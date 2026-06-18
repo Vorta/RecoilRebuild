@@ -6580,7 +6580,11 @@ int EndScene() {
 namespace {
 const char kZVideoDirect3DSourceFile[] = "D:\\Proj\\GameZRecoil\\zVideo\\zvid_ddd3d.c";
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source static helper evidence: source-faithful helper for fog color.
+ * Purpose: Pack 0..255 RGB floats for address-backed callers 0x4aaa90 and
+ * 0x4aab30; BN has no standalone retail function for this body.
+ */
 DWORD PackFogColorFrom255Floats(
     float red,
     float green,
@@ -7608,7 +7612,17 @@ void __fastcall SetFogEnable(
     }
 }
 
-// Reimplements 0x4aaa30: zVideo_dd3d::SetFogStart
+/**
+ * Reimplements 0x4aaa30: zVideo_dd3d::SetFogStart.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
+ * Purpose: update the cached Direct3D fog-start light state only when the
+ * requested start distance changes.
+ *
+ * Evidence: BN shows a stdcall float argument, x87 comparison against
+ * g_zVideo_CachedFogStartLightStateValue, then a Direct3D provider
+ * SetLightState call with selector D3DLIGHTSTATE_FOGSTART and the raw
+ * fogStart float bits before updating the cache.
+ */
 void __stdcall SetFogStart(
     float fogStart
 ) {
@@ -7621,7 +7635,18 @@ void __stdcall SetFogStart(
     }
 }
 
-// Reimplements 0x4aaa60: zVideo_dd3d::SetFogEnd
+/**
+ * Reimplements 0x4aaa60: zVideo_dd3d::SetFogEnd.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
+ * Purpose: update the cached Direct3D fog-end light-state value only when
+ * the requested end distance changes.
+ *
+ * Evidence: BN shows a stdcall float argument, x87 comparison against
+ * g_zVideo_CachedFogEndLightStateValue, then a Direct3D provider
+ * SetLightState call using selector 5 with the raw fogEnd float bits before
+ * updating the cache. The selector is the retail oddity: SetFogEnd pushes
+ * D3DLIGHTSTATE_FOGSTART rather than D3DLIGHTSTATE_FOGEND.
+ */
 void __stdcall SetFogEnd(
     float fogEnd
 ) {
@@ -7634,7 +7659,18 @@ void __stdcall SetFogEnd(
     }
 }
 
-// Reimplements 0x4aaa90: zVideo_dd3d::ApplyFogStateFromGlobals
+/**
+ * Reimplements 0x4aaa90: zVideo_dd3d::ApplyFogStateFromGlobals.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
+ * Purpose: apply pending global fog enable, color, mode, start, and end
+ * state to the active Direct3D device.
+ *
+ * Evidence: BN shows stdcall fogStart, fogEnd, and unused float arguments
+ * with ret 0x0c. The function emits FOGENABLE=1, packs pending RGB globals
+ * into FOGCOLOR via the recovered zvid_ddd3d.c helper expression, then sends
+ * linear fog mode, raw fogStart bits to D3DLIGHTSTATE_FOGSTART, and raw
+ * fogEnd bits to D3DLIGHTSTATE_FOGEND through IDirect3DDevice2 providers.
+ */
 void __stdcall ApplyFogStateFromGlobals(
     float fogStart,
     float fogEnd,
@@ -7669,7 +7705,17 @@ void __stdcall ApplyFogStateFromGlobals(
     );
 }
 
-// Reimplements 0x4aab30: zVideo_dd3d::UpdateFogColor
+/**
+ * Reimplements 0x4aab30: zVideo_dd3d::UpdateFogColor.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
+ * Purpose: upload the applied global fog RGB floats as a packed Direct3D
+ * fog-color render state.
+ *
+ * Evidence: BN shows a cdecl no-argument function that packs
+ * g_zVideo_FogColorAppliedR255/G255/B255 with the same +0.5f, _ftol,
+ * 0xRRGGBB sequence used by 0x4aaa90, then calls the Direct3D provider
+ * SetRenderState for D3DRENDERSTATE_FOGCOLOR.
+ */
 void UpdateFogColor() {
     g_zVideo_pD3DDevice->SetRenderState(
         D3DRENDERSTATE_FOGCOLOR,
@@ -7708,7 +7754,12 @@ void __stdcall SetQuadBatchDepthAndRhw(
     }
 }
 
-// Reimplements 0x4aab90: zVideo_dd3d::SubmitPolyFlatColor16
+/**
+ * Reimplements 0x4aab90: zVideo_dd3d::SubmitPolyFlatColor16.
+ * Source file evidence: GameZRecoil/zVideo/zvid_ddd3d.c.
+ * Purpose: Convert flat 16-bit color polygons to Direct3D TL vertices and
+ * submit them through the immediate, overwrite, or sorted transparent path.
+ */
 void __fastcall SubmitPolyFlatColor16(
     zVideo_XyzVertex *vertices,
     unsigned int packedColor16,
@@ -7848,7 +7899,12 @@ void __fastcall SubmitPolyFlatColor16(
     ++g_zVideo_SortedPolyQueueCount;
 }
 
-// Reimplements 0x4aaef0: zVideo_dd3d::SubmitPolyGouraudColor16
+/**
+ * Reimplements 0x4aaef0: zVideo_dd3d::SubmitPolyGouraudColor16.
+ * Source file evidence: GameZRecoil/zVideo/zvid_ddd3d.c.
+ * Purpose: Convert per-vertex 16-bit color polygons to Direct3D TL vertices
+ * and submit them through the immediate, overwrite, or sorted transparent path.
+ */
 void __fastcall SubmitPolyGouraudColor16(
     zVideo_XyzVertex *vertices,
     unsigned int *packedColors16,
@@ -8090,7 +8146,12 @@ void __fastcall SubmitPolyColorAttr(
     }
 }
 
-// Reimplements 0x4ab6d0: zVideo_dd3d::SubmitPolyRenderClass
+/**
+ * Reimplements 0x4ab6d0: zVideo_dd3d::SubmitPolyRenderClass.
+ * Source file evidence: GameZRecoil/zVideo/zvid_ddd3d.c.
+ * Purpose: Prepare textured TL vertices for a render class and route them to
+ * immediate Direct3D drawing or the overwrite/sorted polygon queues.
+ */
 void __fastcall SubmitPolyRenderClass(
     zVideo_XyzVertex *vertices,
     zVideo_TexCoord *texCoords,
@@ -8653,7 +8714,12 @@ void __fastcall SubmitPolygonLit(
     ++g_zVideo_SortedPolyQueueCount;
 }
 
-// Reimplements 0x4acbd0: zVideo_dd3d::DrawPointColor16
+/**
+ * Reimplements 0x4acbd0: zVideo_dd3d::DrawPointColor16.
+ * Source file evidence: GameZRecoil/zVideo/zvid_ddd3d.c.
+ * Purpose: Convert one 16-bit colored point to a Direct3D TL vertex and draw it
+ * through the cached point-list render-state path.
+ */
 void __fastcall DrawPointColor16(
     zVideo_XyzVertex *pointPos,
     unsigned int packedColor16,
@@ -10614,7 +10680,17 @@ int __fastcall Image_ReleaseSurface(
     return 1;
 }
 
-// Reimplements 0x4a7d90: zVideo_dd::BltSwToPrimaryRectDirect
+/**
+ * Reimplements 0x4a7d90: zVideo_dd::BltSwToPrimaryRectDirect.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
+ * Purpose: copy a source rectangle from the software surface directly to the
+ * primary DirectDraw surface.
+ *
+ * Evidence: BN uses fastcall ECX=srcRect and EDX=dstRect, calls
+ * IDirectDrawSurface3::Blt on g_zVideo_PrimarySurfaceState.surf with dstRect,
+ * g_zVideo_SwSurfaceState.surf, srcRect, DDBLT_WAIT, and null DDBLTFX, then
+ * reports line 0xe9 on nonzero HRESULT.
+ */
 void __fastcall BltSwToPrimaryRectDirect(
     zVidRect32 *srcRect,
     zVidRect32 *dstRect
@@ -10635,7 +10711,18 @@ void __fastcall BltSwToPrimaryRectDirect(
     }
 }
 
-// Reimplements 0x4a7dd0: zVideo_dd::BltPrimaryToSwRectDirect
+/**
+ * Reimplements 0x4a7dd0: zVideo_dd::BltPrimaryToSwRectDirect.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
+ * Purpose: copy a source rectangle from the primary surface directly back to
+ * the software DirectDraw surface.
+ *
+ * Evidence: BN uses fastcall ECX=srcRect and EDX=dstRect, calls
+ * IDirectDrawSurface3::Blt on g_zVideo_SwSurfaceState.surf with dstRect,
+ * g_zVideo_PrimarySurfaceState.surf, srcRect, DDBLT_WAIT, and null DDBLTFX,
+ * then reports line 0xfc on nonzero HRESULT. BN's raw name shows zVideoDD,
+ * while the source/plan owner uses zVideo_dd.
+ */
 void __fastcall BltPrimaryToSwRectDirect(
     zVidRect32 *srcRect,
     zVidRect32 *dstRect
@@ -10765,7 +10852,21 @@ int __fastcall PresentDisplayModeSurface(
     }
 }
 
-// Reimplements 0x4a7e10: zVideo_dd::BltSwToPrimaryRect
+/**
+ * Reimplements 0x4a7e10: zVideo_dd::BltSwToPrimaryRect.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
+ * Purpose: blit an image-backed software surface to the primary surface with
+ * default rectangles, primary clipping, optional source color key, and primary
+ * lock preservation.
+ *
+ * Evidence: BN lazily creates srcImage->surface with caps 0x20004000 when the
+ * selected hardware device has feature flags, otherwise DDSCAPS_SYSTEMMEMORY;
+ * builds default source and destination rectangles, clips destination against
+ * g_zVideo_PrimarySurfaceState width/height while mirroring offsets into the
+ * source rect, unlocks/relocks the primary state if it was locked, calls
+ * IDirectDrawSurface3::Blt with DDBLT_WAIT | DDBLT_KEYSRCOVERRIDE plus
+ * optional DDBLT_KEYSRC, and reports line 0x159 on Blt failure.
+ */
 void __fastcall BltSwToPrimaryRect(
     zVidImagePartial *srcImage,
     int srcColorKeyEnable,
@@ -11962,7 +12063,16 @@ int __fastcall PaletteSetEntries(
     return 0x5a56ffff;
 }
 
-// Reimplements 0x4a9920: zVideo_dd::GetHwApiDeviceFeatureFlags
+/**
+ * Reimplements 0x4a9920: zVideo_dd::GetHwApiDeviceFeatureFlags.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
+ * Purpose: return the DirectDraw hardware API feature flags for the indexed
+ * device record.
+ *
+ * Evidence: BN indexes g_zVideo_HwApiDeviceTable with the 0x6ec-byte
+ * zVidHwApiDeviceRecord stride and returns the m_deviceFeatureFlags field
+ * without side effects. The table data owner remains blocked separately.
+ */
 int __fastcall GetHwApiDeviceFeatureFlags(
     int deviceIndex
 ) {

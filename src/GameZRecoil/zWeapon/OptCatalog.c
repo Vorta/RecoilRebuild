@@ -29,10 +29,10 @@ int g_OptCatalog_EntryCount = 0;
 OptCatalogEntryDef *g_OptCatalog_EntryTable = 0;
 int g_OptCatalogRuntimeInstanceCount = 0;
 void *g_OptCatalogRuntimeInstancePool = 0;
-void *g_OptCatalogFreeRuntimeInstanceList = 0;
+OptCatalogRuntimeInstanceStorage *g_OptCatalogFreeRuntimeInstanceList = 0;
 zClass_NodePartial *g_OptCatalogRuntimeWorld = 0;
-void *g_OptCatalogPendingSpawnTargetCountPtr = 0;
-void *g_OptCatalogPendingSpawnTargetListPtr = 0;
+int *g_OptCatalogPendingSpawnTargetCountPtr = 0;
+PlayerProgressTargetSlotRuntime *g_OptCatalogPendingSpawnTargetListPtr = 0;
 float g_OptCatalogMaxCraterRadius = 0.0f;
 int g_OptCatalogQueuedImpactCount = 0;
 int g_OptCatalog_DamageContextKind = 0;
@@ -470,8 +470,7 @@ namespace {
             runtime->flyoutAnimPrimary = 0;
             runtime->flyoutAnimSecondary = 0;
             runtime->asyncFxHandle = 0;
-            runtime->next =
-                (OptCatalogRuntimeInstanceStorage *)(g_OptCatalogFreeRuntimeInstanceList);
+            runtime->next = g_OptCatalogFreeRuntimeInstanceList;
             g_OptCatalogFreeRuntimeInstanceList = runtime;
         }
     }
@@ -544,6 +543,149 @@ namespace {
         } else {
             SetCurrentVariantTagFromPacked(packedRuntimeTag);
         }
+    }
+}
+
+namespace zClass_Node {
+    /**
+     * Reimplements 0x4b25f0: zClass_Node::AssignDamageHandlerRecursiveIfMissing
+     * Source: D:\Proj\GameZRecoil\zWeapon\OptCatalog.c
+     * Purpose: assign a shared damage handler to nodes in a child-list subtree
+     * that do not already own one.
+     */
+    void __fastcall AssignDamageHandlerRecursiveIfMissing(
+        zClass_NodePartial * node,
+        OptCatalogDamageHandlerPartial * handler
+    ) {
+        if (((zClass_NodeFreeListSlot *)(node))->damageHandler != 0) {
+            return;
+        }
+
+        for (int i = 0; i < node->listCountB; ++i) {
+            AssignDamageHandlerRecursiveIfMissing(
+                node->listB[i],
+                handler
+            );
+        }
+
+        ((zClass_NodeFreeListSlot *)(node))->damageHandler = handler;
+    }
+
+    /**
+     * Reimplements 0x4b2670: zClass_Node::ClearDamageHandlerRecursive
+     * Source: D:\Proj\GameZRecoil\zWeapon\OptCatalog.c
+     * Purpose: clear a matching shared damage handler through a node subtree.
+     */
+    void __fastcall ClearDamageHandlerRecursive(
+        zClass_NodePartial * node,
+        OptCatalogDamageHandlerPartial * handler
+    ) {
+        for (int i = 0; i < node->listCountB; ++i) {
+            ClearDamageHandlerRecursive(
+                node->listB[i],
+                handler
+            );
+        }
+
+        if (((zClass_NodeFreeListSlot *)(node))->damageHandler == handler) {
+            ((zClass_NodeFreeListSlot *)(node))->damageHandler = 0;
+        }
+    }
+
+    /**
+     * Reimplements 0x4b25a0: zClass_Node::SetDamageHitCallback
+     * Source: D:\Proj\GameZRecoil\zWeapon\OptCatalog.c
+     * Purpose: create or reuse a damage handler, install its hit callback, and
+     * propagate the handler through the node subtree.
+     */
+    int __fastcall SetDamageHitCallback(
+        void *context,
+        zClass_NodePartial *node,
+        void *callback
+    ){
+        OptCatalogDamageHandlerPartial *handler =
+            (OptCatalogDamageHandlerPartial *)(((zClass_NodeFreeListSlot *)(node))
+                ->damageHandler);
+        if (handler == 0) {
+            handler = (OptCatalogDamageHandlerPartial *)(calloc(
+                1,
+                sizeof(OptCatalogDamageHandlerPartial)
+            ));
+        } else if (handler->hitContext != 0) {
+            return 0;
+        }
+
+        handler->hitContext = context;
+        handler->hitCallback = callback;
+        AssignDamageHandlerRecursiveIfMissing(
+            node,
+            handler
+        );
+        zClass_Class::gwNodeSetHasHitCallback(
+            node,
+            1
+        );
+        return 0;
+    }
+
+    /**
+     * Reimplements 0x4b2630: zClass_Node::ClearDamageHandler
+     * Source: D:\Proj\GameZRecoil\zWeapon\OptCatalog.c
+     * Purpose: detach and free a node subtree's shared damage handler.
+     */
+    int __fastcall ClearDamageHandler(zClass_NodePartial * node) {
+        if (node == 0) {
+            return 0;
+        }
+
+        OptCatalogDamageHandlerPartial *handler =
+            (OptCatalogDamageHandlerPartial *)(((zClass_NodeFreeListSlot *)(node))
+                ->damageHandler);
+        if (handler != 0) {
+            ClearDamageHandlerRecursive(
+                node,
+                handler
+            );
+            if (handler->hitContext != 0) {
+                zClass_Class::gwNodeSetHasHitCallback(
+                    node,
+                    0
+                );
+            }
+            free(handler);
+        }
+
+        return 0;
+    }
+
+    /**
+     * Reimplements 0x4b26b0: zClass_Node::SetDamageTimerCallback
+     * Source: D:\Proj\GameZRecoil\zWeapon\OptCatalog.c
+     * Purpose: create or reuse a damage handler, install its timer callback,
+     * and propagate the handler through the node subtree.
+     */
+    int __fastcall SetDamageTimerCallback(
+        void *callback,
+        zClass_NodePartial *node,
+        void *context
+    ){
+        OptCatalogDamageHandlerPartial *handler =
+            (OptCatalogDamageHandlerPartial *)(((zClass_NodeFreeListSlot *)(node))
+                ->damageHandler);
+        if (handler == 0) {
+            handler = (OptCatalogDamageHandlerPartial *)(calloc(
+                1,
+                sizeof(OptCatalogDamageHandlerPartial)
+            ));
+        }
+
+        handler->timerContext = context;
+        handler->timerCallback = callback;
+        AssignDamageHandlerRecursiveIfMissing(
+            node,
+            handler
+        );
+        return 0;
     }
 }
 
@@ -1158,7 +1300,12 @@ namespace OptCatalog {
         return 0;
     }
 
-    // Reimplements 0x4ae450: OptCatalog::FindEntryById (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+    /**
+     * Reimplements 0x4ae450: OptCatalog::FindEntryById
+     * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+     * Purpose: return the first loaded OptCatalog entry whose ordinalIndex
+     * matches the requested catalog id.
+     */
     OptCatalogEntryDef *__fastcall FindEntryById(int entryId) {
         for (int i = 0; i < g_OptCatalog_EntryCount; ++i) {
             OptCatalogEntryDef &entry = g_OptCatalog_EntryTable[i];
@@ -1264,8 +1411,17 @@ namespace OptCatalog {
         return runtime;
     }
 
-    // Reimplements 0x4b2930: OptCatalog_MineIterator::Begin
-    // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+    /**
+     * Reimplements 0x4b2930: OptCatalog_MineIterator::Begin
+     * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
+     * BN behavior: ECX is OptCatalogEntryDef*, load activeRuntimeListHead,
+     * store it to g_OptCatalog_MineIteratorCursor, and return the same
+     * runtime-instance pointer.
+     * Data touch: writes the BSS global g_OptCatalog_MineIteratorCursor
+     * at 0x56bcb0.
+     * Purpose: start iterating the active runtime-instance list for a mine
+     * OptCatalog entry.
+     */
     OptCatalogRuntimeInstanceStorage *__fastcall MineIterator_Begin(
         OptCatalogEntryDef * entry
     ) {
@@ -1273,8 +1429,17 @@ namespace OptCatalog {
         return entry->activeRuntimeListHead;
     }
 
-    // Reimplements 0x4b2940: OptCatalog_MineIterator::Next
-    // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+    /**
+     * Reimplements 0x4b2940: OptCatalog_MineIterator::Next
+     * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
+     * BN behavior: read g_OptCatalog_MineIteratorCursor; when non-null,
+     * advance through OptCatalogRuntimeInstanceStorage::next, write the new
+     * cursor back, and return it; when null, return null without changing the
+     * global.
+     * Data touch: reads and conditionally writes the BSS global
+     * g_OptCatalog_MineIteratorCursor at 0x56bcb0.
+     * Purpose: advance the current mine runtime-instance iterator cursor.
+     */
     OptCatalogRuntimeInstanceStorage *MineIterator_Next() {
         OptCatalogRuntimeInstanceStorage *result = g_OptCatalog_MineIteratorCursor;
         if (result != 0) {
@@ -1285,18 +1450,27 @@ namespace OptCatalog {
         return result;
     }
 
-    // Reimplements 0x4ae4a0: OptCatalog::SetPendingSpawnTargetOverrides
-    // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+    /**
+     * Reimplements 0x4ae4a0: OptCatalog::SetPendingSpawnTargetOverrides
+     * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+     * Purpose: install the pending-spawn target count and list pointers used
+     * by OptCatalog runtime spawn setup.
+     */
     void __fastcall SetPendingSpawnTargetOverrides(
         void *pendingSpawnTargetCountPtr,
         void *pendingSpawnTargetListPtr
     ) {
-        g_OptCatalogPendingSpawnTargetCountPtr = pendingSpawnTargetCountPtr;
-        g_OptCatalogPendingSpawnTargetListPtr = pendingSpawnTargetListPtr;
+        g_OptCatalogPendingSpawnTargetCountPtr = (int *)(pendingSpawnTargetCountPtr);
+        g_OptCatalogPendingSpawnTargetListPtr =
+            (PlayerProgressTargetSlotRuntime *)(pendingSpawnTargetListPtr);
     }
 
-    // Reimplements 0x4340c0: OptCatalog::AltGunDispatchAllocRuntimeGateCallback
-    // (D:\Proj\Battlesport\ai_net.cpp)
+    /**
+     * Reimplements 0x4340c0: OptCatalog::AltGunDispatchAllocRuntimeGateCallback
+     * (D:\Proj\Battlesport\ai_net.cpp)
+     * Purpose: gate pkt07 alt-gun runtime allocation and launch-time callback
+     * dispatch for local map-owned rows.
+     */
     int __fastcall
     AltGunDispatchAllocRuntimeGateCallback(
         OptCatalogEntryDef * self,
@@ -1332,8 +1506,12 @@ namespace OptCatalog {
         return 1;
     }
 
-    // Reimplements 0x434240: OptCatalog::SendPkt0A_RemoveRuntimeRelay
-    // (D:\Proj\GameZRecoil\GameNet.cpp)
+    /**
+     * Reimplements 0x434240: OptCatalog::SendPkt0A_RemoveRuntimeRelay
+     * (D:\Proj\GameZRecoil\GameNet.cpp)
+     * Purpose: send pkt0A removal relay packets for authored runtime
+     * instances when recursive relay processing is enabled.
+     */
     void __fastcall SendPkt0A_RemoveRuntimeRelay(
         OptCatalogEntryDef * self,
         zVec3 * pointOrVec3,
@@ -1351,21 +1529,28 @@ namespace OptCatalog {
 
         zUtil_SaveGameState *const ownerSaveState =
             (zUtil_SaveGameState *)(ownerTrackContext->payload);
-        g_NetPkt0A_RemoveRuntimeRelayBuf.header.payloadDword0 = zNetwork_GetLocalPlayerKey();
-        g_NetPkt0A_RemoveRuntimeRelayBuf.optCatalogEntryId = (short)(self->ordinalIndex);
+        g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf.header.payloadDword0 =
+            zNetwork_GetLocalPlayerKey();
+        g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf.optCatalogEntryId =
+            (short)(self->ordinalIndex);
         if (pointOrVec3 != 0) {
-            g_NetPkt0A_RemoveRuntimeRelayBuf.pointOrVec3 = *pointOrVec3;
+            g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf.pointOrVec3 = *pointOrVec3;
         } else {
-            g_NetPkt0A_RemoveRuntimeRelayBuf.pointOrVec3.x = 0.0f;
-            g_NetPkt0A_RemoveRuntimeRelayBuf.pointOrVec3.y = 0.0f;
-            g_NetPkt0A_RemoveRuntimeRelayBuf.pointOrVec3.z = 0.0f;
+            g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf.pointOrVec3.x = 0.0f;
+            g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf.pointOrVec3.y = 0.0f;
+            g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf.pointOrVec3.z = 0.0f;
         }
-        g_NetPkt0A_RemoveRuntimeRelayBuf.ownerPlayerKey = ownerSaveState->netPlayerRow->playerKey;
-        zNetwork_SendPacketReliable(&g_NetPkt0A_RemoveRuntimeRelayBuf.header);
+        g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf.ownerPlayerKey =
+            ownerSaveState->netPlayerRow->playerKey;
+        zNetwork_SendPacketReliable(&g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf.header);
     }
 
-    // Reimplements 0x4342d0: OptCatalog::HandlePkt0A_RemoveRuntimeRelay
-    // (D:\Proj\GameZRecoil\GameNet.cpp)
+    /**
+     * Reimplements 0x4342d0: OptCatalog::HandlePkt0A_RemoveRuntimeRelay
+     * (D:\Proj\GameZRecoil\GameNet.cpp)
+     * Purpose: handle pkt0A removal relay packets by resolving the
+     * OptCatalog entry and player row while suppressing echo relay sends.
+     */
     int __fastcall
     HandlePkt0A_RemoveRuntimeRelay(
         int,
@@ -1524,8 +1709,12 @@ namespace OptCatalog {
         }
     }
 
-    // Reimplements 0x4ae4b0: OptCatalog::AllocOrReuseAttachNodeChildClone
-    // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+    /**
+     * Reimplements 0x4ae4b0: OptCatalog::AllocOrReuseAttachNodeChildClone
+     * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+     * Purpose: reuse an attach-clone child from the entry free list, or clone
+     * the template node when none are available.
+     */
     zClass_NodePartial *__fastcall AllocOrReuseAttachNodeChildClone(
         OptCatalogEntryDef * self
     ) {
@@ -1543,8 +1732,12 @@ namespace OptCatalog {
         );
     }
 
-    // Reimplements 0x4ae520: OptCatalog::ClearRuntimeInstanceAsyncFxHandleCallback
-    // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+    /**
+     * Reimplements 0x4ae520: OptCatalog::ClearRuntimeInstanceAsyncFxHandleCallback
+     * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+     * Purpose: clear the runtime instance async FX handle after the attached
+     * model animation completes.
+     */
     void __fastcall ClearRuntimeInstanceAsyncFxHandleCallback(
         void *,
         OptCatalogRuntimeInstanceStorage *runtimeInstance,
@@ -1553,8 +1746,12 @@ namespace OptCatalog {
         runtimeInstance->asyncFxHandle = 0;
     }
 
-    // Reimplements 0x4ae4e0: OptCatalog::RecycleAttachNodeClone
-    // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+    /**
+     * Reimplements 0x4ae4e0: OptCatalog::RecycleAttachNodeClone
+     * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+     * Purpose: stop pending attach animation work, detach the child clone,
+     * and return it to the entry clone free list.
+     */
     void __fastcall RecycleAttachNodeClone(
         OptCatalogEntryDef * self,
         OptCatalogRuntimeInstanceStorage * runtimeInstance
@@ -1576,13 +1773,17 @@ namespace OptCatalog {
         runtimeInstance->attachCloneChild = 0;
     }
 
-    // Reimplements 0x4ae530: OptCatalog::AllocOrReuseAttachNodeClone
-    // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+    /**
+     * Reimplements 0x4ae530: OptCatalog::AllocOrReuseAttachNodeClone
+     * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+     * Purpose: take a runtime instance from the free list, attach any flyout
+     * child clone, and reset per-spawn lifetime state.
+     */
     OptCatalogRuntimeInstanceStorage *__fastcall AllocOrReuseAttachNodeClone(
         OptCatalogEntryDef * self
     ) {
         OptCatalogRuntimeInstanceStorage *const runtimeInstance =
-            (OptCatalogRuntimeInstanceStorage *)(g_OptCatalogFreeRuntimeInstanceList);
+            g_OptCatalogFreeRuntimeInstanceList;
         if (runtimeInstance == 0) {
             return 0;
         }
@@ -1609,8 +1810,12 @@ namespace OptCatalog {
         return runtimeInstance;
     }
 
-    // Reimplements 0x4ae660: OptCatalog::AllocRuntimeInstance
-    // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+    /**
+     * Reimplements 0x4ae660: OptCatalog::AllocRuntimeInstance
+     * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+     * Purpose: allocate or reuse a projectile runtime instance, link it active,
+     * initialize motion, FX, target, and collision state for the spawn.
+     */
     OptCatalogRuntimeInstanceStorage *__fastcall AllocRuntimeInstance(
         OptCatalogEntryDef * self,
         zClass_NodePartial * ownerNode,
@@ -1791,10 +1996,10 @@ namespace OptCatalog {
         if ((self->flags & kOptCatalogFlagUsePendingSpawnTarget) != 0 &&
             g_OptCatalogPendingSpawnTargetListPtr != 0) {
             runtimeInstance->aux = *spawnVelocity;
-            int *const pendingTargetCount = (int *)(g_OptCatalogPendingSpawnTargetCountPtr);
+            int *const pendingTargetCount = g_OptCatalogPendingSpawnTargetCountPtr;
             if (pendingTargetCount != 0 && *pendingTargetCount > 0) {
                 PlayerProgressTargetSlotRuntime *const targetList =
-                    (PlayerProgressTargetSlotRuntime *)(g_OptCatalogPendingSpawnTargetListPtr);
+                    g_OptCatalogPendingSpawnTargetListPtr;
                 runtimeInstance->pendingTargetA = targetList[0].targetPos;
                 runtimeInstance->pendingTargetB = targetList[0].targetVelocity;
             }
@@ -1826,8 +2031,12 @@ namespace OptCatalog {
         return runtimeInstance;
     }
 
-    // Reimplements 0x4aeaa0: OptCatalog::SpawnRuntimeInstanceAt
-    // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+    /**
+     * Reimplements 0x4aeaa0: OptCatalog::SpawnRuntimeInstanceAt
+     * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+     * Purpose: spawn a positioned impact-scale runtime instance and attach
+     * its projectile node to the OptCatalog runtime world.
+     */
     OptCatalogRuntimeInstanceStorage *__fastcall SpawnRuntimeInstanceAt(
         OptCatalogEntryDef * self,
         zVec3 * spawnPos,
@@ -1865,8 +2074,12 @@ namespace OptCatalog {
         return runtimeInstance;
     }
 
-    // Reimplements 0x4aeb50: OptCatalog::RecycleRuntimeInstance
-    // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+    /**
+     * Reimplements 0x4aeb50: OptCatalog::RecycleRuntimeInstance
+     * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+     * Purpose: stop runtime FX, recycle any attach clone, detach the projectile
+     * node from the runtime world, and return storage to the free list.
+     */
     void __fastcall RecycleRuntimeInstance(
         OptCatalogEntryDef * self,
         OptCatalogRuntimeInstanceStorage * runtimeInstance
@@ -1908,8 +2121,12 @@ namespace OptCatalog {
         );
     }
 
-    // Reimplements 0x4aebc0: OptCatalog::ClearRuntimeInstances
-    // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+    /**
+     * Reimplements 0x4aebc0: OptCatalog::ClearRuntimeInstances
+     * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+     * Purpose: unlink and recycle every active runtime instance owned by the
+     * catalog entry.
+     */
     void __fastcall ClearRuntimeInstances(OptCatalogEntryDef * self) {
         OptCatalogRuntimeInstanceStorage *runtimeInstance = self->activeRuntimeListHead;
         self->activeRuntimeListHead = 0;
@@ -1923,8 +2140,12 @@ namespace OptCatalog {
         }
     }
 
-    // Reimplements 0x4aebf0: OptCatalog::RemoveRuntimeInstance
-    // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+    /**
+     * Reimplements 0x4aebf0: OptCatalog::RemoveRuntimeInstance
+     * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+     * Purpose: process and recycle matching active runtime instances, or probe
+     * a supplied point, then notify the remove-runtime relay callback.
+     */
     int __fastcall RemoveRuntimeInstance(
         OptCatalogEntryDef * self,
         zVec3 * pointOrVec3,
@@ -1977,8 +2198,12 @@ namespace OptCatalog {
         return result;
     }
 
-    // Reimplements 0x4ae590: OptCatalog::RecycleRuntimeInstanceStorage
-    // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+    /**
+     * Reimplements 0x4ae590: OptCatalog::RecycleRuntimeInstanceStorage
+     * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+     * Purpose: detach projectile children, restore transform and collision
+     * state, and push the runtime storage back onto the free list.
+     */
     void __fastcall RecycleRuntimeInstanceStorage(
         OptCatalogEntryDef * self,
         OptCatalogRuntimeInstanceStorage * runtimeInstance
@@ -2017,8 +2242,7 @@ namespace OptCatalog {
             );
         }
 
-        runtimeInstance->next =
-            (OptCatalogRuntimeInstanceStorage *)(g_OptCatalogFreeRuntimeInstanceList);
+        runtimeInstance->next = g_OptCatalogFreeRuntimeInstanceList;
         g_OptCatalogFreeRuntimeInstanceList = runtimeInstance;
         zClass_Object3D::gwObject3DSetScale(
             projectileNode,
@@ -2233,9 +2457,9 @@ namespace OptCatalog {
 
         if ((ownerEntry->flags & kOptCatalogFlagTrailUsePendingSpawnTargets) != 0) {
             trailRuntimeState->pendingSpawnTargetCountPtr =
-                (int *)(g_OptCatalogPendingSpawnTargetCountPtr);
+                g_OptCatalogPendingSpawnTargetCountPtr;
             trailRuntimeState->pendingSpawnTargetListPtr =
-                (PlayerProgressTargetSlotRuntime *)(g_OptCatalogPendingSpawnTargetListPtr);
+                g_OptCatalogPendingSpawnTargetListPtr;
             g_OptCatalogPendingSpawnTargetCountPtr = 0;
         }
 

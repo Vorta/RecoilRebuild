@@ -922,9 +922,11 @@ extern "C" int zturret_load_definitions_from_path_smoke(void) {
 extern "C" int zturret_fire_weapon_smoke(void) {
     const float oldTime = g_Time_AccumulatedTimeSec;
     const float oldNextSpawnScale = g_OptCatalogNextSpawnScale;
-    void *const oldPendingSpawnTargetCountPtr = g_OptCatalogPendingSpawnTargetCountPtr;
-    void *const oldPendingSpawnTargetListPtr = g_OptCatalogPendingSpawnTargetListPtr;
-    void *const oldFreeRuntimeList = g_OptCatalogFreeRuntimeInstanceList;
+    int *const oldPendingSpawnTargetCountPtr = g_OptCatalogPendingSpawnTargetCountPtr;
+    PlayerProgressTargetSlotRuntime *const oldPendingSpawnTargetListPtr =
+        g_OptCatalogPendingSpawnTargetListPtr;
+    OptCatalogRuntimeInstanceStorage *const oldFreeRuntimeList =
+        g_OptCatalogFreeRuntimeInstanceList;
     zClass_NodePartial *const oldRuntimeWorld = g_OptCatalogRuntimeWorld;
     zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
     const int oldNetworkOptionState = g_OptCatalogNetworkOptionState;
@@ -1045,8 +1047,9 @@ extern "C" int zturret_fire_weapon_smoke(void) {
 extern "C" int zturret_fire_weapon_callback_smoke(void) {
     const float oldTime = g_Time_AccumulatedTimeSec;
     const float oldNextSpawnScale = g_OptCatalogNextSpawnScale;
-    void *const oldPendingSpawnTargetCountPtr = g_OptCatalogPendingSpawnTargetCountPtr;
-    void *const oldPendingSpawnTargetListPtr = g_OptCatalogPendingSpawnTargetListPtr;
+    int *const oldPendingSpawnTargetCountPtr = g_OptCatalogPendingSpawnTargetCountPtr;
+    PlayerProgressTargetSlotRuntime *const oldPendingSpawnTargetListPtr =
+        g_OptCatalogPendingSpawnTargetListPtr;
 
     zSndSample trailStopSample = {};
     zSndSample trailLoopSample = {};

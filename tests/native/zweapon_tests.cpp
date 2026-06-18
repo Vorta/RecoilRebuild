@@ -261,10 +261,12 @@ extern "C" int zweapon_init_smoke(void) {
     g_OptCatalog_EntryTable = reinterpret_cast<OptCatalogEntryDef *>(0x1111);
     g_OptCatalogRuntimeInstanceCount = 8;
     g_OptCatalogRuntimeInstancePool = reinterpret_cast<void *>(0x2222);
-    g_OptCatalogFreeRuntimeInstanceList = reinterpret_cast<void *>(0x3333);
+    g_OptCatalogFreeRuntimeInstanceList =
+        reinterpret_cast<OptCatalogRuntimeInstanceStorage *>(0x3333);
     g_OptCatalogRuntimeWorld = reinterpret_cast<zClass_NodePartial *>(0x4444);
-    g_OptCatalogPendingSpawnTargetCountPtr = reinterpret_cast<void *>(0x5555);
-    g_OptCatalogPendingSpawnTargetListPtr = reinterpret_cast<void *>(0x6666);
+    g_OptCatalogPendingSpawnTargetCountPtr = reinterpret_cast<int *>(0x5555);
+    g_OptCatalogPendingSpawnTargetListPtr =
+        reinterpret_cast<PlayerProgressTargetSlotRuntime *>(0x6666);
     g_OptCatalogQueuedImpactCount = 7;
     g_OptCatalog_DamageContextKind = 6;
     g_OptCatalog_DamageContextHitEvent = reinterpret_cast<void *>(0x7777);
@@ -544,10 +546,12 @@ extern "C" int zweapon_optcatalog_shutdown_smoke(void) {
     g_OptCatalog_EntryTable[0].killVerbString = static_cast<char *>(std::malloc(4));
     g_OptCatalogRuntimeInstanceCount = 3;
     g_OptCatalogRuntimeInstancePool = std::malloc(4);
-    g_OptCatalogFreeRuntimeInstanceList = reinterpret_cast<void *>(0x1234);
+    g_OptCatalogFreeRuntimeInstanceList =
+        reinterpret_cast<OptCatalogRuntimeInstanceStorage *>(0x1234);
     g_OptCatalogRuntimeWorld = reinterpret_cast<zClass_NodePartial *>(0x5678);
-    g_OptCatalogPendingSpawnTargetCountPtr = reinterpret_cast<void *>(0x9abc);
-    g_OptCatalogPendingSpawnTargetListPtr = reinterpret_cast<void *>(0xdef0);
+    g_OptCatalogPendingSpawnTargetCountPtr = reinterpret_cast<int *>(0x9abc);
+    g_OptCatalogPendingSpawnTargetListPtr =
+        reinterpret_cast<PlayerProgressTargetSlotRuntime *>(0xdef0);
     g_OptCatalog_FallbackImpactProbeEnabled = 0;
     g_OptCatalog_CaptureHitSnapshotEnabled = 0;
     g_OptCatalogQueuedImpactCount = 9;
@@ -793,7 +797,8 @@ extern "C" int zweapon_optcatalog_pending_spawn_override_smoke(void) {
 
     OptCatalog::SetPendingSpawnTargetOverrides(&pendingCount, &pendingList);
     const bool setOk = g_OptCatalogPendingSpawnTargetCountPtr == &pendingCount &&
-                       g_OptCatalogPendingSpawnTargetListPtr == &pendingList;
+                       g_OptCatalogPendingSpawnTargetListPtr ==
+                           reinterpret_cast<PlayerProgressTargetSlotRuntime *>(&pendingList);
 
     OptCatalog::SetPendingSpawnTargetOverrides(nullptr, nullptr);
     const bool resetOk = g_OptCatalogPendingSpawnTargetCountPtr == nullptr &&
@@ -1572,17 +1577,16 @@ extern "C" int zweapon_optcatalog_build_impact_hit_list_smoke(void) {
     zWorldAreaPartial area{};
     area.childCount = 1;
     area.childList = areaChildren;
-    zWorldAreaPartial emptyRow{};
-    zWorldAreaPartial *rows[2] = {&emptyRow, &area};
+    zWorldAreaPartial *rows[1] = {&area};
     zClass_WorldDataPartial worldData{};
     worldData.originX = 0.0f;
-    worldData.originZ = -1.0f;
+    worldData.originZ = 1.0f;
     worldData.worldMaxX = 2.0f;
-    worldData.worldMaxZ = 1.0f;
+    worldData.worldMaxZ = -1.0f;
     worldData.areaInvSizeX = 0.5f;
-    worldData.areaInvSizeZ = 0.5f;
+    worldData.areaInvSizeZ = -0.5f;
     worldData.areaGridColCount = 1;
-    worldData.areaGridRowCount = 2;
+    worldData.areaGridRowCount = 1;
     worldData.areaGridRows = rows;
     zClass_NodePartial world{};
     world.classData = &worldData;
@@ -1716,17 +1720,16 @@ extern "C" int zweapon_optcatalog_process_runtime_instance_smoke(void) {
     zWorldAreaPartial area = {};
     area.childCount = 1;
     area.childList = areaChildren;
-    zWorldAreaPartial emptyRow = {};
-    zWorldAreaPartial *rows[2] = {&emptyRow, &area};
+    zWorldAreaPartial *rows[1] = {&area};
     zClass_WorldDataPartial fallbackWorldData = {};
     fallbackWorldData.originX = 0.0f;
-    fallbackWorldData.originZ = -1.0f;
+    fallbackWorldData.originZ = 1.0f;
     fallbackWorldData.worldMaxX = 2.0f;
-    fallbackWorldData.worldMaxZ = 1.0f;
+    fallbackWorldData.worldMaxZ = -1.0f;
     fallbackWorldData.areaInvSizeX = 0.5f;
-    fallbackWorldData.areaInvSizeZ = 0.5f;
+    fallbackWorldData.areaInvSizeZ = -0.5f;
     fallbackWorldData.areaGridColCount = 1;
-    fallbackWorldData.areaGridRowCount = 2;
+    fallbackWorldData.areaGridRowCount = 1;
     fallbackWorldData.areaGridRows = rows;
     zClass_NodePartial fallbackWorld = {};
     fallbackWorld.classData = &fallbackWorldData;
@@ -1888,7 +1891,8 @@ extern "C" int zweapon_optcatalog_process_runtime_instances_smoke(void) {
 
 extern "C" int zweapon_optcatalog_remove_runtime_instance_smoke(void) {
     zClass_NodePartial *const oldRuntimeWorld = g_OptCatalogRuntimeWorld;
-    void *const oldFreeRuntimeList = g_OptCatalogFreeRuntimeInstanceList;
+    OptCatalogRuntimeInstanceStorage *const oldFreeRuntimeList =
+        g_OptCatalogFreeRuntimeInstanceList;
     OptCatalogRemoveRuntimeRelayCallback const oldRelay =
         g_OptCatalog_RemoveRuntimeRelayCallback;
 
@@ -2399,7 +2403,8 @@ extern "C" int zweapon_optcatalog_update_trail_segment_visual_smoke(void) {
 }
 
 extern "C" int zweapon_optcatalog_runtime_free_list_helpers_smoke(void) {
-    void *const oldFreeRuntimeList = g_OptCatalogFreeRuntimeInstanceList;
+    OptCatalogRuntimeInstanceStorage *const oldFreeRuntimeList =
+        g_OptCatalogFreeRuntimeInstanceList;
     zClass_NodePartial *const oldRuntimeWorld = g_OptCatalogRuntimeWorld;
     const float oldNextSpawnScale = g_OptCatalogNextSpawnScale;
 
@@ -2666,8 +2671,9 @@ extern "C" int zweapon_optcatalog_runtime_free_list_helpers_smoke(void) {
         return 9;
     }
 
-    void *const oldPendingSpawnTargetCountPtr = g_OptCatalogPendingSpawnTargetCountPtr;
-    void *const oldPendingSpawnTargetListPtr = g_OptCatalogPendingSpawnTargetListPtr;
+    int *const oldPendingSpawnTargetCountPtr = g_OptCatalogPendingSpawnTargetCountPtr;
+    PlayerProgressTargetSlotRuntime *const oldPendingSpawnTargetListPtr =
+        g_OptCatalogPendingSpawnTargetListPtr;
     const int oldNetworkOptionState = g_OptCatalogNetworkOptionState;
     OptCatalogAllocRuntimeGateCallback const oldAllocRuntimeGateCallback =
         g_OptCatalog_AllocRuntimeGateCallback;
@@ -3133,8 +3139,9 @@ extern "C" int zweapon_optcatalog_warning_samples_smoke(void) {
 
 extern "C" int zweapon_optcatalog_activate_trail_runtime_state_smoke(void) {
     const float oldNextSpawnScale = g_OptCatalogNextSpawnScale;
-    void *const oldPendingSpawnTargetCountPtr = g_OptCatalogPendingSpawnTargetCountPtr;
-    void *const oldPendingSpawnTargetListPtr = g_OptCatalogPendingSpawnTargetListPtr;
+    int *const oldPendingSpawnTargetCountPtr = g_OptCatalogPendingSpawnTargetCountPtr;
+    PlayerProgressTargetSlotRuntime *const oldPendingSpawnTargetListPtr =
+        g_OptCatalogPendingSpawnTargetListPtr;
 
     zSndSample trailStopSample = {};
     zSndSample trailLoopSample = {};

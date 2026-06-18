@@ -58,6 +58,17 @@ std::int32_t FloatBitsForTest(float value) {
 std::int32_t __fastcall zclass_test_node_type_0x42(zClass_NodePartial *node) {
     return node->nodeType == 0x42 ? 1 : 0;
 }
+
+bool zclass_bucket_has_pending_node_for_test(int bucket, zClass_NodePartial *node) {
+    for (zClass_TypeListLink *link = zClass_TypeList::Head(bucket); link != nullptr;
+         link = link->next) {
+        if (link->node == node && link->pendingRemove != 0) {
+            return true;
+        }
+    }
+
+    return false;
+}
 } // namespace
 
 extern "C" int zclass_type_list_alloc_and_insert_smoke() {
@@ -291,6 +302,785 @@ extern "C" int zclass_alloc_node_from_free_list_smoke() {
     return result;
 }
 
+extern "C" int zclass_gwnode_update_tree_smoke(void) {
+    ResetTypeListsForTest();
+    g_zClass_DeferredProcessingEnabled = 0;
+
+    zClass_NodePartial root{};
+    zClass_NodePartial activeChild{};
+    zClass_NodePartial inactiveChild{};
+    zClass_NodePartial *children[] = {&activeChild, &inactiveChild};
+
+    root.classId = 6;
+    root.flags = 0x03;
+    root.listCountB = 2;
+    root.listB = children;
+    activeChild.classId = 6;
+    activeChild.flags = 0x03;
+    inactiveChild.classId = 6;
+    inactiveChild.flags = 0x02;
+
+    zClass_TypeList::Insert(7, &root);
+    zClass_TypeList::Insert(7, &activeChild);
+
+    gwNode::UpdateTree(&root);
+    int result = 0;
+    if ((root.flags & 0x02) != 0 || (activeChild.flags & 0x02) != 0 ||
+        (inactiveChild.flags & 0x02) == 0 ||
+        !zclass_bucket_has_pending_node_for_test(7, &root) ||
+        !zclass_bucket_has_pending_node_for_test(7, &activeChild) ||
+        zClass_TypeList::PendingRemovalDirty(7) == 0) {
+        result = 1;
+    }
+
+    FreeTypeListsForTest();
+
+    ResetTypeListsForTest();
+    g_zClass_DeferredProcessingEnabled = 0;
+
+    zClass_NodePartial leaf{};
+    zClass_NodePartial parent{};
+    zClass_NodePartial world{};
+    zClass_NodePartial *parents[] = {&parent, &world};
+
+    leaf.classId = 6;
+    leaf.flags = 0x03;
+    leaf.listCountA = 2;
+    leaf.listA = parents;
+    parent.classId = 6;
+    parent.flags = 0x03;
+    world.classId = 2;
+    world.flags = 0x03;
+
+    zClass_TypeList::Insert(7, &leaf);
+    zClass_TypeList::Insert(7, &parent);
+    zClass_TypeList::Insert(7, &world);
+
+    gwNode::UpdateTree(&leaf);
+    if (result == 0 &&
+        ((leaf.flags & 0x02) != 0 || (parent.flags & 0x02) != 0 ||
+         (world.flags & 0x02) == 0 || !zclass_bucket_has_pending_node_for_test(7, &leaf) ||
+         !zclass_bucket_has_pending_node_for_test(7, &parent) ||
+         zclass_bucket_has_pending_node_for_test(7, &world))) {
+        result = 2;
+    }
+
+    FreeTypeListsForTest();
+    g_zClass_DeferredProcessingEnabled = 1;
+    return result;
+}
+
+extern "C" int zclass_cls_di_set_stop_after_first_hit_smoke() {
+    g_cls_di_BreakOnFirstCandidate = 0;
+    zClass_cls_di::SetBreakOnFirstCandidate(5);
+    if (g_cls_di_BreakOnFirstCandidate != 5) {
+        return 18;
+    }
+
+    g_cls_di_StopAfterFirstHit = 0;
+    zClass_cls_di::SetStopAfterFirstHit(7);
+
+    if (g_cls_di_StopAfterFirstHit != 7) {
+        return 1;
+    }
+
+    zVec3 triZ[3] = {{0.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}};
+    zVec3 segmentStart{0.25f, 0.25f, 1.0f};
+    zVec3 segmentEnd{0.25f, 0.25f, -1.0f};
+    zClassDiPickCandidateEntry candidate{};
+    if (zClass_cls_di::BuildPickCandidateForSegmentVsPolygon(&candidate, &segmentStart, &segmentEnd,
+                                                             triZ, 3, 0) != 1 ||
+        candidate.surfaceNormal.x != 0.0f || candidate.surfaceNormal.y != 0.0f ||
+        candidate.surfaceNormal.z != 1.0f || candidate.hitPos.x != 0.25f ||
+        candidate.hitPos.y != 0.25f || candidate.hitPos.z != 0.0f) {
+        return 2;
+    }
+
+    segmentStart = {1.25f, 0.25f, 1.0f};
+    segmentEnd = {1.25f, 0.25f, -1.0f};
+    if (zClass_cls_di::BuildPickCandidateForSegmentVsPolygon(&candidate, &segmentStart, &segmentEnd,
+                                                             triZ, 3, 0) != 0) {
+        return 3;
+    }
+
+    segmentStart = {0.25f, 0.25f, -1.0f};
+    segmentEnd = {0.25f, 0.25f, 1.0f};
+    if (zClass_cls_di::BuildPickCandidateForSegmentVsPolygon(&candidate, &segmentStart, &segmentEnd,
+                                                             triZ, 3, 0) != 0 ||
+        zClass_cls_di::BuildPickCandidateForSegmentVsPolygon(&candidate, &segmentStart, &segmentEnd,
+                                                             triZ, 3, 1) != 1) {
+        return 4;
+    }
+
+    zVec3 triNegZ[3] = {{0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f, 0.0f}};
+    if (zClass_cls_di::BuildPickCandidateForSegmentVsPolygon(&candidate, &segmentStart, &segmentEnd,
+                                                             triNegZ, 3, 0) != 1 ||
+        candidate.surfaceNormal.z != -1.0f) {
+        return 5;
+    }
+
+    zVec3 triX[3] = {{0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}};
+    segmentStart = {1.0f, 0.25f, 0.25f};
+    segmentEnd = {-1.0f, 0.25f, 0.25f};
+    if (zClass_cls_di::BuildPickCandidateForSegmentVsPolygon(&candidate, &segmentStart, &segmentEnd,
+                                                             triX, 3, 0) != 1 ||
+        candidate.surfaceNormal.x != 1.0f || candidate.hitPos.x != 0.0f ||
+        candidate.hitPos.y != 0.25f || candidate.hitPos.z != 0.25f) {
+        return 6;
+    }
+
+    zVec3 boxCornerValues[8] = {{0.0f, 0.0f, 1.0f}, {1.0f, 0.0f, 1.0f}, {1.0f, 0.0f, 0.0f},
+                                {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 1.0f}, {1.0f, 1.0f, 1.0f},
+                                {1.0f, 1.0f, 0.0f}, {0.0f, 1.0f, 0.0f}};
+    zBBoxCorners boxCorners{};
+    for (std::int32_t i = 0; i < 8; ++i) {
+        boxCorners.values[i * 3 + 0] = boxCornerValues[i].x;
+        boxCorners.values[i * 3 + 1] = boxCornerValues[i].y;
+        boxCorners.values[i * 3 + 2] = boxCornerValues[i].z;
+    }
+
+    candidate.scenePayload = &candidate;
+    segmentStart = {0.5f, 0.5f, 2.0f};
+    segmentEnd = {0.5f, 0.5f, 0.5f};
+    if (zClass_cls_di::BuildPickCandidatesForSegmentVsBBoxFaces(&boxCorners, &candidate,
+                                                                &segmentStart, &segmentEnd) != 1 ||
+        candidate.scenePayload != nullptr || candidate.surfaceNormal.z != 1.0f ||
+        candidate.hitPos.x != 0.5f || candidate.hitPos.y != 0.5f || candidate.hitPos.z != 1.0f ||
+        g_zClass_DiFaceVertexScratch4[1].x != 1.0f || g_zClass_DiFaceVertexScratch4[2].y != 1.0f) {
+        return 7;
+    }
+
+    candidate.scenePayload = &candidate;
+    segmentStart = {2.0f, 2.0f, 2.0f};
+    segmentEnd = {2.0f, 2.0f, -1.0f};
+    if (zClass_cls_di::BuildPickCandidatesForSegmentVsBBoxFaces(&boxCorners, &candidate,
+                                                                &segmentStart, &segmentEnd) != 0 ||
+        candidate.scenePayload != nullptr) {
+        return 8;
+    }
+
+    static std::int32_t filterMatrixFlags[8];
+    static float *filterMatrixSlots[8];
+    static zMat4x3 filterMatrix;
+    filterMatrixFlags[0] = 1;
+    filterMatrixSlots[0] = reinterpret_cast<float *>(&filterMatrix);
+    zMath::g_currentMatrixIdentityFlagSlot = &filterMatrixFlags[0];
+    zMath::g_currentMatrixPtrSlot = &filterMatrixSlots[0];
+
+    zClass_NodePartial filterNode{};
+    std::int32_t filterClassData = 0;
+    filterNode.classId = 2;
+    filterNode.classData = &filterClassData;
+    if (zClass_cls_di::FilterPointsBBox(&filterNode, nullptr) != 1) {
+        return 9;
+    }
+
+    filterNode.flags = 0x100;
+    filterNode.cachedBounds[0] = 0.0f;
+    filterNode.cachedBounds[1] = 0.0f;
+    filterNode.cachedBounds[2] = 0.0f;
+    filterNode.cachedBounds[3] = 1.0f;
+    filterNode.cachedBounds[4] = 1.0f;
+    filterNode.cachedBounds[5] = 1.0f;
+    g_DiSegmentMinX = 0.25f;
+    g_DiSegmentMinY = 0.25f;
+    g_DiSegmentMinZ = 0.25f;
+    g_DiSegmentMaxX = 0.75f;
+    g_DiSegmentMaxY = 0.75f;
+    g_DiSegmentMaxZ = 0.75f;
+    if (zClass_cls_di::FilterPointsBBox(&filterNode, nullptr) != 0) {
+        return 10;
+    }
+
+    std::strcpy(filterNode.name, "regionTarget");
+    filterNode.flags = 0x144;
+    filterNode.nodeType = 0xff;
+    OptCatalogRaycastHitList regionHits{};
+    zVec3 regionCenter{0.5f, 0.5f, 0.5f};
+    g_zClass_cls_di_FilterRegions_OutHitList = &regionHits;
+    g_zClass_cls_di_FilterRegions_NodeNamePrefix = "region";
+    g_zClass_cls_di_FilterRegions_Center = &regionCenter;
+    g_zClass_cls_di_FilterRegions_RadiusSq = 1.0f;
+    g_zClass_cls_di_FilterRegions_EnableClearanceCheck = 1;
+    g_zClass_cls_di_FilterRegions_LineOfSightWorld = nullptr;
+    if (zClass_cls_di::FilterRegions_TryAppendNode(&filterNode) != 0 ||
+        regionHits.hitCount != 1 || regionHits.hits[0].hitNode != &filterNode ||
+        regionHits.hits[0].pos.x != 0.5f || regionHits.hits[0].pos.y != 0.5f ||
+        regionHits.hits[0].pos.z != 0.5f || regionHits.hits[0].distance != 0.0f ||
+        regionHits.hits[0].surfaceRef != nullptr) {
+        return 93;
+    }
+    g_zClass_cls_di_FilterRegions_NodeNamePrefix = "other";
+    if (zClass_cls_di::FilterRegions_TryAppendNode(&filterNode) != 1 ||
+        regionHits.hitCount != 1) {
+        return 94;
+    }
+
+    zClass_NodePartial *regionChildren[1] = {&filterNode};
+    zWorldAreaPartial regionArea{};
+    regionArea.childCount = 1;
+    regionArea.childList = regionChildren;
+    zWorldAreaPartial *regionRows[1] = {&regionArea};
+    zClass_WorldDataPartial regionWorldData{};
+    regionWorldData.originX = 0.0f;
+    regionWorldData.originZ = -2.0f;
+    regionWorldData.worldMaxX = 2.0f;
+    regionWorldData.worldMaxZ = 2.0f;
+    regionWorldData.areaInvSizeX = 0.5f;
+    regionWorldData.areaInvSizeZ = 0.25f;
+    regionWorldData.areaGridColCount = 1;
+    regionWorldData.areaGridRowCount = 1;
+    regionWorldData.areaGridRows = regionRows;
+    zClass_NodePartial regionWorld{};
+    regionWorld.classData = &regionWorldData;
+    regionHits = {};
+    regionCenter = {0.5f, 0.5f, -3.0f};
+    if (zClass_cls_di::FilterRegionsAgainstSphere(&regionWorld, &regionCenter, "region", 0.5f, 0,
+                                                  0, &regionHits) != 0 ||
+        regionHits.hitCount != 1 || regionHits.hits[0].hitNode != &filterNode ||
+        regionHits.hits[0].pos.x != 0.5f || regionHits.hits[0].pos.y != 0.5f ||
+        regionHits.hits[0].pos.z != 0.5f || regionHits.hits[0].distance != 0.0f) {
+        return 95;
+    }
+
+    g_zClass_cls_di_FilterRegions_OutHitList = nullptr;
+    g_zClass_cls_di_FilterRegions_NodeNamePrefix = nullptr;
+    g_zClass_cls_di_FilterRegions_Center = nullptr;
+    g_zClass_cls_di_FilterRegions_EnableClearanceCheck = 0;
+
+    filterNode.flags = 0x100;
+    zVec3 pickPoints[3] = {{0.5f, 99.0f, 0.5f}, {1.5f, 0.0f, 0.5f}, {0.25f, 0.0f, 2.0f}};
+    int pickHitFlags[3] = {1, 1, 0};
+    g_DiPickPointArray = pickPoints;
+    g_DiPickPointCount = 3;
+    if (zClass_cls_di::PickTestBBox2D(&filterNode, pickHitFlags) != 0 ||
+        pickHitFlags[0] != 1 || pickHitFlags[1] != 0 || pickHitFlags[2] != 0) {
+        return 90;
+    }
+    pickHitFlags[0] = 0;
+    pickHitFlags[1] = 1;
+    pickHitFlags[2] = 1;
+    if (zClass_cls_di::PickTestBBox2D(&filterNode, pickHitFlags) != 1 ||
+        pickHitFlags[0] != 0 || pickHitFlags[1] != 0 || pickHitFlags[2] != 0) {
+        return 91;
+    }
+    filterNode.flags = 0;
+    pickHitFlags[0] = 1;
+    if (zClass_cls_di::PickTestBBox2D(&filterNode, pickHitFlags) != 1 ||
+        pickHitFlags[0] != 1) {
+        return 92;
+    }
+    filterNode.flags = 0x100;
+
+    g_DiSegmentMaxX = 0.0f;
+    if (zClass_cls_di::FilterPointsBBox(&filterNode, nullptr) != 1) {
+        return 11;
+    }
+
+    filterNode.flags = 0x120;
+    g_DiPickCandidateCursor = &candidate;
+    g_DiPickQueryPoint = {0.5f, 0.5f, 2.0f};
+    g_DiSegmentEnd = {0.5f, 0.5f, 0.5f};
+    g_DiSegmentMinX = 0.5f;
+    g_DiSegmentMinY = 0.5f;
+    g_DiSegmentMinZ = 0.5f;
+    g_DiSegmentMaxX = 0.5f;
+    g_DiSegmentMaxY = 0.5f;
+    g_DiSegmentMaxZ = 2.0f;
+    if (zClass_cls_di::FilterPointsBBox(&filterNode, nullptr) != 0 || candidate.hitPos.z != 1.0f) {
+        return 12;
+    }
+
+    candidate.scenePayload = &candidate;
+    g_DiPickQueryPoint = {0.5f, 0.5f, 0.5f};
+    g_DiSegmentEnd = {0.75f, 0.75f, 0.75f};
+    g_DiSegmentMinX = 0.5f;
+    g_DiSegmentMinY = 0.5f;
+    g_DiSegmentMinZ = 0.5f;
+    g_DiSegmentMaxX = 0.75f;
+    g_DiSegmentMaxY = 0.75f;
+    g_DiSegmentMaxZ = 0.75f;
+    if (zClass_cls_di::FilterPointsBBox(&filterNode, nullptr) != 1 ||
+        candidate.scenePayload != nullptr) {
+        return 13;
+    }
+
+    zModel_PickFaceUvData faceUvData = {{{0.0f, 0.0f}, {10.0f, 0.0f}, {0.0f, 20.0f}}};
+    zVec2 outUv{};
+    g_OptCatalogDamageMaskPhaseU = -1.0f;
+    g_OptCatalogDamageMaskPhaseV = -1.0f;
+    segmentStart = {0.25f, 0.25f, 1.0f};
+    segmentEnd = {0.25f, 0.25f, -1.0f};
+    if (zClass_cls_di::BuildPickCandidateForSegmentVsPolygonWithUv(
+            &candidate, &segmentStart, &segmentEnd, triZ, &faceUvData, &outUv, 3, 0) != 1 ||
+        candidate.hitPos.x != 0.25f || candidate.hitPos.y != 0.25f || candidate.hitPos.z != 0.0f ||
+        outUv.x != 2.5f || outUv.y != 5.0f || g_OptCatalogDamageMaskPhaseU != 2.5f ||
+        g_OptCatalogDamageMaskPhaseV != 5.0f) {
+        return 14;
+    }
+
+    zModel_PickFaceUvData xFaceUvData = {{{0.0f, 0.0f}, {4.0f, 0.0f}, {0.0f, 8.0f}}};
+    outUv = {};
+    segmentStart = {1.0f, 0.25f, 0.25f};
+    segmentEnd = {-1.0f, 0.25f, 0.25f};
+    if (zClass_cls_di::BuildPickCandidateForSegmentVsPolygonWithUv(
+            &candidate, &segmentStart, &segmentEnd, triX, &xFaceUvData, &outUv, 3, 0) != 1 ||
+        candidate.hitPos.x != 0.0f || candidate.hitPos.y != 0.25f || candidate.hitPos.z != 0.25f ||
+        outUv.x != 1.0f || outUv.y != 2.0f || g_OptCatalogDamageMaskPhaseU != 1.0f ||
+        g_OptCatalogDamageMaskPhaseV != 2.0f) {
+        return 15;
+    }
+
+    g_OptCatalogDamageMaskPhaseU = 123.0f;
+    g_OptCatalogDamageMaskPhaseV = 456.0f;
+    segmentStart = {1.25f, 0.25f, 1.0f};
+    segmentEnd = {1.25f, 0.25f, -1.0f};
+    if (zClass_cls_di::BuildPickCandidateForSegmentVsPolygonWithUv(
+            &candidate, &segmentStart, &segmentEnd, triZ, &faceUvData, &outUv, 3, 0) != 0 ||
+        g_OptCatalogDamageMaskPhaseU != 123.0f || g_OptCatalogDamageMaskPhaseV != 456.0f) {
+        return 16;
+    }
+
+    g_zModel_SharedVec3ScratchA = g_zModel_SharedVec3ScratchAStorage;
+    zModel_PickFaceScenePayload facePayload{};
+    std::int32_t faceIndices[3] = {0, 1, 2};
+    zModel_PickFaceEntry faceEntry{};
+    faceEntry.flagsAndVertexCount = 3;
+    faceEntry.vertexIndices = faceIndices;
+    faceEntry.faceUvData = &faceUvData;
+    faceEntry.scenePayload = &facePayload;
+
+    zModel_PickFaceData faceData{};
+    faceData.faceCount = 1;
+    faceData.faces = &faceEntry;
+    faceData.baseVertices = triZ;
+    filterMatrixFlags[0] = 1;
+    candidate = {};
+    segmentStart = {0.25f, 0.25f, 1.0f};
+    segmentEnd = {0.25f, 0.25f, -1.0f};
+    if (zClass_cls_di::AppendPickCandidatesForFace(&faceData, &candidate, &segmentStart,
+                                                   &segmentEnd) != 1 ||
+        candidate.scenePayload != &facePayload || candidate.hitPos.x != 0.25f ||
+        candidate.hitPos.y != 0.25f || candidate.hitPos.z != 0.0f ||
+        candidate.surfaceNormal.z != 1.0f) {
+        return 17;
+    }
+
+    facePayload.flags = 0x0200;
+    g_OptCatalogDamageMaskPhaseU = -1.0f;
+    g_OptCatalogDamageMaskPhaseV = -1.0f;
+    candidate = {};
+    if (zClass_cls_di::AppendPickCandidatesForFace(&faceData, &candidate, &segmentStart,
+                                                   &segmentEnd) != 1 ||
+        candidate.scenePayload != &facePayload || g_OptCatalogDamageMaskPhaseU != 2.5f ||
+        g_OptCatalogDamageMaskPhaseV != 5.0f) {
+        return 18;
+    }
+
+    facePayload.flags = 0;
+    zVec3 morphDelta[3] = {{0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f}};
+    faceData.flags = 8;
+    faceData.morphVertexCount = 3;
+    faceData.morphWeight = 0.5f;
+    faceData.morphVertices = morphDelta;
+    candidate = {};
+    if (zClass_cls_di::AppendPickCandidatesForFace(&faceData, &candidate, &segmentStart,
+                                                   &segmentEnd) != 1 ||
+        candidate.scenePayload != &facePayload || candidate.hitPos.z != 0.5f ||
+        g_zModel_SharedVec3ScratchA[0].z != 0.5f || g_zModel_SharedVec3ScratchA[1].z != 0.5f ||
+        g_zModel_SharedVec3ScratchA[2].z != 0.5f) {
+        return 19;
+    }
+
+    faceData.flags = 0;
+    faceData.morphVertexCount = 0;
+    faceData.morphWeight = 0.0f;
+    faceData.morphVertices = nullptr;
+    filterMatrixFlags[0] = 0;
+    filterMatrix = {1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 10.0f, 0.0f, 0.0f};
+    candidate = {};
+    segmentStart = {10.25f, 0.25f, 1.0f};
+    segmentEnd = {10.25f, 0.25f, -1.0f};
+    if (zClass_cls_di::AppendPickCandidatesForFace(&faceData, &candidate, &segmentStart,
+                                                   &segmentEnd) != 1 ||
+        candidate.scenePayload != &facePayload || candidate.hitPos.x != 10.25f ||
+        candidate.hitPos.y != 0.25f || candidate.hitPos.z != 0.0f ||
+        candidate.surfaceNormal.x != 0.0f || candidate.surfaceNormal.y != 0.0f ||
+        candidate.surfaceNormal.z != 1.0f) {
+        return 20;
+    }
+
+    zVec3 probeFaceVertices[3] = {{0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 1.0f},
+                                  {1.0f, 0.0f, 0.0f}};
+    zVec3 probeSamples[3] = {{0.25f, 99.0f, 0.25f}, {1.25f, 0.0f, 0.25f},
+                             {0.25f, 0.0f, 0.25f}};
+    int probeSampleMask[3] = {1, 1, 0};
+    PlayerProbeSampleCandidateBuffer probeBuckets[3] = {};
+    faceEntry.variantTag.count = 2;
+    faceEntry.variantTag.tags[0] = 0x44;
+    faceEntry.variantTag.tags[1] = 0x55;
+    zModelConst::AddFaceToPlayerProbeSampleBuckets(&filterNode, probeBuckets, probeSamples,
+                                                   probeSampleMask, 3, 0.5f, probeFaceVertices,
+                                                   &faceEntry);
+    if (probeBuckets[0].candidateCount != 1 || probeBuckets[1].candidateCount != 0 ||
+        probeBuckets[2].candidateCount != 0 || probeBuckets[0].entries[0].node != &filterNode ||
+        probeBuckets[0].entries[0].scenePayload != &facePayload ||
+        probeBuckets[0].entries[0].variantTag.count != 2 ||
+        probeBuckets[0].entries[0].variantTag.tags[1] != 0x55 ||
+        probeBuckets[0].entries[0].surfaceNormal.y != 1.0f ||
+        probeBuckets[0].entries[0].hitPos.y != 0.0f) {
+        return 201;
+    }
+
+    g_zModel_SharedVec3ScratchB = g_zModel_SharedVec3ScratchBStorage;
+    faceData.vertexCount = 3;
+    faceData.baseVertices = probeFaceVertices;
+    probeBuckets[0] = {};
+    probeBuckets[1] = {};
+    probeBuckets[2] = {};
+    filterMatrixFlags[0] = 1;
+    zClass_cls_di::PickTestMeshAtQueryXZ(&filterNode, &faceData, probeSamples, probeSampleMask, 3,
+                                         0.5f, probeBuckets);
+    if (probeBuckets[0].candidateCount != 1 || probeBuckets[0].entries[0].node != &filterNode ||
+        probeBuckets[0].entries[0].scenePayload != &facePayload ||
+        probeBuckets[0].entries[0].hitPos.y != 0.0f || probeBuckets[1].candidateCount != 0) {
+        return 202;
+    }
+
+    zClass_Object3DDataPartial batchObjectData{};
+    batchObjectData.flags = 8;
+    zClass_NodePartial batchObjectNode{};
+    batchObjectNode.flags = 0x11c;
+    batchObjectNode.nodeType = 0xff;
+    batchObjectNode.classId = 5;
+    batchObjectNode.classData = &batchObjectData;
+    batchObjectNode.userDataOrDiRef = reinterpret_cast<std::uint32_t>(&faceData);
+    batchObjectNode.cachedBounds[0] = 0.0f;
+    batchObjectNode.cachedBounds[1] = 0.0f;
+    batchObjectNode.cachedBounds[2] = 0.0f;
+    batchObjectNode.cachedBounds[3] = 1.0f;
+    batchObjectNode.cachedBounds[4] = 1.0f;
+    batchObjectNode.cachedBounds[5] = 1.0f;
+    zClass_NodePartial *batchChildren[] = {&batchObjectNode};
+    zWorldAreaPartial batchArea{};
+    batchArea.childCount = 1;
+    batchArea.childList = batchChildren;
+    zWorldAreaPartial *batchRows[] = {&batchArea};
+    zClass_WorldDataPartial batchWorldData{};
+    batchWorldData.clampQueriesToBounds = 1;
+    batchWorldData.areaCellSizeX = 1.0f;
+    batchWorldData.areaCellSizeZ = 1.0f;
+    batchWorldData.areaInvSizeX = 1.0f;
+    batchWorldData.areaInvSizeZ = 1.0f;
+    batchWorldData.areaGridColCount = 1;
+    batchWorldData.areaGridRowCount = 1;
+    batchWorldData.areaGridRows = batchRows;
+    zClass_NodePartial batchWorld{};
+    batchWorld.classData = &batchWorldData;
+    zVec3 batchPoints[2] = {{0.25f, 99.0f, 0.25f}, {1.25f, 99.0f, 0.25f}};
+    PlayerProbeSampleCandidateBuffer batchBuckets[2] = {};
+    faceData.baseVertices = probeFaceVertices;
+    zClass_cls_di::BuildPickCandidatesForPointBatch(&batchWorld, batchPoints, 2, 0.5f,
+                                                    batchBuckets);
+    if (batchBuckets[0].candidateCount != 1 || batchBuckets[1].candidateCount != 1 ||
+        batchBuckets[0].entries[0].node != &batchObjectNode ||
+        batchBuckets[1].entries[0].node != &batchObjectNode ||
+        batchBuckets[0].entries[0].hitPos.y != 0.0f ||
+        batchBuckets[1].entries[0].hitPos.y != 0.0f || batchPoints[1].x != 1.25f) {
+        return 203;
+    }
+    faceData.baseVertices = triZ;
+
+    auto setIdentityMatrix = [](float *matrixValues) {
+        std::memset(matrixValues, 0, sizeof(zMat4x3));
+        matrixValues[0] = 1.0f;
+        matrixValues[4] = 1.0f;
+        matrixValues[8] = 1.0f;
+    };
+
+    faceData.baseVertices = probeFaceVertices;
+    zVec3 pointBatchSamples[2] = {{0.25f, 99.0f, 0.25f}, {0.6f, 99.0f, 0.2f}};
+    int pointBatchMask[2] = {1, 1};
+    PlayerProbeSampleCandidateBuffer pointBatchBuckets[2] = {};
+    g_DiPickPointArray = pointBatchSamples;
+    g_DiPickPointCount = 2;
+    g_DiPickPointQueryMaxY = 0.5f;
+    g_DiPickCandidateBuffer = pointBatchBuckets;
+    filterMatrixFlags[0] = 1;
+    filterMatrix = {1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+                    0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f};
+
+    zClass_AnimateDataPartial pointAnimateData{};
+    setIdentityMatrix(pointAnimateData.savedParentMatrix);
+    setIdentityMatrix(pointAnimateData.animatedTransform);
+    zClass_NodePartial pointAnimateNode{};
+    pointAnimateNode.flags = 0x14;
+    pointAnimateNode.nodeType = 0xff;
+    pointAnimateNode.classId = 8;
+    pointAnimateNode.classData = &pointAnimateData;
+    pointAnimateNode.userDataOrDiRef = reinterpret_cast<std::uint32_t>(&faceData);
+    if (zClass_cls_di::BuildPickCandidatesForPointsRecursive(&pointAnimateNode, 1,
+                                                             pointBatchMask) != 0 ||
+        pointBatchBuckets[0].candidateCount != 1 ||
+        pointBatchBuckets[1].candidateCount != 1 ||
+        pointBatchBuckets[0].entries[0].node != &pointAnimateNode ||
+        pointBatchBuckets[1].entries[0].node != &pointAnimateNode ||
+        zMath::g_currentMatrixPtrSlot != &filterMatrixSlots[0]) {
+        return 204;
+    }
+
+    pointBatchBuckets[0] = {};
+    pointBatchBuckets[1] = {};
+    pointBatchMask[0] = 1;
+    pointBatchMask[1] = 1;
+    zClass_LightDataPartial pointLightData{};
+    setIdentityMatrix(pointLightData.savedParentMatrix);
+    zClass_NodePartial pointLightNode{};
+    pointLightNode.flags = 0x14;
+    pointLightNode.nodeType = 0xff;
+    pointLightNode.classId = 9;
+    pointLightNode.classData = &pointLightData;
+    pointLightNode.userDataOrDiRef = reinterpret_cast<std::uint32_t>(&faceData);
+    if (zClass_cls_di::BuildPickCandidatesForPointsForLight(&pointLightNode, 1,
+                                                            pointBatchMask) != 0 ||
+        pointBatchBuckets[0].candidateCount != 1 ||
+        pointBatchBuckets[1].candidateCount != 1 ||
+        pointBatchBuckets[0].entries[0].node != &pointLightNode ||
+        pointBatchBuckets[1].entries[0].node != &pointLightNode ||
+        zMath::g_currentMatrixPtrSlot != &filterMatrixSlots[0]) {
+        return 205;
+    }
+    faceData.baseVertices = triZ;
+
+    PlayerProbeSampleCandidateBuffer pickBuffer{};
+    g_DiPickCandidateBuffer = &pickBuffer;
+    g_DiPickCandidateCursor = pickBuffer.entries;
+    g_cls_di_BreakOnFirstCandidate = 0;
+    g_cls_di_StopAfterFirstHit = 0;
+    g_Variant_CurrentTag = {};
+    filterMatrixFlags[0] = 1;
+    filterMatrix = {1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f};
+    zMath::g_currentMatrixIdentityFlagSlot = &filterMatrixFlags[0];
+    zMath::g_currentMatrixPtrSlot = &filterMatrixSlots[0];
+    g_DiPickQueryPoint = {0.25f, 0.25f, 1.0f};
+    g_DiSegmentEnd = {0.25f, 0.25f, -1.0f};
+
+    zClass_Object3DDataPartial objectData{};
+    objectData.flags = 8;
+    zClass_NodePartial objectNode{};
+    objectNode.flags = 0x114;
+    objectNode.nodeType = 0xff;
+    objectNode.classId = 5;
+    objectNode.classData = &objectData;
+    objectNode.userDataOrDiRef = reinterpret_cast<std::uint32_t>(&faceData);
+    objectNode.cachedBounds[0] = 0.0f;
+    objectNode.cachedBounds[1] = 0.0f;
+    objectNode.cachedBounds[2] = 0.0f;
+    objectNode.cachedBounds[3] = 1.0f;
+    objectNode.cachedBounds[4] = 1.0f;
+    objectNode.cachedBounds[5] = 1.0f;
+    if (zClass_cls_di::BuildPickCandidatesForSegmentChildFallback(&objectNode, 1) != 0 ||
+        pickBuffer.candidateCount != 1 || g_DiPickCandidateCursor != &pickBuffer.entries[1] ||
+        pickBuffer.entries[0].node != &objectNode ||
+        pickBuffer.entries[0].scenePayload != &facePayload ||
+        pickBuffer.entries[0].hitPos.z != 0.0f) {
+        return 21;
+    }
+
+    g_cls_di_BreakOnFirstCandidate = 1;
+    if (zClass_cls_di::BuildPickCandidatesForSegmentChildFallback(&objectNode, 1) != 0 ||
+        pickBuffer.candidateCount != 1 || g_DiPickCandidateCursor != &pickBuffer.entries[1]) {
+        return 22;
+    }
+    g_cls_di_BreakOnFirstCandidate = 0;
+
+    pickBuffer = {};
+    g_DiPickCandidateCursor = pickBuffer.entries;
+    zClass_AnimateDataPartial animateData{};
+    setIdentityMatrix(animateData.savedParentMatrix);
+    setIdentityMatrix(animateData.animatedTransform);
+    zClass_NodePartial animateNode{};
+    animateNode.flags = 0x14;
+    animateNode.nodeType = 0xff;
+    animateNode.classId = 8;
+    animateNode.classData = &animateData;
+    animateNode.userDataOrDiRef = reinterpret_cast<std::uint32_t>(&faceData);
+    if (zClass_cls_di::BuildPickCandidatesForSegmentChildFallback(&animateNode, 1) != 0 ||
+        pickBuffer.candidateCount != 1 || pickBuffer.entries[0].node != &animateNode ||
+        zMath::g_currentMatrixPtrSlot != &filterMatrixSlots[0]) {
+        return 23;
+    }
+
+    pickBuffer = {};
+    g_DiPickCandidateCursor = pickBuffer.entries;
+    zClass_CameraDataPartial cameraData{};
+    setIdentityMatrix(cameraData.worldTransform);
+    zClass_NodePartial cameraNode{};
+    cameraNode.flags = 0x14;
+    cameraNode.nodeType = 0xff;
+    cameraNode.classId = 1;
+    cameraNode.classData = &cameraData;
+    cameraNode.userDataOrDiRef = reinterpret_cast<std::uint32_t>(&faceData);
+    if (zClass_cls_di::BuildPickCandidatesForSegmentChildFallback(&cameraNode, 1) != 0 ||
+        pickBuffer.candidateCount != 1 || pickBuffer.entries[0].node != &cameraNode ||
+        zMath::g_currentMatrixPtrSlot != &filterMatrixSlots[0]) {
+        return 24;
+    }
+
+    pickBuffer = {};
+    g_DiPickCandidateCursor = pickBuffer.entries;
+    zClass_LightDataPartial lightData{};
+    setIdentityMatrix(lightData.savedParentMatrix);
+    zClass_NodePartial lightNode{};
+    lightNode.flags = 0x14;
+    lightNode.nodeType = 0xff;
+    lightNode.classId = 9;
+    lightNode.classData = &lightData;
+    lightNode.userDataOrDiRef = reinterpret_cast<std::uint32_t>(&faceData);
+    if (zClass_cls_di::BuildPickCandidatesForSegmentChildFallback(&lightNode, 1) != 0 ||
+        pickBuffer.candidateCount != 1 || pickBuffer.entries[0].node != &lightNode ||
+        zMath::g_currentMatrixPtrSlot != &filterMatrixSlots[0]) {
+        return 25;
+    }
+
+    pickBuffer = {};
+    g_DiPickCandidateCursor = pickBuffer.entries;
+    zClass_SequenceDataPartial sequenceData{};
+    sequenceData.isActive = 1;
+    sequenceData.currentIndex = 0;
+    sequenceData.entries[0].node = &objectNode;
+    zClass_NodePartial sequenceNode{};
+    sequenceNode.flags = 0x14;
+    sequenceNode.nodeType = 0xff;
+    sequenceNode.classId = 7;
+    sequenceNode.classData = &sequenceData;
+    if (zClass_cls_di::BuildPickCandidatesForSegmentChildFallback(&sequenceNode, 1) != 0 ||
+        pickBuffer.candidateCount != 1 || pickBuffer.entries[0].node != &objectNode) {
+        return 26;
+    }
+
+    pickBuffer = {};
+    g_DiPickCandidateCursor = pickBuffer.entries;
+    zClass_NodePartial *segmentChildren[1] = {&objectNode};
+    zClass_NodePartial segmentRoot{};
+    segmentRoot.listCountB = 1;
+    segmentRoot.listB = segmentChildren;
+    if (zClass_cls_di::BuildPickCandidatesForSegment(&segmentRoot) != 1 ||
+        pickBuffer.candidateCount != 1 || pickBuffer.entries[0].node != &objectNode) {
+        return 27;
+    }
+
+    PlayerProbeSampleCandidateBuffer rayBuffer{};
+    zClass_NodePartial *areaChildren[1] = {&objectNode};
+    zWorldAreaPartial areaCells[1] = {};
+    areaCells[0].childCount = 1;
+    areaCells[0].childList = areaChildren;
+    zWorldAreaPartial *areaRows[1] = {areaCells};
+    zClass_WorldDataPartial rayWorldData{};
+    rayWorldData.originX = 0.0f;
+    rayWorldData.originZ = -2.0f;
+    rayWorldData.worldMaxX = 2.0f;
+    rayWorldData.worldMaxZ = 2.0f;
+    rayWorldData.areaCellSizeX = 2.0f;
+    rayWorldData.areaCellSizeZ = 4.0f;
+    rayWorldData.areaInvSizeX = 0.5f;
+    rayWorldData.areaInvSizeZ = 0.25f;
+    rayWorldData.areaGridColCount = 1;
+    rayWorldData.areaGridRowCount = 1;
+    rayWorldData.areaGridRows = areaRows;
+    zClass_NodePartial rayWorld{};
+    rayWorld.classData = &rayWorldData;
+    if (zClass_cls_di::RaycastFindClosest(&rayWorld, &rayBuffer, 0.25f, 0.25f, 1.0f, 0.25f, 0.25f,
+                                          -1.0f) != 0 ||
+        rayBuffer.candidateCount != 1 || rayBuffer.entries[0].node != &objectNode ||
+        rayBuffer.entries[0].hitPos.z != 0.0f ||
+        zMath::g_currentMatrixPtrSlot != &filterMatrixSlots[0] || g_cls_di_StopAfterFirstHit != 0) {
+        return 28;
+    }
+
+    zVec3 rayStart{0.25f, 0.25f, 1.0f};
+    zVec3 rayEnd{0.25f, 0.25f, -1.0f};
+    rayBuffer = {};
+    if (zClass_cls_di::RaycastSelectClosestHitBetweenPoints(&rayWorld, &rayStart, &rayEnd,
+                                                            &rayBuffer) != 0 ||
+        rayBuffer.candidateCount != 0 || rayBuffer.entries[0].node != &objectNode) {
+        return 29;
+    }
+
+    facePayload.flags = 0;
+    zVec3 selectTris[3][3] = {
+        {
+            {0.0f, 0.0f, 0.0f},
+            {1.0f, 0.0f, 0.0f},
+            {0.0f, 1.0f, 0.0f},
+        },
+        {
+            {0.0f, 0.0f, 0.75f},
+            {1.0f, 0.0f, 0.75f},
+            {0.0f, 1.0f, 0.75f},
+        },
+        {
+            {0.0f, 0.0f, -0.5f},
+            {1.0f, 0.0f, -0.5f},
+            {0.0f, 1.0f, -0.5f},
+        },
+    };
+    zModel_PickFaceEntry selectFaces[3] = {};
+    zModel_PickFaceData selectFaceData[3] = {};
+    zClass_NodePartial selectNodes[3] = {};
+    for (std::int32_t i = 0; i < 3; ++i) {
+        selectFaces[i].flagsAndVertexCount = 3;
+        selectFaces[i].vertexIndices = faceIndices;
+        selectFaces[i].faceUvData = &faceUvData;
+        selectFaces[i].scenePayload = &facePayload;
+        selectFaceData[i].faceCount = 1;
+        selectFaceData[i].faces = &selectFaces[i];
+        selectFaceData[i].baseVertices = selectTris[i];
+
+        selectNodes[i].flags = 0x114;
+        selectNodes[i].nodeType = 0xff;
+        selectNodes[i].classId = 5;
+        selectNodes[i].classData = &objectData;
+        selectNodes[i].userDataOrDiRef = reinterpret_cast<std::uint32_t>(&selectFaceData[i]);
+        selectNodes[i].cachedBounds[0] = 0.0f;
+        selectNodes[i].cachedBounds[1] = 0.0f;
+        selectNodes[i].cachedBounds[2] = -1.0f;
+        selectNodes[i].cachedBounds[3] = 1.0f;
+        selectNodes[i].cachedBounds[4] = 1.0f;
+        selectNodes[i].cachedBounds[5] = 1.0f;
+    }
+
+    zClass_NodePartial *selectChildren[3] = {&selectNodes[0], &selectNodes[1], &selectNodes[2]};
+    zClass_WorldDataPartial selectWorldData{};
+    zClass_NodePartial selectWorld{};
+    selectWorld.classData = &selectWorldData;
+    selectWorld.listCountB = 3;
+    selectWorld.listB = selectChildren;
+    PlayerProbeSampleCandidateBuffer selectRayBuffer{};
+    rayStart = {0.25f, 0.25f, 2.0f};
+    rayEnd = {0.25f, 0.25f, -2.0f};
+    if (zClass_cls_di::RaycastSelectClosestHitBetweenPoints(&selectWorld, &rayStart, &rayEnd,
+                                                            &selectRayBuffer) != 0 ||
+        selectRayBuffer.candidateCount != 1 || selectRayBuffer.entries[1].node != &selectNodes[1] ||
+        selectRayBuffer.entries[1].hitPos.z != 0.75f) {
+        return 30;
+    }
+
+    zClass_NodePartial emptyWorld{};
+    emptyWorld.classData = &selectWorldData;
+    PlayerProbeSampleCandidateBuffer emptyRayBuffer{};
+    if (zClass_cls_di::RaycastSelectClosestHitBetweenPoints(&emptyWorld, &rayStart, &rayEnd,
+                                                            &emptyRayBuffer) != 1 ||
+        emptyRayBuffer.candidateCount != 0) {
+        return 31;
+    }
+
+    g_DiPickCandidateBuffer = nullptr;
+    g_DiPickCandidateCursor = nullptr;
+
+    return 0;
+}
+
 extern "C" int zclass_node_propagate_transform_dirty_smoke() {
     int parentObjectFlags = 0;
     int childObjectFlags = 0;
@@ -396,6 +1186,49 @@ extern "C" int zclass_object3d_init_smoke() {
     const int result = zClass_Object3D::gwObject3DInit() == nullptr ? 0 : 3;
     FreeTypeListsForTest();
     return result;
+}
+
+extern "C" int zclass_object3d_visible_and_color_smoke() {
+    zClass_Object3DDataPartial data = {};
+    zClass_NodePartial node = {};
+    node.classId = 5;
+    node.classData = &data;
+
+    if (zClass_Object3D::gwObject3DSetVisibleFlag(&node, 1) != 0 ||
+        (data.flags & 4) == 0) {
+        return 1;
+    }
+    if (zClass_Object3D::gwObject3DSetVisibleFlag(&node, 0) != 0 ||
+        (data.flags & 4) != 0) {
+        return 2;
+    }
+
+    zColorRgb color = {-1.0f, 0.5f, 2.0f};
+    if (zClass_Object3D::gwObject3DSetColorAlpha(&node, &color, 1.5f) != 0) {
+        return 3;
+    }
+    if (data.color.red != 0.0f || data.color.green != 0.5f ||
+        data.color.blue != 1.0f || data.colorAlpha != 1.0f) {
+        return 4;
+    }
+
+    data.color.red = 0.25f;
+    if (zClass_Object3D::gwObject3DSetColorAlpha(&node, 0, -0.5f) != 0) {
+        return 5;
+    }
+    if (data.color.red != 0.25f || data.colorAlpha != 0.0f) {
+        return 6;
+    }
+
+    zClass_NodePartial wrongClass = {};
+    wrongClass.classId = 4;
+    wrongClass.classData = &data;
+    if (zClass_Object3D::gwObject3DSetVisibleFlag(0, 1) != 5 ||
+        zClass_Object3D::gwObject3DSetVisibleFlag(&wrongClass, 1) != 3) {
+        return 7;
+    }
+
+    return 0;
 }
 
 extern "C" int zclass_object3d_alpha_scale_and_lit_smoke() {

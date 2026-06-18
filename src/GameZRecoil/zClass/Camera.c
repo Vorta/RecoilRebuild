@@ -444,13 +444,21 @@ namespace zClass_Camera {
         return 0;
     }
 
-    // Reimplements 0x449da0: zClass_Camera::SetTargetNode
+    /**
+     * Reimplements 0x449da0: zClass_Camera::SetTargetNode.
+     * Source: D:\Proj\GameZRecoil\zClass\Camera.c.
+     * Purpose: store the current global camera target node and report success.
+     */
     int __fastcall SetTargetNode(zClass_NodePartial * target) {
         g_zClass_CameraTargetNode = target;
         return 0;
     }
 
-    // Reimplements 0x449db0: zClass_Camera::SetActiveCamera
+    /**
+     * Reimplements 0x449db0: zClass_Camera::SetActiveCamera.
+     * Source: D:\Proj\GameZRecoil\zClass\Camera.c.
+     * Purpose: store the current global camera node and return it.
+     */
     zClass_NodePartial *__fastcall SetActiveCamera(
         zClass_NodePartial * camera
     ) {
@@ -458,7 +466,11 @@ namespace zClass_Camera {
         return camera;
     }
 
-    // Reimplements 0x449dc0: zClass_Camera::SetObjectHseTestEnabled
+    /**
+     * Reimplements 0x449dc0: zClass_Camera::SetObjectHseTestEnabled.
+     * Source: D:\Proj\GameZRecoil\zClass\Camera.c.
+     * Purpose: store the object HSE test enable flag and report success.
+     */
     int __fastcall SetObjectHseTestEnabled(int enabled) {
         g_zClass_ObjectHseTestEnabled = enabled;
         return 0;

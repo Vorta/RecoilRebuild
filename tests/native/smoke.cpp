@@ -153,19 +153,36 @@ extern "C" int znetwork_player_record_accessors_smoke(void);
 extern "C" int znetwork_alloc_free_player_color_index_smoke(void);
 extern "C" int znetwork_apply_pkt01_player_color_assignments_smoke(void);
 extern "C" int znetwork_shutdown_session_runtime_smoke(void);
+extern "C" int pickup_leaf_helpers_smoke(void);
+extern "C" int pickup_send_pkt11_delta_smoke(void);
+extern "C" int pickup_send_pkt11_create_delta_smoke(void);
+extern "C" int pickup_reconcile_spawn_lists_smoke(void);
 extern "C" int gamenet_find_player_row_and_status_bits_smoke(void);
+extern "C" int hud_timer_panel_net_state_clear_tail_flags_smoke(void);
 extern "C" int gamenet_send_pkt14_hud_timer_and_flags_sync_smoke(void);
 extern "C" int gamenet_host_update_session_status_fields_smoke(void);
+extern "C" int gamenet_timer_status_packet_smoke(void);
+extern "C" int gamenet_timer_panel_state_packet_smoke(void);
 extern "C" int gamenet_register_gameplay_handlers_and_callbacks_smoke(void);
 extern "C" int gamenet_unregister_gameplay_packet_handlers_smoke(void);
 extern "C" int gamenet_reset_remote_players_and_spawn_lists_smoke(void);
 extern "C" int gamenet_player_row_append_smoke(void);
+extern "C" int gamenet_reassign_player_colors_smoke(void);
 extern "C" int gamenet_player_row_apply_color_tint_smoke(void);
 extern "C" int gamenet_player_row_destroy_embedded_panel_smoke(void);
 extern "C" int gamenet_apply_pkt06_player_state_snapshot_smoke(void);
 extern "C" int gamenet_handle_pkt06_player_state_snapshot_smoke(void);
 extern "C" int gamenet_spawn_remote_player_missing_template_smoke(void);
 extern "C" int gamenet_scoreboard_snapshot_packet_smoke(void);
+extern "C" int gamenet_send_pkt13_effect_anim_activation_record_smoke(void);
+extern "C" int gamenet_handle_pkt13_effect_anim_activation_record_smoke(void);
+extern "C" int gamenet_send_all_pkt13_effect_anim_activation_records_smoke(void);
+extern "C" int gamenet_handle_pkt07_alt_gun_dispatch_smoke(void);
+extern "C" int gamenet_send_pkt07_alt_gun_dispatch_smoke(void);
+extern "C" int gamenet_alt_gun_dispatch_no_op_callback_smoke(void);
+extern "C" int optcatalog_alt_gun_dispatch_alloc_runtime_gate_smoke(void);
+extern "C" int optcatalog_handle_pkt0a_remove_runtime_relay_smoke(void);
+extern "C" int optcatalog_send_pkt0a_remove_runtime_relay_smoke(void);
 extern "C" int ainet_find_by_net_id_smoke(void);
 extern "C" int ainet_find_nearest_node_smoke(void);
 extern "C" int player_get_save_state_list_head_smoke(void);
@@ -177,16 +194,47 @@ extern "C" int player_free_alt_weapon_trail_runtime_states_smoke(void);
 extern "C" int player_check_mission_weapon_availability_smoke(void);
 extern "C" int player_apply_primary_weapon_switch_smoke(void);
 extern "C" int player_start_master_type_loop_sfx_handle_smoke(void);
+extern "C" int player_master_type_transition_leaf_smoke(void);
+extern "C" int player_apply_master_type_transition_smoke(void);
+extern "C" int player_transition_to_master_type_track_smoke(void);
+extern "C" int player_transition_to_master_type_amphib_smoke(void);
+extern "C" int player_transition_to_master_type_hover_smoke(void);
+extern "C" int player_transition_to_master_type_sub_smoke(void);
+extern "C" int player_cache_disable_copter_snd_nodes_smoke(void);
+extern "C" int player_reactivate_copter_snd_nodes_if_healthy_smoke(void);
 extern "C" int player_apply_alt_weapon_switch_smoke(void);
+extern "C" int player_apply_aim_pitch_to_direction_smoke(void);
+extern "C" int player_find_alt_gun_controller_smoke(void);
+extern "C" int player_alt_gun_fire_point_selection_smoke(void);
+extern "C" int player_alt_gun_ensure_aux_effect_active_smoke(void);
+extern "C" int player_update_continuous_alt_gun_fire_controller_smoke(void);
+extern "C" int player_alt_gun_projectile_dispatch_helpers_smoke(void);
+extern "C" int player_process_alt_gun_fire_dispatch_request_smoke(void);
 extern "C" int player_write_mines_zar_section_smoke(void);
 extern "C" int player_mines_zar_read_entry_or_reset_smoke(void);
+extern "C" int player_remove_all_deployed_mines_smoke(void);
+extern "C" int zweapon_optcatalog_find_entry_by_id_smoke(void);
 extern "C" int zweapon_optcatalog_find_entry_by_name_smoke(void);
+extern "C" int zweapon_optcatalog_pending_spawn_override_smoke(void);
 extern "C" int zweapon_optcatalog_create_trail_segment_node_smoke(void);
 extern "C" int zweapon_optcatalog_create_trail_runtime_state_smoke(void);
+extern "C" int zweapon_optcatalog_mine_iterator_smoke(void);
+extern "C" int zweapon_optcatalog_runtime_free_list_helpers_smoke(void);
+extern "C" int zweapon_optcatalog_handle_impact_event_smoke(void);
+extern "C" int zweapon_optcatalog_build_impact_hit_list_smoke(void);
+extern "C" int zweapon_optcatalog_handle_impact_from_runtime_probe_smoke(void);
+extern "C" int zweapon_optcatalog_process_runtime_instance_smoke(void);
+extern "C" int zweapon_optcatalog_remove_runtime_instance_smoke(void);
 extern "C" int zweapon_optcatalog_deactivate_trail_runtime_state_smoke(void);
 extern "C" int light_alloc_from_free_list_and_attach_smoke(void);
 extern "C" int player_timed_hit_status_smoke(void);
 extern "C" int player_create_from_names_at_pose_smoke(void);
+extern "C" int player_init_state_from_name_and_master_common_data_smoke(void);
+extern "C" int player_bind_modal_state_from_master_modal_data_smoke(void);
+extern "C" int player_build_support_points_from_model_smoke(void);
+extern "C" int player_build_collision_points_from_model_smoke(void);
+extern "C" int player_sample_ground_and_align_root_to_surface_smoke(void);
+extern "C" int player_init_spawn_state_from_primary_modal_data_smoke(void);
 extern "C" int zutil_save_game_state_list_smoke(void);
 extern "C" int zfmv_script_init_null_path_smoke(void);
 extern "C" int zfmv_script_reset_smoke(void);
@@ -214,6 +262,8 @@ extern "C" int zfmv_action_blur_constructor_smoke(void);
 extern "C" int zfmv_action_blur_update_smoke(void);
 extern "C" int hud_ui_save_load_entry_is_newer_than_smoke(void);
 extern "C" int player_underwater_fx_pass3_ui_constructor_smoke(void);
+extern "C" int player_init_underwater_fx_pass3_ui_singleton_smoke(void);
+extern "C" int player_reset_underwater_fx_pass3_ui_singleton_smoke(void);
 extern "C" int player_projectile_camera_fx_pass3_ui_constructor_smoke(void);
 extern "C" int player_underwater_fx_pass3_ui_apply_blue_tint_smoke(void);
 extern "C" int player_projectile_camera_fx_pass3_ui_apply_green_mask_smoke(void);
@@ -359,6 +409,7 @@ extern "C" int zhud_text_stack_clear_and_enable_smoke(void);
 extern "C" int zhud_text_stack_clear_and_disable_smoke(void);
 extern "C" int zhud_text_stack_destructor_core_smoke(void);
 extern "C" int zhud_text_stack_layout_mutators_smoke(void);
+extern "C" int zhud_timer_panel_global_accessors_smoke(void);
 extern "C" int zhud_list_menu_entry_sort_smoke(void);
 extern "C" int zhud_layout_hw_update_objective_dirty_rect_smoke(void);
 extern "C" int zhud_objective_update_meter_xpoints_smoke(void);
@@ -645,6 +696,7 @@ extern "C" int zturret_fire_weapon_callback_smoke(void);
 extern "C" int zturret_damage_and_on_damage_smoke(void);
 extern "C" int zturret_shutdown_leaf_smoke(void);
 extern "C" int zgame_return_only_stub_smoke(void);
+extern "C" int zgame_options_load_game_options_minimal_smoke(void);
 extern "C" int zopt_network_enabled_accessor_smoke(void);
 extern "C" int hud_sensor_mission_identity_smoke(void);
 extern "C" int hud_sensor_tracker_set_runtime_timer_sec_and_goal_value_smoke(void);
@@ -658,6 +710,7 @@ extern "C" int zclass_node_propagate_transform_dirty_smoke(void);
 extern "C" int zclass_object3d_reset_transform_dirty_smoke(void);
 extern "C" int zclass_object3d_init_smoke(void);
 extern "C" int zclass_light_new_smoke(void);
+extern "C" int zclass_object3d_visible_and_color_smoke(void);
 extern "C" int zclass_object3d_alpha_scale_and_lit_smoke(void);
 extern "C" int zclass_object3d_transform_getters_smoke(void);
 extern "C" int zclass_object3d_transform_setters_smoke(void);
@@ -676,12 +729,14 @@ extern "C" int zmodel_set_di_texture_world_per_meter_smoke(void);
 extern "C" int zclass_copy_node_base_data_smoke(void);
 extern "C" int zclass_copy_node_unimplemented_stubs_smoke(void);
 extern "C" int zclass_copy_camera_node_smoke(void);
+extern "C" int zclass_camera_global_setters_smoke(void);
 extern "C" int zclass_copy_object3d_and_lod_smoke(void);
 extern "C" int zclass_copy_node_dispatch_and_wrappers_smoke(void);
 extern "C" int zclass_node_action_callback_smoke(void);
 extern "C" int zclass_node_priority_smoke(void);
 extern "C" int zclass_node_pick_flag_accessors_smoke(void);
 extern "C" int zclass_node_extra_flag_setters_smoke(void);
+extern "C" int zclass_damage_handler_smoke(void);
 extern "C" int zclass_node_vertex_alpha_and_root_smoke(void);
 extern "C" int zclass_find_by_name_and_filtered_iter_smoke(void);
 extern "C" int zclass_find_node_recursive_by_name_smoke(void);
@@ -689,6 +744,20 @@ extern "C" int zclass_sound_leaf_smoke(void);
 extern "C" int zclass_sound_get_position_smoke(void);
 extern "C" int zclass_gwnode_build_node_to_ancestor_matrix_smoke(void);
 extern "C" int zclass_gwnode_get_world_position_smoke(void);
+extern "C" int zclass_gwnode_update_tree_smoke(void);
+extern "C" int zclass_cls_di_point_query_chain_smoke(void);
+extern "C" int zclass_cls_di_segment_batch_vs_polygon_smoke(void);
+extern "C" int zclass_cls_di_segment_batch_vs_polygon_uv_smoke(void);
+extern "C" int zclass_cls_di_filter_regions_polygon_damage_mask_uv_smoke(void);
+extern "C" int zclass_cls_di_filter_regions_against_polygon_smoke(void);
+extern "C" int zclass_cls_di_frustum_test_and_pick_smoke(void);
+extern "C" int zclass_cls_di_snap_probe_point_y_to_best_candidate_smoke(void);
+extern "C" int zclass_cls_di_segment_batch_recursive_smoke(void);
+extern "C" int zclass_cls_di_segment_grid_window_smoke(void);
+extern "C" int zclass_cls_di_probe_hit_batches_for_segments_smoke(void);
+extern "C" int zclass_cls_di_set_stop_after_first_hit_smoke(void);
+extern "C" int zclass_cls_di_try_get_polygon_hit_at_query_xz_smoke(void);
+extern "C" int zclass_cls_di_region_filter_mesh_faces_smoke(void);
 extern "C" int zclass_node_predicate_helpers_smoke(void);
 extern "C" int zloc_message_lookup_failure_smoke(void);
 extern "C" int zloc_load_unload_messages_dll_smoke(void);
@@ -710,6 +779,7 @@ extern "C" int zvideo_image_alpha_clear_smoke(void);
 extern "C" int zvideo_mode_geometry_and_set_video_mode_smoke(void);
 extern "C" int zvideo_init_video_system_reentry_guard_smoke(void);
 extern "C" int zvideo_bind_renderer_dispatch_smoke(void);
+extern "C" int zvideo_dd_get_hw_api_device_feature_flags_smoke(void);
 extern "C" int zvideo_module_init_smoke(void);
 extern "C" int zvideo_at_exit_release_all_interfaces_and_surfaces_smoke(void);
 extern "C" int zvideo_return_success_stub_smoke(void);
@@ -774,6 +844,10 @@ extern "C" int zvideo_dd_image_lazy_create_backing_surface_smoke(void);
 extern "C" int zvideo_dd_image_lazy_create_video_memory_surface_smoke(void);
 extern "C" int zvideo_dd_image_upload_pixels_to_surface_smoke(void);
 extern "C" int zvideo_dd_image_release_surface_smoke(void);
+extern "C" int zvideo_dd_blt_sw_to_primary_rect_direct_smoke(void);
+extern "C" int zvideo_dd_blt_primary_to_sw_rect_direct_smoke(void);
+extern "C" int zvideo_blt_sw_to_primary_rect_lazy_failure_smoke(void);
+extern "C" int zvideo_dd_blt_sw_to_primary_rect_smoke(void);
 extern "C" int zvideo_image_surface_helpers_guard_smoke(void);
 extern "C" int zvideo_set_renderer_type_smoke(void);
 extern "C" int zvideo_set_half_res_adjust_mode_smoke(void);
@@ -789,15 +863,26 @@ extern "C" int zvideo_dd_run_device_enumeration_smoke(void);
 extern "C" int zvideo_dd_startup_enumerate_default_select_smoke(void);
 extern "C" int zvideo_flip_to_gdi_if_attached_null_smoke(void);
 extern "C" int zvideo_dd3d_set_fog_enable_smoke(void);
+extern "C" int zvideo_dd3d_set_fog_start_smoke(void);
+extern "C" int zvideo_dd3d_set_fog_end_smoke(void);
+extern "C" int zvideo_dd3d_apply_fog_state_from_globals_smoke(void);
+extern "C" int zvideo_dd3d_update_fog_color_smoke(void);
 extern "C" int zvideo_pending_wireframe_state_smoke(void);
 extern "C" int zvideo_pending_dither_enable_smoke(void);
 extern "C" int zvideo_dd3d_begin_scene_flush_pending_smoke(void);
+extern "C" int zvideo_submit_poly_flat_color16_queue_smoke(void);
+extern "C" int zvideo_submit_poly_flat_color16_immediate_smoke(void);
+extern "C" int zvideo_submit_poly_gouraud_color16_queue_smoke(void);
+extern "C" int zvideo_submit_poly_gouraud_color16_immediate_smoke(void);
 extern "C" int zvideo_submit_poly_color_attr_smoke(void);
 extern "C" int zvideo_submit_poly_color_attr_immediate_smoke(void);
+extern "C" int zvideo_submit_poly_render_class_queue_smoke(void);
+extern "C" int zvideo_submit_poly_render_class_immediate_smoke(void);
 extern "C" int zvideo_submit_polygon_queue_smoke(void);
 extern "C" int zvideo_submit_polygon_immediate_smoke(void);
 extern "C" int zvideo_submit_polygon_lit_queue_smoke(void);
 extern "C" int zvideo_submit_polygon_lit_immediate_smoke(void);
+extern "C" int zvideo_draw_point_color16_smoke(void);
 extern "C" int zvideo_texture_record_release_upload_surface_smoke(void);
 extern "C" int zvideo_texture_record_finalize_upload_smoke(void);
 extern "C" int zvideo_texture_record_lock_upload_surface_smoke(void);
@@ -853,6 +938,7 @@ extern "C" int zeffect_anim_restore_node_states_smoke(void);
 extern "C" int zeffect_anim_reset_for_node_smoke(void);
 extern "C" int zeffect_anim_runtime_sequence_group_smoke(void);
 extern "C" int zeffect_conditional_ref_pos_smoke(void);
+extern "C" int zdeclient_dispatch_feature_event_templates_smoke(void);
 extern "C" int zimg_init_smoke(void);
 extern "C" int zinterp_context_logf_smoke(void);
 extern "C" int zinterp_context_report_errorf_smoke(void);
@@ -917,11 +1003,15 @@ extern "C" int zcom_connection_point_container_unadvise_smoke(void);
 extern "C" int time_reset_smoke(void);
 extern "C" int time_tick_smoke(void);
 
+#include "Battlesport/GameNet.h"
+#include "Battlesport/player.h"
 #include "GameZRecoil/zGame/zGame.h"
+#include "GameZRecoil/include/OptCatalog.h"
 #include "GameZRecoil/include/zClass.h"
 #include "GameZRecoil/zEffect/zEffect.h"
 #include "GameZRecoil/zHud/zhud_ui.h"
 #include "GameZRecoil/zSound/zSound.h"
+#include "GameZRecoil/Time/Time.h"
 #include "GameZRecoil/zVideo/zVideo.h"
 
 #include <cstdlib>
@@ -936,6 +1026,49 @@ struct SmokeTest {
     const char *name;
     int (*run)();
 };
+
+int g_smokePkt0CSendCalls;
+DWORD g_smokePkt0CSendFlags;
+void *g_smokePkt0CSendPacket;
+DWORD g_smokePkt0CSendPacketSize;
+unsigned char g_smokePkt0CSendPacketBytes[0x200];
+
+struct SmokePkt0CDirectPlay4 {
+    void **vtable;
+};
+
+HRESULT __stdcall SmokePkt0CDirectPlaySend(
+    zNetwork_DPlay4 *,
+    DWORD,
+    DWORD,
+    DWORD flags,
+    void *packet,
+    DWORD packetSizeBytes
+) {
+    ++g_smokePkt0CSendCalls;
+    g_smokePkt0CSendFlags = flags;
+    g_smokePkt0CSendPacket = packet;
+    g_smokePkt0CSendPacketSize = packetSizeBytes;
+    if (packetSizeBytes <= sizeof(g_smokePkt0CSendPacketBytes)) {
+        std::memcpy(
+            g_smokePkt0CSendPacketBytes,
+            packet,
+            packetSizeBytes
+        );
+    }
+    return 0;
+}
+
+void SmokePkt0CInitDirectPlayVtable(
+    void **vtable
+) {
+    std::memset(
+        vtable,
+        0,
+        sizeof(void *) * 52
+    );
+    vtable[26] = (void *)(&SmokePkt0CDirectPlaySend);
+}
 
 int g_smokeTextureMemoryQueryCalls;
 int g_smokeDeviceMemoryQueryCalls;
@@ -1035,8 +1168,10 @@ DWORD g_smokeDirectDrawSurface3BltFlags[4];
 DDBLTFX g_smokeDirectDrawSurface3BltFxValues[4];
 int g_smokeDirectDrawSurface3BltFxPresent[4];
 RECT *g_smokeDirectDrawSurface3LastBltDstRectArg;
+RECT g_smokeDirectDrawSurface3LastBltDstRectValue;
 IDirectDrawSurface3 *g_smokeDirectDrawSurface3LastBltSource;
 RECT *g_smokeDirectDrawSurface3LastBltSrcRectArg;
+RECT g_smokeDirectDrawSurface3LastBltSrcRectValue;
 DWORD g_smokeDirectDrawSurface3LastBltFlags;
 DDBLTFX *g_smokeDirectDrawSurface3LastBltFx;
 DDBLTFX g_smokeDirectDrawSurface3LastBltFxValue;
@@ -1658,8 +1793,26 @@ HRESULT __stdcall SmokeDirectDrawSurface3Blt(
     }
     ++g_smokeDirectDrawSurface3BltCalls;
     g_smokeDirectDrawSurface3LastBltDstRectArg = dstRect;
+    if (dstRect != 0) {
+        g_smokeDirectDrawSurface3LastBltDstRectValue = *dstRect;
+    } else {
+        std::memset(
+            &g_smokeDirectDrawSurface3LastBltDstRectValue,
+            0,
+            sizeof(g_smokeDirectDrawSurface3LastBltDstRectValue)
+        );
+    }
     g_smokeDirectDrawSurface3LastBltSource = srcSurface;
     g_smokeDirectDrawSurface3LastBltSrcRectArg = srcRect;
+    if (srcRect != 0) {
+        g_smokeDirectDrawSurface3LastBltSrcRectValue = *srcRect;
+    } else {
+        std::memset(
+            &g_smokeDirectDrawSurface3LastBltSrcRectValue,
+            0,
+            sizeof(g_smokeDirectDrawSurface3LastBltSrcRectValue)
+        );
+    }
     g_smokeDirectDrawSurface3LastBltFlags = flags;
     g_smokeDirectDrawSurface3LastBltFx = fx;
     g_smokeDirectDrawSurface3LastBltFxPresent = fx != 0 ? 1 : 0;
@@ -2349,8 +2502,18 @@ void InstallSmokeDirectDrawSurface3(SmokeDirectDrawSurface3Object &surface) {
         sizeof(g_smokeDirectDrawSurface3BltFxPresent)
     );
     g_smokeDirectDrawSurface3LastBltDstRectArg = 0;
+    std::memset(
+        &g_smokeDirectDrawSurface3LastBltDstRectValue,
+        0,
+        sizeof(g_smokeDirectDrawSurface3LastBltDstRectValue)
+    );
     g_smokeDirectDrawSurface3LastBltSource = 0;
     g_smokeDirectDrawSurface3LastBltSrcRectArg = 0;
+    std::memset(
+        &g_smokeDirectDrawSurface3LastBltSrcRectValue,
+        0,
+        sizeof(g_smokeDirectDrawSurface3LastBltSrcRectValue)
+    );
     g_smokeDirectDrawSurface3LastBltFlags = 0;
     g_smokeDirectDrawSurface3LastBltFx = 0;
     std::memset(
@@ -2782,6 +2945,66 @@ int __fastcall SmokeDeviceMemoryQuery(
     return 0;
 }
 
+bool SmokePlayerFloatNear(float actual, float expected) {
+    const float delta = actual - expected;
+    return delta < 0.0001f && delta > -0.0001f;
+}
+
+template <typename Method>
+void *SmokeMethodAddress(Method method) {
+    RECOIL_STATIC_ASSERT(sizeof(Method) == sizeof(void *));
+    void *address = 0;
+    std::memcpy(&address, &method, sizeof(address));
+    return address;
+}
+
+int g_smokePlayerHudVisibleCount;
+void *g_smokePlayerHudVisibleThis[8];
+int g_smokePlayerHudVisibleValue[8];
+
+struct SmokePlayerHudVisibleReceiver {
+    void SetVisible(int visible) {
+        const int index = g_smokePlayerHudVisibleCount;
+        if (index < 8) {
+            g_smokePlayerHudVisibleThis[index] = this;
+            g_smokePlayerHudVisibleValue[index] = visible;
+        }
+        ++g_smokePlayerHudVisibleCount;
+    }
+};
+
+void SmokePlayerInstallHudVisibleVtable(
+    Player_UnderwaterFxPass3Ui *ui,
+    void **vtable
+) {
+    std::memset(vtable, 0, sizeof(void *) * 32);
+    vtable[24] = SmokeMethodAddress(&SmokePlayerHudVisibleReceiver::SetVisible);
+    *reinterpret_cast<void ***>(ui) = vtable;
+}
+
+void SmokePlayerResetHudVisibleLog() {
+    std::memset(g_smokePlayerHudVisibleThis, 0, sizeof(g_smokePlayerHudVisibleThis));
+    std::memset(g_smokePlayerHudVisibleValue, 0, sizeof(g_smokePlayerHudVisibleValue));
+    g_smokePlayerHudVisibleCount = 0;
+}
+
+void SmokePlayerInitObjectPositionNode(
+    zClass_NodePartial *node,
+    zClass_Object3DDataPartial *data,
+    float x,
+    float y,
+    float z
+) {
+    std::memset(node, 0, sizeof(*node));
+    std::memset(data, 0, sizeof(*data));
+    node->classId = 5;
+    node->classData = data;
+    node->flags = 1;
+    data->localMatrix[9] = x;
+    data->localMatrix[10] = y;
+    data->localMatrix[11] = z;
+}
+
 int RunSmokeTests(const SmokeTest *tests, int count, const char *onlyName) {
     int failures = 0;
     bool ran = false;
@@ -2804,6 +3027,669 @@ int RunSmokeTests(const SmokeTest *tests, int count, const char *onlyName) {
     return failures;
 }
 } // namespace
+
+extern "C" int player_master_type_transition_leaf_smoke(void) {
+    const float oldAccumulatedTime = g_Time_AccumulatedTimeSec;
+
+    zUtil_SaveGameState saveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    saveState.playerState = &playerState;
+
+    zEffectAnimEntry transitionHandle = {};
+    playerState.masterTypeTransitionToSubLightHandle = &transitionHandle;
+    Player::StopBftBubbleFxHandle(&saveState);
+    if (playerState.masterTypeTransitionToSubLightHandle != 0) {
+        g_Time_AccumulatedTimeSec = oldAccumulatedTime;
+        return 1;
+    }
+
+    Player::StopBftBubbleFxHandle(&saveState);
+
+    PlayerMasterModalData subData = {};
+    subData.masterType = 2;
+    PlayerMasterModalData flyData = {};
+    flyData.masterType = 1;
+    PlayerModalState subModal = {};
+    subModal.masterModalData = &subData;
+    PlayerModalState flyModal = {};
+    flyModal.masterModalData = &flyData;
+    subModal.next = &flyModal;
+
+    saveState.primaryModalState = &subModal;
+    saveState.modalStateListHead = &subModal;
+    playerState.masterTypeTransitionCooldownUntilTime = 9.0f;
+    playerState.currentMasterType = 77;
+    playerState.damageVisualFlag = 0;
+    g_Time_AccumulatedTimeSec = 10.0f;
+
+    const int flyResult = Player::TransitionToMasterTypeFly(&saveState, 0);
+    if (flyResult != 1 || saveState.primaryModalState != &flyModal ||
+        playerState.currentMasterType != 2 || playerState.damageVisualFlag != 1 ||
+        !SmokePlayerFloatNear(playerState.masterTypeTransitionCooldownUntilTime, 15.0f)) {
+        g_Time_AccumulatedTimeSec = oldAccumulatedTime;
+        return 2;
+    }
+
+    saveState.primaryModalState = &subModal;
+    playerState.masterTypeTransitionCooldownUntilTime = 20.0f;
+    playerState.currentMasterType = 44;
+    playerState.damageVisualFlag = 0;
+    g_Time_AccumulatedTimeSec = 12.0f;
+
+    const int blockedResult = Player::TransitionToMasterTypeFly(&saveState, 0);
+    const bool blockedOk = blockedResult == 0 && saveState.primaryModalState == &subModal &&
+                           playerState.currentMasterType == 44 &&
+                           playerState.damageVisualFlag == 0 &&
+                           SmokePlayerFloatNear(
+                               playerState.masterTypeTransitionCooldownUntilTime,
+                               20.0f
+                           );
+
+    g_Time_AccumulatedTimeSec = oldAccumulatedTime;
+    return blockedOk ? 0 : 3;
+}
+
+extern "C" int player_apply_master_type_transition_smoke(void) {
+    const float oldAccumulatedTime = g_Time_AccumulatedTimeSec;
+
+    zUtil_SaveGameState saveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    PlayerModalState sourceModal = {};
+    PlayerModalState flyModal = {};
+    PlayerMasterModalData sourceData = {};
+    PlayerMasterModalData flyData = {};
+
+    saveState.playerState = &playerState;
+    saveState.primaryModalState = &sourceModal;
+    saveState.modalStateListHead = &sourceModal;
+    sourceModal.masterModalData = &sourceData;
+    sourceModal.next = &flyModal;
+    flyModal.masterModalData = &flyData;
+    sourceData.masterType = 2;
+    flyData.masterType = 1;
+
+    g_Time_AccumulatedTimeSec = 12.0f;
+    playerState.primaryGunGateUntilTime = 99.0f;
+    const int invalidResult = Player::ApplyMasterTypeTransition(&saveState, 0, 7);
+    const bool invalidOk = invalidResult == -1 &&
+                           playerState.primaryGunGateUntilTime == 12.0f &&
+                           saveState.primaryModalState == &sourceModal;
+
+    g_Time_AccumulatedTimeSec = 20.0f;
+    playerState.primaryGunGateUntilTime = 88.0f;
+    playerState.masterTypeTransitionCooldownUntilTime = 0.0f;
+    playerState.currentMasterType = 77;
+    playerState.damageVisualFlag = 0;
+    const int flyResult = Player::ApplyMasterTypeTransition(&saveState, 1, 0);
+    const bool flyOk = flyResult == 1 && saveState.primaryModalState == &flyModal &&
+                       playerState.currentMasterType == 2 && playerState.damageVisualFlag == 1 &&
+                       SmokePlayerFloatNear(
+                           playerState.masterTypeTransitionCooldownUntilTime,
+                           25.0f
+                       );
+
+    g_Time_AccumulatedTimeSec = oldAccumulatedTime;
+    return invalidOk && flyOk ? 0 : 1;
+}
+
+extern "C" int player_transition_to_master_type_track_smoke(void) {
+    const float oldAccumulatedTime = g_Time_AccumulatedTimeSec;
+    zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
+    unsigned char oldUnderwaterFxPass3Ui[sizeof(g_Player_UnderwaterFxPass3Ui)];
+    std::memcpy(
+        oldUnderwaterFxPass3Ui,
+        &g_Player_UnderwaterFxPass3Ui,
+        sizeof(g_Player_UnderwaterFxPass3Ui)
+    );
+    const int oldHorizonEnabled = g_Player_HorizonNodeFollowCameraEnabled;
+    zClass_NodePartial *const oldHealthy1 = g_Player_CopterHealthyNode1;
+    zClass_NodePartial *const oldHealthy2 = g_Player_CopterHealthyNode2;
+    zClass_NodePartial *const oldSnd1 = g_Player_CopterSndNode1;
+    zClass_NodePartial *const oldSnd2 = g_Player_CopterSndNode2;
+    zSndSample *const oldCopterSample = g_Player_CopterSndSample;
+
+    void *visibleVtable[32] = {};
+    std::memset(&g_Player_UnderwaterFxPass3Ui, 0, sizeof(g_Player_UnderwaterFxPass3Ui));
+    SmokePlayerInstallHudVisibleVtable(&g_Player_UnderwaterFxPass3Ui, visibleVtable);
+    SmokePlayerResetHudVisibleLog();
+    g_Player_HorizonNodeFollowCameraEnabled = 0;
+    g_Player_CopterHealthyNode1 = 0;
+    g_Player_CopterHealthyNode2 = 0;
+    g_Player_CopterSndNode1 = 0;
+    g_Player_CopterSndNode2 = 0;
+    g_Player_CopterSndSample = 0;
+    g_GameStateOrMapTable = 0;
+
+    zUtil_SaveGameState saveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    PlayerModalState sourceModal = {};
+    PlayerModalState trackModal = {};
+    PlayerMasterModalData sourceData = {};
+    PlayerMasterModalData trackData = {};
+    zClass_NodePartial rootNode = {};
+    zClass_NodePartial modeVariantNode = {};
+    zClass_NodePartial attachNodes[4] = {};
+    zClass_Object3DDataPartial attachData[4] = {};
+    rootNode.classId = 2;
+    modeVariantNode.classId = 2;
+
+    saveState.playerState = &playerState;
+    saveState.primaryModalState = &sourceModal;
+    saveState.modalStateListHead = &sourceModal;
+    sourceModal.masterModalData = &sourceData;
+    sourceModal.next = &trackModal;
+    trackModal.masterModalData = &trackData;
+    trackData.masterType = 3;
+    playerState.rootNode = &rootNode;
+    playerState.modeVariantNode = &modeVariantNode;
+
+    sourceData.masterType = 1;
+    playerState.masterTypeTransitionCooldownUntilTime = 9.0f;
+    playerState.currentMasterType = 77;
+    g_Time_AccumulatedTimeSec = 10.0f;
+    int result = Player::TransitionToMasterTypeTrack(&saveState, 0);
+    if (result != 1 || saveState.primaryModalState != &trackModal ||
+        playerState.currentMasterType != 1 ||
+        !SmokePlayerFloatNear(playerState.masterTypeTransitionCooldownUntilTime, 11.0f) ||
+        (modeVariantNode.flags & 0x04) == 0) {
+        result = 1;
+        goto restore;
+    }
+
+    saveState.primaryModalState = &sourceModal;
+    sourceData.masterType = 1;
+    playerState.masterTypeTransitionCooldownUntilTime = 20.0f;
+    playerState.currentMasterType = 44;
+    modeVariantNode.flags = 0;
+    g_Time_AccumulatedTimeSec = 12.0f;
+    if (Player::TransitionToMasterTypeTrack(&saveState, 0) != 0 ||
+        saveState.primaryModalState != &sourceModal || playerState.currentMasterType != 44 ||
+        (modeVariantNode.flags & 0x04) != 0) {
+        result = 2;
+        goto restore;
+    }
+
+    sourceData.masterType = 4;
+    playerState.autoTurnSign = -1;
+    playerState.masterTypeTransitionCooldownUntilTime = 0.0f;
+    g_Time_AccumulatedTimeSec = 12.0f;
+    if (Player::TransitionToMasterTypeTrack(&saveState, 0) != 0) {
+        result = 3;
+        goto restore;
+    }
+    playerState.autoTurnSign = 0;
+
+    sourceData.masterType = 2;
+    if (Player::TransitionToMasterTypeTrack(&saveState, 0) != 0) {
+        result = 4;
+        goto restore;
+    }
+
+    for (int i = 0; i < 4; ++i) {
+        SmokePlayerInitObjectPositionNode(
+            &attachNodes[i],
+            &attachData[i],
+            10.0f + i,
+            20.0f + i,
+            30.0f + i
+        );
+    }
+    playerState.altWeaponBanks[1].controllerA.attachNodePrimary = &attachNodes[0];
+    playerState.altWeaponBanks[1].controllerA.attachNodeSecondary = &attachNodes[1];
+    playerState.altWeaponBanks[1].controllerB.attachNodePrimary = &attachNodes[2];
+    playerState.altWeaponBanks[1].controllerB.attachNodeSecondary = &attachNodes[3];
+    saveState.primaryModalState = &sourceModal;
+    playerState.damageVisualFlag = 0;
+    playerState.currentMasterType = 55;
+    playerState.masterTypeTransitionCooldownUntilTime = 0.0f;
+    modeVariantNode.flags = 0;
+    SmokePlayerResetHudVisibleLog();
+    g_Player_HorizonNodeFollowCameraEnabled = 0;
+
+    result = Player::TransitionToMasterTypeTrack(&saveState, 1);
+    if (result != 1 || saveState.primaryModalState != &trackModal ||
+        playerState.currentMasterType != 2 || playerState.damageVisualFlag != 1 ||
+        g_Player_HorizonNodeFollowCameraEnabled != 1 || g_smokePlayerHudVisibleCount != 1 ||
+        g_smokePlayerHudVisibleThis[0] != &g_Player_UnderwaterFxPass3Ui ||
+        g_smokePlayerHudVisibleValue[0] != 0 ||
+        !SmokePlayerFloatNear(playerState.masterTypeTransitionCooldownUntilTime, 13.0f) ||
+        (modeVariantNode.flags & 0x04) == 0) {
+        result = 5;
+        goto restore;
+    }
+
+    for (int i = 0; i < 4; ++i) {
+        if (attachData[i].localMatrix[9] != 0.0f ||
+            attachData[i].localMatrix[10] != 0.0f ||
+            attachData[i].localMatrix[11] != 0.0f) {
+            result = 6;
+            goto restore;
+        }
+    }
+
+    result = 0;
+
+restore:
+    g_Time_AccumulatedTimeSec = oldAccumulatedTime;
+    g_GameStateOrMapTable = oldGameStateOrMapTable;
+    std::memcpy(
+        &g_Player_UnderwaterFxPass3Ui,
+        oldUnderwaterFxPass3Ui,
+        sizeof(g_Player_UnderwaterFxPass3Ui)
+    );
+    g_Player_HorizonNodeFollowCameraEnabled = oldHorizonEnabled;
+    g_Player_CopterHealthyNode1 = oldHealthy1;
+    g_Player_CopterHealthyNode2 = oldHealthy2;
+    g_Player_CopterSndNode1 = oldSnd1;
+    g_Player_CopterSndNode2 = oldSnd2;
+    g_Player_CopterSndSample = oldCopterSample;
+    return result;
+}
+
+extern "C" int player_transition_to_master_type_amphib_smoke(void) {
+    const float oldAccumulatedTime = g_Time_AccumulatedTimeSec;
+    zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
+    unsigned char oldUnderwaterFxPass3Ui[sizeof(g_Player_UnderwaterFxPass3Ui)];
+    std::memcpy(
+        oldUnderwaterFxPass3Ui,
+        &g_Player_UnderwaterFxPass3Ui,
+        sizeof(g_Player_UnderwaterFxPass3Ui)
+    );
+    const int oldHorizonEnabled = g_Player_HorizonNodeFollowCameraEnabled;
+    zClass_NodePartial *const oldHealthy1 = g_Player_CopterHealthyNode1;
+    zClass_NodePartial *const oldHealthy2 = g_Player_CopterHealthyNode2;
+    zClass_NodePartial *const oldSnd1 = g_Player_CopterSndNode1;
+    zClass_NodePartial *const oldSnd2 = g_Player_CopterSndNode2;
+    zSndSample *const oldCopterSample = g_Player_CopterSndSample;
+
+    void *visibleVtable[32] = {};
+    std::memset(&g_Player_UnderwaterFxPass3Ui, 0, sizeof(g_Player_UnderwaterFxPass3Ui));
+    SmokePlayerInstallHudVisibleVtable(&g_Player_UnderwaterFxPass3Ui, visibleVtable);
+    SmokePlayerResetHudVisibleLog();
+    g_Player_HorizonNodeFollowCameraEnabled = 0;
+    g_Player_CopterHealthyNode1 = 0;
+    g_Player_CopterHealthyNode2 = 0;
+    g_Player_CopterSndNode1 = 0;
+    g_Player_CopterSndNode2 = 0;
+    g_Player_CopterSndSample = 0;
+    g_GameStateOrMapTable = 0;
+
+    zUtil_SaveGameState saveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    PlayerModalState sourceModal = {};
+    PlayerModalState amphibModal = {};
+    PlayerMasterModalData sourceData = {};
+    PlayerMasterModalData amphibData = {};
+    zClass_NodePartial rootNode = {};
+    zClass_NodePartial modeVariantNode = {};
+    zClass_NodePartial modalNode = {};
+    zClass_Object3DDataPartial modalObjectData = {};
+    rootNode.classId = 2;
+    modeVariantNode.classId = 2;
+    SmokePlayerInitObjectPositionNode(&modalNode, &modalObjectData, 1.0f, 2.0f, 3.0f);
+
+    saveState.playerState = &playerState;
+    saveState.primaryModalState = &sourceModal;
+    saveState.modalStateListHead = &sourceModal;
+    sourceModal.masterModalData = &sourceData;
+    sourceModal.modalNode = &modalNode;
+    sourceModal.next = &amphibModal;
+    amphibModal.masterModalData = &amphibData;
+    amphibData.masterType = 5;
+    playerState.rootNode = &rootNode;
+    playerState.modeVariantNode = &modeVariantNode;
+
+    sourceData.masterType = 3;
+    playerState.amphibUnlocked = 1;
+    playerState.masterTypeTransitionCooldownUntilTime = 20.0f;
+    playerState.currentMasterType = 33;
+    g_Time_AccumulatedTimeSec = 10.0f;
+    int result = Player::TransitionToMasterTypeAmphib(&saveState, 0, 0);
+    if (result != 0 || saveState.primaryModalState != &sourceModal ||
+        playerState.currentMasterType != 33) {
+        result = 1;
+        goto restore;
+    }
+
+    playerState.masterTypeTransitionCooldownUntilTime = 0.0f;
+    playerState.amphibUnlocked = 0;
+    if (Player::TransitionToMasterTypeAmphib(&saveState, 0, 0) != 0) {
+        result = 2;
+        goto restore;
+    }
+
+    playerState.amphibUnlocked = 1;
+    playerState.airborneFlag = 1;
+    playerState.vehiclePitchRad = 2.5f;
+    playerState.vehicleRollRad = -3.5f;
+    modalObjectData.rotation.x = 4.0f;
+    modalObjectData.rotation.y = 5.0f;
+    modalObjectData.rotation.z = 6.0f;
+    modeVariantNode.flags = 0;
+    saveState.primaryModalState = &sourceModal;
+    sourceData.masterType = 3;
+    g_Time_AccumulatedTimeSec = 10.0f;
+
+    result = Player::TransitionToMasterTypeAmphib(&saveState, 0, 0);
+    if (result != 1 || saveState.primaryModalState != &amphibModal ||
+        playerState.currentMasterType != 3 || playerState.airborneFlag != 0 ||
+        !SmokePlayerFloatNear(playerState.masterTypeTransitionCooldownUntilTime, 11.0f) ||
+        (modeVariantNode.flags & 0x04) == 0 || playerState.vehiclePitchRad != 0.0f ||
+        playerState.vehicleRollRad != 0.0f || modalObjectData.rotation.x != 0.0f ||
+        modalObjectData.rotation.y != 0.0f || modalObjectData.rotation.z != 0.0f) {
+        result = 3;
+        goto restore;
+    }
+
+    saveState.primaryModalState = &sourceModal;
+    sourceData.masterType = 2;
+    playerState.masterTypeTransitionCooldownUntilTime = 0.0f;
+    g_Time_AccumulatedTimeSec = 12.0f;
+    if (Player::TransitionToMasterTypeAmphib(&saveState, 1, 0) != 0) {
+        result = 4;
+        goto restore;
+    }
+
+    playerState.damageVisualFlag = 0;
+    playerState.currentMasterType = 44;
+    modeVariantNode.flags = 0;
+    SmokePlayerResetHudVisibleLog();
+    g_Player_HorizonNodeFollowCameraEnabled = 0;
+    result = Player::TransitionToMasterTypeAmphib(&saveState, 0, 1);
+    if (result != 1 || saveState.primaryModalState != &amphibModal ||
+        playerState.currentMasterType != 2 || playerState.damageVisualFlag != 1 ||
+        g_Player_HorizonNodeFollowCameraEnabled != 1 || g_smokePlayerHudVisibleCount != 1 ||
+        g_smokePlayerHudVisibleThis[0] != &g_Player_UnderwaterFxPass3Ui ||
+        g_smokePlayerHudVisibleValue[0] != 0 ||
+        !SmokePlayerFloatNear(playerState.masterTypeTransitionCooldownUntilTime, 13.0f)) {
+        result = 5;
+        goto restore;
+    }
+
+    result = 0;
+
+restore:
+    g_Time_AccumulatedTimeSec = oldAccumulatedTime;
+    g_GameStateOrMapTable = oldGameStateOrMapTable;
+    std::memcpy(
+        &g_Player_UnderwaterFxPass3Ui,
+        oldUnderwaterFxPass3Ui,
+        sizeof(g_Player_UnderwaterFxPass3Ui)
+    );
+    g_Player_HorizonNodeFollowCameraEnabled = oldHorizonEnabled;
+    g_Player_CopterHealthyNode1 = oldHealthy1;
+    g_Player_CopterHealthyNode2 = oldHealthy2;
+    g_Player_CopterSndNode1 = oldSnd1;
+    g_Player_CopterSndNode2 = oldSnd2;
+    g_Player_CopterSndSample = oldCopterSample;
+    return result;
+}
+
+extern "C" int player_transition_to_master_type_sub_smoke(void) {
+    const float oldAccumulatedTime = g_Time_AccumulatedTimeSec;
+    zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
+
+    g_GameStateOrMapTable = 0;
+
+    zUtil_SaveGameState saveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    PlayerModalState sourceModal = {};
+    PlayerModalState subModal = {};
+    PlayerMasterModalData sourceData = {};
+    PlayerMasterModalData subData = {};
+    zClass_NodePartial rootNode = {};
+    zClass_NodePartial modalNode = {};
+    zClass_Object3DDataPartial modalObjectData = {};
+    OptCatalogEntryDef allowedAltEntry = {};
+    PlayerGunFireController activeAltController = {};
+    rootNode.classId = 2;
+    SmokePlayerInitObjectPositionNode(&modalNode, &modalObjectData, 1.0f, 2.0f, 3.0f);
+
+    saveState.playerState = &playerState;
+    saveState.primaryModalState = &sourceModal;
+    saveState.modalStateListHead = &sourceModal;
+    sourceModal.masterModalData = &sourceData;
+    sourceModal.modalNode = &modalNode;
+    sourceModal.next = &subModal;
+    subModal.masterModalData = &subData;
+    subData.masterType = 2;
+    playerState.rootNode = &rootNode;
+    playerState.activeAltGunController = &activeAltController;
+    activeAltController.optCatalogEntry = &allowedAltEntry;
+
+    sourceData.masterType = 5;
+    playerState.subUnlocked = 1;
+    playerState.masterTypeTransitionCooldownUntilTime = 20.0f;
+    playerState.currentMasterType = 33;
+    playerState.damageVisualFlag = 0;
+    g_Time_AccumulatedTimeSec = 10.0f;
+    int result = Player::TransitionToMasterTypeSub(&saveState, 0);
+    if (result != 0 || saveState.primaryModalState != &sourceModal ||
+        playerState.currentMasterType != 33 || playerState.damageVisualFlag != 1) {
+        result = 1;
+        goto restore;
+    }
+
+    playerState.masterTypeTransitionCooldownUntilTime = 0.0f;
+    playerState.subUnlocked = 0;
+    if (Player::TransitionToMasterTypeSub(&saveState, 0) != 0) {
+        result = 2;
+        goto restore;
+    }
+
+    playerState.subUnlocked = 1;
+    sourceData.masterType = 2;
+    saveState.primaryModalState = &sourceModal;
+    playerState.currentMasterType = 44;
+    playerState.masterTypeTransitionCooldownUntilTime = 0.0f;
+    g_Time_AccumulatedTimeSec = 12.0f;
+    result = Player::TransitionToMasterTypeSub(&saveState, 0);
+    if (result != 1 || saveState.primaryModalState != &sourceModal ||
+        playerState.currentMasterType != 44 ||
+        !SmokePlayerFloatNear(playerState.masterTypeTransitionCooldownUntilTime, 0.0f)) {
+        result = 3;
+        goto restore;
+    }
+
+    sourceData.masterType = 3;
+    saveState.primaryModalState = &sourceModal;
+    playerState.currentMasterType = 55;
+    if (Player::TransitionToMasterTypeSub(&saveState, 0) != 0) {
+        result = 4;
+        goto restore;
+    }
+
+    sourceData.masterType = 5;
+    playerState.bankInput = 1;
+    if (Player::TransitionToMasterTypeSub(&saveState, 0) != 0) {
+        result = 5;
+        goto restore;
+    }
+
+    saveState.primaryModalState = &sourceModal;
+    sourceData.masterType = 5;
+    playerState.bankInput = 0;
+    playerState.currentMasterType = 77;
+    playerState.localVel.y = 1.0f;
+    playerState.worldPos.y = 20.0f;
+    playerState.masterTypeTransitionCooldownUntilTime = 0.0f;
+    g_Time_AccumulatedTimeSec = 14.0f;
+    result = Player::TransitionToMasterTypeSub(&saveState, 0);
+    if (result != 1 || saveState.primaryModalState != &subModal ||
+        playerState.currentMasterType != 5 ||
+        !SmokePlayerFloatNear(playerState.masterTypeTransitionCooldownUntilTime, 15.0f) ||
+        !SmokePlayerFloatNear(playerState.localVel.y, -3.0f) ||
+        !SmokePlayerFloatNear(playerState.worldPos.y, 15.9f)) {
+        result = 6;
+        goto restore;
+    }
+
+    saveState.primaryModalState = &sourceModal;
+    sourceData.masterType = 3;
+    playerState.airborneFlag = 1;
+    playerState.currentMasterType = 88;
+    playerState.localVel.y = 2.0f;
+    playerState.worldPos.y = 30.0f;
+    playerState.masterTypeTransitionCooldownUntilTime = 0.0f;
+    modalObjectData.rotation.x = 4.0f;
+    modalObjectData.rotation.y = 5.0f;
+    modalObjectData.rotation.z = 6.0f;
+    g_Time_AccumulatedTimeSec = 16.0f;
+    result = Player::TransitionToMasterTypeSub(&saveState, 1);
+    if (result != 1 || saveState.primaryModalState != &subModal ||
+        playerState.currentMasterType != 3 || playerState.airborneFlag != 0 ||
+        !SmokePlayerFloatNear(playerState.masterTypeTransitionCooldownUntilTime, 17.0f) ||
+        !SmokePlayerFloatNear(playerState.localVel.y, -3.0f) ||
+        !SmokePlayerFloatNear(playerState.worldPos.y, 25.9f) ||
+        modalObjectData.rotation.x != 0.0f || modalObjectData.rotation.y != 0.0f ||
+        modalObjectData.rotation.z != 0.0f) {
+        result = 7;
+        goto restore;
+    }
+
+    result = 0;
+
+restore:
+    g_Time_AccumulatedTimeSec = oldAccumulatedTime;
+    g_GameStateOrMapTable = oldGameStateOrMapTable;
+    return result;
+}
+
+extern "C" int player_transition_to_master_type_hover_smoke(void) {
+    const float oldAccumulatedTime = g_Time_AccumulatedTimeSec;
+    zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
+    unsigned char oldUnderwaterFxPass3Ui[sizeof(g_Player_UnderwaterFxPass3Ui)];
+    std::memcpy(
+        oldUnderwaterFxPass3Ui,
+        &g_Player_UnderwaterFxPass3Ui,
+        sizeof(g_Player_UnderwaterFxPass3Ui)
+    );
+    const int oldHorizonEnabled = g_Player_HorizonNodeFollowCameraEnabled;
+    zClass_NodePartial *const oldHealthy1 = g_Player_CopterHealthyNode1;
+    zClass_NodePartial *const oldHealthy2 = g_Player_CopterHealthyNode2;
+    zClass_NodePartial *const oldSnd1 = g_Player_CopterSndNode1;
+    zClass_NodePartial *const oldSnd2 = g_Player_CopterSndNode2;
+    zSndSample *const oldCopterSample = g_Player_CopterSndSample;
+
+    void *visibleVtable[32] = {};
+    std::memset(&g_Player_UnderwaterFxPass3Ui, 0, sizeof(g_Player_UnderwaterFxPass3Ui));
+    SmokePlayerInstallHudVisibleVtable(&g_Player_UnderwaterFxPass3Ui, visibleVtable);
+    SmokePlayerResetHudVisibleLog();
+    g_Player_HorizonNodeFollowCameraEnabled = 0;
+    g_Player_CopterHealthyNode1 = 0;
+    g_Player_CopterHealthyNode2 = 0;
+    g_Player_CopterSndNode1 = 0;
+    g_Player_CopterSndNode2 = 0;
+    g_Player_CopterSndSample = 0;
+    g_GameStateOrMapTable = 0;
+
+    zUtil_SaveGameState saveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    PlayerModalState sourceModal = {};
+    PlayerModalState hoverModal = {};
+    PlayerMasterModalData sourceData = {};
+    PlayerMasterModalData hoverData = {};
+    zClass_NodePartial rootNode = {};
+    zClass_NodePartial modeVariantNode = {};
+    zClass_NodePartial modalNode = {};
+    zClass_Object3DDataPartial modalObjectData = {};
+    rootNode.classId = 2;
+    modeVariantNode.classId = 2;
+    SmokePlayerInitObjectPositionNode(&modalNode, &modalObjectData, 1.0f, 2.0f, 3.0f);
+
+    saveState.playerState = &playerState;
+    saveState.primaryModalState = &sourceModal;
+    saveState.modalStateListHead = &sourceModal;
+    sourceModal.masterModalData = &sourceData;
+    sourceModal.modalNode = &modalNode;
+    sourceModal.next = &hoverModal;
+    hoverModal.masterModalData = &hoverData;
+    hoverData.masterType = 4;
+    playerState.rootNode = &rootNode;
+    playerState.modeVariantNode = &modeVariantNode;
+
+    sourceData.masterType = 3;
+    playerState.hoverUnlocked = 1;
+    playerState.masterTypeTransitionCooldownUntilTime = 20.0f;
+    playerState.currentMasterType = 33;
+    g_Time_AccumulatedTimeSec = 10.0f;
+    int result = Player::TransitionToMasterTypeHover(&saveState, 0);
+    if (result != 0 || saveState.primaryModalState != &sourceModal ||
+        playerState.currentMasterType != 33) {
+        result = 1;
+        goto restore;
+    }
+
+    playerState.masterTypeTransitionCooldownUntilTime = 0.0f;
+    playerState.hoverUnlocked = 0;
+    if (Player::TransitionToMasterTypeHover(&saveState, 0) != 0) {
+        result = 2;
+        goto restore;
+    }
+
+    playerState.hoverUnlocked = 1;
+    playerState.airborneFlag = 1;
+    modalObjectData.rotation.x = 4.0f;
+    modalObjectData.rotation.y = 5.0f;
+    modalObjectData.rotation.z = 6.0f;
+    modeVariantNode.flags = 0;
+    saveState.primaryModalState = &sourceModal;
+    sourceData.masterType = 3;
+    g_Time_AccumulatedTimeSec = 10.0f;
+
+    result = Player::TransitionToMasterTypeHover(&saveState, 0);
+    if (result != 1 || saveState.primaryModalState != &hoverModal ||
+        playerState.currentMasterType != 3 || playerState.airborneFlag != 0 ||
+        !SmokePlayerFloatNear(playerState.masterTypeTransitionCooldownUntilTime, 11.0f) ||
+        (modeVariantNode.flags & 0x04) == 0 || modalObjectData.rotation.x != 0.0f ||
+        modalObjectData.rotation.y != 0.0f || modalObjectData.rotation.z != 0.0f) {
+        result = 3;
+        goto restore;
+    }
+
+    saveState.primaryModalState = &sourceModal;
+    sourceData.masterType = 2;
+    playerState.masterTypeTransitionCooldownUntilTime = 0.0f;
+    g_Time_AccumulatedTimeSec = 12.0f;
+    if (Player::TransitionToMasterTypeHover(&saveState, 0) != 0) {
+        result = 4;
+        goto restore;
+    }
+
+    playerState.damageVisualFlag = 0;
+    playerState.currentMasterType = 44;
+    modeVariantNode.flags = 0;
+    SmokePlayerResetHudVisibleLog();
+    g_Player_HorizonNodeFollowCameraEnabled = 0;
+    result = Player::TransitionToMasterTypeHover(&saveState, 1);
+    if (result != 1 || saveState.primaryModalState != &hoverModal ||
+        playerState.currentMasterType != 2 || playerState.damageVisualFlag != 1 ||
+        g_Player_HorizonNodeFollowCameraEnabled != 1 || g_smokePlayerHudVisibleCount != 1 ||
+        g_smokePlayerHudVisibleThis[0] != &g_Player_UnderwaterFxPass3Ui ||
+        g_smokePlayerHudVisibleValue[0] != 0 ||
+        !SmokePlayerFloatNear(playerState.masterTypeTransitionCooldownUntilTime, 13.0f)) {
+        result = 5;
+        goto restore;
+    }
+
+    result = 0;
+
+restore:
+    g_Time_AccumulatedTimeSec = oldAccumulatedTime;
+    g_GameStateOrMapTable = oldGameStateOrMapTable;
+    std::memcpy(
+        &g_Player_UnderwaterFxPass3Ui,
+        oldUnderwaterFxPass3Ui,
+        sizeof(g_Player_UnderwaterFxPass3Ui)
+    );
+    g_Player_HorizonNodeFollowCameraEnabled = oldHorizonEnabled;
+    g_Player_CopterHealthyNode1 = oldHealthy1;
+    g_Player_CopterHealthyNode2 = oldHealthy2;
+    g_Player_CopterSndNode1 = oldSnd1;
+    g_Player_CopterSndNode2 = oldSnd2;
+    g_Player_CopterSndSample = oldCopterSample;
+    return result;
+}
 
 extern "C" int zeffect_anim_find_entry_by_name_smoke(void) {
     zEffectAnimEntry *const oldEntryList = g_zEffectAnim_EntryList;
@@ -6352,6 +7238,207 @@ extern "C" int zvideo_dd_image_release_surface_smoke(void) {
     return nullSurfaceOk && successOk && failureOk ? 0 : 1;
 }
 
+extern "C" int zvideo_dd_blt_sw_to_primary_rect_direct_smoke(void) {
+    SmokeDirectDrawSurface3Object primarySurface = {};
+    SmokeDirectDrawSurface3Object swSurface = {};
+    InstallSmokeDirectDrawSurface3(primarySurface);
+    InstallSmokeDirectDrawSurface3(swSurface);
+
+    const zVideo_SurfaceStatePartial savedPrimaryState = g_zVideo_PrimarySurfaceState;
+    const zVideo_SurfaceStatePartial savedSwState = g_zVideo_SwSurfaceState;
+
+    IDirectDrawSurface3 *const primaryInterface =
+        (IDirectDrawSurface3 *)(&primarySurface);
+    IDirectDrawSurface3 *const swInterface =
+        (IDirectDrawSurface3 *)(&swSurface);
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_SwSurfaceState = {};
+    g_zVideo_PrimarySurfaceState.surf = primaryInterface;
+    g_zVideo_SwSurfaceState.surf = swInterface;
+
+    zVidRect32 srcRect = {2, 3, 8, 9};
+    zVidRect32 dstRect = {4, 5, 10, 11};
+    zVideo_dd::BltSwToPrimaryRectDirect(&srcRect, &dstRect);
+
+    const int ok =
+        g_smokeDirectDrawSurface3BltCalls == 1 &&
+        g_smokeDirectDrawSurface3BltSurfaces[0] == primaryInterface &&
+        g_smokeDirectDrawSurface3LastBltSource == swInterface &&
+        g_smokeDirectDrawSurface3LastBltFlags == DDBLT_WAIT &&
+        g_smokeDirectDrawSurface3LastBltFx == 0 &&
+        g_smokeDirectDrawSurface3LastBltDstRectArg != 0 &&
+        g_smokeDirectDrawSurface3LastBltDstRectValue.left == 4 &&
+        g_smokeDirectDrawSurface3LastBltDstRectValue.top == 5 &&
+        g_smokeDirectDrawSurface3LastBltDstRectValue.right == 10 &&
+        g_smokeDirectDrawSurface3LastBltDstRectValue.bottom == 11 &&
+        g_smokeDirectDrawSurface3LastBltSrcRectArg != 0 &&
+        g_smokeDirectDrawSurface3LastBltSrcRectValue.left == 2 &&
+        g_smokeDirectDrawSurface3LastBltSrcRectValue.top == 3 &&
+        g_smokeDirectDrawSurface3LastBltSrcRectValue.right == 8 &&
+        g_smokeDirectDrawSurface3LastBltSrcRectValue.bottom == 9;
+
+    g_zVideo_PrimarySurfaceState = savedPrimaryState;
+    g_zVideo_SwSurfaceState = savedSwState;
+    return ok != 0 ? 0 : 1;
+}
+
+extern "C" int zvideo_dd_blt_primary_to_sw_rect_direct_smoke(void) {
+    SmokeDirectDrawSurface3Object primarySurface = {};
+    SmokeDirectDrawSurface3Object swSurface = {};
+    InstallSmokeDirectDrawSurface3(swSurface);
+    InstallSmokeDirectDrawSurface3(primarySurface);
+
+    const zVideo_SurfaceStatePartial savedPrimaryState = g_zVideo_PrimarySurfaceState;
+    const zVideo_SurfaceStatePartial savedSwState = g_zVideo_SwSurfaceState;
+
+    IDirectDrawSurface3 *const primaryInterface =
+        (IDirectDrawSurface3 *)(&primarySurface);
+    IDirectDrawSurface3 *const swInterface =
+        (IDirectDrawSurface3 *)(&swSurface);
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_SwSurfaceState = {};
+    g_zVideo_PrimarySurfaceState.surf = primaryInterface;
+    g_zVideo_SwSurfaceState.surf = swInterface;
+
+    zVidRect32 srcRect = {6, 7, 14, 15};
+    zVidRect32 dstRect = {8, 9, 16, 17};
+    zVideo_dd::BltPrimaryToSwRectDirect(&srcRect, &dstRect);
+
+    const int ok =
+        g_smokeDirectDrawSurface3BltCalls == 1 &&
+        g_smokeDirectDrawSurface3BltSurfaces[0] == swInterface &&
+        g_smokeDirectDrawSurface3LastBltSource == primaryInterface &&
+        g_smokeDirectDrawSurface3LastBltFlags == DDBLT_WAIT &&
+        g_smokeDirectDrawSurface3LastBltFx == 0 &&
+        g_smokeDirectDrawSurface3LastBltDstRectArg != 0 &&
+        g_smokeDirectDrawSurface3LastBltDstRectValue.left == 8 &&
+        g_smokeDirectDrawSurface3LastBltDstRectValue.top == 9 &&
+        g_smokeDirectDrawSurface3LastBltDstRectValue.right == 16 &&
+        g_smokeDirectDrawSurface3LastBltDstRectValue.bottom == 17 &&
+        g_smokeDirectDrawSurface3LastBltSrcRectArg != 0 &&
+        g_smokeDirectDrawSurface3LastBltSrcRectValue.left == 6 &&
+        g_smokeDirectDrawSurface3LastBltSrcRectValue.top == 7 &&
+        g_smokeDirectDrawSurface3LastBltSrcRectValue.right == 14 &&
+        g_smokeDirectDrawSurface3LastBltSrcRectValue.bottom == 15;
+
+    g_zVideo_PrimarySurfaceState = savedPrimaryState;
+    g_zVideo_SwSurfaceState = savedSwState;
+    return ok != 0 ? 0 : 1;
+}
+
+extern "C" int zvideo_blt_sw_to_primary_rect_lazy_failure_smoke(void) {
+    zVidHwApiDeviceRecordPartial *const savedSelected =
+        g_zVideo_pSelectedHwApiDeviceRecord;
+
+    zVidHwApiDeviceRecordPartial selectedDevice = {};
+    g_zVideo_pSelectedHwApiDeviceRecord = &selectedDevice;
+
+    zVidImagePartial image = {};
+    image.width = 8;
+    image.height = 4;
+    image.alphaMap = (char *)(0x1234);
+    zVideo_dd::BltSwToPrimaryRect(&image, 0, 0, 0);
+
+    const int ok = image.surface == 0;
+    g_zVideo_pSelectedHwApiDeviceRecord = savedSelected;
+    return ok != 0 ? 0 : 1;
+}
+
+extern "C" int zvideo_dd_blt_sw_to_primary_rect_smoke(void) {
+    const zVideo_SurfaceStatePartial savedPrimaryState = g_zVideo_PrimarySurfaceState;
+    const int savedFullscreenOption = g_zVideo_FullscreenOption;
+
+    SmokeDirectDrawSurface3Object primarySurface = {};
+    SmokeDirectDrawSurface3Object sourceSurface = {};
+    InstallSmokeDirectDrawSurface3(primarySurface);
+    InstallSmokeDirectDrawSurface3(sourceSurface);
+
+    g_zVideo_FullscreenOption = 1;
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_PrimarySurfaceState.width = 10;
+    g_zVideo_PrimarySurfaceState.height = 8;
+    g_zVideo_PrimarySurfaceState.locked = 1;
+    g_zVideo_PrimarySurfaceState.surf =
+        (IDirectDrawSurface3 *)(&primarySurface);
+
+    zVidImagePartial image = {};
+    image.width = 6;
+    image.height = 4;
+    image.surface = (IDirectDrawSurface3 *)(&sourceSurface);
+
+    zVidRect32 srcRect = {1, 2, 15, 12};
+    zVidRect32 dstRect = {-2, -1, 12, 9};
+    zVideo_dd::BltSwToPrimaryRect(&image, 1, &srcRect, &dstRect);
+    const int clippedOk =
+        g_smokeDirectDrawSurface3BltCalls == 1 &&
+        g_smokeDirectDrawSurface3UnlockCalls == 1 &&
+        g_smokeDirectDrawSurface3LockCalls == 1 &&
+        g_zVideo_PrimarySurfaceState.locked == 1 &&
+        g_smokeDirectDrawSurface3BltSurfaces[0] == g_zVideo_PrimarySurfaceState.surf &&
+        g_smokeDirectDrawSurface3LastBltSource == image.surface &&
+        g_smokeDirectDrawSurface3LastBltFx == 0 &&
+        g_smokeDirectDrawSurface3LastBltFlags ==
+            (DDBLT_WAIT | DDBLT_KEYSRCOVERRIDE | DDBLT_KEYSRC) &&
+        g_smokeDirectDrawSurface3LastBltDstRectArg != 0 &&
+        g_smokeDirectDrawSurface3LastBltDstRectValue.left == 0 &&
+        g_smokeDirectDrawSurface3LastBltDstRectValue.top == 0 &&
+        g_smokeDirectDrawSurface3LastBltDstRectValue.right == 10 &&
+        g_smokeDirectDrawSurface3LastBltDstRectValue.bottom == 8 &&
+        g_smokeDirectDrawSurface3LastBltSrcRectArg != 0 &&
+        g_smokeDirectDrawSurface3LastBltSrcRectValue.left == 3 &&
+        g_smokeDirectDrawSurface3LastBltSrcRectValue.top == 3 &&
+        g_smokeDirectDrawSurface3LastBltSrcRectValue.right == 13 &&
+        g_smokeDirectDrawSurface3LastBltSrcRectValue.bottom == 11;
+
+    InstallSmokeDirectDrawSurface3(primarySurface);
+    InstallSmokeDirectDrawSurface3(sourceSurface);
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_PrimarySurfaceState.width = 10;
+    g_zVideo_PrimarySurfaceState.height = 8;
+    g_zVideo_PrimarySurfaceState.locked = 0;
+    g_zVideo_PrimarySurfaceState.surf =
+        (IDirectDrawSurface3 *)(&primarySurface);
+    image.width = 4;
+    image.height = 3;
+    image.surface = (IDirectDrawSurface3 *)(&sourceSurface);
+
+    zVideo_dd::BltSwToPrimaryRect(&image, 0, 0, 0);
+    const int defaultRectOk =
+        g_smokeDirectDrawSurface3BltCalls == 1 &&
+        g_smokeDirectDrawSurface3UnlockCalls == 0 &&
+        g_smokeDirectDrawSurface3LockCalls == 0 &&
+        g_smokeDirectDrawSurface3LastBltFlags ==
+            (DDBLT_WAIT | DDBLT_KEYSRCOVERRIDE) &&
+        g_smokeDirectDrawSurface3LastBltDstRectArg != 0 &&
+        g_smokeDirectDrawSurface3LastBltDstRectValue.left == 0 &&
+        g_smokeDirectDrawSurface3LastBltDstRectValue.top == 0 &&
+        g_smokeDirectDrawSurface3LastBltDstRectValue.right == 4 &&
+        g_smokeDirectDrawSurface3LastBltDstRectValue.bottom == 3 &&
+        g_smokeDirectDrawSurface3LastBltSrcRectArg != 0 &&
+        g_smokeDirectDrawSurface3LastBltSrcRectValue.left == 0 &&
+        g_smokeDirectDrawSurface3LastBltSrcRectValue.top == 0 &&
+        g_smokeDirectDrawSurface3LastBltSrcRectValue.right == 4 &&
+        g_smokeDirectDrawSurface3LastBltSrcRectValue.bottom == 3;
+
+    InstallSmokeDirectDrawSurface3(primarySurface);
+    InstallSmokeDirectDrawSurface3(sourceSurface);
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_PrimarySurfaceState.width = 10;
+    g_zVideo_PrimarySurfaceState.height = 8;
+    g_zVideo_PrimarySurfaceState.surf =
+        (IDirectDrawSurface3 *)(&primarySurface);
+    image.width = 4;
+    image.height = 3;
+    image.surface = (IDirectDrawSurface3 *)(&sourceSurface);
+    dstRect = {20, 0, 24, 3};
+    zVideo_dd::BltSwToPrimaryRect(&image, 0, 0, &dstRect);
+    const int clippedOutOk = g_smokeDirectDrawSurface3BltCalls == 0;
+
+    g_zVideo_PrimarySurfaceState = savedPrimaryState;
+    g_zVideo_FullscreenOption = savedFullscreenOption;
+    return clippedOk && defaultRectOk && clippedOutOk ? 0 : 1;
+}
+
 extern "C" int zvideo_image_surface_helpers_guard_smoke(void) {
     const int savedVideoInitialized = g_zVideo_IsInitialized;
     const int savedUseHalfRes = g_zVideo_UseHalfResBackbuffer;
@@ -7270,6 +8357,28 @@ extern "C" int zvideo_bind_renderer_dispatch_smoke(void) {
     return result;
 }
 
+extern "C" int zvideo_dd_get_hw_api_device_feature_flags_smoke(void) {
+    const int savedFeature0 = g_zVideo_HwApiDeviceTable[0].m_deviceFeatureFlags;
+    const int savedFeature2 = g_zVideo_HwApiDeviceTable[2].m_deviceFeatureFlags;
+    const zVideo_GetHwApiDeviceFeatureFlagsProc savedProc =
+        g_zVideo_pfnGetHwApiDeviceFeatureFlags;
+
+    g_zVideo_HwApiDeviceTable[0].m_deviceFeatureFlags = 0x1357;
+    g_zVideo_HwApiDeviceTable[2].m_deviceFeatureFlags = 0x2468;
+    g_zVideo_pfnGetHwApiDeviceFeatureFlags =
+        zVideo_dd::GetHwApiDeviceFeatureFlags;
+
+    const int ok =
+        zVideo_dd::GetHwApiDeviceFeatureFlags(0) == 0x1357 &&
+        zVideo_dd::GetHwApiDeviceFeatureFlags(2) == 0x2468 &&
+        g_zVideo_pfnGetHwApiDeviceFeatureFlags(2) == 0x2468;
+
+    g_zVideo_HwApiDeviceTable[0].m_deviceFeatureFlags = savedFeature0;
+    g_zVideo_HwApiDeviceTable[2].m_deviceFeatureFlags = savedFeature2;
+    g_zVideo_pfnGetHwApiDeviceFeatureFlags = savedProc;
+    return ok != 0 ? 0 : 1;
+}
+
 extern "C" int zvideo_module_init_smoke(void) {
     const size_t resetBytes =
         (unsigned char *)(&g_zVideo_OverwriteQueueBase[0x180]) -
@@ -7564,6 +8673,152 @@ extern "C" int zvideo_dd3d_set_fog_enable_smoke(void) {
     g_zVideo_CachedFogEnableRenderState = savedFogEnable;
     g_zVideo_CachedFogModeLightState = savedFogMode;
     return firstCallOk && cacheHitOk && renderOnlyOk ? 0 : 1;
+}
+
+extern "C" int zvideo_dd3d_set_fog_start_smoke(void) {
+    SmokeDirect3DDevice2Object device = {};
+    IDirect3DDevice2 *const savedDevice = g_zVideo_pD3DDevice;
+    const float savedFogStart = g_zVideo_CachedFogStartLightStateValue;
+
+    InstallSmokeDirect3DDevice2(device);
+    g_zVideo_CachedFogStartLightStateValue = 10.0f;
+    const float newFogStart = 25.5f;
+    DWORD newFogStartBits = 0;
+    std::memcpy(
+        &newFogStartBits,
+        &newFogStart,
+        sizeof(newFogStartBits)
+    );
+    zVideo_dd3d::SetFogStart(newFogStart);
+    const int updateOk =
+        g_smokeDirect3DDevice2SetLightStateCalls == 1 &&
+        g_smokeDirect3DDevice2LightStates[0] == D3DLIGHTSTATE_FOGSTART &&
+        g_smokeDirect3DDevice2LightStateValues[0] == newFogStartBits &&
+        g_zVideo_CachedFogStartLightStateValue == newFogStart;
+
+    InstallSmokeDirect3DDevice2(device);
+    g_zVideo_CachedFogStartLightStateValue = newFogStart;
+    zVideo_dd3d::SetFogStart(newFogStart);
+    const int cacheHitOk =
+        g_smokeDirect3DDevice2SetLightStateCalls == 0 &&
+        g_zVideo_CachedFogStartLightStateValue == newFogStart;
+
+    g_zVideo_pD3DDevice = savedDevice;
+    g_zVideo_CachedFogStartLightStateValue = savedFogStart;
+    return updateOk && cacheHitOk ? 0 : 1;
+}
+
+extern "C" int zvideo_dd3d_set_fog_end_smoke(void) {
+    SmokeDirect3DDevice2Object device = {};
+    IDirect3DDevice2 *const savedDevice = g_zVideo_pD3DDevice;
+    const float savedFogEnd = g_zVideo_CachedFogEndLightStateValue;
+
+    InstallSmokeDirect3DDevice2(device);
+    g_zVideo_CachedFogEndLightStateValue = 100.0f;
+    const float newFogEnd = 400.25f;
+    DWORD newFogEndBits = 0;
+    std::memcpy(
+        &newFogEndBits,
+        &newFogEnd,
+        sizeof(newFogEndBits)
+    );
+    zVideo_dd3d::SetFogEnd(newFogEnd);
+    const int updateOk =
+        g_smokeDirect3DDevice2SetLightStateCalls == 1 &&
+        g_smokeDirect3DDevice2LightStates[0] == D3DLIGHTSTATE_FOGSTART &&
+        g_smokeDirect3DDevice2LightStateValues[0] == newFogEndBits &&
+        g_zVideo_CachedFogEndLightStateValue == newFogEnd;
+
+    InstallSmokeDirect3DDevice2(device);
+    g_zVideo_CachedFogEndLightStateValue = newFogEnd;
+    zVideo_dd3d::SetFogEnd(newFogEnd);
+    const int cacheHitOk =
+        g_smokeDirect3DDevice2SetLightStateCalls == 0 &&
+        g_zVideo_CachedFogEndLightStateValue == newFogEnd;
+
+    g_zVideo_pD3DDevice = savedDevice;
+    g_zVideo_CachedFogEndLightStateValue = savedFogEnd;
+    return updateOk && cacheHitOk ? 0 : 1;
+}
+
+extern "C" int zvideo_dd3d_apply_fog_state_from_globals_smoke(void) {
+    SmokeDirect3DDevice2Object device = {};
+    IDirect3DDevice2 *const savedDevice = g_zVideo_pD3DDevice;
+    const float savedPendingRed = g_zVideo_FogColorPendingR255;
+    const float savedPendingGreen = g_zVideo_FogColorPendingG255;
+    const float savedPendingBlue = g_zVideo_FogColorPendingB255;
+
+    InstallSmokeDirect3DDevice2(device);
+    g_zVideo_FogColorPendingR255 = 10.4f;
+    g_zVideo_FogColorPendingG255 = 20.6f;
+    g_zVideo_FogColorPendingB255 = 30.5f;
+    const float fogStart = 11.5f;
+    const float fogEnd = 99.25f;
+    DWORD fogStartBits = 0;
+    DWORD fogEndBits = 0;
+    std::memcpy(
+        &fogStartBits,
+        &fogStart,
+        sizeof(fogStartBits)
+    );
+    std::memcpy(
+        &fogEndBits,
+        &fogEnd,
+        sizeof(fogEndBits)
+    );
+
+    zVideo_dd3d::ApplyFogStateFromGlobals(
+        fogStart,
+        fogEnd,
+        -1.0f
+    );
+
+    const int ok =
+        g_smokeDirect3DDevice2SetRenderStateCalls == 2 &&
+        g_smokeDirect3DDevice2RenderStates[0] == D3DRENDERSTATE_FOGENABLE &&
+        g_smokeDirect3DDevice2RenderStateValues[0] == 1 &&
+        g_smokeDirect3DDevice2RenderStates[1] == D3DRENDERSTATE_FOGCOLOR &&
+        g_smokeDirect3DDevice2RenderStateValues[1] == 0x0a151f &&
+        g_smokeDirect3DDevice2SetLightStateCalls == 3 &&
+        g_smokeDirect3DDevice2LightStates[0] == D3DLIGHTSTATE_FOGMODE &&
+        g_smokeDirect3DDevice2LightStateValues[0] == D3DFOG_LINEAR &&
+        g_smokeDirect3DDevice2LightStates[1] == D3DLIGHTSTATE_FOGSTART &&
+        g_smokeDirect3DDevice2LightStateValues[1] == fogStartBits &&
+        g_smokeDirect3DDevice2LightStates[2] == D3DLIGHTSTATE_FOGEND &&
+        g_smokeDirect3DDevice2LightStateValues[2] == fogEndBits;
+
+    g_zVideo_pD3DDevice = savedDevice;
+    g_zVideo_FogColorPendingR255 = savedPendingRed;
+    g_zVideo_FogColorPendingG255 = savedPendingGreen;
+    g_zVideo_FogColorPendingB255 = savedPendingBlue;
+    return ok ? 0 : 1;
+}
+
+extern "C" int zvideo_dd3d_update_fog_color_smoke(void) {
+    SmokeDirect3DDevice2Object device = {};
+    IDirect3DDevice2 *const savedDevice = g_zVideo_pD3DDevice;
+    const float savedAppliedRed = g_zVideo_FogColorAppliedR255;
+    const float savedAppliedGreen = g_zVideo_FogColorAppliedG255;
+    const float savedAppliedBlue = g_zVideo_FogColorAppliedB255;
+
+    InstallSmokeDirect3DDevice2(device);
+    g_zVideo_FogColorAppliedR255 = 40.4f;
+    g_zVideo_FogColorAppliedG255 = 50.6f;
+    g_zVideo_FogColorAppliedB255 = 60.5f;
+
+    zVideo_dd3d::UpdateFogColor();
+
+    const int ok =
+        g_smokeDirect3DDevice2SetRenderStateCalls == 1 &&
+        g_smokeDirect3DDevice2RenderStates[0] == D3DRENDERSTATE_FOGCOLOR &&
+        g_smokeDirect3DDevice2RenderStateValues[0] == 0x28333d &&
+        g_smokeDirect3DDevice2SetLightStateCalls == 0;
+
+    g_zVideo_pD3DDevice = savedDevice;
+    g_zVideo_FogColorAppliedR255 = savedAppliedRed;
+    g_zVideo_FogColorAppliedG255 = savedAppliedGreen;
+    g_zVideo_FogColorAppliedB255 = savedAppliedBlue;
+    return ok ? 0 : 1;
 }
 
 extern "C" int zvideo_pending_wireframe_state_smoke(void) {
@@ -8814,6 +10069,225 @@ extern "C" int zvideo_flush_sorted_polys_smoke(void) {
     return drawArgsOk ? 0 : 6;
 }
 
+extern "C" int zvideo_submit_poly_flat_color16_queue_smoke(void) {
+    zVideo::PixelPack_SetupFromMasks(5, 6, 5, 0xf800, 0x07e0, 0x001f);
+    std::memset(g_zVideo_D3DSubmitTempVertices, 0, sizeof(g_zVideo_D3DSubmitTempVertices));
+    std::memset(g_zVideo_OverwriteQueueBase, 0, sizeof(g_zVideo_OverwriteQueueBase[0]));
+    std::memset(g_zVideo_SortedPolyQueueBase, 0, sizeof(g_zVideo_SortedPolyQueueBase[0]));
+    g_zVideo_OverwriteQueueCount = 0;
+    g_zVideo_SortedPolyQueueCount = 0;
+
+    zVideo_XyzVertex vertices[3] = {
+        {1.0f, 2.0f, 3.0f},
+        {4.0f, 5.0f, 6.0f},
+        {7.0f, 8.0f, 9.0f}
+    };
+
+    zVideo_dd3d::SubmitPolyFlatColor16(vertices, 0xf800, 0xff, 0x1234, 3, 1);
+    if (g_zVideo_OverwriteQueueCount != 1 ||
+        g_zVideo_OverwriteQueueBase[0].type != 1 ||
+        g_zVideo_OverwriteQueueBase[0].vertexCount != 3 ||
+        g_zVideo_OverwriteQueueBase[0].renderClass != 0 ||
+        g_zVideo_OverwriteQueueBase[0].renderParam != 0x1234) {
+        return 1;
+    }
+
+    const D3DTLVERTEX &firstOpaque = g_zVideo_OverwriteQueueBase[0].vertices[0];
+    const D3DTLVERTEX &lastOpaque = g_zVideo_OverwriteQueueBase[0].vertices[2];
+    if (firstOpaque.sx != 7.0f || firstOpaque.sy != 8.0f ||
+        firstOpaque.sz != 9.0f || firstOpaque.rhw != 9.0f ||
+        firstOpaque.color != 0xfff80000 ||
+        firstOpaque.specular != 0xff000000 || lastOpaque.sx != 1.0f) {
+        return 2;
+    }
+
+    zVideo_dd3d::SubmitPolyFlatColor16(vertices, 0x07e0, 0x80, 0x5678, 2, 0);
+    if (g_zVideo_SortedPolyQueueCount != 1 ||
+        g_zVideo_SortedPolyQueueBase[0].vertexCount != 2 ||
+        g_zVideo_SortedPolyQueueBase[0].renderClass != 0 ||
+        g_zVideo_SortedPolyQueueBase[0].renderParam != 0x5678) {
+        return 3;
+    }
+
+    const D3DTLVERTEX &firstSorted = g_zVideo_SortedPolyQueueBase[0].vertices[0];
+    return firstSorted.sx == 4.0f && firstSorted.sy == 5.0f &&
+                   firstSorted.sz == 6.0f &&
+                   firstSorted.color == 0x8000fc00 &&
+                   firstSorted.specular == 0xff000000
+               ? 0
+               : 4;
+}
+
+extern "C" int zvideo_submit_poly_flat_color16_immediate_smoke(void) {
+    SmokeDirect3DDevice2Object device = {};
+    IDirect3DDevice2 *const savedDevice = g_zVideo_pD3DDevice;
+    const D3DTEXTUREHANDLE savedTextureHandle =
+        g_zVideo_D3DRenderStateCache.textureHandle;
+    const int savedShadeMode = g_zVideo_D3DRenderStateCache.shadeMode;
+
+    zVideo::PixelPack_SetupFromMasks(5, 6, 5, 0xf800, 0x07e0, 0x001f);
+    std::memset(g_zVideo_D3DSubmitTempVertices, 0, sizeof(g_zVideo_D3DSubmitTempVertices));
+    InstallSmokeDirect3DDevice2(device);
+    g_zVideo_D3DRenderStateCache.textureHandle = 0x2468;
+    g_zVideo_D3DRenderStateCache.shadeMode = 2;
+
+    zVideo_XyzVertex vertices[3] = {
+        {1.0f, 2.0f, 3.0f},
+        {4.0f, 5.0f, 6.0f},
+        {7.0f, 8.0f, 9.0f}
+    };
+
+    zVideo_dd3d::SubmitPolyFlatColor16(vertices, 0x001f, 0xff, 0x1111, 3, 0);
+
+    const int renderStateOk =
+        g_smokeDirect3DDevice2SetRenderStateCalls == 2 &&
+        g_smokeDirect3DDevice2RenderStates[0] == D3DRENDERSTATE_TEXTUREHANDLE &&
+        g_smokeDirect3DDevice2RenderStateValues[0] == 0 &&
+        g_smokeDirect3DDevice2RenderStates[1] == D3DRENDERSTATE_SHADEMODE &&
+        g_smokeDirect3DDevice2RenderStateValues[1] == 1 &&
+        g_zVideo_D3DRenderStateCache.textureHandle == 0 &&
+        g_zVideo_D3DRenderStateCache.shadeMode == 1;
+    const int drawOk =
+        g_smokeDirect3DDevice2DrawPrimitiveCalls == 1 &&
+        g_smokeDirect3DDevice2LastPrimitiveType == (D3DPRIMITIVETYPE)(6) &&
+        g_smokeDirect3DDevice2LastVertexType == (D3DVERTEXTYPE)(3) &&
+        g_smokeDirect3DDevice2LastVertices == g_zVideo_D3DSubmitTempVertices &&
+        g_smokeDirect3DDevice2LastVertexCount == 3 &&
+        g_smokeDirect3DDevice2LastDrawFlags == 0;
+
+    const D3DTLVERTEX &first = g_zVideo_D3DSubmitTempVertices[0];
+    const D3DTLVERTEX &last = g_zVideo_D3DSubmitTempVertices[2];
+    const int verticesOk =
+        first.sx == 7.0f && first.sy == 8.0f && first.sz == 9.0f &&
+        first.rhw == 9.0f && first.color == 0xff0000f8 &&
+        first.specular == 0xff000000 &&
+        last.sx == 1.0f && last.sy == 2.0f && last.sz == 3.0f &&
+        last.rhw == 3.0f && last.color == 0xff0000f8 &&
+        last.specular == 0xff000000;
+
+    InstallSmokeDirect3DDevice2(device);
+    g_zVideo_D3DRenderStateCache.textureHandle = 0;
+    g_zVideo_D3DRenderStateCache.shadeMode = 1;
+    zVideo_dd3d::SubmitPolyFlatColor16(vertices, 0x07e0, 0xff, 0x2222, 2, 0);
+    const int cacheHitOk =
+        g_smokeDirect3DDevice2SetRenderStateCalls == 0 &&
+        g_smokeDirect3DDevice2DrawPrimitiveCalls == 1 &&
+        g_smokeDirect3DDevice2LastVertexCount == 2 &&
+        g_zVideo_D3DSubmitTempVertices[0].color == 0xff00fc00;
+
+    g_zVideo_pD3DDevice = savedDevice;
+    g_zVideo_D3DRenderStateCache.textureHandle = savedTextureHandle;
+    g_zVideo_D3DRenderStateCache.shadeMode = savedShadeMode;
+    return renderStateOk && drawOk && verticesOk && cacheHitOk ? 0 : 1;
+}
+
+extern "C" int zvideo_submit_poly_gouraud_color16_queue_smoke(void) {
+    zVideo::PixelPack_SetupFromMasks(5, 6, 5, 0xf800, 0x07e0, 0x001f);
+    std::memset(g_zVideo_OverwriteQueueBase, 0, sizeof(g_zVideo_OverwriteQueueBase[0]));
+    std::memset(g_zVideo_SortedPolyQueueBase, 0, sizeof(g_zVideo_SortedPolyQueueBase[0]));
+    g_zVideo_OverwriteQueueCount = 0;
+    g_zVideo_SortedPolyQueueCount = 0;
+
+    zVideo_XyzVertex vertices[3] = {
+        {1.0f, 2.0f, 3.0f},
+        {4.0f, 5.0f, 6.0f},
+        {7.0f, 8.0f, 9.0f}
+    };
+    unsigned int colors[3] = {0xf800, 0x07e0, 0x001f};
+
+    zVideo_dd3d::SubmitPolyGouraudColor16(vertices, colors, 0xff, 0x99, 3, 1);
+    if (g_zVideo_OverwriteQueueCount != 1 ||
+        g_zVideo_OverwriteQueueBase[0].type != 2 ||
+        g_zVideo_OverwriteQueueBase[0].vertexCount != 3 ||
+        g_zVideo_OverwriteQueueBase[0].renderParam != 0x99) {
+        return 1;
+    }
+    if (g_zVideo_OverwriteQueueBase[0].vertices[0].sx != 7.0f ||
+        g_zVideo_OverwriteQueueBase[0].vertices[0].color != 0xff0000f8 ||
+        g_zVideo_OverwriteQueueBase[0].vertices[2].sx != 1.0f ||
+        g_zVideo_OverwriteQueueBase[0].vertices[2].color != 0xfff80000) {
+        return 2;
+    }
+
+    zVideo_dd3d::SubmitPolyGouraudColor16(vertices, colors, 0x40, 0x77, 2, 0);
+    if (g_zVideo_SortedPolyQueueCount != 1 ||
+        g_zVideo_SortedPolyQueueBase[0].vertexCount != 2 ||
+        g_zVideo_SortedPolyQueueBase[0].renderParam != 0x77) {
+        return 3;
+    }
+
+    return g_zVideo_SortedPolyQueueBase[0].vertices[0].sx == 4.0f &&
+                   g_zVideo_SortedPolyQueueBase[0].vertices[0].color == 0x4000fc00 &&
+                   g_zVideo_SortedPolyQueueBase[0].vertices[1].sx == 1.0f &&
+                   g_zVideo_SortedPolyQueueBase[0].vertices[1].color == 0x40f80000
+               ? 0
+               : 4;
+}
+
+extern "C" int zvideo_submit_poly_gouraud_color16_immediate_smoke(void) {
+    SmokeDirect3DDevice2Object device = {};
+    IDirect3DDevice2 *const savedDevice = g_zVideo_pD3DDevice;
+    const D3DTEXTUREHANDLE savedTextureHandle =
+        g_zVideo_D3DRenderStateCache.textureHandle;
+    const int savedShadeMode = g_zVideo_D3DRenderStateCache.shadeMode;
+
+    zVideo::PixelPack_SetupFromMasks(5, 6, 5, 0xf800, 0x07e0, 0x001f);
+    std::memset(g_zVideo_D3DSubmitTempVertices, 0, sizeof(g_zVideo_D3DSubmitTempVertices));
+    InstallSmokeDirect3DDevice2(device);
+    g_zVideo_D3DRenderStateCache.textureHandle = 0x2468;
+    g_zVideo_D3DRenderStateCache.shadeMode = 2;
+
+    zVideo_XyzVertex vertices[3] = {
+        {1.0f, 2.0f, 3.0f},
+        {4.0f, 5.0f, 6.0f},
+        {7.0f, 8.0f, 9.0f}
+    };
+    unsigned int colors[3] = {0xf800, 0x07e0, 0x001f};
+
+    zVideo_dd3d::SubmitPolyGouraudColor16(vertices, colors, 0xff, 0x1111, 3, 0);
+
+    const int renderStateOk =
+        g_smokeDirect3DDevice2SetRenderStateCalls == 2 &&
+        g_smokeDirect3DDevice2RenderStates[0] == D3DRENDERSTATE_TEXTUREHANDLE &&
+        g_smokeDirect3DDevice2RenderStateValues[0] == 0 &&
+        g_smokeDirect3DDevice2RenderStates[1] == D3DRENDERSTATE_SHADEMODE &&
+        g_smokeDirect3DDevice2RenderStateValues[1] == 1 &&
+        g_zVideo_D3DRenderStateCache.textureHandle == 0 &&
+        g_zVideo_D3DRenderStateCache.shadeMode == 1;
+    const int drawOk =
+        g_smokeDirect3DDevice2DrawPrimitiveCalls == 1 &&
+        g_smokeDirect3DDevice2LastPrimitiveType == (D3DPRIMITIVETYPE)(6) &&
+        g_smokeDirect3DDevice2LastVertexType == (D3DVERTEXTYPE)(3) &&
+        g_smokeDirect3DDevice2LastVertices == g_zVideo_D3DSubmitTempVertices &&
+        g_smokeDirect3DDevice2LastVertexCount == 3 &&
+        g_smokeDirect3DDevice2LastDrawFlags == 0;
+
+    const D3DTLVERTEX &first = g_zVideo_D3DSubmitTempVertices[0];
+    const D3DTLVERTEX &last = g_zVideo_D3DSubmitTempVertices[2];
+    const int verticesOk =
+        first.sx == 7.0f && first.sy == 8.0f && first.sz == 9.0f &&
+        first.rhw == 9.0f && first.color == 0xff0000f8 &&
+        first.specular == 0xff000000 &&
+        last.sx == 1.0f && last.sy == 2.0f && last.sz == 3.0f &&
+        last.rhw == 3.0f && last.color == 0xfff80000 &&
+        last.specular == 0xff000000;
+
+    InstallSmokeDirect3DDevice2(device);
+    g_zVideo_D3DRenderStateCache.textureHandle = 0;
+    g_zVideo_D3DRenderStateCache.shadeMode = 1;
+    zVideo_dd3d::SubmitPolyGouraudColor16(vertices, colors, 0xff, 0x2222, 2, 0);
+    const int cacheHitOk =
+        g_smokeDirect3DDevice2SetRenderStateCalls == 0 &&
+        g_smokeDirect3DDevice2DrawPrimitiveCalls == 1 &&
+        g_smokeDirect3DDevice2LastVertexCount == 2 &&
+        g_zVideo_D3DSubmitTempVertices[0].color == 0xff00fc00;
+
+    g_zVideo_pD3DDevice = savedDevice;
+    g_zVideo_D3DRenderStateCache.textureHandle = savedTextureHandle;
+    g_zVideo_D3DRenderStateCache.shadeMode = savedShadeMode;
+    return renderStateOk && drawOk && verticesOk && cacheHitOk ? 0 : 1;
+}
+
 extern "C" int zvideo_submit_poly_color_attr_smoke(void) {
     const int savedNormalizeChannel = g_zVideo_D3DColorNormalizeChannelIndex;
     const float savedBiasR = g_zVideo_D3DColorAttrBiasR;
@@ -8990,6 +10464,220 @@ extern "C" int zvideo_submit_poly_color_attr_immediate_smoke(void) {
     g_zVideo_pD3DDevice = savedDevice;
     g_zVideo_D3DRenderStateCache.textureHandle = savedTextureHandle;
     g_zVideo_D3DRenderStateCache.shadeMode = savedShadeMode;
+    return renderStateOk && drawOk && verticesOk && cacheHitOk ? 0 : 1;
+}
+
+extern "C" int zvideo_submit_poly_render_class_queue_smoke(void) {
+    std::memset(g_zVideo_D3DSubmitTempVertices, 0, sizeof(g_zVideo_D3DSubmitTempVertices));
+    std::memset(g_zVideo_OverwriteQueueBase, 0, sizeof(g_zVideo_OverwriteQueueBase[0]));
+    std::memset(g_zVideo_SortedPolyQueueBase, 0, sizeof(g_zVideo_SortedPolyQueueBase[0]));
+    g_zVideo_OverwriteQueueCount = 0;
+    g_zVideo_SortedPolyQueueCount = 0;
+
+    zVideo_XyzVertex vertices[3] = {
+        {1.0f, 2.0f, 3.0f},
+        {4.0f, 5.0f, 6.0f},
+        {7.0f, 8.0f, 9.0f}
+    };
+    zVideo_TexCoord texCoords[3] = {
+        {0.1f, 0.2f},
+        {0.3f, 0.4f},
+        {0.5f, 0.6f}
+    };
+    zVideo_RenderClass renderClass = {};
+    renderClass.textureHandle = 0x1234;
+    renderClass.textureMapBlend = (D3DTEXTUREBLEND)(3);
+    renderClass.textureAddressU = (D3DTEXTUREADDRESS)(1);
+    renderClass.textureAddressV = (D3DTEXTUREADDRESS)(2);
+
+    zVideo_dd3d::SubmitPolyRenderClass(
+        vertices,
+        texCoords,
+        3,
+        &renderClass,
+        0x77,
+        1.0f,
+        1
+    );
+    if (g_zVideo_OverwriteQueueCount != 1 ||
+        g_zVideo_OverwriteQueueBase[0].type != 4 ||
+        g_zVideo_OverwriteQueueBase[0].vertexCount != 3 ||
+        g_zVideo_OverwriteQueueBase[0].renderClass != (int)(&renderClass) ||
+        g_zVideo_OverwriteQueueBase[0].renderParam != 0x77) {
+        return 1;
+    }
+
+    const D3DTLVERTEX &opaqueFirst = g_zVideo_OverwriteQueueBase[0].vertices[0];
+    if (opaqueFirst.sx != 7.0f || opaqueFirst.sy != 8.0f ||
+        opaqueFirst.sz != 9.0f || opaqueFirst.rhw != 9.0f ||
+        opaqueFirst.color != 0xffffffff ||
+        opaqueFirst.specular != 0xff000000 ||
+        opaqueFirst.tu != 0.5f || opaqueFirst.tv != 0.6f) {
+        return 2;
+    }
+
+    renderClass.textureMapBlend = (D3DTEXTUREBLEND)(4);
+    zVideo_dd3d::SubmitPolyRenderClass(
+        vertices,
+        texCoords,
+        2,
+        &renderClass,
+        0x88,
+        0.25f,
+        1
+    );
+    if (g_zVideo_OverwriteQueueCount != 2 ||
+        g_zVideo_OverwriteQueueBase[1].type != 0 ||
+        g_zVideo_OverwriteQueueBase[1].vertexCount != 2 ||
+        g_zVideo_OverwriteQueueBase[1].renderClass != (int)(&renderClass) ||
+        g_zVideo_OverwriteQueueBase[1].renderParam != 0x88 ||
+        g_zVideo_OverwriteQueueBase[1].vertices[0].sx != 4.0f ||
+        g_zVideo_OverwriteQueueBase[1].vertices[0].color != 0x3fffffff ||
+        g_zVideo_OverwriteQueueBase[1].vertices[0].tu != 0.3f) {
+        return 3;
+    }
+
+    zVideo_dd3d::SubmitPolyRenderClass(
+        vertices,
+        texCoords,
+        2,
+        &renderClass,
+        0x99,
+        0.5f,
+        0
+    );
+    if (g_zVideo_SortedPolyQueueCount != 1 ||
+        g_zVideo_SortedPolyQueueBase[0].vertexCount != 2 ||
+        g_zVideo_SortedPolyQueueBase[0].renderClass != (int)(&renderClass) ||
+        g_zVideo_SortedPolyQueueBase[0].renderParam != 0x99) {
+        return 4;
+    }
+
+    return g_zVideo_SortedPolyQueueBase[0].vertices[0].sx == 4.0f &&
+                   g_zVideo_SortedPolyQueueBase[0].vertices[0].color == 0x7fffffff &&
+                   g_zVideo_SortedPolyQueueBase[0].vertices[0].tu == 0.3f &&
+                   g_zVideo_SortedPolyQueueBase[0].vertices[1].sx == 1.0f
+               ? 0
+               : 5;
+}
+
+extern "C" int zvideo_submit_poly_render_class_immediate_smoke(void) {
+    SmokeDirect3DDevice2Object device = {};
+    IDirect3DDevice2 *const savedDevice = g_zVideo_pD3DDevice;
+    const int savedShadeMode = g_zVideo_D3DRenderStateCache.shadeMode;
+    const D3DTEXTUREHANDLE savedTextureHandle =
+        g_zVideo_D3DRenderStateCache.textureHandle;
+    const D3DTEXTUREBLEND savedTextureMapBlend =
+        g_zVideo_D3DRenderStateCache.textureMapBlend;
+    const D3DTEXTUREADDRESS savedTextureAddressU =
+        g_zVideo_D3DRenderStateCache.textureAddressU;
+    const D3DTEXTUREADDRESS savedTextureAddressV =
+        g_zVideo_D3DRenderStateCache.textureAddressV;
+
+    std::memset(g_zVideo_D3DSubmitTempVertices, 0, sizeof(g_zVideo_D3DSubmitTempVertices));
+    g_zVideo_OverwriteQueueCount = 0;
+    g_zVideo_SortedPolyQueueCount = 0;
+    InstallSmokeDirect3DDevice2(device);
+    g_zVideo_D3DRenderStateCache.shadeMode = 2;
+    g_zVideo_D3DRenderStateCache.textureHandle = 0;
+    g_zVideo_D3DRenderStateCache.textureMapBlend = (D3DTEXTUREBLEND)(1);
+    g_zVideo_D3DRenderStateCache.textureAddressU = (D3DTEXTUREADDRESS)(3);
+    g_zVideo_D3DRenderStateCache.textureAddressV = (D3DTEXTUREADDRESS)(3);
+
+    zVideo_XyzVertex vertices[3] = {
+        {1.0f, 2.0f, 3.0f},
+        {4.0f, 5.0f, 6.0f},
+        {7.0f, 8.0f, 9.0f}
+    };
+    zVideo_TexCoord texCoords[3] = {
+        {0.1f, 0.2f},
+        {0.3f, 0.4f},
+        {0.5f, 0.6f}
+    };
+    zVideo_RenderClass renderClass = {};
+    renderClass.textureHandle = 0x1234;
+    renderClass.textureMapBlend = (D3DTEXTUREBLEND)(3);
+    renderClass.textureAddressU = (D3DTEXTUREADDRESS)(1);
+    renderClass.textureAddressV = (D3DTEXTUREADDRESS)(2);
+
+    zVideo_dd3d::SubmitPolyRenderClass(
+        vertices,
+        texCoords,
+        3,
+        &renderClass,
+        0x77,
+        1.0f,
+        0
+    );
+
+    const int renderStateOk =
+        g_smokeDirect3DDevice2SetRenderStateCalls == 5 &&
+        g_smokeDirect3DDevice2RenderStates[0] == D3DRENDERSTATE_SHADEMODE &&
+        g_smokeDirect3DDevice2RenderStateValues[0] == 1 &&
+        g_smokeDirect3DDevice2RenderStates[1] == D3DRENDERSTATE_TEXTUREHANDLE &&
+        g_smokeDirect3DDevice2RenderStateValues[1] == 0x1234 &&
+        g_smokeDirect3DDevice2RenderStates[2] == D3DRENDERSTATE_TEXTUREMAPBLEND &&
+        g_smokeDirect3DDevice2RenderStateValues[2] == 3 &&
+        g_smokeDirect3DDevice2RenderStates[3] == D3DRENDERSTATE_TEXTUREADDRESSU &&
+        g_smokeDirect3DDevice2RenderStateValues[3] == 1 &&
+        g_smokeDirect3DDevice2RenderStates[4] == D3DRENDERSTATE_TEXTUREADDRESSV &&
+        g_smokeDirect3DDevice2RenderStateValues[4] == 2 &&
+        g_zVideo_D3DRenderStateCache.shadeMode == 1 &&
+        g_zVideo_D3DRenderStateCache.textureHandle == 0x1234 &&
+        g_zVideo_D3DRenderStateCache.textureMapBlend == (D3DTEXTUREBLEND)(3) &&
+        g_zVideo_D3DRenderStateCache.textureAddressU == (D3DTEXTUREADDRESS)(1) &&
+        g_zVideo_D3DRenderStateCache.textureAddressV == (D3DTEXTUREADDRESS)(2);
+    const int drawOk =
+        g_smokeDirect3DDevice2DrawPrimitiveCalls == 1 &&
+        g_smokeDirect3DDevice2LastPrimitiveType == (D3DPRIMITIVETYPE)(6) &&
+        g_smokeDirect3DDevice2LastVertexType == (D3DVERTEXTYPE)(3) &&
+        g_smokeDirect3DDevice2LastVertices == g_zVideo_D3DSubmitTempVertices &&
+        g_smokeDirect3DDevice2LastVertexCount == 3 &&
+        g_smokeDirect3DDevice2LastDrawFlags == 0 &&
+        g_zVideo_OverwriteQueueCount == 0 &&
+        g_zVideo_SortedPolyQueueCount == 0;
+
+    const D3DTLVERTEX &first = g_zVideo_D3DSubmitTempVertices[0];
+    const D3DTLVERTEX &last = g_zVideo_D3DSubmitTempVertices[2];
+    const int verticesOk =
+        first.sx == 7.0f && first.sy == 8.0f && first.sz == 9.0f &&
+        first.rhw == 9.0f && first.color == 0xffffffff &&
+        first.specular == 0xff000000 && first.tu == 0.5f &&
+        first.tv == 0.6f &&
+        last.sx == 1.0f && last.sy == 2.0f && last.sz == 3.0f &&
+        last.rhw == 3.0f && last.color == 0xffffffff &&
+        last.specular == 0xff000000 && last.tu == 0.1f &&
+        last.tv == 0.2f;
+
+    InstallSmokeDirect3DDevice2(device);
+    g_zVideo_D3DRenderStateCache.shadeMode = 1;
+    g_zVideo_D3DRenderStateCache.textureHandle = 0x1234;
+    g_zVideo_D3DRenderStateCache.textureMapBlend = (D3DTEXTUREBLEND)(3);
+    g_zVideo_D3DRenderStateCache.textureAddressU = (D3DTEXTUREADDRESS)(1);
+    g_zVideo_D3DRenderStateCache.textureAddressV = (D3DTEXTUREADDRESS)(2);
+    zVideo_dd3d::SubmitPolyRenderClass(
+        vertices,
+        texCoords,
+        2,
+        &renderClass,
+        0x88,
+        1.0f,
+        0
+    );
+    const int cacheHitOk =
+        g_smokeDirect3DDevice2SetRenderStateCalls == 0 &&
+        g_smokeDirect3DDevice2DrawPrimitiveCalls == 1 &&
+        g_smokeDirect3DDevice2LastVertexCount == 2 &&
+        g_zVideo_D3DSubmitTempVertices[0].sx == 4.0f &&
+        g_zVideo_D3DSubmitTempVertices[0].tu == 0.3f &&
+        g_zVideo_D3DSubmitTempVertices[0].tv == 0.4f;
+
+    g_zVideo_pD3DDevice = savedDevice;
+    g_zVideo_D3DRenderStateCache.shadeMode = savedShadeMode;
+    g_zVideo_D3DRenderStateCache.textureHandle = savedTextureHandle;
+    g_zVideo_D3DRenderStateCache.textureMapBlend = savedTextureMapBlend;
+    g_zVideo_D3DRenderStateCache.textureAddressU = savedTextureAddressU;
+    g_zVideo_D3DRenderStateCache.textureAddressV = savedTextureAddressV;
     return renderStateOk && drawOk && verticesOk && cacheHitOk ? 0 : 1;
 }
 
@@ -9531,6 +11219,89 @@ extern "C" int zvideo_submit_polygon_lit_immediate_smoke(void) {
     return renderStateOk && drawOk && verticesOk && cacheHitOk && transparentOk
                ? 0
                : 1;
+}
+
+extern "C" int zvideo_draw_point_color16_smoke(void) {
+    SmokeDirect3DDevice2Object device = {};
+    IDirect3DDevice2 *const savedDevice = g_zVideo_pD3DDevice;
+    const D3DTEXTUREHANDLE savedTextureHandle =
+        g_zVideo_D3DRenderStateCache.textureHandle;
+    const int savedShadeMode = g_zVideo_D3DRenderStateCache.shadeMode;
+    const int savedPackedBase = g_zVideo_PixelPack.packedBase;
+    const int savedSumMinus8 = g_zVideo_PixelPack.sumMinus8;
+    const int savedBShiftTo8 = g_zVideo_PixelPack.bShiftTo8;
+    const int savedRMaskShifted = g_zVideo_PixelPack.rMaskShifted;
+    const int savedGMaskShifted = g_zVideo_PixelPack.gMaskShifted;
+    const int savedBMaskShifted = g_zVideo_PixelPack.bMaskShifted;
+    const int savedRBits = g_zVideo_PixelPack.rBits;
+    const int savedGBits = g_zVideo_PixelPack.gBits;
+    const int savedBBits = g_zVideo_PixelPack.bBits;
+    const unsigned int savedRMask = g_zVideo_PixelPack.rMask;
+    const unsigned int savedGMask = g_zVideo_PixelPack.gMask;
+    const unsigned int savedBMask = g_zVideo_PixelPack.bMask;
+
+    zVideo::PixelPack_SetupFromMasks(5, 6, 5, 0xf800, 0x07e0, 0x001f);
+    std::memset(g_zVideo_D3DSubmitTempVertices, 0, sizeof(g_zVideo_D3DSubmitTempVertices));
+    InstallSmokeDirect3DDevice2(device);
+    g_zVideo_D3DRenderStateCache.textureHandle = 0x2468;
+    g_zVideo_D3DRenderStateCache.shadeMode = 2;
+
+    zVideo_XyzVertex point = {1.0f, 2.0f, 3.0f};
+    zVideo_dd3d::DrawPointColor16(&point, 0x07e0, 99);
+
+    const int renderStateOk =
+        g_smokeDirect3DDevice2SetRenderStateCalls == 2 &&
+        g_smokeDirect3DDevice2RenderStates[0] == D3DRENDERSTATE_TEXTUREHANDLE &&
+        g_smokeDirect3DDevice2RenderStateValues[0] == 0 &&
+        g_smokeDirect3DDevice2RenderStates[1] == D3DRENDERSTATE_SHADEMODE &&
+        g_smokeDirect3DDevice2RenderStateValues[1] == 1 &&
+        g_zVideo_D3DRenderStateCache.textureHandle == 0 &&
+        g_zVideo_D3DRenderStateCache.shadeMode == 1;
+    const int drawOk =
+        g_smokeDirect3DDevice2DrawPrimitiveCalls == 1 &&
+        g_smokeDirect3DDevice2LastPrimitiveType == (D3DPRIMITIVETYPE)(1) &&
+        g_smokeDirect3DDevice2LastVertexType == (D3DVERTEXTYPE)(3) &&
+        g_smokeDirect3DDevice2LastVertices == g_zVideo_D3DSubmitTempVertices &&
+        g_smokeDirect3DDevice2LastVertexCount == 1 &&
+        g_smokeDirect3DDevice2LastDrawFlags == 0;
+
+    const D3DTLVERTEX &vertex = g_zVideo_D3DSubmitTempVertices[0];
+    const int vertexOk =
+        vertex.sx == 1.0f && vertex.sy == 2.0f && vertex.sz == 3.0f &&
+        vertex.rhw == 3.0f && vertex.color == 0xff00fc00 &&
+        vertex.specular == 0xff000000;
+
+    InstallSmokeDirect3DDevice2(device);
+    g_zVideo_D3DRenderStateCache.textureHandle = 0;
+    g_zVideo_D3DRenderStateCache.shadeMode = 1;
+    point.x = 4.0f;
+    point.y = 5.0f;
+    point.z = 6.0f;
+    zVideo_dd3d::DrawPointColor16(&point, 0xf800, 3);
+    const int cacheHitOk =
+        g_smokeDirect3DDevice2SetRenderStateCalls == 0 &&
+        g_smokeDirect3DDevice2DrawPrimitiveCalls == 1 &&
+        g_smokeDirect3DDevice2LastVertexCount == 1 &&
+        g_zVideo_D3DSubmitTempVertices[0].sx == 4.0f &&
+        g_zVideo_D3DSubmitTempVertices[0].rhw == 6.0f &&
+        g_zVideo_D3DSubmitTempVertices[0].color == 0xfff80000;
+
+    g_zVideo_pD3DDevice = savedDevice;
+    g_zVideo_D3DRenderStateCache.textureHandle = savedTextureHandle;
+    g_zVideo_D3DRenderStateCache.shadeMode = savedShadeMode;
+    g_zVideo_PixelPack.packedBase = savedPackedBase;
+    g_zVideo_PixelPack.sumMinus8 = savedSumMinus8;
+    g_zVideo_PixelPack.bShiftTo8 = savedBShiftTo8;
+    g_zVideo_PixelPack.rMaskShifted = savedRMaskShifted;
+    g_zVideo_PixelPack.gMaskShifted = savedGMaskShifted;
+    g_zVideo_PixelPack.bMaskShifted = savedBMaskShifted;
+    g_zVideo_PixelPack.rBits = savedRBits;
+    g_zVideo_PixelPack.gBits = savedGBits;
+    g_zVideo_PixelPack.bBits = savedBBits;
+    g_zVideo_PixelPack.rMask = savedRMask;
+    g_zVideo_PixelPack.gMask = savedGMask;
+    g_zVideo_PixelPack.bMask = savedBMask;
+    return renderStateOk && drawOk && vertexOk && cacheHitOk ? 0 : 1;
 }
 
 extern "C" int zvideo_dd3d_create_device_state_smoke(void) {
@@ -10413,6 +12184,225 @@ extern "C" int zhud_bar_and_meter_constructor_smoke(void) {
     return barConstructed && meterConstructed ? 0 : 1;
 }
 
+extern "C" int zhud_timer_panel_global_accessors_smoke(void) {
+    HudUiTimerPanel timer = {};
+    HudUiPanel *const panel = (HudUiPanel *)(&timer);
+    panel->ConstructorDefault("", 0, 0);
+
+    HudUiTimerPanel *const oldTimerPanel = g_HudUiMgrTimerPanel;
+    g_HudUiMgrTimerPanel = &timer;
+
+    HudUiTimerPanel::SetRunning(0);
+    const bool stopped = timer.stopped == 1;
+    HudUiTimerPanel::SetRunning(1);
+    const bool running = timer.stopped == 0;
+
+    HudUiTimerPanel::SetElapsedSeconds(12.5f);
+    const bool elapsed = timer.elapsedSeconds == 12.5f &&
+                         HudUiTimerPanel::GetSeconds() == 12.5f;
+
+    HudUiTimerPanel::SetSeconds(65.0f, 3.9f);
+    const bool seconds = timer.elapsedSeconds == 65.0f &&
+                         timer.secondsStep == 3 &&
+                         std::strcmp(panel->cachedText, "00:01:05") == 0;
+
+    DeleteObject(panel->hFont);
+    panel->hFont = 0;
+    g_HudUiMgrTimerPanel = oldTimerPanel;
+    return stopped && running && elapsed && seconds ? 0 : 1;
+}
+
+extern "C" int hud_timer_panel_net_state_clear_tail_flags_smoke(void) {
+    HudTimerPanelNetState state = {};
+    for (int index = 0; index < 8; ++index) {
+        state.tailFlags[index] = 0xffffffff;
+    }
+
+    state.ClearTailFlagsLocal();
+    for (int index = 0; index < 8; ++index) {
+        if (state.tailFlags[index] != 0) {
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+extern "C" int gamenet_timer_status_packet_smoke(void) {
+    zNetwork_DPlay4 *const oldDPlay = g_zNetwork_pDirectPlay4;
+    zNetwork_PlayerRecord *const oldLocalPlayer = g_zNetwork_LocalPlayerRecord;
+    const int oldLocalPlayerKey = g_zNetwork_LocalPlayerKey;
+    const int oldIsHost = g_zNetwork_IsHostFlag;
+    const int oldAsyncSend = g_zNetwork_TcpIpAsyncSendEnabled;
+    HudUiTimerPanel *const oldTimerPanel = g_HudUiMgrTimerPanel;
+    const float oldAccumulatedTime = g_Time_AccumulatedTimeSec;
+    const HudTimerPanelNetState oldTimerState = g_HudTimerPanelNetState;
+    const NetPkt0C_HudTimerStatusBits oldPacket = g_NetPkt0C_HudTimerStatusBitsBuf;
+
+    void *vtable[52];
+    SmokePkt0CInitDirectPlayVtable(vtable);
+    SmokePkt0CDirectPlay4 directPlay = {vtable};
+    zNetwork_PlayerRecord localPlayer = {};
+    localPlayer.playerKey = 0x1234;
+    g_zNetwork_pDirectPlay4 = (zNetwork_DPlay4 *)(&directPlay);
+    g_zNetwork_LocalPlayerRecord = &localPlayer;
+    g_zNetwork_LocalPlayerKey = 0x5678;
+    g_zNetwork_IsHostFlag = 1;
+    g_zNetwork_TcpIpAsyncSendEnabled = 0;
+    g_smokePkt0CSendCalls = 0;
+    g_smokePkt0CSendFlags = 0;
+    g_smokePkt0CSendPacket = 0;
+    g_smokePkt0CSendPacketSize = 0;
+    std::memset(
+        g_smokePkt0CSendPacketBytes,
+        0,
+        sizeof(g_smokePkt0CSendPacketBytes)
+    );
+
+    HudUiTimerPanel timer = {};
+    HudUiPanel *const panel = (HudUiPanel *)(&timer);
+    panel->ConstructorDefault("", 0, 0);
+    g_HudUiMgrTimerPanel = &timer;
+    HudUiTimerPanel::SetSeconds(42.0f, -1.0f);
+
+    g_Time_AccumulatedTimeSec = 12.0f;
+    g_HudTimerPanelNetState = {};
+    g_HudTimerPanelNetState.timerDirectionNeg = 1;
+    g_HudTimerPanelNetState.timeWarningShown = 1;
+    g_HudTimerPanelNetState.oneMinuteWarningShown = 1;
+    GameNet::SendPkt0C_HudTimerStatusBits(&g_HudTimerPanelNetState);
+
+    const NetPkt0C_HudTimerStatusBits *const sentPacket =
+        (const NetPkt0C_HudTimerStatusBits *)(g_smokePkt0CSendPacketBytes);
+    const bool sent =
+        g_smokePkt0CSendCalls == 1 && g_smokePkt0CSendFlags == 1 &&
+        g_smokePkt0CSendPacket == &g_NetPkt0C_HudTimerStatusBitsBuf &&
+        g_smokePkt0CSendPacketSize == sizeof(NetPkt0C_HudTimerStatusBits) &&
+        sentPacket->header.packetType == 0x0c &&
+        sentPacket->header.packetSizeBytes == sizeof(NetPkt0C_HudTimerStatusBits) &&
+        sentPacket->header.payloadDword0 == 0x5678 &&
+        sentPacket->timerSeconds == 42.0f &&
+        sentPacket->statusBitsPackedHiWord == 7;
+
+    const bool localApply =
+        g_HudTimerPanelNetState.timerSeconds == 42.0f &&
+        g_HudTimerPanelNetState.timerDirectionNeg == 1 &&
+        g_HudTimerPanelNetState.statusBitsResendDeadline == 42.0f &&
+        g_HudTimerPanelNetState.timeWarningShown == 1 &&
+        g_HudTimerPanelNetState.oneMinuteWarningShown == 1 &&
+        timer.elapsedSeconds == 42.0f &&
+        timer.secondsStep == -1;
+
+    NetPkt0C_HudTimerStatusBits packet = {};
+    packet.timerSeconds = 7.0f;
+    packet.statusBitsPackedHiWord = 0;
+    GameNet::HandlePkt0C_HudTimerStatusBits(0, &packet);
+    const bool directApply =
+        g_HudTimerPanelNetState.timerSeconds == 7.0f &&
+        g_HudTimerPanelNetState.timerDirectionNeg == 0 &&
+        timer.elapsedSeconds == 7.0f &&
+        timer.secondsStep == 1;
+
+    DeleteObject(panel->hFont);
+    panel->hFont = 0;
+    g_NetPkt0C_HudTimerStatusBitsBuf = oldPacket;
+    g_HudTimerPanelNetState = oldTimerState;
+    g_Time_AccumulatedTimeSec = oldAccumulatedTime;
+    g_HudUiMgrTimerPanel = oldTimerPanel;
+    g_zNetwork_TcpIpAsyncSendEnabled = oldAsyncSend;
+    g_zNetwork_IsHostFlag = oldIsHost;
+    g_zNetwork_LocalPlayerKey = oldLocalPlayerKey;
+    g_zNetwork_LocalPlayerRecord = oldLocalPlayer;
+    g_zNetwork_pDirectPlay4 = oldDPlay;
+    return sent && localApply && directApply ? 0 : 1;
+}
+
+extern "C" int gamenet_timer_panel_state_packet_smoke(void) {
+    zNetwork_DPlay4 *const oldDPlay = g_zNetwork_pDirectPlay4;
+    zNetwork_PlayerRecord *const oldLocalPlayer = g_zNetwork_LocalPlayerRecord;
+    const int oldLocalPlayerKey = g_zNetwork_LocalPlayerKey;
+    const int oldIsHost = g_zNetwork_IsHostFlag;
+    const int oldAsyncSend = g_zNetwork_TcpIpAsyncSendEnabled;
+    HudUiTimerPanel *const oldTimerPanel = g_HudUiMgrTimerPanel;
+    const HudTimerPanelNetState oldTimerState = g_HudTimerPanelNetState;
+    const NetPkt0D_HudTimerPanelState oldPacket = g_NetPkt0D_HudTimerPanelStateBuf;
+
+    void *vtable[52];
+    SmokePkt0CInitDirectPlayVtable(vtable);
+    SmokePkt0CDirectPlay4 directPlay = {vtable};
+    zNetwork_PlayerRecord localPlayer = {};
+    localPlayer.playerKey = 0x4321;
+    g_zNetwork_pDirectPlay4 = (zNetwork_DPlay4 *)(&directPlay);
+    g_zNetwork_LocalPlayerRecord = &localPlayer;
+    g_zNetwork_LocalPlayerKey = 0x8765;
+    g_zNetwork_IsHostFlag = 1;
+    g_zNetwork_TcpIpAsyncSendEnabled = 0;
+    g_smokePkt0CSendCalls = 0;
+    g_smokePkt0CSendFlags = 0;
+    g_smokePkt0CSendPacket = 0;
+    g_smokePkt0CSendPacketSize = 0;
+    std::memset(
+        g_smokePkt0CSendPacketBytes,
+        0,
+        sizeof(g_smokePkt0CSendPacketBytes)
+    );
+
+    HudUiTimerPanel timer = {};
+    HudUiPanel *const panel = (HudUiPanel *)(&timer);
+    panel->ConstructorDefault("", 0, 0);
+    g_HudUiMgrTimerPanel = &timer;
+    HudUiTimerPanel::SetSeconds(88.0f, -1.0f);
+
+    g_HudTimerPanelNetState = {};
+    HudTimerPanelNetState state = {};
+    state.timerDirectionNeg = 1;
+    state.startGateTriggered = 1;
+    state.raceFinishCountdownTriggered = 1;
+    GameNet::SendPkt0D_HudTimerPanelState(&state);
+
+    const NetPkt0D_HudTimerPanelState *const sentPacket =
+        (const NetPkt0D_HudTimerPanelState *)(g_smokePkt0CSendPacketBytes);
+    const bool sent =
+        g_smokePkt0CSendCalls == 1 && g_smokePkt0CSendFlags == 1 &&
+        g_smokePkt0CSendPacket == &g_NetPkt0D_HudTimerPanelStateBuf &&
+        g_smokePkt0CSendPacketSize == sizeof(NetPkt0D_HudTimerPanelState) &&
+        sentPacket->header.packetType == 0x0d &&
+        sentPacket->header.packetSizeBytes == sizeof(NetPkt0D_HudTimerPanelState) &&
+        sentPacket->header.payloadDword0 == 0x8765 &&
+        sentPacket->seconds == 88.0f &&
+        sentPacket->hudTimerFlagsPacked == 0x19;
+
+    const bool localApply =
+        g_HudTimerPanelNetState.timerSeconds == 88.0f &&
+        g_HudTimerPanelNetState.timerDirectionNeg == 1 &&
+        g_HudTimerPanelNetState.startGateTriggered == 1 &&
+        g_HudTimerPanelNetState.raceFinishCountdownTriggered == 1 &&
+        timer.elapsedSeconds == 88.0f &&
+        timer.secondsStep == -1;
+
+    NetPkt0D_HudTimerPanelState packet = {};
+    packet.seconds = 12.0f;
+    packet.hudTimerFlagsPacked = 0;
+    const bool handled =
+        GameNet::HandlePkt0D_HudTimerPanelState(0, &packet) == 1 &&
+        g_HudTimerPanelNetState.timerSeconds == 12.0f &&
+        g_HudTimerPanelNetState.timerDirectionNeg == 0 &&
+        timer.elapsedSeconds == 12.0f &&
+        timer.secondsStep == 1;
+
+    DeleteObject(panel->hFont);
+    panel->hFont = 0;
+    g_NetPkt0D_HudTimerPanelStateBuf = oldPacket;
+    g_HudTimerPanelNetState = oldTimerState;
+    g_HudUiMgrTimerPanel = oldTimerPanel;
+    g_zNetwork_TcpIpAsyncSendEnabled = oldAsyncSend;
+    g_zNetwork_IsHostFlag = oldIsHost;
+    g_zNetwork_LocalPlayerKey = oldLocalPlayerKey;
+    g_zNetwork_LocalPlayerRecord = oldLocalPlayer;
+    g_zNetwork_pDirectPlay4 = oldDPlay;
+    return sent && localApply && handled ? 0 : 1;
+}
+
 extern "C" int hud_ui_set_invalidate_mode_smoke(void) {
     const unsigned int oldMask = g_HudUi_InvalidateMask;
 
@@ -10426,6 +12416,151 @@ extern "C" int hud_ui_set_invalidate_mode_smoke(void) {
 
     g_HudUi_InvalidateMask = oldMask;
     return disabledMode && enabledMode ? 0 : 1;
+}
+
+float __fastcall zclass_damage_timer_stub(void *context, float damageAmount) {
+    *static_cast<float *>(context) = damageAmount;
+    return damageAmount + 1.0f;
+}
+
+extern "C" int zclass_damage_handler_smoke() {
+    zClass_NodeFreeListSlot rootSlot{};
+    zClass_NodeFreeListSlot childSlot{};
+    zClass_NodeFreeListSlot grandchildSlot{};
+    zClass_NodePartial *rootChildren[] = {&childSlot.node};
+    zClass_NodePartial *childChildren[] = {&grandchildSlot.node};
+    rootSlot.node.listCountB = 1;
+    rootSlot.node.listB = rootChildren;
+    childSlot.node.listCountB = 1;
+    childSlot.node.listB = childChildren;
+
+    void *hitCallback = reinterpret_cast<void *>(0x11111111);
+    void *hitContext = reinterpret_cast<void *>(0x22222222);
+    if (zClass_Node::SetDamageHitCallback(hitContext, &rootSlot.node, hitCallback) != 0 ||
+        rootSlot.damageHandler == nullptr || childSlot.damageHandler != rootSlot.damageHandler ||
+        grandchildSlot.damageHandler != rootSlot.damageHandler ||
+        (rootSlot.node.flags & 0x40) == 0) {
+        return 1;
+    }
+
+    OptCatalogDamageHandlerPartial *handler =
+        static_cast<OptCatalogDamageHandlerPartial *>(rootSlot.damageHandler);
+    if (handler->hitCallback != hitCallback || handler->hitContext != hitContext) {
+        return 2;
+    }
+
+    void *replacement = reinterpret_cast<void *>(0x33333333);
+    zClass_Node::SetDamageHitCallback(replacement, &rootSlot.node, replacement);
+    if (handler->hitCallback != hitCallback || handler->hitContext != hitContext) {
+        return 3;
+    }
+
+    zClass_Node::ClearDamageHandlerRecursive(&rootSlot.node, handler);
+    if (rootSlot.damageHandler != nullptr || childSlot.damageHandler != nullptr ||
+        grandchildSlot.damageHandler != nullptr) {
+        std::free(handler);
+        return 4;
+    }
+    std::free(handler);
+    rootSlot.node.flags = 0;
+
+    float capturedDamage = 0.0f;
+    void *timerCallback = reinterpret_cast<void *>(zclass_damage_timer_stub);
+    void *timerContext = &capturedDamage;
+    if (zClass_Node::SetDamageTimerCallback(timerCallback, &rootSlot.node, timerContext) != 0 ||
+        rootSlot.damageHandler == nullptr || childSlot.damageHandler != rootSlot.damageHandler) {
+        return 5;
+    }
+    handler = static_cast<OptCatalogDamageHandlerPartial *>(rootSlot.damageHandler);
+    if (handler->timerCallback != timerCallback || handler->timerContext != timerContext) {
+        return 6;
+    }
+
+    g_OptCatalog_CaptureHitSnapshotEnabled = 1;
+    zVec3 sourcePos{1.0f, 2.0f, 3.0f};
+    OptCatalogHitEventPartial hitEvent{};
+    hitEvent.hitPos = {4.0f, 5.0f, 6.0f};
+    hitEvent.hitNode = &rootSlot.node;
+    const float timerResult =
+        OptCatalog::CaptureHitSnapshotAndInvokeDamageTimerCallback(&sourcePos, &hitEvent, 2.5f);
+    if (timerResult != 3.5f || capturedDamage != 2.5f ||
+        g_OptCatalog_CapturedDamageSourcePos.x != 1.0f ||
+        g_OptCatalog_CapturedDamageSourcePos.y != 2.0f ||
+        g_OptCatalog_CapturedDamageSourcePos.z != 3.0f ||
+        g_OptCatalog_CapturedDamageHitPos.x != 4.0f ||
+        g_OptCatalog_CapturedDamageHitPos.y != 5.0f ||
+        g_OptCatalog_CapturedDamageHitPos.z != 6.0f) {
+        return 7;
+    }
+    g_OptCatalog_CaptureHitSnapshotEnabled = 0;
+
+    if (zClass_Node::ClearDamageHandler(&rootSlot.node) != 0 || rootSlot.damageHandler != nullptr ||
+        childSlot.damageHandler != nullptr || (rootSlot.node.flags & 0x40) != 0) {
+        return 8;
+    }
+
+    return zClass_Node::ClearDamageHandler(nullptr) == 0 ? 0 : 9;
+}
+
+extern "C" int zclass_camera_global_setters_smoke() {
+    zClass_NodePartial *const savedTargetNode = g_zClass_CameraTargetNode;
+    zClass_NodePartial *const savedCurrentCamera = g_zClass_CurrentCamera;
+    const int savedObjectHseTestEnabled = g_zClass_ObjectHseTestEnabled;
+    const int savedAutoClipEnabled = g_zClass_CameraAutoClipDistanceAdjustEnabled;
+    const float savedAutoClipThreshold = g_zClass_CameraAutoClipDistanceThreshold;
+
+    zClass_NodePartial targetNode = {};
+    zClass_NodePartial cameraNode = {};
+    int result = 0;
+
+    if (zClass_Camera::SetTargetNode(&targetNode) != 0 ||
+        g_zClass_CameraTargetNode != &targetNode) {
+        result = 1;
+    }
+    if (result == 0 &&
+        (zClass_Camera::SetTargetNode(0) != 0 || g_zClass_CameraTargetNode != 0)) {
+        result = 2;
+    }
+    if (result == 0 &&
+        (zClass_Camera::SetActiveCamera(&cameraNode) != &cameraNode ||
+         g_zClass_CurrentCamera != &cameraNode)) {
+        result = 3;
+    }
+    if (result == 0 &&
+        (zClass_Camera::SetActiveCamera(0) != 0 || g_zClass_CurrentCamera != 0)) {
+        result = 4;
+    }
+    if (result == 0 &&
+        (zClass_Camera::SetObjectHseTestEnabled(0) != 0 ||
+         g_zClass_ObjectHseTestEnabled != 0)) {
+        result = 5;
+    }
+    if (result == 0 &&
+        (zClass_Camera::SetObjectHseTestEnabled(1) != 0 ||
+         g_zClass_ObjectHseTestEnabled != 1)) {
+        result = 6;
+    }
+    if (result == 0) {
+        zClass_Camera::SetViewDistance(1, 20.0f);
+        if (g_zClass_CameraAutoClipDistanceAdjustEnabled != 1 ||
+            g_zClass_CameraAutoClipDistanceThreshold != 0.05f) {
+            result = 7;
+        }
+    }
+    if (result == 0) {
+        zClass_Camera::SetViewDistance(0, 0.0f);
+        if (g_zClass_CameraAutoClipDistanceAdjustEnabled != 0 ||
+            g_zClass_CameraAutoClipDistanceThreshold != 0.04f) {
+            result = 8;
+        }
+    }
+
+    g_zClass_CameraTargetNode = savedTargetNode;
+    g_zClass_CurrentCamera = savedCurrentCamera;
+    g_zClass_ObjectHseTestEnabled = savedObjectHseTestEnabled;
+    g_zClass_CameraAutoClipDistanceAdjustEnabled = savedAutoClipEnabled;
+    g_zClass_CameraAutoClipDistanceThreshold = savedAutoClipThreshold;
+    return result;
 }
 
 int main(int argc, char **argv) {
@@ -10638,12 +12773,21 @@ int main(int argc, char **argv) {
         {"znetwork_apply_pkt01_player_color_assignments_smoke",
          znetwork_apply_pkt01_player_color_assignments_smoke},
         {"znetwork_shutdown_session_runtime_smoke", znetwork_shutdown_session_runtime_smoke},
+        {"pickup_leaf_helpers_smoke", pickup_leaf_helpers_smoke},
+        {"pickup_send_pkt11_delta_smoke", pickup_send_pkt11_delta_smoke},
+        {"pickup_send_pkt11_create_delta_smoke", pickup_send_pkt11_create_delta_smoke},
+        {"pickup_reconcile_spawn_lists_smoke", pickup_reconcile_spawn_lists_smoke},
         {"gamenet_find_player_row_and_status_bits_smoke",
          gamenet_find_player_row_and_status_bits_smoke},
+        {"hud_timer_panel_net_state_clear_tail_flags_smoke",
+         hud_timer_panel_net_state_clear_tail_flags_smoke},
         {"gamenet_send_pkt14_hud_timer_and_flags_sync_smoke",
          gamenet_send_pkt14_hud_timer_and_flags_sync_smoke},
         {"gamenet_host_update_session_status_fields_smoke",
          gamenet_host_update_session_status_fields_smoke},
+        {"gamenet_timer_status_packet_smoke", gamenet_timer_status_packet_smoke},
+        {"gamenet_timer_panel_state_packet_smoke",
+         gamenet_timer_panel_state_packet_smoke},
         {"gamenet_register_gameplay_handlers_and_callbacks_smoke",
          gamenet_register_gameplay_handlers_and_callbacks_smoke},
         {"gamenet_unregister_gameplay_packet_handlers_smoke",
@@ -10651,6 +12795,7 @@ int main(int argc, char **argv) {
         {"gamenet_reset_remote_players_and_spawn_lists_smoke",
          gamenet_reset_remote_players_and_spawn_lists_smoke},
         {"gamenet_player_row_append_smoke", gamenet_player_row_append_smoke},
+        {"gamenet_reassign_player_colors_smoke", gamenet_reassign_player_colors_smoke},
         {"gamenet_player_row_apply_color_tint_smoke",
          gamenet_player_row_apply_color_tint_smoke},
         {"gamenet_player_row_destroy_embedded_panel_smoke",
@@ -10663,6 +12808,24 @@ int main(int argc, char **argv) {
          gamenet_spawn_remote_player_missing_template_smoke},
         {"gamenet_scoreboard_snapshot_packet_smoke",
          gamenet_scoreboard_snapshot_packet_smoke},
+        {"gamenet_send_pkt13_effect_anim_activation_record_smoke",
+         gamenet_send_pkt13_effect_anim_activation_record_smoke},
+        {"gamenet_handle_pkt13_effect_anim_activation_record_smoke",
+         gamenet_handle_pkt13_effect_anim_activation_record_smoke},
+        {"gamenet_send_all_pkt13_effect_anim_activation_records_smoke",
+         gamenet_send_all_pkt13_effect_anim_activation_records_smoke},
+        {"gamenet_handle_pkt07_alt_gun_dispatch_smoke",
+         gamenet_handle_pkt07_alt_gun_dispatch_smoke},
+        {"gamenet_send_pkt07_alt_gun_dispatch_smoke",
+         gamenet_send_pkt07_alt_gun_dispatch_smoke},
+        {"gamenet_alt_gun_dispatch_no_op_callback_smoke",
+         gamenet_alt_gun_dispatch_no_op_callback_smoke},
+        {"optcatalog_alt_gun_dispatch_alloc_runtime_gate_smoke",
+         optcatalog_alt_gun_dispatch_alloc_runtime_gate_smoke},
+        {"optcatalog_handle_pkt0a_remove_runtime_relay_smoke",
+         optcatalog_handle_pkt0a_remove_runtime_relay_smoke},
+        {"optcatalog_send_pkt0a_remove_runtime_relay_smoke",
+         optcatalog_send_pkt0a_remove_runtime_relay_smoke},
         {"ainet_find_by_net_id_smoke", ainet_find_by_net_id_smoke},
         {"ainet_find_nearest_node_smoke", ainet_find_nearest_node_smoke},
         {"player_get_save_state_list_head_smoke",
@@ -10683,18 +12846,67 @@ int main(int argc, char **argv) {
          player_apply_primary_weapon_switch_smoke},
         {"player_start_master_type_loop_sfx_handle_smoke",
          player_start_master_type_loop_sfx_handle_smoke},
+        {"player_master_type_transition_leaf_smoke",
+         player_master_type_transition_leaf_smoke},
+        {"player_apply_master_type_transition_smoke",
+         player_apply_master_type_transition_smoke},
+        {"player_transition_to_master_type_track_smoke",
+         player_transition_to_master_type_track_smoke},
+        {"player_transition_to_master_type_amphib_smoke",
+         player_transition_to_master_type_amphib_smoke},
+        {"player_transition_to_master_type_hover_smoke",
+         player_transition_to_master_type_hover_smoke},
+        {"player_transition_to_master_type_sub_smoke",
+         player_transition_to_master_type_sub_smoke},
+        {"player_cache_disable_copter_snd_nodes_smoke",
+         player_cache_disable_copter_snd_nodes_smoke},
+        {"player_reactivate_copter_snd_nodes_if_healthy_smoke",
+         player_reactivate_copter_snd_nodes_if_healthy_smoke},
         {"player_apply_alt_weapon_switch_smoke",
          player_apply_alt_weapon_switch_smoke},
+        {"player_apply_aim_pitch_to_direction_smoke",
+         player_apply_aim_pitch_to_direction_smoke},
+        {"player_find_alt_gun_controller_smoke",
+         player_find_alt_gun_controller_smoke},
+        {"player_alt_gun_fire_point_selection_smoke",
+         player_alt_gun_fire_point_selection_smoke},
+        {"player_alt_gun_ensure_aux_effect_active_smoke",
+         player_alt_gun_ensure_aux_effect_active_smoke},
+        {"player_update_continuous_alt_gun_fire_controller_smoke",
+         player_update_continuous_alt_gun_fire_controller_smoke},
+        {"player_alt_gun_projectile_dispatch_helpers_smoke",
+         player_alt_gun_projectile_dispatch_helpers_smoke},
+        {"player_process_alt_gun_fire_dispatch_request_smoke",
+         player_process_alt_gun_fire_dispatch_request_smoke},
         {"player_write_mines_zar_section_smoke",
          player_write_mines_zar_section_smoke},
         {"player_mines_zar_read_entry_or_reset_smoke",
          player_mines_zar_read_entry_or_reset_smoke},
+        {"player_remove_all_deployed_mines_smoke",
+         player_remove_all_deployed_mines_smoke},
+        {"zweapon_optcatalog_find_entry_by_id_smoke",
+         zweapon_optcatalog_find_entry_by_id_smoke},
         {"zweapon_optcatalog_find_entry_by_name_smoke",
          zweapon_optcatalog_find_entry_by_name_smoke},
+        {"zweapon_optcatalog_pending_spawn_override_smoke",
+         zweapon_optcatalog_pending_spawn_override_smoke},
         {"zweapon_optcatalog_create_trail_segment_node_smoke",
          zweapon_optcatalog_create_trail_segment_node_smoke},
         {"zweapon_optcatalog_create_trail_runtime_state_smoke",
          zweapon_optcatalog_create_trail_runtime_state_smoke},
+        {"zweapon_optcatalog_mine_iterator_smoke", zweapon_optcatalog_mine_iterator_smoke},
+        {"zweapon_optcatalog_runtime_free_list_helpers_smoke",
+         zweapon_optcatalog_runtime_free_list_helpers_smoke},
+        {"zweapon_optcatalog_handle_impact_event_smoke",
+         zweapon_optcatalog_handle_impact_event_smoke},
+        {"zweapon_optcatalog_build_impact_hit_list_smoke",
+         zweapon_optcatalog_build_impact_hit_list_smoke},
+        {"zweapon_optcatalog_handle_impact_from_runtime_probe_smoke",
+         zweapon_optcatalog_handle_impact_from_runtime_probe_smoke},
+        {"zweapon_optcatalog_process_runtime_instance_smoke",
+         zweapon_optcatalog_process_runtime_instance_smoke},
+        {"zweapon_optcatalog_remove_runtime_instance_smoke",
+         zweapon_optcatalog_remove_runtime_instance_smoke},
         {"zweapon_optcatalog_deactivate_trail_runtime_state_smoke",
          zweapon_optcatalog_deactivate_trail_runtime_state_smoke},
         {"light_alloc_from_free_list_and_attach_smoke",
@@ -10702,6 +12914,18 @@ int main(int argc, char **argv) {
         {"player_timed_hit_status_smoke", player_timed_hit_status_smoke},
         {"player_create_from_names_at_pose_smoke",
          player_create_from_names_at_pose_smoke},
+        {"player_init_state_from_name_and_master_common_data_smoke",
+         player_init_state_from_name_and_master_common_data_smoke},
+        {"player_bind_modal_state_from_master_modal_data_smoke",
+         player_bind_modal_state_from_master_modal_data_smoke},
+        {"player_build_support_points_from_model_smoke",
+         player_build_support_points_from_model_smoke},
+        {"player_build_collision_points_from_model_smoke",
+         player_build_collision_points_from_model_smoke},
+        {"player_sample_ground_and_align_root_to_surface_smoke",
+         player_sample_ground_and_align_root_to_surface_smoke},
+        {"player_init_spawn_state_from_primary_modal_data_smoke",
+         player_init_spawn_state_from_primary_modal_data_smoke},
         {"zutil_save_game_state_list_smoke", zutil_save_game_state_list_smoke},
         {"zfmv_script_init_null_path_smoke", zfmv_script_init_null_path_smoke},
         {"zfmv_script_reset_smoke", zfmv_script_reset_smoke},
@@ -10742,6 +12966,10 @@ int main(int argc, char **argv) {
          hud_ui_save_load_entry_is_newer_than_smoke},
         {"player_underwater_fx_pass3_ui_constructor_smoke",
          player_underwater_fx_pass3_ui_constructor_smoke},
+        {"player_init_underwater_fx_pass3_ui_singleton_smoke",
+         player_init_underwater_fx_pass3_ui_singleton_smoke},
+        {"player_reset_underwater_fx_pass3_ui_singleton_smoke",
+         player_reset_underwater_fx_pass3_ui_singleton_smoke},
         {"player_projectile_camera_fx_pass3_ui_constructor_smoke",
          player_projectile_camera_fx_pass3_ui_constructor_smoke},
         {"player_underwater_fx_pass3_ui_apply_blue_tint_smoke",
@@ -10998,6 +13226,8 @@ int main(int argc, char **argv) {
          zhud_text_stack_destructor_core_smoke},
         {"zhud_text_stack_layout_mutators_smoke",
          zhud_text_stack_layout_mutators_smoke},
+        {"zhud_timer_panel_global_accessors_smoke",
+         zhud_timer_panel_global_accessors_smoke},
         {"zhud_list_menu_entry_sort_smoke", zhud_list_menu_entry_sort_smoke},
         {"zhud_layout_hw_update_objective_dirty_rect_smoke",
          zhud_layout_hw_update_objective_dirty_rect_smoke},
@@ -11444,6 +13674,8 @@ int main(int argc, char **argv) {
         {"zturret_damage_and_on_damage_smoke", zturret_damage_and_on_damage_smoke},
         {"zturret_shutdown_leaf_smoke", zturret_shutdown_leaf_smoke},
         {"zgame_return_only_stub_smoke", zgame_return_only_stub_smoke},
+        {"zgame_options_load_game_options_minimal_smoke",
+         zgame_options_load_game_options_minimal_smoke},
         {"zopt_network_enabled_accessor_smoke", zopt_network_enabled_accessor_smoke},
         {"hud_sensor_mission_identity_smoke", hud_sensor_mission_identity_smoke},
         {"hud_sensor_tracker_set_runtime_timer_sec_and_goal_value_smoke",
@@ -11465,6 +13697,8 @@ int main(int argc, char **argv) {
          zclass_object3d_reset_transform_dirty_smoke},
         {"zclass_object3d_init_smoke", zclass_object3d_init_smoke},
         {"zclass_light_new_smoke", zclass_light_new_smoke},
+        {"zclass_object3d_visible_and_color_smoke",
+         zclass_object3d_visible_and_color_smoke},
         {"zclass_object3d_alpha_scale_and_lit_smoke",
          zclass_object3d_alpha_scale_and_lit_smoke},
         {"zclass_object3d_transform_getters_smoke",
@@ -11492,6 +13726,7 @@ int main(int argc, char **argv) {
         {"zclass_copy_node_unimplemented_stubs_smoke",
          zclass_copy_node_unimplemented_stubs_smoke},
         {"zclass_copy_camera_node_smoke", zclass_copy_camera_node_smoke},
+        {"zclass_camera_global_setters_smoke", zclass_camera_global_setters_smoke},
         {"zclass_copy_object3d_and_lod_smoke", zclass_copy_object3d_and_lod_smoke},
         {"zclass_copy_node_dispatch_and_wrappers_smoke",
          zclass_copy_node_dispatch_and_wrappers_smoke},
@@ -11501,6 +13736,7 @@ int main(int argc, char **argv) {
          zclass_node_pick_flag_accessors_smoke},
         {"zclass_node_extra_flag_setters_smoke",
          zclass_node_extra_flag_setters_smoke},
+        {"zclass_damage_handler_smoke", zclass_damage_handler_smoke},
         {"zclass_node_vertex_alpha_and_root_smoke",
          zclass_node_vertex_alpha_and_root_smoke},
         {"zclass_find_by_name_and_filtered_iter_smoke",
@@ -11513,6 +13749,34 @@ int main(int argc, char **argv) {
          zclass_gwnode_build_node_to_ancestor_matrix_smoke},
         {"zclass_gwnode_get_world_position_smoke",
          zclass_gwnode_get_world_position_smoke},
+        {"zclass_gwnode_update_tree_smoke",
+         zclass_gwnode_update_tree_smoke},
+        {"zclass_cls_di_point_query_chain_smoke",
+         zclass_cls_di_point_query_chain_smoke},
+        {"zclass_cls_di_segment_batch_vs_polygon_smoke",
+         zclass_cls_di_segment_batch_vs_polygon_smoke},
+        {"zclass_cls_di_segment_batch_vs_polygon_uv_smoke",
+         zclass_cls_di_segment_batch_vs_polygon_uv_smoke},
+        {"zclass_cls_di_filter_regions_polygon_damage_mask_uv_smoke",
+         zclass_cls_di_filter_regions_polygon_damage_mask_uv_smoke},
+        {"zclass_cls_di_filter_regions_against_polygon_smoke",
+         zclass_cls_di_filter_regions_against_polygon_smoke},
+        {"zclass_cls_di_frustum_test_and_pick_smoke",
+         zclass_cls_di_frustum_test_and_pick_smoke},
+        {"zclass_cls_di_snap_probe_point_y_to_best_candidate_smoke",
+         zclass_cls_di_snap_probe_point_y_to_best_candidate_smoke},
+        {"zclass_cls_di_segment_batch_recursive_smoke",
+         zclass_cls_di_segment_batch_recursive_smoke},
+        {"zclass_cls_di_segment_grid_window_smoke",
+         zclass_cls_di_segment_grid_window_smoke},
+        {"zclass_cls_di_probe_hit_batches_for_segments_smoke",
+         zclass_cls_di_probe_hit_batches_for_segments_smoke},
+        {"zclass_cls_di_set_stop_after_first_hit_smoke",
+         zclass_cls_di_set_stop_after_first_hit_smoke},
+        {"zclass_cls_di_try_get_polygon_hit_at_query_xz_smoke",
+         zclass_cls_di_try_get_polygon_hit_at_query_xz_smoke},
+        {"zclass_cls_di_region_filter_mesh_faces_smoke",
+         zclass_cls_di_region_filter_mesh_faces_smoke},
         {"zclass_node_predicate_helpers_smoke",
          zclass_node_predicate_helpers_smoke},
         {"zloc_message_lookup_failure_smoke", zloc_message_lookup_failure_smoke},
@@ -11613,6 +13877,8 @@ int main(int argc, char **argv) {
          zvideo_dd_clear_sw_backbuffer_and_zbuffer_rects_smoke},
         {"zvideo_dd_palette_set_entries_smoke",
          zvideo_dd_palette_set_entries_smoke},
+        {"zvideo_dd_get_hw_api_device_feature_flags_smoke",
+         zvideo_dd_get_hw_api_device_feature_flags_smoke},
         {"zvideo_get_display_mode_bpp_smoke",
          zvideo_get_display_mode_bpp_smoke},
         {"zvideo_dd_set_display_mode_smoke",
@@ -11649,6 +13915,14 @@ int main(int argc, char **argv) {
          zvideo_dd_image_upload_pixels_to_surface_smoke},
         {"zvideo_dd_image_release_surface_smoke",
          zvideo_dd_image_release_surface_smoke},
+        {"zvideo_dd_blt_sw_to_primary_rect_direct_smoke",
+         zvideo_dd_blt_sw_to_primary_rect_direct_smoke},
+        {"zvideo_dd_blt_primary_to_sw_rect_direct_smoke",
+         zvideo_dd_blt_primary_to_sw_rect_direct_smoke},
+        {"zvideo_blt_sw_to_primary_rect_lazy_failure_smoke",
+         zvideo_blt_sw_to_primary_rect_lazy_failure_smoke},
+        {"zvideo_dd_blt_sw_to_primary_rect_smoke",
+         zvideo_dd_blt_sw_to_primary_rect_smoke},
         {"zvideo_image_surface_helpers_guard_smoke",
          zvideo_image_surface_helpers_guard_smoke},
         {"zvideo_set_renderer_type_smoke", zvideo_set_renderer_type_smoke},
@@ -11677,16 +13951,34 @@ int main(int argc, char **argv) {
         {"zvideo_flip_to_gdi_if_attached_null_smoke",
          zvideo_flip_to_gdi_if_attached_null_smoke},
         {"zvideo_dd3d_set_fog_enable_smoke", zvideo_dd3d_set_fog_enable_smoke},
+        {"zvideo_dd3d_set_fog_start_smoke", zvideo_dd3d_set_fog_start_smoke},
+        {"zvideo_dd3d_set_fog_end_smoke", zvideo_dd3d_set_fog_end_smoke},
+        {"zvideo_dd3d_apply_fog_state_from_globals_smoke",
+         zvideo_dd3d_apply_fog_state_from_globals_smoke},
+        {"zvideo_dd3d_update_fog_color_smoke",
+         zvideo_dd3d_update_fog_color_smoke},
         {"zvideo_pending_wireframe_state_smoke",
          zvideo_pending_wireframe_state_smoke},
         {"zvideo_pending_dither_enable_smoke",
          zvideo_pending_dither_enable_smoke},
         {"zvideo_dd3d_begin_scene_flush_pending_smoke",
          zvideo_dd3d_begin_scene_flush_pending_smoke},
+        {"zvideo_submit_poly_flat_color16_queue_smoke",
+         zvideo_submit_poly_flat_color16_queue_smoke},
+        {"zvideo_submit_poly_flat_color16_immediate_smoke",
+         zvideo_submit_poly_flat_color16_immediate_smoke},
+        {"zvideo_submit_poly_gouraud_color16_queue_smoke",
+         zvideo_submit_poly_gouraud_color16_queue_smoke},
+        {"zvideo_submit_poly_gouraud_color16_immediate_smoke",
+         zvideo_submit_poly_gouraud_color16_immediate_smoke},
         {"zvideo_submit_poly_color_attr_smoke",
          zvideo_submit_poly_color_attr_smoke},
         {"zvideo_submit_poly_color_attr_immediate_smoke",
          zvideo_submit_poly_color_attr_immediate_smoke},
+        {"zvideo_submit_poly_render_class_queue_smoke",
+         zvideo_submit_poly_render_class_queue_smoke},
+        {"zvideo_submit_poly_render_class_immediate_smoke",
+         zvideo_submit_poly_render_class_immediate_smoke},
         {"zvideo_submit_polygon_queue_smoke",
          zvideo_submit_polygon_queue_smoke},
         {"zvideo_submit_polygon_immediate_smoke",
@@ -11695,6 +13987,7 @@ int main(int argc, char **argv) {
          zvideo_submit_polygon_lit_queue_smoke},
         {"zvideo_submit_polygon_lit_immediate_smoke",
          zvideo_submit_polygon_lit_immediate_smoke},
+        {"zvideo_draw_point_color16_smoke", zvideo_draw_point_color16_smoke},
         {"zvideo_texture_record_release_upload_surface_smoke",
          zvideo_texture_record_release_upload_surface_smoke},
         {"zvideo_texture_record_finalize_upload_smoke",
@@ -11789,6 +14082,8 @@ int main(int argc, char **argv) {
          zeffect_anim_runtime_sequence_group_smoke},
         {"zeffect_conditional_ref_pos_smoke",
          zeffect_conditional_ref_pos_smoke},
+        {"zdeclient_dispatch_feature_event_templates_smoke",
+         zdeclient_dispatch_feature_event_templates_smoke},
         {"zimg_init_smoke", zimg_init_smoke},
         {"zinterp_context_logf_smoke", zinterp_context_logf_smoke},
         {"zinterp_context_report_errorf_smoke", zinterp_context_report_errorf_smoke},

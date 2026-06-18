@@ -98,6 +98,9 @@ float g_Player_QuicksandSinkRate = 0.0f;
 float g_Player_LavaSinkRate = 0.0f;
 float g_Player_MaxSlope = 0.0f;
 float g_Player_CollisionContactResolveScale = 0.2f;
+// Data owner 0x4f3778: zero-initialized underwater pass-3 HUD overlay
+// singleton, constructed by 0x41eb00 and reset by the atexit callback at
+// 0x41eb20.
 Player_UnderwaterFxPass3Ui g_Player_UnderwaterFxPass3Ui;
 Player_ProjectileCameraFxPass3Ui g_Player_State7FxPass3Ui;
 OptCatalogEntryDef *g_Player_MakeHotOptEntry = 0;
@@ -109,6 +112,10 @@ zClass_NodePartial *g_Player_HorizonNode = 0;
 int g_PlayerPrevCameraState = 0;
 int g_PlayerPrevSteeringMode = 0;
 int g_Player_SavedSteeringMode = 0;
+// Data owner 0x4f36c4/0x4f36c8/0x4f36cc and 0x4f3bbc/0x4f3bc0:
+// zero-initialized copter sound-node cache used by the player.cpp copter
+// sound helpers. Mission init seeds the sample/cache, 0x42b630 lazily binds
+// the copter nodes, and 0x42b5a0 reactivates sound nodes while healthy.
 zClass_NodePartial *g_Player_CopterHealthyNode1 = 0;
 zClass_NodePartial *g_Player_CopterHealthyNode2 = 0;
 zClass_NodePartial *g_Player_CopterSndNode1 = 0;
@@ -313,7 +320,7 @@ const float kPlayerAiSyntheticPathRebuildDelaySec = 1.0f;
 const float kPlayerAiAttackLosTargetYOffset = 1.5f;
 const float kPlayerAiDynamicOffsetBackUpDistance = 10.0f;
 const float kPlayerCameraState2TargetYOffset = 150.0f;
-const float kPlayerDefaultAltGunAimOriginZ = -1.0f;
+const zVec3 kPlayerDefaultAltGunAimOrigin = {0.0f, 0.0f, -1.0f};
 const double kPlayerRadiansToDegrees = 57.29577951308;
 
 struct HitOwnerSaveStateLinkPartial {
@@ -1740,7 +1747,14 @@ void TickAltGunLocalSlotAndPrimaryState(
 }
 
 template <typename T>
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function; observed
+ * callers 0x41f5b0 and 0x438ba0.
+ * Evidence basis: repeated typed zUtil_ZAR::RegisterSectionHandler callback
+ * registration, including Mines.
+ * Purpose: convert typed ZAR section callback function pointers to
+ * zZbdSectionCallback without changing callback ABI.
+ */
 zZbdSectionCallback ZbdCallbackPtr(
     T callback
 ) {
@@ -1960,9 +1974,11 @@ void zUtil_SaveGameState::UpdateModalLoopSfx(
 }
 
 /**
- * Reimplements 0x41eb30: Player_UnderwaterFxPass3Ui::Player_UnderwaterFxPass3Ui.
- * Purpose: constructs the underwater pass-3 HUD overlay as a zVideoFxPass3Element
- * and clears the per-pass clip rectangle consumed by ApplyPass3.
+ * Original inline helper; no standalone retail function exists. Observed in
+ * address-backed constructor 0x41eb30 as HudUiElement::Constructor(0, 0)
+ * followed by clearing the pass-3 clip pointer.
+ * Purpose: construct the underwater pass-3 HUD overlay as a zVideoFxPass3Element
+ * and clear the per-pass clip rectangle consumed by ApplyPass3.
  */
 Player_UnderwaterFxPass3Ui::Player_UnderwaterFxPass3Ui() : zVideoFxPass3Element(
         0,
@@ -1970,6 +1986,11 @@ Player_UnderwaterFxPass3Ui::Player_UnderwaterFxPass3Ui() : zVideoFxPass3Element(
     ) {
 }
 
+/**
+ * Reimplements 0x41eb30: Player_UnderwaterFxPass3Ui::Constructor.
+ * Purpose: construct the underwater pass-3 HUD overlay singleton storage and
+ * return the initialized object.
+ */
 Player_UnderwaterFxPass3Ui * Player_UnderwaterFxPass3Ui::Constructor() {
     new (this) Player_UnderwaterFxPass3Ui();
     return this;
@@ -2130,28 +2151,41 @@ void InitMasterModalDataList() {
     g_PlayerMasterModalDataCount = 0;
 }
 
-// Reimplements 0x41eaf0: Player::InitAndRegisterUnderwaterFxPass3UiSingleton
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x41eaf0: Player::InitAndRegisterUnderwaterFxPass3UiSingleton.
+ * Purpose: run the underwater pass-3 HUD singleton constructor and register
+ * its atexit reset callback.
+ */
 void InitAndRegisterUnderwaterFxPass3UiSingleton() {
     InitUnderwaterFxPass3UiSingleton();
     RegisterUnderwaterFxPass3UiOnExit();
 }
 
-// Reimplements 0x41eb00: Player::InitUnderwaterFxPass3UiSingleton
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x41eb00: Player::InitUnderwaterFxPass3UiSingleton.
+ * Purpose: construct the zero-initialized global underwater pass-3 HUD overlay
+ * singleton at startup.
+ */
 void InitUnderwaterFxPass3UiSingleton() {
     g_Player_UnderwaterFxPass3Ui.Constructor();
 }
 
-// Reimplements 0x41eb10: Player::RegisterUnderwaterFxPass3UiOnExit
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x41eb10: Player::RegisterUnderwaterFxPass3UiOnExit.
+ * Purpose: register the underwater pass-3 HUD singleton reset callback with
+ * the CRT exit list.
+ */
 void RegisterUnderwaterFxPass3UiOnExit() {
     atexit(ResetUnderwaterFxPass3UiSingleton);
 }
 
-// Reimplements 0x41eb20: Player::ResetUnderwaterFxPass3UiSingleton
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x41eb20: Player::ResetUnderwaterFxPass3UiSingleton.
+ * Purpose: reset the underwater pass-3 HUD overlay singleton to the common
+ * HudUiElement destruction state during CRT exit.
+ */
 void ResetUnderwaterFxPass3UiSingleton() {
+    g_Player_UnderwaterFxPass3Ui.~Player_UnderwaterFxPass3Ui();
 }
 
 // Reimplements 0x41eb50: Player::InitAndRegisterProjectileCameraFxPass3UiSingleton
@@ -3192,11 +3226,7 @@ void __fastcall InitStateFromNameAndMasterCommonData(
     playerState->unknown_00d8 = 0;
     playerState->unknown_00dc = 0;
     playerState->unknown_00e0 = 0;
-    playerState->altGunAimOrigin = zVec3_Make(
-        0.0f,
-        0.0f,
-        kPlayerDefaultAltGunAimOriginZ
-    );
+    playerState->altGunAimOrigin = kPlayerDefaultAltGunAimOrigin;
     playerState->activeAltBankIndex = 1;
     playerState->autoTurnActive = 0;
     playerState->cameraTransitionTimer = 0;
@@ -3301,8 +3331,14 @@ void BuildAiPeerRingsByAiNetId() {
     }
 }
 
-// Reimplements 0x421470: Player::BindModalStateFromMasterModalData
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x421470: Player::BindModalStateFromMasterModalData
+ * BN source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: bind a modal state to matching master modal data, cache its model
+ * nodes, and populate support/collision probe points when needed.
+ * Source owner: Player save-state/bootstrap record-global subsystem, not a
+ * C++ Player class.
+ */
 void __fastcall BindModalStateFromMasterModalData(
     zUtil_SaveGameState *saveState,
     PlayerModalState *modalState,
@@ -3431,8 +3467,14 @@ void __fastcall BindModalStateFromMasterModalData(
     }
 }
 
-// Reimplements 0x421790: Player::InitSpawnStateFromPrimaryModalData
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x421790: Player::InitSpawnStateFromPrimaryModalData
+ * BN source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reset spawn-time state from the primary modal data, build world
+ * probe-point caches, and align the root node to the sampled surface.
+ * Source owner: Player save-state/bootstrap record-global subsystem, not a
+ * C++ Player class.
+ */
 void __fastcall InitSpawnStateFromPrimaryModalData(
     zUtil_SaveGameState *saveState
 ) {
@@ -3463,8 +3505,14 @@ void __fastcall InitSpawnStateFromPrimaryModalData(
     );
 }
 
-// Reimplements 0x421830: Player::SampleGroundAndAlignRootToSurface
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x421830: Player::SampleGroundAndAlignRootToSurface
+ * BN source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: sample ground under the player, update the active variant tag, and
+ * optionally pitch/roll the root node to the selected surface normal.
+ * Source owner: Player save-state/bootstrap record-global subsystem, not a
+ * C++ Player class.
+ */
 void __fastcall SampleGroundAndAlignRootToSurface(
     zUtil_SaveGameState *saveState,
     int updateRotation
@@ -3562,8 +3610,14 @@ void __fastcall SampleGroundAndAlignRootToSurface(
     );
 }
 
-// Reimplements 0x421ed0: Player::BuildCollisionPointsFromModel
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x421ed0: Player::BuildCollisionPointsFromModel
+ * BN source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: read collide00..collide11 nodes from the model, deactivate them,
+ * and store the reordered probe points in the modal data.
+ * Source owner: Player save-state/bootstrap record-global subsystem, not a
+ * C++ Player class.
+ */
 int __fastcall BuildCollisionPointsFromModel(
     zUtil_SaveGameState *saveState,
     zClass_NodePartial *modelNode
@@ -3615,8 +3669,14 @@ int __fastcall BuildCollisionPointsFromModel(
     return 1;
 }
 
-// Reimplements 0x4220f0: Player::BuildSupportPointsFromModel
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x4220f0: Player::BuildSupportPointsFromModel
+ * BN source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: read support00..support03 nodes from the model, deactivate them,
+ * and cache their positions in modal probe-point slots 15..18.
+ * Source owner: Player save-state/bootstrap record-global subsystem, not a
+ * C++ Player class.
+ */
 int __fastcall BuildSupportPointsFromModel(
     zUtil_SaveGameState *saveState,
     zClass_NodePartial *modelNode
@@ -4407,8 +4467,12 @@ void __fastcall LoadMasterModalDataFromNode(
     }
 }
 
-// Reimplements 0x42b630: Player::CacheDisableCopterSndNodesAndStopSample
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x42b630: Player::CacheDisableCopterSndNodesAndStopSample
+ * (D:\Proj\Battlesport\player.cpp)
+ * Purpose: lazily cache the two copter healthy/sound scene nodes, disable the
+ * sound nodes, and stop active chopper sample voices.
+ */
 void CacheDisableCopterSndNodesAndStopSample() {
     if (g_Player_CopterSndNode1 == 0) {
         zClass_NodePartial *const copterRoot = zClass::FindByTypeAndName(
@@ -4460,8 +4524,12 @@ void CacheDisableCopterSndNodesAndStopSample() {
     g_Player_CopterSndSample->StopActiveVoicesIfPlaying();
 }
 
-// Reimplements 0x42b5a0: Player::ReactivateCopterSndNodesIfHealthy
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x42b5a0: Player::ReactivateCopterSndNodesIfHealthy
+ * (D:\Proj\Battlesport\player.cpp)
+ * Purpose: reactivate each cached copter sound node whose healthy node remains
+ * active, then restart the cached chopper sample through the node play handle.
+ */
 void ReactivateCopterSndNodesIfHealthy() {
     zClass_NodePartial *const healthyNode1 = g_Player_CopterHealthyNode1;
     if (healthyNode1 != 0 && (healthyNode1->flags & 0x04) != 0) {
@@ -4527,8 +4595,17 @@ void __fastcall StopBftBubbleFxHandle(
     }
 }
 
-// Reimplements 0x42b4c0: Player::TransitionToMasterTypeFly
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x42b4c0: Player::TransitionToMasterTypeFly
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: select the fly modal state when the master-type transition cooldown
+ * allows it.
+ * Source owner: Player master-type transition cluster.
+ * Evidence: existing implementation follows the reviewed Player save-state
+ * model: cooldown guard, SUB-source damage visual latch, source master-type
+ * capture, fly modal selection, five-second cooldown update, and integer
+ * success/failure return.
+ */
 int __fastcall TransitionToMasterTypeFly(
     zUtil_SaveGameState *saveState,
     int flags
@@ -4552,8 +4629,18 @@ int __fastcall TransitionToMasterTypeFly(
     return 1;
 }
 
-// Reimplements 0x42ac90: Player::TransitionToMasterTypeTrack
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x42ac90: Player::TransitionToMasterTypeTrack
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: enter track mode after cooldown and source-mode transition rules
+ * allow it.
+ * Source owner: Player master-type transition cluster.
+ * Evidence: existing implementation matches the known Player modal/state
+ * model with SUB/HOVER/AMPHIB source gates, underwater HUD and copter sound
+ * cleanup, source FX dispatch, mode variant activation, HUD counter update,
+ * stale amphib light stop, track node action, and transition light handle
+ * creation.
+ */
 int __fastcall TransitionToMasterTypeTrack(
     zUtil_SaveGameState *saveState,
     int flags
@@ -4677,8 +4764,17 @@ int __fastcall TransitionToMasterTypeTrack(
     return 1;
 }
 
-// Reimplements 0x42aeb0: Player::TransitionToMasterTypeAmphib
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x42aeb0: Player::TransitionToMasterTypeAmphib
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: enter amphib mode when unlocked, off cooldown, and accepted by the
+ * source-mode transition rules.
+ * Source owner: Player master-type transition cluster.
+ * Evidence: existing implementation preserves the fastcall-plus-stack source
+ * shape for transition and extra flags, amphib unlock/cooldown guards, SUB
+ * cleanup and FX path, TRACK/HOVER source FX paths, modal selection, pitch/roll
+ * reset, HUD counter update, stale track light stop, and amphib light start.
+ */
 int __fastcall TransitionToMasterTypeAmphib(
     zUtil_SaveGameState *saveState,
     int transitionFlags,
@@ -4797,8 +4893,19 @@ int __fastcall TransitionToMasterTypeAmphib(
     return 1;
 }
 
-// Reimplements 0x42b2a0: Player::TransitionToMasterTypeSub
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x42b2a0: Player::TransitionToMasterTypeSub
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: enter sub mode after applying gun-slot offsets, transition gates,
+ * source-mode cleanup, modal selection, alternate-weapon validation, and FX
+ * updates.
+ * Source owner: Player master-type transition cluster.
+ * Evidence: existing implementation matches the known save-state and player
+ * state model with damage visual latching before gates, cooldown/sub unlock
+ * exits, SUB/TRACK/AMPHIB source rules, forced descent nudge, alt-weapon
+ * fallback, loop SFX and copter sound handling, stale light stops, and sub
+ * transition light creation.
+ */
 int __fastcall TransitionToMasterTypeSub(
     zUtil_SaveGameState *saveState,
     int flags
@@ -4913,8 +5020,17 @@ int __fastcall TransitionToMasterTypeSub(
     return 1;
 }
 
-// Reimplements 0x42b0f0: Player::TransitionToMasterTypeHover
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x42b0f0: Player::TransitionToMasterTypeHover
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: enter hover mode when unlocked, off cooldown, and accepted by the
+ * source-mode transition rules.
+ * Source owner: Player master-type transition cluster.
+ * Evidence: existing implementation follows the Player modal/state source
+ * model with hover unlock/cooldown guards, SUB cleanup and damage visual latch,
+ * TRACK rotation and airborne reset, AMPHIB/HOVER FX paths, modal selection,
+ * one-second cooldown update, and local HUD counter update.
+ */
 int __fastcall TransitionToMasterTypeHover(
     zUtil_SaveGameState *saveState,
     int flags
@@ -5005,8 +5121,18 @@ int __fastcall TransitionToMasterTypeHover(
     return 1;
 }
 
-// Reimplements 0x42b520: Player::ApplyMasterTypeTransition
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x42b520: Player::ApplyMasterTypeTransition
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reset the primary-gun gate timestamp and dispatch a requested
+ * master type to the concrete transition helper.
+ * Source owner: Player master-type transition cluster.
+ * Evidence: existing implementation preserves the dispatcher source shape:
+ * writes primaryGunGateUntilTime from accumulated time, maps FLY/SUB/TRACK/
+ * HOVER/AMPHIB cases to the reviewed transition helpers, passes AMPHIB
+ * transitionFlags as zero with caller flags as extraFlags, and returns
+ * masterType - 1 for unsupported requests.
+ */
 int __fastcall ApplyMasterTypeTransition(
     zUtil_SaveGameState *saveState,
     int masterType,
@@ -12874,8 +13000,13 @@ void __fastcall UpdateMasterTypeTrack(
     }
 }
 
-// Reimplements 0x43c9c0: Player::FindAltGunFireControllerForWeaponId
-// (D:\Proj\GameZRecoil\Player\player_weapon.c)
+/**
+ * Reimplements 0x43c9c0: Player::FindAltGunFireControllerForWeaponId
+ * Source path: src/Battlesport/player.cpp.
+ * BN source path: D:\Proj\GameZRecoil\Player\player_weapon.c.
+ * Purpose: select the alternate-gun fire controller matching the requested
+ * weapon id.
+ */
 PlayerGunFireController *__fastcall FindAltGunFireControllerForWeaponId(
     zUtil_SaveGameState *saveState,
     int weaponId
@@ -13162,8 +13293,12 @@ void __fastcall ResetAltGunRuntimeState(
     }
 }
 
-// Reimplements 0x43c950: Player::RemoveAllDeployedMines
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x43c950: Player::RemoveAllDeployedMines
+ * BN source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: remove deployed mine runtime instances from banks 4/5 controller
+ * A/B using the player root node.
+ */
 void __fastcall RemoveAllDeployedMines(
     zUtil_SaveGameState *saveState
 ) {
@@ -13604,9 +13739,7 @@ void __fastcall ApplyAimPitchToDirection(
     const float horizontalLenSq = direction->x * direction->x + direction->z * direction->z;
     if (horizontalLenSq == 0.0f) {
         if (pitchY == 0.0f) {
-            direction->x = 0.0f;
-            direction->y = 0.0f;
-            direction->z = -1.0f;
+            *direction = kPlayerDefaultAltGunAimOrigin;
             return;
         }
 
@@ -15975,7 +16108,12 @@ void __fastcall UpdateAltGunAimDirection(
         );
 }
 
-// Reimplements 0x43afd0: Player::ComposeAimBasisWorldMatrix (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x43afd0: Player::ComposeAimBasisWorldMatrix
+ * Source path: src/Battlesport/player.cpp.
+ * BN source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: compose the current player aim basis into a world-space transform.
+ */
 void __fastcall ComposeAimBasisWorldMatrix(
     zUtil_SaveGameState *saveState,
     zMat4x3 *outMatrix34
@@ -16091,7 +16229,13 @@ void __fastcall ApplyGunFireSlotOffsetToNode(
     }
 }
 
-// Reimplements 0x43aa30: Player::SelectAltGunFirePointAndSlot (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x43aa30: Player::SelectAltGunFirePointAndSlot
+ * Source path: src/Battlesport/player.cpp.
+ * BN source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: choose the alternate-gun fire origin and slot for the active
+ * controller.
+ */
 void __fastcall SelectAltGunFirePointAndSlot(
     zUtil_SaveGameState *saveState,
     PlayerGunFireSlot **outActiveFireSlotPtr
@@ -16235,8 +16379,13 @@ void __fastcall SelectPrimaryGunFirePointAndSlot(
     }
 }
 
-// Reimplements 0x43c2d0: Player::UpdateContinuousAltGunFireController
-// (D:\Proj\GameZRecoil\zWeapon.cpp)
+/**
+ * Reimplements 0x43c2d0: Player::UpdateContinuousAltGunFireController
+ * Source path: src/Battlesport/player.cpp.
+ * BN source path: D:\Proj\GameZRecoil\zWeapon.cpp.
+ * Purpose: tick continuous alternate-gun trail state for the active
+ * controller.
+ */
 void __fastcall UpdateContinuousAltGunFireController(
     zUtil_SaveGameState *saveState
 ) {
@@ -16262,8 +16411,13 @@ void __fastcall UpdateContinuousAltGunFireController(
     }
 }
 
-// Reimplements 0x43c330: Player::EnsureGunAuxEffectActive
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x43c330: Player::EnsureGunAuxEffectActive
+ * Source path: src/Battlesport/player.cpp.
+ * BN source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: ensure an auxiliary muzzle effect exists and is positioned for
+ * the selected gun controller.
+ */
 int __fastcall EnsureGunAuxEffectActive(
     zUtil_SaveGameState *saveState,
     PlayerGunFireController *gunController,
@@ -16309,8 +16463,13 @@ int __fastcall EnsureGunAuxEffectActive(
     return 1;
 }
 
-// Reimplements 0x43c430: Player::AltGunLaunchProjectile
-// (D:\Proj\GameZRecoil\zWeapon.cpp)
+/**
+ * Reimplements 0x43c430: Player::AltGunLaunchProjectile
+ * Source path: src/Battlesport/player.cpp.
+ * BN source path: D:\Proj\GameZRecoil\zWeapon.cpp.
+ * Purpose: launch an attached alternate-gun projectile from the active
+ * controller.
+ */
 int __fastcall AltGunLaunchProjectile(
     zUtil_SaveGameState *saveState
 ) {
@@ -16377,8 +16536,13 @@ int __fastcall AltGunLaunchProjectile(
     return 1;
 }
 
-// Reimplements 0x43c550: Player::AltGunFireSimpleProjectile
-// (D:\Proj\GameZRecoil\zWeapon.cpp)
+/**
+ * Reimplements 0x43c550: Player::AltGunFireSimpleProjectile
+ * Source path: src/Battlesport/player.cpp.
+ * BN source path: D:\Proj\GameZRecoil\zWeapon.cpp.
+ * Purpose: fire a simple alternate-gun projectile from the active fire
+ * origin.
+ */
 int __fastcall AltGunFireSimpleProjectile(
     zUtil_SaveGameState *saveState
 ) {
@@ -16414,8 +16578,13 @@ int __fastcall AltGunFireSimpleProjectile(
            ) != 0;
 }
 
-// Reimplements 0x43c190: Player::ProcessAltGunDispatchRequest
-// (D:\Proj\GameZRecoil\zWeapon.cpp)
+/**
+ * Reimplements 0x43c190: Player::ProcessAltGunDispatchRequest
+ * Source path: src/Battlesport/player.cpp.
+ * BN source path: D:\Proj\GameZRecoil\zWeapon.cpp.
+ * Purpose: dispatch an alternate-gun fire request through effect, trail, or
+ * projectile handling.
+ */
 void __fastcall ProcessAltGunDispatchRequest(
     zUtil_SaveGameState *saveState
 ) {

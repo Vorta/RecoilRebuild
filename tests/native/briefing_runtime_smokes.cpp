@@ -3,7 +3,9 @@
 #include "GameZRecoil/Time/Time.h"
 #include "GameZRecoil/zGame/zGame.h"
 #include "GameZRecoil/zHud/zhud_ui.h"
+#include "GameZRecoil/zInput/zInput.h"
 #include "GameZRecoil/zLoc/zLoc.h"
+#include "GameZRecoil/zReader/zReader.h"
 #include "GameZRecoil/zRndr/zRndr.h"
 #include "GameZRecoil/zSound/zSound.h"
 #include "GameZRecoil/zVideo/zVideo.h"
@@ -130,6 +132,20 @@ void RestoreFunctionPatch(
 
 int TestRunPostprocessOnPrimaryBuffer() {
     return 0;
+}
+
+void WriteTestU32(
+    HANDLE file,
+    std::uint32_t value
+) {
+    DWORD written = 0;
+    WriteFile(
+        file,
+        &value,
+        sizeof(value),
+        &written,
+        0
+    );
 }
 
 struct TestCompositePanelConstructor {
@@ -814,6 +830,100 @@ extern "C" int hud_sensor_tracker_get_objective_briefing_strings_smoke(void) {
                    description == tracker.objectiveSlots[2].objectiveDesc && imageRef == &image
                ? 0
                : 1;
+}
+
+extern "C" int zgame_options_load_game_options_minimal_smoke(void) {
+    char tempDir[MAX_PATH] = {};
+    char tempPath[MAX_PATH] = {};
+    if (GetTempPathA(
+            sizeof(tempDir),
+            tempDir
+        ) == 0 ||
+        GetTempFileNameA(
+            tempDir,
+            "zgo",
+            0,
+            tempPath
+        ) == 0) {
+        return 1;
+    }
+
+    HANDLE file = CreateFileA(
+        tempPath,
+        GENERIC_READ | GENERIC_WRITE,
+        FILE_SHARE_READ,
+        0,
+        CREATE_ALWAYS,
+        FILE_ATTRIBUTE_TEMPORARY,
+        0
+    );
+    if (file == INVALID_HANDLE_VALUE) {
+        DeleteFileA(tempPath);
+        return 2;
+    }
+
+    WriteTestU32(file, zReader::ZRDR_NODE_ARRAY);
+    WriteTestU32(file, 1);
+    WriteTestU32(file, zReader::ZRDR_NODE_INT);
+    WriteTestU32(file, 1);
+    FlushFileBuffers(file);
+
+    zZarFileRecord record = {};
+    record.fileOffset = 0;
+    record.fileSize = SetFilePointer(
+        file,
+        0,
+        0,
+        FILE_CURRENT
+    );
+    std::strcpy(
+        record.name,
+        "detail.zrd"
+    );
+
+    zIndexArchive archive = {};
+    archive.hFile = file;
+    archive.recordCount = 1;
+    archive.records = &record;
+
+    zArchiveListNode node = {};
+    node.payload = &archive;
+    node.next = &node;
+    node.prev = &node;
+
+    zArchiveList list = {};
+    list.count = 1;
+    list.head = &node;
+
+    zArchiveList *const oldMountedList = g_zArchive_MountedList;
+    zInput_BindMapContext *const oldBindMapCurrent = g_zInput_BindMap_Current;
+    g_zArchive_MountedList = &list;
+
+    zGame::Options_InitRegistryContext(
+        "RecoilSmoke",
+        "CurrentUser",
+        "Game"
+    );
+    zInput::BindMapSystem_Init(0x30);
+
+    const int result = zGame::Options_LoadGameOptions();
+    const bool ok =
+        result == 1 &&
+        ZOPT_VIDEO_ACCELERATION != 0 &&
+        zVid::GetAccelerationOption() == 1 &&
+        ZOPT_VIDEO_STRIDE != 0 &&
+        *ZOPT_VIDEO_STRIDE == 1 &&
+        zInput::BindGroupList_GetCount() == 5 &&
+        ZOPT_NETWORK_ENABLED != 0 &&
+        *ZOPT_NETWORK_ENABLED == 0;
+
+    zInput::BindMapSystem_Shutdown();
+    g_zInput_BindMap_Current = oldBindMapCurrent;
+    zGame::Options_ShutdownRegistryContext();
+    g_zArchive_MountedList = oldMountedList;
+    CloseHandle(file);
+    DeleteFileA(tempPath);
+    return ok ? 0 : 3;
 }
 
 extern "C" int zopt_network_enabled_accessor_smoke(void) {

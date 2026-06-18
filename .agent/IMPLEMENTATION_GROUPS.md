@@ -129,9 +129,9 @@ available even when no groups are active.
 
 Active queue sections:
 
-- Ready owner/data work: GameNet launch/session-sync and Player
-  create-from-names bootstrap owner/data cleanup remain actionable through
-  shared 0x420d10/0x432860 blockers.
+- Ready owner/data work: GameNet launch/session-sync registered-callback
+  cleanup and Player create-from-names bootstrap owner/data cleanup remain
+  actionable as separate owner slices.
 - Blocked pending evidence or policy: zVideo/zRndr renderer dispatch remains
   blocked on the ESP-pivot span-family source model unless new evidence or
   explicit policy direction appears.
@@ -235,36 +235,53 @@ Active queue sections:
   - The compiler intrinsic provider-boundary entry for BN symbolic
     `__builtin_memset` at 0x7c8ed4 is accepted for the inline `rep stos`
     zero/fill pattern used by 0x4320f0 and 0x4345a0.
-  - 0x431c50 source/data audit confirms the registration body is source-shaped
-    and its functional target passes. Local VC5 data-symbol targets now cover
-    the zDEClient relay callback slots and OptCatalog runtime callback slots
-    with zero unmasked mismatches, in addition to the existing GameNet,
-    zEffect activation-dispatch, and zNetwork dispatch-list data evidence.
-    Keep 0x431c50 owner/data pending until the installed callback owner band is
-    accepted; do not reroute this as missing callback-slot data evidence.
+  - 0x431c50/0x4321b0 are now narrowed to
+    `network_online.gamenet_launch_session_sync`: a register/unregister
+    coordinator owner with owned data `g_GameNet_HandlersRegistered`.
+    Source-owner markers are accepted for both after focused owner mapping and
+    passing registration/unregistration functional smokes. Data remains blocked
+    because zDEClient relay callback slots, OptCatalog callback slots, Pickup,
+    and packet-handler callback owners are cross-owner dependencies, not
+    GameNet handler-flag storage.
+  - The Pickup spawn-list pkt11 synchronization dependency reached from
+    0x432860 is accepted at tier B. Owner
+    `battlesport_gameplay.pickup_spawn_list_pkt11_sync` covers 0x41e890,
+    0x41e900, 0x433e40, 0x433e70, and 0x433ea0, with registered native
+    functional smokes and VC5 data-symbol evidence for the two spawn-list
+    globals plus the paired pkt11 short-delta globals.
+  - The HUD timer tail-flags and pkt0D dependencies reached from 0x432860 are
+    accepted at tier B. Owner `hud_ui.hud_timer_panel_net_state_tail_flags`
+    covers 0x433a40 with no authored globals. Owner
+    `network_online.gamenet_pkt0d_hud_timer_panel_state` covers 0x433250 and
+    0x433310, with registered native functional smokes and VC5 data-symbol
+    evidence for `g_HudTimerPanelNetState` plus
+    `g_NetPkt0D_HudTimerPanelStateBuf`.
+  - The stale zEffect lookup gate that blocked pkt0D handling is accepted at
+    tier B under `engine.zeffect.anim_entry_name_lookup`; 0x45ff10 now has
+    linked source/data gates for `g_zEffectAnim_EntryCount` and
+    `g_zEffectAnim_EntryList`.
 - Current blockers:
-  - 0x4321b0 is accepted at tier B after registering/rerunning the existing
-    packet-handler unregister smoke, documenting the paired 0x431c50
-    registration function, accepting the GameNet registration subsystem owner
-    for unregister, and reusing `gamenet_launch_session_globals` VC5
-    data-symbol evidence for `g_GameNet_HandlersRegistered`. 0x4320f0 is
-    accepted at tier B after resolving the HUD row-removal chain, accepting
+  - 0x4321b0 remains tier C with source owner accepted under
+    `network_online.gamenet_launch_session_sync`; do not treat it as tier B
+    until the callback-slot data dependencies are routed and accepted. 0x4320f0
+    is accepted at tier B after resolving the HUD row-removal chain, accepting
     `g_HudUiTopMessageStack` with local VC5 data-symbol evidence, and reusing
     `gamenet_launch_session_globals` for the player-row and spawn-point list
-    globals. 0x431c50 remains data-blocked by zDEClient/OptCatalog/zEffect
-    callback-slot globals and source-blocked by zNetwork/zEffect registration
-    helpers.
+    globals. 0x431c50 remains data-blocked by zDEClient/OptCatalog/Pickup and
+    packet-handler callback-slot owner routing, but no longer has a source
+    owner blocker in the narrowed coordinator scope.
     0x432830 is accepted at tier B after row-list data-symbol evidence;
     0x431c50, 0x4327e0, 0x432860, and 0x432ae0 still need broader
     pkt06/player/HUD/zVideo and registered-callback owner-data routing before
     tier B.
   - The pkt06 data correction sets `g_GameNetPkt06InitialSyncGate` to the BN
-    initial value 1. Ignored local VC5 target `gamenet_pkt06_globals` now
-    covers `g_GameNetPlayerRowStyleColors_00RRGGBB`,
+    initial value 1. Ignored local VC5 target `gamenet_pkt06_globals` covers
+    `g_GameNetPlayerRowStyleColors_00RRGGBB`,
     `g_GameNetPkt06InitialSyncGate`, and `g_HudTimerPanelNetState` with zero
-    unmasked mismatches, but callers that touch `g_HudUiTopMessageStack`,
-    `g_Player_RuntimeDiScene`, `g_HudSensorTracker`, or `g_zVideo_FrameTick`
-    remain cross-owner data blocked.
+    unmasked mismatches. The cross-owner `g_HudUiTopMessageStack` and
+    `g_zVideo_FrameTick` globals now have accepted data owners; remaining
+    pkt06 tier-B blockage is through dependency owner data such as the Player
+    master-type transition cluster.
   - The zClass copy-node dependency through 0x452500 is accepted at tier B
     after correcting `g_zClass_CopyNodeCloneDiMode` to the BN initial value 1,
     wiring the existing zClass copy smokes into `recoil_native_smoke`, and
@@ -275,7 +292,7 @@ Active queue sections:
     `sprintf`, adding `zClass_NodePartial::name` layout asserts, documenting
     `ReportNullNode` helper provenance plus accessor docblocks, and wiring the
     existing metadata accessor smoke into `recoil_native_smoke`.
-  - The Player clone helper dependency 0x421a40 is accepted at tier B after
+  - The Player clone helper dependency is accepted at tier B after
     correcting the Player bootstrap source shape, adding Player bootstrap
     provenance docblocks, adding a CRT `strstr` provider-boundary entry, wiring
     the existing Player bootstrap smokes into `recoil_native_smoke`, and
@@ -296,21 +313,22 @@ Active queue sections:
     `recoil_native_smoke` and confirming both mutate caller-owned Object3D
     state with no authored globals.
   - The zClass child-link dispatcher dependency through 0x4483f0 is accepted at
-    tier B after documenting the data-driven child-link subsystem owner,
-    wiring the existing add-child smokes into `recoil_native_smoke`, adding CRT
-    provider-boundary entries for `realloc` and `calloc`, accepting
-    `g_zError_DebugMsgBuffer` through zError::EmitDebugBuffer data evidence,
-    and clearing the AddChildGeneric/SetSingleParentFlagRecursive data gates.
+    tier B under source owner `engine.zclass.add_child_dispatch`; the pass
+    routes the stale camera/LOD functional manifests to registered native
+    smokes, accepts `g_zError_DebugMsgBuffer` through
+    zError::EmitDebugBuffer data evidence, and keeps RemoveChild outside this
+    add-child owner scope.
   - Route zNetwork send/session-desc helpers and HUD row-removal/container
     dependencies as separate owner/data blockers; do not fold them into the
     GameNet owner.
   - Route the remaining 0x4143c0/0x40e880 data gates through the HUD
     stats-list and `HudUiTriplet::RebuildDisplay` owner/data slices. Do not
     broaden into the unrelated `zhud_ui.cpp` docblock backlog.
-  - The Player bootstrap frontier routes through 0x420d10 to 0x42aa40
+  - The Player bootstrap owner routes to
     `Player::GetSaveStateListHead`; treat the save-state list globals as a
     Player save-state/bootstrap record-global subsystem before promoting the
-    launch caller. 0x41ec00 and 0x42aa40 are now accepted at tier B after
+    launch caller. The zUtil save-state creation helper and Player save-state
+    accessor are now accepted at tier B after
     source-order, functional-smoke, and VC5 data-symbol evidence for the
     save-state list globals. The Object3D getter/accessor blockers
     0x44dfd0/0x44e110/0x44e270/0x44e5b0 are accepted at tier B after helper
@@ -330,13 +348,83 @@ Active queue sections:
     functional coverage, owner/data review, zNetwork dispatch-list VC5 data
     evidence, and BN zero-data evidence for the zEffect activation-dispatch
     globals; neither helper has accepted tier S byte evidence.
+  - The Player master-type transition dependency cluster 0x42b520/0x42ac90/
+    0x42aeb0/0x42b0f0/0x42b2a0/0x42b4c0 is now linked to
+    `battlesport_gameplay.player_master_type_transition` with accepted
+    boundary/source/data/functional gates and source-faithful plan metadata;
+    all six members are promoted to tier B. The data gate is backed by
+    accepted owners for `g_Time_AccumulatedTimeSec`
+    (`engine.time_runtime_globals`), the Player underwater pass-3 singleton
+    (`battlesport_gameplay.player_underwater_fx_pass3_ui_singleton`), the
+    horizon-follow node/flag pair
+    (`battlesport_gameplay.player_horizon_follow_globals`), the copter sound
+    cache (`battlesport_gameplay.player_copter_sound_cache`), and
+    `g_GameStateOrMapTable` (`engine.zinput.game_state_or_map_table_data`).
+  - The pkt06 row-apply/spawn/handler slice is split out as
+    `network_online.gamenet_pkt06_player_state_snapshot`: 0x4327e0,
+    0x432860, and 0x432ae0 now have accepted source-owner markers and
+    source-faithful metadata after focused owner mapping, BN/source review,
+    and passing functional targets. The data gate remains blocked while direct
+    GameNet data and dependency-owner data are reviewed; accepted dependency
+    data includes row color, HUD timer, Player runtime DI scene,
+    HudSensorTracker, HUD top-message stack, zVideo frame-tick owners, and the
+    Player master-type transition owner.
+    0x431c50 remains in `network_online.gamenet_launch_session_sync` as a
+    registration/callback-band owner, and 0x433de0/0x433c30 remain excluded
+    pkt10/pkt0f feature-relay work.
+  - `g_zVideo_FrameTick` is now accepted as
+    `render_video.zvideo_frame_tick_global`: BN shows a standalone 4-byte
+    zero-initialized int32 at 0x56bbd8, source declares it in the zVideo global
+    block, and `zvideo_frame_tick_global` VC5 data-symbol verification passes
+    with zero unmasked mismatches.
+  - `g_HudUiTopMessageStack` is now accepted as
+    `hud_ui.hud_ui_top_message_stack_global`: BN shows a standalone 4-byte
+    zero-initialized `HudUiTextStack4 *` at 0x56bd24, source declares/externs
+    it in the HUD UI sources with init/teardown lifecycle writes, and
+    `hud_ui_top_message_stack_global` VC5 data-symbol verification passes with
+    zero unmasked mismatches.
+  - The zWeapon OptCatalog lookup/pending-spawn leaf repair registered existing
+    `zweapon_optcatalog_find_entry_by_id_smoke` and
+    `zweapon_optcatalog_pending_spawn_override_smoke`, added immediate
+    provenance docblocks for 0x4ae450 and 0x4ae4a0, and reran both functional
+    targets successfully. Owner `effects_weapons.optcatalog_entry_lookup`
+    now accepts source/functional/data gates for 0x4ae3c0/0x4ae450 after
+    accepted data owner `effects_weapons.optcatalog_entry_table_data` covered
+    g_OptCatalog_EntryCount/g_OptCatalog_EntryTable at 0x778924/0x778928 with
+    BN xrefs, source lifecycle, and VC5SP3 data-symbol checks; both lookup
+    helpers are promoted to tier B. 0x4ae4a0 is linked into accepted owner
+    `effects_weapons.optcatalog_runtime_instances` and promoted to tier B.
+  - Owner `network_online.gamenet_pkt07_altgun_dispatch` covers
+    0x434130/0x434190/0x434230 and now accepts boundary/source/functional
+    gates. Bounded pkt07 smokes in `gamenet_launch_smokes.cpp` cover the
+    sender, remote handler, and no-op callback; all three functional targets
+    passed. The OptCatalog and Player alt-gun dependency data gates are now
+    accepted, and direct packet-buffer owner
+    `network_online.gamenet_pkt07_packet_buffer_data` accepts
+    `g_NetPkt07_AltGunDispatchBuf` at 0x4dcf60 after BN/source review and
+    `gamenet_pkt07_globals` VC5 data-symbol verification. The owner remains
+    data-blocked by callee data gate `zNetwork::SendPacketReliable` at
+    0x48c080.
+  - Owner `battlesport_gameplay.player_alt_gun_runtime_dispatch` now accepts
+    boundary/source/functional gates for 0x43c9c0, 0x43c190, 0x43aa30,
+    0x43afd0, 0x43c330, 0x43c2d0, 0x43c430, and 0x43c550. The new bounded
+    `player_alt_gun_runtime_smokes.cpp` native smoke source links into
+    `recoil_native_smoke`, and all eight functional targets passed. The owner
+    now accepts data after direct owners for g_GameStateOrMapTable,
+    g_HudSensorTracker, and g_zInputFfEffectSet plus dependency owners
+    OptCatalog entry lookup/runtime instances and Player weapon-bank/Mines ZAR
+    were accepted; all eight members are promoted to tier B. Tier S remains
+    deferred for a coherent Player alt-gun source-cluster pass.
+  - Data owner `engine.zinput.force_feedback_effect_set_global` now accepts
+    boundary/source/data gates for 0x4f36b4 `g_zInputFfEffectSet`; VC5
+    data-symbol target `zinput_force_feedback_effect_set_global` passed with
+    zero unmasked mismatches.
 - Next action:
-  - Continue at the GameNet registered-callback owner band. Start with
-    `python tools/recoil.py status 0x4327e0 --lane binary`, then inspect
-    `python tools/recoil.py frontier 0x4327e0 --depth 1 --lane binary` before
-    assigning a source worker. Keep OptCatalog, Pickup, zDEClient, and zEffect
-    callback targets routed to their own owner sections rather than absorbing
-    them into the GameNet source-file owner.
+  - Continue owner/data routing from `network_online.gamenet_pkt07_altgun_dispatch`
+    by resolving the `zNetwork::SendPacketReliable` data gate at 0x48c080.
+    Keep pkt06 data blockers separate, especially the Player master-type
+    transition data reached from 0x432ae0; do not absorb unrelated HUD,
+    zNetwork, Pickup, zDEClient, zEffect, or pkt0f/pkt10 feature-relay targets.
 
 ### Group: Player create-from-names bootstrap owner-data
 
@@ -344,22 +432,43 @@ Active queue sections:
   Player::CreateFromNamesAtPoseGetState.
 - Section: battlesport_gameplay
 - Queue: ready owner/data work; dependency slice for the GameNet pkt06 remote
-  spawn path through 0x432860.
+  spawn path.
 - Reason: Player class bootstrap/save-state creation owner and touched
   Player/HUD/zClass/zEffect data gates block GameNet pkt06 tier B promotion.
 - Current evidence:
-  - `python tools/recoil.py frontier 0x432860 --depth 1 --lane binary`
-    recommends 0x421ea0, and `frontier 0x421ea0` routes directly to
-    0x421ab0.
-  - 0x421ab0 has accepted dependencies for zOpt network mode, zClass type/name
-    lookup and clone helpers, Object3D pose setters, zClass AddChild,
-    Player::CloneType6NodeFromTemplateAndRename, and zUtil save-state-list
-    allocation/append helpers.
-  - Remaining visible blockers under 0x421ab0 include 0x420d10
-    `Player::InitStateFromNameAndMasterCommonData`,
-    Player modal/spawn/hit/destroyed-state helpers, zClass damage/camera/material
-    helpers, HudSensorTracker::SetTrackedSaveState, OptCatalog damage-mask
-    lookup, and zEffectAnim::FindEntryByName.
+  - The GameNet pkt06 remote-spawn frontier recommends 0x421ea0, and
+    `frontier 0x421ea0` routes directly to 0x421ab0.
+  - 0x421ab0 still has accepted dependencies for Object3D pose setters and
+    zUtil save-state-list allocation/append helpers. zClass type/name lookup,
+    clone helpers, AddChild, Player::CloneType6NodeFromTemplateAndRename, and
+    the local Player bootstrap methods 0x421ed0/0x4220f0/0x421830 remain
+    owner/data-blocked.
+  - The zOpt network-mode leaf was re-audited after stale positive
+    source-owner markers were downgraded. It is now linked to
+    `engine.zgame.zopt_network_options`; 0x408230/0x408240/0x408250/0x408260/
+    0x408270 are accepted at tier B after docblock cleanup, accepted owner
+    source/data/functional gates, functional coverage, and `zopt_network_option_globals`
+    VC5 data-symbol evidence. Owner-level tier S remains deferred.
+  - The linked Player bootstrap functional targets now pass for 0x420d10,
+    0x421470, 0x421790, 0x421ed0, 0x4220f0, 0x421830, 0x421ab0, 0x421ea0,
+    0x421a40, and 0x42aa40 after registering the existing native smokes in
+    `recoil_native_smoke`.
+  - The missing linked smoke for 0x407700 `zGame::Options_LoadGameOptions` is
+    repaired: `zgame_options_load_game_options_minimal_smoke` is registered in
+    `recoil_native_smoke` and `verify functional 0x407700` passes. 0x407700
+    remains a broader zGame options owner/data blocker outside the narrow zOpt
+    network accessor owner.
+  - 0x44ecf0 `zClass::FindByTypeAndName` is now accepted at tier B after
+    linking the narrow `engine.zclass.typelist_find_by_type_and_name` owner,
+    verifying the exact-name lookup smoke, accepting the `List.c` source shape,
+    and adding `zclass_find_by_type_and_name_data` VC5 data-symbol evidence for
+    `g_zClass_TypeList_HeadSlotPtrs` and `g_zClass_TypeList_Buckets`. Tier S
+    remains deferred because the function-byte target still has the known
+    inline-strcmp byte diff.
+  - Remaining visible blockers under 0x421ab0 are owner/data gates for
+    zClass clone/name/add-child/damage/camera/material helpers, Player
+    modal/spawn/hit/destroyed-state helpers, HudSensorTracker::SetTrackedSaveState,
+    OptCatalog damage-mask lookup, and zEffectAnim::FindEntryByName.
   - The zEffect leaf lookup 0x45ff10 `zEffectAnim::FindEntryByName` is
     accepted at tier B after a linked native smoke, source-owner review, and
     BN/source zero-data evidence for `g_zEffectAnim_EntryCount` and
@@ -532,11 +641,46 @@ Active queue sections:
     0x4bffe0 `zUtil_ZAR::RegisterSectionHandler` is accepted at tier B after
     registering the existing native smoke, converting `zZbd.cpp` provenance
     comments to docblocks, and verifying `g_zUtil_ZbdManager` with local VC5
-    data-symbol evidence. Refreshed
-    `frontier 0x438ba0 --depth 1 --lane binary` now routes through the Mines
-    save callbacks; 0x43cc70 `Player::WriteMinesZarSection` points to
-    0x4b2930/0x4b2940 OptCatalog mine-iterator owner/data gates and the
-    zUtil write-section route, which bottoms out at 0x4a64d0
-    `zIndexArchive::AddFileRecord`. Keep the remaining zUtil/zReader/zWeapon
-    callees routed to their own owner sections rather than absorbing them into
-    the Player class pass.
+    data-symbol evidence.
+  - The Player weapon-bank/Mines ZAR dependency owner
+    `battlesport_gameplay.player_weapon_bank_mines_zar` is now linked and
+    accepted for source/data/functional gates. 0x439540, 0x43c950, 0x43cc70,
+    and 0x43cdf0 are accepted at tier B after the zInput game-state pointer
+    data owner, Player weapon/Mines rdata VC5 targets, registered native
+    smokes, and focused source-shape/original-symbol guard checks passed.
+    0x439600 remains accepted at tier B. 0x438ba0
+    `Player::LoadWeaponBanksAndSelectDefaults` is now accepted at tier B after
+    linking the accepted Player weapon-bank/Mines owner and accepted zInput and
+    Player literal data owners; its `Reconstructed` marker remains limited
+    (`☑️`) only for the documented BN HLIL pointer-cursor limitation. Refreshed
+    `frontier 0x420d10 --depth 1 --lane binary` now routes to 0x420d10
+    `Player::InitStateFromNameAndMasterCommonData` itself: direct callees have
+    no lower visible owner blocker at depth 1. The durable
+    `battlesport_gameplay.player_create_from_names_bootstrap` owner has been
+    pruned with supported owner CLI commands: the GameNet pkt06 caller and zEffect
+    0x45d930 are no longer members, the local Player bootstrap methods
+    0x421ed0/0x4220f0/0x421830 are now linked, and shared aim-origin constants
+    were moved to
+    `battlesport_gameplay.player_shared_aim_origin_rdata`.
+    `player_bootstrap_globals`, `player_bootstrap_runtime_globals`,
+    `player_shared_aim_origin_rdata`,
+    `optcatalog_runtime_callback_globals`,
+    `zclass_player_runtime_di_scene_global`, and
+    `czrecoilframe_hud_sensor_tracker_global` provide current VC5 data-symbol
+    evidence for the modal/common list globals, `g_Player_NextOrdinal`,
+    `g_Player_LocalFxOffsetWorldPtr`, `g_Player_NominalGravity`,
+    `kPlayerDefaultAltGunAimOrigin`, `g_OptCatalogDamageFeedbackTrackedNode`,
+    `g_Player_RuntimeDiScene`, and `g_HudSensorTracker`. The shared aim-origin
+    owner `battlesport_gameplay.player_shared_aim_origin_rdata` is accepted
+    after BN xref review, source-shape repair, passing 0x420d10/0x43b500
+    functional targets, and zero-mismatch 12-byte VC5 data-symbol evidence.
+    The broader `battlesport_gameplay.player_create_from_names_bootstrap`
+    owner is now accepted for boundary/source/data/functional gates after the
+    assigned bootstrap docblocks were repaired in `player.cpp`, all ten owner
+    member functional targets passed, and the Player bootstrap/save-state list,
+    runtime-global, shared aim-origin, nominal-gravity, local-FX pointer, and
+    runtime-DI-scene data-symbol targets passed with zero unmasked data-byte
+    mismatches. Plan entries 0x420d10, 0x421a40, 0x421470, 0x421790,
+    0x421830, 0x421ab0, 0x421ea0, 0x421ed0, 0x4220f0, and 0x42aa40 are
+    accepted at tier B; tier S remains deferred for the coherent Player
+    bootstrap/source-cluster pass.

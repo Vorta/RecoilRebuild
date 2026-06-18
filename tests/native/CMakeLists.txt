@@ -26,6 +26,7 @@ add_executable(recoil_native_smoke
     briefing_runtime_smokes.cpp
     zhud_composite_panel_smokes.cpp
     player_fx_pass3_smokes.cpp
+    player_alt_gun_runtime_smokes.cpp
     zhud_cmd_dialog_state_smokes.cpp
     zhud_net_game_setup_smokes.cpp
     zhud_options_panel_smokes.cpp
@@ -40,6 +41,8 @@ add_executable(recoil_native_smoke
     zturret_tests.cpp
     zmodel_di_smokes.cpp
     zclass_tests.cpp
+    zclass_cls_di_smokes.cpp
+    zdeclient_tests.cpp
     zeffect_tests.cpp
     zweapon_tests.cpp
     zweapon_timed_hit_smokes.cpp
@@ -55,6 +58,42 @@ target_link_libraries(recoil_native_smoke PRIVATE recoil_native)
 set_source_files_properties(
     zweapon_tests.cpp
     PROPERTIES COMPILE_DEFINITIONS RECOIL_NATIVE_ZWEAPON_SKIP_DUPLICATE_TIMED_HIT_SMOKE
+)
+
+set(ZDECLIENT_NATIVE_SMOKE_PREFIX
+    "${CMAKE_CURRENT_BINARY_DIR}/zdeclient_native_smoke_prefix.h"
+)
+file(WRITE "${ZDECLIENT_NATIVE_SMOKE_PREFIX}" [=[
+#include "GameZRecoil/zNetwork/zNetwork.h"
+#include <cstdint>
+
+struct zNetwork_DPlay4SmokeVtable;
+struct zNetwork_DPlay4Smoke {
+    const zNetwork_DPlay4SmokeVtable *lpVtbl;
+};
+
+typedef std::int32_t(__stdcall *zNetwork_DPlay4SmokeSendFn)(
+    zNetwork_DPlay4Smoke *,
+    std::uint32_t,
+    std::uint32_t,
+    std::uint32_t,
+    void *,
+    std::uint32_t
+);
+
+struct zNetwork_DPlay4SmokeVtable {
+    void *slots_00_64[26];
+    zNetwork_DPlay4SmokeSendFn Send_68;
+};
+
+#define zNetwork_DPlay4 zNetwork_DPlay4Smoke
+#define zNetwork_DPlay4Vtable zNetwork_DPlay4SmokeVtable
+#define g_zNetwork_pDirectPlay4 (*((zNetwork_DPlay4Smoke **)&g_zNetwork_pDirectPlay4))
+]=])
+
+set_source_files_properties(
+    zdeclient_tests.cpp
+    PROPERTIES COMPILE_OPTIONS "/FI${ZDECLIENT_NATIVE_SMOKE_PREFIX}"
 )
 
 find_package(Python3 COMPONENTS Interpreter REQUIRED)

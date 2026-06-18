@@ -55,6 +55,36 @@ HRESULT __stdcall SendFake(
     return 0;
 }
 
+HRESULT __stdcall SendExFake(
+    zNetwork_DPlay4 *,
+    DWORD,
+    DWORD,
+    DWORD flags,
+    void *packet,
+    DWORD packetSizeBytes,
+    DWORD,
+    DWORD,
+    void *,
+    DWORD *asyncHandle
+) {
+    ++g_sendCalls;
+    g_sendFlags = flags;
+    g_sendPacket = packet;
+    g_sendPacketSize = packetSizeBytes;
+    g_sendPacketBytesSize = packetSizeBytes;
+    if (packetSizeBytes <= sizeof(g_sendPacketBytes)) {
+        std::memcpy(
+            g_sendPacketBytes,
+            packet,
+            packetSizeBytes
+        );
+    }
+    if (asyncHandle != 0) {
+        *asyncHandle = 0x2468;
+    }
+    return 0;
+}
+
 struct FakeDirectPlay4 {
     void **vtable;
 };
@@ -75,6 +105,7 @@ void InitDirectPlayVtable(
     );
     vtable[26] = (void *)(&SendFake);
     vtable[31] = (void *)(&SetSessionDescFake);
+    vtable[49] = (void *)(&SendExFake);
 }
 
 void ClearDispatchHandlerListForTest(
@@ -656,6 +687,135 @@ extern "C" int gamenet_player_row_append_smoke(void) {
     return ok ? 0 : 1;
 }
 
+extern "C" int gamenet_reassign_player_colors_smoke(void) {
+    HudUiStatsListElement *const oldStatsList = g_HudUiMgrStatsList;
+    GameNetPlayerRow *const oldHead = g_GameNetPlayerRowHead;
+    GameNetPlayerRow *const oldTail = g_GameNetPlayerRowTail;
+    const std::uint32_t oldCount = g_GameNetPlayerRowCount;
+    zNetworkPlayerRecordList *const oldPlayerRecordList = g_zNetwork_PlayerRecordList;
+    zNetworkDPlaySessionDescCache *const oldSession = g_zNetwork_CurrentSessionDescCache;
+
+    zNetwork_PlayerRecord firstRecord = {};
+    firstRecord.playerKey = 0x1111;
+    firstRecord.colorIndex = 8;
+    zNetwork_PlayerRecord secondRecord = {};
+    secondRecord.playerKey = 0x2222;
+    secondRecord.colorIndex = 2;
+
+    zNetworkPlayerRecordListNode sentinel = {};
+    zNetworkPlayerRecordListNode firstNode = {};
+    zNetworkPlayerRecordListNode secondNode = {};
+    sentinel.next = &firstNode;
+    sentinel.prev = &secondNode;
+    firstNode.next = &secondNode;
+    firstNode.prev = &sentinel;
+    firstNode.playerRecord = &firstRecord;
+    secondNode.next = &sentinel;
+    secondNode.prev = &firstNode;
+    secondNode.playerRecord = &secondRecord;
+    zNetworkPlayerRecordList playerList = {};
+    playerList.sentinelNode = &sentinel;
+    playerList.count = 2;
+    g_zNetwork_PlayerRecordList = &playerList;
+
+    zNetworkDPlaySessionDescCache session = {};
+    session.desc.dwMaxPlayers = 8;
+    g_zNetwork_CurrentSessionDescCache = &session;
+
+    HudUiTriplet triplet = {};
+    triplet.Constructor();
+    HudUiStatsListElement statsList = {};
+    statsList.triplet = &triplet;
+    g_HudUiMgrStatsList = &statsList;
+
+    zClass_Object3DDataPartial firstObject = {};
+    zClass_NodePartial firstObjectNode = {};
+    firstObjectNode.classId = 5;
+    firstObjectNode.classData = &firstObject;
+    PlayerModalState firstModal = {};
+    firstModal.modalNode = &firstObjectNode;
+    GameNetPlayerSaveState firstSave = {};
+    firstSave.primaryModalState = &firstModal;
+
+    zClass_Object3DDataPartial secondObject = {};
+    zClass_NodePartial secondObjectNode = {};
+    secondObjectNode.classId = 5;
+    secondObjectNode.classData = &secondObject;
+    PlayerModalState secondModal = {};
+    secondModal.modalNode = &secondObjectNode;
+    GameNetPlayerSaveState secondSave = {};
+    secondSave.primaryModalState = &secondModal;
+
+    GameNetPlayerRow *const firstRow = (GameNetPlayerRow *)(::operator new(sizeof(GameNetPlayerRow)));
+    GameNetPlayerRow *const secondRow = (GameNetPlayerRow *)(::operator new(sizeof(GameNetPlayerRow)));
+    std::memset(
+        firstRow,
+        0,
+        sizeof(*firstRow)
+    );
+    std::memset(
+        secondRow,
+        0,
+        sizeof(*secondRow)
+    );
+    firstRow->playerKey = firstRecord.playerKey;
+    firstRow->saveState = &firstSave;
+    std::strcpy(firstRow->displayName, "First");
+    secondRow->playerKey = secondRecord.playerKey;
+    secondRow->saveState = &secondSave;
+    std::strcpy(secondRow->displayName, "Second");
+    firstRow->next = secondRow;
+    g_GameNetPlayerRowHead = firstRow;
+    g_GameNetPlayerRowTail = secondRow;
+    g_GameNetPlayerRowCount = 2;
+
+    GameNet::RefreshPlayerListMenu(firstRow);
+    GameNet::RefreshPlayerListMenu(secondRow);
+    const std::int32_t result = GameNet::ReassignPlayerColorsAndRefreshRows(0, 0);
+
+    const HudUiScoreboardEntry *firstEntry = 0;
+    const HudUiScoreboardEntry *secondEntry = 0;
+    for (HudUiScoreboardEntry *entry = triplet.entries.begin; entry != triplet.entries.end;
+         ++entry) {
+        if (entry->playerKey == firstRow->playerKey) {
+            firstEntry = entry;
+        }
+        if (entry->playerKey == secondRow->playerKey) {
+            secondEntry = entry;
+        }
+    }
+
+    const bool firstOk =
+        firstRow->playerColorIndex == 8 && firstRow->playerColorPackedRgb == 0x000040ff &&
+        FieldAt<std::uint32_t>(&firstRow->hudWidget, 0x14c) == 0x000040ff &&
+        FieldAt<std::uint32_t>(&firstRow->hudWidget, 0x150) == 0x000040ff &&
+        FieldAt<std::int32_t>(&firstRow->hudWidget, 0x270) == 1 && firstEntry != 0 &&
+        firstEntry->playerColorPackedRgb == 0x000040ff && firstObject.color.red == 1.0f &&
+        firstObject.color.green == 1.0f && firstObject.color.blue == 0.0f &&
+        firstObject.colorAlpha == 0.2f;
+
+    const bool secondOk =
+        secondRow->playerColorIndex == 2 && secondRow->playerColorPackedRgb == 0x0000ff00 &&
+        FieldAt<std::uint32_t>(&secondRow->hudWidget, 0x14c) == 0x0000ff00 &&
+        FieldAt<std::uint32_t>(&secondRow->hudWidget, 0x150) == 0x0000ff00 &&
+        FieldAt<std::int32_t>(&secondRow->hudWidget, 0x270) == 1 && secondEntry != 0 &&
+        secondEntry->playerColorPackedRgb == 0x0000ff00 && secondObject.color.red == 0.0f &&
+        secondObject.color.green == 1.0f && secondObject.color.blue == 0.0f &&
+        secondObject.colorAlpha == 0.2f;
+
+    g_HudUiMgrStatsList = oldStatsList;
+    g_GameNetPlayerRowHead = oldHead;
+    g_GameNetPlayerRowTail = oldTail;
+    g_GameNetPlayerRowCount = oldCount;
+    g_zNetwork_PlayerRecordList = oldPlayerRecordList;
+    g_zNetwork_CurrentSessionDescCache = oldSession;
+    triplet.DestructorCore();
+    ::operator delete(firstRow);
+    ::operator delete(secondRow);
+
+    return result == 1 && firstOk && secondOk ? 0 : 1;
+}
+
 extern "C" int gamenet_player_row_apply_color_tint_smoke(void) {
     zClass_Object3DDataPartial objectData = {};
     zClass_NodePartial objectNode = {};
@@ -1106,6 +1266,191 @@ extern "C" int gamenet_scoreboard_snapshot_packet_smoke(void) {
     return applied && sent ? 0 : 1;
 }
 
+extern "C" int gamenet_send_pkt13_effect_anim_activation_record_smoke(void) {
+    void *vtable[52];
+    InitDirectPlayVtable(vtable);
+    FakeDirectPlay4 dplay = {vtable};
+    zNetwork_DPlay4 *const oldDPlay = g_zNetwork_pDirectPlay4;
+    zNetwork_PlayerRecord *const oldLocalPlayer = g_zNetwork_LocalPlayerRecord;
+    const int oldLocalPlayerKey = g_zNetwork_LocalPlayerKey;
+    const int oldAsyncSend = g_zNetwork_TcpIpAsyncSendEnabled;
+    const int oldSuppressEcho = g_GameNetSuppressPkt13ActivationEcho;
+
+    zNetwork_PlayerRecord localPlayer = {};
+    localPlayer.playerKey = 0x12345678;
+    g_zNetwork_pDirectPlay4 = (zNetwork_DPlay4 *)(&dplay);
+    g_zNetwork_LocalPlayerRecord = &localPlayer;
+    g_zNetwork_LocalPlayerKey = 0x12345678;
+    g_zNetwork_TcpIpAsyncSendEnabled = 0;
+    g_GameNetSuppressPkt13ActivationEcho = 0;
+    g_sendCalls = 0;
+    g_sendFlags = 0;
+    g_sendPacket = 0;
+    g_sendPacketSize = 0;
+    g_sendPacketBytesSize = 0;
+    std::memset(
+        g_sendPacketBytes,
+        0,
+        sizeof(g_sendPacketBytes)
+    );
+
+    zEffectAnimActivationRecord record = {};
+    std::memset(
+        &record,
+        0xab,
+        sizeof(record)
+    );
+    record.commandType = 2;
+    GameNet::SendPkt13_EffectAnimActivationRecord(&record);
+
+    const zNetworkPacketHeader *const header =
+        (const zNetworkPacketHeader *)(g_sendPacketBytes);
+    const bool sentOk =
+        g_sendCalls == 1 && g_sendFlags == 1 &&
+        g_sendPacketSize == sizeof(zNetworkPacketHeader) + 0x48 &&
+        header->packetType == 0x13 &&
+        header->packetSizeBytes == sizeof(zNetworkPacketHeader) + 0x48 &&
+        header->payloadDword0 == 0x12345678 &&
+        std::memcmp(
+            g_sendPacketBytes + sizeof(zNetworkPacketHeader),
+            &record,
+            0x48
+        ) == 0;
+
+    g_GameNetSuppressPkt13ActivationEcho = 1;
+    g_sendCalls = 0;
+    GameNet::SendPkt13_EffectAnimActivationRecord(&record);
+    const bool suppressOk = g_sendCalls == 0;
+
+    g_zNetwork_pDirectPlay4 = oldDPlay;
+    g_zNetwork_LocalPlayerRecord = oldLocalPlayer;
+    g_zNetwork_LocalPlayerKey = oldLocalPlayerKey;
+    g_zNetwork_TcpIpAsyncSendEnabled = oldAsyncSend;
+    g_GameNetSuppressPkt13ActivationEcho = oldSuppressEcho;
+
+    return sentOk && suppressOk ? 0 : 1;
+}
+
+extern "C" int gamenet_handle_pkt13_effect_anim_activation_record_smoke(void) {
+    struct Packet13 {
+        zNetworkPacketHeader header;
+        zEffectAnimActivationRecord record;
+    };
+
+    zEffectAnimActivationRecord *const oldRecordTable = g_zEffectAnim_ActivationRecordTable;
+    const int oldRecordCount = g_zEffectAnim_ActivationRecordCount;
+    const int oldSuppressEcho = g_GameNetSuppressPkt13ActivationEcho;
+
+    Packet13 packet = {};
+    packet.header.packetType = 0x13;
+    packet.header.packetSizeBytes = sizeof(Packet13);
+    packet.record.commandType = 2;
+    std::strcpy(
+        packet.record.animName,
+        "missing_pkt13_activation"
+    );
+    packet.record.nodeToken = 77;
+
+    g_zEffectAnim_ActivationRecordTable = 0;
+    g_zEffectAnim_ActivationRecordCount = 0;
+    g_GameNetSuppressPkt13ActivationEcho = 0;
+    const int missingResult = GameNet::HandlePkt13_EffectAnimActivationRecord(
+        0,
+        &packet.header
+    );
+    const bool missingOk = missingResult == 1 && g_GameNetSuppressPkt13ActivationEcho == 0;
+
+    g_zEffectAnim_ActivationRecordTable = &packet.record;
+    g_zEffectAnim_ActivationRecordCount = 1;
+    const int duplicateResult = GameNet::HandlePkt13_EffectAnimActivationRecord(
+        0,
+        &packet.header
+    );
+    const bool duplicateOk = duplicateResult == 1 && g_GameNetSuppressPkt13ActivationEcho == 0;
+
+    g_zEffectAnim_ActivationRecordTable = oldRecordTable;
+    g_zEffectAnim_ActivationRecordCount = oldRecordCount;
+    g_GameNetSuppressPkt13ActivationEcho = oldSuppressEcho;
+
+    return missingOk && duplicateOk ? 0 : 1;
+}
+
+extern "C" int gamenet_send_all_pkt13_effect_anim_activation_records_smoke(void) {
+    void *vtable[52];
+    InitDirectPlayVtable(vtable);
+    FakeDirectPlay4 dplay = {vtable};
+    zNetwork_DPlay4 *const oldDPlay = g_zNetwork_pDirectPlay4;
+    zNetwork_PlayerRecord *const oldLocalPlayer = g_zNetwork_LocalPlayerRecord;
+    const int oldLocalPlayerKey = g_zNetwork_LocalPlayerKey;
+    const int oldIsHost = g_zNetwork_IsHostFlag;
+    const int oldAsyncSend = g_zNetwork_TcpIpAsyncSendEnabled;
+    const int oldSuppressEcho = g_GameNetSuppressPkt13ActivationEcho;
+    zEffectAnimActivationRecord *const oldRecordTable = g_zEffectAnim_ActivationRecordTable;
+    const int oldRecordCount = g_zEffectAnim_ActivationRecordCount;
+
+    zNetwork_PlayerRecord localPlayer = {};
+    localPlayer.playerKey = 0x13572468;
+    g_zNetwork_pDirectPlay4 = (zNetwork_DPlay4 *)(&dplay);
+    g_zNetwork_LocalPlayerRecord = &localPlayer;
+    g_zNetwork_LocalPlayerKey = localPlayer.playerKey;
+    g_zNetwork_TcpIpAsyncSendEnabled = 0;
+    g_GameNetSuppressPkt13ActivationEcho = 0;
+
+    zEffectAnimActivationRecord records[2] = {};
+    std::memset(
+        &records[0],
+        0x11,
+        sizeof(records[0])
+    );
+    std::memset(
+        &records[1],
+        0x22,
+        sizeof(records[1])
+    );
+    records[0].commandType = 1;
+    records[1].commandType = 3;
+    g_zEffectAnim_ActivationRecordTable = records;
+    g_zEffectAnim_ActivationRecordCount = 2;
+
+    g_zNetwork_IsHostFlag = 0;
+    g_sendCalls = 0;
+    GameNet::SendAllPkt13_EffectAnimActivationRecords();
+    const bool nonHostOk = g_sendCalls == 0;
+
+    g_zNetwork_IsHostFlag = 1;
+    g_sendCalls = 0;
+    g_sendPacketSize = 0;
+    std::memset(
+        g_sendPacketBytes,
+        0,
+        sizeof(g_sendPacketBytes)
+    );
+    GameNet::SendAllPkt13_EffectAnimActivationRecords();
+    const zNetworkPacketHeader *const header =
+        (const zNetworkPacketHeader *)(g_sendPacketBytes);
+    const bool hostOk =
+        g_sendCalls == 2 &&
+        g_sendPacketSize == sizeof(zNetworkPacketHeader) + 0x4c &&
+        header->packetType == 0x13 &&
+        header->payloadDword0 == localPlayer.playerKey &&
+        std::memcmp(
+            g_sendPacketBytes + sizeof(zNetworkPacketHeader),
+            &records[1],
+            0x4c
+        ) == 0;
+
+    g_zNetwork_pDirectPlay4 = oldDPlay;
+    g_zNetwork_LocalPlayerRecord = oldLocalPlayer;
+    g_zNetwork_LocalPlayerKey = oldLocalPlayerKey;
+    g_zNetwork_IsHostFlag = oldIsHost;
+    g_zNetwork_TcpIpAsyncSendEnabled = oldAsyncSend;
+    g_GameNetSuppressPkt13ActivationEcho = oldSuppressEcho;
+    g_zEffectAnim_ActivationRecordTable = oldRecordTable;
+    g_zEffectAnim_ActivationRecordCount = oldRecordCount;
+
+    return nonHostOk && hostOk ? 0 : 1;
+}
+
 extern "C" int gamenet_spawn_remote_player_missing_template_smoke(void) {
     HudUiTextStack4 *const oldTopStack = g_HudUiTopMessageStack;
     zNetworkPlayerRecordList *const oldPlayerRecordList = g_zNetwork_PlayerRecordList;
@@ -1170,4 +1515,423 @@ extern "C" int hud_sensor_tracker_set_runtime_timer_sec_and_goal_value_smoke(voi
     );
 
     return tracker.runtimeTimerSecRaw == 3600 && tracker.runtimeGoalValue == 7 ? 0 : 1;
+}
+
+extern "C" int gamenet_handle_pkt07_alt_gun_dispatch_smoke(void) {
+    GameNetPlayerRow *const oldHead = g_GameNetPlayerRowHead;
+    GameNetPlayerRow *const oldTail = g_GameNetPlayerRowTail;
+    const std::uint32_t oldCount = g_GameNetPlayerRowCount;
+    int *const oldPendingSpawnTargetCountPtr = g_OptCatalogPendingSpawnTargetCountPtr;
+    PlayerProgressTargetSlotRuntime *const oldPendingSpawnTargetListPtr =
+        g_OptCatalogPendingSpawnTargetListPtr;
+    const std::int32_t oldEntryCount = g_OptCatalog_EntryCount;
+    OptCatalogEntryDef *const oldEntryTable = g_OptCatalog_EntryTable;
+
+    g_GameNetPlayerRowHead = nullptr;
+    g_GameNetPlayerRowTail = nullptr;
+    g_GameNetPlayerRowCount = 0;
+
+    NetPkt07_AltGunDispatch missingPacket = {};
+    missingPacket.header.payloadDword0 = 0x4040;
+    const int missingResult = GameNet::HandlePkt07_AltGunDispatch(0x1111, &missingPacket);
+
+    zUtil_SaveGameState saveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    saveState.playerState = &playerState;
+
+    PlayerGunFireController originalController = {};
+    PlayerGunFireController targetController = {};
+    playerState.activeAltGunController = &originalController;
+    playerState.altGunFireHeldFlag = 1;
+    playerState.worldPos = {2.0f, 3.0f, 4.0f};
+    playerState.steerBasisRaw = {0.0f, 0.0f, 1.0f};
+
+    OptCatalogEntryDef entry = {};
+    entry.keyName = const_cast<char *>("pkt07-alt-gun");
+    entry.ordinalIndex = 707;
+    g_OptCatalog_EntryCount = 1;
+    g_OptCatalog_EntryTable = &entry;
+    targetController.optCatalogEntry = &entry;
+    playerState.altWeaponBanks[4].controllerA = targetController;
+
+    GameNetPlayerRow *const row = (GameNetPlayerRow *)(::operator new(sizeof(GameNetPlayerRow)));
+    std::memset(row, 0, sizeof(*row));
+    row->playerKey = 0x3030;
+    row->saveState = (GameNetPlayerSaveState *)(&saveState);
+    g_GameNetPlayerRowHead = row;
+    g_GameNetPlayerRowTail = row;
+    g_GameNetPlayerRowCount = 1;
+
+    NetPkt07_AltGunDispatch packet = {};
+    packet.header.payloadDword0 = row->playerKey;
+    packet.weaponId = 707;
+    packet.dispatchFlags = 0x1234;
+    packet.targetPos = {10.0f, 11.0f, 12.0f};
+    g_OptCatalogPendingSpawnTargetCountPtr = (int *)(0x11112222);
+    g_OptCatalogPendingSpawnTargetListPtr =
+        (PlayerProgressTargetSlotRuntime *)(0x33334444);
+
+    const int handledResult = GameNet::HandlePkt07_AltGunDispatch(0x1111, &packet);
+    int failure = 0;
+    if (missingResult != 0) {
+        failure = 1;
+    } else if (handledResult != 1) {
+        failure = 2;
+    } else if (playerState.altGunDispatchFlags != 0) {
+        failure = 3;
+    } else if (playerState.activeAltGunController != &originalController) {
+        failure = 4;
+    } else if (!Vec3Equals(playerState.storedTargetPos, packet.targetPos)) {
+        failure = 5;
+    } else if (!Vec3Equals(playerState.altFireOrigin, {2.0f, 4.0f, 4.0f})) {
+        failure = 6;
+    } else if (g_OptCatalogPendingSpawnTargetCountPtr != nullptr) {
+        failure = 7;
+    } else if (g_OptCatalogPendingSpawnTargetListPtr != nullptr) {
+        failure = 8;
+    }
+
+    g_GameNetPlayerRowHead = oldHead;
+    g_GameNetPlayerRowTail = oldTail;
+    g_GameNetPlayerRowCount = oldCount;
+    g_OptCatalogPendingSpawnTargetCountPtr = oldPendingSpawnTargetCountPtr;
+    g_OptCatalogPendingSpawnTargetListPtr = oldPendingSpawnTargetListPtr;
+    g_OptCatalog_EntryCount = oldEntryCount;
+    g_OptCatalog_EntryTable = oldEntryTable;
+    ::operator delete(row);
+
+    return failure;
+}
+
+extern "C" int gamenet_send_pkt07_alt_gun_dispatch_smoke(void) {
+    const NetPkt07_AltGunDispatch oldPacket = g_NetPkt07_AltGunDispatchBuf;
+    zNetwork_DPlay4 *const oldDPlay = g_zNetwork_pDirectPlay4;
+    zNetwork_PlayerRecord *const oldLocalPlayer = g_zNetwork_LocalPlayerRecord;
+    const int oldLocalPlayerKey = g_zNetwork_LocalPlayerKey;
+    const int oldAsyncSend = g_zNetwork_TcpIpAsyncSendEnabled;
+    zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
+
+    zUtil_PlayerStateStorage playerState = {};
+    playerState.storedTargetPos = {9.0f, 8.0f, 7.0f};
+    zUtil_SaveGameState saveState = {};
+    saveState.playerState = &playerState;
+    g_GameStateOrMapTable = (zInput_GameStateOrMapTablePartial *)&saveState;
+
+    void *vtable[52];
+    InitDirectPlayVtable(vtable);
+    FakeDirectPlay4 dplay = {vtable};
+    zNetwork_PlayerRecord localPlayer = {};
+    localPlayer.playerKey = 0x1234;
+    g_zNetwork_pDirectPlay4 = (zNetwork_DPlay4 *)(&dplay);
+    g_zNetwork_LocalPlayerRecord = &localPlayer;
+    g_zNetwork_LocalPlayerKey = 0x55667788;
+    g_zNetwork_TcpIpAsyncSendEnabled = 0;
+    g_NetPkt07_AltGunDispatchBuf = {{0x07, sizeof(NetPkt07_AltGunDispatch), 0},
+                                    0,
+                                    0,
+                                    0,
+                                    {0.0f, 0.0f, 0.0f}};
+    g_sendCalls = 0;
+    g_sendFlags = 0;
+    g_sendPacket = nullptr;
+    g_sendPacketSize = 0;
+    g_sendPacketBytesSize = 0;
+    std::memset(g_sendPacketBytes, 0, sizeof(g_sendPacketBytes));
+
+    GameNet::SendPkt07_AltGunDispatch(static_cast<short>(0x8123), 0x01000001u);
+
+    const NetPkt07_AltGunDispatch *const sentPacket =
+        reinterpret_cast<const NetPkt07_AltGunDispatch *>(g_sendPacketBytes);
+    const bool ok =
+        g_sendCalls == 1 && g_sendFlags == 1 &&
+        g_sendPacket == &g_NetPkt07_AltGunDispatchBuf.header &&
+        g_sendPacketSize == sizeof(NetPkt07_AltGunDispatch) &&
+        sentPacket->header.packetType == 7 &&
+        sentPacket->header.packetSizeBytes == sizeof(NetPkt07_AltGunDispatch) &&
+        sentPacket->header.payloadDword0 == 0x55667788 &&
+        sentPacket->weaponId == static_cast<short>(0x8123) &&
+        sentPacket->dispatchFlags == 0x01000001u &&
+        Vec3Equals(sentPacket->targetPos, playerState.storedTargetPos);
+
+    g_NetPkt07_AltGunDispatchBuf = oldPacket;
+    g_zNetwork_pDirectPlay4 = oldDPlay;
+    g_zNetwork_LocalPlayerRecord = oldLocalPlayer;
+    g_zNetwork_LocalPlayerKey = oldLocalPlayerKey;
+    g_zNetwork_TcpIpAsyncSendEnabled = oldAsyncSend;
+    g_GameStateOrMapTable = oldGameStateOrMapTable;
+    g_sendCalls = 0;
+    g_sendFlags = 0;
+    g_sendPacket = nullptr;
+    g_sendPacketSize = 0;
+    g_sendPacketBytesSize = 0;
+
+    return ok ? 0 : 1;
+}
+
+extern "C" int gamenet_alt_gun_dispatch_no_op_callback_smoke(void) {
+    OptCatalogEntryDef entry = {};
+    void *saveStateSlot = nullptr;
+    return GameNet::AltGunDispatchNoOpCallback(&entry, &saveStateSlot) == 1 ? 0 : 1;
+}
+
+extern "C" int optcatalog_alt_gun_dispatch_alloc_runtime_gate_smoke(void) {
+    const NetPkt07_AltGunDispatch oldPacket = g_NetPkt07_AltGunDispatchBuf;
+    zNetwork_DPlay4 *const oldDPlay = g_zNetwork_pDirectPlay4;
+    zNetwork_PlayerRecord *const oldLocalPlayer = g_zNetwork_LocalPlayerRecord;
+    const int oldLocalPlayerKey = g_zNetwork_LocalPlayerKey;
+    const int oldAsyncSend = g_zNetwork_TcpIpAsyncSendEnabled;
+    zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
+
+    OptCatalogEntryDef passEntry = {};
+    passEntry.ordinalIndex = 0;
+    void *passSlot = reinterpret_cast<void *>(0x11223344u);
+    const int passZeroResult =
+        OptCatalog::AltGunDispatchAllocRuntimeGateCallback(&passEntry, &passSlot);
+    passEntry.ordinalIndex = 1;
+    const int passOneResult =
+        OptCatalog::AltGunDispatchAllocRuntimeGateCallback(&passEntry, &passSlot);
+    const bool passOk = passZeroResult == 1 && passOneResult == 1 &&
+                        passSlot == reinterpret_cast<void *>(0x11223344u);
+
+    OptCatalogEntryDef entry = {};
+    entry.ordinalIndex = 0x8123;
+    void *nullSlot = nullptr;
+    const bool nullOk =
+        OptCatalog::AltGunDispatchAllocRuntimeGateCallback(&entry, &nullSlot) == 0 &&
+        nullSlot == nullptr;
+
+    zUtil_PlayerStateStorage localPlayerState = {};
+    localPlayerState.storedTargetPos = {1.0f, 2.0f, 3.0f};
+    zUtil_SaveGameState localSaveState = {};
+    localSaveState.playerState = &localPlayerState;
+    g_GameStateOrMapTable = (zInput_GameStateOrMapTablePartial *)&localSaveState;
+
+    void *vtable[52];
+    InitDirectPlayVtable(vtable);
+    FakeDirectPlay4 dplay = {vtable};
+    zNetwork_PlayerRecord localPlayer = {};
+    localPlayer.playerKey = 0x2468;
+    g_zNetwork_pDirectPlay4 = (zNetwork_DPlay4 *)(&dplay);
+    g_zNetwork_LocalPlayerRecord = &localPlayer;
+    g_zNetwork_LocalPlayerKey = 0x13572468;
+    g_zNetwork_TcpIpAsyncSendEnabled = 0;
+    g_NetPkt07_AltGunDispatchBuf = {{0x07, sizeof(NetPkt07_AltGunDispatch), 0}, 0, 0,
+                                    0, {0.0f, 0.0f, 0.0f}};
+    g_sendCalls = 0;
+    std::memset(g_sendPacketBytes, 0, sizeof(g_sendPacketBytes));
+    void *localSlot = &localSaveState;
+    const int localResult =
+        OptCatalog::AltGunDispatchAllocRuntimeGateCallback(&entry, &localSlot);
+    const NetPkt07_AltGunDispatch *const sentPacket =
+        reinterpret_cast<const NetPkt07_AltGunDispatch *>(g_sendPacketBytes);
+    const bool localOk =
+        localResult == 1 && localSlot == reinterpret_cast<void *>(0x01000000u) &&
+        g_sendCalls == 1 && sentPacket->header.payloadDword0 == 0x13572468 &&
+        sentPacket->weaponId == static_cast<short>(0x8123) &&
+        sentPacket->dispatchFlags == 0 &&
+        Vec3Equals(sentPacket->targetPos, localPlayerState.storedTargetPos);
+
+    zUtil_PlayerStateStorage remotePlayerState = {};
+    remotePlayerState.altGunDispatchFlags = 0x01000001;
+    zUtil_SaveGameState remoteSaveState = {};
+    remoteSaveState.playerState = &remotePlayerState;
+    void *remoteSlot = &remoteSaveState;
+    const bool remoteRejectedOk =
+        OptCatalog::AltGunDispatchAllocRuntimeGateCallback(&entry, &remoteSlot) == 0 &&
+        remoteSlot == &remoteSaveState;
+
+    remotePlayerState.altGunDispatchFlags = 0x02000012;
+    remoteSlot = &remoteSaveState;
+    const bool remoteAcceptedOk =
+        OptCatalog::AltGunDispatchAllocRuntimeGateCallback(&entry, &remoteSlot) == 1 &&
+        remoteSlot == reinterpret_cast<void *>(0x02000012u);
+
+    g_NetPkt07_AltGunDispatchBuf = oldPacket;
+    g_zNetwork_pDirectPlay4 = oldDPlay;
+    g_zNetwork_LocalPlayerRecord = oldLocalPlayer;
+    g_zNetwork_LocalPlayerKey = oldLocalPlayerKey;
+    g_zNetwork_TcpIpAsyncSendEnabled = oldAsyncSend;
+    g_GameStateOrMapTable = oldGameStateOrMapTable;
+    g_sendCalls = 0;
+    g_sendFlags = 0;
+    g_sendPacket = nullptr;
+    g_sendPacketSize = 0;
+    g_sendPacketBytesSize = 0;
+
+    if (!passOk) {
+        return 1;
+    }
+    if (!nullOk) {
+        return 2;
+    }
+    if (!localOk) {
+        return 3;
+    }
+    if (!remoteRejectedOk) {
+        return 4;
+    }
+    return remoteAcceptedOk ? 0 : 5;
+}
+
+extern "C" int optcatalog_handle_pkt0a_remove_runtime_relay_smoke(void) {
+    GameNetPlayerRow *const oldHead = g_GameNetPlayerRowHead;
+    GameNetPlayerRow *const oldTail = g_GameNetPlayerRowTail;
+    const std::uint32_t oldCount = g_GameNetPlayerRowCount;
+    const std::int32_t oldEntryCount = g_OptCatalog_EntryCount;
+    OptCatalogEntryDef *const oldEntryTable = g_OptCatalog_EntryTable;
+    const int oldRelayEnabled = g_OptCatalogProcessRuntimeRelayEnabled;
+
+    static NetPkt0A_RemoveRuntimeRelay packet;
+    std::memset(&packet, 0, sizeof(packet));
+    packet.ownerPlayerKey = 0x9090;
+    const int missingResult = OptCatalog::HandlePkt0A_RemoveRuntimeRelay(0x1111, &packet);
+
+    static zClass_NodePartial ownerRoot;
+    std::memset(&ownerRoot, 0, sizeof(ownerRoot));
+    static zUtil_PlayerStateStorage playerState;
+    std::memset(&playerState, 0, sizeof(playerState));
+    playerState.rootNode = &ownerRoot;
+    static zUtil_SaveGameState saveState;
+    std::memset(&saveState, 0, sizeof(saveState));
+    saveState.playerState = &playerState;
+
+    static GameNetPlayerRow row;
+    std::memset(&row, 0, sizeof(row));
+    row.playerKey = packet.ownerPlayerKey;
+    row.saveState = (GameNetPlayerSaveState *)(&saveState);
+    g_GameNetPlayerRowHead = &row;
+    g_GameNetPlayerRowTail = &row;
+    g_GameNetPlayerRowCount = 1;
+
+    static OptCatalogEntryDef entry;
+    std::memset(&entry, 0, sizeof(entry));
+    entry.ordinalIndex = 303;
+    g_OptCatalog_EntryCount = 1;
+    g_OptCatalog_EntryTable = &entry;
+    g_OptCatalogProcessRuntimeRelayEnabled = 1;
+
+    packet.optCatalogEntryId = 303;
+    packet.pointOrVec3 = {0.0f, 0.0f, 0.0f};
+    const int handledZeroResult = OptCatalog::HandlePkt0A_RemoveRuntimeRelay(0x1111, &packet);
+    const bool zeroOk = handledZeroResult == 1 && g_OptCatalogProcessRuntimeRelayEnabled == 1;
+
+    packet.pointOrVec3 = {1.0f, 0.0f, 0.0f};
+    const int handledPointResult = OptCatalog::HandlePkt0A_RemoveRuntimeRelay(0x1111, &packet);
+    const bool pointOk = handledPointResult == 1 && g_OptCatalogProcessRuntimeRelayEnabled == 1;
+
+    g_GameNetPlayerRowHead = oldHead;
+    g_GameNetPlayerRowTail = oldTail;
+    g_GameNetPlayerRowCount = oldCount;
+    g_OptCatalog_EntryCount = oldEntryCount;
+    g_OptCatalog_EntryTable = oldEntryTable;
+    g_OptCatalogProcessRuntimeRelayEnabled = oldRelayEnabled;
+
+    return missingResult == 0 && zeroOk && pointOk ? 0 : 1;
+}
+
+extern "C" int optcatalog_send_pkt0a_remove_runtime_relay_smoke(void) {
+    const NetPkt0A_RemoveRuntimeRelay oldPacket = g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf;
+    const int oldRelayEnabled = g_OptCatalogProcessRuntimeRelayEnabled;
+    zNetwork_DPlay4 *const oldDPlay = g_zNetwork_pDirectPlay4;
+    zNetwork_PlayerRecord *const oldLocalPlayer = g_zNetwork_LocalPlayerRecord;
+    const int oldLocalPlayerKey = g_zNetwork_LocalPlayerKey;
+    const int oldAsyncSend = g_zNetwork_TcpIpAsyncSendEnabled;
+
+    OptCatalogEntryDef entry = {};
+    entry.ordinalIndex = 0x4567;
+
+    g_OptCatalogProcessRuntimeRelayEnabled = 0;
+    g_sendCalls = 0;
+    OptCatalog::SendPkt0A_RemoveRuntimeRelay(&entry, nullptr, nullptr);
+    const bool disabledOk = g_sendCalls == 0;
+
+    static void *vtable[52];
+    InitDirectPlayVtable(vtable);
+    static FakeDirectPlay4 dplay;
+    dplay.vtable = vtable;
+    static zNetwork_PlayerRecord localPlayer;
+    std::memset(&localPlayer, 0, sizeof(localPlayer));
+    localPlayer.playerKey = 0x1111;
+    g_zNetwork_pDirectPlay4 = (zNetwork_DPlay4 *)(&dplay);
+    g_zNetwork_LocalPlayerRecord = &localPlayer;
+    g_zNetwork_LocalPlayerKey = 0x12345678;
+    g_zNetwork_TcpIpAsyncSendEnabled = 0;
+    g_OptCatalogProcessRuntimeRelayEnabled = 1;
+
+    static zClass_NodePartial ownerNode;
+    std::memset(&ownerNode, 0, sizeof(ownerNode));
+    g_sendCalls = 0;
+    OptCatalog::SendPkt0A_RemoveRuntimeRelay(&entry, nullptr, &ownerNode);
+    const bool missingContextOk = g_sendCalls == 0;
+
+    static GameNetPlayerRow ownerRow;
+    std::memset(&ownerRow, 0, sizeof(ownerRow));
+    ownerRow.playerKey = 0x2468;
+    static zUtil_SaveGameState ownerSaveState;
+    std::memset(&ownerSaveState, 0, sizeof(ownerSaveState));
+    ownerSaveState.netPlayerRow = &ownerRow;
+    static HudUiMgrSensorTrackNode trackNode;
+    std::memset(&trackNode, 0, sizeof(trackNode));
+    trackNode.payload = &ownerSaveState;
+    ownerNode.callbackContext = (zClass_NodePartial *)&trackNode;
+
+    g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf =
+        {{0x0a, sizeof(NetPkt0A_RemoveRuntimeRelay), 0},
+         0,
+         0,
+         {9.0f, 9.0f, 9.0f},
+         0};
+    g_sendCalls = 0;
+    g_sendFlags = 0;
+    g_sendPacket = nullptr;
+    g_sendPacketSize = 0;
+    g_sendPacketBytesSize = 0;
+    std::memset(g_sendPacketBytes, 0, sizeof(g_sendPacketBytes));
+    static zVec3 point;
+    point = {4.0f, 5.0f, 6.0f};
+    OptCatalog::SendPkt0A_RemoveRuntimeRelay(&entry, &point, &ownerNode);
+    const NetPkt0A_RemoveRuntimeRelay *const pointPacket =
+        reinterpret_cast<const NetPkt0A_RemoveRuntimeRelay *>(g_sendPacketBytes);
+    const bool pointOk =
+        g_sendCalls == 1 && g_sendFlags == 1 &&
+        g_sendPacket == &g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf.header &&
+        g_sendPacketSize == sizeof(NetPkt0A_RemoveRuntimeRelay) &&
+        pointPacket->header.payloadDword0 == 0x12345678 &&
+        pointPacket->optCatalogEntryId == static_cast<short>(0x4567) &&
+        Vec3Equals(pointPacket->pointOrVec3, point) &&
+        pointPacket->ownerPlayerKey == ownerRow.playerKey;
+
+    g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf.pointOrVec3 = {9.0f, 9.0f, 9.0f};
+    g_sendCalls = 0;
+    std::memset(g_sendPacketBytes, 0, sizeof(g_sendPacketBytes));
+    OptCatalog::SendPkt0A_RemoveRuntimeRelay(&entry, nullptr, &ownerNode);
+    const NetPkt0A_RemoveRuntimeRelay *const zeroPacket =
+        reinterpret_cast<const NetPkt0A_RemoveRuntimeRelay *>(g_sendPacketBytes);
+    const bool zeroOk =
+        g_sendCalls == 1 && zeroPacket->pointOrVec3.x == 0.0f &&
+        zeroPacket->pointOrVec3.y == 0.0f && zeroPacket->pointOrVec3.z == 0.0f &&
+        zeroPacket->ownerPlayerKey == ownerRow.playerKey;
+
+    g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf = oldPacket;
+    g_OptCatalogProcessRuntimeRelayEnabled = oldRelayEnabled;
+    g_zNetwork_pDirectPlay4 = oldDPlay;
+    g_zNetwork_LocalPlayerRecord = oldLocalPlayer;
+    g_zNetwork_LocalPlayerKey = oldLocalPlayerKey;
+    g_zNetwork_TcpIpAsyncSendEnabled = oldAsyncSend;
+    g_sendCalls = 0;
+    g_sendFlags = 0;
+    g_sendPacket = nullptr;
+    g_sendPacketSize = 0;
+    g_sendPacketBytesSize = 0;
+
+    if (!disabledOk) {
+        return 1;
+    }
+    if (!missingContextOk) {
+        return 2;
+    }
+    if (!pointOk) {
+        return 3;
+    }
+    return zeroOk ? 0 : 4;
 }

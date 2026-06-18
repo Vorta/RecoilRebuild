@@ -1,6 +1,8 @@
 #include "Battlesport/player.h"
 #include "GameZRecoil/zVideo/zVideo.h"
 
+#include <string.h>
+
 namespace {
 struct SavedFxSurfaceState {
     unsigned short *pixels;
@@ -69,6 +71,12 @@ bool ClippedPixelsMatch(
         pixels[5 + 1 * 6] == 0xffff &&
         pixels[1 + 3 * 6] == 0xffff;
 }
+
+void *ReadObjectVtable(
+    void *object
+) {
+    return *((void **)object);
+}
 } // namespace
 
 extern "C" int player_underwater_fx_pass3_ui_constructor_smoke(void) {
@@ -89,6 +97,72 @@ extern "C" int player_underwater_fx_pass3_ui_constructor_smoke(void) {
         ui.flags == 0 && ui.timer == 0.0f &&
         ui.x == 0 && ui.y == 0 && ui.state == 0;
     return baseOk && ui.clipRectOrNull == 0 ? 0 : 1;
+}
+
+extern "C" int player_init_underwater_fx_pass3_ui_singleton_smoke(void) {
+    unsigned char oldUnderwaterFxPass3Ui[sizeof(g_Player_UnderwaterFxPass3Ui)];
+    memcpy(
+        oldUnderwaterFxPass3Ui,
+        &g_Player_UnderwaterFxPass3Ui,
+        sizeof(g_Player_UnderwaterFxPass3Ui)
+    );
+
+    memset(
+        &g_Player_UnderwaterFxPass3Ui,
+        0xff,
+        sizeof(g_Player_UnderwaterFxPass3Ui)
+    );
+    Player::InitUnderwaterFxPass3UiSingleton();
+
+    Player_UnderwaterFxPass3Ui probe;
+    probe.Constructor();
+    const bool ok =
+        ReadObjectVtable(&g_Player_UnderwaterFxPass3Ui) == ReadObjectVtable(&probe) &&
+        g_Player_UnderwaterFxPass3Ui.next == 0 &&
+        g_Player_UnderwaterFxPass3Ui.parent == 0 &&
+        g_Player_UnderwaterFxPass3Ui.flags == 0 &&
+        g_Player_UnderwaterFxPass3Ui.timer == 0.0f &&
+        g_Player_UnderwaterFxPass3Ui.x == 0 &&
+        g_Player_UnderwaterFxPass3Ui.y == 0 &&
+        g_Player_UnderwaterFxPass3Ui.state == 0 &&
+        g_Player_UnderwaterFxPass3Ui.clipRectOrNull == 0;
+
+    memcpy(
+        &g_Player_UnderwaterFxPass3Ui,
+        oldUnderwaterFxPass3Ui,
+        sizeof(g_Player_UnderwaterFxPass3Ui)
+    );
+    return ok ? 0 : 1;
+}
+
+extern "C" int player_reset_underwater_fx_pass3_ui_singleton_smoke(void) {
+    unsigned char oldUnderwaterFxPass3Ui[sizeof(g_Player_UnderwaterFxPass3Ui)];
+    memcpy(
+        oldUnderwaterFxPass3Ui,
+        &g_Player_UnderwaterFxPass3Ui,
+        sizeof(g_Player_UnderwaterFxPass3Ui)
+    );
+
+    Player::InitUnderwaterFxPass3UiSingleton();
+    void *const derivedTable = ReadObjectVtable(&g_Player_UnderwaterFxPass3Ui);
+    HudUiRect sentinel = {1, 2, 3, 4};
+    g_Player_UnderwaterFxPass3Ui.clipRectOrNull = &sentinel;
+
+    Player::ResetUnderwaterFxPass3UiSingleton();
+
+    HudUiElement baseProbe;
+    void *const baseTable = ReadObjectVtable(&baseProbe);
+    const bool ok =
+        derivedTable != baseTable &&
+        ReadObjectVtable(&g_Player_UnderwaterFxPass3Ui) == baseTable &&
+        g_Player_UnderwaterFxPass3Ui.clipRectOrNull == &sentinel;
+
+    memcpy(
+        &g_Player_UnderwaterFxPass3Ui,
+        oldUnderwaterFxPass3Ui,
+        sizeof(g_Player_UnderwaterFxPass3Ui)
+    );
+    return ok ? 0 : 1;
 }
 
 extern "C" int player_projectile_camera_fx_pass3_ui_constructor_smoke(void) {

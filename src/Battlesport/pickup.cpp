@@ -86,6 +86,25 @@ struct PickupPkt11Delta {
     unsigned short reserved;
     int pickupId;
 };
+RECOIL_STATIC_ASSERT(sizeof(PickupPkt11Delta) == 0x10);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PickupPkt11Delta,
+        flags
+    ) == 0x08
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PickupPkt11Delta,
+        reserved
+    ) == 0x0a
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        PickupPkt11Delta,
+        pickupId
+    ) == 0x0c
+);
 
 struct PickupArchiveRecord {
     int firstRecord;
@@ -940,8 +959,11 @@ int __fastcall Init(
     return 1;
 }
 
-// Reimplements 0x433e40: Pickup::SendPkt11_Flag2Delta
-// (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x433e40: Pickup::SendPkt11_Flag2Delta (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: send a reliable pkt11 delete delta for a spawn missing from the
+ * primary pickup spawn list.
+ */
 int __fastcall SendPkt11_Flag2Delta(
     PickupSpawnDef *spawn
 ) {
@@ -951,8 +973,10 @@ int __fastcall SendPkt11_Flag2Delta(
     return zNetwork_SendPacketReliable(&g_PickupPkt11Flag2Delta.header);
 }
 
-// Reimplements 0x433e70: Pickup::SendPkt11_Flag8Delta
-// (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x433e70: Pickup::SendPkt11_Flag8Delta (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: send a reliable pkt11 hidden-state delta for a pickup spawn.
+ */
 int __fastcall SendPkt11_Flag8Delta(
     PickupSpawnDef *spawn
 ) {
@@ -962,8 +986,11 @@ int __fastcall SendPkt11_Flag8Delta(
     return zNetwork_SendPacketReliable(&g_PickupPkt11Flag8Delta.header);
 }
 
-// Reimplements 0x433ea0: Pickup::SendPkt11_CreateDelta
-// (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x433ea0: Pickup::SendPkt11_CreateDelta (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: allocate, populate, send, and release a reliable pkt11 create
+ * delta for a primary pickup spawn.
+ */
 void __fastcall SendPkt11_CreateDelta(
     PickupSpawnDef *spawn
 ) {
@@ -1729,8 +1756,11 @@ int __fastcall OnCollected(
     return 1;
 }
 
-// Reimplements 0x41e890: Pickup::ReconcilePrimaryAndNetworkCopySpawnLists
-// (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x41e890: Pickup::ReconcilePrimaryAndNetworkCopySpawnLists (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: reconcile primary and network-copy pickup spawn lists by sending
+ * create or delete pkt11 deltas for missing spawn ids.
+ */
 void ReconcilePrimaryAndNetworkCopySpawnLists() {
     PickupSpawnDef *primarySpawn = g_PickupSpawnList_Primary.head;
     while (primarySpawn != 0) {
@@ -1757,8 +1787,11 @@ void ReconcilePrimaryAndNetworkCopySpawnLists() {
     }
 }
 
-// Reimplements 0x41e900: Pickup::SpawnListContainsPickupId
-// (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x41e900: Pickup::SpawnListContainsPickupId (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: scan a sorted pickup spawn list for a matching pickup id, stopping
+ * early once the list passes the queried id.
+ */
 int __fastcall SpawnListContainsPickupId(
     PickupSpawnDef *spawn,
     PickupSpawnList *list

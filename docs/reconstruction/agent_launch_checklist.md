@@ -46,7 +46,12 @@ If a tool, instruction, environment, or workspace setup blocks work or forces a
 workaround, use the `AGENTS.md` issue commands and boundary rules. Do not file
 normal reconstruction backlog, stale tests/code/manifests/markers, missing or
 unregistered smokes, owner/data blockers, tier debt, or missing evidence as
-workspace issues.
+workspace issues. When a workspace issue is reported or a local tool upgrade is
+requested, inspect the focused issue/tool surface, then spawn
+`recoil_tool_maintainer` by default for the repair. Parent tool edits are
+limited to small integration fixes after worker return, or cases where
+delegation is impossible; record the exception before editing or in the final
+report.
 
 Address-led launch packet for a known anchor:
 
@@ -112,8 +117,9 @@ scopes and spawn `recoil_source_worker` agents for source/test edits.
 
 Use the role pipeline deliberately: the parent schedules and integrates;
 workspace/BN/owner/provider/scaffold roles return evidence packets only; source
-workers edit one assigned slice; verifier agents run targeted checks after the
-parent fixes the validation scope.
+workers edit one assigned slice; tool maintainers fix one assigned
+workspace/tool issue; verifier agents run targeted checks after the parent fixes
+the validation scope.
 
 Create a short parent batch card before any implementation or verification
 handoff. It should record the task kind, active group or address, evidence
@@ -149,18 +155,29 @@ Minimum verifier handoff fields:
 - Return packet fields: exact command lines, pass/fail results, key output
   lines, failure category, and next narrow verification command.
 
+Minimum tool-maintainer handoff fields:
+
+- Workspace issue id or requested tool upgrade.
+- Area and current behavior.
+- Expected behavior.
+- Allowed write paths and forbidden paths.
+- Exact validation commands.
+- Return packet fields: changed files, command results, validation gaps,
+  blockers, and issue-resolution candidate text.
+
 Before launching live markdown handoff blocks, run:
 
 ```powershell
 python tools/recoil.py audit handoff --path .agent/IMPLEMENTATION_GROUPS.md --strict
 ```
 
-Workers may inspect BN and edit only assigned source/test files. They must not
-change BN names/types/comments, save BN, update plan markers, file workspace
-issues, run git commands, or select follow-up work. They return changed paths,
-evidence, checks, blockers, and non-authoritative marker recommendations. The
-parent reviews changed files, reruns checks, performs BN/plan/issue work, and
-owns final claims.
+Workers may inspect BN and edit only assigned source/test files. Tool
+maintainers may edit only assigned tool/docs/skill/role/test files. Subagents
+must not change BN names/types/comments, save BN, update plan markers, file
+workspace issues, run git commands, or select follow-up work. They return
+changed paths, evidence or command results, checks, blockers, and
+non-authoritative recommendations. The parent reviews changed files, reruns
+checks, performs BN/plan/issue work, and owns final claims.
 
 Parent source edits are limited to small integration/conflict fixes after worker
 return, or cases where delegation is impossible; record the exception before

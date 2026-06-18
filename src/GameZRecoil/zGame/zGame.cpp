@@ -1732,7 +1732,7 @@ int __fastcall SetHudTypeForCurrentHwMode(
 /**
  * Reimplements 0x408230: zOpt::SetNetworkEnabled.
  * Original source path: D:\Proj\Battlesport\zOpt.cpp.
- * Purpose: store the persisted network-enabled option value.
+ * Purpose: store the network-enabled option value through its option pointer.
  */
 void __fastcall SetNetworkEnabled(
     int value
@@ -1740,14 +1740,22 @@ void __fastcall SetNetworkEnabled(
     *ZOPT_NETWORK_ENABLED = value;
 }
 
-// Reimplements 0x408240: zOpt::SetNetworkModemEnabled
+/**
+ * Reimplements 0x408240: zOpt::SetNetworkModemEnabled.
+ * Original source path: D:\Proj\Battlesport\zOpt.cpp.
+ * Purpose: store the network-modem option value through its option pointer.
+ */
 void __fastcall SetNetworkModemEnabled(
     int value
 ) {
     *g_zOpt_NetworkModemOption = value;
 }
 
-// Reimplements 0x408250: zOpt::SetNetworkListenEnabled
+/**
+ * Reimplements 0x408250: zOpt::SetNetworkListenEnabled.
+ * Original source path: D:\Proj\Battlesport\zOpt.cpp.
+ * Purpose: store the network-listen option value through its option pointer.
+ */
 void __fastcall SetNetworkListenEnabled(
     int value
 ) {
@@ -1756,8 +1764,8 @@ void __fastcall SetNetworkListenEnabled(
 
 /**
  * Reimplements 0x408270: zOpt::GetNetworkModemEnabled.
- * Original source path: D:\Proj\Battlesport\zopt.cpp.
- * Purpose: return the current network modem option value.
+ * Original source path: D:\Proj\Battlesport\zOpt.cpp.
+ * Purpose: return the network-modem option value through its option pointer.
  */
 int GetNetworkModemEnabled() {
     return *g_zOpt_NetworkModemOption;
@@ -1869,9 +1877,9 @@ int GetReplicateMode() {
 }
 
 /**
- * Reimplements 0x408260: zOpt::GetNetworkEnabled
- * Source: D:\Proj\Battlesport\zOpt.cpp
- * Purpose: Return the current network-enabled option value.
+ * Reimplements 0x408260: zOpt::GetNetworkEnabled.
+ * Original source path: D:\Proj\Battlesport\zOpt.cpp.
+ * Purpose: return the network-enabled option value through its option pointer.
  */
 int GetNetworkEnabled() {
     return *ZOPT_NETWORK_ENABLED;

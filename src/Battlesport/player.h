@@ -87,6 +87,8 @@ extern int g_PlayerEnvProbe_AboveGroundCount;
 extern zEffectAnimEntry *g_PlayerRecentHitFxAnimEntry;
 }
 
+// BN names the retail storage at 0x4f3778 PlayerScreenFxPass3Ui: a
+// zVideoFxPass3Element-compatible HUD element with pass-3 clip state.
 struct Player_UnderwaterFxPass3Ui : zVideoFxPass3Element {
 
     Player_UnderwaterFxPass3Ui();

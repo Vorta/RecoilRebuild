@@ -2,6 +2,183 @@
   "schema_version": 1,
   "owners": [
     {
+      "id": "battlesport_gameplay.pickup_spawn_list_pkt11_sync",
+      "kind": "subsystem",
+      "name": "Pickup spawn-list pkt11 synchronization",
+      "section": "battlesport_gameplay",
+      "state": "discovered",
+      "anchors": [
+        "0x41e890"
+      ],
+      "member_addresses": [
+        "0x41e890",
+        "0x41e900",
+        "0x433e40",
+        "0x433e70",
+        "0x433ea0"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x4f3318",
+          "name": "g_PickupSpawnList_Primary"
+        },
+        {
+          "address": "0x4f32f8",
+          "name": "g_PickupSpawnList_NetworkCopy"
+        },
+        {
+          "address": "0x4dcf20",
+          "name": "g_PickupPkt11Flag2Delta"
+        },
+        {
+          "address": "0x4dcf30",
+          "name": "g_PickupPkt11Flag8Delta"
+        }
+      ],
+      "source_paths": [
+        "src/Battlesport/pickup.cpp"
+      ],
+      "dependencies": [
+        "battlesport_gameplay.pickup_type_table"
+      ],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "accepted",
+        "byte": "deferred"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "BN/source-owner packet maps Pickup namespace source-file subcluster for spawn-list pkt11 synchronization; members reconcile primary/network-copy spawn lists, sorted pickup-id membership, and pkt11 flag2/flag8/create delta senders; data are two complete 16-byte PickupSpawnList globals plus two complete 16-byte pkt11 short-delta globals.",
+        "Source-owner mapper and BN/source review identify a Pickup namespace source-file subcluster, not a class/table owner: five free functions share spawn-list reconciliation and pkt11 send packet shape; no vptr/table/constructor evidence broadens the boundary. 0x433f40 remains a separate pkt11 handler dependency.",
+        "Assigned source worker added accepted provenance docblocks for 0x41e890, 0x41e900, 0x433e40, 0x433e70, and 0x433ea0; parent review confirmed the Pickup namespace source-file subcluster preserves sorted-list membership, primary/network-copy reconciliation, pkt11 flag2/flag8 short-delta sends, and pkt11 create-delta field layout with PickupPkt11Delta size/offset asserts.",
+        "Complete owner data scope is linked: 0x4f3318 g_PickupSpawnList_Primary, 0x4f32f8 g_PickupSpawnList_NetworkCopy, 0x4dcf20 g_PickupPkt11Flag2Delta, and 0x4dcf30 g_PickupPkt11Flag8Delta; VC5 data-symbol target pickup_spawn_sync_globals passed with zero unmasked mismatches for all four 16-byte globals.",
+        "Parent reran functional targets successfully: pickup_spawn_list_contains_pickup_id, pickup_send_pkt11_flag2_delta, pickup_send_pkt11_flag8_delta, pickup_send_pkt11_create_delta, and pickup_reconcile_primary_and_network_copy_spawn_lists.",
+        "Tier S byte verification is deferred by current global owner/data policy; this pass establishes tier B source, functional, and data evidence for the Pickup spawn-list pkt11 owner."
+      ]
+    },
+    {
+      "id": "battlesport_gameplay.player_alt_gun_runtime_dispatch",
+      "kind": "subsystem",
+      "name": "Player alt-gun runtime dispatch",
+      "section": "battlesport_gameplay",
+      "state": "active",
+      "anchors": [
+        "0x43c190"
+      ],
+      "member_addresses": [
+        "0x43c9c0",
+        "0x43c190",
+        "0x43aa30",
+        "0x43afd0",
+        "0x43c330",
+        "0x43c2d0",
+        "0x43c430",
+        "0x43c550"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x4f3a88",
+          "name": "g_GameStateOrMapTable"
+        },
+        {
+          "address": "0x4f0cc0",
+          "name": "g_HudSensorTracker"
+        },
+        {
+          "address": "0x4f36b4",
+          "name": "g_zInputFfEffectSet"
+        }
+      ],
+      "source_paths": [
+        "src/Battlesport/player.cpp",
+        "src/Battlesport/player.h"
+      ],
+      "dependencies": [
+        "effects_weapons.optcatalog_entry_lookup",
+        "effects_weapons.optcatalog_runtime_instances",
+        "battlesport_gameplay.player_weapon_bank_mines_zar",
+        "hud_ui.hud_sensor_tracker_global",
+        "engine.zinput.game_state_or_map_table_data"
+      ],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "accepted",
+        "byte": "deferred"
+      },
+      "blocker": "Register Player alt-gun smokes and docblocks, then resolve g_zInputFfEffectSet and OptCatalog entry-table data before tier B.",
+      "evidence": [
+        "Source-owner mapper bounded the pkt07 lower blocker to the Player alt-gun runtime dispatch subsystem, not a broad C++ Player class: 0x43c9c0, 0x43c190, 0x43aa30, 0x43afd0, 0x43c330, 0x43c2d0, 0x43c430, and 0x43c550 in player.cpp/player.h.",
+        "Focused owner mapping bounds the pkt07 lower Player blocker to the alt-gun runtime dispatch subsystem at 0x43c9c0, 0x43c190, 0x43aa30, 0x43afd0, 0x43c330, 0x43c2d0, 0x43c430, and 0x43c550; this is a Player namespace subsystem, not a broad C++ Player class.",
+        "Owner touches accepted g_GameStateOrMapTable and g_HudSensorTracker data, but g_zInputFfEffectSet has no accepted data owner and OptCatalog entry lookup data 0x778924/0x778928 remains blocked.",
+        "Tier S byte verification remains deferred while authored owner/data blockers remain; this owner pass is source/functional/data routing for pkt07.",
+        "Player alt-gun runtime dispatch source model is bounded to the Player namespace subsystem at 0x43c9c0, 0x43c190, 0x43aa30, 0x43afd0, 0x43c330, 0x43c2d0, 0x43c430, and 0x43c550; worker added immediate provenance docblocks in src/Battlesport/player.cpp and native smoke build compiled.",
+        "Functional verifies passed for 0x43c9c0, 0x43c190, 0x43aa30, 0x43afd0, 0x43c330, 0x43c2d0, 0x43c430, and 0x43c550 after adding player_alt_gun_runtime_smokes.cpp to recoil_native_smoke.",
+        "g_zInputFfEffectSet is now covered by accepted data owner engine.zinput.force_feedback_effect_set_global; this owner remains data-blocked because dependent OptCatalog entry lookup data 0x778924/0x778928 under effects_weapons.optcatalog_entry_lookup is still blocked pending complete entry-table lifecycle/data owner review.",
+        "Direct data owners g_GameStateOrMapTable, g_HudSensorTracker, and g_zInputFfEffectSet are accepted; dependency owners effects_weapons.optcatalog_entry_lookup, effects_weapons.optcatalog_runtime_instances, and battlesport_gameplay.player_weapon_bank_mines_zar now have accepted data gates. The Player alt-gun runtime dispatch members read/use these typed owners and no additional authored globals are claimed for this slice."
+      ]
+    },
+    {
+      "id": "battlesport_gameplay.player_copter_sound_cache",
+      "kind": "data-owner",
+      "name": "Player copter sound cache globals",
+      "section": "battlesport_gameplay",
+      "state": "active",
+      "anchors": [
+        "0x4f36c4"
+      ],
+      "member_addresses": [
+        "0x42b5a0",
+        "0x42b630"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x4f36c4",
+          "name": "g_Player_CopterSndNode1"
+        },
+        {
+          "address": "0x4f36c8",
+          "name": "g_Player_CopterSndNode2"
+        },
+        {
+          "address": "0x4f36cc",
+          "name": "g_Player_CopterSndSample"
+        },
+        {
+          "address": "0x4f3bbc",
+          "name": "g_Player_CopterHealthyNode1"
+        },
+        {
+          "address": "0x4f3bc0",
+          "name": "g_Player_CopterHealthyNode2"
+        }
+      ],
+      "source_paths": [
+        "src/Battlesport/player.cpp",
+        "src/Battlesport/player.h"
+      ],
+      "dependencies": [],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "accepted",
+        "byte": "deferred"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "BN/source identify a bounded Player copter sound cache: g_Player_CopterSndNode1/2 at 0x4f36c4/0x4f36c8, g_Player_CopterSndSample at 0x4f36cc, and g_Player_CopterHealthyNode1/2 at 0x4f3bbc/0x4f3bc0; xrefs bind the cache to ReactivateCopterSndNodesIfHealthy and CacheDisableCopterSndNodesAndStopSample; VC5 target player_copter_sound_cache_globals passes with zero unmasked mismatches. Source-owner gates remain pending for helper source-shape/docblock audit.",
+        "Boundary is the bounded Player copter sound cache owner: helpers 0x42b630 CacheDisableCopterSndNodesAndStopSample and 0x42b5a0 ReactivateCopterSndNodesIfHealthy plus five cache globals 0x4f36c4/0x4f36c8/0x4f36cc/0x4f3bbc/0x4f3bc0; mission init is setup evidence, not a required owner member.",
+        "Worker repaired immediate docblocks for 0x42b630 and 0x42b5a0, added a bounded data-owner comment for the five copter cache globals, and confirmed no raw authored runtime offsets or source-shape scaffolds in the helper bodies; source-shape and original-symbol guards pass for src/Battlesport.",
+        "BN declarations show the five copter cache globals as 4-byte zero-initialized pointers with xrefs bound to the two cache helpers and mission setup; source defines/externs the same typed globals; VC5SP3 target player_copter_sound_cache_globals passed all five symbols with zero unmasked mismatches.",
+        "Functional targets for 0x42b5a0 player_reactivate_copter_snd_nodes_if_healthy and 0x42b630 player_cache_disable_copter_snd_nodes_and_stop_sample passed after focused native smoke registration.",
+        "Function-level tier S remains deferred while authored owner/data blockers remain; current byte evidence is limited to accepted VC5 data-symbol storage for the five copter cache globals."
+      ]
+    },
+    {
       "id": "battlesport_gameplay.player_create_from_names_bootstrap",
       "kind": "record",
       "name": "Player create-from-names bootstrap",
@@ -14,10 +191,72 @@
         "0x420d10",
         "0x421ab0",
         "0x421ea0",
-        "0x432860",
-        "0x45d930"
+        "0x421a40",
+        "0x421790",
+        "0x421470",
+        "0x42aa40",
+        "0x421ed0",
+        "0x4220f0",
+        "0x421830"
       ],
-      "data_addresses": [],
+      "data_addresses": [
+        {
+          "address": "0x4f3a68",
+          "name": "g_PlayerMasterCommonDataListAux"
+        },
+        {
+          "address": "0x4f3a6c",
+          "name": "g_PlayerMasterCommonDataHead"
+        },
+        {
+          "address": "0x4f3a70",
+          "name": "g_PlayerMasterCommonDataTail"
+        },
+        {
+          "address": "0x4f3a74",
+          "name": "g_PlayerMasterCommonDataCount"
+        },
+        {
+          "address": "0x4f3a78",
+          "name": "g_PlayerSaveStateListAux"
+        },
+        {
+          "address": "0x4f3a7c",
+          "name": "g_PlayerSaveStateListHead"
+        },
+        {
+          "address": "0x4f3a80",
+          "name": "g_PlayerSaveStateListTail"
+        },
+        {
+          "address": "0x4f3a84",
+          "name": "g_PlayerSaveStateCount"
+        },
+        {
+          "address": "0x4f3688",
+          "name": "g_PlayerMasterModalDataListAux"
+        },
+        {
+          "address": "0x4f368c",
+          "name": "g_PlayerMasterModalDataHead"
+        },
+        {
+          "address": "0x4f3690",
+          "name": "g_PlayerMasterModalDataTail"
+        },
+        {
+          "address": "0x4f3694",
+          "name": "g_PlayerMasterModalDataCount"
+        },
+        {
+          "address": "0x4f3a94",
+          "name": "g_Player_NextOrdinal"
+        },
+        {
+          "address": "0x779aa8",
+          "name": "g_Player_LocalFxOffsetWorldPtr"
+        }
+      ],
       "source_paths": [
         "src/Battlesport"
       ],
@@ -25,15 +264,1941 @@
         "network_online.gamenet_launch_session_sync"
       ],
       "gates": {
-        "boundary": "pending",
-        "source": "pending",
-        "data": "pending",
-        "functional": "pending",
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "accepted",
         "byte": "deferred"
       },
       "blocker": "Recover the owner record/source cluster before treating create-from-names helper slices as complete.",
       "evidence": [
-        "Seeded from active implementation group after owner-first workflow hardening."
+        "Seeded from active implementation group after owner-first workflow hardening.",
+        "Owner scope is the active Player create-from-names bootstrap record in src/Battlesport/player.cpp, covering members 0x420d10, 0x421a40, 0x421470, 0x421790, 0x421830, 0x421ab0, 0x421ea0, 0x421ed0, 0x4220f0, and 0x42aa40 after frontier review showed direct callees at tier B/provider boundaries.",
+        "VC5 data-symbol targets player_bootstrap_globals, player_save_state_globals, player_bootstrap_runtime_globals, player_shared_aim_origin_rdata, and zclass_player_runtime_di_scene_global passed with zero unmasked data-byte mismatches for the linked Player lists, ordinal/runtime globals, accepted aim-origin rdata, nominal gravity, local FX pointer, and runtime DI scene data owners.",
+        "Worker repaired assigned Player bootstrap docblocks; parent confirmed the ten assigned functions are absent from docblock-audit findings, source-shape guard passed, and source model is scoped to the Player bootstrap/save-state record cluster.",
+        "Functional targets for all listed owner members passed in this session: 0x420d10, 0x421a40, 0x421470, 0x421790, 0x421830, 0x421ab0, 0x421ea0, 0x421ed0, 0x4220f0, and 0x42aa40.",
+        "Tier S byte verification remains deferred for the coherent Player bootstrap/source-cluster pass; no byte promotion is claimed."
+      ]
+    },
+    {
+      "id": "battlesport_gameplay.player_horizon_follow_globals",
+      "kind": "data-owner",
+      "name": "Player horizon-follow globals",
+      "section": "battlesport_gameplay",
+      "state": "active",
+      "anchors": [
+        "0x4f3768"
+      ],
+      "member_addresses": [],
+      "data_addresses": [
+        {
+          "address": "0x4f3768",
+          "name": "g_Player_HorizonNodeFollowCameraEnabled"
+        },
+        {
+          "address": "0x4f36c0",
+          "name": "g_Player_HorizonNode"
+        }
+      ],
+      "source_paths": [
+        "src/Battlesport/player.cpp",
+        "src/Battlesport/player.h",
+        "src/Battlesport/RecoilApp_PlayState_TickAndRenderFrame.cpp"
+      ],
+      "dependencies": [],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "none",
+        "byte": "accepted"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "BN/source identify the complete Player horizon-follow storage as g_Player_HorizonNodeFollowCameraEnabled at 0x4f3768 and g_Player_HorizonNode at 0x4f36c0; xrefs cover mission init, sub/probe and master-type writers, UpdateThirdPersonCamera/RecoilApp tick readers; VC5 target player_horizon_follow_globals passes with zero unmasked mismatches.",
+        "BN/source classify 0x4f3768 g_Player_HorizonNodeFollowCameraEnabled and 0x4f36c0 g_Player_HorizonNode as the complete authored Player horizon-follow data owner, not provider/import/compiler/runtime data.",
+        "player.cpp defines the horizon flag and node pointer as typed zero-initialized globals, player.h externs them, mission init resolves the horizon node, Player water/master-type code toggles the follow flag, and RecoilApp tick/Player camera paths read the typed pair.",
+        "BN declarations show 0x4f3768 int32 g_Player_HorizonNodeFollowCameraEnabled and 0x4f36c0 zClass_Node* g_Player_HorizonNode as zero-initialized 4-byte globals; VC5SP3 target player_horizon_follow_globals passed both symbols with zero unmasked mismatches.",
+        "Pure horizon-follow data owner; behavior evidence remains on the Player/RecoilApp functions that read or write the pair.",
+        "VC5SP3 data-symbol comparison player_horizon_follow_globals accepted the full 8 bytes of horizon-follow storage with zero unmasked mismatches."
+      ]
+    },
+    {
+      "id": "battlesport_gameplay.player_master_type_transition",
+      "kind": "subsystem",
+      "name": "Player master-type transition",
+      "section": "battlesport_gameplay",
+      "state": "active",
+      "anchors": [
+        "0x42b520"
+      ],
+      "member_addresses": [
+        "0x42b520",
+        "0x42ac90",
+        "0x42aeb0",
+        "0x42b0f0",
+        "0x42b2a0",
+        "0x42b4c0"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x56b428",
+          "name": "g_Time_AccumulatedTimeSec"
+        },
+        {
+          "address": "0x4f3778",
+          "name": "g_Player_UnderwaterFxPass3Ui"
+        },
+        {
+          "address": "0x4f3768",
+          "name": "g_Player_HorizonNodeFollowCameraEnabled"
+        },
+        {
+          "address": "0x4f3a88",
+          "name": "g_GameStateOrMapTable"
+        },
+        {
+          "address": "0x4f36c4",
+          "name": "g_Player_CopterSndNode1"
+        },
+        {
+          "address": "0x4f36c8",
+          "name": "g_Player_CopterSndNode2"
+        },
+        {
+          "address": "0x4f3bbc",
+          "name": "g_Player_CopterHealthyNode1"
+        },
+        {
+          "address": "0x4f3bc0",
+          "name": "g_Player_CopterHealthyNode2"
+        },
+        {
+          "address": "0x4f36cc",
+          "name": "g_Player_CopterSndSample"
+        }
+      ],
+      "source_paths": [
+        "src/Battlesport/player.cpp",
+        "src/Battlesport/player.h"
+      ],
+      "dependencies": [
+        "engine.zinput.game_state_or_map_table_data"
+      ],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "accepted",
+        "byte": "deferred"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "BN/source-owner mapper shows a bounded Player namespace gameplay source-file cluster for master-type transition dispatch and five modal transitions; no constructor/vtable/class-table evidence requires broad Player class ownership; direct global data remains pending.",
+        "Focused owner mapping over BN/status/frontier/source shows the six functions form a bounded Player master-type transition subsystem in src/Battlesport/player.cpp; GameNet caller stays external and no table/constructor evidence requires broad Player class ownership.",
+        "Pure tier-S byte verification remains globally deferred while authored owner/data blockers remain; this pass targets source/functional/data gates only.",
+        "Immediate source docblocks now cover the six member functions in src/Battlesport/player.cpp; source-worker changed no behavior; owner boundary is a bounded Player master-type transition subsystem with no broad Player class/table requirement.",
+        "Parent reran functional verifies for 0x42b520, 0x42ac90, 0x42aeb0, 0x42b0f0, 0x42b2a0, and 0x42b4c0 after smoke registration; all six passed.",
+        "Data classifier found direct authored globals outside this six-function owner: 0x56b428 g_Time_AccumulatedTimeSec needs Time data owner; 0x4f3778 Player_UnderwaterFxPass3Ui needs FX UI singleton owner; 0x4f3768 horizon-follow flag needs Player camera/horizon owner; 0x4f36c4/0x4f36c8/0x4f3bbc/0x4f3bc0/0x4f36cc need Player copter sound cache owner. 0x4f3a88 is already covered by engine.zinput.game_state_or_map_table_data.",
+        "Resolved one direct data blocker: g_Time_AccumulatedTimeSec at 0x56b428 is covered by accepted data owner engine.time_runtime_globals, backed by BN/source Time.cpp lifecycle evidence and VC5SP3 targets time_runtime_config_globals/time_runtime_bss_globals. Player master-type transition remains data-blocked by Player underwater FX UI singleton 0x4f3778, horizon-follow flag 0x4f3768, and copter sound cache globals 0x4f36c4/0x4f36c8/0x4f3bbc/0x4f3bc0/0x4f36cc.",
+        "Resolved Time runtime data via engine.time_runtime_globals, underwater pass-3 singleton data via battlesport_gameplay.player_underwater_fx_pass3_ui_singleton, horizon-follow data via battlesport_gameplay.player_horizon_follow_globals, and existing g_GameStateOrMapTable via engine.zinput.game_state_or_map_table_data. Remaining blocker is Player copter sound cache source-owner/data acceptance for 0x4f36c4/0x4f36c8/0x4f36cc/0x4f3bbc/0x4f3bc0; VC5 data-symbol evidence exists in player_copter_sound_cache_globals but helper source-owner gates remain pending.",
+        "All direct/dependency data owners are accepted: engine.time_runtime_globals covers g_Time_AccumulatedTimeSec, engine.zinput.game_state_or_map_table_data covers g_GameStateOrMapTable, battlesport_gameplay.player_underwater_fx_pass3_ui_singleton covers g_Player_UnderwaterFxPass3Ui, battlesport_gameplay.player_horizon_follow_globals covers horizon-follow globals, and battlesport_gameplay.player_copter_sound_cache covers the five copter cache globals. The six master-type transition members use these typed owners and no additional authored globals are claimed."
+      ]
+    },
+    {
+      "id": "battlesport_gameplay.player_nominal_gravity_global",
+      "kind": "data-owner",
+      "name": "Player nominal gravity global",
+      "section": "battlesport_gameplay",
+      "state": "active",
+      "anchors": [
+        "0x4f3ac8"
+      ],
+      "member_addresses": [],
+      "data_addresses": [
+        {
+          "address": "0x4f3ac8",
+          "name": "pending"
+        }
+      ],
+      "source_paths": [
+        "src/Battlesport/player.cpp"
+      ],
+      "dependencies": [],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "none",
+        "byte": "accepted"
+      },
+      "blocker": "Verify g_Player_NominalGravity data-symbol and shared mission-tuning ownership before bootstrap data acceptance.",
+      "evidence": [
+        "Data classifier identified 0x4f3ac8 g_Player_NominalGravity as authored dependency-only data for Player bootstrap.",
+        "BN/source evidence identifies g_Player_NominalGravity at 0x4f3ac8 as the complete Player nominal gravity global defined in src/Battlesport/player.cpp.",
+        "Source definition float g_Player_NominalGravity = 0.0f in src/Battlesport/player.cpp matches the authored global model.",
+        "python tools/recoil.py verify vc5 player_bootstrap_runtime_globals passed for data symbol 0x4f3ac8 with zero unmasked mismatches.",
+        "Data-owner only; no behavior smoke required for the standalone global storage evidence.",
+        "VC5SP3 data-symbol byte comparison for player_bootstrap_runtime_globals accepted 0x4f3ac8."
+      ]
+    },
+    {
+      "id": "battlesport_gameplay.player_shared_aim_origin_rdata",
+      "kind": "data-owner",
+      "name": "Player shared aim-origin rdata constants",
+      "section": "battlesport_gameplay",
+      "state": "active",
+      "anchors": [
+        "0x420d10"
+      ],
+      "member_addresses": [],
+      "data_addresses": [
+        {
+          "address": "0x4dc99c",
+          "name": "g_Player_AltGunAimOriginDefaultY"
+        },
+        {
+          "address": "0x4dc9a0",
+          "name": "g_Player_AltGunAimOriginDefaultZ"
+        },
+        {
+          "address": "0x4dc998",
+          "name": "g_Player_AltGunAimOriginDefaultX"
+        }
+      ],
+      "source_paths": [
+        "src/Battlesport/player.cpp"
+      ],
+      "dependencies": [],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "accepted",
+        "byte": "accepted"
+      },
+      "blocker": "Verify shared alt-gun aim-origin constants before using them as accepted Player bootstrap data dependencies.",
+      "evidence": [
+        "Data classifier routed 0x4dc998/0x4dc99c/0x4dc9a0 out of player_create_from_names_bootstrap because BN xrefs show use from 0x420d10 and Player::ApplyAimPitchToDirection.",
+        "BN data declarations show adjacent Player default aim-origin floats at 0x4dc998/0x4dc99c/0x4dc9a0 with xrefs only from 0x420d10 and 0x43b500 in the current session.",
+        "src/Battlesport/player.cpp now models the shared default alt-gun aim origin as const zVec3 kPlayerDefaultAltGunAimOrigin and both BN xref sites copy that shared vector.",
+        "Functional targets 0x420d10 and 0x43b500 passed after both shared-vector use sites were registered in recoil_native_smoke.",
+        "VC5SP3 data-symbol target player_shared_aim_origin_rdata verified 12 bytes at 0x4dc998 from _kPlayerDefaultAltGunAimOrigin with zero unmasked mismatches.",
+        "VC5SP3 data-symbol verification for player_shared_aim_origin_rdata produced zero unmasked byte mismatches for the complete 12-byte const zVec3 owner.",
+        "VC5SP3 data-symbol target player_shared_aim_origin_rdata verified 12 bytes at 0x4dc998 from _kPlayerDefaultAltGunAimOrigin$S68599 with zero unmasked mismatches."
+      ]
+    },
+    {
+      "id": "battlesport_gameplay.player_underwater_fx_pass3_ui_singleton",
+      "kind": "data-owner",
+      "name": "Player underwater pass-3 FX UI singleton",
+      "section": "battlesport_gameplay",
+      "state": "active",
+      "anchors": [
+        "0x4f3778"
+      ],
+      "member_addresses": [
+        "0x41eb00",
+        "0x41eb20",
+        "0x41eaf0",
+        "0x41eb10"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x4f3778",
+          "name": "g_Player_UnderwaterFxPass3Ui"
+        }
+      ],
+      "source_paths": [
+        "src/Battlesport/player.cpp",
+        "src/Battlesport/player.h"
+      ],
+      "dependencies": [],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "accepted",
+        "byte": "deferred"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "BN declares 0x4f3778 as 56-byte g_Player_UnderwaterFxPass3Ui / PlayerScreenFxPass3Ui zero-initialized storage; xrefs include singleton init/reset, mission init/shutdown, sub-mode water probe, environment probe, and master-type transitions; source defines/externs Player_UnderwaterFxPass3Ui but source-owner gate remains pending for worker docblock/source-shape audit.",
+        "Boundary narrowed to singleton lifecycle/data owner: 0x41eaf0 init+register helper, 0x41eb00 constructor call, 0x41eb10 atexit registration, 0x41eb20 reset/destructor callback, and 0x4f3778 g_Player_UnderwaterFxPass3Ui storage. BN xrefs to broader probe/transition readers are dependencies, not owner members.",
+        "Worker repaired immediate docblocks for 0x41eaf0/0x41eb00/0x41eb10/0x41eb20, documented Player_UnderwaterFxPass3Ui ownership in player.h/player.cpp, and changed reset to the source-faithful explicit singleton destructor call; source-shape and original-symbol guards pass for src/Battlesport.",
+        "BN declares 0x4f3778 g_Player_UnderwaterFxPass3Ui as a complete 56-byte zero-initialized PlayerScreenFxPass3Ui singleton; source defines/externs the singleton and lifecycle helpers construct/register/reset it; VC5SP3 data-symbol target player_underwater_fx_pass3_ui_global passed with zero unmasked mismatches.",
+        "Functional targets for 0x41eb00 player_init_underwater_fx_pass3_ui_singleton and 0x41eb20 player_reset_underwater_fx_pass3_ui_singleton passed after focused native smoke registration; existing functional coverage also covers init/register behavior.",
+        "Function-level tier S remains deferred while authored owner/data blockers remain; current byte evidence is limited to the accepted 56-byte data symbol for g_Player_UnderwaterFxPass3Ui."
+      ]
+    },
+    {
+      "id": "battlesport_gameplay.player_weapon_bank_mines_zar",
+      "kind": "record",
+      "name": "Player weapon-bank and Mines ZAR callbacks",
+      "section": "battlesport_gameplay",
+      "state": "active",
+      "anchors": [
+        "0x438ba0"
+      ],
+      "member_addresses": [
+        "0x438ba0",
+        "0x439540",
+        "0x439600",
+        "0x43c950",
+        "0x43cc70",
+        "0x43cdf0"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x4d1790",
+          "name": "g_PlayerWeaponBankNoGunSentinel"
+        },
+        {
+          "address": "0x4d1794",
+          "name": "g_Float_Zero"
+        },
+        {
+          "address": "0x4dc534",
+          "name": "g_Player_NodeName_Net"
+        },
+        {
+          "address": "0x4dd1dc",
+          "name": "g_Player_MinesZarSectionName"
+        },
+        {
+          "address": "0x4dd1e4",
+          "name": "g_Player_WeaponBankRightNodeNameFmt"
+        },
+        {
+          "address": "0x4dd1ec",
+          "name": "g_Player_WeaponBankScrollNodeNameFmt"
+        },
+        {
+          "address": "0x4dd1f8",
+          "name": "g_Player_WeaponBankLeftNodeNameFmt"
+        },
+        {
+          "address": "0x4f3a88",
+          "name": "g_GameStateOrMapTable"
+        },
+        {
+          "address": "0x4dd224",
+          "name": "g_Player_MineDataNameFmt"
+        },
+        {
+          "address": "0x4dd234",
+          "name": "g_Player_DummyMineDataName"
+        },
+        {
+          "address": "0x4dd244",
+          "name": "g_Player_DummyName"
+        }
+      ],
+      "source_paths": [
+        "src/Battlesport/player.cpp",
+        "src/Battlesport/player.h"
+      ],
+      "dependencies": [
+        "battlesport_gameplay.player_create_from_names_bootstrap"
+      ],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "accepted",
+        "byte": "deferred"
+      },
+      "blocker": "Resolve Player weapon-bank/Mines ZAR source-shape and data ownership before promoting the create-from-names bootstrap path.",
+      "evidence": [
+        "Current BN/source mapping for 0x438ba0, 0x439540, 0x439600, 0x43c950, 0x43cc70, and 0x43cdf0 bounds a Player weapon-bank and Mines ZAR callback source cluster used by Player create-from-names/bootstrap and GameNet pkt06 paths.",
+        "BN/source-owner mapping bounds this Player method cluster to 0x438ba0, 0x439540, 0x439600, 0x43c950, 0x43cc70, and 0x43cdf0 without absorbing zUtil/zReader/zWeapon or the create-from-names bootstrap owner.",
+        "src/Battlesport/player.cpp docblocks now cover ZbdCallbackPtr as original-source helper evidence and 0x43c950 as recovered Player function; source-shape and original-symbol guards pass for the touched Player scope.",
+        "Accepted linked data owners engine.zinput.game_state_or_map_table_data and battlesport_gameplay.player_weapon_bank_mines_zar_rdata cover g_GameStateOrMapTable and the full Player weapon/Mines literal pool with current VC5 data-symbol evidence.",
+        "Functional verification passed in-session for 0x438ba0, 0x439540, 0x439600, 0x43c950, 0x43cc70, and 0x43cdf0.",
+        "Tier S byte verification remains deferred to a coherent Player weapon-bank/Mines source-cluster pass; current work establishes owner/data/functional gates."
+      ]
+    },
+    {
+      "id": "battlesport_gameplay.player_weapon_bank_mines_zar_rdata",
+      "kind": "data-owner",
+      "name": "Player weapon-bank and Mines ZAR literal data",
+      "section": "battlesport_gameplay",
+      "state": "active",
+      "anchors": [
+        "0x438ba0"
+      ],
+      "member_addresses": [],
+      "data_addresses": [
+        {
+          "address": "0x4d1790",
+          "name": "g_PlayerWeaponBankNoGunSentinel"
+        },
+        {
+          "address": "0x4d1794",
+          "name": "g_Float_Zero"
+        },
+        {
+          "address": "0x4dc534",
+          "name": "g_Player_NodeName_Net"
+        },
+        {
+          "address": "0x4dd1dc",
+          "name": "g_Player_MinesZarSectionName"
+        },
+        {
+          "address": "0x4dd1e4",
+          "name": "g_Player_WeaponBankRightNodeNameFmt"
+        },
+        {
+          "address": "0x4dd1ec",
+          "name": "g_Player_WeaponBankScrollNodeNameFmt"
+        },
+        {
+          "address": "0x4dd1f8",
+          "name": "g_Player_WeaponBankLeftNodeNameFmt"
+        },
+        {
+          "address": "0x4dd224",
+          "name": "g_Player_MineDataNameFmt"
+        },
+        {
+          "address": "0x4dd234",
+          "name": "g_Player_DummyMineDataName"
+        },
+        {
+          "address": "0x4dd244",
+          "name": "g_Player_DummyName"
+        }
+      ],
+      "source_paths": [
+        "src/Battlesport/player.cpp"
+      ],
+      "dependencies": [
+        "battlesport_gameplay.player_weapon_bank_mines_zar"
+      ],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "none",
+        "byte": "accepted"
+      },
+      "blocker": "Add and pass VC5 data-symbol target for the full Player weapon-bank/Mines ZAR literal pool before accepting data.",
+      "evidence": [
+        "BN/data classifier mapped Player weapon-bank and Mines ZAR .rdata literals/floats touched by 0x438ba0 and 0x43cc70; 0x4dd244 is shared literal-pool data with zDEClient and must remain recorded as shared.",
+        "BN/data classifier bounded the Player weapon-bank and Mines ZAR literal pool to 0x4d1790, 0x4d1794, 0x4dc534, 0x4dd1dc, 0x4dd1e4, 0x4dd1ec, 0x4dd1f8, 0x4dd224, 0x4dd234, and shared 0x4dd244.",
+        "src/Battlesport/player.cpp emits the recovered VC5 literals/floats used by 0x438ba0 and 0x43cc70.",
+        "Pure data-owner gate; behavior evidence is attached to the Player method owner/function targets.",
+        "VC5 data-symbol targets player_weapon_bank_mines_zar_rdata and player_weapon_bank_mines_zar_rdata_tail passed in-session for all ten mapped rdata addresses, including shared Dummy literal 0x4dd244.",
+        "VC5 data-symbol targets player_weapon_bank_mines_zar_rdata and player_weapon_bank_mines_zar_rdata_tail produced zero unmasked data-byte mismatches after COFF relocation masking."
+      ]
+    },
+    {
+      "id": "effects_weapons.optcatalog_damage_feedback_data",
+      "kind": "data-owner",
+      "name": "OptCatalog damage-feedback tracked node global",
+      "section": "effects_weapons",
+      "state": "active",
+      "anchors": [
+        "0x779aa4"
+      ],
+      "member_addresses": [],
+      "data_addresses": [
+        {
+          "address": "0x779aa4",
+          "name": "pending"
+        }
+      ],
+      "source_paths": [
+        "src/GameZRecoil/zWeapon/OptCatalog.c"
+      ],
+      "dependencies": [],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "none",
+        "byte": "accepted"
+      },
+      "blocker": "Verify g_OptCatalogDamageFeedbackTrackedNode data-symbol and ownership gates.",
+      "evidence": [
+        "Data classifier identified 0x779aa4 g_OptCatalogDamageFeedbackTrackedNode as authored OptCatalog dependency-only data for Player bootstrap.",
+        "BN/source evidence identifies g_OptCatalogDamageFeedbackTrackedNode at 0x779aa4 as the complete OptCatalog damage-feedback tracked-node global defined in src/GameZRecoil/zWeapon/OptCatalog.c.",
+        "Source definition zClass_NodePartial *g_OptCatalogDamageFeedbackTrackedNode = 0 in src/GameZRecoil/zWeapon/OptCatalog.c matches the authored global model.",
+        "python tools/recoil.py verify vc5 optcatalog_runtime_callback_globals passed for data symbol 0x779aa4 with zero unmasked mismatches.",
+        "Data-owner only; no behavior smoke required for the standalone global storage evidence.",
+        "VC5SP3 data-symbol byte comparison for optcatalog_runtime_callback_globals accepted 0x779aa4."
+      ]
+    },
+    {
+      "id": "effects_weapons.optcatalog_entry_lookup",
+      "kind": "source-file",
+      "name": "OptCatalog entry lookup helpers",
+      "section": "effects_weapons",
+      "state": "active",
+      "anchors": [
+        "0x4ae3c0"
+      ],
+      "member_addresses": [
+        "0x4ae3c0",
+        "0x4ae450"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x778924",
+          "name": "g_OptCatalog_EntryCount"
+        },
+        {
+          "address": "0x778928",
+          "name": "g_OptCatalog_EntryTable"
+        }
+      ],
+      "source_paths": [
+        "src/GameZRecoil/zWeapon/OptCatalog.c",
+        "src/GameZRecoil/include/OptCatalog.h"
+      ],
+      "dependencies": [],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "accepted",
+        "byte": "deferred"
+      },
+      "blocker": "Accept source/docblock and complete OptCatalog entry-table data before tier B.",
+      "evidence": [
+        "Plan/status show 0x4ae3c0 OptCatalog::FindEntryByName and 0x4ae450 OptCatalog::FindEntryById as sibling zWeapon/OptCatalog namespace lookup helpers over g_OptCatalog_EntryCount and g_OptCatalog_EntryTable; creating source-file owner-ledger backing before source/docblock and data gate repair.",
+        "BN/status/source evidence bounds this owner to the sibling OptCatalog entry lookup helpers 0x4ae3c0 FindEntryByName and 0x4ae450 FindEntryById plus their shared entry-count/table globals at 0x778924/0x778928.",
+        "Lookup helpers read g_OptCatalog_EntryCount and g_OptCatalog_EntryTable; BN/source show standalone zero-initialized globals, but complete entry-table lifecycle/data-owner acceptance is still pending.",
+        "Pure tier S byte verification remains deferred while authored owner/data blockers remain; this pass is source-owner and functional-evidence repair only.",
+        "OptCatalog.c now has immediate provenance/Purpose docblocks for 0x4ae3c0 FindEntryByName and 0x4ae450 FindEntryById, implements both as typed sibling lookup helpers over g_OptCatalog_EntryCount/g_OptCatalog_EntryTable, and source-shape/original-symbol guards pass for src/GameZRecoil/zWeapon.",
+        "Functional verifies for 0x4ae3c0 optcatalog_find_entry_by_name and 0x4ae450 optcatalog_find_entry_by_id passed with registered native lookup smokes.",
+        "Data gate is backed by accepted owner effects_weapons.optcatalog_entry_table_data: 0x778924/0x778928 are authored OptCatalog entry-table globals with complete typed source lifecycle and VC5SP3 data-symbol matches; lookup helpers only read the accepted count/table owner."
+      ]
+    },
+    {
+      "id": "effects_weapons.optcatalog_entry_table_data",
+      "kind": "data-owner",
+      "name": "OptCatalog entry table runtime data",
+      "section": "effects_weapons",
+      "state": "active",
+      "anchors": [
+        "0x778924"
+      ],
+      "member_addresses": [
+        "0x4b1090",
+        "0x4b1190",
+        "0x4b1d90",
+        "0x4ae3c0",
+        "0x4ae450",
+        "0x4af060"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x778924",
+          "name": "g_OptCatalog_EntryCount"
+        },
+        {
+          "address": "0x778928",
+          "name": "g_OptCatalog_EntryTable"
+        }
+      ],
+      "source_paths": [
+        "src/GameZRecoil/zWeapon/OptCatalog.c",
+        "src/GameZRecoil/include/OptCatalog.h"
+      ],
+      "dependencies": [],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "none",
+        "byte": "deferred"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "BN shows authored .data globals g_OptCatalog_EntryCount at 0x778924 and g_OptCatalog_EntryTable at 0x778928 as adjacent 4-byte zero-initialized OptCatalog entry-table data; xrefs bind them to zWeapon init/load/shutdown lifecycle plus lookup/runtime readers; source defines/externs the globals, allocates count*sizeof(OptCatalogEntryDef), frees per-entry fields/table, and clears both globals; VC5 data-symbol checks for 0x778924 and 0x778928 pass with zero unmasked mismatches.",
+        "BN/source classify 0x778924 g_OptCatalog_EntryCount and 0x778928 g_OptCatalog_EntryTable as authored OptCatalog runtime entry-table data, not provider/import/compiler/runtime data; CRT allocation/free calls remain provider dependencies only.",
+        "OptCatalog.c/OptCatalog.h define and extern the zero-initialized count/table globals; LoadOptCatalogFromPath computes count and calloc(count, sizeof(OptCatalogEntryDef)); ShutdownCore frees per-entry owned fields/table and clears both globals; lookup/runtime readers use typed OptCatalogEntryDef access, preserving the source-file data model.",
+        "BN data declarations show 0x778924 int32 g_OptCatalog_EntryCount and 0x778928 OptCatalogEntryDef* g_OptCatalog_EntryTable as separate 4-byte .data globals with zero initial bytes; xrefs cover zWeapon init/load writes, ShutdownCore teardown/clears, and lookup/runtime readers; VC5SP3 data-symbol verification for 0x778924 and 0x778928 passed with zero unmasked mismatches.",
+        "This scope is a data-owner for the OptCatalog entry table storage/lifecycle; behavior evidence remains on the member/source-file owners that read or mutate the table.",
+        "Pure owner-level tier S byte verification remains deferred while authored owner/data blockers remain; current VC5 evidence is limited to the two static data symbols and supports the data gate only."
+      ]
+    },
+    {
+      "id": "effects_weapons.optcatalog_mine_iterator",
+      "kind": "record",
+      "name": "OptCatalog mine runtime iterator",
+      "section": "effects_weapons",
+      "state": "discovered",
+      "anchors": [
+        "0x4b2930"
+      ],
+      "member_addresses": [
+        "0x4b2930",
+        "0x4b2940"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x56bcb0",
+          "name": "g_OptCatalog_MineIteratorCursor"
+        }
+      ],
+      "source_paths": [
+        "src/GameZRecoil/zWeapon/OptCatalog.c",
+        "src/GameZRecoil/include/OptCatalog.h"
+      ],
+      "dependencies": [],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "accepted",
+        "byte": "deferred"
+      },
+      "blocker": "Accept the typed OptCatalog mine runtime iterator source/global owner before promoting Player Mines ZAR callbacks.",
+      "evidence": [
+        "BN 0x4b2930/0x4b2940 show a two-function OptCatalog runtime-list iterator over OptCatalogEntryDef::activeRuntimeListHead and BSS cursor g_OptCatalog_MineIteratorCursor at 0x56bcb0; status/frontier show no lower callees and source owner/data pending.",
+        "Pure tier S byte work is globally deferred while authored owner/data blockers remain; this owner is currently a source/data gate for Player Mines ZAR callbacks.",
+        "Current BN/source evidence bounds the owner to 0x4b2930 OptCatalog::MineIterator_Begin, 0x4b2940 OptCatalog::MineIterator_Next, and BSS cursor g_OptCatalog_MineIteratorCursor at 0x56bcb0; no lower callees are visible for the iterator functions.",
+        "OptCatalog.c implements the iterator with typed OptCatalogEntryDef::activeRuntimeListHead, OptCatalogRuntimeInstanceStorage::next, and immediate provenance docblocks for 0x4b2930/0x4b2940; source-shape and original-symbol guards pass for src/GameZRecoil/zWeapon.",
+        "Complete owner data is the 4-byte BSS pointer g_OptCatalog_MineIteratorCursor at 0x56bcb0; BN data decl types it as OptCatalogRuntimeInstance*, hexdump is zero-initialized, source defines the same zero-initialized pointer, and the two owner functions are the cursor read/write users in this slice.",
+        "Functional targets optcatalog_mine_iterator_begin and optcatalog_mine_iterator_next passed after registering zweapon_optcatalog_mine_iterator_smoke in tests/native/smoke.cpp and rebuilding ninja-x86-debug recoil_native_smoke."
+      ]
+    },
+    {
+      "id": "effects_weapons.optcatalog_node_damage_handlers",
+      "kind": "source-file",
+      "name": "OptCatalog zClass_Node damage-handler callbacks",
+      "section": "effects_weapons",
+      "state": "active",
+      "anchors": [
+        "0x4b25a0"
+      ],
+      "member_addresses": [
+        "0x4b25a0",
+        "0x4b25f0",
+        "0x4b2630",
+        "0x4b2670",
+        "0x4b26b0"
+      ],
+      "data_addresses": [],
+      "source_paths": [
+        "src/GameZRecoil/zWeapon/OptCatalog.c"
+      ],
+      "dependencies": [
+        "zClass_Class::gwNodeSetHasHitCallback 0x4482b0"
+      ],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "none",
+        "functional": "accepted",
+        "byte": "deferred"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "BN original-file comments for 0x4b25a0, 0x4b25f0, 0x4b2630, 0x4b2670, and 0x4b26b0 identify GameZRecoil/zWeapon/OptCatalog.c; the functions form the OptCatalog damage-handler attachment/clear/timer source-file cluster while 0x4482b0 remains a zClass/Class.c flag-setter dependency.",
+        "BN original-file comments and frontiers identify a five-function OptCatalog.c damage-handler source-file cluster: 0x4b25a0, 0x4b25f0, 0x4b2630, 0x4b2670, and 0x4b26b0; 0x4482b0 is a zClass/Class.c flag-setter dependency, not a member.",
+        "The five BN-routed damage-handler callbacks were migrated from Class.c to OptCatalog.c, source_from manifests and source-file map now point to OptCatalog.c, and implementations use typed zClass_NodeFreeListSlot::damageHandler plus zClass_NodePartial listB traversal without helper scaffolding.",
+        "Functional targets for 0x4b25a0, 0x4b25f0, 0x4b2630, 0x4b2670, and 0x4b26b0 passed in this session using registered zclass_damage_handler_smoke after migration.",
+        "The owner reads/writes heap/caller-owned OptCatalogDamageHandlerPartial records and zClass_NodeFreeListSlot::damageHandler fields only, calls CRT calloc/free, and touches no authored globals or initialized data.",
+        "Tier S byte evidence is deferred for the coherent OptCatalog damage-handler owner; the post-migration VC5 manifest is source-policy clean but no S promotion is claimed."
+      ]
+    },
+    {
+      "id": "effects_weapons.optcatalog_pkt0a_runtime_relay",
+      "kind": "subsystem",
+      "name": "OptCatalog pkt0A runtime-removal relay",
+      "section": "effects_weapons",
+      "state": "active",
+      "anchors": [
+        "0x4342d0"
+      ],
+      "member_addresses": [
+        "0x434240",
+        "0x4342d0"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x4dcf7c",
+          "name": "g_OptCatalogProcessRuntimeRelayEnabled"
+        },
+        {
+          "address": "0x4dcf80",
+          "name": "g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf"
+        }
+      ],
+      "source_paths": [
+        "src/GameZRecoil/zWeapon/OptCatalog.c",
+        "src/GameZRecoil/include/OptCatalog.h",
+        "src/Battlesport/GameNet.cpp",
+        "src/Battlesport/GameNet.h"
+      ],
+      "dependencies": [
+        "effects_weapons.optcatalog_entry_lookup",
+        "effects_weapons.optcatalog_runtime_instances",
+        "network_online.gamenet_launch_session_sync",
+        "network_online.gamenet_pkt07_altgun_dispatch"
+      ],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "blocked",
+        "functional": "accepted",
+        "byte": "deferred"
+      },
+      "blocker": "Accept direct pkt0A relay globals and resolve zNetwork::SendPacketReliable data owner before data promotion.",
+      "evidence": [
+        "BN 0x434240/0x4342d0 form the OptCatalog pkt0A runtime-removal relay: sender gates on g_OptCatalogProcessRuntimeRelayEnabled, fills g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf, and calls zNetwork::SendPacketReliable; handler looks up OptCatalog entry/player row, suppresses relay echo by toggling the same flag, and calls OptCatalog::RemoveRuntimeInstance. Existing functional manifests cover both directions.",
+        "BN/source evidence bounds this owner to OptCatalog pkt0A runtime-removal relay members 0x434240 and 0x4342d0, with direct globals 0x4dcf7c and 0x4dcf80; callback-slot dependencies remain in accepted OptCatalog runtime-instance owner.",
+        "OptCatalog.c now has immediate provenance/Purpose docblocks for 0x434240 and 0x4342d0; source uses typed OptCatalog/GameNet packet, HudUiMgrSensorTrackNode, zUtil_SaveGameState, and GameNetPlayerRow fields, with no copied table or raw-offset scaffold for this relay slice.",
+        "Functional verifies passed for 0x434240 optcatalog_send_pkt0a_remove_runtime_relay and 0x4342d0 optcatalog_handle_pkt0a_remove_runtime_relay after registering bounded native smokes in gamenet_launch_smokes.cpp.",
+        "Direct relay globals are VC5 data-symbol verified: 0x4dcf7c g_OptCatalogProcessRuntimeRelayEnabled in optcatalog_runtime_callback_globals and 0x4dcf80 g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf in gamenet_pkt0a_globals. Owner data remains blocked because sender 0x434240 calls zNetwork::SendPacketReliable 0x48c080, whose lower zNetworkDPlay reliable-send data gates 0x48ad30/0x48ae10 remain Data reimplemented ❌.",
+        "Pure tier S byte verification remains globally deferred while authored owner/data blockers remain; pkt0A owner has source/functional/data-routing evidence only."
+      ]
+    },
+    {
+      "id": "effects_weapons.optcatalog_runtime_impact_processing",
+      "kind": "subsystem",
+      "name": "OptCatalog runtime impact processing",
+      "section": "effects_weapons",
+      "state": "active",
+      "anchors": [
+        "0x4aed00"
+      ],
+      "member_addresses": [
+        "0x4aed00",
+        "0x4b07d0",
+        "0x4b0980",
+        "0x4b09d0",
+        "0x4b0a50"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x778964",
+          "name": "g_OptCatalog_FallbackImpactProbeEnabled"
+        },
+        {
+          "address": "0x77896c",
+          "name": "g_OptCatalogQueuedImpactCount"
+        },
+        {
+          "address": "0x778970",
+          "name": "g_OptCatalogQueuedImpactRecords"
+        },
+        {
+          "address": "0x779a80",
+          "name": "g_OptCatalog_DamageContextKind"
+        },
+        {
+          "address": "0x779a88",
+          "name": "g_OptCatalog_DamageContextHitEvent"
+        }
+      ],
+      "source_paths": [
+        "src/GameZRecoil/zWeapon/OptCatalog.c",
+        "src/GameZRecoil/include/OptCatalog.h"
+      ],
+      "dependencies": [
+        "effects_weapons.optcatalog_runtime_instances",
+        "effects_weapons.optcatalog_damage_feedback_data"
+      ],
+      "gates": {
+        "boundary": "accepted",
+        "source": "blocked",
+        "data": "blocked",
+        "functional": "accepted",
+        "byte": "deferred"
+      },
+      "blocker": "Resolve zClass raycast/filter owner gates and OptCatalog damage-feedback/impact data ownership before promoting impact-runtime helpers beyond tier C.",
+      "evidence": [
+        "BN/source frontier for 0x4aed00 groups ProcessRuntimeInstance with HandleImpactEvent, HandleImpactEventFromRuntimeState, BuildImpactHitList, and HandleImpactFromRuntimeProbe; current functional targets pass after registering native smokes, but source owner/data remain blocked by zClass raycast/filter helpers, g_Player_RuntimeDiScene/runtime-world dependencies, queued-impact data, and damage-feedback context globals.",
+        "Current BN/source map bounds this owner to OptCatalog impact-runtime helpers 0x4aed00/0x4b07d0/0x4b0980/0x4b09d0/0x4b0a50 in OptCatalog.c.",
+        "Frontier for 0x4aed00/0x4b07d0/0x4b09d0/0x4b0a50 still exposes unresolved zClass raycast/filter and OptCatalog damage-feedback source owners, so this cluster cannot be accepted as source-faithful owner yet.",
+        "Owner touches queued-impact, fallback-probe, damage-context, runtime-world/player-scene data; runtime-world is accepted in the runtime-instance owner, but complete impact-processing data ownership and zClass/player scene dependencies remain unresolved.",
+        "Functional verifies for 0x4aed00, 0x4b07d0, 0x4b09d0, and 0x4b0a50 passed in this session after registering the native smokes and fixing the world-area fixture.",
+        "Pure tier S byte verification remains globally deferred while authored owner/data gates are open; manifests defer to coherent OptCatalog/zWeapon runtime impact source-cluster comparison."
+      ]
+    },
+    {
+      "id": "effects_weapons.optcatalog_runtime_instances",
+      "kind": "record",
+      "name": "OptCatalog runtime instance and attach-clone free-list owner",
+      "section": "effects_weapons",
+      "state": "discovered",
+      "anchors": [
+        "0x4ae4b0"
+      ],
+      "member_addresses": [
+        "0x4ae4b0",
+        "0x4ae4e0",
+        "0x4ae520",
+        "0x4ae530",
+        "0x4ae590",
+        "0x4ae660",
+        "0x4aeaa0",
+        "0x4aeb50",
+        "0x4aebc0",
+        "0x4aebf0",
+        "0x4ae4a0"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x77892c",
+          "name": "g_OptCatalogRuntimeInstanceCount"
+        },
+        {
+          "address": "0x778930",
+          "name": "g_OptCatalogRuntimeInstancePool"
+        },
+        {
+          "address": "0x778934",
+          "name": "g_OptCatalogFreeRuntimeInstanceList"
+        },
+        {
+          "address": "0x778920",
+          "name": "g_OptCatalogRuntimeWorld"
+        },
+        {
+          "address": "0x779aac",
+          "name": "g_OptCatalogNextSpawnScale"
+        },
+        {
+          "address": "0x77895c",
+          "name": "g_OptCatalogPendingSpawnTargetCountPtr"
+        },
+        {
+          "address": "0x778960",
+          "name": "g_OptCatalogPendingSpawnTargetListPtr"
+        },
+        {
+          "address": "0x77893c",
+          "name": "g_OptCatalogNetworkOptionState"
+        },
+        {
+          "address": "0x56bc9c",
+          "name": "g_OptCatalog_AllocRuntimeGateCallback"
+        },
+        {
+          "address": "0x56bca4",
+          "name": "g_OptCatalog_RemoveRuntimeRelayCallback"
+        }
+      ],
+      "source_paths": [
+        "src/GameZRecoil/zWeapon/OptCatalog.c",
+        "src/GameZRecoil/include/OptCatalog.h",
+        "src/GameZRecoil/zWeapon/zWeapon.cpp"
+      ],
+      "dependencies": [],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "accepted",
+        "byte": "deferred"
+      },
+      "blocker": "Accept the OptCatalog runtime-instance storage/free-list source and data owner before promoting Player Mines ZAR runtime callbacks.",
+      "evidence": [
+        "BN/source owner mapping for 0x4ae4b0/0x4ae4e0/0x4ae520/0x4ae530/0x4ae590/0x4ae660/0x4aeaa0/0x4aeb50/0x4aebc0/0x4aebf0 shows one OptCatalog runtime storage, attach-clone, and active-list lifecycle slice in zWeapon; functional manifests already cover the slice through existing native smokes.",
+        "Current BN/source mapping bounds the owner to OptCatalog runtime storage, attach-clone, and active-list lifecycle functions 0x4ae4b0/0x4ae4e0/0x4ae520/0x4ae530/0x4ae590/0x4ae660/0x4aeaa0/0x4aeb50/0x4aebc0/0x4aebf0 in zWeapon.",
+        "OptCatalog.c/OptCatalog.h model the owner with typed OptCatalogEntryDef and OptCatalogRuntimeInstanceStorage fields, address-backed docblocks for all owner functions, no source-shape scaffold occurrences under src/GameZRecoil/zWeapon, and matching functional smoke coverage.",
+        "Owner data globals 0x77892c/0x778930/0x778934/0x778920/0x779aac/0x77895c/0x778960/0x77893c/0x56bc9c/0x56bca4 are linked and source definitions match current BN zero-initialized BSS/data declarations; typed globals were tightened for free-list and pending-target pointers.",
+        "Functional verification passed for optcatalog_alloc_or_reuse_attach_node_child_clone, recycle_attach_node_clone, clear_runtime_instance_async_fx_handle_callback, alloc_or_reuse_attach_node_clone, recycle_runtime_instance_storage, alloc_runtime_instance, spawn_runtime_instance_at, recycle_runtime_instance, clear_runtime_instances, and remove_runtime_instance.",
+        "Pure tier S byte verification remains globally deferred while authored owner/data blockers remain; functional manifests also defer tier S to coherent OptCatalog runtime source-cluster comparison.",
+        "Extended owner boundary includes 0x4ae4a0 OptCatalog::SetPendingSpawnTargetOverrides because BN/source show it only installs the owner-linked pending-spawn target globals used by the OptCatalog runtime-instance spawn path.",
+        "OptCatalog.c has an immediate provenance/Purpose docblock for 0x4ae4a0 and implements it as a typed setter for the owner-linked pending-spawn target pointers without source-shape scaffolds; zWeapon source-shape/original-symbol guards pass.",
+        "Functional verify for 0x4ae4a0 optcatalog_set_pending_spawn_target_overrides passed with the registered native pending-spawn override smoke.",
+        "0x4ae4a0 touches only owner-linked g_OptCatalogPendingSpawnTargetCountPtr and g_OptCatalogPendingSpawnTargetListPtr at 0x77895c/0x778960, already accepted as complete data for effects_weapons.optcatalog_runtime_instances."
+      ]
+    },
+    {
+      "id": "engine.time_runtime_globals",
+      "kind": "data-owner",
+      "name": "Time runtime globals",
+      "section": "input_script_config",
+      "state": "active",
+      "anchors": [
+        "0x56b428"
+      ],
+      "member_addresses": [
+        "0x4a5670",
+        "0x4a56d0"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x4e2fa8",
+          "name": "g_Time_MaximumDeltaTimeSec"
+        },
+        {
+          "address": "0x4e2fac",
+          "name": "g_Time_DeltaTimeClampEnabled"
+        },
+        {
+          "address": "0x4e2fb0",
+          "name": "g_Time_CurrentTimeSec"
+        },
+        {
+          "address": "0x4e2fb4",
+          "name": "g_Time_NewTimeSec"
+        },
+        {
+          "address": "0x4e2fb8",
+          "name": "g_Time_TimeScaleFactor"
+        },
+        {
+          "address": "0x56b424",
+          "name": "g_FrameDeltaTimeSec"
+        },
+        {
+          "address": "0x56b428",
+          "name": "g_Time_AccumulatedTimeSec"
+        },
+        {
+          "address": "0x56b42c",
+          "name": "g_Time_UnscaledDeltaTimeSec"
+        },
+        {
+          "address": "0x56b430",
+          "name": "g_Time_UnscaledAccumulatedTimeSec"
+        }
+      ],
+      "source_paths": [
+        "src/GameZRecoil/Time/Time.cpp",
+        "src/GameZRecoil/Time/Time.h"
+      ],
+      "dependencies": [],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "none",
+        "byte": "accepted"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "BN/source identify the complete Time.cpp scalar global set: initialized config/current-time globals at 0x4e2fa8-0x4e2fb8 and zero-initialized frame/accumulator globals at 0x56b424-0x56b430; source defines them in Time.cpp and Reset/Tick own lifecycle writes; VC5SP3 data-symbol targets time_runtime_config_globals and time_runtime_bss_globals pass with zero unmasked mismatches.",
+        "BN/source classify the Time.cpp scalar globals at 0x4e2fa8-0x4e2fb8 and 0x56b424-0x56b430 as authored Time runtime data, not provider/import/compiler/runtime data; GetTickCount remains a provider dependency for Time::Reset/Tick behavior only.",
+        "Time.cpp defines the full scalar global set with VC5-era C linkage; Time::Reset clears new/unscaled/frame/accumulated state and seeds current time, while Time::Tick updates scaled/unscaled delta and accumulators through typed globals matching Time.h externs.",
+        "BN declarations/hexdumps match source initializers for g_Time_MaximumDeltaTimeSec, g_Time_DeltaTimeClampEnabled, g_Time_CurrentTimeSec, g_Time_NewTimeSec, g_Time_TimeScaleFactor, g_FrameDeltaTimeSec, g_Time_AccumulatedTimeSec, g_Time_UnscaledDeltaTimeSec, and g_Time_UnscaledAccumulatedTimeSec; VC5SP3 targets time_runtime_config_globals and time_runtime_bss_globals both pass with zero unmasked data-byte mismatches.",
+        "Pure Time scalar data owner; behavior evidence remains on Time::Reset and Time::Tick function targets.",
+        "VC5SP3 data-symbol comparisons time_runtime_config_globals and time_runtime_bss_globals accept the complete Time.cpp scalar global storage with zero unmasked mismatches."
+      ]
+    },
+    {
+      "id": "engine.zclass.add_child_dispatch",
+      "kind": "subsystem",
+      "name": "zClass data-driven child-link subsystem",
+      "section": "scene_graph_core",
+      "state": "discovered",
+      "anchors": [
+        "0x4483f0"
+      ],
+      "member_addresses": [
+        "0x4483f0",
+        "0x4484d0",
+        "0x452920",
+        "0x44db10",
+        "0x453b40",
+        "0x4510e0",
+        "0x449c90",
+        "0x454310"
+      ],
+      "data_addresses": [],
+      "source_paths": [
+        "src/GameZRecoil/zClass/Class.c",
+        "src/GameZRecoil/zClass/Camera.c",
+        "src/GameZRecoil/zClass/Lod.c",
+        "src/GameZRecoil/zClass/Object3d.c",
+        "src/GameZRecoil/zClass/Animate.c",
+        "src/GameZRecoil/zClass/cls_world.c"
+      ],
+      "dependencies": [
+        "zError::EmitDebugBuffer/g_zError_DebugMsgBuffer accepted at 0x4622f0"
+      ],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "accepted",
+        "byte": "deferred"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "BN frontier for 0x4483f0 dispatches by parent classId to the camera, world, generic, Object3D, LOD, animate, and validated add-child handlers; functional targets for 0x4483f0, 0x449c90, and 0x454310 passed after manifest smoke repair, and existing B child handlers are source-faithful/no-direct-authored-global members of this subsystem.",
+        "Owner boundary is the data-driven add-child dispatch subsystem rooted at 0x4483f0 and its BN-visible handler targets; RemoveChild remains outside this accepted scope.",
+        "Source paths Class.c, Camera.c, Lod.c, Object3d.c, Animate.c, and cls_world.c implement the BN-proven classId dispatch and typed child-link handlers without copied tables or raw offset runtime-state access.",
+        "Handlers link caller-owned zClass nodes and existing child lists; member handlers are no-direct-authored-global data gates, while 0x4483f0's debug-buffer writes depend on accepted zError::EmitDebugBuffer/g_zError_DebugMsgBuffer evidence at 0x4622f0/0x575de0.",
+        "Functional targets zclass_class_add_child, zclass_camera_add_child, and zclass_lod_add_child passed in this session after routing stale manifest smokes to registered native smoke coverage; existing child handlers already carry B-level functional evidence.",
+        "Tier S function-byte verification is deferred for the coherent zClass child-link subsystem; no S promotion is claimed in this owner pass."
+      ]
+    },
+    {
+      "id": "engine.zclass.camera_global_setters",
+      "kind": "data-owner",
+      "name": "zClass camera global setter data",
+      "section": "scene_graph_core",
+      "state": "active",
+      "anchors": [
+        "0x449da0"
+      ],
+      "member_addresses": [
+        "0x449da0",
+        "0x449db0",
+        "0x449dc0",
+        "0x449ba0"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x4ddd10",
+          "name": "g_zClass_ObjectHseTestEnabled"
+        },
+        {
+          "address": "0x4ddd14",
+          "name": "g_zClass_CameraAutoClipDistanceAdjustEnabled"
+        },
+        {
+          "address": "0x4ddd18",
+          "name": "g_zClass_CameraAutoClipDistanceThreshold"
+        },
+        {
+          "address": "0x4ddd1c",
+          "name": "g_zClass_CameraAutoClipDistanceScale"
+        },
+        {
+          "address": "0x4ddd20",
+          "name": "g_zClass_CameraAutoClipDistanceStep"
+        },
+        {
+          "address": "0x4ddd24",
+          "name": "g_zClass_CameraAutoClipDistanceMinScale"
+        },
+        {
+          "address": "0x4ddd34",
+          "name": "g_zClass_CurrentCamera"
+        },
+        {
+          "address": "0x4ddd38",
+          "name": "g_zClass_CameraTargetNode"
+        }
+      ],
+      "source_paths": [
+        "src/GameZRecoil/zClass/Camera.c"
+      ],
+      "dependencies": [],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "accepted",
+        "byte": "deferred"
+      },
+      "blocker": "Complete Camera.c global data-owner review and VC5 data-symbol evidence before accepting data gates; BN shows camera globals interleaved with other zClass globals around 0x4ddd28.",
+      "evidence": [
+        "Seeded from 0x449da0 frontier: SetTargetNode writes g_zClass_CameraTargetNode @0x4ddd38; adjacent setters write g_zClass_CurrentCamera @0x4ddd34, g_zClass_ObjectHseTestEnabled @0x4ddd10, and camera auto-clip globals @0x4ddd14/0x4ddd18, with adjacent auto-clip constants @0x4ddd1c/0x4ddd20/0x4ddd24 needing complete data-owner review.",
+        "Functional targets for 0x449da0, 0x449db0, 0x449dc0, and 0x449ba0 passed in this session using registered zclass_camera_global_setters_smoke.",
+        "Tier S is deferred while camera global data-owner boundary/data-symbol evidence remains pending; no byte promotion is claimed.",
+        "BN data declarations and xrefs bound the setter-owned camera globals at 0x4ddd10/14/18/1c/20/24/34/38; adjacent 0x4ddd28/2c/30 globals are separate render/LOD owners.",
+        "Source owner is src/GameZRecoil/zClass/Camera.c; setter functions 0x449da0/0x449db0/0x449dc0/0x449ba0 have source-faithful docblocks and functional coverage.",
+        "VC5 target zclass_camera_global_setters_data passed for all eight data symbols with zero unmasked byte mismatches; BN hexdump matches initializer values."
+      ]
+    },
+    {
+      "id": "engine.zclass.cls_di_raycast_filter_runtime",
+      "kind": "subsystem",
+      "name": "zClass cls_di raycast and filter-region runtime",
+      "section": "scene_graph_core",
+      "state": "active",
+      "anchors": [
+        "0x446a80"
+      ],
+      "member_addresses": [
+        "0x443c50",
+        "0x443c60",
+        "0x444e90",
+        "0x444de0",
+        "0x4455f0",
+        "0x445650",
+        "0x446a80",
+        "0x446f60",
+        "0x443c70",
+        "0x443d20",
+        "0x42ba50",
+        "0x444890",
+        "0x444c50",
+        "0x444d10",
+        "0x4444b0",
+        "0x443f80",
+        "0x444310",
+        "0x4443e0",
+        "0x4472c0",
+        "0x4473e0",
+        "0x447540",
+        "0x4476f0",
+        "0x446ed0",
+        "0x485380",
+        "0x487540",
+        "0x487350",
+        "0x486290",
+        "0x4856d0",
+        "0x4857f0",
+        "0x485d10",
+        "0x484fc0",
+        "0x484960",
+        "0x484b70",
+        "0x484e00",
+        "0x487900",
+        "0x4879c0",
+        "0x445a00",
+        "0x445b20",
+        "0x445c20",
+        "0x446880",
+        "0x446970",
+        "0x445d40",
+        "0x445f60",
+        "0x446440"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x5396b8",
+          "name": "g_zClass_cls_di_FilterRegions_NodeNamePrefix"
+        },
+        {
+          "address": "0x5396bc",
+          "name": "g_zClass_cls_di_FilterRegions_Center"
+        },
+        {
+          "address": "0x5396c0",
+          "name": "g_zClass_cls_di_FilterRegions_RadiusSq"
+        },
+        {
+          "address": "0x5396c4",
+          "name": "g_zClass_cls_di_FilterRegions_EnableClearanceCheck"
+        },
+        {
+          "address": "0x5396c8",
+          "name": "g_zClass_cls_di_FilterRegions_LineOfSightWorld"
+        },
+        {
+          "address": "0x5396cc",
+          "name": "g_zClass_cls_di_FilterRegions_OutHitList"
+        },
+        {
+          "address": "0x5396d0",
+          "name": "g_cls_di_BreakOnFirstCandidate"
+        },
+        {
+          "address": "0x5396d4",
+          "name": "g_cls_di_StopAfterFirstHit"
+        },
+        {
+          "address": "0x5396d8",
+          "name": "g_DiPickQueryPoint"
+        },
+        {
+          "address": "0x5396e4",
+          "name": "g_DiSegmentEnd_x"
+        },
+        {
+          "address": "0x5396e8",
+          "name": "g_DiSegmentEnd_y"
+        },
+        {
+          "address": "0x5396ec",
+          "name": "g_DiSegmentEnd_z"
+        },
+        {
+          "address": "0x5396f0",
+          "name": "g_DiSegmentBounds_or_minmax_0"
+        },
+        {
+          "address": "0x5396f4",
+          "name": "g_DiSegmentBounds_or_minmax_1"
+        },
+        {
+          "address": "0x5396f8",
+          "name": "g_DiSegmentBounds_or_minmax_2"
+        },
+        {
+          "address": "0x5396fc",
+          "name": "g_DiSegmentBounds_or_minmax_3"
+        },
+        {
+          "address": "0x539700",
+          "name": "g_DiSegmentBounds_or_minmax_4"
+        },
+        {
+          "address": "0x539704",
+          "name": "g_DiSegmentBounds_or_minmax_5"
+        },
+        {
+          "address": "0x539708",
+          "name": "g_DiSegmentBounds_unresolved"
+        },
+        {
+          "address": "0x539810",
+          "name": "g_DiPickCandidateBuffer"
+        },
+        {
+          "address": "0x539818",
+          "name": "g_DiPickPointQueryMaxY"
+        },
+        {
+          "address": "0x53981c",
+          "name": "g_DiPickPointArray"
+        },
+        {
+          "address": "0x539820",
+          "name": "g_DiPickPointCount"
+        },
+        {
+          "address": "0x57c2c4",
+          "name": "g_zClass_DiFaceVertexScratch4"
+        },
+        {
+          "address": "0x539814",
+          "name": "g_DiPickCandidateCursor"
+        }
+      ],
+      "source_paths": [
+        "src/GameZRecoil/zClass/cls_di.c",
+        "src/GameZRecoil/include/zDi.h"
+      ],
+      "dependencies": [],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "accepted",
+        "byte": "deferred"
+      },
+      "blocker": "DI data owner incomplete: segment end/min/max/bounds storage needs BN/source-shape review before source/data acceptance.",
+      "evidence": [
+        "Source-owner mapper split zClass DI raycast/filter state from queued-tree dependency; functional smokes now link and verify, but data shape remains blocked.",
+        "Mapper packet split cls_di raycast/filter runtime as source-file subsystem in cls_di.c/zDi.h; no cross-file queued-tree absorption.",
+        "Current same-session functional verifies passed for 0x443c50, 0x443c60, 0x444e90, 0x444de0, 0x4455f0, 0x445650, 0x446a80, and 0x446f60.",
+        "DI source owner remains blocked until complete cluster extent and segment global source shape are audited.",
+        "DI data remains blocked on segment end/min/max/bounds storage order/extent and unresolved g_DiSegmentBounds review.",
+        "Tier S deferred to coherent zClass cls_di source-cluster pass.",
+        "Accepted after cls_di.c/zDi.h runtime source model repair: zClass_DiRaycastFilterRuntime groups the 0x5396b8..0x539827 BSS owner, docblock audit findings=0, original-symbol guard clean, source-shape guard clean, and expanded cls_di functional verifies passed in-session.",
+        "Accepted after data classifier identified 0x5396b8..0x539827 as one zClass_DiRaycastFilterRuntime BSS owner with segmentBounds[12] and 0x57c2c4..0x57c2f3 as zVec3 scratch[4]; VC5 data-symbol compare zclass_cls_di_raycast_filter_runtime_data passed for 0x5396b8 length 368 and 0x57c2c4 length 48 with zero unmasked mismatches."
+      ]
+    },
+    {
+      "id": "engine.zclass.copy_node_clone_options",
+      "kind": "subsystem",
+      "name": "zClass copy-node clone-option wrappers",
+      "section": "scene_graph_core",
+      "state": "discovered",
+      "anchors": [
+        "0x452500"
+      ],
+      "member_addresses": [
+        "0x451b20",
+        "0x452400",
+        "0x452500",
+        "0x452560"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x4de4cc",
+          "name": "g_zClass_CopyNodeCloneDiMode"
+        },
+        {
+          "address": "0x539c9c",
+          "name": "g_zClass_CopyNodeDiArg0"
+        },
+        {
+          "address": "0x539ca0",
+          "name": "g_zClass_CopyNodeDiArg1"
+        }
+      ],
+      "source_paths": [
+        "src/GameZRecoil/zClass/cls_util.c"
+      ],
+      "dependencies": [],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "accepted",
+        "byte": "deferred"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "BN xrefs show the clone-option globals are touched only by CopyNodeDisplayInstance, CopyNodeWithCloneOptions, and CopyNode; CopyNodeDispatch is the wrapper dependency. Functional targets 0x451b20/0x452400/0x452500 passed, and vc5 target zclass_copy_node_globals matched all three data symbols.",
+        "BN/source scope is limited to cls_util.c copy-node clone-option wrappers and dispatch dependency at 0x451b20/0x452400/0x452500/0x452560.",
+        "Source implements the BN-proven wrapper/dispatch behavior in src/GameZRecoil/zClass/cls_util.c with address-backed docblocks and functional targets for display-instance, dispatch, and wrapper behavior.",
+        "Functional targets 0x451b20, 0x452400, and 0x452500 passed in this session; 0x452560 shares the same zclass_copy_node_dispatch_and_wrappers_smoke wrapper coverage.",
+        "BN data declarations and xrefs cover g_zClass_CopyNodeCloneDiMode @0x4de4cc, g_zClass_CopyNodeDiArg0 @0x539c9c, and g_zClass_CopyNodeDiArg1 @0x539ca0; vc5 target zclass_copy_node_globals matched all three generated data symbols with zero unmasked mismatches.",
+        "VC5 function byte verification remains deferred/failed for the copy-node functions; this owner is accepted only through tier B data and behavior evidence."
+      ]
+    },
+    {
+      "id": "engine.zclass.hit_callback_flag_setter",
+      "kind": "standalone",
+      "name": "zClass hit-callback flag setter",
+      "section": "scene_graph_core",
+      "state": "discovered",
+      "anchors": [
+        "0x4482b0"
+      ],
+      "member_addresses": [
+        "0x4482b0"
+      ],
+      "data_addresses": [],
+      "source_paths": [
+        "src/GameZRecoil/zClass/Class.c"
+      ],
+      "dependencies": [],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "none",
+        "functional": "accepted",
+        "byte": "deferred"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "BN/source evidence for 0x4482b0 is a standalone zClass_Class::gwNodeSetHasHitCallback leaf in GameZRecoil/zClass/Class.c: null-node reporting plus typed bit 0x40 set/clear on zClass_NodePartial::flags; functional target zclass_node_set_has_hit_callback passed and no authored globals are touched.",
+        "0x4482b0 is a standalone zClass/Class.c flag setter leaf with no class/table/data owner beyond the typed zClass_NodePartial flag field.",
+        "Class.c implements 0x4482b0 as typed null-node reporting plus bit 0x40 set/clear on zClass_NodePartial::flags with an address-backed provenance docblock.",
+        "0x4482b0 touches no authored globals; it reads/writes only caller-owned zClass_NodePartial::flags and calls accepted zError reporting for null nodes.",
+        "VC5 byte comparison remains deferred/failed under zclass_node_flag_copy_dependencies; no tier S promotion is claimed.",
+        "Functional target zclass_node_set_has_hit_callback passed in this session with zclass_node_extra_flag_setters_smoke."
+      ]
+    },
+    {
+      "id": "engine.zclass.node_name_accessors",
+      "kind": "subsystem",
+      "name": "zClass node name accessors",
+      "section": "scene_graph_core",
+      "state": "discovered",
+      "anchors": [
+        "0x447dc0"
+      ],
+      "member_addresses": [
+        "0x447dc0",
+        "0x447e30"
+      ],
+      "data_addresses": [],
+      "source_paths": [
+        "src/GameZRecoil/zClass/Class.c"
+      ],
+      "dependencies": [
+        "provider.imports.strncpy",
+        "provider.imports.sprintf"
+      ],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "none",
+        "functional": "accepted",
+        "byte": "deferred"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "BN assembly for 0x447dc0 writes only the caller-owned zClass_NodePartial name buffer, uses provider CRT strncpy/sprintf imports, and has no authored global xrefs; 0x447e30 returns the same node name buffer. Functional targets zclass_node_set_name and zclass_node_get_name passed.",
+        "BN assembly/source docblocks and functional smokes cover set/get name behavior, null-node reporting, long-name strncpy path, short-name sprintf path, and name-buffer return.",
+        "Owner scope is the Class.c zClass node name accessor pair 0x447dc0/0x447e30 plus CRT provider imports.",
+        "BN assembly for 0x447dc0/0x447e30 touches caller-owned zClass_NodePartial fields and provider CRT imports only; no authored global data xrefs are present.",
+        "Functional targets zclass_node_set_name and zclass_node_get_name passed in this session.",
+        "VC5 function byte verification for 0x447dc0 remains a known tier-S mismatch; no byte promotion is claimed."
+      ]
+    },
+    {
+      "id": "engine.zclass.object3d_visibility_color_setters",
+      "kind": "subsystem",
+      "name": "zClass Object3D visibility/color setters",
+      "section": "scene_graph_core",
+      "state": "discovered",
+      "anchors": [
+        "0x44dc30"
+      ],
+      "member_addresses": [
+        "0x44dbb0",
+        "0x44dc30"
+      ],
+      "data_addresses": [],
+      "source_paths": [
+        "src/GameZRecoil/zClass/Object3d.c"
+      ],
+      "dependencies": [],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "none",
+        "functional": "accepted",
+        "byte": "deferred"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "BN frontier for 0x44dbb0 and 0x44dc30 shows only accepted zError provider calls; source uses typed zClass_NodePartial and zClass_Object3DDataPartial validation with Object3d.c helpers, and functional visible/color smoke passed.",
+        "Current BN frontiers bound the owner to the Object3d.c visibility/color setters at 0x44dbb0 and 0x44dc30, each with only accepted zError provider calls below them.",
+        "src/GameZRecoil/zClass/Object3d.c implements both setters with typed Object3D data fields and the recovered validation/clamp helpers; no raw runtime-state offsets or dispatch scaffolds are used.",
+        "The setters mutate only caller-owned Object3D node/class-data fields and call accepted zError provider paths for validation errors; no authored global storage is owned by this two-function accessor slice.",
+        "Functional targets zclass_object3d_set_visible_flag and zclass_object3d_set_color_alpha passed through zclass_object3d_visible_and_color_smoke after registering the existing native smoke.",
+        "Tier S remains deferred to a coherent zClass Object3D source-cluster pass after global owner/data blockers clear."
+      ]
+    },
+    {
+      "id": "engine.zclass.player_runtime_di_scene_global",
+      "kind": "data-owner",
+      "name": "zClass player runtime DI scene global",
+      "section": "engine_zclass",
+      "state": "active",
+      "anchors": [
+        "0x4f36b8"
+      ],
+      "member_addresses": [],
+      "data_addresses": [
+        {
+          "address": "0x4f36b8",
+          "name": "pending"
+        }
+      ],
+      "source_paths": [
+        "src/GameZRecoil/zClass/Class.c"
+      ],
+      "dependencies": [],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "none",
+        "byte": "accepted"
+      },
+      "blocker": "Verify g_Player_RuntimeDiScene data-symbol and dependency owner gates.",
+      "evidence": [
+        "Data classifier identified 0x4f36b8 g_Player_RuntimeDiScene as authored dependency-only data for Player bootstrap.",
+        "BN/source evidence identifies g_Player_RuntimeDiScene at 0x4f36b8 as the complete zClass player runtime DI scene global defined in src/GameZRecoil/zClass/Class.c.",
+        "Source definition zClass_NodePartial *g_Player_RuntimeDiScene = 0 in src/GameZRecoil/zClass/Class.c matches the authored global model.",
+        "python tools/recoil.py verify vc5 zclass_player_runtime_di_scene_global passed for data symbol 0x4f36b8 with zero unmasked mismatches.",
+        "Data-owner only; no behavior smoke required for the standalone global storage evidence.",
+        "VC5SP3 data-symbol byte comparison for zclass_player_runtime_di_scene_global accepted 0x4f36b8."
+      ]
+    },
+    {
+      "id": "engine.zclass.queued_tree_update",
+      "kind": "subsystem",
+      "name": "zClass queued-tree type-list update",
+      "section": "scene_graph_core",
+      "state": "active",
+      "anchors": [
+        "0x44eba0"
+      ],
+      "member_addresses": [
+        "0x44eba0",
+        "0x44eb50",
+        "0x44eb00"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x4ddee0",
+          "name": "g_zClassCallbackPriorityHeadSlotPtrs"
+        },
+        {
+          "address": "0x4ddef8",
+          "name": "g_zClass_TypeList_HeadSlotPtrs"
+        },
+        {
+          "address": "0x4ddf38",
+          "name": "g_zClass_TypeList_TailSlotPtrs"
+        },
+        {
+          "address": "0x539bac",
+          "name": "g_zClass_TypeList_Buckets"
+        },
+        {
+          "address": "0x539c6c",
+          "name": "g_zClass_TypeList_FreeLinkHead"
+        },
+        {
+          "address": "0x539c70",
+          "name": "g_zClass_NodeList_PendingFreeHead"
+        },
+        {
+          "address": "0x4dded8",
+          "name": "g_zClass_DeferredProcessingEnabled"
+        },
+        {
+          "address": "0x539c74",
+          "name": "g_zClass_TypeList_LiveLinkCount"
+        },
+        {
+          "address": "0x539c78",
+          "name": "g_zClass_TypeList_PeakLiveLinkCount"
+        }
+      ],
+      "source_paths": [
+        "src/GameZRecoil/zClass/List.c",
+        "src/GameZRecoil/include/zClass.h"
+      ],
+      "dependencies": [],
+      "gates": {
+        "boundary": "accepted",
+        "source": "blocked",
+        "data": "blocked",
+        "functional": "accepted",
+        "byte": "deferred"
+      },
+      "blocker": "Type-list mutation/update data overlaps narrow lookup owner and needs complete data-owner review before source/data acceptance.",
+      "evidence": [
+        "Source-owner mapper identified queued-tree update as dependency owner for DI ray/filter, not same cls_di owner; functional smokes now link and verify.",
+        "Mapper packet split queued-tree List.c type-list update as dependency owner separate from cls_di runtime.",
+        "Current same-session functional verifies passed for 0x44eba0, 0x44eb50, and 0x44eb00.",
+        "Queued-tree source owner remains blocked until complete type-list mutation/update owner supersedes or reconciles narrow lookup owner scope.",
+        "Queued-tree data remains blocked because type-list buckets/head-slot data overlap a narrow accepted lookup owner and need complete data-owner review.",
+        "Tier S deferred to coherent zClass type-list/source-cluster pass."
+      ]
+    },
+    {
+      "id": "engine.zclass.typelist_find_by_type_and_name",
+      "kind": "subsystem",
+      "name": "zClass type-list exact-name lookup",
+      "section": "scene_graph_core",
+      "state": "discovered",
+      "anchors": [
+        "0x44ecf0"
+      ],
+      "member_addresses": [
+        "0x44ecf0"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x4ddef8",
+          "name": "g_zClass_TypeList_HeadSlotPtrs"
+        },
+        {
+          "address": "0x539bac",
+          "name": "g_zClass_TypeList_Buckets"
+        }
+      ],
+      "source_paths": [
+        "src/GameZRecoil/zClass/List.c"
+      ],
+      "dependencies": [],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "accepted",
+        "byte": "deferred"
+      },
+      "blocker": "Owner/data accepted only for the exact-name lookup leaf; broader zClass_TypeList mutation/update cluster remains separate.",
+      "evidence": [
+        "Current BN assembly for 0x44ecf0 shows a leaf lookup: load g_zClass_TypeList_HeadSlotPtrs[bucket], walk zClass_TypeListLink::next, inline strcmp against node->name, return first matching node or null; no table/class dispatch or callees are involved.",
+        "BN assembly for 0x44ecf0 proves a leaf exact-name lookup over g_zClass_TypeList_HeadSlotPtrs[bucket] and zClass_TypeListLink::next with inline strcmp; no callees, tables, or adjacent mutator functions are required for this narrow blocker.",
+        "src/GameZRecoil/zClass/List.c implements 0x44ecf0 as a zClass namespace leaf using the recovered zClass_TypeList::Head inline helper, typed zClass_TypeListLink traversal, strcmp name equality, and an immediate address/Purpose docblock; source-shape guard and List.c docblock audit pass.",
+        "Data gate covers the complete globals directly read by this lookup: g_zClass_TypeList_HeadSlotPtrs at 0x4ddef8 and the backing g_zClass_TypeList_Buckets aggregate at 0x539bac; VC5 target zclass_find_by_type_and_name_data passed with zero unmasked data-byte mismatches for both.",
+        "Functional target zclass_find_by_type_and_name passed in current session through zclass_find_by_name_and_filtered_iter_smoke, covering matching and missing-name cases over inserted bucket links.",
+        "Tier S remains deferred: current VC5 function comparison for 0x44ecf0 still has known unmasked byte mismatches from inline strcmp/codegen shape, while owner/data/functional evidence supports tier B only."
+      ]
+    },
+    {
+      "id": "engine.zeffect.anim_entry_name_lookup",
+      "kind": "subsystem",
+      "name": "zEffectAnim entry name lookup",
+      "section": "engine_zeffect",
+      "state": "discovered",
+      "anchors": [
+        "0x45ff10"
+      ],
+      "member_addresses": [
+        "0x45ff10"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x575daa",
+          "name": "g_zEffectAnim_EntryCount"
+        },
+        {
+          "address": "0x575dac",
+          "name": "g_zEffectAnim_EntryList"
+        }
+      ],
+      "source_paths": [
+        "src/GameZRecoil/zEffect/zEffect.cpp"
+      ],
+      "dependencies": [],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "accepted",
+        "byte": "deferred"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "Current BN/status/source evidence bounds this owner to zEffectAnim::FindEntryByName, a namespace leaf that scans g_zEffectAnim_EntryList using g_zEffectAnim_EntryCount and returns the first name match; no lower callees are present.",
+        "BN/status/frontier and source review identify a narrow zEffectAnim namespace leaf owner: 0x45ff10 FindEntryByName scans the entry-list globals and has no direct callees or broader dispatch/class ownership.",
+        "src/GameZRecoil/zEffect/zEffect.cpp has the accepted 0x45ff10 provenance docblock and typed source-faithful implementation using zEffectAnimEntry names, g_zEffectAnim_EntryCount, and g_zEffectAnim_EntryList; no raw offsets or scaffolds are present.",
+        "Complete touched data scope is linked: 0x575daa g_zEffectAnim_EntryCount is a 2-byte zero-initialized int16_t and 0x575dac g_zEffectAnim_EntryList is a 4-byte zero-initialized zEffectAnimEntry pointer in BN; VC5 data-symbol blocks in zeffect_anim_check_activation_prereqs passed both with zero unmasked mismatches after relocation masking.",
+        "Functional target zeffect_anim_find_entry_by_name passed in this session with zeffect_anim_find_entry_by_name_smoke.",
+        "Tier S byte verification is deferred by current global owner/data policy; this pass establishes tier B owner/source/data/functional evidence for 0x45ff10."
+      ]
+    },
+    {
+      "id": "engine.zeffect.zdeclient_feature_entry_list",
+      "kind": "data-owner",
+      "name": "zDEClient feature-entry list storage",
+      "section": "engine.zeffect",
+      "state": "active",
+      "anchors": [
+        "0x457c50"
+      ],
+      "member_addresses": [
+        "0x457c50",
+        "0x457840",
+        "0x458a30",
+        "0x458a70",
+        "0x457b40",
+        "0x457660",
+        "0x4576b0"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x539df0",
+          "name": "g_zDEClient_FeatureListFlags"
+        },
+        {
+          "address": "0x539df4",
+          "name": "g_zDEClient_FeatureListBegin"
+        },
+        {
+          "address": "0x539df8",
+          "name": "g_zDEClient_FeatureListEnd"
+        },
+        {
+          "address": "0x539dfc",
+          "name": "g_zDEClient_FeatureListCapacityEnd"
+        }
+      ],
+      "source_paths": [
+        "src/GameZRecoil/zDEClient/zdec_init.cpp"
+      ],
+      "dependencies": [],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "accepted",
+        "byte": "deferred"
+      },
+      "blocker": "Map-tree/display cleanup callbacks remain separate zDEClient owners; this owner covers feature-entry list storage and serialization dispatch.",
+      "evidence": [
+        "BN data declares contiguous feature-list storage at 0x539df0..0x539dff (int flags plus Begin/End/CapacityEnd zDEClient_FeatureEntry pointers), source declares matching globals in zdec_init.cpp, VC5 data manifest zdeclient_feature_entry_list_globals has zero unmasked mismatches for all four symbols, and functional target zdeclient_dispatch_feature_event_templates passed for 0x457c50.",
+        "BN/source evidence bounds this data owner to feature-list storage 0x539df0..0x539dff and member functions that initialize, grow, serialize, and dispatch zDEClient_FeatureEntry records; map-tree/display cleanup remains separate owner work.",
+        "Source uses typed zDEClient_FeatureEntry records (0x34 bytes), typed Begin/End/CapacityEnd pointers, VC5-era vector helper functions, and typed feature dispatch callbacks; no dispatch-only leaf or copied table scaffold is used for 0x457c50.",
+        "BN data declarations show int32_t g_zDEClient_FeatureListFlags at 0x539df0 and zDEClient_FeatureEntry* Begin/End/CapacityEnd at 0x539df4/0x539df8/0x539dfc, all zero-initialized; VC5 data-symbol verification target zdeclient_feature_entry_list_globals passed with zero unmasked mismatches for all four symbols.",
+        "Functional verification for 0x457c50 target zdeclient_dispatch_feature_event_templates passed in this session after wiring the existing native smoke.",
+        "Tier S remains deferred to a coherent zDEClient feature-list/source-cluster VC5 pass; current goal is B-level owner/data acceptance for the GameNet dependency."
+      ]
+    },
+    {
+      "id": "engine.zgame.zopt_network_options",
+      "kind": "subsystem",
+      "name": "zOpt network option accessors",
+      "section": "input_script_config",
+      "state": "discovered",
+      "anchors": [
+        "0x408260"
+      ],
+      "member_addresses": [
+        "0x408230",
+        "0x408240",
+        "0x408250",
+        "0x408260",
+        "0x408270"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x4e5d74",
+          "name": "g_zOpt_NetworkEnabledOption"
+        },
+        {
+          "address": "0x4e5d78",
+          "name": "g_zOpt_NetworkListenOption"
+        },
+        {
+          "address": "0x4e5d90",
+          "name": "g_zOpt_NetworkModemOption"
+        }
+      ],
+      "source_paths": [
+        "src/GameZRecoil/zGame"
+      ],
+      "dependencies": [
+        "engine.zgame.options_load_game_options"
+      ],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "accepted",
+        "byte": "deferred"
+      },
+      "blocker": "Accept source/data only after docblock cleanup, current functional evidence, and zGame options initialization/data review are validated.",
+      "evidence": [
+        "BN assembly and data xrefs bound the source owner to zOpt network option accessors: 0x408230/0x408240/0x408250 store through the three option pointer globals, 0x408260/0x408270 read through them, and 0x407700 initializes those globals from Options_GetOrCreateOption.",
+        "Current BN assembly/xrefs prove the full narrow owner boundary: accessors 0x408230/0x408240/0x408250/0x408260/0x408270 use only the three network option pointer globals, and 0x407700 initializes those globals from zGame::Options_GetOrCreateOption.",
+        "Source model is a plain zOpt namespace accessor subsystem in src/GameZRecoil/zGame/zGame.cpp: the five functions directly load/store the recovered option pointer globals with no class/table/scaffold model, and touched accessor docblocks now carry address/source-path/Purpose evidence.",
+        "Data gate covers the complete touched global set for this owner: BN data at 0x4e5d74, 0x4e5d78, and 0x4e5d90 are independent 4-byte zero-initialized pointer globals; xrefs are limited to 0x407700 initialization and the five owner accessors; VC5 target zopt_network_option_globals reports zero unmasked data-byte mismatches for all three symbols.",
+        "Functional target zopt_network_enabled_accessor_smoke passed in current verification for 0x408230, 0x408240, 0x408250, 0x408260, and 0x408270, covering enabled/modem/listen stores and enabled/modem getters.",
+        "Owner-level tier S is deferred by the global owner/data gate; current VC5 function-byte evidence is available only for 0x408260 and 0x408270, while the three setters remain behavior/data-ready but not owner-level byte-complete."
+      ]
+    },
+    {
+      "id": "engine.zinput.force_feedback_effect_set_global",
+      "kind": "data-owner",
+      "name": "zInput force-feedback effect-set pointer global",
+      "section": "input_script_config",
+      "state": "active",
+      "anchors": [
+        "0x4f36b4"
+      ],
+      "member_addresses": [],
+      "data_addresses": [
+        {
+          "address": "0x4f36b4",
+          "name": "g_zInputFfEffectSet"
+        }
+      ],
+      "source_paths": [
+        "src/GameZRecoil/zInput/zInput.cpp",
+        "src/GameZRecoil/zInput/zInput.h",
+        "src/Battlesport/player.cpp"
+      ],
+      "dependencies": [
+        "provider.directx6.directinput",
+        "battlesport_gameplay.player_alt_gun_runtime_dispatch"
+      ],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "none",
+        "byte": "deferred"
+      },
+      "blocker": "pending parent acceptance of VC5 data-symbol evidence",
+      "evidence": [
+        "BN/data classifier identifies 0x4f36b4 g_zInputFfEffectSet as the complete authored 4-byte zero-initialized scalar pointer global; source definition is zInput.cpp and extern is zInput.h; Player registration writes and Player runtime reads it.",
+        "Complete owner boundary is the BN-sized 4-byte .data scalar pointer global 0x4f36b4 g_zInputFfEffectSet; adjacent zero bytes are not part of this owner.",
+        "Source definition/extern are zInput.cpp/zInput.h as zInput_FFEffectSet *g_zInputFfEffectSet = 0; Player registration writes the pointer and runtime Player code reads it as the DirectInput force-feedback effect set.",
+        "python tools/recoil.py verify vc5 zinput_force_feedback_effect_set_global passed for 0x4f36b4 _g_zInputFfEffectSet: 4 BN bytes matched 4 VC5 COFF data bytes with zero unmasked mismatches.",
+        "Data-only scalar pointer owner; behavior is covered through Player/zInput users rather than a separate functional target.",
+        "Tier S byte scheduling remains globally deferred; VC5 data-symbol evidence was used for the data gate, not for a broader authored byte-equivalence claim."
+      ]
+    },
+    {
+      "id": "engine.zinput.game_state_or_map_table_data",
+      "kind": "data-owner",
+      "name": "zInput game-state/map-table pointer global",
+      "section": "input_script_config",
+      "state": "active",
+      "anchors": [
+        "0x4f3a88"
+      ],
+      "member_addresses": [],
+      "data_addresses": [
+        {
+          "address": "0x4f3a88",
+          "name": "g_GameStateOrMapTable"
+        }
+      ],
+      "source_paths": [
+        "src/GameZRecoil/zInput/zInput.cpp"
+      ],
+      "dependencies": [],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "none",
+        "byte": "accepted"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "BN names 0x4f3a88 as g_GameStateOrMapTable, type struct zUtil_SaveGameState*, zero-initialized .data; VC5 target zinput_game_state_or_map_table_data passed in-session.",
+        "Pure data-owner gate; no behavior target is required for the zero-initialized pointer storage itself.",
+        "BN proves this owner is the single 4-byte g_GameStateOrMapTable .data storage at 0x4f3a88 in zInput.cpp.",
+        "python tools/recoil.py verify vc5 zinput_game_state_or_map_table_data passed in-session for _g_GameStateOrMapTable at 0x4f3a88, byte_length 4.",
+        "src/GameZRecoil/zInput/zInput.cpp defines g_GameStateOrMapTable with the BN-matched type and storage identity.",
+        "VC5 data-symbol verification zinput_game_state_or_map_table_data matched the generated data symbol for 0x4f3a88."
+      ]
+    },
+    {
+      "id": "engine.zloc.message_lookup_runtime",
+      "kind": "source-file",
+      "name": "zLoc message lookup runtime",
+      "section": "input_script_config",
+      "state": "discovered",
+      "anchors": [
+        "0x4a5bf0"
+      ],
+      "member_addresses": [
+        "0x4a5b60",
+        "0x4a5bf0"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x56b568",
+          "name": "g_zLoc_GetIdProc"
+        },
+        {
+          "address": "0x56b570",
+          "name": "g_zLoc_TempMessageBuffer"
+        },
+        {
+          "address": "0x56b670",
+          "name": "g_zLoc_MessagesDllHandle"
+        }
+      ],
+      "source_paths": [
+        "src/GameZRecoil/zLoc/zLoc.cpp"
+      ],
+      "dependencies": [],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "accepted",
+        "byte": "deferred"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "BN/source evidence bounds this owner to zLoc message formatting and fixed-buffer lookup in zLoc.cpp; VC5 data-symbol evidence covers the message DLL handle, callback pointer, and temporary buffer, with functional coverage for FormatMessage and byte-equivalent wrapper evidence for GetMessageString.",
+        "Current BN and source evidence bounds this owner to zLoc::FormatMessage at 0x4a5b60, zLoc::GetMessageString at 0x4a5bf0, and their three zLoc runtime globals in zLoc.cpp.",
+        "src/GameZRecoil/zLoc/zLoc.cpp models the message DLL handle, lookup callback, fixed buffer, FormatMessageA provider path, and GetMessageString wrapper with typed globals and address-backed functions.",
+        "VC5SP3 data-symbol target zloc_runtime_globals passed for g_zLoc_GetIdProc, g_zLoc_TempMessageBuffer, and g_zLoc_MessagesDllHandle with zero unmasked byte mismatches.",
+        "Functional target zloc_format_message passed; zLoc::GetMessageString has accepted tier C plan evidence and a zero-mismatch VC5 function comparison in target zloc_get_message_string.",
+        "zLoc::FormatMessage still has a known 2-byte VC5 mismatch, so this owner remains below S while global owner/data blockers are open."
+      ]
+    },
+    {
+      "id": "engine.znetwork.player_record_accessors",
+      "kind": "subsystem",
+      "name": "zNetwork player-record accessors",
+      "section": "network_online",
+      "state": "discovered",
+      "anchors": [
+        "0x48b9a0"
+      ],
+      "member_addresses": [
+        "0x48afa0",
+        "0x48b980",
+        "0x48b9a0",
+        "0x48b9d0",
+        "0x48ba60"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x56aaf4",
+          "name": "g_zNetwork_CurrentSessionDescCache"
+        },
+        {
+          "address": "0x56aaf8",
+          "name": "g_zNetwork_LocalPlayerRecord"
+        },
+        {
+          "address": "0x56ab34",
+          "name": "g_zNetwork_PlayerRecordList"
+        }
+      ],
+      "source_paths": [
+        "src/GameZRecoil/zNetwork/znet_dplay.cpp"
+      ],
+      "dependencies": [
+        "network_online.gamenet_launch_session_sync"
+      ],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "accepted",
+        "byte": "deferred"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "BN assembly shows the player-record accessor cluster over the DirectPlay player list, local player record, and current session descriptor globals; current functional smokes and VC5 data-symbol checks cover the accessed behavior and storage.",
+        "BN assembly for 0x48afa0, 0x48b980, 0x48b9a0, 0x48b9d0, and 0x48ba60 confines this owner to znet_dplay.cpp player-record accessors over the typed DirectPlay record/session globals.",
+        "The implementation uses typed zNetwork_PlayerRecord, zNetworkPlayerRecordList, and zNetworkDPlaySessionDescCache fields in src/GameZRecoil/zNetwork/znet_dplay.cpp with address-backed docblocks and no raw runtime-state offsets or scaffold dispatch.",
+        "VC5SP3 data-symbol checks passed for g_zNetwork_LocalPlayerRecord in znetwork_session_runtime_identity_globals, g_zNetwork_CurrentSessionDescCache in znetwork_directplay_runtime_globals, and g_zNetwork_PlayerRecordList in znetwork_session_runtime_dispatch_globals with zero unmasked byte mismatches.",
+        "Functional targets passed for znetwork_get_player_name_by_key, znetwork_get_local_player_color_index, znetwork_get_player_color_index_by_key, znetwork_get_player_record_count, and znetwork_find_player_record_by_key.",
+        "Tier S byte comparison remains deferred until the global authored owner/data gate is clear; current evidence supports B-level source/data/behavior only."
+      ]
+    },
+    {
+      "id": "hud_ui.hud_sensor_tracker_global",
+      "kind": "data-owner",
+      "name": "HudSensorTracker global instance",
+      "section": "hud_ui",
+      "state": "active",
+      "anchors": [
+        "0x4f0cc0"
+      ],
+      "member_addresses": [],
+      "data_addresses": [
+        {
+          "address": "0x4f0cc0",
+          "name": "pending"
+        }
+      ],
+      "source_paths": [
+        "src/Battlesport/CZRecoilFrame.cpp"
+      ],
+      "dependencies": [],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "none",
+        "byte": "accepted"
+      },
+      "blocker": "Verify HudSensorTracker global instance owner gates; VC data-symbol coverage exists in czrecoilframe_hud_sensor_tracker_global.",
+      "evidence": [
+        "Data classifier identified 0x4f0cc0 g_HudSensorTracker as authored dependency-only data for Player bootstrap.",
+        "BN/source evidence identifies g_HudSensorTracker at 0x4f0cc0 as the complete HudSensorTracker global instance defined in src/Battlesport/CZRecoilFrame.cpp.",
+        "Source definition HudSensorTracker g_HudSensorTracker in src/Battlesport/CZRecoilFrame.cpp matches the authored global instance model.",
+        "python tools/recoil.py verify vc5 czrecoilframe_hud_sensor_tracker_global passed for data symbol 0x4f0cc0 with zero unmasked mismatches across 9680 bytes.",
+        "Data-owner only; no behavior smoke required for the standalone global storage evidence.",
+        "VC5SP3 data-symbol byte comparison for czrecoilframe_hud_sensor_tracker_global accepted 0x4f0cc0."
+      ]
+    },
+    {
+      "id": "hud_ui.hud_timer_panel_net_state_tail_flags",
+      "kind": "record",
+      "name": "HudTimerPanelNetState tail flags",
+      "section": "hud_ui",
+      "state": "discovered",
+      "anchors": [
+        "0x433a40"
+      ],
+      "member_addresses": [
+        "0x433a40"
+      ],
+      "data_addresses": [],
+      "source_paths": [
+        "src/Battlesport/GameNet.cpp"
+      ],
+      "dependencies": [
+        "hud_ui.hud_ui_timer_panel_global_accessors"
+      ],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "none",
+        "functional": "accepted",
+        "byte": "deferred"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "Current BN/status/frontier evidence bounds this owner to HudTimerPanelNetState::ClearTailFlagsLocal: a record method that clears the eight tailFlags DWORDs on the caller-provided state; it has only compiler memset as a callee and touches no authored globals.",
+        "BN/status/frontier and source review identify a narrow HudTimerPanelNetState record-method owner: 0x433a40 clears only the eight tailFlags DWORDs on this/caller-owned state and has no authored lower owner dependency.",
+        "Source worker added accepted provenance docblock for 0x433a40; parent review confirms source keeps the typed HudTimerPanelNetState::ClearTailFlagsLocal record method and clears the eight tailFlags words without raw runtime offsets or scaffolds.",
+        "BN assembly and source review show 0x433a40 writes only caller-owned HudTimerPanelNetState tailFlags through this and has no authored global data references; the only callee is compiler memset/rep stos.",
+        "Functional target hud_timer_panel_net_state_clear_tail_flags_local passed after registering hud_timer_panel_net_state_clear_tail_flags_smoke in recoil_native_smoke.",
+        "Tier S byte verification is deferred by current global owner/data policy; this pass establishes tier B owner/source/functionality with no authored data globals for 0x433a40."
       ]
     },
     {
@@ -76,6 +2241,167 @@
       ]
     },
     {
+      "id": "hud_ui.hud_ui_timer_panel_global_accessors",
+      "kind": "class",
+      "name": "HudUiTimerPanel global accessors",
+      "section": "hud_ui",
+      "state": "discovered",
+      "anchors": [
+        "0x40eca0"
+      ],
+      "member_addresses": [
+        "0x40eca0",
+        "0x40ecc0",
+        "0x40ece0",
+        "0x40ed10"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x4ea654",
+          "name": "g_HudUiMgrTimerPanel"
+        }
+      ],
+      "source_paths": [
+        "src/GameZRecoil/zHud/zhud_ui.cpp"
+      ],
+      "dependencies": [],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "accepted",
+        "byte": "deferred"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "Current BN/source evidence bounds this owner to the four HudUiTimerPanel global timer-panel accessors/mutators at 0x40eca0, 0x40ecc0, 0x40ece0, and 0x40ed10; source uses typed g_HudUiMgrTimerPanel and HudUiTimerPanel fields.",
+        "Boundary accepted from current BN/status/plan/source evidence: exactly 0x40eca0 SetRunning, 0x40ecc0 SetElapsedSeconds, 0x40ece0 SetSeconds, and 0x40ed10 GetSeconds access g_HudUiMgrTimerPanel for the timer-panel accessor slice.",
+        "Source accepted: src/GameZRecoil/zHud/zhud_ui.cpp uses typed HudUiTimerPanel members stopped, elapsedSeconds, and secondsStep through g_HudUiMgrTimerPanel; assigned functions now carry Recoil docblocks and no raw runtime offsets or scaffolds.",
+        "Data accepted: VC5SP3 target hud_ui_timer_panel_global_accessors_data verifies ?g_HudUiMgrTimerPanel@@3PAUHudUiTimerPanel@@A at 0x4ea654 with byte_length 4 and zero unmasked data-byte mismatches against BN/original bytes.",
+        "Functional accepted: targets hud_ui_timer_panel_set_running, hud_ui_timer_panel_set_elapsed_seconds, hud_ui_timer_panel_set_seconds, and hud_ui_timer_panel_get_seconds all passed zhud_timer_panel_global_accessors_smoke in this session.",
+        "Tier S byte evidence deferred to a coherent HudUiTimerPanel/HUD source-cluster pass after global owner/data blockers clear; current session establishes tier B owner/data/functional evidence only."
+      ]
+    },
+    {
+      "id": "hud_ui.hud_ui_top_message_stack_global",
+      "kind": "data-owner",
+      "name": "HUD top-message stack global pointer",
+      "section": "hud_ui",
+      "state": "discovered",
+      "anchors": [
+        "0x56bd24"
+      ],
+      "member_addresses": [],
+      "data_addresses": [
+        {
+          "address": "0x56bd24",
+          "name": "g_HudUiTopMessageStack"
+        }
+      ],
+      "source_paths": [
+        "src/GameZRecoil/zHud/zhud_ui.cpp",
+        "src/GameZRecoil/zHud/zhud_ui.h"
+      ],
+      "dependencies": [],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "none",
+        "byte": "deferred"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "BN data declaration identifies g_HudUiTopMessageStack as a standalone 4-byte HudUiTextStack4* at 0x56bd24 with zero bytes; source declares HudUiTextStack4 *g_HudUiTopMessageStack = 0 in zhud_ui.cpp and externs it in zhud_ui.h; lifecycle allocation/destruction writes are in the HUD UI source.",
+        "BN data declaration identifies 0x56bd24 as standalone authored g_HudUiTopMessageStack storage, a HudUiTextStack4* global in .bss, not a provider boundary or field slice.",
+        "Source declares HudUiTextStack4 *g_HudUiTopMessageStack = 0 in src/GameZRecoil/zHud/zhud_ui.cpp with extern declaration in zhud_ui.h; HUD UI init allocates/assigns the stack and teardown destructs it then resets the pointer.",
+        "python tools/recoil.py verify vc5 hud_ui_top_message_stack_global matched the 4-byte g_HudUiTopMessageStack data symbol at 0x56bd24 with zero unmasked mismatches.",
+        "Data-only owner; no standalone behavior target is required for the global pointer storage.",
+        "Pure tier S byte verification remains deferred while authored owner/data blockers remain; current data-owner acceptance rests on source and VC5 data-symbol evidence."
+      ]
+    },
+    {
+      "id": "hud_ui.hud_ui_triplet_entry_vector",
+      "kind": "class",
+      "name": "HudUiTriplet entry vector append helpers",
+      "section": "hud_ui",
+      "state": "active",
+      "anchors": [
+        "0x40e590"
+      ],
+      "member_addresses": [
+        "0x40e590",
+        "0x414670",
+        "0x4146a0",
+        "0x4146e0"
+      ],
+      "data_addresses": [],
+      "source_paths": [
+        "src/GameZRecoil/zHud/zhud_ui.cpp"
+      ],
+      "dependencies": [],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "none",
+        "functional": "accepted",
+        "byte": "deferred"
+      },
+      "blocker": "Audit source-faithful entry-vector helper shape, convert legacy comments to docblocks, confirm no authored globals, then promote helper/AddEntry owner-data gates.",
+      "evidence": [
+        "Selected from 0x414390 -> 0x40e590 frontier: GameNet refresh-player-list menu is blocked by HudUiTriplet::AddEntry and HudUiTripletEntries::{GetCount,CopyRange,FillN}; functional smokes pass for all four addresses.",
+        "BN frontier and assembly bound this owner to HudUiTriplet::AddEntry plus HudUiTripletEntries::{GetCount,CopyRange,FillN}; RebuildDisplay remains a separate HudUiTriplet data blocker.",
+        "Source now models typed HudUiTripletEntries/HudUiScoreboardEntry vector helpers with required provenance docblocks and typed entry increments; source-shape guard passed.",
+        "BN assembly for the four owner functions shows no direct authored global accesses; only caller-owned entry-vector state, stack entries, providers, and helper calls are touched.",
+        "Functional targets hud_ui_triplet_add_entry, hud_ui_triplet_entries_get_count, hud_ui_triplet_entries_copy_range, and hud_ui_triplet_entries_fill_n passed via zhud_triplet_scoreboard_entry_update_smoke.",
+        "Tier S byte verification deferred while global authored owner/data blockers remain open."
+      ]
+    },
+    {
+      "id": "hud_ui.hud_ui_triplet_scoreboard_refresh",
+      "kind": "class",
+      "name": "HudUiTriplet scoreboard refresh",
+      "section": "hud_ui",
+      "state": "discovered",
+      "anchors": [
+        "0x40e140"
+      ],
+      "member_addresses": [
+        "0x40e140",
+        "0x40e800",
+        "0x4143b0"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x4ed4e0",
+          "name": "g_HudUiMgrStatsList"
+        }
+      ],
+      "source_paths": [
+        "src/GameZRecoil/zHud/zhud_ui.cpp"
+      ],
+      "dependencies": [
+        "hud_ui.hud_ui_triplet_entry_vector",
+        "engine.zloc.message_lookup_runtime"
+      ],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "accepted",
+        "byte": "deferred"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "BN/source evidence bounds this owner to HudUiTriplet scoreboard rebuild/update and the HudUi wrapper that forwards through g_HudUiMgrStatsList; current functional smokes cover rebuild/update/refresh and VC5 data evidence covers the stats-list pointer.",
+        "Current BN frontiers bound the owner to HudUiTriplet::RebuildDisplay, HudUiTriplet::UpdateEntryData, and HudUi::RefreshScoreboardEntryRow, with dependencies routed to accepted zLoc and triplet entry-vector owners.",
+        "src/GameZRecoil/zHud/zhud_ui.cpp implements the scoreboard refresh/update methods with typed HudUiTriplet, HudUiListMenuEntry, and GameNetPlayerRow fields and no raw runtime-state offsets or scaffold dispatch.",
+        "The owner links g_HudUiMgrStatsList, and VC5SP3 target hud_ui_mgr_is_local_player_first_in_stats_list passed for that pointer with zero unmasked byte mismatches; lower zLoc data dependency is accepted separately.",
+        "Functional targets hud_ui_triplet_rebuild_display, hud_ui_triplet_update_entry_data, and hud_ui_refresh_scoreboard_entry_row passed through the scoreboard update and GameNet snapshot smokes.",
+        "Tier S remains deferred to a coherent HudUiTriplet/HUD source-cluster pass after global owner/data blockers clear."
+      ]
+    },
+    {
       "id": "network_online.gamenet_launch_session_sync",
       "kind": "subsystem",
       "name": "GameNet launch/session-sync owner-data cleanup",
@@ -85,28 +2411,853 @@
         "0x431c50"
       ],
       "member_addresses": [
-        "0x420d10",
         "0x431c50",
-        "0x4327e0",
-        "0x432860",
-        "0x432ae0"
+        "0x4321b0"
       ],
-      "data_addresses": [],
+      "data_addresses": [
+        {
+          "address": "0x4f3fa4",
+          "name": "g_GameNet_HandlersRegistered"
+        }
+      ],
       "source_paths": [
         "src/GameZRecoil",
         "src/Battlesport"
       ],
       "dependencies": [],
       "gates": {
-        "boundary": "pending",
-        "source": "pending",
-        "data": "pending",
-        "functional": "pending",
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "blocked",
+        "functional": "accepted",
         "byte": "deferred"
       },
       "blocker": "Resolve GameNet session/global owner shape and data before promoting dependent launch helpers beyond functional evidence.",
       "evidence": [
-        "Seeded from active implementation group after owner-first workflow hardening."
+        "Seeded from active implementation group after owner-first workflow hardening.",
+        "Focused owner/data mapping bounds this owner to 0x431c50 GameNet::RegisterGameplayHandlersAndOptCatalogCallbacks, 0x4321b0 GameNet::UnregisterGameplayPacketHandlers, and owned scalar g_GameNet_HandlersRegistered; packet handlers and zDEClient/OptCatalog callback slots are cross-owner dependencies.",
+        "The coordinator source shape is narrowed, but accepting the owner source gate still depends on routing the registered callback band, especially pkt07/Player alt-gun, zDEClient relay, Pickup, and OptCatalog callback owners.",
+        "Owned data is narrowed to g_GameNet_HandlersRegistered, but the registration/unregistration coordinator writes callback-slot globals whose owning zDEClient/OptCatalog/Pickup/GameNet callback owners are not all accepted yet.",
+        "Functional evidence exists for the registration/unregistration coordinator through gamenet_register_gameplay_handlers_and_callbacks and gamenet_unregister_gameplay_packet_handlers native smokes; owner acceptance remains blocked on callback owner routing.",
+        "After narrowing, the source owner is the register/unregister coordinator only: 0x431c50 installs packet handlers and callback slots, 0x4321b0 unregisters the same band and clears g_GameNet_HandlersRegistered; both source bodies are implemented with passing functional smokes. Callback handler/source owners remain separate dependencies and data blockers."
+      ]
+    },
+    {
+      "id": "network_online.gamenet_pkt06_player_state_snapshot",
+      "kind": "subsystem",
+      "name": "GameNet pkt06 player-state snapshot",
+      "section": "network_online",
+      "state": "active",
+      "anchors": [
+        "0x4327e0"
+      ],
+      "member_addresses": [
+        "0x4327e0",
+        "0x432860",
+        "0x432ae0"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x4dcdac",
+          "name": "g_GameNetPkt06InitialSyncGate"
+        },
+        {
+          "address": "0x4f3f10",
+          "name": "g_GameNetPlayerRowList"
+        },
+        {
+          "address": "0x4dcd88",
+          "name": "g_GameNetPlayerRowStyleColors_00RRGGBB"
+        },
+        {
+          "address": "0x56bd24",
+          "name": "g_HudUiTopMessageStack"
+        },
+        {
+          "address": "0x4f36b8",
+          "name": "g_Player_RuntimeDiScene"
+        },
+        {
+          "address": "0x4f0cc0",
+          "name": "g_HudSensorTracker"
+        },
+        {
+          "address": "0x4f3f20",
+          "name": "g_HudTimerPanelNetState"
+        },
+        {
+          "address": "0x56bbd8",
+          "name": "g_zVideo_FrameTick"
+        }
+      ],
+      "source_paths": [
+        "src/Battlesport/GameNet.cpp",
+        "src/Battlesport/GameNet.h"
+      ],
+      "dependencies": [
+        "network_online.gamenet_player_row_tint",
+        "network_online.gamenet_reassign_player_colors",
+        "network_online.gamenet_pkt09_scoreboard_snapshot",
+        "network_online.gamenet_pkt0c_hud_timer_status_bits",
+        "network_online.gamenet_pkt0d_hud_timer_panel_state",
+        "battlesport_gameplay.player_master_type_transition",
+        "engine.zclass.player_runtime_di_scene_global",
+        "hud_ui.hud_sensor_tracker_global"
+      ],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "blocked",
+        "functional": "accepted",
+        "byte": "deferred"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "Source-owner mapper split pkt06 snapshot handling from the mixed GameNet registration owner: 0x4327e0, 0x432860, and 0x432ae0 form a bounded GameNet pkt06 player-state snapshot subsystem; 0x431c50 remains registration/callback-band work and 0x433de0/0x433c30 remain pkt0f/pkt10 feature-relay work.",
+        "Focused owner mapping split pkt06 player-state snapshot handling into 0x4327e0, 0x432860, and 0x432ae0; 0x431c50 is registration/callback-band work and pkt0f/pkt10 feature-relay references are excluded.",
+        "Existing immediate docblocks cover 0x4327e0, 0x432860, and 0x432ae0; BN decompilation and source review match the GameNet pkt06 row lookup, remote spawn, and row-apply source model without source-shape scaffolds.",
+        "Parent reran functional verifies for 0x4327e0, 0x432860, and 0x432ae0; all three passed with registered native smokes and existing manifests.",
+        "Data classifier found direct authored data still outside accepted scope: g_GameNetPkt06InitialSyncGate and row-list data need owner/data acceptance, g_HudUiTopMessageStack and g_zVideo_FrameTick are unaccepted/unlinked pending data owners, while color table, HUD timer state, runtime DI scene, and HudSensorTracker are accepted dependencies.",
+        "Owner-level tier-S verification deferred under the global authored owner/data gate; this pass resolves source ownership only."
+      ]
+    },
+    {
+      "id": "network_online.gamenet_pkt07_altgun_dispatch",
+      "kind": "subsystem",
+      "name": "GameNet pkt07 alt-gun dispatch",
+      "section": "network_online",
+      "state": "active",
+      "anchors": [
+        "0x434190"
+      ],
+      "member_addresses": [
+        "0x434190",
+        "0x434130",
+        "0x434230"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x4dcf60",
+          "name": "g_NetPkt07_AltGunDispatchBuf"
+        }
+      ],
+      "source_paths": [
+        "src/Battlesport/GameNet.cpp",
+        "src/Battlesport/GameNet.h"
+      ],
+      "dependencies": [
+        "effects_weapons.optcatalog_entry_lookup",
+        "effects_weapons.optcatalog_runtime_instances"
+      ],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "blocked",
+        "functional": "accepted",
+        "byte": "deferred"
+      },
+      "blocker": "Resolve Player alt-gun runtime owner 0x43c9c0/0x43c190 and OptCatalog lookup data before accepting pkt07 source/data.",
+      "evidence": [
+        "Focused source-owner mapping split pkt07 alt-gun dispatch from GameNet launch/session-sync: 0x434130 sends pkt07, 0x434190 handles remote dispatch, and 0x434230 is the registered no-op callback; owner remains pending because Player alt-gun and OptCatalog lookup/data blockers remain.",
+        "Owner boundary is the pkt07 alt-gun dispatch subsystem: 0x434130 sender, 0x434190 remote handler, and 0x434230 allocation no-op callback; separate from launch/session-sync and pkt0f/pkt10 feature relays.",
+        "GameNet.cpp now has immediate provenance docblocks for 0x434130, 0x434190, and 0x434230; source model routes pkt07 through OptCatalog lookup/runtime callbacks and Player alt-gun runtime dispatch without absorbing adjacent packet relays.",
+        "Functional verifies passed for 0x434130 gamenet_send_pkt07_alt_gun_dispatch, 0x434190 gamenet_handle_pkt07_alt_gun_dispatch, and 0x434230 gamenet_alt_gun_dispatch_no_op_callback after registering bounded smokes in gamenet_launch_smokes.cpp.",
+        "No direct pkt07-owned data globals are claimed; dependency data remains blocked by effects_weapons.optcatalog_entry_lookup because g_OptCatalog_EntryCount/g_OptCatalog_EntryTable 0x778924/0x778928 still need complete entry-table lifecycle/data owner acceptance.",
+        "Tier S byte verification remains deferred while authored owner/data blockers remain; pkt07 currently has source/functional evidence only.",
+        "OptCatalog entry lookup/runtime-instance and Player alt-gun dependency data gates are now accepted, and direct packet buffer owner network_online.gamenet_pkt07_packet_buffer_data accepts g_NetPkt07_AltGunDispatchBuf at 0x4dcf60. Data remains blocked because 0x434130 calls zNetwork::SendPacketReliable at 0x48c080, whose data gate remains ❌ at the current frontier."
+      ]
+    },
+    {
+      "id": "network_online.gamenet_pkt07_packet_buffer_data",
+      "kind": "data-owner",
+      "name": "GameNet pkt07 alt-gun dispatch packet buffer",
+      "section": "network_online",
+      "state": "active",
+      "anchors": [
+        "0x4dcf60"
+      ],
+      "member_addresses": [
+        "0x434130"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x4dcf60",
+          "name": "g_NetPkt07_AltGunDispatchBuf"
+        }
+      ],
+      "source_paths": [
+        "src/Battlesport/GameNet.cpp",
+        "src/Battlesport/GameNet.h"
+      ],
+      "dependencies": [],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "none",
+        "byte": "accepted"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "BN defines g_NetPkt07_AltGunDispatchBuf at 0x4dcf60 as a 28-byte initialized pkt07 alt-gun dispatch packet buffer with bytes 07 00 1c 00 followed by zero fields; source defines the same NetPkt07_AltGunDispatch initializer and SendPkt07_AltGunDispatch is its only BN code xref; VC5 target gamenet_pkt07_globals passes with zero unmasked mismatches.",
+        "BN/source classify 0x4dcf60 g_NetPkt07_AltGunDispatchBuf as authored GameNet pkt07 packet-buffer data, not provider/import/compiler/runtime data.",
+        "GameNet.cpp defines g_NetPkt07_AltGunDispatchBuf with header packet id 0x07 and sizeof(NetPkt07_AltGunDispatch); GameNet.h declares the extern and asserts sizeof(NetPkt07_AltGunDispatch) == 0x1c; SendPkt07_AltGunDispatch writes typed fields before sending the packet.",
+        "BN data declaration shows 0x4dcf60 g_NetPkt07_AltGunDispatchBuf as a 28-byte initialized packet buffer with initial bytes 07 00 1c 00 and zero payload fields; its only code xref is SendPkt07_AltGunDispatch; VC5SP3 target gamenet_pkt07_globals passed with zero unmasked data-byte mismatches.",
+        "Pure packet-buffer data owner; behavior evidence is covered by the pkt07 sender smoke on the owning subsystem.",
+        "VC5SP3 data-symbol comparison gamenet_pkt07_globals accepted the full 28-byte g_NetPkt07_AltGunDispatchBuf storage at 0x4dcf60 with zero unmasked mismatches."
+      ]
+    },
+    {
+      "id": "network_online.gamenet_pkt09_scoreboard_snapshot",
+      "kind": "subsystem",
+      "name": "GameNet pkt09 scoreboard snapshot",
+      "section": "battlesport.network_game",
+      "state": "discovered",
+      "anchors": [
+        "0x4335b0"
+      ],
+      "member_addresses": [
+        "0x4335b0",
+        "0x4334f0"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x4f3f10",
+          "name": "g_GameNetPlayerRowList"
+        },
+        {
+          "address": "0x4f3f20",
+          "name": "g_HudTimerPanelNetState"
+        },
+        {
+          "address": "0x4f3f8c",
+          "name": "g_GameNetOneLapLeftMessageShown"
+        },
+        {
+          "address": "0x4f0cc0",
+          "name": "g_HudSensorTracker"
+        }
+      ],
+      "source_paths": [
+        "src/Battlesport/GameNet.cpp"
+      ],
+      "dependencies": [
+        "network_online.gamenet_player_row_lookup",
+        "network_online.gamenet_pkt0c_hud_timer_status_bits",
+        "hud_ui.hud_ui_triplet_scoreboard_refresh",
+        "hud_ui.hud_sensor_tracker_global"
+      ],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "accepted",
+        "byte": "deferred"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "Current BN/frontier/source evidence bounds this owner to GameNet packet 09 scoreboard snapshot handling and sending: 0x4335b0 HandlePkt09_PlayerScoreboardSnapshot and 0x4334f0 SendPkt09_PlayerScoreboardSnapshot, plus the row-list, HUD timer, one-lap-left flag, and HudSensorTracker data it reads/writes.",
+        "Boundary accepted from current BN/frontier/source evidence: owner is exactly the packet 09 scoreboard snapshot send/handle pair at 0x4334f0 and 0x4335b0 plus the linked row-list, HUD timer, one-lap-left flag, and HudSensorTracker data.",
+        "Source accepted: src/Battlesport/GameNet.cpp implements the pair with typed NetPkt09_PlayerScoreboardSnapshot, NetPkt09_PlayerScoreboardEntry, GameNetPlayerRow, HudTimerPanelNetState, and HUD/zNetwork calls plus Recoil docblocks; no raw runtime offsets or scaffolds were introduced.",
+        "Data accepted: g_GameNetPlayerRowList passed gamenet_launch_session_globals; g_HudTimerPanelNetState passed gamenet_pkt06_globals; g_GameNetOneLapLeftMessageShown passed gamenet_scoreboard_snapshot_globals; g_HudSensorTracker passed czrecoilframe_hud_sensor_tracker_global, all with zero unmasked data-byte mismatches.",
+        "Functional accepted: targets gamenet_handle_pkt09_player_scoreboard_snapshot and gamenet_send_pkt09_player_scoreboard_snapshot both passed gamenet_scoreboard_snapshot_packet_smoke in this session.",
+        "Tier S byte evidence deferred to a coherent GameNet/network source-cluster pass after global owner/data blockers clear; current session establishes tier B owner/data/functional evidence only."
+      ]
+    },
+    {
+      "id": "network_online.gamenet_pkt0c_hud_timer_status_bits",
+      "kind": "subsystem",
+      "name": "GameNet pkt0C HUD timer status bits",
+      "section": "battlesport.network_game",
+      "state": "discovered",
+      "anchors": [
+        "0x433410"
+      ],
+      "member_addresses": [
+        "0x433410",
+        "0x433390"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x4f3f20",
+          "name": "g_HudTimerPanelNetState"
+        },
+        {
+          "address": "0x4dce88",
+          "name": "g_NetPkt0C_HudTimerStatusBitsBuf"
+        }
+      ],
+      "source_paths": [
+        "src/Battlesport/GameNet.cpp"
+      ],
+      "dependencies": [
+        "hud_ui.hud_ui_timer_panel_global_accessors",
+        "engine.zloc.message_lookup_runtime"
+      ],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "accepted",
+        "byte": "deferred"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "Current BN/frontier/source evidence bounds this owner to GameNet packet 0C HUD timer status handling and sending: 0x433410 HandlePkt0C_HudTimerStatusBits and 0x433390 SendPkt0C_HudTimerStatusBits, plus g_HudTimerPanelNetState and g_NetPkt0C_HudTimerStatusBitsBuf.",
+        "Boundary accepted from current BN/frontier/source evidence: owner is exactly the packet 0C HUD timer status send/handle pair at 0x433390 and 0x433410 plus packet/static timer data g_NetPkt0C_HudTimerStatusBitsBuf and g_HudTimerPanelNetState.",
+        "Source accepted: src/Battlesport/GameNet.cpp implements the pair with typed NetPkt0C_HudTimerStatusBits and HudTimerPanelNetState fields, typed HudUiTimerPanel/zNetwork/HUD calls, and Recoil docblocks; no raw runtime offsets or scaffolds were introduced.",
+        "Data accepted: g_HudTimerPanelNetState at 0x4f3f20 passed VC5SP3 target gamenet_pkt06_globals with zero unmasked data-byte mismatches; g_NetPkt0C_HudTimerStatusBitsBuf at 0x4dce88 passed VC5SP3 target gamenet_pkt0c_globals with zero unmasked data-byte mismatches.",
+        "Functional accepted: targets gamenet_handle_pkt0c_hud_timer_status_bits and gamenet_send_pkt0c_hud_timer_status_bits both passed gamenet_timer_status_packet_smoke in this session.",
+        "Tier S byte evidence deferred to a coherent GameNet/network source-cluster pass after global owner/data blockers clear; current session establishes tier B owner/data/functional evidence only."
+      ]
+    },
+    {
+      "id": "network_online.gamenet_pkt0d_hud_timer_panel_state",
+      "kind": "subsystem",
+      "name": "GameNet pkt0D HUD timer panel state",
+      "section": "network_online",
+      "state": "discovered",
+      "anchors": [
+        "0x433250"
+      ],
+      "member_addresses": [
+        "0x433250",
+        "0x433310"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x4f3f20",
+          "name": "g_HudTimerPanelNetState"
+        },
+        {
+          "address": "0x4dce78",
+          "name": "g_NetPkt0D_HudTimerPanelStateBuf"
+        }
+      ],
+      "source_paths": [
+        "src/Battlesport/GameNet.cpp"
+      ],
+      "dependencies": [
+        "hud_ui.hud_timer_panel_net_state_tail_flags",
+        "hud_ui.hud_ui_timer_panel_global_accessors",
+        "engine.zeffect.anim_entry_name_lookup"
+      ],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "accepted",
+        "byte": "deferred"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "Current BN/frontier/source evidence bounds this owner to GameNet pkt0D HUD timer panel state handling and sending: 0x433250 applies timer state and triggers effects/state transitions, 0x433310 packs and sends the reliable pkt0D packet then applies it locally; touched globals are g_HudTimerPanelNetState and g_NetPkt0D_HudTimerPanelStateBuf.",
+        "BN/frontier/source review identifies the pkt0D owner as the GameNet HUD timer panel state send/handle pair: 0x433250 HandlePkt0D_HudTimerPanelState and 0x433310 SendPkt0D_HudTimerPanelState, plus g_HudTimerPanelNetState and g_NetPkt0D_HudTimerPanelStateBuf.",
+        "Source worker added accepted provenance docblocks for 0x433250 and 0x433310; parent BN/source review confirms typed NetPkt0D_HudTimerPanelState and HudTimerPanelNetState source shape for host packet packing, reliable send, local apply, and timer/effect state updates with no raw offsets or scaffolds.",
+        "Complete owner data scope is linked: 0x4f3f20 g_HudTimerPanelNetState and 0x4dce78 g_NetPkt0D_HudTimerPanelStateBuf. VC5 data-symbol target gamenet_pkt06_globals passed g_HudTimerPanelNetState with zero unmasked mismatches, and gamenet_pkt0d_globals passed g_NetPkt0D_HudTimerPanelStateBuf with zero unmasked mismatches.",
+        "Functional targets gamenet_handle_pkt0d_hud_timer_panel_state and gamenet_send_pkt0d_hud_timer_panel_state both passed in this session with gamenet_timer_panel_state_packet_smoke.",
+        "Tier S byte verification is deferred by current global owner/data policy; this pass establishes tier B owner/source/data/functional evidence for the pkt0D send/handle pair."
+      ]
+    },
+    {
+      "id": "network_online.gamenet_pkt13_effect_anim_sync",
+      "kind": "subsystem",
+      "name": "GameNet pkt13 effect animation activation sync",
+      "section": "network_online",
+      "state": "active",
+      "anchors": [
+        "0x434370"
+      ],
+      "member_addresses": [
+        "0x434370",
+        "0x4343f0",
+        "0x434430"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x4f3fa8",
+          "name": "g_GameNetSuppressPkt13ActivationEcho"
+        }
+      ],
+      "source_paths": [
+        "src/Battlesport/GameNet.cpp"
+      ],
+      "dependencies": [
+        "engine.zeffect",
+        "engine.znetwork"
+      ],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "accepted",
+        "byte": "deferred"
+      },
+      "blocker": "Wire current pkt13 functional smokes and docblocks, then accept the local echo-guard data owner; zEffect activation-record table and zNetwork send/session globals remain callee/data dependencies, not owned here.",
+      "evidence": [
+        "BN assembly for 0x434370/0x4343f0/0x434430 proves a cohesive pkt13 send/receive/all-send owner around zEffect activation records and shared replay guard at 0x4f3fa8; source implements the matching GameNet packet trio in GameNet.cpp.",
+        "BN assembly and xrefs bound this owner to the GameNet pkt13 zEffect activation-record packet trio: 0x434370 send, 0x4343f0 receive, 0x434430 host send-all, plus replay guard data at 0x4f3fa8; zEffect activation table and zNetwork send/session state are callee dependencies, not owner data.",
+        "Source implements the packet trio in GameNet.cpp with typed zEffectAnimActivationRecord and zNetworkPacketHeader usage, AGENTS-compliant docblocks on all three functions, no raw runtime-state offsets, and no unsupported packet/helper scaffold.",
+        "Functional verification passed for 0x434370 gamenet_send_pkt13_effect_anim_activation_record, 0x4343f0 gamenet_handle_pkt13_effect_anim_activation_record, and 0x434430 gamenet_send_all_pkt13_effect_anim_activation_records after wiring the native smokes.",
+        "BN data at 0x4f3fa8 is a 4-byte zero-initialized int replay guard (BN name g_GameNet_Pkt13ReplayGuard, source name g_GameNetSuppressPkt13ActivationEcho); VC5 data-symbol target gamenet_pkt13_globals passed with zero unmasked mismatches.",
+        "Tier S remains deferred to the coherent GameNet/zEffect network packet source-cluster pass while global authored owner/data blockers remain open."
+      ]
+    },
+    {
+      "id": "network_online.gamenet_player_row_lookup",
+      "kind": "subsystem",
+      "name": "GameNet player row lookup",
+      "section": "battlesport.network_game",
+      "state": "discovered",
+      "anchors": [
+        "0x432830"
+      ],
+      "member_addresses": [
+        "0x432830"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x4f3f10",
+          "name": "g_GameNetPlayerRowList"
+        }
+      ],
+      "source_paths": [
+        "src/Battlesport/GameNet.cpp"
+      ],
+      "dependencies": [],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "accepted",
+        "byte": "deferred"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "Current source/BN evidence bounds this owner to GameNet::FindPlayerRowByKey at 0x432830, which traverses the typed g_GameNetPlayerRowList head through GameNetPlayerRow::next and compares playerKey.",
+        "Boundary accepted: owner is the standalone GameNet player-row lookup at 0x432830 over the shared g_GameNetPlayerRowList storage.",
+        "Source accepted: src/Battlesport/GameNet.cpp implements FindPlayerRowByKey with typed GameNetPlayerRow traversal and a Recoil docblock, with no raw runtime offsets or scaffolds.",
+        "Data accepted: g_GameNetPlayerRowList at 0x4f3f10 is the complete row-list storage and passed VC5SP3 target gamenet_launch_session_globals with zero unmasked data-byte mismatches.",
+        "Functional accepted: target gamenet_find_player_row_by_key passed gamenet_find_player_row_and_status_bits_smoke in this session.",
+        "Tier S byte evidence deferred to a coherent GameNet player-row source-cluster pass after global owner/data blockers clear; current session establishes tier B owner/data/functional evidence only."
+      ]
+    },
+    {
+      "id": "network_online.gamenet_player_row_tint",
+      "kind": "class",
+      "name": "GameNetPlayerRow color tint",
+      "section": "network_online",
+      "state": "discovered",
+      "anchors": [
+        "0x433a50"
+      ],
+      "member_addresses": [
+        "0x433a50"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x4dcd88",
+          "name": "g_GameNetPlayerRowStyleColors_00RRGGBB"
+        }
+      ],
+      "source_paths": [
+        "src/Battlesport/GameNet.cpp"
+      ],
+      "dependencies": [
+        "engine.zclass.object3d_visibility_color_setters"
+      ],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "accepted",
+        "byte": "deferred"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "BN assembly and source for 0x433a50 show GameNetPlayerRow::ApplyPlayerColorTint converting g_GameNetPlayerRowStyleColors_00RRGGBB into Object3D color/alpha calls; functional tint smoke passed and VC5 data-symbol evidence covers the style-color table.",
+        "Current BN/source evidence bounds this owner to GameNetPlayerRow::ApplyPlayerColorTint at 0x433a50 and the GameNet row color table used by that method.",
+        "src/Battlesport/GameNet.cpp implements ApplyPlayerColorTint as a typed GameNetPlayerRow member over saveState->primaryModalState and Object3D setter calls, with no raw runtime-state offsets or scaffolds.",
+        "g_GameNetPlayerRowStyleColors_00RRGGBB is linked to this owner, and VC5SP3 target gamenet_pkt06_globals passed for the 36-byte table with zero unmasked byte mismatches.",
+        "Functional target gamenet_player_row_apply_color_tint passed through gamenet_player_row_apply_color_tint_smoke.",
+        "Tier S remains deferred to a coherent GameNet player-row/Object3D source-cluster pass after global owner/data blockers clear."
+      ]
+    },
+    {
+      "id": "network_online.gamenet_reassign_player_colors",
+      "kind": "subsystem",
+      "name": "GameNet reassign player colors",
+      "section": "network_online",
+      "state": "discovered",
+      "anchors": [
+        "0x432e70"
+      ],
+      "member_addresses": [
+        "0x432e70"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x4f3f10",
+          "name": "g_GameNetPlayerRowList"
+        },
+        {
+          "address": "0x4dcd88",
+          "name": "g_GameNetPlayerRowStyleColors_00RRGGBB"
+        }
+      ],
+      "source_paths": [
+        "src/Battlesport/GameNet.cpp"
+      ],
+      "dependencies": [
+        "engine.znetwork.player_record_accessors",
+        "hud_ui.hud_ui_triplet_scoreboard_refresh",
+        "network_online.gamenet_player_row_tint"
+      ],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "accepted",
+        "byte": "deferred"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "BN/source evidence for 0x432e70 shows iteration over g_GameNetPlayerRowList, zNetwork color lookup, style-color table application, HUD row refresh, and Object3D tint refresh; direct dependencies are now B and functional smoke coverage passes.",
+        "Current BN frontier for 0x432e70 shows all direct callees at B and bounds this owner to the GameNet row-list color reassignment pass.",
+        "src/Battlesport/GameNet.cpp implements ReassignPlayerColorsAndRefreshRows with typed GameNetPlayerRow traversal, zNetwork accessor calls, HudUi refresh, and GameNetPlayerRow tint method; no raw runtime-state offsets or scaffolds are used.",
+        "Owner links g_GameNetPlayerRowList and g_GameNetPlayerRowStyleColors_00RRGGBB; VC5SP3 targets gamenet_launch_session_globals and gamenet_pkt06_globals passed for those symbols with zero unmasked byte mismatches.",
+        "Functional target gamenet_reassign_player_colors_and_refresh_rows passed through gamenet_reassign_player_colors_smoke after registering the linked native smoke.",
+        "Tier S remains deferred to a coherent GameNet player-row/HUD source-cluster pass after global owner/data blockers clear."
+      ]
+    },
+    {
+      "id": "network_online.gamenet_refresh_player_list_menu",
+      "kind": "subsystem",
+      "name": "GameNet refresh player-list menu wrapper",
+      "section": "network_online",
+      "state": "active",
+      "anchors": [
+        "0x414390"
+      ],
+      "member_addresses": [
+        "0x414390"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x4ed4e0",
+          "name": "g_HudUiMgrStatsList"
+        }
+      ],
+      "source_paths": [
+        "src/Battlesport/GameNet.cpp"
+      ],
+      "dependencies": [
+        "hud_ui.hud_ui_triplet_entry_vector"
+      ],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "accepted",
+        "byte": "deferred"
+      },
+      "blocker": "Convert RefreshPlayerListMenu legacy comment to provenance docblock, verify functional coverage, and reuse HUD stats-list data-symbol evidence before owner/data acceptance.",
+      "evidence": [
+        "Selected from 0x432860 frontier after HudUiTriplet::AddEntry reached tier B; BN assembly for 0x414390 loads g_HudUiMgrStatsList @0x4ed4e0, reads triplet offset 0x34, calls HudUiTriplet::AddEntry, and returns.",
+        "BN assembly bounds 0x414390 to the GameNet wrapper that loads g_HudUiMgrStatsList, reads triplet offset 0x34, and calls accepted HudUiTriplet::AddEntry.",
+        "Source keeps the wrapper shape in src/Battlesport/GameNet.cpp with required provenance docblock; source-shape guard passed.",
+        "VC5 target hud_ui_mgr_is_local_player_first_in_stats_list verifies g_HudUiMgrStatsList @0x4ed4e0 with zero unmasked data-byte mismatches; no other authored globals touched by 0x414390.",
+        "Functional target gamenet_refresh_player_list_menu passed via gamenet_scoreboard_snapshot_packet_smoke.",
+        "Tier S byte verification deferred while global authored owner/data blockers remain open."
+      ]
+    },
+    {
+      "id": "render_video.zvideo_dd3d_fog_state",
+      "kind": "subsystem",
+      "name": "zVideo Direct3D fog-state callbacks",
+      "section": "render_video",
+      "state": "active",
+      "anchors": [
+        "0x4aa9e0"
+      ],
+      "member_addresses": [
+        "0x4aa9e0",
+        "0x4aaa30",
+        "0x4aaa60",
+        "0x4aaa90",
+        "0x4aab30"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x633430",
+          "name": "g_zVideo_CachedFogEnableRenderState"
+        },
+        {
+          "address": "0x633434",
+          "name": "g_zVideo_CachedFogModeLightState"
+        },
+        {
+          "address": "0x633438",
+          "name": "g_zVideo_CachedFogStartLightStateValue"
+        },
+        {
+          "address": "0x63343c",
+          "name": "g_zVideo_CachedFogEndLightStateValue"
+        },
+        {
+          "address": "0x6321d0",
+          "name": "g_zVideo_FogColorPendingR255"
+        },
+        {
+          "address": "0x6321d4",
+          "name": "g_zVideo_FogColorPendingG255"
+        },
+        {
+          "address": "0x6321d8",
+          "name": "g_zVideo_FogColorPendingB255"
+        },
+        {
+          "address": "0x6321f4",
+          "name": "g_zVideo_FogColorAppliedR255"
+        },
+        {
+          "address": "0x6321f8",
+          "name": "g_zVideo_FogColorAppliedG255"
+        },
+        {
+          "address": "0x6321fc",
+          "name": "g_zVideo_FogColorAppliedB255"
+        },
+        {
+          "address": "0x6333f0",
+          "name": "g_zVideo_pD3DDevice"
+        }
+      ],
+      "source_paths": [
+        "src/GameZRecoil/zVideo/zVideo.cpp"
+      ],
+      "dependencies": [
+        "provider.direct3d"
+      ],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "blocked",
+        "functional": "accepted",
+        "byte": "deferred"
+      },
+      "blocker": "Data gate remains blocked until the broader zVideo Direct3D device/global fog storage owner is accepted; current slice only proves fog callback behavior.",
+      "evidence": [
+        "Current BN/source evidence bounds the zvid_ddd3d.c fog-state callback cluster to 0x4aa9e0, 0x4aaa30, 0x4aaa60, 0x4aaa90, and 0x4aab30. The functions update Direct3D fog render/light state through provider IDirect3DDevice2 using cached/pending/applied fog globals and g_zVideo_pD3DDevice.",
+        "BN/source evidence bounds the zvid_ddd3d.c fog-state callback owner to 0x4aa9e0, 0x4aaa30, 0x4aaa60, 0x4aaa90, and 0x4aab30 with Direct3D provider calls and linked fog/device globals.",
+        "Source docblocks now cover 0x4aa9e0, 0x4aaa30, 0x4aaa60, 0x4aaa90, and 0x4aab30 in zVideo.cpp; PackFogColorFrom255Floats is documented as a recovered local zvid_ddd3d.c helper for duplicated address-backed color packing.",
+        "Parent reran verify functional for 0x4aa9e0, 0x4aaa30, 0x4aaa60, 0x4aaa90, and 0x4aab30; all passed after registering the four missing smoke IDs.",
+        "Owner links fog cache/color globals and g_zVideo_pD3DDevice, but the complete broader zVideo Direct3D device/global fog storage data owner is not accepted yet.",
+        "Pure tier S/byte verification remains globally deferred; no coherent zVideo Direct3D fog-state byte pass attempted for this owner."
+      ]
+    },
+    {
+      "id": "render_video.zvideo_dd3d_submit_queue",
+      "kind": "subsystem",
+      "name": "zVideo Direct3D submit and polygon queue source cluster",
+      "section": "render_video",
+      "state": "active",
+      "anchors": [
+        "0x4aab90"
+      ],
+      "member_addresses": [
+        "0x4aab90",
+        "0x4aaef0",
+        "0x4ab320",
+        "0x4ab6d0",
+        "0x4abb20",
+        "0x4ac370",
+        "0x4acbd0",
+        "0x4ace30"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x635d18",
+          "name": "g_zVideo_D3DSubmitTempVertices"
+        },
+        {
+          "address": "0x636518",
+          "name": "g_zVideo_SortedPolyQueueBase"
+        },
+        {
+          "address": "0x6b7118",
+          "name": "g_zVideo_OverwriteQueueBase"
+        },
+        {
+          "address": "0x632fa0",
+          "name": "g_zVideo_SortedPolyQueueCount"
+        },
+        {
+          "address": "0x6333a4",
+          "name": "g_zVideo_OverwriteQueueCount"
+        },
+        {
+          "address": "0x633408",
+          "name": "g_zVideo_D3DRenderStateCache"
+        },
+        {
+          "address": "0x632158",
+          "name": "g_zVideo_PixelPack"
+        },
+        {
+          "address": "0x6333f0",
+          "name": "g_zVideo_pD3DDevice"
+        }
+      ],
+      "source_paths": [
+        "src/GameZRecoil/zVideo/zVideo.cpp"
+      ],
+      "dependencies": [
+        "provider.direct3d"
+      ],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "blocked",
+        "functional": "accepted",
+        "byte": "deferred"
+      },
+      "blocker": "Data gate remains blocked until the shared zVideo Direct3D temp-vertex, sorted/overwrite queue, render-state cache, pixel-pack, and D3D-device globals are accepted as complete data owners; current slice proves submit/queue source shape and functional behavior only.",
+      "evidence": [
+        "Current BN/source evidence bounds this source cluster to zvid_ddd3d.c polygon submission: 0x4aab90, 0x4aaef0, 0x4ab320, 0x4ab6d0, 0x4abb20, 0x4ac370, 0x4acbd0, and 0x4ace30 prepare TL vertices, queue opaque/transparent overwrite/sorted entries, issue Direct3DDevice2 DrawPrimitive/SetRenderState calls, and report zvid_ddd3d.c line failures. BN data declarations identify g_zVideo_D3DSubmitTempVertices, g_zVideo_SortedPolyQueueBase, g_zVideo_OverwriteQueueBase, queue counts, g_zVideo_D3DRenderStateCache, g_zVideo_PixelPack, and g_zVideo_pD3DDevice as touched shared globals.",
+        "BN/source boundary is the zvid_ddd3d.c Direct3D polygon submit queue cluster: 0x4aab90, 0x4aaef0, 0x4ab320, 0x4ab6d0, 0x4abb20, 0x4ac370, 0x4acbd0, and 0x4ace30, with provider Direct3D calls treated as external.",
+        "Source models the shared zvid_ddd3d.c submit routines with typed TL vertices, render classes, queue records, Direct3D provider calls, and immediate provenance docblocks for every member address in the owner.",
+        "Parent reran functional verification for all owner members: 0x4aab90, 0x4aaef0, 0x4ab320, 0x4ab6d0, 0x4abb20, 0x4ac370, 0x4acbd0, and 0x4ace30 all passed their registered native smokes.",
+        "Touched globals are shared data owners: g_zVideo_D3DSubmitTempVertices, sorted/overwrite queue arrays and counts, g_zVideo_D3DRenderStateCache, g_zVideo_PixelPack, and g_zVideo_pD3DDevice; complete storage/layout/lifecycle data acceptance is outside this source-owner slice.",
+        "Tier S/byte verification is deferred to a coherent zVideo Direct3D submit/queue/render-state source-file pass after shared data owners are accepted."
+      ]
+    },
+    {
+      "id": "render_video.zvideo_dd_hw_api_feature_flags",
+      "kind": "data-owner",
+      "name": "zVideo DirectDraw hardware API feature flag accessor",
+      "section": "render_video",
+      "state": "active",
+      "anchors": [
+        "0x4a9920"
+      ],
+      "member_addresses": [
+        "0x4a9920"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x633e44",
+          "name": "g_zVideo_HwApiDeviceTable"
+        }
+      ],
+      "source_paths": [
+        "src/GameZRecoil/zVideo/zVideo.cpp"
+      ],
+      "dependencies": [],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "blocked",
+        "functional": "accepted",
+        "byte": "deferred"
+      },
+      "blocker": "Data gate remains blocked until the complete g_zVideo_HwApiDeviceTable owner is accepted; current slice proves only the deviceIndex feature-flag accessor.",
+      "evidence": [
+        "Current BN/source evidence bounds this zvid_dd.c accessor to 0x4a9920 reading g_zVideo_HwApiDeviceTable[deviceIndex].m_deviceFeatureFlags at the 0x6ec-byte zVidHwApiDeviceRecord stride. BN decompilation has no warnings but retains a field-pointer stride expression, so source keeps the typed table access.",
+        "BN/source scope is bounded to the 0x4a9920 zvid_dd.c leaf accessor and the durable owner links only that member plus the whole g_zVideo_HwApiDeviceTable data owner.",
+        "Source keeps the typed VC5-era accessor g_zVideo_HwApiDeviceTable[deviceIndex].m_deviceFeatureFlags and now has an immediate 0x4a9920 provenance docblock matching BN's 0x6ec-byte record stride evidence.",
+        "Parent reran python tools/recoil.py verify functional 0x4a9920; zvideo_dd_get_hw_api_device_feature_flags_smoke and zvideo_bind_renderer_dispatch_smoke both passed.",
+        "Only the feature-flag field accessor is proven here; Data reimplemented remains blocked until the complete g_zVideo_HwApiDeviceTable owner is audited for full storage, layout, initialization, and table contents.",
+        "Tier S/byte evidence is deferred to a coherent zVideo DirectDraw device-table/source-cluster pass; this isolated accessor remains tier C with functional evidence only."
+      ]
+    },
+    {
+      "id": "render_video.zvideo_dd_primary_sw_blit",
+      "kind": "subsystem",
+      "name": "zVideo DirectDraw primary/software blit callbacks",
+      "section": "render_video",
+      "state": "active",
+      "anchors": [
+        "0x4a7d90"
+      ],
+      "member_addresses": [
+        "0x4a7d90",
+        "0x4a7dd0",
+        "0x4a7e10"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x632200",
+          "name": "g_zVideo_SwSurfaceState"
+        },
+        {
+          "address": "0x632220",
+          "name": "g_zVideo_PrimarySurfaceState"
+        },
+        {
+          "address": "0x633e40",
+          "name": "g_zVideo_pSelectedHwApiDeviceRecord"
+        }
+      ],
+      "source_paths": [
+        "src/GameZRecoil/zVideo/zVideo.cpp"
+      ],
+      "dependencies": [
+        "provider.directdraw"
+      ],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "blocked",
+        "functional": "accepted",
+        "byte": "deferred"
+      },
+      "blocker": "Data gate remains blocked until the broader zVideo DirectDraw surface-state and selected-device data owners are accepted; current slice proves primary/software blit behavior and dispatch callbacks.",
+      "evidence": [
+        "Current BN/source evidence bounds the zvid_dd.c primary/software blit callback cluster to 0x4a7d90, 0x4a7dd0, and 0x4a7e10. The functions call DirectDrawSurface3::Blt through provider vtable slot 0x14, use g_zVideo_SwSurfaceState, g_zVideo_PrimarySurfaceState, and g_zVideo_pSelectedHwApiDeviceRecord, and report zvid_dd.c lines 0xe9, 0xfc, and 0x159 on provider failures.",
+        "BN/source evidence bounds the zvid_dd.c primary/software blit owner to 0x4a7d90, 0x4a7dd0, and 0x4a7e10 with DirectDraw provider Blt calls and linked surface/selected-device globals.",
+        "Source docblocks now cover 0x4a7d90, 0x4a7dd0, and 0x4a7e10 in zVideo.cpp, preserving the zvid_dd.c DirectDraw blit model without helper scaffolds or raw offsets.",
+        "Parent reran verify functional for 0x4a7d90, 0x4a7dd0, and 0x4a7e10; all passed after registering the missing native smoke IDs.",
+        "Owner links g_zVideo_SwSurfaceState, g_zVideo_PrimarySurfaceState, and g_zVideo_pSelectedHwApiDeviceRecord, but the complete broader zVideo DirectDraw surface-state and selected-device data owners are not accepted yet.",
+        "Pure tier S/byte verification remains globally deferred; no coherent zVideo DirectDraw blit owner byte pass attempted for this scope."
+      ]
+    },
+    {
+      "id": "render_video.zvideo_frame_tick_global",
+      "kind": "data-owner",
+      "name": "zVideo frame tick global",
+      "section": "render_video",
+      "state": "discovered",
+      "anchors": [
+        "0x56bbd8"
+      ],
+      "member_addresses": [],
+      "data_addresses": [
+        {
+          "address": "0x56bbd8",
+          "name": "g_zVideo_FrameTick"
+        }
+      ],
+      "source_paths": [
+        "src/GameZRecoil/zVideo/zVideo.cpp",
+        "src/GameZRecoil/zVideo/zVideo.h"
+      ],
+      "dependencies": [],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "none",
+        "byte": "deferred"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "BN data declaration identifies g_zVideo_FrameTick as a standalone 4-byte int32_t at 0x56bbd8 with zero bytes; source declares int g_zVideo_FrameTick = 0 in zVideo.cpp extern C globals and zVideo.h; writers reset it in ModuleInit/InitVideoSystem and increment it in PresentOrAdjustSurfacesIfEnabled.",
+        "BN data declaration, source declaration, and focused xrefs show g_zVideo_FrameTick is a standalone authored zVideo frame counter global, not provider data or an interior field of a larger typed record.",
+        "Source declaration in src/GameZRecoil/zVideo/zVideo.cpp and extern in zVideo.h match BN name/type/storage; lifecycle writes are represented by zVideo ModuleInit, InitVideoSystem, and PresentOrAdjustSurfacesIfEnabled source.",
+        "VC5SP3 data-symbol target zvideo_frame_tick_global compares _g_zVideo_FrameTick from src/GameZRecoil/zVideo/zVideo.cpp against BN 0x56bbd8 for 4 bytes with zero unmasked mismatches and no relocation bytes; BN/source both show zero initialization.",
+        "Data-only global owner; no standalone behavior target is required beyond source lifecycle writers and VC5 data-symbol evidence.",
+        "Owner-level tier-S byte verification is deferred while global authored owner/data blockers remain; accepted data gate rests on VC5SP3 data-symbol evidence."
       ]
     },
     {
@@ -119,9 +3270,23 @@
         "0x4a77a0"
       ],
       "member_addresses": [
-        "0x4a77a0"
+        "0x4a77a0",
+        "0x4a6b40"
       ],
-      "data_addresses": [],
+      "data_addresses": [
+        {
+          "address": "0x632120",
+          "name": "g_zVideo_RendererType"
+        },
+        {
+          "address": "0x56bbe8",
+          "name": "g_zVideo_ActiveRendererPath"
+        },
+        {
+          "address": "0x632124",
+          "name": "g_zVideo_FullscreenOption"
+        }
+      ],
       "source_paths": [
         "src/GameZRecoil",
         "src/Battlesport"
@@ -129,14 +3294,17 @@
       "dependencies": [],
       "gates": {
         "boundary": "pending",
-        "source": "pending",
-        "data": "pending",
+        "source": "blocked",
+        "data": "blocked",
         "functional": "pending",
         "byte": "deferred"
       },
       "blocker": "Recover renderer owner/global dispatch boundary before isolated zVideo function work is accepted.",
       "evidence": [
-        "Seeded from active implementation group after owner-first workflow hardening."
+        "Seeded from active implementation group after owner-first workflow hardening.",
+        "Active implementation group and status 0x49b7e0 keep this renderer-dispatch source cluster blocked on the ESP-pivot span-family source model; do not accept isolated zVideo dispatch functions as the full owner.",
+        "BN/source evidence for 0x4a6b40 touches g_zVideo_RendererType and g_zVideo_ActiveRendererPath; ModuleInit 0x4a7530 zeroes a 0x1467f8-byte zVideo BSS range from g_zVideo_RendererType through g_zVideo_OverwriteQueueBase, so the complete initialized-global data owner remains unresolved.",
+        "Pure tier-S work remains globally deferred while authored owner/data gates are open; 0x4a6b40 has VC5 byte evidence but the owner data gate is blocked."
       ]
     }
   ]

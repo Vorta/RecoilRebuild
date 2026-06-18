@@ -1432,9 +1432,13 @@ namespace zClass_Class {
         return 0;
     }
 
-    // Reimplements 0x4482b0: zClass_Class::gwNodeSetHasHitCallback
-    int __fastcall
-    gwNodeSetHasHitCallback(
+    /**
+     * Reimplements 0x4482b0: zClass_Class::gwNodeSetHasHitCallback
+     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * Purpose: set or clear the node flag that marks an installed hit
+     * callback handler.
+     */
+    int __fastcall gwNodeSetHasHitCallback(
         zClass_NodePartial * node,
         int value
     ){
@@ -2591,14 +2595,6 @@ namespace zClass_Class {
 }
 
 namespace zClass_Node {
-    namespace {
-        // Source-faithful helper recovered from address-backed callers in this source file.
-        OptCatalogDamageHandlerPartial *&DamageHandlerRef(zClass_NodePartial * node) {
-            return (OptCatalogDamageHandlerPartial *&)(((zClass_NodeFreeListSlot *)(node))
-                    ->damageHandler);
-        }
-    }
-
     // Reimplements 0x421d60: zClass_Node::MaskExtraFlagsRecursive
     // (GameZRecoil/zClass/Class.c)
     void __fastcall
@@ -2770,117 +2766,4 @@ namespace zClass_Node {
         }
     }
 
-    // Reimplements 0x4b25f0: zClass_Node::AssignDamageHandlerRecursiveIfMissing
-    void __fastcall AssignDamageHandlerRecursiveIfMissing(
-        zClass_NodePartial * node,
-        OptCatalogDamageHandlerPartial * handler
-    ) {
-        if (DamageHandlerRef(node) != 0) {
-            return;
-        }
-
-        for (int i = 0; i < node->listCountB; ++i) {
-            AssignDamageHandlerRecursiveIfMissing(
-                node->listB[i],
-                handler
-            );
-        }
-
-        DamageHandlerRef(node) = handler;
-    }
-
-    // Reimplements 0x4b2670: zClass_Node::ClearDamageHandlerRecursive
-    void __fastcall ClearDamageHandlerRecursive(
-        zClass_NodePartial * node,
-        OptCatalogDamageHandlerPartial * handler
-    ) {
-        for (int i = 0; i < node->listCountB; ++i) {
-            ClearDamageHandlerRecursive(
-                node->listB[i],
-                handler
-            );
-        }
-
-        if (DamageHandlerRef(node) == handler) {
-            DamageHandlerRef(node) = 0;
-        }
-    }
-
-    // Reimplements 0x4b25a0: zClass_Node::SetDamageHitCallback
-    int __fastcall
-    SetDamageHitCallback(
-        void *context,
-        zClass_NodePartial *node,
-        void *callback
-    ){
-        OptCatalogDamageHandlerPartial *handler = DamageHandlerRef(node);
-        if (handler == 0) {
-            handler = (OptCatalogDamageHandlerPartial *)(calloc(
-                1,
-                sizeof(OptCatalogDamageHandlerPartial)
-            ));
-        } else if (handler->hitContext != 0) {
-            return 0;
-        }
-
-        handler->hitContext = context;
-        handler->hitCallback = callback;
-        AssignDamageHandlerRecursiveIfMissing(
-            node,
-            handler
-        );
-        zClass_Class::gwNodeSetHasHitCallback(
-            node,
-            1
-        );
-        return 0;
-    }
-
-    // Reimplements 0x4b2630: zClass_Node::ClearDamageHandler
-    int __fastcall ClearDamageHandler(zClass_NodePartial * node) {
-        if (node == 0) {
-            return 0;
-        }
-
-        OptCatalogDamageHandlerPartial *handler = DamageHandlerRef(node);
-        if (handler != 0) {
-            ClearDamageHandlerRecursive(
-                node,
-                handler
-            );
-            if (handler->hitContext != 0) {
-                zClass_Class::gwNodeSetHasHitCallback(
-                    node,
-                    0
-                );
-            }
-            free(handler);
-        }
-
-        return 0;
-    }
-
-    // Reimplements 0x4b26b0: zClass_Node::SetDamageTimerCallback
-    int __fastcall
-    SetDamageTimerCallback(
-        void *callback,
-        zClass_NodePartial *node,
-        void *context
-    ){
-        OptCatalogDamageHandlerPartial *handler = DamageHandlerRef(node);
-        if (handler == 0) {
-            handler = (OptCatalogDamageHandlerPartial *)(calloc(
-                1,
-                sizeof(OptCatalogDamageHandlerPartial)
-            ));
-        }
-
-        handler->timerContext = context;
-        handler->timerCallback = callback;
-        AssignDamageHandlerRecursiveIfMissing(
-            node,
-            handler
-        );
-        return 0;
-    }
 }

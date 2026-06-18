@@ -6554,7 +6554,7 @@ extern "C" int optcatalog_handle_pkt0a_remove_runtime_relay_smoke(void) {
 }
 
 extern "C" int optcatalog_send_pkt0a_remove_runtime_relay_smoke(void) {
-    const NetPkt0A_RemoveRuntimeRelay oldPacket = g_NetPkt0A_RemoveRuntimeRelayBuf;
+    const NetPkt0A_RemoveRuntimeRelay oldPacket = g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf;
     const int oldRelayEnabled = g_OptCatalogProcessRuntimeRelayEnabled;
     zNetwork_DPlay4 *const oldDPlay = g_zNetwork_pDirectPlay4;
     zNetwork_PlayerRecord *const oldLocalPlayer = g_zNetwork_LocalPlayerRecord;
@@ -6591,8 +6591,12 @@ extern "C" int optcatalog_send_pkt0a_remove_runtime_relay_smoke(void) {
     trackNode.payload = &ownerSaveState;
     ownerNode.callbackContext = (zClass_NodePartial *)&trackNode;
 
-    g_NetPkt0A_RemoveRuntimeRelayBuf = {{0x0a, sizeof(NetPkt0A_RemoveRuntimeRelay), 0},
-                                        0, 0, {9.0f, 9.0f, 9.0f}, 0};
+    g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf =
+        {{0x0a, sizeof(NetPkt0A_RemoveRuntimeRelay), 0},
+         0,
+         0,
+         {9.0f, 9.0f, 9.0f},
+         0};
     g_sendCalls = 0;
     g_sendFlags = 0;
     g_sendPacket = nullptr;
@@ -6605,14 +6609,14 @@ extern "C" int optcatalog_send_pkt0a_remove_runtime_relay_smoke(void) {
         reinterpret_cast<const NetPkt0A_RemoveRuntimeRelay *>(g_sendPacketBytes);
     const bool pointOk =
         g_sendCalls == 1 && g_sendFlags == 1 &&
-        g_sendPacket == &g_NetPkt0A_RemoveRuntimeRelayBuf.header &&
+        g_sendPacket == &g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf.header &&
         g_sendPacketSize == sizeof(NetPkt0A_RemoveRuntimeRelay) &&
         pointPacket->header.payloadDword0 == 0x12345678 &&
         pointPacket->optCatalogEntryId == static_cast<short>(0x4567) &&
         Vec3Equals(pointPacket->pointOrVec3, point) &&
         pointPacket->ownerPlayerKey == ownerRow.playerKey;
 
-    g_NetPkt0A_RemoveRuntimeRelayBuf.pointOrVec3 = {9.0f, 9.0f, 9.0f};
+    g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf.pointOrVec3 = {9.0f, 9.0f, 9.0f};
     g_sendCalls = 0;
     std::memset(g_sendPacketBytes, 0, sizeof(g_sendPacketBytes));
     OptCatalog::SendPkt0A_RemoveRuntimeRelay(&entry, nullptr, &ownerNode);
@@ -6623,7 +6627,7 @@ extern "C" int optcatalog_send_pkt0a_remove_runtime_relay_smoke(void) {
         zeroPacket->pointOrVec3.y == 0.0f && zeroPacket->pointOrVec3.z == 0.0f &&
         zeroPacket->ownerPlayerKey == ownerRow.playerKey;
 
-    g_NetPkt0A_RemoveRuntimeRelayBuf = oldPacket;
+    g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf = oldPacket;
     g_OptCatalogProcessRuntimeRelayEnabled = oldRelayEnabled;
     g_zNetwork_pDirectPlay4 = oldDPlay;
     g_zNetwork_LocalPlayerRecord = oldLocalPlayer;

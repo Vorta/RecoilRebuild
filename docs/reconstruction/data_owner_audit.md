@@ -86,8 +86,100 @@ Known false/stale pattern:
   `B`, but the complete `g_HudUiMgr`/`HudUiMgrData` owner is not accepted:
   `HudUiMgr::Constructor` and `HudUiMgr::SetNanitePanelCount` remain
   owner/data-blocked, and no VC data-symbol manifest covers the complete owner.
-  The correct state is data-blocked until the full HUD manager data owner is
-  recovered and verified.
+The correct state is data-blocked until the full HUD manager data owner is
+recovered and verified.
 
 Future data-owner acceptances should append compact entries here rather than
 relying only on per-function plan markers.
+
+## 2026-06-18 Accepted Data Owners
+
+### engine.zgame.zopt_network_options
+
+- Owner symbol/scope: zOpt network option pointer globals used by the
+  network-enabled, network-modem, and network-listen accessors in
+  `src/GameZRecoil/zGame/zGame.cpp`.
+- BN data: `g_zOpt_NetworkEnabledOption` at 0x4e5d74,
+  `g_zOpt_NetworkListenOption` at 0x4e5d78, and
+  `g_zOpt_NetworkModemOption` at 0x4e5d90.
+- Source symbols: `ZOPT_NETWORK_ENABLED`,
+  `g_zOpt_NetworkListenOption`, and `g_zOpt_NetworkModemOption`.
+- Extent/section/nullness: each owner item is an independent 4-byte pointer
+  global with zero-initialized bytes in BN/source; no adjacent field slice is
+  being accepted as part of a larger struct.
+- Lifecycle/xrefs: 0x407700 `zGame::Options_LoadGameOptions` initializes the
+  pointers from `Options_GetOrCreateOption`; 0x408230/0x408240/0x408250 store
+  through them; 0x408260/0x408270 read through them.
+- VC5 evidence: `python tools/recoil.py verify vc5
+  zopt_network_option_globals` passed with zero unmasked data-byte mismatches
+  for 0x4e5d74, 0x4e5d78, and 0x4e5d90 using
+  `vc5_o2_ob0_md_facs`.
+- Dependent plan entries: 0x408230, 0x408240, 0x408250, 0x408260, and
+  0x408270.
+
+### engine.zclass.typelist_find_by_type_and_name
+
+- Owner symbol/scope: zClass type-list exact-name lookup data used by
+  0x44ecf0 `zClass::FindByTypeAndName` in
+  `src/GameZRecoil/zClass/List.c`.
+- BN data: `g_zClass_TypeList_HeadSlotPtrs` at 0x4ddef8 and
+  `g_zClass_TypeList_Buckets` at 0x539bac.
+- Source symbols: `g_zClass_TypeList_HeadSlotPtrs` and
+  `g_zClass_TypeList_Buckets`.
+- Extent/section/nullness: the head-slot pointer table is 64 bytes and points
+  into the recovered 192-byte `zClass_TypeListBucket[16]` aggregate; the
+  bucket aggregate is accepted as the full backing owner, not a field slice.
+- Lifecycle/xrefs: 0x44ecf0 reads the selected head-slot pointer and walks the
+  linked bucket chain without mutating global state; adjacent type-list
+  mutators remain separate owner work.
+- VC5 evidence: `python tools/recoil.py verify vc5
+  zclass_find_by_type_and_name_data` passed with zero unmasked data-byte
+  mismatches for 0x4ddef8 and 0x539bac using `vc5_o2_ob0_md_facs`.
+- Dependent plan entries: 0x44ecf0.
+
+### engine.zclass.copy_node_clone_options
+
+- Owner symbol/scope: zClass copy-node clone-option globals used by
+  `CopyNodeDisplayInstance`, `CopyNodeWithCloneOptions`, and `CopyNode` in
+  `src/GameZRecoil/zClass/cls_util.c`; `CopyNodeDispatch` is included as the
+  immediate wrapper dependency for 0x452500.
+- BN data: `g_zClass_CopyNodeCloneDiMode` at 0x4de4cc,
+  `g_zClass_CopyNodeDiArg0` at 0x539c9c, and `g_zClass_CopyNodeDiArg1` at
+  0x539ca0.
+- Source symbols: `g_zClass_CopyNodeCloneDiMode`,
+  `g_zClass_CopyNodeDiArg0`, and `g_zClass_CopyNodeDiArg1`.
+- Extent/section/nullness: each owner item is an independent 4-byte `int`
+  global; BN/source initial bytes are 1 for clone mode and zero for both DI
+  arguments.
+- Lifecycle/xrefs: 0x451b20 reads the clone-option globals while cloning or
+  reusing display instances; 0x452500 saves, installs, and restores clone mode
+  plus DI arg 0 around dispatch; 0x452560 saves, installs, and restores all
+  three globals around dispatch.
+- VC5 evidence: `python tools/recoil.py verify vc5 zclass_copy_node_globals`
+  passed with zero unmasked data-byte mismatches for 0x4de4cc, 0x539c9c, and
+  0x539ca0 using `vc5_o2_ob0_md_facs`.
+- Dependent plan entries: 0x451b20, 0x452400, 0x452500, and 0x452560.
+
+### battlesport_gameplay.player_create_from_names_bootstrap
+
+- Owner symbol/scope: Player create-from-names bootstrap/save-state record
+  owner in `src/Battlesport/player.cpp`.
+- BN/source data: Player master-modal list globals at 0x4f3688..0x4f3694,
+  master-common list globals at 0x4f3a68..0x4f3a74, save-state list globals at
+  0x4f3a78..0x4f3a84, `g_Player_NextOrdinal` at 0x4f3a94,
+  `g_Player_NominalGravity` at 0x4f3ac8, `g_Player_LocalFxOffsetWorldPtr` at
+  0x779aa8, accepted shared aim-origin rdata at 0x4dc998, and accepted
+  `g_Player_RuntimeDiScene` at 0x4f36b8.
+- Extent/section/nullness: the list heads, tails, aux pointers, counts,
+  ordinal, gravity, local-FX pointer, and runtime-DI-scene symbols are
+  independent 4-byte globals; the aim-origin owner is a 12-byte rdata vector.
+- Lifecycle/xrefs: the accepted owner covers the bootstrap member functions
+  that create, bind, initialize, and return Player save-state records from
+  template/object names while updating the accepted list/runtime globals.
+- VC5 evidence: `python tools/recoil.py verify vc5 player_bootstrap_globals`,
+  `player_save_state_globals`, `player_bootstrap_runtime_globals`,
+  `player_shared_aim_origin_rdata`, and
+  `zclass_player_runtime_di_scene_global` passed with zero unmasked data-byte
+  mismatches for their data symbols using `vc5_o2_ob0_md_facs`.
+- Dependent plan entries: 0x420d10, 0x421a40, 0x421470, 0x421790, 0x421830,
+  0x421ab0, 0x421ea0, 0x421ed0, 0x4220f0, and 0x42aa40.
