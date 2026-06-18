@@ -134,6 +134,30 @@ struct zClass_DiSegmentBounds {
     float maxZ;
 };
 
+enum {
+    kDiRaycastFilterSegmentBoundsCapacity = 12
+};
+
+struct zClass_DiRaycastFilterRuntime {
+    const char *filterRegionsNodeNamePrefix;
+    zVec3 *filterRegionsCenter;
+    float filterRegionsRadiusSq;
+    int filterRegionsEnableClearanceCheck;
+    zClass_NodePartial *filterRegionsLineOfSightWorld;
+    OptCatalogRaycastHitList *filterRegionsOutHitList;
+    int breakOnFirstCandidate;
+    int stopAfterFirstHit;
+    zVec3 pickQueryPoint;
+    zVec3 segmentEnd;
+    zClass_DiSegmentBounds segmentBounds[kDiRaycastFilterSegmentBoundsCapacity];
+    PlayerProbeSampleCandidateBuffer *pickCandidateBuffer;
+    zClassDiPickCandidateEntry *pickCandidateCursor;
+    float pickPointQueryMaxY;
+    zVec3 *pickPointArray;
+    int pickPointCount;
+    int unused_16c;
+};
+
 struct zModel_PickFaceUvData {
     zVec2 uvs[3];
 };
@@ -302,29 +326,34 @@ int __fastcall AddCycleTexture(
 );
 } // namespace zModel_Instance
 
-extern int g_cls_di_StopAfterFirstHit;
-extern int g_cls_di_BreakOnFirstCandidate;
+extern zClass_DiRaycastFilterRuntime g_zClass_cls_di_RaycastFilterRuntime;
 extern zVec3 g_zClass_DiFaceVertexScratch4[4];
-extern zVec3 g_DiPickQueryPoint;
-extern zVec3 g_DiSegmentEnd;
-extern float g_DiSegmentMinX;
-extern float g_DiSegmentMinY;
-extern float g_DiSegmentMinZ;
-extern float g_DiSegmentMaxX;
-extern float g_DiSegmentMaxY;
-extern float g_DiSegmentMaxZ;
-extern zClass_DiSegmentBounds g_DiSegmentBounds[24];
-extern zVec3 *g_DiPickPointArray;
-extern int g_DiPickPointCount;
-extern float g_DiPickPointQueryMaxY;
-extern PlayerProbeSampleCandidateBuffer *g_DiPickCandidateBuffer;
-extern zClassDiPickCandidateEntry *g_DiPickCandidateCursor;
-extern const char *g_zClass_cls_di_FilterRegions_NodeNamePrefix;
-extern zVec3 *g_zClass_cls_di_FilterRegions_Center;
-extern float g_zClass_cls_di_FilterRegions_RadiusSq;
-extern int g_zClass_cls_di_FilterRegions_EnableClearanceCheck;
-extern zClass_NodePartial *g_zClass_cls_di_FilterRegions_LineOfSightWorld;
-extern OptCatalogRaycastHitList *g_zClass_cls_di_FilterRegions_OutHitList;
+
+#define g_zClass_cls_di_FilterRegions_NodeNamePrefix \
+    (g_zClass_cls_di_RaycastFilterRuntime.filterRegionsNodeNamePrefix)
+#define g_zClass_cls_di_FilterRegions_Center (g_zClass_cls_di_RaycastFilterRuntime.filterRegionsCenter)
+#define g_zClass_cls_di_FilterRegions_RadiusSq (g_zClass_cls_di_RaycastFilterRuntime.filterRegionsRadiusSq)
+#define g_zClass_cls_di_FilterRegions_EnableClearanceCheck \
+    (g_zClass_cls_di_RaycastFilterRuntime.filterRegionsEnableClearanceCheck)
+#define g_zClass_cls_di_FilterRegions_LineOfSightWorld \
+    (g_zClass_cls_di_RaycastFilterRuntime.filterRegionsLineOfSightWorld)
+#define g_zClass_cls_di_FilterRegions_OutHitList (g_zClass_cls_di_RaycastFilterRuntime.filterRegionsOutHitList)
+#define g_cls_di_BreakOnFirstCandidate (g_zClass_cls_di_RaycastFilterRuntime.breakOnFirstCandidate)
+#define g_cls_di_StopAfterFirstHit (g_zClass_cls_di_RaycastFilterRuntime.stopAfterFirstHit)
+#define g_DiPickQueryPoint (g_zClass_cls_di_RaycastFilterRuntime.pickQueryPoint)
+#define g_DiSegmentEnd (g_zClass_cls_di_RaycastFilterRuntime.segmentEnd)
+#define g_DiSegmentBounds (g_zClass_cls_di_RaycastFilterRuntime.segmentBounds)
+#define g_DiSegmentMinX (g_zClass_cls_di_RaycastFilterRuntime.segmentBounds[0].minX)
+#define g_DiSegmentMinY (g_zClass_cls_di_RaycastFilterRuntime.segmentBounds[0].minY)
+#define g_DiSegmentMinZ (g_zClass_cls_di_RaycastFilterRuntime.segmentBounds[0].minZ)
+#define g_DiSegmentMaxX (g_zClass_cls_di_RaycastFilterRuntime.segmentBounds[0].maxX)
+#define g_DiSegmentMaxY (g_zClass_cls_di_RaycastFilterRuntime.segmentBounds[0].maxY)
+#define g_DiSegmentMaxZ (g_zClass_cls_di_RaycastFilterRuntime.segmentBounds[0].maxZ)
+#define g_DiPickCandidateBuffer (g_zClass_cls_di_RaycastFilterRuntime.pickCandidateBuffer)
+#define g_DiPickCandidateCursor (g_zClass_cls_di_RaycastFilterRuntime.pickCandidateCursor)
+#define g_DiPickPointQueryMaxY (g_zClass_cls_di_RaycastFilterRuntime.pickPointQueryMaxY)
+#define g_DiPickPointArray (g_zClass_cls_di_RaycastFilterRuntime.pickPointArray)
+#define g_DiPickPointCount (g_zClass_cls_di_RaycastFilterRuntime.pickPointCount)
 
 namespace zClass_cls_di {
 void __fastcall SetBreakOnFirstCandidate(int enabled);
@@ -970,6 +999,109 @@ RECOIL_STATIC_ASSERT(
     ) == 0x0c
 );
 RECOIL_STATIC_ASSERT(sizeof(zClass_DiSegmentBounds) == 0x18);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zClass_DiRaycastFilterRuntime,
+        filterRegionsNodeNamePrefix
+    ) == 0x00
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zClass_DiRaycastFilterRuntime,
+        filterRegionsCenter
+    ) == 0x04
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zClass_DiRaycastFilterRuntime,
+        filterRegionsRadiusSq
+    ) == 0x08
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zClass_DiRaycastFilterRuntime,
+        filterRegionsEnableClearanceCheck
+    ) == 0x0c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zClass_DiRaycastFilterRuntime,
+        filterRegionsLineOfSightWorld
+    ) == 0x10
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zClass_DiRaycastFilterRuntime,
+        filterRegionsOutHitList
+    ) == 0x14
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zClass_DiRaycastFilterRuntime,
+        breakOnFirstCandidate
+    ) == 0x18
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zClass_DiRaycastFilterRuntime,
+        stopAfterFirstHit
+    ) == 0x1c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zClass_DiRaycastFilterRuntime,
+        pickQueryPoint
+    ) == 0x20
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zClass_DiRaycastFilterRuntime,
+        segmentEnd
+    ) == 0x2c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zClass_DiRaycastFilterRuntime,
+        segmentBounds
+    ) == 0x38
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zClass_DiRaycastFilterRuntime,
+        pickCandidateBuffer
+    ) == 0x158
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zClass_DiRaycastFilterRuntime,
+        pickCandidateCursor
+    ) == 0x15c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zClass_DiRaycastFilterRuntime,
+        pickPointQueryMaxY
+    ) == 0x160
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zClass_DiRaycastFilterRuntime,
+        pickPointArray
+    ) == 0x164
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zClass_DiRaycastFilterRuntime,
+        pickPointCount
+    ) == 0x168
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zClass_DiRaycastFilterRuntime,
+        unused_16c
+    ) == 0x16c
+);
+RECOIL_STATIC_ASSERT(sizeof(zClass_DiRaycastFilterRuntime) == 0x170);
 RECOIL_STATIC_ASSERT(sizeof(zModel_PickFaceUvData) == 0x18);
 RECOIL_STATIC_ASSERT(
     offsetof(

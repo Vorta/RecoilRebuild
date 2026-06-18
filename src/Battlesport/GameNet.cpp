@@ -138,7 +138,7 @@ NetPkt14_HudTimerAndFlagsSync g_NetPkt14_HudTimerAndFlagsSyncBuf = {
     0,
     0,
 };
-NetPkt0A_RemoveRuntimeRelay g_NetPkt0A_RemoveRuntimeRelayBuf = {
+NetPkt0A_RemoveRuntimeRelay g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf = {
     {0x0a, sizeof(NetPkt0A_RemoveRuntimeRelay), 0},
     0,
     0,
@@ -601,7 +601,12 @@ void GameNetPlayerRow::DestroyEmbeddedPanel() {
     hudWidget.~HudUiPanel();
 }
 
-// Reimplements 0x433a40: HudTimerPanelNetState::ClearTailFlagsLocal
+/**
+ * Reimplements 0x433a40: HudTimerPanelNetState::ClearTailFlagsLocal
+ * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
+ * Purpose: Clear the local HUD timer tail flags before countdown state is
+ * copied or reset.
+ */
 void HudTimerPanelNetState::ClearTailFlagsLocal() {
     {
         for (int index = 0; index < 8; ++index) {
@@ -2262,8 +2267,13 @@ int __fastcall HandlePkt06_PlayerStateSnapshot(
     return 0;
 }
 
-// Reimplements 0x434190: GameNet::HandlePkt07_AltGunDispatch
-// (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
+/**
+ * Reimplements 0x434190: GameNet::HandlePkt07_AltGunDispatch
+ * Source path: src/Battlesport/GameNet.cpp.
+ * BN source path: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp.
+ * Purpose: apply a remote pkt07 alternate-gun dispatch to the matching player
+ * row.
+ */
 int __fastcall HandlePkt07_AltGunDispatch(
     int,
     NetPkt07_AltGunDispatch *packet
@@ -2302,8 +2312,12 @@ int __fastcall HandlePkt07_AltGunDispatch(
     return 1;
 }
 
-// Reimplements 0x434130: GameNet::SendPkt07_AltGunDispatch
-// (D:\Proj\Battlesport\ai_net.cpp)
+/**
+ * Reimplements 0x434130: GameNet::SendPkt07_AltGunDispatch
+ * Source path: src/Battlesport/GameNet.cpp.
+ * BN source path: D:\Proj\Battlesport\ai_net.cpp.
+ * Purpose: send the local alternate-gun dispatch packet to peers.
+ */
 void __fastcall SendPkt07_AltGunDispatch(
     short weaponId,
     unsigned int dispatchFlags
@@ -2318,8 +2332,13 @@ void __fastcall SendPkt07_AltGunDispatch(
     zNetwork_SendPacketReliable(&g_NetPkt07_AltGunDispatchBuf.header);
 }
 
-// Reimplements 0x434230: GameNet::AltGunDispatchNoOpCallback
-// (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
+/**
+ * Reimplements 0x434230: GameNet::AltGunDispatchNoOpCallback
+ * Source path: src/Battlesport/GameNet.cpp.
+ * BN source path: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp.
+ * Purpose: accept remote alternate-gun runtime allocation without local side
+ * effects.
+ */
 int __fastcall AltGunDispatchNoOpCallback(
     OptCatalogEntryDef *,
     void **
@@ -2862,15 +2881,23 @@ int __fastcall HandlePkt03_RemoveRemotePlayer(
     return 0;
 }
 
-// Reimplements 0x414390: GameNet::RefreshPlayerListMenu (D:\Proj\Battlesport\ai_net.cpp)
+/**
+ * Reimplements 0x414390: GameNet::RefreshPlayerListMenu
+ * Source: D:\Proj\Battlesport\ai_net.cpp
+ * Purpose: Forward a player row to the HUD stats list triplet for scoreboard
+ * entry insertion.
+ */
 void __fastcall RefreshPlayerListMenu(
     GameNetPlayerRow *playerRow
 ) {
     g_HudUiMgrStatsList->triplet->AddEntry(playerRow);
 }
 
-// Reimplements 0x433410: GameNet::HandlePkt0C_HudTimerStatusBits
-// (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
+/**
+ * Reimplements 0x433410: GameNet::HandlePkt0C_HudTimerStatusBits
+ * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
+ * Purpose: Apply replicated HUD timer seconds and warning status bits.
+ */
 int __fastcall HandlePkt0C_HudTimerStatusBits(
     int,
     NetPkt0C_HudTimerStatusBits *packet
@@ -2979,8 +3006,11 @@ void __fastcall SendPkt0B_ChatMessage(
     free(packet);
 }
 
-// Reimplements 0x433250: GameNet::HandlePkt0D_HudTimerPanelState
-// (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
+/**
+ * Reimplements 0x433250: GameNet::HandlePkt0D_HudTimerPanelState
+ * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
+ * Purpose: Apply the host HUD timer panel state packet to local timer state.
+ */
 int __fastcall HandlePkt0D_HudTimerPanelState(
     int,
     NetPkt0D_HudTimerPanelState *packet
@@ -3120,8 +3150,11 @@ void __fastcall SendPkt0E_PlayerLapProgress(
     }
 }
 
-// Reimplements 0x4334f0: GameNet::SendPkt09_PlayerScoreboardSnapshot
-// (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
+/**
+ * Reimplements 0x4334f0: GameNet::SendPkt09_PlayerScoreboardSnapshot
+ * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
+ * Purpose: Send the host's packed player score and lap snapshot to peers.
+ */
 void SendPkt09_PlayerScoreboardSnapshot() {
     if (zNetwork::IsHost() == 0) {
         return;
@@ -3164,8 +3197,11 @@ void SendPkt09_PlayerScoreboardSnapshot() {
     free(packet);
 }
 
-// Reimplements 0x4335b0: GameNet::HandlePkt09_PlayerScoreboardSnapshot
-// (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
+/**
+ * Reimplements 0x4335b0: GameNet::HandlePkt09_PlayerScoreboardSnapshot
+ * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
+ * Purpose: Apply packed player score and lap rows and trigger HUD warnings.
+ */
 int __fastcall HandlePkt09_PlayerScoreboardSnapshot(
     int,
     NetPkt09_PlayerScoreboardSnapshot *packet
@@ -3229,8 +3265,11 @@ int __fastcall HandlePkt09_PlayerScoreboardSnapshot(
     return 1;
 }
 
-// Reimplements 0x433310: GameNet::SendPkt0D_HudTimerPanelState
-// (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
+/**
+ * Reimplements 0x433310: GameNet::SendPkt0D_HudTimerPanelState
+ * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
+ * Purpose: Send and locally apply the host HUD timer panel state packet.
+ */
 void __fastcall SendPkt0D_HudTimerPanelState(
     HudTimerPanelNetState *timerState
 ) {
@@ -3299,8 +3338,12 @@ int __fastcall HandlePkt0E_PlayerLapProgress(
     return 1;
 }
 
-// Reimplements 0x434370: GameNet::SendPkt13_EffectAnimActivationRecord
-// (D:\Proj\GameZRecoil\GameNet.cpp)
+/**
+ * Reimplements 0x434370: GameNet::SendPkt13_EffectAnimActivationRecord
+ * Source: D:\Proj\GameZRecoil\GameNet.cpp
+ * Purpose: Send a reliable pkt13 effect-animation activation record unless
+ * replay echo suppression is active.
+ */
 void __fastcall SendPkt13_EffectAnimActivationRecord(
     zEffectAnimActivationRecord *record
 ) {
@@ -3330,8 +3373,12 @@ void __fastcall SendPkt13_EffectAnimActivationRecord(
     free(packet);
 }
 
-// Reimplements 0x434430: GameNet::SendAllPkt13_EffectAnimActivationRecords
-// (D:\Proj\GameZRecoil\GameNet.cpp)
+/**
+ * Reimplements 0x434430: GameNet::SendAllPkt13_EffectAnimActivationRecords
+ * Source: D:\Proj\GameZRecoil\GameNet.cpp
+ * Purpose: Broadcast every queued effect-animation activation record from the
+ * host.
+ */
 void SendAllPkt13_EffectAnimActivationRecords() {
     if (zNetwork::IsHost() == 0) {
         return;
@@ -3343,8 +3390,12 @@ void SendAllPkt13_EffectAnimActivationRecords() {
     }
 }
 
-// Reimplements 0x4343f0: GameNet::HandlePkt13_EffectAnimActivationRecord
-// (D:\Proj\GameZRecoil\GameNet.cpp)
+/**
+ * Reimplements 0x4343f0: GameNet::HandlePkt13_EffectAnimActivationRecord
+ * Source: D:\Proj\GameZRecoil\GameNet.cpp
+ * Purpose: Apply a new remote effect-animation activation record while
+ * suppressing replay echo.
+ */
 int __fastcall HandlePkt13_EffectAnimActivationRecord(
     int,
     zNetworkPacketHeader *packet
@@ -3360,8 +3411,11 @@ int __fastcall HandlePkt13_EffectAnimActivationRecord(
     return 1;
 }
 
-// Reimplements 0x433390: GameNet::SendPkt0C_HudTimerStatusBits
-// (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
+/**
+ * Reimplements 0x433390: GameNet::SendPkt0C_HudTimerStatusBits
+ * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
+ * Purpose: Send and locally apply replicated HUD timer status bits.
+ */
 int __fastcall SendPkt0C_HudTimerStatusBits(
     HudTimerPanelNetState *timerState
 ) {

@@ -1,3 +1,4 @@
+#include "Battlesport/Mfc42Abi.h"
 #include "zDi.h"
 
 #include "Battlesport/player.h"
@@ -9,29 +10,8 @@
 #include <math.h>
 #include <string.h>
 
-int g_cls_di_BreakOnFirstCandidate = 0;
-int g_cls_di_StopAfterFirstHit = 0;
+zClass_DiRaycastFilterRuntime g_zClass_cls_di_RaycastFilterRuntime = {0};
 zVec3 g_zClass_DiFaceVertexScratch4[4] = {0};
-zVec3 g_DiPickQueryPoint = {0};
-zVec3 g_DiSegmentEnd = {0};
-float g_DiSegmentMinX = 0.0f;
-float g_DiSegmentMinY = 0.0f;
-float g_DiSegmentMinZ = 0.0f;
-float g_DiSegmentMaxX = 0.0f;
-float g_DiSegmentMaxY = 0.0f;
-float g_DiSegmentMaxZ = 0.0f;
-zClass_DiSegmentBounds g_DiSegmentBounds[24] = {0};
-zVec3 *g_DiPickPointArray = 0;
-int g_DiPickPointCount = 0;
-float g_DiPickPointQueryMaxY = 0.0f;
-PlayerProbeSampleCandidateBuffer *g_DiPickCandidateBuffer = 0;
-zClassDiPickCandidateEntry *g_DiPickCandidateCursor = 0;
-const char *g_zClass_cls_di_FilterRegions_NodeNamePrefix = 0;
-zVec3 *g_zClass_cls_di_FilterRegions_Center = 0;
-float g_zClass_cls_di_FilterRegions_RadiusSq = 0.0f;
-int g_zClass_cls_di_FilterRegions_EnableClearanceCheck = 0;
-zClass_NodePartial *g_zClass_cls_di_FilterRegions_LineOfSightWorld = 0;
-OptCatalogRaycastHitList *g_zClass_cls_di_FilterRegions_OutHitList = 0;
 
 namespace {
     const char *kClsDiSourceFile = "D:\\Proj\\GameZRecoil\\zClass\\cls_di.c";
@@ -1342,10 +1322,13 @@ namespace {
 }
 
 namespace BBox {
-    // Reimplements 0x446ed0: BBox::ExpandToCorners
-    // (GameZRecoil/zClass/cls_di.c)
-    void __fastcall
-    ExpandToCorners(
+    /**
+     * Reimplements 0x446ed0: BBox::ExpandToCorners.
+     * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
+     * behavior/global evidence; native smoke coverage exercises the owner slice.
+     * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
+     */
+    void __fastcall ExpandToCorners(
         const zBBox3f *bbox,
         zBBoxCorners *outCorners
     ){
@@ -1378,18 +1361,32 @@ namespace BBox {
 }
 
 namespace zClass_cls_di {
-    // Reimplements 0x443c50: zClass_cls_di::SetBreakOnFirstCandidate (GameZRecoil/zClass/cls_di.c)
+    /**
+     * Reimplements 0x443c50: zClass_cls_di::SetBreakOnFirstCandidate.
+     * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
+     * behavior/global evidence; native smoke coverage exercises the owner slice.
+     * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
+     */
     void __fastcall SetBreakOnFirstCandidate(int enabled) {
         g_cls_di_BreakOnFirstCandidate = enabled;
     }
 
-    // Reimplements 0x443c60: zClass_cls_di::SetStopAfterFirstHit (GameZRecoil/zClass/cls_di.c)
+    /**
+     * Reimplements 0x443c60: zClass_cls_di::SetStopAfterFirstHit.
+     * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
+     * behavior/global evidence; native smoke coverage exercises the owner slice.
+     * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
+     */
     void __fastcall SetStopAfterFirstHit(int flag) {
         g_cls_di_StopAfterFirstHit = flag;
     }
 
-    // Reimplements 0x443c70: zClass_cls_di::FindBestPickCandidateBelowPoint
-    // (GameZRecoil/zClass/cls_di.c)
+    /**
+     * Reimplements 0x443c70: zClass_cls_di::FindBestPickCandidateBelowPoint.
+     * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
+     * behavior/global evidence; native smoke coverage exercises the owner slice.
+     * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
+     */
     void __fastcall FindBestPickCandidateBelowPoint(
         zClass_NodePartial * world,
         const zVec3 *position,
@@ -1424,8 +1421,12 @@ namespace zClass_cls_di {
         outResults->candidateCount = 1;
     }
 
-    // Reimplements 0x443d20: zClass_cls_di::BuildPickCandidateListBelowPoint
-    // (GameZRecoil/zClass/cls_di.c)
+    /**
+     * Reimplements 0x443d20: zClass_cls_di::BuildPickCandidateListBelowPoint.
+     * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
+     * behavior/global evidence; native smoke coverage exercises the owner slice.
+     * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
+     */
     int __fastcall BuildPickCandidateListBelowPoint(
         zClass_NodePartial * world,
         PlayerProbeSampleCandidateBuffer * outResults,
@@ -1521,8 +1522,12 @@ namespace zClass_cls_di {
         return outResults->candidateCount <= 0 ? 1 : 0;
     }
 
-    // Reimplements 0x42ba50: zClass_cls_di::SnapProbePointYToBestCandidate
-    // (GameZRecoil/zClass/cls_di.c)
+    /**
+     * Reimplements 0x42ba50: zClass_cls_di::SnapProbePointYToBestCandidate.
+     * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
+     * behavior/global evidence; native smoke coverage exercises the owner slice.
+     * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
+     */
     int __fastcall SnapProbePointYToBestCandidate(zVec3 * point) {
         PlayerProbeSampleCandidateBuffer candidateBuffer;
         const int result = BuildPickCandidateListBelowPoint(
@@ -1547,10 +1552,13 @@ namespace zClass_cls_di {
         return result;
     }
 
-    // Reimplements 0x444890: zClass_cls_di::BuildPickCandidatesForPoints
-    // (GameZRecoil/zClass/cls_di.c)
-    int __fastcall
-    BuildPickCandidatesForPoints(
+    /**
+     * Reimplements 0x444890: zClass_cls_di::BuildPickCandidatesForPoints.
+     * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
+     * behavior/global evidence; native smoke coverage exercises the owner slice.
+     * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
+     */
+    int __fastcall BuildPickCandidatesForPoints(
         zClass_NodePartial * node,
         int depth,
         int *hitFlags
@@ -1774,10 +1782,13 @@ namespace zClass_cls_di {
         }
     }
 
-    // Reimplements 0x444c50: zClass_cls_di::BuildPickCandidatesForPointsRecursive
-    // (GameZRecoil/zClass/cls_di.c)
-    int __fastcall
-    BuildPickCandidatesForPointsRecursive(
+    /**
+     * Reimplements 0x444c50: zClass_cls_di::BuildPickCandidatesForPointsRecursive.
+     * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
+     * behavior/global evidence; native smoke coverage exercises the owner slice.
+     * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
+     */
+    int __fastcall BuildPickCandidatesForPointsRecursive(
         zClass_NodePartial * node,
         int depth,
         int *hitFlags
@@ -1837,10 +1848,13 @@ namespace zClass_cls_di {
         return 0;
     }
 
-    // Reimplements 0x444d10: zClass_cls_di::BuildPickCandidatesForPointsForLight
-    // (GameZRecoil/zClass/cls_di.c)
-    int __fastcall
-    BuildPickCandidatesForPointsForLight(
+    /**
+     * Reimplements 0x444d10: zClass_cls_di::BuildPickCandidatesForPointsForLight.
+     * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
+     * behavior/global evidence; native smoke coverage exercises the owner slice.
+     * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
+     */
+    int __fastcall BuildPickCandidatesForPointsForLight(
         zClass_NodePartial * node,
         int depth,
         int *hitFlags
@@ -1897,8 +1911,12 @@ namespace zClass_cls_di {
         return 0;
     }
 
-    // Reimplements 0x4444b0: zClass_cls_di::BuildPickCandidatesForPointBatch
-    // (GameZRecoil/zClass/cls_di.c)
+    /**
+     * Reimplements 0x4444b0: zClass_cls_di::BuildPickCandidatesForPointBatch.
+     * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
+     * behavior/global evidence; native smoke coverage exercises the owner slice.
+     * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
+     */
     int __fastcall BuildPickCandidatesForPointBatch(
         zClass_NodePartial * world,
         zVec3 * pointArray,
@@ -2044,9 +2062,13 @@ namespace zClass_cls_di {
         return 0;
     }
 
-    // Reimplements 0x443f80: zClass_cls_di::BuildPickCandidateList (GameZRecoil/zClass/cls_di.c)
-    int __fastcall
-    BuildPickCandidateList(
+    /**
+     * Reimplements 0x443f80: zClass_cls_di::BuildPickCandidateList.
+     * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
+     * behavior/global evidence; native smoke coverage exercises the owner slice.
+     * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
+     */
+    int __fastcall BuildPickCandidateList(
         zClass_NodePartial * node,
         int cullCount
     ){
@@ -2210,10 +2232,13 @@ namespace zClass_cls_di {
         }
     }
 
-    // Reimplements 0x444310: zClass_cls_di::BuildPickCandidatesRecursive
-    // (GameZRecoil/zClass/cls_di.c)
-    int __fastcall
-    BuildPickCandidatesRecursive(
+    /**
+     * Reimplements 0x444310: zClass_cls_di::BuildPickCandidatesRecursive.
+     * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
+     * behavior/global evidence; native smoke coverage exercises the owner slice.
+     * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
+     */
+    int __fastcall BuildPickCandidatesRecursive(
         zClass_NodePartial * node,
         int cullCount
     ){
@@ -2253,10 +2278,13 @@ namespace zClass_cls_di {
         return NoCandidatesReturn();
     }
 
-    // Reimplements 0x4443e0: zClass_cls_di::BuildPickCandidatesForLight
-    // (GameZRecoil/zClass/cls_di.c)
-    int __fastcall
-    BuildPickCandidatesForLight(
+    /**
+     * Reimplements 0x4443e0: zClass_cls_di::BuildPickCandidatesForLight.
+     * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
+     * behavior/global evidence; native smoke coverage exercises the owner slice.
+     * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
+     */
+    int __fastcall BuildPickCandidatesForLight(
         zClass_NodePartial * node,
         int cullCount
     ){
@@ -2289,8 +2317,12 @@ namespace zClass_cls_di {
         return NoCandidatesReturn();
     }
 
-    // Reimplements 0x4472c0: zClass_cls_di::IsPickQueryPointOutsideViewBBoxXZ
-    // (GameZRecoil/zClass/cls_di.c)
+    /**
+     * Reimplements 0x4472c0: zClass_cls_di::IsPickQueryPointOutsideViewBBoxXZ.
+     * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
+     * behavior/global evidence; native smoke coverage exercises the owner slice.
+     * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
+     */
     int __fastcall IsPickQueryPointOutsideViewBBoxXZ(
         zClass_NodePartial * node
     ) {
@@ -2326,8 +2358,12 @@ namespace zClass_cls_di {
                    : 1;
     }
 
-    // Reimplements 0x4473e0: zClass_cls_di::PickTestBBox2D
-    // (GameZRecoil/zClass/cls_di.c)
+    /**
+     * Reimplements 0x4473e0: zClass_cls_di::PickTestBBox2D.
+     * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
+     * behavior/global evidence; native smoke coverage exercises the owner slice.
+     * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
+     */
     int __fastcall PickTestBBox2D(
         zClass_NodePartial * node,
         int *hitFlags
@@ -2373,9 +2409,13 @@ namespace zClass_cls_di {
         return result;
     }
 
-    // Reimplements 0x447540: zClass_cls_di::FilterPointsBBox (GameZRecoil/zClass/cls_di.c)
-    int __fastcall
-    FilterPointsBBox(zClass_NodePartial * node, void * /*pointData*/) {
+    /**
+     * Reimplements 0x447540: zClass_cls_di::FilterPointsBBox.
+     * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
+     * behavior/global evidence; native smoke coverage exercises the owner slice.
+     * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
+     */
+    int __fastcall FilterPointsBBox(zClass_NodePartial * node, void * /*pointData*/) {
         if ((node->flags & 0x100) == 0) {
             return 1;
         }
@@ -2419,10 +2459,13 @@ namespace zClass_cls_di {
         return 0;
     }
 
-    // Reimplements 0x4476f0: zClass_cls_di::FrustumTestAndPick
-    // (GameZRecoil/zClass/cls_di.c)
-    int __fastcall
-    FrustumTestAndPick(
+    /**
+     * Reimplements 0x4476f0: zClass_cls_di::FrustumTestAndPick.
+     * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
+     * behavior/global evidence; native smoke coverage exercises the owner slice.
+     * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
+     */
+    int __fastcall FrustumTestAndPick(
         zClass_NodePartial * node,
         int *activeMask
     ){
@@ -2488,8 +2531,12 @@ namespace zClass_cls_di {
         return anyActive == 0 ? 1 : 0;
     }
 
-    // Reimplements 0x485380: zClass_cls_di::BuildPickCandidatesForSegmentVsBBoxFaces
-    // (GameZRecoil/zClass/cls_di.c)
+    /**
+     * Reimplements 0x485380: zClass_cls_di::BuildPickCandidatesForSegmentVsBBoxFaces.
+     * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
+     * behavior/global evidence; native smoke coverage exercises the owner slice.
+     * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
+     */
     int __fastcall BuildPickCandidatesForSegmentVsBBoxFaces(
         const zBBoxCorners *bboxCorners,
         zClassDiPickCandidateEntry *candidate,
@@ -2555,8 +2602,12 @@ namespace zClass_cls_di {
         return 0;
     }
 
-    // Reimplements 0x487540: zClass_cls_di::FilterRegionsAgainstPolygonWithDamageMaskUv
-    // (GameZRecoil/zClass/cls_di.c)
+    /**
+     * Reimplements 0x487540: zClass_cls_di::FilterRegionsAgainstPolygonWithDamageMaskUv.
+     * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
+     * behavior/global evidence; native smoke coverage exercises the owner slice.
+     * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
+     */
     int __fastcall FilterRegionsAgainstPolygonWithDamageMaskUv(
         zClass_NodePartial * candidateOwner,
         PlayerProbeSampleCandidateBuffer * outCandidateBuffersBySegment,
@@ -2668,8 +2719,12 @@ namespace zClass_cls_di {
         return result;
     }
 
-    // Reimplements 0x487350: zClass_cls_di::FilterRegionsAgainstPolygon
-    // (GameZRecoil/zClass/cls_di.c)
+    /**
+     * Reimplements 0x487350: zClass_cls_di::FilterRegionsAgainstPolygon.
+     * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
+     * behavior/global evidence; native smoke coverage exercises the owner slice.
+     * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
+     */
     void __fastcall FilterRegionsAgainstPolygon(
         zClass_NodePartial * candidateOwner,
         zModel_PickFaceData * faceData,
@@ -2736,8 +2791,12 @@ namespace zClass_cls_di {
         }
     }
 
-    // Reimplements 0x486290: zClass_cls_di::BuildPickCandidatesForSegmentBatchVsPolygon
-    // (GameZRecoil/zClass/cls_di.c)
+    /**
+     * Reimplements 0x486290: zClass_cls_di::BuildPickCandidatesForSegmentBatchVsPolygon.
+     * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
+     * behavior/global evidence; native smoke coverage exercises the owner slice.
+     * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
+     */
     int __fastcall BuildPickCandidatesForSegmentBatchVsPolygon(
         zClass_NodePartial * candidateOwner,
         PlayerProbeSampleCandidateBuffer * outCandidateBuffersBySegment,
@@ -2821,9 +2880,13 @@ namespace zClass_cls_di {
         return anyActive;
     }
 
-    // Reimplements 0x4869a0:
-    // zClass_cls_di::BuildPickCandidatesForSegmentBatchVsPolygonWithDamageMaskUv
-    // (GameZRecoil/zClass/cls_di.c)
+    /**
+     * Reimplements 0x4869a0:
+     * zClass_cls_di::BuildPickCandidatesForSegmentBatchVsPolygonWithDamageMaskUv.
+     * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
+     * behavior/global evidence for the expanded raycast/filter runtime slice.
+     * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
+     */
     int __fastcall BuildPickCandidatesForSegmentBatchVsPolygonWithDamageMaskUv(
         zClass_NodePartial * candidateOwner,
         PlayerProbeSampleCandidateBuffer * outCandidateBuffersBySegment,
@@ -2937,7 +3000,12 @@ namespace zClass_cls_di {
         return anyActive;
     }
 
-    // Reimplements 0x4856d0: zClass_cls_di::TryGetPolygonHitAtQueryXZ (GameZRecoil/zClass/cls_di.c)
+    /**
+     * Reimplements 0x4856d0: zClass_cls_di::TryGetPolygonHitAtQueryXZ.
+     * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
+     * behavior/global evidence; native smoke coverage exercises the owner slice.
+     * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
+     */
     int __fastcall TryGetPolygonHitAtQueryXZ(
         zClassDiPickCandidateEntry * candidate,
         const zVec3 *polygonVertices,
@@ -2977,8 +3045,12 @@ namespace zClass_cls_di {
         return 1;
     }
 
-    // Reimplements 0x4857f0: zClass_cls_di::BuildPickCandidateForSegmentVsPolygon
-    // (GameZRecoil/zClass/cls_di.c)
+    /**
+     * Reimplements 0x4857f0: zClass_cls_di::BuildPickCandidateForSegmentVsPolygon.
+     * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
+     * behavior/global evidence; native smoke coverage exercises the owner slice.
+     * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
+     */
     int __fastcall BuildPickCandidateForSegmentVsPolygon(
         zClassDiPickCandidateEntry * candidate,
         const zVec3 *segmentStart,
@@ -3000,8 +3072,12 @@ namespace zClass_cls_di {
                    : 0;
     }
 
-    // Reimplements 0x485d10: zClass_cls_di::BuildPickCandidateForSegmentVsPolygonWithUv
-    // (GameZRecoil/zClass/cls_di.c)
+    /**
+     * Reimplements 0x485d10: zClass_cls_di::BuildPickCandidateForSegmentVsPolygonWithUv.
+     * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
+     * behavior/global evidence; native smoke coverage exercises the owner slice.
+     * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
+     */
     int __fastcall BuildPickCandidateForSegmentVsPolygonWithUv(
         zClassDiPickCandidateEntry * candidate,
         const zVec3 *segmentStart,
@@ -3039,8 +3115,12 @@ namespace zClass_cls_di {
         return 1;
     }
 
-    // Reimplements 0x484fc0: zClass_cls_di::AppendPickCandidatesForFace
-    // (GameZRecoil/zClass/cls_di.c)
+    /**
+     * Reimplements 0x484fc0: zClass_cls_di::AppendPickCandidatesForFace.
+     * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
+     * behavior/global evidence; native smoke coverage exercises the owner slice.
+     * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
+     */
     int __fastcall AppendPickCandidatesForFace(
         const zModel_PickFaceData *faceData,
         zClassDiPickCandidateEntry *candidate,
@@ -3130,7 +3210,12 @@ namespace zClass_cls_di {
 }
 
 namespace zDi {
-    // Reimplements 0x484960: zDi::BuildPickCandidateForQueryPoint (GameZRecoil/zModel/zmodel.cpp)
+    /**
+     * Reimplements 0x484960: zDi::BuildPickCandidateForQueryPoint.
+     * Provenance: address-backed reconstruction placed in the cls_di runtime
+     * surface from current Binary Ninja behavior/global evidence.
+     * Purpose: preserve the recovered pick-face helper behavior used by cls_di.
+     */
     int __fastcall BuildPickCandidateForQueryPoint(
         zDiPartial * self,
         zClassDiPickCandidateEntry * outCandidate,
@@ -3192,8 +3277,12 @@ namespace zDi {
 }
 
 namespace zModelConst {
-    // Reimplements 0x484b70: zModelConst::AddFaceToPlayerProbeSampleBuckets
-    // (GameZRecoil/zModel/zmodel.cpp)
+    /**
+     * Reimplements 0x484b70: zModelConst::AddFaceToPlayerProbeSampleBuckets.
+     * Provenance: address-backed reconstruction placed in the cls_di runtime
+     * surface from current Binary Ninja behavior/global evidence.
+     * Purpose: preserve the recovered pick-face helper behavior used by cls_di.
+     */
     void __fastcall AddFaceToPlayerProbeSampleBuckets(
         zClass_NodePartial * node,
         PlayerProbeSampleCandidateBuffer * outputBuckets,
@@ -3273,8 +3362,12 @@ namespace zModelConst {
 
 namespace zClass_cls_di {
 
-    // Reimplements 0x484e00: zClass_cls_di::PickTestMeshAtQueryXZ
-    // (GameZRecoil/zClass/cls_di.c)
+    /**
+     * Reimplements 0x484e00: zClass_cls_di::PickTestMeshAtQueryXZ.
+     * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
+     * behavior/global evidence; native smoke coverage exercises the owner slice.
+     * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
+     */
     void __fastcall PickTestMeshAtQueryXZ(
         zClass_NodePartial * node,
         zModel_PickFaceData * faceData,
@@ -3327,10 +3420,13 @@ namespace zClass_cls_di {
         }
     }
 
-    // Reimplements 0x487900: zClass_cls_di::FilterRegionsAgainstMeshFaces
-    // (D:\Proj\GameZRecoil\zClass\cls_di.c)
-    int __fastcall
-    FilterRegionsAgainstMeshFaces(
+    /**
+     * Reimplements 0x487900: zClass_cls_di::FilterRegionsAgainstMeshFaces.
+     * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
+     * behavior/global evidence; native smoke coverage exercises the owner slice.
+     * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
+     */
+    int __fastcall FilterRegionsAgainstMeshFaces(
         zVec3 * meshVertices,
         int faceCount
     ){
@@ -3358,10 +3454,13 @@ namespace zClass_cls_di {
         return 1;
     }
 
-    // Reimplements 0x4879c0: zClass_cls_di::FilterRegionsAgainstHexahedronFaces
-    // (D:\Proj\GameZRecoil\zClass\cls_di.c)
-    int __fastcall
-    FilterRegionsAgainstHexahedronFaces(
+    /**
+     * Reimplements 0x4879c0: zClass_cls_di::FilterRegionsAgainstHexahedronFaces.
+     * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
+     * behavior/global evidence; native smoke coverage exercises the owner slice.
+     * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
+     */
+    int __fastcall FilterRegionsAgainstHexahedronFaces(
         zVec3 * center,
         float radius
     ){
@@ -3382,8 +3481,12 @@ namespace zClass_cls_di {
         return 1;
     }
 
-    // Reimplements 0x446f60: zClass_cls_di::FilterRegions_TryAppendNode
-    // (GameZRecoil/zClass/cls_di.c)
+    /**
+     * Reimplements 0x446f60: zClass_cls_di::FilterRegions_TryAppendNode.
+     * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
+     * behavior/global evidence; native smoke coverage exercises the owner slice.
+     * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
+     */
     int __fastcall FilterRegions_TryAppendNode(zClass_NodePartial * node) {
         if (g_zClass_cls_di_FilterRegions_OutHitList->hitCount >= kMaxPickCandidates) {
             zError::ReportOld(
@@ -3479,8 +3582,12 @@ namespace zClass_cls_di {
         return 0;
     }
 
-    // Reimplements 0x446a80: zClass_cls_di::FilterRegionsAgainstSphere
-    // (GameZRecoil/zClass/cls_di.c)
+    /**
+     * Reimplements 0x446a80: zClass_cls_di::FilterRegionsAgainstSphere.
+     * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
+     * behavior/global evidence; native smoke coverage exercises the owner slice.
+     * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
+     */
     int __fastcall FilterRegionsAgainstSphere(
         zClass_NodePartial * world,
         zVec3 * center,
@@ -3566,8 +3673,12 @@ namespace zClass_cls_di {
         return outHitList->hitCount <= 0 ? 1 : 0;
     }
 
-    // Reimplements 0x4455f0: zClass_cls_di::BuildPickCandidatesForSegment
-    // (GameZRecoil/zClass/cls_di.c)
+    /**
+     * Reimplements 0x4455f0: zClass_cls_di::BuildPickCandidatesForSegment.
+     * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
+     * behavior/global evidence; native smoke coverage exercises the owner slice.
+     * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
+     */
     int __fastcall BuildPickCandidatesForSegment(zClass_NodePartial * self) {
         int result = self->listCountB;
         {
@@ -3594,8 +3705,12 @@ namespace zClass_cls_di {
         return result;
     }
 
-    // Reimplements 0x444de0: zClass_cls_di::RaycastSelectClosestHitBetweenPoints
-    // (GameZRecoil/zClass/cls_di.c)
+    /**
+     * Reimplements 0x444de0: zClass_cls_di::RaycastSelectClosestHitBetweenPoints.
+     * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
+     * behavior/global evidence; native smoke coverage exercises the owner slice.
+     * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
+     */
     int __fastcall RaycastSelectClosestHitBetweenPoints(
         zClass_NodePartial * world,
         const zVec3 *startPoint,
@@ -3654,7 +3769,12 @@ namespace zClass_cls_di {
         return 0;
     }
 
-    // Reimplements 0x444e90: zClass_cls_di::RaycastFindClosest (GameZRecoil/zClass/cls_di.c)
+    /**
+     * Reimplements 0x444e90: zClass_cls_di::RaycastFindClosest.
+     * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
+     * behavior/global evidence; native smoke coverage exercises the owner slice.
+     * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
+     */
     int __fastcall RaycastFindClosest(
         zClass_NodePartial * world,
         PlayerProbeSampleCandidateBuffer * rayData,
@@ -3854,10 +3974,13 @@ namespace zClass_cls_di {
         return rayData->candidateCount <= 0 ? 1 : 0;
     }
 
-    // Reimplements 0x445a00: zClass_cls_di::BuildPickCandidatesForSegmentRecursive
-    // (GameZRecoil/zClass/cls_di.c)
-    int __fastcall
-    BuildPickCandidatesForSegmentRecursive(
+    /**
+     * Reimplements 0x445a00: zClass_cls_di::BuildPickCandidatesForSegmentRecursive.
+     * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
+     * behavior/global evidence; native smoke coverage exercises the owner slice.
+     * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
+     */
+    int __fastcall BuildPickCandidatesForSegmentRecursive(
         zClass_NodePartial * node,
         int depth
     ){
@@ -3902,10 +4025,13 @@ namespace zClass_cls_di {
         return NoCandidatesReturn();
     }
 
-    // Reimplements 0x445b20: zClass_cls_di::BuildPickCandidatesForSegmentForCamera
-    // (GameZRecoil/zClass/cls_di.c)
-    int __fastcall
-    BuildPickCandidatesForSegmentForCamera(zClass_NodePartial * node, int /*depth*/) {
+    /**
+     * Reimplements 0x445b20: zClass_cls_di::BuildPickCandidatesForSegmentForCamera.
+     * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
+     * behavior/global evidence; native smoke coverage exercises the owner slice.
+     * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
+     */
+    int __fastcall BuildPickCandidatesForSegmentForCamera(zClass_NodePartial * node, int /*depth*/) {
         zVec3 unitScale = {1.0f, 1.0f, 1.0f};
         zClass_CameraDataPartial *cameraData = (zClass_CameraDataPartial *)(node->classData);
 
@@ -3935,10 +4061,13 @@ namespace zClass_cls_di {
         return NoCandidatesReturn();
     }
 
-    // Reimplements 0x445c20: zClass_cls_di::BuildPickCandidatesForSegmentForLight
-    // (GameZRecoil/zClass/cls_di.c)
-    int __fastcall
-    BuildPickCandidatesForSegmentForLight(
+    /**
+     * Reimplements 0x445c20: zClass_cls_di::BuildPickCandidatesForSegmentForLight.
+     * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
+     * behavior/global evidence; native smoke coverage exercises the owner slice.
+     * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
+     */
+    int __fastcall BuildPickCandidatesForSegmentForLight(
         zClass_NodePartial * node,
         int depth
     ){
@@ -3981,8 +4110,12 @@ namespace zClass_cls_di {
         return NoCandidatesReturn();
     }
 
-    // Reimplements 0x446880: zClass_cls_di::BuildPickCandidatesForSegmentsForAnimate
-    // (GameZRecoil/zClass/cls_di.c)
+    /**
+     * Reimplements 0x446880: zClass_cls_di::BuildPickCandidatesForSegmentsForAnimate.
+     * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
+     * behavior/global evidence; native smoke coverage exercises the owner slice.
+     * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
+     */
     int __fastcall BuildPickCandidatesForSegmentsForAnimate(
         zClass_NodePartial * node,
         int nodeCountHint,
@@ -4036,8 +4169,12 @@ namespace zClass_cls_di {
         return 0;
     }
 
-    // Reimplements 0x446970: zClass_cls_di::BuildPickCandidatesForSegmentsForLight
-    // (GameZRecoil/zClass/cls_di.c)
+    /**
+     * Reimplements 0x446970: zClass_cls_di::BuildPickCandidatesForSegmentsForLight.
+     * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
+     * behavior/global evidence; native smoke coverage exercises the owner slice.
+     * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
+     */
     int __fastcall BuildPickCandidatesForSegmentsForLight(
         zClass_NodePartial * node,
         int nodeCountHint,
@@ -4089,8 +4226,12 @@ namespace zClass_cls_di {
         return 0;
     }
 
-    // Reimplements 0x445d40: zClass_cls_di::BuildProbeHitBatchesForSegments
-    // (GameZRecoil/zClass/cls_di.c)
+    /**
+     * Reimplements 0x445d40: zClass_cls_di::BuildProbeHitBatchesForSegments.
+     * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
+     * behavior/global evidence; native smoke coverage exercises the owner slice.
+     * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
+     */
     void __fastcall BuildProbeHitBatchesForSegments(
         zClass_NodePartial * world,
         zClass_DiSegmentEndpoints * segmentEndpoints,
@@ -4173,10 +4314,13 @@ namespace zClass_cls_di {
         g_cls_di_StopAfterFirstHit = 0;
     }
 
-    // Reimplements 0x445f60: zClass_cls_di::BuildPickCandidatesForSegmentsInGridWindow
-    // (GameZRecoil/zClass/cls_di.c)
-    void __fastcall
-    BuildPickCandidatesForSegmentsInGridWindow(
+    /**
+     * Reimplements 0x445f60: zClass_cls_di::BuildPickCandidatesForSegmentsInGridWindow.
+     * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
+     * behavior/global evidence; native smoke coverage exercises the owner slice.
+     * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
+     */
+    void __fastcall BuildPickCandidatesForSegmentsInGridWindow(
         zClass_NodePartial * world,
         int *activeMask
     ){
@@ -4305,8 +4449,12 @@ namespace zClass_cls_di {
         }
     }
 
-    // Reimplements 0x446440: zClass_cls_di::BuildPickCandidatesForSegmentsRecursive
-    // (GameZRecoil/zClass/cls_di.c)
+    /**
+     * Reimplements 0x446440: zClass_cls_di::BuildPickCandidatesForSegmentsRecursive.
+     * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
+     * behavior/global evidence; native smoke coverage exercises the owner slice.
+     * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
+     */
     int __fastcall BuildPickCandidatesForSegmentsRecursive(
         zClass_NodePartial * node,
         int nodeCountHint,
@@ -4516,10 +4664,13 @@ namespace zClass_cls_di {
         }
     }
 
-    // Reimplements 0x445650: zClass_cls_di::BuildPickCandidatesForSegmentChildFallback
-    // (GameZRecoil/zClass/cls_di.c)
-    int __fastcall
-    BuildPickCandidatesForSegmentChildFallback(
+    /**
+     * Reimplements 0x445650: zClass_cls_di::BuildPickCandidatesForSegmentChildFallback.
+     * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
+     * behavior/global evidence; native smoke coverage exercises the owner slice.
+     * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
+     */
+    int __fastcall BuildPickCandidatesForSegmentChildFallback(
         zClass_NodePartial * node,
         int nodeCountHint
     ){

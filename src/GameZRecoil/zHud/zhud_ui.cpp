@@ -1418,7 +1418,11 @@ float ZrdArrayFloat(
 
 } // namespace
 
-// Reimplements 0x414670: HudUiTripletEntries::GetCount
+/**
+ * Reimplements 0x414670: HudUiTripletEntries::GetCount.
+ * Original source path: D:\Proj\Battlesport\HudUiListMenu.cpp.
+ * Purpose: return the number of populated entries in the recovered scoreboard vector.
+ */
 int HudUiTripletEntries::GetCount() {
     if (begin == 0) {
         return 0;
@@ -1427,7 +1431,11 @@ int HudUiTripletEntries::GetCount() {
     return (int)(end - begin);
 }
 
-// Reimplements 0x4146a0: HudUiTripletEntries::CopyRange
+/**
+ * Reimplements 0x4146a0: HudUiTripletEntries::CopyRange.
+ * Original source path: D:\Proj\Battlesport\HudUiListMenu.cpp.
+ * Purpose: copy a range of scoreboard entries into destination vector storage.
+ */
 HudUiScoreboardEntry *__stdcall HudUiTripletEntries::CopyRange(
     HudUiScoreboardEntry *sourceBegin,
     HudUiScoreboardEntry *sourceEnd,
@@ -1439,13 +1447,17 @@ HudUiScoreboardEntry *__stdcall HudUiTripletEntries::CopyRange(
             *cursor = *sourceBegin;
         }
         ++sourceBegin;
-        cursor = (HudUiScoreboardEntry *)((unsigned char *)cursor + sizeof(HudUiScoreboardEntry));
+        ++cursor;
     }
 
     return cursor;
 }
 
-// Reimplements 0x4146e0: HudUiTripletEntries::FillN
+/**
+ * Reimplements 0x4146e0: HudUiTripletEntries::FillN.
+ * Original source path: D:\Proj\Battlesport\HudUiListMenu.cpp.
+ * Purpose: fill consecutive scoreboard vector slots from one source entry.
+ */
 void __stdcall HudUiTripletEntries::FillN(
     HudUiScoreboardEntry *dest,
     unsigned int count,
@@ -1456,7 +1468,7 @@ void __stdcall HudUiTripletEntries::FillN(
         if (cursor != 0) {
             *cursor = *sourceValue;
         }
-        cursor = (HudUiScoreboardEntry *)((unsigned char *)cursor + sizeof(HudUiScoreboardEntry));
+        ++cursor;
         --count;
     }
 }
@@ -16615,21 +16627,30 @@ void HudUiTimerPanel::UpdateHMSFromSeconds(
     );
 }
 
-// Reimplements 0x40eca0: HudUiTimerPanel::SetRunning
+/**
+ * Reimplements 0x40eca0: HudUiTimerPanel::SetRunning.
+ * Purpose: set the global HUD timer panel stopped flag from the running state.
+ */
 void __fastcall HudUiTimerPanel::SetRunning(
     int running
 ) {
     g_HudUiMgrTimerPanel->stopped = running == 0 ? 1 : 0;
 }
 
-// Reimplements 0x40ecc0: HudUiTimerPanel::SetElapsedSeconds
+/**
+ * Reimplements 0x40ecc0: HudUiTimerPanel::SetElapsedSeconds.
+ * Purpose: store the elapsed seconds on the global HUD timer panel.
+ */
 void __stdcall HudUiTimerPanel::SetElapsedSeconds(
     float seconds
 ) {
     g_HudUiMgrTimerPanel->elapsedSeconds = seconds;
 }
 
-// Reimplements 0x40ece0: HudUiTimerPanel::SetSeconds
+/**
+ * Reimplements 0x40ece0: HudUiTimerPanel::SetSeconds.
+ * Purpose: update the global HUD timer panel's elapsed display and second step.
+ */
 void __stdcall HudUiTimerPanel::SetSeconds(
     float elapsedSeconds,
     float secondsStep
@@ -16638,7 +16659,10 @@ void __stdcall HudUiTimerPanel::SetSeconds(
     g_HudUiMgrTimerPanel->UpdateHMSFromSeconds(elapsedSeconds);
 }
 
-// Reimplements 0x40ed10: HudUiTimerPanel::GetSeconds
+/**
+ * Reimplements 0x40ed10: HudUiTimerPanel::GetSeconds.
+ * Purpose: return the elapsed seconds from the global HUD timer panel.
+ */
 float HudUiTimerPanel::GetSeconds() {
     return g_HudUiMgrTimerPanel->elapsedSeconds;
 }

@@ -55,19 +55,19 @@ Generated from `.agent/RECOIL_PLAN.md`.
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | Reconstructed | all entries | 2804 | 1127 | 0 | 0 | 0 | 3931 |
 | Source dependencies satisfied | authored entries | 3490 | 0 | 0 | 28 | 0 | 3518 |
-| Source owner | authored entries | 1384 | 0 | 0 | 2134 | 0 | 3518 |
-| Data reimplemented | authored entries | 724 | 0 | 454 | 2340 | 0 | 3518 |
+| Source owner | authored entries | 1441 | 0 | 0 | 2077 | 0 | 3518 |
+| Data reimplemented | authored entries | 50 | 0 | 473 | 2995 | 0 | 3518 |
 | Reimplemented | authored entries | 3415 | 0 | 0 | 103 | 0 | 3518 |
 | Provider-boundary | provider entries | 412 | 1 | 0 | 0 | 0 | 413 |
 
 | Reimplementation tier | Count | Percent of authored |
 | --- | ---: | ---: |
 | X | 103 | 2.9% |
-| F | 2 | 0.1% |
-| C | 2300 | 65.4% |
-| B | 612 | 17.4% |
+| F | 1 | 0.0% |
+| C | 2896 | 82.3% |
+| B | 285 | 8.1% |
 | A | 1 | 0.0% |
-| S | 500 | 14.2% |
+| S | 232 | 6.6% |
 <!-- RECOIL_PROGRESS:END -->
 
 Reconstruction is ongoing. Some subsystems have source-level implementations
