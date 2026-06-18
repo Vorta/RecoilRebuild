@@ -129,9 +129,8 @@ available even when no groups are active.
 
 Active queue sections:
 
-- Ready owner/data work: GameNet launch/session-sync registered-callback
-  cleanup and Player create-from-names bootstrap owner/data cleanup remain
-  actionable as separate owner slices.
+- Ready owner/data work: Player create-from-names bootstrap owner/data cleanup
+  remains actionable as a separate owner slice.
 - Blocked pending evidence or policy: zVideo/zRndr renderer dispatch remains
   blocked on the ESP-pivot span-family source model unless new evidence or
   explicit policy direction appears.
@@ -199,8 +198,9 @@ Active queue sections:
   dependencies 0x434460, 0x434550, 0x4321b0, 0x4320f0, 0x419470, and
   0x417770.
 - Section: network_online
-- Queue: active owner/data cleanup for the GameNet launch/session-start
-  dependency cluster under HudUiNetGameSetupPanel.
+- Queue: resolved owner/data cleanup for the GameNet launch/session-start
+  dependency cluster under HudUiNetGameSetupPanel; remaining visible debt is
+  tier-S-only and is deferred by the global owner/data gate policy.
 - Reason: HudUiNetGameSetupPanel_LaunchButton now routes past zOpt and
   zNetwork session-runtime blockers; the current lowest visible authored
   blocker is GameNet/HUD launch status, packet, handler, row-list, and
@@ -239,10 +239,10 @@ Active queue sections:
     `network_online.gamenet_launch_session_sync`: a register/unregister
     coordinator owner with owned data `g_GameNet_HandlersRegistered`.
     Source-owner markers are accepted for both after focused owner mapping and
-    passing registration/unregistration functional smokes. Data remains blocked
-    because zDEClient relay callback slots, OptCatalog callback slots, Pickup,
-    and packet-handler callback owners are cross-owner dependencies, not
-    GameNet handler-flag storage.
+    passing registration/unregistration functional smokes. Data is now accepted
+    after routing the registered callback band to accepted owners and verifying
+    the owned `g_GameNet_HandlersRegistered` scalar through
+    `gamenet_launch_session_globals`.
   - The Pickup spawn-list pkt11 synchronization dependency reached from
     0x432860 is accepted at tier B. Owner
     `battlesport_gameplay.pickup_spawn_list_pkt11_sync` covers 0x41e890,
@@ -260,28 +260,66 @@ Active queue sections:
     tier B under `engine.zeffect.anim_entry_name_lookup`; 0x45ff10 now has
     linked source/data gates for `g_zEffectAnim_EntryCount` and
     `g_zEffectAnim_EntryList`.
+  - The crater relay callback chain reached from GameNet registration is now
+    accepted at tier B. Owners `engine.zeffect.zdeclient_feature_map_tree`,
+    `engine.zeffect.zdeclient_crater_create_feature`,
+    `engine.zgeometry.clip_patch_output_apply_node_di_pairs`,
+    `engine.zeffect.zdeclient_crater_instance_event`, and
+    `engine.zeffect.zdeclient_crater_relay_callbacks` clear the former
+    0x456b20/0x456c50/0x433ad0/0x433b70 source/data blockers, with VC5
+    data-symbol evidence for the feature map-tree globals and current
+    functional smokes.
+  - The QSand relay chain reached from GameNet registration is now accepted at
+    tier B. 0x455ed0 is
+    accepted at tier B under
+    `engine.zeffect.zdeclient_qsand_event_template_defaults`, backed by BN
+    typing of `g_zDEClient_QuickSandEventTemplateDefaults` and VC5 data-symbol
+    target `zdeclient_qsand_event_template_defaults`. Owners
+    `engine.zeffect.zdeclient_qsand_feature_pipeline`,
+    `engine.zeffect.zdeclient_feature_node_clip_partition`,
+    `engine.zeffect.zdeclient_qsand_create_feature_display`, and
+    `engine.zeffect.zdeclient_qsand_relay_callbacks` now have accepted
+    source/data gates for 0x455ea0/0x4563d0/0x456010/0x456450, 0x46af40,
+    0x4564b0, 0x455ef0, and 0x433d40. The QSand material pointer globals are
+    accepted under `engine.zeffect.zdeclient_qsand_material_globals`, with VC5
+    target `zdeclient_qsand_material_globals`; the QSand enabled flag
+    `g_zDEClient_QuickSandEnabled` is accepted with VC5 target
+    `zdeclient_qsand_enabled_global`. The former 0x4564b0/0x46af40 blockers
+    through 0x44db00 `zClass_Object3D::DeleteNode`, 0x447e60
+    `gwNodeSetDisplayInstance`, and the zDi bounds helpers are cleared at
+    tier B/no-data or accepted data.
+  - The Pickup pkt11/pkt12 handler chain reached from GameNet registration is
+    now source-routed under
+    `battlesport_gameplay.pickup_pkt11_pkt12_handlers`. Source-owner markers
+    are accepted for 0x433f40, 0x4340a0, 0x41e930, 0x41e1c0, 0x41dc30,
+    0x41dc60, 0x41e960, 0x41d8a0, 0x41ceb0, 0x41cf50, 0x41da20, 0x41dab0,
+    0x41e330, and 0x41dcf0 after linked native functional smokes and focused
+    docblocks. Data is now accepted at tier B: `g_PickupTypes`,
+    `g_NextPickupId`, and the pkt12 relay buffer are covered by
+    `pickup_pkt11_pkt12_handler_globals`; reused spawn-list storage is covered
+    by `pickup_spawn_sync_globals`; downstream zClass/zEffect/zSound/zError
+    data gates are accepted or no-data.
+  - The zNetwork dispatch-handler list runtime reached from GameNet
+    unregistration is now accepted at tier B under
+    `engine.znetwork.dispatch_handler_list_runtime`. The owner covers
+    0x48bf40, 0x48bfa0, 0x48bfb0, 0x48bfe0, 0x48bff0, 0x48c0a0, 0x48c120,
+    and 0x48c200, with native functional smokes for the lifecycle,
+    register/unregister, and dispatch paths plus VC5 data-symbol evidence for
+    the dispatch-handler flag, sentinel, and count globals.
 - Current blockers:
-  - 0x4321b0 remains tier C with source owner accepted under
-    `network_online.gamenet_launch_session_sync`; do not treat it as tier B
-    until the callback-slot data dependencies are routed and accepted. 0x4320f0
-    is accepted at tier B after resolving the HUD row-removal chain, accepting
-    `g_HudUiTopMessageStack` with local VC5 data-symbol evidence, and reusing
-    `gamenet_launch_session_globals` for the player-row and spawn-point list
-    globals. 0x431c50 remains data-blocked by zDEClient/OptCatalog/Pickup and
-    packet-handler callback-slot owner routing, but no longer has a source
-    owner blocker in the narrowed coordinator scope.
-    0x432830 is accepted at tier B after row-list data-symbol evidence;
-    0x431c50, 0x4327e0, 0x432860, and 0x432ae0 still need broader
-    pkt06/player/HUD/zVideo and registered-callback owner-data routing before
-    tier B.
-  - The pkt06 data correction sets `g_GameNetPkt06InitialSyncGate` to the BN
-    initial value 1. Ignored local VC5 target `gamenet_pkt06_globals` covers
-    `g_GameNetPlayerRowStyleColors_00RRGGBB`,
-    `g_GameNetPkt06InitialSyncGate`, and `g_HudTimerPanelNetState` with zero
-    unmasked mismatches. The cross-owner `g_HudUiTopMessageStack` and
-    `g_zVideo_FrameTick` globals now have accepted data owners; remaining
-    pkt06 tier-B blockage is through dependency owner data such as the Player
-    master-type transition cluster.
+  - Resolved for owner/data: 0x431c50 and 0x4321b0 are accepted at tier B under
+    `network_online.gamenet_launch_session_sync`; 0x432ed0, 0x433ca0,
+    0x4340c0, 0x4344b0, and 0x461eb0 are also accepted at tier B after
+    docblock/smoke activation, owner-ledger routing, and data-gate review.
+    `python tools/recoil.py frontier 0x431c50 --depth 1 --lane binary` now
+    shows only pure tier-S blockers in this registration band.
+  - The pkt06 data gate is now accepted at tier B under
+    `network_online.gamenet_pkt06_player_state_snapshot` for 0x4327e0,
+    0x432860, and 0x432ae0. Direct `g_GameNetPkt06InitialSyncGate` storage is
+    backed by BN declaration/xref evidence and VC5 target
+    `gamenet_pkt06_globals`; linked row-list/color, HUD timer,
+    top-message-stack, zVideo frame-tick, runtime DI scene, HudSensorTracker,
+    and Player master-type data all route to accepted data owners.
   - The zClass copy-node dependency through 0x452500 is accepted at tier B
     after correcting `g_zClass_CopyNodeCloneDiMode` to the BN initial value 1,
     wiring the existing zClass copy smokes into `recoil_native_smoke`, and
@@ -374,12 +412,12 @@ Active queue sections:
     pkt10/pkt0f feature-relay work.
   - `g_zVideo_FrameTick` is now accepted as
     `render_video.zvideo_frame_tick_global`: BN shows a standalone 4-byte
-    zero-initialized int32 at 0x56bbd8, source declares it in the zVideo global
+    zero-initialized int32, source declares it in the zVideo global
     block, and `zvideo_frame_tick_global` VC5 data-symbol verification passes
     with zero unmasked mismatches.
   - `g_HudUiTopMessageStack` is now accepted as
     `hud_ui.hud_ui_top_message_stack_global`: BN shows a standalone 4-byte
-    zero-initialized `HudUiTextStack4 *` at 0x56bd24, source declares/externs
+    zero-initialized `HudUiTextStack4 *`, source declares/externs
     it in the HUD UI sources with init/teardown lifecycle writes, and
     `hud_ui_top_message_stack_global` VC5 data-symbol verification passes with
     zero unmasked mismatches.
@@ -390,21 +428,21 @@ Active queue sections:
     targets successfully. Owner `effects_weapons.optcatalog_entry_lookup`
     now accepts source/functional/data gates for 0x4ae3c0/0x4ae450 after
     accepted data owner `effects_weapons.optcatalog_entry_table_data` covered
-    g_OptCatalog_EntryCount/g_OptCatalog_EntryTable at 0x778924/0x778928 with
+    g_OptCatalog_EntryCount/g_OptCatalog_EntryTable with
     BN xrefs, source lifecycle, and VC5SP3 data-symbol checks; both lookup
     helpers are promoted to tier B. 0x4ae4a0 is linked into accepted owner
     `effects_weapons.optcatalog_runtime_instances` and promoted to tier B.
   - Owner `network_online.gamenet_pkt07_altgun_dispatch` covers
-    0x434130/0x434190/0x434230 and now accepts boundary/source/functional
+    0x434130/0x434190/0x434230 and now accepts boundary/source/functional/data
     gates. Bounded pkt07 smokes in `gamenet_launch_smokes.cpp` cover the
     sender, remote handler, and no-op callback; all three functional targets
-    passed. The OptCatalog and Player alt-gun dependency data gates are now
-    accepted, and direct packet-buffer owner
+    passed. The OptCatalog, Player alt-gun, and zNetwork reliable-send
+    dependency data gates are now accepted, and direct packet-buffer owner
     `network_online.gamenet_pkt07_packet_buffer_data` accepts
-    `g_NetPkt07_AltGunDispatchBuf` at 0x4dcf60 after BN/source review and
-    `gamenet_pkt07_globals` VC5 data-symbol verification. The owner remains
-    data-blocked by callee data gate `zNetwork::SendPacketReliable` at
-    0x48c080.
+    `g_NetPkt07_AltGunDispatchBuf` after BN/source review and
+    `gamenet_pkt07_globals` VC5 data-symbol verification. All three pkt07
+    members are promoted to tier B; tier S remains deferred to a coherent
+    GameNet packet source-cluster pass.
   - Owner `battlesport_gameplay.player_alt_gun_runtime_dispatch` now accepts
     boundary/source/functional gates for 0x43c9c0, 0x43c190, 0x43aa30,
     0x43afd0, 0x43c330, 0x43c2d0, 0x43c430, and 0x43c550. The new bounded
@@ -416,12 +454,124 @@ Active queue sections:
     were accepted; all eight members are promoted to tier B. Tier S remains
     deferred for a coherent Player alt-gun source-cluster pass.
   - Data owner `engine.zinput.force_feedback_effect_set_global` now accepts
-    boundary/source/data gates for 0x4f36b4 `g_zInputFfEffectSet`; VC5
+    boundary/source/data gates for `g_zInputFfEffectSet`; VC5
     data-symbol target `zinput_force_feedback_effect_set_global` passed with
     zero unmasked mismatches.
+  - The zDEClient crater relay callback smoke/docblock gap is repaired for
+    0x433ad0, 0x433b70, 0x456b00, and 0x456c50. Data owners
+    `engine.zeffect.zdeclient_crater_event_template_defaults` and
+    `engine.zeffect.zdeclient_net_relay_callback_globals` now accept the
+    crater default-template global and paired relay callback slots with VC5SP3
+    data-symbol evidence. Leaf owner
+    `engine.zeffect.zdeclient_crater_event_template_defaults_access` promotes
+    0x456b00 to tier B. The broader owner
+    `engine.zeffect.zdeclient_crater_relay_callbacks` remains blocked on
+    adjacent crater instancing/material-pool owner dependencies.
+  - zModel crater-instancing dependencies 0x4805e0
+    `zModel_Matl::GetPoolEntry` and 0x481530/0x481540
+    `zModel_Const` vertex-merge epsilon accessors are now accepted at tier B.
+    The material-pool data owner was already accepted; the vertex-merge
+    epsilon pass registered the existing zModel constants smoke and added
+    VC5SP3 data-symbol evidence for `g_zModel_ConstVertexMergeEpsilon`.
+  - The zDEClient crater init caveat through 0x456c80 is resolved. Camera
+    accessors 0x458aa0/0x458ac0/0x458ae0 are accepted at tier B after camera
+    global VC5 data-symbol evidence and smoke registration; zClass world-grid
+    helpers 0x450650/0x450790 are accepted at tier B with no authored globals
+    after registering the world-grid smoke. 0x456c80 now has accepted
+    source-owner and no-data gates and is promoted to tier B.
+  - The zGeometry ClipPatch dependency chain from 0x4570e0 is narrowed.
+    Source-worker passes repaired missing zGeometry smoke registrations and
+    provenance docblocks. Owners
+    `engine.zgeometry.xy_vector_leaf_helpers`,
+    `engine.zgeometry.weiler_buffer_lifecycle`,
+    `engine.zgeometry.weiler_state_lifecycle`,
+    `engine.zgeometry.clip_polygon_lifecycle_helpers`,
+    `engine.zgeometry.model_polygon_snap_buffer_helpers`, and
+    `engine.zgeometry.clip_polygon_snap_near_node_model` now have accepted
+    source/no-data/functional gates; their members are promoted to tier B.
+  - The Weiler init contour-source slice is now accepted under owner
+    `engine.zgeometry.weiler_init_contour_source`. Members 0x464680, 0x4683a0,
+    0x469960, 0x464b90, 0x4693c0, 0x4676c0, 0x4693a0, and 0x468410 have
+    accepted source/no-data gates and tier B markers; source-map and owner
+    audits are current after the docblock repair.
+  - The next Weiler clip-point-list subowners are also accepted:
+    `engine.zgeometry.weiler_point_in_contour_classifier` promotes 0x468a10,
+    `engine.zgeometry.weiler_preclassified_contour_pair_bounds` promotes
+    0x464ea0/0x464c90,
+    `engine.zgeometry.weiler_selected_input_contour_output` promotes 0x468700,
+    `engine.zgeometry.weiler_clip_point_list_auxiliary_helpers` promotes
+    0x469af0/0x469a30,
+    `engine.zgeometry.weiler_point_side_table_builder` promotes 0x468470,
+    `engine.zgeometry.vec3_between_endpoints_xy` promotes 0x469ca0,
+    `engine.zgeometry.weiler_forward_segment_pair_at_point` promotes 0x468650,
+    `engine.zgeometry.weiler_preclassify_input_contour_pair` promotes 0x464f70,
+    `engine.zgeometry.weiler_intersect2d_tables` promotes 0x468fa0/0x468c40,
+    `engine.zgeometry.weiler_divide_contour_segment_at_point` promotes
+    0x468580, and
+    `engine.zgeometry.weiler_adjacent_edge_pair_against_segment` promotes
+    0x469450.
+  - The remaining Weiler clip-point-list caveat is now cleared through accepted
+    source/no-data/functional gates for
+    `engine.zgeometry.weiler_adjacent_edge_pair_against_pair` (0x469560),
+    `engine.zgeometry.weiler_classify_contained_contour` (0x465ac0),
+    `engine.zgeometry.weiler_validate_xings` (0x46a1f0),
+    `engine.zgeometry.weiler_merge_contours` (0x467710),
+    `engine.zgeometry.weiler_get_next_contour_segment_for_traversal` (0x469430),
+    `engine.zgeometry.weiler_new_contour` (0x4680b0),
+    `engine.zgeometry.weiler_select_forward_start_point_in_contour_a`
+    (0x469d60),
+    `engine.zgeometry.weiler_generate_outside_results` (0x4687b0),
+    `engine.zgeometry.weiler_clip_output_destroy` (0x464b30),
+    `engine.zgeometry.weiler_restore_output_z_from_input_plane` (0x469b60),
+    `engine.zgeometry.weiler_output_contour_to_polygon_set` (0x4682c0),
+    `engine.zgeometry.weiler_output_contours_for_clip_mode` (0x4681a0), and
+    `engine.zgeometry.weiler_clip_point_list` (0x464810). These are
+    source-faithful tier B slices with functional evidence; only the intersect2d
+    table owner carries accepted authored data, while the rest are
+    no-authored-global slices. Owner-level tier S remains deferred.
+  - The zGeometry polygon convexification caveat is now cleared under
+    `engine.zgeometry.polygon_convexification`. 0x46ced0
+    `zGeometry_Polygon::TrySplitPointDwordOffsetsAtBestDiagonal`, 0x46cb50
+    `zGeometry_Polygon::TriangulatePointDwordOffsetsRecursive`, 0x46c720
+    `zGeometry_ConvexPolygonSet::Destroy`, and 0x46c760
+    `zGeometry_Polygon::Convexify` have accepted source/no-data/functional
+    gates and tier B markers. The 0x46cb50 source now uses the BN-visible
+    split-helper recursion instead of the prior ear-clipping caveat, and the
+    functional manifest caveat was reduced to the tier-S deferral.
+  - The zGeometry triangulate-hole caveat is now cleared under
+    `engine.zgeometry.triangulate_hole_source_cluster`. 0x46c070
+    `zGeometry::TriangulatePolygonWithHole`, 0x46c390
+    `zGeometry_TriangulateHole::CacheCombinedPlane`, 0x46c570
+    `zGeometry_TriangulateHole::ProjectInnerRingOntoCachedPlane`, 0x46bd50
+    `zGeometry_TriangulateHole::TryAppendBridgeEdge`, 0x46bf30
+    `zGeometry_TriangulateHole::CollectActiveEdgeIndicesForVertex`, 0x46bfc0
+    `zGeometry_TriangulateHole::TryEmitTriangleFromEdgePair`, 0x46bf70
+    `zGeometry_TriangulateHole::FindActiveEdgeState`, 0x46c620
+    `zGeometry_Vec3Array::EnsurePositiveCrossZ`, 0x46c5b0
+    `zGeometry_Vec3Array::ReversePoints`, and 0x46c3a0
+    `zGeometry_Vec3Array::ComputeNewellPlane` have accepted
+    source/data/functional gates and tier B markers. The authored scratch
+    globals are covered by `zgeometry_triangulate_hole_globals`; owner-level
+    tier S remains deferred.
+  - The zGeometry ClipPatch caller chain from the crater build path is now
+    cleared through tier B. Owners
+    `engine.zmodel.dipool_runtime_globals`,
+    `engine.zutil.store_int32_leaf`,
+    `engine.zgeometry.model_process_clip_patch_node`,
+    `engine.zgeometry.clip_polygon_process_node_polygon_set_xy`, and
+    `engine.zgeometry.model_clip_patch` accept boundary/source/data/functional
+    gates. This promotes 0x482080, 0x4820f0, 0x4826a0, 0x46b6d0, 0x46b550,
+    and 0x46b1f0 through tier B. The zDEClient crater build wrapper 0x4570e0
+    is also accepted as `engine.zeffect.zdeclient_crater_build` with no direct
+    authored globals after repairing its smoke registration and provenance
+    docblock; unrelated zdec_init.cpp docblock backlog remains outside this
+    slice.
 - Next action:
-  - Continue owner/data routing from `network_online.gamenet_pkt07_altgun_dispatch`
-    by resolving the `zNetwork::SendPacketReliable` data gate at 0x48c080.
+  - Continue owner/data routing from the lowest visible crater relay callback
+    dependency blocker. The 0x4570e0 -> 0x46b1f0 ClipPatch chain is now tier B;
+    `frontier 0x433b70 --depth 1 --lane binary` now recommends 0x456c50
+    `zDEClient_Crater::InstanceEventWithNetRelay` as the lowest visible source
+    owner blocker for the crater relay callback owner.
     Keep pkt06 data blockers separate, especially the Player master-type
     transition data reached from 0x432ae0; do not absorb unrelated HUD,
     zNetwork, Pickup, zDEClient, zEffect, or pkt0f/pkt10 feature-relay targets.

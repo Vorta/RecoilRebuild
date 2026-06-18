@@ -7,6 +7,7 @@ add_executable(recoil_native_smoke
     zinput_tests.cpp
     zimage_tests.cpp
     zinterp_tests.cpp
+    zmodel_damage_mask_smokes.cpp
     zvideo_primary_blit_smokes.cpp
     zvideo_clear_dispatch_smokes.cpp
     zvideo_dd_enum_smokes.cpp

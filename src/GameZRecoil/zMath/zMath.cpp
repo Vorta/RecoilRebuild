@@ -549,6 +549,7 @@ void MatLoadIdentity() {
     *g_currentMatrixIdentityFlagSlot = 1;
 }
 
+#pragma optimize("y", off)
 /**
  * Reimplements 0x402f60: zMath::Vec3Normalize.
  * Purpose: Normalizes a nonzero vector in place and returns the original 3D length.
@@ -556,15 +557,18 @@ void MatLoadIdentity() {
 float __fastcall Vec3Normalize(
     zVec3 *vec
 ) {
-    const float length = sqrt(vec->x * vec->x + vec->y * vec->y + vec->z * vec->z);
-    if (length != 0.0f) {
+    zVec3 *inOut = vec;
+    float length = sqrt(inOut->x * inOut->x + inOut->y * inOut->y + inOut->z * inOut->z);
+    const unsigned int *lengthBits = (const unsigned int *)&length;
+    if ((*lengthBits & 0x7fffffffu) != 0) {
         const float reciprocalLength = 1.0f / length;
-        vec->x *= reciprocalLength;
-        vec->y *= reciprocalLength;
-        vec->z *= reciprocalLength;
+        inOut->x *= reciprocalLength;
+        inOut->y *= reciprocalLength;
+        inOut->z *= reciprocalLength;
     }
     return length;
 }
+#pragma optimize("", on)
 
 /**
  * Reimplements 0x4727f0: zMath::Vec3NormalizeXZ (GameZRecoil/zMath/zmath_vec3.cpp).
@@ -2036,7 +2040,10 @@ void __fastcall zMath_Vec3Array_AddScaled(
     }
 }
 
-// Reimplements 0x475070: zMath_Vec3_TriangleNormal (GameZRecoil/zMath/zmath_vec3.cpp)
+/**
+ * Reimplements 0x475070: zMath_Vec3_TriangleNormal.
+ * Purpose: Computes a normalized triangle normal from the triangle edge cross product.
+ */
 void __fastcall zMath_Vec3_TriangleNormal(
     const zVec3 *p0,
     const zVec3 *p1,

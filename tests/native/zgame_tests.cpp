@@ -32,6 +32,7 @@
 #include <io.h>
 #include <limits>
 
+#ifndef RECOIL_ZGAME_TESTS_ZMODEL_CONST_ONLY
 extern "C" int zutil_store_int32_smoke(void) {
     int value = 0;
     zUtil::StoreInt32(&value, -12345);
@@ -480,6 +481,7 @@ extern "C" int zmodel_render_state_setters_smoke(void) {
                : 4;
 }
 
+#endif
 extern "C" int zmodel_const_tolerances_and_cross_smoke() {
     zModel_Const::SetCoplanarTolerance(0.25f);
     zModel_Const::SetColinearTolerance(0.001f);
@@ -995,6 +997,7 @@ extern "C" int zmodel_const_tolerances_and_cross_smoke() {
     return 0;
 }
 
+#ifndef RECOIL_ZGAME_TESTS_ZMODEL_CONST_ONLY
 extern "C" int zdi_add_polygon_wrapper_smoke() {
     zDiPartial addDi = {};
     zModel_MaterialPartial addMaterial = {};
@@ -17041,3 +17044,5 @@ extern "C" int zclass_camera_sync_view_context_positions_smoke() {
     free_zclass_type_lists_for_test();
     return result;
 }
+
+#endif

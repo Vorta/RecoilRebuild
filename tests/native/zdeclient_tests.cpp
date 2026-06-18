@@ -1549,6 +1549,53 @@ extern "C" int zdeclient_create_feature_node_from_partition_smoke(void) {
                : 2;
 }
 
+extern "C" int zdeclient_qsand_build_smoke(void) {
+    zDEClient_QSandFeature negativeFeature = {};
+    zGeometry_ClipPatchOutputPartial negativeOutput = {};
+    zVec3 negativePoints[1] = {{1.0f, 2.0f, 3.0f}};
+    negativeFeature.points = negativePoints;
+    negativeFeature.eventTemplate.pointCount = 1;
+    negativeFeature.clipPatchOutput = &negativeOutput;
+    if (zDEClient_QSand::Build(&negativeFeature) != 0 ||
+        negativeFeature.points != negativePoints ||
+        negativeFeature.eventTemplate.pointCount != 1 ||
+        negativeOutput.partitionCount != 0 || negativeOutput.partitions != nullptr ||
+        negativeOutput.points != nullptr) {
+        zGeometry_ClipPatchOutput::Destroy(&negativeOutput);
+        return 1;
+    }
+
+    zClass_NodePartial *const oldCameraNode = g_zDEClient_CameraNode;
+
+    zClass_NodePartial cameraNode = {};
+    g_zDEClient_CameraNode = &cameraNode;
+
+    zDEClient_FeatureGridCell cell = {};
+    zGeometry_ClipPatchOutputPartial output = {};
+    zDEClient_QSandFeature feature = {};
+    feature.featureGridCell = &cell;
+    feature.clipPatchOutput = &output;
+
+    zVec3 outline[4] = {
+        {0.0f, 0.0f, 0.0f},
+        {10.0f, 0.0f, 0.0f},
+        {10.0f, 0.0f, -10.0f},
+        {0.0f, 0.0f, -10.0f},
+    };
+    feature.points = outline;
+    feature.eventTemplate.pointCount = 4;
+    if (zDEClient_QSand::Build(&feature) != 0 || feature.points != outline ||
+        feature.eventTemplate.pointCount != 4 || output.partitionCount != 0 ||
+        output.partitions != nullptr || output.points != nullptr) {
+        zGeometry_ClipPatchOutput::Destroy(&output);
+        g_zDEClient_CameraNode = oldCameraNode;
+        return 2;
+    }
+
+    g_zDEClient_CameraNode = oldCameraNode;
+    return 0;
+}
+
 extern "C" int zdeclient_qsand_create_feature_smoke(void) {
     ResetZClassTypeLists();
 

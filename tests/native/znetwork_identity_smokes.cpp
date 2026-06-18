@@ -1273,6 +1273,62 @@ extern "C" int znetwork_unregister_packet_handler_smoke(void) {
     return ok ? 0 : 1;
 }
 
+extern "C" int znetwork_dispatch_handler_list_smoke(void) {
+    ResetDirectPlayScenarioState();
+    zNetwork_InitMessageHandlers();
+    zNetworkDispatchHandlerListNode *const sentinel =
+        g_zNetwork_DispatchHandlerListSentinel;
+    if (sentinel == 0 ||
+        sentinel->next != sentinel ||
+        sentinel->prev != sentinel ||
+        g_zNetwork_DispatchHandlerListCount != 0) {
+        return 1;
+    }
+
+    zNetworkDispatchHandlerRecord *const recordA =
+        zNetwork::RegisterPacketHandler(
+            0x22,
+            TestPacketHandlerA,
+            1
+        );
+    zNetworkDispatchHandlerRecord *const recordB =
+        zNetwork::RegisterPacketHandler(
+            0x23,
+            TestDispatchHandlerA,
+            2
+        );
+    zNetwork::DeleteAllDispatchHandlers();
+    const int deleteAllOk =
+        sentinel->next == sentinel &&
+        sentinel->prev == sentinel &&
+        g_zNetwork_DispatchHandlerListSentinel == sentinel &&
+        g_zNetwork_DispatchHandlerListCount == 0;
+    ::operator delete(recordA);
+    ::operator delete(recordB);
+    if (deleteAllOk == 0) {
+        return 4;
+    }
+
+    zNetworkDispatchHandlerListNode *const node =
+        (zNetworkDispatchHandlerListNode *)(::operator new(
+            sizeof(zNetworkDispatchHandlerListNode)
+        ));
+    sentinel->next = node;
+    sentinel->prev = node;
+    node->next = sentinel;
+    node->prev = sentinel;
+    g_zNetwork_DispatchHandlerListCount = 1;
+
+    zNetwork_DestroyDispatchHandlerList();
+    if (g_zNetwork_DispatchHandlerListSentinel != 0 ||
+        g_zNetwork_DispatchHandlerListCount != 0) {
+        return 2;
+    }
+
+    zNetwork_DestroyDispatchHandlerList();
+    return g_zNetwork_DispatchHandlerListCount == 0 ? 0 : 3;
+}
+
 extern "C" int znetwork_clear_enumerated_session_list_smoke(void) {
     zArchiveList list = {};
     zArchiveListNode *const first =

@@ -818,3 +818,104 @@ extern "C" int player_process_alt_gun_fire_dispatch_request_smoke(void) {
     g_HudSensorTracker.primaryGunDispatchCount = oldPrimaryGunDispatchCount;
     return fireOk && heldOk ? 0 : 1;
 }
+
+extern "C" int player_reset_alt_gun_runtime_state_smoke(void) {
+    OptCatalogRuntimeInstanceStorage *const oldFreeRuntimeList = g_OptCatalogFreeRuntimeInstanceList;
+
+    zUtil_SaveGameState saveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    saveState.playerState = &playerState;
+
+    PlayerGunFireController *const activeController =
+        &playerState.altWeaponBanks[2].controllerA;
+    playerState.activeAltGunController = activeController;
+    playerState.altGunFireHeldFlag = 1;
+    playerState.altGunTransitionState = 7;
+    playerState.altGunTransitionTimerA = 3.0f;
+    playerState.altGunTransitionTimerB = 4.0f;
+    playerState.altGunTransitionController = activeController;
+
+    zClass_NodePartial mountNode = {};
+    zClass_Object3DDataPartial mountData = {};
+    mountNode.classId = 5;
+    mountNode.classData = &mountData;
+    mountNode.flags = 0x04;
+    mountData.scale = {0.25f, 0.5f, 0.75f};
+    activeController->attachNodePrimary = &mountNode;
+    activeController->attachPosX = 7.0f;
+    activeController->attachPosY = 8.0f;
+    activeController->attachPosZ = 9.0f;
+
+    OptCatalogEntryDef owner = {};
+    OptCatalogTrailRuntimeState trailRuntime = {};
+    zClass_NodePartial trailNode = {};
+    owner.activeTrailRuntime = &trailRuntime;
+    trailRuntime.ownerEntry = &owner;
+    trailRuntime.activeNodeSlotCount = 1;
+    trailRuntime.activeNodeSlotCursor = 1;
+    trailRuntime.activeNodeSlots[0].node = &trailNode;
+    trailNode.classId = 5;
+    trailNode.flags = 0x04;
+    activeController->trailRuntimeState = &trailRuntime;
+    activeController->optCatalogEntry = &owner;
+
+    OptCatalogRuntimeInstanceStorage runtime = {};
+    zClass_NodeFreeListSlot projectileSlot = {};
+    zClass_Object3DDataPartial projectileData = {};
+    projectileSlot.node.classId = 5;
+    projectileSlot.node.classData = &projectileData;
+    projectileSlot.damageHandler = &owner;
+    runtime.projectileNode = &projectileSlot.node;
+    runtime.lifetime = 0.0f;
+    activeController->attachState = &runtime;
+    zClass_Class::AddChild(&mountNode, &projectileSlot.node);
+
+    zClass_NodePartial doorLeft = {};
+    zClass_Object3DDataPartial doorLeftData = {};
+    doorLeft.classId = 5;
+    doorLeft.classData = &doorLeftData;
+    doorLeftData.scale = {0.3f, 0.4f, 0.5f};
+    playerState.doorLeftNode = &doorLeft;
+
+    zClass_NodePartial bank9Node = {};
+    zClass_Object3DDataPartial bank9Data = {};
+    bank9Node.classId = 5;
+    bank9Node.classData = &bank9Data;
+    bank9Node.flags = 0x04;
+    bank9Data.scale = {2.0f, 2.0f, 2.0f};
+    PlayerGunFireController &bank9Controller = playerState.altWeaponBanks[9].controllerB;
+    bank9Controller.attachNodePrimary = &bank9Node;
+    bank9Controller.attachPosX = 1.0f;
+    bank9Controller.attachPosY = 2.0f;
+    bank9Controller.attachPosZ = 3.0f;
+
+    OptCatalogRuntimeInstanceStorage freeSentinel = {};
+    g_OptCatalogFreeRuntimeInstanceList = &freeSentinel;
+
+    Player::ResetAltGunRuntimeState(&saveState);
+
+    const bool cleanupOk =
+        playerState.altGunFireHeldFlag == 0 && owner.activeTrailRuntime == nullptr &&
+        trailRuntime.activeNodeSlotCursor == 0 && (trailNode.flags & 0x04) == 0 &&
+        activeController->attachState == nullptr &&
+        g_OptCatalogFreeRuntimeInstanceList == &runtime && runtime.next == &freeSentinel &&
+        projectileSlot.damageHandler == nullptr && mountNode.listCountB == 0 &&
+        projectileSlot.node.listCountA == 0;
+    const bool stateOk =
+        playerState.altGunTransitionState == 1 &&
+        playerState.altGunTransitionController == nullptr &&
+        playerState.altGunTransitionTimerA == 0.0f &&
+        playerState.altGunTransitionTimerB == 0.0f;
+    const bool attachResetOk =
+        (mountNode.flags & 0x04) == 0 && mountData.scale.x == 1.0f &&
+        mountData.scale.y == 1.0f && mountData.scale.z == 1.0f &&
+        mountData.localMatrix[9] == 7.0f && mountData.localMatrix[10] == 8.0f &&
+        mountData.localMatrix[11] == 9.0f && (bank9Node.flags & 0x04) == 0 &&
+        bank9Data.scale.x == 1.0f && bank9Data.localMatrix[9] == 1.0f &&
+        bank9Data.localMatrix[10] == 2.0f && bank9Data.localMatrix[11] == 3.0f &&
+        doorLeftData.scale.x == 1.0f && doorLeftData.scale.y == 1.0f &&
+        doorLeftData.scale.z == 1.0f;
+
+    g_OptCatalogFreeRuntimeInstanceList = oldFreeRuntimeList;
+    return cleanupOk && stateOk && attachResetOk ? 0 : 1;
+}

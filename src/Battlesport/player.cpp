@@ -13253,8 +13253,12 @@ void ResetAltGunAttachNode(
     );
 }
 
-// Reimplements 0x43c850: Player::ResetAltGunRuntimeState
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x43c850: Player::ResetAltGunRuntimeState
+ * BN source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: clear active alternate-gun firing, attachment, door, and transition
+ * runtime state before resetting the alternate weapon bank attachment nodes.
+ */
 void __fastcall ResetAltGunRuntimeState(
     zUtil_SaveGameState *saveState
 ) {

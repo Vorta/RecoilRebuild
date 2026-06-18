@@ -145,6 +145,7 @@ extern "C" int znetwork_dplay_pump_incoming_messages_smoke(void);
 extern "C" int znetwork_packet_send_wrappers_smoke(void);
 extern "C" int znetwork_session_status_fields_smoke(void);
 extern "C" int znetwork_unregister_packet_handler_smoke(void);
+extern "C" int znetwork_dispatch_handler_list_smoke(void);
 extern "C" int znetwork_dispatch_packet_to_handlers_smoke(void);
 extern "C" int znetwork_clear_enumerated_session_list_smoke(void);
 extern "C" int znetwork_clear_service_provider_list_smoke(void);
@@ -153,13 +154,23 @@ extern "C" int znetwork_player_record_accessors_smoke(void);
 extern "C" int znetwork_alloc_free_player_color_index_smoke(void);
 extern "C" int znetwork_apply_pkt01_player_color_assignments_smoke(void);
 extern "C" int znetwork_shutdown_session_runtime_smoke(void);
+extern "C" int pickup_register_existing_object_smoke(void);
 extern "C" int pickup_leaf_helpers_smoke(void);
+extern "C" int pickup_spawn_from_parsed_zrd_entry_smoke(void);
+extern "C" int pickup_spawn_with_airdrop_chute_smoke(void);
+extern "C" int pickup_handle_pkt11_spawn_delta_smoke(void);
+extern "C" int pickup_handle_pkt12_airdrop_spawn_chute_relay_smoke(void);
+extern "C" int pickup_remove_object_smoke(void);
+extern "C" int pickup_spawn_list_clear_smoke(void);
+extern "C" int pickup_remove_other_spawns_same_opt_entry_smoke(void);
 extern "C" int pickup_send_pkt11_delta_smoke(void);
 extern "C" int pickup_send_pkt11_create_delta_smoke(void);
 extern "C" int pickup_reconcile_spawn_lists_smoke(void);
 extern "C" int gamenet_find_player_row_and_status_bits_smoke(void);
+extern "C" int gamenet_handle_pkt03_remove_remote_player_smoke(void);
 extern "C" int hud_timer_panel_net_state_clear_tail_flags_smoke(void);
 extern "C" int gamenet_send_pkt14_hud_timer_and_flags_sync_smoke(void);
+extern "C" int gamenet_handle_pkt14_hud_timer_and_flags_sync_smoke(void);
 extern "C" int gamenet_host_update_session_status_fields_smoke(void);
 extern "C" int gamenet_timer_status_packet_smoke(void);
 extern "C" int gamenet_timer_panel_state_packet_smoke(void);
@@ -174,15 +185,27 @@ extern "C" int gamenet_apply_pkt06_player_state_snapshot_smoke(void);
 extern "C" int gamenet_handle_pkt06_player_state_snapshot_smoke(void);
 extern "C" int gamenet_spawn_remote_player_missing_template_smoke(void);
 extern "C" int gamenet_scoreboard_snapshot_packet_smoke(void);
+extern "C" int gamenet_lap_progress_packet_smoke(void);
+extern "C" int gamenet_chat_message_packet_smoke(void);
+extern "C" int gamenet_show_player_kill_message_smoke(void);
+extern "C" int gamenet_player_kill_event_packet_smoke(void);
 extern "C" int gamenet_send_pkt13_effect_anim_activation_record_smoke(void);
 extern "C" int gamenet_handle_pkt13_effect_anim_activation_record_smoke(void);
 extern "C" int gamenet_send_all_pkt13_effect_anim_activation_records_smoke(void);
+extern "C" int gamenet_host_send_pkt10_qsand_feature_smoke(void);
+extern "C" int gamenet_send_pkt10_qsand_event_smoke(void);
+extern "C" int gamenet_host_send_pkt0f_crater_feature_smoke(void);
 extern "C" int gamenet_handle_pkt07_alt_gun_dispatch_smoke(void);
 extern "C" int gamenet_send_pkt07_alt_gun_dispatch_smoke(void);
 extern "C" int gamenet_alt_gun_dispatch_no_op_callback_smoke(void);
 extern "C" int optcatalog_alt_gun_dispatch_alloc_runtime_gate_smoke(void);
 extern "C" int optcatalog_handle_pkt0a_remove_runtime_relay_smoke(void);
 extern "C" int optcatalog_send_pkt0a_remove_runtime_relay_smoke(void);
+extern "C" int zweapon_optcatalog_invoke_damage_feedback_and_hit_callback_smoke(void);
+extern "C" int optcatalog_capture_hit_snapshot_and_invoke_damage_timer_callback_smoke(void);
+extern "C" int optcatalog_set_damage_context_smoke(void);
+extern "C" int optcatalog_damage_feedback_leaf_helpers_smoke(void);
+extern "C" int hitcontext_get_current_owner_smoke(void);
 extern "C" int ainet_find_by_net_id_smoke(void);
 extern "C" int ainet_find_nearest_node_smoke(void);
 extern "C" int player_get_save_state_list_head_smoke(void);
@@ -210,6 +233,7 @@ extern "C" int player_alt_gun_ensure_aux_effect_active_smoke(void);
 extern "C" int player_update_continuous_alt_gun_fire_controller_smoke(void);
 extern "C" int player_alt_gun_projectile_dispatch_helpers_smoke(void);
 extern "C" int player_process_alt_gun_fire_dispatch_request_smoke(void);
+extern "C" int player_reset_alt_gun_runtime_state_smoke(void);
 extern "C" int player_write_mines_zar_section_smoke(void);
 extern "C" int player_mines_zar_read_entry_or_reset_smoke(void);
 extern "C" int player_remove_all_deployed_mines_smoke(void);
@@ -221,6 +245,7 @@ extern "C" int zweapon_optcatalog_create_trail_runtime_state_smoke(void);
 extern "C" int zweapon_optcatalog_mine_iterator_smoke(void);
 extern "C" int zweapon_optcatalog_runtime_free_list_helpers_smoke(void);
 extern "C" int zweapon_optcatalog_handle_impact_event_smoke(void);
+extern "C" int zweapon_optcatalog_handle_impact_event_from_runtime_state_smoke(void);
 extern "C" int zweapon_optcatalog_build_impact_hit_list_smoke(void);
 extern "C" int zweapon_optcatalog_handle_impact_from_runtime_probe_smoke(void);
 extern "C" int zweapon_optcatalog_process_runtime_instance_smoke(void);
@@ -235,6 +260,7 @@ extern "C" int player_build_support_points_from_model_smoke(void);
 extern "C" int player_build_collision_points_from_model_smoke(void);
 extern "C" int player_sample_ground_and_align_root_to_surface_smoke(void);
 extern "C" int player_init_spawn_state_from_primary_modal_data_smoke(void);
+extern "C" int zutil_store_int32_smoke(void);
 extern "C" int zutil_save_game_state_list_smoke(void);
 extern "C" int zfmv_script_init_null_path_smoke(void);
 extern "C" int zfmv_script_reset_smoke(void);
@@ -709,6 +735,7 @@ extern "C" int zclass_delete_node_from_lists_smoke(void);
 extern "C" int zclass_node_propagate_transform_dirty_smoke(void);
 extern "C" int zclass_object3d_reset_transform_dirty_smoke(void);
 extern "C" int zclass_object3d_init_smoke(void);
+extern "C" int zclass_object3d_delete_node_smoke(void);
 extern "C" int zclass_light_new_smoke(void);
 extern "C" int zclass_object3d_visible_and_color_smoke(void);
 extern "C" int zclass_object3d_alpha_scale_and_lit_smoke(void);
@@ -716,16 +743,32 @@ extern "C" int zclass_object3d_transform_getters_smoke(void);
 extern "C" int zclass_object3d_transform_setters_smoke(void);
 extern "C" int zclass_child_generic_link_smoke(void);
 extern "C" int zclass_child_generic_remove_smoke(void);
+extern "C" int zclass_remove_wrapper_matrix_smoke(void);
+extern "C" int zclass_object3d_child_wrappers_smoke(void);
 extern "C" int zclass_remove_dispatch_smoke(void);
 extern "C" int zclass_node_world_child_smoke(void);
 extern "C" int zclass_world_add_child_at_grid_smoke(void);
+extern "C" int zclass_world_free_virtual_area_partitions_smoke(void);
 extern "C" int zclass_world_queue_area_update_smoke(void);
+extern "C" int zclass_world_to_grid_coords_clamped_smoke(void);
 extern "C" int zclass_node_metadata_accessors_smoke(void);
 extern "C" int zclass_copy_node_display_instance_smoke(void);
 extern "C" int zclass_set_display_instance_smoke(void);
+extern "C" int zclass_destroy_node_recursive_display_smoke(void);
+extern "C" int zclass_world_animate_delete_node_smoke(void);
+extern "C" int zclass_display_init_smoke(void);
+extern "C" int zclass_lod_leaf_smoke(void);
+extern "C" int zclass_camera_view_distance_smoke(void);
+extern "C" int zmodel_material_defaults_and_find_smoke(void);
+extern "C" int zmodel_material_pool_entry_smoke(void);
 extern "C" int zmodel_material_and_di_clone_smoke(void);
+extern "C" int zmodel_const_tolerances_and_cross_smoke(void);
 extern "C" int zdi_ref_and_pool_free_smoke(void);
+extern "C" int zdi_add_polygon_wrapper_smoke(void);
+extern "C" int ztag4_clear_smoke(void);
 extern "C" int zmodel_set_di_texture_world_per_meter_smoke(void);
+extern "C" int zmodel_damage_mask_uv_smoke(void);
+extern "C" int zmodel_damage_mask_stamp_smoke(void);
 extern "C" int zclass_copy_node_base_data_smoke(void);
 extern "C" int zclass_copy_node_unimplemented_stubs_smoke(void);
 extern "C" int zclass_copy_camera_node_smoke(void);
@@ -736,6 +779,7 @@ extern "C" int zclass_node_action_callback_smoke(void);
 extern "C" int zclass_node_priority_smoke(void);
 extern "C" int zclass_node_pick_flag_accessors_smoke(void);
 extern "C" int zclass_node_extra_flag_setters_smoke(void);
+extern "C" int zclass_node_flag16_flag17_smoke(void);
 extern "C" int zclass_damage_handler_smoke(void);
 extern "C" int zclass_node_vertex_alpha_and_root_smoke(void);
 extern "C" int zclass_find_by_name_and_filtered_iter_smoke(void);
@@ -924,6 +968,7 @@ extern "C" int zeffect_anim_ref_resolution_smoke(void);
 extern "C" int zeffect_anim_find_or_create_runtime_refs_smoke(void);
 extern "C" int zeffect_anim_clone_entry_for_node_smoke(void);
 extern "C" int zeffect_anim_rebind_entry_to_node_smoke(void);
+extern "C" int zeffect_anim_set_on_state_done_callback_smoke(void);
 extern "C" int zeffect_cleanup_light_sound_refs_smoke(void);
 extern "C" int zeffect_handle_sample_ref_offset_event_smoke(void);
 extern "C" int zeffect_init_smoke(void);
@@ -933,12 +978,37 @@ extern "C" int zeffect_handle_emitter_reset_event_smoke(void);
 extern "C" int zeffect_handle_screen_fx_events_smoke(void);
 extern "C" int zeffect_anim_init_shutdown_smoke(void);
 extern "C" int zeffect_anim_activation_record_queue_smoke(void);
+extern "C" int zeffect_anim_get_root_node_or_null_smoke(void);
 extern "C" int zeffect_anim_capture_node_states_smoke(void);
 extern "C" int zeffect_anim_restore_node_states_smoke(void);
 extern "C" int zeffect_anim_reset_for_node_smoke(void);
 extern "C" int zeffect_anim_runtime_sequence_group_smoke(void);
 extern "C" int zeffect_conditional_ref_pos_smoke(void);
+extern "C" int zdeclient_map_tree_iter_next_node_ref_smoke(void);
+extern "C" int zdeclient_map_tree_iter_prev_node_ref_smoke(void);
+extern "C" int zdeclient_map_tree_insert_at_smoke(void);
+extern "C" int zdeclient_map_tree_find_or_insert_key_smoke(void);
+extern "C" int zdeclient_map_tree_lifecycle_smoke(void);
+extern "C" int zdeclient_map_tree_erase_range_smoke(void);
+extern "C" int zdeclient_set_camera_node_smoke(void);
+extern "C" int zdeclient_feature_leaf_helpers_smoke(void);
+extern "C" int zdeclient_feature_init_helpers_smoke(void);
+extern "C" int zdeclient_create_feature_node_from_partition_smoke(void);
+extern "C" int zdeclient_qsand_build_smoke(void);
+extern "C" int zdeclient_qsand_create_feature_smoke(void);
+extern "C" int zdeclient_crater_build_and_create_feature_smoke(void);
+extern "C" int zdeclient_crater_execute_smoke(void);
+extern "C" int zdeclient_crater_init_event_template_defaults_smoke(void);
+extern "C" int zdeclient_crater_instance_event_smoke(void);
+extern "C" int zdeclient_crater_instance_event_maybe_relay_smoke(void);
+extern "C" int zdeclient_crater_net_relay_callback_smoke(void);
+extern "C" int zdeclient_qsand_copy_event_template_defaults_smoke(void);
+extern "C" int zdeclient_qsand_net_relay_callback_smoke(void);
+extern "C" int zdeclient_qsand_instance_event_maybe_relay_smoke(void);
 extern "C" int zdeclient_dispatch_feature_event_templates_smoke(void);
+extern "C" int zdeclient_submit_feature_geometry_smoke(void);
+extern "C" int zdeclient_append_feature_entry_smoke(void);
+extern "C" int zgeometry_clip_patch_output_apply_node_di_pairs_smoke(void);
 extern "C" int zimg_init_smoke(void);
 extern "C" int zinterp_context_logf_smoke(void);
 extern "C" int zinterp_context_report_errorf_smoke(void);
@@ -1004,22 +1074,1691 @@ extern "C" int time_reset_smoke(void);
 extern "C" int time_tick_smoke(void);
 
 #include "Battlesport/GameNet.h"
+#include "Battlesport/pickup.h"
 #include "Battlesport/player.h"
 #include "GameZRecoil/zGame/zGame.h"
+#include "GameZRecoil/include/zDi.h"
 #include "GameZRecoil/include/OptCatalog.h"
 #include "GameZRecoil/include/zClass.h"
 #include "GameZRecoil/zEffect/zEffect.h"
 #include "GameZRecoil/zHud/zhud_ui.h"
+#include "GameZRecoil/zMath/zMath.h"
+#include "GameZRecoil/zModel/zModel.h"
+#include "GameZRecoil/zNetwork/zNetwork.h"
 #include "GameZRecoil/zSound/zSound.h"
 #include "GameZRecoil/Time/Time.h"
 #include "GameZRecoil/zVideo/zVideo.h"
 
+#include <cstdint>
 #include <cstdlib>
 #include <cstdio>
 #include <cstring>
 #include <limits>
 
 extern "C" unsigned int g_HudUi_InvalidateMask;
+
+#define RECOIL_ZGAME_TESTS_ZMODEL_CONST_ONLY
+#include "zgame_tests.cpp"
+#undef RECOIL_ZGAME_TESTS_ZMODEL_CONST_ONLY
+
+namespace {
+PickupSpawnDef *NewSpawnDef(PickupSpawnDef *next = nullptr) {
+    auto *const node = static_cast<PickupSpawnDef *>(std::malloc(sizeof(PickupSpawnDef)));
+    if (node != nullptr) {
+        *node = {};
+        node->next = next;
+    }
+    return node;
+}
+} // namespace
+
+extern "C" int pickup_register_existing_object_smoke(void) {
+    const PickupSpawnList oldPrimary = g_PickupSpawnList_Primary;
+    zClass_NodePartial *const oldScene = g_Pickup_SceneNode;
+    const PickupType oldType = g_PickupTypes[6];
+
+    g_PickupSpawnList_Primary = {};
+    g_PickupTypes[6] = {};
+    g_PickupTypes[6].typeIndex = 654;
+
+    zClass_Object3DDataPartial objectData = {};
+    objectData.cachedWorldMatrix[9] = 4.0f;
+    objectData.cachedWorldMatrix[10] = 5.0f;
+    objectData.cachedWorldMatrix[11] = 6.0f;
+
+    zClass_NodePartial oldParent = {};
+    zClass_NodePartial scene = {};
+    zClass_NodePartial pickupObj = {};
+    zClass_NodePartial **oldParentList =
+        static_cast<zClass_NodePartial **>(std::malloc(sizeof(zClass_NodePartial *)));
+    zClass_NodePartial **oldChildList =
+        static_cast<zClass_NodePartial **>(std::malloc(sizeof(zClass_NodePartial *)));
+    oldParentList[0] = &oldParent;
+    oldChildList[0] = &pickupObj;
+    oldParent.classId = 3;
+    oldParent.flags = 1;
+    oldParent.listCountB = 1;
+    oldParent.listB = oldChildList;
+    scene.classId = 3;
+    scene.flags = 1;
+    pickupObj.classId = 5;
+    pickupObj.flags = 0x80000;
+    pickupObj.classData = &objectData;
+    pickupObj.listCountA = 1;
+    pickupObj.listA = oldParentList;
+    PickupNodeFields(&pickupObj)->pickupId = 777;
+    PickupNodeFields(&pickupObj)->pickupTypeIndex = 654;
+    PickupNodeFields(&pickupObj)->amount = 12;
+    g_Pickup_SceneNode = &scene;
+
+    Pickup::RegisterExistingObject(0, &pickupObj, 0);
+
+    PickupSpawnDef *const spawn = g_PickupSpawnList_Primary.head;
+    int failure = 0;
+    if (spawn == nullptr || g_PickupSpawnList_Primary.tail != spawn ||
+        g_PickupSpawnList_Primary.count != 1) {
+        failure = 2;
+    } else if (spawn->pickupId != 777 || spawn->pickupType != &g_PickupTypes[6] ||
+               spawn->amount != 12) {
+        failure = 3;
+    } else if (spawn->position.x != 4.0f || spawn->position.y != 5.0f ||
+               spawn->position.z != 6.0f || spawn->rotation.x != 0.0f ||
+               spawn->rotation.y != 0.0f || spawn->rotation.z != 0.0f) {
+        failure = 4;
+    } else if (spawn->pickupObj != &pickupObj || spawn->spawnParam != 0 ||
+               oldParent.listCountB != 0 || scene.listCountB != 1 ||
+               scene.listB[0] != &pickupObj || pickupObj.listCountA != 1 ||
+               pickupObj.listA[0] != &scene) {
+        failure = 5;
+    } else if ((pickupObj.flags & 0x04) == 0 || objectData.localMatrix[9] != 4.0f ||
+               objectData.localMatrix[10] != 5.0f || objectData.localMatrix[11] != 6.0f) {
+        failure = 6;
+    }
+
+    std::free(scene.listB);
+    std::free(pickupObj.listA);
+    std::free(oldParent.listB);
+    std::free(spawn);
+    g_PickupSpawnList_Primary = oldPrimary;
+    g_PickupTypes[6] = oldType;
+    g_Pickup_SceneNode = oldScene;
+    return failure;
+}
+
+extern "C" int pickup_spawn_with_airdrop_chute_smoke(void) {
+    zEffectAnimEntry *const oldEntryList = g_zEffectAnim_EntryList;
+    const short oldEntryCount = g_zEffectAnim_EntryCount;
+    zClass_NodePartial *const oldScene = g_Pickup_SceneNode;
+    const int oldQueueEnabled = g_zEffectAnim_RecordQueueEnabled;
+    const int oldDispatchEnabled = g_zEffectAnim_DispatchEnabled;
+    const auto oldDispatchCallback = g_zEffectAnim_ActivationDispatchCallback;
+    const PickupType oldType = g_PickupTypes[9];
+
+    zClass_NodePartial templateRoot = {};
+    zClass_NodePartial templateBvol = {};
+    zClass_NodePartial *templateChildren[1] = {&templateBvol};
+    std::strcpy(templateRoot.name, "template");
+    std::strcpy(templateBvol.name, "bvol");
+    templateRoot.classId = 5;
+    templateRoot.flags = 0x0400000c;
+    templateRoot.listCountB = 1;
+    templateRoot.listB = templateChildren;
+    templateBvol.classId = 5;
+    templateBvol.flags = 0x04;
+    g_PickupTypes[9] = {};
+    g_PickupTypes[9].typeIndex = 9;
+    g_PickupTypes[9].defaultAmount = 3;
+    g_PickupTypes[9].templateNode = &templateRoot;
+
+    static std::int32_t matrixFlags[8];
+    static float *matrixSlots[8];
+    static zMat4x3 matrix;
+    matrixFlags[0] = 1;
+    matrix = {1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+              0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f};
+    matrixSlots[0] = reinterpret_cast<float *>(&matrix);
+    zMath::g_currentMatrixIdentityFlagSlot = &matrixFlags[0];
+    zMath::g_currentMatrixPtrSlot = &matrixSlots[0];
+    g_zModel_SharedVec3ScratchA = g_zModel_SharedVec3ScratchAStorage;
+    g_zModel_SharedVec3ScratchB = g_zModel_SharedVec3ScratchBStorage;
+
+    zClass_NodePartial effectRoot = {};
+    zClass_NodePartial attachNode = {};
+    zClass_NodePartial world = {};
+    zClass_WorldDataPartial worldData = {};
+    zClass_WorldDataPartial effectWorldData = {};
+    zClass_NodePartial *effectChildren[1] = {&attachNode};
+    std::strcpy(attachNode.name, "airdroppup");
+    effectRoot.classId = 2;
+    effectRoot.flags = 1;
+    effectRoot.classData = &effectWorldData;
+    effectRoot.listCountB = 1;
+    effectRoot.listB = effectChildren;
+    attachNode.classId = 3;
+    attachNode.flags = 1;
+    worldData.areaInvSizeX = 1.0f;
+    worldData.areaInvSizeZ = 1.0f;
+    world.classId = 2;
+    world.classData = &worldData;
+    g_Pickup_SceneNode = &world;
+
+    zClass_NodePartial runtimeNode = {};
+    runtimeNode.callbackPriority = 1;
+    zEffectAnimEntry entry = {};
+    std::strcpy(entry.name, "chutes");
+    entry.boundNode = &effectRoot;
+    entry.callbackNode = &effectRoot;
+    entry.runtimeNode = &runtimeNode;
+    entry.priority = 3;
+    g_zEffectAnim_EntryList = &entry;
+    g_zEffectAnim_EntryCount = 1;
+    zEffect_Anim::ClearActivationRecords();
+    g_zEffectAnim_RecordQueueEnabled = 1;
+    g_zEffectAnim_DispatchEnabled = 0;
+    g_zEffectAnim_ActivationDispatchCallback = nullptr;
+
+    zVec3 position = {7.0f, 8.0f, 9.0f};
+    const int result = Pickup::SpawnWithAirdropChute(9, &position);
+    zClass_NodePartial *const spawned = attachNode.listCountB == 1 ? attachNode.listB[0] : nullptr;
+    int failure = 0;
+    if (result != 1 || spawned == nullptr) {
+        failure = 2;
+    } else if (std::strcmp(spawned->name, "pu00900") != 0 || (spawned->flags & 0x04) != 0) {
+        failure = 3;
+    } else if (spawned->listCountA != 1 || spawned->listA[0] != &attachNode) {
+        failure = 4;
+    } else if (entry.eventCallbackContext != spawned ||
+               entry.eventCallback !=
+                   reinterpret_cast<zEffectAnimEventCallback>(&Pickup::RegisterExistingObject)) {
+        failure = 5;
+    } else if (entry.activationState != 2 || g_zEffectAnim_ActivationRecordCount != 1 ||
+               g_zEffectAnim_ActivationRecordTable[0].commandType != 1 ||
+               g_zEffectAnim_ActivationRecordTable[0].params[0].f32 != 7.0f ||
+               g_zEffectAnim_ActivationRecordTable[0].params[1].f32 != 8.0f ||
+               g_zEffectAnim_ActivationRecordTable[0].params[2].f32 != 9.0f) {
+        failure = 6;
+    }
+
+    if (spawned != nullptr) {
+        std::free(spawned->listA);
+        spawned->listA = nullptr;
+        spawned->listCountA = 0;
+    }
+    std::free(attachNode.listB);
+    attachNode.listB = nullptr;
+    attachNode.listCountB = 0;
+    zEffect_Anim::ClearActivationRecords();
+    g_zEffectAnim_RecordQueueEnabled = oldQueueEnabled;
+    g_zEffectAnim_DispatchEnabled = oldDispatchEnabled;
+    g_zEffectAnim_ActivationDispatchCallback = oldDispatchCallback;
+    g_zEffectAnim_EntryList = oldEntryList;
+    g_zEffectAnim_EntryCount = oldEntryCount;
+    g_Pickup_SceneNode = oldScene;
+    g_PickupTypes[9] = oldType;
+    return failure;
+}
+
+extern "C" int pickup_spawn_list_clear_smoke(void) {
+    PickupSpawnList::Primary_Init();
+    PickupSpawnList::NetCopy_Init();
+
+    PickupSpawnDef *const second = NewSpawnDef();
+    PickupSpawnDef *const first = NewSpawnDef(second);
+    if (first == nullptr || second == nullptr) {
+        std::free(first);
+        std::free(second);
+        return 1;
+    }
+
+    g_NextPickupId = 123;
+    g_PickupSpawnList_Primary.unused = &g_PickupSpawnList_Primary;
+    g_PickupSpawnList_Primary.head = first;
+    g_PickupSpawnList_Primary.tail = second;
+    g_PickupSpawnList_Primary.count = 2;
+
+    g_PickupSpawnList_Primary.Clear();
+
+    const bool primaryCleared = g_PickupSpawnList_Primary.unused == nullptr &&
+                                g_PickupSpawnList_Primary.head == nullptr &&
+                                g_PickupSpawnList_Primary.tail == nullptr &&
+                                g_PickupSpawnList_Primary.count == 0 && g_NextPickupId == 0;
+
+    PickupSpawnDef *const networkNode = NewSpawnDef();
+    if (networkNode == nullptr) {
+        return 2;
+    }
+
+    g_NextPickupId = 77;
+    g_PickupSpawnList_NetworkCopy.head = networkNode;
+    g_PickupSpawnList_NetworkCopy.tail = networkNode;
+    g_PickupSpawnList_NetworkCopy.count = 1;
+
+    g_PickupSpawnList_NetworkCopy.Clear();
+
+    const bool networkCleared = g_PickupSpawnList_NetworkCopy.head == nullptr &&
+                                g_PickupSpawnList_NetworkCopy.tail == nullptr &&
+                                g_PickupSpawnList_NetworkCopy.count == 0 && g_NextPickupId == 77;
+
+    return primaryCleared && networkCleared ? 0 : 3;
+}
+
+extern "C" int pickup_remove_object_smoke(void) {
+    std::int32_t networkEnabled = 0;
+    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    ZOPT_NETWORK_ENABLED = &networkEnabled;
+
+    PickupRespawnQueue::Init();
+    PickupSpawnList::Primary_Init();
+
+    PickupSpawnDef *const respawnSpawn = NewSpawnDef();
+    if (respawnSpawn == nullptr) {
+        ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+        return 1;
+    }
+
+    zClass_NodePartial respawnNode = {};
+    respawnNode.classId = 5;
+    respawnNode.flags = 4;
+    respawnNode.callbackContext = (zClass_NodePartial *)(respawnSpawn);
+    respawnSpawn->pickupId = 37;
+    respawnSpawn->pickupObj = &respawnNode;
+    respawnSpawn->respawnDelay = 2.5f;
+    g_Time_UnscaledAccumulatedTimeSec = 10.0f;
+
+    Pickup::RemoveObject(nullptr, &respawnNode, 0);
+
+    const bool respawnQueued =
+        (respawnNode.flags & 4) == 0 && g_PickupRespawnQueue.count == 1 &&
+        g_PickupRespawnQueue.head == g_PickupRespawnQueue.tail &&
+        g_PickupRespawnQueue.head->spawn == respawnSpawn &&
+        g_PickupRespawnQueue.head->when == 12.5f;
+
+    g_PickupRespawnQueue.ClearAndFree();
+    std::free(respawnSpawn);
+
+    PickupSpawnDef *const first = NewSpawnDef();
+    PickupSpawnDef *const removed = NewSpawnDef();
+    PickupSpawnDef *const third = NewSpawnDef();
+    if (first == nullptr || removed == nullptr || third == nullptr) {
+        std::free(first);
+        std::free(removed);
+        std::free(third);
+        ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+        return 2;
+    }
+
+    first->next = removed;
+    removed->next = third;
+    zClass_NodePartial parent = {};
+    zClass_NodePartial pickupNode = {};
+    zClass_NodePartial *parentList[] = {&parent};
+    zClass_NodePartial *childList[] = {&pickupNode};
+    parent.classId = 3;
+    parent.listCountB = 1;
+    parent.listB = childList;
+    pickupNode.classId = 5;
+    pickupNode.flags = 4;
+    pickupNode.listCountA = 1;
+    pickupNode.listA = parentList;
+    pickupNode.callbackContext = (zClass_NodePartial *)(removed);
+    removed->pickupObj = &pickupNode;
+
+    parent.flags = 1;
+    g_PickupSpawnList_Primary.head = first;
+    g_PickupSpawnList_Primary.tail = third;
+    g_PickupSpawnList_Primary.count = 3;
+
+    Pickup::RemoveObject(nullptr, &pickupNode, 0);
+
+    const bool removedNow = (pickupNode.flags & 4) == 0 && parent.listCountB == 0 &&
+                            pickupNode.listCountA == 0 &&
+                            g_PickupSpawnList_Primary.head == first &&
+                            g_PickupSpawnList_Primary.tail == third &&
+                            g_PickupSpawnList_Primary.count == 2 && first->next == third;
+
+    std::free(first);
+    std::free(third);
+    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    return respawnQueued && removedNow ? 0 : 3;
+}
+
+extern "C" int pickup_spawn_from_parsed_zrd_entry_smoke(void) {
+    const PickupType oldType = g_PickupTypes[7];
+    zClass_NodePartial *const oldSceneNode = g_Pickup_SceneNode;
+    const int oldNextPickupId = g_NextPickupId;
+
+    PickupSpawnList::Primary_Init();
+    zClass_NodePartial world = {};
+    zClass_Object3DDataPartial templateData = {};
+    zClass_NodePartial templateRoot = {};
+    zClass_NodePartial templateBvol = {};
+    zClass_NodePartial *templateChildren[1] = {&templateBvol};
+    std::strcpy(templateRoot.name, "parsed-template");
+    std::strcpy(templateBvol.name, "bvol");
+    templateRoot.classId = 5;
+    templateRoot.flags = 0x04000081;
+    templateRoot.classData = &templateData;
+    templateRoot.listCountB = 1;
+    templateRoot.listB = templateChildren;
+    templateBvol.classId = 3;
+    templateBvol.flags = 0x04;
+
+    static std::int32_t matrixFlags[8];
+    static float *matrixSlots[8];
+    static zMat4x3 matrix;
+    matrixFlags[0] = 1;
+    matrix = {1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+              0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f};
+    matrixSlots[0] = reinterpret_cast<float *>(&matrix);
+    zMath::g_currentMatrixIdentityFlagSlot = &matrixFlags[0];
+    zMath::g_currentMatrixPtrSlot = &matrixSlots[0];
+    g_zModel_SharedVec3ScratchA = g_zModel_SharedVec3ScratchAStorage;
+    g_zModel_SharedVec3ScratchB = g_zModel_SharedVec3ScratchBStorage;
+
+    zVec3 terrainVertices[3] = {{0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 1.0f},
+                                {1.0f, 0.0f, 0.0f}};
+    std::int32_t terrainIndices[3] = {0, 1, 2};
+    zModel_MaterialPartial terrainMaterial = {};
+    zDiEntryPartial terrainEntry = {};
+    terrainEntry.flagsAndIndexCount = 3;
+    terrainEntry.vertexIndices = terrainIndices;
+    terrainEntry.material = &terrainMaterial;
+    terrainEntry.variantTagInitialized = 1;
+    terrainEntry.variantTag = 0x33;
+    zDiPartial terrainDi = {};
+    terrainDi.entryCount = 1;
+    terrainDi.vertCount = 3;
+    terrainDi.entries = &terrainEntry;
+    terrainDi.verts = terrainVertices;
+    zClass_Object3DDataPartial terrainObjectData = {};
+    terrainObjectData.flags = 8;
+    zClass_NodePartial terrainNode = {};
+    terrainNode.flags = 0x11c;
+    terrainNode.nodeType = 0x44;
+    terrainNode.classId = 5;
+    terrainNode.classData = &terrainObjectData;
+    terrainNode.userDataOrDiRef = reinterpret_cast<std::uint32_t>(&terrainDi);
+    terrainNode.cachedBounds[0] = 0.0f;
+    terrainNode.cachedBounds[1] = 0.0f;
+    terrainNode.cachedBounds[2] = 0.0f;
+    terrainNode.cachedBounds[3] = 1.0f;
+    terrainNode.cachedBounds[4] = 1.0f;
+    terrainNode.cachedBounds[5] = 1.0f;
+    zClass_NodePartial *areaChildren[1] = {&terrainNode};
+    zWorldAreaPartial area = {};
+    area.childCount = 1;
+    area.childList = areaChildren;
+    zWorldAreaPartial *rows[1] = {&area};
+    zClass_WorldDataPartial worldData = {};
+    worldData.originX = 0.0f;
+    worldData.originZ = 0.0f;
+    worldData.areaCellSizeX = 1.0f;
+    worldData.areaCellSizeZ = 1.0f;
+    worldData.areaInvSizeX = 1.0f;
+    worldData.areaInvSizeZ = 1.0f;
+    worldData.areaGridColCount = 1;
+    worldData.areaGridRowCount = 1;
+    worldData.areaGridRows = rows;
+    world.classId = 2;
+    world.classData = &worldData;
+
+    g_PickupTypes[7] = {};
+    g_PickupTypes[7].typeIndex = 7;
+    g_PickupTypes[7].defaultAmount = 5;
+    g_PickupTypes[7].nameSuffixMax = 2;
+    g_PickupTypes[7].templateNode = &templateRoot;
+    g_Pickup_SceneNode = &world;
+    g_NextPickupId = 500;
+
+    PickupParsedZrdEntry entry = {};
+    entry.typeDesc = &g_PickupTypes[7];
+    entry.amount = 13;
+    entry.position.x = 1.0f;
+    entry.position.y = 2.0f;
+    entry.position.z = 3.0f;
+    entry.rotation.x = 0.4f;
+    entry.rotation.y = 0.5f;
+    entry.rotation.z = 0.6f;
+    entry.param = 88;
+    entry.unknown_2c = 99;
+    entry.respawnDelay = 12.5f;
+
+    PickupSpawnDef *const spawn = Pickup::SpawnFromParsedZrdEntry(&entry);
+    zClass_Object3DDataPartial *const spawnedData =
+        spawn != nullptr ? static_cast<zClass_Object3DDataPartial *>(spawn->pickupObj->classData)
+                         : nullptr;
+    int failure = 0;
+    if (spawn == nullptr) {
+        failure = 2;
+    } else if (std::strcmp(spawn->name, "pu00702") != 0 || spawn->pickupId != 500 ||
+               spawn->pickupType != &g_PickupTypes[7] || spawn->amount != 13 ||
+               spawn->spawnParam != 88 || spawn->respawnDelay != 12.5f) {
+        failure = 3;
+    } else if (spawn->position.x != 1.0f || spawn->position.y != 2.0f ||
+               spawn->position.z != 3.0f || spawn->rotation.x != 0.4f ||
+               spawn->rotation.y != 0.5f || spawn->rotation.z != 0.6f) {
+        failure = 4;
+    } else if (g_NextPickupId != 501 || g_PickupTypes[7].nameSuffixMax != 3 ||
+               g_PickupSpawnList_Primary.head != spawn ||
+               g_PickupSpawnList_Primary.tail != spawn || g_PickupSpawnList_Primary.count != 1) {
+        failure = 5;
+    } else if (world.listCountB != 1 || world.listB[0] != spawn->pickupObj ||
+               spawn->pickupObj->listCountA != 1 || spawn->pickupObj->listA[0] != &world) {
+        failure = 6;
+    } else if (spawnedData == nullptr || spawnedData->localMatrix[9] != 1.0f ||
+               spawnedData->localMatrix[10] != 2.0f || spawnedData->localMatrix[11] != 3.0f) {
+        failure = 7;
+    } else if (spawnedData->rotation.x != 0.4f || spawnedData->rotation.y != 0.5f ||
+               spawnedData->rotation.z != 0.6f) {
+        failure = 8;
+    }
+
+    if (spawn != nullptr) {
+        std::free(spawn->pickupObj->listA);
+        std::free(spawn);
+    }
+    std::free(world.listB);
+    g_PickupSpawnList_Primary.head = nullptr;
+    g_PickupSpawnList_Primary.tail = nullptr;
+    g_PickupSpawnList_Primary.count = 0;
+    g_PickupTypes[7] = oldType;
+    g_Pickup_SceneNode = oldSceneNode;
+    g_NextPickupId = oldNextPickupId;
+
+    return failure;
+}
+
+extern "C" int pickup_handle_pkt11_spawn_delta_smoke(void) {
+    const PickupType oldType = g_PickupTypes[7];
+    const PickupSpawnList oldPrimary = g_PickupSpawnList_Primary;
+    zClass_NodePartial *const oldSceneNode = g_Pickup_SceneNode;
+    const int oldNextPickupId = g_NextPickupId;
+
+    PickupSpawnDef *removeFirst = NewSpawnDef();
+    PickupSpawnDef *keepSecond = NewSpawnDef();
+    if (removeFirst == nullptr || keepSecond == nullptr) {
+        std::free(removeFirst);
+        std::free(keepSecond);
+        return 1;
+    }
+
+    removeFirst->pickupId = 10;
+    removeFirst->next = keepSecond;
+    keepSecond->pickupId = 20;
+    g_PickupSpawnList_Primary = {};
+    g_PickupSpawnList_Primary.head = removeFirst;
+    g_PickupSpawnList_Primary.tail = keepSecond;
+    g_PickupSpawnList_Primary.count = 2;
+
+    PickupPkt11CreateDelta removePacket = {{0x11, sizeof(PickupPkt11CreateDelta), 0},
+                                           2,
+                                           0,
+                                           10,
+                                           0,
+                                           0,
+                                           0,
+                                           {0.0f, 0.0f, 0.0f},
+                                           {0.0f, 0.0f, 0.0f},
+                                           0.0f};
+    const int removeResult = Pickup::HandlePkt11_SpawnDelta(0, &removePacket);
+    const bool removeOk = removeResult == 1 && g_PickupSpawnList_Primary.head == keepSecond &&
+                          g_PickupSpawnList_Primary.tail == keepSecond &&
+                          g_PickupSpawnList_Primary.count == 1 && keepSecond->next == nullptr;
+    PickupSpawnList::RemoveAndFreeNode(keepSecond, &g_PickupSpawnList_Primary);
+
+    PickupSpawnList::Primary_Init();
+    zClass_NodePartial world = {};
+    zClass_Object3DDataPartial templateData = {};
+    zClass_NodePartial templateRoot = {};
+    zClass_NodePartial templateBvol = {};
+    zClass_NodePartial *templateChildren[1] = {&templateBvol};
+    std::strcpy(templateRoot.name, "pkt-template");
+    std::strcpy(templateBvol.name, "bvol");
+    templateRoot.classId = 5;
+    templateRoot.flags = 0x04000081;
+    templateRoot.classData = &templateData;
+    templateRoot.listCountB = 1;
+    templateRoot.listB = templateChildren;
+    templateBvol.classId = 3;
+    templateBvol.flags = 0x04;
+
+    static std::int32_t matrixFlags[8];
+    static float *matrixSlots[8];
+    static zMat4x3 matrix;
+    matrixFlags[0] = 1;
+    matrix = {1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+              0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f};
+    matrixSlots[0] = reinterpret_cast<float *>(&matrix);
+    zMath::g_currentMatrixIdentityFlagSlot = &matrixFlags[0];
+    zMath::g_currentMatrixPtrSlot = &matrixSlots[0];
+    g_zModel_SharedVec3ScratchA = g_zModel_SharedVec3ScratchAStorage;
+    g_zModel_SharedVec3ScratchB = g_zModel_SharedVec3ScratchBStorage;
+
+    zVec3 terrainVertices[3] = {{0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 1.0f},
+                                {1.0f, 0.0f, 0.0f}};
+    std::int32_t terrainIndices[3] = {0, 1, 2};
+    zModel_MaterialPartial terrainMaterial = {};
+    zDiEntryPartial terrainEntry = {};
+    terrainEntry.flagsAndIndexCount = 3;
+    terrainEntry.vertexIndices = terrainIndices;
+    terrainEntry.material = &terrainMaterial;
+    terrainEntry.variantTagInitialized = 1;
+    terrainEntry.variantTag = 0x33;
+    zDiPartial terrainDi = {};
+    terrainDi.entryCount = 1;
+    terrainDi.vertCount = 3;
+    terrainDi.entries = &terrainEntry;
+    terrainDi.verts = terrainVertices;
+    zClass_Object3DDataPartial terrainObjectData = {};
+    terrainObjectData.flags = 8;
+    zClass_NodePartial terrainNode = {};
+    terrainNode.flags = 0x11c;
+    terrainNode.nodeType = 0x44;
+    terrainNode.classId = 5;
+    terrainNode.classData = &terrainObjectData;
+    terrainNode.userDataOrDiRef = reinterpret_cast<std::uint32_t>(&terrainDi);
+    terrainNode.cachedBounds[0] = 0.0f;
+    terrainNode.cachedBounds[1] = 0.0f;
+    terrainNode.cachedBounds[2] = 0.0f;
+    terrainNode.cachedBounds[3] = 1.0f;
+    terrainNode.cachedBounds[4] = 1.0f;
+    terrainNode.cachedBounds[5] = 1.0f;
+    zClass_NodePartial *areaChildren[1] = {&terrainNode};
+    zWorldAreaPartial area = {};
+    area.childCount = 1;
+    area.childList = areaChildren;
+    zWorldAreaPartial *rows[1] = {&area};
+    zClass_WorldDataPartial worldData = {};
+    worldData.originX = 0.0f;
+    worldData.originZ = 0.0f;
+    worldData.areaCellSizeX = 1.0f;
+    worldData.areaCellSizeZ = 1.0f;
+    worldData.areaInvSizeX = 1.0f;
+    worldData.areaInvSizeZ = 1.0f;
+    worldData.areaGridColCount = 1;
+    worldData.areaGridRowCount = 1;
+    worldData.areaGridRows = rows;
+    world.classId = 2;
+    world.classData = &worldData;
+
+    g_PickupTypes[7] = {};
+    g_PickupTypes[7].typeIndex = 7;
+    g_PickupTypes[7].defaultAmount = 5;
+    g_PickupTypes[7].nameSuffixMax = 2;
+    g_PickupTypes[7].templateNode = &templateRoot;
+    g_Pickup_SceneNode = &world;
+    g_NextPickupId = 500;
+
+    PickupPkt11CreateDelta createPacket = {{0x11, sizeof(PickupPkt11CreateDelta), 0},
+                                           1,
+                                           0,
+                                           700,
+                                           7,
+                                           0,
+                                           13,
+                                           {1.0f, 2.0f, 3.0f},
+                                           {0.4f, 0.5f, 0.6f},
+                                           12.5f};
+    const int createResult = Pickup::HandlePkt11_SpawnDelta(0, &createPacket);
+    PickupSpawnDef *const created = g_PickupSpawnList_Primary.head;
+    const bool createOk =
+        createResult == 1 && created != nullptr && created->pickupId == 700 &&
+        created->pickupType == &g_PickupTypes[7] && created->amount == 13 &&
+        created->spawnParam == 0 && created->respawnDelay == 12.5f &&
+        created->position.x == 1.0f && created->rotation.z == 0.6f && g_NextPickupId == 701;
+
+    if (created != nullptr) {
+        std::free(created->pickupObj->listA);
+        std::free(created);
+    }
+    std::free(world.listB);
+    g_PickupTypes[7] = oldType;
+    g_PickupSpawnList_Primary = oldPrimary;
+    g_Pickup_SceneNode = oldSceneNode;
+    g_NextPickupId = oldNextPickupId;
+
+    return removeOk && createOk ? 0 : 2;
+}
+
+extern "C" int pickup_handle_pkt12_airdrop_spawn_chute_relay_smoke(void) {
+    const int oldNextPickupId = g_NextPickupId;
+
+    g_NextPickupId = 100;
+    PickupPkt12AirdropSpawnChuteRelay packet = {
+        {0x12, sizeof(PickupPkt12AirdropSpawnChuteRelay), 0},
+        {1.0f, 2.0f, 3.0f},
+        99,
+        0,
+        456,
+    };
+
+    const int result = Pickup::HandlePkt12_AirdropSpawnChuteRelay(0, &packet);
+    const bool ok = result == 1 && g_NextPickupId == 456;
+
+    g_NextPickupId = oldNextPickupId;
+    return ok ? 0 : 1;
+}
+
+extern "C" int pickup_remove_other_spawns_same_opt_entry_smoke(void) {
+    PickupSpawnList::Primary_Init();
+
+    PickupType matchingType = {};
+    PickupType otherType = {};
+    OptCatalogEntryDef *const matchingOpt =
+        reinterpret_cast<OptCatalogEntryDef *>(&matchingType);
+    OptCatalogEntryDef *const otherOpt =
+        reinterpret_cast<OptCatalogEntryDef *>(&otherType);
+    matchingType.optEntry = matchingOpt;
+    otherType.optEntry = otherOpt;
+
+    PickupSpawnDef *const removeA = NewSpawnDef();
+    PickupSpawnDef *const keep = NewSpawnDef();
+    PickupSpawnDef *const keepOther = NewSpawnDef();
+    PickupSpawnDef *const removeB = NewSpawnDef();
+    if (removeA == nullptr || keep == nullptr || keepOther == nullptr || removeB == nullptr) {
+        std::free(removeA);
+        std::free(keep);
+        std::free(keepOther);
+        std::free(removeB);
+        return 1;
+    }
+
+    zClass_NodePartial keptPickupObj = {};
+    removeA->pickupId = 1;
+    removeA->pickupType = &matchingType;
+    removeA->next = keep;
+    keep->pickupId = 2;
+    keep->pickupType = &matchingType;
+    keep->pickupObj = &keptPickupObj;
+    keep->next = keepOther;
+    keepOther->pickupId = 3;
+    keepOther->pickupType = &otherType;
+    keepOther->next = removeB;
+    removeB->pickupId = 4;
+    removeB->pickupType = &matchingType;
+    g_PickupSpawnList_Primary.head = removeA;
+    g_PickupSpawnList_Primary.tail = removeB;
+    g_PickupSpawnList_Primary.count = 4;
+
+    Pickup::RemoveOtherSpawnsWithSameOptEntry(matchingOpt, &keptPickupObj);
+
+    const bool ok = g_PickupSpawnList_Primary.head == keep &&
+                    g_PickupSpawnList_Primary.tail == keepOther &&
+                    g_PickupSpawnList_Primary.count == 2 &&
+                    keep->next == keepOther && keepOther->next == nullptr;
+
+    PickupSpawnList::RemoveAndFreeNode(keep, &g_PickupSpawnList_Primary);
+    PickupSpawnList::RemoveAndFreeNode(keepOther, &g_PickupSpawnList_Primary);
+    return ok ? 0 : 2;
+}
+
+extern "C" int zclass_node_flag16_flag17_smoke() {
+    zClass_NodePartial node{};
+
+    if (zClass_Class::gwNodeSetFlag16(&node, 1) != 0 || (node.flags & 0x10000) == 0) {
+        return 1;
+    }
+    if (zClass_Class::gwNodeSetFlag16(&node, 0) != 0 || (node.flags & 0x10000) != 0) {
+        return 2;
+    }
+    if (zClass_Class::gwNodeSetFlag17(&node, 1) != 0 || (node.flags & 0x20000) == 0) {
+        return 3;
+    }
+    if (zClass_Class::gwNodeSetFlag17(&node, 0) != 0 || (node.flags & 0x20000) != 0) {
+        return 4;
+    }
+
+    return zClass_Class::gwNodeSetFlag16(nullptr, 1) == 5 &&
+                   zClass_Class::gwNodeSetFlag17(nullptr, 1) == 5
+               ? 0
+               : 5;
+}
+
+extern "C" int zutil_store_int32_smoke(void) {
+    int value = 0;
+    zUtil::StoreInt32(&value, -12345);
+    return value == -12345 ? 0 : 1;
+}
+
+extern "C" int zgeometry_polygon_convexify_and_triangulate_smoke() {
+    zVec3 square[4] = {
+        {0.0f, 0.0f, 0.0f},
+        {10.0f, 0.0f, 1.0f},
+        {10.0f, 10.0f, 2.0f},
+        {0.0f, 10.0f, 3.0f},
+    };
+    int squareOffsets[12] = {};
+    for (int i = 0; i < 12; ++i) {
+        squareOffsets[i] = i;
+    }
+
+    const int splitOffsetCapacity = 18;
+    void *splitStorage = std::malloc(sizeof(zGeometry_PolygonSplitDwordOffsetListPair) +
+                                     sizeof(int) * (splitOffsetCapacity - 1));
+    if (splitStorage == nullptr) {
+        return 1;
+    }
+
+    zGeometry_PolygonSplitDwordOffsetListPair *split =
+        static_cast<zGeometry_PolygonSplitDwordOffsetListPair *>(splitStorage);
+    if (zGeometry_Polygon::TrySplitPointDwordOffsetsAtBestDiagonal(
+            4, reinterpret_cast<float *>(square), squareOffsets, split, 3) != 1 ||
+        split->pointCount0 != 3 || split->pointCount1 != 3 ||
+        split->pointDwordOffsets[0] != 9 || split->pointDwordOffsets[3] != 0 ||
+        split->pointDwordOffsets[6] != 3 || split->pointDwordOffsets[9] != 3 ||
+        split->pointDwordOffsets[12] != 6 || split->pointDwordOffsets[15] != 9) {
+        std::free(splitStorage);
+        return 2;
+    }
+    std::free(splitStorage);
+
+    zGeometry_TriangleDwordOffsetList *triangles =
+        zGeometry_Polygon::TriangulatePointDwordOffsetsRecursive(
+            4, reinterpret_cast<float *>(square), nullptr, 0);
+    if (triangles == nullptr || triangles->triangleCount != 2 ||
+        triangles->triangleDwordOffsets[0] != 9 ||
+        triangles->triangleDwordOffsets[3] != 0 ||
+        triangles->triangleDwordOffsets[6] != 3 ||
+        triangles->triangleDwordOffsets[9] != 3 ||
+        triangles->triangleDwordOffsets[12] != 6 ||
+        triangles->triangleDwordOffsets[15] != 9) {
+        std::free(triangles);
+        return 3;
+    }
+    std::free(triangles);
+
+    zVec3 points[7] = {
+        {0.0f, 0.0f, 10.0f},
+        {4.0f, 0.0f, 11.0f},
+        {0.0f, 4.0f, 12.0f},
+        {10.0f, 0.0f, 20.0f},
+        {14.0f, 0.0f, 21.0f},
+        {14.0f, 4.0f, 22.0f},
+        {10.0f, 4.0f, 23.0f},
+    };
+    zGeometry_PolygonPointSpanPartial spans[2] = {
+        {0, 3},
+        {9, 4},
+    };
+    zGeometry_PolygonSpanArrayPartial spanArray{};
+    spanArray.polygonCount = 2;
+    spanArray.polygons = spans;
+
+    zGeometry_ConvexPolygonSetPartial *convex =
+        zGeometry_Polygon::Convexify(&spanArray, 7, points);
+    if (convex == nullptr || convex->polygonCount != 2 || convex->totalPointCount != 7 ||
+        convex->polygons[0].pointDwordOffset != 0 || convex->polygons[0].pointCount != 3 ||
+        convex->polygons[1].pointDwordOffset != 9 || convex->polygons[1].pointCount != 4 ||
+        convex->points[0].z != 10.0f || convex->points[3].x != 10.0f ||
+        convex->points[6].z != 23.0f) {
+        zGeometry_ConvexPolygonSet::Destroy(convex);
+        return 4;
+    }
+    zGeometry_ConvexPolygonSet::Destroy(convex);
+    zGeometry_ConvexPolygonSet::Destroy(nullptr);
+
+    return zGeometry_Polygon::Convexify(nullptr, 0, nullptr) == nullptr ? 0 : 5;
+}
+
+extern "C" int zgeometry_triangulate_hole_and_orientation_smoke() {
+    auto nearFloat = [](float lhs, float rhs) { return std::fabs(lhs - rhs) <= 0.0001f; };
+
+    zVec3 pointsToReverse[4] = {
+        {0.0f, 0.0f, 0.0f},
+        {1.0f, 0.0f, 0.0f},
+        {2.0f, 0.0f, 0.0f},
+        {3.0f, 0.0f, 0.0f},
+    };
+    zGeometry_Vec3Array::ReversePoints(4, pointsToReverse);
+    if (pointsToReverse[0].x != 0.0f || pointsToReverse[1].x != 3.0f ||
+        pointsToReverse[2].x != 2.0f || pointsToReverse[3].x != 1.0f) {
+        return 1;
+    }
+
+    zVec3 clockwiseTriangle[3] = {
+        {0.0f, 0.0f, 0.0f},
+        {0.0f, 1.0f, 0.0f},
+        {1.0f, 0.0f, 0.0f},
+    };
+    if (zGeometry_Vec3Array::EnsurePositiveCrossZ(3, clockwiseTriangle, 0) != 0 ||
+        zGeometry_Vec3Array::EnsurePositiveCrossZ(3, clockwiseTriangle, 1) != 1 ||
+        clockwiseTriangle[1].x != 1.0f || clockwiseTriangle[2].y != 1.0f) {
+        return 2;
+    }
+
+    zVec3 counterClockwiseTriangle[3] = {
+        {0.0f, 0.0f, 0.0f},
+        {1.0f, 0.0f, 0.0f},
+        {0.0f, 1.0f, 0.0f},
+    };
+    if (zGeometry_Vec3Array::EnsurePositiveCrossZ(3, counterClockwiseTriangle, 1) != 1 ||
+        counterClockwiseTriangle[1].x != 1.0f || counterClockwiseTriangle[2].y != 1.0f) {
+        return 3;
+    }
+
+    zVec3 segmentA0{0.0f, 0.0f, 0.0f};
+    zVec3 segmentA1{10.0f, 10.0f, 0.0f};
+    zVec3 segmentB0{0.0f, 10.0f, 0.0f};
+    zVec3 segmentB1{10.0f, 0.0f, 0.0f};
+    zVec3 segmentC0{20.0f, 0.0f, 0.0f};
+    zVec3 segmentC1{30.0f, 0.0f, 0.0f};
+    if (zGeometry_Segment::IntersectsSegmentXY(&segmentA0, &segmentA1, &segmentB0,
+                                               &segmentB1) != 1 ||
+        zGeometry_Segment::IntersectsSegmentXY(&segmentA0, &segmentA1, &segmentC0,
+                                               &segmentC1) != 0) {
+        return 4;
+    }
+
+    zGeometry_TriangulateHole_EdgeState edges[5] = {
+        {0, 1, 1},
+        {1, 2, 0},
+        {2, 3, 2},
+        {3, 0, 1},
+        {0, 2, 1},
+    };
+    if (zGeometry_TriangulateHole::FindActiveEdgeState(1, 0, 5, edges) != &edges[0] ||
+        zGeometry_TriangulateHole::FindActiveEdgeState(1, 2, 5, edges) != nullptr ||
+        zGeometry_TriangulateHole::FindActiveEdgeState(0, 4, 5, edges) != nullptr) {
+        return 5;
+    }
+
+    int edgeIndices[4] = {};
+    if (zGeometry_TriangulateHole::CollectActiveEdgeIndicesForVertex(0, 5, edges,
+                                                                     edgeIndices) != 3 ||
+        edgeIndices[0] != 0 || edgeIndices[1] != 3 || edgeIndices[2] != 4) {
+        return 6;
+    }
+
+    zVec3 planePoints[4] = {
+        {0.0f, 0.0f, 2.0f},
+        {10.0f, 0.0f, 2.0f},
+        {10.0f, 10.0f, 2.0f},
+        {0.0f, 10.0f, 2.0f},
+    };
+    zGeometry_PlaneEquationPartial plane{};
+    zGeometry_Vec3Array::ComputeNewellPlane(4, planePoints, &plane);
+    if (!nearFloat(plane.a, 0.0f) || !nearFloat(plane.b, 0.0f) || !(plane.c > 0.9f) ||
+        !nearFloat(-(plane.d / plane.c), 2.0f)) {
+        return 7;
+    }
+
+    zGeometry_TriangulateHole::CacheCombinedPlane(4, planePoints);
+    zVec3 innerProjection[3] = {
+        {2.0f, 2.0f, 10.0f},
+        {4.0f, 2.0f, -3.0f},
+        {3.0f, 4.0f, 7.0f},
+    };
+    zGeometry_TriangulateHole::ProjectInnerRingOntoCachedPlane(3, innerProjection);
+    if (!nearFloat(innerProjection[0].z, 2.0f) ||
+        !nearFloat(innerProjection[1].z, 2.0f) ||
+        !nearFloat(innerProjection[2].z, 2.0f)) {
+        return 8;
+    }
+
+    zVec3 outer[4] = {
+        {0.0f, 0.0f, 0.0f},
+        {10.0f, 0.0f, 0.0f},
+        {10.0f, 10.0f, 0.0f},
+        {0.0f, 10.0f, 0.0f},
+    };
+    zVec3 inner[3] = {
+        {3.0f, 3.0f, 5.0f},
+        {7.0f, 3.0f, 5.0f},
+        {5.0f, 7.0f, 5.0f},
+    };
+    zGeometry_TriangleSoup *soup =
+        zGeometry::TriangulatePolygonWithHole(4, outer, 3, inner);
+    if (soup == nullptr || soup->triangleCount <= 0 || soup->triangleVerts[0].z != 0.0f ||
+        !nearFloat(inner[0].z, 0.0f) || !nearFloat(inner[1].z, 0.0f) ||
+        !nearFloat(inner[2].z, 0.0f)) {
+        std::free(soup);
+        return 9;
+    }
+    std::free(soup);
+
+    return 0;
+}
+
+extern "C" int zgeometry_model_polygon_uv_and_di_helpers_smoke() {
+    auto nearFloat = [](float lhs, float rhs) { return std::fabs(lhs - rhs) <= 0.00001f; };
+
+    zVec3 basisPoints[3] = {
+        {0.0f, 0.0f, 0.0f},
+        {1.0f, 0.0f, 0.0f},
+        {1.0f, 1.0f, 2.0f},
+    };
+
+    zVec2 coefficients{};
+    zGeometry_Polygon::SolveUvAxisCoefficientsXZ(
+        &basisPoints[0], &basisPoints[1], &basisPoints[2], 0.0f, 10.0f, 14.0f,
+        &coefficients);
+    if (!nearFloat(coefficients.x, 10.0f) || !nearFloat(coefficients.y, 2.0f)) {
+        return 1;
+    }
+
+    zVec3 degeneratePoint{1.0f, 0.0f, 0.0f};
+    zGeometry_Polygon::SolveUvAxisCoefficientsXZ(
+        &degeneratePoint, &degeneratePoint, &degeneratePoint, 1.0f, 2.0f, 3.0f,
+        &coefficients);
+    if (coefficients.x != 0.0f || coefficients.y != 0.0f) {
+        return 2;
+    }
+
+    int indices[3] = {0, 1, 2};
+    zModel_PolygonUvBasis uvBasis{};
+    uvBasis.uv0.u = 0.0f;
+    uvBasis.uv0.v = 5.0f;
+    uvBasis.uv1.u = 10.0f;
+    uvBasis.uv1.v = 7.0f;
+    uvBasis.uv2.u = 14.0f;
+    uvBasis.uv2.v = 15.0f;
+
+    zModel_MaterialPartial material{};
+    zModel_PolygonPartial polygon{};
+    polygon.vertexCountAndFlags = 0x100 | 3;
+    polygon.drawFlags = 0x40;
+    polygon.vertexIndices = indices;
+    polygon.uvBasis = &uvBasis;
+    polygon.material = &material;
+    polygon.userTag = 0x12345678;
+
+    zModel_DrawBatchBasePartial model{};
+    model.verts = basisPoints;
+
+    zVec3 polygonPoints[3] = {
+        {2.0f, 1.0f, 3.0f},
+        {1.0f, 0.0f, 0.0f},
+        {1.0f, 1.0f, 2.0f},
+    };
+    zClipUV *uvList =
+        zGeometry_Model::BuildPolygonUvList(3, polygonPoints, &model, &polygon);
+    if (uvList == nullptr || !nearFloat(uvList[0].u, 26.0f) ||
+        !nearFloat(uvList[0].v, 21.0f) || !nearFloat(uvList[1].u, 10.0f) ||
+        !nearFloat(uvList[1].v, 7.0f) || !nearFloat(uvList[2].u, 14.0f) ||
+        !nearFloat(uvList[2].v, 15.0f)) {
+        std::free(uvList);
+        return 3;
+    }
+    std::free(uvList);
+
+    g_zModel_MaxPolygonVertexCountBeforeSplit = 64;
+    g_zModel_CoplanarTolerance = 0.01;
+
+    zDiPartial directDi{};
+    zClipUV directUvs[3] = {
+        {0.0f, 0.0f},
+        {1.0f, 0.0f},
+        {0.0f, 1.0f},
+    };
+    if (zGeometry_Model::AddPolygonToDi(&directDi, 2, polygonPoints, &material, directUvs) !=
+        -1) {
+        zDi::FreeContents(&directDi);
+        return 4;
+    }
+    if (zGeometry_Model::AddPolygonToDi(&directDi, 3, polygonPoints, &material, directUvs) !=
+            0 ||
+        directDi.entryCount != 1 || directDi.vertCount != 3 || directDi.entries == nullptr ||
+        directDi.entries[0].material != &material ||
+        static_cast<int>(directDi.entries[0].flagsAndIndexCount & 0xff) != 3) {
+        zDi::FreeContents(&directDi);
+        return 5;
+    }
+    zDi::FreeContents(&directDi);
+
+    zDiPartial di{};
+    if (zGeometry_Model::AddPointListPolygonToDi(&di, 2, polygonPoints, &model, &polygon) !=
+        -1) {
+        zDi::FreeContents(&di);
+        return 6;
+    }
+    if (zGeometry_Model::AddPointListPolygonToDi(&di, 3, polygonPoints, &model, &polygon) !=
+            0 ||
+        di.entryCount != 1 || di.vertCount != 3 || di.entries == nullptr ||
+        di.entries[0].material != &material ||
+        static_cast<int>(di.entries[0].flagsAndIndexCount & 0xff) != 3) {
+        zDi::FreeContents(&di);
+        return 7;
+    }
+    zDi::FreeContents(&di);
+
+    zDiPartial indexedDi{};
+    if (zGeometry_Model::AddIndexedPolygonToDi(&indexedDi, &model, &polygon) != 0 ||
+        indexedDi.entryCount != 1 || indexedDi.vertCount != 3 || indexedDi.entries == nullptr ||
+        indexedDi.entries[0].material != &material ||
+        static_cast<int>(indexedDi.entries[0].flagsAndIndexCount & 0xff) != 3) {
+        zDi::FreeContents(&indexedDi);
+        return 8;
+    }
+    zDi::FreeContents(&indexedDi);
+
+    return indexedDi.entryCount == 0 && indexedDi.entries == nullptr && indexedDi.verts == nullptr
+               ? 0
+               : 9;
+}
+
+extern "C" int zgeometry_vec3array_clip_leaf_helpers_smoke() {
+    zVec3 points[3] = {
+        {2.0f, 3.0f, 4.0f},
+        {-1.0f, 5.0f, -6.0f},
+        {7.0f, -8.0f, 9.0f},
+    };
+
+    zGeometry_Vec3Array::RotatePos90AroundX(3, points);
+    if (points[0].x != 2.0f || points[0].y != -4.0f || points[0].z != 3.0f ||
+        points[1].x != -1.0f || points[1].y != 6.0f || points[1].z != 5.0f ||
+        points[2].x != 7.0f || points[2].y != -9.0f || points[2].z != -8.0f) {
+        return 1;
+    }
+
+    zGeometry_Vec3Array::RotateNeg90AroundX(3, points);
+    if (points[0].x != 2.0f || points[0].y != 3.0f || points[0].z != 4.0f ||
+        points[1].x != -1.0f || points[1].y != 5.0f || points[1].z != -6.0f ||
+        points[2].x != 7.0f || points[2].y != -8.0f || points[2].z != 9.0f) {
+        return 2;
+    }
+
+    zGeometry_BoundsXY bounds{};
+    zGeometry_Vec3Array::ComputeBoundsXY(&bounds, points, 3);
+    if (bounds.minX != -1.0f || bounds.maxX != 7.0f || bounds.maxY != 5.0f ||
+        bounds.minY != -8.0f) {
+        return 3;
+    }
+
+    zVec3 initPoints[4] = {
+        {0.0f, 0.0f, 1.0f},
+        {0.005f, 0.005f, 2.0f},
+        {1.0f, 0.0f, 3.0f},
+        {0.0f, 1.0f, 4.0f},
+    };
+    zGeometry_WeilerStatePartial *initState = zGeometry_Weiler::Init(initPoints, 4, 0);
+    if (initState == nullptr || initState->inputContourABuffer.count != 3 ||
+        initState->segmentBuffer.count != 6 || initState->contourBuffer.count != 2 ||
+        initState->contourSource != 0) {
+        zGeometry_Weiler::DestroyState(initState);
+        return 4;
+    }
+    zGeometry_Weiler::DestroyState(initState);
+    return 0;
+}
+
+extern "C" int zgeometry_model_linear_buffer_and_bounds_overlap_smoke() {
+    zVec3 verts[4] = {
+        {10.0f, 20.0f, 30.0f},
+        {-1.0f, -2.0f, -3.0f},
+        {4.0f, 5.0f, 6.0f},
+        {7.0f, 8.0f, 9.0f},
+    };
+    int indices[3] = {2, 0, 3};
+    zModel_PolygonPartial polygon{};
+    polygon.vertexCountAndFlags = 3;
+    polygon.vertexIndices = indices;
+
+    zModel_DrawBatchBasePartial model{};
+    model.verts = verts;
+
+    zVec3 *buffer = zGeometry_Model::GetLinearBufferOfPolygonVertices(&model, &polygon, nullptr);
+    if (buffer == nullptr || buffer[0].x != 4.0f || buffer[0].y != 5.0f ||
+        buffer[0].z != 6.0f || buffer[1].x != 10.0f || buffer[1].y != 20.0f ||
+        buffer[1].z != 30.0f || buffer[2].x != 7.0f || buffer[2].y != 8.0f ||
+        buffer[2].z != 9.0f) {
+        std::free(buffer);
+        return 1;
+    }
+
+    int resizedIndices[2] = {1, 2};
+    polygon.vertexCountAndFlags = 2;
+    polygon.vertexIndices = resizedIndices;
+    buffer = zGeometry_Model::GetLinearBufferOfPolygonVertices(&model, &polygon, buffer);
+    if (buffer == nullptr || buffer[0].x != -1.0f || buffer[0].y != -2.0f ||
+        buffer[0].z != -3.0f || buffer[1].x != 4.0f || buffer[1].y != 5.0f ||
+        buffer[1].z != 6.0f) {
+        std::free(buffer);
+        return 2;
+    }
+    std::free(buffer);
+
+    zGeometry_BoundsXY boundsA{};
+    boundsA.minX = 0.0f;
+    boundsA.maxY = 10.0f;
+    boundsA.maxX = 10.0f;
+    boundsA.minY = 0.0f;
+
+    zGeometry_BoundsXY boundsB{};
+    boundsB.minX = 10.5f;
+    boundsB.maxY = 5.0f;
+    boundsB.maxX = 12.0f;
+    boundsB.minY = 1.0f;
+    if (zGeometry_Bounds2D::OverlapsWithUnitMargin(&boundsA, &boundsB) != 1) {
+        return 3;
+    }
+
+    boundsB.minX = 11.5f;
+    boundsB.maxX = 12.5f;
+    if (zGeometry_Bounds2D::OverlapsWithUnitMargin(&boundsA, &boundsB) != 0) {
+        return 4;
+    }
+
+    boundsB.minX = 1.0f;
+    boundsB.maxX = 2.0f;
+    boundsB.maxY = -1.5f;
+    boundsB.minY = -2.5f;
+    return zGeometry_Bounds2D::OverlapsWithUnitMargin(&boundsA, &boundsB) == 0 ? 0 : 5;
+}
+
+extern "C" int zgeometry_model_is_fully_inside_clip_polygon_xy_smoke() {
+    zVec3 clipPoints[4] = {
+        {0.0f, 0.0f, 0.0f},
+        {10.0f, 0.0f, 0.0f},
+        {10.0f, 10.0f, 0.0f},
+        {0.0f, 10.0f, 0.0f},
+    };
+
+    zGeometry_ClipPolygonPartial clipPolygon{};
+    clipPolygon.points = clipPoints;
+    clipPolygon.pointCount = 4;
+    clipPolygon.bounds.minX = 0.0f;
+    clipPolygon.bounds.maxX = 10.0f;
+    clipPolygon.bounds.maxY = 10.0f;
+    clipPolygon.bounds.minY = 0.0f;
+    clipPolygon.weilerState = zGeometry_Weiler::Init(clipPoints, 4, 0);
+    if (clipPolygon.weilerState == nullptr) {
+        return 1;
+    }
+
+    if (zGeometry_Model::IsFullyInsideClipPolygonXY(nullptr, nullptr) != 0 ||
+        zGeometry_Model::IsFullyInsideClipPolygonXY(&clipPolygon, nullptr) != 0) {
+        zGeometry_Weiler::DestroyState(clipPolygon.weilerState);
+        return 2;
+    }
+
+    int faceIndices[3] = {0, 1, 2};
+    zModel_PolygonPartial face{};
+    face.vertexCountAndFlags = 3;
+    face.vertexIndices = faceIndices;
+
+    zModel_DrawBatchBasePartial model{};
+    model.faceCount = 1;
+    model.faceList = &face;
+
+    zVec3 disjointVerts[3] = {
+        {20.0f, 0.0f, -20.0f},
+        {30.0f, 0.0f, -20.0f},
+        {20.0f, 0.0f, -30.0f},
+    };
+    model.verts = disjointVerts;
+    if (zGeometry_Model::IsFullyInsideClipPolygonXY(&clipPolygon, &model) != 1) {
+        zGeometry_Weiler::DestroyState(clipPolygon.weilerState);
+        return 3;
+    }
+
+    zVec3 containedVerts[3] = {
+        {2.0f, 0.0f, -2.0f},
+        {8.0f, 0.0f, -2.0f},
+        {2.0f, 0.0f, -8.0f},
+    };
+    model.verts = containedVerts;
+    if (zGeometry_Model::IsFullyInsideClipPolygonXY(&clipPolygon, &model) != 0) {
+        zGeometry_Weiler::DestroyState(clipPolygon.weilerState);
+        return 4;
+    }
+
+    zGeometry_Weiler::DestroyState(clipPolygon.weilerState);
+    return 0;
+}
+
+extern "C" int zgeometry_model_process_clip_patch_node_smoke() {
+    if (zGeometry_Model::ProcessClipPatchNode(nullptr, nullptr, nullptr) != 1) {
+        return 1;
+    }
+
+    zVec3 clipPoints[4] = {
+        {0.0f, 0.0f, 0.0f},
+        {10.0f, 0.0f, 0.0f},
+        {10.0f, 10.0f, 0.0f},
+        {0.0f, 10.0f, 0.0f},
+    };
+    zGeometry_ClipPolygonPartial clipPolygon{};
+    clipPolygon.points = clipPoints;
+    clipPolygon.pointCount = 4;
+    clipPolygon.bounds.minX = 0.0f;
+    clipPolygon.bounds.maxX = 10.0f;
+    clipPolygon.bounds.maxY = 10.0f;
+    clipPolygon.bounds.minY = 0.0f;
+    clipPolygon.weilerState = zGeometry_Weiler::Init(clipPoints, 4, 0);
+    if (clipPolygon.weilerState == nullptr) {
+        return 2;
+    }
+
+    zVec3 verts[3] = {
+        {20.0f, 0.0f, -20.0f},
+        {30.0f, 0.0f, -20.0f},
+        {20.0f, 1.0f, -30.0f},
+    };
+    int indices[3] = {0, 1, 2};
+    zModel_MaterialPartial material{};
+    zModel_PolygonPartial face{};
+    face.vertexCountAndFlags = 3;
+    face.vertexIndices = indices;
+    face.material = &material;
+
+    zModel_DrawBatchBasePartial model{};
+    model.faceCount = 1;
+    model.faceList = &face;
+    model.verts = verts;
+
+    zDiPartial *outDi = reinterpret_cast<zDiPartial *>(0x1);
+    g_zModel_DiPoolBase = nullptr;
+    g_zModel_DiPoolCapacity = 0;
+    g_zModel_DiPoolInUseCount = 0;
+    g_zModel_DiPoolFreeHeadIndex = -1;
+    if (zGeometry_Model::ProcessClipPatchNode(&clipPolygon, &model, &outDi) != 0 ||
+        outDi != reinterpret_cast<zDiPartial *>(0x1)) {
+        zGeometry_Weiler::DestroyState(clipPolygon.weilerState);
+        return 3;
+    }
+
+    zDiPartial diPool[1] = {};
+    diPool[0].nextFreeIndex = -1;
+    g_zModel_DiPoolBase = diPool;
+    g_zModel_DiPoolCapacity = 1;
+    g_zModel_DiPoolInUseCount = 0;
+    g_zModel_DiPoolFreeHeadIndex = 0;
+    g_zModel_MaxPolygonVertexCountBeforeSplit = 64;
+    g_zModel_CoplanarTolerance = 0.01;
+
+    outDi = reinterpret_cast<zDiPartial *>(0x1);
+    if (zGeometry_Model::ProcessClipPatchNode(&clipPolygon, &model, &outDi) != 1 ||
+        outDi != nullptr || g_zModel_DiPoolInUseCount != 0 ||
+        g_zModel_DiPoolFreeHeadIndex != 0 || diPool[0].entryCount != 0 ||
+        diPool[0].entries != nullptr || diPool[0].verts != nullptr) {
+        zDi::FreeContents(&diPool[0]);
+        zGeometry_Weiler::DestroyState(clipPolygon.weilerState);
+        g_zModel_DiPoolBase = nullptr;
+        g_zModel_DiPoolCapacity = 0;
+        g_zModel_DiPoolInUseCount = 0;
+        g_zModel_DiPoolFreeHeadIndex = -1;
+        return 4;
+    }
+
+    zGeometry_Weiler::DestroyState(clipPolygon.weilerState);
+    g_zModel_DiPoolBase = nullptr;
+    g_zModel_DiPoolCapacity = 0;
+    g_zModel_DiPoolInUseCount = 0;
+    g_zModel_DiPoolFreeHeadIndex = -1;
+    return 0;
+}
+
+extern "C" int zgeometry_clip_polygon_create_copy_finalize_smoke() {
+    zVec3 input[3] = {
+        {0.0f, 1.0f, 2.0f},
+        {3.0f, -4.0f, 5.0f},
+        {-6.0f, 7.0f, -8.0f},
+    };
+
+    zGeometry_ClipPolygonPartial *clipPolygon =
+        zGeometry_ClipPolygon::CreateFromPointList(3, input);
+    if (clipPolygon == nullptr || clipPolygon->pointCount != 3 ||
+        clipPolygon->points == nullptr || clipPolygon->points == input ||
+        clipPolygon->points[0].x != 0.0f || clipPolygon->points[0].y != -2.0f ||
+        clipPolygon->points[0].z != 1.0f || clipPolygon->points[1].x != 3.0f ||
+        clipPolygon->points[1].y != -5.0f || clipPolygon->points[1].z != -4.0f ||
+        clipPolygon->points[2].x != -6.0f || clipPolygon->points[2].y != 8.0f ||
+        clipPolygon->points[2].z != 7.0f || clipPolygon->bounds.minX != -6.0f ||
+        clipPolygon->bounds.maxX != 3.0f || clipPolygon->bounds.maxY != 8.0f ||
+        clipPolygon->bounds.minY != -5.0f) {
+        if (clipPolygon != nullptr) {
+            zGeometry_ClipPolygon::FinalizeAndDestroy(clipPolygon);
+        }
+        return 1;
+    }
+
+    int outPointCount = 0;
+    zVec3 *outPoints = nullptr;
+    if (zGeometry_ClipPolygon::CopyPointsOutRotatedBack(
+            clipPolygon,
+            &outPointCount,
+            &outPoints
+        ) != 2 ||
+        outPointCount != 3 || outPoints == nullptr || outPoints[0].x != input[0].x ||
+        outPoints[0].y != input[0].y || outPoints[0].z != input[0].z ||
+        outPoints[1].x != input[1].x || outPoints[1].y != input[1].y ||
+        outPoints[1].z != input[1].z || outPoints[2].x != input[2].x ||
+        outPoints[2].y != input[2].y || outPoints[2].z != input[2].z) {
+        std::free(outPoints);
+        zGeometry_ClipPolygon::FinalizeAndDestroy(clipPolygon);
+        return 2;
+    }
+
+    std::free(outPoints);
+    zGeometry_ClipPolygon::FinalizeAndDestroy(clipPolygon);
+
+    clipPolygon = static_cast<zGeometry_ClipPolygonPartial *>(
+        std::calloc(1, sizeof(zGeometry_ClipPolygonPartial)));
+    if (clipPolygon == nullptr) {
+        return 3;
+    }
+
+    zGeometry_ClipPolygon::FinalizeAndDestroy(clipPolygon);
+    return 0;
+}
+
+extern "C" int zgeometry_clip_polygon_upsert_point_list_xy_smoke() {
+    zGeometry_ClipPolygonPartial clipPolygon{};
+    clipPolygon.pointCount = 4;
+    clipPolygon.points = static_cast<zVec3 *>(std::malloc(4 * sizeof(zVec3)));
+    if (clipPolygon.points == nullptr) {
+        return 1;
+    }
+    clipPolygon.points[0] = {0.0f, 0.0f, 1.0f};
+    clipPolygon.points[1] = {10.0f, 0.0f, 2.0f};
+    clipPolygon.points[2] = {10.0f, 10.0f, 3.0f};
+    clipPolygon.points[3] = {0.0f, 10.0f, 4.0f};
+
+    zVec3 nearExisting = {10.005f, 0.004f, 20.0f};
+    zVec3 missingPoint = {3.0f, 4.0f, 30.0f};
+    if (zGeometry_ClipPolygon::FindPointIndexXY(&clipPolygon, &nearExisting) != 1 ||
+        zGeometry_ClipPolygon::FindPointIndexXY(&clipPolygon, &missingPoint) != -1) {
+        std::free(clipPolygon.points);
+        return 2;
+    }
+
+    zVec3 topEdgeMidpoint = {5.0f, 10.0f, 40.0f};
+    if (zGeometry_ClipPolygon::FindPointInsertionEdgeXYIndex(
+            &clipPolygon,
+            &topEdgeMidpoint
+        ) != 2 ||
+        zGeometry_ClipPolygon::FindPointInsertionEdgeXYIndex(
+            &clipPolygon,
+            &missingPoint
+        ) != -1) {
+        std::free(clipPolygon.points);
+        return 3;
+    }
+
+    zVec3 diagonalPoints[3] = {
+        {0.0f, 0.0f, 0.0f},
+        {10.0f, 10.0f, 0.0f},
+        {20.0f, 0.0f, 0.0f},
+    };
+    zGeometry_ClipPolygonPartial diagonalPolygon{};
+    diagonalPolygon.pointCount = 3;
+    diagonalPolygon.points = diagonalPoints;
+    zVec3 diagonalMidpoint = {5.0f, 5.0f, 0.0f};
+    if (zGeometry_ClipPolygon::FindPointInsertionEdgeXYIndex(
+            &diagonalPolygon,
+            &diagonalMidpoint
+        ) != 0) {
+        std::free(clipPolygon.points);
+        return 4;
+    }
+
+    zVec3 upsertPoints[2] = {
+        nearExisting,
+        topEdgeMidpoint,
+    };
+    if (zGeometry_ClipPolygon::UpsertPointListXY(&clipPolygon, 2, upsertPoints) != 1 ||
+        clipPolygon.pointCount != 5 ||
+        clipPolygon.points[1].z != 20.0f ||
+        clipPolygon.points[3].x != 5.0f ||
+        clipPolygon.points[3].y != 10.0f ||
+        clipPolygon.points[3].z != 40.0f ||
+        clipPolygon.points[4].x != 0.0f ||
+        clipPolygon.points[4].y != 10.0f) {
+        std::free(clipPolygon.points);
+        return 5;
+    }
+
+    if (zGeometry_ClipPolygon::UpsertPointListXY(&clipPolygon, 1, &missingPoint) != 0 ||
+        zGeometry_ClipPolygon::UpsertPointListXY(&clipPolygon, 0, &missingPoint) != 0) {
+        std::free(clipPolygon.points);
+        return 6;
+    }
+
+    std::free(clipPolygon.points);
+    return 0;
+}
+
+extern "C" int zgeometry_clip_polygon_process_node_polygon_set_xy_smoke() {
+    zDiPartial *outDi = reinterpret_cast<zDiPartial *>(0x1);
+    if (zGeometry_ClipPolygon::ProcessNodePolygonSetXY(nullptr, nullptr, &outDi) != 1 ||
+        outDi != reinterpret_cast<zDiPartial *>(0x1)) {
+        return 1;
+    }
+
+    zGeometry_ClipPolygonPartial clipPolygon{};
+    zClass_NodePartial emptyNode{};
+    if (zGeometry_ClipPolygon::ProcessNodePolygonSetXY(&clipPolygon, &emptyNode, &outDi) != 1) {
+        return 2;
+    }
+
+    zVec3 clipPoints[4] = {
+        {0.0f, 0.0f, 0.0f},
+        {10.0f, 0.0f, 0.0f},
+        {10.0f, 10.0f, 0.0f},
+        {0.0f, 10.0f, 0.0f},
+    };
+    clipPolygon.points = clipPoints;
+    clipPolygon.pointCount = 4;
+    clipPolygon.bounds.minX = 0.0f;
+    clipPolygon.bounds.maxX = 10.0f;
+    clipPolygon.bounds.maxY = 10.0f;
+    clipPolygon.bounds.minY = 0.0f;
+    clipPolygon.weilerState = zGeometry_Weiler::Init(clipPoints, 4, 0);
+    if (clipPolygon.weilerState == nullptr) {
+        return 3;
+    }
+
+    zVec3 verts[3] = {
+        {20.0f, 0.0f, -20.0f},
+        {30.0f, 0.0f, -20.0f},
+        {20.0f, 1.0f, -30.0f},
+    };
+    int indices[3] = {0, 1, 2};
+    zModel_PolygonPartial face{};
+    face.vertexCountAndFlags = 3;
+    face.vertexIndices = indices;
+
+    zModel_DrawBatchBasePartial model{};
+    model.faceCount = 1;
+    model.faceList = &face;
+    model.verts = verts;
+
+    zClass_NodePartial node{};
+    node.flags = 0x20000;
+    node.userDataOrDiRef = static_cast<std::uint32_t>(reinterpret_cast<std::uintptr_t>(&model));
+
+    outDi = reinterpret_cast<zDiPartial *>(0x1);
+    if (zGeometry_ClipPolygon::ProcessNodePolygonSetXY(&clipPolygon, &node, &outDi) != 1 ||
+        outDi != nullptr) {
+        zGeometry_Weiler::DestroyState(clipPolygon.weilerState);
+        return 4;
+    }
+
+    zGeometry_Weiler::DestroyState(clipPolygon.weilerState);
+    return 0;
+}
+
+extern "C" int zgeometry_model_clip_patch_smoke() {
+    zClass_NodePartial *const savedCameraNode = g_zDEClient_CameraNode;
+    zGeometry_ClipPatchOutputPartial output{};
+    if (zGeometry_Model::ClipPatch(0, nullptr, nullptr, &output) != -1) {
+        g_zDEClient_CameraNode = savedCameraNode;
+        return 1;
+    }
+
+    zClass_NodePartial cameraNode{};
+    cameraNode.listCountB = 0;
+    cameraNode.listB = nullptr;
+    g_zDEClient_CameraNode = &cameraNode;
+
+    zDEClient_FeatureGridCell cell{};
+    cell.nodeCount = 0;
+    cell.nodes = nullptr;
+
+    zVec3 outline[4] = {
+        {0.0f, 0.0f, 0.0f},
+        {10.0f, 0.0f, 0.0f},
+        {10.0f, 0.0f, -10.0f},
+        {0.0f, 0.0f, -10.0f},
+    };
+    if (zGeometry_Model::ClipPatch(4, outline, &cell, &output) != 0 ||
+        output.partitionCount != 0 || output.partitions != nullptr ||
+        output.pointCount != 0 || output.points != nullptr) {
+        zGeometry_ClipPatchOutput::Destroy(&output);
+        g_zDEClient_CameraNode = savedCameraNode;
+        return 2;
+    }
+
+    g_zDEClient_CameraNode = savedCameraNode;
+    return 0;
+}
+
+extern "C" int zgeometry_polygon_snap_points_xy_if_near_smoke() {
+    auto nearFloat = [](float lhs, float rhs) { return std::fabs(lhs - rhs) <= 0.00001f; };
+
+    zVec3 a{1.0f, 2.0f, 3.0f};
+    zVec3 b{1.05f, 1.95f, -5.0f};
+    if (zGeometry_Vec3::IsNearEqualXY(&a, &b, 0.1f) != 1 ||
+        zGeometry_Vec3::IsNearEqualXY(&a, &b, 0.01f) != 0) {
+        return 1;
+    }
+
+    zVec3 verticalStart{2.0f, 0.0f, 0.0f};
+    zVec3 verticalEnd{2.0f, 10.0f, 0.0f};
+    zVec3 verticalTest{2.02f, 4.0f, 7.0f};
+    if (zGeometry_Vec3::SnapPointToSegmentXYIfNear(&verticalStart, &verticalEnd, &verticalTest,
+                                                   0.05f) != 1 ||
+        verticalTest.x != 2.0f || verticalTest.y != 4.0f || verticalTest.z != 7.0f) {
+        return 2;
+    }
+
+    zVec3 horizontalStart{0.0f, 3.0f, 0.0f};
+    zVec3 horizontalEnd{10.0f, 3.0f, 0.0f};
+    zVec3 horizontalTest{7.0f, 3.03f, 5.0f};
+    if (zGeometry_Vec3::SnapPointToSegmentXYIfNear(&horizontalStart, &horizontalEnd,
+                                                   &horizontalTest, 0.05f) != 1 ||
+        horizontalTest.x != 7.0f || horizontalTest.y != 3.0f || horizontalTest.z != 5.0f) {
+        return 3;
+    }
+
+    zVec3 diagonalStart{0.0f, 0.0f, 0.0f};
+    zVec3 diagonalEnd{10.0f, 10.0f, 0.0f};
+    zVec3 diagonalTest{5.02f, 5.01f, 9.0f};
+    if (zGeometry_Vec3::SnapPointToSegmentXYIfNear(&diagonalStart, &diagonalEnd, &diagonalTest,
+                                                   0.05f) != 1 ||
+        !nearFloat(diagonalTest.x, 5.02f) || !nearFloat(diagonalTest.y, 5.01f) ||
+        diagonalTest.z != 9.0f) {
+        return 4;
+    }
+
+    zVec3 outsideTest{12.0f, 12.0f, 0.0f};
+    if (zGeometry_Vec3::SnapPointToSegmentXYIfNear(&diagonalStart, &diagonalEnd, &outsideTest,
+                                                   0.1f) != 0 ||
+        outsideTest.x != 12.0f || outsideTest.y != 12.0f) {
+        return 5;
+    }
+
+    zVec3 polygon[3] = {
+        {0.0f, 0.0f, 1.0f},
+        {10.0f, 0.0f, 2.0f},
+        {0.0f, 10.0f, 3.0f},
+    };
+    zVec3 targets[3] = {
+        {0.04f, -0.03f, 40.0f},
+        {4.0f, 0.02f, 50.0f},
+        {20.0f, 20.0f, 60.0f},
+    };
+
+    if (zGeometry_Polygon::SnapPointsXYIfNear(polygon, 3, targets, 3, 0.1f, 0.05f) != 1 ||
+        targets[0].x != 0.0f || targets[0].y != 0.0f || targets[0].z != 1.0f ||
+        targets[1].x != 4.0f || targets[1].y != 0.0f || targets[1].z != 50.0f ||
+        targets[2].x != 20.0f || targets[2].y != 20.0f || targets[2].z != 60.0f) {
+        return 6;
+    }
+
+    return zGeometry_Polygon::SnapPointsXYIfNear(polygon, 3, targets, 0, 0.1f, 0.05f) == 0
+               ? 0
+               : 7;
+}
+
+extern "C" int zgeometry_clip_polygon_snap_points_near_node_model_xy_smoke() {
+    zVec3 modelVerts[3] = {
+        {0.0f, 0.0f, 0.0f},
+        {10.0f, 0.0f, 0.0f},
+        {0.0f, 0.0f, -10.0f},
+    };
+    int invalidIndices[2] = {0, 1};
+    int validIndices[3] = {0, 1, 2};
+    zModel_PolygonPartial faces[2]{};
+    faces[0].vertexCountAndFlags = 2;
+    faces[0].vertexIndices = invalidIndices;
+    faces[1].vertexCountAndFlags = 3;
+    faces[1].vertexIndices = validIndices;
+
+    zModel_DrawBatchBasePartial batch{};
+    batch.faceCount = 2;
+    batch.faceList = faces;
+    batch.verts = modelVerts;
+
+    zVec3 clipPoints[3] = {
+        {0.04f, -0.03f, 100.0f},
+        {4.0f, 0.02f, 200.0f},
+        {20.0f, 20.0f, 300.0f},
+    };
+    zGeometry_ClipPolygonPartial clipPolygon{};
+    clipPolygon.points = clipPoints;
+    clipPolygon.pointCount = 3;
+    clipPolygon.bounds.minX = 0.0f;
+    clipPolygon.bounds.maxX = 20.0f;
+    clipPolygon.bounds.maxY = 20.0f;
+    clipPolygon.bounds.minY = 0.0f;
+
+    zClass_NodePartial node{};
+    node.userDataOrDiRef = static_cast<std::uint32_t>(reinterpret_cast<std::uintptr_t>(&batch));
+
+    if (zGeometry_ClipPolygon::SnapPointsNearNodeModelXY(nullptr, &node) != 0 ||
+        zGeometry_ClipPolygon::SnapPointsNearNodeModelXY(&clipPolygon, nullptr) != 0) {
+        return 1;
+    }
+
+    zClass_NodePartial emptyNode{};
+    if (zGeometry_ClipPolygon::SnapPointsNearNodeModelXY(&clipPolygon, &emptyNode) != 0) {
+        return 2;
+    }
+
+    struct TestBoundedNode {
+        zClass_NodePartial node;
+        float boundsMinX;
+        std::uint32_t unknown90;
+        float boundsNegMaxY;
+        float boundsMaxX;
+        std::uint32_t unknown9c;
+        float boundsNegMinY;
+    };
+    TestBoundedNode boundedNode{};
+    boundedNode.node.flags = 0x200;
+    boundedNode.node.userDataOrDiRef =
+        static_cast<std::uint32_t>(reinterpret_cast<std::uintptr_t>(&batch));
+    boundedNode.boundsMinX = 30.0f;
+    boundedNode.boundsMaxX = 40.0f;
+    boundedNode.boundsNegMaxY = -40.0f;
+    boundedNode.boundsNegMinY = -30.0f;
+    if (zGeometry_ClipPolygon::SnapPointsNearNodeModelXY(
+            &clipPolygon,
+            reinterpret_cast<zGeometry_ClipPatchNodeView *>(&boundedNode)
+        ) != 0) {
+        return 3;
+    }
+
+    if (zGeometry_ClipPolygon::SnapPointsNearNodeModelXY(&clipPolygon, &node) != 1 ||
+        clipPoints[0].x != 0.0f || clipPoints[0].y != 0.0f || clipPoints[0].z != 0.0f ||
+        clipPoints[1].x != 4.0f || clipPoints[1].y != 0.0f || clipPoints[1].z != 200.0f ||
+        clipPoints[2].x != 20.0f || clipPoints[2].y != 20.0f || clipPoints[2].z != 300.0f) {
+        return 4;
+    }
+
+    return 0;
+}
 
 namespace {
 struct SmokeTest {
@@ -3723,6 +5462,101 @@ extern "C" int zgame_return_only_stub_smoke(void) {
     return 0;
 }
 
+extern "C" int zclass_world_to_grid_coords_clamped_smoke(void) {
+    zClass_NodePartial world{};
+    zClass_WorldDataPartial worldData{};
+    world.classData = &worldData;
+    worldData.originX = 0.0f;
+    worldData.originZ = 0.0f;
+    worldData.worldMaxX = 10.0f;
+    worldData.worldMaxZ = 10.0f;
+    worldData.areaInvSizeX = 1.0f;
+    worldData.areaInvSizeZ = 1.0f;
+
+    int col = -1;
+    int row = -1;
+    if (zClass_World::WorldToGridCoordsClamped(&world, &col, 4.0f, -5.0f, &row) != 0 ||
+        col != 4 || row != 0) {
+        return 1;
+    }
+
+    col = -1;
+    row = -1;
+    if (zClass_World::WorldToGridCoordsClamped(&world, &col, -5.0f, 12.0f, &row) != 0 ||
+        col != 0 || row != 10) {
+        return 2;
+    }
+
+    col = -1;
+    row = -1;
+    if (zClass_World::WorldToGridCoordsClamped(&world, &col, 12.0f, 4.0f, &row) != 0 ||
+        col != 9 || row != 4) {
+        return 3;
+    }
+
+    worldData.areaInvSizeX = 0.5f;
+    worldData.areaInvSizeZ = 0.5f;
+
+    int clampedCol = -1;
+    int clampedRow = -1;
+    int insideBounds = -1;
+    col = -1;
+    row = -1;
+    if (zClass_World::WorldToGridCoordsClampedEx(
+            &world,
+            &col,
+            4.0f,
+            6.0f,
+            &row,
+            &clampedCol,
+            &clampedRow,
+            &insideBounds
+        ) != 0 ||
+        col != 2 || row != 3 || clampedCol != 2 || clampedRow != 3 || insideBounds != 1) {
+        return 4;
+    }
+
+    col = -1;
+    row = -1;
+    clampedCol = -1;
+    clampedRow = -1;
+    insideBounds = -1;
+    if (zClass_World::WorldToGridCoordsClampedEx(
+            &world,
+            &col,
+            -2.0f,
+            0.0f,
+            &row,
+            &clampedCol,
+            &clampedRow,
+            &insideBounds
+        ) != 0 ||
+        col != -1 || row != 0 || clampedCol != 0 || clampedRow != 0 || insideBounds != 0) {
+        return 5;
+    }
+
+    col = -1;
+    row = -1;
+    clampedCol = -1;
+    clampedRow = -1;
+    insideBounds = -1;
+    if (zClass_World::WorldToGridCoordsClampedEx(
+            &world,
+            &col,
+            12.0f,
+            12.0f,
+            &row,
+            &clampedCol,
+            &clampedRow,
+            &insideBounds
+        ) != 0 ||
+        col != 6 || row != 6 || clampedCol != 4 || clampedRow != 5 || insideBounds != 0) {
+        return 6;
+    }
+
+    return 0;
+}
+
 extern "C" int zclass_node_free_and_deferred_work_smoke(void) {
     for (int i = 0; i < 16; ++i) {
         zClass_TypeList::Head(i) = nullptr;
@@ -3836,6 +5670,29 @@ extern "C" int zclass_delete_node_from_lists_smoke(void) {
 
     zClass_TypeList::FreeAll();
     return 0;
+}
+
+extern "C" int zclass_object3d_delete_node_smoke(void) {
+    zClass_NodeFreeListSlot slot{};
+    g_zClass_NodeArray = &slot;
+    g_zClass_NodeFreeHeadIndex = 0x222222;
+    g_zClass_ActiveNodeCount = 1;
+    g_zClass_DeferredProcessingEnabled = 1;
+    g_zClass_NodeList_PendingFreeHead = nullptr;
+    for (int i = 0; i < 16; ++i) {
+        zClass_TypeList::Head(i) = nullptr;
+        zClass_TypeList::Tail(i) = nullptr;
+        zClass_TypeList::PendingRemovalDirty(i) = 0;
+    }
+
+    slot.node.classId = 5;
+    slot.node.classData = std::calloc(1, sizeof(zClass_Object3DDataPartial));
+    if (zClass_Object3D::DeleteNode(&slot.node) != 0 || slot.node.classData != nullptr ||
+        g_zClass_ActiveNodeCount != 0) {
+        return 1;
+    }
+
+    return zClass_Object3D::DeleteNode(nullptr) == 5 ? 0 : 2;
 }
 
 extern "C" int zvid_query_device_video_memory_bytes_smoke(void) {
@@ -12760,6 +14617,7 @@ int main(int argc, char **argv) {
         {"znetwork_packet_send_wrappers_smoke", znetwork_packet_send_wrappers_smoke},
         {"znetwork_session_status_fields_smoke", znetwork_session_status_fields_smoke},
         {"znetwork_unregister_packet_handler_smoke", znetwork_unregister_packet_handler_smoke},
+        {"znetwork_dispatch_handler_list_smoke", znetwork_dispatch_handler_list_smoke},
         {"znetwork_dispatch_packet_to_handlers_smoke",
          znetwork_dispatch_packet_to_handlers_smoke},
         {"znetwork_clear_enumerated_session_list_smoke",
@@ -12773,16 +14631,31 @@ int main(int argc, char **argv) {
         {"znetwork_apply_pkt01_player_color_assignments_smoke",
          znetwork_apply_pkt01_player_color_assignments_smoke},
         {"znetwork_shutdown_session_runtime_smoke", znetwork_shutdown_session_runtime_smoke},
+        {"pickup_register_existing_object_smoke", pickup_register_existing_object_smoke},
         {"pickup_leaf_helpers_smoke", pickup_leaf_helpers_smoke},
+        {"pickup_spawn_from_parsed_zrd_entry_smoke",
+         pickup_spawn_from_parsed_zrd_entry_smoke},
+        {"pickup_spawn_with_airdrop_chute_smoke", pickup_spawn_with_airdrop_chute_smoke},
+        {"pickup_handle_pkt11_spawn_delta_smoke", pickup_handle_pkt11_spawn_delta_smoke},
+        {"pickup_handle_pkt12_airdrop_spawn_chute_relay_smoke",
+         pickup_handle_pkt12_airdrop_spawn_chute_relay_smoke},
+        {"pickup_remove_object_smoke", pickup_remove_object_smoke},
+        {"pickup_spawn_list_clear_smoke", pickup_spawn_list_clear_smoke},
+        {"pickup_remove_other_spawns_same_opt_entry_smoke",
+         pickup_remove_other_spawns_same_opt_entry_smoke},
         {"pickup_send_pkt11_delta_smoke", pickup_send_pkt11_delta_smoke},
         {"pickup_send_pkt11_create_delta_smoke", pickup_send_pkt11_create_delta_smoke},
         {"pickup_reconcile_spawn_lists_smoke", pickup_reconcile_spawn_lists_smoke},
         {"gamenet_find_player_row_and_status_bits_smoke",
          gamenet_find_player_row_and_status_bits_smoke},
+        {"gamenet_handle_pkt03_remove_remote_player_smoke",
+         gamenet_handle_pkt03_remove_remote_player_smoke},
         {"hud_timer_panel_net_state_clear_tail_flags_smoke",
          hud_timer_panel_net_state_clear_tail_flags_smoke},
         {"gamenet_send_pkt14_hud_timer_and_flags_sync_smoke",
          gamenet_send_pkt14_hud_timer_and_flags_sync_smoke},
+        {"gamenet_handle_pkt14_hud_timer_and_flags_sync_smoke",
+         gamenet_handle_pkt14_hud_timer_and_flags_sync_smoke},
         {"gamenet_host_update_session_status_fields_smoke",
          gamenet_host_update_session_status_fields_smoke},
         {"gamenet_timer_status_packet_smoke", gamenet_timer_status_packet_smoke},
@@ -12808,12 +14681,24 @@ int main(int argc, char **argv) {
          gamenet_spawn_remote_player_missing_template_smoke},
         {"gamenet_scoreboard_snapshot_packet_smoke",
          gamenet_scoreboard_snapshot_packet_smoke},
+        {"gamenet_lap_progress_packet_smoke", gamenet_lap_progress_packet_smoke},
+        {"gamenet_chat_message_packet_smoke", gamenet_chat_message_packet_smoke},
+        {"gamenet_show_player_kill_message_smoke",
+         gamenet_show_player_kill_message_smoke},
+        {"gamenet_player_kill_event_packet_smoke",
+         gamenet_player_kill_event_packet_smoke},
         {"gamenet_send_pkt13_effect_anim_activation_record_smoke",
          gamenet_send_pkt13_effect_anim_activation_record_smoke},
         {"gamenet_handle_pkt13_effect_anim_activation_record_smoke",
          gamenet_handle_pkt13_effect_anim_activation_record_smoke},
         {"gamenet_send_all_pkt13_effect_anim_activation_records_smoke",
          gamenet_send_all_pkt13_effect_anim_activation_records_smoke},
+        {"gamenet_host_send_pkt10_qsand_feature_smoke",
+         gamenet_host_send_pkt10_qsand_feature_smoke},
+        {"gamenet_send_pkt10_qsand_event_smoke",
+         gamenet_send_pkt10_qsand_event_smoke},
+        {"gamenet_host_send_pkt0f_crater_feature_smoke",
+         gamenet_host_send_pkt0f_crater_feature_smoke},
         {"gamenet_handle_pkt07_alt_gun_dispatch_smoke",
          gamenet_handle_pkt07_alt_gun_dispatch_smoke},
         {"gamenet_send_pkt07_alt_gun_dispatch_smoke",
@@ -12826,6 +14711,15 @@ int main(int argc, char **argv) {
          optcatalog_handle_pkt0a_remove_runtime_relay_smoke},
         {"optcatalog_send_pkt0a_remove_runtime_relay_smoke",
          optcatalog_send_pkt0a_remove_runtime_relay_smoke},
+        {"zweapon_optcatalog_invoke_damage_feedback_and_hit_callback_smoke",
+         zweapon_optcatalog_invoke_damage_feedback_and_hit_callback_smoke},
+        {"optcatalog_capture_hit_snapshot_and_invoke_damage_timer_callback_smoke",
+         optcatalog_capture_hit_snapshot_and_invoke_damage_timer_callback_smoke},
+        {"optcatalog_set_damage_context_smoke",
+         optcatalog_set_damage_context_smoke},
+        {"optcatalog_damage_feedback_leaf_helpers_smoke",
+         optcatalog_damage_feedback_leaf_helpers_smoke},
+        {"hitcontext_get_current_owner_smoke", hitcontext_get_current_owner_smoke},
         {"ainet_find_by_net_id_smoke", ainet_find_by_net_id_smoke},
         {"ainet_find_nearest_node_smoke", ainet_find_nearest_node_smoke},
         {"player_get_save_state_list_head_smoke",
@@ -12878,6 +14772,8 @@ int main(int argc, char **argv) {
          player_alt_gun_projectile_dispatch_helpers_smoke},
         {"player_process_alt_gun_fire_dispatch_request_smoke",
          player_process_alt_gun_fire_dispatch_request_smoke},
+        {"player_reset_alt_gun_runtime_state_smoke",
+         player_reset_alt_gun_runtime_state_smoke},
         {"player_write_mines_zar_section_smoke",
          player_write_mines_zar_section_smoke},
         {"player_mines_zar_read_entry_or_reset_smoke",
@@ -12899,6 +14795,8 @@ int main(int argc, char **argv) {
          zweapon_optcatalog_runtime_free_list_helpers_smoke},
         {"zweapon_optcatalog_handle_impact_event_smoke",
          zweapon_optcatalog_handle_impact_event_smoke},
+        {"zweapon_optcatalog_handle_impact_event_from_runtime_state_smoke",
+         zweapon_optcatalog_handle_impact_event_from_runtime_state_smoke},
         {"zweapon_optcatalog_build_impact_hit_list_smoke",
          zweapon_optcatalog_build_impact_hit_list_smoke},
         {"zweapon_optcatalog_handle_impact_from_runtime_probe_smoke",
@@ -12926,6 +14824,7 @@ int main(int argc, char **argv) {
          player_sample_ground_and_align_root_to_surface_smoke},
         {"player_init_spawn_state_from_primary_modal_data_smoke",
          player_init_spawn_state_from_primary_modal_data_smoke},
+        {"zutil_store_int32_smoke", zutil_store_int32_smoke},
         {"zutil_save_game_state_list_smoke", zutil_save_game_state_list_smoke},
         {"zfmv_script_init_null_path_smoke", zfmv_script_init_null_path_smoke},
         {"zfmv_script_reset_smoke", zfmv_script_reset_smoke},
@@ -13696,6 +15595,7 @@ int main(int argc, char **argv) {
         {"zclass_object3d_reset_transform_dirty_smoke",
          zclass_object3d_reset_transform_dirty_smoke},
         {"zclass_object3d_init_smoke", zclass_object3d_init_smoke},
+        {"zclass_object3d_delete_node_smoke", zclass_object3d_delete_node_smoke},
         {"zclass_light_new_smoke", zclass_light_new_smoke},
         {"zclass_object3d_visible_and_color_smoke",
          zclass_object3d_visible_and_color_smoke},
@@ -13707,21 +15607,71 @@ int main(int argc, char **argv) {
          zclass_object3d_transform_setters_smoke},
         {"zclass_child_generic_link_smoke", zclass_child_generic_link_smoke},
         {"zclass_child_generic_remove_smoke", zclass_child_generic_remove_smoke},
+        {"zclass_remove_wrapper_matrix_smoke",
+         zclass_remove_wrapper_matrix_smoke},
+        {"zclass_object3d_child_wrappers_smoke",
+         zclass_object3d_child_wrappers_smoke},
         {"zclass_remove_dispatch_smoke", zclass_remove_dispatch_smoke},
         {"zclass_node_world_child_smoke", zclass_node_world_child_smoke},
         {"zclass_world_add_child_at_grid_smoke",
          zclass_world_add_child_at_grid_smoke},
+        {"zclass_world_free_virtual_area_partitions_smoke",
+         zclass_world_free_virtual_area_partitions_smoke},
         {"zclass_world_queue_area_update_smoke",
          zclass_world_queue_area_update_smoke},
+        {"zclass_world_to_grid_coords_clamped_smoke",
+         zclass_world_to_grid_coords_clamped_smoke},
         {"zclass_node_metadata_accessors_smoke",
          zclass_node_metadata_accessors_smoke},
         {"zclass_copy_node_display_instance_smoke",
          zclass_copy_node_display_instance_smoke},
         {"zclass_set_display_instance_smoke", zclass_set_display_instance_smoke},
+        {"zclass_destroy_node_recursive_display_smoke",
+         zclass_destroy_node_recursive_display_smoke},
+        {"zclass_world_animate_delete_node_smoke",
+         zclass_world_animate_delete_node_smoke},
+        {"zclass_display_init_smoke", zclass_display_init_smoke},
+        {"zclass_lod_leaf_smoke", zclass_lod_leaf_smoke},
+        {"zclass_camera_view_distance_smoke",
+         zclass_camera_view_distance_smoke},
+        {"zmodel_material_defaults_and_find_smoke",
+         zmodel_material_defaults_and_find_smoke},
+        {"zmodel_material_pool_entry_smoke", zmodel_material_pool_entry_smoke},
         {"zmodel_material_and_di_clone_smoke", zmodel_material_and_di_clone_smoke},
+        {"zmodel_const_tolerances_and_cross_smoke",
+         zmodel_const_tolerances_and_cross_smoke},
         {"zdi_ref_and_pool_free_smoke", zdi_ref_and_pool_free_smoke},
+        {"zdi_add_polygon_wrapper_smoke", zdi_add_polygon_wrapper_smoke},
+        {"ztag4_clear_smoke", ztag4_clear_smoke},
         {"zmodel_set_di_texture_world_per_meter_smoke",
          zmodel_set_di_texture_world_per_meter_smoke},
+        {"zmodel_damage_mask_uv_smoke", zmodel_damage_mask_uv_smoke},
+        {"zmodel_damage_mask_stamp_smoke", zmodel_damage_mask_stamp_smoke},
+        {"zgeometry_polygon_convexify_and_triangulate_smoke",
+         zgeometry_polygon_convexify_and_triangulate_smoke},
+        {"zgeometry_triangulate_hole_and_orientation_smoke",
+         zgeometry_triangulate_hole_and_orientation_smoke},
+        {"zgeometry_model_polygon_uv_and_di_helpers_smoke",
+         zgeometry_model_polygon_uv_and_di_helpers_smoke},
+        {"zgeometry_vec3array_clip_leaf_helpers_smoke",
+         zgeometry_vec3array_clip_leaf_helpers_smoke},
+        {"zgeometry_model_linear_buffer_and_bounds_overlap_smoke",
+         zgeometry_model_linear_buffer_and_bounds_overlap_smoke},
+        {"zgeometry_clip_polygon_create_copy_finalize_smoke",
+         zgeometry_clip_polygon_create_copy_finalize_smoke},
+        {"zgeometry_clip_polygon_process_node_polygon_set_xy_smoke",
+         zgeometry_clip_polygon_process_node_polygon_set_xy_smoke},
+        {"zgeometry_model_is_fully_inside_clip_polygon_xy_smoke",
+         zgeometry_model_is_fully_inside_clip_polygon_xy_smoke},
+        {"zgeometry_model_process_clip_patch_node_smoke",
+         zgeometry_model_process_clip_patch_node_smoke},
+        {"zgeometry_clip_polygon_upsert_point_list_xy_smoke",
+         zgeometry_clip_polygon_upsert_point_list_xy_smoke},
+        {"zgeometry_model_clip_patch_smoke", zgeometry_model_clip_patch_smoke},
+        {"zgeometry_polygon_snap_points_xy_if_near_smoke",
+         zgeometry_polygon_snap_points_xy_if_near_smoke},
+        {"zgeometry_clip_polygon_snap_points_near_node_model_xy_smoke",
+         zgeometry_clip_polygon_snap_points_near_node_model_xy_smoke},
         {"zclass_copy_node_base_data_smoke", zclass_copy_node_base_data_smoke},
         {"zclass_copy_node_unimplemented_stubs_smoke",
          zclass_copy_node_unimplemented_stubs_smoke},
@@ -13736,6 +15686,7 @@ int main(int argc, char **argv) {
          zclass_node_pick_flag_accessors_smoke},
         {"zclass_node_extra_flag_setters_smoke",
          zclass_node_extra_flag_setters_smoke},
+        {"zclass_node_flag16_flag17_smoke", zclass_node_flag16_flag17_smoke},
         {"zclass_damage_handler_smoke", zclass_damage_handler_smoke},
         {"zclass_node_vertex_alpha_and_root_smoke",
          zclass_node_vertex_alpha_and_root_smoke},
@@ -14056,6 +16007,8 @@ int main(int argc, char **argv) {
          zeffect_anim_clone_entry_for_node_smoke},
         {"zeffect_anim_rebind_entry_to_node_smoke",
          zeffect_anim_rebind_entry_to_node_smoke},
+        {"zeffect_anim_set_on_state_done_callback_smoke",
+         zeffect_anim_set_on_state_done_callback_smoke},
         {"zeffect_cleanup_light_sound_refs_smoke",
          zeffect_cleanup_light_sound_refs_smoke},
         {"zeffect_handle_sample_ref_offset_event_smoke",
@@ -14072,6 +16025,8 @@ int main(int argc, char **argv) {
         {"zeffect_anim_init_shutdown_smoke", zeffect_anim_init_shutdown_smoke},
         {"zeffect_anim_activation_record_queue_smoke",
          zeffect_anim_activation_record_queue_smoke},
+        {"zeffect_anim_get_root_node_or_null_smoke",
+         zeffect_anim_get_root_node_or_null_smoke},
         {"zeffect_anim_capture_node_states_smoke",
          zeffect_anim_capture_node_states_smoke},
         {"zeffect_anim_restore_node_states_smoke",
@@ -14082,8 +16037,53 @@ int main(int argc, char **argv) {
          zeffect_anim_runtime_sequence_group_smoke},
         {"zeffect_conditional_ref_pos_smoke",
          zeffect_conditional_ref_pos_smoke},
+        {"zdeclient_map_tree_iter_next_node_ref_smoke",
+         zdeclient_map_tree_iter_next_node_ref_smoke},
+        {"zdeclient_map_tree_iter_prev_node_ref_smoke",
+         zdeclient_map_tree_iter_prev_node_ref_smoke},
+        {"zdeclient_map_tree_insert_at_smoke",
+         zdeclient_map_tree_insert_at_smoke},
+        {"zdeclient_map_tree_find_or_insert_key_smoke",
+         zdeclient_map_tree_find_or_insert_key_smoke},
+        {"zdeclient_map_tree_lifecycle_smoke",
+         zdeclient_map_tree_lifecycle_smoke},
+        {"zdeclient_map_tree_erase_range_smoke",
+         zdeclient_map_tree_erase_range_smoke},
+        {"zdeclient_set_camera_node_smoke", zdeclient_set_camera_node_smoke},
+        {"zdeclient_feature_leaf_helpers_smoke",
+         zdeclient_feature_leaf_helpers_smoke},
+        {"zdeclient_feature_init_helpers_smoke",
+         zdeclient_feature_init_helpers_smoke},
+        {"zdeclient_create_feature_node_from_partition_smoke",
+         zdeclient_create_feature_node_from_partition_smoke},
+        {"zdeclient_qsand_build_smoke", zdeclient_qsand_build_smoke},
+        {"zdeclient_qsand_create_feature_smoke",
+         zdeclient_qsand_create_feature_smoke},
+        {"zdeclient_crater_build_and_create_feature_smoke",
+         zdeclient_crater_build_and_create_feature_smoke},
+        {"zdeclient_crater_execute_smoke", zdeclient_crater_execute_smoke},
+        {"zdeclient_crater_init_event_template_defaults_smoke",
+         zdeclient_crater_init_event_template_defaults_smoke},
+        {"zdeclient_crater_instance_event_smoke",
+         zdeclient_crater_instance_event_smoke},
+        {"zdeclient_crater_instance_event_maybe_relay_smoke",
+         zdeclient_crater_instance_event_maybe_relay_smoke},
+        {"zdeclient_crater_net_relay_callback_smoke",
+         zdeclient_crater_net_relay_callback_smoke},
+        {"zdeclient_qsand_copy_event_template_defaults_smoke",
+         zdeclient_qsand_copy_event_template_defaults_smoke},
+        {"zdeclient_qsand_net_relay_callback_smoke",
+         zdeclient_qsand_net_relay_callback_smoke},
+        {"zdeclient_qsand_instance_event_maybe_relay_smoke",
+         zdeclient_qsand_instance_event_maybe_relay_smoke},
         {"zdeclient_dispatch_feature_event_templates_smoke",
          zdeclient_dispatch_feature_event_templates_smoke},
+        {"zdeclient_submit_feature_geometry_smoke",
+         zdeclient_submit_feature_geometry_smoke},
+        {"zdeclient_append_feature_entry_smoke",
+         zdeclient_append_feature_entry_smoke},
+        {"zgeometry_clip_patch_output_apply_node_di_pairs_smoke",
+         zgeometry_clip_patch_output_apply_node_di_pairs_smoke},
         {"zimg_init_smoke", zimg_init_smoke},
         {"zinterp_context_logf_smoke", zinterp_context_logf_smoke},
         {"zinterp_context_report_errorf_smoke", zinterp_context_report_errorf_smoke},

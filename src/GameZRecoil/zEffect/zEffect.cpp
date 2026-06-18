@@ -981,8 +981,10 @@ int DispatchSequenceEvent(
 }
 } // namespace
 
-// Reimplements 0x45e0d0: zEffectAnimEntry::SetOnStateDoneCallback
-// (D:\Proj\GameZRecoil\zEffect\zeff_anim.c)
+/**
+ * Reimplements 0x45e0d0: zEffectAnimEntry::SetOnStateDoneCallback (zeff_anim.c)
+ * Purpose: Store the animation state-done callback and user context when an entry is available.
+ */
 void __fastcall zEffectAnimEntry::SetOnStateDoneCallback(
     zEffectAnimEntry *self,
     void *callback,
@@ -1510,8 +1512,12 @@ zEffectAnimEntry *__fastcall ActivateRuntime(
     return entryToActivate;
 }
 
-// Reimplements 0x45d7b0: zEffectAnim::SetTransformRotAndVelocity
-// (zeff_anim.c)
+/**
+ * Reimplements 0x45d7b0: zEffectAnim::SetTransformRotAndVelocity.
+ * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_anim.c.
+ * Purpose: activate an animation entry, apply transform and velocity state,
+ * and queue the command type 1 activation record when recording is enabled.
+ */
 zEffectAnimEntry *__fastcall SetTransformRotAndVelocity(
     zEffectAnimEntry *self,
     zClass_NodePartial *boundNode,
@@ -1601,8 +1607,12 @@ zEffectAnimEntry *__fastcall SetTransformRotAndVelocity(
     return activatedEntry;
 }
 
-// Reimplements 0x45dc70: zEffectAnim::SetTransformRotAndVelocity_Thunk
-// (zeff_anim.c)
+/**
+ * Reimplements 0x45dc70: zEffectAnim::SetTransformRotAndVelocity_Thunk.
+ * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_anim.c.
+ * Purpose: forward a saved transform, rotation, and velocity activation
+ * command to SetTransformRotAndVelocity using the retail thunk ABI.
+ */
 zEffectAnimEntry *__fastcall SetTransformRotAndVelocity_Thunk(
     zEffectAnimEntry *self,
     zClass_NodePartial *boundNode,
@@ -2936,7 +2946,10 @@ int __fastcall ShutdownEntry(
     return 0;
 }
 
-// Reimplements 0x460010: zEffectAnim::GetRootNodeOrNull (D:\Proj\GameZRecoil\zEffect\zeff_anim.c)
+/**
+ * Reimplements 0x460010: zEffectAnim::GetRootNodeOrNull (zeff_anim.c)
+ * Purpose: Return an animation entry's bound root node, or null for a missing entry.
+ */
 zClass_NodePartial *__fastcall GetRootNodeOrNull(
     zEffectAnimEntry *self
 ) {

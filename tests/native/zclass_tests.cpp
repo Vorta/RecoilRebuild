@@ -1554,6 +1554,196 @@ extern "C" int zclass_child_generic_remove_smoke() {
     return result;
 }
 
+static void zclass_init_single_child_link(
+    zClass_NodePartial *parent,
+    zClass_NodePartial *child,
+    zClass_NodePartial **children,
+    zClass_NodePartial **parents
+) {
+    *children = child;
+    *parents = parent;
+    parent->flags = 1;
+    parent->listCountB = 1;
+    parent->listB = children;
+    child->listCountA = 1;
+    child->listA = parents;
+}
+
+static int zclass_link_removed(
+    const zClass_NodePartial *parent,
+    const zClass_NodePartial *child
+) {
+    return parent->listCountB == 0 && child->listCountA == 0;
+}
+
+extern "C" int zclass_remove_wrapper_matrix_smoke() {
+    zClass_NodePartial parent{};
+    zClass_NodePartial child{};
+    zClass_NodePartial *children[1]{};
+    zClass_NodePartial *parents[1]{};
+    int classData = 0;
+
+    zclass_init_single_child_link(&parent, &child, children, parents);
+    if (zClass_Camera::gwCameraRemoveChild(&parent, &child) != 0 ||
+        !zclass_link_removed(&parent, &child) ||
+        zClass_Camera::gwCameraRemoveChild(nullptr, &child) != 5 ||
+        zClass_Camera::gwCameraRemoveChild(&parent, nullptr) != 5) {
+        return 1;
+    }
+
+    zclass_init_single_child_link(&parent, &child, children, parents);
+    if (zClass::RemoveChildChecked(&parent, &child) != 0 ||
+        !zclass_link_removed(&parent, &child) ||
+        zClass::RemoveChildChecked(nullptr, &child) != 5 ||
+        zClass::RemoveChildChecked(&parent, nullptr) != 5) {
+        return 2;
+    }
+
+    zclass_init_single_child_link(&parent, &child, children, parents);
+    if (zClass_Display::RemoveChild(&parent, &child) != 0 ||
+        !zclass_link_removed(&parent, &child) ||
+        zClass_Display::RemoveChild(nullptr, &child) != 5 ||
+        zClass_Display::RemoveChild(&parent, nullptr) != 5) {
+        return 3;
+    }
+
+    parent.classData = &classData;
+    zclass_init_single_child_link(&parent, &child, children, parents);
+    if (zClass_Object3D::RemoveChild(&parent, &child) != 0 ||
+        !zclass_link_removed(&parent, &child) ||
+        zClass_Object3D::RemoveChild(nullptr, &child) != 5 ||
+        zClass_Object3D::RemoveChild(&parent, nullptr) != 5) {
+        return 4;
+    }
+    parent.classData = nullptr;
+    if (zClass_Object3D::RemoveChild(&parent, &child) != 5) {
+        return 5;
+    }
+
+    zclass_init_single_child_link(&parent, &child, children, parents);
+    if (zClass_Lod::RemoveChild(&parent, &child) != 0 ||
+        !zclass_link_removed(&parent, &child)) {
+        return 6;
+    }
+
+    zClass_SequenceDataPartial sequenceData{};
+    parent.classData = &sequenceData;
+    zclass_init_single_child_link(&parent, &child, children, parents);
+    if (zClass_Sequence::RemoveChild(&parent, &child) != 0 ||
+        !zclass_link_removed(&parent, &child) ||
+        zClass_Sequence::RemoveChild(nullptr, &child) != 5 ||
+        zClass_Sequence::RemoveChild(&parent, nullptr) != 5) {
+        return 7;
+    }
+    parent.classData = nullptr;
+    if (zClass_Sequence::RemoveChild(&parent, &child) != 5) {
+        return 8;
+    }
+
+    parent.classData = &classData;
+    zclass_init_single_child_link(&parent, &child, children, parents);
+    if (zClass_Animate::RemoveChild(&parent, &child) != 0 ||
+        !zclass_link_removed(&parent, &child) ||
+        zClass_Animate::RemoveChild(nullptr, &child) != 5 ||
+        zClass_Animate::RemoveChild(&parent, nullptr) != 5) {
+        return 9;
+    }
+    parent.classData = nullptr;
+    if (zClass_Animate::RemoveChild(&parent, &child) != 5) {
+        return 10;
+    }
+
+    zclass_init_single_child_link(&parent, &child, children, parents);
+    if (zClass_Light::RemoveChild(&parent, &child) != 0 ||
+        !zclass_link_removed(&parent, &child) ||
+        zClass_Light::RemoveChild(nullptr, &child) != 5 ||
+        zClass_Light::RemoveChild(&parent, nullptr) != 5) {
+        return 11;
+    }
+
+    zclass_init_single_child_link(&parent, &child, children, parents);
+    if (zClass_Sound::RemoveChild(&parent, &child) != 0 ||
+        !zclass_link_removed(&parent, &child) ||
+        zClass_Sound::RemoveChild(nullptr, &child) != 5 ||
+        zClass_Sound::RemoveChild(&parent, nullptr) != 5) {
+        return 12;
+    }
+
+    parent.classData = &classData;
+    zclass_init_single_child_link(&parent, &child, children, parents);
+    if (zClass_Class::RemoveChildValidated(&parent, &child) != 0 ||
+        !zclass_link_removed(&parent, &child) ||
+        zClass_Class::RemoveChildValidated(nullptr, &child) != 5 ||
+        zClass_Class::RemoveChildValidated(&parent, nullptr) != 5) {
+        return 13;
+    }
+    parent.classData = nullptr;
+    if (zClass_Class::RemoveChildValidated(&parent, &child) != 5) {
+        return 14;
+    }
+
+    const int classIds[] = {1, 3, 4, 5, 6, 7, 8, 9, 10, 11};
+    for (int i = 0; i < static_cast<int>(sizeof(classIds) / sizeof(classIds[0])); ++i) {
+        zClass_SequenceDataPartial dispatchSequenceData{};
+        parent = {};
+        child = {};
+        parent.classId = classIds[i];
+        if (classIds[i] == 5 || classIds[i] == 8 || classIds[i] == 11) {
+            parent.classData = &classData;
+        } else if (classIds[i] == 7) {
+            parent.classData = &dispatchSequenceData;
+        }
+        zclass_init_single_child_link(&parent, &child, children, parents);
+        if (zClass_Class::RemoveChild(&parent, &child) != 0 ||
+            !zclass_link_removed(&parent, &child)) {
+            return 20 + i;
+        }
+    }
+
+    parent = {};
+    child = {};
+    parent.classId = 99;
+    return zClass_Class::RemoveChild(&parent, &child) == 1 &&
+                   zClass_Class::RemoveChild(nullptr, &child) == 5 &&
+                   zClass_Class::RemoveChild(&parent, nullptr) == 5
+               ? 0
+               : 40;
+}
+
+extern "C" int zclass_object3d_child_wrappers_smoke() {
+    ResetTypeListsForTest();
+
+    zClass_Object3DDataPartial objectData{};
+    zClass_NodePartial parent{};
+    zClass_NodePartial child{};
+    parent.classData = &objectData;
+
+    if (zClass_Object3D::gwObject3DAddChild(&parent, &child) != 0 ||
+        parent.listCountB != 1 || child.listCountA != 1) {
+        FreeTypeListsForTest();
+        return 1;
+    }
+    if (zClass_Object3D::RemoveChild(&parent, &child) != 0 || parent.listCountB != 0 ||
+        child.listCountA != 0) {
+        FreeTypeListsForTest();
+        return 2;
+    }
+
+    std::free(parent.listB);
+    std::free(child.listA);
+    FreeTypeListsForTest();
+
+    zClass_NodePartial noData{};
+    return zClass_Object3D::gwObject3DAddChild(nullptr, &child) == 5 &&
+                   zClass_Object3D::gwObject3DAddChild(&parent, nullptr) == 5 &&
+                   zClass_Object3D::gwObject3DAddChild(&noData, &child) == 5 &&
+                   zClass_Object3D::RemoveChild(nullptr, &child) == 5 &&
+                   zClass_Object3D::RemoveChild(&parent, nullptr) == 5 &&
+                   zClass_Object3D::RemoveChild(&noData, &child) == 5
+               ? 0
+               : 3;
+}
+
 extern "C" int zclass_remove_dispatch_smoke() {
     ResetTypeListsForTest();
 
@@ -1582,6 +1772,250 @@ extern "C" int zclass_remove_dispatch_smoke() {
     std::free(child.listA);
     FreeTypeListsForTest();
     return result;
+}
+
+extern "C" int zclass_destroy_node_recursive_display_smoke() {
+    ResetTypeListsForTest();
+
+    zClass_NodeFreeListSlot slot{};
+    zDiPartial displayPool[1]{};
+    g_zClass_NodeArray = &slot;
+    g_zClass_NodeFreeHeadIndex = -1;
+    g_zClass_ActiveNodeCount = 1;
+    g_zClass_DeferredProcessingEnabled = 1;
+    g_zModel_DiPoolBase = displayPool;
+    g_zModel_DiPoolFreeHeadIndex = 4;
+    g_zModel_DiPoolInUseCount = 1;
+
+    slot.node.classId = 5;
+    slot.node.classData = std::calloc(1, sizeof(zClass_Object3DDataPartial));
+    slot.node.userDataOrDiRef = reinterpret_cast<std::uint32_t>(&displayPool[0]);
+    displayPool[0].refCount = 1;
+
+    if (zClass_Util::DestroyNodeRecursive(&slot.node) != 0) {
+        FreeTypeListsForTest();
+        return 1;
+    }
+
+    const int result =
+        slot.node.classData == nullptr && slot.node.userDataOrDiRef == 0 &&
+                displayPool[0].nextFreeIndex == 4 && g_zModel_DiPoolFreeHeadIndex == 0 &&
+                g_zModel_DiPoolInUseCount == 0 && g_zClass_ActiveNodeCount == 0
+            ? 0
+            : 2;
+    FreeTypeListsForTest();
+    return result;
+}
+
+extern "C" int zclass_world_animate_delete_node_smoke() {
+    ResetTypeListsForTest();
+
+    zClass_NodeFreeListSlot slots[2]{};
+    g_zClass_NodeArray = slots;
+    g_zClass_NodeFreeHeadIndex = 0x333333;
+    g_zClass_ActiveNodeCount = 2;
+    g_zClass_DeferredProcessingEnabled = 1;
+
+    zClass_NodePartial *const world = &slots[0].node;
+    zClass_WorldDataPartial *const worldData =
+        static_cast<zClass_WorldDataPartial *>(std::calloc(1, sizeof(zClass_WorldDataPartial)));
+    if (worldData == nullptr) {
+        FreeTypeListsForTest();
+        return 1;
+    }
+    world->classId = 2;
+    world->classData = worldData;
+    worldData->lightNodes =
+        static_cast<zClass_NodePartial **>(std::calloc(1, sizeof(zClass_NodePartial *)));
+    worldData->lightDataList = static_cast<zClass_LightDataPartial **>(
+        std::calloc(1, sizeof(zClass_LightDataPartial *)));
+    worldData->soundNodes =
+        static_cast<zClass_NodePartial **>(std::calloc(1, sizeof(zClass_NodePartial *)));
+    worldData->soundDataList = static_cast<zClass_SoundDataPartial **>(
+        std::calloc(1, sizeof(zClass_SoundDataPartial *)));
+    worldData->pendingAreaUpdates =
+        static_cast<zWorldAreaPartial **>(std::calloc(1, sizeof(zWorldAreaPartial *)));
+    if (worldData->lightNodes == nullptr || worldData->lightDataList == nullptr ||
+        worldData->soundNodes == nullptr || worldData->soundDataList == nullptr ||
+        worldData->pendingAreaUpdates == nullptr) {
+        FreeTypeListsForTest();
+        return 2;
+    }
+    if (zClass_World::DeleteNode(world) != 0 || world->classData != nullptr ||
+        g_zClass_NodeFreeHeadIndex != 0 || g_zClass_ActiveNodeCount != 1) {
+        FreeTypeListsForTest();
+        return 3;
+    }
+
+    zClass_NodePartial *const animate = &slots[1].node;
+    animate->classId = 8;
+    animate->classData = std::calloc(1, sizeof(zClass_AnimateDataPartial));
+    if (animate->classData == nullptr) {
+        FreeTypeListsForTest();
+        return 4;
+    }
+    if (zClass_Animate::DeleteNode(animate) != 0 || animate->classData != nullptr ||
+        g_zClass_NodeFreeHeadIndex != 1 || g_zClass_ActiveNodeCount != 0) {
+        FreeTypeListsForTest();
+        return 5;
+    }
+
+    slots[0] = {};
+    g_zClass_NodeFreeHeadIndex = 0x444444;
+    g_zClass_ActiveNodeCount = 1;
+    zClass_NodePartial *const baseNode = &slots[0].node;
+    baseNode->classId = 0;
+    const int deleteByTypeResult = zClass_Class::DeleteNodeByType(baseNode);
+    if (deleteByTypeResult != static_cast<int>(reinterpret_cast<std::uintptr_t>(baseNode)) ||
+        g_zClass_NodeFreeHeadIndex != 0 || g_zClass_ActiveNodeCount != 0) {
+        FreeTypeListsForTest();
+        return 6;
+    }
+
+    zClass_NodePartial parented{};
+    parented.listCountA = 1;
+    if (zClass_Class::DeleteNodeByType(&parented) != 1) {
+        FreeTypeListsForTest();
+        return 7;
+    }
+
+    zClass_NodePartial unknown{};
+    unknown.classId = 99;
+    if (zClass_Class::DeleteNodeByType(&unknown) != 1) {
+        FreeTypeListsForTest();
+        return 8;
+    }
+
+    FreeTypeListsForTest();
+    return zClass_Animate::DeleteNode(nullptr) == 5 ? 0 : 9;
+}
+
+extern "C" int zclass_display_init_smoke() {
+    ResetTypeListsForTest();
+
+    zClass_NodeFreeListSlot slot{};
+    slot.freeTag = 0x00ffffff;
+    g_zClass_NodeArray = &slot;
+    g_zClass_NodeFreeHeadIndex = 0;
+    g_zClass_ActiveNodeCount = 0;
+    g_zClass_DeferredProcessingEnabled = 1;
+
+    zClass_NodePartial *node = zClass_Display::gwDisplayInit();
+    if (node != &slot.node || node->classId != 4 || node->classData == nullptr ||
+        zClass_TypeList::Head(15) == nullptr || zClass_TypeList::Head(15)->node != node) {
+        FreeTypeListsForTest();
+        return 1;
+    }
+
+    zClass_NodePartial removeParent{};
+    zClass_NodePartial child{};
+    zClass_NodePartial *children[] = {&child};
+    zClass_NodePartial *parents[] = {&removeParent};
+    removeParent.flags = 1;
+    removeParent.listCountB = 1;
+    removeParent.listB = children;
+    child.listCountA = 1;
+    child.listA = parents;
+    if (zClass_Display::RemoveChild(&removeParent, &child) != 0 ||
+        removeParent.listCountB != 0 ||
+        child.listCountA != 0 || zClass_Display::RemoveChild(nullptr, &child) != 5 ||
+        zClass_Display::RemoveChild(&removeParent, nullptr) != 5) {
+        FreeTypeListsForTest();
+        return 2;
+    }
+
+    zClass_Object3D::DeleteNode(node);
+    FreeTypeListsForTest();
+
+    g_zClass_NodeFreeHeadIndex = -1;
+    return zClass_Display::gwDisplayInit() == nullptr ? 0 : 3;
+}
+
+extern "C" int zclass_lod_leaf_smoke() {
+    ResetTypeListsForTest();
+
+    zClass_NodeFreeListSlot slot{};
+    slot.freeTag = 0x00ffffff;
+    g_zClass_NodeArray = &slot;
+    g_zClass_NodeFreeHeadIndex = 0;
+    g_zClass_ActiveNodeCount = 0;
+    g_zClass_DeferredProcessingEnabled = 1;
+
+    zClass_NodePartial *node = zClass_Lod::gwLodNew();
+    if (node != &slot.node || node->classId != 6 || node->classData == nullptr ||
+        g_zClass_ActiveNodeCount != 1) {
+        FreeTypeListsForTest();
+        return 1;
+    }
+
+    zClass_LodDataPartial *data = static_cast<zClass_LodDataPartial *>(node->classData);
+    if (data->computeOwnDistance != 1 || data->nearRange != 1000.0f ||
+        data->farRangeSq != 1000000.0f || data->active != 1) {
+        FreeTypeListsForTest();
+        return 2;
+    }
+
+    zClass_NodePartial child{};
+    if (zClass_Lod::gwLodAddChild(node, &child) != 0 || node->listCountB != 1 ||
+        child.listCountA != 1 || zClass_Lod::RemoveChild(node, &child) != 0 ||
+        node->listCountB != 0 || child.listCountA != 0) {
+        FreeTypeListsForTest();
+        return 3;
+    }
+
+    zClass_Class::TryFreeNode(node);
+    FreeTypeListsForTest();
+    return g_zClass_ActiveNodeCount == 0 ? 0 : 4;
+}
+
+extern "C" int zclass_camera_view_distance_smoke() {
+    if (g_zClass_CameraAutoClipDistanceThreshold != 0.04f || g_zClass_ObjectHseTestEnabled != 1) {
+        return 1;
+    }
+
+    zClass_Camera::SetViewDistance(1, 20.0f);
+    if (g_zClass_CameraAutoClipDistanceAdjustEnabled != 1 ||
+        g_zClass_CameraAutoClipDistanceThreshold != 0.05f) {
+        return 2;
+    }
+
+    zClass_Camera::SetViewDistance(0, 0.0f);
+    if (g_zClass_CameraAutoClipDistanceAdjustEnabled != 0 ||
+        g_zClass_CameraAutoClipDistanceThreshold != 0.04f) {
+        return 3;
+    }
+
+    ResetTypeListsForTest();
+
+    zClass_NodeFreeListSlot slot{};
+    slot.freeTag = 0x00ffffff;
+    g_zClass_NodeArray = &slot;
+    g_zClass_NodeFreeHeadIndex = 0;
+    g_zClass_ActiveNodeCount = 0;
+    g_zClass_DeferredProcessingEnabled = 1;
+
+    zClass_NodePartial *camera = zClass_Camera::gwCameraNew();
+    if (camera != &slot.node || camera->classId != 1 || camera->classData == nullptr ||
+        zClass_TypeList::Head(8) == nullptr || zClass_TypeList::Head(8)->node != camera) {
+        FreeTypeListsForTest();
+        return 4;
+    }
+
+    zClass_NodePartial child{};
+    if (zClass_Camera::gwCameraAddChild(camera, &child) != 0 || camera->listCountB != 1 ||
+        child.listCountA != 1 || zClass_Camera::gwCameraRemoveChild(camera, &child) != 0 ||
+        camera->listCountB != 0 || child.listCountA != 0) {
+        FreeTypeListsForTest();
+        return 5;
+    }
+    std::free(camera->listB);
+    std::free(child.listA);
+    camera->listB = nullptr;
+    child.listA = nullptr;
+
+    zClass_Object3D::DeleteNode(camera);
+    FreeTypeListsForTest();
+    return g_zClass_ActiveNodeCount == 0 ? 0 : 6;
 }
 
 extern "C" int zclass_node_world_child_smoke() {
@@ -1715,6 +2149,43 @@ extern "C" int zclass_world_add_child_at_grid_smoke() {
     std::free(world.listB);
     FreeTypeListsForTest();
     return result;
+}
+
+extern "C" int zclass_world_free_virtual_area_partitions_smoke() {
+    zClass_NodePartial world{};
+    zClass_WorldDataPartial worldData{};
+    world.classId = 2;
+    world.classData = &worldData;
+
+    zWorldAreaPartial row0[2]{};
+    zWorldAreaPartial row1[2]{};
+    zWorldAreaPartial *rows[] = {row0, row1};
+    row0[0].childList =
+        static_cast<zClass_NodePartial **>(std::calloc(1, sizeof(zClass_NodePartial *)));
+    row1[1].childList =
+        static_cast<zClass_NodePartial **>(std::calloc(1, sizeof(zClass_NodePartial *)));
+    if (row0[0].childList == nullptr || row1[1].childList == nullptr) {
+        std::free(row0[0].childList);
+        std::free(row1[1].childList);
+        return 1;
+    }
+
+    worldData.areaGridRows = rows;
+    worldData.areaGridColCount = 2;
+    worldData.areaGridRowCount = 2;
+    worldData.areaCellSizeX = 8.0f;
+    worldData.areaCellSizeZ = 4.0f;
+    worldData.areaGridExternalOwnership = 1;
+
+    if (zClass_World::FreeVirtualAreaPartitions(&world) != 0 ||
+        worldData.areaGridRows != nullptr || worldData.areaGridColCount != 0 ||
+        worldData.areaGridRowCount != 0 || worldData.areaCellSizeX != 0.0f ||
+        worldData.areaCellSizeZ != 0.0f || row0[0].childList != nullptr ||
+        row1[1].childList != nullptr) {
+        return 2;
+    }
+
+    return zClass_World::FreeVirtualAreaPartitions(&world) == 0 ? 0 : 3;
 }
 
 extern "C" int zclass_world_queue_area_update_smoke() {

@@ -2001,15 +2001,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x402f60:
   - [☑️] Reconstructed (Name: zMath::Vec3Normalize)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zMath; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: src/GameZRecoil/zMath/zMath.cpp; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zMath::Vec3Normalize;
     - File: src/GameZRecoil/zMath/zMath.cpp;
     - Target: zmath_vec3_normalize;
     - Group: engine.zmath;
-    - Model: data-equivalent-only;
-    - Blocker: tier S raw-assembly byte evidence retired; non-assembly VC5 x87 frame/source shape pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x42d560:
   - [✅] Reconstructed (Name: zMath::Vec3Midpoint)
@@ -2794,15 +2794,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x475070:
   - [☑️] Reconstructed (Name: zMath::Vec3TriangleNormal)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zMath; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: src/GameZRecoil/zMath/zMath.cpp; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zMath_Vec3_TriangleNormal;
     - File: src/GameZRecoil/zMath/zMath.cpp;
     - Target: zmath_vec3_triangle_normal;
     - Group: engine.zmath;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x475130:
   - [✅] Reconstructed (Name: zMath::SolveLinearGradient2D)
@@ -2932,9 +2932,9 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4826a0:
   - [✅] Reconstructed (Name: zUtil::StoreInt32)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: namespace; Parent: zUtil; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: standalone; Parent: engine.zutil.store_int32_leaf; State: standalone)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zUtil::StoreInt32;
     - File: src/GameZRecoil/zUtil/zutil.cpp;
     - Target: zutil_store_int32;
@@ -4456,22 +4456,22 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x447980:
   - [✅] Reconstructed (Name: zClass_Class::DeleteNodeByType)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: zClass; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zclass.remove_child_delete_dispatch; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_Class::DeleteNodeByType;
     - File: src/GameZRecoil/zClass/Class.c;
     - Target: zclass_class_delete_node_by_type;
     - Group: engine.zclass.core;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x447a70:
   - [✅] Reconstructed (Name: zClass_Class::FreeNodeToFreeList)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: cluster; Parent: zClass; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_Class::FreeNodeToFreeList;
     - File: src/GameZRecoil/zClass/Class.c;
     - Target: zclass_class_free_node_to_free_list;
@@ -4483,8 +4483,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zClass_Class::TryFreeNode)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: cluster; Parent: zClass; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_Class::TryFreeNode;
     - File: src/GameZRecoil/zClass/Class.c;
     - Target: zclass_class_try_free_node;
@@ -4521,28 +4521,28 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x447d20:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeSetFlag16)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: zClass; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zclass.node_flag_accessors; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_Class::gwNodeSetFlag16;
     - File: src/GameZRecoil/zClass/Class.c;
     - Target: zclass_node_flag16;
     - Group: engine.zclass.core;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x447d70:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeSetFlag17)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: zClass; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zclass.node_flag_accessors; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_Class::gwNodeSetFlag17;
     - File: src/GameZRecoil/zClass/Class.c;
     - Target: zclass_node_flag17;
     - Group: engine.zclass.core;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x447dc0:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeSetName)
@@ -4574,8 +4574,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zClass_Class::gwNodeSetDisplayInstance)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: cluster; Parent: zClass; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_Class::gwNodeSetDisplayInstance;
     - File: src/GameZRecoil/zClass/Class.c;
     - Target: zclass_node_set_display_instance;
@@ -4664,9 +4664,9 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x448180:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeGetNodeType)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: zClass; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zclass.node_type_accessors; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_Class::gwNodeGetNodeType;
     - File: src/GameZRecoil/zClass/Class.c;
     - Target: zclass_node_get_node_type;
@@ -4677,9 +4677,9 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4481b0:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeSetRaycastable)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: zClass; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zclass.node_flag_accessors; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_Class::gwNodeSetRaycastable;
     - File: src/GameZRecoil/zClass/Class.c;
     - Target: zclass_node_set_raycastable;
@@ -4703,9 +4703,9 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x448230:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeSetPickable)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: zClass; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zclass.node_flag_accessors; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_Class::gwNodeSetPickable;
     - File: src/GameZRecoil/zClass/Class.c;
     - Target: zclass_node_set_pickable;
@@ -4755,9 +4755,9 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x448330:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeSetNodeType)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: zClass; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zclass.node_type_accessors; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_Class::gwNodeSetNodeType;
     - File: src/GameZRecoil/zClass/Class.c;
     - Target: zclass_node_set_node_type;
@@ -4820,28 +4820,28 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x448570:
   - [✅] Reconstructed (Name: zClass_Class::RemoveChild)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: zClass; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zclass.remove_child_delete_dispatch; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_Class::RemoveChild;
     - File: src/GameZRecoil/zClass/Class.c;
     - Target: zclass_class_remove_child;
     - Group: engine.zclass.core;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x448660:
   - [✅] Reconstructed (Name: zClass_Class::RemoveChildGeneric)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: subsystem; Parent: zClass data-driven child-link subsystem; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zclass.remove_child_delete_dispatch; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_Class::RemoveChildGeneric;
     - File: src/GameZRecoil/zClass/Class.c;
     - Target: zclass_remove_child_generic;
     - Group: engine.zclass.core;
     - Model: source-faithful;
-    - Blocker: tier S deferred until global owner/data gate clears
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x448760:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeGetBBox)
@@ -5093,15 +5093,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x44db00:
   - [✅] Reconstructed (Name: zClass_Object3D::DeleteNode)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: zClass; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zclass.object3d_delete_wrapper; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_Object3D::DeleteNode;
     - File: src/GameZRecoil/zClass/Object3d.c;
     - Target: zclass_object3d_delete_node;
     - Group: engine.zclass.core;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x44db10:
   - [✅] Reconstructed (Name: zClass_Object3D::gwObject3DAddChild)
@@ -5328,8 +5328,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zClass_TypeList::AllocLink)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: cluster; Parent: zClass; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_TypeList::AllocLink;
     - File: src/GameZRecoil/zClass/List.c;
     - Target: zclass_typelist_alloc_link;
@@ -5341,8 +5341,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zClass_TypeList::FreeLink)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: cluster; Parent: zClass; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_TypeList::FreeLink;
     - File: src/GameZRecoil/zClass/List.c;
     - Target: zclass_typelist_free_link;
@@ -5367,8 +5367,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zClass_TypeList::ProcessPendingRemovals)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: cluster; Parent: zClass; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_TypeList::ProcessPendingRemovals;
     - File: src/GameZRecoil/zClass/List.c;
     - Target: zclass_typelist_process_pending_removals;
@@ -5380,8 +5380,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zClass::ProcessDeferredWork)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: cluster; Parent: zClass; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass::ProcessDeferredWork;
     - File: src/GameZRecoil/zClass/List.c;
     - Target: zclass_process_deferred_work;
@@ -5418,41 +5418,41 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x44eb00:
   - [✅] Reconstructed (Name: gwNode::UpdateSubtree)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: subsystem; Parent: engine.zclass.queued_tree_update; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zclass.queued_tree_update; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: gwNode::UpdateSubtree;
     - File: src/GameZRecoil/zClass/List.c;
     - Target: zclass_gwnode_update_subtree;
     - Group: engine.zclass.core;
-    - Model: pending;
-    - Blocker: engine.zclass.queued_tree_update source/data blocked on complete type-list mutation data owner review
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x44eb50:
   - [✅] Reconstructed (Name: gwNode::UpdateTree)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: subsystem; Parent: engine.zclass.queued_tree_update; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zclass.queued_tree_update; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: gwNode::UpdateTree;
     - File: src/GameZRecoil/zClass/List.c;
     - Target: zclass_gwnode_update_tree;
     - Group: engine.zclass.core;
-    - Model: pending;
-    - Blocker: engine.zclass.queued_tree_update source/data blocked on complete type-list mutation data owner review
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x44eba0:
   - [✅] Reconstructed (Name: zClass_TypeList::UpdateQueuedTrees)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: subsystem; Parent: engine.zclass.queued_tree_update; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zclass.queued_tree_update; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_TypeList::UpdateQueuedTrees;
     - File: src/GameZRecoil/zClass/List.c;
     - Target: zclass_typelist_update_queued_trees;
     - Group: engine.zclass.core;
-    - Model: pending;
-    - Blocker: engine.zclass.queued_tree_update source/data blocked on complete type-list mutation data owner review
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x44ebe0:
   - [✅] Reconstructed (Name: zClass_TypeList::UpdateSequences)
@@ -5549,8 +5549,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zClass_NodeList::Insert)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: cluster; Parent: zClass; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_NodeList::Insert;
     - File: src/GameZRecoil/zClass/List.c;
     - Target: zclass_node_list_insert;
@@ -5562,8 +5562,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zClass_TypeList::Insert)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: cluster; Parent: zClass; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_TypeList::Insert;
     - File: src/GameZRecoil/zClass/List.c;
     - Target: zclass_typelist_insert;
@@ -5575,8 +5575,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zClass_TypeList::InsertChildNodes)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: cluster; Parent: zClass; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_TypeList::InsertChildNodes;
     - File: src/GameZRecoil/zClass/List.c;
     - Target: zclass_typelist_insert_child_nodes;
@@ -5588,8 +5588,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zClass_NodeList::ProcessPendingFrees)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: cluster; Parent: zClass; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_NodeList::ProcessPendingFrees;
     - File: src/GameZRecoil/zClass/List.c;
     - Target: zclass_nodelist_process_pending_frees;
@@ -5614,8 +5614,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zClass_List::DeleteNodeFromLists)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: cluster; Parent: zClass; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_List::DeleteNodeFromLists;
     - File: src/GameZRecoil/zClass/List.c;
     - Target: zclass_list_delete_node_from_lists;
@@ -6809,15 +6809,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x453110:
   - [✅] Reconstructed (Name: zClass_Light::DeleteNode)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: zClass_LightDataPartial/zClass_Light Light.c record-source cluster; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zclass.remove_child_delete_dispatch; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_Light::DeleteNode;
     - File: src/GameZRecoil/zClass/Light.c;
     - Target: zclass_light_delete_node;
     - Group: engine.zclass.core;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x4531c0:
   - [✅] Reconstructed (Name: zClass_Light::RemoveChild)
@@ -7576,15 +7576,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x450240:
   - [✅] Reconstructed (Name: zClass_World::DeleteNode)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: zClass; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zclass.remove_child_delete_dispatch; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_World::DeleteNode;
     - File: src/GameZRecoil/zClass/cls_world.c;
     - Target: zclass_world_delete_node;
     - Group: engine.zclass.core;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x4502b0:
   - [☑️] Reconstructed (Name: zClass_World::InitVirtualAreaPartitions)
@@ -7628,28 +7628,28 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x450650:
   - [☑️] Reconstructed (Name: zClass_World::WorldToGridCoordsClampedEx)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: zClass; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zclass.core.world_grid_coordinate_helpers; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_World::WorldToGridCoordsClampedEx;
     - File: src/GameZRecoil/zClass/cls_world.c;
     - Target: zclass_world_world_to_grid_coords_clamped_ex;
     - Group: engine.zclass.core;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x450790:
   - [☑️] Reconstructed (Name: zClass_World::WorldToGridCoordsClamped)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: zClass; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zclass.core.world_grid_coordinate_helpers; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_World::WorldToGridCoordsClamped;
     - File: src/GameZRecoil/zClass/cls_world.c;
     - Target: zclass_world_to_grid_coords_clamped;
     - Group: engine.zclass.core;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x450840:
   - [☑️] Reconstructed (Name: zClass_World::WorldRectToGridIndex)
@@ -7862,15 +7862,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x450e40:
   - [✅] Reconstructed (Name: zClass_World::FreeVirtualAreaPartitions)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: zClass; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zclass.remove_child_delete_dispatch; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_World::FreeVirtualAreaPartitions;
     - File: src/GameZRecoil/zClass/cls_world.c;
     - Target: zclass_world_free_virtual_area_partitions;
     - Group: engine.zclass.core;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x450f00:
   - [✅] Reconstructed (Name: zClass_World::gwWorldSetPartitionInclusionTolerance)
@@ -8057,15 +8057,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x451a60:
   - [✅] Reconstructed (Name: zClass_Util::DestroyNodeRecursive)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: zClass; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zclass.remove_child_delete_dispatch; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_Util::DestroyNodeRecursive;
     - File: src/GameZRecoil/zClass/cls_util.c;
     - Target: zclass_util_destroy_node_recursive;
     - Group: engine.zclass.core;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x451b20:
   - [☑️] Reconstructed (Name: zClass_cls_util::CopyNodeDisplayInstance)
@@ -8252,15 +8252,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x452ab0:
   - [✅] Reconstructed (Name: zClass_Sound::DeleteNode)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: zClass; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zclass.remove_child_delete_dispatch; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_Sound::DeleteNode;
     - File: src/GameZRecoil/zClass/Sound.c;
     - Target: zclass_sound_delete_node;
     - Group: engine.zclass.core;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x452b80:
   - [✅] Reconstructed (Name: zClass_Sound::RemoveChild)
@@ -8356,15 +8356,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x453b10:
   - [✅] Reconstructed (Name: zClass_Animate::DeleteNode)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: cluster; Parent: zClass; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zclass.remove_child_delete_dispatch; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_Animate::DeleteNode;
     - File: src/GameZRecoil/zClass/Animate.c;
     - Target: zclass_animate_delete_node;
     - Group: engine.zclass.core;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x453b40:
   - [✅] Reconstructed (Name: zClass_Animate::AddChild)
@@ -9040,1094 +9040,1094 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x46af20:
   - [✅] Reconstructed (Name: zGeometry_ClipPatchOutput::Destroy)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zgeometry.clip_patch_output_lifecycle; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_ClipPatchOutput::Destroy;
     - File: src/GameZRecoil/zDEClient/zdec_init.cpp;
     - Target: zgeometry_clip_patch_output_destroy;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x46b030:
   - [✅] Reconstructed (Name: zGeometry_ClipPolygon::SnapPointsNearNodeModelXY)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zgeometry.clip_polygon_snap_near_node_model; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_ClipPolygon::SnapPointsNearNodeModelXY;
     - File: src/GameZRecoil/zGeometry/zgeo_model.cpp;
     - Target: zgeometry_clip_polygon_snap_points_near_node_model_xy;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x46b1f0:
   - [✅] Reconstructed (Name: zGeometry_Model::ClipPatch)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zgeometry.model_clip_patch; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Model::ClipPatch;
     - File: src/GameZRecoil/zGeometry/zgeo_model.cpp;
     - Target: zgeometry_model_clip_patch;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x464680:
   - [☑️] Reconstructed (Name: zGeometry_Weiler::Init)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zgeometry.weiler_init_contour_source; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Weiler::Init;
     - File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp;
     - Target: zgeometry_weiler_init;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x469e50:
   - [☑️] Reconstructed (Name: zGeometry_Vec3::IsNearEqualXY)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zgeometry.xy_vector_leaf_helpers; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Vec3::IsNearEqualXY;
     - File: src/GameZRecoil/zGeometry/zgeo_model.cpp;
     - Target: zgeometry_vec3_is_near_equal_xy;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x469e90:
   - [☑️] Reconstructed (Name: zGeometry_Vec3::SnapPointToSegmentXYIfNear)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zgeometry.xy_vector_leaf_helpers; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Vec3::SnapPointToSegmentXYIfNear;
     - File: src/GameZRecoil/zGeometry/zgeo_model.cpp;
     - Target: zgeometry_vec3_snap_point_to_segment_xy_if_near;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x46a080:
   - [✅] Reconstructed (Name: zGeometry_Vec3Array::RemoveAdjacentDuplicatePointsXY)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zgeometry.xy_vector_leaf_helpers; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Vec3Array::RemoveAdjacentDuplicatePointsXY;
     - File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp;
     - Target: zgeometry_vec3array_remove_adjacent_duplicate_points_xy;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x46a130:
   - [☑️] Reconstructed (Name: zGeometry_Polygon::SnapPointsXYIfNear)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zgeometry.model_polygon_snap_buffer_helpers; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Polygon::SnapPointsXYIfNear;
     - File: src/GameZRecoil/zGeometry/zgeo_model.cpp;
     - Target: zgeometry_polygon_snap_points_xy_if_near;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x46a5e0:
   - [✅] Reconstructed (Name: zGeometry_Vec3Array::RotateNeg90AroundX)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zgeometry.xy_vector_leaf_helpers; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Vec3Array::RotateNeg90AroundX;
     - File: src/GameZRecoil/zGeometry/zgeo_model.cpp;
     - Target: zgeometry_vec3array_rotate_neg90_around_x;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x46a620:
   - [✅] Reconstructed (Name: zGeometry_Bounds2D::OverlapsWithUnitMargin)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zgeometry.xy_vector_leaf_helpers; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Bounds2D::OverlapsWithUnitMargin;
     - File: src/GameZRecoil/zGeometry/zgeo_model.cpp;
     - Target: zgeometry_bounds2d_overlaps_with_unit_margin;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x46a690:
   - [☑️] Reconstructed (Name: zGeometry_Model::FindOrCreateRandomDebugMaterial)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zgeometry.model_random_debug_material; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Model::FindOrCreateRandomDebugMaterial;
     - File: src/GameZRecoil/zGeometry/zgeo_model.cpp;
     - Target: zgeometry_model_find_or_create_random_debug_material;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global authored owner/data blockers remain open
 
 - 0x46a770:
   - [☑️] Reconstructed (Name: zGeometry_Model::AddPolygonToDi)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zgeometry.model_polygon_di_forwarding_helpers; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Model::AddPolygonToDi;
     - File: src/GameZRecoil/zGeometry/zgeo_model.cpp;
     - Target: zgeometry_model_add_polygon_to_di;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x46a7f0:
   - [☑️] Reconstructed (Name: zGeometry_Model::BuildPolygonUvList)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zgeometry.model_polygon_uv_helpers; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Model::BuildPolygonUvList;
     - File: src/GameZRecoil/zGeometry/zgeo_model.cpp;
     - Target: zgeometry_model_build_polygon_uv_list;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global authored owner/data blockers remain open
 
 - 0x46a8e0:
   - [☑️] Reconstructed (Name: zGeometry_Polygon::SolveUvAxisCoefficientsXZ)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zgeometry.model_polygon_uv_helpers; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Polygon::SolveUvAxisCoefficientsXZ;
     - File: src/GameZRecoil/zGeometry/zgeo_model.cpp;
     - Target: zgeometry_polygon_solve_uv_axis_coefficients_xz;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global authored owner/data blockers remain open
 
 - 0x46aa40:
   - [☑️] Reconstructed (Name: zGeometry_ClipPolygon::CreateFromPointList)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zgeometry.clip_polygon_lifecycle_helpers; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_ClipPolygon::CreateFromPointList;
     - File: src/GameZRecoil/zGeometry/zgeo_model.cpp;
     - Target: zgeometry_clip_polygon_create_from_point_list;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x46aab0:
   - [✅] Reconstructed (Name: zGeometry_ClipPolygon::CopyPointsOutRotatedBack)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zgeometry.clip_polygon_lifecycle_helpers; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_ClipPolygon::CopyPointsOutRotatedBack;
     - File: src/GameZRecoil/zGeometry/zgeo_model.cpp;
     - Target: zgeometry_clip_polygon_copy_points_out_rotated_back;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x46ba90:
   - [✅] Reconstructed (Name: zGeometry_Model::AddPointListPolygonToDi)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zgeometry.model_polygon_di_forwarding_helpers; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Model::AddPointListPolygonToDi;
     - File: src/GameZRecoil/zGeometry/zgeo_model.cpp;
     - Target: zgeometry_model_add_point_list_polygon_to_di;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x46bd50:
   - [✅] Reconstructed (Name: zGeometry_TriangulateHole::TryAppendBridgeEdge)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zgeometry.triangulate_hole_source_cluster; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_TriangulateHole::TryAppendBridgeEdge;
     - File: src/GameZRecoil/zGeometry/zgeo_convexify.cpp;
     - Target: zgeometry_triangulate_hole_try_append_bridge_edge;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x46bf30:
   - [☑️] Reconstructed (Name: zGeometry_TriangulateHole::CollectActiveEdgeIndicesForVertex)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zgeometry.triangulate_hole_source_cluster; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_TriangulateHole::CollectActiveEdgeIndicesForVertex;
     - File: src/GameZRecoil/zGeometry/zgeo_convexify.cpp;
     - Target: zgeometry_triangulate_hole_collect_active_edge_indices_for_vertex;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x46bfc0:
   - [☑️] Reconstructed (Name: zGeometry_TriangulateHole::TryEmitTriangleFromEdgePair)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zgeometry.triangulate_hole_source_cluster; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_TriangulateHole::TryEmitTriangleFromEdgePair;
     - File: src/GameZRecoil/zGeometry/zgeo_convexify.cpp;
     - Target: zgeometry_triangulate_hole_try_emit_triangle_from_edge_pair;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x46c070:
   - [☑️] Reconstructed (Name: zGeometry::TriangulatePolygonWithHole)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zgeometry.triangulate_hole_source_cluster; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry::TriangulatePolygonWithHole;
     - File: src/GameZRecoil/zGeometry/zgeo_convexify.cpp;
     - Target: zgeometry_triangulate_polygon_with_hole;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x46c390:
   - [✅] Reconstructed (Name: zGeometry_TriangulateHole::CacheCombinedPlane)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zgeometry.triangulate_hole_source_cluster; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_TriangulateHole::CacheCombinedPlane;
     - File: src/GameZRecoil/zGeometry/zgeo_convexify.cpp;
     - Target: zgeometry_triangulate_hole_cache_combined_plane;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x46c3a0:
   - [☑️] Reconstructed (Name: zGeometry_Vec3Array::ComputeNewellPlane)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zgeometry.triangulate_hole_source_cluster; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Vec3Array::ComputeNewellPlane;
     - File: src/GameZRecoil/zGeometry/zgeo_convexify.cpp;
     - Target: zgeometry_vec3array_compute_newell_plane;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x46c570:
   - [☑️] Reconstructed (Name: zGeometry_TriangulateHole::ProjectInnerRingOntoCachedPlane)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zgeometry.triangulate_hole_source_cluster; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_TriangulateHole::ProjectInnerRingOntoCachedPlane;
     - File: src/GameZRecoil/zGeometry/zgeo_convexify.cpp;
     - Target: zgeometry_triangulate_hole_project_inner_ring_onto_cached_plane;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x46c5b0:
   - [☑️] Reconstructed (Name: zGeometry_Vec3Array::ReversePoints)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zgeometry.triangulate_hole_source_cluster; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Vec3Array::ReversePoints;
     - File: src/GameZRecoil/zGeometry/zgeo_convexify.cpp;
     - Target: zgeometry_vec3array_reverse_points;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x46c620:
   - [☑️] Reconstructed (Name: zGeometry_Vec3Array::EnsurePositiveCrossZ)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zgeometry.triangulate_hole_source_cluster; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Vec3Array::EnsurePositiveCrossZ;
     - File: src/GameZRecoil/zGeometry/zgeo_convexify.cpp;
     - Target: zgeometry_vec3array_ensure_positive_cross_z;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x46c720:
   - [✅] Reconstructed (Name: zGeometry_ConvexPolygonSet::Destroy)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zgeometry.polygon_convexification; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_ConvexPolygonSet::Destroy;
     - File: src/GameZRecoil/zGeometry/zgeo_convexify.cpp;
     - Target: zgeometry_convex_polygon_set_destroy;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global authored owner/data blockers remain open
 
 - 0x46c760:
   - [☑️] Reconstructed (Name: zGeometry_Polygon::Convexify)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zgeometry.polygon_convexification; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Polygon::Convexify;
     - File: src/GameZRecoil/zGeometry/zgeo_convexify.cpp;
     - Target: zgeometry_polygon_convexify;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global authored owner/data blockers remain open
 
 - 0x46cb50:
   - [☑️] Reconstructed (Name: zGeometry_Polygon::TriangulatePointDwordOffsetsRecursive)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zgeometry.polygon_convexification; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Polygon::TriangulatePointDwordOffsetsRecursive;
     - File: src/GameZRecoil/zGeometry/zgeo_convexify.cpp;
     - Target: zgeometry_polygon_triangulate_point_dword_offsets_recursive;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global authored owner/data blockers remain open
 
 - 0x46ced0:
   - [☑️] Reconstructed (Name: zGeometry_Polygon::TrySplitPointDwordOffsetsAtBestDiagonal)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zgeometry.polygon_convexification; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Polygon::TrySplitPointDwordOffsetsAtBestDiagonal;
     - File: src/GameZRecoil/zGeometry/zgeo_convexify.cpp;
     - Target: zgeometry_polygon_try_split_point_dword_offsets_at_best_diagonal;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global authored owner/data blockers remain open
 
 - 0x464670:
   - [✅] Reconstructed (Name: zGeometry_Weiler::GetInputContourAPointList)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: standalone; Parent: engine.zgeometry.weiler_input_contour_a_point_list_accessor; State: standalone)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Weiler::GetInputContourAPointList;
     - File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp;
     - Target: zgeometry_weiler_get_input_contour_a_point_list;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x464790:
   - [✅] Reconstructed (Name: zGeometry_ClipPolygon::ResetWeilerStateFromContourPoints)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zgeometry.clip_polygon_reset_weiler_state_from_contour_points; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_ClipPolygon::ResetWeilerStateFromContourPoints;
     - File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp;
     - Target: zgeometry_clip_polygon_reset_weiler_state_from_contour_points;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred to coherent zGeometry Weiler/clip-polygon source-cluster pass while global owner/data blockers remain open
 
 - 0x4647d0:
   - [✅] Reconstructed (Name: zGeometry_Weiler::DestroyState)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zgeometry.weiler_state_lifecycle; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Weiler::DestroyState;
     - File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp;
     - Target: zgeometry_weiler_destroy_state;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x464810:
   - [✅] Reconstructed (Name: zGeometry_Weiler::ClipPointList)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zgeometry.weiler_clip_point_list; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Weiler::ClipPointList;
     - File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp;
     - Target: zgeometry_weiler_clip_point_list;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred to coherent zGeometry Weiler source-cluster pass while global owner/data blockers remain open
 
 - 0x464b30:
   - [✅] Reconstructed (Name: zGeometry_WeilerClipOutput::Destroy)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zgeometry.weiler_clip_output_destroy; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_WeilerClipOutput::Destroy;
     - File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp;
     - Target: zgeometry_weiler_clip_output_destroy;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred to coherent zGeometry Weiler source-cluster pass while global owner/data blockers remain open
 
 - 0x464b90:
   - [✅] Reconstructed (Name: zGeometry_Weiler::InitInputContourPair)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zgeometry.weiler_init_contour_source; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Weiler::InitInputContourPair;
     - File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp;
     - Target: zgeometry_weiler_init_input_contour_pair;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x464c90:
   - [☑️] Reconstructed (Name: zGeometry_Weiler::ClassifyInputContourPairBounds)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zgeometry.weiler_preclassified_contour_pair_bounds; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Weiler::ClassifyInputContourPairBounds;
     - File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp;
     - Target: zgeometry_weiler_classify_input_contour_pair_bounds;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x464ea0:
   - [✅] Reconstructed (Name: zGeometry_Weiler::OutputPreclassifiedContourPairResult)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zgeometry.weiler_preclassified_contour_pair_bounds; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Weiler::OutputPreclassifiedContourPairResult;
     - File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp;
     - Target: zgeometry_weiler_output_preclassified_contour_pair_result;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x464f70:
   - [☑️] Reconstructed (Name: zGeometry_Weiler::PreclassifyInputContourPair)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zgeometry.weiler_preclassify_input_contour_pair; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Weiler::PreclassifyInputContourPair;
     - File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp;
     - Target: zgeometry_weiler_preclassify_input_contour_pair;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred to coherent zGeometry Weiler source-cluster pass; BN limited reconstruction remains for x87-expanded epsilon tests
 
 - 0x465ac0:
   - [☑️] Reconstructed (Name: zGeometry_Weiler::ClassifyContainedContour)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zgeometry.weiler_classify_contained_contour; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Weiler::ClassifyContainedContour;
     - File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp;
     - Target: zgeometry_weiler_classify_contained_contour;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred to coherent zGeometry Weiler source-cluster pass; BN HLIL tuple-rendering limits documented
 
 - 0x467600:
   - [✅] Reconstructed (Name: zGeometry_WeilerBuffer::Init)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zgeometry.weiler_buffer_lifecycle; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_WeilerBuffer::Init;
     - File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp;
     - Target: zgeometry_weiler_buffer_init;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x467630:
   - [✅] Reconstructed (Name: zGeometry_WeilerBuffer::Destroy)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zgeometry.weiler_buffer_lifecycle; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_WeilerBuffer::Destroy;
     - File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp;
     - Target: zgeometry_weiler_buffer_destroy;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x467660:
   - [✅] Reconstructed (Name: zGeometry_WeilerBuffer::GetAppendSpace)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zgeometry.weiler_buffer_lifecycle; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_WeilerBuffer::GetAppendSpace;
     - File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp;
     - Target: zgeometry_weiler_buffer_get_append_space;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4676c0:
   - [✅] Reconstructed (Name: zGeometry_Weiler::EnsureContourOutput)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zgeometry.weiler_init_contour_source; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Weiler::EnsureContourOutput;
     - File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp;
     - Target: zgeometry_weiler_ensure_contour_output;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x467710:
   - [☑️] Reconstructed (Name: zGeometry_Weiler::MergeContours)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zgeometry.weiler_merge_contours; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Weiler::MergeContours;
     - File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp;
     - Target: zgeometry_weiler_merge_contours;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred to coherent zGeometry Weiler source-cluster pass while global owner/data blockers remain open
 
 - 0x4680b0:
   - [✅] Reconstructed (Name: zGeometry_Weiler::NewContour)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zgeometry.weiler_new_contour; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Weiler::NewContour;
     - File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp;
     - Target: zgeometry_weiler_new_contour;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred to coherent zGeometry Weiler source-cluster pass while global owner/data blockers remain open
 
 - 0x4681a0:
   - [✅] Reconstructed (Name: zGeometry_Weiler::OutputContoursForClipMode)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zgeometry.weiler_output_contours_for_clip_mode; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Weiler::OutputContoursForClipMode;
     - File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp;
     - Target: zgeometry_weiler_output_contours_for_clip_mode;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred to coherent zGeometry Weiler source-cluster pass while global owner/data blockers remain open
 
 - 0x4682c0:
   - [✅] Reconstructed (Name: zGeometry_Weiler::OutputContourToPolygonSet)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zgeometry.weiler_output_contour_to_polygon_set; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Weiler::OutputContourToPolygonSet;
     - File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp;
     - Target: zgeometry_weiler_output_contour_to_polygon_set;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred to coherent zGeometry Weiler source-cluster pass while global owner/data blockers remain open
 
 - 0x4683a0:
   - [✅] Reconstructed (Name: zGeometry_Weiler::TogglePointAxesForContourSource)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zgeometry.weiler_init_contour_source; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Weiler::TogglePointAxesForContourSource;
     - File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp;
     - Target: zgeometry_weiler_toggle_point_axes_for_contour_source;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x468410:
   - [✅] Reconstructed (Name: zGeometry_WeilerContourSegment::UpdateBounds)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zgeometry.weiler_init_contour_source; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_WeilerContourSegment::UpdateBounds;
     - File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp;
     - Target: zgeometry_weiler_contour_segment_update_bounds;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x468470:
   - [☑️] Reconstructed (Name: zGeometry_Weiler::BuildPointSideTablesForContourPair)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zgeometry.weiler_point_side_table_builder; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Weiler::BuildPointSideTablesForContourPair;
     - File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp;
     - Target: zgeometry_weiler_build_point_side_tables_for_contour_pair;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x468580:
   - [☑️] Reconstructed (Name: zGeometry_Weiler::DivideContourSegmentAtPoint)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zgeometry.weiler_divide_contour_segment_at_point; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Weiler::DivideContourSegmentAtPoint;
     - File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp;
     - Target: zgeometry_weiler_divide_contour_segment_at_point;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred to coherent zGeometry Weiler source-cluster pass; BN HLIL link-store limitation documented
 
 - 0x468650:
   - [✅] Reconstructed (Name: zGeometry_Weiler::CreateForwardSegmentPairAtPoint)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zgeometry.weiler_forward_segment_pair_at_point; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Weiler::CreateForwardSegmentPairAtPoint;
     - File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp;
     - Target: zgeometry_weiler_create_forward_segment_pair_at_point;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred to coherent zGeometry Weiler source-cluster pass
 
 - 0x468700:
   - [✅] Reconstructed (Name: zGeometry_Weiler::OutputSelectedInputContourToPolygonSetA)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zgeometry.weiler_selected_input_contour_output; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Weiler::OutputSelectedInputContourToPolygonSetA;
     - File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp;
     - Target: zgeometry_weiler_output_selected_input_contour_to_polygon_set_a;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4687b0:
   - [☑️] Reconstructed (Name: zGeometry_Weiler::GenerateOutsideResults)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zgeometry.weiler_generate_outside_results; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Weiler::GenerateOutsideResults;
     - File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp;
     - Target: zgeometry_weiler_generate_outside_results;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred to coherent zGeometry Weiler source-cluster pass while global owner/data blockers remain open
 
 - 0x468a10:
   - [☑️] Reconstructed (Name: zGeometry_Weiler::ClassifyPointInContourPointListXY)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zgeometry.weiler_point_in_contour_classifier; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Weiler::ClassifyPointInContourPointListXY;
     - File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp;
     - Target: zgeometry_weiler_classify_point_in_contour_point_list_xy;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x468c40:
   - [☑️] Reconstructed (Name: zGeometry_Weiler::Intersect2d)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zgeometry.weiler_intersect2d_tables; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Weiler::Intersect2d;
     - File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp;
     - Target: zgeometry_weiler_intersect2d;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred to coherent zGeometry Weiler source-cluster pass; BN x87 rendering limitations documented
 
 - 0x468fa0:
   - [☑️] Reconstructed (Name: zGeometry_Weiler::ClassifyIntersect2d)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zgeometry.weiler_intersect2d_tables; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Weiler::ClassifyIntersect2d;
     - File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp;
     - Target: zgeometry_weiler_classify_intersect2d;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred to coherent zGeometry Weiler source-cluster pass; BN x87 sign-class HLIL limitation documented
 
 - 0x4693a0:
   - [✅] Reconstructed (Name: zGeometry_WeilerContourSegmentArray::UpdateBounds)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zgeometry.weiler_init_contour_source; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_WeilerContourSegmentArray::UpdateBounds;
     - File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp;
     - Target: zgeometry_weiler_contour_segment_array_update_bounds;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4693c0:
   - [☑️] Reconstructed (Name: zGeometry_WeilerContourSegmentArray::InitFromPointList)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zgeometry.weiler_init_contour_source; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_WeilerContourSegmentArray::InitFromPointList;
     - File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp;
     - Target: zgeometry_weiler_contour_segment_array_init_from_point_list;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x469430:
   - [✅] Reconstructed (Name: zGeometry_Weiler::GetNextContourSegmentForTraversal)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zgeometry.weiler_get_next_contour_segment_for_traversal; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Weiler::GetNextContourSegmentForTraversal;
     - File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp;
     - Target: zgeometry_weiler_get_next_contour_segment_for_traversal;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred to coherent zGeometry Weiler source-cluster pass while global owner/data blockers remain open
 
 - 0x469450:
   - [☑️] Reconstructed (Name: zGeometry_Weiler::ClassifyAdjacentEdgePairAgainstContourSegment)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zgeometry.weiler_adjacent_edge_pair_against_segment; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Weiler::ClassifyAdjacentEdgePairAgainstContourSegment;
     - File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp;
     - Target: zgeometry_weiler_classify_adjacent_edge_pair_against_contour_segment;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred to coherent zGeometry Weiler source-cluster pass; BN x87/HLIL side-test limitation documented
 
 - 0x469560:
   - [☑️] Reconstructed (Name: zGeometry_Weiler::ClassifyAdjacentEdgePairAgainstAdjacentEdgePair)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zgeometry.weiler_adjacent_edge_pair_against_pair; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Weiler::ClassifyAdjacentEdgePairAgainstAdjacentEdgePair;
     - File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp;
     - Target: zgeometry_weiler_classify_adjacent_edge_pair_against_adjacent_edge_pair;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred to coherent zGeometry Weiler source-cluster pass; BN LLIL/x87 wedge-class sign-test limitations documented
 
 - 0x469960:
   - [☑️] Reconstructed (Name: zGeometry_Weiler::RecenterPointSetsIfOutOfRange)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zgeometry.weiler_init_contour_source; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Weiler::RecenterPointSetsIfOutOfRange;
     - File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp;
     - Target: zgeometry_weiler_recenter_point_sets_if_out_of_range;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x469a30:
   - [✅] Reconstructed (Name: zGeometry_Weiler::PreclassifyInputContourAAdjacentEdgePairs)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zgeometry.weiler_clip_point_list_auxiliary_helpers; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Weiler::PreclassifyInputContourAAdjacentEdgePairs;
     - File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp;
     - Target: zgeometry_weiler_preclassify_input_contour_a_adjacent_edge_pairs;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x469ae0:
   - [✅] Reconstructed (Name: zGeometry_WeilerBuffer::SetCountAndAppendPtr)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zgeometry.weiler_buffer_lifecycle; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_WeilerBuffer::SetCountAndAppendPtr;
     - File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp;
     - Target: zgeometry_weiler_buffer_set_count_and_append_ptr;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x469af0:
   - [✅] Reconstructed (Name: zGeometry_Weiler::RestorePointTranslation)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zgeometry.weiler_clip_point_list_auxiliary_helpers; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Weiler::RestorePointTranslation;
     - File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp;
     - Target: zgeometry_weiler_restore_point_translation;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x469b60:
   - [☑️] Reconstructed (Name: zGeometry_Weiler::RestoreOutputZFromInputPlane)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zgeometry.weiler_restore_output_z_from_input_plane; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Weiler::RestoreOutputZFromInputPlane;
     - File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp;
     - Target: zgeometry_weiler_restore_output_z_from_input_plane;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred to coherent zGeometry Weiler source-cluster pass while global owner/data blockers remain open
 
 - 0x469ca0:
   - [✅] Reconstructed (Name: zGeometry_Vec3::IsBetweenEndpointsXY)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zgeometry.vec3_between_endpoints_xy; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Vec3::IsBetweenEndpointsXY;
     - File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp;
     - Target: zgeometry_vec3_is_between_endpoints_xy;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x469d60:
   - [☑️] Reconstructed (Name: zGeometry_Weiler::SelectForwardStartPointInContourA)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zgeometry.weiler_select_forward_start_point_in_contour_a; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Weiler::SelectForwardStartPointInContourA;
     - File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp;
     - Target: zgeometry_weiler_select_forward_start_point_in_contour_a;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred to coherent zGeometry Weiler source-cluster pass while global owner/data blockers remain open
 
 - 0x46a1f0:
   - [✅] Reconstructed (Name: zGeometry_Weiler::ValidateXings)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zgeometry.weiler_validate_xings; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Weiler::ValidateXings;
     - File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp;
     - Target: zgeometry_weiler_validate_xings;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred to coherent zGeometry Weiler source-cluster pass while global owner/data blockers remain open
 
 - 0x46a600:
   - [✅] Reconstructed (Name: zGeometry_Vec3Array::RotatePos90AroundX)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zgeometry.xy_vector_leaf_helpers; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Vec3Array::RotatePos90AroundX;
     - File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp;
     - Target: zgeometry_vec3array_rotate_pos90_around_x;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x46a9c0:
   - [☑️] Reconstructed (Name: zGeometry_Vec3Array::ComputeBoundsXY)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zgeometry.xy_vector_leaf_helpers; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Vec3Array::ComputeBoundsXY;
     - File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp;
     - Target: zgeometry_vec3array_compute_bounds_xy;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x46ab10:
   - [✅] Reconstructed (Name: zGeometry_ClipPolygon::FinalizeAndDestroy)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zgeometry.clip_polygon_lifecycle_helpers; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_ClipPolygon::FinalizeAndDestroy;
     - File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp;
     - Target: zgeometry_clip_polygon_finalize_and_destroy;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x46ab40:
   - [✅] Reconstructed (Name: zGeometry_ClipPolygon::FindPointIndexXY)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zgeometry.clip_polygon_upsert_point_list_xy_helpers; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_ClipPolygon::FindPointIndexXY;
     - File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp;
     - Target: zgeometry_clip_polygon_find_point_index_xy;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred to coherent zGeometry clip-polygon source-cluster pass while global owner/data blockers remain open
 
 - 0x46ab90:
   - [✅] Reconstructed (Name: zGeometry_ClipPolygon::UpsertPointListXY)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zgeometry.clip_polygon_upsert_point_list_xy_helpers; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_ClipPolygon::UpsertPointListXY;
     - File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp;
     - Target: zgeometry_clip_polygon_upsert_point_list_xy;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred to coherent zGeometry clip-polygon source-cluster pass while global owner/data blockers remain open
 
 - 0x46ac80:
   - [☑️] Reconstructed (Name: zGeometry_ClipPolygon::FindPointInsertionEdgeXYIndex)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zgeometry.clip_polygon_upsert_point_list_xy_helpers; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_ClipPolygon::FindPointInsertionEdgeXYIndex;
     - File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp;
     - Target: zgeometry_clip_polygon_find_point_insertion_edge_xy_index;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred to coherent zGeometry clip-polygon source-cluster pass while global owner/data blockers remain open
 
 - 0x46ae40:
   - [☑️] Reconstructed (Name: zGeometry_ClipPatchOutput::ApplyNodeDiPairs)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zgeometry.clip_patch_output_apply_node_di_pairs; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_ClipPatchOutput::ApplyNodeDiPairs;
     - File: src/GameZRecoil/zDEClient/zdec_init.cpp;
     - Target: zgeometry_clip_patch_output_apply_node_di_pairs;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x46af00:
   - [✅] Reconstructed (Name: zGeometry_ClipPatchOutput::Create)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zgeometry.clip_patch_output_lifecycle; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_ClipPatchOutput::Create;
     - File: src/GameZRecoil/zDEClient/zdec_init.cpp;
     - Target: zgeometry_clip_patch_output_create;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x46b550:
   - [☑️] Reconstructed (Name: zGeometry_ClipPolygon::ProcessNodePolygonSetXY)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zgeometry.clip_polygon_process_node_polygon_set_xy; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_ClipPolygon::ProcessNodePolygonSetXY;
     - File: src/GameZRecoil/zGeometry/zgeo_model.cpp;
     - Target: zgeometry_clip_polygon_process_node_polygon_set_xy;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x46b650:
   - [✅] Reconstructed (Name: zGeometry_Model::GetLinearBufferOfPolygonVertices)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zgeometry.model_polygon_snap_buffer_helpers; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Model::GetLinearBufferOfPolygonVertices;
     - File: src/GameZRecoil/zGeometry/zgeo_weiler.cpp;
     - Target: zgeometry_model_get_linear_buffer_of_polygon_vertices;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x46b6d0:
   - [☑️] Reconstructed (Name: zGeometry_Model::ProcessClipPatchNode)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zgeometry.model_process_clip_patch_node; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Model::ProcessClipPatchNode;
     - File: src/GameZRecoil/zGeometry/zgeo_model.cpp;
     - Target: zgeometry_model_process_clip_patch_node;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x46bb30:
   - [✅] Reconstructed (Name: zGeometry_Model::AddIndexedPolygonToDi)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zgeometry.model_polygon_di_forwarding_helpers; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Model::AddIndexedPolygonToDi;
     - File: src/GameZRecoil/zGeometry/zgeo_model.cpp;
     - Target: zgeometry_model_add_indexed_polygon_to_di;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x46bb90:
   - [☑️] Reconstructed (Name: zGeometry_Model::IsFullyInsideClipPolygonXY)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zgeometry.model_is_fully_inside_clip_polygon_xy; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_Model::IsFullyInsideClipPolygonXY;
     - File: src/GameZRecoil/zGeometry/zgeo_model.cpp;
     - Target: zgeometry_model_is_fully_inside_clip_polygon_xy;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred to coherent zGeometry model/clip-patch source-cluster pass while global owner/data blockers remain open
 
 - 0x46be20:
   - [☑️] Reconstructed (Name: zGeometry_Segment::IntersectsSegmentXY)
@@ -10145,15 +10145,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x46bf70:
   - [✅] Reconstructed (Name: zGeometry_TriangulateHole::FindActiveEdgeState)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGeometry; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zgeometry.triangulate_hole_source_cluster; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zGeometry_TriangulateHole::FindActiveEdgeState;
     - File: src/GameZRecoil/zGeometry/zgeo_convexify.cpp;
     - Target: zgeometry_triangulate_hole_find_active_edge_state;
     - Group: engine.zgeometry;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x476120:
   - [☑️] Reconstructed (Name: zClipAlt::SetSourceRect)
@@ -13817,28 +13817,28 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x482720:
   - [✅] Reconstructed (Name: zModel_Const::AddOrMergeVertex)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zModel; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zmodel.di_vertex_normal_merge_helpers; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zModel_Const::AddOrMergeVertex;
     - File: src/GameZRecoil/zModel/zModel.cpp;
     - Target: zmodel_const_add_or_merge_vertex;
     - Group: engine.zmodel;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred to coherent AddPolygonEx source-cluster verification after global owner/data gates are clear
 
 - 0x482860:
   - [✅] Reconstructed (Name: zModel_Const::AddOrMergeVertexAndNormal)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zModel; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zmodel.di_vertex_normal_merge_helpers; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zModel_Const::AddOrMergeVertexAndNormal;
     - File: src/GameZRecoil/zModel/zModel.cpp;
     - Target: zmodel_const_add_or_merge_vertex_and_normal;
     - Group: engine.zmodel;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred to coherent AddPolygonEx source-cluster verification after global owner/data gates are clear
 
 - 0x475c40:
   - [✅] Reconstructed (Name: zModel_Display::Init)
@@ -14181,15 +14181,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x476320:
   - [✅] Reconstructed (Name: zTag4::Clear)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zModel; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: standalone; Parent: engine.zmodel.ztag4_clear_leaf; State: standalone)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zTag4::Clear;
     - File: src/GameZRecoil/zModel/zModel_Display.cpp;
     - Target: ztag4_clear;
     - Group: engine.zmodel;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x476370:
   - [☑️] Reconstructed (Name: VariantTag::TagsOverlap)
@@ -14298,106 +14298,106 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x479660:
   - [☑️] Reconstructed (Name: OptCatalog::ApplyDamageMaskStampOnHit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zModel; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine_zmodel.optcatalog_damage_mask; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: OptCatalog::ApplyDamageMaskStampOnHit;
     - File: src/GameZRecoil/zModel/zModel_Display.cpp;
     - Target: optcatalog_apply_damage_mask_stamp_on_hit;
     - Group: engine.zmodel;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x479c50:
   - [✅] Reconstructed (Name: OptCatalog::SetDamageMaskSlotIndex)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zModel; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine_zmodel.optcatalog_damage_mask; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: OptCatalog::SetDamageMaskSlotIndex;
     - File: src/GameZRecoil/zModel/zModel_Display.cpp;
     - Target: optcatalog_set_damage_mask_slot_index;
     - Group: engine.zmodel;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x479c60:
   - [✅] Reconstructed (Name: OptCatalog::RegisterDamageMaskSlotPtr)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zModel; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine_zmodel.optcatalog_damage_mask; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: OptCatalog::RegisterDamageMaskSlotPtr;
     - File: src/GameZRecoil/zModel/zModel_Display.cpp;
     - Target: optcatalog_register_damage_mask_slot_ptr;
     - Group: engine.zmodel;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x479c80:
   - [✅] Reconstructed (Name: OptCatalog::IsDamageMaskEnabled)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zModel; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine_zmodel.optcatalog_damage_mask; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: OptCatalog_IsDamageMaskEnabled;
     - File: src/GameZRecoil/zModel/zModel_Display.cpp;
     - Target: optcatalog_is_damage_mask_enabled;
     - Group: engine.zmodel;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x479c90:
   - [✅] Reconstructed (Name: OptCatalog::SetDamageMaskUv)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zModel; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine_zmodel.optcatalog_damage_mask; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: OptCatalog_SetDamageMaskUv;
     - File: src/GameZRecoil/zModel/zModel_Display.cpp;
     - Target: optcatalog_set_damage_mask_uv;
     - Group: engine.zmodel;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x479cb0:
   - [✅] Reconstructed (Name: OptCatalog::SetDamageMaskEnabled)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zModel; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine_zmodel.optcatalog_damage_mask; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: OptCatalog_SetDamageMaskEnabled;
     - File: src/GameZRecoil/zModel/zModel_Display.cpp;
     - Target: optcatalog_set_damage_mask_enabled;
     - Group: engine.zmodel;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x479cc0:
   - [✅] Reconstructed (Name: OptCatalog::IsDamageMaskSlotPtrRegistered)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zModel; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine_zmodel.optcatalog_damage_mask; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: OptCatalog_IsDamageMaskSlotPtrRegistered;
     - File: src/GameZRecoil/zModel/zModel_Display.cpp;
     - Target: optcatalog_is_damage_mask_slot_ptr_registered;
     - Group: engine.zmodel;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4805b0:
   - [☑️] Reconstructed (Name: zModel_MatlSlot::IndexFromPtrOrMinus1)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zModel; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: standalone; Parent: engine.zmodel.matl_slot_index_accessor; State: standalone)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zModel_MatlSlot::IndexFromPtrOrMinus1;
     - File: src/GameZRecoil/zModel/gmod_matl.c;
     - Target: zmodel_matl_slot_index_from_ptr;
     - Group: engine.zmodel;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x480600:
   - [☑️] Reconstructed (Name: zModel_MatlBuffer::WriteGameZ)
@@ -14454,15 +14454,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x480c40:
   - [✅] Reconstructed (Name: zModel_Material::ResetDefaults)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zModel; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zmodel.material_reset_compare_helpers; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zModel_Material::ResetDefaults;
     - File: src/GameZRecoil/zModel/gdi.c;
     - Target: zmodel_material_reset_defaults;
     - Group: engine.zmodel;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x480c80:
   - [✅] Reconstructed (Name: zModel_Material::HasAuxData)
@@ -14480,28 +14480,28 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x480ca0:
   - [✅] Reconstructed (Name: zModel_Material::FindOrClone)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zModel; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zmodel.material_find_or_clone; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zModel_Material::FindOrClone;
     - File: src/GameZRecoil/zModel/gdi.c;
     - Target: zmodel_material_find_or_clone;
     - Group: engine.zmodel;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global authored owner/data blockers remain open
 
 - 0x480d20:
   - [☑️] Reconstructed (Name: zModel_Material::CompareForReuse)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zModel; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zmodel.material_reset_compare_helpers; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zModel_Material::CompareForReuse;
     - File: src/GameZRecoil/zModel/gdi.c;
     - Target: zmodel_material_compare_for_reuse;
     - Group: engine.zmodel;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global authored owner/data blockers remain open
 
 - 0x480d80:
   - [✅] Reconstructed (Name: zModel_MatlBuffer::ReleaseAllActive)
@@ -14662,28 +14662,28 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4812b0:
   - [✅] Reconstructed (Name: zModel_Material::Clone)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: namespace; Parent: zModel; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zmodel.material_clone_active_slot; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zModel_Material::Clone;
     - File: src/GameZRecoil/zModel/gdi.c;
     - Target: zmodel_material_clone;
     - Group: engine.zmodel;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S deferred while global authored owner/data blockers remain open
 
 - 0x4812c0:
   - [☑️] Reconstructed (Name: zModel_MatlBuffer::CloneToActiveSlot)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zModel; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zmodel.material_clone_active_slot; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zModel_MatlBuffer::CloneToActiveSlot;
     - File: src/GameZRecoil/zModel/gdi.c;
     - Target: zmodel_matlbuffer_clone_to_active_slot;
     - Group: engine.zmodel;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: VC5 byte comparison for zmodel_material_di_clone_dependencies still has unmasked mismatches for 0x4812c0
 
 - 0x481420:
   - [☑️] Reconstructed (Name: zModel_Material::FindByTexDirEntry)
@@ -14714,54 +14714,54 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x481530:
   - [☑️] Reconstructed (Name: zModel_Const::GetVertexMergeEpsilon)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zModel; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zmodel.vertex_merge_epsilon_accessors; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zModel_Const::GetVertexMergeEpsilon;
     - File: src/GameZRecoil/zModel/gmod_const.c;
     - Target: zmodel_const_get_vertex_merge_epsilon;
     - Group: engine.zmodel;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x481540:
   - [✅] Reconstructed (Name: zModel_Const::SetVertexMergeEpsilon)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zModel; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zmodel.vertex_merge_epsilon_accessors; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zModel_Const::SetVertexMergeEpsilon;
     - File: src/GameZRecoil/zModel/gmod_const.c;
     - Target: zmodel_const_set_vertex_merge_epsilon;
     - Group: engine.zmodel;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x481550:
   - [☑️] Reconstructed (Name: zModel_Const::SetCoplanarTolerance)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zModel; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zmodel.polygon_tolerance_setters; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zModel_Const::SetCoplanarTolerance;
     - File: src/GameZRecoil/zModel/gmod_const.c;
     - Target: zmodel_const_set_coplanar_tolerance;
     - Group: engine.zmodel;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x481560:
   - [☑️] Reconstructed (Name: zModel_Const::SetColinearTolerance)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zModel; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zmodel.polygon_tolerance_setters; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zModel_Const::SetColinearTolerance;
     - File: src/GameZRecoil/zModel/gmod_const.c;
     - Target: zmodel_const_set_colinear_tolerance;
     - Group: engine.zmodel;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global authored owner/data blockers remain open
 
 - 0x481570:
   - [☑️] Reconstructed (Name: zDi::PtrToIndexOrMinus1)
@@ -14857,9 +14857,9 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x482080:
   - [☑️] Reconstructed (Name: zModel_DiPool::AllocFromFreeList)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: namespace; Parent: zModel; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zmodel.dipool_runtime_globals; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zModel_DiPool::AllocFromFreeList;
     - File: src/GameZRecoil/zModel/zModel_Display.cpp;
     - Target: zmodel_dipool_alloc_from_free_list;
@@ -14870,9 +14870,9 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4820f0:
   - [✅] Reconstructed (Name: zModel_DiPool::FreeIfUnreferenced)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: namespace; Parent: zModel; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zmodel.dipool_runtime_globals; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zModel_DiPool::FreeIfUnreferenced;
     - File: src/GameZRecoil/zModel/zModel_Display.cpp;
     - Target: zmodel_dipool_free_if_unreferenced;
@@ -14883,132 +14883,132 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x482a10:
   - [☑️] Reconstructed (Name: zModel_Const::FindOrAppendNormalIndex)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zModel; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zmodel.di_vertex_normal_merge_helpers; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zModel_Const::FindOrAppendNormalIndex;
     - File: src/GameZRecoil/zModel/zModel.cpp;
     - Target: zmodel_const_find_or_append_normal_index;
     - Group: engine.zmodel;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred to coherent AddPolygonEx source-cluster verification after global owner/data gates are clear
 
 - 0x482b40:
   - [☑️] Reconstructed (Name: zModel_Const::RemoveColinearVerticesInPlace)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zModel; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zmodel.colinear_vertex_filter_helpers; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zModel_Const::RemoveColinearVerticesInPlace;
     - File: src/GameZRecoil/zModel/zModel.cpp;
     - Target: zmodel_const_remove_colinear_vertices_in_place;
     - Group: engine.zmodel;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global authored owner/data blockers remain open
 
 - 0x482c60:
   - [☑️] Reconstructed (Name: zModel_Const::SetNormalizedCrossFromVertexTriplet)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zModel; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zmodel.colinear_vertex_filter_helpers; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zModel_Const::SetNormalizedCrossFromVertexTriplet;
     - File: src/GameZRecoil/zModel/zModel.cpp;
     - Target: zmodel_const_set_normalized_cross_from_vertex_triplet;
     - Group: engine.zmodel;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global authored owner/data blockers remain open
 
 - 0x482db0:
   - [☑️] Reconstructed (Name: zModel_Const::IsPolygonCoplanar)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zModel; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zmodel.polygon_plane_helpers; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zModel_Const::IsPolygonCoplanar;
     - File: src/GameZRecoil/zModel/zModel.cpp;
     - Target: zmodel_const_is_polygon_coplanar;
     - Group: engine.zmodel;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global authored owner/data blockers remain open
 
 - 0x482e30:
   - [☑️] Reconstructed (Name: zModel_Const::ComputePolygonPlaneEquation)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zModel; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zmodel.polygon_plane_helpers; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zModel_Const::ComputePolygonPlaneEquation;
     - File: src/GameZRecoil/zModel/zModel.cpp;
     - Target: zmodel_const_compute_polygon_plane_equation;
     - Group: engine.zmodel;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global authored owner/data blockers remain open
 
 - 0x482fe0:
   - [☑️] Reconstructed (Name: zModel_Const::SplitPolygonChunkedByVertexLimit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zModel; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zmodel.polygon_split_staging_helpers; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zModel_Const::SplitPolygonChunkedByVertexLimit;
     - File: src/GameZRecoil/zModel/zModel.cpp;
     - Target: zmodel_const_split_polygon_chunked_by_vertex_limit;
     - Group: engine.zmodel;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred to coherent AddPolygonEx source-cluster verification after global owner/data gates are clear
 
 - 0x483240:
   - [☑️] Reconstructed (Name: zDi::AddPolygonSplitByVertexLimit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zModel; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zmodel.polygon_split_staging_helpers; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zDi::AddPolygonSplitByVertexLimit;
     - File: src/GameZRecoil/zModel/zModel.cpp;
     - Target: zdi_add_polygon_split_by_vertex_limit;
     - Group: engine.zmodel;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred to coherent AddPolygonEx source-cluster verification after global owner/data gates are clear
 
 - 0x483510:
   - [☑️] Reconstructed (Name: zModel_Const::QuantizeAndNormalizeUvPairs)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zModel; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zmodel.uv_quantize_normalize_helper; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zModel_Const::QuantizeAndNormalizeUvPairs;
     - File: src/GameZRecoil/zModel/zModel.cpp;
     - Target: zmodel_const_quantize_and_normalize_uv_pairs;
     - Group: engine.zmodel;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred to coherent AddPolygonEx/UV source-cluster verification after global owner/data gates are clear
 
 - 0x483610:
   - [✅] Reconstructed (Name: zDi::AddPolygon)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zModel; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zmodel.add_polygon_ex_generated_uv_cluster; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zDi::AddPolygon;
     - File: src/GameZRecoil/zModel/zModel.cpp;
     - Target: zdi_add_polygon;
     - Group: engine.zmodel;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x483650:
   - [☑️] Reconstructed (Name: zDi::AddPolygonEx)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zModel; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: src/GameZRecoil/zModel/zModel.cpp; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zDi::AddPolygonEx;
     - File: src/GameZRecoil/zModel/zModel.cpp;
     - Target: zdi_add_polygon_ex;
     - Group: engine.zmodel;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x483a60:
   - [☑️] Reconstructed (Name: zDi::HasSpecialFlagsOrAuxMaterialData)
@@ -15027,8 +15027,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zDi::RebuildBounds)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zModel; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zDi::RebuildBounds;
     - File: src/GameZRecoil/zModel/gdi.c;
     - Target: zdi_rebuild_bounds;
@@ -15040,8 +15040,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [☑️] Reconstructed (Name: zDi::BuildAabb)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zModel; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zDi::BuildAabb;
     - File: src/GameZRecoil/zModel/gdi.c;
     - Target: zdi_build_aabb;
@@ -15053,8 +15053,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: zDi::BuildOriginSymmetricAabb)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zModel; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zDi::BuildOriginSymmetricAabb;
     - File: src/GameZRecoil/zModel/gdi.c;
     - Target: zdi_build_origin_symmetric_aabb;
@@ -15221,28 +15221,28 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4843b0:
   - [☑️] Reconstructed (Name: zDi::RebuildGeneratedUvPairsForEntry)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zModel; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: src/GameZRecoil/zModel/zModel.cpp; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zDi::RebuildGeneratedUvPairsForEntry;
     - File: src/GameZRecoil/zModel/zModel.cpp;
     - Target: zdi_rebuild_generated_uv_pairs_for_entry;
     - Group: engine.zmodel;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x484860:
   - [☑️] Reconstructed (Name: zModel_Const::SolveTriScalarGradient2D)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zModel; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zmodel.scalar_gradient_2d_helper; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zModel_Const::SolveTriScalarGradient2D;
     - File: src/GameZRecoil/zModel/zModel.cpp;
     - Target: zmodel_const_solve_tri_scalar_gradient_2d;
     - Group: engine.zmodel;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred to coherent AddPolygonEx/UV source-cluster verification after global owner/data gates are clear
 
 - 0x487a30:
   - [☑️] Reconstructed (Name: zModel_Light::BuildActiveLightList)
@@ -15364,15 +15364,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4805e0:
   - [✅] Reconstructed (Name: zModel_Matl::GetPoolEntry)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zModel; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: standalone; Parent: engine.zmodel.matl_pool_entry_accessor; State: standalone)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zModel_Matl::GetPoolEntry;
     - File: src/GameZRecoil/zModel/zModel_Display.cpp;
     - Target: zmodel_matl_get_pool_entry;
     - Group: engine.zmodel;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x480f60:
   - [✅] Reconstructed (Name: zModel_Material::SetFlagBit9)
@@ -16022,15 +16022,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x49fda0:
   - [✅] Reconstructed (Name: zSndPlayHandle::StopIfActive)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: zSndPlayHandle; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zsound.stop_report_runtime; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zSndPlayHandle::StopIfActive;
     - File: src/GameZRecoil/zSound/zsnd_play.cpp;
     - Target: zsnd_play_handle_stop_if_active;
     - Group: engine.zsound;
     - Model: source-faithful;
-    - Blocker: tier S remains blocked by documented VC5 backend dispatch byte drift (135 unmasked mismatches after relocation masking); data gate accepted from current BN/source global and string evidence.
+    - Blocker: tier S deferred; current VC5 target has 135 unmasked StopIfActive byte mismatches
 
 - 0x49fec0:
   - [✅] Reconstructed (Name: zSndSample::StopActiveVoicesIfPlaying)
@@ -16620,15 +16620,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4a3ef0:
   - [✅] Reconstructed (Name: zSnd::ReportA3DError)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: namespace; Parent: zSound; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zsound.stop_report_runtime; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zSnd::ReportA3DError;
     - File: src/GameZRecoil/zSound/zsnd_init.cpp;
     - Target: zsnd_report_a3d_error;
     - Group: engine.zsound;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x4a4530:
   - [☑️] Reconstructed (Name: zSndGroup::QueuePendingLoadsFromConfigNode)
@@ -16789,15 +16789,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4a51f0:
   - [✅] Reconstructed (Name: zSndStreamRequest::StopIfActive)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: namespace; Parent: zSound; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zsound.stop_report_runtime; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zSndStreamRequest_StopIfActive;
     - File: src/GameZRecoil/zSound/zsnd_group.cpp;
     - Target: zsnd_stream_request_stop_if_active;
     - Group: engine.zsound;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x4a5220:
   - [✅] Reconstructed (Name: zSndStreamRequest::MatchGroupPredicate)
@@ -17179,15 +17179,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4a4330:
   - [✅] Reconstructed (Name: zSnd::ReportDirectSoundError)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: namespace; Parent: zSound; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zsound.stop_report_runtime; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zSnd::ReportDirectSoundError;
     - File: src/GameZRecoil/zSound/zsnd_init.cpp;
     - Target: zsnd_report_direct_sound_error;
     - Group: engine.zsound;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x4080a0:
   - [✅] Reconstructed (Name: zSnd::SetAudioApiOption)
@@ -18060,15 +18060,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x48bf40:
   - [✅] Reconstructed (Name: zNetwork::DeleteAllDispatchHandlers)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zNetwork; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.znetwork.dispatch_handler_list_runtime; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zNetwork::DeleteAllDispatchHandlers;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_delete_all_dispatch_handlers;
     - Group: engine.znetwork;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x489d00:
   - [☑️] Reconstructed (Name: zNetwork::InitSessionRuntime)
@@ -18125,9 +18125,9 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x489f80:
   - [✅] Reconstructed (Name: zNetwork::IsHost)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: namespace; Parent: zNetwork; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: standalone; Parent: engine.znetwork.host_flag_accessor; State: standalone)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zNetwork::IsHost;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_is_host;
@@ -18359,9 +18359,9 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x48ad30:
   - [✅] Reconstructed (Name: zNetworkDPlay::SendReliable)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: namespace; Parent: zNetwork; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.znetwork.reliable_send_dispatch; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zNetwork_DPlay_SendReliable;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_send_reliable;
@@ -18385,9 +18385,9 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x48ae10:
   - [☑️] Reconstructed (Name: zNetworkDPlay::SendExReliable)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: namespace; Parent: zNetwork; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.znetwork.reliable_send_dispatch; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zNetwork_DPlay_SendExReliable;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_send_ex_reliable;
@@ -18684,41 +18684,41 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x48bfb0:
   - [☑️] Reconstructed (Name: zNetwork::CreateEmptyDispatchHandlerList)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zNetwork; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.znetwork.dispatch_handler_list_runtime; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zNetwork_CreateEmptyDispatchHandlerList;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_create_empty_dispatch_handler_list;
     - Group: engine.znetwork;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x48bfe0:
   - [✅] Reconstructed (Name: zNetwork::RegisterDispatchHandlerListShutdown)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zNetwork; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.znetwork.dispatch_handler_list_runtime; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zNetwork_RegisterDispatchHandlerListShutdown;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_register_dispatch_handler_list_shutdown;
     - Group: engine.znetwork;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x48bff0:
   - [☑️] Reconstructed (Name: zNetwork::DestroyDispatchHandlerList)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zNetwork; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.znetwork.dispatch_handler_list_runtime; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zNetwork_DestroyDispatchHandlerList;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_destroy_dispatch_handler_list;
     - Group: engine.znetwork;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x48c060:
   - [✅] Reconstructed (Name: zNetwork::SendPacketUnreliable)
@@ -18736,9 +18736,9 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x48c080:
   - [✅] Reconstructed (Name: zNetwork::SendPacketReliable)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: namespace; Parent: zNetwork; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.znetwork.reliable_send_dispatch; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zNetwork_SendPacketReliable;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_send_packet_reliable;
@@ -18749,9 +18749,9 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x48c0a0:
   - [☑️] Reconstructed (Name: zNetwork::RegisterPacketHandler)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: namespace; Parent: zNetwork; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.znetwork.dispatch_handler_list_runtime; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zNetwork::RegisterPacketHandler;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_register_packet_handler;
@@ -18762,22 +18762,22 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x48c120:
   - [☑️] Reconstructed (Name: zNetwork::UnregisterPacketHandler)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: namespace; Parent: zNetwork; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.znetwork.dispatch_handler_list_runtime; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zNetwork::UnregisterPacketHandler;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_unregister_packet_handler;
     - Group: engine.znetwork;
     - Model: source-faithful;
-    - Blocker: tier S byte comparison remains blocked: 193 unmasked mismatches, 16 relocation bytes masked, 12 trailing VC NOP bytes trimmed, BN size 214, VC5 size 144
+    - Blocker: none
 
 - 0x48c200:
   - [☑️] Reconstructed (Name: zNetwork_DPlay::DispatchPacketToHandlers)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: namespace; Parent: zNetwork; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.znetwork.dispatch_handler_list_runtime; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zNetwork_DPlay::DispatchPacketToHandlers;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_dispatch_packet_to_handlers;
@@ -18801,15 +18801,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x48bfa0:
   - [✅] Reconstructed (Name: zNetwork::InitMessageHandlers)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zNetwork; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.znetwork.dispatch_handler_list_runtime; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zNetwork_InitMessageHandlers;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_init_message_handlers;
     - Group: engine.znetwork;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 ## G017. Video initialization, DirectDraw/Direct3D, buffers, and FX
 
@@ -23115,41 +23115,41 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x455ea0:
   - [✅] Reconstructed (Name: zDEClient_QSand::DestroyFeature)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zEffect; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zeffect.zdeclient_qsand_feature_pipeline; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zDEClient_QSand::DestroyFeature;
     - File: src/GameZRecoil/zDEClient/zdec_init.cpp;
     - Target: zdeclient_qsand_destroy_feature;
     - Group: engine.zeffect;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x455ed0:
   - [✅] Reconstructed (Name: zDEClient::CopyQSandEventTemplateDefaults)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zEffect; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: global-data; Parent: engine.zeffect.zdeclient_qsand_event_template_defaults; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zDEClient::CopyQSandEventTemplateDefaults;
     - File: src/GameZRecoil/zDEClient/zdec_init.cpp;
     - Target: zdeclient_qsand_copy_event_template_defaults;
     - Group: engine.zeffect;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4575f0:
   - [✅] Reconstructed (Name: zDEClient::SubmitFeatureGeometry)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zEffect; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: global-data; Parent: engine.zeffect.zdeclient_feature_map_tree; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zDEClient::SubmitFeatureGeometry;
     - File: src/GameZRecoil/zDEClient/zdec_init.cpp;
     - Target: zdeclient_submit_feature_geometry;
     - Group: engine.zeffect;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x457650:
   - [✅] Reconstructed (Name: zDEClient::InitFeatureSystem)
@@ -23232,15 +23232,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x457840:
   - [✅] Reconstructed (Name: zDEClient::AppendFeatureEntry)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zEffect; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: global-data; Parent: engine.zeffect.zdeclient_feature_entry_list; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zDEClient::AppendFeatureEntry;
     - File: src/GameZRecoil/zDEClient/zdec_init.cpp;
     - Target: zdeclient_append_feature_entry;
     - Group: engine.zeffect;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x457ae0:
   - [✅] Reconstructed (Name: zDEClient::ClearFeatureEntriesAndMapTree)
@@ -23427,41 +23427,41 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x458aa0:
   - [✅] Reconstructed (Name: zDEClient::SetCameraNode)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zEffect; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zeffect.zdeclient_camera_feature_accessors; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zDEClient::SetCameraNode;
     - File: src/GameZRecoil/zDEClient/zdec_init.cpp;
     - Target: zdeclient_set_camera_node;
     - Group: engine.zeffect;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x458ac0:
   - [✅] Reconstructed (Name: zDEClient::GetFeatureGridCell)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zEffect; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zeffect.zdeclient_camera_feature_accessors; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zDEClient::GetFeatureGridCell;
     - File: src/GameZRecoil/zDEClient/zdec_init.cpp;
     - Target: zdeclient_get_feature_grid_cell;
     - Group: engine.zeffect;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x458ae0:
   - [✅] Reconstructed (Name: zDEClient::GetCameraNode)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zEffect; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zeffect.zdeclient_camera_feature_accessors; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zDEClient::GetCameraNode;
     - File: src/GameZRecoil/zDEClient/zdec_init.cpp;
     - Target: zdeclient_get_camera_node;
     - Group: engine.zeffect;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x458af0:
   - [✅] Reconstructed (Name: zEffect::SetConditionalRefPos)
@@ -23492,223 +23492,223 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x46af40:
   - [✅] Reconstructed (Name: zDEClient::CreateFeatureNodeAndDiFromClipPatchPartition)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zEffect; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zeffect.zdeclient_feature_node_clip_partition; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zDEClient::CreateFeatureNodeAndDiFromClipPatchPartition;
     - File: src/GameZRecoil/zDEClient/zdec_init.cpp;
     - Target: zdeclient_create_feature_node_and_di_from_clip_patch_partition;
     - Group: engine.zeffect;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x455ef0:
   - [✅] Reconstructed (Name: zDEClient_QSand::InstanceEventWithNetRelay)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zEffect; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zeffect.zdeclient_qsand_relay_callbacks; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zDEClient_QSand::InstanceEventMaybeRelay;
     - File: src/GameZRecoil/zDEClient/zdec_init.cpp;
     - Target: zdeclient_qsand_instance_event_maybe_relay;
     - Group: engine.zeffect;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x456b20:
   - [✅] Reconstructed (Name: zDEClient_Crater::InstanceEvent)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zEffect; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zeffect.zdeclient_crater_instance_event; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zDEClient_Crater::InstanceEvent;
     - File: src/GameZRecoil/zDEClient/zdec_init.cpp;
     - Target: zdeclient_crater_instance_event;
     - Group: engine.zeffect;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x457140:
   - [✅] Reconstructed (Name: zDEClient_Crater::CreateFeature)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zEffect; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zeffect.zdeclient_crater_create_feature; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zDEClient_Crater::CreateFeature;
     - File: src/GameZRecoil/zDEClient/zdec_init.cpp;
     - Target: zdeclient_crater_create_feature;
     - Group: engine.zeffect;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x433ad0:
   - [☑️] Reconstructed (Name: zDEClient_Crater::Execute)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zEffect; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zeffect.zdeclient_crater_relay_callbacks; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zDEClient_Crater::Execute;
     - File: src/GameZRecoil/zDEClient/zdec_init.cpp;
     - Target: zdeclient_crater_execute;
     - Group: engine.zeffect;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x433b70:
   - [☑️] Reconstructed (Name: zDEClient_Crater::NetRelayCallback)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zEffect; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zeffect.zdeclient_crater_relay_callbacks; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zDEClient_Crater::NetRelayCallback;
     - File: src/GameZRecoil/zDEClient/zdec_init.cpp;
     - Target: zdeclient_crater_net_relay_callback;
     - Group: engine.zeffect;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x433d40:
   - [✅] Reconstructed (Name: zDEClient_QSand::NetRelayCallback)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zEffect; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zeffect.zdeclient_qsand_relay_callbacks; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zDEClient_QSand::NetRelayCallback;
     - File: src/GameZRecoil/zDEClient/zdec_init.cpp;
     - Target: zdeclient_qsand_net_relay_callback;
     - Group: engine.zeffect;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x456010:
   - [✅] Reconstructed (Name: zDEClient_QSand::InitFeatureFromEventTemplate)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zEffect; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zeffect.zdeclient_qsand_feature_pipeline; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zDEClient_QSand::InitFeatureFromEventTemplate;
     - File: src/GameZRecoil/zDEClient/zdec_init.cpp;
     - Target: zdeclient_qsand_init_feature_from_event_template;
     - Group: engine.zeffect;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4563d0:
   - [✅] Reconstructed (Name: zDEClient_QSand::CreateFeatureStructFromEventTemplate)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zEffect; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zeffect.zdeclient_qsand_feature_pipeline; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zDEClient_QSand::CreateFeatureStructFromEventTemplate;
     - File: src/GameZRecoil/zDEClient/zdec_init.cpp;
     - Target: zdeclient_qsand_create_feature_struct_from_event_template;
     - Group: engine.zeffect;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x456450:
   - [✅] Reconstructed (Name: zDEClient_QSand::Build)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zEffect; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zeffect.zdeclient_qsand_feature_pipeline; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zDEClient_QSand::Build;
     - File: src/GameZRecoil/zDEClient/zdec_init.cpp;
     - Target: zdeclient_qsand_build;
     - Group: engine.zeffect;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4564b0:
   - [✅] Reconstructed (Name: zDEClient_QSand::CreateFeature)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zEffect; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zeffect.zdeclient_qsand_create_feature_display; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zDEClient_QSand::CreateFeature;
     - File: src/GameZRecoil/zDEClient/zdec_init.cpp;
     - Target: zdeclient_qsand_create_feature;
     - Group: engine.zeffect;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x456ad0:
   - [✅] Reconstructed (Name: zDEClient_Crater::DestroyFeature)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zEffect; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zeffect.zdeclient_crater_feature_leaf_helpers; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zDEClient_Crater::DestroyFeature;
     - File: src/GameZRecoil/zDEClient/zdec_init.cpp;
     - Target: zdeclient_crater_destroy_feature;
     - Group: engine.zeffect;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x456b00:
   - [✅] Reconstructed (Name: zDEClient_Crater::InitEventTemplateDefaults)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zEffect; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zeffect.zdeclient_crater_event_template_defaults_access; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zDEClient_Crater::InitEventTemplateDefaults;
     - File: src/GameZRecoil/zDEClient/zdec_init.cpp;
     - Target: zdeclient_crater_init_event_template_defaults;
     - Group: engine.zeffect;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x456c50:
   - [✅] Reconstructed (Name: zDEClient_Crater::InstanceEventWithNetRelay)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zEffect; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zeffect.zdeclient_crater_relay_callbacks; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zDEClient_Crater::InstanceEventMaybeRelay;
     - File: src/GameZRecoil/zDEClient/zdec_init.cpp;
     - Target: zdeclient_crater_instance_event_maybe_relay;
     - Group: engine.zeffect;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x456c80:
   - [✅] Reconstructed (Name: zDEClient_Crater::InitFeatureFromEventTemplate)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zEffect; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zeffect.zdeclient_crater_feature_init_helpers; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zDEClient_Crater::InitFeatureFromEventTemplate;
     - File: src/GameZRecoil/zDEClient/zdec_init.cpp;
     - Target: zdeclient_crater_init_feature_from_event_template;
     - Group: engine.zeffect;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x457040:
   - [✅] Reconstructed (Name: zDEClient_Crater::CreateFeatureStructFromEventTemplate)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zEffect; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zeffect.zdeclient_crater_feature_leaf_helpers; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zDEClient_Crater::CreateFeatureStructFromEventTemplate;
     - File: src/GameZRecoil/zDEClient/zdec_init.cpp;
     - Target: zdeclient_crater_create_feature_struct_from_event_template;
     - Group: engine.zeffect;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4570e0:
   - [✅] Reconstructed (Name: zDEClient_Crater::Build)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zEffect; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zeffect.zdeclient_crater_build; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zDEClient_Crater::Build;
     - File: src/GameZRecoil/zDEClient/zdec_init.cpp;
     - Target: zdeclient_crater_build;
     - Group: engine.zeffect;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x458b50:
   - [✅] Reconstructed (Name: zEffect::TickResetDelayOnTimer)
@@ -24506,15 +24506,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x45d7b0:
   - [✅] Reconstructed (Name: zEffectAnim::SetTransformRotAndVelocity)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zEffect; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine_zeffect.anim_transform_rot_velocity_entrypoints; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zEffectAnim::SetTransformRotAndVelocity;
     - File: src/GameZRecoil/zEffect/zEffect.cpp;
     - Target: zeffect_anim_set_transform_rot_velocity;
     - Group: engine.zeffect;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x45d930:
   - [✅] Reconstructed (Name: zEffectAnim::ActivateRuntime)
@@ -24545,15 +24545,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x45dc70:
   - [✅] Reconstructed (Name: zEffectAnim::SetTransformRotAndVelocity_Thunk)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zEffect; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine_zeffect.anim_transform_rot_velocity_entrypoints; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zEffectAnim::SetTransformRotAndVelocity_Thunk;
     - File: src/GameZRecoil/zEffect/zEffect.cpp;
     - Target: zeffect_anim_set_transform_rot_velocity_thunk;
     - Group: engine.zeffect;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x45dcb0:
   - [✅] Reconstructed (Name: zEffectAnim::SetVelocity)
@@ -24636,15 +24636,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x45e0d0:
   - [✅] Reconstructed (Name: zEffectAnimEntry::SetOnStateDoneCallback)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zEffect; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zeffect.anim_entry_leaf_accessors; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zEffectAnimEntry::SetOnStateDoneCallback;
     - File: src/GameZRecoil/zEffect/zEffect.cpp;
     - Target: zeffect_anim_set_on_state_done_callback;
     - Group: engine.zeffect;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x45e0f0:
   - [✅] Reconstructed (Name: zEffect::SetConditionalEffectLevel)
@@ -24896,15 +24896,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x460010:
   - [✅] Reconstructed (Name: zEffectAnim::GetRootNodeOrNull)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zEffect; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: engine.zeffect.anim_entry_leaf_accessors; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zEffectAnim::GetRootNodeOrNull;
     - File: src/GameZRecoil/zEffect/zEffect.cpp;
     - Target: zeffect_anim_get_root_node_or_null;
     - Group: engine.zeffect;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x460020:
   - [✅] Reconstructed (Name: zEffect::Init)
@@ -25221,15 +25221,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x461eb0:
   - [✅] Reconstructed (Name: zEffect_Anim::SetActivationDispatchContext)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: namespace; Parent: zEffect_Anim; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zeffect.anim_activation_dispatch_context; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zEffect_Anim::SetActivationDispatchContext;
     - File: src/GameZRecoil/zEffect/zEffect.cpp;
     - Target: zeffect_anim_set_activation_dispatch_context;
     - Group: engine.zeffect;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S deferred
 
 - 0x461ec0:
   - [✅] Reconstructed (Name: zEffect::FindNodeUserDataRecursive)
@@ -26407,15 +26407,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4340c0:
   - [☑️] Reconstructed (Name: OptCatalog::AltGunDispatchAllocRuntimeGateCallback)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zWeapon; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: effects_weapons.optcatalog_alt_gun_dispatch_alloc_gate; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: OptCatalog::AltGunDispatchAllocRuntimeGateCallback;
     - File: src/GameZRecoil/zWeapon/OptCatalog.c;
     - Target: optcatalog_alt_gun_dispatch_alloc_runtime_gate;
     - Group: engine.zweapon;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred
 
 - 0x43ca20:
   - [☑️] Reconstructed (Name: zWeapon_OptCatalog::LoadKillVerbString)
@@ -26433,22 +26433,22 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4b2900:
   - [✅] Reconstructed (Name: DamageFeedback::SetIntensityScalar)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zWeapon; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: DamageFeedback::SetIntensityScalar;
+  - [✅] Source owner (Kind: source-file; Parent: effects_weapons.optcatalog_damage_feedback_context; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
+    - Name: DamageFeedback_SetIntensityScalar;
     - File: src/GameZRecoil/zWeapon/OptCatalog.c;
     - Target: damage_feedback_set_intensity_scalar;
     - Group: engine.zweapon;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x434240:
   - [✅] Reconstructed (Name: OptCatalog::SendPkt0A_RemoveRuntimeRelay)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: subsystem; Parent: effects_weapons.optcatalog_pkt0a_runtime_relay; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: OptCatalog::SendPkt0A_RemoveRuntimeRelay;
     - File: src/GameZRecoil/zWeapon/OptCatalog.c;
     - Target: optcatalog_send_pkt0a_remove_runtime_relay;
@@ -26460,8 +26460,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [☑️] Reconstructed (Name: OptCatalog::HandlePkt0A_RemoveRuntimeRelay)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: subsystem; Parent: effects_weapons.optcatalog_pkt0a_runtime_relay; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: OptCatalog::HandlePkt0A_RemoveRuntimeRelay;
     - File: src/GameZRecoil/zWeapon/OptCatalog.c;
     - Target: optcatalog_handle_pkt0a_remove_runtime_relay;
@@ -26472,28 +26472,28 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4b26f0:
   - [☑️] Reconstructed (Name: OptCatalog::InvokeDamageFeedbackAndHitCallback)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zWeapon; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: effects_weapons.optcatalog_damage_feedback_context; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: OptCatalog::InvokeDamageFeedbackAndHitCallback;
     - File: src/GameZRecoil/zWeapon/OptCatalog.c;
     - Target: optcatalog_invoke_damage_feedback_and_hit_callback;
     - Group: engine.zweapon;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4b2880:
   - [☑️] Reconstructed (Name: OptCatalog::CaptureHitSnapshotAndInvokeDamageTimerCallback)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zWeapon; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: effects_weapons.optcatalog_damage_feedback_context; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: OptCatalog::CaptureHitSnapshotAndInvokeDamageTimerCallback;
     - File: src/GameZRecoil/zWeapon/OptCatalog.c;
     - Target: optcatalog_capture_hit_snapshot_and_invoke_damage_timer_callback;
     - Group: engine.zweapon;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4ae380:
   - [✅] Reconstructed (Name: OptCatalog::BlendDirectionTowardTarget)
@@ -26669,7 +26669,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: cluster; Parent: effects_weapons.optcatalog_runtime_instances; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [B]
     - Name: OptCatalog::RemoveRuntimeInstance;
     - File: src/GameZRecoil/zWeapon/OptCatalog.c;
     - Target: optcatalog_remove_runtime_instance;
@@ -26680,15 +26680,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4aed00:
   - [☑️] Reconstructed (Name: OptCatalog::ProcessRuntimeInstance)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: subsystem; Parent: effects_weapons.optcatalog_runtime_impact_processing; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: effects_weapons.optcatalog_runtime_impact_processing; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: OptCatalog::ProcessRuntimeInstance;
     - File: src/GameZRecoil/zWeapon/OptCatalog.c;
     - Target: optcatalog_process_runtime_instance;
     - Group: engine.zweapon;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4aee40:
   - [☑️] Reconstructed (Name: OptCatalog::ActivateTrailRuntimeState)
@@ -26810,54 +26810,54 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4b07d0:
   - [☑️] Reconstructed (Name: OptCatalog::HandleImpactEvent)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: subsystem; Parent: effects_weapons.optcatalog_runtime_impact_processing; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: effects_weapons.optcatalog_runtime_impact_processing; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: OptCatalog::HandleImpactEvent;
     - File: src/GameZRecoil/zWeapon/OptCatalog.c;
     - Target: optcatalog_handle_impact_event;
     - Group: engine.zweapon;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4b0980:
   - [✅] Reconstructed (Name: OptCatalog::HandleImpactEventFromRuntimeState)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: subsystem; Parent: effects_weapons.optcatalog_runtime_impact_processing; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: effects_weapons.optcatalog_runtime_impact_processing; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: OptCatalog::HandleImpactEventFromRuntimeState;
     - File: src/GameZRecoil/zWeapon/OptCatalog.c;
     - Target: optcatalog_handle_impact_event_from_runtime_state;
     - Group: engine.zweapon;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4b09d0:
   - [☑️] Reconstructed (Name: OptCatalog::BuildImpactHitList)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: subsystem; Parent: effects_weapons.optcatalog_runtime_impact_processing; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: effects_weapons.optcatalog_runtime_impact_processing; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: OptCatalog::BuildImpactHitList;
     - File: src/GameZRecoil/zWeapon/OptCatalog.c;
     - Target: optcatalog_build_impact_hit_list;
     - Group: engine.zweapon;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4b0a50:
   - [☑️] Reconstructed (Name: OptCatalog::HandleImpactFromRuntimeProbe)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: subsystem; Parent: effects_weapons.optcatalog_runtime_impact_processing; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: effects_weapons.optcatalog_runtime_impact_processing; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: OptCatalog::HandleImpactFromRuntimeProbe;
     - File: src/GameZRecoil/zWeapon/OptCatalog.c;
     - Target: optcatalog_handle_impact_from_runtime_probe;
     - Group: engine.zweapon;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4b0ba0:
   - [☑️] Reconstructed (Name: OptCatalog::CanSpawnThroughRay)
@@ -27096,41 +27096,41 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4b28e0:
   - [✅] Reconstructed (Name: OptCatalog::SetDamageContext)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zWeapon; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: effects_weapons.optcatalog_damage_feedback_context; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: OptCatalog::SetDamageContext;
     - File: src/GameZRecoil/zWeapon/OptCatalog.c;
     - Target: optcatalog_set_damage_context;
     - Group: engine.zweapon;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4b2910:
   - [✅] Reconstructed (Name: OptCatalog::GetCapturedHitSourcePtr)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zWeapon; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: source-file; Parent: effects_weapons.optcatalog_damage_feedback_context; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: OptCatalog::GetCapturedHitSourcePtr;
     - File: src/GameZRecoil/zWeapon/OptCatalog.c;
     - Target: optcatalog_get_captured_hit_source_ptr;
     - Group: engine.zweapon;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4b2920:
   - [✅] Reconstructed (Name: HitContext::GetCurrentOwnerOrCtx)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zWeapon; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: HitContext::GetCurrentOwnerOrCtx;
+  - [✅] Source owner (Kind: source-file; Parent: effects_weapons.optcatalog_damage_feedback_context; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
+    - Name: HitContext_GetCurrentOwnerOrCtx;
     - File: src/GameZRecoil/zWeapon/OptCatalog.c;
     - Target: hitcontext_get_current_owner_or_ctx;
     - Group: engine.zweapon;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4b2930:
   - [✅] Reconstructed (Name: OptCatalog_MineIterator::Begin)
@@ -27718,15 +27718,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x41ceb0:
   - [✅] Reconstructed (Name: zClass_Node::ClearPickupFlagsRecursive)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: subsystem; Parent: Pickup; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: battlesport_gameplay.pickup_pkt11_pkt12_handlers; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zClass_Node::ClearPickupFlagsRecursive;
     - File: src/Battlesport/pickup.cpp;
     - Target: zclass_node_clear_pickup_flags_recursive;
     - Group: battlesport.pickup;
-    - Model: data-equivalent-only;
-    - Blocker: source-shape audit and tier S byte verification pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x41cef0:
   - [☑️] Reconstructed (Name: zClass_Node::SetPickupFlagsRecursive)
@@ -27757,15 +27757,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x41cf50:
   - [☑️] Reconstructed (Name: Pickup::RemoveObject)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: subsystem; Parent: Pickup; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: battlesport_gameplay.pickup_pkt11_pkt12_handlers; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: Pickup::RemoveObject;
     - File: src/Battlesport/pickup.cpp;
     - Target: pickup_remove_object;
     - Group: battlesport.pickup;
-    - Model: data-equivalent-only;
-    - Blocker: source-shape audit and tier S byte verification pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x41d0c0:
   - [☑️] Reconstructed (Name: Pickup::OnCollected)
@@ -27809,15 +27809,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x41d8a0:
   - [✅] Reconstructed (Name: PickupSpawnList::RemoveAndFreeNode)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: subsystem; Parent: Pickup; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: battlesport_gameplay.pickup_pkt11_pkt12_handlers; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: PickupSpawnList::RemoveAndFreeNode;
     - File: src/Battlesport/pickup.cpp;
     - Target: pickup_spawn_list_remove_and_free_node;
     - Group: battlesport.pickup;
-    - Model: data-equivalent-only;
-    - Blocker: source-shape audit and tier S byte verification pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x41d920:
   - [☑️] Reconstructed (Name: Pickup::CreateSpawnDefAndLink)
@@ -27835,28 +27835,28 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x41da20:
   - [☑️] Reconstructed (Name: Pickup::SpawnAt)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: subsystem; Parent: Pickup; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: battlesport_gameplay.pickup_pkt11_pkt12_handlers; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: Pickup::SpawnAt;
     - File: src/Battlesport/pickup.cpp;
     - Target: pickup_spawn_at;
     - Group: battlesport.pickup;
-    - Model: data-equivalent-only;
-    - Blocker: source-shape audit and tier S byte verification pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x41dab0:
   - [✅] Reconstructed (Name: Pickup::CreateObjectInstance)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: subsystem; Parent: Pickup; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: battlesport_gameplay.pickup_pkt11_pkt12_handlers; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: Pickup::CreateObjectInstance;
     - File: src/Battlesport/pickup.cpp;
     - Target: pickup_create_object_instance;
     - Group: battlesport.pickup;
-    - Model: data-equivalent-only;
-    - Blocker: source-shape audit and tier S byte verification pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x41db40:
   - [✅] Reconstructed (Name: PickupType::GetByIndex_Pure)
@@ -27887,41 +27887,41 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x41dc30:
   - [✅] Reconstructed (Name: Pickup::SpawnFromParsedZrdEntry)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: subsystem; Parent: Pickup; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: battlesport_gameplay.pickup_pkt11_pkt12_handlers; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: Pickup::SpawnFromParsedZrdEntry;
     - File: src/Battlesport/pickup.cpp;
     - Target: pickup_spawn_from_parsed_zrd_entry;
     - Group: battlesport.pickup;
-    - Model: data-equivalent-only;
-    - Blocker: source-shape audit and tier S byte verification pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x41dc60:
   - [✅] Reconstructed (Name: Pickup::SpawnWithAirdropChute)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: subsystem; Parent: Pickup; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: battlesport_gameplay.pickup_pkt11_pkt12_handlers; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: Pickup::SpawnWithAirdropChute;
     - File: src/Battlesport/pickup.cpp;
     - Target: pickup_spawn_with_airdrop_chute;
     - Group: battlesport.pickup;
-    - Model: data-equivalent-only;
-    - Blocker: source-shape audit and tier S byte verification pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x41dcf0:
   - [✅] Reconstructed (Name: Pickup::RegisterExistingObject)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: subsystem; Parent: Pickup; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: battlesport_gameplay.pickup_pkt11_pkt12_handlers; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: Pickup::RegisterExistingObject;
     - File: src/Battlesport/pickup.cpp;
     - Target: pickup_register_existing_object;
     - Group: battlesport.pickup;
-    - Model: data-equivalent-only;
-    - Blocker: source-shape audit and tier S byte verification pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x41dd60:
   - [☑️] Reconstructed (Name: PickupType::FindByLogicalName)
@@ -27978,15 +27978,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x41e1c0:
   - [✅] Reconstructed (Name: PickupType::GetByIndex)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: subsystem; Parent: Pickup; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: battlesport_gameplay.pickup_pkt11_pkt12_handlers; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: PickupType::GetByIndex;
     - File: src/Battlesport/pickup.cpp;
     - Target: pickup_type_get_by_index;
     - Group: battlesport.pickup;
-    - Model: data-equivalent-only;
-    - Blocker: source-shape audit and tier S byte verification pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x41e1e0:
   - [☑️] Reconstructed (Name: PickupTypeKeyTable::FindIndex)
@@ -28043,15 +28043,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x41e330:
   - [☑️] Reconstructed (Name: Pickup::SetVariantFromTerrain)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: subsystem; Parent: Pickup; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: battlesport_gameplay.pickup_pkt11_pkt12_handlers; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: Pickup::SetVariantFromTerrain;
     - File: src/Battlesport/pickup.cpp;
     - Target: pickup_set_variant_from_terrain;
     - Group: battlesport.pickup;
-    - Model: data-equivalent-only;
-    - Blocker: source-shape audit and tier S byte verification pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x41e430:
   - [☑️] Reconstructed (Name: Pickup::SpawnListHasEntryNearXZ)
@@ -28173,15 +28173,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x41e930:
   - [☑️] Reconstructed (Name: Pickup::FindSpawnByPickupId)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: subsystem; Parent: Pickup; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: battlesport_gameplay.pickup_pkt11_pkt12_handlers; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: Pickup::FindSpawnByPickupId;
     - File: src/Battlesport/pickup.cpp;
     - Target: pickup_find_spawn_by_pickup_id;
     - Group: battlesport.pickup;
-    - Model: data-equivalent-only;
-    - Blocker: source-shape audit and tier S byte verification pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x41e950:
   - [✅] Reconstructed (Name: Pickup::GetSpawnDefFromNode)
@@ -28199,15 +28199,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x41e960:
   - [✅] Reconstructed (Name: Pickup::SetNextPickupId)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: subsystem; Parent: Pickup; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: battlesport_gameplay.pickup_pkt11_pkt12_handlers; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: Pickup::SetNextPickupId;
     - File: src/Battlesport/pickup.cpp;
     - Target: pickup_set_next_pickup_id;
     - Group: battlesport.pickup;
-    - Model: data-equivalent-only;
-    - Blocker: source-shape audit and tier S byte verification pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x41e970:
   - [✅] Reconstructed (Name: Pickup::GetNextPickupId)
@@ -28290,15 +28290,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x433f40:
   - [☑️] Reconstructed (Name: Pickup::HandlePkt11_SpawnDelta)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: subsystem; Parent: Pickup; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: battlesport_gameplay.pickup_pkt11_pkt12_handlers; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: Pickup::HandlePkt11_SpawnDelta;
     - File: src/Battlesport/pickup.cpp;
     - Target: pickup_handle_pkt11_spawn_delta;
     - Group: battlesport.pickup;
-    - Model: data-equivalent-only;
-    - Blocker: source-shape audit and tier S byte verification pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x434050:
   - [✅] Reconstructed (Name: Pickup::SendPkt12_AirdropSpawnChuteRelay)
@@ -28316,15 +28316,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4340a0:
   - [✅] Reconstructed (Name: Pickup::HandlePkt12_AirdropSpawnChuteRelay)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: subsystem; Parent: Pickup; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: battlesport_gameplay.pickup_pkt11_pkt12_handlers; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: Pickup::HandlePkt12_AirdropSpawnChuteRelay;
     - File: src/Battlesport/pickup.cpp;
     - Target: pickup_handle_pkt12_airdrop_spawn_chute_relay;
     - Group: battlesport.pickup;
-    - Model: data-equivalent-only;
-    - Blocker: source-shape audit and tier S byte verification pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x4389c0:
   - [✅] Reconstructed (Name: PickupAirdropSpawnRef::SpawnPickupTypeAndRelay)
@@ -31288,15 +31288,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x43c850:
   - [✅] Reconstructed (Name: Player::ResetAltGunRuntimeState)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: Player; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: battlesport_gameplay.player_alt_gun_runtime_dispatch; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: Player::ResetAltGunRuntimeState;
     - File: src/Battlesport/player.cpp;
     - Target: player_reset_alt_gun_runtime_state;
     - Group: battlesport.player;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred
 
 - 0x43c950:
   - [✅] Reconstructed (Name: Player::RemoveAllDeployedMines)
@@ -32423,8 +32423,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: GameNet::SendPkt07_AltGunDispatch)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: subsystem; Parent: network_online.gamenet_pkt07_altgun_dispatch; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: GameNet::SendPkt07_AltGunDispatch;
     - File: src/Battlesport/GameNet.cpp;
     - Target: gamenet_send_pkt07_alt_gun_dispatch;
@@ -32448,15 +32448,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x414330:
   - [✅] Reconstructed (Name: GameNet::ShowPlayerKillMessage)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: subsystem; Parent: GameNet; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: network_online.gamenet_pkt08_kill_event; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: GameNet::ShowPlayerKillMessage;
     - File: src/Battlesport/GameNet.cpp;
     - Target: gamenet_show_player_kill_message;
     - Group: battlesport.network_game;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x414390:
   - [✅] Reconstructed (Name: GameNet::RefreshPlayerListMenu)
@@ -32540,14 +32540,14 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [☑️] Reconstructed (Name: GameNet::RegisterGameplayHandlersAndOptCatalogCallbacks)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: subsystem; Parent: network_online.gamenet_launch_session_sync; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: GameNet::RegisterGameplayHandlersAndOptCatalogCallbacks;
     - File: src/Battlesport/GameNet.cpp;
     - Target: gamenet_register_gameplay_handlers_and_callbacks;
     - Group: battlesport.network_game;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S deferred
 
 - 0x4320b0:
   - [✅] Reconstructed (Name: GameNet::WaitForLocalPlayerColorIndex)
@@ -32565,28 +32565,28 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4320f0:
   - [✅] Reconstructed (Name: GameNet::ResetRemotePlayersAndSpawnLists)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: subsystem; Parent: GameNet; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: network_online.gamenet_reset_remote_rows_spawns; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: GameNet::ResetRemotePlayersAndSpawnLists;
     - File: src/Battlesport/GameNet.cpp;
     - Target: gamenet_reset_remote_players_and_spawn_lists;
     - Group: battlesport.network_game;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x4321b0:
   - [✅] Reconstructed (Name: GameNet::UnregisterGameplayPacketHandlers)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: subsystem; Parent: network_online.gamenet_launch_session_sync; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: GameNet::UnregisterGameplayPacketHandlers;
     - File: src/Battlesport/GameNet.cpp;
     - Target: gamenet_unregister_gameplay_packet_handlers;
     - Group: battlesport.network_game;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S deferred
 
 - 0x4322a0:
   - [✅] Reconstructed (Name: GameNet::ResetHudTimerPanelNetStateLongCountdown)
@@ -32618,8 +32618,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: GameNet::HandlePkt06_PlayerStateSnapshot)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: subsystem; Parent: network_online.gamenet_pkt06_player_state_snapshot; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: GameNet::HandlePkt06_PlayerStateSnapshot;
     - File: src/Battlesport/GameNet.cpp;
     - Target: gamenet_handle_pkt06_player_state_snapshot;
@@ -32644,8 +32644,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [☑️] Reconstructed (Name: GameNet::SpawnRemotePlayerFromPkt06_PlayerStateSnapshot)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: subsystem; Parent: network_online.gamenet_pkt06_player_state_snapshot; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: GameNet::SpawnRemotePlayerFromPkt06_PlayerStateSnapshot;
     - File: src/Battlesport/GameNet.cpp;
     - Target: gamenet_spawn_remote_player_from_pkt06_player_state_snapshot;
@@ -32657,8 +32657,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [☑️] Reconstructed (Name: GameNet::ApplyPkt06_PlayerStateSnapshotToRow)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: subsystem; Parent: network_online.gamenet_pkt06_player_state_snapshot; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: GameNet::ApplyPkt06_PlayerStateSnapshotToRow;
     - File: src/Battlesport/GameNet.cpp;
     - Target: gamenet_apply_pkt06_player_state_snapshot_to_row;
@@ -32695,80 +32695,80 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x432ed0:
   - [☑️] Reconstructed (Name: GameNet::HandlePkt03_RemoveRemotePlayer)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: subsystem; Parent: GameNet; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: network_online.gamenet_pkt03_remote_player_remove; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: GameNet::HandlePkt03_RemoveRemotePlayer;
     - File: src/Battlesport/GameNet.cpp;
     - Target: gamenet_handle_pkt03_remove_remote_player;
     - Group: battlesport.network_game;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred
 
 - 0x433000:
   - [✅] Reconstructed (Name: GameNet::SendPkt08_PlayerKillEvent)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: subsystem; Parent: GameNet; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: network_online.gamenet_pkt08_kill_event; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: GameNet::SendPkt08_PlayerKillEvent;
     - File: src/Battlesport/GameNet.cpp;
     - Target: gamenet_send_pkt08_player_kill_event;
     - Group: battlesport.network_game;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x433060:
   - [☑️] Reconstructed (Name: GameNet::HandlePkt08_PlayerKillEvent)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: subsystem; Parent: GameNet; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: network_online.gamenet_pkt08_kill_event; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: GameNet::HandlePkt08_PlayerKillEvent;
     - File: src/Battlesport/GameNet.cpp;
     - Target: gamenet_handle_pkt08_player_kill_event;
     - Group: battlesport.network_game;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4330f0:
   - [✅] Reconstructed (Name: GameNet::SendPkt0E_PlayerLapProgress)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: subsystem; Parent: GameNet; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: network_online.gamenet_pkt0e_lap_progress; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: GameNet::SendPkt0E_PlayerLapProgress;
     - File: src/Battlesport/GameNet.cpp;
     - Target: gamenet_send_pkt0e_player_lap_progress;
     - Group: battlesport.network_game;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x433170:
   - [✅] Reconstructed (Name: GameNet::HandlePkt0E_PlayerLapProgress)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: subsystem; Parent: GameNet; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: network_online.gamenet_pkt0e_lap_progress; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: GameNet::HandlePkt0E_PlayerLapProgress;
     - File: src/Battlesport/GameNet.cpp;
     - Target: gamenet_handle_pkt0e_player_lap_progress;
     - Group: battlesport.network_game;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x433200:
   - [✅] Reconstructed (Name: GameNet::AreAllPlayersAtLapTarget)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: subsystem; Parent: GameNet; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: network_online.gamenet_pkt0e_lap_progress; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: GameNet::AreAllPlayersAtLapTarget;
     - File: src/Battlesport/GameNet.cpp;
     - Target: gamenet_are_all_players_at_lap_target;
     - Group: battlesport.network_game;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x433250:
   - [✅] Reconstructed (Name: GameNet::HandlePkt0D_HudTimerPanelState)
@@ -32864,9 +32864,9 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x433710:
   - [✅] Reconstructed (Name: GameNet::SetStatusBitsFromFlags)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: subsystem; Parent: GameNet; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: network_online.gamenet_status_bits; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: GameNet::SetStatusBitsFromFlags;
     - File: src/Battlesport/GameNet.cpp;
     - Target: gamenet_set_status_bits_from_flags;
@@ -32877,9 +32877,9 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x433730:
   - [✅] Reconstructed (Name: GameNet::GetStatusBitAllowMaps)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: subsystem; Parent: GameNet; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: network_online.gamenet_status_bits; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: GameNet::GetStatusBitAllowMaps;
     - File: src/Battlesport/GameNet.cpp;
     - Target: gamenet_get_status_bit_allow_maps;
@@ -32890,9 +32890,9 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x433740:
   - [✅] Reconstructed (Name: GameNet::GetStatusBitNameTags)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: subsystem; Parent: GameNet; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: network_online.gamenet_status_bits; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: GameNet::GetStatusBitNameTags;
     - File: src/Battlesport/GameNet.cpp;
     - Target: gamenet_get_status_bit_name_tags;
@@ -32903,28 +32903,28 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x433750:
   - [☑️] Reconstructed (Name: GameNet::SendPkt0B_ChatMessage)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: subsystem; Parent: GameNet; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: network_online.gamenet_pkt0b_chat_message; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: GameNet::SendPkt0B_ChatMessage;
     - File: src/Battlesport/GameNet.cpp;
     - Target: gamenet_send_pkt0b_chat_message;
     - Group: battlesport.network_game;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4337e0:
   - [☑️] Reconstructed (Name: GameNet::HandlePkt0B_ChatMessage)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: subsystem; Parent: GameNet; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: network_online.gamenet_pkt0b_chat_message; State: implemented)
+  - [❎] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: GameNet::HandlePkt0B_ChatMessage;
     - File: src/Battlesport/GameNet.cpp;
     - Target: gamenet_handle_pkt0b_chat_message;
     - Group: battlesport.network_game;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x433840:
   - [☑️] Reconstructed (Name: GameNet::RespawnPlayerAndDropWeaponPickupIfAllowed)
@@ -32955,48 +32955,48 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x433c30:
   - [✅] Reconstructed (Name: GameNet::HostSendPkt0F_CraterFeature)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: subsystem; Parent: GameNet; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: network_online.gamenet_feature_relay_host_send; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: GameNet::HostSendPkt0F_CraterFeature;
     - File: src/Battlesport/GameNet.cpp;
     - Target: gamenet_host_send_pkt0f_crater_feature;
     - Group: battlesport.network_game;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x433ca0:
   - [☑️] Reconstructed (Name: GameNet::SendPkt10_QSandEvent)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: subsystem; Parent: GameNet; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: network_online.gamenet_pkt10_qsand_event_send; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: GameNet::SendPkt10_QSandEvent;
     - File: src/Battlesport/GameNet.cpp;
     - Target: gamenet_send_pkt10_qsand_event;
     - Group: battlesport.network_game;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred
 
 - 0x433de0:
   - [✅] Reconstructed (Name: GameNet::HostSendPkt10_QSandFeature)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: subsystem; Parent: GameNet; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: network_online.gamenet_feature_relay_host_send; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: GameNet::HostSendPkt10_QSandFeature;
     - File: src/Battlesport/GameNet.cpp;
     - Target: gamenet_host_send_pkt10_qsand_feature;
     - Group: battlesport.network_game;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x434190:
   - [☑️] Reconstructed (Name: GameNet::HandlePkt07_AltGunDispatch)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: subsystem; Parent: network_online.gamenet_pkt07_altgun_dispatch; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: GameNet::HandlePkt07_AltGunDispatch;
     - File: src/Battlesport/GameNet.cpp;
     - Target: gamenet_handle_pkt07_alt_gun_dispatch;
@@ -33008,8 +33008,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: GameNet::AltGunDispatchNoOpCallback)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: subsystem; Parent: network_online.gamenet_pkt07_altgun_dispatch; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: GameNet::AltGunDispatchNoOpCallback;
     - File: src/Battlesport/GameNet.cpp;
     - Target: gamenet_alt_gun_dispatch_no_op_callback;
@@ -33046,9 +33046,9 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x434460:
   - [☑️] Reconstructed (Name: GameNet::SendPkt14_HudTimerAndFlagsSync)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: subsystem; Parent: GameNet; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: network_online.gamenet_pkt14_hud_timer_flags_send; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: GameNet::SendPkt14_HudTimerAndFlagsSync;
     - File: src/Battlesport/GameNet.cpp;
     - Target: gamenet_send_pkt14_hud_timer_and_flags_sync;
@@ -33059,15 +33059,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4344b0:
   - [☑️] Reconstructed (Name: GameNet::HandlePkt14_HudTimerAndFlagsSync)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: subsystem; Parent: GameNet; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: network_online.gamenet_pkt14_hud_timer_flags_receive; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: GameNet::HandlePkt14_HudTimerAndFlagsSync;
     - File: src/Battlesport/GameNet.cpp;
     - Target: gamenet_handle_pkt14_hud_timer_and_flags_sync;
     - Group: battlesport.network_game;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: tier S deferred
 
 - 0x434550:
   - [✅] Reconstructed (Name: GameNet::HostUpdateSessionDescStatusFields)
@@ -36016,7 +36016,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x40e880:
   - [☑️] Reconstructed (Name: HudUiTriplet::RemoveEntry)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: HudUiTriplet; State: implemented)
+  - [✅] Source owner (Kind: class; Parent: hud_ui.hud_ui_triplet_entry_vector; State: implemented)
   - [❎] Data reimplemented
   - [✅] Reimplemented [B]
     - Name: HudUiTriplet::RemoveEntry;
@@ -36024,7 +36024,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: hud_ui_triplet_remove_entry;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S deferred
 
 - 0x40e910:
   - [✅] Reconstructed (Name: HudUiTriplet::InterpolateLayout)
@@ -39684,9 +39684,9 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4138d0:
   - [✅] Reconstructed (Name: HudUi::ShowTopMessageLine)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: HudUi text-stack globals; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: hud_ui.top_message_stack_dispatch; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUi::ShowTopMessageLine;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_show_top_message_line;
@@ -41296,9 +41296,9 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4bd280:
   - [✅] Reconstructed (Name: HudUi::PushTopMessageLine)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: HudUi text-stack globals; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: hud_ui.top_message_stack_dispatch; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUi::PushTopMessageLine;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_push_top_message_line;
@@ -42570,9 +42570,9 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4138f0:
   - [✅] Reconstructed (Name: HudUi::ShowChatLine)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: HudUi text-stack globals; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: hud_ui.chat_message_stack_dispatch; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUi::ShowChatLine;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_show_chat_line;
@@ -42583,15 +42583,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4143c0:
   - [✅] Reconstructed (Name: HudUi::RemoveScoreboardEntryRow)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: HudUi-scoreboard-wrapper; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: class; Parent: hud_ui.hud_ui_triplet_scoreboard_refresh; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: HudUi::RemoveScoreboardEntryRow;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_remove_scoreboard_entry_row;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S deferred
 
 - 0x4143b0:
   - [✅] Reconstructed (Name: HudUi::RefreshScoreboardEntryRow)
@@ -47667,7 +47667,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4622f0:
   - [✅] Reconstructed (Name: zError::EmitDebugBuffer)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: authored-stubs; State: implemented)
+  - [✅] Source owner (Kind: global-data; Parent: engine.zerror.debug_buffer_emit; State: implemented)
   - [✅] Data reimplemented
   - [✅] Reimplemented [B]
     - Name: zError::EmitDebugBuffer;
@@ -47675,7 +47675,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zerror_emit_debug_buffer;
     - Group: misc.authored_stubs;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x404e80:
   - [✅] Reconstructed (Name: zError::ReportOldNoOp)

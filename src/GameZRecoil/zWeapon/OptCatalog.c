@@ -2553,8 +2553,14 @@ namespace OptCatalog {
         g_OptCatalogSndNoAmmoWarning->PlayA3DSimple(1.0f);
     }
 
-    // Reimplements 0x4b26f0: OptCatalog::InvokeDamageFeedbackAndHitCallback
-    // (D:\Proj\GameZRecoil\zWeapon\OptCatalog.c)
+    /**
+     * Reimplements 0x4b26f0: OptCatalog::InvokeDamageFeedbackAndHitCallback
+     * Source path: D:\Proj\GameZRecoil\zWeapon\OptCatalog.c
+     * Purpose: apply per-hit damage feedback and handler callback state.
+     * Behavior: clears current damage context, optionally stamps the damage
+     * mask, dispatches health or handler callbacks, captures hit snapshots,
+     * selects feedback effects, and counts hits for the tracked owner node.
+     */
     int __fastcall InvokeDamageFeedbackAndHitCallback(
         OptCatalogEntryDef * self,
         zClass_NodePartial * damageOwnerNode,
@@ -2634,10 +2640,14 @@ namespace OptCatalog {
         return result;
     }
 
-    // Reimplements 0x4b28e0: OptCatalog::SetDamageContext
-    // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-    void __fastcall
-    SetDamageContext(
+    /**
+     * Reimplements 0x4b28e0: OptCatalog::SetDamageContext
+     * Source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp
+     * Purpose: publish the active damage-context kind and optional hit event.
+     * Behavior: stores the damage-context kind and captures the hit event only
+     * when the event and its hit node are non-null.
+     */
+    void __fastcall SetDamageContext(
         int contextKind,
         OptCatalogHitEventPartial *contextHitEvent
     ){
@@ -2648,7 +2658,14 @@ namespace OptCatalog {
         g_OptCatalog_DamageContextKind = contextKind;
     }
 
-    // Reimplements 0x4b2880: OptCatalog::CaptureHitSnapshotAndInvokeDamageTimerCallback
+    /**
+     * Reimplements 0x4b2880: OptCatalog::CaptureHitSnapshotAndInvokeDamageTimerCallback
+     * Source path: src/GameZRecoil/zWeapon/OptCatalog.c
+     * Purpose: capture hit positions and forward damage to the timer callback.
+     * Behavior: looks up the hit node damage handler, optionally copies source
+     * and hit positions to the captured globals, invokes the timer callback,
+     * and returns the callback float result.
+     */
     float __fastcall CaptureHitSnapshotAndInvokeDamageTimerCallback(
         zVec3 * sourcePos,
         OptCatalogHitEventPartial * hitEvent,
@@ -2669,8 +2686,13 @@ namespace OptCatalog {
         );
     }
 
-    // Reimplements 0x4b2910: OptCatalog::GetCapturedHitSourcePtr
-    // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+    /**
+     * Reimplements 0x4b2910: OptCatalog::GetCapturedHitSourcePtr
+     * Source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp
+     * Purpose: expose the captured damage source vector buffer.
+     * Behavior: returns the captured damage source-position global; callers
+     * consume the adjacent captured hit-position vector.
+     */
     zVec3 *GetCapturedHitSourcePtr() {
         return &g_OptCatalog_CapturedDamageSourcePos;
     }
@@ -2790,8 +2812,18 @@ namespace OptCatalog {
         );
     }
 
-    // Reimplements 0x4b07d0: OptCatalog::HandleImpactEvent
-    // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+    /**
+     * Reimplements 0x4b07d0: OptCatalog::HandleImpactEvent
+     * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
+     * BN behavior: ECX is OptCatalogEntryDef*, EDX is
+     * OptCatalogHitEventPartial*, and the runtime instance is passed on the
+     * stack. Reads the impact slot from the surface reference, invokes the
+     * optional impact callback, scales damage by runtime spawnScale, dispatches
+     * damage feedback, terrain impact events, impact sound, and fallback
+     * animation/effect spawning according to entry flags and damage-context
+     * state.
+     * Purpose: apply all direct impact feedback for a runtime projectile hit.
+     */
     void __fastcall HandleImpactEvent(
         OptCatalogEntryDef * self,
         OptCatalogHitEventPartial * hitEvent,
@@ -2901,8 +2933,16 @@ namespace OptCatalog {
         }
     }
 
-    // Reimplements 0x4b0980: OptCatalog::HandleImpactEventFromRuntimeState
-    // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+    /**
+     * Reimplements 0x4b0980: OptCatalog::HandleImpactEventFromRuntimeState
+     * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
+     * BN behavior: ECX is OptCatalogEntryDef* and EDX is
+     * OptCatalogRuntimeInstanceStorage*. Builds a stack hit event from
+     * runtimeInstance->pos, a zero-slot surface-material reference, and
+     * runtimeInstance->projectileNode, then forwards to HandleImpactEvent with
+     * the original runtime instance.
+     * Purpose: synthesize a simple hit event from runtime state and dispatch it.
+     */
     void __fastcall HandleImpactEventFromRuntimeState(
         OptCatalogEntryDef * self,
         OptCatalogRuntimeInstanceStorage * runtimeInstance
@@ -2923,8 +2963,17 @@ namespace OptCatalog {
         );
     }
 
-    // Reimplements 0x4b09d0: OptCatalog::BuildImpactHitList
-    // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+    /**
+     * Reimplements 0x4b09d0: OptCatalog::BuildImpactHitList
+     * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
+     * BN behavior: ECX is OptCatalogEntryDef*, EDX is
+     * OptCatalogRuntimeInstanceStorage*, with allowOwnerOnlyHit and outHitList
+     * on the stack. Temporarily clears projectile raycastability, filters
+     * g_Player_RuntimeDiScene against a sphere at runtimeInstance->pos using
+     * impactProximity, restores raycastability, rejects owner-only hits when
+     * requested, and returns success for an accepted hit list.
+     * Purpose: collect nearby impact candidates for runtime-probe handling.
+     */
     int __fastcall BuildImpactHitList(
         OptCatalogEntryDef * self,
         OptCatalogRuntimeInstanceStorage * runtimeInstance,
@@ -2966,8 +3015,17 @@ namespace OptCatalog {
         return result == 0 ? 1 : 0;
     }
 
-    // Reimplements 0x4b0a50: OptCatalog::HandleImpactFromRuntimeProbe
-    // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+    /**
+     * Reimplements 0x4b0a50: OptCatalog::HandleImpactFromRuntimeProbe
+     * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
+     * BN behavior: ECX is OptCatalogEntryDef*, EDX is
+     * OptCatalogRuntimeInstanceStorage*, with hitList and excludedDamageHandler
+     * on the stack. Walks probe hits, skips the excluded damage handler,
+     * computes full or distance-scaled damage multiplied by spawnScale, then
+     * either dispatches damage feedback immediately or queues a
+     * OptCatalogQueuedImpactRecord; returns nonzero when any hit was processed.
+     * Purpose: process or queue damage feedback for fallback probe hits.
+     */
     int __fastcall HandleImpactFromRuntimeProbe(
         OptCatalogEntryDef * self,
         OptCatalogRuntimeInstanceStorage * runtimeInstance,
@@ -3015,8 +3073,17 @@ namespace OptCatalog {
         return processedAny;
     }
 
-    // Reimplements 0x4aed00: OptCatalog::ProcessRuntimeInstance
-    // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+    /**
+     * Reimplements 0x4aed00: OptCatalog::ProcessRuntimeInstance
+     * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
+     * BN behavior: ECX is OptCatalogEntryDef* and EDX is
+     * OptCatalogRuntimeInstanceStorage*. Builds a vertical probe from runtime
+     * position, masks and restores projectile active state for closest-hit
+     * raycast against g_OptCatalogRuntimeWorld, dispatches direct hits through
+     * HandleImpactEvent, then optionally runs the fallback impact probe using
+     * BuildImpactHitList and HandleImpactFromRuntimeProbe.
+     * Purpose: advance one runtime projectile through direct and fallback impact checks.
+     */
     int __fastcall ProcessRuntimeInstance(
         OptCatalogEntryDef * self,
         OptCatalogRuntimeInstanceStorage * runtimeInstance
@@ -3553,16 +3620,25 @@ namespace OptCatalog {
 }
 
 namespace DamageFeedback {
-    // Reimplements 0x4b2900: DamageFeedback::SetIntensityScalar
-    // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+    /**
+     * Reimplements 0x4b2900: DamageFeedback::SetIntensityScalar
+     * Source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp
+     * Purpose: update the active damage-feedback intensity scalar.
+     * Behavior: stores the per-hit damage-feedback intensity scalar used by
+     * OptCatalog feedback variant selection.
+     */
     void __stdcall SetIntensityScalar(float scalar) {
         g_OptCatalogDamageFeedbackIntensityScalar = scalar;
     }
 }
 
 namespace HitContext {
-    // Reimplements 0x4b2920: HitContext::GetCurrentOwnerOrCtx
-    // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+    /**
+     * Reimplements 0x4b2920: HitContext::GetCurrentOwnerOrCtx
+     * Source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp
+     * Purpose: expose the current OptCatalog damage owner/context pointer.
+     * Behavior: returns the current OptCatalog damage owner/context pointer.
+     */
     void *GetCurrentOwnerOrCtx() {
         return g_OptCatalog_CurrentDamageOwnerOrCtx;
     }

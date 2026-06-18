@@ -1,8 +1,183 @@
 #include "GameZRecoil/zModel/zModel.h"
+#include "GameZRecoil/zGeometry/zGeometry.h"
+#include "GameZRecoil/zVideo/zVideo.h"
 #include "zDi.h"
 
+#include <cmath>
 #include <cstdint>
 #include <cstdlib>
+
+extern "C" int zmodel_material_pool_entry_smoke() {
+    zModel_MaterialSlot slots[3] = {};
+    g_zModel_MatlPool = slots;
+
+    const bool ok = zModel_Matl::GetPoolEntry(-1) == nullptr &&
+                    zModel_Matl::GetPoolEntry(0) == &slots[0] &&
+                    zModel_Matl::GetPoolEntry(2) == &slots[2] &&
+                    zModel_MatlSlot::IndexFromPtrOrMinus1(nullptr) == -1 &&
+                    zModel_MatlSlot::IndexFromPtrOrMinus1(&slots[2]) == 2;
+
+    g_zModel_MatlPool = nullptr;
+    return ok ? 0 : 1;
+}
+
+extern "C" int zmodel_material_defaults_and_find_smoke() {
+    zImage_TexDirEntryPartial texA{};
+    zImage_TexDirEntryPartial texB{};
+    zImage_TexDirEntryPartial texMissing{};
+
+    zModel_MaterialCyclePartial cycle{};
+    zModel_MaterialPartial material{};
+    material.flags = 0xffff;
+    material.packedColor = 1;
+    material.colorRgb.red = 1.0f;
+    material.currentTextureDirectoryEntry = &texA;
+    material.unknown_14 = 7.0f;
+    material.colorScalar = 8.0f;
+    material.unknown_1c = 9.0f;
+    material.userTag = 10;
+    material.cycle = &cycle;
+
+    zModel_Material::ResetDefaults(&material);
+    const bool defaultsOk =
+        material.flags == 0xf8ff && material.packedColor == 0x7fff &&
+        material.colorRgb.red == 255.0f && material.colorRgb.green == 255.0f &&
+        material.colorRgb.blue == 255.0f && material.currentTextureDirectoryEntry == nullptr &&
+        material.unknown_14 == 0.0f && material.colorScalar == 0.5f &&
+        material.unknown_1c == 0.5f && material.userTag == 0 && material.cycle == nullptr;
+
+    zModel_MaterialSlot slots[3] = {};
+    slots[0].material.currentTextureDirectoryEntry = &texA;
+    slots[0].nextPoolIndex = 2;
+    slots[2].material.currentTextureDirectoryEntry = &texB;
+    slots[2].nextPoolIndex = -1;
+    g_zModel_MatlPool = slots;
+    g_zModel_MatlActiveHeadIndex = 0;
+
+    const bool findOk = zModel_Material::FindByTexDirEntry(nullptr) == nullptr &&
+                        zModel_Material::FindByTexDirEntry(&texA) == &slots[0].material &&
+                        zModel_Material::FindByTexDirEntry(&texB) == &slots[2].material &&
+                        zModel_Material::FindByTexDirEntry(&texMissing) == nullptr;
+
+    zModel_MaterialPartial compareA = material;
+    zModel_MaterialPartial compareB = material;
+    compareA.currentTextureDirectoryEntry = &texA;
+    compareB.currentTextureDirectoryEntry = &texA;
+    compareA.userTag = 0;
+    compareB.userTag = 77;
+    const bool tagPromoteLeft =
+        zModel_Material::CompareForReuse(&compareA, &compareB) == 0 && compareA.userTag == 77;
+    compareA.userTag = 55;
+    compareB.userTag = 0;
+    const bool tagPromoteRight =
+        zModel_Material::CompareForReuse(&compareA, &compareB) == 0 && compareB.userTag == 55;
+    compareB.userTag = 66;
+    const bool tagConflict = zModel_Material::CompareForReuse(&compareA, &compareB) != 0;
+    compareB.userTag = 55;
+    compareB.currentTextureDirectoryEntry = &texB;
+    const bool textureMismatch = zModel_Material::CompareForReuse(&compareA, &compareB) == 1;
+    compareB.currentTextureDirectoryEntry = &texA;
+    compareB.colorRgb.red = 1.0f;
+    const bool bytesMismatch = zModel_Material::CompareForReuse(&compareA, &compareB) != 0;
+
+    zModel_MaterialPartial activeRequest = slots[2].material;
+    activeRequest.userTag = 99;
+    g_zModel_MatlReuseCache = nullptr;
+    const bool findOrCloneActive =
+        zModel_Material::FindOrClone(&activeRequest) == &slots[2].material &&
+        slots[2].material.userTag == 99;
+
+    zModel_MaterialPartial cacheMaterial = slots[0].material;
+    zModel_MaterialPartial cacheRequest = cacheMaterial;
+    g_zModel_MatlReuseCache = &cacheMaterial;
+    const bool findOrCloneCache = zModel_Material::FindOrClone(&cacheRequest) == &cacheMaterial;
+
+    zModel_MaterialSlot cloneSlots[1] = {};
+    cloneSlots[0].prevPoolIndex = -1;
+    cloneSlots[0].nextPoolIndex = -1;
+    zModel_MaterialPartial cloneRequest = material;
+    cloneRequest.currentTextureDirectoryEntry = &texMissing;
+    g_zModel_MatlPool = cloneSlots;
+    g_zModel_MatlActiveHeadIndex = -1;
+    g_zModel_MatlFreeHeadIndex = 0;
+    g_zModel_MatlPoolInUseCount = 0;
+    g_zModel_MatlReuseCache = nullptr;
+    zModel_MaterialPartial *const clonedMaterial = zModel_Material::FindOrClone(&cloneRequest);
+    const bool findOrCloneMiss =
+        clonedMaterial == &cloneSlots[0].material && g_zModel_MatlReuseCache == clonedMaterial &&
+        g_zModel_MatlActiveHeadIndex == 0 && g_zModel_MatlFreeHeadIndex == -1 &&
+        g_zModel_MatlPoolInUseCount == 1 &&
+        clonedMaterial->currentTextureDirectoryEntry == &texMissing;
+
+    zModel_MaterialSlot debugSlots[1] = {};
+    debugSlots[0].prevPoolIndex = -1;
+    debugSlots[0].nextPoolIndex = -1;
+    g_zModel_MatlPool = debugSlots;
+    g_zModel_MatlActiveHeadIndex = -1;
+    g_zModel_MatlFreeHeadIndex = 0;
+    g_zModel_MatlPoolInUseCount = 0;
+    g_zModel_MatlReuseCache = nullptr;
+    std::srand(1);
+    zModel_MaterialPartial *const debugMaterial =
+        zGeometry_Model::FindOrCreateRandomDebugMaterial();
+    const int debugRed = static_cast<int>(debugMaterial->colorRgb.red);
+    const int debugGreen = static_cast<int>(debugMaterial->colorRgb.green);
+    const int debugBlue = static_cast<int>(debugMaterial->colorRgb.blue);
+    const unsigned short debugPackedColor = static_cast<unsigned short>(
+        ((debugRed & 0x1f) << 11) | ((debugGreen & 0x3f) << 5) | (debugBlue & 0x1f));
+    const bool randomDebugMaterialOk =
+        debugMaterial == &debugSlots[0].material &&
+        g_zModel_MatlReuseCache == debugMaterial && g_zModel_MatlActiveHeadIndex == 0 &&
+        g_zModel_MatlFreeHeadIndex == -1 && g_zModel_MatlPoolInUseCount == 1 &&
+        debugMaterial->packedColor == debugPackedColor;
+
+    const bool setTagOk = zModel_Material::SetUserTag(nullptr, 7) == 0 &&
+                          zModel_Material::SetUserTag(&compareA, 88) == 1 &&
+                          compareA.userTag == 88;
+
+    zModel_MaterialPartial cycleMaterial = {};
+    cycleMaterial.flags = 0x0001;
+    const bool cycleCountDefaultReject =
+        zModel_Material::SetCycleTextureCount(&g_zModel_DefaultMaterial, 2) == 0;
+    const bool cycleCountOk =
+        zModel_Material::SetCycleTextureCount(&cycleMaterial, 3) == 1 &&
+        (cycleMaterial.flags & 0x0500) == 0x0500 && cycleMaterial.cycle != nullptr &&
+        cycleMaterial.cycle->loopEnabled == 0 && cycleMaterial.cycle->currentFrame == 0.0f &&
+        cycleMaterial.cycle->framesPerSecond == 15.0f && cycleMaterial.cycle->frameCount == 3 &&
+        cycleMaterial.cycle->frameWriteCount == 0 && cycleMaterial.cycle->frameTable != nullptr &&
+        cycleMaterial.cycle->frameTable[0] == zImage::GetDefaultImageRefPtr() &&
+        reinterpret_cast<zVidImagePartial **>(zImage::GetDefaultImageRefPtr())[0] ==
+            &zVid_Image::g_zImage_DefaultImage;
+    const bool cycleNoResize = zModel_Material::SetCycleTextureCount(&cycleMaterial, 2) == 0;
+    zImage_TexDirEntryPartial cycleTexture = {};
+    const bool cycleAddOk = zModel_Material::AddCycleTexture(&cycleMaterial, &cycleTexture) == 1 &&
+                            cycleMaterial.cycle->frameTable[0] == &cycleTexture &&
+                            cycleMaterial.cycle->frameWriteCount == 1;
+    const bool cycleLoopSpeedOk =
+        zModel_Material::SetCycleTextureLoop(&cycleMaterial, 1) == 1 &&
+        cycleMaterial.cycle->loopEnabled == 1 &&
+        zModel_Material::SetCycleTextureSpeed(&cycleMaterial, 7.5f) == 1 &&
+        cycleMaterial.cycle->framesPerSecond == 7.5f;
+    zModel_MaterialPartial nonCycleMaterial = {};
+    const bool cycleRejects =
+        zModel_Material::AddCycleTexture(&nonCycleMaterial, &cycleTexture) == 0 &&
+        zModel_Material::SetCycleTextureLoop(nullptr, 1) == 0 &&
+        zModel_Material::SetCycleTextureSpeed(nullptr, 1.0f) == 0;
+
+    std::free(cycleMaterial.cycle->frameTable);
+    std::free(cycleMaterial.cycle);
+
+    g_zModel_MatlPool = nullptr;
+    g_zModel_MatlActiveHeadIndex = -1;
+    g_zModel_MatlReuseCache = nullptr;
+    return defaultsOk && findOk && tagPromoteLeft && tagPromoteRight && tagConflict &&
+                   textureMismatch && bytesMismatch && findOrCloneActive && findOrCloneCache &&
+                   findOrCloneMiss && randomDebugMaterialOk && setTagOk &&
+                   cycleCountDefaultReject && cycleCountOk && cycleNoResize && cycleAddOk &&
+                   cycleLoopSpeedOk && cycleRejects
+               ? 0
+               : 1;
+}
 
 extern "C" int zmodel_material_and_di_clone_smoke() {
     zModel_MaterialPartial material = {};
@@ -266,4 +441,93 @@ extern "C" int zmodel_set_di_texture_world_per_meter_smoke() {
     }
 
     return 0;
+}
+
+extern "C" int zdi_add_polygon_wrapper_smoke() {
+    zDiPartial addDi = {};
+    zModel_MaterialPartial addMaterial = {};
+    addMaterial.flags = 0x0100;
+    zVec3 points[4] = {
+        {0.0f, 0.0f, 0.0f},
+        {1.0f, 0.0f, 0.0f},
+        {0.0f, 1.0f, 0.0f},
+        {1.0f, 1.0f, 0.0f},
+    };
+    zVec3 normalsA[4] = {};
+    zVec3 normalsB[4] = {
+        {0.0f, 0.0f, 1.0f},
+        {1.0f, 0.0f, 1.0f},
+        {0.0f, 1.0f, 1.0f},
+        {1.0f, 1.0f, 1.0f},
+    };
+    zClipUV uvs[4] = {
+        {4.0f, 5.0f},
+        {5.0f, 5.0f},
+        {4.0f, 6.0f},
+        {99.0f, 99.0f},
+    };
+    const int tag = 0x4567;
+
+    const int result = zDi::AddPolygon(
+        &addDi,
+        4,
+        points,
+        uvs,
+        normalsA,
+        normalsB,
+        nullptr,
+        &addMaterial,
+        0x88,
+        1,
+        &tag
+    );
+
+    const zDiEntryPartial *const entry = addDi.entries;
+    const int *const vertexIndices =
+        entry != nullptr ? static_cast<const int *>(entry->vertexIndices) : nullptr;
+    const zClipUV *const entryUvs =
+        entry != nullptr ? static_cast<const zClipUV *>(entry->uvPairs) : nullptr;
+
+    const bool ok = result == 0 && addDi.entryCount == 1 && addDi.vertCount == 4 &&
+                    addDi.normalCount == 0 && addDi.blendVertCount == 4 && entry != nullptr &&
+                    vertexIndices != nullptr && entry->normalIndices == nullptr &&
+                    entryUvs != nullptr && entry->drawFlags == 0x88 &&
+                    (entry->flagsAndIndexCount & 0x03ff) == 0x0104 &&
+                    entry->material == &addMaterial &&
+                    entry->variantTagInitialized == 0x67 && entry->variantTag == 0x45 &&
+                    vertexIndices[0] == 0 && vertexIndices[1] == 1 &&
+                    vertexIndices[2] == 2 && vertexIndices[3] == 3 &&
+                    addDi.blendVerts[0].z == 1.0f &&
+                    std::fabs(entryUvs[0].u) < 0.00001f &&
+                    std::fabs(entryUvs[0].v) < 0.00001f &&
+                    std::fabs(entryUvs[3].u - 1.0f) < 0.00001f &&
+                    std::fabs(entryUvs[3].v - 1.0f) < 0.00001f;
+
+    if (entry != nullptr) {
+        std::free(entry->vertexIndices);
+        std::free(entry->normalIndices);
+        std::free(entry->uvPairs);
+    }
+    std::free(addDi.entries);
+    std::free(addDi.verts);
+    std::free(addDi.normals);
+    std::free(addDi.blendVerts);
+
+    return ok ? 0 : 1;
+}
+
+extern "C" int ztag4_clear_smoke() {
+    zTag4Partial tag = {};
+    tag.count = 3;
+    tag.tags[0] = 0x11;
+    tag.tags[1] = 0x22;
+    tag.tags[2] = 0x33;
+
+    zTag4::Clear(nullptr);
+    zTag4::Clear(&tag);
+
+    return tag.count == 0 && tag.tags[0] == 0xff && tag.tags[1] == 0xff &&
+                   tag.tags[2] == 0xff
+               ? 0
+               : 1;
 }
