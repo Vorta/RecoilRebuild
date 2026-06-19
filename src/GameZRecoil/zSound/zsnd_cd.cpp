@@ -31,7 +31,15 @@ extern "C" int g_zSndCdDiscLengthMinute = 0;
 extern "C" int g_zSndCdDiscLengthSecond = 0;
 extern "C" unsigned short g_zSndCdAuxVolumePrimary = 0;
 extern "C" unsigned short g_zSndCdAuxVolumeSecondary = 0;
+/**
+ * Reimplements data 0x4e5d34: ZOPT_AUDIO_API.
+ * Purpose: Stores ZOPT AUDIO API data used by engine.zsound.backend_option_globals.
+ */
 extern "C" int *ZOPT_AUDIO_API = 0;
+/**
+ * Reimplements data 0x4e5d50: ZOPT_SOUND_CDAUDIO.
+ * Purpose: Stores ZOPT SOUND CDAUDIO data used by engine.zsound.backend_option_globals.
+ */
 extern "C" int *ZOPT_SOUND_CDAUDIO = 0;
 extern "C" int g_zSnd_IsInitialized = 0;
 extern "C" int g_zSnd_ActiveBackend = 0;

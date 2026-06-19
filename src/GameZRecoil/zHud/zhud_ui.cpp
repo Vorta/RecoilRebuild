@@ -801,6 +801,10 @@ void HudLayoutHW::Disable() {
 }
 
 extern "C" {
+/**
+ * Reimplements data 0x4e4870: g_HudUi_InvalidateMask.
+ * Purpose: Stores g HudUi InvalidateMask data used by hud_ui.invalidate_mask_global.
+ */
 unsigned int g_HudUi_InvalidateMask = 0x0c;
 }
 

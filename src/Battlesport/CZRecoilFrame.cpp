@@ -34,6 +34,11 @@ extern HWND g_RecoilApp_hWndMain;
 HINSTANCE g_RecoilApp_hInstance = 0;
 int g_CZRecoilFrame_HasWolApi = 0;
 int g_CZRecoilFrame_WestwoodOnlineWinsockChecked = 0;
+/**
+ * Reimplements data 0x4f0cc0: g_HudSensorTracker Symbol.
+ * Purpose: Owns the global HUD sensor tracker state used by mission flow,
+ * map/objective rendering, network timer sync, and frame-level HUD updates.
+ */
 HudSensorTracker g_HudSensorTracker;
 }
 

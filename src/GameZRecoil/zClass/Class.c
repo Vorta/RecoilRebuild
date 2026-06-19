@@ -16,6 +16,10 @@ int g_zClass_ActiveNodeCount = 0;
 int g_zClass_NodeFreeHeadIndex = -1;
 char g_zClass_CurrentZbdPath[260] = {0};
 zClass_NodePartial *g_MainCamera = 0;
+/**
+ * Reimplements data 0x4f36b8: g_Player_RuntimeDiScene.
+ * Purpose: Stores g Player RuntimeDiScene data used by engine.zclass.player_runtime_di_scene_global.
+ */
 zClass_NodePartial *g_Player_RuntimeDiScene = 0;
 int gModel_ClipMaskStack[0x40] = {0};
 int *gModel_ClipMaskStackTop = gModel_ClipMaskStack;

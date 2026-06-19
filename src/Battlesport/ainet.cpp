@@ -10,6 +10,10 @@
 #include <string.h>
 
 extern "C" {
+/**
+ * Reimplements data 0x4e5c58: g_AINetListHead.
+ * Purpose: Stores g AINetListHead data used by battlesport_ai.ainet_global_list_head_data.
+ */
 AINet *g_AINetListHead = 0;
 AINet *g_AINetListTail = 0;
 }
