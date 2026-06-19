@@ -151,7 +151,11 @@ int GetActiveBackend() {
     return g_zSnd_ActiveBackend;
 }
 
-// Reimplements 0x4080a0: zSnd::SetAudioApiOption
+/**
+ * Reimplements 0x4080a0: zSnd::SetAudioApiOption.
+ * Original source: D:\Proj\GameZRecoil\zSound\zsnd_cd.cpp.
+ * Purpose: Store the selected audio backend option and mirror it into the pre-init backend state.
+ */
 int __fastcall SetAudioApiOption(
     int apiType
 ) {
@@ -159,7 +163,11 @@ int __fastcall SetAudioApiOption(
     return SetActiveBackendPreInit(apiType);
 }
 
-// Reimplements 0x4080b0: zSnd::GetAudioApiOption
+/**
+ * Reimplements 0x4080b0: zSnd::GetAudioApiOption.
+ * Original source: D:\Proj\GameZRecoil\zSound\zsnd_cd.cpp.
+ * Purpose: Return the selected audio backend option value.
+ */
 int GetAudioApiOption() {
     return *ZOPT_AUDIO_API;
 }

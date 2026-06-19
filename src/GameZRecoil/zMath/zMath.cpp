@@ -688,8 +688,10 @@ void __fastcall Vec3Lerp(
     inOut->z = t * inOut->z + otherScale * other->z;
 }
 
-// Reimplements 0x4729f0: zMath::Vec3LerpNormalize
-// (D:\Proj\GameZRecoil\zMath\zmath_vec3.cpp)
+/**
+ * Reimplements 0x4729f0: zMath::Vec3LerpNormalize (GameZRecoil/zMath/zmath_vec3.cpp).
+ * Purpose: Blends the first vector toward a second vector and normalizes the result.
+ */
 void __fastcall Vec3LerpNormalize(
     zVec3 *inOut,
     const zVec3 *other,

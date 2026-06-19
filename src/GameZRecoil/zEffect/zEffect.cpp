@@ -5714,7 +5714,12 @@ void __fastcall SetConditionalRefPos(
     g_zEffect_ConditionalRefPosEnabled = 1;
 }
 
-// Reimplements 0x45e0f0: zEffect::SetConditionalEffectLevel
+/**
+ * Reimplements 0x45e0f0: zEffect::SetConditionalEffectLevel.
+ * Original source path: D:\Proj\GameZRecoil\zEffect\zeffect.cpp.
+ * Purpose: store the active conditional effect level used by conditional chain
+ * events.
+ */
 void __fastcall SetConditionalEffectLevel(
     int level
 ) {

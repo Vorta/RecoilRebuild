@@ -2487,8 +2487,10 @@ namespace OptCatalog {
         ownerEntry->activeTrailRuntime = trailRuntimeState;
     }
 
-    // Reimplements 0x4b0530: OptCatalog::ComputeAimPitchForTarget
-    // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+    /**
+     * Reimplements 0x4b0530: OptCatalog::ComputeAimPitchForTarget
+     * Purpose: Computes launch pitch to hit a target and writes the approximated target distance.
+     */
     float __fastcall ComputeAimPitchForTarget(
         OptCatalogEntryDef * self,
         const zVec3 *origin,

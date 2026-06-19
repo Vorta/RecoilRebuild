@@ -278,7 +278,11 @@ void zInput_BindMapContext::RebuildLookupIndices() {
     }
 }
 
-// Reimplements 0x4708f0: zInput_BindMapContext::InitCommandMap
+/**
+ * Reimplements 0x4708f0: zInput_BindMapContext::InitCommandMap.
+ * Original source: D:\Proj\GameZRecoil\zInput\zinput.cpp.
+ * Purpose: Allocate command binding, lookup, callback, and label storage for a bind-map context.
+ */
 void zInput_BindMapContext::InitCommandMap(
     int commandCount
 ) {
@@ -310,7 +314,11 @@ void zInput_BindMapContext::InitCommandMap(
     ResetAllBindings();
 }
 
-// Reimplements 0x470960: zInput_BindMapContext::FreeNonOwnedBuffers
+/**
+ * Reimplements 0x470960: zInput_BindMapContext::FreeNonOwnedBuffers.
+ * Original source: D:\Proj\GameZRecoil\zInput\zinput.cpp.
+ * Purpose: Release lookup and callback buffers that are not owned by a copied bind-map template.
+ */
 void zInput_BindMapContext::FreeNonOwnedBuffers() {
     if (m_commandCallbacks != 0) {
         free(m_commandCallbacks);
@@ -388,21 +396,33 @@ int zInput_BindMapContext::GetMouseButtonSlot(
     return ((unsigned int)(m_packedBindings[commandIndex]) >> 0x1a) & 0x03;
 }
 
-// Reimplements 0x470ac0: zInput_BindMapContext::GetCommandByPrimaryKey
+/**
+ * Reimplements 0x470ac0: zInput_BindMapContext::GetCommandByPrimaryKey.
+ * Original source: D:\Proj\GameZRecoil\zInput\zinput.cpp.
+ * Purpose: Resolve a primary keyboard key to its command id.
+ */
 int zInput_BindMapContext::GetCommandByPrimaryKey(
     int keyboardKey
 ) {
     return m_primaryKeyToCommand[keyboardKey];
 }
 
-// Reimplements 0x470ad0: zInput_BindMapContext::GetCommandBySecondaryKey
+/**
+ * Reimplements 0x470ad0: zInput_BindMapContext::GetCommandBySecondaryKey.
+ * Original source: D:\Proj\GameZRecoil\zInput\zinput.cpp.
+ * Purpose: Resolve a secondary keyboard key to its command id.
+ */
 int zInput_BindMapContext::GetCommandBySecondaryKey(
     int keyboardKey
 ) {
     return m_secondaryKeyToCommand[keyboardKey];
 }
 
-// Reimplements 0x470ae0: zInput_BindMapContext::GetCommandByAnyKeyboardKey
+/**
+ * Reimplements 0x470ae0: zInput_BindMapContext::GetCommandByAnyKeyboardKey.
+ * Original source: D:\Proj\GameZRecoil\zInput\zinput.cpp.
+ * Purpose: Resolve either keyboard binding slot to its command id.
+ */
 int zInput_BindMapContext::GetCommandByAnyKeyboardKey(
     int keyboardKey
 ) {
@@ -414,7 +434,11 @@ int zInput_BindMapContext::GetCommandByAnyKeyboardKey(
     return GetCommandBySecondaryKey(keyboardKey);
 }
 
-// Reimplements 0x470b00: zInput_BindMapContext::GetCommandByJoystickSlot
+/**
+ * Reimplements 0x470b00: zInput_BindMapContext::GetCommandByJoystickSlot.
+ * Original source: D:\Proj\GameZRecoil\zInput\zinput.cpp.
+ * Purpose: Resolve a joystick button slot to its command id.
+ */
 int zInput_BindMapContext::GetCommandByJoystickSlot(
     int joystickSlot
 ) {
@@ -431,7 +455,11 @@ int zInput_BindMapContext::GetCommandByMouseSlot(
     return m_mouseToCommand[mouseSlot];
 }
 
-// Reimplements 0x470b20: zInput_BindMapContext::SetPrimaryKeyBinding
+/**
+ * Reimplements 0x470b20: zInput_BindMapContext::SetPrimaryKeyBinding.
+ * Original source: D:\Proj\GameZRecoil\zInput\zinput.cpp.
+ * Purpose: Update a command's primary keyboard binding and reverse lookup slot.
+ */
 void zInput_BindMapContext::SetPrimaryKeyBinding(
     int keyCode,
     int commandId
@@ -449,7 +477,11 @@ void zInput_BindMapContext::SetPrimaryKeyBinding(
         ((keyCode ^ m_packedBindings[commandId]) & 0x7ff) ^ m_packedBindings[commandId];
 }
 
-// Reimplements 0x470b80: zInput_BindMapContext::SetSecondaryKeyBinding
+/**
+ * Reimplements 0x470b80: zInput_BindMapContext::SetSecondaryKeyBinding.
+ * Original source: D:\Proj\GameZRecoil\zInput\zinput.cpp.
+ * Purpose: Update a command's secondary keyboard binding and reverse lookup slot.
+ */
 void zInput_BindMapContext::SetSecondaryKeyBinding(
     int keyCode,
     int commandId
@@ -467,7 +499,11 @@ void zInput_BindMapContext::SetSecondaryKeyBinding(
         (m_packedBindings[commandId] & 0xffc007ff) | ((keyCode & 0x7ff) << 0x0b);
 }
 
-// Reimplements 0x470bf0: zInput_BindMapContext::SetJoystickBinding
+/**
+ * Reimplements 0x470bf0: zInput_BindMapContext::SetJoystickBinding.
+ * Original source: D:\Proj\GameZRecoil\zInput\zinput.cpp.
+ * Purpose: Update a command's joystick button binding and reverse lookup slot.
+ */
 void zInput_BindMapContext::SetJoystickBinding(
     int joystickSlot,
     int commandId
@@ -485,7 +521,11 @@ void zInput_BindMapContext::SetJoystickBinding(
         ((joystickSlot & 0x0f) << 0x16) | (m_packedBindings[commandId] & 0xfc3fffff);
 }
 
-// Reimplements 0x470c60: zInput_BindMapContext::SetMouseBinding
+/**
+ * Reimplements 0x470c60: zInput_BindMapContext::SetMouseBinding.
+ * Original source: D:\Proj\GameZRecoil\zInput\zinput.cpp.
+ * Purpose: Update a command's mouse button binding and reverse lookup slot.
+ */
 void zInput_BindMapContext::SetMouseBinding(
     int mouseSlot,
     int commandId
@@ -503,7 +543,11 @@ void zInput_BindMapContext::SetMouseBinding(
         ((mouseSlot & 0x03) << 0x1a) | (m_packedBindings[commandId] & 0xf3ffffff);
 }
 
-// Reimplements 0x470cd0: zInput_BindMapContext::SetBindingRecord
+/**
+ * Reimplements 0x470cd0: zInput_BindMapContext::SetBindingRecord.
+ * Original source: D:\Proj\GameZRecoil\zInput\zinput.cpp.
+ * Purpose: Store one command label and all keyboard, joystick, and mouse binding slots.
+ */
 void zInput_BindMapContext::SetBindingRecord(
     int commandId,
     const char *labelSrc,
@@ -618,7 +662,11 @@ int zInput_BindMapContext::SetCommandCallback(
     return 1;
 }
 
-// Reimplements 0x470eb0: zInput_BindMapContext::ReadCommandInputState
+/**
+ * Reimplements 0x470eb0: zInput_BindMapContext::ReadCommandInputState.
+ * Original source: D:\Proj\GameZRecoil\zInput\zinput.cpp.
+ * Purpose: Combine keyboard, joystick, and mouse transition states for one command.
+ */
 int zInput_BindMapContext::ReadCommandInputState(
     int commandIndex
 ) {
@@ -743,7 +791,11 @@ int BindGroupList_StaticInitAndRegisterAtExit() {
 } // namespace zInput
 
 namespace zInp {
-// Reimplements 0x408390: zInp::SetJoystickOption
+/**
+ * Reimplements 0x408390: zInp::SetJoystickOption.
+ * Original source path: D:\Proj\GameZRecoil\zInput\zin_opt.cpp.
+ * Purpose: store the joystick-enabled option when the option slot exists.
+ */
 void __fastcall SetJoystickOption(
     int enabled
 ) {
@@ -752,21 +804,33 @@ void __fastcall SetJoystickOption(
     }
 }
 
-// Reimplements 0x4083a0: zInp::SetJoystickAxesCountOption
+/**
+ * Reimplements 0x4083a0: zInp::SetJoystickAxesCountOption.
+ * Original source path: D:\Proj\GameZRecoil\zInput\zin_opt.cpp.
+ * Purpose: store the detected joystick axis count option value.
+ */
 void __fastcall SetJoystickAxesCountOption(
     int axisCount
 ) {
     *ZOPT_JOYSTICK_NUM_AXES = axisCount;
 }
 
-// Reimplements 0x4083b0: zInp::SetJoystickButtonCountOption
+/**
+ * Reimplements 0x4083b0: zInp::SetJoystickButtonCountOption.
+ * Original source path: D:\Proj\GameZRecoil\zInput\zin_opt.cpp.
+ * Purpose: store the detected joystick button count option value.
+ */
 void __fastcall SetJoystickButtonCountOption(
     int buttonCount
 ) {
     *ZOPT_JOYSTICK_NUM_BUTTONS = buttonCount;
 }
 
-// Reimplements 0x4083c0: zInp::GetJoystickOption
+/**
+ * Reimplements 0x4083c0: zInp::GetJoystickOption.
+ * Original source path: D:\Proj\GameZRecoil\zInput\zin_opt.cpp.
+ * Purpose: return the joystick-enabled option value.
+ */
 int GetJoystickOption() {
     return *ZOPT_INPUT_JOYSTICK;
 }
@@ -1912,7 +1976,11 @@ char *__fastcall BindMap_GetCommandHint(
     return zLoc::GetMessageString(g_zInput_CommandLocIdTable[commandId] + 1);
 }
 
-// Reimplements 0x42a500: zInput::BindMap_AddDefaultBinding
+/**
+ * Reimplements 0x42a500: zInput::BindMap_AddDefaultBinding.
+ * Original source: D:\Proj\GameZRecoil\zInput\zin_bindmap.cpp.
+ * Purpose: Add one localized default command binding to the active bind map and bind-group list.
+ */
 void __fastcall BindMap_AddDefaultBinding(
     int commandId,
     int messageId,
@@ -1936,7 +2004,11 @@ void __fastcall BindMap_AddDefaultBinding(
     g_zInput_CommandLocIdTable[commandId] = messageId;
 }
 
-// Reimplements 0x42a550: zInput::BindMap_InitDefaultBindings
+/**
+ * Reimplements 0x42a550: zInput::BindMap_InitDefaultBindings.
+ * Original source: D:\Proj\GameZRecoil\zInput\zin_bindmap.cpp.
+ * Purpose: Clear the bind-group list and seed the retail default command bindings.
+ */
 int BindMap_InitDefaultBindings() {
     static const BindMapDefaultBindingSpec kGroup0[] = {
         {0x04, 0x806, 0x0c8, 0, 0, 0},
@@ -2302,7 +2374,11 @@ void __fastcall BindMapCurrent_SetMouseBinding(
     );
 }
 
-// Reimplements 0x471790: zInput::BindMap_Current_SetBindingRecord
+/**
+ * Reimplements 0x471790: zInput::BindMap_Current_SetBindingRecord.
+ * Original source: D:\Proj\GameZRecoil\zInput\zinput.cpp.
+ * Purpose: Forward a complete binding record to the active bind-map context and return its command id.
+ */
 int __fastcall BindMap_Current_SetBindingRecord(
     int commandId,
     const char *labelSrc,

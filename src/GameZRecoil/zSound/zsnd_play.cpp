@@ -15,7 +15,12 @@ namespace {
 const char kZSndPlaySourceFile[] = "D:\\Proj\\GameZRecoil\\zSound\\zsnd_play.cpp";
 const char kZSnd3dSourceFile[] = "D:\\Proj\\GameZRecoil\\zSound\\zsnd_3d.cpp";
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original static helper recovered from the zSound playback source cluster.
+ * Evidence: no standalone retail helper function; availability tests appear
+ * inside address-backed DirectSound play-handle acquisition callers.
+ * Purpose: report whether a DirectSound play handle can be reused.
+ */
 bool DirectSoundHandleIsAvailable(
     zSndPlayHandle *handle
 ) {
@@ -29,7 +34,12 @@ bool DirectSoundHandleIsAvailable(
     return (status & 1) == 0;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original static helper recovered from the zSound playback source cluster.
+ * Evidence: no standalone retail helper function; availability tests appear
+ * inside address-backed A3D play-handle acquisition callers.
+ * Purpose: report whether an A3D play handle can be reused.
+ */
 bool A3dHandleIsAvailable(
     zSndPlayHandle *handle
 ) {
@@ -43,7 +53,12 @@ bool A3dHandleIsAvailable(
     return (status & 1) == 0;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original inline helper recovered from zSound playback snapshot callers.
+ * Evidence: no standalone retail helper function; 0x49fff0 queries the
+ * DirectSound provider status and preserves the caller's status word.
+ * Purpose: test whether a DirectSound backend buffer is currently playing.
+ */
 inline bool DirectSoundBufferIsPlaying(
     zSndBuffer *backendBuffer,
     int *status
@@ -53,7 +68,12 @@ inline bool DirectSoundBufferIsPlaying(
     return (*status & 1) != 0;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original inline helper recovered from zSound playback callers.
+ * Evidence: no standalone retail helper function; callers only need the
+ * DirectSound playing predicate and discard the provider status word.
+ * Purpose: test whether a DirectSound backend buffer is currently playing.
+ */
 inline bool DirectSoundBufferIsPlaying(
     zSndBuffer *backendBuffer
 ) {
@@ -64,7 +84,12 @@ inline bool DirectSoundBufferIsPlaying(
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original inline helper recovered from zSound playback snapshot callers.
+ * Evidence: no standalone retail helper function; 0x49fff0 queries the A3D
+ * provider status and preserves the caller's status word.
+ * Purpose: test whether an A3D backend source is currently playing.
+ */
 inline bool A3dSourceIsPlaying(
     zSndBuffer *backendBuffer,
     int *status
@@ -74,7 +99,12 @@ inline bool A3dSourceIsPlaying(
     return (*status & 1) != 0;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original inline helper recovered from zSound playback callers.
+ * Evidence: no standalone retail helper function; callers only need the A3D
+ * playing predicate and discard the provider status word.
+ * Purpose: test whether an A3D backend source is currently playing.
+ */
 inline bool A3dSourceIsPlaying(
     zSndBuffer *backendBuffer
 ) {
@@ -85,7 +115,12 @@ inline bool A3dSourceIsPlaying(
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original static helper recovered from address-backed zSound playback callers.
+ * Evidence: no standalone retail helper function; callers dispatch the playing
+ * query through the active backend tag.
+ * Purpose: report whether a backend play handle is currently playing.
+ */
 bool BackendHandleIsPlaying(
     zSndPlayHandle *handle
 ) {
@@ -100,7 +135,12 @@ bool BackendHandleIsPlaying(
     return false;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original static helper recovered from address-backed zSound teardown callers.
+ * Evidence: no standalone retail helper function; 0x4a3690 releases backend
+ * COM/provider buffers through the shared IUnknown contract.
+ * Purpose: release a non-null backend buffer reference.
+ */
 void ReleaseBackendBuffer(
     zSndBuffer *buffer
 ) {
@@ -109,7 +149,12 @@ void ReleaseBackendBuffer(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original static helper recovered from address-backed zSound teardown callers.
+ * Evidence: no standalone retail helper function; 0x4a3690 frees A3D wave data
+ * only when a backend source is present.
+ * Purpose: free provider-owned A3D wave data for a backend source.
+ */
 int FreeA3dWaveData(
     zSndBuffer *buffer
 ) {
@@ -121,7 +166,12 @@ int FreeA3dWaveData(
     return object->FreeWaveData();
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original static helper recovered from address-backed zSound 3D callers.
+ * Evidence: no standalone retail helper function; 0x4a2b40 uses the
+ * integer-adjusted square-root approximation before pan/gain math.
+ * Purpose: approximate DirectSound listener distance from squared distance.
+ */
 float ApproximateDirectSoundDistance(
     float distanceSquared
 ) {
@@ -142,7 +192,12 @@ float ApproximateDirectSoundDistance(
     return distance;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original static helper recovered from address-backed zSound playback callers.
+ * Evidence: retail callers use integer-preserving float bit reinterpretation
+ * for provider gain replay, with no standalone retail helper function.
+ * Purpose: reinterpret stored IEEE-754 bits as a float gain value.
+ */
 float FloatFromBits(
     int bits
 ) {
@@ -155,7 +210,12 @@ float FloatFromBits(
     return value;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original static helper recovered from address-backed zSound playback callers.
+ * Evidence: retail callers store provider gain values as integer bits for
+ * later replay, with no standalone retail helper function.
+ * Purpose: reinterpret a float gain value as its raw IEEE-754 bits.
+ */
 int FloatToBits(
     float value
 ) {
@@ -206,7 +266,13 @@ void RefreshPlaybackMarkers(
 }
 } // namespace
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original inline helper evidence: no standalone retail function exists.
+ * Observed in 0x49fff0 zSndPlayHandleSnapshot::CreateFromActiveSamples as
+ * the repeated snapshot list append pattern that allocates or links a node
+ * and copies a zSndPlayHandleSnapshotPayload.
+ * Purpose: append one captured payload to the snapshot's intrusive list.
+ */
 inline void zSndPlayHandleSnapshot::AppendPayload(
     const zSndPlayHandleSnapshotPayload &payload
 ) {
@@ -480,10 +546,10 @@ int __stdcall zSnd::GainScaleToDirectSoundAttenuation(
 
 /**
  * Reimplements 0x4a07a0: zSnd::IsMuted.
- * Purpose: report active mute state after sound initialization.
+ * Purpose: report active mute state after sound preinitialization.
  */
 int zSnd::IsMuted() {
-    if (g_zSnd_IsInitialized == 0) {
+    if (g_zSnd_PreInitialized == 0) {
         return 0;
     }
 
@@ -527,11 +593,14 @@ void __fastcall zSnd::SetFlag10PlaybackEnabled(
     g_zSnd_Flag10PlaybackEnabled = enabled;
 }
 
-// Reimplements 0x4a0670: zSnd::ApplyMuteStateToActiveVoices
+/**
+ * Reimplements 0x4a0670: zSnd::ApplyMuteStateToActiveVoices.
+ * Purpose: update nested mute state and rewrite active voice backend gains.
+ */
 int __fastcall zSnd::ApplyMuteStateToActiveVoices(
     int enableMute
 ) {
-    if (g_zSnd_IsInitialized == 0) {
+    if (g_zSnd_PreInitialized == 0) {
         return 0;
     }
 
@@ -689,7 +758,13 @@ void __fastcall zSndPlayHandleSnapshotPayload::CaptureFromPlayHandle(
     *velocityDest = *velocitySrc;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original inline helper evidence: no standalone retail function exists.
+ * Observed in 0x49fff0 zSndPlayHandleSnapshot::CreateFromActiveSamples as
+ * the inlined allocation/initialization pattern for the sentinel list node
+ * immediately after constructing the snapshot object.
+ * Purpose: initialize the snapshot backend tag, empty list head, and item count.
+ */
 inline zSndPlayHandleSnapshot::zSndPlayHandleSnapshot(
     unsigned char tag
 ) {
@@ -711,8 +786,7 @@ inline zSndPlayHandleSnapshot::zSndPlayHandleSnapshot(
  * Reimplements 0x49fff0: zSndPlayHandleSnapshot::CreateFromActiveSamples.
  * Purpose: Builds a snapshot of the global volume anchor and active sample voices.
  */
-zSndPlayHandleSnapshot *
-    zSndPlayHandleSnapshot::CreateFromActiveSamples() {
+zSndPlayHandleSnapshot * zSndPlayHandleSnapshot::CreateFromActiveSamples() {
     zSndPlayHandleSnapshotPayload payload = {0};
 
     // BN 0x4a0037 reads this byte from the constructor stack slot before storing
@@ -804,8 +878,10 @@ zSndPlayHandleSnapshot *
 #pragma runtime_checks("", restore)
 #endif
 
-// Reimplements 0x4a0380: zSndPlayHandle::PlayWithDelta_A3D
-// (D:\Proj\GameZRecoil\zSound\zsnd_play.cpp)
+/**
+ * Reimplements 0x4a0380: zSndPlayHandle::PlayWithDelta_A3D.
+ * Purpose: replay an A3D-backed handle with the requested restart and gain delta.
+ */
 void __fastcall zSndPlayHandle::PlayWithDelta_A3D(
     zSndSampleReplayFields *replayFields,
     zSndPlayHandle *playHandle,
@@ -840,8 +916,10 @@ void __fastcall zSndPlayHandle::PlayWithDelta_A3D(
     }
 }
 
-// Reimplements 0x4a0400: zSndPlayHandle::PlayWithDelta_DirectSound
-// (D:\Proj\GameZRecoil\zSound\zsnd_play.cpp)
+/**
+ * Reimplements 0x4a0400: zSndPlayHandle::PlayWithDelta_DirectSound.
+ * Purpose: replay a DirectSound-backed handle with the requested restart and gain delta.
+ */
 void __fastcall zSndPlayHandle::PlayWithDelta_DirectSound(
     zSndSampleReplayFields *replayFields,
     zSndPlayHandle *playHandle,
@@ -889,8 +967,10 @@ void __fastcall zSndPlayHandle::PlayWithDelta_DirectSound(
     }
 }
 
-// Reimplements 0x4a0490: zSndPlayHandle::PlayWithDelta_BackendDispatch
-// (D:\Proj\GameZRecoil\zSound\zsnd_play.cpp)
+/**
+ * Reimplements 0x4a0490: zSndPlayHandle::PlayWithDelta_BackendDispatch.
+ * Purpose: route play-handle replay through the active sound backend.
+ */
 void __fastcall zSndPlayHandle::PlayWithDelta_BackendDispatch(
     zSndSample *sourceSample,
     zSndPlayHandle *playHandle,
@@ -925,8 +1005,10 @@ void __fastcall zSndPlayHandle::PlayWithDelta_BackendDispatch(
     }
 }
 
-// Reimplements 0x4a0590: zSndPlayHandleSnapshot::RestoreAllWithGlobalVolumeDelta
-// (D:\Proj\GameZRecoil\zSound\zsnd_play.cpp)
+/**
+ * Reimplements 0x4a0590: zSndPlayHandleSnapshot::RestoreAllWithGlobalVolumeDelta.
+ * Purpose: replay captured handles while applying the current global volume delta.
+ */
 int zSndPlayHandleSnapshot::RestoreAllWithGlobalVolumeDelta() {
     zSndPlayHandleSnapshot *const snapshot = this;
     zSndPlayHandleSnapshotItem *const volumeAnchor = snapshot->listHead->next;
@@ -952,7 +1034,10 @@ int zSndPlayHandleSnapshot::RestoreAllWithGlobalVolumeDelta() {
     return 1;
 }
 
-// Reimplements 0x4a05f0: zSndPlayHandleSnapshot::Destroy
+/**
+ * Reimplements 0x4a05f0: zSndPlayHandleSnapshot::Destroy.
+ * Purpose: unlink and free every snapshot node, then delete the snapshot object.
+ */
 int zSndPlayHandleSnapshot::Destroy() {
     if (this != 0) {
         zSndPlayHandleSnapshotItem *const head = listHead;
@@ -1075,7 +1160,10 @@ int zSndPlayHandle::StopIfActive() {
 #pragma runtime_checks("", restore)
 #endif
 
-// Reimplements 0x49fec0: zSndSample::StopActiveVoicesIfPlaying
+/**
+ * Reimplements 0x49fec0: zSndSample::StopActiveVoicesIfPlaying.
+ * Purpose: stop the sample's primary and duplicate backend voices if present.
+ */
 int zSndSample::StopActiveVoicesIfPlaying() {
     if (this == 0 || createGuard != 0) {
         return 0;
@@ -1155,8 +1243,11 @@ int zSndSample::StopActiveVoicesIfPlaying() {
     return 1;
 }
 
-// Reimplements 0x4a3620: zSndSample::GetPlayCursorBytes
-// (D:\Proj\GameZRecoil\zSound\zSound.cpp)
+/**
+ * Reimplements 0x4a3620: zSndSample::GetPlayCursorBytes.
+ * Source: D:\Proj\GameZRecoil\zSound\zSound.cpp.
+ * Purpose: return the active backend play cursor in bytes, or zero on failure.
+ */
 unsigned int zSndSample::GetPlayCursorBytes() {
     int result = 0;
     if (createGuard != 0) {

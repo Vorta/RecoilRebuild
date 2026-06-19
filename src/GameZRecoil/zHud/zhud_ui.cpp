@@ -13511,7 +13511,10 @@ void HudUiWidget::DestructorCore() {
     this->~HudUiWidget();
 }
 
-// Reimplements 0x4b3ce0: HudUiWidget::ScalarDeletingDestructor
+/**
+ * Reimplements 0x4b3ce0: HudUiWidget::ScalarDeletingDestructor.
+ * Purpose: Destroy a HudUiWidget and free scalar-deleting-destructor storage when requested.
+ */
 HudUiElement * HudUiWidget::ScalarDeletingDestructor(
     unsigned int flags
 ) {
@@ -13539,7 +13542,10 @@ void HudUiWidget::SetPos(
     Invalidate();
 }
 
-// Reimplements 0x40f200: HudUiTripletPanel::Constructor
+/**
+ * Reimplements 0x40f200: HudUiTripletPanel::Constructor.
+ * Purpose: Constructs the base panel, initializes the three item widgets hidden, and attaches the panel to the HUD manager.
+ */
 HudUiTripletPanel * HudUiTripletPanel::Constructor() {
     HudUiElement::Constructor(
         0,
@@ -13560,7 +13566,10 @@ HudUiTripletPanel * HudUiTripletPanel::Constructor() {
     return this;
 }
 
-// Reimplements 0x40f2b0: HudUiTripletPanel::ScalarDeletingDestructor
+/**
+ * Reimplements 0x40f2b0: HudUiTripletPanel::ScalarDeletingDestructor.
+ * Purpose: Runs the triplet panel destructor core, conditionally frees storage for scalar deletion, and returns self.
+ */
 HudUiElement * HudUiTripletPanel::ScalarDeletingDestructor(
     unsigned int flags
 ) {
@@ -13694,19 +13703,28 @@ void HudUiNanitePanel::InitLayout(
     );
 }
 
-// Reimplements 0x40f3e0: HudUiTripletPanel::ShutdownItems_Stub
+/**
+ * Reimplements 0x40f3e0: HudUiTripletPanel::ShutdownItems_Stub.
+ * Purpose: Preserves the retail no-op shutdown calls made for each nanite triplet item.
+ */
 void HudUiTripletPanel::ShutdownItems_Stub() {
     HudUiNoOpMethodStub(&g_HudUiMgrNanitePanel.items[0]);
     HudUiNoOpMethodStub(&g_HudUiMgrNanitePanel.items[1]);
     HudUiNoOpMethodStub(&g_HudUiMgrNanitePanel.items[2]);
 }
 
-// Reimplements 0x40d600: HudUiTripletPanel::UnwindDestructFirstItem
+/**
+ * Reimplements 0x40d600: HudUiTripletPanel::UnwindDestructFirstItem.
+ * Purpose: Destroys the first item widget during constructor unwind cleanup.
+ */
 void HudUiTripletPanel::UnwindDestructFirstItem() {
     items[0].DestructorCore();
 }
 
-// Reimplements 0x40d610: HudUiTripletPanel::DestructorCore
+/**
+ * Reimplements 0x40d610: HudUiTripletPanel::DestructorCore.
+ * Purpose: Tears down the three triplet item widgets in reverse construction order.
+ */
 void HudUiTripletPanel::DestructorCore() {
     {
         for (int index = 2; index >= 0; --index) {
@@ -14203,15 +14221,21 @@ void HudUiCounter::UpdateLayoutPosition() {
     clipViewportRect.bottom = localY + image->height;
 }
 
-// Reimplements 0x4134e0: HudUiMessage::Draw
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x4134e0: HudUiMessage::Draw.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: Draws the weapon-message base widget and its embedded text panel.
+ */
 void HudUiMessage::Draw() {
     HudUiWidget::Draw();
     panel.Draw();
 }
 
-// Reimplements 0x414070: HudUiMessage::RebuildWeaponLayout
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x414070: HudUiMessage::RebuildWeaponLayout.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: Rebuilds the message base, text panel, and side widget geometry from the current layout anchor.
+ */
 void HudUiMessage::RebuildWeaponLayout() {
     HudUiWidget *const layoutWidget2 = &g_HudLayoutHW.widget2;
     const int anchorX = layoutWidget2->GetCenterX();
@@ -14310,7 +14334,10 @@ int HudUiMessage::LoadWeaponLayoutFromNode(
     return 1;
 }
 
-// Reimplements 0x413ff0: HudUiMessage::ReleaseImages
+/**
+ * Reimplements 0x413ff0: HudUiMessage::ReleaseImages.
+ * Purpose: Releases all borrowed weapon-message variant and side-image swap references and clears their storage.
+ */
 void HudUiMessage::ReleaseImages() {
     zVid_Image::ReleaseIfNotDefault(variantImages[0]);
     zVid_Image::ReleaseIfNotDefault(variantImages[1]);
@@ -14329,7 +14356,10 @@ void HudUiMessage::ReleaseImages() {
     variantImages[0] = 0;
 }
 
-// Reimplements 0x4126e0: HudUiMessage::SelectVariantDisplay
+/**
+ * Reimplements 0x4126e0: HudUiMessage::SelectVariantDisplay.
+ * Purpose: Selects the visible weapon-message variant image and refreshes the active side-image state.
+ */
 void __fastcall HudUiMessage::SelectVariantDisplay(
     int messageIndex,
     int variantIndex
@@ -14358,7 +14388,10 @@ void __fastcall HudUiMessage::SelectVariantDisplay(
     }
 }
 
-// Reimplements 0x412790: HudUiMessage::ApplySideImageSwap
+/**
+ * Reimplements 0x412790: HudUiMessage::ApplySideImageSwap.
+ * Purpose: Applies a side-image replacement for the selected message slot and preserves the visible flag.
+ */
 void __fastcall HudUiMessage::ApplySideImageSwap(
     int messageIndex,
     int sideIndex
@@ -14370,7 +14403,10 @@ void __fastcall HudUiMessage::ApplySideImageSwap(
     message.widget.flags &= 0x10u;
 }
 
-// Reimplements 0x4127d0: HudUiMessage::ClearDisplay
+/**
+ * Reimplements 0x4127d0: HudUiMessage::ClearDisplay.
+ * Purpose: Clears the message image, side image, and displayed text for one weapon-message slot.
+ */
 void __fastcall HudUiMessage::ClearDisplay(
     int messageIndex
 ) {
@@ -14382,8 +14418,11 @@ void __fastcall HudUiMessage::ClearDisplay(
     message.Invalidate();
 }
 
-// Reimplements 0x412650: HudUiMessage::SetValueIfOwnerMatches
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x412650: HudUiMessage::SetValueIfOwnerMatches.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: Updates a message panel value only when the requested owner side matches the active side.
+ */
 void __fastcall HudUiMessage::SetValueIfOwnerMatches(
     int messageIndex,
     int ownerSideIndex,
@@ -14406,8 +14445,11 @@ void __fastcall HudUiMessage::SetValueIfOwnerMatches(
     message.Invalidate();
 }
 
-// Reimplements 0x412820: HudUiMessage::UpdateSelectedWeaponDisplay
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x412820: HudUiMessage::UpdateSelectedWeaponDisplay.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: Updates active weapon-message images, selected side ownership, and value text.
+ */
 void __fastcall HudUiMessage::UpdateSelectedWeaponDisplay(
     int weaponBankIndex,
     int weaponSideIndex,
@@ -14456,7 +14498,10 @@ void __fastcall HudUiMessage::UpdateSelectedWeaponDisplay(
     message.Invalidate();
 }
 
-// Reimplements 0x40da00: HudUiMessage::Constructor
+/**
+ * Reimplements 0x40da00: HudUiMessage::Constructor.
+ * Purpose: Constructs the weapon-message widget, embedded text panel, side widget, and clears image slots.
+ */
 HudUiMessage * HudUiMessage::Constructor() {
     HudUiWidget::Constructor(0);
     panel.ConstructorDefault(
@@ -14475,14 +14520,20 @@ HudUiMessage * HudUiMessage::Constructor() {
     return this;
 }
 
-// Reimplements 0x40d590: HudUiMessage::Destructor
+/**
+ * Reimplements 0x40d590: HudUiMessage::Destructor.
+ * Purpose: Tears down the side widget, embedded text panel, and base widget in retail destruction order.
+ */
 void HudUiMessage::Destructor() {
     widget.DestructorCore();
     panel.HudUiPanel::~HudUiPanel();
     HudUiWidget::DestructorCore();
 }
 
-// Reimplements 0x40daa0: HudUiMessage::ScalarDeletingDestructor
+/**
+ * Reimplements 0x40daa0: HudUiMessage::ScalarDeletingDestructor.
+ * Purpose: Runs HudUiMessage destruction and conditionally frees scalar-deleting-destructor storage.
+ */
 HudUiElement * HudUiMessage::ScalarDeletingDestructor(
     unsigned int flags
 ) {
@@ -15446,7 +15497,10 @@ HudUiMeter::HudUiMeter() : HudUiBar() {
     meterFlags = 0;
 }
 
-// Reimplements 0x40d9e0: HudUiMeter::ConstructorEx
+/**
+ * Reimplements 0x40d9e0: HudUiMeter::ConstructorEx.
+ * Purpose: Rebuilds the HUD bar base in caller-provided meter storage and clears the meter fill state.
+ */
 HudUiMeter * HudUiMeter::ConstructorEx() {
     new ((HudUiBar *)this) HudUiBar;
     fillPixelsMax = 0;

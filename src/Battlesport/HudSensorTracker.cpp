@@ -828,7 +828,11 @@ int HudSensorMapNode::UpdateCachedBounds(
     return 1;
 }
 
-// Reimplements 0x416660: HudSensorTracker::Init (D:\Proj\Battlesport\HudSensorTracker.cpp)
+/**
+ * Reimplements 0x416660: HudSensorTracker::Init
+ * Source: D:\Proj\Battlesport\HudSensorTracker.cpp
+ * Purpose: Initialize map bounds, save-state marker state, and map runtime defaults.
+ */
 void HudSensorTracker::Init(
     const HudUiRect *outerRectOrNull
 ) {
@@ -858,8 +862,11 @@ void HudSensorTracker::Init(
     SetSaveStateMarkerMaxDistance(450.0f);
 }
 
-// Reimplements 0x416650: HudSensorTracker::InitNoBounds
-// (D:\Proj\Battlesport\HudSensorTracker.cpp)
+/**
+ * Reimplements 0x416650: HudSensorTracker::InitNoBounds
+ * Source: D:\Proj\Battlesport\HudSensorTracker.cpp
+ * Purpose: Initialize tracker state without replacing the existing map bounds.
+ */
 HudSensorTracker * HudSensorTracker::InitNoBounds() {
     Init(0);
     return this;
@@ -899,7 +906,11 @@ void HudSensorTracker::ShutdownGlobal() {
     g_HudSensorTracker.Shutdown();
 }
 
-// Reimplements 0x4166e0: HudSensorTracker::SetBounds (D:\Proj\Battlesport\HudSensorTracker.cpp)
+/**
+ * Reimplements 0x4166e0: HudSensorTracker::SetBounds
+ * Source: D:\Proj\Battlesport\HudSensorTracker.cpp
+ * Purpose: Copy HUD map bounds and cache the overlay center from the outer rect.
+ */
 void HudSensorTracker::SetBounds(
     const HudUiRect *outerRectIn,
     const HudUiRect *innerRectOrNull
@@ -926,8 +937,11 @@ void HudSensorTracker::SetBounds(
     mapOverlayCenterY = outerRect.top + ((outerRect.bottom - outerRect.top) / 2);
 }
 
-// Reimplements 0x416ef0: HudSensorTracker::SetSaveStateMarkerMaxDistance
-// (D:\Proj\Battlesport\map.cpp)
+ /**
+  * Reimplements 0x416ef0: HudSensorTracker::SetSaveStateMarkerMaxDistance
+ * Source: D:\Proj\Battlesport\HudSensorTracker.cpp
+  * Purpose: Store the squared maximum distance for drawing save-state markers.
+  */
 int HudSensorTracker::SetSaveStateMarkerMaxDistance(
     float maxDist
 ) {
@@ -935,7 +949,11 @@ int HudSensorTracker::SetSaveStateMarkerMaxDistance(
     return 1;
 }
 
-// Reimplements 0x417220: HudSensorTracker::SetTrackedSaveState (D:\Proj\Battlesport\map.cpp)
+ /**
+  * Reimplements 0x417220: HudSensorTracker::SetTrackedSaveState
+ * Source: D:\Proj\Battlesport\HudSensorTracker.cpp
+  * Purpose: Select the save-state player pose used by the HUD map marker.
+  */
 int HudSensorTracker::SetTrackedSaveState(
     zUtil_SaveGameState *saveState
 ) {
