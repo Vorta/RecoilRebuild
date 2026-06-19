@@ -2019,26 +2019,42 @@ extern "C" int zsnd_gain_scale_to_directsound_attenuation_smoke(void) {
 }
 
 extern "C" int zsnd_is_muted_smoke(void) {
-    g_zSnd_IsInitialized = 0;
+    const int oldInitialized = g_zSnd_IsInitialized;
+    const int oldPreInitialized = g_zSnd_PreInitialized;
+    const int oldMuteDepth = g_zSnd_MuteDepth;
+
+    g_zSnd_IsInitialized = 1;
+    g_zSnd_PreInitialized = 0;
     g_zSnd_MuteDepth = 7;
     if (zSnd::IsMuted() != 0) {
+        g_zSnd_IsInitialized = oldInitialized;
+        g_zSnd_PreInitialized = oldPreInitialized;
+        g_zSnd_MuteDepth = oldMuteDepth;
         return 1;
     }
 
-    g_zSnd_IsInitialized = 1;
+    g_zSnd_PreInitialized = 1;
     g_zSnd_MuteDepth = 0;
     if (zSnd::IsMuted() != 0) {
+        g_zSnd_IsInitialized = oldInitialized;
+        g_zSnd_PreInitialized = oldPreInitialized;
+        g_zSnd_MuteDepth = oldMuteDepth;
         return 2;
     }
 
     g_zSnd_MuteDepth = 3;
     if (zSnd::IsMuted() != 1) {
+        g_zSnd_IsInitialized = oldInitialized;
+        g_zSnd_PreInitialized = oldPreInitialized;
+        g_zSnd_MuteDepth = oldMuteDepth;
         return 3;
     }
 
     g_zSnd_MuteDepth = -1;
     const int result = zSnd::IsMuted() == 0 ? 0 : 4;
-    g_zSnd_IsInitialized = 0;
+    g_zSnd_IsInitialized = oldInitialized;
+    g_zSnd_PreInitialized = oldPreInitialized;
+    g_zSnd_MuteDepth = oldMuteDepth;
     return result;
 }
 
@@ -5700,6 +5716,7 @@ extern "C" int zsnd_snapshot_item_new_node_smoke(void) {
 // Reimplements 0x4a0670: zSnd::ApplyMuteStateToActiveVoices active-voice rewrite behavior.
 extern "C" int zsnd_apply_mute_state_to_active_voices_smoke(void) {
     const int oldInitialized = g_zSnd_IsInitialized;
+    const int oldPreInitialized = g_zSnd_PreInitialized;
     const int oldActiveBackend = g_zSnd_ActiveBackend;
     const int oldMuteDepth = g_zSnd_MuteDepth;
     void *const oldMuteOptionValuePtr = g_zSnd_MuteOptionValuePtr;
@@ -5735,13 +5752,15 @@ extern "C" int zsnd_apply_mute_state_to_active_voices_smoke(void) {
     g_zSnd_MuteOptionValuePtr = &muteOption;
     g_zSnd_GlobalVolumeScalePtr = &globalVolume;
 
-    g_zSnd_IsInitialized = 0;
+    g_zSnd_IsInitialized = 1;
+    g_zSnd_PreInitialized = 0;
     g_zSnd_MuteDepth = 0;
     g_zSnd_ActiveBackend = 0;
     const bool uninitializedOk = zSnd::ApplyMuteStateToActiveVoices(1) == 0 &&
                                  g_zSnd_MuteDepth == 0 && muteOption == 0;
 
     g_zSnd_IsInitialized = 1;
+    g_zSnd_PreInitialized = 1;
     InitSnapshotPlayHandle(&sample, &sample.primaryVoice,
                            reinterpret_cast<zSndBuffer *>(&directSnapshotBuffer), -321,
                            10.0f);
@@ -5776,6 +5795,7 @@ extern "C" int zsnd_apply_mute_state_to_active_voices_smoke(void) {
                              g_testLastGain == a3dGain;
 
     g_zSnd_IsInitialized = oldInitialized;
+    g_zSnd_PreInitialized = oldPreInitialized;
     g_zSnd_ActiveBackend = oldActiveBackend;
     g_zSnd_MuteDepth = oldMuteDepth;
     g_zSnd_MuteOptionValuePtr = oldMuteOptionValuePtr;

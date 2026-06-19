@@ -8033,8 +8033,17 @@ void __fastcall ProcessTransferContactQueue(
     playerState->projectileSpawnVel.z *= kPlayerTransferVelocityDamping;
 }
 
-// Reimplements 0x43b730: Player::RecordRecentHitFeedback
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x43b730: Player::RecordRecentHitFeedback
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: cache the latest hit source/context and restart the recent-hit
+ * feedback light effect for later damage and kill attribution.
+ * Source owner: Player damage-hit and destroyed-state callback subsystem, not
+ * a C++ Player class owner.
+ * Evidence: source-owner packet groups this callback with the damage-hit and
+ * destroyed-state handlers; body updates recent-hit storage, stops any prior
+ * light effect, and starts the recovered recent-hit effect handle.
+ */
 void __fastcall RecordRecentHitFeedback(
     zUtil_SaveGameState *saveState,
     OptCatalogEntryDef *hitSource,
@@ -8061,8 +8070,16 @@ void __fastcall RecordRecentHitFeedback(
     );
 }
 
-// Reimplements 0x43b800: Player::ClearDestroyedRespawnEffectHandleCallback
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x43b800: Player::ClearDestroyedRespawnEffectHandleCallback
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: clear the async destroyed-respawn effect handle when the effect
+ * callback completes.
+ * Source owner: Player damage-hit and destroyed-state callback subsystem, not
+ * a C++ Player class owner.
+ * Evidence: callback signature matches the effect-animation completion ABI and
+ * the body only clears the save-state player's destroyed respawn async handle.
+ */
 void __fastcall ClearDestroyedRespawnEffectHandleCallback(
     zEffectAnimEntry *,
     zUtil_SaveGameState *saveState,
@@ -8234,8 +8251,17 @@ void __fastcall DestroyedStateRespawnCallback(
     playerState->cachedPrimarySelectionCode = 0;
 }
 
-// Reimplements 0x43bc40: Player::EnterLocalInactiveDestroyedLifecycle
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x43bc40: Player::EnterLocalInactiveDestroyedLifecycle
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: put the local player into the inactive destroyed lifecycle and, for
+ * network games, attach the destroyed reset callback to the respawn effect.
+ * Source owner: Player damage-hit and destroyed-state callback subsystem, not
+ * a C++ Player class owner.
+ * Evidence: body is gated to the active local save state, updates lifecycle and
+ * alt-gun transition fields, starts the destroyed respawn effect, stops BFT
+ * bubble FX, and installs the reset callback only when networking is enabled.
+ */
 void __fastcall EnterLocalInactiveDestroyedLifecycle(
     zUtil_SaveGameState *saveState
 ) {
@@ -8268,8 +8294,20 @@ void __fastcall EnterLocalInactiveDestroyedLifecycle(
     }
 }
 
-// Reimplements 0x43bcc0: Player::EnterDestroyedState
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x43bcc0: Player::EnterDestroyedState
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: apply local damage, transition the local player into destroyed or
+ * inactive lifecycle state, and emit hit feedback, network kill, and impact
+ * side effects.
+ * Source owner: Player damage-hit and destroyed-state callback subsystem, not
+ * a C++ Player class owner.
+ * Evidence: source-owner packet groups this with the hit callbacks and
+ * destroyed-state helpers; body preserves the damage suppression gates,
+ * recent-hit/timed-status updates, status meter and nanite handling,
+ * camera/steering reset, local lifecycle transition, network kill attribution,
+ * damage context, impulse, force-feedback, and hit stamp behavior.
+ */
 int __fastcall EnterDestroyedState(
     zUtil_SaveGameState *saveState,
     OptCatalogEntryDef *hitSource,
@@ -8441,8 +8479,17 @@ int __fastcall EnterDestroyedState(
     return playerState->recentHitValid;
 }
 
-// Reimplements 0x43b790: Player::UpdateTimedHitStatusFromHitSource
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x43b790: Player::UpdateTimedHitStatusFromHitSource
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: update the player's timed-hit status contribution from a hit source
+ * and return the remaining damage that should be applied.
+ * Source owner: Player damage-hit and destroyed-state callback subsystem, not
+ * a C++ Player class owner.
+ * Evidence: body applies the special max-health status path for timed-status
+ * sources, otherwise scales damage by inverse max health and suppresses damage
+ * only when the timed status update reports a completed status event.
+ */
 float __fastcall UpdateTimedHitStatusFromHitSource(
     zUtil_SaveGameState *saveState,
     OptCatalogEntryDef *hitSource,
@@ -8470,8 +8517,17 @@ float __fastcall UpdateTimedHitStatusFromHitSource(
     return damage;
 }
 
-// Reimplements 0x43b810: Player::HitCallback_RecordNetContextAndTimedStatus
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x43b810: Player::HitCallback_RecordNetContextAndTimedStatus
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: network hit callback that records recent-hit context and timed-hit
+ * status without applying local damage.
+ * Source owner: Player damage-hit and destroyed-state callback subsystem, not
+ * a C++ Player class owner.
+ * Evidence: callback exits for inactive lifecycle state, conditionally records
+ * recent-hit feedback and timed-hit status from hit-source flags, and returns
+ * the recent-hit validity state used by the damage callback contract.
+ */
 int __fastcall HitCallback_RecordNetContextAndTimedStatus(
     zUtil_SaveGameState *saveState,
     OptCatalogEntryDef *hitSource,
@@ -8611,8 +8667,18 @@ void __fastcall TickRemoteNetworkPlayer(
     );
 }
 
-// Reimplements 0x43b870: Player::HitCallback_RecordContextAndTimedStatus
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x43b870: Player::HitCallback_RecordContextAndTimedStatus
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: gameplay hit callback that records hit context, applies damage,
+ * enters destroyed-state side effects, and awards kill rewards.
+ * Source owner: Player damage-hit and destroyed-state callback subsystem, not
+ * a C++ Player class owner.
+ * Evidence: body shares the recent-hit/timed-status helpers with the other hit
+ * callbacks, rejects self-owned damage, updates status meter scaling, starts
+ * destroyed vehicle effects through the recovered callback, clears alt-gun
+ * runtime, records damage context, and preserves nanite/reward side effects.
+ */
 int __fastcall HitCallback_RecordContextAndTimedStatus(
     zUtil_SaveGameState *saveState,
     OptCatalogEntryDef *hitSource,
@@ -8793,8 +8859,18 @@ int __fastcall IsMissionProbeType1EnabledById(
     return missionId == 9 || missionId == 11 || missionId == 12 || missionId == 13;
 }
 
-// Reimplements 0x43c0c0: Player::StartDestroyedStateVehicleEffect
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x43c0c0: Player::StartDestroyedStateVehicleEffect
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: choose and start the destroyed-state vehicle effect, clear recent
+ * hit feedback, and optionally install the respawn completion callback.
+ * Source owner: Player damage-hit and destroyed-state callback subsystem, not
+ * a C++ Player class owner.
+ * Evidence: body selects the effect from fixed damage, damage protection,
+ * recent-hit, AI, and default destroyed-state conditions; stores the async
+ * handle, clears recent-hit light state, installs the provided callback, and
+ * hides the tracked HUD progress meter for the save state.
+ */
 void __fastcall StartDestroyedStateVehicleEffect(
     zUtil_SaveGameState *saveState,
     void *respawnCallback
@@ -13734,8 +13810,11 @@ int __fastcall HasLineOfSightFromLocalPlayerFxOffset(
     return raycastResult == 0 && rayData.candidateCount != 0 ? 0 : 1;
 }
 
-// Reimplements 0x43b500: Player::ApplyAimPitchToDirection
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x43b500: Player::ApplyAimPitchToDirection
+ * Purpose: adjust an aim direction to the requested pitch while preserving
+ * horizontal heading when possible.
+ */
 void __fastcall ApplyAimPitchToDirection(
     zVec3 *direction,
     float pitchY
@@ -13760,8 +13839,12 @@ void __fastcall ApplyAimPitchToDirection(
     direction->z *= scale;
 }
 
-// Reimplements 0x405650: Player::UpdateThirdPersonCamera
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x405650: Player::UpdateThirdPersonCamera
+ * BN source path: D:\Proj\GameZRecoil\zGame\Player\Player_Camera.cpp.
+ * Purpose: update the third-person camera target, camera orientation, horizon
+ * node, and cached direction vectors from the active player state.
+ */
 void __fastcall UpdateThirdPersonCamera(
     zUtil_SaveGameState *saveState
 ) {
@@ -13823,12 +13906,17 @@ void __fastcall UpdateThirdPersonCamera(
     );
 }
 
-// Reimplements 0x405c90: Player::ApplyCameraState
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x405c90: Player::ApplyCameraState
+ * BN source path: D:\Proj\GameZRecoil\zGame\Player\Player_Camera.cpp.
+ * Purpose: apply a requested player camera state while preserving previous
+ * state and option flags for first-person, third-person, clear-screen, and
+ * projectile views.
+ */
 void __fastcall ApplyCameraState(
     int newState
 ) {
-    zUtil_SaveGameState *const saveState = (zUtil_SaveGameState *)(g_GameStateOrMapTable);
+    zUtil_SaveGameState *const saveState = g_CurrentPlayerSaveState;
     if (saveState == 0) {
         return;
     }
@@ -15853,8 +15941,11 @@ void __fastcall UpdateMasterTypeBasic(
     playerState->cachedRollRad = playerState->vehicleRollRad;
 }
 
-// Reimplements 0x43b1b0: Player::BuildGunFireTransform
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x43b1b0: Player::BuildGunFireTransform
+ * Purpose: build the player gun-fire transform from the root and active modal
+ * node matrices.
+ */
 void __fastcall BuildGunFireTransform(
     zUtil_SaveGameState *saveState
 ) {
@@ -15916,8 +16007,10 @@ void __fastcall BuildGunFireTransform(
         modalMatrix.posY * rootMatrix.yz + modalMatrix.posZ * rootMatrix.zz + rootMatrix.posZ;
 }
 
-// Reimplements 0x43b3e0: Player::UpdateAltGunAimBasisOrigin
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x43b3e0: Player::UpdateAltGunAimBasisOrigin
+ * Purpose: compute the world-space origin used as the alternate gun aim basis.
+ */
 void __fastcall UpdateAltGunAimBasisOrigin(
     zUtil_SaveGameState *saveState,
     zVec3 *outBasisOrigin
@@ -15957,8 +16050,11 @@ void __fastcall UpdateAltGunAimBasisOrigin(
                         gunFireTransform.zz * localAimZ + gunFireTransform.posZ;
 }
 
-// Reimplements 0x43a4f0: Player::UpdateGunAndTurretAimNodes
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x43a4f0: Player::UpdateGunAndTurretAimNodes
+ * Purpose: apply the alternate gun aim vector to the gun pitch and turret yaw
+ * node matrices.
+ */
 void __fastcall UpdateGunAndTurretAimNodes(
     const zVec3 *aimDirection,
     zClass_NodePartial *gunNode,
@@ -16011,8 +16107,11 @@ void __fastcall UpdateGunAndTurretAimNodes(
     );
 }
 
-// Reimplements 0x43a600: Player::UpdateAltGunAimDirection
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x43a600: Player::UpdateAltGunAimDirection
+ * Purpose: update the smoothed alternate gun aim direction and final gun-fire
+ * vector from the current target and aim basis.
+ */
 void __fastcall UpdateAltGunAimDirection(
     zUtil_SaveGameState *saveState
 ) {

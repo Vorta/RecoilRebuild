@@ -1286,8 +1286,7 @@ namespace zClass_Class {
      * Source: D:\Proj\GameZRecoil\zClass\Class.c
      * Purpose: set or clear the cell-pickable flag on a node.
      */
-    int __fastcall
-    gwNodeSetCellPickable(
+    int __fastcall gwNodeSetCellPickable(
         zClass_NodePartial * node,
         int value
     ){
@@ -1312,8 +1311,7 @@ namespace zClass_Class {
      * Source: D:\Proj\GameZRecoil\zClass\Class.c
      * Purpose: read the cell-pickable flag from a node.
      */
-    int __fastcall
-    gwNodeGetCellPickable(
+    int __fastcall gwNodeGetCellPickable(
         zClass_NodePartial * node,
         int *outValue
     ){
@@ -1378,8 +1376,7 @@ namespace zClass_Class {
      * Source: D:\Proj\GameZRecoil\zClass\Class.c
      * Purpose: read the raycastable flag from a node.
      */
-    int __fastcall
-    gwNodeGetRaycastable(
+    int __fastcall gwNodeGetRaycastable(
         zClass_NodePartial * node,
         int *outValue
     ){
@@ -1424,8 +1421,7 @@ namespace zClass_Class {
      * Source: D:\Proj\GameZRecoil\zClass\Class.c
      * Purpose: read the pickable flag from a node.
      */
-    int __fastcall
-    gwNodeGetPickable(
+    int __fastcall gwNodeGetPickable(
         zClass_NodePartial * node,
         int *outValue
     ){
@@ -2380,7 +2376,7 @@ namespace gwNode {
             default:
                 sprintf(
                     g_zError_DebugMsgBuffer,
-                    "%s: Line %d: gwNodeBuildNodeToAncestorMatrix() : Unrecognized node "
+                    "%s: Line %d: gwNodeBuildNodeToAncestorMatrix(): Unrecognized node "
                     "class type:\n",
                     kClassSourceFile,
                     0xbfa
@@ -2708,15 +2704,19 @@ namespace zClass_Node {
         }
     }
 
-    // Reimplements 0x452860: zClass_Node::SetMaterialFlagBit9ForFlagBit0EntriesRecursive
-    void __fastcall
-    SetMaterialFlagBit9ForFlagBit0EntriesRecursive(
+    /**
+     * Reimplements 0x452860: zClass_Node::SetMaterialFlagBit9ForFlagBit0EntriesRecursive
+     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * Purpose: recurse a child-list subtree and propagate material flag bit 9
+     * updates through each node display instance.
+     */
+    void __fastcall SetMaterialFlagBit9ForFlagBit0EntriesRecursive(
         zClass_NodePartial * node,
         int enabled
     ){
         zDiPartial *di = (zDiPartial *)((unsigned int)(node->userDataOrDiRef));
         if (di != 0) {
-            zDi_SetMaterialFlagBit9ForFlagBit0Entries(
+            zDi::SetMaterialFlagBit9ForFlagBit0Entries(
                 di,
                 enabled
             );

@@ -591,11 +591,11 @@ void __fastcall AddFaceToPlayerProbeSampleBuckets(
 );
 } // namespace zModelConst
 
-int __fastcall zModel_Material_SetFlagBit9(
+namespace zModel_Material {
+int __fastcall SetFlagBit9(
     zModel_MaterialPartial *material,
     int enabled
 );
-namespace zModel_Material {
 void __fastcall ResetDefaults(zModel_MaterialPartial *material);
 int __fastcall HasAuxData(zModel_MaterialPartial *material);
 int __fastcall CompareForReuse(
@@ -632,11 +632,11 @@ void __fastcall UpdateCycleIfNeeded(zModel_MaterialPartial *material);
 zModel_MaterialPartial *__fastcall Clone(zModel_MaterialPartial *material);
 void __fastcall InvalidateImagesIfEligible(zModel_MaterialPartial *material);
 } // namespace zModel_Material
-void __fastcall zDi_SetMaterialFlagBit9ForFlagBit0Entries(
+namespace zDi {
+void __fastcall SetMaterialFlagBit9ForFlagBit0Entries(
     zDiPartial *self,
     int enabled
 );
-namespace zDi {
 void __fastcall InvalidateImagesForFlagBit8Materials(zDiPartial *self);
 }
 

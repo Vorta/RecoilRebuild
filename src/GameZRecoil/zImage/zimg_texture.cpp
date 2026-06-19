@@ -601,7 +601,12 @@ int __fastcall FontsLoadFromPath(
     return 0;
 }
 
-// Reimplements 0x46d900: zImage::TexDir_FindOrCreateByPath
+/**
+ * Reimplements 0x46d900: zImage::TexDir_FindOrCreateByPath.
+ * Purpose: load or reuse the texture-directory image for a path.
+ * Evidence: BN calls the dynamic texture-pack lookup first, then the builtin
+ * lookup, and clears zero-alpha pixels on a loaded image before returning it.
+ */
 zVidImagePartial *__fastcall TexDir_FindOrCreateByPath(
     const char *path
 ) {

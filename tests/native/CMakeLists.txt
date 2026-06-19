@@ -28,6 +28,7 @@ add_executable(recoil_native_smoke
     zhud_composite_panel_smokes.cpp
     player_fx_pass3_smokes.cpp
     player_alt_gun_runtime_smokes.cpp
+    player_damage_hit_smokes.cpp
     zhud_cmd_dialog_state_smokes.cpp
     zhud_net_game_setup_smokes.cpp
     zhud_options_panel_smokes.cpp

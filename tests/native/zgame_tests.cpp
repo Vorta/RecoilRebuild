@@ -12901,7 +12901,7 @@ extern "C" int zclass_node_predicate_helpers_smoke() {
         return 5;
     }
     zDi::SetFlagBit0(nullptr, 1);
-    if (zModel_Material_SetFlagBit9(nullptr, 1) != 0) {
+    if (zModel_Material::SetFlagBit9(nullptr, 1) != 0) {
         return 6;
     }
 
@@ -13337,7 +13337,7 @@ extern "C" int zclass_node_predicate_helpers_smoke() {
     }
 
     zModel_MaterialPartial materialDirect{0xffff};
-    if (zModel_Material_SetFlagBit9(&materialDirect, 0) != 1 ||
+    if (zModel_Material::SetFlagBit9(&materialDirect, 0) != 1 ||
         (materialDirect.flags & 0x0200) != 0 || (materialDirect.flags & 0xfdff) != 0xfdff) {
         return 7;
     }

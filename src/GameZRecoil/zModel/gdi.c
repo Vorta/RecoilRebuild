@@ -960,21 +960,23 @@ namespace zModel_Material {
     }
 }
 
-/**
- * Reimplements 0x480f60: zModel_Material_SetFlagBit9
- * (D:\Proj\GameZRecoil\zModel\gdi.c).
- * Purpose: update material flag bit 9 from a boolean input.
- */
-int __fastcall zModel_Material_SetFlagBit9(
-    zModel_MaterialPartial *material,
-    int enabled
-) {
-    if (material == 0) {
-        return 0;
-    }
+namespace zModel_Material {
+    /**
+     * Reimplements 0x480f60: zModel_Material::SetFlagBit9
+     * Source: D:\Proj\GameZRecoil\zModel\gdi.c
+     * Purpose: update material flag bit 9 from a boolean input.
+     */
+    int __fastcall SetFlagBit9(
+        zModel_MaterialPartial *material,
+        int enabled
+    ) {
+        if (material == 0) {
+            return 0;
+        }
 
-    material->flags = (unsigned short)((material->flags & 0xfdff) | ((enabled & 1) << 9));
-    return 1;
+        material->flags = (unsigned short)((material->flags & 0xfdff) | ((enabled & 1) << 9));
+        return 1;
+    }
 }
 
 namespace zModel_Material {
@@ -1002,22 +1004,25 @@ namespace zModel_Material {
     }
 }
 
-/**
- * Reimplements 0x4841b0: zDi_SetMaterialFlagBit9ForFlagBit0Entries
- * (D:\Proj\GameZRecoil\zModel\gdi.c).
- * Purpose: set material flag bit 9 for display-instance entries whose material has flag bit 0.
- */
-void __fastcall zDi_SetMaterialFlagBit9ForFlagBit0Entries(
-    zDiPartial *self,
-    int enabled
-) {
-    for (int i = 0; i < self->entryCount; ++i) {
-        zModel_MaterialPartial *material = self->entries[i].material;
-        if ((material->flags & 0x0100) != 0) {
-            zModel_Material_SetFlagBit9(
-                material,
-                enabled
-            );
+namespace zDi {
+    /**
+     * Reimplements 0x4841b0: zDi::SetMaterialFlagBit9ForFlagBit0Entries
+     * Source: D:\Proj\GameZRecoil\zModel\gdi.c
+     * Purpose: set material flag bit 9 for display-instance materials whose
+     * flag bit 8 (0x0100) is set.
+     */
+    void __fastcall SetMaterialFlagBit9ForFlagBit0Entries(
+        zDiPartial *self,
+        int enabled
+    ) {
+        for (int i = 0; i < self->entryCount; ++i) {
+            zModel_MaterialPartial *material = self->entries[i].material;
+            if ((material->flags & 0x0100) != 0) {
+                zModel_Material::SetFlagBit9(
+                    material,
+                    enabled
+                );
+            }
         }
     }
 }

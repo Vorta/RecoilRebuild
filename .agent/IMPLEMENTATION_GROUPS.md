@@ -129,8 +129,9 @@ available even when no groups are active.
 
 Active queue sections:
 
-- Ready owner/data work: Player create-from-names bootstrap owner/data cleanup
-  remains actionable as a separate owner slice.
+- Ready owner/data work: HudUi base element/widget owner-data cleanup is the
+  current actionable HUD follow-up after the older Player create-from-names
+  slice cleared to tier-S-only debt.
 - Blocked pending evidence or policy: zVideo/zRndr renderer dispatch remains
   blocked on the ESP-pivot span-family source model unless new evidence or
   explicit policy direction appears.
@@ -139,6 +140,108 @@ Active queue sections:
   and the 0x42e330 caller/data path.
 - Deferred verify-only debt: keep tier S-only zVideo/zRndr and HUD addresses
   in plan/VC manifests, not as active groups, while `tier_s_priority_ready=false`.
+
+### Group: HudUi base element/widget owner-data cleanup
+
+- Anchor: 0x4b3d00 HudUiWidget::Constructor, with base dependency 0x4b4070
+  HudUiElement::Constructor.
+- Owner ids: hud_ui.hud_ui_element_base, hud_ui.invalidate_mask_global,
+  hud_ui.hud_ui_widget_geometry_invalidation,
+  hud_ui.hud_ui_widget_destructor_wrapper, hud_ui.hud_ui_bar_class,
+  hud_ui.hud_ui_meter_class, hud_ui.hud_ui_slot_class,
+  hud_ui.hud_ui_message_class.
+- Section: hud_ui
+- Queue: ready owner/data work; new plan-next follow-up after active-group
+  refresh found the older GameNet/Player groups verify-only and zVideo blocked
+  by the zRndr ESP-pivot source-model policy.
+- Reason: the primary HudOptionsDialog candidate is blocked by
+  zRndr::SelectSpanRoutines, while the next HUD constructor candidates route
+  through HudUiBackground::Constructor -> HudUiBackgroundCursorWidget ->
+  HudUiWidget -> HudUiElement. The HudUiElement/invalidate-mask gates and the
+  narrowed HudUiWidget geometry/invalidation owner are now accepted; remaining
+  HUD owner/data debt is above this slice, especially the background/cursor
+  constructors.
+- Current evidence:
+  - Added data owner `hud_ui.invalidate_mask_global` for
+    `g_HudUi_InvalidateMask`. BN declares a 4-byte uint32 initialized
+    to 0x0c; xrefs are limited to 0x4b3e90, 0x4b4180, and 0x4bc760.
+    `python tools/recoil.py verify vc5 hud_ui_invalidate_mask_global` passed
+    with zero unmasked data-byte mismatches.
+  - Added source owner `hud_ui.hud_ui_element_base` for the accepted
+    HudUiElement base-class method cluster. Direct authored data is limited to
+    `g_HudUi_InvalidateMask`; owner byte evidence remains deferred by global
+    tier-S policy.
+  - Promoted 0x4b4180 `HudUiElement::Invalidate`, 0x4bc760
+    `HudUi::SetInvalidateMode`, 0x4b3e90 `HudUiWidget::InvalidateRect`,
+    0x4b4070 `HudUiElement::Constructor`, and 0x4b40c0
+    `HudUiElement::CopyConstructor` to tier B after current functional/VC5
+    data evidence. 0x4b4070 and 0x4b3d00 have same-session VC5 function-byte
+    passes, but tier S remains deferred.
+  - Added accepted source owner
+    `hud_ui.hud_ui_widget_geometry_invalidation` for the narrowed
+    HudUiWidget constructor/RebuildBltRectFromImage/SetPos/HitTest/
+    InvalidateRect slice. Current BN/source review found no direct authored
+    data beyond the accepted inherited invalidate-mask path; functional
+    verification passed for 0x4b3d00, 0x404e10, 0x4b3dd0, 0x4b4030, and the
+    existing 0x4b3e90 target.
+  - Promoted 0x4b3d00 `HudUiWidget::Constructor`, 0x404e10
+    `HudUiWidget::RebuildBltRectFromImage`, 0x4b3dd0 `HudUiWidget::SetPos`,
+    and 0x4b4030 `HudUiWidget::HitTest` to tier B through
+    `hud_ui.hud_ui_widget_geometry_invalidation`.
+  - Registered `zhud_widget_release_and_destructor_core_smoke` in
+    `recoil_native_smoke`, added owner
+    `hud_ui.hud_ui_widget_destructor_wrapper`, and promoted 0x4b3ce0
+    `HudUiWidget::ScalarDeletingDestructor` to tier B. The wrapper directly
+    touches no authored globals; tier S remains deferred because no VC5SP3
+    byte target covers 0x4b3ce0 yet.
+  - The lower HudUiTripletPanel class owner
+    `hud_ui.hud_ui_triplet_panel_class` is now accepted for boundary/source
+    and functional gates after registering the missing triplet-panel native
+    smokes and repairing provenance docblocks for the constructor/destructor
+    cluster. Data remains blocked for constructor/shutdown paths because they
+    touch `g_HudUiMgr`/`g_HudUiMgrNanitePanel`.
+  - The old `hud_ui.hud_ui_mgr_data` owner has been clarified as a data owner,
+    not the source-owner parent for HudUiMgr methods. BN models
+    `g_HudUiMgr` as a 0x7844 authored singleton object ending before
+    `g_HudLayoutHW`; current source still models only the prefix and split
+    sibling globals for weapon slots, mode counters, messages, loading
+    checkpoint storage, tail bar, timer pointers, and related state.
+    `hud_ui.hud_ui_mgr_class` now records the blocked class owner route for
+    0x40d7e0/static init/destructor/0x411750.
+  - Added accepted source owners `hud_ui.hud_ui_bar_class` and
+    `hud_ui.hud_ui_meter_class`. 0x4bcf20 `HudUiBar::HudUiBar`,
+    0x40d9e0 `HudUiMeter::ConstructorEx`, and 0x40fb70
+    `HudUiMeter::HudUiMeter` are promoted to tier B after current functional
+    evidence, accepted inherited invalidate-mask data, and source-faithful
+    class owner gates. 0x4bcf20 and 0x40fb70 have same-session VC5 function
+    byte passes, but new tier S promotion remains globally deferred.
+  - Added accepted source owner `hud_ui.hud_ui_slot_class` for
+    0x40db20 `HudUiSlot::Constructor`, 0x40d780
+    `HudUiSlot::Destructor`, 0x40dbd0
+    `HudUiSlot::ScalarDeletingDestructor`, and existing 0x40db90
+    `HudUiSlot::Draw`. The stale `zhud_slot_destructors_smoke`
+    functional target was repaired and registered, and the constructor,
+    destructor, and scalar-deleting destructor are now tier B with
+    no authored globals touched. Added missing provider-boundary
+    0x40d5f0 `HudUiWidget::DestructorCoreEhThunk` as MSVC
+    EH/array-cleanup forwarding glue to 0x4b3d50.
+  - Added accepted source owner `hud_ui.hud_ui_message_class` for the
+    HudUiMessage constructor/destructor/deleting destructor, draw, layout,
+    image-release, and static weapon-message update methods. Ported and
+    registered the `zhud_message_*` native smokes from the unlinked test
+    source into `recoil_native_smoke`; all twelve HudUiMessage functional
+    targets pass. Data remains blocked because the owner still touches
+    split `g_HudUiMgrMessages`/`g_HudUiMgr` state and the full 0x7844
+    `g_HudUiMgr` data owner remains incomplete.
+- Next action:
+  - Continue at the HudUiMgr owner/data boundary. Refreshed
+    `frontier 0x40d7e0 --depth 1 --lane binary` now has no lower source-owner
+    blocker visible and recommends 0x40d7e0 `HudUiMgr::Constructor`; its
+    direct data blockers remain HudUiMessage, HudUiTripletPanel, HudUiPanel,
+    and the incomplete 0x7844 `g_HudUiMgr` data owner. Do not promote 0x40d7e0,
+    0x411750, 0x4118b0, or 0x4132b0 data gates until the complete 0x7844
+    `g_HudUiMgr` owner is source-faithfully modeled and verified. Keep the
+    zVideo/zRndr shared renderer callback/surface-state blockers separate.
 
 ### Group: zVideo renderer dispatch/global owner audit
 
@@ -165,6 +268,57 @@ Active queue sections:
     evidence for 0x42e330 and 0x48ff70 has been repaired. The remaining
     reason to keep that path active is this shared 0x48ff70 data gate, so it
     should not live as a separate group.
+  - 2026-06-19 update: `render_video.zvideo_renderer_dispatch` now has
+    accepted boundary/source/data/functional gates for 0x4a77a0 and 0x4a6b40.
+    VC5SP3 data-symbol manifests
+    `zvideo_renderer_dispatch_core_globals`,
+    `zvideo_renderer_dispatch_surface_globals`,
+    `zvideo_renderer_dispatch_image_globals`,
+    `zvideo_renderer_dispatch_texture_globals`,
+    `zvideo_renderer_dispatch_fog_poly_globals`, and
+    `zvideo_renderer_dispatch_flush_globals` cover the complete renderer
+    selection/fullscreen/dispatch callback global set, including
+    `g_zVideo_pfnImageLazyCreateVideoMemorySurface`,
+    `g_zVideo_pfnImageEnsureSurfaceForCurrentDevice`,
+    `g_zVideo_pfnQueryDeviceVideoMemoryBytes`, and
+    `g_zVideo_pfnQueryTextureMemoryBytes`. Plan entries 0x4a77a0 and 0x4a6b40
+    are now tier B; tier S remains globally deferred.
+  - 2026-06-19 update: `render_video.zvideo_fog_color_globals`,
+    `render_video.zvideo_d3d_device_globals`, and
+    `render_video.zvideo_dd3d_fog_state` now have accepted data evidence.
+    Source-worker pass reordered the zVideo fog/color scalar declarations to
+    match BN storage; VC5SP3 data-symbol manifests
+    `zvideo_fog_color_pending_bias`, `zvideo_fog_color_target_applied`,
+    `zvideo_d3d_fog_cache`, `zvideo_d3d_device_globals_a`, and
+    `zvideo_d3d_device_globals_b` passed. Plan entries 0x4a7220, 0x4a7250,
+    0x4a7300, 0x4a7330, 0x4a73a0, 0x4aa9e0, 0x4aaa30, 0x4aaa60, 0x4aaa90,
+    and 0x4aab30 are now tier B; tier S remains globally deferred.
+  - 2026-06-19 update: `render_video.zvideo_pixel_pack_state`,
+    `render_video.zvideo_dd3d_submit_queue_storage`, and
+    `render_video.zvideo_dd3d_submit_queue` now have accepted data evidence.
+    VC5SP3 data-symbol manifests `zvideo_pixel_pack_state_global`,
+    `zvideo_dd3d_submit_temp_vertices`, `zvideo_dd3d_submit_sorted_queue`,
+    `zvideo_dd3d_submit_overwrite_queue`,
+    `zvideo_dd3d_submit_queue_counts`, and
+    `zvideo_d3d_render_state_cache_global` passed for the complete
+    pixel-pack, temp-vertex, sorted/overwrite queue, queue-count, and
+    render-state cache storage. Plan entries 0x4a6b90, 0x4a6bb0, 0x4a6bd0,
+    0x4a6bf0, 0x4aab90, 0x4aaef0, 0x4ab320, 0x4ab6d0, 0x4abb20, 0x4ac370,
+    0x4acbd0, and 0x4ace30 are now tier B; tier S remains globally deferred.
+  - 2026-06-19 update: `render_video.zvideo_dd_hw_api_feature_flags`
+    now has accepted data evidence for the complete
+    `g_zVideo_HwApiDeviceTable` storage. VC5SP3 data-symbol manifest
+    `zvideo_hw_api_device_table_global` passed for the four 0x6ec-byte
+    hardware API device records, and 0x4a9920 is now tier B; tier S remains
+    globally deferred.
+  - 2026-06-19 update: `render_video.zvideo_dd_surface_state_globals`,
+    `render_video.zvideo_selected_hw_api_device_record`, and
+    `render_video.zvideo_dd_primary_sw_blit` now have accepted data evidence.
+    Existing VC5SP3 target `zvideo_dd_present_display_mode_surface_data`
+    covers the four DirectDraw surface-state globals, new target
+    `zvideo_selected_hw_api_device_record_global` covers
+    `g_zVideo_pSelectedHwApiDeviceRecord`, and plan entries 0x4a7d90,
+    0x4a7dd0, and 0x4a7e10 are now tier B; tier S remains globally deferred.
   - Same-session BN/source-worker packets for the 0x49b7e0-led switch-vshift
     span family confirm the retail source shape intentionally pivots ESP
     through gRndr_SavedEspSlot and writes destination words with push/sub-esp.
@@ -183,8 +337,8 @@ Active queue sections:
 - Next action:
   - Do not reassign the 0x49b7e0-led ESP-pivot span-family slice without new
     BN/source-model evidence or explicit user approval for a lower-level
-    implementation strategy. Prefer another active owner/data WIP while this
-    group remains blocked by the current source rules.
+    implementation strategy. Prefer another active owner/data WIP while that
+    slice remains blocked by the current source rules.
   - If the caller/data path is resumed, start with
     `python tools/recoil.py status 0x42e330 --lane binary`, then route through
     the 0x48ff70 data blocker before assigning any source worker.
@@ -581,8 +735,8 @@ Active queue sections:
 - Anchor: 0x421ab0 Player::CreateFromNamesAtPose, with wrapper 0x421ea0
   Player::CreateFromNamesAtPoseGetState.
 - Section: battlesport_gameplay
-- Queue: ready owner/data work; dependency slice for the GameNet pkt06 remote
-  spawn path.
+- Queue: deferred verify-only debt; owner/data dependency slice for the GameNet
+  pkt06 remote spawn path is cleared at the current 0x420d10 depth-1 frontier.
 - Reason: Player class bootstrap/save-state creation owner and touched
   Player/HUD/zClass/zEffect data gates block GameNet pkt06 tier B promotion.
 - Current evidence:
@@ -605,9 +759,33 @@ Active queue sections:
     `recoil_native_smoke`.
   - The missing linked smoke for 0x407700 `zGame::Options_LoadGameOptions` is
     repaired: `zgame_options_load_game_options_minimal_smoke` is registered in
-    `recoil_native_smoke` and `verify functional 0x407700` passes. 0x407700
-    remains a broader zGame options owner/data blocker outside the narrow zOpt
-    network accessor owner.
+    `recoil_native_smoke` and `verify functional 0x407700` passes. 0x407700 is
+    now linked to `engine.zgame.options_load_game_options` and accepted at tier
+    B after clearing all direct owner/data blockers, including zVideo option
+    globals, WOL password flag, bind-map current rebuild, zReader load-node
+    globals, and the option-load-only stride/camera globals. Remaining visible
+    blockers below 0x407700 are tier-S-only and remain deferred by the global
+    authored owner/data policy.
+  - The visible 0x407700 option-helper frontier was narrowed: the
+    zOpt sound option owner `engine.zgame.zopt_sound_options`, the fullscreen
+    pair owner `engine.zgame.zopt_fullscreen_option`, and the zInput joystick
+    option owner `engine.zinput.joystick_option_accessors` are now accepted at
+    tier B after linked owner/data gates, targeted functional checks, local
+    VC5 function checks, and matching data-owner evidence. The 0x42a550
+    `zInput::BindMap_InitDefaultBindings` route is also accepted at tier B
+    after recording the `zInput_BindMapContext` class owner, the current
+    binding-record wrapper owner, bind-group/default setup owner, and their
+    zero-initialized data owners. Owner-level tier S remains deferred by the
+    global owner/data policy; 0x42a550 still has known default-table/loop VC5
+    byte drift. A refreshed `frontier 0x407700 --depth 1 --lane binary` now
+    routed to 0x4080b0 `zSnd::GetAudioApiOption`; the zSound backend/CD-audio
+    option owner `engine.zsound.backend_option_accessors` and data owner
+    `engine.zsound.backend_option_globals` are now accepted at tier B for
+    0x4080a0, 0x4080b0, 0x408210, and 0x408220. The same frontier then routed
+    through the remaining direct data blockers: game difficulty/player name,
+    zVideo option and video-mode globals, WOL password flag, bind-map current
+    rebuild, and zReader load-node data gates. Those are now accepted at tier B
+    with linked owners and current functional/VC5 data-symbol evidence.
   - 0x44ecf0 `zClass::FindByTypeAndName` is now accepted at tier B after
     linking the narrow `engine.zclass.typelist_find_by_type_and_name` owner,
     verifying the exact-name lookup smoke, accepting the `List.c` source shape,
@@ -615,10 +793,13 @@ Active queue sections:
     `g_zClass_TypeList_HeadSlotPtrs` and `g_zClass_TypeList_Buckets`. Tier S
     remains deferred because the function-byte target still has the known
     inline-strcmp byte diff.
-  - Remaining visible blockers under 0x421ab0 are owner/data gates for
+  - Refreshed `frontier 0x421ab0 --depth 1 --lane binary` shows the direct
+    create-from-names frontier at tier B. Prior owner/data blockers for
     zClass clone/name/add-child/damage/camera/material helpers, Player
     modal/spawn/hit/destroyed-state helpers, HudSensorTracker::SetTrackedSaveState,
-    OptCatalog damage-mask lookup, and zEffectAnim::FindEntryByName.
+    OptCatalog damage-mask lookup, and zEffectAnim::FindEntryByName are now
+    cleared to tier B; remaining visible 0x421ab0 dependency blockers are
+    tier-S-only and deferred by the global owner/data policy.
   - The zEffect leaf lookup 0x45ff10 `zEffectAnim::FindEntryByName` is
     accepted at tier B after a linked native smoke, source-owner review, and
     BN/source zero-data evidence for `g_zEffectAnim_EntryCount` and
@@ -677,8 +858,12 @@ Active queue sections:
     0x44e920 `zClass::ProcessDeferredWork` are now source-owner accepted with
     0x44eea0 `zClass_NodeList::ProcessPendingFrees` and 0x44f000. Broader
     0x44f120 `DeleteAllOfType` and 0x44f1d0
-    `gwListDeleteANode` are adjacent deletion-path work, not required for the
-    0x44f000 owner gate. Data classification proves 0x44f000 is not
+    `gwListDeleteANode` are now accepted at tier B after registering their
+    existing native smokes, rerunning functional coverage, linking 0x44f120
+    to `engine.zclass.node_free_and_deferred_work`, linking 0x44f1d0 to
+    `engine.zclass.remove_child_delete_dispatch`, and accepting their
+    owner/data gates; tier S remains deferred. Data classification proves
+    0x44f000 is not
     no-globals: it touches List.c error/source strings, `g_zError_DebugMsgBuffer`,
     and, through `MarkPendingRemoval`, the authored type-list head-slot table
     and bucket dirty fields. 0x44e690 `zClass_TypeList::FreeLink`,
@@ -717,16 +902,27 @@ Active queue sections:
     `CleanupLightRefs` and 0x45bfd0 `CleanupSoundRefs` are accepted at tier B
     after registering `zeffect_cleanup_light_sound_refs_smoke`, rerunning their
     functional targets, and verifying `g_zEffect_World`/stop-cleanup globals
-    with local VC5 data-symbol evidence. Local VC5 data-symbol evidence also
-    confirms the shared Time frame-delta global `g_FrameDeltaTimeSec`, but the
-    remaining zEffect velocity/stop route still needs the
-    recursive 0x45c040 `Stop` / 0x45d3d0 `FinalizeStop` /
-    0x45d770 `RunStopDelayCallback` / 0x45d6b0 `NodeActionCallback` /
-    0x45d570 `StopAndCleanup` owner loop plus 0x45d4c0
-    `RunStopSequenceCallback`, 0x45cc00 `RunSequenceEvents`/event-dispatch
-    ownership, 0x45d6c0 `ResetForNode` through external 0x449ab0
-    `gwNodeGetRoot`, and the zClass sound/light/camera setter gates before
-    0x45d930/0x45dcb0/0x45dde0 promotion.
+    with local VC5 data-symbol evidence. Local VC5 data-symbol evidence now
+    covers the shared `zeffect_stop_cleanup_globals` data owner
+    (`g_zEffect_World`, `g_zEffect_FrameDeltaRemainingSec`, and related
+    zeff_anim_run.c diagnostics), the zClass Class.c root-lookup diagnostic
+    rdata, and the zeff_anim_init/copy-node diagnostic data owner used by
+    rebind/clone helpers. 0x449ab0 `gwNodeGetRoot`, 0x45d6c0
+    `ResetForNode`, and 0x45ed80 `RebindEntryToNode` are accepted at tier B
+    from current owner/data/functional evidence. Local VC5 data-symbol
+    evidence also confirms the shared Time frame-delta global
+    `g_FrameDeltaTimeSec`. The previously remaining 0x45d010 `RunSequence`
+    route through 0x45c640 `GetConditionalRefPosDistanceSq` -> external zClass
+    0x4497b0 `GetWorldPosition` -> 0x449480 `BuildNodeToAncestorMatrix` plus
+    zMath matrix-stack data gates is now accepted at tier B. Durable owners
+    added/accepted in the 2026-06-19 pass: `engine.zmath.matrix_stack_current`,
+    `engine.zclass.node_world_transform_helpers`,
+    `engine.zeffect.conditional_ref_pos`,
+    `engine.zmodel.variant_tag_current_filter`,
+    `engine.zeffect.anim_runtime_sequence_core`, and
+    `engine.zeffect.anim_activate_runtime`. 0x45c040 `Stop`, 0x45cc00
+    `RunSequenceEvents`, 0x45d010 `RunSequence`, and 0x45d930
+    `ActivateRuntime` are now tier B; tier S remains deferred.
     The zEffect runtime-ref creation helpers 0x45e380
     `FindOrCreateSoundRef` and 0x45e4a0 `FindOrCreateLightRef` are accepted
     at tier B after registering their shared native smoke and verifying the
@@ -736,16 +932,11 @@ Active queue sections:
     existing sound leaf smoke passed and the Sound.c diagnostic/source rdata
     target reverified.
 - Next action:
-  - Start with `python tools/recoil.py status 0x420d10` and
-    `python tools/recoil.py frontier 0x420d10 --depth 1 --lane binary`.
-    The visible route through 0x45dde0 `SetVelocity_Thunk`, 0x45dcb0
-    `SetVelocity`, 0x45d930 `ActivateRuntime`, and 0x45e730
-    `CloneEntryForNode` has cleared 0x452fd0 `zClass_Light::gwLightNew`.
-    The 0x4390d0 `Player::CacheGunHardpointsAndDetachDisplays` slice is now
-    accepted at tier B after BN/source owner review, functional smoke coverage,
-    original-helper guard, and local VC5 data-symbol evidence for the four
-    hardpoint-name strings.
-  - Current 0x420d10 frontier now routes to 0x438ba0
+  - Do not schedule this Player slice as active owner/data work unless a deeper
+    refreshed frontier exposes a new non-tier-S blocker or the user explicitly
+    directs tier S work. Current `frontier 0x420d10 --depth 1 --lane binary`
+    reports only tier-S-only direct-callee debt for the visible slice.
+  - Historical route note: an earlier 0x420d10 frontier routed to 0x438ba0
     `Player::LoadWeaponBanksAndSelectDefaults`. 0x4b1f90
     `OptCatalog::FreeTrailRuntimeStateStorage` is now accepted at tier B after
     adding the required provenance docblock, rerunning functional evidence, and
@@ -803,9 +994,36 @@ Active queue sections:
     linking the accepted Player weapon-bank/Mines owner and accepted zInput and
     Player literal data owners; its `Reconstructed` marker remains limited
     (`☑️`) only for the documented BN HLIL pointer-cursor limitation. Refreshed
-    `frontier 0x420d10 --depth 1 --lane binary` now routes to 0x420d10
-    `Player::InitStateFromNameAndMasterCommonData` itself: direct callees have
-    no lower visible owner blocker at depth 1. The durable
+    `frontier 0x420d10 --depth 1 --lane binary` then routed to 0x420d10
+    `Player::InitStateFromNameAndMasterCommonData` itself; a later refreshed
+    frontier exposed remaining direct-callee owner/data blockers including
+    0x4727f0 `zMath::Vec3NormalizeXZ`, 0x403510 `AINet::FindByNetId`,
+    0x4390d0 `Player::CacheGunHardpointsAndDetachDisplays`, and 0x438920
+    `HudUiMgrSensor::TrackList_Add`. 0x4727f0 is now accepted at tier B after
+    linking `engine.zmath.vec3_normalize_xz_helper`, adding accepted data-owner
+    `engine.zmath.vec3_normalize_xz_constants` for g_zMath_Vec3UnitFloat and
+    g_zMath_DoubleZero, passing `zmath_vec3_normalize_xz`, and verifying the
+    two constants with `zmath_vec3_normalize_xz_constants`; tier S remains
+    deferred by its known function-byte mismatch. 0x403510
+    `AINet::FindByNetId` is now accepted at tier B after linking
+    `battlesport_ai.ainet_find_by_net_id_lookup`, accepting data-owner
+    `battlesport_ai.ainet_global_list_head_data` for g_AINetListHead, and
+    rerunning functional/VC5 function/data-symbol evidence. Current refreshed
+    frontier recommends 0x4390d0
+    `Player::CacheGunHardpointsAndDetachDisplays` as the next visible
+    source-owner blocker. 0x4390d0 is now accepted at tier B after clearing
+    lower zClass data gates for 0x447bc0 and 0x447f00 through accepted
+    `engine.zclass.class_error_strings`, linking
+    `battlesport_gameplay.player_gun_hardpoint_cache`, and accepting
+    `battlesport_gameplay.player_gun_hardpoint_name_strings` with
+    `player_gun_hardpoint_name_strings` VC5 data-symbol evidence. 0x438920
+    `HudUiMgrSensor::TrackList_Add` is now accepted at tier B after linking
+    `hud_ui.hud_ui_mgr_sensor_track_list_append`, accepting the complete
+    `hud_ui.hud_ui_mgr_sensor_track_list_global` BSS data owner,
+    and rerunning `hud_ui_mgr_sensor_track_list_add` functional evidence. The
+    refreshed `frontier 0x420d10 --depth 1 --lane binary` now reports only
+    tier-S-only direct-callee debt for this visible slice, so it is deferred by
+    the global owner/data policy. The durable
     `battlesport_gameplay.player_create_from_names_bootstrap` owner has been
     pruned with supported owner CLI commands: the GameNet pkt06 caller and zEffect
     0x45d930 are no longer members, the local Player bootstrap methods
@@ -824,6 +1042,13 @@ Active queue sections:
     owner `battlesport_gameplay.player_shared_aim_origin_rdata` is accepted
     after BN xref review, source-shape repair, passing 0x420d10/0x43b500
     functional targets, and zero-mismatch 12-byte VC5 data-symbol evidence.
+    The Player alt-gun aim-direction owner
+    `battlesport_gameplay.player_alt_gun_aim_direction` is now accepted for
+    boundary/source/data/functional gates. It covers 0x43b1b0, 0x43b3e0,
+    0x43a4f0, 0x43a600, and 0x43b500 after docblock repair, current
+    functional evidence for all five members, accepted zMath and OptCatalog
+    dependency gates, and existing Player aim-origin/time data owners; these
+    entries are tier B with tier S deferred.
     The broader `battlesport_gameplay.player_create_from_names_bootstrap`
     owner is now accepted for boundary/source/data/functional gates after the
     assigned bootstrap docblocks were repaired in `player.cpp`, all ten owner

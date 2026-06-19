@@ -60,6 +60,7 @@ extern "C" int zinput_poll_active_devices_smoke(void);
 extern "C" int zopt_fullscreen_accessors_smoke(void);
 extern "C" int zopt_section_accessor_smoke(void);
 extern "C" int zopt_view_rect_target_side_effects_smoke(void);
+extern "C" int zopt_wol_password_flag_accessor_smoke(void);
 extern "C" int zsnd_option_accessors_smoke(void);
 extern "C" int zsnd_stream_request_stop_if_active_smoke(void);
 extern "C" int zsnd_stream_mgr_ensure_init_smoke(void);
@@ -70,10 +71,14 @@ extern "C" int zsnd_play_handle_stop_if_active_smoke(void);
 extern "C" int zsnd_play_handle_try_disable_managed_smoke(void);
 extern "C" int zsnd_play_handle_update3d_a3d_smoke(void);
 extern "C" int zsnd_play_handle_update3d_directsound_smoke(void);
+extern "C" int zsnd_play_with_delta_a3d_smoke(void);
+extern "C" int zsnd_play_with_delta_directsound_smoke(void);
+extern "C" int zsnd_play_with_delta_backend_dispatch_smoke(void);
 extern "C" int zsnd_update_listener_state_smoke(void);
 extern "C" int zsnd_speed_of_sound_smoke(void);
 extern "C" int zsnd_sample_play_simple_smoke(void);
 extern "C" int zsnd_is_muted_smoke(void);
+extern "C" int zsnd_apply_mute_state_to_active_voices_smoke(void);
 extern "C" int zsnd_gain_scale_to_directsound_attenuation_smoke(void);
 extern "C" int zsnd_global_volume_and_flag_helpers_smoke(void);
 extern "C" int zsnd_preinitialize_runtime_state_smoke(void);
@@ -126,6 +131,7 @@ extern "C" int zsnd_cd_track_list_static_constructor_smoke(void);
 extern "C" int zsnd_cd_track_list_static_destructor_smoke(void);
 extern "C" int zsnd_cd_track_list_static_init_atexit_child_smoke(void);
 extern "C" int zsnd_cd_track_list_static_init_atexit_smoke(void);
+extern "C" int zsnd_options_cpu_and_cached_directsound_smoke(void);
 extern "C" int zreader_named_int_lookup_smoke(void);
 extern "C" int zreader_get_named_node_smoke(void);
 extern "C" int zreader_named_string_float_lookup_smoke(void);
@@ -227,6 +233,7 @@ extern "C" int player_cache_disable_copter_snd_nodes_smoke(void);
 extern "C" int player_reactivate_copter_snd_nodes_if_healthy_smoke(void);
 extern "C" int player_apply_alt_weapon_switch_smoke(void);
 extern "C" int player_apply_aim_pitch_to_direction_smoke(void);
+extern "C" int player_apply_camera_state_and_zopt_set_camera_mode_smoke(void);
 extern "C" int player_find_alt_gun_controller_smoke(void);
 extern "C" int player_alt_gun_fire_point_selection_smoke(void);
 extern "C" int player_alt_gun_ensure_aux_effect_active_smoke(void);
@@ -251,8 +258,19 @@ extern "C" int zweapon_optcatalog_handle_impact_from_runtime_probe_smoke(void);
 extern "C" int zweapon_optcatalog_process_runtime_instance_smoke(void);
 extern "C" int zweapon_optcatalog_remove_runtime_instance_smoke(void);
 extern "C" int zweapon_optcatalog_deactivate_trail_runtime_state_smoke(void);
+extern "C" int zweapon_optcatalog_compute_aim_pitch_for_target_smoke(void);
 extern "C" int light_alloc_from_free_list_and_attach_smoke(void);
 extern "C" int player_timed_hit_status_smoke(void);
+extern "C" int player_record_recent_hit_feedback_smoke(void);
+extern "C" int player_update_timed_hit_status_from_source_smoke(void);
+extern "C" int player_clear_destroyed_respawn_effect_handle_callback_smoke(void);
+extern "C" int player_hit_callback_record_net_context_and_timed_status_smoke(void);
+extern "C" int player_hit_callback_record_context_and_timed_status_smoke(void);
+extern "C" int player_enter_local_inactive_destroyed_lifecycle_smoke(void);
+extern "C" int player_enter_destroyed_state_smoke(void);
+extern "C" int player_apply_status_meter_change_smoke(void);
+extern "C" int player_apply_pitch_roll_velocity_impulse_from_direction_smoke(void);
+extern "C" int player_start_destroyed_state_vehicle_effect_smoke(void);
 extern "C" int player_create_from_names_at_pose_smoke(void);
 extern "C" int player_init_state_from_name_and_master_common_data_smoke(void);
 extern "C" int player_bind_modal_state_from_master_modal_data_smoke(void);
@@ -419,9 +437,13 @@ extern "C" int hud_ui_net_game_setup_launch_button_smoke(void);
 extern "C" int hud_ui_net_game_setup_next_world_button_smoke(void);
 extern "C" int hud_ui_net_game_setup_prev_world_button_smoke(void);
 extern "C" int hud_ui_net_game_setup_overlay_owner_on_try_smoke(void);
+extern "C" int zhud_slot_destructors_smoke(void);
 extern "C" int zhud_slot_draw_smoke(void);
+extern "C" int zhud_triplet_panel_constructor_smoke(void);
+extern "C" int zhud_triplet_panel_destructor_core_smoke(void);
 extern "C" int zhud_triplet_panel_draw_smoke(void);
 extern "C" int zhud_triplet_panel_set_visible_count_smoke(void);
+extern "C" int zhud_triplet_panel_shutdown_items_stub_smoke(void);
 extern "C" int zhud_triplet_interpolate_layout_smoke(void);
 extern "C" int zhud_triplet_is_local_player_first_entry_smoke(void);
 extern "C" int zhud_mgr_is_local_player_first_in_stats_list_smoke(void);
@@ -441,6 +463,14 @@ extern "C" int zhud_layout_hw_update_objective_dirty_rect_smoke(void);
 extern "C" int zhud_objective_update_meter_xpoints_smoke(void);
 extern "C" int zhud_mgr_trigger_current_layout_on_activated_smoke(void);
 extern "C" int zhud_counter_constructor_smoke(void);
+extern "C" int zhud_message_release_images_smoke(void);
+extern "C" int zhud_message_set_value_if_owner_matches_smoke(void);
+extern "C" int zhud_message_update_selected_weapon_display_smoke(void);
+extern "C" int zhud_message_draw_smoke(void);
+extern "C" int zhud_message_constructor_smoke(void);
+extern "C" int zhud_message_rebuild_weapon_layout_smoke(void);
+extern "C" int zhud_message_load_weapon_layout_from_node_smoke(void);
+extern "C" int zhud_message_destructors_smoke(void);
 extern "C" int hud_ui_set_invalidate_mode_smoke(void);
 extern "C" int zhud_bar_and_meter_constructor_smoke(void);
 extern "C" int zhud_widget_release_image_if_owned_smoke(void);
@@ -449,6 +479,7 @@ extern "C" int zhud_widget_destructor_core_smoke(void);
 extern "C" int zhud_fill_bitmap_core_smoke(void);
 extern "C" int zhud_zrd_widget_ex17c_item_core_smoke(void);
 extern "C" int zhud_widget_set_image_by_path_owned_smoke(void);
+extern "C" int zhud_widget_release_and_destructor_core_smoke(void);
 extern "C" int zhud_background_cursor_widget_member_constructor_smoke(void);
 extern "C" int zhud_background_cursor_widget_rebuild_captured_image_smoke(void);
 extern "C" int zhud_background_cursor_widget_set_image_borrowed_refresh_smoke(void);
@@ -722,9 +753,21 @@ extern "C" int zturret_fire_weapon_callback_smoke(void);
 extern "C" int zturret_damage_and_on_damage_smoke(void);
 extern "C" int zturret_shutdown_leaf_smoke(void);
 extern "C" int zgame_return_only_stub_smoke(void);
+extern "C" int zgame_options_init_registry_context_smoke(void);
+extern "C" int zgame_options_find_option_smoke(void);
+extern "C" int zopt_lookup_named_value_as_int_smoke(void);
+extern "C" int zopt_read_scalar_value_as_int_smoke(void);
+extern "C" int zopt_eval_int_compare_op_smoke(void);
+extern "C" int zopt_evaluate_profile_metric_condition_smoke(void);
+extern "C" int zopt_select_profile_value_for_system_smoke(void);
+extern "C" int zgame_options_load_from_registry_missing_smoke(void);
+extern "C" int zgame_options_save_game_options_smoke(void);
+extern "C" int zgame_options_shutdown_registry_context_smoke(void);
+extern "C" int zgame_options_runtime_config_copy_default_smoke(void);
 extern "C" int zgame_options_load_game_options_minimal_smoke(void);
 extern "C" int zopt_network_enabled_accessor_smoke(void);
 extern "C" int hud_sensor_mission_identity_smoke(void);
+extern "C" int hud_sensor_map_bounds_and_save_state_smoke(void);
 extern "C" int hud_sensor_tracker_set_runtime_timer_sec_and_goal_value_smoke(void);
 extern "C" int hud_sensor_tracker_get_objective_briefing_strings_smoke(void);
 extern "C" int zclass_type_list_alloc_and_insert_smoke(void);
@@ -732,6 +775,8 @@ extern "C" int zclass_zbd_leaf_helpers_smoke(void);
 extern "C" int zclass_alloc_node_from_free_list_smoke(void);
 extern "C" int zclass_node_free_and_deferred_work_smoke(void);
 extern "C" int zclass_delete_node_from_lists_smoke(void);
+extern "C" int zclass_gwlist_delete_a_node_smoke(void);
+extern "C" int zclass_shutdown_core_smoke(void);
 extern "C" int zclass_node_propagate_transform_dirty_smoke(void);
 extern "C" int zclass_object3d_reset_transform_dirty_smoke(void);
 extern "C" int zclass_object3d_init_smoke(void);
@@ -898,6 +943,7 @@ extern "C" int zvideo_set_half_res_adjust_mode_smoke(void);
 extern "C" int zvid_texture_pack_load_state_getter_smoke(void);
 extern "C" int zvid_texture_pack_load_state_setter_smoke(void);
 extern "C" int zvid_option_accessors_smoke(void);
+extern "C" int zvid_cached_renderer_and_texture_counts_smoke(void);
 extern "C" int zvideo_init_set_surface_geometry_from_mode_index_smoke(void);
 extern "C" int zvideo_select_hw_api_device_smoke(void);
 extern "C" int zvideo_dd_enum_direct3d_device_callback_smoke(void);
@@ -960,6 +1006,8 @@ extern "C" int zimage_texdir_write_smoke(void);
 extern "C" int zimage_init_option_fallback_smoke(void);
 extern "C" int zimage_init_texture_directory_smoke(void);
 extern "C" int zvid_image_resample_square_smoke(void);
+extern "C" int zvideo_image_file_read_helpers_smoke(void);
+extern "C" int zvideo_image_read_data_smoke(void);
 extern "C" int zvid_image_release_owned_buffers_smoke(void);
 extern "C" int zvid_image_destroy_smoke(void);
 extern "C" int zeffect_anim_find_entry_by_name_smoke(void);
@@ -984,6 +1032,7 @@ extern "C" int zeffect_anim_restore_node_states_smoke(void);
 extern "C" int zeffect_anim_reset_for_node_smoke(void);
 extern "C" int zeffect_anim_runtime_sequence_group_smoke(void);
 extern "C" int zeffect_conditional_ref_pos_smoke(void);
+extern "C" int zeffect_set_conditional_effect_level_smoke(void);
 extern "C" int zdeclient_map_tree_iter_next_node_ref_smoke(void);
 extern "C" int zdeclient_map_tree_iter_prev_node_ref_smoke(void);
 extern "C" int zdeclient_map_tree_insert_at_smoke(void);
@@ -1094,8 +1143,200 @@ extern "C" int time_tick_smoke(void);
 #include <cstdio>
 #include <cstring>
 #include <limits>
+#include <new>
 
 extern "C" unsigned int g_HudUi_InvalidateMask;
+
+static int HudUiSlotWidgetConstructed(const HudUiWidget &widget) {
+    int dirtyIndex;
+    int dirtyCleared = 1;
+    for (dirtyIndex = 0; dirtyIndex < 4; ++dirtyIndex) {
+        dirtyCleared = dirtyCleared && widget.dirtyRects[dirtyIndex].framesRemaining == 0;
+    }
+
+    return widget.next == 0 &&
+           widget.parent == 0 &&
+           widget.flags == 0 &&
+           widget.timer == 0.0f &&
+           widget.x == 0 &&
+           widget.y == 0 &&
+           widget.bltSource == 0 &&
+           widget.ownsImage == 0 &&
+           widget.dirtyRectCount == 0 &&
+           widget.image == 0 &&
+           widget.bltClipRectOrNull == 0 &&
+           widget.alignFlags == 0 &&
+           dirtyCleared;
+}
+
+extern "C" int zhud_slot_destructors_smoke(void) {
+    HudUiSlot constructed;
+    constructed.next = reinterpret_cast<HudUiElement *>(0x1234);
+    constructed.parent = &constructed;
+    constructed.flags = 0x20;
+    constructed.timer = 9.0f;
+    constructed.x = 17;
+    constructed.y = 23;
+    constructed.bltSource = &constructed;
+    constructed.screenEdgeCode = 7;
+    constructed.trackNode = &constructed;
+    constructed.screenX = 1.0f;
+    constructed.screenY = 2.0f;
+    constructed.slotWidget.ownsImage = 1;
+    constructed.slotWidget.image = &zVid_Image::g_zImage_DefaultImage;
+    constructed.trackMarkerWidget.ownsImage = 1;
+    constructed.trackMarkerWidget.image = &zVid_Image::g_zImage_DefaultImage;
+
+    HudUiSlot *const constructedResult = constructed.Constructor();
+    const int constructedOk =
+        constructedResult == &constructed &&
+        constructed.next == 0 &&
+        constructed.parent == 0 &&
+        constructed.flags == 0 &&
+        constructed.timer == 0.0f &&
+        constructed.x == 0 &&
+        constructed.y == 0 &&
+        constructed.bltSource == 0 &&
+        HudUiSlotWidgetConstructed(constructed.slotWidget) &&
+        HudUiSlotWidgetConstructed(constructed.trackMarkerWidget);
+
+    HudUiSlot slot;
+    slot.Constructor();
+    slot.slotWidget.image = &zVid_Image::g_zImage_DefaultImage;
+    slot.slotWidget.ownsImage = 1;
+    slot.trackMarkerWidget.image = &zVid_Image::g_zImage_DefaultImage;
+    slot.trackMarkerWidget.ownsImage = 1;
+
+    slot.Destructor();
+
+    const int destroyed =
+        slot.slotWidget.image == 0 &&
+        slot.slotWidget.ownsImage == 0 &&
+        slot.trackMarkerWidget.image == 0 &&
+        slot.trackMarkerWidget.ownsImage == 0;
+
+    HudUiSlot scalar;
+    scalar.Constructor();
+    scalar.slotWidget.image = &zVid_Image::g_zImage_DefaultImage;
+    scalar.slotWidget.ownsImage = 1;
+    scalar.trackMarkerWidget.image = &zVid_Image::g_zImage_DefaultImage;
+    scalar.trackMarkerWidget.ownsImage = 1;
+
+    const int scalarOk =
+        scalar.ScalarDeletingDestructor(0) == &scalar &&
+        scalar.slotWidget.image == 0 &&
+        scalar.slotWidget.ownsImage == 0 &&
+        scalar.trackMarkerWidget.image == 0 &&
+        scalar.trackMarkerWidget.ownsImage == 0;
+
+    return constructedOk && destroyed && scalarOk ? 0 : 1;
+}
+
+extern "C" int zhud_triplet_panel_constructor_smoke(void) {
+    const HudUiMgrData oldMgr = g_HudUiMgr;
+    const unsigned int oldInvalidateMask = g_HudUi_InvalidateMask;
+
+    g_HudUiMgr = HudUiMgrData();
+    g_HudUi_InvalidateMask = 0;
+
+    HudUiTripletPanel panel;
+    const HudUiTripletPanel *const result = panel.Constructor();
+
+    int itemsHidden = 1;
+    int itemIndex;
+    for (itemIndex = 0; itemIndex < 3; ++itemIndex) {
+        itemsHidden = itemsHidden && ((panel.items[itemIndex].flags & 0x10u) != 0);
+    }
+
+    const int linked =
+        g_HudUiMgr.childHead == static_cast<HudUiElement *>(&panel) &&
+        g_HudUiMgr.childTail == static_cast<HudUiElement *>(&panel) &&
+        panel.parent == &g_HudUiMgr &&
+        panel.next == 0;
+
+    const int ok = result == &panel && panel.visibleCount == 0 && itemsHidden && linked;
+
+    panel.DestructorCore();
+    g_HudUiMgr = oldMgr;
+    g_HudUi_InvalidateMask = oldInvalidateMask;
+    return ok ? 0 : 1;
+}
+
+extern "C" int zhud_triplet_panel_destructor_core_smoke(void) {
+    HudUiTripletPanel panel;
+    int itemIndex;
+    for (itemIndex = 0; itemIndex < 3; ++itemIndex) {
+        panel.items[itemIndex].image = &zVid_Image::g_zImage_DefaultImage;
+        panel.items[itemIndex].ownsImage = 1;
+    }
+
+    panel.DestructorCore();
+
+    int itemsDestroyed = 1;
+    for (itemIndex = 0; itemIndex < 3; ++itemIndex) {
+        itemsDestroyed = itemsDestroyed &&
+                         panel.items[itemIndex].image == 0 &&
+                         panel.items[itemIndex].ownsImage == 0;
+    }
+
+    HudUiTripletPanel unwind;
+    unwind.items[0].image = &zVid_Image::g_zImage_DefaultImage;
+    unwind.items[0].ownsImage = 1;
+    unwind.items[1].image = &zVid_Image::g_zImage_DefaultImage;
+    unwind.items[1].ownsImage = 1;
+    unwind.UnwindDestructFirstItem();
+    const int firstOnly =
+        unwind.items[0].image == 0 &&
+        unwind.items[0].ownsImage == 0 &&
+        unwind.items[1].image == &zVid_Image::g_zImage_DefaultImage &&
+        unwind.items[1].ownsImage == 1;
+    unwind.items[1].image = 0;
+    unwind.items[1].ownsImage = 0;
+
+    HudUiTripletPanel scalar;
+    for (itemIndex = 0; itemIndex < 3; ++itemIndex) {
+        scalar.items[itemIndex].image = &zVid_Image::g_zImage_DefaultImage;
+        scalar.items[itemIndex].ownsImage = 1;
+    }
+
+    HudUiElement *const scalarResult = scalar.ScalarDeletingDestructor(0);
+    const int scalarDestroyed =
+        scalarResult == static_cast<HudUiElement *>(&scalar) &&
+        scalar.items[0].image == 0 &&
+        scalar.items[1].image == 0 &&
+        scalar.items[2].image == 0;
+
+    HudUiTripletPanel *const heapScalar =
+        static_cast<HudUiTripletPanel *>(::operator new(sizeof(HudUiTripletPanel)));
+    new (heapScalar) HudUiTripletPanel;
+    for (itemIndex = 0; itemIndex < 3; ++itemIndex) {
+        heapScalar->items[itemIndex].image = &zVid_Image::g_zImage_DefaultImage;
+        heapScalar->items[itemIndex].ownsImage = 1;
+    }
+    HudUiElement *const heapScalarResult = heapScalar->ScalarDeletingDestructor(1);
+    const int scalarDeleted = heapScalarResult == static_cast<HudUiElement *>(heapScalar);
+
+    return itemsDestroyed && firstOnly && scalarDestroyed && scalarDeleted ? 0 : 1;
+}
+
+extern "C" int zhud_triplet_panel_shutdown_items_stub_smoke(void) {
+    const HudUiNanitePanel oldNanitePanel = g_HudUiMgrNanitePanel;
+
+    g_HudUiMgrNanitePanel.visibleCount = 2;
+    g_HudUiMgrNanitePanel.items[0].flags = 0x12;
+    g_HudUiMgrNanitePanel.items[1].flags = 0x34;
+    g_HudUiMgrNanitePanel.items[2].flags = 0x56;
+
+    g_HudUiMgrNanitePanel.ShutdownItems_Stub();
+    const int ok =
+        g_HudUiMgrNanitePanel.visibleCount == 2 &&
+        g_HudUiMgrNanitePanel.items[0].flags == 0x12 &&
+        g_HudUiMgrNanitePanel.items[1].flags == 0x34 &&
+        g_HudUiMgrNanitePanel.items[2].flags == 0x56;
+
+    g_HudUiMgrNanitePanel = oldNanitePanel;
+    return ok ? 0 : 1;
+}
 
 #define RECOIL_ZGAME_TESTS_ZMODEL_CONST_ONLY
 #include "zgame_tests.cpp"
@@ -4713,7 +4954,7 @@ struct SmokePlayerHudVisibleReceiver {
 };
 
 void SmokePlayerInstallHudVisibleVtable(
-    Player_UnderwaterFxPass3Ui *ui,
+    zVideoFxPass3Element *ui,
     void **vtable
 ) {
     std::memset(vtable, 0, sizeof(void *) * 32);
@@ -4766,6 +5007,147 @@ int RunSmokeTests(const SmokeTest *tests, int count, const char *onlyName) {
     return failures;
 }
 } // namespace
+
+extern "C" int player_apply_camera_state_and_zopt_set_camera_mode_smoke(void) {
+    zUtil_SaveGameState saveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    saveState.playerState = &playerState;
+
+    zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
+    zUtil_SaveGameState *const oldCurrentPlayerSaveState = g_CurrentPlayerSaveState;
+    zOptGameControlFlags *const oldGameControlOptions = ZOPT_GAME_CONTROL_OPTIONS;
+    const int oldSavedSteeringMode = g_Player_SavedSteeringMode;
+    const int oldClearScreen = g_zVideo_ClearScreenBufferEnabled;
+    zClass_NodePartial *const oldMainCamera = g_MainCamera;
+    zClass_NodePartial *const oldHorizonNode = g_Player_HorizonNode;
+    const zTag4Partial oldVariantTagCurrent = g_VariantTag_Current;
+    const zTag4Partial oldVariantCurrentTag = g_Variant_CurrentTag;
+    void *const oldState7Vtable = *reinterpret_cast<void **>(&g_Player_State7FxPass3Ui);
+
+    void *visibleVtable[32] = {};
+    SmokePlayerInstallHudVisibleVtable(&g_Player_State7FxPass3Ui, visibleVtable);
+    SmokePlayerResetHudVisibleLog();
+
+    zClass_NodePartial cameraNode = {};
+    zClass_CameraDataPartial cameraData = {};
+    cameraNode.classId = 1;
+    cameraNode.classData = &cameraData;
+    g_MainCamera = &cameraNode;
+    g_Player_HorizonNode = 0;
+
+    zOptGameControlFlags gameControlOptions = 0;
+    g_GameStateOrMapTable =
+        reinterpret_cast<zInput_GameStateOrMapTablePartial *>(&saveState);
+    g_CurrentPlayerSaveState = &saveState;
+    ZOPT_GAME_CONTROL_OPTIONS = &gameControlOptions;
+
+    g_Player_SavedSteeringMode = 1;
+    playerState.cameraState = 3;
+    playerState.cameraDistance = 77.0f;
+    playerState.cameraTargetDistance = 12.0f;
+    playerState.cameraLerpActive = 5;
+    zOpt::SetCameraMode(1);
+
+    bool ok = (gameControlOptions & 0x08) != 0 && zOpt::GetSteeringMode() == 1 &&
+              playerState.cameraState == 1 && playerState.previousCameraState == 3 &&
+              playerState.cameraTargetDistance == 77.0f &&
+              playerState.cameraLerpActive == 0;
+
+    gameControlOptions = 0x0a;
+    playerState.cameraState = 1;
+    playerState.previousCameraState = 3;
+    playerState.cameraElevationOffset = 9.0f;
+    zOpt::SetCameraMode(0);
+
+    ok = ok && (gameControlOptions & 0x08) == 0 && zOpt::GetSteeringMode() == 0 &&
+         playerState.cameraState == 3 && playerState.previousCameraState == 1 &&
+         playerState.cameraElevationOffset == 0.0f && g_Player_SavedSteeringMode == 1;
+
+    g_zVideo_ClearScreenBufferEnabled = 1;
+    gameControlOptions = 0;
+    playerState.cameraState = 2;
+    playerState.previousCameraState = 1;
+    playerState.worldPos = {10.0f, 20.0f, 30.0f};
+    playerState.cameraLerpStart = {1.0f, 2.0f, 3.0f};
+    playerState.cameraYOffset = 5.0f;
+    playerState.autoTurnTargetWorldPos = {11.0f, 22.0f, 43.0f};
+    Player::ApplyCameraState(8);
+
+    ok = ok && g_zVideo_ClearScreenBufferEnabled == 0 &&
+         (gameControlOptions & 0x08) != 0 && playerState.cameraState == 1 &&
+         playerState.previousCameraState == 2 &&
+         SmokePlayerFloatNear(cameraData.worldTarget.x, 11.0f) &&
+         SmokePlayerFloatNear(cameraData.worldTarget.y, 22.0f) &&
+         SmokePlayerFloatNear(cameraData.worldTarget.z, 33.0f);
+
+    zClass_NodePartial projectileNode = {};
+    zClass_Object3DDataPartial projectileData = {};
+    projectileNode.classId = 5;
+    projectileNode.classData = &projectileData;
+
+    OptCatalogRuntimeInstanceStorage attachState = {};
+    attachState.projectileNode = &projectileNode;
+    PlayerGunFireController activeAltController = {};
+    activeAltController.attachState = &attachState;
+    playerState.activeAltGunController = &activeAltController;
+
+    SmokePlayerResetHudVisibleLog();
+    gameControlOptions = 0;
+    playerState.cameraState = 1;
+    playerState.previousCameraState = 3;
+    projectileData.alphaScale = 1.0f;
+    projectileData.flags = 0;
+    Player::ApplyCameraState(7);
+
+    ok = ok && playerState.cameraState == 7 && playerState.previousCameraState == 1 &&
+         projectileNode.listCountB == 1 && cameraNode.listCountA == 1 &&
+         SmokePlayerFloatNear(projectileData.alphaScale, 0.5f) &&
+         (projectileData.flags & 2) != 0 &&
+         SmokePlayerFloatNear(cameraData.worldTarget.x, 0.0f) &&
+         SmokePlayerFloatNear(cameraData.worldTarget.y, 1.0f) &&
+         SmokePlayerFloatNear(cameraData.worldTarget.z, 1.0f) &&
+         SmokePlayerFloatNear(cameraData.posOffset.x, 0.0f) &&
+         SmokePlayerFloatNear(cameraData.posOffset.y, 0.0f) &&
+         SmokePlayerFloatNear(cameraData.posOffset.z, 0.0f) &&
+         g_smokePlayerHudVisibleCount == 1 &&
+         g_smokePlayerHudVisibleThis[0] == &g_Player_State7FxPass3Ui &&
+         g_smokePlayerHudVisibleValue[0] == 1;
+
+    g_VariantTag_Current.count = 2;
+    g_VariantTag_Current.tags[0] = 7;
+    g_VariantTag_Current.tags[1] = 8;
+    g_VariantTag_Current.tags[2] = 9;
+    g_Variant_CurrentTag.count = 1;
+    g_Variant_CurrentTag.tags[0] = 6;
+    g_Variant_CurrentTag.tags[1] = 5;
+    g_Variant_CurrentTag.tags[2] = 4;
+    SmokePlayerResetHudVisibleLog();
+    Player::ApplyCameraState(8);
+
+    ok = ok && playerState.cameraState == 1 && playerState.previousCameraState == 7 &&
+         projectileNode.listCountB == 0 && cameraNode.listCountA == 0 &&
+         SmokePlayerFloatNear(projectileData.alphaScale, 1.0f) &&
+         (projectileData.flags & 2) == 0 &&
+         g_smokePlayerHudVisibleCount == 1 &&
+         g_smokePlayerHudVisibleThis[0] == &g_Player_State7FxPass3Ui &&
+         g_smokePlayerHudVisibleValue[0] == 0 &&
+         g_VariantTag_Current.count == 0 && g_VariantTag_Current.tags[0] == 0xff &&
+         g_VariantTag_Current.tags[1] == 0xff && g_VariantTag_Current.tags[2] == 0xff &&
+         g_Variant_CurrentTag.count == 0 && g_Variant_CurrentTag.tags[0] == 0xff &&
+         g_Variant_CurrentTag.tags[1] == 0xff && g_Variant_CurrentTag.tags[2] == 0xff;
+
+    g_GameStateOrMapTable = oldGameStateOrMapTable;
+    g_CurrentPlayerSaveState = oldCurrentPlayerSaveState;
+    ZOPT_GAME_CONTROL_OPTIONS = oldGameControlOptions;
+    g_Player_SavedSteeringMode = oldSavedSteeringMode;
+    g_zVideo_ClearScreenBufferEnabled = oldClearScreen;
+    g_MainCamera = oldMainCamera;
+    g_Player_HorizonNode = oldHorizonNode;
+    g_VariantTag_Current = oldVariantTagCurrent;
+    g_Variant_CurrentTag = oldVariantCurrentTag;
+    *reinterpret_cast<void **>(&g_Player_State7FxPass3Ui) = oldState7Vtable;
+    return ok ? 0 : 1;
+}
 
 extern "C" int player_master_type_transition_leaf_smoke(void) {
     const float oldAccumulatedTime = g_Time_AccumulatedTimeSec;
@@ -5462,6 +5844,497 @@ extern "C" int zgame_return_only_stub_smoke(void) {
     return 0;
 }
 
+extern "C" int zgame_options_init_registry_context_smoke(void) {
+    std::free(g_zGame_Options_RegKeyRoot);
+    std::free(g_zGame_Options_RegKeyCurrentUser);
+    std::free(g_zGame_Options_RegKeyGame);
+    g_zGame_Options_RegKeyRoot = nullptr;
+    g_zGame_Options_RegKeyCurrentUser = nullptr;
+    g_zGame_Options_RegKeyGame = nullptr;
+    g_zGame_Options_RegContextInitialized = 0;
+
+    zOptionEntryPartial option = {};
+    g_zGame_Options_OptionListHead = &option;
+    zGame::Options_InitRegistryContext("root", "user", "game");
+
+    const bool ok = g_zGame_Options_RegContextInitialized == 1 &&
+                    g_zGame_Options_OptionListHead == nullptr &&
+                    g_zGame_Options_RegKeyRoot != nullptr &&
+                    std::strcmp(g_zGame_Options_RegKeyRoot, "root") == 0 &&
+                    g_zGame_Options_RegKeyCurrentUser != nullptr &&
+                    std::strcmp(g_zGame_Options_RegKeyCurrentUser, "user") == 0 &&
+                    g_zGame_Options_RegKeyGame != nullptr &&
+                    std::strcmp(g_zGame_Options_RegKeyGame, "game") == 0 &&
+                    g_zGame_Options_RuntimeConfigDefaults.cpuVendor[0] != '\0' &&
+                    g_zGame_Options_RuntimeConfigDefaults.systemRamKb != 0;
+
+    std::free(g_zGame_Options_RegKeyRoot);
+    std::free(g_zGame_Options_RegKeyCurrentUser);
+    std::free(g_zGame_Options_RegKeyGame);
+    g_zGame_Options_RegKeyRoot = nullptr;
+    g_zGame_Options_RegKeyCurrentUser = nullptr;
+    g_zGame_Options_RegKeyGame = nullptr;
+    return ok ? 0 : 1;
+}
+
+extern "C" int zgame_options_find_option_smoke(void) {
+    zOptionEntryPartial first = {};
+    zOptionEntryPartial second = {};
+    char firstName[] = "First";
+    char secondName[] = "GfxFlags_HW";
+    first.name = firstName;
+    first.next = &second;
+    second.name = secondName;
+    second.payloadOrBuffer = 0x10000;
+
+    g_zGame_Options_OptionListHead = &first;
+    if (zGame::Options_FindOption("GfxFlags_HW") != &second) {
+        return 1;
+    }
+    if (zGame::Options_FindOption("Missing") != nullptr) {
+        return 2;
+    }
+
+    g_zGame_Options_OptionListHead = nullptr;
+    return zGame::Options_FindOption("First") == nullptr ? 0 : 3;
+}
+
+extern "C" int zopt_lookup_named_value_as_int_smoke(void) {
+    if (zOpt::LookupNamedValueAsInt("TRUE") != 1 ||
+        zOpt::LookupNamedValueAsInt("FALSE") != 0 ||
+        zOpt::LookupNamedValueAsInt("LOW") != 2 ||
+        zOpt::LookupNamedValueAsInt("TEXMEM_4MB") != 3 ||
+        zOpt::LookupNamedValueAsInt("ZVID_1024x768x16") != 7 ||
+        zOpt::LookupNamedValueAsInt("SOUND_API_A3D") != 1) {
+        return 1;
+    }
+
+    if (zOpt::LookupNamedValueAsInt("SOUND_API_DSOUND") != 0 ||
+        zOpt::LookupNamedValueAsInt("MISSING_TOKEN") != 0 ||
+        zOpt::LookupNamedValueAsInt("low") != 0) {
+        return 2;
+    }
+
+    return 0;
+}
+
+extern "C" int zopt_read_scalar_value_as_int_smoke(void) {
+    zReader::Node intNode = {};
+    intNode.type = zReader::ZRDR_NODE_INT;
+    intNode.value.i32 = -7;
+
+    zReader::Node floatNode = {};
+    floatNode.type = zReader::ZRDR_NODE_FLOAT;
+    floatNode.value.f32 = 6.0f;
+
+    zReader::Node stringNode = {};
+    stringNode.type = zReader::ZRDR_NODE_STRING;
+    stringNode.value.str = const_cast<char *>("CPU_CLASS_PENTIUM_PRO");
+
+    zReader::Node unknownNode = {};
+    unknownNode.type = static_cast<zReader::NodeType>(99);
+    unknownNode.value.i32 = 1234;
+
+    return zOpt::ReadScalarValueAsInt(&intNode) == -7 &&
+                   zOpt::ReadScalarValueAsInt(&floatNode) == 6 &&
+                   zOpt::ReadScalarValueAsInt(&stringNode) == 6 &&
+                   zOpt::ReadScalarValueAsInt(&unknownNode) == 0
+               ? 0
+               : 1;
+}
+
+extern "C" int zopt_eval_int_compare_op_smoke(void) {
+    if (zOpt::EvalIntCompareOp("==", 7, 7) != 1 ||
+        zOpt::EvalIntCompareOp("==", 7, 8) != 0 ||
+        zOpt::EvalIntCompareOp("<", -2, 3) != 1 ||
+        zOpt::EvalIntCompareOp("<", 3, -2) != 0 ||
+        zOpt::EvalIntCompareOp(">", 3, -2) != 1 ||
+        zOpt::EvalIntCompareOp(">", -2, 3) != 0 ||
+        zOpt::EvalIntCompareOp("<=", 3, 3) != 1 ||
+        zOpt::EvalIntCompareOp("<=", 4, 3) != 0 ||
+        zOpt::EvalIntCompareOp(">=", 3, 3) != 1 ||
+        zOpt::EvalIntCompareOp(">=", 2, 3) != 0 ||
+        zOpt::EvalIntCompareOp("!=", 2, 3) != 1 ||
+        zOpt::EvalIntCompareOp("!=", 3, 3) != 0) {
+        return 1;
+    }
+
+    if (zOpt::EvalIntCompareOp("~=", 100, 101) != 1 ||
+        zOpt::EvalIntCompareOp("~=", 100, 102) != 0 ||
+        zOpt::EvalIntCompareOp("~=", 0, 0) != 0 ||
+        zOpt::EvalIntCompareOp("~=", -100, -101) != 0) {
+        return 2;
+    }
+
+    return zOpt::EvalIntCompareOp("??", 1, 1) == 0 ? 0 : 3;
+}
+
+extern "C" int zopt_evaluate_profile_metric_condition_smoke(void) {
+    zReader::Node defaultNode = {};
+    defaultNode.type = zReader::ZRDR_NODE_STRING;
+    defaultNode.value.str = const_cast<char *>("DEFAULT");
+    zReader::Node otherStringNode = {};
+    otherStringNode.type = zReader::ZRDR_NODE_STRING;
+    otherStringNode.value.str = const_cast<char *>("OTHER");
+    zReader::Node badTypeNode = {};
+    badTypeNode.type = zReader::ZRDR_NODE_INT;
+    badTypeNode.value.i32 = 1;
+
+    if (zOpt::EvaluateProfileMetricCondition(&defaultNode) != 1 ||
+        zOpt::EvaluateProfileMetricCondition(&otherStringNode) != 0 ||
+        zOpt::EvaluateProfileMetricCondition(&badTypeNode) != 0) {
+        return 1;
+    }
+
+    g_zGame_Options_RuntimeConfig.cpuClass = 6;
+    g_zGame_Options_RuntimeConfig.cpuMhz = 450;
+    g_zGame_Options_RuntimeConfig.soundHardwareMemKb = 8192;
+    g_zGame_Options_RuntimeConfig.systemRamKb = 65536;
+    g_zGame_Options_RuntimeConfig.defaultFlags = 0x40;
+
+    zReader::Node cpuCondition[4] = {};
+    cpuCondition[0].type = zReader::ZRDR_NODE_INT;
+    cpuCondition[0].value.i32 = 4;
+    cpuCondition[1].type = zReader::ZRDR_NODE_STRING;
+    cpuCondition[1].value.str = const_cast<char *>("CPU_CLASS");
+    cpuCondition[2].type = zReader::ZRDR_NODE_STRING;
+    cpuCondition[2].value.str = const_cast<char *>(">=");
+    cpuCondition[3].type = zReader::ZRDR_NODE_INT;
+    cpuCondition[3].value.i32 = 6;
+
+    zReader::Node cpuConditionNode = {};
+    cpuConditionNode.type = zReader::ZRDR_NODE_ARRAY;
+    cpuConditionNode.value.nodes = cpuCondition;
+    if (zOpt::EvaluateProfileMetricCondition(&cpuConditionNode) != 1) {
+        return 2;
+    }
+
+    zReader::Node mhzCondition[4] = {};
+    mhzCondition[0].type = zReader::ZRDR_NODE_INT;
+    mhzCondition[0].value.i32 = 4;
+    mhzCondition[1].type = zReader::ZRDR_NODE_STRING;
+    mhzCondition[1].value.str = const_cast<char *>("CPU_MHZ");
+    mhzCondition[2].type = zReader::ZRDR_NODE_STRING;
+    mhzCondition[2].value.str = const_cast<char *>("==");
+    mhzCondition[3].type = zReader::ZRDR_NODE_INT;
+    mhzCondition[3].value.i32 = 450;
+
+    zReader::Node mhzConditionNode = {};
+    mhzConditionNode.type = zReader::ZRDR_NODE_ARRAY;
+    mhzConditionNode.value.nodes = mhzCondition;
+    if (zOpt::EvaluateProfileMetricCondition(&mhzConditionNode) != 1) {
+        return 3;
+    }
+
+    zReader::Node videoCondition[4] = {};
+    videoCondition[0].type = zReader::ZRDR_NODE_INT;
+    videoCondition[0].value.i32 = 4;
+    videoCondition[1].type = zReader::ZRDR_NODE_STRING;
+    videoCondition[1].value.str = const_cast<char *>("VIDEO_KB");
+    videoCondition[2].type = zReader::ZRDR_NODE_STRING;
+    videoCondition[2].value.str = const_cast<char *>("<");
+    videoCondition[3].type = zReader::ZRDR_NODE_INT;
+    videoCondition[3].value.i32 = 9000;
+
+    zReader::Node videoConditionNode = {};
+    videoConditionNode.type = zReader::ZRDR_NODE_ARRAY;
+    videoConditionNode.value.nodes = videoCondition;
+    if (zOpt::EvaluateProfileMetricCondition(&videoConditionNode) != 1) {
+        return 4;
+    }
+
+    zReader::Node ramCondition[4] = {};
+    ramCondition[0].type = zReader::ZRDR_NODE_INT;
+    ramCondition[0].value.i32 = 4;
+    ramCondition[1].type = zReader::ZRDR_NODE_STRING;
+    ramCondition[1].value.str = const_cast<char *>("RAM_KB");
+    ramCondition[2].type = zReader::ZRDR_NODE_STRING;
+    ramCondition[2].value.str = const_cast<char *>(">");
+    ramCondition[3].type = zReader::ZRDR_NODE_INT;
+    ramCondition[3].value.i32 = 32000;
+
+    zReader::Node ramConditionNode = {};
+    ramConditionNode.type = zReader::ZRDR_NODE_ARRAY;
+    ramConditionNode.value.nodes = ramCondition;
+    if (zOpt::EvaluateProfileMetricCondition(&ramConditionNode) != 1) {
+        return 5;
+    }
+
+    zReader::Node accelCondition[4] = {};
+    accelCondition[0].type = zReader::ZRDR_NODE_INT;
+    accelCondition[0].value.i32 = 4;
+    accelCondition[1].type = zReader::ZRDR_NODE_STRING;
+    accelCondition[1].value.str = const_cast<char *>("HW_ACCEL");
+    accelCondition[2].type = zReader::ZRDR_NODE_STRING;
+    accelCondition[2].value.str = const_cast<char *>("==");
+    accelCondition[3].type = zReader::ZRDR_NODE_INT;
+    accelCondition[3].value.i32 = 1;
+
+    zReader::Node accelConditionNode = {};
+    accelConditionNode.type = zReader::ZRDR_NODE_ARRAY;
+    accelConditionNode.value.nodes = accelCondition;
+    if (zOpt::EvaluateProfileMetricCondition(&accelConditionNode) != 1) {
+        return 6;
+    }
+
+    zReader::Node missingCondition[4] = {};
+    missingCondition[0].type = zReader::ZRDR_NODE_INT;
+    missingCondition[0].value.i32 = 4;
+    missingCondition[1].type = zReader::ZRDR_NODE_STRING;
+    missingCondition[1].value.str = const_cast<char *>("MISSING");
+    missingCondition[2].type = zReader::ZRDR_NODE_STRING;
+    missingCondition[2].value.str = const_cast<char *>("==");
+    missingCondition[3].type = zReader::ZRDR_NODE_INT;
+    missingCondition[3].value.i32 = 0;
+
+    zReader::Node missingConditionNode = {};
+    missingConditionNode.type = zReader::ZRDR_NODE_ARRAY;
+    missingConditionNode.value.nodes = missingCondition;
+    if (zOpt::EvaluateProfileMetricCondition(&missingConditionNode) != 0) {
+        return 7;
+    }
+
+    zReader::Node badCountCells[4] = {};
+    badCountCells[0].value.i32 = 3;
+    zReader::Node badCountNode = {};
+    badCountNode.type = zReader::ZRDR_NODE_ARRAY;
+    badCountNode.value.nodes = badCountCells;
+    return zOpt::EvaluateProfileMetricCondition(&badCountNode) == 0 ? 0 : 8;
+}
+
+extern "C" int zopt_select_profile_value_for_system_smoke(void) {
+    zReader::Node defaultRule[3] = {};
+    defaultRule[0].type = zReader::ZRDR_NODE_INT;
+    defaultRule[0].value.i32 = 3;
+    defaultRule[1].type = zReader::ZRDR_NODE_STRING;
+    defaultRule[1].value.str = const_cast<char *>("DEFAULT");
+    defaultRule[2].type = zReader::ZRDR_NODE_INT;
+    defaultRule[2].value.i32 = 9;
+
+    zReader::Node defaultRules[2] = {};
+    defaultRules[0].type = zReader::ZRDR_NODE_INT;
+    defaultRules[0].value.i32 = 2;
+    defaultRules[1].type = zReader::ZRDR_NODE_ARRAY;
+    defaultRules[1].value.nodes = defaultRule;
+
+    zReader::Node cpuCondition[4] = {};
+    cpuCondition[0].type = zReader::ZRDR_NODE_INT;
+    cpuCondition[0].value.i32 = 4;
+    cpuCondition[1].type = zReader::ZRDR_NODE_STRING;
+    cpuCondition[1].value.str = const_cast<char *>("CPU_CLASS");
+    cpuCondition[2].type = zReader::ZRDR_NODE_STRING;
+    cpuCondition[2].value.str = const_cast<char *>(">=");
+    cpuCondition[3].type = zReader::ZRDR_NODE_INT;
+    cpuCondition[3].value.i32 = 5;
+
+    zReader::Node metricRule[3] = {};
+    metricRule[0].type = zReader::ZRDR_NODE_INT;
+    metricRule[0].value.i32 = 3;
+    metricRule[1].type = zReader::ZRDR_NODE_ARRAY;
+    metricRule[1].value.nodes = cpuCondition;
+    metricRule[2].type = zReader::ZRDR_NODE_STRING;
+    metricRule[2].value.str = const_cast<char *>("LOW");
+
+    zReader::Node metricRules[2] = {};
+    metricRules[0].type = zReader::ZRDR_NODE_INT;
+    metricRules[0].value.i32 = 2;
+    metricRules[1].type = zReader::ZRDR_NODE_ARRAY;
+    metricRules[1].value.nodes = metricRule;
+
+    zReader::Node rootChildren[5] = {};
+    rootChildren[0].type = zReader::ZRDR_NODE_INT;
+    rootChildren[0].value.i32 = 5;
+    rootChildren[1].type = zReader::ZRDR_NODE_STRING;
+    rootChildren[1].value.str = const_cast<char *>("EffectsLevel_SW");
+    rootChildren[2].type = zReader::ZRDR_NODE_ARRAY;
+    rootChildren[2].value.nodes = defaultRules;
+    rootChildren[3].type = zReader::ZRDR_NODE_STRING;
+    rootChildren[3].value.str = const_cast<char *>("ObjectLOD_SW");
+    rootChildren[4].type = zReader::ZRDR_NODE_ARRAY;
+    rootChildren[4].value.nodes = metricRules;
+
+    zReader::Node root = {};
+    root.type = zReader::ZRDR_NODE_ARRAY;
+    root.value.nodes = rootChildren;
+    g_zGame_Options_RuntimeConfig.cpuClass = 6;
+
+    if (zOpt::SelectProfileValueForSystem(nullptr, "EffectsLevel_SW", 4) != 4 ||
+        zOpt::SelectProfileValueForSystem(&root, "Missing", 5) != 5 ||
+        zOpt::SelectProfileValueForSystem(&root, "EffectsLevel_SW", 1) != 9 ||
+        zOpt::SelectProfileValueForSystem(&root, "ObjectLOD_SW", 0) != 2) {
+        return 1;
+    }
+
+    g_zGame_Options_RuntimeConfig.cpuClass = 4;
+    return zOpt::SelectProfileValueForSystem(&root, "ObjectLOD_SW", 7) == 7 ? 0 : 2;
+}
+
+extern "C" int zgame_options_load_from_registry_missing_smoke(void) {
+    char *const oldRoot = g_zGame_Options_RegKeyRoot;
+    char *const oldUser = g_zGame_Options_RegKeyCurrentUser;
+    char *const oldGame = g_zGame_Options_RegKeyGame;
+    g_zGame_Options_RegKeyRoot = const_cast<char *>("RecoilMissingRootForSmoke");
+    g_zGame_Options_RegKeyCurrentUser = const_cast<char *>("MissingUser");
+    g_zGame_Options_RegKeyGame = const_cast<char *>("MissingGame");
+
+    const int result = zGame::Options_LoadFromRegistry();
+
+    g_zGame_Options_RegKeyRoot = oldRoot;
+    g_zGame_Options_RegKeyCurrentUser = oldUser;
+    g_zGame_Options_RegKeyGame = oldGame;
+    return result == 0 ? 0 : 1;
+}
+
+extern "C" int zgame_options_save_game_options_smoke(void) {
+    const char *const rootName = "RecoilSmokeSave";
+    const char *const userName = "CurrentUser";
+    const char *const gameName = "Game";
+    const char *const leafPath = "SOFTWARE\\RecoilSmokeSave\\CurrentUser\\Game";
+    const char *const userPath = "SOFTWARE\\RecoilSmokeSave\\CurrentUser";
+    const char *const rootPath = "SOFTWARE\\RecoilSmokeSave";
+    RegDeleteKeyA(HKEY_CURRENT_USER, leafPath);
+    RegDeleteKeyA(HKEY_CURRENT_USER, userPath);
+    RegDeleteKeyA(HKEY_CURRENT_USER, rootPath);
+    RegDeleteKeyA(HKEY_LOCAL_MACHINE, leafPath);
+    RegDeleteKeyA(HKEY_LOCAL_MACHINE, userPath);
+    RegDeleteKeyA(HKEY_LOCAL_MACHINE, rootPath);
+
+    char *const oldRoot = g_zGame_Options_RegKeyRoot;
+    char *const oldUser = g_zGame_Options_RegKeyCurrentUser;
+    char *const oldGame = g_zGame_Options_RegKeyGame;
+    zOptionEntryPartial *const oldHead = g_zGame_Options_OptionListHead;
+    int *const oldNetwork = ZOPT_NETWORK_ENABLED;
+    int *const oldModem = g_zOpt_NetworkModemOption;
+
+    g_zGame_Options_RegKeyRoot = const_cast<char *>(rootName);
+    g_zGame_Options_RegKeyCurrentUser = const_cast<char *>(userName);
+    g_zGame_Options_RegKeyGame = const_cast<char *>(gameName);
+
+    zOptionEntryPartial option = {};
+    char optionName[] = "NetworkEnabled";
+    option.name = optionName;
+    option.storageType = 0;
+    option.dataSize = 4;
+    option.registryScope = 1;
+    g_zGame_Options_OptionListHead = &option;
+
+    std::int32_t networkEnabled = 1;
+    std::int32_t networkModem = 1;
+    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_zOpt_NetworkModemOption = &networkModem;
+
+    g_zInput_BindGroupInfoList = {};
+    zInput::BindGroupList_AddGroup("Smoke");
+    const bool groupCreated = zInput::BindGroupList_GetCount() == 1;
+
+    const int saveResult = zGame::Options_SaveGameOptions();
+    const bool ok = groupCreated && (saveResult == 0 || saveResult == 1) &&
+                    zInput::BindGroupList_GetCount() == 0 && networkEnabled == 0 &&
+                    networkModem == 0;
+
+    ::operator delete(g_zInput_BindGroupInfoList.begin);
+    g_zInput_BindGroupInfoList = {};
+    ZOPT_NETWORK_ENABLED = oldNetwork;
+    g_zOpt_NetworkModemOption = oldModem;
+    g_zGame_Options_OptionListHead = oldHead;
+    g_zGame_Options_RegKeyRoot = oldRoot;
+    g_zGame_Options_RegKeyCurrentUser = oldUser;
+    g_zGame_Options_RegKeyGame = oldGame;
+    RegDeleteKeyA(HKEY_CURRENT_USER, leafPath);
+    RegDeleteKeyA(HKEY_CURRENT_USER, userPath);
+    RegDeleteKeyA(HKEY_CURRENT_USER, rootPath);
+    RegDeleteKeyA(HKEY_LOCAL_MACHINE, leafPath);
+    RegDeleteKeyA(HKEY_LOCAL_MACHINE, userPath);
+    RegDeleteKeyA(HKEY_LOCAL_MACHINE, rootPath);
+    return ok ? 0 : 1;
+}
+
+extern "C" int zgame_options_shutdown_registry_context_smoke(void) {
+    zGame::Options_ShutdownRegistryContext();
+
+    zOptionEntryPartial *const first =
+        static_cast<zOptionEntryPartial *>(std::calloc(1, sizeof(zOptionEntryPartial)));
+    zOptionEntryPartial *const second =
+        static_cast<zOptionEntryPartial *>(std::calloc(1, sizeof(zOptionEntryPartial)));
+    if (first == nullptr || second == nullptr) {
+        std::free(first);
+        std::free(second);
+        return 1;
+    }
+
+    first->name = static_cast<char *>(std::malloc(6));
+    second->name = static_cast<char *>(std::malloc(7));
+    void *const payload = std::malloc(16);
+    g_zGame_Options_RegKeyRoot = static_cast<char *>(std::malloc(5));
+    g_zGame_Options_RegKeyCurrentUser = static_cast<char *>(std::malloc(5));
+    g_zGame_Options_RegKeyGame = static_cast<char *>(std::malloc(5));
+    if (first->name == nullptr || second->name == nullptr || payload == nullptr ||
+        g_zGame_Options_RegKeyRoot == nullptr || g_zGame_Options_RegKeyCurrentUser == nullptr ||
+        g_zGame_Options_RegKeyGame == nullptr) {
+        std::free(first->name);
+        std::free(second->name);
+        std::free(payload);
+        std::free(first);
+        std::free(second);
+        std::free(g_zGame_Options_RegKeyRoot);
+        std::free(g_zGame_Options_RegKeyCurrentUser);
+        std::free(g_zGame_Options_RegKeyGame);
+        g_zGame_Options_RegKeyRoot = nullptr;
+        g_zGame_Options_RegKeyCurrentUser = nullptr;
+        g_zGame_Options_RegKeyGame = nullptr;
+        return 2;
+    }
+
+    std::strcpy(first->name, "First");
+    std::strcpy(second->name, "Second");
+    std::strcpy(g_zGame_Options_RegKeyRoot, "Root");
+    std::strcpy(g_zGame_Options_RegKeyCurrentUser, "User");
+    std::strcpy(g_zGame_Options_RegKeyGame, "Game");
+
+    first->storageType = 0;
+    first->next = second;
+    second->storageType = 5;
+    second->payloadOrBuffer = static_cast<int>(reinterpret_cast<std::uintptr_t>(payload));
+    second->next = nullptr;
+    g_zGame_Options_OptionListHead = first;
+    g_zGame_Options_RegContextInitialized = 1;
+
+    zGame::Options_ShutdownRegistryContext();
+
+    return g_zGame_Options_OptionListHead == nullptr && g_zGame_Options_RegKeyRoot == nullptr &&
+                   g_zGame_Options_RegKeyCurrentUser == nullptr &&
+                   g_zGame_Options_RegKeyGame == nullptr &&
+                   g_zGame_Options_RegContextInitialized == 0
+               ? 0
+               : 3;
+}
+
+extern "C" int zgame_options_runtime_config_copy_default_smoke(void) {
+    std::memset(
+        &g_zGame_Options_RuntimeConfigDefaults,
+        0,
+        sizeof(g_zGame_Options_RuntimeConfigDefaults)
+    );
+    std::strcpy(
+        g_zGame_Options_RuntimeConfigDefaults.cpuVendor,
+        "CopyDefault"
+    );
+    g_zGame_Options_RuntimeConfigDefaults.cpuClass = 6;
+    g_zGame_Options_RuntimeConfigDefaults.cpuMhz = 450;
+    g_zGame_Options_RuntimeConfigDefaults.defaultFlags = 0x44;
+    g_zGame_Options_RuntimeConfigDefaults.systemRamKb = 65536;
+    g_zGame_Options_RuntimeConfigDefaults.soundHardwareMemKb = 8192;
+
+    zGame_OptionsRuntimeConfig target = {};
+    zGame_OptionsRuntimeConfig *const result = target.CopyDefault();
+    return result == &target && std::strcmp(target.cpuVendor, "CopyDefault") == 0 &&
+                   target.cpuClass == 6 && target.cpuMhz == 450 &&
+                   target.defaultFlags == 0x44 && target.systemRamKb == 65536 &&
+                   target.soundHardwareMemKb == 8192
+               ? 0
+               : 1;
+}
+
 extern "C" int zclass_world_to_grid_coords_clamped_smoke(void) {
     zClass_NodePartial world{};
     zClass_WorldDataPartial worldData{};
@@ -5670,6 +6543,172 @@ extern "C" int zclass_delete_node_from_lists_smoke(void) {
 
     zClass_TypeList::FreeAll();
     return 0;
+}
+
+extern "C" int zclass_gwlist_delete_a_node_smoke(void) {
+    auto resetTypeLists = []() {
+        for (int i = 0; i < 16; ++i) {
+            zClass_TypeList::Head(i) = nullptr;
+            zClass_TypeList::Tail(i) = nullptr;
+            zClass_TypeList::PendingRemovalDirty(i) = 0;
+        }
+        g_zClass_TypeList_FreeLinkHead = nullptr;
+        g_zClass_NodeList_PendingFreeHead = nullptr;
+        g_zClass_DeferredProcessingEnabled = 1;
+        g_zClass_TypeList_LiveLinkCount = 0;
+        g_zClass_TypeList_PeakLiveLinkCount = 0;
+    };
+
+    resetTypeLists();
+
+    zClass_NodeFreeListSlot objectSlots[3]{};
+    zDiPartial displayPool[1]{};
+    g_zClass_NodeArray = objectSlots;
+    g_zClass_NodeArraySize = 3;
+    g_zClass_NodeFreeHeadIndex = 0x123456;
+    g_zClass_ActiveNodeCount = 2;
+    g_zClass_DeferredProcessingEnabled = 1;
+    g_zModel_DiPoolBase = displayPool;
+    g_zModel_DiPoolFreeHeadIndex = 7;
+    g_zModel_DiPoolInUseCount = 1;
+    displayPool[0].refCount = 1;
+
+    zClass_NodePartial *const objectNode = &objectSlots[1].node;
+    zClass_NodePartial *const objectChild = &objectSlots[2].node;
+    objectNode->classId = 5;
+    objectNode->classData = std::calloc(1, sizeof(zClass_Object3DDataPartial));
+    objectNode->userDataOrDiRef =
+        static_cast<std::uint32_t>(reinterpret_cast<std::uintptr_t>(&displayPool[0]));
+    objectChild->classId = 5;
+    objectChild->classData = std::calloc(1, sizeof(zClass_Object3DDataPartial));
+    if (objectNode->classData == nullptr || objectChild->classData == nullptr ||
+        zClass_Object3D::gwObject3DAddChild(objectNode, objectChild) != 0) {
+        return 1;
+    }
+
+    const int objectDeleteResult = zClass_List::gwListDeleteANode(objectNode);
+    if (objectDeleteResult != 0) {
+        return 20;
+    }
+    if (objectNode->classData != nullptr || objectNode->userDataOrDiRef != 0) {
+        return 21;
+    }
+    if (objectChild->listCountA != 0) {
+        return 22;
+    }
+    if (g_zModel_DiPoolFreeHeadIndex != 0 || g_zModel_DiPoolInUseCount != 0) {
+        return 23;
+    }
+    if (g_zClass_NodeFreeHeadIndex != 1 || g_zClass_ActiveNodeCount != 1) {
+        return 24;
+    }
+    std::free(objectChild->listA);
+    std::free(objectChild->classData);
+    objectChild->listA = nullptr;
+    objectChild->classData = nullptr;
+    zClass_TypeList::FreeAll();
+    g_zModel_DiPoolBase = nullptr;
+    g_zModel_DiPoolFreeHeadIndex = -1;
+    g_zModel_DiPoolInUseCount = 0;
+
+    resetTypeLists();
+
+    zClass_NodeFreeListSlot worldSlots[4]{};
+    g_zClass_NodeArray = worldSlots;
+    g_zClass_NodeArraySize = 4;
+    g_zClass_NodeFreeHeadIndex = 0x654321;
+    g_zClass_ActiveNodeCount = 4;
+    g_zClass_DeferredProcessingEnabled = 1;
+
+    zClass_NodePartial *const world = &worldSlots[0].node;
+    zClass_NodePartial *const light = &worldSlots[1].node;
+    zClass_NodePartial *const sound = &worldSlots[2].node;
+    zClass_NodePartial *const worldChild = &worldSlots[3].node;
+    world->classId = 2;
+    world->classData = std::calloc(1, sizeof(zClass_WorldDataPartial));
+    light->classId = 9;
+    light->classData = std::calloc(1, sizeof(zClass_LightDataPartial));
+    sound->classId = 10;
+    sound->classData = std::calloc(1, sizeof(zClass_SoundDataPartial));
+    worldChild->classId = 5;
+    worldChild->classData = std::calloc(1, sizeof(zClass_Object3DDataPartial));
+    if (world->classData == nullptr || light->classData == nullptr ||
+        sound->classData == nullptr || worldChild->classData == nullptr ||
+        zClass_World::AddLight(world, light) != 0 ||
+        zClass_World::AddSound(world, sound) != 0 ||
+        zClass_World::AddChildToGridCell(world, worldChild, -1, -1) != 0) {
+        return 3;
+    }
+
+    zClass_LightDataPartial *const lightData =
+        static_cast<zClass_LightDataPartial *>(light->classData);
+    zClass_SoundDataPartial *const soundData =
+        static_cast<zClass_SoundDataPartial *>(sound->classData);
+    if (zClass_List::gwListDeleteANode(world) != 0 || world->classData != nullptr ||
+        worldChild->listCountA != 0 || lightData->attachedWorldCount != 0 ||
+        soundData->attachedWorldCount != 0 || g_zClass_NodeFreeHeadIndex != 0 ||
+        g_zClass_ActiveNodeCount != 3) {
+        return 4;
+    }
+    std::free(lightData->attachedWorlds);
+    std::free(soundData->attachedWorlds);
+    std::free(light->classData);
+    std::free(sound->classData);
+    std::free(worldChild->listA);
+    std::free(worldChild->classData);
+    light->classData = nullptr;
+    sound->classData = nullptr;
+    worldChild->listA = nullptr;
+    worldChild->classData = nullptr;
+    zClass_TypeList::FreeAll();
+
+    zClass_NodePartial parented{};
+    parented.classId = 5;
+    parented.listCountA = 1;
+    if (zClass_List::gwListDeleteANode(&parented) != 1) {
+        return 5;
+    }
+
+    zClass_LightDataPartial attachedLightData{};
+    zClass_NodePartial attachedLight{};
+    attachedLight.classId = 9;
+    attachedLight.classData = &attachedLightData;
+    attachedLightData.attachedWorldCount = 1;
+    if (zClass_List::gwListDeleteANode(&attachedLight) != 1) {
+        return 6;
+    }
+
+    zClass_NodePartial unknown{};
+    unknown.classId = 99;
+    if (zClass_List::gwListDeleteANode(&unknown) != 3) {
+        return 7;
+    }
+
+    g_zClass_NodeArray = nullptr;
+    g_zClass_NodeArraySize = 0;
+    g_zClass_ActiveNodeCount = 0;
+    g_zClass_NodeFreeHeadIndex = -1;
+    return 0;
+}
+
+extern "C" int zclass_shutdown_core_smoke(void) {
+    g_zClass_NodeArray =
+        static_cast<zClass_NodeFreeListSlot *>(std::calloc(2, sizeof(zClass_NodeFreeListSlot)));
+    g_zClass_NodeArraySize = 2;
+    g_zClass_ActiveNodeCount = 1;
+    g_zClass_NodeFreeHeadIndex = 1;
+    g_zClass_IsInitialized = 1;
+    std::strcpy(g_zClass_CurrentZbdPath, "mission.zbd");
+
+    if (zClass::Shutdown() != 0) {
+        return 1;
+    }
+
+    return g_zClass_NodeArray == nullptr && g_zClass_NodeArraySize == 0 &&
+                   g_zClass_ActiveNodeCount == 0 && g_zClass_NodeFreeHeadIndex == -1 &&
+                   g_zClass_IsInitialized == 0 && g_zClass_CurrentZbdPath[0] == '\0'
+               ? 0
+               : 2;
 }
 
 extern "C" int zclass_object3d_delete_node_smoke(void) {
@@ -9530,6 +10569,23 @@ extern "C" int zvid_option_accessors_smoke(void) {
     return result;
 }
 
+extern "C" int zvid_cached_renderer_and_texture_counts_smoke(void) {
+    g_zVid_AcceptedHardwareRendererCount = 3;
+    g_zVid_TexturePackLoadState = 1;
+    if (zVid::GetAcceptedHardwareRendererCount_Cached() != 3 ||
+        zVid::HasAcceptedHardwareRenderer() != 1 || zVid::GetTexturePackLoadState() != 1) {
+        return 1;
+    }
+
+    g_zVid_AcceptedHardwareRendererCount = 0;
+    g_zVid_TexturePackLoadState = 0;
+    return zVid::GetAcceptedHardwareRendererCount_Cached() == 0 &&
+                   zVid::HasAcceptedHardwareRenderer() == 0 &&
+                   zVid::GetTexturePackLoadState() == 0
+               ? 0
+               : 2;
+}
+
 extern "C" int zvid_set_video_mode_index_smoke(void) {
     std::int32_t mode = -1;
     std::int32_t replicate = -1;
@@ -9583,6 +10639,21 @@ extern "C" int zvid_set_video_mode_index_smoke(void) {
     return result;
 }
 
+extern "C" int zopt_wol_password_flag_accessor_smoke(void) {
+    int passwordFlag = 0;
+    int *const savedPasswordFlagOption = g_zOpt_WolPasswordFlagOption;
+    g_zOpt_WolPasswordFlagOption = &passwordFlag;
+
+    const bool initial = zOpt_GetWolPasswordFlagValue() == 0;
+    zOpt::SetWolPasswordFlag(1);
+    const bool enabled = passwordFlag == 1 && zOpt_GetWolPasswordFlagValue() == 1;
+    zOpt::SetWolPasswordFlag(0);
+    const bool disabled = passwordFlag == 0 && zOpt_GetWolPasswordFlagValue() == 0;
+
+    g_zOpt_WolPasswordFlagOption = savedPasswordFlagOption;
+    return initial && enabled && disabled ? 0 : 1;
+}
+
 extern "C" int zopt_fullscreen_accessors_smoke(void) {
     int fullscreen = 0;
     int hudSw = 1;
@@ -9626,6 +10697,7 @@ extern "C" int zopt_fullscreen_accessors_smoke(void) {
     int *const savedGfxFlagsHw = ZOPT_GFX_FLAGS_HW;
     zOptionEntryPartial *const savedPlayerName = ZOPT_PLAYER_NAME;
     const int savedHwMode = g_zOpt_HwMode;
+    const int savedHudLayoutsInitialized = g_HudUiMgrHudLayoutsInitialized;
     const int savedConditionalEffectLevel = g_zEffect_ConditionalEffectLevel;
 
     ZOPT_VIDEO_FULLSCREEN = &fullscreen;
@@ -9686,6 +10758,27 @@ extern "C" int zopt_fullscreen_accessors_smoke(void) {
     hudTypeHw = 3;
     if (result == 0 && zOpt::GetHudTypeForCurrentHwMode() != 3) {
         result = 42;
+    }
+
+    g_HudUiMgrHudLayoutsInitialized = 0;
+    g_zOpt_HwMode = 0;
+    int previousHudType = zOpt::SetHudTypeForCurrentHwMode(1);
+    if (result == 0 &&
+        (previousHudType != 2 ||
+         hudTypeSw != 1 ||
+         hudTypeHw != 3 ||
+         zOpt::GetHudTypeForCurrentHwMode() != 1)) {
+        result = 43;
+    }
+
+    g_zOpt_HwMode = 1;
+    previousHudType = zOpt::SetHudTypeForCurrentHwMode(2);
+    if (result == 0 &&
+        (previousHudType != 3 ||
+         hudTypeSw != 1 ||
+         hudTypeHw != 2 ||
+         zOpt::GetHudTypeForCurrentHwMode() != 2)) {
+        result = 44;
     }
 
     zOpt::SetGameControlOptions(0);
@@ -9831,6 +10924,7 @@ extern "C" int zopt_fullscreen_accessors_smoke(void) {
     ZOPT_GFX_FLAGS_HW = savedGfxFlagsHw;
     ZOPT_PLAYER_NAME = savedPlayerName;
     g_zOpt_HwMode = savedHwMode;
+    g_HudUiMgrHudLayoutsInitialized = savedHudLayoutsInitialized;
     g_zEffect_ConditionalEffectLevel = savedConditionalEffectLevel;
     return result;
 }
@@ -13929,6 +15023,510 @@ extern "C" int zhud_counter_constructor_smoke(void) {
     return result == &counter && counterFieldsCleared && inheritedWidgetDefaults ? 0 : 1;
 }
 
+extern "C" int zhud_message_release_images_smoke(void) {
+    const unsigned int oldInvalidateMask = g_HudUi_InvalidateMask;
+    zVidImagePartial variant0{};
+    zVidImagePartial variant1{};
+    zVidImagePartial side0{};
+    zVidImagePartial side1{};
+    HudUiMessage &globalMessage = g_HudUiMgrMessages[2];
+    const HudUiMessage oldGlobalMessage = globalMessage;
+
+    globalMessage = HudUiMessage();
+    globalMessage.variantImages[0] = &variant0;
+    globalMessage.variantImages[1] = &variant1;
+    globalMessage.activeSideImages[0] = &side1;
+    globalMessage.activeSideImages[1] = &side0;
+    globalMessage.sideImageSwaps[0] = &side0;
+    globalMessage.sideImageSwaps[1] = &side1;
+
+    g_HudUi_InvalidateMask = 0x80;
+    HudUiMessage::SelectVariantDisplay(2, 0);
+    const bool variantLeft = globalMessage.image == &variant0 &&
+                             globalMessage.activeSideImages[0] == &side0 &&
+                             globalMessage.widget.image == &side0 &&
+                             globalMessage.panel.activeSideIndex == 0;
+
+    HudUiMessage::SelectVariantDisplay(2, 1);
+    const bool variantRight = globalMessage.image == &variant1 &&
+                              globalMessage.activeSideImages[1] == &side1 &&
+                              globalMessage.widget.image == &side0 &&
+                              globalMessage.panel.activeSideIndex == 1;
+
+    globalMessage.widget.flags = 0x93;
+    HudUiMessage::ApplySideImageSwap(2, 1);
+    const bool sideSwap = globalMessage.activeSideImages[1] == &side1 &&
+                          globalMessage.widget.image == &side1 &&
+                          globalMessage.widget.flags == 0x10;
+
+    globalMessage.panel.SetText("abc");
+    HudUiMessage::ClearDisplay(2);
+    const bool clearedDisplay =
+        globalMessage.image == nullptr && globalMessage.widget.image == nullptr &&
+        std::strcmp(globalMessage.panel.textBuffer, "") == 0 &&
+        (globalMessage.flags & 0x80) != 0;
+
+    HudUiMessage message{};
+    message.variantImages[0] = nullptr;
+    message.variantImages[1] = &zVid_Image::g_zImage_DefaultImage;
+    message.variantImages[2] = nullptr;
+    message.variantImages[3] = &zVid_Image::g_zImage_DefaultImage;
+    message.variantImages[4] = nullptr;
+    message.sideImageSwaps[0] = &zVid_Image::g_zImage_DefaultImage;
+    message.sideImageSwaps[1] = nullptr;
+    message.activeSideImages[0] = &side0;
+
+    message.ReleaseImages();
+
+    const bool releaseOk =
+        message.variantImages[0] == nullptr && message.variantImages[1] == nullptr &&
+        message.variantImages[2] == nullptr && message.variantImages[3] == nullptr &&
+        message.variantImages[4] == nullptr && message.sideImageSwaps[0] == nullptr &&
+        message.sideImageSwaps[1] == nullptr && message.activeSideImages[0] == &side0;
+
+    globalMessage = oldGlobalMessage;
+    g_HudUi_InvalidateMask = oldInvalidateMask;
+    if (!variantLeft) {
+        return 1;
+    }
+    if (!variantRight) {
+        return 2;
+    }
+    if (!sideSwap) {
+        return 3;
+    }
+    if (!clearedDisplay) {
+        return 4;
+    }
+    return releaseOk ? 0 : 5;
+}
+
+extern "C" int zhud_message_set_value_if_owner_matches_smoke(void) {
+    const unsigned int oldInvalidateMask = g_HudUi_InvalidateMask;
+    HudUiMessage &message = g_HudUiMgrMessages[3];
+    const HudUiMessage oldMessage = message;
+
+    message = HudUiMessage();
+    message.panel.SetText("unchanged");
+    message.panel.activeSideIndex = 2;
+    g_HudUi_InvalidateMask = 0x80;
+
+    HudUiMessage::SetValueIfOwnerMatches(3, 1, 4.25f);
+    const bool skipped = std::strcmp(message.panel.textBuffer, "unchanged") == 0 &&
+                         (message.flags & 0x80) == 0;
+
+    HudUiMessage::SetValueIfOwnerMatches(3, 2, 4.25f);
+    const bool rounded = std::strcmp(message.panel.textBuffer, "5") == 0 &&
+                         (message.flags & 0x80) != 0;
+
+    message.flags = 0;
+    HudUiMessage::SetValueIfOwnerMatches(3, 2, 123456792.0f);
+    const bool special = message.panel.textBuffer[0] == static_cast<char>(0xa5) &&
+                         message.panel.textBuffer[1] == '\0' &&
+                         (message.flags & 0x80) == 0;
+
+    message = oldMessage;
+    g_HudUi_InvalidateMask = oldInvalidateMask;
+    return skipped && rounded && special ? 0 : 1;
+}
+
+extern "C" int zhud_message_update_selected_weapon_display_smoke(void) {
+    const unsigned int oldInvalidateMask = g_HudUi_InvalidateMask;
+    const int oldActiveMessage = g_HudUiMgrActiveWeaponMessageIndex;
+    const int oldActiveSide = g_HudUiMgrActiveWeaponSideIndex;
+    zVidImagePartial prevBase{};
+    zVidImagePartial prevSwap0{};
+    zVidImagePartial prevRight{};
+    zVidImagePartial selectedBase{};
+    zVidImagePartial selectedSwap1{};
+    zVidImagePartial selectedLeft{};
+
+    HudUiMessage &previous = g_HudUiMgrMessages[2];
+    HudUiMessage &selected = g_HudUiMgrMessages[3];
+    const HudUiMessage oldPrevious = previous;
+    const HudUiMessage oldSelected = selected;
+
+    previous = HudUiMessage();
+    selected = HudUiMessage();
+    previous.variantImages[0] = &prevBase;
+    previous.sideImageSwaps[0] = &prevSwap0;
+    previous.activeSideImages[1] = &prevRight;
+    selected.variantImages[4] = &selectedBase;
+    selected.sideImageSwaps[1] = &selectedSwap1;
+    selected.activeSideImages[0] = &selectedLeft;
+    selected.panel.activeSideIndex = 1;
+    g_HudUiMgrActiveWeaponMessageIndex = 2;
+    g_HudUiMgrActiveWeaponSideIndex = 0;
+    g_HudUi_InvalidateMask = 0x80;
+
+    HudUiMessage::UpdateSelectedWeaponDisplay(3, 1, 4.25f);
+    if (previous.image != &prevBase || previous.activeSideImages[0] != &prevSwap0 ||
+        previous.widget.image != &prevRight || previous.panel.activeSideIndex != 0) {
+        previous = oldPrevious;
+        selected = oldSelected;
+        g_HudUiMgrActiveWeaponMessageIndex = oldActiveMessage;
+        g_HudUiMgrActiveWeaponSideIndex = oldActiveSide;
+        g_HudUi_InvalidateMask = oldInvalidateMask;
+        return 1;
+    }
+
+    if (selected.image != &selectedBase || selected.activeSideImages[1] != &selectedSwap1 ||
+        selected.widget.image != &selectedLeft || selected.panel.activeSideIndex != 1) {
+        previous = oldPrevious;
+        selected = oldSelected;
+        g_HudUiMgrActiveWeaponMessageIndex = oldActiveMessage;
+        g_HudUiMgrActiveWeaponSideIndex = oldActiveSide;
+        g_HudUi_InvalidateMask = oldInvalidateMask;
+        return 2;
+    }
+
+    if (g_HudUiMgrActiveWeaponMessageIndex != 3 || g_HudUiMgrActiveWeaponSideIndex != 1) {
+        previous = oldPrevious;
+        selected = oldSelected;
+        g_HudUiMgrActiveWeaponMessageIndex = oldActiveMessage;
+        g_HudUiMgrActiveWeaponSideIndex = oldActiveSide;
+        g_HudUi_InvalidateMask = oldInvalidateMask;
+        return 3;
+    }
+
+    if (std::strcmp(selected.panel.textBuffer, "5") != 0 ||
+        (selected.flags & 0x80) == 0) {
+        previous = oldPrevious;
+        selected = oldSelected;
+        g_HudUiMgrActiveWeaponMessageIndex = oldActiveMessage;
+        g_HudUiMgrActiveWeaponSideIndex = oldActiveSide;
+        g_HudUi_InvalidateMask = oldInvalidateMask;
+        return 4;
+    }
+
+    selected.flags = 0;
+    HudUiMessage::UpdateSelectedWeaponDisplay(3, 1, 123456792.0f);
+    if (selected.panel.textBuffer[0] != static_cast<char>(0xa5) ||
+        selected.panel.textBuffer[1] != '\0') {
+        previous = oldPrevious;
+        selected = oldSelected;
+        g_HudUiMgrActiveWeaponMessageIndex = oldActiveMessage;
+        g_HudUiMgrActiveWeaponSideIndex = oldActiveSide;
+        g_HudUi_InvalidateMask = oldInvalidateMask;
+        return 5;
+    }
+
+    HudUiMessage::UpdateSelectedWeaponDisplay(0, 0, 0.0f);
+    const bool reset = g_HudUiMgrActiveWeaponMessageIndex == 0 &&
+                       g_HudUiMgrActiveWeaponSideIndex == 0;
+
+    previous = oldPrevious;
+    selected = oldSelected;
+    g_HudUiMgrActiveWeaponMessageIndex = oldActiveMessage;
+    g_HudUiMgrActiveWeaponSideIndex = oldActiveSide;
+    g_HudUi_InvalidateMask = oldInvalidateMask;
+    return reset ? 0 : 6;
+}
+
+extern "C" int zhud_message_draw_smoke(void) {
+    HudUiMessage message{};
+    message.image = nullptr;
+    message.panel.textPick = nullptr;
+    message.panel.textBuffer[0] = '\0';
+    message.panel.textDirty = 1;
+
+    message.Draw();
+    return message.image == nullptr && message.panel.textPick == nullptr &&
+                   message.panel.textDirty == 0
+               ? 0
+               : 1;
+}
+
+extern "C" int zhud_message_constructor_smoke(void) {
+    HudUiMessage message{};
+    zVidImagePartial image{};
+    message.variantImages[0] = &image;
+    message.sideImageSwaps[1] = &image;
+    message.activeSideImages[0] = &image;
+    message.panel.activeSideIndex = 7;
+
+    HudUiMessage *const result = message.Constructor();
+
+    const bool ok = result == &message && message.variantImages[0] == nullptr &&
+                    message.variantImages[4] == nullptr &&
+                    message.activeSideImages[0] == nullptr &&
+                    message.activeSideImages[1] == nullptr &&
+                    message.sideImageSwaps[0] == nullptr &&
+                    message.sideImageSwaps[1] == nullptr &&
+                    message.panel.activeSideIndex == 0 &&
+                    message.widget.image == nullptr &&
+                    message.widget.ownsImage == 0;
+
+    message.Destructor();
+    return ok ? 0 : 1;
+}
+
+extern "C" int zhud_message_rebuild_weapon_layout_smoke(void) {
+    const int oldHudOriginX = g_HudUiMgrHudOriginX;
+    const HudUiWidget oldLayoutWidget2 = g_HudLayoutHW.widget2;
+
+    zVidImagePartial baseImage{};
+    baseImage.width = 30;
+    baseImage.height = 12;
+    zVidImagePartial sideImage{};
+    sideImage.width = 5;
+    sideImage.height = 6;
+
+    HudUiMessage message{};
+    message.variantImages[0] = &baseImage;
+    message.sideImageSwaps[0] = &sideImage;
+    message.panel.layoutX = 7;
+    message.panel.layoutY = 20;
+
+    g_HudLayoutHW.widget2.x = 300;
+    g_HudLayoutHW.widget2.y = 400;
+    g_HudLayoutHW.widget2.alignFlags = 0;
+    g_HudUiMgrHudOriginX = 101;
+
+    message.RebuildWeaponLayout();
+
+    const bool baseSet = message.x == 357 && message.y == 420 &&
+                         message.clipRect.left == 57 &&
+                         message.clipRect.top == 20 &&
+                         message.clipRect.right == 87 &&
+                         message.clipRect.bottom == 32;
+
+    const bool panelSet = message.panel.x == 372 && message.panel.y == 432 &&
+                          message.panel.clipRect.left == 60 &&
+                          message.panel.clipRect.top == 32 &&
+                          message.panel.clipRect.right == 85 &&
+                          message.panel.clipRect.bottom == 44;
+
+    const bool sideWidgetSet = message.widget.x == 381 && message.widget.y == 425;
+
+    g_HudLayoutHW.widget2 = oldLayoutWidget2;
+    g_HudUiMgrHudOriginX = oldHudOriginX;
+    return baseSet && panelSet && sideWidgetSet ? 0 : 1;
+}
+
+extern "C" int zhud_message_load_weapon_layout_from_node_smoke(void) {
+    char tempDir[MAX_PATH] = {};
+    char packPath[MAX_PATH] = {};
+    if (GetTempPathA(sizeof(tempDir), tempDir) == 0 ||
+        GetTempFileNameA(tempDir, "hwm", 0, packPath) == 0) {
+        return 1;
+    }
+
+    const char *const names[7] = {
+        "msg0.tex", "msg1.tex", "msg2.tex", "msg3.tex",
+        "msg4.tex", "side0.tex", "side1.tex"};
+    const int widths[7] = {30, 1, 1, 1, 1, 5, 2};
+    const int heights[7] = {12, 1, 1, 1, 1, 6, 2};
+
+    zVidTexturePackHeader packHeader{};
+    packHeader.fileFormat = 1;
+    packHeader.recordCount = 7;
+    zVidTexturePackRecord records[7] = {};
+    int offset = sizeof(packHeader) + sizeof(records);
+    for (int index = 0; index < 7; ++index) {
+        std::strcpy(records[index].name, names[index]);
+        records[index].fileOffset = offset;
+        records[index].paletteIndex = -1;
+        offset += 0x10 + widths[index] * heights[index] * (int)(sizeof(std::uint16_t));
+    }
+
+    FILE *out = std::fopen(packPath, "wb");
+    if (out == nullptr) {
+        DeleteFileA(packPath);
+        return 2;
+    }
+
+    std::fwrite(&packHeader, sizeof(packHeader), 1, out);
+    std::fwrite(records, sizeof(records), 1, out);
+    for (int index = 0; index < 7; ++index) {
+        unsigned char imageHeader[0x10] = {};
+        imageHeader[0] = 1;
+        *reinterpret_cast<std::int16_t *>(&imageHeader[4]) =
+            static_cast<std::int16_t>(widths[index]);
+        *reinterpret_cast<std::int16_t *>(&imageHeader[6]) =
+            static_cast<std::int16_t>(heights[index]);
+        std::fwrite(imageHeader, 1, sizeof(imageHeader), out);
+        const std::uint16_t pixel = static_cast<std::uint16_t>(0x1000 + index);
+        for (int pixelIndex = 0; pixelIndex < widths[index] * heights[index]; ++pixelIndex) {
+            std::fwrite(&pixel, sizeof(pixel), 1, out);
+        }
+    }
+    std::fclose(out);
+
+    zVidTexturePackEntry entry{};
+    std::strcpy(entry.filePath, packPath);
+    zVidTexturePackEntry *const oldTexturePacks = g_zVid_TexturePacks;
+    const int oldTexturePackCount = g_zVid_TexturePackCount;
+    zVidTexturePackEntry *const oldBuiltinPacks = g_zVid_BuiltinTexturePacks;
+    const int oldBuiltinPackCount = g_zVid_BuiltinTexturePackCount;
+    const int oldTexturePackLoadState = g_zVid_TexturePackLoadState;
+    const int oldPixelPackRBits = g_zVideo_PixelPack.rBits;
+    const HudUiMgrData oldMgr = g_HudUiMgr;
+    const int oldHudOriginX = g_HudUiMgrHudOriginX;
+    const HudUiWidget oldLayoutWidget2 = g_HudLayoutHW.widget2;
+
+    g_zVid_TexturePackLoadState = 1;
+    g_zVideo_PixelPack.rBits = 0;
+    g_zVid_BuiltinTexturePacks = nullptr;
+    g_zVid_BuiltinTexturePackCount = 0;
+    if (zVid_TexturePackEntry_LoadFromFile(&entry) == nullptr) {
+        g_zVid_TexturePacks = oldTexturePacks;
+        g_zVid_TexturePackCount = oldTexturePackCount;
+        g_zVid_BuiltinTexturePacks = oldBuiltinPacks;
+        g_zVid_BuiltinTexturePackCount = oldBuiltinPackCount;
+        g_zVid_TexturePackLoadState = oldTexturePackLoadState;
+        g_zVideo_PixelPack.rBits = oldPixelPackRBits;
+        DeleteFileA(packPath);
+        return 3;
+    }
+
+    g_zVid_TexturePacks = &entry;
+    g_zVid_TexturePackCount = 1;
+
+    HudUiMessage message{};
+    message.imageStateWord = 0xabcd1234;
+    HudUiMgr::Constructor(&g_HudUiMgr);
+    g_HudUiMgrHudOriginX = 101;
+    g_HudLayoutHW.widget2.x = 300;
+    g_HudLayoutHW.widget2.y = 400;
+    g_HudLayoutHW.widget2.alignFlags = 0;
+
+    zReader::Node payload[10] = {};
+    for (int index = 0; index < 7; ++index) {
+        payload[index + 1].type = zReader::ZRDR_NODE_STRING;
+        payload[index + 1].value.str = const_cast<char *>(names[index]);
+    }
+    payload[8].value.i32 = 7;
+    payload[9].value.i32 = 20;
+    zReader::Node root{};
+    root.type = zReader::ZRDR_NODE_ARRAY;
+    root.value.nodes = payload;
+    HudUiPanelFontParams fontParams = {"Arial", 11, 600, 2};
+
+    const int result = message.LoadWeaponLayoutFromNode(&root, &fontParams);
+    zReader::Node scalarNode{};
+    scalarNode.type = zReader::ZRDR_NODE_INT;
+    const int rejectedResult = message.LoadWeaponLayoutFromNode(&scalarNode, &fontParams);
+
+    const bool imagesLoaded =
+        message.variantImages[0] != nullptr && message.variantImages[0]->width == 30 &&
+        message.variantImages[0]->height == 12 && message.variantImages[4] != nullptr &&
+        message.sideImageSwaps[0] != nullptr && message.sideImageSwaps[0]->width == 5 &&
+        message.sideImageSwaps[0]->height == 6 && message.sideImageSwaps[1] != nullptr;
+    const bool layoutAndInvalidation =
+        message.panel.layoutX == 7 && message.panel.layoutY == 20 &&
+        message.imageStateWord == 0xabcd0001;
+    const bool panelStyle =
+        message.panel.centerText == 1 &&
+        message.panel.textColor0 == 0x0020bf40 &&
+        message.panel.textColor1 == 0x0020bf40 &&
+        message.panel.textDirty == 1 &&
+        message.panel.shadowOffsetX == -1 &&
+        message.panel.shadowOffsetY == -1 &&
+        message.panel.shadowEnabled == 1;
+    const bool fontAndText =
+        message.panel.hFont != nullptr &&
+        std::strcmp(message.panel.textBuffer, "   ") == 0 &&
+        std::strcmp(message.panel.cachedText, "   ") == 0;
+    bool messageLinked = false;
+    bool widgetLinked = false;
+    for (HudUiElement *child = g_HudUiMgr.childHead; child != nullptr; child = child->next) {
+        if (child == reinterpret_cast<HudUiElement *>(&message)) {
+            messageLinked = true;
+        }
+        if (child == reinterpret_cast<HudUiElement *>(&message.widget)) {
+            widgetLinked = true;
+        }
+    }
+    const bool children =
+        messageLinked && widgetLinked &&
+        reinterpret_cast<HudUiElement *>(&message)->parent == &g_HudUiMgr &&
+        reinterpret_cast<HudUiElement *>(&message.widget)->parent == &g_HudUiMgr;
+
+    for (int index = 0; index < 5; ++index) {
+        if (message.variantImages[index] != nullptr) {
+            zVid_Image::Destroy(message.variantImages[index]);
+            message.variantImages[index] = nullptr;
+        }
+    }
+    for (int index = 0; index < 2; ++index) {
+        if (message.sideImageSwaps[index] != nullptr) {
+            zVid_Image::Destroy(message.sideImageSwaps[index]);
+            message.sideImageSwaps[index] = nullptr;
+        }
+    }
+    DeleteObject(message.panel.hFont);
+    message.panel.hFont = nullptr;
+    std::fclose(entry.fileHandle);
+    std::free(entry.records);
+    g_zVid_TexturePacks = oldTexturePacks;
+    g_zVid_TexturePackCount = oldTexturePackCount;
+    g_zVid_BuiltinTexturePacks = oldBuiltinPacks;
+    g_zVid_BuiltinTexturePackCount = oldBuiltinPackCount;
+    g_zVid_TexturePackLoadState = oldTexturePackLoadState;
+    g_zVideo_PixelPack.rBits = oldPixelPackRBits;
+    g_HudUiMgr = oldMgr;
+    g_HudUiMgrHudOriginX = oldHudOriginX;
+    g_HudLayoutHW.widget2 = oldLayoutWidget2;
+    DeleteFileA(packPath);
+
+    if (result != 1) {
+        return 10;
+    }
+    if (rejectedResult != 0) {
+        return 11;
+    }
+    if (!imagesLoaded) {
+        return 12;
+    }
+    if (!layoutAndInvalidation) {
+        return 13;
+    }
+    if (!panelStyle) {
+        return 14;
+    }
+    if (!fontAndText) {
+        return 15;
+    }
+    return children ? 0 : 16;
+}
+
+extern "C" int zhud_message_destructors_smoke(void) {
+    HudUiMessage message{};
+    message.Constructor();
+    message.image = &zVid_Image::g_zImage_DefaultImage;
+    message.ownsImage = 1;
+    message.widget.image = &zVid_Image::g_zImage_DefaultImage;
+    message.widget.ownsImage = 1;
+    message.panel.textPick = nullptr;
+    message.panel.hFont = nullptr;
+
+    message.Destructor();
+
+    const bool destructorOk = message.image == nullptr &&
+                              message.widget.image == nullptr &&
+                              message.ownsImage == 0 &&
+                              message.widget.ownsImage == 0;
+
+    HudUiMessage scalar{};
+    scalar.Constructor();
+    scalar.image = &zVid_Image::g_zImage_DefaultImage;
+    scalar.ownsImage = 1;
+    scalar.widget.image = &zVid_Image::g_zImage_DefaultImage;
+    scalar.widget.ownsImage = 1;
+    scalar.panel.textPick = nullptr;
+    scalar.panel.hFont = nullptr;
+    HudUiElement *const scalarResult = scalar.ScalarDeletingDestructor(0);
+
+    const bool scalarOk = scalarResult == &scalar &&
+                          scalar.image == nullptr &&
+                          scalar.widget.image == nullptr &&
+                          scalar.ownsImage == 0 &&
+                          scalar.widget.ownsImage == 0;
+
+    return destructorOk && scalarOk ? 0 : 1;
+}
+
 extern "C" int zhud_element_position_mutators_smoke(void) {
     const unsigned int oldMask = g_HudUi_InvalidateMask;
     g_HudUi_InvalidateMask = 0x40;
@@ -14029,16 +15627,47 @@ extern "C" int zhud_bar_and_meter_constructor_smoke(void) {
     void *const meterStorage = ::operator new(sizeof(HudUiMeter));
     std::memset(meterStorage, 0xff, sizeof(HudUiMeter));
     HudUiMeter *const meter = new (meterStorage) HudUiMeter;
+    bool meterPointsCleared = true;
+    for (const HudUiBarPoint &point : meter->points) {
+        meterPointsCleared = meterPointsCleared &&
+                             point.x == 0.0f &&
+                             point.y == 0.0f &&
+                             point.reserved == 0;
+    }
+
     const bool meterConstructed =
         meter->fillPixelsMax == 0 &&
         meter->meterFlags == 0 &&
         meter->drawVertexCount == 0 &&
-        (meter->flags & 0x40u) != 0;
+        (meter->flags & 0x40u) != 0 &&
+        meterPointsCleared;
     meter->~HudUiMeter();
     ::operator delete(meterStorage);
 
+    void *const meterExStorage = ::operator new(sizeof(HudUiMeter));
+    std::memset(meterExStorage, 0xff, sizeof(HudUiMeter));
+    HudUiMeter *const meterEx = static_cast<HudUiMeter *>(meterExStorage);
+    HudUiMeter *const meterExReturned = meterEx->ConstructorEx();
+    bool meterExPointsCleared = true;
+    for (const HudUiBarPoint &point : meterEx->points) {
+        meterExPointsCleared = meterExPointsCleared &&
+                               point.x == 0.0f &&
+                               point.y == 0.0f &&
+                               point.reserved == 0;
+    }
+
+    const bool meterExConstructed =
+        meterExReturned == meterEx &&
+        meterEx->fillPixelsMax == 0 &&
+        meterEx->meterFlags == 0 &&
+        meterEx->drawVertexCount == 0 &&
+        (meterEx->flags & 0x40u) != 0 &&
+        meterExPointsCleared;
+    ((HudUiBar *)meterEx)->~HudUiBar();
+    ::operator delete(meterExStorage);
+
     g_HudUi_InvalidateMask = oldMask;
-    return barConstructed && meterConstructed ? 0 : 1;
+    return barConstructed && meterConstructed && meterExConstructed ? 0 : 1;
 }
 
 extern "C" int zhud_timer_panel_global_accessors_smoke(void) {
@@ -14495,6 +16124,8 @@ int main(int argc, char **argv) {
         {"zopt_section_accessor_smoke", zopt_section_accessor_smoke},
         {"zopt_view_rect_target_side_effects_smoke",
          zopt_view_rect_target_side_effects_smoke},
+        {"zopt_wol_password_flag_accessor_smoke",
+         zopt_wol_password_flag_accessor_smoke},
         {"zsnd_option_accessors_smoke", zsnd_option_accessors_smoke},
         {"zsnd_stream_request_stop_if_active_smoke", zsnd_stream_request_stop_if_active_smoke},
         {"zsnd_stream_mgr_ensure_init_smoke", zsnd_stream_mgr_ensure_init_smoke},
@@ -14508,10 +16139,16 @@ int main(int argc, char **argv) {
         {"zsnd_play_handle_update3d_a3d_smoke", zsnd_play_handle_update3d_a3d_smoke},
         {"zsnd_play_handle_update3d_directsound_smoke",
          zsnd_play_handle_update3d_directsound_smoke},
+        {"zsnd_play_with_delta_a3d_smoke", zsnd_play_with_delta_a3d_smoke},
+        {"zsnd_play_with_delta_directsound_smoke", zsnd_play_with_delta_directsound_smoke},
+        {"zsnd_play_with_delta_backend_dispatch_smoke",
+         zsnd_play_with_delta_backend_dispatch_smoke},
         {"zsnd_update_listener_state_smoke", zsnd_update_listener_state_smoke},
         {"zsnd_speed_of_sound_smoke", zsnd_speed_of_sound_smoke},
         {"zsnd_sample_play_simple_smoke", zsnd_sample_play_simple_smoke},
         {"zsnd_is_muted_smoke", zsnd_is_muted_smoke},
+        {"zsnd_apply_mute_state_to_active_voices_smoke",
+         zsnd_apply_mute_state_to_active_voices_smoke},
         {"zsnd_gain_scale_to_directsound_attenuation_smoke",
          zsnd_gain_scale_to_directsound_attenuation_smoke},
         {"zsnd_global_volume_and_flag_helpers_smoke",
@@ -14592,6 +16229,8 @@ int main(int argc, char **argv) {
          zsnd_cd_track_list_static_init_atexit_child_smoke},
         {"zsnd_cd_track_list_static_init_atexit_smoke",
          zsnd_cd_track_list_static_init_atexit_smoke},
+        {"zsnd_options_cpu_and_cached_directsound_smoke",
+         zsnd_options_cpu_and_cached_directsound_smoke},
         {"zreader_named_int_lookup_smoke", zreader_named_int_lookup_smoke},
         {"zreader_get_named_node_smoke", zreader_get_named_node_smoke},
         {"zreader_named_string_float_lookup_smoke", zreader_named_string_float_lookup_smoke},
@@ -14760,6 +16399,8 @@ int main(int argc, char **argv) {
          player_apply_alt_weapon_switch_smoke},
         {"player_apply_aim_pitch_to_direction_smoke",
          player_apply_aim_pitch_to_direction_smoke},
+        {"player_apply_camera_state_and_zopt_set_camera_mode_smoke",
+         player_apply_camera_state_and_zopt_set_camera_mode_smoke},
         {"player_find_alt_gun_controller_smoke",
          player_find_alt_gun_controller_smoke},
         {"player_alt_gun_fire_point_selection_smoke",
@@ -14807,9 +16448,31 @@ int main(int argc, char **argv) {
          zweapon_optcatalog_remove_runtime_instance_smoke},
         {"zweapon_optcatalog_deactivate_trail_runtime_state_smoke",
          zweapon_optcatalog_deactivate_trail_runtime_state_smoke},
+        {"zweapon_optcatalog_compute_aim_pitch_for_target_smoke",
+         zweapon_optcatalog_compute_aim_pitch_for_target_smoke},
         {"light_alloc_from_free_list_and_attach_smoke",
          light_alloc_from_free_list_and_attach_smoke},
         {"player_timed_hit_status_smoke", player_timed_hit_status_smoke},
+        {"player_record_recent_hit_feedback_smoke",
+         player_record_recent_hit_feedback_smoke},
+        {"player_update_timed_hit_status_from_source_smoke",
+         player_update_timed_hit_status_from_source_smoke},
+        {"player_clear_destroyed_respawn_effect_handle_callback_smoke",
+         player_clear_destroyed_respawn_effect_handle_callback_smoke},
+        {"player_hit_callback_record_net_context_and_timed_status_smoke",
+         player_hit_callback_record_net_context_and_timed_status_smoke},
+        {"player_hit_callback_record_context_and_timed_status_smoke",
+         player_hit_callback_record_context_and_timed_status_smoke},
+        {"player_enter_local_inactive_destroyed_lifecycle_smoke",
+         player_enter_local_inactive_destroyed_lifecycle_smoke},
+        {"player_enter_destroyed_state_smoke",
+         player_enter_destroyed_state_smoke},
+        {"player_apply_status_meter_change_smoke",
+         player_apply_status_meter_change_smoke},
+        {"player_apply_pitch_roll_velocity_impulse_from_direction_smoke",
+         player_apply_pitch_roll_velocity_impulse_from_direction_smoke},
+        {"player_start_destroyed_state_vehicle_effect_smoke",
+         player_start_destroyed_state_vehicle_effect_smoke},
         {"player_create_from_names_at_pose_smoke",
          player_create_from_names_at_pose_smoke},
         {"player_init_state_from_name_and_master_common_data_smoke",
@@ -15095,10 +16758,17 @@ int main(int argc, char **argv) {
          hud_ui_net_game_setup_prev_world_button_smoke},
         {"hud_ui_net_game_setup_overlay_owner_on_try_smoke",
          hud_ui_net_game_setup_overlay_owner_on_try_smoke},
+        {"zhud_slot_destructors_smoke", zhud_slot_destructors_smoke},
         {"zhud_slot_draw_smoke", zhud_slot_draw_smoke},
+        {"zhud_triplet_panel_constructor_smoke",
+         zhud_triplet_panel_constructor_smoke},
+        {"zhud_triplet_panel_destructor_core_smoke",
+         zhud_triplet_panel_destructor_core_smoke},
         {"zhud_triplet_panel_draw_smoke", zhud_triplet_panel_draw_smoke},
         {"zhud_triplet_panel_set_visible_count_smoke",
          zhud_triplet_panel_set_visible_count_smoke},
+        {"zhud_triplet_panel_shutdown_items_stub_smoke",
+         zhud_triplet_panel_shutdown_items_stub_smoke},
         {"zhud_triplet_interpolate_layout_smoke",
          zhud_triplet_interpolate_layout_smoke},
         {"zhud_triplet_is_local_player_first_entry_smoke",
@@ -15135,6 +16805,18 @@ int main(int argc, char **argv) {
         {"zhud_mgr_trigger_current_layout_on_activated_smoke",
          zhud_mgr_trigger_current_layout_on_activated_smoke},
         {"zhud_counter_constructor_smoke", zhud_counter_constructor_smoke},
+        {"zhud_message_release_images_smoke", zhud_message_release_images_smoke},
+        {"zhud_message_set_value_if_owner_matches_smoke",
+         zhud_message_set_value_if_owner_matches_smoke},
+        {"zhud_message_update_selected_weapon_display_smoke",
+         zhud_message_update_selected_weapon_display_smoke},
+        {"zhud_message_draw_smoke", zhud_message_draw_smoke},
+        {"zhud_message_constructor_smoke", zhud_message_constructor_smoke},
+        {"zhud_message_rebuild_weapon_layout_smoke",
+         zhud_message_rebuild_weapon_layout_smoke},
+        {"zhud_message_load_weapon_layout_from_node_smoke",
+         zhud_message_load_weapon_layout_from_node_smoke},
+        {"zhud_message_destructors_smoke", zhud_message_destructors_smoke},
         {"hud_ui_set_invalidate_mode_smoke", hud_ui_set_invalidate_mode_smoke},
         {"zhud_bar_and_meter_constructor_smoke", zhud_bar_and_meter_constructor_smoke},
         {"zhud_widget_release_image_if_owned_smoke",
@@ -15148,6 +16830,8 @@ int main(int argc, char **argv) {
          zhud_zrd_widget_ex17c_item_core_smoke},
         {"zhud_widget_set_image_by_path_owned_smoke",
          zhud_widget_set_image_by_path_owned_smoke},
+        {"zhud_widget_release_and_destructor_core_smoke",
+         zhud_widget_release_and_destructor_core_smoke},
         {"zhud_background_cursor_widget_member_constructor_smoke",
          zhud_background_cursor_widget_member_constructor_smoke},
         {"zhud_background_cursor_widget_rebuild_captured_image_smoke",
@@ -15573,10 +17257,29 @@ int main(int argc, char **argv) {
         {"zturret_damage_and_on_damage_smoke", zturret_damage_and_on_damage_smoke},
         {"zturret_shutdown_leaf_smoke", zturret_shutdown_leaf_smoke},
         {"zgame_return_only_stub_smoke", zgame_return_only_stub_smoke},
+        {"zgame_options_init_registry_context_smoke",
+         zgame_options_init_registry_context_smoke},
+        {"zgame_options_find_option_smoke", zgame_options_find_option_smoke},
+        {"zopt_lookup_named_value_as_int_smoke", zopt_lookup_named_value_as_int_smoke},
+        {"zopt_read_scalar_value_as_int_smoke", zopt_read_scalar_value_as_int_smoke},
+        {"zopt_eval_int_compare_op_smoke", zopt_eval_int_compare_op_smoke},
+        {"zopt_evaluate_profile_metric_condition_smoke",
+         zopt_evaluate_profile_metric_condition_smoke},
+        {"zopt_select_profile_value_for_system_smoke",
+         zopt_select_profile_value_for_system_smoke},
+        {"zgame_options_load_from_registry_missing_smoke",
+         zgame_options_load_from_registry_missing_smoke},
+        {"zgame_options_save_game_options_smoke", zgame_options_save_game_options_smoke},
+        {"zgame_options_shutdown_registry_context_smoke",
+         zgame_options_shutdown_registry_context_smoke},
+        {"zgame_options_runtime_config_copy_default_smoke",
+         zgame_options_runtime_config_copy_default_smoke},
         {"zgame_options_load_game_options_minimal_smoke",
          zgame_options_load_game_options_minimal_smoke},
         {"zopt_network_enabled_accessor_smoke", zopt_network_enabled_accessor_smoke},
         {"hud_sensor_mission_identity_smoke", hud_sensor_mission_identity_smoke},
+        {"hud_sensor_map_bounds_and_save_state_smoke",
+         hud_sensor_map_bounds_and_save_state_smoke},
         {"hud_sensor_tracker_set_runtime_timer_sec_and_goal_value_smoke",
          hud_sensor_tracker_set_runtime_timer_sec_and_goal_value_smoke},
         {"hud_sensor_tracker_get_objective_briefing_strings_smoke",
@@ -15590,6 +17293,9 @@ int main(int argc, char **argv) {
          zclass_node_free_and_deferred_work_smoke},
         {"zclass_delete_node_from_lists_smoke",
          zclass_delete_node_from_lists_smoke},
+        {"zclass_gwlist_delete_a_node_smoke",
+         zclass_gwlist_delete_a_node_smoke},
+        {"zclass_shutdown_core_smoke", zclass_shutdown_core_smoke},
         {"zclass_node_propagate_transform_dirty_smoke",
          zclass_node_propagate_transform_dirty_smoke},
         {"zclass_object3d_reset_transform_dirty_smoke",
@@ -15884,6 +17590,8 @@ int main(int argc, char **argv) {
         {"zvid_texture_pack_load_state_setter_smoke",
          zvid_texture_pack_load_state_setter_smoke},
         {"zvid_option_accessors_smoke", zvid_option_accessors_smoke},
+        {"zvid_cached_renderer_and_texture_counts_smoke",
+         zvid_cached_renderer_and_texture_counts_smoke},
         {"zvid_set_video_mode_index_smoke",
          zvid_set_video_mode_index_smoke},
         {"zvideo_init_set_surface_geometry_from_mode_index_smoke",
@@ -15993,6 +17701,8 @@ int main(int argc, char **argv) {
         {"zimage_init_option_fallback_smoke", zimage_init_option_fallback_smoke},
         {"zimage_init_texture_directory_smoke", zimage_init_texture_directory_smoke},
         {"zvid_image_resample_square_smoke", zvid_image_resample_square_smoke},
+        {"zvideo_image_file_read_helpers_smoke", zvideo_image_file_read_helpers_smoke},
+        {"zvideo_image_read_data_smoke", zvideo_image_read_data_smoke},
         {"zvid_image_release_owned_buffers_smoke", zvid_image_release_owned_buffers_smoke},
         {"zvid_image_destroy_smoke", zvid_image_destroy_smoke},
         {"zeffect_anim_find_entry_by_name_smoke",
@@ -16037,6 +17747,8 @@ int main(int argc, char **argv) {
          zeffect_anim_runtime_sequence_group_smoke},
         {"zeffect_conditional_ref_pos_smoke",
          zeffect_conditional_ref_pos_smoke},
+        {"zeffect_set_conditional_effect_level_smoke",
+         zeffect_set_conditional_effect_level_smoke},
         {"zdeclient_map_tree_iter_next_node_ref_smoke",
          zdeclient_map_tree_iter_next_node_ref_smoke},
         {"zdeclient_map_tree_iter_prev_node_ref_smoke",

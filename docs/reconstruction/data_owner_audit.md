@@ -183,3 +183,49 @@ relying only on per-function plan markers.
   mismatches for their data symbols using `vc5_o2_ob0_md_facs`.
 - Dependent plan entries: 0x420d10, 0x421a40, 0x421470, 0x421790, 0x421830,
   0x421ab0, 0x421ea0, 0x421ed0, 0x4220f0, and 0x42aa40.
+
+### engine.zsound.option_runtime_globals
+
+- Owner symbol/scope: zSound mute and global-volume option runtime globals
+  shared by preinitialization, mute-state playback, snapshot capture/restore,
+  and global-volume helpers.
+- BN/source data: `g_zSnd_MuteOptionDefault` at 0x56b3b4,
+  `g_zSnd_MuteOptionValuePtr` at 0x56b3b8, `g_zSnd_MuteDepth` at
+  0x56b3bc, `g_zSnd_VolumeScaleDefault` at 0x56b3c0, and
+  `g_zSnd_GlobalVolumeScalePtr` at 0x56b3c4.
+- Extent/section/nullness: each accepted item is an independent 4-byte global;
+  the defaults and depth are zero-initialized data, and the option pointers are
+  zero-initialized pointer globals until `zSnd_PreInitializeRuntimeState`
+  binds them to the game option table or local defaults.
+- Lifecycle/xrefs: 0x4a12c0 initializes mute/default volume state and option
+  pointers; 0x4a0670/0x4a07a0 consume mute depth/options; 0x49fff0/0x4a0590
+  snapshot and restore global-volume state through the volume pointer; 0x4a1090
+  and 0x4a10b0 update global volume through the same pointer.
+- VC5 evidence: `python tools/recoil.py verify vc5 0x56b3b4`,
+  `0x56b3b8`, `0x56b3bc`, `0x56b3c0`, and `0x56b3c4` resolved to
+  `zsnd_preinitialize_runtime_state` and passed with zero unmasked data-byte
+  mismatches under `vc5_o2_ob1_md_gx_facs`.
+- Dependent plan entries: 0x4a0300, 0x49fff0, 0x4a0590, 0x4a0670, and
+  0x4a07a0.
+
+### engine.zsound.zsnd_play_rdata_literals
+
+- Owner symbol/scope: immutable `zsnd_play.cpp` rdata literals used by
+  PlayWithDelta error reporting and gain/attenuation comparisons.
+- BN/source data: `g_zSnd_SourceFile_ZsndPlayCpp` at 0x4e2208,
+  `g_zSnd_PlayWithDeltaA3D_ZeroFloat` at 0x4d2ebc,
+  `g_zSnd_PlayWithDeltaA3D_DeltaScale` at 0x4d2ec0, and
+  `g_SndConst_dZero` at 0x4d2ec8.
+- Extent/section/nullness: the source-file string is a 41-byte immutable rdata
+  string; the remaining entries are compiler-emitted immutable rdata literals
+  for `0.0f`, `10000.0f`, and double `0.0`.
+- Lifecycle/xrefs: 0x4a0380 uses the source-file string and double-zero
+  compare for A3D replay error/gain handling; 0x4a0400 uses the source-file
+  string for DirectSound provider error reports; 0x4a0490 uses the float-zero
+  and 10000.0f constants for backend dispatch gates and DirectSound attenuation
+  conversion.
+- VC5 evidence: `python tools/recoil.py verify vc5 0x4e2208`,
+  `0x4d2ebc`, `0x4d2ec0`, and `0x4d2ec8` resolved to
+  `zsnd_play_with_delta_backend_dispatch` and passed with zero unmasked
+  data-byte mismatches under `vc5_o2_ob1_md_gx_facs`.
+- Dependent plan entries: 0x4a0380, 0x4a0400, 0x4a0490, and 0x4a0590.

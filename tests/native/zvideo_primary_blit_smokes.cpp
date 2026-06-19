@@ -1,7 +1,10 @@
 #include "GameZRecoil/zVideo/zVideo.h"
 #include "GameZRecoil/zRndr/zRndr.h"
 
+#include <cstdio>
+#include <cstdlib>
 #include <cstring>
+#include <cstdint>
 #include <stdint.h>
 
 namespace {
@@ -344,4 +347,129 @@ extern "C" int zvid_image_blit_to_framebuffer_clipped_smoke(void) {
     zRndr::g_pitchBytes = savedPitchBytes;
     zRndr::g_pixelPackGreenBits = savedPixelPackGreenBits;
     return status;
+}
+
+extern "C" int zvideo_image_file_read_helpers_smoke(void) {
+    unsigned char header[0x10] = {};
+    header[0] = 1;
+    *reinterpret_cast<std::int16_t *>(&header[4]) = 2;
+    *reinterpret_cast<std::int16_t *>(&header[6]) = 1;
+    header[8] = 0x12;
+    *reinterpret_cast<std::int16_t *>(&header[0x0c]) = 0x3456;
+    *reinterpret_cast<std::int16_t *>(&header[0x0e]) = 0;
+    std::uint16_t pixels[2] = {0x7fff, 0x001f};
+
+    std::FILE *file = std::tmpfile();
+    if (file == nullptr) {
+        return 1;
+    }
+
+    std::fwrite(header, 1, sizeof(header), file);
+    std::fwrite(pixels, 1, sizeof(pixels), file);
+    std::rewind(file);
+
+    zVidImagePartial directReadImage = {};
+    const bool directHeaderRead =
+        zVid_Image::ReadHeader(nullptr, &directReadImage) == -1 &&
+        zVid_Image::ReadHeader(file, nullptr) == -1 &&
+        zVid_Image::ReadHeader(file, &directReadImage) == 0 &&
+        directReadImage.width == 2 && directReadImage.height == 1 &&
+        directReadImage.pixelCount == 2 && directReadImage.pitchWords == 2 &&
+        directReadImage.formatFlagsPacked == 1 && directReadImage.headerFlagsByte == 0x12 &&
+        directReadImage.textureAddressFlagsPacked == 0x3456 &&
+        directReadImage.paletteMetaPacked == 0;
+
+    std::rewind(file);
+    g_zVideo_PixelPack.gBits = 5;
+    zVidImagePartial *image = zVid_Image::ReadFromFile(file);
+    std::fclose(file);
+
+    if (image == nullptr) {
+        return 2;
+    }
+
+    std::uint16_t *readPixels = static_cast<std::uint16_t *>(image->pixels);
+    const bool ok = directHeaderRead && image->width == 2 && image->height == 1 &&
+                    image->pixelCount == 2 && image->pitchWords == 2 &&
+                    image->headerFlagsByte == 0x12 &&
+                    image->textureAddressFlagsPacked == 0x3456 &&
+                    image->paletteMetaPacked == 0 && (image->formatFlagsPacked & 0x21) == 0x21 &&
+                    readPixels[0] == 0x3fff && readPixels[1] == 0x001f;
+
+    zVid_Image::Destroy(image);
+    return ok ? 0 : 3;
+}
+
+extern "C" int zvideo_image_read_data_smoke(void) {
+    unsigned char sourcePixels[4] = {0x10, 0x20, 0x30, 0x40};
+    unsigned char sourceAlpha[4] = {1, 2, 3, 4};
+    unsigned char sourcePalette[2] = {0xa0, 0xb0};
+
+    std::FILE *file = std::tmpfile();
+    if (file == nullptr) {
+        return 1;
+    }
+
+    std::fwrite(sourcePixels, 1, sizeof(sourcePixels), file);
+    std::fwrite(sourceAlpha, 1, sizeof(sourceAlpha), file);
+    std::fwrite(sourcePalette, 1, sizeof(sourcePalette), file);
+    std::rewind(file);
+
+    unsigned char pixels[4] = {};
+    zVidImagePartial image = {};
+    image.pixelCount = 4;
+    image.width = 2;
+    image.height = 2;
+    image.formatFlagsPacked = 0x08;
+    image.paletteMetaPacked = 2;
+    image.pixels = pixels;
+
+    const int readResult = zVid_Image::ReadData(file, &image, 0);
+    std::fclose(file);
+
+    const bool dataOk =
+        readResult == 0 && image.alphaMap != nullptr && image.palette != nullptr &&
+        std::memcmp(pixels, sourcePixels, sizeof(sourcePixels)) == 0 &&
+        std::memcmp(image.alphaMap, sourceAlpha, sizeof(sourceAlpha)) == 0 &&
+        std::memcmp(image.palette, sourcePalette, sizeof(sourcePalette)) == 0 &&
+        (image.formatFlagsPacked & 0xc8) == 0xc8;
+    std::free(image.alphaMap);
+    std::free(image.palette);
+    if (!dataOk) {
+        return 2;
+    }
+
+    unsigned char largerHintPixel = 0xaa;
+    zVidImagePartial largerHintImage = {};
+    largerHintImage.pixelCount = 1;
+    largerHintImage.formatFlagsPacked = 0;
+    largerHintImage.pixels = &largerHintPixel;
+
+    file = std::tmpfile();
+    if (file == nullptr) {
+        return 3;
+    }
+    const bool largerHintOk =
+        zVid_Image::ReadData(file, &largerHintImage, 2) == 0 && largerHintPixel == 0xaa;
+    std::fclose(file);
+    if (!largerHintOk) {
+        return 4;
+    }
+
+    unsigned char shortPixels[4] = {};
+    zVidImagePartial shortReadImage = {};
+    shortReadImage.pixelCount = 4;
+    shortReadImage.formatFlagsPacked = 0;
+    shortReadImage.pixels = shortPixels;
+
+    file = std::tmpfile();
+    if (file == nullptr) {
+        return 5;
+    }
+    std::fputc(0x7f, file);
+    std::rewind(file);
+    const bool shortReadOk = zVid_Image::ReadData(file, &shortReadImage, 0) == -1;
+    std::fclose(file);
+
+    return shortReadOk ? 0 : 6;
 }

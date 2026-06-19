@@ -3735,6 +3735,37 @@ extern "C" int zhud_widget_set_image_by_path_owned_smoke(void) {
     return nullPathOk && missingPathOk ? 0 : 1;
 }
 
+extern "C" int zhud_widget_release_and_destructor_core_smoke(void) {
+    const int releaseOk = zhud_widget_release_image_if_owned_smoke() == 0;
+    const int borrowedOk = zhud_widget_set_image_borrowed_and_invalidate_smoke() == 0;
+    const int destructorOk = zhud_widget_destructor_core_smoke() == 0;
+    const int pathOk = zhud_widget_set_image_by_path_owned_smoke() == 0;
+
+    HudUiElement commonProbe(0, 0);
+    const void *const commonVptr = HudElementVptr(commonProbe);
+
+    void *const scalarStorage = ::operator new(sizeof(HudUiWidget));
+    HudUiWidget *const scalar = new (scalarStorage) HudUiWidget();
+    scalar->image = &zVid_Image::g_zImage_DefaultImage;
+    scalar->ownsImage = 1;
+    HudUiElement *const scalarResult = scalar->ScalarDeletingDestructor(0);
+    const bool scalarDestructed =
+        scalarResult == scalar &&
+        HudElementVptr(*scalar) == commonVptr &&
+        scalar->image == nullptr &&
+        scalar->ownsImage == 0;
+    ::operator delete(scalarStorage);
+
+    HudUiWidget *const heapScalar = new HudUiWidget();
+    HudUiElement *const heapScalarResult = heapScalar->ScalarDeletingDestructor(1);
+    const bool heapScalarDeleted = heapScalarResult == heapScalar;
+
+    return releaseOk && borrowedOk && destructorOk && pathOk &&
+                   scalarDestructed && heapScalarDeleted
+               ? 0
+               : 1;
+}
+
 extern "C" int zhud_background_cursor_widget_member_constructor_smoke(void) {
     HudUiBackgroundCursorWidget cursor(nullptr, 7);
 
