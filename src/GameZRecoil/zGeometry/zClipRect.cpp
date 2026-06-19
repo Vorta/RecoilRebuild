@@ -4,16 +4,47 @@
 
 #include <string.h>
 
+/**
+ * Reimplements data 0x57c8c4: g_Clip_PolyVerts.
+ * Data owner: zClipRect polygon clipping scratch vertices.
+ * Purpose: Hold the active polygon vertex stream for XY clipping and rejection.
+ */
 zClipVert g_Clip_PolyVerts[0x40] = {0};
+
+/**
+ * Reimplements data 0x57c5c4: g_Clip_PolyVertsScratch.
+ * Data owner: zClipRect polygon clipping scratch vertices.
+ * Purpose: Hold the alternate polygon vertex stream for Z-range clipping passes.
+ */
 zClipVert g_Clip_PolyVertsScratch[0x40] = {0};
+
+/**
+ * Reimplements data 0x57cbc4: g_Clip_PolyUvsStorage.
+ * Data owner: zClipRect polygon clipping scratch UV storage.
+ * Purpose: Provide default UV storage for clipping passes that preserve texture coordinates.
+ */
 zClipUV g_Clip_PolyUvsStorage[0x40] = {0};
-zClipUV *g_Clip_PolyUvs = g_Clip_PolyUvsStorage;
+
+/**
+ * Reimplements data 0x57cdc4: g_Clip_PolyUvs.
+ * Data owner: zClipRect polygon clipping scratch UV cursor.
+ * Purpose: Select the active UV stream used by polygon clipping passes.
+ */
+zClipUV *g_Clip_PolyUvs = 0;
+
+/**
+ * Data owner: zClipRect primary clipping rectangle.
+ * Purpose: Hold the primary screen clip bounds used by model and alternate clipping callers.
+ */
 zClipRectPartial gClipRect_Primary = {0};
 
 namespace {
 const int kClipBufferCapacity = 0x40;
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original static helper recovered from the zClipRect source-file cluster.
+ * Purpose: test whether one vertex is inside the near-Z clipping plane.
+ */
 bool IsInsideNear(
     const zClipVert &vertex,
     float zMin
@@ -21,7 +52,10 @@ bool IsInsideNear(
     return vertex.z >= zMin;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original static helper recovered from the zClipRect source-file cluster.
+ * Purpose: test whether one scalar is on or above a minimum clip bound.
+ */
 bool IsInsideMin(
     float value,
     float minValue
@@ -29,7 +63,10 @@ bool IsInsideMin(
     return value >= minValue;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original static helper recovered from the zClipRect source-file cluster.
+ * Purpose: test whether one scalar is below a maximum clip bound.
+ */
 bool IsInsideMax(
     float value,
     float maxValue
@@ -37,7 +74,10 @@ bool IsInsideMax(
     return value < maxValue;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original static helper recovered from the zClipRect source-file cluster.
+ * Purpose: interpolate one vertex and clamp the resulting Z value to a clip plane.
+ */
 zClipVert InterpolateVert(
     const zClipVert &a,
     const zClipVert &b,
@@ -51,7 +91,10 @@ zClipVert InterpolateVert(
     return out;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original static helper recovered from the zClipRect source-file cluster.
+ * Purpose: interpolate one vertex on an XY clip axis and clamp that axis to the clip bound.
+ */
 zClipVert InterpolateVertOnAxis(
     const zClipVert &a,
     const zClipVert &b,
@@ -71,7 +114,10 @@ zClipVert InterpolateVertOnAxis(
     return out;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original static helper recovered from the zClipRect source-file cluster.
+ * Purpose: interpolate one texture-coordinate pair between clipped polygon edges.
+ */
 zClipUV InterpolateUv(
     const zClipUV &a,
     const zClipUV &b,
@@ -83,7 +129,10 @@ zClipUV InterpolateUv(
     return out;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original static helper recovered from the zClipRect source-file cluster.
+ * Purpose: interpolate one per-vertex scalar attribute between clipped polygon edges.
+ */
 float InterpolateFloat(
     float a,
     float b,
@@ -92,7 +141,10 @@ float InterpolateFloat(
     return a + (b - a) * t;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original static helper recovered from the zClipRect source-file cluster.
+ * Purpose: append one clipped vertex and UV pair to a bounded scratch stream.
+ */
 void AppendClipped(
     zClipVert *verts,
     zClipUV *uvs,
@@ -109,7 +161,10 @@ void AppendClipped(
     ++count;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original static helper recovered from the zClipRect source-file cluster.
+ * Purpose: append one clipped vertex to a bounded scratch stream.
+ */
 void AppendClippedVert(
     zClipVert *verts,
     int &count,
@@ -123,7 +178,10 @@ void AppendClippedVert(
     ++count;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original static helper recovered from the zClipRect source-file cluster.
+ * Purpose: append one clipped vertex, UV pair, and scalar attribute to bounded scratch streams.
+ */
 void AppendClippedWithAttr(
     zClipVert *verts,
     zClipUV *uvs,
@@ -143,7 +201,10 @@ void AppendClippedWithAttr(
     ++count;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original static helper recovered from the zClipRect source-file cluster.
+ * Purpose: append one clipped vertex, UV pair, and three scalar attributes to bounded scratch streams.
+ */
 void AppendClippedWithAttr012(
     zClipVert *verts,
     zClipUV *uvs,
@@ -169,7 +230,10 @@ void AppendClippedWithAttr012(
     ++count;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original static helper recovered from the zClipRect source-file cluster.
+ * Purpose: append one clipped vertex and three scalar attributes to bounded scratch streams.
+ */
 void AppendClippedVertWithAttr012(
     zClipVert *verts,
     float *attr0,
@@ -192,7 +256,10 @@ void AppendClippedVertWithAttr012(
     ++count;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original static helper recovered from the zClipRect source-file cluster.
+ * Purpose: clip one vertex stream against a single XY plane.
+ */
 int ClipVertsAgainstPlane(
     const zClipVert *source,
     int sourceCount,
@@ -255,7 +322,10 @@ int ClipVertsAgainstPlane(
     return destCount;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original static helper recovered from the zClipRect source-file cluster.
+ * Purpose: clip vertex and UV streams against a single XY plane.
+ */
 int ClipVertsUvsAgainstPlane(
     const zClipVert *sourceVerts,
     const zClipUV *sourceUvs,
@@ -327,7 +397,10 @@ int ClipVertsUvsAgainstPlane(
     return destCount;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original static helper recovered from the zClipRect source-file cluster.
+ * Purpose: clip vertex and first-attribute streams against a single XY plane.
+ */
 int ClipVertsAttr0AgainstPlane(
     const zClipVert *sourceVerts,
     const float *sourceAttrs,
@@ -399,7 +472,10 @@ int ClipVertsAttr0AgainstPlane(
     return destCount;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original static helper recovered from the zClipRect source-file cluster.
+ * Purpose: clip vertex and three-attribute streams against a single XY plane.
+ */
 int ClipVertsAttr012AgainstPlane(
     const zClipVert *sourceVerts,
     const float *sourceAttr0,
@@ -493,7 +569,10 @@ int ClipVertsAttr012AgainstPlane(
     return destCount;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original static helper recovered from the zClipRect source-file cluster.
+ * Purpose: clip vertex, UV, and three-attribute streams against a single XY plane.
+ */
 int ClipVertsUvsAttr012AgainstPlane(
     const zClipVert *sourceVerts,
     const zClipUV *sourceUvs,
@@ -598,7 +677,10 @@ int ClipVertsUvsAttr012AgainstPlane(
     return destCount;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original static helper recovered from the zClipRect source-file cluster.
+ * Purpose: run the shared no-UV XY clipping pass over the active polygon vertex stream.
+ */
 int ClipPolyNoUvCore(
     zClipRectPartial *clipRect,
     int *vertexCount
@@ -689,7 +771,10 @@ int ClipPolyNoUvCore(
     return 1;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original static helper recovered from the zClipRect source-file cluster.
+ * Purpose: run the shared UV-preserving XY clipping pass over active polygon streams.
+ */
 int ClipPolyUvCore(
     zClipRectPartial *clipRect,
     int *vertexCount
@@ -808,7 +893,10 @@ int ClipPolyUvCore(
     return 1;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original static helper recovered from the zClipRect source-file cluster.
+ * Purpose: run the shared no-UV first-attribute XY clipping pass over active polygon streams.
+ */
 int ClipPolyAttr0NoUvCore(
     zClipRectPartial *clipRect,
     int *vertexCount
@@ -927,7 +1015,10 @@ int ClipPolyAttr0NoUvCore(
     return 1;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original static helper recovered from the zClipRect source-file cluster.
+ * Purpose: run the shared no-UV three-attribute XY clipping pass over active polygon streams.
+ */
 int ClipPolyAttr012NoUvCore(
     zClipRectPartial *clipRect,
     int *vertexCount
@@ -1092,7 +1183,10 @@ int ClipPolyAttr012NoUvCore(
     return 1;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original static helper recovered from the zClipRect source-file cluster.
+ * Purpose: run the shared UV and three-attribute XY clipping pass over active polygon streams.
+ */
 int ClipPolyAttr012UvCore(
     zClipRectPartial *clipRect,
     int *vertexCount
@@ -1283,7 +1377,17 @@ int ClipPolyAttr012UvCore(
 } // namespace
 
 namespace zClipRect {
-// Reimplements 0x47aa80: zClipRect::ClipPolyNearZ
+/**
+ * Source owner evidence: these zClipRect routines are a namespace/source-file utility cluster over
+ * typed zClipRectPartial bounds and global scratch polygon streams; BN shows no constructor, table,
+ * or class owner for the clipping helpers in this file.
+ */
+
+/**
+ * Reimplements 0x47aa80: zClipRect::ClipPolyNearZ
+ * Source: D:\Proj\Battlesport\zClip.cpp
+ * Purpose: Clip the scratch polygon vertex and UV streams against the configured near Z plane.
+ */
 int __fastcall ClipPolyNearZ(
     zClipRectPartial *clipRect,
     int *vertexCount
@@ -1389,7 +1493,11 @@ int __fastcall ClipPolyNearZ(
     return 1;
 }
 
-// Reimplements 0x47af60: zClipRect::ClipPolyNearZ_WithAttr0
+/**
+ * Reimplements 0x47af60: zClipRect::ClipPolyNearZ_WithAttr0
+ * Source: D:\Proj\Battlesport\zClip.cpp
+ * Purpose: Clip the scratch polygon vertex, UV, and first-attribute streams against near Z.
+ */
 int __fastcall ClipPolyNearZ_WithAttr0(
     zClipRectPartial *clipRect,
     int *vertexCount
@@ -1512,7 +1620,11 @@ int __fastcall ClipPolyNearZ_WithAttr0(
     return 1;
 }
 
-// Reimplements 0x47a200: zClipRect::ClipPolyZRange_NoUV
+/**
+ * Reimplements 0x47a200: zClipRect::ClipPolyZRange_NoUV
+ * Source: D:\Proj\Battlesport\zClip.cpp
+ * Purpose: Clip the scratch polygon vertex stream against the configured Z range without attributes.
+ */
 int __fastcall ClipPolyZRange_NoUV(
     zClipRectPartial *clipRect,
     int *vertexCount
@@ -1600,7 +1712,11 @@ int __fastcall ClipPolyZRange_NoUV(
     return 1;
 }
 
-// Reimplements 0x47a4e0: zClipRect::ClipPolyZRange_NoUV_WithAttribs
+/**
+ * Reimplements 0x47a4e0: zClipRect::ClipPolyZRange_NoUV_WithAttribs
+ * Source: D:\Proj\Battlesport\zClip.cpp
+ * Purpose: Clip the scratch polygon vertex stream against the configured Z range while preserving three attributes.
+ */
 int __fastcall ClipPolyZRange_NoUV_WithAttribs(
     zClipRectPartial *clipRect,
     int *vertexCount
@@ -1740,7 +1856,11 @@ int __fastcall ClipPolyZRange_NoUV_WithAttribs(
     return 1;
 }
 
-// Reimplements 0x47e900: zClipRect::ClipPolyZRange_WithAttr012
+/**
+ * Reimplements 0x47e900: zClipRect::ClipPolyZRange_WithAttr012
+ * Source: D:\Proj\Battlesport\zClip.cpp
+ * Purpose: Clip the scratch polygon vertex, UV, and three-attribute streams against the Z range.
+ */
 int __fastcall ClipPolyZRange_WithAttr012(
     zClipRectPartial *clipRect,
     int *vertexCount
@@ -1897,7 +2017,11 @@ int __fastcall ClipPolyZRange_WithAttr012(
     return 1;
 }
 
-// Reimplements 0x47b540: zClipRect::ClipPoly_NoUV_Alt
+/**
+ * Reimplements 0x47b540: zClipRect::ClipPoly_NoUV_Alt
+ * Source: D:\Proj\Battlesport\zClip.cpp
+ * Purpose: Dispatch alternate no-UV XY clipping to the shared zClipRect polygon core.
+ */
 int __fastcall ClipPoly_NoUV_Alt(
     zClipRectPartial *clipRect,
     int *vertexCount
@@ -1908,7 +2032,11 @@ int __fastcall ClipPoly_NoUV_Alt(
     );
 }
 
-// Reimplements 0x47cdc0: zClipRect::ClipPoly_NoUV
+/**
+ * Reimplements 0x47cdc0: zClipRect::ClipPoly_NoUV
+ * Source: D:\Proj\Battlesport\zClip.cpp
+ * Purpose: Dispatch primary no-UV XY clipping to the shared zClipRect polygon core.
+ */
 int __fastcall ClipPoly_NoUV(
     zClipRectPartial *clipRect,
     int *vertexCount
@@ -1919,7 +2047,11 @@ int __fastcall ClipPoly_NoUV(
     );
 }
 
-// Reimplements 0x47d3f0: zClipRect::ClipPoly
+/**
+ * Reimplements 0x47d3f0: zClipRect::ClipPoly
+ * Source: D:\Proj\Battlesport\zClip.cpp
+ * Purpose: Dispatch primary UV-preserving XY clipping to the shared zClipRect polygon core.
+ */
 int __fastcall ClipPoly(
     zClipRectPartial *clipRect,
     int *vertexCount
@@ -1930,7 +2062,11 @@ int __fastcall ClipPoly(
     );
 }
 
-// Reimplements 0x47efd0: zClipRect::ClipPoly_WithAttr012
+/**
+ * Reimplements 0x47efd0: zClipRect::ClipPoly_WithAttr012
+ * Source: D:\Proj\Battlesport\zClip.cpp
+ * Purpose: Dispatch UV and three-attribute XY clipping to the shared zClipRect polygon core.
+ */
 int __fastcall ClipPoly_WithAttr012(
     zClipRectPartial *clipRect,
     int *vertexCount
@@ -1941,7 +2077,11 @@ int __fastcall ClipPoly_WithAttr012(
     );
 }
 
-// Reimplements 0x47dfb0: zClipRect::ClipPoly_NoUV_WithAttr0_Alt
+/**
+ * Reimplements 0x47dfb0: zClipRect::ClipPoly_NoUV_WithAttr0_Alt
+ * Source: D:\Proj\Battlesport\zClip.cpp
+ * Purpose: Dispatch alternate no-UV first-attribute XY clipping to the shared core.
+ */
 int __fastcall ClipPoly_NoUV_WithAttr0_Alt(
     zClipRectPartial *clipRect,
     int *vertexCount
@@ -1952,7 +2092,11 @@ int __fastcall ClipPoly_NoUV_WithAttr0_Alt(
     );
 }
 
-// Reimplements 0x47bd30: zClipRect::ClipPoly_NoUV_WithAttr012_Alt
+/**
+ * Reimplements 0x47bd30: zClipRect::ClipPoly_NoUV_WithAttr012_Alt
+ * Source: D:\Proj\Battlesport\zClip.cpp
+ * Purpose: Dispatch alternate no-UV three-attribute XY clipping to the shared core.
+ */
 int __fastcall ClipPoly_NoUV_WithAttr012_Alt(
     zClipRectPartial *clipRect,
     int *vertexCount
@@ -1963,7 +2107,12 @@ int __fastcall ClipPoly_NoUV_WithAttr012_Alt(
     );
 }
 
-// Reimplements 0x4803b0: zClipRect::TrivialRejectPolyXY
+/**
+ * Reimplements 0x4803b0: zClipRect::TrivialRejectPolyXY
+ * Source: D:\Proj\Battlesport\zClip.cpp
+ * Evidence: Current BN/status show this as a leaf zClipRect namespace helper over g_Clip_PolyVerts.
+ * Purpose: Reject polygons whose active vertices all fall outside one enabled XY clip plane.
+ */
 int __fastcall TrivialRejectPolyXY(
     zClipRectPartial *clipRect,
     int vertexCount

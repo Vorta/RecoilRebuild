@@ -20,6 +20,13 @@
 #include <string.h>
 
 namespace {
+/*
+ * Briefing subsystem action records. BN shows the Add* queue helpers allocating
+ * these concrete records, storing a BriefingAction base pointer in the circular
+ * queue, and dispatching each Tick override through that source-level base.
+ * The records are the authored action model, not a recovered VTable/FTable
+ * scaffold.
+ */
 struct BriefingActionElementTarget : BriefingAction {
     HudUiElement *target;
 };
@@ -210,15 +217,59 @@ inline HudUiBriefingLocatorPanel *BriefingLocatorPanel(
 
 } // namespace
 
+/**
+ * Reimplements data 0x4e5cb4: g_Briefing_Runtime.
+ * Purpose: hold the active briefing UI runtime while the mission briefing thread is alive.
+ */
 HudUiBriefingRuntime *g_Briefing_Runtime = 0;
+
+/**
+ * Reimplements data 0x4e5cb0: g_Briefing_CurrentSndHandle.
+ * Purpose: retain the currently playing briefing voice sample so later actions can stop it.
+ */
 zSndPlayHandle *g_Briefing_CurrentSndHandle = 0;
+
+/**
+ * Reimplements data 0x4e5c70: g_Briefing_SndSetName.
+ * Purpose: store the mission briefing sample-set name for thread startup and shutdown.
+ */
 char g_Briefing_SndSetName[0x40] = {0};
 extern "C" {
+
+/**
+ * Reimplements data 0x4e5c60: g_Briefing_ThreadRunFlag.
+ * Purpose: control the lifetime of the briefing update thread.
+ */
 int g_Briefing_ThreadRunFlag = 0;
+
+/**
+ * Reimplements data 0x4e5c64: g_Briefing_ThreadExitedFlag.
+ * Purpose: signal that the briefing update thread has left its loop.
+ */
 int g_Briefing_ThreadExitedFlag = 0;
+
+/**
+ * Reimplements data 0x4e5c6c: g_Briefing_SequenceActiveFlag.
+ * Purpose: expose whether the queued briefing sequence is still active.
+ */
 int g_Briefing_SequenceActiveFlag = 0;
+
+/**
+ * Reimplements data 0x4e5cb8: g_Briefing_AllowAdvanceFlag.
+ * Purpose: gate user input that can advance or halt the current briefing sequence.
+ */
 int g_Briefing_AllowAdvanceFlag = 0;
+
+/**
+ * Reimplements data 0x56bbf8: g_Briefing_SystemActiveFlag.
+ * Purpose: indicate that the briefing subsystem is currently active.
+ */
 int g_Briefing_SystemActiveFlag = 0;
+
+/**
+ * Reimplements data 0x4da24c: g_Briefing_ProgressEventCode.
+ * Purpose: track the most recent briefing sample progress event for queued waits.
+ */
 int g_Briefing_ProgressEventCode = -1;
 }
 
@@ -871,6 +922,10 @@ void ThreadMain(
                 g_Briefing_CurrentSndHandle->StopIfActive();
             }
 
+            /**
+             * Reimplements data 0x4e5cb4: g_Briefing_Runtime.
+             * Purpose: snapshot the active runtime while input cancellation resets the visible panels.
+             */
             HudUiBriefingRuntime *const runtime = g_Briefing_Runtime;
             Briefing_ActionQueue *const actionQueue = BriefingActionQueue(runtime);
             actionQueue->sequenceActive = 0;
@@ -933,6 +988,10 @@ void __fastcall StopAndShutdownThread(
         } while (g_Briefing_SequenceActiveFlag != 0);
     }
 
+    /**
+     * Reimplements data 0x4e5c64: g_Briefing_ThreadExitedFlag.
+     * Purpose: preserve the pre-stop thread-exit state before clearing the run flag.
+     */
     const int threadExited = g_Briefing_ThreadExitedFlag;
     g_Briefing_ThreadRunFlag = 0;
     if (threadExited == 0) {
@@ -941,6 +1000,10 @@ void __fastcall StopAndShutdownThread(
         } while (g_Briefing_ThreadExitedFlag == 0);
     }
 
+    /**
+     * Reimplements data 0x4e5cb4: g_Briefing_Runtime.
+     * Purpose: destroy and clear the active runtime after the briefing thread has stopped.
+     */
     HudUiBriefingRuntime *const runtime = g_Briefing_Runtime;
     if (runtime != 0) {
         runtime->Destructor();

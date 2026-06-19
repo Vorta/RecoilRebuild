@@ -129,43 +129,21 @@ int g_zTimedTask_ActiveCount = 0;
 int g_HudCmdMouseDebounceFrames = 0;
 zVidImagePartial *g_HudUiWidget_ExclusiveDrawImage = 0;
 HudUiMgrData g_HudUiMgr;
-HudUiTimerPanel *g_HudUiMgrTimerPanel = 0;
-HudUiTimerPanelFloat *g_HudUiMgrTimerPanelFloat = 0;
 HudUiStringMenu *g_HudUiMgrStringMenu = 0;
-HudUiStatsListElement *g_HudUiMgrStatsList = 0;
 zSndSample *g_HudUi_PowerupSample = 0;
 unsigned char g_HudUi_PowerupSampleInitFlags = 0;
 extern "C" {
 HudUiMgrSensorTrackList g_HudUiMgrSensor_TrackList = {0};
 }
 zVidImagePartial *g_HudUiMgrSensorTargetMarkerImages[5] = {0};
-HudUiMessage g_HudUiMgrMessages[10];
-int g_HudUiMgrActiveWeaponMessageIndex = 0;
-int g_HudUiMgrActiveWeaponSideIndex = 0;
-HudUiCounter g_HudUiMgrModeCounters[4];
-HudUiSlot g_HudUiMgrWeaponSlots[32];
 HudUiSlot *g_HudUiMgrSensorTrackedProgressSlot = 0;
 int g_HudUiMgrSensorRoundRobinTrackIndex = 0;
 HudUiRect g_HudUiMgrSensor_FxRectScratch = {0};
-int g_HudUiMgrActiveModeCounterIndex = 0;
 int g_HudUiMgrSensorTargetMarkerCount = 0;
-int g_HudUiMgrWeaponState = 0;
 HudUiNetGameSetupOverlayOwner g_HudUiNetGameSetupOverlayOwner;
-int g_HudUiMgrStatsListState1 = 0;
-int g_HudUiMgrStatsListState2 = 0;
-int g_HudUiMgrStatsListState3 = 0;
-int g_HudUiMgrStatsListState5 = 0;
-HudUiMgrSensorBlock g_HudUiMgrSensorBlock = {0};
 HudUiRect g_HudUiMgrSensorFxRect = {0};
 int g_HudUiMgrSensorFxViewportWidth = 0;
 int g_HudUiMgrSensorFxViewportHeight = 0;
-int g_HudUiMgrReticleSnapRadiusSq = 0;
-float g_HudUiLoadingCheckpointRawProgress[19] = {0};
-float g_HudUiLoadingCheckpointProgress[19] = {0};
-float g_HudUiLoadingCheckpointProgressScale = 0.0186219737f;
-unsigned int g_HudUiLoadingCheckpointMaxIndex = 0;
-unsigned int g_HudUiLoadingCheckpointCurrentIndex = 0;
-float g_HudUiLoadingCheckpointCurrentProgress = 0.0f;
 HudLayoutHW g_HudLayoutHW;
 HudLayoutSW g_HudLayoutSW;
 HudUiTextStack4 *g_HudUiChatMessageStack = 0;
@@ -177,13 +155,93 @@ int g_HudUiMgrObjectiveChatComposeActive = 0;
 HudUiWidget g_HudUiMgrSensorPanel;
 HudUiWidget g_HudUiMgrSensorOverlay;
 HudUiMeter g_HudUiMgrSensorMeter;
-HudUiBar g_HudUiMgrTailBar;
 int g_HudUi_AuxOverlayEnabled = 0;
 // BN identifies 0x4e5df0 as an eight-byte BSS HudCmdDialogState object.
 // VC5 emits the 0x40bc20/0x40bc30/0x40bc40/0x40bc50 static init and at-exit
 // thunks from this global object.
 HudCmdDialogState g_HudCmdDialogState;
 CString g_HudUiTripletWndClassName("");
+
+/**
+ * Reimplements data 0x4dac00: g_HudUiOptionsPanel_ResolutionCycleNodeName.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: name the ZRD resolution selector node bound by HudOptionsDialog.
+ */
+char g_HudUiOptionsPanel_ResolutionCycleNodeName[] = "RESOLUTION_CYCLE";
+/**
+ * Reimplements data 0x4dac14: g_HudUiOptionsPanel_MusicVolumeWidgetNodeName.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: name the ZRD music-volume widget node bound by HudOptionsDialog.
+ */
+char g_HudUiOptionsPanel_MusicVolumeWidgetNodeName[] = "MUSIC_VOLUME";
+/**
+ * Reimplements data 0x4dac24: g_HudUiOptionsPanel_MusicEnableToggleNodeName.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: name the ZRD music-enable toggle node bound by HudOptionsDialog.
+ */
+char g_HudUiOptionsPanel_MusicEnableToggleNodeName[] = "MUSIC_ENABLE";
+/**
+ * Reimplements data 0x4dac34: g_HudUiOptionsPanel_SoundVolumeWidgetNodeName.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: name the ZRD sound-volume widget node bound by HudOptionsDialog.
+ */
+char g_HudUiOptionsPanel_SoundVolumeWidgetNodeName[] = "SOUND_VOLUME";
+/**
+ * Reimplements data 0x4dac44: g_HudUiOptionsPanel_SoundQualitySelectorNodeName.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: name the ZRD sound-quality selector node bound by HudOptionsDialog.
+ */
+char g_HudUiOptionsPanel_SoundQualitySelectorNodeName[] = "SOUND_QUALITY";
+/**
+ * Reimplements data 0x4dac54: g_HudUiOptionsPanel_SoundActiveToggleNodeName.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: name the ZRD sound-active toggle node bound by HudOptionsDialog.
+ */
+char g_HudUiOptionsPanel_SoundActiveToggleNodeName[] = "SOUND_ACTIVE";
+/**
+ * Reimplements data 0x4dac64: g_EffectsZrdNodeName
+ * (BN: g_HudUiOptionsPanel_EffectsNodeName).
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: name the shared EFFECTS ZRD node consumed by HudOptionsDialog and
+ * zEffect::InitFromPath.
+ */
+char g_EffectsZrdNodeName[8] = "EFFECTS";
+/**
+ * Reimplements data 0x4dac6c: g_HudUiOptionsPanel_TextureMemorySelectorNodeName.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: name the ZRD texture-memory selector node bound by HudOptionsDialog.
+ */
+char g_HudUiOptionsPanel_TextureMemorySelectorNodeName[] = "TEXTURE_MEMORY";
+/**
+ * Reimplements data 0x4dac7c: g_HudUiOptionsPanel_ObjectDetailSelectorNodeName.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: name the ZRD object-detail selector node bound by HudOptionsDialog.
+ */
+char g_HudUiOptionsPanel_ObjectDetailSelectorNodeName[] = "OBJECT_DETAIL";
+/**
+ * Reimplements data 0x4dac8c: g_HudUiOptionsPanel_FullHudToggleNodeName.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: name the ZRD full-HUD toggle node bound by HudOptionsDialog.
+ */
+char g_HudUiOptionsPanel_FullHudToggleNodeName[] = "FULLHUD";
+/**
+ * Reimplements data 0x4dac94: g_HudUiOptionsPanel_PerspectiveToggleNodeName.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: name the ZRD perspective toggle node bound by HudOptionsDialog.
+ */
+char g_HudUiOptionsPanel_PerspectiveToggleNodeName[] = "PERSPECTIVE";
+/**
+ * Reimplements data 0x4daca0: g_HudUiOptionsPanel_LightingToggleNodeName.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: name the ZRD lighting toggle node bound by HudOptionsDialog.
+ */
+char g_HudUiOptionsPanel_LightingToggleNodeName[] = "LIGHTING";
+/**
+ * Reimplements data 0x4dacac: g_HudUiOptionsPanel_SectionName.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: name the ZRD options-panel section loaded by HudOptionsDialog.
+ */
+char g_HudUiOptionsPanel_SectionName[] = "OPTIONSPANEL";
 
 // Reimplements 0x40ec90: HudLayoutBase::Shutdown_Stub
 void HudLayoutBase::Shutdown_Stub() {
@@ -3052,7 +3110,11 @@ void Update() {
 } // namespace HudUiMgrObjective
 
 namespace HudUiLoadingCheckpoint {
-// Reimplements 0x414180: HudUiLoadingCheckpoint::AdvanceAndLog
+/**
+ * Reimplements 0x414180: HudUiLoadingCheckpoint::AdvanceAndLog.
+ * Purpose: advance the embedded HudUiMgr loading checkpoint table, report
+ * overflow, optionally log the supplied message, and update briefing progress.
+ */
 void __fastcall AdvanceAndLog(
     const char *messageOrNull
 ) {
@@ -3083,7 +3145,11 @@ void __fastcall AdvanceAndLog(
     Briefing::SetProgressAndSleep(g_HudUiLoadingCheckpointCurrentProgress);
 }
 
-// Reimplements 0x414210: HudUiLoadingCheckpoint::InitTable
+/**
+ * Reimplements 0x414210: HudUiLoadingCheckpoint::InitTable.
+ * Purpose: seed the embedded HudUiMgr loading checkpoint table and derive
+ * normalized briefing progress from the retail checkpoint second values.
+ */
 void InitTable() {
     static const float kRawProgress[] = {
         0.00100000005f,
@@ -3107,7 +3173,7 @@ void InitTable() {
         53.7000008f,
     };
 
-    g_HudUiLoadingCheckpointMaxIndex = 0x12;
+    g_HudUiLoadingCheckpointMaxIndex = 18;
     g_HudUiLoadingCheckpointCurrentIndex = 0;
     {
         for (unsigned int index = 0; index <= g_HudUiLoadingCheckpointMaxIndex; ++index) {
@@ -3280,11 +3346,11 @@ void HudUiApplyStatsTripletInt3(
 } // namespace
 
 namespace HudUiMgr {
-// Reimplements 0x40d7e0: HudUiMgr::Constructor (D:\Proj\Battlesport\hud.cpp)
-//
-// The retail binary stores these members in one contiguous HudUiMgr object. The
-// current source model exposes the same subobjects as recovered globals; this
-// constructor preserves the observed construction order and table installs.
+/**
+ * Reimplements 0x40d7e0: HudUiMgr::Constructor (D:\Proj\Battlesport\hud.cpp).
+ * Purpose: construct the contiguous HudUiMgr singleton subobjects in retail
+ * order, including the embedded tail bar at the end of the object.
+ */
 HudUiContainer *__fastcall Constructor(
     HudUiContainer *self
 ) {
@@ -11501,8 +11567,11 @@ HudUiBackground * HudCmdDialog::ScalarDeletingDestructor(
     return this;
 }
 
-// Reimplements 0x40c6e0: HudUiOptionsPanelBackButton::OnActivate
-// (D:\Proj\Battlesport\HudOptionsDialog.cpp)
+/**
+ * Reimplements 0x40c6e0: HudUiOptionsPanelBackButton::OnActivate.
+ * Original source path: D:\Proj\Battlesport\HudOptionsDialog.cpp.
+ * Purpose: store the selected HUD type and leave the options panel.
+ */
 void HudUiOptionsPanelBackButton::OnActivate() {
     HudOptionsDialog *const ownerDialog = (HudOptionsDialog *)(owner);
     const int hudType = ownerDialog->fullHudToggle.checked != 0 ? ZOPT_HUD_TYPE_PERSPECTIVE
@@ -11513,28 +11582,11 @@ void HudUiOptionsPanelBackButton::OnActivate() {
     HudUiZrdWidget::OnActivate();
 }
 
-void HudUiOptionsPanel_Lighting::OnActivate() {
-    SyncFromOptions();
-}
-
-// Source-faithful helper recovered from address-backed callers in this source file.
-void HudUiOptionsPanel_Lighting::PostLoadFromZrd() {
-    InitFromOptions();
-}
-
 /**
- * Reimplements 0x40c9c0: HudUiOptionsPanel_Lighting::InitFromOptions.
- * Purpose: synchronize the lighting toggle from the active hardware-mode graphics flags.
- */
-void HudUiOptionsPanel_Lighting::InitFromOptions() {
-    SetChecked(zOpt::GetGraphicsFlagsForCurrentHwMode() & ZOPT_GRAPHICS_GLOBAL_LIGHT);
-}
-
-/**
- * Reimplements 0x40c9e0: HudUiOptionsPanel_Lighting::SyncFromOptions.
+ * Reimplements 0x40c9e0: HudUiOptionsPanel_Lighting::OnActivate.
  * Purpose: toggle the global lighting graphics flag from the lighting checkbox.
  */
-void HudUiOptionsPanel_Lighting::SyncFromOptions() {
+void HudUiOptionsPanel_Lighting::OnActivate() {
     const int flags = zOpt::GetGraphicsFlagsForCurrentHwMode();
     HudUiCheckToggleWidget::OnActivate();
     zOpt::SetGraphicsFlagsForCurrentHwMode(
@@ -11542,21 +11594,54 @@ void HudUiOptionsPanel_Lighting::SyncFromOptions() {
     );
 }
 
-void HudUiOptionsPanel_Perspective::OnActivate() {
-    SyncFromOptions();
-}
-
-// Source-faithful helper recovered from address-backed callers in this source file.
-void HudUiOptionsPanel_Perspective::PostLoadFromZrd() {
-    InitFromOptions();
+/**
+ * Reimplements 0x40c9c0: HudUiOptionsPanel_Lighting::PostLoadFromZrd.
+ * Purpose: synchronize the lighting toggle from the active hardware-mode graphics flags.
+ */
+void HudUiOptionsPanel_Lighting::PostLoadFromZrd() {
+    SetChecked(zOpt::GetGraphicsFlagsForCurrentHwMode() & ZOPT_GRAPHICS_GLOBAL_LIGHT);
 }
 
 /**
- * Reimplements 0x40ca20: HudUiOptionsPanel_Perspective::InitFromOptions.
+ * Recovered compatibility helper for HudUiOptionsPanel_Lighting::PostLoadFromZrd.
+ * Purpose: synchronize the lighting toggle from the active hardware-mode graphics flags.
+ */
+void HudUiOptionsPanel_Lighting::InitFromOptions() {
+    HudUiOptionsPanel_Lighting::PostLoadFromZrd();
+}
+
+/**
+ * Recovered compatibility helper for HudUiOptionsPanel_Lighting::OnActivate.
+ * Purpose: toggle the global lighting graphics flag from the lighting checkbox.
+ */
+void HudUiOptionsPanel_Lighting::SyncFromOptions() {
+    HudUiOptionsPanel_Lighting::OnActivate();
+}
+
+/**
+ * Recovered compatibility wrapper for HudUiOptionsPanel_Perspective::SyncFromOptions.
+ * No standalone retail function is assigned to this wrapper; 0x40ca40 is the
+ * address-backed option-sync body in this owner cluster.
+ * Purpose: route activation through the recovered perspective option sync.
+ */
+void HudUiOptionsPanel_Perspective::OnActivate() {
+    HudUiOptionsPanel_Perspective::SyncFromOptions();
+}
+
+/**
+ * Reimplements 0x40ca20: HudUiOptionsPanel_Perspective::PostLoadFromZrd.
+ * Purpose: synchronize the perspective toggle from the active hardware-mode graphics flags.
+ */
+void HudUiOptionsPanel_Perspective::PostLoadFromZrd() {
+    SetChecked(zOpt::GetGraphicsFlagsForCurrentHwMode() & ZOPT_GRAPHICS_PERSPECTIVE);
+}
+
+/**
+ * Recovered compatibility helper for HudUiOptionsPanel_Perspective::PostLoadFromZrd.
  * Purpose: synchronize the perspective toggle from the active hardware-mode graphics flags.
  */
 void HudUiOptionsPanel_Perspective::InitFromOptions() {
-    SetChecked(zOpt::GetGraphicsFlagsForCurrentHwMode() & ZOPT_GRAPHICS_PERSPECTIVE);
+    HudUiOptionsPanel_Perspective::PostLoadFromZrd();
 }
 
 /**
@@ -11572,34 +11657,46 @@ void HudUiOptionsPanel_Perspective::SyncFromOptions() {
     zRndr::SelectSpanRoutines();
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
-void HudUiOptionsPanel_FullHud::PostLoadFromZrd() {
-    InitFromOptions();
-}
-
 /**
- * Reimplements 0x40ca80: HudUiOptionsPanel_FullHud::InitFromOptions.
+ * Reimplements 0x40ca80: HudUiOptionsPanel_FullHud::PostLoadFromZrd.
  * Purpose: synchronize the full-HUD toggle from the active hardware-mode HUD type.
  */
-void HudUiOptionsPanel_FullHud::InitFromOptions() {
+void HudUiOptionsPanel_FullHud::PostLoadFromZrd() {
     SetChecked(zOpt::GetHudTypeForCurrentHwMode() == ZOPT_HUD_TYPE_PERSPECTIVE);
 }
 
-void HudUiOptionsPanel_ObjectDetail::OnActivate() {
-    SyncFromOptions();
-}
-
-// Source-faithful helper recovered from address-backed callers in this source file.
-void HudUiOptionsPanel_ObjectDetail::PostLoadFromZrd() {
-    InitFromOptions();
+/**
+ * Recovered compatibility helper for HudUiOptionsPanel_FullHud::PostLoadFromZrd.
+ * Purpose: synchronize the full-HUD toggle from the active hardware-mode HUD type.
+ */
+void HudUiOptionsPanel_FullHud::InitFromOptions() {
+    HudUiOptionsPanel_FullHud::PostLoadFromZrd();
 }
 
 /**
- * Reimplements 0x40cab0: HudUiOptionsPanel_ObjectDetail::InitFromOptions.
+ * Recovered compatibility wrapper for HudUiOptionsPanel_ObjectDetail::SyncFromOptions.
+ * No standalone retail function is assigned to this wrapper; 0x40cad0 is the
+ * address-backed option-sync body in this owner cluster.
+ * Purpose: route activation through the recovered object-detail option sync.
+ */
+void HudUiOptionsPanel_ObjectDetail::OnActivate() {
+    HudUiOptionsPanel_ObjectDetail::SyncFromOptions();
+}
+
+/**
+ * Reimplements 0x40cab0: HudUiOptionsPanel_ObjectDetail::PostLoadFromZrd.
+ * Purpose: synchronize the object detail selector from the active hardware-mode object LOD.
+ */
+void HudUiOptionsPanel_ObjectDetail::PostLoadFromZrd() {
+    SetIndexClamped(zOpt::GetObjectLODForCurrentHwMode());
+}
+
+/**
+ * Recovered compatibility helper for HudUiOptionsPanel_ObjectDetail::PostLoadFromZrd.
  * Purpose: synchronize the object detail selector from the active hardware-mode object LOD.
  */
 void HudUiOptionsPanel_ObjectDetail::InitFromOptions() {
-    SetIndexClamped(zOpt::GetObjectLODForCurrentHwMode());
+    HudUiOptionsPanel_ObjectDetail::PostLoadFromZrd();
 }
 
 /**
@@ -11949,12 +12046,15 @@ void HudUiOptionsPanel_Resolution::OnActivate() {
     }
 }
 
-// Reimplements 0x40c720: HudOptionsDialog::HudOptionsDialog
-// (D:\Proj\Battlesport\HudOptionsDialog.cpp)
+/**
+ * Reimplements 0x40c720: HudOptionsDialog::HudOptionsDialog.
+ * Original source path: D:\Proj\Battlesport\HudOptionsDialog.cpp.
+ * Purpose: construct the options dialog widget tree and bind each ZRD panel control.
+ */
 HudOptionsDialog::HudOptionsDialog() : HudUiBackground() {
     zReader::Node *const loadedSection = LoadFromZrd(
         "dialog.zrd",
-        "OPTIONSPANEL",
+        g_HudUiOptionsPanel_SectionName,
         0
     );
     if (loadedSection != 0) {
@@ -11966,62 +12066,62 @@ HudOptionsDialog::HudOptionsDialog() : HudUiBackground() {
         BindWidgetByName(
             loadedSection,
             &lightingToggle,
-            "LIGHTING"
+            g_HudUiOptionsPanel_LightingToggleNodeName
         );
         BindWidgetByName(
             loadedSection,
             &perspectiveToggle,
-            "PERSPECTIVE"
+            g_HudUiOptionsPanel_PerspectiveToggleNodeName
         );
         BindWidgetByName(
             loadedSection,
             &fullHudToggle,
-            "FULLHUD"
+            g_HudUiOptionsPanel_FullHudToggleNodeName
         );
         BindWidgetByName(
             loadedSection,
             &objectDetailSelector,
-            "OBJECT_DETAIL"
+            g_HudUiOptionsPanel_ObjectDetailSelectorNodeName
         );
         BindWidgetByName(
             loadedSection,
             &textureMemorySelector,
-            "TEXTURE_MEMORY"
+            g_HudUiOptionsPanel_TextureMemorySelectorNodeName
         );
         BindWidgetByName(
             loadedSection,
             &effectsSelector,
-            "EFFECTS"
+            g_EffectsZrdNodeName
         );
         BindWidgetByName(
             loadedSection,
             &soundActiveToggle,
-            "SOUND_ACTIVE"
+            g_HudUiOptionsPanel_SoundActiveToggleNodeName
         );
         BindWidgetByName(
             loadedSection,
             &soundQualitySelector,
-            "SOUND_QUALITY"
+            g_HudUiOptionsPanel_SoundQualitySelectorNodeName
         );
         BindWidgetByName(
             loadedSection,
             &soundVolumeWidget,
-            "SOUND_VOLUME"
+            g_HudUiOptionsPanel_SoundVolumeWidgetNodeName
         );
         BindWidgetByName(
             loadedSection,
             &musicEnableToggle,
-            "MUSIC_ENABLE"
+            g_HudUiOptionsPanel_MusicEnableToggleNodeName
         );
         BindWidgetByName(
             loadedSection,
             &musicVolumeWidget,
-            "MUSIC_VOLUME"
+            g_HudUiOptionsPanel_MusicVolumeWidgetNodeName
         );
         BindWidgetByName(
             loadedSection,
             &resolutionSelector,
-            "RESOLUTION_CYCLE"
+            g_HudUiOptionsPanel_ResolutionCycleNodeName
         );
         FreeLoadedTreeRoots((int)(unsigned int)loadedSection);
     }
@@ -12050,9 +12150,10 @@ void HudOptionsDialog::DestructorCore() {
 }
 
 /**
- * Reimplements 0x40cf00: HudOptionsDialog::ScalarDeletingDestructor.
- * Original source path: D:\Proj\Battlesport\HudOptionsDialog.cpp.
- * Purpose: Run options dialog teardown and optionally free the dialog storage.
+ * Provider-boundary compatibility entry for the HudOptionsDialog scalar
+ * deleting destructor. The plan classifies 0x40cf00 as compiler-generated VC++
+ * glue, not authored HudOptionsDialog source.
+ * Purpose: run options dialog teardown and optionally free the dialog storage.
  */
 HudUiBackground * HudOptionsDialog::ScalarDeletingDestructor(
     unsigned int flags

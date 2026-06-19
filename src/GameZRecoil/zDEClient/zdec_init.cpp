@@ -19,11 +19,38 @@
 #include <string.h>
 #include <time.h>
 
+/**
+ * Reimplements data 0x539d10: g_zDEClient_QuickSandEnabled.
+ * Purpose: Tracks whether quicksand runtime globals were initialized and need
+ * shutdown cleanup.
+ */
 int g_zDEClient_QuickSandEnabled = 0;
+/**
+ * Reimplements data 0x539d14: g_zDEClient_QuickSandTextureCount.
+ * Purpose: Stores the configured quicksand texture-cycle path count.
+ */
 int g_zDEClient_QuickSandTextureCount = 0;
+/**
+ * Reimplements data 0x539d18: g_zDEClient_QuickSandAnimSpeed.
+ * Purpose: Stores the quicksand material cycle animation speed.
+ */
 float g_zDEClient_QuickSandAnimSpeed = 0.0f;
+/**
+ * Reimplements data 0x539d1c: g_zDEClient_QuickSandTexturePaths.
+ * Purpose: Owns the quicksand texture path pointer array allocated from
+ * declient.zrd configuration.
+ */
 char **g_zDEClient_QuickSandTexturePaths = 0;
+/**
+ * Reimplements data 0x539d24: g_zDEClient_QuickSandMaterial.
+ * Purpose: Caches the quicksand material used by generated terrain features.
+ */
 zModel_MaterialPartial *g_zDEClient_QuickSandMaterial = 0;
+/**
+ * Reimplements data 0x539d28: g_zDEClient_QuickSandMaterialCycle.
+ * Purpose: Caches the quicksand cycle material used while feature textures
+ * animate.
+ */
 zModel_MaterialPartial *g_zDEClient_QuickSandMaterialCycle = 0;
 zDEClient_QSandEventTemplate g_zDEClient_QuickSandEventTemplateDefaults = {0};
 /**
@@ -41,14 +68,54 @@ zDEClient_CraterDisplaySourceEntry *g_zDEClient_CraterDisplaySourceList = 0;
  * Purpose: Stores g zDEClient CraterEventTemplateDefaults data used by engine.zeffect.zdeclient_crater_event_template_defaults.
  */
 zDEClient_CraterEventTemplate g_zDEClient_CraterEventTemplateDefaults = {0};
+/**
+ * Reimplements data 0x539de0: g_zDEClient_ConfigReaderRoot.
+ * Purpose: Holds the transient declient.zrd reader tree while config
+ * resources are loaded.
+ */
 zReader::Node *g_zDEClient_ConfigReaderRoot = 0;
+/**
+ * Reimplements data 0x4df3c4: g_zDEClient_RebuildBltRectOnReload.
+ * Purpose: Enables zDEClient ZAR reload handler registration after config
+ * load completes.
+ */
 int g_zDEClient_RebuildBltRectOnReload = 1;
+/**
+ * Reimplements data 0x539df0: g_zDEClient_FeatureListFlags.
+ * Purpose: Stores the feature entry vector initialization flag byte.
+ */
 int g_zDEClient_FeatureListFlags = 0;
+/**
+ * Reimplements data 0x539df4: g_zDEClient_FeatureListBegin.
+ * Purpose: Marks the beginning of the zDEClient feature-entry vector.
+ */
 zDEClient_FeatureEntry *g_zDEClient_FeatureListBegin = 0;
+/**
+ * Reimplements data 0x539df8: g_zDEClient_FeatureListEnd.
+ * Purpose: Marks the active end of the zDEClient feature-entry vector.
+ */
 zDEClient_FeatureEntry *g_zDEClient_FeatureListEnd = 0;
+/**
+ * Reimplements data 0x539dfc: g_zDEClient_FeatureListCapacityEnd.
+ * Purpose: Marks the allocated capacity end of the zDEClient feature-entry
+ * vector.
+ */
 zDEClient_FeatureEntry *g_zDEClient_FeatureListCapacityEnd = 0;
+/**
+ * Reimplements data 0x539e00: g_zDEClient_FeatureMapTree.
+ * Purpose: Owns the map-tree index from feature display nodes to their
+ * generated display-instance pairs.
+ */
 zDEClient_MapTreeState g_zDEClient_FeatureMapTree = {0};
+/**
+ * Reimplements data 0x539e10: g_zDEClient_FeatureMapTreeNil.
+ * Purpose: Stores the shared nil sentinel for zDEClient map-tree instances.
+ */
 zDEClient_MapTreeNode *g_zDEClient_FeatureMapTreeNil = 0;
+/**
+ * Reimplements data 0x539e14: g_zDEClient_FeatureMapTreeNilRefCount.
+ * Purpose: Reference-counts the shared map-tree nil sentinel.
+ */
 int g_zDEClient_FeatureMapTreeNilRefCount = 0;
 /**
  * Reimplements data 0x539e18: g_zDEClient_CameraNode.
@@ -73,7 +140,14 @@ zDEClient_NetRelayCallback g_zDEClientCraterNetRelayCallback = 0;
 
 namespace {
 template <typename T>
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered original inlined helper for zdec_init.cpp.
+ * No standalone retail function is present; observed caller is 0x4558f0
+ * zDEClient::LoadConfigResources where typed ZAR callbacks are passed through
+ * raw section callback slots.
+ * Purpose: preserve VC5 function-pointer storage while registering zDEClient
+ * ZAR section callbacks.
+ */
 zZbdSectionCallback ZbdCallbackPtr(
     T callback
 ) {
@@ -86,14 +160,24 @@ zZbdSectionCallback ZbdCallbackPtr(
     return value.raw;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered original inlined helper for zdec_init.cpp.
+ * No standalone retail function is present; observed callers are zDEClient
+ * map-tree methods 0x457d90, 0x457e80, 0x457fe0, 0x458510, and 0x4585a0.
+ * Purpose: test for the shared nil sentinel used by the zDEClient map tree.
+ */
 bool IsNil(
     const zDEClient_MapTreeNode *node
 ) {
     return node == 0 || node == g_zDEClient_FeatureMapTreeNil;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered original inlined helper for zdec_init.cpp.
+ * No standalone retail function is present; observed callers are 0x457d90,
+ * 0x457e80, 0x457fe0, 0x458510, and 0x4585a0.
+ * Purpose: return the leftmost non-nil node in a feature map-tree subtree.
+ */
 zDEClient_MapTreeNode *TreeMinimum(
     zDEClient_MapTreeNode *node
 ) {
@@ -104,7 +188,12 @@ zDEClient_MapTreeNode *TreeMinimum(
     return node;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered original inlined helper for zdec_init.cpp.
+ * No standalone retail function is present; observed callers are 0x457d90,
+ * 0x457e80, 0x457fe0, 0x458510, and 0x4585a0.
+ * Purpose: return the rightmost non-nil node in a feature map-tree subtree.
+ */
 zDEClient_MapTreeNode *TreeMaximum(
     zDEClient_MapTreeNode *node
 ) {
@@ -115,7 +204,12 @@ zDEClient_MapTreeNode *TreeMaximum(
     return node;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered original inlined helper for zdec_init.cpp.
+ * No standalone retail function is present; observed caller is 0x4585a0
+ * zDEClient_MapTreeState::InsertAt.
+ * Purpose: rotate a feature map-tree branch left during insertion fixup.
+ */
 void RotateTreeLeft(
     zDEClient_MapTreeState *tree,
     zDEClient_MapTreeNode *node
@@ -139,7 +233,12 @@ void RotateTreeLeft(
     node->parent = pivot;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered original inlined helper for zdec_init.cpp.
+ * No standalone retail function is present; observed caller is 0x4585a0
+ * zDEClient_MapTreeState::InsertAt.
+ * Purpose: rotate a feature map-tree branch right during insertion fixup.
+ */
 void RotateTreeRight(
     zDEClient_MapTreeState *tree,
     zDEClient_MapTreeNode *node
@@ -163,7 +262,12 @@ void RotateTreeRight(
     node->parent = pivot;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered original inlined helper for zdec_init.cpp.
+ * No standalone retail function is present; observed callers are map-tree
+ * erase and initialization paths in this source file.
+ * Purpose: reset the map-tree header to the empty-tree state.
+ */
 void ResetHeader(
     zDEClient_MapTreeState *tree
 ) {
@@ -176,7 +280,12 @@ void ResetHeader(
     tree->header->right = tree->header;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered original inlined helper for zdec_init.cpp.
+ * No standalone retail function is present; observed caller is 0x457fe0
+ * zDEClient_MapTreeState::EraseAndAdvance.
+ * Purpose: replace one map-tree node link with another during erase.
+ */
 void Transplant(
     zDEClient_MapTreeState *tree,
     zDEClient_MapTreeNode *oldNode,
@@ -195,7 +304,12 @@ void Transplant(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered original inlined helper for zdec_init.cpp.
+ * No standalone retail function is present; observed callers are map-tree
+ * erase paths 0x457e80 and 0x457fe0.
+ * Purpose: refresh cached leftmost and rightmost header links after erase.
+ */
 void RefreshHeaderExtents(
     zDEClient_MapTreeState *tree
 ) {
@@ -209,7 +323,12 @@ void RefreshHeaderExtents(
     tree->header->right = TreeMaximum(root);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered original inlined helper for zdec_init.cpp.
+ * No standalone retail function is present; observed caller is 0x457d90
+ * zDEClient_MapTreeState::FindOrInsertKey.
+ * Purpose: lazily allocate the feature map-tree header and shared nil node.
+ */
 void EnsureFeatureMapTreeInitialized(
     zDEClient_MapTreeState *tree
 ) {
@@ -236,7 +355,12 @@ void EnsureFeatureMapTreeInitialized(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered original inlined helper for zdec_init.cpp.
+ * No standalone retail function is present; observed caller is 0x4558f0
+ * zDEClient::LoadConfigResources.
+ * Purpose: read the element count stored at the front of a zReader array node.
+ */
 int zReaderArrayCount(
     zReader::Node *node
 ) {
@@ -247,7 +371,12 @@ int zReaderArrayCount(
     return node->value.nodes[0].value.i32;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered original inlined helper for zdec_init.cpp.
+ * No standalone retail function is present; observed caller is 0x4558f0
+ * zDEClient::LoadConfigResources.
+ * Purpose: read a string element from a zReader array node.
+ */
 char *zReaderArrayString(
     zReader::Node *node,
     int index
@@ -1979,8 +2108,11 @@ void zDEClient_MapTreeState::Destroy() {
 }
 
 namespace zDEClient {
-// Reimplements 0x457650: zDEClient::InitFeatureSystem
-// (D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp)
+/**
+ * Reimplements 0x457650: zDEClient::InitFeatureSystem.
+ * Original source path: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp.
+ * Purpose: initialize feature-entry storage and register shutdown cleanup.
+ */
 void InitFeatureSystem() {
     InitFeatureEntryListAndMapTree();
     RegisterFeatureSystemCleanupAtExit();
@@ -2006,14 +2138,21 @@ void InitFeatureEntryListAndMapTree() {
     g_zDEClient_FeatureListCapacityEnd = 0;
 }
 
-// Reimplements 0x4576a0: zDEClient::RegisterFeatureSystemCleanupAtExit
-// (D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp)
+/**
+ * Reimplements 0x4576a0: zDEClient::RegisterFeatureSystemCleanupAtExit.
+ * Original source path: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp.
+ * Purpose: register feature-system shutdown with the CRT atexit list.
+ */
 void RegisterFeatureSystemCleanupAtExit() {
     atexit(ShutdownFeatureSystem);
 }
 
-// Reimplements 0x4576b0: zDEClient::ShutdownFeatureSystem
-// (D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp)
+/**
+ * Reimplements 0x4576b0: zDEClient::ShutdownFeatureSystem.
+ * Original source path: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp.
+ * Purpose: release feature-entry vector storage and destroy the feature map
+ * tree.
+ */
 void ShutdownFeatureSystem() {
     ::operator delete(g_zDEClient_FeatureListBegin);
     g_zDEClient_FeatureListBegin = 0;
@@ -2040,8 +2179,12 @@ void __fastcall CopyQSandEventTemplateDefaults(
     );
 }
 
-// Reimplements 0x4558f0: zDEClient::LoadConfigResources
-// (D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp)
+/**
+ * Reimplements 0x4558f0: zDEClient::LoadConfigResources.
+ * Original source path: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp.
+ * Purpose: load declient.zrd crater and quicksand resource defaults, bind the
+ * active camera, and register feature reload callbacks.
+ */
 int __fastcall LoadConfigResources(
     zClass_NodePartial *worldNode
 ) {
@@ -2335,8 +2478,12 @@ int __fastcall LoadConfigResources(
     return 0;
 }
 
-// Reimplements 0x455dd0: zDEClient::LoadMaterialFromTexturePath_Local
-// (D:\Proj\GameZRecoil\zDEClient\zdec_init.c)
+/**
+ * Reimplements 0x455dd0: zDEClient::LoadOrCreateMaterialFromTexturePath.
+ * Original source path: D:\Proj\GameZRecoil\zDEClient\zdec_init.c.
+ * Purpose: resolve or create a material for a texture path and report whether
+ * the texture directory entry still needs loading.
+ */
 RECOIL_NO_GS int __fastcall LoadMaterialFromTexturePath_Local(
     zModel_MaterialPartial **outMaterial,
     char *texturePath
@@ -2406,8 +2553,11 @@ zClass_NodePartial *GetCameraNode() {
     return g_zDEClient_CameraNode;
 }
 
-// Reimplements 0x458a30: zDEClient::CopyFeatureEntriesForward
-// (D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp)
+/**
+ * Reimplements 0x458a30: zDEClient::CopyFeatureEntriesForward.
+ * Original source path: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp.
+ * Purpose: copy feature-entry records forward during vector growth.
+ */
 zDEClient_FeatureEntry *__stdcall CopyFeatureEntriesForward(
     zDEClient_FeatureEntry *first,
     zDEClient_FeatureEntry *last,
@@ -2425,8 +2575,11 @@ zDEClient_FeatureEntry *__stdcall CopyFeatureEntriesForward(
     return dest;
 }
 
-// Reimplements 0x458a70: zDEClient::FillFeatureEntries
-// (D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp)
+/**
+ * Reimplements 0x458a70: zDEClient::FillFeatureEntries.
+ * Original source path: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp.
+ * Purpose: fill feature-entry vector slots with a repeated feature record.
+ */
 void __stdcall FillFeatureEntries(
     zDEClient_FeatureEntry *dest,
     unsigned int count,
@@ -2534,8 +2687,12 @@ void __fastcall SubmitFeatureGeometry(
     }
 }
 
-// Reimplements 0x457b40: zDEClient::WriteFeatureSectionsToZAR
-// (D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp)
+/**
+ * Reimplements 0x457b40: zDEClient::WriteFeatureSectionsToZAR.
+ * Original source path: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp.
+ * Purpose: serialize saved crater and quicksand feature entries into ZAR
+ * sections.
+ */
 int __fastcall WriteFeatureSectionsToZAR(
     zZbdSectionCallbackCtx *callbackCtx
 ) {
@@ -2595,8 +2752,12 @@ int __fastcall WriteFeatureSectionsToZAR(
     return result;
 }
 
-// Reimplements 0x457c10: zDEClient::ApplyFeatureEntry
-// (D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp)
+/**
+ * Reimplements 0x457c10: zDEClient::ApplyFeatureEntry.
+ * Original source path: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp.
+ * Purpose: reload a serialized zDEClient feature entry or clear feature
+ * display state for a reload marker.
+ */
 void __stdcall ApplyFeatureEntry(
     zDEClient_FeatureEntry *container,
     void *,
@@ -2618,8 +2779,12 @@ void __stdcall ApplyFeatureEntry(
     }
 }
 
-// Reimplements 0x457c50: zDEClient::DispatchFeatureEventTemplates
-// (D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp)
+/**
+ * Reimplements 0x457c50: zDEClient::DispatchFeatureEventTemplates.
+ * Original source path: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp.
+ * Purpose: iterate feature-entry snapshots and dispatch crater or quicksand
+ * event templates to caller-provided handlers.
+ */
 void __fastcall DispatchFeatureEventTemplates(
     zDEClient_CraterFeatureDispatch craterHandler,
     zDEClient_QSandFeatureDispatch qSandHandler
@@ -2646,8 +2811,11 @@ void __fastcall DispatchFeatureEventTemplates(
     }
 }
 
-// Reimplements 0x457750: zDEClient::ClearFeatureDisplayNodes
-// (D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp)
+/**
+ * Reimplements 0x457750: zDEClient::ClearFeatureDisplayNodes.
+ * Original source path: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp.
+ * Purpose: reload display instances and delete generated ZDEC_FEATURE nodes.
+ */
 void ClearFeatureDisplayNodes() {
     zDEClient_MapTreeNode *header = g_zDEClient_FeatureMapTree.header;
     zDEClient_MapTreeNode *node = header->left;
@@ -2732,7 +2900,12 @@ int ClearFeatureEntriesAndMapTree() {
     return 0;
 }
 
-// Reimplements 0x455e40: zDEClient::ShutdownGlobals
+/**
+ * Reimplements 0x455e40: zDEClient::ShutdownGlobals.
+ * Original source path: D:\Proj\GameZRecoil\zDEClient\zdec_init.c.
+ * Purpose: clear feature runtime state, free loaded quicksand and crater
+ * config arrays, and mark quicksand resources shut down.
+ */
 int ShutdownGlobals() {
     if (g_zDEClient_QuickSandEnabled == 0) {
         return 0;

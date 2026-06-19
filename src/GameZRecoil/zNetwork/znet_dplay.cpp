@@ -14,38 +14,178 @@
 extern "C" HWND g_RecoilApp_hWndMain;
 
 extern "C" {
+/**
+ * Reimplements data 0x56aaf0: Symbol.
+ * Data owner: engine.znetwork.directplay_runtime_globals.
+ * Purpose: cache the active IDirectPlay4A interface for zNetwork session calls.
+ */
 zNetwork_DPlay4 *g_zNetwork_pDirectPlay4 = 0;
+/**
+ * Reimplements data 0x56aaf8: Symbol.
+ * Data owner: engine.znetwork.directplay_runtime_globals.
+ * Purpose: hold the local DirectPlay player record while joined to a session.
+ */
 zNetwork_PlayerRecord *g_zNetwork_LocalPlayerRecord = 0;
+/**
+ * Reimplements data 0x56aa30: Symbol.
+ * Data owner: engine.znetwork.directplay_runtime_globals.
+ * Purpose: cache whether the local player is the session host.
+ */
 int g_zNetwork_IsHostFlag = 0;
+/**
+ * Reimplements data 0x56aa44: Symbol.
+ * Data owner: engine.znetwork.directplay_runtime_globals.
+ * Purpose: cache the local DirectPlay player identifier.
+ */
 int g_zNetwork_LocalPlayerKey = 0;
+/**
+ * Reimplements data 0x56aa50: Symbol.
+ * Data owner: engine.znetwork.directplay_runtime_globals.
+ * Purpose: provide the fixed local player-name buffer used by DirectPlay.
+ */
 char g_zNetwork_LocalPlayerNameScratch[0x50] = {0};
+/**
+ * Reimplements data 0x56aa3c: Symbol.
+ * Data owner: engine.znetwork.directplay_runtime_globals.
+ * Purpose: select asynchronous TCP/IP sends when provider caps allow it.
+ */
 int g_zNetwork_TcpIpAsyncSendEnabled = 0;
+/**
+ * Reimplements data 0x56aa34: Symbol.
+ * Data owner: engine.znetwork.service_provider_list.
+ * Purpose: cache whether the selected DirectPlay service-provider record is modem-backed.
+ */
 int g_zNetwork_ActiveProviderIsModem = 0;
+/**
+ * Reimplements data 0x56aa38: Symbol.
+ * Data owner: engine.znetwork.directplay_runtime_globals.
+ * Purpose: cache whether the current DirectPlay provider is TCP/IP.
+ */
 int g_zNetwork_ActiveProviderIsTcpIp = 0;
+/**
+ * Reimplements data 0x56ab08: Symbol.
+ * Data owner: engine.znetwork.directplay_runtime_globals.
+ * Purpose: store DirectPlay capability bits queried for send-mode selection.
+ */
 zNetworkDPlayCaps g_zNetwork_DPlayCaps = {0};
+/**
+ * Reimplements data 0x56aa48: Symbol.
+ * Data owner: engine.znetwork.directplay_runtime_globals.
+ * Purpose: point to the application GUID used for session enumeration.
+ */
 GUID *g_zNetwork_AppGuid = 0;
+/**
+ * Reimplements data 0x4ccd78: Symbol.
+ * Data owner: engine.znetwork.directplay_runtime_globals.
+ * Purpose: hold Recoil's DirectPlay application GUID.
+ */
 GUID g_zNetwork_RecoilAppGuid = {
     0xc94ebca2,
     0x95b7,
     0x11d2,
     {0xa7, 0x7c, 0x00, 0x60, 0x08, 0x98, 0x77, 0x43}
 };
+/**
+ * Reimplements data 0x56ab00: Symbol.
+ * Data owner: engine.znetwork.session_runtime_lifecycle.
+ * Purpose: track the last asynchronous DirectPlay SendEx handle.
+ */
 unsigned int g_zNetwork_LastSendExHandle = 0;
+/**
+ * Reimplements data 0x56ab04: Symbol.
+ * Data owner: engine.znetwork.session_runtime_lifecycle.
+ * Purpose: track completion state for the last asynchronous SendEx packet.
+ */
 int g_zNetwork_LastSendExCompleted = 0;
+/**
+ * Reimplements data 0x56aa28: Symbol.
+ * Data owner: engine.znetwork.session_runtime_lifecycle.
+ * Purpose: indicate that session runtime globals have been initialized.
+ */
 int g_zNetwork_SessionRuntimeInitialized = 0;
+/**
+ * Reimplements data 0x56aaf4: Symbol.
+ * Data owner: engine.znetwork.directplay_runtime_globals.
+ * Purpose: cache the currently selected DirectPlay session descriptor.
+ */
 zNetworkDPlaySessionDescCache *g_zNetwork_CurrentSessionDescCache = 0;
+/**
+ * Reimplements data 0x56aafc: Symbol.
+ * Data owner: engine.znetwork.session_runtime_lifecycle.
+ * Purpose: store the callback invoked on fatal DirectPlay disconnect.
+ */
 zNetworkFatalDisconnectCallback g_zNetwork_FatalDisconnectCallback = 0;
+/**
+ * Reimplements data 0x56aa40: Symbol.
+ * Data owner: engine.znetwork.session_runtime_lifecycle.
+ * Purpose: prevent repeated fatal-disconnect callback dispatch.
+ */
 int g_zNetwork_FatalDisconnectTriggered = 0;
+/**
+ * Reimplements data 0x4e185c: Symbol.
+ * Data owner: engine.znetwork.directplay_runtime_globals.
+ * Purpose: mirror the cached current-player count used by system messages.
+ */
 int g_zNetworkCurrentPlayerCountCached = 1;
+/**
+ * Reimplements data 0x56aaa0: Symbol.
+ * Data owner: engine.znetwork.directplay_runtime_globals.
+ * Purpose: cache the current session name buffer for descriptor updates.
+ */
 char g_zNetwork_SessionNameCache[0x5c] = {0};
+/**
+ * Reimplements data 0x56ab30: Symbol.
+ * Data owner: engine.znetwork.session_enumeration_list.
+ * Purpose: own the archive list of enumerated session descriptors.
+ */
 zArchiveList *g_zNetwork_EnumeratedSessionList = 0;
+/**
+ * Reimplements data 0x56ab38: Symbol.
+ * Data owner: engine.znetwork.service_provider_list.
+ * Purpose: own the recovered vector of DirectPlay service-provider records.
+ */
 zNetworkServiceProviderListVec *g_zNetwork_ServiceProviderList = 0;
+/**
+ * Reimplements data 0x56ab34: Symbol.
+ * Data owner: engine.znetwork.directplay_runtime_globals.
+ * Purpose: own the recovered intrusive list of player records.
+ */
 zNetworkPlayerRecordList *g_zNetwork_PlayerRecordList = 0;
+/**
+ * Reimplements data 0x56ab3c: Symbol.
+ * Data owner: engine.znetwork.session_runtime_lifecycle.
+ * Purpose: hold the reusable DirectPlay receive buffer.
+ */
 void *g_zNetwork_ReceiveBuffer = 0;
+/**
+ * Reimplements data 0x56add4: Symbol.
+ * Data owner: engine.znetwork.session_runtime_lifecycle.
+ * Purpose: record the allocated size of the reusable receive buffer.
+ */
 unsigned int g_zNetwork_ReceiveBufferCapacity = 0;
+/**
+ * Reimplements data 0x56ad50: Symbol.
+ * Data owner: engine.znetwork.directplay_runtime_globals.
+ * Purpose: track player-color slots currently in use by the session.
+ */
 int g_zNetwork_PlayerColorInUseFlags[16] = {0};
+/**
+ * Reimplements data 0x56addc: Symbol.
+ * Data owner: engine.znetwork.directplay_runtime_globals.
+ * Purpose: point to the packet-dispatch handler list sentinel.
+ */
 zNetworkDispatchHandlerListNode *g_zNetwork_DispatchHandlerListSentinel = 0;
+/**
+ * Reimplements data 0x56ade0: Symbol.
+ * Data owner: engine.znetwork.directplay_runtime_globals.
+ * Purpose: count packet-dispatch handler list nodes.
+ */
 int g_zNetwork_DispatchHandlerListCount = 0;
+/**
+ * Reimplements data 0x56add8: Symbol.
+ * Data owner: engine.znetwork.directplay_runtime_globals.
+ * Purpose: preserve the recovered dispatch-handler list allocator flag byte.
+ */
 unsigned char g_zNetwork_DispatchHandlerListFlags = 0;
 }
 
@@ -147,11 +287,13 @@ int ReportDPlayOpenFailure(
 /**
  * Recovered local helper: AppendServiceProviderInfo.
  * Original source path: D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp.
- * Original helper evidence: no standalone retail address; used by address-backed callback
- * zNetworkDPlay::EnumConnectionsCallback_AddServiceProviderInfo at 0x48b3a0.
+ * Original helper evidence: no standalone retail address; fully inlined in
+ * zNetworkDPlay::EnumConnectionsCallback_AddServiceProviderInfo at 0x48b3a0, where BN
+ * shows the service-provider vector insertion, capacity growth, copied pointer range,
+ * and MSVC EH setup around the callback body.
  * Purpose: append a DirectPlay service-provider record to the recovered vector.
  */
-void AppendServiceProviderInfo(
+inline void AppendServiceProviderInfo(
     zNetworkDPlayServiceProviderInfo *info
 ) {
     zNetworkServiceProviderListVec *const list = g_zNetwork_ServiceProviderList;
@@ -893,8 +1035,11 @@ int RefreshServiceProviderList() {
 } // namespace zNetwork_DPlay
 
 namespace zNetworkDPlay {
-// Reimplements 0x48a130: zNetworkDPlay::RefreshAndGetServiceProviderList
-// (D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp)
+/**
+ * Reimplements 0x48a130: zNetworkDPlay::RefreshAndGetServiceProviderList.
+ * Original source path: D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp.
+ * Purpose: refresh DirectPlay service providers and return the provider vector.
+ */
 zNetworkServiceProviderListVec *RefreshAndGetServiceProviderList() {
     zNetwork_DPlay::RefreshServiceProviderList();
     return g_zNetwork_ServiceProviderList;

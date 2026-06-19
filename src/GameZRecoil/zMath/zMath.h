@@ -270,6 +270,7 @@ void zMath_Mat_Scale(
 namespace zMath {
 extern zMat4x3 g_zMath_CameraScratchB;
 extern zMat4x3 g_zMath_CameraScratchA;
+extern zVec3 g_zMath_Vec3Zero;
 extern zVec3 g_zMath_Vec3DeltaScratch;
 extern int *g_currentMatrixIdentityFlagSlot;
 extern float **g_currentMatrixPtrSlot;

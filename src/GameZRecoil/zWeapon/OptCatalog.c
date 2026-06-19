@@ -2023,9 +2023,7 @@ namespace OptCatalog {
             }
         }
 
-        runtimeInstance->aux.x = 0.0f;
-        runtimeInstance->aux.y = 0.0f;
-        runtimeInstance->aux.z = 0.0f;
+        runtimeInstance->aux = zMath::g_zMath_Vec3Zero;
         runtimeInstance->spawnGateAccum = 0.0f;
         runtimeInstance->pendingTargetA = 0;
         runtimeInstance->pendingTargetB = 0;

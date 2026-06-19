@@ -43,12 +43,29 @@ const char kCouldNotLoadDinput[] = "Couldn't LoadLibrary DInput\r\n";
 const char kCouldNotQiDDraw2[] = "Couldn't QI DDraw2\r\n";
 const char kCouldNotSetCoopLevel[] = "Couldn't Set coop level\r\n";
 
+/**
+ * Reimplements data 0x4e46a0: g_zSys_CpuBenchmarkDurationTable.
+ * Purpose: Maps recovered CPU-class indices to the fixed BSF-loop cycle budget used by GetCpuMhz.
+ */
 const unsigned int g_zSys_CpuBenchmarkDurationTable[12] =
     {0, 0, 0, 115, 47, 43, 38, 38, 38, 38, 38, 38};
 
+/**
+ * Reimplements data 0x4e467c: g_zSys_CpuVendorExpectedIntel.
+ * Purpose: Supplies the expected Intel vendor bytes for the CPU detection helpers.
+ */
 const char g_zSys_CpuVendorExpectedIntel[0x0d] = "GenuineIntel";
+
+/**
+ * Reimplements data 0x4e468c: g_zSys_CpuVendorScratchPadInit.
+ * Purpose: Initializes 12-byte stack vendor buffers before CPUID overwrites EBX/EDX/ECX.
+ */
 const char g_zSys_CpuVendorScratchPadInit[0x0d] = "------------";
 
+/**
+ * Reimplements data 0x56b438: g_zSys_DriveTypeSearchPathBuffer.
+ * Purpose: Stores the candidate drive path returned by FindFileOnDriveType.
+ */
 char g_zSys_DriveTypeSearchPathBuffer[MAX_PATH];
 
 struct CpuBenchmarkResolver {
@@ -78,6 +95,10 @@ CpuBenchmarkResolver *CpuBenchmarkResolverFromValue(
 
 } // namespace
 
+/**
+ * Reimplements data 0x56bd14: g_zSys_CpuIsNonIntel.
+ * Purpose: Carries the CPUID vendor mismatch marker folded into DetectCpuClassAndFeatures.
+ */
 extern "C" unsigned int g_zSys_CpuVendorNonIntelMarker = 0;
 
 #include "GameZRecoil/zSys/zSys_probe_platform.inl"
@@ -215,23 +236,19 @@ int zSys::ReadCpuidVendorAndFamily() {
         &cpuInfo[2],
         4
     );
-    g_zSys_CpuVendorNonIntelMarker = memcmp(
+    if (memcmp(
         vendor,
         g_zSys_CpuVendorExpectedIntel,
         sizeof(vendor)
-    ) == 0 ? 0u : 1u;
+    ) != 0) {
+        g_zSys_CpuVendorNonIntelMarker = 1;
+    }
 
     __cpuid(
         cpuInfo,
         1
     );
-    int family = (cpuInfo[0] >> 8) & 0x0f;
-    const int extendedFamily = (cpuInfo[0] >> 20) & 0xff;
-    if (family == 0x0f) {
-        family += extendedFamily;
-    }
-
-    return family;
+    return (cpuInfo[0] >> 8) & 0x0f;
 }
 #endif
 
@@ -292,11 +309,12 @@ unsigned int zSys::ReadCpuidFeatureFlags() {
  * Reimplements 0x4b3b00: zSys::ReadCmosRtcSecondsBcd.
  * Purpose: Reads the CMOS real-time clock seconds register in BCD form.
  */
+#if !(defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZSYS_CPU_RAW_ASM))
 unsigned int zSys::ReadCmosRtcSecondsBcd() {
-    SYSTEMTIME localTime;
-    GetLocalTime(&localTime);
-    return (unsigned int)(((localTime.wSecond / 10) << 4) | (localTime.wSecond % 10));
+    const unsigned int seconds = (unsigned int)((GetTickCount() / 1000u) % 60u);
+    return (unsigned int)(((seconds / 10u) << 4) | (seconds % 10u));
 }
+#endif
 
 #if !(defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZSYS_CPU_RAW_ASM))
 /**

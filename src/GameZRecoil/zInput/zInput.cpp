@@ -19,6 +19,15 @@ extern "C" void __cdecl _ftol();
 #endif
 
 extern "C" {
+/**
+ * Reimplements data 0x561cb0: g_zInput_GlobalState.
+ * BN 0x4719f0/0x471a10 load this address as the static lifetime object
+ * base for the zInput global-state constructor/destructor wrappers; source
+ * keeps the retail storage as named namespace globals instead of a duplicate
+ * aggregate mirror.
+ * Purpose: Owns the DirectInput root pointer and anchors zInput static
+ * global-state lifetime initialization.
+ */
 zInput::DIDirectInput *g_zInput_GlobalState = 0;
 unsigned char g_zInput_DeviceRegistry = 0;
 short g_zInputKeyboardPollRefCount = 0;
@@ -104,7 +113,18 @@ const char *g_zInput_MouseButtonNames[4] = {0};
  * Purpose: Stores g zInput BindMap Current data used by engine.zinput.bindmap_overlay_globals.
  */
 zInput_BindMapContext *g_zInput_BindMap_Current = 0;
+/**
+ * Reimplements data 0x565ea4: g_zInput_BindMapOverlayBlockSize.
+ * BN 0x471ab0 initializes the static lifetime field to 8; BN 0x471a20
+ * preserves it while clearing the remaining overlay lifetime fields.
+ * Purpose: Stores the bind-map overlay node allocation block size.
+ */
 int g_zInput_BindMapOverlayBlockSize = 0;
+/**
+ * Reimplements data 0x565ea8: g_zInput_BindMapOverlayNodeBlockList.
+ * BN 0x471a20 drains this list after the free list and clears the field.
+ * Purpose: Stores the bind-map overlay auxiliary allocated-node list head.
+ */
 zInput_BindMapOverlayStackNode *g_zInput_BindMapOverlayNodeBlockList = 0;
 /**
  * Reimplements data 0x565eac: g_zInput_BindMapOverlayNodeFreeList.
@@ -116,6 +136,12 @@ zInput_BindMapOverlayStackNode *g_zInput_BindMapOverlayNodeFreeList = 0;
  * Purpose: Stores g zInput BindMapOverlayNodeStackHead data used by engine.zinput.bindmap_overlay_globals.
  */
 zInput_BindMapOverlayStackNode *g_zInput_BindMapOverlayNodeStackHead = 0;
+/**
+ * Reimplements data 0x565eb4: g_zInput_BindMapOverlayReserved.
+ * BN 0x471ab0 and 0x471a20 clear this static lifetime field with the other
+ * overlay state.
+ * Purpose: Preserves the recovered reserved overlay lifetime slot.
+ */
 int g_zInput_BindMapOverlayReserved = 0;
 /**
  * Reimplements data 0x565eb8: g_zInput_BindMapOverlayDepth.
@@ -124,7 +150,10 @@ int g_zInput_BindMapOverlayReserved = 0;
 int g_zInput_BindMapOverlayDepth = 0;
 /**
  * Reimplements data 0x4f3ae0: g_zInput_BindGroupInfoList.
- * Purpose: Stores g zInput BindGroupInfoList data used by engine.zinput.bindgroup_default_globals.
+ * Binary Ninja types the 16-byte object as the bind-group pointer vector;
+ * 0x429f20/0x429f50 are the compiler-emitted static constructor/destructor for
+ * this storage, with the offset-0 allocator byte exposed as an MSVC artifact.
+ * Purpose: Owns the global bind-group pointer vector storage.
  */
 zInput_BindGroupInfoList g_zInput_BindGroupInfoList = {0};
 /**
@@ -156,7 +185,13 @@ struct BindMapDefaultBindingSpec {
     int mouseSlot;
 };
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original inline helper evidence: bind-map overlay list head detach.
+ * No standalone retail function exists; observed caller 0x471a20 inlines this
+ * list-unlink pattern for both overlay node lists before operator delete.
+ * Purpose: detach the current overlay list head while preserving the recovered
+ * prev/next cleanup shape used by zInput global-state teardown.
+ */
 zInput_BindMapOverlayStackNode *__fastcall BindMapOverlay_DetachHead(
     zInput_BindMapOverlayStackNode **head
 ) {
@@ -175,7 +210,14 @@ zInput_BindMapOverlayStackNode *__fastcall BindMapOverlay_DetachHead(
     return node;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original inline helper evidence: bind-map overlay node-list deletion.
+ * No standalone retail function exists; observed caller 0x471a20 emits this
+ * repeated detach/delete loop for the free-list and auxiliary block-list
+ * fields.
+ * Purpose: delete one recovered overlay node list in zInput global-state
+ * teardown.
+ */
 void __fastcall BindMapOverlay_DeleteNodeList(
     zInput_BindMapOverlayStackNode **head
 ) {
@@ -769,6 +811,9 @@ char * zInput_BindMapContext::CopyCommandLabel(
 
 /**
  * Reimplements 0x42a9d0: zInput_BindGroupInfoVec::Count.
+ * Original source path: D:\Proj\GameZRecoil\zInput\zin_cmd.cpp.
+ * Binary Ninja reads begin at offset 4, returns zero when begin is null, and
+ * otherwise returns the end-begin pointer distance divided by four.
  * Purpose: Returns the number of bind-group pointers stored in the VC vector.
  */
 int zInput_BindGroupInfoVec::Count() {
@@ -782,6 +827,9 @@ int zInput_BindGroupInfoVec::Count() {
 
 /**
  * Reimplements 0x42a000: zInput_BindGroupInfo::Destroy.
+ * Original source path: D:\Proj\GameZRecoil\zInput\zin_cmd.cpp.
+ * Binary Ninja shows the VC EH-framed record destructor empties the CString,
+ * deletes commandIds storage, clears the vector triplet, then destroys title.
  * Purpose: Releases a bind-group record's CString title and command-id vector.
  */
 void zInput_BindGroupInfo::Destroy() {
@@ -796,6 +844,10 @@ void zInput_BindGroupInfo::Destroy() {
 namespace zInput {
 /**
  * Reimplements 0x429f20: zInput::BindGroupListStaticInit.
+ * Original source path: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
+ * Binary Ninja identifies this as the global vector default construction for
+ * g_zInput_BindGroupInfoList; the saved-ECX allocator byte write is a compiler
+ * artifact and the source-level owner is the typed bind-group global.
  * Purpose: Default-constructs the global bind-group pointer vector storage.
  */
 void BindGroupListStaticInit() {
@@ -807,6 +859,10 @@ void BindGroupListStaticInit() {
 
 /**
  * Reimplements 0x429f50: zInput::BindGroupListAtExitDestructor.
+ * Original source path: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
+ * Binary Ninja shows the process-exit destructor deletes the global vector
+ * buffer and clears begin/end/capacity; stack scratch stores are compiler
+ * artifacts, not source-owned fields.
  * Purpose: Releases the global bind-group pointer vector buffer at process exit.
  */
 void BindGroupListAtExitDestructor() {
@@ -818,6 +874,8 @@ void BindGroupListAtExitDestructor() {
 
 /**
  * Reimplements 0x429f40: zInput::BindGroupListRegisterAtExit.
+ * Original source path: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
+ * Binary Ninja tail registers BindGroupListAtExitDestructor with atexit.
  * Purpose: Registers the bind-group global vector cleanup callback.
  */
 int BindGroupListRegisterAtExit() {
@@ -826,6 +884,9 @@ int BindGroupListRegisterAtExit() {
 
 /**
  * Reimplements 0x429f10: zInput::BindGroupList_StaticInitAndRegisterAtExit.
+ * Original source path: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
+ * Binary Ninja shows this static initializer calls the bind-group list default
+ * constructor and tail-calls the atexit registration wrapper.
  * Purpose: Initializes the bind-group vector global and registers its cleanup.
  */
 int BindGroupList_StaticInitAndRegisterAtExit() {
@@ -1843,6 +1904,9 @@ int __fastcall BindMap_PackBindingCode(
 
 /**
  * Reimplements 0x42a480: zInput::BindGroupList_GetCount.
+ * Original source path: D:\Proj\GameZRecoil\zInput\zin_cmd.cpp.
+ * Binary Ninja reads the global bind-group vector begin/end pointers and
+ * returns zero when begin is null.
  * Purpose: Returns the number of active bind groups in the global vector.
  */
 int BindGroupList_GetCount() {
@@ -1856,6 +1920,9 @@ int BindGroupList_GetCount() {
 
 /**
  * Reimplements 0x42a4a0: zInput::BindGroupList_GetGroupTitle.
+ * Original source path: D:\Proj\GameZRecoil\zInput\zin_cmd.cpp.
+ * Binary Ninja indexes g_zInput_BindGroupInfoList and returns the CString
+ * buffer pointer from the selected group title.
  * Purpose: Returns the CString buffer for the selected bind-group title.
  */
 char *__fastcall BindGroupList_GetGroupTitle(
@@ -1868,6 +1935,9 @@ char *__fastcall BindGroupList_GetGroupTitle(
 
 /**
  * Reimplements 0x42a4b0: zInput::BindGroupList_GetGroupCommandCount.
+ * Original source path: D:\Proj\GameZRecoil\zInput\zin_cmd.cpp.
+ * Binary Ninja indexes the accepted global bind-group vector, selects the
+ * embedded commandIds vector, and returns zero for a null command begin.
  * Purpose: Returns the number of command ids stored in a bind group.
  */
 int __fastcall BindGroupList_GetGroupCommandCount(
@@ -1885,6 +1955,9 @@ int __fastcall BindGroupList_GetGroupCommandCount(
 
 /**
  * Reimplements 0x42a4d0: zInput::BindGroupList_GetGroupCommandId.
+ * Original source path: D:\Proj\GameZRecoil\zInput\zin_cmd.cpp.
+ * Binary Ninja indexes the accepted global bind-group vector and then indexes
+ * the selected record's embedded commandIds begin pointer.
  * Purpose: Returns one command id from a bind group's command-id vector.
  */
 int __fastcall BindGroupList_GetGroupCommandId(
@@ -1962,6 +2035,10 @@ int __fastcall BindGroupList_AddGroup(
 
 /**
  * Reimplements 0x42a2c0: zInput::BindGroupList_AddCommandToGroup.
+ * Original source path: D:\Proj\GameZRecoil\zInput\zin_cmd.cpp.
+ * Binary Ninja shows the VC vector append-at-end template for the selected
+ * group's commandIds storage; the source model is the typed command-id vector,
+ * not a raw offset or copied template scaffold.
  * Purpose: Appends a command id to the selected bind group's command-id vector.
  */
 void __fastcall BindGroupList_AddCommandToGroup(
@@ -1997,6 +2074,7 @@ void __fastcall BindGroupList_AddCommandToGroup(
 
 /**
  * Reimplements 0x42a4e0: zInput::BindMap_GetCommandLabel.
+ * Original source path: D:\Proj\GameZRecoil\zInput\zin_bindmap.cpp.
  * Binary Ninja indexes g_zInput_CommandLocIdTable by command id and tail-calls
  * zLoc::GetMessageString for the command's localized label.
  * Purpose: Resolve a bind-map command id to its localized display label.
@@ -2009,6 +2087,7 @@ char *__fastcall BindMap_GetCommandLabel(
 
 /**
  * Reimplements 0x42a4f0: zInput::BindMap_GetCommandHint.
+ * Original source path: D:\Proj\GameZRecoil\zInput\zin_bindmap.cpp.
  * Binary Ninja indexes g_zInput_CommandLocIdTable by command id, increments
  * the recovered localization id, and tail-calls zLoc::GetMessageString for
  * the command hint.
@@ -2631,9 +2710,15 @@ char *__fastcall BindMapCurrent_CopyMouseButtonName(
     );
 }
 
-// Original storage uses offsets 0x41f4..0x4208 from g_zInput_GlobalState;
-// the rebuilt source keeps those fields as named globals instead of a duplicate mirror.
-// Reimplements 0x471ab0: zInput_GlobalState::Constructor
+/**
+ * Reimplements 0x471ab0: zInput_GlobalState::Constructor.
+ * Original source path: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
+ * BN assembly writes the overlay lifetime fields at data addresses
+ * 0x565ea4..0x565eb8 through the 0x561cb0 static-object base; the rebuilt
+ * source keeps the retail storage as named globals instead of adding a
+ * duplicate aggregate mirror.
+ * Purpose: initialize the zInput bind-map overlay static lifetime state.
+ */
 void *__fastcall GlobalStateConstructor(
     void *self
 ) {
@@ -2646,7 +2731,14 @@ void *__fastcall GlobalStateConstructor(
     return self;
 }
 
-// Reimplements 0x471a20: zInput_GlobalState::Destructor
+/**
+ * Reimplements 0x471a20: zInput_GlobalState::Destructor.
+ * Original source path: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
+ * BN assembly drains the overlay free-list, drains the auxiliary block-list,
+ * clears both list heads plus stack head/reserved/depth, and leaves the block
+ * size field intact.
+ * Purpose: tear down the zInput bind-map overlay static lifetime state.
+ */
 void __fastcall GlobalStateDestructor(
     void *self
 ) {
@@ -2660,22 +2752,47 @@ void __fastcall GlobalStateDestructor(
     g_zInput_BindMapOverlayDepth = 0;
 }
 
-// Reimplements 0x4719f0: zInput::GlobalStateStaticInit
+/**
+ * Reimplements 0x4719f0: zInput::GlobalStateStaticInit.
+ * Original source path: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
+ * BN assembly loads 0x561cb0 as the static-object this pointer and tail-jumps
+ * to zInput_GlobalState::Constructor.
+ * Purpose: run zInput global-state static construction.
+ */
 void *GlobalStateStaticInit() {
     return GlobalStateConstructor(&g_zInput_GlobalState);
 }
 
-// Reimplements 0x471a10: zInput::GlobalStateAtExitDestructor
+/**
+ * Reimplements 0x471a10: zInput::GlobalStateAtExitDestructor.
+ * Original source path: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
+ * BN assembly loads 0x561cb0 as the static-object this pointer and tail-jumps
+ * to zInput_GlobalState::Destructor.
+ * Purpose: expose the zInput global-state destructor as a CRT atexit callback.
+ */
 void GlobalStateAtExitDestructor() {
     GlobalStateDestructor(&g_zInput_GlobalState);
 }
 
-// Reimplements 0x471a00: zInput::GlobalStateRegisterAtExit
+/**
+ * Reimplements 0x471a00: zInput::GlobalStateRegisterAtExit.
+ * Original source path: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
+ * BN assembly pushes zInput::GlobalStateAtExitDestructor and calls the CRT
+ * atexit provider.
+ * Purpose: register the zInput global-state static destructor.
+ */
 int GlobalStateRegisterAtExit() {
     return atexit(GlobalStateAtExitDestructor);
 }
 
-// Reimplements 0x4719e0: zInput::GlobalStateStaticInitAndRegisterAtExit
+/**
+ * Reimplements 0x4719e0: zInput::GlobalStateStaticInitAndRegisterAtExit.
+ * Original source path: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
+ * BN assembly calls zInput::GlobalStateStaticInit and tail-jumps to
+ * zInput::GlobalStateRegisterAtExit.
+ * Purpose: perform zInput global-state static construction and register its
+ * CRT shutdown callback.
+ */
 int GlobalStateStaticInitAndRegisterAtExit() {
     GlobalStateStaticInit();
     return GlobalStateRegisterAtExit();

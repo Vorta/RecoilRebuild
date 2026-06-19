@@ -95,6 +95,8 @@ char g_zEffectAnim_ZarSectionName_RunningAnim[12] = "RunningAnim";
 char g_zEffectAnim_ZarSectionName_AnimActivation[15] = "AnimActivation";
 }
 
+extern char g_EffectsZrdNodeName[8];
+
 namespace {
 const unsigned int kRandUnitScaleBits = 0x38000100u;
 const int kInitialActivationRecordCapacity = 1000;
@@ -5523,7 +5525,7 @@ int __fastcall InitFromPath(
 
     zReader::Node *const effectsNode = zReader_GetNamedNode(
         rootNode,
-        "EFFECTS"
+        g_EffectsZrdNodeName
     );
     g_zEffect_RuntimeManager.templateCount = zReaderArrayCount(effectsNode) - 1;
     g_zEffect_RuntimeManager.templates = (zEffect_RuntimeEntry *)(calloc(

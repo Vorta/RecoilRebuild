@@ -177,7 +177,8 @@ int g_zVideo_FullscreenOption = 0;
 int g_zVideo_PrimaryHasAttachedBackbuffer = 0;
 int g_zVideo_UseHalfResBackbuffer = 0;
 int g_zVideo_HalfResAdjustMode = 0;
-int g_zVideo_SoftwareModeHotkeyEnabled = 0;
+// Retail initializes the authored zVideo debug/software-mode hotkey gate enabled.
+int g_zVideo_SoftwareModeHotkeyEnabled = 1;
 int g_zVideo_CachedFogModeLightState = 0;
 int g_zVideo_CachedFogEnableRenderState = 0;
 float g_zVideo_CachedFogStartLightStateValue = 0.0f;
@@ -2591,7 +2592,11 @@ int __fastcall SetHalfResAdjustMode(
 /**
  * Reimplements 0x437ef0: zVideo::HandleSoftwareModeHotkeyCommand.
  * Original source path: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
- * Purpose: provide the recovered zVideo::HandleSoftwareModeHotkeyCommand behavior.
+ * Purpose: cycle the software-mode hotkey presets while preserving HUD state.
+ *
+ * Evidence: BN dispatches on GetVideoModeIndexFromOptions() - 2 and cycles
+ * modes 2->4, 3->5, 4->2, and 5->3; only the downscale paths request
+ * half-resolution adjustment disablement.
  */
 void __fastcall HandleSoftwareModeHotkeyCommand(
     int
@@ -2610,11 +2615,11 @@ void __fastcall HandleSoftwareModeHotkeyCommand(
         nextModeIndex = 4;
         break;
     case 3:
-        nextModeIndex = 2;
-        halfResAdjustMode = 0;
+        nextModeIndex = 5;
         break;
     case 4:
-        nextModeIndex = 5;
+        nextModeIndex = 2;
+        halfResAdjustMode = 0;
         break;
     case 5:
         nextModeIndex = 3;

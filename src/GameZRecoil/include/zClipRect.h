@@ -90,6 +90,7 @@ RECOIL_STATIC_ASSERT(sizeof(zClipUV) == 0x08);
 
 extern zClipVert g_Clip_PolyVerts[0x40];
 extern zClipVert g_Clip_PolyVertsScratch[0x40];
+extern zClipUV g_Clip_PolyUvsStorage[0x40];
 extern zClipUV *g_Clip_PolyUvs;
 extern zClipRectPartial gClipRect_Primary;
 

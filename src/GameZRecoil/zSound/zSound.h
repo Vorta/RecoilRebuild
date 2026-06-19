@@ -279,7 +279,8 @@ struct zSndSampleSet {
 };
 
 struct zSndSampleSetRegistry {
-    int useArchiveBanksFlag;
+    unsigned char useArchiveBanksFlag;
+    unsigned char unknown_01[3];
     zSndSampleSet **begin;
     zSndSampleSet **end;
     zSndSampleSet **capacityEnd;
@@ -719,9 +720,9 @@ int Shutdown();
 extern "C" void zSndSampleSetRegistry_DestroyAll();
 extern "C" void zSndSampleSetRegistry_Shutdown();
 extern "C" void zSndSampleSetRegistry_RegisterAtExit();
-extern "C" void __fastcall zSnd_SetUseArchiveBanks(int enabled);
+extern "C" void __fastcall zSnd_SetUseArchiveBanks(unsigned char enabled);
 extern "C" void __fastcall zSnd_SetUseArchiveBanksAndRegisterAtExit(
-    int enabled
+    unsigned char enabled
 );
 extern "C" int zSndSampleSetRegistry_GetCount();
 extern "C" zSndSampleSet *__fastcall zSndSampleSetRegistry_GetByIndex(
