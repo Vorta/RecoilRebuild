@@ -849,7 +849,7 @@
 0x4ccc00 struct HudUiDialogController_Vtbl g_HudUiCheatCodeDialog_FTable =
 0x4ccc00 {
     // Cheat-code dialog/controller and widget FTable lane.
-0x4ccc00     void (__thiscall* OnPresent)(struct HudUiDialogController* self, float deltaTimeSec) = HudUiBackground::Update
+0x4ccc00     void (__thiscall* OnPresent)(struct HudUiDialogController* self, float deltaTimeSec) = HudUiBackgroundContainer::UpdateAll
 0x4ccc04     void (__thiscall* SetActive)(struct HudUiDialogController* self, int32_t isActive) = HudUiBackground::SetEnabled
 0x4ccc08     struct HudUiDialogController* (__thiscall* Destroy)(struct HudUiDialogController* self, int32_t freeMemory) = HudUiCheatCodeDialog::ScalarDeletingDestructor
 0x4ccc0c }
@@ -973,7 +973,7 @@
 0x4ccdb0     struct HudUiContainer_FTable container =
 0x4ccdb0     {
         // Controls-dialog header followed by selector widget vtables.
-0x4ccdb0         HudUiContainer_VT_UpdateAll UpdateAll = HudUiBackground::Update
+0x4ccdb0         HudUiContainer_VT_UpdateAll UpdateAll = HudUiBackgroundContainer::UpdateAll
 0x4ccdb4         HudUiContainer_VT_SetEnabled SetEnabled = HudUiBackground::SetEnabled
 0x4ccdb8     }
 0x4ccdb8     HudUiBackgroundPanel_VT_ScalarDeletingDtor scalarDeletingDtor = HudUiControlsDialog::ScalarDeletingDestructor
@@ -1944,7 +1944,7 @@
 0x4cdb30 {
 0x4cdb30     struct HudUiContainer_FTable container =
 0x4cdb30     {
-0x4cdb30         HudUiContainer_VT_UpdateAll UpdateAll = HudUiBackground::Update
+0x4cdb30         HudUiContainer_VT_UpdateAll UpdateAll = HudUiBackgroundContainer::UpdateAll
 0x4cdb34         HudUiContainer_VT_SetEnabled SetEnabled = HudUiBackground::SetEnabled
 0x4cdb38     }
 0x4cdb38     HudUiBackgroundPanel_VT_ScalarDeletingDtor scalarDeletingDtor = HudOptionsDialog::ScalarDeletingDestructor
@@ -3006,7 +3006,7 @@
 0x4ce9d4 void* data_4ce9d4 = 0x0
 0x4ce9d8 struct HudUiDialogController_Vtbl g_HudUiMainMenuDialog_Vtbl =
 0x4ce9d8 {
-0x4ce9d8     void (__thiscall* OnPresent)(struct HudUiDialogController* self, float deltaTimeSec) = HudUiBackground::Update
+0x4ce9d8     void (__thiscall* OnPresent)(struct HudUiDialogController* self, float deltaTimeSec) = HudUiBackgroundContainer::UpdateAll
 0x4ce9dc     void (__thiscall* SetActive)(struct HudUiDialogController* self, int32_t isActive) = HudUiBackground::SetEnabled
 0x4ce9e0     struct HudUiDialogController* (__thiscall* Destroy)(struct HudUiDialogController* self, int32_t freeMemory) = HudUiMainMenuDialog::ScalarDeletingDestructor
 0x4ce9e4 }
@@ -3335,7 +3335,7 @@
 0x4cee68 }
 0x4cee68 struct HudUiDialogController_Vtbl g_HudUiBackgroundConfirmQuit_DialogVtbl =
 0x4cee68 {
-0x4cee68     void (__thiscall* OnPresent)(struct HudUiDialogController* self, float deltaTimeSec) = HudUiBackground::Update
+0x4cee68     void (__thiscall* OnPresent)(struct HudUiDialogController* self, float deltaTimeSec) = HudUiBackgroundContainer::UpdateAll
 0x4cee6c     void (__thiscall* SetActive)(struct HudUiDialogController* self, int32_t isActive) = HudUiBackground::SetEnabled
 0x4cee70     struct HudUiDialogController* (__thiscall* Destroy)(struct HudUiDialogController* self, int32_t freeMemory) = HudUiBackgroundConfirmQuit::ScalarDeletingDestructor
 0x4cee74 }
@@ -3541,7 +3541,7 @@
 0x4cf138 struct HudUiNetGameSetupPanel_FTable g_HudUiNetGameSetupPanel_Vtbl =
 0x4cf138 {
     // MP_NEW_GAME setup panel vtable header.
-0x4cf138     int32_t (__thiscall* Update)(struct HudUiNetGameSetupPanel* self, float dt) = HudUiBackground::Update
+0x4cf138     int32_t (__thiscall* Update)(struct HudUiNetGameSetupPanel* self, float dt) = HudUiBackgroundContainer::UpdateAll
 0x4cf13c     int32_t (__thiscall* SetEnabled)(struct HudUiNetGameSetupPanel* self, int32_t enabled) = HudUiBackground::SetEnabled
 0x4cf140     struct HudUiNetGameSetupPanel* (__thiscall* ScalarDeletingDtor)(struct HudUiNetGameSetupPanel* self, uint32_t flags) = HudUiNetGameSetupPanel::ScalarDeletingDestructor
 0x4cf144     void* unknown_0c = 0x0
@@ -4644,7 +4644,7 @@
 0x4d0088     struct HudUiContainer_FTable container =
 0x4d0088     {
         // NetExit panel ftable header; widget tables follow.
-0x4d0088         HudUiContainer_VT_UpdateAll UpdateAll = HudUiBackground::Update
+0x4d0088         HudUiContainer_VT_UpdateAll UpdateAll = HudUiBackgroundContainer::UpdateAll
 0x4d008c         HudUiContainer_VT_SetEnabled SetEnabled = HudUiBackground::SetEnabled
 0x4d0090     }
 0x4d0090     HudUiBackgroundPanel_VT_ScalarDeletingDtor scalarDeletingDtor = HudUiNetExitPanel::ScalarDeletingDestructor
@@ -4761,7 +4761,7 @@
 0x4d01f8 {
 0x4d01f8     struct HudUiContainer_FTable container =
 0x4d01f8     {
-0x4d01f8         HudUiContainer_VT_UpdateAll UpdateAll = HudUiBackground::Update
+0x4d01f8         HudUiContainer_VT_UpdateAll UpdateAll = HudUiBackgroundContainer::UpdateAll
 0x4d01fc         HudUiContainer_VT_SetEnabled SetEnabled = HudUiBackground::SetEnabled
 0x4d0200     }
 0x4d0200     HudUiBackgroundPanel_VT_ScalarDeletingDtor scalarDeletingDtor = HudUiNewGamePanel::ScalarDeletingDestructor
@@ -6176,7 +6176,7 @@
 0x4d12c8 {
     // Save/load dialog vtable lane: save-game head, shared dialog head,
     // row/list item table, and load-game head.
-0x4d12c8     int32_t (__thiscall* Update)(struct HudUiBackground* self, float deltaTimeSec) = HudUiBackground::Update
+0x4d12c8     int32_t (__thiscall* Update)(struct HudUiBackground* self, float deltaTimeSec) = HudUiBackgroundContainer::UpdateAll
 0x4d12cc     int32_t (__thiscall* SetActive)(struct HudUiBackground* self, int32_t isActive) = HudUiBackground::SetEnabled
 0x4d12d0     struct HudUiSaveLoadDialog* (__thiscall* Destroy)(struct HudUiSaveLoadDialog* self, int32_t freeMemory) = HudUiSaveGameDialog::ScalarDeletingDestructor
 0x4d12d4     void (__thiscall* PrimaryAction)(struct HudUiSaveLoadDialog* self) = HudUiLoadGameDialog::OnPrimaryActionThunk
@@ -6220,7 +6220,7 @@
 0x4d135c                                                                                     00 00 00 00                              ....
 0x4d1360 struct HudUiSaveLoadDialog_VtblHead g_HudUiSaveLoadDialog_Vtbl =
 0x4d1360 {
-0x4d1360     int32_t (__thiscall* Update)(struct HudUiBackground* self, float deltaTimeSec) = HudUiBackground::Update
+0x4d1360     int32_t (__thiscall* Update)(struct HudUiBackground* self, float deltaTimeSec) = HudUiBackgroundContainer::UpdateAll
 0x4d1364     int32_t (__thiscall* SetActive)(struct HudUiBackground* self, int32_t isActive) = HudUiBackground::SetEnabled
 0x4d1368     struct HudUiSaveLoadDialog* (__thiscall* Destroy)(struct HudUiSaveLoadDialog* self, int32_t freeMemory) = HudUiSaveLoadDialog::ScalarDeletingDestructor
 0x4d136c     void (__thiscall* PrimaryAction)(struct HudUiSaveLoadDialog* self) = zError::ReportOldNoOp
@@ -6420,7 +6420,7 @@
 0x4d1674 void* data_4d1674 = 0x0
 0x4d1678 struct HudUiSaveLoadDialog_VtblHead g_HudUiLoadGameDialog_Vtbl =
 0x4d1678 {
-0x4d1678     int32_t (__thiscall* Update)(struct HudUiBackground* self, float deltaTimeSec) = HudUiBackground::Update
+0x4d1678     int32_t (__thiscall* Update)(struct HudUiBackground* self, float deltaTimeSec) = HudUiBackgroundContainer::UpdateAll
 0x4d167c     int32_t (__thiscall* SetActive)(struct HudUiBackground* self, int32_t isActive) = HudUiBackground::SetEnabled
 0x4d1680     struct HudUiSaveLoadDialog* (__thiscall* Destroy)(struct HudUiSaveLoadDialog* self, int32_t freeMemory) = HudUiLoadGameDialog::ScalarDeletingDestructor
 0x4d1684     void (__thiscall* PrimaryAction)(struct HudUiSaveLoadDialog* self) = HudUiLoadGameDialog::ProcessDialogResult
@@ -8870,7 +8870,7 @@
 0x4d39f4 int32_t data_4d39f4 = 0x0
 0x4d39f8 struct HudUiBackground_FTable g_HudUiBackground_Vtbl =
 0x4d39f8 {
-0x4d39f8     void (* Update)(struct HudUiBackground* self, float deltaTime) = HudUiBackground::Update
+0x4d39f8     void (* Update)(struct HudUiBackground* self, float deltaTime) = HudUiBackgroundContainer::UpdateAll
 0x4d39fc     void (* SetEnabled)(struct HudUiBackground* self, int32_t enabled) = HudUiBackground::SetEnabled
 0x4d3a00     struct HudUiBackground* (* ScalarDeletingDtor)(struct HudUiBackground* self, uint32_t flags) = HudUiBackground::ScalarDeletingDestructor
 0x4d3a04 }
@@ -9048,7 +9048,7 @@
 0x4d3c50 {
     // Tiny container ftable seam: background-container prefix, generic two-slot
     // container table, then the text-label vtable anchor at 0x4d3c70.
-0x4d3c50     void (* Update)(void* self, float deltaTime) = HudUiBackground::Update
+0x4d3c50     void (* Update)(void* self, float deltaTime) = HudUiBackgroundContainer::UpdateAll
 0x4d3c54     void (* SetEnabled)(void* self, int32_t enabled) = HudUiBackgroundContainer::SetEnabled
 0x4d3c58 }
 0x4d3c58 struct HudUiContainer_FTable g_HudUiContainer_FTable =
@@ -9367,7 +9367,7 @@
 0x4d4028 struct HudUiMessageBoxDialog_VTable6 g_HudUiMessageBoxDialog_Vtbl =
 0x4d4028 {
     // Message-box dialog vtable head restored from ctor xref at 0x4bf57e.
-0x4d4028     void* SetInputFocus = HudUiBackground::Update
+0x4d4028     void* SetInputFocus = HudUiBackgroundContainer::UpdateAll
 0x4d402c     void* BackgroundScalarDeletingDtor = HudUiBackground::SetEnabled
 0x4d4030     void* ScalarDeletingDtor = HudUiMessageBoxDialog::ScalarDeletingDestructor
 0x4d4034     void* Dtor = HudUiMessageBoxDialog::OnOk
