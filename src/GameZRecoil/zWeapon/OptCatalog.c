@@ -21,9 +21,21 @@
 #include <string.h>
 
 extern "C" {
+/**
+ * Reimplements data 0x778968: g_OptCatalog_CaptureHitSnapshotEnabled.
+ * Purpose: Stores g OptCatalog CaptureHitSnapshotEnabled data used by effects_weapons.optcatalog_damage_feedback_data.
+ */
 int g_OptCatalog_CaptureHitSnapshotEnabled = 0;
 int g_OptCatalog_FallbackImpactProbeEnabled = 0;
+/**
+ * Reimplements data 0x778940: g_OptCatalog_CapturedDamageSourcePos.
+ * Purpose: Stores g OptCatalog CapturedDamageSourcePos data used by effects_weapons.optcatalog_damage_feedback_data.
+ */
 zVec3 g_OptCatalog_CapturedDamageSourcePos = {0};
+/**
+ * Reimplements data 0x77894c: g_OptCatalog_CapturedDamageHitPos.
+ * Purpose: Stores g OptCatalog CapturedDamageHitPos data used by effects_weapons.optcatalog_damage_feedback_data.
+ */
 zVec3 g_OptCatalog_CapturedDamageHitPos = {0};
 int g_OptCatalog_EntryCount = 0;
 OptCatalogEntryDef *g_OptCatalog_EntryTable = 0;
@@ -35,12 +47,36 @@ int *g_OptCatalogPendingSpawnTargetCountPtr = 0;
 PlayerProgressTargetSlotRuntime *g_OptCatalogPendingSpawnTargetListPtr = 0;
 float g_OptCatalogMaxCraterRadius = 0.0f;
 int g_OptCatalogQueuedImpactCount = 0;
+/**
+ * Reimplements data 0x779a80: g_OptCatalog_DamageContextKind.
+ * Purpose: Stores g OptCatalog DamageContextKind data used by effects_weapons.optcatalog_damage_feedback_data.
+ */
 int g_OptCatalog_DamageContextKind = 0;
+/**
+ * Reimplements data 0x779a88: g_OptCatalog_DamageContextHitEvent.
+ * Purpose: Stores g OptCatalog DamageContextHitEvent data used by effects_weapons.optcatalog_damage_feedback_data.
+ */
 void *g_OptCatalog_DamageContextHitEvent = 0;
+/**
+ * Reimplements data 0x778958: g_OptCatalog_CurrentDamageOwnerOrCtx.
+ * Purpose: Stores g OptCatalog CurrentDamageOwnerOrCtx data used by effects_weapons.optcatalog_damage_feedback_data.
+ */
 void *g_OptCatalog_CurrentDamageOwnerOrCtx = 0;
+/**
+ * Reimplements data 0x779a9c: g_OptCatalogDamageFeedbackCallback.
+ * Purpose: Stores g OptCatalogDamageFeedbackCallback data used by effects_weapons.optcatalog_damage_feedback_data.
+ */
 void *g_OptCatalogDamageFeedbackCallback = 0;
 float g_OptCatalogLockOnWarningGateTimeSec = 0.0f;
+/**
+ * Reimplements data 0x779aa0: g_OptCatalog_DamageFeedbackHitCount.
+ * Purpose: Stores g OptCatalog DamageFeedbackHitCount data used by effects_weapons.optcatalog_damage_feedback_data.
+ */
 int g_OptCatalog_DamageFeedbackHitCount = 0;
+/**
+ * Reimplements data 0x779aa4: g_OptCatalogDamageFeedbackTrackedNode.
+ * Purpose: Stores g OptCatalogDamageFeedbackTrackedNode data used by effects_weapons.optcatalog_damage_feedback_data.
+ */
 zClass_NodePartial *g_OptCatalogDamageFeedbackTrackedNode = 0;
 float g_OptCatalogDamageFeedbackIntensityScalar = 0.0f;
 float g_OptCatalogNextSpawnScale = 0.0f;

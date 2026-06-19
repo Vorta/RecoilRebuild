@@ -36,12 +36,28 @@ int g_zEffectAnim_TextIdEntryCount = 0;
 zEffectAnimTextIdEntry *g_zEffectAnim_TextIdEntryList = 0;
 int g_zEffectAnim_SourceFileStampCount = 0;
 zEffectAnimSourceFileStamp *g_zEffectAnim_SourceFileStampList = 0;
+/**
+ * Reimplements data 0x4df724: g_zEffectAnim_CopyNodeMode.
+ * Purpose: Stores g zEffectAnim CopyNodeMode data used by engine.zeffect.anim_init_data.
+ */
 int g_zEffectAnim_CopyNodeMode = 1;
+/**
+ * Reimplements data 0x4df728: g_zEffectAnim_CopyNodeArg1.
+ * Purpose: Stores g zEffectAnim CopyNodeArg1 data used by engine.zeffect.anim_init_data.
+ */
 int g_zEffectAnim_CopyNodeArg1 = 1;
+/**
+ * Reimplements data 0x4df72c: g_zEffectAnim_CopyNodeArg2.
+ * Purpose: Stores g zEffectAnim CopyNodeArg2 data used by engine.zeffect.anim_init_data.
+ */
 int g_zEffectAnim_CopyNodeArg2 = 1;
 int g_zEffectAnim_ForceCloneNonDynamicRoot = 0;
 int g_zEffect_CloneCopyMode = 1;
 int g_zEffect_CloneCopyChildrenMode = 1;
+/**
+ * Reimplements data 0x575db8: g_zEffect_World.
+ * Purpose: Stores g zEffect World data used by engine.zeffect.stop_cleanup_globals.
+ */
 zClass_NodePartial *g_zEffect_World = 0;
 float g_zEffect_DefaultGravity = 0.0f;
 int g_zEffect_ConditionalRefPosEnabled = 0;
@@ -52,7 +68,15 @@ int g_zEffect_ConditionalEffectLevel = 0;
 int g_zEffect_VariantOverrideEnabled = 0;
 unsigned int g_zEffect_VariantOverridePackedIds = 0;
 int g_zEffect_VariantCycleId = 0;
+/**
+ * Reimplements data 0x539ea4: g_zEffect_SkipStopDelay.
+ * Purpose: Stores g zEffect SkipStopDelay data used by engine.zeffect.stop_cleanup_globals.
+ */
 int g_zEffect_SkipStopDelay = 0;
+/**
+ * Reimplements data 0x575dd8: g_zEffect_FrameDeltaRemainingSec.
+ * Purpose: Stores g zEffect FrameDeltaRemainingSec data used by engine.zeffect.stop_cleanup_globals.
+ */
 float g_zEffect_FrameDeltaRemainingSec = 0.0f;
 int g_zEffect_Anim_DebugFrameTag = 0;
 zClass_NodePartial *g_zEffect_ResourceNode = 0;

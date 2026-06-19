@@ -30,6 +30,10 @@ char *g_zGame_Options_RegKeyCurrentUser = 0;
 char *g_zGame_Options_RegKeyGame = 0;
 int g_zGame_Options_RegContextInitialized = 0;
 zGame_OptionsRuntimeConfig g_zGame_Options_RuntimeConfigDefaults = {0};
+/**
+ * Reimplements data 0x4e5d54: ZOPT_VIDEO_FULLSCREEN.
+ * Purpose: Stores ZOPT VIDEO FULLSCREEN data used by engine.zgame.zopt_fullscreen_option_global.
+ */
 int *ZOPT_VIDEO_FULLSCREEN = 0;
 int *ZOPT_VIDEO_STRIDE = 0;
 int *ZOPT_HUD_SW = 0;
@@ -40,17 +44,37 @@ int *ZOPT_REPLICATE = 0;
 int *ZOPT_NETWORK_ENABLED = 0;
 int *g_zOpt_NetworkModemOption = 0;
 int *g_zOpt_NetworkListenOption = 0;
+/**
+ * Reimplements data 0x4e5d48: g_zOpt_GameDifficultyOption.
+ * Purpose: Stores g zOpt GameDifficultyOption data used by engine.zgame.zopt_game_difficulty_option_global.
+ */
 int *g_zOpt_GameDifficultyOption = 0;
 int *g_zOpt_WolPasswordFlagOption = 0;
 int *ZOPT_EFFECTS_LEVEL_SW = 0;
 int *ZOPT_EFFECTS_LEVEL_HW = 0;
 int *ZOPT_OBJECT_LOD_SW = 0;
 int *ZOPT_OBJECT_LOD_HW = 0;
+/**
+ * Reimplements data 0x4e5d40: ZOPT_MUTE_SOUND.
+ * Purpose: Stores ZOPT MUTE SOUND data used by engine.zgame.zopt_sound_option_globals.
+ */
 int *ZOPT_MUTE_SOUND = 0;
+/**
+ * Reimplements data 0x4e5d44: ZOPT_SOUND_VOLUME.
+ * Purpose: Stores ZOPT SOUND VOLUME data used by engine.zgame.zopt_sound_option_globals.
+ */
 float *ZOPT_SOUND_VOLUME = 0;
+/**
+ * Reimplements data 0x4e5d38: ZOPT_SOUND_LOD.
+ * Purpose: Stores ZOPT SOUND LOD data used by engine.zgame.zopt_sound_option_globals.
+ */
 int *ZOPT_SOUND_LOD = 0;
 int *ZOPT_TEXTURE_MEMORY_SW = 0;
 int *ZOPT_TEXTURE_MEMORY_HW = 0;
+/**
+ * Reimplements data 0x4e5d4c: ZOPT_PLAYER_NAME.
+ * Purpose: Stores ZOPT PLAYER NAME data used by engine.zgame.zopt_player_name_option_global.
+ */
 zOptionEntryPartial *ZOPT_PLAYER_NAME = 0;
 int *ZOPT_GFX_FLAGS_SW = 0;
 int *ZOPT_GFX_FLAGS_HW = 0;

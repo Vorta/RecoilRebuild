@@ -26,8 +26,20 @@ char **g_zDEClient_QuickSandTexturePaths = 0;
 zModel_MaterialPartial *g_zDEClient_QuickSandMaterial = 0;
 zModel_MaterialPartial *g_zDEClient_QuickSandMaterialCycle = 0;
 zDEClient_QSandEventTemplate g_zDEClient_QuickSandEventTemplateDefaults = {0};
+/**
+ * Reimplements data 0x539ce0: g_zDEClient_CraterDisplaySourceCount.
+ * Purpose: Stores g zDEClient CraterDisplaySourceCount data used by engine.zeffect.zdeclient_crater_display_source_globals.
+ */
 int g_zDEClient_CraterDisplaySourceCount = 0;
+/**
+ * Reimplements data 0x539ce4: g_zDEClient_CraterDisplaySourceList.
+ * Purpose: Stores g zDEClient CraterDisplaySourceList data used by engine.zeffect.zdeclient_crater_display_source_globals.
+ */
 zDEClient_CraterDisplaySourceEntry *g_zDEClient_CraterDisplaySourceList = 0;
+/**
+ * Reimplements data 0x539ce8: g_zDEClient_CraterEventTemplateDefaults.
+ * Purpose: Stores g zDEClient CraterEventTemplateDefaults data used by engine.zeffect.zdeclient_crater_event_template_defaults.
+ */
 zDEClient_CraterEventTemplate g_zDEClient_CraterEventTemplateDefaults = {0};
 zReader::Node *g_zDEClient_ConfigReaderRoot = 0;
 int g_zDEClient_RebuildBltRectOnReload = 1;
@@ -38,9 +50,25 @@ zDEClient_FeatureEntry *g_zDEClient_FeatureListCapacityEnd = 0;
 zDEClient_MapTreeState g_zDEClient_FeatureMapTree = {0};
 zDEClient_MapTreeNode *g_zDEClient_FeatureMapTreeNil = 0;
 int g_zDEClient_FeatureMapTreeNilRefCount = 0;
+/**
+ * Reimplements data 0x539e18: g_zDEClient_CameraNode.
+ * Purpose: Stores g zDEClient CameraNode data used by engine.zeffect.zdeclient_camera_globals.
+ */
 zClass_NodePartial *g_zDEClient_CameraNode = 0;
+/**
+ * Reimplements data 0x539e1c: g_zDEClient_CameraNodeClassData.
+ * Purpose: Stores g zDEClient CameraNodeClassData data used by engine.zeffect.zdeclient_camera_globals.
+ */
 zClass_CameraDataPartial *g_zDEClient_CameraNodeClassData = 0;
+/**
+ * Reimplements data 0x539de4: g_zDEClientQSandNetRelayCallback.
+ * Purpose: Stores g zDEClientQSandNetRelayCallback data used by engine.zeffect.zdeclient_net_relay_callback_globals.
+ */
 zDEClient_NetRelayCallback g_zDEClientQSandNetRelayCallback = 0;
+/**
+ * Reimplements data 0x539de8: g_zDEClientCraterNetRelayCallback.
+ * Purpose: Stores g zDEClientCraterNetRelayCallback data used by engine.zeffect.zdeclient_net_relay_callback_globals.
+ */
 zDEClient_NetRelayCallback g_zDEClientCraterNetRelayCallback = 0;
 
 namespace {

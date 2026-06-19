@@ -90,7 +90,15 @@ float g_Player_AiMode2_OffsetTargetRotateCos15Deg = 0.965925813f;
 float g_Player_AiMode2_OffsetTargetRotateSin15Deg = 0.258819044f;
 float g_Player_TotalTimeSecScaled = 0.0f;
 int g_PlayerPendingCheckpointNumber = 0;
+/**
+ * Reimplements data 0x4f3754: g_PlayerStatusMeterRatio.
+ * Purpose: Stores g PlayerStatusMeterRatio data used by battlesport_gameplay.player_damage_runtime_globals.
+ */
 float g_PlayerStatusMeterRatio = 0.0f;
+/**
+ * Reimplements data 0x4f3ac8: g_Player_NominalGravity.
+ * Purpose: Stores g Player NominalGravity data used by battlesport_gameplay.player_nominal_gravity_global.
+ */
 float g_Player_NominalGravity = 0.0f;
 float g_Player_WaterGravity = 0.0f;
 float g_Player_QuicksandGravity = 0.0f;
@@ -107,9 +115,25 @@ OptCatalogEntryDef *g_Player_MakeHotOptEntry = 0;
 OptCatalogEntryDef *g_Player_MakeColdOptEntry = 0;
 zEffectAnimEntry *g_Player_BftSplashAnimEntry = 0;
 zEffectAnimEntry *g_Player_ActiveDebugScriptAsyncEntry = 0;
+/**
+ * Reimplements data 0x4f3768: g_Player_HorizonNodeFollowCameraEnabled.
+ * Purpose: Stores g Player HorizonNodeFollowCameraEnabled data used by battlesport_gameplay.player_horizon_follow_globals.
+ */
 int g_Player_HorizonNodeFollowCameraEnabled = 0;
+/**
+ * Reimplements data 0x4f36c0: g_Player_HorizonNode.
+ * Purpose: Stores g Player HorizonNode data used by battlesport_gameplay.player_horizon_follow_globals.
+ */
 zClass_NodePartial *g_Player_HorizonNode = 0;
+/**
+ * Reimplements data 0x4f36d0: g_PlayerPrevCameraState.
+ * Purpose: Stores g PlayerPrevCameraState data used by battlesport_gameplay.player_damage_runtime_globals.
+ */
 int g_PlayerPrevCameraState = 0;
+/**
+ * Reimplements data 0x4f36d4: g_PlayerPrevSteeringMode.
+ * Purpose: Stores g PlayerPrevSteeringMode data used by battlesport_gameplay.player_damage_runtime_globals.
+ */
 int g_PlayerPrevSteeringMode = 0;
 int g_Player_SavedSteeringMode = 0;
 // Data owner 0x4f36c4/0x4f36c8/0x4f36cc and 0x4f3bbc/0x4f3bc0:
@@ -126,6 +150,10 @@ zVec3 g_PlayerEnvProbeWorldPoints[7] = {0};
 int g_PlayerEnvProbe_AboveGroundFlags[10] = {0};
 int g_PlayerEnvProbe_AboveGroundIndices[10] = {0};
 int g_PlayerEnvProbe_AboveGroundCount = 0;
+/**
+ * Reimplements data 0x4f373c: g_PlayerRecentHitFxAnimEntry.
+ * Purpose: Stores g PlayerRecentHitFxAnimEntry data used by battlesport_gameplay.player_damage_runtime_globals.
+ */
 zEffectAnimEntry *g_PlayerRecentHitFxAnimEntry = 0;
 zVec3 *g_Player_LocalFxOffsetWorldPtr = 0;
 int g_Player_MissionInitFirstRunFlag = 1;

@@ -17,10 +17,30 @@ extern "C" LPGUID g_zSnd_CachedDirectSoundGuid = 0;
 extern "C" int g_zSnd_PreInitialized = 0;
 extern "C" int g_zSnd_SoundLodDefault = 0;
 extern "C" void *g_zSnd_SoundLodValuePtr = 0;
+/**
+ * Reimplements data 0x56b3b4: g_zSnd_MuteOptionDefault.
+ * Purpose: Stores g zSnd MuteOptionDefault data used by engine.zsound.option_runtime_globals.
+ */
 extern "C" int g_zSnd_MuteOptionDefault = 0;
+/**
+ * Reimplements data 0x56b3b8: g_zSnd_MuteOptionValuePtr.
+ * Purpose: Stores g zSnd MuteOptionValuePtr data used by engine.zsound.option_runtime_globals.
+ */
 extern "C" void *g_zSnd_MuteOptionValuePtr = 0;
+/**
+ * Reimplements data 0x56b3bc: g_zSnd_MuteDepth.
+ * Purpose: Stores g zSnd MuteDepth data used by engine.zsound.option_runtime_globals.
+ */
 extern "C" int g_zSnd_MuteDepth = 0;
+/**
+ * Reimplements data 0x56b3c0: g_zSnd_VolumeScaleDefault.
+ * Purpose: Stores g zSnd VolumeScaleDefault data used by engine.zsound.option_runtime_globals.
+ */
 extern "C" float g_zSnd_VolumeScaleDefault = 0.0f;
+/**
+ * Reimplements data 0x56b3c4: g_zSnd_GlobalVolumeScalePtr.
+ * Purpose: Stores g zSnd GlobalVolumeScalePtr data used by engine.zsound.option_runtime_globals.
+ */
 extern "C" void *g_zSnd_GlobalVolumeScalePtr = 0;
 extern "C" zSndSample *g_zSndLastSample = 0;
 extern "C" zSndSample *g_zSndLastVoice = 0;

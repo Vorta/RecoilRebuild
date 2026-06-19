@@ -33,6 +33,15 @@ For agent-facing command, doc, skill, or role drift:
 python tools/recoil.py audit agent-surface --strict
 ```
 
+For generated public status and local artifact inventory:
+
+```powershell
+python tools/recoil.py docs readme-progress --check
+```
+
+Run without `--check` only when intentionally refreshing the visitor-facing
+`README.md` generated progress table from the current plan.
+
 For generated local artifact inventory and cleanup planning:
 
 ```powershell
@@ -72,6 +81,7 @@ python tools/recoil.py audit groups --summary --wip-limit 4
 python tools/recoil.py owner audit --strict
 python tools/recoil.py owner next --lane binary
 python tools/recoil.py audit sections --strict
+python tools/recoil.py audit sections --pressure
 ```
 
 If active groups exist, choose the first actionable group in
@@ -87,6 +97,9 @@ unactionable, or the user explicitly directs new work:
 ```powershell
 python tools/recoil.py plan next --lane binary
 python tools/recoil.py plan batch --lane binary
+python tools/recoil.py plan batch --lane binary --spawnable-only
+python tools/recoil.py plan batch --lane binary --json
+python tools/recoil.py plan batch --lane binary --handoff-template
 python tools/recoil.py section show ui.zhud
 python tools/recoil.py plan group app.recoil_app --lane binary
 python tools/recoil.py owner show 0xNNNNNN
@@ -94,10 +107,12 @@ python tools/recoil.py status 0xNNNNNN
 ```
 
 `plan next --lane binary` prints `primary`, `secondary`, and `tertiary`
-ranked owner/work scopes. `plan batch --lane binary` prints section-isolated
-worker candidates for parallel scheduling. The parent agent should use those
-sections to schedule non-overlapping subagent handoffs after checking active WIP
-and allowed/forbidden paths.
+ranked owner/work scopes. `audit sections --pressure` summarizes scheduling
+risk and spawnable capacity. `plan batch --lane binary` prints
+section-isolated worker candidates for parallel scheduling; add
+`--spawnable-only` for live handoffs that exclude pathless or parent-narrowing
+blocks, and add `--json` or `--handoff-template` for machine-readable output or
+a parent batch card.
 If evidence shows a plan group is in the wrong scheduling section, inspect with
 `section show`, then the parent validates `section move <plan-group>
 <section-id> --reason "..." --dry-run` before applying the same command without

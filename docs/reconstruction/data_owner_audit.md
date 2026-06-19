@@ -6,6 +6,13 @@ BSS owner has complete source data-owner evidence. Field-level recovery inside a
 larger global, source macros, static offset asserts, and functional smokes are
 not enough.
 
+The plan's data-entry progress rows are narrower: they track canonical `.data`
+owner-range globals only. Do not add `.rdata` entries, BSS-only entries, or
+member/field rows inside a larger global. For example, `0x4f0cc0
+g_HudSensorTracker` is one data plan entry for the owner range, not one row per
+BN-labeled member. `.rdata` and BSS facts still belong in the source-owner data
+gate evidence when a function's `Data reimplemented` marker depends on them.
+
 ## Acceptance Packet
 
 For each accepted data owner, record:
@@ -18,6 +25,16 @@ For each accepted data owner, record:
 - VC5 `data_symbols` output when available, including relocation identity
   review for pointers;
 - caller/function entries whose `Data reimplemented ✅` depends on this owner.
+
+For each plan-tracked `.data` global definition in source, put an immediately
+preceding docblock:
+
+```cpp
+/**
+ * Reimplements data 0xNNNNNN: g_Symbol.
+ * Purpose: Describes the source-level role of this data owner.
+ */
+```
 
 If any item is missing, dependent functions must use `Data reimplemented ❌`.
 If current BN/source evidence proves no authored globals are touched, use

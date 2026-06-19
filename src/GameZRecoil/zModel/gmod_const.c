@@ -46,6 +46,10 @@ namespace {
     }
 }
 
+/**
+ * Reimplements data 0x4e1398: g_zModel_ConstVertexMergeEpsilon.
+ * Purpose: Stores g zModel ConstVertexMergeEpsilon data used by engine.zmodel.vertex_merge_epsilon_global.
+ */
 float g_zModel_ConstVertexMergeEpsilon = 0.001f;
 int g_zModel_MaxPolygonVertexCountBeforeSplit = 48;
 double g_zModel_ConstVertexWarnThreshold = 921.6;

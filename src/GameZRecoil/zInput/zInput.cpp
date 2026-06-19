@@ -72,26 +72,70 @@ int g_zInput_JoystickCaps_ForceFeedback = 0;
 zInput_FFEffectSet *g_zInputFfEffectSet = 0;
 int g_zInput_JoystickCaps_FFAttack = 0;
 int g_zInput_JoystickCaps_FFFade = 0;
+/**
+ * Reimplements data 0x4f3a88: g_GameStateOrMapTable.
+ * Purpose: Stores g GameStateOrMapTable data used by engine.zinput.game_state_or_map_table_data.
+ */
 zInput_GameStateOrMapTablePartial *g_GameStateOrMapTable = 0;
 float g_Player_DeltaTime = 0.0f;
 float g_Player_InvDeltaTime = 0.0f;
 float g_Player_DeltaTimeScaled001 = 0.0f;
 float g_zInput_DiPitchAngleLowpassRad = 0.0f;
+/**
+ * Reimplements data 0x4e5d60: ZOPT_INPUT_JOYSTICK.
+ * Purpose: Stores ZOPT INPUT JOYSTICK data used by engine.zinput.joystick_option_globals.
+ */
 int *ZOPT_INPUT_JOYSTICK = 0;
+/**
+ * Reimplements data 0x4e5d64: ZOPT_JOYSTICK_NUM_AXES.
+ * Purpose: Stores ZOPT JOYSTICK NUM AXES data used by engine.zinput.joystick_option_globals.
+ */
 int *ZOPT_JOYSTICK_NUM_AXES = 0;
+/**
+ * Reimplements data 0x4e5d68: ZOPT_JOYSTICK_NUM_BUTTONS.
+ * Purpose: Stores ZOPT JOYSTICK NUM BUTTONS data used by engine.zinput.joystick_option_globals.
+ */
 int *ZOPT_JOYSTICK_NUM_BUTTONS = 0;
 const char *g_zInput_DikKeyNames[0x100] = {0};
 const char *g_zInput_JoystickButtonNames[9] = {0};
 const char *g_zInput_MouseButtonNames[4] = {0};
+/**
+ * Reimplements data 0x565ea0: g_zInput_BindMap_Current.
+ * Purpose: Stores g zInput BindMap Current data used by engine.zinput.bindmap_overlay_globals.
+ */
 zInput_BindMapContext *g_zInput_BindMap_Current = 0;
 int g_zInput_BindMapOverlayBlockSize = 0;
 zInput_BindMapOverlayStackNode *g_zInput_BindMapOverlayNodeBlockList = 0;
+/**
+ * Reimplements data 0x565eac: g_zInput_BindMapOverlayNodeFreeList.
+ * Purpose: Stores g zInput BindMapOverlayNodeFreeList data used by engine.zinput.bindmap_overlay_globals.
+ */
 zInput_BindMapOverlayStackNode *g_zInput_BindMapOverlayNodeFreeList = 0;
+/**
+ * Reimplements data 0x565eb0: g_zInput_BindMapOverlayNodeStackHead.
+ * Purpose: Stores g zInput BindMapOverlayNodeStackHead data used by engine.zinput.bindmap_overlay_globals.
+ */
 zInput_BindMapOverlayStackNode *g_zInput_BindMapOverlayNodeStackHead = 0;
 int g_zInput_BindMapOverlayReserved = 0;
+/**
+ * Reimplements data 0x565eb8: g_zInput_BindMapOverlayDepth.
+ * Purpose: Stores g zInput BindMapOverlayDepth data used by engine.zinput.bindmap_overlay_globals.
+ */
 int g_zInput_BindMapOverlayDepth = 0;
+/**
+ * Reimplements data 0x4f3ae0: g_zInput_BindGroupInfoList.
+ * Purpose: Stores g zInput BindGroupInfoList data used by engine.zinput.bindgroup_default_globals.
+ */
 zInput_BindGroupInfoList g_zInput_BindGroupInfoList = {0};
+/**
+ * Reimplements data 0x4f3ad8: g_zInput_CurrentBindGroupIndex.
+ * Purpose: Stores g zInput CurrentBindGroupIndex data used by engine.zinput.bindgroup_default_globals.
+ */
 int g_zInput_CurrentBindGroupIndex = 0;
+/**
+ * Reimplements data 0x4f3af0: g_zInput_CommandLocIdTable.
+ * Purpose: Stores g zInput CommandLocIdTable data used by engine.zinput.bindgroup_default_globals.
+ */
 int g_zInput_CommandLocIdTable[0x30] = {0};
 
 // Reimplements 0x471c80: zInput_Keyboard_IsUnsuspended

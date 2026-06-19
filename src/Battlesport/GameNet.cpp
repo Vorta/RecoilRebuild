@@ -145,6 +145,10 @@ NetPkt0A_RemoveRuntimeRelay g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf = {
     {0.0f, 0.0f, 0.0f},
     0,
 };
+/**
+ * Reimplements data 0x4dcf60: g_NetPkt07_AltGunDispatchBuf.
+ * Purpose: Stores g NetPkt07 AltGunDispatchBuf data used by network_online.gamenet_pkt07_packet_buffer_data.
+ */
 NetPkt07_AltGunDispatch g_NetPkt07_AltGunDispatchBuf = {
     {0x07, sizeof(NetPkt07_AltGunDispatch), 0},
     0,

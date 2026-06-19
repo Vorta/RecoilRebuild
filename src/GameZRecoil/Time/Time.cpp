@@ -9,14 +9,50 @@ extern "C" unsigned long __stdcall GetTickCount();
 #endif
 
 extern "C" {
+/**
+ * Reimplements data 0x4e2fa8: g_Time_MaximumDeltaTimeSec.
+ * Purpose: Stores g Time MaximumDeltaTimeSec data used by engine.time_runtime_globals.
+ */
 float g_Time_MaximumDeltaTimeSec = 0.125f;
+/**
+ * Reimplements data 0x4e2fac: g_Time_DeltaTimeClampEnabled.
+ * Purpose: Stores g Time DeltaTimeClampEnabled data used by engine.time_runtime_globals.
+ */
 int g_Time_DeltaTimeClampEnabled = 1;
+/**
+ * Reimplements data 0x4e2fb0: g_Time_CurrentTimeSec.
+ * Purpose: Stores g Time CurrentTimeSec data used by engine.time_runtime_globals.
+ */
 float g_Time_CurrentTimeSec = 0.0f;
+/**
+ * Reimplements data 0x4e2fb4: g_Time_NewTimeSec.
+ * Purpose: Stores g Time NewTimeSec data used by engine.time_runtime_globals.
+ */
 float g_Time_NewTimeSec = 0.0f;
+/**
+ * Reimplements data 0x4e2fb8: g_Time_TimeScaleFactor.
+ * Purpose: Stores g Time TimeScaleFactor data used by engine.time_runtime_globals.
+ */
 float g_Time_TimeScaleFactor = 1.0f;
+/**
+ * Reimplements data 0x56b424: g_FrameDeltaTimeSec.
+ * Purpose: Stores g FrameDeltaTimeSec data used by engine.time_runtime_globals.
+ */
 float g_FrameDeltaTimeSec = 0.0f;
+/**
+ * Reimplements data 0x56b428: g_Time_AccumulatedTimeSec.
+ * Purpose: Stores g Time AccumulatedTimeSec data used by engine.time_runtime_globals.
+ */
 float g_Time_AccumulatedTimeSec = 0.0f;
+/**
+ * Reimplements data 0x56b42c: g_Time_UnscaledDeltaTimeSec.
+ * Purpose: Stores g Time UnscaledDeltaTimeSec data used by engine.time_runtime_globals.
+ */
 float g_Time_UnscaledDeltaTimeSec = 0.0f;
+/**
+ * Reimplements data 0x56b430: g_Time_UnscaledAccumulatedTimeSec.
+ * Purpose: Stores g Time UnscaledAccumulatedTimeSec data used by engine.time_runtime_globals.
+ */
 float g_Time_UnscaledAccumulatedTimeSec = 0.0f;
 }
 
