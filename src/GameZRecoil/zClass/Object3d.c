@@ -52,7 +52,7 @@ namespace {
         int nullLine,
         int dataLine,
         int classLine
-    ){
+    ) {
         if (node == 0) {
             zError::ReportOld(
                 0x400,
@@ -133,7 +133,7 @@ namespace {
     void QueueTransformUpdate(
         zClass_NodePartial * node,
         zClass_Object3DDataPartial * data
-    ){
+    ) {
         data->flags |= 0x01;
         zClass_Node::PropagateTransformDirtyRecursive(node);
         if ((node->flags & 0x01) == 0) {
@@ -158,7 +158,7 @@ namespace {
         float x,
         float y,
         float z
-    ){
+    ) {
         if ((data->flags & 0x08) != 0 && (x != 0.0f || y != 0.0f || z != 0.0f)) {
             data->flags &= ~0x08;
         }
@@ -174,7 +174,7 @@ namespace {
         zClass_NodePartial * node,
         int siblingCountHint,
         int *clipMask
-    ){
+    ) {
         int testNeeded = 0;
         if (g_zClass_ObjectHseTestEnabled == 0) {
             testNeeded =
@@ -226,7 +226,7 @@ namespace {
     void PushObjectMatrix(
         zClass_Object3DDataPartial * data,
         int *pushed
-    ){
+    ) {
         const int flags = data->flags;
         if ((flags & 0x08) != 0) {
             *pushed = 0;
@@ -347,7 +347,7 @@ namespace {
     void RenderObjectChildren(
         zClass_NodePartial * node,
         int clipMask
-    ){
+    ) {
         if (node->listCountB <= 0) {
             return;
         }
@@ -385,7 +385,7 @@ namespace zClass_Object3D {
     RenderTraverse(
         zClass_NodePartial * node,
         int siblingCountHint
-    ){
+    ) {
         const int flags = node->flags;
         int boundsContextPushed = 0;
         if ((flags & kObject3DVisibleFlag) == 0) {
@@ -510,7 +510,7 @@ namespace zClass_Object3D {
     gwObject3DAddChild(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
-    ){
+    ) {
         if (parent == 0) {
             zError::ReportOld(
                 0x400,
@@ -555,7 +555,7 @@ namespace zClass_Object3D {
     RemoveChild(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
-    ){
+    ) {
         if (parent == 0) {
             zError::ReportOld(
                 0x400,
@@ -668,7 +668,7 @@ namespace zClass_Object3D {
     gwObject3DSetVisibleFlag(
         zClass_NodePartial * node,
         int visible
-    ){
+    ) {
         zClass_Object3DDataPartial *data = GetObject3DData(
             node,
             0x1b1,
@@ -698,7 +698,7 @@ namespace zClass_Object3D {
         zClass_NodePartial * node,
         zColorRgb * color,
         float alpha
-    ){
+    ) {
         zClass_Object3DDataPartial *data = GetObject3DData(
             node,
             0x1d9,
@@ -728,7 +728,7 @@ namespace zClass_Object3D {
     gwObject3DSetAlphaScale(
         zClass_NodePartial * node,
         float alphaScale
-    ){
+    ) {
         zClass_Object3DDataPartial *data = GetObject3DData(
             node,
             0x21f,
@@ -752,7 +752,7 @@ namespace zClass_Object3D {
     gwObject3DGetAlphaScale(
         zClass_NodePartial * node,
         float *outAlphaScale
-    ){
+    ) {
         zClass_Object3DDataPartial *data = GetObject3DData(
             node,
             0x238,
@@ -776,7 +776,7 @@ namespace zClass_Object3D {
     int __fastcall gwObject3DSetLitFlag(
         zClass_NodePartial * node,
         int lit
-    ){
+    ) {
         zClass_Object3DDataPartial *data = GetObject3DData(
             node,
             0x254,
@@ -806,7 +806,7 @@ namespace zClass_Object3D {
         float *outX,
         float *outY,
         float *outZ
-    ){
+    ) {
         zClass_Object3DDataPartial *data = GetObject3DDataNoClassCheck(
             node,
             0x331,
@@ -834,7 +834,7 @@ namespace zClass_Object3D {
         float x,
         float y,
         float z
-    ){
+    ) {
         zClass_Object3DDataPartial *data = GetObject3DDataNoClassCheck(
             node,
             0x294,
@@ -870,7 +870,7 @@ namespace zClass_Object3D {
         float *outX,
         float *outY,
         float *outZ
-    ){
+    ) {
         zClass_Object3DDataPartial *data = GetObject3DDataNoClassCheck(
             node,
             0x3a9,
@@ -898,7 +898,7 @@ namespace zClass_Object3D {
         float x,
         float y,
         float z
-    ){
+    ) {
         zClass_Object3DDataPartial *data = GetObject3DDataNoClassCheck(
             node,
             0x357,
@@ -938,7 +938,7 @@ namespace zClass_Object3D {
         float dx,
         float dy,
         float dz
-    ){
+    ) {
         zClass_Object3DDataPartial *data = GetObject3DDataNoClassCheck(
             node,
             0x3cf,
@@ -978,7 +978,7 @@ namespace zClass_Object3D {
         float *outX,
         float *outY,
         float *outZ
-    ){
+    ) {
         zClass_Object3DDataPartial *data = GetObject3DData(
             node,
             0x41a,
@@ -1007,7 +1007,7 @@ namespace zClass_Object3D {
         float x,
         float y,
         float z
-    ){
+    ) {
         zClass_Object3DDataPartial *data = GetObject3DDataNoClassCheck(
             node,
             0x441,
@@ -1046,7 +1046,7 @@ namespace zClass_Object3D {
         float dx,
         float dy,
         float dz
-    ){
+    ) {
         zClass_Object3DDataPartial *data = GetObject3DData(
             node,
             0x47e,
@@ -1104,7 +1104,7 @@ namespace zClass_Object3D {
     gwObject3DSetMatrix(
         zClass_NodePartial * node,
         float *matrix
-    ){
+    ) {
         zClass_Object3DDataPartial *data = GetObject3DData(
             node,
             0x4bb,

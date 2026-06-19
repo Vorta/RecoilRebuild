@@ -17,7 +17,7 @@ namespace {
     inline void IncludePoint(
         zBoundsMinMaxPartial * bounds,
         const zVec3 *point
-    ){
+    ) {
         if (point->x < bounds->min.x) {
             bounds->min.x = point->x;
         }
@@ -46,7 +46,7 @@ namespace {
     inline void InitializeBounds(
         zBoundsMinMaxPartial * bounds,
         const zVec3 *point
-    ){
+    ) {
         bounds->min = *point;
         bounds->max = *point;
     }
@@ -64,7 +64,7 @@ namespace {
     void *CopyArrayBytes(
         const void *source,
         size_t byteCount
-    ){
+    ) {
         void *const copy = malloc(byteCount);
         if (copy != 0 && source != 0 && byteCount != 0) {
             memcpy(
@@ -85,7 +85,7 @@ namespace {
         void **dest,
         void *source,
         size_t byteCount
-    ){
+    ) {
         if (byteCount != 0) {
             *dest = CopyArrayBytes(
                 source,
@@ -191,7 +191,7 @@ namespace zDi {
     void __fastcall SetFlagBit0(
         zDiPartial * self,
         int enabled
-    ){
+    ) {
         if (self != 0) {
             self->flags = ((enabled ^ self->flags) & 1) ^ self->flags;
         }
@@ -205,7 +205,7 @@ namespace zDi {
     void __fastcall SetClonedFlag(
         zDiPartial * self,
         int isCloned
-    ){
+    ) {
         if (self != 0) {
             self->flags = (self->flags & ~0x02) | ((isCloned & 1) << 1);
         }
@@ -220,7 +220,7 @@ namespace zDi {
         zDiPartial * self,
         int cloneMaterials,
         int cloneAuxOnly
-    ){
+    ) {
         if (self == 0) {
             return 0;
         }
@@ -403,7 +403,7 @@ namespace zDi {
     void __fastcall BuildAabb(
         zDiPartial * self,
         zBoundsMinMaxPartial * outBoundsMinMax
-    ){
+    ) {
         int i;
         int j;
 
@@ -461,7 +461,7 @@ namespace zDi {
     void __fastcall BuildOriginSymmetricAabb(
         zDiPartial * self,
         zBoundsMinMaxPartial * outBoundsMinMax
-    ){
+    ) {
         BuildAabb(
             self,
             outBoundsMinMax
@@ -519,7 +519,7 @@ namespace zDi {
     void __fastcall RebuildBounds(
         zDiPartial * self,
         zBoundsMinMaxPartial * outBoundsMinMax
-    ){
+    ) {
         if (self == 0 || outBoundsMinMax == 0) {
             return;
         }
@@ -592,7 +592,7 @@ namespace zModel_Material {
     int __fastcall CompareForReuse(
         zModel_MaterialPartial * lhs,
         zModel_MaterialPartial * rhs
-    ){
+    ) {
         if (lhs->currentTextureDirectoryEntry != rhs->currentTextureDirectoryEntry) {
             return 1;
         }
@@ -689,7 +689,7 @@ namespace zModel_Material {
     int __fastcall SetUserTag(
         zModel_MaterialPartial * material,
         int userTag
-    ){
+    ) {
         if (material == 0) {
             return 0;
         }
@@ -706,7 +706,7 @@ namespace zModel_Material {
     int __fastcall SetCycleTextureCount(
         zModel_MaterialPartial * material,
         int textureCount
-    ){
+    ) {
         if (material == &g_zModel_DefaultMaterial) {
             return 0;
         }
@@ -818,7 +818,7 @@ namespace zModel_Material {
     int __fastcall SetCycleTextureLoop(
         zModel_MaterialPartial * material,
         int loopEnabled
-    ){
+    ) {
         if (material != 0) {
             if ((material->flags & 0x0400) != 0) {
                 zModel_MaterialCyclePartial *const cycle = material->cycle;
@@ -847,7 +847,7 @@ namespace zModel_Material {
     int __fastcall SetCycleTextureSpeed(
         zModel_MaterialPartial * material,
         float cycleSpeed
-    ){
+    ) {
         if (material != 0) {
             if ((material->flags & 0x0400) != 0) {
                 zModel_MaterialCyclePartial *const cycle = material->cycle;

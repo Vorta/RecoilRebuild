@@ -59,7 +59,7 @@ namespace {
     bool ReportNullNode(
         int sourceLine,
         zClass_NodePartial *node
-    ){
+    ) {
         if (node != 0) {
             return false;
         }
@@ -133,7 +133,7 @@ namespace {
     zMat4x3 *MatrixAt(
         void *base,
         size_t offset
-    ){
+    ) {
         return (zMat4x3 *)((unsigned char *)(base) + offset);
     }
 
@@ -141,7 +141,7 @@ namespace {
     const zMat4x3 *MatrixAt(
         const void *base,
         size_t offset
-    ){
+    ) {
         return (const zMat4x3 *)((const unsigned char *)(base) + offset);
     }
 
@@ -149,7 +149,7 @@ namespace {
     zVec3 *Vec3At(
         void *base,
         size_t offset
-    ){
+    ) {
         return (zVec3 *)((unsigned char *)(base) + offset);
     }
 
@@ -157,7 +157,7 @@ namespace {
     const zVec3 *Vec3At(
         const void *base,
         size_t offset
-    ){
+    ) {
         return (const zVec3 *)((const unsigned char *)(base) + offset);
     }
 
@@ -207,7 +207,7 @@ namespace {
     void CopyBBoxToCorners(
         const zBBox3f *bbox,
         zBBoxCorners *outCorners
-    ){
+    ) {
         float *out = outCorners->values;
         out[0] = bbox->minX;
         out[1] = bbox->minY;
@@ -274,7 +274,7 @@ namespace {
     void ExpandBBoxWithCorner(
         zBBox3f * bbox,
         const float *corner
-    ){
+    ) {
         if (corner[0] < bbox->minX) {
             bbox->minX = corner[0];
         } else if (corner[0] > bbox->maxX) {
@@ -296,7 +296,7 @@ namespace {
     zBBox3f MergeBBoxes(
         const zBBox3f *a,
         const zBBox3f *b
-    ){
+    ) {
         zBBox3f merged = {0};
         merged.minX = a->minX < b->minX ? a->minX : b->minX;
         merged.minY = a->minY < b->minY ? a->minY : b->minY;
@@ -311,7 +311,7 @@ namespace {
     void CopyBBoxToCachedBounds(
         zClass_NodePartial * node,
         const zBBox3f *bbox
-    ){
+    ) {
         memcpy(
             node->cachedBounds,
             bbox,
@@ -533,7 +533,7 @@ namespace zClass_Class {
     gwNodeGetBBox(
         zClass_NodePartial * node,
         zBBox3f * outBBox
-    ){
+    ) {
         if (ReportNullNode(
             0x7f9,
             node
@@ -566,7 +566,7 @@ namespace zClass_Class {
     gwNodeGetWorldBBoxCorners(
         zClass_NodePartial * node,
         zBBoxCorners * outCorners
-    ){
+    ) {
         if (ReportNullNode(
             0x81b,
             node
@@ -633,7 +633,7 @@ namespace zClass_Class {
     gwNodeGetViewBBoxCorners(
         zClass_NodePartial * node,
         zBBoxCorners * outCorners
-    ){
+    ) {
         if (ReportNullNode(
             0x85f,
             node
@@ -938,7 +938,7 @@ namespace zClass_Class {
     int __fastcall gwNodeSetActive(
         zClass_NodePartial * node,
         int active
-    ){
+    ) {
         if (ReportNullNode(
             0x38d,
             node
@@ -985,7 +985,7 @@ namespace zClass_Class {
     int __fastcall gwNodeSetFlag16(
         zClass_NodePartial * node,
         int value
-    ){
+    ) {
         if (ReportNullNode(
             0x3b7,
             node
@@ -1010,7 +1010,7 @@ namespace zClass_Class {
     int __fastcall gwNodeSetFlag17(
         zClass_NodePartial * node,
         int value
-    ){
+    ) {
         if (ReportNullNode(
             0x3c6,
             node
@@ -1036,7 +1036,7 @@ namespace zClass_Class {
     int __fastcall gwNodeSetDisplayInstance(
         zClass_NodePartial * node,
         zDiPartial * displayInstance
-    ){
+    ) {
         if (ReportNullNode(
             0x424,
             node
@@ -1084,7 +1084,7 @@ namespace zClass_Class {
     int __fastcall gwNodeSetName(
         zClass_NodePartial * node,
         const char *name
-    ){
+    ) {
         if (ReportNullNode(
             0x3df,
             node
@@ -1135,7 +1135,7 @@ namespace zClass_Class {
     int __fastcall gwNodeGetUserData(
         zClass_NodePartial * node,
         unsigned int *outData
-    ){
+    ) {
         if (ReportNullNode(
             0x464,
             node
@@ -1156,7 +1156,7 @@ namespace zClass_Class {
     int __fastcall gwNodeSetActionCallback(
         zClass_NodePartial * node,
         void *actionCallback
-    ){
+    ) {
         if (ReportNullNode(
             0x47e,
             node
@@ -1207,7 +1207,7 @@ namespace zClass_Class {
     int __fastcall gwNodeSetActionCallbackTail(
         zClass_NodePartial * node,
         void *actionCallback
-    ){
+    ) {
         if (ReportNullNode(
             0x4c3,
             node
@@ -1259,7 +1259,7 @@ namespace zClass_Class {
     int __fastcall gwNodeSetPriority(
         zClass_NodePartial * node,
         int priority
-    ){
+    ) {
         if (ReportNullNode(
             0x4fc,
             node
@@ -1294,7 +1294,7 @@ namespace zClass_Class {
     int __fastcall gwNodeSetCellPickable(
         zClass_NodePartial * node,
         int value
-    ){
+    ) {
         if (ReportNullNode(
             0x529,
             node
@@ -1319,7 +1319,7 @@ namespace zClass_Class {
     int __fastcall gwNodeGetCellPickable(
         zClass_NodePartial * node,
         int *outValue
-    ){
+    ) {
         if (ReportNullNode(
             0x542,
             node
@@ -1339,7 +1339,7 @@ namespace zClass_Class {
     int __fastcall gwNodeGetNodeType(
         zClass_NodePartial * node,
         int *outValue
-    ){
+    ) {
         if (ReportNullNode(
             0x556,
             node
@@ -1359,7 +1359,7 @@ namespace zClass_Class {
     int __fastcall gwNodeSetRaycastable(
         zClass_NodePartial * node,
         int value
-    ){
+    ) {
         if (ReportNullNode(
             0x56c,
             node
@@ -1384,7 +1384,7 @@ namespace zClass_Class {
     int __fastcall gwNodeGetRaycastable(
         zClass_NodePartial * node,
         int *outValue
-    ){
+    ) {
         if (ReportNullNode(
             0x584,
             node
@@ -1404,7 +1404,7 @@ namespace zClass_Class {
     int __fastcall gwNodeSetPickable(
         zClass_NodePartial * node,
         int value
-    ){
+    ) {
         if (ReportNullNode(
             0x59a,
             node
@@ -1429,7 +1429,7 @@ namespace zClass_Class {
     int __fastcall gwNodeGetPickable(
         zClass_NodePartial * node,
         int *outValue
-    ){
+    ) {
         if (ReportNullNode(
             0x5b2,
             node
@@ -1450,7 +1450,7 @@ namespace zClass_Class {
     int __fastcall gwNodeSetHasHitCallback(
         zClass_NodePartial * node,
         int value
-    ){
+    ) {
         if (ReportNullNode(
             0x5c7,
             node
@@ -1475,7 +1475,7 @@ namespace zClass_Class {
     int __fastcall gwNodeSetBypassFarClip(
         zClass_NodePartial * node,
         int value
-    ){
+    ) {
         if (ReportNullNode(
             0x5e1,
             node
@@ -1501,7 +1501,7 @@ namespace zClass_Class {
     int __fastcall gwNodeSetNodeType(
         zClass_NodePartial * node,
         int nodeType
-    ){
+    ) {
         if (node == 0) {
             zError::ReportOld(
                 0x400,
@@ -1525,7 +1525,7 @@ namespace zClass_Class {
     int __fastcall gwNodeClearVariantGate(
         zClass_NodePartial * node,
         int value
-    ){
+    ) {
         if (ReportNullNode(
             0x60f,
             node
@@ -1547,7 +1547,7 @@ namespace zClass_Class {
     int __fastcall gwNodeSetVertexAlphaOverride(
         zClass_NodePartial * node,
         int value
-    ){
+    ) {
         if (ReportNullNode(
             0x62d,
             node
@@ -1606,7 +1606,7 @@ namespace zClass_Class {
     FindSubNodeByName(
         zClass_NodePartial * root,
         const char *name
-    ){
+    ) {
         if (root == 0) {
             return 0;
         }
@@ -1642,7 +1642,7 @@ namespace zClass_Class {
     zClass_NodePartial *__fastcall FindNodeRecursiveByName(
         zClass_NodePartial * root,
         const char *name
-    ){
+    ) {
         if (ReportNullNode(
             0x33a,
             root
@@ -1714,7 +1714,7 @@ namespace zClass_Class {
     int __fastcall SetSingleParentFlagRecursive(
         zClass_NodePartial * node,
         int setFlag
-    ){
+    ) {
         if (node == 0) {
             return 1;
         }
@@ -1748,7 +1748,7 @@ namespace zClass_Class {
     int __fastcall AddChildValidated(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
-    ){
+    ) {
         if (ValidateParentChildForSwitch(
             parent,
             child,
@@ -1775,7 +1775,7 @@ namespace zClass_Class {
     int __fastcall RemoveChildValidated(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
-    ){
+    ) {
         if (ValidateParentChildForSwitch(
             parent,
             child,
@@ -1801,7 +1801,7 @@ namespace zClass_Class {
     int __fastcall AddChild(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
-    ){
+    ) {
         if (child == 0) {
             zError::ReportOld(
                 0x400,
@@ -1893,7 +1893,7 @@ namespace zClass_Class {
     int __fastcall RemoveChild(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
-    ){
+    ) {
         if (parent == 0) {
             zError::ReportOld(
                 0x400,
@@ -1991,7 +1991,7 @@ namespace zClass_Class {
     int __fastcall AddChildGeneric(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
-    ){
+    ) {
         const int newChildCount = parent->listCountB + 1;
         parent->listB = (zClass_NodePartial **)(realloc(
             parent->listB,
@@ -2036,7 +2036,7 @@ namespace zClass_Class {
     int __fastcall RemoveChildGeneric(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
-    ){
+    ) {
         int childIndex = -1;
         for (int i = 0; i < parent->listCountB; ++i) {
             if (parent->listB[i] == child) {
@@ -2229,7 +2229,7 @@ namespace gwNode {
     int __fastcall BuildNodeToAncestorMatrix(
         zClass_NodePartial * node,
         int matMode
-    ){
+    ) {
         zVec3 unitScale = {1.0f, 1.0f, 1.0f};
         zVec3 zeroAngles = {0};
 
@@ -2417,7 +2417,7 @@ namespace gwNode {
     int __fastcall GetWorldPosition(
         zClass_NodePartial * node,
         zVec3 * outPosition
-    ){
+    ) {
         if (node == 0) {
             return 1;
         }
@@ -2456,7 +2456,7 @@ namespace gwNode {
     int __fastcall TransformPoint(
         zClass_NodePartial * node,
         zVec3 * point
-    ){
+    ) {
         if (node == 0) {
             return 1;
         }
@@ -2558,7 +2558,7 @@ namespace zClass_Class {
     gwNodeRenderDispatch(
         zClass_NodePartial * node,
         int siblingCountHint
-    ){
+    ) {
         const int variantId = node->nodeType;
         const int variantAllowed = VariantTag::CurrentAllowsId(variantId);
         if (variantAllowed == 0) {
@@ -2628,7 +2628,7 @@ namespace zClass_Node {
     void __fastcall MaskExtraFlagsRecursive(
         zClass_NodePartial * self,
         int mask
-    ){
+    ) {
         self->auxFlags &= mask;
 
         for (int i = 0; i < self->listCountB; ++i) {
@@ -2650,7 +2650,7 @@ namespace zClass_Node {
     void __fastcall PropagateExtraFlagsRecursive(
         zClass_NodePartial * self,
         int flags
-    ){
+    ) {
         self->auxFlags |= flags;
 
         for (int i = 0; i < self->listCountB; ++i) {
@@ -2672,7 +2672,7 @@ namespace zClass_Node {
     void __fastcall PropagateFlagsRecursive(
         zClass_NodePartial * self,
         int flags
-    ){
+    ) {
         self->flags |= flags;
 
         for (int i = 0; i < self->listCountB; ++i) {
@@ -2693,7 +2693,7 @@ namespace zClass_Node {
         zClass_NodePartial * self,
         zClass_NodePartial * context,
         int flagMask
-    ){
+    ) {
         self->callbackContext = context;
         self->flags |= flagMask;
 
@@ -2719,7 +2719,7 @@ namespace zClass_Node {
     void __fastcall SetDiFlagBit0Recursive(
         zClass_NodePartial * node,
         int enabled
-    ){
+    ) {
         unsigned int userData;
         zClass_Class::gwNodeGetUserData(
             node,
@@ -2750,7 +2750,7 @@ namespace zClass_Node {
     void __fastcall SetMaterialFlagBit9ForFlagBit0EntriesRecursive(
         zClass_NodePartial * node,
         int enabled
-    ){
+    ) {
         zDiPartial *di = (zDiPartial *)((unsigned int)(node->userDataOrDiRef));
         if (di != 0) {
             zDi::SetMaterialFlagBit9ForFlagBit0Entries(
@@ -2812,7 +2812,7 @@ namespace zClass_Node {
     void __fastcall AssignInt32ToDiRecursive(
         zClass_NodePartial * node,
         int value
-    ){
+    ) {
         zDiPartial *di = (zDiPartial *)((unsigned int)(node->userDataOrDiRef));
         if (di != 0) {
             zDi::SetFlagBit0(

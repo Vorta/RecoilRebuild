@@ -14,7 +14,7 @@ namespace zError {
         HWND hWnd,
         int maxBytes,
         const char *
-    ){
+    ) {
         g_RecoilError_OutputByteCount = 0;
         g_RecoilError_OutputMaxBytes = maxBytes;
         g_RecoilError_OutputHWnd = hWnd;

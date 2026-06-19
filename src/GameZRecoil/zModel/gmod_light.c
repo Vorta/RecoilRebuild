@@ -98,7 +98,7 @@ namespace {
     float EvalHeightFogFade(
         const zVec3 *point,
         float radius
-    ){
+    ) {
         float projectedY = 0.0f;
         zMath::Vec3ArrayProjectToCachedY(
             point,
@@ -145,7 +145,7 @@ namespace {
     float DotVec3(
         const zVec3 &a,
         const zVec3 &b
-    ){
+    ) {
         return a.x * b.x + a.y * b.y + a.z * b.z;
     }
 
@@ -158,7 +158,7 @@ namespace {
     zVec3 SubtractVec3(
         const zVec3 &a,
         const zVec3 &b
-    ){
+    ) {
         zVec3 result = {a.x - b.x, a.y - b.y, a.z - b.z};
         return result;
     }
@@ -382,7 +382,7 @@ namespace zModel_Light {
     EvalDistanceWeight(
         const zClass_LightDataPartial *light,
         float distance
-    ){
+    ) {
         if (distance >= light->range2) {
             return 0.0f;
         }
@@ -403,7 +403,7 @@ namespace zModel_Light {
     float __fastcall EvalSphereFogFade(
         const zVec3 *point,
         float radius
-    ){
+    ) {
         const float distSqXZ = point->x * point->x + point->z * point->z;
         const float distanceXZ = ApproximateSqrtFromBits(distSqXZ);
         const float farEdge = distanceXZ + radius;
@@ -443,7 +443,7 @@ namespace zModel_Light {
     int __fastcall BuildAttr0DepthFade(
         int vertexCount,
         int *outHasVariation
-    ){
+    ) {
         const float kVisibleAttrThreshold = 1.0f / 255.0f;
 
         float radialDistance[0x40] = {0};
@@ -531,7 +531,7 @@ namespace zModel_Light {
     int __fastcall BuildAttr1Falloff(
         int vertexCount,
         int *pLightingFlags
-    ){
+    ) {
         const float kVisibleAttrThreshold = 1.0f / 255.0f;
 
         float radialDistance[0x40] = {0};
@@ -1300,7 +1300,7 @@ namespace zModel_Light {
     PointInPolygonTestRadiusXZ(
         const zVec3 *sphereCenter,
         float radius
-    ){
+    ) {
         float lightDistances[0x40] = {0};
         int result = 0;
         int hasSoftwarePointLight = 0;

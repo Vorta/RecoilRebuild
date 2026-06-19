@@ -13,7 +13,7 @@ namespace {
     int ReportWindowClassError(
         int sourceLine,
         const char *message
-    ){
+    ) {
         zError::ReportOld(
             0x400,
             "GameZRecoil/zClass/Window.c",
@@ -30,7 +30,7 @@ namespace {
         int nullLine,
         int dataLine,
         int classLine
-    ){
+    ) {
         if (node == 0) {
             ReportWindowClassError(
                 nullLine,
@@ -168,7 +168,7 @@ namespace zClass_Window {
         zClass_NodePartial * node,
         int width,
         int height
-    ){
+    ) {
         zClass_WindowDataPartial *data = GetWindowData(
             node,
             0xcd,
@@ -190,7 +190,7 @@ namespace zClass_Window {
         zClass_NodePartial * node,
         int *outWidth,
         int *outHeight
-    ){
+    ) {
         int result = 0;
         zClass_WindowDataPartial *data = GetWindowDataOldMessages(
             node,
@@ -214,7 +214,7 @@ namespace zClass_Window {
         zClass_NodePartial * node,
         int width,
         int height
-    ){
+    ) {
         zClass_WindowDataPartial *data = GetWindowData(
             node,
             0x102,
@@ -236,7 +236,7 @@ namespace zClass_Window {
         zClass_NodePartial * node,
         int *outWidth,
         int *outHeight
-    ){
+    ) {
         int result = 0;
         zClass_WindowDataPartial *data =
             GetWindowDataOldMessages(
@@ -260,7 +260,7 @@ namespace zClass_Window {
     gwWindowSetBuffer(
         zClass_NodePartial * node,
         int bufferIndex
-    ){
+    ) {
         int result = 0;
         zClass_WindowDataPartial *data =
             GetWindowDataOldMessages(
@@ -283,7 +283,7 @@ namespace zClass_Window {
     gwWindowSetClearPolygon(
         zClass_NodePartial * node,
         int enabled
-    ){
+    ) {
         int result = 0;
         zClass_WindowDataPartial *data =
             GetWindowDataOldMessages(
@@ -311,7 +311,7 @@ namespace zClass_Window {
     gwWindowAddClearPolygonVertex(
         zClass_NodePartial * node,
         const zVec3 *point
-    ){
+    ) {
         int result = 0;
         zClass_WindowDataPartial *data =
             GetWindowDataOldMessages(

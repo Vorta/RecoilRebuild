@@ -30,7 +30,7 @@ namespace {
         zClass_NodePartial * node,
         int nullLine,
         int dataLine
-    ){
+    ) {
         if (node == 0) {
             zError::ReportOld(
                 0x400,
@@ -88,7 +88,7 @@ namespace {
         zClass_NodePartial * node,
         int siblingCountHint,
         int *clipMask
-    ){
+    ) {
         int result = 0;
         if ((*clipMask != 0 && siblingCountHint > 1) || (node->flags & 0x00080000) == 0) {
             if ((node->boundsFlags & 0x04) != 0 || g_zClass_RenderBoundsContextActive != 0 ||
@@ -131,7 +131,7 @@ namespace {
     void RenderNodeAndChildren(
         zClass_NodePartial * node,
         int clipMask
-    ){
+    ) {
         node->flags |= 0x80000000;
         zDiPartial *di = (zDiPartial *)(unsigned int)node->userDataOrDiRef;
         if (di != 0 && g_zClass_RenderRangeFadeActive != 0) {
@@ -396,7 +396,7 @@ namespace zClass_Light {
     int __fastcall RemoveChild(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
-    ){
+    ) {
         if (parent == 0) {
             zError::ReportOld(
                 0x400,
@@ -432,7 +432,7 @@ namespace zClass_Light {
     int __fastcall gwLightSetIntensity(
         zClass_NodePartial * node,
         float intensity
-    ){
+    ) {
         zClass_LightDataPartial *data = GetLightData(
             node,
             0x157,
@@ -456,7 +456,7 @@ namespace zClass_Light {
     int __fastcall gwLightSetFalloff(
         zClass_NodePartial * node,
         float falloff
-    ){
+    ) {
         zClass_LightDataPartial *data = GetLightData(
             node,
             0x176,
@@ -480,7 +480,7 @@ namespace zClass_Light {
     int __fastcall gwLightSetConeAngle(
         zClass_NodePartial * node,
         unsigned int coneAngleBits
-    ){
+    ) {
         zClass_LightDataPartial *data = GetLightData(
             node,
             0x196,
@@ -552,7 +552,7 @@ namespace zClass_Light {
     int __fastcall gwLightSetParam(
         zClass_NodePartial * node,
         int param
-    ){
+    ) {
         zClass_LightDataPartial *data = GetLightData(
             node,
             0x1f2,
@@ -577,7 +577,7 @@ namespace zClass_Light {
         zClass_NodePartial * node,
         float rangeA,
         float rangeB
-    ){
+    ) {
         zClass_LightDataPartial *data = GetLightData(
             node,
             0x211,
@@ -616,7 +616,7 @@ namespace zClass_Light {
         zClass_NodePartial * node,
         float *outRange1,
         float *outRange2
-    ){
+    ) {
         zClass_LightDataPartial *data = GetLightData(
             node,
             0x242,
@@ -642,7 +642,7 @@ namespace zClass_Light {
         float x,
         float y,
         float z
-    ){
+    ) {
         zClass_LightDataPartial *data = GetLightData(
             node,
             0x266,
@@ -672,7 +672,7 @@ namespace zClass_Light {
         float x,
         float y,
         float z
-    ){
+    ) {
         zClass_LightDataPartial *data = GetLightData(
             node,
             0x2da,
@@ -700,7 +700,7 @@ namespace zClass_Light {
     int __fastcall ComputeWorldTransform(
         zClass_NodePartial * node,
         zClass_LightDataPartial * data
-    ){
+    ) {
         zVec3 localPointA = {0.0f, 0.0f, 0.0f};
         zVec3 localPointB = {0.0f, 0.0f, -1.0f};
         zMat4x3 slotBuffer = {0};
@@ -835,7 +835,7 @@ namespace zClass_Light {
         float red,
         float green,
         float blue
-    ){
+    ) {
         zClass_LightDataPartial *data = GetLightData(
             node,
             0x40f,
@@ -862,7 +862,7 @@ namespace zClass_Light {
     int __fastcall RenderTraverse(
         zClass_NodePartial * node,
         int siblingCountHint
-    ){
+    ) {
         const int flags = node->flags;
         int boundsContextPushed = 0;
         if ((flags & 0x04) == 0) {

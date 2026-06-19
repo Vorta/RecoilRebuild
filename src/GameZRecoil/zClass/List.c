@@ -92,7 +92,7 @@ namespace {
     int RemoveAllChildren(
         zClass_NodePartial * node,
         RemoveChildProc removeChild
-    ){
+    ) {
         while (node->listCountB > 0) {
             const int result = removeChild(
                 node,
@@ -222,7 +222,7 @@ namespace zClass_List {
         const char *filterText,
         int bucket,
         zClass_NodePredicate predicate
-    ){
+    ) {
         if (filterText != 0) {
             g_zClass_FilterIterText = filterText;
             g_zClass_FilterIterCursor = zClass_TypeList::GetBucketHead(bucket);
@@ -694,7 +694,7 @@ namespace zClass_TypeList {
     int __fastcall MarkPendingRemoval(
         int bucket,
         zClass_NodePartial *node
-    ){
+    ) {
         zClass_TypeListLink *link = zClass_TypeList::Head(bucket);
         if (link == 0) {
             return 1;
@@ -725,7 +725,7 @@ namespace zClass_TypeList {
     int __fastcall Insert(
         int bucket,
         zClass_NodePartial *node
-    ){
+    ) {
         zClass_TypeListLink *link = AllocLink();
         link->node = node;
 
@@ -764,7 +764,7 @@ namespace zClass_TypeList {
     int __fastcall InsertChildNodes(
         int bucket,
         zClass_NodePartial *node
-    ){
+    ) {
         zClass_TypeListLink *link = AllocLink();
         link->node = node;
 
@@ -1036,7 +1036,7 @@ namespace zClass {
     zClass_NodePartial *__fastcall FindByTypeAndName(
         int bucket,
         const char *name
-    ){
+    ) {
         for (zClass_TypeListLink *link = zClass_TypeList::Head(bucket); link != 0;
             link = link->next) {
             if (strcmp(
@@ -1069,7 +1069,7 @@ namespace zClass {
     zClass_NodePartial *__fastcall FindNextByTypePrefix(
         const char *prefixText,
         int bucket
-    ){
+    ) {
         if (prefixText != 0) {
             g_zClass_FilterIterPrefixLen = (int)(strlen(prefixText));
         }
@@ -1089,7 +1089,7 @@ namespace zClass {
     int __fastcall AnyNodeMatchesPredicateRecursive(
         zClass_NodePartial * root,
         zClass_NodePredicate predicate
-    ){
+    ) {
         if (predicate(root) == 1) {
             return 1;
         }
@@ -1114,7 +1114,7 @@ namespace zClass {
     int __fastcall RemoveChildChecked(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
-    ){
+    ) {
         if (parent == 0) {
             zError::ReportOld(
                 0x400,
@@ -1172,7 +1172,7 @@ namespace zClass_Class {
     zClass_NodePartial *__fastcall gwNodeFindNextByName(
         const char *name,
         int bucket
-    ){
+    ) {
         return zClass_List::IterateBucketFiltered(
             name,
             bucket,

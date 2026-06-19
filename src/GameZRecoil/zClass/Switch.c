@@ -13,7 +13,7 @@ namespace {
         zClass_NodePartial * node,
         int siblingCountHint,
         int *clipMask
-    ){
+    ) {
         int result = 0;
         if (*clipMask != 0 && siblingCountHint > 1) {
             if ((node->boundsFlags & 0x04) != 0 || g_zClass_RenderBoundsContextActive != 0) {
@@ -55,7 +55,7 @@ namespace zClass_Switch {
     RenderTraverse(
         zClass_NodePartial * node,
         int siblingCountHint
-    ){
+    ) {
         int boundsContextPushed = 0;
         const int flags = node->flags;
         if ((flags & 0x04) == 0) {

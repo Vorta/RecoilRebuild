@@ -61,7 +61,7 @@ namespace BBox {
         zBBoxCorners * corners,
         zVec3 * outCenter,
         float *outRadius
-    ){
+    ) {
         const zVec3 *corner = (const zVec3 *)corners->values;
         float minX = corner[0].x;
         float maxX = corner[0].x;
@@ -264,7 +264,7 @@ namespace zClass_cls_util {
     CopyNodeDisplayInstance(
         zClass_NodePartial * source,
         zClass_NodePartial * dest
-    ){
+    ) {
         int result = 0;
 
         if (source->userDataOrDiRef == 0) {
@@ -332,7 +332,7 @@ namespace zClass_cls_util {
     CopyNodeBaseData(
         zClass_NodePartial * source,
         zClass_NodePartial * dest
-    ){
+    ) {
         int result = zClass_Class::gwNodeSetName(
             dest,
             source->name
@@ -983,7 +983,7 @@ namespace zClass_cls_util {
         zClass_NodePartial * source,
         int cloneDiMode,
         int diArg0
-    ){
+    ) {
         if (source == 0) {
             zError::ReportOld(
                 0x400,
@@ -1013,7 +1013,7 @@ namespace zClass_cls_util {
         int cloneDiMode,
         int diArg0,
         int diArg1
-    ){
+    ) {
         if (source == 0) {
             zError::ReportOld(
                 0x400,
@@ -1047,7 +1047,7 @@ namespace BBox {
         const zBBox3f *bbox,
         zVec3 *outCenter,
         float *outRadius
-    ){
+    ) {
         const float halfX = (bbox->maxX - bbox->minX) * 0.5f;
         const float halfY = (bbox->maxY - bbox->minY) * 0.5f;
         const float halfZ = (bbox->maxZ - bbox->minZ) * 0.5f;

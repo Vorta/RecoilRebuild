@@ -44,7 +44,7 @@ namespace {
         zClass_NodePartial * node,
         int siblingCountHint,
         int *clipMask
-    ){
+    ) {
         int result = 0;
         if ((*clipMask != 0 && siblingCountHint > 1) || (node->flags & 0x00080000) == 0) {
             if ((node->boundsFlags & 0x04) != 0 || g_zClass_RenderBoundsContextActive != 0 ||
@@ -85,7 +85,7 @@ namespace {
     void RenderNodeAndChildren(
         zClass_NodePartial * node,
         int clipMask
-    ){
+    ) {
         node->flags |= 0x80000000;
         zDiPartial *di = (zDiPartial *)(unsigned int)node->userDataOrDiRef;
         if (di != 0 && g_zClass_RenderRangeFadeActive != 0) {
@@ -124,7 +124,7 @@ namespace zClass_Animate {
     AdvanceTime(
         zClass_AnimateRuntimePartial * runtime,
         float deltaTime
-    ){
+    ) {
         if (runtime->state == kAnimateStateStopped) {
             return kAnimateStateStopped;
         }
@@ -263,7 +263,7 @@ namespace zClass_Animate {
     AddChild(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
-    ){
+    ) {
         if (parent == 0) {
             zError::ReportOld(
                 0x400,
@@ -321,7 +321,7 @@ namespace zClass_Animate {
     RemoveChild(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
-    ){
+    ) {
         if (parent == 0) {
             zError::ReportOld(
                 0x400,
@@ -367,7 +367,7 @@ namespace zClass_Animate {
     RenderTraverse(
         zClass_NodePartial * node,
         int siblingCountHint
-    ){
+    ) {
         const int flags = node->flags;
         int boundsContextPushed = 0;
         if ((flags & 0x04) == 0) {

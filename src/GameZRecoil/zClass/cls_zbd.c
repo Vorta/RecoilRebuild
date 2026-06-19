@@ -29,7 +29,7 @@ namespace {
     inline int ReportZbdWriteFailure(
         int sourceLine,
         const char *message
-    ){
+    ) {
         zError::ReportOld(
             0x200,
             kClsZbdSourceFile,
@@ -43,7 +43,7 @@ namespace {
     inline int ReportZbdReadFailure(
         int sourceLine,
         const char *message
-    ){
+    ) {
         zError::ReportOld(
             0x200,
             kClsZbdSourceFile,
@@ -58,7 +58,7 @@ namespace {
         const void *data,
         size_t byteCount,
         void *stream
-    ){
+    ) {
         return fwrite(
             data,
             byteCount,
@@ -72,7 +72,7 @@ namespace {
         void *data,
         size_t byteCount,
         void *stream
-    ){
+    ) {
         return fread(
             data,
             byteCount,
@@ -271,7 +271,7 @@ namespace GameZ {
     OpenAndReadZBDHeader(
         const char *filename,
         zClass_ZbdHeader *outHeader
-    ){
+    ) {
         FILE *file = fopen(
             filename,
             "rb"
@@ -359,7 +359,7 @@ namespace GameZ_ZBD {
         zClass_NodePartial * *nodeRefList,
         int entryCount,
         void *stream
-    ){
+    ) {
         if (entryCount == 0) {
             return 0;
         }
@@ -408,7 +408,7 @@ namespace GameZ_ZBD {
     WriteSingleNodeClassData(
         zClass_NodePartial * node,
         void *stream
-    ){
+    ) {
         int result = 0;
         if (node->actionCallback != 0) {
             zError::ReportOld(
@@ -753,7 +753,7 @@ namespace GameZ_ZBD {
         zClass_NodePartial * *nodeRefList,
         int entryCount,
         void *stream
-    ){
+    ) {
         if (entryCount == 0) {
             return 0;
         }
@@ -788,7 +788,7 @@ namespace GameZ_ZBD {
     ReadSingleNodeClassData(
         zClass_NodePartial * node,
         void *stream
-    ){
+    ) {
         int result = 0;
         switch (node->classId) {
         case 0:
@@ -1202,7 +1202,7 @@ namespace GameZ_ZBD {
     int __fastcall ReadNodeTable(
         int nodeCount,
         void *stream
-    ){
+    ) {
         if (nodeCount == 0) {
             return 0;
         }
@@ -1289,7 +1289,7 @@ namespace GameZ_ZBD {
     ReloadDisplayInstancesFromCurrentPath_Local(
         zClass_NodePartial * node,
         int recurseChildren
-    ){
+    ) {
         if (strlen(g_zClass_CurrentZbdPath) == 0) {
             return 1;
         }
