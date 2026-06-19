@@ -174,7 +174,7 @@ namespace {
     const char *zReaderArrayString(
         zReader::Node * node,
         int index
-    ){
+    ) {
         return node->value.nodes[index].value.str;
     }
 
@@ -182,7 +182,7 @@ namespace {
     int zReaderArrayInt(
         zReader::Node * node,
         int index
-    ){
+    ) {
         return node->value.nodes[index].value.i32;
     }
 
@@ -190,7 +190,7 @@ namespace {
     float zReaderArrayFloat(
         zReader::Node * node,
         int index
-    ){
+    ) {
         zReader::Node *const valueNode = &node->value.nodes[index];
         if (valueNode->type == zReader::ZRDR_NODE_INT) {
             return (float)(valueNode->value.i32);
@@ -204,7 +204,7 @@ namespace {
         unsigned int &flags,
         unsigned int flag,
         int value
-    ){
+    ) {
         if (value != 0) {
             flags |= flag;
         } else {
@@ -244,7 +244,7 @@ namespace {
         zReader::Node * parentNode,
         const char *name,
         int index
-    ){
+    ) {
         zReader::Node *const node = zReader_GetNamedNode(
             parentNode,
             name
@@ -300,7 +300,7 @@ namespace {
     void LoadRadiusRange(
         zReader::Node * node,
         OptCatalogEntryDef * entry
-    ){
+    ) {
         const int count = zReaderArrayCount(node);
         if (count > 1 && zReaderArrayInt(
             node,
@@ -325,7 +325,7 @@ namespace {
     void LoadTimedStatusBlock(
         zReader::Node * node,
         OptCatalogEntryDef * entry
-    ){
+    ) {
         if (zReaderArrayCount(node) <= 6) {
             return;
         }
@@ -361,7 +361,7 @@ namespace {
     void LoadDesignateStatusBlock(
         zReader::Node * node,
         OptCatalogEntryDef * entry
-    ){
+    ) {
         if (zReaderArrayCount(node) <= 6) {
             return;
         }
@@ -399,7 +399,7 @@ namespace {
     void LoadDamageFeedbackOnHealth(
         zReader::Node * node,
         OptCatalogEntryDef * entry
-    ){
+    ) {
         const int count = zReaderArrayCount(node) - 1;
         entry->damageFeedbackVariantCount = count > 4 ? 4 : count;
         for (int i = 0; i < entry->damageFeedbackVariantCount; ++i) {
@@ -424,7 +424,7 @@ namespace {
     void LoadImpactFxTable(
         zReader::Node * impactNode,
         OptCatalogEntryDef * entry
-    ){
+    ) {
         if (g_zRndr_GlobalStringCount <= 0) {
             return;
         }
@@ -638,7 +638,7 @@ namespace zClass_Node {
         void *context,
         zClass_NodePartial *node,
         void *callback
-    ){
+    ) {
         OptCatalogDamageHandlerPartial *handler =
             (OptCatalogDamageHandlerPartial *)(((zClass_NodeFreeListSlot *)(node))
                 ->damageHandler);
@@ -704,7 +704,7 @@ namespace zClass_Node {
         void *callback,
         zClass_NodePartial *node,
         void *context
-    ){
+    ) {
         OptCatalogDamageHandlerPartial *handler =
             (OptCatalogDamageHandlerPartial *)(((zClass_NodeFreeListSlot *)(node))
                 ->damageHandler);
@@ -732,7 +732,7 @@ namespace zWeapon_OptCatalog {
     LoadKillVerbString(
         zReader::Node * entryNode,
         OptCatalogEntryDef * entry
-    ){
+    ) {
         char *const killVerbString = (char *)(calloc(
             1,
             20
@@ -1511,7 +1511,7 @@ namespace OptCatalog {
     AltGunDispatchAllocRuntimeGateCallback(
         OptCatalogEntryDef * self,
         void **saveStateSlot
-    ){
+    ) {
         const int ordinalIndex = self->ordinalIndex;
         if (ordinalIndex == 0 || ordinalIndex == 1) {
             return 1;
@@ -1591,7 +1591,7 @@ namespace OptCatalog {
     HandlePkt0A_RemoveRuntimeRelay(
         int,
         NetPkt0A_RemoveRuntimeRelay *packet
-    ){
+    ) {
         OptCatalogEntryDef *const entry =
             OptCatalog::FindEntryById((int)(packet->optCatalogEntryId));
 
@@ -2441,7 +2441,7 @@ namespace OptCatalog {
     ActivateTrailRuntimeState(
         OptCatalogTrailRuntimeState * trailRuntimeState,
         int playerOrdinal
-    ){
+    ) {
         (void)playerOrdinal;
 
         OptCatalogEntryDef *const ownerEntry = trailRuntimeState->ownerEntry;
@@ -2686,7 +2686,7 @@ namespace OptCatalog {
     void __fastcall SetDamageContext(
         int contextKind,
         OptCatalogHitEventPartial *contextHitEvent
-    ){
+    ) {
         if (contextHitEvent != 0 && contextHitEvent->hitNode != 0) {
             g_OptCatalog_DamageContextHitEvent = contextHitEvent;
         }

@@ -45,7 +45,7 @@ namespace {
     void InvalidateGrid(
         int *outGridCol,
         int *outGridRow
-    ){
+    ) {
         *outGridCol = -1;
         *outGridRow = -1;
     }
@@ -61,7 +61,7 @@ namespace {
         zClass_NodePartial * **list,
         int *count,
         zClass_NodePartial *node
-    ){
+    ) {
         zClass_NodePartial **resized =
             (zClass_NodePartial **)(realloc(
                 *list,
@@ -82,7 +82,7 @@ namespace {
         zClass_NodePartial * *list,
         int *count,
         int removedIndex
-    ){
+    ) {
         for (int i = removedIndex; i < *count - 1; ++i) {
             list[i] = list[i + 1];
         }
@@ -101,7 +101,7 @@ namespace {
         zClass_WorldDataPartial * data,
         int gridCol,
         int gridRow
-    ){
+    ) {
         return &data->areaGridRows[gridRow][gridCol];
     }
 
@@ -109,7 +109,7 @@ namespace {
     void ExpandAreaYBounds(
         zWorldAreaPartial * area,
         const zBBoxCorners &corners
-    ){
+    ) {
         for (int i = 0; i < 8; ++i) {
             const float y = corners.values[i * 3 + 1];
             if (y < area->bbox[1]) {
@@ -163,7 +163,7 @@ namespace zClass_World {
     WriteSettingsSection(
         zZbdSectionCallbackCtx * callbackCtx,
         void *userData
-    ){
+    ) {
         (void)userData;
 
         int result = 1;
@@ -301,7 +301,7 @@ namespace zClass_World {
     SetPendingFogState(
         zClass_NodePartial * world,
         int fogState
-    ){
+    ) {
         zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         data->fogState = fogState;
         data->flags |= 0x01;
@@ -316,7 +316,7 @@ namespace zClass_World {
         float red,
         float green,
         float blue
-    ){
+    ) {
         zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         data->ambientColor.red = red;
         data->ambientColor.blue = blue;
@@ -332,7 +332,7 @@ namespace zClass_World {
         zClass_NodePartial * world,
         float minAlt,
         float maxAlt
-    ){
+    ) {
         zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         data->fogHeightHigh = maxAlt;
         data->fogHeightLow = minAlt;
@@ -347,7 +347,7 @@ namespace zClass_World {
         zClass_NodePartial * world,
         float nearRange,
         float farRange
-    ){
+    ) {
         zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         data->fogDistanceStart = nearRange;
         data->fogDistanceEnd = farRange;
@@ -361,7 +361,7 @@ namespace zClass_World {
     GetPendingFogDensity(
         zClass_NodePartial * world,
         float *outDensity
-    ){
+    ) {
         zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         *outDensity = data->fogDensity;
         return 0;
@@ -373,7 +373,7 @@ namespace zClass_World {
     GetPendingFogState(
         zClass_NodePartial * world,
         int *outState
-    ){
+    ) {
         zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         *outState = data->fogState;
         return 0;
@@ -401,7 +401,7 @@ namespace zClass_World {
         zClass_NodePartial * world,
         float *outNearRange,
         float *outFarRange
-    ){
+    ) {
         zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         *outNearRange = data->fogDistanceStart;
         *outFarRange = data->fogDistanceEnd;
@@ -415,7 +415,7 @@ namespace zClass_World {
         zClass_NodePartial * world,
         float *outMinAlt,
         float *outMaxAlt
-    ){
+    ) {
         zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         *outMaxAlt = data->fogHeightHigh;
         *outMinAlt = data->fogHeightLow;
@@ -428,7 +428,7 @@ namespace zClass_World {
     SetPendingFogDensity(
         zClass_NodePartial * world,
         float density
-    ){
+    ) {
         zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         data->fogDensity = density;
         data->flags |= 0x08;
@@ -442,7 +442,7 @@ namespace zClass_World {
         zClass_NodePartial * world,
         float originX,
         float originZ
-    ){
+    ) {
         zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         data->originX = originX;
         data->originZ = originZ;
@@ -458,7 +458,7 @@ namespace zClass_World {
         zClass_NodePartial * world,
         float sizeX,
         float sizeZ
-    ){
+    ) {
         zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         data->worldSizeX = sizeX;
         data->worldSizeZ = sizeZ;
@@ -486,7 +486,7 @@ namespace zClass_World {
     gwWorldSetMaxDecFeatures(
         zClass_NodePartial * world,
         int maxFeatures
-    ){
+    ) {
         zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         if (maxFeatures > 255) {
             zError::ReportOld(
@@ -510,7 +510,7 @@ namespace zClass_World {
         zClass_NodePartial * world,
         float cellSizeX,
         float cellSizeZ
-    ){
+    ) {
         zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         if (data->areaGridRows != 0) {
             FreeVirtualAreaPartitions(world);
@@ -633,7 +633,7 @@ namespace zClass_World {
     SetVirtualPartition(
         zClass_NodePartial * world,
         int enabled
-    ){
+    ) {
         zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         data->clampQueriesToBounds = enabled;
         if (enabled != 0) {
@@ -1054,7 +1054,7 @@ namespace zClass_World {
         zClass_NodePartial * world,
         int gridCol,
         int gridRow
-    ){
+    ) {
         if (world == 0) {
             zError::ReportOld(
                 0x400,
@@ -1089,7 +1089,7 @@ namespace zClass_World {
         zClass_NodePartial * world,
         int gridCol,
         int gridRow
-    ){
+    ) {
         if (world == 0) {
             zError::ReportOld(
                 0x400,
@@ -1132,7 +1132,7 @@ namespace zClass_World {
     int __fastcall AddChildAtGrid(
         zClass_NodePartial * world,
         zClass_NodePartial * child
-    ){
+    ) {
         int gridCol = -1;
         int gridRow = -1;
 
@@ -1287,7 +1287,7 @@ namespace zClass_World {
     int __fastcall RemoveChildAtGrid(
         zClass_NodePartial * world,
         zClass_NodePartial * child
-    ){
+    ) {
         const int gridCol = child->gridCol;
         const int gridRow = child->gridRow;
         zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
@@ -1367,7 +1367,7 @@ namespace zClass_World {
     AddLight(
         zClass_NodePartial * world,
         zClass_NodePartial * light
-    ){
+    ) {
         zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         zClass_LightDataPartial *lightData = (zClass_LightDataPartial *)(light->classData);
 
@@ -1400,7 +1400,7 @@ namespace zClass_World {
     RemoveLight(
         zClass_NodePartial * world,
         zClass_NodePartial * light
-    ){
+    ) {
         zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
 
         int lightIndex = -1;
@@ -1492,7 +1492,7 @@ namespace zClass_World {
     AddSound(
         zClass_NodePartial * world,
         zClass_NodePartial * sound
-    ){
+    ) {
         zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         zClass_SoundDataPartial *soundData = (zClass_SoundDataPartial *)(sound->classData);
 
@@ -1525,7 +1525,7 @@ namespace zClass_World {
     RemoveSound(
         zClass_NodePartial * world,
         zClass_NodePartial * sound
-    ){
+    ) {
         zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
 
         int soundIndex = -1;

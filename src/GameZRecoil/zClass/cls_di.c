@@ -68,7 +68,7 @@ namespace {
     float Dot3(
         const zVec3 *a,
         const zVec3 *b
-    ){
+    ) {
         return a->x * b->x + a->y * b->y + a->z * b->z;
     }
 
@@ -80,7 +80,7 @@ namespace {
     zVec3 Delta3(
         const zVec3 *a,
         const zVec3 *b
-    ){
+    ) {
         zVec3 result = {a->x - b->x, a->y - b->y, a->z - b->z};
         return result;
     }
@@ -95,7 +95,7 @@ namespace {
         const zVec3 *edgeEnd,
         const zVec3 *point,
         int axis
-    ){
+    ) {
         switch (axis) {
         case 0:
             return (edgeEnd->y - edgeStart->y) * (point->z - edgeStart->z) -
@@ -137,7 +137,7 @@ namespace {
     float DominantAxisComponent(
         const zVec3 *normal,
         int axis
-    ){
+    ) {
         if (axis == 0) {
             return normal->x;
         }
@@ -155,7 +155,7 @@ namespace {
     int ProjectedWindingSign(
         const zVec3 *normal,
         int axis
-    ){
+    ) {
         const int componentIsNegative = DominantAxisComponent(
             normal,
             axis
@@ -567,7 +567,7 @@ namespace {
     float MinFloat(
         float a,
         float b
-    ){
+    ) {
         return a < b ? a : b;
     }
 
@@ -579,7 +579,7 @@ namespace {
     float MaxFloat(
         float a,
         float b
-    ){
+    ) {
         return a > b ? a : b;
     }
 
@@ -591,7 +591,7 @@ namespace {
     void CopyBBoxToCornersLocal(
         const zBBox3f *bbox,
         zBBoxCorners *outCorners
-    ){
+    ) {
         const float minX = bbox->minX;
         const float minY = bbox->minY;
         const float minZ = bbox->minZ;
@@ -652,7 +652,7 @@ namespace {
     float FilterRegionClearanceDistanceSq(
         const zVec3 *boundsCenter,
         float boundsRadius
-    ){
+    ) {
         if (g_zClass_cls_di_FilterRegions_EnableClearanceCheck == 0) {
             return 0.0f;
         }
@@ -678,7 +678,7 @@ namespace {
     int FilterRegionLineOfSightBlocked(
         zClass_NodePartial * node,
         const zVec3 *boundsCenter
-    ){
+    ) {
         zClass_NodePartial *world = g_zClass_cls_di_FilterRegions_LineOfSightWorld;
         if (world == 0 || (node->flags & kNodeFlagRequiresLineOfSight) == 0) {
             return 0;
@@ -720,7 +720,7 @@ namespace {
         zClass_NodePartial * node,
         const zVec3 *hitPos,
         float distanceSq
-    ){
+    ) {
         OptCatalogRaycastHitList *hitList = g_zClass_cls_di_FilterRegions_OutHitList;
         OptCatalogRaycastHitEntry *entry = &hitList->hits[hitList->hitCount];
         entry->hitNode = node;
@@ -770,7 +770,7 @@ namespace {
     void OffsetActiveRayPacket(
         float offsetX,
         float offsetZ
-    ){
+    ) {
         g_DiPickQueryPoint.x += offsetX;
         g_DiPickQueryPoint.z += offsetZ;
         g_DiSegmentEnd.x += offsetX;
@@ -806,7 +806,7 @@ namespace {
     void ProcessWorldAreaPickCell(
         zWorldAreaPartial * area,
         int nodeCountHint
-    ){
+    ) {
         for (int i = 0; i < area->childCount; ++i) {
             zClass_NodePartial *node = area->childList[i];
             const int flags = node->flags;
@@ -831,7 +831,7 @@ namespace {
     void RecurseListBChildren(
         zClass_NodePartial * node,
         bool requireEnabledRaycastFlags
-    ){
+    ) {
         {
             for (int childIndex = 0; childIndex < node->listCountB; ++childIndex) {
                 zClass_NodePartial *child = node->listB[childIndex];
@@ -1035,7 +1035,7 @@ namespace {
     void CopySegmentActiveMask(
         int *dst,
         const int *src
-    ){
+    ) {
         memcpy(
             dst,
             src,
@@ -1052,7 +1052,7 @@ namespace {
         float value,
         float origin,
         float invCellSize
-    ){
+    ) {
         return (int)(floor((value - origin) * invCellSize));
     }
 
@@ -1064,7 +1064,7 @@ namespace {
     int ClampGridCoord(
         int coord,
         int count
-    ){
+    ) {
         if (coord < 0) {
             return 0;
         }
@@ -1082,7 +1082,7 @@ namespace {
     void OffsetSegmentBatchXZ(
         float offsetX,
         float offsetZ
-    ){
+    ) {
         zClass_DiSegmentEndpoints *segments = SegmentEndpointBatchFromPickPointArray();
         for (int i = 0; i < g_DiPickPointCount; ++i) {
             segments[i].start.x += offsetX;
@@ -1167,7 +1167,7 @@ namespace {
     void FilterCurrentSegmentRegions(
         zClass_NodePartial * node,
         int *activeMask
-    ){
+    ) {
         zModel_PickFaceData *faceData = (zModel_PickFaceData *)((void *)(NodeDiRef(node)));
         if (faceData != 0) {
             zClass_cls_di::FilterRegionsAgainstPolygon(
@@ -1305,7 +1305,7 @@ namespace {
     void TransformVerticesToSharedScratch(
         const zVec3 *vertices,
         int vertexCount
-    ){
+    ) {
         if (*zMath::g_currentMatrixIdentityFlagSlot != 0) {
             memcpy(
                 g_zModel_SharedVec3ScratchB,
@@ -1331,7 +1331,7 @@ namespace BBox {
     void __fastcall ExpandToCorners(
         const zBBox3f *bbox,
         zBBoxCorners *outCorners
-    ){
+    ) {
         float *values = outCorners->values;
         values[0] = bbox->minX;
         values[1] = bbox->minY;
@@ -1562,7 +1562,7 @@ namespace zClass_cls_di {
         zClass_NodePartial * node,
         int depth,
         int *hitFlags
-    ){
+    ) {
         int nodeFlags = node->flags;
         if ((nodeFlags & kNodeFlagEnabledForPick) == 0) {
             return 1;
@@ -1792,7 +1792,7 @@ namespace zClass_cls_di {
         zClass_NodePartial * node,
         int depth,
         int *hitFlags
-    ){
+    ) {
         int sampleMask[24];
         memcpy(
             sampleMask,
@@ -1858,7 +1858,7 @@ namespace zClass_cls_di {
         zClass_NodePartial * node,
         int depth,
         int *hitFlags
-    ){
+    ) {
         int sampleMask[24];
         memcpy(
             sampleMask,
@@ -2071,7 +2071,7 @@ namespace zClass_cls_di {
     int __fastcall BuildPickCandidateList(
         zClass_NodePartial * node,
         int cullCount
-    ){
+    ) {
         int nodeFlags = node->flags;
         if ((nodeFlags & kNodeFlagEnabledForPick) == 0) {
             return 1;
@@ -2241,7 +2241,7 @@ namespace zClass_cls_di {
     int __fastcall BuildPickCandidatesRecursive(
         zClass_NodePartial * node,
         int cullCount
-    ){
+    ) {
         AppendQueryPointCandidateIfHit(node);
 
         zClass_AnimateDataPartial *animateData = (zClass_AnimateDataPartial *)(node->classData);
@@ -2287,7 +2287,7 @@ namespace zClass_cls_di {
     int __fastcall BuildPickCandidatesForLight(
         zClass_NodePartial * node,
         int cullCount
-    ){
+    ) {
         if (cullCount > 1) {
             const int result = IsPickQueryPointOutsideViewBBoxXZ(node);
             if (result != 0) {
@@ -2367,7 +2367,7 @@ namespace zClass_cls_di {
     int __fastcall PickTestBBox2D(
         zClass_NodePartial * node,
         int *hitFlags
-    ){
+    ) {
         if ((node->flags & 0x100) == 0) {
             return 1;
         }
@@ -2468,7 +2468,7 @@ namespace zClass_cls_di {
     int __fastcall FrustumTestAndPick(
         zClass_NodePartial * node,
         int *activeMask
-    ){
+    ) {
         if ((node->flags & 0x100) == 0) {
             return 1;
         }
@@ -3429,7 +3429,7 @@ namespace zClass_cls_di {
     int __fastcall FilterRegionsAgainstMeshFaces(
         zVec3 * meshVertices,
         int faceCount
-    ){
+    ) {
         g_zModel_PointInPolygonVertexCount = 0;
         if (faceCount > 0x40) {
             return 0;
@@ -3463,7 +3463,7 @@ namespace zClass_cls_di {
     int __fastcall FilterRegionsAgainstHexahedronFaces(
         zVec3 * center,
         float radius
-    ){
+    ) {
         zVec3 *vertex = g_zModel_PointInPolygonVertices;
         zVec3 *edgeNormal = g_zModel_PointInPolygonEdgeNormals;
 
@@ -3983,7 +3983,7 @@ namespace zClass_cls_di {
     int __fastcall BuildPickCandidatesForSegmentRecursive(
         zClass_NodePartial * node,
         int depth
-    ){
+    ) {
         if (depth > 1 || (node->flags & kNodeFlagPointCandidate) != 0) {
             const int result = FilterPointsBBox(
                 node,
@@ -4070,7 +4070,7 @@ namespace zClass_cls_di {
     int __fastcall BuildPickCandidatesForSegmentForLight(
         zClass_NodePartial * node,
         int depth
-    ){
+    ) {
         zClass_LightDataPartial *lightData = (zClass_LightDataPartial *)(node->classData);
 
         if (depth > 1 || (node->flags & kNodeFlagPointCandidate) != 0) {
@@ -4323,7 +4323,7 @@ namespace zClass_cls_di {
     void __fastcall BuildPickCandidatesForSegmentsInGridWindow(
         zClass_NodePartial * world,
         int *activeMask
-    ){
+    ) {
         const int segmentCount = g_DiPickPointCount;
         if (segmentCount <= 0) {
             return;
@@ -4673,7 +4673,7 @@ namespace zClass_cls_di {
     int __fastcall BuildPickCandidatesForSegmentChildFallback(
         zClass_NodePartial * node,
         int nodeCountHint
-    ){
+    ) {
         int nodeFlags = node->flags;
         if ((nodeFlags & kNodeFlagEnabledForPick) == 0) {
             return 1;

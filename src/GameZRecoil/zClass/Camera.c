@@ -43,7 +43,7 @@ namespace {
     void ReportCameraError(
         int sourceLine,
         const char *message
-    ){
+    ) {
         zError::ReportOld(
             0x400,
             kCameraSourceFile,
@@ -162,7 +162,7 @@ namespace {
     void CopyCurrentCameraFrustumFootprint(
         zClass_CameraDataPartial * data,
         int pointCount
-    ){
+    ) {
         memcpy(
             g_zCamera_FrustumFootprintPoints,
             &data->frustumOrigin,
@@ -186,7 +186,7 @@ namespace {
     int BuildCameraFrustumFootprint(
         zClass_CameraDataPartial * data,
         int filterErrorLine
-    ){
+    ) {
         zMath::MatLoadIdentity();
         zMath::MatTranslate(
             data->cameraPos.x,
@@ -247,7 +247,7 @@ namespace {
         float *maxX,
         float *minZ,
         float *maxZ
-    ){
+    ) {
         *minX = g_zCamera_FrustumFootprintPoints[0].x;
         *maxX = g_zCamera_FrustumFootprintPoints[0].x;
         *minZ = g_zCamera_FrustumFootprintPoints[0].z;
@@ -364,7 +364,7 @@ namespace zClass_Camera {
     int __fastcall gwCameraAddChild(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
-    ){
+    ) {
         if (parent == 0) {
             ReportCameraError(
                 0x239,
@@ -395,7 +395,7 @@ namespace zClass_Camera {
     int __fastcall gwCameraRemoveChild(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
-    ){
+    ) {
         if (parent == 0) {
             ReportCameraError(
                 0x251,
@@ -422,7 +422,7 @@ namespace zClass_Camera {
     gwCameraSetFlagBit0(
         zClass_NodePartial * node,
         int enabled
-    ){
+    ) {
         zClass_CameraDataPartial *data = 0;
         const int result = ValidateCameraNode(
             node,
@@ -481,7 +481,7 @@ namespace zClass_Camera {
     gwCameraSetWorld(
         zClass_NodePartial * camera,
         zClass_NodePartial * world
-    ){
+    ) {
         if (camera == 0) {
             ReportCameraError(
                 0x2be,
@@ -551,7 +551,7 @@ namespace zClass_Camera {
     gwCameraSetWindow(
         zClass_NodePartial * camera,
         zClass_NodePartial * window
-    ){
+    ) {
         ((zClass_CameraDataPartial *)(camera->classData))->windowNode = window;
         return 0;
     }
@@ -561,7 +561,7 @@ namespace zClass_Camera {
     ActivateChildren(
         zClass_NodePartial * camera,
         zClass_CameraDataPartial * data
-    ){
+    ) {
         data->cameraFlags |= 0x04;
         if ((camera->flags & 0x01) == 0) {
             zClass_TypeList::Insert(
@@ -586,7 +586,7 @@ namespace zClass_Camera {
         float x,
         float y,
         float z
-    ){
+    ) {
         zClass_CameraDataPartial *data = 0;
         const int result = ValidateCameraNode(
             camera,
@@ -623,7 +623,7 @@ namespace zClass_Camera {
         float dx,
         float dy,
         float dz
-    ){
+    ) {
         zClass_CameraDataPartial *data = 0;
         const int result = ValidateCameraNode(
             camera,
@@ -657,7 +657,7 @@ namespace zClass_Camera {
         float *outX,
         float *outY,
         float *outZ
-    ){
+    ) {
         zClass_CameraDataPartial *data = 0;
         const int result = ValidateCameraNode(
             camera,
@@ -683,7 +683,7 @@ namespace zClass_Camera {
         float x,
         float y,
         float z
-    ){
+    ) {
         zClass_CameraDataPartial *data = 0;
         const int result = ValidateCameraNode(
             camera,
@@ -718,7 +718,7 @@ namespace zClass_Camera {
         float dx,
         float dy,
         float dz
-    ){
+    ) {
         zClass_CameraDataPartial *data = 0;
         const int result = ValidateCameraNode(
             camera,
@@ -752,7 +752,7 @@ namespace zClass_Camera {
         float *outX,
         float *outY,
         float *outZ
-    ){
+    ) {
         zClass_CameraDataPartial *data = 0;
         const int result = ValidateCameraNode(
             camera,
@@ -778,7 +778,7 @@ namespace zClass_Camera {
         zClass_NodePartial * camera,
         float nearClip,
         float farClip
-    ){
+    ) {
         zClass_CameraDataPartial *data = 0;
         const int result = ValidateCameraNode(
             camera,
@@ -803,7 +803,7 @@ namespace zClass_Camera {
         zClass_NodePartial * camera,
         float *outNear,
         float *outFar
-    ){
+    ) {
         zClass_CameraDataPartial *data = 0;
         const int result = ValidateCameraNode(
             camera,
@@ -827,7 +827,7 @@ namespace zClass_Camera {
         zClass_NodePartial * camera,
         float viewportWidth,
         float viewportHeight
-    ){
+    ) {
         zClass_CameraDataPartial *data = 0;
         const int result = ValidateCameraNode(
             camera,
@@ -872,7 +872,7 @@ namespace zClass_Camera {
         zClass_NodePartial * camera,
         float *outWidth,
         float *outHeight
-    ){
+    ) {
         zClass_CameraDataPartial *data = 0;
         const int result = ValidateCameraNode(
             camera,
@@ -896,7 +896,7 @@ namespace zClass_Camera {
         zClass_NodePartial * camera,
         float *outFovX,
         float *outFovY
-    ){
+    ) {
         zClass_CameraDataPartial *data = 0;
         const int result = ValidateCameraNode(
             camera,
@@ -920,7 +920,7 @@ namespace zClass_Camera {
         zClass_NodePartial * camera,
         float fovX,
         float fovY
-    ){
+    ) {
         zClass_CameraDataPartial *data = 0;
         const int result = ValidateCameraNode(
             camera,
@@ -958,7 +958,7 @@ namespace zClass_Camera {
     gwCameraGetClipDistance(
         zClass_NodePartial * camera,
         float *outClipDistance
-    ){
+    ) {
         zClass_CameraDataPartial *data = 0;
         const int result = ValidateCameraNode(
             camera,
@@ -980,7 +980,7 @@ namespace zClass_Camera {
     gwCameraSetClipDistance(
         zClass_NodePartial * camera,
         float clipDistance
-    ){
+    ) {
         zClass_CameraDataPartial *data = 0;
         const int result = ValidateCameraNode(
             camera,
@@ -1003,7 +1003,7 @@ namespace zClass_Camera {
     gwCameraSetHorizon(
         zClass_NodePartial * camera,
         zClass_NodePartial * horizonNode
-    ){
+    ) {
         zClass_CameraDataPartial *data = 0;
         const int result = ValidateCameraNode(
             camera,
@@ -1025,7 +1025,7 @@ namespace zClass_Camera {
     gwCameraSetHorizonXZ(
         zClass_NodePartial * camera,
         zClass_NodePartial * horizonXZNode
-    ){
+    ) {
         zClass_CameraDataPartial *data = 0;
         const int result = ValidateCameraNode(
             camera,
@@ -1046,7 +1046,7 @@ namespace zClass_Camera {
     void __fastcall SetViewDistance(
         int enableAutoClip,
         float distance
-    ){
+    ) {
         g_zClass_CameraAutoClipDistanceAdjustEnabled = enableAutoClip;
         if (distance == 0.0f) {
             g_zClass_CameraAutoClipDistanceThreshold = 0.04f;
@@ -1060,7 +1060,7 @@ namespace zClass_Camera {
     float __fastcall FastAngleXZ(
         zVec3 * point1,
         zVec3 * point2
-    ){
+    ) {
         const int deltaX = (int)(point2->x - point1->x);
         const int deltaZ = (int)(point1->z - point2->z);
 
@@ -1089,7 +1089,7 @@ namespace zClass_Camera {
     int __fastcall FindConvexHullXZ(
         zVec3 * points,
         int count
-    ){
+    ) {
         int candidateIndex = 1;
         int selectedIndex = 0;
 
@@ -1686,7 +1686,7 @@ namespace zClass_Camera {
     gwCameraSetVariantTagOverride(
         zClass_NodePartial * camera,
         zTag4Partial * variantTag
-    ){
+    ) {
         zClass_CameraDataPartial *data = 0;
         const int validateResult = ValidateCameraNode(
             camera,
@@ -1719,7 +1719,7 @@ namespace zClass_Camera {
     RenderScene(
         zClass_NodePartial * camera,
         int updateFxPass3Local
-    ){
+    ) {
         const int queuedLensFlareSampleCount = zRndr_LensFlare_GetQueuedSampleCount();
         zMat4x3 slotBuffer = {0};
         zMath::MatStackPushPtr((float *)&slotBuffer);
@@ -1901,7 +1901,7 @@ namespace zClass_Camera {
     int __fastcall UpdateImpl(
         zClass_NodePartial * camera,
         zVec3 * posOffset
-    ){
+    ) {
         zClass_CameraDataPartial *data = (zClass_CameraDataPartial *)(camera->classData);
 
         BuildWorldTransform(
@@ -2039,7 +2039,7 @@ namespace zClass_Camera {
     RenderTraverse(
         zClass_NodePartial * node,
         int siblingCountHint
-    ){
+    ) {
         const int flags = node->flags;
         int boundsContextPushed = 0;
         if ((flags & 0x04) == 0) {

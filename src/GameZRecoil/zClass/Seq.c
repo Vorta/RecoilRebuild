@@ -21,7 +21,7 @@ namespace {
         zClass_NodePartial * node,
         int siblingCountHint,
         int *clipMask
-    ){
+    ) {
         int result = 0;
         if (*clipMask != 0 && siblingCountHint > 1) {
             if ((node->boundsFlags & 0x04) != 0 || g_zClass_RenderBoundsContextActive != 0) {
@@ -167,7 +167,7 @@ namespace zClass_Sequence {
     int __fastcall SetActive(
         zClass_NodePartial * node,
         int active
-    ){
+    ) {
         const char *message;
         int line;
         zClass_SequenceDataPartial *data;
@@ -208,7 +208,7 @@ namespace zClass_Sequence {
     int __fastcall SetRepeat(
         zClass_NodePartial * node,
         int repeat
-    ){
+    ) {
         const char *message;
         int line;
         zClass_SequenceDataPartial *data;
@@ -249,7 +249,7 @@ namespace zClass_Sequence {
     int __fastcall SetLoop(
         zClass_NodePartial * node,
         int loop
-    ){
+    ) {
         const char *message;
         int line;
         zClass_SequenceDataPartial *data;
@@ -290,7 +290,7 @@ namespace zClass_Sequence {
     int __fastcall SetPause(
         zClass_NodePartial * node,
         int paused
-    ){
+    ) {
         const char *message;
         int line;
         zClass_SequenceDataPartial *data;
@@ -332,7 +332,7 @@ namespace zClass_Sequence {
     RemoveChild(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
-    ){
+    ) {
         if (parent == 0) {
             zError::ReportOld(
                 0x400,
@@ -482,7 +482,7 @@ namespace zClass_Sequence {
     RenderTraverse(
         zClass_NodePartial * node,
         int siblingCountHint
-    ){
+    ) {
         int boundsContextPushed = 0;
         zClass_SequenceDataPartial *data;
         const int flags = node->flags;

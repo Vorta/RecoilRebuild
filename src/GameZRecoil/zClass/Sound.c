@@ -24,7 +24,7 @@ namespace {
         zClass_NodePartial * node,
         int siblingCountHint,
         int *clipMask
-    ){
+    ) {
         int result = 0;
         if ((*clipMask != 0 && siblingCountHint > 1) || (node->flags & 0x00080000) == 0) {
             if ((node->boundsFlags & 0x04) != 0 || g_zClass_RenderBoundsContextActive != 0 ||
@@ -65,7 +65,7 @@ namespace {
     void RenderNodeAndChildren(
         zClass_NodePartial * node,
         int clipMask
-    ){
+    ) {
         node->flags |= 0x80000000;
         zDiPartial *di = (zDiPartial *)(unsigned int)node->userDataOrDiRef;
         if (di != 0 && g_zClass_RenderRangeFadeActive != 0) {
@@ -220,7 +220,7 @@ namespace zClass_Sound {
     RemoveChild(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
-    ){
+    ) {
         if (parent == 0) {
             zError::ReportOld(
                 0x400,
@@ -257,7 +257,7 @@ namespace zClass_Sound {
     SetSampleSetByName(
         zClass_NodePartial * node,
         const char *name
-    ){
+    ) {
         if (node == 0) {
             zError::ReportOld(
                 0x400,
@@ -311,7 +311,7 @@ namespace zClass_Sound {
     int __fastcall gwSoundSetActive(
         zClass_NodePartial * node,
         int active
-    ){
+    ) {
         if (node == 0) {
             zError::ReportOld(
                 0x400,
@@ -365,7 +365,7 @@ namespace zClass_Sound {
         float x,
         float y,
         float z
-    ){
+    ) {
         if (node == 0) {
             zError::ReportOld(
                 0x400,
@@ -407,7 +407,7 @@ namespace zClass_Sound {
         float *outX,
         float *outY,
         float *outZ
-    ){
+    ) {
         if (node == 0) {
             zError::ReportOld(
                 0x400,
@@ -520,7 +520,7 @@ namespace zClass_Sound {
     ComputeWorldTransform(
         zClass_NodePartial * node,
         zClass_SoundDataPartial * soundData
-    ){
+    ) {
         zVec3 localPoint = {0.0f, 0.0f, 0.0f};
         zMat4x3 slotBuffer = {0};
 
@@ -558,7 +558,7 @@ namespace zClass_Sound {
     RenderTraverse(
         zClass_NodePartial * node,
         int siblingCountHint
-    ){
+    ) {
         const int flags = node->flags;
         int boundsContextPushed = 0;
         if ((flags & 0x04) == 0) {

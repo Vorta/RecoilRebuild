@@ -22,7 +22,7 @@ namespace {
     void ReportModel3DBufferReadError(
         int line,
         const char *message
-    ){
+    ) {
         zError::ReportOld(
             0x200,
             kGmodConstSourceFile,
@@ -407,7 +407,7 @@ namespace zModel_DiPool {
     int __fastcall ReadEntryDynamicDataFromStream(
         void *stream,
         zDiPartial *entry
-    ){
+    ) {
         FILE *const file = (FILE *)(stream);
 
         if (entry->vertCount > 0) {
@@ -603,7 +603,7 @@ namespace zModel_DiPool {
     RECOIL_NO_GS zDiPartial *__fastcall ReadEntryByIndexFromStream(
         void *stream,
         int index
-    ){
+    ) {
         FILE *const file = (FILE *)(stream);
 
         int serializedCapacity;

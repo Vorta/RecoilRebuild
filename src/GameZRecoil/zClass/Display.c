@@ -19,7 +19,7 @@ namespace {
     int ReportDisplayClassError(
         int sourceLine,
         const char *message
-    ){
+    ) {
         zError::ReportOld(
             0x400,
             "GameZRecoil/zClass/Display.c",
@@ -43,7 +43,7 @@ namespace {
         int nullLine,
         int dataLine,
         int classLine
-    ){
+    ) {
         if (node == 0) {
             ReportDisplayClassError(
                 nullLine,
@@ -183,7 +183,7 @@ namespace zClass_Display {
     RemoveChild(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
-    ){
+    ) {
         if (parent == 0) {
             zError::ReportOld(
                 0x400,
@@ -222,7 +222,7 @@ namespace zClass_Display {
         zClass_NodePartial * node,
         int width,
         int height
-    ){
+    ) {
         zClass_DisplayDataPartial *data = GetDisplayData(
             node,
             0xb0,
@@ -249,7 +249,7 @@ namespace zClass_Display {
         zClass_NodePartial * node,
         int x,
         int y
-    ){
+    ) {
         zClass_DisplayDataPartial *data = GetDisplayData(
             node,
             0xee,
@@ -278,7 +278,7 @@ namespace zClass_Display {
         float red,
         float green,
         float blue
-    ){
+    ) {
         int result = 0;
         zClass_DisplayDataPartial *data =
             GetDisplayDataOldMessages(

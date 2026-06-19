@@ -29,7 +29,7 @@ namespace zDi {
     void __fastcall SetVariantTagIfUnset(
         zDiPartial * self,
         int variantTag
-    ){
+    ) {
         if (self == 0 || self->entryCount <= 0) {
             return;
         }

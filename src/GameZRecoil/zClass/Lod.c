@@ -119,7 +119,7 @@ namespace zClass_Lod {
     RenderTraverse(
         zClass_NodePartial * node,
         int siblingCountHint
-    ){
+    ) {
         const int flags = node->flags;
         int boundsContextPushed = 0;
         if ((flags & 0x04) == 0) {
@@ -325,7 +325,7 @@ namespace zClass_Lod {
     gwLodAddChild(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
-    ){
+    ) {
         return zClass_Class::AddChildGeneric(
             parent,
             child
@@ -343,7 +343,7 @@ namespace zClass_Lod {
     RemoveChild(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
-    ){
+    ) {
         zClass_Class::RemoveChildGeneric(
             parent,
             child
@@ -362,7 +362,7 @@ namespace zClass_Lod {
     SetComputeOwnDistance(
         zClass_NodePartial * node,
         int enabled
-    ){
+    ) {
         ((zClass_LodDataPartial *)(node->classData))->computeOwnDistance = enabled;
         return 0;
     }
@@ -379,7 +379,7 @@ namespace zClass_Lod {
         zClass_NodePartial * node,
         zClass_NodePartial * target,
         float range
-    ){
+    ) {
         zClass_LodDataPartial *data = (zClass_LodDataPartial *)(node->classData);
         data->rangeNode = target;
         if (target != 0) {
