@@ -189,6 +189,8 @@ int g_dplayCreateCoCreateCalls;
 bool g_dplayCreateCoCreateArgsOk;
 HRESULT g_dplayCreateCoCreateResult;
 zNetwork_DPlay4 *g_dplayCreateCoCreateOut;
+void *g_dplayCreateCoCreateInitialOut;
+bool g_dplayCreateCoCreateWriteOut;
 int g_dplayCreateReportErrorCalls;
 int g_dplayCreateReportErrorHresult;
 int g_dplayCreateReportErrorLine;
@@ -1324,7 +1326,8 @@ HRESULT WINAPI FakeDPlayCreateCoCreateInstance(REFCLSID rclsid, LPUNKNOWN outer,
         clsContext == CLSCTX_INPROC_SERVER &&
         IsEqualGUID(riid, IID_IDirectPlay4A) != 0 &&
         outObject != nullptr;
-    if (outObject != nullptr) {
+    g_dplayCreateCoCreateInitialOut = outObject != nullptr ? *outObject : nullptr;
+    if (outObject != nullptr && g_dplayCreateCoCreateWriteOut) {
         *outObject = g_dplayCreateCoCreateOut;
     }
     return g_dplayCreateCoCreateResult;
@@ -1353,6 +1356,8 @@ void ResetDPlayCreateInterfaceLog() {
     g_dplayCreateCoInitializeReserved = nullptr;
     g_dplayCreateCoCreateCalls = 0;
     g_dplayCreateCoCreateArgsOk = false;
+    g_dplayCreateCoCreateInitialOut = nullptr;
+    g_dplayCreateCoCreateWriteOut = true;
     g_dplayCreateReportErrorCalls = 0;
     g_dplayCreateReportErrorHresult = 0;
     g_dplayCreateReportErrorLine = 0;
@@ -3405,6 +3410,7 @@ extern "C" int znetwork_dplay_create_interface_and_coinitialize_smoke(void) {
             g_dplayCreateCoInitializeReserved == nullptr &&
             g_dplayCreateCoCreateCalls == 1 &&
             g_dplayCreateCoCreateArgsOk &&
+            g_dplayCreateCoCreateInitialOut == nullptr &&
             g_dplayCreateReportOldCalls == 0 &&
             g_dplayCreateReportErrorCalls == 1 &&
             g_dplayCreateReportErrorHresult == S_OK &&
@@ -3468,8 +3474,24 @@ extern "C" int znetwork_dplay_create_interface_and_coinitialize_smoke(void) {
             g_dplayCreateReportErrorHresult == E_FAIL &&
             g_dplayCreateReportErrorLine == 0x39a;
 
+        outDPlay = reinterpret_cast<zNetwork_DPlay4 *>(0x66666666);
+        g_dplayCreateCoCreateResult = E_FAIL;
+        g_dplayCreateCoCreateOut = &fakeDPlay;
+        ResetDPlayCreateInterfaceLog();
+        g_dplayCreateCoCreateWriteOut = false;
+        const int noWriteFailResult =
+            zNetwork_DPlay::CreateInterfaceAndCoInitialize(&outDPlay);
+        const bool noWriteFailOk =
+            noWriteFailResult == E_FAIL &&
+            outDPlay == nullptr &&
+            g_dplayCreateCoCreateInitialOut == nullptr &&
+            g_dplayCreateReportOldCalls == 0 &&
+            g_dplayCreateReportErrorCalls == 1 &&
+            g_dplayCreateReportErrorHresult == E_FAIL &&
+            g_dplayCreateReportErrorLine == 0x39a;
+
         result = successOk && classMissingOk && classCannotOk && notInitOk &&
-                         genericFailOk
+                         genericFailOk && noWriteFailOk
                      ? 0
                      : 11;
     }

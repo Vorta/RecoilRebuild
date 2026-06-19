@@ -151,73 +151,69 @@ unsigned int ReadCpuidFeatureFlags() {
  * Reimplements 0x4b3640: zSys::ReadCpuidVendorAndFamily (GameZRecoil/zSys/zsys_cpu.cpp).
  * Purpose: Reads CPUID vendor/family data and records whether the vendor is non-Intel.
  */
-__declspec(naked) int ReadCpuidVendorAndFamily() {
+int ReadCpuidVendorAndFamily() {
+    struct CpuVendorBuffer {
+        char bytes[0x0c];
+    };
+
+    CpuVendorBuffer expectedVendor;
+    CpuVendorBuffer cpuidVendor;
+    unsigned int cpuidSignature = 0xffffu;
+    unsigned int cpuidFamily = 0xffffu;
+
     __asm {
-        push ebp
-        mov ebp, esp
-        sub esp, 020h
         mov eax, dword ptr [g_zSys_CpuVendorScratchPadInit]
         mov ecx, dword ptr [g_zSys_CpuVendorScratchPadInit + 4]
         mov edx, dword ptr [g_zSys_CpuVendorScratchPadInit + 8]
-        mov dword ptr [ebp - 014h], eax
+        mov dword ptr [cpuidVendor], eax
+        mov dword ptr [cpuidVendor + 4], ecx
+        mov dword ptr [cpuidVendor + 8], edx
         mov eax, dword ptr [g_zSys_CpuVendorExpectedIntel]
-        mov dword ptr [ebp - 010h], ecx
         mov ecx, dword ptr [g_zSys_CpuVendorExpectedIntel + 4]
-        mov dword ptr [ebp - 00ch], edx
         mov edx, dword ptr [g_zSys_CpuVendorExpectedIntel + 8]
-        _emit 0x53
-        mov dword ptr [ebp - 008h], 0ffffh
-        mov byte ptr [ebp - 001h], 0
-        mov dword ptr [ebp - 020h], eax
-        mov dword ptr [ebp - 01ch], ecx
-        mov dword ptr [ebp - 018h], edx
+        mov dword ptr [expectedVendor], eax
+        mov dword ptr [expectedVendor + 4], ecx
+        mov dword ptr [expectedVendor + 8], edx
         xor eax, eax
         _emit 0x0f
         _emit 0xa2
-        _emit 0x89
-        _emit 0x5d
-        _emit 0xec
-        mov dword ptr [ebp - 010h], edx
-        mov dword ptr [ebp - 00ch], ecx
-        xor eax, eax
-        mov ecx, 1
-    recoil_cpu_vendor_compare:
-        mov dl, byte ptr [ebp + eax - 014h]
-        _emit 0x8a
-        _emit 0x5c
-        _emit 0x05
-        _emit 0xe0
-        _emit 0x3a
-        _emit 0xd3
-        je recoil_cpu_vendor_compare_next
-        mov dword ptr [g_zSys_CpuVendorNonIntelMarker], ecx
-    recoil_cpu_vendor_compare_next:
-        inc eax
-        cmp eax, 0ch
-        jl recoil_cpu_vendor_compare
-        cmp eax, 1
-        jl recoil_cpu_vendor_done
-        xor eax, eax
-        inc eax
-        _emit 0x0f
-        _emit 0xa2
-        mov byte ptr [ebp - 001h], al
-        and byte ptr [ebp - 001h], 0fh
-        and al, 0f0h
-        shr al, 4
-        mov byte ptr [ebp - 002h], al
-        and eax, 0f00h
-        shr eax, 8
-        and eax, 0fh
-        mov word ptr [ebp - 008h], ax
-    recoil_cpu_vendor_done:
-        mov ax, word ptr [ebp - 008h]
-        mov ax, word ptr [ebp - 008h]
-        _emit 0x5b
-        mov esp, ebp
-        pop ebp
-        ret
+        mov dword ptr [cpuidVendor], ebx
+        mov dword ptr [cpuidVendor + 4], edx
+        mov dword ptr [cpuidVendor + 8], ecx
     }
+
+    for (int i = 0; i < 0x0c; ++i) {
+        if (cpuidVendor.bytes[i] != expectedVendor.bytes[i]) {
+            g_zSys_CpuVendorNonIntelMarker = 1;
+        }
+    }
+
+    __asm {
+        xor eax, eax
+        inc eax
+        _emit 0x0f
+        _emit 0xa2
+        mov dword ptr [cpuidSignature], eax
+    }
+
+    cpuidFamily = (cpuidSignature >> 8) & 0x0fu;
+    return (int)(cpuidFamily);
+}
+
+/**
+ * Reimplements 0x4b3b00: zSys::ReadCmosRtcSecondsBcd (GameZRecoil/zSys/zsys_cpu.cpp).
+ * Purpose: Selects CMOS RTC register 0 and returns the raw seconds BCD byte.
+ */
+unsigned int ReadCmosRtcSecondsBcd() {
+    unsigned int result = 0;
+    __asm {
+        xor ax, ax
+        out 70h, al
+        xor ax, ax
+        in al, 71h
+        mov word ptr [result], ax
+    }
+    return result;
 }
 
 /**

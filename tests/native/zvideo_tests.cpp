@@ -5176,10 +5176,26 @@ extern "C" int zvideo_handle_software_mode_hotkey_smoke(void) {
     g_setVideoModeCalls = 0;
     g_zVideo_HalfResAdjustMode = 1;
     zVideo::HandleSoftwareModeHotkeyCommand(0);
-    const bool halfResOk = g_setVideoModeCalls == 1 && videoMode == 2 &&
+    const bool halfResOk = g_setVideoModeCalls == 1 && videoMode == 5 &&
                            g_zVideo_HalfResAdjustMode == 1 &&
-                           g_zVideo_UseHalfResBackbuffer == 1 && hudTypeSw == 2 &&
-                           render.width == 320 && render.height == 200 && replicate == 1;
+                           g_zVideo_UseHalfResBackbuffer == 0 && hudTypeSw == 2 &&
+                           render.width == 640 && render.height == 480 && replicate == 0;
+
+    videoMode = 4;
+    g_setVideoModeCalls = 0;
+    g_zVideo_HalfResAdjustMode = 1;
+    zVideo::HandleSoftwareModeHotkeyCommand(0);
+    const bool wideToHalfResOk = g_setVideoModeCalls == 1 && videoMode == 2 &&
+                                 g_zVideo_UseHalfResBackbuffer == 1 && hudTypeSw == 2 &&
+                                 render.width == 320 && render.height == 200 && replicate == 1;
+
+    videoMode = 5;
+    g_setVideoModeCalls = 0;
+    g_zVideo_HalfResAdjustMode = 1;
+    zVideo::HandleSoftwareModeHotkeyCommand(0);
+    const bool tallToHalfResOk = g_setVideoModeCalls == 1 && videoMode == 3 &&
+                                 g_zVideo_UseHalfResBackbuffer == 1 && hudTypeSw == 2 &&
+                                 render.width == 320 && render.height == 240 && replicate == 1;
 
     videoMode = 4;
     g_setVideoModeResult = 7;
@@ -5219,10 +5235,16 @@ extern "C" int zvideo_handle_software_mode_hotkey_smoke(void) {
     if (!halfResOk) {
         return 3;
     }
-    if (!failureOk) {
+    if (!wideToHalfResOk) {
         return 4;
     }
-    return unsupportedOk ? 0 : 5;
+    if (!tallToHalfResOk) {
+        return 5;
+    }
+    if (!failureOk) {
+        return 6;
+    }
+    return unsupportedOk ? 0 : 7;
 }
 
 extern "C" int zvideo_adjust_surfaces_if_enabled_smoke(void) {

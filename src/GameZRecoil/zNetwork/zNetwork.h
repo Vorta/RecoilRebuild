@@ -168,12 +168,52 @@ struct zNetworkDPlayServiceProviderInfo {
     int providerFlags;
 };
 
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zNetworkDPlayServiceProviderInfo,
+        displayName
+    ) == 0x10
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zNetworkDPlayServiceProviderInfo,
+        connectionData
+    ) == 0x14
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zNetworkDPlayServiceProviderInfo,
+        providerFlags
+    ) == 0x18
+);
+RECOIL_STATIC_ASSERT(sizeof(zNetworkDPlayServiceProviderInfo) == 0x1c);
+
 struct zNetworkServiceProviderListVec {
     int flags;
     zNetworkDPlayServiceProviderInfo **begin;
     zNetworkDPlayServiceProviderInfo **end;
     zNetworkDPlayServiceProviderInfo **cap;
 };
+
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zNetworkServiceProviderListVec,
+        begin
+    ) == 0x04
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zNetworkServiceProviderListVec,
+        end
+    ) == 0x08
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zNetworkServiceProviderListVec,
+        cap
+    ) == 0x0c
+);
+RECOIL_STATIC_ASSERT(sizeof(zNetworkServiceProviderListVec) == 0x10);
 
 struct zNetworkPlayerRecordListNode {
     zNetworkPlayerRecordListNode *next;

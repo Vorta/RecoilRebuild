@@ -3,7 +3,12 @@
 
 #include <windows.h>
 
+#include <intrin.h>
+
+#include <cstring>
 #include <cstdio>
+
+extern "C" unsigned int g_zSys_CpuVendorNonIntelMarker;
 
 extern "C" HWND g_RecoilError_OutputHWnd;
 extern "C" std::int32_t g_RecoilError_OutputMaxBytes;
@@ -29,8 +34,49 @@ extern "C" int zsys_cpuid_mmx_smoke(void) {
     const std::int32_t hasCpuid = zSys::HasCpuidSupport();
     const std::int32_t hasMmx = zCpu::HasMmxSupport();
     const std::int32_t hasCpuSignatureMask = zSys::CheckCpuSignatureMask();
+
+    int cpuInfo[4] = {};
+    __cpuid(
+        cpuInfo,
+        0
+    );
+    char vendor[12];
+    std::memcpy(
+        &vendor[0],
+        &cpuInfo[1],
+        4
+    );
+    std::memcpy(
+        &vendor[4],
+        &cpuInfo[3],
+        4
+    );
+    std::memcpy(
+        &vendor[8],
+        &cpuInfo[2],
+        4
+    );
+    const bool isIntel =
+        std::memcmp(
+            vendor,
+            "GenuineIntel",
+            sizeof(vendor)
+        ) == 0;
+
+    __cpuid(
+        cpuInfo,
+        1
+    );
+    const int expectedFamily = (cpuInfo[0] >> 8) & 0x0f;
+
+    g_zSys_CpuVendorNonIntelMarker = isIntel ? 7u : 0u;
+    const int family = zSys::ReadCpuidVendorAndFamily();
+    const unsigned int marker = g_zSys_CpuVendorNonIntelMarker;
+    g_zSys_CpuVendorNonIntelMarker = 0;
+
     return hasCpuid == 1 && (hasMmx == 0 || hasMmx == 1) &&
-                   (hasCpuSignatureMask == 0 || hasCpuSignatureMask == 1)
+                   (hasCpuSignatureMask == 0 || hasCpuSignatureMask == 1) &&
+                   family == expectedFamily && (isIntel ? marker == 7u : marker == 1u)
                ? 0
                : 1;
 }

@@ -44,13 +44,14 @@ namespace {
     const int kTransformQueuedFlag = 0x02;
     const int kBoundsDirtyFlag = 0x02;
     const int kSingleParentFlag = 0x00080000;
+    const int kNodeVariantGateFlag = 0x01000000;
     const int kNodeTransformDirtyPropagatedFlag = 0x02000000;
     const char *kSwitchSourceFile = "D:\\Proj\\GameZRecoil\\zClass\\Switch.c";
 
     /**
      * Original-source helper evidence: no standalone retail function is
      * present; observed in Class.c callers including 0x447dc0, 0x447e30,
-     * 0x447f00, 0x447f30, 0x447fe0, 0x448090, and 0x448180 as the
+     * 0x447f00, 0x447f30, 0x447fe0, 0x448090, 0x448180, and 0x4482f0 as the
      * repeated null-node ReportOld pattern.
      * Purpose: report a null zClass node pointer and let the caller return
      * its address-specific failure value.
@@ -1466,9 +1467,12 @@ namespace zClass_Class {
         return 0;
     }
 
-    // Reimplements 0x4482f0: zClass_Class::gwNodeSetBypassFarClip
-    int __fastcall
-    gwNodeSetBypassFarClip(
+    /**
+     * Reimplements 0x4482f0: zClass_Class::gwNodeSetBypassFarClip
+     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * Purpose: set or clear the node flag that bypasses far-clip culling.
+     */
+    int __fastcall gwNodeSetBypassFarClip(
         zClass_NodePartial * node,
         int value
     ){
@@ -1512,9 +1516,13 @@ namespace zClass_Class {
         return 0;
     }
 
-    // Reimplements 0x448360: zClass_Class::gwNodeClearVariantGate
-    int __fastcall
-    gwNodeClearVariantGate(
+    /**
+     * Reimplements 0x448360: zClass_Class::gwNodeClearVariantGate
+     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * Purpose: clear the node variant-gate flag when the caller supplies a
+     * zero gate value.
+     */
+    int __fastcall gwNodeClearVariantGate(
         zClass_NodePartial * node,
         int value
     ){
@@ -1525,16 +1533,18 @@ namespace zClass_Class {
             return 5;
         }
 
-        if ((node->flags & 0x01000000) != 0 && value == 0) {
-            node->flags &= ~0x01000000;
+        if ((node->flags & kNodeVariantGateFlag) != 0 && value == 0) {
+            node->flags &= ~kNodeVariantGateFlag;
         }
 
         return 0;
     }
 
-    // Reimplements 0x4483a0: zClass_Class::gwNodeSetVertexAlphaOverride
-    int __fastcall
-    gwNodeSetVertexAlphaOverride(
+    /**
+     * Reimplements 0x4483a0: zClass_Class::gwNodeSetVertexAlphaOverride.
+     * Purpose: set or clear the caller-owned node vertex-alpha override flag.
+     */
+    int __fastcall gwNodeSetVertexAlphaOverride(
         zClass_NodePartial * node,
         int value
     ){
@@ -2607,10 +2617,15 @@ namespace zClass_Class {
 }
 
 namespace zClass_Node {
-    // Reimplements 0x421d60: zClass_Node::MaskExtraFlagsRecursive
-    // (GameZRecoil/zClass/Class.c)
-    void __fastcall
-    MaskExtraFlagsRecursive(
+    /**
+     * Reimplements 0x421d60: zClass_Node::MaskExtraFlagsRecursive
+     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * BN evidence: fastcall self/mask, auxFlags at 0x28, signed
+     * listCountB at 0x5c, listB at 0x60, recursive self-call only, and no
+     * global data references.
+     * Purpose: AND a mask into auxFlags across a node's child-list subtree.
+     */
+    void __fastcall MaskExtraFlagsRecursive(
         zClass_NodePartial * self,
         int mask
     ){
@@ -2624,9 +2639,15 @@ namespace zClass_Node {
         }
     }
 
-    // Reimplements 0x421da0: zClass_Node::PropagateExtraFlagsRecursive
-    void __fastcall
-    PropagateExtraFlagsRecursive(
+    /**
+     * Reimplements 0x421da0: zClass_Node::PropagateExtraFlagsRecursive
+     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * BN evidence: fastcall self/flags, auxFlags at 0x28, signed
+     * listCountB at 0x5c, listB at 0x60, recursive self-call only, and no
+     * global data references.
+     * Purpose: OR auxFlags into each node in a child-list subtree.
+     */
+    void __fastcall PropagateExtraFlagsRecursive(
         zClass_NodePartial * self,
         int flags
     ){
@@ -2640,10 +2661,15 @@ namespace zClass_Node {
         }
     }
 
-    // Reimplements 0x421de0: zClass_Node::PropagateFlagsRecursive
-    // (GameZRecoil/zClass/Class.c)
-    void __fastcall
-    PropagateFlagsRecursive(
+    /**
+     * Reimplements 0x421de0: zClass_Node::PropagateFlagsRecursive
+     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * BN evidence: fastcall self/flags, flags at 0x24, signed listCountB at
+     * 0x5c, listB at 0x60, recursive self-call only, and no global data
+     * references.
+     * Purpose: OR normal node flags into each node in a child-list subtree.
+     */
+    void __fastcall PropagateFlagsRecursive(
         zClass_NodePartial * self,
         int flags
     ){
@@ -2680,10 +2706,17 @@ namespace zClass_Node {
         }
     }
 
-    // Reimplements 0x437ea0: zClass_Node::SetDiFlagBit0Recursive
-    // (GameZRecoil/zClass/Class.c)
-    void __fastcall
-    SetDiFlagBit0Recursive(
+    /**
+     * Reimplements 0x437ea0: zClass_Node::SetDiFlagBit0Recursive
+     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * BN evidence: fastcall node/enabled, gwNodeGetUserData for the typed
+     * userDataOrDiRef display-instance reference, zDi::SetFlagBit0 when
+     * non-null, signed listCountB at 0x5c, listB at 0x60, recursive self-call
+     * only, and no global data references.
+     * Purpose: set display-instance flag bit 0 for each display instance
+     * reachable through a node's child-list subtree.
+     */
+    void __fastcall SetDiFlagBit0Recursive(
         zClass_NodePartial * node,
         int enabled
     ){
@@ -2734,7 +2767,12 @@ namespace zClass_Node {
         }
     }
 
-    // Reimplements 0x4528b0: zClass_Node::InvalidateFlagBit8MaterialImagesRecursive
+    /**
+     * Reimplements 0x4528b0: zClass_Node::InvalidateFlagBit8MaterialImagesRecursive
+     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * Purpose: recurse a child-list subtree and invalidate loaded material
+     * image variants for each display instance with material flag bit 8 set.
+     */
     void __fastcall InvalidateFlagBit8MaterialImagesRecursive(
         zClass_NodePartial * node
     ) {
@@ -2748,7 +2786,12 @@ namespace zClass_Node {
         }
     }
 
-    // Reimplements 0x4528a0: zClass_Node::LoadFlagBit8MaterialImagesAndTexturePack
+    /**
+     * Reimplements 0x4528a0: zClass_Node::LoadFlagBit8MaterialImagesAndTexturePack
+     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * Purpose: invalidate flagged material images under a node subtree and
+     * then load pending texture-directory entries.
+     */
     void __fastcall LoadFlagBit8MaterialImagesAndTexturePack(
         zClass_NodePartial * node
     ) {
@@ -2760,9 +2803,13 @@ namespace zClass_Node {
         zImage::TexDir_LoadPendingEntries();
     }
 
-    // Reimplements 0x4528e0: zClass_Node::AssignInt32ToDiRecursive
-    void __fastcall
-    AssignInt32ToDiRecursive(
+    /**
+     * Reimplements 0x4528e0: zClass_Node::AssignInt32ToDiRecursive
+     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * Purpose: assign display-instance flag bit 0 for each display instance
+     * reachable through a node's child-list subtree.
+     */
+    void __fastcall AssignInt32ToDiRecursive(
         zClass_NodePartial * node,
         int value
     ){

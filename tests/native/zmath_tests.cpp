@@ -1107,12 +1107,39 @@ extern "C" int zmath_array_add_scaled_and_transform_smoke(void) {
     zMath::g_zMath_CameraScratchB.yy = 1.0f;
     zMath::g_zMath_CameraScratchB.zz = 1.0f;
     zMath_Mat_LoadProjection(1.57079632679f);
-    return current.xx > -0.001f && current.xx < 0.001f && current.xz < -0.999f &&
-                   current.xz > -1.001f && current.zx > 0.999f && current.zx < 1.001f &&
-                   current.zz > -0.001f && current.zz < 0.001f && Near(current.posX, 10.0f) &&
-                   Near(current.posY, 20.0f) && Near(current.posZ, 30.0f)
+    if (!(current.xx > -0.001f && current.xx < 0.001f && current.xz < -0.999f &&
+          current.xz > -1.001f && current.zx > 0.999f && current.zx < 1.001f &&
+          current.zz > -0.001f && current.zz < 0.001f && Near(current.posX, 10.0f) &&
+          Near(current.posY, 20.0f) && Near(current.posZ, 30.0f))) {
+        return 12;
+    }
+
+    parent = {};
+    parent.xx = 0.0f;
+    parent.yy = 1.0f;
+    parent.xz = -1.0f;
+    parent.zx = 1.0f;
+    parent.zz = 0.0f;
+    parent.posX = 10.0f;
+    parent.posY = 20.0f;
+    parent.posZ = 30.0f;
+    current = {};
+    setupFlags[0] = 0;
+    setupFlags[1] = 0;
+    zMath::g_zMath_CameraScratchB = {};
+    zMath::g_zMath_CameraScratchB.xx = 1.0f;
+    zMath::g_zMath_CameraScratchB.yy = 1.0f;
+    zMath::g_zMath_CameraScratchB.zz = 1.0f;
+    zMath::g_zMath_CameraScratchB.posX = 5.0f;
+    zMath::g_zMath_CameraScratchB.posY = 6.0f;
+    zMath::g_zMath_CameraScratchB.posZ = 7.0f;
+    zMath_Mat_LoadProjection(1.57079632679f);
+    return Near(current.xx, 0.0f) && Near(current.yy, 1.0f) && Near(current.xz, -1.0f) &&
+                   Near(current.zx, 1.0f) && Near(current.zz, 0.0f) &&
+                   Near(current.posX, 15.0f) && Near(current.posY, 26.0f) &&
+                   Near(current.posZ, 37.0f)
                ? 0
-               : 12;
+               : 28;
 }
 
 extern "C" int zmath_load_view_smoke(void) {

@@ -11,6 +11,7 @@ namespace {
 /**
  * Original inline helper; no standalone retail function exists.
  * Observed in callers 0x4a0900 and 0x4a08d0.
+ * Evidence: both callers inline the same null-begin guard followed by end-minus-begin pointer count.
  * Purpose: Returns the active registry entry count from begin/end, or zero for an empty registry.
  */
 int RegistrySize() {
@@ -24,6 +25,7 @@ int RegistrySize() {
 /**
  * Original inline helper; no standalone retail function exists.
  * Observed in caller 0x4a09e0.
+ * Evidence: 0x4a09e0 inlines the same null-begin guard followed by capacityEnd-minus-begin pointer count.
  * Purpose: Returns the active registry pointer capacity from begin/capacityEnd.
  */
 int RegistryCapacity() {
@@ -37,6 +39,8 @@ int RegistryCapacity() {
 /**
  * Original inline helper; no standalone retail function exists.
  * Observed in caller 0x4a09e0.
+ * Evidence: BN shows the registry growth path as std::vector-style zSndSampleSet* insertion over
+ * the same begin/end/capacityEnd triplet, with self stored as the inserted value.
  * Purpose: Appends a sample-set entry, growing the registry pointer array when full.
  */
 inline void RegistryAppend(
@@ -75,12 +79,9 @@ inline void RegistryAppend(
  * Purpose: Stores the archive-bank selector flag and clears the sample-set registry range.
  */
 extern "C" void __fastcall zSnd_SetUseArchiveBanks(
-    int enabled
+    unsigned char enabled
 ) {
-    // Binary Ninja shows 0x4a0810 writes only the selector byte before clearing the vector.
-    unsigned char *const archiveBankFlag =
-        (unsigned char *)(&g_zSnd_SampleSetRegistry.useArchiveBanksFlag);
-    *archiveBankFlag = (unsigned char)(enabled);
+    g_zSnd_SampleSetRegistry.useArchiveBanksFlag = enabled;
     g_zSnd_SampleSetRegistry.begin = 0;
     g_zSnd_SampleSetRegistry.end = 0;
     g_zSnd_SampleSetRegistry.capacityEnd = 0;
@@ -110,7 +111,7 @@ extern "C" void zSndSampleSetRegistry_RegisterAtExit() {
  * Purpose: Applies the archive-bank setting and registers sample-set registry cleanup.
  */
 extern "C" void __fastcall zSnd_SetUseArchiveBanksAndRegisterAtExit(
-    int enabled
+    unsigned char enabled
 ) {
     zSnd_SetUseArchiveBanks(enabled);
     zSndSampleSetRegistry_RegisterAtExit();

@@ -1,6 +1,7 @@
 #include "GameZRecoil/zHud/zhud_ui.h"
 #include "GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.h"
 #include "GameZRecoil/zGame/zGame.h"
+#include "GameZRecoil/zRndr/zRndr.h"
 #include "GameZRecoil/zSound/zSound.h"
 #include <string.h>
 
@@ -12,6 +13,7 @@ static unsigned short g_musicVolumeSecondary;
 static int g_musicVolumeSetVolumeCount;
 static unsigned short g_musicVolumeSetPrimary;
 static unsigned short g_musicVolumeSetSecondary;
+static int g_perspectiveSelectSpanCount;
 
 struct OptionsPanelFunctionPatch {
     void *target;
@@ -87,6 +89,10 @@ static int __fastcall FakeMusicVolumeSetVolume(
     g_musicVolumeSetPrimary = primaryVolume;
     g_musicVolumeSetSecondary = secondaryVolume;
     return 1;
+}
+
+static void FakePerspectiveSelectSpanRoutines(void) {
+    ++g_perspectiveSelectSpanCount;
 }
 
 extern "C" int zhud_options_panel_lighting_init_from_options_smoke(void) {
@@ -193,6 +199,65 @@ extern "C" int zhud_options_panel_perspective_init_from_options_smoke(void) {
     g_zOpt_HwMode = oldHwMode;
 
     return swOk && hwClearOk && hwSetOk ? 0 : 1;
+}
+
+extern "C" int zhud_options_panel_perspective_sync_from_options_smoke(void) {
+    int swFlags = 0;
+    int hwFlags = 0x20;
+    int *const oldSwFlags = ZOPT_GFX_FLAGS_SW;
+    int *const oldHwFlags = ZOPT_GFX_FLAGS_HW;
+    const int oldHwMode = g_zOpt_HwMode;
+    OptionsPanelFunctionPatch selectSpanPatch = {0};
+
+    if (!PatchOptionsPanelFunctionJump(
+            (void *)(&zRndr::SelectSpanRoutines),
+            (void *)(&FakePerspectiveSelectSpanRoutines),
+            selectSpanPatch
+        )) {
+        return 1;
+    }
+
+    ZOPT_GFX_FLAGS_SW = &swFlags;
+    ZOPT_GFX_FLAGS_HW = &hwFlags;
+
+    HudUiOptionsPanel_Perspective perspective;
+    perspective.Constructor();
+    perspective.modeOrEnabled = 1;
+    g_perspectiveSelectSpanCount = 0;
+
+    g_zOpt_HwMode = 1;
+    perspective.checked = 0;
+    perspective.SyncFromOptions();
+    const bool setOk =
+        perspective.checked == 1 &&
+        hwFlags == 0x28 &&
+        swFlags == 0 &&
+        g_perspectiveSelectSpanCount == 1;
+
+    perspective.SyncFromOptions();
+    const bool clearOk =
+        perspective.checked == 0 &&
+        hwFlags == 0x20 &&
+        swFlags == 0 &&
+        g_perspectiveSelectSpanCount == 2;
+
+    g_zOpt_HwMode = 0;
+    perspective.checked = 0;
+    swFlags = 0x10;
+    perspective.SyncFromOptions();
+    const bool swOk =
+        perspective.checked == 1 &&
+        swFlags == 0x18 &&
+        hwFlags == 0x20 &&
+        g_perspectiveSelectSpanCount == 3;
+
+    perspective.DestructorCore();
+    ZOPT_GFX_FLAGS_SW = oldSwFlags;
+    ZOPT_GFX_FLAGS_HW = oldHwFlags;
+    g_zOpt_HwMode = oldHwMode;
+    RestoreOptionsPanelFunctionPatch(selectSpanPatch);
+
+    return setOk && clearOk && swOk ? 0 : 1;
 }
 
 extern "C" int zhud_options_panel_full_hud_init_from_options_smoke(void) {

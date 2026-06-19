@@ -484,8 +484,27 @@ void __fastcall zMath_BuildPerspectiveTextureInterpolants(
 #pragma optimize("y", on)
 
 namespace zMath {
+/**
+ * Reimplements data 0x5668e8: g_zMath_CameraScratchB
+ * (D:\Proj\GameZRecoil\zMath\zmath_camera.cpp).
+ * Purpose: stores the camera inverse-rotation scratch matrix loaded by the
+ * camera setup/projection/view helpers.
+ */
 zMat4x3 g_zMath_CameraScratchB = {0};
+/**
+ * Reimplements data 0x566920: g_zMath_CameraScratchA
+ * (D:\Proj\GameZRecoil\zMath\zmath_camera.cpp).
+ * Purpose: stores the staged camera world matrix before the inverse-rotation
+ * transpose is copied into camera scratch B.
+ */
 zMat4x3 g_zMath_CameraScratchA = {0};
+/**
+ * Reimplements data 0x5669d8: zMath::g_zMath_Vec3Zero
+ * (D:\Proj\GameZRecoil\zMath\zmath_camera.cpp).
+ * Purpose: shared writable zero vector read by zMath view-matrix setup and
+ * projectile runtime initialization.
+ */
+zVec3 g_zMath_Vec3Zero = {0};
 zVec3 g_zMath_Vec3DeltaScratch = {0};
 int *g_currentMatrixIdentityFlagSlot = &g_matrixIdentityFlagSlots[0];
 float **g_currentMatrixPtrSlot = &g_matrixSlots[0];
@@ -521,12 +540,20 @@ void MatStackPopPtr() {
     --g_currentMatrixPtrSlot;
 }
 
-// Reimplements 0x472f90: zMath::MatLoadCameraScratchB
+/**
+ * Reimplements 0x472f90: zMath::MatLoadCameraScratchB
+ * (D:\Proj\GameZRecoil\zMath\zmath_camera.cpp).
+ * Purpose: loads camera scratch B into the current matrix stack slot.
+ */
 void MatLoadCameraScratchB() {
     MatLoadCurrentFrom(&g_zMath_CameraScratchB);
 }
 
-// Reimplements 0x472fa0: zMath::MatLoadCameraScratchA
+/**
+ * Reimplements 0x472fa0: zMath::MatLoadCameraScratchA
+ * (D:\Proj\GameZRecoil\zMath\zmath_camera.cpp).
+ * Purpose: loads camera scratch A into the current matrix stack slot.
+ */
 void MatLoadCameraScratchA() {
     MatLoadCurrentFrom(&g_zMath_CameraScratchA);
 }
@@ -1581,7 +1608,12 @@ float __fastcall zMath_Vec3_ElevationAngleBetweenPoints(
     );
 }
 
-// Reimplements 0x4731f0: zMath_Mat_SetupCamera
+/**
+ * Reimplements 0x4731f0: zMath_Mat_SetupCamera
+ * (D:\Proj\GameZRecoil\zMath\zmath_camera.cpp).
+ * Purpose: loads camera scratch B and composes it through the parent matrix
+ * stack slot.
+ */
 void zMath_Mat_SetupCamera() {
     zMath::MatLoadCameraScratchB();
     zMath::MatMultiply(
@@ -1590,7 +1622,12 @@ void zMath_Mat_SetupCamera() {
     );
 }
 
-// Reimplements 0x472fb0: zMath_Mat_LoadProjection
+/**
+ * Reimplements 0x472fb0: zMath_Mat_LoadProjection
+ * (D:\Proj\GameZRecoil\zMath\zmath_camera.cpp).
+ * Purpose: builds the current projection-node matrix from the parent slot,
+ * camera scratch B, and a caller-supplied yaw/Z offset.
+ */
 void __stdcall zMath_Mat_LoadProjection(
     float zOffset
 ) {
@@ -1651,31 +1688,48 @@ void __fastcall zMath_UnprojectPointBatchZBuf(
     zVec3 *outPoints,
     int count
 ) {
-    for (int i = 0; i < count; ++i) {
-        zVec3 viewPoint = {0};
-        zMath_UnprojectPointBatch(
-            &projectedPoints[i],
-            &viewPoint,
-            1
-        );
+    zVec3 *viewPoints = outPoints;
+    zMath_UnprojectPointBatch(
+        projectedPoints,
+        viewPoints,
+        count
+    );
 
-        const zMat4x3 &matrix = zMath::g_zMath_CameraScratchA;
-        outPoints[i].x = viewPoint.x * matrix.xx + viewPoint.y * matrix.yx +
-                         viewPoint.z * matrix.zx + matrix.posX;
-        outPoints[i].z = viewPoint.x * matrix.xz + viewPoint.y * matrix.yz +
-                         viewPoint.z * matrix.zz + matrix.posZ;
-        outPoints[i].y = viewPoint.x * matrix.xy + viewPoint.y * matrix.yy +
-                         viewPoint.z * matrix.zy + matrix.posY;
+    zMat4x3 slotBuffer = {0};
+    zMath::MatStackPushPtr((float *)(&slotBuffer));
+    zMath::MatLoadCameraScratchA();
+
+    if (*zMath::g_currentMatrixIdentityFlagSlot != 0) {
+        for (int i = 0; i < count; ++i) {
+            outPoints[i] = viewPoints[i];
+        }
+    } else {
+        const zMat4x3 *const matrix =
+            (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
+        for (int i = 0; i < count; ++i) {
+            const zVec3 viewPoint = viewPoints[i];
+            outPoints[i].x =
+                viewPoint.x * matrix->xx + viewPoint.y * matrix->yx +
+                viewPoint.z * matrix->zx + matrix->posX;
+            outPoints[i].z =
+                viewPoint.x * matrix->xz + viewPoint.y * matrix->yz +
+                viewPoint.z * matrix->zz + matrix->posZ;
+            outPoints[i].y =
+                viewPoint.x * matrix->xy + viewPoint.y * matrix->yy +
+                viewPoint.z * matrix->zy + matrix->posY;
+        }
     }
+
+    zMath::MatStackPopPtr();
 }
 
 /**
  * Reimplements 0x473060: zMath_Mat_LoadView
- * (D:\Proj\GameZRecoil\zMath\zMath.cpp).
+ * (D:\Proj\GameZRecoil\zMath\zmath_camera.cpp).
  * Purpose: builds the current view matrix from camera and parent transforms.
  */
 void zMath_Mat_LoadView() {
-    zVec3 parentEuler = {0};
+    zVec3 parentEuler = zMath::g_zMath_Vec3Zero;
     if (zMath::g_currentMatrixIdentityFlagSlot[-1] == 0) {
         zMath_Mat_ExtractEulerAngles(
             (const zMat4x3 *)(zMath::g_currentMatrixPtrSlot[-1]),
@@ -1692,7 +1746,7 @@ void zMath_Mat_LoadView() {
     current->zy = -current->zy;
     current->zz = -current->zz;
 
-    zVec3 cameraEuler = {0};
+    zVec3 cameraEuler = zMath::g_zMath_Vec3Zero;
     zMath_Mat_ExtractEulerAngles(
         current,
         &cameraEuler
@@ -1826,8 +1880,12 @@ void __fastcall zMath_Vec3_RotateX(
     outVec->z = sinAngle * inVec->y + cosAngle * inVec->z;
 }
 
-// Reimplements 0x474580: zMath_Vec3_DirFromYaw
-// (D:\Proj\GameZRecoil\zMath\zmath_vec.cpp)
+/**
+ * Reimplements 0x474580: zMath_Vec3_DirFromYaw
+ * (D:\Proj\GameZRecoil\zMath\zmath_vec.cpp).
+ * Purpose: Clears the output vector, stages the canonical forward direction,
+ * and rotates it around Y to produce a unit XZ direction from yaw.
+ */
 void __fastcall zMath_Vec3_DirFromYaw(
     zVec3 *outDir,
     float yawAngle

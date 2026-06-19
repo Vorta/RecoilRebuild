@@ -85,10 +85,13 @@ extern "C" int zsnd_preinitialize_runtime_state_smoke(void);
 extern "C" int zsnd_sample_play_a3d_simple_direct_smoke(void);
 extern "C" int zsnd_sample_play_a3d_worldpos_smoke(void);
 extern "C" int zsnd_sample_acquire_play_handle_smoke(void);
+extern "C" int zsnd_system_named_sets_syntax_smoke(void);
+extern "C" int zsnd_system_legacy_sets_syntax_smoke(void);
 extern "C" int zsnd_stream_request_state_update_smoke(void);
 extern "C" int zsnd_fade_entry_backend_and_dispatch_smoke(void);
 extern "C" int zsnd_fade_list_cursor_helpers_smoke(void);
 extern "C" int zsnd_fade_active_list_tick_compacts_smoke(void);
+extern "C" int zsnd_fade_lists_init_globals_shutdown_at_exit_smoke(void);
 extern "C" int zsnd_fade_lists_stop_all_shutdown_smoke(void);
 extern "C" int zsnd_tick_backend_markers_smoke(void);
 extern "C" int zsnd_report_error_helpers_smoke(void);
@@ -99,6 +102,7 @@ extern "C" int zsnd_sample_set_registry_lookup_destroy_smoke(void);
 extern "C" int zsnd_sample_destroy_owned_data_smoke(void);
 extern "C" int zsnd_sample_set_destroy_owned_data_smoke(void);
 extern "C" int zsnd_sample_set_get_sample_at_smoke(void);
+extern "C" int zsnd_sample_set_registry_add_entry_smoke(void);
 extern "C" int zsnd_find_sample_by_name_smoke(void);
 extern "C" int zsnd_sample_set_init_by_name_empty_smoke(void);
 extern "C" int zsnd_sample_set_init_loose_file_smoke(void);
@@ -143,6 +147,10 @@ extern "C" int znetwork_local_identity_smoke(void);
 extern "C" int znetwork_dplay_close_release_smoke(void);
 extern "C" int znetwork_dplay_report_error_smoke(void);
 extern "C" int znetwork_dplay_query_caps_configure_send_mode_smoke(void);
+extern "C" int znetwork_dplay_initialize_connection_from_provider_info_smoke(void);
+extern "C" int znetwork_dplay_service_provider_refresh_smoke(void);
+extern "C" int znetwork_dplay_free_service_provider_info_buffers_smoke(void);
+extern "C" int znetwork_dplay_select_service_provider_and_init_connection_smoke(void);
 extern "C" int znetwork_dplay_create_session_from_status_fields_smoke(void);
 extern "C" int znetwork_dplay_create_local_player_record_smoke(void);
 extern "C" int znetwork_dplay_enum_players_smoke(void);
@@ -159,7 +167,10 @@ extern "C" int znetwork_clear_player_record_list_smoke(void);
 extern "C" int znetwork_player_record_accessors_smoke(void);
 extern "C" int znetwork_alloc_free_player_color_index_smoke(void);
 extern "C" int znetwork_apply_pkt01_player_color_assignments_smoke(void);
+extern "C" int znetwork_init_session_runtime_smoke(void);
 extern "C" int znetwork_shutdown_session_runtime_smoke(void);
+extern "C" int znetwork_dplay_create_interface_and_coinitialize_smoke(void);
+extern "C" int znetwork_set_fatal_disconnect_callback_smoke(void);
 extern "C" int pickup_register_existing_object_smoke(void);
 extern "C" int pickup_leaf_helpers_smoke(void);
 extern "C" int pickup_spawn_from_parsed_zrd_entry_smoke(void);
@@ -233,6 +244,7 @@ extern "C" int player_cache_disable_copter_snd_nodes_smoke(void);
 extern "C" int player_reactivate_copter_snd_nodes_if_healthy_smoke(void);
 extern "C" int player_apply_alt_weapon_switch_smoke(void);
 extern "C" int player_apply_aim_pitch_to_direction_smoke(void);
+extern "C" int player_update_third_person_camera_smoke(void);
 extern "C" int player_apply_camera_state_and_zopt_set_camera_mode_smoke(void);
 extern "C" int player_find_alt_gun_controller_smoke(void);
 extern "C" int player_alt_gun_fire_point_selection_smoke(void);
@@ -446,6 +458,11 @@ extern "C" int zhud_triplet_panel_set_visible_count_smoke(void);
 extern "C" int zhud_triplet_panel_shutdown_items_stub_smoke(void);
 extern "C" int zhud_triplet_interpolate_layout_smoke(void);
 extern "C" int zhud_triplet_is_local_player_first_entry_smoke(void);
+extern "C" int zhud_mgr_constructor_smoke(void);
+extern "C" int zhud_mgr_static_init_smoke(void);
+extern "C" int zhud_mgr_static_destructor_smoke(void);
+extern "C" int zhud_mgr_register_at_exit_smoke(void);
+extern "C" int zhud_mgr_static_init_and_register_at_exit_smoke(void);
 extern "C" int zhud_mgr_is_local_player_first_in_stats_list_smoke(void);
 extern "C" int zhud_scoreboard_set_scale_and_rebuild_smoke(void);
 extern "C" int zhud_triplet_scoreboard_entry_update_smoke(void);
@@ -461,6 +478,9 @@ extern "C" int zhud_timer_panel_global_accessors_smoke(void);
 extern "C" int zhud_list_menu_entry_sort_smoke(void);
 extern "C" int zhud_layout_hw_update_objective_dirty_rect_smoke(void);
 extern "C" int zhud_objective_update_meter_xpoints_smoke(void);
+extern "C" int zhud_loading_checkpoint_init_table_smoke(void);
+extern "C" int zhud_loading_checkpoint_advance_and_log_smoke(void);
+extern "C" int zhud_mgr_tail_bar_layout_smoke(void);
 extern "C" int zhud_mgr_trigger_current_layout_on_activated_smoke(void);
 extern "C" int zhud_counter_constructor_smoke(void);
 extern "C" int zhud_message_release_images_smoke(void);
@@ -536,6 +556,7 @@ extern "C" int recoil_app_mp_exit_dialog_state_on_update_should_quit_smoke(void)
 extern "C" int zhud_options_panel_lighting_init_from_options_smoke(void);
 extern "C" int zhud_options_panel_lighting_sync_from_options_smoke(void);
 extern "C" int zhud_options_panel_perspective_init_from_options_smoke(void);
+extern "C" int zhud_options_panel_perspective_sync_from_options_smoke(void);
 extern "C" int zhud_options_panel_full_hud_init_from_options_smoke(void);
 extern "C" int zhud_options_panel_object_detail_init_from_options_smoke(void);
 extern "C" int zhud_options_panel_object_detail_sync_from_options_smoke(void);
@@ -673,6 +694,9 @@ extern "C" int zcliprect_clip_poly_uv_attr012_smoke(void);
 extern "C" int zcliprect_clip_poly_no_uv_attr0_alt_smoke(void);
 extern "C" int zcliprect_clip_poly_no_uv_attr012_alt_smoke(void);
 extern "C" int zcliprect_trivial_reject_poly_xy_smoke(void);
+extern "C" int zclipalt_set_source_rect_smoke(void);
+extern "C" int zclipalt_set_target_rect_smoke(void);
+extern "C" int zclipalt_remap_point_xy_in_place_smoke(void);
 extern "C" int zrndr_span_occlusion_reset_shutdown_smoke(void);
 extern "C" int zrndr_span_occlusion_init_build_smoke(void);
 extern "C" int zrndr_span_occlusion_rasterize_smoke(void);
@@ -940,6 +964,7 @@ extern "C" int zvideo_dd_blt_sw_to_primary_rect_smoke(void);
 extern "C" int zvideo_image_surface_helpers_guard_smoke(void);
 extern "C" int zvideo_set_renderer_type_smoke(void);
 extern "C" int zvideo_set_half_res_adjust_mode_smoke(void);
+extern "C" int zvideo_handle_software_mode_hotkey_smoke(void);
 extern "C" int zvid_texture_pack_load_state_getter_smoke(void);
 extern "C" int zvid_texture_pack_load_state_setter_smoke(void);
 extern "C" int zvid_option_accessors_smoke(void);
@@ -1040,6 +1065,9 @@ extern "C" int zdeclient_map_tree_find_or_insert_key_smoke(void);
 extern "C" int zdeclient_map_tree_lifecycle_smoke(void);
 extern "C" int zdeclient_map_tree_erase_range_smoke(void);
 extern "C" int zdeclient_set_camera_node_smoke(void);
+extern "C" int zdeclient_load_material_from_texture_path_smoke(void);
+extern "C" int zdeclient_load_config_resources_smoke(void);
+extern "C" int zdeclient_shutdown_globals_smoke(void);
 extern "C" int zdeclient_feature_leaf_helpers_smoke(void);
 extern "C" int zdeclient_feature_init_helpers_smoke(void);
 extern "C" int zdeclient_create_feature_node_from_partition_smoke(void);
@@ -1130,10 +1158,12 @@ extern "C" int time_tick_smoke(void);
 #include "GameZRecoil/include/OptCatalog.h"
 #include "GameZRecoil/include/zClass.h"
 #include "GameZRecoil/zEffect/zEffect.h"
+#include "GameZRecoil/zError/zError.h"
 #include "GameZRecoil/zHud/zhud_ui.h"
 #include "GameZRecoil/zMath/zMath.h"
 #include "GameZRecoil/zModel/zModel.h"
 #include "GameZRecoil/zNetwork/zNetwork.h"
+#include "GameZRecoil/zReader/zReader.h"
 #include "GameZRecoil/zSound/zSound.h"
 #include "GameZRecoil/Time/Time.h"
 #include "GameZRecoil/zVideo/zVideo.h"
@@ -1341,6 +1371,68 @@ extern "C" int zhud_triplet_panel_shutdown_items_stub_smoke(void) {
 #define RECOIL_ZGAME_TESTS_ZMODEL_CONST_ONLY
 #include "zgame_tests.cpp"
 #undef RECOIL_ZGAME_TESTS_ZMODEL_CONST_ONLY
+
+extern "C" int zclipalt_set_source_rect_smoke(void) {
+    zClipAltFloatRect rect{3.0f, 4.0f, 19.0f, 25.0f};
+    gAltClipSourceRectValid = 0;
+
+    zClipAlt::SetSourceRect(&rect);
+
+    return g_zClipAlt_SourceLeft == 3.0f && g_zClipAlt_SourceTop == 4.0f &&
+                   g_zClipAlt_SourceRight == 19.0f && g_zClipAlt_SourceBottom == 25.0f &&
+                   g_zClipAlt_SourceWidth == 16.0f && g_zClipAlt_SourceHeight == 21.0f &&
+                   gAltClipSourceRectValid == 1
+               ? 0
+               : 1;
+}
+
+extern "C" int zclipalt_set_target_rect_smoke(void) {
+    zClipAltFloatRect source{2.0f, 4.0f, 18.0f, 28.0f};
+    zClipAltFloatRect target{10.0f, 20.0f, 42.0f, 44.0f};
+    gClipRect_Primary.xMin = 100.0f;
+    gClipRect_Primary.yMin = 60.0f;
+
+    zClipAlt::SetSourceRect(&source);
+    g_zClipAlt_BiasIncludesPrimaryOrigin = 0;
+    zClipAlt::SetTargetRect(&target, 0);
+
+    if (gClipRect_Alt.flags != 0x0f || gClipRect_Alt.xMin != 10.0f || gClipRect_Alt.yMin != 20.0f ||
+        gClipRect_Alt.xMax != 42.0f || gClipRect_Alt.yMax != 44.0f ||
+        gClipRect_Alt.xMaxAlt != 42.0f || gClipRect_Alt.yMaxAlt != 44.0f ||
+        g_zClipAlt_RemapOffsetX != 8.0f || g_zClipAlt_RemapOffsetY != 16.0f ||
+        g_zClipAlt_RemapScaleX != 0.5f || g_zClipAlt_RemapScaleY != 1.0f ||
+        g_zClipAlt_RemapBiasX != -3.0f || g_zClipAlt_RemapBiasY != -16.0f) {
+        return 1;
+    }
+
+    g_zClipAlt_BiasIncludesPrimaryOrigin = 1;
+    zClipAlt::SetTargetRect(&target, 1);
+    return g_zClipAlt_RemapBiasX == 47.0f && g_zClipAlt_RemapBiasY == 14.0f ? 0 : 2;
+}
+
+extern "C" int zclipalt_remap_point_xy_in_place_smoke(void) {
+    zClipAltFloatRect source{2.0f, 4.0f, 18.0f, 28.0f};
+    zClipAltFloatRect target{10.0f, 20.0f, 42.0f, 44.0f};
+    gClipRect_Primary.xMin = 0.0f;
+    gClipRect_Primary.yMin = 0.0f;
+    g_zClipAlt_BiasIncludesPrimaryOrigin = 0;
+    zClipAlt::SetSourceRect(&source);
+    zClipAlt::SetTargetRect(&target, 0);
+
+    float acceptedPoint[2] = {26.0f, 32.0f};
+    const bool accepted =
+        zClipAlt::RemapPointXYInPlace(acceptedPoint) == 1 &&
+        g_Clip_PolyVerts[0].x == 26.0f && g_Clip_PolyVerts[0].y == 32.0f &&
+        acceptedPoint[0] == 10.0f && acceptedPoint[1] == 16.0f;
+
+    float rejectedPoint[2] = {50.0f, 32.0f};
+    const bool rejected =
+        zClipAlt::RemapPointXYInPlace(rejectedPoint) == 0 &&
+        g_Clip_PolyVerts[0].x == 50.0f && g_Clip_PolyVerts[0].y == 32.0f &&
+        rejectedPoint[0] == 50.0f && rejectedPoint[1] == 32.0f;
+
+    return accepted && rejected ? 0 : 1;
+}
 
 namespace {
 PickupSpawnDef *NewSpawnDef(PickupSpawnDef *next = nullptr) {
@@ -3535,6 +3627,596 @@ void RestoreSmokeFunctionPatch(
     patch.active = 0;
 }
 
+struct SmokeDPlay4Object {
+    void **vtable;
+};
+
+int g_znetworkInitCreateInterfaceCalls;
+zNetwork_DPlay4 **g_znetworkInitCreateInterfaceOut;
+zNetwork_DPlay4 *g_znetworkInitCreateInterfaceInitialOutValue;
+zNetwork_DPlay4 *g_znetworkInitCreateInterfaceDirectPlay4;
+int g_znetworkInitCreateInterfaceResult;
+int g_znetworkInitFatalDisconnectCalls;
+int g_znetworkInitFatalDisconnectReason;
+
+int g_dplayCreateCoInitializeCalls;
+void *g_dplayCreateCoInitializeReserved;
+int g_dplayCreateCoCreateCalls;
+bool g_dplayCreateCoCreateArgsOk;
+void *g_dplayCreateCoCreateInitialOut;
+bool g_dplayCreateCoCreateWriteOut;
+HRESULT g_dplayCreateCoCreateResult;
+zNetwork_DPlay4 *g_dplayCreateCoCreateOut;
+int g_dplayCreateReportErrorCalls;
+int g_dplayCreateReportErrorHresult;
+int g_dplayCreateReportErrorLine;
+int g_dplayCreateReportOldCalls;
+int g_dplayCreateReportOldFlags;
+int g_dplayCreateReportOldLine;
+char g_dplayCreateReportOldMessage[64];
+
+int g_dplayProviderEnumConnectionsCalls;
+const GUID *g_dplayProviderEnumConnectionsAppGuid;
+zNetworkDPlayEnumConnectionsCallback g_dplayProviderEnumConnectionsCallback;
+void *g_dplayProviderEnumConnectionsContext;
+DWORD g_dplayProviderEnumConnectionsFlags;
+HRESULT g_dplayProviderEnumConnectionsResult;
+int g_dplayProviderInitializeConnectionCalls;
+void *g_dplayProviderInitializeConnectionData;
+DWORD g_dplayProviderInitializeConnectionFlags;
+HRESULT g_dplayProviderInitializeConnectionResult;
+
+int g_dplaySelectCloseCalls;
+zNetwork_DPlay4 *g_dplaySelectCloseArg;
+int g_dplaySelectCreateCalls;
+zNetwork_DPlay4 **g_dplaySelectCreateOutPtr;
+int g_dplaySelectCreateResult;
+zNetwork_DPlay4 *g_dplaySelectCreateOut;
+int g_dplaySelectInitializeCalls;
+zNetworkDPlayServiceProviderInfo *g_dplaySelectInitializeProvider;
+int g_dplaySelectInitializeResult;
+int g_dplaySelectReportErrorCalls;
+int g_dplaySelectReportErrorHresult;
+int g_dplaySelectReportErrorLine;
+int g_dplaySelectReportErrorResult;
+
+template <typename T>
+T *AllocSmokeZeroObject() {
+    void *const memory = ::operator new(sizeof(T));
+    std::memset(memory, 0, sizeof(T));
+    return static_cast<T *>(memory);
+}
+
+int __fastcall SmokePacketHandlerFake(
+    int,
+    zNetworkPacketHeader *
+) {
+    return 0;
+}
+
+void __fastcall SmokeFatalDisconnectFake(
+    int reason
+) {
+    ++g_znetworkInitFatalDisconnectCalls;
+    g_znetworkInitFatalDisconnectReason = reason;
+}
+
+int __fastcall SmokeCreateInterfaceAndCoInitialize(
+    zNetwork_DPlay4 **outDirectPlay4
+) {
+    ++g_znetworkInitCreateInterfaceCalls;
+    g_znetworkInitCreateInterfaceOut = outDirectPlay4;
+    g_znetworkInitCreateInterfaceInitialOutValue =
+        outDirectPlay4 != 0 ? *outDirectPlay4 : 0;
+    if (outDirectPlay4 != 0) {
+        *outDirectPlay4 = g_znetworkInitCreateInterfaceDirectPlay4;
+    }
+    return g_znetworkInitCreateInterfaceResult;
+}
+
+void CleanupInitSessionRuntimeSmokeState() {
+    zNetwork_DestroyDispatchHandlerList();
+
+    if (g_zNetwork_EnumeratedSessionList != 0) {
+        zArchiveList_Destroy(g_zNetwork_EnumeratedSessionList);
+        g_zNetwork_EnumeratedSessionList = 0;
+    }
+
+    if (g_zNetwork_ServiceProviderList != 0) {
+        zNetwork::ClearServiceProviderList();
+        ::operator delete(g_zNetwork_ServiceProviderList->begin);
+        ::operator delete(g_zNetwork_ServiceProviderList);
+        g_zNetwork_ServiceProviderList = 0;
+    }
+
+    if (g_zNetwork_PlayerRecordList != 0) {
+        zNetwork::ClearPlayerRecordList();
+        ::operator delete(g_zNetwork_PlayerRecordList->sentinelNode);
+        ::operator delete(g_zNetwork_PlayerRecordList);
+        g_zNetwork_PlayerRecordList = 0;
+    }
+
+    g_zNetwork_pDirectPlay4 = 0;
+    g_zNetwork_LocalPlayerRecord = 0;
+    g_zNetwork_SessionRuntimeInitialized = 0;
+    g_zNetwork_CurrentSessionDescCache = 0;
+    g_zNetwork_FatalDisconnectCallback = 0;
+    g_zNetwork_FatalDisconnectTriggered = 0;
+    g_zNetwork_AppGuid = 0;
+    g_zNetwork_ReceiveBuffer = 0;
+}
+
+HRESULT WINAPI SmokeDPlayCreateCoInitialize(
+    void *reserved
+) {
+    ++g_dplayCreateCoInitializeCalls;
+    g_dplayCreateCoInitializeReserved = reserved;
+    return S_OK;
+}
+
+HRESULT WINAPI SmokeDPlayCreateCoCreateInstance(
+    REFCLSID clsid,
+    LPUNKNOWN outer,
+    DWORD clsContext,
+    REFIID iid,
+    LPVOID *outObject
+) {
+    ++g_dplayCreateCoCreateCalls;
+    g_dplayCreateCoCreateArgsOk =
+        IsEqualGUID(clsid, CLSID_DirectPlay) != 0 &&
+        outer == 0 &&
+        clsContext == CLSCTX_INPROC_SERVER &&
+        IsEqualGUID(iid, IID_IDirectPlay4A) != 0 &&
+        outObject != 0;
+    g_dplayCreateCoCreateInitialOut = outObject != 0 ? *outObject : 0;
+    if (outObject != 0 && g_dplayCreateCoCreateWriteOut) {
+        *outObject = g_dplayCreateCoCreateOut;
+    }
+    return g_dplayCreateCoCreateResult;
+}
+
+int __fastcall SmokeDPlayCreateReportError(
+    int hresult,
+    const char *,
+    int sourceLine
+) {
+    ++g_dplayCreateReportErrorCalls;
+    g_dplayCreateReportErrorHresult = hresult;
+    g_dplayCreateReportErrorLine = sourceLine;
+    return hresult == 0 ? 1 : 0;
+}
+
+void SmokeDPlayCreateReportOld(
+    int flags,
+    const char *,
+    int sourceLine,
+    const char *format,
+    ...
+) {
+    ++g_dplayCreateReportOldCalls;
+    g_dplayCreateReportOldFlags = flags;
+    g_dplayCreateReportOldLine = sourceLine;
+    std::strncpy(
+        g_dplayCreateReportOldMessage,
+        format != 0 ? format : "",
+        sizeof(g_dplayCreateReportOldMessage)
+    );
+    g_dplayCreateReportOldMessage[sizeof(g_dplayCreateReportOldMessage) - 1] = '\0';
+}
+
+void ResetDPlayCreateInterfaceSmokeLog() {
+    g_dplayCreateCoInitializeCalls = 0;
+    g_dplayCreateCoInitializeReserved = 0;
+    g_dplayCreateCoCreateCalls = 0;
+    g_dplayCreateCoCreateArgsOk = false;
+    g_dplayCreateCoCreateInitialOut = 0;
+    g_dplayCreateCoCreateWriteOut = true;
+    g_dplayCreateReportErrorCalls = 0;
+    g_dplayCreateReportErrorHresult = 0;
+    g_dplayCreateReportErrorLine = 0;
+    g_dplayCreateReportOldCalls = 0;
+    g_dplayCreateReportOldFlags = 0;
+    g_dplayCreateReportOldLine = 0;
+    g_dplayCreateReportOldMessage[0] = '\0';
+}
+
+void FillSmokeGuidBytes(GUID &guid, unsigned char firstByte) {
+    unsigned char *const bytes = reinterpret_cast<unsigned char *>(&guid);
+    for (int index = 0; index < 16; ++index) {
+        bytes[index] = static_cast<unsigned char>(firstByte + index);
+    }
+}
+
+HRESULT __stdcall SmokeDPlayProviderEnumConnections(
+    zNetwork_DPlay4 *,
+    const GUID *applicationGuid,
+    zNetworkDPlayEnumConnectionsCallback callback,
+    void *context,
+    DWORD flags
+) {
+    ++g_dplayProviderEnumConnectionsCalls;
+    g_dplayProviderEnumConnectionsAppGuid = applicationGuid;
+    g_dplayProviderEnumConnectionsCallback = callback;
+    g_dplayProviderEnumConnectionsContext = context;
+    g_dplayProviderEnumConnectionsFlags = flags;
+
+    if (g_dplayProviderEnumConnectionsResult >= 0 && callback != 0) {
+        GUID serviceProviderGuid = {};
+        FillSmokeGuidBytes(serviceProviderGuid, 1);
+        unsigned char connectionData[5] = {10, 20, 30, 40, 50};
+        char providerShortName[] = "TCP/IP Provider";
+        char providerLongName[] = "TCP/IP Provider Long";
+        zNetworkDPlayName providerName = {};
+        providerName.dwSize = sizeof(zNetworkDPlayName);
+        providerName.lpszShortNameA = providerShortName;
+        providerName.lpszLongNameA = providerLongName;
+        callback(&serviceProviderGuid, connectionData, sizeof(connectionData),
+                 &providerName, 0x55, context);
+    }
+
+    return g_dplayProviderEnumConnectionsResult;
+}
+
+HRESULT __stdcall SmokeDPlayProviderInitializeConnection(
+    zNetwork_DPlay4 *,
+    void *connectionData,
+    DWORD flags
+) {
+    ++g_dplayProviderInitializeConnectionCalls;
+    g_dplayProviderInitializeConnectionData = connectionData;
+    g_dplayProviderInitializeConnectionFlags = flags;
+    return g_dplayProviderInitializeConnectionResult;
+}
+
+void ResetDPlayProviderSmokeLog() {
+    g_dplayProviderEnumConnectionsCalls = 0;
+    g_dplayProviderEnumConnectionsAppGuid = 0;
+    g_dplayProviderEnumConnectionsCallback = 0;
+    g_dplayProviderEnumConnectionsContext = 0;
+    g_dplayProviderEnumConnectionsFlags = 0;
+    g_dplayProviderEnumConnectionsResult = S_OK;
+    g_dplayProviderInitializeConnectionCalls = 0;
+    g_dplayProviderInitializeConnectionData = 0;
+    g_dplayProviderInitializeConnectionFlags = 0;
+    g_dplayProviderInitializeConnectionResult = S_OK;
+}
+
+void BuildSmokeDPlayProviderVtable(void **vtable) {
+    std::memset(vtable, 0, sizeof(void *) * 39);
+    vtable[35] = reinterpret_cast<void *>(&SmokeDPlayProviderEnumConnections);
+    vtable[38] = reinterpret_cast<void *>(&SmokeDPlayProviderInitializeConnection);
+}
+
+int __fastcall SmokeDPlaySelectClose(zNetwork_DPlay4 *directPlay4) {
+    ++g_dplaySelectCloseCalls;
+    g_dplaySelectCloseArg = directPlay4;
+    return 0;
+}
+
+int __fastcall SmokeDPlaySelectCreate(zNetwork_DPlay4 **outDirectPlay4) {
+    ++g_dplaySelectCreateCalls;
+    g_dplaySelectCreateOutPtr = outDirectPlay4;
+    if (outDirectPlay4 != 0) {
+        *outDirectPlay4 = g_dplaySelectCreateOut;
+    }
+    return g_dplaySelectCreateResult;
+}
+
+int __fastcall SmokeDPlaySelectInitialize(
+    zNetworkDPlayServiceProviderInfo *providerInfo
+) {
+    ++g_dplaySelectInitializeCalls;
+    g_dplaySelectInitializeProvider = providerInfo;
+    return g_dplaySelectInitializeResult;
+}
+
+int __fastcall SmokeDPlaySelectReportError(
+    int hresult,
+    const char *,
+    int sourceLine
+) {
+    ++g_dplaySelectReportErrorCalls;
+    g_dplaySelectReportErrorHresult = hresult;
+    g_dplaySelectReportErrorLine = sourceLine;
+    return g_dplaySelectReportErrorResult;
+}
+
+void ResetDPlaySelectProviderLog() {
+    g_dplaySelectCloseCalls = 0;
+    g_dplaySelectCloseArg = 0;
+    g_dplaySelectCreateCalls = 0;
+    g_dplaySelectCreateOutPtr = 0;
+    g_dplaySelectInitializeCalls = 0;
+    g_dplaySelectInitializeProvider = 0;
+    g_dplaySelectReportErrorCalls = 0;
+    g_dplaySelectReportErrorHresult = 0;
+    g_dplaySelectReportErrorLine = 0;
+}
+
+int RunZnetworkInitSessionRuntimeSmoke() {
+    SmokeFunctionPatch createInterfacePatch = {};
+    if (!PatchSmokeFunctionJump(
+            reinterpret_cast<void *>(&zNetwork_DPlay::CreateInterfaceAndCoInitialize),
+            reinterpret_cast<void *>(&SmokeCreateInterfaceAndCoInitialize),
+            createInterfacePatch
+        )) {
+        return 90;
+    }
+
+    int failure = 0;
+    SmokeDPlay4Object directPlay = {};
+    GUID appGuid = {};
+    zNetworkDispatchHandlerRecord *handlerRecord = 0;
+    zNetworkDispatchHandlerListNode *handlerNode = 0;
+
+    CleanupInitSessionRuntimeSmokeState();
+    zNetwork_CreateEmptyDispatchHandlerList();
+    zNetwork::RegisterPacketHandler(9, &SmokePacketHandlerFake, 7);
+    g_zNetwork_FatalDisconnectCallback = SmokeFatalDisconnectFake;
+    g_zNetwork_ReceiveBuffer = &directPlay;
+    g_znetworkInitCreateInterfaceCalls = 0;
+    g_znetworkInitCreateInterfaceOut = 0;
+    g_znetworkInitCreateInterfaceInitialOutValue = 0;
+    g_znetworkInitCreateInterfaceDirectPlay4 =
+        reinterpret_cast<zNetwork_DPlay4 *>(&directPlay);
+    g_znetworkInitCreateInterfaceResult = 0;
+
+    if (zNetwork::InitSessionRuntime(&appGuid) != 0 ||
+        g_znetworkInitCreateInterfaceCalls != 1 ||
+        g_znetworkInitCreateInterfaceOut == 0 ||
+        g_znetworkInitCreateInterfaceOut == &g_zNetwork_pDirectPlay4 ||
+        g_znetworkInitCreateInterfaceInitialOutValue != 0 ||
+        g_zNetwork_SessionRuntimeInitialized != 1 ||
+        g_zNetwork_FatalDisconnectTriggered != 0 ||
+        g_zNetwork_AppGuid != &appGuid ||
+        g_zNetwork_pDirectPlay4 != reinterpret_cast<zNetwork_DPlay4 *>(&directPlay) ||
+        g_zNetwork_CurrentSessionDescCache != 0 ||
+        g_zNetwork_LocalPlayerRecord != 0 ||
+        g_zNetwork_FatalDisconnectCallback != 0 ||
+        g_zNetwork_ReceiveBuffer != 0 ||
+        g_zNetwork_EnumeratedSessionList == 0 ||
+        g_zNetwork_PlayerRecordList == 0 ||
+        g_zNetwork_PlayerRecordList->sentinelNode == 0 ||
+        g_zNetwork_PlayerRecordList->sentinelNode->next !=
+            g_zNetwork_PlayerRecordList->sentinelNode ||
+        g_zNetwork_PlayerRecordList->sentinelNode->prev !=
+            g_zNetwork_PlayerRecordList->sentinelNode ||
+        g_zNetwork_PlayerRecordList->count != 0 ||
+        g_zNetwork_ServiceProviderList == 0 ||
+        g_zNetwork_ServiceProviderList->begin != 0 ||
+        g_zNetwork_ServiceProviderList->end != 0 ||
+        g_zNetwork_ServiceProviderList->cap != 0 ||
+        g_zNetwork_DispatchHandlerListCount != 1) {
+        failure = 1;
+    }
+
+    if (failure == 0) {
+        handlerNode = g_zNetwork_DispatchHandlerListSentinel->next;
+        handlerRecord = handlerNode != 0 ? handlerNode->record : 0;
+        if (handlerNode == g_zNetwork_DispatchHandlerListSentinel ||
+            handlerRecord == 0 ||
+            handlerRecord->packetType != 1 ||
+            handlerRecord->handler != zNetwork_ApplyPkt01_PlayerColorAssignments ||
+            handlerRecord->mode != 2) {
+            failure = 2;
+        }
+    }
+
+    CleanupInitSessionRuntimeSmokeState();
+    zNetwork_CreateEmptyDispatchHandlerList();
+    zNetwork::RegisterPacketHandler(9, &SmokePacketHandlerFake, 7);
+    SmokeDPlay4Object oldDirectPlay = {};
+    zNetworkDPlaySessionDescCache oldCache = {};
+    zNetwork_PlayerRecord oldPlayer = {};
+    GUID oldGuid = {};
+    g_zNetwork_SessionRuntimeInitialized = 17;
+    g_zNetwork_FatalDisconnectTriggered = 23;
+    g_zNetwork_AppGuid = &oldGuid;
+    g_zNetwork_pDirectPlay4 = reinterpret_cast<zNetwork_DPlay4 *>(&oldDirectPlay);
+    g_zNetwork_CurrentSessionDescCache = &oldCache;
+    g_zNetwork_LocalPlayerRecord = &oldPlayer;
+    g_zNetwork_FatalDisconnectCallback = SmokeFatalDisconnectFake;
+    g_zNetwork_ReceiveBuffer = &oldPlayer;
+    g_znetworkInitCreateInterfaceCalls = 0;
+    g_znetworkInitCreateInterfaceOut = 0;
+    g_znetworkInitCreateInterfaceInitialOutValue = 0;
+    g_znetworkInitCreateInterfaceDirectPlay4 =
+        reinterpret_cast<zNetwork_DPlay4 *>(&directPlay);
+    g_znetworkInitCreateInterfaceResult = -1;
+
+    if (failure == 0 &&
+        (zNetwork::InitSessionRuntime(&appGuid) != 0 ||
+         g_znetworkInitCreateInterfaceCalls != 1 ||
+         g_znetworkInitCreateInterfaceOut == &g_zNetwork_pDirectPlay4 ||
+         g_znetworkInitCreateInterfaceInitialOutValue != 0 ||
+         g_zNetwork_SessionRuntimeInitialized != 17 ||
+         g_zNetwork_FatalDisconnectTriggered != 23 ||
+         g_zNetwork_AppGuid != &oldGuid ||
+         g_zNetwork_pDirectPlay4 != reinterpret_cast<zNetwork_DPlay4 *>(&oldDirectPlay) ||
+         g_zNetwork_CurrentSessionDescCache != &oldCache ||
+         g_zNetwork_LocalPlayerRecord != &oldPlayer ||
+         g_zNetwork_FatalDisconnectCallback != 0 ||
+         g_zNetwork_ReceiveBuffer != 0 ||
+         g_zNetwork_EnumeratedSessionList == 0 ||
+         g_zNetwork_PlayerRecordList == 0 ||
+         g_zNetwork_ServiceProviderList == 0 ||
+         g_zNetwork_DispatchHandlerListCount != 2)) {
+        failure = 3;
+    }
+
+    if (failure == 0) {
+        handlerNode = g_zNetwork_DispatchHandlerListSentinel->prev;
+        handlerRecord = handlerNode != 0 ? handlerNode->record : 0;
+        if (handlerNode == g_zNetwork_DispatchHandlerListSentinel ||
+            handlerRecord == 0 ||
+            handlerRecord->packetType != 1 ||
+            handlerRecord->handler != zNetwork_ApplyPkt01_PlayerColorAssignments ||
+            handlerRecord->mode != 2) {
+            failure = 4;
+        }
+    }
+
+    g_zNetwork_CurrentSessionDescCache = 0;
+    g_zNetwork_LocalPlayerRecord = 0;
+    CleanupInitSessionRuntimeSmokeState();
+    RestoreSmokeFunctionPatch(createInterfacePatch);
+    return failure;
+}
+
+int RunZnetworkSetFatalDisconnectCallbackSmoke() {
+    g_zNetwork_FatalDisconnectCallback = 0;
+    zNetwork::SetFatalDisconnectCallback(&SmokeFatalDisconnectFake);
+    if (g_zNetwork_FatalDisconnectCallback != &SmokeFatalDisconnectFake) {
+        return 1;
+    }
+
+    zNetwork::SetFatalDisconnectCallback(0);
+    if (g_zNetwork_FatalDisconnectCallback != 0) {
+        return 2;
+    }
+
+    return 0;
+}
+
+int RunZnetworkDPlayCreateInterfaceAndCoInitializeSmoke() {
+    SmokeImportPatch importPatches[2] = {};
+    SmokeFunctionPatch reportErrorPatch = {};
+    SmokeFunctionPatch reportOldPatch = {};
+    const bool installed =
+        PatchSmokeImportByName(
+            "ole32.dll",
+            "CoInitialize",
+            reinterpret_cast<void *>(&SmokeDPlayCreateCoInitialize),
+            importPatches[0]
+        ) &&
+        PatchSmokeImportByName(
+            "ole32.dll",
+            "CoCreateInstance",
+            reinterpret_cast<void *>(&SmokeDPlayCreateCoCreateInstance),
+            importPatches[1]
+        ) &&
+        PatchSmokeFunctionJump(
+            reinterpret_cast<void *>(&zNetwork_DPlay_ReportError),
+            reinterpret_cast<void *>(&SmokeDPlayCreateReportError),
+            reportErrorPatch
+        ) &&
+        PatchSmokeFunctionJump(
+            reinterpret_cast<void *>(&zError::ReportOld),
+            reinterpret_cast<void *>(&SmokeDPlayCreateReportOld),
+            reportOldPatch
+        );
+
+    int result = 0;
+    if (!installed) {
+        result = 10;
+    } else {
+        SmokeDPlay4Object fakeDPlay = {};
+        zNetwork_DPlay4 *outDPlay = reinterpret_cast<zNetwork_DPlay4 *>(0x11111111);
+        g_dplayCreateCoCreateResult = S_OK;
+        g_dplayCreateCoCreateOut = reinterpret_cast<zNetwork_DPlay4 *>(&fakeDPlay);
+        ResetDPlayCreateInterfaceSmokeLog();
+        const int successResult =
+            zNetwork_DPlay::CreateInterfaceAndCoInitialize(&outDPlay);
+        const bool successOk =
+            successResult == S_OK &&
+            outDPlay == reinterpret_cast<zNetwork_DPlay4 *>(&fakeDPlay) &&
+            g_dplayCreateCoInitializeCalls == 1 &&
+            g_dplayCreateCoInitializeReserved == 0 &&
+            g_dplayCreateCoCreateCalls == 1 &&
+            g_dplayCreateCoCreateArgsOk &&
+            g_dplayCreateCoCreateInitialOut == 0 &&
+            g_dplayCreateReportOldCalls == 0 &&
+            g_dplayCreateReportErrorCalls == 1 &&
+            g_dplayCreateReportErrorHresult == S_OK &&
+            g_dplayCreateReportErrorLine == 0x39a;
+
+        outDPlay = reinterpret_cast<zNetwork_DPlay4 *>(0x22222222);
+        g_dplayCreateCoCreateResult = (HRESULT)(0x80040154);
+        g_dplayCreateCoCreateOut = 0;
+        ResetDPlayCreateInterfaceSmokeLog();
+        const int classMissingResult =
+            zNetwork_DPlay::CreateInterfaceAndCoInitialize(&outDPlay);
+        const bool classMissingOk =
+            classMissingResult == (int)(0x80040154) &&
+            outDPlay == 0 &&
+            g_dplayCreateReportOldCalls == 1 &&
+            g_dplayCreateReportOldFlags == 0x400 &&
+            g_dplayCreateReportOldLine == 0x394 &&
+            std::strcmp(g_dplayCreateReportOldMessage, "Class not registered") == 0 &&
+            g_dplayCreateReportErrorCalls == 1 &&
+            g_dplayCreateReportErrorHresult == (int)(0x80040154);
+
+        outDPlay = reinterpret_cast<zNetwork_DPlay4 *>(0x33333333);
+        g_dplayCreateCoCreateResult = (HRESULT)(0x80040110);
+        g_dplayCreateCoCreateOut = 0;
+        ResetDPlayCreateInterfaceSmokeLog();
+        const int classCannotResult =
+            zNetwork_DPlay::CreateInterfaceAndCoInitialize(&outDPlay);
+        const bool classCannotOk =
+            classCannotResult == (int)(0x80040110) &&
+            outDPlay == 0 &&
+            g_dplayCreateReportOldCalls == 1 &&
+            g_dplayCreateReportOldLine == 0x396 &&
+            std::strcmp(g_dplayCreateReportOldMessage, "Class cannot be created") == 0 &&
+            g_dplayCreateReportErrorCalls == 1;
+
+        outDPlay = reinterpret_cast<zNetwork_DPlay4 *>(0x44444444);
+        g_dplayCreateCoCreateResult = (HRESULT)(0x800401f0);
+        g_dplayCreateCoCreateOut = 0;
+        ResetDPlayCreateInterfaceSmokeLog();
+        const int notInitResult =
+            zNetwork_DPlay::CreateInterfaceAndCoInitialize(&outDPlay);
+        const bool notInitOk =
+            notInitResult == (int)(0x800401f0) &&
+            outDPlay == 0 &&
+            g_dplayCreateReportOldCalls == 1 &&
+            g_dplayCreateReportOldLine == 0x398 &&
+            std::strcmp(g_dplayCreateReportOldMessage, "CoCreate not initialized") == 0 &&
+            g_dplayCreateReportErrorCalls == 0;
+
+        outDPlay = reinterpret_cast<zNetwork_DPlay4 *>(0x55555555);
+        g_dplayCreateCoCreateResult = E_FAIL;
+        g_dplayCreateCoCreateOut = 0;
+        ResetDPlayCreateInterfaceSmokeLog();
+        const int genericFailResult =
+            zNetwork_DPlay::CreateInterfaceAndCoInitialize(&outDPlay);
+        const bool genericFailOk =
+            genericFailResult == E_FAIL &&
+            outDPlay == 0 &&
+            g_dplayCreateReportOldCalls == 0 &&
+            g_dplayCreateReportErrorCalls == 1 &&
+            g_dplayCreateReportErrorHresult == E_FAIL &&
+            g_dplayCreateReportErrorLine == 0x39a;
+
+        outDPlay = reinterpret_cast<zNetwork_DPlay4 *>(0x66666666);
+        g_dplayCreateCoCreateResult = E_FAIL;
+        g_dplayCreateCoCreateOut = reinterpret_cast<zNetwork_DPlay4 *>(&fakeDPlay);
+        ResetDPlayCreateInterfaceSmokeLog();
+        g_dplayCreateCoCreateWriteOut = false;
+        const int noWriteFailResult =
+            zNetwork_DPlay::CreateInterfaceAndCoInitialize(&outDPlay);
+        const bool noWriteFailOk =
+            noWriteFailResult == E_FAIL &&
+            outDPlay == 0 &&
+            g_dplayCreateCoCreateInitialOut == 0 &&
+            g_dplayCreateReportOldCalls == 0 &&
+            g_dplayCreateReportErrorCalls == 1 &&
+            g_dplayCreateReportErrorHresult == E_FAIL &&
+            g_dplayCreateReportErrorLine == 0x39a;
+
+        result = successOk && classMissingOk && classCannotOk && notInitOk &&
+                         genericFailOk && noWriteFailOk
+                     ? 0
+                     : 11;
+    }
+
+    RestoreSmokeFunctionPatch(reportOldPatch);
+    RestoreSmokeFunctionPatch(reportErrorPatch);
+    RestoreSmokeImportPatch(importPatches[1]);
+    RestoreSmokeImportPatch(importPatches[0]);
+    return result;
+}
+
 HRESULT __stdcall SmokeDirectDrawCreate(
     GUID *guid,
     IDirectDraw **outDirectDraw,
@@ -5008,6 +5690,360 @@ int RunSmokeTests(const SmokeTest *tests, int count, const char *onlyName) {
 }
 } // namespace
 
+extern "C" int znetwork_init_session_runtime_smoke(void) {
+    return RunZnetworkInitSessionRuntimeSmoke();
+}
+
+extern "C" int znetwork_dplay_create_interface_and_coinitialize_smoke(void) {
+    return RunZnetworkDPlayCreateInterfaceAndCoInitializeSmoke();
+}
+
+extern "C" int znetwork_set_fatal_disconnect_callback_smoke(void) {
+    return RunZnetworkSetFatalDisconnectCallbackSmoke();
+}
+
+extern "C" int znetwork_dplay_initialize_connection_from_provider_info_smoke(void) {
+    void *vtable[39];
+    BuildSmokeDPlayProviderVtable(vtable);
+    SmokeDPlay4Object directPlay = {vtable};
+    char connectionData[8] = {};
+    zNetworkDPlayServiceProviderInfo provider = {};
+    provider.connectionData = connectionData;
+
+    zNetwork_DPlay4 *const oldDirectPlay = g_zNetwork_pDirectPlay4;
+    g_zNetwork_pDirectPlay4 = reinterpret_cast<zNetwork_DPlay4 *>(&directPlay);
+    ResetDPlayProviderSmokeLog();
+    g_dplayProviderInitializeConnectionResult = S_OK;
+    const int successResult =
+        zNetworkDPlay::InitializeConnectionFromProviderInfo(&provider);
+    const bool successOk =
+        successResult == 1 &&
+        g_dplayProviderInitializeConnectionCalls == 1 &&
+        g_dplayProviderInitializeConnectionData == connectionData &&
+        g_dplayProviderInitializeConnectionFlags == 0;
+
+    g_zNetwork_pDirectPlay4 = reinterpret_cast<zNetwork_DPlay4 *>(&directPlay);
+    ResetDPlayProviderSmokeLog();
+    g_dplayProviderInitializeConnectionResult = static_cast<HRESULT>(0x88770118);
+    const int userCancelResult =
+        zNetworkDPlay::InitializeConnectionFromProviderInfo(&provider);
+    const bool userCancelOk =
+        userCancelResult == 0 &&
+        g_dplayProviderInitializeConnectionCalls == 1 &&
+        g_dplayProviderInitializeConnectionData == connectionData &&
+        g_dplayProviderInitializeConnectionFlags == 0;
+
+    g_zNetwork_pDirectPlay4 = reinterpret_cast<zNetwork_DPlay4 *>(&directPlay);
+    ResetDPlayProviderSmokeLog();
+    g_dplayProviderInitializeConnectionResult = static_cast<HRESULT>(0x88770014);
+    const int reportResult =
+        zNetworkDPlay::InitializeConnectionFromProviderInfo(&provider);
+    const bool reportOk =
+        reportResult == 0 &&
+        g_dplayProviderInitializeConnectionCalls == 1 &&
+        g_dplayProviderInitializeConnectionData == connectionData &&
+        g_dplayProviderInitializeConnectionFlags == 0;
+
+    g_zNetwork_pDirectPlay4 = oldDirectPlay;
+    return successOk && userCancelOk && reportOk ? 0 : 1;
+}
+
+extern "C" int znetwork_dplay_service_provider_refresh_smoke(void) {
+    zNetworkServiceProviderListVec *const oldList = g_zNetwork_ServiceProviderList;
+    zNetwork_DPlay4 *const oldDirectPlay = g_zNetwork_pDirectPlay4;
+    GUID *const oldAppGuid = g_zNetwork_AppGuid;
+
+    GUID serviceProviderGuid = {};
+    FillSmokeGuidBytes(serviceProviderGuid, 0x10);
+    unsigned char connectionData[5] = {1, 3, 5, 7, 9};
+    char providerShortName[] = "IPX Provider";
+    char providerLongName[] = "IPX Provider Long";
+    zNetworkDPlayName providerName = {};
+    providerName.dwSize = sizeof(zNetworkDPlayName);
+    providerName.lpszShortNameA = providerShortName;
+    providerName.lpszLongNameA = providerLongName;
+
+    zNetworkServiceProviderListVec list = {};
+    g_zNetwork_ServiceProviderList = &list;
+
+    const int callbackResult =
+        zNetworkDPlay::EnumConnectionsCallback_AddServiceProviderInfo(
+            &serviceProviderGuid, connectionData, sizeof(connectionData),
+            &providerName, 0x77, 0);
+    zNetworkDPlayServiceProviderInfo *const callbackInfo =
+        list.begin != 0 && list.end == list.begin + 1 ? list.begin[0] : 0;
+    const bool callbackOk =
+        callbackResult == TRUE &&
+        callbackInfo != 0 &&
+        std::memcmp(&callbackInfo->serviceProviderGuid, &serviceProviderGuid,
+                    sizeof(serviceProviderGuid)) == 0 &&
+        callbackInfo->displayName != providerShortName &&
+        std::strcmp(callbackInfo->displayName, "IPX Provider") == 0 &&
+        callbackInfo->connectionData != connectionData &&
+        std::memcmp(callbackInfo->connectionData, connectionData,
+                    sizeof(connectionData)) == 0 &&
+        callbackInfo->providerFlags == 0x77;
+
+    zNetwork::ClearServiceProviderList();
+    ::operator delete(list.begin);
+    list.begin = 0;
+    list.end = 0;
+    list.cap = 0;
+
+    void *vtable[39];
+    BuildSmokeDPlayProviderVtable(vtable);
+    SmokeDPlay4Object directPlay = {vtable};
+    GUID appGuid = {};
+    g_zNetwork_pDirectPlay4 = reinterpret_cast<zNetwork_DPlay4 *>(&directPlay);
+    g_zNetwork_AppGuid = &appGuid;
+    ResetDPlayProviderSmokeLog();
+
+    const int refreshCount = zNetwork_DPlay::RefreshServiceProviderList();
+    zNetworkDPlayServiceProviderInfo *const refreshInfo =
+        list.begin != 0 && list.end == list.begin + 1 ? list.begin[0] : 0;
+    const bool refreshOk =
+        refreshCount == 1 &&
+        g_dplayProviderEnumConnectionsCalls == 1 &&
+        g_dplayProviderEnumConnectionsAppGuid == &appGuid &&
+        g_dplayProviderEnumConnectionsCallback ==
+            zNetworkDPlay::EnumConnectionsCallback_AddServiceProviderInfo &&
+        g_dplayProviderEnumConnectionsFlags == 0 &&
+        refreshInfo != 0 &&
+        std::strcmp(refreshInfo->displayName, "TCP/IP Provider") == 0 &&
+        refreshInfo->providerFlags == 0x55;
+
+    const zNetworkServiceProviderListVec *const returnedList =
+        zNetworkDPlay::RefreshAndGetServiceProviderList();
+    const bool wrapperOk =
+        returnedList == &list &&
+        g_dplayProviderEnumConnectionsCalls == 2 &&
+        list.begin != 0 &&
+        list.end == list.begin + 1;
+
+    zNetwork::ClearServiceProviderList();
+    ::operator delete(list.begin);
+    g_zNetwork_ServiceProviderList = oldList;
+    g_zNetwork_pDirectPlay4 = oldDirectPlay;
+    g_zNetwork_AppGuid = oldAppGuid;
+
+    return callbackOk && refreshOk && wrapperOk ? 0 : 11;
+}
+
+extern "C" int znetwork_dplay_free_service_provider_info_buffers_smoke(void) {
+    zNetworkDPlayServiceProviderInfo provider = {};
+    provider.displayName = static_cast<char *>(std::malloc(8));
+    provider.connectionData = std::malloc(12);
+    provider.providerFlags = 0x33;
+
+    std::memcpy(provider.displayName, "Network", 8);
+    std::memset(provider.connectionData, 0x5a, 12);
+
+    zNetworkDPlay::FreeServiceProviderInfoBuffers(&provider);
+
+    return provider.displayName == 0 && provider.connectionData == 0 &&
+                   provider.providerFlags == 0x33
+               ? 0
+               : 1;
+}
+
+extern "C" int znetwork_dplay_select_service_provider_and_init_connection_smoke(void) {
+    SmokeFunctionPatch patches[4] = {};
+    const bool installed =
+        PatchSmokeFunctionJump(
+            reinterpret_cast<void *>(&zNetwork_DPlay::CloseReleaseAndCoUninitialize),
+            reinterpret_cast<void *>(&SmokeDPlaySelectClose), patches[0]) &&
+        PatchSmokeFunctionJump(
+            reinterpret_cast<void *>(&zNetwork_DPlay::CreateInterfaceAndCoInitialize),
+            reinterpret_cast<void *>(&SmokeDPlaySelectCreate), patches[1]) &&
+        PatchSmokeFunctionJump(
+            reinterpret_cast<void *>(&zNetworkDPlay::InitializeConnectionFromProviderInfo),
+            reinterpret_cast<void *>(&SmokeDPlaySelectInitialize), patches[2]) &&
+        PatchSmokeFunctionJump(reinterpret_cast<void *>(&zNetwork_DPlay_ReportError),
+                               reinterpret_cast<void *>(&SmokeDPlaySelectReportError),
+                               patches[3]);
+
+    zNetwork_DPlay4 *const oldGlobalDirectPlay = g_zNetwork_pDirectPlay4;
+    const int oldActiveModem = g_zNetwork_ActiveProviderIsModem;
+    const int oldActiveTcpIp = g_zNetwork_ActiveProviderIsTcpIp;
+    const int oldTcpIpAsyncSend = g_zNetwork_TcpIpAsyncSendEnabled;
+
+    int result = 0;
+    SmokeDPlay4Object oldDirectPlay = {};
+    SmokeDPlay4Object newDirectPlay = {};
+    char connectionData[8] = {};
+    char tcpModemName[] = "TCP/IP Modem Provider";
+    char serialName[] = "Serial Cable";
+    zNetworkDPlayServiceProviderInfo provider = {};
+
+    if (!installed) {
+        result = 10;
+    } else {
+        provider.displayName = tcpModemName;
+        provider.connectionData = 0;
+        g_zNetwork_pDirectPlay4 = reinterpret_cast<zNetwork_DPlay4 *>(&oldDirectPlay);
+        g_zNetwork_ActiveProviderIsModem = 5;
+        g_zNetwork_ActiveProviderIsTcpIp = 6;
+        g_zNetwork_TcpIpAsyncSendEnabled = 7;
+        ResetDPlaySelectProviderLog();
+        const int noConnectionResult =
+            zNetworkDPlay::SelectServiceProviderAndInitConnection(&provider);
+        const bool noConnectionOk =
+            noConnectionResult == 0 &&
+            g_dplaySelectCloseCalls == 1 &&
+            g_dplaySelectCloseArg == reinterpret_cast<zNetwork_DPlay4 *>(&oldDirectPlay) &&
+            g_zNetwork_pDirectPlay4 == 0 &&
+            g_dplaySelectCreateCalls == 0 &&
+            g_dplaySelectInitializeCalls == 0 &&
+            g_zNetwork_ActiveProviderIsModem == 5 &&
+            g_zNetwork_ActiveProviderIsTcpIp == 6 &&
+            g_zNetwork_TcpIpAsyncSendEnabled == 7;
+
+        provider.connectionData = connectionData;
+        g_zNetwork_pDirectPlay4 = reinterpret_cast<zNetwork_DPlay4 *>(&oldDirectPlay);
+        g_dplaySelectCreateResult = E_FAIL;
+        g_dplaySelectCreateOut = 0;
+        g_dplaySelectReportErrorResult = 44;
+        ResetDPlaySelectProviderLog();
+        const int createFailResult =
+            zNetworkDPlay::SelectServiceProviderAndInitConnection(&provider);
+        const bool createFailOk =
+            createFailResult == 44 &&
+            g_dplaySelectCloseCalls == 1 &&
+            g_dplaySelectCreateCalls == 1 &&
+            g_dplaySelectCreateOutPtr == &g_zNetwork_pDirectPlay4 &&
+            g_dplaySelectInitializeCalls == 0 &&
+            g_dplaySelectReportErrorCalls == 1 &&
+            g_dplaySelectReportErrorHresult == E_FAIL &&
+            g_dplaySelectReportErrorLine == 0x8f;
+
+        g_zNetwork_pDirectPlay4 = reinterpret_cast<zNetwork_DPlay4 *>(&oldDirectPlay);
+        g_dplaySelectCreateResult = S_OK;
+        g_dplaySelectCreateOut = 0;
+        ResetDPlaySelectProviderLog();
+        const int nullCreateResult =
+            zNetworkDPlay::SelectServiceProviderAndInitConnection(&provider);
+        const bool nullCreateOk =
+            nullCreateResult == 0 &&
+            g_dplaySelectCreateCalls == 1 &&
+            g_dplaySelectInitializeCalls == 0 &&
+            g_dplaySelectReportErrorCalls == 0;
+
+        g_zNetwork_pDirectPlay4 = reinterpret_cast<zNetwork_DPlay4 *>(&oldDirectPlay);
+        g_dplaySelectCreateResult = S_OK;
+        g_dplaySelectCreateOut = reinterpret_cast<zNetwork_DPlay4 *>(&newDirectPlay);
+        g_dplaySelectInitializeResult = 77;
+        g_zNetwork_ActiveProviderIsModem = 0;
+        g_zNetwork_ActiveProviderIsTcpIp = 0;
+        g_zNetwork_TcpIpAsyncSendEnabled = 0;
+        provider.displayName = tcpModemName;
+        ResetDPlaySelectProviderLog();
+        const int tcpModemResult =
+            zNetworkDPlay::SelectServiceProviderAndInitConnection(&provider);
+        const bool tcpModemOk =
+            tcpModemResult == 77 &&
+            g_zNetwork_pDirectPlay4 == reinterpret_cast<zNetwork_DPlay4 *>(&newDirectPlay) &&
+            g_zNetwork_ActiveProviderIsModem == 1 &&
+            g_zNetwork_ActiveProviderIsTcpIp == 1 &&
+            g_zNetwork_TcpIpAsyncSendEnabled == 1 &&
+            g_dplaySelectInitializeCalls == 1 &&
+            g_dplaySelectInitializeProvider == &provider;
+
+        g_zNetwork_pDirectPlay4 = reinterpret_cast<zNetwork_DPlay4 *>(&oldDirectPlay);
+        g_dplaySelectCreateResult = S_OK;
+        g_dplaySelectCreateOut = reinterpret_cast<zNetwork_DPlay4 *>(&newDirectPlay);
+        g_dplaySelectInitializeResult = 12;
+        provider.displayName = serialName;
+        ResetDPlaySelectProviderLog();
+        const int serialResult =
+            zNetworkDPlay::SelectServiceProviderAndInitConnection(&provider);
+        const bool serialOk =
+            serialResult == 12 &&
+            g_zNetwork_ActiveProviderIsModem == 0 &&
+            g_zNetwork_ActiveProviderIsTcpIp == 0 &&
+            g_zNetwork_TcpIpAsyncSendEnabled == 0 &&
+            g_dplaySelectInitializeCalls == 1 &&
+            g_dplaySelectInitializeProvider == &provider;
+
+        result = noConnectionOk && createFailOk && nullCreateOk && tcpModemOk && serialOk
+                     ? 0
+                     : 11;
+    }
+
+    for (int index = 3; index >= 0; --index) {
+        RestoreSmokeFunctionPatch(patches[index]);
+    }
+    g_zNetwork_pDirectPlay4 = oldGlobalDirectPlay;
+    g_zNetwork_ActiveProviderIsModem = oldActiveModem;
+    g_zNetwork_ActiveProviderIsTcpIp = oldActiveTcpIp;
+    g_zNetwork_TcpIpAsyncSendEnabled = oldTcpIpAsyncSend;
+    return result;
+}
+
+extern "C" int player_update_third_person_camera_smoke(void) {
+    zUtil_SaveGameState saveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    saveState.playerState = &playerState;
+
+    zClass_NodePartial cameraNode = {};
+    zClass_CameraDataPartial cameraData = {};
+    cameraNode.classId = 1;
+    cameraNode.classData = &cameraData;
+    cameraData.cameraFlags = 2;
+
+    zClass_NodePartial horizonNode = {};
+    zClass_Object3DDataPartial horizonData = {};
+    horizonNode.classId = 5;
+    horizonNode.classData = &horizonData;
+    horizonNode.flags = 1;
+
+    playerState.worldPos = {10.0f, 20.0f, 30.0f};
+    playerState.cameraLerpStart = {1.0f, 2.0f, 3.0f};
+    playerState.cameraYOffset = 5.0f;
+    playerState.autoTurnTargetWorldPos = {11.0f, 22.0f, 43.0f};
+
+    zClass_NodePartial *const oldMainCamera = g_MainCamera;
+    zClass_NodePartial *const oldHorizonNode = g_Player_HorizonNode;
+    g_MainCamera = &cameraNode;
+    g_Player_HorizonNode = &horizonNode;
+
+    Player::UpdateThirdPersonCamera(&saveState);
+
+    zVec3 expectedAngles = {};
+    zVec3 expectedLookAt = {10.0f, 25.0f, 30.0f};
+    zMath::Vec3DirectionAnglesBetweenPoints(
+        &playerState.cameraTarget,
+        &expectedLookAt,
+        &expectedAngles
+    );
+
+    const bool ok =
+        SmokePlayerFloatNear(playerState.cameraTarget.x, 11.0f) &&
+        SmokePlayerFloatNear(playerState.cameraTarget.y, 22.0f) &&
+        SmokePlayerFloatNear(playerState.cameraTarget.z, 33.0f) &&
+        SmokePlayerFloatNear(cameraData.worldTarget.x, 11.0f) &&
+        SmokePlayerFloatNear(cameraData.worldTarget.y, 22.0f) &&
+        SmokePlayerFloatNear(cameraData.worldTarget.z, 33.0f) &&
+        SmokePlayerFloatNear(cameraData.posOffset.x, expectedAngles.x) &&
+        SmokePlayerFloatNear(cameraData.posOffset.y, expectedAngles.y) &&
+        SmokePlayerFloatNear(cameraData.posOffset.z, expectedAngles.z) &&
+        SmokePlayerFloatNear(horizonData.localMatrix[9], 11.0f) &&
+        SmokePlayerFloatNear(horizonData.localMatrix[10], 22.0f) &&
+        SmokePlayerFloatNear(horizonData.localMatrix[11], 33.0f) &&
+        SmokePlayerFloatNear(playerState.cameraDirNext.x, 0.0f) &&
+        SmokePlayerFloatNear(playerState.cameraDirNext.y, 0.0f) &&
+        SmokePlayerFloatNear(playerState.cameraDirNext.z, 1.0f) &&
+        SmokePlayerFloatNear(playerState.cameraDir.x, 0.0f) &&
+        SmokePlayerFloatNear(playerState.cameraDir.y, 0.0f) &&
+        SmokePlayerFloatNear(playerState.cameraDir.z, 1.0f) &&
+        SmokePlayerFloatNear(playerState.cameraDirFlat.x, 0.0f) &&
+        SmokePlayerFloatNear(playerState.cameraDirFlat.y, 0.0f) &&
+        SmokePlayerFloatNear(playerState.cameraDirFlat.z, 1.0f);
+
+    g_MainCamera = oldMainCamera;
+    g_Player_HorizonNode = oldHorizonNode;
+    return ok ? 0 : 1;
+}
+
 extern "C" int player_apply_camera_state_and_zopt_set_camera_mode_smoke(void) {
     zUtil_SaveGameState saveState = {};
     zUtil_PlayerStateStorage playerState = {};
@@ -5022,16 +6058,16 @@ extern "C" int player_apply_camera_state_and_zopt_set_camera_mode_smoke(void) {
     zClass_NodePartial *const oldHorizonNode = g_Player_HorizonNode;
     const zTag4Partial oldVariantTagCurrent = g_VariantTag_Current;
     const zTag4Partial oldVariantCurrentTag = g_Variant_CurrentTag;
-    void *const oldState7Vtable = *reinterpret_cast<void **>(&g_Player_State7FxPass3Ui);
+    const Player_ProjectileCameraFxPass3Ui oldState7FxPass3Ui = g_Player_State7FxPass3Ui;
 
-    void *visibleVtable[32] = {};
-    SmokePlayerInstallHudVisibleVtable(&g_Player_State7FxPass3Ui, visibleVtable);
-    SmokePlayerResetHudVisibleLog();
+    g_Player_State7FxPass3Ui.Constructor();
+    g_Player_State7FxPass3Ui.flags = 0x10;
 
     zClass_NodePartial cameraNode = {};
     zClass_CameraDataPartial cameraData = {};
     cameraNode.classId = 1;
     cameraNode.classData = &cameraData;
+    cameraData.cameraFlags = 2;
     g_MainCamera = &cameraNode;
     g_Player_HorizonNode = 0;
 
@@ -5071,6 +6107,7 @@ extern "C" int player_apply_camera_state_and_zopt_set_camera_mode_smoke(void) {
     playerState.cameraLerpStart = {1.0f, 2.0f, 3.0f};
     playerState.cameraYOffset = 5.0f;
     playerState.autoTurnTargetWorldPos = {11.0f, 22.0f, 43.0f};
+    cameraData.cameraFlags = 2;
     Player::ApplyCameraState(8);
 
     ok = ok && g_zVideo_ClearScreenBufferEnabled == 0 &&
@@ -5084,6 +6121,7 @@ extern "C" int player_apply_camera_state_and_zopt_set_camera_mode_smoke(void) {
     zClass_Object3DDataPartial projectileData = {};
     projectileNode.classId = 5;
     projectileNode.classData = &projectileData;
+    projectileNode.flags = 1;
 
     OptCatalogRuntimeInstanceStorage attachState = {};
     attachState.projectileNode = &projectileNode;
@@ -5091,12 +6129,12 @@ extern "C" int player_apply_camera_state_and_zopt_set_camera_mode_smoke(void) {
     activeAltController.attachState = &attachState;
     playerState.activeAltGunController = &activeAltController;
 
-    SmokePlayerResetHudVisibleLog();
     gameControlOptions = 0;
     playerState.cameraState = 1;
     playerState.previousCameraState = 3;
     projectileData.alphaScale = 1.0f;
     projectileData.flags = 0;
+    cameraData.cameraFlags = 2;
     Player::ApplyCameraState(7);
 
     ok = ok && playerState.cameraState == 7 && playerState.previousCameraState == 1 &&
@@ -5109,9 +6147,7 @@ extern "C" int player_apply_camera_state_and_zopt_set_camera_mode_smoke(void) {
          SmokePlayerFloatNear(cameraData.posOffset.x, 0.0f) &&
          SmokePlayerFloatNear(cameraData.posOffset.y, 0.0f) &&
          SmokePlayerFloatNear(cameraData.posOffset.z, 0.0f) &&
-         g_smokePlayerHudVisibleCount == 1 &&
-         g_smokePlayerHudVisibleThis[0] == &g_Player_State7FxPass3Ui &&
-         g_smokePlayerHudVisibleValue[0] == 1;
+         (g_Player_State7FxPass3Ui.flags & 0x10) == 0;
 
     g_VariantTag_Current.count = 2;
     g_VariantTag_Current.tags[0] = 7;
@@ -5121,16 +6157,14 @@ extern "C" int player_apply_camera_state_and_zopt_set_camera_mode_smoke(void) {
     g_Variant_CurrentTag.tags[0] = 6;
     g_Variant_CurrentTag.tags[1] = 5;
     g_Variant_CurrentTag.tags[2] = 4;
-    SmokePlayerResetHudVisibleLog();
+    cameraData.cameraFlags = 2;
     Player::ApplyCameraState(8);
 
     ok = ok && playerState.cameraState == 1 && playerState.previousCameraState == 7 &&
          projectileNode.listCountB == 0 && cameraNode.listCountA == 0 &&
          SmokePlayerFloatNear(projectileData.alphaScale, 1.0f) &&
          (projectileData.flags & 2) == 0 &&
-         g_smokePlayerHudVisibleCount == 1 &&
-         g_smokePlayerHudVisibleThis[0] == &g_Player_State7FxPass3Ui &&
-         g_smokePlayerHudVisibleValue[0] == 0 &&
+         (g_Player_State7FxPass3Ui.flags & 0x10) != 0 &&
          g_VariantTag_Current.count == 0 && g_VariantTag_Current.tags[0] == 0xff &&
          g_VariantTag_Current.tags[1] == 0xff && g_VariantTag_Current.tags[2] == 0xff &&
          g_Variant_CurrentTag.count == 0 && g_Variant_CurrentTag.tags[0] == 0xff &&
@@ -5145,7 +6179,7 @@ extern "C" int player_apply_camera_state_and_zopt_set_camera_mode_smoke(void) {
     g_Player_HorizonNode = oldHorizonNode;
     g_VariantTag_Current = oldVariantTagCurrent;
     g_Variant_CurrentTag = oldVariantCurrentTag;
-    *reinterpret_cast<void **>(&g_Player_State7FxPass3Ui) = oldState7Vtable;
+    g_Player_State7FxPass3Ui = oldState7FxPass3Ui;
     return ok ? 0 : 1;
 }
 
@@ -11223,6 +12257,159 @@ extern "C" int zvideo_mode_geometry_and_set_video_mode_smoke(void) {
     return result;
 }
 
+extern "C" int zvideo_handle_software_mode_hotkey_smoke(void) {
+    int videoMode = 2;
+    int acceleration = 0;
+    int hudTypeSw = 2;
+    int hudTypeHw = 9;
+    int replicate = 0;
+    zOpt_ViewRectSection render = {};
+    zOpt_ViewRectSection display = {};
+    zOpt_ViewRectSection window = {};
+    zOpt_ViewRectSection *renderPtr = &render;
+    zOpt_ViewRectSection *displayPtr = &display;
+    zOpt_ViewRectSection *windowPtr = &window;
+
+    int *const savedVideoMode = ZOPT_VIDEO_MODE;
+    int *const savedAcceleration = ZOPT_VIDEO_ACCELERATION;
+    int *const savedHudTypeSw = ZOPT_HUD_TYPE_SW;
+    int *const savedHudTypeHw = ZOPT_HUD_TYPE_HW;
+    int *const savedReplicate = ZOPT_REPLICATE;
+    zOpt_ViewRectSection **const savedRenderSection = g_zOpt_RenderSectionOption;
+    zOpt_ViewRectSection **const savedDisplaySection = g_zOpt_DisplaySectionOption;
+    zOpt_ViewRectSection **const savedWindowSection = g_zOpt_WindowSectionOption;
+    const int savedHwMode = g_zOpt_HwMode;
+    const int savedLayoutsInitialized = g_HudUiMgrHudLayoutsInitialized;
+    const zVideo_StatusProc savedSetVideoMode = g_zVideo_pfnSetVideoMode;
+    const int savedHotkeyEnabled = g_zVideo_SoftwareModeHotkeyEnabled;
+    const int savedHalfRes = g_zVideo_HalfResAdjustMode;
+    const int savedUseHalfResBackbuffer = g_zVideo_UseHalfResBackbuffer;
+    const int savedRendererType = g_zVideo_RendererType;
+    const zVideo_BltRectDirectProc savedBltPrimaryToSw =
+        g_zVideo_pfnBltPrimaryToSwRectDirect;
+    const int savedSetVideoModeResult = g_smokeZVideoSetVideoModeResult;
+    const zVideo_SurfaceStatePartial savedDisplayState = g_zVideo_DisplayModeSurfaceState;
+    const zVideo_SurfaceStatePartial savedPrimaryState = g_zVideo_PrimarySurfaceState;
+    const zVideo_SurfaceStatePartial savedSwState = g_zVideo_SwSurfaceState;
+    const int savedDisplayModeBpp = g_zVideo_DisplayModeBpp;
+    const int savedResolutionMenuValid = gVideo_resolutionMenuValid;
+
+    ZOPT_VIDEO_MODE = &videoMode;
+    ZOPT_VIDEO_ACCELERATION = &acceleration;
+    ZOPT_HUD_TYPE_SW = &hudTypeSw;
+    ZOPT_HUD_TYPE_HW = &hudTypeHw;
+    ZOPT_REPLICATE = &replicate;
+    g_zOpt_RenderSectionOption = &renderPtr;
+    g_zOpt_DisplaySectionOption = &displayPtr;
+    g_zOpt_WindowSectionOption = &windowPtr;
+    g_zOpt_HwMode = 0;
+    g_HudUiMgrHudLayoutsInitialized = 0;
+    g_zVideo_pfnSetVideoMode = SmokeZVideoSetVideoModeFake;
+    g_zVideo_UseHalfResBackbuffer = 0;
+    g_zVideo_RendererType = 0;
+    g_zVideo_pfnBltPrimaryToSwRectDirect = SmokeZVideoHalfResBltFake;
+
+    g_zVideo_SoftwareModeHotkeyEnabled = 0;
+    g_smokeZVideoSetVideoModeCalls = 0;
+    zVideo::HandleSoftwareModeHotkeyCommand(0);
+    const int disabledOk =
+        g_smokeZVideoSetVideoModeCalls == 0 && videoMode == 2 && hudTypeSw == 2;
+
+    g_zVideo_SoftwareModeHotkeyEnabled = 1;
+    g_smokeZVideoSetVideoModeResult = 0;
+    g_smokeZVideoSetVideoModeCalls = 0;
+    g_zVideo_HalfResAdjustMode = 0;
+    zVideo::HandleSoftwareModeHotkeyCommand(0);
+    const int mode2To4Ok =
+        g_smokeZVideoSetVideoModeCalls == 1 && videoMode == 4 &&
+        g_zVideo_HalfResAdjustMode == 1 && hudTypeSw == 2 &&
+        render.width == 640 && render.height == 400 && replicate == 0;
+
+    videoMode = 3;
+    g_smokeZVideoSetVideoModeCalls = 0;
+    g_zVideo_HalfResAdjustMode = 1;
+    zVideo::HandleSoftwareModeHotkeyCommand(0);
+    const int mode3To5Ok =
+        g_smokeZVideoSetVideoModeCalls == 1 && videoMode == 5 &&
+        g_zVideo_HalfResAdjustMode == 1 &&
+        g_zVideo_UseHalfResBackbuffer == 0 && hudTypeSw == 2 &&
+        render.width == 640 && render.height == 480 && replicate == 0;
+
+    videoMode = 4;
+    g_smokeZVideoSetVideoModeCalls = 0;
+    g_zVideo_HalfResAdjustMode = 1;
+    zVideo::HandleSoftwareModeHotkeyCommand(0);
+    const int mode4To2Ok =
+        g_smokeZVideoSetVideoModeCalls == 1 && videoMode == 2 &&
+        g_zVideo_UseHalfResBackbuffer == 1 && hudTypeSw == 2 &&
+        render.width == 320 && render.height == 200 && replicate == 1;
+
+    videoMode = 5;
+    g_smokeZVideoSetVideoModeCalls = 0;
+    g_zVideo_HalfResAdjustMode = 1;
+    zVideo::HandleSoftwareModeHotkeyCommand(0);
+    const int mode5To3Ok =
+        g_smokeZVideoSetVideoModeCalls == 1 && videoMode == 3 &&
+        g_zVideo_UseHalfResBackbuffer == 1 && hudTypeSw == 2 &&
+        render.width == 320 && render.height == 240 && replicate == 1;
+
+    videoMode = 4;
+    g_smokeZVideoSetVideoModeResult = 7;
+    g_smokeZVideoSetVideoModeCalls = 0;
+    zVideo::HandleSoftwareModeHotkeyCommand(0);
+    const int failureOk =
+        g_smokeZVideoSetVideoModeCalls == 1 && videoMode == 4 && hudTypeSw == 2;
+
+    videoMode = 6;
+    g_smokeZVideoSetVideoModeCalls = 0;
+    zVideo::HandleSoftwareModeHotkeyCommand(0);
+    const int unsupportedOk =
+        g_smokeZVideoSetVideoModeCalls == 0 && videoMode == 6 && hudTypeSw == 2;
+
+    ZOPT_VIDEO_MODE = savedVideoMode;
+    ZOPT_VIDEO_ACCELERATION = savedAcceleration;
+    ZOPT_HUD_TYPE_SW = savedHudTypeSw;
+    ZOPT_HUD_TYPE_HW = savedHudTypeHw;
+    ZOPT_REPLICATE = savedReplicate;
+    g_zOpt_RenderSectionOption = savedRenderSection;
+    g_zOpt_DisplaySectionOption = savedDisplaySection;
+    g_zOpt_WindowSectionOption = savedWindowSection;
+    g_zOpt_HwMode = savedHwMode;
+    g_HudUiMgrHudLayoutsInitialized = savedLayoutsInitialized;
+    g_zVideo_pfnSetVideoMode = savedSetVideoMode;
+    g_zVideo_SoftwareModeHotkeyEnabled = savedHotkeyEnabled;
+    g_zVideo_HalfResAdjustMode = savedHalfRes;
+    g_zVideo_UseHalfResBackbuffer = savedUseHalfResBackbuffer;
+    g_zVideo_RendererType = savedRendererType;
+    g_zVideo_pfnBltPrimaryToSwRectDirect = savedBltPrimaryToSw;
+    g_smokeZVideoSetVideoModeResult = savedSetVideoModeResult;
+    g_zVideo_DisplayModeSurfaceState = savedDisplayState;
+    g_zVideo_PrimarySurfaceState = savedPrimaryState;
+    g_zVideo_SwSurfaceState = savedSwState;
+    g_zVideo_DisplayModeBpp = savedDisplayModeBpp;
+    gVideo_resolutionMenuValid = savedResolutionMenuValid;
+
+    if (disabledOk == 0) {
+        return 1;
+    }
+    if (mode2To4Ok == 0) {
+        return 2;
+    }
+    if (mode3To5Ok == 0) {
+        return 3;
+    }
+    if (mode4To2Ok == 0) {
+        return 4;
+    }
+    if (mode5To3Ok == 0) {
+        return 5;
+    }
+    if (failureOk == 0) {
+        return 6;
+    }
+    return unsupportedOk != 0 ? 0 : 7;
+}
+
 extern "C" int zvideo_init_video_system_reentry_guard_smoke(void) {
     const HWND savedHwnd = g_zVideo_hWnd;
     const int savedInitialized = g_zVideo_IsInitialized;
@@ -16158,6 +17345,9 @@ int main(int argc, char **argv) {
          zsnd_sample_play_a3d_simple_direct_smoke},
         {"zsnd_sample_play_a3d_worldpos_smoke", zsnd_sample_play_a3d_worldpos_smoke},
         {"zsnd_sample_acquire_play_handle_smoke", zsnd_sample_acquire_play_handle_smoke},
+        {"zsnd_system_named_sets_syntax_smoke", zsnd_system_named_sets_syntax_smoke},
+        {"zsnd_system_legacy_sets_syntax_smoke",
+         zsnd_system_legacy_sets_syntax_smoke},
         {"zsnd_stream_request_state_update_smoke",
          zsnd_stream_request_state_update_smoke},
         {"zsnd_fade_entry_backend_and_dispatch_smoke",
@@ -16165,6 +17355,8 @@ int main(int argc, char **argv) {
         {"zsnd_fade_list_cursor_helpers_smoke", zsnd_fade_list_cursor_helpers_smoke},
         {"zsnd_fade_active_list_tick_compacts_smoke",
          zsnd_fade_active_list_tick_compacts_smoke},
+        {"zsnd_fade_lists_init_globals_shutdown_at_exit_smoke",
+         zsnd_fade_lists_init_globals_shutdown_at_exit_smoke},
         {"zsnd_fade_lists_stop_all_shutdown_smoke",
          zsnd_fade_lists_stop_all_shutdown_smoke},
         {"zsnd_tick_backend_markers_smoke", zsnd_tick_backend_markers_smoke},
@@ -16180,6 +17372,8 @@ int main(int argc, char **argv) {
         {"zsnd_sample_set_destroy_owned_data_smoke",
          zsnd_sample_set_destroy_owned_data_smoke},
         {"zsnd_sample_set_get_sample_at_smoke", zsnd_sample_set_get_sample_at_smoke},
+        {"zsnd_sample_set_registry_add_entry_smoke",
+         zsnd_sample_set_registry_add_entry_smoke},
         {"zsnd_find_sample_by_name_smoke", zsnd_find_sample_by_name_smoke},
         {"zsnd_sample_set_init_by_name_empty_smoke",
          zsnd_sample_set_init_by_name_empty_smoke},
@@ -16244,6 +17438,14 @@ int main(int argc, char **argv) {
         {"znetwork_dplay_report_error_smoke", znetwork_dplay_report_error_smoke},
         {"znetwork_dplay_query_caps_configure_send_mode_smoke",
          znetwork_dplay_query_caps_configure_send_mode_smoke},
+        {"znetwork_dplay_initialize_connection_from_provider_info_smoke",
+         znetwork_dplay_initialize_connection_from_provider_info_smoke},
+        {"znetwork_dplay_service_provider_refresh_smoke",
+         znetwork_dplay_service_provider_refresh_smoke},
+        {"znetwork_dplay_free_service_provider_info_buffers_smoke",
+         znetwork_dplay_free_service_provider_info_buffers_smoke},
+        {"znetwork_dplay_select_service_provider_and_init_connection_smoke",
+         znetwork_dplay_select_service_provider_and_init_connection_smoke},
         {"znetwork_dplay_create_session_from_status_fields_smoke",
          znetwork_dplay_create_session_from_status_fields_smoke},
         {"znetwork_dplay_create_local_player_record_smoke",
@@ -16269,7 +17471,12 @@ int main(int argc, char **argv) {
          znetwork_alloc_free_player_color_index_smoke},
         {"znetwork_apply_pkt01_player_color_assignments_smoke",
          znetwork_apply_pkt01_player_color_assignments_smoke},
+        {"znetwork_init_session_runtime_smoke", znetwork_init_session_runtime_smoke},
         {"znetwork_shutdown_session_runtime_smoke", znetwork_shutdown_session_runtime_smoke},
+        {"znetwork_dplay_create_interface_and_coinitialize_smoke",
+         znetwork_dplay_create_interface_and_coinitialize_smoke},
+        {"znetwork_set_fatal_disconnect_callback_smoke",
+         znetwork_set_fatal_disconnect_callback_smoke},
         {"pickup_register_existing_object_smoke", pickup_register_existing_object_smoke},
         {"pickup_leaf_helpers_smoke", pickup_leaf_helpers_smoke},
         {"pickup_spawn_from_parsed_zrd_entry_smoke",
@@ -16399,6 +17606,8 @@ int main(int argc, char **argv) {
          player_apply_alt_weapon_switch_smoke},
         {"player_apply_aim_pitch_to_direction_smoke",
          player_apply_aim_pitch_to_direction_smoke},
+        {"player_update_third_person_camera_smoke",
+         player_update_third_person_camera_smoke},
         {"player_apply_camera_state_and_zopt_set_camera_mode_smoke",
          player_apply_camera_state_and_zopt_set_camera_mode_smoke},
         {"player_find_alt_gun_controller_smoke",
@@ -16773,6 +17982,14 @@ int main(int argc, char **argv) {
          zhud_triplet_interpolate_layout_smoke},
         {"zhud_triplet_is_local_player_first_entry_smoke",
          zhud_triplet_is_local_player_first_entry_smoke},
+        {"zhud_mgr_constructor_smoke", zhud_mgr_constructor_smoke},
+        {"zhud_mgr_static_init_smoke", zhud_mgr_static_init_smoke},
+        {"zhud_mgr_static_destructor_smoke",
+         zhud_mgr_static_destructor_smoke},
+        {"zhud_mgr_register_at_exit_smoke",
+         zhud_mgr_register_at_exit_smoke},
+        {"zhud_mgr_static_init_and_register_at_exit_smoke",
+         zhud_mgr_static_init_and_register_at_exit_smoke},
         {"zhud_mgr_is_local_player_first_in_stats_list_smoke",
          zhud_mgr_is_local_player_first_in_stats_list_smoke},
         {"zhud_scoreboard_set_scale_and_rebuild_smoke",
@@ -16802,6 +18019,11 @@ int main(int argc, char **argv) {
          zhud_layout_hw_update_objective_dirty_rect_smoke},
         {"zhud_objective_update_meter_xpoints_smoke",
          zhud_objective_update_meter_xpoints_smoke},
+        {"zhud_loading_checkpoint_init_table_smoke",
+         zhud_loading_checkpoint_init_table_smoke},
+        {"zhud_loading_checkpoint_advance_and_log_smoke",
+         zhud_loading_checkpoint_advance_and_log_smoke},
+        {"zhud_mgr_tail_bar_layout_smoke", zhud_mgr_tail_bar_layout_smoke},
         {"zhud_mgr_trigger_current_layout_on_activated_smoke",
          zhud_mgr_trigger_current_layout_on_activated_smoke},
         {"zhud_counter_constructor_smoke", zhud_counter_constructor_smoke},
@@ -16930,6 +18152,8 @@ int main(int argc, char **argv) {
          zhud_options_panel_lighting_sync_from_options_smoke},
         {"zhud_options_panel_perspective_init_from_options_smoke",
          zhud_options_panel_perspective_init_from_options_smoke},
+        {"zhud_options_panel_perspective_sync_from_options_smoke",
+         zhud_options_panel_perspective_sync_from_options_smoke},
         {"zhud_options_panel_full_hud_init_from_options_smoke",
          zhud_options_panel_full_hud_init_from_options_smoke},
         {"zhud_options_panel_object_detail_init_from_options_smoke",
@@ -17146,6 +18370,10 @@ int main(int argc, char **argv) {
         {"zcliprect_clip_poly_no_uv_attr012_alt_smoke",
          zcliprect_clip_poly_no_uv_attr012_alt_smoke},
         {"zcliprect_trivial_reject_poly_xy_smoke", zcliprect_trivial_reject_poly_xy_smoke},
+        {"zclipalt_set_source_rect_smoke", zclipalt_set_source_rect_smoke},
+        {"zclipalt_set_target_rect_smoke", zclipalt_set_target_rect_smoke},
+        {"zclipalt_remap_point_xy_in_place_smoke",
+         zclipalt_remap_point_xy_in_place_smoke},
         {"zrndr_span_occlusion_reset_shutdown_smoke", zrndr_span_occlusion_reset_shutdown_smoke},
         {"zrndr_span_occlusion_init_build_smoke", zrndr_span_occlusion_init_build_smoke},
         {"zrndr_span_occlusion_rasterize_smoke", zrndr_span_occlusion_rasterize_smoke},
@@ -17585,6 +18813,8 @@ int main(int argc, char **argv) {
         {"zvideo_set_renderer_type_smoke", zvideo_set_renderer_type_smoke},
         {"zvideo_set_half_res_adjust_mode_smoke",
          zvideo_set_half_res_adjust_mode_smoke},
+        {"zvideo_handle_software_mode_hotkey_smoke",
+         zvideo_handle_software_mode_hotkey_smoke},
         {"zvid_texture_pack_load_state_getter_smoke",
          zvid_texture_pack_load_state_getter_smoke},
         {"zvid_texture_pack_load_state_setter_smoke",
@@ -17762,6 +18992,11 @@ int main(int argc, char **argv) {
         {"zdeclient_map_tree_erase_range_smoke",
          zdeclient_map_tree_erase_range_smoke},
         {"zdeclient_set_camera_node_smoke", zdeclient_set_camera_node_smoke},
+        {"zdeclient_load_material_from_texture_path_smoke",
+         zdeclient_load_material_from_texture_path_smoke},
+        {"zdeclient_load_config_resources_smoke",
+         zdeclient_load_config_resources_smoke},
+        {"zdeclient_shutdown_globals_smoke", zdeclient_shutdown_globals_smoke},
         {"zdeclient_feature_leaf_helpers_smoke",
          zdeclient_feature_leaf_helpers_smoke},
         {"zdeclient_feature_init_helpers_smoke",

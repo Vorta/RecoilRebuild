@@ -211,7 +211,11 @@ void BuildPointSideTable(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; recovered from 0x4683a0 and its contour-source callers.
+ * Evidence: the same buffer-wide axis swap pattern is used for contour A/B point buffers before Weiler clipping.
+ * Purpose: Toggle one stored coordinate axis with Z for all points in a Weiler buffer.
+ */
 void TogglePointAxes(
     zGeometry_WeilerBufferPartial *buffer,
     int contourSource
@@ -234,7 +238,11 @@ void TogglePointAxes(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; recovered from 0x469960 and shared Weiler clipping setup.
+ * Evidence: callers apply the stored XY translation uniformly to contour point buffers before intersection work.
+ * Purpose: Subtract a recovered XY translation from every point in a Weiler buffer.
+ */
 void RecenterPoints(
     zGeometry_WeilerBufferPartial *buffer,
     float translationX,
@@ -484,14 +492,22 @@ int EnsureMergedContourOutputs(
     return 1;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; recovered from the coincident-edge weed-out path in caller 0x466e10.
+ * Evidence: repeated epsilon-zero checks gate coincident segment handling before split/merge operations.
+ * Purpose: Test whether a coincident-edge orientation value is within the recovered zero tolerance.
+ */
 bool IsNearZeroForCoincidentWeedOut(
     float value
 ) {
     return fabs((double)(value)) < 0.0000099999997473787516;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; recovered from the coincident-edge weed-out path in caller 0x466e10.
+ * Evidence: repeated XY endpoint comparisons use the same recovered tolerance before forward-segment validation.
+ * Purpose: Test whether two points are nearly equal in XY coordinates.
+ */
 bool IsNearPointXY(
     zVec3 *first,
     zVec3 *second
@@ -500,7 +516,11 @@ bool IsNearPointXY(
            fabs((double)(first->y) - (double)(second->y)) <= 0.0010000000474974513;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; recovered from the coincident-edge weed-out path in caller 0x466e10.
+ * Evidence: caller compares paired segment deltas to choose the same-direction split and merge branch.
+ * Purpose: Test whether two directed XY segments point in the same recovered direction class.
+ */
 bool HaveSameDirectionXY(
     zVec3 *firstStart,
     zVec3 *firstEnd,
@@ -517,7 +537,11 @@ bool HaveSameDirectionXY(
     return (firstEnd->y < firstStart->y) == (secondEnd->y < secondStart->y);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; recovered from coincident-edge error paths in caller 0x466e10.
+ * Evidence: multiple inside-A failure branches report the same old zError message with source-file line evidence.
+ * Purpose: Report a B_COMPLETELY_INSIDE_A weed-out failure through the original zError path.
+ */
 void ReportWeedOutInsideAFailure(
     int errorLine
 ) {
@@ -530,7 +554,11 @@ void ReportWeedOutInsideAFailure(
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; recovered from coincident-edge error paths in caller 0x466e10.
+ * Evidence: forward-segment failure branches report the same old zError message and line-number source evidence.
+ * Purpose: Report a forward-segment weed-out failure through the original zError path.
+ */
 void ReportWeedOutForwardSegmentFailure(
     int errorLine
 ) {
@@ -543,7 +571,11 @@ void ReportWeedOutForwardSegmentFailure(
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; recovered from coincident-edge error paths in caller 0x466e10.
+ * Evidence: segForward validation failures print the same recovered source filename and line-number format.
+ * Purpose: Report a failed segForward call on stderr using the original source-location string.
+ */
 void ReportWeedOutSegForwardFailure(
     int errorLine
 ) {
@@ -555,7 +587,11 @@ void ReportWeedOutSegForwardFailure(
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; recovered from the coincident-edge cleanup path in caller 0x466e10.
+ * Evidence: caller unlinks paired contour C/D segments and repairs contour output first-segment ownership together.
+ * Purpose: Remove a matched pair of Weiler contour segments while preserving circular list links and output owners.
+ */
 void UnlinkWeilerContourSegmentPair(
     WeilerPreclassifyContourPacket *contourPacket,
     zGeometry_WeilerContourSegmentPartial *originalContourC,
@@ -814,7 +850,11 @@ void PropagateXingBackReferencesForContourPair(
     } while (contourCSegment != contourCStart);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; recovered from forward-start selection in caller 0x469a80.
+ * Evidence: caller repeatedly selects the highest X point, using highest Y as the tie-break under the recovered epsilon.
+ * Purpose: Decide whether a candidate point is the preferred max-X/max-Y contour start.
+ */
 bool SelectMaxXThenMaxY(
     zVec3 *candidate,
     zVec3 *current
@@ -827,7 +867,11 @@ bool SelectMaxXThenMaxY(
            candidate->y > current->y;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; recovered from forward-start output construction in caller 0x469a80.
+ * Evidence: caller copies selected contour points into a linear output buffer and advances the destination cursor.
+ * Purpose: Copy one point into the output contour and advance the output pointer.
+ */
 void CopyPointAndAdvance(
     zVec3 *&outPoint,
     zVec3 *point
@@ -909,8 +953,16 @@ bool ArePointsStrictlyNegativeToAdjacentEdgePair(
 } // namespace
 
 namespace zGeometry_Segment {
-// Reimplements 0x46be20: zGeometry_Segment::IntersectsSegmentXY
-// (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp)
+/**
+ * Source owner evidence: zGeometry_Segment is a namespace-level geometry helper group inside zgeo_weiler.cpp.
+ * Evidence: BN frontier for 0x46be20 shows no direct callees, constructors, table writes, or authored global state.
+ * Purpose: Group source-faithful XY segment predicates used by Weiler/triangulation callers without a class owner.
+ */
+/**
+ * Reimplements 0x46be20: zGeometry_Segment::IntersectsSegmentXY
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp
+ * Purpose: Test whether two XY segments intersect with both parametric coordinates in the half-open unit range.
+ */
 int __fastcall IntersectsSegmentXY(
     zVec3 *segmentAPoint0,
     zVec3 *segmentAPoint1,

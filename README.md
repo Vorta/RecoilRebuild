@@ -55,17 +55,17 @@ Generated from `.agent/RECOIL_PLAN.md`.
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | Reconstructed | all entries | 5885 | 1124 | 0 | 0 | 0 | 7009 |
 | Source dependencies satisfied | authored entries | 3490 | 0 | 0 | 28 | 3077 | 6595 |
-| Source owner | authored entries | 2343 | 0 | 0 | 4252 | 0 | 6595 |
-| Data reimplemented | authored entries | 543 | 0 | 631 | 2344 | 3077 | 6595 |
-| Reimplemented | authored entries | 3485 | 0 | 0 | 3110 | 0 | 6595 |
+| Source owner | authored entries | 2427 | 0 | 0 | 4168 | 0 | 6595 |
+| Data reimplemented | authored entries | 647 | 0 | 649 | 2222 | 3077 | 6595 |
+| Reimplemented | authored entries | 3507 | 0 | 0 | 3088 | 0 | 6595 |
 | Provider-boundary | provider entries | 413 | 1 | 0 | 0 | 0 | 414 |
 
 | Reimplementation tier | Count | Percent of authored |
 | --- | ---: | ---: |
 | X | 101 | 1.5% |
 | F | 0 | 0.0% |
-| C | 2245 | 34.0% |
-| B | 939 | 14.2% |
+| C | 2123 | 32.2% |
+| B | 1061 | 16.1% |
 | A | 1 | 0.0% |
 | S | 3309 | 50.2% |
 <!-- RECOIL_PROGRESS:END -->

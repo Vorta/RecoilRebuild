@@ -15,6 +15,7 @@ add_executable(recoil_native_smoke
     zvideo_blur_region_smokes.cpp
     zloc_tests.cpp
     zhud_triplet_smokes.cpp
+    zhud_ui_tests.cpp
     zsnd_cd_tests.cpp
     zsnd_stream_tests.cpp
     zreader_tests.cpp
@@ -60,6 +61,11 @@ target_link_libraries(recoil_native_smoke PRIVATE recoil_native)
 set_source_files_properties(
     zweapon_tests.cpp
     PROPERTIES COMPILE_DEFINITIONS RECOIL_NATIVE_ZWEAPON_SKIP_DUPLICATE_TIMED_HIT_SMOKE
+)
+
+set_source_files_properties(
+    zhud_ui_tests.cpp
+    PROPERTIES COMPILE_DEFINITIONS RECOIL_NATIVE_ZHUD_UI_LIFECYCLE_ONLY
 )
 
 set(ZDECLIENT_NATIVE_SMOKE_PREFIX

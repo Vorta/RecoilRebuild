@@ -159,6 +159,7 @@ struct zInput_BindMapOverlayStackNode {
 };
 RECOIL_STATIC_ASSERT(sizeof(zInput_BindMapOverlayStackNode) == 0x0c);
 
+// Bind-group command ids use the same VC vector triplet recovered in zin_cmd.cpp.
 struct zInput_CommandIdVector {
     unsigned char allocatorByte;
     unsigned char allocatorPadding[3];
@@ -180,6 +181,7 @@ RECOIL_STATIC_ASSERT(
 );
 RECOIL_STATIC_ASSERT(sizeof(zInput_CommandIdVector) == 0x10);
 
+// Bind-group record: CString title followed by the command-id vector.
 struct zInput_BindGroupInfo {
     CString title;
     zInput_CommandIdVector commandIds;

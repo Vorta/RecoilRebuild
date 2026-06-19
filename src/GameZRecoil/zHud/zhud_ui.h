@@ -291,6 +291,7 @@ struct HudUiMgrSensorBlock {
     float sensorClampHalfH;
     float sensorParam;
     float sensorRangeSq;
+    unsigned int unknown_54[183];
 
     void Destructor();
 };
@@ -1866,8 +1867,24 @@ struct HudUiMgrReticleMapCache {
     int projectedY;
 };
 
-// BN models g_HudUiMgr as one object; this recovered owner covers the fields
-// through the objective/nanite data gate currently used by HudLayoutHW.
+struct HudUiMgrMessageSelectionState {
+    int activeWeaponMessageIndex;
+    int activeWeaponSideIndex;
+};
+
+struct HudLoadingCheckpointTable {
+    unsigned int unknown_00;
+    float checkpointProgressRaw[25];
+    float checkpointProgressNormalized[25];
+    unsigned int maxCheckpointIndex;
+    unsigned int currentCheckpointIndex;
+    unsigned int unknown_D4;
+    float currentProgress;
+};
+
+// BN models g_HudUiMgr as one zero-initialized object at 0x4e5ed0. This
+// recovered owner covers the typed object through tailBar at 0x7844. The
+// four-byte zero gap before g_HudLayoutHW is not part of the typed object.
 struct HudUiMgrData : HudUiContainer {
     int hudLayoutsInitialized;
     unsigned int hudLoaded;
@@ -1895,6 +1912,25 @@ struct HudUiMgrData : HudUiContainer {
     HudUiWidget reticleWidget;
     HudUiNanitePanel nanitePanel;
     HudUiMgrObjectiveBlock objective;
+    HudUiMgrSensorBlock sensor;
+    HudUiSlot weaponSlots[32];
+    unsigned int reticleSnapRadiusSq;
+    unsigned int weaponState;
+    unsigned int unknown_4704[32];
+    HudUiTimerPanel *timerPanel;
+    HudUiTimerPanelFloat *timerPanelFloat;
+    unsigned int activeModeCounterIndex;
+    HudUiCounter modeCounters[4];
+    HudUiMgrMessageSelectionState activeMessageSelection;
+    HudUiMessage messages[10];
+    HudUiStatsListElement *statsList;
+    unsigned int statsListState1;
+    unsigned int statsListState2;
+    unsigned int statsListState3;
+    unsigned int statsListState4;
+    unsigned int statsListState5;
+    HudLoadingCheckpointTable loadingCheckpointTable;
+    HudUiBar tailBar;
 };
 
 #define g_HudUiMgrHudLayoutsInitialized (g_HudUiMgr.hudLayoutsInitialized)
@@ -1939,6 +1975,37 @@ struct HudUiMgrData : HudUiContainer {
 #define g_HudUiMgrObjectiveBar (g_HudUiMgr.objective.objectiveBar)
 #define g_HudUiMgrObjectiveChatComposeTextInput (g_HudUiMgr.objective.chatComposeTextInput)
 #define g_HudUiMgrObjectiveCounterTextPanel (g_HudUiMgr.objective.counterTextPanel)
+#define g_HudUiMgrSensorBlock (g_HudUiMgr.sensor)
+#define g_HudUiMgrWeaponSlots (g_HudUiMgr.weaponSlots)
+#define g_HudUiMgrReticleSnapRadiusSq (g_HudUiMgr.reticleSnapRadiusSq)
+#define g_HudUiMgrWeaponState (g_HudUiMgr.weaponState)
+#define g_HudUiMgrTimerPanel (g_HudUiMgr.timerPanel)
+#define g_HudUiMgrTimerPanelFloat (g_HudUiMgr.timerPanelFloat)
+#define g_HudUiMgrActiveModeCounterIndex (g_HudUiMgr.activeModeCounterIndex)
+#define g_HudUiMgrModeCounters (g_HudUiMgr.modeCounters)
+#define g_HudUiMgrActiveWeaponMessageIndex \
+    (g_HudUiMgr.activeMessageSelection.activeWeaponMessageIndex)
+#define g_HudUiMgrActiveWeaponSideIndex \
+    (g_HudUiMgr.activeMessageSelection.activeWeaponSideIndex)
+#define g_HudUiMgrMessages (g_HudUiMgr.messages)
+#define g_HudUiMgrStatsList (g_HudUiMgr.statsList)
+#define g_HudUiMgrStatsListState1 (g_HudUiMgr.statsListState1)
+#define g_HudUiMgrStatsListState2 (g_HudUiMgr.statsListState2)
+#define g_HudUiMgrStatsListState3 (g_HudUiMgr.statsListState3)
+#define g_HudUiMgrStatsListState4 (g_HudUiMgr.statsListState4)
+#define g_HudUiMgrStatsListState5 (g_HudUiMgr.statsListState5)
+#define g_HudUiLoadingCheckpointRawProgress \
+    (g_HudUiMgr.loadingCheckpointTable.checkpointProgressRaw)
+#define g_HudUiLoadingCheckpointProgress \
+    (g_HudUiMgr.loadingCheckpointTable.checkpointProgressNormalized)
+#define g_HudUiLoadingCheckpointProgressScale (0.0186219737f)
+#define g_HudUiLoadingCheckpointMaxIndex \
+    (g_HudUiMgr.loadingCheckpointTable.maxCheckpointIndex)
+#define g_HudUiLoadingCheckpointCurrentIndex \
+    (g_HudUiMgr.loadingCheckpointTable.currentCheckpointIndex)
+#define g_HudUiLoadingCheckpointCurrentProgress \
+    (g_HudUiMgr.loadingCheckpointTable.currentProgress)
+#define g_HudUiMgrTailBar (g_HudUiMgr.tailBar)
 
 struct HudUiFlashPanel {
     static unsigned int __fastcall ComputeFlashBlendColor(
@@ -4740,7 +4807,130 @@ RECOIL_STATIC_ASSERT(
         objective
     ) == 0x690
 );
-RECOIL_STATIC_ASSERT(sizeof(HudUiMgrData) == 0xbcc);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrData,
+        sensor
+    ) == 0xbcc
+);
+RECOIL_STATIC_ASSERT(sizeof(HudUiMgrSensorBlock) == 0x330);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrData,
+        weaponSlots
+    ) == 0xefc
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrData,
+        reticleSnapRadiusSq
+    ) == 0x46fc
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrData,
+        weaponState
+    ) == 0x4700
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrData,
+        unknown_4704
+    ) == 0x4704
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrData,
+        timerPanel
+    ) == 0x4784
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrData,
+        timerPanelFloat
+    ) == 0x4788
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrData,
+        activeModeCounterIndex
+    ) == 0x478c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrData,
+        modeCounters
+    ) == 0x4790
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrData,
+        activeMessageSelection
+    ) == 0x4b10
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrData,
+        messages
+    ) == 0x4b18
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrData,
+        statsList
+    ) == 0x7610
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrData,
+        statsListState5
+    ) == 0x7624
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudLoadingCheckpointTable,
+        checkpointProgressRaw
+    ) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudLoadingCheckpointTable,
+        checkpointProgressNormalized
+    ) == 0x68
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudLoadingCheckpointTable,
+        maxCheckpointIndex
+    ) == 0xcc
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudLoadingCheckpointTable,
+        currentCheckpointIndex
+    ) == 0xd0
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudLoadingCheckpointTable,
+        currentProgress
+    ) == 0xd8
+);
+RECOIL_STATIC_ASSERT(sizeof(HudLoadingCheckpointTable) == 0xdc);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrData,
+        loadingCheckpointTable
+    ) == 0x7628
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrData,
+        tailBar
+    ) == 0x7704
+);
+RECOIL_STATIC_ASSERT(sizeof(HudUiMgrMessageSelectionState) == 0x8);
+RECOIL_STATIC_ASSERT(sizeof(HudUiMgrData) == 0x7844);
 RECOIL_STATIC_ASSERT(
     offsetof(
         HudUiPanel,

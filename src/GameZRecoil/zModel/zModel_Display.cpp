@@ -427,6 +427,7 @@ int zModel_Display_Init() {
     }
     g_zModel_PointInPolyTolX = 0.2f;
     g_zModel_PointInPolyTolY = 0.2f;
+    g_Clip_PolyUvs = g_Clip_PolyUvsStorage;
 
     g_zModel_DamageMaskCurrent = g_zModel_DamageMaskStorage;
     g_OptCatalogDamageMaskSlotIndex = 0;

@@ -2782,6 +2782,18 @@ extern "C" int zclass_node_extra_flag_setters_smoke() {
         return 10;
     }
 
+    zClass_NodePartial signedCountNode{};
+    zClass_NodePartial ignoredChild{};
+    zClass_NodePartial *ignoredChildren[] = {&ignoredChild};
+    signedCountNode.auxFlags = 0xff;
+    signedCountNode.listCountB = -1;
+    signedCountNode.listB = ignoredChildren;
+    ignoredChild.auxFlags = 0xff;
+    zClass_Node::MaskExtraFlagsRecursive(&signedCountNode, 0x0f);
+    if (signedCountNode.auxFlags != 0x0f || ignoredChild.auxFlags != 0xff) {
+        return 12;
+    }
+
     zClass_Node::PropagateFlagsRecursive(&node, 0x400);
     if ((node.flags & 0x400) == 0 || (child.flags & 0x400) == 0 ||
         (grandchild.flags & 0x400) == 0) {

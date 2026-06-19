@@ -4,6 +4,16 @@
 #include <new>
 #include <stdlib.h>
 
+/**
+ * Reimplements data 0x4e5de0: g_RecoilStateCredits.
+ *
+ * Purpose: store the static credits app-state object.
+ *
+ * Source owner: RecoilStateCredits is the credits-state slice of the
+ * RecoilStateBase app-state cluster. BN shows the retail static-lifetime chain
+ * as a compiler global-constructor thunk plus CRT atexit callback around this
+ * source-file global.
+ */
 RecoilStateCredits g_RecoilStateCredits;
 
 /**
@@ -19,6 +29,10 @@ RecoilStateCredits::RecoilStateCredits() : m_dialog(0) {}
  *
  * Purpose: construct the static credits state and register its at-exit
  * destructor callback.
+ *
+ * BN shape: retail calls compiler-generated StaticConstructGlobal at 0x409960
+ * before tail-calling StaticInit. The authored source keeps that thunk as
+ * compiler glue and expresses the source-level static object construction.
  */
 void RecoilStateCredits::StaticInitAndRegisterAtExit() {
     new (&g_RecoilStateCredits) RecoilStateCredits;
@@ -30,6 +44,8 @@ void RecoilStateCredits::StaticInitAndRegisterAtExit() {
  *
  * Purpose: register the static credits state's destruction callback with the
  * CRT at-exit list.
+ *
+ * BN shape: retail pushes RegisterAtExit and calls the CRT atexit provider.
  */
 void RecoilStateCredits::StaticInit() {
     atexit(RegisterAtExit);
@@ -40,6 +56,9 @@ void RecoilStateCredits::StaticInit() {
  *
  * Purpose: destroy the global credits state from the registered at-exit
  * callback.
+ *
+ * BN shape: retail sets this to g_RecoilStateCredits and tail-calls the
+ * virtual destructor body.
  */
 void RecoilStateCredits::RegisterAtExit() {
     g_RecoilStateCredits.~RecoilStateCredits();

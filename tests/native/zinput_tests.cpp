@@ -3,6 +3,7 @@
 #include "GameZRecoil/zInput/zInput.h"
 #include "GameZRecoil/zLoc/zLoc.h"
 
+#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <new>
@@ -445,6 +446,26 @@ extern "C" int zinput_bindgroup_accessors_smoke(void) {
 }
 
 extern "C" int zinput_bindgroup_static_lifetime_smoke(void) {
+    char childEnabled[2] = {};
+    if (GetEnvironmentVariableA(
+            "RECOIL_ZINPUT_BINDGROUP_STATIC_LIFETIME_CHILD",
+            childEnabled,
+            sizeof(childEnabled)
+        ) != 0 &&
+        childEnabled[0] == '1') {
+        if (zInput::BindGroupList_StaticInitAndRegisterAtExit() != 0) {
+            return 1;
+        }
+
+        zInput_BindGroupInfo **const childGroups =
+            static_cast<zInput_BindGroupInfo **>(::operator new(sizeof(zInput_BindGroupInfo *)));
+        childGroups[0] = nullptr;
+        g_zInput_BindGroupInfoList.begin = childGroups;
+        g_zInput_BindGroupInfoList.end = childGroups + 1;
+        g_zInput_BindGroupInfoList.capacity = childGroups + 1;
+        return 0;
+    }
+
     g_zInput_BindGroupInfoList.allocatorByte = 0x78;
     g_zInput_BindGroupInfoList.begin = reinterpret_cast<zInput_BindGroupInfo **>(0x1111);
     g_zInput_BindGroupInfoList.end = reinterpret_cast<zInput_BindGroupInfo **>(0x2222);
@@ -481,13 +502,77 @@ extern "C" int zinput_bindgroup_static_lifetime_smoke(void) {
     g_zInput_BindGroupInfoList.end = reinterpret_cast<zInput_BindGroupInfo **>(0x2222);
     g_zInput_BindGroupInfoList.capacity = reinterpret_cast<zInput_BindGroupInfo **>(0x3333);
 
-    return zInput::BindGroupList_StaticInitAndRegisterAtExit() == 0 &&
-                   g_zInput_BindGroupInfoList.allocatorByte == 0 &&
-                   g_zInput_BindGroupInfoList.begin == nullptr &&
-                   g_zInput_BindGroupInfoList.end == nullptr &&
-                   g_zInput_BindGroupInfoList.capacity == nullptr
-               ? 0
-               : 4;
+    if (zInput::BindGroupList_StaticInitAndRegisterAtExit() != 0 ||
+        g_zInput_BindGroupInfoList.allocatorByte != 0 ||
+        g_zInput_BindGroupInfoList.begin != nullptr ||
+        g_zInput_BindGroupInfoList.end != nullptr ||
+        g_zInput_BindGroupInfoList.capacity != nullptr) {
+        return 4;
+    }
+
+    char exePath[MAX_PATH] = {};
+    if (GetModuleFileNameA(
+            nullptr,
+            exePath,
+            sizeof(exePath)
+        ) == 0) {
+        return 5;
+    }
+
+    char commandLine[MAX_PATH + 128] = {};
+    if (std::snprintf(
+            commandLine,
+            sizeof(commandLine),
+            "\"%s\" zinput_bindgroup_static_lifetime_smoke",
+            exePath
+        ) <= 0) {
+        return 6;
+    }
+
+    STARTUPINFOA startupInfo = {};
+    PROCESS_INFORMATION processInfo = {};
+    startupInfo.cb = sizeof(startupInfo);
+    SetEnvironmentVariableA(
+        "RECOIL_ZINPUT_BINDGROUP_STATIC_LIFETIME_CHILD",
+        "1"
+    );
+    const BOOL created = CreateProcessA(
+        nullptr,
+        commandLine,
+        nullptr,
+        nullptr,
+        FALSE,
+        0,
+        nullptr,
+        nullptr,
+        &startupInfo,
+        &processInfo
+    );
+    SetEnvironmentVariableA(
+        "RECOIL_ZINPUT_BINDGROUP_STATIC_LIFETIME_CHILD",
+        nullptr
+    );
+    if (created == 0) {
+        return 7;
+    }
+
+    const DWORD waitResult = WaitForSingleObject(
+        processInfo.hProcess,
+        10000
+    );
+    DWORD exitCode = 0;
+    const BOOL gotExitCode = GetExitCodeProcess(
+        processInfo.hProcess,
+        &exitCode
+    );
+    CloseHandle(processInfo.hThread);
+    CloseHandle(processInfo.hProcess);
+
+    if (waitResult != WAIT_OBJECT_0 || gotExitCode == 0) {
+        return 8;
+    }
+
+    return exitCode == 0 ? 0 : 9;
 }
 
 extern "C" int zinput_global_state_static_lifetime_smoke(void) {

@@ -995,13 +995,21 @@ extern "C" int zsnd_set_use_archive_banks_flag_smoke(void) {
 
 extern "C" int zsnd_sample_set_registry_init_shutdown_smoke(void) {
     zSndSampleSet *stackSlots[2] = {};
-    g_zSnd_SampleSetRegistry.useArchiveBanksFlag = 0x12345600;
+    std::memset(
+        g_zSnd_SampleSetRegistry.unknown_01,
+        0x56,
+        sizeof(g_zSnd_SampleSetRegistry.unknown_01)
+    );
+    g_zSnd_SampleSetRegistry.useArchiveBanksFlag = 0;
     g_zSnd_SampleSetRegistry.begin = stackSlots;
     g_zSnd_SampleSetRegistry.end = stackSlots + 1;
     g_zSnd_SampleSetRegistry.capacityEnd = stackSlots + 2;
 
     zSnd_SetUseArchiveBanks(0xab);
-    if (g_zSnd_SampleSetRegistry.useArchiveBanksFlag != 0x123456ab ||
+    if (g_zSnd_SampleSetRegistry.useArchiveBanksFlag != 0xab ||
+        g_zSnd_SampleSetRegistry.unknown_01[0] != 0x56 ||
+        g_zSnd_SampleSetRegistry.unknown_01[1] != 0x56 ||
+        g_zSnd_SampleSetRegistry.unknown_01[2] != 0x56 ||
         g_zSnd_SampleSetRegistry.begin != nullptr || g_zSnd_SampleSetRegistry.end != nullptr ||
         g_zSnd_SampleSetRegistry.capacityEnd != nullptr) {
         return 1;
@@ -4492,6 +4500,18 @@ extern "C" int zsnd_fade_lists_stop_all_shutdown_smoke(void) {
 }
 
 extern "C" int zsnd_tick_backend_markers_smoke(void) {
+    void *const oldBackendDevice = g_zSnd_BackendDevice;
+    const int oldActiveBackend = g_zSnd_ActiveBackend;
+    const int oldFadeActiveListCount = g_zSndFadeActiveListCount;
+    const int oldInitialized = g_zSnd_IsInitialized;
+    const int oldPreInitialized = g_zSnd_PreInitialized;
+    zSndSample *const oldLastVoice = g_zSndLastVoice;
+    zSndPlayHandle *const oldLastVoiceHandle = g_zSndLastVoiceHandle;
+    const int oldLastVoiceMarkerIndex = g_zSndLastVoiceMarkerIndex;
+    const int oldLastVoiceStopMarkerIndex = g_zSndLastVoiceStopMarkerIndex;
+    const float oldUnscaledTime = g_Time_UnscaledAccumulatedTimeSec;
+    int result = 0;
+
     ResetStopBackendCounters();
     g_zSndFadeActiveListCount = 0;
 
@@ -4505,12 +4525,27 @@ extern "C" int zsnd_tick_backend_markers_smoke(void) {
 
     zSnd_Tick(0);
     if (g_testCommitDeferredSettingsCount != 1 || g_testA3dDeviceTickCount != 1) {
-        return 1;
+        result = 1;
+        goto cleanup;
     }
 
     zSnd_Tick(1);
     if (g_testCommitDeferredSettingsCount != 1 || g_testA3dDeviceTickCount != 1) {
-        return 2;
+        result = 2;
+        goto cleanup;
+    }
+
+    ResetStopBackendCounters();
+    zSnd_TickWrapper(0);
+    if (g_testCommitDeferredSettingsCount != 1 || g_testA3dDeviceTickCount != 1) {
+        result = 3;
+        goto cleanup;
+    }
+
+    zSnd_TickWrapper(1);
+    if (g_testCommitDeferredSettingsCount != 1 || g_testA3dDeviceTickCount != 1) {
+        result = 4;
+        goto cleanup;
     }
 
     ResetStopBackendCounters();
@@ -4535,14 +4570,16 @@ extern "C" int zsnd_tick_backend_markers_smoke(void) {
 
     zSnd_Tick(1);
     if (g_testMarkerCallbackCount != 0 || g_zSndLastVoiceMarkerIndex != 0) {
-        return 3;
+        result = 5;
+        goto cleanup;
     }
 
     g_Time_UnscaledAccumulatedTimeSec = 5.0f;
     zSnd_Tick(1);
     if (g_testMarkerCallbackCount != 1 || g_testLastMarkerEvent != 0 ||
         g_zSndLastVoiceMarkerIndex != 1 || g_zSndLastVoice != &sample) {
-        return 4;
+        result = 6;
+        goto cleanup;
     }
 
     g_Time_UnscaledAccumulatedTimeSec = 10.0f;
@@ -4550,7 +4587,8 @@ extern "C" int zsnd_tick_backend_markers_smoke(void) {
     if (g_testMarkerCallbackCount != 2 || g_testLastMarkerEvent != 1 ||
         g_zSndLastVoice != nullptr || g_zSndLastVoiceMarkerIndex != 0 ||
         g_zSndLastVoiceStopMarkerIndex != 999) {
-        return 5;
+        result = 7;
+        goto cleanup;
     }
 
     g_zSndLastVoice = &sample;
@@ -4558,10 +4596,23 @@ extern "C" int zsnd_tick_backend_markers_smoke(void) {
     g_zSndLastVoiceStopMarkerIndex = 3;
     sample.markerValues = nullptr;
     zSnd_TickWrapper(1);
-    return g_zSndLastVoice == nullptr && g_zSndLastVoiceMarkerIndex == 0 &&
-                   g_zSndLastVoiceStopMarkerIndex == 999
-               ? 0
-               : 6;
+    result = g_zSndLastVoice == nullptr && g_zSndLastVoiceMarkerIndex == 0 &&
+                     g_zSndLastVoiceStopMarkerIndex == 999
+                 ? 0
+                 : 8;
+
+cleanup:
+    g_zSnd_BackendDevice = oldBackendDevice;
+    g_zSnd_ActiveBackend = oldActiveBackend;
+    g_zSndFadeActiveListCount = oldFadeActiveListCount;
+    g_zSnd_IsInitialized = oldInitialized;
+    g_zSnd_PreInitialized = oldPreInitialized;
+    g_zSndLastVoice = oldLastVoice;
+    g_zSndLastVoiceHandle = oldLastVoiceHandle;
+    g_zSndLastVoiceMarkerIndex = oldLastVoiceMarkerIndex;
+    g_zSndLastVoiceStopMarkerIndex = oldLastVoiceStopMarkerIndex;
+    g_Time_UnscaledAccumulatedTimeSec = oldUnscaledTime;
+    return result;
 }
 
 extern "C" int zsnd_sample_set_init_by_name_empty_smoke(void) {

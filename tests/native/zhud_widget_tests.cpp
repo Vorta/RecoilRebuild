@@ -1,4 +1,5 @@
 #include "GameZRecoil/zHud/zhud_ui.h"
+#include "Battlesport/Briefing.h"
 #include "Battlesport/HudUiMpExitDialog.h"
 #include "Battlesport/RecoilApp.h"
 #include "Battlesport/hud.h"
@@ -3262,6 +3263,95 @@ extern "C" int zhud_objective_update_meter_xpoints_smoke(void) {
     g_HudUiMgrObjectiveWidget = oldWidget;
     g_HudUiMgrObjectiveMeter = oldMeter;
     return leftEdge && rightEdge && yUnchanged ? 0 : 1;
+}
+
+extern "C" int zhud_loading_checkpoint_init_table_smoke(void) {
+    const HudLoadingCheckpointTable oldTable = g_HudUiMgr.loadingCheckpointTable;
+    const float expectedRaw[19] = {
+        0.00100000005f, 0.136999995f, 0.237000003f, 0.340000004f, 0.899999976f,
+        9.30000019f,    12.3999996f,  13.3999996f,  20.0f,        26.0f,
+        26.2999992f,    28.7000008f,  31.5f,        34.0f,        36.2000008f,
+        36.4000015f,    53.2999992f,  53.5999985f,  53.7000008f,
+    };
+
+    g_HudUiMgr.loadingCheckpointTable = HudLoadingCheckpointTable();
+    HudUiLoadingCheckpoint::InitTable();
+
+    bool tableOk =
+        g_HudUiLoadingCheckpointMaxIndex == 18 &&
+        g_HudUiLoadingCheckpointCurrentIndex == 0 &&
+        g_HudUiMgr.loadingCheckpointTable.unknown_00 == 0 &&
+        g_HudUiMgr.loadingCheckpointTable.unknown_D4 == 0 &&
+        g_HudUiLoadingCheckpointCurrentProgress == 0.0f;
+
+    for (int index = 0; index < 19; ++index) {
+        const float expectedProgress =
+            expectedRaw[index] * g_HudUiLoadingCheckpointProgressScale;
+        tableOk =
+            tableOk &&
+            g_HudUiLoadingCheckpointRawProgress[index] == expectedRaw[index] &&
+            g_HudUiLoadingCheckpointProgress[index] == expectedProgress;
+    }
+
+    for (int index = 19; index < 25; ++index) {
+        tableOk =
+            tableOk &&
+            g_HudUiLoadingCheckpointRawProgress[index] == 0.0f &&
+            g_HudUiLoadingCheckpointProgress[index] == 0.0f;
+    }
+
+    g_HudUiMgr.loadingCheckpointTable = oldTable;
+    return tableOk ? 0 : 1;
+}
+
+extern "C" int zhud_loading_checkpoint_advance_and_log_smoke(void) {
+    const HudLoadingCheckpointTable oldTable = g_HudUiMgr.loadingCheckpointTable;
+    HudUiBriefingRuntime *const oldRuntime = g_Briefing_Runtime;
+
+    g_Briefing_Runtime = nullptr;
+    g_HudUiMgr.loadingCheckpointTable = HudLoadingCheckpointTable();
+    HudUiLoadingCheckpoint::InitTable();
+
+    g_HudUiLoadingCheckpointCurrentIndex = 2;
+    g_HudUiLoadingCheckpointCurrentProgress = -1.0f;
+    HudUiLoadingCheckpoint::AdvanceAndLog(nullptr);
+    const bool normalAdvance =
+        g_HudUiLoadingCheckpointCurrentProgress == g_HudUiLoadingCheckpointProgress[2] &&
+        g_HudUiLoadingCheckpointCurrentIndex == 3;
+
+    g_HudUiLoadingCheckpointCurrentIndex = g_HudUiLoadingCheckpointMaxIndex;
+    g_HudUiLoadingCheckpointCurrentProgress = -1.0f;
+    HudUiLoadingCheckpoint::AdvanceAndLog(nullptr);
+    const bool maxClamped =
+        g_HudUiLoadingCheckpointCurrentProgress ==
+            g_HudUiLoadingCheckpointProgress[g_HudUiLoadingCheckpointMaxIndex] &&
+        g_HudUiLoadingCheckpointCurrentIndex == g_HudUiLoadingCheckpointMaxIndex;
+
+    g_HudUiMgr.loadingCheckpointTable = oldTable;
+    g_Briefing_Runtime = oldRuntime;
+    return normalAdvance && maxClamped ? 0 : 1;
+}
+
+extern "C" int zhud_mgr_tail_bar_layout_smoke(void) {
+    const HudUiBar oldTailBar = g_HudUiMgrTailBar;
+    const unsigned int oldInvalidateMask = g_HudUi_InvalidateMask;
+
+    std::memset(&g_HudUiMgrTailBar, 0, sizeof(g_HudUiMgrTailBar));
+    new (&g_HudUiMgrTailBar) HudUiBar;
+    g_HudUiMgrTailBar.quadHeight = 0;
+    g_HudUiMgrTailBar.quadLeftX = 0.0f;
+
+    const bool aliasOk = &g_HudUiMgrTailBar == &g_HudUiMgr.tailBar;
+    const bool ctorOk =
+        g_HudUiMgrTailBar.drawVertexCount == 0 &&
+        g_HudUiMgrTailBar.points[0].x == 0.0f &&
+        g_HudUiMgrTailBar.points[20].reserved == 0 &&
+        g_HudUiMgrTailBar.quadHeight == 0 &&
+        g_HudUiMgrTailBar.quadLeftX == 0.0f;
+
+    g_HudUiMgrTailBar = oldTailBar;
+    g_HudUi_InvalidateMask = oldInvalidateMask;
+    return aliasOk && ctorOk ? 0 : 1;
 }
 
 extern "C" int zhud_slot_draw_smoke(void) {

@@ -95,6 +95,7 @@ int g_fatalDisconnectCalls;
 int g_fatalDisconnectReason;
 int g_createInterfaceCalls;
 zNetwork_DPlay4 **g_createInterfaceOut;
+zNetwork_DPlay4 *g_createInterfaceInitialOutValue;
 zNetwork_DPlay4 *g_createInterfaceDirectPlay4;
 std::int32_t g_createInterfaceResult;
 int g_lobbyCreateCalls;
@@ -214,6 +215,7 @@ void __fastcall FatalDisconnectFake(int reason) {
 int __fastcall FakeCreateInterfaceAndCoInitialize(zNetwork_DPlay4 **outDirectPlay4) {
     ++g_createInterfaceCalls;
     g_createInterfaceOut = outDirectPlay4;
+    g_createInterfaceInitialOutValue = outDirectPlay4 != nullptr ? *outDirectPlay4 : nullptr;
     if (outDirectPlay4 != nullptr) {
         *outDirectPlay4 = g_createInterfaceDirectPlay4;
     }
@@ -662,6 +664,11 @@ void ResetNetwork() {
     g_dispatchPacketPayloadB = 0;
     g_fatalDisconnectCalls = 0;
     g_fatalDisconnectReason = 0;
+    g_createInterfaceCalls = 0;
+    g_createInterfaceOut = nullptr;
+    g_createInterfaceInitialOutValue = nullptr;
+    g_createInterfaceDirectPlay4 = nullptr;
+    g_createInterfaceResult = 0;
     g_zNetwork_pDirectPlay4 = nullptr;
     g_zNetwork_LocalPlayerRecord = nullptr;
     g_zNetwork_IsHostFlag = 0;
@@ -2499,12 +2506,15 @@ extern "C" int znetwork_init_session_runtime_smoke() {
     g_zNetwork_ReceiveBuffer = &directPlay;
     g_createInterfaceCalls = 0;
     g_createInterfaceOut = nullptr;
+    g_createInterfaceInitialOutValue = nullptr;
     g_createInterfaceDirectPlay4 = &directPlay;
     g_createInterfaceResult = 0;
 
     if (zNetwork::InitSessionRuntime(&appGuid) != 0 ||
         g_createInterfaceCalls != 1 ||
         g_createInterfaceOut == nullptr ||
+        g_createInterfaceOut == &g_zNetwork_pDirectPlay4 ||
+        g_createInterfaceInitialOutValue != nullptr ||
         g_zNetwork_SessionRuntimeInitialized != 1 ||
         g_zNetwork_FatalDisconnectTriggered != 0 ||
         g_zNetwork_AppGuid != &appGuid ||
@@ -2558,12 +2568,15 @@ extern "C" int znetwork_init_session_runtime_smoke() {
     g_zNetwork_ReceiveBuffer = &oldPlayer;
     g_createInterfaceCalls = 0;
     g_createInterfaceOut = nullptr;
+    g_createInterfaceInitialOutValue = nullptr;
     g_createInterfaceDirectPlay4 = &directPlay;
     g_createInterfaceResult = -1;
 
     if (failure == 0 &&
-        (zNetwork::InitSessionRuntime(&appGuid) != 0 ||
+         (zNetwork::InitSessionRuntime(&appGuid) != 0 ||
          g_createInterfaceCalls != 1 ||
+         g_createInterfaceOut == &g_zNetwork_pDirectPlay4 ||
+         g_createInterfaceInitialOutValue != nullptr ||
          g_zNetwork_SessionRuntimeInitialized != 17 ||
          g_zNetwork_FatalDisconnectTriggered != 23 ||
          g_zNetwork_AppGuid != &oldGuid ||

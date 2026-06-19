@@ -1,3 +1,136 @@
+#ifdef RECOIL_NATIVE_ZHUD_UI_LIFECYCLE_ONLY
+
+#include "Battlesport/GameNet.h"
+#include "GameZRecoil/zHud/zhud_ui.h"
+
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
+
+extern "C" std::uint32_t g_HudUi_InvalidateMask;
+
+namespace {
+template <typename T> T &TestFieldAt(void *base, std::size_t offset) {
+    return *reinterpret_cast<T *>(static_cast<std::uint8_t *>(base) + offset);
+}
+
+static int CheckHudUiMgrRegisteredLifecycleConstructed(void) {
+    int failure = 0;
+    failure |= g_HudUiMgr.childHead != nullptr ? 0 : 1;
+    failure |= g_HudUiMgr.childTail != nullptr ? 0 : 2;
+    failure |= g_HudUiMgrObjectiveChatComposeTextInput.capacity == 256 ? 0 : 16;
+    failure |= g_HudUiMgrObjectiveChatComposeTextInput.buffer != nullptr ? 0 : 32;
+    return failure;
+}
+
+static void CleanupHudUiMgrAfterAtExitRegistration(void) {
+    HudUiMgr::StaticDestructor(&g_HudUiMgr);
+    std::memset(&g_HudUiMgr, 0, sizeof(g_HudUiMgr));
+}
+
+static int RunHudUiMgrConstructorSmoke(bool useStaticInit, bool useStaticDestructor) {
+    HudUiMgrData oldMgr;
+    const std::uint32_t oldInvalidateMask = g_HudUi_InvalidateMask;
+
+    std::memcpy(&oldMgr, &g_HudUiMgr, sizeof(oldMgr));
+    std::memset(&g_HudUiMgr, 0, sizeof(g_HudUiMgr));
+
+    HudUiContainer *const result =
+        useStaticInit ? HudUiMgr::StaticInit() : HudUiMgr::Constructor(&g_HudUiMgr);
+    int rootFailure = 0;
+    rootFailure |= result == &g_HudUiMgr ? 0 : 0x001;
+    rootFailure |= g_HudUiMgr.enabled == 0 ? 0 : 0x004;
+    rootFailure |= g_HudUiMgr.childHead != nullptr ? 0 : 0x008;
+    rootFailure |= g_HudUiMgr.childTail != nullptr ? 0 : 0x010;
+    rootFailure |= g_HudUiMgrHudRootPanel.flashCountdown == 0.0f ? 0 : 0x040;
+    rootFailure |= g_HudUiMgrHudRootPanel.flashResetValue == 0.349999994f ? 0 : 0x080;
+    rootFailure |= g_HudUiMgrHudRootPanel.flashAltColor0 == 0 ? 0 : 0x100;
+    rootFailure |= g_HudUiMgrHudRootPanel.flashEnabled == 0 ? 0 : 0x200;
+    rootFailure |= g_HudUiMgrHudRootPanel.flashMode == 0 ? 0 : 0x400;
+    rootFailure |= g_HudUiMgrHudRootPanel.flashDirectionSign == 1 ? 0 : 0x800;
+    const bool rootOk = rootFailure == 0;
+
+    const bool widgetOk =
+        g_HudUiMgrReticleWidget.alignFlags == 0 &&
+        g_HudUiMgrNanitePanel.visibleCount == 0 &&
+        g_HudUiMgrObjectiveWidget.alignFlags == 0 &&
+        g_HudUiMgrObjectiveSensorRect.alignFlags == 0 &&
+        g_HudUiMgrObjectiveMeter.fillPixelsMax == 0 &&
+        g_HudUiMgrObjectiveMeter.meterFlags == 0 &&
+        g_HudUiMgrObjectiveBar.drawVertexCount == 0 &&
+        g_HudUiMgrObjectiveChatComposeTextInput.capacity == 256 &&
+        g_HudUiMgrObjectiveChatComposeTextInput.buffer != nullptr &&
+        g_HudUiMgrSensorPanel.alignFlags == 0 &&
+        g_HudUiMgrSensorOverlay.alignFlags == 0 &&
+        g_HudUiMgrSensorMeter.fillPixelsMax == 0 &&
+        g_HudUiMgrSensorMeter.meterFlags == 0 &&
+        g_HudUiMgrTailBar.drawVertexCount == 0 && g_HudUiMgrTailBar.quadHeight == 0 &&
+        g_HudUiMgrTailBar.quadLeftX == 0.0f;
+
+    bool arraysOk = true;
+    int index;
+    for (index = 0; index < 32; ++index) {
+        arraysOk = arraysOk && g_HudUiMgrWeaponSlots[index].slotWidget.alignFlags == 0 &&
+                   g_HudUiMgrWeaponSlots[index].trackMarkerWidget.alignFlags == 0;
+    }
+    for (index = 0; index < 4; ++index) {
+        arraysOk = arraysOk && g_HudUiMgrModeCounters[index].stateImages[0] == nullptr &&
+                   g_HudUiMgrModeCounters[index].stateImages[1] == nullptr &&
+                   g_HudUiMgrModeCounters[index].stateImages[2] == nullptr;
+    }
+    for (index = 0; index < 10; ++index) {
+        arraysOk = arraysOk && g_HudUiMgrMessages[index].variantImages[0] == nullptr &&
+                   g_HudUiMgrMessages[index].activeSideImages[0] == nullptr &&
+                   g_HudUiMgrMessages[index].sideImageSwaps[0] == nullptr;
+    }
+
+    HudUiMgr::StaticDestructor(&g_HudUiMgr);
+    bool destructorOk = true;
+    if (useStaticDestructor) {
+        destructorOk = true;
+    }
+
+    std::memcpy(&g_HudUiMgr, &oldMgr, sizeof(g_HudUiMgr));
+    g_HudUi_InvalidateMask = oldInvalidateMask;
+
+    int failure = 0;
+    failure |= rootOk ? 0 : (0x1000 | rootFailure);
+    failure |= widgetOk ? 0 : 2;
+    failure |= arraysOk ? 0 : 4;
+    failure |= destructorOk ? 0 : 8;
+    return failure;
+}
+} // namespace
+
+extern "C" int zhud_mgr_constructor_smoke(void) {
+    return RunHudUiMgrConstructorSmoke(false, false);
+}
+
+extern "C" int zhud_mgr_static_init_smoke(void) {
+    return RunHudUiMgrConstructorSmoke(true, false);
+}
+
+extern "C" int zhud_mgr_static_destructor_smoke(void) {
+    return RunHudUiMgrConstructorSmoke(true, true);
+}
+
+extern "C" int zhud_mgr_register_at_exit_smoke(void) {
+    HudUiMgr::StaticInit();
+    HudUiMgr::RegisterAtExit();
+    const int failure = CheckHudUiMgrRegisteredLifecycleConstructed();
+    CleanupHudUiMgrAfterAtExitRegistration();
+    return failure;
+}
+
+extern "C" int zhud_mgr_static_init_and_register_at_exit_smoke(void) {
+    HudUiMgr::StaticInitAndRegisterAtExit();
+    const int failure = CheckHudUiMgrRegisteredLifecycleConstructed();
+    CleanupHudUiMgrAfterAtExitRegistration();
+    return failure;
+}
+
+#else
+
 #include "Battlesport/GameNet.h"
 #include "Battlesport/Briefing.h"
 #include "Battlesport/CZRecoilFrame.h"
@@ -44,12 +177,6 @@
 #include <new>
 
 extern "C" std::uint32_t g_HudUi_InvalidateMask;
-extern float g_HudUiLoadingCheckpointRawProgress[19];
-extern float g_HudUiLoadingCheckpointProgress[19];
-extern float g_HudUiLoadingCheckpointProgressScale;
-extern unsigned int g_HudUiLoadingCheckpointMaxIndex;
-extern unsigned int g_HudUiLoadingCheckpointCurrentIndex;
-extern float g_HudUiLoadingCheckpointCurrentProgress;
 extern zSndSample *g_HudUi_PowerupSample;
 extern unsigned char g_HudUi_PowerupSampleInitFlags;
 extern "C" int g_Hud_MapOverlayRefCount;
@@ -26349,3 +26476,4 @@ extern "C" int zhud_sensor_track_list_add_smoke(void) {
     g_HudUiMgrSensor_TrackList = {};
     return first && second ? 0 : 1;
 }
+#endif
