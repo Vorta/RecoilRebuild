@@ -15,6 +15,12 @@
 namespace {
     const int kZClassNodeLight = 9;
     const char *kLightSourceFile = "D:\\Proj\\GameZRecoil\\zClass\\Light.c";
+    /**
+     * Reimplements data 0x4e4658: g_zWeapon_ThermalGlowLabel.
+     * Purpose: stores the fixed node name assigned to pooled thermal glow
+     * lights during initialization.
+     */
+    const char g_zWeapon_ThermalGlowLabel[] = "Thermal glow";
 
     /**
      * Original inline helper; no standalone retail function exists.
@@ -171,7 +177,7 @@ namespace Light {
             zClass_NodePartial *const light = zClass_Light::gwLightNew();
             zClass_Class::gwNodeSetName(
                 light,
-                "Thermal glow"
+                g_zWeapon_ThermalGlowLabel
             );
             zClass_Light::gwLightSetPosition(
                 light,

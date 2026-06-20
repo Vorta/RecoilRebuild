@@ -1,6 +1,7 @@
 #include "GameZRecoil/zHud/zhud_ui.h"
 #include "GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.h"
 #include "GameZRecoil/zGame/zGame.h"
+#include "GameZRecoil/zEffect/zEffect.h"
 #include "GameZRecoil/zRndr/zRndr.h"
 #include "GameZRecoil/zSound/zSound.h"
 #include <string.h>
@@ -13,6 +14,10 @@ static unsigned short g_musicVolumeSecondary;
 static int g_musicVolumeSetVolumeCount;
 static unsigned short g_musicVolumeSetPrimary;
 static unsigned short g_musicVolumeSetSecondary;
+static int g_musicEnablePlayTrackCount;
+static int g_musicEnablePlayTrack;
+static int g_musicEnablePlayMode;
+static int g_musicEnableStopCount;
 static int g_perspectiveSelectSpanCount;
 
 struct OptionsPanelFunctionPatch {
@@ -88,6 +93,21 @@ static int __fastcall FakeMusicVolumeSetVolume(
     ++g_musicVolumeSetVolumeCount;
     g_musicVolumeSetPrimary = primaryVolume;
     g_musicVolumeSetSecondary = secondaryVolume;
+    return 1;
+}
+
+static int __fastcall FakeMusicEnablePlayTrackWithMode(
+    int trackIndex,
+    int playbackMode
+) {
+    ++g_musicEnablePlayTrackCount;
+    g_musicEnablePlayTrack = trackIndex;
+    g_musicEnablePlayMode = playbackMode;
+    return 1;
+}
+
+static int FakeMusicEnableStop(void) {
+    ++g_musicEnableStopCount;
     return 1;
 }
 
@@ -513,6 +533,55 @@ extern "C" int zhud_options_panel_effects_init_from_options_smoke(void) {
     return swZeroForcedOk && swRangeOk && hwDirectOk ? 0 : 1;
 }
 
+extern "C" int zhud_options_panel_effects_sync_from_options_smoke(void) {
+    int swEffectsLevel = 0;
+    int hwEffectsLevel = 0;
+    int *const oldSwEffectsLevel = ZOPT_EFFECTS_LEVEL_SW;
+    int *const oldHwEffectsLevel = ZOPT_EFFECTS_LEVEL_HW;
+    const int oldHwMode = g_zOpt_HwMode;
+    const int oldConditionalEffectLevel = g_zEffect_ConditionalEffectLevel;
+
+    ZOPT_EFFECTS_LEVEL_SW = &swEffectsLevel;
+    ZOPT_EFFECTS_LEVEL_HW = &hwEffectsLevel;
+
+    HudUiOptionsPanel_Effects effects;
+    effects.Constructor();
+    effects.itemCount = 3;
+    effects.firstIndex = 0;
+    effects.visibleCount = 3;
+
+    g_zOpt_HwMode = 0;
+    effects.selectedIndex = 0;
+    effects.SyncFromOptions();
+    const bool swAdvanceOk =
+        effects.selectedIndex == 1 &&
+        swEffectsLevel == 1 &&
+        g_zEffect_ConditionalEffectLevel == 1;
+
+    effects.selectedIndex = 2;
+    effects.SyncFromOptions();
+    const bool swWrapOk =
+        effects.selectedIndex == 0 &&
+        swEffectsLevel == 0 &&
+        g_zEffect_ConditionalEffectLevel == 2;
+
+    g_zOpt_HwMode = 1;
+    effects.selectedIndex = 1;
+    effects.SyncFromOptions();
+    const bool hwAdvanceOk =
+        effects.selectedIndex == 2 &&
+        hwEffectsLevel == 2 &&
+        g_zEffect_ConditionalEffectLevel == 0;
+
+    effects.DestructorCore();
+    ZOPT_EFFECTS_LEVEL_SW = oldSwEffectsLevel;
+    ZOPT_EFFECTS_LEVEL_HW = oldHwEffectsLevel;
+    g_zOpt_HwMode = oldHwMode;
+    g_zEffect_ConditionalEffectLevel = oldConditionalEffectLevel;
+
+    return swAdvanceOk && swWrapOk && hwAdvanceOk ? 0 : 1;
+}
+
 extern "C" int zhud_options_panel_sound_active_init_from_options_smoke(void) {
     int muteSound = 0;
     int *const oldMuteSound = ZOPT_MUTE_SOUND;
@@ -531,6 +600,29 @@ extern "C" int zhud_options_panel_sound_active_init_from_options_smoke(void) {
     soundActive.checked = 9;
     soundActive.InitFromOptions();
     const bool mutedOk = soundActive.checked == 0;
+
+    soundActive.DestructorCore();
+    ZOPT_MUTE_SOUND = oldMuteSound;
+
+    return unmutedOk && mutedOk ? 0 : 1;
+}
+
+extern "C" int zhud_options_panel_sound_active_sync_from_options_smoke(void) {
+    int muteSound = 0;
+    int *const oldMuteSound = ZOPT_MUTE_SOUND;
+
+    ZOPT_MUTE_SOUND = &muteSound;
+
+    HudUiOptionsPanel_SoundActive soundActive;
+    soundActive.Constructor();
+    soundActive.modeOrEnabled = 1;
+
+    soundActive.checked = 0;
+    soundActive.SyncFromOptions();
+    const bool unmutedOk = soundActive.checked == 1 && muteSound == 0;
+
+    soundActive.SyncFromOptions();
+    const bool mutedOk = soundActive.checked == 0 && muteSound == 1;
 
     soundActive.DestructorCore();
     ZOPT_MUTE_SOUND = oldMuteSound;
@@ -671,6 +763,90 @@ extern "C" int zhud_options_panel_sound_volume_on_activate_smoke(void) {
     g_HudUi_InvalidateMask = oldInvalidateMask;
 
     return activated ? 0 : 1;
+}
+
+extern "C" int zhud_options_panel_music_enable_sync_from_options_smoke(void) {
+    int cdAudio = 1;
+    int *const oldCdAudio = ZOPT_SOUND_CDAUDIO;
+
+    ZOPT_SOUND_CDAUDIO = &cdAudio;
+
+    HudUiOptionsPanel_MusicEnable musicEnable;
+    musicEnable.Constructor();
+
+    musicEnable.checked = 0;
+    musicEnable.SyncFromOptions();
+    const bool enabledOk = musicEnable.checked == 1;
+
+    cdAudio = 0;
+    musicEnable.checked = 9;
+    musicEnable.SyncFromOptions();
+    const bool disabledOk = musicEnable.checked == 0;
+
+    musicEnable.DestructorCore();
+    ZOPT_SOUND_CDAUDIO = oldCdAudio;
+
+    return enabledOk && disabledOk ? 0 : 1;
+}
+
+extern "C" int zhud_options_panel_music_enable_on_activate_smoke(void) {
+    int cdAudio = -1;
+    int *const oldCdAudio = ZOPT_SOUND_CDAUDIO;
+    ZOPT_SOUND_CDAUDIO = &cdAudio;
+
+    OptionsPanelFunctionPatch playPatch = {0};
+    OptionsPanelFunctionPatch stopPatch = {0};
+    if (!PatchOptionsPanelFunctionJump(
+            (void *)(&zSndCd::PlayTrackWithMode),
+            (void *)(&FakeMusicEnablePlayTrackWithMode),
+            playPatch
+        )) {
+        ZOPT_SOUND_CDAUDIO = oldCdAudio;
+        return 1;
+    }
+
+    if (!PatchOptionsPanelFunctionJump(
+            (void *)(&zSndCd::Stop),
+            (void *)(&FakeMusicEnableStop),
+            stopPatch
+        )) {
+        RestoreOptionsPanelFunctionPatch(playPatch);
+        ZOPT_SOUND_CDAUDIO = oldCdAudio;
+        return 2;
+    }
+
+    HudUiOptionsPanel_MusicEnable musicEnable;
+    musicEnable.Constructor();
+    musicEnable.modeOrEnabled = 1;
+
+    g_musicEnablePlayTrackCount = 0;
+    g_musicEnablePlayTrack = 0;
+    g_musicEnablePlayMode = 0;
+    g_musicEnableStopCount = 0;
+
+    musicEnable.checked = 0;
+    musicEnable.OnActivate();
+    const bool enabledOk =
+        musicEnable.checked == 1 &&
+        cdAudio == 1 &&
+        g_musicEnablePlayTrackCount == 1 &&
+        g_musicEnablePlayTrack == 2 &&
+        g_musicEnablePlayMode == 5 &&
+        g_musicEnableStopCount == 0;
+
+    musicEnable.OnActivate();
+    const bool disabledOk =
+        musicEnable.checked == 0 &&
+        cdAudio == 0 &&
+        g_musicEnablePlayTrackCount == 1 &&
+        g_musicEnableStopCount == 1;
+
+    musicEnable.DestructorCore();
+    RestoreOptionsPanelFunctionPatch(stopPatch);
+    RestoreOptionsPanelFunctionPatch(playPatch);
+    ZOPT_SOUND_CDAUDIO = oldCdAudio;
+
+    return enabledOk && disabledOk ? 0 : 1;
 }
 
 extern "C" int zhud_options_panel_music_volume_sync_from_options_smoke(void) {

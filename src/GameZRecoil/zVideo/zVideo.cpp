@@ -158,14 +158,59 @@ zVidPaletteRemapRecipe *g_zVid_PaletteRemapRecipes = 0;
 int g_zVideo_RendererType = 0;
 int g_zVideo_ActiveRendererPath = 0;
 int g_zVideo_FrameTick = 0;
+/**
+ * Reimplements data 0x5398fc: g_zVideo_pActiveViewContext.
+ * Render-frame active view owner data. BN types this 4-byte .data slot as a
+ * zVideo_ViewContext pointer, zero-initialized, and separates its xrefs from
+ * the projection/frustum context cache at 0x576214.
+ * Purpose: store the camera data record used by the software render frame.
+ */
 zClass_CameraDataPartial *g_zVideo_pActiveViewContext = 0;
+/**
+ * Reimplements data 0x576214: g_zVideo_pActiveProjectionViewContext.
+ * Projection/frustum active view owner data. BN types this separate 4-byte
+ * .data slot as a zVideo_ViewContext pointer, zero-initialized; SetActiveViewContext
+ * writes it before projection, model, and frustum users read it.
+ * Purpose: cache the camera data record used by projection, clip, and frustum state.
+ */
+zClass_CameraDataPartial *g_zVideo_pActiveProjectionViewContext = 0;
+/**
+ * Reimplements data 0x5398f8: g_zVideo_ActiveViewVariantTag.
+ * Render-frame variant owner data. BN xrefs show zVideo_sw::RenderFrame and
+ * zClass_Camera::RenderScene copying the active view variant tag into this
+ * 4-byte .data zTag4 record after view selection; retail initializes it to zero.
+ * Purpose: cache the currently selected variant tag for render traversal.
+ */
 zTag4Partial g_zVideo_ActiveViewVariantTag = {0};
+/**
+ * Reimplements data 0x57623c: g_zVideo_ProjectClipLeft.
+ * BN places this zero-initialized float in the project-clip quartet at
+ * 0x57623c..0x576248; SetActiveViewContext writes it for projection users.
+ * Purpose: cache the active view's left project-clip edge for projection users.
+ */
 float g_zVideo_ProjectClipLeft = 0.0f;
+/**
+ * Reimplements data 0x576240: g_zVideo_ProjectClipTop.
+ * BN places this zero-initialized float in the project-clip quartet at
+ * 0x57623c..0x576248; SetActiveViewContext writes it for projection users.
+ * Purpose: cache the active view's top project-clip edge for projection users.
+ */
 float g_zVideo_ProjectClipTop = 0.0f;
+/**
+ * Reimplements data 0x576244: g_zVideo_ProjectClipRight.
+ * BN places this zero-initialized float in the project-clip quartet at
+ * 0x57623c..0x576248; SetActiveViewContext writes it for projection users.
+ * Purpose: cache the active view's right project-clip edge for projection users.
+ */
 float g_zVideo_ProjectClipRight = 0.0f;
+/**
+ * Reimplements data 0x576248: g_zVideo_ProjectClipBottom.
+ * BN places this zero-initialized float in the project-clip quartet at
+ * 0x57623c..0x576248; SetActiveViewContext writes it for projection users.
+ * Purpose: cache the active view's bottom project-clip edge for projection users.
+ */
 float g_zVideo_ProjectClipBottom = 0.0f;
 int gVideo_resolutionMenuValid = 0;
-unsigned char g_zVideo_PaletteBrightnessLevel = 0;
 unsigned int g_zVideo_ClearColorPacked16 = 0;
 int g_zVideo_ClearScreenBufferEnabled = 0;
 // BN data owner 0x56b564 is a zero-initialized int32 touched only by the
@@ -206,7 +251,23 @@ int g_zVideo_PendingDitherEnable = 0;
 float g_zVideo_InverseZTolerancePending = 0.0f;
 int g_zVideo_D3DAppendFanCloseVertexPending = 0;
 int g_zVideo_PendingWireframeState = 0;
+/**
+ * Reimplements data 0x632148: g_zVideo_D3DSceneDepth.
+ * BN types this 4-byte .data slot as an int32, zero-initialized, and confines
+ * its xrefs to zVideoD3D::SceneEnter/SceneLeave nesting.
+ * Purpose: track nested Direct3D scene entry/leave ownership.
+ */
 int g_zVideo_D3DSceneDepth = 0;
+/**
+ * Reimplements data 0x632f9c: g_zVid_AcceptedHardwareRendererCount.
+ * Reimplements data 0x632f98: g_zVideo_NumAcceptedDirectDrawDevices.
+ * Reimplements data 0x56bc98: g_zVideo_DirectDrawEnumOrdinal.
+ * DirectDraw/D3D enumeration counters. BN ties the accepted DirectDraw count
+ * at 0x632f98 to the public zVid thunk at 0x4a7480, the accepted renderer
+ * count at 0x632f9c to the D3D callback/accessor pair, and the enumeration
+ * ordinal at 0x56bc98 only to DirectDrawEnumCallback logging.
+ * Purpose: cache startup DirectDraw and Direct3D enumeration totals.
+ */
 int g_zVid_AcceptedHardwareRendererCount = 0;
 int g_zVideo_NumAcceptedDirectDrawDevices = 0;
 int g_zVideo_DirectDrawEnumOrdinal = 0;
@@ -223,9 +284,16 @@ unsigned short **g_zVid_PaletteRemapVariantTables = 0;
 int *ZOPT_VIDEO_MODE = 0;
 int *ZOPT_VIDEO_ACCELERATION = 0;
 int *ZOPT_HW_API = 0;
+/**
+ * Reimplements data 0x6359f8: g_zVideo_DDrawCapsHal.
+ * Reimplements data 0x635b74: g_zVideo_DDrawCapsHel.
+ * DirectDraw enumeration capability scratch buffers. EnumDirectDrawDeviceCallback
+ * clears these zero-initialized 0x17c-byte provider records, sets dwSize, and
+ * passes them to IDirectDraw2::GetCaps before accepting a hardware API record.
+ * Purpose: hold HAL and HEL DirectDraw capability snapshots during enumeration.
+ */
 DDCAPS g_zVideo_DDrawCapsHal = {0};
 DDCAPS g_zVideo_DDrawCapsHel = {0};
-zVideo_TextureRecordPartial *g_zImage_DefaultTextureRecord = 0;
 /*
  * zVideo hardware default texture owner: BN 0x4a75f0 passes this separate
  * 8x8 four-color checker image directly to the active texture-record callback
@@ -263,8 +331,10 @@ zVidImagePartial g_zVideo_DefaultTextureImage = {
     0
 };
 char g_zVideo_PalettePathBuffer[0x100] = {0};
+int g_zVideo_PaletteBrightnessLevel = 0;
 PALETTEENTRY g_zVideo_PaletteFileEntries[0x100] = {0};
 PALETTEENTRY g_zVideo_SystemPaletteEntries[0x100] = {0};
+RECOIL_STATIC_ASSERT(sizeof(g_zVideo_PaletteBrightnessLevel) == 4);
 
 /*
  * Renderer dispatch owner: BN 0x4a77a0 initializes this backend function
@@ -312,14 +382,30 @@ zVideo_SubmitPolyRenderClassProc g_zVideo_pfnSubmitPolyRenderClass = 0;
 zVideo_SubmitPolygonProc g_zVideo_pfnSubmitPolygon = 0;
 zVideo_SubmitPolygonProc g_zVideo_pfnSubmitPolygonLit = 0;
 zVideo_DrawPointColor16Proc g_zVideo_pfnDrawPointColor16 = 0;
+/**
+ * Reimplements data 0x56bc6c: g_zVideo_pfnFlushSortedPolys.
+ * Purpose: dispatch the active renderer's sorted polygon flush routine.
+ */
 zVideo_FlushProc g_zVideo_pfnFlushSortedPolys = 0;
+/**
+ * Reimplements data 0x56bc70: g_zVideo_pfnFlushOverwritePolys.
+ * Purpose: dispatch the active renderer's overwrite polygon flush routine.
+ */
 zVideo_FlushProc g_zVideo_pfnFlushOverwritePolys = 0;
+/**
+ * Reimplements data 0x56bc74: g_zVideo_pfnFlushQuadBatch.
+ * Purpose: dispatch the active renderer's queued quad-batch flush routine.
+ */
 zVideo_FlushProc g_zVideo_pfnFlushQuadBatch = 0;
 
-/*
- * Cached DirectDraw hardware-device owner: BN memory-query callers 0x4a9950
- * and 0x4a9a30 index four 0x6ec-byte records and the selected-device pointer
- * populated by the DirectDraw enumeration path.
+/**
+ * Reimplements data 0x633e44: g_zVideo_HwApiDeviceTable.
+ * Reimplements data 0x633e40: g_zVideo_pSelectedHwApiDeviceRecord.
+ * Cached DirectDraw hardware-device owner: BN models four 0x6ec-byte records
+ * at 0x633e44 and a selected-record pointer at 0x633e40. The DirectDraw
+ * enumeration callbacks populate the records; memory-query, renderer-selection,
+ * and DirectDraw surface paths consume the cached record fields.
+ * Purpose: cache accepted DirectDraw hardware API records and the active record.
  */
 zVidHwApiDeviceRecordPartial g_zVideo_HwApiDeviceTable[4] = {0};
 zVidHwApiDeviceRecordPartial *g_zVideo_pSelectedHwApiDeviceRecord = 0;
@@ -487,6 +573,14 @@ RECOIL_STATIC_ASSERT(
 RECOIL_STATIC_ASSERT(sizeof(zVideoFxPass3Config) == 0x1f0);
 #endif
 
+/**
+ * Reimplements data 0x56bd58: g_zVideo_FxPass3ConfigLocal.
+ * Data owner evidence: retail 0x56bd58 is the authored zero-initialized
+ * zVideoFxPass3Config singleton, complete size 0x1f0. Sibling pass-3 scratch,
+ * clip, and surface globals are separate zVideo data owners.
+ * Purpose: store the local pass-3 UI config used by the zVideo namespace
+ * wrapper functions.
+ */
 zVideoFxPass3Config g_zVideo_FxPass3ConfigLocal;
 zVidRect32 g_zVideo_PrimarySurfaceRectScratch = {0};
 // BN models g_zVideo_DisplayModeBpp as the zero-initialized int32 at 0x632150.
@@ -494,7 +588,9 @@ int g_zVideo_DisplayModeBpp = 0;
 int g_zVid_NoiseByteTableSize = 0;
 unsigned char *g_zVid_NoiseByteTable = 0;
 // BN's zVid::Noise_InitBuffers BSS writes order this scratch pointer before
-// the five active FX-surface fields it resets.
+// the five active FX-surface fields it resets. The active FX surface descriptor
+// is a typed BSS group: pixel pointer, width, height, pitch bytes, and derived
+// 16-bit pitch.
 unsigned short *g_zVideo_FxPass3_ScratchPixels16 = 0;
 unsigned short *g_zVideo_FxSurfacePixels16 = 0;
 int g_zVideo_FxSurfaceWidth = 0;
@@ -613,12 +709,15 @@ void __fastcall zVideo_SetPendingFogTargetColorFromRgb01(
 /**
  * Reimplements 0x479ce0: zVideo_SetActiveViewContext.
  * Original source path: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
+ * Data evidence: BN stores the supplied camera context into the projection
+ * context cache at 0x576214, updates gClipRect_Primary at 0x576218, and writes
+ * the project clip floats at 0x57623c..0x576248 before zMath projection setup.
  * Purpose: provide the recovered zVideo_SetActiveViewContext behavior.
  */
 void __fastcall zVideo_SetActiveViewContext(
     zClass_CameraDataPartial *viewContext
 ) {
-    g_zVideo_pActiveViewContext = viewContext;
+    g_zVideo_pActiveProjectionViewContext = viewContext;
 
     if (viewContext->nearClip < 1.0f) {
         viewContext->nearClip = 1.0f;
@@ -627,7 +726,7 @@ void __fastcall zVideo_SetActiveViewContext(
     gClipRect_Primary.zMin = viewContext->nearClip + viewContext->nearClip;
     if (g_zVideo_ActiveRendererPath == 0) {
         zVideo_dd3d::SetQuadBatchDepthAndRhw(1.0f / gClipRect_Primary.zMin);
-        viewContext = g_zVideo_pActiveViewContext;
+        viewContext = g_zVideo_pActiveProjectionViewContext;
     }
 
     gClipRect_Primary.zMax = viewContext->farClip;
@@ -643,7 +742,7 @@ void __fastcall zVideo_SetActiveViewContext(
         windowY = 0;
     }
 
-    viewContext = g_zVideo_pActiveViewContext;
+    viewContext = g_zVideo_pActiveProjectionViewContext;
     int width;
     int height;
     if (zClass_Window::gwWindowGetResolution(
@@ -697,7 +796,7 @@ void __fastcall zVideo_SetActiveViewContext(
     g_zVideo_ProjectClipRight = right - 0.00100000005f;
     g_zVideo_ProjectClipBottom = viewportBottom - 0.00100000005f;
 
-    viewContext = g_zVideo_pActiveViewContext;
+    viewContext = g_zVideo_pActiveProjectionViewContext;
     zMath_Setup_Projection(
         viewportOriginX,
         viewportOriginY,
@@ -732,6 +831,10 @@ void __fastcall zVideo_SetActiveViewContext(
 /**
  * Reimplements 0x44d600: zVideo_sw::RenderFrame.
  * Original source path: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
+ * Data evidence: BN writes the render-frame active view context at 0x5398fc,
+ * updates the active variant tag at 0x5398f8, dispatches the three renderer
+ * flush callbacks at 0x56bc6c..0x56bc74, and brackets rendering through the
+ * scene-depth owner at 0x632148.
  * Purpose: provide the recovered zVideo_sw_RenderFrame behavior.
  */
 int __fastcall zVideo_sw_RenderFrame(
@@ -1013,9 +1116,9 @@ static int zVideo_TestSpherePlane(
  * Original file: GameZRecoil/zModel/zModel_Display.cpp.
  * Purpose: reject or clip a sphere against the active view frustum planes.
  *
- * Evidence: BN reads the active view-context global, clears the incoming clip
- * mask, tests near and far centers separately, and tests side planes against
- * camera-position deltas while accumulating clip bits.
+ * Evidence: BN reads the projection view-context global at 0x576214, clears
+ * the incoming clip mask, tests near and far centers separately, and tests
+ * side planes against camera-position deltas while accumulating clip bits.
  */
 int __fastcall zVideo_FrustumTestSphereClipMask(
     zVec3 *sphereCenter,
@@ -1025,7 +1128,7 @@ int __fastcall zVideo_FrustumTestSphereClipMask(
     const int oldMask = *clipMaskInOut;
     *clipMaskInOut = 0;
 
-    zClass_CameraDataPartial *viewContext = g_zVideo_pActiveViewContext;
+    zClass_CameraDataPartial *viewContext = g_zVideo_pActiveProjectionViewContext;
     zVec3 delta;
     if ((oldMask & 0x10) != 0) {
         delta = zVideo_SubtractVec3(
@@ -1046,7 +1149,7 @@ int __fastcall zVideo_FrustumTestSphereClipMask(
         }
     }
 
-    viewContext = g_zVideo_pActiveViewContext;
+    viewContext = g_zVideo_pActiveProjectionViewContext;
     delta = zVideo_SubtractVec3(
         sphereCenter,
         &viewContext->cameraPos
@@ -1105,7 +1208,7 @@ int __fastcall zVideo_FrustumTestSphereClipMask(
     }
 
     if ((oldMask & 0x20) != 0) {
-        viewContext = g_zVideo_pActiveViewContext;
+        viewContext = g_zVideo_pActiveProjectionViewContext;
         delta = zVideo_SubtractVec3(
             sphereCenter,
             &viewContext->farClipCenter
@@ -1582,10 +1685,11 @@ int GetHwApiOption() {
     return *ZOPT_HW_API;
 }
 
-// Reimplements 0x4a7480: zVid::GetAcceptedDirectDrawDeviceCount
 /**
  * Reimplements 0x4a7480: zVid::GetAcceptedDirectDrawDeviceCount.
- * Purpose: provide the recovered zVid::GetAcceptedDirectDrawDeviceCount behavior.
+ * Original file evidence: BN comment identifies this as the public zVid thunk
+ * in GameZRecoil/zVideo_dd.cpp, tail-jumping to the zvid_dd.c cached accessor.
+ * Purpose: return the accepted DirectDraw hardware API device count.
  */
 int GetAcceptedDirectDrawDeviceCount() {
     return zVideo_dd::GetAcceptedDirectDrawDeviceCountCached();
@@ -2006,10 +2110,14 @@ void zVideoFxPass3Element::Draw() {
     clipRectOrNull = parentConfig->inputRectsOrNull[0];
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
 /**
- * Original-source helper evidence: source-faithful helper recovered from address-backed callers in this source file.
- * Purpose: provide the recovered zVideoFxPass3Element::ApplyPass3 helper behavior for zVideo callers.
+ * Original-source helper evidence: no standalone retail address is assigned to
+ * the base virtual implementation in this owner. Draw at 0x4bdb60 dispatches
+ * the pass callback virtually, and the address-backed overrides are
+ * zVideoFxPass3RootElement::ApplyPass3 at 0x4bdbc0 and
+ * zVideoFxPass3Slot::ApplyPass3 at 0x4bdc40.
+ * Purpose: preserve the empty base pass-3 callback for element types that do
+ * not override the pass operation.
  */
 void zVideoFxPass3Element::ApplyPass3() {}
 
@@ -2041,6 +2149,7 @@ zVideoFxPass3Slot * zVideoFxPass3Slot::Constructor() {
         0
     );
     clipRectOrNull = 0;
+    new (this) zVideoFxPass3Slot;
     return this;
 }
 
@@ -2109,6 +2218,7 @@ zVideoFxPass3Config * zVideoFxPass3Config::Constructor() {
         0
     );
     rootElement.clipRectOrNull = 0;
+    new (&rootElement) zVideoFxPass3RootElement;
 
     int slotIndex;
     for (slotIndex = 0; slotIndex < 5; ++slotIndex) {
@@ -2142,6 +2252,11 @@ zVideoFxPass3Config * zVideoFxPass3Config::Constructor() {
  * Purpose: provide the recovered zVideoFxPass3Config::Destructor behavior.
  */
 void zVideoFxPass3Config::Destructor() {
+    int slotIndex;
+    for (slotIndex = 4; slotIndex >= 0; --slotIndex) {
+        slots[slotIndex].~zVideoFxPass3Slot();
+    }
+    rootElement.~zVideoFxPass3RootElement();
     HudUiContainer::DestructorCore();
 }
 
@@ -2833,7 +2948,8 @@ int __fastcall ApplyBrightnessToPaletteEntries(
         sizeof(adjustedEntries)
     );
 
-    const int brightnessDelta = ((int)(g_zVideo_PaletteBrightnessLevel) << 3) - 32;
+    const int brightnessDelta =
+        ((int)((unsigned char)g_zVideo_PaletteBrightnessLevel) << 3) - 32;
     if (brightnessDelta > 0) {
         for (int index = 0; index < 256; ++index) {
             const int red = adjustedEntries[index].peRed + brightnessDelta;
@@ -3881,12 +3997,15 @@ void zVideoFxPass3Config::QueuePrimitiveRaw(
 
 namespace zVideo {
 
-// Reimplements 0x4bed30: zVideoFxPass3Config::UpdateLocal
+// Reimplements 0x4bed30: zVideo::zVideoFxPass3Config_UpdateLocal
 // (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
 /**
- * Reimplements 0x4bed30: zVideoFxPass3Config::UpdateLocal.
+ * Reimplements 0x4bed30: zVideo::zVideoFxPass3Config_UpdateLocal.
  * Original source path: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
- * Purpose: provide the recovered zVideoFxPass3Config::UpdateLocal behavior.
+ * Source-shape evidence: the VC5 coverage symbol is the zVideo namespace
+ * helper `?zVideoFxPass3Config_UpdateLocal@zVideo@@YIXPAUzVideoFxPass3Config@@M@Z`,
+ * with the config object passed explicitly rather than as a C++ member method.
+ * Purpose: update the local pass-3 config container and reset its slot queue.
  */
 void __fastcall zVideoFxPass3Config_UpdateLocal(
     zVideoFxPass3Config *config,
@@ -3896,11 +4015,14 @@ void __fastcall zVideoFxPass3Config_UpdateLocal(
     config->slotWriteIndex = 0;
 }
 
-// Reimplements 0x4bed50: zVideoFxPass3Config::SetPrimaryElementParamsLocal
+// Reimplements 0x4bed50: zVideo::zVideoFxPass3Config_SetPrimaryElementParamsLocal
 /**
- * Reimplements 0x4bed50: zVideoFxPass3Config::SetPrimaryElementParamsLocal.
+ * Reimplements 0x4bed50: zVideo::zVideoFxPass3Config_SetPrimaryElementParamsLocal.
  * Original source path: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
- * Purpose: provide the recovered zVideoFxPass3Config::SetPrimaryElementParamsLocal behavior.
+ * Source-shape evidence: sibling local-config helpers in this cluster use
+ * zVideo namespace `__fastcall` functions with an explicit config pointer;
+ * the public zVideo wrapper at 0x4beee0 supplies the singleton.
+ * Purpose: arm the root pass-3 element with the primary overlay parameters.
  */
 void __fastcall zVideoFxPass3Config_SetPrimaryElementParamsLocal(
     zVideoFxPass3Config *config,
@@ -3930,10 +4052,13 @@ void __fastcall FxPass3_SetPrimaryElementParamsLocal(
     );
 }
 
-// Reimplements 0x4bed90: zVideoFxPass3Config::QueueElementLocal
+// Reimplements 0x4bed90: zVideo::zVideoFxPass3Config_QueueElementLocal
 /**
- * Reimplements 0x4bed90: zVideoFxPass3Config::QueueElementLocal.
- * Purpose: provide the recovered zVideoFxPass3Config::QueueElementLocal behavior.
+ * Reimplements 0x4bed90: zVideo::zVideoFxPass3Config_QueueElementLocal.
+ * Source-shape evidence: this is the same local-config helper family as
+ * 0x4bed30 and keeps the config as an explicit namespace-function parameter;
+ * the public zVideo wrapper at 0x4bef10 supplies the singleton.
+ * Purpose: queue one local pass-3 slot payload for the next config update.
  */
 void __fastcall zVideoFxPass3Config_QueueElementLocal(
     zVideoFxPass3Config *config,
@@ -4706,10 +4831,13 @@ int ShutdownFrameScratchBuffers() {
 } // namespace zVid
 
 namespace zVideo_FxSurface {
-// Source-faithful helper recovered from address-backed callers in this source file.
+// BN shows these as namespace functions in zVideo.cpp with no constructor,
+// vtable, or owned object layout evidence. Model this slice as a source-file
+// namespace cluster over the typed FX-surface globals above.
 /**
- * Original-source helper evidence: source-faithful helper recovered from address-backed callers in this source file.
- * Purpose: provide the recovered TruncateFloat helper behavior for zVideo callers.
+ * Original-source helper evidence: no standalone retail function; repeated
+ * float-to-int truncation in 0x48ed60 uses the VC5 _ftol lowering pattern.
+ * Purpose: truncate FX line-clipping intermediates toward zero.
  */
 static int TruncateFloat(
     float value
@@ -4717,10 +4845,10 @@ static int TruncateFloat(
     return (int)(value);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
 /**
- * Original-source helper evidence: source-faithful helper recovered from address-backed callers in this source file.
- * Purpose: provide the recovered FxLineOutCode helper behavior for zVideo callers.
+ * Original-source helper evidence: no standalone retail function; 0x48ed60
+ * repeats the same Cohen-Sutherland outcode tests for both line endpoints.
+ * Purpose: classify an FX line endpoint against the clipped rectangle.
  */
 static int FxLineOutCode(
     int x,
@@ -4746,10 +4874,10 @@ static int FxLineOutCode(
     return outCode;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
 /**
- * Original-source helper evidence: source-faithful helper recovered from address-backed callers in this source file.
- * Purpose: provide the recovered BlendFxSurfacePixel565 helper behavior for zVideo callers.
+ * Original-source helper evidence: no standalone retail function; 0x48ed60
+ * inlines this RGB565 alpha blend in both major-axis line loops.
+ * Purpose: alpha-blend one RGB565 FX-surface pixel.
  */
 static unsigned short BlendFxSurfacePixel565(
     unsigned short dst,
@@ -4765,10 +4893,10 @@ static unsigned short BlendFxSurfacePixel565(
     return (unsigned short)(redApplied + (greenDelta & 0xffe0) + blueDelta);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
 /**
- * Original-source helper evidence: source-faithful helper recovered from address-backed callers in this source file.
- * Purpose: provide the recovered BlendFxSurfacePixel555 helper behavior for zVideo callers.
+ * Original-source helper evidence: no standalone retail function; 0x48ed60
+ * inlines this RGB555 alpha blend in both major-axis line loops.
+ * Purpose: alpha-blend one RGB555 FX-surface pixel.
  */
 static unsigned short BlendFxSurfacePixel555(
     unsigned short dst,
@@ -4783,10 +4911,11 @@ static unsigned short BlendFxSurfacePixel555(
     return (unsigned short)(dstValue + (redDelta & 0xfc00) + (greenDelta & 0xffe0) + blueDelta);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
 /**
- * Original-source helper evidence: source-faithful helper recovered from address-backed callers in this source file.
- * Purpose: provide the recovered DrawFxSurfaceSpanPixel helper behavior for zVideo callers.
+ * Original-source helper evidence: no standalone retail function; 0x48ed60
+ * inlines the same RGB555/RGB565 threshold and solid-write branches in both
+ * major-axis line loops.
+ * Purpose: draw one alpha-controlled span pixel for an FX line.
  */
 static void DrawFxSurfaceSpanPixel(
     unsigned short *pixel,
@@ -5274,10 +5403,15 @@ zVidImagePartial *Create() {
     return image;
 }
 
-// Reimplements 0x46ecc0: zVid_Image::Destroy
 /**
  * Reimplements 0x46ecc0: zVid_Image::Destroy.
- * Purpose: provide the recovered zVid_Image::Destroy behavior.
+ * Original file: GameZRecoil/zImage/zimg_texture.cpp.
+ * Purpose: release an image object's surface-dependent state, owned buffers,
+ * and allocation, returning zero for both null and non-null images.
+ *
+ * Evidence: BN tests the image pointer, calls the current-device surface
+ * provider only when image->surface is non-null, then releases owned buffers
+ * and frees the image allocation before returning 0.
  */
 int __fastcall Destroy(
     zVidImagePartial *image
@@ -5300,7 +5434,11 @@ int __fastcall Destroy(
 
 /**
  * Reimplements 0x46d5a0: zVid_Image::ReleaseIfNotDefault.
+ * Original file: GameZRecoil/zImage/zimg_texture.cpp.
  * Purpose: destroy dynamically allocated images while preserving the initialized default image singleton.
+ *
+ * Evidence: BN compares the incoming image against g_zImage_DefaultImage,
+ * calls zVid_Image::Destroy only for non-default images, and returns 0.
  * The VC5-era throw() declaration is retained because callers such as
  * HudUiBackground::~HudUiBackground use it to match retail EH cleanup state numbering.
  */
@@ -6704,10 +6842,16 @@ void FreePackEntryRecords(
 } // namespace zVid_TexturePack
 
 namespace zImage {
-// Reimplements 0x46d730: zImage::ShutdownTextureDirectoryRuntime
 /**
  * Reimplements 0x46d730: zImage::ShutdownTextureDirectoryRuntime.
- * Purpose: provide the recovered zImage::ShutdownTextureDirectoryRuntime behavior.
+ * Original file: D:\Proj\GameZRecoil\zImage\zimg_texture.cpp.
+ * Purpose: close open built-in texture-pack file handles and return the
+ * current built-in texture-pack count.
+ *
+ * Evidence: BN reloads g_zVid_BuiltinTexturePackCount after each iteration,
+ * walks g_zVid_BuiltinTexturePacks using the zVidTexturePackEntry stride,
+ * calls fclose for non-null fileHandle values, clears each closed handle, and
+ * returns the last reloaded count.
  */
 int ShutdownTextureDirectoryRuntime() {
     int count = g_zVid_BuiltinTexturePackCount;
@@ -6764,10 +6908,16 @@ void Shutdown() {
 } // namespace zVid_TexturePack
 
 namespace zVid_TexDir {
-// Reimplements 0x46d5d0: zVid_TexDir::Shutdown
 /**
  * Reimplements 0x46d5d0: zVid_TexDir::Shutdown.
- * Purpose: provide the recovered zVid_TexDir::Shutdown behavior.
+ * Original file: GameZRecoil/zVideo/zVideo.cpp.
+ * Purpose: shut down texture-directory entries, palette remap storage, and
+ * texture-pack state.
+ *
+ * Evidence: BN walks g_zImage_TexDirEntries as 0x24-byte records, releases
+ * only loadState 1 image/texture pairs, clears loadState 1 and 2 entries,
+ * then unconditionally calls the active upload-surface release callback before
+ * freeing palette remap tables, recipes, and both texture-pack banks.
  */
 int Shutdown() {
     for (int i = 0; i < g_zImage_TexDirEntryCount; ++i) {
@@ -6778,7 +6928,7 @@ int Shutdown() {
                 entry.image = 0;
             }
 
-            if (entry.texture != 0 && g_zVideo_pfnTextureRecordDestroy != 0) {
+            if (entry.texture != 0) {
                 g_zVideo_pfnTextureRecordDestroy(entry.texture);
                 entry.texture = 0;
             }
@@ -6791,23 +6941,25 @@ int Shutdown() {
 
     g_zImage_TexDirEntryCount = 0;
 
-    if (g_zVideo_pfnTextureRecordReleaseAllUploadSurfaces != 0) {
-        g_zVideo_pfnTextureRecordReleaseAllUploadSurfaces();
+    g_zVideo_pfnTextureRecordReleaseAllUploadSurfaces();
+
+    for (int tableIndex = 0;
+         tableIndex < g_zVid_PaletteRemapVariantTableCount;
+         ++tableIndex) {
+        free(g_zVid_PaletteRemapVariantTables[tableIndex]);
+        g_zVid_PaletteRemapVariantTables[tableIndex] = 0;
     }
 
-    for (int i_2693 = 0; i_2693 < g_zVid_PaletteRemapVariantTableCount; ++i_2693) {
-        free(g_zVid_PaletteRemapVariantTables[i_2693]);
-        g_zVid_PaletteRemapVariantTables[i_2693] = 0;
-    }
-
+    unsigned short **variantTables = g_zVid_PaletteRemapVariantTables;
     g_zVid_PaletteRemapVariantTableCount = 0;
-    if (g_zVid_PaletteRemapVariantTables != 0) {
-        free(g_zVid_PaletteRemapVariantTables);
+    if (variantTables != 0) {
+        free(variantTables);
         g_zVid_PaletteRemapVariantTables = 0;
     }
 
-    if (g_zVid_PaletteRemapRecipes != 0) {
-        free(g_zVid_PaletteRemapRecipes);
+    zVidPaletteRemapRecipe *recipes = g_zVid_PaletteRemapRecipes;
+    if (recipes != 0) {
+        free(recipes);
         g_zVid_PaletteRemapRecipes = 0;
     }
     g_zVid_PaletteRemapRecipeCount = 0;
@@ -10033,6 +10185,9 @@ namespace zVideoD3D {
 // Reimplements 0x4a74d0: zVideoD3D::SceneEnter
 /**
  * Reimplements 0x4a74d0: zVideoD3D::SceneEnter.
+ * Data evidence: BN reads g_zVideo_D3DSceneDepth at 0x632148, calls
+ * zVideo_dd3d::BeginSceneAndFlushPendingRenderStates only when depth is not
+ * positive, then increments the same zero-initialized int32.
  * Purpose: provide the recovered zVideoD3D::SceneEnter behavior.
  */
 int SceneEnter() {
@@ -10047,6 +10202,9 @@ int SceneEnter() {
 // Reimplements 0x4a74f0: zVideoD3D::SceneLeave
 /**
  * Reimplements 0x4a74f0: zVideoD3D::SceneLeave.
+ * Data evidence: BN reads g_zVideo_D3DSceneDepth at 0x632148, calls
+ * zVideo_dd3d::EndScene only for the final active scene, decrements the stored
+ * depth, and returns zero for all depth states.
  * Purpose: provide the recovered zVideoD3D::SceneLeave behavior.
  */
 int SceneLeave() {
@@ -10065,10 +10223,13 @@ int SceneLeave() {
 } // namespace zVideoD3D
 
 namespace zVideo_dd {
-// Reimplements 0x4a9900: zVideo_dd::GetAcceptedDirectDrawDeviceCountCached
 /**
  * Reimplements 0x4a9900: zVideo_dd::GetAcceptedDirectDrawDeviceCountCached.
- * Purpose: provide the recovered zVideo_dd::GetAcceptedDirectDrawDeviceCountCached behavior.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
+ * Purpose: return the cached number of accepted DirectDraw hardware API records.
+ *
+ * Evidence: BN emits a single load from g_zVideo_NumAcceptedDirectDrawDevices
+ * at 0x632f98; EnumDirectDrawDeviceCallback is the only writer.
  */
 int GetAcceptedDirectDrawDeviceCountCached() {
     return g_zVideo_NumAcceptedDirectDrawDevices;

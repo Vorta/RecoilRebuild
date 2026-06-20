@@ -577,6 +577,9 @@ void DestroyHudCmdDialogDescriptionPanelForSmoke(
 
 int g_optionsDialogLoadCalls;
 bool g_optionsDialogLoadArgsOk;
+int g_optionsBackButtonSetHudTypeCount;
+int g_optionsBackButtonSetHudTypeValue;
+int g_optionsBackButtonResetInputCount;
 int g_creditsPanelLoadCalls;
 bool g_creditsPanelLoadArgsOk;
 int g_cmdDialogLoadCalls;
@@ -810,6 +813,23 @@ zReader::Node * OptionsDialogLoadProbe::LoadFromZrd(
         ) == 0 &&
         capturePrimary == 0;
     return nullptr;
+}
+
+int __fastcall FakeOptionsBackButtonSetHudTypeForCurrentHwMode(
+    int hudType
+) {
+    ++g_optionsBackButtonSetHudTypeCount;
+    g_optionsBackButtonSetHudTypeValue = hudType;
+    if (g_zOpt_HwMode != 0) {
+        *ZOPT_HUD_TYPE_HW = hudType;
+    } else {
+        *ZOPT_HUD_TYPE_SW = hudType;
+    }
+    return ZOPT_HUD_TYPE_STANDARD;
+}
+
+void FakeOptionsBackButtonResetAllTransitionState() {
+    ++g_optionsBackButtonResetInputCount;
 }
 
 void *HudUiBackgroundLoadFromZrdAddress() {
@@ -1731,28 +1751,32 @@ extern "C" int hud_ui_mp_exit_dialog_table_cluster_smoke(void) {
         RestoreFunctionPatch(updatePatches[index]);
     }
 
-    CodeFunctionPatch unloadPatches[3] = {};
+    CodeFunctionPatch unloadPatches[4] = {};
     installed =
+        PatchFunctionJump(
+            MethodAddress(&HudUiMpExitDialog::Update),
+            MethodAddress(&MpExitClusterPatchOps::MpDialogUpdate),
+            unloadPatches[0]
+        ) &&
         PatchFunctionJump(
             reinterpret_cast<void *>(&HudScoreboard::SetScaleAndRebuild),
             reinterpret_cast<void *>(&FakeMpExitClusterSetScaleAndRebuild),
-            unloadPatches[0]
+            unloadPatches[1]
         ) &&
         PatchFunctionJump(
             MethodAddress(&HudUiTextStack4::Clear),
             MethodAddress(&MpExitClusterPatchOps::TextStackClear),
-            unloadPatches[1]
+            unloadPatches[2]
         ) &&
         PatchFunctionJump(
             reinterpret_cast<void *>(&zVid_Image::ReleaseIfNotDefault),
             reinterpret_cast<void *>(&FakeMpExitClusterReleaseIfNotDefault),
-            unloadPatches[2]
+            unloadPatches[3]
         );
 
     HudUiMpExitDialog unloadDialog{};
-    void *unloadDispatchTable[4] = {};
+    void *unloadDispatchTable[3] = {};
     unloadDispatchTable[1] = MethodAddress(&MpExitClusterPatchOps::BackgroundSetEnabled);
-    unloadDispatchTable[3] = MethodAddress(&MpExitClusterPatchOps::MpDialogUpdate);
     *reinterpret_cast<void **>(&unloadDialog) = unloadDispatchTable;
     zVidImagePartial unloadImage{};
     unloadDialog.m_capturedBackgroundImage = &unloadImage;
@@ -1772,8 +1796,7 @@ extern "C" int hud_ui_mp_exit_dialog_table_cluster_smoke(void) {
         g_mpExitClusterClearCount == 1 &&
         g_mpExitClusterReleaseImage == &unloadImage &&
         unloadDialog.m_capturedBackgroundImage == nullptr;
-
-    for (int index = 2; index >= 0; --index) {
+    for (int index = 3; index >= 0; --index) {
         RestoreFunctionPatch(unloadPatches[index]);
     }
 
@@ -1848,7 +1871,23 @@ extern "C" int hud_ui_mp_exit_dialog_table_cluster_smoke(void) {
 
     g_HudUiTopMessageStack = oldTopStack;
 
-    return updateFadeOk && updateMessageOk && unloadOk && activateOk && destructorOk ? 0 : 1;
+    if (!updateFadeOk) {
+        return 10;
+    }
+    if (!updateMessageOk) {
+        return 11;
+    }
+    if (!unloadOk) {
+        return 12;
+    }
+    if (!activateOk) {
+        return 13;
+    }
+    if (!destructorOk) {
+        return 14;
+    }
+
+    return 0;
 }
 
 extern "C" int recoil_app_mp_exit_dialog_state_on_enter_smoke(void) {
@@ -4341,8 +4380,7 @@ extern "C" int zhud_panel_constructor_default_smoke(void) {
         panel.wrapRect.bottom == 0 &&
         panel.textRect.left == 0 &&
         panel.textRect.top == 0 &&
-        panel.textRect.bottom == 0 &&
-        panel.shadowOffsetY == 0;
+        panel.textRect.bottom == 0;
 
     const bool thunkCtor =
         thunkReturned == &thunkPanel &&
@@ -5675,6 +5713,114 @@ extern "C" int zhud_options_dialog_scalar_deleting_destructor_smoke(void) {
 
     deletingDialog->ScalarDeletingDestructor(1);
     return 0;
+}
+
+extern "C" int zhud_options_panel_back_button_on_activate_smoke(void) {
+    int swHudType = ZOPT_HUD_TYPE_STANDARD;
+    int hwHudType = ZOPT_HUD_TYPE_STANDARD;
+    int *const oldSwHudType = ZOPT_HUD_TYPE_SW;
+    int *const oldHwHudType = ZOPT_HUD_TYPE_HW;
+    const int oldHwMode = g_zOpt_HwMode;
+    const int oldLayoutsInitialized = g_HudUiMgrHudLayoutsInitialized;
+    const int oldCurrentStateIndex = g_RecoilApp.m_currentStateIndex;
+    RecoilApp_StateQueue oldStateQueue;
+    std::memcpy(
+        &oldStateQueue,
+        &g_RecoilApp.m_stateQueue,
+        sizeof(oldStateQueue)
+    );
+
+    CodeFunctionPatch setHudTypePatch{};
+    CodeFunctionPatch resetInputPatch{};
+    if (!PatchFunctionJump(
+            reinterpret_cast<void *>(&zOpt::SetHudTypeForCurrentHwMode),
+            reinterpret_cast<void *>(&FakeOptionsBackButtonSetHudTypeForCurrentHwMode),
+            setHudTypePatch
+        )) {
+        return 1;
+    }
+    if (!PatchFunctionJump(
+            reinterpret_cast<void *>(&zInput::ResetAllTransitionState),
+            reinterpret_cast<void *>(&FakeOptionsBackButtonResetAllTransitionState),
+            resetInputPatch
+        )) {
+        RestoreFunctionPatch(setHudTypePatch);
+        return 2;
+    }
+    ZOPT_HUD_TYPE_SW = &swHudType;
+    ZOPT_HUD_TYPE_HW = &hwHudType;
+    g_zOpt_HwMode = 1;
+    g_HudUiMgrHudLayoutsInitialized = 0;
+    std::memset(
+        &g_RecoilApp.m_stateQueue,
+        0,
+        sizeof(g_RecoilApp.m_stateQueue)
+    );
+    g_RecoilApp.m_currentStateIndex = -1;
+
+    __declspec(align(4)) unsigned char dialogStorage[sizeof(HudOptionsDialog)] = {0};
+    HudOptionsDialog *const dialog =
+        reinterpret_cast<HudOptionsDialog *>(dialogStorage);
+    new (&dialog->backButton) HudUiOptionsPanelBackButton;
+    dialog->backButton.owner = dialog;
+    g_optionsBackButtonSetHudTypeCount = 0;
+    g_optionsBackButtonSetHudTypeValue = 0;
+    g_optionsBackButtonResetInputCount = 0;
+
+    dialog->fullHudToggle.checked = 0;
+    dialog->backButton.OnActivate();
+    RecoilApp_StateQueueItem **const firstQueueCursor =
+        g_RecoilApp.m_stateQueue.m_readBlock.m_cursor;
+    RecoilApp_StateQueueItem *const firstQueueItem =
+        firstQueueCursor != nullptr ? firstQueueCursor[0] : nullptr;
+    const bool standardOk =
+        hwHudType == ZOPT_HUD_TYPE_STANDARD &&
+        swHudType == ZOPT_HUD_TYPE_STANDARD &&
+        g_optionsBackButtonSetHudTypeCount == 1 &&
+        g_optionsBackButtonSetHudTypeValue == ZOPT_HUD_TYPE_STANDARD &&
+        g_RecoilApp.m_stateQueue.m_itemCount == 1 &&
+        firstQueueItem != nullptr &&
+        firstQueueItem->m_kind == RecoilApp_StateQueueKind_ExitCurrent &&
+        firstQueueItem->m_param == 0 &&
+        g_optionsBackButtonResetInputCount == 1;
+
+    dialog->fullHudToggle.checked = 7;
+    dialog->backButton.OnActivate();
+    RecoilApp_StateQueueItem *const secondQueueItem =
+        firstQueueCursor != nullptr ? firstQueueCursor[1] : nullptr;
+    const bool perspectiveOk =
+        hwHudType == ZOPT_HUD_TYPE_PERSPECTIVE &&
+        swHudType == ZOPT_HUD_TYPE_STANDARD &&
+        g_optionsBackButtonSetHudTypeCount == 2 &&
+        g_optionsBackButtonSetHudTypeValue == ZOPT_HUD_TYPE_PERSPECTIVE &&
+        g_RecoilApp.m_stateQueue.m_itemCount == 2 &&
+        secondQueueItem != nullptr &&
+        secondQueueItem->m_kind == RecoilApp_StateQueueKind_ExitCurrent &&
+        secondQueueItem->m_param == 0 &&
+        g_optionsBackButtonResetInputCount == 2;
+
+    delete firstQueueItem;
+    delete secondQueueItem;
+    if (g_RecoilApp.m_stateQueue.m_readBlock.m_chunkBegin != nullptr) {
+        ::operator delete(g_RecoilApp.m_stateQueue.m_readBlock.m_chunkBegin);
+    }
+    if (g_RecoilApp.m_stateQueue.m_chunkBaseList != nullptr) {
+        ::operator delete(g_RecoilApp.m_stateQueue.m_chunkBaseList);
+    }
+    std::memcpy(
+        &g_RecoilApp.m_stateQueue,
+        &oldStateQueue,
+        sizeof(g_RecoilApp.m_stateQueue)
+    );
+    g_RecoilApp.m_currentStateIndex = oldCurrentStateIndex;
+    ZOPT_HUD_TYPE_SW = oldSwHudType;
+    ZOPT_HUD_TYPE_HW = oldHwHudType;
+    g_zOpt_HwMode = oldHwMode;
+    g_HudUiMgrHudLayoutsInitialized = oldLayoutsInitialized;
+    RestoreFunctionPatch(resetInputPatch);
+    RestoreFunctionPatch(setHudTypePatch);
+
+    return standardOk && perspectiveOk ? 0 : 3;
 }
 
 extern "C" int hud_ui_options_panel_overlay_owner_constructor_smoke(void) {

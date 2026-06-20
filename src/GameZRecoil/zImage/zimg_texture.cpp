@@ -11,16 +11,132 @@
 #include <string.h>
 
 extern "C" {
+/**
+ * Reimplements data 0x53d790: g_zImage_NextFontSlotIndex.
+ * Purpose: hold the next font-slot cursor value initialized by zImage_Init.
+ *
+ * Evidence: BN xrefs show only zImage::Init writing the value 2 before it
+ * clears the 20-entry font table. No current retail code reads this slot.
+ */
+int g_zImage_NextFontSlotIndex = 0;
+/**
+ * Reimplements data 0x53d794: g_zImage_MissionSearchPathList.
+ * Purpose: hold the mission resource search-path list shared by image and
+ * texture-pack loading.
+ *
+ * Evidence: BN xrefs show InitMissionResources creating/appending this list,
+ * Shutdown freeing and clearing it, and built-in texture-pack loading using it
+ * for resolved archive file opens.
+ */
 zArchiveList *g_zImage_MissionSearchPathList = 0;
+/**
+ * Reimplements data 0x53d798: g_zImage_TexDirEntryCount.
+ * Data owner: engine.zimage.texture_directory_state.
+ * Purpose: track the active prefix of the fixed texture-directory table.
+ *
+ * Retail 0x53d798: active count for the fixed texture-directory table at
+ * 0x53d79c. BN xrefs show this count is reset, serialized, scanned, and
+ * appended by the zimg_texture.cpp texture-directory routines and shared with
+ * zVid_TexDir shutdown/palette-remap cleanup.
+ */
 int g_zImage_TexDirEntryCount = 0;
+/**
+ * Reimplements data 0x53d79c: g_zImage_TexDirEntries.
+ * Data owner: engine.zimage.texture_directory_state.
+ * Purpose: store the fixed texture-directory records used by image loading,
+ * serialization, and mip/variant chaining.
+ *
+ * Retail 0x53d79c: fixed 0x1000-entry zImage_TexDirEntry table, zero-filled
+ * in BSS. Each record is 0x24 bytes and stores the image, texture record,
+ * basename, load state, and mip/variant link used by directory serialization
+ * and runtime loading.
+ */
 zImage_TexDirEntryPartial g_zImage_TexDirEntries[0x1000] = {0};
+/**
+ * Reimplements data 0x56179c: g_zImage_FontTable.
+ * Purpose: hold the twenty runtime font slots used by zImage font lookup and
+ * text rendering.
+ *
+ * Evidence: BN zImage::Init clears this contiguous 20-pointer table after
+ * initializing the font-slot cursor, FontsLoadFromPath populates slots 1..19,
+ * and zImage_Font::GetByIndexOrDefault falls back to slot 0 when an indexed
+ * slot is null.
+ */
 zImage_Font *g_zImage_FontTable[20] = {0};
+/**
+ * Reimplements data 0x5617ec: g_zImage_TextureMemoryDefault.
+ * Purpose: provide the local fallback texture-memory option value when no
+ * runtime option record is registered.
+ *
+ * Evidence: BN zImage::Init zeroes this slot and stores its address into the
+ * texture-memory option pointer when zGame::Options_FindOption returns null.
+ */
 int g_zImage_TextureMemoryDefault = 0;
+/**
+ * Reimplements data 0x5617f0: g_zImage_TextureMemoryOption.
+ * Purpose: point image-loading code at the active texture-memory option
+ * storage, or at the local default when no renderer option is registered.
+ *
+ * Evidence: BN zImage::Init selects the TextureMemory_HW or TextureMemory_SW
+ * option name from g_zVideo_ActiveRendererPath, calls zGame::Options_FindOption,
+ * and stores either the option payload address or
+ * g_zImage_TextureMemoryDefault.
+ */
 int *g_zImage_TextureMemoryOption = 0;
-int g_zImage_FontTransparentColor = 2;
-int g_zImage_Unknown5617f4 = 0;
+/**
+ * Reimplements data 0x5617f4: g_zImage_FontTransparentColor.
+ * Purpose: store the transparent font pixel color used while scanning glyph
+ * columns.
+ *
+ * Evidence: BN zImage_Font::IsImageColumnTransparent loads this value for
+ * every non-empty column scan. zImage::Init resets it to zero during startup.
+ */
+int g_zImage_FontTransparentColor = 0;
+/**
+ * Reimplements data 0x4e0718: g_zImage_DefaultImagePtr.
+ * Data owner: engine.zimage.texture_directory_state.
+ * Purpose: hold the default zVid image pointer in the legacy entry-reference
+ * storage shape.
+ *
+ * Retail 0x4e0718: initialized default image pointer. BN initializes it to
+ * zVid_Image::g_zImage_DefaultImage at 0x4e06e0; GetDefaultImageRefPtr exposes
+ * this storage address as the default texture-directory entry reference shape
+ * expected by legacy material callers.
+ */
 zVidImagePartial *g_zImage_DefaultImagePtr = &zVid_Image::g_zImage_DefaultImage;
+/**
+ * Reimplements data 0x4e071c: g_zImage_DefaultTextureRecord.
+ * Data owner: engine.zimage.texture_directory_state.
+ * Purpose: remember the default hardware texture record created for the
+ * zImage texture directory.
+ *
+ * Retail 0x4e071c: initialized null texture-record pointer adjacent to the
+ * zImage default image pointer and default texture name. InitTextureDirectory
+ * is the zImage writer for this texture-directory storage. The similarly
+ * named video-runtime pointer at 0x6333a8 is a separate zVideo owner and is
+ * intentionally not folded into this zImage data symbol.
+ */
+zVideo_TextureRecordPartial *g_zImage_DefaultTextureRecord = 0;
+/**
+ * Reimplements data 0x53d788: g_zImage_pfnCreateFallbackImage.
+ * Data owner: engine.zimage.texture_directory_state.
+ * Purpose: optionally create fallback images when a pending texture-directory
+ * load cannot resolve an image pack entry.
+ *
+ * Retail 0x53d788: optional fastcall fallback-image callback used only by
+ * TexDir_LoadPendingEntries when normal texture-pack lookup returns null.
+ */
 zImage_CreateFallbackImageProc g_zImage_pfnCreateFallbackImage = 0;
+/**
+ * Reimplements data 0x4e0720: g_zImage_DefaultTextureName.
+ * Data owner: engine.zimage.texture_directory_state.
+ * Purpose: name the hardware default texture record created during texture
+ * directory initialization.
+ *
+ * Retail 0x4e0720: 16-byte initialized default texture name. BN shows the
+ * exact bytes "DEFAULT_TEXTURE\0" and InitTextureDirectory passes this storage
+ * to the hardware texture-record creation callback.
+ */
 char g_zImage_DefaultTextureName[0x10] = "DEFAULT_TEXTURE";
 }
 
@@ -28,6 +144,7 @@ namespace zImage {
 /**
  * Reimplements 0x46d4c0: zImage::GetDefaultImageRefPtr.
  * Original file: GameZRecoil/zImage/zimg_texture.cpp.
+ * Source owner: engine.zimage.texture_directory_state.
  * Purpose: expose the default image pointer through the texture-directory
  * entry reference shape expected by legacy callers.
  *
@@ -42,6 +159,7 @@ zImage_TexDirEntryPartial *GetDefaultImageRefPtr() {
  * Recovered helper: zImage::CreateDefaultTextureRecord.
  * Original shape: no standalone retail function is currently identified in the
  * inspected BN/plan evidence.
+ * Source owner: engine.zimage.texture_directory_state.
  * Purpose: create and remember the default texture record through the active
  * zVideo texture creation callback.
  *
@@ -80,6 +198,7 @@ zVideo_TextureRecordPartial *CreateDefaultTextureRecord() {
 /**
  * Reimplements 0x46d550: zImage::InitTextureDirectory.
  * Original file: GameZRecoil/zImage/zimg_texture.cpp.
+ * Source owner: engine.zimage.texture_directory_state.
  * Purpose: reset the texture-directory table and create the hardware default
  * texture record when a non-software renderer is active.
  *
@@ -104,8 +223,15 @@ int InitTextureDirectory() {
 } // namespace zImage
 
 namespace zImg {
-// Reimplements 0x46eba0: zImg::Init
-// (GameZRecoil/zImage/zimg_texture.cpp)
+/**
+ * Reimplements 0x46eba0: zImg::Init.
+ * Original file: GameZRecoil/zImage/zimg_texture.cpp.
+ * Purpose: initialize the zImage texture-directory runtime and report success.
+ *
+ * Evidence: BN assembly is a single call to zImage::InitTextureDirectory
+ * followed by return value 1; this is a namespace-level wrapper, not a class
+ * method or table-dispatch shape.
+ */
 int Init() {
     zImage::InitTextureDirectory();
     return 1;
@@ -115,6 +241,7 @@ int Init() {
 /**
  * Reimplements 0x46e290: zImage_TexDirEntryPartial::GetVariantImageAtIndex.
  * Original file: GameZRecoil/zImage/zimg_texture.cpp.
+ * Source owner: engine.zimage.texture_directory_state.
  * Purpose: return the requested image from a texture-directory variant chain.
  *
  * Evidence: BN treats this as a zImage_TexDirEntry member leaf: null self
@@ -140,8 +267,22 @@ zVidImagePartial *__fastcall zImage_TexDirEntryPartial::GetVariantImageAtIndex(
     return entry->image;
 }
 
-// Reimplements 0x46e3e0: zImage_TexDirEntry::BuildMipChain
-// (GameZRecoil/zImage/zimg_texture.cpp)
+/**
+ * Reimplements 0x46e3e0: zImage_TexDirEntry::BuildMipChain.
+ * Original file: GameZRecoil/zImage/zimg_texture.cpp.
+ * Source owner: engine.zimage.texture_directory_state.
+ * Purpose: link numbered mip texture-directory variants and assign each
+ * variant image width scale from the base image width.
+ *
+ * Evidence: BN assembly copies baseName into a 0x40-byte local path, accepts
+ * only names ending in "_1", increments that suffix digit in place, looks up
+ * or loads each numbered variant, appends missing records through
+ * g_zImage_TexDirEntries/g_zImage_TexDirEntryCount, calls
+ * zVid_Image::CalcPow2ScratchFields for newly loaded variants, links
+ * nextVariant, and stores the integer width quotient as a float. RECOIL_NO_GS
+ * is retained as a host-build annotation for the local buffer; VC5 has no /GS
+ * cookie for this retail-era member.
+ */
 RECOIL_NO_GS void __fastcall zImage_TexDirEntryPartial::BuildMipChain() {
     char variantPath[0x40];
     strcpy(
@@ -193,8 +334,20 @@ RECOIL_NO_GS void __fastcall zImage_TexDirEntryPartial::BuildMipChain() {
 }
 
 namespace zImage {
-// Reimplements 0x46de50: zImage::TexDir_LoadPendingEntries
-// (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
+/**
+ * Reimplements 0x46de50: zImage::TexDir_LoadPendingEntries.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
+ * Source owner: engine.zimage.texture_directory_state.
+ * Purpose: resolve pending texture-directory entries, create renderer texture
+ * records when needed, and retire transient texture-pack runtime state.
+ *
+ * Evidence: BN iterates g_zImage_TexDirEntries up to
+ * g_zImage_TexDirEntryCount, handles only load states 2 and 3, loads images by
+ * basename with the optional fallback callback, falls back to
+ * zVid_Image::g_zImage_DefaultImage, builds mip chains, then either updates
+ * image scratch fields or creates/finalizes texture records before setting
+ * loadState to 1 and calling ShutdownTextureDirectoryRuntime.
+ */
 int TexDir_LoadPendingEntries() {
     zVid_TexturePack_EnsureBuiltinTexturePacksLoaded();
 
@@ -252,7 +405,16 @@ int TexDir_LoadPendingEntries() {
 }
 } // namespace zImage
 
-// Reimplements 0x46ebd0: zImage_InitMissionResources
+/**
+ * Reimplements 0x46ebd0: zImage_InitMissionResources.
+ * Original file: GameZRecoil/zImage/zimg_texture.cpp.
+ * Purpose: create the mission resource search-path list on first use and
+ * append later paths to the existing list.
+ *
+ * Evidence: BN loads g_zImage_MissionSearchPathList, creates a new list when
+ * it is null, otherwise passes the existing list and incoming path to
+ * zUtil::ZRDR_AddSearchPaths, then returns 0.
+ */
 extern "C" int __fastcall zImage_InitMissionResources(
     const char *pathText
 ) {
@@ -268,17 +430,27 @@ extern "C" int __fastcall zImage_InitMissionResources(
     return 0;
 }
 
-// Reimplements 0x46eb20: zImage_Init
+/**
+ * Reimplements 0x46eb20: zImage_Init.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
+ * Purpose: reset font-table state, optionally load fonts, and bind the
+ * texture-memory option value used by image loading.
+ *
+ * Evidence: BN stores 2 to g_zImage_NextFontSlotIndex at 0x53d790, stores 0
+ * to g_zImage_FontTransparentColor at 0x5617f4, clears the 20-entry font
+ * table, optionally loads fonts, and binds the texture-memory option pointer
+ * to the active renderer's option or the local default.
+ */
 extern "C" int __fastcall zImage_Init(
     const char *fontsPath
 ) {
+    g_zImage_NextFontSlotIndex = 2;
+    g_zImage_FontTransparentColor = 0;
     memset(
         g_zImage_FontTable,
         0,
         sizeof(g_zImage_FontTable)
     );
-    g_zImage_FontTransparentColor = 2;
-    g_zImage_Unknown5617f4 = 0;
 
     if (fontsPath != 0) {
         zImage::FontsLoadFromPath(fontsPath);
@@ -294,8 +466,16 @@ extern "C" int __fastcall zImage_Init(
 }
 
 namespace zImage {
-// Reimplements 0x46d310: zImage::TexDirEntryToIndex
-// (D:\Proj\GameZRecoil\zImage\zimg_texture.cpp)
+/**
+ * Reimplements 0x46d310: zImage::TexDirEntryToIndex.
+ * Original file: D:\Proj\GameZRecoil\zImage\zimg_texture.cpp.
+ * Source owner: engine.zimage.texture_directory_state.
+ * Purpose: convert a texture-directory entry pointer to its serialized table
+ * index.
+ *
+ * Evidence: BN returns -1 for a null entry pointer and otherwise subtracts the
+ * fixed g_zImage_TexDirEntries table base from the entry pointer.
+ */
 int __fastcall TexDirEntryToIndex(
     zImage_TexDirEntryPartial *texDirEntry
 ) {
@@ -306,8 +486,16 @@ int __fastcall TexDirEntryToIndex(
     return (int)(texDirEntry - g_zImage_TexDirEntries);
 }
 
-// Reimplements 0x46d340: zImage::TexIndexToDirEntry
-// (D:\Proj\GameZRecoil\zImage\zimg_texture.cpp)
+/**
+ * Reimplements 0x46d340: zImage::TexIndexToDirEntry.
+ * Original file: D:\Proj\GameZRecoil\zImage\zimg_texture.cpp.
+ * Source owner: engine.zimage.texture_directory_state.
+ * Purpose: restore a serialized texture-directory index to a table entry
+ * pointer.
+ *
+ * Evidence: BN maps -1 back to null and otherwise indexes the fixed
+ * g_zImage_TexDirEntries table directly.
+ */
 zImage_TexDirEntryPartial *__fastcall TexIndexToDirEntry(
     int index
 ) {
@@ -318,8 +506,16 @@ zImage_TexDirEntryPartial *__fastcall TexIndexToDirEntry(
     return &g_zImage_TexDirEntries[index];
 }
 
-// Reimplements 0x46d4d0: zImage::FindTexDirEntryByName
-// (D:\Proj\Battlesport\zimage.cpp)
+/**
+ * Reimplements 0x46d4d0: zImage::FindTexDirEntryByName.
+ * Original file: D:\Proj\Battlesport\zimage.cpp.
+ * Source owner: engine.zimage.texture_directory_state.
+ * Purpose: find an active texture-directory entry by base texture name.
+ *
+ * Evidence: BN scans the active g_zImage_TexDirEntries prefix, skips entries
+ * with loadState zero, compares baseName with strcmp, and returns null when no
+ * matching active entry exists.
+ */
 zImage_TexDirEntryPartial *__fastcall FindTexDirEntryByName(
     const char *baseName
 ) {
@@ -336,8 +532,17 @@ zImage_TexDirEntryPartial *__fastcall FindTexDirEntryByName(
     return 0;
 }
 
-// Reimplements 0x46d810: zImage::TexDir_FindOrAppendByPath
-// (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
+/**
+ * Reimplements 0x46d810: zImage::TexDir_FindOrAppendByPath.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
+ * Source owner: engine.zimage.texture_directory_state.
+ * Purpose: find a texture-directory entry for a path or append a pending
+ * record for later loading.
+ *
+ * Evidence: BN temporarily strips the extension for lookup, restores the path
+ * text before returning, and appends a new g_zImage_TexDirEntries record with
+ * loadState 2 when no existing basename entry is present.
+ */
 zImage_TexDirEntryPartial *__fastcall TexDir_FindOrAppendByPath(
     char *path
 ) {
@@ -369,8 +574,18 @@ zImage_TexDirEntryPartial *__fastcall TexDir_FindOrAppendByPath(
     return entry;
 }
 
-// Reimplements 0x46d360: zImage::WriteTextureDirectory
-// (D:\Proj\GameZRecoil\zImage\zimg_texture.cpp)
+/**
+ * Reimplements 0x46d360: zImage::WriteTextureDirectory.
+ * Original file: D:\Proj\GameZRecoil\zImage\zimg_texture.cpp.
+ * Source owner: engine.zimage.texture_directory_state.
+ * Purpose: serialize the active texture-directory records with variant links
+ * converted to table indexes.
+ *
+ * Evidence: BN returns zero for an empty directory, copies the active fixed
+ * table prefix to heap storage, rewrites each nextVariant pointer through
+ * TexDirEntryToIndex, writes one binary block, reports the retail write error
+ * on fwrite failure, then frees the temporary copy.
+ */
 int __fastcall WriteTextureDirectory(
     void *stream
 ) {
@@ -412,8 +627,19 @@ int __fastcall WriteTextureDirectory(
     return count;
 }
 
-// Reimplements 0x46d420: zImage::ReadTextureDirectory
-// (D:\Proj\GameZRecoil\zImage\zimg_texture.cpp)
+/**
+ * Reimplements 0x46d420: zImage::ReadTextureDirectory.
+ * Original file: D:\Proj\GameZRecoil\zImage\zimg_texture.cpp.
+ * Source owner: engine.zimage.texture_directory_state.
+ * Purpose: read serialized texture-directory records and restore in-memory
+ * variant links.
+ *
+ * Evidence: BN returns zero for an empty stream count, rejects counts above
+ * the 0x1000-entry fixed table capacity with the retail error, reads the table
+ * prefix directly into g_zImage_TexDirEntries, stores
+ * g_zImage_TexDirEntryCount, and converts each serialized nextVariant index
+ * back through TexIndexToDirEntry.
+ */
 int __fastcall ReadTextureDirectory(
     int entryCount,
     void *stream
@@ -458,7 +684,17 @@ int __fastcall ReadTextureDirectory(
     return g_zImage_TexDirEntryCount;
 }
 
-// Reimplements 0x46e2c0: zImage::SetPathExtension
+/**
+ * Reimplements 0x46e2c0: zImage::SetPathExtension.
+ * Original file: GameZRecoil/zImage/zimg_texture.cpp.
+ * Source owner: engine.zimage.texture_directory_state.
+ * Purpose: replace, remove, or append the extension portion of a mutable path.
+ *
+ * Evidence: BN searches after the last directory separator candidate used by
+ * the retail helper, truncates at the dot when extension is null, copies a
+ * replacement extension after an existing dot, or appends "." plus the new
+ * extension when no dot exists.
+ */
 void __fastcall SetPathExtension(
     char *path,
     const char *extension
@@ -506,7 +742,17 @@ void __fastcall SetPathExtension(
     }
 }
 
-// Reimplements 0x46e380: zImage::TexDirSetBaseNameFromPath
+/**
+ * Reimplements 0x46e380: zImage::TexDirSetBaseNameFromPath.
+ * Original file: GameZRecoil/zImage/zimg_texture.cpp.
+ * Source owner: engine.zimage.texture_directory_state.
+ * Purpose: copy a path basename into texture-directory storage without its
+ * extension.
+ *
+ * Evidence: BN chooses the substring after the last backslash or slash,
+ * copies it to the destination basename buffer, and reuses SetPathExtension
+ * with a null extension to strip the suffix in place.
+ */
 void __fastcall TexDirSetBaseNameFromPath(
     const char *sourcePath,
     char *destBaseName
@@ -535,7 +781,16 @@ void __fastcall TexDirSetBaseNameFromPath(
     );
 }
 
-// Reimplements 0x46efe0: zImage::FontsLoadFromPath
+/**
+ * Reimplements 0x46efe0: zImage::FontsLoadFromPath.
+ * Original file: D:\Proj\GameZRecoil\zImage\zimg_fonts.cpp.
+ * Purpose: load the FONTS node, create font records, load each font image,
+ * and build glyph rectangles for the font table.
+ *
+ * Evidence: BN reports the same error paths, mission resource initialization,
+ * FONTS node lookup, per-font image load, alpha flag update, glyph build call,
+ * and loaded-tree release.
+ */
 int __fastcall FontsLoadFromPath(
     const char *path
 ) {
@@ -622,7 +877,16 @@ zVidImagePartial *__fastcall TexDir_FindOrCreateByPath(
     return image;
 }
 
-// Reimplements 0x46e250: zImage::InvalidateLoadedVariantChain
+/**
+ * Reimplements 0x46e250: zImage::InvalidateLoadedVariantChain.
+ * Original file: GameZRecoil/zImage/zimg_texture.cpp.
+ * Source owner: engine.zimage.texture_directory_state.
+ * Purpose: mark a loaded texture-directory variant chain for reload.
+ *
+ * Evidence: BN walks nextVariant while entries are loaded, releases each
+ * non-default image through zVid_Image::ReleaseIfNotDefault, clears image, sets
+ * loadState to 3, and stops at the first null or non-loaded chain entry.
+ */
 void __fastcall InvalidateLoadedVariantChain(
     zImage_TexDirEntryPartial *texDirHead
 ) {
@@ -635,7 +899,16 @@ void __fastcall InvalidateLoadedVariantChain(
     }
 }
 
-// Reimplements 0x46ebb0: zImage::Shutdown
+/**
+ * Reimplements 0x46ebb0: zImage::Shutdown.
+ * Original file: GameZRecoil/zImage/zimg_texture.cpp.
+ * Purpose: shut down texture-directory state and release the mission resource
+ * search-path list.
+ *
+ * Evidence: BN calls zVid_TexDir::Shutdown, frees
+ * g_zImage_MissionSearchPathList through zUtil_ZRDR::FreeSearchPathList,
+ * stores the returned null pointer, and returns 1.
+ */
 int Shutdown() {
     zVid_TexDir::Shutdown();
     zUtil_ZRDR_FreeSearchPathList(g_zImage_MissionSearchPathList);
@@ -643,14 +916,30 @@ int Shutdown() {
     return 1;
 }
 
-// Reimplements 0x46eb90: zImage::ShutdownSubsystem
+/**
+ * Reimplements 0x46eb90: zImage::ShutdownSubsystem.
+ * Original file: GameZRecoil/zImage/zimg_texture.cpp.
+ * Purpose: provide the subsystem shutdown entry point that delegates to
+ * zImage::Shutdown and reports success.
+ *
+ * Evidence: BN assembly contains only the zImage::Shutdown call followed by
+ * zero return value setup.
+ */
 int ShutdownSubsystem() {
     Shutdown();
     return 0;
 }
 } // namespace zImage
 
-// Reimplements 0x46efc0: zImage_Font::GetByIndexOrDefault
+/**
+ * Reimplements 0x46efc0: zImage_Font::GetByIndexOrDefault.
+ * Original file: D:\Proj\GameZRecoil\zImage\zimg_fonts.cpp.
+ * Purpose: return a requested font table slot, falling back to slot 0 when
+ * the requested slot is empty.
+ *
+ * Evidence: BN performs one g_zImage_FontTable indexed load, tests it, and
+ * loads g_zImage_FontTable[0] only on the null-slot path.
+ */
 zImage_Font *__fastcall zImage_Font::GetByIndexOrDefault(
     int fontIndex
 ) {
@@ -662,7 +951,15 @@ zImage_Font *__fastcall zImage_Font::GetByIndexOrDefault(
     return g_zImage_FontTable[0];
 }
 
-// Reimplements 0x46f260: zImage_Font::MeasureString
+/**
+ * Reimplements 0x46f260: zImage_Font::MeasureString.
+ * Original file: D:\Proj\GameZRecoil\zImage\zimg_fonts.cpp.
+ * Purpose: measure wrapped font text width and total line advance.
+ *
+ * Evidence: BN gets the requested font with fallback, uses image height as
+ * line advance, treats space, carriage return, and newline specially, clamps
+ * printable glyph indexes to the 95-glyph table, and writes both outputs.
+ */
 void __fastcall zImage_Font::MeasureString(
     const char *text,
     int fontIndex,
@@ -710,8 +1007,16 @@ void __fastcall zImage_Font::MeasureString(
     *outLineAdvance = totalLineAdvance;
 }
 
-// Reimplements 0x4c7f00: zImage_Font::BlitStringToActiveTarget
-// (D:\Proj\GameZRecoil\zImage\zimg_fonts.cpp)
+/**
+ * Reimplements 0x4c7f00: zImage_Font::BlitStringToActiveTarget.
+ * Original file: D:\Proj\GameZRecoil\zImage\zimg_fonts.cpp.
+ * Purpose: draw a string to the active target using the selected font image
+ * and glyph rectangles.
+ *
+ * Evidence: BN falls back through font slot 0, clips against active region
+ * height, advances spaces and newlines, clamps printable glyph indexes, and
+ * blits each glyph through zVid_Image::BlitToActiveTarget.
+ */
 void __fastcall zImage_Font::BlitStringToActiveTarget(
     const char *text,
     int dstX,
@@ -760,7 +1065,16 @@ void __fastcall zImage_Font::BlitStringToActiveTarget(
     }
 }
 
-// Reimplements 0x46f210: zImage_Font::IsImageColumnTransparent
+/**
+ * Reimplements 0x46f210: zImage_Font::IsImageColumnTransparent.
+ * Original file: D:\Proj\GameZRecoil\zImage\zimg_fonts.cpp.
+ * Purpose: test whether a vertical image column contains only the configured
+ * transparent font color.
+ *
+ * Evidence: BN rejects columns beyond image width, treats non-positive height
+ * as transparent, then walks one 16-bit pixel per row using image width as the
+ * row stride.
+ */
 int __fastcall zImage_Font::IsImageColumnTransparent(
     zVidImagePartial *image,
     int columnX
@@ -777,7 +1091,7 @@ int __fastcall zImage_Font::IsImageColumnTransparent(
     }
 
     for (int y = 0; y < height; ++y) {
-        if (*column != (unsigned short)(g_zImage_Unknown5617f4)) {
+        if (*column != (unsigned short)(g_zImage_FontTransparentColor)) {
             return 0;
         }
         column += width;
@@ -786,7 +1100,17 @@ int __fastcall zImage_Font::IsImageColumnTransparent(
     return 1;
 }
 
-// Reimplements 0x46f130: zImage_Font::BuildGlyphRects
+/**
+ * Reimplements 0x46f130: zImage_Font::BuildGlyphRects.
+ * Original file: D:\Proj\GameZRecoil\zImage\zimg_fonts.cpp.
+ * Purpose: scan the font image into glyph rectangles and compute the space
+ * width used by font text layout.
+ *
+ * Evidence: BN initializes space width from image width divided by 95 minus
+ * one, scans transparent and non-transparent column runs through
+ * IsImageColumnTransparent, fills glyph RECT bounds, and returns the glyph
+ * count.
+ */
 int zImage_Font::BuildGlyphRects() {
     zVidImagePartial *image = this->image;
     int x = 0;

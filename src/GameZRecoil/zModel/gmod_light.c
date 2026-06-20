@@ -11,6 +11,7 @@
 
 int gModel_FogEnabled = 0;
 int gModel_FogLinearModeEnabled = 0;
+zColorRgb gModel_FogColorRgb01 = {0};
 float gModel_FogDistanceStart = 0.0f;
 float gModel_FogDistanceEnd = 0.0f;
 float gModel_FogDistanceInvRange = 0.0f;
@@ -18,9 +19,8 @@ float gModel_FogHeightHigh = 0.0f;
 float gModel_FogHeightLow = 0.0f;
 float gModel_FogHeightInvRange = 0.0f;
 float gModel_FogDensity = 0.0f;
-zColorRgb gModel_FogColorRgb01 = {0};
 int gModel_RenderVertexAlphaEnabled = 0;
-float gModel_RenderAlphaScaleCurrent = 1.0f;
+float gModel_RenderAlphaScaleCurrent = 0.0f;
 int gModel_HasActiveLights = 0;
 int gModel_ActiveLightCount = 0;
 int gModel_ActiveLightSpecialIndex = 0;

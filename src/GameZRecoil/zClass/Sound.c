@@ -15,8 +15,11 @@ namespace {
     const char *kSoundSourceFile = "D:\\Proj\\GameZRecoil\\zClass\\Sound.c";
 
     /**
-     * Original static helper recovered with zClass_Sound::RenderTraverse.
-     *
+     * Original-source helper evidence: no standalone retail function exists.
+     * Observed in caller 0x44af60 (D:\Proj\GameZRecoil\zClass\Sound.c);
+     * BN keeps the bounds refresh and sphere clip-mask sequence inline in the
+     * Sound traversal body, matching the traversal helper pattern also seen in
+     * 0x44b710.
      * Purpose: refresh sound-node bounds when needed and run the sphere
      * frustum cull used by sound render traversal.
      */
@@ -57,8 +60,11 @@ namespace {
     }
 
     /**
-     * Original static helper recovered with zClass_Sound::RenderTraverse.
-     *
+     * Original-source helper evidence: no standalone retail function exists.
+     * Observed in caller 0x44af60 (D:\Proj\GameZRecoil\zClass\Sound.c);
+     * BN keeps the render callback, range-fade display-instance writes, clip
+     * mask push, and child dispatch loop inline in the traversal body, matching
+     * the traversal helper pattern also seen in 0x44b710.
      * Purpose: render the sound node, apply range-fade display-instance state,
      * and dispatch child traversal under the current clip mask.
      */

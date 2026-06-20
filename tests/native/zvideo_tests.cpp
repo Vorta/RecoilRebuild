@@ -9704,6 +9704,8 @@ extern "C" int zvideo_quad_batch_depth_and_rhw_smoke(void) {
 
 extern "C" int zvideo_set_active_view_context_smoke(void) {
     zClass_CameraDataPartial *savedViewContext = g_zVideo_pActiveViewContext;
+    zClass_CameraDataPartial *savedProjectionViewContext =
+        g_zVideo_pActiveProjectionViewContext;
     const int savedRendererPath = g_zVideo_ActiveRendererPath;
     const zClipRectPartial savedClipRect = gClipRect_Primary;
     const float savedProjectClipLeft = g_zVideo_ProjectClipLeft;
@@ -9733,12 +9735,18 @@ extern "C" int zvideo_set_active_view_context_smoke(void) {
     viewContext.fovX = 111.0f;
     viewContext.fovY = 222.0f;
 
+    zClass_CameraDataPartial renderFrameContext{};
+    g_zVideo_pActiveViewContext = &renderFrameContext;
+    g_zVideo_pActiveProjectionViewContext = 0;
+
     std::memset(g_zVideo_QuadBatchItemsBase, 0, sizeof(g_zVideo_QuadBatchItemsBase));
     g_zVideo_ActiveRendererPath = 0;
     zVideo_SetActiveViewContext(&viewContext);
 
     int status = 0;
-    if (g_zVideo_pActiveViewContext != &viewContext || !NearFloat(viewContext.nearClip, 1.0f) ||
+    if (g_zVideo_pActiveProjectionViewContext != &viewContext ||
+        g_zVideo_pActiveViewContext != &renderFrameContext ||
+        !NearFloat(viewContext.nearClip, 1.0f) ||
         !NearFloat(gClipRect_Primary.zMin, 2.0f) ||
         !NearFloat(gClipRect_Primary.zMax, 500.0f)) {
         status = 1;
@@ -9781,7 +9789,9 @@ extern "C" int zvideo_set_active_view_context_smoke(void) {
         g_zVideo_ActiveRendererPath = 1;
         zVideo_SetActiveViewContext(&fallbackContext);
 
-        if (!NearFloat(gClipRect_Primary.zMin, 6.0f) ||
+        if (g_zVideo_pActiveProjectionViewContext != &fallbackContext ||
+            g_zVideo_pActiveViewContext != &renderFrameContext ||
+            !NearFloat(gClipRect_Primary.zMin, 6.0f) ||
             !NearFloat(gClipRect_Primary.zMax, 1200.0f) ||
             !NearFloat(gClipRect_Primary.xMin, 0.0f) ||
             !NearFloat(gClipRect_Primary.xMax, 640.001f) ||
@@ -9804,6 +9814,7 @@ extern "C" int zvideo_set_active_view_context_smoke(void) {
     }
 
     g_zVideo_pActiveViewContext = savedViewContext;
+    g_zVideo_pActiveProjectionViewContext = savedProjectionViewContext;
     g_zVideo_ActiveRendererPath = savedRendererPath;
     gClipRect_Primary = savedClipRect;
     g_zVideo_ProjectClipLeft = savedProjectClipLeft;

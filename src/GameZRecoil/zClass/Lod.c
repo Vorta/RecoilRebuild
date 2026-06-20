@@ -11,8 +11,10 @@ namespace {
     const int kZClassNodeLod = 6;
 
     /**
-     * Original static helper recovered with zClass_Lod::RenderTraverse.
-     *
+     * Original-source helper evidence: no standalone retail function exists.
+     * Observed in caller 0x44b8c0 (D:\Proj\GameZRecoil\zClass\Lod.c);
+     * BN keeps the bit-level square-root estimate inline in LOD distance and
+     * fade computations, not behind a separate call target.
      * Purpose: approximate the square root used by LOD distance and fade
      * scaling with the original bit-level floating-point estimate.
      */
@@ -34,8 +36,10 @@ namespace {
     }
 
     /**
-     * Original static helper recovered with zClass_Lod::RenderTraverse.
-     *
+     * Original-source helper evidence: no standalone retail function exists.
+     * Observed in caller 0x44b8c0 (D:\Proj\GameZRecoil\zClass\Lod.c);
+     * BN keeps the bounds refresh, distance-state update, and range test as
+     * caller-local LOD render traversal code.
      * Purpose: refresh the node view-space bounds when needed, push the LOD
      * bounds context, and test the current distance against the LOD range.
      */
@@ -81,8 +85,10 @@ namespace {
     }
 
     /**
-     * Original static helper recovered with zClass_Lod::RenderTraverse.
-     *
+     * Original-source helper evidence: no standalone retail function exists.
+     * Observed in caller 0x44b8c0 (D:\Proj\GameZRecoil\zClass\Lod.c);
+     * BN shows the alpha-scale stack push and zModel setter inline in the LOD
+     * traversal body.
      * Purpose: push a render alpha-scale override and publish it to the model
      * renderer's current alpha-scale state.
      */
@@ -93,8 +99,10 @@ namespace {
     }
 
     /**
-     * Original static helper recovered with zClass_Lod::RenderTraverse.
-     *
+     * Original-source helper evidence: no standalone retail function exists.
+     * Observed in caller 0x44b8c0 (D:\Proj\GameZRecoil\zClass\Lod.c);
+     * BN keeps the alpha-scale stack pop and default-scale restore in the LOD
+     * traversal epilogue.
      * Purpose: pop the render alpha-scale override and restore the previous
      * scale, or the default opaque scale when the stack is empty.
      */

@@ -41,7 +41,14 @@ namespace {
         return range;
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Recovered original static helper in D:\Proj\GameZRecoil\zClass\cls_world.c.
+     * No standalone retail function; observed callers include
+     * 0x450840 zClass_World::WorldRectToGridIndex.
+     * Evidence: world-grid source-cluster callers share the invalid grid-cell
+     * sentinel write before and after partition inclusion checks.
+     * Purpose: set grid column and row outputs to the invalid cell sentinel.
+     */
     void InvalidateGrid(
         int *outGridCol,
         int *outGridRow
@@ -105,7 +112,14 @@ namespace {
         return &data->areaGridRows[gridRow][gridCol];
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Recovered original static helper in D:\Proj\GameZRecoil\zClass\cls_world.c.
+     * No standalone retail function; observed caller includes
+     * 0x4500b0 zClass_World::RebuildAreaBounds.
+     * Evidence: area-bounds source-cluster recomputes min/max Y from
+     * gwNodeGetWorldBBoxCorners eight-corner arrays.
+     * Purpose: expand an area's Y bounds to include all corners from one child bbox.
+     */
     void ExpandAreaYBounds(
         zWorldAreaPartial * area,
         const zBBoxCorners &corners
@@ -295,10 +309,13 @@ namespace zClass_World {
         return node;
     }
 
-    // Reimplements 0x450ae0: zClass_World::SetPendingFogState
-    // (D:\Proj\GameZRecoil\zClass\cls_world.c)
-    int __fastcall
-    SetPendingFogState(
+    /**
+     * Reimplements 0x450ae0: zClass_World::SetPendingFogState.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
+     * Purpose: stage the pending fog enable/linear-mode state for the next
+     * world fog application pass.
+     */
+    int __fastcall SetPendingFogState(
         zClass_NodePartial * world,
         int fogState
     ) {
@@ -308,10 +325,13 @@ namespace zClass_World {
         return 0;
     }
 
-    // Reimplements 0x450af0: zClass_World::SetPendingFogColorRgb01
-    // (D:\Proj\GameZRecoil\zClass\cls_world.c)
-    int __fastcall
-    SetPendingFogColorRgb01(
+    /**
+     * Reimplements 0x450af0: zClass_World::SetPendingFogColorRgb01.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
+     * Purpose: stage the pending fog RGB color values for the next world fog
+     * application pass.
+     */
+    int __fastcall SetPendingFogColorRgb01(
         zClass_NodePartial * world,
         float red,
         float green,
@@ -325,10 +345,13 @@ namespace zClass_World {
         return 0;
     }
 
-    // Reimplements 0x450b20: zClass_World::SetPendingFogAltitudeRange
-    // (D:\Proj\GameZRecoil\zClass\cls_world.c)
-    int __fastcall
-    SetPendingFogAltitudeRange(
+    /**
+     * Reimplements 0x450b20: zClass_World::SetPendingFogAltitudeRange.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
+     * Purpose: stage the pending vertical fog altitude bounds for the next
+     * world fog application pass.
+     */
+    int __fastcall SetPendingFogAltitudeRange(
         zClass_NodePartial * world,
         float minAlt,
         float maxAlt
@@ -340,10 +363,13 @@ namespace zClass_World {
         return 0;
     }
 
-    // Reimplements 0x450b40: zClass_World::SetPendingFogRange
-    // (D:\Proj\GameZRecoil\zClass\cls_world.c)
-    int __fastcall
-    SetPendingFogRange(
+    /**
+     * Reimplements 0x450b40: zClass_World::SetPendingFogRange.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
+     * Purpose: stage the pending near and far fog distance range for the next
+     * world fog application pass.
+     */
+    int __fastcall SetPendingFogRange(
         zClass_NodePartial * world,
         float nearRange,
         float farRange
@@ -355,10 +381,12 @@ namespace zClass_World {
         return 0;
     }
 
-    // Reimplements 0x450b80: zClass_World::GetPendingFogDensity
-    // (GameZRecoil/zClass/cls_world.c)
-    int __fastcall
-    GetPendingFogDensity(
+    /**
+     * Reimplements 0x450b80: zClass_World::GetPendingFogDensity.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
+     * Purpose: return the staged fog density value from the world data.
+     */
+    int __fastcall GetPendingFogDensity(
         zClass_NodePartial * world,
         float *outDensity
     ) {
@@ -367,10 +395,12 @@ namespace zClass_World {
         return 0;
     }
 
-    // Reimplements 0x450b90: zClass_World::GetPendingFogState
-    // (GameZRecoil/zClass/cls_world.c)
-    int __fastcall
-    GetPendingFogState(
+    /**
+     * Reimplements 0x450b90: zClass_World::GetPendingFogState.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
+     * Purpose: return the staged fog state from the world data.
+     */
+    int __fastcall GetPendingFogState(
         zClass_NodePartial * world,
         int *outState
     ) {
@@ -379,8 +409,11 @@ namespace zClass_World {
         return 0;
     }
 
-    // Reimplements 0x450ba0: zClass_World::GetPendingFogColorRgb01
-    // (GameZRecoil/zClass/cls_world.c)
+    /**
+     * Reimplements 0x450ba0: zClass_World::GetPendingFogColorRgb01.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
+     * Purpose: return the staged fog RGB color values from the world data.
+     */
     int __fastcall GetPendingFogColorRgb01(
         zClass_NodePartial * world,
         float *outRed,
@@ -394,10 +427,13 @@ namespace zClass_World {
         return 0;
     }
 
-    // Reimplements 0x450bc0: zClass_World::GetPendingFogRange
-    // (GameZRecoil/zClass/cls_world.c)
-    int __fastcall
-    GetPendingFogRange(
+    /**
+     * Reimplements 0x450bc0: zClass_World::GetPendingFogRange.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
+     * Purpose: return the staged near and far fog distance range from the
+     * world data.
+     */
+    int __fastcall GetPendingFogRange(
         zClass_NodePartial * world,
         float *outNearRange,
         float *outFarRange
@@ -408,10 +444,13 @@ namespace zClass_World {
         return 0;
     }
 
-    // Reimplements 0x450be0: zClass_World::GetPendingFogAltitudeRange
-    // (GameZRecoil/zClass/cls_world.c)
-    int __fastcall
-    GetPendingFogAltitudeRange(
+    /**
+     * Reimplements 0x450be0: zClass_World::GetPendingFogAltitudeRange.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
+     * Purpose: return the staged vertical fog altitude bounds from the world
+     * data.
+     */
+    int __fastcall GetPendingFogAltitudeRange(
         zClass_NodePartial * world,
         float *outMinAlt,
         float *outMaxAlt
@@ -422,10 +461,13 @@ namespace zClass_World {
         return 0;
     }
 
-    // Reimplements 0x450b60: zClass_World::SetPendingFogDensity
-    // (D:\Proj\GameZRecoil\zClass\cls_world.c)
-    int __fastcall
-    SetPendingFogDensity(
+    /**
+     * Reimplements 0x450b60: zClass_World::SetPendingFogDensity.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
+     * Purpose: stage the pending fog density for the next world fog
+     * application pass.
+     */
+    int __fastcall SetPendingFogDensity(
         zClass_NodePartial * world,
         float density
     ) {
@@ -749,9 +791,13 @@ namespace zClass_World {
         return 0;
     }
 
-    // Reimplements 0x4500b0: zClass_World::RebuildAreaBounds
-    int __fastcall
-    RebuildAreaBounds(zClass_WorldDataPartial * /*worldData*/, zWorldAreaPartial * area) {
+    /**
+     * Reimplements 0x4500b0: zClass_World::RebuildAreaBounds.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
+     * Purpose: recompute an area's active Y bounds and bounding sphere from
+     * child world bounding boxes.
+     */
+    int __fastcall RebuildAreaBounds(zClass_WorldDataPartial * /*worldData*/, zWorldAreaPartial * area) {
         const short childCount = area->childCount;
         // Recomputes bbox-present flag 0x100; ApplyPendingFogSettings clears
         // dirty flag 0x01 after this helper.
@@ -815,7 +861,12 @@ namespace zClass_World {
         return 0;
     }
 
-    // Reimplements 0x450530: zClass_World::ApplyPendingFogSettings
+    /**
+     * Reimplements 0x450530: zClass_World::ApplyPendingFogSettings.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
+     * Purpose: apply staged world fog changes and queued area-bound updates,
+     * then clear the pending flags.
+     */
     int __fastcall ApplyPendingFogSettings(zClass_NodePartial * world) {
         zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         if (zClass_TypeList::CountNodes(0x0d) > 1) {
@@ -885,7 +936,12 @@ namespace zClass_World {
         return 0;
     }
 
-    // Reimplements 0x450840: zClass_World::WorldRectToGridIndex
+    /**
+     * Reimplements 0x450840: zClass_World::WorldRectToGridIndex.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
+     * Purpose: convert a world-space X/Z rectangle to a valid grid cell when
+     * it fits inside the partition inclusion tolerances.
+     */
     int __fastcall WorldRectToGridIndex(
         zClass_NodePartial * world,
         int *outGridCol,
@@ -1047,10 +1103,13 @@ namespace zClass_World {
         return 0;
     }
 
-    // Reimplements 0x450a00: zClass_World::GetAreaPartitionAtGrid
-    // (D:\Proj\GameZRecoil\zClass\cls_world.c)
-    zWorldAreaPartial *__fastcall
-    GetAreaPartitionAtGrid(
+    /**
+     * Reimplements 0x450a00: zClass_World::GetAreaPartitionAtGrid.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
+     * Purpose: validate the world node/data pointers and return the area
+     * partition at a grid column and row.
+     */
+    zWorldAreaPartial *__fastcall GetAreaPartitionAtGrid(
         zClass_NodePartial * world,
         int gridCol,
         int gridRow
@@ -1083,9 +1142,13 @@ namespace zClass_World {
         );
     }
 
-    // Reimplements 0x450a70: zClass_World::EnsureGridCellDisplayPosition
-    int __fastcall
-    EnsureGridCellDisplayPosition(
+    /**
+     * Reimplements 0x450a70: zClass_World::EnsureGridCellDisplayPosition.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
+     * Purpose: ensure a grid cell is queued for display-position/bounds
+     * refresh when it is not already pending.
+     */
+    int __fastcall EnsureGridCellDisplayPosition(
         zClass_NodePartial * world,
         int gridCol,
         int gridRow

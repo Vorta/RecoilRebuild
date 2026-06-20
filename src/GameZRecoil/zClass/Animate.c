@@ -35,8 +35,11 @@ namespace {
     }
 
     /**
-     * Original static helper recovered with zClass_Animate::RenderTraverse.
-     *
+     * Original-source helper evidence: no standalone retail function exists.
+     * Observed in caller 0x44b710 (D:\Proj\GameZRecoil\zClass\Animate.c);
+     * BN keeps the bounds refresh and sphere clip-mask sequence inline in the
+     * Animate traversal body, matching the traversal helper pattern also seen
+     * in 0x44af60.
      * Purpose: refresh animated-node bounds when needed and run the sphere
      * frustum cull used by animate render traversal.
      */
@@ -77,8 +80,11 @@ namespace {
     }
 
     /**
-     * Original static helper recovered with zClass_Animate::RenderTraverse.
-     *
+     * Original-source helper evidence: no standalone retail function exists.
+     * Observed in caller 0x44b710 (D:\Proj\GameZRecoil\zClass\Animate.c);
+     * BN keeps the render callback, range-fade display-instance writes, clip
+     * mask push, and child dispatch loop inline in the traversal body, matching
+     * the traversal helper pattern also seen in 0x44af60.
      * Purpose: render the animated node, apply range-fade display-instance
      * state, and dispatch child traversal under the current clip mask.
      */

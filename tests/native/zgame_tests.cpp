@@ -367,6 +367,8 @@ extern "C" int zmodel_display_init_smoke() {
     g_zVideo_ActiveRendererPath = 0;
     gModel_DefaultGraphicsFlags = 0;
     g_zModel_GraphicsFlagsOption = nullptr;
+    gModel_RenderFn = nullptr;
+    gModel_ClipMaskStackTop = nullptr;
     g_Variant_CurrentTag.count = 3;
     g_Variant_CurrentTag.tags[0] = 1;
 
@@ -376,6 +378,8 @@ extern "C" int zmodel_display_init_smoke() {
         gModel_FogDistanceInvRange != 0.005f || gModel_FogHeightHigh != 300.0f ||
         gModel_FogHeightLow != 200.0f || gModel_FogHeightInvRange != 0.01f ||
         gModel_FogDensity != 2.0f || g_zModel_InverseZTolerance != 0.01f ||
+        gModel_RenderFn != zModel::RenderNodeSoftware ||
+        gModel_ClipMaskStackTop != gModel_ClipMaskStack ||
         gModel_DefaultGraphicsFlags != -1 ||
         g_zModel_GraphicsFlagsOption != &gModel_DefaultGraphicsFlags ||
         g_Variant_CurrentTag.count != 0 || g_Variant_CurrentTag.tags[0] != 0xff) {
@@ -393,6 +397,8 @@ extern "C" int zmodel_display_init_smoke() {
 
     const bool hardwareOk = zModel_Display_Init() == 0 && g_zModel_InverseZTolerance == 0.02f &&
                             g_zModel_HardwareInverseZTolerance == 0.02f &&
+                            gModel_RenderFn == zModel::RenderNodeSoftware &&
+                            gModel_ClipMaskStackTop == gModel_ClipMaskStack &&
                             g_zModel_GraphicsFlagsOption == &option;
 
     g_zGame_Options_OptionListHead = nullptr;

@@ -82,6 +82,11 @@ float g_OptCatalogDamageFeedbackIntensityScalar = 0.0f;
 float g_OptCatalogNextSpawnScale = 0.0f;
 float g_OptCatalogRuntimeDeltaTime = 0.0f;
 float g_OptCatalogRuntimeNowSec = 0.0f;
+/**
+ * Reimplements data 0x778938: g_OptCatalogThermalGlowFreeList.
+ * Purpose: stores the head of the pooled thermal glow light free list shared
+ * by OptCatalog runtime effects and the Light lifecycle functions.
+ */
 zClass_NodePartial *g_OptCatalogThermalGlowFreeList = 0;
 OptCatalogRuntimeInstanceStorage *g_OptCatalog_MineIteratorCursor = 0;
 zReader::Node *g_OptCatalogLoadedTreeRoot = 0;
@@ -135,6 +140,15 @@ namespace {
     const float kOptCatalogTrailDamageBlendLimit = 0.25f;
     const double kOptCatalogPi = 3.14159265358979323846;
     const char *kZWeaponInitSourceFile = "D:\\Proj\\GameZRecoil\\zWeapon\\zwep_init.c";
+    /**
+     * Reimplements data 0x4e4600: g_zWeapon_BeamReflectNameFmt.
+     * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
+     * BN data shape: char[15] "BeamReflect_%d"; xref only from
+     * OptCatalog::CreateTrailRuntimeState at 0x4b1ec0.
+     * Purpose: format the inactive BeamReflect segment node names created
+     * for OptCatalog trail runtime state.
+     */
+    const char g_zWeapon_BeamReflectNameFmt[15] = "BeamReflect_%d";
 
     struct OptCatalogQueuedImpactRecord {
         OptCatalogEntryDef *entry;
@@ -1421,7 +1435,7 @@ namespace OptCatalog {
             char nodeName[40];
             sprintf(
                 nodeName,
-                "BeamReflect_%d",
+                g_zWeapon_BeamReflectNameFmt,
                 i
             );
             zClass_Class::gwNodeSetName(

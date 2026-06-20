@@ -110,9 +110,11 @@ float g_inverseDepthScale = 0.0f;
 float g_spanDepthBias = 0.0f;
 float g_spanDepthBiasPlusOne = 0.0f;
 float g_spanDepthBiasPlusOneInv = 0.0f;
+// BN BSS order: Color (0x631dd0), Staged (0x631e70), Direct (0x631f10),
+// Active (0x631fb0).
 FogParamsPartial g_fogColorParams = {0};
-FogParamsPartial g_fogTargetParamsDirect = {0};
 FogParamsPartial g_fogTargetParamsStaged = {0};
+FogParamsPartial g_fogTargetParamsDirect = {0};
 FogParamsPartial g_fogParamsActive = {0};
 // zRndr span-occlusion subsystem state from zRndr_Draw.cpp. BN names these as
 // gRndr_Span* globals; g_spanIterPrevLink stores the previous node observed in
@@ -131,9 +133,10 @@ int g_spanColumnCount = 0;
 int g_spanColumnCountPadded = 0;
 SpanBuildProc g_pfnBuildSpanList = 0;
 SpanBuildProc g_pfnBuildSpanListSecondary = 0;
-// Overlay row callback and row-blend factors from zRndr_Overlay.cpp. The
-// software flush path rewrites the callback for 555/565 and scalar/MMX rows,
-// then row leaves consume the premultiplied packed color and destination scale.
+// zRndr_Overlay.cpp software overlay callback/global owner. FlushSw selects
+// one of the four 555/565 scalar/MMX row leaves, computes the premultiplied
+// source color and destination scale, and the row leaves consume this state
+// without owning independent data.
 OverlayBlendRowProc g_pfnOverlayBlendRow = 0;
 unsigned int g_swOverlayPremulPacked = 0;
 unsigned int g_swOverlayPremulPackedRot16 = 0;
@@ -141,11 +144,12 @@ int g_swOverlayDstScale5 = 0;
 unsigned int g_swOverlayPremulRPair = 0;
 unsigned int g_swOverlayPremulBPair = 0;
 unsigned int g_swOverlayPremulGPair = 0;
+// zRndr cached pixel-pack bank. SelectSpanRoutines refreshes this authored
+// cache through zVideo PixelPack getters; fog and span color math consume the
+// cached zRndr scalars rather than reading the upstream provider global.
 int g_pixelPackRedBits = 0;
 int g_pixelPackGreenBits = 0;
 int g_pixelPackBlueBits = 0;
-// Pixel-pack masks consumed by fog and span color math: red 0x57de40,
-// green 0x57de44, and blue 0x57de48.
 unsigned int g_pixelPackRedMask = 0;
 unsigned int g_pixelPackGreenMask = 0;
 unsigned int g_pixelPackBlueMask = 0;
@@ -169,9 +173,9 @@ unsigned char *g_spanActiveTexPixels = 0;
 unsigned short *g_spanActiveTexPalette = 0;
 int g_spanActiveTexUStepFixed20 = 0;
 int g_spanActiveTexVStepFixed20 = 0;
-// BN names this BSS pointer gRndr_CurrentSpanBaseAddr. Most span leaves use it
-// as an ordinary unsigned-short destination cursor; the opaque/switch-vshift
-// push-write leaves are separate ESP-pivot source-shape debt.
+// BN names this BSS pointer gRndr_CurrentSpanBaseAddr. Span leaves use it as an
+// ordinary unsigned-short destination cursor; the switch-vshift leaves that
+// also use gRndr_SavedEspSlot are separate ESP-pivot source-shape debt.
 unsigned short *g_spanCurrentSpanBaseAddr = 0;
 int g_spanActiveShadeFixed16 = 0;
 int g_spanActiveShadeStepFixed16 = 0;
@@ -809,8 +813,7 @@ void InsertPendingSpanSorted(
     int *spanCount
 ) {
     *spanCount = 0;
-    if (g_spanColumnHeadTable == 0 || g_spanAllocCursor == 0 || columnIndex < 0 ||
-        columnIndex >= g_spanColumnCountPadded) {
+    if (g_spanColumnHeadTable == 0 || g_spanAllocCursor == 0 || columnIndex < 0) {
         return;
     }
 
@@ -873,8 +876,7 @@ void InsertPendingSpanNoDepthTest(
     int *spanCount
 ) {
     *spanCount = 0;
-    if (g_spanColumnHeadTable == 0 || g_spanAllocCursor == 0 || columnIndex < 0 ||
-        columnIndex >= g_spanColumnCountPadded) {
+    if (g_spanColumnHeadTable == 0 || g_spanAllocCursor == 0 || columnIndex < 0) {
         return;
     }
 
@@ -1002,8 +1004,7 @@ void BuildVisibleSpanListWithDepthTest(
     int *spanCount
 ) {
     *spanCount = 0;
-    if (g_spanColumnHeadTable == 0 || g_spanAllocCursor == 0 || columnIndex < 0 ||
-        columnIndex >= g_spanColumnCountPadded) {
+    if (g_spanColumnHeadTable == 0 || g_spanAllocCursor == 0 || columnIndex < 0) {
         return;
     }
 
@@ -1159,8 +1160,7 @@ void InsertPendingSpanWithDepthTest(
     int *spanCount
 ) {
     *spanCount = 0;
-    if (g_spanColumnHeadTable == 0 || g_spanAllocCursor == 0 || columnIndex < 0 ||
-        columnIndex >= g_spanColumnCountPadded) {
+    if (g_spanColumnHeadTable == 0 || g_spanAllocCursor == 0 || columnIndex < 0) {
         return;
     }
 
@@ -1534,6 +1534,8 @@ int InitGlobals() {
  * Source-shape evidence: BN zRndr_Overlay.cpp loads and stores two 555 pixels
  * per uint32_t using the precomputed overlay premul and destination-scale globals;
  * the row extent is the inclusive right-left delta passed by FlushSw.
+ * Owner: shared zRndr_Overlay.cpp overlay callback/global owner with 0x48d7a0,
+ * 0x48d4b0, 0x48d510, and 0x48d5f0.
  * Purpose: Blend one 555 overlay row using the cached software overlay alpha and premultiplied source color.
  */
 void __fastcall OverlayBlendRow555_Scalar(
@@ -1561,6 +1563,8 @@ void __fastcall OverlayBlendRow555_Scalar(
  * Reimplements 0x48d4b0: zRndr::OverlayBlendRow565_Scalar
  * Source-shape evidence: BN zRndr_Overlay.cpp matches the 555 row shape with
  * two 565 pixels per uint32_t and the inclusive right-left delta row extent.
+ * Owner: shared zRndr_Overlay.cpp overlay callback/global owner with 0x48d7a0,
+ * 0x48d450, 0x48d510, and 0x48d5f0.
  * Purpose: Blend one 565 overlay row using the active pixel masks and cached overlay alpha.
  */
 void __fastcall OverlayBlendRow565_Scalar(
@@ -1589,6 +1593,8 @@ void __fastcall OverlayBlendRow565_Scalar(
  * four 16-bit pixels per MMX qword before emms. The current C++ preserves
  * tier C behavior with the same four-pixel grouping and premul-pair globals
  * while the retail MMX instruction source shape remains pending.
+ * Owner: shared zRndr_Overlay.cpp overlay callback/global owner with 0x48d7a0,
+ * 0x48d450, 0x48d4b0, and 0x48d5f0.
  * Purpose: Preserve the MMX row-blend contract with scalar behavior while the retail MMX source shape remains pending.
  */
 void __fastcall OverlayBlendRow555_Mmx(
@@ -1626,6 +1632,8 @@ void __fastcall OverlayBlendRow555_Mmx(
  * qword before emms. The current C++ preserves tier C behavior with the same
  * four-pixel grouping and premul-pair globals while the retail MMX instruction
  * source shape remains pending.
+ * Owner: shared zRndr_Overlay.cpp overlay callback/global owner with 0x48d7a0,
+ * 0x48d450, 0x48d4b0, and 0x48d510.
  * Purpose: Preserve the MMX row-blend contract with scalar behavior while the retail MMX source shape remains pending.
  */
 void __fastcall OverlayBlendRow565_Mmx(
@@ -5243,9 +5251,9 @@ void __fastcall FogColor_SetRgb01Clamped(
     const unsigned int blue = (unsigned int)(color->blue * 255.0f + 0.5f);
     FogTarget565_SetPackedColorAndRamp(
         &g_fogColorParams,
-        (red << g_zVideo_PixelPack.packedBase) & (int)(g_zVideo_PixelPack.rMask),
-        (green << g_zVideo_PixelPack.sumMinus8) & (int)(g_zVideo_PixelPack.gMask),
-        blue >> g_zVideo_PixelPack.bShiftTo8
+        (red << g_pixelPackRedShift) & (int)(g_pixelPackRedMask),
+        (green << g_pixelPackGreenShift) & (int)(g_pixelPackGreenMask),
+        blue >> g_pixelPackBlueShift
     );
 }
 
@@ -5918,7 +5926,7 @@ void __fastcall zRndr_SpanOcclusion_BuildSpanListFast(
  * Purpose: test whether the pending span node remains visible in one occlusion
  * column.
  *
- * Evidence: BN validates null/out-of-range guards, copies
+ * Evidence: BN validates output clearing and column table lookup, copies
  * gRndr_SpanAllocCursor into a local candidate span, walks the column head
  * list, uses zRndr_SpanOcclusion_TestSpanDepthOrderPair for overlap depth
  * decisions, trims candidate ranges, and writes the out visibility flag.
@@ -5928,8 +5936,7 @@ void __fastcall zRndr_SpanOcclusion_TestColumnVisibility(
     int *isVisible
 ) {
     *isVisible = 0;
-    if (zRndr::g_spanColumnHeadTable == 0 || zRndr::g_spanAllocCursor == 0 || columnIndex < 0 ||
-        columnIndex >= zRndr::g_spanColumnCountPadded) {
+    if (zRndr::g_spanColumnHeadTable == 0 || zRndr::g_spanAllocCursor == 0 || columnIndex < 0) {
         return;
     }
 
@@ -6462,36 +6469,23 @@ void __fastcall zRndr_DrawLine16_Clipped(
  * Reimplements 0x4997d0: zRndr_FillSpan16Opaque
  * Purpose: Fill the active reverse span with one opaque 16-bit color.
  *
- * Evidence: BN pivots ESP from gRndr_CurrentSpanBaseAddr and writes the span
- * backward with push ax/eax after forming a packed two-pixel value. This C++
- * body models the odd-word and paired-dword write order while the retail
- * ESP-pivot source-family shape remains unresolved.
+ * Evidence: BN reads gRndr_CurrentSpanBaseAddr, computes the end of the span,
+ * and writes pixels backward with push ax/eax. It does not touch
+ * gRndr_SavedEspSlot, so source keeps this leaf as a typed reverse fill rather
+ * than part of the switch-vshift ESP-pivot source family.
  */
 void __fastcall zRndr_FillSpan16Opaque(
     int packedColor16,
     int pixelCount
 ) {
-    const unsigned int packedPair = ((unsigned int)(packedColor16) << 16) | (unsigned int)(packedColor16);
+    const unsigned short color16 = (unsigned short)(packedColor16);
     unsigned short *cursor = zRndr::g_spanCurrentSpanBaseAddr + pixelCount;
+    unsigned int remaining = (unsigned int)(pixelCount);
 
-    if ((pixelCount & 1) != 0) {
+    while (remaining != 0) {
         --cursor;
-        *cursor = (unsigned short)(packedColor16);
-    }
-
-    unsigned int pairCount = (unsigned int)(pixelCount) >> 1;
-    if ((pairCount & 1) != 0) {
-        cursor -= 2;
-        *((unsigned int *)(cursor)) = packedPair;
-    }
-
-    pairCount >>= 1;
-    while (pairCount != 0) {
-        cursor -= 2;
-        *((unsigned int *)(cursor)) = packedPair;
-        cursor -= 2;
-        *((unsigned int *)(cursor)) = packedPair;
-        --pairCount;
+        *cursor = color16;
+        --remaining;
     }
 }
 
@@ -8139,6 +8133,8 @@ void __fastcall zRndr_OverlayRect_Submit(
  * Source-shape evidence: BN selects the 555/565 scalar or MMX row callback,
  * computes packed premul and destination-scale globals through x87/_ftol, then
  * calls the selected row callback for each FX-surface row.
+ * Owner: shared zRndr_Overlay.cpp overlay callback/global owner with row leaves
+ * 0x48d450, 0x48d4b0, 0x48d510, and 0x48d5f0.
  * Purpose: Blend the staged software overlay rectangle into the active 16-bit video surface.
  */
 void zRndr_OverlayRect_FlushSw() {

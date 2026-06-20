@@ -28,30 +28,116 @@ const int kPreparedScriptMagic = 0x08971119;
 const int kPreparedScriptVersion = 7;
 const double kDegreesToRadians = 0.01745329251994;
 const char kGlobalContextSearchPath[] = ".;zbd";
-char g_zInterp_PreparedIndexFileNameText[] = "interp.zbd";
 const char kCommandNameWeaponSetMaxTetherAltitude[] = "WeaponSetMaxTetherAltitude";
 const char kTokenDelimiters[] = ", \t\n";
-char g_zInterp_MacroExpansionScratch[2048];
+/**
+ * Reimplements data 0x56c378: g_zInterp_MacroExpansionScratch.
+ * Data owner: zInterp_Context initialized globals.
+ * BN evidence: 0x56c378 is char[0x400] BSS; larger storage would overlap
+ * distinct globals at 0x56c780, 0x56c784, and 0x56c788.
+ *
+ * Purpose: shared scratch buffer used while expanding macro references.
+ */
+char g_zInterp_MacroExpansionScratch[1024];
 } // namespace
 
-int g_zInterp_EnablePreparedScripts = 0;
+extern char g_zInterp_PreparedIndexFileNameStr[];
+
+/**
+ * Reimplements data 0x4e48f0: g_zInterp_EnablePreparedScripts.
+ * Data owner: zInterp_Context initialized globals.
+ * BN evidence: 0x4e48f0 contains 01 00 00 00.
+ *
+ * Purpose: enables loading prepared script streams when the index is present.
+ */
+int g_zInterp_EnablePreparedScripts = 1;
+
+/**
+ * Reimplements data 0x575ddc: g_zInterp_VerboseLevel.
+ * Data owner: zInterp_Context initialized globals.
+ *
+ * Purpose: controls script parser logging verbosity.
+ */
 int g_zInterp_VerboseLevel = 0;
+
+/**
+ * Reimplements data 0x56bf78: g_zInterp_LineBuffer.
+ * Data owner: zInterp_Context initialized globals.
+ *
+ * Purpose: shared line buffer used while reading and running script input.
+ */
 char g_zInterp_LineBuffer[1024] = {0};
+
+/**
+ * Reimplements data 0x4e4988: g_zInterp_AssignToken_Equal.
+ * Data owner: zInterp_Context initialized globals.
+ *
+ * Purpose: single-character assignment token used by variable binding.
+ */
 char g_zInterp_AssignToken_Equal = '=';
+
+/**
+ * Reimplements data 0x56c788: g_zInterp_NodeUserDataScratch.
+ * Data owner: zInterp_Context initialized globals.
+ *
+ * Purpose: temporary user-data transfer slot for zClass node callbacks.
+ */
 unsigned int g_zInterp_NodeUserDataScratch = 0;
+
+/**
+ * Reimplements data 0x56c784: g_zInterp_CurrentCycleTextureDi.
+ * Data owner: zInterp_Context initialized globals.
+ *
+ * Purpose: holds the current display-instance cursor for texture commands.
+ */
 zDiPartial *g_zInterp_CurrentCycleTextureDi = 0;
+
+/**
+ * Reimplements data 0x4edb78: g_zInterp_GlobalContext.
+ * Data owner: zInterp_GlobalContext initialized instance.
+ *
+ * Purpose: process-wide script interpreter context constructed at startup.
+ */
 zInterp_GlobalContext g_zInterp_GlobalContext;
-char *g_zInterp_PreparedIndexFileName = g_zInterp_PreparedIndexFileNameText;
+
+/**
+ * Reimplements data 0x4e48f4: g_zInterp_PreparedIndexFileName.
+ * Data owner: zInterp_Context initialized globals.
+ * BN evidence: pointer storage follows g_zInterp_EnablePreparedScripts and
+ * points at the mutable prepared-index filename storage immediately after it.
+ *
+ * Purpose: default prepared script index path passed to the global context.
+ */
+char *g_zInterp_PreparedIndexFileName = g_zInterp_PreparedIndexFileNameStr;
+
+/**
+ * Reimplements data 0x4e48f8: g_zInterp_PreparedIndexFileNameStr.
+ * Data owner: zInterp_Context initialized globals.
+ * BN evidence: mutable "interp.zbd" storage follows the prepared-index pointer.
+ *
+ * Purpose: backing storage for the default prepared script index path.
+ */
+char g_zInterp_PreparedIndexFileNameStr[] = "interp.zbd";
 
 namespace {
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original inline helper evidence: no standalone retail function observed;
+ * address-backed callers in this file use the same current-command idiom.
+ *
+ * Purpose: return the current command token when token storage is populated.
+ */
 char *CurrentCommandToken(
     zInterp_Context *ctx
 ) {
     return ctx->tokenCount > 0 ? ctx->tokenList[0] : 0;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original inline helper evidence: no standalone retail function observed;
+ * recovered from repeated zInterp_Context::DispatchCoreCommand comparisons.
+ *
+ * Purpose: compare the current command token against a literal prefix length.
+ */
 int CommandIs(
     zInterp_Context *ctx,
     const char *text
@@ -62,7 +148,12 @@ int CommandIs(
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original inline helper evidence: no standalone retail function observed;
+ * recovered from exact zInterp_Context::DispatchCoreCommand comparisons.
+ *
+ * Purpose: compare the current command token against a full literal string.
+ */
 int CommandIsExact(
     zInterp_Context *ctx,
     const char *text
@@ -70,7 +161,12 @@ int CommandIsExact(
     return ctx->CommandEquals(text);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original inline helper evidence: no standalone retail function observed;
+ * recovered from prefix zInterp_Context::DispatchCoreCommand comparisons.
+ *
+ * Purpose: compare the current command token against a named prefix.
+ */
 int CommandHasPrefix(
     zInterp_Context *ctx,
     const char *text
@@ -82,29 +178,49 @@ int CommandHasPrefix(
 }
 } // namespace
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: zInterp_Context default virtual dispatch hook.
+ *
+ * Purpose: report an unhandled command token through the parser error path.
+ */
 int zInterp_Context::DispatchHook(
     char *commandToken
 ) {
     return ReportParseError(commandToken);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: zInterp_Context default virtual post-dispatch hook.
+ *
+ * Purpose: report an unhandled command token after core dispatch.
+ */
 int zInterp_Context::PostDispatchHook(
     char *commandToken
 ) {
     return ReportParseError(commandToken);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: zInterp_Context deferred virtual hook slot.
+ * BN evidence: zInterp vtable slot 2 points at shared local no-op 0x414b50;
+ * the same code is also referenced by non-zInterp data, so this declaration
+ * documents the zInterp slot contract without claiming exclusive ownership.
+ *
+ * Purpose: provide a default deferred-command hook that accepts the command.
+ */
 int zInterp_Context::DeferredDispatchHook(
     char *
 ) {
     return 0;
 }
 
-// Reimplements 0x4c58c0: zInterp_Context::DefaultDispatchHook
-// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+/**
+ * Reimplements 0x4c58c0: zInterp_Context::DefaultDispatchHook.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: accept the default zClass node dispatch callback after touching
+ * the node user-data provider entry.
+ */
 int __stdcall zInterp_Context::DefaultDispatchHook(
     zClass_NodePartial *node
 ) {
@@ -119,8 +235,12 @@ int __stdcall zInterp_Context::DefaultDispatchHook(
 }
 
 namespace zInterp_Object3D {
-// Reimplements 0x4c59e0: zInterp_Object3D::DefaultRenderAction
-// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+/**
+ * Reimplements 0x4c59e0: zInterp_Object3D::DefaultRenderAction.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: update scrolling textures for a node's display-instance payload.
+ */
 int __fastcall DefaultRenderAction(
     zClass_NodePartial *node
 ) {
@@ -132,8 +252,13 @@ int __fastcall DefaultRenderAction(
     return zModel_Instance_UpdateScrollingTexturesIfNeeded((zModel_InstancePartial *)(userData));
 }
 
-// Reimplements 0x4c5a00: zInterp_Object3D::ScrollAlwaysTickAction
-// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+/**
+ * Reimplements 0x4c5a00: zInterp_Object3D::ScrollAlwaysTickAction.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: walk the context-owned always-scroll list and run the texture
+ * update action for each payload node.
+ */
 void __fastcall ScrollAlwaysTickAction(
     zClass_NodePartial *wrapperNode
 ) {
@@ -151,8 +276,12 @@ void __fastcall ScrollAlwaysTickAction(
 }
 } // namespace zInterp_Object3D
 
-// Reimplements 0x4c1b30: zInterp_Context::Logf
-// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+/**
+ * Reimplements 0x4c1b30: zInterp_Context::Logf.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: forward formatted parser logging to the context callback.
+ */
 void zInterp_Context::Logf(
     zInterp_Context *ctx,
     const char *fmt,
@@ -172,8 +301,12 @@ void zInterp_Context::Logf(
     }
 }
 
-// Reimplements 0x4c5520: zInterp_Context::ReportErrorf
-// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+/**
+ * Reimplements 0x4c5520: zInterp_Context::ReportErrorf.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: mark the current line failed and forward formatted parser logging.
+ */
 void zInterp_Context::ReportErrorf(
     zInterp_Context *ctx,
     const char *fmt,
@@ -194,14 +327,22 @@ void zInterp_Context::ReportErrorf(
     }
 }
 
-// Reimplements 0x4c1b20: zInterp_Context::IncErrorCount
-// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+/**
+ * Reimplements 0x4c1b20: zInterp_Context::IncErrorCount.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: count one parser error for the current command line.
+ */
 void zInterp_Context::IncErrorCount() {
     ++errorCount;
 }
 
-// Reimplements 0x4c2090: zInterp_Context::ReportParseError
-// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+/**
+ * Reimplements 0x4c2090: zInterp_Context::ReportParseError.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: count an unhandled command parse error and report failure.
+ */
 int zInterp_Context::ReportParseError(
     char *
 ) {
@@ -209,8 +350,12 @@ int zInterp_Context::ReportParseError(
     return 1;
 }
 
-// Reimplements 0x4c15f0: zInterp_Context::FindMacroValue
-// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+/**
+ * Reimplements 0x4c15f0: zInterp_Context::FindMacroValue.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: locate a macro entry by name and optionally return its table slot.
+ */
 char * zInterp_Context::FindMacroValue(
     const char *name,
     zInterp_MacroEntry **outEntry
@@ -231,8 +376,12 @@ char * zInterp_Context::FindMacroValue(
     return 0;
 }
 
-// Reimplements 0x4c1710: zInterp_Context::IsMacroTrue
-// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+/**
+ * Reimplements 0x4c1710: zInterp_Context::IsMacroTrue.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: test whether a named macro currently holds the TRUE literal.
+ */
 int zInterp_Context::IsMacroTrue(
     const char *name
 ) {
@@ -246,8 +395,12 @@ int zInterp_Context::IsMacroTrue(
     ) == 0;
 }
 
-// Reimplements 0x4c1780: zInterp_Context::SetMacro
-// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+/**
+ * Reimplements 0x4c1780: zInterp_Context::SetMacro.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: create or update one dynamically allocated macro table entry.
+ */
 int zInterp_Context::SetMacro(
     const char *name,
     const char *value
@@ -286,8 +439,12 @@ int zInterp_Context::SetMacro(
     return 1;
 }
 
-// Reimplements 0x4c1670: zInterp_Context::ClearMacroTable
-// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+/**
+ * Reimplements 0x4c1670: zInterp_Context::ClearMacroTable.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: free all macro names, values, and table storage for the context.
+ */
 void zInterp_Context::ClearMacroTable() {
     for (unsigned int macroIndex = 0; macroIndex < macroCount; ++macroIndex) {
         free(macroTable[macroIndex].name);
@@ -301,8 +458,12 @@ void zInterp_Context::ClearMacroTable() {
     macroCount = 0;
 }
 
-// Reimplements 0x4c16c0: zInterp_Context::ClearVarTable
-// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+/**
+ * Reimplements 0x4c16c0: zInterp_Context::ClearVarTable.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: free variable table names and release the context's table storage.
+ */
 void zInterp_Context::ClearVarTable() {
     for (unsigned int varIndex = 0; varIndex < varCount; ++varIndex) {
         free(varTable[varIndex].name);
@@ -315,8 +476,13 @@ void zInterp_Context::ClearVarTable() {
     varCount = 0;
 }
 
-// Reimplements 0x414ad0: zInterp_GlobalContext::DispatchHook
-// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+/**
+ * Reimplements 0x414ad0: zInterp_GlobalContext::DispatchHook.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: handle global WeaponSetMaxTetherAltitude commands before the
+ * generic context dispatch path reports them as unhandled.
+ */
 int zInterp_GlobalContext::DispatchHook(
     char *commandToken
 ) {
@@ -334,8 +500,13 @@ int zInterp_GlobalContext::DispatchHook(
     return 0;
 }
 
-// Reimplements 0x4c0d20: zInterp_Context::Constructor
-// (D:\Proj\GameZRecoil\zInterp\interp_context.c)
+/**
+ * Reimplements 0x4c0d20: zInterp_Context::Constructor.
+ * Source path: D:\Proj\GameZRecoil\zInterp\interp_context.c.
+ *
+ * Purpose: initialize one parser context, including prepared-script index
+ * state, macro/variable tables, runtime scratch storage, and scroll callbacks.
+ */
 zInterp_Context * zInterp_Context::Constructor(
     const char *searchPathText,
     const char *preparedIndexPath
@@ -391,8 +562,13 @@ zInterp_Context * zInterp_Context::Constructor(
     return this;
 }
 
-// Reimplements 0x414ab0: zInterp_GlobalContext::Constructor
-// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+/**
+ * Reimplements 0x414ab0: zInterp_GlobalContext::Constructor.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: construct the process-wide interpreter with the retail search path
+ * and prepared script index filename.
+ */
 zInterp_Context * zInterp_GlobalContext::Constructor() {
     zInterp_Context *const context = (zInterp_Context *)(this);
     context->Constructor(
@@ -402,33 +578,55 @@ zInterp_Context * zInterp_GlobalContext::Constructor() {
     return context;
 }
 
-// Reimplements 0x414a70: zInterp_GlobalContext::StaticInit
-// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+/**
+ * Reimplements 0x414a70: zInterp_GlobalContext::StaticInit.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: static initializer wrapper for the process-wide interpreter.
+ */
 zInterp_Context *zInterp_GlobalContext::StaticInit() {
     return ((zInterp_GlobalContext *)(&g_zInterp_GlobalContext))->Constructor();
 }
 
-// Reimplements 0x414a80: zInterp_GlobalContext::RegisterAtExit
-// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+/**
+ * Reimplements 0x414a80: zInterp_GlobalContext::RegisterAtExit.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: register the global interpreter destructor with the CRT atexit list.
+ */
 int zInterp_GlobalContext::RegisterAtExit() {
     return atexit(AtExitDestructor);
 }
 
-// Reimplements 0x414a90: zInterp_GlobalContext::AtExitDestructor
-// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+/**
+ * Reimplements 0x414a90: zInterp_GlobalContext::AtExitDestructor.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: tear down the process-wide interpreter during CRT shutdown.
+ */
 void zInterp_GlobalContext::AtExitDestructor() {
     g_zInterp_GlobalContext.Destructor();
 }
 
-// Reimplements 0x414a60: zInterp_GlobalContext::StaticInitAndRegisterAtExit
-// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+/**
+ * Reimplements 0x414a60: zInterp_GlobalContext::StaticInitAndRegisterAtExit.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: construct the process-wide interpreter and register its shutdown
+ * callback during static initialization.
+ */
 int zInterp_GlobalContext::StaticInitAndRegisterAtExit() {
     StaticInit();
     return RegisterAtExit();
 }
 
-// Reimplements 0x4c0f70: zInterp_Context::Destroy
-// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+/**
+ * Reimplements 0x4c0f70: zInterp_Context::Destroy.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: clear per-run parser tables, search paths, scroll callbacks, and
+ * pointer-array state while leaving constructor-owned storage intact.
+ */
 void zInterp_Context::Destroy() {
     ClearMacroTable();
     ClearVarTable();
@@ -460,8 +658,12 @@ void zInterp_Context::Destroy() {
     includeDepth = 0;
 }
 
-// Reimplements 0x4c0e50: zInterp_Context::Destructor
-// (D:\Proj\GameZRecoil\zInterp\interp_context.c)
+/**
+ * Reimplements 0x4c0e50: zInterp_Context::Destructor.
+ * Source path: D:\Proj\GameZRecoil\zInterp\interp_context.c.
+ *
+ * Purpose: tear down a context after Destroy has released active runtime state.
+ */
 void zInterp_Context::Destructor() {
     Destroy();
 
@@ -500,8 +702,12 @@ void zInterp_Context::Destructor() {
     scrollAlwaysListCount = 0;
 }
 
-// Reimplements 0x4c58e0: zInterp_Context::RegisterScrollAlwaysNode
-// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+/**
+ * Reimplements 0x4c58e0: zInterp_Context::RegisterScrollAlwaysNode.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: register a node for immediate or driver-driven texture scrolling.
+ */
 int zInterp_Context::RegisterScrollAlwaysNode(
     zClass_NodePartial *node,
     float textureWorldPerMeter,
@@ -562,8 +768,12 @@ int zInterp_Context::RegisterScrollAlwaysNode(
     return 1;
 }
 
-// Reimplements 0x4c1b50: zInterp_Context::EvalConditionExpr
-// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+/**
+ * Reimplements 0x4c1b50: zInterp_Context::EvalConditionExpr.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: evaluate simple macro truth expressions used by ifdef/ifndef.
+ */
 int zInterp_Context::EvalConditionExpr() {
     if (tokenCount == 1) {
         return 0;
@@ -612,8 +822,13 @@ int zInterp_Context::EvalConditionExpr() {
     return result;
 }
 
-// Reimplements 0x4c1250: zInterp_Context::ExpandMacroRefs
-// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+/**
+ * Reimplements 0x4c1250: zInterp_Context::ExpandMacroRefs.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: substitute percent-delimited macro references into a shared scratch
+ * buffer before token parsing consumes the argument.
+ */
 char * zInterp_Context::ExpandMacroRefs(
     char *lineBuf
 ) {
@@ -687,8 +902,12 @@ char * zInterp_Context::ExpandMacroRefs(
     return g_zInterp_MacroExpansionScratch;
 }
 
-// Reimplements 0x4c1990: zInterp_Context::NextToken
-// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+/**
+ * Reimplements 0x4c1990: zInterp_Context::NextToken.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: advance the token cursor and return the macro-expanded token text.
+ */
 char * zInterp_Context::NextToken() {
     const unsigned int tokenIndex = (unsigned int)(tokenReadIndex);
     tokenReadIndex = (int)(tokenIndex + 1);
@@ -705,8 +924,12 @@ char * zInterp_Context::NextToken() {
     return ExpandMacroRefs(token);
 }
 
-// Reimplements 0x4c19c0: zInterp_Context::ParseBoolToken
-// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+/**
+ * Reimplements 0x4c19c0: zInterp_Context::ParseBoolToken.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: parse the next token as an on/true boolean value.
+ */
 int zInterp_Context::ParseBoolToken() {
     char *const token = NextToken();
     if (token == 0) {
@@ -722,8 +945,12 @@ int zInterp_Context::ParseBoolToken() {
     ) == 0;
 }
 
-// Reimplements 0x4c1a00: zInterp_Context::ParseFloatToken
-// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+/**
+ * Reimplements 0x4c1a00: zInterp_Context::ParseFloatToken.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: parse the next token as a floating-point value.
+ */
 float zInterp_Context::ParseFloatToken() {
     char *const token = NextToken();
     if (token == 0) {
@@ -733,8 +960,12 @@ float zInterp_Context::ParseFloatToken() {
     return (float)(atof(token));
 }
 
-// Reimplements 0x4c1a20: zInterp_Context::ParseIntToken
-// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+/**
+ * Reimplements 0x4c1a20: zInterp_Context::ParseIntToken.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: parse the next token as an integer value.
+ */
 int zInterp_Context::ParseIntToken() {
     char *const token = NextToken();
     if (token == 0) {
@@ -744,8 +975,12 @@ int zInterp_Context::ParseIntToken() {
     return atoi(token);
 }
 
-// Reimplements 0x4c1a40: zInterp_Context::FindVarEntry
-// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+/**
+ * Reimplements 0x4c1a40: zInterp_Context::FindVarEntry.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: find a registered script variable entry by name.
+ */
 zInterp_VarEntry * zInterp_Context::FindVarEntry(
     const char *name
 ) {
@@ -762,8 +997,12 @@ zInterp_VarEntry * zInterp_Context::FindVarEntry(
     return 0;
 }
 
-// Reimplements 0x4c1ab0: zInterp_Context::DumpVarEntry
-// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+/**
+ * Reimplements 0x4c1ab0: zInterp_Context::DumpVarEntry.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: log one variable entry according to its stored scalar/string type.
+ */
 void zInterp_Context::DumpVarEntry(
     zInterp_VarEntry *entry
 ) {
@@ -803,8 +1042,12 @@ void zInterp_Context::DumpVarEntry(
     }
 }
 
-// Reimplements 0x4c5480: zInterp_Context::CommandEqualsPrefix
-// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+/**
+ * Reimplements 0x4c5480: zInterp_Context::CommandEqualsPrefix.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: compare the current command token against a caller-supplied prefix.
+ */
 int zInterp_Context::CommandEqualsPrefix(
     const char *prefix,
     unsigned int prefixLen
@@ -821,8 +1064,12 @@ int zInterp_Context::CommandEqualsPrefix(
     ) == 0;
 }
 
-// Reimplements 0x4c54b0: zInterp_Context::CommandEquals
-// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+/**
+ * Reimplements 0x4c54b0: zInterp_Context::CommandEquals.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: compare the current command token against a complete string.
+ */
 int zInterp_Context::CommandEquals(
     const char *other
 ) {
@@ -837,8 +1084,12 @@ int zInterp_Context::CommandEquals(
     ) == 0;
 }
 
-// Reimplements 0x4c5510: zInterp_Context::GetCurrentCommand
-// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+/**
+ * Reimplements 0x4c5510: zInterp_Context::GetCurrentCommand.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: return token zero for the current parsed command line.
+ */
 char * zInterp_Context::GetCurrentCommand() {
     if (tokenCount <= 0) {
         return 0;
@@ -847,8 +1098,12 @@ char * zInterp_Context::GetCurrentCommand() {
     return tokenList[0];
 }
 
-// Reimplements 0x4c5820: zInterp_Context::ValidateArgsAndNodeType
-// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+/**
+ * Reimplements 0x4c5820: zInterp_Context::ValidateArgsAndNodeType.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: validate argument count and optional zClass node type for commands.
+ */
 int zInterp_Context::ValidateArgsAndNodeType(
     int expectedArgCount,
     int expectedClassType,
@@ -893,8 +1148,12 @@ int zInterp_Context::ValidateArgsAndNodeType(
     return 0;
 }
 
-// Reimplements 0x4c5550: zInterp_Context::LoadPreparedScriptIndex
-// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+/**
+ * Reimplements 0x4c5550: zInterp_Context::LoadPreparedScriptIndex.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: open and validate the prepared script index and cache its entries.
+ */
 int zInterp_Context::LoadPreparedScriptIndex(
     const char *zrdrPath
 ) {
@@ -996,8 +1255,12 @@ int zInterp_Context::LoadPreparedScriptIndex(
     return 0;
 }
 
-// Reimplements 0x4c5740: zInterp_Context::OpenPreparedScriptStream
-// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+/**
+ * Reimplements 0x4c5740: zInterp_Context::OpenPreparedScriptStream.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: locate a prepared script entry and seek the shared stream to it.
+ */
 FILE * zInterp_Context::OpenPreparedScriptStream(
     const char *commandName
 ) {
@@ -1047,8 +1310,12 @@ FILE * zInterp_Context::OpenPreparedScriptStream(
     return 0;
 }
 
-// Reimplements 0x4c1500: zInterp_Context::RunScriptFile
-// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+/**
+ * Reimplements 0x4c1500: zInterp_Context::RunScriptFile.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: push nested script state, choose prepared or text input, and run it.
+ */
 int zInterp_Context::RunScriptFile(
     const char *filePath
 ) {
@@ -1107,8 +1374,12 @@ int zInterp_Context::RunScriptFile(
     return result;
 }
 
-// Reimplements 0x4c1020: zInterp_Context::RunString
-// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+/**
+ * Reimplements 0x4c1020: zInterp_Context::RunString.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: read script input lines or prepared token blobs and run each one.
+ */
 int zInterp_Context::RunString(
     FILE *scriptFile,
     int preparedInput
@@ -1139,8 +1410,13 @@ int zInterp_Context::RunString(
     return 1;
 }
 
-// Reimplements 0x4c1090: zInterp_Context::RunStream
-// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+/**
+ * Reimplements 0x4c1090: zInterp_Context::RunStream.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: tokenize one command line, dispatch builtins/core hooks, and clear
+ * temporary token storage.
+ */
 int zInterp_Context::RunStream(
     char *lineBuffer
 ) {
@@ -1189,8 +1465,12 @@ int zInterp_Context::RunStream(
     return parseResult == 0 ? 1 : 0;
 }
 
-// Reimplements 0x4c13c0: zInterp_Context::TokenizeLine
-// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+/**
+ * Reimplements 0x4c13c0: zInterp_Context::TokenizeLine.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: copy a text line, strip comments, and split command tokens.
+ */
 int zInterp_Context::TokenizeLine(
     const char *line
 ) {
@@ -1256,8 +1536,12 @@ int zInterp_Context::TokenizeLine(
     return 1;
 }
 
-// Reimplements 0x4c1870: zInterp_Context::EchoTokens
-// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+/**
+ * Reimplements 0x4c1870: zInterp_Context::EchoTokens.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: print each parsed token followed by a newline.
+ */
 int zInterp_Context::EchoTokens() {
     for (unsigned int tokenIndex = 0; tokenIndex < tokenCount; ++tokenIndex) {
         printf(
@@ -1269,8 +1553,12 @@ int zInterp_Context::EchoTokens() {
     return printf("\n");
 }
 
-// Reimplements 0x4c1160: zInterp_Context::ReadLineOrPreparedTokens
-// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+/**
+ * Reimplements 0x4c1160: zInterp_Context::ReadLineOrPreparedTokens.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: read either a text script line or a prepared token block.
+ */
 int zInterp_Context::ReadLineOrPreparedTokens(
     FILE *scriptFile,
     char *lineBuffer
@@ -1332,8 +1620,12 @@ int zInterp_Context::ReadLineOrPreparedTokens(
     return 1;
 }
 
-// Reimplements 0x4c1960: zInterp_Context::ClearFileFrameStack
-// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+/**
+ * Reimplements 0x4c1960: zInterp_Context::ClearFileFrameStack.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: free saved nested-script file frames and reset the frame count.
+ */
 void zInterp_Context::ClearFileFrameStack() {
     if (fileFrameStack != 0) {
         free(fileFrameStack);
@@ -1342,8 +1634,12 @@ void zInterp_Context::ClearFileFrameStack() {
     fileFrameCount = 0;
 }
 
-// Reimplements 0x4c1940: zInterp_Context::PopFileFrame
-// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+/**
+ * Reimplements 0x4c1940: zInterp_Context::PopFileFrame.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: pop the most recent nested-script file frame without freeing storage.
+ */
 zInterp_FileFrame * zInterp_Context::PopFileFrame() {
     int count = fileFrameCount;
     if (count == 0) {
@@ -1355,8 +1651,12 @@ zInterp_FileFrame * zInterp_Context::PopFileFrame() {
     return &fileFrameStack[count];
 }
 
-// Reimplements 0x4c18c0: zInterp_Context::PushFileFrame
-// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+/**
+ * Reimplements 0x4c18c0: zInterp_Context::PushFileFrame.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: append one saved script file position for nested source commands.
+ */
 int zInterp_Context::PushFileFrame(
     FILE *file,
     long filePos,
@@ -1376,8 +1676,13 @@ int zInterp_Context::PushFileFrame(
     return 1;
 }
 
-// Reimplements 0x4c1c50: zInterp_Context::HandleBuiltinCommand
-// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+/**
+ * Reimplements 0x4c1c50: zInterp_Context::HandleBuiltinCommand.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: handle parser builtins for conditions, macros, script inclusion,
+ * and variable mutation before core command dispatch.
+ */
 int zInterp_Context::HandleBuiltinCommand(
     char *commandToken
 ) {
@@ -1558,8 +1863,13 @@ int zInterp_Context::HandleBuiltinCommand(
     return 1;
 }
 
-// Reimplements 0x4c20a0: zInterp_Context::DispatchCoreCommand
-// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+/**
+ * Reimplements 0x4c20a0: zInterp_Context::DispatchCoreCommand.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: dispatch engine-facing script commands across zClass, zVideo,
+ * zEffect, zModel, zRndr, zWeapon, and support subsystems.
+ */
 int zInterp_Context::DispatchCoreCommand(
     char *commandToken
 ) {
@@ -3782,8 +4092,12 @@ int zInterp_Context::DispatchCoreCommand(
     return 1;
 }
 
-// Reimplements 0x4c2030: zInterp_Context::PrintNodeTree
-// (D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp)
+/**
+ * Reimplements 0x4c2030: zInterp_Context::PrintNodeTree.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: recursively log a zClass node tree with two-space child indentation.
+ */
 void zInterp_Context::PrintNodeTree(
     zClass_NodePartial *node,
     int indent

@@ -1956,7 +1956,7 @@ extern "C" {
 extern zVec3 g_zCamera_FrustumFootprintPoints[9];
 extern int g_zCamera_FrustumFootprintPointCount;
 extern zCamera_FrustumGridTileRingPartial g_zCamera_FrustumGridTileRings[50];
-extern int gModel_ClipMaskStack[0x40];
+extern int gModel_ClipMaskStack[0x10];
 extern int *gModel_ClipMaskStackTop;
 extern zClass_RenderFn gModel_RenderFn;
 extern int g_zClass_RenderBoundsContextActive;
@@ -1965,11 +1965,11 @@ extern int g_zClass_RenderRangeFadeActive;
 extern float g_zClass_RenderRangeFadeScale;
 extern int g_zClass_RenderVertexAlphaOverrideActive;
 extern int g_zClass_RenderAlphaScaleStackTop;
-extern float g_zClass_RenderAlphaScaleStack[0x20];
+extern float g_zClass_RenderAlphaScaleStack[0x10];
 extern int g_zClass_SoftwarePathStateStackTop;
-extern zClass_RenderColorAlphaState g_zClass_SoftwarePathRenderStateStack[0x20];
+extern zClass_RenderColorAlphaState g_zClass_SoftwarePathRenderStateStack[4];
 extern int g_zClass_LodDistanceStateStackTop;
-extern zClass_LodDistanceState g_zClass_LodDistanceStateStack[0x20];
+extern zClass_LodDistanceState g_zClass_LodDistanceStateStack[4];
 }
 
 // Source-faithful helper recovered from address-backed callers in this source file.
@@ -3247,7 +3247,7 @@ extern zClass_TypeListLink **g_zClass_TypeList_TailSlotPtrs[16];
 extern zClass_TypeListLink *g_zClass_FilterIterCursor;
 extern const char *g_zClass_FilterIterText;
 extern int g_zClass_FilterIterPrefixLen;
-extern char g_zClass_CurrentZbdPath[260];
+extern char g_zClass_CurrentZbdPath[0x30];
 extern zClass_NodePartial **g_GameZ_Zbd_NodeIndexScratch;
 extern int g_GameZ_Zbd_NodeIndexScratchCapacity;
 extern int g_zClass_CameraAutoClipDistanceAdjustEnabled;

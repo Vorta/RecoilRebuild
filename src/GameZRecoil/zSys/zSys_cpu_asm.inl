@@ -1,4 +1,7 @@
 #if defined(_MSC_VER)
+#include <conio.h>
+#pragma intrinsic(_inp)
+#pragma intrinsic(_outp)
 #pragma warning(disable : 4035)
 #pragma warning(disable : 4101)
 #pragma warning(disable : 4715)
@@ -205,14 +208,9 @@ int ReadCpuidVendorAndFamily() {
  * Purpose: Selects CMOS RTC register 0 and returns the raw seconds BCD byte.
  */
 unsigned int ReadCmosRtcSecondsBcd() {
-    unsigned int result = 0;
-    __asm {
-        xor ax, ax
-        out 70h, al
-        xor ax, ax
-        in al, 71h
-        mov word ptr [result], ax
-    }
+    volatile unsigned int result = 0;
+    _outp(0x70, 0);
+    result = (unsigned short)_inp(0x71);
     return result;
 }
 

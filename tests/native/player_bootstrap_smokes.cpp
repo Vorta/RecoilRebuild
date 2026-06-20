@@ -2220,3 +2220,92 @@ extern "C" int player_create_from_names_at_pose_smoke(void) {
     g_zModel_SharedVec3ScratchB = oldSharedScratchB;
     return result;
 }
+
+extern "C" int player_mgr_tick_all_players_smoke(void) {
+    zUtil_SaveGameState *const oldHead = g_PlayerSaveStateListHead;
+    zUtil_SaveGameState *const oldLocalSaveState = g_LocalPlayerSaveState;
+    zUtil_SaveGameState *const oldPlayer2SaveState = g_Player2SaveState;
+    zUtil_SaveGameState *const oldCurrentSaveState = g_CurrentPlayerSaveState;
+    zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
+    int *const oldAudioApi = ZOPT_AUDIO_API;
+    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    const float oldFrameDelta = g_FrameDeltaTimeSec;
+    const float oldAccumulatedTime = g_Time_AccumulatedTimeSec;
+    const float oldPlayerDelta = g_Player_DeltaTime;
+    const float oldInvDelta = g_Player_InvDeltaTime;
+    const float oldScaled001 = g_Player_DeltaTimeScaled001;
+    const float oldTotalScaled = g_Player_TotalTimeSecScaled;
+    const zTag4Partial oldVariantTagCurrent = g_VariantTag_Current;
+
+    int audioApi = 0;
+    int networkEnabled = 0;
+    ZOPT_AUDIO_API = &audioApi;
+    ZOPT_NETWORK_ENABLED = &networkEnabled;
+
+    zUtil_SaveGameState localSaveState = {};
+    zUtil_PlayerStateStorage localPlayerState = {};
+    localSaveState.playerState = &localPlayerState;
+    localPlayerState.lifecycleState = 4;
+    g_GameStateOrMapTable = (zInput_GameStateOrMapTablePartial *)&localSaveState;
+    g_CurrentPlayerSaveState = 0;
+    g_PlayerSaveStateListHead = 0;
+    g_LocalPlayerSaveState = 0;
+    g_Player2SaveState = 0;
+
+    g_FrameDeltaTimeSec = 0.001f;
+    g_Time_AccumulatedTimeSec = 77.0f;
+    Player::TickAllPlayers();
+    const bool emptyListOk =
+        FloatNear(g_Player_DeltaTime, 0.00499999989f) &&
+        FloatNear(g_Player_InvDeltaTime, 200.0f) &&
+        FloatNear(g_Player_DeltaTimeScaled001, 0.000049999997f) &&
+        FloatNear(g_Player_TotalTimeSecScaled, 77.0f);
+
+    zUtil_SaveGameState aiSaveState = {};
+    zUtil_PlayerStateStorage aiPlayerState = {};
+    aiSaveState.playerState = &aiPlayerState;
+    g_PlayerSaveStateListHead = &aiSaveState;
+    g_FrameDeltaTimeSec = 0.02f;
+    g_Time_AccumulatedTimeSec = 88.0f;
+    aiPlayerState.lifecycleState = 2;
+    aiPlayerState.generalFlags = 0;
+    aiPlayerState.aiActive = 9;
+    aiPlayerState.targetDistanceSq = 123.0f;
+    aiPlayerState.variantTag.count = 1;
+    aiPlayerState.variantTag.tags[0] = 7;
+    aiPlayerState.variantTag.tags[1] = 0xff;
+    aiPlayerState.variantTag.tags[2] = 0xff;
+    g_VariantTag_Current.count = 1;
+    g_VariantTag_Current.tags[0] = 9;
+    g_VariantTag_Current.tags[1] = 0xff;
+    g_VariantTag_Current.tags[2] = 0xff;
+    Player::TickAllPlayers();
+    const bool inactiveAiOk =
+        (aiPlayerState.generalFlags & 2) != 0 &&
+        aiPlayerState.aiActive == 0 &&
+        FloatNear(aiPlayerState.targetDistanceSq, 123.0f) &&
+        FloatNear(g_Player_DeltaTime, 0.02f) &&
+        FloatNear(g_Player_InvDeltaTime, 50.0f) &&
+        FloatNear(g_Player_DeltaTimeScaled001, 0.00019999999f) &&
+        FloatNear(g_Player_TotalTimeSecScaled, 88.0f);
+
+    g_VariantTag_Current = oldVariantTagCurrent;
+    g_Player_TotalTimeSecScaled = oldTotalScaled;
+    g_Player_DeltaTimeScaled001 = oldScaled001;
+    g_Player_InvDeltaTime = oldInvDelta;
+    g_Player_DeltaTime = oldPlayerDelta;
+    g_Time_AccumulatedTimeSec = oldAccumulatedTime;
+    g_FrameDeltaTimeSec = oldFrameDelta;
+    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    ZOPT_AUDIO_API = oldAudioApi;
+    g_GameStateOrMapTable = oldGameStateOrMapTable;
+    g_CurrentPlayerSaveState = oldCurrentSaveState;
+    g_Player2SaveState = oldPlayer2SaveState;
+    g_LocalPlayerSaveState = oldLocalSaveState;
+    g_PlayerSaveStateListHead = oldHead;
+
+    if (!emptyListOk) {
+        return 1;
+    }
+    return inactiveAiOk ? 0 : 2;
+}

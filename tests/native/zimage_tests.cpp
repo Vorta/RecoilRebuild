@@ -10,6 +10,8 @@
 #include <cstdlib>
 #include <cstring>
 
+extern "C" int g_zImage_NextFontSlotIndex;
+
 namespace {
 int g_textureDestroyCount = 0;
 int g_uploadSurfaceReleaseCount = 0;
@@ -423,7 +425,7 @@ extern "C" int zimage_font_glyph_scan_smoke(void) {
         pixels[x] = (x & 1) == 0 ? 0x1234 : 0x5678;
     }
 
-    g_zImage_Unknown5617f4 = 0x1234;
+    g_zImage_FontTransparentColor = 0x1234;
 
     zVidImagePartial image{};
     image.width = kWidth;
@@ -1050,10 +1052,10 @@ extern "C" int zimage_texdir_write_smoke(void) {
 
 extern "C" int zimage_init_option_fallback_smoke(void) {
     g_zImage_FontTable[0] = reinterpret_cast<zImage_Font *>(0x1234);
+    g_zImage_NextFontSlotIndex = 0;
     g_zImage_TextureMemoryDefault = 99;
     g_zImage_TextureMemoryOption = nullptr;
     g_zImage_FontTransparentColor = 0;
-    g_zImage_Unknown5617f4 = 7;
     g_zVideo_ActiveRendererPath = 0;
     g_zGame_Options_OptionListHead = nullptr;
 
@@ -1061,8 +1063,8 @@ extern "C" int zimage_init_option_fallback_smoke(void) {
         return 1;
     }
 
-    return g_zImage_FontTable[0] == nullptr && g_zImage_FontTransparentColor == 2 &&
-                   g_zImage_Unknown5617f4 == 0 && g_zImage_TextureMemoryDefault == 0 &&
+    return g_zImage_FontTable[0] == nullptr && g_zImage_NextFontSlotIndex == 2 &&
+                   g_zImage_FontTransparentColor == 0 && g_zImage_TextureMemoryDefault == 0 &&
                    g_zImage_TextureMemoryOption == &g_zImage_TextureMemoryDefault
                ? 0
                : 2;

@@ -11,6 +11,8 @@ add_executable(recoil_native_smoke
     zvideo_primary_blit_smokes.cpp
     zvideo_clear_dispatch_smokes.cpp
     zvideo_dd_enum_smokes.cpp
+    zvideo_sw_render_frame_smokes.cpp
+    zvideo_fx_surface_smokes.cpp
     zvideo_noise_tests.cpp
     zvideo_blur_region_smokes.cpp
     zloc_tests.cpp
@@ -28,6 +30,7 @@ add_executable(recoil_native_smoke
     briefing_runtime_smokes.cpp
     zhud_composite_panel_smokes.cpp
     player_fx_pass3_smokes.cpp
+    zvideo_fxpass3_ui_local_config_smokes.cpp
     player_alt_gun_runtime_smokes.cpp
     player_damage_hit_smokes.cpp
     zhud_cmd_dialog_state_smokes.cpp

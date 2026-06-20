@@ -8,11 +8,13 @@
 #include <string.h>
 
 /**
+ * Reimplements data 0x56b368: g_zSnd_ConfigRootNode.
  * Data owner: namespace:zSound system configuration state.
  * Purpose: hold the loaded sound configuration tree until sound shutdown.
  */
 extern "C" zReader::Node *g_zSnd_ConfigRootNode = 0;
 /**
+ * Reimplements data 0x56b364: g_zSnd_SearchPathList.
  * Data owner: namespace:zSound system configuration state.
  * Purpose: hold the sound resource search path list built from SOUND_PATH.
  */
@@ -459,6 +461,8 @@ extern "C" void __fastcall zSnd_TickWrapper(
 
 /**
  * Reimplements 0x4a1870: zSndSystem_InitNamedSetsSyntax.
+ * Evidence: BN 0x4a1870 expands the named SETS parser in this source file,
+ * using g_zSnd_ConfigRootNode and g_zSnd_SearchPathList as namespace state.
  * Purpose: load named sound sets, optional CD tracks, search paths, groups,
  * and speed-of-sound settings from the sound config tree.
  */
@@ -768,6 +772,8 @@ void StopAllAndShutdown() {
 namespace zSndSystem {
 /**
  * Reimplements 0x4a13d0: zSndSystem::Shutdown.
+ * Evidence: BN 0x4a13d0 calls the sound subsystem shutdown routines, then
+ * frees g_zSnd_ConfigRootNode and g_zSnd_SearchPathList when present.
  * Purpose: shut down sound subsystems and release sound config/search-path
  * resources.
  */
@@ -793,6 +799,8 @@ int Shutdown() {
 
 /**
  * Reimplements 0x4a1510: zSndSystem_InitLegacySetsSyntax.
+ * Evidence: BN 0x4a1510 expands the legacy positional SETS parser in this
+ * source file, using the same namespace config/search-path state as 0x4a1870.
  * Purpose: load legacy sound sets, optional CD tracks, search paths, groups,
  * and speed-of-sound settings from the sound config tree.
  */
@@ -907,15 +915,12 @@ extern "C" int __fastcall zSndSystem_InitLegacySetsSyntax(
 
             sample->playbackParam3 = 20000.0f;
             sample->playbackParam2 = 90000.0f;
-            sample->highVariant.sampleName = 0;
             sample->highVariant.samplesPerSec = 44100;
             sample->highVariant.bitsPerSample = 16;
             sample->highVariant.channelCount = 2;
-            sample->medVariant.sampleName = 0;
             sample->medVariant.samplesPerSec = 22050;
             sample->medVariant.bitsPerSample = 16;
             sample->medVariant.channelCount = 1;
-            sample->lowVariant.sampleName = 0;
             sample->lowVariant.samplesPerSec = 11025;
             sample->lowVariant.bitsPerSample = 8;
             sample->lowVariant.channelCount = 1;

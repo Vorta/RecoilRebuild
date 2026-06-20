@@ -14,6 +14,7 @@ extern "C" LPDIRECTSOUNDBUFFER g_zSnd_BackendListenerHandle = 0;
 extern "C" DSCAPS g_zSnd_BackendAuxHandleOrConfig = {0};
 extern "C" LPDIRECTSOUND g_zSnd_CachedDirectSound = 0;
 extern "C" LPGUID g_zSnd_CachedDirectSoundGuid = 0;
+extern "C" int g_zSndCdTrackListCount;
 extern "C" int g_zSnd_PreInitialized = 0;
 extern "C" int g_zSnd_SoundLodDefault = 0;
 extern "C" void *g_zSnd_SoundLodValuePtr = 0;
@@ -666,10 +667,10 @@ extern "C" int __fastcall zSnd_PreInitializeRuntimeState(
         g_zSnd_BackendListenerHandle = 0;
     }
 
-    g_zSndCd_TrackCount = 0;
+    g_zSndCdFlags &= ~0x03;
+    g_zSndCdTrackListCount = 0;
     g_zSnd_SearchPathList = 0;
     g_zSndCdDeviceId &= 0xffff0000;
-    g_zSndCdFlags &= ~0x03;
     g_zSndCdAuxDeviceId = 0;
     g_zSndCdAuxVolumePrimary = 0;
     g_zSndCdAuxVolumeSecondary = 0;
@@ -690,9 +691,6 @@ extern "C" int __fastcall zSnd_PreInitializeRuntimeState(
 
     g_zSndLastSample = 0;
     g_zSndLastVoice = 0;
-    g_zSndLastVoiceHandle = 0;
-    g_zSndLastVoiceMarkerIndex = 0;
-    g_zSndLastVoiceStopMarkerIndex = 999;
 
     g_zSnd_VolumeScaleDefault = 1.0f;
     g_zSnd_GlobalVolumeScalePtr = zGame::Options_FindOption("SoundVolume");

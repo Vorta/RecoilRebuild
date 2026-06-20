@@ -34,7 +34,13 @@ namespace {
         return value.raw;
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original-source helper evidence: no standalone retail function is present;
+     * observed BBox callers 0x4525d0 and 0x452650 inline the same operation.
+     * Evidence: both callers use the same float-bit radius approximation,
+     * `bits >> 1` plus 0x1fc00000, after accumulating squared half-extents.
+     * Purpose: return the retail approximate range from a squared range.
+     */
     float ApproximateRangeFromRangeSq(float rangeSq) {
         int bits = 0;
         memcpy(
@@ -54,10 +60,13 @@ namespace {
 }
 
 namespace BBox {
-    // Reimplements 0x452650: BBox::CornersToBoundingSphere
-    // (GameZRecoil/zClass/cls_util.c)
-    void __fastcall
-    CornersToBoundingSphere(
+    /**
+     * Reimplements 0x452650: BBox::CornersToBoundingSphere.
+     * Original source: GameZRecoil/zClass/cls_util.c.
+     * Purpose: scan eight bbox corners, write the center, and write the
+     * retail approximate bounding-sphere radius.
+     */
+    void __fastcall CornersToBoundingSphere(
         zBBoxCorners * corners,
         zVec3 * outCenter,
         float *outRadius
@@ -1040,10 +1049,13 @@ namespace zClass_cls_util {
 }
 
 namespace BBox {
-    // Reimplements 0x4525d0: BBox::MinMaxToBoundingSphere
-    // (GameZRecoil/zClass/cls_util.c)
-    float *__fastcall
-    MinMaxToBoundingSphere(
+    /**
+     * Reimplements 0x4525d0: BBox::MinMaxToBoundingSphere.
+     * Original source: GameZRecoil/zClass/cls_util.c.
+     * Purpose: write the min/max bbox center and retail approximate
+     * bounding-sphere radius.
+     */
+    float *__fastcall MinMaxToBoundingSphere(
         const zBBox3f *bbox,
         zVec3 *outCenter,
         float *outRadius

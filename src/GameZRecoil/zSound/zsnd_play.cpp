@@ -11,9 +11,29 @@
 extern "C" void *g_zSnd_BackendDevice;
 extern "C" void *g_zSnd_BackendListenerHandle;
 
+/**
+ * Reimplements data 0x4e2420: g_zSndSpeedOfSoundMps.
+ * Original file: D:\Proj\GameZRecoil\zSound\zsnd_3d.cpp.
+ * Purpose: Stores the configured speed of sound in meters per second for
+ * 3D audio listener and Doppler calculations.
+ */
+extern "C" float g_zSndSpeedOfSoundMps = 345.0f;
+
+/**
+ * Reimplements data 0x4e2424: g_zSndInvSpeedOfSoundMps.
+ * Original file: D:\Proj\GameZRecoil\zSound\zsnd_3d.cpp.
+ * Purpose: Caches the reciprocal speed-of-sound scale used by 3D audio
+ * Doppler pitch updates.
+ */
+extern "C" float g_zSndInvSpeedOfSoundMps = 1.0f / 345.0f;
+
 namespace {
 const char kZSndPlaySourceFile[] = "D:\\Proj\\GameZRecoil\\zSound\\zsnd_play.cpp";
 const char kZSnd3dSourceFile[] = "D:\\Proj\\GameZRecoil\\zSound\\zsnd_3d.cpp";
+const float g_zSnd_DirectSoundAttenUnityGain = 1.0f; // Reimplements data 0x4d2eb0.
+const float g_zSnd_DirectSoundAttenMinGain = 0.0009765625f; // Reimplements data 0x4d2eb4.
+const float g_zSnd_DirectSoundAttenRoundBias = 0.5f; // Reimplements data 0x4d2eb8.
+const float g_zSnd_DirectSoundAttenScale = 1000.0f; // Reimplements data 0x4e2204.
 
 /**
  * Original static helper recovered from the zSound playback source cluster.
@@ -349,9 +369,31 @@ void zSndSample::Destroy() {
     free(this);
 }
 
+/**
+ * Reimplements data 0x56b36c: g_zSnd_ListenerStateValid.
+ * Purpose: Stores whether the cached DirectSound listener transform can be
+ * used by zSound 3D playback update paths.
+ */
 extern "C" int g_zSnd_ListenerStateValid = 0;
+/**
+ * Reimplements data 0x56b370: g_zSnd_ListenerState.
+ * Purpose: Stores the cached DirectSound listener position and basis vectors
+ * used when software 3D playback gain and pan are recomputed.
+ */
 extern "C" zSndListenerState g_zSnd_ListenerState = {0};
+/**
+ * Reimplements data 0x56b3a0: g_zSnd_ListenerVelocity.
+ * Purpose: Stores the cached DirectSound listener velocity used by Doppler
+ * frequency scaling in software 3D playback.
+ */
 extern "C" zVec3 g_zSnd_ListenerVelocity = {0};
+/**
+ * Reimplements data 0x539b88: g_zSnd_PreviousListenerPos.
+ * Owner: engine.zclass.camera_listener_bridge_previous_pos; storage remains
+ * in zsnd_play.cpp, but current BN xrefs are from Camera.c listener updates.
+ * Purpose: Stores the previous camera listener position used to derive
+ * velocity before zSnd_UpdateListenerState.
+ */
 extern "C" zVec3 g_zSnd_PreviousListenerPos = {0};
 
 /**
@@ -531,17 +573,16 @@ zSndPlayHandle * zSndSample::AcquireA3dVoice() {
 int __stdcall zSnd::GainScaleToDirectSoundAttenuation(
     float gainScale
 ) {
-    if (gainScale >= 1.0f) {
+    if (gainScale >= g_zSnd_DirectSoundAttenUnityGain) {
         return 0;
     }
 
-    if (!(gainScale > 0.0009765625f)) {
+    if (!(gainScale > g_zSnd_DirectSoundAttenMinGain)) {
         return -10000;
     }
 
-    const float kDirectSoundAttenuationScale = 602.059991f;
-    const float attenuation = (log(gainScale) / log(2.0)) * kDirectSoundAttenuationScale;
-    return (int)(attenuation - 0.5f);
+    const float attenuation = (log(gainScale) / log(2.0)) * g_zSnd_DirectSoundAttenScale;
+    return (int)(attenuation - g_zSnd_DirectSoundAttenRoundBias);
 }
 
 /**
@@ -1338,10 +1379,23 @@ extern "C" int __fastcall zSnd_UpdateListenerState(
 
 /**
  * Reimplements 0x4a2e70: zSnd_GetSpeedOfSoundMps.
+ * Original file: D:\Proj\GameZRecoil\zSound\zsnd_3d.cpp.
  * Purpose: return the current 3D-audio speed-of-sound setting.
  */
 extern "C" float zSnd_GetSpeedOfSoundMps() {
     return g_zSndSpeedOfSoundMps;
+}
+
+/**
+ * Reimplements 0x4a2e80: zSnd::SetSpeedOfSoundMps.
+ * Original file: D:\Proj\GameZRecoil\zSound\zsnd_3d.cpp.
+ * Purpose: store the speed of sound and its reciprocal for 3D audio.
+ */
+void __fastcall zSnd::SetSpeedOfSoundMps(
+    float speedOfSoundMps
+) {
+    g_zSndSpeedOfSoundMps = speedOfSoundMps;
+    g_zSndInvSpeedOfSoundMps = 1.0f / speedOfSoundMps;
 }
 
 /**

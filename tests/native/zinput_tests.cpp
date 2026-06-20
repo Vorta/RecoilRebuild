@@ -1,4 +1,5 @@
 #include "GameZRecoil/include/zClass.h"
+#include "Battlesport/player.h"
 #include "GameZRecoil/zGame/zGame.h"
 #include "GameZRecoil/zInput/zInput.h"
 #include "GameZRecoil/zLoc/zLoc.h"
@@ -576,7 +577,7 @@ extern "C" int zinput_bindgroup_static_lifetime_smoke(void) {
 }
 
 extern "C" int zinput_global_state_static_lifetime_smoke(void) {
-    void *const self = &g_zInput_GlobalState;
+    zInput_GlobalState *const self = &g_zInput_GlobalStateStorage;
 
     g_zInput_BindMapOverlayBlockSize = 0;
     g_zInput_BindMapOverlayNodeBlockList =

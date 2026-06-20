@@ -16,6 +16,7 @@ extern "C" std::int32_t g_zSndCdLastPlayMode;
 extern "C" std::int32_t g_zSndCdDeviceId;
 extern "C" std::int32_t g_zSndCdAuxDeviceId;
 extern "C" std::int32_t g_zSndCdTrackCountCached;
+extern "C" std::int32_t g_zSndCdTrackListCount;
 struct zSndCdTrackState
 {
     std::int32_t track;
@@ -2018,8 +2019,8 @@ extern "C" int zsnd_gain_scale_to_directsound_attenuation_smoke(void) {
         return 2;
     }
 
-    if (zSnd::GainScaleToDirectSoundAttenuation(0.5f) != -602 ||
-        zSnd::GainScaleToDirectSoundAttenuation(0.25f) != -1204) {
+    if (zSnd::GainScaleToDirectSoundAttenuation(0.5f) != -1000 ||
+        zSnd::GainScaleToDirectSoundAttenuation(0.25f) != -2000) {
         return 3;
     }
 
@@ -2493,11 +2494,14 @@ extern "C" int zsnd_preinitialize_runtime_state_smoke(void) {
     g_zSndCdAuxVolumePrimary = 9;
     g_zSndCdAuxVolumeSecondary = 8;
     g_zSndCdLastPlayMode = 99;
-    g_zSndCd_TrackCount = 3;
+    g_zSndCdTrackListCount = 3;
+    g_zSndCd_TrackCount = 4;
     g_zSnd_SearchPathList = reinterpret_cast<zArchiveList *>(0x1111);
     g_zSndLastSample = reinterpret_cast<zSndSample *>(0x2222);
     g_zSndLastVoice = reinterpret_cast<zSndSample *>(0x3333);
-    g_zSndLastVoiceHandle = reinterpret_cast<zSndPlayHandle *>(0x4444);
+    zSndPlayHandle *const savedLastVoiceHandle = reinterpret_cast<zSndPlayHandle *>(0x4444);
+    g_zSndLastVoiceHandle = savedLastVoiceHandle;
+    g_zSndLastVoiceMarkerIndex = 6;
     g_zSndLastVoiceStopMarkerIndex = 7;
     g_zSnd_Flag10PlaybackEnabled = 0;
     g_zGame_Options_OptionListHead = nullptr;
@@ -2509,13 +2513,15 @@ extern "C" int zsnd_preinitialize_runtime_state_smoke(void) {
     if (g_zSnd_PreInitialized != 1 || g_zSnd_IsInitialized != 0 || g_zSnd_WindowHandle != 0x1234 ||
         (g_zSndCdFlags & 0x03) != 0 || g_zSndCdDeviceId != 0x12340000 || g_zSndCdAuxDeviceId != 0 ||
         g_zSndCdAuxVolumePrimary != 0 || g_zSndCdAuxVolumeSecondary != 0 ||
-        g_zSndCdLastPlayMode != 2 || g_zSndCd_TrackCount != 0 || g_zSnd_SearchPathList != nullptr ||
+        g_zSndCdLastPlayMode != 2 || g_zSndCdTrackListCount != 0 || g_zSndCd_TrackCount != 4 ||
+        g_zSnd_SearchPathList != nullptr ||
         g_zSnd_SoundLodValuePtr != &g_zSnd_SoundLodDefault ||
         g_zSnd_MuteOptionValuePtr != &g_zSnd_MuteOptionDefault || g_zSnd_MuteDepth != 0 ||
         g_zSnd_GlobalVolumeScalePtr != &g_zSnd_VolumeScaleDefault ||
         g_zSnd_VolumeScaleDefault != 1.0f || g_zSndLastSample != nullptr ||
-        g_zSndLastVoice != nullptr || g_zSndLastVoiceHandle != nullptr ||
-        g_zSndLastVoiceStopMarkerIndex != 999 || g_zSnd_Flag10PlaybackEnabled != 1) {
+        g_zSndLastVoice != nullptr || g_zSndLastVoiceHandle != savedLastVoiceHandle ||
+        g_zSndLastVoiceMarkerIndex != 6 || g_zSndLastVoiceStopMarkerIndex != 7 ||
+        g_zSnd_Flag10PlaybackEnabled != 1) {
         return 2;
     }
 
@@ -3915,8 +3921,8 @@ extern "C" int zsnd_sample_play_a3d_simple_direct_smoke(void) {
 
     zSndPlayHandle *directResult = sample.PlayA3DSimple(0.5f);
     if (directResult != &sample.primaryVoice || sample.primaryVoice.ownerSample != &sample ||
-        sample.primaryVoice.gainScaled != -602 || g_testSetVolumeCount != 1 ||
-        g_testLastVolume != -602 || g_testSetCurrentPositionCount != 1 ||
+        sample.primaryVoice.gainScaled != -1000 || g_testSetVolumeCount != 1 ||
+        g_testLastVolume != -1000 || g_testSetCurrentPositionCount != 1 ||
         g_testLastCurrentPosition != 0 || g_testPlayDirectSoundCount != 1 ||
         g_testLastPlayFlags != 0) {
         return 1;
@@ -3933,8 +3939,8 @@ extern "C" int zsnd_sample_play_a3d_simple_direct_smoke(void) {
 
     zSndPlayHandle *directMarkerResult = sample.PlayDirectSound(1, 0.25f, 77);
     if (directMarkerResult != &sample.primaryVoice || sample.markerBaseTime != 4.5f ||
-        g_zSndLastVoiceStopMarkerIndex != 77 || sample.primaryVoice.gainScaled != -1204 ||
-        g_testSetVolumeCount != 1 || g_testLastVolume != -1204 ||
+        g_zSndLastVoiceStopMarkerIndex != 77 || sample.primaryVoice.gainScaled != -2000 ||
+        g_testSetVolumeCount != 1 || g_testLastVolume != -2000 ||
         g_testSetCurrentPositionCount != 1 || g_testLastCurrentPosition != 321 ||
         g_testPlayDirectSoundCount != 1) {
         return 3;

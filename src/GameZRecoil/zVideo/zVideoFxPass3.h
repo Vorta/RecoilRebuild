@@ -11,9 +11,10 @@ struct zVideoFxPass3Element : HudUiElement {
 
     /**
      * Original inline helper; no standalone retail function exists. Observed
-     * in owner storage that is explicitly address-constructed later.
-     * Purpose: keep native raw-storage tests and aggregate owners from running
-     * an address-backed pass-3 constructor implicitly.
+     * in the global config owner whose retail constructor at 0x4bef90
+     * explicitly constructs the HudUiElement base and clears clipRectOrNull.
+     * Purpose: leave default storage initialization inert for owner-managed
+     * pass-3 elements.
      */
     zVideoFxPass3Element() {}
     /**

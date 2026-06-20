@@ -2,6 +2,8 @@
 #include "GameZRecoil/zNetwork/zNetwork.h"
 #include "GameZRecoil/zReader/zReader.h"
 
+#include <dplobby.h>
+
 #include <cstdlib>
 #include <cstring>
 #include <new>
@@ -9,6 +11,9 @@
 namespace {
 int g_closeCalls;
 int g_releaseCalls;
+int g_destroyPlayerCalls;
+DWORD g_destroyedPlayerKey;
+HRESULT g_destroyPlayerResult;
 int g_getCapsCalls;
 DWORD g_getCapsFlags;
 HRESULT g_getCapsResult;
@@ -68,6 +73,126 @@ int g_dispatchPacketPayloadA;
 int g_dispatchPacketPayloadB;
 int g_fatalDisconnectCalls;
 int g_fatalDisconnectReason;
+int g_lobbyCreateCalls;
+LPGUID g_lobbyCreateGuid;
+LPDIRECTPLAYLOBBYA *g_lobbyCreateOut;
+IUnknown *g_lobbyCreateOuter;
+LPVOID g_lobbyCreateData;
+DWORD g_lobbyCreateFlags;
+HRESULT g_lobbyCreateResult;
+int g_lobbyQueryCalls;
+const GUID *g_lobbyQueryRiid;
+LPVOID *g_lobbyQueryOut;
+HRESULT g_lobbyQueryResult;
+int g_lobbyReleaseCalls;
+void *g_lobby3AResult;
+
+void *g_fakeLobbyVtable[3];
+void *g_fakeLobbyObject[1];
+void *g_fakeLobby3AVtable[15];
+void *g_fakeLobby3AObject[1];
+
+struct CodeFunctionPatch {
+    void *target;
+    unsigned char original[5];
+    bool active;
+};
+
+bool PatchFunctionJump(void *target, void *replacement, CodeFunctionPatch &patch) {
+    DWORD oldProtect = 0;
+    if (!VirtualProtect(target, sizeof(patch.original), PAGE_EXECUTE_READWRITE, &oldProtect)) {
+        return false;
+    }
+
+    patch.target = target;
+    std::memcpy(patch.original, target, sizeof(patch.original));
+    unsigned char jump[5] = {0xe9, 0, 0, 0, 0};
+    const std::intptr_t rel =
+        (std::intptr_t)replacement - ((std::intptr_t)target + (std::intptr_t)sizeof(jump));
+    std::memcpy(&jump[1], &rel, sizeof(std::int32_t));
+    std::memcpy(target, jump, sizeof(jump));
+    FlushInstructionCache(GetCurrentProcess(), target, sizeof(jump));
+    DWORD ignored = 0;
+    VirtualProtect(target, sizeof(patch.original), oldProtect, &ignored);
+    patch.active = true;
+    return true;
+}
+
+void RestoreFunctionPatch(CodeFunctionPatch &patch) {
+    if (!patch.active) {
+        return;
+    }
+
+    DWORD oldProtect = 0;
+    if (VirtualProtect(patch.target, sizeof(patch.original), PAGE_EXECUTE_READWRITE, &oldProtect)) {
+        std::memcpy(patch.target, patch.original, sizeof(patch.original));
+        FlushInstructionCache(GetCurrentProcess(), patch.target, sizeof(patch.original));
+        DWORD ignored = 0;
+        VirtualProtect(patch.target, sizeof(patch.original), oldProtect, &ignored);
+    }
+
+    patch.active = false;
+}
+
+HRESULT WINAPI FakeDirectPlayLobbyCreateA(
+    LPGUID guid,
+    LPDIRECTPLAYLOBBYA *outLobby,
+    IUnknown *outer,
+    LPVOID data,
+    DWORD flags
+) {
+    ++g_lobbyCreateCalls;
+    g_lobbyCreateGuid = guid;
+    g_lobbyCreateOut = outLobby;
+    g_lobbyCreateOuter = outer;
+    g_lobbyCreateData = data;
+    g_lobbyCreateFlags = flags;
+    if (outLobby != 0 && g_lobbyCreateResult >= 0) {
+        *outLobby = (LPDIRECTPLAYLOBBYA)g_fakeLobbyObject;
+    }
+    return g_lobbyCreateResult;
+}
+
+HRESULT __stdcall FakeLobbyQueryInterface(
+    IDirectPlayLobby *,
+    REFIID riid,
+    LPVOID *outInterface
+) {
+    ++g_lobbyQueryCalls;
+    g_lobbyQueryRiid = &riid;
+    g_lobbyQueryOut = outInterface;
+    if (outInterface != 0 && g_lobbyQueryResult >= 0) {
+        *outInterface = g_lobby3AResult;
+    }
+    return g_lobbyQueryResult;
+}
+
+ULONG __stdcall FakeLobbyRelease(IDirectPlayLobby *) {
+    ++g_lobbyReleaseCalls;
+    return 0;
+}
+
+void ResetLobbyFakes(void) {
+    g_lobbyCreateCalls = 0;
+    g_lobbyCreateGuid = 0;
+    g_lobbyCreateOut = 0;
+    g_lobbyCreateOuter = 0;
+    g_lobbyCreateData = 0;
+    g_lobbyCreateFlags = 0;
+    g_lobbyCreateResult = 0;
+    g_lobbyQueryCalls = 0;
+    g_lobbyQueryRiid = 0;
+    g_lobbyQueryOut = 0;
+    g_lobbyQueryResult = 0;
+    g_lobbyReleaseCalls = 0;
+    g_lobby3AResult = g_fakeLobby3AObject;
+    g_fakeLobbyVtable[0] = (void *)&FakeLobbyQueryInterface;
+    g_fakeLobbyVtable[1] = 0;
+    g_fakeLobbyVtable[2] = (void *)&FakeLobbyRelease;
+    g_fakeLobbyObject[0] = g_fakeLobbyVtable;
+    std::memset(g_fakeLobby3AVtable, 0, sizeof(g_fakeLobby3AVtable));
+    g_fakeLobby3AObject[0] = g_fakeLobby3AVtable;
+}
 
 HRESULT __stdcall FakeDirectPlayClose(
     zNetwork_DPlay4 *
@@ -178,6 +303,15 @@ HRESULT __stdcall FakeDirectPlayCreatePlayer(
         *playerId = g_createPlayerAssignedId;
     }
     return g_createPlayerResult;
+}
+
+HRESULT __stdcall FakeDirectPlayDestroyPlayer(
+    zNetwork_DPlay4 *,
+    DPID playerId
+) {
+    ++g_destroyPlayerCalls;
+    g_destroyedPlayerKey = playerId;
+    return g_destroyPlayerResult;
 }
 
 HRESULT __stdcall FakeDirectPlayGetPlayerCaps(
@@ -346,6 +480,9 @@ T *AllocZeroedObject() {
 void ResetDirectPlayScenarioState() {
     g_closeCalls = 0;
     g_releaseCalls = 0;
+    g_destroyPlayerCalls = 0;
+    g_destroyedPlayerKey = 0;
+    g_destroyPlayerResult = 0;
     g_getCapsCalls = 0;
     g_getCapsFlags = 0;
     g_getCapsResult = 0;
@@ -475,6 +612,7 @@ void BuildMinimalDirectPlayVtable(
     vtable[2] = (void *)(&FakeDirectPlayRelease);
     vtable[4] = (void *)(&FakeDirectPlayClose);
     vtable[6] = (void *)(&FakeDirectPlayCreatePlayer);
+    vtable[9] = (void *)(&FakeDirectPlayDestroyPlayer);
     vtable[12] = (void *)(&FakeDirectPlayEnumPlayers);
     vtable[14] = (void *)(&FakeDirectPlayGetCaps);
     vtable[19] = (void *)(&FakeDirectPlayGetPlayerCaps);
@@ -1010,6 +1148,57 @@ extern "C" int znetwork_session_status_fields_smoke(void) {
     return 0;
 }
 
+extern "C" int znetwork_dplay_create_lobby3a_interface_smoke(void) {
+    CodeFunctionPatch lobbyCreatePatch{};
+    if (!PatchFunctionJump(reinterpret_cast<void *>(&DirectPlayLobbyCreateA),
+                           reinterpret_cast<void *>(&FakeDirectPlayLobbyCreateA),
+                           lobbyCreatePatch)) {
+        return 90;
+    }
+
+    int failure = 0;
+    IDirectPlayLobby3A *outLobby = (IDirectPlayLobby3A *)&g_lobby3AResult;
+    int lobby3AStorage = 0;
+
+    ResetLobbyFakes();
+    g_lobbyCreateResult = (HRESULT)0x80004005;
+    if (zNetworkDPlay::CreateLobby3AInterface(&outLobby) != (HRESULT)0x80004005 ||
+        outLobby != (IDirectPlayLobby3A *)&g_lobby3AResult ||
+        g_lobbyCreateCalls != 1 || g_lobbyCreateGuid != nullptr ||
+        g_lobbyCreateOut == nullptr || g_lobbyCreateOuter != nullptr ||
+        g_lobbyCreateData != nullptr || g_lobbyCreateFlags != 0 ||
+        g_lobbyQueryCalls != 0 || g_lobbyReleaseCalls != 0) {
+        failure = 1;
+    }
+
+    ResetLobbyFakes();
+    outLobby = (IDirectPlayLobby3A *)&g_lobby3AResult;
+    g_lobbyQueryResult = (HRESULT)0x80004002;
+    if (failure == 0 &&
+        (zNetworkDPlay::CreateLobby3AInterface(&outLobby) != (HRESULT)0x80004002 ||
+         outLobby != (IDirectPlayLobby3A *)&g_lobby3AResult ||
+         g_lobbyCreateCalls != 1 || g_lobbyQueryCalls != 1 ||
+         g_lobbyQueryRiid != &IID_IDirectPlayLobby3A ||
+         g_lobbyQueryOut == nullptr || g_lobbyReleaseCalls != 0)) {
+        failure = 2;
+    }
+
+    ResetLobbyFakes();
+    outLobby = nullptr;
+    g_lobby3AResult = &lobby3AStorage;
+    if (failure == 0 &&
+        (zNetworkDPlay::CreateLobby3AInterface(&outLobby) != 0 ||
+         outLobby != (IDirectPlayLobby3A *)&lobby3AStorage ||
+         g_lobbyCreateCalls != 1 || g_lobbyQueryCalls != 1 ||
+         g_lobbyQueryRiid != &IID_IDirectPlayLobby3A ||
+         g_lobbyQueryOut == nullptr || g_lobbyReleaseCalls != 1)) {
+        failure = 3;
+    }
+
+    RestoreFunctionPatch(lobbyCreatePatch);
+    return failure;
+}
+
 extern "C" int znetwork_dplay_close_release_smoke(void) {
     g_closeCalls = 0;
     g_releaseCalls = 0;
@@ -1039,6 +1228,32 @@ extern "C" int znetwork_dplay_close_release_smoke(void) {
     }
 
     return 0;
+}
+
+extern "C" int znetwork_destroy_cached_local_player_smoke(void) {
+    ResetDirectPlayScenarioState();
+
+    if (zNetwork_DPlay_DestroyCachedLocalPlayer() != 0) {
+        return 1;
+    }
+
+    void *vtable[26];
+    BuildMinimalDirectPlayVtable(vtable);
+    void **fakeDirectPlay = vtable;
+    zNetwork_PlayerRecord localPlayer = {};
+    localPlayer.playerKey = 0x12345678;
+
+    g_zNetwork_pDirectPlay4 = (zNetwork_DPlay4 *)(&fakeDirectPlay);
+    g_zNetwork_LocalPlayerRecord = &localPlayer;
+
+    if (zNetwork_DPlay_DestroyCachedLocalPlayer() != 1 ||
+        g_destroyPlayerCalls != 1 ||
+        g_destroyedPlayerKey != localPlayer.playerKey) {
+        return 2;
+    }
+
+    g_destroyPlayerResult = (HRESULT)(0x88770014);
+    return zNetwork_DPlay_DestroyCachedLocalPlayer() == 0 ? 0 : 3;
 }
 
 extern "C" int znetwork_dplay_report_error_smoke(void) {

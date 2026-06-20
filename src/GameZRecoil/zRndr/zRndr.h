@@ -89,8 +89,8 @@ struct ActiveRegionRectPartial {
 };
 
 // Authored zRndr fog-parameter record. BN types the four adjacent zeroed BSS
-// records at 0x631dd0, 0x631e70, 0x631f10, and 0x631fb0 as
-// zRndr_FogParams, and scalar fog spans read packedColor16,
+// records as zRndr_FogParams in Color, Staged, Direct, Active order at
+// 0x631dd0, 0x631e70, 0x631f10, and 0x631fb0, and scalar fog spans read packedColor16,
 // packedColor16Dup, and packedColorRamp from the active record. BN shows the
 // 0x49e0e0 helper stores packedColor16 as a word and leaves the following word
 // as padding before packedColor16Dup.
@@ -203,6 +203,9 @@ typedef void(__fastcall *SpanBuildProc)(
     int columnIndex,
     int *spanCount
 );
+// Software overlay row callback selected by zRndr_OverlayRect_FlushSw. BN
+// ties this callback type to the shared premul/destination-scale globals and
+// the four 555/565 scalar/MMX row leaves from zRndr_Overlay.cpp.
 typedef void(__fastcall *OverlayBlendRowProc)(
     unsigned short *rowPixels16,
     int pixelCount
@@ -280,8 +283,8 @@ extern float g_spanDepthBias;
 extern float g_spanDepthBiasPlusOne;
 extern float g_spanDepthBiasPlusOneInv;
 extern FogParamsPartial g_fogColorParams;
-extern FogParamsPartial g_fogTargetParamsDirect;
 extern FogParamsPartial g_fogTargetParamsStaged;
+extern FogParamsPartial g_fogTargetParamsDirect;
 extern FogParamsPartial g_fogParamsActive;
 extern SpanOccluderPolyPartial g_spanOccluderPolys[8];
 extern int g_spanOccluderPolyCount;

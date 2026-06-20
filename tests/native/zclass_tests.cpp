@@ -302,6 +302,63 @@ extern "C" int zclass_alloc_node_from_free_list_smoke() {
     return result;
 }
 
+extern "C" int zclass_gwnode_update_smoke(void) {
+    std::int32_t classData = 0;
+    zClass_NodeFreeListSlot parentSlot{};
+    zClass_NodePartial child{};
+    child.classData = &classData;
+    child.flags = 0x100;
+    child.cachedBounds[0] = -1.0f;
+    child.cachedBounds[1] = 2.0f;
+    child.cachedBounds[2] = -3.0f;
+    child.cachedBounds[3] = 4.0f;
+    child.cachedBounds[4] = 5.0f;
+    child.cachedBounds[5] = 6.0f;
+    zClass_NodePartial *children[] = {&child};
+    parentSlot.node.classId = 6;
+    parentSlot.node.classData = &classData;
+    parentSlot.node.boundsFlags = 0x02;
+    parentSlot.node.flags = 0x02;
+    parentSlot.node.listCountB = 1;
+    parentSlot.node.listB = children;
+    if (zClass_Class::gwNodeUpdate(&parentSlot.node) != 0 ||
+        (parentSlot.node.flags & 0x02) != 0 ||
+        (parentSlot.node.flags & 0x100) == 0 || parentSlot.node.boundsFlags != 0x04 ||
+        parentSlot.node.cachedBounds[0] != -1.0f || parentSlot.node.cachedBounds[5] != 6.0f) {
+        return 1;
+    }
+
+    zClass_Object3DDataPartial objectData{};
+    zClass_NodeFreeListSlot objectSlot{};
+    objectSlot.node.classId = 5;
+    objectSlot.node.classData = &objectData;
+    objectSlot.node.flags = 0x202;
+    objectData.flags = 0x11;
+    zBBox3f *objectBounds = &objectSlot.primaryBounds;
+    *objectBounds = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f};
+    if (zClass_Class::gwNodeUpdate(&objectSlot.node) != 0 || (objectData.flags & 0x01) != 0 ||
+        (objectSlot.node.flags & 0x02) != 0 || (objectSlot.node.flags & 0x100) == 0 ||
+        objectSlot.node.cachedBounds[0] != 1.0f || objectSlot.node.cachedBounds[5] != 6.0f) {
+        return 2;
+    }
+
+    zClass_WorldDataPartial worldData{};
+    worldData.flags = 0x08;
+    worldData.fogDensity = 0.375f;
+    zClass_NodePartial worldNode{};
+    worldNode.classId = 2;
+    worldNode.flags = 0x02;
+    worldNode.classData = &worldData;
+    if (zClass_Class::gwNodeUpdate(&worldNode) != 0 || worldData.flags != 0 ||
+        (worldNode.flags & 0x02) != 0 || gModel_FogDensity != 0.375f) {
+        return 3;
+    }
+
+    zClass_NodePartial invalidNode{};
+    invalidNode.classId = 3;
+    return zClass_Class::gwNodeUpdate(&invalidNode) == 3 ? 0 : 4;
+}
+
 extern "C" int zclass_gwnode_update_tree_smoke(void) {
     ResetTypeListsForTest();
     g_zClass_DeferredProcessingEnabled = 0;
@@ -1362,12 +1419,47 @@ extern "C" int zclass_object3d_transform_setters_smoke() {
         return 5;
     }
 
+    FreeTypeListsForTest();
+    ResetTypeListsForTest();
+
+    std::memset(&data, 0, sizeof(data));
+    node.flags = 0;
+    node.classId = 5;
+    node.classData = &data;
+    data.flags = 0x08;
+
+    float matrix[12] = {};
+    for (int i = 0; i < 12; ++i) {
+        matrix[i] = (float)(i + 1);
+    }
+
+    if (zClass_Object3D::gwObject3DSetMatrix(&node, matrix) != 0) {
+        FreeTypeListsForTest();
+        return 6;
+    }
+
+    int copied = 1;
+    for (int i = 0; i < 12; ++i) {
+        if (data.localMatrix[i] != matrix[i]) {
+            copied = 0;
+        }
+    }
+    if (copied == 0 ||
+        (data.flags & 0x08) != 0 ||
+        (data.flags & 0x31) != 0x31 ||
+        (node.flags & 0x02000003) != 0x02000003 ||
+        zClass_TypeList::Head(7) == nullptr ||
+        zClass_TypeList::Head(7)->node != &node) {
+        FreeTypeListsForTest();
+        return 7;
+    }
+
     zClass_NodePartial wrongClass = {};
     wrongClass.classId = 4;
     wrongClass.classData = &data;
     if (zClass_Object3D::gwObject3DTranslatePosition(&wrongClass, 1.0f, 2.0f, 3.0f) != 3) {
         FreeTypeListsForTest();
-        return 6;
+        return 8;
     }
 
     FreeTypeListsForTest();
@@ -1375,7 +1467,7 @@ extern "C" int zclass_object3d_transform_setters_smoke() {
                    zClass_Object3D::gwObject3DSetRotation(0, 0.0f, 0.0f, 0.0f) == 5 &&
                    zClass_Object3D::gwObject3DSetPosition(0, 0.0f, 0.0f, 0.0f) == 5
                ? 0
-               : 7;
+               : 9;
 }
 
 extern "C" int zclass_child_generic_link_smoke() {
@@ -2228,6 +2320,97 @@ extern "C" int zclass_world_queue_area_update_smoke() {
 
     std::free(worldData.pendingAreaUpdates);
     return 0;
+}
+
+extern "C" int zclass_world_apply_pending_fog_settings_smoke() {
+    zVideo::PixelPack_SetupFromMasks(5, 6, 5, 0xf800, 0x07e0, 0x001f);
+    g_zVideo_ActiveRendererPath = 1;
+    zRndr::g_fogColorParams = {};
+    gModel_FogDistanceInvRange = 0.0f;
+    gModel_FogHeightInvRange = 0.0f;
+
+    zClass_WorldDataPartial worldData{};
+    zClass_NodePartial worldNode{};
+    worldNode.classData = &worldData;
+    if (zClass_World::SetPendingFogState(&worldNode, 1) != 0 ||
+        zClass_World::SetPendingFogColorRgb01(&worldNode, 1.2f, -0.5f, 0.5f) != 0 ||
+        zClass_World::SetPendingFogRange(&worldNode, 5.0f, 20.0f) != 0 ||
+        zClass_World::SetPendingFogAltitudeRange(&worldNode, 2.0f, 10.0f) != 0 ||
+        zClass_World::SetPendingFogDensity(&worldNode, 0.75f) != 0 || worldData.flags != 0x2f) {
+        return 1;
+    }
+
+    float fogStart = 0.0f;
+    float fogEnd = 0.0f;
+    float fogDensity = 0.0f;
+    int fogState = 0;
+    float fogRed = 0.0f;
+    float fogGreen = 0.0f;
+    float fogBlue = 0.0f;
+    float fogAltitudeLow = 0.0f;
+    float fogAltitudeHigh = 0.0f;
+    if (zClass_World::GetPendingFogDensity(&worldNode, &fogDensity) != 0 ||
+        fogDensity != 0.75f ||
+        zClass_World::GetPendingFogState(&worldNode, &fogState) != 0 || fogState != 1 ||
+        zClass_World::GetPendingFogColorRgb01(&worldNode, &fogRed, &fogGreen, &fogBlue) != 0 ||
+        fogRed != 1.2f || fogGreen != -0.5f || fogBlue != 0.5f ||
+        zClass_World::GetPendingFogAltitudeRange(&worldNode, &fogAltitudeLow,
+                                                 &fogAltitudeHigh) != 0 ||
+        fogAltitudeLow != 2.0f || fogAltitudeHigh != 10.0f) {
+        return 6;
+    }
+
+    if (zClass_World::GetPendingFogRange(&worldNode, &fogStart, &fogEnd) != 0 ||
+        fogStart != 5.0f || fogEnd != 20.0f) {
+        return 5;
+    }
+
+    std::int32_t childClassData = 0;
+    zClass_NodePartial areaChild{};
+    areaChild.classData = &childClassData;
+    areaChild.flags = 0x100;
+    areaChild.cachedBounds[1] = -4.0f;
+    areaChild.cachedBounds[4] = 8.0f;
+    zClass_NodePartial *areaChildren[] = {&areaChild};
+    zWorldAreaPartial pendingArea{};
+    pendingArea.areaFlags = 1;
+    pendingArea.bbox[0] = 0.0f;
+    pendingArea.bbox[2] = 0.0f;
+    pendingArea.bbox[3] = 10.0f;
+    pendingArea.bbox[5] = 10.0f;
+    pendingArea.childCount = 1;
+    pendingArea.childList = areaChildren;
+    zWorldAreaPartial *pendingAreas[] = {&pendingArea};
+    worldData.pendingAreaUpdateCount = 1;
+    worldData.pendingAreaUpdates = pendingAreas;
+
+    if (zClass_World::ApplyPendingFogSettings(&worldNode) != 0 || worldData.flags != 0 ||
+        worldData.pendingAreaUpdateCount != 0 || (pendingArea.areaFlags & 1) != 0 ||
+        (pendingArea.areaFlags & 0x100) == 0) {
+        return 1;
+    }
+
+    if (gModel_FogEnabled != 1 || gModel_FogLinearModeEnabled != 1 ||
+        gModel_FogDistanceStart != 5.0f || gModel_FogDistanceEnd != 20.0f ||
+        gModel_FogDistanceInvRange < 0.066f || gModel_FogDistanceInvRange > 0.067f ||
+        gModel_FogHeightHigh != 10.0f || gModel_FogHeightLow != 2.0f ||
+        gModel_FogHeightInvRange != 0.125f || gModel_FogDensity != 0.75f) {
+        return 2;
+    }
+
+    if (worldData.ambientColor.red != 1.0f || worldData.ambientColor.green != 0.0f ||
+        worldData.ambientColor.blue != 0.5f || gModel_FogColorRgb01.red != 1.0f ||
+        gModel_FogColorRgb01.green != 0.0f || gModel_FogColorRgb01.blue != 0.5f ||
+        zRndr::g_fogColorParams.colorRgb01[0] != 1.0f ||
+        zRndr::g_fogColorParams.colorRgb01[1] != 0.0f ||
+        zRndr::g_fogColorParams.colorRgb01[2] != 0.5f) {
+        return 3;
+    }
+
+    return pendingArea.bbox[1] == -4.0f && pendingArea.bbox[4] == 8.0f &&
+                   pendingArea.bboxCenter.y == 2.0f && pendingArea.bboxRadius > 0.0f
+               ? 0
+               : 4;
 }
 
 extern "C" int zclass_node_metadata_accessors_smoke() {

@@ -56,8 +56,9 @@ extern zImage_Font *g_zImage_FontTable[20];
 extern int g_zImage_TextureMemoryDefault;
 extern int *g_zImage_TextureMemoryOption;
 extern int g_zImage_FontTransparentColor;
-extern int g_zImage_Unknown5617f4;
+extern int g_zImage_NextFontSlotIndex;
 extern zVidImagePartial *g_zImage_DefaultImagePtr;
+extern zVideo_TextureRecordPartial *g_zImage_DefaultTextureRecord;
 extern zImage_CreateFallbackImageProc g_zImage_pfnCreateFallbackImage;
 }
 

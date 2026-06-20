@@ -88,7 +88,31 @@ float g_Player_AiMode2_SteeringPitchTurnGain = 5.69999981f;
 float g_Player_AiMode2_SteeringVerticalErrorScale = 0.100000001f;
 float g_Player_AiMode2_OffsetTargetRotateCos15Deg = 0.965925813f;
 float g_Player_AiMode2_OffsetTargetRotateSin15Deg = 0.258819044f;
+/**
+ * Reimplements data 0x4f3760: g_Player_TotalTimeSecScaled.
+ * Purpose: Stores the accumulated player-frame time used by gameplay timers.
+ */
 float g_Player_TotalTimeSecScaled = 0.0f;
+/**
+ * Reimplements data 0x4f3ac4: g_Player_DeltaTime.
+ * BN types this as a zero-filled player timing float consumed by force-feedback
+ * pitch filtering.
+ * Purpose: Stores the current player-frame delta time used by input effects.
+ */
+float g_Player_DeltaTime = 0.0f;
+/**
+ * Reimplements data 0x4f3aac: g_Player_InvDeltaTime.
+ * BN types this as a zero-filled player timing reciprocal float.
+ * Purpose: Stores the inverse player-frame delta time shared with zInput code.
+ */
+float g_Player_InvDeltaTime = 0.0f;
+/**
+ * Reimplements data 0x4f3abc: g_Player_DeltaTimeScaled001.
+ * BN types this as a zero-filled player timing float adjacent to the delta-time
+ * globals.
+ * Purpose: Stores the 0.01-scaled player-frame delta time shared with zInput.
+ */
+float g_Player_DeltaTimeScaled001 = 0.0f;
 int g_PlayerPendingCheckpointNumber = 0;
 /**
  * Reimplements data 0x4f3754: g_PlayerStatusMeterRatio.

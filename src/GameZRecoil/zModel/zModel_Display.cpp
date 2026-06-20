@@ -1,4 +1,5 @@
 #include "GameZRecoil/include/OptCatalog.h"
+#include "GameZRecoil/include/zClipAlt.h"
 #include "GameZRecoil/include/zClipRect.h"
 #include "GameZRecoil/zError/zError.h"
 #include "GameZRecoil/zGame/zGame.h"
@@ -22,12 +23,8 @@ float g_zModel_DisplayClipWidth = 0.0f;
 float g_zModel_DisplayClipHeight = 0.0f;
 float g_zModel_DisplayClipMaxX = 0.0f;
 float g_zModel_DisplayClipMaxY = 0.0f;
-float g_zModel_DisplayParam4 = 0.0f;
-float g_zModel_DisplayParam40 = 0.0f;
 int g_zModel_DisplayClipReserved = 0;
 void *g_zModel_SpanOcclusionProc = 0;
-void *g_zModel_DisplayScratchPtr = 0;
-int g_zModel_DisplayScratchCount = 0;
 float g_zModel_ViewScaleX = 0.0f;
 int g_zModel_ViewScaleYRaw = 0;
 float g_zModel_ViewScaleZ = 0.0f;
@@ -42,48 +39,203 @@ int g_zModel_FogReserved = 0;
 float g_zModel_FogScale = 0.0f;
 float g_zModel_InverseZTolerance = 0.0f;
 float g_zModel_HardwareInverseZTolerance = 0.0f;
+/**
+ * Reimplements data 0x4e0fc0: Symbol.
+ * Authored zModel display global.
+ * Purpose: store the backface-elimination tolerance scalar used by display passes.
+ */
 float g_zModel_BFETolerance = 0.0f;
 zVec3 g_zModel_SharedVec3ScratchAStorage[0x400] = {0};
 zVec3 g_zModel_SharedVec3ScratchBStorage[0x400] = {0};
 zVec3 *g_zModel_TransformedVerts = 0;
 zVec3 *g_zModel_TransformedNormals = 0;
+/**
+ * Reimplements data 0x57d97c: Symbol.
+ * Authored zModel display global.
+ * Purpose: point scratch users at the primary shared transformed-vector buffer.
+ */
 zVec3 *g_zModel_SharedVec3ScratchA = 0;
+/**
+ * Reimplements data 0x57d980: Symbol.
+ * Authored zModel display global.
+ * Purpose: point scratch users at the secondary shared transformed-vector buffer.
+ */
 zVec3 *g_zModel_SharedVec3ScratchB = 0;
+/**
+ * Reimplements data 0x57d984: Symbol.
+ * Authored zModel display global.
+ * Purpose: alias point-in-polygon vertices to the current primary scratch buffer.
+ */
 zVec3 *g_zModel_PointInPolygonVertices = 0;
+/**
+ * Reimplements data 0x57d988: Symbol.
+ * Authored zModel display global.
+ * Purpose: alias point-in-polygon edge normals to the current secondary scratch buffer.
+ */
 zVec3 *g_zModel_PointInPolygonEdgeNormals = 0;
+/**
+ * Reimplements data 0x57d98c: Symbol.
+ * Authored zModel display global.
+ * Purpose: track the number of points in the current point-in-polygon scratch set.
+ */
 int g_zModel_PointInPolygonVertexCount = 0;
+/**
+ * Reimplements data 0x57d990: Symbol.
+ * Authored zModel display global.
+ * Purpose: store the world-space texture U origin used by model display setup.
+ */
 float g_zModel_TextureWorldBaseU = 0.0f;
+/**
+ * Reimplements data 0x57d994: Symbol.
+ * Authored zModel display global.
+ * Purpose: store the world-space texture V origin used by model display setup.
+ */
 float g_zModel_TextureWorldBaseV = 0.0f;
+/**
+ * Reimplements data 0x57d998: Symbol.
+ * Authored zModel display global.
+ * Purpose: store the world-space texture U scale used by model display setup.
+ */
 float g_zModel_TextureWorldPerMeterU = 0.0f;
+/**
+ * Reimplements data 0x57d99c: Symbol.
+ * Authored zModel display global.
+ * Purpose: store the world-space texture V scale used by model display setup.
+ */
 float g_zModel_TextureWorldPerMeterV = 0.0f;
 int g_zModel_ScratchCounters[8] = {0};
 float g_zModel_PointInPolyTolX = 0.0f;
 float g_zModel_PointInPolyTolY = 0.0f;
 unsigned char g_zModel_DamageMaskStorage[0x200] = {0};
 void *g_zModel_DamageMaskCurrent = 0;
+/**
+ * Reimplements data 0x57d9a0: Symbol.
+ * Authored OptCatalog damage-mask global.
+ * Purpose: gate whether damage-mask stamping is active for hit surfaces.
+ */
 int g_OptCatalogDamageMaskEnabled = 0;
+/**
+ * Reimplements data 0x57d9a4: Symbol.
+ * Authored OptCatalog damage-mask global.
+ * Purpose: select which registered damage-mask handle slot is active.
+ */
 int g_OptCatalogDamageMaskSlotIndex = 0;
 void *g_OptCatalogDamageMaskHandles[3] = {0};
+/**
+ * Reimplements data 0x57d9b4: Symbol.
+ * Authored OptCatalog damage-mask global.
+ * Purpose: store the current damage-mask U phase before stamp wrapping.
+ */
 float g_OptCatalogDamageMaskPhaseU = 0.0f;
+/**
+ * Reimplements data 0x57d9b8: Symbol.
+ * Authored OptCatalog damage-mask global.
+ * Purpose: store the current damage-mask V phase before stamp wrapping.
+ */
 float g_OptCatalogDamageMaskPhaseV = 0.0f;
 int g_zModel_OptCatalogAux0 = 0;
 int g_zModel_OptCatalogAux1 = 0;
+/**
+ * Reimplements data 0x57d9bc: Symbol.
+ * Authored zModel display global.
+ * Purpose: provide the fallback graphics-flags storage when the options catalog has no entry.
+ */
 int gModel_DefaultGraphicsFlags = 0;
 void *g_zModel_GraphicsFlagsOption = 0;
+extern "C" {
+/**
+ * Reimplements data 0x57d9e0: gModel_RenderFn.
+ * Authored zModel display global.
+ * Purpose: dispatch visible model nodes to the active renderer path.
+ */
+zClass_RenderFn gModel_RenderFn = 0;
+/**
+ * Reimplements data 0x57d9e4: gModel_ClipMaskStack.
+ * Authored zModel display global.
+ * Purpose: store nested model clip masks for zClass render traversal.
+ */
+int gModel_ClipMaskStack[0x10] = {0};
+/**
+ * Reimplements data 0x57da24: gModel_ClipMaskStackTop.
+ * Authored zModel display global.
+ * Purpose: track the current entry in the model clip-mask stack.
+ */
+int *gModel_ClipMaskStackTop = 0;
+}
+/**
+ * Reimplements data 0x4dd90c: Symbol.
+ * Authored variant-filter global.
+ * Purpose: gate whether variant tag comparisons filter model display entries.
+ */
 int g_Variant_FilterEnabled = 1;
 zTag4Partial g_VariantTag_Current = {0};
 zTag4Partial g_Variant_CurrentTag = {0};
+/**
+ * Reimplements data 0x576200: Symbol.
+ * Authored zModel display-instance pool global.
+ * Purpose: record the configured display-instance pool capacity.
+ */
 int g_zModel_DiPoolCapacity = 0;
+/**
+ * Reimplements data 0x576204: Symbol.
+ * Authored zModel display-instance pool global.
+ * Purpose: point at the allocated display-instance pool storage.
+ */
 zDiPartial *g_zModel_DiPoolBase = 0;
+/**
+ * Reimplements data 0x576208: Symbol.
+ * Authored zModel display-instance pool global.
+ * Purpose: count display-instance pool entries currently allocated.
+ */
 int g_zModel_DiPoolInUseCount = 0;
+/**
+ * Reimplements data 0x57620c: Symbol.
+ * Authored zModel display-instance pool global.
+ * Purpose: hold the head index of the display-instance free list.
+ */
 int g_zModel_DiPoolFreeHeadIndex = 0;
+/**
+ * Reimplements data 0x566a1c: Symbol.
+ * Authored zModel material-pool global.
+ * Purpose: point at the allocated material-slot pool storage.
+ */
 zModel_MaterialSlot *g_zModel_MatlPool = 0;
+/**
+ * Reimplements data 0x566a18: Symbol.
+ * Authored zModel material-pool global.
+ * Purpose: record the configured material-slot pool capacity.
+ */
 int g_zModel_MatlPoolCapacity = 0;
+/**
+ * Reimplements data 0x566a20: Symbol.
+ * Authored zModel material-pool global.
+ * Purpose: count material-slot pool entries currently allocated.
+ */
 int g_zModel_MatlPoolInUseCount = 0;
+/**
+ * Reimplements data 0x4e1160: Symbol.
+ * Authored zModel material-pool global.
+ * Purpose: hold the head index of the material-slot free list.
+ */
 int g_zModel_MatlFreeHeadIndex = -1;
+/**
+ * Reimplements data 0x4e1164: Symbol.
+ * Authored zModel material-pool global.
+ * Purpose: hold the head index of the active material-slot list.
+ */
 int g_zModel_MatlActiveHeadIndex = -1;
+/**
+ * Reimplements data 0x566a24: Symbol.
+ * Authored zModel material-pool global.
+ * Purpose: cache a reusable material record for display material allocation.
+ */
 zModel_MaterialPartial *g_zModel_MatlReuseCache = 0;
 zModel_MaterialPartial g_zModel_DefaultMaterial = {0};
+/**
+ * Reimplements data 0x4e0fc8: Symbol.
+ * Authored renderer global-string table data.
+ * Purpose: track the active count in the fixed-prefix plus dynamic string table.
+ */
 int g_zRndr_GlobalStringCount = 6;
 char *g_zRndr_GlobalStringTable[100] = {0};
 
@@ -374,16 +526,17 @@ int zModel_Display_Init() {
 
     g_zModel_DisplayClipMode = 2;
     g_zModel_SpanOcclusionProc = (void *)(&zModel::RenderNodeSoftware);
-    g_zModel_DisplayScratchCount = 0;
-    g_zModel_DisplayScratchPtr = &g_zModel_ViewScaleX;
+    gModel_RenderFn = zModel::RenderNodeSoftware;
+    gAltClipPassEnabled = 0;
+    gModel_ClipMaskStackTop = gModel_ClipMaskStack;
     g_zModel_DisplayClipX = 0;
     g_zModel_DisplayClipY = 0;
     g_zModel_DisplayClipWidth = 320.0f;
     g_zModel_DisplayClipHeight = 200.0f;
     g_zModel_DisplayClipMaxX = 319.0f;
     g_zModel_DisplayClipMaxY = 199.0f;
-    g_zModel_DisplayParam4 = 4.0f;
-    g_zModel_DisplayParam40 = 40.0f;
+    gModel_SmallPolyRejectArea2x = 4.0f;
+    gModel_SmallPolyRejectArea20x = 40.0f;
     g_zModel_DisplayClipReserved = 0;
 
     gModel_FogEnabled = 1;
@@ -790,7 +943,7 @@ zDiPartial *AllocFromFreeList() {
 
     zDiPartial *const entry = &g_zModel_DiPoolBase[slotIndex];
     g_zModel_DiPoolFreeHeadIndex = entry->nextFreeIndex;
-    ++g_zModel_DiPoolInUseCount;
+    g_zModel_DiPoolInUseCount += 1;
     memset(
         entry,
         0,

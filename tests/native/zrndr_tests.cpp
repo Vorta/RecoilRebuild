@@ -5123,6 +5123,22 @@ extern "C" int zrndr_fog_commit_and_blend_smoke(void) {
 
 extern "C" int zrndr_and_zmodel_current_fog_color_smoke(void) {
     zVideo::PixelPack_SetupFromMasks(5, 6, 5, 0xf800, 0x07e0, 0x001f);
+    zVideo::PixelPack_GetRgbBits(
+        &zRndr::g_pixelPackRedBits,
+        &zRndr::g_pixelPackGreenBits,
+        &zRndr::g_pixelPackBlueBits
+    );
+    zVideo::PixelPack_GetRgbMasks(
+        &zRndr::g_pixelPackRedMask,
+        &zRndr::g_pixelPackGreenMask,
+        &zRndr::g_pixelPackBlueMask
+    );
+    zVideo::PixelPack_GetPackingParams(
+        &zRndr::g_pixelPackRedShift,
+        &zRndr::g_pixelPackGreenShift,
+        &zRndr::g_pixelPackBlueShift
+    );
+    zVideo::PixelPack_SetupFromMasks(5, 5, 5, 0x7c00, 0x03e0, 0x001f);
     zRndr::g_fogColorParams = {};
     g_zVideo_ActiveRendererPath = 1;
     g_zVideo_FogColorPendingR255 = 0.0f;

@@ -34,13 +34,13 @@ zNetwork_PlayerRecord *g_zNetwork_LocalPlayerRecord = 0;
 int g_zNetwork_IsHostFlag = 0;
 /**
  * Reimplements data 0x56aa44: Symbol.
- * Data owner: engine.znetwork.directplay_runtime_globals.
+ * Data owner: engine.znetwork.dplay_player_runtime_lifecycle.
  * Purpose: cache the local DirectPlay player identifier.
  */
 int g_zNetwork_LocalPlayerKey = 0;
 /**
  * Reimplements data 0x56aa50: Symbol.
- * Data owner: engine.znetwork.directplay_runtime_globals.
+ * Data owner: engine.znetwork.dplay_player_runtime_lifecycle.
  * Purpose: provide the fixed local player-name buffer used by DirectPlay.
  */
 char g_zNetwork_LocalPlayerNameScratch[0x50] = {0};
@@ -123,7 +123,7 @@ zNetworkFatalDisconnectCallback g_zNetwork_FatalDisconnectCallback = 0;
 int g_zNetwork_FatalDisconnectTriggered = 0;
 /**
  * Reimplements data 0x4e185c: Symbol.
- * Data owner: engine.znetwork.directplay_runtime_globals.
+ * Data owner: engine.znetwork.dplay_player_runtime_lifecycle.
  * Purpose: mirror the cached current-player count used by system messages.
  */
 int g_zNetworkCurrentPlayerCountCached = 1;
@@ -132,7 +132,7 @@ int g_zNetworkCurrentPlayerCountCached = 1;
  * Data owner: engine.znetwork.directplay_runtime_globals.
  * Purpose: cache the current session name buffer for descriptor updates.
  */
-char g_zNetwork_SessionNameCache[0x5c] = {0};
+char g_zNetwork_SessionNameCache[kZNetworkSessionNameCacheBytes] = {0};
 /**
  * Reimplements data 0x56ab30: Symbol.
  * Data owner: engine.znetwork.session_enumeration_list.
@@ -165,7 +165,7 @@ void *g_zNetwork_ReceiveBuffer = 0;
 unsigned int g_zNetwork_ReceiveBufferCapacity = 0;
 /**
  * Reimplements data 0x56ad50: Symbol.
- * Data owner: engine.znetwork.directplay_runtime_globals.
+ * Data owner: engine.znetwork.dplay_player_runtime_lifecycle.
  * Purpose: track player-color slots currently in use by the session.
  */
 int g_zNetwork_PlayerColorInUseFlags[16] = {0};
