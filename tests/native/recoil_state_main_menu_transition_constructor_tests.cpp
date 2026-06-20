@@ -46,6 +46,58 @@ extern "C" int recoil_state_main_menu_transition_constructor_smoke(void) {
     return 0;
 }
 
+extern "C" int recoil_state_main_menu_transition_static_init_smoke(void) {
+    g_RecoilState_MainMenuTransition.m_mainMenuDialog =
+        reinterpret_cast<HudUiMainMenuDialog *>(0x22222222);
+    g_RecoilState_MainMenuTransition.m_savedHalfResAdjustMode = 0x33333333;
+    g_RecoilState_MainMenuTransition.m_entryRoute =
+        static_cast<RecoilMainMenuEntryRoute>(7);
+    g_RecoilState_MainMenuTransition.m_deferredVideoModeIndex =
+        static_cast<zVidModeIndex>(5);
+    g_RecoilState_MainMenuTransition.m_pausedAudioSnapshot = 0x44444444;
+
+    RecoilStateMainMenuTransition *const staticInitReturned =
+        RecoilStateMainMenuTransition::StaticInit();
+    if (staticInitReturned != &g_RecoilState_MainMenuTransition) {
+        return 1;
+    }
+
+    if (g_RecoilState_MainMenuTransition.m_mainMenuDialog != 0 ||
+        g_RecoilState_MainMenuTransition.m_savedHalfResAdjustMode != 0 ||
+        g_RecoilState_MainMenuTransition.m_entryRoute !=
+            RECOIL_MAINMENU_ROUTE_FRONTEND ||
+        g_RecoilState_MainMenuTransition.m_deferredVideoModeIndex !=
+            ZVID_MODE_INVALID_COMPLEMENT ||
+        g_RecoilState_MainMenuTransition.m_pausedAudioSnapshot != 0) {
+        return 2;
+    }
+
+    RecoilStateMainMenuTransition::AtExitDestructor();
+    if (g_RecoilState_MainMenuTransition.m_mainMenuDialog != 0) {
+        return 3;
+    }
+
+    g_RecoilState_MainMenuTransition.m_mainMenuDialog = 0;
+    g_RecoilState_MainMenuTransition.m_savedHalfResAdjustMode = 0x55555555;
+    g_RecoilState_MainMenuTransition.m_entryRoute =
+        static_cast<RecoilMainMenuEntryRoute>(9);
+    g_RecoilState_MainMenuTransition.m_deferredVideoModeIndex =
+        static_cast<zVidModeIndex>(6);
+    g_RecoilState_MainMenuTransition.m_pausedAudioSnapshot = 0x66666666;
+    RecoilStateMainMenuTransition::StaticInitAndRegisterAtExit();
+    if (g_RecoilState_MainMenuTransition.m_mainMenuDialog != 0 ||
+        g_RecoilState_MainMenuTransition.m_savedHalfResAdjustMode != 0 ||
+        g_RecoilState_MainMenuTransition.m_entryRoute !=
+            RECOIL_MAINMENU_ROUTE_FRONTEND ||
+        g_RecoilState_MainMenuTransition.m_deferredVideoModeIndex !=
+            ZVID_MODE_INVALID_COMPLEMENT ||
+        g_RecoilState_MainMenuTransition.m_pausedAudioSnapshot != 0) {
+        return 4;
+    }
+
+    return 0;
+}
+
 extern "C" int recoil_state_main_menu_transition_set_deferred_video_mode_index_smoke(void) {
     g_RecoilState_MainMenuTransition.m_deferredVideoModeIndex = ZVID_MODE_INVALID_COMPLEMENT;
 
@@ -57,6 +109,37 @@ extern "C" int recoil_state_main_menu_transition_set_deferred_video_mode_index_s
                    static_cast<zVidModeIndex>(5)
                ? 0
                : 1;
+}
+
+extern "C" int recoil_state_main_menu_transition_queue_enter_smoke(void) {
+    const int oldCount = g_RecoilApp.m_stateQueue.m_itemCount;
+    g_RecoilState_MainMenuTransition.m_entryRoute = RECOIL_MAINMENU_ROUTE_FRONTEND;
+
+    RecoilStateMainMenuTransition::QueueEnter(
+        static_cast<RecoilMainMenuEntryRoute>(7)
+    );
+
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue;
+    RecoilApp_StateQueueItem *const item =
+        queue.m_writeBlock.m_cursor != 0 ? *(queue.m_writeBlock.m_cursor - 1) : 0;
+
+    if (g_RecoilState_MainMenuTransition.m_entryRoute !=
+        static_cast<RecoilMainMenuEntryRoute>(7)) {
+        return 1;
+    }
+
+    if (queue.m_itemCount != oldCount + 1) {
+        return 2;
+    }
+
+    if (item == 0 ||
+        item->m_kind != RecoilApp_StateQueueKind_PushState ||
+        item->m_stateObj != &g_RecoilState_MainMenuTransition ||
+        item->m_param != 0) {
+        return 3;
+    }
+
+    return 0;
 }
 
 extern "C" int hud_ui_main_menu_dialog_constructor_smoke(void) {

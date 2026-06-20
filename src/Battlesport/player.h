@@ -57,6 +57,7 @@ extern float g_Player_DeltaTime;
 extern float g_Player_InvDeltaTime;
 extern float g_Player_DeltaTimeScaled001;
 extern int g_PlayerPendingCheckpointNumber;
+extern char g_Checkpoint_NodeNameFmt[13];
 extern float g_PlayerStatusMeterRatio;
 extern float g_Player_NominalGravity;
 extern float g_Player_WaterGravity;

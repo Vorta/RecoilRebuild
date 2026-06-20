@@ -52,7 +52,11 @@ extern "C" int *ZOPT_SOUND_CDAUDIO = 0;
 extern "C" int g_zSnd_IsInitialized = 0;
 extern "C" int g_zSnd_ActiveBackend = 0;
 extern "C" unsigned int g_zSnd_WindowHandle = 0;
-// BN 0x4e2234: initialized .data archive-bank selector defaults to enabled.
+/**
+ * Reimplements data 0x4e2234: g_zSndUseArchiveBanks.
+ * Purpose: Stores the archive-bank selector used by sound-bank loading and
+ * CZRecoilFrame archive-bank menu state.
+ */
 extern "C" int g_zSnd_UseArchiveBanksFlag = 1;
 
 #define g_zSndCdPlayFromTrack (g_zSndCdPlayFrom.track)
@@ -72,7 +76,10 @@ const char kZSndCdSourceFile[] = "D:\\Proj\\GameZRecoil\\zSound\\zsnd_cd.cpp";
 } // namespace
 
 namespace zSndCdTrackList {
-// Reimplements 0x4a2020: zSndCdTrackList::StaticConstructor
+/**
+ * Reimplements 0x4a2020: zSndCdTrackList::StaticConstructor.
+ * Purpose: Allocate and initialize the circular CD track-list sentinel.
+ */
 void StaticConstructor() {
     g_zSndCd_TrackListCtorGuard = 1;
     g_zSndCd_TrackListHead = (zSndCdTrackNode *)(::operator new(sizeof(zSndCdTrackNode)));
@@ -81,7 +88,10 @@ void StaticConstructor() {
     g_zSndCd_TrackCount = 0;
 }
 
-// Reimplements 0x4a2060: zSndCdTrackList::StaticDestructor
+/**
+ * Reimplements 0x4a2060: zSndCdTrackList::StaticDestructor.
+ * Purpose: Delete every CD track-list node and reset the static list state.
+ */
 void StaticDestructor() {
     zSndCdTrackNode *const head = g_zSndCd_TrackListHead;
     zSndCdTrackNode *node = head->next;
@@ -99,12 +109,18 @@ void StaticDestructor() {
     g_zSndCd_TrackCount = 0;
 }
 
-// Reimplements 0x4a2050: zSndCdTrackList::RegisterAtExitDestructor
+/**
+ * Reimplements 0x4a2050: zSndCdTrackList::RegisterAtExitDestructor.
+ * Purpose: Register the static CD track-list destructor for process exit.
+ */
 void RegisterAtExitDestructor() {
     atexit(StaticDestructor);
 }
 
-// Reimplements 0x4a2010: zSndCdTrackList::StaticInit
+/**
+ * Reimplements 0x4a2010: zSndCdTrackList::StaticInit.
+ * Purpose: Initialize the CD track-list singleton and its exit cleanup.
+ */
 void StaticInit() {
     StaticConstructor();
     RegisterAtExitDestructor();
@@ -112,7 +128,10 @@ void StaticInit() {
 } // namespace zSndCdTrackList
 
 namespace zSnd {
-// Reimplements 0x4a1290: zSnd::SetActiveBackendPreInit
+/**
+ * Reimplements 0x4a1290: zSnd::SetActiveBackendPreInit.
+ * Purpose: Select the sound backend before the runtime is initialized.
+ */
 int __fastcall SetActiveBackendPreInit(
     int backend
 ) {
@@ -124,7 +143,10 @@ int __fastcall SetActiveBackendPreInit(
     return 1;
 }
 
-// Reimplements 0x4a12b0: zSnd::GetActiveBackend
+/**
+ * Reimplements 0x4a12b0: zSnd::GetActiveBackend.
+ * Purpose: Return the currently selected sound backend id.
+ */
 int GetActiveBackend() {
     return g_zSnd_ActiveBackend;
 }
@@ -168,7 +190,11 @@ int GetCDAudioOption() {
     return *ZOPT_SOUND_CDAUDIO;
 }
 
-// Reimplements 0x4a07f0: zSnd::SetUseArchiveBanksFlag
+/**
+ * Reimplements 0x4a07f0: zSnd::SetUseArchiveBanksFlag.
+ * Original source: D:\Proj\GameZRecoil\zSound\zSound.cpp.
+ * Purpose: Store the archive-bank selector global for sound-bank loading.
+ */
 void __fastcall SetUseArchiveBanksFlag(
     int useArchiveBanks
 ) {
@@ -205,7 +231,10 @@ namespace zSndCd {
 int ResetTrackState();
 int Shutdown();
 
-// Reimplements 0x4a20d0: zSndCd::Init
+/**
+ * Reimplements 0x4a20d0: zSndCd::Init.
+ * Purpose: Open the MCI CD device, cache track metadata, and build the CD track list.
+ */
 RECOIL_NO_GS int __fastcall Init(
     zReader::Node *cdTracksNode
 ) {
@@ -374,7 +403,10 @@ RECOIL_NO_GS int __fastcall Init(
     return 1;
 }
 
-// Reimplements 0x4a2490: zSndCd::ResetTrackState
+/**
+ * Reimplements 0x4a2490: zSndCd::ResetTrackState.
+ * Purpose: Reset cached CD play-from/current/play-to positions to track one.
+ */
 int ResetTrackState() {
     zSndCdTrackState state = {1, 0, 0};
     g_zSndCdPlayFrom = state;
@@ -479,7 +511,10 @@ int __fastcall SetVolume(
     return 1;
 }
 
-// Reimplements 0x4a2600: zSndCd::ApplyPlaybackMode
+/**
+ * Reimplements 0x4a2600: zSndCd::ApplyPlaybackMode.
+ * Purpose: Apply the requested CD playback mode and issue the MCI play command.
+ */
 RECOIL_NO_GS int __fastcall ApplyPlaybackMode(
     int playbackMode
 ) {
@@ -529,7 +564,10 @@ RECOIL_NO_GS int __fastcall ApplyPlaybackMode(
     return 1;
 }
 
-// Reimplements 0x4a2930: zSndCd::GetTrackCount
+/**
+ * Reimplements 0x4a2930: zSndCd::GetTrackCount.
+ * Purpose: Return the cached number of CD tracks when the CD device is ready.
+ */
 int GetTrackCount() {
     if ((g_zSndCdFlags & ZSND_CD_FLAG_READY) == 0) {
         return 0;
@@ -538,7 +576,10 @@ int GetTrackCount() {
     return g_zSndCdTrackCountCached;
 }
 
-// Reimplements 0x4a2750: zSndCd::PlayTrack
+/**
+ * Reimplements 0x4a2750: zSndCd::PlayTrack.
+ * Purpose: Seek to a CD track and reset cached playback state for that track.
+ */
 RECOIL_NO_GS int __fastcall PlayTrack(
     int trackIndex
 ) {
@@ -570,7 +611,10 @@ RECOIL_NO_GS int __fastcall PlayTrack(
     return 1;
 }
 
-// Reimplements 0x4a25e0: zSndCd::PlayTrackWithMode
+/**
+ * Reimplements 0x4a25e0: zSndCd::PlayTrackWithMode.
+ * Purpose: Start a CD track and then apply the requested playback mode.
+ */
 int __fastcall PlayTrackWithMode(
     int trackIndex,
     int playbackMode
@@ -584,7 +628,10 @@ int __fastcall PlayTrackWithMode(
     return result;
 }
 
-// Reimplements 0x4a26b0: zSndCd::OnMciNotify
+/**
+ * Reimplements 0x4a26b0: zSndCd::OnMciNotify.
+ * Purpose: Restart looping CD playback when the MCI notify callback completes.
+ */
 void __fastcall OnMciNotify(
     unsigned int wParam,
     unsigned int lParam

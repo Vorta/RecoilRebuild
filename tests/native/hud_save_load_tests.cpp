@@ -223,6 +223,12 @@ RecoilApp_IState *g_saveLoadQueueSwitchStates[4];
 int g_saveLoadQueueSwitchParams[4];
 int g_saveLoadStateEnterCount;
 int g_saveLoadStateExitCount;
+int g_confirmQuitBackgroundLoadCalls;
+bool g_confirmQuitBackgroundLoadArgsOk;
+int g_confirmQuitBackgroundBindCalls;
+bool g_confirmQuitBackgroundBindArgsOk;
+int g_confirmQuitBackgroundFreeCalls;
+bool g_confirmQuitBackgroundFreeArgsOk;
 int g_saveLoadStartEngineCount;
 int g_saveLoadShutdownEngineCount;
 int g_saveLoadExitInstanceCount;
@@ -261,6 +267,78 @@ zReader::Node * SaveGameInitLoadProbe::LoadFromZrd(
         ) == 0 &&
         capturePrimary == 0;
     return nullptr;
+}
+
+struct ConfirmQuitBackgroundProbe {
+    zReader::Node * LoadFromZrd(
+        const char *zrdPath,
+        const char *sectionName,
+        int capturePrimary
+    );
+    int BindWidgetByName(
+        zReader::Node *loadedSectionNode,
+        HudUiZrdWidget *widget,
+        const char *name
+    );
+    void FreeLoadedTreeRoots(int loadedRoot);
+};
+
+zReader::Node g_confirmQuitBackgroundNode;
+
+zReader::Node * ConfirmQuitBackgroundProbe::LoadFromZrd(
+    const char *zrdPath,
+    const char *sectionName,
+    int capturePrimary
+) {
+    ++g_confirmQuitBackgroundLoadCalls;
+    g_confirmQuitBackgroundLoadArgsOk =
+        this != nullptr &&
+        zrdPath != nullptr &&
+        std::strcmp(
+            zrdPath,
+            "dialog.zrd"
+        ) == 0 &&
+        sectionName != nullptr &&
+        std::strcmp(
+            sectionName,
+            "CONFIRM_QUIT"
+        ) == 0 &&
+        capturePrimary == 0;
+    return &g_confirmQuitBackgroundNode;
+}
+
+int ConfirmQuitBackgroundProbe::BindWidgetByName(
+    zReader::Node *loadedSectionNode,
+    HudUiZrdWidget *widget,
+    const char *name
+) {
+    ++g_confirmQuitBackgroundBindCalls;
+
+    HudUiBackgroundConfirmQuit *const dialog =
+        static_cast<HudUiBackgroundConfirmQuit *>(static_cast<void *>(this));
+    const bool widgetOk =
+        (g_confirmQuitBackgroundBindCalls == 1 &&
+         widget == &dialog->okButton &&
+         name != nullptr &&
+         std::strcmp(name, "OK_TO_QUIT") == 0) ||
+        (g_confirmQuitBackgroundBindCalls == 2 &&
+         widget == &dialog->cancelButton &&
+         name != nullptr &&
+         std::strcmp(name, "CANCEL_QUIT") == 0);
+
+    g_confirmQuitBackgroundBindArgsOk =
+        g_confirmQuitBackgroundBindArgsOk &&
+        loadedSectionNode == &g_confirmQuitBackgroundNode &&
+        widgetOk;
+    return 0;
+}
+
+void ConfirmQuitBackgroundProbe::FreeLoadedTreeRoots(
+    int loadedRoot
+) {
+    ++g_confirmQuitBackgroundFreeCalls;
+    g_confirmQuitBackgroundFreeArgsOk =
+        loadedRoot == (int)reinterpret_cast<std::uintptr_t>(&g_confirmQuitBackgroundNode);
 }
 
 void ResetSaveLoadListItemDrawCapture() {
@@ -775,6 +853,26 @@ void *SaveGameInitLoadProbeAddress() {
 
 void *LoadGameInitLoadProbeAddress() {
     return MethodAddress(&LoadGameInitLoadProbe::LoadFromZrd);
+}
+
+void *HudUiBackgroundBindWidgetByNameAddress() {
+    return MethodAddress(&HudUiBackground::BindWidgetByName);
+}
+
+void *HudUiBackgroundFreeLoadedTreeRootsAddress() {
+    return MethodAddress(&HudUiBackground::FreeLoadedTreeRoots);
+}
+
+void *ConfirmQuitBackgroundLoadProbeAddress() {
+    return MethodAddress(&ConfirmQuitBackgroundProbe::LoadFromZrd);
+}
+
+void *ConfirmQuitBackgroundBindProbeAddress() {
+    return MethodAddress(&ConfirmQuitBackgroundProbe::BindWidgetByName);
+}
+
+void *ConfirmQuitBackgroundFreeProbeAddress() {
+    return MethodAddress(&ConfirmQuitBackgroundProbe::FreeLoadedTreeRoots);
 }
 
 struct SaveLoadDialogActionProbe {
@@ -1559,6 +1657,149 @@ extern "C" int hud_ui_credits_quit_button_on_activate_smoke(void) {
         oldApp,
         sizeof(g_RecoilApp)
     );
+    return result;
+}
+
+extern "C" int hud_ui_confirm_quit_ok_button_on_activate_smoke(void) {
+    unsigned char oldApp[sizeof(g_RecoilApp)];
+    std::memcpy(
+        oldApp,
+        &g_RecoilApp,
+        sizeof(oldApp)
+    );
+    const int oldSkipExitDelay = g_RecoilState_MainMenuSkipExitDelay;
+    std::memset(
+        &g_RecoilApp,
+        0,
+        sizeof(g_RecoilApp)
+    );
+
+    SaveLoadTestAppState currentState;
+    SaveLoadTestAppState leaveState;
+    g_RecoilApp.m_currentStateIndex = 0;
+    g_RecoilApp.m_stateStack[0] = &currentState;
+    InstallSaveLoadStateVptr(
+        g_RecoilApp.m_leaveNetworkState,
+        leaveState
+    );
+    g_RecoilApp.m_missionShutdownMode = RECOILAPP_MISSION_SHUTDOWN_ON_EXIT;
+    g_RecoilState_MainMenuSkipExitDelay = 0;
+    g_saveLoadStateEnterCount = 0;
+    g_saveLoadStateExitCount = 0;
+
+    HudUiConfirmQuitOkButton button{};
+    button.OnActivate();
+
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue;
+    RecoilApp_StateQueueItem *const firstItem = SaveLoadQueueItemAt(
+        queue,
+        0
+    );
+    RecoilApp_StateQueueItem *const secondItem = SaveLoadQueueItemAt(
+        queue,
+        1
+    );
+    RecoilApp_StateQueueItem *const thirdItem = SaveLoadQueueItemAt(
+        queue,
+        2
+    );
+
+    int result = 0;
+    if (g_RecoilState_MainMenuSkipExitDelay != 1 ||
+        g_RecoilApp.m_missionShutdownMode !=
+            RECOILAPP_MISSION_SHUTDOWN_SKIP_GAMEPLAY ||
+        g_saveLoadStateExitCount != 3 ||
+        g_saveLoadStateEnterCount != 1 ||
+        queue.m_itemCount != 3) {
+        result = 1;
+    } else if (firstItem == nullptr ||
+               firstItem->m_kind != RecoilApp_StateQueueKind_ExitCurrent ||
+               firstItem->m_param != 1) {
+        result = 2;
+    } else if (secondItem == nullptr ||
+               secondItem->m_kind != RecoilApp_StateQueueKind_ExitCurrent ||
+               secondItem->m_param != 0) {
+        result = 3;
+    } else if (thirdItem == nullptr ||
+               thirdItem->m_kind != RecoilApp_StateQueueKind_SwitchCurrent ||
+               thirdItem->m_stateObj != &g_RecoilApp.m_leaveNetworkState ||
+               thirdItem->m_param != 0) {
+        result = 4;
+    }
+
+    CleanupSaveLoadQueue(queue);
+    button.DestructorCore();
+    g_RecoilState_MainMenuSkipExitDelay = oldSkipExitDelay;
+    std::memcpy(
+        &g_RecoilApp,
+        oldApp,
+        sizeof(g_RecoilApp)
+    );
+    return result;
+}
+
+extern "C" int hud_ui_background_confirm_quit_lifecycle_smoke(void) {
+    CodeFunctionPatch loadPatch{};
+    CodeFunctionPatch bindPatch{};
+    CodeFunctionPatch freePatch{};
+
+    if (!PatchFunctionJump(
+            HudUiBackgroundLoadFromZrdAddress(),
+            ConfirmQuitBackgroundLoadProbeAddress(),
+            loadPatch
+        )) {
+        return 1;
+    }
+    if (!PatchFunctionJump(
+            HudUiBackgroundBindWidgetByNameAddress(),
+            ConfirmQuitBackgroundBindProbeAddress(),
+            bindPatch
+        )) {
+        RestoreFunctionPatch(loadPatch);
+        return 2;
+    }
+    if (!PatchFunctionJump(
+            HudUiBackgroundFreeLoadedTreeRootsAddress(),
+            ConfirmQuitBackgroundFreeProbeAddress(),
+            freePatch
+        )) {
+        RestoreFunctionPatch(bindPatch);
+        RestoreFunctionPatch(loadPatch);
+        return 3;
+    }
+
+    g_confirmQuitBackgroundLoadCalls = 0;
+    g_confirmQuitBackgroundLoadArgsOk = false;
+    g_confirmQuitBackgroundBindCalls = 0;
+    g_confirmQuitBackgroundBindArgsOk = true;
+    g_confirmQuitBackgroundFreeCalls = 0;
+    g_confirmQuitBackgroundFreeArgsOk = false;
+
+    void *const storage = ::operator new(sizeof(HudUiBackgroundConfirmQuit));
+    HudUiBackgroundConfirmQuit *const dialog =
+        static_cast<HudUiBackgroundConfirmQuit *>(storage);
+    HudUiBackgroundConfirmQuit *const returned = dialog->Constructor();
+
+    int result = 0;
+    if (returned != dialog ||
+        g_confirmQuitBackgroundLoadCalls != 1 ||
+        !g_confirmQuitBackgroundLoadArgsOk ||
+        g_confirmQuitBackgroundBindCalls != 2 ||
+        !g_confirmQuitBackgroundBindArgsOk ||
+        g_confirmQuitBackgroundFreeCalls != 1 ||
+        !g_confirmQuitBackgroundFreeArgsOk) {
+        result = 4;
+    }
+
+    HudUiBackground *const deleted = dialog->ScalarDeletingDestructor(0);
+    if (result == 0 && deleted != dialog) {
+        result = 5;
+    }
+
+    ::operator delete(storage);
+    RestoreFunctionPatch(freePatch);
+    RestoreFunctionPatch(bindPatch);
+    RestoreFunctionPatch(loadPatch);
     return result;
 }
 

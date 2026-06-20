@@ -73,6 +73,39 @@ void **g_TestAllocRuntimeGateSaveStateSlot;
 int g_TestLoadOptCatalogCallbackCalls;
 zReader::Node *g_TestLoadOptCatalogCallbackNode;
 OptCatalogEntryDef *g_TestLoadOptCatalogCallbackEntry;
+int g_TestWarningSoundGetStatusCount;
+int g_TestWarningSoundSetVolumeCount;
+int g_TestWarningSoundSetCurrentPositionCount;
+int g_TestWarningSoundPlayCount;
+
+typedef std::int32_t(__stdcall *TestWarningSoundGetStatusFn)(
+    void *self,
+    std::uint32_t *status
+);
+typedef std::int32_t(__stdcall *TestWarningSoundSetIntFn)(
+    void *self,
+    std::int32_t value
+);
+typedef std::int32_t(__stdcall *TestWarningSoundPlayFn)(
+    void *self,
+    std::uint32_t reserved1,
+    std::uint32_t reserved2,
+    std::uint32_t flags
+);
+
+struct TestWarningSoundBufferVTable {
+    void *slots00_20[9];
+    TestWarningSoundGetStatusFn GetStatus;
+    void *slots28_2c[2];
+    TestWarningSoundPlayFn Play;
+    TestWarningSoundSetIntFn SetCurrentPosition;
+    void *slot38;
+    TestWarningSoundSetIntFn SetVolume;
+};
+
+struct TestWarningSoundBuffer {
+    TestWarningSoundBufferVTable *vtable;
+};
 
 bool TestFloatNear(float actual, float expected) {
     float delta = actual - expected;
@@ -157,10 +190,45 @@ int __fastcall TestOptCatalogAllocRuntimeGateCallback(OptCatalogEntryDef *,
 }
 
 void __fastcall TestLoadOptCatalogEntryCallback(zReader::Node *entryNode,
-                                                     OptCatalogEntryDef *entry) {
+                                                 OptCatalogEntryDef *entry) {
     ++g_TestLoadOptCatalogCallbackCalls;
     g_TestLoadOptCatalogCallbackNode = entryNode;
     g_TestLoadOptCatalogCallbackEntry = entry;
+}
+
+std::int32_t __stdcall TestWarningSoundGetStatus(
+    void *,
+    std::uint32_t *status
+) {
+    ++g_TestWarningSoundGetStatusCount;
+    *status = 0;
+    return 0;
+}
+
+std::int32_t __stdcall TestWarningSoundSetVolume(
+    void *,
+    std::int32_t
+) {
+    ++g_TestWarningSoundSetVolumeCount;
+    return 0;
+}
+
+std::int32_t __stdcall TestWarningSoundSetCurrentPosition(
+    void *,
+    std::int32_t
+) {
+    ++g_TestWarningSoundSetCurrentPositionCount;
+    return 0;
+}
+
+std::int32_t __stdcall TestWarningSoundPlay(
+    void *,
+    std::uint32_t,
+    std::uint32_t,
+    std::uint32_t
+) {
+    ++g_TestWarningSoundPlayCount;
+    return 0;
 }
 
 bool WriteU32(HANDLE file, std::uint32_t value) {
@@ -3112,29 +3180,94 @@ extern "C" int player_timed_hit_status_smoke(void) {
 #endif
 
 extern "C" int zweapon_optcatalog_warning_samples_smoke(void) {
+    const int oldInitialized = g_zSnd_IsInitialized;
+    const int oldPreInitialized = g_zSnd_PreInitialized;
+    const int oldActiveBackend = g_zSnd_ActiveBackend;
+    const int oldMuteDepth = g_zSnd_MuteDepth;
+    const int oldFlag10PlaybackEnabled = g_zSnd_Flag10PlaybackEnabled;
+    void *const oldGlobalVolumeScalePtr = g_zSnd_GlobalVolumeScalePtr;
+    zSndSample *const oldLastVoice = g_zSndLastVoice;
+    zSndPlayHandle *const oldLastVoiceHandle = g_zSndLastVoiceHandle;
+    const int oldLastVoiceMarkerIndex = g_zSndLastVoiceMarkerIndex;
+    const int oldLastVoiceStopMarkerIndex = g_zSndLastVoiceStopMarkerIndex;
+
+    TestWarningSoundBufferVTable bufferVTable = {};
+    bufferVTable.GetStatus = &TestWarningSoundGetStatus;
+    bufferVTable.Play = &TestWarningSoundPlay;
+    bufferVTable.SetCurrentPosition = &TestWarningSoundSetCurrentPosition;
+    bufferVTable.SetVolume = &TestWarningSoundSetVolume;
+    TestWarningSoundBuffer buffer = {&bufferVTable};
+
     zSndSample trigger = {};
     zSndSample weapon = {};
     zSndSample noAmmo = {};
+    trigger.replayFields.flags = 8;
+    trigger.replayFields.gain = 1.0f;
+    trigger.primaryVoice.backendBuffer = reinterpret_cast<zSndBuffer *>(&buffer);
+    weapon.replayFields.flags = 8;
+    weapon.replayFields.gain = 1.0f;
+    weapon.primaryVoice.backendBuffer = reinterpret_cast<zSndBuffer *>(&buffer);
+    noAmmo.replayFields.flags = 8;
+    noAmmo.replayFields.gain = 1.0f;
+    noAmmo.primaryVoice.backendBuffer = reinterpret_cast<zSndBuffer *>(&buffer);
 
     g_OptCatalogSndTriggerInactive = &trigger;
     g_OptCatalogSndWeaponInactive = &weapon;
     g_OptCatalogSndNoAmmoWarning = &noAmmo;
-    g_zSnd_IsInitialized = 0;
-    g_zSnd_PreInitialized = 0;
+    float globalVolume = 1.0f;
+    g_zSnd_GlobalVolumeScalePtr = &globalVolume;
+    g_zSnd_IsInitialized = 1;
+    g_zSnd_PreInitialized = 1;
+    g_zSnd_ActiveBackend = 0;
+    g_zSnd_MuteDepth = 0;
+    g_zSnd_Flag10PlaybackEnabled = 1;
+    g_TestWarningSoundGetStatusCount = 0;
+    g_TestWarningSoundSetVolumeCount = 0;
+    g_TestWarningSoundSetCurrentPositionCount = 0;
+    g_TestWarningSoundPlayCount = 0;
 
     OptCatalog::PlayTriggerInactiveWarning();
+    const bool triggerOk =
+        trigger.primaryVoice.ownerSample == &trigger && g_TestWarningSoundPlayCount == 1;
     OptCatalog::PlayWeaponInactiveWarning();
+    const bool weaponOk =
+        weapon.primaryVoice.ownerSample == &weapon && g_TestWarningSoundPlayCount == 2;
     OptCatalog::PlayNoAmmoWarning();
+    const bool noAmmoOk =
+        noAmmo.primaryVoice.ownerSample == &noAmmo && g_TestWarningSoundPlayCount == 3;
 
     const bool samplesKept = g_OptCatalogSndTriggerInactive == &trigger &&
                              g_OptCatalogSndWeaponInactive == &weapon &&
                              g_OptCatalogSndNoAmmoWarning == &noAmmo;
+    const bool backendOk = g_TestWarningSoundPlayCount == 3;
 
     g_OptCatalogSndTriggerInactive = nullptr;
     g_OptCatalogSndWeaponInactive = nullptr;
     g_OptCatalogSndNoAmmoWarning = nullptr;
+    g_zSnd_IsInitialized = oldInitialized;
+    g_zSnd_PreInitialized = oldPreInitialized;
+    g_zSnd_ActiveBackend = oldActiveBackend;
+    g_zSnd_MuteDepth = oldMuteDepth;
+    g_zSnd_Flag10PlaybackEnabled = oldFlag10PlaybackEnabled;
+    g_zSnd_GlobalVolumeScalePtr = oldGlobalVolumeScalePtr;
+    g_zSndLastVoice = oldLastVoice;
+    g_zSndLastVoiceHandle = oldLastVoiceHandle;
+    g_zSndLastVoiceMarkerIndex = oldLastVoiceMarkerIndex;
+    g_zSndLastVoiceStopMarkerIndex = oldLastVoiceStopMarkerIndex;
 
-    return samplesKept ? 0 : 1;
+    if (!triggerOk) {
+        return 1;
+    }
+    if (!weaponOk) {
+        return 2;
+    }
+    if (!noAmmoOk) {
+        return 3;
+    }
+    if (!backendOk) {
+        return 4;
+    }
+    return samplesKept ? 0 : 5;
 }
 
 extern "C" int zweapon_optcatalog_activate_trail_runtime_state_smoke(void) {

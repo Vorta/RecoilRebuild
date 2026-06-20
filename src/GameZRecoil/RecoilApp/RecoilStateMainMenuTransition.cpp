@@ -3,6 +3,12 @@
 #include <new>
 #include <stdlib.h>
 
+/**
+ * Reimplements data 0x4edc58: g_RecoilState_MainMenuTransition.
+ *
+ * Purpose: own the global app-state singleton used while transitioning into
+ * the main menu.
+ */
 RecoilStateMainMenuTransition g_RecoilState_MainMenuTransition;
 
 /**

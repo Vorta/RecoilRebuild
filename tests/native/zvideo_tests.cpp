@@ -12111,9 +12111,9 @@ extern "C" int zvideo_texture_record_unlock_upload_surface_smoke(void) {
 }
 
 extern "C" int zvideo_texture_record_destroy_smoke(void) {
-    zVideo_TextureRecordPartial *const savedDefaultRecord = g_zImage_DefaultTextureRecord;
+    zVideo_TextureRecordPartial *const savedDefaultRecord = g_zVideo_DefaultTextureRecord;
     zVideo_TextureRecordPartial defaultRecord{};
-    g_zImage_DefaultTextureRecord = &defaultRecord;
+    g_zVideo_DefaultTextureRecord = &defaultRecord;
     ResetFakeComReleaseTracking();
     zVideo_dd3d::TextureRecord_Destroy(&defaultRecord);
     const bool defaultSkipOk = gFakeComReleaseCalls == 0;
@@ -12129,7 +12129,7 @@ extern "C" int zvideo_texture_record_destroy_smoke(void) {
     zVideo_TextureRecordPartial *textureRecord =
         (zVideo_TextureRecordPartial *)std::malloc(sizeof(zVideo_TextureRecordPartial));
     if (textureRecord == nullptr) {
-        g_zImage_DefaultTextureRecord = savedDefaultRecord;
+        g_zVideo_DefaultTextureRecord = savedDefaultRecord;
         return 1;
     }
     std::memset(textureRecord, 0, sizeof(*textureRecord));
@@ -12145,7 +12145,7 @@ extern "C" int zvideo_texture_record_destroy_smoke(void) {
         gFakeComReleaseObjects[1] == &textureSurface &&
         gFakeComReleaseObjects[2] == &texture;
 
-    g_zImage_DefaultTextureRecord = savedDefaultRecord;
+    g_zVideo_DefaultTextureRecord = savedDefaultRecord;
     return defaultSkipOk && releaseOk ? 0 : 2;
 }
 
@@ -12159,28 +12159,28 @@ extern "C" int zvideo_dd_shutdown_video_system_smoke(void) {
         return 1;
     }
 
-    zVideo_TextureRecordPartial *const savedDefaultRecord = g_zImage_DefaultTextureRecord;
+    zVideo_TextureRecordPartial *const savedDefaultRecord = g_zVideo_DefaultTextureRecord;
     zVideo_TextureRecordPartial defaultRecord{};
 
     gFakeTeardownVideoSubsystemCalls = 0;
     ResetFakeComReleaseTracking();
-    g_zImage_DefaultTextureRecord = &defaultRecord;
+    g_zVideo_DefaultTextureRecord = &defaultRecord;
     const int defaultResult = zVideo_dd::ShutdownVideoSystem();
     const bool defaultOk =
         defaultResult == 0 &&
-        g_zImage_DefaultTextureRecord == nullptr &&
+        g_zVideo_DefaultTextureRecord == nullptr &&
         gFakeTeardownVideoSubsystemCalls == 1 &&
         gFakeComReleaseCalls == 0;
 
     gFakeTeardownVideoSubsystemCalls = 0;
-    g_zImage_DefaultTextureRecord = nullptr;
+    g_zVideo_DefaultTextureRecord = nullptr;
     const int noDefaultResult = zVideo_dd::ShutdownVideoSystem();
     const bool noDefaultOk =
         noDefaultResult == 0 &&
-        g_zImage_DefaultTextureRecord == nullptr &&
+        g_zVideo_DefaultTextureRecord == nullptr &&
         gFakeTeardownVideoSubsystemCalls == 1;
 
-    g_zImage_DefaultTextureRecord = savedDefaultRecord;
+    g_zVideo_DefaultTextureRecord = savedDefaultRecord;
     RestoreFunctionPatch(teardownPatch);
     return defaultOk && noDefaultOk ? 0 : 2;
 }
@@ -12471,7 +12471,7 @@ extern "C" int zvideo_create_texture_record_guards_smoke(void) {
     g_zVideo_pSelectedD3DDeviceInfo = &selectedD3DDevice;
 
     zVideo_TextureRecordPartial defaultRecord{};
-    g_zImage_DefaultTextureRecord = &defaultRecord;
+    g_zVideo_DefaultTextureRecord = &defaultRecord;
 
     zVidImagePartial image{};
     image.width = 128;
@@ -12503,7 +12503,7 @@ extern "C" int zvideo_create_texture_record_guards_smoke(void) {
     }
 
     image.palette = nullptr;
-    g_zImage_DefaultTextureRecord = nullptr;
+    g_zVideo_DefaultTextureRecord = nullptr;
     g_zVideo_pSelectedD3DDeviceInfo = nullptr;
     return 0;
 }
@@ -12521,7 +12521,7 @@ extern "C" int zvideo_dd3d_create_texture_record_smoke(void) {
     zVidD3DDriverRecordPartial *const savedSelectedD3D =
         g_zVideo_pSelectedD3DDeviceInfo;
     zVideo_TextureRecordPartial *const savedDefaultRecord =
-        g_zImage_DefaultTextureRecord;
+        g_zVideo_DefaultTextureRecord;
     IDirectDraw2 *const savedDirectDraw2 = g_zVideo_pDirectDraw2;
     IDirect3DDevice2 *const savedD3DDevice = g_zVideo_pD3DDevice;
     const D3DDEVICEDESC savedHalDesc = g_zVideo_D3DHalDeviceDesc;
@@ -12552,7 +12552,7 @@ extern "C" int zvideo_dd3d_create_texture_record_smoke(void) {
     g_zVideo_pSelectedD3DDeviceInfo = &selectedD3DDevice;
 
     zVideo_TextureRecordPartial defaultRecord{};
-    g_zImage_DefaultTextureRecord = &defaultRecord;
+    g_zVideo_DefaultTextureRecord = &defaultRecord;
 
     FakeDirectDraw2Object directDraw{};
     FakeDirectDrawSurfaceObject createdSurface{};
@@ -12712,7 +12712,7 @@ extern "C" int zvideo_dd3d_create_texture_record_smoke(void) {
         gFakeDirectDrawSurfaceReleaseCalls == 2;
 
     g_zVideo_pSelectedD3DDeviceInfo = savedSelectedD3D;
-    g_zImage_DefaultTextureRecord = savedDefaultRecord;
+    g_zVideo_DefaultTextureRecord = savedDefaultRecord;
     g_zVideo_pDirectDraw2 = savedDirectDraw2;
     g_zVideo_pD3DDevice = savedD3DDevice;
     g_zVideo_D3DHalDeviceDesc = savedHalDesc;

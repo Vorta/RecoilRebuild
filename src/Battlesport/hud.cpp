@@ -23,6 +23,7 @@
 HudUiNewGamePanelOverlayOwner g_HudUiNewGamePanelOverlayOwner;
 HudUiOptionsPanelOverlayOwner g_HudUiOptionsPanelOverlayOwner;
 RecoilStateConfirmQuit g_RecoilState_ConfirmQuit;
+extern "C" int g_RecoilState_MainMenuSkipExitDelay = 0;
 RecoilStateControls g_RecoilStateControls;
 RecoilStateCheatCode g_RecoilStateCheatCode;
 zSndSample *g_Hud_LowMeterBeepSample = 0;
@@ -31,33 +32,26 @@ int g_Hud_LowMeterLoopActive = 0;
 float g_Hud_LowMeterBeepInterval = 0.0f;
 float g_Hud_LowMeterNextBeepTime = 0.0f;
 
-extern "C" int g_RecoilState_MainMenuSkipExitDelay;
-
 namespace {
-const float kHudWeatherFxDepthRandScale = -0.0000152592547f;
-const float kHudWeatherFxConeRandScale = -0.0000457777642f;
-const float kHudWeatherFxDepthBase = 0.5f;
-const float kHudWeatherFxConeBase = -1.0f;
-const float kHudWeatherFxReflectBias = 1.5f;
-const float kHudWeatherFxCameraDriftScale = -0.100000001f;
-const float kHudWeatherFxForceScale = 0.100000001f;
-const float kHudWeatherFxConeDepthMax = 1.5f;
-const float kHudWeatherFxProjectionCenter = 0.5f;
-const float kHudWeatherFxProbeScale = 0.100000001f;
-const float kHudWeatherFxProbeVelocityMinSq = 0.0100000007f;
-const float kHudWeatherFxVelocityMaxSq = 1.0f;
-const float kHudWeatherFxSnowSlantScale = 3.5f;
 const int kHudWeatherFxRainSlantDelta = 1;
 
-// Source-faithful helper recovered from address-backed callers in this source file.
-float HudWeatherFxVec3LengthSq(
+/**
+ * Original inline helper; no standalone retail function exists.
+ * Observed callers: 0x4be2f0 HudWeatherFxSnow::Update and 0x4be880 HudWeatherFxRain::Update.
+ * Purpose: Compute a weather particle velocity vector's squared length before normalization.
+ */
+inline float HudWeatherFxVec3LengthSq(
     const zVec3 *value
 ) {
     return value->x * value->x + value->y * value->y + value->z * value->z;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
-int HudWeatherFxSnowNeedsReset(
+/**
+ * Original inline helper; no standalone retail function exists.
+ * Observed callers: 0x4be2f0 HudWeatherFxSnow::Update.
+ * Purpose: Decide whether a snow particle left the visible weather cone and must respawn.
+ */
+inline int HudWeatherFxSnowNeedsReset(
     const zVec3 *position
 ) {
     const float absZ = (float)(fabs(position->z));
@@ -67,10 +61,10 @@ int HudWeatherFxSnowNeedsReset(
     if ((float)(fabs(position->x)) > absZ) {
         return 1;
     }
-    if (position->z > 1.0f) {
+    if (position->z > 1.0) {
         return 1;
     }
-    if (position->z < 0.5f) {
+    if (position->z < 0.5) {
         return 1;
     }
     return 0;
@@ -82,16 +76,42 @@ enum zVideoRendererBackend {
 
 } // namespace
 
-float g_HudWeatherFxSnow_LastCameraTargetX = 0.0f;
-float g_HudWeatherFxSnow_LastCameraTargetY = 0.0f;
-float g_HudWeatherFxSnow_LastCameraTargetZ = 0.0f;
+/**
+ * Reimplements data 0x56bf48: g_HudWeatherFxSnow_LastCameraTarget.
+ * Purpose: Retain the previous snow camera target coordinates for frame-to-frame drift.
+ */
+HudWeatherFxCameraTargetHistory g_HudWeatherFxSnow_LastCameraTarget = {
+    0.0f,
+    0.0f,
+    0.0f,
+    0.0f
+};
+/**
+ * Reimplements data 0x56bf58: g_HudWeatherFxRain_LastCameraTarget.
+ * Purpose: Retain the previous rain camera target coordinates for frame-to-frame drift.
+ */
+HudWeatherFxCameraTargetHistory g_HudWeatherFxRain_LastCameraTarget = {
+    0.0f,
+    0.0f,
+    0.0f,
+    0.0f
+};
+/**
+ * Reimplements data 0x56bf68: g_HudWeatherFxSnow_TimeAccumulator.
+ * Purpose: Accumulate elapsed snow update time.
+ */
 float g_HudWeatherFxSnow_TimeAccumulator = 0.0f;
-float g_HudWeatherFxRain_LastCameraTargetX = 0.0f;
-float g_HudWeatherFxRain_LastCameraTargetY = 0.0f;
-float g_HudWeatherFxRain_LastCameraTargetZ = 0.0f;
+/**
+ * Reimplements data 0x56bf6c: g_HudWeatherFxRain_TimeAccumulator.
+ * Purpose: Accumulate elapsed rain update time.
+ */
 float g_HudWeatherFxRain_TimeAccumulator = 0.0f;
-// Reimplements 0x4bdc70: HudWeatherFx::Constructor
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x4bdc70: HudWeatherFx::Constructor.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: Initialize the base weather particle emitter, allocate particle buffers, reset
+ * particles, and create the hardware SnowFX texture resources when needed.
+ */
 HudWeatherFx * HudWeatherFx::Constructor(
     int newParticleCount
 ) {
@@ -99,7 +119,8 @@ HudWeatherFx * HudWeatherFx::Constructor(
         0,
         0
     );
-    viewportRect = 0;
+    clipRectOrNull = 0;
+    new (this) HudWeatherFx;
     maxParticles = newParticleCount;
     particleCount = newParticleCount;
     particleQuads = (HudWeatherFxParticleQuad *)(::operator new(
@@ -174,7 +195,11 @@ HudWeatherFx * HudWeatherFx::Constructor(
     return this;
 }
 
-// Reimplements 0x4bde20: HudWeatherFx::ScalarDeletingDestructor
+/**
+ * Reimplements 0x4bde20: HudWeatherFx::ScalarDeletingDestructor.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: Run shared weather teardown and optionally free the object for scalar delete.
+ */
 HudUiElement * HudWeatherFx::ScalarDeletingDestructor(
     unsigned int flags
 ) {
@@ -186,8 +211,11 @@ HudUiElement * HudWeatherFx::ScalarDeletingDestructor(
     return self;
 }
 
-// Reimplements 0x4bde40: HudWeatherFx::Destructor
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x4bde40: HudWeatherFx::Destructor.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: Release particle buffers and renderer-backed weather texture resources.
+ */
 void HudWeatherFx::Destructor() {
     if (particleQuads != 0) {
         ::operator delete(particleQuads);
@@ -211,8 +239,11 @@ void HudWeatherFx::Destructor() {
 
 }
 
-// Reimplements 0x4be210: HudWeatherFx::ArePointBatchInsideRect
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x4be210: HudWeatherFx::ArePointBatchInsideRect.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: Accept a projected weather quad only when all points lie inside the viewport.
+ */
 int HudWeatherFxPointBatch::ArePointBatchInsideRect(
     int pointCount,
     const HudUiRect *viewportRect
@@ -239,8 +270,11 @@ int HudWeatherFxPointBatch::ArePointBatchInsideRect(
     return 1;
 }
 
-// Reimplements 0x4bdee0: HudWeatherFx::ResetParticleSlot
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x4bdee0: HudWeatherFx::ResetParticleSlot.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: Respawn one particle in the weather cone and copy it into the destination buffer.
+ */
 void HudWeatherFx::ResetParticleSlot(
     int particleIndex,
     int
@@ -248,31 +282,35 @@ void HudWeatherFx::ResetParticleSlot(
     zVec3 *const sourcePosition = &particlePositions[sourceBufferIndex][particleIndex];
     zVec3 *const destPosition = &particlePositions[destBufferIndex][particleIndex];
 
-    sourcePosition->z = kHudWeatherFxDepthBase - (float)(rand()) * kHudWeatherFxDepthRandScale;
+    sourcePosition->z = 0.5f - (float)(rand()) * -0.0000152592547f;
 
-    sourcePosition->x = kHudWeatherFxConeBase - (float)(rand()) * kHudWeatherFxConeRandScale;
+    sourcePosition->x = -1.0f - (float)(rand()) * -0.0000457777642f;
     if (sourcePosition->x < -sourcePosition->z) {
-        sourcePosition->x += kHudWeatherFxReflectBias;
-        sourcePosition->z = kHudWeatherFxReflectBias - sourcePosition->z;
+        sourcePosition->x -= -1.5f;
+        sourcePosition->z = 1.5f - sourcePosition->z;
     }
 
-    sourcePosition->y = kHudWeatherFxConeBase - (float)(rand()) * kHudWeatherFxConeRandScale;
+    sourcePosition->y = -1.0f - (float)(rand()) * -0.0000457777642f;
     if (sourcePosition->y < -sourcePosition->z) {
-        sourcePosition->y += kHudWeatherFxReflectBias;
-        sourcePosition->z = kHudWeatherFxReflectBias - sourcePosition->z;
+        sourcePosition->y -= -1.5f;
+        sourcePosition->z = 1.5f - sourcePosition->z;
     }
 
     *destPosition = *sourcePosition;
 }
 
-// Reimplements 0x4bdfd0: HudWeatherFx::DrawParticles
-// (D:\Proj\Battlesport\hud.cpp)
-void HudWeatherFx::DrawParticles() {
+/**
+ * Reimplements 0x4bdfd0: HudWeatherFx::ApplyPass3.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: Draw software weather lines or submit hardware textured weather quads
+ * through the pass-3 HUD element callback.
+ */
+void HudWeatherFx::ApplyPass3() {
     if (g_zVideo_ActiveRendererPath == ZVID_RENDERER_BACKEND_SOFTWARE) {
         zVideo_FxSurface::DrawColoredLinesBatch(
             (zVideoFxColoredLineRecord *)(particleQuads),
             particleCount,
-            (zVidRect32 *)(viewportRect)
+            (zVidRect32 *)(clipRectOrNull)
         );
         return;
     }
@@ -339,8 +377,11 @@ void HudWeatherFx::DrawParticles() {
         texCoords[3].u = particleQuad->texCoordUEnd;
         texCoords[3].v = 0.0f;
 
-        if (((HudWeatherFxPointBatch *)(clipVerts))->ArePointBatchInsideRect(4, viewportRect) !=
-            0) {
+        if (((HudWeatherFxPointBatch *)(clipVerts))
+                ->ArePointBatchInsideRect(
+                    4,
+                    clipRectOrNull
+                ) != 0) {
             g_zVideo_pfnSubmitPolyRenderClass(
                 clipVerts,
                 texCoords,
@@ -360,19 +401,27 @@ void HudWeatherFx::DrawParticles() {
     }
 }
 
-// Reimplements 0x4be280: HudWeatherFxSnow::Constructor
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x4be280: HudWeatherFxSnow::Constructor.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: Construct the shared weather emitter and initialize snow emitter defaults.
+ */
 HudWeatherFxSnow * HudWeatherFxSnow::Constructor(
     int particleCount
 ) {
     HudWeatherFx::Constructor(particleCount);
+    new (this) HudWeatherFxSnow;
     emitEnabled = 1;
     emitRadius = 20.0f;
     emitDepth = 400.0f;
     return this;
 }
 
-// Reimplements 0x4be2c0: HudWeatherFxSnow::ScalarDeletingDestructor
+/**
+ * Reimplements 0x4be2c0: HudWeatherFxSnow::ScalarDeletingDestructor.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: Run snow weather teardown and optionally free the object for scalar delete.
+ */
 HudUiElement * HudWeatherFxSnow::ScalarDeletingDestructor(
     unsigned int flags
 ) {
@@ -384,14 +433,20 @@ HudUiElement * HudWeatherFxSnow::ScalarDeletingDestructor(
     return self;
 }
 
-// Reimplements 0x4be2e0: HudWeatherFxSnow::Destructor
-// Snow has no additional teardown; the retail body tail-calls the shared base destructor.
+/**
+ * Reimplements 0x4be2e0: HudWeatherFxSnow::Destructor.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: Delegate snow weather teardown to the shared base weather emitter destructor.
+ */
 void HudWeatherFxSnow::Destructor() {
     HudWeatherFx::Destructor();
 }
 
-// Reimplements 0x4be2f0: HudWeatherFxSnow::Update
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x4be2f0: HudWeatherFxSnow::Update.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: Advance snow particles from camera drift, gravity, and wind, then project quads.
+ */
 void HudWeatherFxSnow::Update(
     float deltaSeconds
 ) {
@@ -406,9 +461,9 @@ void HudWeatherFxSnow::Update(
 
     int viewportWidth = 0;
     int viewportHeight = 0;
-    if (viewportRect != 0) {
-        viewportWidth = viewportRect->right - viewportRect->left;
-        viewportHeight = viewportRect->bottom - viewportRect->top;
+    if (clipRectOrNull != 0) {
+        viewportWidth = clipRectOrNull->right - clipRectOrNull->left;
+        viewportHeight = clipRectOrNull->bottom - clipRectOrNull->top;
     } else {
         const zVidRect32 *const primaryRect = zVideo::GetPrimarySurfaceRectScratch();
         viewportWidth = primaryRect->right - primaryRect->left;
@@ -435,14 +490,14 @@ void HudWeatherFxSnow::Update(
 
     zVec3 cameraTargetDrift;
     cameraTargetDrift.x =
-        (g_HudWeatherFxSnow_LastCameraTargetX - cameraTarget.x) * kHudWeatherFxCameraDriftScale;
+        (g_HudWeatherFxSnow_LastCameraTarget.x - cameraTarget.x) * -0.100000001f;
     cameraTargetDrift.y =
-        (g_HudWeatherFxSnow_LastCameraTargetY - cameraTarget.y) * kHudWeatherFxCameraDriftScale;
+        (g_HudWeatherFxSnow_LastCameraTarget.y - cameraTarget.y) * -0.100000001f;
     cameraTargetDrift.z =
-        (g_HudWeatherFxSnow_LastCameraTargetZ - cameraTarget.z) * kHudWeatherFxCameraDriftScale;
-    g_HudWeatherFxSnow_LastCameraTargetX = cameraTarget.x;
-    g_HudWeatherFxSnow_LastCameraTargetY = cameraTarget.y;
-    g_HudWeatherFxSnow_LastCameraTargetZ = cameraTarget.z;
+        (g_HudWeatherFxSnow_LastCameraTarget.z - cameraTarget.z) * -0.100000001f;
+    g_HudWeatherFxSnow_LastCameraTarget.x = cameraTarget.x;
+    g_HudWeatherFxSnow_LastCameraTarget.y = cameraTarget.y;
+    g_HudWeatherFxSnow_LastCameraTarget.z = cameraTarget.z;
 
     zMat4x3 slotBuffer;
     zMath::MatStackPushPtr((float *)(&slotBuffer));
@@ -462,7 +517,7 @@ void HudWeatherFxSnow::Update(
     zMath::MatRotateX(cameraAngles.x);
 
     zVec3 gravityOffset;
-    const float gravityScale = gravity * kHudWeatherFxForceScale;
+    const float gravityScale = (float)(gravity * 0.1);
     gravityOffset.x = basisVector.x * gravityScale;
     gravityOffset.y = basisVector.y * gravityScale;
     gravityOffset.z = basisVector.z * gravityScale;
@@ -472,7 +527,7 @@ void HudWeatherFxSnow::Update(
     );
 
     zVec3 windOffset;
-    const float windScale = windVelocity * kHudWeatherFxForceScale;
+    const float windScale = (float)(windVelocity * 0.1);
     windOffset.x = (float)(sin(windDirection)) * windScale;
     windOffset.y = 0.0f;
     windOffset.z = (float)(cos(windDirection)) * windScale;
@@ -486,16 +541,16 @@ void HudWeatherFxSnow::Update(
     particleVelocity.x = cameraTargetDrift.x + gravityOffset.x + windOffset.x;
     particleVelocity.y = cameraTargetDrift.y + gravityOffset.y + windOffset.y;
     particleVelocity.z = cameraTargetDrift.z + gravityOffset.z + windOffset.z;
-    if (HudWeatherFxVec3LengthSq(&particleVelocity) >= kHudWeatherFxVelocityMaxSq) {
+    if (HudWeatherFxVec3LengthSq(&particleVelocity) >= 1.0) {
         zMath::Vec3Normalize(&particleVelocity);
     }
 
     zVec3 probeVelocity = particleVelocity;
-    if (HudWeatherFxVec3LengthSq(&probeVelocity) >= kHudWeatherFxProbeVelocityMinSq) {
+    if (HudWeatherFxVec3LengthSq(&probeVelocity) >= 0.010000000000000002) {
         zMath::Vec3Normalize(&probeVelocity);
-        probeVelocity.x *= kHudWeatherFxProbeScale;
-        probeVelocity.y *= kHudWeatherFxProbeScale;
-        probeVelocity.z *= kHudWeatherFxProbeScale;
+        probeVelocity.x *= 0.100000001f;
+        probeVelocity.y *= 0.100000001f;
+        probeVelocity.z *= 0.100000001f;
     }
 
     for (int particleIndex = 0; particleIndex < particleCount; ++particleIndex) {
@@ -510,28 +565,28 @@ void HudWeatherFxSnow::Update(
         probePosition.y = sourcePosition->y + probeVelocity.y;
         probePosition.z = sourcePosition->z + probeVelocity.z;
 
-        const float sourceDepthFactor = kHudWeatherFxConeDepthMax - sourcePosition->z;
-        const float probeDepthFactor = kHudWeatherFxConeDepthMax - probePosition.z;
+        const float sourceDepthFactor = 1.5f - sourcePosition->z;
+        const float probeDepthFactor = 1.5f - probePosition.z;
         HudWeatherFxParticleQuad *const particleQuad = &particleQuads[particleIndex];
         particleQuad->x =
-            (int)(((probeDepthFactor * probePosition.x) + kHudWeatherFxProjectionCenter) *
+            (int)(((probeDepthFactor * probePosition.x) - -0.5f) *
                   viewportWidthF);
         particleQuad->y =
-            (int)(((probeDepthFactor * probePosition.y) + kHudWeatherFxProjectionCenter) *
+            (int)(((probeDepthFactor * probePosition.y) - -0.5f) *
                   viewportHeightF);
         particleQuad->width =
-            (int)(((sourceDepthFactor * sourcePosition->x) + kHudWeatherFxProjectionCenter) *
+            (int)(((sourceDepthFactor * sourcePosition->x) - -0.5f) *
                   viewportWidthF) -
             particleQuad->x;
         particleQuad->height =
-            (int)(((sourceDepthFactor * sourcePosition->y) + kHudWeatherFxProjectionCenter) *
+            (int)(((sourceDepthFactor * sourcePosition->y) - -0.5f) *
                   viewportHeightF) -
             particleQuad->y;
         particleQuad->color16 = packedColor16;
         particleQuad->texCoordUStart = probeDepthFactor * alphaStartScale;
         particleQuad->texCoordUEnd = sourceDepthFactor * alphaEndScale;
         particleQuad->slantOffset = (int)(((float)(activeParticleCount + 1)) * sourceDepthFactor *
-                                          kHudWeatherFxSnowSlantScale);
+                                          3.5);
 
         if (HudWeatherFxSnowNeedsReset(destPosition) != 0) {
             ResetParticleSlot(
@@ -548,19 +603,27 @@ void HudWeatherFxSnow::Update(
     destBufferIndex = oldSourceBufferIndex;
 }
 
-// Reimplements 0x4be810: HudWeatherFxRain::Constructor
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x4be810: HudWeatherFxRain::Constructor.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: Construct the shared weather emitter and initialize rain emitter defaults.
+ */
 HudWeatherFxRain * HudWeatherFxRain::Constructor(
     int particleCount
 ) {
     HudWeatherFx::Constructor(particleCount);
+    new (this) HudWeatherFxRain;
     emitEnabled = 1;
     emitRadius = 20.0f;
     emitDepth = 400.0f;
     return this;
 }
 
-// Reimplements 0x4be850: HudWeatherFxRain::ScalarDeletingDestructor
+/**
+ * Reimplements 0x4be850: HudWeatherFxRain::ScalarDeletingDestructor.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: Run rain weather teardown and optionally free the object for scalar delete.
+ */
 HudUiElement * HudWeatherFxRain::ScalarDeletingDestructor(
     unsigned int flags
 ) {
@@ -572,14 +635,20 @@ HudUiElement * HudWeatherFxRain::ScalarDeletingDestructor(
     return self;
 }
 
-// Reimplements 0x4be870: HudWeatherFxRain::Destructor
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x4be870: HudWeatherFxRain::Destructor.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: Delegate rain weather teardown to the shared base weather emitter destructor.
+ */
 void HudWeatherFxRain::Destructor() {
     HudWeatherFx::Destructor();
 }
 
-// Reimplements 0x4be880: HudWeatherFxRain::Update
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x4be880: HudWeatherFxRain::Update.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: Advance rain particles from camera drift, gravity, and wind, then project quads.
+ */
 void HudWeatherFxRain::Update(
     float deltaSeconds
 ) {
@@ -594,9 +663,9 @@ void HudWeatherFxRain::Update(
 
     int viewportWidth = 0;
     int viewportHeight = 0;
-    if (viewportRect != 0) {
-        viewportWidth = viewportRect->right - viewportRect->left;
-        viewportHeight = viewportRect->bottom - viewportRect->top;
+    if (clipRectOrNull != 0) {
+        viewportWidth = clipRectOrNull->right - clipRectOrNull->left;
+        viewportHeight = clipRectOrNull->bottom - clipRectOrNull->top;
     } else {
         const zVidRect32 *const primaryRect = zVideo::GetPrimarySurfaceRectScratch();
         viewportWidth = primaryRect->right - primaryRect->left;
@@ -623,14 +692,14 @@ void HudWeatherFxRain::Update(
 
     zVec3 cameraTargetDrift;
     cameraTargetDrift.x =
-        (g_HudWeatherFxRain_LastCameraTargetX - cameraTarget.x) * kHudWeatherFxCameraDriftScale;
+        (g_HudWeatherFxRain_LastCameraTarget.x - cameraTarget.x) * -0.100000001f;
     cameraTargetDrift.y =
-        (g_HudWeatherFxRain_LastCameraTargetY - cameraTarget.y) * kHudWeatherFxCameraDriftScale;
+        (g_HudWeatherFxRain_LastCameraTarget.y - cameraTarget.y) * -0.100000001f;
     cameraTargetDrift.z =
-        (g_HudWeatherFxRain_LastCameraTargetZ - cameraTarget.z) * kHudWeatherFxCameraDriftScale;
-    g_HudWeatherFxRain_LastCameraTargetX = cameraTarget.x;
-    g_HudWeatherFxRain_LastCameraTargetY = cameraTarget.y;
-    g_HudWeatherFxRain_LastCameraTargetZ = cameraTarget.z;
+        (g_HudWeatherFxRain_LastCameraTarget.z - cameraTarget.z) * -0.100000001f;
+    g_HudWeatherFxRain_LastCameraTarget.x = cameraTarget.x;
+    g_HudWeatherFxRain_LastCameraTarget.y = cameraTarget.y;
+    g_HudWeatherFxRain_LastCameraTarget.z = cameraTarget.z;
 
     zMat4x3 slotBuffer;
     zMath::MatStackPushPtr((float *)(&slotBuffer));
@@ -650,7 +719,7 @@ void HudWeatherFxRain::Update(
     zMath::MatRotateX(cameraAngles.x);
 
     zVec3 gravityOffset;
-    const float gravityScale = gravity * kHudWeatherFxForceScale;
+    const float gravityScale = (float)(gravity * 0.1);
     gravityOffset.x = basisVector.x * gravityScale;
     gravityOffset.y = basisVector.y * gravityScale;
     gravityOffset.z = basisVector.z * gravityScale;
@@ -660,7 +729,7 @@ void HudWeatherFxRain::Update(
     );
 
     zVec3 windOffset;
-    const float windScale = windVelocity * kHudWeatherFxForceScale;
+    const float windScale = (float)(windVelocity * 0.1);
     windOffset.x = (float)(sin(windDirection)) * windScale;
     windOffset.y = 0.0f;
     windOffset.z = (float)(cos(windDirection)) * windScale;
@@ -674,16 +743,16 @@ void HudWeatherFxRain::Update(
     particleVelocity.x = cameraTargetDrift.x + gravityOffset.x + windOffset.x;
     particleVelocity.y = cameraTargetDrift.y + gravityOffset.y + windOffset.y;
     particleVelocity.z = cameraTargetDrift.z + gravityOffset.z + windOffset.z;
-    if (HudWeatherFxVec3LengthSq(&particleVelocity) >= kHudWeatherFxVelocityMaxSq) {
+    if (HudWeatherFxVec3LengthSq(&particleVelocity) >= 1.0) {
         zMath::Vec3Normalize(&particleVelocity);
     }
 
     zVec3 probeVelocity = particleVelocity;
-    if (HudWeatherFxVec3LengthSq(&probeVelocity) >= kHudWeatherFxProbeVelocityMinSq) {
+    if (HudWeatherFxVec3LengthSq(&probeVelocity) >= 0.010000000000000002) {
         zMath::Vec3Normalize(&probeVelocity);
-        probeVelocity.x *= kHudWeatherFxProbeScale;
-        probeVelocity.y *= kHudWeatherFxProbeScale;
-        probeVelocity.z *= kHudWeatherFxProbeScale;
+        probeVelocity.x *= 0.100000001f;
+        probeVelocity.y *= 0.100000001f;
+        probeVelocity.z *= 0.100000001f;
     }
 
     for (int particleIndex = 0; particleIndex < particleCount; ++particleIndex) {
@@ -698,21 +767,21 @@ void HudWeatherFxRain::Update(
         probePosition.y = sourcePosition->y + probeVelocity.y;
         probePosition.z = sourcePosition->z + probeVelocity.z;
 
-        const float sourceDepthFactor = kHudWeatherFxConeDepthMax - sourcePosition->z;
-        const float probeDepthFactor = kHudWeatherFxConeDepthMax - probePosition.z;
+        const float sourceDepthFactor = 1.5f - sourcePosition->z;
+        const float probeDepthFactor = 1.5f - probePosition.z;
         HudWeatherFxParticleQuad *const particleQuad = &particleQuads[particleIndex];
         particleQuad->x =
-            (int)(((probeDepthFactor * probePosition.x) + kHudWeatherFxProjectionCenter) *
+            (int)(((probeDepthFactor * probePosition.x) - -0.5f) *
                   viewportWidthF);
         particleQuad->y =
-            (int)(((probeDepthFactor * probePosition.y) + kHudWeatherFxProjectionCenter) *
+            (int)(((probeDepthFactor * probePosition.y) - -0.5f) *
                   viewportHeightF);
         particleQuad->width =
-            (int)(((sourceDepthFactor * sourcePosition->x) + kHudWeatherFxProjectionCenter) *
+            (int)(((sourceDepthFactor * sourcePosition->x) - -0.5f) *
                   viewportWidthF) -
             particleQuad->x;
         particleQuad->height =
-            (int)(((sourceDepthFactor * sourcePosition->y) + kHudWeatherFxProjectionCenter) *
+            (int)(((sourceDepthFactor * sourcePosition->y) - -0.5f) *
                   viewportHeightF) -
             particleQuad->y;
         particleQuad->color16 = packedColor16;

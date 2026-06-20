@@ -33,29 +33,16 @@ typedef void( *RecoilStateWndActivateMethod)(
     unsigned int
 );
 typedef void( *CFrameWndDestructorProc)(CFrameWnd *);
+typedef CObject *(PASCAL *MfcCreateObjectProc)();
+typedef CRuntimeClass *(PASCAL *MfcRuntimeClassProc)();
+typedef const AFX_MSGMAP *(PASCAL *MfcMessageMapProc)();
 
-/**
- * Local MFC provider boundary helper for CZGameFrame runtime-class/message-map
- * thunks.
- *
- * Purpose: return source symbols through the 32-bit pointer value shape used by
- * the recovered retail accessors.
- */
-RecoilPtr32 Ptr32FromSymbol(
-    const void *symbol
-) {
-    return (RecoilPtr32)((unsigned int)(symbol));
-}
-
-/**
- * Local MFC provider boundary callback for CZGameFrame::classCZGameFrame.
- *
- * Purpose: expose the CFrameWnd provider runtime class through the callback
- * shape expected by the recovered MFC class record.
- */
-CRuntimeClass *__stdcall GetCZGameFrameBaseRuntimeClass() {
-    return (CRuntimeClass *)(&CFrameWnd::classCFrameWnd);
-}
+const UINT kMfcMessageMapSigIntCreateStruct = 9;
+const UINT kMfcMessageMapSigLongWparamLparam = 10;
+const UINT kMfcMessageMapSigVoid = 12;
+const UINT kMfcMessageMapSigVoidIntInt = 15;
+const UINT kMfcMessageMapSigVoidUIntIntInt = 17;
+const UINT kMfcMessageMapSigVoidUIntCWndBool = 28;
 
 /**
  * Local MFC provider boundary ABI helper for CZGameFrame teardown.
@@ -84,21 +71,56 @@ void CallMfcCFrameWndDestructor(
 }
 } // namespace
 
+/**
+ * Reimplements data 0x4d2100: g_CZGameFrame_MessageEntries.
+ *
+ * Purpose: provide the terminal MFC message-map entry array for CZGameFrame.
+ */
 AFX_MSGMAP_ENTRY const CZGameFrame::messageEntries[] = {
+    {WM_CLOSE, 0, 0, 0, kMfcMessageMapSigVoid, (AFX_PMSG)&CZGameFrame::OnClose},
+    {WM_PAINT, 0, 0, 0, kMfcMessageMapSigVoid, (AFX_PMSG)&CZGameFrame::OnPaint},
+    {WM_SIZE, 0, 0, 0, kMfcMessageMapSigVoidUIntIntInt, (AFX_PMSG)&CZGameFrame::OnSize},
+    {WM_MOVE, 0, 0, 0, kMfcMessageMapSigVoidIntInt, (AFX_PMSG)&CZGameFrame::OnMove},
+    {WM_CREATE, 0, 0, 0, kMfcMessageMapSigIntCreateStruct, (AFX_PMSG)&CZGameFrame::OnCreate},
+    {WM_DESTROY, 0, 0, 0, kMfcMessageMapSigVoid, (AFX_PMSG)&CZGameFrame::OnDestroy},
+    {0x3b9,
+        0,
+        0,
+        0,
+        kMfcMessageMapSigLongWparamLparam,
+        (AFX_PMSG)&CZGameFrame::OnAppIdleDispatchMessage},
+    {WM_ACTIVATE,
+        0,
+        0,
+        0,
+        kMfcMessageMapSigVoidUIntCWndBool,
+        (AFX_PMSG)&CZGameFrame::OnActivate},
     {0, 0, 0, 0, 0, 0},
 };
 
+/**
+ * Reimplements data 0x4d20f8: g_CZGameFrame_MessageMap.
+ *
+ * Purpose: link CZGameFrame's message entries to the CFrameWnd provider
+ * message-map accessor used as the retail base-map callback.
+ */
 const AFX_MSGMAP CZGameFrame::messageMap = {
-    &CZGameFrame::GetBaseMessageMapForMfc,
+    (MfcMessageMapProc)&CZGameFrame::GetBaseMessageMap,
     &CZGameFrame::messageEntries[0],
 };
 
+/**
+ * Reimplements data 0x4d20e0: g_CZGameFrame_RuntimeClass.
+ *
+ * Purpose: expose CZGameFrame's MFC runtime-class record with the recovered
+ * factory and CFrameWnd base-runtime callback pointer identities.
+ */
 CRuntimeClass CZGameFrame::classCZGameFrame = {
     "CZGameFrame",
     sizeof(CZGameFrame),
     0xffff,
-    0,
-    &GetCZGameFrameBaseRuntimeClass,
+    (MfcCreateObjectProc)&CZGameFrame::CreateObject,
+    (MfcRuntimeClassProc)&CZGameFrame::GetBaseRuntimeClass,
     0,
 };
 
@@ -109,17 +131,7 @@ CRuntimeClass CZGameFrame::classCZGameFrame = {
  * recovered runtime-class hierarchy.
  */
 RecoilPtr32 CZGameFrame::GetBaseRuntimeClass() {
-    return Ptr32FromSymbol(&CFrameWnd::classCFrameWnd);
-}
-
-/**
- * Local MFC provider boundary message-map callback for CZGameFrame::messageMap.
- *
- * Purpose: expose CFrameWnd's provider message map through the callback shape
- * stored in the recovered CZGameFrame message-map record.
- */
-const AFX_MSGMAP *__stdcall CZGameFrame::GetBaseMessageMapForMfc() {
-    return &CFrameWnd::messageMap;
+    return (RecoilPtr32)((unsigned int)(&CFrameWnd::classCFrameWnd));
 }
 
 /**
@@ -148,7 +160,7 @@ CZGameFrame *CZGameFrame::CreateObject() {
  * Purpose: return CZGameFrame's recovered runtime-class record to MFC callers.
  */
 RecoilPtr32 CZGameFrame::GetRuntimeClass() {
-    return Ptr32FromSymbol(&CZGameFrame::classCZGameFrame);
+    return (RecoilPtr32)((unsigned int)(&CZGameFrame::classCZGameFrame));
 }
 
 /**
@@ -158,7 +170,7 @@ RecoilPtr32 CZGameFrame::GetRuntimeClass() {
  * recovered message-map hierarchy.
  */
 RecoilPtr32 CZGameFrame::GetBaseMessageMap() {
-    return Ptr32FromSymbol(&CFrameWnd::messageMap);
+    return (RecoilPtr32)((unsigned int)(&CFrameWnd::messageMap));
 }
 
 /**
@@ -167,7 +179,7 @@ RecoilPtr32 CZGameFrame::GetBaseMessageMap() {
  * Purpose: return CZGameFrame's recovered MFC message-map record.
  */
 RecoilPtr32 CZGameFrame::GetMessageMap() {
-    return Ptr32FromSymbol(&CZGameFrame::messageMap);
+    return (RecoilPtr32)((unsigned int)(&CZGameFrame::messageMap));
 }
 
 /**

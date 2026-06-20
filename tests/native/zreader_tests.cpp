@@ -243,6 +243,16 @@ extern "C" int zreader_global_string_prefix_index_smoke(void) {
     }
     const int savedCount = g_zRndr_GlobalStringCount;
 
+    const bool initialTableOk =
+        g_zRndr_GlobalStringCount == 6 &&
+        std::strcmp(g_zRndr_GlobalStringTable[0], "default") == 0 &&
+        std::strcmp(g_zRndr_GlobalStringTable[1], "water") == 0 &&
+        std::strcmp(g_zRndr_GlobalStringTable[2], "seafloor") == 0 &&
+        std::strcmp(g_zRndr_GlobalStringTable[3], "quicksand") == 0 &&
+        std::strcmp(g_zRndr_GlobalStringTable[4], "lava") == 0 &&
+        std::strcmp(g_zRndr_GlobalStringTable[5], "fire") == 0 &&
+        g_zRndr_GlobalStringTable[6] == nullptr;
+
     g_zRndr_GlobalStringTable[0] = const_cast<char *>("ALPHA");
     g_zRndr_GlobalStringTable[1] = const_cast<char *>("BETA");
     g_zRndr_GlobalStringTable[2] = const_cast<char *>("LONG");
@@ -250,7 +260,10 @@ extern "C" int zreader_global_string_prefix_index_smoke(void) {
     g_zRndr_GlobalStringCount = 4;
 
     int result = 0;
-    if (zReader::FindGlobalStringPrefixIndex(nullptr) != -1) {
+    if (!initialTableOk) {
+        result = 10;
+    }
+    else if (zReader::FindGlobalStringPrefixIndex(nullptr) != -1) {
         result = 1;
     }
     else if (zReader::FindGlobalStringPrefixIndex("ALPHA") != 0) {

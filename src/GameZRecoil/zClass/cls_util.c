@@ -9,12 +9,40 @@
 #include <string.h>
 
 extern "C" {
+/**
+ * Reimplements data 0x539c90: g_zClass_NodeArraySize.
+ * Purpose: track the configured zClass node free-list capacity.
+ */
 int g_zClass_NodeArraySize = 0;
+/**
+ * Reimplements data 0x539ca4: g_zClass_IsInitialized.
+ * Purpose: track whether the core zClass utility subsystem is initialized.
+ */
 int g_zClass_IsInitialized = 0;
+/**
+ * Reimplements data 0x4de4cc: g_zClass_CopyNodeCloneDiMode.
+ * Purpose: hold the active display-instance clone mode during node-copy recursion.
+ */
 int g_zClass_CopyNodeCloneDiMode = 1;
+/**
+ * Reimplements data 0x539c9c: g_zClass_CopyNodeDiArg0.
+ * Purpose: hold the first display-instance clone argument during node-copy recursion.
+ */
 int g_zClass_CopyNodeDiArg0 = 0;
+/**
+ * Reimplements data 0x539ca0: g_zClass_CopyNodeDiArg1.
+ * Purpose: hold the second display-instance clone argument during node-copy recursion.
+ */
 int g_zClass_CopyNodeDiArg1 = 0;
+/**
+ * Reimplements data 0x4de4c4: g_zClass_RebuildGwWorldBltRectOnShutdown.
+ * Purpose: gate registration of the GWWorld ZBD settings handler at zClass init.
+ */
 int g_zClass_RebuildGwWorldBltRectOnShutdown = 1;
+/**
+ * Reimplements data 0x4de530: g_zClass_GWWorldNodeName.
+ * Purpose: store the GWWorld ZBD section name used by the class utility handler.
+ */
 char g_zClass_GWWorldNodeName[8] = "GWWorld";
 }
 
@@ -23,7 +51,12 @@ namespace {
     const int kDefaultNodeArraySize = 8250;
     const unsigned int kNodeFreeTagIndexMask = 0x00ffffff;
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original-source helper evidence: no standalone retail function is present;
+     * observed caller 0x451900 uses this source-file-local cast helper when
+     * registering the GWWorld ZBD callbacks.
+     * Purpose: preserve the original callback storage cast without a table scaffold.
+     */
     template<typename T> zZbdSectionCallback ZbdCallbackPtr(T callback) {
         RECOIL_STATIC_ASSERT(sizeof(T) == sizeof(zZbdSectionCallback));
         union {
@@ -108,7 +141,10 @@ namespace BBox {
 }
 
 namespace zClass {
-    // Reimplements 0x4518b0: zClass::SetNodeArraySize
+    /**
+     * Reimplements 0x4518b0: zClass::SetNodeArraySize.
+     * Purpose: set the core zClass node-array capacity before initialization.
+     */
     void __fastcall SetNodeArraySize(int size) {
         if (g_zClass_NodeArraySize != 0) {
             zError::ReportOld(
@@ -124,13 +160,19 @@ namespace zClass {
         g_zClass_NodeArraySize = size;
     }
 
-    // Reimplements 0x4518f0: zClass::IsInitialized
+    /**
+     * Reimplements 0x4518f0: zClass::IsInitialized.
+     * Purpose: return the current zClass initialization flag.
+     */
     int IsInitialized() {
         return g_zClass_IsInitialized;
     }
 
-    // Reimplements 0x451900: zClass::Init
-    // (GameZRecoil/zClass/cls_util.c)
+    /**
+     * Reimplements 0x451900: zClass::Init
+     * (GameZRecoil/zClass/cls_util.c).
+     * Purpose: initialize zClass node storage and register the GWWorld ZBD handler.
+     */
     int Init() {
         if (g_zClass_NodeArraySize == 0) {
             g_zClass_NodeArraySize = kDefaultNodeArraySize;
@@ -171,13 +213,19 @@ namespace zClass {
         return 0;
     }
 
-    // Reimplements 0x454360: zClass::ResetCurrentZbdPath
+    /**
+     * Reimplements 0x454360: zClass::ResetCurrentZbdPath.
+     * Purpose: clear the active zClass ZBD path buffer and return success.
+     */
     int ResetCurrentZbdPath() {
         g_zClass_CurrentZbdPath[0] = 0;
         return 0;
     }
 
-    // Reimplements 0x451a00: zClass::ShutdownCore
+    /**
+     * Reimplements 0x451a00: zClass::ShutdownCore.
+     * Purpose: tear down zClass-owned nodes, type lists, node storage, and path state.
+     */
     int ShutdownCore() {
         zClass_List::DeleteAllOfType(6);
         zClass_TypeList::FreeAll();
@@ -198,7 +246,11 @@ namespace zClass {
         return 0;
     }
 
-    // Reimplements 0x4518e0: zClass::Shutdown (GameZRecoil/zClass/cls_util.c)
+    /**
+     * Reimplements 0x4518e0: zClass::Shutdown
+     * (GameZRecoil/zClass/cls_util.c).
+     * Purpose: run the core zClass shutdown sequence.
+     */
     int Shutdown() {
         ShutdownCore();
         return 0;
@@ -267,10 +319,12 @@ namespace zClass_Util {
 }
 
 namespace zClass_cls_util {
-    // Reimplements 0x451b20: zClass_cls_util::CopyNodeDisplayInstance
-    // (D:\Proj\GameZRecoil\zClass\cls_util.c)
-    int __fastcall
-    CopyNodeDisplayInstance(
+    /**
+     * Reimplements 0x451b20: zClass_cls_util::CopyNodeDisplayInstance
+     * (D:\Proj\GameZRecoil\zClass\cls_util.c).
+     * Purpose: copy or clone a source node's display instance into the destination.
+     */
+    int __fastcall CopyNodeDisplayInstance(
         zClass_NodePartial * source,
         zClass_NodePartial * dest
     ) {
@@ -335,10 +389,12 @@ namespace zClass_cls_util {
         );
     }
 
-    // Reimplements 0x451bd0: zClass_cls_util::CopyNodeBaseData
-    // (D:\Proj\GameZRecoil\zClass\cls_util.c)
-    int __fastcall
-    CopyNodeBaseData(
+    /**
+     * Reimplements 0x451bd0: zClass_cls_util::CopyNodeBaseData
+     * (D:\Proj\GameZRecoil\zClass\cls_util.c).
+     * Purpose: copy common node flags, callbacks, type, and graphics state.
+     */
+    int __fastcall CopyNodeBaseData(
         zClass_NodePartial * source,
         zClass_NodePartial * dest
     ) {
@@ -612,8 +668,11 @@ namespace zClass_cls_util {
         return 0;
     }
 
-    // Reimplements 0x451f70: zClass_cls_util::CopyCameraNode
-    // (D:\Proj\GameZRecoil\zClass\cls_util.c)
+    /**
+     * Reimplements 0x451f70: zClass_cls_util::CopyCameraNode
+     * (D:\Proj\GameZRecoil\zClass\cls_util.c).
+     * Purpose: allocate and populate a copied camera node and its copied children.
+     */
     zClass_NodePartial *__fastcall CopyCameraNode(
         zClass_NodePartial * source
     ) {
@@ -701,8 +760,11 @@ namespace zClass_cls_util {
         return camera;
     }
 
-    // Reimplements 0x452100: zClass_cls_util::CopyObject3DNode
-    // (D:\Proj\GameZRecoil\zClass\cls_util.c)
+    /**
+     * Reimplements 0x452100: zClass_cls_util::CopyObject3DNode
+     * (D:\Proj\GameZRecoil\zClass\cls_util.c).
+     * Purpose: allocate and populate a copied Object3D node and its copied children.
+     */
     zClass_NodePartial *__fastcall CopyObject3DNode(
         zClass_NodePartial * source
     ) {
@@ -790,8 +852,11 @@ namespace zClass_cls_util {
         return parent;
     }
 
-    // Reimplements 0x4520c0: zClass_cls_util::CopyLightNode_Unimplemented
-    // (D:\Proj\GameZRecoil\zClass\cls_util.c)
+    /**
+     * Reimplements 0x4520c0: zClass_cls_util::CopyLightNode_Unimplemented
+     * (D:\Proj\GameZRecoil\zClass\cls_util.c).
+     * Purpose: preserve the retail unimplemented light-node copy path.
+     */
     zClass_NodePartial *__fastcall CopyLightNode_Unimplemented(
         zClass_NodePartial *
     ) {
@@ -804,8 +869,11 @@ namespace zClass_cls_util {
         return 0;
     }
 
-    // Reimplements 0x4520e0: zClass_cls_util::CopySoundNode_Unimplemented
-    // (D:\Proj\GameZRecoil\zClass\cls_util.c)
+    /**
+     * Reimplements 0x4520e0: zClass_cls_util::CopySoundNode_Unimplemented
+     * (D:\Proj\GameZRecoil\zClass\cls_util.c).
+     * Purpose: preserve the retail unimplemented sound-node copy path.
+     */
     zClass_NodePartial *__fastcall CopySoundNode_Unimplemented(
         zClass_NodePartial *
     ) {
@@ -818,8 +886,11 @@ namespace zClass_cls_util {
         return 0;
     }
 
-    // Reimplements 0x452230: zClass_cls_util::CopyAnimateNode_Unimplemented
-    // (D:\Proj\GameZRecoil\zClass\cls_util.c)
+    /**
+     * Reimplements 0x452230: zClass_cls_util::CopyAnimateNode_Unimplemented
+     * (D:\Proj\GameZRecoil\zClass\cls_util.c).
+     * Purpose: preserve the retail unimplemented animate-node copy path.
+     */
     zClass_NodePartial *__fastcall CopyAnimateNode_Unimplemented(
         zClass_NodePartial *
     ) {
@@ -832,8 +903,11 @@ namespace zClass_cls_util {
         return 0;
     }
 
-    // Reimplements 0x452250: zClass_cls_util::CopyLodNode
-    // (D:\Proj\GameZRecoil\zClass\cls_util.c)
+    /**
+     * Reimplements 0x452250: zClass_cls_util::CopyLodNode
+     * (D:\Proj\GameZRecoil\zClass\cls_util.c).
+     * Purpose: allocate and populate a copied LOD node and its copied children.
+     */
     zClass_NodePartial *__fastcall CopyLodNode(zClass_NodePartial * source) {
         zClass_NodePartial *const parent = zClass_Lod::gwLodNew();
         if (parent == 0) {
@@ -898,8 +972,11 @@ namespace zClass_cls_util {
         return parent;
     }
 
-    // Reimplements 0x4523c0: zClass_cls_util::CopySequenceNode_Unimplemented
-    // (D:\Proj\GameZRecoil\zClass\cls_util.c)
+    /**
+     * Reimplements 0x4523c0: zClass_cls_util::CopySequenceNode_Unimplemented
+     * (D:\Proj\GameZRecoil\zClass\cls_util.c).
+     * Purpose: preserve the retail unimplemented sequence-node copy path.
+     */
     zClass_NodePartial *__fastcall CopySequenceNode_Unimplemented(
         zClass_NodePartial *
     ) {
@@ -912,8 +989,11 @@ namespace zClass_cls_util {
         return 0;
     }
 
-    // Reimplements 0x4523e0: zClass_cls_util::CopySwitchNode_Stub
-    // (D:\Proj\GameZRecoil\zClass\cls_util.c)
+    /**
+     * Reimplements 0x4523e0: zClass_cls_util::CopySwitchNode_Stub
+     * (D:\Proj\GameZRecoil\zClass\cls_util.c).
+     * Purpose: preserve the retail switch-node copy stub behavior.
+     */
     zClass_NodePartial *__fastcall CopySwitchNode_Stub(zClass_NodePartial *) {
         zError::ReportOld(
             0x100,
@@ -924,8 +1004,11 @@ namespace zClass_cls_util {
         return 0;
     }
 
-    // Reimplements 0x452400: zClass_cls_util::CopyNodeDispatch
-    // (D:\Proj\GameZRecoil\zClass\cls_util.c)
+    /**
+     * Reimplements 0x452400: zClass_cls_util::CopyNodeDispatch
+     * (D:\Proj\GameZRecoil\zClass\cls_util.c).
+     * Purpose: dispatch node-copy work by class id.
+     */
     zClass_NodePartial *__fastcall CopyNodeDispatch(
         zClass_NodePartial * source
     ) {
@@ -985,10 +1068,12 @@ namespace zClass_cls_util {
         }
     }
 
-    // Reimplements 0x452500: zClass_cls_util::CopyNodeWithCloneOptions
-    // (D:\Proj\GameZRecoil\zClass\cls_util.c)
-    zClass_NodePartial *__fastcall
-    CopyNodeWithCloneOptions(
+    /**
+     * Reimplements 0x452500: zClass_cls_util::CopyNodeWithCloneOptions
+     * (D:\Proj\GameZRecoil\zClass\cls_util.c).
+     * Purpose: copy a node while temporarily overriding clone-mode globals.
+     */
+    zClass_NodePartial *__fastcall CopyNodeWithCloneOptions(
         zClass_NodePartial * source,
         int cloneDiMode,
         int diArg0
@@ -1014,10 +1099,12 @@ namespace zClass_cls_util {
         return result;
     }
 
-    // Reimplements 0x452560: zClass_cls_util::CopyNode
-    // (D:\Proj\GameZRecoil\zClass\cls_util.c)
-    zClass_NodePartial *__fastcall
-    CopyNode(
+    /**
+     * Reimplements 0x452560: zClass_cls_util::CopyNode
+     * (D:\Proj\GameZRecoil\zClass\cls_util.c).
+     * Purpose: copy a node while temporarily overriding all display-instance clone options.
+     */
+    zClass_NodePartial *__fastcall CopyNode(
         zClass_NodePartial * source,
         int cloneDiMode,
         int diArg0,

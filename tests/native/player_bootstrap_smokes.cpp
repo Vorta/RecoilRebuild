@@ -8,10 +8,15 @@
 #include "GameZRecoil/zEffect/zEffect.h"
 #include "GameZRecoil/zGame/zGame.h"
 #include "GameZRecoil/zInput/zInput.h"
+#include "GameZRecoil/zHud/zhud_ui.h"
+#include "GameZRecoil/include/zImage.h"
+#include "GameZRecoil/zLoc/zLoc.h"
 #include "GameZRecoil/zMath/zMath.h"
 #include "GameZRecoil/zModel/zModel.h"
+#include "GameZRecoil/zReader/zReader.h"
 #include "GameZRecoil/zSound/zSound.h"
 #include "GameZRecoil/zUtil/zZbd.h"
+#include "GameZRecoil/zVideo/zVideo.h"
 
 #include <windows.h>
 
@@ -20,6 +25,10 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <new>
+
+extern "C" unsigned int g_HudUi_InvalidateMask;
+extern "C" int g_Player_MissionInitFirstRunFlag;
 
 namespace {
 using TestBackendSimpleFn = std::int32_t(__stdcall *)(void *self);
@@ -51,6 +60,19 @@ struct TestDirectSoundBuffer {
 
 int g_PlayerBootstrapTestPlayCount;
 int g_PlayerBootstrapTestStopCount;
+int g_PlayerTopMsgPanelAtexitCalls;
+void (*g_PlayerTopMsgPanelAtexitCallback)(void);
+
+struct PlayerBootstrapCodePatch {
+    unsigned char *address;
+    unsigned char original[5];
+};
+
+void ClearPlayerNodeFlagRestoreGlobalsAtExit() {
+    g_PlayerNodeFlagRestoreEntriesBegin = 0;
+    g_PlayerNodeFlagRestoreEntriesEnd = 0;
+    g_PlayerNodeFlagRestoreEntriesCapacityEnd = 0;
+}
 
 std::int32_t __stdcall TestDirectSoundGetStatus(void *, std::int32_t *status) {
     *status = 0;
@@ -72,6 +94,142 @@ std::int32_t __stdcall TestDirectSoundStop(void *) {
     return 0;
 }
 
+bool PatchPlayerBootstrapFunctionJump(
+    void *target,
+    void *replacement,
+    PlayerBootstrapCodePatch &patch
+) {
+    if (target == 0) {
+        patch.address = 0;
+        return false;
+    }
+
+    patch.address = (unsigned char *)target;
+    std::memcpy(patch.original, patch.address, sizeof(patch.original));
+
+    DWORD oldProtect = 0;
+    if (
+        VirtualProtect(
+            patch.address,
+            sizeof(patch.original),
+            PAGE_EXECUTE_READWRITE,
+            &oldProtect
+        ) == 0
+    ) {
+        patch.address = 0;
+        return false;
+    }
+
+    patch.address[0] = 0xe9;
+    const LONG relativeOffset =
+        (LONG)((unsigned char *)replacement - (patch.address + sizeof(patch.original)));
+    std::memcpy(patch.address + 1, &relativeOffset, sizeof(relativeOffset));
+
+    DWORD ignored = 0;
+    VirtualProtect(patch.address, sizeof(patch.original), oldProtect, &ignored);
+    FlushInstructionCache(GetCurrentProcess(), patch.address, sizeof(patch.original));
+    return true;
+}
+
+void RestorePlayerBootstrapFunctionPatch(
+    PlayerBootstrapCodePatch &patch
+) {
+    if (patch.address == 0) {
+        return;
+    }
+
+    DWORD oldProtect = 0;
+    if (
+        VirtualProtect(
+            patch.address,
+            sizeof(patch.original),
+            PAGE_EXECUTE_READWRITE,
+            &oldProtect
+        ) != 0
+    ) {
+        std::memcpy(patch.address, patch.original, sizeof(patch.original));
+        DWORD ignored = 0;
+        VirtualProtect(patch.address, sizeof(patch.original), oldProtect, &ignored);
+        FlushInstructionCache(GetCurrentProcess(), patch.address, sizeof(patch.original));
+    }
+
+    patch.address = 0;
+}
+
+int FakePlayerTopMsgPanelAtexit(void (*callback)(void)) {
+    ++g_PlayerTopMsgPanelAtexitCalls;
+    g_PlayerTopMsgPanelAtexitCallback = callback;
+    return 0;
+}
+
+void ResetPlayerTopMsgPanelAtexitCapture() {
+    g_PlayerTopMsgPanelAtexitCalls = 0;
+    g_PlayerTopMsgPanelAtexitCallback = 0;
+}
+
+bool PlayerTopMsgPanelConstructed(
+    const HudUiPanel &panel
+) {
+    const HudUiElement *const element = (const HudUiElement *)(&panel);
+    HudUiPanel probe;
+    probe.ConstructorDefault(
+        0,
+        0,
+        0
+    );
+    const void *const panelTable = *(const void *const *)(&panel);
+    const void *const expectedPanelTable = *(const void *const *)(&probe);
+
+    return panelTable == expectedPanelTable &&
+           panel.textBuffer[0] == '\0' &&
+           element->x == 0 &&
+           element->y == 0 &&
+           panel.textPick == 0 &&
+           panel.textColor0 == 0x00ffffff &&
+           panel.textColor1 == 0x00ffffff &&
+           panel.hFont != 0 &&
+           panel.cachedText[0] == '\0' &&
+           panel.textWidthPx == 0 &&
+           panel.textHeightPx == 0 &&
+           panel.shadowEnabled == 0 &&
+           panel.textDirty == 1 &&
+           panel.wordWrapEnabled == 0 &&
+           panel.wrapRect.left == 0 &&
+           panel.wrapRect.top == 0 &&
+           panel.wrapRect.right == 0 &&
+           panel.wrapRect.bottom == 0;
+}
+
+bool PlayerTopMsgPanelDestroyed(
+    const HudUiPanel &panel
+) {
+    HudUiElement probe;
+    const void *const panelTable = *(const void *const *)(&panel);
+    const void *const expectedCommonTable = *(const void *const *)(&probe);
+    return panelTable == expectedCommonTable &&
+           panel.textPick == 0;
+}
+
+void SavePlayerTopMsgPanel(
+    const HudUiPanel &panel,
+    unsigned char *saved
+) {
+    std::memcpy(saved, &panel, sizeof(panel));
+}
+
+void RestorePlayerTopMsgPanel(
+    HudUiPanel &panel,
+    const unsigned char *saved
+) {
+    std::memcpy(&panel, saved, sizeof(panel));
+}
+
+void ClearPlayerTopMsgPanel(
+    HudUiPanel &panel
+) {
+    std::memset(&panel, 0, sizeof(panel));
+}
+
 bool FloatNear(
     float actual,
     float expected
@@ -86,6 +244,148 @@ bool Vec3Equals(
     return FloatNear(value.x, expected.x) &&
            FloatNear(value.y, expected.y) &&
            FloatNear(value.z, expected.z);
+}
+
+void MakeAinetReaderStringNode(
+    zReader::Node &node,
+    const char *value
+) {
+    node.type = zReader::ZRDR_NODE_STRING;
+    node.value.str = const_cast<char *>(value);
+}
+
+void MakeAinetReaderFloatNode(
+    zReader::Node &node,
+    float value
+) {
+    node.type = zReader::ZRDR_NODE_FLOAT;
+    node.value.f32 = value;
+}
+
+void MakeAinetReaderArrayNode(
+    zReader::Node &node,
+    zReader::Node *payload,
+    int count
+) {
+    payload[0].type = zReader::ZRDR_NODE_INT;
+    payload[0].value.i32 = count;
+    node.type = zReader::ZRDR_NODE_ARRAY;
+    node.value.nodes = payload;
+}
+
+bool WriteAinetZrdU32(
+    std::FILE *file,
+    unsigned int value
+) {
+    return std::fwrite(&value, sizeof(value), 1, file) == 1;
+}
+
+bool WriteAinetZrdNode(
+    std::FILE *file,
+    const zReader::Node &node
+) {
+    if (!WriteAinetZrdU32(file, static_cast<unsigned int>(node.type))) {
+        return false;
+    }
+
+    switch (node.type) {
+    case zReader::ZRDR_NODE_INT:
+    case zReader::ZRDR_NODE_FLOAT:
+        return WriteAinetZrdU32(file, node.value.u32);
+    case zReader::ZRDR_NODE_STRING: {
+        const unsigned int length =
+            static_cast<unsigned int>(std::strlen(node.value.str));
+        return WriteAinetZrdU32(file, length) &&
+               std::fwrite(node.value.str, 1, length, file) == length;
+    }
+    case zReader::ZRDR_NODE_ARRAY: {
+        const int count = node.value.nodes[0].value.i32;
+        if (!WriteAinetZrdU32(file, static_cast<unsigned int>(count))) {
+            return false;
+        }
+        for (int index = 1; index < count; ++index) {
+            if (!WriteAinetZrdNode(file, node.value.nodes[index])) {
+                return false;
+            }
+        }
+        return true;
+    }
+    }
+
+    return false;
+}
+
+struct AinetZrdArchiveEntry {
+    const char *name;
+    const zReader::Node *root;
+};
+
+bool MountAinetZrdArchive(
+    const char *path,
+    const AinetZrdArchiveEntry *entries,
+    int entryCount,
+    zIndexArchive &archive,
+    zZarFileRecord *records,
+    zArchiveListNode &archiveNode,
+    zArchiveList &archiveList
+) {
+    std::FILE *const file = std::fopen(path, "wb");
+    if (file == nullptr) {
+        return false;
+    }
+
+    bool ok = true;
+    for (int index = 0; index < entryCount; ++index) {
+        const long offset = std::ftell(file);
+        if (offset < 0 || !WriteAinetZrdNode(file, *entries[index].root)) {
+            ok = false;
+            break;
+        }
+        const long endOffset = std::ftell(file);
+        if (endOffset < offset) {
+            ok = false;
+            break;
+        }
+
+        records[index] = {};
+        records[index].fileOffset = static_cast<unsigned int>(offset);
+        records[index].fileSize = static_cast<unsigned int>(endOffset - offset);
+        std::strcpy(records[index].name, entries[index].name);
+    }
+
+    if (std::fclose(file) != 0 || !ok) {
+        std::remove(path);
+        return false;
+    }
+
+    archive = {};
+    archive.hFile = CreateFileA(
+        path,
+        GENERIC_READ,
+        FILE_SHARE_READ,
+        nullptr,
+        OPEN_EXISTING,
+        FILE_ATTRIBUTE_NORMAL,
+        nullptr
+    );
+    if (archive.hFile == INVALID_HANDLE_VALUE) {
+        std::remove(path);
+        return false;
+    }
+
+    archive.recordCount = static_cast<unsigned int>(entryCount);
+    archive.records = records;
+
+    archiveNode = {};
+    archiveNode.payload = &archive;
+    archiveNode.next = &archiveNode;
+    archiveNode.prev = &archiveNode;
+
+    archiveList = {};
+    archiveList.count = 1;
+    archiveList.head = &archiveNode;
+    g_zArchive_MountedList = &archiveList;
+    return true;
 }
 
 float PlayerFastSqrtEstimateForTest(
@@ -129,7 +429,1160 @@ void SetObjectLocalMatrix(
 ) {
     std::memcpy(data->localMatrix, &matrix, sizeof(matrix));
 }
+
+template <typename T>
+T &PlayerStateFieldAt(
+    zUtil_PlayerStateStorage &playerState,
+    std::size_t offset
+) {
+    return *reinterpret_cast<T *>(playerState.bytes + offset);
+}
+
+template <typename T>
+T &PlayerBootstrapFieldAt(
+    void *base,
+    std::size_t offset
+) {
+    return *reinterpret_cast<T *>(static_cast<unsigned char *>(base) + offset);
+}
+
+void InitDestroyedEffectEntry(
+    zEffectAnimEntry *entry,
+    zClass_NodePartial *boundNode,
+    zClass_NodePartial *runtimeNode,
+    const char *name
+) {
+    std::memset(entry, 0, sizeof(*entry));
+    std::strcpy(entry->name, name);
+    entry->boundNode = boundNode;
+    entry->callbackNode = boundNode;
+    entry->runtimeNode = runtimeNode;
+    entry->priority = 3;
+}
+
+HMODULE LoadPlayerBootstrapMessagesDll() {
+    HMODULE messagesDll = LoadLibraryA("support\\messages.dll");
+    if (messagesDll == nullptr) {
+        messagesDll = LoadLibraryA("..\\..\\..\\..\\support\\messages.dll");
+    }
+    return messagesDll;
+}
+
+FILE *OpenPlayerBootstrapNullFile() {
+    FILE *file = nullptr;
+    fopen_s(&file, "NUL", "w+b");
+    if (file == nullptr) {
+        file = std::tmpfile();
+    }
+    return file;
+}
+
+void InitPlayerBootstrapShieldWidget(
+    HudUiShieldMessageWidget &shield
+) {
+    new (&shield.widget) HudUiWidget(0);
+    new (&shield.percentTextPanel) HudUiPanelSimple;
+    new (&shield.meter) HudUiMeter;
+    shield.meter.fillPixelsMax = 20;
+    shield.meter.points[1].y = 100.0f;
+}
+
+int g_CheckpointNetSendCalls;
+DWORD g_CheckpointNetSendFlags;
+DWORD g_CheckpointNetSendSize;
+unsigned char g_CheckpointNetPacketBytes[0x40];
+
+HRESULT __stdcall CheckpointSendFake(
+    zNetwork_DPlay4 *,
+    DPID,
+    DPID,
+    DWORD flags,
+    LPVOID packet,
+    DWORD packetSizeBytes
+) {
+    ++g_CheckpointNetSendCalls;
+    g_CheckpointNetSendFlags = flags;
+    g_CheckpointNetSendSize = packetSizeBytes;
+    if (packetSizeBytes <= sizeof(g_CheckpointNetPacketBytes)) {
+        std::memcpy(
+            g_CheckpointNetPacketBytes,
+            packet,
+            packetSizeBytes
+        );
+    }
+    return 0;
+}
+
+struct CheckpointFakeDirectPlay4 {
+    void **vtable;
+};
+
+void InitCheckpointDirectPlayVtable(
+    void **vtable
+) {
+    std::memset(
+        vtable,
+        0,
+        sizeof(void *) * 52
+    );
+    vtable[26] = (void *)(&CheckpointSendFake);
+}
+
 } // namespace
+
+extern "C" int player_top_msg_panel1_constructor_safe_smoke(void) {
+    unsigned char oldPanel[sizeof(g_Player_TopMsgPanel1)];
+    SavePlayerTopMsgPanel(g_Player_TopMsgPanel1, oldPanel);
+
+    ClearPlayerTopMsgPanel(g_Player_TopMsgPanel1);
+    Player_TopMsgPanel1::Constructor();
+
+    const bool ok = PlayerTopMsgPanelConstructed(g_Player_TopMsgPanel1);
+
+    Player_TopMsgPanel1::Destructor();
+    RestorePlayerTopMsgPanel(g_Player_TopMsgPanel1, oldPanel);
+    return ok ? 0 : 1;
+}
+
+extern "C" int player_top_msg_panel1_destructor_safe_smoke(void) {
+    unsigned char oldPanel[sizeof(g_Player_TopMsgPanel1)];
+    SavePlayerTopMsgPanel(g_Player_TopMsgPanel1, oldPanel);
+
+    ClearPlayerTopMsgPanel(g_Player_TopMsgPanel1);
+    Player_TopMsgPanel1::Constructor();
+    Player_TopMsgPanel1::Destructor();
+
+    const bool ok = PlayerTopMsgPanelDestroyed(g_Player_TopMsgPanel1);
+
+    RestorePlayerTopMsgPanel(g_Player_TopMsgPanel1, oldPanel);
+    return ok ? 0 : 1;
+}
+
+extern "C" int player_register_top_msg_panel1_on_exit_safe_smoke(void) {
+    unsigned char oldPanel[sizeof(g_Player_TopMsgPanel1)];
+    SavePlayerTopMsgPanel(g_Player_TopMsgPanel1, oldPanel);
+
+    PlayerBootstrapCodePatch patch = {};
+    ResetPlayerTopMsgPanelAtexitCapture();
+    ClearPlayerTopMsgPanel(g_Player_TopMsgPanel1);
+    unsigned char preparedPanel[sizeof(g_Player_TopMsgPanel1)];
+    SavePlayerTopMsgPanel(g_Player_TopMsgPanel1, preparedPanel);
+
+    if (!PatchPlayerBootstrapFunctionJump(
+        (void *)(&atexit),
+        (void *)(&FakePlayerTopMsgPanelAtexit),
+        patch
+    )) {
+        RestorePlayerTopMsgPanel(g_Player_TopMsgPanel1, oldPanel);
+        return 1;
+    }
+
+    Player::RegisterTopMsgPanel1OnExit();
+    RestorePlayerBootstrapFunctionPatch(patch);
+
+    const bool ok =
+        g_PlayerTopMsgPanelAtexitCalls == 1 &&
+        g_PlayerTopMsgPanelAtexitCallback == &Player_TopMsgPanel1::Destructor &&
+        std::memcmp(&g_Player_TopMsgPanel1, preparedPanel, sizeof(preparedPanel)) == 0;
+
+    RestorePlayerTopMsgPanel(g_Player_TopMsgPanel1, oldPanel);
+    return ok ? 0 : 2;
+}
+
+extern "C" int player_init_and_register_top_msg_panel1_safe_smoke(void) {
+    unsigned char oldPanel[sizeof(g_Player_TopMsgPanel1)];
+    SavePlayerTopMsgPanel(g_Player_TopMsgPanel1, oldPanel);
+
+    PlayerBootstrapCodePatch patch = {};
+    ResetPlayerTopMsgPanelAtexitCapture();
+    ClearPlayerTopMsgPanel(g_Player_TopMsgPanel1);
+
+    if (!PatchPlayerBootstrapFunctionJump(
+        (void *)(&atexit),
+        (void *)(&FakePlayerTopMsgPanelAtexit),
+        patch
+    )) {
+        RestorePlayerTopMsgPanel(g_Player_TopMsgPanel1, oldPanel);
+        return 1;
+    }
+
+    Player::InitAndRegisterTopMsgPanel1();
+    RestorePlayerBootstrapFunctionPatch(patch);
+
+    const bool ok =
+        PlayerTopMsgPanelConstructed(g_Player_TopMsgPanel1) &&
+        g_PlayerTopMsgPanelAtexitCalls == 1 &&
+        g_PlayerTopMsgPanelAtexitCallback == &Player_TopMsgPanel1::Destructor;
+
+    Player_TopMsgPanel1::Destructor();
+    RestorePlayerTopMsgPanel(g_Player_TopMsgPanel1, oldPanel);
+    return ok ? 0 : 2;
+}
+
+extern "C" int player_top_msg_panel2_constructor_safe_smoke(void) {
+    unsigned char oldPanel[sizeof(g_Player_TopMsgPanel2)];
+    SavePlayerTopMsgPanel(g_Player_TopMsgPanel2, oldPanel);
+
+    ClearPlayerTopMsgPanel(g_Player_TopMsgPanel2);
+    Player_TopMsgPanel2::Constructor();
+
+    const bool ok = PlayerTopMsgPanelConstructed(g_Player_TopMsgPanel2);
+
+    Player_TopMsgPanel2::Destructor();
+    RestorePlayerTopMsgPanel(g_Player_TopMsgPanel2, oldPanel);
+    return ok ? 0 : 1;
+}
+
+extern "C" int player_top_msg_panel2_destructor_safe_smoke(void) {
+    unsigned char oldPanel[sizeof(g_Player_TopMsgPanel2)];
+    SavePlayerTopMsgPanel(g_Player_TopMsgPanel2, oldPanel);
+
+    ClearPlayerTopMsgPanel(g_Player_TopMsgPanel2);
+    Player_TopMsgPanel2::Constructor();
+    Player_TopMsgPanel2::Destructor();
+
+    const bool ok = PlayerTopMsgPanelDestroyed(g_Player_TopMsgPanel2);
+
+    RestorePlayerTopMsgPanel(g_Player_TopMsgPanel2, oldPanel);
+    return ok ? 0 : 1;
+}
+
+extern "C" int player_register_top_msg_panel2_cleanup_safe_smoke(void) {
+    unsigned char oldPanel[sizeof(g_Player_TopMsgPanel2)];
+    SavePlayerTopMsgPanel(g_Player_TopMsgPanel2, oldPanel);
+
+    PlayerBootstrapCodePatch patch = {};
+    ResetPlayerTopMsgPanelAtexitCapture();
+    ClearPlayerTopMsgPanel(g_Player_TopMsgPanel2);
+    unsigned char preparedPanel[sizeof(g_Player_TopMsgPanel2)];
+    SavePlayerTopMsgPanel(g_Player_TopMsgPanel2, preparedPanel);
+
+    if (!PatchPlayerBootstrapFunctionJump(
+        (void *)(&atexit),
+        (void *)(&FakePlayerTopMsgPanelAtexit),
+        patch
+    )) {
+        RestorePlayerTopMsgPanel(g_Player_TopMsgPanel2, oldPanel);
+        return 1;
+    }
+
+    Player::RegisterTopMsgPanel2Cleanup();
+    RestorePlayerBootstrapFunctionPatch(patch);
+
+    const bool ok =
+        g_PlayerTopMsgPanelAtexitCalls == 1 &&
+        g_PlayerTopMsgPanelAtexitCallback == &Player_TopMsgPanel2::Destructor &&
+        std::memcmp(&g_Player_TopMsgPanel2, preparedPanel, sizeof(preparedPanel)) == 0;
+
+    RestorePlayerTopMsgPanel(g_Player_TopMsgPanel2, oldPanel);
+    return ok ? 0 : 2;
+}
+
+extern "C" int player_init_and_register_top_msg_panel2_safe_smoke(void) {
+    unsigned char oldPanel[sizeof(g_Player_TopMsgPanel2)];
+    SavePlayerTopMsgPanel(g_Player_TopMsgPanel2, oldPanel);
+
+    PlayerBootstrapCodePatch patch = {};
+    ResetPlayerTopMsgPanelAtexitCapture();
+    ClearPlayerTopMsgPanel(g_Player_TopMsgPanel2);
+
+    if (!PatchPlayerBootstrapFunctionJump(
+        (void *)(&atexit),
+        (void *)(&FakePlayerTopMsgPanelAtexit),
+        patch
+    )) {
+        RestorePlayerTopMsgPanel(g_Player_TopMsgPanel2, oldPanel);
+        return 1;
+    }
+
+    Player::InitAndRegisterTopMsgPanel2();
+    RestorePlayerBootstrapFunctionPatch(patch);
+
+    const bool ok =
+        PlayerTopMsgPanelConstructed(g_Player_TopMsgPanel2) &&
+        g_PlayerTopMsgPanelAtexitCalls == 1 &&
+        g_PlayerTopMsgPanelAtexitCallback == &Player_TopMsgPanel2::Destructor;
+
+    Player_TopMsgPanel2::Destructor();
+    RestorePlayerTopMsgPanel(g_Player_TopMsgPanel2, oldPanel);
+    return ok ? 0 : 2;
+}
+
+extern "C" int player_init_master_common_data_list_smoke(void) {
+    PlayerMasterCommonData *const oldHead = g_PlayerMasterCommonDataHead;
+    PlayerMasterCommonData *const oldTail = g_PlayerMasterCommonDataTail;
+    const int oldAux = g_PlayerMasterCommonDataListAux;
+    const int oldCount = g_PlayerMasterCommonDataCount;
+
+    PlayerMasterCommonData head = {};
+    PlayerMasterCommonData tail = {};
+    g_PlayerMasterCommonDataListAux = 1;
+    g_PlayerMasterCommonDataHead = &head;
+    g_PlayerMasterCommonDataTail = &tail;
+    g_PlayerMasterCommonDataCount = 2;
+
+    Player::InitMasterCommonDataList();
+
+    const bool ok = g_PlayerMasterCommonDataListAux == 0 &&
+                    g_PlayerMasterCommonDataHead == 0 &&
+                    g_PlayerMasterCommonDataTail == 0 &&
+                    g_PlayerMasterCommonDataCount == 0;
+
+    g_PlayerMasterCommonDataHead = oldHead;
+    g_PlayerMasterCommonDataTail = oldTail;
+    g_PlayerMasterCommonDataListAux = oldAux;
+    g_PlayerMasterCommonDataCount = oldCount;
+    return ok ? 0 : 1;
+}
+
+extern "C" int player_init_master_modal_data_list_smoke(void) {
+    PlayerMasterModalData *const oldHead = g_PlayerMasterModalDataHead;
+    PlayerMasterModalData *const oldTail = g_PlayerMasterModalDataTail;
+    const int oldAux = g_PlayerMasterModalDataListAux;
+    const int oldCount = g_PlayerMasterModalDataCount;
+
+    PlayerMasterModalData head = {};
+    PlayerMasterModalData tail = {};
+    g_PlayerMasterModalDataListAux = 1;
+    g_PlayerMasterModalDataHead = &head;
+    g_PlayerMasterModalDataTail = &tail;
+    g_PlayerMasterModalDataCount = 2;
+
+    Player::InitMasterModalDataList();
+
+    const bool ok = g_PlayerMasterModalDataListAux == 0 &&
+                    g_PlayerMasterModalDataHead == 0 &&
+                    g_PlayerMasterModalDataTail == 0 &&
+                    g_PlayerMasterModalDataCount == 0;
+
+    g_PlayerMasterModalDataHead = oldHead;
+    g_PlayerMasterModalDataTail = oldTail;
+    g_PlayerMasterModalDataListAux = oldAux;
+    g_PlayerMasterModalDataCount = oldCount;
+    return ok ? 0 : 1;
+}
+
+extern "C" int player_init_projectile_camera_fx_pass3_ui_singleton_smoke(void) {
+    const Player_ProjectileCameraFxPass3Ui oldState7FxPass3Ui =
+        g_Player_State7FxPass3Ui;
+
+    g_Player_State7FxPass3Ui = {};
+    g_Player_State7FxPass3Ui.clipRectOrNull =
+        (HudUiRect *)(&g_Player_State7FxPass3Ui);
+
+    Player::InitProjectileCameraFxPass3UiSingleton();
+
+    const bool ok =
+        g_Player_State7FxPass3Ui.clipRectOrNull == 0 &&
+        g_Player_State7FxPass3Ui.x == 0 &&
+        g_Player_State7FxPass3Ui.y == 0;
+
+    g_Player_State7FxPass3Ui = oldState7FxPass3Ui;
+    return ok ? 0 : 1;
+}
+
+extern "C" int player_reset_projectile_camera_fx_pass3_ui_singleton_smoke(void) {
+    const Player_ProjectileCameraFxPass3Ui oldState7FxPass3Ui =
+        g_Player_State7FxPass3Ui;
+
+    Player::InitProjectileCameraFxPass3UiSingleton();
+    void *const derivedTable = *((void **)(&g_Player_State7FxPass3Ui));
+    Player::ResetProjectileCameraFxPass3UiSingleton();
+
+    HudUiElement baseProbe;
+    const bool ok = derivedTable != *((void **)(&baseProbe)) &&
+                    *((void **)(&g_Player_State7FxPass3Ui)) == *((void **)(&baseProbe));
+
+    g_Player_State7FxPass3Ui = oldState7FxPass3Ui;
+    return ok ? 0 : 1;
+}
+
+extern "C" int player_register_projectile_camera_fx_pass3_ui_cleanup_smoke(void) {
+    const Player_ProjectileCameraFxPass3Ui oldState7FxPass3Ui =
+        g_Player_State7FxPass3Ui;
+
+    Player::InitProjectileCameraFxPass3UiSingleton();
+    void *const oldTable = *((void **)(&g_Player_State7FxPass3Ui));
+    Player::RegisterProjectileCameraFxPass3UiCleanup();
+
+    const bool ok = *((void **)(&g_Player_State7FxPass3Ui)) == oldTable;
+
+    g_Player_State7FxPass3Ui = oldState7FxPass3Ui;
+    return ok ? 0 : 1;
+}
+
+extern "C" int player_init_and_register_projectile_camera_fx_pass3_ui_singleton_smoke(void) {
+    const Player_ProjectileCameraFxPass3Ui oldState7FxPass3Ui =
+        g_Player_State7FxPass3Ui;
+
+    g_Player_State7FxPass3Ui = {};
+    g_Player_State7FxPass3Ui.clipRectOrNull =
+        (HudUiRect *)(&g_Player_State7FxPass3Ui);
+
+    Player::InitAndRegisterProjectileCameraFxPass3UiSingleton();
+
+    const bool ok =
+        g_Player_State7FxPass3Ui.clipRectOrNull == 0 &&
+        g_Player_State7FxPass3Ui.x == 0 &&
+        g_Player_State7FxPass3Ui.y == 0;
+
+    g_Player_State7FxPass3Ui = oldState7FxPass3Ui;
+    return ok ? 0 : 1;
+}
+
+extern "C" int player_destroyed_state_reset_local_finalize_smoke(void) {
+    zUtil_SaveGameState saveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    PlayerMasterCommonData commonData = {};
+    HudUiShieldMessageWidget shield = {};
+    HudUiTextStack4 topStack = {};
+
+    saveState.playerState = &playerState;
+    playerState.masterCommonData = &commonData;
+    playerState.lifecycleState = 4;
+    playerState.cameraState = 3;
+    playerState.thirdPersonYawOffset = 8.0f;
+    playerState.cameraElevationOffset = 9.0f;
+    playerState.damageProtectionActive = 1;
+    playerState.queuedFixedDamageFlag = 1;
+    playerState.damageVisualFlag = 1;
+    playerState.statusMeterValue = 10.0f;
+    commonData.maxHealth = 100.0f;
+    commonData.invMaxHealth = 0.01f;
+    InitPlayerBootstrapShieldWidget(shield);
+
+    zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
+    int *const oldGameControlOptions = ZOPT_GAME_CONTROL_OPTIONS;
+    HudUiShieldMessageWidget *const oldShieldWidget = g_HudUiMgrShieldMessageWidget;
+    HudUiTextStack4 *const oldTopStack = g_HudUiTopMessageStack;
+    const float oldStatusMeterRatio = g_PlayerStatusMeterRatio;
+    const int oldPrevCameraState = g_PlayerPrevCameraState;
+    const int oldPrevSteeringMode = g_PlayerPrevSteeringMode;
+    const std::uint32_t oldInvalidateMask = g_HudUi_InvalidateMask;
+    HMODULE const oldMessagesDll = g_zLoc_MessagesDllHandle;
+
+    HMODULE messagesDll = LoadPlayerBootstrapMessagesDll();
+    if (messagesDll == nullptr) {
+        return 6;
+    }
+
+    int gameControlOptions = 0;
+    g_GameStateOrMapTable =
+        reinterpret_cast<zInput_GameStateOrMapTablePartial *>(&saveState);
+    ZOPT_GAME_CONTROL_OPTIONS = &gameControlOptions;
+    g_HudUiMgrShieldMessageWidget = &shield;
+    g_HudUiTopMessageStack = &topStack;
+    g_PlayerStatusMeterRatio = 0.1f;
+    g_PlayerPrevCameraState = 3;
+    g_PlayerPrevSteeringMode = 1;
+    g_HudUi_InvalidateMask = 0;
+    g_zLoc_MessagesDllHandle = messagesDll;
+
+    Player::DestroyedStateResetLocalFinalize();
+
+    const bool lifecycleOk = playerState.lifecycleState == 1;
+    const bool steeringOk = (gameControlOptions & 0x02) != 0;
+    const bool mouseOk = playerState.thirdPersonYawOffset == 0.0f &&
+                         playerState.cameraElevationOffset == 0.0f;
+    const bool damageOk = playerState.damageProtectionActive == 0 &&
+                          playerState.queuedFixedDamageFlag == 0 &&
+                          playerState.damageVisualFlag == 0;
+    const bool statusOk =
+        playerState.statusMeterValue == 100.0f &&
+        g_PlayerStatusMeterRatio == 1.0f &&
+        std::strcmp(
+            &PlayerBootstrapFieldAt<char>(&shield.percentTextPanel, 0x34),
+            "100"
+        ) == 0;
+
+    g_GameStateOrMapTable = oldGameStateOrMapTable;
+    ZOPT_GAME_CONTROL_OPTIONS = oldGameControlOptions;
+    g_HudUiMgrShieldMessageWidget = oldShieldWidget;
+    g_HudUiTopMessageStack = oldTopStack;
+    g_PlayerStatusMeterRatio = oldStatusMeterRatio;
+    g_PlayerPrevCameraState = oldPrevCameraState;
+    g_PlayerPrevSteeringMode = oldPrevSteeringMode;
+    g_HudUi_InvalidateMask = oldInvalidateMask;
+    g_zLoc_MessagesDllHandle = oldMessagesDll;
+    FreeLibrary(messagesDll);
+    if (!lifecycleOk) {
+        return 1;
+    }
+    if (!steeringOk) {
+        return 2;
+    }
+    if (!mouseOk) {
+        return 3;
+    }
+    if (!damageOk) {
+        return 4;
+    }
+    return statusOk ? 0 : 5;
+}
+
+extern "C" int player_apply_mission_save_data_smoke(void) {
+    zUtil_SaveGameState *const oldLocalSaveState = g_LocalPlayerSaveState;
+    zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
+    zClass_NodePartial *const oldMainCamera = g_MainCamera;
+    HudUiShieldMessageWidget *const oldShieldWidget = g_HudUiMgrShieldMessageWidget;
+    HudUiCounterTextPanel *const oldObjectiveCounter = g_HudUiMgrObjectiveCounterTextPanel;
+    const int oldActiveWeaponMessageIndex = g_HudUiMgrActiveWeaponMessageIndex;
+    const int oldActiveWeaponSideIndex = g_HudUiMgrActiveWeaponSideIndex;
+    const float oldStatusMeterRatio = g_PlayerStatusMeterRatio;
+    const int oldHudCounterValue = g_Player_HudCounterValue;
+    const float oldAccumulatedTime = g_Time_AccumulatedTimeSec;
+    const std::uint32_t oldInvalidateMask = g_HudUi_InvalidateMask;
+    HudUiNanitePanel oldNanitePanel = g_HudUiMgrNanitePanel;
+
+    HudUiMessage oldMessages[10] = {};
+    for (int index = 0; index < 10; ++index) {
+        oldMessages[index] = g_HudUiMgrMessages[index];
+    }
+
+    zUtil_SaveGameState saveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    PlayerMasterCommonData commonData = {};
+    PlayerMasterModalData flyModalData = {};
+    PlayerModalState flyModal = {};
+    zClass_NodePartial rootNode = {};
+    zClass_NodePartial cameraNode = {};
+    zClass_CameraDataPartial cameraData = {};
+    HudUiShieldMessageWidget shield = {};
+    HudUiCounterTextPanel counter = {};
+    zVidImagePartial messageImages[40] = {};
+
+    rootNode.classId = 5;
+    cameraNode.classId = 1;
+    cameraNode.classData = &cameraData;
+
+    commonData.maxHealth = 200.0f;
+    playerState.masterCommonData = &commonData;
+    playerState.rootNode = &rootNode;
+    playerState.statusMeterValue = 50.0f;
+    playerState.nanitePanelLevel = 2;
+    playerState.primaryGunGateUntilTime = 99.0f;
+    playerState.damageProtectionActive = 1;
+    playerState.timedHitStatus.runtimeFlags = 0xffffu;
+    playerState.timedHitStatus.currentLevel = 9.0f;
+
+    for (int bankIndex = 0; bankIndex < 10; ++bankIndex) {
+        PlayerAltWeaponBank &bank = playerState.altWeaponBanks[bankIndex];
+        bank.selectedSide = 0;
+        bank.controllerA.weaponBankIndex = bankIndex;
+        bank.controllerA.weaponSideIndex = 0;
+        bank.controllerA.flags = 0;
+        bank.controllerA.ammoOrCharge = 1.0f;
+        bank.controllerB.weaponBankIndex = bankIndex;
+        bank.controllerB.weaponSideIndex = 1;
+        bank.controllerB.flags = 0;
+        bank.controllerB.ammoOrCharge = 2.0f;
+
+        HudUiMessage &message = g_HudUiMgrMessages[bankIndex];
+        std::memset(&message, 0, sizeof(message));
+        new (&message) HudUiMessage;
+        message.variantImages[0] = &messageImages[bankIndex * 4 + 0];
+        message.variantImages[1] = &messageImages[bankIndex * 4 + 1];
+        message.variantImages[4] = &messageImages[bankIndex * 4 + 2];
+        message.sideImageSwaps[0] = &messageImages[bankIndex * 4 + 2];
+        message.sideImageSwaps[1] = &messageImages[bankIndex * 4 + 3];
+        PlayerBootstrapFieldAt<int>(&message.panel, 0x2a4) = bankIndex & 1;
+    }
+
+    playerState.activeAltGunController = &playerState.altWeaponBanks[1].controllerA;
+    playerState.activePrimaryGunController = &playerState.altWeaponBanks[2].controllerB;
+
+    flyModalData.masterType = 1;
+    flyModal.masterModalData = &flyModalData;
+    saveState.playerState = &playerState;
+    saveState.primaryModalState = &flyModal;
+    saveState.modalStateListHead = &flyModal;
+    saveState.modalStateListTail = &flyModal;
+    saveState.modalStateCount = 1;
+
+    InitPlayerBootstrapShieldWidget(shield);
+    counter.Constructor();
+    std::memset(&g_HudUiMgrNanitePanel, 0, sizeof(g_HudUiMgrNanitePanel));
+    new (&g_HudUiMgrNanitePanel) HudUiNanitePanel;
+
+    PlayerMissionSaveData saveData = {};
+    saveData.size = sizeof(saveData);
+    saveData.altWeaponBankIndex = 3;
+    saveData.altWeaponSideIndex = 1;
+    saveData.primaryWeaponBankIndex = 4;
+    saveData.primaryWeaponSideIndex = 0;
+    saveData.playerStatusMeterRatio = 0.375f;
+    saveData.hudCounterValue = 345;
+    saveData.amphibUnlocked = 1;
+    saveData.hoverUnlocked = 0;
+    saveData.subUnlocked = 1;
+    saveData.aiMode = 7;
+    saveData.nextModeSwitchAllowedTime = 12.25f;
+    saveData.motionInput = 2;
+    saveData.autoTurnSign = -1;
+    saveData.bankInput = 3;
+    saveData.playerMasterType = 1;
+    saveData.cameraTarget = {11.0f, 12.0f, 13.0f};
+    saveData.cameraPosition = {21.0f, 22.0f, 23.0f};
+    saveData.timedHitStatus.runtimeFlags = 0;
+    saveData.timedHitStatus.savedHitSourceEntryId = 77;
+    saveData.timedHitStatus.currentLevel = 0.25f;
+    saveData.timedHitStatus.targetLevel = 0.5f;
+    saveData.timedHitStatus.lightNode = nullptr;
+    saveData.timedHitStatus.nextUpdateTime = 8.0f;
+    saveData.timedHitStatus.lightParentNode = nullptr;
+
+    for (int bankIndex = 0; bankIndex < 10; ++bankIndex) {
+        PlayerMissionSaveWeaponBank &bank = saveData.weaponBank[bankIndex];
+        bank.selectedSide = bankIndex & 1;
+        bank.sides[0].enabled = bankIndex % 3 == 0 ? 1 : 0;
+        bank.sides[0].ammoOrCharge = static_cast<float>(10 + bankIndex);
+        bank.sides[1].enabled = bankIndex % 2 == 0 ? 1 : 0;
+        bank.sides[1].ammoOrCharge = static_cast<float>(20 + bankIndex);
+    }
+
+    g_LocalPlayerSaveState = &saveState;
+    g_GameStateOrMapTable = reinterpret_cast<zInput_GameStateOrMapTablePartial *>(&saveState);
+    g_MainCamera = &cameraNode;
+    g_HudUiMgrShieldMessageWidget = &shield;
+    g_HudUiMgrObjectiveCounterTextPanel = &counter;
+    g_HudUiMgrActiveWeaponMessageIndex = 0;
+    g_HudUiMgrActiveWeaponSideIndex = 0;
+    g_HudUi_InvalidateMask = 0x80;
+    g_PlayerStatusMeterRatio = 0.0f;
+    g_Player_HudCounterValue = 0;
+    g_Time_AccumulatedTimeSec = 100.0f;
+
+    Player::ApplyMissionSaveData(&saveData);
+
+    int failure = 0;
+    if (playerState.altWeaponBanks[3].selectedSide != 1) {
+        failure = 1;
+    } else if (playerState.activeAltGunController != &playerState.altWeaponBanks[3].controllerB) {
+        failure = 6;
+    } else if (playerState.activePrimaryGunController !=
+               &playerState.altWeaponBanks[4].controllerA) {
+        failure = 7;
+    } else if (playerState.cachedAltSelectionCode != 301) {
+        failure = 8;
+    } else if (playerState.cachedPrimarySelectionCode != 400) {
+        failure = 9;
+    } else if (
+        g_PlayerStatusMeterRatio != 0.375f ||
+        g_Player_HudCounterValue != 345 ||
+        playerState.amphibUnlocked != 1 ||
+        playerState.hoverUnlocked != 0 ||
+        playerState.subUnlocked != 1 ||
+        playerState.aiMode != 7 ||
+        playerState.nextModeSwitchAllowedTime != 12.25f ||
+        playerState.motionInput != 2 ||
+        playerState.autoTurnSign != -1 ||
+        playerState.bankInput != 3 ||
+        playerState.primaryGunGateUntilTime != 0.0f ||
+        playerState.damageProtectionActive != 0
+    ) {
+        failure = 2;
+    } else if (!Vec3Equals(cameraData.targetOrEuler, saveData.cameraTarget) ||
+               !Vec3Equals(cameraData.posOffset, saveData.cameraPosition)) {
+        failure = 3;
+    } else if (
+        playerState.timedHitStatus.runtimeFlags != 0 ||
+        playerState.timedHitStatus.currentLevel != 0.25f ||
+        playerState.timedHitStatus.targetLevel != 0.5f ||
+        playerState.timedHitStatus.nextUpdateTime != 8.0f ||
+        playerState.timedHitStatus.lightParentNode != &rootNode
+    ) {
+        failure = 4;
+    } else if (
+        std::strcmp(&PlayerBootstrapFieldAt<char>(&counter, 0x34), "345") != 0 ||
+        shield.meter.points[0].y != 95.0f ||
+        g_HudUiMgrNanitePanel.visibleCount != 2
+    ) {
+        failure = 5;
+    }
+
+    for (int bankIndex = 0; failure == 0 && bankIndex < 10; ++bankIndex) {
+        const PlayerMissionSaveWeaponBank &savedBank = saveData.weaponBank[bankIndex];
+        const PlayerAltWeaponBank &bank = playerState.altWeaponBanks[bankIndex];
+        if (
+            bank.selectedSide != savedBank.selectedSide ||
+            ((bank.controllerA.flags >> 2) & 1) != (savedBank.sides[0].enabled & 1) ||
+            ((bank.controllerB.flags >> 2) & 1) != (savedBank.sides[1].enabled & 1) ||
+            bank.controllerA.ammoOrCharge != savedBank.sides[0].ammoOrCharge ||
+            bank.controllerB.ammoOrCharge != savedBank.sides[1].ammoOrCharge
+        ) {
+            failure = 20 + bankIndex;
+        }
+    }
+
+    if (counter.hFont != nullptr) {
+        DeleteObject(counter.hFont);
+        counter.hFont = nullptr;
+    }
+    if (shield.percentTextPanel.hFont != nullptr) {
+        DeleteObject(shield.percentTextPanel.hFont);
+        shield.percentTextPanel.hFont = nullptr;
+    }
+    g_LocalPlayerSaveState = oldLocalSaveState;
+    g_GameStateOrMapTable = oldGameStateOrMapTable;
+    g_MainCamera = oldMainCamera;
+    g_HudUiMgrShieldMessageWidget = oldShieldWidget;
+    g_HudUiMgrObjectiveCounterTextPanel = oldObjectiveCounter;
+    g_HudUiMgrActiveWeaponMessageIndex = oldActiveWeaponMessageIndex;
+    g_HudUiMgrActiveWeaponSideIndex = oldActiveWeaponSideIndex;
+    g_PlayerStatusMeterRatio = oldStatusMeterRatio;
+    g_Player_HudCounterValue = oldHudCounterValue;
+    g_Time_AccumulatedTimeSec = oldAccumulatedTime;
+    g_HudUi_InvalidateMask = oldInvalidateMask;
+    g_HudUiMgrNanitePanel = oldNanitePanel;
+    for (int index = 0; index < 10; ++index) {
+        g_HudUiMgrMessages[index] = oldMessages[index];
+    }
+
+    return failure;
+}
+
+extern "C" int player_destroyed_state_reset_finalize_callback_smoke(void) {
+    zUtil_SaveGameState saveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    PlayerMasterCommonData commonData = {};
+    alignas(GameNetPlayerRow) unsigned char rowStorage[sizeof(GameNetPlayerRow)] = {};
+    GameNetPlayerRow *const row = reinterpret_cast<GameNetPlayerRow *>(rowStorage);
+    HudUiShieldMessageWidget shield = {};
+    HudUiTextStack4 topStack = {};
+
+    saveState.playerState = &playerState;
+    saveState.netPlayerRow = row;
+    row->saveState = reinterpret_cast<GameNetPlayerSaveState *>(&saveState);
+    playerState.masterCommonData = &commonData;
+    playerState.lifecycleState = 4;
+    playerState.cameraState = 3;
+    playerState.cameraTransitionTimer = 123;
+    playerState.statusMeterValue = 10.0f;
+    commonData.maxHealth = 120.0f;
+    commonData.invMaxHealth = 1.0f / 120.0f;
+    row->playerColorIndex = 1;
+    InitPlayerBootstrapShieldWidget(shield);
+
+    zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
+    int *const oldGameControlOptions = ZOPT_GAME_CONTROL_OPTIONS;
+    HudUiShieldMessageWidget *const oldShieldWidget = g_HudUiMgrShieldMessageWidget;
+    HudUiTextStack4 *const oldTopStack = g_HudUiTopMessageStack;
+    GameNetPlayerRow *const oldRowHead = g_GameNetPlayerRowHead;
+    GameNetPlayerRow *const oldRowTail = g_GameNetPlayerRowTail;
+    const int oldRowCount = g_GameNetPlayerRowCount;
+    HMODULE const oldMessagesDll = g_zLoc_MessagesDllHandle;
+    const float oldStatusMeterRatio = g_PlayerStatusMeterRatio;
+    const int oldPrevCameraState = g_PlayerPrevCameraState;
+    const int oldPrevSteeringMode = g_PlayerPrevSteeringMode;
+    const std::uint32_t oldInvalidateMask = g_HudUi_InvalidateMask;
+
+    HMODULE messagesDll = LoadPlayerBootstrapMessagesDll();
+    if (messagesDll == nullptr) {
+        return 6;
+    }
+
+    int gameControlOptions = 0;
+    g_GameStateOrMapTable =
+        reinterpret_cast<zInput_GameStateOrMapTablePartial *>(&saveState);
+    ZOPT_GAME_CONTROL_OPTIONS = &gameControlOptions;
+    g_HudUiMgrShieldMessageWidget = &shield;
+    g_HudUiTopMessageStack = &topStack;
+    g_GameNetPlayerRowHead = row;
+    g_GameNetPlayerRowTail = row;
+    g_GameNetPlayerRowCount = 1;
+    g_zLoc_MessagesDllHandle = messagesDll;
+    g_PlayerStatusMeterRatio = 10.0f / 120.0f;
+    g_PlayerPrevCameraState = 3;
+    g_PlayerPrevSteeringMode = 1;
+    g_HudUi_InvalidateMask = 0;
+
+    Player::DestroyedStateResetFinalizeCallback(&saveState);
+
+    int result = 0;
+    if (playerState.lifecycleState != 1) {
+        result = 10;
+    } else if (playerState.statusMeterValue != 120.0f) {
+        result = 11;
+    } else if (playerState.cameraTransitionTimer != 0) {
+        result = 12;
+    } else if ((gameControlOptions & 0x02) == 0) {
+        result = 13;
+    } else if (g_PlayerStatusMeterRatio != 1.0f) {
+        result = 14;
+    } else if (std::strcmp(
+                   &PlayerBootstrapFieldAt<char>(&shield.percentTextPanel, 0x34),
+                   "100"
+               ) != 0) {
+        result = 15;
+    }
+
+    g_GameStateOrMapTable = oldGameStateOrMapTable;
+    ZOPT_GAME_CONTROL_OPTIONS = oldGameControlOptions;
+    g_HudUiMgrShieldMessageWidget = oldShieldWidget;
+    g_HudUiTopMessageStack = oldTopStack;
+    g_GameNetPlayerRowHead = oldRowHead;
+    g_GameNetPlayerRowTail = oldRowTail;
+    g_GameNetPlayerRowCount = oldRowCount;
+    g_zLoc_MessagesDllHandle = oldMessagesDll;
+    g_PlayerStatusMeterRatio = oldStatusMeterRatio;
+    g_PlayerPrevCameraState = oldPrevCameraState;
+    g_PlayerPrevSteeringMode = oldPrevSteeringMode;
+    g_HudUi_InvalidateMask = oldInvalidateMask;
+    FreeLibrary(messagesDll);
+    return result;
+}
+
+extern "C" int player_clear_respawn_transition_flag_callback_smoke(void) {
+    zUtil_SaveGameState saveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    saveState.playerState = &playerState;
+    playerState.cameraTransitionTimer = 17;
+
+    Player::ClearRespawnTransitionFlagCallback(&saveState);
+    return playerState.cameraTransitionTimer == 0 ? 0 : 1;
+}
+
+extern "C" int player_destroyed_state_reset_callback_smoke(void) {
+    const int oldMissionId = g_HudSensorTracker.missionId;
+    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    zZbdManager *const oldZbdManager = g_zUtil_ZbdManager;
+    zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
+    zUtil_SaveGameState *const oldLocalPlayerSaveState = g_LocalPlayerSaveState;
+    const int oldAllowMaps = g_GameNetStatus_AllowMaps;
+    const int oldRaceCheckpointMode = g_HudSensorTracker.raceCheckpointMode;
+    GameNetSpawnPoint *const oldSpawnHead = g_GameNetSpawnPointHead;
+    GameNetSpawnPoint *const oldSpawnTail = g_GameNetSpawnPointTail;
+    const unsigned int oldSpawnCount = g_GameNetSpawnPointCount;
+    HudLayoutBase *const oldCurrentLayout = g_HudUiMgrCurrentLayout;
+    HudUiShieldMessageWidget *const oldShieldWidget = g_HudUiMgrShieldMessageWidget;
+    const std::uint32_t oldInvalidateMask = g_HudUi_InvalidateMask;
+    const int oldActiveWeaponMessageIndex = g_HudUiMgrActiveWeaponMessageIndex;
+    const int oldActiveWeaponSideIndex = g_HudUiMgrActiveWeaponSideIndex;
+    const HudUiNanitePanel oldNanitePanel = g_HudUiMgrNanitePanel;
+    zVidTexturePackEntry *const oldBuiltinTexturePacks = g_zVid_BuiltinTexturePacks;
+    const int oldBuiltinTexturePackCount = g_zVid_BuiltinTexturePackCount;
+    const int oldTexDirEntryCount = g_zImage_TexDirEntryCount;
+    HudUiMessage oldMessages[10] = {};
+    HudUiCounter oldModeCounters[4] = {};
+    for (int index = 0; index < 10; ++index) {
+        oldMessages[index] = g_HudUiMgrMessages[index];
+    }
+    for (int index = 0; index < 4; ++index) {
+        oldModeCounters[index] = g_HudUiMgrModeCounters[index];
+    }
+
+    zClass_Object3D_ModelRefLerpQueue::Reset();
+
+    int networkEnabled = 0;
+    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_HudSensorTracker.missionId = 8;
+    g_HudSensorTracker.raceCheckpointMode = 1;
+
+    zZbdSectionHandlerNode sentinel = {};
+    zZbdManager manager = MakePlayerZbdManager(sentinel);
+    g_zUtil_ZbdManager = &manager;
+
+    zUtil_SaveGameState saveState = {};
+    zUtil_SaveGameState localSaveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    zUtil_PlayerStateStorage localPlayerState = {};
+    PlayerMasterCommonData commonData = {};
+    PlayerMasterCommonData localCommonData = {};
+    PlayerMasterModalData sourceData = {};
+    PlayerMasterModalData trackData = {};
+    PlayerModalState sourceModal = {};
+    PlayerModalState trackModal = {};
+    zClass_NodePartial rootNode = {};
+    zClass_NodePartial modeVariantNode = {};
+    zClass_NodePartial runtimeNode = {};
+    zClass_Object3DDataPartial rootData = {};
+    zEffectAnimEntry destroyedRespawn = {};
+    HudUiShieldMessageWidget shield = {};
+    zVidImagePartial messageImages[40] = {};
+    zVidImagePartial counterImages[6] = {};
+    zVidTexturePackEntry builtinTexturePack = {};
+
+    saveState.playerState = &playerState;
+    saveState.primaryModalState = &sourceModal;
+    saveState.modalStateListHead = &sourceModal;
+    saveState.modalStateListTail = &trackModal;
+    saveState.modalStateCount = 2;
+    localSaveState.playerState = &localPlayerState;
+    sourceModal.masterModalData = &sourceData;
+    sourceModal.next = &trackModal;
+    trackModal.masterModalData = &trackData;
+    sourceData.masterType = 1;
+    trackData.masterType = 3;
+    playerState.masterCommonData = &commonData;
+    localPlayerState.masterCommonData = &localCommonData;
+    commonData.maxHealth = 120.0f;
+    commonData.invMaxHealth = 1.0f / 120.0f;
+    localCommonData.maxHealth = 120.0f;
+    localCommonData.invMaxHealth = 1.0f / 120.0f;
+
+    rootNode.classId = 5;
+    rootNode.classData = &rootData;
+    std::strcpy(rootNode.name, "destroyed_root");
+    modeVariantNode.classId = 2;
+    playerState.rootNode = &rootNode;
+    playerState.modeVariantNode = &modeVariantNode;
+    InitDestroyedEffectEntry(&destroyedRespawn, &rootNode, &runtimeNode, "destroyed_respawn");
+    destroyedRespawn.activationState = 2;
+    playerState.destroyedRespawnFxEntry = &destroyedRespawn;
+    playerState.statusMeterValue = 5.0f;
+    playerState.damageProtectionActive = 1;
+    playerState.queuedFixedDamageFlag = 1;
+    playerState.damageVisualFlag = 1;
+    playerState.timedHitStatus.runtimeFlags = 3;
+    playerState.aiMode = 9;
+    playerState.nextModeSwitchAllowedTime = 7.0f;
+    playerState.motionInput = 2;
+    playerState.autoTurnSign = -1;
+    playerState.thirdPersonYawOffset = 4.0f;
+    playerState.cameraElevationOffset = 5.0f;
+    playerState.localVel = {1.0f, 2.0f, 3.0f};
+    playerState.projectileSpawnVel = {4.0f, 5.0f, 6.0f};
+    playerState.yawRotatedLocalVel = {7.0f, 8.0f, 9.0f};
+    playerState.angVelPitch = 1.5f;
+    playerState.angVelYaw = 2.5f;
+    playerState.angVelRoll = 3.5f;
+    playerState.steeringInput = 0.5f;
+    playerState.throttleInput = 0.6f;
+    playerState.subVerticalInput = 0.7f;
+
+    InitPlayerBootstrapShieldWidget(shield);
+    g_HudUiMgrShieldMessageWidget = &shield;
+
+    for (int bankIndex = 0; bankIndex < 10; ++bankIndex) {
+        HudUiMessage &message = g_HudUiMgrMessages[bankIndex];
+        std::memset(&message, 0, sizeof(message));
+        new (&message) HudUiMessage;
+        message.variantImages[0] = &messageImages[bankIndex * 4 + 0];
+        message.variantImages[1] = &messageImages[bankIndex * 4 + 1];
+        message.variantImages[4] = &messageImages[bankIndex * 4 + 2];
+        message.sideImageSwaps[0] = &messageImages[bankIndex * 4 + 2];
+        message.sideImageSwaps[1] = &messageImages[bankIndex * 4 + 3];
+    }
+
+    std::memset(&g_HudUiMgrNanitePanel, 0, sizeof(g_HudUiMgrNanitePanel));
+    new (&g_HudUiMgrNanitePanel) HudUiNanitePanel;
+
+    for (int index = 1; index < 4; ++index) {
+        std::memset(&g_HudUiMgrModeCounters[index], 0, sizeof(g_HudUiMgrModeCounters[index]));
+        new (&g_HudUiMgrModeCounters[index]) HudUiCounter;
+        PlayerBootstrapFieldAt<zVidImagePartial *>(&g_HudUiMgrModeCounters[index], 0xbc) =
+            &counterImages[(index - 1) * 2];
+        PlayerBootstrapFieldAt<zVidImagePartial *>(&g_HudUiMgrModeCounters[index], 0xc0) =
+            &counterImages[(index - 1) * 2 + 1];
+    }
+
+    g_GameStateOrMapTable =
+        reinterpret_cast<zInput_GameStateOrMapTablePartial *>(&localSaveState);
+    g_LocalPlayerSaveState = &localSaveState;
+    g_GameNetStatus_AllowMaps = 1;
+    g_GameNetSpawnPointHead = nullptr;
+    g_GameNetSpawnPointTail = nullptr;
+    g_GameNetSpawnPointCount = 0;
+    g_HudUiMgrCurrentLayout = nullptr;
+    g_HudUi_InvalidateMask = 0x80;
+    std::strcpy(builtinTexturePack.filePath, "test.zbd");
+    builtinTexturePack.fileHandle = OpenPlayerBootstrapNullFile();
+    g_zVid_BuiltinTexturePacks = &builtinTexturePack;
+    g_zVid_BuiltinTexturePackCount = 1;
+    g_zImage_TexDirEntryCount = 0;
+
+    Player::DestroyedStateResetCallback(nullptr, &saveState, 0);
+
+    zClass_Object3D_ModelRefLerpTask *const fadeTask = g_ModelRefLerpQueueState.head;
+    zZbdSectionHandlerNode *const minesNode = sentinel.next;
+    const bool effectOk =
+        destroyedRespawn.activationState == 0 && (destroyedRespawn.flags & 0x40u) != 0;
+    const bool damageOk =
+        playerState.damageProtectionActive == 0 &&
+        playerState.queuedFixedDamageFlag == 0 &&
+        playerState.damageVisualFlag == 0;
+    const bool objectOk =
+        playerState.statusMeterValue == 120.0f &&
+        (rootData.flags & 0x02) != 0 &&
+        rootData.alphaScale == 0.0f &&
+        g_ModelRefLerpQueueState.count == 1 &&
+        fadeTask != nullptr &&
+        fadeTask->node == &rootNode &&
+        fadeTask->callbackCtx == &saveState &&
+        fadeTask->onComplete == (void *)(&Player::DestroyedStateResetFinalizeCallback) &&
+        fadeTask->currentModelRef == 0.0f &&
+        fadeTask->targetModelRef == 1.0f &&
+        fadeTask->modelRefDeltaPerSec == 1.0f;
+    const bool motionOk =
+        playerState.aiMode == 0 &&
+        playerState.nextModeSwitchAllowedTime == 0.0f &&
+        playerState.motionInput == 0 &&
+        playerState.autoTurnSign == 0 &&
+        playerState.thirdPersonYawOffset == 0.0f &&
+        playerState.cameraElevationOffset == 0.0f &&
+        Vec3Equals(playerState.localVel, {0.0f, 0.0f, 0.0f}) &&
+        Vec3Equals(playerState.projectileSpawnVel, {0.0f, 0.0f, 0.0f}) &&
+        Vec3Equals(playerState.yawRotatedLocalVel, {0.0f, 0.0f, 0.0f}) &&
+        playerState.angVelPitch == 0.0f &&
+        playerState.angVelYaw == 0.0f &&
+        playerState.angVelRoll == 0.0f;
+    const bool transitionOk =
+        saveState.primaryModalState == &trackModal &&
+        playerState.currentMasterType == 1 &&
+        (modeVariantNode.flags & 0x04) != 0;
+    const bool weaponOk =
+        playerState.activeAltGunController == &playerState.altWeaponBanks[1].controllerA &&
+        playerState.activePrimaryGunController == &playerState.altWeaponBanks[1].controllerA &&
+        playerState.cachedAltSelectionCode == 100 &&
+        playerState.cachedPrimarySelectionCode == 100 &&
+        playerState.timedHitStatus.runtimeFlags == 0;
+    const bool hudOk =
+        std::strcmp(&PlayerBootstrapFieldAt<char>(&shield.percentTextPanel, 0x34), "100") == 0;
+    const bool zbdOk =
+        minesNode != &sentinel &&
+        minesNode->sectionHandler.sectionName != nullptr &&
+        std::strcmp(minesNode->sectionHandler.sectionName, "Mines") == 0;
+
+    int result = 0;
+    if (destroyedRespawn.activationState != 1) {
+        result = 20 + destroyedRespawn.activationState;
+    } else if ((destroyedRespawn.flags & 0x40u) == 0) {
+        result = 29;
+    } else if (!damageOk) {
+        result = 2;
+    } else if (!objectOk) {
+        result = 3;
+    } else if (!motionOk) {
+        result = 4;
+    } else if (!transitionOk) {
+        result = 5;
+    } else if (!weaponOk) {
+        result = 6;
+    } else if (!hudOk) {
+        result = 7;
+    } else if (!zbdOk) {
+        result = 8;
+    }
+
+    zClass_Object3D_ModelRefLerpQueue::Reset();
+    ClearPlayerRegisteredHandlers(sentinel);
+    g_HudSensorTracker.missionId = oldMissionId;
+    g_HudSensorTracker.raceCheckpointMode = oldRaceCheckpointMode;
+    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_zUtil_ZbdManager = oldZbdManager;
+    g_GameStateOrMapTable = oldGameStateOrMapTable;
+    g_LocalPlayerSaveState = oldLocalPlayerSaveState;
+    g_GameNetStatus_AllowMaps = oldAllowMaps;
+    g_GameNetSpawnPointHead = oldSpawnHead;
+    g_GameNetSpawnPointTail = oldSpawnTail;
+    g_GameNetSpawnPointCount = oldSpawnCount;
+    g_HudUiMgrCurrentLayout = oldCurrentLayout;
+    g_HudUiMgrShieldMessageWidget = oldShieldWidget;
+    g_HudUi_InvalidateMask = oldInvalidateMask;
+    g_HudUiMgrActiveWeaponMessageIndex = oldActiveWeaponMessageIndex;
+    g_HudUiMgrActiveWeaponSideIndex = oldActiveWeaponSideIndex;
+    g_HudUiMgrNanitePanel = oldNanitePanel;
+    g_zVid_BuiltinTexturePacks = oldBuiltinTexturePacks;
+    g_zVid_BuiltinTexturePackCount = oldBuiltinTexturePackCount;
+    g_zImage_TexDirEntryCount = oldTexDirEntryCount;
+    for (int index = 0; index < 10; ++index) {
+        g_HudUiMgrMessages[index] = oldMessages[index];
+    }
+    for (int index = 0; index < 4; ++index) {
+        g_HudUiMgrModeCounters[index] = oldModeCounters[index];
+    }
+    if (builtinTexturePack.fileHandle != nullptr) {
+        std::fclose(builtinTexturePack.fileHandle);
+    }
+    return result;
+}
+
+extern "C" int player_destroyed_state_respawn_callback_smoke(void) {
+    zVidTexturePackEntry *const oldBuiltinTexturePacks = g_zVid_BuiltinTexturePacks;
+    const int oldBuiltinTexturePackCount = g_zVid_BuiltinTexturePackCount;
+    const int oldTexDirEntryCount = g_zImage_TexDirEntryCount;
+
+    zClass_Object3D_ModelRefLerpQueue::Reset();
+
+    zUtil_SaveGameState saveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    PlayerMasterCommonData commonData = {};
+    zClass_NodePartial rootNode = {};
+    zClass_NodePartial healthyNode = {};
+    zClass_NodePartial *rootChildren[] = {&healthyNode};
+    zClass_Object3DDataPartial rootData = {};
+    zClass_Object3DDataPartial healthyData = {};
+    saveState.playerState = &playerState;
+    playerState.masterCommonData = &commonData;
+    playerState.rootNode = &rootNode;
+    std::strcpy(rootNode.name, "root");
+    std::strcpy(healthyNode.name, "healthy");
+    rootNode.classId = 5;
+    rootNode.classData = &rootData;
+    rootNode.listCountB = 1;
+    rootNode.listB = rootChildren;
+    healthyNode.classId = 5;
+    healthyNode.classData = &healthyData;
+    healthyNode.flags = 0x01;
+    healthyData.localMatrix[9] = 4.0f;
+    healthyData.localMatrix[10] = 5.0f;
+    healthyData.localMatrix[11] = 6.0f;
+    healthyData.rotation = {7.0f, 8.0f, 9.0f};
+    commonData.maxHealth = 90.0f;
+    playerState.statusMeterValue = 12.0f;
+    playerState.damageProtectionActive = 3;
+    playerState.queuedFixedDamageFlag = 4;
+    playerState.damageVisualFlag = 5;
+    playerState.cachedAltSelectionCode = 201;
+    playerState.cachedPrimarySelectionCode = 100;
+
+    zVidTexturePackEntry builtinTexturePack = {};
+    builtinTexturePack.fileHandle = OpenPlayerBootstrapNullFile();
+    if (builtinTexturePack.fileHandle == nullptr) {
+        g_zVid_BuiltinTexturePacks = oldBuiltinTexturePacks;
+        g_zVid_BuiltinTexturePackCount = oldBuiltinTexturePackCount;
+        g_zImage_TexDirEntryCount = oldTexDirEntryCount;
+        return 2;
+    }
+    g_zVid_BuiltinTexturePacks = &builtinTexturePack;
+    g_zVid_BuiltinTexturePackCount = 1;
+    g_zImage_TexDirEntryCount = 0;
+
+    Player::DestroyedStateRespawnCallback(nullptr, &saveState, 0);
+
+    zClass_Object3D_ModelRefLerpTask *const fadeTask = g_ModelRefLerpQueueState.head;
+    const bool objectOk =
+        (rootData.flags & 0x02) != 0 &&
+        rootData.alphaScale == 0.0f &&
+        g_ModelRefLerpQueueState.count == 1 &&
+        fadeTask != nullptr &&
+        fadeTask->node == &rootNode &&
+        fadeTask->callbackCtx == &saveState &&
+        fadeTask->onComplete == (void *)(&Player::ClearRespawnTransitionFlagCallback) &&
+        fadeTask->currentModelRef == 0.0f &&
+        fadeTask->targetModelRef == 1.0f &&
+        FloatNear(fadeTask->modelRefDeltaPerSec, 0.2f) &&
+        healthyData.localMatrix[9] == 0.0f &&
+        healthyData.localMatrix[10] == 0.0f &&
+        healthyData.localMatrix[11] == 0.0f &&
+        healthyData.rotation.x == 0.0f &&
+        healthyData.rotation.y == 0.0f &&
+        healthyData.rotation.z == 0.0f;
+    const bool stateOk =
+        playerState.damageProtectionActive == 0 &&
+        playerState.queuedFixedDamageFlag == 0 &&
+        playerState.damageVisualFlag == 0 &&
+        playerState.statusMeterValue == 90.0f &&
+        playerState.cachedAltSelectionCode == 0 &&
+        playerState.cachedPrimarySelectionCode == 0;
+
+    const bool ok = objectOk && stateOk;
+    zClass_Object3D_ModelRefLerpQueue::Reset();
+    g_zVid_BuiltinTexturePacks = oldBuiltinTexturePacks;
+    g_zVid_BuiltinTexturePackCount = oldBuiltinTexturePackCount;
+    g_zImage_TexDirEntryCount = oldTexDirEntryCount;
+    return ok ? 0 : 1;
+}
 
 extern "C" int ainet_find_by_net_id_smoke(void) {
     AINet first = {};
@@ -180,6 +1633,198 @@ extern "C" int ainet_find_nearest_node_smoke(void) {
                    ) == 0
                ? 0
                : 1;
+}
+
+extern "C" int checkpoint_update_player_lap_progress_and_notify_net_smoke(void) {
+    const float oldAccumulatedTime = g_Time_AccumulatedTimeSec;
+    const int oldCheckpointCount = g_HudSensorTracker.checkpointCount;
+    zNetwork_DPlay4 *const oldDPlay = g_zNetwork_pDirectPlay4;
+    zNetwork_PlayerRecord *const oldLocalPlayer = g_zNetwork_LocalPlayerRecord;
+    const int oldLocalPlayerKey = g_zNetwork_LocalPlayerKey;
+    const int oldIsHost = g_zNetwork_IsHostFlag;
+
+    void *vtable[52];
+    InitCheckpointDirectPlayVtable(vtable);
+    CheckpointFakeDirectPlay4 dplay = {vtable};
+    zNetwork_PlayerRecord localPlayer = {};
+    localPlayer.playerKey = 0x1234;
+    g_zNetwork_pDirectPlay4 = (zNetwork_DPlay4 *)(&dplay);
+    g_zNetwork_LocalPlayerRecord = &localPlayer;
+    g_zNetwork_LocalPlayerKey = 0x1234;
+    g_zNetwork_IsHostFlag = 0;
+    g_CheckpointNetSendCalls = 0;
+    g_CheckpointNetSendFlags = 0;
+    g_CheckpointNetSendSize = 0;
+    std::memset(
+        g_CheckpointNetPacketBytes,
+        0,
+        sizeof(g_CheckpointNetPacketBytes)
+    );
+
+    zUtil_SaveGameState saveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    saveState.playerState = &playerState;
+    g_HudSensorTracker.checkpointCount = 3;
+
+    PlayerStateFieldAt<int>(playerState, 0x1020) = 1;
+    Checkpoint::UpdatePlayerLapProgressAndNotifyNet(&saveState, 2);
+    if (PlayerStateFieldAt<int>(playerState, 0x1020) != 1 ||
+        g_CheckpointNetSendCalls != 0) {
+        g_Time_AccumulatedTimeSec = oldAccumulatedTime;
+        g_HudSensorTracker.checkpointCount = oldCheckpointCount;
+        g_zNetwork_pDirectPlay4 = oldDPlay;
+        g_zNetwork_LocalPlayerRecord = oldLocalPlayer;
+        g_zNetwork_LocalPlayerKey = oldLocalPlayerKey;
+        g_zNetwork_IsHostFlag = oldIsHost;
+        return 1;
+    }
+
+    Checkpoint::UpdatePlayerLapProgressAndNotifyNet(&saveState, 1);
+    if (PlayerStateFieldAt<int>(playerState, 0x101c) != 1 ||
+        g_CheckpointNetSendCalls != 0) {
+        g_Time_AccumulatedTimeSec = oldAccumulatedTime;
+        g_HudSensorTracker.checkpointCount = oldCheckpointCount;
+        g_zNetwork_pDirectPlay4 = oldDPlay;
+        g_zNetwork_LocalPlayerRecord = oldLocalPlayer;
+        g_zNetwork_LocalPlayerKey = oldLocalPlayerKey;
+        g_zNetwork_IsHostFlag = oldIsHost;
+        return 2;
+    }
+
+    PlayerStateFieldAt<int>(playerState, 0x1020) = 0;
+    Checkpoint::UpdatePlayerLapProgressAndNotifyNet(&saveState, 3);
+    if (PlayerStateFieldAt<int>(playerState, 0x101c) != 0 ||
+        PlayerStateFieldAt<int>(playerState, 0x1020) != 0 ||
+        PlayerStateFieldAt<int>(playerState, 0x1024) != 0 ||
+        g_CheckpointNetSendCalls != 0) {
+        g_Time_AccumulatedTimeSec = oldAccumulatedTime;
+        g_HudSensorTracker.checkpointCount = oldCheckpointCount;
+        g_zNetwork_pDirectPlay4 = oldDPlay;
+        g_zNetwork_LocalPlayerRecord = oldLocalPlayer;
+        g_zNetwork_LocalPlayerKey = oldLocalPlayerKey;
+        g_zNetwork_IsHostFlag = oldIsHost;
+        return 3;
+    }
+
+    PlayerStateFieldAt<int>(playerState, 0x101c) = 1;
+    PlayerStateFieldAt<int>(playerState, 0x1020) = 1;
+    PlayerStateFieldAt<float>(playerState, 0x10a4) = 35.0f;
+    PlayerStateFieldAt<float>(playerState, 0x10a8) = 10.0f;
+    PlayerStateFieldAt<int>(playerState, 0x10ac) = 7;
+    g_Time_AccumulatedTimeSec = 50.0f;
+    Checkpoint::UpdatePlayerLapProgressAndNotifyNet(&saveState, 3);
+
+    const NetPkt0E_PlayerLapProgress *const packet =
+        reinterpret_cast<const NetPkt0E_PlayerLapProgress *>(g_CheckpointNetPacketBytes);
+    const bool ok =
+        PlayerStateFieldAt<int>(playerState, 0x101c) == 0 &&
+        PlayerStateFieldAt<int>(playerState, 0x1020) == 0 &&
+        PlayerStateFieldAt<int>(playerState, 0x1024) == 0 &&
+        FloatNear(PlayerStateFieldAt<float>(playerState, 0x109c), 15.0f) &&
+        FloatNear(PlayerStateFieldAt<float>(playerState, 0x10a0), 40.0f) &&
+        FloatNear(PlayerStateFieldAt<float>(playerState, 0x10a4), 50.0f) &&
+        PlayerStateFieldAt<int>(playerState, 0x10ac) == 8 &&
+        g_CheckpointNetSendCalls == 1 &&
+        g_CheckpointNetSendFlags == 1 &&
+        g_CheckpointNetSendSize == sizeof(NetPkt0E_PlayerLapProgress) &&
+        packet->header.packetType == 0x0e &&
+        packet->header.payloadDword0 == 0x1234 &&
+        packet->lapCountPacked == 8 &&
+        FloatNear(packet->lapTimeSec, 40.0f);
+
+    g_Time_AccumulatedTimeSec = oldAccumulatedTime;
+    g_HudSensorTracker.checkpointCount = oldCheckpointCount;
+    g_zNetwork_pDirectPlay4 = oldDPlay;
+    g_zNetwork_LocalPlayerRecord = oldLocalPlayer;
+    g_zNetwork_LocalPlayerKey = oldLocalPlayerKey;
+    g_zNetwork_IsHostFlag = oldIsHost;
+    return ok ? 0 : 4;
+}
+
+extern "C" int checkpoint_instantiate_named_objects_smoke(void) {
+    const int oldCheckpointCount = g_HudSensorTracker.checkpointCount;
+    zClass_TypeListLink *const oldType6Head = zClass_TypeList::Head(6);
+    zClass_TypeListLink *const oldType6Tail = zClass_TypeList::Tail(6);
+
+    zClass_NodePartial checkpoint1 = {};
+    zClass_NodePartial checkpoint2 = {};
+    zClass_NodePartial child = {};
+    zClass_NodePartial grandchild = {};
+    zClass_NodePartial unrelated = {};
+    zClass_NodePartial *checkpoint2Children[] = {&child};
+    zClass_NodePartial *childChildren[] = {&grandchild};
+    zClass_TypeListLink checkpoint1Link = {&checkpoint1, nullptr, nullptr, 0};
+    zClass_TypeListLink checkpoint2Link = {&checkpoint2, &checkpoint1Link, nullptr, 0};
+    zClass_TypeListLink unrelatedLink = {&unrelated, &checkpoint2Link, nullptr, 0};
+
+    std::strcpy(checkpoint1.name, "checkpoint1");
+    std::strcpy(checkpoint2.name, "checkpoint2");
+    std::strcpy(unrelated.name, "checkpoint4");
+    checkpoint2.listCountB = 1;
+    checkpoint2.listB = checkpoint2Children;
+    child.listCountB = 1;
+    child.listB = childChildren;
+
+    checkpoint1Link.next = &checkpoint2Link;
+    checkpoint2Link.next = &unrelatedLink;
+    zClass_TypeList::Head(6) = &checkpoint1Link;
+    zClass_TypeList::Tail(6) = &unrelatedLink;
+    g_HudSensorTracker.checkpointCount = 3;
+
+    Checkpoint::InstantiateNamedObjects();
+
+    const bool checkpoint1Ok =
+        checkpoint1.auxFlags == 2 &&
+        (checkpoint1.flags & 0x40000) != 0 &&
+        checkpoint1.callbackContext == &checkpoint1 &&
+        (checkpoint1.flags & 0x200000) != 0;
+    const bool checkpoint2Ok =
+        checkpoint2.auxFlags == 2 &&
+        child.auxFlags == 2 &&
+        grandchild.auxFlags == 2 &&
+        (checkpoint2.flags & 0x40000) != 0 &&
+        (child.flags & 0x40000) != 0 &&
+        (grandchild.flags & 0x40000) != 0 &&
+        checkpoint2.callbackContext == &checkpoint2 &&
+        child.callbackContext == &checkpoint2 &&
+        grandchild.callbackContext == &checkpoint2 &&
+        (checkpoint2.flags & 0x200000) != 0 &&
+        (child.flags & 0x200000) != 0 &&
+        (grandchild.flags & 0x200000) != 0;
+    const bool unrelatedOk =
+        unrelated.auxFlags == 0 &&
+        unrelated.flags == 0 &&
+        unrelated.callbackContext == nullptr;
+
+    g_HudSensorTracker.checkpointCount = oldCheckpointCount;
+    zClass_TypeList::Head(6) = oldType6Head;
+    zClass_TypeList::Tail(6) = oldType6Tail;
+    return checkpoint1Ok && checkpoint2Ok && unrelatedOk ? 0 : 1;
+}
+
+extern "C" int player_ai_discard_negative_branch_nodes_smoke(void) {
+    zUtil_SaveGameState saveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    AINetNode *const negativeA = static_cast<AINetNode *>(std::calloc(1, sizeof(AINetNode)));
+    AINetNode *const negativeB = static_cast<AINetNode *>(std::calloc(1, sizeof(AINetNode)));
+    AINetNode positive = {};
+
+    if (negativeA == 0 || negativeB == 0) {
+        std::free(negativeA);
+        std::free(negativeB);
+        return 1;
+    }
+
+    negativeA->nodeIndex = -2;
+    negativeB->nodeIndex = -1;
+    positive.nodeIndex = 3;
+    negativeA->neighborNodes[0] = negativeB;
+    negativeB->neighborNodes[0] = &positive;
+    playerState.aiCurrentPathNode = negativeA;
+    saveState.playerState = &playerState;
+
+    Player::AiDiscardNegativeBranchPathNodes(&saveState);
+    return playerState.aiCurrentPathNode == &positive ? 0 : 1;
 }
 
 extern "C" int player_get_save_state_list_head_smoke(void) {
@@ -2221,6 +3866,346 @@ extern "C" int player_create_from_names_at_pose_smoke(void) {
     return result;
 }
 
+extern "C" int player_init_mission_runtime_missing_aiv_smoke(void) {
+    zUtil_SaveGameState *const oldSaveHead = g_PlayerSaveStateListHead;
+    zUtil_SaveGameState *const oldSaveTail = g_PlayerSaveStateListTail;
+    const int oldSaveAux = g_PlayerSaveStateListAux;
+    const int oldSaveCount = g_PlayerSaveStateCount;
+    zUtil_SaveGameState *const oldPlayer2SaveState = g_Player2SaveState;
+    zUtil_SaveGameState *const oldLocalSaveState = g_LocalPlayerSaveState;
+    zUtil_SaveGameState *const oldCurrentSaveState = g_CurrentPlayerSaveState;
+    zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
+    PlayerMasterCommonData *const oldCommonHead = g_PlayerMasterCommonDataHead;
+    PlayerMasterCommonData *const oldCommonTail = g_PlayerMasterCommonDataTail;
+    const int oldCommonAux = g_PlayerMasterCommonDataListAux;
+    const int oldCommonCount = g_PlayerMasterCommonDataCount;
+    PlayerMasterModalData *const oldModalHead = g_PlayerMasterModalDataHead;
+    PlayerMasterModalData *const oldModalTail = g_PlayerMasterModalDataTail;
+    const int oldModalAux = g_PlayerMasterModalDataListAux;
+    const int oldModalCount = g_PlayerMasterModalDataCount;
+    const int oldMissionInitFirstRun = g_Player_MissionInitFirstRunFlag;
+    HudUiTextStack4 *const oldTopStack = g_HudUiTopMessageStack;
+    const HudUiPanel oldTopPanel1 = g_Player_TopMsgPanel1;
+    const HudUiPanel oldTopPanel2 = g_Player_TopMsgPanel2;
+    const Player_UnderwaterFxPass3Ui oldUnderwaterFxPass3Ui =
+        g_Player_UnderwaterFxPass3Ui;
+    const Player_ProjectileCameraFxPass3Ui oldState7FxPass3Ui =
+        g_Player_State7FxPass3Ui;
+    HudUiContainer *const fxContainer =
+        reinterpret_cast<HudUiContainer *>(&g_zVideo_FxPass3ConfigLocal);
+    const HudUiContainer oldFxContainer = *fxContainer;
+    zClass_NodePartial *const oldRuntimeScene = g_Player_RuntimeDiScene;
+    zClass_NodePartial *const oldMainCamera = g_MainCamera;
+    zClass_NodePartial *const oldHorizonNode = g_Player_HorizonNode;
+    const int oldHorizonEnabled = g_Player_HorizonNodeFollowCameraEnabled;
+    const int oldRuntimeInputFlags = g_Player_RuntimeInputFlags;
+    const int oldLocalControlEnabled = g_Player_LocalControlEnabled;
+    const int oldNextOrdinal = g_Player_NextOrdinal;
+    const float oldAccumulatedTime = g_Time_AccumulatedTimeSec;
+    const float oldTotalTime = g_Player_TotalTimeSecScaled;
+    const float oldCameraZone = g_Player_CameraZone;
+    const float oldCameraZoneInvRange = g_Player_CameraZoneInvRange;
+    const float oldNominalGravity = g_Player_NominalGravity;
+    const float oldStatusMeterRatio = g_PlayerStatusMeterRatio;
+    zClass_NodeFreeListSlot *const oldNodeArray = g_zClass_NodeArray;
+    const int oldFreeHead = g_zClass_NodeFreeHeadIndex;
+    const int oldActiveNodeCount = g_zClass_ActiveNodeCount;
+    zClass_TypeListLink *const oldFreeLinkHead = g_zClass_TypeList_FreeLinkHead;
+    zClass_TypeListLink *const oldPendingFreeHead = g_zClass_NodeList_PendingFreeHead;
+    const int oldDeferredProcessing = g_zClass_DeferredProcessingEnabled;
+    const int oldLiveLinkCount = g_zClass_TypeList_LiveLinkCount;
+    const int oldPeakLiveLinkCount = g_zClass_TypeList_PeakLiveLinkCount;
+    zClass_NodePartial *const oldHudWorldNode = g_HudSensorTracker.worldNode;
+    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    int *const oldGameControlOptions = ZOPT_GAME_CONTROL_OPTIONS;
+    int *const oldDifficultyOption = g_zOpt_GameDifficultyOption;
+    zArchiveList *const oldMountedList = g_zArchive_MountedList;
+    zClass_TypeListLink *oldTypeHeads[16] = {};
+    zClass_TypeListLink *oldTypeTails[16] = {};
+    int oldTypeDirty[16] = {};
+    for (int i = 0; i < 16; ++i) {
+        oldTypeHeads[i] = zClass_TypeList::Head(i);
+        oldTypeTails[i] = zClass_TypeList::Tail(i);
+        oldTypeDirty[i] = zClass_TypeList::PendingRemovalDirty(i);
+        zClass_TypeList::Head(i) = nullptr;
+        zClass_TypeList::Tail(i) = nullptr;
+        zClass_TypeList::PendingRemovalDirty(i) = 0;
+    }
+
+    char tempPath[MAX_PATH] = {};
+    char tempFile[MAX_PATH] = {};
+    if (
+        GetTempPathA(sizeof(tempPath), tempPath) == 0 ||
+        GetTempFileNameA(tempPath, "pim", 0, tempFile) == 0
+    ) {
+        return 1;
+    }
+
+    zReader::Node playerRoot = {};
+    zReader::Node playerItems[3] = {};
+    zReader::Node cameraZoneItems[2] = {};
+    MakeAinetReaderArrayNode(playerRoot, playerItems, 3);
+    MakeAinetReaderStringNode(playerItems[1], "camera_zone");
+    MakeAinetReaderArrayNode(playerItems[2], cameraZoneItems, 2);
+    MakeAinetReaderFloatNode(cameraZoneItems[1], 0.75f);
+
+    zReader::Node vehicleRoot = {};
+    zReader::Node vehicleItems[3] = {};
+    zReader::Node stealthItems[5] = {};
+    zReader::Node commonItems[1] = {};
+    zReader::Node modalItems[3] = {};
+    zReader::Node modeItems[2] = {};
+    MakeAinetReaderArrayNode(vehicleRoot, vehicleItems, 3);
+    MakeAinetReaderStringNode(vehicleItems[1], "stealth");
+    MakeAinetReaderArrayNode(vehicleItems[2], stealthItems, 5);
+    MakeAinetReaderStringNode(stealthItems[1], "common_mode");
+    MakeAinetReaderArrayNode(stealthItems[2], commonItems, 1);
+    MakeAinetReaderStringNode(stealthItems[3], "basic");
+    MakeAinetReaderArrayNode(stealthItems[4], modalItems, 3);
+    MakeAinetReaderStringNode(modalItems[1], "mode");
+    MakeAinetReaderArrayNode(modalItems[2], modeItems, 2);
+    MakeAinetReaderStringNode(modeItems[1], "basic");
+
+    const AinetZrdArchiveEntry entries[] = {
+        {"player.zrd", &playerRoot},
+        {"vehicle.zrd", &vehicleRoot},
+    };
+    zIndexArchive archive = {};
+    zZarFileRecord records[2] = {};
+    zArchiveListNode archiveNode = {};
+    zArchiveList archiveList = {};
+    if (
+        !MountAinetZrdArchive(
+            tempFile,
+            entries,
+            2,
+            archive,
+            records,
+            archiveNode,
+            archiveList
+        )
+    ) {
+        return 2;
+    }
+
+    HudUiTopMessageStack topStack = {};
+    topStack.Constructor();
+    HudUiElement *const oldTopStackTail = topStack.childTail;
+    g_HudUiTopMessageStack = &topStack;
+    Player_TopMsgPanel1::Constructor();
+    Player_TopMsgPanel2::Constructor();
+    g_Player_UnderwaterFxPass3Ui.Constructor();
+    g_Player_State7FxPass3Ui.Constructor();
+    *fxContainer = {};
+
+    zClass_NodePartial worldNode = {};
+    zClass_WorldDataPartial worldData = {};
+    worldNode.classId = 2;
+    worldNode.classData = &worldData;
+    zClass_NodePartial cameraNode = {};
+    zClass_CameraDataPartial cameraData = {};
+    cameraNode.classId = 1;
+    cameraNode.classData = &cameraData;
+    cameraData.frustumWidth = 1.25f;
+    cameraData.frustumHeight = 0.75f;
+
+    zClass_NodeFreeListSlot slots[8] = {};
+    for (int i = 0; i < 7; ++i) {
+        slots[i].freeTag = i + 1;
+    }
+    slots[7].freeTag = 0x00ffffff;
+    g_zClass_NodeArray = slots;
+    g_zClass_NodeFreeHeadIndex = 0;
+    g_zClass_ActiveNodeCount = 0;
+    g_zClass_TypeList_FreeLinkHead = nullptr;
+    g_zClass_NodeList_PendingFreeHead = nullptr;
+    g_zClass_DeferredProcessingEnabled = 1;
+    g_zClass_TypeList_LiveLinkCount = 0;
+    g_zClass_TypeList_PeakLiveLinkCount = 0;
+
+    int networkEnabled = 1;
+    int gameControlOptions = 0;
+    int difficultyOption = 1;
+    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    ZOPT_GAME_CONTROL_OPTIONS = &gameControlOptions;
+    g_zOpt_GameDifficultyOption = &difficultyOption;
+    g_PlayerSaveStateListHead = nullptr;
+    g_PlayerSaveStateListTail = nullptr;
+    g_PlayerSaveStateListAux = 0;
+    g_PlayerSaveStateCount = 0;
+    g_Player2SaveState = nullptr;
+    g_LocalPlayerSaveState = nullptr;
+    g_CurrentPlayerSaveState = nullptr;
+    g_GameStateOrMapTable = nullptr;
+    g_PlayerMasterCommonDataHead = nullptr;
+    g_PlayerMasterCommonDataTail = nullptr;
+    g_PlayerMasterCommonDataListAux = 0;
+    g_PlayerMasterCommonDataCount = 0;
+    g_PlayerMasterModalDataHead = nullptr;
+    g_PlayerMasterModalDataTail = nullptr;
+    g_PlayerMasterModalDataListAux = 0;
+    g_PlayerMasterModalDataCount = 0;
+    g_Player_MissionInitFirstRunFlag = 1;
+    g_Player_HorizonNode = nullptr;
+    g_Player_HorizonNodeFollowCameraEnabled = 0;
+    g_Player_RuntimeInputFlags = 0;
+    g_Player_LocalControlEnabled = 0;
+    g_Player_NextOrdinal = 1;
+    g_Time_AccumulatedTimeSec = 9.5f;
+    g_Player_TotalTimeSecScaled = 9.5f;
+    g_Player_CameraZone = 0.5f;
+    g_Player_CameraZoneInvRange = 2.0f;
+    g_Player_NominalGravity = 0.0f;
+    g_PlayerStatusMeterRatio = 0.0f;
+    g_HudSensorTracker.worldNode = &worldNode;
+    Player::InitMissionRuntimeFromWorldAndCamera(&worldNode, &cameraNode);
+
+    zUtil_SaveGameState *const stealthSave = g_Player2SaveState;
+    zUtil_PlayerStateStorage *const stealthState =
+        stealthSave != nullptr ? stealthSave->playerState : nullptr;
+    PlayerMasterCommonData *const commonData = g_PlayerMasterCommonDataHead;
+    PlayerMasterModalData *const modalData = g_PlayerMasterModalDataHead;
+
+    int result = 0;
+    if (
+        g_Player_MissionInitFirstRunFlag != 0 ||
+        oldTopStackTail == nullptr ||
+        oldTopStackTail->next != reinterpret_cast<HudUiElement *>(&g_Player_TopMsgPanel1) ||
+        reinterpret_cast<HudUiElement *>(&g_Player_TopMsgPanel1)->next !=
+            reinterpret_cast<HudUiElement *>(&g_Player_TopMsgPanel2) ||
+        topStack.childTail != reinterpret_cast<HudUiElement *>(&g_Player_TopMsgPanel2)
+    ) {
+        result = 3;
+    } else if (
+        g_Player_RuntimeDiScene != &worldNode ||
+        g_MainCamera != &cameraNode ||
+        cameraData.posOffset.x != 0.0f ||
+        cameraData.posOffset.y != 0.0f ||
+        cameraData.posOffset.z != 0.0f ||
+        cameraData.targetOrEuler.x != 0.0f ||
+        cameraData.targetOrEuler.y != 0.0f ||
+        cameraData.targetOrEuler.z != 0.0f
+    ) {
+        result = 4;
+    } else if (
+        (reinterpret_cast<HudUiElement *>(&g_Player_TopMsgPanel1)->flags & 0x10) == 0 ||
+        (reinterpret_cast<HudUiElement *>(&g_Player_TopMsgPanel2)->flags & 0x10) == 0 ||
+        (reinterpret_cast<HudUiElement *>(&g_Player_UnderwaterFxPass3Ui)->flags & 0x10) == 0 ||
+        (reinterpret_cast<HudUiElement *>(&g_Player_State7FxPass3Ui)->flags & 0x10) == 0
+    ) {
+        result = 5;
+    } else if (
+        g_Player_LocalControlEnabled != 1 ||
+        g_Player_RuntimeInputFlags != 3 ||
+        !FloatNear(g_Player_TotalTimeSecScaled, 9.5f) ||
+        !FloatNear(g_Player_CameraZone, 0.75f) ||
+        !FloatNear(g_Player_CameraZoneInvRange, 4.0f) ||
+        !FloatNear(g_Player_NominalGravity, 28.0f) ||
+        !FloatNear(g_PlayerStatusMeterRatio, 1.0f)
+    ) {
+        result = 6;
+    } else if (
+        commonData == nullptr ||
+        modalData == nullptr ||
+        g_PlayerMasterCommonDataCount != 1 ||
+        g_PlayerMasterModalDataCount != 1 ||
+        std::strcmp(commonData->vehicleName, "stealth") != 0 ||
+        commonData->modalCount != 1 ||
+        std::strcmp(modalData->modalName, "stealth") != 0 ||
+        std::strcmp(modalData->modeName, "basic") != 0
+    ) {
+        result = 7;
+    } else if (
+        stealthSave == nullptr ||
+        stealthSave != g_PlayerSaveStateListHead ||
+        stealthState == nullptr ||
+        stealthState->rootNode == nullptr ||
+        std::strcmp(stealthState->rootNode->name, "Stealth") != 0 ||
+        stealthState->lifecycleState != 4 ||
+        stealthState->cameraState != 3 ||
+        !FloatNear(stealthState->worldPos.x, 500.0f) ||
+        !FloatNear(stealthState->worldPos.y, 50.0f) ||
+        !FloatNear(stealthState->worldPos.z, 500.0f)
+    ) {
+        result = 8;
+    } else if (
+        g_LocalPlayerSaveState != nullptr ||
+        g_CurrentPlayerSaveState != nullptr ||
+        g_PlayerSaveStateCount != 1 ||
+        g_GameStateOrMapTable !=
+            reinterpret_cast<zInput_GameStateOrMapTablePartial *>(stealthSave)
+    ) {
+        result = 9;
+    }
+
+    Player::ShutdownMissionRuntime();
+    for (int i = 0; i < 8; ++i) {
+        std::free(slots[i].node.classData);
+        slots[i].node.classData = nullptr;
+    }
+    if (archive.hFile != INVALID_HANDLE_VALUE && archive.hFile != nullptr) {
+        CloseHandle(archive.hFile);
+    }
+    DeleteFileA(tempFile);
+
+    g_PlayerSaveStateListHead = oldSaveHead;
+    g_PlayerSaveStateListTail = oldSaveTail;
+    g_PlayerSaveStateListAux = oldSaveAux;
+    g_PlayerSaveStateCount = oldSaveCount;
+    g_Player2SaveState = oldPlayer2SaveState;
+    g_LocalPlayerSaveState = oldLocalSaveState;
+    g_CurrentPlayerSaveState = oldCurrentSaveState;
+    g_GameStateOrMapTable = oldGameState;
+    g_PlayerMasterCommonDataHead = oldCommonHead;
+    g_PlayerMasterCommonDataTail = oldCommonTail;
+    g_PlayerMasterCommonDataListAux = oldCommonAux;
+    g_PlayerMasterCommonDataCount = oldCommonCount;
+    g_PlayerMasterModalDataHead = oldModalHead;
+    g_PlayerMasterModalDataTail = oldModalTail;
+    g_PlayerMasterModalDataListAux = oldModalAux;
+    g_PlayerMasterModalDataCount = oldModalCount;
+    g_Player_MissionInitFirstRunFlag = oldMissionInitFirstRun;
+    g_HudUiTopMessageStack = oldTopStack;
+    g_Player_TopMsgPanel1 = oldTopPanel1;
+    g_Player_TopMsgPanel2 = oldTopPanel2;
+    g_Player_UnderwaterFxPass3Ui = oldUnderwaterFxPass3Ui;
+    g_Player_State7FxPass3Ui = oldState7FxPass3Ui;
+    *fxContainer = oldFxContainer;
+    g_Player_RuntimeDiScene = oldRuntimeScene;
+    g_MainCamera = oldMainCamera;
+    g_Player_HorizonNode = oldHorizonNode;
+    g_Player_HorizonNodeFollowCameraEnabled = oldHorizonEnabled;
+    g_Player_RuntimeInputFlags = oldRuntimeInputFlags;
+    g_Player_LocalControlEnabled = oldLocalControlEnabled;
+    g_Player_NextOrdinal = oldNextOrdinal;
+    g_Time_AccumulatedTimeSec = oldAccumulatedTime;
+    g_Player_TotalTimeSecScaled = oldTotalTime;
+    g_Player_CameraZone = oldCameraZone;
+    g_Player_CameraZoneInvRange = oldCameraZoneInvRange;
+    g_Player_NominalGravity = oldNominalGravity;
+    g_PlayerStatusMeterRatio = oldStatusMeterRatio;
+    g_zClass_NodeArray = oldNodeArray;
+    g_zClass_NodeFreeHeadIndex = oldFreeHead;
+    g_zClass_ActiveNodeCount = oldActiveNodeCount;
+    g_zClass_TypeList_FreeLinkHead = oldFreeLinkHead;
+    g_zClass_NodeList_PendingFreeHead = oldPendingFreeHead;
+    g_zClass_DeferredProcessingEnabled = oldDeferredProcessing;
+    g_zClass_TypeList_LiveLinkCount = oldLiveLinkCount;
+    g_zClass_TypeList_PeakLiveLinkCount = oldPeakLiveLinkCount;
+    g_HudSensorTracker.worldNode = oldHudWorldNode;
+    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    ZOPT_GAME_CONTROL_OPTIONS = oldGameControlOptions;
+    g_zOpt_GameDifficultyOption = oldDifficultyOption;
+    g_zArchive_MountedList = oldMountedList;
+    for (int i = 0; i < 16; ++i) {
+        zClass_TypeList::Head(i) = oldTypeHeads[i];
+        zClass_TypeList::Tail(i) = oldTypeTails[i];
+        zClass_TypeList::PendingRemovalDirty(i) = oldTypeDirty[i];
+    }
+
+    return result;
+}
+
 extern "C" int player_mgr_tick_all_players_smoke(void) {
     zUtil_SaveGameState *const oldHead = g_PlayerSaveStateListHead;
     zUtil_SaveGameState *const oldLocalSaveState = g_LocalPlayerSaveState;
@@ -2308,4 +4293,403 @@ extern "C" int player_mgr_tick_all_players_smoke(void) {
         return 1;
     }
     return inactiveAiOk ? 0 : 2;
+}
+
+extern "C" int player_node_flag_restore_init_globals_smoke(void) {
+    const unsigned char oldProxy = g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy;
+    PlayerNodeFlagRestoreEntry *const oldBegin = g_PlayerNodeFlagRestoreEntriesBegin;
+    PlayerNodeFlagRestoreEntry *const oldEnd = g_PlayerNodeFlagRestoreEntriesEnd;
+    PlayerNodeFlagRestoreEntry *const oldCapacityEnd = g_PlayerNodeFlagRestoreEntriesCapacityEnd;
+
+    PlayerNodeFlagRestoreEntry sentinels[2] = {};
+    g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy = 0x5a;
+    g_PlayerNodeFlagRestoreEntriesBegin = sentinels;
+    g_PlayerNodeFlagRestoreEntriesEnd = sentinels + 1;
+    g_PlayerNodeFlagRestoreEntriesCapacityEnd = sentinels + 2;
+
+    PlayerNodeFlagRestore::InitGlobals();
+
+    const bool clearedOk =
+        g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy == 0 &&
+        g_PlayerNodeFlagRestoreEntriesBegin == 0 &&
+        g_PlayerNodeFlagRestoreEntriesEnd == 0 &&
+        g_PlayerNodeFlagRestoreEntriesCapacityEnd == 0;
+
+    atexit(ClearPlayerNodeFlagRestoreGlobalsAtExit);
+    g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy = oldProxy;
+    g_PlayerNodeFlagRestoreEntriesBegin = oldBegin;
+    g_PlayerNodeFlagRestoreEntriesEnd = oldEnd;
+    g_PlayerNodeFlagRestoreEntriesCapacityEnd = oldCapacityEnd;
+
+    return clearedOk ? 0 : 1;
+}
+
+extern "C" int player_node_flag_restore_init_instance_smoke(void) {
+    const unsigned char oldProxy = g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy;
+    PlayerNodeFlagRestoreEntry *const oldBegin = g_PlayerNodeFlagRestoreEntriesBegin;
+    PlayerNodeFlagRestoreEntry *const oldEnd = g_PlayerNodeFlagRestoreEntriesEnd;
+    PlayerNodeFlagRestoreEntry *const oldCapacityEnd = g_PlayerNodeFlagRestoreEntriesCapacityEnd;
+
+    PlayerNodeFlagRestoreEntry sentinels[2] = {};
+    g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy = 0x5a;
+    g_PlayerNodeFlagRestoreEntriesBegin = sentinels;
+    g_PlayerNodeFlagRestoreEntriesEnd = sentinels + 1;
+    g_PlayerNodeFlagRestoreEntriesCapacityEnd = sentinels + 2;
+
+    PlayerNodeFlagRestore::InitInstance();
+
+    const bool clearedOk =
+        g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy == 0 &&
+        g_PlayerNodeFlagRestoreEntriesBegin == 0 &&
+        g_PlayerNodeFlagRestoreEntriesEnd == 0 &&
+        g_PlayerNodeFlagRestoreEntriesCapacityEnd == 0;
+
+    g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy = oldProxy;
+    g_PlayerNodeFlagRestoreEntriesBegin = oldBegin;
+    g_PlayerNodeFlagRestoreEntriesEnd = oldEnd;
+    g_PlayerNodeFlagRestoreEntriesCapacityEnd = oldCapacityEnd;
+
+    return clearedOk ? 0 : 1;
+}
+
+extern "C" int player_node_flag_restore_register_at_exit_smoke(void) {
+    const unsigned char oldProxy = g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy;
+    PlayerNodeFlagRestoreEntry *const oldBegin = g_PlayerNodeFlagRestoreEntriesBegin;
+    PlayerNodeFlagRestoreEntry *const oldEnd = g_PlayerNodeFlagRestoreEntriesEnd;
+    PlayerNodeFlagRestoreEntry *const oldCapacityEnd = g_PlayerNodeFlagRestoreEntriesCapacityEnd;
+
+    PlayerNodeFlagRestoreEntry sentinels[2] = {};
+    g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy = 0x5a;
+    g_PlayerNodeFlagRestoreEntriesBegin = sentinels;
+    g_PlayerNodeFlagRestoreEntriesEnd = sentinels + 1;
+    g_PlayerNodeFlagRestoreEntriesCapacityEnd = sentinels + 2;
+
+    PlayerNodeFlagRestore::RegisterAtExit();
+
+    const bool unchangedOk =
+        g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy == 0x5a &&
+        g_PlayerNodeFlagRestoreEntriesBegin == sentinels &&
+        g_PlayerNodeFlagRestoreEntriesEnd == sentinels + 1 &&
+        g_PlayerNodeFlagRestoreEntriesCapacityEnd == sentinels + 2;
+
+    atexit(ClearPlayerNodeFlagRestoreGlobalsAtExit);
+    g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy = oldProxy;
+    g_PlayerNodeFlagRestoreEntriesBegin = oldBegin;
+    g_PlayerNodeFlagRestoreEntriesEnd = oldEnd;
+    g_PlayerNodeFlagRestoreEntriesCapacityEnd = oldCapacityEnd;
+
+    return unchangedOk ? 0 : 1;
+}
+
+extern "C" int player_node_flag_restore_shutdown_instance_smoke(void) {
+    const unsigned char oldProxy = g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy;
+    PlayerNodeFlagRestoreEntry *const oldBegin = g_PlayerNodeFlagRestoreEntriesBegin;
+    PlayerNodeFlagRestoreEntry *const oldEnd = g_PlayerNodeFlagRestoreEntriesEnd;
+    PlayerNodeFlagRestoreEntry *const oldCapacityEnd = g_PlayerNodeFlagRestoreEntriesCapacityEnd;
+
+    PlayerNodeFlagRestoreEntry *const testBegin = (PlayerNodeFlagRestoreEntry *)(::operator new(
+        sizeof(PlayerNodeFlagRestoreEntry) * 2
+    ));
+    g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy = 0x5a;
+    g_PlayerNodeFlagRestoreEntriesBegin = testBegin;
+    g_PlayerNodeFlagRestoreEntriesEnd = testBegin + 1;
+    g_PlayerNodeFlagRestoreEntriesCapacityEnd = testBegin + 2;
+
+    PlayerNodeFlagRestore::ShutdownInstance();
+
+    const bool clearedOk =
+        g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy == 0x5a &&
+        g_PlayerNodeFlagRestoreEntriesBegin == 0 &&
+        g_PlayerNodeFlagRestoreEntriesEnd == 0 &&
+        g_PlayerNodeFlagRestoreEntriesCapacityEnd == 0;
+
+    g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy = oldProxy;
+    g_PlayerNodeFlagRestoreEntriesBegin = oldBegin;
+    g_PlayerNodeFlagRestoreEntriesEnd = oldEnd;
+    g_PlayerNodeFlagRestoreEntriesCapacityEnd = oldCapacityEnd;
+
+    return clearedOk ? 0 : 1;
+}
+
+extern "C" int player_restore_recorded_node_flags_smoke(void) {
+    const unsigned char oldProxy = g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy;
+    PlayerNodeFlagRestoreEntry *const oldBegin = g_PlayerNodeFlagRestoreEntriesBegin;
+    PlayerNodeFlagRestoreEntry *const oldEnd = g_PlayerNodeFlagRestoreEntriesEnd;
+    PlayerNodeFlagRestoreEntry *const oldCapacityEnd = g_PlayerNodeFlagRestoreEntriesCapacityEnd;
+
+    zClass_NodePartial untouchedNode = {};
+    zClass_NodePartial allFlagsNode = {};
+    zClass_NodePartial raycastOnlyNode = {};
+    raycastOnlyNode.flags = 0x20;
+
+    PlayerNodeFlagRestoreEntry entries[3] = {};
+    entries[0].node = &untouchedNode;
+    entries[0].wasCellPickable = 0;
+    entries[0].wasRaycastable = 0;
+    entries[0].wasPickable = 0;
+    entries[1].node = &allFlagsNode;
+    entries[1].wasCellPickable = 1;
+    entries[1].wasRaycastable = 1;
+    entries[1].wasPickable = 1;
+    entries[2].node = &raycastOnlyNode;
+    entries[2].wasCellPickable = 0;
+    entries[2].wasRaycastable = 1;
+    entries[2].wasPickable = 0;
+
+    g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy = 0;
+    g_PlayerNodeFlagRestoreEntriesBegin = entries;
+    g_PlayerNodeFlagRestoreEntriesEnd = entries + 3;
+    g_PlayerNodeFlagRestoreEntriesCapacityEnd = entries + 3;
+
+    Player::RestoreRecordedNodeFlags();
+
+    const bool flagsOk =
+        untouchedNode.flags == 0 &&
+        (allFlagsNode.flags & 0x38) == 0x38 &&
+        (raycastOnlyNode.flags & 0x10) != 0 &&
+        (raycastOnlyNode.flags & 0x08) == 0 &&
+        (raycastOnlyNode.flags & 0x20) != 0;
+
+    g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy = oldProxy;
+    g_PlayerNodeFlagRestoreEntriesBegin = oldBegin;
+    g_PlayerNodeFlagRestoreEntriesEnd = oldEnd;
+    g_PlayerNodeFlagRestoreEntriesCapacityEnd = oldCapacityEnd;
+
+    return flagsOk ? 0 : 1;
+}
+
+extern "C" int player_record_node_flags_for_restore_smoke(void) {
+    const unsigned char oldProxy = g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy;
+    PlayerNodeFlagRestoreEntry *const oldBegin = g_PlayerNodeFlagRestoreEntriesBegin;
+    PlayerNodeFlagRestoreEntry *const oldEnd = g_PlayerNodeFlagRestoreEntriesEnd;
+    PlayerNodeFlagRestoreEntry *const oldCapacityEnd = g_PlayerNodeFlagRestoreEntriesCapacityEnd;
+
+    g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy = 0;
+    g_PlayerNodeFlagRestoreEntriesBegin = nullptr;
+    g_PlayerNodeFlagRestoreEntriesEnd = nullptr;
+    g_PlayerNodeFlagRestoreEntriesCapacityEnd = nullptr;
+
+    zClass_NodePartial firstNode = {};
+    zClass_NodePartial secondNode = {};
+    zClass_NodePartial thirdNode = {};
+    firstNode.flags = 0x08 | 0x20;
+    secondNode.flags = 0x10;
+    thirdNode.flags = 0x08 | 0x10 | 0x20;
+
+    Player::RecordNodeFlagsForRestore(&firstNode);
+    const bool firstGrowthOk =
+        g_PlayerNodeFlagRestoreEntriesBegin != nullptr &&
+        g_PlayerNodeFlagRestoreEntriesEnd == g_PlayerNodeFlagRestoreEntriesBegin + 1 &&
+        g_PlayerNodeFlagRestoreEntriesCapacityEnd == g_PlayerNodeFlagRestoreEntriesBegin + 1;
+
+    Player::RecordNodeFlagsForRestore(&secondNode);
+    const bool secondGrowthOk =
+        g_PlayerNodeFlagRestoreEntriesEnd == g_PlayerNodeFlagRestoreEntriesBegin + 2 &&
+        g_PlayerNodeFlagRestoreEntriesCapacityEnd == g_PlayerNodeFlagRestoreEntriesBegin + 2;
+
+    Player::RecordNodeFlagsForRestore(&thirdNode);
+    PlayerNodeFlagRestoreEntry *const testBegin = g_PlayerNodeFlagRestoreEntriesBegin;
+    const bool thirdGrowthOk =
+        g_PlayerNodeFlagRestoreEntriesEnd == testBegin + 3 &&
+        g_PlayerNodeFlagRestoreEntriesCapacityEnd == testBegin + 4;
+
+    const bool entriesOk =
+        testBegin != nullptr &&
+        testBegin[0].node == &firstNode &&
+        testBegin[0].wasCellPickable == 1 &&
+        testBegin[0].wasRaycastable == 0 &&
+        testBegin[0].wasPickable == 1 &&
+        testBegin[1].node == &secondNode &&
+        testBegin[1].wasCellPickable == 0 &&
+        testBegin[1].wasRaycastable == 1 &&
+        testBegin[1].wasPickable == 0 &&
+        testBegin[2].node == &thirdNode &&
+        testBegin[2].wasCellPickable == 1 &&
+        testBegin[2].wasRaycastable == 1 &&
+        testBegin[2].wasPickable == 1;
+
+    ::operator delete(testBegin);
+    g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy = oldProxy;
+    g_PlayerNodeFlagRestoreEntriesBegin = oldBegin;
+    g_PlayerNodeFlagRestoreEntriesEnd = oldEnd;
+    g_PlayerNodeFlagRestoreEntriesCapacityEnd = oldCapacityEnd;
+
+    if (!firstGrowthOk) {
+        return 1;
+    }
+    if (!secondGrowthOk) {
+        return 2;
+    }
+    if (!thirdGrowthOk) {
+        return 3;
+    }
+    return entriesOk ? 0 : 4;
+}
+
+extern "C" int player_ai_restore_saved_top_level_state_smoke(void) {
+    zUtil_SaveGameState saveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    saveState.playerState = &playerState;
+    playerState.aiTopLevelState = 1;
+    playerState.aiSavedTopLevelState = 7;
+
+    Player::AiRestoreSavedTopLevelState(&saveState);
+
+    return playerState.aiTopLevelState == 7 &&
+                   playerState.aiSavedTopLevelState == 7
+               ? 0
+               : 1;
+}
+
+extern "C" int player_ai_finalize_mode2_state1_for_all_players_smoke(void) {
+    zUtil_SaveGameState *const oldHead = g_PlayerSaveStateListHead;
+    const int oldFinalized = g_Player_AiMode2State1Finalized;
+
+    zUtil_SaveGameState matchingSaveState = {};
+    zUtil_SaveGameState nonmatchingAiSaveState = {};
+    zUtil_SaveGameState inactiveSaveState = {};
+    zUtil_PlayerStateStorage matchingState = {};
+    zUtil_PlayerStateStorage nonmatchingAiState = {};
+    zUtil_PlayerStateStorage inactiveState = {};
+
+    matchingSaveState.next = &nonmatchingAiSaveState;
+    nonmatchingAiSaveState.next = &inactiveSaveState;
+    matchingSaveState.playerState = &matchingState;
+    nonmatchingAiSaveState.playerState = &nonmatchingAiState;
+    inactiveSaveState.playerState = &inactiveState;
+
+    matchingState.lifecycleState = 2;
+    matchingState.aiTopLevelState = 1;
+    matchingState.aiSavedTopLevelState = 4;
+    nonmatchingAiState.lifecycleState = 2;
+    nonmatchingAiState.aiTopLevelState = 3;
+    nonmatchingAiState.aiSavedTopLevelState = 8;
+    inactiveState.lifecycleState = 4;
+    inactiveState.aiTopLevelState = 1;
+    inactiveState.aiSavedTopLevelState = 9;
+
+    g_PlayerSaveStateListHead = &matchingSaveState;
+    g_Player_AiMode2State1Finalized = 0;
+    Player::AiFinalizeMode2State1ForAllPlayers();
+
+    const bool populatedOk =
+        matchingState.aiTopLevelState == 4 &&
+        nonmatchingAiState.aiTopLevelState == 3 &&
+        inactiveState.aiTopLevelState == 1 &&
+        g_Player_AiMode2State1Finalized == 1;
+
+    g_PlayerSaveStateListHead = 0;
+    g_Player_AiMode2State1Finalized = 0;
+    Player::AiFinalizeMode2State1ForAllPlayers();
+    const bool emptyOk = g_Player_AiMode2State1Finalized == 1;
+
+    g_PlayerSaveStateListHead = oldHead;
+    g_Player_AiMode2State1Finalized = oldFinalized;
+
+    if (!populatedOk) {
+        return 1;
+    }
+    return emptyOk ? 0 : 2;
+}
+
+extern "C" int player_ai_steer_toward_path_node_forward_smoke(void) {
+    const float oldTotalTimeSecScaled = g_Player_TotalTimeSecScaled;
+
+    zUtil_SaveGameState saveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    AINetNode currentNode = {};
+    AINetNode forwardNode = {};
+    saveState.playerState = &playerState;
+    currentNode.neighborNodes[0] = &forwardNode;
+    playerState.aiCurrentPathNode = &currentNode;
+    playerState.steerBasisNorm = {1.0f, 0.0f, 0.0f};
+    g_Player_TotalTimeSecScaled = 40.0f;
+
+    playerState.worldPos = {0.0f, 0.0f, 0.0f};
+    forwardNode.position = {3.0f, 10.0f, 0.0f};
+    Player::AiSteerTowardPathNodeForward(&saveState);
+    const bool advanceOk =
+        playerState.aiCurrentPathNode == &forwardNode &&
+        playerState.throttleInput == 0.0f && playerState.throttleInputCopy == 0.0f &&
+        playerState.steeringInput == 0.0f && playerState.steeringInputCopy == 0.0f &&
+        FloatNear(playerState.unknown_0fa4, 44.0f);
+
+    playerState.aiCurrentPathNode = &currentNode;
+    playerState.worldPos = {0.0f, 0.0f, 0.0f};
+    forwardNode.position = {10.0f, 0.0f, 10.0f};
+    Player::AiSteerTowardPathNodeForward(&saveState);
+    const float diagonal = static_cast<float>(std::sqrt(0.5f));
+    const bool forwardOk =
+        FloatNear(playerState.throttleInput, 1.0f - diagonal) &&
+        FloatNear(playerState.throttleInputCopy, 1.0f - diagonal) &&
+        FloatNear(playerState.steeringInput, -diagonal) &&
+        FloatNear(playerState.steeringInputCopy, -diagonal);
+
+    playerState.aiCurrentPathNode = &currentNode;
+    forwardNode.position = {-10.0f, 0.0f, 10.0f};
+    Player::AiSteerTowardPathNodeForward(&saveState);
+    const bool behindOk =
+        playerState.throttleInput == 0.0f && playerState.throttleInputCopy == 0.0f &&
+        playerState.steeringInput == -1.0f && playerState.steeringInputCopy == -1.0f;
+
+    g_Player_TotalTimeSecScaled = oldTotalTimeSecScaled;
+
+    if (!advanceOk) {
+        return 1;
+    }
+    if (!forwardOk) {
+        return 2;
+    }
+    return behindOk ? 0 : 3;
+}
+
+extern "C" int player_ai_steer_toward_path_node_reverse_smoke(void) {
+    const float oldTotalTimeSecScaled = g_Player_TotalTimeSecScaled;
+
+    zUtil_SaveGameState saveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    AINetNode currentNode = {};
+    AINetNode forwardNode = {};
+    saveState.playerState = &playerState;
+    currentNode.neighborNodes[0] = &forwardNode;
+    playerState.aiCurrentPathNode = &currentNode;
+    playerState.steerBasisNorm = {1.0f, 0.0f, 0.0f};
+    g_Player_TotalTimeSecScaled = 40.0f;
+
+    playerState.worldPos = {0.0f, 0.0f, 0.0f};
+    forwardNode.position = {3.0f, 10.0f, 0.0f};
+    Player::AiSteerTowardPathNodeReverse(&saveState);
+    const bool advanceOk =
+        playerState.aiCurrentPathNode == &forwardNode &&
+        playerState.throttleInput == 0.0f && playerState.throttleInputCopy == 0.0f &&
+        playerState.steeringInput == 0.0f && playerState.steeringInputCopy == 0.0f &&
+        FloatNear(playerState.unknown_0fa4, 54.0f);
+
+    playerState.aiCurrentPathNode = &currentNode;
+    playerState.worldPos = {0.0f, 0.0f, 0.0f};
+    forwardNode.position = {-10.0f, 0.0f, 10.0f};
+    Player::AiSteerTowardPathNodeReverse(&saveState);
+    const float diagonal = static_cast<float>(std::sqrt(0.5f));
+    const bool reverseForwardOk =
+        FloatNear(playerState.throttleInput, -(1.0f - diagonal)) &&
+        FloatNear(playerState.throttleInputCopy, -(1.0f - diagonal)) &&
+        FloatNear(playerState.steeringInput, diagonal) &&
+        FloatNear(playerState.steeringInputCopy, diagonal);
+
+    playerState.aiCurrentPathNode = &currentNode;
+    forwardNode.position = {10.0f, 0.0f, 10.0f};
+    Player::AiSteerTowardPathNodeReverse(&saveState);
+    const bool behindOk =
+        playerState.throttleInput == 0.0f && playerState.throttleInputCopy == 0.0f &&
+        playerState.steeringInput == 1.0f && playerState.steeringInputCopy == 1.0f;
+
+    g_Player_TotalTimeSecScaled = oldTotalTimeSecScaled;
+
+    if (!advanceOk) {
+        return 1;
+    }
+    if (!reverseForwardOk) {
+        return 2;
+    }
+    return behindOk ? 0 : 3;
 }

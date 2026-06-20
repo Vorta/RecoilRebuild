@@ -461,6 +461,7 @@ extern int *ZOPT_VIDEO_ACCELERATION;
 extern int *ZOPT_HW_API;
 extern DDCAPS g_zVideo_DDrawCapsHal;
 extern DDCAPS g_zVideo_DDrawCapsHel;
+extern zVideo_TextureRecordPartial *g_zVideo_DefaultTextureRecord;
 extern zVideo_TextureRecordPartial *g_zImage_DefaultTextureRecord;
 extern char g_zVideo_PalettePathBuffer[0x100];
 extern int g_zVideo_PaletteBrightnessLevel;

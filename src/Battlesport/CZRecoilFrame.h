@@ -3,7 +3,7 @@
 #include "recoil/recoil_types.h"
 #include <stddef.h>
 
-#include "Battlesport/Mfc42Abi.h"
+#include "Battlesport/CZGameFrame.h"
 #include "recoil/recoil_callconv.h"
 
 namespace MfcCmdUI {
@@ -14,13 +14,7 @@ class RecoilApp;
 
 // Authored Recoil frame reconstructed over imported MFC42 frame/window
 // providers; MFC base behavior is not reimplemented here.
-struct CZRecoilFrame {
-    unsigned int m_mfcDispatchWord;
-    unsigned char reserved004[0x1c];
-    HWND m_hWnd;
-    unsigned char reserved024[0x9c];
-    RecoilApp *m_app;
-    unsigned char reserved0c4[0x08];
+struct CZRecoilFrame : CZGameFrame {
     char m_openZbdFilePath[0x104];
     CMenu m_mainMenu;
     int m_useArchiveBanks;
@@ -93,6 +87,8 @@ struct CZRecoilFrame {
     void OnUpdateHwApi2CmdUI(CCmdUI *cmdUi);
     void OnUpdateHwApi3CmdUI(CCmdUI *cmdUi);
     void OnUpdateFullscreenCmdUI(CCmdUI *cmdUi);
+    void OnUpdateAlwaysEnabledCmdUI(CCmdUI *cmdUi);
+    void OnUpdateNoOpCmdUI(CCmdUI *cmdUi);
     void OnMenuToggleCDAudio();
     void OnUpdateCDAudioCmdUI(CCmdUI *cmdUi);
     void OnMenuToggleJoystick();

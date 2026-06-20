@@ -30,6 +30,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#ifndef RECOIL_NATIVE_PLAYER_TESTS_GUN_DISPATCH_ONLY
 extern "C" std::uint32_t g_HudUi_InvalidateMask;
 extern "C" int g_Player_MissionInitFirstRunFlag;
 extern "C" HudUiPanel g_Player_TopMsgPanel1;
@@ -2009,7 +2010,7 @@ extern "C" int player_create_from_names_at_pose_smoke(void) {
     zClass_TypeList::Head(6) = &rootLink;
     zClass_TypeList::Tail(6) = &rootLink;
     g_Player_RuntimeDiScene = &world;
-    g_GameStateOrMapTable = nullptr;
+    g_GameStateOrMapTable = reinterpret_cast<zInput_GameStateOrMapTablePartial *>(&saveState);
     g_Player_NextOrdinal = 1;
     g_HudSensorTracker.missionStat1 = oldMissionStat1;
     g_Player_NominalGravity = 19.5f;
@@ -5613,6 +5614,8 @@ extern "C" int player_auto_switch_to_next_usable_alt_weapon_smoke(void) {
     return upwardOk ? 0 : 3;
 }
 
+#endif
+
 extern "C" int player_update_gun_dispatch_requests_from_trigger_latches_smoke(void) {
     const float oldTotalTimeSecScaled = g_Player_TotalTimeSecScaled;
 
@@ -5694,6 +5697,7 @@ extern "C" int player_update_gun_dispatch_requests_from_trigger_latches_smoke(vo
     return 0;
 }
 
+#ifndef RECOIL_NATIVE_PLAYER_TESTS_GUN_DISPATCH_ONLY
 extern "C" int player_update_debug_overlay_hud_smoke(void) {
     HudUiStringMenu *const oldStringMenu = g_HudUiMgrStringMenu;
     HudUiCounterTextPanel *const oldObjectiveCounter = g_HudUiMgrObjectiveCounterTextPanel;
@@ -6910,6 +6914,8 @@ extern "C" int player_alt_gun_fire_slot_offset_smoke(void) {
     return gunlessUnchanged ? 0 : 4;
 }
 
+#endif
+
 extern "C" int player_build_mission_save_data_smoke(void) {
     zUtil_SaveGameState saveState = {};
     zUtil_PlayerStateStorage playerState = {};
@@ -6987,8 +6993,12 @@ extern "C" int player_build_mission_save_data_smoke(void) {
               outData.nextModeSwitchAllowedTime == 12.5f && outData.motionInput == 5 &&
               outData.autoTurnSign == -1 && outData.bankInput == 6 &&
               outData.playerMasterType == 11 &&
-              Vec3Equals(outData.cameraTarget, cameraData.worldTarget) &&
-              Vec3Equals(outData.cameraPosition, cameraData.posOffset) &&
+              outData.cameraTarget.x == cameraData.worldTarget.x &&
+              outData.cameraTarget.y == cameraData.worldTarget.y &&
+              outData.cameraTarget.z == cameraData.worldTarget.z &&
+              outData.cameraPosition.x == cameraData.posOffset.x &&
+              outData.cameraPosition.y == cameraData.posOffset.y &&
+              outData.cameraPosition.z == cameraData.posOffset.z &&
               outData.timedHitStatus.runtimeFlags == 1 &&
               outData.timedHitStatus.savedHitSourceEntryId == 77 &&
               outData.timedHitStatus.currentLevel == 0.25f &&
@@ -7014,6 +7024,8 @@ extern "C" int player_build_mission_save_data_smoke(void) {
     g_Time_AccumulatedTimeSec = oldAccumulatedTime;
     return ok ? 0 : 1;
 }
+
+#ifndef RECOIL_NATIVE_PLAYER_TESTS_GUN_DISPATCH_ONLY
 
 extern "C" int player_apply_mission_save_data_smoke(void) {
     zUtil_SaveGameState *const oldLocalSaveState = g_LocalPlayerSaveState;
@@ -7239,7 +7251,7 @@ extern "C" int player_zar_read_mission_save_data_section_smoke(void) {
     HudUiShieldMessageWidget *const oldShieldWidget = g_HudUiMgrShieldMessageWidget;
     HudUiCounterTextPanel *const oldObjectiveCounter = g_HudUiMgrObjectiveCounterTextPanel;
     HudLayoutBase *const oldCurrentLayout = g_HudUiMgrCurrentLayout;
-    const zTag4Partial oldVariantTag = g_Variant_CurrentTag;
+    const zTag4Partial oldLastValidCameraVariantTag = g_Player_LastValidCameraVariantTag;
     const int oldActiveWeaponMessageIndex = g_HudUiMgrActiveWeaponMessageIndex;
     const int oldActiveWeaponSideIndex = g_HudUiMgrActiveWeaponSideIndex;
     const std::uint32_t oldInvalidateMask = g_HudUi_InvalidateMask;
@@ -7380,8 +7392,9 @@ extern "C" int player_zar_read_mission_save_data_section_smoke(void) {
                                            nullptr);
 
     int failure = 0;
-    if (g_Variant_CurrentTag.count != 2 || g_Variant_CurrentTag.tags[0] != 9 ||
-        g_Variant_CurrentTag.tags[1] != 10) {
+    if (g_Player_LastValidCameraVariantTag.count != 2 ||
+        g_Player_LastValidCameraVariantTag.tags[0] != 9 ||
+        g_Player_LastValidCameraVariantTag.tags[1] != 10) {
         failure = 1;
     } else if (playerState.activeAltGunController !=
                    &playerState.altWeaponBanks[3].controllerB ||
@@ -7402,7 +7415,7 @@ extern "C" int player_zar_read_mission_save_data_section_smoke(void) {
     g_HudUiMgrShieldMessageWidget = oldShieldWidget;
     g_HudUiMgrObjectiveCounterTextPanel = oldObjectiveCounter;
     g_HudUiMgrCurrentLayout = oldCurrentLayout;
-    g_Variant_CurrentTag = oldVariantTag;
+    g_Player_LastValidCameraVariantTag = oldLastValidCameraVariantTag;
     g_HudUiMgrActiveWeaponMessageIndex = oldActiveWeaponMessageIndex;
     g_HudUiMgrActiveWeaponSideIndex = oldActiveWeaponSideIndex;
     g_HudUi_InvalidateMask = oldInvalidateMask;
@@ -18017,14 +18030,14 @@ extern "C" int player_zar_write_mission_save_data_section_smoke(void) {
 
     zUtil_SaveGameState *const oldLocalSaveState = g_LocalPlayerSaveState;
     zClass_NodePartial *const oldMainCamera = g_MainCamera;
-    const zTag4Partial oldVariantTag = g_Variant_CurrentTag;
+    const zTag4Partial oldLastValidCameraVariantTag = g_Player_LastValidCameraVariantTag;
     const float oldAccumulatedTime = g_Time_AccumulatedTimeSec;
     g_LocalPlayerSaveState = &saveState;
     g_MainCamera = &cameraNode;
-    g_Variant_CurrentTag.count = 2;
-    g_Variant_CurrentTag.tags[0] = 7;
-    g_Variant_CurrentTag.tags[1] = 8;
-    g_Variant_CurrentTag.tags[2] = 0xff;
+    g_Player_LastValidCameraVariantTag.count = 2;
+    g_Player_LastValidCameraVariantTag.tags[0] = 7;
+    g_Player_LastValidCameraVariantTag.tags[1] = 8;
+    g_Player_LastValidCameraVariantTag.tags[2] = 0xff;
     g_Time_AccumulatedTimeSec = 90.0f;
 
     const int result = Player::ZAR_WriteMissionSaveDataSection(&callbackCtx, nullptr);
@@ -18052,7 +18065,7 @@ extern "C" int player_zar_write_mission_save_data_section_smoke(void) {
 
     g_LocalPlayerSaveState = oldLocalSaveState;
     g_MainCamera = oldMainCamera;
-    g_Variant_CurrentTag = oldVariantTag;
+    g_Player_LastValidCameraVariantTag = oldLastValidCameraVariantTag;
     g_Time_AccumulatedTimeSec = oldAccumulatedTime;
     std::free(manager.indexArchive.records);
     manager.indexArchive.records = nullptr;
@@ -18791,3 +18804,102 @@ extern "C" int player_shutdown_mission_runtime_smoke(void) {
                ? 0
                : 1;
 }
+#endif
+
+#ifdef RECOIL_NATIVE_PLAYER_TESTS_GUN_DISPATCH_ONLY
+namespace {
+template <typename T> T *AllocZeroedMallocGunOnly() {
+    void *const mem = std::calloc(1, sizeof(T));
+    return static_cast<T *>(mem);
+}
+
+template <typename T> T *AllocZeroedNewGunOnly() {
+    T *const value = static_cast<T *>(::operator new(sizeof(T)));
+    std::memset(value, 0, sizeof(T));
+    return value;
+}
+} // namespace
+
+extern "C" int player_destroy_save_game_state_smoke(void) {
+    zUtil_SaveGameState *const saveState = AllocZeroedNewGunOnly<zUtil_SaveGameState>();
+    saveState->playerState = AllocZeroedMallocGunOnly<zUtil_PlayerStateStorage>();
+
+    zClass_NodeFreeListSlot rootSlot = {};
+    saveState->playerState->rootNode = &rootSlot.node;
+
+    HudUiMgrSensorTrackNode *const trackNode = AllocZeroedMallocGunOnly<HudUiMgrSensorTrackNode>();
+    rootSlot.node.callbackContext = reinterpret_cast<zClass_NodePartial *>(trackNode);
+
+    g_HudUiMgrSensor_TrackList.trackListAux = 1;
+    g_HudUiMgrSensor_TrackList.head = trackNode;
+    g_HudUiMgrSensor_TrackList.tail = trackNode;
+    g_HudUiMgrSensor_TrackList.count = 1;
+
+    g_PlayerSaveStateListAux = 1;
+    g_PlayerSaveStateListHead = saveState;
+    g_PlayerSaveStateListTail = saveState;
+    g_PlayerSaveStateCount = 1;
+
+    Player::DestroySaveGameState(saveState);
+
+    return g_HudUiMgrSensor_TrackList.head == nullptr &&
+                   g_HudUiMgrSensor_TrackList.tail == nullptr &&
+                   g_HudUiMgrSensor_TrackList.count == 0 &&
+                   g_HudUiMgrSensor_TrackList.trackListAux == 0 &&
+                   g_PlayerSaveStateListHead == nullptr && g_PlayerSaveStateListTail == nullptr &&
+                   g_PlayerSaveStateCount == 0 && g_PlayerSaveStateListAux == 0
+               ? 0
+               : 1;
+}
+
+extern "C" int player_shutdown_mission_runtime_smoke(void) {
+    auto *const trackNode = AllocZeroedNewGunOnly<HudUiMgrSensorTrackNode>();
+    g_HudUiMgrSensor_TrackList.head = trackNode;
+    g_HudUiMgrSensor_TrackList.tail = trackNode;
+    g_HudUiMgrSensor_TrackList.count = 1;
+    g_HudUiMgrSensor_TrackList.trackListAux = 1;
+
+    PlayerMasterCommonData *const commonData = AllocZeroedNewGunOnly<PlayerMasterCommonData>();
+    PlayerMasterWeaponSpec *const weaponSpec = AllocZeroedNewGunOnly<PlayerMasterWeaponSpec>();
+    commonData->weaponSpecHead = weaponSpec;
+    commonData->weaponSpecTail = weaponSpec;
+    commonData->weaponSpecCount = 1;
+    commonData->weaponSpecListAux = 1;
+    g_PlayerMasterCommonDataHead = commonData;
+    g_PlayerMasterCommonDataTail = commonData;
+    g_PlayerMasterCommonDataCount = 1;
+    g_PlayerMasterCommonDataListAux = 1;
+
+    PlayerMasterModalData *const modalData = AllocZeroedNewGunOnly<PlayerMasterModalData>();
+    g_PlayerMasterModalDataHead = modalData;
+    g_PlayerMasterModalDataTail = modalData;
+    g_PlayerMasterModalDataCount = 1;
+    g_PlayerMasterModalDataListAux = 1;
+
+    g_Player_NextOrdinal = 7;
+    g_GameStateOrMapTable = reinterpret_cast<zInput_GameStateOrMapTablePartial *>(0x1234);
+
+    HudUiContainer *const fxContainer =
+        reinterpret_cast<HudUiContainer *>(&g_zVideo_FxPass3ConfigLocal);
+    fxContainer->childHead = &g_Player_UnderwaterFxPass3Ui;
+    fxContainer->childTail = &g_Player_State7FxPass3Ui;
+    g_Player_UnderwaterFxPass3Ui.next = &g_Player_State7FxPass3Ui;
+    g_Player_UnderwaterFxPass3Ui.parent = fxContainer;
+    g_Player_State7FxPass3Ui.next = nullptr;
+    g_Player_State7FxPass3Ui.parent = fxContainer;
+
+    Player::ShutdownMissionRuntime();
+
+    return g_HudUiMgrSensor_TrackList.head == nullptr &&
+                   g_HudUiMgrSensor_TrackList.tail == nullptr &&
+                   g_HudUiMgrSensor_TrackList.count == 0 &&
+                   g_PlayerMasterCommonDataHead == nullptr &&
+                   g_PlayerMasterCommonDataTail == nullptr && g_PlayerMasterCommonDataCount == 0 &&
+                   g_PlayerMasterModalDataHead == nullptr &&
+                   g_PlayerMasterModalDataTail == nullptr && g_PlayerMasterModalDataCount == 0 &&
+                   g_Player_NextOrdinal == 0 && g_GameStateOrMapTable == nullptr &&
+                   fxContainer->childHead == nullptr && fxContainer->childTail == nullptr
+               ? 0
+               : 1;
+}
+#endif

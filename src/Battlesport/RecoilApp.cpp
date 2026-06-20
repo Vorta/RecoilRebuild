@@ -153,10 +153,35 @@ inline int SaveLoadEntryCount(
 RecoilApp g_RecoilApp;
 RecoilStateSaveLoadTransition g_RecoilStateSaveLoadTransition;
 
-extern "C" HWND g_RecoilApp_hWndMain;
-extern "C" HINSTANCE g_RecoilApp_hInstance;
 extern "C" {
-const char *g_RecoilApp_WndClassNamePtr = "RecoilClass";
+/**
+ * Reimplements data 0x4f3ef8: g_RecoilApp_hInstance.
+ *
+ * Purpose: cache the Recoil application instance handle used by frame dialogs
+ * and resource-loading paths.
+ */
+HINSTANCE g_RecoilApp_hInstance = 0;
+/**
+ * Reimplements data 0x4dcac8: g_RecoilApp_WndClassName.
+ *
+ * Purpose: owns the app-shell window class name storage used by the class-name
+ * pointer global.
+ */
+char g_RecoilApp_WndClassName[] = "RecoilClass";
+/**
+ * Reimplements data 0x4dcac0: g_RecoilApp_WndClassNamePtr.
+ *
+ * Purpose: points app-shell window registration and lookup paths at the Recoil
+ * frame window class name.
+ */
+const char *g_RecoilApp_WndClassNamePtr = g_RecoilApp_WndClassName;
+/**
+ * Reimplements data 0x4f3eec: g_RecoilApp_hWndMain.
+ *
+ * Purpose: caches the main Recoil application window handle for app-shell,
+ * networking, FMV, and dialog owner paths.
+ */
+HWND g_RecoilApp_hWndMain = 0;
 int g_RecoilApp_WindowClassRegistered = 0;
 int g_RecoilApp_AttractFmvReloadMode = 1;
 }

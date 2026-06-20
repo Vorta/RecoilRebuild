@@ -1554,6 +1554,7 @@ extern "C" int zmodel_matlbuffer_release_all_active_smoke() {
     return releaseOk ? 0 : 1;
 }
 
+#endif
 extern "C" int zrndr_global_string_table_release_dynamic_entries_smoke() {
     char *savedTable[100] = {};
     for (int index = 0; index < 100; ++index) {
@@ -1608,6 +1609,7 @@ extern "C" int zrndr_global_string_table_release_dynamic_entries_smoke() {
     }
     return lowCountOk ? 0 : 3;
 }
+#ifndef RECOIL_ZGAME_TESTS_ZMODEL_CONST_ONLY
 
 extern "C" int zmodel_material_defaults_and_find_smoke() {
     zImage_TexDirEntryPartial texA{};

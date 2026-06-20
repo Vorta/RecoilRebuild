@@ -24,7 +24,7 @@ Owner gate meanings:
 - `source`: source-faithful owner model is implemented, not an address slice or scaffold.
 - `data`: all touched authored `.data`, `.rdata`, and BSS owner facts are reconstructed.
 - `functional`: current behavior evidence exists at the owner or accepted target level.
-- `byte`: tier `S` owner-level byte/provider ABI evidence, or `deferred` while global owner/data blockers remain.
+- `byte`: tier `S` owner-level byte/provider ABI evidence. For function/code owners this may be `deferred` while global owner/data blockers remain; for data-owner entries it is accepted when the data-symbol byte and relocation identity evidence is accepted.
 
 `plan set` now gates positive markers through this ledger. `Source owner ✅`
 requires a linked owner whose `boundary` and `source` gates are accepted, unless
@@ -42,10 +42,19 @@ python tools/recoil.py plan add-data 0xNNNNNN --name g_Symbol --section .data --
 ```
 
 Data entries carry `Reconstructed (Kind: data; Name; Section; Size; Type)`,
-`Source owner`, and `Reimplemented [S]`; they do not carry `Source dependencies
-satisfied` or `Data reimplemented`. Setting data `Reimplemented [S] ✅` requires
-the linked SOURCE_OWNERS owner to have `boundary`, `source`, `data`, and `byte`
-accepted.
+`Source owner`, and `Reimplemented [X/F/C/B/A/S]`; they do not carry `Source
+dependencies satisfied` or `Data reimplemented`. Data `F` records a compiled
+canonical source definition/declaration, `C` requires linked owner
+`boundary/source` gates, `B` requires linked owner `data`, `A` records reviewed
+near-byte-equivalent data-symbol evidence, and `S` requires linked owner
+`byte` accepted. Use:
+
+```powershell
+python tools/recoil.py plan migrate-data-tiers --dry-run
+```
+
+to rewrite legacy data rows from current owner gates before applying the
+non-dry-run command.
 
 Do not seed owners as accepted from legacy function metadata. A marker can be
 current only when the owner ledger and current BN/source/build evidence agree.

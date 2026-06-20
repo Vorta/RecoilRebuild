@@ -47,8 +47,8 @@ struct zTurret_Runtime {
     int firePointCount;
     zClass_NodePartial *firePointNode0;
     zClass_NodePartial *firePointNode1;
-    zVec3 spawnPos;
     zVec3 fireDir;
+    zVec3 spawnPos;
     zVec3 spawnVel;
     float fireRateSeconds;
     float nextFireTime;
@@ -60,6 +60,8 @@ struct zTurret_Runtime {
     OptCatalogTrailRuntimeState *trailRuntimeState;
     int runtimeInstanceActive;
     int runtimeAimPending;
+    // OptCatalog pending-spawn target slot at 0x110: two pointer fields copied by the
+    // zWeapon target-list contract before the remaining turret padding at 0x118.
     PlayerProgressTargetSlotRuntime runtimeAimTarget;
     unsigned char unknown_118[0x38];
     int enableLosCheck;
@@ -284,13 +286,13 @@ RECOIL_STATIC_ASSERT(
 RECOIL_STATIC_ASSERT(
     offsetof(
         zTurret_Runtime,
-        spawnPos
+        fireDir
     ) == 0xc4
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
         zTurret_Runtime,
-        fireDir
+        spawnPos
     ) == 0xd0
 );
 RECOIL_STATIC_ASSERT(
@@ -424,7 +426,7 @@ extern int g_zTurret_RuntimeCount;
 extern int g_zTurret_CallbackIterationActive;
 extern int g_zTurret_CallbackStartIndex;
 extern int g_zTurret_CallbackIterIndex;
-extern zTurret_Runtime *g_zTurret_RuntimeList[64];
+extern zTurret_Runtime *g_zTurret_RuntimeList[9];
 }
 
 namespace zTurret_System {

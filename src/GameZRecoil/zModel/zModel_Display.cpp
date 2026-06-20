@@ -231,13 +231,72 @@ int g_zModel_MatlActiveHeadIndex = -1;
  */
 zModel_MaterialPartial *g_zModel_MatlReuseCache = 0;
 zModel_MaterialPartial g_zModel_DefaultMaterial = {0};
+namespace {
+extern char g_ZrdrGlobalString_Default[];
+extern char g_ZrdrGlobalString_Water[];
+extern char g_ZrdrGlobalString_Seafloor[];
+extern char g_ZrdrGlobalString_Quicksand[];
+extern char g_ZrdrGlobalString_Lava[];
+extern char g_ZrdrGlobalString_Fire[];
+} // namespace
 /**
  * Reimplements data 0x4e0fc8: Symbol.
  * Authored renderer global-string table data.
  * Purpose: track the active count in the fixed-prefix plus dynamic string table.
  */
 int g_zRndr_GlobalStringCount = 6;
-char *g_zRndr_GlobalStringTable[100] = {0};
+/**
+ * Reimplements data 0x4e0fd0: Symbol.
+ * Authored renderer global-string table data.
+ * Purpose: store the six built-in renderer prefixes followed by dynamic entries loaded at runtime.
+ */
+char *g_zRndr_GlobalStringTable[100] = {
+    g_ZrdrGlobalString_Default,
+    g_ZrdrGlobalString_Water,
+    g_ZrdrGlobalString_Seafloor,
+    g_ZrdrGlobalString_Quicksand,
+    g_ZrdrGlobalString_Lava,
+    g_ZrdrGlobalString_Fire
+};
+
+namespace {
+/**
+ * Reimplements data 0x4e1168: g_ZrdrGlobalString_Fire.
+ * Authored renderer global-string table data.
+ * Purpose: provide the built-in "fire" renderer prefix.
+ */
+char g_ZrdrGlobalString_Fire[] = "fire";
+/**
+ * Reimplements data 0x4e1170: g_ZrdrGlobalString_Lava.
+ * Authored renderer global-string table data.
+ * Purpose: provide the built-in "lava" renderer prefix.
+ */
+char g_ZrdrGlobalString_Lava[] = "lava";
+/**
+ * Reimplements data 0x4e1178: g_ZrdrGlobalString_Quicksand.
+ * Authored renderer global-string table data.
+ * Purpose: provide the built-in "quicksand" renderer prefix.
+ */
+char g_ZrdrGlobalString_Quicksand[] = "quicksand";
+/**
+ * Reimplements data 0x4e1184: g_ZrdrGlobalString_Seafloor.
+ * Authored renderer global-string table data.
+ * Purpose: provide the built-in "seafloor" renderer prefix.
+ */
+char g_ZrdrGlobalString_Seafloor[] = "seafloor";
+/**
+ * Reimplements data 0x4e1190: g_ZrdrGlobalString_Water.
+ * Authored renderer global-string table data.
+ * Purpose: provide the built-in "water" renderer prefix.
+ */
+char g_ZrdrGlobalString_Water[] = "water";
+/**
+ * Reimplements data 0x4e1198: g_ZrdrGlobalString_Default.
+ * Authored renderer global-string table data.
+ * Purpose: provide the built-in "default" renderer prefix.
+ */
+char g_ZrdrGlobalString_Default[] = "default";
+} // namespace
 
 namespace {
 /**

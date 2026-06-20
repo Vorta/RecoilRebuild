@@ -217,7 +217,8 @@ sentence with no evidence dump or command output unless requested.
 
 Normal binary-lane selection is owner-first after reconstruction/dependency
 readiness: resolve owner structure and touched data before isolated behavior or
-pure tier `S` work. For the detailed owner/data gates, use
+pure code/function tier `S` work. Data-entry `S` work follows the data entry's
+local owner/data/byte gates. For the detailed owner/data gates, use
 `owner_led_workflow.md` and `data_owner_audit.md`; this checklist only names
 the launch commands.
 

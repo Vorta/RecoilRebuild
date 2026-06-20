@@ -136,11 +136,13 @@ struct NetSessionConfigDialog : CDialog {
     static const AFX_MSGMAP_ENTRY messageEntries[];
     static const AFX_MSGMAP *__stdcall GetBaseMessageMapForMfc();
 
-    const AFX_MSGMAP * GetMessageMap() const;
-    BOOL OnInitDialog();
+    NetSessionConfigDialog(CWnd *parentWnd);
+    virtual ~NetSessionConfigDialog();
+    virtual const AFX_MSGMAP * GetMessageMap() const;
+    virtual BOOL OnInitDialog();
     NetSessionConfigDialog * Constructor(CWnd *parentWnd);
     void Destructor();
-    void DoDataExchange(CDataExchange *dataExchange);
+    virtual void DoDataExchange(CDataExchange *dataExchange);
     void OnDestroy();
     void OnMapChanged();
     static void InitMapNameStrings();
@@ -692,6 +694,7 @@ extern int g_GameNetHudTimerTenSecondWarningArmed;
 extern int g_GameNetHudTimerPendingSaveReminderArmed;
 extern int g_GameNet_HandlersRegistered;
 extern NetPkt06_PlayerStateSnapshot g_NetPkt06_PlayerStateSnapshotBuf;
+extern NetPkt0F_CraterEvent g_NetPkt0F_CraterEventRelayBuf;
 extern NetPkt0F_CraterEvent g_NetPkt0F_CraterEventSendBuf;
 extern NetPkt10_QSandEvent g_NetPkt10_QSandEventSendBuf;
 }

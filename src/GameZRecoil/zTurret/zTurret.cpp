@@ -17,14 +17,54 @@
 #include <string.h>
 
 extern "C" {
+/**
+ * Data owner: zTurret writable runtime globals.
+ * Reimplements data 0x4f3fd0: g_zTurret_CallbackNode.
+ * Purpose: Holds the action-callback node used to tick the turret runtime list.
+ */
 zClass_NodePartial *g_zTurret_CallbackNode = 0;
+/**
+ * Data owner: zTurret writable runtime globals.
+ * Reimplements data 0x4f3fd4: g_zTurret_LoadedDefRoot.
+ * Purpose: Retains the loaded turret definition tree until turret shutdown.
+ */
 zReader::Node *g_zTurret_LoadedDefRoot = 0;
+/**
+ * Data owner: zTurret writable runtime globals.
+ * Reimplements data 0x4f41ec: g_zTurret_NapalmVehicleDestroyAnim.
+ * Purpose: Stores the napalm_vehicle destroy animation shared by turret destruction.
+ */
 zEffectAnimEntry *g_zTurret_NapalmVehicleDestroyAnim = 0;
+/**
+ * Data owner: zTurret writable runtime globals.
+ * Reimplements data 0x4f3fd8: g_zTurret_RuntimeCount.
+ * Purpose: Counts active entries in g_zTurret_RuntimeList.
+ */
 int g_zTurret_RuntimeCount = 0;
+/**
+ * Data owner: zTurret writable runtime globals.
+ * Reimplements data 0x4f3fdc: g_zTurret_CallbackIterationActive.
+ * Purpose: Marks reentrant callback iteration so runtime removal can preserve scan state.
+ */
 int g_zTurret_CallbackIterationActive = 0;
+/**
+ * Data owner: zTurret writable runtime globals.
+ * Reimplements data 0x4f3fe0: g_zTurret_CallbackStartIndex.
+ * Purpose: Stores the rotating round-robin start index for turret ticking.
+ */
 int g_zTurret_CallbackStartIndex = 0;
+/**
+ * Data owner: zTurret writable runtime globals.
+ * Reimplements data 0x4f3fe4: g_zTurret_CallbackIterIndex.
+ * Purpose: Tracks the current round-robin scan index while callbacks are active.
+ */
 int g_zTurret_CallbackIterIndex = 0;
-zTurret_Runtime *g_zTurret_RuntimeList[64] = {0};
+/**
+ * Data owner: zTurret writable runtime globals.
+ * Reimplements data 0x4f3fe8: g_zTurret_RuntimeList.
+ * Purpose: Stores the nine turret runtime pointers allocated from loaded definitions.
+ */
+zTurret_Runtime *g_zTurret_RuntimeList[9] = {0};
 }
 
 namespace {
@@ -37,14 +77,24 @@ const unsigned int kOptCatalogFlagUseNapalmVehicleDestroyAnim = 0x1000;
 const unsigned int kOptCatalogFlagRemoveRuntimeOnTurretFire = 0x2000;
 const char *const kZTurretSourceFile = "D:\\Proj\\Battlesport\\turret.cpp";
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered inline helper: zTurret_ReaderArrayCount.
+ * Source file: D:\Proj\Battlesport\turret.cpp.
+ * Original inline helper evidence: no standalone retail function; repeated reader-array count access in zTurret callers.
+ * Purpose: Returns the recovered zReader array element count or zero for non-array nodes.
+ */
 int zTurret_ReaderArrayCount(
     zReader::Node *node
 ) {
     return node != 0 && node->type == zReader::ZRDR_NODE_ARRAY ? node->value.nodes[0].value.i32 : 0;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered inline helper: zTurret_ReaderArraySlot.
+ * Source file: D:\Proj\Battlesport\turret.cpp.
+ * Original inline helper evidence: no standalone retail function; repeated bounded array-slot access in zTurret callers.
+ * Purpose: Returns a valid zReader array slot pointer or null when the slot is unavailable.
+ */
 zReader::Node *zTurret_ReaderArraySlot(
     zReader::Node *node,
     int index
@@ -60,7 +110,12 @@ zReader::Node *zTurret_ReaderArraySlot(
     return &node->value.nodes[index];
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered inline helper: zTurret_ReaderArrayString.
+ * Source file: D:\Proj\Battlesport\turret.cpp.
+ * Original inline helper evidence: no standalone retail function; repeated reader-array string access in zTurret callers.
+ * Purpose: Returns the string value from a recovered zReader array slot.
+ */
 const char *zTurret_ReaderArrayString(
     zReader::Node *node,
     int index
@@ -72,7 +127,12 @@ const char *zTurret_ReaderArrayString(
     return slot != 0 && slot->type == zReader::ZRDR_NODE_STRING ? slot->value.str : 0;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered inline helper: zTurret_ReaderArrayMutableString.
+ * Source file: D:\Proj\Battlesport\turret.cpp.
+ * Original inline helper evidence: no standalone retail function; repeated mutable reader-array string access in zTurret callers.
+ * Purpose: Returns the mutable string value from a recovered zReader array slot.
+ */
 char *zTurret_ReaderArrayMutableString(
     zReader::Node *node,
     int index
@@ -84,7 +144,12 @@ char *zTurret_ReaderArrayMutableString(
     return slot != 0 && slot->type == zReader::ZRDR_NODE_STRING ? slot->value.str : 0;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered inline helper: zTurret_ReaderArrayInt.
+ * Source file: D:\Proj\Battlesport\turret.cpp.
+ * Original inline helper evidence: no standalone retail function; repeated reader-array integer access in zTurret callers.
+ * Purpose: Returns the integer value from a recovered zReader array slot.
+ */
 int zTurret_ReaderArrayInt(
     zReader::Node *node,
     int index
@@ -96,7 +161,12 @@ int zTurret_ReaderArrayInt(
     return slot != 0 ? slot->value.i32 : 0;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered inline helper: zTurret_ReaderArrayFloat.
+ * Source file: D:\Proj\Battlesport\turret.cpp.
+ * Original inline helper evidence: no standalone retail function; repeated reader-array numeric access in zTurret callers.
+ * Purpose: Returns the numeric value from a recovered zReader array slot as a float.
+ */
 float zTurret_ReaderArrayFloat(
     zReader::Node *node,
     int index
@@ -112,7 +182,12 @@ float zTurret_ReaderArrayFloat(
     return slot->type == zReader::ZRDR_NODE_INT ? (float)(slot->value.i32) : slot->value.f32;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered inline helper: zTurret_FindChildByArrayString.
+ * Source file: D:\Proj\Battlesport\turret.cpp.
+ * Original inline helper evidence: no standalone retail function; repeated zReader-name to zClass child lookup in zTurret setup.
+ * Purpose: Finds a turret child node named by a recovered zReader array string.
+ */
 zClass_NodePartial *zTurret_FindChildByArrayString(
     zClass_NodePartial *root,
     zReader::Node *node,
@@ -128,7 +203,12 @@ zClass_NodePartial *zTurret_FindChildByArrayString(
     ) : 0;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered inline helper: zTurret_FloatFromBits.
+ * Source file: D:\Proj\Battlesport\turret.cpp.
+ * Original inline helper evidence: no standalone retail function; inlined bit-to-float conversion in aim blending.
+ * Purpose: Reinterprets recovered integer float bits without changing their stored value.
+ */
 float zTurret_FloatFromBits(
     int bits
 ) {
@@ -141,7 +221,12 @@ float zTurret_FloatFromBits(
     return value;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered inline helper: zTurret_FastSqrtEstimate.
+ * Source file: D:\Proj\Battlesport\turret.cpp.
+ * Original inline helper evidence: no standalone retail function; recovered fast square-root estimate used by turret aim.
+ * Purpose: Computes the VC-era bit estimate used for horizontal aim length.
+ */
 float zTurret_FastSqrtEstimate(
     float value
 ) {
@@ -160,14 +245,24 @@ float zTurret_FastSqrtEstimate(
     return value;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered inline helper: zTurret_NodeIsActive.
+ * Source file: D:\Proj\Battlesport\turret.cpp.
+ * Original inline helper evidence: no standalone retail function; repeated node-active flag test in zTurret runtime paths.
+ * Purpose: Tests whether a zClass node pointer is present and active.
+ */
 int zTurret_NodeIsActive(
     zClass_NodePartial *node
 ) {
     return node != 0 && (node->flags & kZClassNodeActiveFlag) != 0;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered inline helper: zTurret_DeactivateRuntimeInstance.
+ * Source file: D:\Proj\Battlesport\turret.cpp.
+ * Original inline helper evidence: no standalone retail function; repeated runtime-active cleanup in zTurret paths.
+ * Purpose: Clears the active trail runtime flag and deactivates its OptCatalog trail state.
+ */
 void zTurret_DeactivateRuntimeInstance(
     zTurret_Runtime *runtime
 ) {
@@ -177,7 +272,12 @@ void zTurret_DeactivateRuntimeInstance(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered inline helper: zTurret_AddCandidateTarget.
+ * Source file: D:\Proj\Battlesport\turret.cpp.
+ * Original inline helper evidence: no standalone retail function; inlined nearest-target candidate scoring in Tick.
+ * Purpose: Scores a candidate target and records it when it is the nearest turret target.
+ */
 void zTurret_AddCandidateTarget(
     zTurret_Runtime *runtime,
     const zVec3 *candidatePos,
@@ -193,7 +293,12 @@ void zTurret_AddCandidateTarget(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered inline helper: zTurret_FindNearestTarget.
+ * Source file: D:\Proj\Battlesport\turret.cpp.
+ * Original inline helper evidence: no standalone retail function; recovered target scan pattern in zTurret_Runtime::Tick.
+ * Purpose: Selects the nearest active turret target and reports its recovered distance score.
+ */
 const zVec3 *zTurret_FindNearestTarget(
     zTurret_Runtime *runtime,
     zUtil_PlayerStateStorage *playerState,
@@ -241,8 +346,11 @@ const zVec3 *zTurret_FindNearestTarget(
 }
 } // namespace
 
-// Reimplements 0x436630: zTurret_Runtime::InitDefaults
-// (D:\Proj\Battlesport\turret.cpp)
+/**
+ * Reimplements 0x436630: zTurret_Runtime::InitDefaults.
+ * Source file: D:\Proj\Battlesport\turret.cpp.
+ * Purpose: Applies the recovered default runtime state before turret field parsing.
+ */
 zTurret_Runtime * zTurret_Runtime::InitDefaults() {
     flags = 0;
     scenePathVisible = 0;
@@ -275,12 +383,12 @@ zTurret_Runtime * zTurret_Runtime::InitDefaults() {
     fireAnimEntry = 0;
     nextFireTime = 1.0f;
     fireRateSeconds = 1.0f;
-    spawnPos.x = 0.0f;
-    spawnPos.y = 0.0f;
-    spawnPos.z = -1.0f;
     fireDir.x = 0.0f;
     fireDir.y = 0.0f;
-    fireDir.z = 0.0f;
+    fireDir.z = -1.0f;
+    spawnPos.x = 0.0f;
+    spawnPos.y = 0.0f;
+    spawnPos.z = 0.0f;
     spawnVel.x = 0.0f;
     spawnVel.y = 0.0f;
     spawnVel.z = 0.0f;
@@ -319,8 +427,11 @@ zTurret_Runtime * zTurret_Runtime::InitDefaults() {
     return this;
 }
 
-// Reimplements 0x4367a0: zTurret_Runtime::InitFromReaderNode
-// (D:\Proj\Battlesport\turret.cpp)
+/**
+ * Reimplements 0x4367a0: zTurret_Runtime::InitFromReaderNode.
+ * Source file: D:\Proj\Battlesport\turret.cpp.
+ * Purpose: Parses a turret definition node and binds its scene parts, weapon, effects, and callbacks.
+ */
 void zTurret_Runtime::InitFromReaderNode(
     zClass_NodePartial *worldNode,
     zClass_NodePartial *turretWorldNode,
@@ -812,8 +923,11 @@ void zTurret_Runtime::InitFromReaderNode(
     );
 }
 
-// Reimplements 0x437430: zTurret_Runtime::UpdateFirePositionFromParts
-// (D:\Proj\Battlesport\turret.cpp)
+/**
+ * Reimplements 0x437430: zTurret_Runtime::UpdateFirePositionFromParts.
+ * Source file: D:\Proj\Battlesport\turret.cpp.
+ * Purpose: Recomputes the turret fire origin from the active base, barrel, and fire-point parts.
+ */
 void zTurret_Runtime::UpdateFirePositionFromParts() {
     firePos = worldPos;
 
@@ -835,8 +949,11 @@ void zTurret_Runtime::UpdateFirePositionFromParts() {
     }
 }
 
-// Reimplements 0x4374a0: zTurret_Runtime::UpdateAimAndPartMatrices
-// (D:\Proj\Battlesport\turret.cpp)
+/**
+ * Reimplements 0x4374a0: zTurret_Runtime::UpdateAimAndPartMatrices.
+ * Source file: D:\Proj\Battlesport\turret.cpp.
+ * Purpose: Blends the turret aim direction and writes the recovered base/barrel matrices.
+ */
 void zTurret_Runtime::UpdateAimAndPartMatrices(
     const zVec3 *targetPos
 ) {
@@ -928,8 +1045,11 @@ void zTurret_Runtime::UpdateAimAndPartMatrices(
     );
 }
 
-// Reimplements 0x437730: zTurret_Runtime::SelectFirePointAndAimAtTarget
-// (D:\Proj\Battlesport\turret.cpp)
+/**
+ * Reimplements 0x437730: zTurret_Runtime::SelectFirePointAndAimAtTarget.
+ * Source file: D:\Proj\Battlesport\turret.cpp.
+ * Purpose: Selects the next muzzle point and computes the projectile direction toward the target.
+ */
 void zTurret_Runtime::SelectFirePointAndAimAtTarget(
     const zVec3 *targetPos
 ) {
@@ -962,8 +1082,11 @@ void zTurret_Runtime::SelectFirePointAndAimAtTarget(
     zMath::MatStackPopPtr();
 }
 
-// Reimplements 0x437820: zTurret_Runtime::FireWeapon
-// (D:\Proj\Battlesport\turret.cpp)
+/**
+ * Reimplements 0x437820: zTurret_Runtime::FireWeapon.
+ * Source file: D:\Proj\Battlesport\turret.cpp.
+ * Purpose: Spawns the configured OptCatalog weapon or activates its trail runtime state.
+ */
 void zTurret_Runtime::FireWeapon() {
     if (trailRuntimeState != 0) {
         if (runtimeInstanceActive == 0) {
@@ -1041,8 +1164,11 @@ void zTurret_Runtime::FireWeapon() {
     UpdateFireBurstTimer(fireRateSeconds);
 }
 
-// Reimplements 0x437990: zTurret_Runtime::UpdateFireBurstTimer
-// (D:\Proj\Battlesport\turret.cpp)
+/**
+ * Reimplements 0x437990: zTurret_Runtime::UpdateFireBurstTimer.
+ * Source file: D:\Proj\Battlesport\turret.cpp.
+ * Purpose: Advances burst timing and applies the post-burst fire cooldown.
+ */
 void zTurret_Runtime::UpdateFireBurstTimer(
     float deltaTime
 ) {
@@ -1058,8 +1184,11 @@ void zTurret_Runtime::UpdateFireBurstTimer(
     }
 }
 
-// Reimplements 0x436e40: zTurret_Runtime::Tick
-// (D:\Proj\Battlesport\turret.cpp)
+/**
+ * Reimplements 0x436e40: zTurret_Runtime::Tick.
+ * Source file: D:\Proj\Battlesport\turret.cpp.
+ * Purpose: Ticks target acquisition, aiming, firing, trail state, and turret deactivation.
+ */
 void zTurret_Runtime::Tick(
     const zVec3 *playerFxOffsetWorld
 ) {
@@ -1214,8 +1343,11 @@ void zTurret_Runtime::Tick(
     }
 }
 
-// Reimplements 0x437e50: zTurret_Runtime::FireWeaponCallback
-// (D:\Proj\Battlesport\turret.cpp)
+/**
+ * Reimplements 0x437e50: zTurret_Runtime::FireWeaponCallback.
+ * Source file: D:\Proj\Battlesport\turret.cpp.
+ * Purpose: Bridges the fire animation completion callback to the turret weapon firing path.
+ */
 void __fastcall zTurret_Runtime::FireWeaponCallback(
     zEffectAnimEntry *entry,
     zTurret_Runtime *self,
@@ -1226,8 +1358,11 @@ void __fastcall zTurret_Runtime::FireWeaponCallback(
     self->FireWeapon();
 }
 
-// Reimplements 0x4379f0: zTurret_Runtime::ApplyDamageAndHandleDestruction
-// (D:\Proj\Battlesport\turret.cpp)
+/**
+ * Reimplements 0x4379f0: zTurret_Runtime::ApplyDamageAndHandleDestruction.
+ * Source file: D:\Proj\Battlesport\turret.cpp.
+ * Purpose: Applies damage, activate-on-hit timing, and turret destruction effects.
+ */
 int zTurret_Runtime::ApplyDamageAndHandleDestruction(
     float damageAmount,
     OptCatalogEntryDef *entry,
@@ -1268,8 +1403,11 @@ int zTurret_Runtime::ApplyDamageAndHandleDestruction(
     return 0;
 }
 
-// Reimplements 0x437d60: zTurret_Runtime::OnDamage
-// (D:\Proj\Battlesport\turret.cpp)
+/**
+ * Reimplements 0x437d60: zTurret_Runtime::OnDamage.
+ * Source file: D:\Proj\Battlesport\turret.cpp.
+ * Purpose: Handles incoming OptCatalog damage and updates destruction or damage feedback.
+ */
 int __fastcall zTurret_Runtime::OnDamage(
     zTurret_Runtime *self,
     OptCatalogEntryDef *entry,
@@ -1293,7 +1431,11 @@ int __fastcall zTurret_Runtime::OnDamage(
     return 0;
 }
 
-// Reimplements 0x436e00: zTurret_Runtime::Shutdown
+/**
+ * Reimplements 0x436e00: zTurret_Runtime::Shutdown.
+ * Source file: D:\Proj\Battlesport\turret.cpp.
+ * Purpose: Frees per-runtime trail state and clears the turret damage handler.
+ */
 int zTurret_Runtime::Shutdown() {
     if (trailRuntimeState != 0) {
         OptCatalog::FreeTrailRuntimeStateStorage(trailRuntimeState);
@@ -1302,8 +1444,11 @@ int zTurret_Runtime::Shutdown() {
     return zClass_Node::ClearDamageHandler(healthyNode);
 }
 
-// Reimplements 0x436e20: zTurret_Runtime::HasActiveNode
-// (D:\Proj\Battlesport\turret.cpp)
+/**
+ * Reimplements 0x436e20: zTurret_Runtime::HasActiveNode.
+ * Source file: D:\Proj\Battlesport\turret.cpp.
+ * Purpose: Reports whether the parsed turret has an active scene node.
+ */
 int zTurret_Runtime::HasActiveNode() {
     if (flags != 0 && (turretNode->flags & 0x04) != 0) {
         return 1;
@@ -1313,15 +1458,22 @@ int zTurret_Runtime::HasActiveNode() {
 }
 
 namespace zTurret_System {
-// Reimplements 0x437aa0: zTurret_System::ResetIterationState
+/**
+ * Reimplements 0x437aa0: zTurret_System::ResetIterationState.
+ * Source file: D:\Proj\Battlesport\turret.cpp.
+ * Purpose: Clears turret runtime count and callback round-robin state.
+ */
 int ResetIterationState() {
     g_zTurret_RuntimeCount = 0;
     g_zTurret_CallbackStartIndex = 0;
     return 0;
 }
 
-// Reimplements 0x437ac0: zTurret_System::LoadDefinitionsFromPath
-// (D:\Proj\Battlesport\turret.cpp)
+/**
+ * Reimplements 0x437ac0: zTurret_System::LoadDefinitionsFromPath.
+ * Source file: D:\Proj\Battlesport\turret.cpp.
+ * Purpose: Loads turret definitions, allocates runtimes, and enables the tick callback.
+ */
 int __fastcall LoadDefinitionsFromPath(
     zClass_NodePartial *worldNode,
     const char *path
@@ -1420,8 +1572,11 @@ int __fastcall LoadDefinitionsFromPath(
     return 0;
 }
 
-// Reimplements 0x437ca0: zTurret_System::TickAllRuntimesRoundRobin
-// (D:\Proj\Battlesport\turret.cpp)
+/**
+ * Reimplements 0x437ca0: zTurret_System::TickAllRuntimesRoundRobin.
+ * Source file: D:\Proj\Battlesport\turret.cpp.
+ * Purpose: Advances active turret runtimes using the recovered round-robin globals.
+ */
 void TickAllRuntimesRoundRobin() {
     zUtil_SaveGameState *const saveState = (zUtil_SaveGameState *)g_GameStateOrMapTable;
     if (saveState->primaryModalState->masterModalData->masterType == kPlayerMasterTypeSub) {
@@ -1459,8 +1614,11 @@ void TickAllRuntimesRoundRobin() {
     }
 }
 
-// Reimplements 0x437d40: zTurret_System::DisableTickCallback
-// (D:\Proj\Battlesport\turret.cpp)
+/**
+ * Reimplements 0x437d40: zTurret_System::DisableTickCallback.
+ * Source file: D:\Proj\Battlesport\turret.cpp.
+ * Purpose: Disables the zTurret round-robin action callback node.
+ */
 int DisableTickCallback() {
     return zClass_Class::gwNodeSetActionCallback(
         g_zTurret_CallbackNode,
@@ -1468,8 +1626,11 @@ int DisableTickCallback() {
     );
 }
 
-// Reimplements 0x437d50: zTurret_System::EnableTickCallback
-// (D:\Proj\Battlesport\turret.cpp)
+/**
+ * Reimplements 0x437d50: zTurret_System::EnableTickCallback.
+ * Source file: D:\Proj\Battlesport\turret.cpp.
+ * Purpose: Enables the zTurret round-robin action callback node.
+ */
 int EnableTickCallback() {
     return zClass_Class::gwNodeSetActionCallback(
         g_zTurret_CallbackNode,
@@ -1477,7 +1638,11 @@ int EnableTickCallback() {
     );
 }
 
-// Reimplements 0x437dc0: zTurret_System::FreeAllRuntimes
+/**
+ * Reimplements 0x437dc0: zTurret_System::FreeAllRuntimes.
+ * Source file: D:\Proj\Battlesport\turret.cpp.
+ * Purpose: Releases turret runtimes, the loaded definition tree, and callback node.
+ */
 int FreeAllRuntimes() {
     for (int i = 0; i < g_zTurret_RuntimeCount; ++i) {
         zTurret_Runtime *const runtime = g_zTurret_RuntimeList[i];
@@ -1504,7 +1669,11 @@ int FreeAllRuntimes() {
     return 0;
 }
 
-// Reimplements 0x437ab0: zTurret_System::Shutdown
+/**
+ * Reimplements 0x437ab0: zTurret_System::Shutdown.
+ * Source file: D:\Proj\Battlesport\turret.cpp.
+ * Purpose: Shuts down the zTurret subsystem by freeing all loaded runtime state.
+ */
 int Shutdown() {
     FreeAllRuntimes();
     return 0;

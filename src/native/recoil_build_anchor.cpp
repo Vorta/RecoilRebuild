@@ -2,8 +2,6 @@
 
 struct zClass_NodePartial;
 
-extern "C" int g_RecoilState_MainMenuSkipExitDelay = 0;
-
 // Source-faithful helper recovered from address-backed callers in this source file.
 extern "C" int recoil_native_build_anchor(
     void

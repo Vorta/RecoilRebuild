@@ -129,6 +129,223 @@ extern "C" int zhud_mgr_static_init_and_register_at_exit_smoke(void) {
     return failure;
 }
 
+extern "C" int zhud_objective_show_smoke(void) {
+    g_HudUi_InvalidateMask = 0x80;
+
+    alignas(HudUiPanel) std::uint8_t summaryStorage[0x2a4]{};
+    alignas(HudUiPanel) std::uint8_t descStorage[0x2a4]{};
+    HudUiPanel *const summary = reinterpret_cast<HudUiPanel *>(summaryStorage);
+    HudUiPanel *const desc = reinterpret_cast<HudUiPanel *>(descStorage);
+    summary->ConstructorDefault(nullptr, 0, 0);
+    desc->ConstructorDefault(nullptr, 0, 0);
+
+    zVidImagePartial objectiveImage = {};
+    zVidImagePartial widgetImage = {};
+    widgetImage.width = 24;
+
+    g_HudUiMgrObjectiveSummaryTextPanel = summary;
+    g_HudUiMgrObjectiveDescTextPanel = desc;
+    g_HudUiMgrObjectiveWidget.image = &widgetImage;
+    g_HudUiMgrSensorOverlay.flags = 0;
+    g_HudUiMgrObjectiveBar.flags = 0x10;
+    g_HudUiMgrObjectivePhase = 0;
+    g_HudUiMgrObjectiveState = 0;
+    g_HudUiMgrObjectivePhaseTimerSec = 9.0f;
+    g_HudUiMgrObjectiveAutoHideDelaySec = 0.0f;
+    g_HudUiMgrObjectiveChatComposeActive = 0;
+
+    const int shown = HudUiMgrObjective::Show(&objectiveImage, "Summary", "Desc", 2.5f);
+    const bool showOk =
+        shown == 1 && g_HudUiMgrObjectiveState == 1 && g_HudUiMgrObjectivePhase == 1 &&
+        g_HudUiMgrObjectivePhaseTimerSec == 0.0f &&
+        g_HudUiMgrObjectiveAutoHideDelaySec == 2.5f &&
+        g_HudUiMgrObjectiveSensorRect.image == &objectiveImage &&
+        (g_HudUiMgrObjectiveBar.flags & 0x10) == 0 &&
+        std::strcmp(&TestFieldAt<char>(summary, 0x34), "Summary") == 0 &&
+        std::strcmp(&TestFieldAt<char>(desc, 0x34), "Desc") == 0;
+
+    g_HudUiMgrObjectivePhase = 3;
+    g_HudUiMgrObjectivePhaseTimerSec = 0.75f;
+    g_HudUiMgrObjectivePhaseDurationSec = 3.0f;
+    const int reversed = HudUiMgrObjective::Show(&objectiveImage, "Again", "Text", 1.0f);
+    const bool reverseOk =
+        reversed == 1 && g_HudUiMgrObjectivePhase == 1 &&
+        g_HudUiMgrObjectivePhaseTimerSec == 2.25f;
+
+    g_HudUiMgrObjectiveChatComposeActive = 1;
+    const int guarded = HudUiMgrObjective::Show(&objectiveImage, "No", "No", 1.0f);
+    const bool guardOk = guarded == 0;
+
+    DeleteObject(summary->hFont);
+    DeleteObject(desc->hFont);
+    summary->hFont = nullptr;
+    desc->hFont = nullptr;
+    g_HudUiMgrObjectiveChatComposeActive = 0;
+    g_HudUi_InvalidateMask = 0;
+    return showOk && reverseOk && guardOk ? 0 : 1;
+}
+
+extern "C" int zhud_objective_begin_smoke(void) {
+    g_HudUi_InvalidateMask = 0x80;
+
+    alignas(HudUiPanel) std::uint8_t summaryStorage[0x2a4]{};
+    alignas(HudUiPanel) std::uint8_t descStorage[0x2a4]{};
+    alignas(HudUiPanel) std::uint8_t labelStorage[0x2a4]{};
+    HudUiPanel *const summary = reinterpret_cast<HudUiPanel *>(summaryStorage);
+    HudUiPanel *const desc = reinterpret_cast<HudUiPanel *>(descStorage);
+    HudUiPanel *const label = reinterpret_cast<HudUiPanel *>(labelStorage);
+    summary->ConstructorDefault(nullptr, 0, 0);
+    desc->ConstructorDefault(nullptr, 0, 0);
+    label->ConstructorDefault(nullptr, 0, 0);
+
+    g_HudUiMgrObjectiveSummaryTextPanel = summary;
+    g_HudUiMgrObjectiveDescTextPanel = desc;
+    g_HudUiMgrObjectiveLabelTextPanel = label;
+    g_HudUiMgrObjectiveSensorRect.Constructor(0);
+    g_HudUiMgrObjectiveSensorRect.flags = 0;
+    g_HudUiMgrObjectiveState = 0;
+    g_HudUiMgrObjectivePhase = 2;
+    g_HudUiMgrObjectivePhaseTimerSec = 9.0f;
+    g_HudUiMgrObjectiveAutoHideDelaySec = 4.0f;
+    g_HudUiMgrObjectiveChatComposeActive = 0;
+
+    HudUiMgrObjective::Begin();
+    const bool phase2 = g_HudUiMgrObjectiveState == 1 && g_HudUiMgrObjectivePhase == 3 &&
+                        g_HudUiMgrObjectivePhaseTimerSec == 0.0f &&
+                        g_HudUiMgrObjectiveAutoHideDelaySec == 0.0f &&
+                        (reinterpret_cast<HudUiElement *>(summary)->flags & 0x10) != 0 &&
+                        (reinterpret_cast<HudUiElement *>(desc)->flags & 0x10) != 0 &&
+                        (reinterpret_cast<HudUiElement *>(label)->flags & 0x10) == 0 &&
+                        (g_HudUiMgrObjectiveSensorRect.flags & 0x10) != 0;
+
+    g_HudUiMgrObjectivePhase = 1;
+    g_HudUiMgrObjectivePhaseTimerSec = 1.25f;
+    g_HudUiMgrObjectivePhaseDurationSec = 3.0f;
+    g_HudUiMgrObjectiveAutoHideDelaySec = 8.0f;
+    HudUiMgrObjective::Begin();
+    const bool phase1 = g_HudUiMgrObjectivePhase == 3 &&
+                        g_HudUiMgrObjectivePhaseTimerSec == 1.75f &&
+                        g_HudUiMgrObjectiveAutoHideDelaySec == 0.0f;
+
+    g_HudUiMgrObjectiveChatComposeActive = 1;
+    g_HudUiMgrObjectivePhase = 2;
+    g_HudUiMgrObjectiveState = 0;
+    HudUiMgrObjective::Begin();
+    const bool chatGuard = g_HudUiMgrObjectivePhase == 2 && g_HudUiMgrObjectiveState == 0;
+
+    DeleteObject(summary->hFont);
+    DeleteObject(desc->hFont);
+    DeleteObject(label->hFont);
+    summary->hFont = nullptr;
+    desc->hFont = nullptr;
+    label->hFont = nullptr;
+    g_HudUiMgrObjectiveChatComposeActive = 0;
+    g_HudUi_InvalidateMask = 0;
+    return phase2 && phase1 && chatGuard ? 0 : 1;
+}
+
+extern "C" int zhud_mgr_sensor_set_shield_message_ratio_smoke(void) {
+    HudUiMgrData oldMgr;
+    const std::uint32_t oldInvalidateMask = g_HudUi_InvalidateMask;
+    std::memcpy(&oldMgr, &g_HudUiMgr, sizeof(oldMgr));
+
+    HudUiShieldMessageWidget shield = {};
+    g_HudUiMgrShieldMessageWidget = &shield;
+    shield.meter.fillPixelsMax = 20;
+    shield.meter.points[1].y = 100.0f;
+
+    g_HudUi_InvalidateMask = 0x80;
+    HudUiMgrSensor::SetShieldMessageRatio(0.125f);
+    if (shield.meter.color565 != (zVid_PackColorRGB(255, 0, 0) & 0xffffu)) {
+        std::memcpy(&g_HudUiMgr, &oldMgr, sizeof(g_HudUiMgr));
+        g_HudUi_InvalidateMask = oldInvalidateMask;
+        return 1;
+    }
+    if (shield.meter.points[0].y != 97.0f || shield.meter.points[3].y != 97.0f) {
+        std::memcpy(&g_HudUiMgr, &oldMgr, sizeof(g_HudUiMgr));
+        g_HudUi_InvalidateMask = oldInvalidateMask;
+        return 2;
+    }
+    if ((shield.meter.flags & 0x80) == 0) {
+        std::memcpy(&g_HudUiMgr, &oldMgr, sizeof(g_HudUiMgr));
+        g_HudUi_InvalidateMask = oldInvalidateMask;
+        return 3;
+    }
+    if (std::strcmp(&TestFieldAt<char>(&shield.percentTextPanel, 0x34), "13") != 0) {
+        std::memcpy(&g_HudUiMgr, &oldMgr, sizeof(g_HudUiMgr));
+        g_HudUi_InvalidateMask = oldInvalidateMask;
+        return 4;
+    }
+
+    shield.meter.flags = 0;
+    ((HudUiElement *)(&shield.percentTextPanel))->flags = 0;
+    HudUiMgrSensor::SetShieldMessageRatio(1.50f);
+    if (shield.meter.color565 != (zVid_PackColorRGB(255, 255, 0) & 0xffffu)) {
+        std::memcpy(&g_HudUiMgr, &oldMgr, sizeof(g_HudUiMgr));
+        g_HudUi_InvalidateMask = oldInvalidateMask;
+        return 5;
+    }
+    if (shield.meter.points[0].y != 80.0f || shield.meter.points[3].y != 80.0f) {
+        std::memcpy(&g_HudUiMgr, &oldMgr, sizeof(g_HudUiMgr));
+        g_HudUi_InvalidateMask = oldInvalidateMask;
+        return 6;
+    }
+    if ((shield.meter.flags & 0x80) == 0) {
+        std::memcpy(&g_HudUiMgr, &oldMgr, sizeof(g_HudUiMgr));
+        g_HudUi_InvalidateMask = oldInvalidateMask;
+        return 7;
+    }
+    if (std::strcmp(&TestFieldAt<char>(&shield.percentTextPanel, 0x34), "100") != 0) {
+        std::memcpy(&g_HudUiMgr, &oldMgr, sizeof(g_HudUiMgr));
+        g_HudUi_InvalidateMask = oldInvalidateMask;
+        return 8;
+    }
+
+    shield.meter.flags = 0;
+    HudUiMgrSensor::SetShieldMessageRatio(-0.50f);
+    const bool zeroOk =
+        shield.meter.color565 == (zVid_PackColorRGB(255, 0, 0) & 0xffffu) &&
+        shield.meter.points[0].y == 100.0f &&
+        shield.meter.points[3].y == 100.0f &&
+        std::strcmp(&TestFieldAt<char>(&shield.percentTextPanel, 0x34), "0") == 0;
+
+    std::memcpy(&g_HudUiMgr, &oldMgr, sizeof(g_HudUiMgr));
+    g_HudUi_InvalidateMask = oldInvalidateMask;
+    return zeroOk ? 0 : 9;
+}
+
+extern "C" int zhud_objective_refresh_counter_text_smoke(void) {
+    HudUiMgrData oldMgr;
+    std::memcpy(&oldMgr, &g_HudUiMgr, sizeof(oldMgr));
+
+    HudUiCounterTextPanel counter;
+    std::memset(&counter, 0, sizeof(counter));
+    HudUiContainer *const constructedMgr = HudUiMgr::Constructor(&g_HudUiMgr);
+    counter.Constructor();
+    g_HudUiMgrObjectiveCounterTextPanel = &counter;
+
+    HudUiMgrObjective::RefreshCounterText(12345);
+    const bool positive =
+        constructedMgr == &g_HudUiMgr &&
+        std::strcmp(&TestFieldAt<char>(&counter, 0x34), "12345") == 0 &&
+        std::strcmp(&TestFieldAt<char>(&counter, 0x15c), "12345") == 0 &&
+        TestFieldAt<std::uint32_t>(&counter, 0x270) == 1;
+
+    HudUiMgrObjective::RefreshCounterText(-8);
+    HudUiElement *const element = (HudUiElement *)(&counter);
+    const bool negative =
+        std::strcmp(&TestFieldAt<char>(&counter, 0x34), "-8") == 0 &&
+        std::strcmp(&TestFieldAt<char>(&counter, 0x15c), "-8") == 0 &&
+        element->clipRect.right >= element->clipRect.left &&
+        element->clipRect.bottom >= element->clipRect.top;
+
+    HudUiMgr::StaticDestructor(&g_HudUiMgr);
+    DeleteObject(((HudUiPanel *)(&counter))->hFont);
+    ((HudUiPanel *)(&counter))->hFont = 0;
+    std::memcpy(&g_HudUiMgr, &oldMgr, sizeof(g_HudUiMgr));
+    return positive && negative ? 0 : 1;
+}
+
 #else
 
 #include "Battlesport/GameNet.h"
@@ -22803,17 +23020,20 @@ extern "C" int zhud_objective_update_smoke(void) {
 extern "C" int zhud_objective_begin_smoke(void) {
     g_HudUi_InvalidateMask = 0x80;
 
+    alignas(HudUiPanel) std::uint8_t summaryStorage[0x2a4]{};
     alignas(HudUiPanel) std::uint8_t descStorage[0x2a4]{};
     alignas(HudUiPanel) std::uint8_t labelStorage[0x2a4]{};
+    auto *const summary = reinterpret_cast<HudUiPanel *>(summaryStorage);
     auto *const desc = reinterpret_cast<HudUiPanel *>(descStorage);
     auto *const label = reinterpret_cast<HudUiPanel *>(labelStorage);
+    summary->ConstructorDefault(nullptr, 0, 0);
     desc->ConstructorDefault(nullptr, 0, 0);
     label->ConstructorDefault(nullptr, 0, 0);
 
+    g_HudUiMgrObjectiveSummaryTextPanel = summary;
     g_HudUiMgrObjectiveDescTextPanel = desc;
     g_HudUiMgrObjectiveLabelTextPanel = label;
-    g_HudUiMgrObjectiveSensorRect.ftable =
-        reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable);
+    g_HudUiMgrObjectiveSensorRect.Constructor(0);
     g_HudUiMgrObjectiveSensorRect.flags = 0;
     g_HudUiMgrObjectiveState = 0;
     g_HudUiMgrObjectivePhase = 2;
@@ -22825,8 +23045,9 @@ extern "C" int zhud_objective_begin_smoke(void) {
     const bool phase2 = g_HudUiMgrObjectiveState == 1 && g_HudUiMgrObjectivePhase == 3 &&
                         g_HudUiMgrObjectivePhaseTimerSec == 0.0f &&
                         g_HudUiMgrObjectiveAutoHideDelaySec == 0.0f &&
+                        (reinterpret_cast<HudUiElement *>(summary)->flags & 0x10) != 0 &&
                         (reinterpret_cast<HudUiElement *>(desc)->flags & 0x10) != 0 &&
-                        (reinterpret_cast<HudUiElement *>(label)->flags & 0x10) != 0 &&
+                        (reinterpret_cast<HudUiElement *>(label)->flags & 0x10) == 0 &&
                         (g_HudUiMgrObjectiveSensorRect.flags & 0x10) != 0;
 
     g_HudUiMgrObjectivePhase = 1;
@@ -22844,8 +23065,10 @@ extern "C" int zhud_objective_begin_smoke(void) {
     HudUiMgrObjective::Begin();
     const bool chatGuard = g_HudUiMgrObjectivePhase == 2 && g_HudUiMgrObjectiveState == 0;
 
+    DeleteObject(summary->hFont);
     DeleteObject(desc->hFont);
     DeleteObject(label->hFont);
+    summary->hFont = nullptr;
     desc->hFont = nullptr;
     label->hFont = nullptr;
     g_HudUiMgrObjectiveChatComposeActive = 0;
@@ -25084,7 +25307,7 @@ extern "C" int hud_weather_fx_constructor_smoke(void) {
 
     const bool initialized =
         result == &weather && weather.ftable == &g_HudWeatherFx_Vtable &&
-        weather.viewportRect == nullptr && weather.maxParticles == 3 &&
+        weather.clipRectOrNull == nullptr && weather.maxParticles == 3 &&
         weather.particleCount == 3 && weather.packedColor16 == 0x7fff &&
         weather.alphaStartScale == 1.0f && weather.alphaEndScale == 0.0500000007f &&
         weather.camera == nullptr && weather.activeParticleCount == 0 &&
@@ -25294,7 +25517,7 @@ extern "C" int hud_weather_fx_draw_particles_smoke(void) {
     softwareQuad.texCoordUStart = 1.0f;
     softwareQuad.texCoordUEnd = 1.0f;
     softwareQuad.slantOffset = 1;
-    softwareWeather.viewportRect = &softwareViewport;
+    softwareWeather.clipRectOrNull = &softwareViewport;
     softwareWeather.particleQuads = &softwareQuad;
     softwareWeather.particleCount = 1;
     g_zVideo_ActiveRendererPath = 0;
@@ -25305,7 +25528,7 @@ extern "C" int hud_weather_fx_draw_particles_smoke(void) {
     g_zVideo_FxSurfacePitchPixels16 = 5;
     zRndr::g_pitchBytes = 10;
     zRndr::g_pixelPackGreenBits = 6;
-    softwareWeather.DrawParticles();
+    softwareWeather.ApplyPass3();
     const bool softwareOk = fxPixels[1 + 2 * 5] == 0xf800 &&
                             fxPixels[2 + 2 * 5] == 0xf800 &&
                             fxPixels[3 + 2 * 5] == 0xf800 &&
@@ -25339,7 +25562,7 @@ extern "C" int hud_weather_fx_draw_particles_smoke(void) {
     hardwareQuads[1].slantOffset = 5;
     positions[0].z = 0.6f;
     positions[1].z = 0.7f;
-    hardwareWeather.viewportRect = &hardwareViewport;
+    hardwareWeather.clipRectOrNull = &hardwareViewport;
     hardwareWeather.particleQuads = hardwareQuads;
     hardwareWeather.particleCount = 2;
     hardwareWeather.packedColor16 = 0x1234;
@@ -25363,7 +25586,7 @@ extern "C" int hud_weather_fx_draw_particles_smoke(void) {
         reinterpret_cast<std::uint32_t>(&HudWeatherFxFlushSortedStub);
     g_zVideo_D3DSceneDepth = 2;
     g_zVideo_SwSurfaceState.locked = 0;
-    hardwareWeather.DrawParticles();
+    hardwareWeather.ApplyPass3();
 
     bool uploadPatternOk = true;
     for (int index = 0; index < 16; ++index) {
@@ -25510,7 +25733,7 @@ extern "C" int hud_weather_fx_rain_update_smoke(void) {
     zVec3 positionsB[1] = {};
     HudWeatherFxRain rain = {};
     rain.flags = 0x02;
-    rain.viewportRect = &viewport;
+    rain.clipRectOrNull = &viewport;
     rain.particleQuads = quads;
     rain.particleCount = 1;
     rain.packedColor16 = 0x2468;
@@ -25580,7 +25803,7 @@ extern "C" int hud_weather_fx_snow_update_smoke(void) {
     zVec3 positionsB[2] = {};
     HudWeatherFxSnow snow = {};
     snow.flags = 0x02;
-    snow.viewportRect = &viewport;
+    snow.clipRectOrNull = &viewport;
     snow.particleQuads = quads;
     snow.particleCount = 2;
     snow.packedColor16 = 0x1357;

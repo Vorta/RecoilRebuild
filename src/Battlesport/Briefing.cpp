@@ -572,6 +572,8 @@ void HudUiBriefingLocatorPanel::Update(
  * Original inline helper; no standalone retail function exists.
  * Observed in callers 0x4045b0, 0x404640, 0x4046d0, 0x404780,
  * 0x4048a0, 0x4049d0, and 0x404b40.
+ * Evidence: BN shows each Add* helper allocating an action record, then
+ * linking one 0x0c-byte queue node at the action-queue sentinel.
  * Purpose: insert one action at the tail sentinel and return the updated queue count.
  */
 inline int Briefing_ActionQueue::InsertAction(

@@ -13,6 +13,14 @@ g_HudSensorTracker` is one data plan entry for the owner range, not one row per
 BN-labeled member. `.rdata` and BSS facts still belong in the source-owner data
 gate evidence when a function's `Data reimplemented` marker depends on them.
 
+Data entries use `Reimplemented [X/F/C/B/A/S]`: `X` means no accepted
+source-level data implementation, `F` means the canonical source definition or
+declaration builds and matches basic BN symbol facts, `C` means the complete
+source data-owner model is accepted, `B` means the linked owner data gate is
+accepted, `A` means reviewed relocation-masked data-symbol evidence is
+near-byte-equivalent, and `S` means accepted data-symbol bytes plus relocation
+identity and linked owner byte gate acceptance.
+
 ## Acceptance Packet
 
 For each accepted data owner, record:
@@ -108,6 +116,301 @@ recovered and verified.
 
 Future data-owner acceptances should append compact entries here rather than
 relying only on per-function plan markers.
+
+## 2026-06-21 Accepted Data Owners
+
+### render_video.zrndr_overlay_rect_staging_globals
+
+- Owner symbol/scope: zRndr overlay rectangle buffered draw globals in
+  `src/GameZRecoil/zRndr/zRndr.cpp`.
+- BN/source data: `gRndr_OverlayBlendEnabled` at 0x62e9dc,
+  `gRndr_OverlayBlendRectLeft` at 0x62e9e0,
+  `gRndr_OverlayBlendRectTop` at 0x62e9e4,
+  `gRndr_OverlayBlendRectRight` at 0x62e9e8,
+  `gRndr_OverlayBlendRectBottom` at 0x62e9ec,
+  `gRndr_OverlayBlendPackedColor16` at 0x62e9f0, and
+  `gRndr_OverlayBlendAlpha` at 0x62e9f8.
+- Extent/section/nullness: the accepted bank spans 0x62e9dc..0x62e9ff.
+  The scalar fields are 4-byte zero-initialized values, 0x62e9f4 is an
+  unreferenced alignment gap, and the alpha value is an 8-byte double whose
+  high dword overlaps stale BN field views at 0x62e9fc.
+- Lifecycle/xrefs: overlay submit writes the bank, overlay flush reads it, and
+  lens-flare draw paths read the buffered enabled/color/alpha state. This data
+  owner is independent of the unresolved ESP-pivot span family and does not
+  clear the separate overlay MMX row source-shape blocker.
+- VC5 evidence: `python tools/recoil.py verify vc5
+  zrndr_overlay_rect_staging_globals` passed with zero unmasked data-byte
+  mismatches for all seven non-padding data symbols using
+  `vc5_o2_ob0_md_facs`.
+- Dependent plan entries: none promoted in this pass; shared overlay
+  row/submit/flush entries remain owner/source-blocked.
+
+### network_online.gamenet_net_zrd_path_literal
+
+- Owner symbol/scope: GameNet mission startup `net.zrd` path literal in
+  `src/Battlesport/GameNet.cpp`.
+- BN/source data: `g_GameNet_NetZrdPathLiteral` at 0x4dcfb4.
+- Extent/section/nullness: independent 8-byte null-terminated `.rdata`
+  string literal.
+- Lifecycle/xrefs: 0x431dd0 `Net::InitFromZrd` passes the literal to the
+  zReader load path.
+- VC5 evidence: `python tools/recoil.py verify vc5
+  gamenet_net_zrd_path_literal` passed with zero unmasked data-byte mismatches
+  for the generated VC5 string symbol using
+  `vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs`.
+- Dependent plan entries: data entry 0x4dcfb4 was accepted; 0x431dd0 remains
+  blocked on broader GameNet owner/data routing.
+
+### network_online.gamenet_pkt06_local_replication_data
+
+- Owner symbol/scope: GameNet local pkt06 replication snapshot buffer and input
+  latch globals in `src/Battlesport/GameNet.cpp`.
+- BN/source data: `g_NetPkt06_PlayerStateSnapshotBuf` at 0x4dcdb0,
+  `g_GameNetPkt06InputBit17Latch` at 0x4f3f6c, and
+  `g_GameNetPkt06InputBit16Latch` at 0x4f3f70.
+- Extent/section/nullness: the pkt06 snapshot buffer is a 192-byte initialized
+  record; the two latch globals are independent 4-byte zero-initialized BSS
+  values.
+- Lifecycle/xrefs: 0x432300 fills/sends the pkt06 snapshot and consumes/clears
+  both input latches during local-player replication.
+- VC5 evidence: `python tools/recoil.py verify vc5
+  gamenet_pkt06_local_replication_data` passed with zero unmasked data-byte
+  mismatches for all three data symbols using
+  `vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs`.
+- Dependent plan entries: data entries 0x4dcdb0, 0x4f3f6c, and 0x4f3f70 were
+  accepted; 0x432300 remains below promotion because its function
+  reconstruction/source-owner routing is broader than this data owner.
+
+### network_online.gamenet_startgate_effect_literal
+
+- Owner symbol/scope: GameNet startgate effect-name literal in
+  `src/Battlesport/GameNet.cpp`.
+- BN/source data: `g_GameNet_StartGateEffectLiteral` at 0x4dcfbc.
+- Extent/section/nullness: independent 10-byte null-terminated `.rdata`
+  string literal.
+- Lifecycle/xrefs: 0x432300 uses the literal when looking up the startgate
+  effect during pkt06/HUD timer replication.
+- VC5 evidence: `python tools/recoil.py verify vc5
+  gamenet_startgate_effect_literal` passed with zero unmasked data-byte
+  mismatches using `vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs`.
+- Dependent plan entries: data entry 0x4dcfbc was accepted; 0x432300 remains
+  separately source-owner/reconstruction gated.
+
+### shared.fatal_shutdown_printf_literal
+
+- Owner symbol/scope: shared fatal shutdown printf format literal pooled across
+  `src/Battlesport/GameNet.cpp`, `src/Battlesport/RecoilApp.cpp`, and
+  `src/Battlesport/HudUiMpExitDialog.cpp`.
+- BN/source data: `g_SharedFatalShutdownPrintfFormat` at 0x4db4ac.
+- Extent/section/nullness: independent 8-byte null-terminated `.rdata`
+  string literal.
+- Lifecycle/xrefs: GameNet mission init failure, RecoilApp fatal exit, and
+  HudUi multiplayer exit dialog failure paths all reference this pooled
+  literal before calling `printf`.
+- VC5 evidence: `python tools/recoil.py verify vc5
+  shared_fatal_shutdown_printf_literal` passed with zero unmasked data-byte
+  mismatches from the GameNet translation unit using
+  `vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs`.
+- Dependent plan entries: data entry 0x4db4ac was accepted; function-level
+  promotions remain controlled by their respective source-owner gates.
+
+### app_shell.czrecoil_frame_mfc_runtime_message_maps
+
+- Owner symbol/scope: CZRecoilFrame/CZGameFrame MFC runtime-class and
+  message-map metadata in `src/Battlesport/CZRecoilFrame.cpp` and
+  `src/Battlesport/CZGameFrame.cpp`.
+- BN/source data: `g_CZRecoilFrame_RuntimeClass` at 0x4d0bf0,
+  `g_CZRecoilFrame_MessageMap` at 0x4d0c08,
+  `g_CZRecoilFrame_MessageEntries` at 0x4d0c10,
+  `g_CZRecoilFrame_RuntimeClassName` at 0x4dccf0,
+  `g_CZGameFrame_RuntimeClass` at 0x4d20e0,
+  `g_CZGameFrame_MessageMap` at 0x4d20f8,
+  `g_CZGameFrame_MessageEntries` at 0x4d2100, and
+  `g_CZGameFrame_RuntimeClassName` at 0x4dd8dc.
+- Extent/section/nullness: the runtime-class records are 24-byte
+  `CRuntimeClass` records; the message maps are 8-byte `AFX_MSGMAP` records;
+  the message-entry tables are 1320-byte and 216-byte `AFX_MSGMAP_ENTRY`
+  arrays with terminal zero entries; the class-name strings are 14-byte and
+  12-byte null-terminated `.data` string COMDATs. BN typing for
+  `g_CZGameFrame_RuntimeClass` was corrected from a 4-byte pointer view to
+  `zMfcRuntimeClass24` and saved.
+- Provider exclusions: MFC42 CFrameWnd runtime-class/message-map pointers at
+  0x4cc25c and 0x4cc260 are provider data, not authored app-shell data.
+  CZRecoilFrame/CZGameFrame vtables at 0x4d1140 and 0x4d21d8 remain separate
+  class/vtable owner work.
+- VC5 evidence: `python tools/recoil.py verify vc5 czframe_mfc_metadata` and
+  `python tools/recoil.py verify vc5 czgame_frame_mfc_metadata` passed with
+  zero unmasked data-byte mismatches for all eight linked metadata/string data
+  symbols using `vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs`.
+- Dependent plan entries: 0x4301e0, 0x443730, 0x430240, 0x4306e0, 0x443790,
+  0x4437a0, 0x4437b0, and 0x4437c0. Standalone string data entries
+  0x4dccf0 and 0x4dd8dc have accepted source ownership and data-equivalent
+  metadata, but their `Reimplemented [S]` marker remains blocked while the
+  linked owner byte gate is deferred.
+
+### effects_weapons.zweapon_tether_config_data
+
+- Owner symbol/scope: zWeapon maximum tether altitude runtime config global in
+  `src/GameZRecoil/zWeapon/zWeapon.cpp`.
+- BN/source data: `g_zWeapon_MaxTetherAltitude` at 0x779a98.
+- Extent/section/nullness: independent 4-byte `.data` float initialized to
+  zero.
+- Lifecycle/xrefs: `zWeapon::Init` restores the startup default,
+  `zWeapon::SetMaxTetherAltitude` updates the value, and OptCatalog runtime
+  processing reads it for tether checks.
+- VC5 evidence: `python tools/recoil.py verify vc5
+  zweapon_tether_config_data` passed with zero unmasked data-byte mismatches
+  for the generated `_g_zWeapon_MaxTetherAltitude` symbol using
+  `vc5_o2_ob0_md_facs`.
+- Dependent plan entries: supports the accepted data gate for 0x4b1090
+  `zWepInit`; broader zWeapon/OptCatalog source-cluster tier S remains
+  deferred.
+
+### effects_weapons.optcatalog_warning_config_data
+
+- Owner symbol/scope: OptCatalog warning sample pointers, crater radius
+  configuration, and config-key literals in
+  `src/GameZRecoil/zWeapon/OptCatalog.c`.
+- BN/source data: `g_OptCatalogMaxCraterRadius` at 0x779a7c,
+  `g_OptCatalogSndTriggerInactive` at 0x779a8c,
+  `g_OptCatalogSndWeaponInactive` at 0x779a90,
+  `g_OptCatalogSndNoAmmoWarning` at 0x779a94, plus the authored config-key
+  string literals at 0x4e4548, 0x4e455c, 0x4e456c, 0x4e4580, and 0x4e4590.
+- Extent/section/nullness: the four scalar globals are independent 4-byte
+  `.data` values; the config keys are independent null-terminated `.rdata`
+  strings used by the OptCatalog load/config path.
+- Lifecycle/xrefs: the warning playback helpers at 0x4b0600, 0x4b0620, and
+  0x4b0640 consume the warning sample pointers. The crater and remaining key
+  users are still broader zWeapon/OptCatalog owner work and are not promoted by
+  this owner acceptance alone.
+- VC5 evidence: `python tools/recoil.py verify vc5
+  optcatalog_warning_config_data` passed with zero unmasked data-byte
+  mismatches for all nine data symbols using `vc5_o2_ob0_md_facs`.
+- Dependent plan entries: 0x4b0600, 0x4b0620, and 0x4b0640 are promoted to
+  tier B from this owner plus `effects_weapons.optcatalog_warning_sample_playback`.
+
+### effects_weapons.zweapon_zar_section_data
+
+- Owner symbol/scope: zWeapon ZAR handler registration flag and archive/section
+  name literals in `src/GameZRecoil/zWeapon/zWeapon.cpp`.
+- BN/source data: `g_zWeapon_ZarHandlerRegistered` at 0x4e42ec,
+  `g_zWeapon_ArchiveName` at 0x4e42f0, and `g_zWeapon_DataSectionName` at
+  0x4e42f8.
+- Extent/section/nullness: the registration flag is independent 4-byte `.data`
+  storage initialized to one; the archive and section names are independent
+  null-terminated `.rdata` strings.
+- Lifecycle/xrefs: the zWeapon init/load callbacks register and consume this
+  ZAR section state. Broader load-path promotion remains blocked by separate
+  zWeapon owner and verification gaps.
+- VC5 evidence: `python tools/recoil.py verify vc5
+  zweapon_zar_warning_data` passed with zero unmasked data-byte mismatches for
+  all three data symbols using `vc5_o2_ob0_md_facs`.
+- Dependent plan entries: no broad zWeapon init/load entry is promoted from
+  this narrow data-owner acceptance in this pass.
+
+### effects_weapons.optcatalog_runtime_tick_data
+
+- Owner symbol/scope: OptCatalog runtime tick timing and lock-on warning
+  globals in `src/GameZRecoil/zWeapon/OptCatalog.c`.
+- BN/source data: `g_OptCatalogRuntimeDeltaTime` at 0x56bca8,
+  `g_OptCatalogRuntimeNowSec` at 0x56bcac,
+  `g_OptCatalogSndLockOnWarning` at 0x779a74, and
+  `g_OptCatalogLockOnWarningGateTimeSec` at 0x779a78.
+- Extent/section/nullness: each accepted item is an independent 4-byte
+  zero-initialized global. The warning sample is pointer storage in source,
+  while current BN exposes the same 4-byte storage as `int32_t`.
+- Lifecycle/xrefs: 0x4af060 `OptCatalog::ProcessRuntimeInstances` writes the
+  runtime delta/now values and consumes the lock-on warning sample/gate;
+  0x4b0e20 `OptCatalog::ComputeTrailImpactResponse` consumes runtime delta
+  time; `zWeapon::OnWeaponsSectionDataReady` resets the gate and the load path
+  initializes the warning sample.
+- VC5 evidence: address-scoped `python tools/recoil.py verify vc5` passed for
+  0x56bca8, 0x56bcac, 0x779a74, and 0x779a78 through
+  `optcatalog_runtime_callback_globals` using `vc5_o2_ob0_md_facs`, with zero
+  unmasked data-byte mismatches.
+- Dependent plan entries: 0x4af060 and 0x4b0e20.
+
+### engine.zmath.vec3_scalar_rdata_constants
+
+- Owner symbol/scope: zMath vector scalar read-only constants used by
+  `Vec3Perp2D` and `Vec3Slerp` in
+  `src/GameZRecoil/zMath/zMath.cpp`.
+- BN/source data: `g_zMath_Vec3ZeroFloat` at 0x4d2918,
+  `g_zMath_Vec3UnitFloat` at 0x4d291c,
+  `g_zMath_Vec3DirectionDotNegThreshold` at 0x4d2930,
+  `g_zMath_DirectionToPiFloat` at 0x4d2938, and
+  `g_zMath_Vec3DirectionDotPosThreshold` at 0x4d2948.
+- Extent/section/nullness: each accepted item is an independent `.rdata`
+  scalar constant; the zero and unit values are 4-byte floats, the dot
+  thresholds are 8-byte doubles, and the pi scalar is a 4-byte float.
+- Lifecycle/xrefs: 0x472cc0 `zMath::Vec3Perp2D` reads zero/unit constants;
+  0x472a10 `zMath::Vec3Slerp` reads zero/unit plus the three authored Slerp
+  constants. The 0x4d2940 x87 trig range threshold read by Slerp is classified
+  under `compiler.vc5.x87_trig_intrinsic_constants`, not authored zMath data.
+- VC5 evidence: `python tools/recoil.py verify vc5
+  zmath_vec3_scalar_rdata_constants` passed with zero unmasked data-byte
+  mismatches for all five authored constants using `vc5_o2_ob0_md_facs`.
+- Dependent plan entries: 0x472cc0 and 0x472a10.
+
+### network_online.gamenet_mission_pkt06_timer_globals
+
+- Owner symbol/scope: GameNet mission startup and pkt06/HUD timer scalar
+  globals in `src/Battlesport/GameNet.cpp`.
+- BN/source data: `g_GameNetHostHudTimerInitFlag` at 0x4f3f98,
+  `g_GameNetPkt06NextSendTimeSec` at 0x4f3f9c,
+  `g_GameNetHudTimerTenSecondWarningArmed` at 0x4dce70, and
+  `g_GameNetHudTimerPendingSaveReminderArmed` at 0x4dce74.
+- Extent/section/nullness: each accepted item is a 4-byte authored scalar;
+  the two BSS values initialize to zero, and the two HUD timer warning flags
+  initialize to one in `.data`.
+- Lifecycle/xrefs: 0x431dd0 initializes the host HUD timer flag and pkt06
+  next-send deadline; 0x432300 consumes and updates the pkt06 deadline and
+  HUD timer warning flags during local-player replication.
+- VC5 evidence: `python tools/recoil.py verify vc5
+  gamenet_mission_pkt06_timer_globals` passed with zero unmasked data-byte
+  mismatches for all four data symbols using
+  `vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs`.
+- Dependent plan entries: 0x431dd0 and 0x432300 still need complete
+  source-owner/data routing before promotion, including the `net.zrd` path
+  literal and shared fatal printf literal for 0x431dd0.
+
+### network_online.net_session_config_dialog
+
+- Owner symbol/scope: NetSessionConfigDialog authored MFC dialog class/static
+  metadata and multiplayer map-name storage in `src/Battlesport/GameNet.cpp`.
+- BN/source data: `g_NetSessionConfigDialog_MessageMap` at 0x4d03d0,
+  `g_NetSessionConfigDialog_MessageMapEntries` at 0x4d03d8,
+  `g_NetSessionConfigDialog_Vtbl` at 0x4d0420,
+  `g_NetSessionConfigDialog_MapNameStrings` at 0x4f32d8, the seven
+  map-name literals at 0x4db6cc, 0x4db6bc, 0x4db6b0, 0x4db6a4,
+  0x4db694, 0x4db684, and 0x4db674, and the Exercise name format at
+  0x4db6d8.
+- Extent/section/nullness: the message map is an 8-byte MFC map record, the
+  message-entry table is a 72-byte three-entry table, the vftable is a
+  216-byte `CDialogVTable`, the CString storage is seven zero-initialized
+  4-byte CString slots, and the map/session literals are independent
+  null-terminated static string objects.
+- Lifecycle/xrefs: 0x41c6e0 constructs the derived dialog and installs the
+  authored vftable, 0x41c970 returns the message map, 0x41c990 constructs the
+  map-name CString table, 0x41ca10 destroys the CString table, and
+  0x41ca30/0x41cb50/0x41cb90 consume the map-name/session state while the
+  dialog is active.
+- VC5 evidence: `python tools/recoil.py verify vc5
+  net_session_config_dialog_data` passed with zero unmasked data-byte
+  mismatches for the message map, message entries, vftable, and CString
+  storage. `python tools/recoil.py verify vc5
+  net_session_config_dialog_map_literals` passed with zero unmasked data-byte
+  mismatches for all seven map-name literals and the Exercise session-name
+  format using `vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs`.
+- Source-shape note: the accepted class model uses a real VC5-era
+  MFC-derived constructor/destructor so the compiler emits
+  `??_7NetSessionConfigDialog@@6B@`; the earlier placement-CDialog
+  pseudo-constructor shape did not emit the derived vftable and was not
+  accepted.
+- Dependent plan entries: 0x41c6e0, 0x41c7f0, 0x41c880, 0x41c970,
+  0x41c990, 0x41ca00, 0x41ca10, 0x41ca30, 0x41cb50, and 0x41cb90.
+  The standalone 0x4f32d8 data row records data-equivalent evidence but keeps
+  `Reimplemented [S]` blocked while the class byte gate remains deferred.
 
 ## 2026-06-18 Accepted Data Owners
 

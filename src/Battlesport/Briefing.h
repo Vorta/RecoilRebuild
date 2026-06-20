@@ -6,17 +6,29 @@
 
 #include "recoil/recoil_callconv.h"
 
+/**
+ * Briefing action base. BN action records at 0x404620 through 0x404bb0 share
+ * the offset-zero virtual Tick dispatch used by HudUiBriefingRuntime::Update.
+ */
 struct BriefingAction {
     virtual int Tick(float deltaSec) = 0;
 };
 
+/**
+ * Briefing action queue node. BN queue helpers allocate 0x0c-byte nodes and
+ * thread them through the runtime-owned circular action list.
+ */
 struct BriefingActionNode {
     BriefingActionNode *prev;
     BriefingActionNode *next;
     BriefingAction *action;
 };
 
-// Briefing-owned circular action queue embedded at HudUiBriefingRuntime+0xa94c.
+/**
+ * Briefing-owned circular action queue embedded in HudUiBriefingRuntime. BN
+ * field references in the runtime/action helpers prove the member offsets and
+ * the action insertion/tick ownership.
+ */
 struct Briefing_ActionQueue {
     int missionId;
     BriefingActionNode *headSentinel;
@@ -64,7 +76,11 @@ struct HudUiBriefingLocatorPanel : HudUiCircle {
     void Update(float deltaSec);
 };
 
-// Briefing objective picture widget; derived dispatch overrides Draw with the noise-overlay pass.
+/**
+ * Briefing objective picture widget. BN names the slot target
+ * DrawWithNoiseOverlay; the source model is the HudUiWidget Draw override with
+ * a briefing-only noiseAlpha member.
+ */
 struct HudUiBriefingObjectivePicture : HudUiWidget {
     float noiseAlpha;
 
@@ -72,11 +88,17 @@ struct HudUiBriefingObjectivePicture : HudUiWidget {
 };
 RECOIL_STATIC_ASSERT(offsetof(HudUiBriefingObjectivePicture, noiseAlpha) == 0xbc);
 
-// Briefing transport progress widget; constructor installs the briefing-specific fill-bitmap vtable.
+/**
+ * Briefing transport progress widget. BN constructor evidence keeps this as a
+ * fill-bitmap-derived member owned by HudUiBriefingRuntime.
+ */
 struct HudUiBriefingTransportProgress : HudUiFillBitmap {
 };
 
-// Briefing runtime owner; BN constructor/destructor prove this HudUiBackground-derived member layout.
+/**
+ * Briefing runtime owner. BN constructor/destructor and action callers prove
+ * this HudUiBackground-derived member layout and embedded action queue.
+ */
 struct HudUiBriefingRuntime : HudUiBackground {
     Briefing_ActionQueue actionQueue;
     HudUiBriefingTransportProgress transportProgress;

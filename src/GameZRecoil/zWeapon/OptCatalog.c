@@ -26,6 +26,13 @@ extern "C" {
  * Purpose: Stores g OptCatalog CaptureHitSnapshotEnabled data used by effects_weapons.optcatalog_damage_feedback_data.
  */
 int g_OptCatalog_CaptureHitSnapshotEnabled = 0;
+/**
+ * Reimplements data 0x778964: g_OptCatalog_FallbackImpactProbeEnabled.
+ * BN xrefs: OptCatalog::ProcessRuntimeInstance, ProcessRuntimeInstances,
+ * zWeapon::Init, and OptCatalog::ShutdownCore.
+ * Purpose: enables deferred fallback impact probes for runtime projectile
+ * processing.
+ */
 int g_OptCatalog_FallbackImpactProbeEnabled = 0;
 /**
  * Reimplements data 0x778940: g_OptCatalog_CapturedDamageSourcePos.
@@ -37,15 +44,69 @@ zVec3 g_OptCatalog_CapturedDamageSourcePos = {0};
  * Purpose: Stores g OptCatalog CapturedDamageHitPos data used by effects_weapons.optcatalog_damage_feedback_data.
  */
 zVec3 g_OptCatalog_CapturedDamageHitPos = {0};
+/**
+ * Reimplements data 0x778924: g_OptCatalog_EntryCount.
+ * BN xrefs include OptCatalog lookup helpers, ProcessRuntimeInstances,
+ * zWeapon::Init, zWeapon::LoadOptCatalogFromPath, and ShutdownCore.
+ * Purpose: number of loaded OptCatalog entries in the runtime catalog table.
+ */
 int g_OptCatalog_EntryCount = 0;
+/**
+ * Reimplements data 0x778928: g_OptCatalog_EntryTable.
+ * BN xrefs include OptCatalog lookup helpers, ProcessRuntimeInstances,
+ * zWeapon::Init, zWeapon::LoadOptCatalogFromPath, and ShutdownCore.
+ * Purpose: owning pointer for the loaded OptCatalog entry array walked by
+ * runtime processing and lookup helpers.
+ */
 OptCatalogEntryDef *g_OptCatalog_EntryTable = 0;
+/**
+ * Reimplements data 0x77892c: g_OptCatalogRuntimeInstanceCount.
+ * Purpose: stores the configured runtime projectile pool count loaded with
+ * the OptCatalog.
+ */
 int g_OptCatalogRuntimeInstanceCount = 0;
+/**
+ * Reimplements data 0x778930: g_OptCatalogRuntimeInstancePool.
+ * Purpose: owns the allocated runtime projectile pool backing the free list
+ * and active per-entry runtime lists.
+ */
 void *g_OptCatalogRuntimeInstancePool = 0;
+/**
+ * Reimplements data 0x778934: g_OptCatalogFreeRuntimeInstanceList.
+ * Purpose: head of the free runtime projectile instance list shared by
+ * allocation, recycling, and shutdown.
+ */
 OptCatalogRuntimeInstanceStorage *g_OptCatalogFreeRuntimeInstanceList = 0;
+/**
+ * Reimplements data 0x778920: g_OptCatalogRuntimeWorld.
+ * BN xrefs include runtime allocation/recycling, projectile raycasts, trail
+ * impact probes, zWeapon load/init/shutdown, and thermal glow light attach.
+ * Purpose: active world node used by OptCatalog runtime projectiles, trail
+ * probes, and glow-light attachment.
+ */
 zClass_NodePartial *g_OptCatalogRuntimeWorld = 0;
+/**
+ * Reimplements data 0x77895c: g_OptCatalogPendingSpawnTargetCountPtr.
+ * Purpose: transient pointer to the pending target count consumed by
+ * OptCatalog runtime spawn and trail activation.
+ */
 int *g_OptCatalogPendingSpawnTargetCountPtr = 0;
+/**
+ * Reimplements data 0x778960: g_OptCatalogPendingSpawnTargetListPtr.
+ * Purpose: transient pointer to pending target slots consumed by OptCatalog
+ * runtime spawn and trail activation.
+ */
 PlayerProgressTargetSlotRuntime *g_OptCatalogPendingSpawnTargetListPtr = 0;
+/**
+ * Reimplements data 0x779a7c: g_OptCatalogMaxCraterRadius.
+ * Purpose: clamps crater and quicksand terrain-deformation event radii.
+ */
 float g_OptCatalogMaxCraterRadius = 0.0f;
+/**
+ * Reimplements data 0x77896c: g_OptCatalogQueuedImpactCount.
+ * Purpose: counts deferred OptCatalog impact records drained by
+ * ProcessRuntimeInstances.
+ */
 int g_OptCatalogQueuedImpactCount = 0;
 /**
  * Reimplements data 0x779a80: g_OptCatalog_DamageContextKind.
@@ -67,6 +128,12 @@ void *g_OptCatalog_CurrentDamageOwnerOrCtx = 0;
  * Purpose: Stores g OptCatalogDamageFeedbackCallback data used by effects_weapons.optcatalog_damage_feedback_data.
  */
 void *g_OptCatalogDamageFeedbackCallback = 0;
+/**
+ * Reimplements data 0x779a78: g_OptCatalogLockOnWarningGateTimeSec.
+ * BN xrefs: OptCatalog::ProcessRuntimeInstances, zWeapon::Init, and
+ * zWeapon::OnWeaponsSectionDataReady.
+ * Purpose: throttles lock-on warning playback during OptCatalog runtime ticks.
+ */
 float g_OptCatalogLockOnWarningGateTimeSec = 0.0f;
 /**
  * Reimplements data 0x779aa0: g_OptCatalog_DamageFeedbackHitCount.
@@ -78,9 +145,32 @@ int g_OptCatalog_DamageFeedbackHitCount = 0;
  * Purpose: Stores g OptCatalogDamageFeedbackTrackedNode data used by effects_weapons.optcatalog_damage_feedback_data.
  */
 zClass_NodePartial *g_OptCatalogDamageFeedbackTrackedNode = 0;
+/**
+ * Reimplements data 0x779a84: g_OptCatalog_DamageFeedbackScale.
+ * BN xrefs: DamageFeedback::SetIntensityScalar stores this scalar and
+ * OptCatalog::InvokeDamageFeedbackAndHitCallback consumes it when selecting
+ * damage-feedback effects. Source currently names the variable
+ * g_OptCatalogDamageFeedbackIntensityScalar.
+ * Purpose: per-hit damage feedback intensity scalar.
+ */
 float g_OptCatalogDamageFeedbackIntensityScalar = 0.0f;
+/**
+ * Reimplements data 0x779aac: g_OptCatalogNextSpawnScale.
+ * Purpose: one-shot spawn scale transferred into projectile or trail runtime
+ * state, then reset to 1.0f.
+ */
 float g_OptCatalogNextSpawnScale = 0.0f;
+/**
+ * Reimplements data 0x56bca8: g_OptCatalogRuntimeDeltaTime.
+ * Purpose: current unscaled frame delta consumed by OptCatalog projectile and
+ * trail runtime processing.
+ */
 float g_OptCatalogRuntimeDeltaTime = 0.0f;
+/**
+ * Reimplements data 0x56bcac: g_OptCatalogRuntimeNowSec.
+ * Purpose: current unscaled time used by OptCatalog runtime updates and
+ * warning-sound gates.
+ */
 float g_OptCatalogRuntimeNowSec = 0.0f;
 /**
  * Reimplements data 0x778938: g_OptCatalogThermalGlowFreeList.
@@ -88,16 +178,93 @@ float g_OptCatalogRuntimeNowSec = 0.0f;
  * by OptCatalog runtime effects and the Light lifecycle functions.
  */
 zClass_NodePartial *g_OptCatalogThermalGlowFreeList = 0;
+/**
+ * Reimplements data 0x56bcb0: g_OptCatalog_MineIteratorCursor.
+ * BN xrefs: OptCatalog_MineIterator::Begin and
+ * OptCatalog_MineIterator::Next.
+ * Purpose: cursor for MineIterator_Begin/Next traversal of an entry's active
+ * runtime-instance list.
+ */
 OptCatalogRuntimeInstanceStorage *g_OptCatalog_MineIteratorCursor = 0;
+/**
+ * Reimplements data 0x779a70: g_OptCatalogLoadedTreeRoot.
+ * BN xrefs: zWeapon::LoadOptCatalogFromPath stores the loaded root;
+ * OptCatalog::ShutdownCore frees it through zReader::FreeLoadedTree and
+ * clears the pointer.
+ * Purpose: owning pointer for the currently loaded OptCatalog zReader tree.
+ */
 zReader::Node *g_OptCatalogLoadedTreeRoot = 0;
+/**
+ * Reimplements data 0x779a8c: g_OptCatalogSndTriggerInactive.
+ * BN xrefs: OptCatalog::PlayTriggerInactiveWarning and
+ * zWeapon::LoadOptCatalogFromPath.
+ * Purpose: trigger-inactive warning sample loaded with the OptCatalog.
+ */
 zSndSample *g_OptCatalogSndTriggerInactive = 0;
+/**
+ * Reimplements data 0x779a90: g_OptCatalogSndWeaponInactive.
+ * BN xrefs: OptCatalog::PlayWeaponInactiveWarning and
+ * zWeapon::LoadOptCatalogFromPath.
+ * Purpose: weapon-inactive warning sample loaded with the OptCatalog.
+ */
 zSndSample *g_OptCatalogSndWeaponInactive = 0;
+/**
+ * Reimplements data 0x779a94: g_OptCatalogSndNoAmmoWarning.
+ * BN xrefs: OptCatalog::PlayNoAmmoWarning and
+ * zWeapon::LoadOptCatalogFromPath.
+ * Purpose: no-ammo warning sample loaded with the OptCatalog.
+ */
 zSndSample *g_OptCatalogSndNoAmmoWarning = 0;
+/**
+ * Reimplements data 0x779a74: g_OptCatalogSndLockOnWarning.
+ * BN xrefs: OptCatalog::ProcessRuntimeInstances and
+ * zWeapon::LoadOptCatalogFromPath. BN currently types the data symbol as
+ * int32_t, but all use sites consume it as a zSndSample pointer.
+ * Purpose: lock-on warning sample played by the runtime tick gate.
+ */
 zSndSample *g_OptCatalogSndLockOnWarning = 0;
+/**
+ * Reimplements data 0x56bca4: g_OptCatalog_RemoveRuntimeRelayCallback.
+ * BN xrefs: GameNet::RegisterGameplayHandlersAndOptCatalogCallbacks installs
+ * the callback; OptCatalog::RemoveRuntimeInstance invokes it after removal.
+ * Purpose: optional network relay hook for removed OptCatalog runtime
+ * instances.
+ */
 OptCatalogRemoveRuntimeRelayCallback g_OptCatalog_RemoveRuntimeRelayCallback = 0;
+/**
+ * Reimplements data 0x77893c: g_OptCatalogNetworkOptionState.
+ * BN xrefs: zWeapon::LoadOptCatalogFromPath initializes the state;
+ * OptCatalog::AllocRuntimeInstance and ProcessRuntimeInstances read it for
+ * network-runtime behavior.
+ * Purpose: active OptCatalog network option state loaded with the catalog.
+ */
 int g_OptCatalogNetworkOptionState = 0;
+/**
+ * Reimplements data 0x56bc9c: g_OptCatalog_AllocRuntimeGateCallback.
+ * BN xrefs: GameNet::RegisterGameplayHandlersAndOptCatalogCallbacks installs
+ * the callback; OptCatalog::AllocRuntimeInstance calls it when network gate
+ * processing is enabled.
+ * Purpose: optional allocation gate for networked OptCatalog runtime
+ * instances.
+ */
 OptCatalogAllocRuntimeGateCallback g_OptCatalog_AllocRuntimeGateCallback = 0;
+/**
+ * Reimplements data 0x56bca0: g_OptCatalog_AltGunDispatchNoOpCallback.
+ * BN xrefs: GameNet::RegisterGameplayHandlersAndOptCatalogCallbacks installs
+ * the alternate-gun no-op dispatch callback.
+ * Purpose: callback slot paired with the runtime allocation gate for
+ * alternate-gun dispatch processing.
+ */
 OptCatalogAllocRuntimeGateCallback g_OptCatalog_AltGunDispatchNoOpCallback = 0;
+/**
+ * Reimplements data 0x4dcf7c: g_OptCatalogProcessRuntimeRelayEnabled.
+ * BN initial bytes are 01 00 00 00. BN xrefs:
+ * OptCatalog::SendPkt0A_RemoveRuntimeRelay reads the gate and
+ * OptCatalog::HandlePkt0A_RemoveRuntimeRelay clears/restores it around local
+ * relay processing.
+ * Purpose: suppresses recursive runtime-removal relay while a network packet
+ * is being handled.
+ */
 int g_OptCatalogProcessRuntimeRelayEnabled = 1;
 }
 
@@ -161,6 +328,13 @@ namespace {
 
     RECOIL_STATIC_ASSERT(sizeof(OptCatalogQueuedImpactRecord) == 68);
 
+    /**
+     * Reimplements data 0x778970: g_OptCatalogQueuedImpactRecords.
+     * BN data shape: OptCatalogQueuedImpactRecord[64], 4352 bytes, zero-filled
+     * BSS. Paired with g_OptCatalogQueuedImpactCount at 0x77896c.
+     * Purpose: deferred impact callback queue drained by
+     * OptCatalog::ProcessRuntimeInstances.
+     */
     OptCatalogQueuedImpactRecord g_OptCatalogQueuedImpacts[kMaxQueuedImpacts] = {0};
 
     typedef void( * OptCatalogRuntimeUpdateCallback)(
@@ -179,12 +353,22 @@ namespace {
 
     RECOIL_STATIC_ASSERT(sizeof(OptCatalogRuntimeInstancePoolSlot) == 0x90);
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original inline helper evidence: no standalone retail function.
+     * Observed in zWeapon::LoadOptCatalogFromPath and its local loader
+     * helpers.
+     * Purpose: return the element count stored in a zReader array node.
+     */
     int zReaderArrayCount(zReader::Node * node) {
         return node->value.nodes[0].value.i32;
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original inline helper evidence: no standalone retail function.
+     * Observed in zWeapon::LoadOptCatalogFromPath and OptCatalog loader
+     * helpers.
+     * Purpose: return a string element from a zReader array node.
+     */
     const char *zReaderArrayString(
         zReader::Node * node,
         int index
@@ -192,7 +376,12 @@ namespace {
         return node->value.nodes[index].value.str;
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original inline helper evidence: no standalone retail function.
+     * Observed in zWeapon::LoadOptCatalogFromPath and OptCatalog loader
+     * helpers.
+     * Purpose: return an integer element from a zReader array node.
+     */
     int zReaderArrayInt(
         zReader::Node * node,
         int index
@@ -200,7 +389,12 @@ namespace {
         return node->value.nodes[index].value.i32;
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original inline helper evidence: no standalone retail function.
+     * Observed in zWeapon::LoadOptCatalogFromPath and OptCatalog loader
+     * helpers.
+     * Purpose: read an int-or-float zReader array element as a float.
+     */
     float zReaderArrayFloat(
         zReader::Node * node,
         int index
@@ -213,7 +407,11 @@ namespace {
         return valueNode->value.f32;
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original inline helper evidence: no standalone retail function.
+     * Observed in zWeapon::LoadOptCatalogFromPath loader branches.
+     * Purpose: set or clear an OptCatalog flag from a parsed boolean value.
+     */
     void SetFlagFromBool(
         unsigned int &flags,
         unsigned int flag,
@@ -226,7 +424,11 @@ namespace {
         }
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original inline helper evidence: no standalone retail function.
+     * Observed in zWeapon::LoadOptCatalogFromPath callback table setup.
+     * Purpose: convert a typed callback pointer to the generic action payload.
+     */
     template<typename T> void *ActionCallbackPtr(T callback) {
         RECOIL_STATIC_ASSERT(sizeof(T) == sizeof(void *));
         union {
@@ -236,7 +438,11 @@ namespace {
         return ptr.raw;
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original inline helper evidence: no standalone retail function.
+     * Observed in OptCatalog aim and trail math callsites in this source file.
+     * Purpose: approximate square root through the recovered bit-bias idiom.
+     */
     float FastSqrtApprox(float value) {
         unsigned int bits = 0;
         memcpy(
@@ -253,7 +459,11 @@ namespace {
         return value;
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original static helper evidence: no standalone retail function.
+     * Observed in zWeapon::LoadOptCatalogFromPath loader branches.
+     * Purpose: fetch an optional named zReader array string by index.
+     */
     const char *ReadNamedArrayString(
         zReader::Node * parentNode,
         const char *name,
@@ -274,7 +484,12 @@ namespace {
         );
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original static helper evidence: no standalone retail function.
+     * Observed in zWeapon::LoadOptCatalogFromPath warning and trail sound
+     * loaders.
+     * Purpose: resolve an optional named sound sample into an output slot.
+     */
     void LoadNamedSoundSample(
         zReader::Node * parentNode,
         const char *name,
@@ -290,7 +505,11 @@ namespace {
         }
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original static helper evidence: no standalone retail function.
+     * Observed in zWeapon::LoadOptCatalogFromPath flag loader branches.
+     * Purpose: load a boolean OptCatalog flag from a named zReader array.
+     */
     void LoadNamedBoolFlag(
         zReader::Node * entryNode,
         const char *name,
@@ -310,7 +529,11 @@ namespace {
         }
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original static helper evidence: no standalone retail function.
+     * Observed in zWeapon::LoadOptCatalogFromPath impact loader branches.
+     * Purpose: parse crater radius base and randomized range metadata.
+     */
     void LoadRadiusRange(
         zReader::Node * node,
         OptCatalogEntryDef * entry
@@ -335,7 +558,12 @@ namespace {
         }
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original static helper evidence: no standalone retail function.
+     * Observed in zWeapon::LoadOptCatalogFromPath timed-status loader
+     * branches.
+     * Purpose: load timed-hit light range, delay, and color metadata.
+     */
     void LoadTimedStatusBlock(
         zReader::Node * node,
         OptCatalogEntryDef * entry
@@ -371,7 +599,12 @@ namespace {
         entry->flags |= kOptCatalogFlagAppliesTimedHitStatus;
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original static helper evidence: no standalone retail function.
+     * Observed in zWeapon::LoadOptCatalogFromPath designate-status loader
+     * branches.
+     * Purpose: load remote-detonation designate status metadata.
+     */
     void LoadDesignateStatusBlock(
         zReader::Node * node,
         OptCatalogEntryDef * entry
@@ -409,7 +642,12 @@ namespace {
         entry->flags |= kOptCatalogFlagRemoteDetonate;
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original static helper evidence: no standalone retail function.
+     * Observed in zWeapon::LoadOptCatalogFromPath damage-feedback loader
+     * branches.
+     * Purpose: load health-scaled damage-feedback effect variants.
+     */
     void LoadDamageFeedbackOnHealth(
         zReader::Node * node,
         OptCatalogEntryDef * entry
@@ -434,7 +672,12 @@ namespace {
         }
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original static helper evidence: no standalone retail function.
+     * Observed in zWeapon::LoadOptCatalogFromPath impact-effect loader
+     * branches.
+     * Purpose: load per-material impact effect specs and fallback entries.
+     */
     void LoadImpactFxTable(
         zReader::Node * impactNode,
         OptCatalogEntryDef * entry
@@ -473,7 +716,11 @@ namespace {
         }
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original static helper evidence: no standalone retail function.
+     * Observed in zWeapon::LoadOptCatalogFromPath after catalog count load.
+     * Purpose: allocate and initialize the OptCatalog runtime projectile pool.
+     */
     void SetupRuntimeInstancePool() {
         if (g_OptCatalogRuntimeInstanceCount <= 0) {
             return;
@@ -525,13 +772,21 @@ namespace {
         }
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original inline helper evidence: no standalone retail function.
+     * Observed in OptCatalog damage-feedback callback paths.
+     * Purpose: read the damage-handler pointer stored on a zClass node slot.
+     */
     OptCatalogDamageHandlerPartial *DamageHandlerForNode(zClass_NodePartial * node) {
         return (OptCatalogDamageHandlerPartial *)(((zClass_NodeFreeListSlot *)(node))
                 ->damageHandler);
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original static helper evidence: no standalone retail function.
+     * Observed in OptCatalog damage-feedback callback paths.
+     * Purpose: spawn a feedback animation at the hit position.
+     */
     void ActivateDamageFeedbackEffect(
         zEffectAnimEntry * effect,
         OptCatalogHitEventPartial * hitEvent
@@ -551,7 +806,11 @@ namespace {
         );
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original static helper evidence: no standalone retail function.
+     * Observed in OptCatalog damage-context effect paths.
+     * Purpose: resolve the impact owner node from the current damage context.
+     */
     zClass_NodePartial *ImpactOwnerNodeFromDamageContext() {
         OptCatalogHitEventPartial *const contextHitEvent =
             (OptCatalogHitEventPartial *)(g_OptCatalog_DamageContextHitEvent);
@@ -562,7 +821,11 @@ namespace {
         return contextHitEvent->surfaceRef->impactOwnerNode;
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original inline helper evidence: no standalone retail function.
+     * Observed in OptCatalog::ProcessRuntimeInstances variant-save logic.
+     * Purpose: pack the active four-byte variant tag into an integer.
+     */
     unsigned int PackVariantTag(const zTag4Partial *tag) {
         unsigned int packed = 0;
         memcpy(
@@ -573,7 +836,11 @@ namespace {
         return packed;
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original inline helper evidence: no standalone retail function.
+     * Observed in OptCatalog::ProcessRuntimeInstances variant-restore logic.
+     * Purpose: unpack an integer into the current four-byte variant tag.
+     */
     void SetCurrentVariantTagFromPacked(unsigned int packedTag) {
         memcpy(
             &g_Variant_CurrentTag,
@@ -582,7 +849,11 @@ namespace {
         );
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original static helper evidence: no standalone retail function.
+     * Observed in OptCatalog::ProcessRuntimeInstances runtime-list walks.
+     * Purpose: select either a runtime variant tag or the saved caller tag.
+     */
     void SetCurrentVariantForRuntime(
         unsigned int packedRuntimeTag,
         unsigned int savedPackedVariantTag
@@ -740,10 +1011,13 @@ namespace zClass_Node {
 }
 
 namespace zWeapon_OptCatalog {
-    // Reimplements 0x43ca20: zWeapon_OptCatalog::LoadKillVerbString
-    // (D:\Proj\GameZRecoil\zWeapon\zwep_init.c)
-    void __fastcall
-    LoadKillVerbString(
+    /**
+     * Reimplements 0x43ca20: zWeapon_OptCatalog::LoadKillVerbString
+     * Source: D:\Proj\GameZRecoil\zWeapon\zwep_init.c.
+     * Purpose: Allocate and populate the entry kill-verb string from the
+     * optional KILL_VERB catalog node or default localized message.
+     */
+    void __fastcall LoadKillVerbString(
         zReader::Node * entryNode,
         OptCatalogEntryDef * entry
     ) {
@@ -776,8 +1050,12 @@ namespace zWeapon_OptCatalog {
 }
 
 namespace zWeapon {
-    // Reimplements 0x4b1190: zWeapon::LoadOptCatalogFromPath
-    // (D:\Proj\GameZRecoil\zWeapon\zwep_init.c)
+    /**
+     * Reimplements 0x4b1190: zWeapon::LoadOptCatalogFromPath
+     * (D:\Proj\GameZRecoil\zWeapon\zwep_init.c).
+     * Purpose: load weapons.zrd, build the OptCatalog entry table, initialize
+     * runtime storage, and publish the loaded runtime globals.
+     */
     int __fastcall LoadOptCatalogFromPath(
         zClass_NodePartial * worldNode,
         const char *path,
@@ -804,14 +1082,34 @@ namespace zWeapon {
             return -1;
         }
 
-        int version = 0;
-        if (zReader::ReadNamedInt(rootNode, "VERSION", &version) == 0 ||
-            version != kOptCatalogRequiredVersion) {
+        zReader::Node *const versionNode = zReader_GetNamedNode(
+            rootNode,
+            "VERSION"
+        );
+        if (versionNode == 0) {
             zError::ReportOld(
-                0x200,
+                0x400,
                 kZWeaponInitSourceFile,
-                0xcb,
-                "Unsupported weapons.zrd version"
+                0xdb,
+                "No ZWEP version found"
+            );
+            return -1;
+        }
+
+        int version = 0;
+        zReader::ReadNamedInt(
+            rootNode,
+            "VERSION",
+            &version
+        );
+        if (version != kOptCatalogRequiredVersion) {
+            zError::ReportOld(
+                0x400,
+                kZWeaponInitSourceFile,
+                0xd3,
+                "Incorrect ZWEP version (found %d, wanted %d)",
+                version,
+                kOptCatalogRequiredVersion
             );
             return -1;
         }
@@ -1292,10 +1590,10 @@ namespace zWeapon {
         zClass_NodePartial *const callbackNode = zClass_Object3D::gwObject3DInit();
         if (callbackNode == 0) {
             zError::ReportOld(
-                0x200,
+                0x400,
                 kZWeaponInitSourceFile,
-                0x2c1,
-                "Failed to allocate weapon tick node"
+                0x2d9,
+                "Error allocating weapon_tick callback"
             );
             g_OptCatalogNetworkOptionState = networkState;
             return 0;
@@ -1315,8 +1613,12 @@ namespace zWeapon {
 } // namespace zWeapon
 
 namespace OptCatalog {
-    // Reimplements 0x4ae380: OptCatalog::BlendDirectionTowardTarget
-    // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+    /**
+     * Reimplements 0x4ae380: OptCatalog::BlendDirectionTowardTarget
+     * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+     * Purpose: blend an active direction vector toward a target direction
+     * using per-axis weights, then renormalize the result.
+     */
     void __fastcall BlendDirectionTowardTarget(
         zVec3 * direction,
         const zVec3 *targetDirection,
@@ -1521,8 +1823,7 @@ namespace OptCatalog {
      * Purpose: gate pkt07 alt-gun runtime allocation and launch-time callback
      * dispatch for local map-owned rows.
      */
-    int __fastcall
-    AltGunDispatchAllocRuntimeGateCallback(
+    int __fastcall AltGunDispatchAllocRuntimeGateCallback(
         OptCatalogEntryDef * self,
         void **saveStateSlot
     ) {
@@ -1601,8 +1902,7 @@ namespace OptCatalog {
      * Purpose: handle pkt0A removal relay packets by resolving the
      * OptCatalog entry and player row while suppressing echo relay sends.
      */
-    int __fastcall
-    HandlePkt0A_RemoveRuntimeRelay(
+    int __fastcall HandlePkt0A_RemoveRuntimeRelay(
         int,
         NetPkt0A_RemoveRuntimeRelay *packet
     ) {
@@ -1635,8 +1935,11 @@ namespace OptCatalog {
         return 1;
     }
 
-    // Reimplements 0x4b1fa0: OptCatalog::LoadFxSpecFromReaderNode
-    // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+    /**
+     * Reimplements 0x4b1fa0: OptCatalog::LoadFxSpecFromReaderNode
+     * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp).
+     * Purpose: load one named impact effect spec from a zReader node.
+     */
     void __fastcall LoadFxSpecFromReaderNode(
         zReader::Node * parentNode,
         OptCatalogFxSpec * spec,
@@ -2313,7 +2616,11 @@ namespace OptCatalog {
         ((zClass_NodeFreeListSlot *)(projectileNode))->damageHandler = 0;
     }
 
-    // Reimplements 0x4b1d90: OptCatalog::ShutdownCore
+    /**
+     * Reimplements 0x4b1d90: OptCatalog::ShutdownCore.
+     * Purpose: release loaded OptCatalog entries, runtime pools, reader tree,
+     * and reset runtime globals to initialization defaults.
+     */
     int ShutdownCore() {
         for (int i = 0; i < g_OptCatalog_EntryCount; ++i) {
             OptCatalogEntryDef &entry = g_OptCatalog_EntryTable[i];
@@ -2371,7 +2678,11 @@ namespace OptCatalog {
         return 0;
     }
 
-    // Reimplements 0x4b1180: OptCatalog::Shutdown (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+    /**
+     * Reimplements 0x4b1180: OptCatalog::Shutdown
+     * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp).
+     * Purpose: public shutdown wrapper for OptCatalog runtime cleanup.
+     */
     int Shutdown() {
         ShutdownCore();
         return 0;
@@ -2449,10 +2760,21 @@ namespace OptCatalog {
         return 0;
     }
 
-    // Reimplements 0x4aee40: OptCatalog::ActivateTrailRuntimeState
-    // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
-    void __fastcall
-    ActivateTrailRuntimeState(
+    /**
+     * Reimplements 0x4aee40: OptCatalog::ActivateTrailRuntimeState
+     * BN source path: src/Battlesport/zWeapon.cpp.
+     * BN behavior: ECX is OptCatalogTrailRuntimeState*, EDX carries
+     * playerOrdinal but is not consumed. Starts trail stop/loop audio,
+     * optionally mutes the loop, spawns the fire effect or trail animation,
+     * resets trail timers, consumes g_OptCatalogNextSpawnScale, captures
+     * pending spawn targets, optionally allocates a glow light, and links the
+     * state at owner->activeTrailRuntime.
+     * Data touch: reads/writes g_OptCatalogNextSpawnScale at 0x779aac and
+     * reads/clears g_OptCatalogPendingSpawnTargetCountPtr at 0x77895c when
+     * pending trail targets are enabled.
+     * Purpose: activate a prebuilt trail runtime state for a weapon owner.
+     */
+    void __fastcall ActivateTrailRuntimeState(
         OptCatalogTrailRuntimeState * trailRuntimeState,
         int playerOrdinal
     ) {
@@ -2586,19 +2908,29 @@ namespace OptCatalog {
         return -1.0f;
     }
 
-    // Reimplements 0x4b0600: OptCatalog::PlayTriggerInactiveWarning
-    // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+    /**
+     * Reimplements 0x4b0600: OptCatalog::PlayTriggerInactiveWarning
+     * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
+     * Purpose: play the trigger-inactive warning sound at full gain.
+     */
     void PlayTriggerInactiveWarning() {
         g_OptCatalogSndTriggerInactive->PlayA3DSimple(1.0f);
     }
 
-    // Reimplements 0x4b0620: OptCatalog::PlayWeaponInactiveWarning
-    // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+    /**
+     * Reimplements 0x4b0620: OptCatalog::PlayWeaponInactiveWarning
+     * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
+     * Purpose: play the weapon-inactive warning sound at full gain.
+     */
     void PlayWeaponInactiveWarning() {
         g_OptCatalogSndWeaponInactive->PlayA3DSimple(1.0f);
     }
 
-    // Reimplements 0x4b0640: OptCatalog::PlayNoAmmoWarning (D:\Proj\Battlesport\OptCatalog.cpp)
+    /**
+     * Reimplements 0x4b0640: OptCatalog::PlayNoAmmoWarning
+     * BN source path: D:\Proj\Battlesport\OptCatalog.cpp.
+     * Purpose: play the no-ammo warning sound at full gain.
+     */
     void PlayNoAmmoWarning() {
         g_OptCatalogSndNoAmmoWarning->PlayA3DSimple(1.0f);
     }
@@ -2747,8 +3079,16 @@ namespace OptCatalog {
         return &g_OptCatalog_CapturedDamageSourcePos;
     }
 
-    // Reimplements 0x4b0710: OptCatalog::EmitCraterImpactEvent
-    // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+    /**
+     * Reimplements 0x4b0710: OptCatalog::EmitCraterImpactEvent
+     * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
+     * BN behavior: if the hit node accepts terrain deformation, builds a
+     * crater event at the hit position, selects randomized or clamped radius,
+     * invokes the crater net relay, and returns 1 only when the relay does
+     * not consume the impact.
+     * Data touch: reads g_OptCatalogMaxCraterRadius at 0x779a7c.
+     * Purpose: emit a crater terrain-deformation event for an OptCatalog hit.
+     */
     int __fastcall EmitCraterImpactEvent(
         OptCatalogEntryDef * self,
         OptCatalogHitEventPartial * hitEvent,
@@ -2782,8 +3122,15 @@ namespace OptCatalog {
         return zDEClient_Crater::InstanceEventMaybeRelay(&eventTemplate) == 0 ? 1 : 0;
     }
 
-    // Reimplements 0x4b0660: OptCatalog::EmitQSandImpactEvent
-    // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+    /**
+     * Reimplements 0x4b0660: OptCatalog::EmitQSandImpactEvent
+     * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
+     * BN behavior: if the hit node accepts terrain deformation, builds a
+     * quicksand event at the hit position, selects randomized or clamped
+     * radius, and dispatches it through the quicksand net relay.
+     * Data touch: reads g_OptCatalogMaxCraterRadius at 0x779a7c.
+     * Purpose: emit a quicksand terrain-deformation event for an OptCatalog hit.
+     */
     void __fastcall EmitQSandImpactEvent(
         OptCatalogEntryDef * self,
         OptCatalogHitEventPartial * hitEvent,
@@ -2816,8 +3163,11 @@ namespace OptCatalog {
         zDEClient_QSand::InstanceEventMaybeRelay(&eventTemplate);
     }
 
-    // Reimplements 0x4b0fd0: OptCatalog::PlayImpactSound
-    // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+    /**
+     * Reimplements 0x4b0fd0: OptCatalog::PlayImpactSound
+     * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp).
+     * Purpose: choose and play an impact sound sample at the hit position.
+     */
     void __fastcall PlayImpactSound(
         OptCatalogEntryDef * self,
         OptCatalogHitEventPartial * hitEvent,
@@ -2839,8 +3189,11 @@ namespace OptCatalog {
         );
     }
 
-    // Reimplements 0x4b1030: OptCatalog::PlayBounceSound
-    // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+    /**
+     * Reimplements 0x4b1030: OptCatalog::PlayBounceSound
+     * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp).
+     * Purpose: choose and play a bounce sound sample at the raycast hit.
+     */
     void __fastcall PlayBounceSound(
         OptCatalogEntryDef * self,
         OptCatalogRaycastHitEntry * hitEvent,
@@ -3199,8 +3552,18 @@ namespace OptCatalog {
         return result;
     }
 
-    // Reimplements 0x4af060: OptCatalog::ProcessRuntimeInstances
-    // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+    /**
+     * Reimplements 0x4af060: OptCatalog::ProcessRuntimeInstances
+     * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
+     * BN behavior: drains queued impact callbacks, stores unscaled delta/time,
+     * walks every loaded OptCatalog entry, updates trail-runtime segment
+     * visuals and projectile runtime instances, recycles expired instances,
+     * handles lock-on warning audio, and restores the packed variant tag.
+     * Data touch: reads/writes g_OptCatalogQueuedImpactCount at 0x77896c,
+     * g_OptCatalogRuntimeDeltaTime at 0x56bca8, g_OptCatalogRuntimeNowSec at
+     * 0x56bcac, and lock-on warning gate state.
+     * Purpose: frame-update all active OptCatalog runtime state.
+     */
     void ProcessRuntimeInstances() {
         const unsigned int savedPackedVariantTag = PackVariantTag(&g_Variant_CurrentTag);
         float nearestLockOnDistance = (float)(_HUGE);
@@ -3444,8 +3807,12 @@ namespace OptCatalog {
         SetCurrentVariantTagFromPacked(savedPackedVariantTag);
     }
 
-    // Reimplements 0x4b0ba0: OptCatalog::CanSpawnThroughRay
-    // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+    /**
+     * Reimplements 0x4b0ba0: OptCatalog::CanSpawnThroughRay
+     * (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp).
+     * Purpose: test whether a trail segment can continue through a ray hit and
+     * compute reflected distance/direction outputs.
+     */
     int __fastcall CanSpawnThroughRay(
         OptCatalogEntryDef * self,
         OptCatalogRaycastHitEntry * hit,
@@ -3494,8 +3861,12 @@ namespace OptCatalog {
         return 1;
     }
 
-    // Reimplements 0x4b0ca0: OptCatalog::ReflectAndSortImpactTraceList
-    // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+    /**
+     * Reimplements 0x4b0ca0: OptCatalog::ReflectAndSortImpactTraceList
+     * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
+     * Purpose: choose the farthest pending trail target direction and sort
+     * pending target slots by projection along that direction.
+     */
     void __fastcall ReflectAndSortImpactTraceList(
         OptCatalogTrailRuntimeState * runtime,
         float *targetProjectionScratch,
@@ -3555,8 +3926,13 @@ namespace OptCatalog {
         } while (swapped != 0);
     }
 
-    // Reimplements 0x4b0e20: OptCatalog::ComputeTrailImpactResponse
-    // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+    /**
+     * Reimplements 0x4b0e20: OptCatalog::ComputeTrailImpactResponse
+     * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
+     * Purpose: raycast a trail segment against the runtime world, apply
+     * damage feedback on hits, play impact audio, and trim segment length to
+     * the selected hit.
+     */
     int __fastcall ComputeTrailImpactResponse(
         OptCatalogEntryDef * self,
         OptCatalogTrailRuntimeState * trailRuntime,
@@ -3633,8 +4009,12 @@ namespace OptCatalog {
         return 1;
     }
 
-    // Reimplements 0x4b0f70: OptCatalog::UpdateTrailSegmentVisual
-    // (D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp)
+    /**
+     * Reimplements 0x4b0f70: OptCatalog::UpdateTrailSegmentVisual
+     * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
+     * Purpose: activate and transform a trail segment node from its recovered
+     * position, direction, and scale state.
+     */
     void __fastcall UpdateTrailSegmentVisual(
         OptCatalogTrailNodeSlot * segment
     ) {

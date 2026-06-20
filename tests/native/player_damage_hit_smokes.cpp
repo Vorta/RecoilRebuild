@@ -650,6 +650,33 @@ extern "C" int player_apply_status_meter_change_smoke(void) {
     return replaceOk && maxClampOk && minClampOk ? 0 : 1;
 }
 
+extern "C" int player_reset_damage_state_and_timed_hit_status_smoke(void) {
+    zUtil_SaveGameState saveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    saveState.playerState = &playerState;
+
+    playerState.damageProtectionActive = 11;
+    playerState.queuedFixedDamageFlag = 12;
+    playerState.damageVisualFlag = 13;
+    playerState.timedHitStatus.runtimeFlags = 3;
+    playerState.timedHitStatus.currentLevel = 0.25f;
+    playerState.timedHitStatus.targetLevel = -0.5f;
+    playerState.timedHitStatus.nextUpdateTime = 7.0f;
+    playerState.timedHitStatus.lightNode = 0;
+
+    Player::ResetDamageStateAndTimedHitStatus(&saveState);
+
+    return playerState.damageProtectionActive == 0 &&
+                   playerState.queuedFixedDamageFlag == 0 &&
+                   playerState.damageVisualFlag == 0 &&
+                   playerState.timedHitStatus.runtimeFlags == 3 &&
+                   playerState.timedHitStatus.currentLevel == 0.25f &&
+                   playerState.timedHitStatus.targetLevel == -0.5f &&
+                   playerState.timedHitStatus.nextUpdateTime == 7.0f
+               ? 0
+               : 1;
+}
+
 extern "C" int player_apply_pitch_roll_velocity_impulse_from_direction_smoke(void) {
     int *const oldMatrixIdentityFlagSlot = zMath::g_currentMatrixIdentityFlagSlot;
     float **const oldMatrixPtrSlot = zMath::g_currentMatrixPtrSlot;

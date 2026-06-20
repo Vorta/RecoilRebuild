@@ -3,7 +3,7 @@
 #include "recoil/recoil_types.h"
 #include <stddef.h>
 
-#include "Battlesport/CZRecoilFrame.h"
+#include "Battlesport/Mfc42Abi.h"
 #include "Battlesport/RecoilApp.h"
 #include "recoil/recoil_callconv.h"
 

@@ -30,6 +30,7 @@
 #include <cstring>
 
 extern "C" HWND g_RecoilApp_hWndMain;
+extern "C" NetPkt10_QSandEvent g_NetPkt10_QSandEventRelayBuf;
 
 namespace {
 RecoilNamedVtable *TestObjectVtable(void *object)
@@ -4555,7 +4556,7 @@ extern "C" int gamenet_get_nearest_other_player_distance_to_spawn_point_smoke(vo
     GameNetPlayerRow *const oldHead = g_GameNetPlayerRowHead;
     GameNetPlayerRow *const oldTail = g_GameNetPlayerRowTail;
     const unsigned int oldCount = g_GameNetPlayerRowCount;
-    zUtil_SaveGameState *const oldLocalSaveState = g_LocalPlayerSaveState;
+    zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
 
     GameNetSpawnPoint spawnPoint = {};
     spawnPoint.position.x = 0.0f;
@@ -4588,7 +4589,7 @@ extern "C" int gamenet_get_nearest_other_player_distance_to_spawn_point_smoke(vo
     g_GameNetPlayerRowHead = &localRow;
     g_GameNetPlayerRowTail = &nearRow;
     g_GameNetPlayerRowCount = 3;
-    g_LocalPlayerSaveState = reinterpret_cast<zUtil_SaveGameState *>(&localSave);
+    g_GameStateOrMapTable = reinterpret_cast<zInput_GameStateOrMapTablePartial *>(&localSave);
 
     GameNetPlayerSaveState *nearest = &localSave;
     const float nearestDistance =
@@ -4604,7 +4605,7 @@ extern "C" int gamenet_get_nearest_other_player_distance_to_spawn_point_smoke(vo
     g_GameNetPlayerRowHead = oldHead;
     g_GameNetPlayerRowTail = oldTail;
     g_GameNetPlayerRowCount = oldCount;
-    g_LocalPlayerSaveState = oldLocalSaveState;
+    g_GameStateOrMapTable = oldGameStateOrMapTable;
 
     return nearestOk && emptyOk ? 0 : 1;
 }
@@ -4615,6 +4616,7 @@ extern "C" int gamenet_respawn_player_color_indexed_spawn_smoke(void) {
     GameNetSpawnPoint *const oldSpawnTail = g_GameNetSpawnPointTail;
     const std::uint32_t oldSpawnCount = g_GameNetSpawnPointCount;
     const std::int32_t oldAllowMaps = g_GameNetStatus_AllowMaps;
+    const int oldRaceCheckpointMode = g_HudSensorTracker.raceCheckpointMode;
     const std::int32_t oldMissionId = g_HudSensorTracker.missionId;
     const zTag4Partial oldVariantTagCurrent = g_VariantTag_Current;
     const zTag4Partial oldVariantCurrent = g_Variant_CurrentTag;
@@ -4654,6 +4656,7 @@ extern "C" int gamenet_respawn_player_color_indexed_spawn_smoke(void) {
     g_GameNetSpawnPointTail = &secondSpawn;
     g_GameNetSpawnPointCount = 2;
     g_GameNetStatus_AllowMaps = 0;
+    g_HudSensorTracker.raceCheckpointMode = 0;
     g_GameStateOrMapTable = reinterpret_cast<zInput_GameStateOrMapTablePartial *>(&saveState);
     g_HudSensorTracker.missionId = 11;
 
@@ -4715,6 +4718,7 @@ extern "C" int gamenet_respawn_player_color_indexed_spawn_smoke(void) {
     g_GameNetSpawnPointTail = oldSpawnTail;
     g_GameNetSpawnPointCount = oldSpawnCount;
     g_GameNetStatus_AllowMaps = oldAllowMaps;
+    g_HudSensorTracker.raceCheckpointMode = oldRaceCheckpointMode;
     g_HudSensorTracker.missionId = oldMissionId;
     g_VariantTag_Current = oldVariantTagCurrent;
     g_Variant_CurrentTag = oldVariantCurrent;
@@ -6733,7 +6737,7 @@ extern "C" int gamenet_host_send_pkt10_qsand_feature_smoke(void) {
 }
 
 extern "C" int gamenet_send_pkt10_qsand_event_smoke(void) {
-    const NetPkt10_QSandEvent oldPacket = g_NetPkt10_QSandEventSendBuf;
+    const NetPkt10_QSandEvent oldPacket = g_NetPkt10_QSandEventRelayBuf;
     zNetwork_DPlay4 *const oldDPlay = g_zNetwork_pDirectPlay4;
     zNetwork_PlayerRecord *const oldLocalPlayer = g_zNetwork_LocalPlayerRecord;
     const int oldLocalPlayerKey = g_zNetwork_LocalPlayerKey;
@@ -6767,8 +6771,8 @@ extern "C" int gamenet_send_pkt10_qsand_event_smoke(void) {
     const int negativeResult = GameNet::SendPkt10_QSandEvent(&negativeEvent);
     const bool negativeOk = negativeResult == 1 && FloatNear(negativeEvent.radius, 2.25f);
 
-    g_NetPkt10_QSandEventSendBuf = {{0x10, sizeof(NetPkt10_QSandEvent), 0}, 0x12345678u, 0,
-                                    {0.0f, 0.0f, 0.0f}, 0.0f};
+    g_NetPkt10_QSandEventRelayBuf = {{0x10, sizeof(NetPkt10_QSandEvent), 0}, 0x12345678u, 0,
+                                     {0.0f, 0.0f, 0.0f}, 0.0f};
     g_sendCalls = 0;
     zDEClient_QSandEventTemplate otherOwnerEvent{};
     otherOwnerEvent.radius = 5.0f;
@@ -6776,16 +6780,16 @@ extern "C" int gamenet_send_pkt10_qsand_event_smoke(void) {
     otherOwnerEvent.damageOwnerNode = &otherRoot;
     const int otherOwnerResult = GameNet::SendPkt10_QSandEvent(&otherOwnerEvent);
     const bool otherOwnerOk = otherOwnerResult == 0 && g_sendCalls == 0 &&
-                              g_NetPkt10_QSandEventSendBuf.header.payloadDword0 == 0 &&
-                              g_NetPkt10_QSandEventSendBuf.eventFlags == 0x12345678u;
+                              g_NetPkt10_QSandEventRelayBuf.header.payloadDword0 == 0 &&
+                              g_NetPkt10_QSandEventRelayBuf.eventFlags == 0x12345678u;
 
     zDEClient_QSandEventTemplate nonHostEvent{};
     nonHostEvent.radius = 6.5f;
     nonHostEvent.center = {4.0f, 5.0f, 6.0f};
     nonHostEvent.damageOwnerNode = &ownerRoot;
     g_zNetwork_IsHostFlag = 0;
-    g_NetPkt10_QSandEventSendBuf = {{0x10, sizeof(NetPkt10_QSandEvent), 0}, 0x12345678u, 0,
-                                    {0.0f, 0.0f, 0.0f}, 0.0f};
+    g_NetPkt10_QSandEventRelayBuf = {{0x10, sizeof(NetPkt10_QSandEvent), 0}, 0x12345678u, 0,
+                                     {0.0f, 0.0f, 0.0f}, 0.0f};
     g_sendCalls = 0;
     g_sendFlags = 0;
     g_sendPacket = nullptr;
@@ -6797,7 +6801,7 @@ extern "C" int gamenet_send_pkt10_qsand_event_smoke(void) {
         reinterpret_cast<const NetPkt10_QSandEvent *>(g_sendPacketBytes);
     const bool nonHostOk =
         nonHostResult == 0 && g_sendCalls == 1 && g_sendFlags == 1 &&
-        g_sendPacket == &g_NetPkt10_QSandEventSendBuf.header &&
+        g_sendPacket == &g_NetPkt10_QSandEventRelayBuf.header &&
         g_sendPacketSize == sizeof(NetPkt10_QSandEvent) &&
         sentPacket->header.payloadDword0 == localPlayer.playerKey &&
         sentPacket->eventFlags == 0x12340000u && Vec3Equals(sentPacket->center, nonHostEvent.center) &&
@@ -6809,17 +6813,17 @@ extern "C" int gamenet_send_pkt10_qsand_event_smoke(void) {
     g_sendCalls = 0;
     zDEClient_QSandEventTemplate hostEvent = nonHostEvent;
     hostEvent.radius = 7.75f;
-    g_NetPkt10_QSandEventSendBuf = {{0x10, sizeof(NetPkt10_QSandEvent), 0}, 0x87654321u, 0,
-                                    {0.0f, 0.0f, 0.0f}, 0.0f};
+    g_NetPkt10_QSandEventRelayBuf = {{0x10, sizeof(NetPkt10_QSandEvent), 0}, 0x87654321u, 0,
+                                     {0.0f, 0.0f, 0.0f}, 0.0f};
     const int hostResult = GameNet::SendPkt10_QSandEvent(&hostEvent);
     const bool hostOk =
         hostResult == 0 && g_qsandRelayCallbackCount == 1 && g_sendCalls == 0 &&
-        g_NetPkt10_QSandEventSendBuf.header.payloadDword0 == localPlayer.playerKey &&
-        g_NetPkt10_QSandEventSendBuf.eventFlags == 0x87650000u &&
-        Vec3Equals(g_NetPkt10_QSandEventSendBuf.center, hostEvent.center) &&
-        FloatNear(g_NetPkt10_QSandEventSendBuf.radius, 7.75f);
+        g_NetPkt10_QSandEventRelayBuf.header.payloadDword0 == localPlayer.playerKey &&
+        g_NetPkt10_QSandEventRelayBuf.eventFlags == 0x87650000u &&
+        Vec3Equals(g_NetPkt10_QSandEventRelayBuf.center, hostEvent.center) &&
+        FloatNear(g_NetPkt10_QSandEventRelayBuf.radius, 7.75f);
 
-    g_NetPkt10_QSandEventSendBuf = oldPacket;
+    g_NetPkt10_QSandEventRelayBuf = oldPacket;
     g_zNetwork_pDirectPlay4 = oldDPlay;
     g_zNetwork_LocalPlayerRecord = oldLocalPlayer;
     g_zNetwork_LocalPlayerKey = oldLocalPlayerKey;

@@ -31,20 +31,37 @@
 #include <string.h>
 
 extern "C" {
+/**
+ * Reimplements data 0x4f3764: g_Player_HudCounterValue.
+ * BN types this as a zero-filled .data int restored by
+ * Player::ApplyMissionSaveData, accumulated by AddScaledHudCounterValue, and
+ * mirrored into mission-save/HUD objective counter paths.
+ * Purpose: Stores the local mission objective HUD counter value.
+ */
 int g_Player_HudCounterValue = 0;
 unsigned char g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy = 0;
 PlayerNodeFlagRestoreEntry *g_PlayerNodeFlagRestoreEntriesBegin = 0;
 PlayerNodeFlagRestoreEntry *g_PlayerNodeFlagRestoreEntriesEnd = 0;
 PlayerNodeFlagRestoreEntry *g_PlayerNodeFlagRestoreEntriesCapacityEnd = 0;
+// Data owner 0x4f3a68..0x4f3a77: zero-initialized PlayerMasterCommonData
+// intrusive-list globals cleared by Player::InitMasterCommonDataList.
+int g_PlayerMasterCommonDataListAux = 0;
 PlayerMasterCommonData *g_PlayerMasterCommonDataHead = 0;
 PlayerMasterCommonData *g_PlayerMasterCommonDataTail = 0;
-int g_PlayerMasterCommonDataListAux = 0;
 int g_PlayerMasterCommonDataCount = 0;
+// Data owner 0x4f3688..0x4f3697: zero-initialized PlayerMasterModalData
+// intrusive-list globals cleared by Player::InitMasterModalDataList.
+int g_PlayerMasterModalDataListAux = 0;
 PlayerMasterModalData *g_PlayerMasterModalDataHead = 0;
 PlayerMasterModalData *g_PlayerMasterModalDataTail = 0;
-int g_PlayerMasterModalDataListAux = 0;
 int g_PlayerMasterModalDataCount = 0;
 int g_Player_LocalControlEnabled = 1;
+/**
+ * Reimplements data 0x4f36a0: g_Player_RuntimeInputFlags.
+ * BN types this as a zero-filled .data int reset by ZAR_RegisterSections and
+ * read by local gameplay input/runtime-control paths.
+ * Purpose: Stores player runtime input mode flags for the current mission.
+ */
 int g_Player_RuntimeInputFlags = 0;
 float g_Player_CameraZone = 0.5f;
 float g_Player_CameraZoneInvRange = 2.0f;
@@ -66,13 +83,32 @@ float g_Player_GameplayInputStepScale = 0.03f;
 float g_Player_CameraHeadingDotAbs = 1.0f;
 float g_Player_CameraHeadingLerpBaseWhenFlagClear = 3.0f;
 float g_Player_CameraHeadingLerpBaseWhenFlagSet = 2.0f;
+/**
+ * Reimplements data owner 0x4f3a78..0x4f3a87: player save-state intrusive list.
+ * BN exposes the zero-filled .data aux/head/tail/count fields used by player
+ * creation, teardown, and ZAR VehicleList traversal/serialization.
+ * Purpose: Tracks every active player save-state record in mission order.
+ */
 int g_PlayerSaveStateListAux = 0;
 zUtil_SaveGameState *g_PlayerSaveStateListHead = 0;
 zUtil_SaveGameState *g_PlayerSaveStateListTail = 0;
 int g_PlayerSaveStateCount = 0;
+/**
+ * Reimplements data 0x4f36a4: g_LocalPlayerSaveState.
+ * BN types this as a zero-filled .data zUtil_SaveGameState pointer written
+ * during mission-runtime initialization and read by the mission save/load
+ * payload, local-control, camera-anchor, and HUD/gameplay paths.
+ * Purpose: Points at the active local player's save-state record.
+ */
 zUtil_SaveGameState *g_LocalPlayerSaveState = 0;
 zUtil_SaveGameState *g_Player2SaveState = 0;
 zUtil_SaveGameState *g_CurrentPlayerSaveState = 0;
+/**
+ * Reimplements data 0x4f3718: g_Player_LastValidCameraVariantTag.
+ * BN types this as a zero-filled .data zTag4 copied into and out of the
+ * Player ZAR mission-save section as one packed 32-bit value.
+ * Purpose: Remembers the last camera variant tag valid for mission save/load.
+ */
 zTag4Partial g_Player_LastValidCameraVariantTag = {0};
 float g_Player_ThirdPersonCameraSideProbeOffsetScale = 1.0f;
 int g_Player_CameraVariantUpdatedThisTick = 0;
@@ -80,6 +116,13 @@ int g_Player_RebuildCameraDirFlatFromCurrentTarget = 0;
 zVec3 g_Player_AmphibBasisUpRef = {0.0f, 1.0f, 0.0f};
 float g_Player_AmphibSteerBasisLerpRate = 3.0f;
 int g_Player_NextOrdinal = 0;
+/**
+ * Reimplements data 0x4f36ac: g_Player_AiMode2State1Finalized.
+ * BN types this as a zero-filled .data int written by
+ * Player::AiFinalizeMode2State1ForAllPlayers and read by the Mode2 State1 AI
+ * steering/latch helpers.
+ * Purpose: Latches completion of the Mode2 State1 saved-state finalization pass.
+ */
 int g_Player_AiMode2State1Finalized = 0;
 float g_Player_AiMode2_PathFollowPitchInputScale = 0.0174499992f;
 float g_Player_AiMode2_PathFollowPitchTurnGain = 5.69999981f;
@@ -115,6 +158,13 @@ float g_Player_InvDeltaTime = 0.0f;
 float g_Player_DeltaTimeScaled001 = 0.0f;
 int g_PlayerPendingCheckpointNumber = 0;
 /**
+ * Reimplements data 0x4dc4e0: g_Checkpoint_NodeNameFmt.
+ * BN types this as a writable 13-byte .data string referenced only by
+ * Checkpoint::InstantiateNamedObjects.
+ * Purpose: Formats checkpoint node names as checkpoint1..checkpointN.
+ */
+char g_Checkpoint_NodeNameFmt[13] = "checkpoint%d";
+/**
  * Reimplements data 0x4f3754: g_PlayerStatusMeterRatio.
  * Purpose: Stores g PlayerStatusMeterRatio data used by battlesport_gameplay.player_damage_runtime_globals.
  */
@@ -134,6 +184,9 @@ float g_Player_CollisionContactResolveScale = 0.2f;
 // singleton, constructed by 0x41eb00 and reset by the atexit callback at
 // 0x41eb20.
 Player_UnderwaterFxPass3Ui g_Player_UnderwaterFxPass3Ui;
+// Data owner 0x4f3650..0x4f3687: zero-initialized projectile-camera
+// pass-3 HUD overlay singleton, constructed by 0x41eb60 and reset by the
+// atexit callback at 0x41eb80.
 Player_ProjectileCameraFxPass3Ui g_Player_State7FxPass3Ui;
 OptCatalogEntryDef *g_Player_MakeHotOptEntry = 0;
 OptCatalogEntryDef *g_Player_MakeColdOptEntry = 0;
@@ -181,6 +234,9 @@ int g_PlayerEnvProbe_AboveGroundCount = 0;
 zEffectAnimEntry *g_PlayerRecentHitFxAnimEntry = 0;
 zVec3 *g_Player_LocalFxOffsetWorldPtr = 0;
 int g_Player_MissionInitFirstRunFlag = 1;
+// Data owner 0x4f37b0..0x4f3a57 and 0x4f33a8..0x4f364f:
+// zero-initialized top-message HUD panel singletons constructed at startup
+// and destroyed by their CRT exit callbacks.
 HudUiPanel g_Player_TopMsgPanel1;
 HudUiPanel g_Player_TopMsgPanel2;
 char g_Player_AivParentDir[0x100] = {0};
@@ -2049,9 +2105,12 @@ Player_UnderwaterFxPass3Ui * Player_UnderwaterFxPass3Ui::Constructor() {
 }
 
 /**
- * Reimplements 0x41eb90: Player_ProjectileCameraFxPass3Ui::Player_ProjectileCameraFxPass3Ui.
- * Purpose: constructs the projectile-camera pass-3 HUD overlay as a zVideoFxPass3Element
- * and clears the per-pass clip rectangle consumed by ApplyPass3.
+ * Original inline helper; no standalone retail function exists. Observed in
+ * address-backed constructor 0x41eb90 as HudUiElement::Constructor(0, 0)
+ * followed by clearing the pass-3 clip pointer.
+ * Purpose: construct the projectile-camera pass-3 HUD overlay as a
+ * zVideoFxPass3Element and clear the per-pass clip rectangle consumed by
+ * ApplyPass3.
  */
 Player_ProjectileCameraFxPass3Ui::Player_ProjectileCameraFxPass3Ui() : zVideoFxPass3Element(
         0,
@@ -2059,6 +2118,11 @@ Player_ProjectileCameraFxPass3Ui::Player_ProjectileCameraFxPass3Ui() : zVideoFxP
     ) {
 }
 
+/**
+ * Reimplements 0x41eb90: Player_ProjectileCameraFxPass3Ui::Constructor.
+ * Purpose: construct the projectile-camera pass-3 HUD overlay singleton storage
+ * and return the initialized object.
+ */
 Player_ProjectileCameraFxPass3Ui * Player_ProjectileCameraFxPass3Ui::Constructor() {
     new (this) Player_ProjectileCameraFxPass3Ui();
     return this;
@@ -2111,8 +2175,11 @@ const char *__fastcall SelectZrdByDifficulty(
 
 namespace Player_TopMsgPanel1 {
 
-// Reimplements 0x41ec40: Player_TopMsgPanel1::Constructor
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x41ec40: Player_TopMsgPanel1::Constructor.
+ * Purpose: construct the first top-message HUD panel singleton with default
+ * panel state.
+ */
 void Constructor() {
     g_Player_TopMsgPanel1.ConstructorDefault(
         0,
@@ -2121,8 +2188,10 @@ void Constructor() {
     );
 }
 
-// Reimplements 0x41ec70: Player_TopMsgPanel1::Destructor
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x41ec70: Player_TopMsgPanel1::Destructor.
+ * Purpose: destroy the first top-message HUD panel singleton during CRT exit.
+ */
 void Destructor() {
     g_Player_TopMsgPanel1.~HudUiPanel();
 }
@@ -2131,8 +2200,11 @@ void Destructor() {
 
 namespace Player_TopMsgPanel2 {
 
-// Reimplements 0x41ec90: Player_TopMsgPanel2::Constructor
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x41ec90: Player_TopMsgPanel2::Constructor.
+ * Purpose: construct the second top-message HUD panel singleton with default
+ * panel state.
+ */
 void Constructor() {
     g_Player_TopMsgPanel2.ConstructorDefault(
         0,
@@ -2141,8 +2213,10 @@ void Constructor() {
     );
 }
 
-// Reimplements 0x41ecc0: Player_TopMsgPanel2::Destructor
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x41ecc0: Player_TopMsgPanel2::Destructor.
+ * Purpose: destroy the second top-message HUD panel singleton during CRT exit.
+ */
 void Destructor() {
     g_Player_TopMsgPanel2.~HudUiPanel();
 }
@@ -2185,8 +2259,10 @@ void ShutdownInstance() {
 } // namespace PlayerNodeFlagRestore
 
 namespace Player {
-// Reimplements 0x41ea90: Player::InitMasterCommonDataList
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x41ea90: Player::InitMasterCommonDataList.
+ * Purpose: clear the master common-data intrusive-list bootstrap globals.
+ */
 void InitMasterCommonDataList() {
     g_PlayerMasterCommonDataListAux = 0;
     g_PlayerMasterCommonDataTail = 0;
@@ -2194,8 +2270,10 @@ void InitMasterCommonDataList() {
     g_PlayerMasterCommonDataCount = 0;
 }
 
-// Reimplements 0x41eac0: Player::InitMasterModalDataList
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x41eac0: Player::InitMasterModalDataList.
+ * Purpose: clear the master modal-data intrusive-list bootstrap globals.
+ */
 void InitMasterModalDataList() {
     g_PlayerMasterModalDataListAux = 0;
     g_PlayerMasterModalDataTail = 0;
@@ -2240,28 +2318,40 @@ void ResetUnderwaterFxPass3UiSingleton() {
     g_Player_UnderwaterFxPass3Ui.~Player_UnderwaterFxPass3Ui();
 }
 
-// Reimplements 0x41eb50: Player::InitAndRegisterProjectileCameraFxPass3UiSingleton
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x41eb50: Player::InitAndRegisterProjectileCameraFxPass3UiSingleton.
+ * Purpose: construct the projectile-camera pass-3 HUD singleton and register
+ * its CRT exit reset callback.
+ */
 void InitAndRegisterProjectileCameraFxPass3UiSingleton() {
     InitProjectileCameraFxPass3UiSingleton();
     RegisterProjectileCameraFxPass3UiCleanup();
 }
 
-// Reimplements 0x41eb60: Player::InitProjectileCameraFxPass3UiSingleton
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x41eb60: Player::InitProjectileCameraFxPass3UiSingleton.
+ * Purpose: construct the global projectile-camera pass-3 HUD overlay singleton.
+ */
 void InitProjectileCameraFxPass3UiSingleton() {
     g_Player_State7FxPass3Ui.Constructor();
 }
 
-// Reimplements 0x41eb70: Player::RegisterProjectileCameraFxPass3UiCleanup
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x41eb70: Player::RegisterProjectileCameraFxPass3UiCleanup.
+ * Purpose: register the projectile-camera pass-3 HUD singleton reset callback
+ * with the CRT exit list.
+ */
 void RegisterProjectileCameraFxPass3UiCleanup() {
     atexit(ResetProjectileCameraFxPass3UiSingleton);
 }
 
-// Reimplements 0x41eb80: Player::ResetProjectileCameraFxPass3UiSingleton
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x41eb80: Player::ResetProjectileCameraFxPass3UiSingleton.
+ * Purpose: reset the projectile-camera pass-3 HUD overlay singleton to the
+ * common HudUiElement destruction state during CRT exit.
+ */
 void ResetProjectileCameraFxPass3UiSingleton() {
+    g_Player_State7FxPass3Ui.~Player_ProjectileCameraFxPass3Ui();
 }
 
 /**
@@ -2278,28 +2368,40 @@ void InitSaveStateList() {
     g_PlayerSaveStateCount = 0;
 }
 
-// Reimplements 0x41ec30: Player::InitAndRegisterTopMsgPanel1
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x41ec30: Player::InitAndRegisterTopMsgPanel1.
+ * Purpose: construct the first top-message panel singleton and register its
+ * CRT exit destructor.
+ */
 void InitAndRegisterTopMsgPanel1() {
     Player_TopMsgPanel1::Constructor();
     RegisterTopMsgPanel1OnExit();
 }
 
-// Reimplements 0x41ec60: Player::RegisterTopMsgPanel1OnExit
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x41ec60: Player::RegisterTopMsgPanel1OnExit.
+ * Purpose: register the first top-message panel destructor with the CRT exit
+ * list.
+ */
 void RegisterTopMsgPanel1OnExit() {
     atexit(Player_TopMsgPanel1::Destructor);
 }
 
-// Reimplements 0x41ec80: Player::InitAndRegisterTopMsgPanel2
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x41ec80: Player::InitAndRegisterTopMsgPanel2.
+ * Purpose: construct the second top-message panel singleton and register its
+ * CRT exit destructor.
+ */
 void InitAndRegisterTopMsgPanel2() {
     Player_TopMsgPanel2::Constructor();
     RegisterTopMsgPanel2Cleanup();
 }
 
-// Reimplements 0x41ecb0: Player::RegisterTopMsgPanel2Cleanup
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x41ecb0: Player::RegisterTopMsgPanel2Cleanup.
+ * Purpose: register the second top-message panel destructor with the CRT exit
+ * list.
+ */
 void RegisterTopMsgPanel2Cleanup() {
     atexit(Player_TopMsgPanel2::Destructor);
 }
@@ -5300,15 +5402,19 @@ RECOIL_STATIC_ASSERT(
 } // namespace
 
 namespace Checkpoint {
-// Reimplements 0x420c60: Checkpoint::InstantiateNamedObjects
-// (D:\Proj\GameZRecoil\checkpoint.cpp)
+/**
+ * Reimplements 0x420c60: Checkpoint::InstantiateNamedObjects
+ * Source: D:\Proj\GameZRecoil\checkpoint.cpp
+ * Purpose: Resolves checkpoint nodes by name and recursively stamps their race
+ * checkpoint flags and callback context.
+ */
 void InstantiateNamedObjects() {
     CString searchName;
     const int checkpointCount = g_HudSensorTracker.checkpointCount;
 
     for (int checkpointNumber = 1; checkpointNumber <= checkpointCount; ++checkpointNumber) {
         searchName.Format(
-            "checkpoint%d",
+            g_Checkpoint_NodeNameFmt,
             checkpointNumber
         );
         zClass_NodePartial *const checkpointNode =
@@ -5334,8 +5440,12 @@ void InstantiateNamedObjects() {
     }
 }
 
-// Reimplements 0x425150: Checkpoint::UpdatePlayerLapProgressAndNotifyNet
-// (D:\Proj\GameZRecoil\checkpoint.cpp)
+/**
+ * Reimplements 0x425150: Checkpoint::UpdatePlayerLapProgressAndNotifyNet
+ * Source: D:\Proj\GameZRecoil\checkpoint.cpp
+ * Purpose: Marks checkpoint visits, completes laps after all checkpoint flags
+ * are set, and notifies networking of lap progress.
+ */
 void __fastcall UpdatePlayerLapProgressAndNotifyNet(
     zUtil_SaveGameState *saveState,
     int checkpointIndex
@@ -5674,7 +5784,13 @@ void __fastcall UpdateGunDispatchRequestsFromTriggerLatches(
     }
 }
 
-// Reimplements 0x403830: Player::AiDiscardNegativeBranchPathNodes (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x403830: Player::AiDiscardNegativeBranchPathNodes
+ * (src/Battlesport/ainet.cpp).
+ *
+ * Purpose: discard temporary negative-index AI path nodes before the saved
+ * player state releases or resumes its current path cursor.
+ */
 void __fastcall AiDiscardNegativeBranchPathNodes(
     zUtil_SaveGameState *saveState
 ) {
@@ -6720,8 +6836,12 @@ void __fastcall TickAiMode2DynamicOffsetTargetSteering(
     playerState->aiCurrentSteeringSubstate = kPlayerAiMode2SteerAutoTurn;
 }
 
-// Reimplements 0x402080: Player::AiRestoreSavedTopLevelState
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x402080: Player::AiRestoreSavedTopLevelState.
+ * BN shows a fastcall leaf that copies playerState->aiSavedTopLevelState to
+ * playerState->aiTopLevelState through the save-state's playerState pointer.
+ * Purpose: Restores a saved AI top-level state for one player save-state node.
+ */
 void __fastcall AiRestoreSavedTopLevelState(
     zUtil_SaveGameState *saveState
 ) {
@@ -8140,8 +8260,17 @@ void __fastcall ClearDestroyedRespawnEffectHandleCallback(
     saveState->playerState->destroyedRespawnAsyncHandle = 0;
 }
 
-// Reimplements 0x41bd20: Player::DestroyedStateResetLocalFinalize
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x41bd20: Player::DestroyedStateResetLocalFinalize.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: finish the local destroyed-state reset by restoring active local
+ * lifecycle, input/camera state, damage state, and pickup effect feedback.
+ * Source owner: Player damage-hit and destroyed-state callback subsystem, not
+ * a C++ Player class owner.
+ * Evidence: helper is called by the destroyed reset finalize callback and
+ * touches only the active global save-state player's destroyed lifecycle,
+ * steering/camera restoration, damage reset, and pickup effect dispatch.
+ */
 void DestroyedStateResetLocalFinalize() {
     zUtil_SaveGameState *const saveState = (zUtil_SaveGameState *)g_GameStateOrMapTable;
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
@@ -8160,8 +8289,17 @@ void DestroyedStateResetLocalFinalize() {
     );
 }
 
-// Reimplements 0x41bca0: Player::DestroyedStateResetFinalizeCallback
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x41bca0: Player::DestroyedStateResetFinalizeCallback.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: finish the destroyed-state model fade-in and restore health,
+ * lifecycle, and camera transition state after respawn reset.
+ * Source owner: Player damage-hit and destroyed-state callback subsystem, not
+ * a C++ Player class owner.
+ * Evidence: model-ref lerp callback ABI receives the save state, compares the
+ * nearest other player at the spawn point before optional network respawn/drop
+ * handling, then calls the local finalize helper and restores player fields.
+ */
 void __fastcall DestroyedStateResetFinalizeCallback(
     zUtil_SaveGameState *saveState
 ) {
@@ -8187,8 +8325,18 @@ void __fastcall DestroyedStateResetFinalizeCallback(
     playerState->cameraTransitionTimer = 0;
 }
 
-// Reimplements 0x41bbf0: Player::DestroyedStateResetCallback
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x41bbf0: Player::DestroyedStateResetCallback.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: begin destroyed-state reset by restarting the player node action,
+ * restoring damage/health visibility, queuing model fade-in, and refreshing
+ * weapon, HUD, and alt-gun runtime state.
+ * Source owner: Player damage-hit and destroyed-state callback subsystem, not
+ * a C++ Player class owner.
+ * Evidence: effect-animation callback ABI receives the save state and body
+ * uses destroyed-respawn effect data, root-node visual flags, model-ref lerp
+ * queue callback 0x41bca0, network respawn/drop handling, and weapon/HUD reset.
+ */
 void __fastcall DestroyedStateResetCallback(
     zEffectAnimEntry *,
     zUtil_SaveGameState *saveState,
@@ -8237,16 +8385,34 @@ void __fastcall DestroyedStateResetCallback(
     HudUiMgr::TriggerCurrentLayoutOnActivated();
 }
 
-// Reimplements 0x41bd10: Player::ClearRespawnTransitionFlagCallback
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x41bd10: Player::ClearRespawnTransitionFlagCallback.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: clear the camera transition timer after the destroyed-state
+ * respawn fade finishes.
+ * Source owner: Player damage-hit and destroyed-state callback subsystem, not
+ * a C++ Player class owner.
+ * Evidence: model-ref lerp callback ABI receives the save state and the body
+ * only clears the save-state player's camera transition timer.
+ */
 void __fastcall ClearRespawnTransitionFlagCallback(
     zUtil_SaveGameState *saveState
 ) {
     saveState->playerState->cameraTransitionTimer = 0;
 }
 
-// Reimplements 0x41bb30: Player::DestroyedStateRespawnCallback
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x41bb30: Player::DestroyedStateRespawnCallback.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: restore the respawned player model to a lit, visible, healthy
+ * state and clear destroyed-state combat selection and damage state.
+ * Source owner: Player damage-hit and destroyed-state callback subsystem, not
+ * a C++ Player class owner.
+ * Evidence: effect-animation callback ABI receives the save state, queues the
+ * camera transition clear callback, resets the healthy node transform, runs
+ * the destroyed-respawn async action callback when present, and restores
+ * damage, selection, and health fields.
+ */
 void __fastcall DestroyedStateRespawnCallback(
     zEffectAnimEntry *,
     zUtil_SaveGameState *saveState,
@@ -9538,8 +9704,14 @@ void __fastcall AsyncCommandCallback(
     }
 }
 
-// Reimplements 0x402f10: Player::AiFinalizeMode2State1ForAllPlayers
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x402f10: Player::AiFinalizeMode2State1ForAllPlayers.
+ * BN shows traversal from g_PlayerSaveStateListHead, filtering
+ * lifecycleState == 2 and aiTopLevelState == 1, restoring matching nodes, and
+ * setting g_Player_AiMode2State1Finalized to 1 after the pass.
+ * Purpose: Finalizes AI Mode2 State1 by restoring saved top-level state for
+ * active AI players and setting the global finalization latch.
+ */
 void AiFinalizeMode2State1ForAllPlayers() {
     zUtil_SaveGameState *saveState = g_PlayerSaveStateListHead;
     while (saveState != 0) {
@@ -10942,8 +11114,11 @@ void __fastcall SetAutoTurnTargetDirFromWorldPoint(
     playerState->autoTurnActive = 1;
 }
 
-// Reimplements 0x41f010: Player::BuildMissionSaveData
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x41f010: Player::BuildMissionSaveData
+ * Original source: D:\Proj\Battlesport\player.cpp
+ * Purpose: copy the live local-player mission state into the save-section payload.
+ */
 void __fastcall BuildMissionSaveData(
     PlayerMissionSaveData *outData
 ) {
@@ -10959,13 +11134,13 @@ void __fastcall BuildMissionSaveData(
             PlayerMissionSaveWeaponBank &dstBank = outData->weaponBank[bankIndex];
 
             dstBank.selectedSide = srcBank.selectedSide;
-            const PlayerGunFireController *controllers[2] = {&srcBank.controllerA,
-                &srcBank.controllerB};
+            const PlayerGunFireController *controller = &srcBank.controllerA;
 
             {
                 for (int sideIndex = 0; sideIndex < 2; ++sideIndex) {
-                    dstBank.sides[sideIndex].enabled = (controllers[sideIndex]->flags >> 2) & 1;
-                    dstBank.sides[sideIndex].ammoOrCharge = controllers[sideIndex]->ammoOrCharge;
+                    dstBank.sides[sideIndex].enabled = (controller->flags >> 2) & 1;
+                    dstBank.sides[sideIndex].ammoOrCharge = controller->ammoOrCharge;
+                    ++controller;
                 }
             }
         }
@@ -11014,8 +11189,11 @@ void __fastcall BuildMissionSaveData(
     }
 }
 
-// Reimplements 0x41f1d0: Player::ApplyMissionSaveData
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x41f1d0: Player::ApplyMissionSaveData
+ * Original source: D:\Proj\Battlesport\player.cpp
+ * Purpose: restore the live local-player mission state from the save-section payload.
+ */
 void __fastcall ApplyMissionSaveData(
     PlayerMissionSaveData *saveData
 ) {
@@ -11148,7 +11326,9 @@ void __fastcall ApplyMissionSaveData(
         saveData->cameraPosition.z
     );
 
-    playerState->timedHitStatus.ClearLightAndReset();
+    zUtil_PlayerStateStorage *const activePlayerState =
+        ((zUtil_SaveGameState *)g_GameStateOrMapTable)->playerState;
+    activePlayerState->timedHitStatus.ClearLightAndReset();
     playerState->damageProtectionActive = 0;
     if (hasTimedHitStatus != 0) {
         memcpy(
@@ -11248,8 +11428,14 @@ void RestoreRecordedNodeFlags() {
     }
 }
 
-// Reimplements 0x41f640: Player::ZAR_ReadMissionSaveDataSection
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x41f640: Player::ZAR_ReadMissionSaveDataSection
+ * Original source: D:\Proj\Battlesport\player.cpp
+ * BN evidence: __fastcall ZAR data-ready callback; applies PlayerMissionSaveData,
+ * copies lastValidCameraVariantTag to g_Player_LastValidCameraVariantTag, refreshes
+ * HUD/layout state, and restores recorded node flags.
+ * Purpose: restore local-player mission state from the Player ZAR section.
+ */
 void __fastcall ZAR_ReadMissionSaveDataSection(
     zZbdSectionCallbackCtx *,
     const char *,
@@ -11260,7 +11446,7 @@ void __fastcall ZAR_ReadMissionSaveDataSection(
     zUtil_PlayerStateStorage *const playerState = g_LocalPlayerSaveState->playerState;
 
     ApplyMissionSaveData(saveData);
-    g_Variant_CurrentTag = saveData->lastValidCameraVariantTag;
+    g_Player_LastValidCameraVariantTag = saveData->lastValidCameraVariantTag;
 
     if (playerState->lifecycleState == kPlayerLifecycleInactive) {
         zEffect_Anim::NodeActionCallback(
@@ -11274,8 +11460,14 @@ void __fastcall ZAR_ReadMissionSaveDataSection(
     RestoreRecordedNodeFlags();
 }
 
-// Reimplements 0x41f5b0: Player::ZAR_RegisterSections
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x41f5b0: Player::ZAR_RegisterSections
+ * Original source: D:\Proj\Battlesport\player.cpp
+ * BN evidence: resets g_Player_RuntimeInputFlags and registers VehicleList and
+ * Player callbacks through zUtil_ZAR::RegisterSectionHandler with sort orders 100
+ * and 200.
+ * Purpose: install Player-owned ZAR section callbacks for save/load.
+ */
 void ZAR_RegisterSections() {
     g_Player_RuntimeInputFlags = 0;
     zUtil_ZAR::RegisterSectionHandler(
@@ -11294,8 +11486,14 @@ void ZAR_RegisterSections() {
     );
 }
 
-// Reimplements 0x41f5f0: Player::ZAR_WriteMissionSaveDataSection
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x41f5f0: Player::ZAR_WriteMissionSaveDataSection
+ * Original source: D:\Proj\Battlesport\player.cpp
+ * BN evidence: __fastcall ZAR pre-load callback; builds PlayerMissionSaveData,
+ * copies g_Player_LastValidCameraVariantTag as one packed zTag4 value, and writes
+ * a 0x140-byte blob under the local player's root-node name.
+ * Purpose: serialize local-player mission state into the Player ZAR section.
+ */
 int __fastcall ZAR_WriteMissionSaveDataSection(
     zZbdSectionCallbackCtx *writer,
     void *
@@ -11304,7 +11502,7 @@ int __fastcall ZAR_WriteMissionSaveDataSection(
     zUtil_PlayerStateStorage *const playerState = g_LocalPlayerSaveState->playerState;
 
     BuildMissionSaveData(&missionData);
-    missionData.lastValidCameraVariantTag = g_Variant_CurrentTag;
+    missionData.lastValidCameraVariantTag = g_Player_LastValidCameraVariantTag;
     return zUtil_ZAR::WriteSectionBlob(
         writer,
         playerState->rootNode->name,
@@ -11313,8 +11511,14 @@ int __fastcall ZAR_WriteMissionSaveDataSection(
     );
 }
 
-// Reimplements 0x41f850: Player::ZAR_ReadVehicleListSection
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x41f850: Player::ZAR_ReadVehicleListSection
+ * Original source: D:\Proj\Battlesport\player.cpp
+ * BN evidence: __fastcall ZAR data-ready callback; validates the 0x80-byte
+ * VehicleList record, finds the save state by root-node token, restores pose,
+ * AI, status, visual, and lifecycle fields, and refreshes node state.
+ * Purpose: restore one player vehicle record from the VehicleList ZAR section.
+ */
 void __fastcall ZAR_ReadVehicleListSection(
     zZbdSectionCallbackCtx *,
     const char *sectionToken,
@@ -11463,8 +11667,14 @@ void __fastcall ZAR_ReadVehicleListSection(
     );
 }
 
-// Reimplements 0x41f6a0: Player::ZAR_WriteVehicleListSection
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x41f6a0: Player::ZAR_WriteVehicleListSection
+ * Original source: D:\Proj\Battlesport\player.cpp
+ * BN evidence: __fastcall ZAR pre-load callback; walks g_PlayerSaveStateListHead,
+ * fills the 0x80-byte PlayerVehicleListSaveEntry from typed player-state fields,
+ * and writes each blob under the player's root-node name.
+ * Purpose: serialize all active player vehicle records into the VehicleList ZAR section.
+ */
 int __fastcall ZAR_WriteVehicleListSection(
     zZbdSectionCallbackCtx *writer,
     void *
@@ -13650,8 +13860,13 @@ void __fastcall HandlePrimaryWeaponVariantToggleInput(
     );
 }
 
-// Reimplements 0x439990: Player::ResetDamageStateAndTimedHitStatus
-// (D:\Proj\GameZRecoil\zGame\Player\Player_Damage.cpp)
+/**
+ * Reimplements 0x439990: Player::ResetDamageStateAndTimedHitStatus
+ * (D:\Proj\GameZRecoil\zGame\Player\Player_Damage.cpp).
+ *
+ * Purpose: reload damage material state, clear damage flags, and clear any
+ * attached timed-hit status light.
+ */
 void __fastcall ResetDamageStateAndTimedHitStatus(
     zUtil_SaveGameState *saveState
 ) {
@@ -16921,7 +17136,12 @@ void __fastcall TickAltGunRuntimeState(
     TickAltGunLocalSlotAndPrimaryState(saveState);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source static helper; no standalone retail function exists.
+ * Observed in caller 0x41fd20 Player::DestroySaveGameState.
+ * Evidence: the caller contains the HUD sensor track-list unlink sequence inline.
+ * Purpose: Remove a HUD sensor track node from the global mission track list.
+ */
 static void RemoveTrackNode(
     HudUiMgrSensorTrackNode *trackNode
 ) {
@@ -16952,7 +17172,12 @@ static void RemoveTrackNode(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source static helper; no standalone retail function exists.
+ * Observed in caller 0x41fd20 Player::DestroySaveGameState.
+ * Evidence: the caller contains the player save-state list unlink sequence inline.
+ * Purpose: Remove a save state from the global mission save-state list.
+ */
 static void UnlinkSaveState(
     zUtil_SaveGameState *saveState
 ) {
@@ -16986,7 +17211,11 @@ static void UnlinkSaveState(
     }
 }
 
-// Reimplements 0x41fd20: Player::DestroySaveGameState (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x41fd20: Player::DestroySaveGameState
+ * Source file: D:\Proj\Battlesport\player.cpp.
+ * Purpose: Tear down a mission save state, its sensor track node, and owned resources.
+ */
 void __fastcall DestroySaveGameState(
     zUtil_SaveGameState *saveState
 ) {
@@ -17008,7 +17237,12 @@ void __fastcall DestroySaveGameState(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source static helper; no standalone retail function exists.
+ * Observed in caller 0x41fb80 Player::ShutdownMissionRuntime.
+ * Evidence: the caller contains the remaining HUD sensor track-node deletion loop inline.
+ * Purpose: Delete leftover HUD sensor track nodes and clear the global track list.
+ */
 static void DeleteRemainingTrackNodes() {
     HudUiMgrSensorTrackNode *node = g_HudUiMgrSensor_TrackList.head;
     while (node != 0) {
@@ -17024,7 +17258,12 @@ static void DeleteRemainingTrackNodes() {
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source static helper; no standalone retail function exists.
+ * Observed in caller 0x41fb80 Player::ShutdownMissionRuntime.
+ * Evidence: the caller contains the weapon-spec deletion and list-clear sequence inline.
+ * Purpose: Delete all weapon specs owned by one PlayerMasterCommonData record.
+ */
 static void DeleteWeaponSpecs(
     PlayerMasterCommonData *commonData
 ) {
@@ -17041,7 +17280,11 @@ static void DeleteWeaponSpecs(
     commonData->weaponSpecCount = 0;
 }
 
-// Reimplements 0x41fb80: Player::ShutdownMissionRuntime (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x41fb80: Player::ShutdownMissionRuntime
+ * Source file: D:\Proj\Battlesport\player.cpp.
+ * Purpose: Clear mission-owned player runtime lists, AI net state, and pass-3 UI links.
+ */
 void ShutdownMissionRuntime() {
     while (g_PlayerSaveStateListHead != 0) {
         DestroySaveGameState(g_PlayerSaveStateListHead);

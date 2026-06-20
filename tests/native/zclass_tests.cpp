@@ -2093,6 +2093,69 @@ extern "C" int zclass_camera_view_distance_smoke() {
         return 4;
     }
 
+    zClass_CameraDataPartial *cameraData =
+        static_cast<zClass_CameraDataPartial *>(camera->classData);
+    cameraData->frustumWidth = 1.25f;
+    cameraData->frustumHeight = 0.75f;
+    float fovX = 0.0f;
+    float fovY = 0.0f;
+    if (zClass_Camera::gwCameraGetFOV(camera, &fovX, &fovY) != 0 ||
+        fovX != 1.25f || fovY != 0.75f) {
+        FreeTypeListsForTest();
+        return 7;
+    }
+    if (zClass_Camera::gwCameraGetFOV(nullptr, &fovX, &fovY) != 5) {
+        FreeTypeListsForTest();
+        return 8;
+    }
+    camera->classData = nullptr;
+    if (zClass_Camera::gwCameraGetFOV(camera, &fovX, &fovY) != 5) {
+        camera->classData = cameraData;
+        FreeTypeListsForTest();
+        return 9;
+    }
+    camera->classData = cameraData;
+    camera->classId = 2;
+    if (zClass_Camera::gwCameraGetFOV(camera, &fovX, &fovY) != 3) {
+        camera->classId = 1;
+        FreeTypeListsForTest();
+        return 10;
+    }
+    camera->classId = 1;
+
+    cameraData->posOffset = {2.0f, 3.0f, 4.0f};
+    float cameraX = 0.0f;
+    float cameraY = 0.0f;
+    float cameraZ = 0.0f;
+    if (zClass_Camera::gwCameraGetPosition(camera, &cameraX, &cameraY, &cameraZ) != 0 ||
+        cameraX != 2.0f || cameraY != 3.0f || cameraZ != 4.0f) {
+        FreeTypeListsForTest();
+        return 11;
+    }
+    if (zClass_Camera::gwCameraGetPosition(nullptr, &cameraX, &cameraY, &cameraZ) != 5) {
+        FreeTypeListsForTest();
+        return 12;
+    }
+
+    cameraData->targetOrEuler = {5.0f, 6.0f, 7.0f};
+    cameraData->worldTarget = {8.0f, 9.0f, 10.0f};
+    cameraData->cameraFlags &= ~0x02;
+    if (zClass_Camera::gwCameraGetTarget(camera, &cameraX, &cameraY, &cameraZ) != 0 ||
+        cameraX != 5.0f || cameraY != 6.0f || cameraZ != 7.0f) {
+        FreeTypeListsForTest();
+        return 13;
+    }
+    cameraData->cameraFlags |= 0x02;
+    if (zClass_Camera::gwCameraGetTarget(camera, &cameraX, &cameraY, &cameraZ) != 0 ||
+        cameraX != 8.0f || cameraY != 9.0f || cameraZ != 10.0f) {
+        FreeTypeListsForTest();
+        return 14;
+    }
+    if (zClass_Camera::gwCameraGetTarget(nullptr, &cameraX, &cameraY, &cameraZ) != 5) {
+        FreeTypeListsForTest();
+        return 15;
+    }
+
     zClass_NodePartial child{};
     if (zClass_Camera::gwCameraAddChild(camera, &child) != 0 || camera->listCountB != 1 ||
         child.listCountA != 1 || zClass_Camera::gwCameraRemoveChild(camera, &child) != 0 ||

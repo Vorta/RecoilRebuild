@@ -1986,7 +1986,8 @@ extern "C" int zdeclient_crater_net_relay_callback_smoke(void) {
 }
 
 extern "C" int zdeclient_crater_execute_smoke(void) {
-    const NetPkt0F_CraterEvent oldPacket = g_NetPkt0F_CraterEventSendBuf;
+    const NetPkt0F_CraterEvent oldRelayPacket = g_NetPkt0F_CraterEventRelayBuf;
+    const NetPkt0F_CraterEvent oldSendPacket = g_NetPkt0F_CraterEventSendBuf;
     const int oldIsHost = g_zNetwork_IsHostFlag;
     zNetwork_DPlay4 *const oldDPlay = g_zNetwork_pDirectPlay4;
     zNetwork_PlayerRecord *const oldLocalPlayer = g_zNetwork_LocalPlayerRecord;
@@ -2029,8 +2030,8 @@ extern "C" int zdeclient_crater_execute_smoke(void) {
     const int negativeResult = zDEClient_Crater::Execute(&negativeEvent);
     const bool negativeOk = negativeResult == 1 && NearlyEqual(negativeEvent.radius, 3.5f);
 
-    g_NetPkt0F_CraterEventSendBuf = {{0x0f, sizeof(NetPkt0F_CraterEvent), 0}, 0x20u, -1,
-                                     {0.0f, 0.0f, 0.0f}, 0.0f};
+    g_NetPkt0F_CraterEventRelayBuf = {{0x0f, sizeof(NetPkt0F_CraterEvent), 0}, 0x20u, -1,
+                                      {0.0f, 0.0f, 0.0f}, 0.0f};
     g_craterNetRelaySendCalls = 0;
     zDEClient_CraterEventTemplate otherOwnerEvent = {};
     otherOwnerEvent.craterMaterialSlot = &materialSlots[1];
@@ -2039,16 +2040,16 @@ extern "C" int zdeclient_crater_execute_smoke(void) {
     otherOwnerEvent.damageOwnerNode = &otherRoot;
     const int otherOwnerResult = zDEClient_Crater::Execute(&otherOwnerEvent);
     const bool otherOwnerOk = otherOwnerResult == 0 && g_craterNetRelaySendCalls == 0 &&
-                              g_NetPkt0F_CraterEventSendBuf.craterTypeId == -1 &&
-                              g_NetPkt0F_CraterEventSendBuf.header.payloadDword0 == 0;
+                              g_NetPkt0F_CraterEventRelayBuf.craterTypeId == -1 &&
+                              g_NetPkt0F_CraterEventRelayBuf.header.payloadDword0 == 0;
 
     zDEClient_CraterEventTemplate nonHostEvent = {};
     nonHostEvent.craterMaterialSlot = &materialSlots[2];
     nonHostEvent.radius = 7.25f;
     nonHostEvent.center = {4.0f, 5.0f, 6.0f};
     nonHostEvent.damageOwnerNode = &ownerRoot;
-    g_NetPkt0F_CraterEventSendBuf = {{0x0f, sizeof(NetPkt0F_CraterEvent), 0}, 0x20u, -1,
-                                     {0.0f, 0.0f, 0.0f}, 0.0f};
+    g_NetPkt0F_CraterEventRelayBuf = {{0x0f, sizeof(NetPkt0F_CraterEvent), 0}, 0x20u, -1,
+                                      {0.0f, 0.0f, 0.0f}, 0.0f};
     g_craterNetRelaySendCalls = 0;
     const int nonHostResult = zDEClient_Crater::Execute(&nonHostEvent);
     const NetPkt0F_CraterEvent *const sentPacket =
@@ -2067,17 +2068,18 @@ extern "C" int zdeclient_crater_execute_smoke(void) {
     g_craterNetRelaySendCalls = 0;
     zDEClient_CraterEventTemplate hostEvent = nonHostEvent;
     hostEvent.radius = 8.5f;
-    g_NetPkt0F_CraterEventSendBuf = {{0x0f, sizeof(NetPkt0F_CraterEvent), 0x1111}, 0x10u, -1,
-                                     {0.0f, 0.0f, 0.0f}, 0.0f};
+    g_NetPkt0F_CraterEventRelayBuf = {{0x0f, sizeof(NetPkt0F_CraterEvent), 0x1111}, 0x10u, -1,
+                                      {0.0f, 0.0f, 0.0f}, 0.0f};
     const int hostResult = zDEClient_Crater::Execute(&hostEvent);
     const bool hostOk =
         hostResult == 0 && g_craterRelayCallCount == 1 && g_craterNetRelaySendCalls == 0 &&
-        g_NetPkt0F_CraterEventSendBuf.header.payloadDword0 == localPlayer.playerKey &&
-        g_NetPkt0F_CraterEventSendBuf.eventFlags == 0x10u &&
-        g_NetPkt0F_CraterEventSendBuf.craterTypeId == 2 &&
-        NearlyEqual(g_NetPkt0F_CraterEventSendBuf.radius, 8.5f);
+        g_NetPkt0F_CraterEventRelayBuf.header.payloadDword0 == localPlayer.playerKey &&
+        g_NetPkt0F_CraterEventRelayBuf.eventFlags == 0x10u &&
+        g_NetPkt0F_CraterEventRelayBuf.craterTypeId == 2 &&
+        NearlyEqual(g_NetPkt0F_CraterEventRelayBuf.radius, 8.5f);
 
-    g_NetPkt0F_CraterEventSendBuf = oldPacket;
+    g_NetPkt0F_CraterEventRelayBuf = oldRelayPacket;
+    g_NetPkt0F_CraterEventSendBuf = oldSendPacket;
     g_zNetwork_IsHostFlag = oldIsHost;
     g_zNetwork_pDirectPlay4 = oldDPlay;
     g_zNetwork_LocalPlayerRecord = oldLocalPlayer;

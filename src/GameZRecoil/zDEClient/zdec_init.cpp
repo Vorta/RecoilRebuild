@@ -406,21 +406,21 @@ int __fastcall Execute(
         return 0;
     }
 
-    g_NetPkt0F_CraterEventSendBuf.header.payloadDword0 = zNetwork_GetLocalPlayerKey();
-    g_NetPkt0F_CraterEventSendBuf.craterTypeId =
+    g_NetPkt0F_CraterEventRelayBuf.header.payloadDword0 = zNetwork_GetLocalPlayerKey();
+    g_NetPkt0F_CraterEventRelayBuf.craterTypeId =
         zModel_MatlSlot::IndexFromPtrOrMinus1(eventTemplate->craterMaterialSlot);
-    g_NetPkt0F_CraterEventSendBuf.center = eventTemplate->center;
-    g_NetPkt0F_CraterEventSendBuf.radius = eventTemplate->radius;
+    g_NetPkt0F_CraterEventRelayBuf.center = eventTemplate->center;
+    g_NetPkt0F_CraterEventRelayBuf.radius = eventTemplate->radius;
 
     if (zNetwork::IsHost() != 0) {
         NetRelayCallback(
             zNetwork_GetLocalPlayerKey(),
-            &g_NetPkt0F_CraterEventSendBuf
+            &g_NetPkt0F_CraterEventRelayBuf
         );
         return 0;
     }
 
-    zNetwork_SendPacketReliable(&g_NetPkt0F_CraterEventSendBuf.header);
+    zNetwork_SendPacketReliable(&g_NetPkt0F_CraterEventRelayBuf.header);
     return 0;
 }
 

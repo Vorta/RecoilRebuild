@@ -31,8 +31,58 @@ HINSTANCE __stdcall AfxFindResourceHandle(
 
 extern "C" {
 extern HWND g_RecoilApp_hWndMain;
-HINSTANCE g_RecoilApp_hInstance = 0;
+extern HINSTANCE g_RecoilApp_hInstance;
+/**
+ * Reimplements data 0x4dcd00: g_CZRecoilFrame_WolApiRegKey.
+ *
+ * Purpose: provide the constructor-owned registry path used to detect the
+ * Westwood Online API install.
+ */
+extern const char g_CZRecoilFrame_WolApiRegKey[] = "Software\\Westwood\\WOLAPI\\4352";
+/**
+ * Reimplements data 0x4dcd20: g_CZRecoilFrame_MainMenuResourceName.
+ *
+ * Purpose: name the recovered frame menu resource loaded during construction.
+ */
+extern const char g_CZRecoilFrame_MainMenuResourceName[] = "MYMENU";
+/**
+ * Reimplements data 0x4dcd28: g_RecoilError_LogFileName.
+ *
+ * Purpose: name the error log initialized by the frame constructor.
+ */
+extern const char g_RecoilError_LogFileName[] = "recoil.err";
+/**
+ * Reimplements data 0x4dcd34: g_CZRecoilFrame_NumericDigits.
+ *
+ * Purpose: preserve the constructor command-line sentinel tested with strncmp.
+ */
+extern const char g_CZRecoilFrame_NumericDigits[] = "1234567890";
+/**
+ * Reimplements data 0x4dcd40: g_CZRecoilFrame_CmdCampaigns.
+ *
+ * Purpose: preserve the constructor command-line campaign-mode switch prefix.
+ */
+extern const char g_CZRecoilFrame_CmdCampaigns[] = "/campaigns";
+/**
+ * Reimplements data 0x4dcd4c: g_CZRecoilFrame_LogBaseName.
+ *
+ * Purpose: provide the CZGameFrame constructor log/base name passed by the
+ * Recoil frame constructor.
+ */
+extern const char g_CZRecoilFrame_LogBaseName[] = "recoil";
+/**
+ * Reimplements data 0x4f3efc: Symbol.
+ *
+ * Purpose: remember whether the Westwood Online registry key was found during
+ * frame construction.
+ */
 int g_CZRecoilFrame_HasWolApi = 0;
+/**
+ * Reimplements data 0x4f3f04: Symbol.
+ *
+ * Purpose: gate the one-time Winsock2 prompt before launching the Westwood
+ * Online upgrade flow.
+ */
 int g_CZRecoilFrame_WestwoodOnlineWinsockChecked = 0;
 /**
  * Reimplements data 0x4f0cc0: g_HudSensorTracker Symbol.
@@ -43,6 +93,14 @@ HudSensorTracker g_HudSensorTracker;
 }
 
 namespace {
+typedef CObject *(PASCAL *MfcCreateObjectProc)();
+typedef CRuntimeClass *(PASCAL *MfcRuntimeClassProc)();
+typedef const AFX_MSGMAP *(PASCAL *MfcMessageMapProc)();
+
+const UINT kMfcCommandUpdateCode = (UINT)-1;
+const UINT kMfcMessageMapSigVoid = 12;
+const UINT kMfcMessageMapSigVoidUIntIntInt = 17;
+const UINT kMfcMessageMapSigCmdUi = 44;
 const int kRendererBackend3dfx = 2;
 const int kCmdUiDisabled = 1;
 const int kCmdUiChecked = 8;
@@ -60,26 +118,12 @@ const unsigned int kVidMem1024x768Threshold = 4718592;
 const unsigned int kFullscreenMenuCommandId = 0x9c4e;
 const DWORD kMainWindowStyle = 0x82ca0000;
 const char *kRecoilWndClassName = "RecoilClass";
-const char *kMainMenuResourceName = "MYMENU";
 
-// Source-faithful helper recovered from address-backed callers in this source file.
-unsigned int Ptr32FromSymbol(
-    const void *symbol
-) {
-    return (unsigned int)((unsigned int)(symbol));
-}
-
-// Source-faithful helper recovered from address-backed callers in this source file.
-CRuntimeClass *__stdcall GetCZRecoilFrameBaseRuntimeClass() {
-    return &CZGameFrame::classCZGameFrame;
-}
-
-// Source-faithful helper recovered from address-backed callers in this source file.
-const AFX_MSGMAP *__stdcall GetCZRecoilFrameBaseMessageMap() {
-    return &CZGameFrame::messageMap;
-}
-
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; observed in
+ * CZRecoilFrame video-mode command UI callers.
+ * Purpose: return the MFC checked-state flag when a video mode is active.
+ */
 int CommandCheckedIfMode(
     int currentMode,
     int targetMode
@@ -87,7 +131,11 @@ int CommandCheckedIfMode(
     return currentMode == targetMode ? kCmdUiChecked : 0;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; observed in
+ * CZRecoilFrame video-mode update handlers.
+ * Purpose: translate cached command state into CCmdUI enable/check calls.
+ */
 void UpdateCmdUiFromState(
     CCmdUI *cmdUi,
     int state
@@ -102,7 +150,11 @@ void UpdateCmdUiFromState(
     cmdUi->SetCheck(state == kCmdUiChecked ? 1 : 0);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; observed in
+ * CZRecoilFrame constructor menu-pruning calls.
+ * Purpose: fetch a submenu handle for command removal while matching MFC use.
+ */
 HMENU SubMenuHandleOrNull(
     HMENU menu,
     int position
@@ -114,30 +166,231 @@ HMENU SubMenuHandleOrNull(
 }
 } // namespace
 
+/**
+ * Reimplements data 0x4d0c10: g_CZRecoilFrame_MessageEntries.
+ *
+ * Purpose: provide the recovered MFC message-map entry array for CZRecoilFrame.
+ */
 AFX_MSGMAP_ENTRY const CZRecoilFrame::messageEntries[] = {
+    {WM_COMMAND, 0, 0x68, 0x68, kMfcMessageMapSigVoid, (AFX_PMSG)&CZRecoilFrame::OnMenuStartSinglePlayer},
+    {WM_COMMAND, 0, 0x9c51, 0x9c51, kMfcMessageMapSigVoid, (AFX_PMSG)&CZRecoilFrame::OnMenuOpenCampaign},
+    {WM_COMMAND, 0, 0x65, 0x65, kMfcMessageMapSigVoid, (AFX_PMSG)&CZRecoilFrame::OnOpenFileDialog},
+    {WM_COMMAND, 0, 0x67, 0x67, kMfcMessageMapSigVoid, (AFX_PMSG)&CZRecoilFrame::OnMenuExitGame},
+    {WM_COMMAND, 0, 0x206, 0x206, kMfcMessageMapSigVoid, (AFX_PMSG)&CZRecoilFrame::OnMenuSetVideoMode2},
+    {WM_COMMAND, 0, 0x207, 0x207, kMfcMessageMapSigVoid, (AFX_PMSG)&CZRecoilFrame::OnMenuSetVideoMode3},
+    {WM_COMMAND, 0, 0x208, 0x208, kMfcMessageMapSigVoid, (AFX_PMSG)&CZRecoilFrame::OnMenuSetVideoMode4},
+    {WM_COMMAND, 0, 0x209, 0x209, kMfcMessageMapSigVoid, (AFX_PMSG)&CZRecoilFrame::OnMenuSetVideoMode5},
+    {WM_COMMAND, 0, 0x9c4f, 0x9c4f, kMfcMessageMapSigVoid, (AFX_PMSG)&CZRecoilFrame::OnMenuToggleHud},
+    {WM_COMMAND, 0, 0x9c4e, 0x9c4e, kMfcMessageMapSigVoid, (AFX_PMSG)&CZRecoilFrame::OnMenuToggleFullscreen},
+    {WM_COMMAND, 0, 0x6a, 0x6a, kMfcMessageMapSigVoid, (AFX_PMSG)&CZRecoilFrame::OnMenuOpenHelpDocs},
+    {WM_COMMAND, 0, 0x6b, 0x6b, kMfcMessageMapSigVoid, (AFX_PMSG)&CZRecoilFrame::OnMenuAbout},
+    {WM_COMMAND,
+        0,
+        0x9c53,
+        0x9c53,
+        kMfcMessageMapSigVoid,
+        (AFX_PMSG)&CZRecoilFrame::OnMenuOpenMultiplayerSessionBrowser},
+    {WM_COMMAND, 0, 0x9c55, 0x9c55, kMfcMessageMapSigVoid, (AFX_PMSG)&CZRecoilFrame::OnMenuStartMultiplayer},
+    {WM_COMMAND, 0, 0x9c56, 0x9c56, kMfcMessageMapSigVoid, (AFX_PMSG)&CZRecoilFrame::OnMenuStartCampaignMode},
+    {WM_COMMAND, 0, 0x9c57, 0x9c57, kMfcMessageMapSigVoid, (AFX_PMSG)&CZRecoilFrame::OnMenuStartCampaignMode2},
+    {WM_COMMAND, 0, 0x9c58, 0x9c58, kMfcMessageMapSigVoid, (AFX_PMSG)&CZRecoilFrame::OnMenuStartCampaignMode3},
+    {WM_COMMAND, 0, 0x9c59, 0x9c59, kMfcMessageMapSigVoid, (AFX_PMSG)&CZRecoilFrame::OnMenuStartCampaignMode4},
+    {WM_COMMAND, 0, 0x9c5a, 0x9c5a, kMfcMessageMapSigVoid, (AFX_PMSG)&CZRecoilFrame::OnMenuStartCampaignMode5},
+    {WM_COMMAND, 0, 0x9c6b, 0x9c6b, kMfcMessageMapSigVoid, (AFX_PMSG)&CZRecoilFrame::OnMenuToggleArchiveBanks},
+    {WM_COMMAND, 0, 0x9c7b, 0x9c7b, kMfcMessageMapSigVoid, (AFX_PMSG)&CZRecoilFrame::OnMenuToggleTexturePacks},
+    {WM_COMMAND, 0, 0x210, 0x210, kMfcMessageMapSigVoid, (AFX_PMSG)&CZRecoilFrame::OnMenuSetVideoMode7},
+    {WM_COMMAND, 0, 0x9c71, 0x9c71, kMfcMessageMapSigVoid, (AFX_PMSG)&CZRecoilFrame::OnMenuSetVideoMode6},
+    {WM_COMMAND,
+        kMfcCommandUpdateCode,
+        0x210,
+        0x210,
+        kMfcMessageMapSigCmdUi,
+        (AFX_PMSG)&CZRecoilFrame::OnUpdateVideoMode7CmdUI},
+    {WM_COMMAND,
+        kMfcCommandUpdateCode,
+        0x206,
+        0x206,
+        kMfcMessageMapSigCmdUi,
+        (AFX_PMSG)&CZRecoilFrame::OnUpdateVideoMode2CmdUI},
+    {WM_COMMAND,
+        kMfcCommandUpdateCode,
+        0x207,
+        0x207,
+        kMfcMessageMapSigCmdUi,
+        (AFX_PMSG)&CZRecoilFrame::OnUpdateVideoMode3CmdUI},
+    {WM_COMMAND,
+        kMfcCommandUpdateCode,
+        0x208,
+        0x208,
+        kMfcMessageMapSigCmdUi,
+        (AFX_PMSG)&CZRecoilFrame::OnUpdateVideoMode4CmdUI},
+    {WM_COMMAND,
+        kMfcCommandUpdateCode,
+        0x209,
+        0x209,
+        kMfcMessageMapSigCmdUi,
+        (AFX_PMSG)&CZRecoilFrame::OnUpdateVideoMode5CmdUI},
+    {WM_COMMAND,
+        kMfcCommandUpdateCode,
+        0x9c71,
+        0x9c71,
+        kMfcMessageMapSigCmdUi,
+        (AFX_PMSG)&CZRecoilFrame::OnUpdateVideoMode6CmdUI},
+    {WM_COMMAND, 0, 0x9c83, 0x9c83, kMfcMessageMapSigVoid, (AFX_PMSG)&CZRecoilFrame::OnMenuSelectHwApi0},
+    {WM_COMMAND, 0, 0x9c72, 0x9c72, kMfcMessageMapSigVoid, (AFX_PMSG)&CZRecoilFrame::OnMenuSelectHwApi1},
+    {WM_COMMAND, 0, 0x9c75, 0x9c75, kMfcMessageMapSigVoid, (AFX_PMSG)&CZRecoilFrame::OnMenuSelectHwApi2},
+    {WM_COMMAND, 0, 0x9c76, 0x9c76, kMfcMessageMapSigVoid, (AFX_PMSG)&CZRecoilFrame::OnMenuSelectHwApi3},
+    {WM_COMMAND,
+        kMfcCommandUpdateCode,
+        0x9c83,
+        0x9c83,
+        kMfcMessageMapSigCmdUi,
+        (AFX_PMSG)&CZRecoilFrame::OnUpdateHwApi0CmdUI},
+    {WM_COMMAND,
+        kMfcCommandUpdateCode,
+        0x9c72,
+        0x9c72,
+        kMfcMessageMapSigCmdUi,
+        (AFX_PMSG)&CZRecoilFrame::OnUpdateHwApi1CmdUI},
+    {WM_COMMAND,
+        kMfcCommandUpdateCode,
+        0x9c75,
+        0x9c75,
+        kMfcMessageMapSigCmdUi,
+        (AFX_PMSG)&CZRecoilFrame::OnUpdateHwApi2CmdUI},
+    {WM_COMMAND,
+        kMfcCommandUpdateCode,
+        0x9c76,
+        0x9c76,
+        kMfcMessageMapSigCmdUi,
+        (AFX_PMSG)&CZRecoilFrame::OnUpdateHwApi3CmdUI},
+    {WM_COMMAND,
+        kMfcCommandUpdateCode,
+        0x9c4e,
+        0x9c4e,
+        kMfcMessageMapSigCmdUi,
+        (AFX_PMSG)&CZRecoilFrame::OnUpdateFullscreenCmdUI},
+    {WM_COMMAND, 0, 0x9c7c, 0x9c7c, kMfcMessageMapSigVoid, (AFX_PMSG)&CZRecoilFrame::OnMenuToggleCDAudio},
+    {WM_COMMAND,
+        kMfcCommandUpdateCode,
+        0x9c7c,
+        0x9c7c,
+        kMfcMessageMapSigCmdUi,
+        (AFX_PMSG)&CZRecoilFrame::OnUpdateCDAudioCmdUI},
+    {WM_COMMAND, 0, 0x9c7d, 0x9c7d, kMfcMessageMapSigVoid, (AFX_PMSG)&CZRecoilFrame::OnMenuToggleJoystick},
+    {WM_COMMAND,
+        kMfcCommandUpdateCode,
+        0x9c7d,
+        0x9c7d,
+        kMfcMessageMapSigCmdUi,
+        (AFX_PMSG)&CZRecoilFrame::OnUpdateJoystickCmdUI},
+    {WM_COMMAND,
+        0,
+        0x9c7e,
+        0x9c7e,
+        kMfcMessageMapSigVoid,
+        (AFX_PMSG)&CZRecoilFrame::OnMenuWestwoodOnlineUpgrade},
+    {WM_COMMAND,
+        kMfcCommandUpdateCode,
+        0x9c7f,
+        0x9c7f,
+        kMfcMessageMapSigCmdUi,
+        (AFX_PMSG)&CZRecoilFrame::OnUpdateAlwaysEnabledCmdUI},
+    {WM_COMMAND,
+        kMfcCommandUpdateCode,
+        0x9c81,
+        0x9c81,
+        kMfcMessageMapSigCmdUi,
+        (AFX_PMSG)&CZRecoilFrame::OnUpdateAlwaysEnabledCmdUI},
+    {WM_COMMAND,
+        kMfcCommandUpdateCode,
+        0x9c84,
+        0x9c84,
+        kMfcMessageMapSigCmdUi,
+        (AFX_PMSG)&CZRecoilFrame::OnUpdateAlwaysEnabledCmdUI},
+    {WM_COMMAND,
+        kMfcCommandUpdateCode,
+        0x9c7e,
+        0x9c7e,
+        kMfcMessageMapSigCmdUi,
+        (AFX_PMSG)&CZRecoilFrame::OnUpdateNoOpCmdUI},
+    {WM_COMMAND,
+        kMfcCommandUpdateCode,
+        0x9c4f,
+        0x9c4f,
+        kMfcMessageMapSigCmdUi,
+        (AFX_PMSG)&CZRecoilFrame::OnUpdateHudCmdUI},
+    {WM_COMMAND, 0, 0x9c80, 0x9c80, kMfcMessageMapSigVoid, (AFX_PMSG)&CZRecoilFrame::OnMenuSelectDirectSound},
+    {WM_COMMAND,
+        kMfcCommandUpdateCode,
+        0x9c80,
+        0x9c80,
+        kMfcMessageMapSigCmdUi,
+        (AFX_PMSG)&CZRecoilFrame::OnUpdateDirectSoundCmdUI},
+    {WM_COMMAND, 0, 0x9c82, 0x9c82, kMfcMessageMapSigVoid, (AFX_PMSG)&CZRecoilFrame::OnMenuSelectA3D},
+    {WM_COMMAND,
+        kMfcCommandUpdateCode,
+        0x9c82,
+        0x9c82,
+        kMfcMessageMapSigCmdUi,
+        (AFX_PMSG)&CZRecoilFrame::OnUpdateA3DCmdUI},
+    {WM_COMMAND,
+        kMfcCommandUpdateCode,
+        0x9c53,
+        0x9c53,
+        kMfcMessageMapSigCmdUi,
+        (AFX_PMSG)&CZRecoilFrame::OnUpdateNoOpCmdUI},
+    {WM_SIZE,
+        0,
+        0,
+        0,
+        kMfcMessageMapSigVoidUIntIntInt,
+        (AFX_PMSG)&CZRecoilFrame::OnSize},
     {0, 0, 0, 0, 0, 0},
 };
 
+/**
+ * Reimplements data 0x4d0c08: g_CZRecoilFrame_MessageMap.
+ *
+ * Purpose: link CZRecoilFrame's message entries to the recovered CZGameFrame
+ * message-map accessor used as the retail base-map callback.
+ */
 const AFX_MSGMAP CZRecoilFrame::messageMap = {
-    &GetCZRecoilFrameBaseMessageMap,
+    (MfcMessageMapProc)&CZGameFrame::GetMessageMap,
     &CZRecoilFrame::messageEntries[0],
 };
 
+/**
+ * Reimplements data 0x4d0bf0: g_CZRecoilFrame_RuntimeClass.
+ *
+ * Purpose: expose CZRecoilFrame's MFC runtime-class record with the recovered
+ * factory and base-runtime callback pointer identities.
+ */
 CRuntimeClass CZRecoilFrame::classCZRecoilFrame = {
     "CZRecoilFrame",
     sizeof(CZRecoilFrame),
     0xffff,
-    0,
-    &GetCZRecoilFrameBaseRuntimeClass,
+    (MfcCreateObjectProc)&CZRecoilFrame::CreateObject,
+    (MfcRuntimeClassProc)&CZGameFrame::GetRuntimeClass,
     0,
 };
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Reimplements 0x430230: CZRecoilFrame::GetBaseRuntimeClass.
+ *
+ * Purpose: return the recovered CZGameFrame runtime-class record for
+ * CZRecoilFrame's MFC hierarchy.
+ */
 unsigned int CZRecoilFrame::GetBaseRuntimeClass() {
-    return Ptr32FromSymbol(&CZGameFrame::classCZGameFrame);
+    return (unsigned int)((unsigned int)(&CZGameFrame::classCZGameFrame));
 }
 
-// Reimplements 0x4301e0: CZRecoilFrame::CreateObject
+/**
+ * Reimplements 0x4301e0: CZRecoilFrame::CreateObject.
+ *
+ * Purpose: allocate and construct the Recoil frame object for the recovered MFC
+ * runtime-class factory path.
+ */
 CZRecoilFrame *CZRecoilFrame::CreateObject() {
     CZRecoilFrame *const frame = (CZRecoilFrame *)(::operator new(sizeof(CZRecoilFrame)));
     if (frame == 0) {
@@ -152,23 +405,41 @@ CZRecoilFrame *CZRecoilFrame::CreateObject() {
     }
 }
 
-// Reimplements 0x430240: CZRecoilFrame::GetRuntimeClass
+/**
+ * Reimplements 0x430240: CZRecoilFrame::GetRuntimeClass.
+ *
+ * Purpose: return CZRecoilFrame's recovered runtime-class record to MFC
+ * callers.
+ */
 unsigned int CZRecoilFrame::GetRuntimeClass() {
-    return Ptr32FromSymbol(&CZRecoilFrame::classCZRecoilFrame);
+    return (unsigned int)((unsigned int)(&CZRecoilFrame::classCZRecoilFrame));
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Reimplements 0x4306d0: CZRecoilFrame::GetBaseMessageMap.
+ *
+ * Purpose: return CZGameFrame's recovered message-map record for the frame's
+ * MFC hierarchy.
+ */
 unsigned int CZRecoilFrame::GetBaseMessageMap() {
-    return Ptr32FromSymbol(&CZGameFrame::messageMap);
+    return (unsigned int)((unsigned int)(&CZGameFrame::messageMap));
 }
 
-// Reimplements 0x4306e0: CZRecoilFrame::GetMessageMap
+/**
+ * Reimplements 0x4306e0: CZRecoilFrame::GetMessageMap.
+ *
+ * Purpose: return CZRecoilFrame's recovered MFC message-map record.
+ */
 unsigned int CZRecoilFrame::GetMessageMap() {
-    return Ptr32FromSymbol(&CZRecoilFrame::messageMap);
+    return (unsigned int)((unsigned int)(&CZRecoilFrame::messageMap));
 }
 
 namespace MfcCmdUI {
-// Reimplements 0x431a80: MfcCmdUI::EnableAlways
+/**
+ * Reimplements 0x431a80: MfcCmdUI::EnableAlways.
+ *
+ * Purpose: provide the shared MFC command-update target that enables commands.
+ */
 void __stdcall EnableAlways(
     CCmdUI *cmdUi
 ) {
@@ -176,9 +447,14 @@ void __stdcall EnableAlways(
 }
 } // namespace MfcCmdUI
 
-// Reimplements 0x430250: CZRecoilFrame::Constructor
+/**
+ * Reimplements 0x430250: CZRecoilFrame::Constructor.
+ *
+ * Purpose: initialize the Recoil frame, menu, title, global handles, launch
+ * options, renderer menu state, and Westwood Online availability flag.
+ */
 CZRecoilFrame * CZRecoilFrame::Constructor() {
-    ((CZGameFrame *)(this))->Constructor("recoil");
+    ((CZGameFrame *)(this))->Constructor(g_CZRecoilFrame_LogBaseName);
     new (&m_mainMenu) CMenu();
 
     unsigned long
@@ -188,20 +464,19 @@ CZRecoilFrame * CZRecoilFrame::Constructor() {
     const int windowHeight = GetSystemMetrics(SM_CYCAPTION) + GetSystemMetrics(SM_CYMENU) +
                              (GetSystemMetrics(SM_CYFRAME) << 1) + 0x1e0;
     const int windowWidth = (GetSystemMetrics(SM_CXFRAME) << 1) + 0x280;
-    ((CWnd *)(this))
-        ->CreateEx(
-            0x20000,
-            kRecoilWndClassName,
-            (const char *)(*title),
-            kMainWindowStyle,
-            CW_USEDEFAULT,
-            CW_USEDEFAULT,
-            windowWidth,
-            windowHeight,
-            0,
-            0,
-            0
-        );
+    ((CWnd *)(this))->CreateEx(
+        0x20000,
+        kRecoilWndClassName,
+        (const char *)(*title),
+        kMainWindowStyle,
+        CW_USEDEFAULT,
+        CW_USEDEFAULT,
+        windowWidth,
+        windowHeight,
+        0,
+        0,
+        0
+    );
     title->~CString();
 
     m_cmdlineFlag = 1;
@@ -216,13 +491,13 @@ CZRecoilFrame * CZRecoilFrame::Constructor() {
     )) {
         if (strncmp(
             token,
-            "/campaigns",
+            g_CZRecoilFrame_CmdCampaigns,
             4
         ) == 0) {
             m_campaignsOnlyMode = 1;
         } else if (strncmp(
             token,
-            "1234567890",
+            g_CZRecoilFrame_NumericDigits,
             4
         ) == 0) {
             m_cmdlineFlag = 0;
@@ -233,16 +508,16 @@ CZRecoilFrame * CZRecoilFrame::Constructor() {
     zError::InitOutputContext(
         m_hWnd,
         0xe00,
-        "recoil.err"
+        g_RecoilError_LogFileName
     );
     m_mainMenu.Attach(LoadMenuA(
         AfxFindResourceHandle(
-            kMainMenuResourceName,
+            g_CZRecoilFrame_MainMenuResourceName,
             MAKEINTRESOURCEA(4)
         ),
-        kMainMenuResourceName
+        g_CZRecoilFrame_MainMenuResourceName
     ));
-    SetMenu(
+    ::SetMenu(
         m_hWnd,
         m_mainMenu.m_hMenu
     );
@@ -324,7 +599,7 @@ CZRecoilFrame * CZRecoilFrame::Constructor() {
     HKEY wolApiRegKey = 0;
     if (RegOpenKeyExA(
             HKEY_LOCAL_MACHINE,
-            "Software\\Westwood\\WOLAPI\\4352",
+            g_CZRecoilFrame_WolApiRegKey,
             0,
             KEY_READ,
             &wolApiRegKey
@@ -341,14 +616,23 @@ CZRecoilFrame * CZRecoilFrame::Constructor() {
     return this;
 }
 
-// Reimplements 0x430610: CZRecoilFrame::Destructor
+/**
+ * Reimplements 0x430610: CZRecoilFrame::Destructor.
+ *
+ * Purpose: destroy the recovered menu member before chaining into CZGameFrame
+ * teardown.
+ */
 void CZRecoilFrame::Destructor() {
     m_mainMenu.DestroyMenu();
     m_mainMenu.CMenu::~CMenu();
     ((CZGameFrame *)(this))->Destructor();
 }
 
-// Reimplements 0x430680: CZRecoilFrame::SetMenuBarVisibility
+/**
+ * Reimplements 0x430680: CZRecoilFrame::SetMenuBarVisibility.
+ *
+ * Purpose: attach or remove the recovered main menu and frame menu style.
+ */
 void CZRecoilFrame::SetMenuBarVisibility(
     int visible
 ) {
@@ -369,13 +653,17 @@ void CZRecoilFrame::SetMenuBarVisibility(
         GWL_STYLE,
         style
     );
-    SetMenu(
+    ::SetMenu(
         m_hWnd,
         menu
     );
 }
 
-// Reimplements 0x4306f0: CZRecoilFrame::BuildWindowTitle
+/**
+ * Reimplements 0x4306f0: CZRecoilFrame::BuildWindowTitle.
+ *
+ * Purpose: build the Recoil window title, including the 3Dfx renderer suffix.
+ */
 CString * CZRecoilFrame::BuildWindowTitle(
     CString *outTitle
 ) {
@@ -389,20 +677,33 @@ CString * CZRecoilFrame::BuildWindowTitle(
     return outTitle;
 }
 
-// Reimplements 0x430740: CZRecoilFrame::OnMenuStartSinglePlayer
+/**
+ * Reimplements 0x430740: CZRecoilFrame::OnMenuStartSinglePlayer.
+ *
+ * Purpose: clear intro/mission FMV skips and start the default engine load.
+ */
 void CZRecoilFrame::OnMenuStartSinglePlayer() {
     g_RecoilApp.m_skipIntroFmv = 0;
     g_RecoilApp.m_missionFmvState.m_skipMissionFmv = 0;
     g_RecoilApp.LoadZbdAndStartEngine();
 }
 
-// Reimplements 0x430760: CZRecoilFrame::OnMenuOpenCampaign
+/**
+ * Reimplements 0x430760: CZRecoilFrame::OnMenuOpenCampaign.
+ *
+ * Purpose: enter campaign-open flow with the intro FMV skipped.
+ */
 void CZRecoilFrame::OnMenuOpenCampaign() {
     g_RecoilApp.m_skipIntroFmv = 1;
     OnOpenFileDialog();
 }
 
-// Reimplements 0x430770: CZRecoilFrame::OnOpenFileDialog
+/**
+ * Reimplements 0x430770: CZRecoilFrame::OnOpenFileDialog.
+ *
+ * Purpose: open a campaign ZBD file through the retail common dialog path and
+ * launch the selected mission data.
+ */
 RECOIL_NO_GS void CZRecoilFrame::OnOpenFileDialog() {
     char filter[0x100];
     const int filterLength = LoadStringA(
@@ -451,14 +752,19 @@ RECOIL_NO_GS void CZRecoilFrame::OnOpenFileDialog() {
         );
     }
 
-    InvalidateRect(
+    ::InvalidateRect(
         m_hWnd,
         0,
         TRUE
     );
 }
 
-// Reimplements 0x4308c0: CZRecoilFrame::ConfigureModeFeatureFlags
+/**
+ * Reimplements 0x4308c0: CZRecoilFrame::ConfigureModeFeatureFlags.
+ *
+ * Purpose: cache menu command UI states for video modes based on acceleration
+ * state and available video memory.
+ */
 void CZRecoilFrame::ConfigureModeFeatureFlags() {
     const int mode = zVid::GetVideoModeIndexFromOptions();
 
@@ -520,45 +826,73 @@ void CZRecoilFrame::ConfigureModeFeatureFlags() {
     }
 }
 
-// Reimplements 0x4309b0: CZRecoilFrame::OnMenuSetVideoMode2
+/**
+ * Reimplements 0x4309b0: CZRecoilFrame::OnMenuSetVideoMode2.
+ *
+ * Purpose: set video mode 2 and refresh the recovered mode command state.
+ */
 void CZRecoilFrame::OnMenuSetVideoMode2() {
     zVid::SetVideoModeIndex(2);
     ConfigureModeFeatureFlags();
 }
 
-// Reimplements 0x4309d0: CZRecoilFrame::OnMenuSetVideoMode3
+/**
+ * Reimplements 0x4309d0: CZRecoilFrame::OnMenuSetVideoMode3.
+ *
+ * Purpose: set video mode 3 and refresh the recovered mode command state.
+ */
 void CZRecoilFrame::OnMenuSetVideoMode3() {
     zVid::SetVideoModeIndex(3);
     ConfigureModeFeatureFlags();
 }
 
-// Reimplements 0x4309f0: CZRecoilFrame::OnMenuSetVideoMode4
+/**
+ * Reimplements 0x4309f0: CZRecoilFrame::OnMenuSetVideoMode4.
+ *
+ * Purpose: set video mode 4 and refresh the recovered mode command state.
+ */
 void CZRecoilFrame::OnMenuSetVideoMode4() {
     zVid::SetVideoModeIndex(4);
     ConfigureModeFeatureFlags();
 }
 
-// Reimplements 0x430a10: CZRecoilFrame::OnMenuSetVideoMode5
+/**
+ * Reimplements 0x430a10: CZRecoilFrame::OnMenuSetVideoMode5.
+ *
+ * Purpose: set video mode 5 and refresh the recovered mode command state.
+ */
 void CZRecoilFrame::OnMenuSetVideoMode5() {
     zVid::SetVideoModeIndex(5);
     ConfigureModeFeatureFlags();
 }
 
-// Reimplements 0x430a30: CZRecoilFrame::OnMenuSetVideoMode6
+/**
+ * Reimplements 0x430a30: CZRecoilFrame::OnMenuSetVideoMode6.
+ *
+ * Purpose: set video mode 6 and refresh the recovered mode command state.
+ */
 void CZRecoilFrame::OnMenuSetVideoMode6() {
     zVid::SetVideoModeIndex(6);
     ConfigureModeFeatureFlags();
 }
 
-// Reimplements 0x430a50: CZRecoilFrame::OnMenuSetVideoMode7
+/**
+ * Reimplements 0x430a50: CZRecoilFrame::OnMenuSetVideoMode7.
+ *
+ * Purpose: set video mode 7 and refresh the recovered mode command state.
+ */
 void CZRecoilFrame::OnMenuSetVideoMode7() {
     zVid::SetVideoModeIndex(7);
     ConfigureModeFeatureFlags();
 }
 
-// Reimplements 0x4308a0: CZRecoilFrame::OnMenuExitGame
+/**
+ * Reimplements 0x4308a0: CZRecoilFrame::OnMenuExitGame.
+ *
+ * Purpose: post WM_CLOSE to the recovered frame window.
+ */
 void CZRecoilFrame::OnMenuExitGame() {
-    PostMessageA(
+    ::PostMessageA(
         m_hWnd,
         WM_CLOSE,
         0,
@@ -566,12 +900,20 @@ void CZRecoilFrame::OnMenuExitGame() {
     );
 }
 
-// Reimplements 0x430a70: CZRecoilFrame::OnMenuToggleHud
+/**
+ * Reimplements 0x430a70: CZRecoilFrame::OnMenuToggleHud.
+ *
+ * Purpose: toggle the HUD visibility option from the frame menu.
+ */
 void CZRecoilFrame::OnMenuToggleHud() {
     zOpt::SetHudVisibilityOption(zOpt::GetHudVisibilityOption() == 0 ? 1 : 0);
 }
 
-// Reimplements 0x430a90: CZRecoilFrame::OnUpdateHudCmdUI
+/**
+ * Reimplements 0x430a90: CZRecoilFrame::OnUpdateHudCmdUI.
+ *
+ * Purpose: enable and check the HUD command from the current option state.
+ */
 void CZRecoilFrame::OnUpdateHudCmdUI(
     CCmdUI *cmdUi
 ) {
@@ -579,12 +921,20 @@ void CZRecoilFrame::OnUpdateHudCmdUI(
     cmdUi->SetCheck(zOpt::GetHudVisibilityOption());
 }
 
-// Reimplements 0x430ab0: CZRecoilFrame::OnMenuToggleFullscreen
+/**
+ * Reimplements 0x430ab0: CZRecoilFrame::OnMenuToggleFullscreen.
+ *
+ * Purpose: toggle the fullscreen option from the frame menu.
+ */
 void CZRecoilFrame::OnMenuToggleFullscreen() {
     zOpt::SetFullscreenOption(zOpt::GetFullscreenOption() == 0 ? 1 : 0);
 }
 
-// Reimplements 0x430ad0: CZRecoilFrame::OnMenuOpenHelpDocs
+/**
+ * Reimplements 0x430ad0: CZRecoilFrame::OnMenuOpenHelpDocs.
+ *
+ * Purpose: open the retail help index or report the associated shell error.
+ */
 RECOIL_NO_GS void CZRecoilFrame::OnMenuOpenHelpDocs() {
     static const unsigned char kFindExecutableErrorMap[0x20] = {0,
         4,
@@ -682,14 +1032,22 @@ RECOIL_NO_GS void CZRecoilFrame::OnMenuOpenHelpDocs() {
     );
 }
 
-// Reimplements 0x430c30: CZRecoilFrame::OnMenuAbout (D:\Proj\Battlesport\CZRecoilFrame.cpp)
+/**
+ * Reimplements 0x430c30: CZRecoilFrame::OnMenuAbout (D:\Proj\Battlesport\CZRecoilFrame.cpp).
+ *
+ * Purpose: display the recovered About dialog through the frame menu.
+ */
 RECOIL_NO_GS void CZRecoilFrame::OnMenuAbout() {
     CAboutDlg aboutDlg;
     aboutDlg.CDialog::DoModal();
 }
 
-// Reimplements 0x430d80: CZRecoilFrame::OnMenuOpenMultiplayerSessionBrowser
-// (D:\Proj\Battlesport\CZRecoilFrame.cpp)
+/**
+ * Reimplements 0x430d80: CZRecoilFrame::OnMenuOpenMultiplayerSessionBrowser.
+ * Source file evidence: D:\Proj\Battlesport\CZRecoilFrame.cpp.
+ * Purpose: run the DirectPlay session browser/host setup flow and launch the
+ * selected multiplayer mission state.
+ */
 void CZRecoilFrame::OnMenuOpenMultiplayerSessionBrowser() {
     int shouldShutdownNetwork = 1;
 
@@ -770,7 +1128,11 @@ void CZRecoilFrame::OnMenuOpenMultiplayerSessionBrowser() {
     }
 }
 
-// Reimplements 0x431270: CZRecoilFrame::OnMenuStartMultiplayer
+/**
+ * Reimplements 0x431270: CZRecoilFrame::OnMenuStartMultiplayer.
+ *
+ * Purpose: start the default multiplayer mission setup path.
+ */
 void CZRecoilFrame::OnMenuStartMultiplayer() {
     g_RecoilApp.LoadZbdAndSetupSensorTracker(
         1,
@@ -780,7 +1142,11 @@ void CZRecoilFrame::OnMenuStartMultiplayer() {
     );
 }
 
-// Reimplements 0x431290: CZRecoilFrame::OnMenuStartCampaignMode
+/**
+ * Reimplements 0x431290: CZRecoilFrame::OnMenuStartCampaignMode.
+ *
+ * Purpose: start campaign mission slot 2 with the current archive-bank flag.
+ */
 void CZRecoilFrame::OnMenuStartCampaignMode() {
     g_RecoilApp.LoadZbdAndSetupSensorTracker(
         2,
@@ -790,7 +1156,11 @@ void CZRecoilFrame::OnMenuStartCampaignMode() {
     );
 }
 
-// Reimplements 0x4312b0: CZRecoilFrame::OnMenuStartCampaignMode2
+/**
+ * Reimplements 0x4312b0: CZRecoilFrame::OnMenuStartCampaignMode2.
+ *
+ * Purpose: start campaign mission slot 3 with the current archive-bank flag.
+ */
 void CZRecoilFrame::OnMenuStartCampaignMode2() {
     g_RecoilApp.LoadZbdAndSetupSensorTracker(
         3,
@@ -800,7 +1170,11 @@ void CZRecoilFrame::OnMenuStartCampaignMode2() {
     );
 }
 
-// Reimplements 0x4312d0: CZRecoilFrame::OnMenuStartCampaignMode3
+/**
+ * Reimplements 0x4312d0: CZRecoilFrame::OnMenuStartCampaignMode3.
+ *
+ * Purpose: start campaign mission slot 4 with the current archive-bank flag.
+ */
 void CZRecoilFrame::OnMenuStartCampaignMode3() {
     g_RecoilApp.LoadZbdAndSetupSensorTracker(
         4,
@@ -810,7 +1184,11 @@ void CZRecoilFrame::OnMenuStartCampaignMode3() {
     );
 }
 
-// Reimplements 0x4312f0: CZRecoilFrame::OnMenuStartCampaignMode4
+/**
+ * Reimplements 0x4312f0: CZRecoilFrame::OnMenuStartCampaignMode4.
+ *
+ * Purpose: start campaign mission slot 5 with the current archive-bank flag.
+ */
 void CZRecoilFrame::OnMenuStartCampaignMode4() {
     g_RecoilApp.LoadZbdAndSetupSensorTracker(
         5,
@@ -820,7 +1198,11 @@ void CZRecoilFrame::OnMenuStartCampaignMode4() {
     );
 }
 
-// Reimplements 0x431310: CZRecoilFrame::OnMenuStartCampaignMode5
+/**
+ * Reimplements 0x431310: CZRecoilFrame::OnMenuStartCampaignMode5.
+ *
+ * Purpose: start campaign mission slot 6 with the current archive-bank flag.
+ */
 void CZRecoilFrame::OnMenuStartCampaignMode5() {
     g_RecoilApp.LoadZbdAndSetupSensorTracker(
         6,
@@ -830,8 +1212,12 @@ void CZRecoilFrame::OnMenuStartCampaignMode5() {
     );
 }
 
-// Reimplements 0x4319a0: CZRecoilFrame::OnMenuWestwoodOnlineUpgrade
-// (D:\Proj\Battlesport\CZRecoilFrame.cpp)
+/**
+ * Reimplements 0x4319a0: CZRecoilFrame::OnMenuWestwoodOnlineUpgrade.
+ * Source file evidence: D:\Proj\Battlesport\CZRecoilFrame.cpp.
+ * Purpose: gate the Westwood Online upgrade flow on Winsock2 readiness and
+ * launch the selected mission.
+ */
 RECOIL_NO_GS void CZRecoilFrame::OnMenuWestwoodOnlineUpgrade() {
     int canShowUpgrade = 1;
     if (g_CZRecoilFrame_WestwoodOnlineWinsockChecked == 0) {
@@ -874,7 +1260,11 @@ RECOIL_NO_GS void CZRecoilFrame::OnMenuWestwoodOnlineUpgrade() {
     }
 }
 
-// Reimplements 0x431330: CZRecoilFrame::OnMenuToggleArchiveBanks
+/**
+ * Reimplements 0x431330: CZRecoilFrame::OnMenuToggleArchiveBanks.
+ *
+ * Purpose: toggle archive-bank loading and mirror it into audio/HUD state.
+ */
 void CZRecoilFrame::OnMenuToggleArchiveBanks() {
     m_useArchiveBanks = m_useArchiveBanks == 0 ? 1 : 0;
     CheckMenuItem(
@@ -886,7 +1276,11 @@ void CZRecoilFrame::OnMenuToggleArchiveBanks() {
     zSnd::SetUseArchiveBanksFlag(m_useArchiveBanks);
 }
 
-// Reimplements 0x431380: CZRecoilFrame::OnMenuToggleTexturePacks
+/**
+ * Reimplements 0x431380: CZRecoilFrame::OnMenuToggleTexturePacks.
+ *
+ * Purpose: toggle texture-pack loading and update the menu check state.
+ */
 void CZRecoilFrame::OnMenuToggleTexturePacks() {
     if (zVid::GetTexturePackLoadState() != 0) {
         zVid::SetTexturePackLoadState(0);
@@ -906,7 +1300,11 @@ void CZRecoilFrame::OnMenuToggleTexturePacks() {
     );
 }
 
-// Reimplements 0x4313d0: CZRecoilFrame::OnUpdateVideoMode2CmdUI
+/**
+ * Reimplements 0x4313d0: CZRecoilFrame::OnUpdateVideoMode2CmdUI.
+ *
+ * Purpose: apply cached command UI state for video mode 2.
+ */
 void CZRecoilFrame::OnUpdateVideoMode2CmdUI(
     CCmdUI *cmdUi
 ) {
@@ -916,7 +1314,11 @@ void CZRecoilFrame::OnUpdateVideoMode2CmdUI(
     );
 }
 
-// Reimplements 0x431430: CZRecoilFrame::OnUpdateVideoMode3CmdUI
+/**
+ * Reimplements 0x431430: CZRecoilFrame::OnUpdateVideoMode3CmdUI.
+ *
+ * Purpose: apply cached command UI state for video mode 3.
+ */
 void CZRecoilFrame::OnUpdateVideoMode3CmdUI(
     CCmdUI *cmdUi
 ) {
@@ -926,7 +1328,11 @@ void CZRecoilFrame::OnUpdateVideoMode3CmdUI(
     );
 }
 
-// Reimplements 0x431490: CZRecoilFrame::OnUpdateVideoMode4CmdUI
+/**
+ * Reimplements 0x431490: CZRecoilFrame::OnUpdateVideoMode4CmdUI.
+ *
+ * Purpose: apply cached command UI state for video mode 4.
+ */
 void CZRecoilFrame::OnUpdateVideoMode4CmdUI(
     CCmdUI *cmdUi
 ) {
@@ -936,7 +1342,11 @@ void CZRecoilFrame::OnUpdateVideoMode4CmdUI(
     );
 }
 
-// Reimplements 0x4314f0: CZRecoilFrame::OnUpdateVideoMode5CmdUI
+/**
+ * Reimplements 0x4314f0: CZRecoilFrame::OnUpdateVideoMode5CmdUI.
+ *
+ * Purpose: apply cached command UI state for video mode 5.
+ */
 void CZRecoilFrame::OnUpdateVideoMode5CmdUI(
     CCmdUI *cmdUi
 ) {
@@ -946,7 +1356,11 @@ void CZRecoilFrame::OnUpdateVideoMode5CmdUI(
     );
 }
 
-// Reimplements 0x431550: CZRecoilFrame::OnUpdateVideoMode6CmdUI
+/**
+ * Reimplements 0x431550: CZRecoilFrame::OnUpdateVideoMode6CmdUI.
+ *
+ * Purpose: apply cached command UI state for video mode 6.
+ */
 void CZRecoilFrame::OnUpdateVideoMode6CmdUI(
     CCmdUI *cmdUi
 ) {
@@ -956,7 +1370,11 @@ void CZRecoilFrame::OnUpdateVideoMode6CmdUI(
     );
 }
 
-// Reimplements 0x4315b0: CZRecoilFrame::OnUpdateVideoMode7CmdUI
+/**
+ * Reimplements 0x4315b0: CZRecoilFrame::OnUpdateVideoMode7CmdUI.
+ *
+ * Purpose: apply cached command UI state for video mode 7.
+ */
 void CZRecoilFrame::OnUpdateVideoMode7CmdUI(
     CCmdUI *cmdUi
 ) {
@@ -966,27 +1384,47 @@ void CZRecoilFrame::OnUpdateVideoMode7CmdUI(
     );
 }
 
-// Reimplements 0x431790: CZRecoilFrame::OnMenuSelectHwApi0
+/**
+ * Reimplements 0x431790: CZRecoilFrame::OnMenuSelectHwApi0.
+ *
+ * Purpose: select the software/fallback hardware API menu path.
+ */
 void CZRecoilFrame::OnMenuSelectHwApi0() {
     EnsureHwApiInitialized(0);
 }
 
-// Reimplements 0x4317a0: CZRecoilFrame::OnMenuSelectHwApi1
+/**
+ * Reimplements 0x4317a0: CZRecoilFrame::OnMenuSelectHwApi1.
+ *
+ * Purpose: select hardware API menu entry 1.
+ */
 void CZRecoilFrame::OnMenuSelectHwApi1() {
     EnsureHwApiInitialized(1);
 }
 
-// Reimplements 0x4317b0: CZRecoilFrame::OnMenuSelectHwApi2
+/**
+ * Reimplements 0x4317b0: CZRecoilFrame::OnMenuSelectHwApi2.
+ *
+ * Purpose: select hardware API menu entry 2.
+ */
 void CZRecoilFrame::OnMenuSelectHwApi2() {
     EnsureHwApiInitialized(2);
 }
 
-// Reimplements 0x4317c0: CZRecoilFrame::OnMenuSelectHwApi3
+/**
+ * Reimplements 0x4317c0: CZRecoilFrame::OnMenuSelectHwApi3.
+ *
+ * Purpose: select hardware API menu entry 3.
+ */
 void CZRecoilFrame::OnMenuSelectHwApi3() {
     EnsureHwApiInitialized(3);
 }
 
-// Reimplements 0x4317d0: CZRecoilFrame::UpdateHwApiMenuItem
+/**
+ * Reimplements 0x4317d0: CZRecoilFrame::UpdateHwApiMenuItem.
+ *
+ * Purpose: remove unavailable hardware API commands or update their label/check state.
+ */
 RECOIL_NO_GS void CZRecoilFrame::UpdateHwApiMenuItem(
     CCmdUI *cmdUi,
     int apiIndex
@@ -1012,7 +1450,11 @@ RECOIL_NO_GS void CZRecoilFrame::UpdateHwApiMenuItem(
     cmdUi->SetText(menuLabelText);
 }
 
-// Reimplements 0x431870: CZRecoilFrame::OnUpdateHwApi0CmdUI
+/**
+ * Reimplements 0x431870: CZRecoilFrame::OnUpdateHwApi0CmdUI.
+ *
+ * Purpose: enable and check the software/fallback hardware API command.
+ */
 void CZRecoilFrame::OnUpdateHwApi0CmdUI(
     CCmdUI *cmdUi
 ) {
@@ -1020,7 +1462,11 @@ void CZRecoilFrame::OnUpdateHwApi0CmdUI(
     cmdUi->SetCheck(m_hwApiCmdUiState[0] == kCmdUiChecked ? 1 : 0);
 }
 
-// Reimplements 0x4318b0: CZRecoilFrame::OnUpdateHwApi1CmdUI
+/**
+ * Reimplements 0x4318b0: CZRecoilFrame::OnUpdateHwApi1CmdUI.
+ *
+ * Purpose: update hardware API command UI entry 1.
+ */
 void CZRecoilFrame::OnUpdateHwApi1CmdUI(
     CCmdUI *cmdUi
 ) {
@@ -1030,7 +1476,11 @@ void CZRecoilFrame::OnUpdateHwApi1CmdUI(
     );
 }
 
-// Reimplements 0x4318c0: CZRecoilFrame::OnUpdateHwApi2CmdUI
+/**
+ * Reimplements 0x4318c0: CZRecoilFrame::OnUpdateHwApi2CmdUI.
+ *
+ * Purpose: update hardware API command UI entry 2.
+ */
 void CZRecoilFrame::OnUpdateHwApi2CmdUI(
     CCmdUI *cmdUi
 ) {
@@ -1040,7 +1490,11 @@ void CZRecoilFrame::OnUpdateHwApi2CmdUI(
     );
 }
 
-// Reimplements 0x4318d0: CZRecoilFrame::OnUpdateHwApi3CmdUI
+/**
+ * Reimplements 0x4318d0: CZRecoilFrame::OnUpdateHwApi3CmdUI.
+ *
+ * Purpose: update hardware API command UI entry 3.
+ */
 void CZRecoilFrame::OnUpdateHwApi3CmdUI(
     CCmdUI *cmdUi
 ) {
@@ -1050,7 +1504,11 @@ void CZRecoilFrame::OnUpdateHwApi3CmdUI(
     );
 }
 
-// Reimplements 0x4318e0: CZRecoilFrame::OnUpdateFullscreenCmdUI
+/**
+ * Reimplements 0x4318e0: CZRecoilFrame::OnUpdateFullscreenCmdUI.
+ *
+ * Purpose: remove the fullscreen command from the update menu path.
+ */
 void CZRecoilFrame::OnUpdateFullscreenCmdUI(
     CCmdUI *cmdUi
 ) {
@@ -1061,12 +1519,41 @@ void CZRecoilFrame::OnUpdateFullscreenCmdUI(
     );
 }
 
-// Reimplements 0x431900: CZRecoilFrame::OnMenuToggleCDAudio
+/**
+ * Original helper evidence: CZRecoilFrame message-map entries for command ids
+ * 0x9c7f, 0x9c81, and 0x9c84 share the same one-argument enable handler.
+ * Purpose: Enable command UI entries that have no authored state gate.
+ */
+void CZRecoilFrame::OnUpdateAlwaysEnabledCmdUI(
+    CCmdUI *cmdUi
+) {
+    MfcCmdUI::EnableAlways(cmdUi);
+}
+
+/**
+ * Original helper evidence: CZRecoilFrame message-map entries for command ids
+ * 0x9c7e and 0x9c53 route to the shared MFC no-op one-argument provider.
+ * Purpose: Preserve command UI routing entries that intentionally do not alter state.
+ */
+void CZRecoilFrame::OnUpdateNoOpCmdUI(
+    CCmdUI *
+) {
+}
+
+/**
+ * Reimplements 0x431900: CZRecoilFrame::OnMenuToggleCDAudio.
+ *
+ * Purpose: toggle the CD audio option from the frame menu.
+ */
 void CZRecoilFrame::OnMenuToggleCDAudio() {
     zSnd::SetCDAudioOption(zSnd::GetCDAudioOption() == 0 ? 1 : 0);
 }
 
-// Reimplements 0x431920: CZRecoilFrame::OnUpdateCDAudioCmdUI
+/**
+ * Reimplements 0x431920: CZRecoilFrame::OnUpdateCDAudioCmdUI.
+ *
+ * Purpose: enable and check the CD audio command from sound options.
+ */
 void CZRecoilFrame::OnUpdateCDAudioCmdUI(
     CCmdUI *cmdUi
 ) {
@@ -1074,12 +1561,20 @@ void CZRecoilFrame::OnUpdateCDAudioCmdUI(
     cmdUi->SetCheck(zSnd::GetCDAudioOption() != 0 ? 1 : 0);
 }
 
-// Reimplements 0x431950: CZRecoilFrame::OnMenuToggleJoystick
+/**
+ * Reimplements 0x431950: CZRecoilFrame::OnMenuToggleJoystick.
+ *
+ * Purpose: toggle joystick input from the frame menu.
+ */
 void CZRecoilFrame::OnMenuToggleJoystick() {
     zInp::SetJoystickOption(zInp::GetJoystickOption() == 0 ? 1 : 0);
 }
 
-// Reimplements 0x431970: CZRecoilFrame::OnUpdateJoystickCmdUI
+/**
+ * Reimplements 0x431970: CZRecoilFrame::OnUpdateJoystickCmdUI.
+ *
+ * Purpose: enable and check the joystick command from input options.
+ */
 void CZRecoilFrame::OnUpdateJoystickCmdUI(
     CCmdUI *cmdUi
 ) {
@@ -1087,12 +1582,20 @@ void CZRecoilFrame::OnUpdateJoystickCmdUI(
     cmdUi->SetCheck(zInp::GetJoystickOption() != 0 ? 1 : 0);
 }
 
-// Reimplements 0x431a90: CZRecoilFrame::OnMenuSelectDirectSound
+/**
+ * Reimplements 0x431a90: CZRecoilFrame::OnMenuSelectDirectSound.
+ *
+ * Purpose: select DirectSound as the active audio API option.
+ */
 void CZRecoilFrame::OnMenuSelectDirectSound() {
     zSnd::SetAudioApiOption(0);
 }
 
-// Reimplements 0x431aa0: CZRecoilFrame::OnUpdateDirectSoundCmdUI
+/**
+ * Reimplements 0x431aa0: CZRecoilFrame::OnUpdateDirectSoundCmdUI.
+ *
+ * Purpose: enable and check the DirectSound command from audio options.
+ */
 void CZRecoilFrame::OnUpdateDirectSoundCmdUI(
     CCmdUI *cmdUi
 ) {
@@ -1100,12 +1603,20 @@ void CZRecoilFrame::OnUpdateDirectSoundCmdUI(
     cmdUi->SetCheck(zSnd::GetAudioApiOption() == 0 ? 1 : 0);
 }
 
-// Reimplements 0x431ad0: CZRecoilFrame::OnMenuSelectA3D
+/**
+ * Reimplements 0x431ad0: CZRecoilFrame::OnMenuSelectA3D.
+ *
+ * Purpose: select A3D as the active audio API option.
+ */
 void CZRecoilFrame::OnMenuSelectA3D() {
     zSnd::SetAudioApiOption(1);
 }
 
-// Reimplements 0x431ae0: CZRecoilFrame::OnUpdateA3DCmdUI
+/**
+ * Reimplements 0x431ae0: CZRecoilFrame::OnUpdateA3DCmdUI.
+ *
+ * Purpose: enable and check the A3D command from the active sound backend.
+ */
 void CZRecoilFrame::OnUpdateA3DCmdUI(
     CCmdUI *cmdUi
 ) {
@@ -1113,24 +1624,32 @@ void CZRecoilFrame::OnUpdateA3DCmdUI(
     cmdUi->SetCheck(zSnd::GetActiveBackend() == 1 ? 1 : 0);
 }
 
-// Reimplements 0x431b10: CZRecoilFrame::OnSize
+/**
+ * Reimplements 0x431b10: CZRecoilFrame::OnSize.
+ *
+ * Purpose: forward sizing to CZGameFrame and deactivate the app on minimized/iconic states.
+ */
 void CZRecoilFrame::OnSize(
     unsigned int nType,
     int cx,
     int cy
 ) {
-    ((CZGameFrame *)(this))->OnSize(
+    CZGameFrame::OnSize(
         nType,
         cx,
         cy
     );
 
     if (nType == 4 || nType == 1) {
-        ((CZGameFrame *)(this))->m_app->OnAppDeactivate();
+        m_app->OnAppDeactivate();
     }
 }
 
-// Reimplements 0x431610: CZRecoilFrame::SetHwApiAndInitMode
+/**
+ * Reimplements 0x431610: CZRecoilFrame::SetHwApiAndInitMode.
+ *
+ * Purpose: select a hardware API, query video memory, force accelerated mode, and enter the default hardware video mode.
+ */
 void CZRecoilFrame::SetHwApiAndInitMode(
     int hwApiIndex
 ) {
@@ -1147,7 +1666,11 @@ void CZRecoilFrame::SetHwApiAndInitMode(
     OnMenuSetVideoMode5();
 }
 
-// Reimplements 0x431680: CZRecoilFrame::InitFallbackMode
+/**
+ * Reimplements 0x431680: CZRecoilFrame::InitFallbackMode.
+ *
+ * Purpose: restore software/fallback renderer options and rebuild mode command state.
+ */
 void CZRecoilFrame::InitFallbackMode() {
     zVid::SetHwApiOption(zVideo::SelectHwApiDeviceOrFallback(-1));
     zVid::SetAccelerationOption(0);
@@ -1156,7 +1679,11 @@ void CZRecoilFrame::InitFallbackMode() {
     ConfigureModeFeatureFlags();
 }
 
-// Reimplements 0x4316c0: CZRecoilFrame::EnsureHwApiInitialized
+/**
+ * Reimplements 0x4316c0: CZRecoilFrame::EnsureHwApiInitialized.
+ *
+ * Purpose: initialize the selected hardware API once and clear competing menu checks.
+ */
 void CZRecoilFrame::EnsureHwApiInitialized(
     int hwApiSelector
 ) {
@@ -1182,7 +1709,11 @@ void CZRecoilFrame::EnsureHwApiInitialized(
     }
 }
 
-// Reimplements 0x431730: CZRecoilFrame::InitStartupHwApiFromOptions
+/**
+ * Reimplements 0x431730: CZRecoilFrame::InitStartupHwApiFromOptions.
+ *
+ * Purpose: select the startup renderer path from saved options or fallback defaults.
+ */
 void CZRecoilFrame::InitStartupHwApiFromOptions() {
     if (zVid::GetHwApiOption() != 0) {
         const int acceptedDirectDrawDeviceCount = zVid::GetAcceptedDirectDrawDeviceCount();

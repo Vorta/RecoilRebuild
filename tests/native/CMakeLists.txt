@@ -23,7 +23,10 @@ add_executable(recoil_native_smoke
     zreader_tests.cpp
     znetwork_identity_smokes.cpp
     gamenet_launch_smokes.cpp
+    gamenet_net_smokes.cpp
+    net_session_config_dialog_smokes.cpp
     player_bootstrap_smokes.cpp
+    player_zar_smokes.cpp
     zutil_save_game_smokes.cpp
     fmv_script_core_smokes.cpp
     fmv_action_manifest_smokes.cpp
@@ -32,6 +35,7 @@ add_executable(recoil_native_smoke
     player_fx_pass3_smokes.cpp
     zvideo_fxpass3_ui_local_config_smokes.cpp
     player_alt_gun_runtime_smokes.cpp
+    player_tests.cpp
     player_damage_hit_smokes.cpp
     zhud_cmd_dialog_state_smokes.cpp
     zhud_net_game_setup_smokes.cpp
@@ -39,7 +43,10 @@ add_executable(recoil_native_smoke
     zhud_widget_tests.cpp
     hud_tests.cpp
     hud_save_load_tests.cpp
+    hud_ui_net_exit_smokes.cpp
+    hud_weather_fx_smokes.cpp
     czframe_constructor_smokes.cpp
+    czrecoil_frame_tests.cpp
     recoil_state_main_menu_transition_constructor_tests.cpp
     zmath_tests.cpp
     recoil_version_tests.cpp
@@ -69,6 +76,17 @@ set_source_files_properties(
 set_source_files_properties(
     zhud_ui_tests.cpp
     PROPERTIES COMPILE_DEFINITIONS RECOIL_NATIVE_ZHUD_UI_LIFECYCLE_ONLY
+)
+
+set_source_files_properties(
+    czrecoil_frame_tests.cpp
+    PROPERTIES COMPILE_DEFINITIONS
+        "RECOIL_NATIVE_CZRECOIL_FRAME_TESTS_SKIP_SHARED_SMOKES;RECOIL_NATIVE_CZRECOIL_FRAME_TESTS_MENU_SMOKES"
+)
+
+set_source_files_properties(
+    player_tests.cpp
+    PROPERTIES COMPILE_DEFINITIONS RECOIL_NATIVE_PLAYER_TESTS_GUN_DISPATCH_ONLY
 )
 
 set(ZDECLIENT_NATIVE_SMOKE_PREFIX

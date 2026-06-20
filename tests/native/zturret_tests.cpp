@@ -141,8 +141,8 @@ extern "C" int zturret_runtime_init_defaults_smoke(void) {
     failed |= runtime->firePointCount != 0;
     failed |= runtime->firePointNode0 != nullptr;
     failed |= runtime->firePointNode1 != nullptr;
-    failed |= CheckVec3(runtime->spawnPos, 0.0f, 0.0f, -1.0f);
-    failed |= CheckVec3(runtime->fireDir, 0.0f, 0.0f, 0.0f);
+    failed |= CheckVec3(runtime->fireDir, 0.0f, 0.0f, -1.0f);
+    failed |= CheckVec3(runtime->spawnPos, 0.0f, 0.0f, 0.0f);
     failed |= CheckVec3(runtime->spawnVel, 0.0f, 0.0f, 0.0f);
     failed |= runtime->fireRateSeconds != 1.0f;
     failed |= runtime->nextFireTime != 1.0f;

@@ -23,7 +23,7 @@
 extern "C" void(__cdecl *__imp__free)(void *); // VC5 retail import-pointer call shape.
 #endif
 
-extern "C" HWND g_RecoilApp_hWndMain = 0;
+extern "C" HWND g_RecoilApp_hWndMain;
 
 // BN 0x53a728 and 0x53a708 are four-int rect-shaped state records used by
 // zFMV_ActionImage constructors before copying into the action instance.

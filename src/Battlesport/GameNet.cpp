@@ -104,8 +104,23 @@ RECOIL_STATIC_ASSERT(sizeof(CComboBox) == 0x40);
 RECOIL_STATIC_ASSERT(sizeof(CSpinButtonCtrl) == 0x40);
 
 extern "C" {
+/**
+ * Reimplements data 0x4f3f10: g_GameNetPlayerRowList.
+ * Purpose: Owns the multiplayer player-row linked-list header for active
+ * local and remote network participants.
+ */
 GameNetPlayerRowListState g_GameNetPlayerRowList = {0, 0, 0, 0};
+/**
+ * Reimplements data 0x4f3f78: g_GameNetSpawnPointList.
+ * Purpose: Owns the multiplayer spawn-point linked-list header loaded from
+ * net.zrd during network mission startup.
+ */
 GameNetSpawnPointListState g_GameNetSpawnPointList = {0, 0, 0, 0};
+/**
+ * Reimplements data 0x4dcd88: g_GameNetPlayerRowStyleColors_00RRGGBB.
+ * Purpose: Maps network player color indices to HUD row and player tint
+ * colors in packed 00RRGGBB order.
+ */
 unsigned int g_GameNetPlayerRowStyleColors_00RRGGBB[9] = {
     0x00000000,
     0x000000ff,
@@ -117,7 +132,17 @@ unsigned int g_GameNetPlayerRowStyleColors_00RRGGBB[9] = {
     0x00ffffff,
     0x000040ff,
 };
+/**
+ * Reimplements data 0x4f3f20: g_HudTimerPanelNetState.
+ * Purpose: Stores replicated multiplayer HUD timer state and resend/warning
+ * flags shared by GameNet timer packet handlers.
+ */
 HudTimerPanelNetState g_HudTimerPanelNetState = {0};
+/**
+ * Reimplements data 0x4dce88: g_NetPkt0C_HudTimerStatusBitsBuf.
+ * Purpose: Holds the reusable network packet buffer for HUD timer status-bit
+ * replication.
+ */
 NetPkt0C_HudTimerStatusBits g_NetPkt0C_HudTimerStatusBitsBuf = {
     {0x0c, sizeof(NetPkt0C_HudTimerStatusBits), 0},
     0.0f,
@@ -125,12 +150,22 @@ NetPkt0C_HudTimerStatusBits g_NetPkt0C_HudTimerStatusBitsBuf = {
     0,
     0,
 };
+/**
+ * Reimplements data 0x4dce78: g_NetPkt0D_HudTimerPanelStateBuf.
+ * Purpose: Holds the reusable network packet buffer for HUD timer panel state
+ * replication.
+ */
 NetPkt0D_HudTimerPanelState g_NetPkt0D_HudTimerPanelStateBuf = {
     {0x0d, sizeof(NetPkt0D_HudTimerPanelState), 0},
     0.0f,
     0,
     0,
 };
+/**
+ * Reimplements data 0x4dcfa0: g_NetPkt14_HudTimerAndFlagsSyncBuf.
+ * Purpose: Holds the reusable network packet buffer for HUD timer and status
+ * flag synchronization.
+ */
 NetPkt14_HudTimerAndFlagsSync g_NetPkt14_HudTimerAndFlagsSyncBuf = {
     {0x14, sizeof(NetPkt14_HudTimerAndFlagsSync), 0},
     0,
@@ -138,6 +173,11 @@ NetPkt14_HudTimerAndFlagsSync g_NetPkt14_HudTimerAndFlagsSyncBuf = {
     0,
     0,
 };
+/**
+ * Reimplements data 0x4dcf80: g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf.
+ * Purpose: Holds the reusable packet buffer for OptCatalog runtime relay
+ * removal events.
+ */
 NetPkt0A_RemoveRuntimeRelay g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf = {
     {0x0a, sizeof(NetPkt0A_RemoveRuntimeRelay), 0},
     0,
@@ -156,15 +196,31 @@ NetPkt07_AltGunDispatch g_NetPkt07_AltGunDispatchBuf = {
     0,
     {0.0f, 0.0f, 0.0f},
 };
+/**
+ * Reimplements data 0x4dcdb0: g_NetPkt06_PlayerStateSnapshotBuf.
+ * Purpose: Holds the reusable local player-state snapshot buffer for packet 6
+ * replication.
+ */
 NetPkt06_PlayerStateSnapshot g_NetPkt06_PlayerStateSnapshotBuf = {
-    {0x06, 0x44, 0},
+    {0x06, 0, 0},
 };
-NetPkt0E_PlayerLapProgress g_NetPkt0E_PlayerLapProgressBuf = {
-    {0x0e, sizeof(NetPkt0E_PlayerLapProgress), 0},
+/**
+ * Reimplements data 0x4dcea0: g_NetPkt0F_CraterEventRelayBuf.
+ * Purpose: Holds the reusable crater packet used by zDEClient_Crater::Execute
+ * before host relay or reliable send.
+ */
+NetPkt0F_CraterEvent g_NetPkt0F_CraterEventRelayBuf = {
+    {0x0f, sizeof(NetPkt0F_CraterEvent), 0},
     0,
     0,
+    {0.0f, 0.0f, 0.0f},
     0.0f,
 };
+/**
+ * Reimplements data 0x4dcec0: g_NetPkt0F_CraterEventSendBuf.
+ * Purpose: Holds the reusable network packet buffer for crater feature
+ * events.
+ */
 NetPkt0F_CraterEvent g_NetPkt0F_CraterEventSendBuf = {
     {0x0f, sizeof(NetPkt0F_CraterEvent), 0},
     0,
@@ -172,6 +228,23 @@ NetPkt0F_CraterEvent g_NetPkt0F_CraterEventSendBuf = {
     {0.0f, 0.0f, 0.0f},
     0.0f,
 };
+/**
+ * Reimplements data 0x4dcee0: g_NetPkt10_QSandEventRelayBuf.
+ * Purpose: Holds the reusable quicksand packet used by GameNet local event
+ * relay before host callback or reliable send.
+ */
+NetPkt10_QSandEvent g_NetPkt10_QSandEventRelayBuf = {
+    {0x10, sizeof(NetPkt10_QSandEvent), 0},
+    0,
+    0,
+    {0.0f, 0.0f, 0.0f},
+    0.0f,
+};
+/**
+ * Reimplements data 0x4dcf00: g_NetPkt10_QSandEventSendBuf.
+ * Purpose: Holds the reusable network packet buffer for quicksand feature
+ * events.
+ */
 NetPkt10_QSandEvent g_NetPkt10_QSandEventSendBuf = {
     {0x10, sizeof(NetPkt10_QSandEvent), 0},
     0,
@@ -179,24 +252,95 @@ NetPkt10_QSandEvent g_NetPkt10_QSandEventSendBuf = {
     {0.0f, 0.0f, 0.0f},
     0.0f,
 };
+/**
+ * Reimplements data 0x4f3f8c: g_GameNetOneLapLeftMessageShown.
+ * Purpose: Caches whether the local race HUD has already shown the one-lap
+ * remaining network message.
+ */
 int g_GameNetOneLapLeftMessageShown = 0;
+/**
+ * Reimplements data 0x4f3f88: g_GameNetStatus_AllowMaps.
+ * Purpose: Stores the replicated session status bit that allows map use.
+ */
 int g_GameNetStatus_AllowMaps = 0;
+/**
+ * Reimplements data 0x4f3f90: g_GameNetStatus_NameTags.
+ * Purpose: Stores the replicated session status bit that enables name tags.
+ */
 int g_GameNetStatus_NameTags = 0;
+/**
+ * Reimplements data 0x4f3fa0: g_GameNetAllPlayersLapTargetCheckStarted.
+ * Purpose: Tracks whether the multiplayer race goal completion check has
+ * started for the current session.
+ */
 int g_GameNetAllPlayersLapTargetCheckStarted = 0;
+/**
+ * Reimplements data 0x4f3fa8: g_GameNetSuppressPkt13ActivationEcho.
+ * Purpose: Suppresses local echo while replaying replicated effect animation
+ * activation records.
+ */
 int g_GameNetSuppressPkt13ActivationEcho = 0;
+/**
+ * Reimplements data 0x4dcdac: g_GameNetPkt06InitialSyncGate.
+ * Purpose: Blocks local pkt06 replication until the first multiplayer state
+ * synchronization has been initialized.
+ */
 int g_GameNetPkt06InitialSyncGate = 1;
+/**
+ * Reimplements data 0x4f3f6c: g_GameNetPkt06InputBit17Latch.
+ * Purpose: Accumulates local pkt06 input bit 17 until the next player-state
+ * snapshot is sent.
+ */
 int g_GameNetPkt06InputBit17Latch = 0;
+/**
+ * Reimplements data 0x4f3f70: g_GameNetPkt06InputBit16Latch.
+ * Purpose: Accumulates local pkt06 input bit 16 until the next player-state
+ * snapshot is sent.
+ */
 int g_GameNetPkt06InputBit16Latch = 0;
+/**
+ * Reimplements data 0x4f3f9c: g_GameNetPkt06NextSendTimeSec.
+ * Purpose: Stores the next accumulated-time deadline for local pkt06 state
+ * snapshot transmission.
+ */
 float g_GameNetPkt06NextSendTimeSec = 0.0f;
+/**
+ * Reimplements data 0x4f3f98: g_GameNetHostHudTimerInitFlag.
+ * Purpose: Tracks host-side HUD timer initialization during multiplayer
+ * mission startup.
+ */
 int g_GameNetHostHudTimerInitFlag = 0;
-int g_GameNetHudTimerTenSecondWarningArmed = 0;
-int g_GameNetHudTimerPendingSaveReminderArmed = 0;
+/**
+ * Reimplements data 0x4dce70: g_GameNetHudTimerTenSecondWarningArmed.
+ * Purpose: Arms the replicated HUD timer ten-second warning message.
+ */
+int g_GameNetHudTimerTenSecondWarningArmed = 1;
+/**
+ * Reimplements data 0x4dce74: g_GameNetHudTimerPendingSaveReminderArmed.
+ * Purpose: Arms the replicated HUD timer pending-save reminder message.
+ */
+int g_GameNetHudTimerPendingSaveReminderArmed = 1;
+/**
+ * Reimplements data 0x4f3fa4: g_GameNet_HandlersRegistered.
+ * Purpose: Records whether GameNet gameplay packet handlers and callback
+ * hooks are registered.
+ */
 int g_GameNet_HandlersRegistered = 0;
+/**
+ * Reimplements data 0x4f32b4: g_NetUiTcpIpProviderWarningShown.
+ * Purpose: Records whether the Net UI has already shown the TCP/IP provider
+ * warning for the current UI lifetime.
+ */
 int g_NetUiTcpIpProviderWarningShown = 0;
 }
 
 extern "C" HWND g_RecoilApp_hWndMain;
 
+/**
+ * Reimplements data 0x4f32d8: g_NetSessionConfigDialog_MapNameStrings.
+ * Purpose: Stores the seven static CString objects used by the multiplayer
+ * session configuration map list.
+ */
 unsigned int g_NetSessionConfigDialog_MapNameStringStorage[7] = {0};
 CString *g_NetSessionConfigDialog_MapNameStrings =
     (CString *)&g_NetSessionConfigDialog_MapNameStringStorage[0];
@@ -212,6 +356,17 @@ const unsigned int kGameNetPkt06ProgressTargetsFlag = 0x40000u;
 const unsigned int kGameNetRemoteAltGunDispatchFlag = 0x2000000u;
 const unsigned int kGameNetRemoteCloneNodeFlag = 0x400000u;
 const float kGameNetRemoteUnlimitedAmmo = 123456792.0f;
+const int kGameNetChatComposeTextCapacity = 0x20;
+const int kGameNetChatComposeShiftModifierMask = 0x400;
+const int kGameNetChatComposeDigitFirstDik = 0x02;
+const int kGameNetChatComposeDigitLastDik = 0x0e;
+const int kGameNetChatComposeLetterRowFirstDik = 0x10;
+const int kGameNetChatComposeLetterRowLastDik = 0x2b;
+const int kGameNetChatComposeHomeRowFirstDik = 0x1e;
+const int kGameNetChatComposeHomeRowLastDik = 0x28;
+const int kGameNetChatComposeBottomRowFirstDik = 0x2c;
+const int kGameNetChatComposeBottomRowLastDik = 0x35;
+const int kGameNetChatComposeSpaceDik = 0x39;
 const UINT kNetSessionBrowserDialogResourceId = 136;
 const int kNetSessionBrowserPlayerNameEditId = 1048;
 const int kNetSessionBrowserOkButtonId = 1;
@@ -309,8 +464,9 @@ struct GameNetReaderArray {
 
 /**
  * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
- * Original helper evidence: no standalone retail function; callers 0x432ae0,
- * 0x432860, and 0x432e70 share the same HudUiPanel text-color writes.
+ * Original helper evidence: no standalone retail function; callers 0x431dd0,
+ * 0x432ae0, 0x432860, and 0x432e70 share the same HudUiPanel text-color
+ * writes.
  * Purpose: Apply a row style color to the embedded scoreboard HUD text
  * panel and mark its cached text image dirty.
  */
@@ -323,8 +479,14 @@ void SetEmbeddedHudPanelColor(
     row->hudWidget.textDirty = 1;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
-void RegisterChatComposeKey(
+/**
+ * Source: D:\Proj\Battlesport\ai_net.cpp
+ * Original helper evidence: no standalone retail function; caller 0x4143d0
+ * repeats this unregister/register pair across the chat-compose key ranges and
+ * the standalone space-bar binding.
+ * Purpose: Register one chat-compose keyboard callback binding.
+ */
+inline void RegisterChatComposeKey(
     int comboIdx
 ) {
     zInput::Keyboard_UnregisterKeyCallback(comboIdx);
@@ -335,18 +497,28 @@ void RegisterChatComposeKey(
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
-void RegisterChatComposeKeyRange(
+/**
+ * Source: D:\Proj\Battlesport\ai_net.cpp
+ * Original helper evidence: no standalone retail function; caller 0x4143d0
+ * repeats contiguous chat-compose key registration for unmodified and modified
+ * DIK ranges.
+ * Purpose: Register a contiguous range of chat-compose keyboard bindings.
+ */
+inline void RegisterChatComposeKeyRange(
     int firstComboIdx,
     int lastComboIdx
 ) {
     for (int comboIdx = firstComboIdx; comboIdx <= lastComboIdx; ++comboIdx) {
         RegisterChatComposeKey(comboIdx);
-        RegisterChatComposeKey(comboIdx | 0x400);
+        RegisterChatComposeKey(comboIdx | kGameNetChatComposeShiftModifierMask);
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; callers 0x432860,
+ * 0x432d60, and 0x432ed0 share the same HudUiPanel visibility dispatch.
+ * Purpose: Set remote-player HUD widget visibility.
+ */
 void GameNetSetRemoteHudVisible(
     HudUiPanel *panel,
     int visible
@@ -354,7 +526,11 @@ void GameNetSetRemoteHudVisible(
     panel->SetVisible(visible);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; caller 0x432d60
+ * uses the same typed HudUiPanel position dispatch after screen projection.
+ * Purpose: Move a remote-player HUD widget to a projected screen position.
+ */
 void GameNetSetRemoteHudPos(
     HudUiPanel *panel,
     int x,
@@ -366,7 +542,11 @@ void GameNetSetRemoteHudPos(
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; pkt06 spawn and
+ * apply callers share the same ten-bank remote weapon unlock loop.
+ * Purpose: Unlock every alternate weapon bank for a replicated remote player.
+ */
 void GameNetUnlockRemotePlayerWeaponBanks(
     zUtil_PlayerStateStorage *playerState
 ) {
@@ -379,7 +559,12 @@ void GameNetUnlockRemotePlayerWeaponBanks(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; caller 0x432300
+ * uses paired top-message display with the same duration constant in host and
+ * client HUD timer branches.
+ * Purpose: Show two localized HUD timer warning messages as a pair.
+ */
 void GameNetShowPairedTimerMessages(
     int firstMessageId,
     int secondMessageId
@@ -410,7 +595,11 @@ void GameNetCopyPkt06ProgressTargets(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; pkt06 decode
+ * callers use the same bank/side arithmetic for weapon-controller selection.
+ * Purpose: Decode a packed alternate-weapon selection into a controller slot.
+ */
 PlayerGunFireController *GameNetPkt06DecodeWeaponController(
     zUtil_PlayerStateStorage *playerState,
     int selectionCode
@@ -421,11 +610,19 @@ PlayerGunFireController *GameNetPkt06DecodeWeaponController(
 }
 } // namespace
 
+/**
+ * Provider-boundary accessor for imported MFC42 CDialog message-map metadata.
+ * Purpose: Return the provider CDialog message map for the browser dialog chain.
+ */
 const AFX_MSGMAP *__stdcall NetSessionBrowserCDialogMessageMapAccessor::GetMessageMap() {
     return &CDialog::messageMap;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; MFC message-map
+ * tables reference this base-map accessor for NetSessionBrowserDialog.
+ * Purpose: Return the browser dialog base message map.
+ */
 const AFX_MSGMAP *__stdcall NetSessionBrowserDialog::GetBaseMessageMapForMfc() {
     return NetSessionBrowserCDialogMessageMapAccessor::GetMessageMap();
 }
@@ -459,26 +656,46 @@ const AFX_MSGMAP NetSessionBrowserDialog::messageMap = {
     &NetSessionBrowserDialog::messageEntries[0],
 };
 
+/**
+ * Provider-boundary accessor for imported MFC42 CDialog message-map metadata.
+ * Purpose: Return the provider CDialog message map for the config dialog chain.
+ */
 const AFX_MSGMAP *__stdcall NetSessionConfigCDialogMessageMapAccessor::GetMessageMap() {
     return &CDialog::messageMap;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; MFC dialog methods
+ * in this source file share the same protected CWnd::Default dispatch.
+ * Purpose: Call the provider CWnd default handler.
+ */
 long GameNetMfcWndAccess::CallDefault() {
     return CWnd::Default();
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; MFC dialog methods
+ * in this source file share the same protected CWnd::OnDestroy dispatch.
+ * Purpose: Call the provider CWnd destroy handler.
+ */
 void GameNetMfcWndAccess::CallOnDestroy() {
     CWnd::OnDestroy();
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; MFC dialog methods
+ * in this source file share the same protected CDialog::OnOK dispatch.
+ * Purpose: Call the provider CDialog OK handler.
+ */
 void GameNetMfcDialogAccess::CallOnOK() {
     CDialog::OnOK();
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; MFC message-map
+ * tables reference this base-map accessor for NetSessionConfigDialog.
+ * Purpose: Return the config dialog base message map.
+ */
 const AFX_MSGMAP *__stdcall NetSessionConfigDialog::GetBaseMessageMapForMfc() {
     return NetSessionConfigCDialogMessageMapAccessor::GetMessageMap();
 }
@@ -499,14 +716,20 @@ const AFX_MSGMAP NetSessionConfigDialog::messageMap = {
     &NetSessionConfigDialog::messageEntries[0],
 };
 
-// Reimplements 0x41afd0: NetSessionBrowserDialog::GetMessageMap
-// (D:\Proj\Battlesport\GameNet.cpp)
+/**
+ * Reimplements 0x41afd0: NetSessionBrowserDialog::GetMessageMap
+ * Source: D:\Proj\Battlesport\GameNet.cpp
+ * Purpose: Return the browser dialog MFC message map.
+ */
 const AFX_MSGMAP * NetSessionBrowserDialog::GetMessageMap() const {
     return &NetSessionBrowserDialog::messageMap;
 }
 
-// Reimplements 0x41afe0: NetSessionBrowserDialog::OnInitDialog
-// (D:\Proj\Battlesport\GameNet.cpp)
+/**
+ * Reimplements 0x41afe0: NetSessionBrowserDialog::OnInitDialog
+ * Source: D:\Proj\Battlesport\GameNet.cpp
+ * Purpose: Initialize the multiplayer session browser controls and providers.
+ */
 BOOL NetSessionBrowserDialog::OnInitDialog() {
     ((CDialog *)this)->CDialog::OnInitDialog();
     m_playerName = zOpt_GetPlayerName();
@@ -620,7 +843,13 @@ void HudTimerPanelNetState::ClearTailFlagsLocal() {
 }
 
 namespace Net {
-// Reimplements 0x431dd0: Net::InitFromZrd
+/**
+ * Reimplements 0x431dd0: Net::InitFromZrd
+ * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
+ * Purpose: Initialize multiplayer mission state from net.zrd spawn points,
+ * create the local player row, initialize host HUD timer state, and respawn
+ * the local player.
+ */
 void InitFromZrd() {
     zUtil_SaveGameState *saveState = g_PlayerSaveStateListHead;
     while (saveState != 0) {
@@ -639,6 +868,8 @@ void InitFromZrd() {
 
     zTurret_System::DisableTickCallback();
 
+    /* Retail literal 0x4dcfb4 names the multiplayer spawn-point ZRD; data
+       ownership remains blocked outside this source slice. */
     zReader::Node *const treeRoot = zReader::LoadNodeFromPath(
         "net.zrd",
         0,
@@ -714,6 +945,9 @@ void InitFromZrd() {
                 fatalErrorMessage,
                 zLoc::GetMessageString(26)
             );
+            /* Retail literal 0x4db4ac formats the fatal shutdown caption and
+               message; data ownership remains blocked outside this source
+               slice. */
             printf(
                 "%s: %s\n",
                 fatalErrorCaption,
@@ -774,8 +1008,11 @@ void InitFromZrd() {
     g_GameNetPkt06NextSendTimeSec = 0.0f;
 }
 
-// Reimplements 0x43cf40: Net::FormatIpv4Address
-// (D:\Proj\Battlesport\Net.cpp)
+/**
+ * Reimplements 0x43cf40: Net::FormatIpv4Address
+ * Source: D:\Proj\Battlesport\Net.cpp
+ * Purpose: Format a little-endian IPv4 address for session UI text.
+ */
 void __fastcall FormatIpv4Address(
     char *outText,
     unsigned int ipAddress
@@ -798,8 +1035,11 @@ void __fastcall FormatIpv4Address(
 }
 } // namespace Net
 
-// Reimplements 0x41ada0: NetSessionBrowserDialog::Constructor
-// (D:\Proj\Battlesport\GameNet.cpp)
+/**
+ * Reimplements 0x41ada0: NetSessionBrowserDialog::Constructor
+ * Source: D:\Proj\Battlesport\GameNet.cpp
+ * Purpose: Construct the multiplayer session browser dialog and child controls.
+ */
 NetSessionBrowserDialog * NetSessionBrowserDialog::Constructor(
     CWnd *parentWnd
 ) {
@@ -820,8 +1060,11 @@ NetSessionBrowserDialog * NetSessionBrowserDialog::Constructor(
     return this;
 }
 
-// Reimplements 0x41ae90: NetSessionBrowserDialog::ScalarDeletingDtor
-// (D:\Proj\Battlesport\GameNet.cpp)
+/**
+ * Reimplements 0x41ae90: NetSessionBrowserDialog::ScalarDeletingDestructor
+ * Source: D:\Proj\Battlesport\GameNet.cpp
+ * Purpose: Destroy the browser dialog and optionally release its storage.
+ */
 NetSessionBrowserDialog * NetSessionBrowserDialog::ScalarDeletingDestructor(
     unsigned int flags
 ) {
@@ -832,8 +1075,11 @@ NetSessionBrowserDialog * NetSessionBrowserDialog::ScalarDeletingDestructor(
     return this;
 }
 
-// Reimplements 0x41aeb0: NetSessionBrowserDialog::Destructor
-// (D:\Proj\Battlesport\GameNet.cpp)
+/**
+ * Reimplements 0x41aeb0: NetSessionBrowserDialog::Destructor
+ * Source: D:\Proj\Battlesport\GameNet.cpp
+ * Purpose: Destroy browser dialog owned controls and CString state.
+ */
 void NetSessionBrowserDialog::Destructor() {
     m_playerName.~CString();
     ((CComboBox *)&m_providerCombo)->CComboBox::~CComboBox();
@@ -844,8 +1090,11 @@ void NetSessionBrowserDialog::Destructor() {
     ((CDialog *)this)->CDialog::~CDialog();
 }
 
-// Reimplements 0x41af50: NetSessionBrowserDialog::DoDataExchange
-// (D:\Proj\Battlesport\GameNet.cpp)
+/**
+ * Reimplements 0x41af50: NetSessionBrowserDialog::DoDataExchange
+ * Source: D:\Proj\Battlesport\GameNet.cpp
+ * Purpose: Bind browser dialog controls and validate the player-name field.
+ */
 void NetSessionBrowserDialog::DoDataExchange(
     CDataExchange *dataExchange
 ) {
@@ -886,7 +1135,11 @@ void NetSessionBrowserDialog::DoDataExchange(
     );
 }
 
-// Reimplements 0x41b150: NetSessionBrowserDialog::RefreshSessionList
+/**
+ * Reimplements 0x41b150: NetSessionBrowserDialog::RefreshSessionList
+ * Source: D:\Proj\Battlesport\GameNet.cpp
+ * Purpose: Refresh and restore the visible DirectPlay session list.
+ */
 int NetSessionBrowserDialog::RefreshSessionList() {
     CString selectedSessionText;
     m_sessionCount = zNetwork_DPlay::EnumSessions();
@@ -976,8 +1229,11 @@ int NetSessionBrowserDialog::RefreshSessionList() {
     return m_sessionCount;
 }
 
-// Reimplements 0x41b2f0: NetSessionBrowserDialog::ConnectSelectedProvider
-// (D:\Proj\Battlesport\GameNet.cpp)
+/**
+ * Reimplements 0x41b2f0: NetSessionBrowserDialog::ConnectSelectedProvider
+ * Source: D:\Proj\Battlesport\GameNet.cpp
+ * Purpose: Connect to the selected provider and update browser dialog actions.
+ */
 void NetSessionBrowserDialog::ConnectSelectedProvider() {
     ::KillTimer(
         m_hWnd,
@@ -1080,8 +1336,11 @@ void NetSessionBrowserDialog::ConnectSelectedProvider() {
     m_selectedProviderIsModem = FALSE;
 }
 
-// Reimplements 0x41b660: NetSessionBrowserDialog::OnTimer
-// (D:\Proj\Battlesport\GameNet.cpp)
+/**
+ * Reimplements 0x41b660: NetSessionBrowserDialog::OnTimer
+ * Source: D:\Proj\Battlesport\GameNet.cpp
+ * Purpose: Poll for updated DirectPlay sessions while the browser is open.
+ */
 void NetSessionBrowserDialog::OnTimer(
     UINT_PTR
 ) {
@@ -1089,8 +1348,11 @@ void NetSessionBrowserDialog::OnTimer(
     ((GameNetMfcWndAccess *)this)->CallDefault();
 }
 
-// Reimplements 0x41b6a0: NetSessionBrowserDialog::ValidatePlayerName
-// (D:\Proj\Battlesport\GameNet.cpp)
+/**
+ * Reimplements 0x41b6a0: NetSessionBrowserDialog::ValidatePlayerName
+ * Source: D:\Proj\Battlesport\GameNet.cpp
+ * Purpose: Trim, validate, and prompt for the multiplayer player name.
+ */
 int NetSessionBrowserDialog::ValidatePlayerName() {
     ((CWnd *)this)->UpdateData(TRUE);
     m_playerName.TrimLeft();
@@ -1122,8 +1384,11 @@ int NetSessionBrowserDialog::ValidatePlayerName() {
     return FALSE;
 }
 
-// Reimplements 0x41b510: NetSessionBrowserDialog::OnOK
-// (D:\Proj\Battlesport\GameNet.cpp)
+/**
+ * Reimplements 0x41b510: NetSessionBrowserDialog::OnOK
+ * Source: D:\Proj\Battlesport\GameNet.cpp
+ * Purpose: Join or initialize the selected multiplayer provider/session.
+ */
 void NetSessionBrowserDialog::OnOK() {
     int canCloseDialog = FALSE;
     if (ValidatePlayerName() == 0) {
@@ -1167,8 +1432,11 @@ void NetSessionBrowserDialog::OnOK() {
     }
 }
 
-// Reimplements 0x41b5a0: NetSessionBrowserDialog::OnCreateSession
-// (D:\Proj\Battlesport\GameNet.cpp)
+/**
+ * Reimplements 0x41b5a0: NetSessionBrowserDialog::OnCreateSession
+ * Source: D:\Proj\Battlesport\GameNet.cpp
+ * Purpose: Enter host setup or create a modem session from browser state.
+ */
 void NetSessionBrowserDialog::OnCreateSession() {
     if (ValidatePlayerName() == 0) {
         return;
@@ -1205,8 +1473,11 @@ void NetSessionBrowserDialog::OnCreateSession() {
     }
 }
 
-// Reimplements 0x41b680: NetSessionBrowserDialog::OnDestroy
-// (D:\Proj\Battlesport\GameNet.cpp)
+/**
+ * Reimplements 0x41b680: NetSessionBrowserDialog::OnDestroy
+ * Source: D:\Proj\Battlesport\GameNet.cpp
+ * Purpose: Forward browser dialog destruction and stop session polling.
+ */
 void NetSessionBrowserDialog::OnDestroy() {
     ((GameNetMfcWndAccess *)this)->CallOnDestroy();
     ::KillTimer(
@@ -1215,8 +1486,11 @@ void NetSessionBrowserDialog::OnDestroy() {
     );
 }
 
-// Reimplements 0x41b780: NetSessionBrowserDialog::OnHelpDocs
-// (D:\Proj\Battlesport\GameNet.cpp)
+/**
+ * Reimplements 0x41b780: NetSessionBrowserDialog::OnHelpDocs
+ * Source: D:\Proj\Battlesport\GameNet.cpp
+ * Purpose: Open the bundled help document or show the matching shell error.
+ */
 void NetSessionBrowserDialog::OnHelpDocs() {
     char caption[128];
     strcpy(
@@ -1284,43 +1558,67 @@ void NetSessionBrowserDialog::OnHelpDocs() {
     );
 }
 
-// Reimplements 0x41c6e0: NetSessionConfigDialog::Constructor
-// (D:\Proj\Battlesport\GameNet.cpp)
-NetSessionConfigDialog * NetSessionConfigDialog::Constructor(
+/**
+ * Reimplements 0x41c6e0: NetSessionConfigDialog::NetSessionConfigDialog
+ * Source: D:\Proj\Battlesport\GameNet.cpp
+ * Purpose: Construct the multiplayer session configuration dialog controls.
+ */
+NetSessionConfigDialog::NetSessionConfigDialog(
     CWnd *parentWnd
-) {
-    new ((CDialog *)this) CDialog(
+) :
+    CDialog(
         kNetSessionConfigDialogResourceId,
         parentWnd
-    );
-
-    new (&m_maxPlayersSpin) CSpinButtonCtrl();
-    new (&m_valueLimitSpin) CSpinButtonCtrl();
-    new (&m_timeLimitSpin) CSpinButtonCtrl();
-    new (&m_mapCombo) CComboBox();
-
-    new (&m_sessionName) CString();
+    ),
+    m_maxPlayersSpin(),
+    m_valueLimitSpin(),
+    m_timeLimitSpin(),
+    m_mapCombo(),
+    m_sessionName()
+{
     m_sessionName = "";
     m_valueLimit = 0;
     m_timeLimitMinutes = 0;
     m_maxPlayers = 0;
     m_unusedCheckboxEnabled = 0;
+}
+
+/**
+ * Original helper evidence: no standalone retail function; reconstructed
+ * callers in this source file still use the recovered constructor helper
+ * spelling while the owner model is the real C++ constructor above.
+ * Purpose: Placement-construct the config dialog and return self.
+ */
+NetSessionConfigDialog * NetSessionConfigDialog::Constructor(
+    CWnd *parentWnd
+) {
+    new (this) NetSessionConfigDialog(parentWnd);
     return this;
 }
 
-// Reimplements 0x41c7f0: NetSessionConfigDialog::Destructor
-// (D:\Proj\Battlesport\GameNet.cpp)
-void NetSessionConfigDialog::Destructor() {
-    m_sessionName.~CString();
-    ((CComboBox *)&m_mapCombo)->CComboBox::~CComboBox();
-    ((CSpinButtonCtrl *)&m_timeLimitSpin)->CSpinButtonCtrl::~CSpinButtonCtrl();
-    ((CSpinButtonCtrl *)&m_valueLimitSpin)->CSpinButtonCtrl::~CSpinButtonCtrl();
-    ((CSpinButtonCtrl *)&m_maxPlayersSpin)->CSpinButtonCtrl::~CSpinButtonCtrl();
-    ((CDialog *)this)->CDialog::~CDialog();
+/**
+ * Reimplements 0x41c7f0: NetSessionConfigDialog::~NetSessionConfigDialog
+ * Source: D:\Proj\Battlesport\GameNet.cpp
+ * Purpose: Destroy config dialog owned controls and CString state.
+ */
+NetSessionConfigDialog::~NetSessionConfigDialog() {
 }
 
-// Reimplements 0x41c880: NetSessionConfigDialog::DoDataExchange
-// (D:\Proj\Battlesport\GameNet.cpp)
+/**
+ * Original helper evidence: no standalone retail function; reconstructed
+ * callers in this source file still use the recovered destructor helper
+ * spelling while the owner model is the real C++ destructor above.
+ * Purpose: Invoke the real config dialog destructor.
+ */
+void NetSessionConfigDialog::Destructor() {
+    this->NetSessionConfigDialog::~NetSessionConfigDialog();
+}
+
+/**
+ * Reimplements 0x41c880: NetSessionConfigDialog::DoDataExchange
+ * Source: D:\Proj\Battlesport\GameNet.cpp
+ * Purpose: Bind config dialog controls and validate session numeric fields.
+ */
 void NetSessionConfigDialog::DoDataExchange(
     CDataExchange *dataExchange
 ) {
@@ -1394,14 +1692,20 @@ void NetSessionConfigDialog::DoDataExchange(
     );
 }
 
-// Reimplements 0x41c970: NetSessionConfigDialog::GetMessageMap
-// (D:\Proj\Battlesport\GameNet.cpp)
+/**
+ * Reimplements 0x41c970: NetSessionConfigDialog::GetMessageMap
+ * Source: D:\Proj\Battlesport\GameNet.cpp
+ * Purpose: Return the config dialog MFC message map.
+ */
 const AFX_MSGMAP * NetSessionConfigDialog::GetMessageMap() const {
     return &NetSessionConfigDialog::messageMap;
 }
 
-// Reimplements 0x41ca30: NetSessionConfigDialog::OnInitDialog
-// (D:\Proj\Battlesport\GameNet.cpp)
+/**
+ * Reimplements 0x41ca30: NetSessionConfigDialog::OnInitDialog
+ * Source: D:\Proj\Battlesport\GameNet.cpp
+ * Purpose: Initialize multiplayer session config fields, maps, and spin ranges.
+ */
 BOOL NetSessionConfigDialog::OnInitDialog() {
     ((CDialog *)this)->CDialog::OnInitDialog();
 
@@ -1476,8 +1780,11 @@ BOOL NetSessionConfigDialog::OnInitDialog() {
     return TRUE;
 }
 
-// Reimplements 0x41cb50: NetSessionConfigDialog::OnDestroy
-// (D:\Proj\Battlesport\GameNet.cpp)
+/**
+ * Reimplements 0x41cb50: NetSessionConfigDialog::OnDestroy
+ * Source: D:\Proj\Battlesport\GameNet.cpp
+ * Purpose: Persist the selected map index as the config dialog closes.
+ */
 void NetSessionConfigDialog::OnDestroy() {
     ((GameNetMfcWndAccess *)this)->CallOnDestroy();
     const LRESULT selectedMapComboIndex = ::SendMessageA(
@@ -1495,8 +1802,11 @@ void NetSessionConfigDialog::OnDestroy() {
         );
 }
 
-// Reimplements 0x41cb90: NetSessionConfigDialog::OnMapChanged
-// (D:\Proj\Battlesport\GameNet.cpp)
+/**
+ * Reimplements 0x41cb90: NetSessionConfigDialog::OnMapChanged
+ * Source: D:\Proj\Battlesport\GameNet.cpp
+ * Purpose: Track map selection and refresh max-player label text.
+ */
 void NetSessionConfigDialog::OnMapChanged() {
     const LRESULT selectedMapComboIndex = ::SendMessageA(
         m_mapCombo.m_hWnd,
@@ -1525,16 +1835,22 @@ void NetSessionConfigDialog::OnMapChanged() {
 }
 
 namespace Mission {
-// Reimplements 0x41c980: Mission::RegisterMultiplayerMaps
-// (D:\Proj\Battlesport\GameNet.cpp)
+/**
+ * Reimplements 0x41c980: Mission::RegisterMultiplayerMaps
+ * Source: D:\Proj\Battlesport\GameNet.cpp
+ * Purpose: Construct and register cleanup for multiplayer map name strings.
+ */
 void RegisterMultiplayerMaps() {
     NetSessionConfigDialog::InitMapNameStrings();
     NetSessionConfigDialog::RegisterMapNameCleanup();
 }
 } // namespace Mission
 
-// Reimplements 0x41c990: NetSessionConfigDialog::InitMapNameStrings
-// (D:\Proj\Battlesport\GameNet.cpp)
+/**
+ * Reimplements 0x41c990: NetSessionConfigDialog::InitMapNameStrings
+ * Source: D:\Proj\Battlesport\GameNet.cpp
+ * Purpose: Construct the seven multiplayer map-name CString entries.
+ */
 void NetSessionConfigDialog::InitMapNameStrings() {
     new (&g_NetSessionConfigDialog_MapNameStrings[0]) CString("RiverWorks");
     new (&g_NetSessionConfigDialog_MapNameStrings[1]) CString("Crater Chaos");
@@ -1545,14 +1861,20 @@ void NetSessionConfigDialog::InitMapNameStrings() {
     new (&g_NetSessionConfigDialog_MapNameStrings[6]) CString("New Clone City");
 }
 
-// Reimplements 0x41ca00: NetSessionConfigDialog::RegisterMapNameCleanup
-// (D:\Proj\Battlesport\GameNet.cpp)
+/**
+ * Reimplements 0x41ca00: NetSessionConfigDialog::RegisterMapNameCleanup
+ * Source: D:\Proj\Battlesport\GameNet.cpp
+ * Purpose: Register process-exit cleanup for multiplayer map-name strings.
+ */
 void NetSessionConfigDialog::RegisterMapNameCleanup() {
     atexit(&NetSessionConfigDialog::CleanupMapNameStringsOnExit);
 }
 
-// Reimplements 0x41ca10: NetSessionConfigDialog::CleanupMapNameStringsOnExit
-// (D:\Proj\Battlesport\GameNet.cpp)
+/**
+ * Reimplements 0x41ca10: NetSessionConfigDialog::CleanupMapNameStringsOnExit
+ * Source: D:\Proj\Battlesport\GameNet.cpp
+ * Purpose: Destroy the static multiplayer map-name CString entries.
+ */
 void NetSessionConfigDialog::CleanupMapNameStringsOnExit() {
     for (int index = kNetSessionConfigMapNameCount - 1; index >= 0; --index) {
         g_NetSessionConfigDialog_MapNameStrings[index].~CString();
@@ -1560,7 +1882,12 @@ void NetSessionConfigDialog::CleanupMapNameStringsOnExit() {
 }
 
 namespace GameNet {
-// Reimplements 0x414550: GameNet::ChatComposeKeyCallback (D:\Proj\Battlesport\ai_net.cpp)
+/**
+ * Reimplements 0x414550: GameNet::ChatComposeKeyCallback
+ * Source: D:\Proj\Battlesport\ai_net.cpp
+ * Purpose: Append a translated key to active chat-compose text and mirror the
+ * buffer into the objective description panel.
+ */
 void __fastcall ChatComposeKeyCallback(
     int dikCodeWithMods
 ) {
@@ -1576,7 +1903,11 @@ void __fastcall ChatComposeKeyCallback(
     );
 }
 
-// Reimplements 0x4143d0: GameNet::BeginChatCompose (D:\Proj\Battlesport\ai_net.cpp)
+/**
+ * Reimplements 0x4143d0: GameNet::BeginChatCompose
+ * Source: D:\Proj\Battlesport\ai_net.cpp
+ * Purpose: Open chat-compose mode and bind text-entry keys.
+ */
 void BeginChatCompose() {
     if (zOpt::GetNetworkEnabled() == 0) {
         return;
@@ -1589,30 +1920,34 @@ void BeginChatCompose() {
         0.0f
     );
     g_HudUiMgrObjectiveChatComposeActive = 1;
-    g_HudUiMgrObjectiveChatComposeTextInput.AllocTextBuffer(0x20);
+    g_HudUiMgrObjectiveChatComposeTextInput.AllocTextBuffer(kGameNetChatComposeTextCapacity);
     g_HudUiMgrObjectiveChatComposeTextInput.SetContents("");
     zInput::BindMapContext_Push(0);
 
     RegisterChatComposeKeyRange(
-        0x02,
-        0x0e
+        kGameNetChatComposeDigitFirstDik,
+        kGameNetChatComposeDigitLastDik
     );
     RegisterChatComposeKeyRange(
-        0x10,
-        0x2b
+        kGameNetChatComposeLetterRowFirstDik,
+        kGameNetChatComposeLetterRowLastDik
     );
     RegisterChatComposeKeyRange(
-        0x1e,
-        0x28
+        kGameNetChatComposeHomeRowFirstDik,
+        kGameNetChatComposeHomeRowLastDik
     );
     RegisterChatComposeKeyRange(
-        0x2c,
-        0x35
+        kGameNetChatComposeBottomRowFirstDik,
+        kGameNetChatComposeBottomRowLastDik
     );
-    RegisterChatComposeKey(0x39);
+    RegisterChatComposeKey(kGameNetChatComposeSpaceDik);
 }
 
-// Reimplements 0x414590: GameNet::EndChatComposeAndSend (D:\Proj\Battlesport\ai_net.cpp)
+/**
+ * Reimplements 0x414590: GameNet::EndChatComposeAndSend
+ * Source: D:\Proj\Battlesport\ai_net.cpp
+ * Purpose: Close chat compose, show the local chat line, and send packet 0x0b.
+ */
 void EndChatComposeAndSend() {
     zUtil_SaveGameState *const saveState = (zUtil_SaveGameState *)(g_GameStateOrMapTable);
     GameNetPlayerRow *const playerRow = saveState->netPlayerRow;
@@ -1634,7 +1969,7 @@ void EndChatComposeAndSend() {
     );
     strncat(
         chatLine,
-        ":",
+        g_HudUiMessage_SeparatorColon,
         0x50 - strlen(chatLine)
     );
     strncat(
@@ -1649,8 +1984,11 @@ void EndChatComposeAndSend() {
     SendPkt0B_ChatMessage(chatLine);
 }
 
-// Reimplements 0x414660: GameNet::EndChatComposeAndSendThunk
-// Pure forwarding callback thunk referenced by the chat-compose text input dispatch record.
+/**
+ * Reimplements 0x414660: GameNet::EndChatComposeAndSendThunk
+ * Source: D:\Proj\Battlesport\ai_net.cpp
+ * Purpose: Forward the chat-compose dispatch callback to EndChatComposeAndSend.
+ */
 void EndChatComposeAndSendThunk() {
     EndChatComposeAndSend();
 }
@@ -1675,8 +2013,12 @@ GameNetPlayerRow *__fastcall FindPlayerRowByKey(
     return 0;
 }
 
-// Reimplements 0x4336f0: GameNet::GetLocalPlayerColorIndexOrZero
-// (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
+/**
+ * Reimplements 0x4336f0: GameNet::GetLocalPlayerColorIndexOrZero
+ * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
+ * Purpose: Return the local GameNet player-row color index when the local
+ * save-state row is available, or zero otherwise.
+ */
 int GetLocalPlayerColorIndexOrZero() {
     zUtil_SaveGameState *const saveState = (zUtil_SaveGameState *)(g_GameStateOrMapTable);
     if (saveState == 0) {
@@ -1691,17 +2033,23 @@ int GetLocalPlayerColorIndexOrZero() {
     return netPlayerRow->playerColorIndex;
 }
 
-// Reimplements 0x4339d0: GameNet::GetNearestOtherPlayerDistanceToSpawnPoint
-// (D:\Proj\Battlesport\net.cpp)
+/**
+ * Reimplements 0x4339d0: GameNet::GetNearestOtherPlayerDistanceToSpawnPoint
+ * Source: D:\Proj\Battlesport\net.cpp
+ * Purpose: Measure the nearest player-row save state other than the active
+ * game-state-table row for a candidate multiplayer spawn point.
+ */
 float __fastcall GetNearestOtherPlayerDistanceToSpawnPoint(
     GameNetSpawnPoint *spawnPoint,
     GameNetPlayerSaveState **outSaveState
 ) {
     float nearestDistanceSq = 1.0e23f;
+    GameNetPlayerSaveState *const localSaveState =
+        (GameNetPlayerSaveState *)(g_GameStateOrMapTable);
     GameNetPlayerRow *row = g_GameNetPlayerRowHead;
     while (row != 0) {
         GameNetPlayerSaveState *const saveState = row->saveState;
-        if (saveState != (GameNetPlayerSaveState *)g_LocalPlayerSaveState) {
+        if (saveState != localSaveState) {
             const float distanceSq =
                 zMath::Vec3DeltaLengthSq(
                     &saveState->playerState->worldPos,
@@ -1742,8 +2090,13 @@ int AreAllPlayersAtLapTarget() {
     return 1;
 }
 
-// Reimplements 0x433840: GameNet::RespawnPlayerAndDropWeaponPickupIfAllowed
-// (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
+/**
+ * Reimplements 0x433840: GameNet::RespawnPlayerAndDropWeaponPickupIfAllowed
+ * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
+ * Purpose: Choose a multiplayer respawn point, optionally drop the player's
+ * current weapon pickup, reset transient player state, and refresh mission
+ * vehicle unlock flags.
+ */
 void __fastcall RespawnPlayerAndDropWeaponPickupIfAllowed(
     zUtil_SaveGameState *saveState,
     int useColorIndexedSpawn
@@ -1762,7 +2115,7 @@ void __fastcall RespawnPlayerAndDropWeaponPickupIfAllowed(
             }
         }
         selectedSpawn = spawnPoint;
-    } else if (g_GameNetStatus_AllowMaps != 0) {
+    } else if (g_HudSensorTracker.raceCheckpointMode != 0) {
         selectedSpawn = 0;
     } else {
         PickupType *const pickupType = Pickup::FindDroppableTypeForPlayerCurrentWeapon(saveState);
@@ -1804,7 +2157,7 @@ void __fastcall RespawnPlayerAndDropWeaponPickupIfAllowed(
     }
 
     if (saveState->primaryModalState->masterModalData->masterType != 3 &&
-        g_GameNetStatus_AllowMaps == 0) {
+        g_HudSensorTracker.raceCheckpointMode == 0) {
         Player::TransitionToMasterTypeTrack(
             saveState,
             1
@@ -1819,8 +2172,12 @@ void __fastcall RespawnPlayerAndDropWeaponPickupIfAllowed(
     playerState->subUnlocked = 0;
 }
 
-// Reimplements 0x432300: GameNet::TickLocalPlayerPkt06ReplicationAndHudTimer
-// (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
+/**
+ * Reimplements 0x432300: GameNet::TickLocalPlayerPkt06ReplicationAndHudTimer
+ * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
+ * Purpose: Replicate the local pkt06 player-state snapshot and drive host HUD
+ * timer warning/status packet updates.
+ */
 int __fastcall TickLocalPlayerPkt06ReplicationAndHudTimer(
     zUtil_SaveGameState *saveState
 ) {
@@ -1902,6 +2259,13 @@ int __fastcall TickLocalPlayerPkt06ReplicationAndHudTimer(
                     timerState.startGateTriggered = 1;
                     timerState.timerDirectionNeg = 0;
                     timerState.timerSeconds = 0.0f;
+                    /**
+                     * Reimplements data 0x4dcfbc: GameNet startgate effect literal.
+                     * Data owner gate remains pending; this docblock records
+                     * source provenance only.
+                     * Purpose: name the replicated start-gate effect animation
+                     * stopped when the host race countdown reaches zero.
+                     */
                     zEffectAnim::SetVelocity_Thunk(
                         zEffectAnim::FindEntryByName("startgate"),
                         0,
@@ -2373,20 +2737,20 @@ int __fastcall SendPkt10_QSandEvent(
         return 0;
     }
 
-    g_NetPkt10_QSandEventSendBuf.header.payloadDword0 = zNetwork_GetLocalPlayerKey();
-    g_NetPkt10_QSandEventSendBuf.center = eventTemplate->center;
-    g_NetPkt10_QSandEventSendBuf.radius = eventTemplate->radius;
-    g_NetPkt10_QSandEventSendBuf.eventFlags &= 0xffff0000u;
+    g_NetPkt10_QSandEventRelayBuf.header.payloadDword0 = zNetwork_GetLocalPlayerKey();
+    g_NetPkt10_QSandEventRelayBuf.center = eventTemplate->center;
+    g_NetPkt10_QSandEventRelayBuf.radius = eventTemplate->radius;
+    g_NetPkt10_QSandEventRelayBuf.eventFlags &= 0xffff0000u;
 
     if (zNetwork::IsHost() != 0) {
         zDEClient_QSand::NetRelayCallback(
             zNetwork_GetLocalPlayerKey(),
-            &g_NetPkt10_QSandEventSendBuf
+            &g_NetPkt10_QSandEventRelayBuf
         );
         return 0;
     }
 
-    zNetwork_SendPacketReliable(&g_NetPkt10_QSandEventSendBuf.header);
+    zNetwork_SendPacketReliable(&g_NetPkt10_QSandEventRelayBuf.header);
     return 0;
 }
 
@@ -2646,7 +3010,12 @@ void ResetRemotePlayersAndSpawnLists() {
     g_GameNetPlayerRowCount = 0;
 }
 
-// Reimplements 0x4320b0: GameNet::WaitForLocalPlayerColorIndex
+/**
+ * Reimplements 0x4320b0: GameNet::WaitForLocalPlayerColorIndex
+ * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
+ * Purpose: Pump pending DirectPlay messages until the local player receives a
+ * positive color index or the wait budget expires.
+ */
 int __fastcall WaitForLocalPlayerColorIndex(
     int maxWaitSeconds
 ) {
@@ -2666,7 +3035,12 @@ int __fastcall WaitForLocalPlayerColorIndex(
     return 0;
 }
 
-// Reimplements 0x4322a0: GameNet::ResetHudTimerPanelNetStateLongCountdown
+/**
+ * Reimplements 0x4322a0: GameNet::ResetHudTimerPanelNetStateLongCountdown
+ * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
+ * Purpose: Reset the replicated HUD timer state to the long race countdown
+ * defaults and update the displayed timer panel.
+ */
 void ResetHudTimerPanelNetStateLongCountdown() {
     g_HudTimerPanelNetState.timerSeconds = 36000.0f;
     HudUiTimerPanel::SetSeconds(
@@ -2680,7 +3054,11 @@ void ResetHudTimerPanelNetStateLongCountdown() {
     g_HudTimerPanelNetState.startGateTriggered = 0;
     g_HudTimerPanelNetState.raceFinishCountdownTriggered = 0;
     g_GameNetAllPlayersLapTargetCheckStarted = 0;
-    g_HudTimerPanelNetState.ClearTailFlagsLocal();
+    memset(
+        g_HudTimerPanelNetState.tailFlags,
+        0,
+        sizeof(g_HudTimerPanelNetState.tailFlags)
+    );
     g_GameNetOneLapLeftMessageShown = 0;
 }
 
@@ -2714,8 +3092,11 @@ int GetStatusBitNameTags() {
     return g_GameNetStatus_NameTags;
 }
 
-// Reimplements 0x432d60: GameNet::UpdateRemotePlayerHudWidgetScreenPos
-// (src/Battlesport/gamenet.cpp)
+/**
+ * Reimplements 0x432d60: GameNet::UpdateRemotePlayerHudWidgetScreenPos
+ * Source: src/Battlesport/gamenet.cpp
+ * Purpose: Project a remote player name-tag HUD widget into screen space.
+ */
 int __fastcall UpdateRemotePlayerHudWidgetScreenPos(
     zUtil_SaveGameState *saveState
 ) {
@@ -2805,8 +3186,11 @@ void __fastcall ShowPlayerKillMessage(
     );
 }
 
-// Reimplements 0x432e70: GameNet::ReassignPlayerColorsAndRefreshRows
-// (D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp)
+/**
+ * Reimplements 0x432e70: GameNet::ReassignPlayerColorsAndRefreshRows
+ * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
+ * Purpose: Refresh player-row colors after network color assignment changes.
+ */
 int ReassignPlayerColorsAndRefreshRows(
     int,
     zNetworkPacketHeader *

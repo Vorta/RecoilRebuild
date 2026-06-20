@@ -72,8 +72,9 @@ extern int g_zInterp_EnablePreparedScripts;
 extern int g_zInterp_VerboseLevel;
 extern char g_zInterp_LineBuffer[1024];
 extern char g_zInterp_AssignToken_Equal;
-extern unsigned int g_zInterp_NodeUserDataScratch;
+extern int g_zInterp_Object3DCommandIntScratch;
 extern zDiPartial *g_zInterp_CurrentCycleTextureDi;
+extern unsigned int g_zInterp_NodeUserDataScratch;
 extern char *g_zInterp_PreparedIndexFileName;
 
 typedef void(*zInterp_LogFn)(

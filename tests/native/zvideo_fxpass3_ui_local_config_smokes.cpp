@@ -398,3 +398,175 @@ extern "C" int zvideo_fxpass3_config_constructor_destructor_smoke(void) {
 
     return constructorOk && destructorOk && globalConstructOk && globalDestroyOk ? 0 : 1;
 }
+
+extern "C" int zvideo_fxpass3_copy_surface_pixel_clipped_smoke(void) {
+    unsigned short *const oldFxPixels = g_zVideo_FxSurfacePixels16;
+    unsigned short *const oldScratch = g_zVideo_FxPass3_ScratchPixels16;
+    const int oldWidth = g_zVideo_FxSurfaceWidth;
+    const int oldHeight = g_zVideo_FxSurfaceHeight;
+    const int oldPitchBytes = g_zVideo_FxSurfacePitchBytes;
+    const int oldPitchPixels = g_zVideo_FxSurfacePitchPixels16;
+    const int oldOffsetX = g_zVideo_FxPass3_ScratchOffsetX;
+    const int oldOffsetY = g_zVideo_FxPass3_ScratchOffsetY;
+    const int oldClipMinX = g_zVideo_FxPass3_ClipMinX;
+    const int oldClipMinY = g_zVideo_FxPass3_ClipMinY;
+    const int oldClipMaxX = g_zVideo_FxPass3_ClipMaxX;
+    const int oldClipMaxY = g_zVideo_FxPass3_ClipMaxY;
+
+    unsigned short pixels[25] = {};
+    unsigned short scratch[25] = {};
+    for (int i = 0; i < 25; ++i) {
+        pixels[i] = static_cast<unsigned short>(0x1000 + i);
+        scratch[i] = 0xffff;
+    }
+
+    g_zVideo_FxSurfacePixels16 = pixels;
+    g_zVideo_FxPass3_ScratchPixels16 = scratch;
+    g_zVideo_FxSurfaceWidth = 5;
+    g_zVideo_FxSurfaceHeight = 5;
+    g_zVideo_FxSurfacePitchBytes = 10;
+    g_zVideo_FxSurfacePitchPixels16 = 5;
+    g_zVideo_FxPass3_ScratchOffsetX = 2;
+    g_zVideo_FxPass3_ScratchOffsetY = 2;
+    g_zVideo_FxPass3_ClipMinX = 1;
+    g_zVideo_FxPass3_ClipMinY = 1;
+    g_zVideo_FxPass3_ClipMaxX = 4;
+    g_zVideo_FxPass3_ClipMaxY = 4;
+
+    zVideo::FxPass3_CopySurfacePixelToScratchClipped(
+        0,
+        0,
+        1,
+        1
+    );
+    const bool copiedOk = scratch[2 + 2 * 5] == pixels[3 + 3 * 5];
+
+    zVideo::FxPass3_CopySurfacePixelToScratchClipped(
+        2,
+        0,
+        0,
+        0
+    );
+    const bool dstClipOk = scratch[4 + 2 * 5] == 0xffff;
+
+    zVideo::FxPass3_CopySurfacePixelToScratchClipped(
+        0,
+        0,
+        -2,
+        0
+    );
+    const bool srcClipOk = scratch[2 + 2 * 5] == pixels[3 + 3 * 5];
+
+    g_zVideo_FxSurfacePixels16 = oldFxPixels;
+    g_zVideo_FxPass3_ScratchPixels16 = oldScratch;
+    g_zVideo_FxSurfaceWidth = oldWidth;
+    g_zVideo_FxSurfaceHeight = oldHeight;
+    g_zVideo_FxSurfacePitchBytes = oldPitchBytes;
+    g_zVideo_FxSurfacePitchPixels16 = oldPitchPixels;
+    g_zVideo_FxPass3_ScratchOffsetX = oldOffsetX;
+    g_zVideo_FxPass3_ScratchOffsetY = oldOffsetY;
+    g_zVideo_FxPass3_ClipMinX = oldClipMinX;
+    g_zVideo_FxPass3_ClipMinY = oldClipMinY;
+    g_zVideo_FxPass3_ClipMaxX = oldClipMaxX;
+    g_zVideo_FxPass3_ClipMaxY = oldClipMaxY;
+
+    return copiedOk && dstClipOk && srcClipOk ? 0 : 1;
+}
+
+extern "C" int zvideo_fxpass3_apply_to_current_surface_smoke(void) {
+    unsigned short *const oldFxPixels = g_zVideo_FxSurfacePixels16;
+    unsigned short *const oldScratch = g_zVideo_FxPass3_ScratchPixels16;
+    const int oldWidth = g_zVideo_FxSurfaceWidth;
+    const int oldHeight = g_zVideo_FxSurfaceHeight;
+    const int oldPitchBytes = g_zVideo_FxSurfacePitchBytes;
+    const int oldPitchPixels = g_zVideo_FxSurfacePitchPixels16;
+    const int oldOffsetX = g_zVideo_FxPass3_ScratchOffsetX;
+    const int oldOffsetY = g_zVideo_FxPass3_ScratchOffsetY;
+    const int oldClipMinX = g_zVideo_FxPass3_ClipMinX;
+    const int oldClipMinY = g_zVideo_FxPass3_ClipMinY;
+    const int oldClipMaxX = g_zVideo_FxPass3_ClipMaxX;
+    const int oldClipMaxY = g_zVideo_FxPass3_ClipMaxY;
+
+    unsigned short pixels[49];
+    unsigned short original[49];
+    unsigned short scratch[49];
+    for (int i = 0; i < 49; ++i) {
+        pixels[i] = static_cast<unsigned short>(0x1000 + i);
+        original[i] = pixels[i];
+        scratch[i] = 0xffff;
+    }
+
+    g_zVideo_FxSurfacePixels16 = pixels;
+    g_zVideo_FxPass3_ScratchPixels16 = scratch;
+    g_zVideo_FxSurfaceWidth = 7;
+    g_zVideo_FxSurfaceHeight = 7;
+    g_zVideo_FxSurfacePitchBytes = 14;
+    g_zVideo_FxSurfacePitchPixels16 = 7;
+
+    zVideo::FxPass3_ApplyToCurrentSurface(
+        3,
+        3,
+        2,
+        2,
+        2,
+        1.0f,
+        0.0f,
+        0
+    );
+    bool cappedNoopOk = true;
+    for (int i = 0; i < 49; ++i) {
+        cappedNoopOk = cappedNoopOk && pixels[i] == original[i];
+    }
+
+    for (int i = 0; i < 49; ++i) {
+        pixels[i] = original[i];
+        scratch[i] = 0xffff;
+    }
+    zVideo::FxPass3_ApplyToCurrentSurface(
+        3,
+        3,
+        1,
+        2,
+        2,
+        1.0f,
+        0.0f,
+        0
+    );
+    const bool fullWarpOk = pixels[2 + 2 * 7] == original[1 + 1 * 7] &&
+                            pixels[3 + 3 * 7] == original[3 + 3 * 7];
+
+    for (int i = 0; i < 49; ++i) {
+        pixels[i] = original[i];
+        scratch[i] = 0xffff;
+    }
+    zVidRect32 clip = {1, 1, 5, 5};
+    zVideo::FxPass3_ApplyToCurrentSurface(
+        3,
+        3,
+        1,
+        2,
+        2,
+        1.0f,
+        0.0f,
+        &clip
+    );
+    const bool clippedWarpOk = pixels[2 + 2 * 7] == original[1 + 1 * 7] &&
+                               pixels[0 + 0 * 7] == original[0 + 0 * 7] &&
+                               g_zVideo_FxPass3_ScratchOffsetX == 3 &&
+                               g_zVideo_FxPass3_ScratchOffsetY == 3;
+
+    g_zVideo_FxSurfacePixels16 = oldFxPixels;
+    g_zVideo_FxPass3_ScratchPixels16 = oldScratch;
+    g_zVideo_FxSurfaceWidth = oldWidth;
+    g_zVideo_FxSurfaceHeight = oldHeight;
+    g_zVideo_FxSurfacePitchBytes = oldPitchBytes;
+    g_zVideo_FxSurfacePitchPixels16 = oldPitchPixels;
+    g_zVideo_FxPass3_ScratchOffsetX = oldOffsetX;
+    g_zVideo_FxPass3_ScratchOffsetY = oldOffsetY;
+    g_zVideo_FxPass3_ClipMinX = oldClipMinX;
+    g_zVideo_FxPass3_ClipMinY = oldClipMinY;
+    g_zVideo_FxPass3_ClipMaxX = oldClipMaxX;
+    g_zVideo_FxPass3_ClipMaxY = oldClipMaxY;
+
+    return cappedNoopOk && fullWarpOk && clippedWarpOk ? 0 : 1;
+}

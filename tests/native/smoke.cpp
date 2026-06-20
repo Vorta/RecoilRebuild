@@ -71,6 +71,7 @@ extern "C" int zsnd_backend_init_directsound_provider_smoke(void);
 extern "C" int zsnd_backend_shutdown_release_smoke(void);
 extern "C" int zsnd_backend_error_reporters_smoke(void);
 extern "C" int zsnd_play_handle_stop_if_active_smoke(void);
+extern "C" int zsnd_play_handle_set_freq_scaled_smoke(void);
 extern "C" int zsnd_play_handle_try_disable_managed_smoke(void);
 extern "C" int zsnd_play_handle_update3d_a3d_smoke(void);
 extern "C" int zsnd_play_handle_update3d_directsound_smoke(void);
@@ -152,6 +153,7 @@ extern "C" int zreader_get_named_node_smoke(void);
 extern "C" int zreader_named_string_float_lookup_smoke(void);
 extern "C" int zreader_global_string_prefix_index_smoke(void);
 extern "C" int zrndr_global_string_table_load_dynamic_entries_smoke(void);
+extern "C" int zrndr_global_string_table_release_dynamic_entries_smoke(void);
 extern "C" int zreader_load_node_from_archive_smoke(void);
 extern "C" int zreader_file_exists_and_list_create_smoke(void);
 extern "C" int znetwork_local_identity_smoke(void);
@@ -184,6 +186,10 @@ extern "C" int znetwork_init_session_runtime_smoke(void);
 extern "C" int znetwork_shutdown_session_runtime_smoke(void);
 extern "C" int znetwork_dplay_create_interface_and_coinitialize_smoke(void);
 extern "C" int znetwork_set_fatal_disconnect_callback_smoke(void);
+extern "C" int pickup_airdrop_spawn_ref_init_nodes_smoke(void);
+extern "C" int pickup_archive_write_all_smoke(void);
+extern "C" int pickup_archive_read_record_smoke(void);
+extern "C" int pickup_init_smoke(void);
 extern "C" int pickup_register_existing_object_smoke(void);
 extern "C" int pickup_leaf_helpers_smoke(void);
 extern "C" int pickup_spawn_from_parsed_zrd_entry_smoke(void);
@@ -191,6 +197,8 @@ extern "C" int pickup_spawn_with_airdrop_chute_smoke(void);
 extern "C" int pickup_handle_pkt11_spawn_delta_smoke(void);
 extern "C" int pickup_handle_pkt12_airdrop_spawn_chute_relay_smoke(void);
 extern "C" int pickup_remove_object_smoke(void);
+extern "C" int pickup_respawn_spawn_def_smoke(void);
+extern "C" int pickup_respawn_queue_update_smoke(void);
 extern "C" int pickup_spawn_list_clear_smoke(void);
 extern "C" int pickup_remove_other_spawns_same_opt_entry_smoke(void);
 extern "C" int pickup_send_pkt11_delta_smoke(void);
@@ -204,9 +212,11 @@ extern "C" int gamenet_handle_pkt14_hud_timer_and_flags_sync_smoke(void);
 extern "C" int gamenet_host_update_session_status_fields_smoke(void);
 extern "C" int gamenet_timer_status_packet_smoke(void);
 extern "C" int gamenet_timer_panel_state_packet_smoke(void);
+extern "C" int gamenet_tick_local_player_pkt06_and_timer_smoke(void);
 extern "C" int gamenet_register_gameplay_handlers_and_callbacks_smoke(void);
 extern "C" int gamenet_unregister_gameplay_packet_handlers_smoke(void);
 extern "C" int gamenet_reset_remote_players_and_spawn_lists_smoke(void);
+extern "C" int gamenet_player_row_list_reset_smoke(void);
 extern "C" int gamenet_player_row_append_smoke(void);
 extern "C" int gamenet_reassign_player_colors_smoke(void);
 extern "C" int gamenet_player_row_apply_color_tint_smoke(void);
@@ -216,6 +226,9 @@ extern "C" int gamenet_handle_pkt06_player_state_snapshot_smoke(void);
 extern "C" int gamenet_spawn_remote_player_missing_template_smoke(void);
 extern "C" int gamenet_scoreboard_snapshot_packet_smoke(void);
 extern "C" int gamenet_lap_progress_packet_smoke(void);
+extern "C" int gamenet_chat_compose_key_callback_smoke(void);
+extern "C" int gamenet_begin_chat_compose_smoke(void);
+extern "C" int gamenet_end_chat_compose_and_send_smoke(void);
 extern "C" int gamenet_chat_message_packet_smoke(void);
 extern "C" int gamenet_show_player_kill_message_smoke(void);
 extern "C" int gamenet_player_kill_event_packet_smoke(void);
@@ -228,6 +241,25 @@ extern "C" int gamenet_host_send_pkt0f_crater_feature_smoke(void);
 extern "C" int gamenet_handle_pkt07_alt_gun_dispatch_smoke(void);
 extern "C" int gamenet_send_pkt07_alt_gun_dispatch_smoke(void);
 extern "C" int gamenet_alt_gun_dispatch_no_op_callback_smoke(void);
+extern "C" int gamenet_respawn_player_color_indexed_spawn_smoke(void);
+extern "C" int gamenet_respawn_player_race_mode_no_spawn_smoke(void);
+extern "C" int gamenet_reset_hud_timer_panel_net_state_smoke(void);
+extern "C" int gamenet_get_local_player_color_index_smoke(void);
+extern "C" int gamenet_get_nearest_other_player_distance_to_spawn_point_smoke(void);
+extern "C" int gamenet_wait_for_local_player_color_index_smoke(void);
+extern "C" int net_format_ipv4_address_smoke(void);
+extern "C" int net_session_config_dialog_get_message_map_smoke(void);
+extern "C" int net_session_config_dialog_init_map_name_strings_smoke(void);
+extern "C" int net_session_config_dialog_register_map_name_cleanup_smoke(void);
+extern "C" int mission_register_multiplayer_maps_smoke(void);
+extern "C" int net_session_config_dialog_cleanup_map_name_strings_on_exit_smoke(void);
+extern "C" int net_session_config_dialog_on_init_dialog_smoke(void);
+extern "C" int net_session_config_dialog_constructor_smoke(void);
+extern "C" int net_session_config_dialog_destructor_smoke(void);
+extern "C" int net_session_config_dialog_do_data_exchange_smoke(void);
+extern "C" int net_session_config_dialog_on_destroy_smoke(void);
+extern "C" int net_session_config_dialog_on_map_changed_smoke(void);
+extern "C" int net_init_from_zrd_smoke(void);
 extern "C" int optcatalog_alt_gun_dispatch_alloc_runtime_gate_smoke(void);
 extern "C" int optcatalog_handle_pkt0a_remove_runtime_relay_smoke(void);
 extern "C" int optcatalog_send_pkt0a_remove_runtime_relay_smoke(void);
@@ -236,8 +268,13 @@ extern "C" int optcatalog_capture_hit_snapshot_and_invoke_damage_timer_callback_
 extern "C" int optcatalog_set_damage_context_smoke(void);
 extern "C" int optcatalog_damage_feedback_leaf_helpers_smoke(void);
 extern "C" int hitcontext_get_current_owner_smoke(void);
+extern "C" int ainet_free_all_smoke(void);
 extern "C" int ainet_find_by_net_id_smoke(void);
 extern "C" int ainet_find_nearest_node_smoke(void);
+extern "C" int ainet_load_from_zrd_smoke(void);
+extern "C" int ainet_load_all_from_zrd_smoke(void);
+extern "C" int checkpoint_instantiate_named_objects_smoke(void);
+extern "C" int checkpoint_update_player_lap_progress_and_notify_net_smoke(void);
 extern "C" int player_get_save_state_list_head_smoke(void);
 extern "C" int player_init_save_state_list_smoke(void);
 extern "C" int player_clone_type6_node_from_template_and_rename_smoke(void);
@@ -265,23 +302,64 @@ extern "C" int player_alt_gun_ensure_aux_effect_active_smoke(void);
 extern "C" int player_update_continuous_alt_gun_fire_controller_smoke(void);
 extern "C" int player_alt_gun_projectile_dispatch_helpers_smoke(void);
 extern "C" int player_process_alt_gun_fire_dispatch_request_smoke(void);
+extern "C" int player_update_gun_dispatch_requests_from_trigger_latches_smoke(void);
 extern "C" int player_reset_alt_gun_runtime_state_smoke(void);
+extern "C" int player_build_mission_save_data_smoke(void);
+extern "C" int player_apply_mission_save_data_smoke(void);
+extern "C" int player_destroy_save_game_state_smoke(void);
+extern "C" int player_shutdown_mission_runtime_smoke(void);
+extern "C" int player_zar_register_sections_smoke(void);
+extern "C" int player_zar_write_mission_save_data_section_smoke(void);
+extern "C" int player_zar_read_mission_save_data_section_smoke(void);
+extern "C" int player_zar_write_vehicle_list_section_smoke(void);
+extern "C" int player_zar_read_vehicle_list_section_smoke(void);
 extern "C" int player_write_mines_zar_section_smoke(void);
 extern "C" int player_mines_zar_read_entry_or_reset_smoke(void);
 extern "C" int player_remove_all_deployed_mines_smoke(void);
+extern "C" int player_ai_discard_negative_branch_nodes_smoke(void);
+extern "C" int player_ai_restore_saved_top_level_state_smoke(void);
+extern "C" int player_ai_finalize_mode2_state1_for_all_players_smoke(void);
+extern "C" int player_ai_steer_toward_path_node_forward_smoke(void);
+extern "C" int player_ai_steer_toward_path_node_reverse_smoke(void);
+extern "C" int player_init_mission_runtime_missing_aiv_smoke(void);
+extern "C" int player_node_flag_restore_init_globals_smoke(void);
+extern "C" int player_node_flag_restore_init_instance_smoke(void);
+extern "C" int player_node_flag_restore_register_at_exit_smoke(void);
+extern "C" int player_node_flag_restore_shutdown_instance_smoke(void);
+extern "C" int player_restore_recorded_node_flags_smoke(void);
+extern "C" int player_record_node_flags_for_restore_smoke(void);
+extern "C" int zweapon_init_smoke(void);
+extern "C" int zweapon_load_opt_catalog_from_path_smoke(void);
+extern "C" int zweapon_zar_weapons_section_callbacks_smoke(void);
+extern "C" int zweapon_optcatalog_blend_direction_toward_target_smoke(void);
+extern "C" int zweapon_set_max_tether_altitude_smoke(void);
 extern "C" int zweapon_optcatalog_find_entry_by_id_smoke(void);
 extern "C" int zweapon_optcatalog_find_entry_by_name_smoke(void);
+extern "C" int zweapon_optcatalog_load_kill_verb_string_smoke(void);
+extern "C" int zweapon_optcatalog_load_fx_spec_from_reader_node_smoke(void);
+extern "C" int zweapon_optcatalog_shutdown_smoke(void);
 extern "C" int zweapon_optcatalog_pending_spawn_override_smoke(void);
 extern "C" int zweapon_optcatalog_create_trail_segment_node_smoke(void);
 extern "C" int zweapon_optcatalog_create_trail_runtime_state_smoke(void);
 extern "C" int zweapon_optcatalog_mine_iterator_smoke(void);
 extern "C" int zweapon_optcatalog_runtime_free_list_helpers_smoke(void);
+extern "C" int zweapon_optcatalog_emit_crater_impact_event_smoke(void);
+extern "C" int zweapon_optcatalog_emit_qsand_impact_event_smoke(void);
+extern "C" int zweapon_optcatalog_play_impact_sound_smoke(void);
+extern "C" int zweapon_optcatalog_play_bounce_sound_smoke(void);
 extern "C" int zweapon_optcatalog_handle_impact_event_smoke(void);
 extern "C" int zweapon_optcatalog_handle_impact_event_from_runtime_state_smoke(void);
 extern "C" int zweapon_optcatalog_build_impact_hit_list_smoke(void);
 extern "C" int zweapon_optcatalog_handle_impact_from_runtime_probe_smoke(void);
 extern "C" int zweapon_optcatalog_process_runtime_instance_smoke(void);
+extern "C" int zweapon_optcatalog_process_runtime_instances_smoke(void);
 extern "C" int zweapon_optcatalog_remove_runtime_instance_smoke(void);
+extern "C" int zweapon_optcatalog_can_spawn_through_ray_smoke(void);
+extern "C" int zweapon_optcatalog_reflect_and_sort_impact_trace_list_smoke(void);
+extern "C" int zweapon_optcatalog_compute_trail_impact_response_smoke(void);
+extern "C" int zweapon_optcatalog_update_trail_segment_visual_smoke(void);
+extern "C" int zweapon_optcatalog_warning_samples_smoke(void);
+extern "C" int zweapon_optcatalog_activate_trail_runtime_state_smoke(void);
 extern "C" int zweapon_optcatalog_deactivate_trail_runtime_state_smoke(void);
 extern "C" int zweapon_optcatalog_compute_aim_pitch_for_target_smoke(void);
 extern "C" int light_alloc_from_free_list_and_attach_smoke(void);
@@ -289,11 +367,17 @@ extern "C" int player_timed_hit_status_smoke(void);
 extern "C" int player_record_recent_hit_feedback_smoke(void);
 extern "C" int player_update_timed_hit_status_from_source_smoke(void);
 extern "C" int player_clear_destroyed_respawn_effect_handle_callback_smoke(void);
+extern "C" int player_destroyed_state_reset_local_finalize_smoke(void);
+extern "C" int player_destroyed_state_reset_finalize_callback_smoke(void);
+extern "C" int player_destroyed_state_reset_callback_smoke(void);
+extern "C" int player_clear_respawn_transition_flag_callback_smoke(void);
+extern "C" int player_destroyed_state_respawn_callback_smoke(void);
 extern "C" int player_hit_callback_record_net_context_and_timed_status_smoke(void);
 extern "C" int player_hit_callback_record_context_and_timed_status_smoke(void);
 extern "C" int player_enter_local_inactive_destroyed_lifecycle_smoke(void);
 extern "C" int player_enter_destroyed_state_smoke(void);
 extern "C" int player_apply_status_meter_change_smoke(void);
+extern "C" int player_reset_damage_state_and_timed_hit_status_smoke(void);
 extern "C" int player_apply_pitch_roll_velocity_impulse_from_direction_smoke(void);
 extern "C" int player_start_destroyed_state_vehicle_effect_smoke(void);
 extern "C" int player_create_from_names_at_pose_smoke(void);
@@ -306,6 +390,7 @@ extern "C" int player_init_spawn_state_from_primary_modal_data_smoke(void);
 extern "C" int player_mgr_tick_all_players_smoke(void);
 extern "C" int zutil_store_int32_smoke(void);
 extern "C" int zutil_save_game_state_list_smoke(void);
+extern "C" int zutil_save_game_state_free_owned_resources_smoke(void);
 extern "C" int zfmv_script_init_null_path_smoke(void);
 extern "C" int zfmv_script_reset_smoke(void);
 extern "C" int zfmv_script_cleanup_smoke(void);
@@ -335,6 +420,20 @@ extern "C" int player_underwater_fx_pass3_ui_constructor_smoke(void);
 extern "C" int player_init_underwater_fx_pass3_ui_singleton_smoke(void);
 extern "C" int player_reset_underwater_fx_pass3_ui_singleton_smoke(void);
 extern "C" int player_projectile_camera_fx_pass3_ui_constructor_smoke(void);
+extern "C" int player_top_msg_panel1_constructor_safe_smoke(void);
+extern "C" int player_top_msg_panel1_destructor_safe_smoke(void);
+extern "C" int player_register_top_msg_panel1_on_exit_safe_smoke(void);
+extern "C" int player_init_and_register_top_msg_panel1_safe_smoke(void);
+extern "C" int player_top_msg_panel2_constructor_safe_smoke(void);
+extern "C" int player_top_msg_panel2_destructor_safe_smoke(void);
+extern "C" int player_register_top_msg_panel2_cleanup_safe_smoke(void);
+extern "C" int player_init_and_register_top_msg_panel2_safe_smoke(void);
+extern "C" int player_init_master_common_data_list_smoke(void);
+extern "C" int player_init_master_modal_data_list_smoke(void);
+extern "C" int player_init_projectile_camera_fx_pass3_ui_singleton_smoke(void);
+extern "C" int player_reset_projectile_camera_fx_pass3_ui_singleton_smoke(void);
+extern "C" int player_register_projectile_camera_fx_pass3_ui_cleanup_smoke(void);
+extern "C" int player_init_and_register_projectile_camera_fx_pass3_ui_singleton_smoke(void);
 extern "C" int player_underwater_fx_pass3_ui_apply_blue_tint_smoke(void);
 extern "C" int player_projectile_camera_fx_pass3_ui_apply_green_mask_smoke(void);
 extern "C" int hud_ui_save_load_list_item_constructor_smoke(void);
@@ -371,15 +470,40 @@ extern "C" int recoil_app_mfc_ole_module_constructor_smoke(void);
 extern "C" int recoil_app_mfc_ole_module_destructor_smoke(void);
 extern "C" int recoil_app_constructor_destructor_smoke(void);
 extern "C" int czgame_frame_constructor_smoke(void);
+extern "C" int czgame_frame_create_object_smoke(void);
 extern "C" int czrecoil_frame_constructor_smoke(void);
+extern "C" int czrecoil_frame_create_object_smoke(void);
+extern "C" int czrecoil_frame_destructor_smoke(void);
+extern "C" int czframe_metadata_accessors_smoke(void);
+extern "C" int czrecoil_frame_set_menu_bar_visibility_smoke(void);
 extern "C" int czrecoil_frame_init_startup_hw_api_from_options_smoke(void);
+extern "C" int czrecoil_frame_on_menu_start_single_player_smoke(void);
+extern "C" int czrecoil_frame_on_menu_open_campaign_smoke(void);
+extern "C" int czrecoil_frame_on_open_file_dialog_smoke(void);
+extern "C" int czrecoil_frame_on_menu_open_help_docs_smoke(void);
+extern "C" int cabout_dlg_constructor_smoke(void);
+extern "C" int czrecoil_frame_on_menu_about_smoke(void);
+extern "C" int czrecoil_frame_start_mode_menu_handlers_smoke(void);
+extern "C" int czrecoil_frame_menu_exit_game_smoke(void);
+extern "C" int czrecoil_frame_configure_mode_feature_flags_smoke(void);
+extern "C" int czrecoil_frame_video_mode_menu_handlers_smoke(void);
+extern "C" int czrecoil_frame_update_video_mode_cmd_ui_smoke(void);
+extern "C" int czrecoil_frame_set_hw_api_and_init_mode_smoke(void);
+extern "C" int czrecoil_frame_ensure_hw_api_initialized_smoke(void);
+extern "C" int czrecoil_frame_select_hw_api_menu_handlers_smoke(void);
+extern "C" int czrecoil_frame_hw_api_menu_cmd_ui_smoke(void);
+extern "C" int czrecoil_frame_menu_toggle_smoke(void);
+extern "C" int czrecoil_frame_toggle_texture_packs_smoke(void);
+extern "C" int czrecoil_frame_on_size_smoke(void);
 extern "C" int recoil_app_fmv_state_destructor_smoke(void);
 extern "C" int recoil_app_scalar_deleting_destructor_smoke(void);
 extern "C" int recoil_app_mission_fmv_state_destructor_smoke(void);
 extern "C" int recoil_app_initialize_display_failure_smoke(void);
 extern "C" int recoil_app_start_engine_and_queue_startup_state_smoke(void);
 extern "C" int recoil_state_main_menu_transition_constructor_smoke(void);
+extern "C" int recoil_state_main_menu_transition_static_init_smoke(void);
 extern "C" int recoil_state_main_menu_transition_set_deferred_video_mode_index_smoke(void);
+extern "C" int recoil_state_main_menu_transition_queue_enter_smoke(void);
 extern "C" int hud_ui_main_menu_dialog_constructor_smoke(void);
 extern "C" int recoil_state_cheat_code_constructor_smoke(void);
 extern "C" int recoil_state_controls_lifecycle_smoke(void);
@@ -388,6 +512,8 @@ extern "C" int recoil_state_controls_on_resume_smoke(void);
 extern "C" int recoil_state_controls_queue_enter_smoke(void);
 extern "C" int recoil_state_confirm_quit_queue_enter_smoke(void);
 extern "C" int recoil_state_confirm_quit_destructor_smoke(void);
+extern "C" int hud_ui_confirm_quit_ok_button_on_activate_smoke(void);
+extern "C" int hud_ui_background_confirm_quit_lifecycle_smoke(void);
 extern "C" int hud_ui_load_game_dialog_on_primary_action_smoke(void);
 extern "C" int hud_ui_load_game_dialog_on_primary_action_thunk_smoke(void);
 extern "C" int hud_ui_load_game_dialog_process_dialog_result_smoke(void);
@@ -505,10 +631,14 @@ extern "C" int zhud_timer_panel_global_accessors_smoke(void);
 extern "C" int zhud_list_menu_entry_sort_smoke(void);
 extern "C" int zhud_layout_hw_update_objective_dirty_rect_smoke(void);
 extern "C" int zhud_objective_update_meter_xpoints_smoke(void);
+extern "C" int zhud_objective_show_smoke(void);
+extern "C" int zhud_objective_begin_smoke(void);
 extern "C" int zhud_loading_checkpoint_init_table_smoke(void);
 extern "C" int zhud_loading_checkpoint_advance_and_log_smoke(void);
 extern "C" int zhud_mgr_tail_bar_layout_smoke(void);
 extern "C" int zhud_mgr_trigger_current_layout_on_activated_smoke(void);
+extern "C" int zhud_mgr_sensor_set_shield_message_ratio_smoke(void);
+extern "C" int zhud_objective_refresh_counter_text_smoke(void);
 extern "C" int zhud_counter_constructor_smoke(void);
 extern "C" int zhud_message_release_images_smoke(void);
 extern "C" int zhud_message_set_value_if_owner_matches_smoke(void);
@@ -527,6 +657,25 @@ extern "C" int zhud_fill_bitmap_core_smoke(void);
 extern "C" int zhud_zrd_widget_ex17c_item_core_smoke(void);
 extern "C" int zhud_widget_set_image_by_path_owned_smoke(void);
 extern "C" int zhud_widget_release_and_destructor_core_smoke(void);
+extern "C" int hud_ui_net_exit_constructor_smoke(void);
+extern "C" int hud_ui_net_exit_destructor_smoke(void);
+extern "C" int hud_ui_net_exit_scalar_deleting_destructor_smoke(void);
+extern "C" int hud_ui_net_exit_create_global_smoke(void);
+extern "C" int hud_ui_net_exit_destroy_global_smoke(void);
+extern "C" int hud_ui_net_exit_show_tick_smoke(void);
+extern "C" int hud_ui_net_exit_exit_button_on_activate_smoke(void);
+extern "C" int hud_ui_net_exit_resume_widget_on_activate_smoke(void);
+extern "C" int hud_ui_net_exit_resume_widget_on_show_preview_smoke(void);
+extern "C" int hud_ui_net_exit_resume_widget_on_hide_preview_smoke(void);
+extern "C" int hud_weather_fx_constructor_smoke(void);
+extern "C" int hud_weather_fx_destructor_smoke(void);
+extern "C" int hud_weather_fx_scalar_deleting_destructors_smoke(void);
+extern "C" int hud_weather_fx_are_point_batch_inside_rect_smoke(void);
+extern "C" int hud_weather_fx_draw_particles_smoke(void);
+extern "C" int hud_weather_fx_derived_constructors_smoke(void);
+extern "C" int hud_weather_fx_rain_destructor_smoke(void);
+extern "C" int hud_weather_fx_rain_update_smoke(void);
+extern "C" int hud_weather_fx_snow_update_smoke(void);
 extern "C" int zhud_background_cursor_widget_member_constructor_smoke(void);
 extern "C" int zhud_background_cursor_widget_rebuild_captured_image_smoke(void);
 extern "C" int zhud_background_cursor_widget_set_image_borrowed_refresh_smoke(void);
@@ -942,6 +1091,8 @@ extern "C" int zvideo_surface_accessors_smoke(void);
 extern "C" int zvideo_fxpass3_local_queue_smoke(void);
 extern "C" int zvideo_fxpass3_element_draw_smoke(void);
 extern "C" int zvideo_fxpass3_config_constructor_destructor_smoke(void);
+extern "C" int zvideo_fxpass3_copy_surface_pixel_clipped_smoke(void);
+extern "C" int zvideo_fxpass3_apply_to_current_surface_smoke(void);
 extern "C" int zvideo_primary_surface_rect_scratch_smoke(void);
 extern "C" int zvideo_image_alpha_clear_smoke(void);
 extern "C" int zvideo_mode_geometry_and_set_video_mode_smoke(void);
@@ -1022,6 +1173,7 @@ extern "C" int zvideo_dd_blt_sw_to_primary_rect_smoke(void);
 extern "C" int zvideo_image_surface_helpers_guard_smoke(void);
 extern "C" int zvideo_set_renderer_type_smoke(void);
 extern "C" int zvideo_set_half_res_adjust_mode_smoke(void);
+extern "C" int zvideo_adjust_surfaces_if_enabled_smoke(void);
 extern "C" int zvideo_handle_software_mode_hotkey_smoke(void);
 extern "C" int zvid_texture_pack_load_state_getter_smoke(void);
 extern "C" int zvid_texture_pack_load_state_setter_smoke(void);
@@ -1126,6 +1278,8 @@ extern "C" int zeffect_cleanup_light_sound_refs_smoke(void);
 extern "C" int zeffect_find_node_user_data_recursive_smoke(void);
 extern "C" int zeffect_find_template_index_by_name_smoke(void);
 extern "C" int zeffect_handle_sample_ref_offset_event_smoke(void);
+extern "C" int zeffect_handle_top_message_event_smoke(void);
+extern "C" int zeffect_world_and_zbd_setters_smoke(void);
 extern "C" int zeffect_init_smoke(void);
 extern "C" int zeffect_init_from_path_smoke(void);
 extern "C" int zeffect_runtime_node_action_callback_smoke(void);
@@ -1140,6 +1294,7 @@ extern "C" int zeffect_anim_activation_record_queue_smoke(void);
 extern "C" int zeffect_anim_get_root_node_or_null_smoke(void);
 extern "C" int zeffect_anim_capture_node_states_smoke(void);
 extern "C" int zeffect_anim_restore_node_states_smoke(void);
+extern "C" int zeffect_anim_debug_frame_tag_smoke(void);
 extern "C" int zeffect_anim_reset_for_node_smoke(void);
 extern "C" int zeffect_anim_runtime_sequence_group_smoke(void);
 extern "C" int zeffect_conditional_ref_pos_smoke(void);
@@ -1992,6 +2147,17 @@ extern "C" int zclipalt_remap_point_xy_in_place_smoke(void) {
 }
 
 namespace {
+struct PickupArchiveRecordForSmoke {
+    int firstRecord;
+    int typeIndex;
+    int pickupId;
+    int amount;
+    zVec3 position;
+    zVec3 rotation;
+    int spawnParam;
+    float respawnDelay;
+};
+
 PickupSpawnDef *NewSpawnDef(PickupSpawnDef *next = nullptr) {
     auto *const node = static_cast<PickupSpawnDef *>(std::malloc(sizeof(PickupSpawnDef)));
     if (node != nullptr) {
@@ -2000,7 +2166,447 @@ PickupSpawnDef *NewSpawnDef(PickupSpawnDef *next = nullptr) {
     }
     return node;
 }
+
+PickupRespawnEntry *NewRespawnEntry() {
+    auto *const node = static_cast<PickupRespawnEntry *>(::operator new(sizeof(PickupRespawnEntry)));
+    if (node != nullptr) {
+        node->spawn = nullptr;
+        node->when = 0.0f;
+        node->next = nullptr;
+    }
+    return node;
+}
+
+void WriteU32(HANDLE file, std::uint32_t value) {
+    DWORD written = 0;
+    WriteFile(file, &value, sizeof(value), &written, nullptr);
+}
+
+void WriteBytes(HANDLE file, const void *data, std::uint32_t size) {
+    DWORD written = 0;
+    WriteFile(file, data, size, &written, nullptr);
+}
+
+void WriteZrdString(HANDLE file, const char *text) {
+    const std::uint32_t length = static_cast<std::uint32_t>(std::strlen(text));
+    WriteU32(file, zReader::ZRDR_NODE_STRING);
+    WriteU32(file, length);
+    WriteBytes(file, text, length);
+}
+
+void WriteZrdArrayHeader(HANDLE file, std::uint32_t count) {
+    WriteU32(file, zReader::ZRDR_NODE_ARRAY);
+    WriteU32(file, count);
+}
+
+void ResetPickupTestTypeListBucket(int bucket) {
+    zClass_TypeList::Head(bucket) = nullptr;
+    zClass_TypeList::Tail(bucket) = nullptr;
+    zClass_TypeList::PendingRemovalDirty(bucket) = 0;
+    g_zClass_DeferredProcessingEnabled = 1;
+    g_zClass_TypeList_FreeLinkHead = nullptr;
+    g_zClass_TypeList_LiveLinkCount = 0;
+    g_zClass_TypeList_PeakLiveLinkCount = 0;
+}
 } // namespace
+
+extern "C" int pickup_airdrop_spawn_ref_init_nodes_smoke(void) {
+    ResetPickupTestTypeListBucket(6);
+
+    zClass_NodePartial carrier = {};
+    zClass_NodePartial healthy = {};
+    zClass_NodePartial other = {};
+    zClass_NodePartial *children[] = {&other, &healthy};
+    std::strcpy(carrier.name, "carrier01");
+    std::strcpy(healthy.name, "healthy");
+    std::strcpy(other.name, "decor");
+    carrier.listCountB = 2;
+    carrier.listB = children;
+
+    zClass_TypeList::Insert(6, &carrier);
+
+    PickupAirdropSpawnRef spawnRef = {};
+    PickupAirdropSpawnRef *const returned =
+        spawnRef.InitNodesFromCarrierNodeName("carrier01");
+
+    const bool initialized = returned == &spawnRef && spawnRef.carrierNode == &carrier &&
+                             spawnRef.dropAttachNode == &healthy;
+
+    ResetPickupTestTypeListBucket(6);
+    return initialized ? 0 : 1;
+}
+
+extern "C" int pickup_archive_write_all_smoke(void) {
+    char tempPath[MAX_PATH] = {};
+    char tempFile[MAX_PATH] = {};
+    GetTempPathA(sizeof(tempPath), tempPath);
+    GetTempFileNameA(tempPath, "pku", 0, tempFile);
+
+    HANDLE const file =
+        CreateFileA(tempFile, GENERIC_READ | GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS,
+                    FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE, nullptr);
+    if (file == INVALID_HANDLE_VALUE) {
+        return 1;
+    }
+
+    zZbdManager manager = {};
+    manager.indexArchive.hFile = file;
+    zZbdSectionHandler handler = {};
+    handler.sectionName = "Pickup";
+    zZbdSectionCallbackCtx callbackCtx = {};
+    callbackCtx.manager = &manager;
+    callbackCtx.sectionHandler = &handler;
+
+    const PickupSpawnList oldPrimary = g_PickupSpawnList_Primary;
+
+    PickupType typeA = {};
+    PickupType typeB = {};
+    typeA.typeIndex = 7;
+    typeB.typeIndex = 12;
+
+    zClass_NodePartial nodeA = {};
+    zClass_NodePartial nodeB = {};
+    zClass_NodePartial nodeSkip = {};
+    std::strcpy(nodeA.name, "pu00001");
+    std::strcpy(nodeB.name, "pu00002");
+    nodeA.flags = 0x40000;
+    nodeB.flags = 0x40000;
+
+    PickupSpawnDef first = {};
+    PickupSpawnDef skip = {};
+    PickupSpawnDef second = {};
+    first.pickupId = 101;
+    first.pickupType = &typeA;
+    first.amount = 3;
+    first.position = {1.0f, 2.0f, 3.0f};
+    first.rotation = {0.1f, 0.2f, 0.3f};
+    first.pickupObj = &nodeA;
+    first.spawnParam = 44;
+    first.respawnDelay = 9.0f;
+    first.next = &skip;
+
+    skip.pickupObj = &nodeSkip;
+    skip.next = &second;
+
+    second.pickupId = 202;
+    second.pickupType = &typeB;
+    second.amount = 6;
+    second.position = {4.0f, 5.0f, 6.0f};
+    second.rotation = {0.4f, 0.5f, 0.6f};
+    second.pickupObj = &nodeB;
+    second.spawnParam = 88;
+    second.respawnDelay = 18.0f;
+
+    g_PickupSpawnList_Primary.head = &first;
+    g_PickupSpawnList_Primary.tail = &second;
+    g_PickupSpawnList_Primary.count = 3;
+
+    const int result = Pickup::ArchiveWriteAll(&callbackCtx, nullptr);
+
+    PickupArchiveRecordForSmoke recordA = {};
+    PickupArchiveRecordForSmoke recordB = {};
+    DWORD read = 0;
+    SetFilePointer(file, manager.indexArchive.records[0].fileOffset, nullptr, FILE_BEGIN);
+    ReadFile(file, &recordA, sizeof(recordA), &read, nullptr);
+    SetFilePointer(file, manager.indexArchive.records[1].fileOffset, nullptr, FILE_BEGIN);
+    ReadFile(file, &recordB, sizeof(recordB), &read, nullptr);
+
+    const bool ok = result == 1 && manager.indexArchive.recordCount == 2 &&
+                    std::strcmp(manager.indexArchive.records[0].name, "Pickup/pu00001") == 0 &&
+                    std::strcmp(manager.indexArchive.records[1].name, "Pickup/pu00002") == 0 &&
+                    recordA.firstRecord == 1 && recordA.typeIndex == 7 &&
+                    recordA.pickupId == 101 && recordA.amount == 3 &&
+                    recordA.position.z == 3.0f && recordA.rotation.y == 0.2f &&
+                    recordA.spawnParam == 44 && recordA.respawnDelay == 9.0f &&
+                    recordB.firstRecord == 0 && recordB.typeIndex == 12 &&
+                    recordB.pickupId == 202 && recordB.amount == 6 &&
+                    recordB.position.x == 4.0f && recordB.rotation.z == 0.6f &&
+                    recordB.spawnParam == 88 && recordB.respawnDelay == 18.0f;
+
+    g_PickupSpawnList_Primary = oldPrimary;
+    std::free(manager.indexArchive.records);
+    manager.indexArchive.records = nullptr;
+    CloseHandle(file);
+    return ok ? 0 : 2;
+}
+
+extern "C" int pickup_archive_read_record_smoke(void) {
+    const PickupSpawnList oldPrimary = g_PickupSpawnList_Primary;
+    const PickupType oldType = g_PickupTypes[7];
+    zClass_NodePartial *const oldSceneNode = g_Pickup_SceneNode;
+    const int oldNextPickupId = g_NextPickupId;
+    int oldNameSuffixMax[40] = {};
+    for (int index = 0; index < 40; ++index) {
+        oldNameSuffixMax[index] = g_PickupTypes[index].nameSuffixMax;
+        g_PickupTypes[index].nameSuffixMax = index + 1;
+    }
+
+    PickupSpawnList::Primary_Init();
+    g_NextPickupId = 42;
+    PickupArchiveRecordForSmoke resetRecord = {};
+    resetRecord.firstRecord = 1;
+    resetRecord.typeIndex = 99;
+    Pickup::ArchiveReadRecord(nullptr, nullptr, &resetRecord, sizeof(resetRecord), nullptr);
+
+    bool resetOk = g_PickupSpawnList_Primary.head == nullptr &&
+                   g_PickupSpawnList_Primary.tail == nullptr &&
+                   g_PickupSpawnList_Primary.count == 0 && g_NextPickupId == 0;
+    for (int index = 0; index < 40; ++index) {
+        resetOk = resetOk && g_PickupTypes[index].nameSuffixMax == 0;
+    }
+
+    zClass_NodePartial world = {};
+    zClass_Object3DDataPartial templateData = {};
+    zClass_NodePartial templateRoot = {};
+    zClass_NodePartial templateBvol = {};
+    zClass_NodePartial *templateChildren[1] = {&templateBvol};
+    std::strcpy(templateRoot.name, "archive-template");
+    std::strcpy(templateBvol.name, "bvol");
+    templateRoot.classId = 5;
+    templateRoot.flags = 0x04000081;
+    templateRoot.classData = &templateData;
+    templateRoot.listCountB = 1;
+    templateRoot.listB = templateChildren;
+    templateBvol.classId = 3;
+    templateBvol.flags = 0x04;
+
+    static std::int32_t matrixFlags[8];
+    static float *matrixSlots[8];
+    static zMat4x3 matrix;
+    matrixFlags[0] = 1;
+    matrix = {1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+              0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f};
+    matrixSlots[0] = reinterpret_cast<float *>(&matrix);
+    zMath::g_currentMatrixIdentityFlagSlot = &matrixFlags[0];
+    zMath::g_currentMatrixPtrSlot = &matrixSlots[0];
+    g_zModel_SharedVec3ScratchA = g_zModel_SharedVec3ScratchAStorage;
+    g_zModel_SharedVec3ScratchB = g_zModel_SharedVec3ScratchBStorage;
+
+    zVec3 terrainVertices[3] = {{0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 1.0f},
+                                {1.0f, 0.0f, 0.0f}};
+    std::int32_t terrainIndices[3] = {0, 1, 2};
+    zModel_MaterialPartial terrainMaterial = {};
+    zDiEntryPartial terrainEntry = {};
+    terrainEntry.flagsAndIndexCount = 3;
+    terrainEntry.vertexIndices = terrainIndices;
+    terrainEntry.material = &terrainMaterial;
+    terrainEntry.variantTagInitialized = 1;
+    terrainEntry.variantTag = 0x44;
+    zDiPartial terrainDi = {};
+    terrainDi.entryCount = 1;
+    terrainDi.vertCount = 3;
+    terrainDi.entries = &terrainEntry;
+    terrainDi.verts = terrainVertices;
+    zClass_Object3DDataPartial terrainObjectData = {};
+    terrainObjectData.flags = 8;
+    zClass_NodePartial terrainNode = {};
+    terrainNode.flags = 0x11c;
+    terrainNode.nodeType = 0x44;
+    terrainNode.classId = 5;
+    terrainNode.classData = &terrainObjectData;
+    terrainNode.userDataOrDiRef = reinterpret_cast<std::uint32_t>(&terrainDi);
+    terrainNode.cachedBounds[0] = 0.0f;
+    terrainNode.cachedBounds[1] = 0.0f;
+    terrainNode.cachedBounds[2] = 0.0f;
+    terrainNode.cachedBounds[3] = 1.0f;
+    terrainNode.cachedBounds[4] = 1.0f;
+    terrainNode.cachedBounds[5] = 1.0f;
+    zClass_NodePartial *areaChildren[1] = {&terrainNode};
+    zWorldAreaPartial area = {};
+    area.childCount = 1;
+    area.childList = areaChildren;
+    zWorldAreaPartial *rows[1] = {&area};
+    zClass_WorldDataPartial worldData = {};
+    worldData.originX = 0.0f;
+    worldData.originZ = 0.0f;
+    worldData.areaCellSizeX = 1.0f;
+    worldData.areaCellSizeZ = 1.0f;
+    worldData.areaInvSizeX = 1.0f;
+    worldData.areaInvSizeZ = 1.0f;
+    worldData.areaGridColCount = 1;
+    worldData.areaGridRowCount = 1;
+    worldData.areaGridRows = rows;
+    world.classId = 2;
+    world.classData = &worldData;
+
+    g_PickupTypes[7] = {};
+    g_PickupTypes[7].typeIndex = 7;
+    g_PickupTypes[7].defaultAmount = 5;
+    g_PickupTypes[7].templateNode = &templateRoot;
+    g_Pickup_SceneNode = &world;
+    g_NextPickupId = 500;
+    PickupSpawnList::Primary_Init();
+
+    PickupArchiveRecordForSmoke record = {};
+    record.firstRecord = 0;
+    record.typeIndex = 7;
+    record.pickupId = 777;
+    record.amount = 21;
+    record.position = {2.0f, 3.0f, 4.0f};
+    record.rotation = {0.7f, 0.8f, 0.9f};
+    record.spawnParam = 66;
+    record.respawnDelay = 14.5f;
+    Pickup::ArchiveReadRecord(nullptr, nullptr, &record, sizeof(record), nullptr);
+
+    PickupSpawnDef *const spawn = g_PickupSpawnList_Primary.head;
+    const bool spawnOk =
+        spawn != nullptr && g_PickupSpawnList_Primary.tail == spawn &&
+        g_PickupSpawnList_Primary.count == 1 && spawn->pickupType == &g_PickupTypes[7] &&
+        spawn->amount == 21 && spawn->spawnParam == 66 && spawn->respawnDelay == 14.5f &&
+        spawn->position.x == 2.0f && spawn->position.z == 4.0f &&
+        spawn->rotation.x == 0.7f && spawn->rotation.z == 0.9f &&
+        spawn->pickupObj != nullptr && std::strcmp(spawn->pickupObj->name, "pu00700") == 0;
+
+    if (spawn != nullptr) {
+        std::free(spawn->pickupObj->listA);
+        std::free(spawn);
+    }
+    std::free(world.listB);
+    g_PickupSpawnList_Primary = oldPrimary;
+    g_PickupTypes[7] = oldType;
+    for (int index = 0; index < 40; ++index) {
+        if (index != 7) {
+            g_PickupTypes[index].nameSuffixMax = oldNameSuffixMax[index];
+        }
+    }
+    g_Pickup_SceneNode = oldSceneNode;
+    g_NextPickupId = oldNextPickupId;
+
+    return resetOk && spawnOk ? 0 : 1;
+}
+
+extern "C" int pickup_init_smoke(void) {
+    PickupType oldTypes[40] = {};
+    for (int index = 0; index < 40; ++index) {
+        oldTypes[index] = g_PickupTypes[index];
+    }
+    zClass_NodePartial *const oldSceneNode = g_Pickup_SceneNode;
+    zArchiveList *const oldMountedList = g_zArchive_MountedList;
+    zClass_TypeListLink *const oldClassHead = zClass_TypeList::Head(6);
+    zClass_TypeListLink *const oldClassTail = zClass_TypeList::Tail(6);
+    zZbdManager *const oldZbdManager = g_zUtil_ZbdManager;
+    const int oldSndInitialized = g_zSnd_IsInitialized;
+    const int oldSndBackend = g_zSnd_ActiveBackend;
+    const zSndSampleSetRegistry oldSampleRegistry = g_zSnd_SampleSetRegistry;
+
+    char tempPath[MAX_PATH] = {};
+    char tempFile[MAX_PATH] = {};
+    if (GetTempPathA(sizeof(tempPath), tempPath) == 0 ||
+        GetTempFileNameA(tempPath, "pki", 0, tempFile) == 0) {
+        return 1;
+    }
+
+    HANDLE const file =
+        CreateFileA(tempFile, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, nullptr,
+                    CREATE_ALWAYS, FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE, nullptr);
+    if (file == INVALID_HANDLE_VALUE) {
+        DeleteFileA(tempFile);
+        return 2;
+    }
+
+    WriteU32(file, 0xaaaaaaaa);
+    const std::uint32_t zrdOffset = SetFilePointer(file, 0, nullptr, FILE_CURRENT);
+    WriteZrdArrayHeader(file, 3);
+    WriteZrdString(file, "PICKUP_DATA");
+    WriteZrdArrayHeader(file, 3);
+    WriteZrdString(file, "ammo");
+    WriteZrdArrayHeader(file, 3);
+    WriteZrdString(file, "SOUND");
+    WriteZrdArrayHeader(file, 2);
+    WriteZrdString(file, "pickup_custom");
+    FlushFileBuffers(file);
+
+    zZarFileRecord record = {};
+    record.fileOffset = zrdOffset;
+    record.fileSize = SetFilePointer(file, 0, nullptr, FILE_CURRENT) - zrdOffset;
+    std::strcpy(record.name, "pickup.zrd");
+
+    zIndexArchive archive = {};
+    archive.hFile = file;
+    archive.recordCount = 1;
+    archive.records = &record;
+    zArchiveListNode archiveNode = {};
+    archiveNode.payload = &archive;
+    archiveNode.next = &archiveNode;
+    archiveNode.prev = &archiveNode;
+    zArchiveList mountedList = {};
+    mountedList.count = 1;
+    mountedList.head = &archiveNode;
+    g_zArchive_MountedList = &mountedList;
+
+    zClass_NodePartial sceneNode = {};
+    zClass_NodePartial templateNode = {};
+    std::strcpy(templateNode.name, "pu007");
+    zClass_TypeListLink typeLink = {&templateNode, nullptr, nullptr, 0};
+    zClass_TypeList::Head(6) = &typeLink;
+    zClass_TypeList::Tail(6) = &typeLink;
+
+    for (int index = 0; index < 40; ++index) {
+        g_PickupTypes[index] = {};
+        g_PickupTypes[index].typeIndex = index;
+        g_PickupTypes[index].nameSuffixMax = 100 + index;
+    }
+    g_PickupTypes[7].logicalName = "ammo";
+    g_PickupTypes[7].defaultAmount = 12;
+
+    zSndSample samples[2] = {};
+    samples[0].replayFields.sampleId = "snd_pickup";
+    samples[1].replayFields.sampleId = "pickup_custom";
+    samples[0].primaryVoice.backendBuffer = reinterpret_cast<zSndBuffer *>(&samples[0]);
+    samples[1].primaryVoice.backendBuffer = reinterpret_cast<zSndBuffer *>(&samples[1]);
+    zSndSampleSet sampleSet = {};
+    sampleSet.sampleCount = 2;
+    sampleSet.samples = samples;
+    zSndSampleSet *sampleSetSlots[1] = {&sampleSet};
+    g_zSnd_IsInitialized = 1;
+    g_zSnd_ActiveBackend = 0;
+    g_zSnd_SampleSetRegistry.useArchiveBanksFlag = 0;
+    g_zSnd_SampleSetRegistry.begin = sampleSetSlots;
+    g_zSnd_SampleSetRegistry.end = sampleSetSlots + 1;
+    g_zSnd_SampleSetRegistry.capacityEnd = sampleSetSlots + 1;
+
+    zZbdSectionHandlerNode sentinel = {};
+    sentinel.next = &sentinel;
+    sentinel.prev = &sentinel;
+    zZbdManager manager = {};
+    manager.sectionHandlerListSentinel = &sentinel;
+    g_zUtil_ZbdManager = &manager;
+
+    const int result = Pickup::Init(&sceneNode, "C:\\dummy\\pickup.zrd");
+    zZbdSectionHandlerNode *const handlerNode = sentinel.next;
+    const bool registered =
+        handlerNode != &sentinel && manager.sectionHandlerCount == 1 &&
+        std::strcmp(handlerNode->sectionHandler.sectionName, "Pickup") == 0 &&
+        handlerNode->sectionHandler.sortOrder == 300 &&
+        handlerNode->sectionHandler.onPreLoad != nullptr &&
+        handlerNode->sectionHandler.onDataReady != nullptr;
+    const bool ok = result == 1 && g_Pickup_SceneNode == &sceneNode &&
+                    g_PickupTypes[7].templateNode == &templateNode &&
+                    g_PickupTypes[7].pickupSound == &samples[1] &&
+                    g_PickupTypes[7].nameSuffixMax == 0 &&
+                    PickupNodeFields(&templateNode)->pickupId == 0 &&
+                    PickupNodeFields(&templateNode)->pickupTypeIndex == 7 &&
+                    PickupNodeFields(&templateNode)->amount == 12 && registered;
+
+    if (handlerNode != &sentinel) {
+        handlerNode->prev->next = handlerNode->next;
+        handlerNode->next->prev = handlerNode->prev;
+        ::operator delete(handlerNode);
+    }
+    for (int index = 0; index < 40; ++index) {
+        g_PickupTypes[index] = oldTypes[index];
+    }
+    g_Pickup_SceneNode = oldSceneNode;
+    g_zArchive_MountedList = oldMountedList;
+    zClass_TypeList::Head(6) = oldClassHead;
+    zClass_TypeList::Tail(6) = oldClassTail;
+    g_zUtil_ZbdManager = oldZbdManager;
+    g_zSnd_IsInitialized = oldSndInitialized;
+    g_zSnd_ActiveBackend = oldSndBackend;
+    g_zSnd_SampleSetRegistry = oldSampleRegistry;
+    CloseHandle(file);
+    return ok ? 0 : 3;
+}
 
 extern "C" int pickup_register_existing_object_smoke(void) {
     const PickupSpawnList oldPrimary = g_PickupSpawnList_Primary;
@@ -2310,6 +2916,153 @@ extern "C" int pickup_remove_object_smoke(void) {
     std::free(third);
     ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
     return respawnQueued && removedNow ? 0 : 3;
+}
+
+extern "C" int pickup_respawn_spawn_def_smoke(void) {
+    zClass_Object3D_ModelRefLerpQueue::Reset();
+
+    zClass_Object3DDataPartial objectData = {};
+    zClass_NodePartial child = {};
+    zClass_NodePartial *children[] = {&child};
+    zClass_NodePartial pickupObj = {};
+    pickupObj.classId = 5;
+    pickupObj.classData = &objectData;
+    pickupObj.flags = 0x08;
+    pickupObj.listCountB = 1;
+    pickupObj.listB = children;
+    child.flags = 0x88;
+
+    PickupSpawnDef spawn = {};
+    spawn.pickupObj = &pickupObj;
+    spawn.position = zVec3_Make(1.25f, 2.5f, 3.75f);
+    spawn.rotation = zVec3_Make(0.1f, 0.2f, 0.3f);
+    std::strcpy(spawn.name, "pu00511");
+
+    Pickup::RespawnSpawnDef(&spawn);
+
+    zClass_Object3D_ModelRefLerpTask *const task = g_ModelRefLerpQueueState.head;
+    if (std::strcmp(pickupObj.name, "pu00511") != 0) {
+        zClass_Object3D_ModelRefLerpQueue::Reset();
+        return 1;
+    }
+    if (pickupObj.flags != 0x2040037 || child.flags != 0x2040090) {
+        zClass_Object3D_ModelRefLerpQueue::Reset();
+        return 2;
+    }
+    if (objectData.localMatrix[9] != 1.25f || objectData.localMatrix[10] != 2.5f ||
+        objectData.localMatrix[11] != 3.75f || objectData.rotation.x != 0.1f ||
+        objectData.rotation.y != 0.2f || objectData.rotation.z != 0.3f ||
+        objectData.scale.x != 1.0f || objectData.scale.y != 1.0f ||
+        objectData.scale.z != 1.0f) {
+        zClass_Object3D_ModelRefLerpQueue::Reset();
+        return 3;
+    }
+    if ((objectData.flags & 0x02) == 0 || objectData.alphaScale != 0.0f) {
+        zClass_Object3D_ModelRefLerpQueue::Reset();
+        return 4;
+    }
+    if (g_ModelRefLerpQueueState.count != 1 || task == nullptr ||
+        g_ModelRefLerpQueueState.tail != task || task->node != &pickupObj ||
+        task->callbackCtx != nullptr || task->onComplete != nullptr) {
+        zClass_Object3D_ModelRefLerpQueue::Reset();
+        return 5;
+    }
+    if (task->invertModelRef != 0 || task->targetModelRef != 1.0f ||
+        task->currentModelRef != 0.0f || task->modelRefDeltaPerSec <= 0.14f ||
+        task->modelRefDeltaPerSec >= 0.15f || task->next != nullptr) {
+        zClass_Object3D_ModelRefLerpQueue::Reset();
+        return 6;
+    }
+
+    zClass_Object3D_ModelRefLerpQueue::Reset();
+    return 0;
+}
+
+extern "C" int pickup_respawn_queue_update_smoke(void) {
+    zClass_Object3D_ModelRefLerpQueue::Reset();
+    PickupRespawnQueue::Init();
+
+    zClass_Object3DDataPartial firstData = {};
+    zClass_NodePartial firstNode = {};
+    firstNode.classId = 5;
+    firstNode.classData = &firstData;
+    firstNode.flags = 0x08;
+
+    zClass_Object3DDataPartial futureData = {};
+    zClass_NodePartial futureNode = {};
+    futureNode.classId = 5;
+    futureNode.classData = &futureData;
+    futureNode.flags = 0x08;
+
+    zClass_Object3DDataPartial thirdData = {};
+    zClass_NodePartial thirdNode = {};
+    thirdNode.classId = 5;
+    thirdNode.classData = &thirdData;
+    thirdNode.flags = 0x08;
+
+    PickupSpawnDef firstSpawn = {};
+    firstSpawn.pickupObj = &firstNode;
+    firstSpawn.position = zVec3_Make(1.0f, 2.0f, 3.0f);
+    std::strcpy(firstSpawn.name, "pu00100");
+
+    PickupSpawnDef futureSpawn = {};
+    futureSpawn.pickupObj = &futureNode;
+    futureSpawn.position = zVec3_Make(4.0f, 5.0f, 6.0f);
+    std::strcpy(futureSpawn.name, "pu00200");
+
+    PickupSpawnDef thirdSpawn = {};
+    thirdSpawn.pickupObj = &thirdNode;
+    thirdSpawn.position = zVec3_Make(7.0f, 8.0f, 9.0f);
+    std::strcpy(thirdSpawn.name, "pu00300");
+
+    PickupRespawnEntry *const firstEntry = NewRespawnEntry();
+    PickupRespawnEntry *const futureEntry = NewRespawnEntry();
+    PickupRespawnEntry *const thirdEntry = NewRespawnEntry();
+    if (firstEntry == nullptr || futureEntry == nullptr || thirdEntry == nullptr) {
+        ::operator delete(firstEntry);
+        ::operator delete(futureEntry);
+        ::operator delete(thirdEntry);
+        zClass_Object3D_ModelRefLerpQueue::Reset();
+        return 1;
+    }
+
+    firstEntry->spawn = &firstSpawn;
+    firstEntry->when = 9.0f;
+    firstEntry->next = futureEntry;
+    futureEntry->spawn = &futureSpawn;
+    futureEntry->when = 12.0f;
+    futureEntry->next = thirdEntry;
+    thirdEntry->spawn = &thirdSpawn;
+    thirdEntry->when = 1.0f;
+    thirdEntry->next = nullptr;
+
+    g_PickupRespawnQueue.unused = &g_PickupRespawnQueue;
+    g_PickupRespawnQueue.head = firstEntry;
+    g_PickupRespawnQueue.tail = thirdEntry;
+    g_PickupRespawnQueue.count = 3;
+    g_Time_UnscaledAccumulatedTimeSec = 10.0f;
+
+    PickupRespawnQueue::Update();
+
+    zClass_Object3D_ModelRefLerpTask *const firstTask = g_ModelRefLerpQueueState.head;
+    zClass_Object3D_ModelRefLerpTask *const secondTask =
+        firstTask != nullptr ? firstTask->next : nullptr;
+    const bool ok =
+        g_PickupRespawnQueue.count == 1 && g_PickupRespawnQueue.head == futureEntry &&
+        g_PickupRespawnQueue.tail == futureEntry && futureEntry->next == nullptr &&
+        firstNode.flags == 0x2040037 && thirdNode.flags == 0x2040037 &&
+        futureNode.flags == 0x08 && firstData.localMatrix[9] == 1.0f &&
+        firstData.localMatrix[10] == 2.0f && firstData.localMatrix[11] == 3.0f &&
+        thirdData.localMatrix[9] == 7.0f && thirdData.localMatrix[10] == 8.0f &&
+        thirdData.localMatrix[11] == 9.0f && futureData.localMatrix[9] == 0.0f &&
+        g_ModelRefLerpQueueState.count == 2 && firstTask != nullptr &&
+        secondTask != nullptr && firstTask->node == &firstNode &&
+        secondTask->node == &thirdNode && g_ModelRefLerpQueueState.tail == secondTask;
+
+    ::operator delete(futureEntry);
+    PickupRespawnQueue::Init();
+    zClass_Object3D_ModelRefLerpQueue::Reset();
+    return ok ? 0 : 2;
 }
 
 extern "C" int pickup_spawn_from_parsed_zrd_entry_smoke(void) {
@@ -6169,6 +6922,156 @@ bool SmokePlayerFloatNear(float actual, float expected) {
     return delta < 0.0001f && delta > -0.0001f;
 }
 
+void MakeSmokeAinetReaderStringNode(zReader::Node &node, const char *value) {
+    node.type = zReader::ZRDR_NODE_STRING;
+    node.value.str = const_cast<char *>(value);
+}
+
+void MakeSmokeAinetReaderIntNode(zReader::Node &node, int value) {
+    node.type = zReader::ZRDR_NODE_INT;
+    node.value.i32 = value;
+}
+
+void MakeSmokeAinetReaderFloatNode(zReader::Node &node, float value) {
+    node.type = zReader::ZRDR_NODE_FLOAT;
+    node.value.f32 = value;
+}
+
+void MakeSmokeAinetReaderArrayNode(
+    zReader::Node &node,
+    zReader::Node *payload,
+    int count
+) {
+    payload[0].type = zReader::ZRDR_NODE_INT;
+    payload[0].value.i32 = count;
+    node.type = zReader::ZRDR_NODE_ARRAY;
+    node.value.nodes = payload;
+}
+
+bool WriteSmokeAinetZrdU32(std::FILE *file, unsigned int value) {
+    return std::fwrite(&value, sizeof(value), 1, file) == 1;
+}
+
+bool WriteSmokeAinetZrdNode(std::FILE *file, const zReader::Node &node) {
+    if (!WriteSmokeAinetZrdU32(file, static_cast<unsigned int>(node.type))) {
+        return false;
+    }
+
+    switch (node.type) {
+    case zReader::ZRDR_NODE_INT:
+    case zReader::ZRDR_NODE_FLOAT:
+        return WriteSmokeAinetZrdU32(file, node.value.u32);
+    case zReader::ZRDR_NODE_STRING: {
+        const unsigned int length = static_cast<unsigned int>(std::strlen(node.value.str));
+        return WriteSmokeAinetZrdU32(file, length) &&
+               std::fwrite(node.value.str, 1, length, file) == length;
+    }
+    case zReader::ZRDR_NODE_ARRAY: {
+        const int count = node.value.nodes[0].value.i32;
+        if (!WriteSmokeAinetZrdU32(file, static_cast<unsigned int>(count))) {
+            return false;
+        }
+        for (int index = 1; index < count; ++index) {
+            if (!WriteSmokeAinetZrdNode(file, node.value.nodes[index])) {
+                return false;
+            }
+        }
+        return true;
+    }
+    }
+
+    return false;
+}
+
+struct SmokeAinetZrdArchiveEntry {
+    const char *name;
+    const zReader::Node *root;
+};
+
+bool MountSmokeAinetZrdArchive(
+    const char *path,
+    const SmokeAinetZrdArchiveEntry *entries,
+    int entryCount,
+    zIndexArchive &archive,
+    zZarFileRecord *records,
+    zArchiveListNode &archiveNode,
+    zArchiveList &archiveList
+) {
+    std::FILE *const file = std::fopen(path, "wb");
+    if (file == nullptr) {
+        return false;
+    }
+
+    bool ok = true;
+    for (int index = 0; index < entryCount; ++index) {
+        const long offset = std::ftell(file);
+        if (offset < 0 || !WriteSmokeAinetZrdNode(file, *entries[index].root)) {
+            ok = false;
+            break;
+        }
+        const long endOffset = std::ftell(file);
+        if (endOffset < offset) {
+            ok = false;
+            break;
+        }
+
+        records[index] = {};
+        records[index].fileOffset = static_cast<unsigned int>(offset);
+        records[index].fileSize = static_cast<unsigned int>(endOffset - offset);
+        std::strcpy(records[index].name, entries[index].name);
+    }
+
+    if (std::fclose(file) != 0 || !ok) {
+        std::remove(path);
+        return false;
+    }
+
+    archive = {};
+    archive.hFile = CreateFileA(
+        path,
+        GENERIC_READ,
+        FILE_SHARE_READ,
+        nullptr,
+        OPEN_EXISTING,
+        FILE_ATTRIBUTE_NORMAL,
+        nullptr
+    );
+    if (archive.hFile == INVALID_HANDLE_VALUE) {
+        std::remove(path);
+        return false;
+    }
+
+    archive.recordCount = static_cast<unsigned int>(entryCount);
+    archive.records = records;
+
+    archiveNode = {};
+    archiveNode.payload = &archive;
+    archiveNode.next = &archiveNode;
+    archiveNode.prev = &archiveNode;
+
+    archiveList = {};
+    archiveList.count = 1;
+    archiveList.head = &archiveNode;
+    g_zArchive_MountedList = &archiveList;
+    return true;
+}
+
+void MakeSmokeAinetMinimalZrdRoot(
+    zReader::Node &root,
+    zReader::Node *rootPayload,
+    zReader::Node *versionPayload,
+    zReader::Node *namePayload,
+    const char *name
+) {
+    MakeSmokeAinetReaderArrayNode(root, rootPayload, 5);
+    MakeSmokeAinetReaderStringNode(rootPayload[1], "version");
+    MakeSmokeAinetReaderArrayNode(rootPayload[2], versionPayload, 2);
+    MakeSmokeAinetReaderIntNode(versionPayload[1], 105);
+    MakeSmokeAinetReaderStringNode(rootPayload[3], "name");
+    MakeSmokeAinetReaderArrayNode(rootPayload[4], namePayload, 2);
+    MakeSmokeAinetReaderStringNode(namePayload[1], name);
+}
+
 template <typename Method>
 void *SmokeMethodAddress(Method method) {
     RECOIL_STATIC_ASSERT(sizeof(Method) == sizeof(void *));
@@ -6246,6 +7149,210 @@ int RunSmokeTests(const SmokeTest *tests, int count, const char *onlyName) {
     return failures;
 }
 } // namespace
+
+extern "C" int ainet_free_all_smoke(void) {
+    AINet *const first = static_cast<AINet *>(std::calloc(1, sizeof(AINet)));
+    AINet *const second = static_cast<AINet *>(std::calloc(1, sizeof(AINet)));
+    AINetNode *const nodeA = static_cast<AINetNode *>(std::calloc(1, sizeof(AINetNode)));
+    AINetNode *const nodeB = static_cast<AINetNode *>(std::calloc(1, sizeof(AINetNode)));
+
+    if (first == nullptr || second == nullptr || nodeA == nullptr || nodeB == nullptr) {
+        std::free(first);
+        std::free(second);
+        std::free(nodeA);
+        std::free(nodeB);
+        return 1;
+    }
+
+    nodeA->next = nodeB;
+    first->nodeListHead = nodeA;
+    first->next = second;
+    g_AINetListHead = first;
+    g_AINetListTail = second;
+
+    AINet::FreeAll();
+    const bool cleared = g_AINetListHead == nullptr;
+    g_AINetListTail = nullptr;
+    return cleared ? 0 : 2;
+}
+
+extern "C" int ainet_load_from_zrd_smoke(void) {
+    AINet::FreeAll();
+    g_AINetListTail = nullptr;
+
+    zReader::Node root = {};
+    zReader::Node rootPayload[21] = {};
+    zReader::Node versionPayload[2] = {};
+    zReader::Node namePayload[2] = {};
+    zReader::Node typePayload[2] = {};
+    zReader::Node pathWidthPayload[2] = {};
+    zReader::Node hideTimesPayload[3] = {};
+    zReader::Node attackBuddyPayload[2] = {};
+    zReader::Node activateBuddyPayload[2] = {};
+    zReader::Node attackStrategyPayload[2] = {};
+    zReader::Node node0Payload[4] = {};
+    zReader::Node node0Position[4] = {};
+    zReader::Node node0Neighbors[4] = {};
+    zReader::Node node1Payload[4] = {};
+    zReader::Node node1Position[4] = {};
+    zReader::Node node1Neighbors[4] = {};
+
+    MakeSmokeAinetReaderArrayNode(root, rootPayload, 21);
+    MakeSmokeAinetReaderStringNode(rootPayload[1], "version");
+    MakeSmokeAinetReaderArrayNode(rootPayload[2], versionPayload, 2);
+    MakeSmokeAinetReaderIntNode(versionPayload[1], 105);
+    MakeSmokeAinetReaderStringNode(rootPayload[3], "name");
+    MakeSmokeAinetReaderArrayNode(rootPayload[4], namePayload, 2);
+    MakeSmokeAinetReaderStringNode(namePayload[1], "arena");
+    MakeSmokeAinetReaderStringNode(rootPayload[5], "type");
+    MakeSmokeAinetReaderArrayNode(rootPayload[6], typePayload, 2);
+    MakeSmokeAinetReaderStringNode(typePayload[1], "fi");
+    MakeSmokeAinetReaderStringNode(rootPayload[7], "path_width");
+    MakeSmokeAinetReaderArrayNode(rootPayload[8], pathWidthPayload, 2);
+    MakeSmokeAinetReaderFloatNode(pathWidthPayload[1], 2.0f);
+    MakeSmokeAinetReaderStringNode(rootPayload[9], "hide_times");
+    MakeSmokeAinetReaderArrayNode(rootPayload[10], hideTimesPayload, 3);
+    MakeSmokeAinetReaderFloatNode(hideTimesPayload[1], 1.5f);
+    MakeSmokeAinetReaderFloatNode(hideTimesPayload[2], 2.5f);
+    MakeSmokeAinetReaderStringNode(rootPayload[11], "attack_buddy");
+    MakeSmokeAinetReaderArrayNode(rootPayload[12], attackBuddyPayload, 2);
+    MakeSmokeAinetReaderIntNode(attackBuddyPayload[1], 12);
+    MakeSmokeAinetReaderStringNode(rootPayload[13], "activate_buddy");
+    MakeSmokeAinetReaderArrayNode(rootPayload[14], activateBuddyPayload, 2);
+    MakeSmokeAinetReaderIntNode(activateBuddyPayload[1], 34);
+    MakeSmokeAinetReaderStringNode(rootPayload[15], "attack_strategy");
+    MakeSmokeAinetReaderArrayNode(rootPayload[16], attackStrategyPayload, 2);
+    MakeSmokeAinetReaderStringNode(attackStrategyPayload[1], "zig");
+    MakeSmokeAinetReaderStringNode(rootPayload[17], "node_00");
+    MakeSmokeAinetReaderArrayNode(rootPayload[18], node0Payload, 4);
+    MakeSmokeAinetReaderIntNode(node0Payload[1], 77);
+    MakeSmokeAinetReaderArrayNode(node0Payload[2], node0Position, 4);
+    MakeSmokeAinetReaderFloatNode(node0Position[1], 0.0f);
+    MakeSmokeAinetReaderFloatNode(node0Position[2], 0.0f);
+    MakeSmokeAinetReaderFloatNode(node0Position[3], 0.0f);
+    MakeSmokeAinetReaderArrayNode(node0Payload[3], node0Neighbors, 4);
+    MakeSmokeAinetReaderIntNode(node0Neighbors[1], 1);
+    MakeSmokeAinetReaderIntNode(node0Neighbors[2], -1);
+    MakeSmokeAinetReaderIntNode(node0Neighbors[3], -1);
+    MakeSmokeAinetReaderStringNode(rootPayload[19], "node_01");
+    MakeSmokeAinetReaderArrayNode(rootPayload[20], node1Payload, 4);
+    MakeSmokeAinetReaderIntNode(node1Payload[1], 88);
+    MakeSmokeAinetReaderArrayNode(node1Payload[2], node1Position, 4);
+    MakeSmokeAinetReaderFloatNode(node1Position[1], 3.0f);
+    MakeSmokeAinetReaderFloatNode(node1Position[2], 0.0f);
+    MakeSmokeAinetReaderFloatNode(node1Position[3], 4.0f);
+    MakeSmokeAinetReaderArrayNode(node1Payload[3], node1Neighbors, 4);
+    MakeSmokeAinetReaderIntNode(node1Neighbors[1], -1);
+    MakeSmokeAinetReaderIntNode(node1Neighbors[2], -1);
+    MakeSmokeAinetReaderIntNode(node1Neighbors[3], -1);
+
+    zIndexArchive archive = {};
+    zZarFileRecord records[1] = {};
+    zArchiveListNode archiveNode = {};
+    zArchiveList archiveList = {};
+    const char *const path = "ainet_load_from_zrd_test.zar";
+    const SmokeAinetZrdArchiveEntry entries[] = {{"net_07.zrd", &root}};
+    std::remove(path);
+    if (!MountSmokeAinetZrdArchive(path, entries, 1, archive, records, archiveNode, archiveList)) {
+        return 1;
+    }
+
+    AINet *const net = AINet::LoadFromZrd(7);
+    g_zArchive_MountedList = nullptr;
+    CloseHandle(static_cast<HANDLE>(archive.hFile));
+    std::remove(path);
+    if (net == nullptr) {
+        return 2;
+    }
+
+    AINetNode *const node0 = net->nodeListHead;
+    AINetNode *const node1 = node0 != nullptr ? node0->next : nullptr;
+    const bool ok = g_AINetListHead == net && g_AINetListTail == net && net->netId == 7 &&
+                    std::strcmp(net->name, "arena") == 0 && net->aiType == AINET_TYPE_FI &&
+                    SmokePlayerFloatNear(net->pathWidth, 2.0f) &&
+                    SmokePlayerFloatNear(net->hideTime0, 1.5f) &&
+                    SmokePlayerFloatNear(net->hideTime1, 2.5f) &&
+                    net->attackBuddyNetId == 12 && net->activateBuddyNetId == 34 &&
+                    net->attackStrategy == AINET_STRAT_ZIG && node0 != nullptr &&
+                    node1 != nullptr && node1->next == nullptr && node0->costOrType == 77 &&
+                    node1->costOrType == 88 && node0->neighborNodes[0] == node1 &&
+                    node0->neighborNodes[1] == nullptr && node0->neighborNodes[2] == nullptr &&
+                    node0->probeFans[0] != nullptr && node0->probeFans[1] == nullptr &&
+                    node0->probeFans[2] == nullptr && node1->neighborNodes[0] == nullptr &&
+                    node1->probeFans[0] == nullptr &&
+                    SmokePlayerFloatNear(node0->probeFans[0]->delta.x, 0.6f) &&
+                    SmokePlayerFloatNear(node0->probeFans[0]->delta.z, 0.8f);
+
+    AINet::FreeAll();
+    g_AINetListTail = nullptr;
+    return ok ? 0 : 3;
+}
+
+extern "C" int ainet_load_all_from_zrd_smoke(void) {
+    AINet::FreeAll();
+    g_AINetListTail = nullptr;
+
+    zReader::Node root00 = {};
+    zReader::Node root01 = {};
+    zReader::Node root99 = {};
+    zReader::Node root100 = {};
+    zReader::Node rootPayload00[5] = {};
+    zReader::Node rootPayload01[5] = {};
+    zReader::Node rootPayload99[5] = {};
+    zReader::Node rootPayload100[5] = {};
+    zReader::Node versionPayload00[2] = {};
+    zReader::Node versionPayload01[2] = {};
+    zReader::Node versionPayload99[2] = {};
+    zReader::Node versionPayload100[2] = {};
+    zReader::Node namePayload00[2] = {};
+    zReader::Node namePayload01[2] = {};
+    zReader::Node namePayload99[2] = {};
+    zReader::Node namePayload100[2] = {};
+
+    MakeSmokeAinetMinimalZrdRoot(root00, rootPayload00, versionPayload00, namePayload00, "zero");
+    MakeSmokeAinetMinimalZrdRoot(root01, rootPayload01, versionPayload01, namePayload01, "one");
+    MakeSmokeAinetMinimalZrdRoot(root99, rootPayload99, versionPayload99, namePayload99, "last");
+    MakeSmokeAinetMinimalZrdRoot(
+        root100,
+        rootPayload100,
+        versionPayload100,
+        namePayload100,
+        "hundred"
+    );
+
+    zIndexArchive archive = {};
+    zZarFileRecord records[4] = {};
+    zArchiveListNode archiveNode = {};
+    zArchiveList archiveList = {};
+    const char *const path = "ainet_load_all_from_zrd_test.zar";
+    const SmokeAinetZrdArchiveEntry entries[] = {
+        {"net_00.zrd", &root00},
+        {"net_01.zrd", &root01},
+        {"net_99.zrd", &root99},
+        {"net_100.zrd", &root100}
+    };
+    std::remove(path);
+    if (!MountSmokeAinetZrdArchive(path, entries, 4, archive, records, archiveNode, archiveList)) {
+        return 1;
+    }
+
+    AINet::LoadAllFromZrd();
+    g_zArchive_MountedList = nullptr;
+    CloseHandle(static_cast<HANDLE>(archive.hFile));
+    std::remove(path);
+
+    AINet *const first = g_AINetListHead;
+    AINet *const second = first != nullptr ? first->next : nullptr;
+    const bool ok = first != nullptr && second != nullptr && second->next == nullptr &&
+                    g_AINetListTail == second && first->netId == 1 && second->netId == 99 &&
+                    std::strcmp(first->name, "one") == 0 &&
+                    std::strcmp(second->name, "last") == 0 &&
+                    first->nodeListHead == nullptr && second->nodeListHead == nullptr;
+
+    AINet::FreeAll();
+    g_AINetListTail = nullptr;
+    return ok ? 0 : 2;
+}
 
 extern "C" int znetwork_init_session_runtime_smoke(void) {
     return RunZnetworkInitSessionRuntimeSmoke();
@@ -9527,10 +10634,10 @@ extern "C" int zvideo_dd_open_video_mode_smoke(void) {
 
 extern "C" int zvideo_texture_record_destroy_smoke(void) {
     zVideo_TextureRecordPartial *const savedDefaultRecord =
-        g_zImage_DefaultTextureRecord;
+        g_zVideo_DefaultTextureRecord;
 
     zVideo_TextureRecordPartial defaultRecord{};
-    g_zImage_DefaultTextureRecord = &defaultRecord;
+    g_zVideo_DefaultTextureRecord = &defaultRecord;
     ResetSmokeComReleaseTracking();
     zVideo_dd3d::TextureRecord_Destroy(&defaultRecord);
     const int defaultSkipOk = g_smokeComReleaseCalls == 0;
@@ -9546,7 +10653,7 @@ extern "C" int zvideo_texture_record_destroy_smoke(void) {
     zVideo_TextureRecordPartial *textureRecord =
         (zVideo_TextureRecordPartial *)std::malloc(sizeof(zVideo_TextureRecordPartial));
     if (textureRecord == 0) {
-        g_zImage_DefaultTextureRecord = savedDefaultRecord;
+        g_zVideo_DefaultTextureRecord = savedDefaultRecord;
         return 1;
     }
 
@@ -9562,7 +10669,7 @@ extern "C" int zvideo_texture_record_destroy_smoke(void) {
         g_smokeComReleaseObjects[1] == &textureSurface &&
         g_smokeComReleaseObjects[2] == &texture;
 
-    g_zImage_DefaultTextureRecord = savedDefaultRecord;
+    g_zVideo_DefaultTextureRecord = savedDefaultRecord;
     return defaultSkipOk != 0 && releaseOk != 0 ? 0 : 2;
 }
 
@@ -9795,7 +10902,7 @@ extern "C" int zvideo_dd_teardown_video_subsystem_smoke(void) {
 
 extern "C" int zvideo_dd_shutdown_video_system_smoke(void) {
     zVideo_TextureRecordPartial *const savedDefaultRecord =
-        g_zImage_DefaultTextureRecord;
+        g_zVideo_DefaultTextureRecord;
     IDirect3DMaterial2 *const savedMaterial = g_zVideo_pD3DMaterial2;
     IDirect3DViewport2 *const savedViewport = g_zVideo_pD3DViewport2;
     IDirect3DDevice2 *const savedDevice = g_zVideo_pD3DDevice;
@@ -9829,21 +10936,21 @@ extern "C" int zvideo_dd_shutdown_video_system_smoke(void) {
     g_zVideo_DisplayModeSurfaceState = {};
 
     zVideo_TextureRecordPartial defaultRecord{};
-    g_zImage_DefaultTextureRecord = &defaultRecord;
+    g_zVideo_DefaultTextureRecord = &defaultRecord;
     ResetSmokeComReleaseTracking();
     const int defaultResult = zVideo_dd::ShutdownVideoSystem();
     const int defaultOk =
         defaultResult == 0 &&
-        g_zImage_DefaultTextureRecord == 0 &&
+        g_zVideo_DefaultTextureRecord == 0 &&
         g_smokeComReleaseCalls == 0;
 
-    g_zImage_DefaultTextureRecord = 0;
+    g_zVideo_DefaultTextureRecord = 0;
     const int noDefaultResult = zVideo_dd::ShutdownVideoSystem();
     const int noDefaultOk =
         noDefaultResult == 0 &&
-        g_zImage_DefaultTextureRecord == 0;
+        g_zVideo_DefaultTextureRecord == 0;
 
-    g_zImage_DefaultTextureRecord = savedDefaultRecord;
+    g_zVideo_DefaultTextureRecord = savedDefaultRecord;
     g_zVideo_pD3DMaterial2 = savedMaterial;
     g_zVideo_pD3DViewport2 = savedViewport;
     g_zVideo_pD3DDevice = savedDevice;
@@ -12558,12 +13665,27 @@ extern "C" int zvideo_set_renderer_type_smoke(void) {
 
 namespace {
 int g_smokeZVideoHalfResBltCalls;
+int g_smokeZVideoAdjustSurfacesCalls;
+int g_smokeZVideoLastAdjustWaitForPresent;
+int g_smokeZVideoLastAdjustBlitPrimaryToSwFirst;
 
 void __fastcall SmokeZVideoHalfResBltFake(
     zVidRect32 *,
     zVidRect32 *
 ) {
     ++g_smokeZVideoHalfResBltCalls;
+}
+
+int __fastcall SmokeZVideoAdjustSurfacesFake(
+    zVidRect32 *,
+    zVidRect32 *,
+    int waitForPresent,
+    int blitPrimaryToSwFirst
+) {
+    ++g_smokeZVideoAdjustSurfacesCalls;
+    g_smokeZVideoLastAdjustWaitForPresent = waitForPresent;
+    g_smokeZVideoLastAdjustBlitPrimaryToSwFirst = blitPrimaryToSwFirst;
+    return 0x123;
 }
 } // namespace
 
@@ -12620,6 +13742,43 @@ extern "C" int zvideo_set_half_res_adjust_mode_smoke(void) {
     g_zVideo_UseHalfResBackbuffer = savedUseHalfResBackbuffer;
     g_zVideo_RendererType = savedRendererType;
     g_zVideo_pfnBltPrimaryToSwRectDirect = savedBltPrimaryToSw;
+    return result;
+}
+
+extern "C" int zvideo_adjust_surfaces_if_enabled_smoke(void) {
+    const int savedFrameTick = g_zVideo_FrameTick;
+    const int savedDisableGate = g_zVideo_AdjustSurfacesDisableGate;
+    const zVideo_AdjustSurfacesProc savedAdjustSurfaces = g_zVideo_pfnAdjustSurfaces;
+
+    zVidRect32 rect{0, 0, 1, 1};
+    g_smokeZVideoAdjustSurfacesCalls = 0;
+    g_smokeZVideoLastAdjustWaitForPresent = 0;
+    g_smokeZVideoLastAdjustBlitPrimaryToSwFirst = 0;
+    g_zVideo_FrameTick = 10;
+    g_zVideo_AdjustSurfacesDisableGate = 0;
+    g_zVideo_pfnAdjustSurfaces = SmokeZVideoAdjustSurfacesFake;
+
+    int result = 0;
+    if (zVideo::AdjustSurfacesIfEnabled(&rect, &rect, 7, 9) != 0x123 ||
+        g_smokeZVideoAdjustSurfacesCalls != 1 ||
+        g_smokeZVideoLastAdjustWaitForPresent != 7 ||
+        g_smokeZVideoLastAdjustBlitPrimaryToSwFirst != 9 ||
+        g_zVideo_FrameTick != 11) {
+        result = 1;
+    }
+
+    if (result == 0) {
+        g_zVideo_AdjustSurfacesDisableGate = 2;
+        if (zVideo::AdjustSurfacesIfEnabled(&rect, &rect, 1, 1) != 2 ||
+            g_smokeZVideoAdjustSurfacesCalls != 1 ||
+            g_zVideo_FrameTick != 11) {
+            result = 2;
+        }
+    }
+
+    g_zVideo_FrameTick = savedFrameTick;
+    g_zVideo_AdjustSurfacesDisableGate = savedDisableGate;
+    g_zVideo_pfnAdjustSurfaces = savedAdjustSurfaces;
     return result;
 }
 
@@ -14570,7 +15729,7 @@ extern "C" int zvideo_create_texture_record_guards_smoke(void) {
     zVidD3DDriverRecordPartial *const savedSelectedD3D =
         g_zVideo_pSelectedD3DDeviceInfo;
     zVideo_TextureRecordPartial *const savedDefaultRecord =
-        g_zImage_DefaultTextureRecord;
+        g_zVideo_DefaultTextureRecord;
     const D3DDEVICEDESC savedHalDesc = g_zVideo_D3DHalDeviceDesc;
 
     zVidD3DDriverRecordPartial selectedD3DDevice = {};
@@ -14580,7 +15739,7 @@ extern "C" int zvideo_create_texture_record_guards_smoke(void) {
     g_zVideo_pSelectedD3DDeviceInfo = &selectedD3DDevice;
 
     zVideo_TextureRecordPartial defaultRecord = {};
-    g_zImage_DefaultTextureRecord = &defaultRecord;
+    g_zVideo_DefaultTextureRecord = &defaultRecord;
 
     zVidImagePartial image = {};
     image.width = 128;
@@ -14612,7 +15771,7 @@ extern "C" int zvideo_create_texture_record_guards_smoke(void) {
         &defaultRecord;
 
     g_zVideo_pSelectedD3DDeviceInfo = savedSelectedD3D;
-    g_zImage_DefaultTextureRecord = savedDefaultRecord;
+    g_zVideo_DefaultTextureRecord = savedDefaultRecord;
     g_zVideo_D3DHalDeviceDesc = savedHalDesc;
     return tooLargeOk && nonPow2Ok && badAspectOk && palettedOk ? 0 : 1;
 }
@@ -14630,7 +15789,7 @@ extern "C" int zvideo_dd3d_create_texture_record_smoke(void) {
     zVidD3DDriverRecordPartial *const savedSelectedD3D =
         g_zVideo_pSelectedD3DDeviceInfo;
     zVideo_TextureRecordPartial *const savedDefaultRecord =
-        g_zImage_DefaultTextureRecord;
+        g_zVideo_DefaultTextureRecord;
     IDirectDraw2 *const savedDirectDraw2 = g_zVideo_pDirectDraw2;
     IDirect3DDevice2 *const savedD3DDevice = g_zVideo_pD3DDevice;
     const D3DDEVICEDESC savedHalDesc = g_zVideo_D3DHalDeviceDesc;
@@ -14661,7 +15820,7 @@ extern "C" int zvideo_dd3d_create_texture_record_smoke(void) {
     g_zVideo_pSelectedD3DDeviceInfo = &selectedD3DDevice;
 
     zVideo_TextureRecordPartial defaultRecord = {};
-    g_zImage_DefaultTextureRecord = &defaultRecord;
+    g_zVideo_DefaultTextureRecord = &defaultRecord;
 
     SmokeDirectDraw2Object directDraw = {};
     SmokeDirectDrawSurfaceObject createdSurface = {};
@@ -14799,7 +15958,7 @@ extern "C" int zvideo_dd3d_create_texture_record_smoke(void) {
         g_smokeDirectDrawSurfaceReleaseCalls == 2;
 
     g_zVideo_pSelectedD3DDeviceInfo = savedSelectedD3D;
-    g_zImage_DefaultTextureRecord = savedDefaultRecord;
+    g_zVideo_DefaultTextureRecord = savedDefaultRecord;
     g_zVideo_pDirectDraw2 = savedDirectDraw2;
     g_zVideo_pD3DDevice = savedD3DDevice;
     g_zVideo_D3DHalDeviceDesc = savedHalDesc;
@@ -18653,6 +19812,7 @@ int main(int argc, char **argv) {
         {"zsnd_backend_shutdown_release_smoke", zsnd_backend_shutdown_release_smoke},
         {"zsnd_backend_error_reporters_smoke", zsnd_backend_error_reporters_smoke},
         {"zsnd_play_handle_stop_if_active_smoke", zsnd_play_handle_stop_if_active_smoke},
+        {"zsnd_play_handle_set_freq_scaled_smoke", zsnd_play_handle_set_freq_scaled_smoke},
         {"zsnd_play_handle_try_disable_managed_smoke",
          zsnd_play_handle_try_disable_managed_smoke},
         {"zsnd_play_handle_update3d_a3d_smoke", zsnd_play_handle_update3d_a3d_smoke},
@@ -18777,6 +19937,8 @@ int main(int argc, char **argv) {
         {"zreader_global_string_prefix_index_smoke", zreader_global_string_prefix_index_smoke},
         {"zrndr_global_string_table_load_dynamic_entries_smoke",
          zrndr_global_string_table_load_dynamic_entries_smoke},
+        {"zrndr_global_string_table_release_dynamic_entries_smoke",
+         zrndr_global_string_table_release_dynamic_entries_smoke},
         {"zreader_load_node_from_archive_smoke", zreader_load_node_from_archive_smoke},
         {"zreader_file_exists_and_list_create_smoke", zreader_file_exists_and_list_create_smoke},
         {"znetwork_local_identity_smoke", znetwork_local_identity_smoke},
@@ -18827,6 +19989,11 @@ int main(int argc, char **argv) {
          znetwork_dplay_create_interface_and_coinitialize_smoke},
         {"znetwork_set_fatal_disconnect_callback_smoke",
          znetwork_set_fatal_disconnect_callback_smoke},
+        {"pickup_airdrop_spawn_ref_init_nodes_smoke",
+         pickup_airdrop_spawn_ref_init_nodes_smoke},
+        {"pickup_archive_write_all_smoke", pickup_archive_write_all_smoke},
+        {"pickup_archive_read_record_smoke", pickup_archive_read_record_smoke},
+        {"pickup_init_smoke", pickup_init_smoke},
         {"pickup_register_existing_object_smoke", pickup_register_existing_object_smoke},
         {"pickup_leaf_helpers_smoke", pickup_leaf_helpers_smoke},
         {"pickup_spawn_from_parsed_zrd_entry_smoke",
@@ -18836,6 +20003,8 @@ int main(int argc, char **argv) {
         {"pickup_handle_pkt12_airdrop_spawn_chute_relay_smoke",
          pickup_handle_pkt12_airdrop_spawn_chute_relay_smoke},
         {"pickup_remove_object_smoke", pickup_remove_object_smoke},
+        {"pickup_respawn_spawn_def_smoke", pickup_respawn_spawn_def_smoke},
+        {"pickup_respawn_queue_update_smoke", pickup_respawn_queue_update_smoke},
         {"pickup_spawn_list_clear_smoke", pickup_spawn_list_clear_smoke},
         {"pickup_remove_other_spawns_same_opt_entry_smoke",
          pickup_remove_other_spawns_same_opt_entry_smoke},
@@ -18857,12 +20026,16 @@ int main(int argc, char **argv) {
         {"gamenet_timer_status_packet_smoke", gamenet_timer_status_packet_smoke},
         {"gamenet_timer_panel_state_packet_smoke",
          gamenet_timer_panel_state_packet_smoke},
+        {"gamenet_tick_local_player_pkt06_and_timer_smoke",
+         gamenet_tick_local_player_pkt06_and_timer_smoke},
         {"gamenet_register_gameplay_handlers_and_callbacks_smoke",
          gamenet_register_gameplay_handlers_and_callbacks_smoke},
         {"gamenet_unregister_gameplay_packet_handlers_smoke",
          gamenet_unregister_gameplay_packet_handlers_smoke},
         {"gamenet_reset_remote_players_and_spawn_lists_smoke",
          gamenet_reset_remote_players_and_spawn_lists_smoke},
+        {"gamenet_player_row_list_reset_smoke",
+         gamenet_player_row_list_reset_smoke},
         {"gamenet_player_row_append_smoke", gamenet_player_row_append_smoke},
         {"gamenet_reassign_player_colors_smoke", gamenet_reassign_player_colors_smoke},
         {"gamenet_player_row_apply_color_tint_smoke",
@@ -18878,6 +20051,11 @@ int main(int argc, char **argv) {
         {"gamenet_scoreboard_snapshot_packet_smoke",
          gamenet_scoreboard_snapshot_packet_smoke},
         {"gamenet_lap_progress_packet_smoke", gamenet_lap_progress_packet_smoke},
+        {"gamenet_chat_compose_key_callback_smoke",
+         gamenet_chat_compose_key_callback_smoke},
+        {"gamenet_begin_chat_compose_smoke", gamenet_begin_chat_compose_smoke},
+        {"gamenet_end_chat_compose_and_send_smoke",
+         gamenet_end_chat_compose_and_send_smoke},
         {"gamenet_chat_message_packet_smoke", gamenet_chat_message_packet_smoke},
         {"gamenet_show_player_kill_message_smoke",
          gamenet_show_player_kill_message_smoke},
@@ -18901,6 +20079,42 @@ int main(int argc, char **argv) {
          gamenet_send_pkt07_alt_gun_dispatch_smoke},
         {"gamenet_alt_gun_dispatch_no_op_callback_smoke",
          gamenet_alt_gun_dispatch_no_op_callback_smoke},
+        {"gamenet_respawn_player_color_indexed_spawn_smoke",
+         gamenet_respawn_player_color_indexed_spawn_smoke},
+        {"gamenet_respawn_player_race_mode_no_spawn_smoke",
+         gamenet_respawn_player_race_mode_no_spawn_smoke},
+        {"gamenet_reset_hud_timer_panel_net_state_smoke",
+         gamenet_reset_hud_timer_panel_net_state_smoke},
+        {"gamenet_get_local_player_color_index_smoke",
+         gamenet_get_local_player_color_index_smoke},
+        {"gamenet_get_nearest_other_player_distance_to_spawn_point_smoke",
+         gamenet_get_nearest_other_player_distance_to_spawn_point_smoke},
+        {"gamenet_wait_for_local_player_color_index_smoke",
+         gamenet_wait_for_local_player_color_index_smoke},
+        {"net_format_ipv4_address_smoke", net_format_ipv4_address_smoke},
+        {"net_session_config_dialog_get_message_map_smoke",
+         net_session_config_dialog_get_message_map_smoke},
+        {"net_session_config_dialog_init_map_name_strings_smoke",
+         net_session_config_dialog_init_map_name_strings_smoke},
+        {"net_session_config_dialog_register_map_name_cleanup_smoke",
+         net_session_config_dialog_register_map_name_cleanup_smoke},
+        {"mission_register_multiplayer_maps_smoke",
+         mission_register_multiplayer_maps_smoke},
+        {"net_session_config_dialog_cleanup_map_name_strings_on_exit_smoke",
+         net_session_config_dialog_cleanup_map_name_strings_on_exit_smoke},
+        {"net_session_config_dialog_on_init_dialog_smoke",
+         net_session_config_dialog_on_init_dialog_smoke},
+        {"net_session_config_dialog_constructor_smoke",
+         net_session_config_dialog_constructor_smoke},
+        {"net_session_config_dialog_destructor_smoke",
+         net_session_config_dialog_destructor_smoke},
+        {"net_session_config_dialog_do_data_exchange_smoke",
+         net_session_config_dialog_do_data_exchange_smoke},
+        {"net_session_config_dialog_on_destroy_smoke",
+         net_session_config_dialog_on_destroy_smoke},
+        {"net_session_config_dialog_on_map_changed_smoke",
+         net_session_config_dialog_on_map_changed_smoke},
+        {"net_init_from_zrd_smoke", net_init_from_zrd_smoke},
         {"optcatalog_alt_gun_dispatch_alloc_runtime_gate_smoke",
          optcatalog_alt_gun_dispatch_alloc_runtime_gate_smoke},
         {"optcatalog_handle_pkt0a_remove_runtime_relay_smoke",
@@ -18916,8 +20130,15 @@ int main(int argc, char **argv) {
         {"optcatalog_damage_feedback_leaf_helpers_smoke",
          optcatalog_damage_feedback_leaf_helpers_smoke},
         {"hitcontext_get_current_owner_smoke", hitcontext_get_current_owner_smoke},
+        {"ainet_free_all_smoke", ainet_free_all_smoke},
         {"ainet_find_by_net_id_smoke", ainet_find_by_net_id_smoke},
         {"ainet_find_nearest_node_smoke", ainet_find_nearest_node_smoke},
+        {"ainet_load_from_zrd_smoke", ainet_load_from_zrd_smoke},
+        {"ainet_load_all_from_zrd_smoke", ainet_load_all_from_zrd_smoke},
+        {"checkpoint_instantiate_named_objects_smoke",
+         checkpoint_instantiate_named_objects_smoke},
+        {"checkpoint_update_player_lap_progress_and_notify_net_smoke",
+         checkpoint_update_player_lap_progress_and_notify_net_smoke},
         {"player_get_save_state_list_head_smoke",
          player_get_save_state_list_head_smoke},
         {"player_init_save_state_list_smoke",
@@ -18972,18 +20193,75 @@ int main(int argc, char **argv) {
          player_alt_gun_projectile_dispatch_helpers_smoke},
         {"player_process_alt_gun_fire_dispatch_request_smoke",
          player_process_alt_gun_fire_dispatch_request_smoke},
+        {"player_update_gun_dispatch_requests_from_trigger_latches_smoke",
+         player_update_gun_dispatch_requests_from_trigger_latches_smoke},
         {"player_reset_alt_gun_runtime_state_smoke",
          player_reset_alt_gun_runtime_state_smoke},
+        {"player_build_mission_save_data_smoke",
+         player_build_mission_save_data_smoke},
+        {"player_apply_mission_save_data_smoke",
+         player_apply_mission_save_data_smoke},
+        {"player_destroy_save_game_state_smoke",
+         player_destroy_save_game_state_smoke},
+        {"player_shutdown_mission_runtime_smoke",
+         player_shutdown_mission_runtime_smoke},
+        {"player_zar_register_sections_smoke",
+         player_zar_register_sections_smoke},
+        {"player_zar_write_mission_save_data_section_smoke",
+         player_zar_write_mission_save_data_section_smoke},
+        {"player_zar_read_mission_save_data_section_smoke",
+         player_zar_read_mission_save_data_section_smoke},
+        {"player_zar_write_vehicle_list_section_smoke",
+         player_zar_write_vehicle_list_section_smoke},
+        {"player_zar_read_vehicle_list_section_smoke",
+         player_zar_read_vehicle_list_section_smoke},
         {"player_write_mines_zar_section_smoke",
          player_write_mines_zar_section_smoke},
         {"player_mines_zar_read_entry_or_reset_smoke",
          player_mines_zar_read_entry_or_reset_smoke},
         {"player_remove_all_deployed_mines_smoke",
          player_remove_all_deployed_mines_smoke},
+        {"player_ai_discard_negative_branch_nodes_smoke",
+         player_ai_discard_negative_branch_nodes_smoke},
+        {"player_ai_restore_saved_top_level_state_smoke",
+         player_ai_restore_saved_top_level_state_smoke},
+        {"player_ai_finalize_mode2_state1_for_all_players_smoke",
+         player_ai_finalize_mode2_state1_for_all_players_smoke},
+        {"player_ai_steer_toward_path_node_forward_smoke",
+         player_ai_steer_toward_path_node_forward_smoke},
+        {"player_ai_steer_toward_path_node_reverse_smoke",
+         player_ai_steer_toward_path_node_reverse_smoke},
+        {"player_init_mission_runtime_missing_aiv_smoke",
+         player_init_mission_runtime_missing_aiv_smoke},
+        {"player_node_flag_restore_init_globals_smoke",
+         player_node_flag_restore_init_globals_smoke},
+        {"player_node_flag_restore_init_instance_smoke",
+         player_node_flag_restore_init_instance_smoke},
+        {"player_node_flag_restore_register_at_exit_smoke",
+         player_node_flag_restore_register_at_exit_smoke},
+        {"player_node_flag_restore_shutdown_instance_smoke",
+         player_node_flag_restore_shutdown_instance_smoke},
+        {"player_restore_recorded_node_flags_smoke",
+         player_restore_recorded_node_flags_smoke},
+        {"player_record_node_flags_for_restore_smoke",
+         player_record_node_flags_for_restore_smoke},
+        {"zweapon_init_smoke", zweapon_init_smoke},
+        {"zweapon_load_opt_catalog_from_path_smoke",
+         zweapon_load_opt_catalog_from_path_smoke},
+        {"zweapon_zar_weapons_section_callbacks_smoke",
+         zweapon_zar_weapons_section_callbacks_smoke},
+        {"zweapon_optcatalog_blend_direction_toward_target_smoke",
+         zweapon_optcatalog_blend_direction_toward_target_smoke},
+        {"zweapon_set_max_tether_altitude_smoke", zweapon_set_max_tether_altitude_smoke},
         {"zweapon_optcatalog_find_entry_by_id_smoke",
          zweapon_optcatalog_find_entry_by_id_smoke},
         {"zweapon_optcatalog_find_entry_by_name_smoke",
          zweapon_optcatalog_find_entry_by_name_smoke},
+        {"zweapon_optcatalog_load_kill_verb_string_smoke",
+         zweapon_optcatalog_load_kill_verb_string_smoke},
+        {"zweapon_optcatalog_load_fx_spec_from_reader_node_smoke",
+         zweapon_optcatalog_load_fx_spec_from_reader_node_smoke},
+        {"zweapon_optcatalog_shutdown_smoke", zweapon_optcatalog_shutdown_smoke},
         {"zweapon_optcatalog_pending_spawn_override_smoke",
          zweapon_optcatalog_pending_spawn_override_smoke},
         {"zweapon_optcatalog_create_trail_segment_node_smoke",
@@ -18993,6 +20271,14 @@ int main(int argc, char **argv) {
         {"zweapon_optcatalog_mine_iterator_smoke", zweapon_optcatalog_mine_iterator_smoke},
         {"zweapon_optcatalog_runtime_free_list_helpers_smoke",
          zweapon_optcatalog_runtime_free_list_helpers_smoke},
+        {"zweapon_optcatalog_emit_crater_impact_event_smoke",
+         zweapon_optcatalog_emit_crater_impact_event_smoke},
+        {"zweapon_optcatalog_emit_qsand_impact_event_smoke",
+         zweapon_optcatalog_emit_qsand_impact_event_smoke},
+        {"zweapon_optcatalog_play_impact_sound_smoke",
+         zweapon_optcatalog_play_impact_sound_smoke},
+        {"zweapon_optcatalog_play_bounce_sound_smoke",
+         zweapon_optcatalog_play_bounce_sound_smoke},
         {"zweapon_optcatalog_handle_impact_event_smoke",
          zweapon_optcatalog_handle_impact_event_smoke},
         {"zweapon_optcatalog_handle_impact_event_from_runtime_state_smoke",
@@ -19003,8 +20289,22 @@ int main(int argc, char **argv) {
          zweapon_optcatalog_handle_impact_from_runtime_probe_smoke},
         {"zweapon_optcatalog_process_runtime_instance_smoke",
          zweapon_optcatalog_process_runtime_instance_smoke},
+        {"zweapon_optcatalog_process_runtime_instances_smoke",
+         zweapon_optcatalog_process_runtime_instances_smoke},
         {"zweapon_optcatalog_remove_runtime_instance_smoke",
          zweapon_optcatalog_remove_runtime_instance_smoke},
+        {"zweapon_optcatalog_can_spawn_through_ray_smoke",
+         zweapon_optcatalog_can_spawn_through_ray_smoke},
+        {"zweapon_optcatalog_reflect_and_sort_impact_trace_list_smoke",
+         zweapon_optcatalog_reflect_and_sort_impact_trace_list_smoke},
+        {"zweapon_optcatalog_compute_trail_impact_response_smoke",
+         zweapon_optcatalog_compute_trail_impact_response_smoke},
+        {"zweapon_optcatalog_update_trail_segment_visual_smoke",
+         zweapon_optcatalog_update_trail_segment_visual_smoke},
+        {"zweapon_optcatalog_warning_samples_smoke",
+         zweapon_optcatalog_warning_samples_smoke},
+        {"zweapon_optcatalog_activate_trail_runtime_state_smoke",
+         zweapon_optcatalog_activate_trail_runtime_state_smoke},
         {"zweapon_optcatalog_deactivate_trail_runtime_state_smoke",
          zweapon_optcatalog_deactivate_trail_runtime_state_smoke},
         {"zweapon_optcatalog_compute_aim_pitch_for_target_smoke",
@@ -19018,6 +20318,16 @@ int main(int argc, char **argv) {
          player_update_timed_hit_status_from_source_smoke},
         {"player_clear_destroyed_respawn_effect_handle_callback_smoke",
          player_clear_destroyed_respawn_effect_handle_callback_smoke},
+        {"player_destroyed_state_reset_local_finalize_smoke",
+         player_destroyed_state_reset_local_finalize_smoke},
+        {"player_destroyed_state_reset_finalize_callback_smoke",
+         player_destroyed_state_reset_finalize_callback_smoke},
+        {"player_destroyed_state_reset_callback_smoke",
+         player_destroyed_state_reset_callback_smoke},
+        {"player_clear_respawn_transition_flag_callback_smoke",
+         player_clear_respawn_transition_flag_callback_smoke},
+        {"player_destroyed_state_respawn_callback_smoke",
+         player_destroyed_state_respawn_callback_smoke},
         {"player_hit_callback_record_net_context_and_timed_status_smoke",
          player_hit_callback_record_net_context_and_timed_status_smoke},
         {"player_hit_callback_record_context_and_timed_status_smoke",
@@ -19028,6 +20338,8 @@ int main(int argc, char **argv) {
          player_enter_destroyed_state_smoke},
         {"player_apply_status_meter_change_smoke",
          player_apply_status_meter_change_smoke},
+        {"player_reset_damage_state_and_timed_hit_status_smoke",
+         player_reset_damage_state_and_timed_hit_status_smoke},
         {"player_apply_pitch_roll_velocity_impulse_from_direction_smoke",
          player_apply_pitch_roll_velocity_impulse_from_direction_smoke},
         {"player_start_destroyed_state_vehicle_effect_smoke",
@@ -19049,6 +20361,8 @@ int main(int argc, char **argv) {
         {"player_mgr_tick_all_players_smoke", player_mgr_tick_all_players_smoke},
         {"zutil_store_int32_smoke", zutil_store_int32_smoke},
         {"zutil_save_game_state_list_smoke", zutil_save_game_state_list_smoke},
+        {"zutil_save_game_state_free_owned_resources_smoke",
+         zutil_save_game_state_free_owned_resources_smoke},
         {"zfmv_script_init_null_path_smoke", zfmv_script_init_null_path_smoke},
         {"zfmv_script_reset_smoke", zfmv_script_reset_smoke},
         {"zfmv_script_cleanup_smoke", zfmv_script_cleanup_smoke},
@@ -19094,6 +20408,34 @@ int main(int argc, char **argv) {
          player_reset_underwater_fx_pass3_ui_singleton_smoke},
         {"player_projectile_camera_fx_pass3_ui_constructor_smoke",
          player_projectile_camera_fx_pass3_ui_constructor_smoke},
+        {"player_top_msg_panel1_constructor_safe_smoke",
+         player_top_msg_panel1_constructor_safe_smoke},
+        {"player_top_msg_panel1_destructor_safe_smoke",
+         player_top_msg_panel1_destructor_safe_smoke},
+        {"player_register_top_msg_panel1_on_exit_safe_smoke",
+         player_register_top_msg_panel1_on_exit_safe_smoke},
+        {"player_init_and_register_top_msg_panel1_safe_smoke",
+         player_init_and_register_top_msg_panel1_safe_smoke},
+        {"player_top_msg_panel2_constructor_safe_smoke",
+         player_top_msg_panel2_constructor_safe_smoke},
+        {"player_top_msg_panel2_destructor_safe_smoke",
+         player_top_msg_panel2_destructor_safe_smoke},
+        {"player_register_top_msg_panel2_cleanup_safe_smoke",
+         player_register_top_msg_panel2_cleanup_safe_smoke},
+        {"player_init_and_register_top_msg_panel2_safe_smoke",
+         player_init_and_register_top_msg_panel2_safe_smoke},
+        {"player_init_master_common_data_list_smoke",
+         player_init_master_common_data_list_smoke},
+        {"player_init_master_modal_data_list_smoke",
+         player_init_master_modal_data_list_smoke},
+        {"player_init_projectile_camera_fx_pass3_ui_singleton_smoke",
+         player_init_projectile_camera_fx_pass3_ui_singleton_smoke},
+        {"player_reset_projectile_camera_fx_pass3_ui_singleton_smoke",
+         player_reset_projectile_camera_fx_pass3_ui_singleton_smoke},
+        {"player_register_projectile_camera_fx_pass3_ui_cleanup_smoke",
+         player_register_projectile_camera_fx_pass3_ui_cleanup_smoke},
+        {"player_init_and_register_projectile_camera_fx_pass3_ui_singleton_smoke",
+         player_init_and_register_projectile_camera_fx_pass3_ui_singleton_smoke},
         {"player_underwater_fx_pass3_ui_apply_blue_tint_smoke",
          player_underwater_fx_pass3_ui_apply_blue_tint_smoke},
         {"player_projectile_camera_fx_pass3_ui_apply_green_mask_smoke",
@@ -19165,9 +20507,50 @@ int main(int argc, char **argv) {
         {"recoil_app_constructor_destructor_smoke",
          recoil_app_constructor_destructor_smoke},
         {"czgame_frame_constructor_smoke", czgame_frame_constructor_smoke},
+        {"czgame_frame_create_object_smoke", czgame_frame_create_object_smoke},
         {"czrecoil_frame_constructor_smoke", czrecoil_frame_constructor_smoke},
+        {"czrecoil_frame_create_object_smoke",
+         czrecoil_frame_create_object_smoke},
+        {"czrecoil_frame_destructor_smoke", czrecoil_frame_destructor_smoke},
+        {"czframe_metadata_accessors_smoke", czframe_metadata_accessors_smoke},
+        {"czrecoil_frame_set_menu_bar_visibility_smoke",
+         czrecoil_frame_set_menu_bar_visibility_smoke},
         {"czrecoil_frame_init_startup_hw_api_from_options_smoke",
          czrecoil_frame_init_startup_hw_api_from_options_smoke},
+        {"czrecoil_frame_on_menu_start_single_player_smoke",
+         czrecoil_frame_on_menu_start_single_player_smoke},
+        {"czrecoil_frame_on_menu_open_campaign_smoke",
+         czrecoil_frame_on_menu_open_campaign_smoke},
+        {"czrecoil_frame_on_open_file_dialog_smoke",
+         czrecoil_frame_on_open_file_dialog_smoke},
+        {"czrecoil_frame_on_menu_open_help_docs_smoke",
+         czrecoil_frame_on_menu_open_help_docs_smoke},
+        {"cabout_dlg_constructor_smoke", cabout_dlg_constructor_smoke},
+        {"czrecoil_frame_on_menu_about_smoke",
+         czrecoil_frame_on_menu_about_smoke},
+        {"czrecoil_frame_start_mode_menu_handlers_smoke",
+         czrecoil_frame_start_mode_menu_handlers_smoke},
+        {"czrecoil_frame_menu_exit_game_smoke",
+         czrecoil_frame_menu_exit_game_smoke},
+        {"czrecoil_frame_configure_mode_feature_flags_smoke",
+         czrecoil_frame_configure_mode_feature_flags_smoke},
+        {"czrecoil_frame_video_mode_menu_handlers_smoke",
+         czrecoil_frame_video_mode_menu_handlers_smoke},
+        {"czrecoil_frame_update_video_mode_cmd_ui_smoke",
+         czrecoil_frame_update_video_mode_cmd_ui_smoke},
+        {"czrecoil_frame_set_hw_api_and_init_mode_smoke",
+         czrecoil_frame_set_hw_api_and_init_mode_smoke},
+        {"czrecoil_frame_ensure_hw_api_initialized_smoke",
+         czrecoil_frame_ensure_hw_api_initialized_smoke},
+        {"czrecoil_frame_select_hw_api_menu_handlers_smoke",
+         czrecoil_frame_select_hw_api_menu_handlers_smoke},
+        {"czrecoil_frame_hw_api_menu_cmd_ui_smoke",
+         czrecoil_frame_hw_api_menu_cmd_ui_smoke},
+        {"czrecoil_frame_menu_toggle_smoke",
+         czrecoil_frame_menu_toggle_smoke},
+        {"czrecoil_frame_toggle_texture_packs_smoke",
+         czrecoil_frame_toggle_texture_packs_smoke},
+        {"czrecoil_frame_on_size_smoke", czrecoil_frame_on_size_smoke},
         {"recoil_app_fmv_state_destructor_smoke",
          recoil_app_fmv_state_destructor_smoke},
         {"recoil_app_scalar_deleting_destructor_smoke",
@@ -19180,8 +20563,12 @@ int main(int argc, char **argv) {
          recoil_app_start_engine_and_queue_startup_state_smoke},
         {"recoil_state_main_menu_transition_constructor_smoke",
          recoil_state_main_menu_transition_constructor_smoke},
+        {"recoil_state_main_menu_transition_static_init_smoke",
+         recoil_state_main_menu_transition_static_init_smoke},
         {"recoil_state_main_menu_transition_set_deferred_video_mode_index_smoke",
          recoil_state_main_menu_transition_set_deferred_video_mode_index_smoke},
+        {"recoil_state_main_menu_transition_queue_enter_smoke",
+         recoil_state_main_menu_transition_queue_enter_smoke},
         {"hud_ui_main_menu_dialog_constructor_smoke",
          hud_ui_main_menu_dialog_constructor_smoke},
         {"recoil_state_cheat_code_constructor_smoke",
@@ -19198,6 +20585,10 @@ int main(int argc, char **argv) {
          recoil_state_confirm_quit_queue_enter_smoke},
         {"recoil_state_confirm_quit_destructor_smoke",
          recoil_state_confirm_quit_destructor_smoke},
+        {"hud_ui_confirm_quit_ok_button_on_activate_smoke",
+         hud_ui_confirm_quit_ok_button_on_activate_smoke},
+        {"hud_ui_background_confirm_quit_lifecycle_smoke",
+         hud_ui_background_confirm_quit_lifecycle_smoke},
         {"hud_ui_load_game_dialog_on_primary_action_smoke",
          hud_ui_load_game_dialog_on_primary_action_smoke},
         {"hud_ui_load_game_dialog_on_primary_action_thunk_smoke",
@@ -19392,6 +20783,8 @@ int main(int argc, char **argv) {
          zhud_layout_hw_update_objective_dirty_rect_smoke},
         {"zhud_objective_update_meter_xpoints_smoke",
          zhud_objective_update_meter_xpoints_smoke},
+        {"zhud_objective_show_smoke", zhud_objective_show_smoke},
+        {"zhud_objective_begin_smoke", zhud_objective_begin_smoke},
         {"zhud_loading_checkpoint_init_table_smoke",
          zhud_loading_checkpoint_init_table_smoke},
         {"zhud_loading_checkpoint_advance_and_log_smoke",
@@ -19399,6 +20792,10 @@ int main(int argc, char **argv) {
         {"zhud_mgr_tail_bar_layout_smoke", zhud_mgr_tail_bar_layout_smoke},
         {"zhud_mgr_trigger_current_layout_on_activated_smoke",
          zhud_mgr_trigger_current_layout_on_activated_smoke},
+        {"zhud_mgr_sensor_set_shield_message_ratio_smoke",
+         zhud_mgr_sensor_set_shield_message_ratio_smoke},
+        {"zhud_objective_refresh_counter_text_smoke",
+         zhud_objective_refresh_counter_text_smoke},
         {"zhud_counter_constructor_smoke", zhud_counter_constructor_smoke},
         {"zhud_message_release_images_smoke", zhud_message_release_images_smoke},
         {"zhud_message_set_value_if_owner_matches_smoke",
@@ -19427,6 +20824,34 @@ int main(int argc, char **argv) {
          zhud_widget_set_image_by_path_owned_smoke},
         {"zhud_widget_release_and_destructor_core_smoke",
          zhud_widget_release_and_destructor_core_smoke},
+        {"hud_ui_net_exit_constructor_smoke", hud_ui_net_exit_constructor_smoke},
+        {"hud_ui_net_exit_destructor_smoke", hud_ui_net_exit_destructor_smoke},
+        {"hud_ui_net_exit_scalar_deleting_destructor_smoke",
+         hud_ui_net_exit_scalar_deleting_destructor_smoke},
+        {"hud_ui_net_exit_create_global_smoke", hud_ui_net_exit_create_global_smoke},
+        {"hud_ui_net_exit_destroy_global_smoke", hud_ui_net_exit_destroy_global_smoke},
+        {"hud_ui_net_exit_show_tick_smoke", hud_ui_net_exit_show_tick_smoke},
+        {"hud_ui_net_exit_exit_button_on_activate_smoke",
+         hud_ui_net_exit_exit_button_on_activate_smoke},
+        {"hud_ui_net_exit_resume_widget_on_activate_smoke",
+         hud_ui_net_exit_resume_widget_on_activate_smoke},
+        {"hud_ui_net_exit_resume_widget_on_show_preview_smoke",
+         hud_ui_net_exit_resume_widget_on_show_preview_smoke},
+        {"hud_ui_net_exit_resume_widget_on_hide_preview_smoke",
+         hud_ui_net_exit_resume_widget_on_hide_preview_smoke},
+        {"hud_weather_fx_constructor_smoke", hud_weather_fx_constructor_smoke},
+        {"hud_weather_fx_destructor_smoke", hud_weather_fx_destructor_smoke},
+        {"hud_weather_fx_scalar_deleting_destructors_smoke",
+         hud_weather_fx_scalar_deleting_destructors_smoke},
+        {"hud_weather_fx_are_point_batch_inside_rect_smoke",
+         hud_weather_fx_are_point_batch_inside_rect_smoke},
+        {"hud_weather_fx_draw_particles_smoke", hud_weather_fx_draw_particles_smoke},
+        {"hud_weather_fx_derived_constructors_smoke",
+         hud_weather_fx_derived_constructors_smoke},
+        {"hud_weather_fx_rain_destructor_smoke",
+         hud_weather_fx_rain_destructor_smoke},
+        {"hud_weather_fx_rain_update_smoke", hud_weather_fx_rain_update_smoke},
+        {"hud_weather_fx_snow_update_smoke", hud_weather_fx_snow_update_smoke},
         {"zhud_background_cursor_widget_member_constructor_smoke",
          zhud_background_cursor_widget_member_constructor_smoke},
         {"zhud_background_cursor_widget_rebuild_captured_image_smoke",
@@ -20102,6 +21527,10 @@ int main(int argc, char **argv) {
         {"zvideo_fxpass3_element_draw_smoke", zvideo_fxpass3_element_draw_smoke},
         {"zvideo_fxpass3_config_constructor_destructor_smoke",
          zvideo_fxpass3_config_constructor_destructor_smoke},
+        {"zvideo_fxpass3_copy_surface_pixel_clipped_smoke",
+         zvideo_fxpass3_copy_surface_pixel_clipped_smoke},
+        {"zvideo_fxpass3_apply_to_current_surface_smoke",
+         zvideo_fxpass3_apply_to_current_surface_smoke},
         {"zvideo_primary_surface_rect_scratch_smoke",
          zvideo_primary_surface_rect_scratch_smoke},
         {"zvideo_image_alpha_clear_smoke", zvideo_image_alpha_clear_smoke},
@@ -20239,6 +21668,8 @@ int main(int argc, char **argv) {
         {"zvideo_set_renderer_type_smoke", zvideo_set_renderer_type_smoke},
         {"zvideo_set_half_res_adjust_mode_smoke",
          zvideo_set_half_res_adjust_mode_smoke},
+        {"zvideo_adjust_surfaces_if_enabled_smoke",
+         zvideo_adjust_surfaces_if_enabled_smoke},
         {"zvideo_handle_software_mode_hotkey_smoke",
          zvideo_handle_software_mode_hotkey_smoke},
         {"zvid_texture_pack_load_state_getter_smoke",
@@ -20425,6 +21856,10 @@ int main(int argc, char **argv) {
          zeffect_find_template_index_by_name_smoke},
         {"zeffect_handle_sample_ref_offset_event_smoke",
          zeffect_handle_sample_ref_offset_event_smoke},
+        {"zeffect_handle_top_message_event_smoke",
+         zeffect_handle_top_message_event_smoke},
+        {"zeffect_world_and_zbd_setters_smoke",
+         zeffect_world_and_zbd_setters_smoke},
         {"zeffect_init_smoke", zeffect_init_smoke},
         {"zeffect_init_from_path_smoke", zeffect_init_from_path_smoke},
         {"zeffect_runtime_node_action_callback_smoke",
@@ -20449,6 +21884,8 @@ int main(int argc, char **argv) {
          zeffect_anim_capture_node_states_smoke},
         {"zeffect_anim_restore_node_states_smoke",
          zeffect_anim_restore_node_states_smoke},
+        {"zeffect_anim_debug_frame_tag_smoke",
+         zeffect_anim_debug_frame_tag_smoke},
         {"zeffect_anim_reset_for_node_smoke",
          zeffect_anim_reset_for_node_smoke},
         {"zeffect_anim_runtime_sequence_group_smoke",
