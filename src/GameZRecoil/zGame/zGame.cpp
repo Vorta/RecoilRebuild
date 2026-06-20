@@ -1982,11 +1982,11 @@ void __fastcall SetReplicateMode(
     *ZOPT_REPLICATE = replicateMode;
 }
 
-// Reimplements 0x408380: zOpt::GetReplicateMode
+/** Reimplements 0x408380: zOpt::GetReplicateMode
+ * Purpose: return the active video replicate-mode option. */
 int GetReplicateMode() {
     return *ZOPT_REPLICATE;
 }
-
 /**
  * Reimplements 0x408260: zOpt::GetNetworkEnabled.
  * Original source path: D:\Proj\Battlesport\zOpt.cpp.
@@ -1996,7 +1996,8 @@ int GetNetworkEnabled() {
     return *ZOPT_NETWORK_ENABLED;
 }
 
-// Reimplements 0x4083d0: zOpt_ViewRectSection::SetPosition
+/** Reimplements 0x4083d0: zOpt_ViewRectSection::SetPosition
+ * Purpose: store origin and recompute bounds from size. */
 void __fastcall ViewRectSection_SetPosition(
     zOpt_ViewRectSection *section,
     int x,
@@ -2009,8 +2010,8 @@ void __fastcall ViewRectSection_SetPosition(
     section->maxXInclusive = section->rightExclusive - 1;
     section->maxYInclusive = section->bottomExclusive - 1;
 }
-
-// Reimplements 0x408400: zOpt_ViewRectSection::SetSize
+/** Reimplements 0x408400: zOpt_ViewRectSection::SetSize
+ * Purpose: store size and recompute bounds from origin. */
 void __fastcall ViewRectSection_SetSize(
     zOpt_ViewRectSection *section,
     int width,
@@ -2023,8 +2024,8 @@ void __fastcall ViewRectSection_SetSize(
     section->maxXInclusive = section->rightExclusive - 1;
     section->maxYInclusive = section->bottomExclusive - 1;
 }
-
-// Reimplements 0x408430: zOpt::ViewRectSection_ClampPointToInclusiveBounds
+/** Reimplements 0x408430: zOpt::ViewRectSection_ClampPointToInclusiveBounds
+ * Purpose: clamp a point to inclusive bounds. */
 void __fastcall ViewRectSection_ClampPointToInclusiveBounds(
     zOpt_ViewRectSection *section,
     float *pointXY
@@ -2041,7 +2042,6 @@ void __fastcall ViewRectSection_ClampPointToInclusiveBounds(
         pointXY[1] = (float)(section->maxYInclusive);
     }
 }
-
 /**
  * Reimplements 0x408530: zOpt::RenderSection_SetPosition.
  * Original file: D:\Proj\GameZRecoil\zGame\zGame.cpp.
@@ -2108,7 +2108,8 @@ void __fastcall RenderSection_SetSize(
     }
 }
 
-// Reimplements 0x408570: zOpt::RenderSection_SetTargetWindow
+/** Reimplements 0x408570: zOpt::RenderSection_SetTargetWindow
+ * Purpose: attach target window and apply render rectangle. */
 void __fastcall RenderSection_SetTargetWindow(
     zClass_NodePartial *windowNode
 ) {
@@ -2127,12 +2128,11 @@ void __fastcall RenderSection_SetTargetWindow(
         );
     }
 }
-
-// Reimplements 0x4085a0: zOpt::GetRenderSection
+/** Reimplements 0x4085a0: zOpt::GetRenderSection
+ * Purpose: return the active render section pointer. */
 zOpt_ViewRectSection *GetRenderSection() {
     return *g_zOpt_RenderSectionOption;
 }
-
 /**
  * Reimplements 0x4085e0: zOpt::DisplaySection_SetPosition.
  * Original file: D:\Proj\GameZRecoil\zGame\zGame.cpp.
@@ -2199,7 +2199,8 @@ void __fastcall DisplaySection_SetSize(
     }
 }
 
-// Reimplements 0x4085b0: zOpt::DisplaySection_SetTargetDisplay
+/** Reimplements 0x4085b0: zOpt::DisplaySection_SetTargetDisplay
+ * Purpose: attach target display and apply display rectangle. */
 void __fastcall DisplaySection_SetTargetDisplay(
     zClass_NodePartial *displayNode
 ) {
@@ -2218,7 +2219,6 @@ void __fastcall DisplaySection_SetTargetDisplay(
         );
     }
 }
-
 /**
  * Reimplements 0x408680: zOpt::DisplaySection_SetBitsPerPixel.
  * Original file: D:\Proj\GameZRecoil\zGame\zGame.cpp.
@@ -2274,7 +2274,8 @@ void __fastcall WindowSection_SetSize(
     );
 }
 
-// Reimplements 0x408480: zOpt::CameraSection_SetActiveCamera
+/** Reimplements 0x408480: zOpt::CameraSection_SetActiveCamera
+ * Purpose: store camera, recompute FOV, and reapply LOD. */
 void __fastcall CameraSection_SetActiveCamera(
     zClass_NodePartial *camera
 ) {
@@ -2302,8 +2303,8 @@ void __fastcall CameraSection_SetActiveCamera(
     zOpt::SetObjectLODForCurrentHwMode(zOpt::GetObjectLODForCurrentHwMode());
 }
 } // namespace zOpt
-
-// Reimplements 0x4084e0: zOpt_CameraSection_GetActiveCamera
+/** Reimplements 0x4084e0: zOpt_CameraSection_GetActiveCamera
+ * Purpose: return active camera or null when unavailable. */
 zClass_NodePartial *zOpt_CameraSection_GetActiveCamera() {
     if (g_zOpt_CameraSectionOption == 0 || *g_zOpt_CameraSectionOption == 0) {
         return 0;
@@ -2311,7 +2312,6 @@ zClass_NodePartial *zOpt_CameraSection_GetActiveCamera() {
 
     return (*g_zOpt_CameraSectionOption)->m_pCamera;
 }
-
 /**
  * Reimplements 0x408190: zOpt::GetPlayerName.
  * Original source path: D:\Proj\GameZRecoil\zOptions\zopt.cpp.

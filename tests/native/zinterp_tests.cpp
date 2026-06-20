@@ -1598,6 +1598,8 @@ extern "C" int zinterp_context_run_stream_builtin_smoke()
 
 extern "C" int zinterp_context_run_script_file_nested_source_smoke()
 {
+    TestZrdrFreePoolScope freePoolScope;
+
     char tempDir[MAX_PATH];
     char mainPath[MAX_PATH];
     char includePath[MAX_PATH];
@@ -1626,6 +1628,7 @@ extern "C" int zinterp_context_run_script_file_nested_source_smoke()
     std::fclose(mainFile);
 
     zInterp_Context context = {};
+    context.Constructor(tempDir, "missing_nested_source_prepared.idx");
     const int runResult = context.RunScriptFile(mainPath);
     const bool resultOk = runResult == 1;
     const bool currentFileOk = context.currentScriptFile == nullptr;
@@ -1634,8 +1637,7 @@ extern "C" int zinterp_context_run_script_file_nested_source_smoke()
     const bool mainMacroOk = context.FindMacroValue("MAIN", nullptr) != nullptr;
     const bool includedMacroOk = context.FindMacroValue("INCLUDED", nullptr) != nullptr;
 
-    context.ClearMacroTable();
-    context.ClearFileFrameStack();
+    context.Destructor();
     DeleteFileA(includePath);
     DeleteFileA(mainPath);
     if (!resultOk) {

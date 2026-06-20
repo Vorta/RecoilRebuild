@@ -55,8 +55,8 @@ Generated from `.agent/RECOIL_PLAN.md`.
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | Reconstructed | all entries | 5888 | 1122 | 0 | 0 | 0 | 7010 |
 | Source dependencies satisfied | authored entries | 3496 | 0 | 0 | 22 | 3076 | 6594 |
-| Source owner | authored entries | 2941 | 0 | 0 | 3653 | 0 | 6594 |
-| Data reimplemented | authored entries | 1011 | 0 | 714 | 1793 | 3076 | 6594 |
+| Source owner | authored entries | 2952 | 0 | 0 | 3642 | 0 | 6594 |
+| Data reimplemented | authored entries | 1023 | 0 | 714 | 1781 | 3076 | 6594 |
 | Reimplemented | authored entries | 3562 | 0 | 0 | 3032 | 0 | 6594 |
 | Provider-boundary | provider entries | 415 | 1 | 0 | 0 | 0 | 416 |
 
@@ -64,8 +64,8 @@ Generated from `.agent/RECOIL_PLAN.md`.
 | --- | ---: | ---: |
 | X | 93 | 1.4% |
 | F | 0 | 0.0% |
-| C | 1702 | 25.8% |
-| B | 1492 | 22.6% |
+| C | 1690 | 25.6% |
+| B | 1504 | 22.8% |
 | A | 1 | 0.0% |
 | S | 3306 | 50.1% |
 <!-- RECOIL_PROGRESS:END -->

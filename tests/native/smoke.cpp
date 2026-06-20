@@ -1026,6 +1026,7 @@ extern "C" int zvideo_handle_software_mode_hotkey_smoke(void);
 extern "C" int zvid_texture_pack_load_state_getter_smoke(void);
 extern "C" int zvid_texture_pack_load_state_setter_smoke(void);
 extern "C" int zvid_option_accessors_smoke(void);
+extern "C" int zvid_hw_api_accessors_smoke(void);
 extern "C" int zvid_cached_renderer_and_texture_counts_smoke(void);
 extern "C" int zvideo_init_set_surface_geometry_from_mode_index_smoke(void);
 extern "C" int zvideo_select_hw_api_device_smoke(void);
@@ -12711,6 +12712,51 @@ extern "C" int zvid_option_accessors_smoke(void) {
     return result;
 }
 
+extern "C" int zvid_hw_api_accessors_smoke(void) {
+    const zVidHwApiDeviceRecordPartial savedRecord = g_zVideo_HwApiDeviceTable[2];
+    zVidHwApiDeviceRecordPartial *const savedSelectedHw =
+        g_zVideo_pSelectedHwApiDeviceRecord;
+    zVidD3DDriverRecordPartial *const savedSelectedD3D =
+        g_zVideo_pSelectedD3DDeviceInfo;
+
+    std::strncpy(g_zVideo_HwApiDeviceTable[2].m_driverName, "driver-two",
+                 sizeof(g_zVideo_HwApiDeviceTable[2].m_driverName));
+    std::strncpy(g_zVideo_HwApiDeviceTable[2].m_driverDescription, "description-two",
+                 sizeof(g_zVideo_HwApiDeviceTable[2].m_driverDescription));
+    std::strncpy(g_zVideo_HwApiDeviceTable[2].m_d3dDrivers[1].m_deviceName, "device-one",
+                 sizeof(g_zVideo_HwApiDeviceTable[2].m_d3dDrivers[1].m_deviceName));
+
+    int result = 0;
+    g_zVideo_pSelectedHwApiDeviceRecord = nullptr;
+    if (std::strcmp(zVid::GetSelectedHwApiDescriptionOrDefault(), "Default") != 0) {
+        result = 1;
+    }
+
+    g_zVideo_pSelectedD3DDeviceInfo = nullptr;
+    if (result == 0 && std::strcmp(zVid::GetSelectedD3DDeviceNameOrDefault(), "GameZ") != 0) {
+        result = 2;
+    }
+
+    if (result == 0) {
+        g_zVideo_pSelectedHwApiDeviceRecord = &g_zVideo_HwApiDeviceTable[2];
+        g_zVideo_pSelectedD3DDeviceInfo = &g_zVideo_HwApiDeviceTable[2].m_d3dDrivers[1];
+        if (zVid::GetHwApiDriverName(2) != g_zVideo_HwApiDeviceTable[2].m_driverName ||
+            zVid::GetHwApiDescription(2) !=
+                g_zVideo_HwApiDeviceTable[2].m_driverDescription ||
+            zVid::GetSelectedHwApiDescriptionOrDefault() !=
+                g_zVideo_HwApiDeviceTable[2].m_driverDescription ||
+            zVid::GetSelectedD3DDeviceNameOrDefault() !=
+                g_zVideo_HwApiDeviceTable[2].m_d3dDrivers[1].m_deviceName) {
+            result = 3;
+        }
+    }
+
+    g_zVideo_HwApiDeviceTable[2] = savedRecord;
+    g_zVideo_pSelectedHwApiDeviceRecord = savedSelectedHw;
+    g_zVideo_pSelectedD3DDeviceInfo = savedSelectedD3D;
+    return result;
+}
+
 extern "C" int czrecoil_frame_init_startup_hw_api_from_options_smoke(void) {
     int mode = 4;
     int acceleration = 0;
@@ -20200,6 +20246,7 @@ int main(int argc, char **argv) {
         {"zvid_texture_pack_load_state_setter_smoke",
          zvid_texture_pack_load_state_setter_smoke},
         {"zvid_option_accessors_smoke", zvid_option_accessors_smoke},
+        {"zvid_hw_api_accessors_smoke", zvid_hw_api_accessors_smoke},
         {"zvid_cached_renderer_and_texture_counts_smoke",
          zvid_cached_renderer_and_texture_counts_smoke},
         {"zvid_set_video_mode_index_smoke",

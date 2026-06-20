@@ -1113,8 +1113,8 @@ void HudUiConfirmQuitOkButton::OnActivate() {
  */
 HudUiBackgroundConfirmQuit * HudUiBackgroundConfirmQuit::Constructor() {
     new ((HudUiBackground *)this) HudUiBackground;
-    okButton.Constructor();
-    cancelButton.Constructor();
+    new (&okButton) HudUiConfirmQuitOkButton;
+    new (&cancelButton) HudUiConfirmQuitCancelButton;
 
     zReader::Node *const dialogRoot = HudUiBackground::LoadFromZrd(
         "dialog.zrd",
@@ -1144,8 +1144,8 @@ HudUiBackgroundConfirmQuit * HudUiBackgroundConfirmQuit::Constructor() {
  * Purpose: Destroy the confirm-quit child widgets before the inherited background cleanup.
  */
 void HudUiBackgroundConfirmQuit::Destructor() {
-    cancelButton.DestructorCore();
-    okButton.DestructorCore();
+    cancelButton.~HudUiConfirmQuitCancelButton();
+    okButton.~HudUiConfirmQuitOkButton();
     this->HudUiBackground::~HudUiBackground();
 }
 

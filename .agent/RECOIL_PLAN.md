@@ -20208,9 +20208,9 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4a7410:
   - [✅] Reconstructed (Name: zVid::GetSelectedHwApiDescriptionOrDefault)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: namespace; Parent: zVideo; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: zVideo; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVid::GetSelectedHwApiDescriptionOrDefault;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvid_selected_hw_api_description;
@@ -20221,28 +20221,28 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4a7430:
   - [✅] Reconstructed (Name: zVid::GetHwApiDescription)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: zVideo; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVid::GetHwApiDescription;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvid_hw_api_description;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4a7450:
   - [✅] Reconstructed (Name: zVid::GetHwApiDriverName)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zVideo; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: zVideo; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zVid::GetHwApiDriverName;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvid_hw_api_driver_name;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4a7490:
   - [☑️] Reconstructed (Name: zVideo::SelectHwApiDeviceOrFallback)
@@ -25991,80 +25991,80 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x408380:
   - [✅] Reconstructed (Name: zOpt::GetReplicateMode)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGame; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: zGame; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zOpt::GetReplicateMode;
     - File: src/GameZRecoil/zGame/zGame.cpp;
     - Target: zopt_get_replicate_mode;
     - Group: engine.zgame;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x408400:
   - [✅] Reconstructed (Name: zOpt_ViewRectSection::SetSize)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGame; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: zGame; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zOpt_ViewRectSection::SetSize;
     - File: src/GameZRecoil/zGame/zGame.cpp;
     - Target: zopt_view_rect_section_set_size;
     - Group: engine.zgame;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x408430:
   - [☑️] Reconstructed (Name: zOpt_ViewRectSection::ClampPointToInclusiveBounds)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGame; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: zGame; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zOpt::ViewRectSection_ClampPointToInclusiveBounds;
     - File: src/GameZRecoil/zGame/zGame.cpp;
     - Target: zopt_view_rect_clamp_point_to_inclusive_bounds;
     - Group: engine.zgame;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4083d0:
   - [✅] Reconstructed (Name: zOpt_ViewRectSection::SetPosition)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGame; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: zGame; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zOpt_ViewRectSection::SetPosition;
     - File: src/GameZRecoil/zGame/zGame.cpp;
     - Target: zopt_view_rect_section_set_position;
     - Group: engine.zgame;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x408480:
   - [✅] Reconstructed (Name: zOpt::CameraSection_SetActiveCamera)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGame; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: zGame; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zOpt::CameraSection_SetActiveCamera;
     - File: src/GameZRecoil/zGame/zGame.cpp;
     - Target: zopt_camera_section_set_active_camera;
     - Group: engine.zgame;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4084e0:
   - [✅] Reconstructed (Name: zOpt::CameraSection_GetActiveCamera)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGame; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: zGame; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zOpt_CameraSection_GetActiveCamera;
     - File: src/GameZRecoil/zGame/zGame.cpp;
     - Target: zopt_camera_section_get_active_camera;
     - Group: engine.zgame;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x408500:
   - [✅] Reconstructed (Name: zOpt::RenderSection_SetSize)
@@ -26095,41 +26095,41 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x408570:
   - [✅] Reconstructed (Name: zOpt::RenderSection_SetTargetWindow)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGame; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: zGame; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zOpt::RenderSection_SetTargetWindow;
     - File: src/GameZRecoil/zGame/zGame.cpp;
     - Target: zopt_render_section_set_target_window;
     - Group: engine.zgame;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4085a0:
   - [✅] Reconstructed (Name: zOpt::GetRenderSection)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGame; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: zGame; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zOpt::GetRenderSection;
     - File: src/GameZRecoil/zGame/zGame.cpp;
     - Target: zopt_get_render_section;
     - Group: engine.zgame;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4085b0:
   - [✅] Reconstructed (Name: zOpt::DisplaySection_SetTargetDisplay)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zGame; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: subsystem; Parent: zGame; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zOpt::DisplaySection_SetTargetDisplay;
     - File: src/GameZRecoil/zGame/zGame.cpp;
     - Target: zopt_display_section_set_target_display;
     - Group: engine.zgame;
-    - Model: pending;
-    - Blocker: source-shape audit pending
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4085e0:
   - [✅] Reconstructed (Name: zOpt::DisplaySection_SetPosition)
