@@ -145,6 +145,11 @@ struct NetPkt01_PlayerColorAssignments {
     zNetworkPlayerColorPair pairs[1];
 };
 
+enum {
+    kZNetworkSessionNameCacheBytes = 0x50,
+    kZNetworkStatusSessionNameBytes = 0x5c
+};
+
 struct zNetworkDPlaySessionDescCache {
     int openMode;
     int reserved_04;
@@ -158,7 +163,7 @@ struct zNetworkSessionDescStatusFields {
     int auxParam;
     int selectedSessionIndex;
     int maxPlayers;
-    char sessionNameBuf[0x5c];
+    char sessionNameBuf[kZNetworkStatusSessionNameBytes];
 };
 
 struct zNetworkDPlayServiceProviderInfo {
@@ -259,7 +264,7 @@ extern zNetworkDPlaySessionDescCache *g_zNetwork_CurrentSessionDescCache;
 extern zNetworkFatalDisconnectCallback g_zNetwork_FatalDisconnectCallback;
 extern int g_zNetwork_FatalDisconnectTriggered;
 extern int g_zNetworkCurrentPlayerCountCached;
-extern char g_zNetwork_SessionNameCache[0x5c];
+extern char g_zNetwork_SessionNameCache[kZNetworkSessionNameCacheBytes];
 extern zArchiveList *g_zNetwork_EnumeratedSessionList;
 extern zNetworkServiceProviderListVec *g_zNetwork_ServiceProviderList;
 extern zNetworkPlayerRecordList *g_zNetwork_PlayerRecordList;
@@ -461,4 +466,5 @@ RECOIL_STATIC_ASSERT(
     ) == 0x18
 );
 RECOIL_STATIC_ASSERT(sizeof(zNetworkSessionDescStatusFields) == 0x74);
+RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_SessionNameCache) == 0x50);
 #endif

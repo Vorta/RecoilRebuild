@@ -1,3 +1,6 @@
+#ifndef GAMEZRECOIL_ZINPUT_ZINPUT_H
+#define GAMEZRECOIL_ZINPUT_ZINPUT_H
+
 #pragma once
 
 #include "recoil/recoil_types.h"
@@ -16,6 +19,7 @@
 typedef void(__fastcall *zInputCommandCallbackFn)(int commandId);
 
 struct zVec3;
+struct zInput_GlobalState;
 
 struct zInput_BindMapContext {
     int m_isOverlay;
@@ -618,8 +622,8 @@ int __fastcall BindMap_PackBindingCode(
     int joy,
     int mouse
 );
-void *__fastcall GlobalStateConstructor(void *self);
-void __fastcall GlobalStateDestructor(void *self);
+void *__fastcall GlobalStateConstructor(::zInput_GlobalState *self);
+void __fastcall GlobalStateDestructor(::zInput_GlobalState *self);
 void *GlobalStateStaticInit();
 int GlobalStateRegisterAtExit();
 void GlobalStateAtExitDestructor();
@@ -740,6 +744,134 @@ void OnAppActivate();
 void OnAppDeactivate();
 } // namespace zInput
 
+// Static zero-filled input lifetime object at 0x561cb0..0x565ebc. BN currently
+// proves the DirectInput root, device registry, keyboard dispatch storage,
+// joystick current/previous state, force-feedback caps, mouse current/previous
+// state, and bind-map overlay tail; the 0x4144..0x4163 interval remains
+// bounded unknown storage.
+struct zInput_DeviceRegistry {
+    unsigned char keyboardFlags;
+    unsigned char joystickFlags;
+    unsigned char mouseFlags;
+    unsigned char unknown_03;
+    unsigned short keyboardRefCount;
+    unsigned short joystickRefCount;
+    unsigned short mouseRefCount;
+    unsigned short unknown_0a;
+};
+typedef char zInput_DeviceRegistry_size_check[(sizeof(zInput_DeviceRegistry) == 0x0c) ? 1 : -1];
+
+struct zInput_GlobalState {
+    zInput::DIDirectInput *directInput;
+    HWND hWnd;
+    zInput_DeviceRegistry deviceRegistry;
+    int keyboardSystemReady;
+    zInput::DIDevice *keyboardDevice;
+    zInput::DIDeviceObjectData *keyboardEventBuffer;
+    int keyboardModifierState;
+    zInput::KbdKeyDispatchEntry keyboardDispatchTable[0x7de];
+    void *keyboardRawEventCallback;
+    void *keyboardRawEventCallbackCtx;
+    int joystickInitialized;
+    zInput::DIDevice *joystickDevice;
+    DIJOYSTATE2 joystickCurrentState;
+    DIJOYSTATE2 joystickPreviousState;
+    unsigned char unknown_4144[0x20];
+    int joystickAxisCount;
+    int joystickCapsForceFeedback;
+    int joystickCapsFFAttack;
+    int joystickCapsFFFade;
+    zInput::JoystickAxisConfig joystickAxisConfig;
+    int mouseInitialized;
+    zInput::DIDevice *mouseDevice;
+    zInput::MouseDeviceState mouseCurrentState;
+    zInput::MouseDeviceState mousePreviousState;
+    unsigned char unknown_41ec[4];
+    zInput_BindMapContext *currentBindMap;
+    int bindMapOverlayBlockSize;
+    zInput_BindMapOverlayStackNode *bindMapOverlayNodeBlockList;
+    zInput_BindMapOverlayStackNode *bindMapOverlayNodeFreeList;
+    zInput_BindMapOverlayStackNode *bindMapOverlayNodeStackHead;
+    int bindMapOverlayReserved;
+    int bindMapOverlayDepth;
+};
+typedef char zInput_GlobalState_directInput_check[
+    (offsetof(zInput_GlobalState, directInput) == 0x00) ? 1 : -1
+];
+typedef char zInput_GlobalState_hWnd_check[
+    (offsetof(zInput_GlobalState, hWnd) == 0x04) ? 1 : -1
+];
+typedef char zInput_GlobalState_deviceRegistry_check[
+    (offsetof(zInput_GlobalState, deviceRegistry) == 0x08) ? 1 : -1
+];
+typedef char zInput_GlobalState_keyboardSystemReady_check[
+    (offsetof(zInput_GlobalState, keyboardSystemReady) == 0x14) ? 1 : -1
+];
+typedef char zInput_GlobalState_keyboardDispatchTable_check[
+    (offsetof(zInput_GlobalState, keyboardDispatchTable) == 0x24) ? 1 : -1
+];
+typedef char zInput_GlobalState_keyboardRawEventCallback_check[
+    (offsetof(zInput_GlobalState, keyboardRawEventCallback) == 0x3f14) ? 1 : -1
+];
+typedef char zInput_GlobalState_joystickInitialized_check[
+    (offsetof(zInput_GlobalState, joystickInitialized) == 0x3f1c) ? 1 : -1
+];
+typedef char zInput_GlobalState_joystickCurrentState_check[
+    (offsetof(zInput_GlobalState, joystickCurrentState) == 0x3f24) ? 1 : -1
+];
+typedef char zInput_GlobalState_joystickPreviousState_check[
+    (offsetof(zInput_GlobalState, joystickPreviousState) == 0x4034) ? 1 : -1
+];
+typedef char zInput_GlobalState_unknown_4144_check[
+    (offsetof(zInput_GlobalState, unknown_4144) == 0x4144) ? 1 : -1
+];
+typedef char zInput_GlobalState_joystickAxisCount_check[
+    (offsetof(zInput_GlobalState, joystickAxisCount) == 0x4164) ? 1 : -1
+];
+typedef char zInput_GlobalState_joystickCapsForceFeedback_check[
+    (offsetof(zInput_GlobalState, joystickCapsForceFeedback) == 0x4168) ? 1 : -1
+];
+typedef char zInput_GlobalState_joystickCapsFFAttack_check[
+    (offsetof(zInput_GlobalState, joystickCapsFFAttack) == 0x416c) ? 1 : -1
+];
+typedef char zInput_GlobalState_joystickCapsFFFade_check[
+    (offsetof(zInput_GlobalState, joystickCapsFFFade) == 0x4170) ? 1 : -1
+];
+typedef char zInput_GlobalState_joystickAxisConfig_check[
+    (offsetof(zInput_GlobalState, joystickAxisConfig) == 0x4174) ? 1 : -1
+];
+typedef char zInput_GlobalState_mouseInitialized_check[
+    (offsetof(zInput_GlobalState, mouseInitialized) == 0x41c4) ? 1 : -1
+];
+typedef char zInput_GlobalState_mouseCurrentState_check[
+    (offsetof(zInput_GlobalState, mouseCurrentState) == 0x41cc) ? 1 : -1
+];
+typedef char zInput_GlobalState_mousePreviousState_check[
+    (offsetof(zInput_GlobalState, mousePreviousState) == 0x41dc) ? 1 : -1
+];
+typedef char zInput_GlobalState_currentBindMap_check[
+    (offsetof(zInput_GlobalState, currentBindMap) == 0x41f0) ? 1 : -1
+];
+typedef char zInput_GlobalState_bindMapOverlayBlockSize_check[
+    (offsetof(zInput_GlobalState, bindMapOverlayBlockSize) == 0x41f4) ? 1 : -1
+];
+typedef char zInput_GlobalState_bindMapOverlayNodeBlockList_check[
+    (offsetof(zInput_GlobalState, bindMapOverlayNodeBlockList) == 0x41f8) ? 1 : -1
+];
+typedef char zInput_GlobalState_bindMapOverlayNodeFreeList_check[
+    (offsetof(zInput_GlobalState, bindMapOverlayNodeFreeList) == 0x41fc) ? 1 : -1
+];
+typedef char zInput_GlobalState_bindMapOverlayNodeStackHead_check[
+    (offsetof(zInput_GlobalState, bindMapOverlayNodeStackHead) == 0x4200) ? 1 : -1
+];
+typedef char zInput_GlobalState_bindMapOverlayReserved_check[
+    (offsetof(zInput_GlobalState, bindMapOverlayReserved) == 0x4204) ? 1 : -1
+];
+typedef char zInput_GlobalState_bindMapOverlayDepth_check[
+    (offsetof(zInput_GlobalState, bindMapOverlayDepth) == 0x4208) ? 1 : -1
+];
+typedef char zInput_GlobalState_size_check[(sizeof(zInput_GlobalState) == 0x420c) ? 1 : -1];
+
 namespace zInp {
 void __fastcall SetJoystickOption(int enabled);
 void __fastcall SetJoystickAxesCountOption(int axisCount);
@@ -748,44 +880,18 @@ int GetJoystickOption();
 } // namespace zInp
 
 extern "C" {
+extern zInput_GlobalState g_zInput_GlobalStateStorage;
 extern const char *g_zInput_DikKeyNames[0x100];
 extern const char *g_zInput_JoystickButtonNames[9];
 extern const char *g_zInput_MouseButtonNames[4];
-extern zInput_BindMapContext *g_zInput_BindMap_Current;
-extern int g_zInput_BindMapOverlayBlockSize;
-extern zInput_BindMapOverlayStackNode *g_zInput_BindMapOverlayNodeBlockList;
-extern zInput_BindMapOverlayStackNode *g_zInput_BindMapOverlayNodeFreeList;
-extern zInput_BindMapOverlayStackNode *g_zInput_BindMapOverlayNodeStackHead;
-extern int g_zInput_BindMapOverlayReserved;
-extern int g_zInput_BindMapOverlayDepth;
 extern zInput_BindGroupInfoList g_zInput_BindGroupInfoList;
 extern int g_zInput_CurrentBindGroupIndex;
 extern int g_zInput_CommandLocIdTable[0x30];
-extern zInput::DIDirectInput *g_zInput_GlobalState;
-extern unsigned char g_zInput_DeviceRegistry;
-extern short g_zInputKeyboardPollRefCount;
 extern int g_zInput_MouseActive;
-extern int g_zInput_MouseInitialized;
-extern zInput::DIDevice *g_zInput_MouseDevice;
 extern int g_zInput_MouseCoopLevelFlags;
-extern unsigned char g_zInputMouseFlags;
-extern short g_zInputMousePollRefCount;
-extern unsigned char g_zInput_KeyboardSuspendFlags;
-extern unsigned char g_zInput_JoystickSuspendFlags;
-extern unsigned char g_zInput_MouseSuspendFlags;
-extern int g_zInput_JoystickInitialized;
-extern zInput::DIDevice *g_zInput_JoystickDevice;
-extern unsigned char g_zInputJoystickFlags;
-extern short g_zInputJoystickPollRefCount;
-extern int g_zInput_JoystickAxisCount;
-extern zInput::JoystickAxisConfig g_zInput_JoystickAxisConfig;
 extern zInput::JoystickAxisConfig g_zInput_JoystickAxisConfig_Gameplay;
-extern DIJOYSTATE2 g_zInput_JoystickCurrentState;
-extern DIJOYSTATE2 g_zInput_JoystickPreviousState;
 extern DIJOYSTATE2 g_zInput_JoystickRawDIState;
 extern zInput::MouseDeviceState g_zInput_MouseRawDIState;
-extern zInput::MouseDeviceState g_zInput_MouseCurrentState;
-extern zInput::MouseDeviceState g_zInput_MousePreviousState;
 extern zInput::MouseStateSnapshot g_zInput_MouseStateSnapshot;
 extern int g_zInputMouseLastPollResult;
 extern int g_zInput_MouseClientWidth;
@@ -797,24 +903,10 @@ extern float g_zInput_MouseInvClientCenterY;
 extern float g_zInput_MouseSensitivityX;
 extern float g_zInput_MouseSensitivityY;
 extern int g_zInput_MouseWrapModeFlag;
-extern HWND g_zInput_hWnd;
-extern int g_zInput_KbdSystemReady;
-extern zInput::DIDevice *g_zInput_KbdDevice;
-extern zInput::DIDeviceObjectData *g_zInput_KbdEventBuffer;
-extern int g_zInput_KbdModifierState;
-extern zInput::KbdKeyDispatchEntry g_zInputKbdKeyDispatchTable[0x7de];
-extern void *g_zInput_KbdRawEventCallback;
-extern void *g_zInput_KbdRawEventCallbackCtx;
 extern int g_zInput_KbdDikToAsciiTable[0x100];
 extern int g_zInput_KbdDikToAsciiTableReady;
-extern int g_zInput_JoystickCaps_ForceFeedback;
 extern zInput_FFEffectSet *g_zInputFfEffectSet;
-extern int g_zInput_JoystickCaps_FFAttack;
-extern int g_zInput_JoystickCaps_FFFade;
 extern zInput_GameStateOrMapTablePartial *g_GameStateOrMapTable;
-extern float g_Player_DeltaTime;
-extern float g_Player_InvDeltaTime;
-extern float g_Player_DeltaTimeScaled001;
 extern float g_zInput_DiPitchAngleLowpassRad;
 extern int *ZOPT_INPUT_JOYSTICK;
 extern int *ZOPT_JOYSTICK_NUM_AXES;
@@ -852,3 +944,44 @@ void zInput_DI_PlayDamageHitEffect(
 );
 void __fastcall zInput_DI_UpdateSteerAndPitchForceEffects(zInput_FFEffectSet *effectSet);
 }
+
+#define g_zInput_GlobalState (g_zInput_GlobalStateStorage.directInput)
+#define g_zInput_hWnd (g_zInput_GlobalStateStorage.hWnd)
+#define g_zInput_DeviceRegistry (g_zInput_GlobalStateStorage.deviceRegistry.keyboardFlags)
+#define g_zInputJoystickFlags (g_zInput_GlobalStateStorage.deviceRegistry.joystickFlags)
+#define g_zInputMouseFlags (g_zInput_GlobalStateStorage.deviceRegistry.mouseFlags)
+#define g_zInput_KeyboardSuspendFlags (g_zInput_DeviceRegistry)
+#define g_zInput_JoystickSuspendFlags (g_zInputJoystickFlags)
+#define g_zInput_MouseSuspendFlags (g_zInputMouseFlags)
+#define g_zInputKeyboardPollRefCount (g_zInput_GlobalStateStorage.deviceRegistry.keyboardRefCount)
+#define g_zInputJoystickPollRefCount (g_zInput_GlobalStateStorage.deviceRegistry.joystickRefCount)
+#define g_zInputMousePollRefCount (g_zInput_GlobalStateStorage.deviceRegistry.mouseRefCount)
+#define g_zInput_KbdSystemReady (g_zInput_GlobalStateStorage.keyboardSystemReady)
+#define g_zInput_KbdDevice (g_zInput_GlobalStateStorage.keyboardDevice)
+#define g_zInput_KbdEventBuffer (g_zInput_GlobalStateStorage.keyboardEventBuffer)
+#define g_zInput_KbdModifierState (g_zInput_GlobalStateStorage.keyboardModifierState)
+#define g_zInputKbdKeyDispatchTable (g_zInput_GlobalStateStorage.keyboardDispatchTable)
+#define g_zInput_KbdRawEventCallback (g_zInput_GlobalStateStorage.keyboardRawEventCallback)
+#define g_zInput_KbdRawEventCallbackCtx (g_zInput_GlobalStateStorage.keyboardRawEventCallbackCtx)
+#define g_zInput_JoystickInitialized (g_zInput_GlobalStateStorage.joystickInitialized)
+#define g_zInput_JoystickDevice (g_zInput_GlobalStateStorage.joystickDevice)
+#define g_zInput_JoystickCurrentState (g_zInput_GlobalStateStorage.joystickCurrentState)
+#define g_zInput_JoystickPreviousState (g_zInput_GlobalStateStorage.joystickPreviousState)
+#define g_zInput_JoystickAxisCount (g_zInput_GlobalStateStorage.joystickAxisCount)
+#define g_zInput_JoystickCaps_ForceFeedback (g_zInput_GlobalStateStorage.joystickCapsForceFeedback)
+#define g_zInput_JoystickCaps_FFAttack (g_zInput_GlobalStateStorage.joystickCapsFFAttack)
+#define g_zInput_JoystickCaps_FFFade (g_zInput_GlobalStateStorage.joystickCapsFFFade)
+#define g_zInput_JoystickAxisConfig (g_zInput_GlobalStateStorage.joystickAxisConfig)
+#define g_zInput_MouseInitialized (g_zInput_GlobalStateStorage.mouseInitialized)
+#define g_zInput_MouseDevice (g_zInput_GlobalStateStorage.mouseDevice)
+#define g_zInput_MouseCurrentState (g_zInput_GlobalStateStorage.mouseCurrentState)
+#define g_zInput_MousePreviousState (g_zInput_GlobalStateStorage.mousePreviousState)
+#define g_zInput_BindMap_Current (g_zInput_GlobalStateStorage.currentBindMap)
+#define g_zInput_BindMapOverlayBlockSize (g_zInput_GlobalStateStorage.bindMapOverlayBlockSize)
+#define g_zInput_BindMapOverlayNodeBlockList (g_zInput_GlobalStateStorage.bindMapOverlayNodeBlockList)
+#define g_zInput_BindMapOverlayNodeFreeList (g_zInput_GlobalStateStorage.bindMapOverlayNodeFreeList)
+#define g_zInput_BindMapOverlayNodeStackHead (g_zInput_GlobalStateStorage.bindMapOverlayNodeStackHead)
+#define g_zInput_BindMapOverlayReserved (g_zInput_GlobalStateStorage.bindMapOverlayReserved)
+#define g_zInput_BindMapOverlayDepth (g_zInput_GlobalStateStorage.bindMapOverlayDepth)
+
+#endif

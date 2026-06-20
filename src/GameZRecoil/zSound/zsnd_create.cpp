@@ -11,6 +11,14 @@
 extern "C" void *g_zSnd_BackendDevice;
 
 namespace {
+/*
+ * Source owner note: current BN source comments place the DirectSound sample
+ * creation, A3D sample creation, backend lock/unlock helpers, and streaming
+ * sample factory in the original zsnd_create.cpp cluster. The backend device
+ * and active-backend selector are extern zSound runtime data owned outside this
+ * file; this slice only consumes them, so the source/data owner gate remains
+ * blocked until the larger zSound runtime-global owner is linked.
+ */
 const char kZSndCreateSourceFile[] = "D:\\Proj\\GameZRecoil\\zSound\\zsnd_create.cpp";
 const char kCreateSoundBufferError[] = "Error creating sound buffer ( %s )";
 
@@ -35,6 +43,10 @@ RECOIL_STATIC_ASSERT(sizeof(zSndDirectSoundLegacyBufferDesc) == 20);
 
 /**
  * Reimplements 0x4a3180: zSndSample::InitFromWaveData_DirectSound.
+ *
+ * Evidence: BN source comment and assembly show the DirectSound path in
+ * zsnd_create.cpp with a 20-byte legacy buffer descriptor, provider calls
+ * through the backend device, PCM copy into locked spans, and cue marker setup.
  *
  * Purpose: create a DirectSound sample buffer from parsed WAV data, upload the
  * PCM bytes, initialize cue markers, and clear the loading flag.
@@ -230,6 +242,11 @@ int __fastcall zSndSample::InitFromWaveData_DirectSound(
 /**
  * Reimplements 0x4a2ec0: zSndSample::InitFromWaveData_A3D.
  *
+ * Evidence: BN source comment and functional target evidence place the A3D WAV
+ * upload path in zsnd_create.cpp, with NewSource, SetWaveFormat,
+ * AllocateWaveData, Lock/Unlock PCM copy, post-Rewind spatial setup from replay
+ * flags, cue marker setup, and loading-flag clear.
+ *
  * Purpose: create an A3D source from parsed WAV data, upload the PCM bytes,
  * configure spatial playback, initialize cue markers, and clear the loading flag.
  */
@@ -389,6 +406,10 @@ int __fastcall zSndSample::InitFromWaveData_A3D(
 /**
  * Reimplements 0x4a34e0: zSndSample::LockBackendBuffers.
  *
+ * Evidence: BN assembly dispatches active backend 0 to the DirectSound Lock
+ * slot and active backend 1 to the A3D Lock slot, with zsnd_create.cpp error
+ * source lines 0x1ec and 0x1e3.
+ *
  * Purpose: lock the active DirectSound or A3D sample buffer and return the
  * writable spans for streamed audio updates.
  */
@@ -453,6 +474,10 @@ int __fastcall zSndSample::LockBackendBuffers(
 /**
  * Reimplements 0x4a3590: zSndSample::UnlockBackendBuffers.
  *
+ * Evidence: BN assembly dispatches active backend 0 to the DirectSound Unlock
+ * slot and active backend 1 to the A3D commit-write slot, with zsnd_create.cpp
+ * error source lines 0x222 and 0x21b.
+ *
  * Purpose: unlock or commit the active backend sample-buffer spans after
  * streamed audio updates.
  */
@@ -505,6 +530,10 @@ int __fastcall zSndSample::UnlockBackendBuffers(
 /**
  * Reimplements 0x4a2ea0: zSndSample::InitFromWaveData.
  *
+ * Evidence: BN assembly switches on the zSound active-backend selector and
+ * dispatches backend 0 to the DirectSound initializer and backend 1 to the A3D
+ * initializer, both in this source-file cluster.
+ *
  * Purpose: dispatch parsed WAV initialization to the currently selected sound
  * backend.
  */
@@ -526,6 +555,10 @@ int __fastcall zSndSample::InitFromWaveData(
 
 /**
  * Reimplements 0x4a3850: zSndSample_CreateQueuedStreamingSample.
+ *
+ * Evidence: BN assembly allocates a zeroed zSndSample, constructs a temporary
+ * zSndWaveData around caller-owned PCM storage, dispatches InitFromWaveData,
+ * mirrors the init result into replay flag bit 0x08, and frees on failure.
  *
  * Purpose: allocate a streaming zSndSample around caller-owned PCM storage and
  * initialize it through the active backend.

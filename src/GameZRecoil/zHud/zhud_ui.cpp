@@ -201,7 +201,8 @@ char g_HudUiOptionsPanel_SoundActiveToggleNodeName[] = "SOUND_ACTIVE";
 /**
  * Reimplements data 0x4dac64: g_EffectsZrdNodeName
  * (BN: g_HudUiOptionsPanel_EffectsNodeName).
- * Data owner gate remains pending; this docblock records source provenance only.
+ * Shared data owner: effects_weapons.shared_effects_zrd_node_name; this is
+ * not HudOptionsDialog-owned data.
  * Purpose: name the shared EFFECTS ZRD node consumed by HudOptionsDialog and
  * zEffect::InitFromPath.
  */
@@ -11568,6 +11569,15 @@ HudUiBackground * HudCmdDialog::ScalarDeletingDestructor(
 }
 
 /**
+ * HudOptionsDialog owner evidence: BN constructor 0x40c720 builds the
+ * HudUiBackground base, constructs the typed options-panel child widgets,
+ * installs their derived dispatch identities, binds the dialog.zrd node names,
+ * and destructor 0x40cf60 destroys the same members in reverse order. The
+ * retail HudUiOptionsPanel_* dispatch data is compiler-emitted class evidence,
+ * not production-source permission for FTable records or table factories.
+ */
+
+/**
  * Reimplements 0x40c6e0: HudUiOptionsPanelBackButton::OnActivate.
  * Original source path: D:\Proj\Battlesport\HudOptionsDialog.cpp.
  * Purpose: store the selected HUD type and leave the options panel.
@@ -11583,39 +11593,43 @@ void HudUiOptionsPanelBackButton::OnActivate() {
 }
 
 /**
- * Reimplements 0x40c9e0: HudUiOptionsPanel_Lighting::OnActivate.
+ * Recovered compatibility wrapper for HudUiOptionsPanel_Lighting::SyncFromOptions.
+ * No standalone retail function is assigned to this wrapper; 0x40c9e0 is the
+ * address-backed option-sync body in this owner cluster.
  * Purpose: toggle the global lighting graphics flag from the lighting checkbox.
  */
 void HudUiOptionsPanel_Lighting::OnActivate() {
+    HudUiOptionsPanel_Lighting::SyncFromOptions();
+}
+
+/**
+ * Source-faithful helper: no standalone retail function is assigned; 0x40c9c0
+ * is the address-backed option-init body in this HudOptionsDialog owner cluster.
+ * The wrapper preserves the recovered virtual PostLoadFromZrd call shape.
+ * Purpose: synchronize the lighting toggle from the active hardware-mode graphics flags.
+ */
+void HudUiOptionsPanel_Lighting::PostLoadFromZrd() {
+    HudUiOptionsPanel_Lighting::InitFromOptions();
+}
+
+/**
+ * Reimplements 0x40c9c0: HudUiOptionsPanel_Lighting::InitFromOptions.
+ * Purpose: synchronize the lighting toggle from the active hardware-mode graphics flags.
+ */
+void HudUiOptionsPanel_Lighting::InitFromOptions() {
+    SetChecked(zOpt::GetGraphicsFlagsForCurrentHwMode() & ZOPT_GRAPHICS_GLOBAL_LIGHT);
+}
+
+/**
+ * Reimplements 0x40c9e0: HudUiOptionsPanel_Lighting::SyncFromOptions.
+ * Purpose: toggle the global lighting graphics flag from the lighting checkbox.
+ */
+void HudUiOptionsPanel_Lighting::SyncFromOptions() {
     const int flags = zOpt::GetGraphicsFlagsForCurrentHwMode();
     HudUiCheckToggleWidget::OnActivate();
     zOpt::SetGraphicsFlagsForCurrentHwMode(
         checked != 0 ? (flags | ZOPT_GRAPHICS_GLOBAL_LIGHT) : (flags & ~ZOPT_GRAPHICS_GLOBAL_LIGHT)
     );
-}
-
-/**
- * Reimplements 0x40c9c0: HudUiOptionsPanel_Lighting::PostLoadFromZrd.
- * Purpose: synchronize the lighting toggle from the active hardware-mode graphics flags.
- */
-void HudUiOptionsPanel_Lighting::PostLoadFromZrd() {
-    SetChecked(zOpt::GetGraphicsFlagsForCurrentHwMode() & ZOPT_GRAPHICS_GLOBAL_LIGHT);
-}
-
-/**
- * Recovered compatibility helper for HudUiOptionsPanel_Lighting::PostLoadFromZrd.
- * Purpose: synchronize the lighting toggle from the active hardware-mode graphics flags.
- */
-void HudUiOptionsPanel_Lighting::InitFromOptions() {
-    HudUiOptionsPanel_Lighting::PostLoadFromZrd();
-}
-
-/**
- * Recovered compatibility helper for HudUiOptionsPanel_Lighting::OnActivate.
- * Purpose: toggle the global lighting graphics flag from the lighting checkbox.
- */
-void HudUiOptionsPanel_Lighting::SyncFromOptions() {
-    HudUiOptionsPanel_Lighting::OnActivate();
 }
 
 /**
@@ -11629,19 +11643,21 @@ void HudUiOptionsPanel_Perspective::OnActivate() {
 }
 
 /**
- * Reimplements 0x40ca20: HudUiOptionsPanel_Perspective::PostLoadFromZrd.
+ * Source-faithful helper: no standalone retail function is assigned; 0x40ca20
+ * is the address-backed option-init body in this HudOptionsDialog owner cluster.
+ * The wrapper preserves the recovered virtual PostLoadFromZrd call shape.
  * Purpose: synchronize the perspective toggle from the active hardware-mode graphics flags.
  */
 void HudUiOptionsPanel_Perspective::PostLoadFromZrd() {
-    SetChecked(zOpt::GetGraphicsFlagsForCurrentHwMode() & ZOPT_GRAPHICS_PERSPECTIVE);
+    HudUiOptionsPanel_Perspective::InitFromOptions();
 }
 
 /**
- * Recovered compatibility helper for HudUiOptionsPanel_Perspective::PostLoadFromZrd.
+ * Reimplements 0x40ca20: HudUiOptionsPanel_Perspective::InitFromOptions.
  * Purpose: synchronize the perspective toggle from the active hardware-mode graphics flags.
  */
 void HudUiOptionsPanel_Perspective::InitFromOptions() {
-    HudUiOptionsPanel_Perspective::PostLoadFromZrd();
+    SetChecked(zOpt::GetGraphicsFlagsForCurrentHwMode() & ZOPT_GRAPHICS_PERSPECTIVE);
 }
 
 /**
@@ -11658,19 +11674,21 @@ void HudUiOptionsPanel_Perspective::SyncFromOptions() {
 }
 
 /**
- * Reimplements 0x40ca80: HudUiOptionsPanel_FullHud::PostLoadFromZrd.
+ * Source-faithful helper: no standalone retail function is assigned; 0x40ca80
+ * is the address-backed option-init body in this HudOptionsDialog owner cluster.
+ * The wrapper preserves the recovered virtual PostLoadFromZrd call shape.
  * Purpose: synchronize the full-HUD toggle from the active hardware-mode HUD type.
  */
 void HudUiOptionsPanel_FullHud::PostLoadFromZrd() {
-    SetChecked(zOpt::GetHudTypeForCurrentHwMode() == ZOPT_HUD_TYPE_PERSPECTIVE);
+    HudUiOptionsPanel_FullHud::InitFromOptions();
 }
 
 /**
- * Recovered compatibility helper for HudUiOptionsPanel_FullHud::PostLoadFromZrd.
+ * Reimplements 0x40ca80: HudUiOptionsPanel_FullHud::InitFromOptions.
  * Purpose: synchronize the full-HUD toggle from the active hardware-mode HUD type.
  */
 void HudUiOptionsPanel_FullHud::InitFromOptions() {
-    HudUiOptionsPanel_FullHud::PostLoadFromZrd();
+    SetChecked(zOpt::GetHudTypeForCurrentHwMode() == ZOPT_HUD_TYPE_PERSPECTIVE);
 }
 
 /**
@@ -11684,19 +11702,21 @@ void HudUiOptionsPanel_ObjectDetail::OnActivate() {
 }
 
 /**
- * Reimplements 0x40cab0: HudUiOptionsPanel_ObjectDetail::PostLoadFromZrd.
+ * Source-faithful helper: no standalone retail function is assigned; 0x40cab0
+ * is the address-backed option-init body in this HudOptionsDialog owner cluster.
+ * The wrapper preserves the recovered virtual PostLoadFromZrd call shape.
  * Purpose: synchronize the object detail selector from the active hardware-mode object LOD.
  */
 void HudUiOptionsPanel_ObjectDetail::PostLoadFromZrd() {
-    SetIndexClamped(zOpt::GetObjectLODForCurrentHwMode());
+    HudUiOptionsPanel_ObjectDetail::InitFromOptions();
 }
 
 /**
- * Recovered compatibility helper for HudUiOptionsPanel_ObjectDetail::PostLoadFromZrd.
+ * Reimplements 0x40cab0: HudUiOptionsPanel_ObjectDetail::InitFromOptions.
  * Purpose: synchronize the object detail selector from the active hardware-mode object LOD.
  */
 void HudUiOptionsPanel_ObjectDetail::InitFromOptions() {
-    HudUiOptionsPanel_ObjectDetail::PostLoadFromZrd();
+    SetIndexClamped(zOpt::GetObjectLODForCurrentHwMode());
 }
 
 /**

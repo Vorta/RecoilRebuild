@@ -16,17 +16,57 @@ float g_zMath_ProjOffsetX = 0.0f;
 float g_zMath_ProjOffsetY = 0.0f;
 float g_zMath_InvProjScaleX = 0.0f;
 float g_zMath_InvProjScaleY = 0.0f;
+/**
+ * Reimplements data 0x4e4880: g_zMath_ClipZLowerBound.
+ * Purpose: stores the mutable lower Z clipping plane used by the zMath line
+ * segment clipping helpers.
+ */
 float g_zMath_ClipZLowerBound = 1.0f;
+/**
+ * Reimplements data 0x4e4890: g_zMath_ClipZUpperBound.
+ * Purpose: stores the mutable upper Z clipping plane used by the zMath line
+ * segment clipping helpers.
+ */
 float g_zMath_ClipZUpperBound = 1.0f;
+/**
+ * Reimplements data 0x4d08d4: shared zMath midpoint half scalar.
+ * Purpose: supplies Vec3Midpoint's component scale after summing both source
+ * vectors.
+ */
 const float g_zMath_MidpointHalf = 0.5f;
+/**
+ * Reimplements data 0x4d2918: shared zMath vector zero scalar.
+ * Purpose: supplies float-zero comparisons for recovered vector helpers.
+ */
 const float g_zMath_Vec3ZeroFloat = 0.0f;
+/**
+ * Reimplements data 0x4d291c: shared zMath vector unit scalar.
+ * Purpose: supplies reciprocal numerator constants for recovered vector
+ * helpers.
+ */
 const float g_zMath_Vec3UnitFloat = 1.0f;
+/**
+ * Reimplements data 0x4d2928: shared zMath negative unit scalar.
+ * Purpose: supplies the zero-dot reflection negation multiplier.
+ */
 const float g_zMath_Vec3NegUnitFloat = -1.0f;
-const float g_zMath_MatrixUnitFloat = 1.0f;
+const float g_zMath_MatrixUnitFloat = 1.0f; // Reimplements data 0x4d297c: shared zMath matrix/projection unit scalar.
+/**
+ * Reimplements data 0x4d2960: shared zMath double zero scalar.
+ * Purpose: supplies the x87 zero comparisons used by zMath vector,
+ * projection, and line/sphere intersection helpers.
+ */
 const double g_zMath_DoubleZero = 0.0;
+/**
+ * Reimplements data 0x4d2970: distinct shared zMath double zero scalar.
+ * Purpose: supplies zMath_SolveLinearGradient2D's x87 double-zero comparison
+ * for degenerate determinants.
+ */
+const double g_zMath_DoubleZero2 = 0.0;
 const double g_zMath_Vec3SlerpDotNegThreshold = -0.95;
 const float g_zMath_Vec3SlerpPiFloat = 3.14159274f;
 const double g_zMath_Vec3SlerpDotPosThreshold = 0.95;
+const float g_zMath_ElevationPiFloat = 3.14159274f; // Reimplements data 0x4d2998: Euler roll adjustment pi scalar.
 int g_zMath_ScreenWidthPx = 0;
 int g_zMath_ScreenHeightPx = 0;
 float g_zMath_FocalScaleX = 0.0f;
@@ -654,6 +694,8 @@ void __fastcall Vec3PerpXZ(
 /**
  * Reimplements 0x472770: zMath::Vec3ScaleAdd (GameZRecoil/zMath/zmath_vec3.cpp).
  * Purpose: Computes out = vec + scale * delta for each vector component.
+ * Data: reads only caller-supplied vector/scalar inputs and writes only the
+ * caller-supplied output vector.
  */
 void __fastcall Vec3ScaleAdd(
     const zVec3 *vec,
@@ -669,6 +711,8 @@ void __fastcall Vec3ScaleAdd(
 /**
  * Reimplements 0x472860: zMath::Vec3Reflect (GameZRecoil/zMath/zmath_vec3.cpp).
  * Purpose: Reflects an incident vector around a normal, with the zero-dot case negating the incident vector.
+ * Data: reads shared zMath scalar constants 0x4d2918 and 0x4d2928; writes
+ * only the caller-supplied output vector.
  */
 void __fastcall Vec3Reflect(
     zVec3 *normal,
@@ -735,6 +779,8 @@ void __fastcall Vec3LerpNormalize(
 /**
  * Reimplements 0x4729b0: zMath::Vec3DirectionTo (GameZRecoil/zMath/zmath_vec3.cpp).
  * Purpose: Writes the normalized direction from one point to another and returns the original distance.
+ * Data: writes only the caller-supplied output vector before delegating
+ * normalization to zMath::Vec3Normalize.
  */
 float __fastcall Vec3DirectionTo(
     const zVec3 *from,
@@ -817,8 +863,15 @@ void __fastcall Vec3Slerp(
     out->z *= invSinOmega;
 }
 
-// Reimplements 0x475210: zMath::LineVsSphereHit
-// (D:\Proj\GameZRecoil\zMath\zMathGeom.cpp)
+/**
+ * Reimplements 0x475210: zMath::LineVsSphereHit
+ * (D:\Proj\GameZRecoil\zMath\zMathGeom.cpp).
+ * Purpose: tests a segment direction against a sphere and writes the
+ * normalized inward hit normal when the hit lies in front of the segment
+ * origin.
+ * Data: reads the shared zMath zero scalar at 0x4d2960 for x87 comparisons;
+ * writes only the caller-supplied output normal.
+ */
 int __fastcall LineVsSphereHit(
     const zVec3 *segA,
     const zVec3 *segB,
@@ -890,6 +943,8 @@ int __fastcall LineVsSphereHit(
 /**
  * Reimplements 0x42d560: zMath::Vec3Midpoint (GameZRecoil/zMath/zmath_vec3.cpp).
  * Purpose: Writes the component-wise midpoint of two vectors and returns the output pointer.
+ * Data: reads shared zMath scalar constant 0x4d08d4 and writes only the
+ * caller-supplied output vector.
  */
 zVec3 *__fastcall Vec3Midpoint(
     const zVec3 *a,
@@ -1378,8 +1433,13 @@ void __fastcall ProjectPointBatch(
     }
 }
 
-// Reimplements 0x4bd800: zMath::ClipLineSegmentPointToZ
-// (D:\Proj\GameZ\z_math.cpp)
+/**
+ * Reimplements 0x4bd800: zMath::ClipLineSegmentPointToZ
+ * (D:\Proj\GameZ\z_math.cpp).
+ * Purpose: moves one segment endpoint onto the caller-supplied Z clip plane by
+ * interpolating toward the other endpoint.
+ * Data: writes only the caller-supplied endpoint and reads no authored globals.
+ */
 void __fastcall ClipLineSegmentPointToZ(
     zVec3 *pointToClip,
     const zVec3 *otherPoint,
@@ -1392,8 +1452,14 @@ void __fastcall ClipLineSegmentPointToZ(
     pointToClip->z = clipZ;
 }
 
-// Reimplements 0x4bd720: zMath::ClipLineSegmentToZRange
-// (D:\Proj\GameZ\z_math.cpp)
+/**
+ * Reimplements 0x4bd720: zMath::ClipLineSegmentToZRange
+ * (D:\Proj\GameZ\z_math.cpp).
+ * Purpose: clips a mutable segment against the current zMath lower and upper
+ * Z clipping planes, rejecting segments fully outside the range.
+ * Data: reads g_zMath_ClipZLowerBound at 0x4e4880 and
+ * g_zMath_ClipZUpperBound at 0x4e4890.
+ */
 int __fastcall ClipLineSegmentToZRange(
     zVec3 *pointA,
     zVec3 *pointB
@@ -1826,7 +1892,11 @@ float __fastcall zMath_Mat_ExtractYaw(
     );
 }
 
-// Reimplements 0x474e10: zMath_Mat_ExtractEulerAngles
+/**
+ * Reimplements 0x474e10: zMath_Mat_ExtractEulerAngles
+ * (D:\Proj\GameZRecoil\zMath\zmath_matrix.cpp).
+ * Purpose: extracts pitch, yaw, and roll from a 4x3 rotation matrix.
+ */
 void __fastcall zMath_Mat_ExtractEulerAngles(
     const zMat4x3 *matrix,
     zVec3 *outEuler
@@ -1859,7 +1929,7 @@ void __fastcall zMath_Mat_ExtractEulerAngles(
         rollHorizontalLength
     );
     if (matrix->yy < 0.0f) {
-        roll = 3.14159274f - roll;
+        roll = g_zMath_ElevationPiFloat - roll;
     }
 
     outEuler->x = pitch;
@@ -1962,6 +2032,8 @@ void __fastcall zMath_Camera_StageInverseRotation(
  * Reimplements 0x4757c0: zMath_Quat_FromEuler
  * (D:\Proj\GameZRecoil\zMath\zMath_Quat.cpp).
  * Purpose: converts three Euler rotation angles into a quaternion.
+ * Data: reads no authored zMath globals; VC5 materializes literal and x87
+ * range-check constants while lowering the sin/cos half-angle calls.
  */
 void __fastcall zMath_Quat_FromEuler(
     zQuat *outQuat,
@@ -1987,8 +2059,11 @@ void __fastcall zMath_Quat_FromEuler(
     outQuat->z = cos1Cos0 * sin2 - sin1Sin0 * cos2;
 }
 
-// Reimplements 0x475910: zMath_Quat_Multiply
-// (D:\Proj\GameZRecoil\zMath\zMath_Quat.cpp)
+/**
+ * Reimplements 0x475910: zMath_Quat_Multiply
+ * (D:\Proj\GameZRecoil\zMath\zMath_Quat.cpp).
+ * Purpose: computes the quaternion product used by zMath rotation composition.
+ */
 void __fastcall zMath_Quat_Multiply(
     const zQuat *quatA,
     const zQuat *quatB,
@@ -2058,8 +2133,11 @@ void __fastcall zMath_Quat_ToMatrix(
     outMatrix3x3->zz = 1.0f - xx2 - yy2;
 }
 
-// Reimplements 0x475b80: zMath_Quat_FromRotationVector
-// (D:\Proj\GameZRecoil\zMath\zMath_Quat.cpp)
+/**
+ * Reimplements 0x475b80: zMath_Quat_FromRotationVector
+ * (D:\Proj\GameZRecoil\zMath\zMath_Quat.cpp).
+ * Purpose: converts a rotation vector into a quaternion, returning identity for a zero vector.
+ */
 void __fastcall zMath_Quat_FromRotationVector(
     const zVec3 *rotationVector,
     zQuat *outQuat
@@ -2119,7 +2197,14 @@ void __fastcall zMath_Vec3_TriangleNormal(
     zMath::Vec3Normalize(outNormal);
 }
 
-// Reimplements 0x475130: zMath_SolveLinearGradient2D (GameZRecoil/zMath/zMathMisc.cpp)
+/**
+ * Reimplements 0x475130: zMath_SolveLinearGradient2D
+ * (D:\Proj\GameZRecoil\zMath\zMathMisc.cpp).
+ * Purpose: solves the screen-space linear gradient of a scalar over a triangle.
+ * Data: reads the distinct shared zMath zero double at 0x4d2970
+ * (g_zMath_DoubleZero2) and unit float at 0x4d297c; writes only the two
+ * caller-supplied output floats.
+ */
 void __fastcall zMath_SolveLinearGradient2D(
     float *outDuDx,
     float *outDuDy,
@@ -2139,7 +2224,7 @@ void __fastcall zMath_SolveLinearGradient2D(
     const float dyCB = cy - by;
     const float determinant = dyCB * dxAB - dxCB * dyAB;
 
-    if (determinant == 0.0f) {
+    if (determinant == g_zMath_DoubleZero2) {
         *outDuDx = 0.0f;
         *outDuDy = 0.0f;
         return;
@@ -2147,7 +2232,7 @@ void __fastcall zMath_SolveLinearGradient2D(
 
     const float duAB = ua - ub;
     const float duCB = uc - ub;
-    const float invDeterminant = 1.0f / determinant;
+    const float invDeterminant = g_zMath_MatrixUnitFloat / determinant;
     *outDuDx = (dyCB * duAB - duCB * dyAB) * invDeterminant;
     *outDuDy = (duCB * dxAB - dxCB * duAB) * invDeterminant;
 }
@@ -2155,6 +2240,8 @@ void __fastcall zMath_SolveLinearGradient2D(
 /**
  * Reimplements 0x4727a0: zMath_Vec3_DivScalar (GameZRecoil/zMath/zmath_vec3.cpp).
  * Purpose: Divides a vector by a scalar while preserving the input vector for zero divisors.
+ * Data: reads shared zMath scalar constants 0x4d2918 and 0x4d291c; writes
+ * only the caller-supplied output vector.
  */
 void __fastcall zMath_Vec3_DivScalar(
     const zVec3 *vec,
@@ -2191,7 +2278,13 @@ void __fastcall zMath_ProjectSphereBatch(
 }
 
 namespace zFloat {
-// Reimplements 0x490330: zFloat::Set255f
+/**
+ * Reimplements 0x490330: zFloat::Set255f
+ * (Battlesport/zMath/zfloat.c).
+ * Purpose: stores the byte-maximum float constant into the caller-supplied
+ * output slot.
+ * Data: writes only the caller-supplied float pointer.
+ */
 void __fastcall Set255f(
     float *value
 ) {

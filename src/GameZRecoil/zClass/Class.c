@@ -11,30 +11,119 @@
 #include <string.h>
 
 extern "C" {
+/**
+ * Reimplements data 0x539c94: g_zClass_NodeArray.
+ * BN evidence: zClass::Init/ShutdownCore and ZBD node-table helpers reference
+ * this global node pool pointer, and Class.c alloc/free paths index through it.
+ * Purpose: store the active zClass node-slot array backing runtime scene nodes.
+ */
 zClass_NodeFreeListSlot *g_zClass_NodeArray = 0;
+/**
+ * Reimplements data 0x539c98: g_zClass_ActiveNodeCount.
+ * BN evidence: Class.c alloc/free paths update this count, while zClass::Init,
+ * ShutdownCore, and ZBD reads reset or recompute it from the node pool.
+ * Purpose: count currently allocated nodes in the global zClass node array.
+ */
 int g_zClass_ActiveNodeCount = 0;
+/**
+ * Reimplements data 0x4de4c8: g_zClass_NodeFreeHeadIndex.
+ * BN evidence: Class.c alloc/free paths load and store this head index, with
+ * zClass::Init/ShutdownCore and ZBD serialization preserving the free list.
+ * Purpose: identify the first free zClass node-slot index or -1 when empty.
+ */
 int g_zClass_NodeFreeHeadIndex = -1;
-char g_zClass_CurrentZbdPath[260] = {0};
+/**
+ * Reimplements data 0x539ca8: g_zClass_CurrentZbdPath.
+ * BN data inventory declares char[0x30] at 0x539ca8.
+ * Purpose: store the current ZBD path prefix used by zClass loading.
+ */
+char g_zClass_CurrentZbdPath[0x30] = {0};
+/**
+ * Reimplements data 0x4f36bc: g_MainCamera.
+ * BN evidence: player, HUD, and play-state camera callers reference this
+ * global before zClass_Camera operations and world-node attachment calls.
+ * Purpose: store the current main camera node used by gameplay and rendering.
+ */
 zClass_NodePartial *g_MainCamera = 0;
 /**
  * Reimplements data 0x4f36b8: g_Player_RuntimeDiScene.
  * Purpose: Stores g Player RuntimeDiScene data used by engine.zclass.player_runtime_di_scene_global.
  */
 zClass_NodePartial *g_Player_RuntimeDiScene = 0;
-int gModel_ClipMaskStack[0x40] = {0};
-int *gModel_ClipMaskStackTop = gModel_ClipMaskStack;
-zClass_RenderFn gModel_RenderFn = 0;
+/**
+ * Reimplements data 0x4ddd28: g_zClass_RenderBoundsContextActive.
+ * BN evidence: camera, sound, light, object, animate, LOD, sequence, and switch
+ * render traversals test and bracket this flag while updating bounds contexts.
+ * Purpose: mark that rendering is inside a bounds-update traversal context.
+ */
 int g_zClass_RenderBoundsContextActive = 0;
+/**
+ * Reimplements data 0x4ddd2c: g_zClass_RenderFrustumGridTileIndex.
+ * BN evidence: camera frustum-grid rendering writes this index and object
+ * traversal reads it when selecting grid-tile render behavior.
+ * Purpose: identify the active frustum-grid tile during camera render passes.
+ */
 int g_zClass_RenderFrustumGridTileIndex = 0;
+/**
+ * Reimplements data 0x539980: g_zClass_RenderRangeFadeActive.
+ * BN evidence: LOD traversal brackets this flag, and render traversals test it
+ * before applying range-fade blend scale to display instances.
+ * Purpose: mark that range-fade alpha scaling is active for child renders.
+ */
 int g_zClass_RenderRangeFadeActive = 0;
+/**
+ * Reimplements data 0x539828: g_zClass_RenderRangeFadeScale.
+ * BN evidence: LOD traversal computes this float and camera, sound, light,
+ * object, and animate traversals copy it into display-instance blend scale.
+ * Purpose: store the current range-fade blend scale for render traversal.
+ */
 float g_zClass_RenderRangeFadeScale = 0.0f;
+/**
+ * Reimplements data 0x539b94: g_zClass_RenderVertexAlphaOverrideActive.
+ * BN evidence: object and LOD render traversals set, test, and clear this flag
+ * around vertex-alpha override rendering.
+ * Purpose: prevent nested vertex-alpha override state from being applied twice.
+ */
 int g_zClass_RenderVertexAlphaOverrideActive = 0;
+/**
+ * Reimplements data 0x4ddd3c: g_zClass_RenderAlphaScaleStackTop.
+ * BN evidence: object and LOD render traversals push and pop this index, then
+ * restore zModel render alpha scale from the stack top.
+ * Purpose: track the current render alpha-scale stack entry.
+ */
 int g_zClass_RenderAlphaScaleStackTop = -1;
-float g_zClass_RenderAlphaScaleStack[0x20] = {0};
+/**
+ * Reimplements data 0x539830: g_zClass_RenderAlphaScaleStack.
+ * BN data inventory declares float[0x10] at 0x539830.
+ * Purpose: store nested render alpha scale values for traversal restore.
+ */
+float g_zClass_RenderAlphaScaleStack[0x10] = {0};
+/**
+ * Reimplements data 0x4ddd40: g_zClass_SoftwarePathStateStackTop.
+ * BN evidence: object render traversal pushes and pops this index while
+ * restoring software-path color and alpha render state.
+ * Purpose: track the current software renderer color/alpha state stack entry.
+ */
 int g_zClass_SoftwarePathStateStackTop = -1;
-zClass_RenderColorAlphaState g_zClass_SoftwarePathRenderStateStack[0x20] = {0};
+/**
+ * Reimplements data 0x539988: g_zClass_SoftwarePathRenderStateStack.
+ * BN data inventory declares a 64-byte stack, matching four color/alpha states.
+ * Purpose: store nested software render color and alpha state.
+ */
+zClass_RenderColorAlphaState g_zClass_SoftwarePathRenderStateStack[4] = {0};
+/**
+ * Reimplements data 0x4ddd30: g_zClass_LodDistanceStateStackTop.
+ * BN evidence: LOD traversal and camera/video render setup read, reset, push,
+ * and pop this index while computing active LOD distance state.
+ * Purpose: track the current LOD distance-state stack entry during rendering.
+ */
 int g_zClass_LodDistanceStateStackTop = 0;
-zClass_LodDistanceState g_zClass_LodDistanceStateStack[0x20] = {0};
+/**
+ * Reimplements data 0x539900: g_zClass_LodDistanceStateStack.
+ * BN data inventory declares a 64-byte stack, matching four LOD states.
+ * Purpose: store nested LOD distance state for render traversal.
+ */
+zClass_LodDistanceState g_zClass_LodDistanceStateStack[4] = {0};
 }
 
 namespace {
@@ -129,23 +218,99 @@ namespace {
         return 0;
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
-    zMat4x3 *MatrixAt(
-        void *base,
-        size_t offset
+    /*
+     * BN type evidence: zClass_CameraData stores a union at 0x80 whose
+     * cachedViewMatrix arm is used by node bbox query helpers 0x4487c0 and
+     * 0x448920.
+     */
+    struct zClass_CameraViewTargetStatePartial {
+        unsigned char viewBasis[0x24];
+        zVec3 worldTarget;
+    };
+
+    union zClass_CameraViewOverlayPartial {
+        zClass_CameraViewTargetStatePartial targetState;
+        zMat4x3 cachedViewMatrix;
+    };
+
+    struct zClass_CameraBBoxQueryDataPartial {
+        zClass_NodePartial *worldNode;
+        zClass_NodePartial *windowNode;
+        zClass_NodePartial *horizonNode;
+        zClass_NodePartial *horizonXZNode;
+        int cameraFlags;
+        zVec3 targetOrEuler;
+        zVec3 posOffset;
+        zVec3 worldPos;
+        zVec3 eulerAngles;
+        zMat4x3 worldTransform;
+        zVec3 forwardDir;
+        zClass_CameraViewOverlayPartial viewOverlay;
+    };
+
+    RECOIL_STATIC_ASSERT(sizeof(zClass_CameraViewTargetStatePartial) == 0x30);
+    RECOIL_STATIC_ASSERT(sizeof(zClass_CameraViewOverlayPartial) == 0x30);
+    RECOIL_STATIC_ASSERT(
+        offsetof(
+            zClass_CameraBBoxQueryDataPartial,
+            viewOverlay
+        ) == 0x80
+    );
+
+    /**
+     * Original-source helper evidence: no standalone retail function is
+     * present; observed in Class.c bbox/query callers 0x4487c0 and 0x448920.
+     * Purpose: select the cached camera view matrix stored in camera data.
+     */
+    const zMat4x3 *CameraCachedViewMatrix(
+        const zClass_CameraDataPartial *cameraData
     ) {
-        return (zMat4x3 *)((unsigned char *)(base) + offset);
+        return &((const zClass_CameraBBoxQueryDataPartial *)(cameraData))
+                    ->viewOverlay.cachedViewMatrix;
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
-    const zMat4x3 *MatrixAt(
-        const void *base,
-        size_t offset
+    /**
+     * Original-source helper evidence: no standalone retail function is
+     * present; observed in Class.c update/bbox callers 0x4487c0, 0x448920,
+     * and 0x448cc0.
+     * Purpose: select the mutable cached camera view matrix in camera data.
+     */
+    zMat4x3 *CameraCachedViewMatrix(
+        zClass_CameraDataPartial *cameraData
     ) {
-        return (const zMat4x3 *)((const unsigned char *)(base) + offset);
+        return &((zClass_CameraBBoxQueryDataPartial *)(cameraData))
+                    ->viewOverlay.cachedViewMatrix;
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original-source helper evidence: no standalone retail function is
+     * present; observed in Class.c bbox/update callers 0x4487c0, 0x448920,
+     * and 0x448cc0.
+     * Purpose: expose an object node's local transform as a matrix.
+     */
+    const zMat4x3 *Object3DLocalMatrix(
+        const zClass_Object3DDataPartial *objectData
+    ) {
+        return (const zMat4x3 *)(objectData->localMatrix);
+    }
+
+    /**
+     * Original-source helper evidence: no standalone retail function is
+     * present; observed in Class.c bbox/update callers 0x4487c0, 0x448920,
+     * and 0x448cc0.
+     * Purpose: expose an animate node's sampled transform as a matrix.
+     */
+    const zMat4x3 *AnimateTransform(
+        const zClass_AnimateDataPartial *animateData
+    ) {
+        return (const zMat4x3 *)(animateData->animatedTransform);
+    }
+
+    /**
+     * Original-source helper evidence: no standalone retail function is
+     * present; observed in Class.c typed vector-field access patterns.
+     * Purpose: address a mutable zVec3 field inside a recovered class record.
+     */
     zVec3 *Vec3At(
         void *base,
         size_t offset
@@ -153,7 +318,11 @@ namespace {
         return (zVec3 *)((unsigned char *)(base) + offset);
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original-source helper evidence: no standalone retail function is
+     * present; observed in Class.c typed vector-field access patterns.
+     * Purpose: address a const zVec3 field inside a recovered class record.
+     */
     const zVec3 *Vec3At(
         const void *base,
         size_t offset
@@ -161,7 +330,11 @@ namespace {
         return (const zVec3 *)((const unsigned char *)(base) + offset);
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original-source helper evidence: no standalone retail function is
+     * present; observed in Class.c matrix query/update callers.
+     * Purpose: copy the current zMath matrix into caller-owned matrix storage.
+     */
     void CopyCurrentMatrixTo(float *outMatrix) {
         zMat4x3 out = {0};
         zMath::MatCopyCurrentTo(&out);
@@ -172,38 +345,67 @@ namespace {
         );
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original-source helper evidence: no standalone retail function is
+     * present; observed in 0x448cc0 camera update setup as the repeated
+     * unit-scale vector.
+     * Purpose: return a zVec3 scale of one on each axis.
+     */
     zVec3 UnitScale() {
         zVec3 result = {1.0f, 1.0f, 1.0f};
         return result;
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original-source helper evidence: no standalone retail function is
+     * present; observed in Class.c bbox query callers.
+     * Purpose: view a node's cached bounds as a typed bounding box.
+     */
     const zBBox3f *CachedBBox(const zClass_NodePartial *node) {
         return (const zBBox3f *)(node->cachedBounds);
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original-source helper evidence: no standalone retail function is
+     * present; observed in 0x448e90 and 0x4491b0.
+     * Purpose: access the child-aggregate bounding box for a node slot.
+     */
     zBBox3f *SecondaryBBox(zClass_NodePartial * node) {
         return &zClass_NodeSlotFromNode(node)->secondaryBounds;
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original-source helper evidence: no standalone retail function is
+     * present; observed in 0x448e90 and 0x449420.
+     * Purpose: access the display-instance bounding box for a node slot.
+     */
     zBBox3f *PrimaryBBox(zClass_NodePartial * node) {
         return &zClass_NodeSlotFromNode(node)->primaryBounds;
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original-source helper evidence: no standalone retail function is
+     * present; observed in 0x448e90 and bbox query callers.
+     * Purpose: access the const display-instance bounding box for a node slot.
+     */
     const zBBox3f *PrimaryBBox(const zClass_NodePartial *node) {
         return &zClass_NodeSlotFromNode(node)->primaryBounds;
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original-source helper evidence: no standalone retail function is
+     * present; observed in 0x448e90 and bbox query callers.
+     * Purpose: access the const child-aggregate bounding box for a node slot.
+     */
     const zBBox3f *SecondaryBBox(const zClass_NodePartial *node) {
         return &zClass_NodeSlotFromNode(node)->secondaryBounds;
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original-source helper evidence: no standalone retail function is
+     * present; observed in 0x4487c0, 0x448920, and 0x448e90 bbox paths.
+     * Purpose: expand a min/max box into its eight corner points.
+     */
     void CopyBBoxToCorners(
         const zBBox3f *bbox,
         zBBoxCorners *outCorners
@@ -235,7 +437,11 @@ namespace {
         out[23] = bbox->minZ;
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original-source helper evidence: no standalone retail function is
+     * present; observed in 0x448920 view-bounds matrix composition.
+     * Purpose: combine the current view matrix with a node-local matrix.
+     */
     void MultiplyMatricesForViewBBox(
         const zMat4x3 *currentMatrix,
         const zMat4x3 *nodeMatrix,
@@ -270,7 +476,11 @@ namespace {
                           currentMatrix->zz * nodeMatrix->posZ + currentMatrix->posZ;
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original-source helper evidence: no standalone retail function is
+     * present; observed in 0x4491b0 and 0x448e90 corner-scanning loops.
+     * Purpose: enlarge a min/max box to include one corner point.
+     */
     void ExpandBBoxWithCorner(
         zBBox3f * bbox,
         const float *corner
@@ -292,7 +502,11 @@ namespace {
         }
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original-source helper evidence: no standalone retail function is
+     * present; observed in 0x448e90 primary/secondary box merge logic.
+     * Purpose: produce the union of two node bounding boxes.
+     */
     zBBox3f MergeBBoxes(
         const zBBox3f *a,
         const zBBox3f *b
@@ -307,7 +521,11 @@ namespace {
         return merged;
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original-source helper evidence: no standalone retail function is
+     * present; observed in 0x448e90 cached-bounds update logic.
+     * Purpose: copy a typed bounding box into the node cached-bounds storage.
+     */
     void CopyBBoxToCachedBounds(
         zClass_NodePartial * node,
         const zBBox3f *bbox
@@ -319,7 +537,11 @@ namespace {
         );
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original-source helper evidence: no standalone retail function is
+     * present; observed in 0x448e90 before world-grid rebucketing.
+     * Purpose: compute the XZ extents of a node's world-space bounds corners.
+     */
     void ComputeXZRectFromCorners(
         zClass_NodePartial * node,
         float *outMinX,
@@ -370,6 +592,12 @@ namespace zClass_Class {
                 0,
                 0xc0
             );
+            /**
+             * Reimplements data 0x539c98: g_zClass_ActiveNodeCount.
+             * BN evidence: AllocNodeFromFreeList increments this global after
+             * clearing a popped node slot from g_zClass_NodeArray.
+             * Purpose: account for the newly active node before type-list use.
+             */
             ++g_zClass_ActiveNodeCount;
             zClass_TypeList::Insert(
                 6,
@@ -399,7 +627,12 @@ namespace zClass_Class {
         return 0;
     }
 
-    // Reimplements 0x448cc0: zClass_Class::gwNodeUpdate
+    /**
+     * Reimplements 0x448cc0: zClass_Class::gwNodeUpdate.
+     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * Purpose: process pending transform and bounds work for one scene node
+     * and run class-specific camera, world, object, and animate updates.
+     */
     int __fastcall gwNodeUpdate(zClass_NodePartial * node) {
         int result = 0;
         bool needsBBoxRecalc = false;
@@ -420,10 +653,7 @@ namespace zClass_Class {
             zClass_CameraDataPartial *cameraData = (zClass_CameraDataPartial *)(node->classData);
             if (cameraData != 0 && (cameraData->cameraFlags & 0x04) != 0) {
                 if ((cameraData->cameraFlags & 0x02) == 0) {
-                    zMath::MatStackPushPtr((float *)(MatrixAt(
-                        cameraData,
-                        0x80
-                    )));
+                    zMath::MatStackPushPtr((float *)(CameraCachedViewMatrix(cameraData)));
                     zMath::MatLoadIdentity();
                     zMath::MatApplyLocalTRS(
                         &cameraData->posOffset,
@@ -489,7 +719,7 @@ namespace zClass_Class {
                 0x200,
                 kClassSourceFile,
                 0x99e,
-                "gwNodeUpdate() : Unrecognized node class type:\n  node = %s class_type = %d\n",
+                "gwNodeUpdate(): Unrecognized node class type:\n  node = %s class_type = %d\n",
                 node,
                 node->classId
             );
@@ -504,7 +734,12 @@ namespace zClass_Class {
         return result;
     }
 
-    // Reimplements 0x449420: zClass_Class::gwNodeUpdateDisplayInstance
+    /**
+     * Reimplements 0x449420: zClass_Class::gwNodeUpdateDisplayInstance.
+     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * Purpose: rebuild display-instance bounds into the node primary box and
+     * update the primary-bounds-valid flag.
+     */
     int __fastcall gwNodeUpdateDisplayInstance(zClass_NodePartial * node) {
         if (ReportNullNode(
             0xb31,
@@ -527,10 +762,12 @@ namespace zClass_Class {
         return 0;
     }
 
-    // Reimplements 0x448760: zClass_Class::gwNodeGetBBox
-    // (D:\Proj\GameZRecoil\zClass\Class.c)
-    int __fastcall
-    gwNodeGetBBox(
+    /**
+     * Reimplements 0x448760: zClass_Class::gwNodeGetBBox.
+     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * Purpose: copy the cached node bounding box when it is currently valid.
+     */
+    int __fastcall gwNodeGetBBox(
         zClass_NodePartial * node,
         zBBox3f * outBBox
     ) {
@@ -561,9 +798,13 @@ namespace zClass_Class {
         return 0;
     }
 
-    // Reimplements 0x4487c0: zClass_Class::gwNodeGetWorldBBoxCorners
-    int __fastcall
-    gwNodeGetWorldBBoxCorners(
+    /**
+     * Reimplements 0x4487c0: zClass_Class::gwNodeGetWorldBBoxCorners.
+     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * Purpose: return cached bounds corners in world/node space for object,
+     * camera, animate, and untransformed node classes.
+     */
+    int __fastcall gwNodeGetWorldBBoxCorners(
         zClass_NodePartial * node,
         zBBoxCorners * outCorners
     ) {
@@ -592,33 +833,32 @@ namespace zClass_Class {
                 (const zClass_Object3DDataPartial *)(node->classData);
             if ((objectData->flags & 0x08) == 0) {
                 zMath_Mat_TransformBBoxToCorners(
-                    (const zMat4x3 *)(objectData->localMatrix),
+                    Object3DLocalMatrix(objectData),
                     bbox,
                     outCorners
                 );
                 return 0;
             }
         } else if (node->classId == 1) {
+            const zClass_CameraDataPartial *cameraData =
+                (const zClass_CameraDataPartial *)(node->classData);
             zMath_Mat_TransformBBoxToCorners(
-                MatrixAt(
-                    node->classData,
-                    0x80
-                ),
+                CameraCachedViewMatrix(cameraData),
                 bbox,
                 outCorners
             );
             return 0;
-        } else if (node->classId == 8 && (node->flags & 0x04) != 0 &&
-                   (((const unsigned char *)(node->classData))[4] & 0x04) != 0) {
-            zMath_Mat_TransformBBoxToCorners(
-                MatrixAt(
-                    node->classData,
-                    0x08
-                ),
-                bbox,
-                outCorners
-            );
-            return 0;
+        } else if (node->classId == 8) {
+            const zClass_AnimateDataPartial *animateData =
+                (const zClass_AnimateDataPartial *)(node->classData);
+            if ((node->flags & 0x04) != 0 && (animateData->statusFlags & 0x04) != 0) {
+                zMath_Mat_TransformBBoxToCorners(
+                    AnimateTransform(animateData),
+                    bbox,
+                    outCorners
+                );
+                return 0;
+            }
         }
 
         CopyBBoxToCorners(
@@ -628,9 +868,13 @@ namespace zClass_Class {
         return 0;
     }
 
-    // Reimplements 0x448920: zClass_Class::gwNodeGetViewBBoxCorners
-    int __fastcall
-    gwNodeGetViewBBoxCorners(
+    /**
+     * Reimplements 0x448920: zClass_Class::gwNodeGetViewBBoxCorners.
+     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * Purpose: return cached bounds corners after combining the active view
+     * transform with any class-specific node transform.
+     */
+    int __fastcall gwNodeGetViewBBoxCorners(
         zClass_NodePartial * node,
         zBBoxCorners * outCorners
     ) {
@@ -660,12 +904,12 @@ namespace zClass_Class {
         const zMat4x3 *nodeMatrix = 0;
 
         switch (node->classId) {
-        case 1:
-            nodeMatrix = MatrixAt(
-                node->classData,
-                0x80
-            );
+        case 1: {
+            const zClass_CameraDataPartial *cameraData =
+                (const zClass_CameraDataPartial *)(node->classData);
+            nodeMatrix = CameraCachedViewMatrix(cameraData);
             break;
+        }
         case 2:
         case 6:
         case 7:
@@ -675,22 +919,19 @@ namespace zClass_Class {
             const zClass_Object3DDataPartial *objectData =
                 (const zClass_Object3DDataPartial *)(node->classData);
             skipTransform = (objectData->flags >> 3) & 0x01;
-            nodeMatrix = MatrixAt(
-                node->classData,
-                0x30
-            );
+            nodeMatrix = Object3DLocalMatrix(objectData);
             break;
         }
-        case 8:
+        case 8: {
+            const zClass_AnimateDataPartial *animateData =
+                (const zClass_AnimateDataPartial *)(node->classData);
             if ((node->flags & 0x04) == 0 ||
-                (((const unsigned char *)(node->classData))[4] & 0x04) == 0) {
+                (animateData->statusFlags & 0x04) == 0) {
                 skipTransform = 1;
             }
-            nodeMatrix = MatrixAt(
-                node->classData,
-                0x08
-            );
+            nodeMatrix = AnimateTransform(animateData);
             break;
+        }
         case 9:
         case 10:
             break;
@@ -746,7 +987,12 @@ namespace zClass_Class {
         return returnCode;
     }
 
-    // Reimplements 0x4491b0: zClass_Class::gwNodeComputeChildBBox
+    /**
+     * Reimplements 0x4491b0: zClass_Class::gwNodeComputeChildBBox.
+     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * Purpose: merge valid child world-bounds corners into the node's
+     * secondary bounding box.
+     */
     int __fastcall gwNodeComputeChildBBox(zClass_NodePartial * node) {
         if (ReportNullNode(
             0xaa3,
@@ -821,7 +1067,12 @@ namespace zClass_Class {
         return 0;
     }
 
-    // Reimplements 0x448e90: zClass_Class::gwNodeRecalcBBox
+    /**
+     * Reimplements 0x448e90: zClass_Class::gwNodeRecalcBBox.
+     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * Purpose: select or merge primary and child bounds, cache the result, and
+     * propagate parent/world-grid bounds updates.
+     */
     int __fastcall gwNodeRecalcBBox(zClass_NodePartial * node) {
         if (ReportNullNode(
             0x9d0,
@@ -2314,10 +2565,7 @@ namespace gwNode {
                     );
                 } else {
                     zMath::MatMultiply(
-                        MatrixAt(
-                            cameraData,
-                            0x80
-                        ),
+                        CameraCachedViewMatrix(cameraData),
                         1
                     );
                 }
@@ -2451,8 +2699,11 @@ namespace gwNode {
         return 0;
     }
 
-    // Reimplements 0x449850: gwNode::TransformPoint
-    // (D:\Proj\GameZRecoil\zClass\Class.c)
+    /**
+     * Reimplements 0x449850: gwNode::TransformPoint.
+     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * Purpose: transform a point from node-local space into world space.
+     */
     int __fastcall TransformPoint(
         zClass_NodePartial * node,
         zVec3 * point
@@ -2484,8 +2735,12 @@ namespace gwNode {
         return 0;
     }
 
-    // Reimplements 0x4498e0: gwNode::GetWorldPosAndOrientation
-    // (D:\Proj\GameZRecoil\zClass\Class.c)
+    /**
+     * Reimplements 0x4498e0: gwNode::GetWorldPosAndOrientation.
+     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * Purpose: compute a node world position and derive orientation angles
+     * from transformed basis points.
+     */
     int __fastcall GetWorldPosAndOrientation(
         zClass_NodePartial * node,
         zVec3 * inOutPosition,
@@ -2552,10 +2807,13 @@ namespace gwNode {
 }
 
 namespace zClass_Class {
-    // Reimplements 0x44c0e0: zClass_Class::gwNodeRenderDispatch
-    // (D:\Proj\GameZRecoil\zClass\Class.c)
-    int __fastcall
-    gwNodeRenderDispatch(
+    /**
+     * Reimplements 0x44c0e0: zClass_Class::gwNodeRenderDispatch.
+     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * Purpose: route visible scene nodes to the class-specific render
+     * traversal after variant-tag filtering.
+     */
+    int __fastcall gwNodeRenderDispatch(
         zClass_NodePartial * node,
         int siblingCountHint
     ) {

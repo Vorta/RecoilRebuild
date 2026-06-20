@@ -22,19 +22,84 @@
 #include <time.h>
 
 extern "C" {
+/**
+ * Reimplements data 0x575a40: g_zEffect_RuntimeManager.
+ * Purpose: Owns the loaded runtime-effect template table, free-list, parent,
+ * and listener state used by eff_runtime.c.
+ */
 zEffect_RuntimeManager g_zEffect_RuntimeManager = {0};
+/**
+ * Reimplements data 0x575a80: g_zEffect_RandUnitTable.
+ * Purpose: Stores the initialized random-unit table consumed by zEffect
+ * animation runtime events.
+ */
 float g_zEffect_RandUnitTable[200] = {0};
+/**
+ * Reimplements data 0x53a0b8: g_zEffect_RandUnitScale.
+ * Purpose: Stores the rand-to-unit scale used to populate
+ * g_zEffect_RandUnitTable during zEffect_Anim::Init.
+ */
 float g_zEffect_RandUnitScale = 0.0f;
+/**
+ * Reimplements data 0x53a244: g_zEffect_RandTableIndex.
+ * Purpose: Tracks the cursor into g_zEffect_RandUnitTable for repeated
+ * animation event sampling.
+ */
 int g_zEffect_RandTableIndex = 0;
+/**
+ * Reimplements data 0x53a1c0: g_zEffectAnim_ZbdFilename.
+ * Purpose: Stores the animation ZBD path loaded by zeff_anim_init.c.
+ */
 char g_zEffectAnim_ZbdFilename[0x80] = {0};
+/**
+ * Reimplements data 0x575da0: g_zEffectAnim_EntriesInstantiated.
+ * Purpose: Records whether animation entries have been loaded and
+ * instantiated.
+ */
 int g_zEffectAnim_EntriesInstantiated = 0;
+/**
+ * Reimplements data 0x575da4: g_zEffectAnim_HeapPtr.
+ * Purpose: Retains the loaded animation heap block released by shutdown.
+ */
 void *g_zEffectAnim_HeapPtr = 0;
+/**
+ * Reimplements data 0x575da8: g_zEffectAnim_CountsPackedLoWord.
+ * Purpose: Stores the packed count field read from the animation ZBD header.
+ */
 short g_zEffectAnim_CountsPackedLoWord = 0;
+/**
+ * Reimplements data 0x575daa: g_zEffectAnim_EntryCount.
+ * Purpose: Tracks the number of entries in g_zEffectAnim_EntryList.
+ */
 short g_zEffectAnim_EntryCount = 0;
+/**
+ * Reimplements data 0x575dac: g_zEffectAnim_EntryList.
+ * Purpose: Owns the loaded animation entry table used by load, shutdown,
+ * save, activation, and runtime dispatch.
+ */
 zEffectAnimEntry *g_zEffectAnim_EntryList = 0;
+/**
+ * Reimplements data 0x575db0: g_zEffectAnim_TextIdEntryCount.
+ * Purpose: Tracks localized text-id entries loaded from the animation ZBD.
+ */
 int g_zEffectAnim_TextIdEntryCount = 0;
+/**
+ * Reimplements data 0x575db4: g_zEffectAnim_TextIdEntryList.
+ * Purpose: Owns the localized text-id entry table loaded from the animation
+ * ZBD.
+ */
 zEffectAnimTextIdEntry *g_zEffectAnim_TextIdEntryList = 0;
+/**
+ * Reimplements data 0x53a248: g_zEffectAnim_SourceFileStampCount.
+ * Purpose: Tracks source-file stamp records used to reject stale animation
+ * ZBD data.
+ */
 int g_zEffectAnim_SourceFileStampCount = 0;
+/**
+ * Reimplements data 0x53a24c: g_zEffectAnim_SourceFileStampList.
+ * Purpose: Owns the temporary source-file stamp table read during animation
+ * ZBD loading.
+ */
 zEffectAnimSourceFileStamp *g_zEffectAnim_SourceFileStampList = 0;
 /**
  * Reimplements data 0x4df724: g_zEffectAnim_CopyNodeMode.
@@ -51,22 +116,78 @@ int g_zEffectAnim_CopyNodeArg1 = 1;
  * Purpose: Stores g zEffectAnim CopyNodeArg2 data used by engine.zeffect.anim_init_data.
  */
 int g_zEffectAnim_CopyNodeArg2 = 1;
+/**
+ * Reimplements data 0x53a240: g_zEffectAnim_ForceCloneNonDynamicRoot.
+ * Purpose: Forces loaded animation roots outside dynamic/world classes to be
+ * copied before runtime binding.
+ */
 int g_zEffectAnim_ForceCloneNonDynamicRoot = 0;
+/**
+ * Reimplements data 0x4dfaec: g_zEffect_CloneCopyMode.
+ * Purpose: Supplies the primary copy mode for runtime effect template clones.
+ */
 int g_zEffect_CloneCopyMode = 1;
+/**
+ * Reimplements data 0x4dfaf0: g_zEffect_CloneCopyChildrenMode.
+ * Purpose: Supplies the child-copy mode for runtime effect template clones.
+ */
 int g_zEffect_CloneCopyChildrenMode = 1;
 /**
  * Reimplements data 0x575db8: g_zEffect_World.
  * Purpose: Stores g zEffect World data used by engine.zeffect.stop_cleanup_globals.
  */
 zClass_NodePartial *g_zEffect_World = 0;
+/**
+ * Reimplements data 0x575dbc: g_zEffect_DefaultGravity.
+ * Purpose: Stores the default gravity value restored from animation ZBD state.
+ */
 float g_zEffect_DefaultGravity = 0.0f;
+/**
+ * Reimplements data 0x575dc0: g_zEffect_ConditionalRefPosEnabled.
+ * Purpose: Enables conditional reference-position distance checks.
+ */
 int g_zEffect_ConditionalRefPosEnabled = 0;
-float g_zEffect_ConditionalRefPosX = 0.0f;
-float g_zEffect_ConditionalRefPosY = 0.0f;
-float g_zEffect_ConditionalRefPosZ = 0.0f;
-int g_zEffect_ConditionalEffectLevel = 0;
+/**
+ * Reimplements data 0x575dc4: g_zEffect_VariantOverrideEnabled.
+ * Purpose: Enables the packed variant override once every id is complete.
+ */
 int g_zEffect_VariantOverrideEnabled = 0;
+/**
+ * Reimplements data 0x575dc8: g_zEffect_ConditionalRefPosX.
+ * Purpose: Stores the conditional reference-position X component.
+ */
+float g_zEffect_ConditionalRefPosX = 0.0f;
+/**
+ * Reimplements data 0x575dcc: g_zEffect_ConditionalRefPosY.
+ * Purpose: Stores the conditional reference-position Y component.
+ */
+float g_zEffect_ConditionalRefPosY = 0.0f;
+/**
+ * Reimplements data 0x575dd0: g_zEffect_ConditionalRefPosZ.
+ * Purpose: Stores the conditional reference-position Z component.
+ */
+float g_zEffect_ConditionalRefPosZ = 0.0f;
+/**
+ * Reimplements data 0x575dd4: g_zEffect_VariantOverridePackedIds.
+ * Purpose: Stores the completed packed variant ids copied from zTag4Partial.
+ */
 unsigned int g_zEffect_VariantOverridePackedIds = 0;
+/**
+ * Reimplements data 0x575dd8: g_zEffect_FrameDeltaRemainingSec.
+ * Purpose: Stores g zEffect FrameDeltaRemainingSec data used by engine.zeffect.stop_cleanup_globals.
+ */
+float g_zEffect_FrameDeltaRemainingSec = 0.0f;
+/**
+ * Reimplements data 0x539ea0: g_zEffect_ConditionalEffectLevel.
+ * Purpose: Stores the active conditional-chain level for zEffect animation
+ * events.
+ */
+int g_zEffect_ConditionalEffectLevel = 0;
+/**
+ * Reimplements data 0x539ea8: g_zEffect_VariantCycleId.
+ * Purpose: Stores the current variant cycle id used by zEffect material
+ * variant events.
+ */
 int g_zEffect_VariantCycleId = 0;
 /**
  * Reimplements data 0x539ea4: g_zEffect_SkipStopDelay.
@@ -74,24 +195,71 @@ int g_zEffect_VariantCycleId = 0;
  */
 int g_zEffect_SkipStopDelay = 0;
 /**
- * Reimplements data 0x575dd8: g_zEffect_FrameDeltaRemainingSec.
- * Purpose: Stores g zEffect FrameDeltaRemainingSec data used by engine.zeffect.stop_cleanup_globals.
+ * Reimplements data 0x4df670: g_zEffect_Anim_DebugFrameTag.
+ * Purpose: Stores the frame tag assigned by zEffect::SetAnimDebugFrameTag.
  */
-float g_zEffect_FrameDeltaRemainingSec = 0.0f;
-int g_zEffect_Anim_DebugFrameTag = 0;
-zClass_NodePartial *g_zEffect_ResourceNode = 0;
+int g_zEffect_Anim_DebugFrameTag = -1;
+/**
+ * Reimplements data 0x4df730: g_zEffect_ResourceNode.
+ * Purpose: Stores the resource root node required to load animation ZBD data.
+ */
+zClass_NodePartial *g_zEffect_ResourceNode = (zClass_NodePartial *)(1);
+/**
+ * Reimplements data 0x53a2d8: g_zEffectAnim_ActivationRecordTable.
+ * Purpose: Owns the queued activation-record table used to save, load, and replay deferred animation activations.
+ */
 zEffectAnimActivationRecord *g_zEffectAnim_ActivationRecordTable = 0;
+/**
+ * Reimplements data 0x53a2dc: g_zEffectAnim_ActivationRecordCapacity.
+ * Purpose: Tracks the allocated activation-record slots for the queue table.
+ */
 int g_zEffectAnim_ActivationRecordCapacity = 0;
+/**
+ * Reimplements data 0x53a2e0: g_zEffectAnim_ActivationRecordCount.
+ * Purpose: Tracks the number of queued activation records available for serialization or dispatch.
+ */
 int g_zEffectAnim_ActivationRecordCount = 0;
+/**
+ * Reimplements data 0x53a2e4: g_zEffectAnim_ActivationDispatchCallback.
+ * Purpose: Stores the optional activation-record dispatch callback.
+ */
 void(__fastcall *g_zEffectAnim_ActivationDispatchCallback)(
     zEffectAnimActivationRecord *record
 ) = 0;
+/**
+ * Reimplements data 0x53a2e8: g_zEffectAnim_ActivationDispatchTagHigh.
+ * Purpose: Stores the high-byte activation-record tag context.
+ */
 unsigned int g_zEffectAnim_ActivationDispatchTagHigh = 0;
+/**
+ * Reimplements data 0x4df9b4: g_zEffectAnim_RecordQueueEnabled.
+ * Purpose: Enables allocation of activation records when commands should be queued instead of run immediately.
+ */
 int g_zEffectAnim_RecordQueueEnabled = 1;
+/**
+ * Reimplements data 0x4df9b8: g_zEffectAnim_DispatchEnabled.
+ * Purpose: Enables immediate activation dispatch when queueing is bypassed.
+ */
 int g_zEffectAnim_DispatchEnabled = 1;
+/**
+ * Reimplements data 0x4df734: g_zEffectAnim_EnableZarRegistration.
+ * Purpose: Enables registration of animation save/load ZAR section handlers.
+ */
 int g_zEffectAnim_EnableZarRegistration = 1;
+/**
+ * Reimplements data 0x4df738: g_zEffectAnim_ZarSectionName_Anim.
+ * Purpose: Stores the ZAR section token for saved animation records.
+ */
 char g_zEffectAnim_ZarSectionName_Anim[5] = "Anim";
+/**
+ * Reimplements data 0x4df740: g_zEffectAnim_ZarSectionName_RunningAnim.
+ * Purpose: Stores the ZAR section token for saved running animation records.
+ */
 char g_zEffectAnim_ZarSectionName_RunningAnim[12] = "RunningAnim";
+/**
+ * Reimplements data 0x4df74c: g_zEffectAnim_ZarSectionName_AnimActivation.
+ * Purpose: Stores the ZAR section token for queued activation records.
+ */
 char g_zEffectAnim_ZarSectionName_AnimActivation[15] = "AnimActivation";
 }
 
@@ -120,7 +288,13 @@ const char *kZeffInitSourceFile = "D:\\Proj\\GameZRecoil\\zEffect\\zeff_init.c";
 const char *kAnimationNodeNotFoundMessage =
     "Animation node not found.\n  Animation: %s; Node: %s\n";
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered original static helper for zEffect cleanup routines.
+ * No standalone retail function is present; observed callers include
+ * 0x45fd10 zEffectAnim::ShutdownEntry and nearby zEffect cleanup paths that
+ * perform the same null-checked free.
+ * Purpose: free an owned allocation only when its pointer is non-null.
+ */
 void FreeIfSet(
     void *ptr
 ) {
@@ -253,7 +427,13 @@ RECOIL_STATIC_ASSERT(sizeof(zEffectAnimRunningSaveHeader) == 0x68);
 RECOIL_STATIC_ASSERT(sizeof(zEffectAnimRuntimeNodeSaveRecord) == 0x38);
 RECOIL_STATIC_ASSERT(sizeof(zEffectAnimSoundNodeSaveRecord) == 0x3c);
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered original static helper for zeff_anim_init.c ZBD loading.
+ * No standalone retail function is present; observed callers are the
+ * 0x45efb0 zEffect_Anim::LoadZbd read sequence and the save/load persistence
+ * helpers in this source file that compare fread counts against one record.
+ * Purpose: read one fixed-size record from a stream.
+ */
 bool ReadOne(
     FILE *stream,
     void *data,
@@ -267,7 +447,13 @@ bool ReadOne(
     ) == 1;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered original static helper for zeff_anim_init.c ZBD loading.
+ * No standalone retail function is present; observed caller 0x45efb0 allocates
+ * typed arrays for animation entries, refs, stamps, and text records with this
+ * malloc-plus-fread pattern.
+ * Purpose: allocate and read a raw fixed-stride array.
+ */
 bool ReadArrayRaw(
     FILE *stream,
     void **outData,
@@ -294,7 +480,12 @@ bool ReadArrayRaw(
 }
 
 template <typename T>
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered original static helper for zeff_anim_init.c ZBD loading.
+ * No standalone retail function is present; observed caller 0x45efb0 repeats
+ * typed array reads with element counts taken from serialized animation data.
+ * Purpose: allocate and read a typed array from an animation ZBD stream.
+ */
 bool ReadArray(
     FILE *stream,
     T **outData,
@@ -314,7 +505,12 @@ bool ReadArray(
     return true;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered original static helper for zEffect animation stream loading.
+ * No standalone retail function is present; observed callers are the 0x45efb0
+ * load of primary and per-sequence event streams from the animation ZBD.
+ * Purpose: allocate and read a serialized event stream when one is present.
+ */
 bool ReadEventStream(
     FILE *stream,
     zEffectAnimSurfaceRuntime *runtime
@@ -2234,7 +2430,12 @@ zClass_NodePartial *__fastcall FindNodeRecursiveByName(
     return 0;
 }
 
-// Reimplements 0x45ffa0: zEffectAnim::FindNextAsyncEntry (D:\Proj\GameZRecoil\zEffect\zeff_anim.c)
+/**
+ * Reimplements 0x45ffa0: zEffectAnim::FindNextAsyncEntry.
+ * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_anim.c.
+ * Purpose: return the next animation entry with the async flag set after an
+ * optional current entry.
+ */
 zEffectAnimEntry *__fastcall FindNextAsyncEntry(
     zEffectAnimEntry *currentEntry
 ) {
@@ -2591,7 +2792,12 @@ zEffectAnimEntry *__fastcall RebindEntryToNode(
     return self;
 }
 
-// Reimplements 0x45e6d0: zEffectAnim::EnsureCopiedRootTree (zeff_anim.c)
+/**
+ * Reimplements 0x45e6d0: zEffectAnim::EnsureCopiedRootTree.
+ * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_anim.c.
+ * Purpose: copy and rebind an animation root when the entry is marked as
+ * needing an owned runtime tree.
+ */
 int __fastcall EnsureCopiedRootTree(
     zEffectAnimEntry *self,
     zClass_NodePartial *sourceRoot
@@ -2929,7 +3135,12 @@ zEffectAnimEntry *__fastcall CloneEntryForNode(
     return clonedEntry;
 }
 
-// Reimplements 0x45fd10: zEffectAnim::ShutdownEntry
+/**
+ * Reimplements 0x45fd10: zEffectAnim::ShutdownEntry.
+ * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_anim_init.c.
+ * Purpose: release runtime nodes, event streams, dynamic entry lists, and
+ * cloned siblings owned by one animation entry.
+ */
 int __fastcall ShutdownEntry(
     zEffectAnimEntry *self
 ) {
@@ -2988,8 +3199,12 @@ zClass_NodePartial *__fastcall GetRootNodeOrNull(
 } // namespace zEffectAnim
 
 namespace zEffect_Anim {
-// Reimplements 0x45e210: zEffect_Anim::SetZbdFilename
-// (D:\Proj\GameZRecoil\zEffect\zeff_anim_init.c)
+/**
+ * Reimplements 0x45e210: zEffect_Anim::SetZbdFilename.
+ * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_anim_init.c.
+ * Purpose: store the animation ZBD filename after enforcing the retail length
+ * limit.
+ */
 void __fastcall SetZbdFilename(
     const char *filename
 ) {
@@ -3010,8 +3225,12 @@ void __fastcall SetZbdFilename(
     );
 }
 
-// Reimplements 0x45efb0: zEffect_Anim::LoadZbd
-// (D:\Proj\GameZRecoil\zEffect\zeff_anim_init.c)
+/**
+ * Reimplements 0x45efb0: zEffect_Anim::LoadZbd.
+ * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_anim_init.c.
+ * Purpose: load animation entries, dynamic lists, event streams, refs, and
+ * text ids from the configured animation ZBD.
+ */
 int LoadZbd() {
     if (g_zEffect_ResourceNode == 0 || g_zEffectAnim_ZbdFilename[0] == '\0') {
         return -1;
@@ -3414,8 +3633,12 @@ int LoadZbd() {
     return 0;
 }
 
-// Reimplements 0x45fb30: zEffect_Anim::LoadAndInstantiate
-// (D:\Proj\GameZRecoil\zEffect\zeff_anim_init.c)
+/**
+ * Reimplements 0x45fb30: zEffect_Anim::LoadAndInstantiate.
+ * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_anim_init.c.
+ * Purpose: ensure animation entries are loaded, bind runtime roots, install
+ * callbacks, capture initial node state, and mark entries instantiated.
+ */
 int LoadAndInstantiate() {
     if (g_zEffectAnim_EntriesInstantiated != 0) {
         return 0;
@@ -3587,8 +3810,12 @@ zEffectAnimActivationRecord *__fastcall GetActivationRecordAt(
     return &g_zEffectAnim_ActivationRecordTable[index];
 }
 
-// Reimplements 0x460490: zEffect_Anim::SaveActivationRecords
-// (GameZRecoil/zEffect/zeff_anim_save.c)
+/**
+ * Reimplements 0x460490: zEffect_Anim::SaveActivationRecords.
+ * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_anim_save.c.
+ * Purpose: serialize queued activation records with tracked-node state into
+ * numbered ZAR activation sections.
+ */
 int __fastcall SaveActivationRecords(
     zZbdSectionCallbackCtx *callbackCtx
 ) {
@@ -3693,7 +3920,12 @@ int __fastcall SaveActivationRecords(
     return result;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered original static helper for zeff_anim_save.c load callbacks.
+ * No standalone retail function is present; observed caller 0x4606d0 copies a
+ * loaded activation record into the queued activation-record table.
+ * Purpose: append one loaded activation record to the activation queue.
+ */
 static void QueueLoadedActivationRecord(
     const zEffectAnimActivationRecord *record
 ) {
@@ -3704,8 +3936,12 @@ static void QueueLoadedActivationRecord(
     );
 }
 
-// Reimplements 0x4606d0: zEffect_Anim::LoadActivationRecords
-// (GameZRecoil/zEffect/zeff_anim_save.c)
+/**
+ * Reimplements 0x4606d0: zEffect_Anim::LoadActivationRecords.
+ * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_anim_save.c.
+ * Purpose: restore queued activation records, activation states, tracked-node
+ * transforms, and deferred record queue state from ZAR activation sections.
+ */
 void __fastcall LoadActivationRecords(
     void *,
     const char *sectionToken,
@@ -3912,8 +4148,12 @@ void __fastcall LoadActivationRecords(
     }
 }
 
-// Reimplements 0x460bc0: zEffect_Anim::SaveRunningAnimRecord
-// (GameZRecoil/zEffect/zeff_anim_save.c)
+/**
+ * Reimplements 0x460bc0: zEffect_Anim::SaveRunningAnimRecord.
+ * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_anim_save.c.
+ * Purpose: write one running animation entry, runtime sequence state, and
+ * attached light/sound refs into a temporary ZBD section stream.
+ */
 int __fastcall SaveRunningAnimRecord(
     zZbdSectionCallbackCtx *callbackCtx,
     zEffectAnimEntry *entry,
@@ -4065,8 +4305,12 @@ int __fastcall SaveRunningAnimRecord(
     return result;
 }
 
-// Reimplements 0x460f80: zEffect_Anim::SaveRunningAnimRecords
-// (GameZRecoil/zEffect/zeff_anim_save.c)
+/**
+ * Reimplements 0x460f80: zEffect_Anim::SaveRunningAnimRecords.
+ * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_anim_save.c.
+ * Purpose: enumerate active animation entries and cloned siblings that need
+ * running-state persistence.
+ */
 int __fastcall SaveRunningAnimRecords(
     zZbdSectionCallbackCtx *callbackCtx
 ) {
@@ -4102,8 +4346,12 @@ int __fastcall SaveRunningAnimRecords(
     return result;
 }
 
-// Reimplements 0x461040: zEffect_Anim::LoadRunningAnimRecords
-// (GameZRecoil/zEffect/zeff_anim_save.c)
+/**
+ * Reimplements 0x461040: zEffect_Anim::LoadRunningAnimRecords.
+ * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_anim_save.c.
+ * Purpose: restore one running animation entry, sequence event streams, reset
+ * scratch refs, and attached light/sound refs from a ZAR section.
+ */
 void __fastcall LoadRunningAnimRecords(
     void *unused,
     const char *sectionToken,
@@ -4328,8 +4576,12 @@ void __fastcall LoadRunningAnimRecords(
     zUtil_ZBD::CloseTempReadStream(tempStream);
 }
 
-// Reimplements 0x461430: zEffect_Anim::SaveAnimRecords
-// (GameZRecoil/zEffect/zeff_anim_save.c)
+/**
+ * Reimplements 0x461430: zEffect_Anim::SaveAnimRecords.
+ * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_anim_save.c.
+ * Purpose: serialize non-running animation activation state and tracked-node
+ * transforms into numbered Anim sections.
+ */
 int __fastcall SaveAnimRecords(
     zZbdSectionCallbackCtx *callbackCtx
 ) {
@@ -4427,8 +4679,12 @@ int __fastcall SaveAnimRecords(
     return result;
 }
 
-// Reimplements 0x461670: zEffect_Anim::LoadAnimRecords
-// (GameZRecoil/zEffect/zeff_anim_save.c)
+/**
+ * Reimplements 0x461670: zEffect_Anim::LoadAnimRecords.
+ * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_anim_save.c.
+ * Purpose: restore non-running animation activation state and tracked-node
+ * transforms from a saved Anim section.
+ */
 void __fastcall LoadAnimRecords(
     void *unused,
     const char *sectionToken,
@@ -5383,7 +5639,12 @@ void __fastcall SetActivationDispatchContext(
     g_zEffectAnim_ActivationDispatchTagHigh = (unsigned int)(context) << 24;
 }
 
-// Reimplements 0x45fe50: zEffect_Anim::Shutdown
+/**
+ * Reimplements 0x45fe50: zEffect_Anim::Shutdown.
+ * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_anim_init.c.
+ * Purpose: free loaded animation heap, entries, localized text records, and
+ * queued activation records, then clear animation-load state.
+ */
 int Shutdown() {
     if (g_zEffectAnim_HeapPtr != 0) {
         free(g_zEffectAnim_HeapPtr);
@@ -5412,7 +5673,12 @@ int Shutdown() {
     return 0;
 }
 
-// Reimplements 0x45fef0: zEffect_Anim::ShutdownIfLoaded
+/**
+ * Reimplements 0x45fef0: zEffect_Anim::ShutdownIfLoaded.
+ * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_anim_init.c.
+ * Purpose: run animation shutdown only when entries are currently
+ * instantiated.
+ */
 int ShutdownIfLoaded() {
     if (g_zEffectAnim_EntriesInstantiated != 0) {
         Shutdown();
@@ -5421,7 +5687,12 @@ int ShutdownIfLoaded() {
     return 0;
 }
 
-// Reimplements 0x45e100: zEffect_Anim::Init
+/**
+ * Reimplements 0x45e100: zEffect_Anim::Init.
+ * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_anim_init.c.
+ * Purpose: reset animation globals, seed runtime random values, and register
+ * animation save/load ZAR section handlers.
+ */
 int Init() {
     if (g_zEffectAnim_EntriesInstantiated != 0) {
         Shutdown();
@@ -5481,7 +5752,12 @@ int Init() {
 } // namespace zEffect_Anim
 
 namespace zEffect {
-// Reimplements 0x460020: zEffect::Init
+/**
+ * Reimplements 0x460020: zEffect::Init.
+ * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_init.c.
+ * Purpose: reset the runtime effect manager and initialize zEffect animation
+ * state.
+ */
 int Init() {
     g_zEffect_RuntimeManager.initialized = 0;
     g_zEffect_RuntimeManager.templateCount = 0;
@@ -5495,8 +5771,12 @@ int Init() {
     return zEffect_Anim::Init();
 }
 
-// Reimplements 0x460070: zEffect::InitFromPath
-// (D:\Proj\GameZRecoil\zEffect\zeff_init.c)
+/**
+ * Reimplements 0x460070: zEffect::InitFromPath.
+ * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_init.c.
+ * Purpose: load runtime effect templates from a zReader tree and prepare the
+ * runtime free list and texture cycling data.
+ */
 int __fastcall InitFromPath(
     zClass_NodePartial *worldNode,
     zClass_NodePartial *cameraNode,
@@ -5670,8 +5950,11 @@ void __fastcall SetResourceNode(
     g_zEffect_ResourceNode = resourceNode;
 }
 
-// Reimplements 0x458b50: zEffect::TickResetDelayOnTimer
-// (D:\Proj\GameZRecoil\zEffect\zeff_anim_init.c)
+/**
+ * Reimplements 0x458b50: zEffect::TickResetDelayOnTimer.
+ * Source: D:\Proj\GameZRecoil\zEffect\zeff_anim_init.c.
+ * Purpose: Advance timer-gated reset delay and clear transform/velocity when it expires.
+ */
 float __fastcall TickResetDelayOnTimer(
     zEffectAnimEntry *self,
     float deltaSec
@@ -5698,8 +5981,11 @@ float __fastcall TickResetDelayOnTimer(
     return self->activationCountdown;
 }
 
-// Reimplements 0x458bb0: zEffect::TickResetDelayOnHit
-// (D:\Proj\GameZRecoil\zEffect\zeff_anim_init.c)
+/**
+ * Reimplements 0x458bb0: zEffect::TickResetDelayOnHit.
+ * Source: D:\Proj\GameZRecoil\zEffect\zeff_anim_init.c.
+ * Purpose: Advance hit-gated reset delay and clear transform/velocity when it expires.
+ */
 int __fastcall TickResetDelayOnHit(
     zEffectAnimEntry *self,
     zClass_NodePartial *hitNode,
@@ -5752,8 +6038,12 @@ void __fastcall SetConditionalEffectLevel(
     g_zEffect_ConditionalEffectLevel = level;
 }
 
-// Reimplements 0x458b20: zEffect::SetVariantOverridePackedIdsIfComplete
-// (D:\Proj\GameZRecoil\zEffect\zeffect.cpp)
+/**
+ * Reimplements 0x458b20: zEffect::SetVariantOverridePackedIdsIfComplete.
+ * Original source path: D:\Proj\GameZRecoil\zEffect\zeffect.cpp.
+ * Purpose: enable the packed variant override only when the active id bytes are
+ * populated.
+ */
 void __fastcall SetVariantOverridePackedIdsIfComplete(
     const zTag4Partial *packedIds
 ) {
@@ -5860,8 +6150,12 @@ int __fastcall TraceUpwardHitFromNodeOrPos(
     return result;
 }
 
-// Reimplements 0x461ec0: zEffect::FindNodeUserDataRecursive
-// (GameZRecoil/zEffect/zeff_init.c)
+/**
+ * Reimplements 0x461ec0: zEffect::FindNodeUserDataRecursive.
+ * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_init.c.
+ * Purpose: find the first non-null user-data value in a root-first node tree
+ * traversal.
+ */
 void *__fastcall FindNodeUserDataRecursive(
     zClass_NodePartial *node
 ) {
@@ -5884,8 +6178,12 @@ void *__fastcall FindNodeUserDataRecursive(
     return 0;
 }
 
-// Reimplements 0x461f00: zEffect::SpawnRuntimeInstanceAt
-// (GameZRecoil/zEffect/eff_runtime.c)
+/**
+ * Reimplements 0x461f00: zEffect::SpawnRuntimeInstanceAt.
+ * Original source path: D:\Proj\GameZRecoil\zEffect\eff_runtime.c.
+ * Purpose: acquire and activate a runtime effect entry at a world position,
+ * then install its node action callback.
+ */
 int __fastcall SpawnRuntimeInstanceAt(
     int effectIndex,
     const zVec3 *worldPos
@@ -5913,8 +6211,12 @@ int __fastcall SpawnRuntimeInstanceAt(
     return initialized;
 }
 
-// Reimplements 0x461f50: zEffect::ActivateRuntimeEntryAtPosition
-// (GameZRecoil/zEffect/eff_runtime.c)
+/**
+ * Reimplements 0x461f50: zEffect::ActivateRuntimeEntryAtPosition.
+ * Original source path: D:\Proj\GameZRecoil\zEffect\eff_runtime.c.
+ * Purpose: initialize runtime scale, lifetime, fade, position, variant, and
+ * parent attachment for one active effect instance.
+ */
 int __fastcall ActivateRuntimeEntryAtPosition(
     zEffect_RuntimeEntry *runtimeEntry,
     const zVec3 *worldPos
@@ -5969,8 +6271,12 @@ int __fastcall ActivateRuntimeEntryAtPosition(
     return 1;
 }
 
-// Reimplements 0x462050: zEffect::ComputeDistanceSqToListener
-// (GameZRecoil/zEffect/eff_runtime.c)
+/**
+ * Reimplements 0x462050: zEffect::ComputeDistanceSqToListener.
+ * Original source path: D:\Proj\GameZRecoil\zEffect\eff_runtime.c.
+ * Purpose: compute squared distance from the runtime listener node to a world
+ * position.
+ */
 float __fastcall ComputeDistanceSqToListener(
     const zVec3 *worldPos
 ) {
@@ -5986,8 +6292,12 @@ float __fastcall ComputeDistanceSqToListener(
            listenerPosition.z * listenerPosition.z;
 }
 
-// Reimplements 0x4620d0: zEffect::AcquireRuntimeEntryByIndex
-// (GameZRecoil/zEffect/eff_runtime.c)
+/**
+ * Reimplements 0x4620d0: zEffect::AcquireRuntimeEntryByIndex.
+ * Original source path: D:\Proj\GameZRecoil\zEffect\eff_runtime.c.
+ * Purpose: reuse a free runtime effect entry for an index or clone a fresh
+ * entry from its template.
+ */
 zEffect_RuntimeEntry *__fastcall AcquireRuntimeEntryByIndex(
     int effectIndex
 ) {
@@ -6012,8 +6322,12 @@ zEffect_RuntimeEntry *__fastcall AcquireRuntimeEntryByIndex(
     return CloneRuntimeEntryFromTemplate(effectIndex);
 }
 
-// Reimplements 0x462130: zEffect::CloneRuntimeEntryFromTemplate
-// (GameZRecoil/zEffect/eff_runtime.c)
+/**
+ * Reimplements 0x462130: zEffect::CloneRuntimeEntryFromTemplate.
+ * Original source path: D:\Proj\GameZRecoil\zEffect\eff_runtime.c.
+ * Purpose: allocate a runtime effect entry and copy its template node tree and
+ * graphics data reference.
+ */
 zEffect_RuntimeEntry *__fastcall CloneRuntimeEntryFromTemplate(
     int effectIndex
 ) {
@@ -6048,8 +6362,12 @@ zEffect_RuntimeEntry *__fastcall CloneRuntimeEntryFromTemplate(
     return clone->effectGfxData != 0 ? clone : 0;
 }
 
-// Reimplements 0x4621b0: zEffect::RuntimeNodeActionCallback
-// (GameZRecoil/zEffect/eff_runtime.c)
+/**
+ * Reimplements 0x4621b0: zEffect::RuntimeNodeActionCallback.
+ * Original source path: D:\Proj\GameZRecoil\zEffect\eff_runtime.c.
+ * Purpose: advance runtime effect fade timing and recycle the effect entry
+ * after the instance has completed.
+ */
 int __fastcall RuntimeNodeActionCallback(
     zClass_NodePartial *node
 ) {
@@ -6110,7 +6428,11 @@ int __fastcall RuntimeNodeActionCallback(
     return parentCount;
 }
 
-// Reimplements 0x462280: zEffect::FindTemplateIndexByName (GameZRecoil/zEffect/Effect.c)
+/**
+ * Reimplements 0x462280: zEffect::FindTemplateIndexByName.
+ * Original source path: D:\Proj\GameZRecoil\zEffect\Effect.c.
+ * Purpose: return the runtime template index whose effect name matches.
+ */
 int __fastcall FindTemplateIndexByName(
     const char *name
 ) {
@@ -6126,8 +6448,12 @@ int __fastcall FindTemplateIndexByName(
     return -1;
 }
 
-// Reimplements 0x458c10: zEffect::UpdateBeamNodeBetweenPoints
-// (zeff_detach.c)
+/**
+ * Reimplements 0x458c10: zEffect::UpdateBeamNodeBetweenPoints.
+ * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_detach.c.
+ * Purpose: position, orient, scale, and return the length of a beam node
+ * spanning two world points.
+ */
 float __fastcall UpdateBeamNodeBetweenPoints(
     zClass_NodePartial *obj3d,
     const zVec3 *srcPos,
@@ -6179,8 +6505,12 @@ float __fastcall UpdateBeamNodeBetweenPoints(
     return length;
 }
 
-// Reimplements 0x458ce0: zEffect::UpdateBeamNodeBetweenFractions
-// (zeff_detach.c)
+/**
+ * Reimplements 0x458ce0: zEffect::UpdateBeamNodeBetweenFractions.
+ * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_detach.c.
+ * Purpose: position, orient, scale, and return the length of a beam node
+ * spanning two fractional points on a world-space segment.
+ */
 float __fastcall UpdateBeamNodeBetweenFractions(
     zClass_NodePartial *obj3d,
     const zVec3 *srcPos,
@@ -8852,7 +9182,12 @@ int __fastcall CleanupSoundRefs(
     return 0;
 }
 
-// Reimplements 0x460330: zEffect::Reset
+/**
+ * Reimplements 0x460330: zEffect::Reset.
+ * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_init.c.
+ * Purpose: free loaded runtime template data, delete recycled effect nodes,
+ * destroy the free list, and reinitialize zEffect state.
+ */
 int Reset() {
     if (g_zEffect_RuntimeManager.loadedTemplateTree != 0) {
         zReader::FreeLoadedTree((zReader::Node *)(g_zEffect_RuntimeManager.loadedTemplateTree));
@@ -8870,7 +9205,7 @@ int Reset() {
             (zEffect_RuntimeEntry *)(zArchiveList_PopFrontPayload(freeList));
         while (entry != 0) {
             if (entry->effectNode != 0) {
-                zClass_Object3D::DeleteNode(entry->effectNode);
+                zClass_Util::DestroyNodeRecursive(entry->effectNode);
             }
 
             free(entry);
@@ -8886,7 +9221,12 @@ int Reset() {
     return 0;
 }
 
-// Reimplements 0x460060: zEffect::ShutdownAll
+/**
+ * Reimplements 0x460060: zEffect::ShutdownAll.
+ * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_init.c.
+ * Purpose: reset runtime effect state and shut down animation data when it is
+ * loaded.
+ */
 int ShutdownAll() {
     Reset();
     return zEffect_Anim::ShutdownIfLoaded();

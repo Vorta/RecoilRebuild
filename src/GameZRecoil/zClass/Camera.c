@@ -1821,8 +1821,12 @@ namespace zClass_Camera {
         return 0;
     }
 
-    // Reimplements 0x44abf0: zClass_Camera::BuildWorldTransform
-    // (GameZRecoil/zClass/Camera.c)
+    /**
+     * Reimplements 0x44abf0: zClass_Camera::BuildWorldTransform.
+     * Source: D:\Proj\GameZRecoil\zClass\Camera.c.
+     * Purpose: build the camera world transform and update the zSound
+     * listener bridge previous-position state.
+     */
     int __fastcall BuildWorldTransform(
         zClass_NodePartial * camera,
         zClass_CameraDataPartial * data,
@@ -1861,6 +1865,11 @@ namespace zClass_Camera {
         zMath_Camera_StageInverseRotation((zMat4x3 *)(data->worldTransform));
 
         if ((data->cameraFlags & 0x01) != 0) {
+            /*
+             * g_zSnd_PreviousListenerPos is the camera/listener bridge state
+             * for the previous camera position, consumed here before pushing
+             * the current listener state into zSound.
+             */
             zVec3 listenerVelocity = {0};
             if (g_FrameDeltaTimeSec != 0.0f) {
                 listenerVelocity.x =

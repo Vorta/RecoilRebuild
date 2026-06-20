@@ -11,6 +11,7 @@ struct zGeometry_PlaneEquationPartial;
 
 extern int gModel_FogEnabled;
 extern int gModel_FogLinearModeEnabled;
+extern zColorRgb gModel_FogColorRgb01;
 extern float gModel_FogDistanceStart;
 extern float gModel_FogDistanceEnd;
 extern float gModel_FogDistanceInvRange;
@@ -18,7 +19,6 @@ extern float gModel_FogHeightHigh;
 extern float gModel_FogHeightLow;
 extern float gModel_FogHeightInvRange;
 extern float gModel_FogDensity;
-extern zColorRgb gModel_FogColorRgb01;
 extern float gModel_SmallPolyRejectArea2x;
 extern float gModel_SmallPolyRejectArea20x;
 extern float g_OptCatalogDamageMaskPhaseU;

@@ -16,21 +16,29 @@ struct zSndCdTrackState {
     int second;
 };
 
-extern "C" int g_zSndCdFlags = 0;
+/**
+ * Reimplements data 0x56b318: g_zSndCdTrackListCount.
+ * Purpose: Stores the pre-initialization CD track-list count reset by
+ * zSnd_PreInitializeRuntimeState; distinct from the static CD track-list
+ * lifecycle count.
+ */
+extern "C" int g_zSndCdTrackListCount = 0;
 extern "C" int g_zSndCdLastPlayMode = 0;
+extern "C" int g_zSndCdFlags = 0;
 extern "C" int g_zSndCdDeviceId = 0;
 extern "C" int g_zSndCdAuxDeviceId = 0;
+extern "C" unsigned short g_zSndCdAuxVolumePrimary = 0;
+extern "C" unsigned short g_zSndCdAuxVolumeSecondary = 0;
 extern "C" int g_zSndCdTrackCountCached = 0;
+extern "C" int g_zSndCdDiscLengthMinute = 0;
+extern "C" int g_zSndCdDiscLengthSecond = 0;
 extern "C" zSndCdTrackState g_zSndCdPlayFrom = {0};
 extern "C" zSndCdTrackState g_zSndCdCurrent = {0};
 extern "C" zSndCdTrackState g_zSndCdPlayTo = {0};
 extern "C" unsigned char g_zSndCd_TrackListCtorGuard = 0;
 extern "C" zSndCdTrackNode *g_zSndCd_TrackListHead = 0;
+// Static CD track-list lifecycle count owned with the zSndCdTrackList helper.
 extern "C" int g_zSndCd_TrackCount = 0;
-extern "C" int g_zSndCdDiscLengthMinute = 0;
-extern "C" int g_zSndCdDiscLengthSecond = 0;
-extern "C" unsigned short g_zSndCdAuxVolumePrimary = 0;
-extern "C" unsigned short g_zSndCdAuxVolumeSecondary = 0;
 /**
  * Reimplements data 0x4e5d34: ZOPT_AUDIO_API.
  * Purpose: Stores ZOPT AUDIO API data used by engine.zsound.backend_option_globals.
@@ -46,8 +54,6 @@ extern "C" int g_zSnd_ActiveBackend = 0;
 extern "C" unsigned int g_zSnd_WindowHandle = 0;
 // BN 0x4e2234: initialized .data archive-bank selector defaults to enabled.
 extern "C" int g_zSnd_UseArchiveBanksFlag = 1;
-extern "C" float g_zSndSpeedOfSoundMps = 345.0f;
-extern "C" float g_zSndInvSpeedOfSoundMps = 1.0f / 345.0f;
 
 #define g_zSndCdPlayFromTrack (g_zSndCdPlayFrom.track)
 #define g_zSndCdPlayFromMinute (g_zSndCdPlayFrom.minute)
@@ -63,42 +69,6 @@ namespace {
 const int ZSND_CD_FLAG_STEREO_AUX = 1;
 const int ZSND_CD_FLAG_READY = 2;
 const char kZSndCdSourceFile[] = "D:\\Proj\\GameZRecoil\\zSound\\zsnd_cd.cpp";
-
-// Source-faithful helper recovered from address-backed callers in this source file.
-zReader::Node *ArrayBase(
-    zReader::Node *node
-) {
-    return node->value.nodes;
-}
-
-// Source-faithful helper recovered from address-backed callers in this source file.
-int ArrayCount(
-    zReader::Node *node
-) {
-    return ArrayBase(node)[0].value.i32;
-}
-
-// Source-faithful helper recovered from address-backed callers in this source file.
-void AppendCdTrackEntry(
-    zSndCdTrackEntry *entry
-) {
-    if (g_zSndCd_TrackListHead == 0) {
-        g_zSndCd_TrackListHead = (zSndCdTrackNode *)(::operator new(sizeof(zSndCdTrackNode)));
-        g_zSndCd_TrackListHead->next = g_zSndCd_TrackListHead;
-        g_zSndCd_TrackListHead->prev = g_zSndCd_TrackListHead;
-        g_zSndCd_TrackListHead->entry = 0;
-    }
-
-    zSndCdTrackNode *head = g_zSndCd_TrackListHead;
-    zSndCdTrackNode *tail = head->prev;
-    zSndCdTrackNode *node = (zSndCdTrackNode *)(::operator new(sizeof(zSndCdTrackNode)));
-    node->next = head;
-    node->prev = tail;
-    tail->next = node;
-    head->prev = node;
-    node->entry = entry;
-    ++g_zSndCd_TrackCount;
-}
 } // namespace
 
 namespace zSndCdTrackList {
@@ -203,17 +173,6 @@ void __fastcall SetUseArchiveBanksFlag(
     int useArchiveBanks
 ) {
     g_zSnd_UseArchiveBanksFlag = useArchiveBanks;
-}
-
-/**
- * Reimplements 0x4a2e80: zSnd::SetSpeedOfSoundMps.
- * Purpose: store the speed of sound and its reciprocal for 3D audio.
- */
-void __fastcall SetSpeedOfSoundMps(
-    float speedOfSoundMps
-) {
-    g_zSndSpeedOfSoundMps = speedOfSoundMps;
-    g_zSndInvSpeedOfSoundMps = 1.0f / speedOfSoundMps;
 }
 
 /**
@@ -377,21 +336,38 @@ RECOIL_NO_GS int __fastcall Init(
     g_zSndCdFlags |= ZSND_CD_FLAG_READY;
 
     if (cdTracksNode != 0) {
-        zReader::Node *tracks = ArrayBase(cdTracksNode);
-        for (int i = 1; i < ArrayCount(cdTracksNode); ++i) {
+        zReader::Node *tracks = cdTracksNode->value.nodes;
+        for (int i = 1; i < cdTracksNode->value.nodes[0].value.i32; ++i) {
             zReader::Node *trackNode = &tracks[i];
             if (trackNode->type != zReader::ZRDR_NODE_ARRAY) {
                 continue;
             }
 
-            zReader::Node *trackConfig = ArrayBase(trackNode);
+            zReader::Node *trackConfig = trackNode->value.nodes;
             zSndCdTrackEntry *entry =
                 (zSndCdTrackEntry *)(::operator new(sizeof(zSndCdTrackEntry)));
             if (entry != 0) {
                 entry->trackNumber = trackConfig[2].value.i32;
                 entry->archiveName = _strdup(trackConfig[1].value.str);
             }
-            AppendCdTrackEntry(entry);
+
+            if (g_zSndCd_TrackListHead == 0) {
+                g_zSndCd_TrackListHead =
+                    (zSndCdTrackNode *)(::operator new(sizeof(zSndCdTrackNode)));
+                g_zSndCd_TrackListHead->next = g_zSndCd_TrackListHead;
+                g_zSndCd_TrackListHead->prev = g_zSndCd_TrackListHead;
+                g_zSndCd_TrackListHead->entry = 0;
+            }
+
+            zSndCdTrackNode *head = g_zSndCd_TrackListHead;
+            zSndCdTrackNode *tail = head->prev;
+            zSndCdTrackNode *node = (zSndCdTrackNode *)(::operator new(sizeof(zSndCdTrackNode)));
+            node->next = head;
+            node->prev = tail;
+            tail->next = node;
+            head->prev = node;
+            node->entry = entry;
+            ++g_zSndCd_TrackCount;
         }
     }
 

@@ -68,6 +68,12 @@ const char g_zSys_CpuVendorScratchPadInit[0x0d] = "------------";
  */
 char g_zSys_DriveTypeSearchPathBuffer[MAX_PATH];
 
+/*
+ * Source-file helper cluster for zsys_cpu.cpp CPU benchmarking. Retail uses a
+ * thiscall-shaped ABI for these helpers: ECX carries the class hint or expected
+ * cycle count, and the result packet is the single stack argument. The helper
+ * object has no storage, no constructor, and no table identity in BN evidence.
+ */
 struct CpuBenchmarkResolver {
     zSys::CpuBenchmarkResult * ResolveCpuBenchmarkPacket(
         zSys::CpuBenchmarkResult *outBuffer
@@ -85,13 +91,6 @@ struct CpuBenchmarkResolver {
         zSys::CpuBenchmarkResult *outBuffer
     );
 };
-
-// Source-faithful helper recovered from address-backed callers in this source file.
-CpuBenchmarkResolver *CpuBenchmarkResolverFromValue(
-    unsigned int value
-) {
-    return (CpuBenchmarkResolver *)((unsigned int)(value));
-}
 
 } // namespace
 
@@ -305,11 +304,11 @@ unsigned int zSys::ReadCpuidFeatureFlags() {
 }
 #endif
 
+#if !(defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZSYS_CPU_RAW_ASM))
 /**
  * Reimplements 0x4b3b00: zSys::ReadCmosRtcSecondsBcd.
  * Purpose: Reads the CMOS real-time clock seconds register in BCD form.
  */
-#if !(defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZSYS_CPU_RAW_ASM))
 unsigned int zSys::ReadCmosRtcSecondsBcd() {
     const unsigned int seconds = (unsigned int)((GetTickCount() / 1000u) % 60u);
     return (unsigned int)(((seconds / 10u) << 4) | (seconds % 10u));
@@ -397,6 +396,12 @@ int DetectIs80386ByAcFlag() {
 #include "GameZRecoil/zSys/zSys_cpu_detect.inl"
 
 #if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZSYS_CPU_RAW_ASM)
+/*
+ * The VC5 raw-assembly profile keeps this timing probe as assembly because the
+ * BSF busy-loop opcode placement and thiscall-shaped ECX input are part of the
+ * recovered retail source contract. The portable branch below is the native
+ * smoke fallback and is not byte evidence for the retail helper.
+ */
 /**
  * Reimplements 0x4b37f0: CpuBenchmarkResolver::MeasureMhzViaBsfLoop_Qpc.
  * Purpose: Measures CPU MHz by timing the retail fixed BSF busy loop with QueryPerformanceCounter.
@@ -585,6 +590,12 @@ zSys::CpuBenchmarkResult * CpuBenchmarkResolver::MeasureMhzViaBsfLoop_Qpc(
 #endif
 
 #if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZSYS_CPU_RAW_ASM)
+/*
+ * The VC5 raw-assembly profile keeps this timing probe as assembly because the
+ * RDTSC/QPC sampling loop, thread-priority calls, and convergence arithmetic
+ * are byte-verified in their original register and stack shape. The portable
+ * branch below is the native smoke fallback and is not byte evidence.
+ */
 /**
  * Reimplements 0x4b38e0: CpuBenchmarkResolver::MeasureCpuMhz_RdtscQpc.
  * Purpose: Measures CPU MHz with the retail RDTSC/QPC timing loop.
@@ -980,9 +991,15 @@ zSys::CpuBenchmarkResult * CpuBenchmarkResolver::MeasureCpuMhz_CmosRtc(
 
     unsigned int previousSecond = zSys::ReadCmosRtcSecondsBcd();
     unsigned int startSecond;
+    unsigned int startAdvance;
     do {
         startSecond = zSys::ReadCmosRtcSecondsBcd();
-    } while (startSecond == previousSecond);
+        if (startSecond < previousSecond) {
+            startAdvance = startSecond - previousSecond + 0x0a;
+        } else {
+            startAdvance = startSecond > previousSecond ? 1u : 0u;
+        }
+    } while (startAdvance == 0);
 
     unsigned int startTscHigh = 0;
     unsigned int startTscLow = 0;
@@ -991,9 +1008,15 @@ zSys::CpuBenchmarkResult * CpuBenchmarkResolver::MeasureCpuMhz_CmosRtc(
         &startTscLow
     );
     unsigned int endSecond;
+    unsigned int endAdvance;
     do {
         endSecond = zSys::ReadCmosRtcSecondsBcd();
-    } while (endSecond == startSecond);
+        if (endSecond < startSecond) {
+            endAdvance = endSecond - startSecond + 0x0a;
+        } else {
+            endAdvance = endSecond > startSecond ? 1u : 0u;
+        }
+    } while (endAdvance == 0);
 
     unsigned int endTscHigh = 0;
     unsigned int endTscLow = 0;
@@ -1008,9 +1031,8 @@ zSys::CpuBenchmarkResult * CpuBenchmarkResolver::MeasureCpuMhz_CmosRtc(
         );
     }
 
-    const unsigned int elapsedSeconds =
-        endSecond >= startSecond ? endSecond - startSecond : endSecond - startSecond + 0x0a;
-    const unsigned int microseconds = elapsedSeconds * 1000000u;
+    const unsigned int microseconds =
+        endSecond * 1000000u - startSecond * 1000000u;
     unsigned int elapsedHigh = 0;
     unsigned int elapsedLow = 0;
     zSys::Sub64(
@@ -1069,13 +1091,13 @@ zSys::CpuBenchmarkResult * CpuBenchmarkResolver::ResolveCpuBenchmarkPacket(
     zSys::CpuBenchmarkResult *measured;
     if ((featureFlags & 0x10u) != 0 && !forcedLowHint) {
         if (cpuClassHint != 0) {
-            measured = CpuBenchmarkResolverFromValue(0)->MeasureCpuMhz_CmosRtc(&localResult);
+            measured = ((CpuBenchmarkResolver *)expectedCycles)->MeasureCpuMhz_CmosRtc(&localResult);
         } else {
-            measured = CpuBenchmarkResolverFromValue(0)->MeasureCpuMhz_RdtscQpc(&localResult);
+            measured = ((CpuBenchmarkResolver *)expectedCycles)->MeasureCpuMhz_RdtscQpc(&localResult);
         }
     } else if ((cpuClass & 0xffff) >= 3) {
         measured =
-            CpuBenchmarkResolverFromValue(expectedCycles)->MeasureMhzViaBsfLoop_Qpc(&localResult);
+            ((CpuBenchmarkResolver *)expectedCycles)->MeasureMhzViaBsfLoop_Qpc(&localResult);
     } else {
         outBuffer->totalCycles = 0;
         outBuffer->totalMicroseconds = 0;

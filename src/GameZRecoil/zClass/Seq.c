@@ -12,8 +12,10 @@ namespace {
     const char *kSequenceSourceFile = "D:\\Proj\\GameZRecoil\\zClass\\Seq.c";
 
     /**
-     * Original static helper recovered with zClass_Sequence::RenderTraverse.
-     *
+     * Original-source helper evidence: no standalone retail function exists.
+     * Observed in caller 0x44bea0 (D:\Proj\GameZRecoil\zClass\Seq.c);
+     * BN keeps the active-entry traversal cull, bounds refresh, and sphere
+     * clip-mask sequence inline in the Sequence traversal body.
      * Purpose: update sequence-node bounds when needed and run the sphere
      * frustum cull used by sequence render traversal.
      */

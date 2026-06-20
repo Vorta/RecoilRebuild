@@ -165,8 +165,10 @@ namespace {
     }
 
     /**
-     * Original static helper observed in caller 0x44b300
-     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
+     * Original-source helper evidence: no standalone retail function exists.
+     * Observed in caller 0x44b300 (D:\Proj\GameZRecoil\zClass\Object3d.c);
+     * BN keeps the bounds refresh, sphere test, and far-clip repair as
+     * caller-local render traversal code rather than a separate call target.
      * Purpose: decide whether object render culling is needed, refresh the view
      * bounding sphere, and run the frustum sphere clip-mask test.
      */
@@ -218,8 +220,10 @@ namespace {
     }
 
     /**
-     * Original static helper observed in caller 0x44b300
-     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
+     * Original-source helper evidence: no standalone retail function exists.
+     * Observed in caller 0x44b300 (D:\Proj\GameZRecoil\zClass\Object3d.c);
+     * BN shows the Object3D matrix-selection branches in the render traversal
+     * body, with only direct zMath provider calls inside the pattern.
      * Purpose: push the correct object matrix onto the zMath stack, recomputing
      * cached world matrix state when the transform is dirty.
      */
@@ -253,8 +257,10 @@ namespace {
     }
 
     /**
-     * Original static helper observed in caller 0x44b300
-     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
+     * Original-source helper evidence: no standalone retail function exists.
+     * Observed in caller 0x44b300 (D:\Proj\GameZRecoil\zClass\Object3d.c);
+     * BN keeps the render-state stack pushes and zModel setter calls in the
+     * Object3D render traversal body.
      * Purpose: push vertex-alpha, alpha-scale, and software color override
      * render state for an Object3D node.
      */
@@ -297,8 +303,10 @@ namespace {
     }
 
     /**
-     * Original static helper observed in caller 0x44b300
-     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
+     * Original-source helper evidence: no standalone retail function exists.
+     * Observed in caller 0x44b300 (D:\Proj\GameZRecoil\zClass\Object3d.c);
+     * BN keeps the vertex-alpha, alpha-scale, and software-state restore
+     * sequence in the Object3D render traversal epilogue.
      * Purpose: restore Object3D render-state stacks after rendering a node
      * subtree.
      */
@@ -339,8 +347,10 @@ namespace {
     }
 
     /**
-     * Original static helper observed in caller 0x44b300
-     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
+     * Original-source helper evidence: no standalone retail function exists.
+     * Observed in caller 0x44b300 (D:\Proj\GameZRecoil\zClass\Object3d.c);
+     * BN shows the child-loop variant check, recursive Object3D call, and
+     * generic dispatch call inline in the traversal body.
      * Purpose: render Object3D children through variant filtering and dispatch
      * non-Object3D children through the generic node renderer.
      */
@@ -844,7 +854,9 @@ namespace zClass_Object3D {
             return 5;
         }
 
-        data->flags &= ~0x10;
+        if ((data->flags & 0x10) != 0) {
+            data->flags &= ~0x10;
+        }
         data->scale.x = x;
         data->scale.y = y;
         data->scale.z = z;
@@ -908,7 +920,9 @@ namespace zClass_Object3D {
             return 5;
         }
 
-        data->flags &= ~0x10;
+        if ((data->flags & 0x10) != 0) {
+            data->flags &= ~0x10;
+        }
         data->rotation.x = x;
         data->rotation.y = y;
         data->rotation.z = z;
@@ -948,7 +962,9 @@ namespace zClass_Object3D {
             return 5;
         }
 
-        data->flags &= ~0x10;
+        if ((data->flags & 0x10) != 0) {
+            data->flags &= ~0x10;
+        }
         data->rotation.x += dx;
         data->rotation.y += dy;
         data->rotation.z += dz;

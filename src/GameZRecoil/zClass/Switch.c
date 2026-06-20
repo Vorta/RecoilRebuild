@@ -4,8 +4,10 @@
 
 namespace {
     /**
-     * Original static helper observed in caller 0x44bfb0.
-     *
+     * Original-source helper evidence: no standalone retail function exists.
+     * Observed in caller 0x44bfb0 (D:\Proj\GameZRecoil\zClass\Switch.c);
+     * BN keeps the switch-mask traversal cull, bounds refresh, and sphere
+     * clip-mask sequence inline in the Switch traversal body.
      * Purpose: update switch-node bounds when needed and run the sphere
      * frustum cull used by switch render traversal.
      */

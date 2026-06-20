@@ -5,6 +5,13 @@
 #include <string.h>
 
 extern "C" {
+/**
+ * Reimplements data 0x56bf70: g_zUtil_ZbdManager.
+ * BN types this zero-initialized 4-byte .data slot as the process-wide
+ * zZbdManager pointer; ZBD_Init/ZBD_DestroyGlobalManager own its lifecycle
+ * and the ZAR/ZBD wrapper helpers null-check it before forwarding work.
+ * Purpose: store the active ZBD archive manager singleton.
+ */
 zZbdManager *g_zUtil_ZbdManager = 0;
 }
 
@@ -574,44 +581,70 @@ void zZbdSectionHandler::InvokeDataReady(
 /**
  * Reimplements 0x4c07d0: zZbdManager::SortSectionHandlers
  * (D:\Proj\GameZRecoil\zUtil\zUtil_ZBD.cpp).
- * Purpose: order registered section handlers by ascending sort order.
+ * Purpose: run the MSVC STL list-sort cascade over registered handlers.
  */
 void zZbdManager::SortSectionHandlers() {
     if (sectionHandlerCount < 2) {
         return;
     }
 
-    zZbdSectionHandlerNode *const sentinel = sectionHandlerListSentinel;
-    zZbdSectionHandlerNode sorted;
-    sorted.next = &sorted;
-    sorted.prev = &sorted;
+    zZbdSectionHandlerList *const sectionHandlers =
+        (zZbdSectionHandlerList *)this;
+    zZbdSectionHandlerList carry;
+    carry.allocatorByte = allocatorByte;
+    carry.sentinel = new zZbdSectionHandlerNode;
+    carry.sentinel->next = carry.sentinel;
+    carry.sentinel->prev = carry.sentinel;
+    carry.count = 0;
 
-    zZbdSectionHandlerNode *node = sentinel->next;
-    while (node != sentinel) {
-        zZbdSectionHandlerNode *const next = node->next;
-        node->prev->next = node->next;
-        node->next->prev = node->prev;
-
-        zZbdSectionHandlerNode *insertBefore = sorted.next;
-        while (insertBefore != &sorted && !zZbdSectionHandler::CompareSortOrderLessThan(
-                                              &node->sectionHandler,
-                                              &insertBefore->sectionHandler
-                                          )) {
-            insertBefore = insertBefore->next;
-        }
-
-        zZbdSectionHandlerNode *const insertAfter = insertBefore->prev;
-        node->next = insertBefore;
-        node->prev = insertAfter;
-        insertAfter->next = node;
-        insertBefore->prev = node;
-        node = next;
+    zZbdSectionHandlerList bins[16];
+    int i;
+    for (i = 0; i < 16; ++i) {
+        bins[i].Constructor();
     }
 
-    sentinel->next = sorted.next;
-    sentinel->prev = sorted.prev;
-    sorted.next->prev = sentinel;
-    sorted.prev->next = sentinel;
+    int filledBins = 0;
+    while (sectionHandlers->count != 0) {
+        zZbdSectionHandlerNode *const first =
+            sectionHandlers->sentinel->next;
+        zZbdSectionHandlerNode *const last = first->next;
+
+        carry.SpliceThreeNodes(
+            carry.sentinel->next,
+            sectionHandlers,
+            first,
+            last
+        );
+        ++carry.count;
+        --sectionHandlers->count;
+
+        i = 0;
+        while (i < filledBins && i < 15 && bins[i].count != 0) {
+            bins[i].Merge(&carry);
+            bins[i].Swap(&carry);
+            ++i;
+        }
+
+        if (i == 15) {
+            bins[15].Merge(&carry);
+            filledBins = 16;
+        } else {
+            bins[i].Swap(&carry);
+            if (i == filledBins) {
+                ++filledBins;
+            }
+        }
+    }
+
+    while (filledBins != 0) {
+        --filledBins;
+        sectionHandlers->Merge(&bins[filledBins]);
+    }
+
+    for (i = 15; i >= 0; --i) {
+        ::operator delete(bins[i].sentinel);
+    }
+    ::operator delete(carry.sentinel);
 }
 
 namespace zUtil_ZAR {
