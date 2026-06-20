@@ -9,6 +9,7 @@
 #include "GameZRecoil/include/zClass.h"
 #include "GameZRecoil/zHud/zhud_ui.h"
 #include "GameZRecoil/zVideo/zVideo.h"
+#include "GameZRecoil/zVideo/zVideoFxPass3.h"
 #include "recoil/recoil_callconv.h"
 
 enum RecoilSaveLoadDialogKind {
@@ -441,8 +442,21 @@ RECOIL_STATIC_ASSERT(
     ) == 0x1c
 );
 
-struct HudWeatherFx : HudUiElement {
-    HudUiRect *viewportRect;
+struct HudWeatherFxCameraTargetHistory {
+    float x;
+    float y;
+    float z;
+    float unknown0c;
+};
+RECOIL_STATIC_ASSERT(sizeof(HudWeatherFxCameraTargetHistory) == 0x10);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudWeatherFxCameraTargetHistory,
+        unknown0c
+    ) == 0x0c
+);
+
+struct HudWeatherFx : zVideoFxPass3Element {
     HudWeatherFxParticleQuad *particleQuads;
     int maxParticles;
     int particleCount;
@@ -472,7 +486,7 @@ struct HudWeatherFx : HudUiElement {
         int particleIndex,
         int unusedStack
     );
-    void DrawParticles();
+    virtual void ApplyPass3();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudWeatherFx) == 0x8c);
 RECOIL_STATIC_ASSERT(
@@ -844,6 +858,7 @@ RECOIL_STATIC_ASSERT(
 extern HudUiNewGamePanelOverlayOwner g_HudUiNewGamePanelOverlayOwner;
 extern HudUiOptionsPanelOverlayOwner g_HudUiOptionsPanelOverlayOwner;
 extern RecoilStateConfirmQuit g_RecoilState_ConfirmQuit;
+extern "C" int g_RecoilState_MainMenuSkipExitDelay;
 extern RecoilStateControls g_RecoilStateControls;
 extern RecoilStateCheatCode g_RecoilStateCheatCode;
 extern zSndSample *g_Hud_LowMeterBeepSample;
@@ -851,14 +866,16 @@ extern zSndSample *g_Hud_LowMeterLoopSample;
 extern int g_Hud_LowMeterLoopActive;
 extern float g_Hud_LowMeterBeepInterval;
 extern float g_Hud_LowMeterNextBeepTime;
-extern float g_HudWeatherFxSnow_LastCameraTargetX;
-extern float g_HudWeatherFxSnow_LastCameraTargetY;
-extern float g_HudWeatherFxSnow_LastCameraTargetZ;
+extern HudWeatherFxCameraTargetHistory g_HudWeatherFxSnow_LastCameraTarget;
 extern float g_HudWeatherFxSnow_TimeAccumulator;
-extern float g_HudWeatherFxRain_LastCameraTargetX;
-extern float g_HudWeatherFxRain_LastCameraTargetY;
-extern float g_HudWeatherFxRain_LastCameraTargetZ;
+extern HudWeatherFxCameraTargetHistory g_HudWeatherFxRain_LastCameraTarget;
 extern float g_HudWeatherFxRain_TimeAccumulator;
+#define g_HudWeatherFxSnow_LastCameraTargetX (g_HudWeatherFxSnow_LastCameraTarget.x)
+#define g_HudWeatherFxSnow_LastCameraTargetY (g_HudWeatherFxSnow_LastCameraTarget.y)
+#define g_HudWeatherFxSnow_LastCameraTargetZ (g_HudWeatherFxSnow_LastCameraTarget.z)
+#define g_HudWeatherFxRain_LastCameraTargetX (g_HudWeatherFxRain_LastCameraTarget.x)
+#define g_HudWeatherFxRain_LastCameraTargetY (g_HudWeatherFxRain_LastCameraTarget.y)
+#define g_HudWeatherFxRain_LastCameraTargetZ (g_HudWeatherFxRain_LastCameraTarget.z)
 namespace HudUiCallback {
 void QueueExitCurrentState();
 int QueueCheatCodeState();

@@ -26,7 +26,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Reconstructs original initialized data at 0x4db6e8: 40 PickupType rows.
+/**
+ * Reimplements data 0x4db6e8: g_PickupTypes (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: define the 40-row pickup type table used by pickup spawning and
+ * effect application.
+ */
 PickupType g_PickupTypes[40] = {
     {0, 515, 0, 30, "ERFPG_AMMO", 0, 0, 0, 0, 0, 0, 0},
     {0, 517, 1, 3, "HEMORTAR_AMMO", 0, 0, 0, 0, 0, 0, 0},
@@ -70,13 +74,33 @@ PickupType g_PickupTypes[40] = {
     {0, 581, 39, 1, "PUP_SUB", 0, 0, 0, 0, 0, 0, 0}
 };
 PickupSpawnList g_PickupSpawnList_NetworkCopy = {0};
+/**
+ * Reimplements data 0x4f3308: g_PickupRespawnQueue (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: hold the BSS-zeroed head/tail/count state for pending pickup respawns.
+ */
 PickupRespawnQueue g_PickupRespawnQueue = {0};
 PickupSpawnList g_PickupSpawnList_Primary = {0};
+/**
+ * Reimplements data 0x4f3330: g_NextPickupId (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: track the next pickup instance id assigned to spawned pickup nodes.
+ */
 int g_NextPickupId = 0;
+/**
+ * Reimplements data 0x4dbe68: g_Pickup_LastVTOLDropIndex (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: remember the rotating VTOL weapon-drop cursor between airdrops.
+ */
 int g_Pickup_LastVTOLDropIndex = 19;
+/**
+ * Reimplements data 0x4f3328: g_Pickup_SceneNode (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: cache the scene node used as the parent and terrain query root for pickups.
+ */
 zClass_NodePartial *g_Pickup_SceneNode = 0;
 
 extern "C" {
+/**
+ * Reimplements data 0x4f4210: g_Pickup_GlobalAirdropSpawnRef (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: hold the optional global airdrop spawn reference allocated during pickup setup.
+ */
 PickupAirdropSpawnRef *g_Pickup_GlobalAirdropSpawnRef = 0;
 }
 
@@ -168,7 +192,11 @@ const char kPickupPuppiesHardZrd[] = "puppies_hard.zrd";
 const char kPickupPuppiesDefaultZrd[] = "puppies.zrd";
 
 template <typename T>
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered original inline helper: no standalone retail function; observed in caller 0x41ccf0.
+ * Purpose: preserve the original callback-pointer storage shape used by the
+ * pickup archive registration call.
+ */
 zZbdSectionCallback ZbdCallbackPtr(
     T callback
 ) {
@@ -187,7 +215,10 @@ PickupPkt11Delta g_PickupPkt11Flag8Delta = {{0x11, sizeof(PickupPkt11Delta), 0},
 PickupPkt12AirdropSpawnChuteRelay g_PickupPkt12AirdropSpawnChuteRelay =
     {{0x12, sizeof(PickupPkt12AirdropSpawnChuteRelay), 0}, {0.0f, 0.0f, 0.0f}, 0, 0, 0};
 
-// Reimplements 0x41db40: PickupType::GetByIndex_Pure (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x41db40: PickupType::GetByIndex_Pure (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: return the pickup type record when the index is below the table size.
+ */
 PickupType *__fastcall PickupType::GetByIndex_Pure(
     int pickupTypeIndex
 ) {
@@ -212,8 +243,10 @@ PickupType *__fastcall PickupType::GetByIndex(
     return 0;
 }
 
-// Reimplements 0x41dd60: PickupType::FindByLogicalName
-// (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x41dd60: PickupType::FindByLogicalName (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: map a pickup logical name to its stored pickup type id.
+ */
 int __fastcall PickupType::FindByLogicalName(
     const char *logicalName,
     int *outTypeIndex
@@ -234,8 +267,10 @@ int __fastcall PickupType::FindByLogicalName(
 }
 
 namespace PickupTypeKeyTable {
-// Reimplements 0x41e1e0: PickupTypeKeyTable::FindIndex
-// (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x41e1e0: PickupTypeKeyTable::FindIndex (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: scan the pickup type table for a matching logical name index.
+ */
 int __fastcall FindIndex(
     const char *logicalName
 ) {
@@ -254,8 +289,10 @@ int __fastcall FindIndex(
 } // namespace PickupTypeKeyTable
 
 namespace PickupTypeMeta {
-// Reimplements 0x41e1a0: PickupTypeMeta::FindByName
-// (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x41e1a0: PickupTypeMeta::FindByName (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: resolve a pickup logical name to its pickup type record.
+ */
 PickupType *__fastcall FindByName(
     const char *typeName
 ) {
@@ -269,8 +306,10 @@ PickupType *__fastcall FindByName(
 } // namespace PickupTypeMeta
 
 namespace Net {
-// Reimplements 0x41de30: Net::IsOptEntryActiveInAnySlot
-// (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x41de30: Net::IsOptEntryActiveInAnySlot (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: report whether any player weapon slot already owns an option entry.
+ */
 int __fastcall IsOptEntryActiveInAnySlot(
     OptCatalogEntryDef *optEntry
 ) {
@@ -309,7 +348,10 @@ int __fastcall ClearPickupFlagsRecursive(
     return 1;
 }
 
-// Reimplements 0x41cef0: zClass_Node::SetPickupFlagsRecursive (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x41cef0: zClass_Node::SetPickupFlagsRecursive (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: restore pickup active/raycast flags on a node and its secondary children.
+ */
 int __fastcall SetPickupFlagsRecursive(
     zClass_NodePartial *node
 ) {
@@ -323,9 +365,11 @@ int __fastcall SetPickupFlagsRecursive(
 }
 } // namespace zClass_Node
 
-// Reimplements 0x438990: PickupAirdropSpawnRef::InitNodesFromCarrierNodeName
-// (D:\Proj\Battlesport\pickup.cpp)
-PickupAirdropSpawnRef * PickupAirdropSpawnRef::InitNodesFromCarrierNodeName(
+/**
+ * Reimplements 0x438990: PickupAirdropSpawnRef::InitNodesFromCarrierNodeName (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: cache a carrier node and its healthy drop-attachment child.
+ */
+PickupAirdropSpawnRef *PickupAirdropSpawnRef::InitNodesFromCarrierNodeName(
     const char *carrierNodeName
 ) {
     carrierNode = zClass::FindByTypeAndName(
@@ -339,9 +383,11 @@ PickupAirdropSpawnRef * PickupAirdropSpawnRef::InitNodesFromCarrierNodeName(
     return this;
 }
 
-// Reimplements 0x438a70: PickupAirdropSpawnRef::GetWorldPos
-// (D:\Proj\Battlesport\pickup.cpp)
-zVec3 * PickupAirdropSpawnRef::GetWorldPos() {
+/**
+ * Reimplements 0x438a70: PickupAirdropSpawnRef::GetWorldPos (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: refresh and return the cached world position of the airdrop carrier.
+ */
+zVec3 *PickupAirdropSpawnRef::GetWorldPos() {
     gwNode::GetWorldPosition(
         carrierNode,
         &worldPos
@@ -349,8 +395,10 @@ zVec3 * PickupAirdropSpawnRef::GetWorldPos() {
     return &worldPos;
 }
 
-// Reimplements 0x438a20: PickupAirdropSpawnRef::CanSpawnWithClearance
-// (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x438a20: PickupAirdropSpawnRef::CanSpawnWithClearance (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: gate VTOL pickup spawning on attach-node state, ammo state, and XZ clearance.
+ */
 int PickupAirdropSpawnRef::CanSpawnWithClearance(
     float clearanceRadius
 ) {
@@ -370,8 +418,10 @@ int PickupAirdropSpawnRef::CanSpawnWithClearance(
     ) == 0;
 }
 
-// Reimplements 0x4389c0: PickupAirdropSpawnRef::SpawnPickupTypeAndRelay
-// (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x4389c0: PickupAirdropSpawnRef::SpawnPickupTypeAndRelay (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: spawn an airdrop pickup locally and relay it from network hosts.
+ */
 int PickupAirdropSpawnRef::SpawnPickupTypeAndRelay(
     int pickupTypeIndex
 ) {
@@ -398,8 +448,10 @@ int PickupAirdropSpawnRef::SpawnPickupTypeAndRelay(
     return 1;
 }
 
-// Reimplements 0x438a90: PickupAirdropSpawnRef::InitGlobalFromCarrierNodeName
-// (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x438a90: PickupAirdropSpawnRef::InitGlobalFromCarrierNodeName (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: allocate and validate the global airdrop spawn reference.
+ */
 void __fastcall PickupAirdropSpawnRef::InitGlobalFromCarrierNodeName(
     const char *carrierNodeName
 ) {
@@ -413,7 +465,10 @@ void __fastcall PickupAirdropSpawnRef::InitGlobalFromCarrierNodeName(
     }
 }
 
-// Reimplements 0x438b10: PickupAirdropSpawnRef::ShutdownGlobal
+/**
+ * Reimplements 0x438b10: PickupAirdropSpawnRef::ShutdownGlobal (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: release the global airdrop spawn reference and clear its pointer.
+ */
 void PickupAirdropSpawnRef::ShutdownGlobal() {
     PickupAirdropSpawnRef *const spawnRef = g_Pickup_GlobalAirdropSpawnRef;
     if (spawnRef != 0) {
@@ -423,8 +478,10 @@ void PickupAirdropSpawnRef::ShutdownGlobal() {
     g_Pickup_GlobalAirdropSpawnRef = 0;
 }
 
-// Reimplements 0x438b30: PickupAirdropSpawnRef::TrySpawnRandomPickupFromGlobal
-// (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x438b30: PickupAirdropSpawnRef::TrySpawnRandomPickupFromGlobal (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: attempt a random VTOL pickup spawn through the global airdrop ref.
+ */
 int PickupAirdropSpawnRef::TrySpawnRandomPickupFromGlobal() {
     zOpt::GetNetworkEnabled();
     if (g_Pickup_GlobalAirdropSpawnRef->CanSpawnWithClearance(20.0f) == 0) {
@@ -436,7 +493,10 @@ int PickupAirdropSpawnRef::TrySpawnRandomPickupFromGlobal() {
     );
 }
 
-// Reimplements 0x41cc10: PickupSpawnList::Primary_Init (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x41cc10: PickupSpawnList::Primary_Init (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: clear the primary pickup spawn list global.
+ */
 void PickupSpawnList::Primary_Init() {
     g_PickupSpawnList_Primary.unused = 0;
     g_PickupSpawnList_Primary.tail = 0;
@@ -444,7 +504,10 @@ void PickupSpawnList::Primary_Init() {
     g_PickupSpawnList_Primary.count = 0;
 }
 
-// Reimplements 0x41cc40: PickupSpawnList::NetCopy_Init (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x41cc40: PickupSpawnList::NetCopy_Init (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: clear the network-copy pickup spawn list global.
+ */
 void PickupSpawnList::NetCopy_Init() {
     g_PickupSpawnList_NetworkCopy.unused = 0;
     g_PickupSpawnList_NetworkCopy.tail = 0;
@@ -452,7 +515,10 @@ void PickupSpawnList::NetCopy_Init() {
     g_PickupSpawnList_NetworkCopy.count = 0;
 }
 
-// Reimplements 0x41cc70: PickupRespawnQueue::Init (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x41cc70: PickupRespawnQueue::Init (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: clear the pickup respawn queue global.
+ */
 void PickupRespawnQueue::Init() {
     g_PickupRespawnQueue.unused = 0;
     g_PickupRespawnQueue.tail = 0;
@@ -509,7 +575,10 @@ void __fastcall PickupSpawnList::RemoveAndFreeNode(
     free(node);
 }
 
-// Reimplements 0x41e240: PickupSpawnList::Clear (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x41e240: PickupSpawnList::Clear (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: free every spawn in a pickup spawn list and reset primary ids when needed.
+ */
 void PickupSpawnList::Clear() {
     PickupSpawnDef *node = head;
     while (node != 0) {
@@ -526,7 +595,10 @@ void PickupSpawnList::Clear() {
     }
 }
 
-// Reimplements 0x41e270: PickupRespawnQueue::ClearAndFree (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x41e270: PickupRespawnQueue::ClearAndFree (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: unlink and release every pending pickup respawn queue entry.
+ */
 void PickupRespawnQueue::ClearAndFree() {
     PickupRespawnEntry *node = head;
     while (node != 0) {
@@ -566,7 +638,10 @@ void PickupRespawnQueue::ClearAndFree() {
     }
 }
 
-// Reimplements 0x41e5d0: PickupRespawnQueue::Update (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x41e5d0: PickupRespawnQueue::Update (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: respawn due pickups and remove their queue entries.
+ */
 void PickupRespawnQueue::Update() {
     if (g_PickupRespawnQueue.count == 0) {
         return;
@@ -616,8 +691,10 @@ void PickupRespawnQueue::Update() {
 }
 
 namespace Pickup {
-// Reimplements 0x41ddf0: Pickup::SelectPuppiesZrdByDifficulty
-// (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x41ddf0: Pickup::SelectPuppiesZrdByDifficulty (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: choose the puppy spawn ZRD path for the current difficulty with fallback.
+ */
 const char *__fastcall SelectPuppiesZrdByDifficulty(
     const char *extraSearchPath
 ) {
@@ -639,8 +716,10 @@ const char *__fastcall SelectPuppiesZrdByDifficulty(
     return filename;
 }
 
-// Reimplements 0x41de70: Pickup::InitAndLoadPuppySpawns
-// (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x41de70: Pickup::InitAndLoadPuppySpawns (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: initialize weapon pickup metadata and load puppy pickup spawn records.
+ */
 int InitAndLoadPuppySpawns() {
     for (int index = 17; index <= 33; ++index) {
         PickupType &pickupType = g_PickupTypes[index];
@@ -786,8 +865,10 @@ int InitAndLoadPuppySpawns() {
     return 1;
 }
 
-// Reimplements 0x41e430: Pickup::SpawnListHasEntryNearXZ
-// (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x41e430: Pickup::SpawnListHasEntryNearXZ (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: test whether a primary spawn lies inside a requested XZ clearance window.
+ */
 int __fastcall SpawnListHasEntryNearXZ(
     zVec3 *position,
     float clearanceRadius
@@ -804,8 +885,10 @@ int __fastcall SpawnListHasEntryNearXZ(
     return 0;
 }
 
-// Reimplements 0x41e540: Pickup::MapVTOLDropGroupVariantToTypeIndex
-// (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x41e540: Pickup::MapVTOLDropGroupVariantToTypeIndex (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: convert a VTOL drop weapon group and variant into a pickup type index.
+ */
 int __fastcall MapVTOLDropGroupVariantToTypeIndex(
     int dropGroupIndex,
     int dropVariantIndex
@@ -817,8 +900,10 @@ int __fastcall MapVTOLDropGroupVariantToTypeIndex(
     return (dropGroupIndex - 2) * 2 + 1 + (dropVariantIndex != 0);
 }
 
-// Reimplements 0x41e480: Pickup::SelectNextVTOLSpawnTypeIndex
-// (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x41e480: Pickup::SelectNextVTOLSpawnTypeIndex (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: rotate through available weapon pickups for the next VTOL drop.
+ */
 int SelectNextVTOLSpawnTypeIndex() {
     zUtil_PlayerStateStorage *const playerState =
         (zUtil_PlayerStateStorage *)((void *)(g_GameStateOrMapTable->playerState));
@@ -862,7 +947,10 @@ int SelectNextVTOLSpawnTypeIndex() {
     );
 }
 
-// Reimplements 0x41ccf0: Pickup::Init (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x41ccf0: Pickup::Init (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: initialize pickup templates, metadata images, sounds, and archive handlers.
+ */
 int __fastcall Init(
     zClass_NodePartial *sceneNode,
     const char *pickupsCfgPath
@@ -1097,8 +1185,10 @@ int __fastcall HandlePkt11_SpawnDelta(
     return 1;
 }
 
-// Reimplements 0x434050: Pickup::SendPkt12_AirdropSpawnChuteRelay
-// (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x434050: Pickup::SendPkt12_AirdropSpawnChuteRelay (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: send a reliable pkt12 airdrop chute-spawn relay to peers.
+ */
 void __fastcall SendPkt12_AirdropSpawnChuteRelay(
     int pickupTypeIndex,
     zVec3 *spawnPos,
@@ -1127,8 +1217,10 @@ int __fastcall HandlePkt12_AirdropSpawnChuteRelay(
     return 1;
 }
 
-// Reimplements 0x41db60: Pickup::AssignBvolGroupAndId
-// (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x41db60: Pickup::AssignBvolGroupAndId (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: parse a pickup node name, assign runtime pickup fields, and disable its bvol child.
+ */
 int __fastcall AssignBvolGroupAndId(
     zClass_NodePartial *pickupObj
 ) {
@@ -1225,8 +1317,10 @@ zClass_NodePartial *__fastcall CreateObjectInstance(
     return 0;
 }
 
-// Reimplements 0x41d920: Pickup::CreateSpawnDefAndLink
-// (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x41d920: Pickup::CreateSpawnDefAndLink (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: allocate a spawn definition, attach it to the primary list, and bind node context.
+ */
 PickupSpawnDef *__fastcall CreateSpawnDefAndLink(
     zClass_NodePartial *pickupObj,
     zVec3 *position,
@@ -1440,8 +1534,10 @@ PickupSpawnDef *__fastcall SpawnAt(
     return spawn;
 }
 
-// Reimplements 0x41ea30: Pickup::SpawnAtCarrierNodeByName
-// (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x41ea30: Pickup::SpawnAtCarrierNodeByName (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: spawn a pickup at the world transform of a named carrier node.
+ */
 void __fastcall SpawnAtCarrierNodeByName(
     const char *carrierNodeName,
     int typeIndex,
@@ -1551,8 +1647,10 @@ void __fastcall SetVariantFromTerrain(
     );
 }
 
-// Reimplements 0x41e6c0: Pickup::RespawnSpawnDef
-// (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x41e6c0: Pickup::RespawnSpawnDef (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: restore a hidden pickup object to its saved spawn transform and flags.
+ */
 void __fastcall RespawnSpawnDef(
     PickupSpawnDef *spawn
 ) {
@@ -1696,8 +1794,10 @@ void __fastcall RemoveObject(
     free(spawn);
 }
 
-// Reimplements 0x41d0c0: Pickup::OnCollected
-// (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x41d0c0: Pickup::OnCollected (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: apply a collected pickup and transition the pickup object to its pickup animation or removal.
+ */
 int __fastcall OnCollected(
     zClass_NodePartial *hitNode,
     zUtil_SaveGameState *saveState
@@ -1848,8 +1948,10 @@ int __fastcall SpawnListContainsPickupId(
     return 0;
 }
 
-// Reimplements 0x41cf30: Pickup::ResolveOwnerFromBvolHit
-// (src/Battlesport/pickup.cpp)
+/**
+ * Reimplements 0x41cf30: Pickup::ResolveOwnerFromBvolHit (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: resolve a pickup bvol hit node back to its owning pickup node.
+ */
 int __fastcall ResolveOwnerFromBvolHit(
     zClass_NodePartial **nodeInOut
 ) {
@@ -1884,15 +1986,20 @@ PickupSpawnDef *__fastcall FindSpawnByPickupId(
     return 0;
 }
 
-// Reimplements 0x41e950: Pickup::GetSpawnDefFromNode (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x41e950: Pickup::GetSpawnDefFromNode (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: return the spawn definition stored in a pickup node callback context.
+ */
 PickupSpawnDef *__fastcall GetSpawnDefFromNode(
     zClass_NodePartial *pickupNode
 ) {
     return (PickupSpawnDef *)(pickupNode->callbackContext);
 }
 
-// Reimplements 0x41ea00: Pickup::FindOptMetaImageByOptEntry
-// (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x41ea00: Pickup::FindOptMetaImageByOptEntry (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: find the optional metadata image for a weapon pickup option entry.
+ */
 zVidImagePartial *__fastcall FindOptMetaImageByOptEntry(
     OptCatalogEntryDef *optEntry
 ) {
@@ -1907,8 +2014,10 @@ zVidImagePartial *__fastcall FindOptMetaImageByOptEntry(
     return 0;
 }
 
-// Reimplements 0x41e980: Pickup::FindDroppableTypeForPlayerCurrentWeapon
-// (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x41e980: Pickup::FindDroppableTypeForPlayerCurrentWeapon (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: map the active player weapon option to the matching droppable pickup type.
+ */
 PickupType *__fastcall FindDroppableTypeForPlayerCurrentWeapon(
     zUtil_SaveGameState *saveState
 ) {
@@ -1928,8 +2037,10 @@ PickupType *__fastcall FindDroppableTypeForPlayerCurrentWeapon(
     return &g_PickupTypes[0];
 }
 
-// Reimplements 0x41e2f0: Pickup::RemoveOtherSpawnsWithSameOptEntry
-// (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x41e2f0: Pickup::RemoveOtherSpawnsWithSameOptEntry (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: remove other primary pickup spawns that grant the same option entry.
+ */
 void __fastcall RemoveOtherSpawnsWithSameOptEntry(
     OptCatalogEntryDef *optEntry,
     zClass_NodePartial *keepPickupObj
@@ -1947,8 +2058,10 @@ void __fastcall RemoveOtherSpawnsWithSameOptEntry(
     }
 }
 
-// Reimplements 0x41d650: Pickup::GrantAmmoOrWeapon
-// (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x41d650: Pickup::GrantAmmoOrWeapon (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: grant ammo or weapon ownership for a pickup and prepare HUD feedback.
+ */
 int __fastcall GrantAmmoOrWeapon(
     PickupType *pickupType,
     char *messageBuffer,
@@ -2061,8 +2174,10 @@ int __fastcall GrantAmmoOrWeapon(
     return 1;
 }
 
-// Reimplements 0x41d220: Pickup::ApplyEffect
-// (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x41d220: Pickup::ApplyEffect (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: apply the gameplay effect for a pickup type to the player save state.
+ */
 int __fastcall ApplyEffect(
     int pickupTypeId,
     int overrideAmount,
@@ -2268,8 +2383,10 @@ int __fastcall ApplyEffect(
     return result;
 }
 
-// Reimplements 0x41e780: Pickup::ArchiveWriteAll
-// (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x41e780: Pickup::ArchiveWriteAll (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: serialize active pickup spawns to the pickup archive section.
+ */
 int __fastcall ArchiveWriteAll(
     zZbdSectionCallbackCtx *callbackCtx,
     void *userData
@@ -2307,8 +2424,10 @@ int __fastcall ArchiveWriteAll(
     return result;
 }
 
-// Reimplements 0x41e840: Pickup::ArchiveReadRecord
-// (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x41e840: Pickup::ArchiveReadRecord (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: restore one pickup spawn record from the pickup archive section.
+ */
 void __fastcall ArchiveReadRecord(
     zZbdSectionCallbackCtx *callbackCtx,
     const char *sectionToken,
@@ -2353,12 +2472,18 @@ int __fastcall SetNextPickupId(
     return oldNextPickupId;
 }
 
-// Reimplements 0x41e970: Pickup::GetNextPickupId (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x41e970: Pickup::GetNextPickupId (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: return the next pickup id counter.
+ */
 int GetNextPickupId() {
     return g_NextPickupId;
 }
 
-// Reimplements 0x41ccd0: Pickup::Shutdown (D:\Proj\Battlesport\pickup.cpp)
+/**
+ * Reimplements 0x41ccd0: Pickup::Shutdown (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: clear pickup spawn, network-copy, and respawn queue state.
+ */
 void Shutdown() {
     g_PickupSpawnList_Primary.Clear();
     g_PickupSpawnList_NetworkCopy.Clear();
@@ -2367,7 +2492,10 @@ void Shutdown() {
 } // namespace Pickup
 
 namespace PickupTypeTable {
-// Reimplements 0x41cca0: PickupTypeTable::FreeOptMeta
+/**
+ * Reimplements 0x41cca0: PickupTypeTable::FreeOptMeta (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: release optional pickup metadata images and clear their table slots.
+ */
 void FreeOptMeta() {
     {
         for (int index = 0; index < 40; ++index) {

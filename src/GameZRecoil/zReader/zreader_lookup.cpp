@@ -68,7 +68,7 @@ namespace zReader {
  * (Battlesport/zUtil/zrdr_global.c).
  *
  * Purpose: find the global string-table prefix that matches the start of a
- * reader token and stops before the next alphanumeric character.
+ * reader token and is followed by the token end or whitespace.
  */
 int __fastcall FindGlobalStringPrefixIndex(
     const char *text
@@ -84,10 +84,10 @@ int __fastcall FindGlobalStringPrefixIndex(
             continue;
         }
 
-        const unsigned char nextChar = (unsigned char)(text[prefixLength]);
+        const int nextChar = text[prefixLength];
         if (nextChar != '\0' && _isctype(
             nextChar,
-            0x0008
+            _SPACE
         ) == 0) {
             continue;
         }

@@ -65,6 +65,12 @@ void sort(
 } // namespace
 
 extern "C" {
+/**
+ * Reimplements data 0x6320ac: g_zVideo_pfnBltSourceToPrimary.
+ * BN xrefs: zVideo/zRndr setup stores the active source-to-primary blit
+ * callback before software HUD/renderer paths dispatch through it.
+ * Purpose: renderer-selected 16-bit source blit callback for primary output.
+ */
 zVideo_BltSourceToPrimaryProc g_zVideo_pfnBltSourceToPrimary = 0;
 }
 
@@ -72,14 +78,47 @@ namespace zSys {
 int CheckCpuSignatureMask();
 }
 
+/**
+ * Reimplements data 0x57d978: g_zRndr_InverseZTolerance.
+ * BN xrefs: inverse-depth span and polygon setup paths compare against this
+ * tolerance when preparing software rasterization state.
+ * Purpose: runtime inverse-Z comparison tolerance for zRndr draw paths.
+ */
 float g_zRndr_InverseZTolerance = 0.0f;
-// Palette-remap selection globals: BN identifies the active packed remap key at
-// 0x4e21fc and active shade recipe index at 0x4e2200; both retail values start
-// disabled at -1 and are written by the zRndr palette setter cluster.
+/**
+ * Reimplements data 0x4e21fc: g_zRndr_ActivePaletteRemapKey.
+ * BN xrefs: zRndr palette setter and remap selection paths read/write this
+ * packed remap key; retail initializes it to the disabled value -1.
+ * Purpose: active palette-remap key selected for software renderer spans.
+ */
 int g_zRndr_ActivePaletteRemapKey = -1;
+/**
+ * Reimplements data 0x4e2200: g_zRndr_ActivePaletteShadeRecipeIndex.
+ * BN xrefs: zRndr palette setter and remap selection paths read/write this
+ * shade recipe index; retail initializes it to the disabled value -1.
+ * Purpose: active palette shade recipe selected for remapped spans.
+ */
 int g_zRndr_ActivePaletteShadeRecipeIndex = -1;
+/**
+ * Reimplements data 0x56b23c: g_zRndr_CircleCenterX.
+ * BN xrefs: zRndr circle drawing setup stores the center X coordinate before
+ * circle span callbacks consume it.
+ * Purpose: staged center X coordinate for software circle rendering.
+ */
 int g_zRndr_CircleCenterX = 0;
+/**
+ * Reimplements data 0x56b240: g_zRndr_CircleCenterY.
+ * BN xrefs: zRndr circle drawing setup stores the center Y coordinate before
+ * circle span callbacks consume it.
+ * Purpose: staged center Y coordinate for software circle rendering.
+ */
 int g_zRndr_CircleCenterY = 0;
+/**
+ * Reimplements data 0x56b244: g_zRndr_CircleDrawAuxArg.
+ * BN xrefs: zRndr circle drawing setup stores the auxiliary draw argument for
+ * the selected circle span callback.
+ * Purpose: staged callback argument for software circle rendering.
+ */
 int g_zRndr_CircleDrawAuxArg = 0;
 
 namespace zRndr {
@@ -244,15 +283,62 @@ OverwriteQueuedPolyDrawCmd g_overwriteQueue[0x15e] = {0};
 int g_transparentQueueSortIndices[0x15e] = {0};
 int g_transparentQueueCount = 0;
 int g_overwriteQueueCount = 0;
-// Overlay blend state shared by zRndr_Overlay.cpp setup and the lens-flare
-// clipped-framebuffer leaf: enable flag 0x62e9dc, packed color 0x62e9f0, and
-// alpha double 0x62e9f8.
+/*
+ * zRndr_Overlay.cpp software overlay rectangle staging bank:
+ * BN models 0x62e9dc..0x62e9ff as zero-initialized authored state. Submit
+ * writes the rectangle/color/alpha fields, FlushSw consumes the same bank, and
+ * lens-flare clipped-framebuffer paths read the enable/color/alpha subset.
+ * The four bytes at 0x62e9f4 have no current xrefs and are retained as the
+ * compiler-emitted alignment gap before the double at 0x62e9f8.
+ */
+/**
+ * Reimplements data 0x62e9dc: g_overlayBlendEnabled
+ * (BN: gRndr_OverlayBlendEnabled).
+ * Data owner: render_video.zrndr_overlay_rect_staging_globals.
+ * Purpose: record whether a software overlay rectangle is staged for blending.
+ */
 int g_overlayBlendEnabled = 0;
+/**
+ * Reimplements data 0x62e9e0: g_overlayBlendRectLeft
+ * (BN: gRndr_OverlayBlendRectLeft).
+ * Data owner: render_video.zrndr_overlay_rect_staging_globals.
+ * Purpose: store the staged overlay rectangle left edge in pixels.
+ */
 int g_overlayBlendRectLeft = 0;
+/**
+ * Reimplements data 0x62e9e4: g_overlayBlendRectTop
+ * (BN: gRndr_OverlayBlendRectTop).
+ * Data owner: render_video.zrndr_overlay_rect_staging_globals.
+ * Purpose: store the staged overlay rectangle top edge in pixels.
+ */
 int g_overlayBlendRectTop = 0;
+/**
+ * Reimplements data 0x62e9e8: g_overlayBlendRectRight
+ * (BN: gRndr_OverlayBlendRectRight).
+ * Data owner: render_video.zrndr_overlay_rect_staging_globals.
+ * Purpose: store the staged overlay rectangle right edge used by the software row flush.
+ */
 int g_overlayBlendRectRight = 0;
+/**
+ * Reimplements data 0x62e9ec: g_overlayBlendRectBottom
+ * (BN: gRndr_OverlayBlendRectBottom).
+ * Data owner: render_video.zrndr_overlay_rect_staging_globals.
+ * Purpose: store the staged overlay rectangle bottom edge in pixels.
+ */
 int g_overlayBlendRectBottom = 0;
+/**
+ * Reimplements data 0x62e9f0: g_overlayBlendPackedColor16
+ * (BN: gRndr_OverlayBlendPackedColor16).
+ * Data owner: render_video.zrndr_overlay_rect_staging_globals.
+ * Purpose: cache the staged 16-bpp overlay color used by software overlay and lens-flare blending.
+ */
 unsigned int g_overlayBlendPackedColor16 = 0;
+/**
+ * Reimplements data 0x62e9f8: g_overlayBlendAlpha
+ * (BN: gRndr_OverlayBlendAlpha).
+ * Data owner: render_video.zrndr_overlay_rect_staging_globals.
+ * Purpose: cache the staged overlay alpha as the x87 double consumed by software overlay paths.
+ */
 double g_overlayBlendAlpha = 0.0;
 // zRndr lens-flare frame-state bank. BN identifies the zero-initialized queue
 // count at 0x62ea00, the 0x28a-entry sample queue at 0x62ea04, the visible

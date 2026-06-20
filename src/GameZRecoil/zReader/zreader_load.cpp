@@ -12,26 +12,110 @@
 #include <stdlib.h>
 #include <string.h>
 
+/**
+ * Reimplements data 0x56b184: g_zArchive_MountedList.
+ * Purpose: store the process-wide list of mounted ZRDR/ZAR index archives.
+ */
 extern "C" zArchiveList *g_zArchive_MountedList = 0;
+/**
+ * Reimplements data 0x56b188: g_zArchive_Current.
+ * Purpose: store the current mounted archive selected by archive mounting.
+ */
 extern "C" zArchiveList *g_zArchive_Current = 0;
+/**
+ * Reimplements data 0x56b180: g_zRdr_SearchPathList.
+ * Purpose: store the global ZRDR search-path list.
+ */
 extern "C" zArchiveList *g_zRdr_SearchPathList = 0;
+/**
+ * Reimplements data 0x56ae70: g_zUtil_ZRDR_FreePool.
+ * Purpose: store reusable archive-list nodes for ZRDR list operations.
+ */
 extern "C" zArchiveList *g_zUtil_ZRDR_FreePool = 0;
+/**
+ * Reimplements data 0x56bb8c: g_zRdr_ScratchSearchPathList.
+ * Purpose: store the temporary ZRDR search-path list used by scoped lookups.
+ */
 extern "C" zArchiveList *g_zRdr_ScratchSearchPathList = 0;
+/**
+ * Reimplements data 0x56ae74: g_zUtil_ZRDR_TotalAllocated.
+ * Purpose: count archive-list nodes allocated for the ZRDR free pool.
+ */
 extern "C" int g_zUtil_ZRDR_TotalAllocated = 0;
+/**
+ * Reimplements data 0x56ae78: g_zUtil_ZRDR_FreeCount.
+ * Purpose: count nodes currently held by the ZRDR free pool.
+ */
 extern "C" int g_zUtil_ZRDR_FreeCount = 0;
+/**
+ * Reimplements data 0x56ae7c: g_zUtil_ZRDR_GrowCount.
+ * Purpose: count demand-growth events for the ZRDR free pool.
+ */
 extern "C" int g_zUtil_ZRDR_GrowCount = 0;
+/**
+ * Reimplements data 0x56ae80: g_zReader_FileExtBuf.
+ * Purpose: store the file extension split out before archive-member lookup.
+ */
 extern "C" char g_zReader_FileExtBuf[0x100] = {0};
+/**
+ * Reimplements data 0x56af80: g_zReader_FileNameBuf.
+ * Purpose: store the basename joined with extension for archive-member lookup.
+ */
 extern "C" char g_zReader_FileNameBuf[0x100] = {0};
+/**
+ * Reimplements data 0x56bb88: g_zRdr_SplitDriveBuf.
+ * Purpose: store the CRT drive component during ZRDR path resolution.
+ */
 extern "C" char g_zRdr_SplitDriveBuf[4] = {0};
+/**
+ * Reimplements data 0x56ba88: g_zRdr_SplitDirBuf.
+ * Purpose: store the CRT directory component during ZRDR path resolution.
+ */
 extern "C" char g_zRdr_SplitDirBuf[0x100] = {0};
+/**
+ * Reimplements data 0x56b678: g_zRdr_SplitFileNameBuf.
+ * Purpose: store the CRT basename component during ZRDR path resolution.
+ */
 extern "C" char g_zRdr_SplitFileNameBuf[0x100] = {0};
+/**
+ * Reimplements data 0x56b778: g_zRdr_SplitExtBuf.
+ * Purpose: store the CRT extension component during ZRDR path resolution.
+ */
 extern "C" char g_zRdr_SplitExtBuf[0x100] = {0};
+/**
+ * Reimplements data 0x56b878: g_zRdr_PathJoinBuf.
+ * Purpose: store joined search-directory and filename probes.
+ */
 extern "C" char g_zRdr_PathJoinBuf[0x100] = {0};
+/**
+ * Reimplements data 0x56b980: g_zRdr_ResolvedPathBuf.
+ * Purpose: store the resolved path returned from ZRDR search-path lookup.
+ */
 extern "C" char g_zRdr_ResolvedPathBuf[0x100] = {0};
+/**
+ * Reimplements data 0x56bba4: g_zUtil_ZRDR_WildcardPath.
+ * Purpose: store the active in-place wildcard path string.
+ */
 extern "C" char *g_zUtil_ZRDR_WildcardPath = 0;
+/**
+ * Reimplements data 0x56bb90: g_zUtil_ZRDR_WildcardDigits.
+ * Purpose: store the odometer digits for active wildcard path expansion.
+ */
 extern "C" int g_zUtil_ZRDR_WildcardDigits[5] = {0};
+/**
+ * Reimplements data 0x56bba8: g_zUtil_ZRDR_WildcardStarCount.
+ * Purpose: store the number of active wildcard placeholders, capped at five.
+ */
 extern "C" int g_zUtil_ZRDR_WildcardStarCount = 0;
+/**
+ * Reimplements data 0x56bbb0: g_zUtil_ZRDR_WildcardStarPtrs.
+ * Purpose: store pointers to wildcard placeholder bytes inside the active path.
+ */
 extern "C" char *g_zUtil_ZRDR_WildcardStarPtrs[5] = {0};
+/**
+ * Reimplements data 0x4f3ab4: g_Mover_LastLoadedNode.
+ * Purpose: remember the most recent mover node accepted from movers.zrd.
+ */
 extern "C" zClass_NodePartial *g_Mover_LastLoadedNode = 0;
 
 /**
@@ -625,10 +709,10 @@ extern "C" FILE *__fastcall zUtil_ZRDR_OpenFileResolved(
 }
 
 namespace {
-// Source-faithful helper recovered from address-backed callers in this source file.
 /**
- * Original-source helper evidence: local helper used by zUtil_ZRDR_InitWildcardPath and
- * zUtil_ZRDR_NextWildcardPath to maintain the active wildcard path string.
+ * Original-source helper evidence: no standalone retail function is present;
+ * observed callers 0x4a5f90 and 0x4a6070 share the same wildcard digit rewrite
+ * loop after initializing or incrementing the digit state.
  * Purpose: update wildcard digit placeholders in the active ZRDR wildcard path.
  */
 void zUtil_ZRDR_WriteWildcardDigits() {
@@ -688,7 +772,7 @@ extern "C" char *__fastcall zUtil_ZRDR_InitWildcardPath(
  * Source: D:\Proj\GameZRecoil\zUtil\zutl_zrdr.cpp.
  * Purpose: advance wildcard digits and return the next generated path.
  */
-extern "C" char *zUtil_ZRDR_NextWildcardPath() {
+extern "C" char * zUtil_ZRDR_NextWildcardPath() {
     int carryOut = 0;
     int digitIndex = 0;
     if (g_zUtil_ZRDR_WildcardStarCount > 0) {
@@ -840,28 +924,9 @@ extern "C" int zUtil_ZRDR_ShutdownWildcardPath() {
     return 0;
 }
 
-namespace {
-// Source-faithful helper recovered from address-backed callers in this source file.
-/**
- * Original-source helper evidence: local callback used by zUtil_ZRDR_UnloadMountedArchives.
- * Purpose: release one mounted archive payload during mounted-archive teardown.
- */
-void DestroyMountedArchive(
-    zIndexArchive *archive
-) {
-    if (archive == 0) {
-        return;
-    }
-
-    archive->CloseAndFreeRecords();
-    archive->Destroy();
-    ::operator delete(archive);
-}
-} // namespace
-
 /**
  * Reimplements 0x48d2c0: zUtil_ZRDR_UnloadMountedArchives.
- * Purpose: destroy mounted archives and reset mounted/current archive globals.
+ * Purpose: destroy mounted archives while optionally preserving the current archive.
  */
 extern "C" int __fastcall zUtil_ZRDR_UnloadMountedArchives(
     int destroyCurrentToo
@@ -875,7 +940,9 @@ extern "C" int __fastcall zUtil_ZRDR_UnloadMountedArchives(
                 g_zArchive_Current = 0;
             }
 
-            DestroyMountedArchive(archive);
+            archive->CloseAndFreeRecords();
+            archive->Destroy();
+            ::operator delete(archive);
         }
 
         archive = (zIndexArchive *)(zArchiveList_PopFrontPayload(g_zArchive_MountedList));

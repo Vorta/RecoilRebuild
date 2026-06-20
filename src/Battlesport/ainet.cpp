@@ -12,9 +12,13 @@
 extern "C" {
 /**
  * Reimplements data 0x4e5c58: g_AINetListHead.
- * Purpose: Stores g AINetListHead data used by battlesport_ai.ainet_global_list_head_data.
+ * Purpose: Stores the zero-initialized head pointer for the loaded AINet global list.
  */
 AINet *g_AINetListHead = 0;
+/**
+ * Reimplements data 0x4e5c5c: g_AINetListTail.
+ * Purpose: Stores the zero-initialized tail pointer maintained with the loaded AINet global list.
+ */
 AINet *g_AINetListTail = 0;
 }
 

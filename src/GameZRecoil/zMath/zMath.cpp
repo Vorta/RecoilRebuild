@@ -63,9 +63,24 @@ const double g_zMath_DoubleZero = 0.0;
  * for degenerate determinants.
  */
 const double g_zMath_DoubleZero2 = 0.0;
-const double g_zMath_Vec3SlerpDotNegThreshold = -0.95;
-const float g_zMath_Vec3SlerpPiFloat = 3.14159274f;
-const double g_zMath_Vec3SlerpDotPosThreshold = 0.95;
+/**
+ * Reimplements data 0x4d2930: zMath vector direction negative dot threshold.
+ * Purpose: selects the antiparallel Vec3Slerp branch before building a
+ * perpendicular direction.
+ */
+const double g_zMath_Vec3DirectionDotNegThreshold = -0.95;
+/**
+ * Reimplements data 0x4d2938: zMath direction pi scalar.
+ * Purpose: converts the Vec3Slerp antiparallel interpolation amount to
+ * radians.
+ */
+const float g_zMath_DirectionToPiFloat = 3.14159274f;
+/**
+ * Reimplements data 0x4d2948: zMath vector direction positive dot threshold.
+ * Purpose: selects the near-linear Vec3Slerp branch for nearly aligned
+ * vectors.
+ */
+const double g_zMath_Vec3DirectionDotPosThreshold = 0.95;
 const float g_zMath_ElevationPiFloat = 3.14159274f; // Reimplements data 0x4d2998: Euler roll adjustment pi scalar.
 int g_zMath_ScreenWidthPx = 0;
 int g_zMath_ScreenHeightPx = 0;
@@ -820,14 +835,14 @@ void __fastcall Vec3Slerp(
         *a,
         *b
     );
-    if (dot < g_zMath_Vec3SlerpDotNegThreshold) {
+    if (dot < g_zMath_Vec3DirectionDotNegThreshold) {
         zVec3 perpendicular;
         Vec3Perp2D(
             a,
             &perpendicular
         );
 
-        const float angle = g_zMath_Vec3SlerpPiFloat * t;
+        const float angle = g_zMath_DirectionToPiFloat * t;
         const float sinAngle = sin(angle);
         const float cosAngle = cos(angle);
         out->x = a->x * cosAngle + perpendicular.x * sinAngle;
@@ -836,7 +851,7 @@ void __fastcall Vec3Slerp(
         return;
     }
 
-    if (dot > g_zMath_Vec3SlerpDotPosThreshold) {
+    if (dot > g_zMath_Vec3DirectionDotPosThreshold) {
         const float aScale = g_zMath_Vec3UnitFloat - t;
         out->x = a->x * aScale + b->x * t;
         out->y = a->y * aScale + b->y * t;

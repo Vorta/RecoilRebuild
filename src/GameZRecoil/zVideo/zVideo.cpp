@@ -219,6 +219,16 @@ int g_zVid_CachedClientRectUpdateMask = 0;
 int g_zVideo_IsInitialized = 0;
 int g_zVideo_AdjustSurfacesDisableGate = 0;
 int g_zVideo_FullscreenOption = 0;
+/**
+ * Reimplements data 0x632134: g_zVideo_PrimaryHasAttachedBackbuffer.
+ * Purpose: remember whether the primary DirectDraw surface has an attached
+ * backbuffer that can be flipped back to GDI during shutdown or mode changes.
+ *
+ * DirectDraw primary-surface state owner data. BN xrefs show the flag is set
+ * by the surface creation paths when the primary surface owns an attached
+ * backbuffer, cleared by the fullscreen surface path without one, and checked
+ * by FlipToGDIIfAttached before calling IDirectDraw2::FlipToGDISurface.
+ */
 int g_zVideo_PrimaryHasAttachedBackbuffer = 0;
 int g_zVideo_UseHalfResBackbuffer = 0;
 int g_zVideo_HalfResAdjustMode = 0;
@@ -330,6 +340,19 @@ zVidImagePartial g_zVideo_DefaultTextureImage = {
     0,
     0
 };
+/**
+ * Reimplements data 0x6333a8: g_zVideo_DefaultTextureRecord.
+ * Data owner: render_video.zvideo_default_texture_record_runtime.
+ * Purpose: hold the hardware default texture record created by zVideo startup
+ * and used by zVideo Direct3D texture fallback/destruction paths.
+ *
+ * Retail 0x6333a8: zero-initialized zVideo runtime pointer. BN currently
+ * names this storage g_zImage_DefaultTextureRecord, but xrefs are only from
+ * zVideo::InitVideoSystem, zVideo_dd::ShutdownVideoSystem, and zVideo_dd3d
+ * texture-record helpers. The zImage texture-directory pointer at 0x4e071c is
+ * separate storage owned by zImage::InitTextureDirectory.
+ */
+zVideo_TextureRecordPartial *g_zVideo_DefaultTextureRecord = 0;
 char g_zVideo_PalettePathBuffer[0x100] = {0};
 int g_zVideo_PaletteBrightnessLevel = 0;
 PALETTEENTRY g_zVideo_PaletteFileEntries[0x100] = {0};
@@ -409,6 +432,14 @@ zVideo_FlushProc g_zVideo_pfnFlushQuadBatch = 0;
  */
 zVidHwApiDeviceRecordPartial g_zVideo_HwApiDeviceTable[4] = {0};
 zVidHwApiDeviceRecordPartial *g_zVideo_pSelectedHwApiDeviceRecord = 0;
+/**
+ * Reimplements data 0x6359f4: g_zVideo_pSelectedD3DDeviceInfo.
+ * Selected Direct3D device-info pointer. BN types the retail 4-byte
+ * zero-initialized slot as a zVidD3DDeviceInfo pointer; zVideo stores either
+ * the selected hardware record's first D3D driver record or null.
+ * Purpose: cache the active Direct3D device info record for name and device
+ * creation queries.
+ */
 zVidD3DDriverRecordPartial *g_zVideo_pSelectedD3DDeviceInfo = 0;
 D3DDEVICEDESC g_zVideo_D3DHalDeviceDesc = {0};
 D3DDEVICEDESC g_zVideo_D3DHelDeviceDesc = {0};
@@ -427,6 +458,15 @@ IDirect3DViewport2 *g_zVideo_pD3DViewport2 = 0;
 IDirect3DDevice2 *g_zVideo_pD3DDevice = 0;
 IDirect3D2 *g_zVideo_pD3D2 = 0;
 IDirectDrawClipper *g_zVideo_pClipper = 0;
+/**
+ * Reimplements data 0x6333d8: g_zVideo_pDirectDraw2.
+ * Purpose: hold the active IDirectDraw2 provider interface used by DirectDraw
+ * surface creation, GDI flipping, and subsystem teardown.
+ *
+ * DirectDraw/Direct3D interface owner data. BN stores the IDirectDraw2
+ * provider pointer after QueryInterface, reads it from surface creation and
+ * FlipToGDIIfAttached, and releases/clears it during video teardown.
+ */
 IDirectDraw2 *g_zVideo_pDirectDraw2 = 0;
 IDirectDrawSurface3 *g_zVideo_pZBufferSurface = 0;
 IDirectDrawSurface *g_zVideo_pZBufferAttachSurface = 0;
@@ -585,23 +625,136 @@ zVideoFxPass3Config g_zVideo_FxPass3ConfigLocal;
 zVidRect32 g_zVideo_PrimarySurfaceRectScratch = {0};
 // BN models g_zVideo_DisplayModeBpp as the zero-initialized int32 at 0x632150.
 int g_zVideo_DisplayModeBpp = 0;
+/**
+ * Reimplements data 0x56b1b8: g_zVid_NoiseByteTableSize.
+ * Data owner evidence: zVid::Noise_InitBuffers writes the primary-surface
+ * width multiplied by 25 before filling the byte table; DrawNoiseRect uses it
+ * as the random row-window limit.
+ * Purpose: cache the allocated noise-byte table length.
+ */
 int g_zVid_NoiseByteTableSize = 0;
+/**
+ * Reimplements data 0x56b1bc: g_zVid_NoiseByteTable.
+ * Data owner evidence: zVid::Noise_InitBuffers allocates and fills this byte
+ * table, DrawNoiseRect samples it, and zVid::Noise_ShutdownBuffers frees and
+ * clears it when non-null.
+ * Purpose: hold the software noise bytes used by the FX surface overlay path.
+ */
 unsigned char *g_zVid_NoiseByteTable = 0;
-// BN's zVid::Noise_InitBuffers BSS writes order this scratch pointer before
-// the five active FX-surface fields it resets. The active FX surface descriptor
-// is a typed BSS group: pixel pointer, width, height, pitch bytes, and derived
-// 16-bit pitch.
+/**
+ * Reimplements data 0x56b1c0: g_zVideo_FxPass3_ScratchPixels16.
+ * Data owner evidence: zVid::Noise_InitBuffers allocates a width*height
+ * 16-bpp scratch buffer and stores it after clearing the active FX-surface
+ * descriptor; zVid::Noise_ShutdownBuffers frees and clears it when non-null.
+ * zVideo::FxPass3_CopySurfacePixelToScratchClipped at 0x48da60 writes through
+ * this pointer with tight g_zVideo_FxSurfaceWidth row stride, while
+ * zVideo::FxPass3_ApplyToCurrentSurface at 0x48daf0 stages the radial ring
+ * warp here before copying back to the active FX surface.
+ * Purpose: stage pass-3 warp, blur, and related 16-bpp FX surface pixels.
+ */
 unsigned short *g_zVideo_FxPass3_ScratchPixels16 = 0;
+/**
+ * Reimplements data 0x56b1c4: g_zVideo_FxSurfacePixels16.
+ * Data owner evidence: zVideo::Fx_SetSurfaceState writes this active surface
+ * pointer, zVid::Noise_InitBuffers clears it during scratch initialization,
+ * and noise/blur/pass-3/FX-surface routines use it as the 16-bpp destination.
+ * zVideo::FxPass3_CopySurfacePixelToScratchClipped at 0x48da60 reads source
+ * pixels through this pointer using g_zVideo_FxSurfacePitchPixels16.
+ * Purpose: point at the currently active 16-bpp FX surface pixel buffer.
+ */
 unsigned short *g_zVideo_FxSurfacePixels16 = 0;
+/**
+ * Reimplements data 0x56b1c8: g_zVideo_FxSurfaceWidth.
+ * Data owner evidence: zVideo::Fx_SetSurfaceState writes the active width,
+ * zVid::Noise_InitBuffers clears it, and FX/noise/blur paths use it for bounds
+ * and tight scratch-buffer row stride. FxPass3 clipped copies use this for
+ * scratch row indexing, distinct from the provider pitch used for source rows.
+ * Purpose: cache the active FX surface width in pixels.
+ */
 int g_zVideo_FxSurfaceWidth = 0;
+/**
+ * Reimplements data 0x56b1cc: g_zVideo_FxSurfaceHeight.
+ * Data owner evidence: zVideo::Fx_SetSurfaceState writes the active height,
+ * zVid::Noise_InitBuffers clears it, and FX/noise/blur paths use it for full
+ * surface clipping.
+ * Purpose: cache the active FX surface height in pixels.
+ */
 int g_zVideo_FxSurfaceHeight = 0;
+/**
+ * Reimplements data 0x56b1d0: g_zVideo_FxSurfacePitchBytes.
+ * Data owner evidence: zVideo::Fx_SetSurfaceState writes the provider pitch in
+ * bytes and zVid::Noise_InitBuffers clears it with the active surface record.
+ * Purpose: retain the active FX surface row pitch in bytes.
+ */
 int g_zVideo_FxSurfacePitchBytes = 0;
+/**
+ * Reimplements data 0x56b1d4: g_zVideo_FxSurfacePitchPixels16.
+ * Data owner evidence: zVideo::Fx_SetSurfaceState derives this from pitch
+ * bytes divided by two; FX/noise/blur paths use it for source/destination row
+ * stepping while scratch rows use g_zVideo_FxSurfaceWidth. BN assembly for
+ * 0x48da60 multiplies the biased source Y by this value before reading
+ * g_zVideo_FxSurfacePixels16.
+ * Purpose: retain the active FX surface row pitch in 16-bpp pixels.
+ */
 int g_zVideo_FxSurfacePitchPixels16 = 0;
+/*
+ * FxPass3 scratch/clip data-owner note:
+ * 0x48da60 reads the two scratch offsets, four clip bounds, active FX-surface
+ * descriptor, and scratch pointer as one zVideo pass-3 scratch copy data set.
+ * 0x48daf0 writes the clip bounds for every pass and writes the scratch offsets
+ * only when it switches from the direct scatter path to the clipped helper path.
+ * This documents the local source shape only; the complete zVideo data owner is
+ * broader than this slice and remains a parent-owned data-gate decision.
+ */
+/**
+ * Reimplements data 0x56b190: g_zVideo_FxPass3_ScratchOffsetX.
+ * Data owner evidence: zVideo::FxPass3_ApplyToCurrentSurface writes the center
+ * X bias before clipped scatter calls; BN assembly for 0x48da60 loads it once
+ * and applies it to both the destination delta in ECX and the source X stack
+ * delta before clip tests.
+ * Purpose: cache the pass-3 clipped copy X offset.
+ */
 int g_zVideo_FxPass3_ScratchOffsetX = 0;
+/**
+ * Reimplements data 0x56b194: g_zVideo_FxPass3_ScratchOffsetY.
+ * Data owner evidence: zVideo::FxPass3_ApplyToCurrentSurface writes the center
+ * Y bias before clipped scatter calls; BN assembly for 0x48da60 loads it once
+ * and applies it to both the destination delta in EDX and the source Y stack
+ * delta before clip tests.
+ * Purpose: cache the pass-3 clipped copy Y offset.
+ */
 int g_zVideo_FxPass3_ScratchOffsetY = 0;
+/**
+ * Reimplements data 0x56b1a0: g_zVideo_FxPass3_ClipMinX.
+ * Data owner evidence: zVideo::FxPass3_ApplyToCurrentSurface writes the
+ * current pass-3 clip rectangle and the clipped scatter helper tests source
+ * and destination X coordinates against it as an inclusive lower bound.
+ * Purpose: cache the inclusive minimum X clip edge for pass-3 scatter copies.
+ */
 int g_zVideo_FxPass3_ClipMinX = 0;
+/**
+ * Reimplements data 0x56b1a4: g_zVideo_FxPass3_ClipMinY.
+ * Data owner evidence: zVideo::FxPass3_ApplyToCurrentSurface writes the
+ * current pass-3 clip rectangle and the clipped scatter helper tests source
+ * and destination Y coordinates against it as an inclusive lower bound.
+ * Purpose: cache the inclusive minimum Y clip edge for pass-3 scatter copies.
+ */
 int g_zVideo_FxPass3_ClipMinY = 0;
+/**
+ * Reimplements data 0x56b1a8: g_zVideo_FxPass3_ClipMaxX.
+ * Data owner evidence: zVideo::FxPass3_ApplyToCurrentSurface writes the
+ * current pass-3 clip rectangle and the clipped scatter helper treats this as
+ * the exclusive maximum X edge.
+ * Purpose: cache the exclusive maximum X clip edge for pass-3 scatter copies.
+ */
 int g_zVideo_FxPass3_ClipMaxX = 0;
+/**
+ * Reimplements data 0x56b1ac: g_zVideo_FxPass3_ClipMaxY.
+ * Data owner evidence: zVideo::FxPass3_ApplyToCurrentSurface writes the
+ * current pass-3 clip rectangle and the clipped scatter helper treats this as
+ * the exclusive maximum Y edge.
+ * Purpose: cache the exclusive maximum Y clip edge for pass-3 scatter copies.
+ */
 int g_zVideo_FxPass3_ClipMaxY = 0;
 IDirectDrawPalette *g_zVideo_pDDPalette = 0;
 HWND g_zVideo_hWnd = 0;
@@ -3190,7 +3343,17 @@ void __fastcall Fx_SetSurfaceState(
 // current center bias and rejects copies unless both endpoints are in bounds.
 /**
  * Reimplements 0x48da60: zVideo::FxPass3_CopySurfacePixelToScratchClipped.
- * Purpose: provide the recovered zVideo::FxPass3_CopySurfacePixelToScratchClipped behavior.
+ * Source owner evidence: current BN assembly shows a zVideo namespace helper
+ * with no direct callees, fastcall destination deltas in ECX/EDX, source deltas
+ * on the stack, scratch-offset biasing for both endpoints, and strict clip
+ * checks before a single 16-bpp surface-to-scratch copy.
+ * Data owner evidence: reads g_zVideo_FxPass3_ScratchOffsetX/Y,
+ * g_zVideo_FxPass3_ClipMin/MaxX/Y, g_zVideo_FxSurfacePixels16,
+ * g_zVideo_FxSurfacePitchPixels16, g_zVideo_FxSurfaceWidth, and
+ * g_zVideo_FxPass3_ScratchPixels16. This slice documents the touched
+ * scratch/clip globals but does not prove the complete zVideo data owner.
+ * Purpose: copy one biased 16-bpp FX-surface pixel into pass-3 scratch only
+ * when both the source and destination endpoints are inside the active clip.
  */
 void __fastcall FxPass3_CopySurfacePixelToScratchClipped(
     int dstDx,
@@ -3220,10 +3383,12 @@ void __fastcall FxPass3_CopySurfacePixelToScratchClipped(
         g_zVideo_FxSurfacePixels16[srcY * g_zVideo_FxSurfacePitchPixels16 + srcX];
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
 /**
- * Original-source helper evidence: source-faithful helper recovered from address-backed callers in this source file.
- * Purpose: provide the recovered zVideoFxPass3ClampCurrentRadius helper behavior for zVideo callers.
+ * Original-source helper evidence: no standalone retail address is assigned to
+ * this helper shape in current plan/BN evidence; observed in caller
+ * zVideo::FxPass3_ApplyToCurrentSurface at 0x48daf0. The BN body clamps the
+ * current radius against a non-negative max radius before the early-exit test.
+ * Purpose: clamp the pass-3 current radius to the valid [0, max] range.
  */
 static int __fastcall zVideoFxPass3ClampCurrentRadius(
     int currentRadius,
@@ -3242,10 +3407,12 @@ static int __fastcall zVideoFxPass3ClampCurrentRadius(
     return currentRadius;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
 /**
- * Original-source helper evidence: source-faithful helper recovered from address-backed callers in this source file.
- * Purpose: provide the recovered zVideoFxPass3ApproxRadiusIndex helper behavior for zVideo callers.
+ * Original-source helper evidence: no standalone retail address is assigned to
+ * this helper shape in current plan/BN evidence; observed twice in caller
+ * zVideo::FxPass3_ApplyToCurrentSurface at 0x48daf0. BN uses the repeated
+ * integer-bit square-root approximation, then clamps the result to maxRadius.
+ * Purpose: approximate the radius-table index used by the pass-3 radial warp.
  */
 static int __fastcall zVideoFxPass3ApproxRadiusIndex(
     int distanceSquared,
@@ -3261,10 +3428,13 @@ static int __fastcall zVideoFxPass3ApproxRadiusIndex(
     return radiusIndex;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
 /**
- * Original-source helper evidence: source-faithful helper recovered from address-backed callers in this source file.
- * Purpose: provide the recovered zVideoFxPass3CopyDirect helper behavior for zVideo callers.
+ * Original-source helper evidence: no standalone retail address is assigned to
+ * this helper shape in current plan/BN evidence; observed in the non-clipped
+ * scatter path of zVideo::FxPass3_ApplyToCurrentSurface at 0x48daf0. BN uses
+ * center-relative deltas and direct pointer indexing with surface pitch for the
+ * source and tight surface width for scratch.
+ * Purpose: copy one pass-3 sample through the direct in-bounds scatter path.
  */
 static void __fastcall zVideoFxPass3CopyDirect(
     int centerX,
@@ -3281,10 +3451,12 @@ static void __fastcall zVideoFxPass3CopyDirect(
     ];
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
 /**
- * Original-source helper evidence: source-faithful helper recovered from address-backed callers in this source file.
- * Purpose: provide the recovered zVideoFxPass3ScatterDirectSymmetric helper behavior for zVideo callers.
+ * Original-source helper evidence: no standalone retail address is assigned to
+ * this helper shape in current plan/BN evidence; observed as the repeated
+ * eight-way direct scatter pattern in zVideo::FxPass3_ApplyToCurrentSurface at
+ * 0x48daf0.
+ * Purpose: scatter a direct pass-3 sample to the eight mirrored ring positions.
  */
 static void __fastcall zVideoFxPass3ScatterDirectSymmetric(
     int centerX,
@@ -3360,10 +3532,13 @@ static void __fastcall zVideoFxPass3ScatterDirectSymmetric(
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
 /**
- * Original-source helper evidence: source-faithful helper recovered from address-backed callers in this source file.
- * Purpose: provide the recovered zVideoFxPass3ScatterClippedSymmetric helper behavior for zVideo callers.
+ * Original-source helper evidence: no standalone retail address is assigned to
+ * this helper shape in current plan/BN evidence; observed as the repeated
+ * eight-call clipped scatter pattern in zVideo::FxPass3_ApplyToCurrentSurface
+ * at 0x48daf0, with each arm calling the address-backed helper at 0x48da60.
+ * Purpose: scatter a pass-3 sample to eight mirrored ring positions through
+ * the active clip bounds.
  */
 static void __fastcall zVideoFxPass3ScatterClippedSymmetric(
     int x,
@@ -3421,10 +3596,13 @@ static void __fastcall zVideoFxPass3ScatterClippedSymmetric(
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
 /**
- * Original-source helper evidence: source-faithful helper recovered from address-backed callers in this source file.
- * Purpose: provide the recovered zVideoFxPass3CopyScratchToSurface helper behavior for zVideo callers.
+ * Original-source helper evidence: no standalone retail address is assigned to
+ * this helper shape in current plan/BN evidence; observed at the tail of
+ * zVideo::FxPass3_ApplyToCurrentSurface at 0x48daf0. BN copies a bounded
+ * scratch region back to the active FX surface while skipping coordinates that
+ * remain inside the current radius.
+ * Purpose: copy the staged pass-3 scratch region back to the active FX surface.
  */
 static void __fastcall zVideoFxPass3CopyScratchToSurface(
     int minX,
@@ -3458,7 +3636,18 @@ static void __fastcall zVideoFxPass3CopyScratchToSurface(
 // clipped pixel helper when any endpoint can cross the active rectangle.
 /**
  * Reimplements 0x48daf0: zVideo::FxPass3_ApplyToCurrentSurface.
- * Purpose: provide the recovered zVideo::FxPass3_ApplyToCurrentSurface behavior.
+ * Source owner evidence: current BN assembly identifies the original file as
+ * GameZRecoil/zVideo/zVideo.cpp and shows the complete local pass-3 ring-warp
+ * source cluster: radius clamp, two alloca float tables, optional clipped
+ * helper path through 0x48da60, direct in-bounds scatter path, and final
+ * scratch-to-surface copy. There is no C++ object/table ownership in this
+ * helper cluster.
+ * Data owner evidence: writes the pass-3 clip globals on every active pass and
+ * writes g_zVideo_FxPass3_ScratchOffsetX/Y only for the clipped helper path;
+ * it also consumes the active FX surface descriptor and scratch pointer. The
+ * complete zVideo data owner remains broader than this function pair.
+ * Purpose: apply the local pass-3 animated radial ring warp to the active
+ * 16-bpp FX surface.
  */
 void __fastcall FxPass3_ApplyToCurrentSurface(
     int centerX,
@@ -4505,7 +4694,7 @@ int __fastcall InitVideoSystem(
     }
 
     if (g_zVideo_RendererType != 0) {
-        g_zImage_DefaultTextureRecord = g_zVideo_pfnCreateTextureRecord(
+        g_zVideo_DefaultTextureRecord = g_zVideo_pfnCreateTextureRecord(
             0,
             &g_zVideo_DefaultTextureImage,
             0,
@@ -4737,7 +4926,11 @@ void Noise_InitBuffers() {
 // Reimplements 0x48d3e0: zVid::Noise_ShutdownBuffers
 /**
  * Reimplements 0x48d3e0: zVid::Noise_ShutdownBuffers.
- * Purpose: provide the recovered zVid::Noise_ShutdownBuffers behavior.
+ * Original source path: D:\Proj\GameZRecoil\zImage\zvid_buff.c.
+ * Data owner evidence: current BN loads the noise table pointer, conditionally
+ * frees it, loads the pass-3 scratch pointer, clears g_zVid_NoiseByteTable,
+ * then conditionally frees and clears g_zVideo_FxPass3_ScratchPixels16.
+ * Purpose: release the software-noise byte table and pass-3 scratch buffer.
  */
 void Noise_ShutdownBuffers() {
     if (g_zVid_NoiseByteTable != 0) {
@@ -7647,7 +7840,7 @@ zVideo_TextureRecordPartial *__fastcall CreateTextureRecord(
             width,
             height
         );
-        return g_zImage_DefaultTextureRecord;
+        return g_zVideo_DefaultTextureRecord;
     }
 
     if ((g_zVideo_D3DHalDeviceDesc.dpcTriCaps.dwTextureCaps & D3DPTEXTURECAPS_POW2) != 0 &&
@@ -7661,7 +7854,7 @@ zVideo_TextureRecordPartial *__fastcall CreateTextureRecord(
             image->width,
             image->height
         );
-        return g_zImage_DefaultTextureRecord;
+        return g_zVideo_DefaultTextureRecord;
     }
 
     if (width > height * 8 || height > width * 8) {
@@ -7674,7 +7867,7 @@ zVideo_TextureRecordPartial *__fastcall CreateTextureRecord(
             width,
             height
         );
-        return g_zImage_DefaultTextureRecord;
+        return g_zVideo_DefaultTextureRecord;
     }
 
     if ((g_zVideo_D3DHalDeviceDesc.dpcTriCaps.dwTextureCaps & D3DPTEXTURECAPS_SQUAREONLY) != 0 &&
@@ -7696,7 +7889,7 @@ zVideo_TextureRecordPartial *__fastcall CreateTextureRecord(
             "Texture [%s] Palettes not supported  Using default texture.",
             textureName
         );
-        return g_zImage_DefaultTextureRecord;
+        return g_zVideo_DefaultTextureRecord;
     }
 
     DDSURFACEDESC desc = {0};
@@ -7869,7 +8062,7 @@ zVideo_TextureRecordPartial *__fastcall CreateTextureRecord(
         }
     }
 
-    return result != 0 ? result : g_zImage_DefaultTextureRecord;
+    return result != 0 ? result : g_zVideo_DefaultTextureRecord;
 }
 
 /**
@@ -8707,7 +8900,7 @@ void __fastcall SubmitPolyRenderClass(
     int queueMode
 ) {
     if (renderClass == 0) {
-        renderClass = (zVideo_RenderClass *)(g_zImage_DefaultTextureRecord);
+        renderClass = (zVideo_RenderClass *)(g_zVideo_DefaultTextureRecord);
         if (renderClass == 0) {
             return;
         }
@@ -10162,7 +10355,7 @@ void __fastcall TextureRecord_Destroy(
     IDirectDrawSurface *textureSurface = textureRecord->m_textureSurface;
     IDirect3DTexture2 *texture = textureRecord->m_texture;
 
-    if (textureRecord == g_zImage_DefaultTextureRecord) {
+    if (textureRecord == g_zVideo_DefaultTextureRecord) {
         return;
     }
 
@@ -10742,14 +10935,14 @@ void StartupEnumerateAndDefaultSelect() {
  * Purpose: clear the default texture record and tear down the DirectDraw
  * backend state.
  *
- * Evidence: BN clears g_zImage_DefaultTextureRecord after destroying the
+ * Evidence: BN clears g_zVideo_DefaultTextureRecord after destroying the
  * default record when present, calls TeardownVideoSubsystem unconditionally,
  * and returns zero.
  */
 int ShutdownVideoSystem() {
-    if (g_zImage_DefaultTextureRecord != 0) {
-        zVideo_dd3d::TextureRecord_Destroy(g_zImage_DefaultTextureRecord);
-        g_zImage_DefaultTextureRecord = 0;
+    if (g_zVideo_DefaultTextureRecord != 0) {
+        zVideo_dd3d::TextureRecord_Destroy(g_zVideo_DefaultTextureRecord);
+        g_zVideo_DefaultTextureRecord = 0;
     }
 
     TeardownVideoSubsystem();

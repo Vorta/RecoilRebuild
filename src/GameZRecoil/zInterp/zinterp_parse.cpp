@@ -77,12 +77,15 @@ char g_zInterp_LineBuffer[1024] = {0};
 char g_zInterp_AssignToken_Equal = '=';
 
 /**
- * Reimplements data 0x56c788: g_zInterp_NodeUserDataScratch.
+ * Reimplements data 0x56c780: g_zInterp_Object3DCommandIntScratch.
  * Data owner: zInterp_Context initialized globals.
+ * BN evidence: int32 BSS slot between the macro-expansion scratch buffer and
+ * Object3D display-instance scratch globals; xrefs in DispatchCoreCommand
+ * stage Object3D color, priority, and show-backface command arguments here.
  *
- * Purpose: temporary user-data transfer slot for zClass node callbacks.
+ * Purpose: temporary integer argument storage for Object3D parser commands.
  */
-unsigned int g_zInterp_NodeUserDataScratch = 0;
+int g_zInterp_Object3DCommandIntScratch = 0;
 
 /**
  * Reimplements data 0x56c784: g_zInterp_CurrentCycleTextureDi.
@@ -91,6 +94,14 @@ unsigned int g_zInterp_NodeUserDataScratch = 0;
  * Purpose: holds the current display-instance cursor for texture commands.
  */
 zDiPartial *g_zInterp_CurrentCycleTextureDi = 0;
+
+/**
+ * Reimplements data 0x56c788: g_zInterp_NodeUserDataScratch.
+ * Data owner: zInterp_Context initialized globals.
+ *
+ * Purpose: temporary user-data transfer slot for zClass node callbacks.
+ */
+unsigned int g_zInterp_NodeUserDataScratch = 0;
 
 /**
  * Reimplements data 0x4edb78: g_zInterp_GlobalContext.
@@ -3107,9 +3118,10 @@ int zInterp_Context::DispatchCoreCommand(
         this,
         "Object3DSetActionPriority"
     ) != 0) {
+        g_zInterp_Object3DCommandIntScratch = ParseIntToken();
         zClass_Class::gwNodeSetPriority(
             (zClass_NodePartial *)(currentNode),
-            ParseIntToken()
+            g_zInterp_Object3DCommandIntScratch
         );
         return 1;
     }
@@ -3118,14 +3130,14 @@ int zInterp_Context::DispatchCoreCommand(
         this,
         "Object3DSetColor"
     ) != 0) {
-        const int colorMode = ParseIntToken();
+        g_zInterp_Object3DCommandIntScratch = ParseIntToken();
         zClass_Class::gwNodeGetUserData(
             (zClass_NodePartial *)(currentNode),
             &g_zInterp_NodeUserDataScratch
         );
         zDi::SetObject3DColorModeForMaterials(
             (zDiPartial *)g_zInterp_NodeUserDataScratch,
-            colorMode
+            g_zInterp_Object3DCommandIntScratch
         );
         return 1;
     }
@@ -3188,13 +3200,14 @@ int zInterp_Context::DispatchCoreCommand(
         this,
         "Object3DSetPriority"
     ) != 0) {
+        g_zInterp_Object3DCommandIntScratch = ParseIntToken();
         zClass_Class::gwNodeGetUserData(
             (zClass_NodePartial *)(currentNode),
             &g_zInterp_NodeUserDataScratch
         );
         zDi::SetEntryValueForAllEntries(
             (zDiPartial *)g_zInterp_NodeUserDataScratch,
-            (unsigned int)(ParseIntToken())
+            (unsigned int)(g_zInterp_Object3DCommandIntScratch)
         );
         return 1;
     }
@@ -3265,13 +3278,14 @@ int zInterp_Context::DispatchCoreCommand(
         this,
         "Object3DSetShowBackFace"
     ) != 0) {
+        g_zInterp_Object3DCommandIntScratch = ParseBoolToken();
         zClass_Class::gwNodeGetUserData(
             (zClass_NodePartial *)(currentNode),
             &g_zInterp_NodeUserDataScratch
         );
         zDi::SetShowBackFaceForAllEntries(
             (zDiPartial *)g_zInterp_NodeUserDataScratch,
-            ParseBoolToken()
+            g_zInterp_Object3DCommandIntScratch
         );
         return 1;
     }

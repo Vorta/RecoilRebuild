@@ -9,8 +9,25 @@
 #include <math.h>
 
 extern "C" {
+/**
+ * Reimplements data 0x4e42ec: g_zWeapon_ZarHandlerRegistered.
+ * BN xrefs: zWepInit gates Weapons ZAR section callback registration.
+ * Purpose: one-time startup flag controlling whether zWeapon registers the
+ * Weapons archive callbacks during initialization.
+ */
 int g_zWeapon_ZarHandlerRegistered = 1;
+/**
+ * Reimplements data 0x4e42f0: g_zWeapon_ArchiveName.
+ * BN xrefs: zWepInit passes this string to zUtil_ZAR::RegisterSectionHandler.
+ * Purpose: archive section name used when registering zWeapon save callbacks.
+ */
 char g_zWeapon_ArchiveName[8] = "Weapons";
+/**
+ * Reimplements data 0x779a98: g_zWeapon_MaxTetherAltitude.
+ * BN xrefs: zWepInit restores the startup default and tether checks consume
+ * the configured altitude cap.
+ * Purpose: runtime maximum tether altitude loaded from weapon configuration.
+ */
 float g_zWeapon_MaxTetherAltitude = 0.0f;
 }
 
@@ -130,6 +147,15 @@ void __stdcall SetMaxTetherAltitude(
     g_zWeapon_MaxTetherAltitude = altitude;
 }
 } // namespace zWeapon
+
+RECOIL_STATIC_ASSERT(sizeof(PlayerTimedHitStatus) == 0x1c);
+RECOIL_STATIC_ASSERT(offsetof(PlayerTimedHitStatus, runtimeFlags) == 0x00);
+RECOIL_STATIC_ASSERT(offsetof(PlayerTimedHitStatus, hitSource) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(PlayerTimedHitStatus, currentLevel) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(PlayerTimedHitStatus, targetLevel) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(PlayerTimedHitStatus, lightNode) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(PlayerTimedHitStatus, nextUpdateTime) == 0x14);
+RECOIL_STATIC_ASSERT(offsetof(PlayerTimedHitStatus, lightParentNode) == 0x18);
 
 /**
  * Reimplements 0x4b21c0: PlayerTimedHitStatus::ResetFields

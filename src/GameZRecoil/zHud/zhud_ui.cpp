@@ -129,17 +129,13 @@ int g_zTimedTask_ActiveCount = 0;
 int g_HudCmdMouseDebounceFrames = 0;
 zVidImagePartial *g_HudUiWidget_ExclusiveDrawImage = 0;
 HudUiMgrData g_HudUiMgr;
-HudUiStringMenu *g_HudUiMgrStringMenu = 0;
 zSndSample *g_HudUi_PowerupSample = 0;
 unsigned char g_HudUi_PowerupSampleInitFlags = 0;
 extern "C" {
 HudUiMgrSensorTrackList g_HudUiMgrSensor_TrackList = {0};
 }
-zVidImagePartial *g_HudUiMgrSensorTargetMarkerImages[5] = {0};
-HudUiSlot *g_HudUiMgrSensorTrackedProgressSlot = 0;
 int g_HudUiMgrSensorRoundRobinTrackIndex = 0;
 HudUiRect g_HudUiMgrSensor_FxRectScratch = {0};
-int g_HudUiMgrSensorTargetMarkerCount = 0;
 HudUiNetGameSetupOverlayOwner g_HudUiNetGameSetupOverlayOwner;
 HudUiRect g_HudUiMgrSensorFxRect = {0};
 int g_HudUiMgrSensorFxViewportWidth = 0;
@@ -150,11 +146,6 @@ HudUiTextStack4 *g_HudUiChatMessageStack = 0;
 HudUiTextStack4 *g_HudUiTopMessageStack = 0;
 zFMV_Playback *g_HudUiSensorWindowPlayback = 0;
 CWnd g_HudUiSensorWindow;
-HudUiShieldMessageWidgetState *g_HudUiMgrShieldMessageWidget = 0;
-int g_HudUiMgrObjectiveChatComposeActive = 0;
-HudUiWidget g_HudUiMgrSensorPanel;
-HudUiWidget g_HudUiMgrSensorOverlay;
-HudUiMeter g_HudUiMgrSensorMeter;
 int g_HudUi_AuxOverlayEnabled = 0;
 // BN identifies 0x4e5df0 as an eight-byte BSS HudCmdDialogState object.
 // VC5 emits the 0x40bc20/0x40bc30/0x40bc40/0x40bc50 static init and at-exit
@@ -243,6 +234,12 @@ char g_HudUiOptionsPanel_LightingToggleNodeName[] = "LIGHTING";
  * Purpose: name the ZRD options-panel section loaded by HudOptionsDialog.
  */
 char g_HudUiOptionsPanel_SectionName[] = "OPTIONSPANEL";
+/**
+ * Reimplements data 0x4dae48: g_HudUiMessage_SeparatorColon.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: separate the local player name from chat text when composing HUD messages.
+ */
+char g_HudUiMessage_SeparatorColon[2] = ":";
 
 // Reimplements 0x40ec90: HudLayoutBase::Shutdown_Stub
 void HudLayoutBase::Shutdown_Stub() {
@@ -2661,8 +2658,12 @@ void __fastcall UpdateMarkersAndProgressFromVariantTag(
     HudUiMgrTarget::UpdateSelectedProgressMeter(0);
 }
 
-// Reimplements 0x411f10: HudUiMgrSensor::SetShieldMessageRatio
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x411f10: HudUiMgrSensor::SetShieldMessageRatio.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: clamp the shield ratio, update the HudUiMgr shield meter, and
+ * refresh the shield percent text.
+ */
 void __fastcall SetShieldMessageRatio(
     float ratio
 ) {
@@ -2818,8 +2819,12 @@ void __fastcall UpdateSelectedProgressMeter(
 } // namespace HudUiMgrTarget
 
 namespace HudUiMgrObjective {
-// Reimplements 0x412050: HudUiMgrObjective::RefreshCounterText
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x412050: HudUiMgrObjective::RefreshCounterText.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: format the objective counter panel from the supplied integer value
+ * and rebuild its text bounds.
+ */
 void __fastcall RefreshCounterText(
     int counterValue
 ) {
@@ -2937,8 +2942,11 @@ static void HudUiMgrObjective_DrawSensorNoise(
     );
 }
 
-// Reimplements 0x411900: HudUiMgrObjective::Show
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x411900: HudUiMgrObjective::Show.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: Start or update the objective HUD panel with summary text, description text, and image state.
+ */
 int __fastcall Show(
     zVidImagePartial *objectiveImage,
     const char *summaryFormat,
@@ -2981,7 +2989,11 @@ int __fastcall Show(
     return 0;
 }
 
-// Reimplements 0x411a20: HudUiMgrObjective::Begin
+/**
+ * Reimplements 0x411a20: HudUiMgrObjective::Begin.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: Transition the objective panel into its begin/close phase while respecting chat-compose input.
+ */
 void Begin() {
     if (g_HudUiMgrObjectiveChatComposeActive != 0) {
         return;
@@ -2993,14 +3005,8 @@ void Begin() {
         g_HudUiMgrObjectivePhase = 3;
         g_HudUiMgrObjectivePhaseTimerSec = 0.0f;
 
-        if (g_HudUiMgrObjectiveDescTextPanel != 0) {
-            ((HudUiElement *)(g_HudUiMgrObjectiveDescTextPanel))->SetVisible(0);
-        }
-
-        if (g_HudUiMgrObjectiveLabelTextPanel != 0) {
-            ((HudUiElement *)(g_HudUiMgrObjectiveLabelTextPanel))->SetVisible(0);
-        }
-
+        g_HudUiMgrObjectiveSummaryTextPanel->SetVisible(0);
+        g_HudUiMgrObjectiveDescTextPanel->SetVisible(0);
         g_HudUiMgrObjectiveSensorRect.SetVisible(0);
         g_HudUiMgrObjectiveAutoHideDelaySec = 0.0f;
         return;
@@ -14120,7 +14126,13 @@ void HudUiTextInput::InsertCharAtCursor(
     ++cursor;
 }
 
-// Reimplements 0x4b4460: HudUiTextInput::DispatchKeyAction
+/**
+ * Reimplements 0x4b4460: HudUiTextInput::DispatchKeyAction.
+ * Binary Ninja shows the key action byte read from HudUiTextInput::keyActionMap
+ * and dispatches action values 0 through 7 through the text-input virtual
+ * methods; no authored globals are touched by this body.
+ * Purpose: translate a raw key into the recovered text-input editing action.
+ */
 void HudUiTextInput::DispatchKeyAction(
     int key
 ) {

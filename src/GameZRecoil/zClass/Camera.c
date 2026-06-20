@@ -16,15 +16,51 @@
 #include <string.h>
 
 extern "C" {
+/**
+ * Reimplements data 0x4ddd14: g_zClass_CameraAutoClipDistanceAdjustEnabled.
+ * Purpose: enable adaptive camera clip-distance changes during scene render.
+ */
 int g_zClass_CameraAutoClipDistanceAdjustEnabled = 0;
+/**
+ * Reimplements data 0x4ddd18: g_zClass_CameraAutoClipDistanceThreshold.
+ * Purpose: frame-time threshold used by adaptive camera clip-distance scaling.
+ */
 float g_zClass_CameraAutoClipDistanceThreshold = 0.04f;
+/**
+ * Reimplements data 0x4ddd1c: g_zClass_CameraAutoClipDistanceScale.
+ * Purpose: current adaptive camera clip-distance scale.
+ */
 float g_zClass_CameraAutoClipDistanceScale = 1.0f;
+/**
+ * Reimplements data 0x4ddd20: g_zClass_CameraAutoClipDistanceStep.
+ * Purpose: per-frame adaptive camera clip-distance scale step.
+ */
 float g_zClass_CameraAutoClipDistanceStep = 0.05f;
+/**
+ * Reimplements data 0x4ddd24: g_zClass_CameraAutoClipDistanceMinScale.
+ * Purpose: minimum adaptive camera clip-distance scale clamp.
+ */
 float g_zClass_CameraAutoClipDistanceMinScale = 0.6f;
+/**
+ * Reimplements data 0x4ddd10: g_zClass_ObjectHseTestEnabled.
+ * Purpose: enable projected object visibility testing during tiled render.
+ */
 int g_zClass_ObjectHseTestEnabled = 1;
+/**
+ * Reimplements data 0x4ddd34: g_zClass_CurrentCamera.
+ * Purpose: track the current active camera node.
+ */
 zClass_NodePartial *g_zClass_CurrentCamera = 0;
+/**
+ * Reimplements data 0x4ddd38: g_zClass_CameraTargetNode.
+ * Purpose: track the current camera target node.
+ */
 zClass_NodePartial *g_zClass_CameraTargetNode = 0;
 zVec3 g_zCamera_FrustumFootprintPoints[9] = {0};
+/**
+ * Reimplements data 0x56ccac: g_zCamera_FrustumFootprintPointCount.
+ * Purpose: count active frustum footprint points for grid-tile construction.
+ */
 int g_zCamera_FrustumFootprintPointCount = 0;
 zCamera_FrustumGridTileRingPartial g_zCamera_FrustumGridTileRings[50] = {0};
 }
@@ -32,6 +68,14 @@ zCamera_FrustumGridTileRingPartial g_zCamera_FrustumGridTileRings[50] = {0};
 namespace {
     const int kZClassNodeCamera = 1;
     const int kZClassNodeWorld = 2;
+
+    /*
+     * BN diagnostic string data used by 0x44a760 gwCameraGetFOV:
+     * 0x4dd9d4 null-node text, 0x4dd9bc null-class-data text,
+     * 0x4ddd44 Camera.c source path, and 0x4ddd68 bad-class format.
+     * The generic diagnostic text/format strings are pooled across zClass
+     * callers, so their owner is shared rather than Camera.c-only.
+     */
     const char *kCameraSourceFile = "D:\\Proj\\GameZRecoil\\zClass\\Camera.c";
 
     /**
@@ -323,7 +367,10 @@ namespace {
 }
 
 namespace zClass_Camera {
-    // Reimplements 0x449be0: zClass_Camera::gwCameraNew
+    /**
+     * Reimplements 0x449be0: zClass_Camera::gwCameraNew.
+     * Purpose: allocate and initialize a camera node and its class data.
+     */
     zClass_NodePartial *gwCameraNew() {
         zClass_NodePartial *node = zClass_Class::AllocNodeFromFreeList();
         if (node == 0) {
@@ -417,8 +464,11 @@ namespace zClass_Camera {
         );
     }
 
-    // Reimplements 0x449d20: zClass_Camera::gwCameraSetFlagBit0
     int __fastcall
+    /**
+     * Reimplements 0x449d20: zClass_Camera::gwCameraSetFlagBit0.
+     * Purpose: validate a camera node and set or clear camera flag bit 0.
+     */
     gwCameraSetFlagBit0(
         zClass_NodePartial * node,
         int enabled
@@ -476,8 +526,11 @@ namespace zClass_Camera {
         return 0;
     }
 
-    // Reimplements 0x449dd0: zClass_Camera::gwCameraSetWorld
     int __fastcall
+    /**
+     * Reimplements 0x449dd0: zClass_Camera::gwCameraSetWorld.
+     * Purpose: validate camera and world nodes before assigning the camera world.
+     */
     gwCameraSetWorld(
         zClass_NodePartial * camera,
         zClass_NodePartial * world
@@ -539,15 +592,21 @@ namespace zClass_Camera {
         return 0;
     }
 
-    // Reimplements 0x449e80: zClass_Camera::gwCameraGetWorld
+    /**
+     * Reimplements 0x449e80: zClass_Camera::gwCameraGetWorld.
+     * Purpose: return the world node currently assigned to the camera.
+     */
     zClass_NodePartial *__fastcall gwCameraGetWorld(
         zClass_NodePartial * camera
     ) {
         return ((zClass_CameraDataPartial *)(camera->classData))->worldNode;
     }
 
-    // Reimplements 0x449e90: zClass_Camera::gwCameraSetWindow
     int __fastcall
+    /**
+     * Reimplements 0x449e90: zClass_Camera::gwCameraSetWindow.
+     * Purpose: assign the window node used by the camera view context.
+     */
     gwCameraSetWindow(
         zClass_NodePartial * camera,
         zClass_NodePartial * window
@@ -556,8 +615,11 @@ namespace zClass_Camera {
         return 0;
     }
 
-    // Reimplements 0x449f50: zClass_Camera::ActivateChildren
     int __fastcall
+    /**
+     * Reimplements 0x449f50: zClass_Camera::ActivateChildren.
+     * Purpose: mark camera children dirty and register the active camera node.
+     */
     ActivateChildren(
         zClass_NodePartial * camera,
         zClass_CameraDataPartial * data
@@ -579,8 +641,11 @@ namespace zClass_Camera {
         return 0;
     }
 
-    // Reimplements 0x449ea0: zClass_Camera::gwCameraSetPosition
     int __fastcall
+    /**
+     * Reimplements 0x449ea0: zClass_Camera::gwCameraSetPosition.
+     * Purpose: set the camera position offset and dirty dependent transforms.
+     */
     gwCameraSetPosition(
         zClass_NodePartial * camera,
         float x,
@@ -616,8 +681,11 @@ namespace zClass_Camera {
         return 0;
     }
 
-    // Reimplements 0x449fb0: zClass_Camera::gwCameraTranslate
     int __fastcall
+    /**
+     * Reimplements 0x449fb0: zClass_Camera::gwCameraTranslate.
+     * Purpose: translate the camera position offset and dirty dependent transforms.
+     */
     gwCameraTranslate(
         zClass_NodePartial * camera,
         float dx,
@@ -650,8 +718,11 @@ namespace zClass_Camera {
         return 0;
     }
 
-    // Reimplements 0x44a060: zClass_Camera::gwCameraGetPosition
     int __fastcall
+    /**
+     * Reimplements 0x44a060: zClass_Camera::gwCameraGetPosition.
+     * Purpose: return the camera position offset components.
+     */
     gwCameraGetPosition(
         zClass_NodePartial * camera,
         float *outX,
@@ -676,8 +747,11 @@ namespace zClass_Camera {
         return 0;
     }
 
-    // Reimplements 0x44a0f0: zClass_Camera::gwCameraSetTarget
     int __fastcall
+    /**
+     * Reimplements 0x44a0f0: zClass_Camera::gwCameraSetTarget.
+     * Purpose: set the selected camera target vector and update children.
+     */
     gwCameraSetTarget(
         zClass_NodePartial * camera,
         float x,
@@ -711,8 +785,11 @@ namespace zClass_Camera {
         return 0;
     }
 
-    // Reimplements 0x44a1a0: zClass_Camera::gwCameraTranslateTarget
     int __fastcall
+    /**
+     * Reimplements 0x44a1a0: zClass_Camera::gwCameraTranslateTarget.
+     * Purpose: translate the selected camera target vector and update children.
+     */
     gwCameraTranslateTarget(
         zClass_NodePartial * camera,
         float dx,
@@ -745,8 +822,11 @@ namespace zClass_Camera {
         return 0;
     }
 
-    // Reimplements 0x44a250: zClass_Camera::gwCameraGetTarget
     int __fastcall
+    /**
+     * Reimplements 0x44a250: zClass_Camera::gwCameraGetTarget.
+     * Purpose: return the selected camera target vector components.
+     */
     gwCameraGetTarget(
         zClass_NodePartial * camera,
         float *outX,
@@ -772,8 +852,11 @@ namespace zClass_Camera {
         return 0;
     }
 
-    // Reimplements 0x44a2f0: zClass_Camera::gwCameraSetNearFarClip
     int __fastcall
+    /**
+     * Reimplements 0x44a2f0: zClass_Camera::gwCameraSetNearFarClip.
+     * Purpose: store near/far clip distances and dirty frustum vectors.
+     */
     gwCameraSetNearFarClip(
         zClass_NodePartial * camera,
         float nearClip,
@@ -797,8 +880,11 @@ namespace zClass_Camera {
         return 0;
     }
 
-    // Reimplements 0x44a380: zClass_Camera::gwCameraGetNearFarClip
     int __fastcall
+    /**
+     * Reimplements 0x44a380: zClass_Camera::gwCameraGetNearFarClip.
+     * Purpose: return the camera near/far clip distances.
+     */
     gwCameraGetNearFarClip(
         zClass_NodePartial * camera,
         float *outNear,
@@ -821,8 +907,11 @@ namespace zClass_Camera {
         return 0;
     }
 
-    // Reimplements 0x44a410: zClass_Camera::gwCameraSetViewport
     int __fastcall
+    /**
+     * Reimplements 0x44a410: zClass_Camera::gwCameraSetViewport.
+     * Purpose: update viewport dimensions and derived frustum scale values.
+     */
     gwCameraSetViewport(
         zClass_NodePartial * camera,
         float viewportWidth,
@@ -866,8 +955,11 @@ namespace zClass_Camera {
         return 0;
     }
 
-    // Reimplements 0x44a580: zClass_Camera::gwCameraGetViewport
     int __fastcall
+    /**
+     * Reimplements 0x44a580: zClass_Camera::gwCameraGetViewport.
+     * Purpose: return the camera viewport dimensions.
+     */
     gwCameraGetViewport(
         zClass_NodePartial * camera,
         float *outWidth,
@@ -890,9 +982,15 @@ namespace zClass_Camera {
         return 0;
     }
 
-    // Reimplements 0x44a760: zClass_Camera::gwCameraGetFOV
-    int __fastcall
-    gwCameraGetFOV(
+    /**
+     * Reimplements 0x44a760: zClass_Camera::gwCameraGetFOV.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\Camera.c.
+     * Touched diagnostic string data: 0x4dd9d4, 0x4dd9bc, 0x4ddd44,
+     * and 0x4ddd68.
+     * Purpose: return the camera frustum FOV pair after legacy camera-node
+     * validation diagnostics.
+     */
+    int __fastcall gwCameraGetFOV(
         zClass_NodePartial * camera,
         float *outFovX,
         float *outFovY
@@ -914,8 +1012,11 @@ namespace zClass_Camera {
         return 0;
     }
 
-    // Reimplements 0x44a610: zClass_Camera::gwCameraSetFOV
     int __fastcall
+    /**
+     * Reimplements 0x44a610: zClass_Camera::gwCameraSetFOV.
+     * Purpose: set camera frustum dimensions and derived projection scale values.
+     */
     gwCameraSetFOV(
         zClass_NodePartial * camera,
         float fovX,
@@ -953,8 +1054,11 @@ namespace zClass_Camera {
         return 0;
     }
 
-    // Reimplements 0x44a7f0: zClass_Camera::gwCameraGetClipDistance
     int __fastcall
+    /**
+     * Reimplements 0x44a7f0: zClass_Camera::gwCameraGetClipDistance.
+     * Purpose: return the camera clip distance.
+     */
     gwCameraGetClipDistance(
         zClass_NodePartial * camera,
         float *outClipDistance
@@ -975,8 +1079,11 @@ namespace zClass_Camera {
         return 0;
     }
 
-    // Reimplements 0x44a870: zClass_Camera::gwCameraSetClipDistance
     int __fastcall
+    /**
+     * Reimplements 0x44a870: zClass_Camera::gwCameraSetClipDistance.
+     * Purpose: store the camera clip distance and inverse squared distance.
+     */
     gwCameraSetClipDistance(
         zClass_NodePartial * camera,
         float clipDistance
@@ -998,8 +1105,11 @@ namespace zClass_Camera {
         return 0;
     }
 
-    // Reimplements 0x44a910: zClass_Camera::gwCameraSetHorizon
     int __fastcall
+    /**
+     * Reimplements 0x44a910: zClass_Camera::gwCameraSetHorizon.
+     * Purpose: assign the horizon node that follows the camera position.
+     */
     gwCameraSetHorizon(
         zClass_NodePartial * camera,
         zClass_NodePartial * horizonNode
@@ -1020,8 +1130,11 @@ namespace zClass_Camera {
         return 0;
     }
 
-    // Reimplements 0x44a980: zClass_Camera::gwCameraSetHorizonXZ
     int __fastcall
+    /**
+     * Reimplements 0x44a980: zClass_Camera::gwCameraSetHorizonXZ.
+     * Purpose: assign the horizon node that follows camera X/Z position.
+     */
     gwCameraSetHorizonXZ(
         zClass_NodePartial * camera,
         zClass_NodePartial * horizonXZNode
@@ -1042,7 +1155,10 @@ namespace zClass_Camera {
         return 0;
     }
 
-    // Reimplements 0x449ba0: zClass_Camera::SetViewDistance
+    /**
+     * Reimplements 0x449ba0: zClass_Camera::SetViewDistance.
+     * Purpose: configure adaptive camera clip-distance scaling from view distance.
+     */
     void __fastcall SetViewDistance(
         int enableAutoClip,
         float distance
@@ -1055,8 +1171,11 @@ namespace zClass_Camera {
         }
     }
 
-    // Reimplements 0x44c1b0: zClass_Camera::FastAngleXZ
-    // (D:\Proj\GameZRecoil\zClass\Camera.c)
+    /**
+     * Reimplements 0x44c1b0: zClass_Camera::FastAngleXZ.
+     * Source: D:\Proj\GameZRecoil\zClass\Camera.c.
+     * Purpose: approximate the XZ-plane angle between two points.
+     */
     float __fastcall FastAngleXZ(
         zVec3 * point1,
         zVec3 * point2
@@ -1084,8 +1203,11 @@ namespace zClass_Camera {
         return angle * 1.57079601f;
     }
 
-    // Reimplements 0x44c230: zClass_Camera::FindConvexHullXZ
-    // (D:\Proj\GameZRecoil\zClass\Camera.c)
+    /**
+     * Reimplements 0x44c230: zClass_Camera::FindConvexHullXZ.
+     * Source: D:\Proj\GameZRecoil\zClass\Camera.c.
+     * Purpose: build the XZ convex hull ordering for frustum footprint points.
+     */
     int __fastcall FindConvexHullXZ(
         zVec3 * points,
         int count
@@ -1500,8 +1622,11 @@ namespace zClass_Camera {
         return 0;
     }
 
-    // Reimplements 0x44ce70: zClass_Camera::RenderFrustumGridTiles
-    // (D:\Proj\GameZRecoil\zClass\Camera.c)
+    /**
+     * Reimplements 0x44ce70: zClass_Camera::RenderFrustumGridTiles.
+     * Source: D:\Proj\GameZRecoil\zClass\Camera.c.
+     * Purpose: render world grid tiles selected by the camera frustum.
+     */
     int __fastcall RenderFrustumGridTiles(
         zClass_NodePartial * world,
         zClass_NodePartial * camera,
@@ -1653,8 +1778,11 @@ namespace zClass_Camera {
         return result;
     }
 
-    // Reimplements 0x44d200: zClass_Camera::RenderOverlayNodes
-    // (GameZRecoil/zClass/Camera.c)
+    /**
+     * Reimplements 0x44d200: zClass_Camera::RenderOverlayNodes.
+     * Source: GameZRecoil/zClass/Camera.c.
+     * Purpose: render overlay child nodes from the world node.
+     */
     void __fastcall RenderOverlayNodes(zClass_NodePartial * world) {
         *gModel_ClipMaskStackTop = 0x3f;
         for (int i = 0; i < world->listCountB; ++i) {
@@ -1665,8 +1793,11 @@ namespace zClass_Camera {
         }
     }
 
-    // Reimplements 0x44d240: zClass_Camera::RenderWorld
-    // (GameZRecoil/zClass/Camera.c)
+    /**
+     * Reimplements 0x44d240: zClass_Camera::RenderWorld.
+     * Source: GameZRecoil/zClass/Camera.c.
+     * Purpose: render frustum grid tiles and overlay nodes for the world.
+     */
     void __fastcall RenderWorld(
         zClass_NodePartial * world,
         zClass_NodePartial * camera,
@@ -1680,9 +1811,12 @@ namespace zClass_Camera {
         RenderOverlayNodes(world);
     }
 
-    // Reimplements 0x44d260: zClass_Camera::gwCameraSetVariantTagOverride
-    // (GameZRecoil/zClass/Camera.c)
     int __fastcall
+    /**
+     * Reimplements 0x44d260: zClass_Camera::gwCameraSetVariantTagOverride.
+     * Source: GameZRecoil/zClass/Camera.c.
+     * Purpose: validate and store the camera variant tag override.
+     */
     gwCameraSetVariantTagOverride(
         zClass_NodePartial * camera,
         zTag4Partial * variantTag
@@ -1713,9 +1847,12 @@ namespace zClass_Camera {
         return 0;
     }
 
-    // Reimplements 0x44d3a0: zClass_Camera::RenderScene
-    // (GameZRecoil/zClass/Camera.c)
     int __fastcall
+    /**
+     * Reimplements 0x44d3a0: zClass_Camera::RenderScene.
+     * Source: GameZRecoil/zClass/Camera.c.
+     * Purpose: update camera scene state and render the active world.
+     */
     RenderScene(
         zClass_NodePartial * camera,
         int updateFxPass3Local
@@ -1905,8 +2042,11 @@ namespace zClass_Camera {
         return 0;
     }
 
-    // Reimplements 0x44aa30: zClass_Camera::UpdateImpl
-    // (GameZRecoil/zClass/Camera.c)
+    /**
+     * Reimplements 0x44aa30: zClass_Camera::UpdateImpl.
+     * Source: GameZRecoil/zClass/Camera.c.
+     * Purpose: rebuild camera transforms, frustum planes, and clip centers.
+     */
     int __fastcall UpdateImpl(
         zClass_NodePartial * camera,
         zVec3 * posOffset
@@ -1976,8 +2116,11 @@ namespace zClass_Camera {
         return 0;
     }
 
-    // Reimplements 0x44a9f0: zClass_Camera::gwCameraUpdate
-    // (GameZRecoil/zClass/Camera.c)
+    /**
+     * Reimplements 0x44a9f0: zClass_Camera::gwCameraUpdate.
+     * Source: GameZRecoil/zClass/Camera.c.
+     * Purpose: validate the camera node and run the camera update implementation.
+     */
     int __fastcall gwCameraUpdate(zClass_NodePartial * camera) {
         if (camera == 0) {
             ReportCameraError(
@@ -2001,7 +2144,11 @@ namespace zClass_Camera {
         );
     }
 
-    // Reimplements 0x44d320: zClass_Camera::SyncViewContextPositions (GameZRecoil/zClass/Camera.c)
+    /**
+     * Reimplements 0x44d320: zClass_Camera::SyncViewContextPositions.
+     * Source: GameZRecoil/zClass/Camera.c.
+     * Purpose: synchronize horizon helper nodes with the active view context.
+     */
     void SyncViewContextPositions() {
         zClass_CameraDataPartial *viewContext = g_zVideo_pActiveViewContext;
         int updatedAnyNode = 0;
@@ -2042,9 +2189,12 @@ namespace zClass_Camera {
         }
     }
 
-    // Reimplements 0x44ada0: zClass_Camera::RenderTraverse
-    // (D:\Proj\GameZRecoil\zClass\Camera.c)
     int __fastcall
+    /**
+     * Reimplements 0x44ada0: zClass_Camera::RenderTraverse.
+     * Source: D:\Proj\GameZRecoil\zClass\Camera.c.
+     * Purpose: frustum-test and render a camera node traversal branch.
+     */
     RenderTraverse(
         zClass_NodePartial * node,
         int siblingCountHint

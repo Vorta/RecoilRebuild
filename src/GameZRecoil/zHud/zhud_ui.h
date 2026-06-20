@@ -281,20 +281,7 @@ int __fastcall ApplyMeterQuad(
 );
 } // namespace HudUiLayoutNode
 
-struct HudUiMgrSensorBlock {
-    int state;
-    HudUiRect sensorRectScaled;
-    HudUiRect sensorRectRaw;
-    HudUiRect sensorViewportRect;
-    zClipAltFloatRect sensorPiVSrcRect;
-    float sensorClampHalfW;
-    float sensorClampHalfH;
-    float sensorParam;
-    float sensorRangeSq;
-    unsigned int unknown_54[183];
-
-    void Destructor();
-};
+struct HudUiMgrSensorBlock;
 
 extern HudUiMgrSensorBlock g_HudUiMgrSensorBlock;
 extern HudUiRect g_HudUiMgrSensorFxRect;
@@ -518,6 +505,7 @@ void __stdcall SetScaleAndRebuild(float scale);
 void __stdcall DispatchSetScale(float deltaTime);
 } // namespace HudScoreboard
 
+extern char g_HudUiMessage_SeparatorColon[2];
 extern int g_HudUiMgrObjectiveChatComposeActive;
 struct HudUiObjectiveBar;
 extern HudUiWidget g_HudUiMgrSensorPanel;
@@ -1656,6 +1644,28 @@ struct HudUiMeter : HudUiBar {
 
 struct HudUiObjectiveBar : HudUiBar {};
 
+struct HudUiMgrSensorBlock {
+    int state;
+    HudUiRect sensorRectScaled;
+    HudUiRect sensorRectRaw;
+    HudUiRect sensorViewportRect;
+    zClipAltFloatRect sensorPiVSrcRect;
+    float sensorClampHalfW;
+    float sensorClampHalfH;
+    float sensorParam;
+    float sensorRangeSq;
+    HudUiSlot *trackedProgressSlot;
+    HudUiWidget sensorPanel;
+    HudUiWidget sensorOverlay;
+    HudUiMeter sensorMeter;
+    HudUiShieldMessageWidget *shieldMessageWidget;
+    HudUiStringMenu *stringMenu;
+    zVidImagePartial *targetMarkerImages[5];
+    int targetMarkerCount;
+
+    void Destructor();
+};
+
 struct HudUiTextInput {
     virtual void OnPrintableKey(int key);
     virtual void OnIgnoredKey(int key);
@@ -1973,9 +1983,19 @@ struct HudUiMgrData : HudUiContainer {
 #define g_HudUiMgrObjectiveMeterFillAnimEnabled (g_HudUiMgr.objective.objectiveMeterFillAnimEnabled)
 #define g_HudUiMgrObjectiveDescTextPanel (g_HudUiMgr.objective.objectiveDescTextPanel)
 #define g_HudUiMgrObjectiveBar (g_HudUiMgr.objective.objectiveBar)
+#define g_HudUiMgrObjectiveChatComposeActive \
+    (g_HudUiMgr.objective.objectiveBar.chatComposeActive)
 #define g_HudUiMgrObjectiveChatComposeTextInput (g_HudUiMgr.objective.chatComposeTextInput)
 #define g_HudUiMgrObjectiveCounterTextPanel (g_HudUiMgr.objective.counterTextPanel)
 #define g_HudUiMgrSensorBlock (g_HudUiMgr.sensor)
+#define g_HudUiMgrSensorTrackedProgressSlot (g_HudUiMgr.sensor.trackedProgressSlot)
+#define g_HudUiMgrSensorPanel (g_HudUiMgr.sensor.sensorPanel)
+#define g_HudUiMgrSensorOverlay (g_HudUiMgr.sensor.sensorOverlay)
+#define g_HudUiMgrSensorMeter (g_HudUiMgr.sensor.sensorMeter)
+#define g_HudUiMgrShieldMessageWidget (g_HudUiMgr.sensor.shieldMessageWidget)
+#define g_HudUiMgrStringMenu (g_HudUiMgr.sensor.stringMenu)
+#define g_HudUiMgrSensorTargetMarkerImages (g_HudUiMgr.sensor.targetMarkerImages)
+#define g_HudUiMgrSensorTargetMarkerCount (g_HudUiMgr.sensor.targetMarkerCount)
 #define g_HudUiMgrWeaponSlots (g_HudUiMgr.weaponSlots)
 #define g_HudUiMgrReticleSnapRadiusSq (g_HudUiMgr.reticleSnapRadiusSq)
 #define g_HudUiMgrWeaponState (g_HudUiMgr.weaponState)
@@ -3084,6 +3104,60 @@ RECOIL_STATIC_ASSERT(
         HudUiMgrSensorBlock,
         sensorParam
     ) == 0x4c
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrSensorBlock,
+        sensorRangeSq
+    ) == 0x50
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrSensorBlock,
+        trackedProgressSlot
+    ) == 0x54
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrSensorBlock,
+        sensorPanel
+    ) == 0x58
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrSensorBlock,
+        sensorOverlay
+    ) == 0x114
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrSensorBlock,
+        sensorMeter
+    ) == 0x1d0
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrSensorBlock,
+        shieldMessageWidget
+    ) == 0x310
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrSensorBlock,
+        stringMenu
+    ) == 0x314
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrSensorBlock,
+        targetMarkerImages
+    ) == 0x318
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        HudUiMgrSensorBlock,
+        targetMarkerCount
+    ) == 0x32c
 );
 RECOIL_STATIC_ASSERT(sizeof(HudUiShieldMessageWidget) == 0x4c4);
 RECOIL_STATIC_ASSERT(
