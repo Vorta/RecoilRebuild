@@ -214,9 +214,12 @@ struct HudUiConfirmQuitOkButton : HudUiZrdWidget {
     void OnActivate();
 };
 
+struct HudUiConfirmQuitCancelButton : HudUiCreditsBackButton {
+};
+
 struct HudUiBackgroundConfirmQuit : HudUiBackground {
     HudUiConfirmQuitOkButton okButton;
-    HudUiZrdWidget cancelButton;
+    HudUiConfirmQuitCancelButton cancelButton;
 
     HudUiBackgroundConfirmQuit * Constructor();
     void Destructor();
@@ -225,6 +228,7 @@ struct HudUiBackgroundConfirmQuit : HudUiBackground {
     );
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiBackgroundConfirmQuit) == 0xabe4);
+RECOIL_STATIC_ASSERT(sizeof(HudUiConfirmQuitCancelButton) == 0x14c);
 RECOIL_STATIC_ASSERT(
     offsetof(
         HudUiBackgroundConfirmQuit,
