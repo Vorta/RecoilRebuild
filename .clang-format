@@ -13,9 +13,9 @@ AlignAfterOpenBracket: DontAlign
 BreakAfterOpenBracketFunction: true
 BreakBeforeCloseBracketFunction: true
 
-# Formatter support for wrapped calls. Agent instructions are stricter for
-# touched multi-argument calls and require the expanded shape even when a call
-# would fit on one line.
+# Formatter support for wrapped calls. Agent instructions allow short,
+# readable calls to stay on one line and reserve expanded calls for cases
+# where wrapping improves clarity.
 BinPackArguments: false
 AllowAllArgumentsOnNextLine: false
 

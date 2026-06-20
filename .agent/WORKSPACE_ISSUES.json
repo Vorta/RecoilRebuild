@@ -63,11 +63,11 @@
     },
     {
       "id": "WSI-20260620-001",
-      "status": "open",
+      "status": "resolved",
       "kind": "tool-error",
       "severity": "medium",
       "created": "2026-06-20T00:58:19Z",
-      "updated": "2026-06-20T00:58:19Z",
+      "updated": "2026-06-20T11:53:08Z",
       "summary": "Grouped VC5 data-symbol verify exceeds BN bridge budget for zclass_class_error_strings",
       "area": "tools/recoil.py verify vc5",
       "impact": "Grouped zclass_class_error_strings verification stops before all linked data symbols after adding 0x4ddd94, so agents must use narrow address checks for the later symbols.",
@@ -80,10 +80,16 @@
           "at": "2026-06-20T00:58:19Z",
           "action": "created",
           "note": "Issue recorded for future agent tooling/process repair."
+        },
+        {
+          "at": "2026-06-20T11:53:08Z",
+          "action": "resolved",
+          "note": "Implemented VC5 BN hexdump cache support, pointed zclass_class_error_strings at tools/vc5_verify_bn_cache/zclass_class_error_strings, and verified the target passes all nine data symbols with an invalid BN bridge URL."
         }
       ],
       "actual": "python tools/recoil.py verify vc5 zclass_class_error_strings fails before 0x4ddd94 hexdump with Binary Ninja bridge call budget exhausted, used 10/10 calls.",
-      "repro": "python tools/recoil.py verify vc5 zclass_class_error_strings"
+      "repro": "python tools/recoil.py verify vc5 zclass_class_error_strings",
+      "resolution": "Implemented VC5 BN hexdump cache support, pointed zclass_class_error_strings at tools/vc5_verify_bn_cache/zclass_class_error_strings, and verified the target passes all nine data symbols with an invalid BN bridge URL."
     }
   ]
 }

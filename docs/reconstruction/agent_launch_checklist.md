@@ -33,6 +33,18 @@ For agent-facing command, doc, skill, or role drift:
 python tools/recoil.py audit agent-surface --strict
 ```
 
+Agent-surface evolution is a governed tool-maintenance change. Allowed
+agent-surface evolution write paths are `.codex/skills/recoil-*`,
+`.codex/agents/*.toml`, `tools/recoil.py`, `tools/_recoil`, `tests/tools`, and
+focused docs. Nontrivial updates need a direct user request or reproducible
+process/tooling need, and the parent uses `recoil_tool_maintainer` by default
+for implementation while keeping scheduler/integrator authority. Agent-surface
+evolution must not introduce new marker criteria, must not weaken evidence or
+provider boundaries, must not edit production source, must not change Binary
+Ninja state, and must not mutate `.agent` ledgers unless separately authorized
+by the existing workflow. Do not create broad/general reconstruction roles, fake
+provider models, or overlapping subagent ownership.
+
 For generated public status and local artifact inventory:
 
 ```powershell
