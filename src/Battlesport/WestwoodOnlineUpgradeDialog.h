@@ -6,12 +6,15 @@
 #include "recoil/recoil_callconv.h"
 #include "recoil/recoil_types.h"
 
-struct WestwoodOnlineUpgradeBootstrapServerRecord;
 struct WestwoodOnlineUpgradeDownloadReadyEntry;
 
 // Authored Recoil dialog reconstructed over imported MFC42 CDialog. MFC
 // dialog behavior is provided by MFC42, not reimplemented in this source tree.
 struct WestwoodOnlineUpgradeProgressDialog : CDialog {
+    WestwoodOnlineUpgradeProgressDialog(
+        CWnd *parentWnd
+    );
+
     static const AFX_MSGMAP messageMap;
     static const AFX_MSGMAP_ENTRY messageEntries[];
 
@@ -126,17 +129,12 @@ struct WestwoodOnlineUpgradeDialog : CDialog {
     static int __fastcall ShowDownloadReadyList(
         WestwoodOnlineUpgradeDownloadReadyEntry *readyListHead
     );
-    static int __stdcall OnBootstrapServerList(
-        void *callbackContext,
-        int resultCode,
-        WestwoodOnlineUpgradeBootstrapServerRecord *serverList
-    );
 };
 
 extern "C" HINSTANCE g_hWestwoodOnlineUpgradeModuleInstance;
 extern "C" WestwoodOnlineUpgradeProgressDialog *g_pWestwoodOnlineUpgradeProgressDialog;
 extern "C" WestwoodOnlineUpgradeDialog *g_pWestwoodOnlineUpgradeDialog;
-extern "C" char g_WestwoodOnlineUpgradeProgressStatusTextBuffer[1024];
+extern "C" char g_WestwoodOnlineUpgradeProgressStatusTextBuffer[0x40];
 extern "C" int g_WestwoodOnlineUpgradeSelectedMissionIndex;
 extern "C" char g_WestwoodOnlineUpgradeStatusAppendBuffer[1024];
 

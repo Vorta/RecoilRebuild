@@ -40,9 +40,9 @@ int RecoilApp_PlayState::TickAndRenderFrame(
     pRenderSection = zOpt::GetRenderSection();
     pDisplaySection = zOpt::GetDisplaySection();
     pWindowSection = zOpt::GetWindowSection();
-    zOpt_ViewRectSection *const renderSection = (zOpt_ViewRectSection *)pRenderSection;
-    zOpt_ViewRectSection *const displaySection = (zOpt_ViewRectSection *)pDisplaySection;
-    zOpt_ViewRectSection *const windowSection = (zOpt_ViewRectSection *)pWindowSection;
+    zOpt_ViewRectSection *const renderSection = pRenderSection;
+    zOpt_ViewRectSection *const displaySection = pDisplaySection;
+    zOpt_ViewRectSection *const windowSection = pWindowSection;
     zClass_TypeList::UpdateAllBuckets();
 
     if (g_RecoilApp_QuitAfterCredits != 0) {

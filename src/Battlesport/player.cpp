@@ -55,7 +55,14 @@ int g_PlayerMasterModalDataListAux = 0;
 PlayerMasterModalData *g_PlayerMasterModalDataHead = 0;
 PlayerMasterModalData *g_PlayerMasterModalDataTail = 0;
 int g_PlayerMasterModalDataCount = 0;
-int g_Player_LocalControlEnabled = 1;
+/**
+ * Reimplements data 0x4f36b0: g_Player_LocalControlEnabled.
+ * BN types this as a zero-filled .data int seeded from the network option by
+ * Player::InitMissionRuntimeFromWorldAndCamera and toggled by local-control
+ * input paths.
+ * Purpose: Gates local player command handling during mission runtime.
+ */
+int g_Player_LocalControlEnabled = 0;
 /**
  * Reimplements data 0x4f36a0: g_Player_RuntimeInputFlags.
  * BN types this as a zero-filled .data int reset by ZAR_RegisterSections and
@@ -63,21 +70,41 @@ int g_Player_LocalControlEnabled = 1;
  * Purpose: Stores player runtime input mode flags for the current mission.
  */
 int g_Player_RuntimeInputFlags = 0;
-float g_Player_CameraZone = 0.5f;
-float g_Player_CameraZoneInvRange = 2.0f;
+/**
+ * Reimplements data 0x4f36f0: g_Player_CameraZone.
+ * BN types this as a zero-filled .data float overwritten from player.zrd
+ * camera_zone tuning, or by the mission-runtime default, before camera input
+ * reads it.
+ * Purpose: Stores the camera dead-zone threshold for player aim/camera input.
+ */
+float g_Player_CameraZone = 0.0f;
+/**
+ * Reimplements data 0x4f36f4: g_Player_CameraZoneInvRange.
+ * BN types this as a zero-filled .data float paired with g_Player_CameraZone
+ * and seeded during mission-runtime player.zrd tuning load.
+ * Purpose: Stores the reciprocal scale for input outside the camera dead zone.
+ */
+float g_Player_CameraZoneInvRange = 0.0f;
+/**
+ * Reimplements Player ZRD runtime tuning data 0x4f36f8..0x4f3738.
+ * BN types these as independent zero-filled .data globals written by
+ * Player::InitMissionRuntimeFromWorldAndCamera from player.zrd nodes:
+ * camera, underwater-camera, gravity/sink, slope, and heat/cold option tuning.
+ * Purpose: Stores mission runtime tuning loaded from player.zrd.
+ */
 float g_Player_MaxCamYawRate = 0.0f;
 float g_Player_MousePushX = 0.0f;
 float g_Player_MousePushY = 0.0f;
 float g_Player_CameraElastic = 0.0f;
 float g_Player_MaxCamTetherAngleRad = 0.0f;
 float g_Player_FpCamElevationRate = 0.0f;
-float g_Player_FpCamElevationMin = -1.0f;
-float g_Player_FpCamElevationMax = 1.0f;
+float g_Player_FpCamElevationMax = 0.0f;
+float g_Player_FpCamElevationMin = 0.0f;
 float g_Player_UnderwaterCamDistance = 0.0f;
 float g_Player_UnderwaterCamHeight = 0.0f;
 int g_Player_UnderwaterCamStepCount = 0;
 float g_Player_UnderwaterCamFar = 0.0f;
-int g_Player_UnderwaterCamPackedColor = 0;
+unsigned int g_Player_UnderwaterCamPackedColor = 0;
 float g_Player_UnderwaterCamAlpha = 0.0f;
 float g_Player_GameplayInputStepScale = 0.03f;
 float g_Player_CameraHeadingDotAbs = 1.0f;
@@ -101,6 +128,12 @@ int g_PlayerSaveStateCount = 0;
  * Purpose: Points at the active local player's save-state record.
  */
 zUtil_SaveGameState *g_LocalPlayerSaveState = 0;
+/**
+ * Reimplements data 0x4f3770: g_Player2SaveState.
+ * BN types this as a zero-filled .data zUtil_SaveGameState pointer assigned to
+ * the stealth save-state created during mission-runtime bootstrap.
+ * Purpose: Holds the hidden second-player/stealth save-state record.
+ */
 zUtil_SaveGameState *g_Player2SaveState = 0;
 zUtil_SaveGameState *g_CurrentPlayerSaveState = 0;
 /**
@@ -174,6 +207,15 @@ float g_PlayerStatusMeterRatio = 0.0f;
  * Purpose: Stores g Player NominalGravity data used by battlesport_gameplay.player_nominal_gravity_global.
  */
 float g_Player_NominalGravity = 0.0f;
+/**
+ * Reimplements Player ZRD runtime tuning data 0x4f3338, 0x4f3698,
+ * 0x4f376c, 0x4f3ab8, and 0x4f3ac0.
+ * BN types these as independent zero-filled .data floats written by
+ * Player::InitMissionRuntimeFromWorldAndCamera from player.zrd gravity,
+ * sink-rate, and slope nodes, with defaults derived there when nodes are
+ * absent.
+ * Purpose: Stores terrain and gravity tuning loaded from player.zrd.
+ */
 float g_Player_WaterGravity = 0.0f;
 float g_Player_QuicksandGravity = 0.0f;
 float g_Player_QuicksandSinkRate = 0.0f;
@@ -188,8 +230,21 @@ Player_UnderwaterFxPass3Ui g_Player_UnderwaterFxPass3Ui;
 // pass-3 HUD overlay singleton, constructed by 0x41eb60 and reset by the
 // atexit callback at 0x41eb80.
 Player_ProjectileCameraFxPass3Ui g_Player_State7FxPass3Ui;
+/**
+ * Reimplements Player ZRD runtime tuning data 0x4f3734 and 0x4f3738.
+ * BN types these as zero-filled .data OptCatalogEntryDef pointers resolved
+ * from player.zrd `make_hot` and `make_cold` option names during
+ * Player::InitMissionRuntimeFromWorldAndCamera.
+ * Purpose: Caches heat/cold gameplay option catalog entries for player damage paths.
+ */
 OptCatalogEntryDef *g_Player_MakeHotOptEntry = 0;
 OptCatalogEntryDef *g_Player_MakeColdOptEntry = 0;
+/**
+ * Reimplements data 0x4f3740: g_Player_BftSplashAnimEntry.
+ * BN types this as a zero-filled .data zEffectAnimEntry pointer cached from
+ * the "bftsplash" animation during mission-runtime bootstrap.
+ * Purpose: Caches the battle-force splash animation entry for gameplay FX.
+ */
 zEffectAnimEntry *g_Player_BftSplashAnimEntry = 0;
 zEffectAnimEntry *g_Player_ActiveDebugScriptAsyncEntry = 0;
 /**
@@ -222,10 +277,15 @@ zClass_NodePartial *g_Player_CopterHealthyNode2 = 0;
 zClass_NodePartial *g_Player_CopterSndNode1 = 0;
 zClass_NodePartial *g_Player_CopterSndNode2 = 0;
 zSndSample *g_Player_CopterSndSample = 0;
+// Data owner 0x4f3bc8..0x4f3c8f: zero-initialized Player
+// post-move environment probe globals. BN exposes seven live world-point
+// samples; the remaining zero bytes in this owner are bounded padding.
 int g_PlayerEnvProbeSampleCount = 0;
-zVec3 g_PlayerEnvProbeWorldPoints[7] = {0};
+unsigned char g_PlayerEnvProbeSampleCountPadding[4] = {0};
 int g_PlayerEnvProbe_AboveGroundFlags[10] = {0};
 int g_PlayerEnvProbe_AboveGroundIndices[10] = {0};
+zVec3 g_PlayerEnvProbeWorldPoints[7] = {0};
+unsigned char g_PlayerEnvProbeWorldPointsTailPadding[24] = {0};
 int g_PlayerEnvProbe_AboveGroundCount = 0;
 /**
  * Reimplements data 0x4f373c: g_PlayerRecentHitFxAnimEntry.
@@ -233,17 +293,32 @@ int g_PlayerEnvProbe_AboveGroundCount = 0;
  */
 zEffectAnimEntry *g_PlayerRecentHitFxAnimEntry = 0;
 zVec3 *g_Player_LocalFxOffsetWorldPtr = 0;
+/**
+ * Reimplements data 0x4dc268: g_Player_MissionInitFirstRunFlag.
+ * BN types this as an initialized .data int with value 1, cleared after the
+ * first mission-runtime HUD top-message panel registration.
+ * Purpose: Ensures one-time attachment of player top-message HUD panels.
+ */
 int g_Player_MissionInitFirstRunFlag = 1;
 // Data owner 0x4f37b0..0x4f3a57 and 0x4f33a8..0x4f364f:
 // zero-initialized top-message HUD panel singletons constructed at startup
 // and destroyed by their CRT exit callbacks.
 HudUiPanel g_Player_TopMsgPanel1;
 HudUiPanel g_Player_TopMsgPanel2;
-char g_Player_AivParentDir[0x100] = {0};
+/**
+ * Reimplements data 0x4e5b50: g_Player_AivParentDir.
+ * BN types this as a zero-filled .data char[0x104] buffer written by
+ * zReader::BuildResolvedParentDir after aiv.zrd is loaded.
+ * Purpose: Stores the resolved parent directory for AIV-relative player data.
+ */
+char g_Player_AivParentDir[0x104] = {0};
 }
 
 namespace {
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original inline helper; no standalone retail function exists. Observed in address-backed caller 0x4386c0 as the two-branch 0.0f..1.0f clamp.
+ * Purpose: clamp a blend value to the unit interval.
+ */
 float PlayerClamp01(
     float value
 ) {
@@ -255,8 +330,10 @@ float PlayerClamp01(
     }
     return value;
 }
-
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original inline helper; no standalone retail function exists. Observed in address-backed callers 0x4386c0, 0x4289f0, 0x42c0d0, 0x42c2e0, 0x427440, 0x427ec0, 0x43a600, and 0x43a900 as a VC5-era int-bits smoothing idiom.
+ * Purpose: reinterpret an IEEE-754 bit pattern as float.
+ */
 float PlayerFloatFromBits(
     int bits
 ) {
@@ -268,7 +345,6 @@ float PlayerFloatFromBits(
     );
     return value;
 }
-
 // Source-faithful helper recovered from address-backed callers in this source file.
 float PlayerFastSqrtEstimate(
     float value
@@ -287,14 +363,12 @@ float PlayerFastSqrtEstimate(
     );
     return value;
 }
-
 // Source-faithful helper recovered from address-backed callers in this source file.
 float PlayerDampingFromRate(
     float rate
 ) {
     return PlayerFloatFromBits((int)(-rate * g_Player_DeltaTime * 12102200.0f) + 0x3f800000);
 }
-
 // Source-faithful helper recovered from address-backed callers in this source file.
 float PlayerWrapSignedTwoPi(
     float angle
@@ -307,7 +381,6 @@ float PlayerWrapSignedTwoPi(
     }
     return angle;
 }
-
 // Source-faithful helper recovered from address-backed callers in this source file.
 float PlayerClampSigned(
     float value,
@@ -321,7 +394,6 @@ float PlayerClampSigned(
     }
     return value;
 }
-
 // Source-faithful helper recovered from address-backed callers in this source file.
 zVec3 TransformWorldVectorToLocal(
     const zVec3 &vec,
@@ -408,10 +480,29 @@ const unsigned int kOptCatalogFlagBlockedInSub = 0x1000;
 const unsigned int kOptCatalogFlagNoSubUse = 0x02;
 const int kPlayerTickCameraStateProjectileAttached = 7;
 const int kPlayerTickCameraStateRestorePrevious = 8;
-const char kVehicleEasyZrd[] = "vehicle_easy.zrd";
-const char kVehicleHardZrd[] = "vehicle_hard.zrd";
-const char kVehicleDefaultZrd[] = "vehicle.zrd";
-const char kPlayerAivZrd[] = "aiv.zrd";
+/**
+ * Reimplements data 0x4dc334: g_Player_VehicleArchiveName_Easy.
+ * Purpose: names the easy-difficulty vehicle archive selected for AIV loads.
+ */
+const char g_Player_VehicleArchiveName_Easy[] = "vehicle_easy.zrd";
+
+/**
+ * Reimplements data 0x4dc348: g_Player_VehicleArchiveName_Hard.
+ * Purpose: names the hard-difficulty vehicle archive selected for AIV loads.
+ */
+const char g_Player_VehicleArchiveName_Hard[] = "vehicle_hard.zrd";
+
+/**
+ * Reimplements data 0x4dc35c: g_Player_VehicleArchiveName_Default.
+ * Purpose: names the fallback vehicle archive selected for AIV loads.
+ */
+const char g_Player_VehicleArchiveName_Default[] = "vehicle.zrd";
+
+/**
+ * Reimplements data 0x4dc32c: g_Player_AivZrdPath.
+ * Purpose: names the player AIV archive loaded during mission bootstrap.
+ */
+const char g_Player_AivZrdPath[] = "aiv.zrd";
 const float kPlayerDefaultActivationRange = 100.0f;
 const float kPlayerDefaultReturnRange = 250.0f;
 const float kPlayerDefaultNotPursuitDwellTime = 3.0f;
@@ -452,21 +543,41 @@ RECOIL_STATIC_ASSERT(
     ) == 0x04
 );
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in callers 0x41fe90, 0x422170, and 0x4226d0 as repeated direct
+ * zReader node-array value loads. BN shows the caller bodies fold this access
+ * into field reads instead of calling a helper target.
+ * Purpose: return the child array backing a type-4 ZRD record node.
+ */
 zReader::Node *PlayerZrdArrayBase(
     zReader::Node *node
 ) {
     return node->value.nodes;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in callers 0x41fe90, 0x422170, and 0x4226d0 as repeated reads of
+ * the first child node's integer count before ZRD array loops and modal-count
+ * calculations. The pattern is a source-level ZRD array accessor, not a
+ * separate retail callee.
+ * Purpose: return the stored element count for a ZRD array node.
+ */
 int PlayerZrdArrayCount(
     zReader::Node *node
 ) {
     return PlayerZrdArrayBase(node)[0].value.i32;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in callers 0x41fe90, 0x422170, and 0x4226d0 as repeated string
+ * fetches from indexed ZRD child records before strcpy, sound lookup, pickup
+ * lookup, and FX lookup operations. BN shows inline child-array field reads at
+ * those call sites.
+ * Purpose: return a string field from an indexed ZRD array element.
+ */
 const char *PlayerZrdArrayString(
     zReader::Node *node,
     int index
@@ -533,7 +644,13 @@ static inline void PlayerCacheGunHardpoint(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in callers 0x41fe90 and 0x422170 as repeated integer fetches from
+ * indexed ZRD child records for tuning fields, counts, capacities, gates, and
+ * weapon specs. BN shows the loads inlined into the caller bodies.
+ * Purpose: return an integer field from an indexed ZRD array element.
+ */
 int PlayerZrdArrayInt(
     zReader::Node *node,
     int index
@@ -541,7 +658,13 @@ int PlayerZrdArrayInt(
     return PlayerZrdArrayBase(node)[index].value.i32;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in callers 0x41fe90, 0x422170, and 0x4226d0 as repeated float
+ * fetches from indexed ZRD child records for camera, common-mode, modal, wave,
+ * and sound-scale data. BN shows direct float loads at those caller sites.
+ * Purpose: return a float field from an indexed ZRD array element.
+ */
 float PlayerZrdArrayFloat(
     zReader::Node *node,
     int index
@@ -549,7 +672,13 @@ float PlayerZrdArrayFloat(
     return PlayerZrdArrayBase(node)[index].value.f32;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in caller 0x41fe90 while selecting each vehicle modal child node
+ * from the loaded vehicle ZRD array. BN shows address arithmetic over the
+ * child-node array, with no separate helper target.
+ * Purpose: return the indexed child node from a ZRD array node.
+ */
 zReader::Node *PlayerZrdArrayNode(
     zReader::Node *node,
     int index
@@ -557,7 +686,13 @@ zReader::Node *PlayerZrdArrayNode(
     return &PlayerZrdArrayBase(node)[index];
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in callers 0x422170 and 0x4226d0 where string fields from ZRD
+ * records are copied into fixed Player master-data name buffers. BN shows
+ * strlen/memcpy strcpy expansions around direct child-array string loads.
+ * Purpose: copy an indexed ZRD string field into a destination buffer.
+ */
 void PlayerCopyZrdArrayString(
     char *dest,
     zReader::Node *node,
@@ -569,7 +704,13 @@ void PlayerCopyZrdArrayString(
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in callers 0x422170 and 0x4226d0 as repeated named child lookups
+ * followed by first-string extraction and zSnd::FindSampleByName. BN shows the
+ * full pattern repeated for common and modal sound records.
+ * Purpose: resolve one optional named ZRD sound sample into a Player data slot.
+ */
 void PlayerLoadSoundSample(
     zReader::Node *parentNode,
     const char *name,
@@ -587,7 +728,13 @@ void PlayerLoadSoundSample(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in caller 0x4226d0 as the same count-and-copy loop for platform and
+ * collision point lists. BN shows direct child-array vector loads and no
+ * separate retail function target for the repeated loop.
+ * Purpose: copy a ZRD list of xyz point records into a modal point buffer.
+ */
 void PlayerLoadModalPointList(
     zReader::Node *node,
     zVec3 *points,
@@ -608,7 +755,13 @@ void PlayerLoadModalPointList(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in caller 0x4226d0 as eight repeated transition-FX list loads with
+ * the same optional named-node lookup, two-entry cap, and
+ * zEffectAnim::FindEntryByName dispatch. BN shows each loop body inlined.
+ * Purpose: load up to two named transition FX entries from a modal ZRD list.
+ */
 void PlayerLoadModalFxList(
     zReader::Node *modalNode,
     const char *name,
@@ -635,7 +788,13 @@ void PlayerLoadModalFxList(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in caller 0x4226d0 as three repeated seven-float wave blocks for
+ * amphib, hover, and sub modal records. BN shows direct field stores into the
+ * same modal wave parameter slots rather than a separate helper call.
+ * Purpose: overwrite modal hover wave parameters from a named ZRD record.
+ */
 void PlayerLoadModalWaveParams(
     PlayerMasterModalData *modalData,
     zReader::Node *modalNode,
@@ -769,7 +928,14 @@ zUtil_SaveGameState *PlayerAllocLinkedSaveState() {
     return saveState;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in caller 0x41fe90 as the player.zrd tuning block that reads named
+ * ZRD nodes and writes the Player mission-runtime tuning globals. The helper
+ * keeps the recovered source cluster readable without introducing a retail
+ * call target.
+ * Purpose: load Player mission-runtime tuning globals from the player.zrd root.
+ */
 void PlayerLoadPlayerZrdTuning(
     zReader::Node *root
 ) {
@@ -1094,7 +1260,14 @@ float ExtractYawFromMatrix(
     ));
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source inline helper evidence: source-faithful helper recovered from
+ * inlined caller evidence.
+ * No standalone retail function is present in the focused plan lookup.
+ * Observed in caller 0x42aa50 Player::UpdateDebugOverlayHud; the switch and
+ * string table match the HUD debug-line master-type formatting.
+ * Purpose: return the debug HUD label for a player modal master type.
+ */
 const char *PlayerDebugMasterTypeName(
     int masterType
 ) {
@@ -1341,7 +1514,7 @@ static inline void PlayerBindSingleWeaponMount(
 float &PlayerAltGunTransitionAnimScale(
     zUtil_PlayerStateStorage *playerState
 ) {
-    return *((float *)playerState->unknown_0f24);
+    return playerState->altGunTransitionAnimScale;
 }
 
 // Source-faithful helper recovered from address-backed callers in this source file.
@@ -1899,8 +2072,8 @@ zSndPlayHandle * zUtil_SaveGameState::StartMasterTypeLoopSfxHandle(
     return handle;
 }
 
-// Reimplements 0x438630: Player::EnsureMasterTypeLoopSfxHandle
-// (D:\Proj\Battlesport\player.cpp)
+/** Reimplements 0x438630: Player::EnsureMasterTypeLoopSfxHandle. BN source path: D:\Proj\Battlesport\player.cpp. Source model: zUtil_SaveGameState modal loop SFX record method; no authored globals touched.
+ * Purpose: lazily start the selected master-type loop sample when configured and no cached handle is active. */
 void zUtil_SaveGameState::EnsureMasterTypeLoopSfxHandle(
     int modeIndex,
     float sfxVolume
@@ -1916,8 +2089,8 @@ void zUtil_SaveGameState::EnsureMasterTypeLoopSfxHandle(
     }
 }
 
-// Reimplements 0x4385f0: Player::StartModalLoopSfxHandle
-// (src/Battlesport/player.cpp)
+/** Reimplements 0x4385f0: Player::StartModalLoopSfxHandle. BN source path: D:\Proj\Battlesport\player.cpp. Source model: zUtil_SaveGameState modal loop SFX record method; no authored globals touched.
+ * Purpose: start one modal engine loop sample at the player world position and cache the returned play handle on the active modal state. */
 void zUtil_SaveGameState::StartModalLoopSfxHandle(
     int modalSfxIndex,
     float sfxVolume
@@ -1933,8 +2106,8 @@ void zUtil_SaveGameState::StartModalLoopSfxHandle(
     saveState->primaryModalState->modalSfxHandle[modalSfxIndex] = handle;
 }
 
-// Reimplements 0x438690: Player::StopModalLoopSfxHandle
-// (D:\Proj\Battlesport\player.cpp)
+/** Reimplements 0x438690: Player::StopModalLoopSfxHandle. BN source path: D:\Proj\Battlesport\player.cpp. Source model: zUtil_SaveGameState modal loop SFX record method; no authored globals touched.
+ * Purpose: stop a cached modal engine loop handle and clear the modal-state slot when the handle is present. */
 void zUtil_SaveGameState::StopModalLoopSfxHandle(
     int modalSfxIndex
 ) {
@@ -1946,8 +2119,8 @@ void zUtil_SaveGameState::StopModalLoopSfxHandle(
     }
 }
 
-// Reimplements 0x438540: Player::SelectModalStateByMasterType
-// (D:\Proj\Battlesport\player.cpp)
+/** Reimplements 0x438540: Player::SelectModalStateByMasterType. BN source path: D:\Proj\Battlesport\player.cpp. Source model: zUtil_SaveGameState modal loop SFX record method; no authored globals touched.
+ * Purpose: select the modal state matching a master type and stop existing modal loop handles before installing it as primary. */
 int zUtil_SaveGameState::SelectModalStateByMasterType(
     int masterType
 ) {
@@ -1971,8 +2144,8 @@ int zUtil_SaveGameState::SelectModalStateByMasterType(
     return 0;
 }
 
-// Reimplements 0x438660: Player::StopMasterTypeLoopSfxHandle
-// (D:\Proj\Battlesport\player.cpp)
+/** Reimplements 0x438660: Player::StopMasterTypeLoopSfxHandle. BN source path: D:\Proj\Battlesport\player.cpp. Source model: zUtil_SaveGameState modal loop SFX record method; no authored globals touched.
+ * Purpose: stop a cached master-type loop handle and clear the player-state handle slot when the handle is present. */
 void zUtil_SaveGameState::StopMasterTypeLoopSfxHandle(
     int modeIndex
 ) {
@@ -1984,8 +2157,8 @@ void zUtil_SaveGameState::StopMasterTypeLoopSfxHandle(
     }
 }
 
-// Reimplements 0x4386c0: Player::UpdateModalLoopSfx
-// (D:\Proj\Battlesport\player.cpp)
+/** Reimplements 0x4386c0: Player::UpdateModalLoopSfx. BN source path: D:\Proj\Battlesport\player.cpp. Source model: zUtil_SaveGameState modal loop SFX record method; reads accepted g_FrameDeltaTimeSec and original inline helpers PlayerFloatFromBits/PlayerClamp01.
+ * Purpose: maintain modal and master loop SFX handles, blend pitch and enable scales from movement state, and update 3D dispatch positions. */
 void zUtil_SaveGameState::UpdateModalLoopSfx(
     int enabled
 ) {
@@ -2148,24 +2321,28 @@ void Player_ProjectileCameraFxPass3Ui::ApplyPass3() {
 
 namespace zVehicle {
 
-// Reimplements 0x41fe50: zVehicle::SelectZrdByDifficulty
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x41fe50: zVehicle::SelectZrdByDifficulty.
+ * Source: D:\Proj\Battlesport\player.cpp.
+ * Purpose: select the difficulty-specific vehicle ZRD archive, falling back
+ * to the default archive when the selected path is unavailable.
+ */
 const char *__fastcall SelectZrdByDifficulty(
     const char *extraSearchPath
 ) {
-    const char *filename = kVehicleDefaultZrd;
+    const char *filename = g_Player_VehicleArchiveName_Default;
     const int difficultyMode = zOpt::GetGameDifficultyMode();
     if (difficultyMode == 0) {
-        filename = kVehicleEasyZrd;
+        filename = g_Player_VehicleArchiveName_Easy;
     } else if (difficultyMode == 2) {
-        filename = kVehicleHardZrd;
+        filename = g_Player_VehicleArchiveName_Hard;
     }
 
     if (zReader::TryResolvePath(
         filename,
         extraSearchPath
     ) == 0) {
-        filename = kVehicleDefaultZrd;
+        filename = g_Player_VehicleArchiveName_Default;
     }
 
     return filename;
@@ -2406,14 +2583,22 @@ void RegisterTopMsgPanel2Cleanup() {
     atexit(Player_TopMsgPanel2::Destructor);
 }
 
-// Reimplements 0x41fe40: Player::GetAivZrdPath
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x41fe40: Player::GetAivZrdPath.
+ * Source: D:\Proj\Battlesport\player.cpp.
+ * Purpose: return the static player AIV archive path used by mission
+ * bootstrap.
+ */
 const char *GetAivZrdPath() {
-    return kPlayerAivZrd;
+    return g_Player_AivZrdPath;
 }
 
-// Reimplements 0x423150: Player::ExtractVehicleNameFromAivName
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x423150: Player::ExtractVehicleNameFromAivName.
+ * Source: D:\Proj\Battlesport\player.cpp.
+ * Purpose: copy the vehicle-name prefix from an AIV name until the numeric
+ * suffix separator.
+ */
 void __fastcall ExtractVehicleNameFromAivName(
     const char *aivName,
     char *outVehicleName
@@ -2687,8 +2872,18 @@ zUtil_SaveGameState *__fastcall CreateFromNamesAtPoseGetState(
     return g_PlayerSaveStateListTail;
 }
 
-// Reimplements 0x41fe90: Player::InitMissionRuntimeFromWorldAndCamera
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x41fe90: Player::InitMissionRuntimeFromWorldAndCamera
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: initialize mission player runtime from world/camera nodes, attach
+ * one-time HUD panels, load player/vehicle tuning, create the stealth
+ * save-state, and continue into AIV/local-player bootstrap when aiv.zrd loads.
+ * Source owner: battlesport_gameplay.player_mission_runtime_bootstrap.
+ * BN evidence: current assembly writes the first-run HUD gate, world/camera
+ * globals, camera-zone defaults and player.zrd overrides, runtime input flags,
+ * stealth save-state pointer, AIV parent-dir buffer, and the missing-aiv.zrd
+ * early return path at 0x420870.
+ */
 void __fastcall InitMissionRuntimeFromWorldAndCamera(
     zClass_NodePartial *worldNode,
     zClass_NodePartial *cameraNode
@@ -3071,8 +3266,15 @@ zUtil_SaveGameState *GetSaveStateListHead() {
     return g_PlayerSaveStateListHead;
 }
 
-// Reimplements 0x406430: Player::UnbindCurrentSaveStateIfSinglePlayer
-// (D:\Proj\GameZRecoil\Player\player_camera.c)
+/**
+ * Reimplements 0x406430: Player::UnbindCurrentSaveStateIfSinglePlayer
+ * Original source path: D:\Proj\GameZRecoil\Player\player_camera.c.
+ * Purpose: Clear the current save-state binding when the mission is not in
+ * network play.
+ * Source owner: battlesport_gameplay.player_camera_control_state_bridge,
+ * not a C++ Player class and not the accepted player_camera.c source-file
+ * owner.
+ */
 void UnbindCurrentSaveStateIfSinglePlayer() {
     if (zOpt::GetNetworkEnabled() == 0) {
         g_CurrentPlayerSaveState->playerState->currentSaveStateBound = 0;
@@ -3080,8 +3282,15 @@ void UnbindCurrentSaveStateIfSinglePlayer() {
     }
 }
 
-// Reimplements 0x406450: Player::BindActiveGameStateAsCurrentSaveState
-// (D:\Proj\GameZRecoil\Player\player_camera.c)
+/**
+ * Reimplements 0x406450: Player::BindActiveGameStateAsCurrentSaveState
+ * Original source path: D:\Proj\GameZRecoil\Player\player_camera.c.
+ * Purpose: Bind the active local game-state record as the current save state
+ * for camera/control paths.
+ * Source owner: battlesport_gameplay.player_camera_control_state_bridge,
+ * not a C++ Player class and not the accepted player_camera.c source-file
+ * owner.
+ */
 void BindActiveGameStateAsCurrentSaveState() {
     zUtil_SaveGameState *const activeSaveState = (zUtil_SaveGameState *)g_GameStateOrMapTable;
     activeSaveState->playerState->currentSaveStateBound = 1;
@@ -3869,8 +4078,16 @@ int __fastcall BuildSupportPointsFromModel(
     return 1;
 }
 
-// Reimplements 0x422170: Player::LoadMasterCommonDataFromNode
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x422170: Player::LoadMasterCommonDataFromNode.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Source owner: battlesport_gameplay.player_master_zrd_record_loaders.
+ * BN evidence: current decompilation shows fastcall ECX=PlayerMasterCommonData,
+ * EDX=vehicle zReader node, stack vehicleName, direct type-4 child-array field
+ * reads for the ZRD records, optional common_mode child lookups, sample/pickup
+ * provider calls, and PlayerMasterWeaponSpec allocation/linking.
+ * Purpose: load one vehicle common-mode master data record from vehicle ZRD.
+ */
 void __fastcall LoadMasterCommonDataFromNode(
     PlayerMasterCommonData *commonData,
     zReader::Node *vehicleNode,
@@ -4158,8 +4375,16 @@ void __fastcall LoadMasterCommonDataFromNode(
     }
 }
 
-// Reimplements 0x4226d0: Player::LoadMasterModalDataFromNode
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x4226d0: Player::LoadMasterModalDataFromNode.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Source owner: battlesport_gameplay.player_master_zrd_record_loaders.
+ * BN evidence: current decompilation shows fastcall ECX=PlayerMasterModalData,
+ * EDX=modal zReader node, stack modalName, direct type-4 child-array field
+ * reads for modal scalar/list records, two-character mode dispatch, repeated
+ * point/FX/wave/sound loader patterns, and no authored globals touched.
+ * Purpose: load one modal master data record from a vehicle modal ZRD node.
+ */
 void __fastcall LoadMasterModalDataFromNode(
     PlayerMasterModalData *modalData,
     zReader::Node *modalNode,
@@ -5741,8 +5966,12 @@ zVec3 Vec3Cross(
     return result;
 }
 
-// Reimplements 0x42a9f0: Player::AddScaledHudCounterValue
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x42a9f0: Player::AddScaledHudCounterValue.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: scale a HUD objective counter contribution by active primary-gun
+ * dispatch count and add it to the mission HUD counter accumulator.
+ */
 void __fastcall AddScaledHudCounterValue(
     float value
 ) {
@@ -7900,8 +8129,17 @@ void __fastcall ResolvePendingWorldCollisionContact(
     );
 }
 
-// Reimplements 0x429430: Player::ApplyPitchRollVelocityImpulseFromDirection
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x429430: Player::ApplyPitchRollVelocityImpulseFromDirection
+ * Original source path: src/Battlesport/player.cpp.
+ * Purpose: transform an incoming hit direction into player-local space and
+ * apply the matching pitch/roll and local X/Z velocity impulse.
+ * Source owner: Player damage-hit and destroyed-state callback subsystem, not
+ * a standalone C++ Player class owner.
+ * Evidence: status names this address-backed helper; body loads the root-node
+ * 3x3 rotation, transforms one direction vector, then applies the scaled local
+ * X/Z components to vehicle pitch, roll, and local velocity.
+ */
 void __fastcall ApplyPitchRollVelocityImpulseFromDirection(
     zUtil_SaveGameState *saveState,
     const zVec3 *direction,
@@ -9069,8 +9307,16 @@ int __fastcall HitCallback_RecordContextAndTimedStatus(
     return playerState->recentHitValid;
 }
 
-// Reimplements 0x423380: Player::IsMissionProbeType1EnabledById
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x423380: Player::IsMissionProbeType1EnabledById
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: identify the mission probe ids that enable type-1 mission probe
+ * handling.
+ * Source owner: standalone mission probe type predicate leaf, not the Player
+ * C++ class.
+ * Evidence: retail body is a pure integer predicate over ids 9, 11, 12, and
+ * 13 with no calls, globals, object state, or table dispatch.
+ */
 int __fastcall IsMissionProbeType1EnabledById(
     int missionId
 ) {
@@ -9782,8 +10028,15 @@ void __fastcall CaptureCurrentObjectPoseAsRestartAnchor(
     );
 }
 
-// Reimplements 0x426330: Player::ResetMouseControlStateAndRecenterCursor
-// (D:\Proj\GameZRecoil\zGame\Player\Player_Camera.cpp)
+/**
+ * Reimplements 0x426330: Player::ResetMouseControlStateAndRecenterCursor
+ * Original source path: D:\Proj\GameZRecoil\zGame\Player\Player_Camera.cpp.
+ * Purpose: Reset a save state's mouse-look offsets and recenter the mouse
+ * cursor.
+ * Source owner: battlesport_gameplay.player_camera_control_state_bridge,
+ * not a C++ Player class and not the accepted player_camera.c source-file
+ * owner.
+ */
 void __fastcall ResetMouseControlStateAndRecenterCursor(
     zUtil_SaveGameState *saveState
 ) {
@@ -10750,8 +11003,14 @@ void __fastcall TickLocalPlayerControls(
     ApplyCameraState(kPlayerCameraStateTargeting);
 }
 
-// Reimplements 0x405ec0: Player::ToggleSteeringModeAndResetMouseLook
-// (D:\Proj\GameZRecoil\Player\player_camera.c)
+/**
+ * Reimplements 0x405ec0: Player::ToggleSteeringModeAndResetMouseLook
+ * Original source path: D:\Proj\GameZRecoil\Player\player_camera.c.
+ * Purpose: Reset active mouse-look state and toggle the steering-mode option.
+ * Source owner: battlesport_gameplay.player_camera_control_state_bridge,
+ * not a C++ Player class and not the accepted player_camera.c source-file
+ * owner.
+ */
 void ToggleSteeringModeAndResetMouseLook() {
     ResetMouseControlStateAndRecenterCursor((zUtil_SaveGameState *)g_GameStateOrMapTable);
     zOpt::SetSteeringMode(zOpt::GetSteeringMode() == 0 ? 1 : 0);
@@ -10806,8 +11065,17 @@ void __fastcall UpdateBankVelocityFromSteerInput(
         masterModalData->accelRate * g_Player_DeltaTime * playerState->steeringInputCopy;
 }
 
-// Reimplements 0x429750: Player::UpdateAutoTurnAndSteerFromTarget
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x429750: Player::UpdateAutoTurnAndSteerFromTarget
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: damp yaw angular velocity when steering is neutral, otherwise apply
+ * steering yaw acceleration and clamp it to the active yaw velocity limit.
+ * Source owner: proposed Player auto-turn yaw steering helper; owner/data gates
+ * are still pending outside this docblock-only edit.
+ * Evidence: status names this address-backed helper; body branches on steering
+ * input, builds the recovered yaw-damping scale, zeroes opposing yaw velocity,
+ * accumulates yaw acceleration from steering input, and clamps angVelYaw.
+ */
 void __fastcall UpdateAutoTurnAndSteerFromTarget(
     zUtil_SaveGameState *saveState
 ) {
@@ -11051,7 +11319,9 @@ void __fastcall RebuildSteerBasisFromMotionAxes(
                 normalizedCursor.y
             );
 
-            const int lerpBits = (int)(g_FrameDeltaTimeSec * -2.0f * 12102200.0f) + 0x3f800000;
+            float autoTurnCursorLerpStep = g_FrameDeltaTimeSec * -2.0f;
+            int lerpBits = (int)(autoTurnCursorLerpStep * 12102200.0f);
+            lerpBits += 0x3f800000;
             float lerpFactor = 0.0f;
             memcpy(
                 &lerpFactor,
@@ -11855,8 +12125,12 @@ int __fastcall WriteMinesZarSection(
     return writeOk;
 }
 
-// Reimplements 0x42aa50: Player::UpdateDebugOverlayHud
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x42aa50: Player::UpdateDebugOverlayHud.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: refresh weapon HUD values, objective counter text, and the debug
+ * overlay lines for the current player save state.
+ */
 void __fastcall UpdateDebugOverlayHud(
     zUtil_SaveGameState *saveState,
     int unusedActiveMode2Count,
@@ -11964,8 +12238,12 @@ void __fastcall UpdateDebugOverlayHud(
     );
 }
 
-// Reimplements 0x4231b0: Player::RefreshHudFromState
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x4231b0: Player::RefreshHudFromState.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: refresh the HUD weapon, health, mode, damage, and status displays
+ * from the current player save-state fields.
+ */
 void __fastcall RefreshHudFromState(
     zUtil_SaveGameState *saveState
 ) {
@@ -12531,8 +12809,17 @@ float __fastcall UpdateBankAndTurnDynamics(
     return residual;
 }
 
-// Reimplements 0x424bf0: Player::Vec3_FastNormalize
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x424bf0: Player::Vec3_FastNormalize
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: scale short nonzero contact deltas with the fast approximate
+ * square-root normalizer used by collision contact resolution.
+ * Source owner: player contact unit-distance helper subsystem, not
+ * player_camera_control_state_bridge or the broader Player C++ class.
+ * Evidence: retail body reads only the zVec3 argument and
+ * g_Player_CollisionContactResolveScale, uses the integer half-exponent
+ * approximation, and returns whether the vector was rescaled.
+ */
 int __fastcall Vec3_FastNormalize(
     zVec3 *vec
 ) {
@@ -12563,8 +12850,17 @@ int __fastcall Vec3_FastNormalize(
     return 1;
 }
 
-// Reimplements 0x424c90: Player::ConstrainToUnitDistanceFrom
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x424c90: Player::ConstrainToUnitDistanceFrom
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: constrain a nearby position to the contact resolve distance around
+ * a center point.
+ * Source owner: player contact unit-distance helper subsystem, not
+ * player_camera_control_state_bridge or the broader Player C++ class.
+ * Evidence: retail body forms a stack zVec3 delta, calls
+ * Player::Vec3_FastNormalize, and writes back center plus normalized delta
+ * only when the helper reports a short nonzero contact vector.
+ */
 void __fastcall ConstrainToUnitDistanceFrom(
     zVec3 *pos,
     const zVec3 *center
@@ -12732,8 +13028,11 @@ void __fastcall UpdateSubModeWaterProbeState(
     }
 }
 
-// Reimplements 0x428c20: Player::UpdateSubVerticalDamping
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x428c20: Player::UpdateSubVerticalDamping.
+ * Source model: bounded Player namespace subsystem helper, not a C++ Player class member.
+ * Purpose: Apply submarine vertical input acceleration, velocity clamp, and neutral-input vertical damping.
+ */
 void __fastcall UpdateSubVerticalDamping(
     zUtil_SaveGameState *saveState
 ) {
@@ -13955,8 +14254,13 @@ void __fastcall ResetDamageVisualsAndTimedStatus(
     }
 }
 
-// Reimplements 0x401e50: Player::TestScenePathBetweenCameraTargetAndPoint
-// (GameZRecoil/Player.cpp)
+/**
+ * Reimplements 0x401e50: Player::TestScenePathBetweenCameraTargetAndPoint
+ * (GameZRecoil/Player.cpp).
+ * Purpose: tests whether the active camera target has an unobstructed ray path
+ * to the supplied point while temporarily excluding the tested node and local
+ * player root from raycast candidates.
+ */
 int __fastcall TestScenePathBetweenCameraTargetAndPoint(
     zClass_NodePartial *node,
     const zVec3 *point,
@@ -14020,8 +14324,13 @@ int __fastcall TestScenePathBetweenCameraTargetAndPoint(
     return raycastResult == 0 && rayData.candidateCount != 0 ? 0 : 1;
 }
 
-// Reimplements 0x401d50: Player::HasLineOfSightFromLocalPlayerFxOffset
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x401d50: Player::HasLineOfSightFromLocalPlayerFxOffset
+ * (src/Battlesport/player.cpp).
+ * Purpose: tests whether the active local player fx-offset position has an
+ * unobstructed ray path to the supplied point while temporarily excluding the
+ * tested node and local player root from raycast candidates.
+ */
 int __fastcall HasLineOfSightFromLocalPlayerFxOffset(
     zClass_NodePartial *node,
     const zVec3 *point,
@@ -14378,8 +14687,16 @@ float __fastcall SelectProbeSampleHeightFromCandidates(
     return selectedHeight;
 }
 
-// Reimplements 0x428d60: Player::ProbeModalSampleHeights
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x428d60: Player::ProbeModalSampleHeights.
+ * Original file: D:\Proj\Battlesport\player.cpp.
+ * Source model: bounded Player modal-probe subsystem helper over zUtil_SaveGameState,
+ * PlayerModalState, PlayerMasterModalData, accepted zClass/zDI dependencies, and
+ * accepted Player/frame/variant/zInput runtime globals; no Player C++ class object or
+ * table ownership is required by current BN evidence.
+ * Purpose: transform active modal probe points, build scene height candidates, select
+ * per-sample impact heights, and publish histogram and attachment outputs.
+ */
 void __fastcall ProbeModalSampleHeights(
     zUtil_SaveGameState *saveState,
     float *outSampleHeightByPoint,
@@ -14414,7 +14731,7 @@ void __fastcall ProbeModalSampleHeights(
     for (int i = 0; i < probePointCount; ++i) {
         zVec3 transformed =
             TransformPointByMatrix(
-                masterModalData->probePoints[i],
+                masterModalData->probePoints[kPlayerEnvProbeBasePointOffset + i],
                 playerState->motionBasis
             );
         if (masterModalData->masterType != kPlayerMasterTypeSub) {

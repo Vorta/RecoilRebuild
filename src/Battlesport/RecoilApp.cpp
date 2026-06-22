@@ -153,6 +153,81 @@ inline int SaveLoadEntryCount(
 RecoilApp g_RecoilApp;
 RecoilStateSaveLoadTransition g_RecoilStateSaveLoadTransition;
 
+/**
+ * Reimplements data 0x4dcb4c: g_RecoilApp_StartupArchivePath.
+ *
+ * Purpose: names the startup ZRDR archive mounted during app initialization
+ * and engine startup.
+ */
+const char g_RecoilApp_StartupArchivePath[0x0d] = "zbd\\zrdr.zbd";
+/**
+ * Reimplements data 0x4dcb5c: g_zUtil_ZrdrCommonDataPath.
+ *
+ * Purpose: supplies the common ZRDR directory initialized before registry and
+ * video setup.
+ */
+const char g_zUtil_ZrdrCommonDataPath[0x14] = "..\\data\\common\\zrdr";
+/**
+ * Reimplements data 0x4dcb70: g_zUtil_ZbdSearchPathLeaf.
+ *
+ * Purpose: supplies the leaf archive search path registered during app startup.
+ */
+const char g_zUtil_ZbdSearchPathLeaf[0x04] = "zbd";
+/**
+ * Reimplements data 0x4dcb74: g_RecoilApp_IntroFmvPath.
+ *
+ * Purpose: names the startup FMV file probed before display and engine startup.
+ */
+const char g_RecoilApp_IntroFmvPath[0x13] = "video\\intro_01.avi";
+/**
+ * Reimplements data 0x4dcbd0: g_zFMV_ScriptFileName.
+ *
+ * Purpose: supplies the FMV script archive path shared by RecoilApp FMV states.
+ */
+const char g_zFMV_ScriptFileName[0x08] = "fmv.zrd";
+/**
+ * Reimplements data 0x4dcbd8: g_RecoilApp_IntroFmvTag.
+ *
+ * Purpose: identifies the intro sequence in the FMV script.
+ */
+const char g_RecoilApp_IntroFmvTag[0x06] = "INTRO";
+/**
+ * Reimplements data 0x4dcbe0: g_RecoilApp_AttractFmvTag.
+ *
+ * Purpose: identifies the attract-mode sequence in the FMV script.
+ */
+const char g_RecoilApp_AttractFmvTag[0x08] = "ATTRACT";
+/**
+ * Reimplements data 0x4dcc74: g_RecoilApp_MissionFmvTagTemplate.
+ *
+ * Purpose: initializes the stack mission-FMV tag before the mission digit is patched in.
+ */
+const char g_RecoilApp_MissionFmvTagTemplate[0x04] = "M0";
+/**
+ * Reimplements data 0x4dccb0: g_zFMV_GrandPrizeScriptName.
+ *
+ * Purpose: identifies the grand-prize credits FMV script action.
+ */
+const char g_zFMV_GrandPrizeScriptName[0x0b] = "GRANDPRIZE";
+/**
+ * Reimplements data 0x4dccbc: g_RecoilApp_MissionOverFmvTag.
+ *
+ * Purpose: identifies the mission-over FMV script action.
+ */
+const char g_RecoilApp_MissionOverFmvTag[0x0c] = "MISSIONOVER";
+/**
+ * Reimplements data 0x4dccc8: g_RecoilApp_LeavingNetworkingMsg.
+ *
+ * Purpose: labels the networking teardown checkpoint during play-state shutdown.
+ */
+const char g_RecoilApp_LeavingNetworkingMsg[0x13] = "Leaving Networking";
+/**
+ * Reimplements data 0x4dccdc: g_RecoilApp_LeavingPlayStateMsg.
+ *
+ * Purpose: labels the play-state teardown checkpoint.
+ */
+const char g_RecoilApp_LeavingPlayStateMsg[0x13] = "Leaving Play State";
+
 extern "C" {
 /**
  * Reimplements data 0x4f3ef8: g_RecoilApp_hInstance.
@@ -183,6 +258,11 @@ const char *g_RecoilApp_WndClassNamePtr = g_RecoilApp_WndClassName;
  */
 HWND g_RecoilApp_hWndMain = 0;
 int g_RecoilApp_WindowClassRegistered = 0;
+/**
+ * Reimplements data 0x4dcac4: g_RecoilApp_AttractFmvReloadMode.
+ *
+ * Purpose: forces the first attract-mode entry to reload its FMV actions.
+ */
 int g_RecoilApp_AttractFmvReloadMode = 1;
 }
 
@@ -610,6 +690,59 @@ void __fastcall SortEntryRange(
             break;
         }
     }
+}
+
+/**
+ * Provider-boundary 0x435fd0: VC5 std::vector<HudUiSaveLoadEntry>
+ * insert helper emitted for HudUiSaveLoadDialog::fileEntries.
+ * Purpose: provide the recovered vector insert instantiation needed by the
+ * save/load file-list refresh path and final executable link.
+ */
+HudUiSaveLoadEntry * HudUiSaveLoadEntries::InsertCopiesAt(
+    HudUiSaveLoadEntry *position,
+    unsigned int count,
+    const HudUiSaveLoadEntry *entry
+) {
+    const int oldSize = begin != 0 ? (int)(end - begin) : 0;
+    const int oldCapacity = begin != 0 ? (int)(capacityEnd - begin) : 0;
+    const int insertIndex = begin != 0 ? (int)(position - begin) : 0;
+    const int newSize = oldSize + (int)count;
+
+    if (newSize > oldCapacity) {
+        int newCapacity = oldSize + ((int)count < oldSize ? oldSize : (int)count);
+        if (newCapacity < newSize) {
+            newCapacity = newSize;
+        }
+
+        HudUiSaveLoadEntry *const newBegin =
+            (HudUiSaveLoadEntry *)::operator new(sizeof(HudUiSaveLoadEntry) * newCapacity);
+        int i;
+        for (i = 0; i < insertIndex; ++i) {
+            newBegin[i] = begin[i];
+        }
+        for (i = 0; i < (int)count; ++i) {
+            newBegin[insertIndex + i] = *entry;
+        }
+        for (i = insertIndex; i < oldSize; ++i) {
+            newBegin[(int)count + i] = begin[i];
+        }
+
+        ::operator delete(begin);
+        begin = newBegin;
+        end = newBegin + newSize;
+        capacityEnd = newBegin + newCapacity;
+        return begin + insertIndex;
+    }
+
+    int i;
+    for (i = oldSize - 1; i >= insertIndex; --i) {
+        begin[i + (int)count] = begin[i];
+    }
+    for (i = 0; i < (int)count; ++i) {
+        begin[insertIndex + i] = *entry;
+    }
+    end += count;
+    return begin + insertIndex;
 }
 
 /**
@@ -1596,7 +1729,7 @@ RECOIL_NO_GS int RecoilApp::InitInstance() {
     );
     while (zSys::FindFileOnDriveType(
         5,
-        "video\\intro_01.avi",
+        g_RecoilApp_IntroFmvPath,
         0
     ) == 0) {
         MessageBeep(MB_ICONEXCLAMATION);
@@ -1642,9 +1775,9 @@ RECOIL_NO_GS int RecoilApp::InitInstance() {
     zUtil::ZRDR_PreallocNodePool(0x200);
     zUtil::ZRDR_AddSearchPaths(
         0,
-        "zbd"
+        g_zUtil_ZbdSearchPathLeaf
     );
-    zUtil::ZRDR_Init("..\\data\\common\\zrdr");
+    zUtil::ZRDR_Init(g_zUtil_ZrdrCommonDataPath);
 
     strncpy(
         registryCompanyNameBuffer,
@@ -1665,7 +1798,7 @@ RECOIL_NO_GS int RecoilApp::InitInstance() {
 
     if (zGame::Options_LoadGameOptions() == 0) {
         zArchive::MountIndexArchive(
-            "zbd\\zrdr.zbd",
+            g_RecoilApp_StartupArchivePath,
             1
         );
         if (zGame::Options_LoadGameOptions() == 0) {
@@ -1698,7 +1831,7 @@ CZRecoilFrame * RecoilApp::CreateMainWnd() {
         return 0;
     }
 
-    return frame->Constructor();
+    return frame;
 }
 
 // Reimplements 0x4429d0: RecoilApp::InitMainWindow
@@ -1992,7 +2125,7 @@ void RecoilApp::ShutdownEngine() {
 int RecoilApp::LoadZbdAndStartEngine() {
     if (g_HudSensorTracker.missionFlags != 0) {
         zArchive::MountIndexArchive(
-            "zbd\\zrdr.zbd",
+            g_RecoilApp_StartupArchivePath,
             1
         );
     }
@@ -2808,7 +2941,7 @@ int RecoilApp_PlayState::OnUpdateShouldQuit() {
         g_zVideo_SoftwareModeHotkeyEnabled = ZVIDEO_SOFTWARE_MODE_HOTKEY_DISABLED;
         TickAndRenderFrame(0);
 
-        zOpt_ViewRectSection *const windowSection = ViewRectFromPtr(pWindowSection);
+        zOpt_ViewRectSection *const windowSection = pWindowSection;
         if (g_RecoilApp.m_transitionFadeTimer >= 1.0f) {
             const int previousClearState =
                 zVideo::ExchangeClearScreenBufferEnabled(ZVIDEO_CLEAR_SCREEN_BUFFER_ENABLED);
@@ -2859,8 +2992,8 @@ int RecoilApp_PlayState::OnUpdateShouldQuit() {
 
         zFMV_Script fmvScript;
         fmvScript.Init(
-            "fmv.zrd",
-            "GRANDPRIZE",
+            g_zFMV_ScriptFileName,
+            g_zFMV_GrandPrizeScriptName,
             0
         );
         fmvScript.RunBlocking(0);
@@ -2887,7 +3020,7 @@ int RecoilApp_PlayState::OnUpdateShouldQuit() {
             return 0;
         }
 
-        zRndr::SetActiveRegionSizeFromRect((HudUiRect *)ViewRectFromPtr(pWindowSection));
+        zRndr::SetActiveRegionSizeFromRect((HudUiRect *)pWindowSection);
         if (g_RecoilApp_QuitAfterCredits == 0) {
             RecoilStateMainMenuTransition::QueueEnter(RECOIL_MAINMENU_ROUTE_INGAME);
         }
@@ -2913,7 +3046,7 @@ void RecoilApp_PlayState::OnResume(
 // Reimplements 0x42f8e0: RecoilApp_PlayState::OnDeactivate
 // (D:\Proj\Battlesport\RecoilApp.cpp)
 void RecoilApp_PlayState::OnDeactivate() {
-    HudUiLoadingCheckpoint::AdvanceAndLog("Leaving Play State");
+    HudUiLoadingCheckpoint::AdvanceAndLog(g_RecoilApp_LeavingPlayStateMsg);
 
     if (zVid::GetAccelerationOption() != 0) {
         BOOL screenSaverRunning = FALSE;
@@ -2929,7 +3062,7 @@ void RecoilApp_PlayState::OnDeactivate() {
     zVideo::SetHalfResAdjustMode(ZVIDEO_HALFRES_ADJUST_DISABLED);
 
     if (zOpt::GetNetworkEnabled() != 0) {
-        HudUiLoadingCheckpoint::AdvanceAndLog("Leaving Networking");
+        HudUiLoadingCheckpoint::AdvanceAndLog(g_RecoilApp_LeavingNetworkingMsg);
         HudUiNetExitPanel::DestroyGlobal();
     }
 
@@ -2941,8 +3074,8 @@ void RecoilApp_PlayState::OnDeactivate() {
 
     zFMV_Script fmvScript;
     fmvScript.Init(
-        "fmv.zrd",
-        "MISSIONOVER",
+        g_zFMV_ScriptFileName,
+        g_RecoilApp_MissionOverFmvTag,
         0
     );
     fmvScript.RunBlocking(1);
@@ -2993,8 +3126,8 @@ int RecoilApp_IntroFmvState::OnTryBecomeCurrent() {
         }
 
         if (script->LoadActionsFromZrd(
-            "fmv.zrd",
-            "INTRO"
+            g_zFMV_ScriptFileName,
+            g_RecoilApp_IntroFmvTag
         ) != -1) {
             script->BeginAtTime();
         }
@@ -3072,8 +3205,8 @@ int RecoilApp_AttractFmvState::OnTryBecomeCurrent() {
 
     if (g_RecoilApp_AttractFmvReloadMode != 0) {
         m_fmv.LoadActionsFromZrd(
-            "fmv.zrd",
-            "ATTRACT"
+            g_zFMV_ScriptFileName,
+            g_RecoilApp_AttractFmvTag
         );
         g_RecoilApp_AttractFmvReloadMode = 0;
     }
@@ -3084,8 +3217,8 @@ int RecoilApp_AttractFmvState::OnTryBecomeCurrent() {
     }
 
     if (script->LoadActionsFromZrd(
-        "fmv.zrd",
-        "ATTRACT"
+        g_zFMV_ScriptFileName,
+        g_RecoilApp_AttractFmvTag
     ) != -1) {
         script->BeginAtTime();
     }
@@ -3130,10 +3263,13 @@ int RecoilApp_MissionFmvState::OnTryBecomeCurrent() {
 
     zUtil::SetMissionZrdrPathsAndMountZbd(m_missionId);
 
-    char missionFmvTag[4];
-    missionFmvTag[0] = 'M';
+    char missionFmvTag[sizeof(g_RecoilApp_MissionFmvTagTemplate)];
+    memcpy(
+        missionFmvTag,
+        g_RecoilApp_MissionFmvTagTemplate,
+        sizeof(missionFmvTag)
+    );
     missionFmvTag[1] = (char)(m_missionId + '0');
-    missionFmvTag[2] = '\0';
 
     if (m_skipMissionFmv == 0) {
         zFMV_Script *const script = &m_fmv;
@@ -3142,7 +3278,7 @@ int RecoilApp_MissionFmvState::OnTryBecomeCurrent() {
         }
 
         if (script->LoadActionsFromZrd(
-            "fmv.zrd",
+            g_zFMV_ScriptFileName,
             missionFmvTag
         ) != -1) {
             script->BeginAtTime();

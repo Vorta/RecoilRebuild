@@ -9,37 +9,142 @@
 #include <math.h>
 #include <string.h>
 
+/**
+ * Reimplements data 0x57d930: gModel_FogEnabled.
+ * Authored zModel light/fog global.
+ * Purpose: gate fog calculations during model lighting and vertex color setup.
+ */
 int gModel_FogEnabled = 0;
+/**
+ * Reimplements data 0x57d934: gModel_FogLinearModeEnabled.
+ * Authored zModel light/fog global.
+ * Purpose: select the linear distance fog path for active model rendering.
+ */
 int gModel_FogLinearModeEnabled = 0;
 zColorRgb gModel_FogColorRgb01 = {0};
+/**
+ * Reimplements data 0x57d944: gModel_FogDistanceStart.
+ * Authored zModel light/fog global.
+ * Purpose: store the near distance where linear fog begins.
+ */
 float gModel_FogDistanceStart = 0.0f;
+/**
+ * Reimplements data 0x57d948: gModel_FogDistanceEnd.
+ * Authored zModel light/fog global.
+ * Purpose: store the far distance where linear fog reaches full strength.
+ */
 float gModel_FogDistanceEnd = 0.0f;
+/**
+ * Reimplements data 0x57d94c: gModel_FogDistanceInvRange.
+ * Authored zModel light/fog global.
+ * Purpose: cache the reciprocal distance-fog range used by fade calculations.
+ */
 float gModel_FogDistanceInvRange = 0.0f;
+/**
+ * Reimplements data 0x57d950: gModel_FogHeightHigh.
+ * Authored zModel light/fog global.
+ * Purpose: store the upper height threshold for height fog.
+ */
 float gModel_FogHeightHigh = 0.0f;
+/**
+ * Reimplements data 0x57d954: gModel_FogHeightLow.
+ * Authored zModel light/fog global.
+ * Purpose: store the lower height threshold for height fog.
+ */
 float gModel_FogHeightLow = 0.0f;
+/**
+ * Reimplements data 0x57d958: gModel_FogHeightInvRange.
+ * Authored zModel light/fog global.
+ * Purpose: cache the reciprocal height-fog range used by fade calculations.
+ */
 float gModel_FogHeightInvRange = 0.0f;
+/**
+ * Reimplements data 0x57d95c: gModel_FogDensity.
+ * Authored zModel light/fog global.
+ * Purpose: store the density scalar used by model fog shading.
+ */
 float gModel_FogDensity = 0.0f;
+/**
+ * Reimplements data 0x57d960: gModel_RenderVertexAlphaEnabled.
+ * Authored zModel light/fog global.
+ * Purpose: gate per-vertex alpha output during model rendering.
+ */
 int gModel_RenderVertexAlphaEnabled = 0;
+/**
+ * Reimplements data 0x57d964: gModel_RenderAlphaScaleCurrent.
+ * Authored zModel light/fog global.
+ * Purpose: store the current alpha scale applied to rendered vertices.
+ */
 float gModel_RenderAlphaScaleCurrent = 0.0f;
+/**
+ * Reimplements data 0x57d418: gModel_HasActiveLights.
+ * Authored zModel active-light global.
+ * Purpose: record whether the current light scan found any active lights.
+ */
 int gModel_HasActiveLights = 0;
+/**
+ * Reimplements data 0x57d420: gModel_ActiveLightCount.
+ * Authored zModel active-light global.
+ * Purpose: track the number of entries populated in the active-light array.
+ */
 int gModel_ActiveLightCount = 0;
+/**
+ * Reimplements data 0x57d424: gModel_ActiveLightSpecialIndex.
+ * Authored zModel active-light global.
+ * Purpose: remember the special ambient-modulating active light index.
+ */
 int gModel_ActiveLightSpecialIndex = 0;
 zModel_ActiveLightEntryLive gModel_ActiveLights[0x40] = {0};
+/**
+ * Reimplements data 0x57d414: gModel_LightInputDataList.
+ * Authored zModel active-light global.
+ * Purpose: point at the current caller-supplied light data pointer list.
+ */
 zClass_LightDataPartial **gModel_LightInputDataList = 0;
+/**
+ * Reimplements data 0x57d410: gModel_LightInputNodeStates.
+ * Authored zModel active-light global.
+ * Purpose: point at the current caller-supplied light node-state list.
+ */
 zModel_LightStatePartial **gModel_LightInputNodeStates = 0;
+/**
+ * Reimplements data 0x57d41c: gModel_LightInputCount.
+ * Authored zModel active-light global.
+ * Purpose: store the number of caller-supplied light inputs to scan.
+ */
 int gModel_LightInputCount = 0;
+/**
+ * Reimplements data 0x57d9c8: g_zModel_SoftwarePathActive.
+ * Authored zModel light/fog global.
+ * Purpose: gate software-renderer lighting paths that need polygon normals.
+ */
 int g_zModel_SoftwarePathActive = 0;
 float g_Clip_PolyAttr0[0x40] = {0};
 float g_Clip_PolyAttr1[0x40] = {0};
 float g_Clip_PolyAttr2[0x40] = {0};
+/**
+ * Reimplements data 0x57d0c8: g_zModel_CurrentPolyNormals.
+ * Authored zModel active-light global.
+ * Purpose: point lighting code at the current polygon normal scratch buffer.
+ */
 zVec3 *g_zModel_CurrentPolyNormals = 0;
 zVec3 g_zModel_CurrentPolyNormalsStorage[0x40] = {0};
 zModel_FogTargetColorOverride g_zModel_FogTargetColorOverride = {0};
 zColorRgb gModel_FogBaseColorRgb01 = {0};
+/**
+ * Reimplements data 0x57d3e8: gModel_AmbientScale.
+ * Authored zModel active-light global.
+ * Purpose: store the ambient scale used while applying active light results.
+ */
 float gModel_AmbientScale = 0.0f;
+/**
+ * Reimplements data 0x57d3e4: gModel_AmbientIntensityFactor.
+ * Authored zModel active-light global.
+ * Purpose: store the active-light intensity factor used to adjust ambient light.
+ */
 float gModel_AmbientIntensityFactor = 0.0f;
 zColorRgb gModel_AmbientColorRgb01 = {0};
-zModel_PaletteRemapRecipePartial gModel_SpecialLightPaletteRemapRecipe = {0};
+zVidPaletteRemapRecipe gModel_SpecialLightPaletteRemapRecipe = {0};
 
 namespace {
     /**
@@ -1200,7 +1305,7 @@ namespace zModel_Light {
                         g_Clip_PolyAttr0[i] = g_Clip_PolyAttr1[i] * scale255;
                     }
                     zRndr_SetPaletteShadeRecipeIndex(
-                        (zVidPaletteRemapRecipe *)(&gModel_SpecialLightPaletteRemapRecipe)
+                        &gModel_SpecialLightPaletteRemapRecipe
                     );
                     *lightingMode |= 1;
                     return 1;
@@ -1209,7 +1314,7 @@ namespace zModel_Light {
                 if (pointAttrsVisible != 0) {
                     g_Clip_PolyAttr1[0] *= scale255;
                     zRndr_SetPaletteRemapKey(
-                        (zVidPaletteRemapRecipe *)(&gModel_SpecialLightPaletteRemapRecipe),
+                        &gModel_SpecialLightPaletteRemapRecipe,
                         g_Clip_PolyAttr1[0]
                     );
                 } else if (IsVisibleWeight(g_zModel_FogTargetColorOverride.weight)) {

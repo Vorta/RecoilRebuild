@@ -23,7 +23,13 @@ namespace {
         return (int)(value);
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Recovered original static helper in D:\Proj\GameZRecoil\zClass\cls_world.c.
+     * No standalone retail function; observed caller includes
+     * 0x450c60 zClass_World::gwWorldSetVirtualAreaPartition.
+     * Purpose: approximate the square root of a squared range through its
+     * floating-point exponent bits.
+     */
     float ApproximateSqrtFromRangeSq(float rangeSq) {
         int bits = 0;
         memcpy(
@@ -134,9 +140,13 @@ namespace {
         }
     }
 
-    // Restores likely inlined VAP edge-cell helper observed four times in
-    // 0x4502b0; no standalone function exists in the retail executable.
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Recovered original static helper in D:\Proj\GameZRecoil\zClass\cls_world.c.
+     * No standalone retail function; observed caller includes
+     * 0x4502b0 zClass_World::InitVirtualAreaPartitions.
+     * Purpose: move all children from a virtual-area edge cell into a
+     * VAP_statics object and reinsert that object into the world grid.
+     */
     inline void MoveAreaChildrenToVapStatics(
         zClass_NodePartial * world,
         zWorldAreaPartial * area
@@ -171,9 +181,13 @@ namespace {
 }
 
 namespace zClass_World {
-    // Reimplements 0x4517a0: zClass_World::WriteSettingsSection
-    // (GameZRecoil/zClass/cls_world.c)
     int __fastcall
+    /**
+     * Reimplements 0x4517a0: zClass_World::WriteSettingsSection.
+     * BN source path evidence: GameZRecoil/zClass/cls_world.c.
+     * Purpose: write each world node's pending fog settings as a ZBD settings
+     * section blob.
+     */
     WriteSettingsSection(
         zZbdSectionCallbackCtx * callbackCtx,
         void *userData
@@ -226,8 +240,12 @@ namespace zClass_World {
         return result;
     }
 
-    // Reimplements 0x451840: zClass_World::ReadSettingsSection
-    // (GameZRecoil/zClass/cls_world.c)
+    /**
+     * Reimplements 0x451840: zClass_World::ReadSettingsSection.
+     * BN source path evidence: GameZRecoil/zClass/cls_world.c.
+     * Purpose: apply a ZBD settings section record to the named world node's
+     * pending fog settings.
+     */
     void __fastcall ReadSettingsSection(
         zZbdSectionCallbackCtx * callbackCtx,
         const char *worldName,
@@ -277,8 +295,12 @@ namespace zClass_World {
         );
     }
 
-    // Reimplements 0x4501c0: zClass_World::gwWorldNew
-    // (D:\Proj\GameZRecoil\zClass\cls_world.c)
+    /**
+     * Reimplements 0x4501c0: zClass_World::gwWorldNew.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
+     * Purpose: allocate and initialize a world node and its class data, then
+     * insert it into the world type list.
+     */
     zClass_NodePartial *gwWorldNew() {
         zClass_NodePartial *node = zClass_Class::AllocNodeFromFreeList();
         node->classId = 2;
@@ -477,9 +499,13 @@ namespace zClass_World {
         return 0;
     }
 
-    // Reimplements 0x450c00: zClass_World::gwWorldSetOrigin
-    // (D:\Proj\GameZRecoil\zClass\cls_world.c)
     int __fastcall
+    /**
+     * Reimplements 0x450c00: zClass_World::gwWorldSetOrigin.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
+     * Purpose: set the world origin and update the derived maximum X/Z
+     * bounds.
+     */
     gwWorldSetOrigin(
         zClass_NodePartial * world,
         float originX,
@@ -493,9 +519,12 @@ namespace zClass_World {
         return 0;
     }
 
-    // Reimplements 0x450c30: zClass_World::gwWorldSetSize
-    // (D:\Proj\GameZRecoil\zClass\cls_world.c)
     int __fastcall
+    /**
+     * Reimplements 0x450c30: zClass_World::gwWorldSetSize.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
+     * Purpose: set the world X/Z size and update the derived maximum bounds.
+     */
     gwWorldSetSize(
         zClass_NodePartial * world,
         float sizeX,
@@ -509,8 +538,11 @@ namespace zClass_World {
         return 0;
     }
 
-    // Reimplements 0x450f00: zClass_World::gwWorldSetPartitionInclusionTolerance
-    // (D:\Proj\GameZRecoil\zClass\cls_world.c)
+    /**
+     * Reimplements 0x450f00: zClass_World::gwWorldSetPartitionInclusionTolerance.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
+     * Purpose: set the X/Z tolerances used when testing partition inclusion.
+     */
     int __fastcall gwWorldSetPartitionInclusionTolerance(
         zClass_NodePartial * world,
         float toleranceX,
@@ -522,9 +554,13 @@ namespace zClass_World {
         return 0;
     }
 
-    // Reimplements 0x450f20: zClass_World::gwWorldSetMaxDecFeatures
-    // (D:\Proj\GameZRecoil\zClass\cls_world.c)
     int __fastcall
+    /**
+     * Reimplements 0x450f20: zClass_World::gwWorldSetMaxDecFeatures.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
+     * Purpose: clamp and store the maximum DEC feature count for world
+     * partitions.
+     */
     gwWorldSetMaxDecFeatures(
         zClass_NodePartial * world,
         int maxFeatures
@@ -545,9 +581,13 @@ namespace zClass_World {
         return 0;
     }
 
-    // Reimplements 0x450c60: zClass_World::gwWorldSetVirtualAreaPartition
-    // (D:\Proj\GameZRecoil\zClass\cls_world.c)
     int __fastcall
+    /**
+     * Reimplements 0x450c60: zClass_World::gwWorldSetVirtualAreaPartition.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
+     * Purpose: allocate and initialize the virtual area partition grid and
+     * its cell metrics from the configured world bounds.
+     */
     gwWorldSetVirtualAreaPartition(
         zClass_NodePartial * world,
         float cellSizeX,
@@ -619,8 +659,12 @@ namespace zClass_World {
         return 0;
     }
 
-    // Reimplements 0x4502b0: zClass_World::InitVirtualAreaPartitions
-    // (GameZRecoil/zClass/cls_world.c)
+    /**
+     * Reimplements 0x4502b0: zClass_World::InitVirtualAreaPartitions.
+     * BN source path evidence: GameZRecoil/zClass/cls_world.c.
+     * Purpose: initialize virtual area partition edge cells by moving their
+     * children into VAP_statics nodes.
+     */
     int __fastcall InitVirtualAreaPartitions(zClass_NodePartial * world) {
         zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         if (data->areaGridRows == 0) {
@@ -669,9 +713,13 @@ namespace zClass_World {
         return 0;
     }
 
-    // Reimplements 0x450510: zClass_World::SetVirtualPartition
-    // (GameZRecoil/zClass/cls_world.c)
     int __fastcall
+    /**
+     * Reimplements 0x450510: zClass_World::SetVirtualPartition.
+     * BN source path evidence: GameZRecoil/zClass/cls_world.c.
+     * Purpose: set the virtual-partition query flag and initialize partitions
+     * when enabling the mode.
+     */
     SetVirtualPartition(
         zClass_NodePartial * world,
         int enabled
@@ -1424,9 +1472,13 @@ namespace zClass_World {
         return 0;
     }
 
-    // Reimplements 0x451360: zClass_World::AddLight
-    // (D:\Proj\GameZRecoil\zClass\cls_world.c)
     int __fastcall
+    /**
+     * Reimplements 0x451360: zClass_World::AddLight.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
+     * Purpose: append a light and its data to the world lists and attach the
+     * world to the light's world list.
+     */
     AddLight(
         zClass_NodePartial * world,
         zClass_NodePartial * light
@@ -1458,8 +1510,13 @@ namespace zClass_World {
         return 0;
     }
 
-    // Reimplements 0x451410: zClass_World::RemoveLight
     int __fastcall
+    /**
+     * Reimplements 0x451410: zClass_World::RemoveLight.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
+     * Purpose: remove a light from the world lists and remove the world from
+     * the light's attached-world list.
+     */
     RemoveLight(
         zClass_NodePartial * world,
         zClass_NodePartial * light
@@ -1525,8 +1582,12 @@ namespace zClass_World {
         return 0;
     }
 
-    // Reimplements 0x451540: zClass_World::InitLightPointInPolygonXZ
-    // (D:\Proj\GameZRecoil\zClass\cls_world.c)
+    /**
+     * Reimplements 0x451540: zClass_World::InitLightPointInPolygonXZ.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
+     * Purpose: forward the world's light data/node lists and count into
+     * zModel_Light_PointInPolygonInitXZ.
+     */
     int __fastcall InitLightPointInPolygonXZ(zClass_NodePartial * world) {
         zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
         zModel_Light_PointInPolygonInitXZ(
@@ -1537,8 +1598,12 @@ namespace zClass_World {
         return 0;
     }
 
-    // Reimplements 0x451560: zClass_World::UpdateAllLights
-    // (D:\Proj\GameZRecoil\zClass\cls_world.c)
+    /**
+     * Reimplements 0x451560: zClass_World::UpdateAllLights.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
+     * Purpose: iterate the world light nodes and call
+     * zClass_Light::gwLightUpdate for each.
+     */
     int __fastcall UpdateAllLights(zClass_NodePartial * world) {
         zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
 
@@ -1549,9 +1614,13 @@ namespace zClass_World {
         return 0;
     }
 
-    // Reimplements 0x451590: zClass_World::AddSound
-    // (D:\Proj\GameZRecoil\zClass\cls_world.c)
     int __fastcall
+    /**
+     * Reimplements 0x451590: zClass_World::AddSound.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
+     * Purpose: append a sound and its data to the world lists and attach the
+     * world to the sound's world list.
+     */
     AddSound(
         zClass_NodePartial * world,
         zClass_NodePartial * sound
@@ -1583,8 +1652,13 @@ namespace zClass_World {
         return 0;
     }
 
-    // Reimplements 0x451640: zClass_World::RemoveSound
     int __fastcall
+    /**
+     * Reimplements 0x451640: zClass_World::RemoveSound.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
+     * Purpose: remove a sound from the world lists and remove the world from
+     * the sound's attached-world list.
+     */
     RemoveSound(
         zClass_NodePartial * world,
         zClass_NodePartial * sound
@@ -1650,8 +1724,12 @@ namespace zClass_World {
         return 0;
     }
 
-    // Reimplements 0x451770: zClass_World::UpdateAllSounds
-    // (D:\Proj\GameZRecoil\zClass\cls_world.c)
+    /**
+     * Reimplements 0x451770: zClass_World::UpdateAllSounds.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
+     * Purpose: iterate the world sound nodes and call
+     * zClass_Sound::UpdatePlayback for each.
+     */
     int __fastcall UpdateAllSounds(zClass_NodePartial * world) {
         zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
 

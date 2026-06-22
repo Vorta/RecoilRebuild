@@ -336,8 +336,12 @@ void TransformBBoxCorner(
 }
 } // namespace
 
-// Reimplements 0x474710: zMath_Mat_TransformNormalBatch
-// (D:\Proj\GameZRecoil\zMath\zmath_matrix.cpp)
+/**
+ * Reimplements 0x474710: zMath_Mat_TransformNormalBatch
+ * (D:\Proj\GameZRecoil\zMath\zmath_matrix.cpp).
+ * Purpose: transforms normal batches through the current matrix rotation, or
+ * copies the input normals unchanged when the current matrix is identity.
+ */
 void __fastcall zMath_Mat_TransformNormalBatch(
     const zVec3 *normals,
     zVec3 *outNormals,

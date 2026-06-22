@@ -140,7 +140,17 @@ HudUiNetGameSetupOverlayOwner g_HudUiNetGameSetupOverlayOwner;
 HudUiRect g_HudUiMgrSensorFxRect = {0};
 int g_HudUiMgrSensorFxViewportWidth = 0;
 int g_HudUiMgrSensorFxViewportHeight = 0;
+/**
+ * Reimplements data 0x4ed718: g_HudLayoutHW.
+ * Owner data: 844-byte zero-initialized singleton.
+ * Purpose: store the global hardware HUD layout instance.
+ */
 HudLayoutHW g_HudLayoutHW;
+/**
+ * Reimplements data 0x4eda68: g_HudLayoutSW.
+ * Owner data: 236-byte zero-initialized singleton.
+ * Purpose: store the global software HUD layout instance.
+ */
 HudLayoutSW g_HudLayoutSW;
 HudUiTextStack4 *g_HudUiChatMessageStack = 0;
 HudUiTextStack4 *g_HudUiTopMessageStack = 0;
@@ -235,32 +245,113 @@ char g_HudUiOptionsPanel_LightingToggleNodeName[] = "LIGHTING";
  */
 char g_HudUiOptionsPanel_SectionName[] = "OPTIONSPANEL";
 /**
+ * Reimplements data 0x4dacc0: g_HudFontName_Arial.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: provide the shared writable Arial face-name buffer used by HUD
+ * panel font setup.
+ */
+char g_HudFontName_Arial[] = "Arial";
+/**
+ * Reimplements data 0x4e4708: g_HudUiCycleSelectorWidget_ZrdKey_Bitmap.
+ * Shared data owner: hud_ui.cycle_selector_shared_zrd_key_literals.
+ * Purpose: name the shared BITMAP ZRD record consumed by HUD widget loaders.
+ */
+char g_HudUiCycleSelectorWidget_ZrdKey_Bitmap[] = "BITMAP";
+/**
+ * Reimplements data 0x4e4738: g_HudUiCycleSelectorWidget_ZrdKey_Text.
+ * Shared data owner: hud_ui.cycle_selector_shared_zrd_key_literals.
+ * BN exposes four TEXT bytes; the following aligned zero padding supplies the
+ * C-string terminator in the original data pool.
+ * Purpose: name shared TEXT ZRD records consumed by toggle and cycle widgets.
+ */
+char g_HudUiCycleSelectorWidget_ZrdKey_Text[4] = {'T', 'E', 'X', 'T'};
+/**
+ * Reimplements data 0x4e4748: g_HudUiCycleSelectorWidget_ZrdKey_Cycle.
+ * Shared data owner: hud_ui.cycle_selector_shared_zrd_key_literals.
+ * Purpose: name the CYCLE ZRD array loaded by HudUiCycleSelectorWidget.
+ */
+char g_HudUiCycleSelectorWidget_ZrdKey_Cycle[] = "CYCLE";
+/**
+ * Reimplements data 0x4e4750: g_HudUiCycleSelectorWidget_ZrdKey_TextOffset.
+ * Shared data owner: hud_ui.cycle_selector_shared_zrd_key_literals.
+ * Purpose: name the TEXTOFFSET ZRD array loaded by HudUiCycleSelectorWidget.
+ */
+char g_HudUiCycleSelectorWidget_ZrdKey_TextOffset[] = "TEXTOFFSET";
+/**
+ * Reimplements data 0x4e475c: g_HudUiCycleSelectorWidget_ZrdKey_Font.
+ * Shared data owner: hud_ui.cycle_selector_shared_zrd_key_literals.
+ * Purpose: name shared FONT ZRD records consumed by HUD widget loaders.
+ */
+char g_HudUiCycleSelectorWidget_ZrdKey_Font[] = "FONT";
+/**
+ * Reimplements data 0x4e4764: g_HudUiFillBitmap_ZrdKey_FillBitmap.
+ * Data owner: hud_ui.hud_ui_fill_bitmap_zrd_key_literals.
+ * Purpose: name the FILLBITMAP ZRD record consumed by HudUiFillBitmap.
+ */
+char g_HudUiFillBitmap_ZrdKey_FillBitmap[] = "FILLBITMAP";
+/**
+ * Reimplements data 0x4e4770: g_HudUiZrdWidgetEx17C_Item_ZrdKey_MouseRect.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: name the optional mouse-rectangle ZRD child loaded by HudUiZrdWidgetEx17C_Item.
+ */
+char g_HudUiZrdWidgetEx17C_Item_ZrdKey_MouseRect[] = "MOUSERECT";
+/**
+ * Reimplements data 0x4e477c: g_HudUiZrdToken_Radio.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: name the RADIO ZRD child array loaded by HudUiZrdWidgetEx17C.
+ */
+char g_HudUiZrdToken_Radio[] = "RADIO";
+/**
+ * Reimplements data 0x4dae0c: g_HudLayout_TypeISectionName.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: name the TYPEI HUD layout section loaded from the HUD ZRD root.
+ */
+char g_HudLayout_TypeISectionName[] = "TYPEI";
+/**
+ * Reimplements data 0x4dae14: g_HudLayout_TypeIISectionName.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: name the TYPEII HUD layout section loaded from the HUD ZRD root.
+ */
+char g_HudLayout_TypeIISectionName[] = "TYPEII";
+/**
  * Reimplements data 0x4dae48: g_HudUiMessage_SeparatorColon.
  * Data owner gate remains pending; this docblock records source provenance only.
  * Purpose: separate the local player name from chat text when composing HUD messages.
  */
 char g_HudUiMessage_SeparatorColon[2] = ":";
 
-// Reimplements 0x40ec90: HudLayoutBase::Shutdown_Stub
+/**
+ * Reimplements 0x40ec90: HudLayoutBase::Shutdown_Stub.
+ * Purpose: route the HUD layout shutdown slot through the recovered no-op widget method.
+ */
 void HudLayoutBase::Shutdown_Stub() {
     HudUiNoOpMethodStub(&g_HudUiMgrShieldMessageWidget->widget);
 }
 
-// Reimplements 0x40d3b0: HudLayoutBase::Destructor
+/**
+ * Reimplements 0x40d3b0: HudLayoutBase::Destructor.
+ * Purpose: destroy the base layout widget and container subobjects in recovered order.
+ */
 void HudLayoutBase::Destructor() {
     widget0.DestructorCore();
     HudUiContainer::DestructorCore();
 }
 
-// Reimplements 0x412bd0: HudLayoutBase::SetActive
+/**
+ * Reimplements 0x412bd0: HudLayoutBase::SetActive.
+ * Purpose: provide the default layout activation result for base layout callers.
+ */
 int HudLayoutBase::SetActive(
     int
 ) {
     return 1;
 }
 
-// Reimplements 0x412b60: HudLayoutSW::Constructor
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x412b60: HudLayoutSW::Constructor.
+ * Source file evidence: BN labels this function as a Battlesport hud.cpp helper.
+ * Purpose: construct the software HUD layout container and attach its base widget child.
+ */
 HudLayoutSW * HudLayoutSW::Constructor() {
     new ((HudUiContainer *)this) HudUiContainer;
     HudUiWidget *const childWidget = (HudUiWidget *)(&widget0);
@@ -269,30 +360,45 @@ HudLayoutSW * HudLayoutSW::Constructor() {
     return this;
 }
 
-// Reimplements 0x40d270: HudLayoutSW::GlobalInit
+/**
+ * Reimplements 0x40d270: HudLayoutSW::GlobalInit.
+ * Purpose: initialize the global software HUD layout singleton.
+ */
 HudLayoutSW *HudLayoutSW::GlobalInit() {
     return g_HudLayoutSW.Constructor();
 }
 
-// Reimplements 0x40d280: HudLayoutSW::RegisterAtExit
+/**
+ * Reimplements 0x40d280: HudLayoutSW::RegisterAtExit.
+ * Purpose: register the software HUD layout singleton for CRT exit destruction.
+ */
 void HudLayoutSW::RegisterAtExit() {
     atexit(AtExitDestructor);
 }
 
-// Reimplements 0x40d290: HudLayoutSW::AtExitDestructor
+/**
+ * Reimplements 0x40d290: HudLayoutSW::AtExitDestructor.
+ * Purpose: dispatch CRT exit cleanup to the global software HUD layout singleton.
+ */
 void HudLayoutSW::AtExitDestructor() {
     g_HudLayoutSW.GlobalDestructor();
 }
 
-// Reimplements 0x40d2a0: HudLayoutSW::GlobalDestructor
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x40d2a0: HudLayoutSW::GlobalDestructor.
+ * Source file evidence: BN labels this function as a Battlesport hud.cpp helper.
+ * Purpose: destroy the software HUD layout singleton's widget child and base container.
+ */
 void HudLayoutSW::GlobalDestructor() {
     ((HudUiWidget *)(&widget0))->DestructorCore();
     DestructorCore();
 }
 
-// Reimplements 0x412ea0: HudLayoutHW::Constructor
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x412ea0: HudLayoutHW::Constructor.
+ * Source file evidence: BN labels this function as a Battlesport hud.cpp helper.
+ * Purpose: construct the hardware HUD layout container and attach its three image widgets.
+ */
 HudLayoutHW * HudLayoutHW::Constructor() {
     new ((HudUiContainer *)this) HudUiContainer;
     HudUiWidget *const baseWidget = (HudUiWidget *)(&widget0);
@@ -312,23 +418,35 @@ HudLayoutHW * HudLayoutHW::Constructor() {
     return this;
 }
 
-// Reimplements 0x40d300: HudLayoutHW::GlobalInit
+/**
+ * Reimplements 0x40d300: HudLayoutHW::GlobalInit.
+ * Purpose: initialize the global hardware HUD layout singleton.
+ */
 HudLayoutHW *HudLayoutHW::GlobalInit() {
     return g_HudLayoutHW.Constructor();
 }
 
-// Reimplements 0x40d310: HudLayoutHW::RegisterAtExit
+/**
+ * Reimplements 0x40d310: HudLayoutHW::RegisterAtExit.
+ * Purpose: register the hardware HUD layout singleton for CRT exit destruction.
+ */
 void HudLayoutHW::RegisterAtExit() {
     atexit(AtExitDestructor);
 }
 
-// Reimplements 0x40d320: HudLayoutHW::AtExitDestructor
+/**
+ * Reimplements 0x40d320: HudLayoutHW::AtExitDestructor.
+ * Purpose: dispatch CRT exit cleanup to the global hardware HUD layout singleton.
+ */
 void HudLayoutHW::AtExitDestructor() {
     g_HudLayoutHW.GlobalDestructor();
 }
 
-// Reimplements 0x40d330: HudLayoutHW::GlobalDestructor
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x40d330: HudLayoutHW::GlobalDestructor.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: destroy the hardware HUD layout singleton's widget children and base container.
+ */
 void HudLayoutHW::GlobalDestructor() {
     ((HudUiWidget *)(&widget3))->DestructorCore();
     ((HudUiWidget *)(&widget2))->DestructorCore();
@@ -337,39 +455,65 @@ void HudLayoutHW::GlobalDestructor() {
     DestructorCore();
 }
 
-// Reimplements 0x40d2f0: HudLayoutHW::CrtInitGlobalSingleton
+/**
+ * Reimplements 0x40d2f0: HudLayoutHW::CrtInitGlobalSingleton.
+ * Purpose: construct the hardware HUD layout singleton and register its exit cleanup.
+ */
 void HudLayoutHW::CrtInitGlobalSingleton() {
     GlobalInit();
     RegisterAtExit();
 }
 
-// Reimplements 0x412be0: HudLayoutBase::UpdateAll
+/**
+ * Reimplements 0x412be0: HudLayoutBase::UpdateAll.
+ * Purpose: forward per-frame layout updates through the recovered container base.
+ */
 void HudLayoutBase::UpdateAll(
     float deltaSeconds
 ) {
     HudUiContainer::UpdateAll(deltaSeconds);
 }
 
-// Reimplements 0x412bf0: HudLayoutBase::Enable
+/**
+ * Original inline helper; no standalone retail function exists. BN vtable
+ * evidence at 0x4ce968, 0x4ce988, and 0x4ce9a8 points this slot at the
+ * shared no-op body 0x404e80.
+ * Original source name: HudLayoutBase::LayoutPreUpdate.
+ * Purpose: preserve the typed HudLayoutBase virtual source model without
+ * introducing a production FTable scaffold.
+ */
 void HudLayoutBase::LayoutPreUpdate() {
 }
 
-// Reimplements 0x412bf0: HudLayoutBase::Enable
+/**
+ * Reimplements 0x412bf0: HudLayoutBase::Enable.
+ * Purpose: activate this HUD layout through the recovered base SetActive slot.
+ */
 void HudLayoutBase::Enable() {
     SetActive(1);
 }
 
-// Reimplements 0x412c00: HudLayoutBase::Disable
+/**
+ * Reimplements 0x412c00: HudLayoutBase::Disable.
+ * Purpose: deactivate this HUD layout through the recovered base SetActive slot.
+ */
 void HudLayoutBase::Disable() {
     SetActive(0);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original inline helper; no standalone retail function exists.
+ * Original source name: HudLayoutBase::OnActivated.
+ * Purpose: provide the default layout activation hook for derived HUD layouts.
+ */
 void HudLayoutBase::OnActivated() {
 }
 
-// Reimplements 0x413500: HudLayoutHW::UpdateAll
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x413500: HudLayoutHW::UpdateAll.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: refresh hardware HUD replication blits before container child updates.
+ */
 void HudLayoutHW::UpdateAll(
     float deltaSeconds
 ) {
@@ -383,8 +527,11 @@ void HudLayoutHW::UpdateAll(
     HudUiContainer::UpdateAll(deltaSeconds);
 }
 
-// Reimplements 0x412c60: HudLayoutSW::SetActive
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x412c60: HudLayoutSW::SetActive.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: apply the software HUD viewport and active sensor occlusion state.
+ */
 int HudLayoutSW::SetActive(
     int active
 ) {
@@ -448,14 +595,17 @@ int HudLayoutSW::SetActive(
     return 1;
 }
 
-// Reimplements 0x412c10: HudLayoutSW::LoadTypeIFromZarRoot
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x412c10: HudLayoutSW::LoadTypeIFromZarRoot.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: load the TYPEI HUD layout rectangle from the ZRD root.
+ */
 void HudLayoutBase::LoadTypeIFromZarRoot(
     zReader::Node *parentNode
 ) {
     zReader::Node *const typeINode = zReader_GetNamedNode(
         parentNode,
-        "TYPEI"
+        g_HudLayout_TypeISectionName
     );
     if (typeINode == 0) {
         return;
@@ -472,8 +622,11 @@ void HudLayoutBase::LoadTypeIFromZarRoot(
 }
 
 namespace HudLayout {
-// Reimplements 0x412db0: HudLayout::ApplyViewportRect
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x412db0: HudLayout::ApplyViewportRect.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: update display and render viewport sections from the active HUD rectangle.
+ */
 int __fastcall ApplyViewportRect(
     HudUiRect *activeRect
 ) {
@@ -544,7 +697,10 @@ int __fastcall ApplyViewportRect(
 }
 } // namespace HudLayout
 
-// Reimplements 0x413080: HudLayoutHW::ReleaseImages
+/**
+ * Reimplements 0x413080: HudLayoutHW::ReleaseImages.
+ * Purpose: release hardware HUD layout alternate images and clear their cached pointers.
+ */
 void HudLayoutHW::ReleaseImages() {
     zVid_Image::ReleaseIfNotDefault(widget1Image320);
     zVid_Image::ReleaseIfNotDefault(widget1Image400);
@@ -557,8 +713,11 @@ void HudLayoutHW::ReleaseImages() {
     widget1Image320 = 0;
 }
 
-// Reimplements 0x413340: HudLayoutHW::OnActivated
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x413340: HudLayoutHW::OnActivated.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: activate hardware HUD widgets, image variants, and sensor bounds.
+ */
 void HudLayoutHW::OnActivated() {
     HudUi::SetInvalidateMode(zOpt::GetReplicateMode() == 0 ? 1 : 0);
 
@@ -648,8 +807,11 @@ void HudLayoutHW::UpdateObjectiveDirtyRect() {
     ((HudUiTripletPanel *)(&g_HudUiMgrNanitePanel))->Draw();
 }
 
-// Reimplements 0x4130d0: HudLayoutHW::SetActive
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x4130d0: HudLayoutHW::SetActive.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: apply the hardware HUD viewport and connect or clear widget blit sources.
+ */
 int HudLayoutHW::SetActive(
     int active
 ) {
@@ -754,14 +916,17 @@ int HudLayoutHW::SetActive(
     return 1;
 }
 
-// Reimplements 0x412f70: HudLayoutHW::LoadTypeIIFromZarRoot
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x412f70: HudLayoutHW::LoadTypeIIFromZarRoot.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: load the TYPEII HUD layout widgets and alternate image variants from ZRD data.
+ */
 int HudLayoutHW::LoadTypeIIFromZarRoot(
     zReader::Node *parentNode
 ) {
     zReader::Node *const typeIINode = zReader_GetNamedNode(
         parentNode,
-        "TYPEII"
+        g_HudLayout_TypeIISectionName
     );
     if (typeIINode == 0) {
         return 1;
@@ -818,8 +983,11 @@ int HudLayoutHW::LoadTypeIIFromZarRoot(
     return 1;
 }
 
-// Reimplements 0x413540: HudLayoutHW::Enable
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x413540: HudLayoutHW::Enable.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: enable hardware HUD layout children and mark dependent widgets visible.
+ */
 void HudLayoutHW::Enable() {
     g_HudUiMgr.SetChildFlags(0x0e);
     SetChildFlags(0x0e);
@@ -850,8 +1018,11 @@ void HudLayoutHW::Enable() {
     SetEnabled(1);
 }
 
-// Reimplements 0x4135f0: HudLayoutHW::Disable
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x4135f0: HudLayoutHW::Disable.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: disable the hardware HUD layout container.
+ */
 void HudLayoutHW::Disable() {
     SetEnabled(0);
 }
@@ -964,7 +1135,7 @@ HudUiPanel *NewSimplePanel(
         0
     );
     panel->SetFont(
-        "Arial",
+        g_HudFontName_Arial,
         fontSize,
         0x1f4,
         fontWeight,
@@ -1337,7 +1508,7 @@ void HudUiTripletPrepareCell(
     HudUiElement *const element = (HudUiElement *)(panel);
     element->flags = (element->flags & 0x10u) | 0x0cu;
     panel->SetFont(
-        "Arial",
+        g_HudFontName_Arial,
         triplet->fontSize,
         0x1f4,
         triplet->fontWeight,
@@ -2224,7 +2395,7 @@ void ConfigureTextStackLine(
     HudUiElement *const element = (HudUiElement *)(panel);
     stack->AddChild(element);
     panel->SetFont(
-        "Arial",
+        g_HudFontName_Arial,
         fontSize,
         fontWeight,
         fontWidth,
@@ -3193,7 +3364,10 @@ void InitTable() {
 } // namespace HudUiLoadingCheckpoint
 
 namespace HudUiAuxOverlay {
-// Reimplements 0x4137f0: HudUiAuxOverlay::UpdateTextLine
+/**
+ * Reimplements 0x4137f0: HudUiAuxOverlay::ApplyTextLineOp.
+ * Purpose: apply one sensor overlay text-line operation to a string-menu item.
+ */
 void __fastcall UpdateTextLine(
     int op,
     int index,
@@ -3222,7 +3396,10 @@ void __fastcall UpdateTextLine(
     }
 }
 
-// Reimplements 0x4137c0: HudUiAuxOverlay::ClearTextLines
+/**
+ * Reimplements 0x4137c0: HudUiAuxOverlay::ClearTextLines.
+ * Purpose: clear and hide every sensor overlay text line.
+ */
 void ClearTextLines() {
     {
         for (int index = 0; index < 23; ++index) {
@@ -4174,7 +4351,10 @@ void __fastcall CopyReticleProjection(
     outBits[2] = projectionBits[2];
 }
 
-// Reimplements 0x411740: HudUiMgr::SetReticleMode
+/**
+ * Reimplements 0x411740: HudUiMgr::SetReticleMode.
+ * Purpose: store the active HUD reticle mode.
+ */
 void __fastcall SetReticleMode(
     int mode
 ) {
@@ -4722,7 +4902,10 @@ void DisableTopAndChatStacks() {
     g_HudUiChatMessageStack->SetEnabled(0);
 }
 
-// Reimplements 0x40f4c0: HudUiMgr::InitHudLayouts
+/**
+ * Reimplements 0x40f4c0: HudUiMgr::InitHudLayouts / InitHudLayouts.
+ * Purpose: initialize the software and hardware HUD layout singletons for the current display sections.
+ */
 int __fastcall InitHudLayouts(
     const HudUiRect *displaySection,
     const HudUiRect *windowSection
@@ -4774,7 +4957,7 @@ int __fastcall InitHudLayouts(
         );
         percentTextPanel->SetTextColor(0x0020bf40);
         percentTextPanel->SetFont(
-            "Arial",
+            g_HudFontName_Arial,
             0x0a,
             0x1f4,
             6,
@@ -6061,8 +6244,21 @@ HudUiContainer::HudUiContainer() {
     childTail = 0;
 }
 
-// Reimplements 0x4bc7b0: HudUiContainer::DestructorCore
+/**
+ * Reimplements 0x4bc7b0: HudUiContainer::~HudUiContainer.
+ * Current BN assembly restores the base HudUiContainer vptr and returns.
+ * Purpose: tear down the common container base after derived HUD UI cleanup.
+ */
+HudUiContainer::~HudUiContainer() {
+}
+
+/**
+ * Reimplements 0x4bc7b0: HudUiContainer::DestructorCore.
+ * Purpose: route legacy native smoke call sites through the recovered C++
+ * destructor so base vptr restoration remains compiler-owned.
+ */
 void HudUiContainer::DestructorCore() {
+    this->HudUiContainer::~HudUiContainer();
 }
 
 // Reimplements 0x40d9d0: HudUiContainer::SetEnabled
@@ -7548,7 +7744,7 @@ zReader::Node * HudUiBackground::LoadZrdAndSection(
             zReader::Node *const bitmapNode =
                 ZrdArrayBase(zReader_GetNamedNode(
                     cursorNode,
-                    "BITMAP"
+                    g_HudUiCycleSelectorWidget_ZrdKey_Bitmap
                 ));
             if (bitmapNode != 0) {
                 cursorWidget.SetImageByPathOwnedAndRefresh(ZrdArrayString(
@@ -7737,7 +7933,7 @@ int HudUiBackground::BindPrimitiveNodeToElement(
 
     zReader::Node *bitmapNode = zReader_GetNamedNode(
         primitiveNode,
-        "BITMAP"
+        g_HudUiCycleSelectorWidget_ZrdKey_Bitmap
     );
     if (bitmapNode != 0) {
         ((HudUiWidget *)(element))->SetImageByPathOwned(
@@ -7771,7 +7967,7 @@ int HudUiBackground::BindPrimitiveNodeToElement(
 
     zReader::Node *fontNode = zReader_GetNamedNode(
         primitiveNode,
-        "FONT"
+        g_HudUiCycleSelectorWidget_ZrdKey_Font
     );
     if (fontNode != 0) {
         const int fontIndex = fontNode->value.i32;
@@ -8533,7 +8729,7 @@ int HudUiZrdWidget::LoadFromZrd(
     int widgetY = originY;
     zReader::Node *const bitmapNode = zReader_GetNamedNode(
         zrdSection,
-        "BITMAP"
+        g_HudUiCycleSelectorWidget_ZrdKey_Bitmap
     );
     zReader::Node *const bitmapBase = ZrdArrayBase(bitmapNode);
     const char *const bitmapPath = ZrdArrayString(
@@ -8579,7 +8775,7 @@ int HudUiZrdWidget::LoadFromZrd(
     if (rolloverNode != 0) {
         LoadHudZrdBitmap(
             rolloverNode,
-            "BITMAP",
+            g_HudUiCycleSelectorWidget_ZrdKey_Bitmap,
             &rolloverImage
         );
         LoadHudZrdSound(
@@ -8605,7 +8801,7 @@ int HudUiZrdWidget::LoadFromZrd(
     if (disableNode != 0) {
         LoadHudZrdBitmap(
             disableNode,
-            "BITMAP",
+            g_HudUiCycleSelectorWidget_ZrdKey_Bitmap,
             &disabledImage
         );
         LoadHudZrdSound(
@@ -8627,7 +8823,7 @@ int HudUiZrdWidget::LoadFromZrd(
     if (activateNode != 0) {
         LoadHudZrdBitmap(
             activateNode,
-            "BITMAP",
+            g_HudUiCycleSelectorWidget_ZrdKey_Bitmap,
             &activateImage
         );
         LoadHudZrdSound(
@@ -9296,7 +9492,12 @@ HudUiElement * HudUiCheckToggleWidget::ScalarDeletingDestructor(
     return this;
 }
 
-// Reimplements 0x41a590: HudUiCheckToggleWidget::ScalarDeletingDestructorThunk
+/**
+ * Provider-boundary 0x41a590: HudUiCheckToggleWidget::ScalarDeletingDestructorThunk.
+ * BN shows VC++ scalar-deleting destructor glue: call DestructorCoreThunk,
+ * optionally delete storage when flags bit 0 is set, return this.
+ * Purpose: preserve the compiler-generated virtual table target for check-toggle widgets.
+ */
 HudUiCheckToggleWidget * HudUiCheckToggleWidget::ScalarDeletingDestructorThunk(
     unsigned int flags
 ) {
@@ -9431,12 +9632,12 @@ int HudUiCheckToggleWidget::LoadFromZrd(
     if (checkedNode != 0) {
         LoadHudZrdBitmap(
             checkedNode,
-            "BITMAP",
+            g_HudUiCycleSelectorWidget_ZrdKey_Bitmap,
             &checkedImage
         );
         zReader::Node *const textNode = zReader_GetNamedNode(
             checkedNode,
-            "TEXT"
+            g_HudUiCycleSelectorWidget_ZrdKey_Text
         );
         if (textNode != 0) {
             checkedLabelPanel = CreateHudZrdTextPanel(
@@ -9454,12 +9655,12 @@ int HudUiCheckToggleWidget::LoadFromZrd(
     if (disabledUnselectedNode != 0) {
         LoadHudZrdBitmap(
             disabledUnselectedNode,
-            "BITMAP",
+            g_HudUiCycleSelectorWidget_ZrdKey_Bitmap,
             &disabledCheckedFallbackImage
         );
         zReader::Node *const textNode = zReader_GetNamedNode(
             disabledUnselectedNode,
-            "TEXT"
+            g_HudUiCycleSelectorWidget_ZrdKey_Text
         );
         if (textNode != 0) {
             checkedLabelPanel = CreateHudZrdTextPanel(
@@ -9483,12 +9684,12 @@ int HudUiCheckToggleWidget::LoadFromZrd(
     if (disabledSelectedNode != 0) {
         LoadHudZrdBitmap(
             disabledSelectedNode,
-            "BITMAP",
+            g_HudUiCycleSelectorWidget_ZrdKey_Bitmap,
             &disabledCheckedImage
         );
         zReader::Node *const textNode = zReader_GetNamedNode(
             disabledSelectedNode,
-            "TEXT"
+            g_HudUiCycleSelectorWidget_ZrdKey_Text
         );
         if (textNode != 0) {
             checkedLabelPanel = CreateHudZrdTextPanel(
@@ -10058,7 +10259,7 @@ int HudUiCycleSelectorWidget::LoadFromZrd(
 
     zReader::Node *const fontNode = zReader_GetNamedNode(
         zrdSection,
-        "FONT"
+        g_HudUiCycleSelectorWidget_ZrdKey_Font
     );
     if (fontNode != 0) {
         fontStyleRef = (void *)((unsigned int)(fontNode->value.u32));
@@ -10066,7 +10267,7 @@ int HudUiCycleSelectorWidget::LoadFromZrd(
 
     zReader::Node *const textOffsetNode = zReader_GetNamedNode(
         zrdSection,
-        "TEXTOFFSET"
+        g_HudUiCycleSelectorWidget_ZrdKey_TextOffset
     );
     zReader::Node *const textOffsetBase = ZrdArrayBase(textOffsetNode);
     if (textOffsetBase != 0) {
@@ -10084,7 +10285,7 @@ int HudUiCycleSelectorWidget::LoadFromZrd(
 
     zReader::Node *const cycleNode = zReader_GetNamedNode(
         zrdSection,
-        "CYCLE"
+        g_HudUiCycleSelectorWidget_ZrdKey_Cycle
     );
     zReader::Node *const cycleBase = ZrdArrayBase(cycleNode);
     if (cycleBase == 0) {
@@ -10110,7 +10311,7 @@ int HudUiCycleSelectorWidget::LoadFromZrd(
 
             zReader::Node *const textNode = zReader_GetNamedNode(
                 entryNode,
-                "TEXT"
+                g_HudUiCycleSelectorWidget_ZrdKey_Text
             );
             zReader::Node *const textBase = ZrdArrayBase(textNode);
             if (textBase != 0) {
@@ -10137,7 +10338,7 @@ int HudUiCycleSelectorWidget::LoadFromZrd(
 
             zReader::Node *const bitmapNode = zReader_GetNamedNode(
                 entryNode,
-                "BITMAP"
+                g_HudUiCycleSelectorWidget_ZrdKey_Bitmap
             );
             zReader::Node *const bitmapBase = ZrdArrayBase(bitmapNode);
             if (bitmapBase != 0) {
@@ -10276,7 +10477,7 @@ int HudUiFillBitmap::LoadFromZrd(
 
     zReader::Node *const fillBitmapNode = zReader_GetNamedNode(
         zrdSection,
-        "FILLBITMAP"
+        g_HudUiFillBitmap_ZrdKey_FillBitmap
     );
     zReader::Node *const fillBitmapBase = ZrdArrayBase(fillBitmapNode);
     if (fillBitmapBase != 0) {
@@ -10510,7 +10711,7 @@ int HudUiZrdWidgetEx17C_Item::LoadFromZrd(
 
     zReader::Node *const mouseRectNode = zReader_GetNamedNode(
         zrdSection,
-        "MOUSERECT"
+        g_HudUiZrdWidgetEx17C_Item_ZrdKey_MouseRect
     );
     zReader::Node *const mouseRectBase = ZrdArrayBase(mouseRectNode);
     if (mouseRectBase != 0) {
@@ -10647,7 +10848,7 @@ int HudUiZrdWidgetEx17C::LoadFromZrd(
 
     zReader::Node *const radioNode = zReader_GetNamedNode(
         zrdSection,
-        "RADIO"
+        g_HudUiZrdToken_Radio
     );
     zReader::Node *const radioBase = ZrdArrayBase(radioNode);
     if (radioBase != 0) {
@@ -10677,7 +10878,11 @@ int HudUiZrdWidgetEx17C::LoadFromZrd(
     return 1;
 }
 
-// Reimplements 0x409010: HudUiZrdWidgetEx17C::EnableChildAtIndex
+/**
+ * Reimplements 0x409010: HudUiZrdWidgetEx17C::EnableChildAtIndex.
+ * Source file evidence: BN labels the source as D:\Proj\Battlesport\hudui_zrdwidget.cpp.
+ * Purpose: Enable an in-range option item and refresh its displayed widget state.
+ */
 void HudUiZrdWidgetEx17C::EnableChildAtIndex(
     int childIndex
 ) {
@@ -10686,7 +10891,7 @@ void HudUiZrdWidgetEx17C::EnableChildAtIndex(
     }
 
     HudUiZrdWidgetEx17C_Item *const option = options[childIndex];
-    option->selected = 1;
+    option->modeOrEnabled = 1;
     option->RefreshState();
 }
 
@@ -13944,10 +14149,9 @@ HudUiTextInput::~HudUiTextInput() {
 }
 
 /**
- * Source-faithful helper wrapper for legacy native smoke call sites; no
- * production source should depend on this spelling now that 0x4b4370 is
- * recovered as HudUiTextInput::~HudUiTextInput.
- * Purpose: route compatibility calls through the recovered C++ destructor.
+ * Reimplements 0x4b4ab0: HudUiTextInput::DestructorCoreThunk.
+ * Purpose: tail-call the recovered base text-input destructor from legacy
+ * thunk entry points.
  */
 void HudUiTextInput::DestructorCore() {
     this->HudUiTextInput::~HudUiTextInput();
@@ -14041,7 +14245,10 @@ char * HudUiTextInput::GetBuffer() {
     return buffer;
 }
 
-// Reimplements 0x4b4590: HudUiTextInput::ShiftTextRight
+/**
+ * Reimplements 0x4b4590: HudUiTextInput::ShiftTextRight.
+ * Purpose: make room in the edit buffer for inserted characters.
+ */
 int HudUiTextInput::ShiftTextRight(
     int count,
     int startPos
@@ -14059,7 +14266,10 @@ int HudUiTextInput::ShiftTextRight(
     return 1;
 }
 
-// Reimplements 0x4b45e0: HudUiTextInput::ShiftTextLeft
+/**
+ * Reimplements 0x4b45e0: HudUiTextInput::ShiftTextLeft.
+ * Purpose: close a deleted text range by shifting the following characters.
+ */
 int HudUiTextInput::ShiftTextLeft(
     int count,
     int startPos
@@ -14074,7 +14284,10 @@ int HudUiTextInput::ShiftTextLeft(
     return 1;
 }
 
-// Reimplements 0x4b4550: HudUiTextInput::DeleteCharForward
+/**
+ * Reimplements 0x4b4550: HudUiTextInput::DeleteCharForward.
+ * Purpose: delete the character at the cursor without moving the cursor.
+ */
 void HudUiTextInput::DeleteCharForward() {
     ShiftTextLeft(
         1,
@@ -14082,14 +14295,20 @@ void HudUiTextInput::DeleteCharForward() {
     );
 }
 
-// Reimplements 0x4b4560: HudUiTextInput::MoveCursorLeft
+/**
+ * Reimplements 0x4b4560: HudUiTextInput::MoveCursorLeft.
+ * Purpose: move the edit cursor one position left when possible.
+ */
 void HudUiTextInput::MoveCursorLeft() {
     if ((int)(cursor) > 0) {
         --cursor;
     }
 }
 
-// Reimplements 0x4b4570: HudUiTextInput::MoveCursorRight
+/**
+ * Reimplements 0x4b4570: HudUiTextInput::MoveCursorRight.
+ * Purpose: move the edit cursor one position right within the text contents.
+ */
 void HudUiTextInput::MoveCursorRight() {
     const int textLength = (int)(strlen(buffer));
     if ((int)(cursor) < textLength) {
@@ -14097,7 +14316,10 @@ void HudUiTextInput::MoveCursorRight() {
     }
 }
 
-// Reimplements 0x4b4530: HudUiTextInput::BackspaceDeleteChar
+/**
+ * Reimplements 0x4b4530: HudUiTextInput::BackspaceDeleteChar.
+ * Purpose: delete the character before the cursor and move the cursor back.
+ */
 void HudUiTextInput::BackspaceDeleteChar() {
     if ((int)(cursor) > 0) {
         --cursor;
@@ -14108,7 +14330,10 @@ void HudUiTextInput::BackspaceDeleteChar() {
     }
 }
 
-// Reimplements 0x4b44e0: HudUiTextInput::InsertCharAtCursor
+/**
+ * Reimplements 0x4b44e0: HudUiTextInput::InsertCharAtCursor.
+ * Purpose: insert one printable character at the current cursor position.
+ */
 void HudUiTextInput::InsertCharAtCursor(
     int ch
 ) {
@@ -14248,16 +14473,21 @@ HudUiElement * HudUiSlot::ScalarDeletingDestructor(
     return this;
 }
 
-// Reimplements 0x40fa10: HudUiStatsListElement::Update
+/**
+ * Reimplements 0x40fa10: HudUiStatsListElement::Update.
+ * Purpose: Forward frame updates to the owned scoreboard triplet.
+ */
 void HudUiStatsListElement::Update(
     float deltaSeconds
 ) {
     triplet->UpdateAll(deltaSeconds);
 }
 
-// Reimplements 0x40fa40: HudUiStatsListElement::DestructorCore
+/**
+ * Reimplements 0x40fa40: HudUiStatsListElement::DestructorCore.
+ * Purpose: Destroy the owned scoreboard triplet and clear the member during stats-list teardown.
+ */
 void HudUiStatsListElement::DestructorCore() {
-
     HudUiTriplet *const ownedTriplet = triplet;
     if (ownedTriplet != 0) {
         ownedTriplet->DestructorCore();
@@ -14265,9 +14495,13 @@ void HudUiStatsListElement::DestructorCore() {
     }
 
     triplet = 0;
+    this->HudUiElement::~HudUiElement();
 }
 
-// Reimplements 0x40fa20: HudUiStatsListElement::ScalarDeletingDestructor
+/**
+ * Reimplements 0x40fa20: HudUiStatsListElement::ScalarDeletingDestructor.
+ * Purpose: Run stats-list destruction and conditionally release heap storage according to the MSVC deleting-destructor flag.
+ */
 HudUiElement * HudUiStatsListElement::ScalarDeletingDestructor(
     unsigned int flags
 ) {
@@ -14682,8 +14916,16 @@ HudUiElement * HudUiMessage::ScalarDeletingDestructor(
     return this;
 }
 
-// Reimplements 0x40eb00: HudUiShieldMessageWidget::ApplyLayout
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x40eb00: HudUiShieldMessageWidget::ApplyLayout.
+ * Original file: D:\Proj\Battlesport\hud.cpp.
+ * Binary Ninja evidence: stdcall layout callback ignores ECX and uses the
+ * global shield-message widget, applies ZRD root children 1, 2, and 3 to the
+ * widget, percent text panel, and meter, then attaches those children in that
+ * order.
+ * Purpose: Apply the shield-message HUD layout and reset the displayed
+ * percent text.
+ */
 int __stdcall HudUiShieldMessageWidget::ApplyLayout(
     zReader::Node *layoutRoot
 ) {
@@ -14744,8 +14986,17 @@ int __stdcall HudUiShieldMessageWidget::ApplyLayout(
     return 1;
 }
 
-// Reimplements 0x40fe30: HudUiShieldMessageWidget::Destructor
+/**
+ * Reimplements 0x40fe30: HudUiShieldMessageWidget::Destructor.
+ * Original file: D:\Proj\Battlesport\hud.cpp.
+ * Binary Ninja evidence: thiscall wrapper has no stack arguments, restores
+ * the embedded meter's HudUiElement ftable before percent-panel teardown,
+ * then destroys the percent text panel and calls HudUiWidget::DestructorCore
+ * for the embedded widget; no standalone HudUiMeter destructor body is called.
+ * Purpose: Tear down the shield-message widget subobjects in retail order.
+ */
 void HudUiShieldMessageWidget::Destructor() {
+    meter.~HudUiMeter();
     ((HudUiPanel *)(&percentTextPanel))->~HudUiPanel();
     widget.DestructorCore();
 }
@@ -16742,7 +16993,10 @@ int HudUiPanel::QueryTextHeight() {
     return textHeightPx - unknown274;
 }
 
-// Reimplements 0x40fac0: HudUiPanelSimple::Constructor
+/**
+ * Reimplements 0x40fac0: HudUiPanelSimple::Constructor.
+ * Purpose: construct a simple HUD text panel with the default green font and shadow state.
+ */
 HudUiPanelSimple * HudUiPanelSimple::Constructor(
     const char *text,
     int initX,
@@ -16757,7 +17011,7 @@ HudUiPanelSimple * HudUiPanelSimple::Constructor(
     textColor1 = 0x0020bf40;
     textDirty = 1;
     HudUiPanel::SetFont(
-        "Arial",
+        g_HudFontName_Arial,
         0x0a,
         0x1f4,
         6,
@@ -16771,7 +17025,10 @@ HudUiPanelSimple * HudUiPanelSimple::Constructor(
     return this;
 }
 
-// Reimplements 0x40fab0: HudUiPanelSimple::ConstructorDefaultThunk
+/**
+ * Reimplements 0x40fab0: HudUiPanelSimple::ConstructorDefaultThunk.
+ * Purpose: default-construct a simple HUD text panel by forwarding null text and zero position.
+ */
 HudUiPanelSimple * HudUiPanelSimple::ConstructorDefaultThunk() {
     return Constructor(
         0,
@@ -16910,7 +17167,7 @@ HudUiTimerPanel * HudUiTimerPanel::ConstructorDefault() {
     textColor1 = 0x0020bf40;
     textDirty = 1;
     HudUiPanel::SetFont(
-        "Arial",
+        g_HudFontName_Arial,
         0x0a,
         0x1f4,
         6,
@@ -16946,7 +17203,7 @@ HudUiCounterTextPanel * HudUiCounterTextPanel::Constructor() {
     textColor1 = 0x0020bf40;
     textDirty = 1;
     HudUiPanel::SetFont(
-        "Arial",
+        g_HudFontName_Arial,
         0x0a,
         0x1f4,
         6,
@@ -17179,7 +17436,7 @@ void HudUiTriplet::RebuildDisplay() {
         int headerIndex;
         for (headerIndex = 0; headerIndex < 3; ++headerIndex) {
             headerPanels[headerIndex]->SetFont(
-                "Arial",
+                g_HudFontName_Arial,
                 fontSize,
                 0x1f4,
                 fontWeight,
@@ -17980,7 +18237,7 @@ HudUiTimerPanelFloat * HudUiTimerPanelFloat::ConstructorDefault() {
     textColor1 = 0x0020bf40;
     textDirty = 1;
     HudUiPanel::SetFont(
-        "Arial",
+        g_HudFontName_Arial,
         0x0a,
         0x1f4,
         6,

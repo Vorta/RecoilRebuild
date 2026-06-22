@@ -622,7 +622,7 @@ namespace zClass_Class {
             0x400,
             "D:\\Proj\\GameZRecoil\\zClass\\Class.c",
             0x1ed,
-            "gwNodeNew() : GameZ node buffer is full:\n"
+            "gwNodeNew(): GameZ node buffer is full:\n"
         );
         return 0;
     }

@@ -629,7 +629,7 @@ const AFX_MSGMAP *__stdcall NetSessionBrowserDialog::GetBaseMessageMapForMfc() {
 
 AFX_MSGMAP_ENTRY const NetSessionBrowserDialog::messageEntries[] = {
     {WM_COMMAND,
-        CBN_SELCHANGE,
+        CBN_CLOSEUP,
         kNetSessionBrowserProviderComboId,
         kNetSessionBrowserProviderComboId,
         12,
@@ -1036,27 +1036,37 @@ void __fastcall FormatIpv4Address(
 } // namespace Net
 
 /**
+ * Original helper evidence: no standalone retail function; the 0x41ada0
+ * Constructor wrapper placement-invokes this owner-shaped C++ constructor so
+ * VC5 emits the derived dialog vftable.
+ * Purpose: Construct the multiplayer session browser dialog and child controls.
+ */
+NetSessionBrowserDialog::NetSessionBrowserDialog(
+    CWnd *parentWnd
+) :
+    CDialog(
+        kNetSessionBrowserDialogResourceId,
+        parentWnd
+    ),
+    m_playerNameEdit(),
+    m_okButton(),
+    m_createSessionButton(),
+    m_sessionList(),
+    m_providerCombo(),
+    m_playerName()
+{
+    m_playerName = "";
+}
+
+/**
  * Reimplements 0x41ada0: NetSessionBrowserDialog::Constructor
  * Source: D:\Proj\Battlesport\GameNet.cpp
- * Purpose: Construct the multiplayer session browser dialog and child controls.
+ * Purpose: Placement-construct the multiplayer session browser dialog owner.
  */
 NetSessionBrowserDialog * NetSessionBrowserDialog::Constructor(
     CWnd *parentWnd
 ) {
-    new ((CDialog *)this) CDialog(
-        kNetSessionBrowserDialogResourceId,
-        parentWnd
-    );
-
-    new (&m_playerNameEdit) CEdit();
-    new (&m_okButton) CButton();
-    new (&m_createSessionButton) CButton();
-    new (&m_sessionList) CListBox();
-    new (&m_providerCombo) CComboBox();
-
-    new (&m_playerName) CString();
-    m_playerName = "";
-
+    new (this) NetSessionBrowserDialog(parentWnd);
     return this;
 }
 
@@ -1076,18 +1086,21 @@ NetSessionBrowserDialog * NetSessionBrowserDialog::ScalarDeletingDestructor(
 }
 
 /**
+ * Original helper evidence: no standalone retail function; the 0x41aeb0
+ * Destructor wrapper invokes this owner-shaped C++ destructor so VC5 emits the
+ * derived dialog deleting-destructor slot.
+ * Purpose: Let the compiler emit the browser dialog vftable destructor slot.
+ */
+NetSessionBrowserDialog::~NetSessionBrowserDialog() {
+}
+
+/**
  * Reimplements 0x41aeb0: NetSessionBrowserDialog::Destructor
  * Source: D:\Proj\Battlesport\GameNet.cpp
- * Purpose: Destroy browser dialog owned controls and CString state.
+ * Purpose: Invoke the real browser dialog destructor.
  */
 void NetSessionBrowserDialog::Destructor() {
-    m_playerName.~CString();
-    ((CComboBox *)&m_providerCombo)->CComboBox::~CComboBox();
-    ((CListBox *)&m_sessionList)->CListBox::~CListBox();
-    ((CButton *)&m_createSessionButton)->CButton::~CButton();
-    ((CButton *)&m_okButton)->CButton::~CButton();
-    ((CEdit *)&m_playerNameEdit)->CEdit::~CEdit();
-    ((CDialog *)this)->CDialog::~CDialog();
+    this->NetSessionBrowserDialog::~NetSessionBrowserDialog();
 }
 
 /**

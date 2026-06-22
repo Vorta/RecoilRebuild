@@ -33,6 +33,11 @@ const char kZSnd3dSourceFile[] = "D:\\Proj\\GameZRecoil\\zSound\\zsnd_3d.cpp";
 const float g_zSnd_DirectSoundAttenUnityGain = 1.0f; // Reimplements data 0x4d2eb0.
 const float g_zSnd_DirectSoundAttenMinGain = 0.0009765625f; // Reimplements data 0x4d2eb4.
 const float g_zSnd_DirectSoundAttenRoundBias = 0.5f; // Reimplements data 0x4d2eb8.
+/**
+ * Reimplements data 0x4e2204: g_zSnd_DirectSoundAttenScale.
+ * Purpose: DirectSound 3D attenuation distance scale used by
+ * zSndPlayHandle::Update3D.
+ */
 const float g_zSnd_DirectSoundAttenScale = 1000.0f; // Reimplements data 0x4e2204.
 
 /**

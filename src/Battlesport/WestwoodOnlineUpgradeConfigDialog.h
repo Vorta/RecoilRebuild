@@ -29,16 +29,18 @@ struct WestwoodOnlineUpgradeConfigDialog : CDialog {
     static const AFX_MSGMAP_ENTRY messageEntries[];
 
     static const AFX_MSGMAP *__stdcall GetBaseMessageMapForMfc();
-    const AFX_MSGMAP * GetMessageMap() const;
+    WestwoodOnlineUpgradeConfigDialog(CWnd *parentWnd);
+    virtual ~WestwoodOnlineUpgradeConfigDialog();
+    virtual const AFX_MSGMAP * GetMessageMap() const;
     WestwoodOnlineUpgradeConfigDialog * Constructor(
         CWnd *parentWnd
     );
     void Destructor();
-    void DoDataExchange(CDataExchange *dataExchange);
+    virtual void DoDataExchange(CDataExchange *dataExchange);
     void OnConnectStringEditSetFocusClear();
     void OnConnectStringEditKillFocus();
-    BOOL OnInitDialog();
-    void OnOK();
+    virtual BOOL OnInitDialog();
+    virtual void OnOK();
     void OnProfileComboKillFocus();
     void OnProfileComboSelChange();
     void OnProfileComboEditChange();

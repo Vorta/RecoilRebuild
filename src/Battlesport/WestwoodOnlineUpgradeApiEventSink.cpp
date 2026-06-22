@@ -131,58 +131,17 @@ const char kBrowseRecordLatencyStep4Text[] = " ||||||||| ";
 const char kBrowseRecordLatencyStep5Text[] = " ||||||||||| ";
 const char kBrowseRecordLatencyStep6Text[] = " ||||||||||||| ";
 const char kBrowseRecordLatencyStep7Text[] = " ||||||||||||||| ";
+const char kBootstrapServerTypeIrc[] = "IRC";
+const unsigned int kBootstrapServerCopiedBytes = 0xf8;
 
-struct IWestwoodOnlineUpgradeApiCallbacks : IUnknown {
-    virtual void STDMETHODCALLTYPE Reserved0c() = 0;
-    virtual void STDMETHODCALLTYPE Reserved10() = 0;
-    virtual void STDMETHODCALLTYPE Reserved14() = 0;
-    virtual void STDMETHODCALLTYPE RequestListMode(
-        int listMode,
-        int enabled
-    ) = 0;
-    virtual void STDMETHODCALLTYPE Reserved1c() = 0;
-    virtual void STDMETHODCALLTYPE Reserved20() = 0;
-    virtual void STDMETHODCALLTYPE Reserved24() = 0;
-    virtual void STDMETHODCALLTYPE CancelPendingSessionFlow() = 0;
-    virtual void STDMETHODCALLTYPE Reserved2c() = 0;
-    virtual void STDMETHODCALLTYPE Reserved30() = 0;
-    virtual void STDMETHODCALLTYPE Disconnect() = 0;
-    virtual void STDMETHODCALLTYPE Reserved38() = 0;
-    virtual void STDMETHODCALLTYPE Reserved3c() = 0;
-    virtual void STDMETHODCALLTYPE Reserved40() = 0;
-    virtual void STDMETHODCALLTYPE Reserved44() = 0;
-    virtual void STDMETHODCALLTYPE Reserved48() = 0;
-    virtual void STDMETHODCALLTYPE Reserved4c() = 0;
-    virtual void STDMETHODCALLTYPE Reserved50() = 0;
-    virtual void STDMETHODCALLTYPE Reserved54() = 0;
-    virtual void STDMETHODCALLTYPE RequestSessionDetails(
-        WestwoodOnlineUpgradeSessionRequest *sessionRequest
-    ) = 0;
-    virtual void STDMETHODCALLTYPE Reserved5c() = 0;
-    virtual void STDMETHODCALLTYPE Reserved60() = 0;
-    virtual void STDMETHODCALLTYPE Reserved64() = 0;
-    virtual void STDMETHODCALLTYPE Reserved68() = 0;
-    virtual void STDMETHODCALLTYPE Reserved6c() = 0;
-    virtual void STDMETHODCALLTYPE Reserved70() = 0;
-    virtual void STDMETHODCALLTYPE SetQueryMode(
-        int listMode
-    ) = 0;
-    virtual void STDMETHODCALLTYPE Reserved78() = 0;
-    virtual void STDMETHODCALLTYPE Reserved7c() = 0;
-    virtual void STDMETHODCALLTYPE Reserved80() = 0;
-    virtual void STDMETHODCALLTYPE Reserved84() = 0;
-    virtual void STDMETHODCALLTYPE Reserved88() = 0;
-    virtual void STDMETHODCALLTYPE Reserved8c() = 0;
-    virtual void STDMETHODCALLTYPE Reserved90() = 0;
-    virtual void STDMETHODCALLTYPE Reserved94() = 0;
-    virtual void STDMETHODCALLTYPE GetQueryResultCount(
-        int *outCount
-    ) = 0;
-};
-
-// Source-faithful helper recovered from address-backed callers in this source file.
-IWestwoodOnlineUpgradeApiCallbacks *GetCallbackApiComObject() {
-    return (IWestwoodOnlineUpgradeApiCallbacks *)g_pWestwoodOnlineUpgradeApi;
+/**
+ * Original helper evidence: no standalone retail function; observed in
+ * event-sink callback callers in this source file.
+ * Source: D:\Proj\Battlesport\WestwoodOnlineUpgradeApiEventSink.cpp
+ * Purpose: Returns the shared Westwood Online upgrade provider API callback interface.
+ */
+IWestwoodOnlineUpgradeProviderApiCallbacks *GetCallbackApiComObject() {
+    return (IWestwoodOnlineUpgradeProviderApiCallbacks *)g_pWestwoodOnlineUpgradeApi;
 }
 } // namespace
 
@@ -190,7 +149,7 @@ extern "C" LONG g_WestwoodOnlineUpgradeEventSinkLiveCount = 0;
 
 // Recovered interface map used by 0x441660. BN data at 0x4d1ba0 contains
 // {IID_WestwoodOnlineUpgradeApiEventSink, offset 0, direct} followed by end.
-const zCom::InterfaceMapEntry g_WestwoodOnlineUpgradeApiEventSink_InterfaceMap[2] = {
+extern const zCom::InterfaceMapEntry g_WestwoodOnlineUpgradeApiEventSink_InterfaceMap[2] = {
     {&g_WestwoodOnlineUpgradeApiEventSink_IID, 0, zCom::ZCOM_INTERFACE_MAP_DIRECT},
     {0, 0, zCom::ZCOM_INTERFACE_MAP_END},
 };
@@ -230,7 +189,12 @@ HRESULT STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::QueryInterface(
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; observed in the
+ * 0x441660 COM QueryInterface body.
+ * Source: D:\Proj\Battlesport\WestwoodOnlineUpgradeApiEventSink.cpp
+ * Purpose: Performs the shared interface-map lookup for the event sink object.
+ */
 HRESULT __stdcall WestwoodOnlineUpgradeApiEventSink::QueryInterface(
     WestwoodOnlineUpgradeApiEventSink *self,
     REFIID iid,
@@ -244,12 +208,22 @@ HRESULT __stdcall WestwoodOnlineUpgradeApiEventSink::QueryInterface(
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; observed as the
+ * COM AddRef vtable member body.
+ * Source: D:\Proj\Battlesport\WestwoodOnlineUpgradeApiEventSink.cpp
+ * Purpose: Increments the event sink COM reference count.
+ */
 ULONG STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::AddRef() {
-    return (ULONG)InterlockedIncrement(&m_refCountAndLock.refCount);
+    return WestwoodOnlineUpgradeSharedComAddRef(this);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function; observed as the
+ * COM Release vtable member body.
+ * Source: D:\Proj\Battlesport\WestwoodOnlineUpgradeApiEventSink.cpp
+ * Purpose: Delegates the vtable Release call to the recovered static release routine.
+ */
 ULONG STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::Release() {
     return WestwoodOnlineUpgradeApiEventSink::Release(this);
 }
@@ -283,11 +257,81 @@ void WestwoodOnlineUpgradeApiEventSink::Destructor() {
 }
 
 /**
+ * Reimplements 0x43f6b0: WestwoodOnlineUpgradeApiEventSink::OnBootstrapServerList.
+ * Source: D:\Proj\Battlesport\WestwoodOnlineUpgradeApiEventSink.cpp
+ * Purpose: Handles the API event-sink bootstrap-server callback.
+ */
+int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnBootstrapServerList(
+    int resultCode,
+    WestwoodOnlineUpgradeBootstrapServerRecord *serverList
+) {
+    char debugText[4096];
+    sprintf(
+        debugText,
+        "\nOnServerList:\n\tResult Code: %d\n",
+        resultCode
+    );
+    zGame::ReturnOnlyStub();
+
+    if (resultCode < 0) {
+        SetEvent(g_WestwoodOnlineUpgradeFailureEvent);
+        return 0;
+    }
+
+    int foundIrcServer = 0;
+    WestwoodOnlineUpgradeBootstrapServerRecord *server = serverList;
+    while (server != 0) {
+        if (strcmp(
+            server->m_serverType,
+            kBootstrapServerTypeIrc
+        ) == 0 && foundIrcServer == 0) {
+            memcpy(
+                &g_WestwoodOnlineUpgradeSelectedBootstrapServer,
+                server,
+                kBootstrapServerCopiedBytes
+            );
+            foundIrcServer = 1;
+        }
+
+        sprintf(
+            debugText,
+            "\n\tServer:\n\t\tName: %s\n\t\tType: %s\n\t\tConndata: %s\n\t\tGameType: %d\n",
+            server->m_serverName,
+            server->m_serverType,
+            server->m_connectData,
+            server->m_gameType
+        );
+        zGame::ReturnOnlyStub();
+        server = server->m_next;
+    }
+
+    {
+        CString playerName;
+        g_pWestwoodOnlineUpgradeDialog->GetSelectedProfilePlayerName(&playerName);
+        strcpy(
+            g_WestwoodOnlineUpgradeSelectedBootstrapServer.m_playerName,
+            (const char *)playerName
+        );
+    }
+
+    {
+        CString connectString;
+        g_pWestwoodOnlineUpgradeDialog->GetSelectedProfileConnectString(&connectString);
+        strcpy(
+            g_WestwoodOnlineUpgradeSelectedBootstrapServer.m_connectString,
+            (const char *)connectString
+        );
+    }
+
+    SetEvent(g_WestwoodOnlineUpgradeInitWaitEvents[0]);
+    return 0;
+}
+
+/**
  * Reimplements 0x43f830: WestwoodOnlineUpgradeApiEventSink::OnDownloadReadyResult.
  * Purpose: Handles patch-download readiness results and opens the download-ready dialog.
  */
-int __stdcall WestwoodOnlineUpgradeApiEventSink::OnDownloadReadyResult(
-    void *,
+int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnDownloadReadyResult(
     int resultCode,
     WestwoodOnlineUpgradeDownloadReadyEntry *downloadReadyList
 ) {
@@ -351,8 +395,7 @@ int __stdcall WestwoodOnlineUpgradeApiEventSink::OnDownloadReadyResult(
  * Reimplements 0x43fa70: WestwoodOnlineUpgradeApiEventSink::OnServerError.
  * Purpose: Displays a Westwood Online server-error dialog for a received error string.
  */
-int __stdcall WestwoodOnlineUpgradeApiEventSink::OnServerError(
-    void *,
+int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnServerError(
     int,
     const char *errorText
 ) {
@@ -369,8 +412,7 @@ int __stdcall WestwoodOnlineUpgradeApiEventSink::OnServerError(
  * Reimplements 0x43fa90: WestwoodOnlineUpgradeApiEventSink::OnApiStatus.
  * Purpose: Formats API status results and appends them to the upgrade dialog result list.
  */
-int __stdcall WestwoodOnlineUpgradeApiEventSink::OnApiStatus(
-    void *,
+int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnApiStatus(
     int statusCode,
     const char *statusText
 ) {
@@ -381,7 +423,7 @@ int __stdcall WestwoodOnlineUpgradeApiEventSink::OnApiStatus(
     int failureMessageId;
     UINT messageBoxFlags;
     char *statusLine;
-    IWestwoodOnlineUpgradeApiCallbacks *api;
+    IWestwoodOnlineUpgradeProviderApiCallbacks *api;
 
     Time::Reset();
 
@@ -468,8 +510,7 @@ int __stdcall WestwoodOnlineUpgradeApiEventSink::OnApiStatus(
  * Reimplements 0x43fde0: WestwoodOnlineUpgradeApiEventSink::OnStatusTextReceived.
  * Purpose: Writes received status text into the Westwood Online status display.
  */
-int __stdcall WestwoodOnlineUpgradeApiEventSink::OnStatusTextReceived(
-    void *,
+int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnStatusTextReceived(
     int status,
     const char *statusText
 ) {
@@ -500,13 +541,12 @@ int __stdcall WestwoodOnlineUpgradeApiEventSink::OnStatusTextReceived(
  * Reimplements 0x43fe50: WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordAdded.
  * Purpose: Appends a browse-record row and enables the game button when appropriate.
  */
-int __stdcall WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordAdded(
-    void *,
+int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordAdded(
     int status,
     WestwoodOnlineUpgradeBrowseRecord *browseRecord
 ) {
     char statusText[kBrowseRecordAddedStatusBufferSize];
-    IWestwoodOnlineUpgradeApiCallbacks *api;
+    IWestwoodOnlineUpgradeProviderApiCallbacks *api;
 
     if (status < 0) {
         g_pWestwoodOnlineUpgradeDialog->AppendStatusTextFmt(
@@ -559,15 +599,14 @@ int __stdcall WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordAdded(
  * Reimplements 0x43ff80: WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordAndSessionResolved.
  * Purpose: Resolves browse-record/session details and updates session row status text.
  */
-int __stdcall WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordAndSessionResolved(
-    void *,
+int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordAndSessionResolved(
     int status,
     WestwoodOnlineUpgradeBrowseRecord *browseRecord,
     WestwoodOnlineUpgradeSessionRequest *sessionRequest
 ) {
     char statusText[kBrowseSessionResolvedStatusBufferSize];
     unsigned int failureMessageId;
-    IWestwoodOnlineUpgradeApiCallbacks *api;
+    IWestwoodOnlineUpgradeProviderApiCallbacks *api;
 
     if (status < 0) {
         strcpy(
@@ -671,15 +710,14 @@ int __stdcall WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordAndSessionResolve
  * Reimplements 0x4401d0: WestwoodOnlineUpgradeApiEventSink::OnSessionQueryFinished.
  * Purpose: Finalizes session-query state and requests detail data for pending sessions.
  */
-int __stdcall WestwoodOnlineUpgradeApiEventSink::OnSessionQueryFinished(
-    void *,
+int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnSessionQueryFinished(
     int status,
     WestwoodOnlineUpgradeBrowseRecord *browseRecord,
     WestwoodOnlineUpgradeSessionRequest *sessionRequest
 ) {
     char statusText[kBrowseSessionResolvedStatusBufferSize];
     LRESULT sessionIndex;
-    IWestwoodOnlineUpgradeApiCallbacks *api;
+    IWestwoodOnlineUpgradeProviderApiCallbacks *api;
 
     if (status < 0) {
         api = GetCallbackApiComObject();
@@ -738,8 +776,7 @@ int __stdcall WestwoodOnlineUpgradeApiEventSink::OnSessionQueryFinished(
  * Reimplements 0x441480: WestwoodOnlineUpgradeApiEventSink::OnSessionLaunchResult.
  * Purpose: Handles launch success/failure state for a selected Westwood session.
  */
-int __stdcall WestwoodOnlineUpgradeApiEventSink::OnSessionLaunchResult(
-    void *,
+int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnSessionLaunchResult(
     int status,
     WestwoodOnlineUpgradeBrowseRecord *browseRecord,
     WestwoodOnlineUpgradeSessionRequest *sessionNode,
@@ -747,7 +784,7 @@ int __stdcall WestwoodOnlineUpgradeApiEventSink::OnSessionLaunchResult(
 ) {
     char statusText[kSessionRequestStatusBufferSize];
     LRESULT sessionIndex;
-    IWestwoodOnlineUpgradeApiCallbacks *api;
+    IWestwoodOnlineUpgradeProviderApiCallbacks *api;
 
     if (status < 0) {
         api = GetCallbackApiComObject();
@@ -818,8 +855,7 @@ int __stdcall WestwoodOnlineUpgradeApiEventSink::OnSessionLaunchResult(
  * Reimplements 0x4402c0: WestwoodOnlineUpgradeApiEventSink::OnSessionListEnumerated.
  * Purpose: Enumerates session records and appends visible rows for the upgrade dialog.
  */
-int __stdcall WestwoodOnlineUpgradeApiEventSink::OnSessionListEnumerated(
-    void *,
+int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnSessionListEnumerated(
     int status,
     WestwoodOnlineUpgradeBrowseRecord *browseRecord,
     WestwoodOnlineUpgradeSessionRequest *sessionList
@@ -910,8 +946,7 @@ int __stdcall WestwoodOnlineUpgradeApiEventSink::OnSessionListEnumerated(
  * Reimplements 0x4404c0: WestwoodOnlineUpgradeApiEventSink::LaunchSelectedSession.
  * Purpose: Applies selected-session connection details and starts the network launch path.
  */
-int __stdcall WestwoodOnlineUpgradeApiEventSink::LaunchSelectedSession(
-    void *,
+int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::LaunchSelectedSession(
     int status,
     int,
     WestwoodOnlineUpgradeSessionRequest *selectedSessionList,
@@ -925,7 +960,7 @@ int __stdcall WestwoodOnlineUpgradeApiEventSink::LaunchSelectedSession(
     char failureMessageText[128];
     WestwoodOnlineUpgradeSessionRequest *selectedSessionNode;
     WestwoodOnlineUpgradeDialog *dialog;
-    IWestwoodOnlineUpgradeApiCallbacks *api;
+    IWestwoodOnlineUpgradeProviderApiCallbacks *api;
 
     if (status < 0) {
         return 0;
@@ -1055,8 +1090,7 @@ int __stdcall WestwoodOnlineUpgradeApiEventSink::LaunchSelectedSession(
  * Reimplements 0x440a30: WestwoodOnlineUpgradeApiEventSink::ApplyEncodedQueryString0.
  * Purpose: Parses encoded query data for one Westwood Online session result variant.
  */
-int __stdcall WestwoodOnlineUpgradeApiEventSink::ApplyEncodedQueryString0(
-    void *,
+int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::ApplyEncodedQueryString0(
     int status,
     int,
     char *encodedQuery
@@ -1119,8 +1153,7 @@ int __stdcall WestwoodOnlineUpgradeApiEventSink::ApplyEncodedQueryString0(
  * Reimplements 0x4407e0: WestwoodOnlineUpgradeApiEventSink::ApplyEncodedQueryString1.
  * Purpose: Parses encoded query data for the alternate session result callback shape.
  */
-int __stdcall WestwoodOnlineUpgradeApiEventSink::ApplyEncodedQueryString1(
-    void *,
+int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::ApplyEncodedQueryString1(
     int status,
     int,
     int,
@@ -1184,8 +1217,7 @@ int __stdcall WestwoodOnlineUpgradeApiEventSink::ApplyEncodedQueryString1(
  * Reimplements 0x440c80: WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301B.
  * Purpose: Appends localized 0x301b status text for a session request.
  */
-int __stdcall WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301B(
-    void *,
+int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301B(
     int status,
     int,
     WestwoodOnlineUpgradeSessionRequest *sessionRequest,
@@ -1212,8 +1244,7 @@ int __stdcall WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301B(
  * Reimplements 0x440ce0: WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301C.
  * Purpose: Appends localized 0x301c status text for a session request.
  */
-int __stdcall WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301C(
-    void *,
+int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301C(
     int status,
     WestwoodOnlineUpgradeSessionRequest *sessionRequest,
     const char *statusText
@@ -1239,8 +1270,7 @@ int __stdcall WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301C(
  * Reimplements 0x4411c0: WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301C_Alt0.
  * Purpose: Appends the first numeric 0x301c status variant for a session request.
  */
-int __stdcall WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301C_Alt0(
-    void *,
+int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301C_Alt0(
     int status,
     WestwoodOnlineUpgradeSessionRequest *sessionRequest,
     int value
@@ -1261,8 +1291,7 @@ int __stdcall WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301C_
  * Reimplements 0x441200: WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301C_Alt1.
  * Purpose: Appends the second numeric 0x301c status variant for a session request.
  */
-int __stdcall WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301C_Alt1(
-    void *,
+int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301C_Alt1(
     int status,
     int,
     WestwoodOnlineUpgradeSessionRequest *sessionRequest,
@@ -1284,8 +1313,7 @@ int __stdcall WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301C_
  * Reimplements 0x441240: WestwoodOnlineUpgradeApiEventSink::CallbackNoOp0.
  * Purpose: Handles an unused four-argument API event callback with a zero result.
  */
-int __stdcall WestwoodOnlineUpgradeApiEventSink::CallbackNoOp0(
-    void *,
+int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::CallbackNoOp0(
     int,
     int,
     int
@@ -1297,8 +1325,7 @@ int __stdcall WestwoodOnlineUpgradeApiEventSink::CallbackNoOp0(
  * Reimplements 0x441250: WestwoodOnlineUpgradeApiEventSink::CallbackNoOp1.
  * Purpose: Handles an unused three-argument API event callback with a zero result.
  */
-int __stdcall WestwoodOnlineUpgradeApiEventSink::CallbackNoOp1(
-    void *,
+int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::CallbackNoOp1(
     int,
     int
 ) {
@@ -1309,8 +1336,7 @@ int __stdcall WestwoodOnlineUpgradeApiEventSink::CallbackNoOp1(
  * Reimplements 0x441260: WestwoodOnlineUpgradeApiEventSink::AppendTimeStatus302A.
  * Purpose: Converts a session timestamp to localized 0x302a status text.
  */
-int __stdcall WestwoodOnlineUpgradeApiEventSink::AppendTimeStatus302A(
-    void *,
+int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::AppendTimeStatus302A(
     int status,
     long unixTime
 ) {
@@ -1335,8 +1361,7 @@ int __stdcall WestwoodOnlineUpgradeApiEventSink::AppendTimeStatus302A(
  * Reimplements 0x4412c0: WestwoodOnlineUpgradeApiEventSink::AppendValueStatus302B_302C.
  * Purpose: Appends one of the localized value status messages for a numeric field.
  */
-int __stdcall WestwoodOnlineUpgradeApiEventSink::AppendValueStatus302B_302C(
-    void *,
+int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::AppendValueStatus302B_302C(
     int,
     int value,
     int usePrimaryMessage
@@ -1359,8 +1384,7 @@ int __stdcall WestwoodOnlineUpgradeApiEventSink::AppendValueStatus302B_302C(
  * Reimplements 0x441350: WestwoodOnlineUpgradeApiEventSink::UpdateSessionResultItemFlags.
  * Purpose: Updates the visible suffix flags for a matching session result row.
  */
-int __stdcall WestwoodOnlineUpgradeApiEventSink::UpdateSessionResultItemFlags(
-    void *,
+int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::UpdateSessionResultItemFlags(
     int,
     const char *sessionName,
     int flags,
@@ -1426,8 +1450,7 @@ int __stdcall WestwoodOnlineUpgradeApiEventSink::UpdateSessionResultItemFlags(
  * Reimplements 0x440d40: WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301D.
  * Purpose: Appends localized 0x301d status text for a session request.
  */
-int __stdcall WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301D(
-    void *,
+int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301D(
     int,
     WestwoodOnlineUpgradeSessionRequest *sessionRequest,
     const char *statusText
@@ -1449,8 +1472,7 @@ int __stdcall WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestStatus301D(
  * Reimplements 0x440d90: WestwoodOnlineUpgradeApiEventSink::AppendConnectStatus301E_3021.
  * Purpose: Maps connection status codes to localized connect-status text.
  */
-int __stdcall WestwoodOnlineUpgradeApiEventSink::AppendConnectStatus301E_3021(
-    void *,
+int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::AppendConnectStatus301E_3021(
     int connectionStatusCode
 ) {
     unsigned int messageId;
@@ -1473,8 +1495,7 @@ int __stdcall WestwoodOnlineUpgradeApiEventSink::AppendConnectStatus301E_3021(
  * Reimplements 0x440e10: WestwoodOnlineUpgradeApiEventSink::AppendBrowseRecordStatus3022_3025.
  * Purpose: Maps browse-record status codes to localized browse-status text.
  */
-int __stdcall WestwoodOnlineUpgradeApiEventSink::AppendBrowseRecordStatus3022_3025(
-    void *,
+int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::AppendBrowseRecordStatus3022_3025(
     int status,
     WestwoodOnlineUpgradeBrowseRecord *browseRecord
 ) {
@@ -1510,8 +1531,7 @@ int __stdcall WestwoodOnlineUpgradeApiEventSink::AppendBrowseRecordStatus3022_30
  * Reimplements 0x440ef0: WestwoodOnlineUpgradeApiEventSink::AppendValueStatus3026.
  * Purpose: Appends localized 0x3026 value text for a session status field.
  */
-int __stdcall WestwoodOnlineUpgradeApiEventSink::AppendValueStatus3026(
-    void *,
+int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::AppendValueStatus3026(
     int status,
     int value
 ) {
@@ -1535,8 +1555,7 @@ int __stdcall WestwoodOnlineUpgradeApiEventSink::AppendValueStatus3026(
  * Reimplements 0x440f40: WestwoodOnlineUpgradeApiEventSink::OnNetworkStatusChanged.
  * Purpose: Updates network status text and side effects for Westwood connection changes.
  */
-int __stdcall WestwoodOnlineUpgradeApiEventSink::OnNetworkStatusChanged(
-    void *,
+int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnNetworkStatusChanged(
     int connectionStatusCode
 ) {
     const char *statusName;
@@ -1589,8 +1608,7 @@ int __stdcall WestwoodOnlineUpgradeApiEventSink::OnNetworkStatusChanged(
  * Reimplements 0x441040: WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordListReceived.
  * Purpose: Rebuilds the browse-record list display from a received record list.
  */
-int __stdcall WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordListReceived(
-    void *,
+int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordListReceived(
     int status,
     WestwoodOnlineUpgradeBrowseRecord *browseRecordList
 ) {
@@ -1677,8 +1695,7 @@ int __stdcall WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordListReceived(
  * Reimplements 0x43f9d0: WestwoodOnlineUpgradeApiEventSink::OnPendingSessionRequestRemoved.
  * Purpose: Removes or updates pending-session UI state after a session request is removed.
  */
-int __stdcall WestwoodOnlineUpgradeApiEventSink::OnPendingSessionRequestRemoved(
-    void *,
+int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnPendingSessionRequestRemoved(
     int status,
     WestwoodOnlineUpgradeSessionRequest *sessionRequest
 ) {

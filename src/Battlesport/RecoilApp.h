@@ -271,9 +271,9 @@ struct RecoilApp_MissionFmvState : RecoilApp_FmvState {
 RECOIL_STATIC_ASSERT(sizeof(RecoilApp_MissionFmvState) == 0x30);
 
 struct RecoilApp_PlayState : RecoilApp_IState {
-    void *pWindowSection; // zOpt_ViewRectSection*
-    void *pDisplaySection;
-    void *pRenderSection;
+    struct zOpt_ViewRectSection *pWindowSection;
+    struct zOpt_ViewRectSection *pDisplaySection;
+    struct zOpt_ViewRectSection *pRenderSection;
     int m_transitionScratch;
     char *pPendingLoadGameStartPath;
 

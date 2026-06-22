@@ -19,11 +19,126 @@
 #include <string.h>
 #include <sys/stat.h>
 
-#if defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86)
-extern "C" void(__cdecl *__imp__free)(void *); // VC5 retail import-pointer call shape.
-#endif
-
 extern "C" HWND g_RecoilApp_hWndMain;
+
+struct zFMV_ActionTagStringSet {
+    char playSoundTag[10];
+    char padAfterPlaySound[2];
+    char blurVTag[6];
+    char padAfterBlurV[2];
+    char blurHTag[6];
+    char padAfterBlurH[2];
+    char blurTag[5];
+    char padAfterBlur[3];
+    char playMciTag[8];
+    char playAviTag[8];
+    char fadeOutTag[8];
+    char fadeInTag[7];
+    char padAfterFadeIn[1];
+    char waitTag[5];
+    char padAfterWait[3];
+    char loadImageTag[10];
+    char padAfterLoadImage[2];
+    char blitImageTag[10];
+    char padAfterBlitImage[2];
+    char showImageTag[10];
+    char padAfterShowImage[2];
+};
+
+extern "C" {
+/**
+ * Reimplements data 0x4dfb1c: g_zFMV_MpegVideoString.
+ * BN xrefs: zFMV_Playback::OpenAndPlay opens the MCI MPEGVideo device type.
+ * Purpose: first literal in the playback/MCI data owner 0x4dfb1c..0x4dfb63.
+ */
+char g_zFMV_MpegVideoString[] = "MPEGVideo";
+
+/**
+ * Reimplements data 0x4dfb28: g_zFMV_SourceFile_FmvMainCpp.
+ * BN xrefs: zFMV_Playback::ReportMciError passes the retail source path to zError.
+ * Purpose: second literal in the playback/MCI data owner 0x4dfb1c..0x4dfb63.
+ */
+char g_zFMV_SourceFile_FmvMainCpp[] = "D:\\Proj\\GameZRecoil\\zFMV\\fmv_main.cpp";
+
+/**
+ * Reimplements data 0x4dfb50: g_zFMV_UnknownErrorIdMsg.
+ * BN xrefs: zFMV_Playback::ReportMciError uses this fallback MCI error text.
+ * Purpose: final literal in the playback/MCI data owner 0x4dfb1c..0x4dfb63.
+ */
+char g_zFMV_UnknownErrorIdMsg[] = "Unknown Error ID";
+
+/**
+ * Reimplements data 0x4dfb64: g_zFMV_ParseActionsErrorFmt.
+ * BN xrefs: zFMV_Script::LoadActionsFromZrd reports malformed action arrays.
+ * Purpose: FMV script action parse diagnostic format in retail .data order;
+ * excludes the adjacent action-tag owner beginning at 0x4dfb94.
+ */
+char g_zFMV_ParseActionsErrorFmt[] = "Error in parsing fmv actions:  file=%s, tag=%s";
+
+/**
+ * Reimplements data owner 0x4dfb94..0x4dfc03:
+ * g_zFMV_ActionPlaySoundTag, g_zFMV_ActionBlurVTag,
+ * g_zFMV_ActionBlurHTag, g_zFMV_ActionBlurTag,
+ * g_zFMV_ActionPlayMciTag, g_zFMV_ActionPlayAviTag,
+ * g_zFMV_ActionFadeOutTag, g_zFMV_ActionFadeInTag,
+ * g_zFMV_ActionWaitTag, g_zFMV_ActionLoadImageTag,
+ * g_zFMV_ActionBlitImageTag, and g_zFMV_ActionShowImageTag.
+ * BN xrefs: zFMV_Script::LoadActionsFromZrd compares action node tags.
+ * Purpose: packed FMV action selector strings in retail .data order; excludes
+ * the adjacent IMAGE_PATH key at 0x4dfc04.
+ */
+zFMV_ActionTagStringSet g_zFMV_ActionTagStrings = {
+    "PLAYSOUND",
+    {0, 0},
+    "BLURV",
+    {0, 0},
+    "BLURH",
+    {0, 0},
+    "BLUR",
+    {0, 0, 0},
+    "PLAYMCI",
+    "PLAYAVI",
+    "FADEOUT",
+    "FADEIN",
+    {0},
+    "WAIT",
+    {0, 0, 0},
+    "LOADIMAGE",
+    {0, 0},
+    "BLITIMAGE",
+    {0, 0},
+    "SHOWIMAGE",
+    {0, 0}
+};
+
+/**
+ * Reimplements data 0x4dfc04: zHudCfgKey_IMAGE_PATH.
+ * BN xrefs: zFMV_Script::LoadActionsFromZrd reads the image media root path.
+ * Purpose: named FMV script image key literal in retail .data order.
+ */
+char zHudCfgKey_IMAGE_PATH[] = "IMAGE_PATH";
+
+/**
+ * Reimplements data 0x4dfc10: g_zFMV_PathKey.
+ * BN xrefs: zFMV_Script::LoadActionsFromZrd reads the FMV media root path.
+ * Purpose: named FMV script key literal in retail .data order.
+ */
+char g_zFMV_PathKey[] = "FMV_PATH";
+
+/**
+ * Reimplements data 0x4dfc1c: g_zFMV_SourceFile_FmvScriptCpp.
+ * BN xrefs: zFMV_Script::LoadActionsFromZrd passes the retail source path to zError.
+ * Purpose: source-file literal for FMV script diagnostics.
+ */
+char g_zFMV_SourceFile_FmvScriptCpp[] = "D:\\Proj\\GameZRecoil\\zFMV\\fmv_script.cpp";
+
+/**
+ * Reimplements data 0x4dfc44: g_zFMV_MissingDefinitionsZrdErrorMsg.
+ * BN xrefs: zFMV_Script::LoadActionsFromZrd reports missing FMV definitions.
+ * Purpose: missing fmv.zrd diagnostic string.
+ */
+char g_zFMV_MissingDefinitionsZrdErrorMsg[] = "Failed to find FMV definitions (fmv.zrd)";
+}
 
 // BN 0x53a728 and 0x53a708 are four-int rect-shaped state records used by
 // zFMV_ActionImage constructors before copying into the action instance.
@@ -39,10 +154,7 @@ const int k_zFMV_RendererBackend3dfx = 2;
 const int k_zFMV_BlurModeHorizontal = 1;
 const int k_zFMV_BlurModeVertical = 2;
 const int k_zFMV_BlurModeCombined = 3;
-const char kFMVMainSourceFile[] = "D:\\Proj\\GameZRecoil\\zFMV\\fmv_main.cpp";
 const char *kFMVStreamSourceFile = "D:\\Proj\\GameZRecoil\\zFMV\\fmv_stream.cpp";
-const char kMpegVideoDeviceType[] = "MPEGVideo";
-const char kUnknownMciErrorText[] = "Unknown Error ID";
 const char *kCannotOpenAviFile = "Cannot Open AVI File";
 const char *kCannotReadAviFormatSize = "Cannot Read AVI Format Size";
 const char *kCannotReadAviFormat = "Cannot Read AVI Format";
@@ -94,9 +206,9 @@ static inline void CopyActionImageActiveRegionRect(
 
 /**
  * Observed in callers 0x462330, 0x4631af, 0x463221, 0x4635af, and 0x463b2f.
+ * Original inline helper evidence: recovered from address-backed callers in this source file.
  * Purpose: duplicate an input C string through the active C runtime spelling.
  */
-// Source-faithful helper recovered from address-backed callers in this source file.
 static inline char *DuplicateCString(
     const char *value
 ) {
@@ -109,9 +221,9 @@ static inline char *DuplicateCString(
 
 /**
  * Observed in caller 0x4626b0.
+ * Original inline helper evidence: recovered from address-backed callers in this source file.
  * Purpose: return the first node of a zReader array payload.
  */
-// Source-faithful helper recovered from address-backed callers in this source file.
 zReader::Node *ArrayBase(
     zReader::Node *node
 ) {
@@ -120,9 +232,9 @@ zReader::Node *ArrayBase(
 
 /**
  * Observed in caller 0x4626b0.
+ * Original inline helper evidence: recovered from address-backed callers in this source file.
  * Purpose: return one indexed zReader array element.
  */
-// Source-faithful helper recovered from address-backed callers in this source file.
 zReader::Node *ArrayItem(
     zReader::Node *node,
     int index
@@ -132,9 +244,9 @@ zReader::Node *ArrayItem(
 
 /**
  * Observed in caller 0x4626b0.
+ * Original inline helper evidence: recovered from address-backed callers in this source file.
  * Purpose: fetch a string argument from an FMV action node.
  */
-// Source-faithful helper recovered from address-backed callers in this source file.
 const char *StringArg(
     zReader::Node *actionNode,
     int index
@@ -385,13 +497,13 @@ int zFMV_Playback::ReportMciError(
     ) == 0) {
         strcpy(
             errorText,
-            kUnknownMciErrorText
+            g_zFMV_UnknownErrorIdMsg
         );
     }
 
     zError::ReportOld(
         0x200,
-        kFMVMainSourceFile,
+        g_zFMV_SourceFile_FmvMainCpp,
         0xc4,
         errorText
     );
@@ -416,7 +528,7 @@ void zFMV_Playback::OpenAndPlay(
     zFMV_MciRectParams rectParams;
     MCI_DGV_OPEN_PARMSA openParams;
 
-    openParams.lpstrDeviceType = (LPSTR)(kMpegVideoDeviceType);
+    openParams.lpstrDeviceType = (LPSTR)(g_zFMV_MpegVideoString);
     openParams.lpstrElementName = mediaPathDup;
     DWORD mciError = mciSendCommandA(
         0,
@@ -1145,11 +1257,7 @@ zFMV_Script * zFMV_Script::Init(
  */
 void zFMV_Script::Cleanup() {
     if (m_fmvPath != 0) {
-#if defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86)
-        __imp__free(m_fmvPath);
-#else
         free(m_fmvPath);
-#endif
         m_fmvPath = 0;
     }
 
@@ -1201,20 +1309,20 @@ int zFMV_Script::LoadActionsFromZrd(
     if (root == 0) {
         zError::ReportOld(
             0x200,
-            "D:\\Proj\\GameZRecoil\\zFMV\\fmv_script.cpp",
+            g_zFMV_SourceFile_FmvScriptCpp,
             0x51,
-            "Failed to find FMV definitions (fmv.zrd)"
+            g_zFMV_MissingDefinitionsZrdErrorMsg
         );
         return -1;
     }
 
     m_fmvPath = _strdup(zReader::ReadNamedString(
         root,
-        "FMV_PATH"
+        g_zFMV_PathKey
     ));
     zImage_InitMissionResources(zReader::ReadNamedString(
         root,
-        "IMAGE_PATH"
+        zHudCfgKey_IMAGE_PATH
     ));
 
     zReader::Node *sequenceNode = zReader_GetNamedNode(
@@ -1234,9 +1342,9 @@ int zFMV_Script::LoadActionsFromZrd(
             result = 0;
             zError::ReportOld(
                 0x200,
-                "D:\\Proj\\GameZRecoil\\zFMV\\fmv_script.cpp",
+                g_zFMV_SourceFile_FmvScriptCpp,
                 0x69,
-                "Error in parsing fmv actions:  file=%s, tag=%s",
+                g_zFMV_ParseActionsErrorFmt,
                 zrdPath,
                 tagPrefix
             );
@@ -1247,7 +1355,7 @@ int zFMV_Script::LoadActionsFromZrd(
 
         if (strcmp(
                 actionTag,
-                "SHOWIMAGE"
+                g_zFMV_ActionTagStrings.showImageTag
             ) == 0) {
             AppendAction(new zFMV_ActionImage(
                 actionNode->value.nodes[2].value.str,
@@ -1255,7 +1363,7 @@ int zFMV_Script::LoadActionsFromZrd(
             ));
         } else if (strcmp(
                        actionTag,
-                       "BLITIMAGE"
+                       g_zFMV_ActionTagStrings.blitImageTag
                    ) == 0) {
             AppendAction(new zFMV_ActionImage(
                 actionNode->value.nodes[2].value.str,
@@ -1265,7 +1373,7 @@ int zFMV_Script::LoadActionsFromZrd(
             ));
         } else if (strcmp(
                        actionTag,
-                       "LOADIMAGE"
+                       g_zFMV_ActionTagStrings.loadImageTag
                    ) == 0) {
             AppendAction(new zFMV_ActionImage(
                 actionNode->value.nodes[2].value.str,
@@ -1273,12 +1381,12 @@ int zFMV_Script::LoadActionsFromZrd(
             ));
         } else if (strcmp(
                        actionTag,
-                       "WAIT"
+                       g_zFMV_ActionTagStrings.waitTag
                    ) == 0) {
             AppendAction(new zFMV_ActionWait(actionNode->value.nodes[2].value.f32));
         } else if (strcmp(
                        actionTag,
-                       "FADEIN"
+                       g_zFMV_ActionTagStrings.fadeInTag
                    ) == 0) {
             AppendAction(new zFMV_ActionFade(
                 actionNode->value.nodes[2].value.nodes[1].value.i32,
@@ -1290,7 +1398,7 @@ int zFMV_Script::LoadActionsFromZrd(
             ));
         } else if (strcmp(
                        actionTag,
-                       "FADEOUT"
+                       g_zFMV_ActionTagStrings.fadeOutTag
                    ) == 0) {
             AppendAction(new zFMV_ActionFade(
                 actionNode->value.nodes[2].value.nodes[1].value.i32,
@@ -1302,7 +1410,7 @@ int zFMV_Script::LoadActionsFromZrd(
             ));
         } else if (strcmp(
                        actionTag,
-                       "PLAYAVI"
+                       g_zFMV_ActionTagStrings.playAviTag
                    ) == 0) {
             const int actionArgCount = actionNode->value.nodes[0].value.i32;
             if (actionArgCount > 3) {
@@ -1320,7 +1428,7 @@ int zFMV_Script::LoadActionsFromZrd(
             }
         } else if (strcmp(
                        actionTag,
-                       "PLAYMCI"
+                       g_zFMV_ActionTagStrings.playMciTag
                    ) == 0) {
             AppendAction(new zFMV_ActionPlayMci(
                 m_hWnd,
@@ -1329,7 +1437,7 @@ int zFMV_Script::LoadActionsFromZrd(
             ));
         } else if (strcmp(
                        actionTag,
-                       "BLUR"
+                       g_zFMV_ActionTagStrings.blurTag
                    ) == 0) {
             AppendAction(new zFMV_ActionBlur(
                 1,
@@ -1337,7 +1445,7 @@ int zFMV_Script::LoadActionsFromZrd(
             ));
         } else if (strcmp(
                        actionTag,
-                       "BLURH"
+                       g_zFMV_ActionTagStrings.blurHTag
                    ) == 0) {
             AppendAction(new zFMV_ActionBlurH(
                 1,
@@ -1345,7 +1453,7 @@ int zFMV_Script::LoadActionsFromZrd(
             ));
         } else if (strcmp(
                        actionTag,
-                       "BLURV"
+                       g_zFMV_ActionTagStrings.blurVTag
                    ) == 0) {
             AppendAction(new zFMV_ActionBlurV(
                 1,
@@ -1353,7 +1461,7 @@ int zFMV_Script::LoadActionsFromZrd(
             ));
         } else if (strcmp(
                        actionTag,
-                       "PLAYSOUND"
+                       g_zFMV_ActionTagStrings.playSoundTag
             ) == 0) {
             AppendAction(new zFMV_ActionPlaySound(actionNode->value.nodes[2].value.str));
         }

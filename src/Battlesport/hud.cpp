@@ -25,12 +25,101 @@ HudUiOptionsPanelOverlayOwner g_HudUiOptionsPanelOverlayOwner;
 RecoilStateConfirmQuit g_RecoilState_ConfirmQuit;
 extern "C" int g_RecoilState_MainMenuSkipExitDelay = 0;
 RecoilStateControls g_RecoilStateControls;
+/**
+ * Reimplements data 0x4e5ce8: g_RecoilStateCheatCode.
+ * Source owner: legacy.app_shell.class_recoilstatecheatcode.
+ * Data owner gate remains pending until the global lifecycle plan link for
+ * 0x406ea0 is accepted.
+ * Purpose: Holds the zero-initialized global cheat-code app state singleton.
+ */
 RecoilStateCheatCode g_RecoilStateCheatCode;
+/**
+ * Reimplements data 0x4f3748: g_Hud_LowMeterBeepSample.
+ * Source owner: hud_ui.hud_low_meter_loop_sound_globals.
+ * Purpose: Holds the one-shot low-meter warning sample loaded from player.zrd.
+ */
 zSndSample *g_Hud_LowMeterBeepSample = 0;
+/**
+ * Reimplements data 0x4f374c: g_Hud_LowMeterLoopSample.
+ * Source owner: hud_ui.hud_low_meter_loop_sound_globals.
+ * Purpose: Holds the looped low-meter warning sample loaded from player.zrd.
+ */
 zSndSample *g_Hud_LowMeterLoopSample = 0;
+/**
+ * Reimplements data 0x4f3750: g_Hud_LowMeterLoopActive.
+ * Source owner: hud_ui.hud_low_meter_loop_sound_globals.
+ * Purpose: Tracks whether the low-meter loop sample has been started.
+ */
 int g_Hud_LowMeterLoopActive = 0;
+/**
+ * Reimplements data 0x4f3758: g_Hud_LowMeterBeepInterval.
+ * Source owner: hud_ui.hud_low_meter_loop_sound_globals.
+ * Purpose: Stores the low-meter one-shot beep interval from player.zrd.
+ */
 float g_Hud_LowMeterBeepInterval = 0.0f;
+/**
+ * Reimplements data 0x4f375c: g_Hud_LowMeterNextBeepTime.
+ * Source owner: hud_ui.hud_low_meter_loop_sound_globals.
+ * Purpose: Stores the next absolute mission time for a low-meter one-shot beep.
+ */
 float g_Hud_LowMeterNextBeepTime = 0.0f;
+
+/**
+ * Reimplements data 0x4da8d8: g_HudUiControlsDialog_CameraModeSelectorNodeName.
+ * Source owner: hud_ui.hud_ui_controls_dialog_strings.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: name the ZRD camera-mode selector node bound by HudUiControlsDialog.
+ */
+char g_HudUiControlsDialog_CameraModeSelectorNodeName[] = "CAMERA_MODE";
+/**
+ * Reimplements data 0x4da8e4: g_HudUiControlsDialog_CursorModeSelectorNodeName.
+ * Source owner: hud_ui.hud_ui_controls_dialog_strings.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: name the ZRD cursor-mode selector node bound by HudUiControlsDialog.
+ */
+char g_HudUiControlsDialog_CursorModeSelectorNodeName[] = "CURSOR_MODE";
+/**
+ * Reimplements data 0x4da8f0: g_HudUiControlsDialog_SteeringModeSelectorNodeName.
+ * Source owner: hud_ui.hud_ui_controls_dialog_strings.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: name the ZRD steering-mode selector node bound by HudUiControlsDialog.
+ */
+char g_HudUiControlsDialog_SteeringModeSelectorNodeName[] = "STEERING_MODE";
+/**
+ * Reimplements data 0x4da900: g_HudUiControlsDialog_ThrottleModeSelectorNodeName.
+ * Source owner: hud_ui.hud_ui_controls_dialog_strings.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: name the ZRD throttle-mode selector node bound by HudUiControlsDialog.
+ */
+char g_HudUiControlsDialog_ThrottleModeSelectorNodeName[] = "THROTTLE_MODE";
+/**
+ * Reimplements data 0x4da910: g_HudUiControlsDialog_MouseOrJoystickSelectorNodeName.
+ * Source owner: hud_ui.hud_ui_controls_dialog_strings.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: name the ZRD mouse-or-joystick selector node bound by HudUiControlsDialog.
+ */
+char g_HudUiControlsDialog_MouseOrJoystickSelectorNodeName[] = "MOUSE_OR_JOYSTICK";
+/**
+ * Reimplements data 0x4da924: g_HudUiControlsDialog_CommandsButtonNodeName.
+ * Source owner: hud_ui.hud_ui_controls_dialog_strings.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: name the ZRD commands button node bound by HudUiControlsDialog.
+ */
+char g_HudUiControlsDialog_CommandsButtonNodeName[] = "COMMANDS_BTN";
+/**
+ * Reimplements data 0x4da934: g_HudUiResumeButtonNodeName.
+ * Source owner: hud_ui.shared_resume_button_node_name_string.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: name the shared resume button node bound by Controls and NetExit HUD UI dialogs.
+ */
+char g_HudUiResumeButtonNodeName[] = "RESUME";
+/**
+ * Reimplements data 0x4da93c: g_HudUiControlsDialogSectionName.
+ * Source owner: hud_ui.hud_ui_controls_dialog_strings.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: name the ZRD controls dialog section loaded by HudUiControlsDialog.
+ */
+char g_HudUiControlsDialogSectionName[] = "CONTROLS_DIALOG";
 
 namespace {
 const int kHudWeatherFxRainSlantDelta = 1;
@@ -990,7 +1079,8 @@ void HudUiNewGamePanel::StartGameFromFields() {
     HudCheat::ClearNanitePanelCheatSentinel();
     zOpt::SetPlayerName(nameInput.GetBuffer());
     zOpt::SetGameDifficultyMode(intensity.selectedIndex);
-    ((HudUiBackgroundContainer *)(&g_RecoilApp.m_missionFmvState))->SetEnabled(1);
+    ((HudUiBackgroundContainer *)(&g_RecoilApp.m_missionFmvState))
+        ->HudUiBackgroundContainer::SetEnabled(1);
     g_RecoilApp.QueueExitCurrentState(1);
     g_RecoilApp.QueueExitCurrentState(1);
     g_RecoilApp.QueueSwitchCurrentState(
@@ -1306,27 +1396,39 @@ HudUiBackground * HudUiCheatCodeDialog::ScalarDeletingDestructor(
     return this;
 }
 
-// Reimplements 0x406e90: RecoilStateCheatCode::StaticInitAndRegisterAtExit
-// (D:\Proj\Battlesport\HudUiCheatCode.cpp)
+/**
+ * Reimplements 0x406e90: RecoilStateCheatCode::StaticInitAndRegisterAtExit.
+ * Original source path: D:\Proj\Battlesport\HudUiCheatCode.cpp.
+ * Purpose: construct the global cheat-code state and register its atexit teardown.
+ */
 void RecoilStateCheatCode::StaticInitAndRegisterAtExit() {
     ConstructGlobal();
     StaticInit();
 }
 
-// Reimplements 0x406ea0: RecoilStateCheatCode::ConstructGlobal
-// (D:\Proj\Battlesport\HudUiCheatCode.cpp)
+/**
+ * Reimplements 0x406ea0: RecoilStateCheatCode::ConstructGlobal.
+ * Original source path: D:\Proj\Battlesport\HudUiCheatCode.cpp.
+ * Purpose: run placement construction for the global cheat-code app-state object.
+ */
 RecoilStateCheatCode *RecoilStateCheatCode::ConstructGlobal() {
     return new (&g_RecoilStateCheatCode) RecoilStateCheatCode;
 }
 
-// Reimplements 0x406eb0: RecoilStateCheatCode::StaticInit
-// (D:\Proj\Battlesport\HudUiCheatCode.cpp)
+/**
+ * Reimplements 0x406eb0: RecoilStateCheatCode::StaticInit.
+ * Original source path: D:\Proj\Battlesport\HudUiCheatCode.cpp.
+ * Purpose: register the global cheat-code app-state destructor with atexit.
+ */
 void RecoilStateCheatCode::StaticInit() {
     atexit(AtExitDestructor);
 }
 
-// Reimplements 0x406ec0: RecoilStateCheatCode::AtExitDestructor
-// (D:\Proj\Battlesport\HudUiCheatCode.cpp)
+/**
+ * Reimplements 0x406ec0: RecoilStateCheatCode::AtExitDestructor.
+ * Original source path: D:\Proj\Battlesport\HudUiCheatCode.cpp.
+ * Purpose: destroy the global cheat-code app-state object during CRT shutdown.
+ */
 void RecoilStateCheatCode::AtExitDestructor() {
     g_RecoilStateCheatCode.~RecoilStateCheatCode();
 }
@@ -1340,8 +1442,11 @@ RecoilStateCheatCode::RecoilStateCheatCode() {
     m_dialog = 0;
 }
 
-// Reimplements 0x406f60: RecoilStateCheatCode::OnTryBecomeCurrent
-// (D:\Proj\Battlesport\RecoilStateCheatCode.cpp)
+/**
+ * Reimplements 0x406f60: RecoilStateCheatCode::OnTryBecomeCurrent.
+ * Original source path: D:\Proj\Battlesport\RecoilStateCheatCode.cpp.
+ * Purpose: enter the cheat-code dialog state after capturing video and audio presentation state.
+ */
 int RecoilStateCheatCode::OnTryBecomeCurrent() {
     if (g_zVideo_ActiveRendererPath != ZVID_RENDERER_BACKEND_SOFTWARE) {
         g_zVideo_pfnBltSwToPrimaryRectDirect(
@@ -1366,8 +1471,11 @@ int RecoilStateCheatCode::OnTryBecomeCurrent() {
     return 1;
 }
 
-// Reimplements 0x407010: RecoilStateCheatCode::OnDeactivate
-// (D:\Proj\Battlesport\RecoilStateCheatCode.cpp)
+/**
+ * Reimplements 0x407010: RecoilStateCheatCode::OnDeactivate.
+ * Original source path: D:\Proj\Battlesport\RecoilStateCheatCode.cpp.
+ * Purpose: leave the cheat-code dialog state, restore presentation state, and execute the entered command.
+ */
 void RecoilStateCheatCode::OnDeactivate() {
     CString commandString;
 
@@ -1404,8 +1512,11 @@ void RecoilStateCheatCode::OnDeactivate() {
     HudCheat::ExecuteCommandString(&commandString);
 }
 
-// Reimplements 0x406f00: RecoilStateCheatCode::Destructor
-// (D:\Proj\Battlesport\HudUiCheatCode.cpp)
+/**
+ * Reimplements 0x406f00: RecoilStateCheatCode::Destructor.
+ * Original source path: D:\Proj\Battlesport\HudUiCheatCode.cpp.
+ * Purpose: release any active cheat-code dialog and clear the app-state dialog pointer.
+ */
 RecoilStateCheatCode::~RecoilStateCheatCode() {
     HudUiCheatCodeDialog *dialog = m_dialog;
     if (dialog != 0) {
@@ -1621,15 +1732,24 @@ void RecoilStateControls::QueueEnter() {
     );
 }
 
-// Reimplements 0x408c20: HudUiControlsDialog_CommandsWidget::OnActivate
-// (D:\Proj\Battlesport\hud_ui_dialogs.cpp)
+/**
+ * Reimplements 0x408c20: HudUiControlsDialog_CommandsWidget::OnActivate.
+ * Original source path: D:\Proj\Battlesport\hud_ui_dialogs.cpp.
+ * Purpose: Queue the command-dialog state from the controls dialog Commands widget before running inherited ZRD activation.
+ * Evidence: BN/source slice calls HudCmdDialogState::QueueEnter, then chains HudUiZrdWidget::OnActivate.
+ */
 void HudUiControlsDialog_CommandsWidget::OnActivate() {
     HudCmdDialogState::QueueEnter();
     HudUiZrdWidget::OnActivate();
 }
 
-// Reimplements 0x408a30: HudUiControlsDialog::Constructor
-// (D:\Proj\Battlesport\hud_ui_dialogs.cpp)
+/**
+ * Reimplements 0x408a30: HudUiControlsDialog::Constructor.
+ * Original source path: D:\Proj\Battlesport\hud_ui_dialogs.cpp.
+ * Purpose: Construct the controls dialog, bind its ZRD widgets, and seed option selectors from current input/options.
+ * Evidence: BN/source slice builds HudUiBackground, resume/commands widgets, five option selectors, loads
+ * dialog.zrd/CONTROLS_DIALOG, binds named controls, then seeds zInp/zOpt selector indices.
+ */
 HudUiControlsDialog * HudUiControlsDialog::Constructor() {
     new ((HudUiBackground *)this) HudUiBackground;
 
@@ -1643,44 +1763,44 @@ HudUiControlsDialog * HudUiControlsDialog::Constructor() {
 
     zReader::Node *const dialogRoot = HudUiBackground::LoadFromZrd(
         "dialog.zrd",
-        "CONTROLS_DIALOG",
+        g_HudUiControlsDialogSectionName,
         0
     );
     if (dialogRoot != 0) {
         HudUiBackground::BindWidgetByName(
             dialogRoot,
             &resumeWidget,
-            "RESUME"
+            g_HudUiResumeButtonNodeName
         );
         HudUiBackground::BindWidgetByName(
             dialogRoot,
             &commandsWidget,
-            "COMMANDS_BTN"
+            g_HudUiControlsDialog_CommandsButtonNodeName
         );
         HudUiBackground::BindWidgetByName(
             dialogRoot,
             &mouseOrJoystickSelector,
-            "MOUSE_OR_JOYSTICK"
+            g_HudUiControlsDialog_MouseOrJoystickSelectorNodeName
         );
         HudUiBackground::BindWidgetByName(
             dialogRoot,
             &throttleModeSelector,
-            "THROTTLE_MODE"
+            g_HudUiControlsDialog_ThrottleModeSelectorNodeName
         );
         HudUiBackground::BindWidgetByName(
             dialogRoot,
             &steeringModeSelector,
-            "STEERING_MODE"
+            g_HudUiControlsDialog_SteeringModeSelectorNodeName
         );
         HudUiBackground::BindWidgetByName(
             dialogRoot,
             &cursorModeSelector,
-            "CURSOR_MODE"
+            g_HudUiControlsDialog_CursorModeSelectorNodeName
         );
         HudUiBackground::BindWidgetByName(
             dialogRoot,
             &cameraModeSelector,
-            "CAMERA_MODE"
+            g_HudUiControlsDialog_CameraModeSelectorNodeName
         );
         HudUiBackground::FreeLoadedTreeRoots((int)(unsigned int)dialogRoot);
     }
@@ -1693,8 +1813,13 @@ HudUiControlsDialog * HudUiControlsDialog::Constructor() {
     return this;
 }
 
-// Reimplements 0x408c70: HudUiControlsDialog::Destructor
-// (D:\Proj\Battlesport\hud_ui_dialogs.cpp)
+/**
+ * Reimplements 0x408c70: HudUiControlsDialog::Destructor.
+ * Original source path: D:\Proj\Battlesport\hud_ui_dialogs.cpp.
+ * Purpose: Destroy the controls dialog child widgets in reverse construction order before background cleanup.
+ * Evidence: BN/source slice tears down camera, cursor, steering, throttle, mouse/joystick selectors,
+ * commands/resume widgets, then the HudUiBackground base.
+ */
 void HudUiControlsDialog::Destructor() {
     cameraModeSelector.DestructorCore();
     cursorModeSelector.DestructorCore();
@@ -1706,8 +1831,13 @@ void HudUiControlsDialog::Destructor() {
     this->HudUiBackground::~HudUiBackground();
 }
 
-// Reimplements 0x408c40: HudUiControlsDialog::ScalarDeletingDestructor
-// (D:\Proj\Battlesport\hud_ui_dialogs.cpp)
+/**
+ * Reimplements 0x408c40: HudUiControlsDialog::ScalarDeletingDestructor.
+ * Original source path: D:\Proj\Battlesport\hud_ui_dialogs.cpp.
+ * Purpose: Run controls dialog destruction and optionally release heap storage for VC5 scalar delete.
+ * Evidence: BN/source slice calls the recovered destructor, tests delete flag bit 0, conditionally
+ * calls operator delete, and returns this as the HudUiBackground base pointer.
+ */
 HudUiBackground * HudUiControlsDialog::ScalarDeletingDestructor(
     unsigned int flags
 ) {
@@ -1719,14 +1849,20 @@ HudUiBackground * HudUiControlsDialog::ScalarDeletingDestructor(
     return this;
 }
 
-// Reimplements 0x407100: HudUiCallback::QueueExitCurrentState
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x407100: HudUiCallback::QueueExitCurrentState.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: Queue an immediate exit from the current Recoil application state.
+ */
 void HudUiCallback::QueueExitCurrentState() {
     g_RecoilApp.QueueExitCurrentState(0);
 }
 
-// Reimplements 0x407110: HudUiCallback::QueueCheatCodeState
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x407110: HudUiCallback::QueueCheatCodeState.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: Queue the cheat-code state and report successful callback handling.
+ */
 int HudUiCallback::QueueCheatCodeState() {
     g_RecoilApp.QueuePushState(
         &g_RecoilStateCheatCode,
@@ -1914,8 +2050,11 @@ int ToggleHudTypeForCurrentHwMode() {
 
 namespace HudLowMeterLoopSound {
 
-// Reimplements 0x439b20: HudLowMeterLoopSound::SetLoopActive
-// (D:\Proj\Battlesport\Hud.cpp)
+/**
+ * Reimplements 0x439b20: HudLowMeterLoopSound::SetLoopActive.
+ * Original source: D:\Proj\Battlesport\Hud.cpp.
+ * Purpose: Starts or stops the low-meter loop sample on active-state changes.
+ */
 void __fastcall SetLoopActive(
     int enabled
 ) {
@@ -1934,8 +2073,11 @@ void __fastcall SetLoopActive(
     }
 }
 
-// Reimplements 0x439b70: HudLowMeterLoopSound::Disable
-// (D:\Proj\Battlesport\Hud.cpp)
+/**
+ * Reimplements 0x439b70: HudLowMeterLoopSound::Disable.
+ * Original source: D:\Proj\Battlesport\Hud.cpp.
+ * Purpose: Stops both low-meter warning samples and clears the loop-active flag.
+ */
 void Disable() {
     g_Hud_LowMeterBeepSample->StopActiveVoicesIfPlaying();
     g_Hud_LowMeterLoopSample->StopActiveVoicesIfPlaying();

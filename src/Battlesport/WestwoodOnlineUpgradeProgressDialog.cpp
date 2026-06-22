@@ -33,18 +33,18 @@ const char kWestwoodOnlineUpgradeRegistryKey[] = "SOFTWARE\\Westwood\\Recoil";
 
 extern "C" HINSTANCE g_RecoilApp_hInstance;
 extern "C" HWND g_RecoilApp_hWndMain;
-extern "C" char g_WestwoodOnlineUpgradeProgressStatusTextBuffer[1024] = "";
+extern "C" char g_WestwoodOnlineUpgradeProgressStatusTextBuffer[0x40] = "";
 
-const AFX_MSGMAP *__stdcall
-WestwoodOnlineUpgradeProgressCDialogMessageMapAccessor::GetMessageMap() {
+/** Provider-boundary: imported MFC42 CDialog message map accessor.
+ * Purpose: exposes the CDialog base message map. */
+const AFX_MSGMAP *__stdcall WestwoodOnlineUpgradeProgressCDialogMessageMapAccessor::GetMessageMap() {
     return &CDialog::messageMap;
 }
-
-// Source-faithful helper recovered from address-backed callers in this source file.
+/** Original helper evidence: no standalone retail function; used by the progress-dialog MFC message-map data.
+ * Purpose: returns the provider CDialog base map. */
 const AFX_MSGMAP *__stdcall WestwoodOnlineUpgradeProgressDialog::GetBaseMessageMapForMfc() {
     return WestwoodOnlineUpgradeProgressCDialogMessageMapAccessor::GetMessageMap();
 }
-
 AFX_MSGMAP_ENTRY const WestwoodOnlineUpgradeProgressDialog::messageEntries[] = {
     {0, 0, 0, 0, 0, 0},
 };
@@ -54,14 +54,26 @@ const AFX_MSGMAP WestwoodOnlineUpgradeProgressDialog::messageMap = {
     &WestwoodOnlineUpgradeProgressDialog::messageEntries[0],
 };
 
-// Reimplements 0x442260: WestwoodOnlineUpgradeProgressDialog::GetMessageMap
-// (D:\Proj\GameZRecoil\westwoodonline\WolapiProgressDialog.cpp)
+/** Original helper evidence: no standalone retail function; constructor shape is observed in the placement-constructor body.
+ * Purpose: constructs the imported CDialog base with resource 157 so the compiler installs the derived vftable. */
+WestwoodOnlineUpgradeProgressDialog::WestwoodOnlineUpgradeProgressDialog(
+    CWnd *parentWnd
+) :
+    CDialog(
+        kWestwoodOnlineUpgradeProgressDialogResourceId,
+        parentWnd
+    )
+{
+}
+
+/** Reimplements 0x442260: WestwoodOnlineUpgradeProgressDialog::GetMessageMap (D:\Proj\GameZRecoil\westwoodonline\WolapiProgressDialog.cpp).
+ * Purpose: returns the sentinel-only MFC message-map record for the raw dialog proc. */
 const AFX_MSGMAP * WestwoodOnlineUpgradeProgressDialog::GetMessageMap() const {
     return &WestwoodOnlineUpgradeProgressDialog::messageMap;
 }
 
-// Reimplements 0x442270: WestwoodOnlineUpgradeProgressDialog::SetStatusTextFmt
-// (D:\Proj\GameZRecoil\westwoodonline\WolapiProgressDialog.cpp)
+/** Reimplements 0x442270: WestwoodOnlineUpgradeProgressDialog::SetStatusTextFmt (D:\Proj\GameZRecoil\westwoodonline\WolapiProgressDialog.cpp).
+ * Purpose: formats text into the recovered 0x40-byte global buffer and writes the progress status control. */
 BOOL WestwoodOnlineUpgradeProgressDialog::SetStatusTextFmt(
     const char *format,
     ...
@@ -85,26 +97,23 @@ BOOL WestwoodOnlineUpgradeProgressDialog::SetStatusTextFmt(
     );
 }
 
-// Reimplements 0x442220: WestwoodOnlineUpgradeProgressDialog::Constructor
-// (D:\Proj\Battlesport\WestwoodOnlineUpgradeProgressDialog.cpp)
+/** Reimplements 0x442220: WestwoodOnlineUpgradeProgressDialog::Constructor (D:\Proj\Battlesport\WestwoodOnlineUpgradeProgressDialog.cpp).
+ * Purpose: placement-constructs the standalone WOL download progress dialog. */
 WestwoodOnlineUpgradeProgressDialog * WestwoodOnlineUpgradeProgressDialog::Constructor(
     CWnd *parentWnd
 ) {
-    new ((CDialog *)this) CDialog(
-        kWestwoodOnlineUpgradeProgressDialogResourceId,
-        parentWnd
-    );
+    new (this) WestwoodOnlineUpgradeProgressDialog(parentWnd);
     return this;
 }
 
-// Reimplements 0x43f440: WestwoodOnlineUpgradeProgressDialog::Destructor
-// (D:\Proj\Battlesport\WestwoodOnlineUpgradeDialog.cpp)
+/** Reimplements 0x43f440: WestwoodOnlineUpgradeProgressDialog::Destructor (D:\Proj\Battlesport\WestwoodOnlineUpgradeDialog.cpp).
+ * Purpose: delegates progress-dialog teardown to the imported MFC42 CDialog provider destructor. */
 void WestwoodOnlineUpgradeProgressDialog::Destructor() {
     ((CDialog *)this)->CDialog::~CDialog();
 }
 
-// Reimplements 0x442240: WestwoodOnlineUpgradeProgressDialog::ScalarDeletingDestructor
-// (D:\Proj\GameZRecoil\westwoodonline\WolapiProgressDialog.cpp)
+/** Reimplements 0x442240: WestwoodOnlineUpgradeProgressDialog::ScalarDeletingDestructor (D:\Proj\GameZRecoil\westwoodonline\WolapiProgressDialog.cpp).
+ * Purpose: runs the destructor and conditionally releases object storage for compiler scalar-delete callers. */
 WestwoodOnlineUpgradeProgressDialog * WestwoodOnlineUpgradeProgressDialog::ScalarDeletingDestructor(
     unsigned int flags
 ) {
@@ -116,8 +125,8 @@ WestwoodOnlineUpgradeProgressDialog * WestwoodOnlineUpgradeProgressDialog::Scala
     return self;
 }
 
-// Reimplements 0x442320: WestwoodOnlineUpgradeProgressDialog::DlgProc
-// (D:\Proj\Battlesport\WestwoodOnlineUpgradeProgressDialog.cpp)
+/** Reimplements 0x442320: WestwoodOnlineUpgradeProgressDialog::DlgProc (D:\Proj\Battlesport\WestwoodOnlineUpgradeProgressDialog.cpp).
+ * Purpose: starts and pumps the WOL download progress dialog, handles cancel, and cleans up on destroy. */
 BOOL CALLBACK WestwoodOnlineUpgradeProgressDialog::DlgProc(
     HWND hWnd,
     UINT uMsg,
@@ -225,8 +234,8 @@ BOOL CALLBACK WestwoodOnlineUpgradeProgressDialog::DlgProc(
     return FALSE;
 }
 
-// Reimplements 0x442530: WestwoodOnlineUpgradeDialog::ShowDownloadReadyList
-// (D:\Proj\Battlesport\WestwoodOnlineUpgradeProgressDialog.cpp)
+/** Reimplements 0x442530: WestwoodOnlineUpgradeDialog::ShowDownloadReadyList (D:\Proj\Battlesport\WestwoodOnlineUpgradeProgressDialog.cpp).
+ * Purpose: formats per-entry prompts and launches the standalone WOL download progress dialog for each ready-list entry. */
 int __fastcall WestwoodOnlineUpgradeDialog::ShowDownloadReadyList(
     WestwoodOnlineUpgradeDownloadReadyEntry *readyListHead
 ) {

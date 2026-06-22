@@ -6,26 +6,39 @@
 
 #include <commctrl.h>
 
-extern "C" IUnknown *g_pWestwoodOnlineUpgradeDownload = 0;
-extern "C" void *g_pWestwoodOnlineUpgradeDownloadEventSink = 0;
+extern "C" IWestwoodOnlineUpgradeDownload *g_pWestwoodOnlineUpgradeDownload = 0;
+extern "C" WestwoodOnlineUpgradeDownloadEventSink *g_pWestwoodOnlineUpgradeDownloadEventSink = 0;
 extern "C" DWORD g_WestwoodOnlineUpgradeDownloadAdviseCookie = 0;
-extern "C" int g_WestwoodOnlineUpgradeDownloadEventSinkConnectionOffset = 0;
 extern "C" WestwoodOnlineUpgradeDownloadReadyEntry *g_pWestwoodOnlineUpgradeDownloadReadyList = 0;
 extern "C" char g_WestwoodOnlineUpgradeDownloadReadyPromptText[0x80] = {0};
 extern "C" char g_WestwoodOnlineUpgradeDownloadRestoreCwd[0x100] = {0};
 extern "C" int g_WestwoodOnlineUpgradeDownloadDialogResult = 0;
 extern "C" HWND g_hWestwoodOnlineUpgradeProgressDialog = 0;
 
-// BN observes these COM identity objects in the WOL download ActiveX path.
-// Exact GUID contents remain future provider-interface recovery evidence.
-const CLSID g_WestwoodOnlineUpgradeDownload_CLSID = {0};
-const IID g_WestwoodOnlineUpgradeDownload_IID = {0};
-const IID g_WestwoodOnlineUpgradeDownloadEventSink_IID = {0};
+// BN observes these COM identity bytes in the WOL download ActiveX path.
+const CLSID g_CLSID_WestwoodOnlineUpgradeDownload = {
+    0xbf6ea206,
+    0x9e55,
+    0x11d1,
+    {0x9d, 0xc6, 0x00, 0x60, 0x97, 0xc5, 0x43, 0x21},
+};
+const IID g_IID_WestwoodOnlineUpgradeDownload = {
+    0x0bf5fceb,
+    0x9f03,
+    0x11d1,
+    {0x9d, 0xc7, 0x00, 0x60, 0x97, 0xc5, 0x43, 0x21},
+};
+const IID IID_WestwoodOnlineUpgradeDownloadEventSink = {
+    0x6869e99d,
+    0x9fb4,
+    0x11d1,
+    {0x9d, 0xc8, 0x00, 0x60, 0x97, 0xc5, 0x43, 0x21},
+};
 
 // Recovered interface map used by 0x4427d0. BN data at 0x4d1fc8 contains
 // {IID_WestwoodOnlineUpgradeDownloadEventSink, offset 0, direct} followed by end.
 const zCom::InterfaceMapEntry g_WestwoodOnlineUpgradeDownloadEventSink_InterfaceMap[2] = {
-    {&g_WestwoodOnlineUpgradeDownloadEventSink_IID, 0, zCom::ZCOM_INTERFACE_MAP_DIRECT},
+    {&IID_WestwoodOnlineUpgradeDownloadEventSink, 0, zCom::ZCOM_INTERFACE_MAP_DIRECT},
     {0, 0, zCom::ZCOM_INTERFACE_MAP_END},
 };
 
@@ -40,10 +53,22 @@ const char kDownloadStateDownloadingPatchText[] = "Downloading patch...";
 const int kDownloadProgressControlId = 1021;
 const unsigned int kDownloadProgressPercentScale = 100;
 const DWORD kDownloadErrorStatusSleepMs = 1000;
+
+struct WestwoodOnlineUpgradeSharedComRefCountOwner : IUnknown {
+    WestwoodOnlineUpgradeRefCountAndLock m_refCountAndLock;
+};
 } // namespace
 
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        WestwoodOnlineUpgradeSharedComRefCountOwner,
+        m_refCountAndLock
+    ) == 0x04
+);
+
 /**
- * Reimplements 0x414b50: WestwoodOnlineUpgradeDownloadEventSink::CallbackNoOp.
+ * Reimplements 0x414b50: shared.authored_ret4_noop_414b50
+ * (standalone; not a Westwood download event-sink owner member).
  * Purpose: Handles an unused download event callback slot with a zero result.
  */
 int STDMETHODCALLTYPE WestwoodOnlineUpgradeDownloadEventSink::CallbackNoOp(
@@ -127,11 +152,22 @@ HRESULT STDMETHODCALLTYPE WestwoodOnlineUpgradeDownloadEventSink::OnStateChanged
 }
 
 /**
- * Reimplements 0x442770: WestwoodOnlineUpgradeDownloadEventSink::AddRef.
- * Purpose: Increments the embedded COM reference count for the download event sink.
+ * Reimplements 0x442770: WestwoodOnlineUpgradeSharedComAddRef.
+ * Purpose: Increments the shared COM event-sink reference count at self+4.
+ */
+ULONG __stdcall WestwoodOnlineUpgradeSharedComAddRef(void *self) {
+    return (ULONG)InterlockedIncrement(
+        &((WestwoodOnlineUpgradeSharedComRefCountOwner *)self)->m_refCountAndLock.refCount
+    );
+}
+
+/**
+ * Original helper evidence: no standalone retail function; the API and
+ * download event sinks share 0x442770 for the COM AddRef body.
+ * Purpose: Routes the download event-sink AddRef call to the shared body.
  */
 ULONG STDMETHODCALLTYPE WestwoodOnlineUpgradeDownloadEventSink::AddRef() {
-    return (ULONG)InterlockedIncrement(&m_refCountAndLock.refCount);
+    return WestwoodOnlineUpgradeSharedComAddRef(this);
 }
 
 /**
@@ -139,19 +175,11 @@ ULONG STDMETHODCALLTYPE WestwoodOnlineUpgradeDownloadEventSink::AddRef() {
  * Purpose: Decrements the COM reference count and destroys the sink on the final release.
  */
 ULONG STDMETHODCALLTYPE WestwoodOnlineUpgradeDownloadEventSink::Release() {
-    return WestwoodOnlineUpgradeDownloadEventSink::Release(this);
-}
-
-// Source-faithful helper recovered from address-backed callers in this source file.
-ULONG __stdcall WestwoodOnlineUpgradeDownloadEventSink::Release(
-    WestwoodOnlineUpgradeDownloadEventSink *self
-) {
     ULONG refCount;
 
-    refCount = (ULONG)InterlockedDecrement(&self->m_refCountAndLock.refCount);
-    if (refCount == 0 && self != 0) {
-        self->Destructor();
-        delete self;
+    refCount = (ULONG)InterlockedDecrement(&m_refCountAndLock.refCount);
+    if (refCount == 0) {
+        delete this;
     }
 
     return refCount;
@@ -161,36 +189,23 @@ ULONG __stdcall WestwoodOnlineUpgradeDownloadEventSink::Release(
  * Reimplements 0x4427d0: WestwoodOnlineUpgradeDownloadEventSink::QueryInterface.
  * Purpose: Resolves the download event sink interfaces through its recovered interface map.
  */
-HRESULT __stdcall WestwoodOnlineUpgradeDownloadEventSink::QueryInterface(
-    WestwoodOnlineUpgradeDownloadEventSink *self,
+HRESULT STDMETHODCALLTYPE WestwoodOnlineUpgradeDownloadEventSink::QueryInterface(
     REFIID iid,
     void **outInterface
 ) {
     return zCom::QueryInterfaceFromInterfaceMap(
-        self,
+        this,
         g_WestwoodOnlineUpgradeDownloadEventSink_InterfaceMap,
         &iid,
         outInterface
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
-HRESULT STDMETHODCALLTYPE WestwoodOnlineUpgradeDownloadEventSink::QueryInterface(
-    REFIID iid,
-    void **outInterface
-) {
-    return WestwoodOnlineUpgradeDownloadEventSink::QueryInterface(
-        this,
-        iid,
-        outInterface
-    );
-}
-
 /**
- * Reimplements 0x4427f0: WestwoodOnlineUpgradeDownloadEventSink::Destructor.
+ * Reimplements 0x4427f0: WestwoodOnlineUpgradeDownloadEventSink::~WestwoodOnlineUpgradeDownloadEventSink.
  * Purpose: Tears down the embedded lock and decrements the live Westwood event-sink count.
  */
-void WestwoodOnlineUpgradeDownloadEventSink::Destructor() {
+WestwoodOnlineUpgradeDownloadEventSink::~WestwoodOnlineUpgradeDownloadEventSink() {
     m_refCountAndLock.refCount = 1;
     InterlockedDecrement(&g_WestwoodOnlineUpgradeEventSinkLiveCount);
     DeleteCriticalSection(&m_refCountAndLock.lock);
@@ -223,20 +238,19 @@ HRESULT __stdcall WestwoodOnlineUpgradeDownloadEventSink::CreateInstance(
  */
 HRESULT WestwoodOnlineUpgradeDownload::CreateInstanceAndAdvise() {
     CoCreateInstance(
-        g_WestwoodOnlineUpgradeDownload_CLSID,
+        g_CLSID_WestwoodOnlineUpgradeDownload,
         0,
         CLSCTX_INPROC_SERVER,
-        g_WestwoodOnlineUpgradeDownload_IID,
+        g_IID_WestwoodOnlineUpgradeDownload,
         (void **)&g_pWestwoodOnlineUpgradeDownload
     );
     WestwoodOnlineUpgradeDownloadEventSink::CreateInstance(
-        (WestwoodOnlineUpgradeDownloadEventSink **)&g_pWestwoodOnlineUpgradeDownloadEventSink
+        &g_pWestwoodOnlineUpgradeDownloadEventSink
     );
     return zCom::ConnectionPointContainer_Advise(
         g_pWestwoodOnlineUpgradeDownload,
-        (IUnknown *)((unsigned char *)g_pWestwoodOnlineUpgradeDownloadEventSink +
-                     g_WestwoodOnlineUpgradeDownloadEventSinkConnectionOffset),
-        g_WestwoodOnlineUpgradeDownloadEventSink_IID,
+        g_pWestwoodOnlineUpgradeDownloadEventSink,
+        IID_WestwoodOnlineUpgradeDownloadEventSink,
         &g_WestwoodOnlineUpgradeDownloadAdviseCookie
     );
 }
@@ -248,7 +262,7 @@ HRESULT WestwoodOnlineUpgradeDownload::CreateInstanceAndAdvise() {
 ULONG WestwoodOnlineUpgradeDownload::UnadviseAndRelease() {
     zCom::ConnectionPointContainer_Unadvise(
         g_pWestwoodOnlineUpgradeDownload,
-        g_WestwoodOnlineUpgradeDownloadEventSink_IID,
+        IID_WestwoodOnlineUpgradeDownloadEventSink,
         g_WestwoodOnlineUpgradeDownloadAdviseCookie
     );
     return g_pWestwoodOnlineUpgradeDownload->Release();

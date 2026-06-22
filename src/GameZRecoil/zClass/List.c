@@ -15,10 +15,30 @@ namespace zModel_DiPool {
 }
 
 extern "C" {
+/**
+ * Reimplements data 0x539c6c: g_zClass_TypeList_FreeLinkHead.
+ * Purpose: head of the recycled type-list link cache used by list allocation.
+ */
 zClass_TypeListLink *g_zClass_TypeList_FreeLinkHead = 0;
+/**
+ * Reimplements data 0x539c70: g_zClass_NodeList_PendingFreeHead.
+ * Purpose: head of the deferred node-free queue drained by zClass work.
+ */
 zClass_TypeListLink *g_zClass_NodeList_PendingFreeHead = 0;
+/**
+ * Reimplements data 0x4dded8: g_zClass_DeferredProcessingEnabled.
+ * Purpose: gates deferred type-list removal and pending node-free processing.
+ */
 int g_zClass_DeferredProcessingEnabled = 1;
+/**
+ * Reimplements data 0x539c74: g_zClass_TypeList_LiveLinkCount.
+ * Purpose: counts type-list links currently allocated outside the free cache.
+ */
 int g_zClass_TypeList_LiveLinkCount = 0;
+/**
+ * Reimplements data 0x539c78: g_zClass_TypeList_PeakLiveLinkCount.
+ * Purpose: records the peak live type-list link count for diagnostics.
+ */
 int g_zClass_TypeList_PeakLiveLinkCount = 0;
 // Recovered storage order at 0x539bac is 6,0,1,2,3,4,5,7,8,9,10,13,14,15,11,12.
 zClass_TypeListBucket g_zClass_TypeList_Buckets[16] = {0};
@@ -66,8 +86,20 @@ zClass_TypeListLink **g_zClass_TypeList_TailSlotPtrs[16] = {
     &g_zClass_TypeList_Buckets[12].tail,
     &g_zClass_TypeList_Buckets[13].tail,
 };
+/**
+ * Reimplements data 0x539b98: g_zClass_FilterIterCursor.
+ * Purpose: cursor for continued filtered type-list iteration.
+ */
 zClass_TypeListLink *g_zClass_FilterIterCursor = 0;
+/**
+ * Reimplements data 0x539ba0: g_zClass_FilterIterText.
+ * Purpose: active exact or prefix text used by filtered type-list predicates.
+ */
 const char *g_zClass_FilterIterText = 0;
+/**
+ * Reimplements data 0x539ba8: g_zClass_FilterIterPrefixLen.
+ * Purpose: cached prefix length used by filtered type-list prefix searches.
+ */
 int g_zClass_FilterIterPrefixLen = 0;
 }
 

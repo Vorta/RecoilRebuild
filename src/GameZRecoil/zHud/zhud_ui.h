@@ -291,6 +291,7 @@ extern int g_HudUiMgrReticleSnapRadiusSq;
 
 struct HudUiContainer {
     HudUiContainer();
+    ~HudUiContainer();
 
     virtual void UpdateAll(float deltaSeconds);
     virtual void SetEnabled(int enabled);

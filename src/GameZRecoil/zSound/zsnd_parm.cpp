@@ -25,23 +25,6 @@ float Clamp01(
     return value;
 }
 
-/**
- * Original static helper observed in caller 0x4a11d0.
- *
- * Purpose: copy a float's stored bit pattern into an integer field used by
- * the A3D backend path.
- */
-int FloatToBits(
-    float value
-) {
-    int bits = 0;
-    memcpy(
-        &bits,
-        &value,
-        sizeof(bits)
-    );
-    return bits;
-}
 } // namespace
 
 /**
@@ -122,7 +105,13 @@ void zSndPlayHandle::SetEnableScale(
             0
         );
     } else if (g_zSnd_ActiveBackend == 1) {
-        gainScaled = FloatToBits(scaledGain);
+        // BN stores the x87 product directly into this int-backed gain field
+        // for A3D, preserving the raw float bits for later replay.
+        memcpy(
+            &gainScaled,
+            &scaledGain,
+            sizeof(gainScaled)
+        );
         Update3DDispatch(
             0,
             0,

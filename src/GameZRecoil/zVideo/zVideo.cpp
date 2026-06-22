@@ -24,10 +24,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#if defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86)
-extern "C" void(__cdecl *__imp__free)(void *); // VC5 retail import-pointer call shape.
-#endif
-
 namespace {
 const int kZVidPaletteColorCount = 256;
 const int kZVidPaletteRemapVariantCount = 32;
@@ -5615,11 +5611,7 @@ int __fastcall Destroy(
         }
 
         ReleaseOwnedBuffers(image);
-#if defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86)
-        __imp__free(image);
-#else
         free(image);
-#endif
     }
 
     return 0;
@@ -5881,11 +5873,7 @@ void __fastcall BlitToFramebufferClipped(
 void __fastcall ReleaseOwnedBuffers(
     zVidImagePartial *image
 ) {
-#if defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86)
-    void(__cdecl * freeProc)(void *) = __imp__free;
-#else
     void(__cdecl * freeProc)(void *) = free;
-#endif
 
     if (image->pixels != 0 && (image->formatFlagsPacked & 0x20) != 0) {
         freeProc(image->pixels);

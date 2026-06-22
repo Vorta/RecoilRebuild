@@ -9,67 +9,73 @@
 
 #include <string.h>
 
-struct IWestwoodOnlineUpgradeApi : IUnknown {
-    virtual void STDMETHODCALLTYPE ProcessCallbacks() = 0;
-    virtual void STDMETHODCALLTYPE BeginConnect(
-        int languageId,
-        int productId,
-        const char *playerName,
-        const char *connectString,
-        int timeoutSeconds
-    ) = 0;
-    virtual void STDMETHODCALLTYPE RequestBootstrapServerList(
-        WestwoodOnlineUpgradeBootstrapServerRecord *selectedBootstrapServer,
-        int timeoutSeconds,
-        int useAlternateConnectString
-    ) = 0;
-    virtual void STDMETHODCALLTYPE RequestListMode(
-        int listMode,
-        int enabled
-    ) = 0;
-};
-
+// WestwoodOnline owns the WOL ActiveX API startup globals. Current BN evidence
+// shows these as independent zero-initialized or immutable data symbols used by
+// the API startup anchors; dialog/session-browser globals defined in this
+// translation unit are tracked as a separate data-owner blocker.
 extern "C" WestwoodOnlineUpgradeApiInitState g_WestwoodOnlineUpgradeApiInitState = {0};
 extern "C" IUnknown *g_pWestwoodOnlineUpgradeApi = 0;
 extern "C" void *g_pWestwoodOnlineUpgradeApiEventSink = 0;
-extern "C" DWORD g_WestwoodOnlineUpgradeApiConnectionCookie = 0;
-extern "C" int g_WestwoodOnlineUpgradeApiEventSinkConnectionOffset = 0;
-extern "C" int g_WestwoodOnlineUpgradeApiReadyFlag = 0;
+extern "C" DWORD g_WestwoodOnlineUpgradeApiAdviseCookie = 0;
 extern "C" int g_WestwoodOnlineUpgradeApiShutdownState = 0;
 extern "C" int g_WestwoodOnlineUpgradeApiAsyncErrorFlag = 0;
-extern "C" int g_WestwoodOnlineUpgradeAbortFlag = 0;
+extern "C" int g_WestwoodOnlineUpgradeAbortFlag = 1;
+
+// Session-browser/dialog state: defined here by the recovered source file, but
+// not part of the API startup data owner.
 extern "C" int g_WestwoodOnlineUpgradeActiveListMode = 0;
 extern "C" int g_WestwoodOnlineUpgradeCreateSessionFromQueryFlag = 0;
 extern "C" int g_WestwoodOnlineUpgradePendingSessionResultCount = 0;
 extern "C" int g_WestwoodOnlineUpgradeVisibleSessionResultCount = 0;
+
+// API callback pump state.
 extern "C" int g_WestwoodOnlineUpgradeProcessCallbacksFlag = 0;
+
+// More session-browser/dialog state.
 extern "C" float g_WestwoodOnlineUpgradeNextAutoRefreshTime = 0.0f;
 extern "C" int g_WestwoodOnlineUpgradeDisconnectInFlightFlag = 0;
+
+// API startup wait/event state.
 extern "C" HANDLE g_WestwoodOnlineUpgradeInitWaitEvents[3] = {0};
 extern "C" HANDLE g_WestwoodOnlineUpgradeBootstrapServerListEvent = 0;
 extern "C" HANDLE g_WestwoodOnlineUpgradeStatusTextEvent = 0;
 extern "C" HANDLE g_WestwoodOnlineUpgradeFailureEvent = 0;
 extern "C" WestwoodOnlineUpgradeBootstrapServerRecord
     g_WestwoodOnlineUpgradeSelectedBootstrapServer = {0};
+
+// Session-browser cache state. 0x43d2e0 clears the current record at startup,
+// but the broader browse/cache owner remains the dialog/event-sink slice.
 extern "C" WestwoodOnlineUpgradeBrowseRecord g_WestwoodOnlineUpgradeCachedBrowseRecord = {0};
 extern "C" WestwoodOnlineUpgradeBrowseRecord g_WestwoodOnlineUpgradeCachedBrowseRecordList[1024] = {
     {0}};
 extern "C" int g_WestwoodOnlineUpgradeCachedBrowseRecordListCount = 0;
-extern "C" HANDLE g_WestwoodOnlineUpgradeCloseHandle0 = 0;
-extern "C" HANDLE g_WestwoodOnlineUpgradeCloseHandle1 = 0;
-extern "C" HANDLE g_WestwoodOnlineUpgradeCloseHandle2 = 0;
 
-// BN observes these COM identity objects in the WOL ActiveX startup path.
-// g_WestwoodOnlineUpgradeApiEventSink_IID is the recovered IID referenced by
-// the event-sink interface map at 0x4d1ba0.
-const CLSID g_WestwoodOnlineUpgradeApi_CLSID = {0};
-const IID g_WestwoodOnlineUpgradeApi_IID = {0};
+// BN observes the same COM identity bytes as g_CLSID_WestwoodOnlineUpgradeApi,
+// g_IID_WestwoodOnlineUpgradeApi, and IID_WestwoodOnlineUpgradeApiEventSink.
+// The source names below preserve the recovered API/event-sink naming used by
+// this file and the event-sink interface map at 0x4d1ba0.
+const CLSID g_WestwoodOnlineUpgradeApi_CLSID = {
+    0x4dd3baf5,
+    0x7579,
+    0x11d1,
+    {0xb1, 0xc6, 0x00, 0x60, 0x97, 0x17, 0x65, 0x56},
+};
+const IID g_WestwoodOnlineUpgradeApi_IID = {
+    0x4dd3baf4,
+    0x7579,
+    0x11d1,
+    {0xb1, 0xc6, 0x00, 0x60, 0x97, 0x17, 0x65, 0x56},
+};
 const IID g_WestwoodOnlineUpgradeApiEventSink_IID = {
     0x4dd3baf6,
     0x7579,
     0x11d1,
     {0xb1, 0xc6, 0x00, 0x60, 0x97, 0x17, 0x65, 0x56},
 };
+
+// BN 0x4d1ba0 owns the event-sink zCom interface map; 0x43d130 reads the
+// first entry's offset field rather than a standalone source global.
+extern const zCom::InterfaceMapEntry g_WestwoodOnlineUpgradeApiEventSink_InterfaceMap[2];
 
 namespace {
 const unsigned int kWestwoodOnlineUpgradeInitStateSize = sizeof(WestwoodOnlineUpgradeApiInitState);
@@ -98,12 +104,12 @@ const DWORD kBootstrapWaitTimeoutMs = 5;
 const DWORD kFailureDisplaySleepMs = 1000;
 
 /**
- * Local helper with no standalone retail function; observed in callers 0x43d130
- * and 0x43d2e0 as inlined localized failure-message copies.
+ * Original inline helper evidence: no standalone retail function exists.
+ * Observed in callers 0x43d130 and 0x43d2e0 as inlined localized
+ * failure-message copies.
  *
  * Purpose: copy a localized Westwood Online failure message into a stack buffer.
  */
-// Source-faithful helper recovered from address-backed callers in this source file.
 void CopyFailureMessage(
     char *destination,
     const char *source
@@ -114,32 +120,37 @@ void CopyFailureMessage(
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
-IWestwoodOnlineUpgradeApi *GetApiComObject() {
-    return (IWestwoodOnlineUpgradeApi *)g_pWestwoodOnlineUpgradeApi;
+/**
+ * Original inline helper evidence: no standalone retail function exists.
+ * Observed in caller 0x43d2e0 and dependent WOL dialog/event-sink source as a
+ * typed access to the API COM pointer.
+ *
+ * Purpose: return the global WOL ActiveX API pointer as the recovered provider
+ * interface type.
+ */
+IWestwoodOnlineUpgradeProviderApi *GetApiComObject() {
+    return (IWestwoodOnlineUpgradeProviderApi *)g_pWestwoodOnlineUpgradeApi;
 }
 
 /**
- * Local helper with no standalone retail function; observed in caller 0x43d2e0
- * at the progress-dialog DestroyWindow dispatch.
+ * Original inline helper evidence: no standalone retail function exists.
+ * Observed in caller 0x43d2e0 at the progress-dialog DestroyWindow dispatch.
  *
  * Purpose: destroy the modal Westwood Online progress dialog through its MFC
  * provider virtual slot.
  */
-// Source-faithful helper recovered from address-backed callers in this source file.
 void DestroyProgressDialog() {
     CWnd *const progressWnd = (CWnd *)g_pWestwoodOnlineUpgradeProgressDialog;
     progressWnd->DestroyWindow();
 }
 
 /**
- * Local helper with no standalone retail function; observed in caller 0x43d2e0
- * as the GetSystemDefaultLangID language switch.
+ * Original inline helper evidence: no standalone retail function exists.
+ * Observed in caller 0x43d2e0 as the GetSystemDefaultLangID language switch.
  *
  * Purpose: choose the Westwood Online language id for German, French, or the
  * default localized startup path.
  */
-// Source-faithful helper recovered from address-backed callers in this source file.
 int GetWolLanguageId() {
     const LANGID primaryLanguage = GetSystemDefaultLangID() & 0x3ff;
     if (primaryLanguage == LANG_GERMAN) {
@@ -152,20 +163,19 @@ int GetWolLanguageId() {
 }
 
 /**
- * Local helper with no standalone retail function; observed in caller 0x43d2e0
- * as the initial WAIT_TIMEOUT callback pump.
+ * Original inline helper evidence: no standalone retail function exists.
+ * Observed in caller 0x43d2e0 as the initial WAIT_TIMEOUT callback pump.
  *
  * Purpose: process WOL API callbacks until the initial connect/status/failure
  * wait set leaves the timeout state.
  */
-// Source-faithful helper recovered from address-backed callers in this source file.
 void PumpInitialCallbacksUntilEvent(
     DWORD *waitResult
 ) {
     while (*waitResult == WAIT_TIMEOUT) {
-        if (g_WestwoodOnlineUpgradeApiReadyFlag != 0 &&
+        if (g_WestwoodOnlineUpgradeProcessCallbacksFlag != 0 &&
             g_WestwoodOnlineUpgradeApiAsyncErrorFlag == 0) {
-            IWestwoodOnlineUpgradeApi *const api = GetApiComObject();
+            IWestwoodOnlineUpgradeProviderApi *const api = GetApiComObject();
             api->ProcessCallbacks();
         }
 
@@ -184,13 +194,12 @@ void PumpInitialCallbacksUntilEvent(
 }
 
 /**
- * Local helper with no standalone retail function; observed in caller 0x43d2e0
- * as the bootstrap-server wait loop.
+ * Original inline helper evidence: no standalone retail function exists.
+ * Observed in caller 0x43d2e0 as the bootstrap-server wait loop.
  *
  * Purpose: process WOL API callbacks while waiting for the bootstrap server
  * list/status/failure events.
  */
-// Source-faithful helper recovered from address-backed callers in this source file.
 DWORD PumpBootstrapCallbacksUntilEvent() {
     DWORD waitResult = WaitForMultipleObjects(
         3,
@@ -199,7 +208,7 @@ DWORD PumpBootstrapCallbacksUntilEvent() {
         kBootstrapWaitTimeoutMs
     );
     while (waitResult == WAIT_TIMEOUT) {
-        IWestwoodOnlineUpgradeApi *const api = GetApiComObject();
+        IWestwoodOnlineUpgradeProviderApi *const api = GetApiComObject();
         api->ProcessCallbacks();
         if (g_WestwoodOnlineUpgradeApiAsyncErrorFlag != 0) {
             break;
@@ -309,7 +318,7 @@ int WestwoodOnlineUpgradeApi::Init() {
     g_pWestwoodOnlineUpgradeDialog->GetSelectedProfileConnectString(&connectString);
     g_pWestwoodOnlineUpgradeDialog->GetSelectedProfilePlayerName(&playerName);
 
-    IWestwoodOnlineUpgradeApi *apiCom = GetApiComObject();
+    IWestwoodOnlineUpgradeProviderApi *apiCom = GetApiComObject();
     apiCom->BeginConnect(
         GetWolLanguageId(),
         kWolProductId,
@@ -435,16 +444,16 @@ int WestwoodOnlineUpgradeApi::CreateInstanceAndLoadConfig(
         return 0;
     }
 
-    g_WestwoodOnlineUpgradeApiReadyFlag = 1;
+    g_WestwoodOnlineUpgradeProcessCallbacksFlag = 1;
     WestwoodOnlineUpgradeApiEventSink::CreateInstance(
         (WestwoodOnlineUpgradeApiEventSink **)&g_pWestwoodOnlineUpgradeApiEventSink
     );
     zCom::ConnectionPointContainer_Advise(
         g_pWestwoodOnlineUpgradeApi,
         (IUnknown *)((unsigned char *)g_pWestwoodOnlineUpgradeApiEventSink +
-                     g_WestwoodOnlineUpgradeApiEventSinkConnectionOffset),
+                     g_WestwoodOnlineUpgradeApiEventSink_InterfaceMap[0].interfaceOffset),
         g_WestwoodOnlineUpgradeApiEventSink_IID,
-        &g_WestwoodOnlineUpgradeApiConnectionCookie
+        &g_WestwoodOnlineUpgradeApiAdviseCookie
     );
 
     if (WestwoodOnlineUpgradeConfigDialog::ShowModalAndApplySelectedProfileValues()) {
@@ -470,11 +479,11 @@ void WestwoodOnlineUpgradeApi::Shutdown() {
     zCom::ConnectionPointContainer_Unadvise(
         g_pWestwoodOnlineUpgradeApi,
         g_WestwoodOnlineUpgradeApiEventSink_IID,
-        g_WestwoodOnlineUpgradeApiConnectionCookie
+        g_WestwoodOnlineUpgradeApiAdviseCookie
     );
     g_pWestwoodOnlineUpgradeApi->Release();
     g_pWestwoodOnlineUpgradeApi = 0;
-    CloseHandle(g_WestwoodOnlineUpgradeCloseHandle0);
-    CloseHandle(g_WestwoodOnlineUpgradeCloseHandle1);
-    CloseHandle(g_WestwoodOnlineUpgradeCloseHandle2);
+    CloseHandle(g_WestwoodOnlineUpgradeBootstrapServerListEvent);
+    CloseHandle(g_WestwoodOnlineUpgradeStatusTextEvent);
+    CloseHandle(g_WestwoodOnlineUpgradeFailureEvent);
 }

@@ -37,19 +37,21 @@ struct NetSessionBrowserDialog : CDialog {
     static const AFX_MSGMAP_ENTRY messageEntries[];
     static const AFX_MSGMAP *__stdcall GetBaseMessageMapForMfc();
 
-    const AFX_MSGMAP * GetMessageMap() const;
-    BOOL OnInitDialog();
+    NetSessionBrowserDialog(CWnd *parentWnd);
+    virtual ~NetSessionBrowserDialog();
+    virtual const AFX_MSGMAP * GetMessageMap() const;
+    virtual BOOL OnInitDialog();
     NetSessionBrowserDialog * Constructor(CWnd *parentWnd);
     NetSessionBrowserDialog * ScalarDeletingDestructor(
         unsigned int flags
     );
     void Destructor();
-    void DoDataExchange(CDataExchange *dataExchange);
+    virtual void DoDataExchange(CDataExchange *dataExchange);
     int RefreshSessionList();
     void ConnectSelectedProvider();
     void OnTimer(UINT_PTR timerId);
     int ValidatePlayerName();
-    void OnOK();
+    virtual void OnOK();
     void OnCreateSession();
     void OnDestroy();
     void OnHelpDocs();
