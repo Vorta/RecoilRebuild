@@ -33,19 +33,19 @@ RECOIL_NO_GS void __fastcall zSys::ProbePlatformAndVideoCaps(
 
         if (osVer.dwMajorVersion == 4) {
             *outVideoCaps = ZSYS_VIDEO_CAPS_DDRAW2;
-            HMODULE dinputModule = LoadLibraryA(kDinputDll);
+            HMODULE dinputModule = LoadLibraryA(g_zSys_ProbeDinputDllName);
             if (dinputModule == 0) {
-                OutputDebugStringA(kCouldNotLoadDinput);
+                OutputDebugStringA(g_zSys_ProbeLoadDinputFailedMsg);
                 return;
             }
 
             FARPROC directInputCreate = GetProcAddress(
                 dinputModule,
-                kDirectInputCreateName
+                g_zSys_ProbeDirectInputCreateExportName
             );
             FreeLibrary(dinputModule);
             if (directInputCreate == 0) {
-                OutputDebugStringA(kCouldNotGetDinputCreate);
+                OutputDebugStringA(g_zSys_ProbeMissingDirectInputCreateMsg);
                 return;
             }
 
@@ -57,7 +57,7 @@ RECOIL_NO_GS void __fastcall zSys::ProbePlatformAndVideoCaps(
     }
 
     zLoadLibraryAFn loadLibrary = LoadLibraryA;
-    HMODULE ddrawModule = loadLibrary(kDdrawDll);
+    HMODULE ddrawModule = loadLibrary(g_zSys_ProbeDdrawDllName);
     if (ddrawModule == 0) {
         *outVideoCaps = ZSYS_VIDEO_CAPS_NONE;
         *outPlatformCaps = ZSYS_PLATFORM_CAPS_UNSUPPORTED;
@@ -68,13 +68,13 @@ RECOIL_NO_GS void __fastcall zSys::ProbePlatformAndVideoCaps(
     zDirectDrawCreateFn directDrawCreate =
         (zDirectDrawCreateFn)GetProcAddress(
             ddrawModule,
-            kDirectDrawCreateName
+            g_zSys_ProbeDirectDrawCreateExportName
         );
     if (directDrawCreate == 0) {
         *outVideoCaps = ZSYS_VIDEO_CAPS_NONE;
         *outPlatformCaps = ZSYS_PLATFORM_CAPS_UNSUPPORTED;
         FreeLibrary(ddrawModule);
-        OutputDebugStringA(kCouldNotLoadDDraw);
+        OutputDebugStringA(g_zSys_ProbeLoadDdrawFailedMsg);
         return;
     }
 
@@ -86,7 +86,7 @@ RECOIL_NO_GS void __fastcall zSys::ProbePlatformAndVideoCaps(
         *outVideoCaps = ZSYS_VIDEO_CAPS_NONE;
         *outPlatformCaps = ZSYS_PLATFORM_CAPS_UNSUPPORTED;
         FreeLibrary(ddrawModule);
-        OutputDebugStringA(kCouldNotCreateDDraw);
+        OutputDebugStringA(g_zSys_ProbeCreateDdrawFailedMsg);
         return;
     }
 
@@ -98,17 +98,17 @@ RECOIL_NO_GS void __fastcall zSys::ProbePlatformAndVideoCaps(
     ) < 0) {
         IDirectDraw_Release(pDDraw);
         FreeLibrary(ddrawModule);
-        OutputDebugStringA(kCouldNotQiDDraw2);
+        OutputDebugStringA(g_zSys_ProbeQiDdraw2FailedMsg);
         return;
     }
 
     IDirectDraw2_Release(pDDraw2);
     *outVideoCaps = ZSYS_VIDEO_CAPS_DDRAW2;
 
-    register HMODULE dinputModule = loadLibrary(kDinputDll);
+    register HMODULE dinputModule = loadLibrary(g_zSys_ProbeDinputDllName);
     HMODULE dinputHandle = dinputModule;
     if (dinputHandle == 0) {
-        OutputDebugStringA(kCouldNotLoadDinput);
+        OutputDebugStringA(g_zSys_ProbeLoadDinputFailedMsg);
         IDirectDraw_Release(pDDraw);
         FreeLibrary(ddrawModule);
         return;
@@ -116,14 +116,14 @@ RECOIL_NO_GS void __fastcall zSys::ProbePlatformAndVideoCaps(
 
     FARPROC directInputCreate = GetProcAddress(
         dinputHandle,
-        kDirectInputCreateName
+        g_zSys_ProbeDirectInputCreateExportName
     );
     dinputModule = (HMODULE)directInputCreate;
     FreeLibrary(dinputHandle);
     if (dinputModule == 0) {
         FreeLibrary(ddrawModule);
         IDirectDraw_Release(pDDraw);
-        OutputDebugStringA(kCouldNotGetDinputCreate);
+        OutputDebugStringA(g_zSys_ProbeMissingDirectInputCreateMsg);
         return;
     }
 
@@ -148,7 +148,7 @@ RECOIL_NO_GS void __fastcall zSys::ProbePlatformAndVideoCaps(
         IDirectDraw_Release(pDDraw);
         FreeLibrary(ddrawModule);
         *outVideoCaps = ZSYS_VIDEO_CAPS_NONE;
-        OutputDebugStringA(kCouldNotSetCoopLevel);
+        OutputDebugStringA(g_zSys_ProbeSetCoopLevelFailedMsg);
         return;
     }
 
@@ -161,7 +161,7 @@ RECOIL_NO_GS void __fastcall zSys::ProbePlatformAndVideoCaps(
         IDirectDraw_Release(pDDraw);
         FreeLibrary(ddrawModule);
         *outVideoCaps = ZSYS_VIDEO_CAPS_NONE;
-        OutputDebugStringA(kCouldNotCreateSurface);
+        OutputDebugStringA(g_zSys_ProbeCreatePrimarySurfaceFailedMsg);
         return;
     }
 

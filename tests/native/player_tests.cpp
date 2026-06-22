@@ -9701,6 +9701,8 @@ extern "C" int player_reset_motion_transient_state_smoke(void) {
                : 1;
 }
 
+#endif
+
 extern "C" int player_is_mission_probe_type1_enabled_by_id_smoke(void) {
     const bool enabledOk = Player::IsMissionProbeType1EnabledById(9) == 1 &&
                            Player::IsMissionProbeType1EnabledById(11) == 1 &&
@@ -9713,6 +9715,448 @@ extern "C" int player_is_mission_probe_type1_enabled_by_id_smoke(void) {
 
     return enabledOk && disabledOk ? 0 : 1;
 }
+
+namespace {
+bool PlayerAutoTurnSmokeFloatNear(float actual, float expected) {
+    return std::fabs(actual - expected) < 0.0001f;
+}
+
+float PlayerContactFastNormalizeScale(float lengthSq) {
+    int lengthSqBits = 0;
+    std::memcpy(&lengthSqBits, &lengthSq, sizeof(lengthSqBits));
+    lengthSqBits = (lengthSqBits >> 1) + 532676608;
+
+    float approxLength = 0.0f;
+    std::memcpy(&approxLength, &lengthSqBits, sizeof(approxLength));
+    return g_Player_CollisionContactResolveScale / (approxLength + 0.00000001f);
+}
+} // namespace
+
+#if defined(RECOIL_NATIVE_PLAYER_TESTS_GUN_DISPATCH_ONLY) && \
+    defined(RECOIL_NATIVE_PLAYER_TESTS_CAMERA_SMOKES)
+namespace {
+bool Vec3Equals(const zVec3 &value, const zVec3 &expected) {
+    return value.x == expected.x && value.y == expected.y && value.z == expected.z;
+}
+
+bool MatrixEquals(const zMat4x3 &value, const zMat4x3 &expected) {
+    return value.xx == expected.xx && value.xy == expected.xy && value.xz == expected.xz &&
+           value.yx == expected.yx && value.yy == expected.yy && value.yz == expected.yz &&
+           value.zx == expected.zx && value.zy == expected.zy && value.zz == expected.zz &&
+           value.posX == expected.posX && value.posY == expected.posY &&
+           value.posZ == expected.posZ;
+}
+
+bool FloatNear(float actual, float expected) {
+    return actual > expected - 0.0001f && actual < expected + 0.0001f;
+}
+
+float PlayerDampingFactor(float rate, float deltaTime) {
+    const int bits = static_cast<int>(-rate * deltaTime * 12102200.0f) + 0x3f800000;
+    float factor = 0.0f;
+    std::memcpy(&factor, &bits, sizeof(factor));
+    return factor;
+}
+
+template <typename Method>
+std::uintptr_t MethodAddress(Method method) {
+    std::uintptr_t address = 0;
+    std::memcpy(&address, &method, sizeof(address));
+    return address;
+}
+
+int g_PlayerTestHudVisibleCount;
+void *g_PlayerTestHudVisibleThis[8];
+int g_PlayerTestHudVisibleValue[8];
+
+struct PlayerTestHudUiFTable {
+    std::uintptr_t slots[32];
+};
+
+struct TestPlayerWeatherFxEmitter {
+    HudUiElement ui;
+    unsigned char unknown_34[0x1c];
+    zClass_NodePartial *cameraNode;
+    int particleAgeTick;
+
+    void SetVisible(int visible) {
+        const int index = g_PlayerTestHudVisibleCount;
+        if (index < 8) {
+            g_PlayerTestHudVisibleThis[index] = this;
+            g_PlayerTestHudVisibleValue[index] = visible;
+        }
+        ++g_PlayerTestHudVisibleCount;
+        if (visible != 0) {
+            ui.flags &= ~0x10u;
+        } else {
+            ui.flags |= 0x10u;
+        }
+    }
+};
+static_assert(offsetof(TestPlayerWeatherFxEmitter, cameraNode) == 0x50,
+              "weather FX camera node offset");
+static_assert(offsetof(TestPlayerWeatherFxEmitter, particleAgeTick) == 0x54,
+              "weather FX particle tick offset");
+} // namespace
+
+extern "C" int player_sync_local_pose_from_root_node_smoke(void) {
+    zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
+
+    zClass_Object3DDataPartial objectData = {};
+    objectData.localMatrix[9] = 12.0f;
+    objectData.localMatrix[10] = 34.0f;
+    objectData.localMatrix[11] = 56.0f;
+    objectData.rotation = zVec3_Make(0.1f, 0.2f, 0.3f);
+    zClass_NodePartial rootNode = {};
+    rootNode.classId = 5;
+    rootNode.classData = &objectData;
+
+    zUtil_PlayerStateStorage playerState = {};
+    playerState.rootNode = &rootNode;
+    playerState.lifecycleState = 6;
+    zUtil_SaveGameState saveState = {};
+    saveState.playerState = &playerState;
+    g_GameStateOrMapTable = (zInput_GameStateOrMapTablePartial *)&saveState;
+
+    zMat4x3 expectedBasis = {};
+    zMath::MatBuildEulerRotation3x3(
+        &expectedBasis,
+        objectData.rotation.x,
+        objectData.rotation.y,
+        objectData.rotation.z
+    );
+    expectedBasis.posX = objectData.localMatrix[9];
+    expectedBasis.posY = objectData.localMatrix[10];
+    expectedBasis.posZ = objectData.localMatrix[11];
+
+    Player::SyncLocalPoseFromRootNode();
+
+    const bool ok =
+        Vec3Equals(playerState.worldPos, zVec3_Make(12.0f, 34.0f, 56.0f)) &&
+        Vec3Equals(playerState.vehicleRotationAngles, objectData.rotation) &&
+        MatrixEquals(playerState.motionBasis, expectedBasis) &&
+        MatrixEquals(playerState.previousTransform, expectedBasis) &&
+        playerState.lifecycleState == 1;
+
+    g_GameStateOrMapTable = oldGameStateOrMapTable;
+    return ok ? 0 : 1;
+}
+
+extern "C" int player_unbind_current_save_state_if_single_player_smoke(void) {
+    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    zUtil_SaveGameState *const oldCurrentSaveState = g_CurrentPlayerSaveState;
+
+    int networkEnabled = 0;
+    ZOPT_NETWORK_ENABLED = &networkEnabled;
+
+    zUtil_PlayerStateStorage playerState = {};
+    zUtil_SaveGameState saveState = {};
+    saveState.playerState = &playerState;
+    playerState.currentSaveStateBound = 1;
+    g_CurrentPlayerSaveState = &saveState;
+
+    Player::UnbindCurrentSaveStateIfSinglePlayer();
+    const bool disabledOk =
+        g_CurrentPlayerSaveState == nullptr && playerState.currentSaveStateBound == 0;
+
+    networkEnabled = 1;
+    playerState.currentSaveStateBound = 1;
+    g_CurrentPlayerSaveState = &saveState;
+
+    Player::UnbindCurrentSaveStateIfSinglePlayer();
+    const bool enabledOk =
+        g_CurrentPlayerSaveState == &saveState && playerState.currentSaveStateBound == 1;
+
+    g_CurrentPlayerSaveState = oldCurrentSaveState;
+    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    return disabledOk && enabledOk ? 0 : 1;
+}
+
+extern "C" int player_bind_active_game_state_as_current_save_state_smoke(void) {
+    zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
+    zUtil_SaveGameState *const oldCurrentSaveState = g_CurrentPlayerSaveState;
+
+    zUtil_PlayerStateStorage playerState = {};
+    zUtil_SaveGameState saveState = {};
+    saveState.playerState = &playerState;
+    g_GameStateOrMapTable = reinterpret_cast<zInput_GameStateOrMapTablePartial *>(&saveState);
+    g_CurrentPlayerSaveState = nullptr;
+
+    Player::BindActiveGameStateAsCurrentSaveState();
+    const bool ok =
+        playerState.currentSaveStateBound == 1 && g_CurrentPlayerSaveState == &saveState;
+
+    g_CurrentPlayerSaveState = oldCurrentSaveState;
+    g_GameStateOrMapTable = oldGameStateOrMapTable;
+    return ok ? 0 : 1;
+}
+
+extern "C" int player_reset_mouse_control_state_and_recenter_cursor_smoke(void) {
+    HWND const oldWindow = g_zInput_hWnd;
+    const int oldCenterX = g_zInput_MouseClientCenterX;
+    const int oldCenterY = g_zInput_MouseClientCenterY;
+    const zInput::MouseStateSnapshot oldMouseState = g_zInput_MouseStateSnapshot;
+    POINT originalCursor = {};
+    GetCursorPos(&originalCursor);
+
+    HWND const hwnd = CreateWindowExA(0, "STATIC", "recoil", WS_POPUP, 30, 40, 200, 120,
+                                      nullptr, nullptr, GetModuleHandleA(nullptr), nullptr);
+    if (hwnd == nullptr) {
+        return 1;
+    }
+
+    zUtil_SaveGameState saveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    saveState.playerState = &playerState;
+    playerState.thirdPersonYawOffset = 11.0f;
+    playerState.cameraElevationOffset = -3.0f;
+    playerState.cameraYOffset = 5.0f;
+
+    g_zInput_hWnd = hwnd;
+    g_zInput_MouseClientCenterX = 64;
+    g_zInput_MouseClientCenterY = 48;
+    g_zInput_MouseStateSnapshot.cursorClientX = 7;
+    g_zInput_MouseStateSnapshot.cursorClientY = 9;
+    g_zInput_MouseStateSnapshot.cursorNormX = 0.25f;
+    g_zInput_MouseStateSnapshot.cursorNormY = -0.5f;
+
+    Player::ResetMouseControlStateAndRecenterCursor(&saveState);
+
+    const bool resetOk = playerState.thirdPersonYawOffset == 0.0f &&
+                         playerState.cameraElevationOffset == 0.0f &&
+                         playerState.cameraYOffset == 5.0f &&
+                         g_zInput_MouseStateSnapshot.cursorClientX == 64 &&
+                         g_zInput_MouseStateSnapshot.cursorClientY == 48 &&
+                         g_zInput_MouseStateSnapshot.cursorNormX == 0.0f &&
+                         g_zInput_MouseStateSnapshot.cursorNormY == 0.0f;
+
+    DestroyWindow(hwnd);
+    SetCursorPos(originalCursor.x, originalCursor.y);
+    g_zInput_hWnd = oldWindow;
+    g_zInput_MouseClientCenterX = oldCenterX;
+    g_zInput_MouseClientCenterY = oldCenterY;
+    g_zInput_MouseStateSnapshot = oldMouseState;
+
+    return resetOk ? 0 : 2;
+}
+
+extern "C" int player_toggle_steering_mode_and_reset_mouse_look_smoke(void) {
+    zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
+    int *const oldGameControlOptions = ZOPT_GAME_CONTROL_OPTIONS;
+    HWND const oldWindow = g_zInput_hWnd;
+    const int oldCenterX = g_zInput_MouseClientCenterX;
+    const int oldCenterY = g_zInput_MouseClientCenterY;
+    const zInput::MouseStateSnapshot oldMouseState = g_zInput_MouseStateSnapshot;
+    POINT originalCursor = {};
+    GetCursorPos(&originalCursor);
+
+    HWND const hwnd = CreateWindowExA(0, "STATIC", "recoil", WS_POPUP, 30, 40, 200, 120,
+                                      nullptr, nullptr, GetModuleHandleA(nullptr), nullptr);
+    if (hwnd == nullptr) {
+        return 1;
+    }
+
+    zUtil_SaveGameState saveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    int gameControlOptions = 0;
+    saveState.playerState = &playerState;
+    playerState.thirdPersonYawOffset = 13.0f;
+    playerState.cameraElevationOffset = -4.0f;
+
+    g_GameStateOrMapTable = reinterpret_cast<zInput_GameStateOrMapTablePartial *>(&saveState);
+    ZOPT_GAME_CONTROL_OPTIONS = &gameControlOptions;
+    g_zInput_hWnd = hwnd;
+    g_zInput_MouseClientCenterX = 31;
+    g_zInput_MouseClientCenterY = 29;
+    g_zInput_MouseStateSnapshot.cursorClientX = 5;
+    g_zInput_MouseStateSnapshot.cursorClientY = 7;
+    g_zInput_MouseStateSnapshot.cursorNormX = 0.5f;
+    g_zInput_MouseStateSnapshot.cursorNormY = -0.25f;
+
+    Player::ToggleSteeringModeAndResetMouseLook();
+    const bool enabledOk =
+        (gameControlOptions & 0x02) != 0 && zOpt::GetSteeringMode() == 1 &&
+        playerState.thirdPersonYawOffset == 0.0f && playerState.cameraElevationOffset == 0.0f &&
+        g_zInput_MouseStateSnapshot.cursorClientX == 31 &&
+        g_zInput_MouseStateSnapshot.cursorClientY == 29 &&
+        g_zInput_MouseStateSnapshot.cursorNormX == 0.0f &&
+        g_zInput_MouseStateSnapshot.cursorNormY == 0.0f;
+
+    playerState.thirdPersonYawOffset = 2.0f;
+    playerState.cameraElevationOffset = 3.0f;
+    g_zInput_MouseStateSnapshot.cursorClientX = 9;
+    g_zInput_MouseStateSnapshot.cursorClientY = 11;
+    g_zInput_MouseStateSnapshot.cursorNormX = 0.75f;
+    g_zInput_MouseStateSnapshot.cursorNormY = 0.25f;
+    Player::ToggleSteeringModeAndResetMouseLook();
+
+    const bool disabledOk =
+        (gameControlOptions & 0x02) == 0 && zOpt::GetSteeringMode() == 0 &&
+        playerState.thirdPersonYawOffset == 0.0f && playerState.cameraElevationOffset == 0.0f &&
+        g_zInput_MouseStateSnapshot.cursorClientX == 31 &&
+        g_zInput_MouseStateSnapshot.cursorClientY == 29 &&
+        g_zInput_MouseStateSnapshot.cursorNormX == 0.0f &&
+        g_zInput_MouseStateSnapshot.cursorNormY == 0.0f;
+
+    DestroyWindow(hwnd);
+    SetCursorPos(originalCursor.x, originalCursor.y);
+    g_GameStateOrMapTable = oldGameStateOrMapTable;
+    ZOPT_GAME_CONTROL_OPTIONS = oldGameControlOptions;
+    g_zInput_hWnd = oldWindow;
+    g_zInput_MouseClientCenterX = oldCenterX;
+    g_zInput_MouseClientCenterY = oldCenterY;
+    g_zInput_MouseStateSnapshot = oldMouseState;
+
+    return enabledOk && disabledOk ? 0 : 2;
+}
+
+extern "C" int player_set_world_pose_and_restart_anchor_smoke(void) {
+    zUtil_SaveGameState saveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    saveState.playerState = &playerState;
+
+    playerState.worldPos = {1.0f, 2.0f, 3.0f};
+    playerState.previousTransform.posX = 4.0f;
+    playerState.previousTransform.posY = 5.0f;
+    playerState.previousTransform.posZ = 6.0f;
+    playerState.restartYawRad = 7.0f;
+    playerState.variantTag.count = 3;
+    playerState.variantTag.tags[0] = 10;
+    playerState.variantTag.tags[1] = 11;
+    playerState.variantTag.tags[2] = 12;
+
+    const zTag4Partial oldVariantTagCurrent = g_VariantTag_Current;
+    const zTag4Partial oldVariantCurrent = g_Variant_CurrentTag;
+    g_VariantTag_Current.count = 2;
+    g_VariantTag_Current.tags[0] = 20;
+    g_VariantTag_Current.tags[1] = 21;
+    g_VariantTag_Current.tags[2] = 22;
+    g_Variant_CurrentTag.count = 1;
+    g_Variant_CurrentTag.tags[0] = 30;
+    g_Variant_CurrentTag.tags[1] = 31;
+    g_Variant_CurrentTag.tags[2] = 32;
+
+    Player::SetWorldPoseAndRestartAnchor(nullptr, nullptr, 9.0f);
+    if (!Vec3Equals(playerState.worldPos, {1.0f, 2.0f, 3.0f}) ||
+        playerState.restartYawRad != 7.0f || g_VariantTag_Current.count != 2 ||
+        g_Variant_CurrentTag.count != 1) {
+        g_VariantTag_Current = oldVariantTagCurrent;
+        g_Variant_CurrentTag = oldVariantCurrent;
+        return 1;
+    }
+
+    const zVec3 newPosition = {40.0f, 41.0f, 42.0f};
+    Player::SetWorldPoseAndRestartAnchor(&saveState, &newPosition, 1.25f);
+
+    const bool ok = Vec3Equals(playerState.worldPos, newPosition) &&
+                    playerState.previousTransform.posX == newPosition.x &&
+                    playerState.previousTransform.posY == newPosition.y &&
+                    playerState.previousTransform.posZ == newPosition.z &&
+                    playerState.restartYawRad == 1.25f &&
+                    g_VariantTag_Current.count == 0 &&
+                    g_VariantTag_Current.tags[0] == 0xff &&
+                    g_VariantTag_Current.tags[1] == 0xff &&
+                    g_VariantTag_Current.tags[2] == 0xff &&
+                    g_Variant_CurrentTag.count == 0 &&
+                    g_Variant_CurrentTag.tags[0] == 0xff &&
+                    g_Variant_CurrentTag.tags[1] == 0xff &&
+                    g_Variant_CurrentTag.tags[2] == 0xff &&
+                    playerState.variantTag.count == 0 &&
+                    playerState.variantTag.tags[0] == 0xff &&
+                    playerState.variantTag.tags[1] == 0xff &&
+                    playerState.variantTag.tags[2] == 0xff;
+
+    g_VariantTag_Current = oldVariantTagCurrent;
+    g_Variant_CurrentTag = oldVariantCurrent;
+    return ok ? 0 : 2;
+}
+
+extern "C" int player_capture_current_object_pose_as_restart_anchor_smoke(void) {
+    zUtil_SaveGameState *const oldLocalSaveState = g_LocalPlayerSaveState;
+    const zTag4Partial oldVariantTagCurrent = g_VariantTag_Current;
+    const zTag4Partial oldVariantCurrent = g_Variant_CurrentTag;
+
+    zClass_Object3DDataPartial objectData = {};
+    objectData.localMatrix[9] = -8.0f;
+    objectData.localMatrix[10] = 9.5f;
+    objectData.localMatrix[11] = 12.25f;
+    objectData.rotation = zVec3_Make(0.25f, 1.75f, -0.5f);
+    zClass_NodePartial rootNode = {};
+    rootNode.classId = 5;
+    rootNode.classData = &objectData;
+
+    zUtil_PlayerStateStorage localPlayerState = {};
+    localPlayerState.rootNode = &rootNode;
+    zUtil_SaveGameState localSaveState = {};
+    localSaveState.playerState = &localPlayerState;
+
+    zUtil_PlayerStateStorage targetPlayerState = {};
+    zUtil_SaveGameState targetSaveState = {};
+    targetSaveState.playerState = &targetPlayerState;
+
+    g_VariantTag_Current.count = 2;
+    g_VariantTag_Current.tags[0] = 1;
+    g_VariantTag_Current.tags[1] = 2;
+    g_VariantTag_Current.tags[2] = 3;
+    g_Variant_CurrentTag = g_VariantTag_Current;
+    g_LocalPlayerSaveState = &localSaveState;
+
+    Player::CaptureCurrentObjectPoseAsRestartAnchor(&targetSaveState);
+
+    const zVec3 expectedPosition = zVec3_Make(-8.0f, 9.5f, 12.25f);
+    const bool ok = Vec3Equals(targetPlayerState.worldPos, expectedPosition) &&
+                    targetPlayerState.previousTransform.posX == expectedPosition.x &&
+                    targetPlayerState.previousTransform.posY == expectedPosition.y &&
+                    targetPlayerState.previousTransform.posZ == expectedPosition.z &&
+                    targetPlayerState.restartYawRad == 1.75f &&
+                    targetPlayerState.variantTag.count == 0 &&
+                    g_VariantTag_Current.count == 0 && g_Variant_CurrentTag.count == 0;
+
+    g_LocalPlayerSaveState = oldLocalSaveState;
+    g_VariantTag_Current = oldVariantTagCurrent;
+    g_Variant_CurrentTag = oldVariantCurrent;
+    return ok ? 0 : 1;
+}
+
+extern "C" int player_reset_motion_transient_state_smoke(void) {
+    zUtil_SaveGameState saveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    saveState.playerState = &playerState;
+
+    playerState.throttleInput = 1.0f;
+    playerState.steeringInput = 2.0f;
+    playerState.subVerticalInput = 3.0f;
+    playerState.subPitchInput = 4.0f;
+    playerState.joyCameraYawInput = 5.0f;
+    playerState.throttleInputCopy = 6.0f;
+    playerState.steeringInputCopy = 7.0f;
+    playerState.subVerticalInputCopy = 8.0f;
+    playerState.subPitchInputCopy = 9.0f;
+    playerState.angVelPitch = 10.0f;
+    playerState.angVelYaw = 11.0f;
+    playerState.angVelRoll = 12.0f;
+    playerState.projectileSpawnVel = {13.0f, 14.0f, 15.0f};
+    playerState.localVel = {16.0f, 17.0f, 18.0f};
+    playerState.yawRotatedLocalVel = {19.0f, 20.0f, 21.0f};
+
+    Player::ResetMotionTransientState(&saveState);
+
+    return playerState.throttleInput == 0.0f && playerState.steeringInput == 0.0f &&
+                   playerState.subVerticalInput == 0.0f && playerState.subPitchInput == 4.0f &&
+                   playerState.joyCameraYawInput == 5.0f &&
+                   playerState.throttleInputCopy == 0.0f &&
+                   playerState.steeringInputCopy == 0.0f &&
+                   playerState.subVerticalInputCopy == 0.0f &&
+                   playerState.subPitchInputCopy == 9.0f &&
+                   playerState.angVelPitch == 0.0f && playerState.angVelYaw == 0.0f &&
+                   playerState.angVelRoll == 0.0f &&
+                   Vec3Equals(playerState.projectileSpawnVel, {0.0f, 0.0f, 0.0f}) &&
+                   Vec3Equals(playerState.localVel, {0.0f, 0.0f, 0.0f}) &&
+                   Vec3Equals(playerState.yawRotatedLocalVel, {0.0f, 0.0f, 0.0f})
+               ? 0
+               : 1;
+}
+#endif
 
 extern "C" int player_update_bank_velocity_from_steer_input_smoke(void) {
     zUtil_SaveGameState saveState = {};
@@ -9818,7 +10262,8 @@ extern "C" int player_integrate_yaw_and_wrap_from_yaw_velocity_smoke(void) {
     playerState.angVelYaw = 3.0f;
     Player::IntegrateYawAndWrapFromYawVelocity(&saveState);
     if (playerState.autoTurnActive != 0 || playerState.steeringInput != 0.0f ||
-        playerState.angVelYaw != 0.0f || !FloatNear(playerState.restartYawRad, 0.0f)) {
+        playerState.angVelYaw != 0.0f ||
+        !PlayerAutoTurnSmokeFloatNear(playerState.restartYawRad, 0.0f)) {
         return 1;
     }
 
@@ -9827,14 +10272,14 @@ extern "C" int player_integrate_yaw_and_wrap_from_yaw_velocity_smoke(void) {
     playerState.steeringInput = 0.0f;
     modalData.yawDamping = 0.0f;
     Player::IntegrateYawAndWrapFromYawVelocity(&saveState);
-    if (!FloatNear(playerState.restartYawRad, 0.1168146f)) {
+    if (!PlayerAutoTurnSmokeFloatNear(playerState.restartYawRad, 0.1168146f)) {
         return 2;
     }
 
     playerState.restartYawRad = -6.2f;
     playerState.angVelYaw = -0.2f;
     Player::IntegrateYawAndWrapFromYawVelocity(&saveState);
-    if (!FloatNear(playerState.restartYawRad, -0.1168146f)) {
+    if (!PlayerAutoTurnSmokeFloatNear(playerState.restartYawRad, -0.1168146f)) {
         return 3;
     }
 
@@ -9842,7 +10287,7 @@ extern "C" int player_integrate_yaw_and_wrap_from_yaw_velocity_smoke(void) {
     playerState.angVelYaw = 0.5f;
     g_Player_DeltaTime = 0.5f;
     Player::IntegrateYawAndWrapFromYawVelocity(&saveState);
-    return FloatNear(playerState.restartYawRad, 1.25f) ? 0 : 4;
+    return PlayerAutoTurnSmokeFloatNear(playerState.restartYawRad, 1.25f) ? 0 : 4;
 }
 
 extern "C" int player_rebuild_steer_basis_from_motion_basis_smoke(void) {
@@ -9859,20 +10304,20 @@ extern "C" int player_rebuild_steer_basis_from_motion_basis_smoke(void) {
     playerState.steerBasisNorm.y = 99.0f;
 
     Player::RebuildSteerBasisFromMotionBasis(&saveState);
-    if (!FloatNear(playerState.steerBasisRaw.x, -3.0f) ||
-        !FloatNear(playerState.steerBasisRaw.y, -4.0f) ||
-        !FloatNear(playerState.steerBasisRaw.z, 0.0f)) {
+    if (!PlayerAutoTurnSmokeFloatNear(playerState.steerBasisRaw.x, -3.0f) ||
+        !PlayerAutoTurnSmokeFloatNear(playerState.steerBasisRaw.y, -4.0f) ||
+        !PlayerAutoTurnSmokeFloatNear(playerState.steerBasisRaw.z, 0.0f)) {
         return 1;
     }
-    if (!FloatNear(playerState.steerBasisRef.x, 7.0f) ||
-        !FloatNear(playerState.steerBasisRef.y, 8.0f) ||
-        !FloatNear(playerState.steerBasisRef.z, 9.0f)) {
+    if (!PlayerAutoTurnSmokeFloatNear(playerState.steerBasisRef.x, 7.0f) ||
+        !PlayerAutoTurnSmokeFloatNear(playerState.steerBasisRef.y, 8.0f) ||
+        !PlayerAutoTurnSmokeFloatNear(playerState.steerBasisRef.z, 9.0f)) {
         return 2;
     }
 
-    return FloatNear(playerState.steerBasisNorm.x, -1.0f) &&
-                   FloatNear(playerState.steerBasisNorm.y, 0.0f) &&
-                   FloatNear(playerState.steerBasisNorm.z, 0.0f)
+    return PlayerAutoTurnSmokeFloatNear(playerState.steerBasisNorm.x, -1.0f) &&
+                   PlayerAutoTurnSmokeFloatNear(playerState.steerBasisNorm.y, 0.0f) &&
+                   PlayerAutoTurnSmokeFloatNear(playerState.steerBasisNorm.z, 0.0f)
                ? 0
                : 3;
 }
@@ -9912,10 +10357,10 @@ extern "C" int player_rebuild_steer_basis_from_motion_axes_smoke(void) {
 
     return playerState.autoTurnActive == 0 && playerState.steeringInputCopy == 0.0f &&
                    playerState.angVelYaw == 0.0f && playerState.thirdPersonYawOffset == 0.0f &&
-                   FloatNear(playerState.cameraDirFlat.x, 0.6f) &&
+                   PlayerAutoTurnSmokeFloatNear(playerState.cameraDirFlat.x, 0.6f) &&
                    playerState.cameraDirFlat.y == 0.0f &&
-                   FloatNear(playerState.cameraDirFlat.z, 0.8f) &&
-                   FloatNear(playerState.restartYawRad, -1.57079637f)
+                   PlayerAutoTurnSmokeFloatNear(playerState.cameraDirFlat.z, 0.8f) &&
+                   PlayerAutoTurnSmokeFloatNear(playerState.restartYawRad, -1.57079637f)
                ? 0
                : 2;
 }
@@ -9933,12 +10378,14 @@ extern "C" int player_set_auto_turn_target_dir_from_world_point_smoke(void) {
     Player::SetAutoTurnTargetDirFromWorldPoint(&saveState, &worldPoint);
 
     return playerState.autoTurnActive == 1 &&
-                   FloatNear(playerState.autoTurnTargetDir.x, 0.6f) &&
+                   PlayerAutoTurnSmokeFloatNear(playerState.autoTurnTargetDir.x, 0.6f) &&
                    playerState.autoTurnTargetDir.y == 0.0f &&
-                   FloatNear(playerState.autoTurnTargetDir.z, 0.8f)
+                   PlayerAutoTurnSmokeFloatNear(playerState.autoTurnTargetDir.z, 0.8f)
                ? 0
                : 1;
 }
+
+#ifndef RECOIL_NATIVE_PLAYER_TESTS_GUN_DISPATCH_ONLY
 
 extern "C" int player_tick_local_player_controls_smoke(void) {
     int *const oldJoystickOption = ZOPT_INPUT_JOYSTICK;
@@ -10126,6 +10573,58 @@ extern "C" int player_tick_local_player_controls_smoke(void) {
 
     return ok ? 0 : 1;
 }
+#endif
+
+extern "C" int player_vec3_fast_normalize_smoke(void) {
+    const float oldScale = g_Player_CollisionContactResolveScale;
+    g_Player_CollisionContactResolveScale = 0.2f;
+
+    zVec3 vec = {0.03f, 0.04f, 0.0f};
+    const float lengthSq = vec.x * vec.x + vec.y * vec.y + vec.z * vec.z;
+    const float expectedScale = PlayerContactFastNormalizeScale(lengthSq);
+    const int normalized = Player::Vec3_FastNormalize(&vec);
+    if (normalized != 1 || !PlayerAutoTurnSmokeFloatNear(vec.x, 0.03f * expectedScale) ||
+        !PlayerAutoTurnSmokeFloatNear(vec.y, 0.04f * expectedScale) || vec.z != 0.0f) {
+        g_Player_CollisionContactResolveScale = oldScale;
+        return 1;
+    }
+
+    zVec3 atThreshold = {0.1f, 0.0f, 0.0f};
+    if (Player::Vec3_FastNormalize(&atThreshold) != 0 || atThreshold.x != 0.1f ||
+        atThreshold.y != 0.0f || atThreshold.z != 0.0f) {
+        g_Player_CollisionContactResolveScale = oldScale;
+        return 2;
+    }
+
+    zVec3 zero = {};
+    const int zeroResult = Player::Vec3_FastNormalize(&zero);
+    g_Player_CollisionContactResolveScale = oldScale;
+    return zeroResult == 0 && zero.x == 0.0f && zero.y == 0.0f && zero.z == 0.0f ? 0 : 3;
+}
+
+extern "C" int player_constrain_to_unit_distance_from_smoke(void) {
+    const float oldScale = g_Player_CollisionContactResolveScale;
+    g_Player_CollisionContactResolveScale = 0.2f;
+
+    const zVec3 center = {10.0f, 20.0f, 30.0f};
+    zVec3 pos = {10.03f, 20.04f, 30.0f};
+    const float expectedScale = PlayerContactFastNormalizeScale(0.03f * 0.03f + 0.04f * 0.04f);
+    Player::ConstrainToUnitDistanceFrom(&pos, &center);
+    if (!PlayerAutoTurnSmokeFloatNear(pos.x, center.x + 0.03f * expectedScale) ||
+        !PlayerAutoTurnSmokeFloatNear(pos.y, center.y + 0.04f * expectedScale) ||
+        pos.z != center.z) {
+        g_Player_CollisionContactResolveScale = oldScale;
+        return 1;
+    }
+
+    zVec3 farPos = {11.0f, 20.0f, 30.0f};
+    Player::ConstrainToUnitDistanceFrom(&farPos, &center);
+    g_Player_CollisionContactResolveScale = oldScale;
+    return farPos.x == 11.0f && farPos.y == 20.0f && farPos.z == 30.0f ? 0 : 2;
+}
+
+#if !defined(RECOIL_NATIVE_PLAYER_TESTS_GUN_DISPATCH_ONLY) || \
+    defined(RECOIL_NATIVE_PLAYER_TESTS_CAMERA_SMOKES)
 
 extern "C" int player_filter_camera_probe_blocking_hits_smoke(void) {
     const int oldRaceCheckpointMode = g_HudSensorTracker.raceCheckpointMode;
@@ -11149,10 +11648,10 @@ extern "C" int player_update_camera_weather_fx_emitter_visibility_smoke(void) {
     const int oldBreakOnFirst = g_cls_di_BreakOnFirstCandidate;
     const int oldStopAfterFirst = g_cls_di_StopAfterFirstHit;
 
-    HudUiCommon_FTable visibleTable = {};
+    PlayerTestHudUiFTable visibleTable = {};
     visibleTable.slots[24] = MethodAddress(&TestPlayerWeatherFxEmitter::SetVisible);
     TestPlayerWeatherFxEmitter fxEmitter = {};
-    fxEmitter.ui.ftable = &visibleTable;
+    *reinterpret_cast<const PlayerTestHudUiFTable **>(&fxEmitter.ui) = &visibleTable;
     fxEmitter.ui.flags = 0x10;
     g_HudSensorTracker.fxPass3Obj = &fxEmitter.ui;
 
@@ -11313,6 +11812,79 @@ extern "C" int player_tick_active_camera_state_smoke(void) {
     }
     return state2CacheOk ? 0 : 2;
 }
+#endif
+
+#if defined(RECOIL_NATIVE_PLAYER_TESTS_GUN_DISPATCH_ONLY) && \
+    defined(RECOIL_NATIVE_PLAYER_TESTS_PENDING_CONTACT_SMOKES)
+namespace {
+template <typename T> T *AllocZeroedNew() {
+    T *const value = static_cast<T *>(::operator new(sizeof(T)));
+    std::memset(value, 0, sizeof(T));
+    return value;
+}
+
+template <typename T>
+T &TestFieldAt(void *base, std::size_t offset) {
+    return *reinterpret_cast<T *>(static_cast<unsigned char *>(base) + offset);
+}
+
+int g_PlayerTestTransferDamageCalls;
+float g_PlayerTestTransferDamageArgs[4];
+
+float __fastcall PlayerTransferDamageTimerCallback(void *context, float damageAmount) {
+    const int index = g_PlayerTestTransferDamageCalls;
+    if (index < 4) {
+        g_PlayerTestTransferDamageArgs[index] = damageAmount;
+    }
+    ++g_PlayerTestTransferDamageCalls;
+    return *static_cast<float *>(context);
+}
+
+PlayerPendingContact *MakePendingContactChain(int count) {
+    PlayerPendingContact *head = nullptr;
+    PlayerPendingContact *tail = nullptr;
+    for (int i = 0; i < count; ++i) {
+        PlayerPendingContact *const contact = AllocZeroedNew<PlayerPendingContact>();
+        if (head == nullptr) {
+            head = contact;
+        } else {
+            tail->next = contact;
+        }
+        tail = contact;
+    }
+    return head;
+}
+
+void FillPendingContactQueue(PlayerPendingContactQueue *queue, int count) {
+    queue->listAux = 0x12340000 + count;
+    queue->head = MakePendingContactChain(count);
+    queue->tail = queue->head;
+    while (queue->tail != nullptr && queue->tail->next != nullptr) {
+        queue->tail = queue->tail->next;
+    }
+    queue->count = count;
+}
+
+bool PendingContactQueueCleared(const PlayerPendingContactQueue &queue) {
+    return queue.listAux == 0 && queue.head == nullptr && queue.tail == nullptr &&
+           queue.count == 0;
+}
+
+bool PendingContactPayloadMatches(const PlayerPendingContact *contact,
+                                  const zClassDiPickCandidateEntry &candidate,
+                                  const zVec3 &segmentStart, const zVec3 &segmentEnd,
+                                  int segmentTag) {
+    return contact != nullptr && contact->hit.node == candidate.node &&
+           contact->hit.scenePayload == candidate.scenePayload &&
+           contact->hit.surfaceNormal.y == candidate.surfaceNormal.y &&
+           Vec3Equals(contact->sweepStart, segmentStart) &&
+           Vec3Equals(contact->sweepEnd, segmentEnd) && contact->segmentTag == segmentTag;
+}
+} // namespace
+#endif
+
+#if !defined(RECOIL_NATIVE_PLAYER_TESTS_GUN_DISPATCH_ONLY) || \
+    defined(RECOIL_NATIVE_PLAYER_TESTS_PENDING_CONTACT_SMOKES)
 
 extern "C" int player_clear_pending_contact_queues_smoke(void) {
     zUtil_SaveGameState saveState = {};
@@ -11488,6 +12060,7 @@ extern "C" int player_resolve_pending_world_collision_contact_smoke(void) {
                : 1;
 }
 
+#ifndef RECOIL_NATIVE_PLAYER_TESTS_GUN_DISPATCH_ONLY
 extern "C" int checkpoint_update_player_lap_progress_and_notify_net_smoke(void) {
     const float oldAccumulatedTime = g_Time_AccumulatedTimeSec;
     const int oldCheckpointCount = g_HudSensorTracker.checkpointCount;
@@ -11637,6 +12210,7 @@ extern "C" int checkpoint_instantiate_named_objects_smoke(void) {
     zClass_TypeList::Tail(6) = oldType6Tail;
     return checkpoint1Ok && checkpoint2Ok && unrelatedOk ? 0 : 1;
 }
+#endif
 
 extern "C" int player_classify_pending_contacts_for_segment_smoke(void) {
     zUtil_SaveGameState saveState = {};
@@ -11857,6 +12431,7 @@ extern "C" int player_collect_pending_contacts_for_segments_smoke(void) {
     return contactsOk && emptyOk ? 0 : 1;
 }
 
+#ifndef RECOIL_NATIVE_PLAYER_TESTS_GUN_DISPATCH_ONLY
 extern "C" int player_ai_mode2_forward_probe_requires_auto_turn_smoke(void) {
     zClass_NodePartial *const oldRuntimeScene = g_Player_RuntimeDiScene;
     const zTag4Partial oldVariantCurrent = g_Variant_CurrentTag;
@@ -12124,6 +12699,7 @@ extern "C" int player_tick_ai_mode2_path_follow_smoke(void) {
     }
     return followOk ? 0 : 2;
 }
+#endif
 
 extern "C" int player_pickup_contact_passes_collection_test_smoke(void) {
     zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
@@ -12325,11 +12901,8 @@ extern "C" int player_process_pending_pickup_contacts_smoke(void) {
     g_HudUiMgrShieldMessageWidget = &shield;
     g_HudUiTopMessageStack = &topStack;
     g_PlayerStatusMeterRatio = 0.2f;
-    shield.meter.ftable = &g_HudUiMeter_FTable;
     shield.meter.fillPixelsMax = 20;
     shield.meter.points[1].y = 100.0f;
-    reinterpret_cast<HudUiPanel *>(&shield.percentTextPanel)->vtbl =
-        &g_HudUiPanelSimple_FTable;
 
     Player::ProcessPendingPickupContacts(&saveState);
 
@@ -12925,6 +13498,10 @@ extern "C" int player_process_transfer_contact_queue_smoke(void) {
     g_OptCatalog_CapturedDamageHitPos = oldHitPos;
     return queuesOk && callbackOk && disabledOk && captureOk && dampingOk ? 0 : 1;
 }
+
+#endif
+
+#ifndef RECOIL_NATIVE_PLAYER_TESTS_GUN_DISPATCH_ONLY
 
 extern "C" int player_apply_pitch_roll_velocity_impulse_from_direction_smoke(void) {
     int *const oldMatrixIdentityFlagSlot = zMath::g_currentMatrixIdentityFlagSlot;
@@ -13753,6 +14330,11 @@ extern "C" int player_clear_destroyed_respawn_effect_handle_callback_smoke(void)
     return playerState.destroyedRespawnAsyncHandle == nullptr ? 0 : 1;
 }
 
+#endif
+
+#if !defined(RECOIL_NATIVE_PLAYER_TESTS_GUN_DISPATCH_ONLY) || \
+    defined(RECOIL_NATIVE_PLAYER_TESTS_PENDING_CONTACT_SMOKES)
+
 extern "C" int player_apply_pending_collision_probe_velocity_smoke(void) {
     zUtil_SaveGameState saveState = {};
     zUtil_PlayerStateStorage playerState = {};
@@ -13819,52 +14401,9 @@ extern "C" int player_apply_pending_collision_probe_velocity_smoke(void) {
                : 4;
 }
 
-extern "C" int player_vec3_fast_normalize_smoke(void) {
-    const float oldScale = g_Player_CollisionContactResolveScale;
-    g_Player_CollisionContactResolveScale = 0.2f;
+#endif
 
-    zVec3 vec = {0.03f, 0.04f, 0.0f};
-    const float lengthSq = vec.x * vec.x + vec.y * vec.y + vec.z * vec.z;
-    const float expectedScale = PlayerFastNormalizeScale(lengthSq);
-    const int normalized = Player::Vec3_FastNormalize(&vec);
-    if (normalized != 1 || !FloatNear(vec.x, 0.03f * expectedScale) ||
-        !FloatNear(vec.y, 0.04f * expectedScale) || vec.z != 0.0f) {
-        g_Player_CollisionContactResolveScale = oldScale;
-        return 1;
-    }
-
-    zVec3 atThreshold = {0.1f, 0.0f, 0.0f};
-    if (Player::Vec3_FastNormalize(&atThreshold) != 0 || atThreshold.x != 0.1f ||
-        atThreshold.y != 0.0f || atThreshold.z != 0.0f) {
-        g_Player_CollisionContactResolveScale = oldScale;
-        return 2;
-    }
-
-    zVec3 zero = {};
-    const int zeroResult = Player::Vec3_FastNormalize(&zero);
-    g_Player_CollisionContactResolveScale = oldScale;
-    return zeroResult == 0 && zero.x == 0.0f && zero.y == 0.0f && zero.z == 0.0f ? 0 : 3;
-}
-
-extern "C" int player_constrain_to_unit_distance_from_smoke(void) {
-    const float oldScale = g_Player_CollisionContactResolveScale;
-    g_Player_CollisionContactResolveScale = 0.2f;
-
-    const zVec3 center = {10.0f, 20.0f, 30.0f};
-    zVec3 pos = {10.03f, 20.04f, 30.0f};
-    const float expectedScale = PlayerFastNormalizeScale(0.03f * 0.03f + 0.04f * 0.04f);
-    Player::ConstrainToUnitDistanceFrom(&pos, &center);
-    if (!FloatNear(pos.x, center.x + 0.03f * expectedScale) ||
-        !FloatNear(pos.y, center.y + 0.04f * expectedScale) || pos.z != center.z) {
-        g_Player_CollisionContactResolveScale = oldScale;
-        return 1;
-    }
-
-    zVec3 farPos = {11.0f, 20.0f, 30.0f};
-    Player::ConstrainToUnitDistanceFrom(&farPos, &center);
-    g_Player_CollisionContactResolveScale = oldScale;
-    return farPos.x == 11.0f && farPos.y == 20.0f && farPos.z == 30.0f ? 0 : 2;
-}
+#ifndef RECOIL_NATIVE_PLAYER_TESTS_GUN_DISPATCH_ONLY
 
 extern "C" int hud_sensor_tracker_parse_checkpoint_number_from_node_smoke(void) {
     zClass_NodePartial node = {};
@@ -13898,6 +14437,56 @@ extern "C" int hud_sensor_tracker_parse_checkpoint_number_from_node_smoke(void) 
     std::strcpy(contextNode.name, "checkpoint");
     return HudSensorTracker::ParseCheckpointNumberFromNode(&node) == 0 ? 0 : 5;
 }
+
+#endif
+
+#if !defined(RECOIL_NATIVE_PLAYER_TESTS_GUN_DISPATCH_ONLY) || \
+    defined(RECOIL_NATIVE_PLAYER_TESTS_ENV_PROBE_SMOKES)
+#if defined(RECOIL_NATIVE_PLAYER_TESTS_GUN_DISPATCH_ONLY) && \
+    defined(RECOIL_NATIVE_PLAYER_TESTS_ENV_PROBE_SMOKES)
+namespace {
+using TestBackendSimpleFn = std::int32_t(__stdcall *)(void *self);
+using TestBackendGetStatusFn = std::int32_t(__stdcall *)(void *self, std::int32_t *status);
+using TestBackendPlayDirectSoundFn = std::int32_t(__stdcall *)(void *self,
+                                                               std::uint32_t reserved1,
+                                                               std::uint32_t reserved2,
+                                                               std::uint32_t flags);
+using TestBackendSetIntFn = std::int32_t(__stdcall *)(void *self, std::int32_t value);
+
+struct TestDirectSoundBufferVTable {
+    void *slots00_1c[8];
+    void *GetFrequency;
+    TestBackendGetStatusFn GetStatus;
+    void *slot28;
+    void *slot2c;
+    TestBackendPlayDirectSoundFn Play;
+    TestBackendSetIntFn SetCurrentPosition;
+    void *slot38;
+    TestBackendSetIntFn SetVolume;
+    TestBackendSetIntFn SetPan;
+    TestBackendSetIntFn SetFrequency;
+    TestBackendSimpleFn Stop;
+};
+
+struct TestDirectSoundBuffer {
+    TestDirectSoundBufferVTable *vtable;
+};
+
+std::int32_t __stdcall TestDirectSoundGetStatus(void *, std::int32_t *status) {
+    *status = 0;
+    return 0;
+}
+
+std::int32_t __stdcall TestDirectSoundSetInt(void *, std::int32_t) {
+    return 0;
+}
+
+std::int32_t __stdcall TestDirectSoundPlay(void *, std::uint32_t, std::uint32_t,
+                                           std::uint32_t) {
+    return 0;
+}
+}
+#endif
 
 extern "C" int player_start_modal_loop_sfx_handle_smoke(void) {
     TestDirectSoundBufferVTable vtable = {};
@@ -13945,6 +14534,9 @@ extern "C" int player_start_modal_loop_sfx_handle_smoke(void) {
 
     return sample.primaryVoice.ownerSample == &sample ? 0 : 3;
 }
+#endif
+
+#ifndef RECOIL_NATIVE_PLAYER_TESTS_GUN_DISPATCH_ONLY
 
 extern "C" int player_start_master_type_loop_sfx_handle_smoke(void) {
     TestDirectSoundBufferVTable vtable = {};
@@ -14163,10 +14755,10 @@ extern "C" int player_update_modal_loop_sfx_smoke(void) {
                           g_PlayerTestLastFrequency == 1400 &&
                           g_PlayerTestSetPanCount == 6 &&
                           g_PlayerTestSetVolumeCount == 6 &&
-                          g_PlayerTestLastVolume == -602 &&
+                          g_PlayerTestLastVolume == -1000 &&
                           engineSample.primaryVoice.gainScaled == 0 &&
-                          externalSample.primaryVoice.gainScaled == -602 &&
-                          idleSample.primaryVoice.gainScaled == -602;
+                          externalSample.primaryVoice.gainScaled == -1000 &&
+                          idleSample.primaryVoice.gainScaled == -1000;
 
     g_zSnd_IsInitialized = 0;
     g_zSnd_PreInitialized = 0;
@@ -15373,6 +15965,10 @@ extern "C" int player_update_sub_vertical_damping_smoke(void) {
                ? 0
                : 5;
 }
+#endif
+
+#if !defined(RECOIL_NATIVE_PLAYER_TESTS_GUN_DISPATCH_ONLY) || \
+    defined(RECOIL_NATIVE_PLAYER_TESTS_CAMERA_SMOKES)
 
 extern "C" int player_select_probe_sample_height_smoke(void) {
     PlayerProbeSampleCandidateBuffer emptyBuffer = {};
@@ -15425,6 +16021,10 @@ extern "C" int player_select_probe_sample_height_smoke(void) {
         &buffer, &bestIndex, 10.0f, 4.0f, 0, &selectedImpactSlot, &taggedHeight);
     return selected == 4.0f && taggedHeight == 4.0f && selectedImpactSlot == 0 ? 0 : 5;
 }
+#endif
+
+#if !defined(RECOIL_NATIVE_PLAYER_TESTS_GUN_DISPATCH_ONLY) || \
+    defined(RECOIL_NATIVE_PLAYER_TESTS_ENV_PROBE_SMOKES)
 
 extern "C" int player_build_environment_probe_result_smoke(void) {
     zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
@@ -15494,6 +16094,10 @@ extern "C" int player_build_environment_probe_result_smoke(void) {
 
     return ok ? 0 : 1;
 }
+
+#endif
+
+#ifndef RECOIL_NATIVE_PLAYER_TESTS_GUN_DISPATCH_ONLY
 
 extern "C" int player_los_from_fx_offset_smoke(void) {
     zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
@@ -15617,6 +16221,10 @@ extern "C" int player_apply_aim_pitch_to_direction_smoke(void) {
     return failed != 0 ? 1 : 0;
 }
 
+#endif
+
+#if !defined(RECOIL_NATIVE_PLAYER_TESTS_GUN_DISPATCH_ONLY) || \
+    defined(RECOIL_NATIVE_PLAYER_TESTS_CAMERA_SMOKES)
 extern "C" int player_probe_modal_sample_heights_smoke(void) {
     zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
     zClass_NodePartial *const oldRuntimeScene = g_Player_RuntimeDiScene;
@@ -15662,8 +16270,10 @@ extern "C" int player_probe_modal_sample_heights_smoke(void) {
 
     PlayerMasterModalData masterModalData = {};
     masterModalData.masterType = 1;
-    masterModalData.probePoints[0] = {0.25f, 0.5f, 0.25f};
-    masterModalData.probePoints[1] = {0.6f, 0.75f, 0.2f};
+    masterModalData.probePoints[0] = {9.0f, 9.0f, 9.0f};
+    masterModalData.probePoints[1] = {8.0f, 8.0f, 8.0f};
+    masterModalData.probePoints[15] = {0.25f, 0.5f, 0.25f};
+    masterModalData.probePoints[16] = {0.6f, 0.75f, 0.2f};
     PlayerModalState modalState = {};
     modalState.masterModalData = &masterModalData;
     modalState.modalStateCode = 2;
@@ -15764,6 +16374,9 @@ extern "C" int player_probe_modal_sample_heights_smoke(void) {
 
     return 0;
 }
+#endif
+
+#ifndef RECOIL_NATIVE_PLAYER_TESTS_GUN_DISPATCH_ONLY
 
 extern "C" int player_update_master_type_hover_from_modal_probe_smoke(void) {
     zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
@@ -16868,6 +17481,11 @@ extern "C" int player_update_master_type_hover_smoke(void) {
     return ok ? 0 : 1;
 }
 
+#endif
+
+#if !defined(RECOIL_NATIVE_PLAYER_TESTS_GUN_DISPATCH_ONLY) || \
+    defined(RECOIL_NATIVE_PLAYER_TESTS_ENV_PROBE_SMOKES)
+
 extern "C" int player_apply_environment_probe_result_smoke(void) {
     const float oldNominalGravity = g_Player_NominalGravity;
     const float oldWaterGravity = g_Player_WaterGravity;
@@ -17421,6 +18039,10 @@ extern "C" int player_rebuild_orientation_from_normal_smoke(void) {
     return FloatNear(playerState.steerBasisRef.y, 0.00100000005f) ? 0 : 2;
 }
 
+#endif
+
+#ifndef RECOIL_NATIVE_PLAYER_TESTS_GUN_DISPATCH_ONLY
+
 extern "C" int player_rebuild_steer_basis_raw_from_ref_smoke(void) {
     zUtil_SaveGameState saveState = {};
     zUtil_PlayerStateStorage playerState = {};
@@ -17553,6 +18175,11 @@ extern "C" int player_apply_amphib_speed_oscillation_smoke(void) {
     g_Time_AccumulatedTimeSec = oldAccumulatedTimeSec;
     return ok ? 0 : 1;
 }
+
+#endif
+
+#if !defined(RECOIL_NATIVE_PLAYER_TESTS_GUN_DISPATCH_ONLY) || \
+    defined(RECOIL_NATIVE_PLAYER_TESTS_ENV_PROBE_SMOKES)
 
 extern "C" int player_find_third_probe_and_compute_normal_smoke(void) {
     const float oldDeltaTime = g_Player_DeltaTime;
@@ -17710,6 +18337,10 @@ extern "C" int player_update_vertical_velocity_and_transform_smoke(void) {
     return ok ? 0 : 1;
 }
 
+#endif
+
+#ifndef RECOIL_NATIVE_PLAYER_TESTS_GUN_DISPATCH_ONLY
+
 extern "C" int player_update_post_move_environment_smoke(void) {
     zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
     zClass_NodePartial *const oldRuntimeDiScene = g_Player_RuntimeDiScene;
@@ -17806,6 +18437,10 @@ extern "C" int player_update_post_move_environment_smoke(void) {
     g_GameStateOrMapTable = oldGameStateOrMapTable;
     return ok ? 0 : 1;
 }
+
+#endif
+
+#ifndef RECOIL_NATIVE_PLAYER_TESTS_GUN_DISPATCH_ONLY
 
 extern "C" int player_update_master_type_track_smoke(void) {
     zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
@@ -18807,7 +19442,110 @@ extern "C" int player_shutdown_mission_runtime_smoke(void) {
 #endif
 
 #ifdef RECOIL_NATIVE_PLAYER_TESTS_GUN_DISPATCH_ONLY
+#ifdef RECOIL_NATIVE_PLAYER_TESTS_ASYNC_COMMAND_CALLBACK_SMOKE
+extern "C" int player_async_command_callback_basic_smoke(void) {
+    zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
+    zUtil_SaveGameState *const oldCurrentSaveState = g_CurrentPlayerSaveState;
+    zEffectAnimEntry *const oldDebugEntry = g_Player_ActiveDebugScriptAsyncEntry;
+    const int oldRebuildCameraDir = g_Player_RebuildCameraDirFlatFromCurrentTarget;
+
+    zUtil_PlayerStateStorage playerState = {};
+    zUtil_SaveGameState saveState = {};
+    saveState.playerState = &playerState;
+    g_GameStateOrMapTable = (zInput_GameStateOrMapTablePartial *)&saveState;
+    g_CurrentPlayerSaveState = nullptr;
+    g_Player_RebuildCameraDirFlatFromCurrentTarget = 0;
+    g_Player_ActiveDebugScriptAsyncEntry = nullptr;
+
+    zEffectAnimEntry entryA = {};
+    zEffectAnimEntry entryB = {};
+
+    Player::AsyncCommandCallback(&entryA, nullptr, 20);
+    const bool storesDebugEntry = g_Player_ActiveDebugScriptAsyncEntry == &entryA;
+
+    Player::AsyncCommandCallback(&entryB, nullptr, 0);
+    const bool ignoresMismatchedClear = g_Player_ActiveDebugScriptAsyncEntry == &entryA;
+
+    Player::AsyncCommandCallback(&entryA, nullptr, 0);
+    const bool clearsMatchedEntry = g_Player_ActiveDebugScriptAsyncEntry == nullptr;
+
+    Player::AsyncCommandCallback(&entryA, nullptr, 1);
+    const bool bindsActiveState = g_Player_RebuildCameraDirFlatFromCurrentTarget == 1 &&
+                                  playerState.currentSaveStateBound == 1 &&
+                                  g_CurrentPlayerSaveState == &saveState;
+
+    g_Player_ActiveDebugScriptAsyncEntry = &entryB;
+    Player::AsyncCommandCallback(&entryA, nullptr, 1234);
+    const bool defaultNoOp = g_Player_ActiveDebugScriptAsyncEntry == &entryB;
+
+    g_Player_ActiveDebugScriptAsyncEntry = oldDebugEntry;
+    g_Player_RebuildCameraDirFlatFromCurrentTarget = oldRebuildCameraDir;
+    g_CurrentPlayerSaveState = oldCurrentSaveState;
+    g_GameStateOrMapTable = oldGameStateOrMapTable;
+    return storesDebugEntry && ignoresMismatchedClear && clearsMatchedEntry && bindsActiveState &&
+                   defaultNoOp
+               ? 0
+               : 1;
+}
+#endif
+
 namespace {
+using TestBackendSimpleFnGunOnly = std::int32_t(__stdcall *)(void *self);
+using TestBackendGetStatusFnGunOnly =
+    std::int32_t(__stdcall *)(void *self, std::int32_t *status);
+using TestBackendPlayDirectSoundFnGunOnly = std::int32_t(__stdcall *)(
+    void *self,
+    std::uint32_t reserved1,
+    std::uint32_t reserved2,
+    std::uint32_t flags
+);
+using TestBackendSetIntFnGunOnly = std::int32_t(__stdcall *)(void *self, std::int32_t value);
+
+struct TestDirectSoundBufferVTableGunOnly {
+    void *slots00_1c[8];
+    void *GetFrequency;
+    TestBackendGetStatusFnGunOnly GetStatus;
+    void *slot28;
+    void *slot2c;
+    TestBackendPlayDirectSoundFnGunOnly Play;
+    TestBackendSetIntFnGunOnly SetCurrentPosition;
+    void *slot38;
+    TestBackendSetIntFnGunOnly SetVolume;
+    TestBackendSetIntFnGunOnly SetPan;
+    TestBackendSetIntFnGunOnly SetFrequency;
+    TestBackendSimpleFnGunOnly Stop;
+};
+
+struct TestDirectSoundBufferGunOnly {
+    TestDirectSoundBufferVTableGunOnly *vtable;
+};
+
+int g_PlayerTestSetFrequencyCountGunOnly;
+int g_PlayerTestLastFrequencyGunOnly;
+int g_PlayerTestSetPanCountGunOnly;
+int g_PlayerTestSetVolumeCountGunOnly;
+int g_PlayerTestLastVolumeGunOnly;
+
+std::int32_t __stdcall TestPlayerDirectSoundSetFrequencyGunOnly(
+    void *,
+    std::int32_t frequency
+) {
+    ++g_PlayerTestSetFrequencyCountGunOnly;
+    g_PlayerTestLastFrequencyGunOnly = frequency;
+    return 0;
+}
+
+std::int32_t __stdcall TestPlayerDirectSoundSetPanGunOnly(void *, std::int32_t) {
+    ++g_PlayerTestSetPanCountGunOnly;
+    return 0;
+}
+
+std::int32_t __stdcall TestPlayerDirectSoundSetVolumeGunOnly(void *, std::int32_t volume) {
+    ++g_PlayerTestSetVolumeCountGunOnly;
+    g_PlayerTestLastVolumeGunOnly = volume;
+    return 0;
+}
+
 template <typename T> T *AllocZeroedMallocGunOnly() {
     void *const mem = std::calloc(1, sizeof(T));
     return static_cast<T *>(mem);
@@ -18818,7 +19556,473 @@ template <typename T> T *AllocZeroedNewGunOnly() {
     std::memset(value, 0, sizeof(T));
     return value;
 }
+
+bool FloatNearGunOnly(float actual, float expected) {
+    return actual > expected - 0.0001f && actual < expected + 0.0001f;
+}
+
+float PlayerDampingFactorGunOnly(float rate, float deltaTime) {
+    const int bits = static_cast<int>(-rate * deltaTime * 12102200.0f) + 0x3f800000;
+    float factor = 0.0f;
+    std::memcpy(&factor, &bits, sizeof(factor));
+    return factor;
+}
 } // namespace
+
+extern "C" int player_rebuild_steer_basis_raw_from_ref_smoke(void) {
+    zUtil_SaveGameState saveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    saveState.playerState = &playerState;
+
+    playerState.steerBasisRef = {0.25f, 0.5f, 0.0f};
+    playerState.steerBasisNorm = {1.0f, 0.0f, 0.0f};
+    playerState.steerBasisRaw = {9.0f, 8.0f, 7.0f};
+    Player::RebuildSteerBasisRawFromRef(&saveState);
+
+    if (!FloatNearGunOnly(playerState.steerBasisRaw.x, 0.89442718f) ||
+        !FloatNearGunOnly(playerState.steerBasisRaw.y, -0.44721359f) ||
+        !FloatNearGunOnly(playerState.steerBasisRaw.z, 0.0f)) {
+        return 1;
+    }
+
+    playerState.steerBasisRef = {0.0f, 0.0f, 0.0f};
+    playerState.steerBasisNorm = {0.0f, 0.0f, 1.0f};
+    playerState.steerBasisRaw = {3.0f, 4.0f, 5.0f};
+    Player::RebuildSteerBasisRawFromRef(&saveState);
+
+    return playerState.steerBasisRaw.x == 3.0f && playerState.steerBasisRaw.y == 4.0f &&
+                   playerState.steerBasisRaw.z == 5.0f
+               ? 0
+               : 2;
+}
+
+extern "C" int player_rebuild_motion_basis_from_steer_basis_smoke(void) {
+    zUtil_SaveGameState saveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    saveState.playerState = &playerState;
+
+    playerState.steerBasisRaw = {1.0f, 2.0f, 3.0f};
+    playerState.steerBasisRef = {4.0f, 5.0f, 6.0f};
+    playerState.worldPos = {7.0f, 8.0f, 9.0f};
+    Player::RebuildMotionBasisFromSteerBasis(&saveState);
+
+    return FloatNearGunOnly(playerState.motionBasis.xx, -3.0f) &&
+                   FloatNearGunOnly(playerState.motionBasis.xy, 6.0f) &&
+                   FloatNearGunOnly(playerState.motionBasis.xz, -3.0f) &&
+                   FloatNearGunOnly(playerState.motionBasis.yx, 4.0f) &&
+                   FloatNearGunOnly(playerState.motionBasis.yy, 5.0f) &&
+                   FloatNearGunOnly(playerState.motionBasis.yz, 6.0f) &&
+                   FloatNearGunOnly(playerState.motionBasis.zx, -1.0f) &&
+                   FloatNearGunOnly(playerState.motionBasis.zy, -2.0f) &&
+                   FloatNearGunOnly(playerState.motionBasis.zz, -3.0f) &&
+                   FloatNearGunOnly(playerState.motionBasis.posX, 7.0f) &&
+                   FloatNearGunOnly(playerState.motionBasis.posY, 8.0f) &&
+                   FloatNearGunOnly(playerState.motionBasis.posZ, 9.0f)
+               ? 0
+               : 1;
+}
+
+extern "C" int player_update_modal_loop_sfx_smoke(void) {
+    const int oldBackend = g_zSnd_ActiveBackend;
+    void *const oldGlobalVolume = g_zSnd_GlobalVolumeScalePtr;
+    const int oldMuteDepth = g_zSnd_MuteDepth;
+    const int oldListenerValid = g_zSnd_ListenerStateValid;
+    const int oldInitialized = g_zSnd_IsInitialized;
+    const int oldPreInitialized = g_zSnd_PreInitialized;
+
+    TestDirectSoundBufferVTableGunOnly vtable = {};
+    vtable.SetPan = &TestPlayerDirectSoundSetPanGunOnly;
+    vtable.SetVolume = &TestPlayerDirectSoundSetVolumeGunOnly;
+    vtable.SetFrequency = &TestPlayerDirectSoundSetFrequencyGunOnly;
+    TestDirectSoundBufferGunOnly directSoundBuffer = {&vtable};
+
+    float globalVolume = 1.0f;
+    g_zSnd_GlobalVolumeScalePtr = &globalVolume;
+    g_zSnd_ActiveBackend = 0;
+    g_zSnd_MuteDepth = 0;
+    g_zSnd_ListenerStateValid = 0;
+    g_PlayerTestSetFrequencyCountGunOnly = 0;
+    g_PlayerTestLastFrequencyGunOnly = 0;
+    g_PlayerTestSetPanCountGunOnly = 0;
+    g_PlayerTestSetVolumeCountGunOnly = 0;
+    g_PlayerTestLastVolumeGunOnly = 0;
+
+    zSndSample engineSample = {};
+    zSndSample externalSample = {};
+    zSndSample idleSample = {};
+    zSndSample *samples[3] = {&engineSample, &externalSample, &idleSample};
+    for (int index = 0; index < 3; ++index) {
+        samples[index]->replayFields.flags = 4;
+        samples[index]->playbackParam2 = 2000.0f;
+        samples[index]->playbackParam3 = 1000.0f;
+        samples[index]->sampleRate = 2000.0f;
+        samples[index]->primaryVoice.handleKind = ZSND_PLAYHANDLE_BACKEND;
+        samples[index]->primaryVoice.backendBuffer =
+            reinterpret_cast<zSndBuffer *>(&directSoundBuffer);
+        samples[index]->primaryVoice.ownerSample = samples[index];
+    }
+
+    PlayerMasterModalData modalData = {};
+    modalData.maxSpeed = 10.0f;
+    modalData.sfxPitchScale = 0.8f;
+    modalData.sfxVolumeScale = 0.6f;
+    PlayerModalState modalState = {};
+    modalState.masterModalData = &modalData;
+    modalState.modalSfxHandle[0] = &engineSample.primaryVoice;
+    modalState.modalSfxHandle[1] = &externalSample.primaryVoice;
+    modalState.modalSfxHandle[2] = &idleSample.primaryVoice;
+
+    zUtil_PlayerStateStorage playerState = {};
+    playerState.localVel.z = -5.0f;
+    playerState.worldPos = {3.0f, 4.0f, 5.0f};
+    zUtil_SaveGameState saveState = {};
+    saveState.playerState = &playerState;
+    saveState.primaryModalState = &modalState;
+    saveState.modeLoopBlend = 0.25f;
+
+    saveState.UpdateModalLoopSfx(1);
+    const bool updateOk = FloatNearGunOnly(saveState.modeLoopBlend, 0.5f) &&
+                          g_PlayerTestSetFrequencyCountGunOnly == 2 &&
+                          g_PlayerTestLastFrequencyGunOnly == 1400 &&
+                          g_PlayerTestSetPanCountGunOnly == 6 &&
+                          g_PlayerTestSetVolumeCountGunOnly == 6 &&
+                          g_PlayerTestLastVolumeGunOnly == -1000 &&
+                          engineSample.primaryVoice.gainScaled == 0 &&
+                          externalSample.primaryVoice.gainScaled == -1000 &&
+                          idleSample.primaryVoice.gainScaled == -1000;
+
+    g_zSnd_IsInitialized = 0;
+    g_zSnd_PreInitialized = 0;
+    saveState.UpdateModalLoopSfx(0);
+    const bool disabledOk = modalState.modalSfxHandle[0] == nullptr &&
+                            modalState.modalSfxHandle[1] == nullptr &&
+                            modalState.modalSfxHandle[2] == nullptr &&
+                            playerState.modeLoopSfxHandle[3] == nullptr;
+
+    g_zSnd_ActiveBackend = oldBackend;
+    g_zSnd_GlobalVolumeScalePtr = oldGlobalVolume;
+    g_zSnd_MuteDepth = oldMuteDepth;
+    g_zSnd_ListenerStateValid = oldListenerValid;
+    g_zSnd_IsInitialized = oldInitialized;
+    g_zSnd_PreInitialized = oldPreInitialized;
+
+    return updateOk && disabledOk ? 0 : 1;
+}
+
+extern "C" int player_select_modal_state_by_master_type_smoke(void) {
+    zUtil_SaveGameState saveState = {};
+
+    if (saveState.SelectModalStateByMasterType(7) != 0) {
+        return 1;
+    }
+
+    PlayerMasterModalData firstData = {};
+    firstData.masterType = 3;
+    PlayerMasterModalData secondData = {};
+    secondData.masterType = 7;
+    PlayerMasterModalData thirdData = {};
+    thirdData.masterType = 9;
+
+    PlayerModalState firstModal = {};
+    firstModal.masterModalData = &firstData;
+    PlayerModalState secondModal = {};
+    secondModal.masterModalData = &secondData;
+    PlayerModalState thirdModal = {};
+    thirdModal.masterModalData = &thirdData;
+    firstModal.next = &secondModal;
+    secondModal.next = &thirdModal;
+
+    zSndPlayHandle handle0 = {};
+    zSndPlayHandle handle1 = {};
+    zSndPlayHandle handle2 = {};
+    firstModal.modalSfxHandle[0] = &handle0;
+    firstModal.modalSfxHandle[1] = &handle1;
+    firstModal.modalSfxHandle[2] = &handle2;
+
+    saveState.primaryModalState = &firstModal;
+    saveState.modalStateListHead = &firstModal;
+
+    if (saveState.SelectModalStateByMasterType(8) != 0) {
+        return 2;
+    }
+    if (saveState.primaryModalState != &firstModal) {
+        return 3;
+    }
+
+    if (saveState.SelectModalStateByMasterType(7) != 1) {
+        return 4;
+    }
+    if (saveState.primaryModalState != &secondModal) {
+        return 5;
+    }
+
+    return firstModal.modalSfxHandle[0] == nullptr &&
+                   firstModal.modalSfxHandle[1] == nullptr &&
+                   firstModal.modalSfxHandle[2] == nullptr
+               ? 0
+               : 6;
+}
+
+extern "C" int player_update_sub_vertical_damping_smoke(void) {
+    const float oldPlayerDeltaTime = g_Player_DeltaTime;
+    const float oldAccumulatedTime = g_Time_AccumulatedTimeSec;
+
+    zUtil_SaveGameState saveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    PlayerModalState modalState = {};
+    PlayerMasterModalData modalData = {};
+    saveState.playerState = &playerState;
+    saveState.primaryModalState = &modalState;
+    modalState.masterModalData = &modalData;
+
+    g_Player_DeltaTime = 0.5f;
+    modalData.accelRate = 40.0f;
+
+    playerState.subVerticalInput = 1.0f;
+    playerState.subVerticalInputCopy = 2.0f;
+    playerState.localVel.y = -3.0f;
+    Player::UpdateSubVerticalDamping(&saveState);
+    if (!FloatNearGunOnly(playerState.localVel.y, 20.0f)) {
+        g_Player_DeltaTime = oldPlayerDeltaTime;
+        g_Time_AccumulatedTimeSec = oldAccumulatedTime;
+        return 1;
+    }
+
+    playerState.subVerticalInput = 1.0f;
+    playerState.subVerticalInputCopy = -2.0f;
+    playerState.localVel.y = 4.0f;
+    Player::UpdateSubVerticalDamping(&saveState);
+    if (!FloatNearGunOnly(playerState.localVel.y, -20.0f)) {
+        g_Player_DeltaTime = oldPlayerDeltaTime;
+        g_Time_AccumulatedTimeSec = oldAccumulatedTime;
+        return 2;
+    }
+
+    playerState.subVerticalInput = 0.0f;
+    playerState.throttleInputCopy = 1.0f;
+    playerState.localVel.y = 5.0f;
+    Player::UpdateSubVerticalDamping(&saveState);
+    if (!FloatNearGunOnly(playerState.localVel.y, 5.0f)) {
+        g_Player_DeltaTime = oldPlayerDeltaTime;
+        g_Time_AccumulatedTimeSec = oldAccumulatedTime;
+        return 3;
+    }
+
+    playerState.throttleInputCopy = 0.0f;
+    playerState.primaryGunGateUntilTime = 20.0f;
+    playerState.localVel.y = 10.0f;
+    g_Time_AccumulatedTimeSec = 10.0f;
+    Player::UpdateSubVerticalDamping(&saveState);
+    if (!FloatNearGunOnly(playerState.localVel.y,
+                          10.0f * PlayerDampingFactorGunOnly(2.0f, 0.5f))) {
+        g_Player_DeltaTime = oldPlayerDeltaTime;
+        g_Time_AccumulatedTimeSec = oldAccumulatedTime;
+        return 4;
+    }
+
+    playerState.primaryGunGateUntilTime = 20.0f;
+    playerState.localVel.y = 10.0f;
+    g_Time_AccumulatedTimeSec = 20.0f;
+    Player::UpdateSubVerticalDamping(&saveState);
+
+    g_Player_DeltaTime = oldPlayerDeltaTime;
+    g_Time_AccumulatedTimeSec = oldAccumulatedTime;
+    return FloatNearGunOnly(playerState.localVel.y,
+                            10.0f * PlayerDampingFactorGunOnly(10.0f, 0.5f))
+               ? 0
+               : 5;
+}
+
+extern "C" int player_update_post_move_environment_smoke(void) {
+    zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
+    zClass_NodePartial *const oldRuntimeDiScene = g_Player_RuntimeDiScene;
+    const float oldDeltaTime = g_Player_DeltaTime;
+    const float oldInvDeltaTime = g_Player_InvDeltaTime;
+    const float oldNominalGravity = g_Player_NominalGravity;
+    const float oldMaxSlope = g_Player_MaxSlope;
+    const int oldSampleCount = g_PlayerEnvProbeSampleCount;
+    const int oldAboveGroundCount = g_PlayerEnvProbe_AboveGroundCount;
+    const zTag4Partial oldVariantCurrent = g_Variant_CurrentTag;
+    const zTag4Partial oldVariantTagCurrent = g_VariantTag_Current;
+    zVec3 oldProbePoints[7];
+    int oldAboveGroundFlags[10];
+    int oldAboveGroundIndices[10];
+    for (int i = 0; i < 7; ++i) {
+        oldProbePoints[i] = g_PlayerEnvProbeWorldPoints[i];
+    }
+    for (int i = 0; i < 10; ++i) {
+        oldAboveGroundFlags[i] = g_PlayerEnvProbe_AboveGroundFlags[i];
+        oldAboveGroundIndices[i] = g_PlayerEnvProbe_AboveGroundIndices[i];
+    }
+
+    g_Player_DeltaTime = 0.2f;
+    g_Player_InvDeltaTime = 5.0f;
+    g_Player_NominalGravity = 10.0f;
+    g_Player_MaxSlope = -1.0f;
+    g_Variant_CurrentTag = {};
+    g_VariantTag_Current = {};
+
+    zUtil_SaveGameState saveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    zUtil_PlayerStateStorage globalPlayerState = {};
+    PlayerModalState modalState = {};
+    PlayerMasterModalData masterModalData = {};
+    zInput_GameStateOrMapTablePartial gameStateOrMap = {};
+    zClass_NodePartial rootNode = {};
+    zClass_NodePartial globalRootNode = {};
+    zClass_NodePartial worldNode = {};
+    zClass_WorldDataPartial worldData = {};
+
+    saveState.playerState = &playerState;
+    saveState.primaryModalState = &modalState;
+    modalState.masterModalData = &masterModalData;
+    modalState.modalStateCode = 1;
+    playerState.rootNode = &rootNode;
+    globalPlayerState.rootNode = &globalRootNode;
+    gameStateOrMap.playerState =
+        static_cast<zInput_PlayerStatePartial *>(static_cast<void *>(&globalPlayerState));
+    g_GameStateOrMapTable = &gameStateOrMap;
+    worldNode.classData = &worldData;
+    g_Player_RuntimeDiScene = &worldNode;
+
+    playerState.motionBasis.xx = 1.0f;
+    playerState.motionBasis.yy = 1.0f;
+    playerState.motionBasis.zz = 1.0f;
+    playerState.worldPos = {10.0f, 2.0f, 30.0f};
+    playerState.previousTransform.posY = 2.0f;
+    playerState.projectileSpawnVel = {0.0f, 4.0f, 0.0f};
+    playerState.gravityAccel = 10.0f;
+    playerState.angVelPitch = 0.5f;
+    playerState.angVelRoll = -0.25f;
+    masterModalData.probePoints[15] = {0.0f, 0.0f, 0.0f};
+
+    Player::UpdatePostMoveEnvironment(&saveState, 1);
+
+    int result = 0;
+    if (g_PlayerEnvProbeSampleCount != 1) {
+        result = 2;
+    } else if (g_PlayerEnvProbe_AboveGroundCount != 0) {
+        result = 3;
+    } else if (playerState.airborneFlag != 1) {
+        result = 4;
+    } else if (std::fabs(playerState.vehiclePitchRad - 0.1f) >= 0.001f) {
+        result = 5;
+    } else if (!FloatNearGunOnly(playerState.vehicleRollRad, -0.05f)) {
+        result = 6;
+    } else if (!FloatNearGunOnly(playerState.projectileSpawnVel.y, 2.0f)) {
+        result = 7;
+    } else if (!FloatNearGunOnly(playerState.worldPos.y, 2.4f)) {
+        result = 8;
+    } else if (!FloatNearGunOnly(playerState.motionBasis.posX, 10.0f)) {
+        result = 9;
+    } else if (!FloatNearGunOnly(playerState.motionBasis.posY, 2.4f)) {
+        result = 10;
+    } else if (!FloatNearGunOnly(playerState.motionBasis.posZ, 30.0f)) {
+        result = 11;
+    } else if (!FloatNearGunOnly(playerState.gravityAccel, 10.0f)) {
+        result = 12;
+    }
+
+    for (int i = 0; i < 7; ++i) {
+        g_PlayerEnvProbeWorldPoints[i] = oldProbePoints[i];
+    }
+    for (int i = 0; i < 10; ++i) {
+        g_PlayerEnvProbe_AboveGroundFlags[i] = oldAboveGroundFlags[i];
+        g_PlayerEnvProbe_AboveGroundIndices[i] = oldAboveGroundIndices[i];
+    }
+    g_VariantTag_Current = oldVariantTagCurrent;
+    g_Variant_CurrentTag = oldVariantCurrent;
+    g_PlayerEnvProbe_AboveGroundCount = oldAboveGroundCount;
+    g_PlayerEnvProbeSampleCount = oldSampleCount;
+    g_Player_MaxSlope = oldMaxSlope;
+    g_Player_NominalGravity = oldNominalGravity;
+    g_Player_InvDeltaTime = oldInvDeltaTime;
+    g_Player_DeltaTime = oldDeltaTime;
+    g_Player_RuntimeDiScene = oldRuntimeDiScene;
+    g_GameStateOrMapTable = oldGameStateOrMapTable;
+    return result;
+}
+
+extern "C" int player_apply_amphib_speed_oscillation_smoke(void) {
+    const float oldAccumulatedTimeSec = g_Time_AccumulatedTimeSec;
+    g_Time_AccumulatedTimeSec = 2.0f;
+
+    zUtil_SaveGameState saveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    PlayerModalState modalState = {};
+    PlayerMasterModalData modalData = {};
+    saveState.playerState = &playerState;
+    saveState.primaryModalState = &modalState;
+    modalState.masterModalData = &modalData;
+
+    playerState.localVel.z = 3.0f;
+    playerState.angVelYaw = 0.25f;
+    playerState.steerBasisNorm = {0.6f, 0.0f, 0.8f};
+    modalData.hoverPitchWaveBaseRate = 1.0f;
+    modalData.hoverPitchWaveSpeedRate = 0.25f;
+    modalData.hoverPitchWaveAmplitude = 0.3f;
+    modalData.hoverRollWaveBaseRate = 0.5f;
+    modalData.hoverRollWaveSpeedRate = -0.1f;
+    modalData.hoverRollWaveAmplitude = 0.2f;
+    modalData.hoverRollYawCoupleScale = 0.4f;
+
+    const zVec3 input = {1.0f, 2.0f, -0.5f};
+    const float speedAbs = std::fabs(playerState.localVel.z);
+    const float pitchArg =
+        (modalData.hoverPitchWaveSpeedRate * speedAbs + modalData.hoverPitchWaveBaseRate) *
+        g_Time_AccumulatedTimeSec;
+    const float rollArg =
+        (modalData.hoverRollWaveSpeedRate * speedAbs + modalData.hoverRollWaveBaseRate) *
+        g_Time_AccumulatedTimeSec;
+    const float pitchAngle =
+        static_cast<float>(std::sin(pitchArg)) * modalData.hoverPitchWaveAmplitude;
+    const float rollAngleBase =
+        static_cast<float>(std::sin(rollArg)) * modalData.hoverRollWaveAmplitude;
+
+    const float yawSin = -playerState.steerBasisNorm.x;
+    const float yawCos = -playerState.steerBasisNorm.z;
+    const float pitchSin = static_cast<float>(std::sin(pitchAngle));
+    const float pitchCos = static_cast<float>(std::cos(pitchAngle));
+
+    zVec3 expected[2] = {};
+    for (int i = 0; i < 2; ++i) {
+        float rollAngle = rollAngleBase;
+        if (i != 0) {
+            rollAngle +=
+                playerState.angVelYaw * modalData.hoverRollYawCoupleScale * playerState.localVel.z;
+        }
+        const float rollSin = static_cast<float>(std::sin(rollAngle));
+        const float rollCos = static_cast<float>(std::cos(rollAngle));
+        const float xx = yawSin * pitchSin * rollSin + rollCos * yawCos;
+        const float xy = rollSin * pitchCos;
+        const float xz = rollSin * yawCos * pitchSin - rollCos * yawSin;
+        const float yx = yawSin * pitchSin * rollCos - rollSin * yawCos;
+        const float yy = rollCos * pitchCos;
+        const float yz = rollCos * yawCos * pitchSin + rollSin * yawSin;
+        const float zx = yawSin * pitchCos;
+        const float zy = -pitchSin;
+        const float zz = yawCos * pitchCos;
+        expected[i].x = input.x * xx + input.y * yx + input.z * zx;
+        expected[i].y = input.x * xy + input.y * yy + input.z * zy;
+        expected[i].z = input.x * xz + input.y * yz + input.z * zz;
+    }
+
+    zVec3 uncoupled = input;
+    Player::ApplyAmphibSpeedOscillation(&saveState, &uncoupled, 0);
+    zVec3 coupled = input;
+    Player::ApplyAmphibSpeedOscillation(&saveState, &coupled, 1);
+
+    const bool ok =
+        FloatNearGunOnly(uncoupled.x, expected[0].x) &&
+        FloatNearGunOnly(uncoupled.y, expected[0].y) &&
+        FloatNearGunOnly(uncoupled.z, expected[0].z) &&
+        FloatNearGunOnly(coupled.x, expected[1].x) &&
+        FloatNearGunOnly(coupled.y, expected[1].y) &&
+        FloatNearGunOnly(coupled.z, expected[1].z) && !FloatNearGunOnly(coupled.z, uncoupled.z);
+
+    g_Time_AccumulatedTimeSec = oldAccumulatedTimeSec;
+    return ok ? 0 : 1;
+}
 
 extern "C" int player_destroy_save_game_state_smoke(void) {
     zUtil_SaveGameState *const saveState = AllocZeroedNewGunOnly<zUtil_SaveGameState>();

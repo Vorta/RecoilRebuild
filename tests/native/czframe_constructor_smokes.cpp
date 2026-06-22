@@ -5,6 +5,7 @@
 #include "GameZRecoil/zVideo/zVideo.h"
 
 #include <cstring>
+#include <new>
 
 extern "C" int g_CZRecoilFrame_HasWolApi;
 BOOL __stdcall AfxWinInit(
@@ -93,8 +94,11 @@ BOOL __fastcall FakeCWndCreateEx(
         GetModuleHandleA(0),
         param
     );
-    self->m_hWnd = hwnd;
-    return hwnd != 0 ? TRUE : FALSE;
+    if (hwnd == 0) {
+        return FALSE;
+    }
+
+    return self->Attach(hwnd);
 }
 
 void __fastcall FakeCWndSetWindowTextA(
@@ -162,6 +166,18 @@ void *CWndCenterWindowProc() {
     MemberToFunction thunk = {};
     thunk.member = &CWndCenterWindowAccess::CenterWindow;
     return thunk.function;
+}
+
+int CallGameFrameDestructorWithSeh(
+    CZGameFrame *frame
+) {
+    __try {
+        frame->~CZGameFrame();
+    } __except (EXCEPTION_EXECUTE_HANDLER) {
+        return 1;
+    }
+
+    return 0;
 }
 
 bool PatchFunctionJump(
@@ -313,18 +329,12 @@ extern "C" int czframe_metadata_accessors_smoke(void) {
     const UINT sigVoidUIntCWndBool = 28;
     const UINT sigCmdUi = 44;
 
-    const CRuntimeClass *gameRuntimeClass =
-        (const CRuntimeClass *)((unsigned int)CZGameFrame::GetRuntimeClass());
-    const CRuntimeClass *gameBaseRuntimeClass =
-        (const CRuntimeClass *)((unsigned int)CZGameFrame::GetBaseRuntimeClass());
-    const AFX_MSGMAP *gameMessageMap =
-        (const AFX_MSGMAP *)((unsigned int)CZGameFrame::GetMessageMap());
-    const AFX_MSGMAP *gameBaseMessageMap =
-        (const AFX_MSGMAP *)((unsigned int)CZGameFrame::GetBaseMessageMap());
-    const CRuntimeClass *recoilRuntimeClass =
-        (const CRuntimeClass *)CZRecoilFrame::GetRuntimeClass();
-    const AFX_MSGMAP *recoilMessageMap =
-        (const AFX_MSGMAP *)CZRecoilFrame::GetMessageMap();
+    const CRuntimeClass *gameRuntimeClass = CZGameFrame::GetRuntimeClassStatic();
+    const CRuntimeClass *gameBaseRuntimeClass = CZGameFrame::GetBaseRuntimeClass();
+    const AFX_MSGMAP *gameMessageMap = CZGameFrame::GetMessageMapStatic();
+    const AFX_MSGMAP *gameBaseMessageMap = CZGameFrame::GetBaseMessageMap();
+    const CRuntimeClass *recoilRuntimeClass = CZRecoilFrame::GetRuntimeClassStatic();
+    const AFX_MSGMAP *recoilMessageMap = CZRecoilFrame::GetMessageMapStatic();
 
     if (gameRuntimeClass != &CZGameFrame::classCZGameFrame ||
         std::strcmp(
@@ -439,14 +449,14 @@ extern "C" int czframe_metadata_accessors_smoke(void) {
         recoilRuntimeClass->m_pfnCreateObject !=
             (MfcCreateObjectProc)&CZRecoilFrame::CreateObject ||
         recoilRuntimeClass->m_pfnGetBaseClass !=
-            (MfcRuntimeClassProc)&CZGameFrame::GetRuntimeClass ||
+            (MfcRuntimeClassProc)&CZGameFrame::GetRuntimeClassStatic ||
         recoilRuntimeClass->m_pfnGetBaseClass() != &CZGameFrame::classCZGameFrame) {
         return 3;
     }
 
     if (recoilMessageMap != &CZRecoilFrame::messageMap ||
         recoilMessageMap->pfnGetBaseMap !=
-            (MfcMessageMapProc)&CZGameFrame::GetMessageMap ||
+            (MfcMessageMapProc)&CZGameFrame::GetMessageMapStatic ||
         recoilMessageMap->pfnGetBaseMap() != &CZGameFrame::messageMap ||
         recoilMessageMap->lpEntries != &CZRecoilFrame::messageEntries[0]) {
         return 4;
@@ -536,15 +546,17 @@ extern "C" int czgame_frame_constructor_smoke(void) {
         return ready;
     }
 
-    CZGameFrame frame = {};
-    CZGameFrame *returned = frame.Constructor(0);
-    const RecoilPtr32 constructedFrameVtable = *(RecoilPtr32 *)(&frame);
-    if (returned == &frame &&
+    unsigned long frameStorage
+        [(sizeof(CZGameFrame) + sizeof(unsigned long) - 1) / sizeof(unsigned long)] = {};
+    CZGameFrame *const frame = reinterpret_cast<CZGameFrame *>(frameStorage);
+    CZGameFrame *returned = new (frame) CZGameFrame(0);
+    const void *constructedFrameVtable = *(const void *const *)(frame);
+    if (returned == frame &&
         constructedFrameVtable != 0 &&
-        constructedFrameVtable != CZGameFrame::GetRuntimeClass() &&
-        frame.m_gameBitmap.m_hObject == 0) {
-        frame.Destructor();
-        return frame.m_gameBitmap.m_hObject == 0 ? 0 : 4;
+        constructedFrameVtable != CZGameFrame::GetRuntimeClassStatic() &&
+        frame->m_gameBitmap.m_hObject == 0) {
+        frame->~CZGameFrame();
+        return frame->m_gameBitmap.m_hObject == 0 ? 0 : 4;
     }
 
     return 3;
@@ -561,15 +573,91 @@ extern "C" int czgame_frame_create_object_smoke(void) {
         return 3;
     }
 
-    const RecoilPtr32 constructedFrameVtable = *(RecoilPtr32 *)(frame);
+    const void *constructedFrameVtable = *(const void *const *)(frame);
     const bool constructed =
         constructedFrameVtable != 0 &&
-        constructedFrameVtable != CZGameFrame::GetRuntimeClass() &&
+        constructedFrameVtable != CZGameFrame::GetRuntimeClassStatic() &&
         frame->m_gameBitmap.m_hObject == 0;
 
-    frame->Destructor();
+    frame->~CZGameFrame();
     ::operator delete(frame);
     return constructed ? 0 : 4;
+}
+
+extern "C" int czgame_frame_destructor_smoke(void) {
+    const int ready = EnsureFrameMfcReady();
+    if (ready != 0) {
+        return ready;
+    }
+
+    HBITMAP bitmap = CreateBitmap(
+        1,
+        1,
+        1,
+        1,
+        0
+    );
+    if (bitmap == 0) {
+        return 3;
+    }
+
+    unsigned long frameStorage
+        [(sizeof(CZGameFrame) + sizeof(unsigned long) - 1) / sizeof(unsigned long)] = {};
+    CZGameFrame *const frame = reinterpret_cast<CZGameFrame *>(frameStorage);
+    new (frame) CZGameFrame();
+    frame->m_gameBitmap.Attach(bitmap);
+    if (CallGameFrameDestructorWithSeh(frame) != 0) {
+        ::DeleteObject(bitmap);
+        return 4;
+    }
+
+    return frame->m_gameBitmap.m_hObject == 0 ? 0 : 5;
+}
+
+extern "C" int czgame_frame_is_window_valid_smoke(void) {
+    const int ready = EnsureFrameMfcReady();
+    if (ready != 0) {
+        return ready;
+    }
+
+    CZGameFrame frame = {};
+    if (frame.IsWindowValid(0) != 0) {
+        return 3;
+    }
+
+    HWND hwnd = CreateWindowExA(
+        0,
+        "STATIC",
+        "recoil-validity-test",
+        WS_OVERLAPPEDWINDOW | WS_DISABLED,
+        0,
+        0,
+        10,
+        10,
+        0,
+        0,
+        GetModuleHandleA(0),
+        0
+    );
+    if (hwnd == 0) {
+        return 4;
+    }
+
+    unsigned long wndStorage[(sizeof(CWnd) + sizeof(unsigned long) - 1) / sizeof(unsigned long)] = {};
+    CWnd *const disabledWnd = reinterpret_cast<CWnd *>(wndStorage);
+    disabledWnd->m_hWnd = hwnd;
+    if (frame.IsWindowValid(disabledWnd) != 1) {
+        DestroyWindow(hwnd);
+        return 5;
+    }
+
+    EnableWindow(
+        hwnd,
+        TRUE
+    );
+    const int result = frame.IsWindowValid(disabledWnd) == 0 ? 0 : 6;
+    DestroyWindow(hwnd);
+    return result;
 }
 
 extern "C" int czrecoil_frame_constructor_smoke(void) {
@@ -600,13 +688,13 @@ extern "C" int czrecoil_frame_constructor_smoke(void) {
     unsigned long frameStorage
         [(sizeof(CZRecoilFrame) + sizeof(unsigned long) - 1) / sizeof(unsigned long)] = {};
     CZRecoilFrame *const frame = reinterpret_cast<CZRecoilFrame *>(frameStorage);
-    CZRecoilFrame *returned = frame->Constructor();
+    CZRecoilFrame *returned = new (frame) CZRecoilFrame();
 
-    const RecoilPtr32 constructedFrameVtable = *(RecoilPtr32 *)(frame);
+    const void *constructedFrameVtable = *(const void *const *)(frame);
     const bool constructed =
         returned == frame &&
         constructedFrameVtable != 0 &&
-        constructedFrameVtable != CZRecoilFrame::GetRuntimeClass();
+        constructedFrameVtable != CZRecoilFrame::GetRuntimeClassStatic();
     const bool fieldsOk =
         frame->m_openZbdFilePath[0] == '\0' &&
         frame->m_useArchiveBanks == 1 &&
@@ -660,18 +748,17 @@ extern "C" int czrecoil_frame_create_object_smoke(void) {
     g_CZRecoilFrame_HasWolApi = 0;
 
     CZRecoilFrame *const frame = CZRecoilFrame::CreateObject();
-    RestoreFunctionPatch(centerWindowPatch);
-    RestoreFunctionPatch(setWindowTextPatch);
-    RestoreFunctionPatch(createExPatch);
-
     if (frame == 0) {
+        RestoreFunctionPatch(centerWindowPatch);
+        RestoreFunctionPatch(setWindowTextPatch);
+        RestoreFunctionPatch(createExPatch);
         return 4;
     }
 
-    const RecoilPtr32 constructedFrameVtable = *(RecoilPtr32 *)(frame);
+    const void *constructedFrameVtable = *(const void *const *)(frame);
     const bool constructed =
         constructedFrameVtable != 0 &&
-        constructedFrameVtable != CZRecoilFrame::GetRuntimeClass();
+        constructedFrameVtable != CZRecoilFrame::GetRuntimeClassStatic();
     const bool fieldsOk =
         frame->m_openZbdFilePath[0] == '\0' &&
         frame->m_useArchiveBanks == 1 &&
@@ -683,7 +770,10 @@ extern "C" int czrecoil_frame_create_object_smoke(void) {
         g_cWndSetWindowTextCalls == 1 &&
         g_cWndCenterWindowCalls == 1;
 
-    frame->Destructor();
+    frame->~CZRecoilFrame();
     ::operator delete(frame);
+    RestoreFunctionPatch(centerWindowPatch);
+    RestoreFunctionPatch(setWindowTextPatch);
+    RestoreFunctionPatch(createExPatch);
     return !constructed ? 5 : (!fieldsOk ? 6 : (globalsOk ? 0 : 7));
 }

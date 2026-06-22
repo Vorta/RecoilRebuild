@@ -80,7 +80,7 @@ GUID *g_zNetwork_AppGuid = 0;
  * Purpose: hold Recoil's DirectPlay application GUID.
  */
 GUID g_zNetwork_RecoilAppGuid = {
-    0xc94ebca2,
+    0xc94ebca1,
     0x95b7,
     0x11d2,
     {0xa7, 0x7c, 0x00, 0x60, 0x08, 0x98, 0x77, 0x43}

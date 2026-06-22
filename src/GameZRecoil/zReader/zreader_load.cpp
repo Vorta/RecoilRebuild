@@ -119,6 +119,24 @@ extern "C" char *g_zUtil_ZRDR_WildcardStarPtrs[5] = {0};
 extern "C" zClass_NodePartial *g_Mover_LastLoadedNode = 0;
 
 /**
+ * Reimplements data 0x4dcbe8: g_zUtil_MissionZrdrArchivePathFmt.
+ * Purpose: format the mission-specific ZRDR archive path mounted after search-path setup.
+ */
+const char g_zUtil_MissionZrdrArchivePathFmt[0x11] = "zbd\\m%d\\zrdr.zbd";
+/**
+ * Reimplements data 0x4dcbfc: g_zUtil_MissionZrdrSearchPathsFmt.
+ * Purpose: format the loose mission ZRDR search paths before mounting the archive.
+ */
+const char g_zUtil_MissionZrdrSearchPathsFmt[0x3d] =
+    "..\\data\\common\\zrdr;..\\data\\m%d\\zrdr;..\\data\\m%d\\zrdr\\aipath";
+/**
+ * Reimplements data 0x4dcc3c: g_zImage_CommonTextureSearchPaths.
+ * Purpose: supplies common texture and effect texture search paths for mission resources.
+ */
+const char g_zImage_CommonTextureSearchPaths[0x38] =
+    "..\\data\\common\\textures;..\\data\\common\\effects\\textures";
+
+/**
  * Reimplements 0x48c9a0: zArchiveList_LinkNodeBetween.
  * Purpose: link a node between two existing circular-list neighbors.
  */
@@ -1061,11 +1079,11 @@ int __fastcall SetMissionZrdrPathsAndMountZbd(
         0,
         "zbd"
     );
-    zImage_InitMissionResources("..\\data\\common\\textures;..\\data\\common\\effects\\textures");
+    zImage_InitMissionResources(g_zImage_CommonTextureSearchPaths);
 
     sprintf(
         pathText,
-        "..\\data\\common\\zrdr;..\\data\\m%d\\zrdr;..\\data\\m%d\\zrdr\\aipath",
+        g_zUtil_MissionZrdrSearchPathsFmt,
         missionId,
         missionId
     );
@@ -1077,7 +1095,7 @@ int __fastcall SetMissionZrdrPathsAndMountZbd(
 
     sprintf(
         pathText,
-        "zbd\\m%d\\zrdr.zbd",
+        g_zUtil_MissionZrdrArchivePathFmt,
         missionId
     );
     return zArchive::MountIndexArchive(

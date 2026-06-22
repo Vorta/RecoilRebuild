@@ -633,6 +633,9 @@ void *g_panelRebuildTextRectThis;
 int g_elementUpdateDrawCount;
 int g_elementUpdateDrawBaseCount;
 int g_elementUpdateInvalidateCount;
+int g_polylineBaseDrawCount;
+int g_polylineLineCount;
+int g_polylineLineArgs[5];
 int g_circleDrawBaseCount;
 int g_circlePointOpCount;
 void *g_circlePointOpFrameBuffer;
@@ -766,6 +769,43 @@ void TestElementUpdateElement::DrawBase() {
 void TestElementUpdateElement::Invalidate() {
     ++g_elementUpdateInvalidateCount;
     HudUiElement::Invalidate();
+}
+
+void __fastcall CapturePolylineBaseDraw(HudUiElement *) {
+    ++g_polylineBaseDrawCount;
+}
+
+void __fastcall CapturePolylineRaster4(
+    unsigned short *,
+    int x0,
+    int y0,
+    int x1,
+    int y1,
+    int color16
+) {
+    ++g_polylineLineCount;
+    g_polylineLineArgs[0] = x0;
+    g_polylineLineArgs[1] = y0;
+    g_polylineLineArgs[2] = x1;
+    g_polylineLineArgs[3] = y1;
+    g_polylineLineArgs[4] = color16;
+}
+
+void __fastcall CapturePolylineRaster5(
+    unsigned short *,
+    const zRndr_LineClipRect2I *,
+    int x0,
+    int y0,
+    int x1,
+    int y1,
+    int color16
+) {
+    ++g_polylineLineCount;
+    g_polylineLineArgs[0] = x0;
+    g_polylineLineArgs[1] = y0;
+    g_polylineLineArgs[2] = x1;
+    g_polylineLineArgs[3] = y1;
+    g_polylineLineArgs[4] = color16;
 }
 
 void TestCircleDrawDirtyOps::DrawBase() {
@@ -9025,6 +9065,104 @@ extern "C" int zhud_polyline_and_slider_border_constructor_smoke(void) {
 
     g_HudUi_InvalidateMask = oldMask;
     return constructed && firstPoint && laterPoint && borderConstructed && boundsSet ? 0 : 1;
+}
+
+extern "C" int zhud_polyline_draw_and_slider_update_smoke(void) {
+    struct TestDrawTable {
+        std::uintptr_t slots[3];
+    };
+
+    TestDrawTable table{};
+    table.slots[2] = reinterpret_cast<std::uintptr_t>(CapturePolylineBaseDraw);
+
+    void *const oldFrameBuffer = zRndr::g_frameBuffer;
+    zRndr::ImmediateRaster4Proc const oldRaster4 = zRndr::g_pfnImmediateRaster4;
+    zRndr::ImmediateRaster5Proc const oldRaster5 = zRndr::g_pfnImmediateRaster5;
+
+    zRndr::g_frameBuffer = &table;
+    zRndr::g_pfnImmediateRaster4 = CapturePolylineRaster4;
+    zRndr::g_pfnImmediateRaster5 = CapturePolylineRaster5;
+
+    HudUiPolyline polyline{};
+    *reinterpret_cast<const void **>(&polyline) = &table;
+    polyline.pointCount = 3;
+    polyline.color565 = 0x77;
+    polyline.points[0] = {1, 2};
+    polyline.points[1] = {3, 4};
+    polyline.points[2] = {5, 6};
+
+    g_polylineBaseDrawCount = 0;
+    g_polylineLineCount = 0;
+    polyline.Draw();
+    const bool unclipped =
+        g_polylineBaseDrawCount == 1 &&
+        g_polylineLineCount == 2 &&
+        g_polylineLineArgs[0] == 3 &&
+        g_polylineLineArgs[1] == 4 &&
+        g_polylineLineArgs[2] == 5 &&
+        g_polylineLineArgs[3] == 6 &&
+        g_polylineLineArgs[4] == 0x77;
+
+    RECT clip{0, 0, 10, 10};
+    polyline.clipRect = &clip;
+    g_polylineBaseDrawCount = 0;
+    g_polylineLineCount = 0;
+    polyline.Draw();
+    const bool clipped =
+        g_polylineBaseDrawCount == 1 &&
+        g_polylineLineCount == 2 &&
+        g_polylineLineArgs[0] == 3 &&
+        g_polylineLineArgs[1] == 4 &&
+        g_polylineLineArgs[2] == 5 &&
+        g_polylineLineArgs[3] == 6 &&
+        g_polylineLineArgs[4] == 0x77;
+
+    HudUiSliderBorder border{};
+    *reinterpret_cast<const void **>(&border) = &table;
+    border.pointCount = 0;
+    border.flags = 0x10;
+    border.blinkEnabled = 0;
+    g_polylineBaseDrawCount = 0;
+    border.Update(0.1f);
+    const bool hiddenSkipped = g_polylineBaseDrawCount == 0;
+
+    border.flags = 0;
+    border.Update(0.1f);
+    const bool noBlinkDraw = g_polylineBaseDrawCount == 1;
+
+    border.blinkEnabled = 1;
+    border.blinkDirSign = 1;
+    border.blinkPeriodSec = 0.35f;
+    border.blinkTimeRemainingSec = 0.10f;
+    border.Update(0.05f);
+    const bool blinkStillVisible =
+        g_polylineBaseDrawCount == 2 &&
+        border.blinkDirSign == 1 &&
+        border.blinkTimeRemainingSec > 0.049f &&
+        border.blinkTimeRemainingSec < 0.051f;
+
+    border.blinkTimeRemainingSec = 0.01f;
+    border.Update(0.02f);
+    const bool blinkFlippedHidden =
+        g_polylineBaseDrawCount == 2 &&
+        border.blinkDirSign == -1 &&
+        border.blinkTimeRemainingSec == 0.35f;
+
+    border.blinkTimeRemainingSec = 0.01f;
+    border.Update(0.02f);
+    const bool blinkFlippedVisible =
+        g_polylineBaseDrawCount == 3 &&
+        border.blinkDirSign == 1 &&
+        border.blinkTimeRemainingSec == 0.35f;
+
+    zRndr::g_frameBuffer = oldFrameBuffer;
+    zRndr::g_pfnImmediateRaster4 = oldRaster4;
+    zRndr::g_pfnImmediateRaster5 = oldRaster5;
+
+    return unclipped && clipped && hiddenSkipped && noBlinkDraw && blinkStillVisible &&
+                   blinkFlippedHidden && blinkFlippedVisible
+               ? 0
+               : 1;
 }
 
 extern "C" int zhud_numeric_text_input_base_constructor_smoke(void) {

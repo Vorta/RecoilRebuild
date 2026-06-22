@@ -10603,7 +10603,7 @@
 0x40d260 void HudLayoutSW::CrtInitGlobalSingleton()
 {
     HudLayoutSW::GlobalInit()
-    return HudLayoutSW::GlobalConstructor() __tailcall
+    return HudLayoutSW::RegisterAtExit() __tailcall
 }
 
 // Source: D:\Proj\Battlesport\hud.cpp -- HudLayoutSW::GlobalInit.
@@ -10615,17 +10615,14 @@
     return HudLayoutSW::Constructor(&g_HudLayoutSW) __tailcall
 }
 
-// Source: D:\Proj\Battlesport\hud.cpp -- HudLayoutSW::GlobalConstructor.
-// Registers the HudLayoutSW global cleanup callback with the CRT at-exit table.
-0x40d280 void HudLayoutSW::GlobalConstructor()
+// D:\Proj\Battlesport\hud.cpp -- HudLayoutSW::RegisterAtExit
+0x40d280 void HudLayoutSW::RegisterAtExit()
 {
-    atexit(HudLayoutSW::RegisterAtExit)
+    atexit(HudLayoutSW::AtExitDestructor)
 }
 
-// Source: D:\Proj\Battlesport\hud.cpp -- HudLayoutSW::RegisterAtExit.
-// CRT at-exit callback thunk that destroys the global software HUD layout object.
-// BN limitation: tail jump to HudLayoutSW::GlobalDestructor renders as `return ... __tailcall` even though the atexit callback has no source-level return value.
-0x40d290 void HudLayoutSW::RegisterAtExit()
+// D:\Proj\Battlesport\hud.cpp -- HudLayoutSW::AtExitDestructor
+0x40d290 void HudLayoutSW::AtExitDestructor()
 {
     // BN limitation: this is a tail jump to HudLayoutSW::GlobalDestructor(&g_HudLayoutSW); the atexit callback itself has no source-level return value.
     return HudLayoutSW::GlobalDestructor(&g_HudLayoutSW) __tailcall
@@ -47510,7 +47507,7 @@
 0x43d130 int32_t __fastcall WestwoodOnlineUpgradeApi::CreateInstanceAndLoadConfig(HINSTANCE moduleHandle)
 {
     CoInitialize(nullptr)
-    g_WestwoodOnlineUpgradeApiInitState = 0x64
+    __builtin_memcpy(&g_WestwoodOnlineUpgradeApiInitState, "\x64\x00\x00\x00", 4)
     g_WestwoodOnlineUpgradeApiInitReservedZero = 0
     WestwoodOnlineUpgradeApiInitState::Init(&g_WestwoodOnlineUpgradeApiInitState, nullptr, moduleHandle)
     AfxEnableControlContainer(nullptr)
@@ -48281,7 +48278,7 @@
     CWnd::EnableWindow(&self->m_querySessionsByNameButton, 0)
     CWnd::EnableWindow(&self->m_queueVisibleSessionRequestsButton, 0)
     struct WestwoodOnlineUpgradeApi* pWestwoodOnlineUpgradeApi_2 = g_pWestwoodOnlineUpgradeApi
-    return pWestwoodOnlineUpgradeApi_2->m_vftable->RequestListMode(pWestwoodOnlineUpgradeApi_2, g_WestwoodOnlineUpgradeActiveListMode, 1)
+    return pWestwoodOnlineUpgradeApi_2->m_vftable->RequestListMode(pWestwoodOnlineUpgradeApi_2, g_WestwoodOnlineUpgradeActiveListMode[0].d, 1)
 }
 
 // Original file: D:\Proj\Battlesport\WestwoodOnlineUpgradeDialog.cpp
@@ -48401,7 +48398,7 @@
 0x43e680 int32_t __thiscall WestwoodOnlineUpgradeDialog::RequestActiveListMode(struct WestwoodOnlineUpgradeDialog* self)
 {
     struct WestwoodOnlineUpgradeApi* pWestwoodOnlineUpgradeApi_1 = g_pWestwoodOnlineUpgradeApi
-    return pWestwoodOnlineUpgradeApi_1->m_vftable->RequestListMode(pWestwoodOnlineUpgradeApi_1, g_WestwoodOnlineUpgradeActiveListMode, 1)
+    return pWestwoodOnlineUpgradeApi_1->m_vftable->RequestListMode(pWestwoodOnlineUpgradeApi_1, g_WestwoodOnlineUpgradeActiveListMode[0].d, 1)
 }
 
 // Original file: D:\Proj\Battlesport\WestwoodOnlineUpgradeDialog.cpp. BN keeps the MSVC SEH frame and inline strcpy/strlen sequences used for validation MessageBox strings.
@@ -48457,7 +48454,7 @@
 
                 WestwoodOnlineUpgradeDialog::AppendStatusTextFmt(pWestwoodOnlineUpgradeDialog_1, format)
 
-            g_WestwoodOnlineUpgradeActiveListMode = 0
+            g_WestwoodOnlineUpgradeActiveListMode[0].d = 0
         else
             char* edi_7 = zLoc::GetMessageString(0x3003)
             int32_t i = 0xffffffff
@@ -48594,7 +48591,7 @@
             CString::operator=(&self->m_sessionName, &sessionNameText)
             CWnd::UpdateData(self, 0)
             WestwoodOnlineUpgradeDialog::ClearStatusList(self)
-            g_WestwoodOnlineUpgradeActiveListMode = 0x11
+            g_WestwoodOnlineUpgradeActiveListMode[0].d = 0x11
             CWnd::EnableWindow(&self->m_querySessionsByNameButton, 1)
             CWnd::EnableWindow(&self->m_queueVisibleSessionRequestsButton, 1)
         else
@@ -48784,7 +48781,7 @@
 0x43ee40 int32_t WestwoodOnlineUpgradeDialog::RequestListMode0()
 {
     struct WestwoodOnlineUpgradeApi* pWestwoodOnlineUpgradeApi_1 = g_pWestwoodOnlineUpgradeApi
-    g_WestwoodOnlineUpgradeActiveListMode = 0
+    g_WestwoodOnlineUpgradeActiveListMode[0].d = 0
     return pWestwoodOnlineUpgradeApi_1->m_vftable->RequestListMode(pWestwoodOnlineUpgradeApi_1, 0, 0)
 }
 
@@ -48792,7 +48789,7 @@
 0x43ee60 int32_t WestwoodOnlineUpgradeDialog::RequestListMode11()
 {
     struct WestwoodOnlineUpgradeApi* pWestwoodOnlineUpgradeApi_1 = g_pWestwoodOnlineUpgradeApi
-    g_WestwoodOnlineUpgradeActiveListMode = 0x11
+    g_WestwoodOnlineUpgradeActiveListMode[0].d = 0x11
     return pWestwoodOnlineUpgradeApi_1->m_vftable->RequestListMode(pWestwoodOnlineUpgradeApi_1, 0x11, 1)
 }
 
@@ -48886,14 +48883,13 @@
     var_4.b = 1
     g_pWestwoodOnlineUpgradeDialog = &var_4d8
     CZRecoilFrame::SetMenuBarVisibility(RecoilApp::GetMainWnd(&g_RecoilApp), 0)
-    struct WestwoodOnlineUpgradeDialog* pWestwoodOnlineUpgradeDialog_1 = g_pWestwoodOnlineUpgradeDialog
-    g_WestwoodOnlineUpgradeSelectedMissionIndex = 0xffffffff
+    g_WestwoodOnlineUpgradeSelectedMissionIndex[0].d = 0xffffffff
     struct CDialog* entry_esi
-    pWestwoodOnlineUpgradeDialog_1->vtable->DoModal(entry_esi)
+    g_pWestwoodOnlineUpgradeDialog->vtable->DoModal(entry_esi)
     CZRecoilFrame::SetMenuBarVisibility(RecoilApp::GetMainWnd(&g_RecoilApp), 1)
-    int32_t WestwoodOnlineUpgradeSelectedMissionIndex_1 = g_WestwoodOnlineUpgradeSelectedMissionIndex
+    int32_t eax_5 = g_WestwoodOnlineUpgradeSelectedMissionIndex[0].d
 
-    if (WestwoodOnlineUpgradeSelectedMissionIndex_1 == 0xffffffff)
+    if (eax_5 == 0xffffffff)
         var_4.b = 0
         CDialog::~CDialog(&var_538)
         int32_t var_4_3 = 0x29
@@ -48941,7 +48937,7 @@
         fsbase->NtTib.ExceptionList = ExceptionList
         return 0
 
-    *selectedMissionIndexOut = WestwoodOnlineUpgradeSelectedMissionIndex_1
+    *selectedMissionIndexOut = eax_5
     var_4.b = 0
     CDialog::~CDialog(&var_538)
     int32_t var_4_1 = 0x15
@@ -49233,7 +49229,7 @@
     int32_t ecx_5 = not.d(i)
     int32_t esi_4
     int32_t edi_2
-    edi_2, esi_4 = __builtin_memcpy(&g_WestwoodOnlineUpgradeSelectedBootstrapServer.m_playerName, m_pchData - ecx_5, ecx_5 & 0xfffffffc)
+    edi_2, esi_4 = __builtin_memcpy(&g_WestwoodOnlineUpgradeSelectedBootstrapServer[0xe4], m_pchData - ecx_5, ecx_5 & 0xfffffffc)
     __builtin_memcpy(edi_2, esi_4, ecx_5 & 3)
     CString::~CString(&__return_addr)
     char* m_pchData_1 = WestwoodOnlineUpgradeDialog::GetSelectedProfileConnectString(g_pWestwoodOnlineUpgradeDialog, &__return_addr)->m_pchData
@@ -49250,7 +49246,7 @@
     int32_t ecx_11 = not.d(i_1)
     int32_t esi_6
     int32_t edi_4
-    edi_4, esi_6 = __builtin_memcpy(&g_WestwoodOnlineUpgradeSelectedBootstrapServer.m_connectString, m_pchData_1 - ecx_11, ecx_11 & 0xfffffffc)
+    edi_4, esi_6 = __builtin_memcpy(&g_WestwoodOnlineUpgradeSelectedBootstrapServer[0xee], m_pchData_1 - ecx_11, ecx_11 & 0xfffffffc)
     __builtin_memcpy(edi_4, esi_6, ecx_11 & 3)
     CString::~CString(&__return_addr)
     SetEvent(g_WestwoodOnlineUpgradeInitWaitEvents[0])
@@ -49398,7 +49394,7 @@
             struct WestwoodOnlineUpgradeApi* pWestwoodOnlineUpgradeApi_1 = g_pWestwoodOnlineUpgradeApi
             pWestwoodOnlineUpgradeApi_1->m_vftable->SetQueryMode(pWestwoodOnlineUpgradeApi_1, 0x11)
             struct WestwoodOnlineUpgradeApi* pWestwoodOnlineUpgradeApi_2 = g_pWestwoodOnlineUpgradeApi
-            g_WestwoodOnlineUpgradeActiveListMode = 0x11
+            g_WestwoodOnlineUpgradeActiveListMode[0].d = 0x11
             int32_t outCount
             pWestwoodOnlineUpgradeApi_2->m_vftable->GetQueryResultCount(pWestwoodOnlineUpgradeApi_2, &outCount)
             int32_t outCount_1 = outCount
@@ -49592,9 +49588,8 @@
         g_WestwoodOnlineUpgradeCreateSessionFromQueryFlag = 0
         WestwoodOnlineUpgradeDialog::EnableQueryControls(dialog, 0)
         struct WestwoodOnlineUpgradeApi* api = g_pWestwoodOnlineUpgradeApi
-        int32_t activeListMode = g_WestwoodOnlineUpgradeActiveListMode
         g_WestwoodOnlineUpgradeCachedBrowseRecord.m_sessionName[0] = 0
-        api->m_vftable->RequestListMode(api, activeListMode, 1)
+        api->m_vftable->RequestListMode(api, g_WestwoodOnlineUpgradeActiveListMode[0].d, 1)
         return 0
 
     char statusTextBuffer[0x80]
@@ -49625,7 +49620,7 @@
 
         if ((sessionRequest->m_rowFlags.b & 1) == 0)
             struct WestwoodOnlineUpgradeApi* pWestwoodOnlineUpgradeApi_2 = g_pWestwoodOnlineUpgradeApi
-            pWestwoodOnlineUpgradeApi_2->m_vftable->RequestListMode(pWestwoodOnlineUpgradeApi_2, g_WestwoodOnlineUpgradeActiveListMode, 1)
+            pWestwoodOnlineUpgradeApi_2->m_vftable->RequestListMode(pWestwoodOnlineUpgradeApi_2, g_WestwoodOnlineUpgradeActiveListMode[0].d, 1)
 
             if (browseRecord->m_recordFlags != 0 && g_WestwoodOnlineUpgradeCreateSessionFromQueryFlag == 1)
                 WestwoodOnlineUpgradeDialog::UpdateSessionListQueryFromControls()
@@ -49738,10 +49733,9 @@
         __builtin_memcpy(edi_13, esi_6, ecx_10 & 3)
         WestwoodOnlineUpgradeDialog::AppendStatusTextFmt(g_pWestwoodOnlineUpgradeDialog, &statusTextBuffer)
     struct WestwoodOnlineUpgradeApi* pWestwoodOnlineUpgradeApi_1 = g_pWestwoodOnlineUpgradeApi
-    int32_t activeListMode = g_WestwoodOnlineUpgradeActiveListMode
     g_WestwoodOnlineUpgradeCreateSessionFromQueryFlag = 0
     g_WestwoodOnlineUpgradeCachedBrowseRecord.m_sessionName[0] = 0
-    pWestwoodOnlineUpgradeApi_1->m_vftable->RequestListMode(pWestwoodOnlineUpgradeApi_1, activeListMode, 1)
+    pWestwoodOnlineUpgradeApi_1->m_vftable->RequestListMode(pWestwoodOnlineUpgradeApi_1, g_WestwoodOnlineUpgradeActiveListMode[0].d, 1)
     return 0
 }
 
@@ -49770,7 +49764,7 @@
         WestwoodOnlineUpgradeDialog::AppendConnectStatusAndRefreshList(g_pWestwoodOnlineUpgradeDialog, &browseRecord->m_sessionName)
 
     struct WestwoodOnlineUpgradeApi* apiForFailureCancel = g_pWestwoodOnlineUpgradeApi
-    apiForFailureCancel->m_vftable->RequestListMode(apiForFailureCancel, g_WestwoodOnlineUpgradeActiveListMode, 1)
+    apiForFailureCancel->m_vftable->RequestListMode(apiForFailureCancel, g_WestwoodOnlineUpgradeActiveListMode[0].d, 1)
     return 0
 }
 
@@ -50010,7 +50004,7 @@
             int32_t var_19c_1 = 0
             int32_t timerGoalValue_1 = timerGoalValue
             HudSensorTracker::SetRuntimeTimerSecAndGoalValue(&g_HudSensorTracker, selectedPlayerName.m_pchData.q * 60f, timerGoalValue)
-            g_WestwoodOnlineUpgradeSelectedMissionIndex = statusFields.eventCode
+            g_WestwoodOnlineUpgradeSelectedMissionIndex[0].d = statusFields.eventCode
 
         if (showConnectionFailureMessage != 0)
             char* edi_3 = zLoc::GetMessageString(0x3003)
@@ -50085,7 +50079,7 @@
     // BN stack merge: the &self/atoi(self) display is the local queryFieldText CString at stack -0x20, not the event-sink receiver.
     CString::operator=(&self, CString::Mid(&encodedQuery, &var_10, 0))
     var_8.b = 1
-    int32_t __saved_esi
+    struct CString __saved_esi
     CString::~CString(&__saved_esi)
     int32_t wParam = atoi(self)
     SendMessageA(g_pWestwoodOnlineUpgradeDialog->m_sessionModeCombo.base.m_hWnd, 0x14e, wParam, 0)
@@ -50152,7 +50146,7 @@
     // BN stack merge: the &self/atoi(self) display is the local queryFieldText CString at stack -0x20, not the event-sink receiver.
     CString::operator=(&self, CString::Mid(&encodedQuery, &var_10, 0))
     var_8.b = 1
-    int32_t __saved_esi
+    struct CString __saved_esi
     CString::~CString(&__saved_esi)
     int32_t wParam = atoi(self)
     SendMessageA(g_pWestwoodOnlineUpgradeDialog->m_sessionModeCombo.base.m_hWnd, 0x14e, wParam, 0)
@@ -50556,10 +50550,9 @@
     zLoc::FormatMessage(&statusMessageText, 0x80, 0x302d, &browseRecord->m_sessionName, &sessionRequest->m_sessionName)
     WestwoodOnlineUpgradeDialog::AppendStatusTextFmt(g_pWestwoodOnlineUpgradeDialog, &statusMessageText)
     struct WestwoodOnlineUpgradeApi* pWestwoodOnlineUpgradeApi_2 = g_pWestwoodOnlineUpgradeApi
-    int32_t WestwoodOnlineUpgradeActiveListMode_1 = g_WestwoodOnlineUpgradeActiveListMode
     g_WestwoodOnlineUpgradePendingSessionResultCount = 0
     g_WestwoodOnlineUpgradeCachedBrowseRecord.m_sessionName[0] = 0
-    pWestwoodOnlineUpgradeApi_2->m_vftable->RequestListMode(pWestwoodOnlineUpgradeApi_2, WestwoodOnlineUpgradeActiveListMode_1, 1)
+    pWestwoodOnlineUpgradeApi_2->m_vftable->RequestListMode(pWestwoodOnlineUpgradeApi_2, g_WestwoodOnlineUpgradeActiveListMode[0].d, 1)
     CWnd::SendDlgItemMessageA(g_pWestwoodOnlineUpgradeDialog, 0x471, 0x184, 0, 0)
     struct WestwoodOnlineUpgradeDialog* pWestwoodOnlineUpgradeDialog_1 = g_pWestwoodOnlineUpgradeDialog
     g_WestwoodOnlineUpgradeCreateSessionFromQueryFlag = 0
@@ -97394,7 +97387,7 @@
     gModel_RenderFn = zModel::RenderNodeSoftware
     gAltClipPassEnabled = 0
     gModel_ClipMaskStackTop = &gModel_ClipMaskStack
-    g_zVideo_pActiveViewContext = nullptr
+    g_zVideo_pActiveProjectionViewContext = nullptr
     gClipRect_Primary.xMin = 0f
     gClipRect_Primary.xMax = 320f
     gClipRect_Primary.yMin = 0f
@@ -98479,7 +98472,7 @@
         zMath::MatSetupCamera()
         gRndr_PerspectiveTextureEnabled = 0
     else if ((di->flags.b & 0x10) == 0)
-        zMath::MatLoadProjection(g_zVideo_pActiveViewContext->projectionYawOffset)
+        zMath::MatLoadProjection(g_zVideo_pActiveProjectionViewContext->projectionYawOffset)
         gRndr_PerspectiveTextureEnabled = 0
     else
         zMath::MatLoadView()
@@ -99224,7 +99217,7 @@
         zMath::MatSetupCamera()
         gRndr_PerspectiveTextureEnabled = 0
     else if ((index->flags.b & 0x10) == 0)
-        zMath::MatLoadProjection(g_zVideo_pActiveViewContext->projectionYawOffset)
+        zMath::MatLoadProjection(g_zVideo_pActiveProjectionViewContext->projectionYawOffset)
         gRndr_PerspectiveTextureEnabled = 0
     else
         zMath::MatLoadView()
@@ -100126,14 +100119,14 @@
     struct zVec3 var_24
 
     if ((eax.b & 0x10) s> 0)
-        struct zVec3* ecx_1 = &g_zVideo_pActiveViewContext->nearClipCenter
+        struct zVec3* ecx_1 = &g_zVideo_pActiveProjectionViewContext->nearClipCenter
         struct zVec3* var_10_1 = &var_24
         long double x87_r6_2 = sphereCenter->y - ecx_1->y
         long double x87_r5_2 = sphereCenter->z - ecx_1->z
         var_10_1->x = sphereCenter->x - ecx_1->x
         var_10_1->y = x87_r6_2
         var_10_1->z = x87_r5_2
-        struct zVec3* edx_2 = &g_zVideo_pActiveViewContext->frustumNearNormal
+        struct zVec3* edx_2 = &g_zVideo_pActiveProjectionViewContext->frustumNearNormal
         struct zVec3* var_18_1 = &var_24
         float var_10_2 = var_18_1->x * edx_2->x + var_18_1->y * edx_2->y + var_18_1->z * edx_2->z
         long double x87_r7_8 = var_10_2
@@ -100154,7 +100147,7 @@
         else
             *clipMaskInOut = 0
 
-    struct zVec3* edx_5 = &g_zVideo_pActiveViewContext->cameraPos
+    struct zVec3* edx_5 = &g_zVideo_pActiveProjectionViewContext->cameraPos
     struct zVec3* var_18_2 = &var_24
     long double x87_r6_7 = sphereCenter->y - edx_5->y
     long double x87_r5_8 = sphereCenter->z - edx_5->z
@@ -100164,7 +100157,7 @@
 
     if ((var_8 & 1) s> 0)
         struct zVec3* var_14_4 = &var_24
-        struct zVec3* var_18_3 = &g_zVideo_pActiveViewContext->frustumLeftNormal.x
+        struct zVec3* var_18_3 = &g_zVideo_pActiveProjectionViewContext->frustumLeftNormal.x
         float var_10_3 = var_14_4->x * var_18_3->x + var_14_4->y * var_18_3->y + var_14_4->z * var_18_3->z
         long double x87_r7_19 = fneg(radius)
         long double temp2_1 = var_10_3
@@ -100184,7 +100177,7 @@
             *clipMaskInOut = eax
 
     if ((var_8 & 2) s> 0)
-        struct zVec3* edx_9 = &g_zVideo_pActiveViewContext->frustumRightNormal
+        struct zVec3* edx_9 = &g_zVideo_pActiveProjectionViewContext->frustumRightNormal
         struct zVec3* var_14_5 = &var_24
         float var_10_4 = var_14_5->x * edx_9->x + var_14_5->y * edx_9->y + var_14_5->z * edx_9->z
         long double x87_r7_26 = fneg(radius)
@@ -100205,7 +100198,7 @@
             *clipMaskInOut = eax
 
     if ((var_8 & 4) s> 0)
-        struct zVec3* ecx_8 = &g_zVideo_pActiveViewContext->frustumBottomNormal
+        struct zVec3* ecx_8 = &g_zVideo_pActiveProjectionViewContext->frustumBottomNormal
         struct zVec3* var_14_6 = &var_24
         float var_10_5 = var_14_6->x * ecx_8->x + var_14_6->y * ecx_8->y + var_14_6->z * ecx_8->z
         long double x87_r7_33 = fneg(radius)
@@ -100227,7 +100220,7 @@
             *clipMaskInOut = eax_6
 
     if ((var_8 & 8) s> 0)
-        struct zVec3* eax_8 = &g_zVideo_pActiveViewContext->frustumTopNormal
+        struct zVec3* eax_8 = &g_zVideo_pActiveProjectionViewContext->frustumTopNormal
         struct zVec3* var_14_7 = &var_24
         float var_10_6 = var_14_7->x * eax_8->x + var_14_7->y * eax_8->y + var_14_7->z * eax_8->z
         long double x87_r7_40 = fneg(radius)
@@ -100249,14 +100242,14 @@
             *clipMaskInOut = eax_10
 
     if ((var_8 & 0x20) s> 0)
-        struct zVec3* eax_12 = &g_zVideo_pActiveViewContext->farClipCenter
+        struct zVec3* eax_12 = &g_zVideo_pActiveProjectionViewContext->farClipCenter
         struct zVec3* var_18_7 = &var_24
         long double x87_r6_21 = sphereCenter->y - eax_12->y
         long double x87_r5_23 = sphereCenter->z - eax_12->z
         var_18_7->x = sphereCenter->x - eax_12->x
         var_18_7->y = x87_r6_21
         var_18_7->z = x87_r5_23
-        struct zVec3* ecx_13 = &g_zVideo_pActiveViewContext->frustumFarNormal
+        struct zVec3* ecx_13 = &g_zVideo_pActiveProjectionViewContext->frustumFarNormal
         struct zVec3* var_14_9 = &var_24
         float var_10_7 = var_14_9->x * ecx_13->x + var_14_9->y * ecx_13->y + var_14_9->z * ecx_13->z
         long double x87_r7_50 = fneg(radius)
@@ -101101,14 +101094,14 @@
 // Source: D:\Proj\GameZRecoil\zVideo\zVideo.cpp. BN lowers the viewport/clip-rect x87 stack math as explicit fconvert/long double temporaries; accepted behavior is active view-context selection plus projection and clip state update.
 0x479ce0 void __fastcall zVideo::SetActiveViewContext(struct zVideo_ViewContext* viewContext)
 {
-    g_zVideo_pActiveViewContext = viewContext
+    g_zVideo_pActiveProjectionViewContext = viewContext
     long double x87_r7 = viewContext->clipDistance
     long double temp1 = 1.0
     x87_r7 - temp1
 
     if ((((x87_r7 < temp1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7, temp1) ? 1 : 0) << 0xa | (x87_r7 == temp1 ? 1 : 0) << 0xe):1.b & 1) != 0)
         viewContext->clipDistance = 1f
-        viewContext = g_zVideo_pActiveViewContext
+        viewContext = g_zVideo_pActiveProjectionViewContext
 
     long double x87_r7_1 = viewContext->clipDistance
     bool cond:0 = g_zVideo_ActiveRendererPath != ZVID_RENDERER_BACKEND_SOFTWARE
@@ -101117,7 +101110,7 @@
     if (not(cond:0))
         struct zVideo_ViewContext* viewContext_1 = viewContext
         zVideo_dd3d::SetQuadBatchDepthAndRhw(1f / gClipRect_Primary.zMin)
-        viewContext = g_zVideo_pActiveViewContext
+        viewContext = g_zVideo_pActiveProjectionViewContext
 
     gClipRect_Primary.zMax = viewContext->projDepth
     int32_t outWidth
@@ -101131,7 +101124,7 @@
     int32_t outHeight_1
     int32_t outHeight_2
 
-    if (zClass_Window::gwWindowGetResolution(g_zVideo_pActiveViewContext->windowNode, &outWidth_1, &outHeight_1) == 0)
+    if (zClass_Window::gwWindowGetResolution(g_zVideo_pActiveProjectionViewContext->windowNode, &outWidth_1, &outHeight_1) == 0)
         outHeight_2 = outHeight_1
     else
         outWidth_1 = zVideo::GetPrimarySurfaceWidth()
@@ -101181,17 +101174,17 @@
 
     gClipRect_Primary.yMax = x87_r4_8
     gClipRect_Primary.yMax2 = x87_r6_5
-    struct zVideo_ViewContext* zVideo_pActiveViewContext_1 = g_zVideo_pActiveViewContext
+    struct zVideo_ViewContext* zVideo_pActiveProjectionViewContext_1 = g_zVideo_pActiveProjectionViewContext
     g_zVideo_ProjectClipLeft = x87_r5_4
     g_zVideo_ProjectClipTop = viewportOriginY
     g_zVideo_ProjectClipRight = x87_r7_5 - 0.00100000005f
     g_zVideo_ProjectClipBottom = var_20 - 0.00100000005f
-    float viewportScaleY = zVideo_pActiveViewContext_1->viewportScaleY
+    float viewportScaleY = zVideo_pActiveProjectionViewContext_1->viewportScaleY
     float viewportScaleY_2 = viewportScaleY
     float viewportScaleY_1 = viewportScaleY
-    zMath::SetupProjection(viewportOriginX, viewportOriginY, outWidth_1 * 0.5f, outHeight_1 * 0.5f, zVideo_pActiveViewContext_1->viewportScaleX, viewportScaleY, zVideo_pActiveViewContext_1->clipDistance, zVideo_pActiveViewContext_1->projDepth)
-    struct zVideo_ViewContext* zVideo_pActiveViewContext_2 = g_zVideo_pActiveViewContext
-    zMath::SetScreenSize(zVideo_pActiveViewContext_2->fovX, zVideo_pActiveViewContext_2->fovY)
+    zMath::SetupProjection(viewportOriginX, viewportOriginY, outWidth_1 * 0.5f, outHeight_1 * 0.5f, zVideo_pActiveProjectionViewContext_1->viewportScaleX, viewportScaleY, zVideo_pActiveProjectionViewContext_1->clipDistance, zVideo_pActiveProjectionViewContext_1->projDepth)
+    struct zVideo_ViewContext* zVideo_pActiveProjectionViewContext_2 = g_zVideo_pActiveProjectionViewContext
+    zMath::SetScreenSize(zVideo_pActiveProjectionViewContext_2->fovX, zVideo_pActiveProjectionViewContext_2->fovY)
 }
 
 // D:\Proj\GameZRecoil\zModel\zModel_Display.cpp. BN keeps the remap arithmetic as x87 fconvert temporaries after the RectF32/zClip globals are typed.
@@ -133575,7 +133568,7 @@
 // Likely original file: D:\Proj\GameZRecoil\zSound\zSound.cpp. Sets whether sound banks should be loaded from archive files and clears the sample-set registry vector.
 0x4a0810 void __fastcall zSnd::SetUseArchiveBanks(int32_t enabled)
 {
-    g_zSnd_SampleSetRegistry.useArchiveBanksFlag.b = enabled:3.b
+    g_zSnd_SampleSetRegistry.useArchiveBanksFlag = enabled:3.b
     g_zSnd_SampleSetRegistry.begin = nullptr
     g_zSnd_SampleSetRegistry.end = nullptr
     g_zSnd_SampleSetRegistry.capacityEnd = nullptr
@@ -140470,7 +140463,7 @@
         return eax_3
 
     if (g_zVideo_RendererType != ZVID_RENDERER_BACKEND_SOFTWARE)
-        g_zImage_DefaultTextureRecord = g_zVideo_pfnCreateTextureRecord(nullptr, &g_zVideo_DefaultTextureImage, 0, 0, 0)
+        g_zVideo_DefaultTextureRecord = g_zVideo_pfnCreateTextureRecord(nullptr, &g_zVideo_DefaultTextureImage, 0, 0, 0)
         g_zVideo_QuadBatchCount = 0
         uint32_t* i = &g_zVideo_QuadBatchItemsBase[0].bottomRight.spec
 
@@ -140844,11 +140837,11 @@
 // Original file: D:\Proj\GameZRecoil\zVideo\zVideo.cpp. Shutdown dispatch routine for the DirectDraw/D3D backend: destroys the default texture record, clears the global, then tears down the video subsystem interfaces.
 0x4a7d40 void zVideo_dd::ShutdownVideoSystem()
 {
-    struct zVideo_TextureRecord* zImage_DefaultTextureRecord_1 = g_zImage_DefaultTextureRecord
+    struct zVideo_TextureRecord* zVideo_DefaultTextureRecord_1 = g_zVideo_DefaultTextureRecord
 
-    if (zImage_DefaultTextureRecord_1 != 0)
-        zVideo_dd3d::TextureRecord_Destroy(zImage_DefaultTextureRecord_1)
-        g_zImage_DefaultTextureRecord = nullptr
+    if (zVideo_DefaultTextureRecord_1 != 0)
+        zVideo_dd3d::TextureRecord_Destroy(zVideo_DefaultTextureRecord_1)
+        g_zVideo_DefaultTextureRecord = nullptr
 
     zVideo_dd::TeardownVideoSubsystem()
 }
@@ -142654,7 +142647,7 @@
 
                 if (image->palette != 0)
                     zError::ReportOldNoOp(0x200, "D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c", 0x24a, "Texture [%s] Palettes not supported  Using default texture.", textureName)
-                    return g_zImage_DefaultTextureRecord
+                    return g_zVideo_DefaultTextureRecord
 
                 desc.dwSize = 0x6c
                 desc.dwFlags = 0x1007
@@ -142850,7 +142843,7 @@
         else
             zError::ReportOldNoOp(0x200, "D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c", 0x224, "Texture [%s] dimensions [%d x %d] are not power of 2.Using default texture.", textureName, image->width, image->height)
 
-    return g_zImage_DefaultTextureRecord
+    return g_zVideo_DefaultTextureRecord
 }
 
 // Source: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c
@@ -143061,7 +143054,7 @@
     struct IDirectDrawSurface* m_textureSurface = textureRecord->m_textureSurface
     struct IDirect3DTexture2* m_texture = textureRecord->m_texture
 
-    if (textureRecord == g_zImage_DefaultTextureRecord)
+    if (textureRecord == g_zVideo_DefaultTextureRecord)
         return
 
     if (m_uploadSurface != 0)
@@ -152982,7 +152975,7 @@
     struct HudUiZrdDialog* owner_30 = arg3
     struct HudUiWidget_FTable* ftable = self->base.ftable
     self->owner = owner_30
-    ftable->SetVisible(self, 1)
+    ftable->SetVisible(1)
     HudUiContainer::AddChild(owner_30, self)
     self->originX = owner_30->originX
     self->originY = owner_30->originY
@@ -153009,19 +153002,19 @@
             originX += u32_15->x.i32
             originY_8 += u32_15->y.i32
 
-    self->base.ftable->SetPos(self, originX, originY_8)
+    self->base.ftable->SetPos(originX, originY_8)
     struct zVideo_BltSourceHead* clipSource = arg3->clipSource
 
     if (clipSource != 0)
-        struct HudUiRect* eax_10 = self->base.ftable->GetBoundsRectOrNull(self)
+        int32_t* eax_10 = self->base.ftable->GetBoundsRectOrNull()
 
         if (eax_10 != 0)
-            int32_t top = eax_10->top
-            int32_t left = eax_10->left
-            int32_t right = eax_10->right
-            int32_t top_1 = top
-            int32_t bottom = eax_10->bottom
-            self->base.ftable->SetClip(self, clipSource, &left)
+            int32_t edx_5 = eax_10[1]
+            int32_t bltSourceOrNull = *eax_10
+            int32_t var_14_1 = eax_10[2]
+            int32_t var_18_1 = edx_5
+            int32_t var_10_1 = eax_10[3]
+            self->base.ftable->SetClip(clipSource, &bltSourceOrNull)
 
     struct zReader_Node* parentNode = zReader::GetNamedNode(zrdSection, "ROLLOVER")
 
@@ -153070,23 +153063,20 @@
                     owner_29->base.flash.flashDirectionSign = 1
 
                 struct HudUiTransitionTextPanel* owner_16 = owner_29
-                int32_t edx_14
-                edx_14.b = owner_29->base.elementFlags.b
+                int32_t edx_15
+                edx_15.b = owner_29->base.elementFlags.b
                 int32_t var_4_4 = 0xffffffff
-                owner_29->base.elementFlags = (edx_14 & 0x10) | 2
+                owner_29->base.elementFlags = (edx_15 & 0x10) | 2
                 struct HudUiTransitionTextPanel_FTable* vptr_1 = arg3->base.vptr
                 char* fmt_1 = zLoc::ResolveMessageKeyOrFallback(eax_17->list->items[0].payload)
                 vptr_1->SetTextFmt(arg3, fmt_1)
                 struct zReader_NodeArray_HudTextLabelSpec* u32_2 = eax_17->list
-                struct HudUiZrdDialog* ecx_42 = arg3
-                int32_t var_44_9 = u32_2->y.i32 + originY_1
-                int32_t var_48_5 = u32_2->x.i32 + originX_2
-                ecx_42->base.vptr->PrimaryAction(ecx_42)
+                arg3->base.vptr->PrimaryAction(u32_2->x.i32 + originX_2, u32_2->y.i32 + originY_1)
                 struct HudUiZrdDialog* owner_1 = self->owner
-                int32_t edx_19 = eax_17->list->__offset(0x24).d * 9
-                int32_t esi_10 = *(&owner_1->fontStyles + (edx_19 << 2))
+                int32_t edx_20 = eax_17->list->__offset(0x24).d * 9
+                int32_t esi_10 = *(&owner_1->fontStyles + (edx_20 << 2))
                 int32_t esi_11 = neg.d(esi_10)
-                struct HudFontStyle* esi_13 = sbb.d(esi_11, esi_11, esi_10 != 0) & (&owner_1->fontStyles + (edx_19 << 2))
+                struct HudFontStyle* esi_13 = sbb.d(esi_11, esi_11, esi_10 != 0) & (&owner_1->fontStyles + (edx_20 << 2))
 
                 if (esi_13 != 0)
                     struct HudUiZrdDialog* ecx_44 = arg3
@@ -153177,15 +153167,12 @@
                         char* fmt = zLoc::ResolveMessageKeyOrFallback(*((&eax_17->list->count)[var_30_1 * 2] + 0xc))
                         vptr->SetTextFmt(arg3, fmt)
                         struct zReader_NodeArray_HudTextLabelSpec* eax_25 = (&eax_17->list->count)[var_30_1 * 2]
-                        struct HudUiZrdDialog* ecx_28 = arg3
-                        int32_t var_44_5 = eax_25->y.i32 + originY_7
-                        int32_t var_48_3 = eax_25->x.i32 + originX_1
-                        ecx_28->base.vptr->PrimaryAction(ecx_28)
+                        arg3->base.vptr->PrimaryAction(eax_25->x.i32 + originX_1, eax_25->y.i32 + originY_7)
                         struct HudUiZrdDialog* owner = self->owner
-                        int32_t edx_12 = *((&eax_17->list->count)[var_30_1 * 2] + 0x24) * 9
-                        int32_t esi_4 = *(&owner->fontStyles + (edx_12 << 2))
+                        int32_t edx_13 = *((&eax_17->list->count)[var_30_1 * 2] + 0x24) * 9
+                        int32_t esi_4 = *(&owner->fontStyles + (edx_13 << 2))
                         int32_t esi_5 = neg.d(esi_4)
-                        struct HudFontStyle* esi_7 = sbb.d(esi_5, esi_5, esi_4 != 0) & (&owner->fontStyles + (edx_12 << 2))
+                        struct HudFontStyle* esi_7 = sbb.d(esi_5, esi_5, esi_4 != 0) & (&owner->fontStyles + (edx_13 << 2))
 
                         if (esi_7 != 0)
                             struct HudUiZrdDialog* ecx_30 = arg3
@@ -153323,23 +153310,20 @@
                     owner_33->base.flash.flashDirectionSign = 1
 
                 struct HudUiTransitionTextPanel* owner_18 = owner_33
-                int32_t edx_34
-                edx_34.b = owner_33->base.elementFlags.b
+                int32_t edx_35
+                edx_35.b = owner_33->base.elementFlags.b
                 int32_t var_4_8 = 0xffffffff
-                owner_33->base.elementFlags = (edx_34 & 0x10) | 2
+                owner_33->base.elementFlags = (edx_35 & 0x10) | 2
                 struct HudUiTransitionTextPanel_FTable* vptr_3 = arg3->base.vptr
                 char* fmt_3 = zLoc::ResolveMessageKeyOrFallback(eax_63->list->items[0].payload)
                 vptr_3->SetTextFmt(arg3, fmt_3)
                 struct zReader_NodeArray_HudTextLabelSpec* list_04_1 = eax_63->list
-                struct HudUiZrdDialog* ecx_82 = arg3
-                int32_t var_44_18 = list_04_1->y.i32 + originY_3
-                int32_t var_48_10 = list_04_1->x.i32 + originX_4
-                ecx_82->base.vptr->PrimaryAction(ecx_82)
+                arg3->base.vptr->PrimaryAction(list_04_1->x.i32 + originX_4, list_04_1->y.i32 + originY_3)
                 struct HudUiZrdDialog* owner_3 = self->owner
-                int32_t edx_39 = eax_63->list->__offset(0x24).d * 9
-                int32_t esi_24 = *(&owner_3->fontStyles + (edx_39 << 2))
+                int32_t edx_40 = eax_63->list->__offset(0x24).d * 9
+                int32_t esi_24 = *(&owner_3->fontStyles + (edx_40 << 2))
                 int32_t esi_25 = neg.d(esi_24)
-                struct HudFontStyle* esi_27 = sbb.d(esi_25, esi_25, esi_24 != 0) & (&owner_3->fontStyles + (edx_39 << 2))
+                struct HudFontStyle* esi_27 = sbb.d(esi_25, esi_25, esi_24 != 0) & (&owner_3->fontStyles + (edx_40 << 2))
 
                 if (esi_27 != 0)
                     struct HudUiZrdDialog* ecx_84 = arg3
@@ -153419,23 +153403,20 @@
                             owner_31->base.flash.flashDirectionSign = 1
 
                         struct HudUiTransitionTextPanel* owner_17 = owner_31
-                        int32_t edx_25
-                        edx_25.b = owner_31->base.elementFlags.b
+                        int32_t edx_26
+                        edx_26.b = owner_31->base.elementFlags.b
                         int32_t var_4_6 = 0xffffffff
-                        owner_31->base.elementFlags = (edx_25 & 0x10) | 2
+                        owner_31->base.elementFlags = (edx_26 & 0x10) | 2
                         struct HudUiTransitionTextPanel_FTable* vptr_2 = arg3->base.vptr
                         char* fmt_2 = zLoc::ResolveMessageKeyOrFallback(*((&eax_63->list->count)[var_30_2 * 2] + 0xc))
                         vptr_2->SetTextFmt(arg3, fmt_2)
-                        struct HudUiZrdDialog* ecx_68 = arg3
                         struct zReader_NodeArray_HudTextLabelSpec* eax_70 = (&eax_63->list->count)[var_30_2 * 2]
-                        int32_t var_44_14 = eax_70->y.i32 + originY_2
-                        int32_t var_48_8 = eax_70->x.i32 + originX_3
-                        ecx_68->base.vptr->PrimaryAction(ecx_68)
+                        arg3->base.vptr->PrimaryAction(eax_70->x.i32 + originX_3, eax_70->y.i32 + originY_2)
                         struct HudUiZrdDialog* owner_2 = self->owner
-                        int32_t edx_32 = *((&eax_63->list->count)[var_30_2 * 2] + 0x24) * 9
-                        int32_t esi_18 = *(&owner_2->fontStyles + (edx_32 << 2))
+                        int32_t edx_33 = *((&eax_63->list->count)[var_30_2 * 2] + 0x24) * 9
+                        int32_t esi_18 = *(&owner_2->fontStyles + (edx_33 << 2))
                         int32_t esi_19 = neg.d(esi_18)
-                        struct HudFontStyle* esi_21 = sbb.d(esi_19, esi_19, esi_18 != 0) & (&owner_2->fontStyles + (edx_32 << 2))
+                        struct HudFontStyle* esi_21 = sbb.d(esi_19, esi_19, esi_18 != 0) & (&owner_2->fontStyles + (edx_33 << 2))
 
                         if (esi_21 != 0)
                             struct HudUiZrdDialog* ecx_70 = arg3
@@ -153573,23 +153554,20 @@
                     owner_39->base.flash.flashDirectionSign = 1
 
                 struct HudUiTransitionTextPanel* owner_20 = owner_39
-                int32_t edx_54
-                edx_54.b = owner_39->base.elementFlags.b
+                int32_t edx_55
+                edx_55.b = owner_39->base.elementFlags.b
                 int32_t var_4_12 = 0xffffffff
-                owner_39->base.elementFlags = (edx_54 & 0x10) | 2
+                owner_39->base.elementFlags = (edx_55 & 0x10) | 2
                 struct HudUiTransitionTextPanel_FTable* vptr_5 = arg3->base.vptr
                 char* fmt_5 = zLoc::ResolveMessageKeyOrFallback(eax_110->list->items[0].payload)
                 vptr_5->SetTextFmt(arg3, fmt_5)
                 struct zReader_NodeArray_HudTextLabelSpec* u32_7 = eax_110->list
-                struct HudUiZrdDialog* ecx_122 = arg3
-                int32_t var_44_27 = u32_7->y.i32 + originY_5
-                int32_t var_48_15 = u32_7->x.i32 + originX_6
-                ecx_122->base.vptr->PrimaryAction(ecx_122)
+                arg3->base.vptr->PrimaryAction(u32_7->x.i32 + originX_6, u32_7->y.i32 + originY_5)
                 struct HudUiZrdDialog* owner_5 = self->owner
-                int32_t edx_59 = eax_110->list->__offset(0x24).d * 9
-                int32_t esi_38 = *(&owner_5->fontStyles + (edx_59 << 2))
+                int32_t edx_60 = eax_110->list->__offset(0x24).d * 9
+                int32_t esi_38 = *(&owner_5->fontStyles + (edx_60 << 2))
                 int32_t esi_39 = neg.d(esi_38)
-                struct HudFontStyle* esi_41 = sbb.d(esi_39, esi_39, esi_38 != 0) & (&owner_5->fontStyles + (edx_59 << 2))
+                struct HudFontStyle* esi_41 = sbb.d(esi_39, esi_39, esi_38 != 0) & (&owner_5->fontStyles + (edx_60 << 2))
 
                 if (esi_41 != 0)
                     struct HudUiZrdDialog* ecx_124 = arg3
@@ -153669,23 +153647,20 @@
                             owner_35->base.flash.flashDirectionSign = 1
 
                         struct HudUiTransitionTextPanel* owner_19 = owner_35
-                        int32_t edx_45
-                        edx_45.b = owner_35->base.elementFlags.b
+                        int32_t edx_46
+                        edx_46.b = owner_35->base.elementFlags.b
                         int32_t var_4_10 = 0xffffffff
-                        owner_35->base.elementFlags = (edx_45 & 0x10) | 2
+                        owner_35->base.elementFlags = (edx_46 & 0x10) | 2
                         struct HudUiTransitionTextPanel_FTable* vptr_4 = arg3->base.vptr
                         char* fmt_4 = zLoc::ResolveMessageKeyOrFallback(*((&eax_110->list->count)[var_30_3 * 2] + 0xc))
                         vptr_4->SetTextFmt(arg3, fmt_4)
-                        struct HudUiZrdDialog* ecx_108 = arg3
                         struct zReader_NodeArray_HudTextLabelSpec* eax_117 = (&eax_110->list->count)[var_30_3 * 2]
-                        int32_t var_44_23 = eax_117->y.i32 + originY_4
-                        int32_t var_48_13 = eax_117->x.i32 + originX_5
-                        ecx_108->base.vptr->PrimaryAction(ecx_108)
+                        arg3->base.vptr->PrimaryAction(eax_117->x.i32 + originX_5, eax_117->y.i32 + originY_4)
                         struct HudUiZrdDialog* owner_4 = self->owner
-                        int32_t edx_52 = *((&eax_110->list->count)[var_30_3 * 2] + 0x24) * 9
-                        int32_t esi_32 = *(&owner_4->fontStyles + (edx_52 << 2))
+                        int32_t edx_53 = *((&eax_110->list->count)[var_30_3 * 2] + 0x24) * 9
+                        int32_t esi_32 = *(&owner_4->fontStyles + (edx_53 << 2))
                         int32_t esi_33 = neg.d(esi_32)
-                        struct HudFontStyle* esi_35 = sbb.d(esi_33, esi_33, esi_32 != 0) & (&owner_4->fontStyles + (edx_52 << 2))
+                        struct HudFontStyle* esi_35 = sbb.d(esi_33, esi_33, esi_32 != 0) & (&owner_4->fontStyles + (edx_53 << 2))
 
                         if (esi_35 != 0)
                             struct HudUiZrdDialog* ecx_110 = arg3
@@ -153802,23 +153777,20 @@
                 owner_41->base.flash.flashDirectionSign = 1
 
             struct HudUiTransitionTextPanel* owner_22 = owner_41
-            int32_t edx_70
-            edx_70.b = owner_41->base.elementFlags.b
+            int32_t edx_71
+            edx_71.b = owner_41->base.elementFlags.b
             int32_t var_4_16 = 0xffffffff
-            owner_41->base.elementFlags = (edx_70 & 0x10) | 2
+            owner_41->base.elementFlags = (edx_71 & 0x10) | 2
             struct HudUiTransitionTextPanel_FTable* vptr_7 = arg3->base.vptr
             char* fmt_7 = zLoc::ResolveMessageKeyOrFallback(eax_142->list->items[0].payload)
             vptr_7->SetTextFmt(arg3, fmt_7)
             struct zReader_NodeArray_HudTextLabelSpec* u32_9 = eax_142->list
-            struct HudUiZrdDialog* ecx_161 = arg3
-            int32_t var_44_36 = u32_9->y.i32 + originY_6
-            int32_t var_48_20 = u32_9->x.i32 + originX_8
-            ecx_161->base.vptr->PrimaryAction(ecx_161)
+            arg3->base.vptr->PrimaryAction(u32_9->x.i32 + originX_8, u32_9->y.i32 + originY_6)
             struct HudUiZrdDialog* owner_7 = self->owner
-            int32_t edx_75 = eax_142->list->__offset(0x24).d * 9
-            int32_t esi_51 = *(&owner_7->fontStyles + (edx_75 << 2))
+            int32_t edx_76 = eax_142->list->__offset(0x24).d * 9
+            int32_t esi_51 = *(&owner_7->fontStyles + (edx_76 << 2))
             int32_t esi_52 = neg.d(esi_51)
-            struct HudFontStyle* esi_54 = sbb.d(esi_52, esi_52, esi_51 != 0) & (&owner_7->fontStyles + (edx_75 << 2))
+            struct HudFontStyle* esi_54 = sbb.d(esi_52, esi_52, esi_51 != 0) & (&owner_7->fontStyles + (edx_76 << 2))
 
             if (esi_54 != 0)
                 struct HudUiZrdDialog* ecx_163 = arg3
@@ -153888,10 +153860,10 @@
 
                     if (i != eax_192)
                         do
-                            struct HudUiFlashPanel* edx_90 = *(eax_192 - 4)
+                            struct HudUiFlashPanel* edx_91 = *(eax_192 - 4)
                             eax_192 -= 4
                             end_1 -= 4
-                            *end_1 = edx_90
+                            *end_1 = edx_91
                         while (eax_192 != i)
 
                     for (; i != &i[1]; i = &i[1])
@@ -154029,15 +154001,12 @@
                     char* fmt_6 = zLoc::ResolveMessageKeyOrFallback(*((&eax_142->list->count)[var_30_4 * 2] + 0xc))
                     vptr_6->SetTextFmt(arg3, fmt_6)
                     struct zReader_NodeArray_HudTextLabelSpec* eax_148 = (&eax_142->list->count)[var_30_4 * 2]
-                    struct HudUiZrdDialog* ecx_147 = arg3
-                    int32_t var_44_32 = eax_148->y.i32 + originY
-                    int32_t var_48_18 = eax_148->x.i32 + originX_7
-                    ecx_147->base.vptr->PrimaryAction(ecx_147)
+                    arg3->base.vptr->PrimaryAction(eax_148->x.i32 + originX_7, eax_148->y.i32 + originY)
                     struct HudUiZrdDialog* owner_6 = self->owner
-                    int32_t edx_68 = *((&eax_142->list->count)[var_30_4 * 2] + 0x24) * 9
-                    int32_t esi_45 = *(&owner_6->fontStyles + (edx_68 << 2))
+                    int32_t edx_69 = *((&eax_142->list->count)[var_30_4 * 2] + 0x24) * 9
+                    int32_t esi_45 = *(&owner_6->fontStyles + (edx_69 << 2))
                     int32_t esi_46 = neg.d(esi_45)
-                    struct HudFontStyle* esi_48 = sbb.d(esi_46, esi_46, esi_45 != 0) & (&owner_6->fontStyles + (edx_68 << 2))
+                    struct HudFontStyle* esi_48 = sbb.d(esi_46, esi_46, esi_45 != 0) & (&owner_6->fontStyles + (edx_69 << 2))
 
                     if (esi_48 != 0)
                         struct HudUiZrdDialog* ecx_149 = arg3

@@ -344,7 +344,7 @@ struct zUtil_PlayerStateStorage {
             PlayerGunFireSlot altFireSlotRight;
             PlayerGunFireSlot altFireSlotCenter;
             PlayerGunFireController *altGunTransitionController;
-            unsigned char unknown_0f24[0x04];
+            float altGunTransitionAnimScale;
             float altGunTransitionTimerA;
             float altGunTransitionTimerB;
             float statusMeterScaled;
@@ -1614,6 +1614,12 @@ RECOIL_STATIC_ASSERT(
         zUtil_PlayerStateStorage,
         altGunTransitionController
     ) == 0xf20
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zUtil_PlayerStateStorage,
+        altGunTransitionAnimScale
+    ) == 0xf24
 );
 RECOIL_STATIC_ASSERT(
     offsetof(

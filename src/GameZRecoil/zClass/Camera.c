@@ -56,12 +56,23 @@ zClass_NodePartial *g_zClass_CurrentCamera = 0;
  * Purpose: track the current camera target node.
  */
 zClass_NodePartial *g_zClass_CameraTargetNode = 0;
-zVec3 g_zCamera_FrustumFootprintPoints[9] = {0};
+/**
+ * Reimplements data 0x56cc40: g_zCamera_FrustumFootprintPoints.
+ * Purpose: cache the frustum origin plus four corner points used by camera
+ * grid-tile construction; BN bounds this zero-initialized array to five zVec3
+ * entries, with the adjacent zero gaps outside this symbol.
+ */
+zVec3 g_zCamera_FrustumFootprintPoints[5] = {0};
 /**
  * Reimplements data 0x56ccac: g_zCamera_FrustumFootprintPointCount.
  * Purpose: count active frustum footprint points for grid-tile construction.
  */
 int g_zCamera_FrustumFootprintPointCount = 0;
+/**
+ * Reimplements data 0x56ccc0: g_zCamera_FrustumGridTileRings.
+ * Purpose: cache up to 50 diamond-ring buckets of camera frustum grid tiles
+ * for the scene render pass.
+ */
 zCamera_FrustumGridTileRingPartial g_zCamera_FrustumGridTileRings[50] = {0};
 }
 

@@ -14,6 +14,23 @@ namespace zSndCd {
 int Stop();
 }
 
+extern "C" {
+/**
+ * Reimplements data 0x4dd8e8: g_CZGameFrame_DefaultAppId.
+ *
+ * Purpose: provide the recovered app id string used by the CZGameFrame
+ * runtime-class factory.
+ */
+extern const char g_CZGameFrame_DefaultAppId[] = "gamez";
+
+/**
+ * Reimplements data 0x4dd904: g_CZGameFrame_GameBmpResourceName.
+ *
+ * Purpose: name the recovered bitmap resource loaded by CZGameFrame creation.
+ */
+extern const char g_CZGameFrame_GameBmpResourceName[] = "GAMEBMP";
+}
+
 RECOIL_STATIC_ASSERT(
     offsetof(
         CPaintDC,
@@ -32,10 +49,7 @@ typedef void( *RecoilStateWndActivateMethod)(
     RecoilApp_IState *,
     unsigned int
 );
-typedef void( *CFrameWndDestructorProc)(CFrameWnd *);
 typedef CObject *(PASCAL *MfcCreateObjectProc)();
-typedef CRuntimeClass *(PASCAL *MfcRuntimeClassProc)();
-typedef const AFX_MSGMAP *(PASCAL *MfcMessageMapProc)();
 
 const UINT kMfcMessageMapSigIntCreateStruct = 9;
 const UINT kMfcMessageMapSigLongWparamLparam = 10;
@@ -44,31 +58,6 @@ const UINT kMfcMessageMapSigVoidIntInt = 15;
 const UINT kMfcMessageMapSigVoidUIntIntInt = 17;
 const UINT kMfcMessageMapSigVoidUIntCWndBool = 28;
 
-/**
- * Local MFC provider boundary ABI helper for CZGameFrame teardown.
- *
- * Purpose: resolve and call the MFC42 CFrameWnd destructor without rebuilding
- * provider-owned MFC internals in production source.
- */
-void CallMfcCFrameWndDestructor(
-    CFrameWnd *frame
-) {
-    HMODULE mfc42 = GetModuleHandleA("MFC42.DLL");
-    if (mfc42 == 0) {
-        mfc42 = LoadLibraryA("MFC42.DLL");
-    }
-
-    if (mfc42 != 0) {
-        CFrameWndDestructorProc const destructor =
-            (CFrameWndDestructorProc)(GetProcAddress(
-                mfc42,
-                "??1CFrameWnd@@UAE@XZ"
-            ));
-        if (destructor != 0) {
-            destructor(frame);
-        }
-    }
-}
 } // namespace
 
 /**
@@ -105,7 +94,7 @@ AFX_MSGMAP_ENTRY const CZGameFrame::messageEntries[] = {
  * message-map accessor used as the retail base-map callback.
  */
 const AFX_MSGMAP CZGameFrame::messageMap = {
-    (MfcMessageMapProc)&CZGameFrame::GetBaseMessageMap,
+    &CZGameFrame::GetBaseMessageMap,
     &CZGameFrame::messageEntries[0],
 };
 
@@ -120,7 +109,7 @@ CRuntimeClass CZGameFrame::classCZGameFrame = {
     sizeof(CZGameFrame),
     0xffff,
     (MfcCreateObjectProc)&CZGameFrame::CreateObject,
-    (MfcRuntimeClassProc)&CZGameFrame::GetBaseRuntimeClass,
+    &CZGameFrame::GetBaseRuntimeClass,
     0,
 };
 
@@ -130,8 +119,8 @@ CRuntimeClass CZGameFrame::classCZGameFrame = {
  * Purpose: return the MFC CFrameWnd runtime-class symbol for CZGameFrame's
  * recovered runtime-class hierarchy.
  */
-RecoilPtr32 CZGameFrame::GetBaseRuntimeClass() {
-    return (RecoilPtr32)((unsigned int)(&CFrameWnd::classCFrameWnd));
+CRuntimeClass *__stdcall CZGameFrame::GetBaseRuntimeClass() {
+    return (CRuntimeClass *)&CFrameWnd::classCFrameWnd;
 }
 
 /**
@@ -141,26 +130,51 @@ RecoilPtr32 CZGameFrame::GetBaseRuntimeClass() {
  * runtime-class factory path.
  */
 CZGameFrame *CZGameFrame::CreateObject() {
-    CZGameFrame *const frame = (CZGameFrame *)(::operator new(sizeof(CZGameFrame)));
-    if (frame == 0) {
-        return 0;
-    }
+    return new CZGameFrame(g_CZGameFrame_DefaultAppId);
+}
 
-    try {
-        return frame->Constructor("gamez");
-    } catch (...) {
-        ::operator delete(frame);
-        throw;
-    }
+/**
+ * Original helper evidence: no standalone retail default-constructor address;
+ * source/local construction paths use it only to install the compiler-emitted
+ * MFC-derived vtable.
+ *
+ * Purpose: let normal C++ construction install the MFC-derived vtable and
+ * provider-owned base/member state without running the app-shell startup hooks.
+ */
+CZGameFrame::CZGameFrame() {
+}
+
+/**
+ * Reimplements 0x4437d0: CZGameFrame::CZGameFrame.
+ *
+ * Purpose: model the original MFC-derived construction path that installs the
+ * compiler-emitted CZGameFrame vtable before the app-shell startup hooks run.
+ */
+CZGameFrame::CZGameFrame(
+    const char *appId
+) {
+    RecoilApp::InitStdLogFiles(appId);
+    zVideo::ModuleInit();
+}
+
+/**
+ * Reimplements 0x4437a0 callback rule: CZGameFrame runtime-class access.
+ *
+ * Purpose: keep a static callback for MFC data records while the vtable slot is
+ * modeled by the non-static MFC override.
+ */
+CRuntimeClass *__stdcall CZGameFrame::GetRuntimeClassStatic() {
+    return &CZGameFrame::classCZGameFrame;
 }
 
 /**
  * Reimplements 0x4437a0: CZGameFrame::GetRuntimeClass.
  *
- * Purpose: return CZGameFrame's recovered runtime-class record to MFC callers.
+ * Purpose: expose CZGameFrame's runtime-class record through the inherited MFC
+ * virtual slot that owns the first entry of the compiler-emitted frame vtable.
  */
-RecoilPtr32 CZGameFrame::GetRuntimeClass() {
-    return (RecoilPtr32)((unsigned int)(&CZGameFrame::classCZGameFrame));
+CRuntimeClass *CZGameFrame::GetRuntimeClass() const {
+    return &CZGameFrame::classCZGameFrame;
 }
 
 /**
@@ -169,28 +183,39 @@ RecoilPtr32 CZGameFrame::GetRuntimeClass() {
  * Purpose: return the provider CFrameWnd message-map symbol for the frame's
  * recovered message-map hierarchy.
  */
-RecoilPtr32 CZGameFrame::GetBaseMessageMap() {
-    return (RecoilPtr32)((unsigned int)(&CFrameWnd::messageMap));
+const AFX_MSGMAP *__stdcall CZGameFrame::GetBaseMessageMap() {
+    return &CFrameWnd::messageMap;
+}
+
+/**
+ * Reimplements 0x4437c0 callback rule: CZGameFrame message-map access.
+ *
+ * Purpose: keep a static callback for MFC data records while the vtable slot is
+ * modeled by the non-static MFC override.
+ */
+const AFX_MSGMAP *__stdcall CZGameFrame::GetMessageMapStatic() {
+    return &CZGameFrame::messageMap;
 }
 
 /**
  * Reimplements 0x4437c0: CZGameFrame::GetMessageMap.
  *
- * Purpose: return CZGameFrame's recovered MFC message-map record.
+ * Purpose: expose CZGameFrame's message-map record through the inherited MFC
+ * virtual slot used by MFC command and window-message dispatch.
  */
-RecoilPtr32 CZGameFrame::GetMessageMap() {
-    return (RecoilPtr32)((unsigned int)(&CZGameFrame::messageMap));
+const AFX_MSGMAP * CZGameFrame::GetMessageMap() const {
+    return &CZGameFrame::messageMap;
 }
 
 /**
  * Reimplements 0x4438a0: CZGameFrame::IsWindowValid.
  *
- * Purpose: treat a missing or disabled MFC window as eligible for the game
- * frame's idle dispatch checks.
+ * Purpose: preserve the frame vtable callback shape for the MFC
+ * window-validity rule.
  */
-int __stdcall CZGameFrame::IsWindowValid(
+int CZGameFrame::IsWindowValid(
     CWnd *pWnd
-) {
+) const {
     if (pWnd == 0) {
         return 0;
     }
@@ -199,32 +224,12 @@ int __stdcall CZGameFrame::IsWindowValid(
 }
 
 /**
- * Reimplements 0x4437d0: CZGameFrame::Constructor.
+ * Reimplements 0x443830: CZGameFrame::~CZGameFrame.
  *
- * Purpose: initialize the MFC frame base, game bitmap member, and game/video
- * startup hooks for the lightweight game frame.
+ * Purpose: let compiler-emitted MFC-derived teardown restore provider vtables
+ * and release the owned game bitmap member before the CFrameWnd base.
  */
-CZGameFrame * CZGameFrame::Constructor(
-    const char *appId
-) {
-    new ((CFrameWnd *)(this)) CFrameWnd();
-    new (&m_gameBitmap) CBitmap();
-    RecoilApp::InitStdLogFiles(appId);
-    zVideo::ModuleInit();
-    return this;
-}
-
-/**
- * Reimplements 0x443830: CZGameFrame::Destructor.
- *
- * Purpose: tear down the lightweight game frame bitmap, video hook, and MFC
- * CFrameWnd provider base.
- */
-void CZGameFrame::Destructor() {
-    zVideo::ReturnSuccessStub();
-    m_gameBitmap.DeleteObject();
-    m_gameBitmap.CBitmap::~CBitmap();
-    CallMfcCFrameWndDestructor((CFrameWnd *)(this));
+CZGameFrame::~CZGameFrame() {
 }
 
 /**
@@ -255,9 +260,9 @@ int CZGameFrame::OnCreate(
 
     m_gameBitmap.Attach(
         LoadBitmapA(AfxFindResourceHandle(
-            "GAMEBMP",
+            g_CZGameFrame_GameBmpResourceName,
             MAKEINTRESOURCEA(2)
-        ), "GAMEBMP")
+        ), g_CZGameFrame_GameBmpResourceName)
     );
     zInput::Mouse_ShutdownDevice();
     return 0;

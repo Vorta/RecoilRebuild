@@ -117,6 +117,294 @@ recovered and verified.
 Future data-owner acceptances should append compact entries here rather than
 relying only on per-function plan markers.
 
+## 2026-06-22 Data Evidence Candidates
+
+### legacy.audio_fmv.data_zfmv_action_tag_strings
+
+- Owner symbol/scope: packed zFMV script action-tag string set in
+  `src/GameZRecoil/zFMV/fmv_script.cpp`, consumed only by
+  `zFMV_Script::LoadActionsFromZrd` comparisons.
+- BN/source data: retail labels the owner as `g_zFMV_ActionPlaySoundTag` at
+  0x4dfb94, `g_zFMV_ActionBlurVTag` at 0x4dfba0,
+  `g_zFMV_ActionBlurHTag` at 0x4dfba8, `g_zFMV_ActionBlurTag` at 0x4dfbb0,
+  `g_zFMV_ActionPlayMciTag` at 0x4dfbb8, `g_zFMV_ActionPlayAviTag` at
+  0x4dfbc0, `g_zFMV_ActionFadeOutTag` at 0x4dfbc8,
+  `g_zFMV_ActionFadeInTag` at 0x4dfbd0, `g_zFMV_ActionWaitTag` at 0x4dfbd8,
+  `g_zFMV_ActionLoadImageTag` at 0x4dfbe0,
+  `g_zFMV_ActionBlitImageTag` at 0x4dfbec, and
+  `g_zFMV_ActionShowImageTag` at 0x4dfbf8. Source models the full packed
+  owner as `g_zFMV_ActionTagStrings`.
+- Extent/section/nullness: the accepted owner candidate is the 112-byte
+  initialized `.data` range 0x4dfb94..0x4dfc03, including inter-string zero
+  padding. The adjacent `IMAGE_PATH` key at 0x4dfc04 is excluded.
+- Lifecycle/xrefs: `zFMV_Script::LoadActionsFromZrd` compares action node tag
+  strings against this set before constructing SHOWIMAGE, BLITIMAGE,
+  LOADIMAGE, WAIT, FADEIN, FADEOUT, PLAYAVI, PLAYMCI, BLUR, BLURH, BLURV, and
+  PLAYSOUND actions.
+- VC5 evidence candidate: `python tools/recoil.py verify vc5
+  zfmv_action_tag_strings_data` passed with zero unmasked data-byte mismatches
+  for the complete 112-byte owner range using `vc5_o2_ob1_md_gx_facs`.
+- Parent-owned gate status: no owner or plan marker was updated by this
+  evidence candidate; parent still owns source-owner/data/byte acceptance for
+  the twelve plan-tracked data entries.
+
+### network_online.westwood_online_upgrade_api_source_file
+
+- Owner symbol/scope: Westwood Online ActiveX API startup source-file globals
+  in `src/Battlesport/WestwoodOnlineUpgradeApi.cpp`, separate from the accepted
+  `network_online.westwood_online_upgrade_config_dialog` class owner and from
+  the dialog/session-browser data owner.
+- BN/source data: `g_WestwoodOnlineUpgradeInitWaitEvents` at 0x4f4220
+  (12-byte `HANDLE[3]`), `g_WestwoodOnlineUpgradeFailureEvent` at 0x4f52c4,
+  `g_WestwoodOnlineUpgradeSelectedBootstrapServer` at 0x4f52c8,
+  `g_WestwoodOnlineUpgradeProcessCallbacksFlag` at 0x4f53cc,
+  `g_WestwoodOnlineUpgradeApiInitState` starting at 0x4f53d0,
+  `g_WestwoodOnlineUpgradeStatusTextEvent` at 0x4f5438,
+  `g_WestwoodOnlineUpgradeBootstrapServerListEvent` at 0x4f5440,
+  `g_pWestwoodOnlineUpgradeApiEventSink` at 0x538560,
+  `g_WestwoodOnlineUpgradeApiAsyncErrorFlag` at 0x538564,
+  `g_pWestwoodOnlineUpgradeApi` at 0x538574, and
+  `g_WestwoodOnlineUpgradeApiAdviseCookie` at 0x538570. Additional source-file
+  data now covered by the extra VC5 target is
+  `g_WestwoodOnlineUpgradeApiInitReservedZero` at 0x4f5434
+  (source symbol `g_WestwoodOnlineUpgradeApiShutdownState`),
+  `g_WestwoodOnlineUpgradeAbortFlag` at 0x4dd24c, initialized to 1,
+  and `g_WestwoodOnlineUpgradeCachedBrowseRecord` at 0x4f5448. Immutable COM
+  identity data is `g_IID_WestwoodOnlineUpgradeApi` at 0x4d1838,
+  `IID_WestwoodOnlineUpgradeApiEventSink` at 0x4d1848, and
+  `g_CLSID_WestwoodOnlineUpgradeApi` at 0x4d18d8.
+- Extent/section/nullness: all runtime globals above are zero-initialized
+  independent 4-byte or typed aggregate symbols except the API init-state
+  aggregate (100 bytes from source/0x42dda0 behavior), the selected bootstrap
+  server record (260 bytes from source/VC5), the abort flag's initialized 1
+  value, and the three immutable 16-byte GUIDs in `.rdata`. Parent BN/plan
+  repair is still needed where current metadata lags the 260-byte 0x4f52c8
+  record and 100-byte 0x4f53d0 init-state record. BN renders
+  `g_WestwoodOnlineUpgradeCachedBrowseRecord` as a full 0x10c-byte
+  `WestwoodOnlineUpgradeBrowseRecord`; 0x43d2e0 assembly clears that full
+  extent before WOL startup, but the broader browse/cache lifecycle belongs to
+  the separate dialog/session-browser owner.
+- Lifecycle/xrefs: 0x43d130 initializes COM/control hosting, fills the
+  init-state block, sets `g_WestwoodOnlineUpgradeProcessCallbacksFlag`, creates
+  the event sink, and stores the advise cookie. 0x43d2e0 creates the three wait
+  events, installs the wait-event array, clears the cached browse record, and
+  requests bootstrap/list mode through the API provider. 0x43d280 unadvises,
+  releases the API object, clears the API pointer, and closes the three named
+  startup event handles.
+- Verification state: functional targets
+  `westwood_online_upgrade_api_init_state`,
+  `westwood_online_upgrade_api_create_instance_load_config`,
+  `westwood_online_upgrade_api_shutdown`, and
+  `westwood_online_upgrade_api_init` cover the behavior. VC5 data-symbol
+  targets `westwood_online_upgrade_api_data` and
+  `westwood_online_upgrade_api_extra_data` pass with zero unmasked data-byte
+  mismatches for the runtime symbols listed in those manifests using
+  `vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs`. The extra
+  target also covers immutable COM identity data at 0x4d1838, 0x4d1848, and
+  0x4d18d8 by comparing the source symbols
+  `g_WestwoodOnlineUpgradeApi_IID`,
+  `g_WestwoodOnlineUpgradeApiEventSink_IID`, and
+  `g_WestwoodOnlineUpgradeApi_CLSID` against the BN symbols named above. The
+  broader WestwoodOnline dialog/download subsystem data remains outside this
+  owner scope; that includes source-file globals whose current xrefs are in the
+  dialog/download/event-sink slices rather than the API startup anchors, such
+  as `g_WestwoodOnlineUpgradeVisibleSessionResultCount` at 0x538580 and
+  `g_WestwoodOnlineUpgradeCreateSessionFromQueryFlag` at 0x538584. Those two
+  symbols were removed from `westwood_online_upgrade_api_extra_data` so this
+  API-owner evidence does not link the session-browser data owner.
+- Dependent plan entries: 0x42dda0, 0x43d130, 0x43d280, and 0x43d2e0.
+
+## 2026-06-21 Data Evidence Candidates
+
+### app_shell.czgame_frame_class
+
+- Owner symbol/scope: CZGameFrame class-owned string data in
+  `src/Battlesport/CZGameFrame.cpp`.
+- BN/source data: `g_CZGameFrame_DefaultAppId` at 0x4dd8e8 and
+  `g_CZGameFrame_GameBmpResourceName` at 0x4dd904.
+- Extent/section/nullness: the app id is the six-byte null-terminated
+  `"gamez"` string consumed by `CZGameFrame::CreateObject`; the bitmap resource
+  name is the eight-byte null-terminated `"GAMEBMP"` string consumed twice by
+  `CZGameFrame::OnCreate`.
+- Lifecycle/xrefs: 0x443730 passes the app id to the CZGameFrame constructor,
+  and 0x443a60 passes the bitmap name to `AfxFindResourceHandle` and
+  `LoadBitmapA`.
+- VC5 evidence candidate: `python tools/recoil.py verify vc5
+  czgameframe_class_data` passed with zero unmasked data-byte mismatches for
+  both string data symbols using `vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs`.
+- Open limit: `g_CZGameFrame_VTable` at 0x4d21d8 remains separate class/vtable
+  owner work. A probe in the same VC5 target could not find
+  `??_7CZGameFrame@@6B@` because the current public source shape still exposes
+  several CZGameFrame/CZRecoilFrame MFC callbacks as static helpers for the
+  existing smoke surface instead of the real owner-wide virtual class shape.
+  Parent should keep the owner data gate pending until that vtable is recovered
+  or explicitly accepted as a bounded blocker.
+- Parent-owned gate status: no plan/source-owner marker was updated by this
+  evidence candidate.
+
+### hud_ui.hud_low_meter_loop_sound_globals
+
+- Owner symbol/scope: HudLowMeterLoopSound low-meter warning sample pointers,
+  active-state flag, and one-shot beep timing globals in
+  `src/Battlesport/hud.cpp`.
+- BN/source data: `g_Hud_LowMeterBeepSample` at 0x4f3748,
+  `g_Hud_LowMeterLoopSample` at 0x4f374c,
+  `g_Hud_LowMeterLoopActive` at 0x4f3750,
+  `g_Hud_LowMeterBeepInterval` at 0x4f3758, and
+  `g_Hud_LowMeterNextBeepTime` at 0x4f375c.
+- Extent/section/nullness: each low-meter HUD item is an independent
+  4-byte zero-initialized `.data` symbol. Retail places the accepted Player
+  status-meter ratio `g_PlayerStatusMeterRatio` at 0x4f3754 between the
+  low-meter active flag and beep-timing floats; that Player scalar remains
+  owned by its existing Player data owner and is not part of this HUD owner.
+- Lifecycle/xrefs: `Player::InitMissionRuntimeFromWorldAndCamera` loads the
+  sample pointers and beep interval from the `low_shield_snd` ZRD node and
+  clears the next-beep time. `HudLowMeterLoopSound::SetLoopActive` consumes
+  the loop sample and active flag, `HudLowMeterLoopSound::Disable` consumes
+  both samples and clears the active flag, and
+  `Player::ResetDamageVisualsAndTimedStatus` consumes the beep sample,
+  interval, and next-beep time when the status meter is low.
+- VC5 evidence candidate: `python tools/recoil.py verify vc5
+  hud_low_meter_loop_sound_globals` passed with zero unmasked data-byte
+  mismatches for all five HUD symbols using
+  `vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs`. Parent review still owns
+  acceptance of the source-owner/data/byte gates.
+- Dependent plan entries: 0x439b20 and 0x439b70 for direct loop-sound control;
+  this evidence may also support the narrow low-meter portion of
+  `Player::InitMissionRuntimeFromWorldAndCamera` without broadening the HUD
+  data owner over 0x4f3754.
+
+### battlesport_gameplay.player_zrd_runtime_tuning_globals
+
+- Owner symbol/scope: Player player.zrd runtime tuning globals in
+  `src/Battlesport/player.cpp`, written by
+  `Player::InitMissionRuntimeFromWorldAndCamera` / recovered helper
+  `PlayerLoadPlayerZrdTuning`.
+- BN/source data: `g_Player_MaxCamYawRate` at 0x4f36f8,
+  `g_Player_MousePushX` at 0x4f36fc, `g_Player_MousePushY` at 0x4f3700,
+  `g_Player_CameraElastic` at 0x4f3704,
+  `g_Player_MaxCamTetherAngleRad` at 0x4f3708,
+  `g_Player_FpCamElevationRate` at 0x4f370c,
+  `g_Player_FpCamElevationMax` at 0x4f3710,
+  `g_Player_FpCamElevationMin` at 0x4f3714,
+  `g_Player_UnderwaterCamDistance` at 0x4f371c,
+  `g_Player_UnderwaterCamHeight` at 0x4f3720,
+  `g_Player_UnderwaterCamStepCount` at 0x4f3724,
+  `g_Player_UnderwaterCamFar` at 0x4f3728,
+  `g_Player_UnderwaterCamPackedColor` at 0x4f372c,
+  `g_Player_UnderwaterCamAlpha` at 0x4f3730,
+  `g_Player_MakeHotOptEntry` at 0x4f3734,
+  `g_Player_MakeColdOptEntry` at 0x4f3738,
+  `g_Player_LavaSinkRate` at 0x4f3698, `g_Player_MaxSlope` at 0x4f3338,
+  `g_Player_QuicksandSinkRate` at 0x4f376c,
+  `g_Player_WaterGravity` at 0x4f3ab8, and
+  `g_Player_QuicksandGravity` at 0x4f3ac0.
+- Extent/section/nullness: each item is an independent 4-byte zero-initialized
+  `.data` symbol. BN types the camera/gravity/sink/slope items as floats except
+  `g_Player_UnderwaterCamStepCount` as `int32_t`,
+  `g_Player_UnderwaterCamPackedColor` as `uint32_t`, and the heat/cold caches
+  as `OptCatalogEntryDef *`.
+- Lifecycle/xrefs: 0x41fe90 loads `player.zrd`, probes named nodes such as
+  `max_cam_yaw_rate`, `mouse_push`, `fp_cam_el_rate`, `fp_cam_el_lim`,
+  `underwater_cam`, `camera_elastic`, `max_cam_tether_angle`, `wat_gravity`,
+  `qsd_gravity`, `qsand_sink`, `lava_sink`, `max_slope`, `make_hot`, and
+  `make_cold`, then writes these globals from ZRD payloads or the retail
+  fallback constants. The HUD low-meter sample/timing globals and accepted
+  0x4f36f0/0x4f36f4 camera-zone pair remain separate owner evidence.
+- VC5 evidence candidate: `python tools/recoil.py verify vc5
+  player_zrd_runtime_tuning_globals` compiled with `vc5_o2_ob0_md_facs` and
+  verified the first ten symbols listed in the manifest with zero unmasked
+  data-byte mismatches before the tool's ten-call BN budget stopped the
+  remaining data-symbol comparison. A compile-only rerun with
+  `--skip-bn-compare` covered the full manifest, but parent review still needs
+  complete BN-backed data-symbol evidence before any byte-tier claim.
+- Dependent plan entry: 0x41fe90
+  `Player::InitMissionRuntimeFromWorldAndCamera`, specifically the
+  `battlesport_gameplay.player_mission_runtime_bootstrap` data gate.
+
+### battlesport_gameplay.player_mission_runtime_bootstrap
+
+- Owner symbol/scope: Player mission-runtime bootstrap globals in
+  `src/Battlesport/player.cpp`.
+- BN/source data: `g_Player_MissionInitFirstRunFlag` at 0x4dc268,
+  `g_Player_LocalControlEnabled` at 0x4f36b0,
+  `g_Player_BftSplashAnimEntry` at 0x4f3740, `g_Player2SaveState` at
+  0x4f3770, and `g_Player_AivParentDir` at 0x4e5b50.
+- Extent/section/nullness: the first-run flag is an initialized 4-byte `.data`
+  `int` with value 1; the local-control flag is a zero-filled 4-byte `.data`
+  `int`; the BFT splash and Player2 save-state entries are zero-filled 4-byte
+  pointer globals; the AIV parent directory is a zero-filled 260-byte `.data`
+  character buffer.
+- Lifecycle/xrefs: 0x41fe90 clears the first-run flag after one-time HUD panel
+  registration, seeds the local-control flag from the network option, caches
+  the `bftsplash` animation entry, assigns the hidden/stealth save-state
+  pointer, and asks `zReader::BuildResolvedParentDir` to fill the AIV parent
+  directory after `aiv.zrd` loads. Later local-control, camera/HUD, save/load,
+  and gameplay FX paths read the same globals.
+- VC5 evidence: `python tools/recoil.py verify vc5
+  player_mission_runtime_bootstrap_globals` passed with zero unmasked
+  data-byte mismatches for all five bootstrap symbols using
+  `vc5_o2_ob0_md_facs`. The same manifest also carries already-routed
+  `g_Player_CameraZone` and `g_Player_CameraZoneInvRange` symbols for local
+  compile/data comparison; those two remain under the accepted Player ZRD
+  tuning owner rather than this bootstrap owner.
+- Dependent plan entry: 0x41fe90
+  `Player::InitMissionRuntimeFromWorldAndCamera`.
+
+### hud_ui.hud_layout_classes
+
+- Owner symbol/scope: HudLayout Base/SW/HW class compiler-emitted vtables,
+  singleton storage, and TYPEI/TYPEII ZRD section-name data in
+  `src/GameZRecoil/zHud/zhud_ui.cpp`.
+- BN/source data: `g_HudLayoutSW_FTable` at 0x4ce968,
+  `g_HudLayoutBase_FTable` at 0x4ce988, `g_HudLayoutHW_FTable` at
+  0x4ce9a8, `g_HudLayoutHW` at 0x4ed718, `g_HudLayoutSW` at 0x4eda68,
+  `g_HudLayout_TypeISectionName` at 0x4dae0c, and
+  `g_HudLayout_TypeIISectionName` at 0x4dae14.
+- Extent/section/nullness: the vtables are 28, 28, and 32-byte
+  compiler-emitted dispatch tables for the typed C++ classes; the hardware and
+  software layout singleton objects are 844 and 236-byte zero-initialized
+  globals; the TYPEI and TYPEII names are six and seven-byte initialized
+  strings.
+- Lifecycle/xrefs: the global init helpers construct `g_HudLayoutHW` and
+  `g_HudLayoutSW`, register at-exit destructors, and the layout load helpers
+  use the TYPEI/TYPEII section names for ZRD traversal. The vtable entries are
+  compiler data for the recovered virtual class model, not authored production
+  FTable arrays.
+- VC5 evidence candidate: `python tools/recoil.py verify vc5
+  hud_layout_class_data` passed with zero unmasked data-byte mismatches for all
+  seven data symbols using `vc5_o2_ob0_md_facs`.
+- Parent-owned gate status: no plan/source-owner marker was updated by this
+  evidence candidate; broader HudLayout source/functional/data gate acceptance
+  remains parent-owned.
+
+## 2026-06-22 Data Evidence Candidates
+
+### render_video.zrndr_textured_finalize_dispatch_data
+
+- Owner symbol/scope: zRndr textured queued span finalize callback globals in
+  `src/GameZRecoil/zRndr/zRndr.cpp`, limited to the non-ESP finalizer slots.
+- BN/source data: `gRndr_pfnTexturedQueuedFinalize` at 0x632104 maps to
+  `zRndr::g_pfnTexturedQueuedFinalize`, and
+  `gRndr_pfnTexturedQueuedFinalizeAlt` at 0x632108 maps to
+  `zRndr::g_pfnTexturedQueuedFinalizeAlt`.
+- Extent/section/nullness: two adjacent 4-byte plan-tracked `.data`
+  function-pointer globals, both zero-initialized; the VC5 object emits them
+  into `.bss#2`. The owner excludes the ESP-pivot scratch global at 0x57da38
+  and excludes the broader SelectSpanRoutines callback bank.
+- Lifecycle/xrefs: `zRndr::SelectSpanRoutines` writes the first slot to one of
+  the scalar or MMX fog-blend finalizers and writes the second slot to
+  `SpanMmxSetTexUvMasksAndVShift` only in the MMX path, otherwise null.
+  `zRndr::DrawTexturedQueued` reads the first slot before queued textured-span
+  dispatch.
+- VC5 evidence candidate: `python tools/recoil.py verify vc5
+  zrndr_textured_finalize_dispatch_data` passed with zero unmasked data-byte
+  mismatches for both 4-byte data symbols using `vc5_o2_ob0_md_facs`; both
+  zero-initialized symbols reported zero relocation bytes.
+- Parent-owned gate status: no owner or plan marker was updated by this
+  evidence candidate; parent still owns source-owner gate and data-entry
+  promotion for 0x632104 and 0x632108.
+
 ## 2026-06-21 Accepted Data Owners
 
 ### render_video.zrndr_overlay_rect_staging_globals

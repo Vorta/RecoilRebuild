@@ -13,13 +13,16 @@
 #include "GameZRecoil/zNetwork/zNetwork.h"
 #include "GameZRecoil/zReader/zReader.h"
 #include "GameZRecoil/zInput/zInput.h"
+#include "GameZRecoil/zMath/zMath.h"
 #include "GameZRecoil/zUtil/zSaveGame.h"
 #include "GameZRecoil/zVideo/zVideo.h"
+#include "GameZRecoil/include/zClipRect.h"
 
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
+#include <type_traits>
 
 extern "C" NetPkt10_QSandEvent g_NetPkt10_QSandEventRelayBuf;
 
@@ -36,6 +39,10 @@ int g_qsandRelayCallbackCount;
 int g_qsandRelayCallbackResult;
 int g_remoteHudSetVisibleCount;
 int g_remoteHudLastVisible;
+int g_remoteHudSetPosCount;
+HudUiPanel *g_remoteHudSetPosThis;
+int g_remoteHudLastX;
+int g_remoteHudLastY;
 int g_chatComposeSetTextFmtCalls;
 HudUiPanel *g_chatComposeSetTextFmtThis;
 char g_chatComposeSetTextFmtText[32];
@@ -391,6 +398,16 @@ int __fastcall QSandRelayCallbackFake(
 }
 
 struct TestRemoteHudPanelOps {
+    void SetPos(
+        int x,
+        int y
+    ) {
+        ++g_remoteHudSetPosCount;
+        g_remoteHudSetPosThis = (HudUiPanel *)this;
+        g_remoteHudLastX = x;
+        g_remoteHudLastY = y;
+    }
+
     void SetVisible(int visible) {
         ++g_remoteHudSetVisibleCount;
         g_remoteHudLastVisible = visible;
@@ -1136,6 +1153,109 @@ extern "C" int gamenet_find_player_row_and_status_bits_smoke(void) {
 
     return rowLookup && lapsReached && lapsBlocked && emptyListReached && bothSet && bothClear ? 0
                                                                                                : 1;
+}
+
+extern "C" int gamenet_update_remote_player_hud_widget_screen_pos_smoke(void) {
+    const int oldNameTags = g_GameNetStatus_NameTags;
+    int *const oldReplicateOption = ZOPT_REPLICATE;
+    zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
+    zClass_NodePartial *const oldRuntimeDiScene = g_Player_RuntimeDiScene;
+    int *const oldMatrixIdentitySlot = zMath::g_currentMatrixIdentityFlagSlot;
+    float **const oldMatrixPtrSlot = zMath::g_currentMatrixPtrSlot;
+
+    int replicateMode = 0;
+    ZOPT_REPLICATE = &replicateMode;
+
+    int matrixIdentityFlags[2] = {};
+    float *matrixSlots[2] = {};
+    zMat4x3 baseMatrix = {};
+    zMath::g_currentMatrixIdentityFlagSlot = &matrixIdentityFlags[0];
+    zMath::g_currentMatrixPtrSlot = &matrixSlots[0];
+    matrixSlots[0] = reinterpret_cast<float *>(&baseMatrix);
+    zMath::g_zMath_CameraScratchB = {1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+                                     0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f};
+    g_zMath_ProjScaleX = 100.0f;
+    g_zMath_ProjScaleY = -50.0f;
+    g_zMath_ProjOffsetX = 320.0f;
+    g_zMath_ProjOffsetY = 240.0f;
+    gClipRect_Primary.zMin = 1.0f;
+    gClipRect_Primary.xMaxAlt = 640.0f;
+    g_zVideo_ProjectClipLeft = 0.0f;
+    g_zVideo_ProjectClipTop = 0.0f;
+    g_zVideo_ProjectClipRight = 640.0f;
+    g_zVideo_ProjectClipBottom = 480.0f;
+
+    void *panelTable[32] = {};
+    panelTable[0x0c / 4] = MethodAddress(&TestRemoteHudPanelOps::SetPos);
+    panelTable[0x60 / 4] = MethodAddress(&TestRemoteHudPanelOps::SetVisible);
+
+    zClass_NodePartial localRoot = {};
+    zClass_NodePartial remoteRoot = {};
+    zUtil_PlayerStateStorage localPlayer = {};
+    localPlayer.rootNode = &localRoot;
+    zUtil_SaveGameState localSave = {};
+    localSave.playerState = &localPlayer;
+    g_GameStateOrMapTable = reinterpret_cast<zInput_GameStateOrMapTablePartial *>(&localSave);
+    g_Player_RuntimeDiScene = 0;
+
+    zUtil_PlayerStateStorage remotePlayer = {};
+    remotePlayer.rootNode = &remoteRoot;
+    remotePlayer.worldPos = {1.0f, 2.0f, 10.0f};
+    zUtil_SaveGameState remoteSave = {};
+    remoteSave.playerState = &remotePlayer;
+    std::aligned_storage<sizeof(GameNetPlayerRow), alignof(GameNetPlayerRow)>::type rowStorage;
+    std::memset(&rowStorage, 0, sizeof(rowStorage));
+    GameNetPlayerRow *const row = reinterpret_cast<GameNetPlayerRow *>(&rowStorage);
+    *reinterpret_cast<void **>(&row->hudWidget) = panelTable;
+    FieldAt<int>(&row->hudWidget, 0x260) = 14;
+    FieldAt<int>(&row->hudWidget, 0x270) = 0;
+    FieldAt<int>(&row->hudWidget, 0x274) = 0;
+    remoteSave.netPlayerRow = row;
+
+    g_remoteHudSetVisibleCount = 0;
+    g_remoteHudSetPosCount = 0;
+    g_GameNetStatus_NameTags = 0;
+    const bool disabledOk = GameNet::UpdateRemotePlayerHudWidgetScreenPos(&remoteSave) == 0 &&
+                            g_remoteHudSetVisibleCount == 0 && g_remoteHudSetPosCount == 0;
+
+    g_GameNetStatus_NameTags = 1;
+    const int visibleResult = GameNet::UpdateRemotePlayerHudWidgetScreenPos(&remoteSave);
+    const bool visibleOk =
+        visibleResult == 1 && g_remoteHudSetPosCount == 1 &&
+        g_remoteHudSetPosThis == &row->hudWidget && g_remoteHudLastX == 330 &&
+        g_remoteHudLastY == 205 && g_remoteHudSetVisibleCount == 1 &&
+        g_remoteHudLastVisible == 1;
+
+    replicateMode = 1;
+    g_remoteHudSetVisibleCount = 0;
+    g_remoteHudSetPosCount = 0;
+    const int replicateResult = GameNet::UpdateRemotePlayerHudWidgetScreenPos(&remoteSave);
+    const bool replicateOk = replicateResult == 1 && g_remoteHudLastX == 660 &&
+                             g_remoteHudLastY == 420 && g_remoteHudLastVisible == 1;
+
+    replicateMode = 0;
+    remotePlayer.worldPos = {1.0f, 38.0f, 10.0f};
+    g_remoteHudSetVisibleCount = 0;
+    g_remoteHudSetPosCount = 0;
+    const bool marginHideOk = GameNet::UpdateRemotePlayerHudWidgetScreenPos(&remoteSave) == 0 &&
+                              g_remoteHudSetVisibleCount == 1 &&
+                              g_remoteHudLastVisible == 0 && g_remoteHudSetPosCount == 0;
+
+    remotePlayer.worldPos = {-100.0f, 2.0f, 10.0f};
+    g_remoteHudSetVisibleCount = 0;
+    g_remoteHudSetPosCount = 0;
+    const bool clippedHideOk = GameNet::UpdateRemotePlayerHudWidgetScreenPos(&remoteSave) == 0 &&
+                               g_remoteHudSetVisibleCount == 1 &&
+                               g_remoteHudLastVisible == 0 && g_remoteHudSetPosCount == 0;
+
+    g_GameNetStatus_NameTags = oldNameTags;
+    ZOPT_REPLICATE = oldReplicateOption;
+    g_GameStateOrMapTable = oldGameState;
+    g_Player_RuntimeDiScene = oldRuntimeDiScene;
+    zMath::g_currentMatrixIdentityFlagSlot = oldMatrixIdentitySlot;
+    zMath::g_currentMatrixPtrSlot = oldMatrixPtrSlot;
+
+    return disabledOk && visibleOk && replicateOk && marginHideOk && clippedHideOk ? 0 : 1;
 }
 
 extern "C" int gamenet_unregister_gameplay_packet_handlers_smoke(void) {

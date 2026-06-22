@@ -1658,7 +1658,7 @@ extern "C" int net_session_browser_dialog_get_message_map_smoke(void) {
     const AFX_MSGMAP_ENTRY *const entries = messageMap->lpEntries;
     const bool providerEntryOk =
         entries[0].nMessage == WM_COMMAND &&
-        entries[0].nCode == CBN_SELCHANGE &&
+        entries[0].nCode == CBN_CLOSEUP &&
         entries[0].nID == 1114 &&
         entries[0].nLastID == 1114 &&
         entries[0].nSig == 12 &&

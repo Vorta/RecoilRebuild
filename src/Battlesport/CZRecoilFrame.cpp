@@ -94,8 +94,6 @@ HudSensorTracker g_HudSensorTracker;
 
 namespace {
 typedef CObject *(PASCAL *MfcCreateObjectProc)();
-typedef CRuntimeClass *(PASCAL *MfcRuntimeClassProc)();
-typedef const AFX_MSGMAP *(PASCAL *MfcMessageMapProc)();
 
 const UINT kMfcCommandUpdateCode = (UINT)-1;
 const UINT kMfcMessageMapSigVoid = 12;
@@ -356,7 +354,7 @@ AFX_MSGMAP_ENTRY const CZRecoilFrame::messageEntries[] = {
  * message-map accessor used as the retail base-map callback.
  */
 const AFX_MSGMAP CZRecoilFrame::messageMap = {
-    (MfcMessageMapProc)&CZGameFrame::GetMessageMap,
+    &CZGameFrame::GetMessageMapStatic,
     &CZRecoilFrame::messageEntries[0],
 };
 
@@ -371,7 +369,7 @@ CRuntimeClass CZRecoilFrame::classCZRecoilFrame = {
     sizeof(CZRecoilFrame),
     0xffff,
     (MfcCreateObjectProc)&CZRecoilFrame::CreateObject,
-    (MfcRuntimeClassProc)&CZGameFrame::GetRuntimeClass,
+    &CZGameFrame::GetRuntimeClassStatic,
     0,
 };
 
@@ -381,8 +379,8 @@ CRuntimeClass CZRecoilFrame::classCZRecoilFrame = {
  * Purpose: return the recovered CZGameFrame runtime-class record for
  * CZRecoilFrame's MFC hierarchy.
  */
-unsigned int CZRecoilFrame::GetBaseRuntimeClass() {
-    return (unsigned int)((unsigned int)(&CZGameFrame::classCZGameFrame));
+CRuntimeClass *__stdcall CZRecoilFrame::GetBaseRuntimeClass() {
+    return &CZGameFrame::classCZGameFrame;
 }
 
 /**
@@ -392,27 +390,27 @@ unsigned int CZRecoilFrame::GetBaseRuntimeClass() {
  * runtime-class factory path.
  */
 CZRecoilFrame *CZRecoilFrame::CreateObject() {
-    CZRecoilFrame *const frame = (CZRecoilFrame *)(::operator new(sizeof(CZRecoilFrame)));
-    if (frame == 0) {
-        return 0;
-    }
+    return new CZRecoilFrame();
+}
 
-    try {
-        return frame->Constructor();
-    } catch (...) {
-        ::operator delete(frame);
-        throw;
-    }
+/**
+ * Reimplements 0x430240 callback rule: CZRecoilFrame runtime-class access.
+ *
+ * Purpose: keep a static callback for MFC data records while the vtable slot is
+ * modeled by the non-static MFC override.
+ */
+CRuntimeClass *__stdcall CZRecoilFrame::GetRuntimeClassStatic() {
+    return &CZRecoilFrame::classCZRecoilFrame;
 }
 
 /**
  * Reimplements 0x430240: CZRecoilFrame::GetRuntimeClass.
  *
- * Purpose: return CZRecoilFrame's recovered runtime-class record to MFC
- * callers.
+ * Purpose: expose CZRecoilFrame's runtime-class record through the inherited
+ * MFC virtual slot that owns the compiler-emitted Recoil frame vtable entry.
  */
-unsigned int CZRecoilFrame::GetRuntimeClass() {
-    return (unsigned int)((unsigned int)(&CZRecoilFrame::classCZRecoilFrame));
+CRuntimeClass *CZRecoilFrame::GetRuntimeClass() const {
+    return &CZRecoilFrame::classCZRecoilFrame;
 }
 
 /**
@@ -421,17 +419,28 @@ unsigned int CZRecoilFrame::GetRuntimeClass() {
  * Purpose: return CZGameFrame's recovered message-map record for the frame's
  * MFC hierarchy.
  */
-unsigned int CZRecoilFrame::GetBaseMessageMap() {
-    return (unsigned int)((unsigned int)(&CZGameFrame::messageMap));
+const AFX_MSGMAP *__stdcall CZRecoilFrame::GetBaseMessageMap() {
+    return &CZGameFrame::messageMap;
+}
+
+/**
+ * Reimplements 0x4306e0 callback rule: CZRecoilFrame message-map access.
+ *
+ * Purpose: keep a static callback for MFC data records while the vtable slot is
+ * modeled by the non-static MFC override.
+ */
+const AFX_MSGMAP *__stdcall CZRecoilFrame::GetMessageMapStatic() {
+    return &CZRecoilFrame::messageMap;
 }
 
 /**
  * Reimplements 0x4306e0: CZRecoilFrame::GetMessageMap.
  *
- * Purpose: return CZRecoilFrame's recovered MFC message-map record.
+ * Purpose: expose CZRecoilFrame's message-map record through the inherited MFC
+ * virtual slot used by MFC command and window-message dispatch.
  */
-unsigned int CZRecoilFrame::GetMessageMap() {
-    return (unsigned int)((unsigned int)(&CZRecoilFrame::messageMap));
+const AFX_MSGMAP * CZRecoilFrame::GetMessageMap() const {
+    return &CZRecoilFrame::messageMap;
 }
 
 namespace MfcCmdUI {
@@ -448,15 +457,13 @@ void __stdcall EnableAlways(
 } // namespace MfcCmdUI
 
 /**
- * Reimplements 0x430250: CZRecoilFrame::Constructor.
+ * Reimplements 0x430250: CZRecoilFrame::CZRecoilFrame.
  *
- * Purpose: initialize the Recoil frame, menu, title, global handles, launch
- * options, renderer menu state, and Westwood Online availability flag.
+ * Purpose: model the original MFC-derived C++ construction path that builds
+ * the CZGameFrame base, menu member, frame window, launch options, renderer
+ * menu state, and Westwood Online availability flag.
  */
-CZRecoilFrame * CZRecoilFrame::Constructor() {
-    ((CZGameFrame *)(this))->Constructor(g_CZRecoilFrame_LogBaseName);
-    new (&m_mainMenu) CMenu();
-
+CZRecoilFrame::CZRecoilFrame() : CZGameFrame(g_CZRecoilFrame_LogBaseName) {
     unsigned long
         titleStorage[(sizeof(CString) + sizeof(unsigned long) - 1) / sizeof(unsigned long)];
     CString *title = (CString *)(titleStorage);
@@ -613,19 +620,15 @@ CZRecoilFrame * CZRecoilFrame::Constructor() {
         0,
         IDC_ARROW
     ));
-    return this;
 }
 
 /**
- * Reimplements 0x430610: CZRecoilFrame::Destructor.
+ * Reimplements 0x430610: CZRecoilFrame::~CZRecoilFrame.
  *
- * Purpose: destroy the recovered menu member before chaining into CZGameFrame
- * teardown.
+ * Purpose: let compiler-emitted MFC member and CZGameFrame base teardown
+ * destroy the owned menu through the CMenu provider.
  */
-void CZRecoilFrame::Destructor() {
-    m_mainMenu.DestroyMenu();
-    m_mainMenu.CMenu::~CMenu();
-    ((CZGameFrame *)(this))->Destructor();
+CZRecoilFrame::~CZRecoilFrame() {
 }
 
 /**

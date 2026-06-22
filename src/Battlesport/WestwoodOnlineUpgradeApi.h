@@ -59,6 +59,144 @@ struct WestwoodOnlineUpgradeQueryRequest {
     char m_serverAddress[0x35];
 };
 
+// Westwood Online ActiveX provider boundary. The source keeps call-site views
+// typed by observed slot order without modeling provider storage or tables.
+struct IWestwoodOnlineUpgradeProviderApi : IUnknown {
+    virtual void STDMETHODCALLTYPE ProcessCallbacks() = 0;
+    virtual void STDMETHODCALLTYPE BeginConnect(
+        int languageId,
+        int productId,
+        const char *playerName,
+        const char *connectString,
+        int timeoutSeconds
+    ) = 0;
+    virtual void STDMETHODCALLTYPE RequestBootstrapServerList(
+        WestwoodOnlineUpgradeBootstrapServerRecord *selectedBootstrapServer,
+        int timeoutSeconds,
+        int useAlternateConnectString
+    ) = 0;
+    virtual void STDMETHODCALLTYPE RequestListMode(
+        int listMode,
+        int enabled
+    ) = 0;
+    virtual int STDMETHODCALLTYPE SubmitQueryRequest(
+        WestwoodOnlineUpgradeQueryRequest *request
+    ) = 0;
+    virtual int STDMETHODCALLTYPE LoadBrowseRecord(
+        WestwoodOnlineUpgradeBrowseRecord *record
+    ) = 0;
+    virtual void STDMETHODCALLTYPE ResetQueryState() = 0;
+    virtual void STDMETHODCALLTYPE Reserved28() = 0;
+    virtual void STDMETHODCALLTYPE SubmitStatusText(
+        const char *statusText
+    ) = 0;
+    virtual void STDMETHODCALLTYPE SubmitSessionRequestListAndStatusText(
+        WestwoodOnlineUpgradeSessionRequest *sessionRequestList,
+        const char *statusText
+    ) = 0;
+    virtual void STDMETHODCALLTYPE Disconnect() = 0;
+    virtual void STDMETHODCALLTYPE Reserved38() = 0;
+    virtual void STDMETHODCALLTYPE SubmitEncodedQueryString(
+        const char *encodedQuery
+    ) = 0;
+    virtual void STDMETHODCALLTYPE Reserved40() = 0;
+    virtual void STDMETHODCALLTYPE Reserved44() = 0;
+    virtual void STDMETHODCALLTYPE SubmitPendingSessionList(
+        WestwoodOnlineUpgradeSessionRequest *sessionRequestList
+    ) = 0;
+    virtual void STDMETHODCALLTYPE Reserved4c() = 0;
+    virtual void STDMETHODCALLTYPE Reserved50() = 0;
+    virtual void STDMETHODCALLTYPE QueueSessionRequest(
+        WestwoodOnlineUpgradeSessionRequest *request
+    ) = 0;
+    virtual void STDMETHODCALLTYPE Reserved58() = 0;
+    virtual void STDMETHODCALLTYPE Reserved5c() = 0;
+    virtual int STDMETHODCALLTYPE RequestUpgradeDownloadReadyResult(
+        WestwoodOnlineUpgradeConnectContext *context
+    ) = 0;
+    virtual int STDMETHODCALLTYPE QueryStatusWithTokenAndServer(
+        WestwoodOnlineUpgradeConnectContext *context,
+        const char *serverText
+    ) = 0;
+    virtual void STDMETHODCALLTYPE Reserved68() = 0;
+    virtual void STDMETHODCALLTYPE BeginConnectWithPreparedContext(
+        WestwoodOnlineUpgradeConnectContext *context,
+        int mode
+    ) = 0;
+    virtual int STDMETHODCALLTYPE PrepareConnectContextAndMode(
+        WestwoodOnlineUpgradeConnectContext *context
+    ) = 0;
+    virtual void STDMETHODCALLTYPE Reserved74() = 0;
+    virtual void STDMETHODCALLTYPE Reserved78() = 0;
+    virtual void STDMETHODCALLTYPE Reserved7c() = 0;
+    virtual void STDMETHODCALLTYPE LookupBrowseRecordBySessionName(
+        const char *sessionName,
+        int lookupMode
+    ) = 0;
+    virtual void STDMETHODCALLTYPE Reserved84() = 0;
+    virtual void STDMETHODCALLTYPE Reserved88() = 0;
+    virtual void STDMETHODCALLTYPE Reserved8c() = 0;
+    virtual int STDMETHODCALLTYPE LoadConnectProfileStrings(
+        int profileId,
+        char **playerNameOut,
+        char **connectStringOut
+    ) = 0;
+    virtual int STDMETHODCALLTYPE SaveConnectProfileStrings(
+        int profileId,
+        const char *playerName,
+        const char *connectString,
+        int connectStringMode
+    ) = 0;
+};
+
+struct IWestwoodOnlineUpgradeProviderApiCallbacks : IUnknown {
+    virtual void STDMETHODCALLTYPE Reserved0c() = 0;
+    virtual void STDMETHODCALLTYPE Reserved10() = 0;
+    virtual void STDMETHODCALLTYPE Reserved14() = 0;
+    virtual void STDMETHODCALLTYPE RequestListMode(
+        int listMode,
+        int enabled
+    ) = 0;
+    virtual void STDMETHODCALLTYPE Reserved1c() = 0;
+    virtual void STDMETHODCALLTYPE Reserved20() = 0;
+    virtual void STDMETHODCALLTYPE Reserved24() = 0;
+    virtual void STDMETHODCALLTYPE CancelPendingSessionFlow() = 0;
+    virtual void STDMETHODCALLTYPE Reserved2c() = 0;
+    virtual void STDMETHODCALLTYPE Reserved30() = 0;
+    virtual void STDMETHODCALLTYPE Disconnect() = 0;
+    virtual void STDMETHODCALLTYPE Reserved38() = 0;
+    virtual void STDMETHODCALLTYPE Reserved3c() = 0;
+    virtual void STDMETHODCALLTYPE Reserved40() = 0;
+    virtual void STDMETHODCALLTYPE Reserved44() = 0;
+    virtual void STDMETHODCALLTYPE Reserved48() = 0;
+    virtual void STDMETHODCALLTYPE Reserved4c() = 0;
+    virtual void STDMETHODCALLTYPE Reserved50() = 0;
+    virtual void STDMETHODCALLTYPE Reserved54() = 0;
+    virtual void STDMETHODCALLTYPE RequestSessionDetails(
+        WestwoodOnlineUpgradeSessionRequest *sessionRequest
+    ) = 0;
+    virtual void STDMETHODCALLTYPE Reserved5c() = 0;
+    virtual void STDMETHODCALLTYPE Reserved60() = 0;
+    virtual void STDMETHODCALLTYPE Reserved64() = 0;
+    virtual void STDMETHODCALLTYPE Reserved68() = 0;
+    virtual void STDMETHODCALLTYPE Reserved6c() = 0;
+    virtual void STDMETHODCALLTYPE Reserved70() = 0;
+    virtual void STDMETHODCALLTYPE SetQueryMode(
+        int listMode
+    ) = 0;
+    virtual void STDMETHODCALLTYPE Reserved78() = 0;
+    virtual void STDMETHODCALLTYPE Reserved7c() = 0;
+    virtual void STDMETHODCALLTYPE Reserved80() = 0;
+    virtual void STDMETHODCALLTYPE Reserved84() = 0;
+    virtual void STDMETHODCALLTYPE Reserved88() = 0;
+    virtual void STDMETHODCALLTYPE Reserved8c() = 0;
+    virtual void STDMETHODCALLTYPE Reserved90() = 0;
+    virtual void STDMETHODCALLTYPE Reserved94() = 0;
+    virtual void STDMETHODCALLTYPE GetQueryResultCount(
+        int *outCount
+    ) = 0;
+};
+
 struct WestwoodOnlineUpgradeApiInitState {
     unsigned int structSize;
     HINSTANCE moduleHandlePrimary;
@@ -91,9 +229,7 @@ void AfxEnableControlContainer(COccManager *manager);
 extern "C" WestwoodOnlineUpgradeApiInitState g_WestwoodOnlineUpgradeApiInitState;
 extern "C" IUnknown *g_pWestwoodOnlineUpgradeApi;
 extern "C" void *g_pWestwoodOnlineUpgradeApiEventSink;
-extern "C" DWORD g_WestwoodOnlineUpgradeApiConnectionCookie;
-extern "C" int g_WestwoodOnlineUpgradeApiEventSinkConnectionOffset;
-extern "C" int g_WestwoodOnlineUpgradeApiReadyFlag;
+extern "C" DWORD g_WestwoodOnlineUpgradeApiAdviseCookie;
 extern "C" int g_WestwoodOnlineUpgradeApiShutdownState;
 extern "C" int g_WestwoodOnlineUpgradeApiAsyncErrorFlag;
 extern "C" int g_WestwoodOnlineUpgradeAbortFlag;
@@ -113,9 +249,6 @@ extern "C" WestwoodOnlineUpgradeBootstrapServerRecord
 extern "C" WestwoodOnlineUpgradeBrowseRecord g_WestwoodOnlineUpgradeCachedBrowseRecord;
 extern "C" WestwoodOnlineUpgradeBrowseRecord g_WestwoodOnlineUpgradeCachedBrowseRecordList[1024];
 extern "C" int g_WestwoodOnlineUpgradeCachedBrowseRecordListCount;
-extern "C" HANDLE g_WestwoodOnlineUpgradeCloseHandle0;
-extern "C" HANDLE g_WestwoodOnlineUpgradeCloseHandle1;
-extern "C" HANDLE g_WestwoodOnlineUpgradeCloseHandle2;
 extern const CLSID g_WestwoodOnlineUpgradeApi_CLSID;
 extern const IID g_WestwoodOnlineUpgradeApi_IID;
 extern const IID g_WestwoodOnlineUpgradeApiEventSink_IID;

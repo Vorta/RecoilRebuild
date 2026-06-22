@@ -5,6 +5,8 @@ src/GameZRecoil/zSys/zSys.cpp 0x4b37f0 _emit cpu-probe CPU BSF opcode emission f
 src/GameZRecoil/zSys/zSys.cpp 0x4b38e0 __declspec(naked) cpu-probe CPU RDTSC/QPC timing benchmark; documented zSys CPU probing exception.
 src/GameZRecoil/zSys/zSys.cpp 0x4b38e0 __asm cpu-probe CPU RDTSC/QPC timing benchmark; documented zSys CPU probing exception.
 src/GameZRecoil/zSys/zSys.cpp 0x4b38e0 _emit cpu-probe CPU RDTSC opcode emission for timing benchmark; documented zSys CPU probing exception.
+src/GameZRecoil/zSys/zSys_cpu_asm.inl 0x4b3020 __asm cpu-probe CPUID leaf-1 MMX feature probe; documented zSys CPU probing exception.
+src/GameZRecoil/zSys/zSys_cpu_asm.inl 0x4b3020 _emit cpu-probe CPUID opcode emission for MMX feature probe; documented zSys CPU probing exception.
 src/GameZRecoil/zSys/zSys_cpu_asm.inl 0x4b2fe0 __asm cpu-probe Runtime CPUID ID-flag probe; documented zSys CPU probing exception.
 src/GameZRecoil/zSys/zSys_cpu_asm.inl 0x4b3050 __asm cpu-probe CPUID signature-mask probe; documented zSys CPU probing exception.
 src/GameZRecoil/zSys/zSys_cpu_asm.inl 0x4b3050 _emit cpu-probe CPUID opcode emission for signature-mask probe; documented zSys CPU probing exception.
@@ -22,3 +24,5 @@ src/GameZRecoil/zSys/zSys_cpu_asm.inl 0x4b3b20 __asm cpu-probe RDTSC counter rea
 src/GameZRecoil/zSys/zSys_cpu_asm.inl 0x4b3b20 _emit cpu-probe RDTSC opcode emission; documented zSys CPU timing exception.
 src/GameZRecoil/zSys/zSys_cpu_asm.inl 0x4b3ca0 __asm cpu-probe Split 64-bit CPU timing subtraction helper; documented zSys CPU timing exception.
 src/GameZRecoil/zSys/zSys_cpu_asm.inl 0x4b3ca0 _emit cpu-probe Split 64-bit CPU timing subtraction byte-shape helper; documented zSys CPU timing exception.
+src/GameZRecoil/zGame/zGame.cpp 0x4b3160 __asm cpu-probe CPUID vendor string read; user-approved zGame runtime-options CPU probing exception.
+src/GameZRecoil/zGame/zGame.cpp 0x4b3160 _emit cpu-probe CPUID opcode emission for vendor string read; user-approved zGame runtime-options CPU probing exception.

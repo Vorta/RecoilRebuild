@@ -21,6 +21,7 @@
 #include <windows.h>
 
 #include <cmath>
+#include <cstdarg>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
@@ -62,6 +63,11 @@ int g_PlayerBootstrapTestPlayCount;
 int g_PlayerBootstrapTestStopCount;
 int g_PlayerTopMsgPanelAtexitCalls;
 void (*g_PlayerTopMsgPanelAtexitCallback)(void);
+HudUiStringMenu *g_PlayerBootstrapDebugAuxMenu;
+char g_PlayerBootstrapDebugAuxText[23][256];
+int g_PlayerBootstrapDebugAuxVisible[23];
+int g_PlayerBootstrapDebugAuxSetTextCount[23];
+int g_PlayerBootstrapDebugAuxSetVisibleCount[23];
 
 struct PlayerBootstrapCodePatch {
     unsigned char *address;
@@ -445,6 +451,54 @@ T &PlayerBootstrapFieldAt(
 ) {
     return *reinterpret_cast<T *>(static_cast<unsigned char *>(base) + offset);
 }
+
+template <typename Method>
+std::uintptr_t PlayerBootstrapMethodAddress(Method method) {
+    std::uintptr_t address = 0;
+    std::memcpy(&address, &method, sizeof(address));
+    return address;
+}
+
+int PlayerBootstrapDebugAuxIndex(void *self) {
+    if (g_PlayerBootstrapDebugAuxMenu == nullptr) {
+        return -1;
+    }
+
+    for (int index = 0; index < 23; ++index) {
+        if (&g_PlayerBootstrapDebugAuxMenu->items[index] == self) {
+            return index;
+        }
+    }
+    return -1;
+}
+
+void PlayerBootstrapDebugAuxSetTextFmt(HudUiPanel *self, const char *format, ...) {
+    const int index = PlayerBootstrapDebugAuxIndex(self);
+    if (index < 0) {
+        return;
+    }
+
+    va_list args;
+    va_start(args, format);
+    std::vsnprintf(
+        g_PlayerBootstrapDebugAuxText[index],
+        sizeof(g_PlayerBootstrapDebugAuxText[index]),
+        format,
+        args
+    );
+    va_end(args);
+    ++g_PlayerBootstrapDebugAuxSetTextCount[index];
+}
+
+struct PlayerBootstrapDebugAuxPanel {
+    void SetVisible(int visible) {
+        const int index = PlayerBootstrapDebugAuxIndex(this);
+        if (index >= 0) {
+            g_PlayerBootstrapDebugAuxVisible[index] = visible;
+            ++g_PlayerBootstrapDebugAuxSetVisibleCount[index];
+        }
+    }
+};
 
 void InitDestroyedEffectEntry(
     zEffectAnimEntry *entry,
@@ -1134,6 +1188,164 @@ extern "C" int player_apply_mission_save_data_smoke(void) {
     g_Time_AccumulatedTimeSec = oldAccumulatedTime;
     g_HudUi_InvalidateMask = oldInvalidateMask;
     g_HudUiMgrNanitePanel = oldNanitePanel;
+    for (int index = 0; index < 10; ++index) {
+        g_HudUiMgrMessages[index] = oldMessages[index];
+    }
+
+    return failure;
+}
+
+extern "C" int player_add_scaled_hud_counter_smoke(void) {
+    const int oldCounterValue = g_Player_HudCounterValue;
+    const int oldPrimaryGunDispatchCount = g_HudSensorTracker.primaryGunDispatchCount;
+    const int oldDamageFeedbackHitCount = g_OptCatalog_DamageFeedbackHitCount;
+
+    g_Player_HudCounterValue = 10;
+    g_HudSensorTracker.primaryGunDispatchCount = 0;
+    g_OptCatalog_DamageFeedbackHitCount = 7;
+
+    Player::AddScaledHudCounterValue(1.25f);
+    int failure = 0;
+    if (g_Player_HudCounterValue != 1260) {
+        failure = 1;
+    }
+
+    if (failure == 0) {
+        g_HudSensorTracker.primaryGunDispatchCount = 4;
+        g_OptCatalog_DamageFeedbackHitCount = 3;
+        Player::AddScaledHudCounterValue(2.0f);
+        if (g_Player_HudCounterValue != 2760) {
+            failure = 2;
+        }
+    }
+
+    if (failure == 0) {
+        g_HudSensorTracker.primaryGunDispatchCount = 4;
+        g_OptCatalog_DamageFeedbackHitCount = 1;
+        Player::AddScaledHudCounterValue(-1.5f);
+        if (g_Player_HudCounterValue != 2385) {
+            failure = 3;
+        }
+    }
+
+    g_Player_HudCounterValue = oldCounterValue;
+    g_HudSensorTracker.primaryGunDispatchCount = oldPrimaryGunDispatchCount;
+    g_OptCatalog_DamageFeedbackHitCount = oldDamageFeedbackHitCount;
+    return failure;
+}
+
+extern "C" int player_update_debug_overlay_hud_smoke(void) {
+    HudUiStringMenu *const oldStringMenu = g_HudUiMgrStringMenu;
+    HudUiCounterTextPanel *const oldObjectiveCounter = g_HudUiMgrObjectiveCounterTextPanel;
+    const int oldReticleMode = g_HudUiMgrReticleMode;
+    const int oldHudCounterValue = g_Player_HudCounterValue;
+    HudUiMessage oldMessages[10] = {};
+    for (int index = 0; index < 10; ++index) {
+        oldMessages[index] = g_HudUiMgrMessages[index];
+        g_HudUiMgrMessages[index] = {};
+        PlayerBootstrapFieldAt<int>(&g_HudUiMgrMessages[index].panel, 0x2a4) = 0;
+    }
+
+    HudUiCounterTextPanel counter = {};
+    counter.Constructor();
+    g_HudUiMgrObjectiveCounterTextPanel = &counter;
+
+    std::uintptr_t auxTable[32] = {};
+    auxTable[24] =
+        PlayerBootstrapMethodAddress(&PlayerBootstrapDebugAuxPanel::SetVisible);
+    auxTable[29] =
+        reinterpret_cast<std::uintptr_t>(&PlayerBootstrapDebugAuxSetTextFmt);
+
+    HudUiStringMenu menu = {};
+    for (int index = 0; index < 23; ++index) {
+        *reinterpret_cast<std::uintptr_t **>(&menu.items[index]) = auxTable;
+    }
+    g_HudUiMgrStringMenu = &menu;
+    g_PlayerBootstrapDebugAuxMenu = &menu;
+    std::memset(g_PlayerBootstrapDebugAuxText, 0, sizeof(g_PlayerBootstrapDebugAuxText));
+    std::memset(
+        g_PlayerBootstrapDebugAuxVisible,
+        0,
+        sizeof(g_PlayerBootstrapDebugAuxVisible)
+    );
+    std::memset(
+        g_PlayerBootstrapDebugAuxSetTextCount,
+        0,
+        sizeof(g_PlayerBootstrapDebugAuxSetTextCount)
+    );
+    std::memset(
+        g_PlayerBootstrapDebugAuxSetVisibleCount,
+        0,
+        sizeof(g_PlayerBootstrapDebugAuxSetVisibleCount)
+    );
+
+    zUtil_SaveGameState saveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    PlayerModalState modalState = {};
+    PlayerMasterModalData modalData = {};
+    PlayerGunFireController altController = {};
+    OptCatalogEntryDef altEntry = {};
+    zClass_NodePartial rootNode = {};
+    AINetNode currentPathNode = {};
+
+    std::strcpy(rootNode.name, "DebugRoot");
+    currentPathNode.nodeIndex = 42;
+    modalData.masterType = 3;
+    modalState.masterModalData = &modalData;
+    saveState.playerState = &playerState;
+    saveState.primaryModalState = &modalState;
+    playerState.rootNode = &rootNode;
+    playerState.activeAltGunController = &altController;
+    playerState.activePrimaryGunController = nullptr;
+    playerState.lifecycleState = 1;
+    playerState.slipSfxActive = 1;
+    playerState.aiCurrentPathNode = &currentPathNode;
+    playerState.worldPos = {12.75f, -4.25f, 100.5f};
+    playerState.restartYawRad = 1.0f;
+    playerState.aimTargetDistanceApprox = 20.0f;
+    altEntry.range = 25.0f;
+    altController.optCatalogEntry = &altEntry;
+    altController.weaponBankIndex = 3;
+    altController.weaponSideIndex = 1;
+    altController.ammoOrCharge = 7.5f;
+    g_Player_HudCounterValue = 77;
+    g_HudUiMgrReticleMode = 0;
+
+    Player::UpdateDebugOverlayHud(&saveState, 123, 456);
+
+    int failure = 0;
+    if (g_HudUiMgrReticleMode != 1) {
+        failure = 1;
+    } else if (std::strcmp(&PlayerBootstrapFieldAt<char>(&counter, 0x34), "77") != 0) {
+        failure = 2;
+    } else if (
+        g_PlayerBootstrapDebugAuxSetTextCount[1] != 1 ||
+        g_PlayerBootstrapDebugAuxSetVisibleCount[1] != 1 ||
+        g_PlayerBootstrapDebugAuxVisible[1] != 1 ||
+        std::strcmp(
+            g_PlayerBootstrapDebugAuxText[1],
+            "DebugRoot using TRACK dynamics - S"
+        ) != 0
+    ) {
+        failure = 3;
+    } else if (
+        g_PlayerBootstrapDebugAuxSetTextCount[2] != 1 ||
+        g_PlayerBootstrapDebugAuxSetVisibleCount[2] != 1 ||
+        g_PlayerBootstrapDebugAuxVisible[2] != 1 ||
+        std::strcmp(g_PlayerBootstrapDebugAuxText[2], "POS 12 -4 100 YAW 57") != 0
+    ) {
+        failure = 4;
+    }
+
+    if (reinterpret_cast<HudUiPanel *>(&counter)->hFont != nullptr) {
+        DeleteObject(reinterpret_cast<HudUiPanel *>(&counter)->hFont);
+        reinterpret_cast<HudUiPanel *>(&counter)->hFont = nullptr;
+    }
+    g_HudUiMgrStringMenu = oldStringMenu;
+    g_HudUiMgrObjectiveCounterTextPanel = oldObjectiveCounter;
+    g_HudUiMgrReticleMode = oldReticleMode;
+    g_Player_HudCounterValue = oldHudCounterValue;
+    g_PlayerBootstrapDebugAuxMenu = nullptr;
     for (int index = 0; index < 10; ++index) {
         g_HudUiMgrMessages[index] = oldMessages[index];
     }
@@ -4692,4 +4904,186 @@ extern "C" int player_ai_steer_toward_path_node_reverse_smoke(void) {
         return 2;
     }
     return behindOk ? 0 : 3;
+}
+
+extern "C" int zvehicle_select_zrd_by_difficulty_smoke(void) {
+    int *const oldDifficultyOption = g_zOpt_GameDifficultyOption;
+    int difficulty = 1;
+    g_zOpt_GameDifficultyOption = &difficulty;
+    if (g_zUtil_ZRDR_FreePool == nullptr) {
+        zUtil::ZRDR_PreallocNodePool(2);
+    }
+
+    const char *const dir = "zvehicle_select_zrd_by_difficulty_smoke_dir";
+    CreateDirectoryA(dir, nullptr);
+
+    char easyPath[MAX_PATH] = {};
+    char hardPath[MAX_PATH] = {};
+    std::sprintf(easyPath, "%s\\vehicle_easy.zrd", dir);
+    std::sprintf(hardPath, "%s\\vehicle_hard.zrd", dir);
+    std::remove(easyPath);
+    std::remove(hardPath);
+
+    std::FILE *file = std::fopen(easyPath, "wb");
+    if (file == nullptr) {
+        g_zOpt_GameDifficultyOption = oldDifficultyOption;
+        RemoveDirectoryA(dir);
+        return 1;
+    }
+    std::fclose(file);
+
+    difficulty = 0;
+    const bool easyOk =
+        std::strcmp(zVehicle::SelectZrdByDifficulty(dir), "vehicle_easy.zrd") == 0;
+
+    difficulty = 2;
+    const bool missingHardFallsBack =
+        std::strcmp(zVehicle::SelectZrdByDifficulty(dir), "vehicle.zrd") == 0;
+
+    file = std::fopen(hardPath, "wb");
+    if (file == nullptr) {
+        std::remove(easyPath);
+        g_zOpt_GameDifficultyOption = oldDifficultyOption;
+        RemoveDirectoryA(dir);
+        return 2;
+    }
+    std::fclose(file);
+
+    const bool hardOk =
+        std::strcmp(zVehicle::SelectZrdByDifficulty(dir), "vehicle_hard.zrd") == 0;
+
+    difficulty = 1;
+    const bool defaultOk =
+        std::strcmp(zVehicle::SelectZrdByDifficulty(dir), "vehicle.zrd") == 0;
+
+    std::remove(easyPath);
+    std::remove(hardPath);
+    RemoveDirectoryA(dir);
+    g_zOpt_GameDifficultyOption = oldDifficultyOption;
+    return easyOk && missingHardFallsBack && hardOk && defaultOk ? 0 : 3;
+}
+
+extern "C" int player_get_aiv_zrd_path_smoke(void) {
+    const char *const path = Player::GetAivZrdPath();
+    return path != nullptr && std::strcmp(path, "aiv.zrd") == 0 ? 0 : 1;
+}
+
+extern "C" int player_extract_vehicle_name_from_aiv_name_smoke(void) {
+    char out[64] = {};
+
+    Player::ExtractVehicleNameFromAivName("tank_01", out);
+    if (std::strcmp(out, "tank") != 0) {
+        return 1;
+    }
+
+    Player::ExtractVehicleNameFromAivName("hover_alpha", out);
+    if (std::strcmp(out, "hover_alpha") != 0) {
+        return 2;
+    }
+
+    Player::ExtractVehicleNameFromAivName("_1", out);
+    if (std::strcmp(out, "") != 0) {
+        return 3;
+    }
+
+    Player::ExtractVehicleNameFromAivName("", out);
+    return std::strcmp(out, "") == 0 ? 0 : 4;
+}
+
+extern "C" int player_los_from_fx_offset_smoke(void) {
+    zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
+    zClass_NodePartial *const oldRuntimeScene = g_Player_RuntimeDiScene;
+    zClass_NodePartial *const oldMainCamera = g_MainCamera;
+    const zTag4Partial oldVariantCurrent = g_Variant_CurrentTag;
+    PlayerProbeSampleCandidateBuffer *const oldPickBuffer = g_DiPickCandidateBuffer;
+    const int oldBreakOnFirst = g_cls_di_BreakOnFirstCandidate;
+    const int oldStopAfterFirst = g_cls_di_StopAfterFirstHit;
+
+    zUtil_PlayerStateStorage playerState = {};
+    zInput_GameStateOrMapTablePartial gameStateOrMap = {};
+    zClass_NodePartial excludedNode = {};
+    zClass_NodePartial rootNode = {};
+    zClass_NodePartial worldNode = {};
+    zClass_WorldDataPartial worldData = {};
+    zClass_NodePartial cameraNode = {};
+    zClass_CameraDataPartial cameraData = {};
+    const zVec3 targetPoint = {10.0f, 20.0f, 30.0f};
+
+    playerState.rootNode = &rootNode;
+    playerState.fxOffsetWorld = {1.0f, 2.0f, 3.0f};
+    playerState.variantTag.count = 2;
+    playerState.variantTag.tags[0] = 7;
+    playerState.variantTag.tags[1] = 8;
+    playerState.variantTag.tags[2] = 0xff;
+    gameStateOrMap.playerState =
+        static_cast<zInput_PlayerStatePartial *>(static_cast<void *>(&playerState));
+    worldNode.classData = &worldData;
+    excludedNode.flags = 0x10;
+    rootNode.flags = 0x10;
+    cameraNode.classId = 1;
+    cameraNode.classData = &cameraData;
+    cameraData.targetOrEuler = {4.0f, 5.0f, 6.0f};
+
+    g_GameStateOrMapTable = &gameStateOrMap;
+    g_Player_RuntimeDiScene = &worldNode;
+    g_MainCamera = &cameraNode;
+    g_cls_di_BreakOnFirstCandidate = 99;
+    g_cls_di_StopAfterFirstHit = 99;
+
+    const int forwardResult =
+        Player::HasLineOfSightFromLocalPlayerFxOffset(&excludedNode, &targetPoint, 1);
+    const bool forwardOk =
+        forwardResult == 1 && FloatNear(g_DiPickQueryPoint.x, 1.0f) &&
+        FloatNear(g_DiPickQueryPoint.y, 2.0f) && FloatNear(g_DiPickQueryPoint.z, 3.0f) &&
+        FloatNear(g_DiSegmentEnd.x, 10.0f) && FloatNear(g_DiSegmentEnd.y, 20.0f) &&
+        FloatNear(g_DiSegmentEnd.z, 30.0f) &&
+        (excludedNode.flags & 0x10) != 0 && (rootNode.flags & 0x10) != 0 &&
+        g_cls_di_BreakOnFirstCandidate == 0 && g_cls_di_StopAfterFirstHit == 0 &&
+        g_Variant_CurrentTag.count == 2 && g_Variant_CurrentTag.tags[0] == 7 &&
+        g_Variant_CurrentTag.tags[1] == 8;
+
+    excludedNode.flags = 0x10;
+    rootNode.flags = 0x10;
+    const int reverseResult =
+        Player::HasLineOfSightFromLocalPlayerFxOffset(&excludedNode, &targetPoint, 0);
+    const bool reverseOk =
+        reverseResult == 1 && FloatNear(g_DiPickQueryPoint.x, 10.0f) &&
+        FloatNear(g_DiPickQueryPoint.y, 20.0f) && FloatNear(g_DiPickQueryPoint.z, 30.0f) &&
+        FloatNear(g_DiSegmentEnd.x, 1.0f) && FloatNear(g_DiSegmentEnd.y, 2.0f) &&
+        FloatNear(g_DiSegmentEnd.z, 3.0f) &&
+        (excludedNode.flags & 0x10) != 0 && (rootNode.flags & 0x10) != 0;
+
+    excludedNode.flags = 0x10;
+    rootNode.flags = 0x10;
+    const int cameraForwardResult =
+        Player::TestScenePathBetweenCameraTargetAndPoint(&excludedNode, &targetPoint, 1);
+    const bool cameraForwardOk =
+        cameraForwardResult == 1 && FloatNear(g_DiPickQueryPoint.x, 4.0f) &&
+        FloatNear(g_DiPickQueryPoint.y, 5.0f) && FloatNear(g_DiPickQueryPoint.z, 6.0f) &&
+        FloatNear(g_DiSegmentEnd.x, 10.0f) && FloatNear(g_DiSegmentEnd.y, 20.0f) &&
+        FloatNear(g_DiSegmentEnd.z, 30.0f) &&
+        (excludedNode.flags & 0x10) != 0 && (rootNode.flags & 0x10) != 0 &&
+        g_Variant_CurrentTag.count == 2 && g_Variant_CurrentTag.tags[0] == 7 &&
+        g_Variant_CurrentTag.tags[1] == 8;
+
+    excludedNode.flags = 0x10;
+    rootNode.flags = 0x10;
+    const int cameraReverseResult =
+        Player::TestScenePathBetweenCameraTargetAndPoint(&excludedNode, &targetPoint, 0);
+    const bool cameraReverseOk =
+        cameraReverseResult == 1 && FloatNear(g_DiPickQueryPoint.x, 10.0f) &&
+        FloatNear(g_DiPickQueryPoint.y, 20.0f) && FloatNear(g_DiPickQueryPoint.z, 30.0f) &&
+        FloatNear(g_DiSegmentEnd.x, 4.0f) && FloatNear(g_DiSegmentEnd.y, 5.0f) &&
+        FloatNear(g_DiSegmentEnd.z, 6.0f) &&
+        (excludedNode.flags & 0x10) != 0 && (rootNode.flags & 0x10) != 0;
+
+    g_cls_di_StopAfterFirstHit = oldStopAfterFirst;
+    g_cls_di_BreakOnFirstCandidate = oldBreakOnFirst;
+    g_DiPickCandidateBuffer = oldPickBuffer;
+    g_Variant_CurrentTag = oldVariantCurrent;
+    g_MainCamera = oldMainCamera;
+    g_Player_RuntimeDiScene = oldRuntimeScene;
+    g_GameStateOrMapTable = oldGameStateOrMapTable;
+
+    return forwardOk && reverseOk && cameraForwardOk && cameraReverseOk ? 0 : 1;
 }

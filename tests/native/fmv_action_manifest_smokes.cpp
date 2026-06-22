@@ -434,6 +434,38 @@ extern "C" int zfmv_script_append_action_smoke(void) {
     return 0;
 }
 
+extern "C" int zfmv_action_flip_surfaces_smoke(void) {
+    CodeFunctionPatch adjustPatch = {};
+    if (!PatchFunctionJump(
+            reinterpret_cast<void *>(&zVideo::AdjustSurfacesIfEnabled),
+            reinterpret_cast<void *>(&FakeFmvAdjustSurfacesIfEnabled),
+            adjustPatch
+        )) {
+        return 1;
+    }
+
+    g_fakeFmvAdjustSurfacesCount = 0;
+    g_fakeFmvAdjustSurfacesSrcRect =
+        reinterpret_cast<zVidRect32 *>(0x11111111);
+    g_fakeFmvAdjustSurfacesDstRect =
+        reinterpret_cast<zVidRect32 *>(0x22222222);
+    g_fakeFmvAdjustSurfacesWaitForPresent = 0;
+    g_fakeFmvAdjustSurfacesBlitPrimaryToSwFirst = 0;
+
+    zFMV_Action action = {};
+    action.FlipSurfaces();
+
+    const bool ok =
+        g_fakeFmvAdjustSurfacesCount == 1 &&
+        g_fakeFmvAdjustSurfacesSrcRect == 0 &&
+        g_fakeFmvAdjustSurfacesDstRect == 0 &&
+        g_fakeFmvAdjustSurfacesWaitForPresent == 1 &&
+        g_fakeFmvAdjustSurfacesBlitPrimaryToSwFirst == 1;
+
+    RestoreFunctionPatch(adjustPatch);
+    return ok ? 0 : 2;
+}
+
 extern "C" int zfmv_action_image_constructor_with_screen_rect_smoke(void) {
     g_zFMV_ActionImage_BlitRect.left = -1;
     g_zFMV_ActionImage_BlitRect.top = -1;

@@ -222,10 +222,23 @@ RECOIL_NO_GS void zGame_OptionsRuntimeConfig::LoadCpuVendorString() {
     }
 
     int cpuInfo[4];
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+    __asm {
+        lea edi, cpuInfo
+        xor eax, eax
+        _emit 0x0f
+        _emit 0xa2
+        mov dword ptr [edi], eax
+        mov dword ptr [edi + 004h], ebx
+        mov dword ptr [edi + 008h], ecx
+        mov dword ptr [edi + 00ch], edx
+    }
+#else
     __cpuid(
         cpuInfo,
         0
     );
+#endif
     char vendor[0x0c];
     memcpy(
         &vendor[0],

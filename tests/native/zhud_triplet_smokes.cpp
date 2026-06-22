@@ -60,6 +60,20 @@ static bool TextStackLineFontHandleValidForSmoke(
     ) != 0;
 }
 
+static int g_statsListDispatchUpdateCount = 0;
+static float g_statsListDispatchUpdateDelta = 0.0f;
+static void *g_statsListDispatchUpdateThis = 0;
+
+struct TestStatsListElementDispatch : HudUiStatsListElement {
+    virtual void Update(
+        float deltaSeconds
+    ) {
+        ++g_statsListDispatchUpdateCount;
+        g_statsListDispatchUpdateDelta = deltaSeconds;
+        g_statsListDispatchUpdateThis = this;
+    }
+};
+
 extern "C" int zhud_triplet_scoreboard_entry_update_smoke(void) {
     const int oldRaceMode = g_HudSensorTracker.raceCheckpointMode;
     const int oldGoalValue = g_HudSensorTracker.runtimeGoalValue;
@@ -383,6 +397,28 @@ extern "C" int zhud_scoreboard_set_scale_and_rebuild_smoke(void) {
     g_HudUiMgrStatsList = oldStatsList;
     triplet.DestructorCore();
     return interpolated && rowsHidden ? 0 : 1;
+}
+
+extern "C" int zhud_scoreboard_dispatch_set_scale_smoke(void) {
+    HudUiStatsListElement *const oldStatsList = g_HudUiMgrStatsList;
+
+    TestStatsListElementDispatch statsList = {};
+    g_HudUiMgrStatsList = &statsList;
+
+    g_statsListDispatchUpdateCount = 0;
+    g_statsListDispatchUpdateDelta = 0.0f;
+    g_statsListDispatchUpdateThis = 0;
+
+    HudScoreboard::DispatchSetScale(
+        1.75f
+    );
+
+    const bool dispatched = g_statsListDispatchUpdateCount == 1 &&
+                            g_statsListDispatchUpdateDelta == 1.75f &&
+                            g_statsListDispatchUpdateThis == &statsList;
+
+    g_HudUiMgrStatsList = oldStatsList;
+    return dispatched ? 0 : 1;
 }
 
 extern "C" int zhud_text_stack_constructors_smoke(void) {

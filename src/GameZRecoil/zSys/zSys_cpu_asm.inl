@@ -7,6 +7,31 @@
 #pragma warning(disable : 4715)
 #endif
 
+/**
+ * Reimplements 0x4b3020: zCpu::HasMmxSupport.
+ * Purpose: Probes MMX support with the documented zSys CPU raw-assembly CPUID exception.
+ */
+int zCpu::HasMmxSupport() {
+    int result;
+    __asm {
+        push ebx
+        push ecx
+        push edx
+        mov eax, 1
+        _emit 0x0f
+        _emit 0xa2
+        test edx, 0800000h
+        jne recoil_cpu_mmx_support_done
+        xor eax, eax
+    recoil_cpu_mmx_support_done:
+        mov dword ptr [result], eax
+        pop edx
+        pop ecx
+        pop ebx
+    }
+    return result != 0 ? 1 : 0;
+}
+
 namespace zSys {
 /**
  * Reimplements 0x4b33f0: zSys::HasCpuidSupport (GameZRecoil/zSys/zsys_cpu.cpp).

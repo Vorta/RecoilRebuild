@@ -17,16 +17,19 @@ struct CZGameFrame : CFrameWnd {
     static const AFX_MSGMAP messageMap;
     static const AFX_MSGMAP_ENTRY messageEntries[];
 
-    static RecoilPtr32 GetBaseRuntimeClass();
+    CZGameFrame();
+    CZGameFrame(const char *appId);
+    ~CZGameFrame();
+    static CRuntimeClass *__stdcall GetBaseRuntimeClass();
     static const AFX_MSGMAP *__stdcall GetBaseMessageMapForMfc();
     static CZGameFrame *CreateObject();
-    static RecoilPtr32 GetRuntimeClass();
-    static RecoilPtr32 GetBaseMessageMap();
-    static RecoilPtr32 GetMessageMap();
-    static int __stdcall IsWindowValid(CWnd *pWnd);
-    CZGameFrame * Constructor(const char *appId);
-    void Destructor();
-    CString * BuildWindowTitle(CString *outTitle);
+    static CRuntimeClass *__stdcall GetRuntimeClassStatic();
+    virtual CRuntimeClass *GetRuntimeClass() const;
+    static const AFX_MSGMAP *__stdcall GetBaseMessageMap();
+    static const AFX_MSGMAP *__stdcall GetMessageMapStatic();
+    virtual const AFX_MSGMAP * GetMessageMap() const;
+    virtual int IsWindowValid(CWnd *pWnd) const;
+    virtual CString * BuildWindowTitle(CString *outTitle);
     int OnCreate(CREATESTRUCTA *createStruct);
     void OnClose();
     void OnPaint();

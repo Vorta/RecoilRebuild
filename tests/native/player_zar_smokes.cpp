@@ -273,6 +273,163 @@ extern "C" int player_zar_read_mission_save_data_section_smoke(void) {
     return failure;
 }
 
+extern "C" int player_refresh_hud_from_state_smoke(void) {
+    zUtil_SaveGameState saveState = {};
+    zUtil_SaveGameState localSaveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    zUtil_PlayerStateStorage localPlayerState = {};
+    PlayerMasterCommonData localCommonData = {};
+    HudUiShieldMessageWidget shield = {};
+    zVidImagePartial images[40] = {};
+
+    zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
+    const std::uint32_t oldInvalidateMask = g_HudUi_InvalidateMask;
+    HudUiShieldMessageWidget *const oldShieldWidget = g_HudUiMgrShieldMessageWidget;
+    HudUiNanitePanel oldNanitePanel = g_HudUiMgrNanitePanel;
+    HudUiCounter oldModeCounters[4] = {};
+    HudUiMessage oldMessages[10] = {};
+    const int oldActiveWeaponMessageIndex = g_HudUiMgrActiveWeaponMessageIndex;
+    const int oldActiveWeaponSideIndex = g_HudUiMgrActiveWeaponSideIndex;
+    for (int index = 0; index < 10; ++index) {
+        oldMessages[index] = g_HudUiMgrMessages[index];
+    }
+    for (int index = 0; index < 4; ++index) {
+        oldModeCounters[index] = g_HudUiMgrModeCounters[index];
+    }
+
+    saveState.playerState = &playerState;
+    localSaveState.playerState = &localPlayerState;
+    localPlayerState.masterCommonData = &localCommonData;
+    localCommonData.maxHealth = 100.0f;
+    playerState.statusMeterValue = 25.0f;
+    playerState.nanitePanelLevel = 3;
+    playerState.amphibUnlocked = 1;
+    playerState.hoverUnlocked = 0;
+    playerState.subUnlocked = 1;
+
+    for (int bankIndex = 0; bankIndex < 10; ++bankIndex) {
+        HudUiMessage &message = g_HudUiMgrMessages[bankIndex];
+        std::memset(&message, 0, sizeof(message));
+        new (&message) HudUiMessage;
+        message.variantImages[0] = &images[bankIndex * 4 + 0];
+        message.variantImages[1] = &images[bankIndex * 4 + 1];
+        message.variantImages[4] = &images[bankIndex * 4 + 2];
+        message.sideImageSwaps[0] = &images[bankIndex * 4 + 2];
+        message.sideImageSwaps[1] = &images[bankIndex * 4 + 3];
+    }
+
+    playerState.altWeaponBanks[0].controllerA.flags = 4;
+    playerState.altWeaponBanks[0].controllerA.ammoOrCharge = 5.0f;
+    playerState.altWeaponBanks[0].controllerB.flags = 4;
+    playerState.altWeaponBanks[0].controllerB.ammoOrCharge = 7.0f;
+
+    playerState.altWeaponBanks[1].controllerB.flags = 4;
+    playerState.altWeaponBanks[1].controllerB.ammoOrCharge = 9.0f;
+
+    playerState.altWeaponBanks[2].controllerA.ammoOrCharge = 4.0f;
+
+    playerState.altWeaponBanks[3].controllerA.flags = 4;
+    playerState.altWeaponBanks[3].controllerB.flags = 4;
+    playerState.altWeaponBanks[3].controllerB.ammoOrCharge = 11.0f;
+
+    for (int bankIndex = 0; bankIndex < 10; ++bankIndex) {
+        playerState.altWeaponBanks[bankIndex].controllerA.weaponBankIndex = bankIndex;
+        playerState.altWeaponBanks[bankIndex].controllerA.weaponSideIndex = 0;
+        playerState.altWeaponBanks[bankIndex].controllerB.weaponBankIndex = bankIndex;
+        playerState.altWeaponBanks[bankIndex].controllerB.weaponSideIndex = 1;
+    }
+    playerState.activeAltGunController = &playerState.altWeaponBanks[3].controllerB;
+    playerState.activePrimaryGunController = &playerState.altWeaponBanks[1].controllerB;
+
+    InitPlayerZarShieldWidget(shield);
+    g_HudUiMgrShieldMessageWidget = &shield;
+
+    std::memset(&g_HudUiMgrNanitePanel, 0, sizeof(g_HudUiMgrNanitePanel));
+    new (&g_HudUiMgrNanitePanel) HudUiNanitePanel;
+    zVidImagePartial counterImages[6] = {};
+    for (int index = 1; index < 4; ++index) {
+        std::memset(&g_HudUiMgrModeCounters[index], 0, sizeof(g_HudUiMgrModeCounters[index]));
+        new (&g_HudUiMgrModeCounters[index]) HudUiCounter;
+        TestFieldAt<zVidImagePartial *>(&g_HudUiMgrModeCounters[index], 0xbc) =
+            &counterImages[(index - 1) * 2];
+        TestFieldAt<zVidImagePartial *>(&g_HudUiMgrModeCounters[index], 0xc0) =
+            &counterImages[(index - 1) * 2 + 1];
+    }
+
+    g_GameStateOrMapTable =
+        reinterpret_cast<zInput_GameStateOrMapTablePartial *>(&localSaveState);
+    g_HudUi_InvalidateMask = 0x80;
+
+    Player::RefreshHudFromState(&saveState);
+
+    const bool shieldOk =
+        shield.meter.color565 == (zVid_PackColorRGB(255, 255, 0) & 0xffffu) &&
+        shield.meter.points[0].y == 95.0f && shield.meter.points[3].y == 95.0f &&
+        std::strcmp(&TestFieldAt<char>(&shield.percentTextPanel, 0x34), "25") == 0;
+    const bool naniteOk = g_HudUiMgrNanitePanel.visibleCount == 3;
+    const bool bank0Ok =
+        playerState.altWeaponBanks[0].selectedSide == 0 &&
+        g_HudUiMgrMessages[0].image == &images[0] &&
+        g_HudUiMgrMessages[0].widget.image == &images[3] &&
+        std::strcmp(&TestFieldAt<char>(&g_HudUiMgrMessages[0].panel, 0x34), "5") == 0;
+    const bool bank1Ok =
+        playerState.altWeaponBanks[1].selectedSide == 1 &&
+        g_HudUiMgrMessages[1].image == &images[6] &&
+        g_HudUiMgrMessages[1].widget.image == nullptr &&
+        std::strcmp(&TestFieldAt<char>(&g_HudUiMgrMessages[1].panel, 0x34), "9") == 0;
+    const bool bank2Ok =
+        g_HudUiMgrMessages[2].image == nullptr &&
+        std::strcmp(&TestFieldAt<char>(&g_HudUiMgrMessages[2].panel, 0x34), "4") == 0;
+    const bool activeOk =
+        playerState.altWeaponBanks[3].selectedSide == 1 &&
+        g_HudUiMgrMessages[3].image == &images[14] &&
+        std::strcmp(&TestFieldAt<char>(&g_HudUiMgrMessages[3].panel, 0x34), "11") == 0 &&
+        g_HudUiMgrActiveWeaponMessageIndex == 3 && g_HudUiMgrActiveWeaponSideIndex == 1;
+    const bool modesOk =
+        reinterpret_cast<HudUiWidget *>(&g_HudUiMgrModeCounters[1])->image ==
+            &counterImages[1] &&
+        reinterpret_cast<HudUiWidget *>(&g_HudUiMgrModeCounters[2])->image ==
+            &counterImages[2] &&
+        reinterpret_cast<HudUiWidget *>(&g_HudUiMgrModeCounters[3])->image ==
+            &counterImages[5];
+
+    g_GameStateOrMapTable = oldGameStateOrMapTable;
+    g_HudUi_InvalidateMask = oldInvalidateMask;
+    g_HudUiMgrShieldMessageWidget = oldShieldWidget;
+    g_HudUiMgrNanitePanel = oldNanitePanel;
+    g_HudUiMgrActiveWeaponMessageIndex = oldActiveWeaponMessageIndex;
+    g_HudUiMgrActiveWeaponSideIndex = oldActiveWeaponSideIndex;
+    for (int index = 0; index < 10; ++index) {
+        g_HudUiMgrMessages[index] = oldMessages[index];
+    }
+    for (int index = 0; index < 4; ++index) {
+        g_HudUiMgrModeCounters[index] = oldModeCounters[index];
+    }
+
+    if (!shieldOk) {
+        return 1;
+    }
+    if (!naniteOk) {
+        return 2;
+    }
+    if (!bank0Ok) {
+        return 3;
+    }
+    if (!bank1Ok) {
+        return 4;
+    }
+    if (!bank2Ok) {
+        return 5;
+    }
+    if (!activeOk) {
+        return 6;
+    }
+    if (!modesOk) {
+        return 7;
+    }
+    return 0;
+}
+
 extern "C" int player_zar_write_mission_save_data_section_smoke(void) {
     char tempPath[MAX_PATH] = {};
     char tempFile[MAX_PATH] = {};

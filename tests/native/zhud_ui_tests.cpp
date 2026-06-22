@@ -1,11 +1,25 @@
 #ifdef RECOIL_NATIVE_ZHUD_UI_LIFECYCLE_ONLY
 
+#include "Battlesport/RecoilApp.h"
 #include "Battlesport/GameNet.h"
+#include "Battlesport/HudSensorTracker.h"
+#include "Battlesport/hud.h"
+#include "Battlesport/player.h"
+#include "GameZRecoil/include/OptCatalog.h"
+#include "GameZRecoil/include/zClass.h"
+#include "GameZRecoil/include/zClipAlt.h"
+#include "GameZRecoil/include/zClipRect.h"
+#include "GameZRecoil/zGame/zGame.h"
 #include "GameZRecoil/zHud/zhud_ui.h"
+#include "GameZRecoil/zRndr/zRndr.h"
+#include "GameZRecoil/zUtil/zSaveGame.h"
+#include "GameZRecoil/zVideo/zVideo.h"
 
 #include <cstddef>
 #include <cstdint>
+#include <cstdlib>
 #include <cstring>
+#include <new>
 
 extern "C" std::uint32_t g_HudUi_InvalidateMask;
 
@@ -13,6 +27,142 @@ namespace {
 template <typename T> T &TestFieldAt(void *base, std::size_t offset) {
     return *reinterpret_cast<T *>(static_cast<std::uint8_t *>(base) + offset);
 }
+
+static std::uintptr_t *TestVTable(void *object) {
+    return *reinterpret_cast<std::uintptr_t **>(object);
+}
+
+static int g_containerUpdateCount = 0;
+static float g_containerUpdateDelta[4] = {};
+
+struct TestContainerUpdateElement : HudUiElement {
+    void Update(float deltaSeconds) {
+        const int index = g_containerUpdateCount;
+        if (index < 4) {
+            g_containerUpdateDelta[index] = deltaSeconds;
+        }
+
+        ++g_containerUpdateCount;
+    }
+};
+
+struct TestLayoutSetActiveElement : HudLayoutBase {
+    int activeValue;
+
+    int SetActive(int active) {
+        activeValue = active;
+        return 1;
+    }
+};
+
+static int g_newGamePanelStartEnterCount;
+static int g_newGamePanelStartExitCount;
+
+struct TestNewGamePanelStartState : RecoilApp_IState {
+    void OnEnter() {
+        ++g_newGamePanelStartEnterCount;
+    }
+
+    void OnExit() {
+        ++g_newGamePanelStartExitCount;
+    }
+};
+
+static RecoilApp_StateQueueItem *NewGamePanelQueueItemAt(
+    RecoilApp_StateQueue &queue,
+    int index
+) {
+    if (index < 0 || index >= queue.m_itemCount || queue.m_readBlock.m_cursor == 0) {
+        return 0;
+    }
+
+    return queue.m_readBlock.m_cursor[index];
+}
+
+static void CleanupNewGamePanelQueue(RecoilApp_StateQueue &queue) {
+    if (queue.m_itemCount == 0 || queue.m_readBlock.m_cursor == 0) {
+        queue = RecoilApp_StateQueue();
+        return;
+    }
+
+    const int itemCount = queue.m_itemCount;
+    for (int i = 0; i < itemCount; ++i) {
+        ::operator delete(queue.m_readBlock.m_cursor[i]);
+    }
+
+    if (queue.m_chunkBaseList != 0) {
+        for (RecoilApp_StateQueueItem ***slot = queue.m_readBlock.m_chunkBaseSlot;
+             slot <= queue.m_writeBlock.m_chunkBaseSlot;
+             ++slot) {
+            ::operator delete(*slot);
+        }
+        ::operator delete(queue.m_chunkBaseList);
+    }
+
+    queue = RecoilApp_StateQueue();
+}
+
+static int g_HudLayoutHWUpdateAllBlitCount;
+static zVidRect32 *g_HudLayoutHWUpdateAllBlitSrc;
+static zVidRect32 *g_HudLayoutHWUpdateAllBlitDst;
+static int g_HudLayoutHWSetActiveOnActivatedCount;
+static HudLayoutBase *g_HudLayoutHWSetActiveOnActivatedThis;
+static int g_HudLayoutHWSetActiveClearCount;
+static zVidRect32 *g_HudLayoutHWSetActiveClearRect;
+static zVideo_SurfaceStatePartial *g_HudLayoutHWSetActiveClearSurface;
+static int g_HudLayoutHWEnableSetEnabledCount;
+static HudLayoutHW *g_HudLayoutHWEnableSetEnabledThis;
+static int g_HudLayoutHWEnableSetEnabledValue;
+
+template <typename Method> static std::uintptr_t HudLifecycleMethodAddress(Method method) {
+    std::uintptr_t address = 0;
+    std::memcpy(&address, &method, sizeof(address));
+    return address;
+}
+
+static void __fastcall HudLayoutHWUpdateAllBlitCapture(
+    zVidRect32 *srcRect,
+    zVidRect32 *dstRect
+) {
+    ++g_HudLayoutHWUpdateAllBlitCount;
+    g_HudLayoutHWUpdateAllBlitSrc = srcRect;
+    g_HudLayoutHWUpdateAllBlitDst = dstRect;
+}
+
+static int __fastcall HudLayoutHWSetActiveClearCapture(
+    zVidRect32 *rect,
+    zVideo_SurfaceStatePartial *surfaceState
+) {
+    ++g_HudLayoutHWSetActiveClearCount;
+    g_HudLayoutHWSetActiveClearRect = rect;
+    g_HudLayoutHWSetActiveClearSurface = surfaceState;
+    return 1;
+}
+
+struct TestHudLayoutHWSetActiveLayout : HudLayoutHW {
+    void OnActivated() {
+        ++g_HudLayoutHWSetActiveOnActivatedCount;
+        g_HudLayoutHWSetActiveOnActivatedThis = this;
+    }
+};
+
+struct TestHudLayoutHWEnableLayout : HudLayoutHW {
+    void SetEnabled(int enabled) {
+        ++g_HudLayoutHWEnableSetEnabledCount;
+        g_HudLayoutHWEnableSetEnabledThis = this;
+        g_HudLayoutHWEnableSetEnabledValue = enabled;
+    }
+};
+
+static int g_statsListTripletUpdateAllCount = 0;
+static float g_statsListTripletUpdateAllDelta = 0.0f;
+
+struct TestStatsListTriplet : HudUiTriplet {
+    void UpdateAll(float deltaSeconds) {
+        ++g_statsListTripletUpdateAllCount;
+        g_statsListTripletUpdateAllDelta = deltaSeconds;
+    }
+};
 
 static int CheckHudUiMgrRegisteredLifecycleConstructed(void) {
     int failure = 0;
@@ -100,7 +250,140 @@ static int RunHudUiMgrConstructorSmoke(bool useStaticInit, bool useStaticDestruc
     failure |= destructorOk ? 0 : 8;
     return failure;
 }
+
+int g_auxTextFmtCount[23] = {};
+int g_auxVisibleCount[23] = {};
+int g_auxLastVisible[23] = {};
+const char *g_auxLastText[23] = {};
+
+int AuxLineIndexFromPanel(void *self) {
+    HudUiPanelSimple *const item = reinterpret_cast<HudUiPanelSimple *>(self);
+    return static_cast<int>(item - g_HudUiMgrStringMenu->items);
+}
+
+void TestAuxSetTextFmt(HudUiPanel *self, const char *format, ...) {
+    const int index = AuxLineIndexFromPanel(self);
+    ++g_auxTextFmtCount[index];
+    g_auxLastText[index] = format;
+}
+
+struct TestAuxPanel {
+    void SetVisible(std::int32_t visible) {
+        const int index = AuxLineIndexFromPanel(this);
+        ++g_auxVisibleCount[index];
+        g_auxLastVisible[index] = visible;
+    }
+};
+
+struct TestHudUiPanel_FTable {
+    std::uintptr_t slots[30];
+};
 } // namespace
+
+extern "C" int hud_ui_aux_overlay_text_lines_smoke(void) {
+    TestHudUiPanel_FTable ftable = {};
+    ftable.slots[24] = HudLifecycleMethodAddress(&TestAuxPanel::SetVisible);
+    ftable.slots[29] = reinterpret_cast<std::uintptr_t>(&TestAuxSetTextFmt);
+
+    HudUiStringMenu menu = {};
+    for (int index = 0; index < 23; ++index) {
+        *reinterpret_cast<const TestHudUiPanel_FTable **>(&menu.items[index]) = &ftable;
+    }
+
+    std::memset(g_auxTextFmtCount, 0, sizeof(g_auxTextFmtCount));
+    std::memset(g_auxVisibleCount, 0, sizeof(g_auxVisibleCount));
+    std::memset(g_auxLastVisible, 0, sizeof(g_auxLastVisible));
+    std::memset(g_auxLastText, 0, sizeof(g_auxLastText));
+    g_HudUiMgrStringMenu = &menu;
+
+    HudUiAuxOverlay::UpdateTextLine(1, 3, "alpha");
+    HudUiAuxOverlay::UpdateTextLine(2, 4, "bravo");
+    HudUiAuxOverlay::UpdateTextLine(2, 5, "");
+    HudUiAuxOverlay::UpdateTextLine(7, 6, "ignored");
+
+    const bool nonEmptyOps =
+        g_auxTextFmtCount[3] == 1 && g_auxVisibleCount[3] == 1 && g_auxLastVisible[3] == 1 &&
+        std::strcmp(g_auxLastText[3], "alpha") == 0 && g_auxTextFmtCount[4] == 1 &&
+        g_auxVisibleCount[4] == 1 && g_auxLastVisible[4] == 1 &&
+        std::strcmp(g_auxLastText[4], "bravo") == 0;
+    const bool emptyOp =
+        g_auxTextFmtCount[5] == 0 && g_auxVisibleCount[5] == 1 && g_auxLastVisible[5] == 0;
+    const bool unknownOp =
+        g_auxTextFmtCount[6] == 0 && g_auxVisibleCount[6] == 0 && g_auxLastVisible[6] == 0;
+
+    HudUiAuxOverlay::ClearTextLines();
+
+    bool clearOps = true;
+    for (int index = 0; index < 23; ++index) {
+        const int expectedVisible = 2 + (index == 3 || index == 4 || index == 5 ? 1 : 0);
+        const int expectedText = index == 3 || index == 4 ? 1 : 0;
+        clearOps = clearOps && g_auxVisibleCount[index] == expectedVisible &&
+                   g_auxTextFmtCount[index] == expectedText && g_auxLastVisible[index] == 0;
+    }
+
+    g_HudUiMgrStringMenu = nullptr;
+
+    return nonEmptyOps && emptyOp && unknownOp && clearOps ? 0 : 1;
+}
+
+extern "C" int zhud_mgr_viewport_activation_smoke(void) {
+    const int oldMode = g_HudUiMgrReticleMode;
+    HudUiMgr::SetReticleMode(2);
+    const bool ok = g_HudUiMgrReticleMode == 2;
+    g_HudUiMgrReticleMode = oldMode;
+    return ok ? 0 : 1;
+}
+
+extern "C" int zhud_mgr_project_point_to_normalized_clamped_smoke(void) {
+    int matrixIdentityFlags[2] = {};
+    float *matrixSlots[2] = {};
+    zMat4x3 baseMatrix{};
+    int *const oldMatrixIdentityFlagSlot = zMath::g_currentMatrixIdentityFlagSlot;
+    float **const oldMatrixPtrSlot = zMath::g_currentMatrixPtrSlot;
+    std::int32_t *const oldReplicateOption = ZOPT_REPLICATE;
+
+    zMath::g_currentMatrixIdentityFlagSlot = &matrixIdentityFlags[0];
+    zMath::g_currentMatrixPtrSlot = &matrixSlots[0];
+    matrixSlots[0] = reinterpret_cast<float *>(&baseMatrix);
+    zMath::g_zMath_CameraScratchB = {1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+                                     0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f};
+
+    g_zMath_ProjScaleX = 100.0f;
+    g_zMath_ProjScaleY = -50.0f;
+    g_zMath_ProjOffsetX = 320.0f;
+    g_zMath_ProjOffsetY = 240.0f;
+    gClipRect_Primary.zMin = 1.0f;
+    gClipRect_Primary.xMaxAlt = 640.0f;
+    g_zVideo_ProjectClipLeft = 0.0f;
+    g_zVideo_ProjectClipTop = 0.0f;
+    g_zVideo_ProjectClipRight = 640.0f;
+    g_zVideo_ProjectClipBottom = 480.0f;
+    g_HudUiMgrHudRect.top = 0;
+    g_HudUiMgrHudRectW = 640.0f;
+    g_HudUiMgrHudRectH = 480.0f;
+
+    std::int32_t replicate = 0;
+    ZOPT_REPLICATE = &replicate;
+    zVec3 worldPoint = {0.0f, 0.0f, 10.0f};
+    zVec3 projected = {};
+    bool ok = HudUiMgr::ProjectPointToNormalizedClamped(&worldPoint, &projected) == 0 &&
+              projected.x == 0.0f && projected.y == 0.0f;
+
+    replicate = 1;
+    worldPoint = {-16.0f, 24.0f, 10.0f};
+    ok = ok && HudUiMgr::ProjectPointToNormalizedClamped(&worldPoint, &projected) == 0 &&
+         projected.x == 0.0f && projected.y == 0.0f;
+
+    replicate = 0;
+    worldPoint = {-100.0f, 100.0f, 10.0f};
+    ok = ok && HudUiMgr::ProjectPointToNormalizedClamped(&worldPoint, &projected) == 0 &&
+         projected.x == -1.0f && projected.y == -1.0f;
+
+    zMath::g_currentMatrixIdentityFlagSlot = oldMatrixIdentityFlagSlot;
+    zMath::g_currentMatrixPtrSlot = oldMatrixPtrSlot;
+    ZOPT_REPLICATE = oldReplicateOption;
+    return ok ? 0 : 1;
+}
 
 extern "C" int zhud_mgr_constructor_smoke(void) {
     return RunHudUiMgrConstructorSmoke(false, false);
@@ -127,6 +410,982 @@ extern "C" int zhud_mgr_static_init_and_register_at_exit_smoke(void) {
     const int failure = CheckHudUiMgrRegisteredLifecycleConstructed();
     CleanupHudUiMgrAfterAtExitRegistration();
     return failure;
+}
+
+extern "C" int zhud_layout_base_load_type_i_from_zar_root_smoke(void) {
+    zReader::Node rectItems[5] = {};
+    rectItems[1].value.i32 = 7;
+    rectItems[2].value.i32 = 11;
+    rectItems[3].value.i32 = 107;
+    rectItems[4].value.i32 = 211;
+
+    zReader::Node typeIPayload[2] = {};
+    typeIPayload[1].type = zReader::ZRDR_NODE_ARRAY;
+    typeIPayload[1].value.nodes = rectItems;
+
+    zReader::Node rootItems[3] = {};
+    rootItems[0].value.i32 = 3;
+    rootItems[1].type = zReader::ZRDR_NODE_STRING;
+    rootItems[1].value.str = const_cast<char *>("TYPEI");
+    rootItems[2].type = zReader::ZRDR_NODE_ARRAY;
+    rootItems[2].value.nodes = typeIPayload;
+
+    zReader::Node root{};
+    root.type = zReader::ZRDR_NODE_ARRAY;
+    root.value.nodes = rootItems;
+
+    HudLayoutBase layout{};
+    layout.layoutRect = {1, 2, 3, 4};
+    layout.activeRect = {5, 6, 7, 8};
+    layout.LoadTypeIFromZarRoot(&root);
+
+    const bool loaded = layout.layoutRect.left == 7 && layout.layoutRect.top == 11 &&
+                        layout.layoutRect.right == 107 && layout.layoutRect.bottom == 211 &&
+                        layout.activeRect.left == 7 && layout.activeRect.top == 11 &&
+                        layout.activeRect.right == 107 && layout.activeRect.bottom == 211;
+
+    zReader::Node missingItems[1] = {};
+    missingItems[0].value.i32 = 1;
+    zReader::Node missingRoot{};
+    missingRoot.type = zReader::ZRDR_NODE_ARRAY;
+    missingRoot.value.nodes = missingItems;
+
+    layout.layoutRect = {10, 20, 30, 40};
+    layout.activeRect = {50, 60, 70, 80};
+    layout.LoadTypeIFromZarRoot(&missingRoot);
+
+    const bool missingPreserves = layout.layoutRect.left == 10 && layout.layoutRect.top == 20 &&
+                                  layout.layoutRect.right == 30 &&
+                                  layout.layoutRect.bottom == 40 &&
+                                  layout.activeRect.left == 50 && layout.activeRect.top == 60 &&
+                                  layout.activeRect.right == 70 &&
+                                  layout.activeRect.bottom == 80;
+
+    return loaded && missingPreserves ? 0 : 1;
+}
+
+extern "C" int zhud_layout_sw_constructor_smoke(void) {
+    HudLayoutSW layout{};
+    HudLayoutSW *const result = layout.Constructor();
+    HudUiWidget *const child = &TestFieldAt<HudUiWidget>(&layout, 0x30);
+
+    const bool constructed =
+        result == &layout && TestVTable(&layout) != nullptr &&
+        layout.childHead == reinterpret_cast<HudUiElement *>(child) &&
+        layout.childTail == reinterpret_cast<HudUiElement *>(child) &&
+        TestVTable(child) != nullptr && child->parent == &layout &&
+        child->next == nullptr;
+
+    return constructed ? 0 : 1;
+}
+
+extern "C" int zhud_layout_sw_global_init_smoke(void) {
+    const HudLayoutSW oldLayout = g_HudLayoutSW;
+
+    g_HudLayoutSW = HudLayoutSW();
+    HudLayoutSW *const result = HudLayoutSW::GlobalInit();
+    HudUiWidget *const child = &g_HudLayoutSW.widget0;
+
+    const bool initialized =
+        result == &g_HudLayoutSW && TestVTable(&g_HudLayoutSW) != nullptr &&
+        g_HudLayoutSW.childHead == reinterpret_cast<HudUiElement *>(child) &&
+        g_HudLayoutSW.childTail == reinterpret_cast<HudUiElement *>(child) &&
+        TestVTable(child) != nullptr && child->parent == &g_HudLayoutSW;
+
+    g_HudLayoutSW.GlobalDestructor();
+    g_HudLayoutSW = oldLayout;
+    return initialized ? 0 : 1;
+}
+
+extern "C" int zhud_layout_sw_static_lifetime_smoke(void) {
+    const HudLayoutSW oldLayout = g_HudLayoutSW;
+
+    HudUiContainer expectedContainer{};
+    HudUiElement expectedElement{};
+    HudLayoutSW layout{};
+    layout.Constructor();
+    layout.GlobalDestructor();
+    const bool directDestructor =
+        TestVTable(&layout) == TestVTable(&expectedContainer) &&
+        TestVTable(&layout.widget0) == TestVTable(&expectedElement);
+
+    g_HudLayoutSW = HudLayoutSW();
+    g_HudLayoutSW.Constructor();
+    HudLayoutSW::AtExitDestructor();
+    const bool atExitDestructor =
+        TestVTable(&g_HudLayoutSW) == TestVTable(&expectedContainer) &&
+        TestVTable(&g_HudLayoutSW.widget0) == TestVTable(&expectedElement);
+
+    g_HudLayoutSW = HudLayoutSW();
+    g_HudLayoutSW.Constructor();
+    HudLayoutSW::RegisterAtExit();
+    const bool registered = TestVTable(&g_HudLayoutSW) != nullptr &&
+                            g_HudLayoutSW.childHead ==
+                                reinterpret_cast<HudUiElement *>(&g_HudLayoutSW.widget0);
+
+    g_HudLayoutSW = oldLayout;
+    return directDestructor && atExitDestructor && registered ? 0 : 1;
+}
+
+extern "C" int zhud_layout_hw_release_images_smoke(void) {
+    HudLayoutHW layout{};
+    layout.widget1Image320 = &zVid_Image::g_zImage_DefaultImage;
+    layout.widget1Image400 = nullptr;
+    layout.widget2Image320 = &zVid_Image::g_zImage_DefaultImage;
+    layout.widget2Image400 = nullptr;
+    layout.widget2.x = 0xa5;
+
+    layout.ReleaseImages();
+
+    return layout.widget1Image320 == nullptr && layout.widget1Image400 == nullptr &&
+                   layout.widget2Image320 == nullptr && layout.widget2Image400 == nullptr &&
+                   layout.widget2.x == 0xa5
+               ? 0
+               : 1;
+}
+
+extern "C" int zhud_layout_hw_update_all_smoke(void) {
+    HudUiMgrData oldMgr;
+    std::memcpy(&oldMgr, &g_HudUiMgr, sizeof(oldMgr));
+    const HudUiMgrSensorBlock oldSensorBlock = g_HudUiMgrSensorBlock;
+    const int oldObjectivePhase = g_HudUiMgrObjectivePhase;
+    zVideo_BltRectDirectProc const oldBlit = g_zVideo_pfnBltSwToPrimaryRectDirect;
+    std::int32_t *const oldReplicateOption = ZOPT_REPLICATE;
+
+    std::int32_t replicate = 1;
+    ZOPT_REPLICATE = &replicate;
+    g_zVideo_pfnBltSwToPrimaryRectDirect = &HudLayoutHWUpdateAllBlitCapture;
+    g_HudLayoutHWUpdateAllBlitCount = 0;
+    g_HudLayoutHWUpdateAllBlitSrc = nullptr;
+    g_HudLayoutHWUpdateAllBlitDst = nullptr;
+
+    std::memset(&g_HudUiMgr, 0, sizeof(g_HudUiMgr));
+    g_HudUiMgr.enabled = 1;
+    g_HudUiMgrObjectivePhase = 0;
+    g_HudUiMgrSensorBlock.sensorRectScaled = {1, 2, 3, 4};
+    g_HudUiMgrSensorBlock.sensorRectRaw = {5, 6, 7, 8};
+
+    HudLayoutHW layout{};
+    layout.UpdateAll(0.25f);
+    const bool blitted =
+        g_HudLayoutHWUpdateAllBlitCount == 1 &&
+        g_HudLayoutHWUpdateAllBlitSrc ==
+            reinterpret_cast<zVidRect32 *>(&g_HudUiMgrSensorBlock.sensorRectScaled) &&
+        g_HudLayoutHWUpdateAllBlitDst ==
+            reinterpret_cast<zVidRect32 *>(&g_HudUiMgrSensorBlock.sensorRectRaw);
+
+    g_HudUiMgrObjectivePhase = 1;
+    layout.UpdateAll(0.25f);
+    const bool phaseGuard = g_HudLayoutHWUpdateAllBlitCount == 1;
+
+    replicate = 0;
+    g_HudUiMgrObjectivePhase = 0;
+    layout.UpdateAll(0.25f);
+    const bool replicateGuard = g_HudLayoutHWUpdateAllBlitCount == 1;
+
+    std::memcpy(&g_HudUiMgr, &oldMgr, sizeof(g_HudUiMgr));
+    g_HudUiMgrSensorBlock = oldSensorBlock;
+    g_HudUiMgrObjectivePhase = oldObjectivePhase;
+    g_zVideo_pfnBltSwToPrimaryRectDirect = oldBlit;
+    ZOPT_REPLICATE = oldReplicateOption;
+
+    return blitted && phaseGuard && replicateGuard ? 0 : 1;
+}
+
+extern "C" int zhud_layout_hw_set_active_smoke(void) {
+    const zVideo_SurfaceStatePartial oldPrimarySurface = g_zVideo_PrimarySurfaceState;
+    int *const oldVideoAcceleration = ZOPT_VIDEO_ACCELERATION;
+    std::int32_t *const oldReplicateOption = ZOPT_REPLICATE;
+    zOpt_ViewRectSection **const oldRenderOption = g_zOpt_RenderSectionOption;
+    zOpt_ViewRectSection **const oldDisplayOption = g_zOpt_DisplaySectionOption;
+    zClass_NodePartial *const oldMainCamera = g_MainCamera;
+    alignas(HudSensorTracker) std::uint8_t oldTrackerBytes[sizeof(HudSensorTracker)];
+    std::memcpy(oldTrackerBytes, &g_HudSensorTracker, sizeof(g_HudSensorTracker));
+    const HudUiMgrSensorBlock oldSensorBlock = g_HudUiMgrSensorBlock;
+    const HudUiRect oldSensorFxRect = g_HudUiMgrSensorFxRect;
+    const int oldSensorFxViewportWidth = g_HudUiMgrSensorFxViewportWidth;
+    const int oldSensorFxViewportHeight = g_HudUiMgrSensorFxViewportHeight;
+    const HudUiRect oldHudRect = g_HudUiMgrHudRect;
+    const int oldHudOriginY = g_HudUiMgrHudOriginY;
+    alignas(HudUiMgrData) std::uint8_t oldMgrBytes[sizeof(HudUiMgrData)];
+    std::memcpy(oldMgrBytes, &g_HudUiMgr, sizeof(g_HudUiMgr));
+    const int oldObjectivePhase = g_HudUiMgrObjectivePhase;
+    zVideo_ClearStateSurfaceAndZBufferProc const oldClearState =
+        g_zVideo_pfnClearStateSurfaceAndZBuffer;
+    const int oldClearEnabled = g_zVideo_ClearScreenBufferEnabled;
+    const int oldSpanPolyCount = zRndr::g_spanOccluderPolyCount;
+    zRndr::SpanOccluderPolyPartial oldSpanPolys[8];
+    int index;
+    for (index = 0; index < 8; ++index) {
+        oldSpanPolys[index] = zRndr::g_spanOccluderPolys[index];
+    }
+    const int oldAltClipValid = gAltClipSourceRectValid;
+    const float oldAltSourceLeft = g_zClipAlt_SourceLeft;
+    const float oldAltSourceTop = g_zClipAlt_SourceTop;
+    const float oldAltSourceRight = g_zClipAlt_SourceRight;
+    const float oldAltSourceBottom = g_zClipAlt_SourceBottom;
+    const float oldAltSourceWidth = g_zClipAlt_SourceWidth;
+    const float oldAltSourceHeight = g_zClipAlt_SourceHeight;
+
+    int acceleration = 0;
+    std::int32_t replicate = 0;
+    ZOPT_VIDEO_ACCELERATION = &acceleration;
+    ZOPT_REPLICATE = &replicate;
+
+    zOpt_ViewRectSection renderSection{};
+    zOpt_ViewRectSection displaySection{};
+    zOpt_ViewRectSection *renderSectionPtr = &renderSection;
+    zOpt_ViewRectSection *displaySectionPtr = &displaySection;
+    g_zOpt_RenderSectionOption = &renderSectionPtr;
+    g_zOpt_DisplaySectionOption = &displaySectionPtr;
+
+    zClass_CameraDataPartial cameraData{};
+    cameraData.nearClip = 2.0f;
+    cameraData.farClip = 500.0f;
+    zClass_NodePartial cameraNode{};
+    cameraNode.classId = 1;
+    cameraNode.classData = &cameraData;
+    g_MainCamera = &cameraNode;
+    std::memset(&g_HudSensorTracker, 0, sizeof(g_HudSensorTracker));
+
+    g_zVideo_PrimarySurfaceState = zVideo_SurfaceStatePartial();
+    g_zVideo_PrimarySurfaceState.width = 800;
+    g_zVideo_pfnClearStateSurfaceAndZBuffer = &HudLayoutHWSetActiveClearCapture;
+    g_zVideo_ClearScreenBufferEnabled = 3;
+    g_HudLayoutHWSetActiveClearCount = 0;
+    g_HudLayoutHWSetActiveClearRect = nullptr;
+    g_HudLayoutHWSetActiveClearSurface = nullptr;
+
+    g_HudUiMgr.enabled = 1;
+    g_HudUiMgr.childHead = nullptr;
+    g_HudUiMgr.childTail = nullptr;
+    g_HudUiMgrCurrentLayout = nullptr;
+    g_HudUiTopMessageStack = nullptr;
+    g_HudUiChatMessageStack = nullptr;
+    g_HudUiMgrHudOriginY = 5;
+    g_HudUiMgrHudRect = {0, 0, 320, 240};
+    std::memset(&g_HudUiMgrSensorBlock, 0, sizeof(g_HudUiMgrSensorBlock));
+    g_HudUiMgrSensorBlock.sensorViewportRect = {10, 20, 110, 120};
+    g_HudUiMgrSensorBlock.sensorPiVSrcRect = {2.0f, 3.0f, 82.0f, 63.0f};
+    g_HudUiMgrSensorFxRect = {0, 0, 0, 0};
+    g_HudUiMgrSensorFxViewportWidth = 80;
+    g_HudUiMgrSensorFxViewportHeight = 60;
+    g_HudUiMgrObjectivePhase = 0;
+    g_HudUiMgrObjectiveWidget.flags = 0;
+    g_HudUiMgrObjectiveBar.flags = 0;
+    g_HudUiMgrObjectiveSensorRect.flags = 0;
+
+    HudUiCounterTextPanel counterPanel{};
+    HudUiTimerPanel timerPanel{};
+    g_HudUiMgrObjectiveCounterTextPanel = &counterPanel;
+    g_HudUiMgrTimerPanel = &timerPanel;
+
+    void *const messageZeroBaseSentinel = reinterpret_cast<void *>(0x1111);
+    void *const messageZeroPanelSentinel = reinterpret_cast<void *>(0x2222);
+    for (index = 0; index < 10; ++index) {
+        g_HudUiMgrMessages[index].bltSource =
+            index == 0 ? messageZeroBaseSentinel : nullptr;
+        g_HudUiMgrMessages[index].panel.bltSource =
+            index == 0 ? messageZeroPanelSentinel : nullptr;
+    }
+
+    TestHudLayoutHWSetActiveLayout layout{};
+    layout.layoutRect = {4, 6, 320, 200};
+    layout.activeRect = {4, 6, 0, 0};
+    zVidImagePartial widget1Image{};
+    zVidImagePartial widget2Image{};
+    layout.widget1.image = &widget1Image;
+    layout.widget2.image = &widget2Image;
+    g_HudLayoutHWSetActiveOnActivatedCount = 0;
+    g_HudLayoutHWSetActiveOnActivatedThis = nullptr;
+
+    zRndr::g_spanOccluderPolyCount = 7;
+    for (index = 0; index < 8; ++index) {
+        zRndr::g_spanOccluderPolys[index] = zRndr::SpanOccluderPolyPartial();
+    }
+    const int activeResult = layout.SetActive(1);
+    const zRndr::SpanOccluderPolyPartial &sensorPoly = zRndr::g_spanOccluderPolys[0];
+
+    bool activeImages =
+        activeResult == 1 && g_HudLayoutHWSetActiveOnActivatedCount == 1 &&
+        g_HudLayoutHWSetActiveOnActivatedThis == &layout &&
+        layout.activeRect.right == 800 && layout.activeRect.bottom == 205 &&
+        reinterpret_cast<HudUiElement *>(&counterPanel)->bltSource == &widget1Image &&
+        reinterpret_cast<HudUiElement *>(&timerPanel)->bltSource == &widget1Image &&
+        reinterpret_cast<HudUiElement *>(&g_HudUiMgrNanitePanel)->bltSource ==
+            &widget2Image &&
+        g_HudUiMgrMessages[0].bltSource == messageZeroBaseSentinel &&
+        g_HudUiMgrMessages[0].panel.bltSource == messageZeroPanelSentinel;
+    for (index = 1; index < 10; ++index) {
+        activeImages = activeImages && g_HudUiMgrMessages[index].bltSource == &widget2Image &&
+                       g_HudUiMgrMessages[index].panel.bltSource == &widget2Image;
+    }
+
+    const bool activeClipAndOccluder =
+        zRndr::g_spanOccluderPolyCount == 1 && sensorPoly.vertCount == 4 &&
+        sensorPoly.vertices[0][0] == 10.0f && sensorPoly.vertices[0][1] == 20.0f &&
+        sensorPoly.vertices[0][2] == 0.5f && sensorPoly.vertices[2][0] == 110.0f &&
+        sensorPoly.vertices[2][1] == 205.0f && g_zClipAlt_SourceLeft == 0.0f &&
+        g_zClipAlt_SourceTop == 0.0f && g_zClipAlt_SourceRight == 80.0f &&
+        g_zClipAlt_SourceBottom == 60.0f && gAltClipSourceRectValid == 1;
+
+    zRndr::g_spanOccluderPolyCount = 4;
+    const int inactiveResult = layout.SetActive(0);
+
+    bool inactiveCleared =
+        inactiveResult == 1 && g_HudLayoutHWSetActiveOnActivatedCount == 1 &&
+        zRndr::g_spanOccluderPolyCount == 0 && g_HudLayoutHWSetActiveClearCount == 1 &&
+        g_HudLayoutHWSetActiveClearRect == nullptr &&
+        g_HudLayoutHWSetActiveClearSurface == &g_zVideo_PrimarySurfaceState &&
+        g_zVideo_ClearScreenBufferEnabled == 3 &&
+        reinterpret_cast<HudUiElement *>(&counterPanel)->bltSource == nullptr &&
+        reinterpret_cast<HudUiElement *>(&timerPanel)->bltSource == nullptr &&
+        reinterpret_cast<HudUiElement *>(&g_HudUiMgrNanitePanel)->bltSource == nullptr;
+    for (index = 0; index < 10; ++index) {
+        inactiveCleared = inactiveCleared &&
+                          g_HudUiMgrMessages[index].bltSource == nullptr &&
+                          g_HudUiMgrMessages[index].panel.bltSource == nullptr;
+    }
+
+    g_zVideo_PrimarySurfaceState = oldPrimarySurface;
+    ZOPT_VIDEO_ACCELERATION = oldVideoAcceleration;
+    ZOPT_REPLICATE = oldReplicateOption;
+    g_zOpt_RenderSectionOption = oldRenderOption;
+    g_zOpt_DisplaySectionOption = oldDisplayOption;
+    g_MainCamera = oldMainCamera;
+    std::memcpy(&g_HudSensorTracker, oldTrackerBytes, sizeof(g_HudSensorTracker));
+    g_HudUiMgrSensorBlock = oldSensorBlock;
+    g_HudUiMgrSensorFxRect = oldSensorFxRect;
+    g_HudUiMgrSensorFxViewportWidth = oldSensorFxViewportWidth;
+    g_HudUiMgrSensorFxViewportHeight = oldSensorFxViewportHeight;
+    g_HudUiMgrHudRect = oldHudRect;
+    g_HudUiMgrHudOriginY = oldHudOriginY;
+    std::memcpy(&g_HudUiMgr, oldMgrBytes, sizeof(g_HudUiMgr));
+    g_HudUiMgrObjectivePhase = oldObjectivePhase;
+    g_zVideo_pfnClearStateSurfaceAndZBuffer = oldClearState;
+    g_zVideo_ClearScreenBufferEnabled = oldClearEnabled;
+    zRndr::g_spanOccluderPolyCount = oldSpanPolyCount;
+    for (index = 0; index < 8; ++index) {
+        zRndr::g_spanOccluderPolys[index] = oldSpanPolys[index];
+    }
+    gAltClipSourceRectValid = oldAltClipValid;
+    g_zClipAlt_SourceLeft = oldAltSourceLeft;
+    g_zClipAlt_SourceTop = oldAltSourceTop;
+    g_zClipAlt_SourceRight = oldAltSourceRight;
+    g_zClipAlt_SourceBottom = oldAltSourceBottom;
+    g_zClipAlt_SourceWidth = oldAltSourceWidth;
+    g_zClipAlt_SourceHeight = oldAltSourceHeight;
+
+    if (!activeImages) {
+        int failure = 0;
+        failure |= activeResult == 1 ? 0 : 0x001;
+        failure |= g_HudLayoutHWSetActiveOnActivatedCount == 1 ? 0 : 0x002;
+        failure |= g_HudLayoutHWSetActiveOnActivatedThis == &layout ? 0 : 0x004;
+        failure |= layout.activeRect.right == 800 ? 0 : 0x008;
+        failure |= layout.activeRect.bottom == 205 ? 0 : 0x010;
+        failure |= reinterpret_cast<HudUiElement *>(&counterPanel)->bltSource == &widget1Image ? 0
+                                                                                               : 0x020;
+        failure |= reinterpret_cast<HudUiElement *>(&timerPanel)->bltSource == &widget1Image ? 0
+                                                                                             : 0x040;
+        failure |= reinterpret_cast<HudUiElement *>(&g_HudUiMgrNanitePanel)->bltSource ==
+                           &widget2Image
+                       ? 0
+                       : 0x080;
+        failure |= g_HudUiMgrMessages[0].bltSource == messageZeroBaseSentinel ? 0 : 0x100;
+        failure |= g_HudUiMgrMessages[0].panel.bltSource == messageZeroPanelSentinel ? 0
+                                                                                    : 0x200;
+        return 0x1000 | failure;
+    }
+    if (!activeClipAndOccluder) {
+        return 2;
+    }
+    if (!inactiveCleared) {
+        return 3;
+    }
+    return 0;
+}
+
+extern "C" int zhud_layout_hw_on_activated_smoke(void) {
+    int *const oldReplicateOption = ZOPT_REPLICATE;
+    const std::uint32_t oldInvalidateMask = g_HudUi_InvalidateMask;
+    alignas(HudUiMgrData) std::uint8_t oldMgrBytes[sizeof(HudUiMgrData)];
+    alignas(HudSensorTracker) std::uint8_t oldTrackerBytes[sizeof(HudSensorTracker)];
+    std::memcpy(oldMgrBytes, &g_HudUiMgr, sizeof(g_HudUiMgr));
+    std::memcpy(oldTrackerBytes, &g_HudSensorTracker, sizeof(g_HudSensorTracker));
+
+    std::int32_t replicate = 0;
+    ZOPT_REPLICATE = &replicate;
+
+    HudUiElement mgrChild{};
+    mgrChild.next = nullptr;
+    mgrChild.flags = 0x91;
+    g_HudUiMgr.enabled = 0;
+    g_HudUiMgr.childHead = &mgrChild;
+    g_HudUiMgr.childTail = &mgrChild;
+    g_HudUiMgrCurrentLayout = nullptr;
+    g_HudUiTopMessageStack = nullptr;
+    g_HudUiChatMessageStack = nullptr;
+
+    alignas(HudUiPanel) std::uint8_t objectiveLabelStorage[sizeof(HudUiPanel)] = {};
+    HudUiPanel *const objectiveLabel = reinterpret_cast<HudUiPanel *>(objectiveLabelStorage);
+    g_HudUiMgrObjectiveLabelTextPanel = objectiveLabel;
+    std::memset(&g_HudUiMgrObjectiveWidget, 0, sizeof(g_HudUiMgrObjectiveWidget));
+    std::memset(&g_HudUiMgrObjectiveMeter, 0, sizeof(g_HudUiMgrObjectiveMeter));
+    g_HudUiMgrObjectiveWidget.flags = 0x9f;
+    g_HudUiMgrObjectiveMeter.flags = 0x9f;
+    objectiveLabel->flags = 0x9f;
+
+    HudUiStatsListElement statsList{};
+    HudUiTriplet triplet{};
+    triplet.Constructor();
+    triplet.rowCells[0]->flags = 0x7f;
+    statsList.triplet = &triplet;
+    g_HudUiMgrStatsList = &statsList;
+
+    std::memset(&g_HudSensorTracker, 0, sizeof(g_HudSensorTracker));
+    std::memset(&g_HudUiMgrSensorBlock, 0, sizeof(g_HudUiMgrSensorBlock));
+    g_HudUiMgrSensorBlock.sensorViewportRect = {30, 40, 70, 90};
+    g_HudUiMgrSensorOverlay.flags = 0x9f;
+
+    zVidImagePartial defaultWidget1{};
+    zVidImagePartial defaultWidget2{};
+    zVidImagePartial widget1Image320{};
+    zVidImagePartial widget2Image320{};
+    zVidImagePartial widget1Image400{};
+    zVidImagePartial widget2Image400{};
+    widget2Image320.width = 120;
+    widget2Image320.height = 80;
+
+    alignas(HudLayoutHW) std::uint8_t layoutStorage[sizeof(HudLayoutHW)] = {};
+    HudLayoutHW &layout = *reinterpret_cast<HudLayoutHW *>(layoutStorage);
+    layout.Constructor();
+    layout.activeRect = {10, 20, 800, 160};
+    layout.widget1ImageDefault = &defaultWidget1;
+    layout.widget2ImageDefault = &defaultWidget2;
+    layout.widget1Image320 = &widget1Image320;
+    layout.widget2Image320 = &widget2Image320;
+    layout.widget1Image400 = &widget1Image400;
+    layout.widget2Image400 = &widget2Image400;
+    layout.widget0.flags = 0x91;
+    layout.widget1.flags = 0x91;
+    layout.widget3.flags = 0x91;
+    layout.widget2.flags = 0x9f;
+    layout.widget2.dirtyRectCount = 0;
+
+    layout.widget1.image = nullptr;
+    layout.widget2.image = nullptr;
+    for (int index = 0; index < 4; ++index) {
+        layout.widget2.dirtyRects[index] = HudUiRectDirty();
+    }
+
+    for (int index = 0; index < 10; ++index) {
+        g_HudUiMgrMessages[index] = HudUiMessage();
+        g_HudUiMgrMessages[index].widget.flags = 0x9f;
+        g_HudUiMgrMessages[index].widget.image =
+            index == 5 ? nullptr : &zVid_Image::g_zImage_DefaultImage;
+    }
+
+    g_HudUiMgrHudLayoutsInitialized = 1;
+    g_HudUiMgrViewRect = {0, 0, 50, 40};
+    g_HudUi_InvalidateMask = 0;
+
+    layout.HudLayoutHW::OnActivated();
+
+    bool messageFlags = g_HudUiMgrMessages[0].widget.flags == 0x9f &&
+                        g_HudUiMgrMessages[5].widget.flags == 0x9f;
+    for (int index = 1; index < 10; ++index) {
+        if (index != 5) {
+            messageFlags = messageFlags && g_HudUiMgrMessages[index].widget.flags == 0x10;
+        }
+    }
+
+    const HudUiRectDirty &dirtySlot = layout.widget2.dirtyRects[0];
+    const bool flagsAndImages =
+        g_HudUi_InvalidateMask == 0x0c && mgrChild.flags == 0x1e &&
+        layout.widget0.flags == 0x1e && layout.widget1.flags == 0x1e &&
+        layout.widget3.flags == 0x1e && layout.widget2.flags == 0x1c &&
+        g_HudUiMgrObjectiveWidget.flags == 0x10 && g_HudUiMgrObjectiveMeter.flags == 0x10 &&
+        objectiveLabel->flags == 0x10 && g_HudUiMgrSensorOverlay.flags == 0x10 &&
+        layout.widget1.image == &widget1Image320 && layout.widget2.image == &widget2Image320 &&
+        layout.widget1.ownsImage == 0 && layout.widget2.ownsImage == 0;
+    const bool trackerBounds =
+        g_HudSensorTracker.outerRect.left == 11 && g_HudSensorTracker.outerRect.top == 21 &&
+        g_HudSensorTracker.outerRect.right == 799 && g_HudSensorTracker.outerRect.bottom == 159 &&
+        g_HudSensorTracker.innerRectExpanded.left == 29 &&
+        g_HudSensorTracker.innerRectExpanded.top == 39 &&
+        g_HudSensorTracker.innerRectExpanded.right == 71 &&
+        g_HudSensorTracker.innerRectExpanded.bottom == 91 &&
+        g_HudSensorTracker.mapOverlayCenterX == 405 &&
+        g_HudSensorTracker.mapOverlayCenterY == 90;
+    const bool invalidateRect =
+        layout.widget2.dirtyRectCount == 1 && dirtySlot.framesRemaining == 2 &&
+        dirtySlot.drawX == 0 && dirtySlot.drawY == 0 && dirtySlot.srcLeft == 0 &&
+        dirtySlot.srcTop == 0 && dirtySlot.srcRight == 50 && dirtySlot.srcBottom == 40;
+    const bool scoreboardRebuilt = (triplet.rowCells[0]->flags & 0x10) != 0;
+
+    int result = 0;
+    if (!flagsAndImages) {
+        int failure = 0;
+        failure |= g_HudUi_InvalidateMask == 0x0c ? 0 : 0x001;
+        failure |= mgrChild.flags == 0x1e ? 0 : 0x002;
+        failure |= layout.widget0.flags == 0x1e ? 0 : 0x004;
+        failure |= layout.widget1.flags == 0x1e ? 0 : 0x008;
+        failure |= layout.widget3.flags == 0x1e ? 0 : 0x010;
+        failure |= layout.widget2.flags == 0x1c ? 0 : 0x020;
+        failure |= g_HudUiMgrObjectiveWidget.flags == 0x10 ? 0 : 0x040;
+        failure |= g_HudUiMgrObjectiveMeter.flags == 0x10 ? 0 : 0x080;
+        failure |= objectiveLabel->flags == 0x10 ? 0 : 0x100;
+        failure |= g_HudUiMgrSensorOverlay.flags == 0x10 ? 0 : 0x200;
+        failure |= layout.widget1.image == &widget1Image320 ? 0 : 0x400;
+        failure |= layout.widget2.image == &widget2Image320 ? 0 : 0x800;
+        failure |= layout.widget1.ownsImage == 0 ? 0 : 0x1000;
+        failure |= layout.widget2.ownsImage == 0 ? 0 : 0x2000;
+        result = 0x4000 | failure;
+    } else if (!messageFlags) {
+        result = 2;
+    } else if (!trackerBounds) {
+        result = 3;
+    } else if (!invalidateRect) {
+        result = 4;
+    } else if (!scoreboardRebuilt) {
+        result = 5;
+    }
+
+    ZOPT_REPLICATE = oldReplicateOption;
+    g_HudUi_InvalidateMask = oldInvalidateMask;
+    std::memcpy(&g_HudUiMgr, oldMgrBytes, sizeof(g_HudUiMgr));
+    std::memcpy(&g_HudSensorTracker, oldTrackerBytes, sizeof(g_HudSensorTracker));
+    triplet.DestructorCore();
+
+    return result;
+}
+
+extern "C" int zhud_layout_hw_enable_smoke(void) {
+    alignas(HudUiMgrData) std::uint8_t oldMgrBytes[sizeof(HudUiMgrData)];
+    std::memcpy(oldMgrBytes, &g_HudUiMgr, sizeof(g_HudUiMgr));
+
+    HudUiElement mgrChild{};
+    HudUiElement layoutChild{};
+    mgrChild.next = nullptr;
+    layoutChild.next = nullptr;
+    mgrChild.flags = 0x91;
+    layoutChild.flags = 0x91;
+    g_HudUiMgr.enabled = 0;
+    g_HudUiMgr.childHead = &mgrChild;
+    g_HudUiMgr.childTail = &mgrChild;
+    g_HudUiMgrCurrentLayout = nullptr;
+    g_HudUiTopMessageStack = nullptr;
+    g_HudUiChatMessageStack = nullptr;
+    g_HudUiMgr.childHead = &mgrChild;
+    g_HudUiMgr.childTail = &mgrChild;
+
+    alignas(HudUiPanel) std::uint8_t objectiveLabelStorage[sizeof(HudUiPanel)] = {};
+    HudUiPanel *const objectiveLabel =
+        reinterpret_cast<HudUiPanel *>(objectiveLabelStorage);
+    g_HudUiMgrObjectiveLabelTextPanel = objectiveLabel;
+    g_HudUiMgrObjectiveWidget.flags = 0x9f;
+    g_HudUiMgrObjectiveMeter.flags = 0x9f;
+    objectiveLabel->flags = 0x9f;
+    g_HudUiMgrSensorOverlay.flags = 0x9f;
+
+    for (int index = 0; index < 10; ++index) {
+        g_HudUiMgrMessages[index].widget.flags = 0x9f;
+        g_HudUiMgrMessages[index].widget.image =
+            index == 4 ? nullptr : &zVid_Image::g_zImage_DefaultImage;
+    }
+
+    TestHudLayoutHWEnableLayout layout{};
+    layout.childHead = &layoutChild;
+    layout.childTail = &layoutChild;
+    layout.widget2.flags = 0x9f;
+    g_HudLayoutHWEnableSetEnabledCount = 0;
+    g_HudLayoutHWEnableSetEnabledThis = nullptr;
+    g_HudLayoutHWEnableSetEnabledValue = -1;
+
+    layout.Enable();
+
+    bool messageFlags = g_HudUiMgrMessages[0].widget.flags == 0x9f &&
+                        g_HudUiMgrMessages[4].widget.flags == 0x9f;
+    for (int index = 1; index < 10; ++index) {
+        if (index != 4) {
+            messageFlags = messageFlags && g_HudUiMgrMessages[index].widget.flags == 0x10;
+        }
+    }
+
+    const bool flags =
+        mgrChild.flags == 0x1e && layoutChild.flags == 0x1e &&
+        layout.widget2.flags == 0x10 && g_HudUiMgrObjectiveWidget.flags == 0x10 &&
+        g_HudUiMgrObjectiveMeter.flags == 0x10 && objectiveLabel->flags == 0x10 &&
+        g_HudUiMgrSensorOverlay.flags == 0x10;
+    const bool enabledDispatch =
+        g_HudLayoutHWEnableSetEnabledCount == 1 &&
+        g_HudLayoutHWEnableSetEnabledThis == &layout &&
+        g_HudLayoutHWEnableSetEnabledValue == 1;
+
+    std::memcpy(&g_HudUiMgr, oldMgrBytes, sizeof(g_HudUiMgr));
+
+    if (!flags) {
+        return 1;
+    }
+    if (!messageFlags) {
+        return 2;
+    }
+    if (!enabledDispatch) {
+        return 3;
+    }
+    return 0;
+}
+
+extern "C" int zhud_layout_hw_disable_smoke(void) {
+    TestHudLayoutHWEnableLayout layout{};
+    g_HudLayoutHWEnableSetEnabledCount = 0;
+    g_HudLayoutHWEnableSetEnabledThis = nullptr;
+    g_HudLayoutHWEnableSetEnabledValue = -1;
+
+    layout.Disable();
+
+    return g_HudLayoutHWEnableSetEnabledCount == 1 &&
+                   g_HudLayoutHWEnableSetEnabledThis == &layout &&
+                   g_HudLayoutHWEnableSetEnabledValue == 0
+               ? 0
+               : 1;
+}
+
+extern "C" int zhud_layout_hw_constructor_smoke(void) {
+    HudLayoutHW layout{};
+    HudLayoutHW *const result = layout.Constructor();
+
+    const bool tableOk = result == &layout && TestVTable(&layout) != nullptr;
+    const bool childOrder =
+        layout.childHead == reinterpret_cast<HudUiElement *>(&layout.widget0) &&
+        layout.widget0.next == reinterpret_cast<HudUiElement *>(&layout.widget1) &&
+        layout.widget1.next == reinterpret_cast<HudUiElement *>(&layout.widget3) &&
+        layout.widget3.next == reinterpret_cast<HudUiElement *>(&layout.widget2) &&
+        layout.widget2.next == nullptr &&
+        layout.childTail == reinterpret_cast<HudUiElement *>(&layout.widget2);
+
+    const bool widgets =
+        TestVTable(&layout.widget0) != nullptr && TestVTable(&layout.widget1) != nullptr &&
+        TestVTable(&layout.widget2) != nullptr && TestVTable(&layout.widget3) != nullptr &&
+        layout.widget0.parent == &layout && layout.widget1.parent == &layout &&
+        layout.widget2.parent == &layout && layout.widget3.parent == &layout;
+
+    layout.GlobalDestructor();
+    return tableOk && childOrder && widgets ? 0 : 1;
+}
+
+extern "C" int zhud_layout_hw_global_init_smoke(void) {
+    const HudLayoutHW oldLayout = g_HudLayoutHW;
+
+    g_HudLayoutHW = HudLayoutHW();
+    HudLayoutHW *const result = HudLayoutHW::GlobalInit();
+
+    const bool initialized =
+        result == &g_HudLayoutHW && TestVTable(&g_HudLayoutHW) != nullptr &&
+        g_HudLayoutHW.childHead == reinterpret_cast<HudUiElement *>(&g_HudLayoutHW.widget0) &&
+        g_HudLayoutHW.childTail == reinterpret_cast<HudUiElement *>(&g_HudLayoutHW.widget2) &&
+        TestVTable(&g_HudLayoutHW.widget0) != nullptr &&
+        TestVTable(&g_HudLayoutHW.widget2) != nullptr;
+
+    g_HudLayoutHW.GlobalDestructor();
+    g_HudLayoutHW = oldLayout;
+    return initialized ? 0 : 1;
+}
+
+extern "C" int zhud_layout_hw_static_lifetime_smoke(void) {
+    const HudLayoutHW oldLayout = g_HudLayoutHW;
+
+    HudUiContainer expectedContainer{};
+    HudUiElement expectedElement{};
+    HudLayoutHW layout{};
+    layout.Constructor();
+    layout.GlobalDestructor();
+    const bool directDestructor =
+        TestVTable(&layout) == TestVTable(&expectedContainer) &&
+        TestVTable(&layout.widget0) == TestVTable(&expectedElement) &&
+        TestVTable(&layout.widget1) == TestVTable(&expectedElement) &&
+        TestVTable(&layout.widget2) == TestVTable(&expectedElement) &&
+        TestVTable(&layout.widget3) == TestVTable(&expectedElement);
+
+    g_HudLayoutHW = HudLayoutHW();
+    g_HudLayoutHW.Constructor();
+    HudLayoutHW::AtExitDestructor();
+    const bool atExitDestructor =
+        TestVTable(&g_HudLayoutHW) == TestVTable(&expectedContainer) &&
+        TestVTable(&g_HudLayoutHW.widget3) == TestVTable(&expectedElement);
+
+    g_HudLayoutHW = HudLayoutHW();
+    HudLayoutHW::CrtInitGlobalSingleton();
+    const bool crtInit = TestVTable(&g_HudLayoutHW) != nullptr &&
+                         g_HudLayoutHW.childHead ==
+                             reinterpret_cast<HudUiElement *>(&g_HudLayoutHW.widget0) &&
+                         g_HudLayoutHW.childTail ==
+                             reinterpret_cast<HudUiElement *>(&g_HudLayoutHW.widget2);
+
+    g_HudLayoutHW = oldLayout;
+    return directDestructor && atExitDestructor && crtInit ? 0 : 1;
+}
+
+extern "C" int zhud_layout_sw_set_active_smoke(void) {
+    const zVideo_SurfaceStatePartial oldPrimarySurface = g_zVideo_PrimarySurfaceState;
+    int *const oldVideoAcceleration = ZOPT_VIDEO_ACCELERATION;
+    std::int32_t *const oldReplicateOption = ZOPT_REPLICATE;
+    zOpt_ViewRectSection **const oldRenderOption = g_zOpt_RenderSectionOption;
+    zOpt_ViewRectSection **const oldDisplayOption = g_zOpt_DisplaySectionOption;
+    zClass_NodePartial *const oldMainCamera = g_MainCamera;
+    const HudUiMgrSensorBlock oldSensorBlock = g_HudUiMgrSensorBlock;
+    const HudUiRect oldHudRect = g_HudUiMgrHudRect;
+    const HudUiRect oldViewRect = g_HudUiMgrViewRect;
+    const float oldHudRectW = g_HudUiMgrHudRectW;
+    const float oldHudRectH = g_HudUiMgrHudRectH;
+    const int oldHudOriginY = g_HudUiMgrHudOriginY;
+    alignas(HudUiMgrData) std::uint8_t oldMgrBytes[sizeof(HudUiMgrData)];
+    std::memcpy(oldMgrBytes, &g_HudUiMgr, sizeof(g_HudUiMgr));
+    alignas(HudSensorTracker) std::uint8_t oldTrackerBytes[sizeof(HudSensorTracker)];
+    std::memcpy(oldTrackerBytes, &g_HudSensorTracker, sizeof(g_HudSensorTracker));
+    const int oldObjectivePhase = g_HudUiMgrObjectivePhase;
+    const int oldSpanPolyCount = zRndr::g_spanOccluderPolyCount;
+    zRndr::SpanOccluderPolyPartial oldSpanPolys[8];
+    int index;
+    for (index = 0; index < 8; ++index) {
+        oldSpanPolys[index] = zRndr::g_spanOccluderPolys[index];
+    }
+    const int oldAltClipValid = gAltClipSourceRectValid;
+    const float oldAltSourceLeft = g_zClipAlt_SourceLeft;
+    const float oldAltSourceTop = g_zClipAlt_SourceTop;
+    const float oldAltSourceRight = g_zClipAlt_SourceRight;
+    const float oldAltSourceBottom = g_zClipAlt_SourceBottom;
+    const float oldAltSourceWidth = g_zClipAlt_SourceWidth;
+    const float oldAltSourceHeight = g_zClipAlt_SourceHeight;
+
+    int acceleration = 0;
+    std::int32_t replicate = 0;
+    ZOPT_VIDEO_ACCELERATION = &acceleration;
+    ZOPT_REPLICATE = &replicate;
+
+    zOpt_ViewRectSection renderSection{};
+    zOpt_ViewRectSection displaySection{};
+    zOpt_ViewRectSection *renderSectionPtr = &renderSection;
+    zOpt_ViewRectSection *displaySectionPtr = &displaySection;
+    g_zOpt_RenderSectionOption = &renderSectionPtr;
+    g_zOpt_DisplaySectionOption = &displaySectionPtr;
+
+    zClass_CameraDataPartial cameraData{};
+    cameraData.nearClip = 2.0f;
+    cameraData.farClip = 250.0f;
+    cameraData.viewportWidth = 640.0f;
+    cameraData.viewportHeight = 480.0f;
+    cameraData.frustumWidth = 80.0f;
+    cameraData.frustumHeight = 60.0f;
+    zClass_NodePartial cameraNode{};
+    cameraNode.classId = 1;
+    cameraNode.classData = &cameraData;
+    g_MainCamera = &cameraNode;
+    std::memset(&g_HudSensorTracker, 0, sizeof(g_HudSensorTracker));
+    g_HudSensorTracker.cameraNode = &cameraNode;
+
+    g_zVideo_PrimarySurfaceState = zVideo_SurfaceStatePartial();
+    g_zVideo_PrimarySurfaceState.width = 640;
+    g_zVideo_PrimarySurfaceState.height = 480;
+    g_HudUiMgr.enabled = 1;
+    g_HudUiMgr.childHead = nullptr;
+    g_HudUiMgr.childTail = nullptr;
+    g_HudUiMgrCurrentLayout = nullptr;
+    g_HudUiTopMessageStack = nullptr;
+    g_HudUiChatMessageStack = nullptr;
+    g_HudUiMgrObjectivePhase = 0;
+    g_HudUiMgrObjectiveWidget.flags = 0;
+    g_HudUiMgrObjectiveBar.flags = 0;
+    g_HudUiMgrObjectiveSensorRect.flags = 0;
+    g_HudUiMgrHudOriginY = 7;
+    std::memset(&g_HudUiMgrSensorBlock, 0, sizeof(g_HudUiMgrSensorBlock));
+    g_HudUiMgrSensorBlock.sensorParam = 2.0f;
+    g_HudUiMgrSensorBlock.sensorViewportRect = {10, 20, 110, 120};
+    g_HudUiMgrSensorBlock.sensorPiVSrcRect = {1.0f, 2.0f, 201.0f, 102.0f};
+    g_HudUiMgrSensorFxRect = {0, 0, 0, 0};
+    g_HudUiMgrSensorFxViewportWidth = 80;
+    g_HudUiMgrSensorFxViewportHeight = 60;
+
+    HudUiShieldMessageWidget shield{};
+    shield.screenRect = {30, 40, 130, 140};
+    g_HudUiMgrShieldMessageWidget = &shield;
+    for (index = 0; index < 4; ++index) {
+        g_HudUiMgrModeCounters[index].clipViewportRect = {50 + index, 60 + index,
+                                                           70 + index, 80 + index};
+    }
+
+    HudLayoutSW layout{};
+    layout.layoutRect = {3, 4, 200, 240};
+    layout.activeRect = {11, 21, 0, 0};
+    zRndr::g_spanOccluderPolyCount = 5;
+    const bool inactive =
+        layout.SetActive(0) == 1 && zRndr::g_spanOccluderPolyCount == 0 &&
+        layout.activeRect.right == 640 && layout.activeRect.bottom == 247;
+
+    zRndr::g_spanOccluderPolyCount = 3;
+    for (index = 0; index < 8; ++index) {
+        zRndr::g_spanOccluderPolys[index] = zRndr::SpanOccluderPolyPartial();
+    }
+    layout.activeRect = {11, 21, 0, 0};
+    const int activeResult = layout.SetActive(1);
+    const zRndr::SpanOccluderPolyPartial &sensorPoly = zRndr::g_spanOccluderPolys[0];
+    const zRndr::SpanOccluderPolyPartial &counterPoly = zRndr::g_spanOccluderPolys[5];
+
+    const bool active =
+        activeResult == 1 && zRndr::g_spanOccluderPolyCount == 6 &&
+        sensorPoly.vertCount == 4 && sensorPoly.vertices[0][0] == 10.0f &&
+        sensorPoly.vertices[0][1] == 20.0f && sensorPoly.vertices[0][2] == 0.5f &&
+        counterPoly.vertices[0][0] == 53.0f && counterPoly.vertices[0][1] == 63.0f &&
+        counterPoly.vertices[2][0] == 73.0f && counterPoly.vertices[2][1] == 83.0f &&
+        g_zClipAlt_SourceLeft == 0.0f && g_zClipAlt_SourceTop == 0.0f &&
+        g_zClipAlt_SourceRight == 80.0f && g_zClipAlt_SourceBottom == 60.0f &&
+        gAltClipSourceRectValid == 1;
+
+    g_zVideo_PrimarySurfaceState = oldPrimarySurface;
+    ZOPT_VIDEO_ACCELERATION = oldVideoAcceleration;
+    ZOPT_REPLICATE = oldReplicateOption;
+    g_zOpt_RenderSectionOption = oldRenderOption;
+    g_zOpt_DisplaySectionOption = oldDisplayOption;
+    g_MainCamera = oldMainCamera;
+    g_HudUiMgrSensorBlock = oldSensorBlock;
+    g_HudUiMgrHudRect = oldHudRect;
+    g_HudUiMgrViewRect = oldViewRect;
+    g_HudUiMgrHudRectW = oldHudRectW;
+    g_HudUiMgrHudRectH = oldHudRectH;
+    g_HudUiMgrHudOriginY = oldHudOriginY;
+    std::memcpy(&g_HudUiMgr, oldMgrBytes, sizeof(g_HudUiMgr));
+    std::memcpy(&g_HudSensorTracker, oldTrackerBytes, sizeof(g_HudSensorTracker));
+    g_HudUiMgrObjectivePhase = oldObjectivePhase;
+    zRndr::g_spanOccluderPolyCount = oldSpanPolyCount;
+    for (index = 0; index < 8; ++index) {
+        zRndr::g_spanOccluderPolys[index] = oldSpanPolys[index];
+    }
+    gAltClipSourceRectValid = oldAltClipValid;
+    g_zClipAlt_SourceLeft = oldAltSourceLeft;
+    g_zClipAlt_SourceTop = oldAltSourceTop;
+    g_zClipAlt_SourceRight = oldAltSourceRight;
+    g_zClipAlt_SourceBottom = oldAltSourceBottom;
+    g_zClipAlt_SourceWidth = oldAltSourceWidth;
+    g_zClipAlt_SourceHeight = oldAltSourceHeight;
+
+    if (!inactive) {
+        return 1;
+    }
+    if (!active) {
+        return 2;
+    }
+    return 0;
+}
+
+extern "C" int zhud_layout_hw_load_type_ii_from_zar_root_smoke(void) {
+    zReader::Node rectItems[5] = {};
+    rectItems[1].value.i32 = 12;
+    rectItems[2].value.i32 = 24;
+    rectItems[3].value.i32 = 320;
+    rectItems[4].value.i32 = 240;
+
+    zReader::Node widget1Items[4] = {};
+    widget1Items[0].value.i32 = 4;
+    widget1Items[1].type = zReader::ZRDR_NODE_STRING;
+    widget1Items[1].value.str = const_cast<char *>("__recoil_missing_typeii_widget1__");
+    widget1Items[2].value.i32 = 3;
+    widget1Items[3].value.i32 = 5;
+
+    zReader::Node widget3Items[4] = {};
+    widget3Items[0].value.i32 = 4;
+    widget3Items[1].type = zReader::ZRDR_NODE_STRING;
+    widget3Items[1].value.str = const_cast<char *>("__recoil_missing_typeii_widget3__");
+    widget3Items[2].value.i32 = 7;
+    widget3Items[3].value.i32 = 11;
+
+    zReader::Node widget2Items[4] = {};
+    widget2Items[0].value.i32 = 4;
+    widget2Items[1].type = zReader::ZRDR_NODE_STRING;
+    widget2Items[1].value.str = const_cast<char *>("__recoil_missing_typeii_widget2__");
+    widget2Items[2].value.i32 = 13;
+    widget2Items[3].value.i32 = 17;
+
+    zReader::Node imageNameItems[5] = {};
+    imageNameItems[1].value.str = const_cast<char *>("__recoil_missing_widget1_320__");
+    imageNameItems[2].value.str = const_cast<char *>("__recoil_missing_widget1_400__");
+    imageNameItems[3].value.str = const_cast<char *>("__recoil_missing_widget2_320__");
+    imageNameItems[4].value.str = const_cast<char *>("__recoil_missing_widget2_400__");
+
+    zReader::Node typeIIPayload[6] = {};
+    typeIIPayload[1].type = zReader::ZRDR_NODE_ARRAY;
+    typeIIPayload[1].value.nodes = rectItems;
+    typeIIPayload[2].type = zReader::ZRDR_NODE_ARRAY;
+    typeIIPayload[2].value.nodes = widget1Items;
+    typeIIPayload[3].type = zReader::ZRDR_NODE_ARRAY;
+    typeIIPayload[3].value.nodes = widget3Items;
+    typeIIPayload[4].type = zReader::ZRDR_NODE_ARRAY;
+    typeIIPayload[4].value.nodes = widget2Items;
+    typeIIPayload[5].type = zReader::ZRDR_NODE_ARRAY;
+    typeIIPayload[5].value.nodes = imageNameItems;
+
+    zReader::Node rootItems[3] = {};
+    rootItems[0].value.i32 = 3;
+    rootItems[1].type = zReader::ZRDR_NODE_STRING;
+    rootItems[1].value.str = const_cast<char *>("TYPEII");
+    rootItems[2].type = zReader::ZRDR_NODE_ARRAY;
+    rootItems[2].value.nodes = typeIIPayload;
+
+    zReader::Node root{};
+    root.type = zReader::ZRDR_NODE_ARRAY;
+    root.value.nodes = rootItems;
+
+    HudLayoutHW layout{};
+    HudLayoutBase *const layoutBase = reinterpret_cast<HudLayoutBase *>(&layout);
+    HudUiWidget *const widget1 = &TestFieldAt<HudUiWidget>(&layout, 0xec);
+    HudUiWidget *const widget2 = &TestFieldAt<HudUiWidget>(&layout, 0x1b4);
+    HudUiWidget *const widget3 = &TestFieldAt<HudUiWidget>(&layout, 0x27c);
+    widget1->Constructor(0);
+    widget2->Constructor(0);
+    widget3->Constructor(0);
+    widget1->image = &zVid_Image::g_zImage_DefaultImage;
+    widget2->image = &zVid_Image::g_zImage_DefaultImage;
+    widget3->image = &zVid_Image::g_zImage_DefaultImage;
+
+    g_HudUiMgrHudOriginY = 100;
+    g_HudUi_InvalidateMask = 0x80;
+    const int loadedResult = layout.LoadTypeIIFromZarRoot(&root);
+
+    const bool rectsLoaded = loadedResult == 1 && layoutBase->layoutRect.left == 12 &&
+                             layoutBase->layoutRect.top == 24 &&
+                             layoutBase->layoutRect.right == 320 &&
+                             layoutBase->layoutRect.bottom == 240 &&
+                             layoutBase->activeRect.left == 12 &&
+                             layoutBase->activeRect.top == 24 &&
+                             layoutBase->activeRect.right == 320 &&
+                             layoutBase->activeRect.bottom == 240;
+    const bool missingImagesCleared =
+        widget1->image == nullptr && widget2->image == nullptr && widget3->image == nullptr &&
+        layout.widget1ImageDefault == nullptr && layout.widget1Image320 == nullptr &&
+        layout.widget1Image400 == nullptr && layout.widget2ImageDefault == nullptr &&
+        layout.widget2Image320 == nullptr && layout.widget2Image400 == nullptr &&
+        (widget1->flags & 0x80) != 0 && (widget2->flags & 0x80) != 0 &&
+        (widget3->flags & 0x80) != 0;
+
+    zReader::Node missingItems[1] = {};
+    missingItems[0].value.i32 = 1;
+    zReader::Node missingRoot{};
+    missingRoot.type = zReader::ZRDR_NODE_ARRAY;
+    missingRoot.value.nodes = missingItems;
+    layoutBase->layoutRect = {1, 2, 3, 4};
+    layoutBase->activeRect = {5, 6, 7, 8};
+    const int missingResult = layout.LoadTypeIIFromZarRoot(&missingRoot);
+    const bool missingPreserves = missingResult == 1 && layoutBase->layoutRect.left == 1 &&
+                                  layoutBase->layoutRect.top == 2 &&
+                                  layoutBase->layoutRect.right == 3 &&
+                                  layoutBase->layoutRect.bottom == 4 &&
+                                  layoutBase->activeRect.left == 5 &&
+                                  layoutBase->activeRect.top == 6 &&
+                                  layoutBase->activeRect.right == 7 &&
+                                  layoutBase->activeRect.bottom == 8;
+
+    g_HudUiMgrHudOriginY = 0;
+    g_HudUi_InvalidateMask = 0;
+    return rectsLoaded && missingImagesCleared && missingPreserves ? 0 : 1;
 }
 
 extern "C" int zhud_objective_show_smoke(void) {
@@ -314,6 +1573,101 @@ extern "C" int zhud_mgr_sensor_set_shield_message_ratio_smoke(void) {
     return zeroOk ? 0 : 9;
 }
 
+extern "C" int zhud_shield_message_widget_destructor_smoke(void) {
+    HudUiShieldMessageWidget shield = {};
+    shield.widget.image = &zVid_Image::g_zImage_DefaultImage;
+    shield.widget.ownsImage = 1;
+    ((HudUiPanel *)(&shield.percentTextPanel))->textPick = nullptr;
+    ((HudUiPanel *)(&shield.percentTextPanel))->hFont = nullptr;
+
+    shield.Destructor();
+
+    HudUiElement expectedElement = {};
+    return TestVTable(&shield.meter) == TestVTable(&expectedElement) &&
+                   TestVTable(&shield.percentTextPanel) == TestVTable(&expectedElement) &&
+                   TestVTable(&shield.widget) == TestVTable(&expectedElement) &&
+                   shield.widget.image == nullptr && shield.widget.ownsImage == 0
+               ? 0
+               : 1;
+}
+
+extern "C" int zhud_shield_message_widget_apply_layout_smoke(void) {
+    HudUiMgrData oldMgr;
+    const int oldHudOriginX = g_HudUiMgrHudOriginX;
+    const int oldHudOriginY = g_HudUiMgrHudOriginY;
+    const std::uint32_t oldInvalidateMask = g_HudUi_InvalidateMask;
+    std::memcpy(&oldMgr, &g_HudUiMgr, sizeof(oldMgr));
+
+    HudUiShieldMessageWidget shield = {};
+    zVidImagePartial image = {};
+    image.width = 10;
+    image.height = 6;
+    shield.widget.image = &image;
+    shield.widget.ownsImage = 0;
+    std::memset(&g_HudUiMgr, 0, sizeof(g_HudUiMgr));
+    g_HudUiMgrShieldMessageWidget = &shield;
+    g_HudUiMgrHudOriginX = 100;
+    g_HudUiMgrHudOriginY = 200;
+    g_HudUi_InvalidateMask = 0x80;
+
+    zReader::Node imageItems[4] = {};
+    imageItems[0].value.i32 = 4;
+    imageItems[1].type = zReader::ZRDR_NODE_STRING;
+    imageItems[1].value.str = const_cast<char *>("shield-image");
+    imageItems[2].value.i32 = 20;
+    imageItems[3].value.i32 = 30;
+
+    zReader::Node textItems[4] = {};
+    textItems[1].type = zReader::ZRDR_NODE_STRING;
+    textItems[1].value.str = const_cast<char *>("old");
+    textItems[2].value.i32 = 2;
+    textItems[3].value.i32 = 3;
+
+    zReader::Node meterItems[5] = {};
+    meterItems[1].value.i32 = 1;
+    meterItems[2].value.i32 = 2;
+    meterItems[3].value.i32 = 4;
+    meterItems[4].value.i32 = 7;
+
+    zReader::Node payload[4] = {};
+    payload[1].type = zReader::ZRDR_NODE_ARRAY;
+    payload[1].value.nodes = imageItems;
+    payload[2].type = zReader::ZRDR_NODE_ARRAY;
+    payload[2].value.nodes = textItems;
+    payload[3].type = zReader::ZRDR_NODE_ARRAY;
+    payload[3].value.nodes = meterItems;
+
+    zReader::Node root = {};
+    root.type = zReader::ZRDR_NODE_ARRAY;
+    root.value.nodes = payload;
+
+    const int result = HudUiShieldMessageWidget::ApplyLayout(&root);
+    HudUiPanel *const panel = (HudUiPanel *)(&shield.percentTextPanel);
+    const bool childOrder =
+        g_HudUiMgr.childHead == (HudUiElement *)(&shield.widget) &&
+        ((HudUiElement *)(&shield.widget))->next == (HudUiElement *)(panel) &&
+        ((HudUiElement *)(panel))->next == (HudUiElement *)(&shield.meter) &&
+        g_HudUiMgr.childTail == (HudUiElement *)(&shield.meter);
+    const bool textApplied = std::strcmp(panel->cachedText, "000") == 0;
+    std::memcpy(&g_HudUiMgr, &oldMgr, sizeof(g_HudUiMgr));
+    g_HudUiMgrHudOriginX = oldHudOriginX;
+    g_HudUiMgrHudOriginY = oldHudOriginY;
+    g_HudUi_InvalidateMask = oldInvalidateMask;
+    if (result != 1) {
+        return 1;
+    }
+    if (!childOrder) {
+        return 2;
+    }
+    if (!textApplied) {
+        return 3;
+    }
+    if (shield.meter.fillPixelsMax != 6) {
+        return 4;
+    }
+    return shield.meter.meterFlags == 4 ? 0 : 5;
+}
+
 extern "C" int zhud_objective_refresh_counter_text_smoke(void) {
     HudUiMgrData oldMgr;
     std::memcpy(&oldMgr, &g_HudUiMgr, sizeof(oldMgr));
@@ -344,6 +1698,708 @@ extern "C" int zhud_objective_refresh_counter_text_smoke(void) {
     ((HudUiPanel *)(&counter))->hFont = 0;
     std::memcpy(&g_HudUiMgr, &oldMgr, sizeof(g_HudUiMgr));
     return positive && negative ? 0 : 1;
+}
+
+extern "C" int zhud_layout_node_read_rect_offset_and_size_smoke(void) {
+    zReader::Node rectItems[5] = {};
+    rectItems[1].value.i32 = 10;
+    rectItems[2].value.i32 = 20;
+    rectItems[3].value.i32 = 30;
+    rectItems[4].value.i32 = 40;
+
+    zReader::Node rectNode{};
+    rectNode.type = zReader::ZRDR_NODE_ARRAY;
+    rectNode.value.nodes = rectItems;
+
+    HudUiRect shifted{};
+    int width = -1;
+    int height = -1;
+    const int offsetXY[2] = {3, -4};
+    const int shiftedResult =
+        HudUiLayoutNode::ReadRectOffsetAndSize(&rectNode, &shifted, offsetXY, &width, &height);
+    const bool shiftedOk = shiftedResult == 1 && shifted.left == 13 && shifted.top == 16 &&
+                           shifted.right == 33 && shifted.bottom == 36 && width == 20 &&
+                           height == 20;
+
+    HudUiRect unshifted{};
+    width = -1;
+    const int unshiftedResult =
+        HudUiLayoutNode::ReadRectOffsetAndSize(&rectNode, &unshifted, nullptr, &width, nullptr);
+    const bool unshiftedOk = unshiftedResult == 1 && unshifted.left == 10 &&
+                             unshifted.top == 20 && unshifted.right == 30 &&
+                             unshifted.bottom == 40 && width == 20;
+
+    zReader::Node scalarNode{};
+    scalarNode.type = zReader::ZRDR_NODE_INT;
+    HudUiRect rejected = {1, 2, 3, 4};
+    width = 77;
+    height = 88;
+    const int rejectedResult =
+        HudUiLayoutNode::ReadRectOffsetAndSize(&scalarNode, &rejected, offsetXY, &width, &height);
+    const bool rejectedOk = rejectedResult == 0 && rejected.left == 1 && rejected.top == 2 &&
+                            rejected.right == 3 && rejected.bottom == 4 && width == 77 &&
+                            height == 88;
+
+    return shiftedOk && unshiftedOk && rejectedOk ? 0 : 1;
+}
+
+extern "C" int zhud_layout_node_read_rect_smoke(void) {
+    zReader::Node rectItems[5] = {};
+    rectItems[1].value.i32 = 4;
+    rectItems[2].value.i32 = 40;
+    rectItems[3].value.i32 = 8;
+    rectItems[4].value.i32 = 80;
+
+    zReader::Node rectNode{};
+    rectNode.type = zReader::ZRDR_NODE_ARRAY;
+    rectNode.value.nodes = rectItems;
+
+    HudUiRect rect{};
+    const int result = HudUiLayoutNode::ReadRect(&rectNode, &rect);
+    const bool loaded = result == 1 && rect.left == 4 && rect.right == 40 &&
+                        rect.top == 8 && rect.bottom == 80;
+
+    zReader::Node scalarNode{};
+    scalarNode.type = zReader::ZRDR_NODE_INT;
+    rect = {1, 2, 3, 4};
+    const int rejectedResult = HudUiLayoutNode::ReadRect(&scalarNode, &rect);
+    const bool rejected = rejectedResult == 0 && rect.left == 1 && rect.top == 2 &&
+                          rect.right == 3 && rect.bottom == 4;
+
+    return loaded && rejected ? 0 : 1;
+}
+
+extern "C" int zhud_layout_node_read_int3_smoke(void) {
+    zReader::Node intItems[4] = {};
+    intItems[1].value.i32 = 5;
+    intItems[2].value.i32 = 6;
+    intItems[3].value.i32 = 7;
+
+    zReader::Node intNode{};
+    intNode.type = zReader::ZRDR_NODE_ARRAY;
+    intNode.value.nodes = intItems;
+
+    int a = 0;
+    int b = 0;
+    int c = 0;
+    const int allResult = HudUiLayoutNode::ReadInt3(&intNode, &a, &b, &c);
+    const bool allLoaded = allResult == 1 && a == 5 && b == 6 && c == 7;
+
+    a = 10;
+    b = 20;
+    c = 30;
+    const int partialResult = HudUiLayoutNode::ReadInt3(&intNode, nullptr, &b, nullptr);
+    const bool partialLoaded = partialResult == 1 && a == 10 && b == 6 && c == 30;
+
+    zReader::Node scalarNode{};
+    scalarNode.type = zReader::ZRDR_NODE_INT;
+    a = 11;
+    b = 22;
+    c = 33;
+    const int rejectedResult = HudUiLayoutNode::ReadInt3(&scalarNode, &a, &b, &c);
+    const bool rejected = rejectedResult == 0 && a == 11 && b == 22 && c == 33;
+
+    return allLoaded && partialLoaded && rejected ? 0 : 1;
+}
+
+extern "C" int zhud_layout_node_apply_text_label_smoke(void) {
+    HudUiPanel panel{};
+    panel.ConstructorDefault(nullptr, 0, 0);
+    const int offsetXY[2] = {7, -4};
+
+    zReader::Node textItems[4] = {};
+    textItems[1].type = zReader::ZRDR_NODE_STRING;
+    textItems[1].value.str = const_cast<char *>("Shield");
+    textItems[2].value.i32 = 20;
+    textItems[3].value.i32 = 30;
+
+    zReader::Node textNode{};
+    textNode.type = zReader::ZRDR_NODE_ARRAY;
+    textNode.value.nodes = textItems;
+
+    const int textResult = HudUiLayoutNode::ApplyTextLabel(&textNode, &panel, 100, 200, offsetXY);
+    const bool textPath = textResult == 1 && panel.x == 127 && panel.y == 226 &&
+                          std::strcmp(panel.cachedText, "Shield") == 0;
+
+    textItems[1].value.str = nullptr;
+    textItems[2].value.i32 = 1;
+    textItems[3].value.i32 = 2;
+    const int nullResult = HudUiLayoutNode::ApplyTextLabel(&textNode, &panel, 10, 15, nullptr);
+    const bool nullText = nullResult == 1 && panel.x == 11 && panel.y == 17 &&
+                          std::strcmp(panel.cachedText, "") == 0;
+
+    zReader::Node scalarNode{};
+    scalarNode.type = zReader::ZRDR_NODE_INT;
+    panel.x = -5;
+    panel.y = -6;
+    std::strcpy(panel.cachedText, "unchanged");
+    const int rejectedResult =
+        HudUiLayoutNode::ApplyTextLabel(&scalarNode, &panel, 1000, 2000, offsetXY);
+    const bool rejected = rejectedResult == 0 && panel.x == -5 && panel.y == -6 &&
+                          std::strcmp(panel.cachedText, "unchanged") == 0;
+
+    DeleteObject(panel.hFont);
+    panel.hFont = nullptr;
+    return textPath && nullText && rejected ? 0 : 1;
+}
+
+extern "C" int zhud_layout_node_apply_corner_text_quad_smoke(void) {
+    zReader::Node quadItems[5] = {};
+    quadItems[1].value.i32 = 10;
+    quadItems[2].value.i32 = 20;
+    quadItems[3].value.i32 = 30;
+    quadItems[4].value.i32 = 40;
+
+    zReader::Node quadNode{};
+    quadNode.type = zReader::ZRDR_NODE_ARRAY;
+    quadNode.value.nodes = quadItems;
+
+    HudUiBar bar{};
+    const int offsetXY[2] = {3, -4};
+    HudUiRect outRect{};
+
+    const int result =
+        HudUiLayoutNode::ApplyCornerTextQuad(&quadNode, &bar, offsetXY, &outRect);
+    const bool applied = result == 1 && outRect.left == 13 && outRect.top == 16 &&
+                         outRect.right == 33 && outRect.bottom == 36 &&
+                         bar.points[0].x == 13.0f && bar.points[0].y == 16.0f &&
+                         bar.points[1].x == 13.0f && bar.points[1].y == 36.0f &&
+                         bar.points[2].x == 33.0f && bar.points[2].y == 36.0f &&
+                         bar.points[3].x == 33.0f && bar.points[3].y == 16.0f &&
+                         bar.drawVertexCount == 4;
+
+    zReader::Node scalarNode{};
+    scalarNode.type = zReader::ZRDR_NODE_INT;
+    HudUiBar rejectedBar{};
+    rejectedBar.drawVertexCount = 7;
+    HudUiRect rejectedRect = {1, 2, 3, 4};
+    const int rejectedResult =
+        HudUiLayoutNode::ApplyCornerTextQuad(&scalarNode, &rejectedBar, offsetXY, &rejectedRect);
+    const bool rejected = rejectedResult == 0 && rejectedBar.drawVertexCount == 7 &&
+                          rejectedRect.left == 1 && rejectedRect.top == 2 &&
+                          rejectedRect.right == 3 && rejectedRect.bottom == 4;
+
+    return applied && rejected ? 0 : 1;
+}
+
+extern "C" int zhud_layout_node_apply_meter_quad_smoke(void) {
+    zReader::Node meterItems[5] = {};
+    meterItems[1].value.i32 = 10;
+    meterItems[2].value.i32 = 20;
+    meterItems[3].value.i32 = 30;
+    meterItems[4].value.i32 = 40;
+
+    zReader::Node meterNode{};
+    meterNode.type = zReader::ZRDR_NODE_ARRAY;
+    meterNode.value.nodes = meterItems;
+
+    HudUiMeter meter{};
+    const int offsetXY[2] = {3, -4};
+    HudUiRect outRect{};
+
+    const int result =
+        HudUiLayoutNode::ApplyMeterQuad(&meterNode, &meter, 100, 200, offsetXY, &outRect);
+    const bool applied = result == 1 && outRect.left == 10 && outRect.top == 20 &&
+                         outRect.right == 31 && outRect.bottom == 41 &&
+                         meter.points[0].x == 13.0f && meter.points[0].y == 216.0f &&
+                         meter.points[1].x == 13.0f && meter.points[1].y == 237.0f &&
+                         meter.points[2].x == 135.0f && meter.points[2].y == 237.0f &&
+                         meter.points[3].x == 135.0f && meter.points[3].y == 216.0f &&
+                         meter.drawVertexCount == 4 && meter.fillPixelsMax == 21 &&
+                         meter.meterFlags == 121;
+
+    zReader::Node scalarNode{};
+    scalarNode.type = zReader::ZRDR_NODE_INT;
+    HudUiMeter rejectedMeter{};
+    rejectedMeter.fillPixelsMax = 7;
+    rejectedMeter.meterFlags = 8;
+    HudUiRect rejectedRect = {1, 2, 3, 4};
+    const int rejectedResult = HudUiLayoutNode::ApplyMeterQuad(
+        &scalarNode, &rejectedMeter, 10, 20, offsetXY, &rejectedRect);
+
+    const bool rejected = rejectedResult == 0 && rejectedMeter.drawVertexCount == 0 &&
+                          rejectedMeter.fillPixelsMax == 7 && rejectedMeter.meterFlags == 8 &&
+                          rejectedRect.left == 1 && rejectedRect.top == 2 &&
+                          rejectedRect.right == 3 && rejectedRect.bottom == 4;
+
+    return applied && rejected ? 0 : 1;
+}
+
+extern "C" int zhud_layout_node_apply_image_widget_smoke(void) {
+    const std::uint32_t oldInvalidateMask = g_HudUi_InvalidateMask;
+
+    zReader::Node imageItems[6] = {};
+    imageItems[0].value.i32 = 6;
+    imageItems[1].type = zReader::ZRDR_NODE_STRING;
+    imageItems[1].value.str = const_cast<char *>("borrowed-image");
+    imageItems[2].value.i32 = 20;
+    imageItems[3].value.i32 = 30;
+    imageItems[4].type = zReader::ZRDR_NODE_STRING;
+    imageItems[4].value.str = const_cast<char *>("TRUE");
+    imageItems[5].type = zReader::ZRDR_NODE_STRING;
+    imageItems[5].value.str = const_cast<char *>("TRUE");
+
+    zReader::Node imageNode{};
+    imageNode.type = zReader::ZRDR_NODE_ARRAY;
+    imageNode.value.nodes = imageItems;
+
+    zVidImagePartial image{};
+    image.width = 10;
+    image.height = 6;
+
+    HudUiWidget widget{};
+    widget.ownsImage = 1;
+    widget.imageStateWord = 0xabcd1234;
+    const int anchor[2] = {7, 9};
+    HudUiRect outRect{};
+    g_HudUi_InvalidateMask = 0x80;
+
+    zVidImagePartial *const result =
+        HudUiLayoutNode::ApplyImageWidget(&imageNode, &widget, 100, 200, anchor, &image, &outRect);
+
+    const bool centeredBorrowed =
+        result == &image && widget.image == &image && widget.ownsImage == 0 &&
+        widget.x == 122 && widget.y == 236 && widget.imageStateWord == 0xabcd0001 &&
+        (widget.flags & 0x80) != 0 && outRect.left == 122 && outRect.top == 236 &&
+        outRect.right == 132 && outRect.bottom == 242;
+
+    zReader::Node simpleItems[4] = {};
+    simpleItems[0].value.i32 = 4;
+    simpleItems[1].type = zReader::ZRDR_NODE_STRING;
+    simpleItems[1].value.str = const_cast<char *>("simple-borrowed-image");
+    simpleItems[2].value.i32 = -3;
+    simpleItems[3].value.i32 = 5;
+
+    zReader::Node simpleNode{};
+    simpleNode.type = zReader::ZRDR_NODE_ARRAY;
+    simpleNode.value.nodes = simpleItems;
+
+    zVidImagePartial simpleImage{};
+    simpleImage.width = 9;
+    simpleImage.height = 7;
+    HudUiWidget simpleWidget{};
+    simpleWidget.imageStateWord = 0x5678ffff;
+    HudUiRect simpleRect{};
+
+    zVidImagePartial *const simpleResult = HudUiLayoutNode::ApplyImageWidget(
+        &simpleNode, &simpleWidget, 10, 15, nullptr, &simpleImage, &simpleRect);
+
+    const bool defaultFlags =
+        simpleResult == &simpleImage && simpleWidget.x == 7 && simpleWidget.y == 20 &&
+        simpleWidget.imageStateWord == 0x56780000 && simpleRect.left == 7 &&
+        simpleRect.top == 20 && simpleRect.right == 16 && simpleRect.bottom == 27;
+
+    zReader::Node scalarNode{};
+    scalarNode.type = zReader::ZRDR_NODE_INT;
+    HudUiWidget rejectedWidget{};
+    rejectedWidget.x = 1;
+    rejectedWidget.y = 2;
+    rejectedWidget.imageStateWord = 0x11112222;
+    HudUiRect rejectedRect = {3, 4, 5, 6};
+    zVidImagePartial *const rejectedResult = HudUiLayoutNode::ApplyImageWidget(
+        &scalarNode, &rejectedWidget, 10, 20, anchor, &image, &rejectedRect);
+
+    const bool rejected = rejectedResult == nullptr && rejectedWidget.x == 1 &&
+                          rejectedWidget.y == 2 &&
+                          rejectedWidget.imageStateWord == 0x11112222 &&
+                          rejectedRect.left == 3 && rejectedRect.top == 4 &&
+                          rejectedRect.right == 5 && rejectedRect.bottom == 6;
+
+    g_HudUi_InvalidateMask = oldInvalidateMask;
+    return centeredBorrowed && defaultFlags && rejected ? 0 : 1;
+}
+
+extern "C" int zhud_layout_apply_viewport_rect_smoke(void) {
+    std::int32_t *const oldReplicateOption = ZOPT_REPLICATE;
+    zOpt_ViewRectSection **const oldRenderOption = g_zOpt_RenderSectionOption;
+    zOpt_ViewRectSection **const oldDisplayOption = g_zOpt_DisplaySectionOption;
+    zClass_NodePartial *const oldCameraNode = g_HudSensorTracker.cameraNode;
+    HudLayoutBase *const oldLayout = g_HudUiMgrCurrentLayout;
+    HudUiTextStack4 *const oldTopStack = g_HudUiTopMessageStack;
+    HudUiTextStack4 *const oldChatStack = g_HudUiChatMessageStack;
+    const HudUiRect oldHudRect = g_HudUiMgrHudRect;
+    const HudUiRect oldViewRect = g_HudUiMgrViewRect;
+    const float oldHudRectW = g_HudUiMgrHudRectW;
+    const float oldHudRectH = g_HudUiMgrHudRectH;
+    const float oldReticleBiasX = g_HudUiMgrReticleMapBiasX;
+    const float oldReticleBiasY = g_HudUiMgrReticleMapBiasY;
+    const float oldReticleScaleHalfW = g_HudUiMgrReticleMapScaleHalfW;
+    const float oldReticleScaleHalfH = g_HudUiMgrReticleMapScaleHalfH;
+    const int oldReticleSnapRadiusSq = g_HudUiMgrReticleSnapRadiusSq;
+    const HudUiMgrSensorBlock oldSensorBlock = g_HudUiMgrSensorBlock;
+    const HudUiRect oldSensorFxRect = g_HudUiMgrSensorFxRect;
+    const int oldSensorFxViewportWidth = g_HudUiMgrSensorFxViewportWidth;
+    const int oldSensorFxViewportHeight = g_HudUiMgrSensorFxViewportHeight;
+    const int oldObjectivePhase = g_HudUiMgrObjectivePhase;
+    const HudUiWidget oldObjectiveWidget = g_HudUiMgrObjectiveWidget;
+    const HudUiObjectiveBar oldObjectiveBar = g_HudUiMgrObjectiveBar;
+    const HudUiWidget oldObjectiveSensorRect = g_HudUiMgrObjectiveSensorRect;
+
+    std::int32_t replicate = 1;
+    ZOPT_REPLICATE = &replicate;
+
+    zOpt_ViewRectSection renderSection{};
+    zOpt_ViewRectSection displaySection{};
+    zOpt_ViewRectSection *renderSectionPtr = &renderSection;
+    zOpt_ViewRectSection *displaySectionPtr = &displaySection;
+    g_zOpt_RenderSectionOption = &renderSectionPtr;
+    g_zOpt_DisplaySectionOption = &displaySectionPtr;
+
+    zClass_CameraDataPartial cameraData{};
+    cameraData.viewportWidth = 640.0f;
+    cameraData.viewportHeight = 480.0f;
+    cameraData.frustumWidth = 80.0f;
+    cameraData.frustumHeight = 10.0f;
+    zClass_NodePartial cameraNode{};
+    cameraNode.classId = 1;
+    cameraNode.classData = &cameraData;
+    g_HudSensorTracker.cameraNode = &cameraNode;
+
+    g_HudUiMgrCurrentLayout = nullptr;
+    g_HudUiTopMessageStack = nullptr;
+    g_HudUiChatMessageStack = nullptr;
+    g_HudUiMgrSensorBlock = {};
+    g_HudUiMgrSensorBlock.sensorParam = 2.0f;
+    g_HudUiMgrSensorFxRect = {7, 9, 0, 0};
+    g_HudUiMgrSensorFxViewportWidth = 100;
+    g_HudUiMgrSensorFxViewportHeight = 80;
+    g_HudUiMgrObjectivePhase = 0;
+    g_HudUiMgrObjectiveWidget.flags = 0x10;
+
+    HudUiRect activeRect{11, 21, 331, 261};
+    const int result = HudLayout::ApplyViewportRect(&activeRect);
+
+    const bool displayUpdated =
+        displaySection.x == 11 && displaySection.y == 21 && displaySection.width == 320 &&
+        displaySection.height == 240 && displaySection.rightExclusive == 331 &&
+        displaySection.bottomExclusive == 261;
+    const bool renderUpdated =
+        renderSection.x == 5 && renderSection.y == 10 && renderSection.width == 160 &&
+        renderSection.height == 120 && renderSection.rightExclusive == 165 &&
+        renderSection.bottomExclusive == 130;
+    const bool cameraUpdated =
+        cameraData.frustumWidth == 80.0f && cameraData.frustumHeight == 60.0f &&
+        cameraData.fovX == 0.125f && cameraData.fovY == 0.125f;
+    const bool viewportUpdated =
+        g_HudUiMgrHudRect.left == 11 && g_HudUiMgrHudRect.top == 21 &&
+        g_HudUiMgrHudRect.right == 331 && g_HudUiMgrHudRect.bottom == 261 &&
+        g_HudUiMgrViewRect.left == 5 && g_HudUiMgrViewRect.top == 10 &&
+        g_HudUiMgrViewRect.right == 165 && g_HudUiMgrViewRect.bottom == 130 &&
+        g_HudUiMgrHudRectW == 320.0f && g_HudUiMgrHudRectH == 240.0f &&
+        g_HudUiMgrReticleMapBiasX == 11.0f && g_HudUiMgrReticleMapBiasY == 21.0f &&
+        g_HudUiMgrReticleMapScaleHalfW == 160.0f &&
+        g_HudUiMgrReticleMapScaleHalfH == 120.0f && g_HudUiMgrReticleSnapRadiusSq == 256;
+    const bool sensorUpdated =
+        g_HudUiMgrSensorBlock.sensorRectRaw.left == 7 &&
+        g_HudUiMgrSensorBlock.sensorRectRaw.top == 9 &&
+        g_HudUiMgrSensorBlock.sensorRectRaw.right == 107 &&
+        g_HudUiMgrSensorBlock.sensorRectRaw.bottom == 89 &&
+        g_HudUiMgrSensorBlock.sensorRectScaled.left == 3 &&
+        g_HudUiMgrSensorBlock.sensorRectScaled.top == 4 &&
+        g_HudUiMgrSensorBlock.sensorRectScaled.right == 53 &&
+        g_HudUiMgrSensorBlock.sensorRectScaled.bottom == 44 &&
+        g_HudUiMgrSensorBlock.sensorClampHalfW == 25.0f &&
+        g_HudUiMgrSensorBlock.sensorClampHalfH == 20.0f;
+
+    g_HudSensorTracker.cameraNode = oldCameraNode;
+    g_HudUiMgrCurrentLayout = oldLayout;
+    g_HudUiTopMessageStack = oldTopStack;
+    g_HudUiChatMessageStack = oldChatStack;
+    g_HudUiMgrHudRect = oldHudRect;
+    g_HudUiMgrViewRect = oldViewRect;
+    g_HudUiMgrHudRectW = oldHudRectW;
+    g_HudUiMgrHudRectH = oldHudRectH;
+    g_HudUiMgrReticleMapBiasX = oldReticleBiasX;
+    g_HudUiMgrReticleMapBiasY = oldReticleBiasY;
+    g_HudUiMgrReticleMapScaleHalfW = oldReticleScaleHalfW;
+    g_HudUiMgrReticleMapScaleHalfH = oldReticleScaleHalfH;
+    g_HudUiMgrReticleSnapRadiusSq = oldReticleSnapRadiusSq;
+    g_HudUiMgrSensorBlock = oldSensorBlock;
+    g_HudUiMgrSensorFxRect = oldSensorFxRect;
+    g_HudUiMgrSensorFxViewportWidth = oldSensorFxViewportWidth;
+    g_HudUiMgrSensorFxViewportHeight = oldSensorFxViewportHeight;
+    g_HudUiMgrObjectivePhase = oldObjectivePhase;
+    g_HudUiMgrObjectiveWidget = oldObjectiveWidget;
+    g_HudUiMgrObjectiveBar = oldObjectiveBar;
+    g_HudUiMgrObjectiveSensorRect = oldObjectiveSensorRect;
+    g_zOpt_RenderSectionOption = oldRenderOption;
+    g_zOpt_DisplaySectionOption = oldDisplayOption;
+    ZOPT_REPLICATE = oldReplicateOption;
+
+    return result == 1 && displayUpdated && renderUpdated && cameraUpdated && viewportUpdated &&
+                   sensorUpdated
+               ? 0
+               : 1;
+}
+
+static void DeleteLifecyclePanelAllocationForSmoke(HudUiPanel *panel) {
+    if (panel == nullptr) {
+        return;
+    }
+
+    DeleteObject(panel->hFont);
+    panel->hFont = nullptr;
+    ::operator delete(panel);
+}
+
+extern "C" int zhud_triplet_constructor_smoke(void) {
+    HudUiTriplet triplet{};
+    triplet.Constructor();
+
+    const bool headers =
+        triplet.headerPanels[0] != nullptr && triplet.headerPanels[1] != nullptr &&
+        triplet.headerPanels[2] != nullptr &&
+        std::strcmp(&TestFieldAt<char>(triplet.headerPanels[0], 0x34), "Player") == 0 &&
+        std::strcmp(&TestFieldAt<char>(triplet.headerPanels[1], 0x34), "Laps") == 0 &&
+        std::strcmp(&TestFieldAt<char>(triplet.headerPanels[2], 0x34), "Kills") == 0 &&
+        TestFieldAt<std::int32_t>(triplet.headerPanels[0], 0x144) == 2 &&
+        TestFieldAt<std::int32_t>(triplet.headerPanels[1], 0x144) == 1 &&
+        TestFieldAt<std::int32_t>(triplet.headerPanels[2], 0x144) == 1;
+
+    bool rows = true;
+    for (int i = 0; i < 24; ++i) {
+        rows = rows && triplet.rowCells[i] != nullptr;
+    }
+
+    const bool linked =
+        triplet.enabled == 1 &&
+        triplet.childHead == reinterpret_cast<HudUiElement *>(triplet.headerPanels[0]) &&
+        triplet.childTail == reinterpret_cast<HudUiElement *>(triplet.rowCells[23]) &&
+        triplet.lapsColumnOffsetX == 0x23 && triplet.killsColumnOffsetX == 0x46 &&
+        triplet.fontSize == 8 && triplet.fontWeight == 6;
+
+    for (HudUiPanel *header : triplet.headerPanels) {
+        DeleteLifecyclePanelAllocationForSmoke(header);
+    }
+
+    for (HudUiPanel *rowCell : triplet.rowCells) {
+        DeleteLifecyclePanelAllocationForSmoke(rowCell);
+    }
+
+    return headers && rows && linked ? 0 : 1;
+}
+
+extern "C" int zhud_triplet_destructor_core_smoke(void) {
+    HudUiTriplet triplet{};
+    triplet.Constructor();
+    triplet.entries.begin =
+        static_cast<HudUiScoreboardEntry *>(::operator new(sizeof(HudUiScoreboardEntry)));
+    triplet.entries.end = triplet.entries.begin + 1;
+    triplet.entries.cap = triplet.entries.begin + 1;
+
+    triplet.DestructorCore();
+
+    HudUiContainer expectedContainer{};
+    bool cleared = TestVTable(&triplet) == TestVTable(&expectedContainer) &&
+                   triplet.entries.begin == nullptr && triplet.entries.end == nullptr &&
+                   triplet.entries.cap == nullptr;
+
+    for (HudUiPanel *header : triplet.headerPanels) {
+        cleared = cleared && header == nullptr;
+    }
+
+    for (HudUiPanel *rowCell : triplet.rowCells) {
+        cleared = cleared && rowCell == nullptr;
+    }
+
+    return cleared ? 0 : 1;
+}
+
+extern "C" int zhud_stats_list_element_update_smoke(void) {
+    TestStatsListTriplet triplet{};
+    HudUiStatsListElement stats{};
+    stats.triplet = &triplet;
+
+    g_statsListTripletUpdateAllCount = 0;
+    g_statsListTripletUpdateAllDelta = 0.0f;
+
+    stats.Update(1.25f);
+
+    return g_statsListTripletUpdateAllCount == 1 && g_statsListTripletUpdateAllDelta == 1.25f
+               ? 0
+               : 1;
+}
+
+extern "C" int zhud_stats_list_destructors_smoke(void) {
+    HudUiTriplet *const triplet =
+        static_cast<HudUiTriplet *>(::operator new(sizeof(HudUiTriplet)));
+    triplet->Constructor();
+
+    HudUiStatsListElement coreStats{};
+    coreStats.triplet = triplet;
+    *reinterpret_cast<std::uintptr_t **>(&coreStats) = nullptr;
+    coreStats.DestructorCore();
+
+    HudUiElement expectedElement{};
+    const bool coreTriplet = coreStats.triplet == nullptr;
+    const bool coreVtable = TestVTable(&coreStats) == TestVTable(&expectedElement);
+    int failure = 0;
+    failure |= coreTriplet ? 0 : 1;
+    failure |= coreVtable ? 0 : 2;
+    if (failure != 0) {
+        return failure;
+    }
+
+    HudUiStatsListElement scalarStats{};
+    scalarStats.triplet = nullptr;
+    *reinterpret_cast<std::uintptr_t **>(&scalarStats) = nullptr;
+    HudUiElement *const returned = scalarStats.ScalarDeletingDestructor(0);
+    const bool scalarReturn = returned == &scalarStats;
+    const bool scalarVtable = TestVTable(&scalarStats) == TestVTable(&expectedElement);
+
+    HudUiStatsListElement *const heapStats =
+        static_cast<HudUiStatsListElement *>(::operator new(sizeof(HudUiStatsListElement)));
+    std::memset(heapStats, 0, sizeof(*heapStats));
+    HudUiElement *const heapReturned =
+        heapStats->HudUiStatsListElement::ScalarDeletingDestructor(1);
+    const bool scalarDeleted = heapReturned == heapStats;
+
+    failure |= scalarReturn ? 0 : 4;
+    failure |= scalarVtable ? 0 : 8;
+    failure |= scalarDeleted ? 0 : 16;
+    return failure;
+}
+
+extern "C" int zhud_container_destructor_core_smoke(void) {
+    HudUiContainer container{};
+    *reinterpret_cast<std::uintptr_t **>(&container) = nullptr;
+    container.DestructorCore();
+
+    HudUiContainer expectedContainer{};
+    return TestVTable(&container) == TestVTable(&expectedContainer) ? 0 : 1;
+}
+
+extern "C" int zhud_panel_simple_constructor_smoke(void) {
+    HudUiPanelSimple simple{};
+    HudUiPanel *const panel = reinterpret_cast<HudUiPanel *>(&simple);
+
+    simple.Constructor("ABC", 8, 9);
+    int failure = 0;
+    failure |= TestVTable(&simple) != nullptr ? 0 : 0x001;
+    failure |= std::strcmp(&TestFieldAt<char>(&simple, 0x34), "ABC") == 0 ? 0 : 0x002;
+    failure |= TestFieldAt<std::int32_t>(&simple, 0x14) == 8 ? 0 : 0x004;
+    failure |= TestFieldAt<std::int32_t>(&simple, 0x18) == 9 ? 0 : 0x008;
+    failure |= TestFieldAt<std::uint32_t>(&simple, 0x14c) == 0x0020bf40 ? 0 : 0x010;
+    failure |= TestFieldAt<std::uint32_t>(&simple, 0x150) == 0x0020bf40 ? 0 : 0x020;
+    failure |= TestFieldAt<std::uint32_t>(&simple, 0x270) == 1 ? 0 : 0x040;
+    failure |= TestFieldAt<std::uint32_t>(&simple, 0x264) == 1 ? 0 : 0x080;
+    failure |= TestFieldAt<std::int32_t>(&simple, 0x29c) == -1 ? 0 : 0x100;
+    failure |= TestFieldAt<std::int32_t>(&simple, 0x2a0) == -1 ? 0 : 0x200;
+    failure |= panel->hFont != nullptr ? 0 : 0x400;
+
+    DeleteObject(panel->hFont);
+    panel->hFont = nullptr;
+
+    HudUiPanelSimple defaulted{};
+    HudUiPanel *const defaultedPanel = reinterpret_cast<HudUiPanel *>(&defaulted);
+    failure |= defaulted.ConstructorDefaultThunk() == &defaulted ? 0 : 0x800;
+    failure |= TestVTable(&defaulted) == TestVTable(&simple) ? 0 : 0x1000;
+    failure |= TestFieldAt<char>(&defaulted, 0x34) == 0 ? 0 : 0x2000;
+    failure |= TestFieldAt<std::int32_t>(&defaulted, 0x14) == 0 ? 0 : 0x4000;
+    failure |= TestFieldAt<std::int32_t>(&defaulted, 0x18) == 0 ? 0 : 0x8000;
+
+    DeleteObject(defaultedPanel->hFont);
+    defaultedPanel->hFont = nullptr;
+    return failure;
+}
+
+static bool CheckNewGamePanelStartQueue(
+    RecoilApp_StateQueue &queue,
+    int difficulty,
+    const char *storedName
+) {
+    RecoilApp_StateQueueItem *const exit0 = NewGamePanelQueueItemAt(queue, 0);
+    RecoilApp_StateQueueItem *const exit1 = NewGamePanelQueueItemAt(queue, 1);
+    RecoilApp_StateQueueItem *const switchItem = NewGamePanelQueueItemAt(queue, 2);
+    const bool ok =
+        std::strcmp(storedName, "Pilot") == 0 && difficulty == 3 &&
+        g_RecoilApp.m_missionFmvState.m_missionId == 1 &&
+        g_newGamePanelStartExitCount == 3 && queue.m_itemCount == 3 &&
+        exit0 != 0 && exit0->m_kind == RecoilApp_StateQueueKind_ExitCurrent &&
+        exit0->m_param == 1 && exit1 != 0 &&
+        exit1->m_kind == RecoilApp_StateQueueKind_ExitCurrent && exit1->m_param == 1 &&
+        switchItem != 0 && switchItem->m_kind == RecoilApp_StateQueueKind_SwitchCurrent &&
+        switchItem->m_stateObj == &g_RecoilApp.m_missionFmvState &&
+        switchItem->m_param == 0;
+    return ok;
+}
+
+extern "C" int hud_ui_new_game_panel_start_activation_smoke(void) {
+    unsigned char oldApp[sizeof(g_RecoilApp)];
+    std::memcpy(oldApp, &g_RecoilApp, sizeof(g_RecoilApp));
+    zOptionEntryPartial *const oldPlayerNameOption = ZOPT_PLAYER_NAME;
+    int *const oldDifficultyOption = g_zOpt_GameDifficultyOption;
+    zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
+
+    char inputName[16] = "Pilot";
+    char storedName[16] = "";
+    zOptionEntryPartial playerNameOption = zOptionEntryPartial();
+    playerNameOption.payloadOrBuffer =
+        static_cast<int>(reinterpret_cast<std::uintptr_t>(storedName));
+    playerNameOption.dataSize = sizeof(storedName);
+    int difficulty = 0;
+    ZOPT_PLAYER_NAME = &playerNameOption;
+    g_zOpt_GameDifficultyOption = &difficulty;
+
+    zUtil_SaveGameState saveState = zUtil_SaveGameState();
+    zUtil_PlayerStateStorage playerState = zUtil_PlayerStateStorage();
+    saveState.playerState = &playerState;
+    g_GameStateOrMapTable = reinterpret_cast<zInput_GameStateOrMapTablePartial *>(&saveState);
+
+    TestNewGamePanelStartState oldState;
+    std::memset(&g_RecoilApp, 0, sizeof(g_RecoilApp));
+    g_RecoilApp.m_currentStateIndex = 0;
+    g_RecoilApp.m_stateStack[0] = &oldState;
+    new (&g_RecoilApp.m_missionFmvState) RecoilApp_MissionFmvState;
+    g_newGamePanelStartEnterCount = 0;
+    g_newGamePanelStartExitCount = 0;
+
+    alignas(HudUiNewGamePanel) unsigned char panelStorage[sizeof(HudUiNewGamePanel)] = {};
+    HudUiNewGamePanel *const panel =
+        reinterpret_cast<HudUiNewGamePanel *>(panelStorage);
+    panel->nameInput.textInput.buffer = inputName;
+    panel->nameInput.textInput.capacity = sizeof(inputName);
+    panel->intensity.selectedIndex = 3;
+    playerState.nanitePanelLevel = 123456789;
+
+    panel->StartGameFromFields();
+    const bool directOk =
+        CheckNewGamePanelStartQueue(g_RecoilApp.m_stateQueue, difficulty, storedName) &&
+        playerState.nanitePanelLevel == 0;
+    CleanupNewGamePanelQueue(g_RecoilApp.m_stateQueue);
+    if (!directOk) {
+        g_GameStateOrMapTable = oldGameState;
+        ZOPT_PLAYER_NAME = oldPlayerNameOption;
+        g_zOpt_GameDifficultyOption = oldDifficultyOption;
+        std::memcpy(&g_RecoilApp, oldApp, sizeof(g_RecoilApp));
+        return 2;
+    }
+
+    std::memset(storedName, 0, sizeof(storedName));
+    std::strcpy(inputName, "Pilot");
+    difficulty = 0;
+    std::memset(&g_RecoilApp, 0, sizeof(g_RecoilApp));
+    g_RecoilApp.m_currentStateIndex = 0;
+    g_RecoilApp.m_stateStack[0] = &oldState;
+    new (&g_RecoilApp.m_missionFmvState) RecoilApp_MissionFmvState;
+    g_newGamePanelStartEnterCount = 0;
+    g_newGamePanelStartExitCount = 0;
+    playerState.nanitePanelLevel = 123456789;
+
+    HudUiNewGamePanel_StartButton startButton;
+    startButton.owner = panel;
+    startButton.OnActivate();
+    const bool buttonOk =
+        CheckNewGamePanelStartQueue(g_RecoilApp.m_stateQueue, difficulty, storedName) &&
+        playerState.nanitePanelLevel == 0;
+    CleanupNewGamePanelQueue(g_RecoilApp.m_stateQueue);
+
+    g_GameStateOrMapTable = oldGameState;
+    ZOPT_PLAYER_NAME = oldPlayerNameOption;
+    g_zOpt_GameDifficultyOption = oldDifficultyOption;
+    std::memcpy(&g_RecoilApp, oldApp, sizeof(g_RecoilApp));
+
+    return directOk && buttonOk ? 0 : 1;
 }
 
 #else
@@ -3515,7 +5571,9 @@ int g_netSetupHostUpdateValueOrTime;
 int g_netSetupHostUpdateStatusFlags;
 int g_netSetupUnregisterCalls;
 int g_netSetupResetRemoteCalls;
-CZRecoilFrame g_netSetupFrame;
+alignas(CZRecoilFrame) unsigned char g_netSetupFrameStorage[sizeof(CZRecoilFrame)];
+CZRecoilFrame &g_netSetupFrame =
+    *reinterpret_cast<CZRecoilFrame *>(g_netSetupFrameStorage);
 
 void ResetNetGameSetupProbe() {
     g_netSetupLoadPath = nullptr;
@@ -5542,6 +7600,7 @@ extern "C" int hud_ui_aux_overlay_text_lines_smoke(void) {
     HudUiAuxOverlay::UpdateTextLine(1, 3, "alpha");
     HudUiAuxOverlay::UpdateTextLine(2, 4, "bravo");
     HudUiAuxOverlay::UpdateTextLine(2, 5, "");
+    HudUiAuxOverlay::UpdateTextLine(7, 6, "ignored");
 
     const bool nonEmptyOps =
         g_auxTextFmtCount[3] == 1 && g_auxVisibleCount[3] == 1 && g_auxLastVisible[3] == 1 &&
@@ -5550,6 +7609,8 @@ extern "C" int hud_ui_aux_overlay_text_lines_smoke(void) {
         std::strcmp(g_auxLastText[4], "bravo") == 0;
     const bool emptyOp =
         g_auxTextFmtCount[5] == 0 && g_auxVisibleCount[5] == 1 && g_auxLastVisible[5] == 0;
+    const bool unknownOp =
+        g_auxTextFmtCount[6] == 0 && g_auxVisibleCount[6] == 0 && g_auxLastVisible[6] == 0;
 
     HudUiAuxOverlay::ClearTextLines();
 
@@ -5563,7 +7624,7 @@ extern "C" int hud_ui_aux_overlay_text_lines_smoke(void) {
 
     g_HudUiMgrStringMenu = nullptr;
 
-    return nonEmptyOps && emptyOp && clearOps ? 0 : 1;
+    return nonEmptyOps && emptyOp && unknownOp && clearOps ? 0 : 1;
 }
 
 extern "C" int zhud_mgr_destroy_sensor_window_null_smoke(void) {
@@ -6397,7 +8458,7 @@ extern "C" int zhud_mgr_ensure_hud_loaded_minimal_smoke(void) {
     menu.base.vptr = &stringMenuTable;
 
     HudLayoutBase_FTable layoutTable{};
-    layoutTable.slots[2] = MethodAddress(&HudLayoutBase::SetActiveNoOp);
+    layoutTable.slots[2] = MethodAddress(&HudLayoutBase::SetActive);
     layoutTable.OnActivated = TestLayoutOnActivated;
     g_HudLayoutSW.ftable = &layoutTable;
 
@@ -8203,59 +10264,6 @@ extern "C" int zhud_flash_panel_compute_blend_color_smoke(void) {
         HudUiFlashPanel::ComputeFlashBlendColor(0x00000000, 0x00020406, 0.5f) == 0x00010203;
 
     return clamps && blends ? 0 : 1;
-}
-
-extern "C" int zhud_layout_shutdown_stub_smoke(void) {
-    HudUiShieldMessageWidgetState shield{};
-    g_HudUiMgrShieldMessageWidget = &shield;
-    HudLayoutBase::Shutdown_Stub();
-    g_HudUiMgrShieldMessageWidget = nullptr;
-
-    alignas(HudUiWidget) std::uint8_t storage[0x30 + sizeof(HudUiWidget)]{};
-    auto *const layout = reinterpret_cast<HudLayoutBase *>(storage);
-    auto *const widget = reinterpret_cast<HudUiWidget *>(storage + 0x30);
-    layout->ftable = nullptr;
-    widget->ftable = &g_HudUiWidget_FTable;
-    widget->image = &zVid_Image::g_zImage_DefaultImage;
-    widget->ownsImage = 0;
-
-    layout->Destructor();
-
-    alignas(HudUiContainer) std::uint8_t updateStorage[sizeof(HudUiContainer)]{};
-    auto *const updateLayout = reinterpret_cast<HudLayoutBase *>(updateStorage);
-    auto *const updateContainer = reinterpret_cast<HudUiContainer *>(updateStorage);
-    updateContainer->ConstructorDefault();
-    updateContainer->enabled = 1;
-
-    HudUiCommon_FTable updateTable{};
-    updateTable.slots[9] = MethodAddress(&TestContainerUpdateElement::Update);
-    TestContainerUpdateElement updateElement{};
-    updateElement.base.ftable = &updateTable;
-    updateContainer->AddChild(&updateElement.base);
-
-    g_containerUpdateCount = 0;
-    updateLayout->UpdateAll(0.75f);
-    const bool layoutUpdated = g_containerUpdateCount == 1 && g_containerUpdateDelta[0] == 0.75f;
-
-    HudLayoutBase noOp{};
-    const bool noOpActive = noOp.SetActiveNoOp(0) == 1;
-
-    HudLayoutBase_FTable setActiveTable{};
-    setActiveTable.slots[1] = MethodAddress(&TestLayoutSetActiveElement::SetActive);
-    TestLayoutSetActiveElement activeElement{};
-    activeElement.ftable = &setActiveTable;
-    reinterpret_cast<HudLayoutBase *>(&activeElement)->Enable();
-    const bool enabled = activeElement.activeValue == 1;
-    reinterpret_cast<HudLayoutBase *>(&activeElement)->Disable();
-    const bool disabled = activeElement.activeValue == 0;
-
-    return reinterpret_cast<HudUiContainer *>(layout)->vptr == &g_HudUiContainer_FTable &&
-                   widget->ftable ==
-                       reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable) &&
-                   widget->image == &zVid_Image::g_zImage_DefaultImage && layoutUpdated &&
-                   noOpActive && enabled && disabled
-               ? 0
-               : 1;
 }
 
 extern "C" int zhud_layout_hw_release_images_smoke(void) {
@@ -10846,6 +12854,7 @@ extern "C" int zhud_zrd_widget_ex17c_item_core_smoke(void) {
     refreshItem.base.base.ftable =
         reinterpret_cast<const HudUiWidget_FTable *>(&refreshTable);
     refreshItem.selected = 0;
+    refreshItem.base.modeOrEnabled = 0;
     selector.optionCount = 2;
     selector.options[0] = &selectorItem0;
     selector.options[1] = &refreshItem;
@@ -10854,7 +12863,8 @@ extern "C" int zhud_zrd_widget_ex17c_item_core_smoke(void) {
     selector.EnableChildAtIndex(1);
     selector.EnableChildAtIndex(2);
     const bool childEnabled =
-        refreshItem.selected == 1 && g_optionSelectorRefreshCount == 1 &&
+        refreshItem.selected == 0 && refreshItem.base.modeOrEnabled == 1 &&
+        g_optionSelectorRefreshCount == 1 &&
         g_optionSelectorRefreshThis == &refreshItem &&
         g_HudUiZrdWidgetEx17C_FTable.slots[24] ==
             MethodAddress(&HudUiZrdWidgetEx17C::EnableChildAtIndex) &&
@@ -20623,21 +22633,6 @@ extern "C" int zhud_layout_base_load_type_i_from_zar_root_smoke(void) {
     return loaded && missingPreserves ? 0 : 1;
 }
 
-extern "C" int zhud_layout_base_destructor_smoke(void) {
-    HudLayoutBase layout{};
-    HudUiWidget *const child = &TestFieldAt<HudUiWidget>(&layout, 0x30);
-
-    child->Constructor(0);
-    child->parent = &layout;
-    layout.Destructor();
-
-    const bool destroyed =
-        TestFieldAt<const void *>(&layout, 0) == &g_HudUiContainer_FTable &&
-        child->ftable == reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable);
-
-    return destroyed ? 0 : 1;
-}
-
 extern "C" int zhud_layout_sw_constructor_smoke(void) {
     HudLayoutSW layout{};
     HudLayoutSW *const result = layout.Constructor();
@@ -22167,7 +24162,10 @@ extern "C" int zhud_stats_list_destructors_smoke(void) {
     auto *heapStats =
         static_cast<HudUiStatsListElement *>(::operator new(sizeof(HudUiStatsListElement)));
     std::memset(heapStats, 0, sizeof(*heapStats));
-    HudUiStatsListElement *const heapReturned = heapStats->ScalarDeletingDestructor(1);
+    HudUiStatsListElement *const heapReturned =
+        static_cast<HudUiStatsListElement *>(
+            heapStats->HudUiStatsListElement::ScalarDeletingDestructor(1)
+        );
     const bool scalarDeleted = heapReturned == heapStats;
 
     return core && scalar && scalarDeleted ? 0 : 1;
@@ -26700,3 +28698,125 @@ extern "C" int zhud_sensor_track_list_add_smoke(void) {
     return first && second ? 0 : 1;
 }
 #endif
+
+extern "C" int zhud_layout_shutdown_stub_smoke(void) {
+#ifdef RECOIL_NATIVE_ZHUD_UI_LIFECYCLE_ONLY
+    HudUiShieldMessageWidget *const oldShieldMessage = g_HudUiMgrShieldMessageWidget;
+
+    HudUiShieldMessageWidget shield{};
+    g_HudUiMgrShieldMessageWidget = &shield;
+    HudLayoutBase::Shutdown_Stub();
+    g_HudUiMgrShieldMessageWidget = oldShieldMessage;
+
+    HudLayoutBase layout{};
+    HudUiWidget *const widget = &layout.widget0;
+    widget->Constructor(0);
+    widget->image = &zVid_Image::g_zImage_DefaultImage;
+    widget->ownsImage = 0;
+    layout.Destructor();
+
+    HudUiElement expectedElement{};
+    const bool destroyed = TestVTable(widget) == TestVTable(&expectedElement) &&
+                           widget->image == &zVid_Image::g_zImage_DefaultImage;
+
+    HudLayoutBase updateLayout{};
+    updateLayout.enabled = 1;
+    TestContainerUpdateElement updateElement{};
+    updateLayout.AddChild(&updateElement);
+
+    g_containerUpdateCount = 0;
+    updateLayout.UpdateAll(0.75f);
+    const bool layoutUpdated = g_containerUpdateCount == 1 && g_containerUpdateDelta[0] == 0.75f;
+
+    HudLayoutBase noOp{};
+    const bool noOpActive = noOp.SetActive(0) == 1;
+
+    TestLayoutSetActiveElement activeElement{};
+    activeElement.activeValue = -1;
+    activeElement.Enable();
+    const bool enabled = activeElement.activeValue == 1;
+    activeElement.Disable();
+    const bool disabled = activeElement.activeValue == 0;
+
+    return destroyed && layoutUpdated && noOpActive && enabled && disabled ? 0 : 1;
+#else
+    HudUiShieldMessageWidgetState shield{};
+    g_HudUiMgrShieldMessageWidget = &shield;
+    HudLayoutBase::Shutdown_Stub();
+    g_HudUiMgrShieldMessageWidget = nullptr;
+
+    alignas(HudUiWidget) std::uint8_t storage[0x30 + sizeof(HudUiWidget)]{};
+    auto *const layout = reinterpret_cast<HudLayoutBase *>(storage);
+    auto *const widget = reinterpret_cast<HudUiWidget *>(storage + 0x30);
+    layout->ftable = nullptr;
+    widget->ftable = &g_HudUiWidget_FTable;
+    widget->image = &zVid_Image::g_zImage_DefaultImage;
+    widget->ownsImage = 0;
+
+    layout->Destructor();
+
+    alignas(HudUiContainer) std::uint8_t updateStorage[sizeof(HudUiContainer)]{};
+    auto *const updateLayout = reinterpret_cast<HudLayoutBase *>(updateStorage);
+    auto *const updateContainer = reinterpret_cast<HudUiContainer *>(updateStorage);
+    updateContainer->ConstructorDefault();
+    updateContainer->enabled = 1;
+
+    HudUiCommon_FTable updateTable{};
+    updateTable.slots[9] = MethodAddress(&TestContainerUpdateElement::Update);
+    TestContainerUpdateElement updateElement{};
+    updateElement.base.ftable = &updateTable;
+    updateContainer->AddChild(&updateElement.base);
+
+    g_containerUpdateCount = 0;
+    updateLayout->UpdateAll(0.75f);
+    const bool layoutUpdated = g_containerUpdateCount == 1 && g_containerUpdateDelta[0] == 0.75f;
+
+    HudLayoutBase noOp{};
+    const bool noOpActive = noOp.SetActive(0) == 1;
+
+    HudLayoutBase_FTable setActiveTable{};
+    setActiveTable.slots[2] = MethodAddress(&TestLayoutSetActiveElement::SetActive);
+    TestLayoutSetActiveElement activeElement{};
+    activeElement.ftable = &setActiveTable;
+    reinterpret_cast<HudLayoutBase *>(&activeElement)->Enable();
+    const bool enabled = activeElement.activeValue == 1;
+    reinterpret_cast<HudLayoutBase *>(&activeElement)->Disable();
+    const bool disabled = activeElement.activeValue == 0;
+
+    return reinterpret_cast<HudUiContainer *>(layout)->vptr == &g_HudUiContainer_FTable &&
+                   widget->ftable ==
+                       reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable) &&
+                   widget->image == &zVid_Image::g_zImage_DefaultImage && layoutUpdated &&
+                   noOpActive && enabled && disabled
+               ? 0
+               : 1;
+#endif
+}
+
+extern "C" int zhud_layout_base_destructor_smoke(void) {
+#ifdef RECOIL_NATIVE_ZHUD_UI_LIFECYCLE_ONLY
+    HudLayoutBase layout{};
+    HudUiWidget *const child = &layout.widget0;
+    child->Constructor(0);
+    child->parent = &layout;
+    layout.Destructor();
+
+    HudUiElement expectedElement{};
+    const bool destroyed = TestVTable(child) == TestVTable(&expectedElement);
+
+    return destroyed ? 0 : 1;
+#else
+    HudLayoutBase layout{};
+    HudUiWidget *const child = &TestFieldAt<HudUiWidget>(&layout, 0x30);
+
+    child->Constructor(0);
+    child->parent = &layout;
+    layout.Destructor();
+
+    const bool destroyed =
+        TestFieldAt<const void *>(&layout, 0) == &g_HudUiContainer_FTable &&
+        child->ftable == reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable);
+
+    return destroyed ? 0 : 1;
+#endif
+}

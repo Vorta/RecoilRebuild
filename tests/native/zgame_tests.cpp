@@ -488,6 +488,16 @@ extern "C" int zmodel_render_state_setters_smoke(void) {
 }
 
 #endif
+#if defined(RECOIL_ZGAME_TESTS_ZMODEL_CONST_ONLY) && \
+    defined(RECOIL_ZGAME_TESTS_ZMODEL_ACTIVE_LIGHTS)
+namespace {
+int g_zgameFogColorUpdateCount = 0;
+
+void TestZGameUpdateFogColor(void) {
+    ++g_zgameFogColorUpdateCount;
+}
+}
+#endif
 extern "C" int zmodel_const_tolerances_and_cross_smoke() {
     zModel_Const::SetCoplanarTolerance(0.25f);
     zModel_Const::SetColinearTolerance(0.001f);
@@ -1345,6 +1355,9 @@ extern "C" int zmodel_set_display_instance_pool_capacity_smoke() {
     return setOk && alreadySetOk && signedValueOk ? 0 : 1;
 }
 
+#endif
+#if !defined(RECOIL_ZGAME_TESTS_ZMODEL_CONST_ONLY) || \
+    defined(RECOIL_ZGAME_TESTS_ZMODEL_SOFTWARE_PATH_ACTIVE)
 extern "C" int zmodel_set_software_path_active_smoke() {
     const int savedRendererPath = g_zVideo_ActiveRendererPath;
     const int savedSoftwareActive = g_zModel_SoftwarePathActive;
@@ -1365,7 +1378,9 @@ extern "C" int zmodel_set_software_path_active_smoke() {
     g_zModel_SoftwarePathActive = savedSoftwareActive;
     return softwareSetOk && signedValueOk && hardwareSkippedOk ? 0 : 1;
 }
+#endif
 
+#ifndef RECOIL_ZGAME_TESTS_ZMODEL_CONST_ONLY
 extern "C" int zmodel_matlbuffer_release_texture_surfaces_smoke() {
     zModel_MaterialSlot *const savedPool = g_zModel_MatlPool;
     const int savedActiveHead = g_zModel_MatlActiveHeadIndex;
@@ -5446,6 +5461,9 @@ extern "C" int zmodel_fog_apply_current_color_smoke(void) {
     return 0;
 }
 
+#endif
+#if !defined(RECOIL_ZGAME_TESTS_ZMODEL_CONST_ONLY) || \
+    defined(RECOIL_ZGAME_TESTS_ZMODEL_ACTIVE_LIGHTS)
 extern "C" int zmodel_light_fog_fade_smoke() {
     zClass_LightDataPartial light{};
     light.range1 = 5.0f;
@@ -5688,6 +5706,9 @@ extern "C" int zmodel_light_build_light_weights_smoke(void) {
                : 3;
 }
 
+#endif
+#if !defined(RECOIL_ZGAME_TESTS_ZMODEL_CONST_ONLY) || \
+    defined(RECOIL_ZGAME_TESTS_ZMODEL_LIGHT_POINT_IN_POLYGON_INIT)
 extern "C" int zmodel_light_point_in_polygon_init_smoke(void) {
     zClass_LightDataPartial light0{};
     zClass_LightDataPartial light1{};
@@ -5725,6 +5746,9 @@ extern "C" int zmodel_light_point_in_polygon_init_smoke(void) {
                ? 0
                : 2;
 }
+#endif
+#if !defined(RECOIL_ZGAME_TESTS_ZMODEL_CONST_ONLY) || \
+    defined(RECOIL_ZGAME_TESTS_ZMODEL_ACTIVE_LIGHTS)
 
 extern "C" int zclass_world_build_active_light_list_smoke(void) {
     const int savedRendererPath = g_zVideo_ActiveRendererPath;
@@ -5770,6 +5794,9 @@ extern "C" int zclass_world_build_active_light_list_smoke(void) {
     return ok ? 0 : 1;
 }
 
+#endif
+#if !defined(RECOIL_ZGAME_TESTS_ZMODEL_CONST_ONLY) || \
+    defined(RECOIL_ZGAME_TESTS_ZMODEL_ACTIVE_LIGHTS)
 extern "C" int zmodel_light_set_active_lights_smoke(void) {
     std::memset(gModel_ActiveLights, 0, sizeof(gModel_ActiveLights));
     std::memset(g_Clip_PolyAttr0, 0, sizeof(g_Clip_PolyAttr0));
@@ -5993,6 +6020,8 @@ extern "C" int zmodel_light_build_attr1_falloff_smoke(void) {
     return 0;
 }
 
+#endif
+#ifndef RECOIL_ZGAME_TESTS_ZMODEL_CONST_ONLY
 extern "C" int zclass_world_apply_pending_fog_settings_smoke(void) {
     zVideo::PixelPack_SetupFromMasks(5, 6, 5, 0xf800, 0x07e0, 0x001f);
     g_zVideo_ActiveRendererPath = 1;
@@ -9938,6 +9967,20 @@ extern "C" int zclass_object3d_reset_transform_dirty_smoke() {
                : 2;
 }
 
+#endif
+#if !defined(RECOIL_ZGAME_TESTS_ZMODEL_CONST_ONLY) || defined(RECOIL_ZGAME_TESTS_MODEL_REF_LERP_QUEUE)
+#if defined(RECOIL_ZGAME_TESTS_ZMODEL_CONST_ONLY) && defined(RECOIL_ZGAME_TESTS_MODEL_REF_LERP_QUEUE)
+namespace {
+int g_modelRefLerpCallbackCount = 0;
+void *g_modelRefLerpLastCallbackCtx = nullptr;
+
+void __fastcall TestModelRefLerpCallback(void *callbackCtx) {
+    ++g_modelRefLerpCallbackCount;
+    g_modelRefLerpLastCallbackCtx = callbackCtx;
+}
+} // namespace
+#endif
+
 extern "C" int zclass_model_ref_lerp_queue_reset_smoke() {
     auto *const first = static_cast<zClass_Object3D_ModelRefLerpTask *>(
         ::operator new(sizeof(zClass_Object3D_ModelRefLerpTask)));
@@ -10082,6 +10125,189 @@ extern "C" int zclass_model_ref_lerp_queue_update_smoke() {
     return listOk && alphaOk && taskOk && callbackOk && litOk ? 0 : 1;
 }
 
+#endif
+#if defined(RECOIL_ZGAME_TESTS_ZMODEL_CONST_ONLY) && \
+    defined(RECOIL_ZGAME_TESTS_ZCLASS_TYPELIST_UPDATE)
+namespace {
+int g_zclassUpdateBucketCallbackCount = 0;
+zClass_NodePartial *g_zclassUpdateBucketLastNode = nullptr;
+int g_zclassUpdateBucketDeferredDuringCallback = -1;
+
+int __fastcall TestZClassUpdateBucketCallback(zClass_NodePartial *node) {
+    ++g_zclassUpdateBucketCallbackCount;
+    g_zclassUpdateBucketLastNode = node;
+    g_zclassUpdateBucketDeferredDuringCallback = g_zClass_DeferredProcessingEnabled;
+    return 0;
+}
+
+void reset_zclass_type_lists_for_test() {
+    for (int i = 0; i < 16; ++i) {
+        zClass_TypeList::Head(i) = nullptr;
+        zClass_TypeList::Tail(i) = nullptr;
+        zClass_TypeList::PendingRemovalDirty(i) = 0;
+    }
+    g_zClass_TypeList_FreeLinkHead = nullptr;
+    g_zClass_TypeList_LiveLinkCount = 0;
+    g_zClass_TypeList_PeakLiveLinkCount = 0;
+    g_zClass_DeferredProcessingEnabled = 1;
+}
+
+void free_zclass_type_lists_for_test() {
+    for (int i = 0; i < 16; ++i) {
+        for (zClass_TypeListLink *link = zClass_TypeList::Head(i); link != nullptr;) {
+            zClass_TypeListLink *const next = link->next;
+            std::free(link);
+            link = next;
+        }
+        zClass_TypeList::Head(i) = nullptr;
+        zClass_TypeList::Tail(i) = nullptr;
+        zClass_TypeList::PendingRemovalDirty(i) = 0;
+    }
+
+    for (zClass_TypeListLink *link = g_zClass_TypeList_FreeLinkHead; link != nullptr;) {
+        zClass_TypeListLink *const next = link->next;
+        std::free(link);
+        link = next;
+    }
+    g_zClass_TypeList_FreeLinkHead = nullptr;
+    g_zClass_TypeList_LiveLinkCount = 0;
+    g_zClass_TypeList_PeakLiveLinkCount = 0;
+}
+} // namespace
+
+extern "C" int zclass_typelist_update_bucket_smoke(void) {
+    reset_zclass_type_lists_for_test();
+    g_zClass_DeferredProcessingEnabled = 1;
+    g_zclassUpdateBucketCallbackCount = 0;
+    g_zclassUpdateBucketLastNode = nullptr;
+    g_zclassUpdateBucketDeferredDuringCallback = -1;
+
+    zClass_NodePartial activeNode{};
+    zClass_NodePartial nullCallbackNode{};
+    zClass_NodePartial pendingNode{};
+    zClass_NodePartial inactiveNode{};
+    activeNode.flags = 4;
+    pendingNode.flags = 4;
+    inactiveNode.flags = 0;
+    activeNode.actionCallback = reinterpret_cast<void *>(&TestZClassUpdateBucketCallback);
+    pendingNode.actionCallback = reinterpret_cast<void *>(&TestZClassUpdateBucketCallback);
+    inactiveNode.actionCallback = reinterpret_cast<void *>(&TestZClassUpdateBucketCallback);
+
+    zClass_TypeListLink activeLink{&activeNode, nullptr, nullptr, 0};
+    zClass_TypeListLink nullCallbackLink{&nullCallbackNode, nullptr, nullptr, 0};
+    zClass_TypeListLink pendingLink{&pendingNode, nullptr, nullptr, 1};
+    zClass_TypeListLink inactiveLink{&inactiveNode, nullptr, nullptr, 0};
+    activeLink.next = &nullCallbackLink;
+    nullCallbackLink.prev = &activeLink;
+    nullCallbackLink.next = &pendingLink;
+    pendingLink.prev = &nullCallbackLink;
+    pendingLink.next = &inactiveLink;
+    inactiveLink.prev = &pendingLink;
+
+    zClass_TypeList::UpdateBucket(&activeLink);
+    const bool updateOk =
+        g_zclassUpdateBucketCallbackCount == 1 &&
+        g_zclassUpdateBucketLastNode == &activeNode &&
+        g_zclassUpdateBucketDeferredDuringCallback == 0 &&
+        nullCallbackLink.pendingRemove == 1 && pendingLink.pendingRemove == 1 &&
+        inactiveLink.pendingRemove == 0 && g_zClass_DeferredProcessingEnabled == 1;
+
+    g_zClass_DeferredProcessingEnabled = 0;
+    zClass_TypeList::UpdateBucket(nullptr);
+    const bool nullBucketOk = g_zClass_DeferredProcessingEnabled == 0;
+
+    reset_zclass_type_lists_for_test();
+    return updateOk && nullBucketOk ? 0 : 1;
+}
+
+extern "C" int zclass_typelist_update_all_buckets_smoke(void) {
+    reset_zclass_type_lists_for_test();
+    g_zClass_DeferredProcessingEnabled = 1;
+    g_zclassUpdateBucketCallbackCount = 0;
+    g_zclassUpdateBucketLastNode = nullptr;
+    g_zclassUpdateBucketDeferredDuringCallback = -1;
+
+    zClass_NodePartial firstNode{};
+    zClass_NodePartial secondNode{};
+    firstNode.flags = 4;
+    secondNode.flags = 4;
+    firstNode.actionCallback = reinterpret_cast<void *>(&TestZClassUpdateBucketCallback);
+    secondNode.actionCallback = reinterpret_cast<void *>(&TestZClassUpdateBucketCallback);
+
+    zClass_TypeListLink firstLink{&firstNode, nullptr, nullptr, 0};
+    zClass_TypeListLink secondLink{&secondNode, nullptr, nullptr, 0};
+    zClass_TypeList::Head(0) = &firstLink;
+    zClass_TypeList::Tail(0) = &firstLink;
+    zClass_TypeList::Head(1) = &secondLink;
+    zClass_TypeList::Tail(1) = &secondLink;
+
+    zClass_TypeList::UpdateAllBuckets();
+    const bool ok = g_zclassUpdateBucketCallbackCount == 2 &&
+                    g_zclassUpdateBucketLastNode == &secondNode &&
+                    g_zclassUpdateBucketDeferredDuringCallback == 0 &&
+                    firstLink.pendingRemove == 0 && secondLink.pendingRemove == 0 &&
+                    g_zClass_DeferredProcessingEnabled == 1;
+
+    reset_zclass_type_lists_for_test();
+    return ok ? 0 : 1;
+}
+
+extern "C" int zclass_gwnode_update_all_smoke() {
+    auto nearFloat = [](float lhs, float rhs) { return std::fabs(lhs - rhs) <= 0.0001f; };
+    reset_zclass_type_lists_for_test();
+
+    zClass_SequenceDataPartial sequenceData{};
+    sequenceData.isActive = 1;
+    sequenceData.step = 1;
+    sequenceData.entryCount = 1;
+    sequenceData.entries[0].triggerTime = 3.0f;
+    zClass_NodePartial sequenceNode{};
+    sequenceNode.classData = &sequenceData;
+    zClass_TypeListLink sequenceLink{};
+    sequenceLink.node = &sequenceNode;
+    zClass_TypeList::Head(11) = &sequenceLink;
+    zClass_TypeList::Tail(11) = &sequenceLink;
+
+    zClass_AnimateKeyframePartial keyframes[3]{};
+    keyframes[0].scale = {1.0f, 1.0f, 1.0f};
+    keyframes[1].scale = {2.0f, 3.0f, 4.0f};
+    keyframes[2].scale = {5.0f, 6.0f, 7.0f};
+    zClass_AnimateDataPartial animateData{};
+    animateData.statusFlags = 0x04;
+    animateData.runtime.keyframes = keyframes;
+    animateData.runtime.duration = 4.0f;
+    animateData.runtime.currentTime = 1.0f;
+    animateData.runtime.maxFrameIndex = 3;
+    animateData.runtime.loopCount = -1;
+    animateData.runtime.outputRotationScale = {1.0f, 1.0f, 1.0f};
+    animateData.runtime.outputPositionScale = {1.0f, 1.0f, 1.0f};
+    animateData.runtime.outputScaleScale = {1.0f, 1.0f, 1.0f};
+    zClass_NodePartial animateNode{};
+    animateNode.flags = 0x05;
+    animateNode.classData = &animateData;
+    zClass_TypeListLink animateLink{};
+    animateLink.node = &animateNode;
+    zClass_TypeList::Head(12) = &animateLink;
+    zClass_TypeList::Tail(12) = &animateLink;
+
+    g_FrameDeltaTimeSec = 1.0f;
+    const int result = zClass_Class::gwNodeUpdateAll();
+    const bool ok = result == 0 && sequenceData.currentTime == 1.0f &&
+                    animateData.flags == 1 && (animateNode.flags & 0x07) == 0x07 &&
+                    zClass_TypeList::Head(7) == nullptr &&
+                    nearFloat(animateData.runtime.currentTime, 2.0f);
+    zClass_TypeList::Head(11) = nullptr;
+    zClass_TypeList::Tail(11) = nullptr;
+    zClass_TypeList::Head(12) = nullptr;
+    zClass_TypeList::Tail(12) = nullptr;
+    free_zclass_type_lists_for_test();
+    return ok ? 0 : 1;
+}
+
+#endif
+#if !defined(RECOIL_ZGAME_TESTS_ZMODEL_CONST_ONLY) || \
+    defined(RECOIL_ZGAME_TESTS_ZCLASS_TYPELIST_UPDATE)
+#ifndef RECOIL_ZGAME_TESTS_ZMODEL_CONST_ONLY
 extern "C" int zclass_type_list_alloc_and_insert_smoke() {
     for (int i = 0; i < 16; ++i) {
         zClass_TypeList::Head(i) = nullptr;
@@ -10560,6 +10786,7 @@ extern "C" int zclass_sequence_update_smoke() {
     std::free(data);
     return 0;
 }
+#endif
 
 extern "C" int zclass_typelist_update_sequences_smoke() {
     reset_zclass_type_lists_for_test();
@@ -10667,6 +10894,7 @@ extern "C" int zclass_typelist_update_animations_smoke() {
     return ok ? 0 : 1;
 }
 
+#ifndef RECOIL_ZGAME_TESTS_ZMODEL_CONST_ONLY
 extern "C" int zclass_gwnode_update_all_smoke() {
     auto nearFloat = [](float lhs, float rhs) { return std::fabs(lhs - rhs) <= 0.0001f; };
     reset_zclass_type_lists_for_test();
@@ -12020,6 +12248,9 @@ extern "C" int zclass_world_ensure_grid_cell_display_position_smoke() {
     return 0;
 }
 
+#endif
+#if !defined(RECOIL_ZGAME_TESTS_ZMODEL_CONST_ONLY) || \
+    defined(RECOIL_ZGAME_TESTS_ZCLASS_TYPELIST_UPDATE)
 extern "C" int zclass_world_remove_light_sound_smoke() {
     zClass_WorldDataPartial addWorldData{};
     zClass_NodePartial addWorld{};
@@ -12182,6 +12413,8 @@ extern "C" int zclass_world_remove_light_sound_smoke() {
     return 0;
 }
 
+#endif
+#ifndef RECOIL_ZGAME_TESTS_ZMODEL_CONST_ONLY
 extern "C" int zclass_child_generic_link_smoke() {
     for (int i = 0; i < 16; ++i) {
         zClass_TypeList::Head(i) = nullptr;
@@ -17053,4 +17286,5 @@ extern "C" int zclass_camera_sync_view_context_positions_smoke() {
     return result;
 }
 
+#endif
 #endif

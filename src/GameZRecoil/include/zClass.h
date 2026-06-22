@@ -1953,7 +1953,7 @@ RECOIL_STATIC_ASSERT(
 RECOIL_STATIC_ASSERT(sizeof(zCamera_FrustumGridTileRingPartial) == 0x2d4);
 
 extern "C" {
-extern zVec3 g_zCamera_FrustumFootprintPoints[9];
+extern zVec3 g_zCamera_FrustumFootprintPoints[5];
 extern int g_zCamera_FrustumFootprintPointCount;
 extern zCamera_FrustumGridTileRingPartial g_zCamera_FrustumGridTileRings[50];
 extern int gModel_ClipMaskStack[0x10];

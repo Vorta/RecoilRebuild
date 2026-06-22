@@ -33,13 +33,15 @@ struct CZRecoilFrame : CZGameFrame {
     static const AFX_MSGMAP messageMap;
     static const AFX_MSGMAP_ENTRY messageEntries[];
 
-    static unsigned int GetBaseRuntimeClass();
+    CZRecoilFrame();
+    ~CZRecoilFrame();
+    static CRuntimeClass *__stdcall GetBaseRuntimeClass();
     static CZRecoilFrame *CreateObject();
-    static unsigned int GetRuntimeClass();
-    static unsigned int GetBaseMessageMap();
-    static unsigned int GetMessageMap();
-    CZRecoilFrame * Constructor();
-    void Destructor();
+    static CRuntimeClass *__stdcall GetRuntimeClassStatic();
+    virtual CRuntimeClass *GetRuntimeClass() const;
+    static const AFX_MSGMAP *__stdcall GetBaseMessageMap();
+    static const AFX_MSGMAP *__stdcall GetMessageMapStatic();
+    virtual const AFX_MSGMAP * GetMessageMap() const;
     void SetMenuBarVisibility(int visible);
     CString * BuildWindowTitle(CString *outTitle);
     void OnMenuStartSinglePlayer();

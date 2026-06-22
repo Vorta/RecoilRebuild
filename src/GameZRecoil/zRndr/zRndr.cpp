@@ -272,7 +272,15 @@ ImmediateRasterSegmentedProc g_pfnImmediateRasterReserved = 0;
 ImmediateRaster5Proc g_pfnImmediateRaster5 = 0;
 PointOpProc g_pfnPointOpCandidate = 0;
 PointOpProc g_pfnPointOpActive = 0;
+/**
+ * Reimplements data 0x632104: gRndr_pfnTexturedQueuedFinalize.
+ * Purpose: Holds the selected scalar/MMX textured queued span finalizer.
+ */
 SpanRoutineProc g_pfnTexturedQueuedFinalize = 0;
+/**
+ * Reimplements data 0x632108: gRndr_pfnTexturedQueuedFinalizeAlt.
+ * Purpose: Holds the optional MMX texture mask setup callback for queued spans.
+ */
 SpanRoutineProc g_pfnTexturedQueuedFinalizeAlt = 0;
 // Queued polygon banks from zrndr_draw.c. BN identifies the transparent count
 // at 0x57de7c, the transparent records at 0x57de80, the sort index bank at

@@ -72,6 +72,7 @@ extern "C" int zsnd_backend_shutdown_release_smoke(void);
 extern "C" int zsnd_backend_error_reporters_smoke(void);
 extern "C" int zsnd_play_handle_stop_if_active_smoke(void);
 extern "C" int zsnd_play_handle_set_freq_scaled_smoke(void);
+extern "C" int zsnd_play_handle_set_enable_scale_smoke(void);
 extern "C" int zsnd_play_handle_try_disable_managed_smoke(void);
 extern "C" int zsnd_play_handle_update3d_a3d_smoke(void);
 extern "C" int zsnd_play_handle_update3d_directsound_smoke(void);
@@ -247,7 +248,22 @@ extern "C" int gamenet_reset_hud_timer_panel_net_state_smoke(void);
 extern "C" int gamenet_get_local_player_color_index_smoke(void);
 extern "C" int gamenet_get_nearest_other_player_distance_to_spawn_point_smoke(void);
 extern "C" int gamenet_wait_for_local_player_color_index_smoke(void);
+extern "C" int gamenet_update_remote_player_hud_widget_screen_pos_smoke(void);
 extern "C" int net_format_ipv4_address_smoke(void);
+extern "C" int net_session_browser_dialog_constructor_smoke(void);
+extern "C" int net_session_browser_dialog_scalar_deleting_dtor_smoke(void);
+extern "C" int net_session_browser_dialog_destructor_smoke(void);
+extern "C" int net_session_browser_dialog_do_data_exchange_smoke(void);
+extern "C" int net_session_browser_dialog_get_message_map_smoke(void);
+extern "C" int net_session_browser_dialog_on_init_dialog_smoke(void);
+extern "C" int net_session_browser_dialog_refresh_session_list_smoke(void);
+extern "C" int net_session_browser_dialog_connect_selected_provider_smoke(void);
+extern "C" int net_session_browser_dialog_on_ok_smoke(void);
+extern "C" int net_session_browser_dialog_on_create_session_smoke(void);
+extern "C" int net_session_browser_dialog_on_timer_smoke(void);
+extern "C" int net_session_browser_dialog_on_destroy_smoke(void);
+extern "C" int net_session_browser_dialog_validate_player_name_smoke(void);
+extern "C" int net_session_browser_dialog_on_help_docs_smoke(void);
 extern "C" int net_session_config_dialog_get_message_map_smoke(void);
 extern "C" int net_session_config_dialog_init_map_name_strings_smoke(void);
 extern "C" int net_session_config_dialog_register_map_name_cleanup_smoke(void);
@@ -259,6 +275,78 @@ extern "C" int net_session_config_dialog_destructor_smoke(void);
 extern "C" int net_session_config_dialog_do_data_exchange_smoke(void);
 extern "C" int net_session_config_dialog_on_destroy_smoke(void);
 extern "C" int net_session_config_dialog_on_map_changed_smoke(void);
+extern "C" int westwood_online_upgrade_config_dialog_constructor_smoke(void);
+extern "C" int westwood_online_upgrade_config_dialog_destructor_smoke(void);
+extern "C" int westwood_online_upgrade_config_dialog_do_data_exchange_smoke(void);
+extern "C" int westwood_online_upgrade_config_dialog_focus_clear_smoke(void);
+extern "C" int westwood_online_upgrade_config_dialog_on_init_smoke(void);
+extern "C" int westwood_online_upgrade_config_dialog_on_ok_smoke(void);
+extern "C" int westwood_online_upgrade_config_get_message_map_smoke(void);
+extern "C" int westwood_online_upgrade_config_get_selected_profile_values_smoke(void);
+extern "C" int westwood_online_upgrade_config_show_modal_apply_smoke(void);
+extern "C" int westwood_online_upgrade_config_dialog_profile_combo_kill_focus_smoke(void);
+extern "C" int westwood_online_upgrade_config_dialog_profile_combo_sel_change_smoke(void);
+extern "C" int westwood_online_upgrade_config_dialog_profile_combo_edit_change_smoke(void);
+extern "C" int westwood_online_upgrade_config_dialog_profile_combo_dropdown_smoke(void);
+extern "C" int westwood_online_upgrade_config_dialog_connect_mode_clicked_smoke(void);
+extern "C" int westwood_online_upgrade_config_dialog_connect_edit_kill_focus_smoke(void);
+extern "C" int westwood_online_upgrade_dialog_refresh_list_timer_smoke(void);
+extern "C" int westwood_online_upgrade_dialog_begin_connect_smoke(void);
+extern "C" int westwood_online_upgrade_dialog_append_status_text_smoke(void);
+extern "C" int westwood_online_upgrade_dialog_submit_visible_session_requests_status_smoke(void);
+extern "C" int westwood_online_upgrade_dialog_queue_visible_session_requests_lookup_smoke(void);
+extern "C" int westwood_online_upgrade_dialog_show_download_ready_list_smoke(void);
+extern "C" int westwood_online_upgrade_progress_dialog_set_status_text_fmt_smoke(void);
+extern "C" int westwood_online_upgrade_progress_dialog_dlg_proc_smoke(void);
+extern "C" int westwood_online_upgrade_progress_dialog_constructor_smoke(void);
+extern "C" int westwood_online_upgrade_progress_dialog_destructor_smoke(void);
+extern "C" int westwood_online_upgrade_progress_dialog_scalar_dtor_smoke(void);
+extern "C" int westwood_online_upgrade_progress_dialog_get_message_map_smoke(void);
+extern "C" int westwood_online_upgrade_download_callback_no_op_smoke(void);
+extern "C" int westwood_online_upgrade_download_create_instance_advise_smoke(void);
+extern "C" int westwood_online_upgrade_download_unadvise_release_smoke(void);
+extern "C" int westwood_online_upgrade_download_event_sink_create_instance_smoke(void);
+extern "C" int westwood_online_upgrade_download_event_sink_finished_smoke(void);
+extern "C" int westwood_online_upgrade_download_event_sink_error_smoke(void);
+extern "C" int westwood_online_upgrade_download_event_sink_progress_smoke(void);
+extern "C" int westwood_online_upgrade_download_event_sink_state_changed_smoke(void);
+extern "C" int westwood_online_upgrade_download_event_sink_query_interface_smoke(void);
+extern "C" int westwood_online_upgrade_download_event_sink_destructor_smoke(void);
+extern "C" int westwood_online_upgrade_download_event_sink_release_smoke(void);
+extern "C" int westwood_online_upgrade_shared_com_add_ref_smoke(void);
+extern "C" int westwood_online_upgrade_ref_count_and_lock_init_smoke(void);
+extern "C" int westwood_online_upgrade_api_event_sink_append_browse_record_status3022_3025_smoke(void);
+extern "C" int westwood_online_upgrade_api_event_sink_append_connect_status301e_3021_smoke(void);
+extern "C" int westwood_online_upgrade_api_event_sink_append_session_request_status301b_smoke(void);
+extern "C" int westwood_online_upgrade_api_event_sink_append_session_request_status301c_smoke(void);
+extern "C" int westwood_online_upgrade_api_event_sink_append_session_request_status301c_alt0_smoke(void);
+extern "C" int westwood_online_upgrade_api_event_sink_append_session_request_status301c_alt1_smoke(void);
+extern "C" int westwood_online_upgrade_api_event_sink_append_session_request_status301d_smoke(void);
+extern "C" int westwood_online_upgrade_api_event_sink_append_time_status302a_smoke(void);
+extern "C" int westwood_online_upgrade_api_event_sink_append_value_status3026_smoke(void);
+extern "C" int westwood_online_upgrade_api_event_sink_append_value_status302b_302c_smoke(void);
+extern "C" int westwood_online_upgrade_api_event_sink_apply_encoded_query_string0_smoke(void);
+extern "C" int westwood_online_upgrade_api_event_sink_apply_encoded_query_string1_smoke(void);
+extern "C" int westwood_online_upgrade_api_event_sink_callback_no_op0_smoke(void);
+extern "C" int westwood_online_upgrade_api_event_sink_callback_no_op1_smoke(void);
+extern "C" int westwood_online_upgrade_api_event_sink_create_instance_smoke(void);
+extern "C" int westwood_online_upgrade_api_event_sink_lifetime_smoke(void);
+extern "C" int westwood_online_upgrade_api_event_sink_launch_selected_session_smoke(void);
+extern "C" int westwood_online_upgrade_api_event_sink_on_api_status_smoke(void);
+extern "C" int westwood_online_upgrade_api_event_sink_on_bootstrap_server_list_smoke(void);
+extern "C" int westwood_online_upgrade_api_event_sink_on_browse_record_added_smoke(void);
+extern "C" int westwood_online_upgrade_api_event_sink_on_browse_record_and_session_resolved_smoke(void);
+extern "C" int westwood_online_upgrade_api_event_sink_on_browse_record_list_received_smoke(void);
+extern "C" int westwood_online_upgrade_api_event_sink_on_download_ready_smoke(void);
+extern "C" int westwood_online_upgrade_api_event_sink_on_network_status_changed_smoke(void);
+extern "C" int westwood_online_upgrade_api_event_sink_on_pending_session_removed_smoke(void);
+extern "C" int westwood_online_upgrade_api_event_sink_on_server_error_smoke(void);
+extern "C" int westwood_online_upgrade_api_event_sink_on_session_launch_result_smoke(void);
+extern "C" int westwood_online_upgrade_api_event_sink_on_session_list_enumerated_smoke(void);
+extern "C" int westwood_online_upgrade_api_event_sink_on_session_query_finished_smoke(void);
+extern "C" int westwood_online_upgrade_api_event_sink_on_status_text_received_smoke(void);
+extern "C" int westwood_online_upgrade_api_event_sink_query_interface_smoke(void);
+extern "C" int westwood_online_upgrade_api_event_sink_update_session_result_item_flags_smoke(void);
 extern "C" int net_init_from_zrd_smoke(void);
 extern "C" int optcatalog_alt_gun_dispatch_alloc_runtime_gate_smoke(void);
 extern "C" int optcatalog_handle_pkt0a_remove_runtime_relay_smoke(void);
@@ -275,7 +363,18 @@ extern "C" int ainet_load_from_zrd_smoke(void);
 extern "C" int ainet_load_all_from_zrd_smoke(void);
 extern "C" int checkpoint_instantiate_named_objects_smoke(void);
 extern "C" int checkpoint_update_player_lap_progress_and_notify_net_smoke(void);
+extern "C" int player_is_mission_probe_type1_enabled_by_id_smoke(void);
 extern "C" int player_get_save_state_list_head_smoke(void);
+extern "C" int player_unbind_current_save_state_if_single_player_smoke(void);
+extern "C" int player_bind_active_game_state_as_current_save_state_smoke(void);
+extern "C" int player_async_command_callback_basic_smoke(void);
+extern "C" int player_sync_local_pose_from_root_node_smoke(void);
+extern "C" int zvehicle_select_zrd_by_difficulty_smoke(void);
+extern "C" int player_load_master_common_data_from_node_smoke(void);
+extern "C" int player_load_master_modal_data_from_node_smoke(void);
+extern "C" int player_get_aiv_zrd_path_smoke(void);
+extern "C" int player_extract_vehicle_name_from_aiv_name_smoke(void);
+extern "C" int player_los_from_fx_offset_smoke(void);
 extern "C" int player_init_save_state_list_smoke(void);
 extern "C" int player_clone_type6_node_from_template_and_rename_smoke(void);
 extern "C" int player_cache_gun_hardpoints_and_detach_displays_smoke(void);
@@ -284,6 +383,8 @@ extern "C" int player_free_alt_weapon_trail_runtime_states_smoke(void);
 extern "C" int player_check_mission_weapon_availability_smoke(void);
 extern "C" int player_apply_primary_weapon_switch_smoke(void);
 extern "C" int player_start_master_type_loop_sfx_handle_smoke(void);
+extern "C" int player_update_modal_loop_sfx_smoke(void);
+extern "C" int player_select_modal_state_by_master_type_smoke(void);
 extern "C" int player_master_type_transition_leaf_smoke(void);
 extern "C" int player_apply_master_type_transition_smoke(void);
 extern "C" int player_transition_to_master_type_track_smoke(void);
@@ -295,17 +396,97 @@ extern "C" int player_reactivate_copter_snd_nodes_if_healthy_smoke(void);
 extern "C" int player_apply_alt_weapon_switch_smoke(void);
 extern "C" int player_apply_aim_pitch_to_direction_smoke(void);
 extern "C" int player_update_third_person_camera_smoke(void);
+extern "C" int player_tick_active_camera_state_smoke(void);
+extern "C" int player_update_chase_camera_from_input_smoke(void);
+extern "C" int player_update_top_down_camera_state_smoke(void);
+extern "C" int player_update_camera_from_stored_target_toward_player_smoke(void);
+extern "C" int player_update_first_person_camera_from_input_smoke(void);
+extern "C" int player_adjust_third_person_camera_by_offset_probes_smoke(void);
+extern "C" int player_adjust_third_person_camera_by_side_probes_smoke(void);
+extern "C" int player_restore_third_person_camera_from_obstruction_state_smoke(void);
+extern "C" int player_update_camera_variant_from_camera_pos_smoke(void);
+extern "C" int player_update_camera_variant_from_anchor_smoke(void);
+extern "C" int player_update_camera_weather_fx_emitter_visibility_smoke(void);
+extern "C" int player_filter_camera_probe_blocking_hits_smoke(void);
+extern "C" int player_adjust_sub_camera_focus_for_obstruction_smoke(void);
+extern "C" int player_find_nearest_third_person_camera_probe_point_smoke(void);
+extern "C" int player_select_probe_sample_height_smoke(void);
+extern "C" int player_probe_modal_sample_heights_smoke(void);
 extern "C" int player_apply_camera_state_and_zopt_set_camera_mode_smoke(void);
+extern "C" int player_set_world_pose_and_restart_anchor_smoke(void);
+extern "C" int player_capture_current_object_pose_as_restart_anchor_smoke(void);
+extern "C" int player_reset_mouse_control_state_and_recenter_cursor_smoke(void);
+extern "C" int player_toggle_steering_mode_and_reset_mouse_look_smoke(void);
+extern "C" int player_reset_motion_transient_state_smoke(void);
 extern "C" int player_find_alt_gun_controller_smoke(void);
 extern "C" int player_alt_gun_fire_point_selection_smoke(void);
+extern "C" int player_primary_gun_fire_point_selection_smoke(void);
 extern "C" int player_alt_gun_ensure_aux_effect_active_smoke(void);
 extern "C" int player_update_continuous_alt_gun_fire_controller_smoke(void);
 extern "C" int player_alt_gun_projectile_dispatch_helpers_smoke(void);
 extern "C" int player_process_alt_gun_fire_dispatch_request_smoke(void);
+extern "C" int player_alt_gun_fire_slot_offset_smoke(void);
+extern "C" int player_solve_alt_gun_lead_target_point_smoke(void);
+extern "C" int player_tick_ai_mode2_alt_gun_attack_window_smoke(void);
 extern "C" int player_update_gun_dispatch_requests_from_trigger_latches_smoke(void);
+extern "C" int player_start_slip_sfx_smoke(void);
+extern "C" int player_stop_slip_sfx_smoke(void);
+extern "C" int player_vec3_fast_normalize_smoke(void);
+extern "C" int player_constrain_to_unit_distance_from_smoke(void);
+extern "C" int player_update_bank_and_turn_dynamics_smoke(void);
+extern "C" int player_compute_turn_slip_delta_smoke(void);
+extern "C" int player_update_yaw_velocity_from_steer_input_smoke(void);
+extern "C" int player_update_bank_velocity_from_steer_input_smoke(void);
+extern "C" int player_integrate_yaw_and_wrap_from_yaw_velocity_smoke(void);
+extern "C" int player_rebuild_steer_basis_from_motion_basis_smoke(void);
+extern "C" int player_rebuild_steer_basis_from_motion_axes_smoke(void);
+extern "C" int player_rebuild_steer_basis_raw_from_ref_smoke(void);
+extern "C" int player_rebuild_motion_basis_from_steer_basis_smoke(void);
+extern "C" int player_update_auto_turn_and_steer_from_target_smoke(void);
+extern "C" int player_set_auto_turn_target_dir_from_world_point_smoke(void);
+extern "C" int player_update_sub_vertical_damping_smoke(void);
+extern "C" int player_clear_pending_contact_queues_smoke(void);
+extern "C" int player_pending_contact_select_preferred_smoke(void);
+extern "C" int player_select_and_resolve_preferred_pending_collision_contact_smoke(void);
+extern "C" int player_prepare_pending_world_collision_response_smoke(void);
+extern "C" int player_resolve_pending_world_collision_contact_smoke(void);
+extern "C" int player_classify_pending_contacts_for_segment_smoke(void);
+extern "C" int player_collect_pending_contacts_for_segments_smoke(void);
+extern "C" int player_pickup_contact_passes_collection_test_smoke(void);
+extern "C" int player_process_pending_pickup_contacts_smoke(void);
+extern "C" int player_build_pending_contact_queues_smoke(void);
+extern "C" int player_process_pending_contact_queues_smoke(void);
+extern "C" int player_collect_pending_collision_contacts_for_quad_probe_smoke(void);
+extern "C" int player_try_resolve_pending_collision_probe_sweep_smoke(void);
+extern "C" int player_resolve_pending_collision_contact_smoke(void);
+extern "C" int player_resolve_pending_player_collision_contact_smoke(void);
+extern "C" int player_process_transfer_contact_queue_smoke(void);
+extern "C" int player_apply_pending_collision_probe_velocity_smoke(void);
+extern "C" int player_start_modal_loop_sfx_handle_smoke(void);
+extern "C" int player_build_environment_probe_result_smoke(void);
+extern "C" int player_apply_environment_probe_result_smoke(void);
+extern "C" int player_surface_height_and_terrain_tilt_smoke(void);
+extern "C" int player_compute_surface_from1_probe_smoke(void);
+extern "C" int player_compute_triangle_normal_smoke(void);
+extern "C" int player_compute_surface_from2_probes_smoke(void);
+extern "C" int player_check_probe_sample_mask_overlap_smoke(void);
+extern "C" int player_rebuild_above_ground_indices_smoke(void);
+extern "C" int player_select_best_probes_by_dot_product_smoke(void);
+extern "C" int player_compute_surface_from3_probes_smoke(void);
+extern "C" int player_process_env_probe_results_smoke(void);
+extern "C" int player_rebuild_orientation_from_normal_smoke(void);
+extern "C" int player_find_third_probe_and_compute_normal_smoke(void);
+extern "C" int player_accumulate_slope_forces_smoke(void);
+extern "C" int player_update_vertical_velocity_and_transform_smoke(void);
+extern "C" int player_update_post_move_environment_smoke(void);
+extern "C" int player_apply_amphib_speed_oscillation_smoke(void);
+extern "C" int player_tick_alt_gun_runtime_state_smoke(void);
 extern "C" int player_reset_alt_gun_runtime_state_smoke(void);
 extern "C" int player_build_mission_save_data_smoke(void);
 extern "C" int player_apply_mission_save_data_smoke(void);
+extern "C" int player_add_scaled_hud_counter_smoke(void);
+extern "C" int player_update_debug_overlay_hud_smoke(void);
+extern "C" int player_refresh_hud_from_state_smoke(void);
 extern "C" int player_destroy_save_game_state_smoke(void);
 extern "C" int player_shutdown_mission_runtime_smoke(void);
 extern "C" int player_zar_register_sections_smoke(void);
@@ -401,6 +582,8 @@ extern "C" int zfmv_script_update_smoke(void);
 extern "C" int zfmv_script_update_at_time_smoke(void);
 extern "C" int zfmv_script_begin_now_smoke(void);
 extern "C" int zfmv_script_load_actions_from_zrd_smoke(void);
+extern "C" int zfmv_action_flip_surfaces_smoke(void);
+extern "C" int zfmv_action_wait_begin_update_smoke(void);
 extern "C" int zfmv_action_image_constructor_with_screen_rect_smoke(void);
 extern "C" int zfmv_action_image_constructor_scaled_smoke(void);
 extern "C" int zfmv_action_fade_constructor_smoke(void);
@@ -447,12 +630,17 @@ extern "C" int hud_ui_save_game_primary_action_button_on_activate_smoke(void);
 extern "C" int hud_ui_load_game_dialog_constructor_smoke(void);
 extern "C" int hud_ui_load_game_primary_action_button_on_activate_smoke(void);
 extern "C" int hud_ui_zrd_widget_on_activate_queue_exit_current_state_smoke(void);
+extern "C" int hud_ui_callback_queue_exit_current_state_smoke(void);
+extern "C" int hud_ui_callback_queue_cheat_code_state_smoke(void);
 extern "C" int hud_ui_credits_quit_button_on_activate_smoke(void);
 extern "C" int hud_cheat_clear_nanite_panel_cheat_sentinel_smoke(void);
 extern "C" int hud_ui_cheat_code_title_widget_on_activate_smoke(void);
 extern "C" int hud_ui_cheat_code_dialog_constructor_smoke(void);
 extern "C" int hud_ui_cheat_code_dialog_destructor_smoke(void);
 extern "C" int hud_ui_cheat_code_dialog_scalar_deleting_destructor_smoke(void);
+extern "C" int hud_low_meter_loop_sound_set_loop_active_smoke(void);
+extern "C" int hud_ui_controls_dialog_constructor_smoke(void);
+extern "C" int hud_ui_new_game_panel_start_activation_smoke(void);
 extern "C" int hud_ui_new_game_panel_constructor_cluster_smoke(void);
 extern "C" int hud_ui_new_game_panel_overlay_owner_queue_enter_smoke(void);
 extern "C" int hud_ui_new_game_panel_overlay_owner_on_try_become_current_smoke(void);
@@ -466,11 +654,24 @@ extern "C" int recoil_app_state_queue_block_init_from_cursor_smoke(void);
 extern "C" int recoil_app_queue_switch_current_state_smoke(void);
 extern "C" int recoil_app_queue_push_state_smoke(void);
 extern "C" int recoil_app_queue_exit_current_state_smoke(void);
+extern "C" int recoil_app_run_current_state_quit_smoke(void);
+extern "C" int recoil_app_run_queue_transitions_smoke(void);
 extern "C" int recoil_app_mfc_ole_module_constructor_smoke(void);
 extern "C" int recoil_app_mfc_ole_module_destructor_smoke(void);
 extern "C" int recoil_app_constructor_destructor_smoke(void);
 extern "C" int czgame_frame_constructor_smoke(void);
 extern "C" int czgame_frame_create_object_smoke(void);
+extern "C" int czgame_frame_destructor_smoke(void);
+extern "C" int czgame_frame_is_window_valid_smoke(void);
+extern "C" int czgame_frame_build_window_title_smoke(void);
+extern "C" int czrecoilframe_build_window_title_smoke(void);
+extern "C" int czgame_frame_on_close_smoke(void);
+extern "C" int czgame_frame_on_paint_smoke(void);
+extern "C" int czgame_frame_on_size_smoke(void);
+extern "C" int czgame_frame_on_create_smoke(void);
+extern "C" int czgame_frame_on_destroy_smoke(void);
+extern "C" int czgame_frame_on_activate_smoke(void);
+extern "C" int czgame_frame_on_app_idle_dispatch_message_smoke(void);
 extern "C" int czrecoil_frame_constructor_smoke(void);
 extern "C" int czrecoil_frame_create_object_smoke(void);
 extern "C" int czrecoil_frame_destructor_smoke(void);
@@ -489,23 +690,32 @@ extern "C" int czrecoil_frame_configure_mode_feature_flags_smoke(void);
 extern "C" int czrecoil_frame_video_mode_menu_handlers_smoke(void);
 extern "C" int czrecoil_frame_update_video_mode_cmd_ui_smoke(void);
 extern "C" int czrecoil_frame_set_hw_api_and_init_mode_smoke(void);
+extern "C" int czrecoilframe_set_hw_api_and_init_mode_smoke(void);
 extern "C" int czrecoil_frame_ensure_hw_api_initialized_smoke(void);
 extern "C" int czrecoil_frame_select_hw_api_menu_handlers_smoke(void);
 extern "C" int czrecoil_frame_hw_api_menu_cmd_ui_smoke(void);
+extern "C" int czrecoil_frame_audio_input_menu_smoke(void);
 extern "C" int czrecoil_frame_menu_toggle_smoke(void);
 extern "C" int czrecoil_frame_toggle_texture_packs_smoke(void);
+extern "C" int czrecoil_frame_on_menu_westwood_online_upgrade_smoke(void);
+extern "C" int czrecoil_frame_open_multiplayer_session_browser_smoke(void);
 extern "C" int czrecoil_frame_on_size_smoke(void);
 extern "C" int recoil_app_fmv_state_destructor_smoke(void);
 extern "C" int recoil_app_scalar_deleting_destructor_smoke(void);
 extern "C" int recoil_app_mission_fmv_state_destructor_smoke(void);
 extern "C" int recoil_app_initialize_display_failure_smoke(void);
 extern "C" int recoil_app_start_engine_and_queue_startup_state_smoke(void);
+extern "C" int recoil_app_on_idle_or_dispatch_smoke(void);
 extern "C" int recoil_state_main_menu_transition_constructor_smoke(void);
 extern "C" int recoil_state_main_menu_transition_static_init_smoke(void);
 extern "C" int recoil_state_main_menu_transition_set_deferred_video_mode_index_smoke(void);
 extern "C" int recoil_state_main_menu_transition_queue_enter_smoke(void);
 extern "C" int hud_ui_main_menu_dialog_constructor_smoke(void);
 extern "C" int recoil_state_cheat_code_constructor_smoke(void);
+extern "C" int recoil_state_cheat_code_destructor_smoke(void);
+extern "C" int recoil_state_cheat_code_static_init_thunks_smoke(void);
+extern "C" int recoil_state_cheat_code_on_try_become_current_smoke(void);
+extern "C" int recoil_state_cheat_code_on_deactivate_smoke(void);
 extern "C" int recoil_state_controls_lifecycle_smoke(void);
 extern "C" int recoil_state_controls_activation_smoke(void);
 extern "C" int recoil_state_controls_on_resume_smoke(void);
@@ -609,8 +819,13 @@ extern "C" int zhud_triplet_panel_destructor_core_smoke(void);
 extern "C" int zhud_triplet_panel_draw_smoke(void);
 extern "C" int zhud_triplet_panel_set_visible_count_smoke(void);
 extern "C" int zhud_triplet_panel_shutdown_items_stub_smoke(void);
+extern "C" int zhud_triplet_constructor_smoke(void);
+extern "C" int zhud_triplet_destructor_core_smoke(void);
 extern "C" int zhud_triplet_interpolate_layout_smoke(void);
 extern "C" int zhud_triplet_is_local_player_first_entry_smoke(void);
+extern "C" int zhud_stats_list_element_update_smoke(void);
+extern "C" int zhud_stats_list_destructors_smoke(void);
+extern "C" int zhud_container_destructor_core_smoke(void);
 extern "C" int zhud_mgr_constructor_smoke(void);
 extern "C" int zhud_mgr_static_init_smoke(void);
 extern "C" int zhud_mgr_static_destructor_smoke(void);
@@ -618,6 +833,7 @@ extern "C" int zhud_mgr_register_at_exit_smoke(void);
 extern "C" int zhud_mgr_static_init_and_register_at_exit_smoke(void);
 extern "C" int zhud_mgr_is_local_player_first_in_stats_list_smoke(void);
 extern "C" int zhud_scoreboard_set_scale_and_rebuild_smoke(void);
+extern "C" int zhud_scoreboard_dispatch_set_scale_smoke(void);
 extern "C" int zhud_triplet_scoreboard_entry_update_smoke(void);
 extern "C" int zhud_text_stack_constructors_smoke(void);
 extern "C" int zhud_text_stack_set_font_all_smoke(void);
@@ -629,15 +845,45 @@ extern "C" int zhud_text_stack_destructor_core_smoke(void);
 extern "C" int zhud_text_stack_layout_mutators_smoke(void);
 extern "C" int zhud_timer_panel_global_accessors_smoke(void);
 extern "C" int zhud_list_menu_entry_sort_smoke(void);
+extern "C" int zhud_layout_base_load_type_i_from_zar_root_smoke(void);
+extern "C" int zhud_layout_apply_viewport_rect_smoke(void);
+extern "C" int zhud_layout_node_read_rect_offset_and_size_smoke(void);
+extern "C" int zhud_layout_node_read_rect_smoke(void);
+extern "C" int zhud_layout_node_read_int3_smoke(void);
+extern "C" int zhud_layout_node_apply_text_label_smoke(void);
+extern "C" int zhud_layout_node_apply_corner_text_quad_smoke(void);
+extern "C" int zhud_layout_node_apply_meter_quad_smoke(void);
+extern "C" int zhud_layout_node_apply_image_widget_smoke(void);
+extern "C" int zhud_layout_shutdown_stub_smoke(void);
+extern "C" int zhud_layout_base_destructor_smoke(void);
+extern "C" int zhud_layout_sw_constructor_smoke(void);
+extern "C" int zhud_layout_sw_global_init_smoke(void);
+extern "C" int zhud_layout_sw_static_lifetime_smoke(void);
+extern "C" int zhud_layout_hw_release_images_smoke(void);
+extern "C" int zhud_layout_hw_update_all_smoke(void);
+extern "C" int zhud_layout_hw_set_active_smoke(void);
+extern "C" int zhud_layout_hw_on_activated_smoke(void);
+extern "C" int zhud_layout_hw_enable_smoke(void);
+extern "C" int zhud_layout_hw_disable_smoke(void);
+extern "C" int zhud_layout_hw_constructor_smoke(void);
+extern "C" int zhud_layout_hw_global_init_smoke(void);
+extern "C" int zhud_layout_hw_static_lifetime_smoke(void);
+extern "C" int zhud_layout_sw_set_active_smoke(void);
 extern "C" int zhud_layout_hw_update_objective_dirty_rect_smoke(void);
+extern "C" int zhud_layout_hw_load_type_ii_from_zar_root_smoke(void);
 extern "C" int zhud_objective_update_meter_xpoints_smoke(void);
 extern "C" int zhud_objective_show_smoke(void);
 extern "C" int zhud_objective_begin_smoke(void);
+extern "C" int hud_ui_aux_overlay_text_lines_smoke(void);
 extern "C" int zhud_loading_checkpoint_init_table_smoke(void);
 extern "C" int zhud_loading_checkpoint_advance_and_log_smoke(void);
 extern "C" int zhud_mgr_tail_bar_layout_smoke(void);
 extern "C" int zhud_mgr_trigger_current_layout_on_activated_smoke(void);
+extern "C" int zhud_mgr_viewport_activation_smoke(void);
+extern "C" int zhud_mgr_project_point_to_normalized_clamped_smoke(void);
 extern "C" int zhud_mgr_sensor_set_shield_message_ratio_smoke(void);
+extern "C" int zhud_shield_message_widget_destructor_smoke(void);
+extern "C" int zhud_shield_message_widget_apply_layout_smoke(void);
 extern "C" int zhud_objective_refresh_counter_text_smoke(void);
 extern "C" int zhud_counter_constructor_smoke(void);
 extern "C" int zhud_message_release_images_smoke(void);
@@ -692,6 +938,7 @@ extern "C" int zhud_panel_draw_smoke(void);
 extern "C" int zhud_panel_set_font_smoke(void);
 extern "C" int zhud_panel_set_text_fmt_smoke(void);
 extern "C" int zhud_panel_query_text_height_smoke(void);
+extern "C" int zhud_panel_simple_constructor_smoke(void);
 extern "C" int zhud_panel_layout_entry_copy_construct_smoke(void);
 extern "C" int zhud_panel_layout_entry_copy_assign_smoke(void);
 extern "C" int zhud_panel_layout_entry_copy_assign_range_smoke(void);
@@ -803,6 +1050,7 @@ extern "C" int zhud_text_input_constructor_smoke(void);
 extern "C" int zhud_text_input_destructor_core_smoke(void);
 extern "C" int zhud_text_input_constructor_and_alloc_smoke(void);
 extern "C" int zhud_polyline_and_slider_border_constructor_smoke(void);
+extern "C" int zhud_polyline_draw_and_slider_update_smoke(void);
 extern "C" int zhud_numeric_text_input_base_constructor_smoke(void);
 extern "C" int zhud_background_bind_primitive_node_to_element_smoke(void);
 extern "C" int zhud_sensor_track_list_add_smoke(void);
@@ -984,6 +1232,10 @@ extern "C" int zclass_gwlist_delete_a_node_smoke(void);
 extern "C" int zclass_shutdown_core_smoke(void);
 extern "C" int zclass_node_propagate_transform_dirty_smoke(void);
 extern "C" int zclass_object3d_reset_transform_dirty_smoke(void);
+extern "C" int zclass_model_ref_lerp_queue_clear_global_state_smoke(void);
+extern "C" int zclass_model_ref_lerp_queue_add_smoke(void);
+extern "C" int zclass_model_ref_lerp_queue_reset_smoke(void);
+extern "C" int zclass_model_ref_lerp_queue_update_smoke(void);
 extern "C" int zclass_object3d_init_smoke(void);
 extern "C" int zclass_object3d_delete_node_smoke(void);
 extern "C" int zclass_light_new_smoke(void);
@@ -1005,6 +1257,8 @@ extern "C" int zclass_world_ensure_grid_cell_display_position_smoke(void);
 extern "C" int zclass_world_apply_pending_fog_settings_smoke(void);
 extern "C" int zclass_world_get_area_partition_at_grid_smoke(void);
 extern "C" int zclass_world_to_grid_coords_clamped_smoke(void);
+extern "C" int zclass_world_build_active_light_list_smoke(void);
+extern "C" int zclass_world_remove_light_sound_smoke(void);
 extern "C" int zclass_node_metadata_accessors_smoke(void);
 extern "C" int zclass_copy_node_display_instance_smoke(void);
 extern "C" int zclass_set_display_instance_smoke(void);
@@ -1013,13 +1267,24 @@ extern "C" int zclass_world_animate_delete_node_smoke(void);
 extern "C" int zclass_display_init_smoke(void);
 extern "C" int zclass_lod_leaf_smoke(void);
 extern "C" int zclass_camera_view_distance_smoke(void);
+extern "C" int zclass_camera_render_frustum_grid_tiles_smoke(void);
+extern "C" int zclass_camera_render_scene_smoke(void);
+extern "C" int zclass_camera_sync_view_context_positions_smoke(void);
+extern "C" int zclass_list_render_active_cameras_smoke(void);
 extern "C" int zclass_render_traverse_dispatch_smoke(void);
 extern "C" int zmodel_material_defaults_and_find_smoke(void);
 extern "C" int zmodel_material_pool_entry_smoke(void);
 extern "C" int zmodel_material_and_di_clone_smoke(void);
 extern "C" int zmodel_init_smoke(void);
 extern "C" int zmodel_display_init_smoke(void);
+extern "C" int zmodel_set_software_path_active_smoke(void);
 extern "C" int zmodel_const_tolerances_and_cross_smoke(void);
+extern "C" int zmodel_light_fog_fade_smoke(void);
+extern "C" int zmodel_light_set_active_lights_smoke(void);
+extern "C" int zmodel_light_build_light_weights_smoke(void);
+extern "C" int zmodel_light_build_attr0_depth_fade_smoke(void);
+extern "C" int zmodel_light_build_attr1_falloff_smoke(void);
+extern "C" int zmodel_light_point_in_polygon_init_smoke(void);
 extern "C" int zdi_ref_and_pool_free_smoke(void);
 extern "C" int zdi_add_polygon_wrapper_smoke(void);
 extern "C" int ztag4_clear_smoke(void);
@@ -1055,6 +1320,11 @@ extern "C" int zclass_gwnode_build_node_to_ancestor_matrix_smoke(void);
 extern "C" int zclass_gwnode_get_world_position_smoke(void);
 extern "C" int zclass_gwnode_update_smoke(void);
 extern "C" int zclass_gwnode_update_tree_smoke(void);
+extern "C" int zclass_typelist_update_bucket_smoke(void);
+extern "C" int zclass_typelist_update_all_buckets_smoke(void);
+extern "C" int zclass_typelist_update_sequences_smoke(void);
+extern "C" int zclass_typelist_update_animations_smoke(void);
+extern "C" int zclass_gwnode_update_all_smoke(void);
 extern "C" int zclass_cls_di_point_query_chain_smoke(void);
 extern "C" int zclass_cls_di_segment_batch_vs_polygon_smoke(void);
 extern "C" int zclass_cls_di_segment_batch_vs_polygon_uv_smoke(void);
@@ -1398,8 +1668,13 @@ extern "C" int zcom_connection_point_container_unadvise_smoke(void);
 extern "C" int time_reset_smoke(void);
 extern "C" int time_tick_smoke(void);
 
+#include "Battlesport/hud.h"
 #include "Battlesport/GameNet.h"
 #include "Battlesport/CZRecoilFrame.h"
+#include "Battlesport/WestwoodOnlineUpgradeApi.h"
+#include "Battlesport/WestwoodOnlineUpgradeApiEventSink.h"
+#include "Battlesport/WestwoodOnlineUpgradeConfigDialog.h"
+#include "Battlesport/WestwoodOnlineUpgradeDialog.h"
 #include "Battlesport/pickup.h"
 #include "Battlesport/player.h"
 #include "GameZRecoil/zGame/zGame.h"
@@ -1409,6 +1684,8 @@ extern "C" int time_tick_smoke(void);
 #include "GameZRecoil/zEffect/zEffect.h"
 #include "GameZRecoil/zError/zError.h"
 #include "GameZRecoil/zHud/zhud_ui.h"
+#include "GameZRecoil/zInput/zInput.h"
+#include "GameZRecoil/zLoc/zLoc.h"
 #include "GameZRecoil/zMath/zMath.h"
 #include "GameZRecoil/zModel/zModel.h"
 #include "GameZRecoil/zNetwork/zNetwork.h"
@@ -1417,6 +1694,8 @@ extern "C" int time_tick_smoke(void);
 #include "GameZRecoil/Time/Time.h"
 #include "GameZRecoil/zVideo/zVideo.h"
 
+#include <ocidl.h>
+#include <cstddef>
 #include <cstdint>
 #include <cstdlib>
 #include <cstdio>
@@ -1618,7 +1897,17 @@ extern "C" int zhud_triplet_panel_shutdown_items_stub_smoke(void) {
 }
 
 #define RECOIL_ZGAME_TESTS_ZMODEL_CONST_ONLY
+#define RECOIL_ZGAME_TESTS_ZMODEL_ACTIVE_LIGHTS
+#define RECOIL_ZGAME_TESTS_ZMODEL_LIGHT_POINT_IN_POLYGON_INIT
+#define RECOIL_ZGAME_TESTS_ZMODEL_SOFTWARE_PATH_ACTIVE
+#define RECOIL_ZGAME_TESTS_MODEL_REF_LERP_QUEUE
+#define RECOIL_ZGAME_TESTS_ZCLASS_TYPELIST_UPDATE
 #include "zgame_tests.cpp"
+#undef RECOIL_ZGAME_TESTS_ZCLASS_TYPELIST_UPDATE
+#undef RECOIL_ZGAME_TESTS_MODEL_REF_LERP_QUEUE
+#undef RECOIL_ZGAME_TESTS_ZMODEL_SOFTWARE_PATH_ACTIVE
+#undef RECOIL_ZGAME_TESTS_ZMODEL_LIGHT_POINT_IN_POLYGON_INIT
+#undef RECOIL_ZGAME_TESTS_ZMODEL_ACTIVE_LIGHTS
 #undef RECOIL_ZGAME_TESTS_ZMODEL_CONST_ONLY
 
 extern "C" int zmodel_init_smoke(void) {
@@ -2199,6 +2488,68 @@ void WriteZrdArrayHeader(HANDLE file, std::uint32_t count) {
     WriteU32(file, count);
 }
 
+int __fastcall SmokeHudUiControlsSurfaceStateNoOp(
+    zVideo_SurfaceStatePartial *surfaceState
+) {
+    return surfaceState != 0 ? 1 : 0;
+}
+
+void ClearSmokeRecoilAppQueue(RecoilApp_StateQueue &queue) {
+    if (queue.m_readBlock.m_cursor != 0) {
+        for (int index = 0; index < queue.m_itemCount; ++index) {
+            RecoilApp_StateQueueItem *const item = queue.m_readBlock.m_cursor[index];
+            if (item != 0) {
+                delete item;
+                queue.m_readBlock.m_cursor[index] = 0;
+            }
+        }
+    }
+
+    if (queue.m_chunkBaseList != 0) {
+        RecoilApp_StateQueueItem ***slot = queue.m_readBlock.m_chunkBaseSlot;
+        RecoilApp_StateQueueItem ***const lastSlot = queue.m_writeBlock.m_chunkBaseSlot;
+        while (slot != 0 && slot <= lastSlot) {
+            if (*slot != 0) {
+                ::operator delete(*slot);
+                *slot = 0;
+            }
+            ++slot;
+        }
+
+        ::operator delete(queue.m_chunkBaseList);
+    }
+
+    std::memset(&queue, 0, sizeof(queue));
+}
+
+bool HudUiControlsCommandActivationQueuesDialog() {
+    const RecoilApp_StateQueue savedQueue = g_RecoilApp.m_stateQueue;
+    if (savedQueue.m_itemCount != 0 || savedQueue.m_chunkBaseList != 0) {
+        return false;
+    }
+
+    std::memset(&g_RecoilApp.m_stateQueue, 0, sizeof(g_RecoilApp.m_stateQueue));
+
+    HudUiControlsDialog_CommandsWidget commandsWidget;
+    commandsWidget.Constructor();
+    commandsWidget.OnActivate();
+
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue;
+    RecoilApp_StateQueueItem *const item =
+        queue.m_readBlock.m_cursor != 0 ? queue.m_readBlock.m_cursor[0] : 0;
+    const bool queued =
+        queue.m_itemCount == 1 &&
+        item != 0 &&
+        item->m_kind == RecoilApp_StateQueueKind_PushState &&
+        item->m_stateObj == &g_HudCmdDialogState &&
+        item->m_param == 0;
+
+    commandsWidget.DestructorCore();
+    ClearSmokeRecoilAppQueue(queue);
+    g_RecoilApp.m_stateQueue = savedQueue;
+    return queued;
+}
+
 void ResetPickupTestTypeListBucket(int bucket) {
     zClass_TypeList::Head(bucket) = nullptr;
     zClass_TypeList::Tail(bucket) = nullptr;
@@ -2209,6 +2560,101 @@ void ResetPickupTestTypeListBucket(int bucket) {
     g_zClass_TypeList_PeakLiveLinkCount = 0;
 }
 } // namespace
+
+extern "C" int hud_ui_controls_dialog_constructor_smoke(void) {
+    zOptGameControlFlags *const oldGameControlOptions = ZOPT_GAME_CONTROL_OPTIONS;
+    int *const oldInputJoystick = ZOPT_INPUT_JOYSTICK;
+    const int oldRendererType = g_zVideo_RendererType;
+    const int oldHalfResBackbuffer = g_zVideo_UseHalfResBackbuffer;
+    const zVideo_SurfaceStatePartial oldPrimarySurface = g_zVideo_PrimarySurfaceState;
+    const zVideo_SurfaceStatePartial oldSwSurface = g_zVideo_SwSurfaceState;
+    const zVideo_SurfaceStatePartial oldDisplayModeSurface = g_zVideo_DisplayModeSurfaceState;
+    zVideo_SurfaceStateProc const oldLockSurfaceState = g_zVideo_pfnLockSurfaceState;
+    zVideo_SurfaceStateProc const oldUnlockSurfaceState = g_zVideo_pfnUnlockSurfaceState;
+
+    std::uint16_t primaryPixels[4] = {};
+    std::uint16_t swPixels[4] = {};
+    std::uint16_t displayPixels[4] = {};
+    zOptGameControlFlags gameControlOptions = 13;
+    int joystickOption = 1;
+
+    ZOPT_GAME_CONTROL_OPTIONS = &gameControlOptions;
+    ZOPT_INPUT_JOYSTICK = &joystickOption;
+    g_zVideo_RendererType = 0;
+    g_zVideo_UseHalfResBackbuffer = 0;
+    g_zVideo_pfnLockSurfaceState = SmokeHudUiControlsSurfaceStateNoOp;
+    g_zVideo_pfnUnlockSurfaceState = SmokeHudUiControlsSurfaceStateNoOp;
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_PrimarySurfaceState.pixels = primaryPixels;
+    g_zVideo_PrimarySurfaceState.width = 2;
+    g_zVideo_PrimarySurfaceState.height = 2;
+    g_zVideo_PrimarySurfaceState.pitch = sizeof(std::uint16_t) * 2;
+    g_zVideo_SwSurfaceState = g_zVideo_PrimarySurfaceState;
+    g_zVideo_SwSurfaceState.pixels = swPixels;
+    g_zVideo_DisplayModeSurfaceState = g_zVideo_PrimarySurfaceState;
+    g_zVideo_DisplayModeSurfaceState.pixels = displayPixels;
+
+    bool constructed = false;
+    bool commandActivation = false;
+    bool noDeleteScalar = false;
+    bool heapScalar = false;
+
+    HudUiControlsDialog dialog;
+    std::memset(&dialog, 0, sizeof(dialog));
+    HudUiControlsDialog *const returned = dialog.Constructor();
+
+    constructed =
+        returned == &dialog &&
+        sizeof(HudUiControlsDialog) == 0xb350 &&
+        offsetof(HudUiControlsDialog, resumeWidget) == 0xa94c &&
+        offsetof(HudUiControlsDialog, commandsWidget) == 0xaa98 &&
+        offsetof(HudUiControlsDialog, mouseOrJoystickSelector) == 0xabe4 &&
+        offsetof(HudUiControlsDialog, throttleModeSelector) == 0xad60 &&
+        offsetof(HudUiControlsDialog, steeringModeSelector) == 0xaedc &&
+        offsetof(HudUiControlsDialog, cursorModeSelector) == 0xb058 &&
+        offsetof(HudUiControlsDialog, cameraModeSelector) == 0xb1d4 &&
+        dialog.mouseOrJoystickSelector.selectedIndex == 1 &&
+        dialog.throttleModeSelector.selectedIndex == 1 &&
+        dialog.steeringModeSelector.selectedIndex == 0 &&
+        dialog.cursorModeSelector.selectedIndex == 1 &&
+        dialog.cameraModeSelector.selectedIndex == 1;
+
+    commandActivation = HudUiControlsCommandActivationQueuesDialog();
+
+    HudUiBackground *const noDeleteResult = dialog.ScalarDeletingDestructor(0);
+    noDeleteScalar = noDeleteResult == static_cast<HudUiBackground *>(&dialog);
+
+    HudUiControlsDialog *const heapDialog =
+        static_cast<HudUiControlsDialog *>(::operator new(sizeof(HudUiControlsDialog)));
+    std::memset(heapDialog, 0, sizeof(*heapDialog));
+    heapDialog->Constructor();
+    HudUiBackground *const heapScalarResult = heapDialog->ScalarDeletingDestructor(1);
+    heapScalar = heapScalarResult == static_cast<HudUiBackground *>(heapDialog);
+
+    ZOPT_GAME_CONTROL_OPTIONS = oldGameControlOptions;
+    ZOPT_INPUT_JOYSTICK = oldInputJoystick;
+    g_zVideo_RendererType = oldRendererType;
+    g_zVideo_UseHalfResBackbuffer = oldHalfResBackbuffer;
+    g_zVideo_PrimarySurfaceState = oldPrimarySurface;
+    g_zVideo_SwSurfaceState = oldSwSurface;
+    g_zVideo_DisplayModeSurfaceState = oldDisplayModeSurface;
+    g_zVideo_pfnLockSurfaceState = oldLockSurfaceState;
+    g_zVideo_pfnUnlockSurfaceState = oldUnlockSurfaceState;
+
+    if (!constructed) {
+        return 3;
+    }
+    if (!commandActivation) {
+        return 4;
+    }
+    if (!noDeleteScalar) {
+        return 5;
+    }
+    if (!heapScalar) {
+        return 6;
+    }
+    return 0;
+}
 
 extern "C" int pickup_airdrop_spawn_ref_init_nodes_smoke(void) {
     ResetPickupTestTypeListBucket(6);
@@ -4937,6 +5383,1050 @@ void RestoreSmokeFunctionPatch(
     patch.active = 0;
 }
 
+template <typename Method>
+void *SmokeWolMethodAddress(Method method)
+{
+    void *address = 0;
+    std::memcpy(&address, &method, sizeof(address));
+    return address;
+}
+
+bool PatchSmokeImportByOrdinal(
+    const char *dllName,
+    WORD ordinal,
+    void *replacement,
+    SmokeImportPatch &patch
+) {
+    unsigned char *const imageBase = (unsigned char *)GetModuleHandleA(0);
+    IMAGE_DOS_HEADER *const dos = (IMAGE_DOS_HEADER *)imageBase;
+    if (dos->e_magic != IMAGE_DOS_SIGNATURE) {
+        return false;
+    }
+
+    IMAGE_NT_HEADERS *const nt = (IMAGE_NT_HEADERS *)(imageBase + dos->e_lfanew);
+    if (nt->Signature != IMAGE_NT_SIGNATURE) {
+        return false;
+    }
+
+    const IMAGE_DATA_DIRECTORY &imports =
+        nt->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT];
+    if (imports.VirtualAddress == 0) {
+        return false;
+    }
+
+    IMAGE_IMPORT_DESCRIPTOR *descriptor =
+        (IMAGE_IMPORT_DESCRIPTOR *)(imageBase + imports.VirtualAddress);
+    for (; descriptor->Name != 0; ++descriptor) {
+        const char *const importedDll = (const char *)(imageBase + descriptor->Name);
+        if (lstrcmpiA(importedDll, dllName) != 0) {
+            continue;
+        }
+
+        IMAGE_THUNK_DATA *nameThunk = (IMAGE_THUNK_DATA *)(
+            imageBase + (descriptor->OriginalFirstThunk != 0
+                             ? descriptor->OriginalFirstThunk
+                             : descriptor->FirstThunk)
+        );
+        IMAGE_THUNK_DATA *addressThunk =
+            (IMAGE_THUNK_DATA *)(imageBase + descriptor->FirstThunk);
+        for (; nameThunk->u1.AddressOfData != 0; ++nameThunk, ++addressThunk) {
+            if (!IMAGE_SNAP_BY_ORDINAL(nameThunk->u1.Ordinal) ||
+                (WORD)(nameThunk->u1.Ordinal & 0xffff) != ordinal) {
+                continue;
+            }
+
+            DWORD oldProtect = 0;
+            patch.slot = &addressThunk->u1.Function;
+            patch.original = addressThunk->u1.Function;
+            if (VirtualProtect(
+                    patch.slot,
+                    sizeof(*patch.slot),
+                    PAGE_EXECUTE_READWRITE,
+                    &oldProtect
+                ) == 0) {
+                patch.slot = 0;
+                patch.original = 0;
+                return false;
+            }
+
+            *patch.slot = (ULONG_PTR)replacement;
+            DWORD ignored = 0;
+            VirtualProtect(patch.slot, sizeof(*patch.slot), oldProtect, &ignored);
+            FlushInstructionCache(GetCurrentProcess(), patch.slot, sizeof(*patch.slot));
+            return true;
+        }
+    }
+
+    return false;
+}
+
+struct SmokeWolUnknownVtable {
+    HRESULT(STDMETHODCALLTYPE *QueryInterface)(IUnknown *, REFIID, void **);
+    ULONG(STDMETHODCALLTYPE *AddRef)(IUnknown *);
+    ULONG(STDMETHODCALLTYPE *Release)(IUnknown *);
+};
+
+struct SmokeWolConnectionPointContainerVtable {
+    HRESULT(STDMETHODCALLTYPE *QueryInterface)(IConnectionPointContainer *, REFIID, void **);
+    ULONG(STDMETHODCALLTYPE *AddRef)(IConnectionPointContainer *);
+    ULONG(STDMETHODCALLTYPE *Release)(IConnectionPointContainer *);
+    HRESULT(STDMETHODCALLTYPE *EnumConnectionPoints)(IConnectionPointContainer *, void **);
+    HRESULT(STDMETHODCALLTYPE *FindConnectionPoint)(IConnectionPointContainer *, REFIID,
+                                                    IConnectionPoint **);
+};
+
+struct SmokeWolConnectionPointVtable {
+    HRESULT(STDMETHODCALLTYPE *QueryInterface)(IConnectionPoint *, REFIID, void **);
+    ULONG(STDMETHODCALLTYPE *AddRef)(IConnectionPoint *);
+    ULONG(STDMETHODCALLTYPE *Release)(IConnectionPoint *);
+    HRESULT(STDMETHODCALLTYPE *GetConnectionInterface)(IConnectionPoint *, IID *);
+    HRESULT(STDMETHODCALLTYPE *GetConnectionPointContainer)(IConnectionPoint *,
+                                                           IConnectionPointContainer **);
+    HRESULT(STDMETHODCALLTYPE *Advise)(IConnectionPoint *, IUnknown *, DWORD *);
+    HRESULT(STDMETHODCALLTYPE *Unadvise)(IConnectionPoint *, DWORD);
+    HRESULT(STDMETHODCALLTYPE *EnumConnections)(IConnectionPoint *, void **);
+};
+
+struct SmokeWolUnknown {
+    SmokeWolUnknownVtable *vftable;
+};
+
+struct SmokeWolConnectionPointContainer {
+    SmokeWolConnectionPointContainerVtable *vftable;
+};
+
+struct SmokeWolConnectionPoint {
+    SmokeWolConnectionPointVtable *vftable;
+};
+
+struct SmokeWolInitApiVtable {
+    void *QueryInterface;
+    void *AddRef;
+    void *Release;
+    void(STDMETHODCALLTYPE *ProcessCallbacks)(IUnknown *self);
+    void(STDMETHODCALLTYPE *BeginConnect)(IUnknown *self, int languageId, int productId,
+                                          const char *playerName,
+                                          const char *connectString,
+                                          int timeoutSeconds);
+    void(STDMETHODCALLTYPE *RequestBootstrapServerList)(
+        IUnknown *self,
+        WestwoodOnlineUpgradeBootstrapServerRecord *selectedBootstrapServer,
+        int timeoutSeconds,
+        int useAlternateConnectString);
+    void(STDMETHODCALLTYPE *RequestListMode)(IUnknown *self, int listMode, int enabled);
+    void *reserved020[21];
+};
+
+struct SmokeWolInitApiObject {
+    SmokeWolInitApiVtable *vftable;
+};
+
+struct SmokeWolInitProgressVtable {
+    void *reserved000[24];
+    int(__fastcall *DestroyWindow)(CWnd *self, void *edx);
+};
+
+SmokeWolUnknown g_smokeWolUnknown;
+SmokeWolConnectionPointContainer g_smokeWolCpc;
+SmokeWolConnectionPoint g_smokeWolConnectionPoint;
+SmokeWolInitApiObject g_smokeWolInitApi;
+SmokeWolInitApiVtable g_smokeWolInitApiVtable;
+SmokeWolInitProgressVtable g_smokeWolInitProgressVtable;
+int g_smokeWolSourceReleaseCalls;
+int g_smokeWolCpcReleaseCalls;
+int g_smokeWolConnectionPointReleaseCalls;
+int g_smokeWolFindConnectionPointCalls;
+int g_smokeWolUnadviseCalls;
+DWORD g_smokeWolUnadviseCookie;
+bool g_smokeWolIidOk;
+int g_smokeWolAdviseCalls;
+IUnknown *g_smokeWolAdviseSink;
+DWORD g_smokeWolAdviseCookie;
+int g_smokeWolCreateCoInitializeCalls;
+void *g_smokeWolCreateCoInitializeReserved;
+int g_smokeWolCreateCoCreateCalls;
+bool g_smokeWolCreateCoCreateArgsOk;
+HRESULT g_smokeWolCreateCoCreateResult;
+IUnknown *g_smokeWolCreateCoCreateObject;
+int g_smokeWolShowModalCalls;
+int g_smokeWolShowModalResult;
+int g_smokeWolCreateInstanceCalls;
+HANDLE g_smokeWolCreateInstanceBootstrap;
+int g_smokeWolCreateEventCalls;
+HANDLE g_smokeWolCreatedEvents[3];
+int g_smokeWolCreateProgressCalls;
+LPCSTR g_smokeWolCreateProgressResource;
+CWnd *g_smokeWolCreateProgressParent;
+int g_smokeWolSetDlgItemTextCalls;
+void *g_smokeWolSetDlgItemTextThis[4];
+int g_smokeWolSetDlgItemTextControlId[4];
+const char *g_smokeWolSetDlgItemTextValue[4];
+unsigned int g_smokeWolMessageIds[16];
+int g_smokeWolMessageIdCalls;
+int g_smokeWolBeginConnectCalls;
+int g_smokeWolBeginConnectLanguageId;
+int g_smokeWolBeginConnectProductId;
+const char *g_smokeWolBeginConnectPlayerName;
+const char *g_smokeWolBeginConnectConnectString;
+int g_smokeWolBeginConnectTimeoutSeconds;
+int g_smokeWolProcessCallbacksCalls;
+int g_smokeWolRequestBootstrapCalls;
+WestwoodOnlineUpgradeBootstrapServerRecord *g_smokeWolRequestBootstrapServer;
+int g_smokeWolRequestBootstrapTimeoutSeconds;
+int g_smokeWolRequestBootstrapUseAlternate;
+int g_smokeWolRequestListModeCalls;
+int g_smokeWolRequestListMode;
+int g_smokeWolRequestListModeEnabled;
+int g_smokeWolDestroyProgressCalls;
+CWnd *g_smokeWolDestroyedProgress;
+DWORD g_smokeWolWaitResults[4];
+int g_smokeWolWaitResultCount;
+int g_smokeWolWaitCalls;
+HANDLE *g_smokeWolWaitHandles;
+DWORD g_smokeWolWaitTimeouts[4];
+int g_smokeWolResetEventCalls;
+HANDLE g_smokeWolResetEventHandle;
+int g_smokeWolSleepCalls;
+DWORD g_smokeWolSleepDurations[4];
+
+HRESULT STDMETHODCALLTYPE SmokeWolUnknownQueryInterface(IUnknown *, REFIID iid, void **out)
+{
+    if (IsEqualGUID(iid, IID_IConnectionPointContainer))
+    {
+        *out = &g_smokeWolCpc;
+        return S_OK;
+    }
+
+    *out = 0;
+    return E_NOINTERFACE;
+}
+
+ULONG STDMETHODCALLTYPE SmokeWolUnknownAddRef(IUnknown *)
+{
+    return 2;
+}
+
+ULONG STDMETHODCALLTYPE SmokeWolUnknownRelease(IUnknown *)
+{
+    ++g_smokeWolSourceReleaseCalls;
+    return 1;
+}
+
+HRESULT STDMETHODCALLTYPE SmokeWolCpcQueryInterface(IConnectionPointContainer *, REFIID,
+                                                    void **out)
+{
+    *out = 0;
+    return E_NOINTERFACE;
+}
+
+ULONG STDMETHODCALLTYPE SmokeWolCpcAddRef(IConnectionPointContainer *)
+{
+    return 2;
+}
+
+ULONG STDMETHODCALLTYPE SmokeWolCpcRelease(IConnectionPointContainer *)
+{
+    ++g_smokeWolCpcReleaseCalls;
+    return 1;
+}
+
+HRESULT STDMETHODCALLTYPE SmokeWolEnumConnectionPoints(IConnectionPointContainer *, void **)
+{
+    return E_NOTIMPL;
+}
+
+HRESULT STDMETHODCALLTYPE SmokeWolFindConnectionPoint(IConnectionPointContainer *,
+                                                      REFIID iid,
+                                                      IConnectionPoint **out)
+{
+    ++g_smokeWolFindConnectionPointCalls;
+    g_smokeWolIidOk = IsEqualGUID(iid, g_WestwoodOnlineUpgradeApiEventSink_IID)
+                          ? true
+                          : false;
+    *out = (IConnectionPoint *)&g_smokeWolConnectionPoint;
+    return S_OK;
+}
+
+HRESULT STDMETHODCALLTYPE SmokeWolCpQueryInterface(IConnectionPoint *, REFIID, void **out)
+{
+    *out = 0;
+    return E_NOINTERFACE;
+}
+
+ULONG STDMETHODCALLTYPE SmokeWolCpAddRef(IConnectionPoint *)
+{
+    return 2;
+}
+
+ULONG STDMETHODCALLTYPE SmokeWolCpRelease(IConnectionPoint *)
+{
+    ++g_smokeWolConnectionPointReleaseCalls;
+    return 1;
+}
+
+HRESULT STDMETHODCALLTYPE SmokeWolGetConnectionInterface(IConnectionPoint *, IID *)
+{
+    return E_NOTIMPL;
+}
+
+HRESULT STDMETHODCALLTYPE SmokeWolGetConnectionPointContainer(
+    IConnectionPoint *,
+    IConnectionPointContainer **)
+{
+    return E_NOTIMPL;
+}
+
+HRESULT STDMETHODCALLTYPE SmokeWolAdvise(IConnectionPoint *, IUnknown *sink, DWORD *cookie)
+{
+    ++g_smokeWolAdviseCalls;
+    g_smokeWolAdviseSink = sink;
+    if (cookie != 0)
+    {
+        *cookie = 0x87654321;
+        g_smokeWolAdviseCookie = *cookie;
+    }
+    return S_OK;
+}
+
+HRESULT STDMETHODCALLTYPE SmokeWolUnadvise(IConnectionPoint *, DWORD cookie)
+{
+    ++g_smokeWolUnadviseCalls;
+    g_smokeWolUnadviseCookie = cookie;
+    return S_OK;
+}
+
+HRESULT STDMETHODCALLTYPE SmokeWolEnumConnections(IConnectionPoint *, void **)
+{
+    return E_NOTIMPL;
+}
+
+SmokeWolUnknownVtable g_smokeWolUnknownVtable = {
+    SmokeWolUnknownQueryInterface,
+    SmokeWolUnknownAddRef,
+    SmokeWolUnknownRelease,
+};
+
+SmokeWolConnectionPointContainerVtable g_smokeWolCpcVtable = {
+    SmokeWolCpcQueryInterface,
+    SmokeWolCpcAddRef,
+    SmokeWolCpcRelease,
+    SmokeWolEnumConnectionPoints,
+    SmokeWolFindConnectionPoint,
+};
+
+SmokeWolConnectionPointVtable g_smokeWolConnectionPointVtable = {
+    SmokeWolCpQueryInterface,
+    SmokeWolCpAddRef,
+    SmokeWolCpRelease,
+    SmokeWolGetConnectionInterface,
+    SmokeWolGetConnectionPointContainer,
+    SmokeWolAdvise,
+    SmokeWolUnadvise,
+    SmokeWolEnumConnections,
+};
+
+HRESULT WINAPI SmokeWolCoInitialize(void *reserved)
+{
+    ++g_smokeWolCreateCoInitializeCalls;
+    g_smokeWolCreateCoInitializeReserved = reserved;
+    return S_OK;
+}
+
+HRESULT WINAPI SmokeWolCoCreateInstance(REFCLSID rclsid, LPUNKNOWN outer,
+                                        DWORD clsContext, REFIID riid,
+                                        LPVOID *outObject)
+{
+    ++g_smokeWolCreateCoCreateCalls;
+    g_smokeWolCreateCoCreateArgsOk =
+        IsEqualGUID(rclsid, g_WestwoodOnlineUpgradeApi_CLSID) != 0 &&
+        outer == 0 &&
+        clsContext == CLSCTX_INPROC_SERVER &&
+        IsEqualGUID(riid, g_WestwoodOnlineUpgradeApi_IID) != 0 &&
+        outObject != 0;
+    if (outObject != 0)
+    {
+        *outObject = g_smokeWolCreateCoCreateObject;
+    }
+    return g_smokeWolCreateCoCreateResult;
+}
+
+int SmokeWolShowModalAndApplySelectedProfileValues()
+{
+    ++g_smokeWolShowModalCalls;
+    return g_smokeWolShowModalResult;
+}
+
+int __fastcall SmokeWolCreateInstanceAndLoadConfig(
+    WestwoodOnlineUpgradeApi *,
+    void *,
+    HANDLE bootstrapServerListEvent)
+{
+    ++g_smokeWolCreateInstanceCalls;
+    g_smokeWolCreateInstanceBootstrap = bootstrapServerListEvent;
+    g_pWestwoodOnlineUpgradeApi = (IUnknown *)&g_smokeWolInitApi;
+    return 1;
+}
+
+HANDLE WINAPI SmokeWolCreateEventA(LPSECURITY_ATTRIBUTES, BOOL, BOOL, LPCSTR)
+{
+    HANDLE result = 0;
+    if (g_smokeWolCreateEventCalls < 3)
+    {
+        result = g_smokeWolCreatedEvents[g_smokeWolCreateEventCalls];
+    }
+    ++g_smokeWolCreateEventCalls;
+    return result;
+}
+
+BOOL __fastcall SmokeWolCreateProgress(CDialog *, void *, LPCSTR resourceName,
+                                       CWnd *parentWnd)
+{
+    ++g_smokeWolCreateProgressCalls;
+    g_smokeWolCreateProgressResource = resourceName;
+    g_smokeWolCreateProgressParent = parentWnd;
+    return TRUE;
+}
+
+void __fastcall SmokeWolSetDlgItemTextA(CWnd *self, void *, int controlId,
+                                        LPCSTR text)
+{
+    if (g_smokeWolSetDlgItemTextCalls < 4)
+    {
+        g_smokeWolSetDlgItemTextThis[g_smokeWolSetDlgItemTextCalls] = self;
+        g_smokeWolSetDlgItemTextControlId[g_smokeWolSetDlgItemTextCalls] =
+            controlId;
+        g_smokeWolSetDlgItemTextValue[g_smokeWolSetDlgItemTextCalls] = text;
+    }
+    ++g_smokeWolSetDlgItemTextCalls;
+}
+
+char *__fastcall SmokeWolGetMessageString(unsigned int messageId)
+{
+    static char messages[16][32];
+    if (g_smokeWolMessageIdCalls < 16)
+    {
+        g_smokeWolMessageIds[g_smokeWolMessageIdCalls] = messageId;
+        wsprintfA(messages[g_smokeWolMessageIdCalls], "msg-%04x", messageId);
+        return messages[g_smokeWolMessageIdCalls++];
+    }
+
+    return (char *)"msg-overflow";
+}
+
+void STDMETHODCALLTYPE SmokeWolProcessCallbacks(IUnknown *)
+{
+    ++g_smokeWolProcessCallbacksCalls;
+}
+
+void STDMETHODCALLTYPE SmokeWolBeginConnect(IUnknown *, int languageId, int productId,
+                                            const char *playerName,
+                                            const char *connectString,
+                                            int timeoutSeconds)
+{
+    ++g_smokeWolBeginConnectCalls;
+    g_smokeWolBeginConnectLanguageId = languageId;
+    g_smokeWolBeginConnectProductId = productId;
+    g_smokeWolBeginConnectPlayerName = playerName;
+    g_smokeWolBeginConnectConnectString = connectString;
+    g_smokeWolBeginConnectTimeoutSeconds = timeoutSeconds;
+}
+
+void STDMETHODCALLTYPE SmokeWolRequestBootstrapServerList(
+    IUnknown *,
+    WestwoodOnlineUpgradeBootstrapServerRecord *selectedBootstrapServer,
+    int timeoutSeconds,
+    int useAlternateConnectString)
+{
+    ++g_smokeWolRequestBootstrapCalls;
+    g_smokeWolRequestBootstrapServer = selectedBootstrapServer;
+    g_smokeWolRequestBootstrapTimeoutSeconds = timeoutSeconds;
+    g_smokeWolRequestBootstrapUseAlternate = useAlternateConnectString;
+}
+
+void STDMETHODCALLTYPE SmokeWolRequestListMode(IUnknown *, int listMode, int enabled)
+{
+    ++g_smokeWolRequestListModeCalls;
+    g_smokeWolRequestListMode = listMode;
+    g_smokeWolRequestListModeEnabled = enabled;
+}
+
+int __fastcall SmokeWolDestroyProgress(CWnd *self, void *)
+{
+    ++g_smokeWolDestroyProgressCalls;
+    g_smokeWolDestroyedProgress = self;
+    return 1;
+}
+
+DWORD WINAPI SmokeWolWaitForMultipleObjects(DWORD count, const HANDLE *handles,
+                                            BOOL waitAll, DWORD timeout)
+{
+    if (count != 3 || waitAll != FALSE)
+    {
+        return WAIT_FAILED;
+    }
+
+    g_smokeWolWaitHandles = (HANDLE *)handles;
+    if (g_smokeWolWaitCalls < 4)
+    {
+        g_smokeWolWaitTimeouts[g_smokeWolWaitCalls] = timeout;
+    }
+
+    if (g_smokeWolWaitCalls < g_smokeWolWaitResultCount)
+    {
+        return g_smokeWolWaitResults[g_smokeWolWaitCalls++];
+    }
+
+    ++g_smokeWolWaitCalls;
+    return WAIT_OBJECT_0;
+}
+
+BOOL WINAPI SmokeWolResetEvent(HANDLE eventHandle)
+{
+    ++g_smokeWolResetEventCalls;
+    g_smokeWolResetEventHandle = eventHandle;
+    return TRUE;
+}
+
+VOID WINAPI SmokeWolSleep(DWORD duration)
+{
+    if (g_smokeWolSleepCalls < 4)
+    {
+        g_smokeWolSleepDurations[g_smokeWolSleepCalls] = duration;
+    }
+    ++g_smokeWolSleepCalls;
+}
+
+LANGID WINAPI SmokeWolGetSystemDefaultLangID()
+{
+    return MAKELANGID(LANG_GERMAN, SUBLANG_DEFAULT);
+}
+
+void ResetSmokeWolComFakes()
+{
+    g_smokeWolUnknown.vftable = &g_smokeWolUnknownVtable;
+    g_smokeWolCpc.vftable = &g_smokeWolCpcVtable;
+    g_smokeWolConnectionPoint.vftable = &g_smokeWolConnectionPointVtable;
+    g_smokeWolSourceReleaseCalls = 0;
+    g_smokeWolCpcReleaseCalls = 0;
+    g_smokeWolConnectionPointReleaseCalls = 0;
+    g_smokeWolFindConnectionPointCalls = 0;
+    g_smokeWolUnadviseCalls = 0;
+    g_smokeWolUnadviseCookie = 0;
+    g_smokeWolIidOk = false;
+    g_smokeWolAdviseCalls = 0;
+    g_smokeWolAdviseSink = 0;
+    g_smokeWolAdviseCookie = 0;
+}
+
+void SmokeWolDeleteInitCriticalSections()
+{
+    DeleteCriticalSection(&g_WestwoodOnlineUpgradeApiInitState.criticalSection2);
+    DeleteCriticalSection(&g_WestwoodOnlineUpgradeApiInitState.criticalSection1);
+    DeleteCriticalSection(&g_WestwoodOnlineUpgradeApiInitState.criticalSection0);
+}
+
+extern "C" int westwood_online_upgrade_api_init_state_smoke(void)
+{
+    const HANDLE bootstrapEvent = (HANDLE)0x13572468;
+    const HINSTANCE moduleHandle = (HINSTANCE)0x24681357;
+    WestwoodOnlineUpgradeApiInitState state = {};
+    state.structSize = sizeof(state);
+    state.statusTextEvent = (HANDLE)0x11111111;
+    state.failureEvent = (HANDLE)0x22222222;
+
+    if (WestwoodOnlineUpgradeApiInitState::Init(0, bootstrapEvent, moduleHandle) !=
+        E_INVALIDARG)
+    {
+        return 1;
+    }
+
+    WestwoodOnlineUpgradeApiInitState smallState = {};
+    smallState.structSize = sizeof(smallState) - 1;
+    smallState.moduleHandlePrimary = (HINSTANCE)0x33333333;
+    if (WestwoodOnlineUpgradeApiInitState::Init(&smallState, bootstrapEvent, moduleHandle) !=
+            E_INVALIDARG ||
+        smallState.moduleHandlePrimary != (HINSTANCE)0x33333333)
+    {
+        return 2;
+    }
+
+    if (WestwoodOnlineUpgradeApiInitState::Init(&state, bootstrapEvent, moduleHandle) != S_OK)
+    {
+        return 3;
+    }
+
+    int failure = 0;
+    if (state.moduleHandlePrimary != moduleHandle ||
+        state.moduleHandleSecondary != moduleHandle ||
+        state.moduleHandleTertiary != moduleHandle ||
+        state.bootstrapServerListEvent != bootstrapEvent ||
+        state.statusTextEvent != 0 ||
+        state.failureEvent != 0)
+    {
+        failure = 4;
+    }
+    else if (TryEnterCriticalSection(&state.criticalSection0) == 0)
+    {
+        failure = 5;
+    }
+    else
+    {
+        LeaveCriticalSection(&state.criticalSection0);
+    }
+
+    if (failure == 0 && TryEnterCriticalSection(&state.criticalSection1) == 0)
+    {
+        failure = 6;
+    }
+    else if (failure == 0)
+    {
+        LeaveCriticalSection(&state.criticalSection1);
+    }
+
+    if (failure == 0 && TryEnterCriticalSection(&state.criticalSection2) == 0)
+    {
+        failure = 7;
+    }
+    else if (failure == 0)
+    {
+        LeaveCriticalSection(&state.criticalSection2);
+    }
+
+    DeleteCriticalSection(&state.criticalSection2);
+    DeleteCriticalSection(&state.criticalSection1);
+    DeleteCriticalSection(&state.criticalSection0);
+    return failure;
+}
+
+extern "C" int westwood_online_upgrade_api_shutdown_smoke(void)
+{
+    IUnknown *const oldApi = g_pWestwoodOnlineUpgradeApi;
+    const DWORD oldCookie = g_WestwoodOnlineUpgradeApiAdviseCookie;
+    HANDLE const oldBootstrapEvent = g_WestwoodOnlineUpgradeBootstrapServerListEvent;
+    HANDLE const oldStatusEvent = g_WestwoodOnlineUpgradeStatusTextEvent;
+    HANDLE const oldFailureEvent = g_WestwoodOnlineUpgradeFailureEvent;
+
+    ResetSmokeWolComFakes();
+
+    g_pWestwoodOnlineUpgradeApi = 0;
+    WestwoodOnlineUpgradeApi::Shutdown();
+    if (g_smokeWolSourceReleaseCalls != 0 || g_smokeWolUnadviseCalls != 0)
+    {
+        return 1;
+    }
+
+    HANDLE handle0 = CreateEventA(0, TRUE, FALSE, 0);
+    HANDLE handle1 = CreateEventA(0, TRUE, FALSE, 0);
+    HANDLE handle2 = CreateEventA(0, TRUE, FALSE, 0);
+    if (handle0 == 0 || handle1 == 0 || handle2 == 0)
+    {
+        if (handle0 != 0)
+        {
+            CloseHandle(handle0);
+        }
+        if (handle1 != 0)
+        {
+            CloseHandle(handle1);
+        }
+        if (handle2 != 0)
+        {
+            CloseHandle(handle2);
+        }
+        return 2;
+    }
+
+    g_pWestwoodOnlineUpgradeApi = (IUnknown *)&g_smokeWolUnknown;
+    g_WestwoodOnlineUpgradeApiAdviseCookie = 0x12345678;
+    g_WestwoodOnlineUpgradeBootstrapServerListEvent = handle0;
+    g_WestwoodOnlineUpgradeStatusTextEvent = handle1;
+    g_WestwoodOnlineUpgradeFailureEvent = handle2;
+    WestwoodOnlineUpgradeApi::Shutdown();
+
+    int failure = 0;
+    if (g_pWestwoodOnlineUpgradeApi != 0)
+    {
+        failure = 3;
+    }
+    else if (g_smokeWolFindConnectionPointCalls != 1 || !g_smokeWolIidOk ||
+             g_smokeWolUnadviseCalls != 1 ||
+             g_smokeWolUnadviseCookie != 0x12345678)
+    {
+        failure = 4;
+    }
+    else if (g_smokeWolConnectionPointReleaseCalls != 1 ||
+             g_smokeWolCpcReleaseCalls != 1 ||
+             g_smokeWolSourceReleaseCalls != 1)
+    {
+        failure = 5;
+    }
+
+    g_pWestwoodOnlineUpgradeApi = oldApi;
+    g_WestwoodOnlineUpgradeApiAdviseCookie = oldCookie;
+    g_WestwoodOnlineUpgradeBootstrapServerListEvent = oldBootstrapEvent;
+    g_WestwoodOnlineUpgradeStatusTextEvent = oldStatusEvent;
+    g_WestwoodOnlineUpgradeFailureEvent = oldFailureEvent;
+    return failure;
+}
+
+extern "C" int westwood_online_upgrade_api_create_instance_load_config_smoke(void)
+{
+    SmokeImportPatch imports[2] = {};
+    SmokeFunctionPatch showModalPatch = {};
+    if (!PatchSmokeImportByName("ole32.dll", "CoInitialize",
+                                (void *)&SmokeWolCoInitialize, imports[0]) ||
+        !PatchSmokeImportByName("ole32.dll", "CoCreateInstance",
+                                (void *)&SmokeWolCoCreateInstance, imports[1]) ||
+        !PatchSmokeFunctionJump(
+            SmokeWolMethodAddress(
+                &WestwoodOnlineUpgradeConfigDialog::ShowModalAndApplySelectedProfileValues),
+            (void *)&SmokeWolShowModalAndApplySelectedProfileValues,
+            showModalPatch))
+    {
+        RestoreSmokeFunctionPatch(showModalPatch);
+        RestoreSmokeImportPatch(imports[1]);
+        RestoreSmokeImportPatch(imports[0]);
+        return 1;
+    }
+
+    IUnknown *const oldApi = g_pWestwoodOnlineUpgradeApi;
+    void *const oldSink = g_pWestwoodOnlineUpgradeApiEventSink;
+    const DWORD oldCookie = g_WestwoodOnlineUpgradeApiAdviseCookie;
+    const int oldProcessCallbacksFlag = g_WestwoodOnlineUpgradeProcessCallbacksFlag;
+    const int oldShutdownState = g_WestwoodOnlineUpgradeApiShutdownState;
+    WestwoodOnlineUpgradeApiInitState const oldInitState =
+        g_WestwoodOnlineUpgradeApiInitState;
+
+    ResetSmokeWolComFakes();
+    g_smokeWolCreateCoInitializeCalls = 0;
+    g_smokeWolCreateCoInitializeReserved = 0;
+    g_smokeWolCreateCoCreateCalls = 0;
+    g_smokeWolCreateCoCreateArgsOk = false;
+    g_smokeWolCreateCoCreateResult = S_OK;
+    g_smokeWolCreateCoCreateObject = (IUnknown *)&g_smokeWolUnknown;
+    g_smokeWolShowModalCalls = 0;
+    g_smokeWolShowModalResult = 1;
+    g_pWestwoodOnlineUpgradeApi = 0;
+    g_pWestwoodOnlineUpgradeApiEventSink = 0;
+    g_WestwoodOnlineUpgradeApiAdviseCookie = 0;
+    g_WestwoodOnlineUpgradeProcessCallbacksFlag = 0;
+    g_WestwoodOnlineUpgradeApiShutdownState = 77;
+
+    WestwoodOnlineUpgradeApi api;
+    const HANDLE bootstrapEvent = (HANDLE)0x31415926;
+    int result = api.CreateInstanceAndLoadConfig(bootstrapEvent);
+    int failure = 0;
+    if (result != 1 || g_smokeWolCreateCoInitializeCalls != 1 ||
+        g_smokeWolCreateCoInitializeReserved != 0 ||
+        g_smokeWolCreateCoCreateCalls != 1 ||
+        !g_smokeWolCreateCoCreateArgsOk)
+    {
+        failure = 2;
+    }
+    else if (g_WestwoodOnlineUpgradeApiInitState.structSize !=
+                 sizeof(g_WestwoodOnlineUpgradeApiInitState) ||
+             g_WestwoodOnlineUpgradeApiInitState.bootstrapServerListEvent !=
+                 bootstrapEvent ||
+             g_WestwoodOnlineUpgradeApiShutdownState != 0 ||
+             g_WestwoodOnlineUpgradeProcessCallbacksFlag != 1)
+    {
+        failure = 3;
+    }
+    else if (g_pWestwoodOnlineUpgradeApi != (IUnknown *)&g_smokeWolUnknown ||
+             g_pWestwoodOnlineUpgradeApiEventSink == 0 ||
+             g_smokeWolFindConnectionPointCalls != 1 ||
+             g_smokeWolAdviseCalls != 1 ||
+             g_smokeWolAdviseSink !=
+                 (IUnknown *)g_pWestwoodOnlineUpgradeApiEventSink ||
+             g_WestwoodOnlineUpgradeApiAdviseCookie != 0x87654321 ||
+             !g_smokeWolIidOk)
+    {
+        failure = 4;
+    }
+    else if (g_smokeWolShowModalCalls != 1 ||
+             g_smokeWolSourceReleaseCalls != 0 ||
+             g_smokeWolConnectionPointReleaseCalls != 1 ||
+             g_smokeWolCpcReleaseCalls != 1)
+    {
+        failure = 5;
+    }
+
+    if (g_pWestwoodOnlineUpgradeApiEventSink != 0)
+    {
+        WestwoodOnlineUpgradeApiEventSink *const sink =
+            (WestwoodOnlineUpgradeApiEventSink *)g_pWestwoodOnlineUpgradeApiEventSink;
+        DeleteCriticalSection(&sink->m_refCountAndLock.lock);
+        ::operator delete(sink);
+        g_pWestwoodOnlineUpgradeApiEventSink = 0;
+    }
+    SmokeWolDeleteInitCriticalSections();
+    g_WestwoodOnlineUpgradeApiInitState = oldInitState;
+
+    g_smokeWolCreateCoCreateObject = (IUnknown *)&g_smokeWolUnknown;
+    g_smokeWolShowModalCalls = 0;
+    g_smokeWolShowModalResult = 0;
+    g_smokeWolFindConnectionPointCalls = 0;
+    g_smokeWolAdviseCalls = 0;
+    g_smokeWolUnadviseCalls = 0;
+    g_smokeWolSourceReleaseCalls = 0;
+    g_smokeWolConnectionPointReleaseCalls = 0;
+    g_smokeWolCpcReleaseCalls = 0;
+    g_pWestwoodOnlineUpgradeApi = 0;
+    g_WestwoodOnlineUpgradeApiAdviseCookie = 0;
+    result = api.CreateInstanceAndLoadConfig(bootstrapEvent);
+    if (failure == 0 &&
+        (result != 0 || g_smokeWolShowModalCalls != 1 ||
+         g_smokeWolAdviseCalls != 1 || g_smokeWolUnadviseCalls != 1 ||
+         g_smokeWolSourceReleaseCalls != 1 || g_pWestwoodOnlineUpgradeApi != 0))
+    {
+        failure = 6;
+    }
+
+    if (g_pWestwoodOnlineUpgradeApiEventSink != 0)
+    {
+        WestwoodOnlineUpgradeApiEventSink *const sink =
+            (WestwoodOnlineUpgradeApiEventSink *)g_pWestwoodOnlineUpgradeApiEventSink;
+        DeleteCriticalSection(&sink->m_refCountAndLock.lock);
+        ::operator delete(sink);
+    }
+    SmokeWolDeleteInitCriticalSections();
+
+    g_pWestwoodOnlineUpgradeApi = oldApi;
+    g_pWestwoodOnlineUpgradeApiEventSink = oldSink;
+    g_WestwoodOnlineUpgradeApiAdviseCookie = oldCookie;
+    g_WestwoodOnlineUpgradeProcessCallbacksFlag = oldProcessCallbacksFlag;
+    g_WestwoodOnlineUpgradeApiShutdownState = oldShutdownState;
+    g_WestwoodOnlineUpgradeApiInitState = oldInitState;
+
+    RestoreSmokeFunctionPatch(showModalPatch);
+    RestoreSmokeImportPatch(imports[1]);
+    RestoreSmokeImportPatch(imports[0]);
+    return failure;
+}
+
+extern "C" int westwood_online_upgrade_api_init_smoke(void)
+{
+    const WORD kMfc42CDialogCreateOrdinal = 2086;
+    const WORD kMfc42CWndSetDlgItemTextAOrdinal = 5953;
+    SmokeImportPatch imports[7] = {};
+    SmokeFunctionPatch patches[2] = {};
+    if (!PatchSmokeImportByName("KERNEL32.dll", "CreateEventA",
+                                (void *)&SmokeWolCreateEventA, imports[0]) ||
+        !PatchSmokeImportByName("KERNEL32.dll", "WaitForMultipleObjects",
+                                (void *)&SmokeWolWaitForMultipleObjects, imports[1]) ||
+        !PatchSmokeImportByName("KERNEL32.dll", "ResetEvent",
+                                (void *)&SmokeWolResetEvent, imports[2]) ||
+        !PatchSmokeImportByName("KERNEL32.dll", "Sleep",
+                                (void *)&SmokeWolSleep, imports[3]) ||
+        !PatchSmokeImportByName("KERNEL32.dll", "GetSystemDefaultLangID",
+                                (void *)&SmokeWolGetSystemDefaultLangID, imports[4]) ||
+        !PatchSmokeImportByOrdinal("MFC42.DLL", kMfc42CDialogCreateOrdinal,
+                                   (void *)&SmokeWolCreateProgress, imports[5]) ||
+        !PatchSmokeImportByOrdinal("MFC42.DLL", kMfc42CWndSetDlgItemTextAOrdinal,
+                                   (void *)&SmokeWolSetDlgItemTextA, imports[6]) ||
+        !PatchSmokeFunctionJump(
+            SmokeWolMethodAddress(&WestwoodOnlineUpgradeApi::CreateInstanceAndLoadConfig),
+            (void *)&SmokeWolCreateInstanceAndLoadConfig,
+            patches[0]) ||
+        !PatchSmokeFunctionJump((void *)&zLoc::GetMessageString,
+                                (void *)&SmokeWolGetMessageString, patches[1]))
+    {
+        for (int index = 1; index >= 0; --index)
+        {
+            RestoreSmokeFunctionPatch(patches[index]);
+        }
+        for (int index = 6; index >= 0; --index)
+        {
+            RestoreSmokeImportPatch(imports[index]);
+        }
+        return 1;
+    }
+
+    IUnknown *const oldApi = g_pWestwoodOnlineUpgradeApi;
+    WestwoodOnlineUpgradeDialog *const oldDialog = g_pWestwoodOnlineUpgradeDialog;
+    WestwoodOnlineUpgradeProgressDialog *const oldProgressDialog =
+        g_pWestwoodOnlineUpgradeProgressDialog;
+    HINSTANCE const oldModule = g_hWestwoodOnlineUpgradeModuleInstance;
+    const int oldAsyncError = g_WestwoodOnlineUpgradeApiAsyncErrorFlag;
+    const int oldProcessCallbacksFlag = g_WestwoodOnlineUpgradeProcessCallbacksFlag;
+    const int oldAbortFlag = g_WestwoodOnlineUpgradeAbortFlag;
+    HANDLE const oldWaitEvent0 = g_WestwoodOnlineUpgradeInitWaitEvents[0];
+    HANDLE const oldWaitEvent1 = g_WestwoodOnlineUpgradeInitWaitEvents[1];
+    HANDLE const oldWaitEvent2 = g_WestwoodOnlineUpgradeInitWaitEvents[2];
+    HANDLE const oldBootstrapEvent = g_WestwoodOnlineUpgradeBootstrapServerListEvent;
+    HANDLE const oldStatusEvent = g_WestwoodOnlineUpgradeStatusTextEvent;
+    HANDLE const oldFailureEvent = g_WestwoodOnlineUpgradeFailureEvent;
+    WestwoodOnlineUpgradeBrowseRecord const oldCachedBrowseRecord =
+        g_WestwoodOnlineUpgradeCachedBrowseRecord;
+
+    unsigned char dialogStorage[sizeof(WestwoodOnlineUpgradeDialog)] = {0};
+    WestwoodOnlineUpgradeDialog &dialog = *(WestwoodOnlineUpgradeDialog *)dialogStorage;
+    unsigned char progressDialogStorage[sizeof(WestwoodOnlineUpgradeProgressDialog)] = {0};
+    WestwoodOnlineUpgradeProgressDialog &progressDialog =
+        *(WestwoodOnlineUpgradeProgressDialog *)progressDialogStorage;
+    dialog.m_selectedProfileConnectStringMode = 0;
+    new (&dialog.m_selectedProfilePlayerName) CString("InitPilot");
+    new (&dialog.m_selectedProfileConnectString) CString("InitConnect");
+    *(void **)&progressDialog = (void *)&g_smokeWolInitProgressVtable;
+
+    g_smokeWolInitApiVtable.QueryInterface = 0;
+    g_smokeWolInitApiVtable.AddRef = 0;
+    g_smokeWolInitApiVtable.Release = 0;
+    g_smokeWolInitApiVtable.ProcessCallbacks = SmokeWolProcessCallbacks;
+    g_smokeWolInitApiVtable.BeginConnect = SmokeWolBeginConnect;
+    g_smokeWolInitApiVtable.RequestBootstrapServerList =
+        SmokeWolRequestBootstrapServerList;
+    g_smokeWolInitApiVtable.RequestListMode = SmokeWolRequestListMode;
+    g_smokeWolInitApi.vftable = &g_smokeWolInitApiVtable;
+    g_smokeWolInitProgressVtable.DestroyWindow = SmokeWolDestroyProgress;
+
+    g_smokeWolCreateInstanceCalls = 0;
+    g_smokeWolCreateInstanceBootstrap = 0;
+    g_smokeWolCreateEventCalls = 0;
+    g_smokeWolCreatedEvents[0] = (HANDLE)0x11110001;
+    g_smokeWolCreatedEvents[1] = (HANDLE)0x11110002;
+    g_smokeWolCreatedEvents[2] = (HANDLE)0x11110003;
+    g_smokeWolCreateProgressCalls = 0;
+    g_smokeWolCreateProgressResource = 0;
+    g_smokeWolCreateProgressParent = 0;
+    g_smokeWolSetDlgItemTextCalls = 0;
+    g_smokeWolMessageIdCalls = 0;
+    g_smokeWolBeginConnectCalls = 0;
+    g_smokeWolBeginConnectLanguageId = 0;
+    g_smokeWolBeginConnectProductId = 0;
+    g_smokeWolBeginConnectPlayerName = 0;
+    g_smokeWolBeginConnectConnectString = 0;
+    g_smokeWolBeginConnectTimeoutSeconds = 0;
+    g_smokeWolProcessCallbacksCalls = 0;
+    g_smokeWolRequestBootstrapCalls = 0;
+    g_smokeWolRequestBootstrapServer = 0;
+    g_smokeWolRequestBootstrapTimeoutSeconds = 0;
+    g_smokeWolRequestBootstrapUseAlternate = 0;
+    g_smokeWolRequestListModeCalls = 0;
+    g_smokeWolRequestListMode = 0;
+    g_smokeWolRequestListModeEnabled = 0;
+    g_smokeWolDestroyProgressCalls = 0;
+    g_smokeWolDestroyedProgress = 0;
+    g_smokeWolWaitResults[0] = WAIT_TIMEOUT;
+    g_smokeWolWaitResults[1] = WAIT_OBJECT_0;
+    g_smokeWolWaitResults[2] = WAIT_TIMEOUT;
+    g_smokeWolWaitResults[3] = WAIT_OBJECT_0;
+    g_smokeWolWaitResultCount = 4;
+    g_smokeWolWaitCalls = 0;
+    g_smokeWolWaitHandles = 0;
+    g_smokeWolResetEventCalls = 0;
+    g_smokeWolResetEventHandle = 0;
+    g_smokeWolSleepCalls = 0;
+
+    g_hWestwoodOnlineUpgradeModuleInstance = (HINSTANCE)0x22223333;
+    g_pWestwoodOnlineUpgradeApi = 0;
+    g_pWestwoodOnlineUpgradeDialog = &dialog;
+    g_pWestwoodOnlineUpgradeProgressDialog = &progressDialog;
+    g_WestwoodOnlineUpgradeApiAsyncErrorFlag = 99;
+    g_WestwoodOnlineUpgradeProcessCallbacksFlag = 1;
+    g_WestwoodOnlineUpgradeAbortFlag = 77;
+    memset(&g_WestwoodOnlineUpgradeCachedBrowseRecord,
+           0x5a,
+           sizeof(g_WestwoodOnlineUpgradeCachedBrowseRecord));
+
+    const int result = WestwoodOnlineUpgradeApi::Init();
+    int failure = 0;
+    if (result != 1 || g_smokeWolCreateInstanceCalls != 1 ||
+        g_smokeWolCreateInstanceBootstrap != (HANDLE)0x22223333 ||
+        g_smokeWolCreateEventCalls != 3)
+    {
+        failure = 2;
+    }
+    else if (g_WestwoodOnlineUpgradeInitWaitEvents[0] != g_smokeWolCreatedEvents[0] ||
+             g_WestwoodOnlineUpgradeInitWaitEvents[1] != g_smokeWolCreatedEvents[1] ||
+             g_WestwoodOnlineUpgradeInitWaitEvents[2] != g_smokeWolCreatedEvents[2] ||
+             g_WestwoodOnlineUpgradeFailureEvent != g_smokeWolCreatedEvents[2])
+    {
+        failure = 3;
+    }
+    else if (g_smokeWolCreateProgressCalls != 1 ||
+             g_smokeWolCreateProgressResource != (LPCSTR)157 ||
+             g_smokeWolSetDlgItemTextCalls != 2 ||
+             g_smokeWolSetDlgItemTextThis[0] != &progressDialog ||
+             g_smokeWolSetDlgItemTextControlId[0] != 1179 ||
+             g_smokeWolSetDlgItemTextThis[1] != &dialog ||
+             g_smokeWolSetDlgItemTextControlId[1] != 154)
+    {
+        failure = 4;
+    }
+    else if (g_smokeWolMessageIdCalls != 2 ||
+             g_smokeWolMessageIds[0] != 0x3033 ||
+             g_smokeWolMessageIds[1] != 0x3034)
+    {
+        failure = 5;
+    }
+    else if (g_smokeWolBeginConnectCalls != 1 ||
+             g_smokeWolBeginConnectLanguageId != 0x1102 ||
+             g_smokeWolBeginConnectProductId != 0x10003 ||
+             strcmp(g_smokeWolBeginConnectPlayerName, "InitPilot") != 0 ||
+             strcmp(g_smokeWolBeginConnectConnectString, "InitConnect") != 0 ||
+             g_smokeWolBeginConnectTimeoutSeconds != 60)
+    {
+        failure = 6;
+    }
+    else if (g_smokeWolWaitCalls != 4 ||
+             g_smokeWolWaitHandles != &g_WestwoodOnlineUpgradeInitWaitEvents[0] ||
+             g_smokeWolProcessCallbacksCalls != 2 ||
+             g_smokeWolResetEventCalls != 1 ||
+             g_smokeWolResetEventHandle != g_smokeWolCreatedEvents[2])
+    {
+        failure = 7;
+    }
+    else if (g_smokeWolRequestBootstrapCalls != 1 ||
+             g_smokeWolRequestBootstrapServer !=
+                 &g_WestwoodOnlineUpgradeSelectedBootstrapServer ||
+             g_smokeWolRequestBootstrapTimeoutSeconds != 30 ||
+             g_smokeWolRequestBootstrapUseAlternate != 1)
+    {
+        failure = 8;
+    }
+    else if (g_smokeWolDestroyProgressCalls != 1 ||
+             g_smokeWolDestroyedProgress != (CWnd *)&progressDialog ||
+             g_smokeWolRequestListModeCalls != 1 ||
+             g_smokeWolRequestListMode != 17 ||
+             g_smokeWolRequestListModeEnabled != 1)
+    {
+        failure = 9;
+    }
+    else if (g_WestwoodOnlineUpgradeApiAsyncErrorFlag != 0 ||
+             g_WestwoodOnlineUpgradeAbortFlag != 0 ||
+             g_WestwoodOnlineUpgradeCachedBrowseRecord.m_sessionName[0] != '\0')
+    {
+        failure = 10;
+    }
+
+    dialog.m_selectedProfileConnectString.CString::~CString();
+    dialog.m_selectedProfilePlayerName.CString::~CString();
+    g_pWestwoodOnlineUpgradeApi = oldApi;
+    g_pWestwoodOnlineUpgradeDialog = oldDialog;
+    g_pWestwoodOnlineUpgradeProgressDialog = oldProgressDialog;
+    g_hWestwoodOnlineUpgradeModuleInstance = oldModule;
+    g_WestwoodOnlineUpgradeApiAsyncErrorFlag = oldAsyncError;
+    g_WestwoodOnlineUpgradeProcessCallbacksFlag = oldProcessCallbacksFlag;
+    g_WestwoodOnlineUpgradeAbortFlag = oldAbortFlag;
+    g_WestwoodOnlineUpgradeInitWaitEvents[0] = oldWaitEvent0;
+    g_WestwoodOnlineUpgradeInitWaitEvents[1] = oldWaitEvent1;
+    g_WestwoodOnlineUpgradeInitWaitEvents[2] = oldWaitEvent2;
+    g_WestwoodOnlineUpgradeBootstrapServerListEvent = oldBootstrapEvent;
+    g_WestwoodOnlineUpgradeStatusTextEvent = oldStatusEvent;
+    g_WestwoodOnlineUpgradeFailureEvent = oldFailureEvent;
+    g_WestwoodOnlineUpgradeCachedBrowseRecord = oldCachedBrowseRecord;
+
+    for (int index = 1; index >= 0; --index)
+    {
+        RestoreSmokeFunctionPatch(patches[index]);
+    }
+    for (int index = 6; index >= 0; --index)
+    {
+        RestoreSmokeImportPatch(imports[index]);
+    }
+    return failure;
+}
+
 struct SmokeDPlay4Object {
     void **vtable;
 };
@@ -6922,6 +8412,10 @@ bool SmokePlayerFloatNear(float actual, float expected) {
     return delta < 0.0001f && delta > -0.0001f;
 }
 
+bool SmokePlayerVec3Equals(const zVec3 &value, const zVec3 &expected) {
+    return value.x == expected.x && value.y == expected.y && value.z == expected.z;
+}
+
 void MakeSmokeAinetReaderStringNode(zReader::Node &node, const char *value) {
     node.type = zReader::ZRDR_NODE_STRING;
     node.value.str = const_cast<char *>(value);
@@ -6947,6 +8441,414 @@ void MakeSmokeAinetReaderArrayNode(
     node.type = zReader::ZRDR_NODE_ARRAY;
     node.value.nodes = payload;
 }
+
+} // namespace
+
+extern "C" int player_load_master_common_data_from_node_smoke(void) {
+    int networkEnabled = 0;
+    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    const char *const oldPickupLogicalName = g_PickupTypes[4].logicalName;
+    const int oldPickupTypeIndex = g_PickupTypes[4].typeIndex;
+    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    g_PickupTypes[4].logicalName = "pickup_test";
+    g_PickupTypes[4].typeIndex = 77;
+
+    zReader::Node root = {};
+    zReader::Node rootItems[5] = {};
+    zReader::Node commonItems[27] = {};
+    zReader::Node dummyModalItems[1] = {};
+    zReader::Node naniteItems[3] = {};
+    zReader::Node soundsItems[7] = {};
+    zReader::Node weaponUpItems[2] = {};
+    zReader::Node weaponSelectItems[2] = {};
+    zReader::Node pingingItems[2] = {};
+    zReader::Node activationItems[2] = {};
+    zReader::Node notPursuitItems[2] = {};
+    zReader::Node returnRangeItems[2] = {};
+    zReader::Node startAnimItems[2] = {};
+    zReader::Node cambackItems[4] = {};
+    zReader::Node camback0Items[4] = {};
+    zReader::Node camback1Items[4] = {};
+    zReader::Node camback2Items[4] = {};
+    zReader::Node aimyItems[3] = {};
+    zReader::Node cameraSwingItems[5] = {};
+    zReader::Node trackSwitchItems[4] = {};
+    zReader::Node healthItems[3] = {};
+    zReader::Node pickupsItems[3] = {};
+    zReader::Node weaponsItems[3] = {};
+    zReader::Node weapon0Items[10] = {};
+    zReader::Node weapon1Items[10] = {};
+
+    MakeSmokeAinetReaderArrayNode(root, rootItems, 5);
+    MakeSmokeAinetReaderStringNode(rootItems[1], "common_mode");
+    MakeSmokeAinetReaderArrayNode(rootItems[2], commonItems, 27);
+    MakeSmokeAinetReaderStringNode(rootItems[3], "modal_track");
+    MakeSmokeAinetReaderArrayNode(rootItems[4], dummyModalItems, 1);
+
+    int slot = 1;
+    MakeSmokeAinetReaderStringNode(commonItems[slot++], "nanite");
+    MakeSmokeAinetReaderArrayNode(commonItems[slot++], naniteItems, 3);
+    MakeSmokeAinetReaderStringNode(commonItems[slot++], "sounds");
+    MakeSmokeAinetReaderArrayNode(commonItems[slot++], soundsItems, 7);
+    MakeSmokeAinetReaderStringNode(commonItems[slot++], "activation");
+    MakeSmokeAinetReaderArrayNode(commonItems[slot++], activationItems, 2);
+    MakeSmokeAinetReaderStringNode(commonItems[slot++], "not_pursuit_dwell");
+    MakeSmokeAinetReaderArrayNode(commonItems[slot++], notPursuitItems, 2);
+    MakeSmokeAinetReaderStringNode(commonItems[slot++], "return_range");
+    MakeSmokeAinetReaderArrayNode(commonItems[slot++], returnRangeItems, 2);
+    MakeSmokeAinetReaderStringNode(commonItems[slot++], "start_anims");
+    MakeSmokeAinetReaderArrayNode(commonItems[slot++], startAnimItems, 2);
+    MakeSmokeAinetReaderStringNode(commonItems[slot++], "camback");
+    MakeSmokeAinetReaderArrayNode(commonItems[slot++], cambackItems, 4);
+    MakeSmokeAinetReaderStringNode(commonItems[slot++], "aimy");
+    MakeSmokeAinetReaderArrayNode(commonItems[slot++], aimyItems, 3);
+    MakeSmokeAinetReaderStringNode(commonItems[slot++], "camera_ud_swing");
+    MakeSmokeAinetReaderArrayNode(commonItems[slot++], cameraSwingItems, 5);
+    MakeSmokeAinetReaderStringNode(commonItems[slot++], "track_switch");
+    MakeSmokeAinetReaderArrayNode(commonItems[slot++], trackSwitchItems, 4);
+    MakeSmokeAinetReaderStringNode(commonItems[slot++], "health");
+    MakeSmokeAinetReaderArrayNode(commonItems[slot++], healthItems, 3);
+    MakeSmokeAinetReaderStringNode(commonItems[slot++], "pickups");
+    MakeSmokeAinetReaderArrayNode(commonItems[slot++], pickupsItems, 3);
+    MakeSmokeAinetReaderStringNode(commonItems[slot++], "weapons");
+    MakeSmokeAinetReaderArrayNode(commonItems[slot++], weaponsItems, 3);
+
+    MakeSmokeAinetReaderIntNode(naniteItems[1], 12);
+    MakeSmokeAinetReaderIntNode(naniteItems[2], 34);
+    MakeSmokeAinetReaderStringNode(soundsItems[1], "weapon_up");
+    MakeSmokeAinetReaderArrayNode(soundsItems[2], weaponUpItems, 2);
+    MakeSmokeAinetReaderStringNode(weaponUpItems[1], "snd_weapon_up");
+    MakeSmokeAinetReaderStringNode(soundsItems[3], "weapon_select");
+    MakeSmokeAinetReaderArrayNode(soundsItems[4], weaponSelectItems, 2);
+    MakeSmokeAinetReaderStringNode(weaponSelectItems[1], "snd_weapon_select");
+    MakeSmokeAinetReaderStringNode(soundsItems[5], "pinging");
+    MakeSmokeAinetReaderArrayNode(soundsItems[6], pingingItems, 2);
+    MakeSmokeAinetReaderStringNode(pingingItems[1], "snd_ping");
+    MakeSmokeAinetReaderFloatNode(activationItems[1], 13.0f);
+    MakeSmokeAinetReaderFloatNode(notPursuitItems[1], 4.25f);
+    MakeSmokeAinetReaderFloatNode(returnRangeItems[1], 30.0f);
+    MakeSmokeAinetReaderStringNode(startAnimItems[1], "anim_start");
+
+    MakeSmokeAinetReaderArrayNode(cambackItems[1], camback0Items, 4);
+    MakeSmokeAinetReaderArrayNode(cambackItems[2], camback1Items, 4);
+    MakeSmokeAinetReaderArrayNode(cambackItems[3], camback2Items, 4);
+    MakeSmokeAinetReaderFloatNode(camback0Items[1], 1.0f);
+    MakeSmokeAinetReaderFloatNode(camback0Items[2], 2.0f);
+    MakeSmokeAinetReaderFloatNode(camback0Items[3], 3.0f);
+    MakeSmokeAinetReaderFloatNode(camback1Items[1], 4.0f);
+    MakeSmokeAinetReaderFloatNode(camback1Items[2], 5.0f);
+    MakeSmokeAinetReaderFloatNode(camback1Items[3], 6.0f);
+    MakeSmokeAinetReaderFloatNode(camback2Items[1], 7.0f);
+    MakeSmokeAinetReaderFloatNode(camback2Items[2], 8.0f);
+    MakeSmokeAinetReaderFloatNode(camback2Items[3], 9.0f);
+    MakeSmokeAinetReaderFloatNode(aimyItems[1], 0.75f);
+    MakeSmokeAinetReaderFloatNode(aimyItems[2], 1.25f);
+    MakeSmokeAinetReaderFloatNode(cameraSwingItems[1], 5.0f);
+    MakeSmokeAinetReaderFloatNode(cameraSwingItems[2], 6.0f);
+    MakeSmokeAinetReaderFloatNode(cameraSwingItems[3], 7.0f);
+    MakeSmokeAinetReaderFloatNode(cameraSwingItems[4], 8.0f);
+    MakeSmokeAinetReaderFloatNode(trackSwitchItems[1], 11.0f);
+    MakeSmokeAinetReaderFloatNode(trackSwitchItems[2], 22.0f);
+    MakeSmokeAinetReaderFloatNode(trackSwitchItems[3], 33.0f);
+    MakeSmokeAinetReaderFloatNode(healthItems[1], 125.0f);
+    MakeSmokeAinetReaderFloatNode(healthItems[2], 250.0f);
+    MakeSmokeAinetReaderStringNode(pickupsItems[1], "pickup_test");
+    MakeSmokeAinetReaderIntNode(pickupsItems[2], 3);
+
+    MakeSmokeAinetReaderArrayNode(weaponsItems[1], weapon0Items, 10);
+    MakeSmokeAinetReaderArrayNode(weaponsItems[2], weapon1Items, 10);
+    MakeSmokeAinetReaderStringNode(weapon0Items[1], "weapon_alpha");
+    MakeSmokeAinetReaderIntNode(weapon0Items[2], 10);
+    MakeSmokeAinetReaderIntNode(weapon0Items[3], 11);
+    MakeSmokeAinetReaderIntNode(weapon0Items[4], 12);
+    MakeSmokeAinetReaderFloatNode(weapon0Items[5], 1.5f);
+    MakeSmokeAinetReaderFloatNode(weapon0Items[6], 20.0f);
+    MakeSmokeAinetReaderFloatNode(weapon0Items[7], 30.0f);
+    MakeSmokeAinetReaderIntNode(weapon0Items[8], 13);
+    MakeSmokeAinetReaderIntNode(weapon0Items[9], 14);
+    MakeSmokeAinetReaderStringNode(weapon1Items[1], "weapon_beta");
+    MakeSmokeAinetReaderIntNode(weapon1Items[2], 20);
+    MakeSmokeAinetReaderIntNode(weapon1Items[3], 21);
+    MakeSmokeAinetReaderIntNode(weapon1Items[4], 22);
+    MakeSmokeAinetReaderFloatNode(weapon1Items[5], 2.5f);
+    MakeSmokeAinetReaderFloatNode(weapon1Items[6], 40.0f);
+    MakeSmokeAinetReaderFloatNode(weapon1Items[7], 50.0f);
+    MakeSmokeAinetReaderIntNode(weapon1Items[8], 23);
+    MakeSmokeAinetReaderIntNode(weapon1Items[9], 24);
+
+    PlayerMasterCommonData commonData = {};
+    Player::LoadMasterCommonDataFromNode(&commonData, &root, "vehicle_name");
+
+    PlayerMasterWeaponSpec *const firstWeapon = commonData.weaponSpecHead;
+    PlayerMasterWeaponSpec *const secondWeapon = firstWeapon != nullptr ? firstWeapon->next : nullptr;
+    const bool ok =
+        std::strcmp(commonData.vehicleName, "vehicle_name") == 0 && commonData.modalCount == 1 &&
+        commonData.naniteBuildRate == 12 && commonData.naniteMaxLevel == 34 &&
+        SmokePlayerFloatNear(commonData.activationRangeSq, 169.0f) &&
+        SmokePlayerFloatNear(commonData.notPursuitDwellTime, 4.25f) &&
+        SmokePlayerFloatNear(commonData.returnRangeSq, 900.0f) &&
+        std::strcmp(commonData.startAnimsName, "anim_start") == 0 &&
+        SmokePlayerFloatNear(commonData.cambackSide0, 1.0f) &&
+        SmokePlayerFloatNear(commonData.cambackBase0, 2.0f) &&
+        SmokePlayerFloatNear(commonData.cambackDist0, 3.0f) &&
+        SmokePlayerFloatNear(commonData.cambackSide1, 4.0f) &&
+        SmokePlayerFloatNear(commonData.cambackBase1, 5.0f) &&
+        SmokePlayerFloatNear(commonData.cambackDist1, 6.0f) &&
+        SmokePlayerFloatNear(commonData.cambackSide2, 7.0f) &&
+        SmokePlayerFloatNear(commonData.cambackBase2, 8.0f) &&
+        SmokePlayerFloatNear(commonData.cambackDist2, 9.0f) &&
+        SmokePlayerFloatNear(commonData.aimYawRate, 0.75f) &&
+        SmokePlayerFloatNear(commonData.aimYawMax, 1.25f) &&
+        SmokePlayerFloatNear(commonData.cameraUdSwing[0], 5.0f) &&
+        SmokePlayerFloatNear(commonData.cameraUdSwing[1], 6.0f) &&
+        SmokePlayerFloatNear(commonData.cameraUdSwing[2], 7.0f) &&
+        SmokePlayerFloatNear(commonData.cameraUdSwing[3], 8.0f) &&
+        SmokePlayerFloatNear(commonData.trackSwitchDist0, 11.0f) &&
+        SmokePlayerFloatNear(commonData.trackSwitchDist1, 22.0f) &&
+        SmokePlayerFloatNear(commonData.trackSwitchDist2, 33.0f) &&
+        SmokePlayerFloatNear(commonData.maxHealth, 125.0f) &&
+        SmokePlayerFloatNear(commonData.invMaxHealth, 1.0f / 125.0f) &&
+        commonData.pickupType == 77 && commonData.pickupCapacity == 3 &&
+        commonData.weaponNodeCount == 2 && commonData.weaponSpecCount == 2 &&
+        firstWeapon != nullptr && secondWeapon != nullptr && secondWeapon->next == nullptr &&
+        std::strcmp(firstWeapon->optCatalogName, "weapon_alpha") == 0 &&
+        firstWeapon->missionRequirementOrGateId == 10 && firstWeapon->mountLayoutFlags == 11 &&
+        SmokePlayerFloatNear(firstWeapon->startAmmoOrCharge, 12.0f) &&
+        SmokePlayerFloatNear(firstWeapon->dispatchRepeatDelay, 1.5f) &&
+        SmokePlayerFloatNear(firstWeapon->aiAttackRangeMin, 20.0f) &&
+        SmokePlayerFloatNear(firstWeapon->aiAttackRangeMax, 30.0f) &&
+        firstWeapon->fireSlotRecoilFlags == 13 &&
+        firstWeapon->initialHardpointSelectState == 14 &&
+        std::strcmp(secondWeapon->optCatalogName, "weapon_beta") == 0 &&
+        secondWeapon->missionRequirementOrGateId == 20 && secondWeapon->mountLayoutFlags == 21 &&
+        SmokePlayerFloatNear(secondWeapon->startAmmoOrCharge, 22.0f) &&
+        SmokePlayerFloatNear(secondWeapon->dispatchRepeatDelay, 2.5f) &&
+        SmokePlayerFloatNear(secondWeapon->aiAttackRangeMin, 40.0f) &&
+        SmokePlayerFloatNear(secondWeapon->aiAttackRangeMax, 50.0f) &&
+        secondWeapon->fireSlotRecoilFlags == 23 &&
+        secondWeapon->initialHardpointSelectState == 24;
+
+    PlayerMasterWeaponSpec *weaponSpec = commonData.weaponSpecHead;
+    while (weaponSpec != nullptr) {
+        PlayerMasterWeaponSpec *const next = weaponSpec->next;
+        ::operator delete(weaponSpec);
+        weaponSpec = next;
+    }
+    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+    g_PickupTypes[4].logicalName = oldPickupLogicalName;
+    g_PickupTypes[4].typeIndex = oldPickupTypeIndex;
+    return ok ? 0 : 1;
+}
+
+extern "C" int player_load_master_modal_data_from_node_smoke(void) {
+    zEffectAnimEntry *const oldEntryList = g_zEffectAnim_EntryList;
+    const short oldEntryCount = g_zEffectAnim_EntryCount;
+
+    zReader::Node root = {};
+    zReader::Node rootItems[47] = {};
+    zReader::Node modeItems[2] = {};
+    zReader::Node platformItems[3] = {};
+    zReader::Node collisionItems[3] = {};
+    zReader::Node platformPoint0[4] = {};
+    zReader::Node platformPoint1[4] = {};
+    zReader::Node collisionPoint0[4] = {};
+    zReader::Node collisionPoint1[4] = {};
+    zReader::Node ratesItems[3] = {};
+    zReader::Node frictionItems[4] = {};
+    zReader::Node stoppingItems[2] = {};
+    zReader::Node lavaItems[2] = {};
+    zReader::Node turnsItems[3] = {};
+    zReader::Node turnDampingItems[2] = {};
+    zReader::Node rateDampingItems[3] = {};
+    zReader::Node aDampingItems[2] = {};
+    zReader::Node altControlItems[4] = {};
+    zReader::Node massItems[2] = {};
+    zReader::Node gunPitchItems[3] = {};
+    zReader::Node modeAltItems[2] = {};
+    zReader::Node chasSmoothItems[2] = {};
+    zReader::Node chasPitchItems[4] = {};
+    zReader::Node hoverWaveItems[8] = {};
+    zReader::Node subWaveItems[8] = {};
+    zReader::Node collisionDItems[3] = {};
+    zReader::Node t2aItems[3] = {};
+    zReader::Node a2hItems[3] = {};
+    zReader::Node soundsItems[5] = {};
+    zReader::Node pitchScaleItems[2] = {};
+    zReader::Node volumeScaleItems[2] = {};
+
+    MakeSmokeAinetReaderArrayNode(root, rootItems, 47);
+    int slot = 1;
+    MakeSmokeAinetReaderStringNode(rootItems[slot++], "mode");
+    MakeSmokeAinetReaderArrayNode(rootItems[slot++], modeItems, 2);
+    MakeSmokeAinetReaderStringNode(rootItems[slot++], "platform");
+    MakeSmokeAinetReaderArrayNode(rootItems[slot++], platformItems, 3);
+    MakeSmokeAinetReaderStringNode(rootItems[slot++], "collision");
+    MakeSmokeAinetReaderArrayNode(rootItems[slot++], collisionItems, 3);
+    MakeSmokeAinetReaderStringNode(rootItems[slot++], "rates");
+    MakeSmokeAinetReaderArrayNode(rootItems[slot++], ratesItems, 3);
+    MakeSmokeAinetReaderStringNode(rootItems[slot++], "friction");
+    MakeSmokeAinetReaderArrayNode(rootItems[slot++], frictionItems, 4);
+    MakeSmokeAinetReaderStringNode(rootItems[slot++], "stopping");
+    MakeSmokeAinetReaderArrayNode(rootItems[slot++], stoppingItems, 2);
+    MakeSmokeAinetReaderStringNode(rootItems[slot++], "lava_slowdown");
+    MakeSmokeAinetReaderArrayNode(rootItems[slot++], lavaItems, 2);
+    MakeSmokeAinetReaderStringNode(rootItems[slot++], "turns");
+    MakeSmokeAinetReaderArrayNode(rootItems[slot++], turnsItems, 3);
+    MakeSmokeAinetReaderStringNode(rootItems[slot++], "turn_damping");
+    MakeSmokeAinetReaderArrayNode(rootItems[slot++], turnDampingItems, 2);
+    MakeSmokeAinetReaderStringNode(rootItems[slot++], "rate_damping");
+    MakeSmokeAinetReaderArrayNode(rootItems[slot++], rateDampingItems, 3);
+    MakeSmokeAinetReaderStringNode(rootItems[slot++], "a_damping");
+    MakeSmokeAinetReaderArrayNode(rootItems[slot++], aDampingItems, 2);
+    MakeSmokeAinetReaderStringNode(rootItems[slot++], "alt_control");
+    MakeSmokeAinetReaderArrayNode(rootItems[slot++], altControlItems, 4);
+    MakeSmokeAinetReaderStringNode(rootItems[slot++], "mass");
+    MakeSmokeAinetReaderArrayNode(rootItems[slot++], massItems, 2);
+    MakeSmokeAinetReaderStringNode(rootItems[slot++], "gun_pitch");
+    MakeSmokeAinetReaderArrayNode(rootItems[slot++], gunPitchItems, 3);
+    MakeSmokeAinetReaderStringNode(rootItems[slot++], "mode_alt");
+    MakeSmokeAinetReaderArrayNode(rootItems[slot++], modeAltItems, 2);
+    MakeSmokeAinetReaderStringNode(rootItems[slot++], "chas_smooth");
+    MakeSmokeAinetReaderArrayNode(rootItems[slot++], chasSmoothItems, 2);
+    MakeSmokeAinetReaderStringNode(rootItems[slot++], "chas_pitch");
+    MakeSmokeAinetReaderArrayNode(rootItems[slot++], chasPitchItems, 4);
+    MakeSmokeAinetReaderStringNode(rootItems[slot++], "hover_wave");
+    MakeSmokeAinetReaderArrayNode(rootItems[slot++], hoverWaveItems, 8);
+    MakeSmokeAinetReaderStringNode(rootItems[slot++], "sub_wave");
+    MakeSmokeAinetReaderArrayNode(rootItems[slot++], subWaveItems, 8);
+    MakeSmokeAinetReaderStringNode(rootItems[slot++], "collision_d");
+    MakeSmokeAinetReaderArrayNode(rootItems[slot++], collisionDItems, 3);
+    MakeSmokeAinetReaderStringNode(rootItems[slot++], "t2a_anims");
+    MakeSmokeAinetReaderArrayNode(rootItems[slot++], t2aItems, 3);
+    MakeSmokeAinetReaderStringNode(rootItems[slot++], "a2h_anims");
+    MakeSmokeAinetReaderArrayNode(rootItems[slot++], a2hItems, 3);
+    MakeSmokeAinetReaderStringNode(rootItems[slot++], "sounds");
+    MakeSmokeAinetReaderArrayNode(rootItems[slot++], soundsItems, 5);
+
+    MakeSmokeAinetReaderStringNode(modeItems[1], "hover");
+    MakeSmokeAinetReaderArrayNode(platformItems[1], platformPoint0, 4);
+    MakeSmokeAinetReaderArrayNode(platformItems[2], platformPoint1, 4);
+    MakeSmokeAinetReaderArrayNode(collisionItems[1], collisionPoint0, 4);
+    MakeSmokeAinetReaderArrayNode(collisionItems[2], collisionPoint1, 4);
+    MakeSmokeAinetReaderFloatNode(platformPoint0[1], 1.0f);
+    MakeSmokeAinetReaderFloatNode(platformPoint0[2], 2.0f);
+    MakeSmokeAinetReaderFloatNode(platformPoint0[3], 3.0f);
+    MakeSmokeAinetReaderFloatNode(platformPoint1[1], 4.0f);
+    MakeSmokeAinetReaderFloatNode(platformPoint1[2], 5.0f);
+    MakeSmokeAinetReaderFloatNode(platformPoint1[3], 6.0f);
+    MakeSmokeAinetReaderFloatNode(collisionPoint0[1], -1.0f);
+    MakeSmokeAinetReaderFloatNode(collisionPoint0[2], -2.0f);
+    MakeSmokeAinetReaderFloatNode(collisionPoint0[3], -3.0f);
+    MakeSmokeAinetReaderFloatNode(collisionPoint1[1], -4.0f);
+    MakeSmokeAinetReaderFloatNode(collisionPoint1[2], -5.0f);
+    MakeSmokeAinetReaderFloatNode(collisionPoint1[3], -6.0f);
+    MakeSmokeAinetReaderFloatNode(ratesItems[1], 12.0f);
+    MakeSmokeAinetReaderFloatNode(ratesItems[2], 34.0f);
+    MakeSmokeAinetReaderFloatNode(frictionItems[1], 4.0f);
+    MakeSmokeAinetReaderFloatNode(frictionItems[2], 5.0f);
+    MakeSmokeAinetReaderFloatNode(frictionItems[3], 0.25f);
+    MakeSmokeAinetReaderFloatNode(stoppingItems[1], 9.0f);
+    MakeSmokeAinetReaderFloatNode(lavaItems[1], 0.7f);
+    MakeSmokeAinetReaderFloatNode(turnsItems[1], 0.9f);
+    MakeSmokeAinetReaderFloatNode(turnsItems[2], 1.9f);
+    MakeSmokeAinetReaderFloatNode(turnDampingItems[1], 21.0f);
+    MakeSmokeAinetReaderFloatNode(rateDampingItems[1], 22.0f);
+    MakeSmokeAinetReaderFloatNode(rateDampingItems[2], 23.0f);
+    MakeSmokeAinetReaderFloatNode(aDampingItems[1], 24.0f);
+    MakeSmokeAinetReaderFloatNode(altControlItems[1], -7.0f);
+    MakeSmokeAinetReaderFloatNode(altControlItems[2], 0.6f);
+    MakeSmokeAinetReaderFloatNode(altControlItems[3], -2.0f);
+    MakeSmokeAinetReaderFloatNode(massItems[1], 2.0f);
+    MakeSmokeAinetReaderFloatNode(gunPitchItems[1], -0.5f);
+    MakeSmokeAinetReaderFloatNode(gunPitchItems[2], 0.75f);
+    MakeSmokeAinetReaderFloatNode(modeAltItems[1], 1.25f);
+    MakeSmokeAinetReaderFloatNode(chasSmoothItems[1], -0.4f);
+    MakeSmokeAinetReaderFloatNode(chasPitchItems[1], 8.0f);
+    MakeSmokeAinetReaderFloatNode(chasPitchItems[2], 9.0f);
+    MakeSmokeAinetReaderFloatNode(chasPitchItems[3], -10.0f);
+    for (int index = 1; index < 8; ++index) {
+        MakeSmokeAinetReaderFloatNode(hoverWaveItems[index], static_cast<float>(index));
+        MakeSmokeAinetReaderFloatNode(subWaveItems[index], static_cast<float>(index + 10));
+    }
+    MakeSmokeAinetReaderFloatNode(collisionDItems[1], 0.3f);
+    MakeSmokeAinetReaderFloatNode(collisionDItems[2], 0.4f);
+    MakeSmokeAinetReaderStringNode(t2aItems[1], "fx_alpha");
+    MakeSmokeAinetReaderStringNode(t2aItems[2], "fx_beta");
+    MakeSmokeAinetReaderStringNode(a2hItems[1], "fx_gamma");
+    MakeSmokeAinetReaderStringNode(a2hItems[2], "fx_missing");
+    MakeSmokeAinetReaderStringNode(soundsItems[1], "pitch_scale");
+    MakeSmokeAinetReaderArrayNode(soundsItems[2], pitchScaleItems, 2);
+    MakeSmokeAinetReaderStringNode(soundsItems[3], "volume_scale");
+    MakeSmokeAinetReaderArrayNode(soundsItems[4], volumeScaleItems, 2);
+    MakeSmokeAinetReaderFloatNode(pitchScaleItems[1], 1.5f);
+    MakeSmokeAinetReaderFloatNode(volumeScaleItems[1], 0.25f);
+
+    zEffectAnimEntry effects[3] = {};
+    std::strcpy(effects[0].name, "fx_alpha");
+    std::strcpy(effects[1].name, "fx_beta");
+    std::strcpy(effects[2].name, "fx_gamma");
+    g_zEffectAnim_EntryList = effects;
+    g_zEffectAnim_EntryCount = 3;
+
+    PlayerMasterModalData modalData = {};
+    Player::LoadMasterModalDataFromNode(&modalData, &root, "modal_hover");
+
+    const bool ok =
+        std::strcmp(modalData.modalName, "modal_hover") == 0 &&
+        std::strcmp(modalData.modeName, "hover") == 0 && modalData.masterType == 4 &&
+        modalData.platformPointCount == 2 && modalData.probePointCount == 2 &&
+        SmokePlayerVec3Equals(modalData.probePoints[15], {1.0f, 2.0f, 3.0f}) &&
+        SmokePlayerVec3Equals(modalData.probePoints[16], {4.0f, 5.0f, 6.0f}) &&
+        SmokePlayerVec3Equals(modalData.probePoints[0], {-1.0f, -2.0f, -3.0f}) &&
+        SmokePlayerVec3Equals(modalData.probePoints[1], {-4.0f, -5.0f, -6.0f}) &&
+        SmokePlayerFloatNear(modalData.accelRate, 12.0f) &&
+        SmokePlayerFloatNear(modalData.maxSpeed, 34.0f) &&
+        SmokePlayerFloatNear(modalData.frictionStatic, 4.0f) &&
+        SmokePlayerFloatNear(modalData.frictionDynamic, 3.5999999f) &&
+        SmokePlayerFloatNear(modalData.frictionSlide, 0.25f) &&
+        SmokePlayerFloatNear(modalData.stoppingForce, 9.0f) &&
+        SmokePlayerFloatNear(modalData.quicksandSlowdown, 0.899999976f) &&
+        SmokePlayerFloatNear(modalData.lavaSlowdown, 0.7f) &&
+        SmokePlayerFloatNear(modalData.yawAccel, 0.9f) &&
+        SmokePlayerFloatNear(modalData.yawRateMax, 1.9f) &&
+        SmokePlayerFloatNear(modalData.yawDamping, 21.0f) &&
+        SmokePlayerFloatNear(modalData.rateDampingAccel, 22.0f) &&
+        SmokePlayerFloatNear(modalData.rateDampingDecel, 23.0f) &&
+        SmokePlayerFloatNear(modalData.aDamping, 24.0f) &&
+        SmokePlayerFloatNear(modalData.hoverLiftDampingRate, -7.0f) &&
+        SmokePlayerFloatNear(modalData.hoverLiftScale, 0.6f) &&
+        SmokePlayerFloatNear(modalData.hoverNormalLerpRate, -2.0f) &&
+        SmokePlayerFloatNear(modalData.mass, 2.0f) &&
+        SmokePlayerFloatNear(modalData.invMass, 0.5f) &&
+        SmokePlayerFloatNear(modalData.gunPitchMin, -0.5f) &&
+        SmokePlayerFloatNear(modalData.gunPitchRate, 0.75f) &&
+        SmokePlayerFloatNear(modalData.modeAltTransitionTime, 1.25f) &&
+        SmokePlayerFloatNear(modalData.chassisSmoothFactor, 0.4f) &&
+        SmokePlayerFloatNear(modalData.chassisPitchRate, 0.0f) &&
+        SmokePlayerFloatNear(modalData.chassisPitchMax, 0.0f) &&
+        SmokePlayerFloatNear(modalData.chassisPitchDamping, 0.0f) &&
+        SmokePlayerFloatNear(modalData.hoverPitchWaveBaseRate, 11.0f) &&
+        SmokePlayerFloatNear(modalData.hoverPitchWaveSpeedRate, 12.0f) &&
+        SmokePlayerFloatNear(modalData.hoverPitchWaveAmplitude, 13.0f) &&
+        SmokePlayerFloatNear(modalData.hoverRollWaveBaseRate, 14.0f) &&
+        SmokePlayerFloatNear(modalData.hoverRollWaveSpeedRate, 15.0f) &&
+        SmokePlayerFloatNear(modalData.hoverRollWaveAmplitude, 16.0f) &&
+        SmokePlayerFloatNear(modalData.hoverRollYawCoupleScale, 17.0f) &&
+        SmokePlayerFloatNear(modalData.collisionDampingA, 0.3f) &&
+        SmokePlayerFloatNear(modalData.collisionDampingB, 0.4f) &&
+        modalData.fxList_fromTrackToAmphib[0] == &effects[0] &&
+        modalData.fxList_fromTrackToAmphib[1] == &effects[1] &&
+        modalData.fxList_fromAmphibToHover[0] == &effects[2] &&
+        modalData.fxList_fromAmphibToHover[1] == nullptr &&
+        SmokePlayerFloatNear(modalData.sfxPitchScale, 1.5f) &&
+        SmokePlayerFloatNear(modalData.sfxVolumeScale, 0.25f);
+
+    g_zEffectAnim_EntryList = oldEntryList;
+    g_zEffectAnim_EntryCount = oldEntryCount;
+    return ok ? 0 : 1;
+}
+
+namespace {
 
 bool WriteSmokeAinetZrdU32(std::FILE *file, unsigned int value) {
     return std::fwrite(&value, sizeof(value), 1, file) == 1;
@@ -14007,6 +15909,130 @@ extern "C" int czrecoil_frame_init_startup_hw_api_from_options_smoke(void) {
     return result;
 }
 
+extern "C" int czrecoilframe_build_window_title_smoke(void) {
+    alignas(CZRecoilFrame) unsigned char frameStorage[sizeof(CZRecoilFrame)] = {};
+    CZRecoilFrame *const frame = reinterpret_cast<CZRecoilFrame *>(frameStorage);
+    alignas(CString) unsigned char titleStorage[sizeof(CString)];
+    CString *const title = reinterpret_cast<CString *>(titleStorage);
+    const int savedRendererPath = g_zVideo_ActiveRendererPath;
+
+    int result = 0;
+    g_zVideo_ActiveRendererPath = 0;
+    CString *returned = frame->CZRecoilFrame::BuildWindowTitle(title);
+    if (returned != title ||
+        static_cast<const char *>(*title) == 0 ||
+        std::strcmp(static_cast<const char *>(*title), "RECOIL") != 0) {
+        result = 1;
+    }
+    title->~CString();
+
+    if (result == 0) {
+        g_zVideo_ActiveRendererPath = 2;
+        returned = frame->CZRecoilFrame::BuildWindowTitle(title);
+        if (returned != title ||
+            static_cast<const char *>(*title) == 0 ||
+            std::strcmp(static_cast<const char *>(*title), "RECOIL (3Dfx)") != 0) {
+            result = 2;
+        }
+        title->~CString();
+    }
+
+    g_zVideo_ActiveRendererPath = savedRendererPath;
+    return result;
+}
+
+extern "C" int czrecoilframe_set_hw_api_and_init_mode_smoke(void) {
+    int mode = 4;
+    int acceleration = 0;
+    int hwApi = -1;
+    int fullscreen = 0;
+    int replicate = -1;
+    zOpt_ViewRectSection render = {};
+    zOpt_ViewRectSection display = {};
+    zOpt_ViewRectSection window = {};
+    zOpt_ViewRectSection *renderPtr = &render;
+    zOpt_ViewRectSection *displayPtr = &display;
+    zOpt_ViewRectSection *windowPtr = &window;
+    int *const savedVideoMode = ZOPT_VIDEO_MODE;
+    int *const savedAcceleration = ZOPT_VIDEO_ACCELERATION;
+    int *const savedHwApi = ZOPT_HW_API;
+    int *const savedFullscreen = ZOPT_VIDEO_FULLSCREEN;
+    int *const savedReplicate = ZOPT_REPLICATE;
+    zOpt_ViewRectSection **const savedRenderSection = g_zOpt_RenderSectionOption;
+    zOpt_ViewRectSection **const savedDisplaySection = g_zOpt_DisplaySectionOption;
+    zOpt_ViewRectSection **const savedWindowSection = g_zOpt_WindowSectionOption;
+    const int savedHwMode = g_zOpt_HwMode;
+    const int savedRendererType = g_zVideo_RendererType;
+    const int savedActiveRendererPath = g_zVideo_ActiveRendererPath;
+    const int savedVideoFullscreenOption = g_zVideo_FullscreenOption;
+    const zVideo_QueryMemoryBytesProc savedQueryMemory =
+        g_zVideo_pfnQueryDeviceVideoMemoryBytes;
+    zVidHwApiDeviceRecordPartial *const savedSelectedHw =
+        g_zVideo_pSelectedHwApiDeviceRecord;
+    zVidD3DDriverRecordPartial *const savedSelectedD3D =
+        g_zVideo_pSelectedD3DDeviceInfo;
+    const zVidHwApiDeviceRecordPartial savedEntry2 = g_zVideo_HwApiDeviceTable[2];
+
+    ZOPT_VIDEO_MODE = &mode;
+    ZOPT_VIDEO_ACCELERATION = &acceleration;
+    ZOPT_HW_API = &hwApi;
+    ZOPT_VIDEO_FULLSCREEN = &fullscreen;
+    ZOPT_REPLICATE = &replicate;
+    g_zOpt_RenderSectionOption = &renderPtr;
+    g_zOpt_DisplaySectionOption = &displayPtr;
+    g_zOpt_WindowSectionOption = &windowPtr;
+    g_zVideo_pfnQueryDeviceVideoMemoryBytes = zVid::QueryDeviceVideoMemoryBytes;
+    g_zVideo_HwApiDeviceTable[2].m_videoMemTotalBytes = 0x900000;
+    g_zVideo_HwApiDeviceTable[2].m_videoMemFreeBytes = 0x700000;
+    g_zVideo_HwApiDeviceTable[2].m_textureMemTotalBytes = 0x200000;
+
+    alignas(CZRecoilFrame) unsigned char frameStorage[sizeof(CZRecoilFrame)] = {};
+    CZRecoilFrame *const frame = reinterpret_cast<CZRecoilFrame *>(frameStorage);
+    frame->SetHwApiAndInitMode(2);
+
+    int result = 0;
+    if (frame->m_vidMemTotalBytes != 0x900000 ||
+        frame->m_vidMemFreeBytes != 0x500000 ||
+        frame->m_fullscreenOption != 0 ||
+        frame->m_videoModeIndex != 4) {
+        result = 1;
+    } else if (hwApi != 1 ||
+               fullscreen != 1 ||
+               acceleration != 1 ||
+               g_zOpt_HwMode != 1 ||
+               mode != 5 ||
+               replicate != 0 ||
+               display.width != 0x280 ||
+               display.height != 0x1e0) {
+        result = 2;
+    } else if (frame->m_videoModeCmdUiState[0] != 1 ||
+               frame->m_videoModeCmdUiState[1] != 1 ||
+               frame->m_videoModeCmdUiState[2] != 0 ||
+               frame->m_videoModeCmdUiState[3] != 8 ||
+               frame->m_videoModeCmdUiState[4] != 0 ||
+               frame->m_videoModeCmdUiState[5] != 0) {
+        result = 3;
+    }
+
+    ZOPT_VIDEO_MODE = savedVideoMode;
+    ZOPT_VIDEO_ACCELERATION = savedAcceleration;
+    ZOPT_HW_API = savedHwApi;
+    ZOPT_VIDEO_FULLSCREEN = savedFullscreen;
+    ZOPT_REPLICATE = savedReplicate;
+    g_zOpt_RenderSectionOption = savedRenderSection;
+    g_zOpt_DisplaySectionOption = savedDisplaySection;
+    g_zOpt_WindowSectionOption = savedWindowSection;
+    g_zOpt_HwMode = savedHwMode;
+    g_zVideo_RendererType = savedRendererType;
+    g_zVideo_ActiveRendererPath = savedActiveRendererPath;
+    g_zVideo_FullscreenOption = savedVideoFullscreenOption;
+    g_zVideo_pfnQueryDeviceVideoMemoryBytes = savedQueryMemory;
+    g_zVideo_pSelectedHwApiDeviceRecord = savedSelectedHw;
+    g_zVideo_pSelectedD3DDeviceInfo = savedSelectedD3D;
+    g_zVideo_HwApiDeviceTable[2] = savedEntry2;
+    return result;
+}
+
 extern "C" int zvid_cached_renderer_and_texture_counts_smoke(void) {
     g_zVid_AcceptedHardwareRendererCount = 3;
     g_zVid_TexturePackLoadState = 1;
@@ -19813,6 +21839,8 @@ int main(int argc, char **argv) {
         {"zsnd_backend_error_reporters_smoke", zsnd_backend_error_reporters_smoke},
         {"zsnd_play_handle_stop_if_active_smoke", zsnd_play_handle_stop_if_active_smoke},
         {"zsnd_play_handle_set_freq_scaled_smoke", zsnd_play_handle_set_freq_scaled_smoke},
+        {"zsnd_play_handle_set_enable_scale_smoke",
+         zsnd_play_handle_set_enable_scale_smoke},
         {"zsnd_play_handle_try_disable_managed_smoke",
          zsnd_play_handle_try_disable_managed_smoke},
         {"zsnd_play_handle_update3d_a3d_smoke", zsnd_play_handle_update3d_a3d_smoke},
@@ -20089,9 +22117,39 @@ int main(int argc, char **argv) {
          gamenet_get_local_player_color_index_smoke},
         {"gamenet_get_nearest_other_player_distance_to_spawn_point_smoke",
          gamenet_get_nearest_other_player_distance_to_spawn_point_smoke},
+        {"gamenet_update_remote_player_hud_widget_screen_pos_smoke",
+         gamenet_update_remote_player_hud_widget_screen_pos_smoke},
         {"gamenet_wait_for_local_player_color_index_smoke",
          gamenet_wait_for_local_player_color_index_smoke},
         {"net_format_ipv4_address_smoke", net_format_ipv4_address_smoke},
+        {"net_session_browser_dialog_constructor_smoke",
+         net_session_browser_dialog_constructor_smoke},
+        {"net_session_browser_dialog_scalar_deleting_dtor_smoke",
+         net_session_browser_dialog_scalar_deleting_dtor_smoke},
+        {"net_session_browser_dialog_destructor_smoke",
+         net_session_browser_dialog_destructor_smoke},
+        {"net_session_browser_dialog_do_data_exchange_smoke",
+         net_session_browser_dialog_do_data_exchange_smoke},
+        {"net_session_browser_dialog_get_message_map_smoke",
+         net_session_browser_dialog_get_message_map_smoke},
+        {"net_session_browser_dialog_on_init_dialog_smoke",
+         net_session_browser_dialog_on_init_dialog_smoke},
+        {"net_session_browser_dialog_refresh_session_list_smoke",
+         net_session_browser_dialog_refresh_session_list_smoke},
+        {"net_session_browser_dialog_connect_selected_provider_smoke",
+         net_session_browser_dialog_connect_selected_provider_smoke},
+        {"net_session_browser_dialog_on_ok_smoke",
+         net_session_browser_dialog_on_ok_smoke},
+        {"net_session_browser_dialog_on_create_session_smoke",
+         net_session_browser_dialog_on_create_session_smoke},
+        {"net_session_browser_dialog_on_timer_smoke",
+         net_session_browser_dialog_on_timer_smoke},
+        {"net_session_browser_dialog_on_destroy_smoke",
+         net_session_browser_dialog_on_destroy_smoke},
+        {"net_session_browser_dialog_validate_player_name_smoke",
+         net_session_browser_dialog_validate_player_name_smoke},
+        {"net_session_browser_dialog_on_help_docs_smoke",
+         net_session_browser_dialog_on_help_docs_smoke},
         {"net_session_config_dialog_get_message_map_smoke",
          net_session_config_dialog_get_message_map_smoke},
         {"net_session_config_dialog_init_map_name_strings_smoke",
@@ -20114,6 +22172,158 @@ int main(int argc, char **argv) {
          net_session_config_dialog_on_destroy_smoke},
         {"net_session_config_dialog_on_map_changed_smoke",
          net_session_config_dialog_on_map_changed_smoke},
+        {"westwood_online_upgrade_config_dialog_constructor_smoke",
+         westwood_online_upgrade_config_dialog_constructor_smoke},
+        {"westwood_online_upgrade_config_dialog_destructor_smoke",
+         westwood_online_upgrade_config_dialog_destructor_smoke},
+        {"westwood_online_upgrade_config_dialog_do_data_exchange_smoke",
+         westwood_online_upgrade_config_dialog_do_data_exchange_smoke},
+        {"westwood_online_upgrade_config_dialog_focus_clear_smoke",
+         westwood_online_upgrade_config_dialog_focus_clear_smoke},
+        {"westwood_online_upgrade_config_dialog_on_init_smoke",
+         westwood_online_upgrade_config_dialog_on_init_smoke},
+        {"westwood_online_upgrade_config_dialog_on_ok_smoke",
+         westwood_online_upgrade_config_dialog_on_ok_smoke},
+        {"westwood_online_upgrade_config_get_message_map_smoke",
+         westwood_online_upgrade_config_get_message_map_smoke},
+        {"westwood_online_upgrade_config_get_selected_profile_values_smoke",
+         westwood_online_upgrade_config_get_selected_profile_values_smoke},
+        {"westwood_online_upgrade_config_show_modal_apply_smoke",
+         westwood_online_upgrade_config_show_modal_apply_smoke},
+        {"westwood_online_upgrade_config_dialog_profile_combo_kill_focus_smoke",
+         westwood_online_upgrade_config_dialog_profile_combo_kill_focus_smoke},
+        {"westwood_online_upgrade_config_dialog_profile_combo_sel_change_smoke",
+         westwood_online_upgrade_config_dialog_profile_combo_sel_change_smoke},
+        {"westwood_online_upgrade_config_dialog_profile_combo_edit_change_smoke",
+         westwood_online_upgrade_config_dialog_profile_combo_edit_change_smoke},
+        {"westwood_online_upgrade_config_dialog_profile_combo_dropdown_smoke",
+         westwood_online_upgrade_config_dialog_profile_combo_dropdown_smoke},
+        {"westwood_online_upgrade_config_dialog_connect_mode_clicked_smoke",
+         westwood_online_upgrade_config_dialog_connect_mode_clicked_smoke},
+        {"westwood_online_upgrade_config_dialog_connect_edit_kill_focus_smoke",
+         westwood_online_upgrade_config_dialog_connect_edit_kill_focus_smoke},
+        {"westwood_online_upgrade_dialog_refresh_list_timer_smoke",
+         westwood_online_upgrade_dialog_refresh_list_timer_smoke},
+        {"westwood_online_upgrade_dialog_begin_connect_smoke",
+         westwood_online_upgrade_dialog_begin_connect_smoke},
+        {"westwood_online_upgrade_dialog_append_status_text_smoke",
+         westwood_online_upgrade_dialog_append_status_text_smoke},
+        {"westwood_online_upgrade_dialog_submit_visible_session_requests_status_smoke",
+         westwood_online_upgrade_dialog_submit_visible_session_requests_status_smoke},
+        {"westwood_online_upgrade_dialog_queue_visible_session_requests_lookup_smoke",
+         westwood_online_upgrade_dialog_queue_visible_session_requests_lookup_smoke},
+        {"westwood_online_upgrade_dialog_show_download_ready_list_smoke",
+         westwood_online_upgrade_dialog_show_download_ready_list_smoke},
+        {"westwood_online_upgrade_progress_dialog_set_status_text_fmt_smoke",
+         westwood_online_upgrade_progress_dialog_set_status_text_fmt_smoke},
+        {"westwood_online_upgrade_progress_dialog_dlg_proc_smoke",
+         westwood_online_upgrade_progress_dialog_dlg_proc_smoke},
+        {"westwood_online_upgrade_progress_dialog_constructor_smoke",
+         westwood_online_upgrade_progress_dialog_constructor_smoke},
+        {"westwood_online_upgrade_progress_dialog_destructor_smoke",
+         westwood_online_upgrade_progress_dialog_destructor_smoke},
+        {"westwood_online_upgrade_progress_dialog_scalar_dtor_smoke",
+         westwood_online_upgrade_progress_dialog_scalar_dtor_smoke},
+        {"westwood_online_upgrade_progress_dialog_get_message_map_smoke",
+         westwood_online_upgrade_progress_dialog_get_message_map_smoke},
+        {"westwood_online_upgrade_download_callback_no_op_smoke",
+         westwood_online_upgrade_download_callback_no_op_smoke},
+        {"westwood_online_upgrade_download_create_instance_advise_smoke",
+         westwood_online_upgrade_download_create_instance_advise_smoke},
+        {"westwood_online_upgrade_download_unadvise_release_smoke",
+         westwood_online_upgrade_download_unadvise_release_smoke},
+        {"westwood_online_upgrade_download_event_sink_create_instance_smoke",
+         westwood_online_upgrade_download_event_sink_create_instance_smoke},
+        {"westwood_online_upgrade_download_event_sink_finished_smoke",
+         westwood_online_upgrade_download_event_sink_finished_smoke},
+        {"westwood_online_upgrade_download_event_sink_error_smoke",
+         westwood_online_upgrade_download_event_sink_error_smoke},
+        {"westwood_online_upgrade_download_event_sink_progress_smoke",
+         westwood_online_upgrade_download_event_sink_progress_smoke},
+        {"westwood_online_upgrade_download_event_sink_state_changed_smoke",
+         westwood_online_upgrade_download_event_sink_state_changed_smoke},
+        {"westwood_online_upgrade_download_event_sink_query_interface_smoke",
+         westwood_online_upgrade_download_event_sink_query_interface_smoke},
+        {"westwood_online_upgrade_download_event_sink_destructor_smoke",
+         westwood_online_upgrade_download_event_sink_destructor_smoke},
+        {"westwood_online_upgrade_download_event_sink_release_smoke",
+         westwood_online_upgrade_download_event_sink_release_smoke},
+        {"westwood_online_upgrade_shared_com_add_ref_smoke",
+         westwood_online_upgrade_shared_com_add_ref_smoke},
+        {"westwood_online_upgrade_ref_count_and_lock_init_smoke",
+         westwood_online_upgrade_ref_count_and_lock_init_smoke},
+        {"westwood_online_upgrade_api_event_sink_append_browse_record_status3022_3025_smoke",
+         westwood_online_upgrade_api_event_sink_append_browse_record_status3022_3025_smoke},
+        {"westwood_online_upgrade_api_event_sink_append_connect_status301e_3021_smoke",
+         westwood_online_upgrade_api_event_sink_append_connect_status301e_3021_smoke},
+        {"westwood_online_upgrade_api_event_sink_append_session_request_status301b_smoke",
+         westwood_online_upgrade_api_event_sink_append_session_request_status301b_smoke},
+        {"westwood_online_upgrade_api_event_sink_append_session_request_status301c_smoke",
+         westwood_online_upgrade_api_event_sink_append_session_request_status301c_smoke},
+        {"westwood_online_upgrade_api_event_sink_append_session_request_status301c_alt0_smoke",
+         westwood_online_upgrade_api_event_sink_append_session_request_status301c_alt0_smoke},
+        {"westwood_online_upgrade_api_event_sink_append_session_request_status301c_alt1_smoke",
+         westwood_online_upgrade_api_event_sink_append_session_request_status301c_alt1_smoke},
+        {"westwood_online_upgrade_api_event_sink_append_session_request_status301d_smoke",
+         westwood_online_upgrade_api_event_sink_append_session_request_status301d_smoke},
+        {"westwood_online_upgrade_api_event_sink_append_time_status302a_smoke",
+         westwood_online_upgrade_api_event_sink_append_time_status302a_smoke},
+        {"westwood_online_upgrade_api_event_sink_append_value_status3026_smoke",
+         westwood_online_upgrade_api_event_sink_append_value_status3026_smoke},
+        {"westwood_online_upgrade_api_event_sink_append_value_status302b_302c_smoke",
+         westwood_online_upgrade_api_event_sink_append_value_status302b_302c_smoke},
+        {"westwood_online_upgrade_api_event_sink_apply_encoded_query_string0_smoke",
+         westwood_online_upgrade_api_event_sink_apply_encoded_query_string0_smoke},
+        {"westwood_online_upgrade_api_event_sink_apply_encoded_query_string1_smoke",
+         westwood_online_upgrade_api_event_sink_apply_encoded_query_string1_smoke},
+        {"westwood_online_upgrade_api_event_sink_callback_no_op0_smoke",
+         westwood_online_upgrade_api_event_sink_callback_no_op0_smoke},
+        {"westwood_online_upgrade_api_event_sink_callback_no_op1_smoke",
+         westwood_online_upgrade_api_event_sink_callback_no_op1_smoke},
+        {"westwood_online_upgrade_api_event_sink_create_instance_smoke",
+         westwood_online_upgrade_api_event_sink_create_instance_smoke},
+        {"westwood_online_upgrade_api_event_sink_lifetime_smoke",
+         westwood_online_upgrade_api_event_sink_lifetime_smoke},
+        {"westwood_online_upgrade_api_event_sink_launch_selected_session_smoke",
+         westwood_online_upgrade_api_event_sink_launch_selected_session_smoke},
+        {"westwood_online_upgrade_api_event_sink_on_api_status_smoke",
+         westwood_online_upgrade_api_event_sink_on_api_status_smoke},
+        {"westwood_online_upgrade_api_event_sink_on_bootstrap_server_list_smoke",
+         westwood_online_upgrade_api_event_sink_on_bootstrap_server_list_smoke},
+        {"westwood_online_upgrade_api_event_sink_on_browse_record_added_smoke",
+         westwood_online_upgrade_api_event_sink_on_browse_record_added_smoke},
+        {"westwood_online_upgrade_api_event_sink_on_browse_record_and_session_resolved_smoke",
+         westwood_online_upgrade_api_event_sink_on_browse_record_and_session_resolved_smoke},
+        {"westwood_online_upgrade_api_event_sink_on_browse_record_list_received_smoke",
+         westwood_online_upgrade_api_event_sink_on_browse_record_list_received_smoke},
+        {"westwood_online_upgrade_api_event_sink_on_download_ready_smoke",
+         westwood_online_upgrade_api_event_sink_on_download_ready_smoke},
+        {"westwood_online_upgrade_api_event_sink_on_network_status_changed_smoke",
+         westwood_online_upgrade_api_event_sink_on_network_status_changed_smoke},
+        {"westwood_online_upgrade_api_event_sink_on_pending_session_removed_smoke",
+         westwood_online_upgrade_api_event_sink_on_pending_session_removed_smoke},
+        {"westwood_online_upgrade_api_event_sink_on_server_error_smoke",
+         westwood_online_upgrade_api_event_sink_on_server_error_smoke},
+        {"westwood_online_upgrade_api_event_sink_on_session_launch_result_smoke",
+         westwood_online_upgrade_api_event_sink_on_session_launch_result_smoke},
+        {"westwood_online_upgrade_api_event_sink_on_session_list_enumerated_smoke",
+         westwood_online_upgrade_api_event_sink_on_session_list_enumerated_smoke},
+        {"westwood_online_upgrade_api_event_sink_on_session_query_finished_smoke",
+         westwood_online_upgrade_api_event_sink_on_session_query_finished_smoke},
+        {"westwood_online_upgrade_api_event_sink_on_status_text_received_smoke",
+         westwood_online_upgrade_api_event_sink_on_status_text_received_smoke},
+        {"westwood_online_upgrade_api_event_sink_query_interface_smoke",
+         westwood_online_upgrade_api_event_sink_query_interface_smoke},
+        {"westwood_online_upgrade_api_event_sink_update_session_result_item_flags_smoke",
+         westwood_online_upgrade_api_event_sink_update_session_result_item_flags_smoke},
+        {"westwood_online_upgrade_api_init_state_smoke",
+         (int (*)(void))westwood_online_upgrade_api_init_state_smoke},
+        {"westwood_online_upgrade_api_shutdown_smoke",
+         (int (*)(void))westwood_online_upgrade_api_shutdown_smoke},
+        {"westwood_online_upgrade_api_create_instance_load_config_smoke",
+         (int (*)(void))westwood_online_upgrade_api_create_instance_load_config_smoke},
+        {"westwood_online_upgrade_api_init_smoke",
+         (int (*)(void))westwood_online_upgrade_api_init_smoke},
         {"net_init_from_zrd_smoke", net_init_from_zrd_smoke},
         {"optcatalog_alt_gun_dispatch_alloc_runtime_gate_smoke",
          optcatalog_alt_gun_dispatch_alloc_runtime_gate_smoke},
@@ -20139,8 +22349,28 @@ int main(int argc, char **argv) {
          checkpoint_instantiate_named_objects_smoke},
         {"checkpoint_update_player_lap_progress_and_notify_net_smoke",
          checkpoint_update_player_lap_progress_and_notify_net_smoke},
+        {"player_is_mission_probe_type1_enabled_by_id_smoke",
+         player_is_mission_probe_type1_enabled_by_id_smoke},
         {"player_get_save_state_list_head_smoke",
          player_get_save_state_list_head_smoke},
+        {"player_unbind_current_save_state_if_single_player_smoke",
+         player_unbind_current_save_state_if_single_player_smoke},
+        {"player_bind_active_game_state_as_current_save_state_smoke",
+         player_bind_active_game_state_as_current_save_state_smoke},
+        {"player_async_command_callback_basic_smoke",
+         player_async_command_callback_basic_smoke},
+        {"player_sync_local_pose_from_root_node_smoke",
+         player_sync_local_pose_from_root_node_smoke},
+        {"zvehicle_select_zrd_by_difficulty_smoke",
+         zvehicle_select_zrd_by_difficulty_smoke},
+        {"player_load_master_common_data_from_node_smoke",
+         player_load_master_common_data_from_node_smoke},
+        {"player_load_master_modal_data_from_node_smoke",
+         player_load_master_modal_data_from_node_smoke},
+        {"player_get_aiv_zrd_path_smoke", player_get_aiv_zrd_path_smoke},
+        {"player_extract_vehicle_name_from_aiv_name_smoke",
+         player_extract_vehicle_name_from_aiv_name_smoke},
+        {"player_los_from_fx_offset_smoke", player_los_from_fx_offset_smoke},
         {"player_init_save_state_list_smoke",
          player_init_save_state_list_smoke},
         {"player_clone_type6_node_from_template_and_rename_smoke",
@@ -20157,6 +22387,9 @@ int main(int argc, char **argv) {
          player_apply_primary_weapon_switch_smoke},
         {"player_start_master_type_loop_sfx_handle_smoke",
          player_start_master_type_loop_sfx_handle_smoke},
+        {"player_update_modal_loop_sfx_smoke", player_update_modal_loop_sfx_smoke},
+        {"player_select_modal_state_by_master_type_smoke",
+         player_select_modal_state_by_master_type_smoke},
         {"player_master_type_transition_leaf_smoke",
          player_master_type_transition_leaf_smoke},
         {"player_apply_master_type_transition_smoke",
@@ -20179,12 +22412,56 @@ int main(int argc, char **argv) {
          player_apply_aim_pitch_to_direction_smoke},
         {"player_update_third_person_camera_smoke",
          player_update_third_person_camera_smoke},
+        {"player_tick_active_camera_state_smoke",
+         player_tick_active_camera_state_smoke},
+        {"player_update_chase_camera_from_input_smoke",
+         player_update_chase_camera_from_input_smoke},
+        {"player_update_top_down_camera_state_smoke",
+         player_update_top_down_camera_state_smoke},
+        {"player_update_camera_from_stored_target_toward_player_smoke",
+         player_update_camera_from_stored_target_toward_player_smoke},
+        {"player_update_first_person_camera_from_input_smoke",
+         player_update_first_person_camera_from_input_smoke},
+        {"player_adjust_third_person_camera_by_offset_probes_smoke",
+         player_adjust_third_person_camera_by_offset_probes_smoke},
+        {"player_adjust_third_person_camera_by_side_probes_smoke",
+         player_adjust_third_person_camera_by_side_probes_smoke},
+        {"player_restore_third_person_camera_from_obstruction_state_smoke",
+         player_restore_third_person_camera_from_obstruction_state_smoke},
+        {"player_update_camera_variant_from_camera_pos_smoke",
+         player_update_camera_variant_from_camera_pos_smoke},
+        {"player_update_camera_variant_from_anchor_smoke",
+         player_update_camera_variant_from_anchor_smoke},
+        {"player_update_camera_weather_fx_emitter_visibility_smoke",
+         player_update_camera_weather_fx_emitter_visibility_smoke},
+        {"player_filter_camera_probe_blocking_hits_smoke",
+         player_filter_camera_probe_blocking_hits_smoke},
+        {"player_adjust_sub_camera_focus_for_obstruction_smoke",
+         player_adjust_sub_camera_focus_for_obstruction_smoke},
+        {"player_find_nearest_third_person_camera_probe_point_smoke",
+         player_find_nearest_third_person_camera_probe_point_smoke},
+        {"player_select_probe_sample_height_smoke",
+         player_select_probe_sample_height_smoke},
+        {"player_probe_modal_sample_heights_smoke",
+         player_probe_modal_sample_heights_smoke},
         {"player_apply_camera_state_and_zopt_set_camera_mode_smoke",
          player_apply_camera_state_and_zopt_set_camera_mode_smoke},
+        {"player_set_world_pose_and_restart_anchor_smoke",
+         player_set_world_pose_and_restart_anchor_smoke},
+        {"player_capture_current_object_pose_as_restart_anchor_smoke",
+         player_capture_current_object_pose_as_restart_anchor_smoke},
+        {"player_reset_mouse_control_state_and_recenter_cursor_smoke",
+         player_reset_mouse_control_state_and_recenter_cursor_smoke},
+        {"player_toggle_steering_mode_and_reset_mouse_look_smoke",
+         player_toggle_steering_mode_and_reset_mouse_look_smoke},
+        {"player_reset_motion_transient_state_smoke",
+         player_reset_motion_transient_state_smoke},
         {"player_find_alt_gun_controller_smoke",
          player_find_alt_gun_controller_smoke},
         {"player_alt_gun_fire_point_selection_smoke",
          player_alt_gun_fire_point_selection_smoke},
+        {"player_primary_gun_fire_point_selection_smoke",
+         player_primary_gun_fire_point_selection_smoke},
         {"player_alt_gun_ensure_aux_effect_active_smoke",
          player_alt_gun_ensure_aux_effect_active_smoke},
         {"player_update_continuous_alt_gun_fire_controller_smoke",
@@ -20193,14 +22470,127 @@ int main(int argc, char **argv) {
          player_alt_gun_projectile_dispatch_helpers_smoke},
         {"player_process_alt_gun_fire_dispatch_request_smoke",
          player_process_alt_gun_fire_dispatch_request_smoke},
+        {"player_alt_gun_fire_slot_offset_smoke",
+         player_alt_gun_fire_slot_offset_smoke},
+        {"player_solve_alt_gun_lead_target_point_smoke",
+         player_solve_alt_gun_lead_target_point_smoke},
+        {"player_tick_ai_mode2_alt_gun_attack_window_smoke",
+         player_tick_ai_mode2_alt_gun_attack_window_smoke},
         {"player_update_gun_dispatch_requests_from_trigger_latches_smoke",
          player_update_gun_dispatch_requests_from_trigger_latches_smoke},
+        {"player_start_slip_sfx_smoke", player_start_slip_sfx_smoke},
+        {"player_stop_slip_sfx_smoke", player_stop_slip_sfx_smoke},
+        {"player_vec3_fast_normalize_smoke", player_vec3_fast_normalize_smoke},
+        {"player_constrain_to_unit_distance_from_smoke",
+         player_constrain_to_unit_distance_from_smoke},
+        {"player_update_bank_and_turn_dynamics_smoke",
+         player_update_bank_and_turn_dynamics_smoke},
+        {"player_compute_turn_slip_delta_smoke",
+         player_compute_turn_slip_delta_smoke},
+        {"player_update_yaw_velocity_from_steer_input_smoke",
+         player_update_yaw_velocity_from_steer_input_smoke},
+        {"player_update_bank_velocity_from_steer_input_smoke",
+         player_update_bank_velocity_from_steer_input_smoke},
+        {"player_integrate_yaw_and_wrap_from_yaw_velocity_smoke",
+         player_integrate_yaw_and_wrap_from_yaw_velocity_smoke},
+        {"player_rebuild_steer_basis_from_motion_basis_smoke",
+         player_rebuild_steer_basis_from_motion_basis_smoke},
+        {"player_rebuild_steer_basis_from_motion_axes_smoke",
+         player_rebuild_steer_basis_from_motion_axes_smoke},
+        {"player_rebuild_steer_basis_raw_from_ref_smoke",
+         player_rebuild_steer_basis_raw_from_ref_smoke},
+        {"player_rebuild_motion_basis_from_steer_basis_smoke",
+         player_rebuild_motion_basis_from_steer_basis_smoke},
+        {"player_update_auto_turn_and_steer_from_target_smoke",
+         player_update_auto_turn_and_steer_from_target_smoke},
+        {"player_set_auto_turn_target_dir_from_world_point_smoke",
+         player_set_auto_turn_target_dir_from_world_point_smoke},
+        {"player_update_sub_vertical_damping_smoke",
+         player_update_sub_vertical_damping_smoke},
+        {"player_clear_pending_contact_queues_smoke",
+         player_clear_pending_contact_queues_smoke},
+        {"player_pending_contact_select_preferred_smoke",
+         player_pending_contact_select_preferred_smoke},
+        {"player_select_and_resolve_preferred_pending_collision_contact_smoke",
+         player_select_and_resolve_preferred_pending_collision_contact_smoke},
+        {"player_prepare_pending_world_collision_response_smoke",
+         player_prepare_pending_world_collision_response_smoke},
+        {"player_resolve_pending_world_collision_contact_smoke",
+         player_resolve_pending_world_collision_contact_smoke},
+        {"player_classify_pending_contacts_for_segment_smoke",
+         player_classify_pending_contacts_for_segment_smoke},
+        {"player_collect_pending_contacts_for_segments_smoke",
+         player_collect_pending_contacts_for_segments_smoke},
+        {"player_pickup_contact_passes_collection_test_smoke",
+         player_pickup_contact_passes_collection_test_smoke},
+        {"player_process_pending_pickup_contacts_smoke",
+         player_process_pending_pickup_contacts_smoke},
+        {"player_build_pending_contact_queues_smoke",
+         player_build_pending_contact_queues_smoke},
+        {"player_process_pending_contact_queues_smoke",
+         player_process_pending_contact_queues_smoke},
+        {"player_collect_pending_collision_contacts_for_quad_probe_smoke",
+         player_collect_pending_collision_contacts_for_quad_probe_smoke},
+        {"player_try_resolve_pending_collision_probe_sweep_smoke",
+         player_try_resolve_pending_collision_probe_sweep_smoke},
+        {"player_resolve_pending_collision_contact_smoke",
+         player_resolve_pending_collision_contact_smoke},
+        {"player_resolve_pending_player_collision_contact_smoke",
+         player_resolve_pending_player_collision_contact_smoke},
+        {"player_process_transfer_contact_queue_smoke",
+         player_process_transfer_contact_queue_smoke},
+        {"player_apply_pending_collision_probe_velocity_smoke",
+         player_apply_pending_collision_probe_velocity_smoke},
+        {"player_start_modal_loop_sfx_handle_smoke",
+         player_start_modal_loop_sfx_handle_smoke},
+        {"player_build_environment_probe_result_smoke",
+         player_build_environment_probe_result_smoke},
+        {"player_apply_environment_probe_result_smoke",
+         player_apply_environment_probe_result_smoke},
+        {"player_surface_height_and_terrain_tilt_smoke",
+         player_surface_height_and_terrain_tilt_smoke},
+        {"player_compute_surface_from1_probe_smoke",
+         player_compute_surface_from1_probe_smoke},
+        {"player_compute_triangle_normal_smoke",
+         player_compute_triangle_normal_smoke},
+        {"player_compute_surface_from2_probes_smoke",
+         player_compute_surface_from2_probes_smoke},
+        {"player_check_probe_sample_mask_overlap_smoke",
+         player_check_probe_sample_mask_overlap_smoke},
+        {"player_rebuild_above_ground_indices_smoke",
+         player_rebuild_above_ground_indices_smoke},
+        {"player_select_best_probes_by_dot_product_smoke",
+         player_select_best_probes_by_dot_product_smoke},
+        {"player_compute_surface_from3_probes_smoke",
+         player_compute_surface_from3_probes_smoke},
+        {"player_process_env_probe_results_smoke",
+         player_process_env_probe_results_smoke},
+        {"player_rebuild_orientation_from_normal_smoke",
+         player_rebuild_orientation_from_normal_smoke},
+        {"player_find_third_probe_and_compute_normal_smoke",
+         player_find_third_probe_and_compute_normal_smoke},
+        {"player_accumulate_slope_forces_smoke",
+         player_accumulate_slope_forces_smoke},
+        {"player_update_vertical_velocity_and_transform_smoke",
+         player_update_vertical_velocity_and_transform_smoke},
+        {"player_update_post_move_environment_smoke",
+         player_update_post_move_environment_smoke},
+        {"player_apply_amphib_speed_oscillation_smoke",
+         player_apply_amphib_speed_oscillation_smoke},
+        {"player_tick_alt_gun_runtime_state_smoke",
+         player_tick_alt_gun_runtime_state_smoke},
         {"player_reset_alt_gun_runtime_state_smoke",
          player_reset_alt_gun_runtime_state_smoke},
         {"player_build_mission_save_data_smoke",
          player_build_mission_save_data_smoke},
         {"player_apply_mission_save_data_smoke",
          player_apply_mission_save_data_smoke},
+        {"player_add_scaled_hud_counter_smoke",
+         player_add_scaled_hud_counter_smoke},
+        {"player_update_debug_overlay_hud_smoke",
+         player_update_debug_overlay_hud_smoke},
+        {"player_refresh_hud_from_state_smoke",
+         player_refresh_hud_from_state_smoke},
         {"player_destroy_save_game_state_smoke",
          player_destroy_save_game_state_smoke},
         {"player_shutdown_mission_runtime_smoke",
@@ -20375,6 +22765,10 @@ int main(int argc, char **argv) {
         {"zfmv_script_begin_now_smoke", zfmv_script_begin_now_smoke},
         {"zfmv_script_load_actions_from_zrd_smoke",
          zfmv_script_load_actions_from_zrd_smoke},
+        {"zfmv_action_flip_surfaces_smoke",
+         zfmv_action_flip_surfaces_smoke},
+        {"zfmv_action_wait_begin_update_smoke",
+         zfmv_action_wait_begin_update_smoke},
         {"zfmv_action_image_constructor_with_screen_rect_smoke",
          zfmv_action_image_constructor_with_screen_rect_smoke},
         {"zfmv_action_image_constructor_scaled_smoke",
@@ -20462,6 +22856,10 @@ int main(int argc, char **argv) {
          hud_ui_load_game_primary_action_button_on_activate_smoke},
         {"hud_ui_zrd_widget_on_activate_queue_exit_current_state_smoke",
          hud_ui_zrd_widget_on_activate_queue_exit_current_state_smoke},
+        {"hud_ui_callback_queue_exit_current_state_smoke",
+         hud_ui_callback_queue_exit_current_state_smoke},
+        {"hud_ui_callback_queue_cheat_code_state_smoke",
+         hud_ui_callback_queue_cheat_code_state_smoke},
         {"hud_ui_credits_quit_button_on_activate_smoke",
          hud_ui_credits_quit_button_on_activate_smoke},
         {"hud_cheat_clear_nanite_panel_cheat_sentinel_smoke",
@@ -20474,6 +22872,12 @@ int main(int argc, char **argv) {
          hud_ui_cheat_code_dialog_destructor_smoke},
         {"hud_ui_cheat_code_dialog_scalar_deleting_destructor_smoke",
          hud_ui_cheat_code_dialog_scalar_deleting_destructor_smoke},
+        {"hud_low_meter_loop_sound_set_loop_active_smoke",
+         hud_low_meter_loop_sound_set_loop_active_smoke},
+        {"hud_ui_controls_dialog_constructor_smoke",
+         hud_ui_controls_dialog_constructor_smoke},
+        {"hud_ui_new_game_panel_start_activation_smoke",
+         hud_ui_new_game_panel_start_activation_smoke},
         {"hud_ui_new_game_panel_constructor_cluster_smoke",
          hud_ui_new_game_panel_constructor_cluster_smoke},
         {"hud_ui_new_game_panel_overlay_owner_queue_enter_smoke",
@@ -20500,6 +22904,10 @@ int main(int argc, char **argv) {
          recoil_app_queue_push_state_smoke},
         {"recoil_app_queue_exit_current_state_smoke",
          recoil_app_queue_exit_current_state_smoke},
+        {"recoil_app_run_current_state_quit_smoke",
+         recoil_app_run_current_state_quit_smoke},
+        {"recoil_app_run_queue_transitions_smoke",
+         recoil_app_run_queue_transitions_smoke},
         {"recoil_app_mfc_ole_module_constructor_smoke",
          recoil_app_mfc_ole_module_constructor_smoke},
         {"recoil_app_mfc_ole_module_destructor_smoke",
@@ -20508,6 +22916,21 @@ int main(int argc, char **argv) {
          recoil_app_constructor_destructor_smoke},
         {"czgame_frame_constructor_smoke", czgame_frame_constructor_smoke},
         {"czgame_frame_create_object_smoke", czgame_frame_create_object_smoke},
+        {"czgame_frame_destructor_smoke", czgame_frame_destructor_smoke},
+        {"czgame_frame_is_window_valid_smoke",
+         czgame_frame_is_window_valid_smoke},
+        {"czgame_frame_build_window_title_smoke",
+         czgame_frame_build_window_title_smoke},
+        {"czrecoilframe_build_window_title_smoke",
+         czrecoilframe_build_window_title_smoke},
+        {"czgame_frame_on_close_smoke", czgame_frame_on_close_smoke},
+        {"czgame_frame_on_paint_smoke", czgame_frame_on_paint_smoke},
+        {"czgame_frame_on_size_smoke", czgame_frame_on_size_smoke},
+        {"czgame_frame_on_create_smoke", czgame_frame_on_create_smoke},
+        {"czgame_frame_on_destroy_smoke", czgame_frame_on_destroy_smoke},
+        {"czgame_frame_on_activate_smoke", czgame_frame_on_activate_smoke},
+        {"czgame_frame_on_app_idle_dispatch_message_smoke",
+         czgame_frame_on_app_idle_dispatch_message_smoke},
         {"czrecoil_frame_constructor_smoke", czrecoil_frame_constructor_smoke},
         {"czrecoil_frame_create_object_smoke",
          czrecoil_frame_create_object_smoke},
@@ -20540,16 +22963,24 @@ int main(int argc, char **argv) {
          czrecoil_frame_update_video_mode_cmd_ui_smoke},
         {"czrecoil_frame_set_hw_api_and_init_mode_smoke",
          czrecoil_frame_set_hw_api_and_init_mode_smoke},
+        {"czrecoilframe_set_hw_api_and_init_mode_smoke",
+         czrecoilframe_set_hw_api_and_init_mode_smoke},
         {"czrecoil_frame_ensure_hw_api_initialized_smoke",
          czrecoil_frame_ensure_hw_api_initialized_smoke},
         {"czrecoil_frame_select_hw_api_menu_handlers_smoke",
          czrecoil_frame_select_hw_api_menu_handlers_smoke},
         {"czrecoil_frame_hw_api_menu_cmd_ui_smoke",
          czrecoil_frame_hw_api_menu_cmd_ui_smoke},
+        {"czrecoil_frame_audio_input_menu_smoke",
+         czrecoil_frame_audio_input_menu_smoke},
         {"czrecoil_frame_menu_toggle_smoke",
          czrecoil_frame_menu_toggle_smoke},
         {"czrecoil_frame_toggle_texture_packs_smoke",
          czrecoil_frame_toggle_texture_packs_smoke},
+        {"czrecoil_frame_on_menu_westwood_online_upgrade_smoke",
+         czrecoil_frame_on_menu_westwood_online_upgrade_smoke},
+        {"czrecoil_frame_open_multiplayer_session_browser_smoke",
+         czrecoil_frame_open_multiplayer_session_browser_smoke},
         {"czrecoil_frame_on_size_smoke", czrecoil_frame_on_size_smoke},
         {"recoil_app_fmv_state_destructor_smoke",
          recoil_app_fmv_state_destructor_smoke},
@@ -20561,6 +22992,8 @@ int main(int argc, char **argv) {
          recoil_app_initialize_display_failure_smoke},
         {"recoil_app_start_engine_and_queue_startup_state_smoke",
          recoil_app_start_engine_and_queue_startup_state_smoke},
+        {"recoil_app_on_idle_or_dispatch_smoke",
+         recoil_app_on_idle_or_dispatch_smoke},
         {"recoil_state_main_menu_transition_constructor_smoke",
          recoil_state_main_menu_transition_constructor_smoke},
         {"recoil_state_main_menu_transition_static_init_smoke",
@@ -20573,6 +23006,14 @@ int main(int argc, char **argv) {
          hud_ui_main_menu_dialog_constructor_smoke},
         {"recoil_state_cheat_code_constructor_smoke",
          recoil_state_cheat_code_constructor_smoke},
+        {"recoil_state_cheat_code_destructor_smoke",
+         recoil_state_cheat_code_destructor_smoke},
+        {"recoil_state_cheat_code_static_init_thunks_smoke",
+         recoil_state_cheat_code_static_init_thunks_smoke},
+        {"recoil_state_cheat_code_on_try_become_current_smoke",
+         recoil_state_cheat_code_on_try_become_current_smoke},
+        {"recoil_state_cheat_code_on_deactivate_smoke",
+         recoil_state_cheat_code_on_deactivate_smoke},
         {"recoil_state_controls_lifecycle_smoke",
          recoil_state_controls_lifecycle_smoke},
         {"recoil_state_controls_activation_smoke",
@@ -20742,10 +23183,19 @@ int main(int argc, char **argv) {
          zhud_triplet_panel_set_visible_count_smoke},
         {"zhud_triplet_panel_shutdown_items_stub_smoke",
          zhud_triplet_panel_shutdown_items_stub_smoke},
+        {"zhud_triplet_constructor_smoke", zhud_triplet_constructor_smoke},
+        {"zhud_triplet_destructor_core_smoke",
+         zhud_triplet_destructor_core_smoke},
         {"zhud_triplet_interpolate_layout_smoke",
          zhud_triplet_interpolate_layout_smoke},
         {"zhud_triplet_is_local_player_first_entry_smoke",
          zhud_triplet_is_local_player_first_entry_smoke},
+        {"zhud_stats_list_element_update_smoke",
+         zhud_stats_list_element_update_smoke},
+        {"zhud_stats_list_destructors_smoke",
+         zhud_stats_list_destructors_smoke},
+        {"zhud_container_destructor_core_smoke",
+         zhud_container_destructor_core_smoke},
         {"zhud_mgr_constructor_smoke", zhud_mgr_constructor_smoke},
         {"zhud_mgr_static_init_smoke", zhud_mgr_static_init_smoke},
         {"zhud_mgr_static_destructor_smoke",
@@ -20758,6 +23208,8 @@ int main(int argc, char **argv) {
          zhud_mgr_is_local_player_first_in_stats_list_smoke},
         {"zhud_scoreboard_set_scale_and_rebuild_smoke",
          zhud_scoreboard_set_scale_and_rebuild_smoke},
+        {"zhud_scoreboard_dispatch_set_scale_smoke",
+         zhud_scoreboard_dispatch_set_scale_smoke},
         {"zhud_triplet_scoreboard_entry_update_smoke",
          zhud_triplet_scoreboard_entry_update_smoke},
         {"zhud_text_stack_constructors_smoke",
@@ -20779,12 +23231,62 @@ int main(int argc, char **argv) {
         {"zhud_timer_panel_global_accessors_smoke",
          zhud_timer_panel_global_accessors_smoke},
         {"zhud_list_menu_entry_sort_smoke", zhud_list_menu_entry_sort_smoke},
+        {"zhud_layout_base_load_type_i_from_zar_root_smoke",
+         zhud_layout_base_load_type_i_from_zar_root_smoke},
+        {"zhud_layout_apply_viewport_rect_smoke",
+         zhud_layout_apply_viewport_rect_smoke},
+        {"zhud_layout_node_read_rect_offset_and_size_smoke",
+         zhud_layout_node_read_rect_offset_and_size_smoke},
+        {"zhud_layout_node_read_rect_smoke",
+         zhud_layout_node_read_rect_smoke},
+        {"zhud_layout_node_read_int3_smoke",
+         zhud_layout_node_read_int3_smoke},
+        {"zhud_layout_node_apply_text_label_smoke",
+         zhud_layout_node_apply_text_label_smoke},
+        {"zhud_layout_node_apply_corner_text_quad_smoke",
+         zhud_layout_node_apply_corner_text_quad_smoke},
+        {"zhud_layout_node_apply_meter_quad_smoke",
+         zhud_layout_node_apply_meter_quad_smoke},
+        {"zhud_layout_node_apply_image_widget_smoke",
+         zhud_layout_node_apply_image_widget_smoke},
+        {"zhud_layout_shutdown_stub_smoke", zhud_layout_shutdown_stub_smoke},
+        {"zhud_layout_base_destructor_smoke", zhud_layout_base_destructor_smoke},
+        {"zhud_layout_sw_constructor_smoke",
+         zhud_layout_sw_constructor_smoke},
+        {"zhud_layout_sw_global_init_smoke",
+         zhud_layout_sw_global_init_smoke},
+        {"zhud_layout_sw_static_lifetime_smoke",
+         zhud_layout_sw_static_lifetime_smoke},
+        {"zhud_layout_hw_release_images_smoke",
+         zhud_layout_hw_release_images_smoke},
+        {"zhud_layout_hw_update_all_smoke",
+         zhud_layout_hw_update_all_smoke},
+        {"zhud_layout_hw_set_active_smoke",
+         zhud_layout_hw_set_active_smoke},
+        {"zhud_layout_hw_on_activated_smoke",
+         zhud_layout_hw_on_activated_smoke},
+        {"zhud_layout_hw_enable_smoke",
+         zhud_layout_hw_enable_smoke},
+        {"zhud_layout_hw_disable_smoke",
+         zhud_layout_hw_disable_smoke},
+        {"zhud_layout_hw_constructor_smoke",
+         zhud_layout_hw_constructor_smoke},
+        {"zhud_layout_hw_global_init_smoke",
+         zhud_layout_hw_global_init_smoke},
+        {"zhud_layout_hw_static_lifetime_smoke",
+         zhud_layout_hw_static_lifetime_smoke},
+        {"zhud_layout_sw_set_active_smoke",
+         zhud_layout_sw_set_active_smoke},
         {"zhud_layout_hw_update_objective_dirty_rect_smoke",
          zhud_layout_hw_update_objective_dirty_rect_smoke},
+        {"zhud_layout_hw_load_type_ii_from_zar_root_smoke",
+         zhud_layout_hw_load_type_ii_from_zar_root_smoke},
         {"zhud_objective_update_meter_xpoints_smoke",
          zhud_objective_update_meter_xpoints_smoke},
         {"zhud_objective_show_smoke", zhud_objective_show_smoke},
         {"zhud_objective_begin_smoke", zhud_objective_begin_smoke},
+        {"hud_ui_aux_overlay_text_lines_smoke",
+         hud_ui_aux_overlay_text_lines_smoke},
         {"zhud_loading_checkpoint_init_table_smoke",
          zhud_loading_checkpoint_init_table_smoke},
         {"zhud_loading_checkpoint_advance_and_log_smoke",
@@ -20792,8 +23294,16 @@ int main(int argc, char **argv) {
         {"zhud_mgr_tail_bar_layout_smoke", zhud_mgr_tail_bar_layout_smoke},
         {"zhud_mgr_trigger_current_layout_on_activated_smoke",
          zhud_mgr_trigger_current_layout_on_activated_smoke},
+        {"zhud_mgr_viewport_activation_smoke",
+         zhud_mgr_viewport_activation_smoke},
+        {"zhud_mgr_project_point_to_normalized_clamped_smoke",
+         zhud_mgr_project_point_to_normalized_clamped_smoke},
         {"zhud_mgr_sensor_set_shield_message_ratio_smoke",
          zhud_mgr_sensor_set_shield_message_ratio_smoke},
+        {"zhud_shield_message_widget_destructor_smoke",
+         zhud_shield_message_widget_destructor_smoke},
+        {"zhud_shield_message_widget_apply_layout_smoke",
+         zhud_shield_message_widget_apply_layout_smoke},
         {"zhud_objective_refresh_counter_text_smoke",
          zhud_objective_refresh_counter_text_smoke},
         {"zhud_counter_constructor_smoke", zhud_counter_constructor_smoke},
@@ -20877,6 +23387,8 @@ int main(int argc, char **argv) {
         {"zhud_panel_set_text_fmt_smoke", zhud_panel_set_text_fmt_smoke},
         {"zhud_panel_query_text_height_smoke",
          zhud_panel_query_text_height_smoke},
+        {"zhud_panel_simple_constructor_smoke",
+         zhud_panel_simple_constructor_smoke},
         {"zhud_panel_layout_entry_copy_construct_smoke",
          zhud_panel_layout_entry_copy_construct_smoke},
         {"zhud_panel_layout_entry_copy_assign_smoke",
@@ -21084,6 +23596,8 @@ int main(int argc, char **argv) {
          zhud_text_input_constructor_and_alloc_smoke},
         {"zhud_polyline_and_slider_border_constructor_smoke",
          zhud_polyline_and_slider_border_constructor_smoke},
+        {"zhud_polyline_draw_and_slider_update_smoke",
+         zhud_polyline_draw_and_slider_update_smoke},
         {"zhud_numeric_text_input_base_constructor_smoke",
          zhud_numeric_text_input_base_constructor_smoke},
         {"zhud_background_bind_primitive_node_to_element_smoke",
@@ -21336,6 +23850,14 @@ int main(int argc, char **argv) {
          zclass_node_propagate_transform_dirty_smoke},
         {"zclass_object3d_reset_transform_dirty_smoke",
          zclass_object3d_reset_transform_dirty_smoke},
+        {"zclass_model_ref_lerp_queue_clear_global_state_smoke",
+         zclass_model_ref_lerp_queue_clear_global_state_smoke},
+        {"zclass_model_ref_lerp_queue_add_smoke",
+         zclass_model_ref_lerp_queue_add_smoke},
+        {"zclass_model_ref_lerp_queue_reset_smoke",
+         zclass_model_ref_lerp_queue_reset_smoke},
+        {"zclass_model_ref_lerp_queue_update_smoke",
+         zclass_model_ref_lerp_queue_update_smoke},
         {"zclass_object3d_init_smoke", zclass_object3d_init_smoke},
         {"zclass_object3d_delete_node_smoke", zclass_object3d_delete_node_smoke},
         {"zclass_light_new_smoke", zclass_light_new_smoke},
@@ -21371,6 +23893,10 @@ int main(int argc, char **argv) {
          zclass_world_get_area_partition_at_grid_smoke},
         {"zclass_world_to_grid_coords_clamped_smoke",
          zclass_world_to_grid_coords_clamped_smoke},
+        {"zclass_world_build_active_light_list_smoke",
+         zclass_world_build_active_light_list_smoke},
+        {"zclass_world_remove_light_sound_smoke",
+         zclass_world_remove_light_sound_smoke},
         {"zclass_node_metadata_accessors_smoke",
          zclass_node_metadata_accessors_smoke},
         {"zclass_copy_node_display_instance_smoke",
@@ -21384,6 +23910,14 @@ int main(int argc, char **argv) {
         {"zclass_lod_leaf_smoke", zclass_lod_leaf_smoke},
         {"zclass_camera_view_distance_smoke",
          zclass_camera_view_distance_smoke},
+        {"zclass_camera_render_frustum_grid_tiles_smoke",
+         zclass_camera_render_frustum_grid_tiles_smoke},
+        {"zclass_camera_render_scene_smoke",
+         zclass_camera_render_scene_smoke},
+        {"zclass_camera_sync_view_context_positions_smoke",
+         zclass_camera_sync_view_context_positions_smoke},
+        {"zclass_list_render_active_cameras_smoke",
+         zclass_list_render_active_cameras_smoke},
         {"zclass_render_traverse_dispatch_smoke",
          zclass_render_traverse_dispatch_smoke},
         {"zmodel_material_defaults_and_find_smoke",
@@ -21392,8 +23926,21 @@ int main(int argc, char **argv) {
         {"zmodel_material_and_di_clone_smoke", zmodel_material_and_di_clone_smoke},
         {"zmodel_init_smoke", zmodel_init_smoke},
         {"zmodel_display_init_smoke", zmodel_display_init_smoke},
+        {"zmodel_set_software_path_active_smoke",
+         zmodel_set_software_path_active_smoke},
         {"zmodel_const_tolerances_and_cross_smoke",
          zmodel_const_tolerances_and_cross_smoke},
+        {"zmodel_light_fog_fade_smoke", zmodel_light_fog_fade_smoke},
+        {"zmodel_light_set_active_lights_smoke",
+         zmodel_light_set_active_lights_smoke},
+        {"zmodel_light_build_light_weights_smoke",
+         zmodel_light_build_light_weights_smoke},
+        {"zmodel_light_build_attr0_depth_fade_smoke",
+         zmodel_light_build_attr0_depth_fade_smoke},
+        {"zmodel_light_build_attr1_falloff_smoke",
+         zmodel_light_build_attr1_falloff_smoke},
+        {"zmodel_light_point_in_polygon_init_smoke",
+         zmodel_light_point_in_polygon_init_smoke},
         {"zdi_ref_and_pool_free_smoke", zdi_ref_and_pool_free_smoke},
         {"zdi_add_polygon_wrapper_smoke", zdi_add_polygon_wrapper_smoke},
         {"ztag4_clear_smoke", ztag4_clear_smoke},
@@ -21470,6 +24017,15 @@ int main(int argc, char **argv) {
         {"zclass_gwnode_update_smoke", zclass_gwnode_update_smoke},
         {"zclass_gwnode_update_tree_smoke",
          zclass_gwnode_update_tree_smoke},
+        {"zclass_typelist_update_bucket_smoke",
+         zclass_typelist_update_bucket_smoke},
+        {"zclass_typelist_update_all_buckets_smoke",
+         zclass_typelist_update_all_buckets_smoke},
+        {"zclass_typelist_update_sequences_smoke",
+         zclass_typelist_update_sequences_smoke},
+        {"zclass_typelist_update_animations_smoke",
+         zclass_typelist_update_animations_smoke},
+        {"zclass_gwnode_update_all_smoke", zclass_gwnode_update_all_smoke},
         {"zclass_cls_di_point_query_chain_smoke",
          zclass_cls_di_point_query_chain_smoke},
         {"zclass_cls_di_segment_batch_vs_polygon_smoke",

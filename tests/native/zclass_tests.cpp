@@ -6,6 +6,7 @@
 #include "GameZRecoil/zModel/zModel.h"
 #include "GameZRecoil/zRndr/zRndr.h"
 #include "GameZRecoil/zSound/zSound.h"
+#include "GameZRecoil/Time/Time.h"
 #include "GameZRecoil/zVideo/zVideo.h"
 
 #include <cmath>
@@ -68,6 +69,24 @@ bool zclass_bucket_has_pending_node_for_test(int bucket, zClass_NodePartial *nod
     }
 
     return false;
+}
+
+int g_zclassRenderTraverseCallCount;
+zClass_NodePartial *g_zclassRenderTraverseNodes[16];
+int g_zclassRenderTraverseClipMasks[16];
+float g_zclassRenderTraverseAlphaScales[16];
+int g_zclassRenderTraverseVertexAlphaEnabled[16];
+
+void __fastcall TestZClassRenderTraverseCallback(zClass_NodePartial *node, int clipMask) {
+    if (g_zclassRenderTraverseCallCount < 16) {
+        g_zclassRenderTraverseNodes[g_zclassRenderTraverseCallCount] = node;
+        g_zclassRenderTraverseClipMasks[g_zclassRenderTraverseCallCount] = clipMask;
+        g_zclassRenderTraverseAlphaScales[g_zclassRenderTraverseCallCount] =
+            gModel_RenderAlphaScaleCurrent;
+        g_zclassRenderTraverseVertexAlphaEnabled[g_zclassRenderTraverseCallCount] =
+            gModel_RenderVertexAlphaEnabled;
+    }
+    ++g_zclassRenderTraverseCallCount;
 }
 } // namespace
 
@@ -4411,4 +4430,701 @@ extern "C" int zclass_node_predicate_helpers_smoke() {
     grandchild.nodeType = 0;
     return zClass::AnyNodeMatchesPredicateRecursive(&root, zclass_test_node_type_0x42) == 0 ? 0
                                                                                             : 15;
+}
+
+extern "C" int zclass_camera_render_frustum_grid_tiles_smoke(void) {
+    auto setIdentity = [](float *matrix) {
+        const zMat4x3 identity{1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+                               0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f};
+        std::memcpy(matrix, &identity, sizeof(identity));
+    };
+    auto resetRenderLog = []() {
+        g_zclassRenderTraverseCallCount = 0;
+        for (int i = 0; i < 16; ++i) {
+            g_zclassRenderTraverseNodes[i] = nullptr;
+            g_zclassRenderTraverseClipMasks[i] = -1;
+            g_zclassRenderTraverseAlphaScales[i] = -1.0f;
+            g_zclassRenderTraverseVertexAlphaEnabled[i] = -1;
+        }
+    };
+    auto initVisibleObject = [](zClass_NodePartial &node, zClass_Object3DDataPartial &data,
+                                const char *name) {
+        node = {};
+        std::strncpy(node.name, name, sizeof(node.name) - 1);
+        node.flags = 0x02080005;
+        node.nodeType = 0xff;
+        node.classId = 5;
+        node.classData = &data;
+        data = {};
+        data.flags = 0x08;
+    };
+
+    zVec3 polygonVertices[8] = {};
+    zVec3 polygonNormals[8] = {};
+    zVec3 *const savedPolygonVertices = g_zModel_PointInPolygonVertices;
+    zVec3 *const savedPolygonNormals = g_zModel_PointInPolygonEdgeNormals;
+    const int savedPolygonVertexCount = g_zModel_PointInPolygonVertexCount;
+    zClass_CameraDataPartial *const savedViewContext = g_zVideo_pActiveViewContext;
+    zClass_CameraDataPartial *const savedProjectionViewContext =
+        g_zVideo_pActiveProjectionViewContext;
+    zClass_RenderFn const savedRenderFn = gModel_RenderFn;
+    int *const savedClipStackTop = gModel_ClipMaskStackTop;
+    const int savedClipStack0 = gModel_ClipMaskStack[0];
+    const int savedObjectHseTestEnabled = g_zClass_ObjectHseTestEnabled;
+    const int savedFrustumGridTileIndex = g_zClass_RenderFrustumGridTileIndex;
+    const int savedFogEnabled = gModel_FogEnabled;
+    const float savedFogDistanceStart = gModel_FogDistanceStart;
+    int *const savedMatrixIdentitySlot = zMath::g_currentMatrixIdentityFlagSlot;
+    float **const savedMatrixPtrSlot = zMath::g_currentMatrixPtrSlot;
+
+    int matrixIdentityFlags[16] = {};
+    float *matrixSlots[16] = {};
+    zMat4x3 matrixStorage[16] = {};
+    setIdentity(reinterpret_cast<float *>(&matrixStorage[0]));
+    matrixIdentityFlags[0] = 1;
+    matrixSlots[0] = reinterpret_cast<float *>(&matrixStorage[0]);
+    zMath::g_currentMatrixIdentityFlagSlot = &matrixIdentityFlags[0];
+    zMath::g_currentMatrixPtrSlot = &matrixSlots[0];
+
+    g_zModel_PointInPolygonVertices = polygonVertices;
+    g_zModel_PointInPolygonEdgeNormals = polygonNormals;
+    g_zModel_PointInPolygonVertexCount = 0;
+    gModel_RenderFn = TestZClassRenderTraverseCallback;
+    gModel_ClipMaskStackTop = gModel_ClipMaskStack;
+    gModel_ClipMaskStack[0] = 0;
+    g_zClass_ObjectHseTestEnabled = 0;
+    g_zClass_RenderFrustumGridTileIndex = -1;
+    gModel_FogEnabled = 1;
+    gModel_FogDistanceStart = 2.0f;
+    resetRenderLog();
+
+    zWorldAreaPartial row0[2] = {};
+    zWorldAreaPartial row1[2] = {};
+    zWorldAreaPartial *rows[2] = {row0, row1};
+    zClass_Object3DDataPartial childData[4] = {};
+    zClass_NodeFreeListSlot childSlots[4] = {};
+    zClass_NodePartial *areaChildren[4][1] = {
+        {&childSlots[0].node},
+        {&childSlots[1].node},
+        {&childSlots[2].node},
+        {&childSlots[3].node},
+    };
+    initVisibleObject(childSlots[0].node, childData[0], "area_00");
+    initVisibleObject(childSlots[1].node, childData[1], "area_01");
+    initVisibleObject(childSlots[2].node, childData[2], "area_10");
+    initVisibleObject(childSlots[3].node, childData[3], "area_11");
+    for (int rowIndex = 0; rowIndex < 2; ++rowIndex) {
+        for (int colIndex = 0; colIndex < 2; ++colIndex) {
+            zWorldAreaPartial &area = rows[rowIndex][colIndex];
+            area.areaIndex = 1;
+            area.cellMinX = static_cast<float>(colIndex * 10);
+            area.cellMinZ = static_cast<float>(rowIndex * 10);
+            area.bboxCenter = {static_cast<float>(colIndex * 10 + 5), 0.0f,
+                               static_cast<float>(rowIndex * 10 + 5)};
+            area.bboxRadius = 1.0f;
+            area.childCount = 1;
+            area.childList = areaChildren[rowIndex * 2 + colIndex];
+        }
+    }
+
+    zClass_NodePartial lightNode{};
+    lightNode.flags = 0x04;
+    zClass_LightDataPartial lightData{};
+    lightData.enabled = 1;
+    lightData.isDirectionalMode = 1;
+    lightData.worldPosScratch = {100.0f, 0.0f, 100.0f};
+    lightData.range2 = 1.0f;
+    lightData.lightSubMode = 7;
+    zClass_NodePartial *lightNodes[1] = {&lightNode};
+    zClass_LightDataPartial *lightDataList[1] = {&lightData};
+
+    zClass_WorldDataPartial worldData{};
+    worldData.originX = 0.0f;
+    worldData.originZ = 0.0f;
+    worldData.worldMaxX = 20.0f;
+    worldData.worldMaxZ = 20.0f;
+    worldData.areaCellSizeX = 10.0f;
+    worldData.areaCellSizeZ = 10.0f;
+    worldData.areaInvSizeX = 0.1f;
+    worldData.areaInvSizeZ = 0.1f;
+    worldData.areaHalfSizeX = 5.0f;
+    worldData.areaHalfSizeZ = 5.0f;
+    worldData.areaCellRadiusBias = -1000.0f;
+    worldData.areaGridColCount = 2;
+    worldData.areaGridRowCount = 2;
+    worldData.areaGridRows = rows;
+    worldData.lightCount = 1;
+    worldData.lightNodes = lightNodes;
+    worldData.lightDataList = lightDataList;
+
+    zClass_NodePartial world{};
+    world.classData = &worldData;
+    zClass_CameraDataPartial cameraData{};
+    cameraData.cameraPos = {5.0f, 0.0f, -1.0f};
+    cameraData.nearClipCenter = {5.0f, 0.0f, 0.0f};
+    cameraData.farClipCenter = {5.0f, 0.0f, 20.0f};
+    cameraData.frustumOrigin = {0.0f, 0.0f, 0.0f};
+    cameraData.frustumCorners[0] = {10.0f, 0.0f, 0.0f};
+    cameraData.frustumCorners[1] = {0.0f, 0.0f, 20.0f};
+    cameraData.worldFrustumNormals[0] = {1.0f, 0.0f, 0.0f};
+    cameraData.worldFrustumNormals[1] = {-1.0f, 0.0f, 0.0f};
+    cameraData.worldFrustumNormals[2] = {0.0f, 0.0f, 1.0f};
+    cameraData.worldFrustumNormals[3] = {0.0f, 0.0f, -1.0f};
+    cameraData.worldFrustumNormals[4] = {0.0f, 0.0f, 1.0f};
+    cameraData.worldFrustumNormals[5] = {0.0f, 0.0f, -1.0f};
+    zClass_NodePartial camera{};
+    camera.classData = &cameraData;
+    g_zVideo_pActiveViewContext = &cameraData;
+    g_zVideo_pActiveProjectionViewContext = &cameraData;
+    std::memset(g_zCamera_FrustumGridTileRings, 0, sizeof(g_zCamera_FrustumGridTileRings));
+
+    const int result = zClass_Camera::RenderFrustumGridTiles(&world, &camera, &cameraData);
+    int status = 0;
+    if (result != 0) {
+        status = result;
+    } else if (g_zclassRenderTraverseCallCount != 4 ||
+               g_zclassRenderTraverseNodes[0] != &childSlots[0].node ||
+               g_zclassRenderTraverseNodes[1] != &childSlots[2].node ||
+               g_zclassRenderTraverseNodes[2] != &childSlots[1].node ||
+               g_zclassRenderTraverseNodes[3] != &childSlots[3].node) {
+        status = 10 + g_zclassRenderTraverseCallCount;
+    } else if (g_zclassRenderTraverseClipMasks[0] != 0x3f ||
+               g_zclassRenderTraverseClipMasks[1] != 0x3f ||
+               g_zclassRenderTraverseClipMasks[2] != 0x3f ||
+               g_zclassRenderTraverseClipMasks[3] != 0x3f) {
+        status = 20;
+    } else if (lightData.lightSubMode != 1 || gModel_FogEnabled != 1) {
+        status = 30;
+    } else if (g_zClass_RenderFrustumGridTileIndex != 50) {
+        status = 40 + g_zClass_RenderFrustumGridTileIndex;
+    }
+
+    g_zModel_PointInPolygonVertices = savedPolygonVertices;
+    g_zModel_PointInPolygonEdgeNormals = savedPolygonNormals;
+    g_zModel_PointInPolygonVertexCount = savedPolygonVertexCount;
+    g_zVideo_pActiveViewContext = savedViewContext;
+    g_zVideo_pActiveProjectionViewContext = savedProjectionViewContext;
+    gModel_RenderFn = savedRenderFn;
+    gModel_ClipMaskStackTop = savedClipStackTop;
+    gModel_ClipMaskStack[0] = savedClipStack0;
+    g_zClass_ObjectHseTestEnabled = savedObjectHseTestEnabled;
+    g_zClass_RenderFrustumGridTileIndex = savedFrustumGridTileIndex;
+    gModel_FogEnabled = savedFogEnabled;
+    gModel_FogDistanceStart = savedFogDistanceStart;
+    zMath::g_currentMatrixIdentityFlagSlot = savedMatrixIdentitySlot;
+    zMath::g_currentMatrixPtrSlot = savedMatrixPtrSlot;
+    return status;
+}
+
+extern "C" int zclass_camera_sync_view_context_positions_smoke(void) {
+    zClass_CameraDataPartial *oldActiveViewContext = g_zVideo_pActiveViewContext;
+    for (int i = 0; i < 16; ++i) {
+        zClass_TypeList::Head(i) = nullptr;
+        zClass_TypeList::Tail(i) = nullptr;
+    }
+    g_zClass_TypeList_FreeLinkHead = nullptr;
+    g_zClass_TypeList_LiveLinkCount = 0;
+    g_zClass_TypeList_PeakLiveLinkCount = 0;
+
+    zClass_Object3DDataPartial horizonData{};
+    horizonData.flags = 0x10;
+    horizonData.scale = {1.0f, 1.0f, 1.0f};
+    zClass_NodePartial horizon{};
+    horizon.classId = 5;
+    horizon.classData = &horizonData;
+
+    zClass_Object3DDataPartial horizonXZData{};
+    horizonXZData.flags = 0x10;
+    horizonXZData.scale = {1.0f, 1.0f, 1.0f};
+    horizonXZData.localMatrix[9] = 10.0f;
+    horizonXZData.localMatrix[10] = 20.0f;
+    horizonXZData.localMatrix[11] = 30.0f;
+    zClass_NodePartial horizonXZ{};
+    horizonXZ.classId = 5;
+    horizonXZ.classData = &horizonXZData;
+
+    zClass_CameraDataPartial viewContext{};
+    viewContext.horizonNode = &horizon;
+    viewContext.horizonXZNode = &horizonXZ;
+    viewContext.cameraPos = {1.0f, 2.0f, 3.0f};
+    g_zVideo_pActiveViewContext = &viewContext;
+
+    zClass_Camera::SyncViewContextPositions();
+    int result = 0;
+    if (horizonData.localMatrix[9] != 1.0f || horizonData.localMatrix[10] != 2.0f ||
+        horizonData.localMatrix[11] != 3.0f) {
+        result = 1;
+    } else if (horizonXZData.localMatrix[9] != 1.0f) {
+        result = 2;
+    } else if (horizonXZData.localMatrix[10] != 20.0f) {
+        result = 3;
+    } else if (horizonXZData.localMatrix[11] != 3.0f) {
+        result = 4;
+    }
+
+    g_zVideo_pActiveViewContext = oldActiveViewContext;
+    FreeTypeListsForTest();
+    return result;
+}
+
+extern "C" int zclass_camera_render_scene_smoke(void) {
+    zClass_CameraDataPartial *const savedViewContext = g_zVideo_pActiveViewContext;
+    const int savedVariantFilterEnabled = g_Variant_FilterEnabled;
+    const zTag4Partial savedVariantTag = g_Variant_CurrentTag;
+    const zTag4Partial savedActiveVariantTag = g_zVideo_ActiveViewVariantTag;
+    const int savedLodStackTop = g_zClass_LodDistanceStateStackTop;
+    const int savedAutoClipEnabled = g_zClass_CameraAutoClipDistanceAdjustEnabled;
+    const float savedAutoClipThreshold = g_zClass_CameraAutoClipDistanceThreshold;
+    const float savedAutoClipScale = g_zClass_CameraAutoClipDistanceScale;
+    const float savedAutoClipStep = g_zClass_CameraAutoClipDistanceStep;
+    const float savedAutoClipMinScale = g_zClass_CameraAutoClipDistanceMinScale;
+    const float savedFrameDelta = g_FrameDeltaTimeSec;
+    const int savedLensFlareQueueCount = zRndr::g_lensFlareSampleQueueCount;
+    const int savedLensFlareVisibleCount = zRndr::g_lensFlareVisibleSampleCount;
+    const int savedLensFlareVisibilityActive = zRndr::g_lensFlareVisibilityActive;
+    const int savedTransparentQueueCount = zRndr::g_transparentQueueCount;
+    const int savedOverwriteQueueCount = zRndr::g_overwriteQueueCount;
+    const int savedOverlayEnabled = zRndr::g_overlayBlendEnabled;
+    const int savedSpanOccluderPolyCount = zRndr::g_spanOccluderPolyCount;
+    zRndr::SpanNodePartial **const savedSpanColumnHeadTable = zRndr::g_spanColumnHeadTable;
+    zRndr::SpanNodePartial *const savedSpanPoolBase = zRndr::g_spanPoolBase;
+    zRndr::SpanNodePartial *const savedSpanAllocCursor = zRndr::g_spanAllocCursor;
+    const int savedSpanColumnCount = zRndr::g_spanColumnCount;
+    const int savedSpanColumnCountPadded = zRndr::g_spanColumnCountPadded;
+    zRndr::SpanBuildProc const savedBuildSpanList = zRndr::g_pfnBuildSpanList;
+    zRndr::SpanBuildProc const savedBuildSpanListSecondary = zRndr::g_pfnBuildSpanListSecondary;
+    zClass_TypeListLink *const savedTypeListHead8 = zClass_TypeList::Head(8);
+    zClass_TypeListLink *const savedTypeListTail8 = zClass_TypeList::Tail(8);
+    int *const savedClipStackTop = gModel_ClipMaskStackTop;
+    const int savedClipStack0 = gModel_ClipMaskStack[0];
+    const int savedObjectHseTestEnabled = g_zClass_ObjectHseTestEnabled;
+    const int savedFogEnabled = zModel_Fog_IsEnabled();
+    zVec3 *const savedPolygonVertices = g_zModel_PointInPolygonVertices;
+    zVec3 *const savedPolygonNormals = g_zModel_PointInPolygonEdgeNormals;
+    const int savedPolygonVertexCount = g_zModel_PointInPolygonVertexCount;
+    int *const savedMatrixIdentitySlot = zMath::g_currentMatrixIdentityFlagSlot;
+    float **const savedMatrixPtrSlot = zMath::g_currentMatrixPtrSlot;
+
+    int matrixIdentityFlags[16] = {};
+    float *matrixSlots[16] = {};
+    zMat4x3 matrixStorage[16] = {};
+    const zMat4x3 identity{1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+                           0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f};
+    std::memcpy(&matrixStorage[0], &identity, sizeof(identity));
+    matrixIdentityFlags[0] = 1;
+    matrixSlots[0] = reinterpret_cast<float *>(&matrixStorage[0]);
+    zMath::g_currentMatrixIdentityFlagSlot = &matrixIdentityFlags[0];
+    zMath::g_currentMatrixPtrSlot = &matrixSlots[0];
+
+    zWorldAreaPartial row0[3] = {};
+    zWorldAreaPartial row1[3] = {};
+    zWorldAreaPartial row2[3] = {};
+    zWorldAreaPartial *rows[3] = {row0, row1, row2};
+    for (int rowIndex = 0; rowIndex < 3; ++rowIndex) {
+        for (int colIndex = 0; colIndex < 3; ++colIndex) {
+            rows[rowIndex][colIndex].areaIndex = 1;
+            rows[rowIndex][colIndex].cellMinX = static_cast<float>(colIndex * 10);
+            rows[rowIndex][colIndex].cellMinZ = static_cast<float>(rowIndex * 10);
+            rows[rowIndex][colIndex].bboxRadius = 1.0f;
+        }
+    }
+
+    zClass_WorldDataPartial worldData{};
+    worldData.originX = 0.0f;
+    worldData.originZ = 0.0f;
+    worldData.worldMaxX = 30.0f;
+    worldData.worldMaxZ = 19.0f;
+    worldData.areaCellSizeX = 10.0f;
+    worldData.areaCellSizeZ = 10.0f;
+    worldData.areaInvSizeX = 0.1f;
+    worldData.areaInvSizeZ = 0.1f;
+    worldData.areaHalfSizeX = 5.0f;
+    worldData.areaHalfSizeZ = 5.0f;
+    worldData.areaCellRadiusBias = -1000.0f;
+    worldData.areaGridColCount = 3;
+    worldData.areaGridRowCount = 3;
+    worldData.areaGridRows = rows;
+
+    zClass_NodePartial world{};
+    world.classId = 2;
+    world.classData = &worldData;
+
+    zClass_WindowDataPartial windowData{};
+    windowData.viewportWidth = 64;
+    windowData.viewportHeight = 48;
+    windowData.resolutionWidth = 64;
+    windowData.resolutionHeight = 48;
+    windowData.clearPolyIndexFlags = 0x80000001;
+    windowData.clearPolys[0].vertices[0] = {4.9f, 7.9f, 0.0f};
+    windowData.clearPolys[0].vertices[1] = {1.1f, 3.2f, 0.0f};
+    windowData.clearPolys[0].vertices[2] = {6.6f, 2.2f, 0.0f};
+    windowData.clearPolys[0].vertCount = 0x80000003;
+
+    zClass_NodePartial window{};
+    window.classId = 3;
+    window.classData = &windowData;
+
+    zClass_CameraDataPartial cameraData{};
+    cameraData.worldNode = &world;
+    cameraData.windowNode = &window;
+    cameraData.posOffset = {0.0f, 0.0f, -1.0f};
+    cameraData.nearClip = 1.0f;
+    cameraData.farClip = 100.0f;
+    cameraData.clipDistance = 100.0f;
+    cameraData.invClipDistanceSq = 0.0001f;
+    cameraData.viewportScaleX = 1.0f;
+    cameraData.viewportScaleY = 1.0f;
+    cameraData.fovX = 1.0f;
+    cameraData.fovY = 1.0f;
+    cameraData.frustumOrigin = {0.0f, 0.0f, 0.0f};
+    cameraData.frustumCorners[0] = {10.0f, 0.0f, 0.0f};
+    cameraData.frustumCorners[1] = {0.0f, 0.0f, 2.0f};
+    cameraData.variantOverrideEnabled = 1;
+    cameraData.variantTag.count = 2;
+    cameraData.variantTag.tags[0] = 0x44;
+    cameraData.variantTag.tags[1] = 0x55;
+    cameraData.variantTag.tags[2] = 0xff;
+
+    zClass_NodePartial camera{};
+    camera.classId = 1;
+    camera.classData = &cameraData;
+
+    zClass_TypeListLink cameraListA{};
+    zClass_TypeListLink cameraListB{};
+    cameraListA.next = &cameraListB;
+    cameraListA.node = &camera;
+    cameraListB.node = &camera;
+
+    static zRndr::SpanNodePartial *spanHeads[192];
+    static zRndr::SpanNodePartial spanPool[64 * 256];
+    std::memset(spanHeads, 0, sizeof(spanHeads));
+    std::memset(spanPool, 0, sizeof(spanPool));
+    zRndr::g_spanColumnCount = 64;
+    zRndr::g_spanColumnCountPadded = 192;
+    zRndr::g_spanColumnHeadTable = spanHeads;
+    zRndr::g_spanPoolBase = spanPool;
+    zRndr::g_spanAllocCursor = spanPool;
+    zRndr::g_spanOccluderPolyCount = 5;
+    zRndr::g_pfnBuildSpanList = zRndr_SpanOcclusion_InsertSpanNode_Local;
+    zRndr::g_pfnBuildSpanListSecondary = zRndr_SpanOcclusion_BuildSpanList;
+    zRndr::g_transparentQueueCount = 0;
+    zRndr::g_overwriteQueueCount = 0;
+    zRndr::g_overlayBlendEnabled = 0;
+    zRndr::g_lensFlareSampleQueueCount = 0;
+    zRndr::g_lensFlareVisibleSampleCount = 0;
+    zRndr::g_lensFlareVisibilityActive = 0;
+    zClass_TypeList::Head(8) = &cameraListA;
+    zClass_TypeList::Tail(8) = &cameraListB;
+    g_Variant_FilterEnabled = 1;
+    g_Variant_CurrentTag = {};
+    g_zVideo_ActiveViewVariantTag = {};
+    g_zClass_LodDistanceStateStackTop = 7;
+    g_zClass_CameraAutoClipDistanceAdjustEnabled = 1;
+    g_zClass_CameraAutoClipDistanceThreshold = 0.04f;
+    g_zClass_CameraAutoClipDistanceScale = 0.75f;
+    g_zClass_CameraAutoClipDistanceStep = 0.05f;
+    g_zClass_CameraAutoClipDistanceMinScale = 0.6f;
+    g_FrameDeltaTimeSec = 0.02f;
+    gModel_ClipMaskStackTop = gModel_ClipMaskStack;
+    gModel_ClipMaskStack[0] = 0;
+    g_zClass_ObjectHseTestEnabled = 0;
+    zModel_Fog_SetEnabled(0);
+    zVec3 polygonVertices[8] = {};
+    zVec3 polygonNormals[8] = {};
+    g_zModel_PointInPolygonVertices = polygonVertices;
+    g_zModel_PointInPolygonEdgeNormals = polygonNormals;
+    g_zModel_PointInPolygonVertexCount = 0;
+
+    int status = 0;
+    if (zClass_Camera::RenderScene(&camera, 0) != 0) {
+        status = 1;
+    } else if (g_zVideo_pActiveViewContext != &cameraData ||
+               g_zClass_LodDistanceStateStackTop != 0 ||
+               g_zClass_CameraAutoClipDistanceScale != 0.8f ||
+               cameraData.clipDistance != 0.8f) {
+        status = 2;
+    } else if (g_Variant_CurrentTag.count != 2 || g_Variant_CurrentTag.tags[0] != 0x44 ||
+               g_Variant_CurrentTag.tags[1] != 0x55 ||
+               g_zVideo_ActiveViewVariantTag.count != 2 ||
+               g_zVideo_ActiveViewVariantTag.tags[0] != 0x44 ||
+               g_zVideo_ActiveViewVariantTag.tags[1] != 0x55) {
+        status = 3;
+    } else if (zRndr::g_spanOccluderPolyCount != 1 ||
+               zRndr::g_transparentQueueCount != 0 ||
+               zRndr::g_overwriteQueueCount != 0 ||
+               zRndr::g_lensFlareSampleQueueCount != 0 ||
+               zRndr::g_lensFlareVisibleSampleCount != 0) {
+        status = 4;
+    }
+
+    g_zVideo_pActiveViewContext = savedViewContext;
+    g_Variant_FilterEnabled = savedVariantFilterEnabled;
+    g_Variant_CurrentTag = savedVariantTag;
+    g_zVideo_ActiveViewVariantTag = savedActiveVariantTag;
+    g_zClass_LodDistanceStateStackTop = savedLodStackTop;
+    g_zClass_CameraAutoClipDistanceAdjustEnabled = savedAutoClipEnabled;
+    g_zClass_CameraAutoClipDistanceThreshold = savedAutoClipThreshold;
+    g_zClass_CameraAutoClipDistanceScale = savedAutoClipScale;
+    g_zClass_CameraAutoClipDistanceStep = savedAutoClipStep;
+    g_zClass_CameraAutoClipDistanceMinScale = savedAutoClipMinScale;
+    g_FrameDeltaTimeSec = savedFrameDelta;
+    zRndr::g_lensFlareSampleQueueCount = savedLensFlareQueueCount;
+    zRndr::g_lensFlareVisibleSampleCount = savedLensFlareVisibleCount;
+    zRndr::g_lensFlareVisibilityActive = savedLensFlareVisibilityActive;
+    zRndr::g_transparentQueueCount = savedTransparentQueueCount;
+    zRndr::g_overwriteQueueCount = savedOverwriteQueueCount;
+    zRndr::g_overlayBlendEnabled = savedOverlayEnabled;
+    zRndr::g_spanOccluderPolyCount = savedSpanOccluderPolyCount;
+    zRndr::g_spanColumnHeadTable = savedSpanColumnHeadTable;
+    zRndr::g_spanPoolBase = savedSpanPoolBase;
+    zRndr::g_spanAllocCursor = savedSpanAllocCursor;
+    zRndr::g_spanColumnCount = savedSpanColumnCount;
+    zRndr::g_spanColumnCountPadded = savedSpanColumnCountPadded;
+    zRndr::g_pfnBuildSpanList = savedBuildSpanList;
+    zRndr::g_pfnBuildSpanListSecondary = savedBuildSpanListSecondary;
+    zClass_TypeList::Head(8) = savedTypeListHead8;
+    zClass_TypeList::Tail(8) = savedTypeListTail8;
+    gModel_ClipMaskStackTop = savedClipStackTop;
+    gModel_ClipMaskStack[0] = savedClipStack0;
+    g_zClass_ObjectHseTestEnabled = savedObjectHseTestEnabled;
+    zModel_Fog_SetEnabled(savedFogEnabled);
+    g_zModel_PointInPolygonVertices = savedPolygonVertices;
+    g_zModel_PointInPolygonEdgeNormals = savedPolygonNormals;
+    g_zModel_PointInPolygonVertexCount = savedPolygonVertexCount;
+    zMath::g_currentMatrixIdentityFlagSlot = savedMatrixIdentitySlot;
+    zMath::g_currentMatrixPtrSlot = savedMatrixPtrSlot;
+    return status;
+}
+
+extern "C" int zclass_list_render_active_cameras_smoke(void) {
+    zClass_TypeListLink *const savedTypeListHead8 = zClass_TypeList::Head(8);
+    zClass_TypeListLink *const savedTypeListTail8 = zClass_TypeList::Tail(8);
+    zClass_CameraDataPartial *const savedViewContext = g_zVideo_pActiveViewContext;
+    const int savedActiveRendererPath = g_zVideo_ActiveRendererPath;
+    const int savedVariantFilterEnabled = g_Variant_FilterEnabled;
+    const zTag4Partial savedVariantTag = g_Variant_CurrentTag;
+    const zTag4Partial savedActiveVariantTag = g_zVideo_ActiveViewVariantTag;
+    const int savedLodStackTop = g_zClass_LodDistanceStateStackTop;
+    const int savedAutoClipEnabled = g_zClass_CameraAutoClipDistanceAdjustEnabled;
+    const float savedAutoClipThreshold = g_zClass_CameraAutoClipDistanceThreshold;
+    const float savedAutoClipScale = g_zClass_CameraAutoClipDistanceScale;
+    const float savedAutoClipStep = g_zClass_CameraAutoClipDistanceStep;
+    const float savedAutoClipMinScale = g_zClass_CameraAutoClipDistanceMinScale;
+    const float savedFrameDelta = g_FrameDeltaTimeSec;
+    const int savedLensFlareQueueCount = zRndr::g_lensFlareSampleQueueCount;
+    const int savedLensFlareVisibleCount = zRndr::g_lensFlareVisibleSampleCount;
+    const int savedLensFlareVisibilityActive = zRndr::g_lensFlareVisibilityActive;
+    const int savedTransparentQueueCount = zRndr::g_transparentQueueCount;
+    const int savedOverwriteQueueCount = zRndr::g_overwriteQueueCount;
+    const int savedOverlayEnabled = zRndr::g_overlayBlendEnabled;
+    const int savedSpanOccluderPolyCount = zRndr::g_spanOccluderPolyCount;
+    zRndr::SpanNodePartial **const savedSpanColumnHeadTable = zRndr::g_spanColumnHeadTable;
+    zRndr::SpanNodePartial *const savedSpanPoolBase = zRndr::g_spanPoolBase;
+    zRndr::SpanNodePartial *const savedSpanAllocCursor = zRndr::g_spanAllocCursor;
+    const int savedSpanColumnCount = zRndr::g_spanColumnCount;
+    const int savedSpanColumnCountPadded = zRndr::g_spanColumnCountPadded;
+    zRndr::SpanBuildProc const savedBuildSpanList = zRndr::g_pfnBuildSpanList;
+    zRndr::SpanBuildProc const savedBuildSpanListSecondary = zRndr::g_pfnBuildSpanListSecondary;
+    int *const savedClipStackTop = gModel_ClipMaskStackTop;
+    const int savedClipStack0 = gModel_ClipMaskStack[0];
+    const int savedObjectHseTestEnabled = g_zClass_ObjectHseTestEnabled;
+    const int savedFogEnabled = zModel_Fog_IsEnabled();
+    zVec3 *const savedPolygonVertices = g_zModel_PointInPolygonVertices;
+    zVec3 *const savedPolygonNormals = g_zModel_PointInPolygonEdgeNormals;
+    const int savedPolygonVertexCount = g_zModel_PointInPolygonVertexCount;
+    int *const savedMatrixIdentitySlot = zMath::g_currentMatrixIdentityFlagSlot;
+    float **const savedMatrixPtrSlot = zMath::g_currentMatrixPtrSlot;
+
+    int status = 0;
+    zClass_TypeList::Head(8) = nullptr;
+    zClass_TypeList::Tail(8) = nullptr;
+    if (zClass_List::RenderActiveCameras() != 1) {
+        status = 1;
+    }
+
+    zClass_NodePartial inactiveCamera{};
+    inactiveCamera.flags = 0;
+    zClass_TypeListLink inactiveLink{};
+    inactiveLink.node = &inactiveCamera;
+    zClass_TypeList::Head(8) = &inactiveLink;
+    zClass_TypeList::Tail(8) = &inactiveLink;
+    if (status == 0 && zClass_List::RenderActiveCameras() != 0) {
+        status = 2;
+    }
+
+    int matrixIdentityFlags[16] = {};
+    float *matrixSlots[16] = {};
+    zMat4x3 matrixStorage[16] = {};
+    const zMat4x3 identity{1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+                           0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f};
+    std::memcpy(&matrixStorage[0], &identity, sizeof(identity));
+    matrixIdentityFlags[0] = 1;
+    matrixSlots[0] = reinterpret_cast<float *>(&matrixStorage[0]);
+    zMath::g_currentMatrixIdentityFlagSlot = &matrixIdentityFlags[0];
+    zMath::g_currentMatrixPtrSlot = &matrixSlots[0];
+
+    zWorldAreaPartial row0[3] = {};
+    zWorldAreaPartial row1[3] = {};
+    zWorldAreaPartial row2[3] = {};
+    zWorldAreaPartial *rows[3] = {row0, row1, row2};
+    for (int rowIndex = 0; rowIndex < 3; ++rowIndex) {
+        for (int colIndex = 0; colIndex < 3; ++colIndex) {
+            rows[rowIndex][colIndex].areaIndex = 1;
+            rows[rowIndex][colIndex].cellMinX = static_cast<float>(colIndex * 10);
+            rows[rowIndex][colIndex].cellMinZ = static_cast<float>(rowIndex * 10);
+            rows[rowIndex][colIndex].bboxRadius = 1.0f;
+        }
+    }
+
+    zClass_WorldDataPartial worldData{};
+    worldData.originX = 0.0f;
+    worldData.originZ = 0.0f;
+    worldData.worldMaxX = 30.0f;
+    worldData.worldMaxZ = 19.0f;
+    worldData.areaCellSizeX = 10.0f;
+    worldData.areaCellSizeZ = 10.0f;
+    worldData.areaInvSizeX = 0.1f;
+    worldData.areaInvSizeZ = 0.1f;
+    worldData.areaHalfSizeX = 5.0f;
+    worldData.areaHalfSizeZ = 5.0f;
+    worldData.areaCellRadiusBias = -1000.0f;
+    worldData.areaGridColCount = 3;
+    worldData.areaGridRowCount = 3;
+    worldData.areaGridRows = rows;
+
+    zClass_NodePartial world{};
+    world.classId = 2;
+    world.classData = &worldData;
+
+    zClass_WindowDataPartial windowData{};
+    windowData.viewportWidth = 64;
+    windowData.viewportHeight = 48;
+    windowData.resolutionWidth = 64;
+    windowData.resolutionHeight = 48;
+
+    zClass_NodePartial window{};
+    window.classId = 3;
+    window.classData = &windowData;
+
+    zClass_CameraDataPartial cameraData{};
+    cameraData.worldNode = &world;
+    cameraData.windowNode = &window;
+    cameraData.posOffset = {0.0f, 0.0f, -1.0f};
+    cameraData.nearClip = 1.0f;
+    cameraData.farClip = 100.0f;
+    cameraData.clipDistance = 100.0f;
+    cameraData.invClipDistanceSq = 0.0001f;
+    cameraData.viewportScaleX = 1.0f;
+    cameraData.viewportScaleY = 1.0f;
+    cameraData.fovX = 1.0f;
+    cameraData.fovY = 1.0f;
+    cameraData.frustumOrigin = {0.0f, 0.0f, 0.0f};
+    cameraData.frustumCorners[0] = {10.0f, 0.0f, 0.0f};
+    cameraData.frustumCorners[1] = {0.0f, 0.0f, 2.0f};
+    cameraData.variantOverrideEnabled = 1;
+    cameraData.variantTag.count = 2;
+    cameraData.variantTag.tags[0] = 0x44;
+    cameraData.variantTag.tags[1] = 0x55;
+    cameraData.variantTag.tags[2] = 0xff;
+
+    zClass_NodePartial camera{};
+    camera.classId = 1;
+    camera.flags = 4;
+    camera.classData = &cameraData;
+
+    zClass_TypeListLink activeLink{};
+    activeLink.node = &camera;
+    zClass_TypeList::Head(8) = &activeLink;
+    zClass_TypeList::Tail(8) = &activeLink;
+
+    g_zVideo_ActiveRendererPath = 0;
+    g_Variant_FilterEnabled = 1;
+    g_Variant_CurrentTag = {};
+    g_zVideo_ActiveViewVariantTag = {};
+    g_zClass_LodDistanceStateStackTop = 7;
+    g_zClass_CameraAutoClipDistanceAdjustEnabled = 1;
+    g_zClass_CameraAutoClipDistanceThreshold = 0.04f;
+    g_zClass_CameraAutoClipDistanceScale = 0.75f;
+    g_zClass_CameraAutoClipDistanceStep = 0.05f;
+    g_zClass_CameraAutoClipDistanceMinScale = 0.6f;
+    g_FrameDeltaTimeSec = 0.02f;
+    zRndr::g_spanOccluderPolyCount = 0;
+    zRndr::g_spanColumnHeadTable = nullptr;
+    zRndr::g_spanPoolBase = nullptr;
+    zRndr::g_spanAllocCursor = nullptr;
+    zRndr::g_spanColumnCount = 0;
+    zRndr::g_spanColumnCountPadded = 0;
+    zRndr::g_pfnBuildSpanList = zRndr_SpanOcclusion_InsertSpanNode_Local;
+    zRndr::g_pfnBuildSpanListSecondary = zRndr_SpanOcclusion_BuildSpanList;
+    zRndr::g_transparentQueueCount = 0;
+    zRndr::g_overwriteQueueCount = 0;
+    zRndr::g_overlayBlendEnabled = 0;
+    zRndr::g_lensFlareSampleQueueCount = 0;
+    zRndr::g_lensFlareVisibleSampleCount = 0;
+    zRndr::g_lensFlareVisibilityActive = 0;
+    gModel_ClipMaskStackTop = gModel_ClipMaskStack;
+    gModel_ClipMaskStack[0] = 0;
+    g_zClass_ObjectHseTestEnabled = 0;
+    zModel_Fog_SetEnabled(0);
+    zVec3 polygonVertices[8] = {};
+    zVec3 polygonNormals[8] = {};
+    g_zModel_PointInPolygonVertices = polygonVertices;
+    g_zModel_PointInPolygonEdgeNormals = polygonNormals;
+    g_zModel_PointInPolygonVertexCount = 0;
+
+    if (status == 0 && zClass_List::RenderActiveCameras() != 0) {
+        status = 3;
+    } else if (status == 0 &&
+               (g_zVideo_pActiveViewContext != &cameraData ||
+                g_zClass_LodDistanceStateStackTop != 0 ||
+                g_zClass_CameraAutoClipDistanceScale != 0.8f ||
+                cameraData.clipDistance != 0.8f)) {
+        status = 4;
+    } else if (status == 0 &&
+               (g_Variant_CurrentTag.count != 2 || g_Variant_CurrentTag.tags[0] != 0x44 ||
+                g_Variant_CurrentTag.tags[1] != 0x55 ||
+                g_zVideo_ActiveViewVariantTag.count != 2 ||
+                g_zVideo_ActiveViewVariantTag.tags[0] != 0x44 ||
+                g_zVideo_ActiveViewVariantTag.tags[1] != 0x55)) {
+        status = 5;
+    }
+
+    zClass_TypeList::Head(8) = savedTypeListHead8;
+    zClass_TypeList::Tail(8) = savedTypeListTail8;
+    g_zVideo_pActiveViewContext = savedViewContext;
+    g_zVideo_ActiveRendererPath = savedActiveRendererPath;
+    g_Variant_FilterEnabled = savedVariantFilterEnabled;
+    g_Variant_CurrentTag = savedVariantTag;
+    g_zVideo_ActiveViewVariantTag = savedActiveVariantTag;
+    g_zClass_LodDistanceStateStackTop = savedLodStackTop;
+    g_zClass_CameraAutoClipDistanceAdjustEnabled = savedAutoClipEnabled;
+    g_zClass_CameraAutoClipDistanceThreshold = savedAutoClipThreshold;
+    g_zClass_CameraAutoClipDistanceScale = savedAutoClipScale;
+    g_zClass_CameraAutoClipDistanceStep = savedAutoClipStep;
+    g_zClass_CameraAutoClipDistanceMinScale = savedAutoClipMinScale;
+    g_FrameDeltaTimeSec = savedFrameDelta;
+    zRndr::g_lensFlareSampleQueueCount = savedLensFlareQueueCount;
+    zRndr::g_lensFlareVisibleSampleCount = savedLensFlareVisibleCount;
+    zRndr::g_lensFlareVisibilityActive = savedLensFlareVisibilityActive;
+    zRndr::g_transparentQueueCount = savedTransparentQueueCount;
+    zRndr::g_overwriteQueueCount = savedOverwriteQueueCount;
+    zRndr::g_overlayBlendEnabled = savedOverlayEnabled;
+    zRndr::g_spanOccluderPolyCount = savedSpanOccluderPolyCount;
+    zRndr::g_spanColumnHeadTable = savedSpanColumnHeadTable;
+    zRndr::g_spanPoolBase = savedSpanPoolBase;
+    zRndr::g_spanAllocCursor = savedSpanAllocCursor;
+    zRndr::g_spanColumnCount = savedSpanColumnCount;
+    zRndr::g_spanColumnCountPadded = savedSpanColumnCountPadded;
+    zRndr::g_pfnBuildSpanList = savedBuildSpanList;
+    zRndr::g_pfnBuildSpanListSecondary = savedBuildSpanListSecondary;
+    gModel_ClipMaskStackTop = savedClipStackTop;
+    gModel_ClipMaskStack[0] = savedClipStack0;
+    g_zClass_ObjectHseTestEnabled = savedObjectHseTestEnabled;
+    zModel_Fog_SetEnabled(savedFogEnabled);
+    g_zModel_PointInPolygonVertices = savedPolygonVertices;
+    g_zModel_PointInPolygonEdgeNormals = savedPolygonNormals;
+    g_zModel_PointInPolygonVertexCount = savedPolygonVertexCount;
+    zMath::g_currentMatrixIdentityFlagSlot = savedMatrixIdentitySlot;
+    zMath::g_currentMatrixPtrSlot = savedMatrixPtrSlot;
+    return status;
 }

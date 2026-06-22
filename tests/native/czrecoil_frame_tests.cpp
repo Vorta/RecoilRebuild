@@ -59,7 +59,7 @@ extern "C" int czrecoil_frame_build_window_title_smoke(void) {
               std::strcmp((const char *)(*title), "RECOIL") == 0;
     title->~CString();
 
-    g_zVideo_ActiveRendererPath = 1;
+    g_zVideo_ActiveRendererPath = 2;
     returned = frame.BuildWindowTitle(title);
     ok = ok && returned == title && (const char *)(*title) != nullptr &&
          std::strcmp((const char *)(*title), "RECOIL (3Dfx)") == 0;
@@ -75,17 +75,17 @@ extern "C" int czframe_metadata_accessors_smoke(void) {
     typedef const AFX_MSGMAP *(PASCAL *MfcMessageMapProc)();
 
     const auto gameRuntimeClass = reinterpret_cast<CRuntimeClass *>(
-        static_cast<std::uintptr_t>(CZGameFrame::GetRuntimeClass()));
+        static_cast<std::uintptr_t>(CZGameFrame::GetRuntimeClassStatic()));
     const auto gameBaseRuntimeClass = reinterpret_cast<CRuntimeClass *>(
         static_cast<std::uintptr_t>(CZGameFrame::GetBaseRuntimeClass()));
     const auto gameMessageMap = reinterpret_cast<const AFX_MSGMAP *>(
-        static_cast<std::uintptr_t>(CZGameFrame::GetMessageMap()));
+        static_cast<std::uintptr_t>(CZGameFrame::GetMessageMapStatic()));
     const auto gameBaseMessageMap = reinterpret_cast<const AFX_MSGMAP *>(
         static_cast<std::uintptr_t>(CZGameFrame::GetBaseMessageMap()));
     const auto recoilRuntimeClass = reinterpret_cast<CRuntimeClass *>(
-        static_cast<std::uintptr_t>(CZRecoilFrame::GetRuntimeClass()));
+        static_cast<std::uintptr_t>(CZRecoilFrame::GetRuntimeClassStatic()));
     const auto recoilMessageMap = reinterpret_cast<const AFX_MSGMAP *>(
-        static_cast<std::uintptr_t>(CZRecoilFrame::GetMessageMap()));
+        static_cast<std::uintptr_t>(CZRecoilFrame::GetMessageMapStatic()));
 
     if (gameRuntimeClass != &CZGameFrame::classCZGameFrame ||
         std::strcmp(gameRuntimeClass->m_lpszClassName, "CZGameFrame") != 0 ||
@@ -115,14 +115,14 @@ extern "C" int czframe_metadata_accessors_smoke(void) {
         recoilRuntimeClass->m_pfnCreateObject !=
             (MfcCreateObjectProc)(&CZRecoilFrame::CreateObject) ||
         recoilRuntimeClass->m_pfnGetBaseClass !=
-            (MfcRuntimeClassProc)(&CZGameFrame::GetRuntimeClass) ||
+            (MfcRuntimeClassProc)(&CZGameFrame::GetRuntimeClassStatic) ||
         recoilRuntimeClass->m_pfnGetBaseClass() != &CZGameFrame::classCZGameFrame) {
         return 3;
     }
 
     return recoilMessageMap == &CZRecoilFrame::messageMap &&
                    recoilMessageMap->pfnGetBaseMap ==
-                       (MfcMessageMapProc)(&CZGameFrame::GetMessageMap) &&
+                       (MfcMessageMapProc)(&CZGameFrame::GetMessageMapStatic) &&
                    recoilMessageMap->pfnGetBaseMap() == &CZGameFrame::messageMap &&
                    recoilMessageMap->lpEntries == &CZRecoilFrame::messageEntries[0]
                ? 0
@@ -917,6 +917,63 @@ void ResetFrameStartModeProbe() {
     g_frameStartModeLoadSkipIntro = -1;
     g_frameStartModeLoadMissionFlags = -1;
 }
+
+std::int32_t g_frameWolMenuZlocCalls;
+std::int32_t g_frameWolMenuZlocIds[2];
+std::int32_t g_frameWolMenuVerifyCalls;
+std::int32_t g_frameWolMenuVerifyResult;
+bool g_frameWolMenuVerifyArgsOk;
+std::int32_t g_frameWolMenuModalCalls;
+std::int32_t g_frameWolMenuModalResult;
+std::int32_t g_frameWolMenuModalSelectedMissionIndex;
+
+char *__fastcall FakeFrameWolMenuGetMessageString(
+    unsigned int messageId
+) {
+    static char caption[] = "Network Caption";
+    static char messageFormat[] = "Need Winsock";
+
+    if (g_frameWolMenuZlocCalls < 2) {
+        g_frameWolMenuZlocIds[g_frameWolMenuZlocCalls] =
+            static_cast<std::int32_t>(messageId);
+    }
+    ++g_frameWolMenuZlocCalls;
+    return messageId == 18 ? caption : messageFormat;
+}
+
+int __fastcall FakeFrameWolMenuVerifyWinsock(
+    const char *caption,
+    const char *messageFormat
+) {
+    ++g_frameWolMenuVerifyCalls;
+    g_frameWolMenuVerifyArgsOk =
+        std::strcmp(caption, "Network Caption") == 0 &&
+        std::strcmp(messageFormat, "Need Winsock") == 0;
+    return g_frameWolMenuVerifyResult;
+}
+
+int __fastcall FakeFrameWolMenuShowModal(
+    int *selectedMissionIndexOut
+) {
+    ++g_frameWolMenuModalCalls;
+    if (g_frameWolMenuModalResult != 0) {
+        *selectedMissionIndexOut = g_frameWolMenuModalSelectedMissionIndex;
+    }
+    return g_frameWolMenuModalResult;
+}
+
+void ResetFrameWolMenuProbe() {
+    g_frameWolMenuZlocCalls = 0;
+    g_frameWolMenuZlocIds[0] = -1;
+    g_frameWolMenuZlocIds[1] = -1;
+    g_frameWolMenuVerifyCalls = 0;
+    g_frameWolMenuVerifyResult = 1;
+    g_frameWolMenuVerifyArgsOk = true;
+    g_frameWolMenuModalCalls = 0;
+    g_frameWolMenuModalResult = 0;
+    g_frameWolMenuModalSelectedMissionIndex = -1;
+    ResetFrameStartModeProbe();
+}
 #endif
 } // namespace
 
@@ -1100,6 +1157,130 @@ extern "C" int czrecoil_frame_start_mode_menu_handlers_smoke(void) {
     RestoreFrameMenuFunctionPatch(loadPatch);
     ResetFrameStartModeProbe();
     return result;
+}
+
+extern "C" int czrecoil_frame_on_menu_westwood_online_upgrade_smoke(void) {
+    CodeFunctionPatch zlocPatch{};
+    CodeFunctionPatch verifyPatch{};
+    CodeFunctionPatch modalPatch{};
+    CodeFunctionPatch loadPatch{};
+    if (!PatchFrameMenuFunctionJump(
+            reinterpret_cast<void *>(&zLoc::GetMessageString),
+            reinterpret_cast<void *>(&FakeFrameWolMenuGetMessageString),
+            zlocPatch
+        )) {
+        return 10;
+    }
+    if (!PatchFrameMenuFunctionJump(
+            reinterpret_cast<void *>(&NetUi::VerifyWinsock2OrPromptContinue),
+            reinterpret_cast<void *>(&FakeFrameWolMenuVerifyWinsock),
+            verifyPatch
+        )) {
+        RestoreFrameMenuFunctionPatch(zlocPatch);
+        return 11;
+    }
+    if (!PatchFrameMenuFunctionJump(
+            reinterpret_cast<void *>(
+                &WestwoodOnlineUpgradeDialog::ShowModalAndGetSelectedMissionIndex
+            ),
+            reinterpret_cast<void *>(&FakeFrameWolMenuShowModal),
+            modalPatch
+        )) {
+        RestoreFrameMenuFunctionPatch(verifyPatch);
+        RestoreFrameMenuFunctionPatch(zlocPatch);
+        return 12;
+    }
+    if (!PatchFrameMenuFunctionJump(
+            FrameStartModeLoadZbdAndSetupSensorTrackerProc(),
+            reinterpret_cast<void *>(&FakeFrameStartModeLoadZbdAndSetupSensorTracker),
+            loadPatch
+        )) {
+        RestoreFrameMenuFunctionPatch(modalPatch);
+        RestoreFrameMenuFunctionPatch(verifyPatch);
+        RestoreFrameMenuFunctionPatch(zlocPatch);
+        return 13;
+    }
+
+    const int oldChecked = g_CZRecoilFrame_WestwoodOnlineWinsockChecked;
+    const int oldSkipIntro = g_RecoilApp.m_skipIntroFmv;
+    const int oldSkipMissionFmv = g_RecoilApp.m_missionFmvState.m_skipMissionFmv;
+    const int oldMissionFlags = g_HudSensorTracker.missionFlags;
+
+    alignas(CZRecoilFrame) unsigned char frameStorage[sizeof(CZRecoilFrame)] = {};
+    CZRecoilFrame *const frame = reinterpret_cast<CZRecoilFrame *>(frameStorage);
+    int failure = 0;
+
+    ResetFrameWolMenuProbe();
+    g_CZRecoilFrame_WestwoodOnlineWinsockChecked = 0;
+    g_RecoilApp.m_skipIntroFmv = 7;
+    g_RecoilApp.m_missionFmvState.m_skipMissionFmv = 8;
+    g_frameWolMenuVerifyResult = 0;
+    frame->OnMenuWestwoodOnlineUpgrade();
+    if (g_CZRecoilFrame_WestwoodOnlineWinsockChecked != 1 ||
+        g_frameWolMenuZlocCalls != 2 ||
+        g_frameWolMenuZlocIds[0] != 18 ||
+        g_frameWolMenuZlocIds[1] != 38 ||
+        g_frameWolMenuVerifyCalls != 1 ||
+        !g_frameWolMenuVerifyArgsOk ||
+        g_frameWolMenuModalCalls != 0 ||
+        g_frameStartModeLoadCalls != 0 ||
+        g_RecoilApp.m_skipIntroFmv != 7 ||
+        g_RecoilApp.m_missionFmvState.m_skipMissionFmv != 8) {
+        failure = 2;
+    }
+
+    ResetFrameWolMenuProbe();
+    g_CZRecoilFrame_WestwoodOnlineWinsockChecked = 1;
+    g_RecoilApp.m_skipIntroFmv = 0;
+    g_RecoilApp.m_missionFmvState.m_skipMissionFmv = 0;
+    frame->OnMenuWestwoodOnlineUpgrade();
+    if (failure == 0 &&
+        (g_frameWolMenuZlocCalls != 0 ||
+         g_frameWolMenuVerifyCalls != 0 ||
+         g_frameWolMenuModalCalls != 1 ||
+         g_frameStartModeLoadCalls != 0 ||
+         g_RecoilApp.m_skipIntroFmv != 1 ||
+         g_RecoilApp.m_missionFmvState.m_skipMissionFmv != 1)) {
+        failure = 3;
+    }
+
+    ResetFrameWolMenuProbe();
+    g_CZRecoilFrame_WestwoodOnlineWinsockChecked = 0;
+    g_RecoilApp.m_skipIntroFmv = 0;
+    g_RecoilApp.m_missionFmvState.m_skipMissionFmv = 0;
+    g_HudSensorTracker.missionFlags = 0x55;
+    g_frameWolMenuVerifyResult = 1;
+    g_frameWolMenuModalResult = 1;
+    g_frameWolMenuModalSelectedMissionIndex = 4;
+    frame->OnMenuWestwoodOnlineUpgrade();
+    if (failure == 0 &&
+        (g_CZRecoilFrame_WestwoodOnlineWinsockChecked != 1 ||
+         g_frameWolMenuZlocCalls != 2 ||
+         g_frameWolMenuVerifyCalls != 1 ||
+         !g_frameWolMenuVerifyArgsOk ||
+         g_frameWolMenuModalCalls != 1 ||
+         g_frameStartModeLoadCalls != 1 ||
+         g_frameStartModeLoadApp != &g_RecoilApp ||
+         g_frameStartModeLoadMissionId != 10 ||
+         g_frameStartModeLoadZbdPath != nullptr ||
+         g_frameStartModeLoadSkipIntro != 1 ||
+         g_frameStartModeLoadMissionFlags != 0x55 ||
+         g_RecoilApp.m_skipIntroFmv != 1 ||
+         g_RecoilApp.m_missionFmvState.m_skipMissionFmv != 1)) {
+        failure = 4;
+    }
+
+    g_CZRecoilFrame_WestwoodOnlineWinsockChecked = oldChecked;
+    g_RecoilApp.m_skipIntroFmv = oldSkipIntro;
+    g_RecoilApp.m_missionFmvState.m_skipMissionFmv = oldSkipMissionFmv;
+    g_HudSensorTracker.missionFlags = oldMissionFlags;
+
+    RestoreFrameMenuFunctionPatch(loadPatch);
+    RestoreFrameMenuFunctionPatch(modalPatch);
+    RestoreFrameMenuFunctionPatch(verifyPatch);
+    RestoreFrameMenuFunctionPatch(zlocPatch);
+    ResetFrameWolMenuProbe();
+    return failure;
 }
 #endif
 
@@ -1918,7 +2099,8 @@ extern "C" int czrecoil_frame_hw_api_menu_cmd_ui_smoke(void) {
 
 #endif
 
-#ifndef RECOIL_NATIVE_CZRECOIL_FRAME_TESTS_SKIP_SHARED_SMOKES
+#if defined(RECOIL_NATIVE_CZRECOIL_FRAME_TESTS_MENU_SMOKES) || \
+    !defined(RECOIL_NATIVE_CZRECOIL_FRAME_TESTS_SKIP_SHARED_SMOKES)
 extern "C" int czrecoil_frame_audio_input_menu_smoke(void) {
     std::int32_t cdAudio = 0;
     std::int32_t joystick = 0;
@@ -1929,7 +2111,8 @@ extern "C" int czrecoil_frame_audio_input_menu_smoke(void) {
     g_zSnd_IsInitialized = 0;
     g_zSnd_ActiveBackend = 0;
 
-    CZRecoilFrame frame{};
+    alignas(CZRecoilFrame) unsigned char frameStorage[sizeof(CZRecoilFrame)] = {};
+    CZRecoilFrame *const frame = reinterpret_cast<CZRecoilFrame *>(frameStorage);
     FakeRecoilCmdUI cmdUi{};
     InitFakeRecoilCmdUI(cmdUi);
 
@@ -1939,53 +2122,55 @@ extern "C" int czrecoil_frame_audio_input_menu_smoke(void) {
         return 9;
     }
 
-    frame.OnMenuToggleCDAudio();
+    frame->OnMenuToggleCDAudio();
     if (cdAudio != 1) {
         return 1;
     }
 
     g_lastCmdUiEnable = -1;
     g_lastCmdUiCheck = -1;
-    frame.OnUpdateCDAudioCmdUI(&cmdUi);
+    frame->OnUpdateCDAudioCmdUI(&cmdUi);
     if (g_lastCmdUiEnable != 1 || g_lastCmdUiCheck != 1) {
         return 2;
     }
 
-    frame.OnMenuToggleJoystick();
+    frame->OnMenuToggleJoystick();
     if (joystick != 1) {
         return 3;
     }
 
     g_lastCmdUiEnable = -1;
     g_lastCmdUiCheck = -1;
-    frame.OnUpdateJoystickCmdUI(&cmdUi);
+    frame->OnUpdateJoystickCmdUI(&cmdUi);
     if (g_lastCmdUiEnable != 1 || g_lastCmdUiCheck != 1) {
         return 4;
     }
 
-    frame.OnMenuSelectA3D();
+    frame->OnMenuSelectA3D();
     if (audioApi != 1 || g_zSnd_ActiveBackend != 1) {
         return 5;
     }
 
     g_lastCmdUiEnable = -1;
     g_lastCmdUiCheck = -1;
-    frame.OnUpdateA3DCmdUI(&cmdUi);
+    frame->OnUpdateA3DCmdUI(&cmdUi);
     if (g_lastCmdUiEnable != 1 || g_lastCmdUiCheck != 1) {
         return 6;
     }
 
-    frame.OnMenuSelectDirectSound();
+    frame->OnMenuSelectDirectSound();
     if (audioApi != 0 || g_zSnd_ActiveBackend != 0) {
         return 7;
     }
 
     g_lastCmdUiEnable = -1;
     g_lastCmdUiCheck = -1;
-    frame.OnUpdateDirectSoundCmdUI(&cmdUi);
+    frame->OnUpdateDirectSoundCmdUI(&cmdUi);
     return g_lastCmdUiEnable == 1 && g_lastCmdUiCheck == 1 ? 0 : 8;
 }
+#endif
 
+#ifndef RECOIL_NATIVE_CZRECOIL_FRAME_TESTS_SKIP_SHARED_SMOKES
 extern "C" int czrecoil_frame_menu_exit_game_smoke(void) {
     HWND hwnd = CreateWindowExA(0, "STATIC", "recoil-exit-test", WS_OVERLAPPEDWINDOW, 0, 0, 100,
                                 100, nullptr, nullptr, GetModuleHandleA(nullptr), nullptr);
@@ -2004,7 +2189,8 @@ extern "C" int czrecoil_frame_menu_exit_game_smoke(void) {
 }
 
 extern "C" int czgame_frame_is_window_valid_smoke(void) {
-    if (CZGameFrame::IsWindowValid(nullptr) != 0) {
+    CZGameFrame frame{};
+    if (frame.IsWindowValid(nullptr) != 0) {
         return 1;
     }
 
@@ -2015,13 +2201,13 @@ extern "C" int czgame_frame_is_window_valid_smoke(void) {
     alignas(CWnd) unsigned char storage[sizeof(CWnd)] = {};
     CWnd *disabledWnd = reinterpret_cast<CWnd *>(storage);
     disabledWnd->m_hWnd = g_gameFrameValidityWindow;
-    if (CZGameFrame::IsWindowValid(disabledWnd) != 1) {
+    if (frame.IsWindowValid(disabledWnd) != 1) {
         DestroyWindow(g_gameFrameValidityWindow);
         return 2;
     }
 
     EnableWindow(g_gameFrameValidityWindow, TRUE);
-    const int result = CZGameFrame::IsWindowValid(disabledWnd) == 0 ? 0 : 3;
+    const int result = frame.IsWindowValid(disabledWnd) == 0 ? 0 : 3;
     DestroyWindow(g_gameFrameValidityWindow);
     return result;
 }
@@ -2041,14 +2227,15 @@ extern "C" int czgame_frame_build_window_title_smoke(void) {
 
 #ifndef RECOIL_NATIVE_CZRECOIL_FRAME_TESTS_SKIP_SHARED_SMOKES
 extern "C" int czgame_frame_constructor_smoke(void) {
-    CZGameFrame frame{};
-    CZGameFrame *returned = frame.Constructor(nullptr);
-    const auto constructedFrameVtable = *reinterpret_cast<RecoilPtr32 *>(&frame);
-    if (returned == &frame && constructedFrameVtable != 0 &&
-        constructedFrameVtable != CZGameFrame::GetRuntimeClass() &&
-        frame.m_gameBitmap.m_hObject == nullptr) {
-        frame.Destructor();
-        return frame.m_gameBitmap.m_hObject == nullptr ? 0 : 2;
+    alignas(CZGameFrame) unsigned char frameStorage[sizeof(CZGameFrame)]{};
+    auto *frame = reinterpret_cast<CZGameFrame *>(frameStorage);
+    CZGameFrame *returned = new (frame) CZGameFrame(nullptr);
+    const auto constructedFrameVtable = *reinterpret_cast<RecoilPtr32 *>(frame);
+    if (returned == frame && constructedFrameVtable != 0 &&
+        constructedFrameVtable != CZGameFrame::GetRuntimeClassStatic() &&
+        frame->m_gameBitmap.m_hObject == nullptr) {
+        frame->~CZGameFrame();
+        return frame->m_gameBitmap.m_hObject == nullptr ? 0 : 2;
     }
 
     return 1;
@@ -2062,22 +2249,22 @@ extern "C" int czgame_frame_create_object_smoke(void) {
 
     const auto constructedFrameVtable = *reinterpret_cast<RecoilPtr32 *>(frame);
     const bool ok = constructedFrameVtable != 0 &&
-                    constructedFrameVtable != CZGameFrame::GetRuntimeClass() &&
+                    constructedFrameVtable != CZGameFrame::GetRuntimeClassStatic() &&
                     frame->m_gameBitmap.m_hObject == nullptr;
 
-    frame->Destructor();
+    frame->~CZGameFrame();
     ::operator delete(frame);
     return ok ? 0 : 2;
 }
 #endif
 
 extern "C" int czgame_frame_destructor_smoke(void) {
-    CZGameFrame frame{};
-    frame.Constructor(nullptr);
+    alignas(CZGameFrame) unsigned char frameStorage[sizeof(CZGameFrame)]{};
+    auto *frame = new (frameStorage) CZGameFrame();
 
-    frame.Destructor();
+    frame->~CZGameFrame();
 
-    return frame.m_gameBitmap.m_hObject == nullptr ? 0 : 1;
+    return frame->m_gameBitmap.m_hObject == nullptr ? 0 : 1;
 }
 
 #ifndef RECOIL_NATIVE_CZRECOIL_FRAME_TESTS_SKIP_SHARED_SMOKES
@@ -2111,27 +2298,28 @@ extern "C" int czrecoil_frame_constructor_smoke(void) {
         return 2;
     }
 
-    CZRecoilFrame frame{};
+    alignas(CZRecoilFrame) unsigned char frameStorage[sizeof(CZRecoilFrame)]{};
+    auto *frame = reinterpret_cast<CZRecoilFrame *>(frameStorage);
     g_zVid_AcceptedHardwareRendererCount = 5;
     g_zVid_TexturePackLoadState = 1;
     g_zSnd_UseArchiveBanksFlag = 0;
     g_CZRecoilFrame_HasWolApi = 0;
 
-    CZRecoilFrame *returned = frame.Constructor();
+    CZRecoilFrame *returned = new (frame) CZRecoilFrame();
 
-    const auto constructedFrameVtable = *reinterpret_cast<RecoilPtr32 *>(&frame);
-    const bool constructed = returned == &frame && constructedFrameVtable != 0 &&
-                             constructedFrameVtable != CZRecoilFrame::GetRuntimeClass();
+    const auto constructedFrameVtable = *reinterpret_cast<RecoilPtr32 *>(frame);
+    const bool constructed = returned == frame && constructedFrameVtable != 0 &&
+                             constructedFrameVtable != CZRecoilFrame::GetRuntimeClassStatic();
     const bool fieldsOk =
-        frame.m_openZbdFilePath[0] == '\0' && frame.m_useArchiveBanks == 1 &&
-        frame.m_cmdlineFlag == 1 && frame.m_campaignsOnlyMode == 0 &&
-        frame.m_acceptedD3DDeviceCount == g_zVid_AcceptedHardwareRendererCount &&
-        frame.m_hwApiCmdUiState[0] == 0 &&
-        frame.m_hwApiCmdUiState[1] == 0 && frame.m_hwApiCmdUiState[2] == 0 &&
-        frame.m_hwApiCmdUiState[3] == 0 && frame.m_hwApiMenuCommandIds[0] == 0x9c83 &&
-        frame.m_hwApiMenuCommandIds[1] == 0x9c72 &&
-        frame.m_hwApiMenuCommandIds[2] == 0x9c75 &&
-        frame.m_hwApiMenuCommandIds[3] == 0x9c76;
+        frame->m_openZbdFilePath[0] == '\0' && frame->m_useArchiveBanks == 1 &&
+        frame->m_cmdlineFlag == 1 && frame->m_campaignsOnlyMode == 0 &&
+        frame->m_acceptedD3DDeviceCount == g_zVid_AcceptedHardwareRendererCount &&
+        frame->m_hwApiCmdUiState[0] == 0 &&
+        frame->m_hwApiCmdUiState[1] == 0 && frame->m_hwApiCmdUiState[2] == 0 &&
+        frame->m_hwApiCmdUiState[3] == 0 && frame->m_hwApiMenuCommandIds[0] == 0x9c83 &&
+        frame->m_hwApiMenuCommandIds[1] == 0x9c72 &&
+        frame->m_hwApiMenuCommandIds[2] == 0x9c75 &&
+        frame->m_hwApiMenuCommandIds[3] == 0x9c76;
     const bool globalsOk = g_zSnd_UseArchiveBanksFlag == 1;
 
     const int failure = !constructed ? 2 : (!fieldsOk ? 3 : (globalsOk ? 0 : 4));
@@ -2186,12 +2374,12 @@ extern "C" int czrecoil_frame_create_object_smoke(void) {
 
     const auto constructedFrameVtable = *reinterpret_cast<RecoilPtr32 *>(frame);
     const bool ok = constructedFrameVtable != 0 &&
-                    constructedFrameVtable != CZRecoilFrame::GetRuntimeClass() &&
+                    constructedFrameVtable != CZRecoilFrame::GetRuntimeClassStatic() &&
                     frame->m_useArchiveBanks == 1 &&
                     frame->m_acceptedD3DDeviceCount == g_zVid_AcceptedHardwareRendererCount &&
                     g_zSnd_UseArchiveBanksFlag == 1;
 
-    frame->Destructor();
+    frame->~CZRecoilFrame();
     ::operator delete(frame);
     RestoreFunctionPatch(centerWindowPatch);
     RestoreFunctionPatch(setWindowTextPatch);
@@ -2245,7 +2433,7 @@ extern "C" int recoil_app_create_main_wnd_smoke(void) {
 
     const auto constructedFrameVtable = *reinterpret_cast<RecoilPtr32 *>(frame);
     const int failure = constructedFrameVtable != 0 &&
-                                constructedFrameVtable != CZRecoilFrame::GetRuntimeClass() &&
+                                constructedFrameVtable != CZRecoilFrame::GetRuntimeClassStatic() &&
                                 frame->m_useArchiveBanks == 1 &&
                                 frame->m_acceptedD3DDeviceCount ==
                                     g_zVid_AcceptedHardwareRendererCount &&
@@ -2260,24 +2448,46 @@ extern "C" int recoil_app_create_main_wnd_smoke(void) {
 #endif
 
 extern "C" int czrecoil_frame_destructor_smoke(void) {
-    void *storage = ::operator new(sizeof(CZRecoilFrame));
-    CZRecoilFrame *const frame = (CZRecoilFrame *)storage;
-    std::memset(frame, 0, sizeof(*frame));
-    reinterpret_cast<CZGameFrame *>(frame)->Constructor(nullptr);
-    new (&frame->m_mainMenu) CMenu();
-    frame->m_mainMenu.m_hMenu = CreateMenu();
-    if (frame->m_mainMenu.m_hMenu == nullptr) {
-        ::operator delete(storage);
+    HINSTANCE instance = GetModuleHandleA(nullptr);
+    if (AfxWinInit(instance, nullptr, GetCommandLineA(), SW_HIDE) == 0) {
         return 1;
     }
 
-    frame->Destructor();
-    const bool ok = frame->m_mainMenu.m_hMenu == nullptr;
+    WNDCLASSA wndClass{};
+    wndClass.lpfnWndProc = DefWindowProcA;
+    wndClass.hInstance = instance;
+    wndClass.lpszClassName = "RecoilClass";
+    RegisterClassA(&wndClass);
+
+    g_zVid_AcceptedHardwareRendererCount = 5;
+    g_zVid_TexturePackLoadState = 1;
+    g_zSnd_UseArchiveBanksFlag = 0;
+    g_CZRecoilFrame_HasWolApi = 0;
+
+    void *storage = ::operator new(sizeof(CZRecoilFrame));
+    CZRecoilFrame *const frame = new (storage) CZRecoilFrame();
+    HMENU const menu = CreateMenu();
+    if (menu == nullptr) {
+        frame->~CZRecoilFrame();
+        ::operator delete(storage);
+        return 2;
+    }
+
+    HMENU const constructorMenu = frame->m_mainMenu.Detach();
+    if (constructorMenu != nullptr && IsMenu(constructorMenu) != FALSE) {
+        ::DestroyMenu(constructorMenu);
+    }
+    frame->m_mainMenu.Attach(menu);
+    ::SetMenu(frame->m_hWnd, menu);
+
+    frame->~CZRecoilFrame();
+    const bool ok = IsMenu(menu) == FALSE;
     ::operator delete(storage);
-    return ok ? 0 : 2;
+    return ok ? 0 : 3;
 }
 
-#ifndef RECOIL_NATIVE_CZRECOIL_FRAME_TESTS_SKIP_SHARED_SMOKES
+#if !defined(RECOIL_NATIVE_CZRECOIL_FRAME_TESTS_SKIP_SHARED_SMOKES) || \
+    defined(RECOIL_NATIVE_CZRECOIL_FRAME_TESTS_MENU_SMOKES)
 namespace {
 std::uint32_t g_lastIdleWParam;
 std::uint32_t g_lastIdleLParam;
@@ -2388,6 +2598,7 @@ struct ImportFunctionPatch {
     ULONG_PTR original;
 };
 
+#ifndef RECOIL_NATIVE_CZRECOIL_FRAME_TESTS_SKIP_SHARED_SMOKES
 struct FakeGameFrameApp : CZGameFrameApp {
     void OnActivate() {
         ++g_appActivateCalls;
@@ -2411,6 +2622,7 @@ struct FakeGameFrameApp : CZGameFrameApp {
         ++g_onActivateCallCount;
     }
 };
+#endif
 
 struct FakeActivateState : RecoilApp_IState {
     void OnWndActivate(std::uint32_t nState) {
@@ -2607,8 +2819,11 @@ BOOL __fastcall FakeCWndCreateEx(CWnd *self, void *, DWORD exStyle, LPCSTR class
     ++g_cWndCreateExCalls;
     HWND hwnd = CreateWindowExA(exStyle, className, windowName, style, x, y, width, height, parent,
                                 menu, GetModuleHandleA(nullptr), param);
-    self->m_hWnd = hwnd;
-    return hwnd != nullptr ? TRUE : FALSE;
+    if (hwnd == nullptr) {
+        return FALSE;
+    }
+
+    return self->Attach(hwnd);
 }
 
 void __fastcall FakeCWndSetWindowTextA(CWnd *self, void *, LPCSTR text) {
@@ -3082,6 +3297,7 @@ bool PatchImportByOrdinal(
     return false;
 }
 
+#ifndef RECOIL_NATIVE_CZRECOIL_FRAME_TESTS_SKIP_SHARED_SMOKES
 bool PatchFunctionJump(void *target, void *replacement, CodeFunctionPatch &patch) {
     patch.address = static_cast<unsigned char *>(target);
     std::memcpy(patch.original, patch.address, sizeof(patch.original));
@@ -3103,6 +3319,7 @@ bool PatchFunctionJump(void *target, void *replacement, CodeFunctionPatch &patch
     VirtualProtect(patch.address, sizeof(patch.original), oldProtect, &ignored);
     return true;
 }
+#endif
 
 void RestoreImportPatch(ImportFunctionPatch &patch) {
     if (patch.slot == nullptr) {
@@ -3122,6 +3339,7 @@ void RestoreImportPatch(ImportFunctionPatch &patch) {
     patch.original = 0;
 }
 
+#ifndef RECOIL_NATIVE_CZRECOIL_FRAME_TESTS_SKIP_SHARED_SMOKES
 void RestoreFunctionPatch(CodeFunctionPatch &patch) {
     if (patch.address == nullptr) {
         return;
@@ -3137,6 +3355,7 @@ void RestoreFunctionPatch(CodeFunctionPatch &patch) {
     }
     patch.address = nullptr;
 }
+#endif
 
 } // namespace
 
@@ -3221,12 +3440,13 @@ extern "C" int czrecoil_frame_open_multiplayer_session_browser_smoke(void) {
     }
 
     int result = 0;
-    CZRecoilFrame frame{};
-    frame.m_useArchiveBanks = 0x55;
+    alignas(CZRecoilFrame) unsigned char frameStorage[sizeof(CZRecoilFrame)] = {};
+    CZRecoilFrame *const frame = reinterpret_cast<CZRecoilFrame *>(frameStorage);
+    frame->m_useArchiveBanks = 0x55;
 
     ResetMpMenuProbe();
     g_mpMenuDoModalResult = IDCANCEL;
-    frame.OnMenuOpenMultiplayerSessionBrowser();
+    frame->OnMenuOpenMultiplayerSessionBrowser();
     if (g_mpMenuCoInitializeCalls != 1) {
         result = 20;
     } else if (g_mpMenuInitRuntimeCalls != 1) {
@@ -3251,7 +3471,7 @@ extern "C" int czrecoil_frame_open_multiplayer_session_browser_smoke(void) {
     ResetMpMenuProbe();
     g_mpMenuDialogShouldEnterHostSetup = 1;
     g_mpMenuDialogPlayerName = "HostPilot";
-    frame.OnMenuOpenMultiplayerSessionBrowser();
+    frame->OnMenuOpenMultiplayerSessionBrowser();
     if (result == 0 &&
         (g_mpMenuInitRuntimeGuid != &g_zNetwork_RecoilAppGuid ||
          g_mpMenuSetPlayerNameCalls != 1 ||
@@ -3271,16 +3491,13 @@ extern "C" int czrecoil_frame_open_multiplayer_session_browser_smoke(void) {
     g_mpMenuOpenStatusFlags = 0x35;
     g_mpMenuOpenValueOrTime = 2;
     g_mpMenuOpenAuxParam = 9;
-    frame.OnMenuOpenMultiplayerSessionBrowser();
+    frame->OnMenuOpenMultiplayerSessionBrowser();
 
     union TimerSecondsBits {
         float seconds;
         std::int32_t raw;
     } expectedTimer = {120.0f};
-    const RecoilPtr32 expectedPendingState =
-        static_cast<RecoilPtr32>(
-            reinterpret_cast<std::uintptr_t>(&g_RecoilApp.m_mpExitDialogState.base)
-        );
+    RecoilApp_IState *const expectedPendingState = &g_RecoilApp.m_mpExitDialogState;
     if (result == 0 &&
         (g_mpMenuOpenSessionCalls != 1 || g_mpMenuOpenSelectedSessionIndex != 4 ||
          g_mpMenuSetNetworkEnabledCalls != 1 || g_mpMenuLastNetworkEnabled != 1 ||
@@ -3322,6 +3539,7 @@ extern "C" int czrecoil_frame_open_multiplayer_session_browser_smoke(void) {
     return result;
 }
 
+#ifndef RECOIL_NATIVE_CZRECOIL_FRAME_TESTS_SKIP_SHARED_SMOKES
 extern "C" int czrecoil_frame_on_menu_westwood_online_upgrade_smoke(void) {
     CodeFunctionPatch zlocPatch{};
     CodeFunctionPatch verifyPatch{};
@@ -3846,7 +4064,7 @@ extern "C" int czgame_frame_on_paint_smoke(void) {
         return 20;
     }
 
-    g_zVideo_ActiveRendererPath = 2;
+    g_zVideo_ActiveRendererPath = 1;
     g_zVid_CachedClientRectUpdateMask = 1;
     InvalidateRect(hwnd, nullptr, FALSE);
     gameFrame->OnPaint();
@@ -3900,7 +4118,7 @@ extern "C" int czrecoil_frame_on_size_smoke(void) {
     RECT client{};
     GetClientRect(frame.m_hWnd, &client);
     g_zVideo_hWnd = frame.m_hWnd;
-    g_zVideo_ActiveRendererPath = 2;
+    g_zVideo_ActiveRendererPath = 1;
     zVid::SetCachedClientRectUpdateMask(1);
     g_zVideo_CachedClientRectScreen = {7, 8, 9, 10};
 
@@ -3954,6 +4172,7 @@ extern "C" int czrecoil_frame_on_size_smoke(void) {
     RestoreFunctionPatch(frameWndOnSizePatch);
     return ok ? 0 : 3;
 }
+#endif
 #endif
 
 #ifdef RECOIL_NATIVE_CZRECOIL_FRAME_TESTS_SKIP_SHARED_SMOKES
@@ -4019,7 +4238,899 @@ void *OnSizeCZGameFrameOnSizeProc() {
     thunk.member = &CZGameFrame::OnSize;
     return thunk.function;
 }
+
+struct HandlerImportPatch {
+    ULONG_PTR *slot;
+    ULONG_PTR original;
+};
+
+std::uint32_t g_handlerLastIdleWParam;
+std::uint32_t g_handlerLastIdleLParam;
+std::int32_t g_handlerAppActivateCalls;
+std::int32_t g_handlerAppDeactivateCalls;
+std::int32_t g_handlerFrameWndOnCloseCalls;
+std::int32_t g_handlerFrameWndOnCreateCalls;
+std::int32_t g_handlerFrameWndOnCreateResult;
+std::int32_t g_handlerFrameWndOnDestroyCalls;
+std::int32_t g_handlerFrameWndOnActivateCalls;
+bool g_handlerFrameWndOnActivateArgsOk;
+std::int32_t g_handlerStateWndActivateCalls;
+std::int32_t g_handlerLastStateWndActivateValue;
+std::int32_t g_handlerZInputOnAppActivateCalls;
+std::int32_t g_handlerZInputOnAppDeactivateCalls;
+std::int32_t g_handlerZGameReturnOnlyStubCalls;
+std::int32_t g_handlerZVideoRestoreIconicCalls;
+std::int32_t g_handlerGdiDeleteObjectCalls;
+std::int32_t g_handlerOnDestroyCallOrder[5];
+std::int32_t g_handlerOnDestroyCallCount;
+std::int32_t g_handlerOnActivateCallOrder[5];
+std::int32_t g_handlerOnActivateCallCount;
+std::int32_t g_handlerFindResourceHandleCalls;
+std::int32_t g_handlerLoadBitmapCalls;
+LPCSTR g_handlerLastResourceName;
+LPCSTR g_handlerLastResourceType;
+HINSTANCE g_handlerLastBitmapInstance;
+LPCSTR g_handlerLastBitmapName;
+HINSTANCE g_handlerFakeResourceHandle =
+    reinterpret_cast<HINSTANCE>(static_cast<std::uintptr_t>(0x13572468));
+HBITMAP g_handlerFakeBitmapHandle =
+    reinterpret_cast<HBITMAP>(static_cast<std::uintptr_t>(0x24681357));
+std::int32_t g_handlerPaintCreateCompatibleDcCalls;
+std::int32_t g_handlerPaintSelectObjectCalls;
+std::int32_t g_handlerPaintBitBltCalls;
+std::int32_t g_handlerPaintStretchBltCalls;
+std::int32_t g_handlerPaintDeleteDcCalls;
+HDC g_handlerPaintCompatibleDc =
+    reinterpret_cast<HDC>(static_cast<std::uintptr_t>(0x11223344));
+HDC g_handlerPaintLastDestDc;
+HDC g_handlerPaintLastSourceDc;
+HGDIOBJ g_handlerPaintLastSelectedObject;
+RECT g_handlerPaintLastDestRect;
+RECT g_handlerPaintLastSourceRect;
+DWORD g_handlerPaintLastRasterOp;
+
+struct HandlerFakeApp : RecoilApp {
+    void OnAppActivate() override {
+        ++g_handlerAppActivateCalls;
+        if (g_handlerOnActivateCallCount < 5) {
+            g_handlerOnActivateCallOrder[g_handlerOnActivateCallCount] = 6;
+        }
+        ++g_handlerOnActivateCallCount;
+    }
+
+    void OnAppDeactivate() override {
+        ++g_handlerAppDeactivateCalls;
+        if (g_handlerOnActivateCallCount < 5) {
+            g_handlerOnActivateCallOrder[g_handlerOnActivateCallCount] = 3;
+        }
+        ++g_handlerOnActivateCallCount;
+    }
+
+    int OnIdleOrDispatch(unsigned int wParam, unsigned int lParam) override {
+        g_handlerLastIdleWParam = wParam;
+        g_handlerLastIdleLParam = lParam;
+        return 0x1234;
+    }
+};
+
+struct HandlerFakeActivateState : RecoilApp_IState {
+    void OnWndActivate(int nState) override {
+        ++g_handlerStateWndActivateCalls;
+        g_handlerLastStateWndActivateValue = nState;
+        if (g_handlerOnActivateCallCount < 5) {
+            g_handlerOnActivateCallOrder[g_handlerOnActivateCallCount] = 2;
+        }
+        ++g_handlerOnActivateCallCount;
+    }
+};
+
+struct HandlerCFrameWndOnActivateAccess : CFrameWnd {
+    using CFrameWnd::OnActivate;
+};
+
+struct HandlerCFrameWndOnCloseAccess : CFrameWnd {
+    using CFrameWnd::OnClose;
+};
+
+struct HandlerCFrameWndOnCreateAccess : CFrameWnd {
+    using CFrameWnd::OnCreate;
+};
+
+struct HandlerCFrameWndOnDestroyAccess : CFrameWnd {
+    using CFrameWnd::OnDestroy;
+};
+
+void HandlerRecordOnDestroyCall(std::int32_t callId) {
+    if (g_handlerOnDestroyCallCount < 5) {
+        g_handlerOnDestroyCallOrder[g_handlerOnDestroyCallCount] = callId;
+    }
+    ++g_handlerOnDestroyCallCount;
+}
+
+void HandlerRecordOnActivateCall(std::int32_t callId) {
+    if (g_handlerOnActivateCallCount < 5) {
+        g_handlerOnActivateCallOrder[g_handlerOnActivateCallCount] = callId;
+    }
+    ++g_handlerOnActivateCallCount;
+}
+
+void *HandlerCFrameWndOnCloseProc() {
+    union MemberToFunction {
+        void ( HandlerCFrameWndOnCloseAccess::*member)();
+        void *function;
+    };
+
+    MemberToFunction thunk{};
+    thunk.member = &HandlerCFrameWndOnCloseAccess::OnClose;
+    return thunk.function;
+}
+
+void *HandlerCFrameWndOnActivateProc() {
+    union MemberToFunction {
+        void ( HandlerCFrameWndOnActivateAccess::*member)(unsigned int, CWnd *, BOOL);
+        void *function;
+    };
+
+    MemberToFunction thunk{};
+    thunk.member = &HandlerCFrameWndOnActivateAccess::OnActivate;
+    return thunk.function;
+}
+
+void *HandlerCFrameWndOnCreateProc() {
+    union MemberToFunction {
+        int ( HandlerCFrameWndOnCreateAccess::*member)(CREATESTRUCTA *);
+        void *function;
+    };
+
+    MemberToFunction thunk{};
+    thunk.member = &HandlerCFrameWndOnCreateAccess::OnCreate;
+    return thunk.function;
+}
+
+void *HandlerCFrameWndOnDestroyProc() {
+    union MemberToFunction {
+        void ( HandlerCFrameWndOnDestroyAccess::*member)();
+        void *function;
+    };
+
+    MemberToFunction thunk{};
+    thunk.member = &HandlerCFrameWndOnDestroyAccess::OnDestroy;
+    return thunk.function;
+}
+
+void *HandlerCGdiObjectDeleteObjectProc() {
+    union MemberToFunction {
+        BOOL ( CGdiObject::*member)();
+        void *function;
+    };
+
+    MemberToFunction thunk{};
+    thunk.member = &CGdiObject::DeleteObject;
+    return thunk.function;
+}
+
+bool HandlerPatchImportByName(
+    const char *dllName,
+    const char *functionName,
+    void *replacement,
+    HandlerImportPatch &patch
+) {
+    HMODULE module = GetModuleHandleA(nullptr);
+    unsigned char *base = reinterpret_cast<unsigned char *>(module);
+    IMAGE_DOS_HEADER *dos = reinterpret_cast<IMAGE_DOS_HEADER *>(base);
+    IMAGE_NT_HEADERS *nt = reinterpret_cast<IMAGE_NT_HEADERS *>(base + dos->e_lfanew);
+    const IMAGE_DATA_DIRECTORY &directory =
+        nt->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT];
+    IMAGE_IMPORT_DESCRIPTOR *descriptor =
+        reinterpret_cast<IMAGE_IMPORT_DESCRIPTOR *>(base + directory.VirtualAddress);
+
+    for (; descriptor->Name != 0; ++descriptor) {
+        const char *importDll = reinterpret_cast<const char *>(base + descriptor->Name);
+        if (_stricmp(importDll, dllName) != 0) {
+            continue;
+        }
+
+        IMAGE_THUNK_DATA *names =
+            reinterpret_cast<IMAGE_THUNK_DATA *>(base + descriptor->OriginalFirstThunk);
+        IMAGE_THUNK_DATA *thunks =
+            reinterpret_cast<IMAGE_THUNK_DATA *>(base + descriptor->FirstThunk);
+        for (; names->u1.AddressOfData != 0; ++names, ++thunks) {
+            if ((names->u1.Ordinal & IMAGE_ORDINAL_FLAG) != 0) {
+                continue;
+            }
+
+            IMAGE_IMPORT_BY_NAME *importName =
+                reinterpret_cast<IMAGE_IMPORT_BY_NAME *>(base + names->u1.AddressOfData);
+            if (std::strcmp(reinterpret_cast<const char *>(importName->Name), functionName) !=
+                0) {
+                continue;
+            }
+
+            patch.slot = reinterpret_cast<ULONG_PTR *>(&thunks->u1.Function);
+            patch.original = *patch.slot;
+            DWORD oldProtect = 0;
+            if (VirtualProtect(
+                    patch.slot,
+                    sizeof(*patch.slot),
+                    PAGE_EXECUTE_READWRITE,
+                    &oldProtect
+                ) == 0) {
+                patch.slot = nullptr;
+                return false;
+            }
+
+            *patch.slot = reinterpret_cast<ULONG_PTR>(replacement);
+            DWORD ignored = 0;
+            VirtualProtect(
+                patch.slot,
+                sizeof(*patch.slot),
+                oldProtect,
+                &ignored
+            );
+            FlushInstructionCache(GetCurrentProcess(), patch.slot, sizeof(*patch.slot));
+            return true;
+        }
+    }
+
+    return false;
+}
+
+void HandlerRestoreImportPatch(HandlerImportPatch &patch) {
+    if (patch.slot == nullptr) {
+        return;
+    }
+
+    DWORD oldProtect = 0;
+    if (VirtualProtect(
+            patch.slot,
+            sizeof(*patch.slot),
+            PAGE_EXECUTE_READWRITE,
+            &oldProtect
+        ) != 0) {
+        *patch.slot = patch.original;
+        DWORD ignored = 0;
+        VirtualProtect(
+            patch.slot,
+            sizeof(*patch.slot),
+            oldProtect,
+            &ignored
+        );
+        FlushInstructionCache(GetCurrentProcess(), patch.slot, sizeof(*patch.slot));
+    }
+
+    patch.slot = nullptr;
+    patch.original = 0;
+}
+
+void HandlerFakeCFrameWndOnClose(CFrameWnd *, void *) {
+    ++g_handlerFrameWndOnCloseCalls;
+}
+
+int __fastcall HandlerFakeCFrameWndOnCreate(CFrameWnd *, void *, CREATESTRUCTA *) {
+    ++g_handlerFrameWndOnCreateCalls;
+    return g_handlerFrameWndOnCreateResult;
+}
+
+void __fastcall HandlerFakeCFrameWndOnDestroy(CFrameWnd *, void *) {
+    ++g_handlerFrameWndOnDestroyCalls;
+    HandlerRecordOnDestroyCall(4);
+}
+
+void __fastcall HandlerFakeCFrameWndOnActivate(
+    CFrameWnd *,
+    void *,
+    unsigned int nState,
+    CWnd *pWndOther,
+    BOOL bMinimized
+) {
+    ++g_handlerFrameWndOnActivateCalls;
+    g_handlerFrameWndOnActivateArgsOk =
+        (nState == 0 || nState == 1) && pWndOther == 0 &&
+        (bMinimized == TRUE || bMinimized == FALSE);
+    HandlerRecordOnActivateCall(1);
+}
+
+int HandlerFakeDestroyCachedLocalPlayer() {
+    HandlerRecordOnDestroyCall(1);
+    return 1;
+}
+
+int HandlerFakeShutdownVideoSystem() {
+    HandlerRecordOnDestroyCall(2);
+    return 1;
+}
+
+int HandlerFakeZsndCdStop() {
+    HandlerRecordOnDestroyCall(3);
+    return 1;
+}
+
+BOOL __fastcall HandlerFakeCGdiObjectDeleteObject(CGdiObject *, void *) {
+    ++g_handlerGdiDeleteObjectCalls;
+    HandlerRecordOnDestroyCall(5);
+    return TRUE;
+}
+
+void HandlerFakeZInputOnAppActivate() {
+    ++g_handlerZInputOnAppActivateCalls;
+    HandlerRecordOnActivateCall(7);
+}
+
+void HandlerFakeZInputOnAppDeactivate() {
+    ++g_handlerZInputOnAppDeactivateCalls;
+    HandlerRecordOnActivateCall(4);
+}
+
+void HandlerFakeZGameReturnOnlyStub() {
+    ++g_handlerZGameReturnOnlyStubCalls;
+    HandlerRecordOnActivateCall(5);
+}
+
+void HandlerFakeZVideoRestoreIconicFullscreenWindowIfNeeded() {
+    ++g_handlerZVideoRestoreIconicCalls;
+    HandlerRecordOnActivateCall(8);
+}
+
+HINSTANCE __stdcall HandlerFakeAfxFindResourceHandle(
+    LPCSTR resourceName,
+    LPCSTR resourceType
+) {
+    ++g_handlerFindResourceHandleCalls;
+    g_handlerLastResourceName = resourceName;
+    g_handlerLastResourceType = resourceType;
+    return g_handlerFakeResourceHandle;
+}
+
+HBITMAP WINAPI HandlerFakeLoadBitmapA(HINSTANCE instance, LPCSTR bitmapName) {
+    ++g_handlerLoadBitmapCalls;
+    g_handlerLastBitmapInstance = instance;
+    g_handlerLastBitmapName = bitmapName;
+    return g_handlerFakeBitmapHandle;
+}
+
+HDC WINAPI HandlerFakeCreateCompatibleDC(HDC hdc) {
+    ++g_handlerPaintCreateCompatibleDcCalls;
+    g_handlerPaintLastDestDc = hdc;
+    return g_handlerPaintCompatibleDc;
+}
+
+HGDIOBJ WINAPI HandlerFakeSelectObject(HDC hdc, HGDIOBJ object) {
+    if (hdc == g_handlerPaintCompatibleDc) {
+        ++g_handlerPaintSelectObjectCalls;
+    }
+    g_handlerPaintLastSelectedObject = object;
+    return object;
+}
+
+BOOL WINAPI HandlerFakeBitBlt(
+    HDC destDc,
+    int x,
+    int y,
+    int width,
+    int height,
+    HDC sourceDc,
+    int sourceX,
+    int sourceY,
+    DWORD rasterOp
+) {
+    ++g_handlerPaintBitBltCalls;
+    g_handlerPaintLastDestDc = destDc;
+    g_handlerPaintLastSourceDc = sourceDc;
+    g_handlerPaintLastDestRect = {x, y, x + width, y + height};
+    g_handlerPaintLastSourceRect = {sourceX, sourceY, sourceX + width, sourceY + height};
+    g_handlerPaintLastRasterOp = rasterOp;
+    return TRUE;
+}
+
+BOOL WINAPI HandlerFakeStretchBlt(
+    HDC destDc,
+    int x,
+    int y,
+    int width,
+    int height,
+    HDC sourceDc,
+    int sourceX,
+    int sourceY,
+    int sourceWidth,
+    int sourceHeight,
+    DWORD rasterOp
+) {
+    ++g_handlerPaintStretchBltCalls;
+    g_handlerPaintLastDestDc = destDc;
+    g_handlerPaintLastSourceDc = sourceDc;
+    g_handlerPaintLastDestRect = {x, y, x + width, y + height};
+    g_handlerPaintLastSourceRect = {sourceX, sourceY, sourceX + sourceWidth,
+                                    sourceY + sourceHeight};
+    g_handlerPaintLastRasterOp = rasterOp;
+    return TRUE;
+}
+
+BOOL WINAPI HandlerFakeDeleteDC(HDC hdc) {
+    if (hdc == g_handlerPaintCompatibleDc) {
+        ++g_handlerPaintDeleteDcCalls;
+    }
+    return TRUE;
+}
 } // namespace
+
+extern "C" int czgame_frame_on_app_idle_dispatch_message_smoke(void) {
+    HandlerFakeApp app{};
+    CZGameFrame frame{};
+    frame.m_app = &app;
+
+    const int result = frame.OnAppIdleDispatchMessage(0xabcdef01, 0x23456789);
+    return result == 0x1234 && g_handlerLastIdleWParam == 0xabcdef01 &&
+                   g_handlerLastIdleLParam == 0x23456789
+               ? 0
+               : 1;
+}
+
+extern "C" int czgame_frame_on_close_smoke(void) {
+    CodeFunctionPatch frameWndOnClosePatch{};
+    if (!PatchFunctionJump(
+            HandlerCFrameWndOnCloseProc(),
+            reinterpret_cast<void *>(&HandlerFakeCFrameWndOnClose),
+            frameWndOnClosePatch
+        )) {
+        return 1;
+    }
+
+    CZGameFrame frame{};
+    g_handlerFrameWndOnCloseCalls = 0;
+    frame.OnClose();
+    const bool ok = g_handlerFrameWndOnCloseCalls == 1;
+
+    RestoreFunctionPatch(frameWndOnClosePatch);
+    return ok ? 0 : 2;
+}
+
+extern "C" int czgame_frame_on_create_smoke(void) {
+    CodeFunctionPatch frameWndOnCreatePatch{};
+    CodeFunctionPatch findResourcePatch{};
+    HandlerImportPatch loadBitmapPatch{};
+    if (!PatchFunctionJump(
+            HandlerCFrameWndOnCreateProc(),
+            reinterpret_cast<void *>(&HandlerFakeCFrameWndOnCreate),
+            frameWndOnCreatePatch
+        ) ||
+        !PatchFunctionJump(
+            reinterpret_cast<void *>(&AfxFindResourceHandle),
+            reinterpret_cast<void *>(&HandlerFakeAfxFindResourceHandle),
+            findResourcePatch
+        ) ||
+        !HandlerPatchImportByName(
+            "USER32.dll",
+            "LoadBitmapA",
+            reinterpret_cast<void *>(&HandlerFakeLoadBitmapA),
+            loadBitmapPatch
+        )) {
+        HandlerRestoreImportPatch(loadBitmapPatch);
+        RestoreFunctionPatch(findResourcePatch);
+        RestoreFunctionPatch(frameWndOnCreatePatch);
+        return 1;
+    }
+
+    CZGameFrame frame{};
+    CREATESTRUCTA createStruct{};
+    g_handlerFrameWndOnCreateCalls = 0;
+    g_handlerFindResourceHandleCalls = 0;
+    g_handlerLoadBitmapCalls = 0;
+    g_zInput_MouseDevice = nullptr;
+    g_zInput_MouseInitialized = 1;
+    g_zInput_MouseActive = 1;
+    g_handlerFrameWndOnCreateResult = -1;
+
+    if (frame.OnCreate(&createStruct) != -1 || g_handlerFrameWndOnCreateCalls != 1 ||
+        g_handlerFindResourceHandleCalls != 0 || g_handlerLoadBitmapCalls != 0 ||
+        g_zInput_MouseInitialized != 1 || g_zInput_MouseActive != 1) {
+        HandlerRestoreImportPatch(loadBitmapPatch);
+        RestoreFunctionPatch(findResourcePatch);
+        RestoreFunctionPatch(frameWndOnCreatePatch);
+        return 2;
+    }
+
+    g_handlerFrameWndOnCreateResult = 0;
+    g_handlerFrameWndOnCreateCalls = 0;
+    g_handlerFindResourceHandleCalls = 0;
+    g_handlerLoadBitmapCalls = 0;
+    g_handlerLastResourceName = nullptr;
+    g_handlerLastResourceType = nullptr;
+    g_handlerLastBitmapName = nullptr;
+    g_handlerLastBitmapInstance = nullptr;
+    g_zInput_MouseInitialized = 1;
+    g_zInput_MouseActive = 1;
+    frame.m_gameBitmap.m_hObject = nullptr;
+
+    const int result = frame.OnCreate(&createStruct);
+    const bool ok = result == 0 && g_handlerFrameWndOnCreateCalls == 1 &&
+                    g_handlerFindResourceHandleCalls == 1 && g_handlerLoadBitmapCalls == 1 &&
+                    std::strcmp(g_handlerLastResourceName, "GAMEBMP") == 0 &&
+                    g_handlerLastResourceType == MAKEINTRESOURCEA(2) &&
+                    g_handlerLastBitmapInstance == g_handlerFakeResourceHandle &&
+                    std::strcmp(g_handlerLastBitmapName, "GAMEBMP") == 0 &&
+                    frame.m_gameBitmap.m_hObject == g_handlerFakeBitmapHandle &&
+                    g_zInput_MouseInitialized == 0 && g_zInput_MouseActive == 0;
+
+    frame.m_gameBitmap.m_hObject = nullptr;
+    HandlerRestoreImportPatch(loadBitmapPatch);
+    RestoreFunctionPatch(findResourcePatch);
+    RestoreFunctionPatch(frameWndOnCreatePatch);
+    return ok ? 0 : 3;
+}
+
+extern "C" int czgame_frame_on_destroy_smoke(void) {
+    CodeFunctionPatch networkPatch{};
+    CodeFunctionPatch videoPatch{};
+    CodeFunctionPatch cdStopPatch{};
+    CodeFunctionPatch frameDestroyPatch{};
+    CodeFunctionPatch bitmapDeletePatch{};
+
+    if (!PatchFunctionJump(
+            reinterpret_cast<void *>(&zNetwork_DPlay_DestroyCachedLocalPlayer),
+            reinterpret_cast<void *>(&HandlerFakeDestroyCachedLocalPlayer),
+            networkPatch
+        ) ||
+        !PatchFunctionJump(
+            reinterpret_cast<void *>(&zVideo::ShutdownVideoSystem),
+            reinterpret_cast<void *>(&HandlerFakeShutdownVideoSystem),
+            videoPatch
+        ) ||
+        !PatchFunctionJump(
+            reinterpret_cast<void *>(&zSndCd::Stop),
+            reinterpret_cast<void *>(&HandlerFakeZsndCdStop),
+            cdStopPatch
+        ) ||
+        !PatchFunctionJump(
+            HandlerCFrameWndOnDestroyProc(),
+            reinterpret_cast<void *>(&HandlerFakeCFrameWndOnDestroy),
+            frameDestroyPatch
+        ) ||
+        !PatchFunctionJump(
+            HandlerCGdiObjectDeleteObjectProc(),
+            reinterpret_cast<void *>(&HandlerFakeCGdiObjectDeleteObject),
+            bitmapDeletePatch
+        )) {
+        RestoreFunctionPatch(bitmapDeletePatch);
+        RestoreFunctionPatch(frameDestroyPatch);
+        RestoreFunctionPatch(cdStopPatch);
+        RestoreFunctionPatch(videoPatch);
+        RestoreFunctionPatch(networkPatch);
+        return 1;
+    }
+
+    CZGameFrame frame{};
+    g_handlerFrameWndOnDestroyCalls = 0;
+    g_handlerGdiDeleteObjectCalls = 0;
+    g_handlerOnDestroyCallCount = 0;
+    for (int i = 0; i < 5; ++i) {
+        g_handlerOnDestroyCallOrder[i] = 0;
+    }
+
+    frame.OnDestroy();
+    const bool ok = g_handlerOnDestroyCallCount == 5 &&
+                    g_handlerOnDestroyCallOrder[0] == 1 &&
+                    g_handlerOnDestroyCallOrder[1] == 2 &&
+                    g_handlerOnDestroyCallOrder[2] == 3 &&
+                    g_handlerOnDestroyCallOrder[3] == 4 &&
+                    g_handlerOnDestroyCallOrder[4] == 5 &&
+                    g_handlerFrameWndOnDestroyCalls == 1 &&
+                    g_handlerGdiDeleteObjectCalls == 1;
+
+    RestoreFunctionPatch(bitmapDeletePatch);
+    RestoreFunctionPatch(frameDestroyPatch);
+    RestoreFunctionPatch(cdStopPatch);
+    RestoreFunctionPatch(videoPatch);
+    RestoreFunctionPatch(networkPatch);
+    return ok ? 0 : 2;
+}
+
+extern "C" int czgame_frame_on_activate_smoke(void) {
+    HandlerFakeActivateState state{};
+    HandlerFakeApp app{};
+    app.m_currentStateIndex = 0;
+    app.m_stateStack[0] = &state;
+
+    CZGameFrame frame{};
+    frame.m_app = &app;
+
+    CodeFunctionPatch frameWndOnActivatePatch{};
+    CodeFunctionPatch zInputActivatePatch{};
+    CodeFunctionPatch zInputDeactivatePatch{};
+    CodeFunctionPatch zGameReturnPatch{};
+    CodeFunctionPatch zVideoRestorePatch{};
+
+    if (!PatchFunctionJump(
+            HandlerCFrameWndOnActivateProc(),
+            reinterpret_cast<void *>(&HandlerFakeCFrameWndOnActivate),
+            frameWndOnActivatePatch
+        ) ||
+        !PatchFunctionJump(
+            reinterpret_cast<void *>(&zInput::OnAppActivate),
+            reinterpret_cast<void *>(&HandlerFakeZInputOnAppActivate),
+            zInputActivatePatch
+        ) ||
+        !PatchFunctionJump(
+            reinterpret_cast<void *>(&zInput::OnAppDeactivate),
+            reinterpret_cast<void *>(&HandlerFakeZInputOnAppDeactivate),
+            zInputDeactivatePatch
+        ) ||
+        !PatchFunctionJump(
+            reinterpret_cast<void *>(&zGame::ReturnOnlyStub),
+            reinterpret_cast<void *>(&HandlerFakeZGameReturnOnlyStub),
+            zGameReturnPatch
+        ) ||
+        !PatchFunctionJump(
+            reinterpret_cast<void *>(&zVideo_RestoreIconicFullscreenWindowIfNeeded),
+            reinterpret_cast<void *>(&HandlerFakeZVideoRestoreIconicFullscreenWindowIfNeeded),
+            zVideoRestorePatch
+        )) {
+        RestoreFunctionPatch(zVideoRestorePatch);
+        RestoreFunctionPatch(zGameReturnPatch);
+        RestoreFunctionPatch(zInputDeactivatePatch);
+        RestoreFunctionPatch(zInputActivatePatch);
+        RestoreFunctionPatch(frameWndOnActivatePatch);
+        return 1;
+    }
+
+    g_handlerAppActivateCalls = 0;
+    g_handlerAppDeactivateCalls = 0;
+    g_handlerFrameWndOnActivateCalls = 0;
+    g_handlerFrameWndOnActivateArgsOk = false;
+    g_handlerStateWndActivateCalls = 0;
+    g_handlerLastStateWndActivateValue = -1;
+    g_handlerZInputOnAppActivateCalls = 0;
+    g_handlerZInputOnAppDeactivateCalls = 0;
+    g_handlerZGameReturnOnlyStubCalls = 0;
+    g_handlerZVideoRestoreIconicCalls = 0;
+    g_handlerOnActivateCallCount = 0;
+    for (int i = 0; i < 5; ++i) {
+        g_handlerOnActivateCallOrder[i] = 0;
+    }
+
+    frame.OnActivate(0, nullptr, FALSE);
+    bool ok = g_handlerOnActivateCallCount == 5 &&
+              g_handlerOnActivateCallOrder[0] == 1 &&
+              g_handlerOnActivateCallOrder[1] == 2 &&
+              g_handlerOnActivateCallOrder[2] == 3 &&
+              g_handlerOnActivateCallOrder[3] == 4 &&
+              g_handlerOnActivateCallOrder[4] == 5 &&
+              g_handlerFrameWndOnActivateCalls == 1 &&
+              g_handlerFrameWndOnActivateArgsOk &&
+              g_handlerStateWndActivateCalls == 1 &&
+              g_handlerLastStateWndActivateValue == 0 &&
+              g_handlerAppDeactivateCalls == 1 &&
+              g_handlerZInputOnAppDeactivateCalls == 1 &&
+              g_handlerZGameReturnOnlyStubCalls == 1 &&
+              g_handlerAppActivateCalls == 0 &&
+              g_handlerZInputOnAppActivateCalls == 0 &&
+              g_handlerZVideoRestoreIconicCalls == 0;
+    if (!ok) {
+        RestoreFunctionPatch(zVideoRestorePatch);
+        RestoreFunctionPatch(zGameReturnPatch);
+        RestoreFunctionPatch(zInputDeactivatePatch);
+        RestoreFunctionPatch(zInputActivatePatch);
+        RestoreFunctionPatch(frameWndOnActivatePatch);
+        return 2;
+    }
+
+    g_handlerAppActivateCalls = 0;
+    g_handlerAppDeactivateCalls = 0;
+    g_handlerFrameWndOnActivateCalls = 0;
+    g_handlerFrameWndOnActivateArgsOk = false;
+    g_handlerStateWndActivateCalls = 0;
+    g_handlerLastStateWndActivateValue = -1;
+    g_handlerZInputOnAppActivateCalls = 0;
+    g_handlerZInputOnAppDeactivateCalls = 0;
+    g_handlerZGameReturnOnlyStubCalls = 0;
+    g_handlerZVideoRestoreIconicCalls = 0;
+    g_handlerOnActivateCallCount = 0;
+    for (int i = 0; i < 5; ++i) {
+        g_handlerOnActivateCallOrder[i] = 0;
+    }
+
+    frame.OnActivate(1, nullptr, TRUE);
+    ok = g_handlerOnActivateCallCount == 5 &&
+         g_handlerOnActivateCallOrder[0] == 1 &&
+         g_handlerOnActivateCallOrder[1] == 2 &&
+         g_handlerOnActivateCallOrder[2] == 6 &&
+         g_handlerOnActivateCallOrder[3] == 7 &&
+         g_handlerOnActivateCallOrder[4] == 8 &&
+         g_handlerFrameWndOnActivateCalls == 1 &&
+         g_handlerFrameWndOnActivateArgsOk &&
+         g_handlerStateWndActivateCalls == 1 &&
+         g_handlerLastStateWndActivateValue == 1 &&
+         g_handlerAppActivateCalls == 1 &&
+         g_handlerZInputOnAppActivateCalls == 1 &&
+         g_handlerZVideoRestoreIconicCalls == 1 &&
+         g_handlerAppDeactivateCalls == 0 &&
+         g_handlerZInputOnAppDeactivateCalls == 0 &&
+         g_handlerZGameReturnOnlyStubCalls == 0;
+
+    RestoreFunctionPatch(zVideoRestorePatch);
+    RestoreFunctionPatch(zGameReturnPatch);
+    RestoreFunctionPatch(zInputDeactivatePatch);
+    RestoreFunctionPatch(zInputActivatePatch);
+    RestoreFunctionPatch(frameWndOnActivatePatch);
+    return ok ? 0 : 3;
+}
+
+extern "C" int czgame_frame_on_paint_smoke(void) {
+    HandlerImportPatch createDcPatch{};
+    HandlerImportPatch selectObjectPatch{};
+    HandlerImportPatch bitBltPatch{};
+    HandlerImportPatch stretchBltPatch{};
+    HandlerImportPatch deleteDcPatch{};
+
+    if (!HandlerPatchImportByName(
+            "GDI32.dll",
+            "CreateCompatibleDC",
+            reinterpret_cast<void *>(&HandlerFakeCreateCompatibleDC),
+            createDcPatch
+        ) ||
+        !HandlerPatchImportByName(
+            "GDI32.dll",
+            "SelectObject",
+            reinterpret_cast<void *>(&HandlerFakeSelectObject),
+            selectObjectPatch
+        ) ||
+        !HandlerPatchImportByName(
+            "GDI32.dll",
+            "BitBlt",
+            reinterpret_cast<void *>(&HandlerFakeBitBlt),
+            bitBltPatch
+        ) ||
+        !HandlerPatchImportByName(
+            "GDI32.dll",
+            "StretchBlt",
+            reinterpret_cast<void *>(&HandlerFakeStretchBlt),
+            stretchBltPatch
+        ) ||
+        !HandlerPatchImportByName(
+            "GDI32.dll",
+            "DeleteDC",
+            reinterpret_cast<void *>(&HandlerFakeDeleteDC),
+            deleteDcPatch
+        )) {
+        HandlerRestoreImportPatch(deleteDcPatch);
+        HandlerRestoreImportPatch(stretchBltPatch);
+        HandlerRestoreImportPatch(bitBltPatch);
+        HandlerRestoreImportPatch(selectObjectPatch);
+        HandlerRestoreImportPatch(createDcPatch);
+        return 1;
+    }
+
+    HWND hwnd = CreateWindowExA(
+        0,
+        "STATIC",
+        "recoil-paint-test",
+        WS_POPUP,
+        0,
+        0,
+        400,
+        300,
+        nullptr,
+        nullptr,
+        GetModuleHandleA(nullptr),
+        nullptr
+    );
+    if (hwnd == nullptr) {
+        HandlerRestoreImportPatch(deleteDcPatch);
+        HandlerRestoreImportPatch(stretchBltPatch);
+        HandlerRestoreImportPatch(bitBltPatch);
+        HandlerRestoreImportPatch(selectObjectPatch);
+        HandlerRestoreImportPatch(createDcPatch);
+        return 2;
+    }
+
+    ShowWindow(hwnd, SW_SHOWNOACTIVATE);
+
+    CZGameFrame frame{};
+    frame.m_hWnd = hwnd;
+    frame.m_gameBitmap.m_hObject =
+        reinterpret_cast<HGDIOBJ>(static_cast<std::uintptr_t>(0x2468));
+
+    const int oldRendererPath = g_zVideo_ActiveRendererPath;
+    const int oldUpdateMask = g_zVid_CachedClientRectUpdateMask;
+    g_zVideo_ActiveRendererPath = 0;
+    g_zVid_CachedClientRectUpdateMask = 0;
+
+    g_handlerPaintCreateCompatibleDcCalls = 0;
+    g_handlerPaintSelectObjectCalls = 0;
+    g_handlerPaintBitBltCalls = 0;
+    g_handlerPaintStretchBltCalls = 0;
+    g_handlerPaintDeleteDcCalls = 0;
+    g_handlerPaintLastDestRect = {};
+    g_handlerPaintLastSourceRect = {};
+    g_handlerPaintLastRasterOp = 0;
+
+    RECT smallPaint = {0, 0, 400, 300};
+    InvalidateRect(hwnd, nullptr, FALSE);
+    frame.OnPaint();
+    bool ok = g_handlerPaintCreateCompatibleDcCalls == 1 &&
+              g_handlerPaintSelectObjectCalls == 1 &&
+              g_handlerPaintBitBltCalls == 1 &&
+              g_handlerPaintStretchBltCalls == 0 &&
+              g_handlerPaintDeleteDcCalls == 1 &&
+              g_handlerPaintLastSourceDc == g_handlerPaintCompatibleDc &&
+              g_handlerPaintLastSelectedObject == frame.m_gameBitmap.m_hObject &&
+              g_handlerPaintLastDestRect.left == smallPaint.left &&
+              g_handlerPaintLastDestRect.top == smallPaint.top &&
+              g_handlerPaintLastDestRect.right == smallPaint.right &&
+              g_handlerPaintLastDestRect.bottom == smallPaint.bottom &&
+              g_handlerPaintLastSourceRect.left == smallPaint.left &&
+              g_handlerPaintLastSourceRect.top == smallPaint.top &&
+              g_handlerPaintLastSourceRect.right == smallPaint.right &&
+              g_handlerPaintLastSourceRect.bottom == smallPaint.bottom &&
+              g_handlerPaintLastRasterOp == SRCCOPY;
+    if (!ok) {
+        g_zVideo_ActiveRendererPath = oldRendererPath;
+        g_zVid_CachedClientRectUpdateMask = oldUpdateMask;
+        frame.m_gameBitmap.m_hObject = nullptr;
+        DestroyWindow(hwnd);
+        frame.m_hWnd = nullptr;
+        HandlerRestoreImportPatch(deleteDcPatch);
+        HandlerRestoreImportPatch(stretchBltPatch);
+        HandlerRestoreImportPatch(bitBltPatch);
+        HandlerRestoreImportPatch(selectObjectPatch);
+        HandlerRestoreImportPatch(createDcPatch);
+        return 10;
+    }
+
+    SetWindowPos(hwnd, nullptr, 0, 0, 800, 700, SWP_NOZORDER | SWP_NOACTIVATE);
+    RECT tallPaint = {0, 0, 800, 700};
+    InvalidateRect(hwnd, nullptr, FALSE);
+    frame.OnPaint();
+    ok = g_handlerPaintCreateCompatibleDcCalls == 2 &&
+         g_handlerPaintSelectObjectCalls == 2 &&
+         g_handlerPaintBitBltCalls == 1 &&
+         g_handlerPaintStretchBltCalls == 1 &&
+         g_handlerPaintDeleteDcCalls == 2 &&
+         g_handlerPaintLastSourceDc == g_handlerPaintCompatibleDc &&
+         g_handlerPaintLastDestRect.left == tallPaint.left &&
+         g_handlerPaintLastDestRect.top == tallPaint.top &&
+         g_handlerPaintLastDestRect.right == tallPaint.right &&
+         g_handlerPaintLastDestRect.bottom == tallPaint.bottom &&
+         g_handlerPaintLastSourceRect.left == tallPaint.left &&
+         g_handlerPaintLastSourceRect.top == tallPaint.top &&
+         g_handlerPaintLastSourceRect.right == tallPaint.left + 640 &&
+         g_handlerPaintLastSourceRect.bottom == tallPaint.top + 480 &&
+         g_handlerPaintLastRasterOp == SRCCOPY;
+    if (!ok) {
+        g_zVideo_ActiveRendererPath = oldRendererPath;
+        g_zVid_CachedClientRectUpdateMask = oldUpdateMask;
+        frame.m_gameBitmap.m_hObject = nullptr;
+        DestroyWindow(hwnd);
+        frame.m_hWnd = nullptr;
+        HandlerRestoreImportPatch(deleteDcPatch);
+        HandlerRestoreImportPatch(stretchBltPatch);
+        HandlerRestoreImportPatch(bitBltPatch);
+        HandlerRestoreImportPatch(selectObjectPatch);
+        HandlerRestoreImportPatch(createDcPatch);
+        return 20;
+    }
+
+    g_zVideo_ActiveRendererPath = 1;
+    g_zVid_CachedClientRectUpdateMask = 1;
+    InvalidateRect(hwnd, nullptr, FALSE);
+    frame.OnPaint();
+    ok = g_handlerPaintCreateCompatibleDcCalls == 2 &&
+         g_handlerPaintSelectObjectCalls == 2 &&
+         g_handlerPaintBitBltCalls == 1 &&
+         g_handlerPaintStretchBltCalls == 1 &&
+         g_handlerPaintDeleteDcCalls == 2;
+
+    g_zVideo_ActiveRendererPath = oldRendererPath;
+    g_zVid_CachedClientRectUpdateMask = oldUpdateMask;
+    frame.m_gameBitmap.m_hObject = nullptr;
+    DestroyWindow(hwnd);
+    frame.m_hWnd = nullptr;
+    HandlerRestoreImportPatch(deleteDcPatch);
+    HandlerRestoreImportPatch(stretchBltPatch);
+    HandlerRestoreImportPatch(bitBltPatch);
+    HandlerRestoreImportPatch(selectObjectPatch);
+    HandlerRestoreImportPatch(createDcPatch);
+    return ok ? 0 : 3;
+}
 
 extern "C" int czrecoil_frame_on_size_smoke(void) {
     OnSizeFakeRecoilApp *const app = new OnSizeFakeRecoilApp();
@@ -4098,7 +5209,7 @@ extern "C" int czgame_frame_on_size_smoke(void) {
     RECT client{};
     GetClientRect(frame.m_hWnd, &client);
     g_zVideo_hWnd = frame.m_hWnd;
-    g_zVideo_ActiveRendererPath = 2;
+    g_zVideo_ActiveRendererPath = 1;
     zVid::SetCachedClientRectUpdateMask(1);
     g_zVideo_CachedClientRectScreen = {7, 8, 9, 10};
     g_onSizeFrameWndCalls = 0;
@@ -4114,6 +5225,7 @@ extern "C" int czgame_frame_on_size_smoke(void) {
     g_zVideo_hWnd = oldVideoHwnd;
     g_zVideo_CachedClientRectScreen = oldCachedRect;
     DestroyWindow(frame.m_hWnd);
+    frame.m_hWnd = nullptr;
     RestoreFunctionPatch(frameWndOnSizePatch);
     if (g_onSizeFrameWndCalls != 1) {
         return 7;
@@ -4126,5 +5238,18 @@ extern "C" int czgame_frame_on_size_smoke(void) {
         return 9;
     }
     return 0;
+}
+
+extern "C" int czgame_frame_build_window_title_smoke(void) {
+    CZGameFrame frame{};
+    alignas(CString) unsigned char storage[sizeof(CString)];
+    auto *title = reinterpret_cast<CString *>(storage);
+
+    CString *returned = frame.BuildWindowTitle(title);
+    const bool ok = returned == title && (const char *)(*title) != nullptr &&
+                    std::strcmp((const char *)(*title), "Zipper Interactive") == 0;
+    title->~CString();
+
+    return ok ? 0 : 1;
 }
 #endif

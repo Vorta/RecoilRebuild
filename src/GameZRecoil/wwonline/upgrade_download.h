@@ -44,10 +44,11 @@ enum WestwoodOnlineUpgradeDownloadState {
     WOL_DOWNLOAD_STATE_DOWNLOADING_PATCH = 6
 };
 
+ULONG __stdcall WestwoodOnlineUpgradeSharedComAddRef(void *self);
+
 struct WestwoodOnlineUpgradeDownloadEventSink : IUnknown {
     WestwoodOnlineUpgradeRefCountAndLock m_refCountAndLock;
 
-    virtual int STDMETHODCALLTYPE CallbackNoOp(void *arg);
     virtual HRESULT STDMETHODCALLTYPE OnDownloadFinished();
     virtual HRESULT STDMETHODCALLTYPE OnDownloadError(
         HRESULT result
@@ -58,6 +59,7 @@ struct WestwoodOnlineUpgradeDownloadEventSink : IUnknown {
         int unusedArg4,
         int secondsLeft
     );
+    virtual int STDMETHODCALLTYPE CallbackNoOp(void *arg);
     virtual HRESULT STDMETHODCALLTYPE OnStateChanged(
         WestwoodOnlineUpgradeDownloadState stateCode
     );
@@ -67,31 +69,24 @@ struct WestwoodOnlineUpgradeDownloadEventSink : IUnknown {
     );
     ULONG STDMETHODCALLTYPE AddRef();
     ULONG STDMETHODCALLTYPE Release();
-    void Destructor();
-    static HRESULT __stdcall QueryInterface(
-        WestwoodOnlineUpgradeDownloadEventSink *self,
-        REFIID iid,
-        void **outInterface
-    );
-    static ULONG __stdcall Release(WestwoodOnlineUpgradeDownloadEventSink *self);
+    ~WestwoodOnlineUpgradeDownloadEventSink();
     static HRESULT __stdcall CreateInstance(
         WestwoodOnlineUpgradeDownloadEventSink **outSink
     );
 };
 
-extern "C" IUnknown *g_pWestwoodOnlineUpgradeDownload;
-extern "C" void *g_pWestwoodOnlineUpgradeDownloadEventSink;
+extern "C" IWestwoodOnlineUpgradeDownload *g_pWestwoodOnlineUpgradeDownload;
+extern "C" WestwoodOnlineUpgradeDownloadEventSink *g_pWestwoodOnlineUpgradeDownloadEventSink;
 extern "C" DWORD g_WestwoodOnlineUpgradeDownloadAdviseCookie;
-extern "C" int g_WestwoodOnlineUpgradeDownloadEventSinkConnectionOffset;
 extern "C" LONG g_WestwoodOnlineUpgradeEventSinkLiveCount;
 extern "C" WestwoodOnlineUpgradeDownloadReadyEntry *g_pWestwoodOnlineUpgradeDownloadReadyList;
 extern "C" char g_WestwoodOnlineUpgradeDownloadReadyPromptText[0x80];
 extern "C" char g_WestwoodOnlineUpgradeDownloadRestoreCwd[0x100];
 extern "C" int g_WestwoodOnlineUpgradeDownloadDialogResult;
 extern "C" HWND g_hWestwoodOnlineUpgradeProgressDialog;
-extern const CLSID g_WestwoodOnlineUpgradeDownload_CLSID;
-extern const IID g_WestwoodOnlineUpgradeDownload_IID;
-extern const IID g_WestwoodOnlineUpgradeDownloadEventSink_IID;
+extern const CLSID g_CLSID_WestwoodOnlineUpgradeDownload;
+extern const IID g_IID_WestwoodOnlineUpgradeDownload;
+extern const IID IID_WestwoodOnlineUpgradeDownloadEventSink;
 
 RECOIL_STATIC_ASSERT(
     offsetof(

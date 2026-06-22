@@ -1,3 +1,20 @@
+#ifdef RECOIL_FMV_SCRIPT_TESTS_WAIT_ONLY
+
+#include "GameZRecoil/zFMV/fmv.h"
+
+extern "C" int zfmv_action_wait_begin_update_smoke(void) {
+    zFMV_ActionWait action{};
+    action.durationSec = 2.5f;
+    action.startSec = -1.0f;
+
+    action.Begin(10.25);
+
+    return action.startSec == 10.25f && action.Update(12.0) == 1 && action.Update(12.75) == 0 ? 0
+                                                                                              : 1;
+}
+
+#else
+
 #include "GameZRecoil/zFMV/fmv.h"
 #include "GameZRecoil/include/zImage.h"
 #include "GameZRecoil/zInput/zInput.h"
@@ -3376,3 +3393,5 @@ extern "C" int zfmv_action_play_sound_begin_missing_sample_smoke(void) {
 
     return action.sample == nullptr && action.voice == nullptr ? 0 : 1;
 }
+
+#endif

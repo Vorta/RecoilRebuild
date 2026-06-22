@@ -176,7 +176,9 @@ int g_netSetupHostUpdateValueOrTime;
 int g_netSetupHostUpdateStatusFlags;
 int g_netSetupUnregisterCalls;
 int g_netSetupResetRemoteCalls;
-CZRecoilFrame g_netSetupFrame;
+alignas(CZRecoilFrame) unsigned char g_netSetupFrameStorage[sizeof(CZRecoilFrame)];
+CZRecoilFrame &g_netSetupFrame =
+    *reinterpret_cast<CZRecoilFrame *>(g_netSetupFrameStorage);
 int g_netSetupTryHalfResCalls;
 int g_netSetupTryHalfResMode;
 int g_netSetupTryInvalidateCalls;

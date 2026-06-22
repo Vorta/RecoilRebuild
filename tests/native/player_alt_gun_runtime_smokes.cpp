@@ -5,9 +5,11 @@
 #include "GameZRecoil/include/OptCatalog.h"
 #include "GameZRecoil/include/zClass.h"
 #include "GameZRecoil/zInput/zInput.h"
+#include "GameZRecoil/zModel/zModel.h"
 #include "GameZRecoil/zSound/zSound.h"
 
 #include <cstdint>
+#include <cstdlib>
 #include <cstring>
 
 namespace {
@@ -25,6 +27,10 @@ bool MatrixEquals(const zMat4x3 &value, const zMat4x3 &expected) {
            value.zx == expected.zx && value.zy == expected.zy && value.zz == expected.zz &&
            value.posX == expected.posX && value.posY == expected.posY &&
            value.posZ == expected.posZ;
+}
+
+bool FloatNear(float actual, float expected) {
+    return actual > expected - 0.0001f && actual < expected + 0.0001f;
 }
 
 float PlayerFastSqrtEstimateForAltGunTest(float value) {
@@ -386,6 +392,107 @@ extern "C" int player_alt_gun_fire_point_selection_smoke(void) {
         playerState.altFireSlotLeft.attachNode != &primaryAttachNode ||
         playerState.altHardpointSelectState != 1) {
         return 6;
+    }
+
+    return 0;
+}
+
+extern "C" int player_primary_gun_fire_point_selection_smoke(void) {
+    zUtil_SaveGameState saveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    saveState.playerState = &playerState;
+
+    playerState.worldPos = {10.0f, 20.0f, 30.0f};
+    playerState.steerBasisRaw = {1.0f, 2.0f, 3.0f};
+    PlayerGunFireSlot sentinelSlot = {};
+    PlayerGunFireSlot *outSlot = &sentinelSlot;
+    Player::SelectPrimaryGunFirePointAndSlot(&saveState, &outSlot);
+    if (!Vec3Equals(playerState.primaryFireOrigin, {10.0f, 21.0f, 30.0f}) ||
+        !Vec3Equals(playerState.aimBasisOrigin, {10.0f, 21.0f, 30.0f}) ||
+        !Vec3Equals(playerState.gunFireDir, {1.0f, 2.0f, 3.0f}) || outSlot != &sentinelSlot) {
+        return 1;
+    }
+
+    PlayerModalState modalState = {};
+    saveState.primaryModalState = &modalState;
+    zClass_Object3DDataPartial rootData = {};
+    zClass_NodePartial rootNode = {};
+    rootNode.classId = 5;
+    rootNode.classData = &rootData;
+    playerState.rootNode = &rootNode;
+
+    const zMat4x3 identityMatrix = {1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+                                    0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f};
+    SetObjectLocalMatrix(&rootData, identityMatrix);
+    modalState.modalNode = nullptr;
+    Player::BuildGunFireTransform(&saveState);
+
+    zClass_Object3DDataPartial gunData = {};
+    zClass_NodePartial gunNode = {};
+    gunNode.classId = 5;
+    gunNode.classData = &gunData;
+    zClass_Object3DDataPartial turretData = {};
+    zClass_NodePartial turretNode = {};
+    turretNode.classId = 5;
+    turretNode.classData = &turretData;
+    SetObjectLocalMatrix(&gunData, identityMatrix);
+    SetObjectLocalMatrix(&turretData, identityMatrix);
+    playerState.gunNode = &gunNode;
+    playerState.turretNode = &turretNode;
+    playerState.gunFireTransform = identityMatrix;
+    playerState.aimBasisOrigin = {10.0f, 20.0f, 30.0f};
+
+    PlayerGunFireController controller = {};
+    zClass_NodePartial primaryAttachNode = {};
+    zClass_NodePartial secondaryAttachNode = {};
+    zClass_NodePartial activeAttachState = {};
+    controller.attachNodePrimary = &primaryAttachNode;
+    controller.attachNodeSecondary = &secondaryAttachNode;
+    playerState.activePrimaryGunController = &controller;
+    playerState.firePointCenter = {1.0f, 2.0f, 3.0f};
+    playerState.firePointRight = {4.0f, 5.0f, 6.0f};
+    playerState.firePointLeft = {7.0f, 8.0f, 9.0f};
+
+    outSlot = nullptr;
+    playerState.primaryHardpointSelectState = 0;
+    controller.attachState = nullptr;
+    Player::SelectPrimaryGunFirePointAndSlot(&saveState, &outSlot);
+    if (!Vec3Equals(playerState.primaryFireOrigin, {11.0f, 22.0f, 33.0f}) ||
+        outSlot != &playerState.altFireSlotCenter ||
+        playerState.altFireSlotCenter.attachNode != &primaryAttachNode ||
+        playerState.primaryHardpointSelectState != 0) {
+        return 2;
+    }
+
+    outSlot = nullptr;
+    controller.attachState = &activeAttachState;
+    Player::SelectPrimaryGunFirePointAndSlot(&saveState, &outSlot);
+    if (!Vec3Equals(playerState.primaryFireOrigin, {10.0f, 20.0f, 30.0f}) ||
+        outSlot != &playerState.altFireSlotCenter ||
+        playerState.altFireSlotCenter.attachNode != &primaryAttachNode ||
+        playerState.primaryHardpointSelectState != 0) {
+        return 3;
+    }
+
+    outSlot = nullptr;
+    controller.attachState = nullptr;
+    playerState.primaryHardpointSelectState = 1;
+    Player::SelectPrimaryGunFirePointAndSlot(&saveState, &outSlot);
+    if (!Vec3Equals(playerState.primaryFireOrigin, {14.0f, 25.0f, 36.0f}) ||
+        outSlot != &playerState.altFireSlotRight ||
+        playerState.altFireSlotRight.attachNode != &secondaryAttachNode ||
+        playerState.primaryHardpointSelectState != 2) {
+        return 4;
+    }
+
+    outSlot = nullptr;
+    playerState.primaryHardpointSelectState = 2;
+    Player::SelectPrimaryGunFirePointAndSlot(&saveState, &outSlot);
+    if (!Vec3Equals(playerState.primaryFireOrigin, {17.0f, 28.0f, 39.0f}) ||
+        outSlot != &playerState.altFireSlotLeft ||
+        playerState.altFireSlotLeft.attachNode != &primaryAttachNode ||
+        playerState.primaryHardpointSelectState != 1) {
+        return 5;
     }
 
     return 0;
@@ -817,6 +924,247 @@ extern "C" int player_process_alt_gun_fire_dispatch_request_smoke(void) {
     g_zInput_JoystickCaps_ForceFeedback = oldForceFeedbackCaps;
     g_HudSensorTracker.primaryGunDispatchCount = oldPrimaryGunDispatchCount;
     return fireOk && heldOk ? 0 : 1;
+}
+
+extern "C" int player_solve_alt_gun_lead_target_point_smoke(void) {
+    zUtil_SaveGameState saveState = {};
+    zUtil_SaveGameState targetState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    zUtil_PlayerStateStorage targetPlayerState = {};
+    PlayerGunFireController activeAltGunController = {};
+    OptCatalogEntryDef optCatalogEntry = {};
+    zVec3 outTargetPos = {};
+    saveState.playerState = &playerState;
+    targetState.playerState = &targetPlayerState;
+    playerState.activeAltGunController = &activeAltGunController;
+    activeAltGunController.optCatalogEntry = &optCatalogEntry;
+
+    optCatalogEntry.velocity = 10.0f;
+    playerState.worldPos = {0.0f, 0.0f, 0.0f};
+    playerState.projectileSpawnVel = {0.0f, 0.0f, 0.0f};
+    targetPlayerState.worldPos = {3.0f, 4.0f, 5.0f};
+    targetPlayerState.fxOffsetWorld = {100.0f, 101.0f, 102.0f};
+    targetPlayerState.projectileSpawnVel = {20.0f, 0.0f, 0.0f};
+    Player::SolveAltGunLeadTargetPoint(&saveState, &targetState, &outTargetPos);
+    const bool fallbackOk = Vec3Equals(outTargetPos, targetPlayerState.worldPos);
+
+    playerState.worldPos = {0.0f, 0.0f, 0.0f};
+    playerState.projectileSpawnVel = {0.0f, 0.0f, 0.0f};
+    targetPlayerState.worldPos = {30.0f, 0.0f, 0.0f};
+    targetPlayerState.fxOffsetWorld = {31.0f, 2.0f, 3.0f};
+    targetPlayerState.projectileSpawnVel = {1.0f, 0.0f, 0.0f};
+
+    std::srand(12345);
+    const int expectedRand = std::rand();
+    std::srand(12345);
+    Player::SolveAltGunLeadTargetPoint(&saveState, &targetState, &outTargetPos);
+
+    const float leadScale = (PlayerFastSqrtEstimateForAltGunTest(9.0f) + 0.3f) / 0.99f;
+    const float expectedY =
+        2.0f - (static_cast<float>(expectedRand) * 3.05185094e-05f - 0.5f) * -2.0f;
+    const bool leadOk =
+        FloatNear(outTargetPos.x, 31.0f + leadScale) &&
+        FloatNear(outTargetPos.y, expectedY) &&
+        FloatNear(outTargetPos.z, 3.0f);
+
+    if (!fallbackOk) {
+        return 1;
+    }
+    return leadOk ? 0 : 2;
+}
+
+extern "C" int player_tick_ai_mode2_alt_gun_attack_window_smoke(void) {
+    zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
+    zClass_NodePartial *const oldRuntimeScene = g_Player_RuntimeDiScene;
+    const float oldTotalTimeSecScaled = g_Player_TotalTimeSecScaled;
+    const zTag4Partial oldVariantCurrent = g_Variant_CurrentTag;
+    const int oldBreakOnFirst = g_cls_di_BreakOnFirstCandidate;
+    const int oldStopAfterFirst = g_cls_di_StopAfterFirstHit;
+
+    zUtil_SaveGameState saveState = {};
+    zUtil_SaveGameState targetState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    zUtil_PlayerStateStorage targetPlayerState = {};
+    PlayerGunFireController activeAltGunController = {};
+    OptCatalogEntryDef optCatalogEntry = {};
+    zClass_NodePartial aiRootNode = {};
+    zClass_NodePartial targetRootNode = {};
+    zClass_NodePartial worldNode = {};
+    zClass_WorldDataPartial worldData = {};
+
+    saveState.playerState = &playerState;
+    targetState.playerState = &targetPlayerState;
+    playerState.activeAltGunController = &activeAltGunController;
+    playerState.rootNode = &aiRootNode;
+    playerState.statusMeterScaled = 0.25f;
+    playerState.fxOffsetWorld = {1.0f, 2.0f, 3.0f};
+    playerState.projectileSpawnVel = {0.0f, 0.0f, 0.0f};
+    targetPlayerState.rootNode = &targetRootNode;
+    targetPlayerState.lifecycleState = 1;
+    targetPlayerState.worldPos = {10.0f, 11.0f, 12.0f};
+    targetPlayerState.fxOffsetWorld = {20.0f, 21.0f, 22.0f};
+    targetPlayerState.projectileSpawnVel = {20.0f, 0.0f, 0.0f};
+    activeAltGunController.optCatalogEntry = &optCatalogEntry;
+    activeAltGunController.dispatchRepeatDelay = 4.0f;
+    activeAltGunController.aiAttackRangeMin = 5.0f;
+    activeAltGunController.aiAttackRangeMax = 50.0f;
+    optCatalogEntry.velocity = 10.0f;
+    worldNode.classData = &worldData;
+    aiRootNode.flags = 0x10;
+    targetRootNode.flags = 0x10;
+
+    g_GameStateOrMapTable =
+        static_cast<zInput_GameStateOrMapTablePartial *>(static_cast<void *>(&targetState));
+    g_Player_RuntimeDiScene = &worldNode;
+    g_cls_di_BreakOnFirstCandidate = 99;
+    g_cls_di_StopAfterFirstHit = 99;
+
+    g_Player_TotalTimeSecScaled = 10.0f;
+    playerState.aiStateEndTime = 5.0f;
+    playerState.aiNotPursuitDwell = 2.0f;
+    playerState.aiMode2AttackDwell = 3.0f;
+    activeAltGunController.nextDispatchTime = 20.0f;
+    Player::TickAiMode2AltGunAttackWindow(&saveState, 10.0f, 1.0f);
+    const bool refreshOk =
+        FloatNear(playerState.aiStateStartTime, 12.0f) &&
+        FloatNear(playerState.aiStateEndTime, 15.0f) &&
+        playerState.altGunDispatchRequested == 0;
+
+    g_Player_TotalTimeSecScaled = 20.0f;
+    playerState.aiStateStartTime = 19.0f;
+    playerState.aiStateEndTime = 30.0f;
+    playerState.altGunDispatchRequested = 0;
+    playerState.altGunFireHeldFlag = 0;
+    playerState.progressTargetCount = 7;
+    playerState.progressTargetSlots[0].targetPos = &playerState.worldPos;
+    playerState.progressTargetSlots[0].targetVelocity = &playerState.projectileSpawnVel;
+    activeAltGunController.nextDispatchTime = 1.0f;
+    optCatalogEntry.flags = 0;
+    Player::TickAiMode2AltGunAttackWindow(&saveState, 10.0f, 0.8f);
+    const bool dispatchOk =
+        playerState.altGunDispatchRequested == 1 &&
+        FloatNear(activeAltGunController.nextDispatchTime, 28.0f) &&
+        playerState.progressTargetCount == 0 &&
+        playerState.progressTargetSlots[0].targetPos == nullptr &&
+        playerState.progressTargetSlots[0].targetVelocity == nullptr &&
+        Vec3Equals(playerState.storedTargetPos, targetPlayerState.worldPos);
+
+    playerState.altGunFireHeldFlag = 1;
+    playerState.altGunDispatchRequested = 5;
+    activeAltGunController.nextDispatchTime = 30.0f;
+    Player::TickAiMode2AltGunAttackWindow(&saveState, 50.0f, 0.75f);
+    const bool heldCopyOk =
+        playerState.altGunDispatchRequested == 5 &&
+        Vec3Equals(playerState.storedTargetPos, targetPlayerState.fxOffsetWorld);
+
+    targetPlayerState.lifecycleState = 4;
+    Player::TickAiMode2AltGunAttackWindow(&saveState, 10.0f, 1.0f);
+    const bool heldClearOk =
+        playerState.altGunDispatchRequested == 0 &&
+        FloatNear(activeAltGunController.nextDispatchTime, 24.0f);
+
+    g_cls_di_StopAfterFirstHit = oldStopAfterFirst;
+    g_cls_di_BreakOnFirstCandidate = oldBreakOnFirst;
+    g_Variant_CurrentTag = oldVariantCurrent;
+    g_Player_TotalTimeSecScaled = oldTotalTimeSecScaled;
+    g_Player_RuntimeDiScene = oldRuntimeScene;
+    g_GameStateOrMapTable = oldGameStateOrMapTable;
+
+    if (!refreshOk) {
+        return 1;
+    }
+    if (!dispatchOk) {
+        return 2;
+    }
+    if (!heldCopyOk) {
+        return 3;
+    }
+    return heldClearOk ? 0 : 4;
+}
+
+extern "C" int player_alt_gun_fire_slot_offset_smoke(void) {
+    const float oldFrameDelta = g_FrameDeltaTimeSec;
+    g_FrameDeltaTimeSec = 0.0f;
+
+    zClass_Object3DDataPartial directNodeData = {};
+    zClass_NodePartial directNode = {};
+    directNode.classId = 5;
+    directNode.classData = &directNodeData;
+    const zMat4x3 identityMatrix = {1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+                                    0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f};
+    SetObjectLocalMatrix(&directNodeData, identityMatrix);
+
+    PlayerGunFireSlot slot = {};
+    slot.offset = 2.0f;
+    slot.attachNode = &directNode;
+    Player::DecayAndApplyAltFireSlotOffsetToNode(&slot, &directNode, 0.25f, 1);
+    if (!FloatNear(slot.offset, 2.0f) || !FloatNear(directNodeData.localMatrix[10], -0.5f) ||
+        !FloatNear(directNodeData.localMatrix[11], 2.0f)) {
+        g_FrameDeltaTimeSec = oldFrameDelta;
+        return 1;
+    }
+
+    slot.offset = 0.005f;
+    directNodeData.localMatrix[10] = 7.0f;
+    directNodeData.localMatrix[11] = 8.0f;
+    Player::DecayAndApplyAltFireSlotOffsetToNode(&slot, &directNode, 3.0f, 0);
+    if (slot.offset != 0.0f || directNodeData.localMatrix[10] != 0.0f ||
+        directNodeData.localMatrix[11] != 0.0f) {
+        g_FrameDeltaTimeSec = oldFrameDelta;
+        return 2;
+    }
+
+    zUtil_SaveGameState saveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    saveState.playerState = &playerState;
+    zClass_NodePartial gunNode = {};
+    playerState.gunNode = &gunNode;
+    playerState.gunFireDir.y = 4.0f;
+
+    zClass_Object3DDataPartial leftData = {};
+    zClass_Object3DDataPartial rightData = {};
+    zClass_Object3DDataPartial centerData = {};
+    zClass_NodePartial leftNode = {};
+    zClass_NodePartial rightNode = {};
+    zClass_NodePartial centerNode = {};
+    leftNode.classId = 5;
+    rightNode.classId = 5;
+    centerNode.classId = 5;
+    leftNode.classData = &leftData;
+    rightNode.classData = &rightData;
+    centerNode.classData = &centerData;
+    SetObjectLocalMatrix(&leftData, identityMatrix);
+    SetObjectLocalMatrix(&rightData, identityMatrix);
+    SetObjectLocalMatrix(&centerData, identityMatrix);
+    playerState.altFireSlotLeft.offset = 1.0f;
+    playerState.altFireSlotRight.offset = -2.0f;
+    playerState.altFireSlotCenter.offset = 3.0f;
+    playerState.altFireSlotLeft.attachNode = &leftNode;
+    playerState.altFireSlotRight.attachNode = &rightNode;
+    playerState.altFireSlotCenter.attachNode = &centerNode;
+
+    Player::ApplyGunFireSlotOffsetToNode(&saveState);
+    if (playerState.altFireSlotLeft.offset != 0.0f ||
+        playerState.altFireSlotRight.offset != 0.0f ||
+        playerState.altFireSlotCenter.offset != 0.0f || leftData.localMatrix[10] != 0.0f ||
+        leftData.localMatrix[11] != 0.0f || rightData.localMatrix[10] != 0.0f ||
+        rightData.localMatrix[11] != 0.0f || centerData.localMatrix[10] != 0.0f ||
+        centerData.localMatrix[11] != 0.0f) {
+        g_FrameDeltaTimeSec = oldFrameDelta;
+        return 3;
+    }
+
+    playerState.gunNode = nullptr;
+    playerState.altFireSlotLeft.offset = 5.0f;
+    leftData.localMatrix[10] = 6.0f;
+    leftData.localMatrix[11] = 7.0f;
+    Player::ApplyGunFireSlotOffsetToNode(&saveState);
+    const bool gunlessUnchanged = playerState.altFireSlotLeft.offset == 5.0f &&
+                                  leftData.localMatrix[10] == 6.0f &&
+                                  leftData.localMatrix[11] == 7.0f;
+
+    g_FrameDeltaTimeSec = oldFrameDelta;
+    return gunlessUnchanged ? 0 : 4;
 }
 
 extern "C" int player_reset_alt_gun_runtime_state_smoke(void) {

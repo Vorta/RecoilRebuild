@@ -80,13 +80,6 @@ zZbdSectionCallback ZbdCallbackPtr(
 }
 
 // Source-faithful helper recovered from address-backed callers in this source file.
-void ClearZbdPath(
-    HudSensorTracker *tracker
-) {
-    tracker->zbdPath.Empty();
-}
-
-// Source-faithful helper recovered from address-backed callers in this source file.
 int FloatToRawSeconds(
     float value
 ) {
@@ -1918,7 +1911,7 @@ int HudSensorTracker::SetMissionId(
 ) {
     missionId = newMissionId;
     if (newMissionId != 0) {
-        ClearZbdPath(this);
+        zbdPath.Empty();
     }
 
     return 1;

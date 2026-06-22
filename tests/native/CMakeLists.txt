@@ -24,17 +24,24 @@ add_executable(recoil_native_smoke
     znetwork_identity_smokes.cpp
     gamenet_launch_smokes.cpp
     gamenet_net_smokes.cpp
+    net_session_browser_dialog_smokes.cpp
     net_session_config_dialog_smokes.cpp
+    westwood_online_upgrade_event_sink_smokes.cpp
+    westwood_online_upgrade_smokes.cpp
+    westwood_online_upgrade_tests.cpp
+    westwood_online_upgrade_progress_dialog_smokes.cpp
     player_bootstrap_smokes.cpp
     player_zar_smokes.cpp
     zutil_save_game_smokes.cpp
     fmv_script_core_smokes.cpp
+    fmv_script_tests.cpp
     fmv_action_manifest_smokes.cpp
     briefing_runtime_smokes.cpp
     zhud_composite_panel_smokes.cpp
     player_fx_pass3_smokes.cpp
     zvideo_fxpass3_ui_local_config_smokes.cpp
     player_alt_gun_runtime_smokes.cpp
+    player_slip_dynamics_smokes.cpp
     player_tests.cpp
     player_damage_hit_smokes.cpp
     zhud_cmd_dialog_state_smokes.cpp
@@ -43,6 +50,7 @@ add_executable(recoil_native_smoke
     zhud_widget_tests.cpp
     hud_tests.cpp
     hud_save_load_tests.cpp
+    recoil_app_message_map.cpp
     hud_ui_net_exit_smokes.cpp
     hud_weather_fx_smokes.cpp
     czframe_constructor_smokes.cpp
@@ -68,6 +76,15 @@ add_executable(recoil_native_smoke
 
 target_link_libraries(recoil_native_smoke PRIVATE recoil_native)
 
+set(WESTWOOD_ONLINE_UPGRADE_CONFIG_SMOKE_SOURCE
+    "${CMAKE_CURRENT_BINARY_DIR}/westwood_online_upgrade_config_smokes.cpp"
+)
+file(WRITE "${WESTWOOD_ONLINE_UPGRADE_CONFIG_SMOKE_SOURCE}" [=[
+#define RECOIL_NATIVE_WESTWOOD_ONLINE_UPGRADE_CONFIG_SMOKES_ONLY
+#include "]=] "${CMAKE_CURRENT_SOURCE_DIR}/westwood_online_upgrade_tests.cpp" [=["
+]=])
+target_sources(recoil_native_smoke PRIVATE "${WESTWOOD_ONLINE_UPGRADE_CONFIG_SMOKE_SOURCE}")
+
 set_source_files_properties(
     zweapon_tests.cpp
     PROPERTIES COMPILE_DEFINITIONS RECOIL_NATIVE_ZWEAPON_SKIP_DUPLICATE_TIMED_HIT_SMOKE
@@ -86,7 +103,18 @@ set_source_files_properties(
 
 set_source_files_properties(
     player_tests.cpp
-    PROPERTIES COMPILE_DEFINITIONS RECOIL_NATIVE_PLAYER_TESTS_GUN_DISPATCH_ONLY
+    PROPERTIES COMPILE_DEFINITIONS
+        "RECOIL_NATIVE_PLAYER_TESTS_GUN_DISPATCH_ONLY;RECOIL_NATIVE_PLAYER_TESTS_CAMERA_SMOKES;RECOIL_NATIVE_PLAYER_TESTS_ENV_PROBE_SMOKES;RECOIL_NATIVE_PLAYER_TESTS_PENDING_CONTACT_SMOKES;RECOIL_NATIVE_PLAYER_TESTS_ASYNC_COMMAND_CALLBACK_SMOKE"
+)
+
+set_source_files_properties(
+    fmv_script_tests.cpp
+    PROPERTIES COMPILE_DEFINITIONS RECOIL_FMV_SCRIPT_TESTS_WAIT_ONLY
+)
+
+set_source_files_properties(
+    recoil_app_message_map.cpp
+    PROPERTIES COMPILE_DEFINITIONS RECOIL_NATIVE_RECOIL_APP_MESSAGE_MAP_CALLBACK_SMOKES_ONLY
 )
 
 set(ZDECLIENT_NATIVE_SMOKE_PREFIX
@@ -119,6 +147,11 @@ struct zNetwork_DPlay4SmokeVtable {
 #define zNetwork_DPlay4Vtable zNetwork_DPlay4SmokeVtable
 #define g_zNetwork_pDirectPlay4 (*((zNetwork_DPlay4Smoke **)&g_zNetwork_pDirectPlay4))
 ]=])
+
+set_source_files_properties(
+    westwood_online_upgrade_tests.cpp
+    PROPERTIES COMPILE_DEFINITIONS RECOIL_NATIVE_WESTWOOD_ONLINE_UPGRADE_UNADVISE_SMOKE_ONLY
+)
 
 set_source_files_properties(
     zdeclient_tests.cpp

@@ -2304,51 +2304,6 @@ extern "C" int hud_ui_save_load_sort_entry_range_smoke(void) {
     return 0;
 }
 
-HudUiSaveLoadEntry * HudUiSaveLoadEntries::InsertCopiesAt(
-    HudUiSaveLoadEntry *position,
-    unsigned int count,
-    const HudUiSaveLoadEntry *entry
-) {
-    const int size = begin != nullptr ? static_cast<int>(end - begin) : 0;
-    const int capacity = begin != nullptr ? static_cast<int>(capacityEnd - begin) : 0;
-    const int insertIndex = begin != nullptr ? static_cast<int>(position - begin) : 0;
-    const int newSize = size + static_cast<int>(count);
-
-    if (newSize > capacity) {
-        int newCapacity = size + (static_cast<int>(count) < size ? size : static_cast<int>(count));
-        if (newCapacity < newSize) {
-            newCapacity = newSize;
-        }
-
-        HudUiSaveLoadEntry *const newBegin =
-            static_cast<HudUiSaveLoadEntry *>(::operator new(sizeof(HudUiSaveLoadEntry) * newCapacity));
-        for (int i = 0; i < insertIndex; ++i) {
-            newBegin[i] = begin[i];
-        }
-        for (unsigned int i = 0; i < count; ++i) {
-            newBegin[insertIndex + static_cast<int>(i)] = *entry;
-        }
-        for (int i = insertIndex; i < size; ++i) {
-            newBegin[static_cast<int>(count) + i] = begin[i];
-        }
-
-        ::operator delete(begin);
-        begin = newBegin;
-        end = newBegin + newSize;
-        capacityEnd = newBegin + newCapacity;
-        return begin + insertIndex;
-    }
-
-    for (int i = size - 1; i >= insertIndex; --i) {
-        begin[i + static_cast<int>(count)] = begin[i];
-    }
-    for (unsigned int i = 0; i < count; ++i) {
-        begin[insertIndex + static_cast<int>(i)] = *entry;
-    }
-    end += count;
-    return begin + insertIndex;
-}
-
 extern "C" int hud_ui_save_load_refresh_file_list_smoke(void) {
     DWORD savedGamesAttrs = GetFileAttributesA("SavedGames");
     bool createdDirectory = false;

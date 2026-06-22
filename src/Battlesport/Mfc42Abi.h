@@ -36,8 +36,11 @@ struct tm {
 #undef _DEBUG
 #endif
 #include <afx.h>
+#if !defined(_MSC_VER) || _MSC_VER >= 1300
 #undef _AFX_ENABLE_INLINES
+#endif
 #include <afxwin.h>
+#undef _AFX_ENABLE_INLINES
 
 // VC5SP3's common-control headers predate several declarations consumed by
 // the vendored MFC42 afxcmn.h. Supply only the missing SDK shapes for local

@@ -3591,8 +3591,8 @@ extern "C" int zsnd_play_handle_set_enable_scale_smoke(void) {
 
     g_zSnd_ActiveBackend = 0;
     directHandle.SetEnableScale(0.5f);
-    const bool directOk = directHandle.gainScaled == -1204 && g_testSetPanCount == 1 &&
-                          g_testSetVolumeCount == 1 && g_testLastVolume == -1204;
+    const bool directOk = directHandle.gainScaled == -2000 && g_testSetPanCount == 1 &&
+                          g_testSetVolumeCount == 1 && g_testLastVolume == -2000;
 
     ResetStopBackendCounters();
     TestA3dSourceVTable a3dVTable = {};

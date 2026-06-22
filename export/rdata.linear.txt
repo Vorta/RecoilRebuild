@@ -7321,14 +7321,18 @@
 0x4d20dc }
 0x4d20dc void* data_4d20dc = 0x0
 // MFC runtime-class record for CZGameFrame; create thunk at CZGameFrame_CreateObject().
-// MFC runtime-class record for CZGameFrame; create thunk at
-// CZGameFrame_CreateObject().
-0x4d20e0 char (* g_CZGameFrame_RuntimeClass)[0xc] = g_CZGameFrame_RuntimeClassName {"CZGameFrame"}
-0x4d20e4             cc 00 00 00 ff ff 00 00                                                                  ........
-0x4d20ec void* data_4d20ec = CZGameFrame::CreateObject
-0x4d20f0 void* data_4d20f0 = CZGameFrame::GetBaseRuntimeClass
-0x4d20f4                                                             00 00 00 00                                              ....
+0x4d20e0 struct zMfcRuntimeClass24 g_CZGameFrame_RuntimeClass =
+0x4d20e0 {
+    // MFC runtime-class record for CZGameFrame; create thunk at
+    // CZGameFrame_CreateObject().
+0x4d20e0     char* m_className = g_CZGameFrame_RuntimeClassName {"CZGameFrame"}
+0x4d20e4     int32_t m_objectSize = 0xcc
+0x4d20e8     int32_t m_schema = 0xffff
+0x4d20ec     void* m_pfnCreateObject = CZGameFrame::CreateObject
+0x4d20f0     void* m_pfnGetBaseClass = CZGameFrame::GetBaseRuntimeClass
+0x4d20f4     void* m_pBaseClass = 0x0
 // CZGameFrame MFC message map: WM_CLOSE, WM_PAINT, WM_SIZE, WM_MOVE, WM_CREATE, WM_DESTROY, MM_MCINOTIFY, WM_ACTIVATE, sentinel.
+0x4d20f8 }
 0x4d20f8 struct zMfcMsgMap g_CZGameFrame_MessageMap =
 0x4d20f8 {
     // CZGameFrame MFC message map: WM_CLOSE, WM_PAINT, WM_SIZE, WM_MOVE,
@@ -7418,13 +7422,14 @@
 0x4d21cc         int32_t nLastID = 0x0
 0x4d21d0         int32_t nSig = 0x0
 0x4d21d4         void* pfn = 0x0
-// CZGameFrame base-frame vtable. Trailing +0x100 slot uses CZGameFrame_BuildWindowTitleCString.
+// CZGameFrame authored CFrameWnd-derived vtable, including inherited MFC42 provider/import slots and trailing CZGameFrame IsWindowValid/BuildWindowTitle callbacks.
 0x4d21d8     }
 0x4d21d8 }
 0x4d21d8 struct CFrameWndVTable g_CZGameFrame_VTable =
 0x4d21d8 {
-    // CZGameFrame base-frame vtable. Trailing +0x100 slot uses
-    // CZGameFrame_BuildWindowTitleCString.
+    // CZGameFrame authored CFrameWnd-derived vtable, including inherited MFC42
+    // provider/import slots and trailing CZGameFrame
+    // IsWindowValid/BuildWindowTitle callbacks.
 0x4d21d8     void* field_0 = CZGameFrame::GetRuntimeClass
 0x4d21dc     void* field_4 = CZGameFrame::ScalarDeletingDtor
 0x4d21e0     void* field_8 = zStub::NoOp1Arg
@@ -7488,7 +7493,13 @@
 0x4d22c8     void* GetDefaultAccelerator = MFC42:CFrameWnd::GetDefaultAccelerator(CFrameWnd* this)
 0x4d22cc     void* DelayUpdateFrameMenu = MFC42:CFrameWnd::DelayUpdateFrameMenu(CFrameWnd* this, struct HMENU__*)
 0x4d22d0     void* ExitHelpMode = MFC42:CFrameWnd::ExitHelpMode(CFrameWnd* this)
+// Interior slot g_CZGameFrame_VTable+0xfc: CZGameFrame::IsWindowValid callback; not a standalone data object.
+    // Interior slot g_CZGameFrame_VTable+0xfc: CZGameFrame::IsWindowValid
+    // callback; not a standalone data object.
 0x4d22d4     void* IsWindowValidCallback = CZGameFrame::IsWindowValid
+// Interior slot g_CZGameFrame_VTable+0x100: CZGameFrame::BuildWindowTitle callback; not a standalone data object.
+    // Interior slot g_CZGameFrame_VTable+0x100: CZGameFrame::BuildWindowTitle
+    // callback; not a standalone data object.
 0x4d22d8     void* BuildWindowTitleCallback = CZGameFrame::BuildWindowTitle
 0x4d22dc }
 0x4d22dc                                                                                     00 00 00 00                              ....

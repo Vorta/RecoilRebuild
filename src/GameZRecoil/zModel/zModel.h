@@ -8,6 +8,7 @@
 #include "recoil/recoil_callconv.h"
 
 struct zGeometry_PlaneEquationPartial;
+struct zVidPaletteRemapRecipe;
 
 extern int gModel_FogEnabled;
 extern int gModel_FogLinearModeEnabled;
@@ -119,20 +120,7 @@ extern float gModel_AmbientScale;
 extern float gModel_AmbientIntensityFactor;
 extern zColorRgb gModel_AmbientColorRgb01;
 
-struct zModel_PaletteRemapRecipePartial {
-    float color0R;
-    float color0G;
-    float color0B;
-    float color1R;
-    float color1G;
-    float color1B;
-    float color0Strength;
-    float color1Strength;
-};
-
-RECOIL_STATIC_ASSERT(sizeof(zModel_PaletteRemapRecipePartial) == 0x20);
-
-extern zModel_PaletteRemapRecipePartial gModel_SpecialLightPaletteRemapRecipe;
+extern zVidPaletteRemapRecipe gModel_SpecialLightPaletteRemapRecipe;
 
 struct zModel_MaterialSlot {
     zModel_MaterialPartial material;

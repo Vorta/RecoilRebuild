@@ -1,3 +1,6 @@
+#ifndef RECOIL_GAMEZRECOIL_ZGEOMETRY_ZGEOMETRY_H
+#define RECOIL_GAMEZRECOIL_ZGEOMETRY_ZGEOMETRY_H
+
 #pragma once
 
 #include "recoil/recoil_types.h"
@@ -980,3 +983,5 @@ zGeometry_ClipPatchOutputPartial *Create();
 void __fastcall Destroy(zGeometry_ClipPatchOutputPartial *self);
 int __fastcall ApplyNodeDiPairs(zGeometry_ClipPatchOutputPartial *self);
 } // namespace zGeometry_ClipPatchOutput
+
+#endif

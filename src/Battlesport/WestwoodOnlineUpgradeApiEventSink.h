@@ -11,6 +11,7 @@
 
 struct WestwoodOnlineUpgradeDownloadReadyEntry;
 struct WestwoodOnlineUpgradeBrowseRecord;
+struct WestwoodOnlineUpgradeBootstrapServerRecord;
 struct WestwoodOnlineUpgradeSessionRequest;
 
 struct WestwoodOnlineUpgradeApiEventSink : IUnknown {
@@ -22,6 +23,143 @@ struct WestwoodOnlineUpgradeApiEventSink : IUnknown {
     );
     ULONG STDMETHODCALLTYPE AddRef();
     ULONG STDMETHODCALLTYPE Release();
+
+    virtual int STDMETHODCALLTYPE OnBootstrapServerList(
+        int resultCode,
+        WestwoodOnlineUpgradeBootstrapServerRecord *serverList
+    );
+    virtual int STDMETHODCALLTYPE OnDownloadReadyResult(
+        int resultCode,
+        WestwoodOnlineUpgradeDownloadReadyEntry *downloadReadyList
+    );
+    virtual int STDMETHODCALLTYPE OnServerError(
+        int status,
+        const char *errorText
+    );
+    virtual int STDMETHODCALLTYPE OnApiStatus(
+        int statusCode,
+        const char *statusText
+    );
+    virtual int STDMETHODCALLTYPE OnStatusTextReceived(
+        int status,
+        const char *statusText
+    );
+    virtual int STDMETHODCALLTYPE OnBrowseRecordListReceived(
+        int status,
+        WestwoodOnlineUpgradeBrowseRecord *browseRecordList
+    );
+    virtual int STDMETHODCALLTYPE OnBrowseRecordAdded(
+        int status,
+        WestwoodOnlineUpgradeBrowseRecord *browseRecord
+    );
+    virtual int STDMETHODCALLTYPE OnBrowseRecordAndSessionResolved(
+        int status,
+        WestwoodOnlineUpgradeBrowseRecord *browseRecord,
+        WestwoodOnlineUpgradeSessionRequest *sessionRequest
+    );
+    virtual int STDMETHODCALLTYPE OnSessionQueryFinished(
+        int status,
+        WestwoodOnlineUpgradeBrowseRecord *browseRecord,
+        WestwoodOnlineUpgradeSessionRequest *sessionRequest
+    );
+    virtual int STDMETHODCALLTYPE CallbackNoOp0(
+        int reserved0,
+        int reserved1,
+        int reserved2
+    );
+    virtual int STDMETHODCALLTYPE AppendSessionRequestStatus301C_Alt0(
+        int status,
+        WestwoodOnlineUpgradeSessionRequest *sessionRequest,
+        int value
+    );
+    virtual int STDMETHODCALLTYPE AppendSessionRequestStatus301C_Alt1(
+        int status,
+        int reserved,
+        WestwoodOnlineUpgradeSessionRequest *sessionRequest,
+        int value
+    );
+    virtual int STDMETHODCALLTYPE OnSessionListEnumerated(
+        int status,
+        WestwoodOnlineUpgradeBrowseRecord *browseRecord,
+        WestwoodOnlineUpgradeSessionRequest *sessionList
+    );
+    virtual int STDMETHODCALLTYPE AppendSessionRequestStatus301B(
+        int status,
+        int reserved,
+        WestwoodOnlineUpgradeSessionRequest *sessionRequest,
+        const char *statusText
+    );
+    virtual int STDMETHODCALLTYPE AppendSessionRequestStatus301C(
+        int status,
+        WestwoodOnlineUpgradeSessionRequest *sessionRequest,
+        const char *statusText
+    );
+    virtual int STDMETHODCALLTYPE AppendValueStatus3026(
+        int status,
+        int value
+    );
+    virtual int STDMETHODCALLTYPE OnNetworkStatusChanged(
+        int connectionStatusCode
+    );
+    virtual int STDMETHODCALLTYPE OnPendingSessionRequestRemoved(
+        int status,
+        WestwoodOnlineUpgradeSessionRequest *sessionRequest
+    );
+    virtual int STDMETHODCALLTYPE ApplyEncodedQueryString0(
+        int status,
+        int reserved,
+        char *encodedQuery
+    );
+    virtual int STDMETHODCALLTYPE ApplyEncodedQueryString1(
+        int status,
+        int reserved,
+        int reserved2,
+        char *encodedQuery
+    );
+    virtual int STDMETHODCALLTYPE LaunchSelectedSession(
+        int status,
+        int reserved,
+        WestwoodOnlineUpgradeSessionRequest *selectedSessionList,
+        int reserved2
+    );
+    virtual int STDMETHODCALLTYPE OnSessionLaunchResult(
+        int status,
+        WestwoodOnlineUpgradeBrowseRecord *browseRecord,
+        WestwoodOnlineUpgradeSessionRequest *sessionNode,
+        WestwoodOnlineUpgradeSessionRequest *sessionRequest
+    );
+    virtual int STDMETHODCALLTYPE CallbackNoOp1(
+        int reserved0,
+        int reserved1
+    );
+    virtual int STDMETHODCALLTYPE AppendBrowseRecordStatus3022_3025(
+        int status,
+        WestwoodOnlineUpgradeBrowseRecord *browseRecord
+    );
+    virtual int STDMETHODCALLTYPE AppendConnectStatus301E_3021(
+        int connectionStatusCode
+    );
+    virtual int STDMETHODCALLTYPE AppendSessionRequestStatus301D(
+        int status,
+        WestwoodOnlineUpgradeSessionRequest *sessionRequest,
+        const char *statusText
+    );
+    virtual int STDMETHODCALLTYPE AppendTimeStatus302A(
+        int status,
+        long unixTime
+    );
+    virtual int STDMETHODCALLTYPE UpdateSessionResultItemFlags(
+        int status,
+        const char *sessionName,
+        int flags,
+        int reserved
+    );
+    virtual int STDMETHODCALLTYPE AppendValueStatus302B_302C(
+        int reserved,
+        int value,
+        int usePrimaryMessage
+    );
+
     static HRESULT __stdcall CreateInstance(
         WestwoodOnlineUpgradeApiEventSink **outSink
     );
@@ -41,6 +179,11 @@ struct WestwoodOnlineUpgradeApiEventSink : IUnknown {
         void *callbackContext,
         int status,
         WestwoodOnlineUpgradeSessionRequest *sessionRequest
+    );
+    static int __stdcall OnBootstrapServerList(
+        void *callbackContext,
+        int resultCode,
+        WestwoodOnlineUpgradeBootstrapServerRecord *serverList
     );
     static int __stdcall OnServerError(
         void *callbackContext,

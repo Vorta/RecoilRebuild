@@ -1,4 +1,35 @@
 {
   "version": 1,
-  "issues": []
+  "issues": [
+    {
+      "id": "WSI-20260622-001",
+      "status": "resolved",
+      "kind": "improvement",
+      "severity": "medium",
+      "created": "2026-06-22T19:16:09Z",
+      "updated": "2026-06-22T19:27:51Z",
+      "summary": "Need CLI command to update existing plan data-entry shape",
+      "area": "tools/recoil.py",
+      "impact": "Agents cannot safely correct stale Reconstructed data Size/Type metadata without hand-editing .agent/RECOIL_PLAN.md, which AGENTS.md forbids.",
+      "next_action": "Implement focused plan data-shape update command, then correct 0x4dcbfc to size 61/type char[0x3d] and 0x4dcc3c to size 56/type char[0x38].",
+      "commands": [],
+      "files": [],
+      "tags": [],
+      "history": [
+        {
+          "at": "2026-06-22T19:16:09Z",
+          "action": "created",
+          "note": "Issue recorded for future agent tooling/process repair."
+        },
+        {
+          "at": "2026-06-22T19:27:51Z",
+          "action": "resolved",
+          "note": "Fixed by adding plan update-data with evidence and dry-run support for existing data-entry Reconstructed shape fields. Parent validation passed, and 0x4dcbfc/0x4dcc3c were corrected then promoted through the accepted zReader mission path data owner."
+        }
+      ],
+      "requested_change": "Add a plan subcommand that updates an existing canonical data entry's Reconstructed Size and Type fields with evidence and dry-run support, preserving owner/reimplementation metadata and enforcing plan audit.",
+      "benefit": "Allows accepted BN/VC data-symbol evidence such as 0x4dcbfc/0x4dcc3c NUL-inclusive string extents to be recorded without unsafe manual plan edits.",
+      "resolution": "Fixed by adding plan update-data with evidence and dry-run support for existing data-entry Reconstructed shape fields. Parent validation passed, and 0x4dcbfc/0x4dcc3c were corrected then promoted through the accepted zReader mission path data owner."
+    }
+  ]
 }
