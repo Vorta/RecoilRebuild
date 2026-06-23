@@ -58,7 +58,7 @@ int g_zInput_MouseCoopLevelFlags = DISCL_EXCLUSIVE | DISCL_FOREGROUND;
  */
 zInput::JoystickAxisConfig g_zInput_JoystickAxisConfig_Gameplay = {0};
 /**
- * Reimplements data 0x4f33a0: g_zInput_JoystickRawDIState.
+ * Reimplements data 0x566310: g_zInput_JoystickRawDIState.
  * BN types this as the zero-filled DIJOYSTATE2 scratch buffer passed to
  * IDirectInputDevice::GetDeviceState before joystick current-state updates.
  * Purpose: Stores the latest raw DirectInput joystick state read from the provider.
@@ -85,6 +85,647 @@ zInput::MouseStateSnapshot g_zInput_MouseStateSnapshot = {0};
  * Purpose: Preserves the most recent DirectInput mouse poll status.
  */
 int g_zInputMouseLastPollResult = 1;
+/**
+ * Reimplements data 0x4e0904: g_zInput_CommandMapKeyName.
+ * BN types this writable char[0x7] as the "CmdMap" option name passed by
+ * zInput_BindMapContext::InitCommandMap to Options_GetOrCreateOption.
+ * Purpose: Names the persisted command-map option payload.
+ */
+char g_zInput_CommandMapKeyName[7] = "CmdMap";
+/**
+ * Reimplements data 0x4e090c: g_zInput_KeyNameShiftPrefix.
+ * Purpose: Stores the writable Shift modifier prefix for bind-map key names.
+ */
+char g_zInput_KeyNameShiftPrefix[7] = "Shift-";
+/**
+ * Reimplements data 0x4e0914: g_zInput_KeyNameAltPrefix.
+ * Purpose: Stores the writable Alt modifier prefix for bind-map key names.
+ */
+char g_zInput_KeyNameAltPrefix[5] = "Alt-";
+/**
+ * Reimplements data 0x4e091c: g_zInput_KeyNameCtrlPrefix.
+ * Purpose: Stores the writable Ctrl modifier prefix for bind-map key names.
+ */
+char g_zInput_KeyNameCtrlPrefix[6] = "Ctrl-";
+/**
+ * Reimplements data 0x4e0924: g_zInput_KeyNameApps.
+ * Purpose: Stores the writable APPS DIK backing key name.
+ */
+char g_zInput_KeyNameApps[5] = "APPS";
+/**
+ * Reimplements data 0x4e092c: g_zInput_KeyNameRWin.
+ * Purpose: Stores the writable RWIN DIK backing key name.
+ */
+char g_zInput_KeyNameRWin[5] = "RWIN";
+/**
+ * Reimplements data 0x4e0934: g_zInput_KeyNameLWin.
+ * Purpose: Stores the writable LWIN DIK backing key name.
+ */
+char g_zInput_KeyNameLWin[5] = "LWIN";
+/**
+ * Reimplements data 0x4e093c: g_zInput_KeyNameDelete.
+ * Purpose: Stores the writable DELETE DIK backing key name.
+ */
+char g_zInput_KeyNameDelete[7] = "DELETE";
+/**
+ * Reimplements data 0x4e0944: g_zInput_KeyNameInsert.
+ * Purpose: Stores the writable INSERT DIK backing key name.
+ */
+char g_zInput_KeyNameInsert[7] = "INSERT";
+/**
+ * Reimplements data 0x4e094c: g_zInput_KeyNameNext.
+ * Purpose: Stores the writable NEXT DIK backing key name.
+ */
+char g_zInput_KeyNameNext[5] = "NEXT";
+/**
+ * Reimplements data 0x4e0954: g_zInput_KeyNameDown.
+ * Purpose: Stores the writable DOWN DIK backing key name.
+ */
+char g_zInput_KeyNameDown[5] = "DOWN";
+/**
+ * Reimplements data 0x4e095c: g_zInput_KeyNameEnd.
+ * Purpose: Stores the writable END DIK backing key name.
+ */
+char g_zInput_KeyNameEnd[4] = "END";
+/**
+ * Reimplements data 0x4e0970: g_zInput_KeyNamePrior.
+ * Purpose: Stores the writable PRIOR DIK backing key name.
+ */
+char g_zInput_KeyNamePrior[6] = "PRIOR";
+/**
+ * Reimplements data 0x4e0978: g_zInput_KeyNameUp.
+ * Purpose: Stores the writable UP DIK backing key name.
+ */
+char g_zInput_KeyNameUp[3] = "UP";
+/**
+ * Reimplements data 0x4e097c: g_zInput_KeyNameHome.
+ * Purpose: Stores the writable HOME DIK backing key name.
+ */
+char g_zInput_KeyNameHome[5] = "HOME";
+/**
+ * Reimplements data 0x4e0984: g_zInput_KeyNameRMenu.
+ * Purpose: Stores the writable RMENU DIK backing key name.
+ */
+char g_zInput_KeyNameRMenu[6] = "RMENU";
+/**
+ * Reimplements data 0x4e098c: g_zInput_KeyNameSysRq.
+ * Purpose: Stores the writable SYSRQ DIK backing key name.
+ */
+char g_zInput_KeyNameSysRq[6] = "SYSRQ";
+/**
+ * Reimplements data 0x4e0994: g_zInput_KeyNameDivide.
+ * Purpose: Stores the writable DIVIDE DIK backing key name.
+ */
+char g_zInput_KeyNameDivide[7] = "DIVIDE";
+/**
+ * Reimplements data 0x4e099c: g_zInput_KeyNameNumpadComma.
+ * Purpose: Stores the writable NUMPADCOMMA DIK backing key name.
+ */
+char g_zInput_KeyNameNumpadComma[12] = "NUMPADCOMMA";
+/**
+ * Reimplements data 0x4e09a8: g_zInput_KeyNameRControl.
+ * Purpose: Stores the writable RCONTROL DIK backing key name.
+ */
+char g_zInput_KeyNameRControl[9] = "RCONTROL";
+/**
+ * Reimplements data 0x4e09b4: g_zInput_KeyNameNumpadEnter.
+ * Purpose: Stores the writable NUMPADENTER DIK backing key name.
+ */
+char g_zInput_KeyNameNumpadEnter[12] = "NUMPADENTER";
+/**
+ * Reimplements data 0x4e09c0: g_zInput_KeyNameUnlabeled.
+ * Purpose: Stores the writable UNLABELED DIK backing key name.
+ */
+char g_zInput_KeyNameUnlabeled[10] = "UNLABELED";
+/**
+ * Reimplements data 0x4e09cc: g_zInput_KeyNameAx.
+ * Purpose: Stores the writable AX DIK backing key name.
+ */
+char g_zInput_KeyNameAx[3] = "AX";
+/**
+ * Reimplements data 0x4e09d0: g_zInput_KeyNameKanji.
+ * Purpose: Stores the writable KANJI DIK backing key name.
+ */
+char g_zInput_KeyNameKanji[6] = "KANJI";
+/**
+ * Reimplements data 0x4e09d8: g_zInput_KeyNameUnderline.
+ * Purpose: Stores the writable UNDERLINE DIK backing key name.
+ */
+char g_zInput_KeyNameUnderline[10] = "UNDERLINE";
+/**
+ * Reimplements data 0x4e09e4: g_zInput_KeyNameColon.
+ * Purpose: Stores the writable COLON DIK backing key name.
+ */
+char g_zInput_KeyNameColon[6] = "COLON";
+/**
+ * Reimplements data 0x4e09ec: g_zInput_KeyNameAt.
+ * Purpose: Stores the writable AT DIK backing key name.
+ */
+char g_zInput_KeyNameAt[3] = "AT";
+/**
+ * Reimplements data 0x4e09f0: g_zInput_KeyNameCircumflex.
+ * Purpose: Stores the writable CIRCUMFLEX DIK backing key name.
+ */
+char g_zInput_KeyNameCircumflex[11] = "CIRCUMFLEX";
+/**
+ * Reimplements data 0x4e09fc: g_zInput_KeyNameNumpadEquals.
+ * Purpose: Stores the writable NUMPADEQUALS DIK backing key name.
+ */
+char g_zInput_KeyNameNumpadEquals[13] = "NUMPADEQUALS";
+/**
+ * Reimplements data 0x4e0a0c: g_zInput_KeyNameYen.
+ * Purpose: Stores the writable YEN DIK backing key name.
+ */
+char g_zInput_KeyNameYen[4] = "YEN";
+/**
+ * Reimplements data 0x4e0a10: g_zInput_KeyNameNoConvert.
+ * Purpose: Stores the writable NOCONVERT DIK backing key name.
+ */
+char g_zInput_KeyNameNoConvert[10] = "NOCONVERT";
+/**
+ * Reimplements data 0x4e0a1c: g_zInput_KeyNameConvert.
+ * Purpose: Stores the writable CONVERT DIK backing key name.
+ */
+char g_zInput_KeyNameConvert[8] = "CONVERT";
+/**
+ * Reimplements data 0x4e0a24: g_zInput_KeyNameKana.
+ * Purpose: Stores the writable KANA DIK backing key name.
+ */
+char g_zInput_KeyNameKana[5] = "KANA";
+/**
+ * Reimplements data 0x4e0a2c: g_zInput_KeyNameF15.
+ * Purpose: Stores the writable F15 DIK backing key name.
+ */
+char g_zInput_KeyNameF15[4] = "F15";
+/**
+ * Reimplements data 0x4e0a30: g_zInput_KeyNameF14.
+ * Purpose: Stores the writable F14 DIK backing key name.
+ */
+char g_zInput_KeyNameF14[4] = "F14";
+/**
+ * Reimplements data 0x4e0a34: g_zInput_KeyNameF13.
+ * Purpose: Stores the writable F13 DIK backing key name.
+ */
+char g_zInput_KeyNameF13[4] = "F13";
+/**
+ * Reimplements data 0x4e0a38: g_zInput_KeyNameF12.
+ * Purpose: Stores the writable F12 DIK backing key name.
+ */
+char g_zInput_KeyNameF12[4] = "F12";
+/**
+ * Reimplements data 0x4e0a3c: g_zInput_KeyNameF11.
+ * Purpose: Stores the writable F11 DIK backing key name.
+ */
+char g_zInput_KeyNameF11[4] = "F11";
+/**
+ * Reimplements data 0x4e0a40: g_zInput_KeyNameDecimal.
+ * Purpose: Stores the writable DECIMAL DIK backing key name.
+ */
+char g_zInput_KeyNameDecimal[8] = "DECIMAL";
+/**
+ * Reimplements data 0x4e0a48: g_zInput_KeyNameNumpad0.
+ * Purpose: Stores the writable NUMPAD0 DIK backing key name.
+ */
+char g_zInput_KeyNameNumpad0[8] = "NUMPAD0";
+/**
+ * Reimplements data 0x4e0a50: g_zInput_KeyNameNumpad3.
+ * Purpose: Stores the writable NUMPAD3 DIK backing key name.
+ */
+char g_zInput_KeyNameNumpad3[8] = "NUMPAD3";
+/**
+ * Reimplements data 0x4e0a58: g_zInput_KeyNameNumpad2.
+ * Purpose: Stores the writable NUMPAD2 DIK backing key name.
+ */
+char g_zInput_KeyNameNumpad2[8] = "NUMPAD2";
+/**
+ * Reimplements data 0x4e0a60: g_zInput_KeyNameNumpad1.
+ * Purpose: Stores the writable NUMPAD1 DIK backing key name.
+ */
+char g_zInput_KeyNameNumpad1[8] = "NUMPAD1";
+/**
+ * Reimplements data 0x4e0a68: g_zInput_KeyNameAdd.
+ * Purpose: Stores the writable ADD DIK backing key name.
+ */
+char g_zInput_KeyNameAdd[4] = "ADD";
+/**
+ * Reimplements data 0x4e0a6c: g_zInput_KeyNameNumpad6.
+ * Purpose: Stores the writable NUMPAD6 DIK backing key name.
+ */
+char g_zInput_KeyNameNumpad6[8] = "NUMPAD6";
+/**
+ * Reimplements data 0x4e0a74: g_zInput_KeyNameNumpad5.
+ * Purpose: Stores the writable NUMPAD5 DIK backing key name.
+ */
+char g_zInput_KeyNameNumpad5[8] = "NUMPAD5";
+/**
+ * Reimplements data 0x4e0a7c: g_zInput_KeyNameNumpad4.
+ * Purpose: Stores the writable NUMPAD4 DIK backing key name.
+ */
+char g_zInput_KeyNameNumpad4[8] = "NUMPAD4";
+/**
+ * Reimplements data 0x4e0a84: g_zInput_KeyNameSubtract.
+ * Purpose: Stores the writable SUBTRACT DIK backing key name.
+ */
+char g_zInput_KeyNameSubtract[9] = "SUBTRACT";
+/**
+ * Reimplements data 0x4e0a90: g_zInput_KeyNameNumpad9.
+ * Purpose: Stores the writable NUMPAD9 DIK backing key name.
+ */
+char g_zInput_KeyNameNumpad9[8] = "NUMPAD9";
+/**
+ * Reimplements data 0x4e0a98: g_zInput_KeyNameNumpad8.
+ * Purpose: Stores the writable NUMPAD8 DIK backing key name.
+ */
+char g_zInput_KeyNameNumpad8[8] = "NUMPAD8";
+/**
+ * Reimplements data 0x4e0aa0: g_zInput_KeyNameNumpad7.
+ * Purpose: Stores the writable NUMPAD7 DIK backing key name.
+ */
+char g_zInput_KeyNameNumpad7[8] = "NUMPAD7";
+/**
+ * Reimplements data 0x4e0aa8: g_zInput_KeyNameScroll.
+ * Purpose: Stores the writable SCROLL DIK backing key name.
+ */
+char g_zInput_KeyNameScroll[7] = "SCROLL";
+/**
+ * Reimplements data 0x4e0ab0: g_zInput_KeyNameNumLock.
+ * Purpose: Stores the writable NUMLOCK DIK backing key name.
+ */
+char g_zInput_KeyNameNumLock[8] = "NUMLOCK";
+/**
+ * Reimplements data 0x4e0ab8: g_zInput_KeyNameF10.
+ * Purpose: Stores the writable F10 DIK backing key name.
+ */
+char g_zInput_KeyNameF10[4] = "F10";
+/**
+ * Reimplements data 0x4e0abc: g_zInput_KeyNameF9.
+ * Purpose: Stores the writable F9 DIK backing key name.
+ */
+char g_zInput_KeyNameF9[3] = "F9";
+/**
+ * Reimplements data 0x4e0ac0: g_zInput_KeyNameF8.
+ * Purpose: Stores the writable F8 DIK backing key name.
+ */
+char g_zInput_KeyNameF8[3] = "F8";
+/**
+ * Reimplements data 0x4e0ac4: g_zInput_KeyNameF7.
+ * Purpose: Stores the writable F7 DIK backing key name.
+ */
+char g_zInput_KeyNameF7[3] = "F7";
+/**
+ * Reimplements data 0x4e0ac8: g_zInput_KeyNameF6.
+ * Purpose: Stores the writable F6 DIK backing key name.
+ */
+char g_zInput_KeyNameF6[3] = "F6";
+/**
+ * Reimplements data 0x4e0acc: g_zInput_KeyNameF5.
+ * Purpose: Stores the writable F5 DIK backing key name.
+ */
+char g_zInput_KeyNameF5[3] = "F5";
+/**
+ * Reimplements data 0x4e0ad0: g_zInput_KeyNameF4.
+ * Purpose: Stores the writable F4 DIK backing key name.
+ */
+char g_zInput_KeyNameF4[3] = "F4";
+/**
+ * Reimplements data 0x4e0ad4: g_zInput_KeyNameF3.
+ * Purpose: Stores the writable F3 DIK backing key name.
+ */
+char g_zInput_KeyNameF3[3] = "F3";
+/**
+ * Reimplements data 0x4e0ad8: g_zInput_KeyNameF2.
+ * Purpose: Stores the writable F2 DIK backing key name.
+ */
+char g_zInput_KeyNameF2[3] = "F2";
+/**
+ * Reimplements data 0x4e0adc: g_zInput_KeyNameF1.
+ * Purpose: Stores the writable F1 DIK backing key name.
+ */
+char g_zInput_KeyNameF1[3] = "F1";
+/**
+ * Reimplements data 0x4e0ae0: g_zInput_KeyNameCapital.
+ * Purpose: Stores the writable CAPITAL DIK backing key name.
+ */
+char g_zInput_KeyNameCapital[8] = "CAPITAL";
+/**
+ * Reimplements data 0x4e0ae8: g_zInput_KeyNameSpace.
+ * Purpose: Stores the writable SPACE DIK backing key name.
+ */
+char g_zInput_KeyNameSpace[6] = "SPACE";
+/**
+ * Reimplements data 0x4e0af0: g_zInput_KeyNameLMenu.
+ * Purpose: Stores the writable LMENU DIK backing key name.
+ */
+char g_zInput_KeyNameLMenu[6] = "LMENU";
+/**
+ * Reimplements data 0x4e0af8: g_zInput_KeyNameMultiply.
+ * Purpose: Stores the writable MULTIPLY DIK backing key name.
+ */
+char g_zInput_KeyNameMultiply[9] = "MULTIPLY";
+/**
+ * Reimplements data 0x4e0b04: g_zInput_KeyNameRShift.
+ * Purpose: Stores the writable RSHIFT DIK backing key name.
+ */
+char g_zInput_KeyNameRShift[7] = "RSHIFT";
+/**
+ * Reimplements data 0x4e0b0c: g_zInput_KeyNameSlash.
+ * Purpose: Stores the writable SLASH DIK backing key name.
+ */
+char g_zInput_KeyNameSlash[6] = "SLASH";
+/**
+ * Reimplements data 0x4e0b14: g_zInput_KeyNamePeriod.
+ * Purpose: Stores the writable PERIOD DIK backing key name.
+ */
+char g_zInput_KeyNamePeriod[7] = "PERIOD";
+/**
+ * Reimplements data 0x4e0b1c: g_zInput_KeyNameComma.
+ * Purpose: Stores the writable COMMA DIK backing key name.
+ */
+char g_zInput_KeyNameComma[6] = "COMMA";
+/**
+ * Reimplements data 0x4e0b24: g_zInput_KeyCharRow_MNBVCXZ.
+ * BN types this as seven 4-byte-aligned writable one-character DIK name slots.
+ * Purpose: Stores folded one-character Z/X/C/V/B/N/M key names.
+ */
+unsigned int g_zInput_KeyCharRow_MNBVCXZ[7] = {
+    'M',
+    'N',
+    'B',
+    'V',
+    'C',
+    'X',
+    'Z'
+};
+/**
+ * Reimplements data 0x4e0b40: g_zInput_KeyNameBackslash.
+ * Purpose: Stores the writable BACKSLASH DIK backing key name.
+ */
+char g_zInput_KeyNameBackslash[10] = "BACKSLASH";
+/**
+ * Reimplements data 0x4e0b4c: g_zInput_KeyNameLShift.
+ * Purpose: Stores the writable LSHIFT DIK backing key name.
+ */
+char g_zInput_KeyNameLShift[7] = "LSHIFT";
+/**
+ * Reimplements data 0x4e0b54: g_zInput_KeyNameGrave.
+ * Purpose: Stores the writable GRAVE DIK backing key name.
+ */
+char g_zInput_KeyNameGrave[6] = "GRAVE";
+/**
+ * Reimplements data 0x4e0b5c: g_zInput_KeyNameApostrophe.
+ * Purpose: Stores the writable APOSTROPHE DIK backing key name.
+ */
+char g_zInput_KeyNameApostrophe[11] = "APOSTROPHE";
+/**
+ * Reimplements data 0x4e0b68: g_zInput_KeyNameSemicolon.
+ * Purpose: Stores the writable SEMICOLON DIK backing key name.
+ */
+char g_zInput_KeyNameSemicolon[10] = "SEMICOLON";
+/**
+ * Reimplements data 0x4e0b74: g_zInput_KeyCharRow_LKJHGFDSA.
+ * BN types this as nine 4-byte-aligned writable one-character DIK name slots.
+ * Purpose: Stores folded one-character A/S/D/F/G/H/J/K/L key names.
+ */
+unsigned int g_zInput_KeyCharRow_LKJHGFDSA[9] = {
+    'L',
+    'K',
+    'J',
+    'H',
+    'G',
+    'F',
+    'D',
+    'S',
+    'A'
+};
+/**
+ * Reimplements data 0x4e0b98: g_zInput_KeyNameLControl.
+ * Purpose: Stores the writable LCONTROL DIK backing key name.
+ */
+char g_zInput_KeyNameLControl[9] = "LCONTROL";
+/**
+ * Reimplements data 0x4e0ba4: g_zInput_KeyNameReturn.
+ * Purpose: Stores the writable RETURN DIK backing key name.
+ */
+char g_zInput_KeyNameReturn[7] = "RETURN";
+/**
+ * Reimplements data 0x4e0bac: g_zInput_KeyNameRBracket.
+ * Purpose: Stores the writable RBRACKET DIK backing key name.
+ */
+char g_zInput_KeyNameRBracket[9] = "RBRACKET";
+/**
+ * Reimplements data 0x4e0bb8: g_zInput_KeyNameLBracket.
+ * Purpose: Stores the writable LBRACKET DIK backing key name.
+ */
+char g_zInput_KeyNameLBracket[9] = "LBRACKET";
+/**
+ * Reimplements data 0x4e0bc4: g_zInput_KeyCharRow_POIUYTREWQ.
+ * BN types this as ten 4-byte-aligned writable one-character DIK name slots.
+ * Purpose: Stores folded one-character Q/W/E/R/T/Y/U/I/O/P key names.
+ */
+unsigned int g_zInput_KeyCharRow_POIUYTREWQ[10] = {
+    'P',
+    'O',
+    'I',
+    'U',
+    'Y',
+    'T',
+    'R',
+    'E',
+    'W',
+    'Q'
+};
+/**
+ * Reimplements data 0x4e0bec: g_zInput_KeyNameTab.
+ * Purpose: Stores the writable TAB DIK backing key name.
+ */
+char g_zInput_KeyNameTab[4] = "TAB";
+/**
+ * Reimplements data 0x4e0bf0: g_zInput_KeyNameEquals.
+ * Purpose: Stores the writable EQUALS DIK backing key name.
+ */
+char g_zInput_KeyNameEquals[7] = "EQUALS";
+/**
+ * Reimplements data 0x4e0bf8: g_zInput_KeyNameMinus.
+ * Purpose: Stores the writable MINUS DIK backing key name.
+ */
+char g_zInput_KeyNameMinus[6] = "MINUS";
+/**
+ * Reimplements data 0x4e0c00: g_zInput_KeyCharRow_0987653.
+ * BN types this as seven 4-byte-aligned writable one-character DIK name slots.
+ * Purpose: Stores folded one-character 3/5/6/7/8/9/0 key names.
+ */
+unsigned int g_zInput_KeyCharRow_0987653[7] = {
+    '0',
+    '9',
+    '8',
+    '7',
+    '6',
+    '5',
+    '3'
+};
+/**
+ * Reimplements data 0x4e0c1c: g_zInput_KeyNameEscape.
+ * Purpose: Stores the writable ESCAPE DIK backing key name.
+ */
+char g_zInput_KeyNameEscape[7] = "ESCAPE";
+/**
+ * Reimplements data 0x4e0c24: g_zInput_JoystickButtonName8.
+ * Purpose: Stores the writable joystick Button 8 bind-map name.
+ */
+char g_zInput_JoystickButtonName8[9] = "Button 8";
+/**
+ * Reimplements data 0x4e0c30: g_zInput_JoystickButtonName7.
+ * Purpose: Stores the writable joystick Button 7 bind-map name.
+ */
+char g_zInput_JoystickButtonName7[9] = "Button 7";
+/**
+ * Reimplements data 0x4e0c3c: g_zInput_JoystickButtonName6.
+ * Purpose: Stores the writable joystick Button 6 bind-map name.
+ */
+char g_zInput_JoystickButtonName6[9] = "Button 6";
+/**
+ * Reimplements data 0x4e0c48: g_zInput_JoystickButtonName5.
+ * Purpose: Stores the writable joystick Button 5 bind-map name.
+ */
+char g_zInput_JoystickButtonName5[9] = "Button 5";
+/**
+ * Reimplements data 0x4e0c54: g_zInput_JoystickButtonName4.
+ * Purpose: Stores the writable joystick Button 4 bind-map name.
+ */
+char g_zInput_JoystickButtonName4[9] = "Button 4";
+/**
+ * Reimplements data 0x4e0c60: g_zInput_JoystickButtonName3.
+ * Purpose: Stores the writable joystick Button 3 bind-map name.
+ */
+char g_zInput_JoystickButtonName3[9] = "Button 3";
+/**
+ * Reimplements data 0x4e0c6c: g_zInput_JoystickButtonName2.
+ * Purpose: Stores the writable joystick Button 2 bind-map name.
+ */
+char g_zInput_JoystickButtonName2[9] = "Button 2";
+/**
+ * Reimplements data 0x4e0c78: g_zInput_JoystickButtonName1.
+ * Purpose: Stores the writable joystick Button 1 bind-map name.
+ */
+char g_zInput_JoystickButtonName1[9] = "Button 1";
+/**
+ * Reimplements data 0x4e0c84: g_zInput_MouseButtonNameMiddle.
+ * Purpose: Stores the writable mouse Middle bind-map name.
+ */
+char g_zInput_MouseButtonNameMiddle[7] = "Middle";
+/**
+ * Reimplements data 0x4e0c8c: g_zInput_MouseButtonNameRight.
+ * Purpose: Stores the writable mouse Right bind-map name.
+ */
+char g_zInput_MouseButtonNameRight[6] = "Right";
+/**
+ * Reimplements data 0x4e0c94: g_zInput_MouseButtonNameLeft.
+ * Purpose: Stores the writable mouse Left bind-map name.
+ */
+char g_zInput_MouseButtonNameLeft[5] = "Left";
+/**
+ * Reimplements data 0x4e0c9c: g_zInput_SourceFile_ZinInitCpp.
+ * BN types this writable char[0x28] as the zin_init.cpp source-path literal
+ * passed to DI_ReportError when DirectInputCreateA fails.
+ * Purpose: Supplies the original init source-file path for diagnostics.
+ */
+char g_zInput_SourceFile_ZinInitCpp[0x28] =
+    "D:\\Proj\\GameZRecoil\\zInput\\zin_init.cpp";
+/**
+ * Reimplements data 0x4e0cc4: g_zInput_DirectInputErrorFmt.
+ * Purpose: Stores the writable DirectInput error report format string.
+ */
+char g_zInput_DirectInputErrorFmt[0x18] = "DirectInput Error [%s]\n";
+/**
+ * Reimplements data 0x4e0cdc: g_zInput_DiErrorName_AlreadyInitialized.
+ * Purpose: Stores the writable DIERR_ALREADYINITIALIZED diagnostic name.
+ */
+char g_zInput_DiErrorName_AlreadyInitialized[0x19] =
+    "DIERR_ALREADYINITIALIZED";
+/**
+ * Reimplements data 0x4e0cf8: g_zInput_DiErrorName_BetaDirectInputVersion.
+ * Purpose: Stores the writable DIERR_BETADIRECTINPUTVERSION diagnostic name.
+ */
+char g_zInput_DiErrorName_BetaDirectInputVersion[0x1d] =
+    "DIERR_BETADIRECTINPUTVERSION";
+/**
+ * Reimplements data 0x4e0d18: g_zInput_DiErrorName_OldDirectInputVersion.
+ * Purpose: Stores the writable DIERR_OLDDIRECTINPUTVERSION diagnostic name.
+ */
+char g_zInput_DiErrorName_OldDirectInputVersion[0x1c] =
+    "DIERR_OLDDIRECTINPUTVERSION";
+/**
+ * Reimplements data 0x4e0d34: g_zInput_DiErrorName_Acquired.
+ * Purpose: Stores the writable DIERR_ACQUIRED diagnostic name.
+ */
+char g_zInput_DiErrorName_Acquired[0x0f] = "DIERR_ACQUIRED";
+/**
+ * Reimplements data 0x4e0d44: g_zInput_DiErrorName_BadDriverVersion.
+ * Purpose: Stores the writable DIERR_BADDRIVERVER diagnostic name.
+ */
+char g_zInput_DiErrorName_BadDriverVersion[0x13] = "DIERR_BADDRIVERVER";
+/**
+ * Reimplements data 0x4e0d58: g_zInput_DiErrorName_InvalidParam.
+ * Purpose: Stores the writable DIERR_INVALIDPARAM diagnostic name.
+ */
+char g_zInput_DiErrorName_InvalidParam[0x13] = "DIERR_INVALIDPARAM";
+/**
+ * Reimplements data 0x4e0d6c: g_zInput_DiErrorName_InputLost.
+ * Purpose: Stores the writable DIERR_INPUTLOST diagnostic name.
+ */
+char g_zInput_DiErrorName_InputLost[0x10] = "DIERR_INPUTLOST";
+/**
+ * Reimplements data 0x4e0d7c: g_zInput_DiErrorName_NotInitialized.
+ * Purpose: Stores the writable DIERR_NOTINITIALIZED diagnostic name.
+ */
+char g_zInput_DiErrorName_NotInitialized[0x15] =
+    "DIERR_NOTINITIALIZED";
+/**
+ * Reimplements data 0x4e0d94: g_zInput_DiErrorName_OutOfMemory.
+ * Purpose: Stores the writable DIERR_OUTOFMEMORY diagnostic name.
+ */
+char g_zInput_DiErrorName_OutOfMemory[0x12] = "DIERR_OUTOFMEMORY";
+/**
+ * Reimplements data 0x4e0da8: g_zInput_DiErrorName_NotAcquired.
+ * Purpose: Stores the writable DIERR_NOTACQUIRED diagnostic name.
+ */
+char g_zInput_DiErrorName_NotAcquired[0x12] = "DIERR_NOTACQUIRED";
+/**
+ * Reimplements data 0x4e0dbc: g_zInput_DiErrorName_ReadOnly.
+ * Purpose: Stores the writable DIERR_READONLY diagnostic name.
+ */
+char g_zInput_DiErrorName_ReadOnly[0x0f] = "DIERR_READONLY";
+/**
+ * Reimplements data 0x4e0dcc: g_zInput_DiErrorName_ObjectNotFound.
+ * Purpose: Stores the writable DIERR_OBJECTNOTFOUND diagnostic name.
+ */
+char g_zInput_DiErrorName_ObjectNotFound[0x15] =
+    "DIERR_OBJECTNOTFOUND";
+/**
+ * Reimplements data 0x4e0de4: g_zInput_DiErrorName_DeviceNotReg.
+ * Purpose: Stores the writable DIERR_DEVICENOTREG diagnostic name.
+ */
+char g_zInput_DiErrorName_DeviceNotReg[0x13] = "DIERR_DEVICENOTREG";
+/**
+ * Reimplements data 0x4e0df8: g_zInput_DiErrorName_NoAggregation.
+ * Purpose: Stores the writable DIERR_NOAGGREGATION diagnostic name.
+ */
+char g_zInput_DiErrorName_NoAggregation[0x14] = "DIERR_NOAGGREGATION";
+/**
+ * Reimplements data 0x4e0e0c: g_zInput_DiErrorName_Unsupported.
+ * Purpose: Stores the writable DIERR_UNSUPPORTED diagnostic name.
+ */
+char g_zInput_DiErrorName_Unsupported[0x12] = "DIERR_UNSUPPORTED";
+/**
+ * Reimplements data 0x4e0e20: g_zInput_DiErrorName_NoInterface.
+ * Purpose: Stores the writable DIERR_NOINTERFACE diagnostic name.
+ */
+char g_zInput_DiErrorName_NoInterface[0x12] = "DIERR_NOINTERFACE";
+/**
+ * Reimplements data 0x4e0e34: g_zInput_DiErrorName_Generic.
+ * Purpose: Stores the writable DIERR_GENERIC diagnostic name.
+ */
+char g_zInput_DiErrorName_Generic[0x0e] = "DIERR_GENERIC";
 /**
  * Reimplements data 0x561c78: g_zInput_MouseClientWidth.
  * BN types this as the zero-filled client-width word used by mouse
@@ -127,6 +768,14 @@ float g_zInput_MouseInvClientCenterX = 0.0f;
  * Purpose: Converts client-space vertical mouse deltas and positions.
  */
 float g_zInput_MouseInvClientCenterY = 0.0f;
+/**
+ * Reimplements data 0x4e08cc: g_zInput_SourceFile_ZinKbdCpp.
+ * BN types this writable char[0x27] as the zin_kbd.cpp source-path literal
+ * passed to DI_ReportError by keyboard DirectInput failure paths.
+ * Purpose: Supplies the original keyboard source-file path for diagnostics.
+ */
+char g_zInput_SourceFile_ZinKbdCpp[0x27] =
+    "D:\\Proj\\GameZRecoil\\zInput\\zin_kbd.cpp";
 /**
  * Reimplements data 0x4e08f4: g_zInput_MouseSensitivityX.
  * BN stores this initialized float as 1.3 and Mouse_ApplyAccumulatedDelta uses
@@ -454,7 +1103,7 @@ void zInput_BindMapContext::InitCommandMap(
     m_commandCount = commandCount;
     zOptionEntryPartial *option =
         zGame::Options_GetOrCreateOption(
-            "CmdMap",
+            g_zInput_CommandMapKeyName,
             7,
             commandCount * (int)(sizeof(int)),
             1
@@ -1561,8 +2210,6 @@ const int kDiFalse = 1;
 const int kDiInputLost = (int)(0x8007001e);
 const unsigned char kSuspendFlag = 2;
 const unsigned int kDirectInputVersion = 0x500;
-const char kZInputInitSourceFile[] = "D:\\Proj\\GameZRecoil\\zInput\\zin_init.cpp";
-const char kZInputKeyboardSourceFile[] = "D:\\Proj\\GameZRecoil\\zInput\\zin_kbd.cpp";
 
 struct DipropDwordInit {
     unsigned int dwSize;
@@ -1788,97 +2435,97 @@ RECOIL_NO_GS int __fastcall DI_ReportError(
 dierrGeneric:
     sprintf(
         errorNameBuffer,
-        "DIERR_GENERIC"
+        g_zInput_DiErrorName_Generic
     );
     goto reportError;
 dierrNoInterface:
     sprintf(
         errorNameBuffer,
-        "DIERR_NOINTERFACE"
+        g_zInput_DiErrorName_NoInterface
     );
     goto reportError;
 dierrUnsupported:
     sprintf(
         errorNameBuffer,
-        "DIERR_UNSUPPORTED"
+        g_zInput_DiErrorName_Unsupported
     );
     goto reportError;
 dierrNoAggregation:
     sprintf(
         errorNameBuffer,
-        "DIERR_NOAGGREGATION"
+        g_zInput_DiErrorName_NoAggregation
     );
     goto reportError;
 dierrDeviceNotReg:
     sprintf(
         errorNameBuffer,
-        "DIERR_DEVICENOTREG"
+        g_zInput_DiErrorName_DeviceNotReg
     );
     goto reportError;
 dierrObjectNotFound:
     sprintf(
         errorNameBuffer,
-        "DIERR_OBJECTNOTFOUND"
+        g_zInput_DiErrorName_ObjectNotFound
     );
     goto reportError;
 dierrReadOnly:
     sprintf(
         errorNameBuffer,
-        "DIERR_READONLY"
+        g_zInput_DiErrorName_ReadOnly
     );
     goto reportError;
 dierrNotAcquired:
     sprintf(
         errorNameBuffer,
-        "DIERR_NOTACQUIRED"
+        g_zInput_DiErrorName_NotAcquired
     );
     goto reportError;
 dierrOutOfMemory:
     sprintf(
         errorNameBuffer,
-        "DIERR_OUTOFMEMORY"
+        g_zInput_DiErrorName_OutOfMemory
     );
     goto reportError;
 dierrNotInitialized:
     sprintf(
         errorNameBuffer,
-        "DIERR_NOTINITIALIZED"
+        g_zInput_DiErrorName_NotInitialized
     );
     goto reportError;
 dierrInputLost:
     sprintf(
         errorNameBuffer,
-        "DIERR_INPUTLOST"
+        g_zInput_DiErrorName_InputLost
     );
     goto reportError;
 dierrInvalidParam:
     sprintf(
         errorNameBuffer,
-        "DIERR_INVALIDPARAM"
+        g_zInput_DiErrorName_InvalidParam
     );
     goto reportError;
 dierrBadDriverVer:
     sprintf(
         errorNameBuffer,
-        "DIERR_BADDRIVERVER"
+        g_zInput_DiErrorName_BadDriverVersion
     );
     goto reportError;
 dierrAcquired:
     sprintf(
         errorNameBuffer,
-        "DIERR_ACQUIRED"
+        g_zInput_DiErrorName_Acquired
     );
     goto reportError;
 dierrOldDirectInputVersion:
     sprintf(
         errorNameBuffer,
-        "DIERR_OLDDIRECTINPUTVERSION"
+        g_zInput_DiErrorName_OldDirectInputVersion
     );
     goto reportError;
 dierrBetaDirectInputVersion:
     sprintf(
         errorNameBuffer,
-        "DIERR_BETADIRECTINPUTVERSION"
+        g_zInput_DiErrorName_BetaDirectInputVersion
     );
     goto reportError;
 unknownError:
@@ -1892,7 +2539,7 @@ diOk:
 dierrAlreadyInitialized:
     sprintf(
         errorNameBuffer,
-        "DIERR_ALREADYINITIALIZED"
+        g_zInput_DiErrorName_AlreadyInitialized
     );
 
 reportError:
@@ -1900,7 +2547,7 @@ reportError:
         0x800,
         sourceFile,
         sourceLine,
-        "DirectInput Error [%s]\n",
+        g_zInput_DirectInputErrorFmt,
         errorNameBuffer
     );
     return 0;
@@ -1913,126 +2560,126 @@ reportError:
  * Purpose: Populate the DirectInput key-name lookup table used by bind-map UI.
  */
 void BindMap_InitDikKeyNameTable() {
-    g_zInput_DikKeyNames[1] = "ESCAPE";
+    g_zInput_DikKeyNames[1] = g_zInput_KeyNameEscape;
     g_zInput_DikKeyNames[2] = "1";
     g_zInput_DikKeyNames[3] = "2";
-    g_zInput_DikKeyNames[4] = "3";
+    g_zInput_DikKeyNames[4] = (const char *)&g_zInput_KeyCharRow_0987653[6];
     g_zInput_DikKeyNames[5] = "4";
-    g_zInput_DikKeyNames[6] = "5";
-    g_zInput_DikKeyNames[7] = "6";
-    g_zInput_DikKeyNames[8] = "7";
-    g_zInput_DikKeyNames[9] = "8";
-    g_zInput_DikKeyNames[0x0a] = "9";
-    g_zInput_DikKeyNames[0x0b] = "0";
-    g_zInput_DikKeyNames[0x0c] = "MINUS";
-    g_zInput_DikKeyNames[0x0d] = "EQUALS";
+    g_zInput_DikKeyNames[6] = (const char *)&g_zInput_KeyCharRow_0987653[5];
+    g_zInput_DikKeyNames[7] = (const char *)&g_zInput_KeyCharRow_0987653[4];
+    g_zInput_DikKeyNames[8] = (const char *)&g_zInput_KeyCharRow_0987653[3];
+    g_zInput_DikKeyNames[9] = (const char *)&g_zInput_KeyCharRow_0987653[2];
+    g_zInput_DikKeyNames[0x0a] = (const char *)&g_zInput_KeyCharRow_0987653[1];
+    g_zInput_DikKeyNames[0x0b] = (const char *)&g_zInput_KeyCharRow_0987653[0];
+    g_zInput_DikKeyNames[0x0c] = g_zInput_KeyNameMinus;
+    g_zInput_DikKeyNames[0x0d] = g_zInput_KeyNameEquals;
     g_zInput_DikKeyNames[0x0e] = "BACK";
-    g_zInput_DikKeyNames[0x0f] = "TAB";
-    g_zInput_DikKeyNames[0x10] = "Q";
-    g_zInput_DikKeyNames[0x11] = "W";
-    g_zInput_DikKeyNames[0x12] = "E";
-    g_zInput_DikKeyNames[0x13] = "R";
-    g_zInput_DikKeyNames[0x14] = "T";
-    g_zInput_DikKeyNames[0x15] = "Y";
-    g_zInput_DikKeyNames[0x16] = "U";
-    g_zInput_DikKeyNames[0x17] = "I";
-    g_zInput_DikKeyNames[0x18] = "O";
-    g_zInput_DikKeyNames[0x19] = "P";
+    g_zInput_DikKeyNames[0x0f] = g_zInput_KeyNameTab;
+    g_zInput_DikKeyNames[0x10] = (const char *)&g_zInput_KeyCharRow_POIUYTREWQ[9];
+    g_zInput_DikKeyNames[0x11] = (const char *)&g_zInput_KeyCharRow_POIUYTREWQ[8];
+    g_zInput_DikKeyNames[0x12] = (const char *)&g_zInput_KeyCharRow_POIUYTREWQ[7];
+    g_zInput_DikKeyNames[0x13] = (const char *)&g_zInput_KeyCharRow_POIUYTREWQ[6];
+    g_zInput_DikKeyNames[0x14] = (const char *)&g_zInput_KeyCharRow_POIUYTREWQ[5];
+    g_zInput_DikKeyNames[0x15] = (const char *)&g_zInput_KeyCharRow_POIUYTREWQ[4];
+    g_zInput_DikKeyNames[0x16] = (const char *)&g_zInput_KeyCharRow_POIUYTREWQ[3];
+    g_zInput_DikKeyNames[0x17] = (const char *)&g_zInput_KeyCharRow_POIUYTREWQ[2];
+    g_zInput_DikKeyNames[0x18] = (const char *)&g_zInput_KeyCharRow_POIUYTREWQ[1];
+    g_zInput_DikKeyNames[0x19] = (const char *)&g_zInput_KeyCharRow_POIUYTREWQ[0];
     g_zInput_DikKeyNames[0x1a] = "LBRACKET";
     g_zInput_DikKeyNames[0x1b] = "RBRACKET";
     g_zInput_DikKeyNames[0x1c] = "RETURN";
     g_zInput_DikKeyNames[0x1d] = "LCONTROL";
-    g_zInput_DikKeyNames[0x1e] = "A";
-    g_zInput_DikKeyNames[0x1f] = "S";
-    g_zInput_DikKeyNames[0x20] = "D";
-    g_zInput_DikKeyNames[0x21] = "F";
-    g_zInput_DikKeyNames[0x22] = "G";
-    g_zInput_DikKeyNames[0x23] = "H";
-    g_zInput_DikKeyNames[0x24] = "J";
-    g_zInput_DikKeyNames[0x25] = "K";
-    g_zInput_DikKeyNames[0x26] = "L";
-    g_zInput_DikKeyNames[0x27] = "SEMICOLON";
-    g_zInput_DikKeyNames[0x28] = "APOSTROPHE";
-    g_zInput_DikKeyNames[0x29] = "GRAVE";
-    g_zInput_DikKeyNames[0x2a] = "LSHIFT";
-    g_zInput_DikKeyNames[0x2b] = "BACKSLASH";
-    g_zInput_DikKeyNames[0x2c] = "Z";
-    g_zInput_DikKeyNames[0x2d] = "X";
-    g_zInput_DikKeyNames[0x2e] = "C";
-    g_zInput_DikKeyNames[0x2f] = "V";
-    g_zInput_DikKeyNames[0x30] = "B";
-    g_zInput_DikKeyNames[0x31] = "N";
-    g_zInput_DikKeyNames[0x32] = "M";
-    g_zInput_DikKeyNames[0x33] = "COMMA";
-    g_zInput_DikKeyNames[0x34] = "PERIOD";
-    g_zInput_DikKeyNames[0x35] = "SLASH";
-    g_zInput_DikKeyNames[0x36] = "RSHIFT";
-    g_zInput_DikKeyNames[0x37] = "MULTIPLY";
-    g_zInput_DikKeyNames[0x38] = "LMENU";
-    g_zInput_DikKeyNames[0x39] = "SPACE";
-    g_zInput_DikKeyNames[0x3a] = "CAPITAL";
-    g_zInput_DikKeyNames[0x3b] = "F1";
-    g_zInput_DikKeyNames[0x3c] = "F2";
-    g_zInput_DikKeyNames[0x3d] = "F3";
-    g_zInput_DikKeyNames[0x3e] = "F4";
-    g_zInput_DikKeyNames[0x3f] = "F5";
-    g_zInput_DikKeyNames[0x40] = "F6";
-    g_zInput_DikKeyNames[0x41] = "F7";
-    g_zInput_DikKeyNames[0x42] = "F8";
-    g_zInput_DikKeyNames[0x43] = "F9";
-    g_zInput_DikKeyNames[0x44] = "F10";
-    g_zInput_DikKeyNames[0x45] = "NUMLOCK";
-    g_zInput_DikKeyNames[0x46] = "SCROLL";
-    g_zInput_DikKeyNames[0x47] = "NUMPAD7";
-    g_zInput_DikKeyNames[0x48] = "NUMPAD8";
-    g_zInput_DikKeyNames[0x49] = "NUMPAD9";
-    g_zInput_DikKeyNames[0x4a] = "SUBTRACT";
-    g_zInput_DikKeyNames[0x4b] = "NUMPAD4";
-    g_zInput_DikKeyNames[0x4c] = "NUMPAD5";
-    g_zInput_DikKeyNames[0x4d] = "NUMPAD6";
-    g_zInput_DikKeyNames[0x4e] = "ADD";
-    g_zInput_DikKeyNames[0x4f] = "NUMPAD1";
-    g_zInput_DikKeyNames[0x50] = "NUMPAD2";
-    g_zInput_DikKeyNames[0x51] = "NUMPAD3";
-    g_zInput_DikKeyNames[0x52] = "NUMPAD0";
-    g_zInput_DikKeyNames[0x53] = "DECIMAL";
-    g_zInput_DikKeyNames[0x57] = "F11";
-    g_zInput_DikKeyNames[0x58] = "F12";
-    g_zInput_DikKeyNames[0x64] = "F13";
-    g_zInput_DikKeyNames[0x65] = "F14";
-    g_zInput_DikKeyNames[0x66] = "F15";
-    g_zInput_DikKeyNames[0x70] = "KANA";
-    g_zInput_DikKeyNames[0x79] = "CONVERT";
-    g_zInput_DikKeyNames[0x7b] = "NOCONVERT";
-    g_zInput_DikKeyNames[0x7d] = "YEN";
-    g_zInput_DikKeyNames[0x8d] = "NUMPADEQUALS";
-    g_zInput_DikKeyNames[0x90] = "CIRCUMFLEX";
-    g_zInput_DikKeyNames[0x91] = "AT";
-    g_zInput_DikKeyNames[0x92] = "COLON";
-    g_zInput_DikKeyNames[0x93] = "UNDERLINE";
-    g_zInput_DikKeyNames[0x94] = "KANJI";
+    g_zInput_DikKeyNames[0x1e] = (const char *)&g_zInput_KeyCharRow_LKJHGFDSA[8];
+    g_zInput_DikKeyNames[0x1f] = (const char *)&g_zInput_KeyCharRow_LKJHGFDSA[7];
+    g_zInput_DikKeyNames[0x20] = (const char *)&g_zInput_KeyCharRow_LKJHGFDSA[6];
+    g_zInput_DikKeyNames[0x21] = (const char *)&g_zInput_KeyCharRow_LKJHGFDSA[5];
+    g_zInput_DikKeyNames[0x22] = (const char *)&g_zInput_KeyCharRow_LKJHGFDSA[4];
+    g_zInput_DikKeyNames[0x23] = (const char *)&g_zInput_KeyCharRow_LKJHGFDSA[3];
+    g_zInput_DikKeyNames[0x24] = (const char *)&g_zInput_KeyCharRow_LKJHGFDSA[2];
+    g_zInput_DikKeyNames[0x25] = (const char *)&g_zInput_KeyCharRow_LKJHGFDSA[1];
+    g_zInput_DikKeyNames[0x26] = (const char *)&g_zInput_KeyCharRow_LKJHGFDSA[0];
+    g_zInput_DikKeyNames[0x27] = g_zInput_KeyNameSemicolon;
+    g_zInput_DikKeyNames[0x28] = g_zInput_KeyNameApostrophe;
+    g_zInput_DikKeyNames[0x29] = g_zInput_KeyNameGrave;
+    g_zInput_DikKeyNames[0x2a] = g_zInput_KeyNameLShift;
+    g_zInput_DikKeyNames[0x2b] = g_zInput_KeyNameBackslash;
+    g_zInput_DikKeyNames[0x2c] = (const char *)&g_zInput_KeyCharRow_MNBVCXZ[6];
+    g_zInput_DikKeyNames[0x2d] = (const char *)&g_zInput_KeyCharRow_MNBVCXZ[5];
+    g_zInput_DikKeyNames[0x2e] = (const char *)&g_zInput_KeyCharRow_MNBVCXZ[4];
+    g_zInput_DikKeyNames[0x2f] = (const char *)&g_zInput_KeyCharRow_MNBVCXZ[3];
+    g_zInput_DikKeyNames[0x30] = (const char *)&g_zInput_KeyCharRow_MNBVCXZ[2];
+    g_zInput_DikKeyNames[0x31] = (const char *)&g_zInput_KeyCharRow_MNBVCXZ[1];
+    g_zInput_DikKeyNames[0x32] = (const char *)&g_zInput_KeyCharRow_MNBVCXZ[0];
+    g_zInput_DikKeyNames[0x33] = g_zInput_KeyNameComma;
+    g_zInput_DikKeyNames[0x34] = g_zInput_KeyNamePeriod;
+    g_zInput_DikKeyNames[0x35] = g_zInput_KeyNameSlash;
+    g_zInput_DikKeyNames[0x36] = g_zInput_KeyNameRShift;
+    g_zInput_DikKeyNames[0x37] = g_zInput_KeyNameMultiply;
+    g_zInput_DikKeyNames[0x38] = g_zInput_KeyNameLMenu;
+    g_zInput_DikKeyNames[0x39] = g_zInput_KeyNameSpace;
+    g_zInput_DikKeyNames[0x3a] = g_zInput_KeyNameCapital;
+    g_zInput_DikKeyNames[0x3b] = g_zInput_KeyNameF1;
+    g_zInput_DikKeyNames[0x3c] = g_zInput_KeyNameF2;
+    g_zInput_DikKeyNames[0x3d] = g_zInput_KeyNameF3;
+    g_zInput_DikKeyNames[0x3e] = g_zInput_KeyNameF4;
+    g_zInput_DikKeyNames[0x3f] = g_zInput_KeyNameF5;
+    g_zInput_DikKeyNames[0x40] = g_zInput_KeyNameF6;
+    g_zInput_DikKeyNames[0x41] = g_zInput_KeyNameF7;
+    g_zInput_DikKeyNames[0x42] = g_zInput_KeyNameF8;
+    g_zInput_DikKeyNames[0x43] = g_zInput_KeyNameF9;
+    g_zInput_DikKeyNames[0x44] = g_zInput_KeyNameF10;
+    g_zInput_DikKeyNames[0x45] = g_zInput_KeyNameNumLock;
+    g_zInput_DikKeyNames[0x46] = g_zInput_KeyNameScroll;
+    g_zInput_DikKeyNames[0x47] = g_zInput_KeyNameNumpad7;
+    g_zInput_DikKeyNames[0x48] = g_zInput_KeyNameNumpad8;
+    g_zInput_DikKeyNames[0x49] = g_zInput_KeyNameNumpad9;
+    g_zInput_DikKeyNames[0x4a] = g_zInput_KeyNameSubtract;
+    g_zInput_DikKeyNames[0x4b] = g_zInput_KeyNameNumpad4;
+    g_zInput_DikKeyNames[0x4c] = g_zInput_KeyNameNumpad5;
+    g_zInput_DikKeyNames[0x4d] = g_zInput_KeyNameNumpad6;
+    g_zInput_DikKeyNames[0x4e] = g_zInput_KeyNameAdd;
+    g_zInput_DikKeyNames[0x4f] = g_zInput_KeyNameNumpad1;
+    g_zInput_DikKeyNames[0x50] = g_zInput_KeyNameNumpad2;
+    g_zInput_DikKeyNames[0x51] = g_zInput_KeyNameNumpad3;
+    g_zInput_DikKeyNames[0x52] = g_zInput_KeyNameNumpad0;
+    g_zInput_DikKeyNames[0x53] = g_zInput_KeyNameDecimal;
+    g_zInput_DikKeyNames[0x57] = g_zInput_KeyNameF11;
+    g_zInput_DikKeyNames[0x58] = g_zInput_KeyNameF12;
+    g_zInput_DikKeyNames[0x64] = g_zInput_KeyNameF13;
+    g_zInput_DikKeyNames[0x65] = g_zInput_KeyNameF14;
+    g_zInput_DikKeyNames[0x66] = g_zInput_KeyNameF15;
+    g_zInput_DikKeyNames[0x70] = g_zInput_KeyNameKana;
+    g_zInput_DikKeyNames[0x79] = g_zInput_KeyNameConvert;
+    g_zInput_DikKeyNames[0x7b] = g_zInput_KeyNameNoConvert;
+    g_zInput_DikKeyNames[0x7d] = g_zInput_KeyNameYen;
+    g_zInput_DikKeyNames[0x8d] = g_zInput_KeyNameNumpadEquals;
+    g_zInput_DikKeyNames[0x90] = g_zInput_KeyNameCircumflex;
+    g_zInput_DikKeyNames[0x91] = g_zInput_KeyNameAt;
+    g_zInput_DikKeyNames[0x92] = g_zInput_KeyNameColon;
+    g_zInput_DikKeyNames[0x93] = g_zInput_KeyNameUnderline;
+    g_zInput_DikKeyNames[0x94] = g_zInput_KeyNameKanji;
     g_zInput_DikKeyNames[0x95] = "STOP";
-    g_zInput_DikKeyNames[0x96] = "AX";
-    g_zInput_DikKeyNames[0x97] = "UNLABELED";
-    g_zInput_DikKeyNames[0x9c] = "NUMPADENTER";
-    g_zInput_DikKeyNames[0x9d] = "RCONTROL";
-    g_zInput_DikKeyNames[0xb3] = "NUMPADCOMMA";
-    g_zInput_DikKeyNames[0xb5] = "DIVIDE";
-    g_zInput_DikKeyNames[0xb7] = "SYSRQ";
-    g_zInput_DikKeyNames[0xb8] = "RMENU";
-    g_zInput_DikKeyNames[0xc7] = "HOME";
-    g_zInput_DikKeyNames[0xc8] = "UP";
-    g_zInput_DikKeyNames[0xc9] = "PRIOR";
+    g_zInput_DikKeyNames[0x96] = g_zInput_KeyNameAx;
+    g_zInput_DikKeyNames[0x97] = g_zInput_KeyNameUnlabeled;
+    g_zInput_DikKeyNames[0x9c] = g_zInput_KeyNameNumpadEnter;
+    g_zInput_DikKeyNames[0x9d] = g_zInput_KeyNameRControl;
+    g_zInput_DikKeyNames[0xb3] = g_zInput_KeyNameNumpadComma;
+    g_zInput_DikKeyNames[0xb5] = g_zInput_KeyNameDivide;
+    g_zInput_DikKeyNames[0xb7] = g_zInput_KeyNameSysRq;
+    g_zInput_DikKeyNames[0xb8] = g_zInput_KeyNameRMenu;
+    g_zInput_DikKeyNames[0xc7] = g_zInput_KeyNameHome;
+    g_zInput_DikKeyNames[0xc8] = g_zInput_KeyNameUp;
+    g_zInput_DikKeyNames[0xc9] = g_zInput_KeyNamePrior;
     g_zInput_DikKeyNames[0xcb] = "LEFT";
     g_zInput_DikKeyNames[0xcd] = "RIGHT";
-    g_zInput_DikKeyNames[0xcf] = "END";
-    g_zInput_DikKeyNames[0xd0] = "DOWN";
-    g_zInput_DikKeyNames[0xd1] = "NEXT";
-    g_zInput_DikKeyNames[0xd2] = "INSERT";
-    g_zInput_DikKeyNames[0xd3] = "DELETE";
-    g_zInput_DikKeyNames[0xdb] = "LWIN";
-    g_zInput_DikKeyNames[0xdc] = "RWIN";
-    g_zInput_DikKeyNames[0xdd] = "APPS";
+    g_zInput_DikKeyNames[0xcf] = g_zInput_KeyNameEnd;
+    g_zInput_DikKeyNames[0xd0] = g_zInput_KeyNameDown;
+    g_zInput_DikKeyNames[0xd1] = g_zInput_KeyNameNext;
+    g_zInput_DikKeyNames[0xd2] = g_zInput_KeyNameInsert;
+    g_zInput_DikKeyNames[0xd3] = g_zInput_KeyNameDelete;
+    g_zInput_DikKeyNames[0xdb] = g_zInput_KeyNameLWin;
+    g_zInput_DikKeyNames[0xdc] = g_zInput_KeyNameRWin;
+    g_zInput_DikKeyNames[0xdd] = g_zInput_KeyNameApps;
 }
 
 /**
@@ -2042,14 +2689,14 @@ void BindMap_InitDikKeyNameTable() {
  * Purpose: Populate the joystick button-name lookup table used by bind-map UI.
  */
 void BindMap_InitJoystickButtonNameTable() {
-    g_zInput_JoystickButtonNames[1] = "Button 1";
-    g_zInput_JoystickButtonNames[2] = "Button 2";
-    g_zInput_JoystickButtonNames[3] = "Button 3";
-    g_zInput_JoystickButtonNames[4] = "Button 4";
-    g_zInput_JoystickButtonNames[5] = "Button 5";
-    g_zInput_JoystickButtonNames[6] = "Button 6";
-    g_zInput_JoystickButtonNames[7] = "Button 7";
-    g_zInput_JoystickButtonNames[8] = "Button 8";
+    g_zInput_JoystickButtonNames[1] = g_zInput_JoystickButtonName1;
+    g_zInput_JoystickButtonNames[2] = g_zInput_JoystickButtonName2;
+    g_zInput_JoystickButtonNames[3] = g_zInput_JoystickButtonName3;
+    g_zInput_JoystickButtonNames[4] = g_zInput_JoystickButtonName4;
+    g_zInput_JoystickButtonNames[5] = g_zInput_JoystickButtonName5;
+    g_zInput_JoystickButtonNames[6] = g_zInput_JoystickButtonName6;
+    g_zInput_JoystickButtonNames[7] = g_zInput_JoystickButtonName7;
+    g_zInput_JoystickButtonNames[8] = g_zInput_JoystickButtonName8;
 }
 
 /**
@@ -2059,9 +2706,9 @@ void BindMap_InitJoystickButtonNameTable() {
  * Purpose: Populate the mouse button-name lookup table used by bind-map UI.
  */
 void BindMap_InitMouseButtonNameTable() {
-    g_zInput_MouseButtonNames[1] = "Left";
-    g_zInput_MouseButtonNames[2] = "Right";
-    g_zInput_MouseButtonNames[3] = "Middle";
+    g_zInput_MouseButtonNames[1] = g_zInput_MouseButtonNameLeft;
+    g_zInput_MouseButtonNames[2] = g_zInput_MouseButtonNameRight;
+    g_zInput_MouseButtonNames[3] = g_zInput_MouseButtonNameMiddle;
 }
 
 /**
@@ -2826,7 +3473,7 @@ char *__stdcall BindMap_FormatKeyComboName(
     if ((packedKey & 0x200) != 0) {
         strncat(
             destBuf,
-            "Ctrl-",
+            g_zInput_KeyNameCtrlPrefix,
             remaining
         );
         remaining -= (int)(strlen(destBuf));
@@ -2834,7 +3481,7 @@ char *__stdcall BindMap_FormatKeyComboName(
     if ((packedKey & 0x100) != 0) {
         strncat(
             destBuf,
-            "Alt-",
+            g_zInput_KeyNameAltPrefix,
             remaining
         );
         remaining -= (int)(strlen(destBuf));
@@ -2842,7 +3489,7 @@ char *__stdcall BindMap_FormatKeyComboName(
     if ((packedKey & 0x400) != 0) {
         strncat(
             destBuf,
-            "Shift-",
+            g_zInput_KeyNameShiftPrefix,
             remaining
         );
         remaining -= (int)(strlen(destBuf));
@@ -3073,7 +3720,7 @@ int __fastcall Init(
     if (hr != 0) {
         DI_ReportError(
             hr,
-            kZInputInitSourceFile,
+            g_zInput_SourceFile_ZinInitCpp,
             0x93
         );
         return -1;
@@ -3431,7 +4078,7 @@ int Keyboard_InitDevice() {
     if (hr != 0) {
         DI_ReportError(
             hr,
-            kZInputKeyboardSourceFile,
+            g_zInput_SourceFile_ZinKbdCpp,
             0x95
         );
         return 1;
@@ -3445,7 +4092,7 @@ int Keyboard_InitDevice() {
     if (hr != 0) {
         DI_ReportError(
             hr,
-            kZInputKeyboardSourceFile,
+            g_zInput_SourceFile_ZinKbdCpp,
             0x9d
         );
         return 1;
@@ -3458,7 +4105,7 @@ int Keyboard_InitDevice() {
     if (hr != 0) {
         DI_ReportError(
             hr,
-            kZInputKeyboardSourceFile,
+            g_zInput_SourceFile_ZinKbdCpp,
             0xa5
         );
         return 1;
@@ -3470,7 +4117,7 @@ int Keyboard_InitDevice() {
     if (hr != 0) {
         DI_ReportError(
             hr,
-            kZInputKeyboardSourceFile,
+            g_zInput_SourceFile_ZinKbdCpp,
             0xad
         );
         return 1;
@@ -3480,7 +4127,7 @@ int Keyboard_InitDevice() {
     if (hr != 0) {
         DI_ReportError(
             hr,
-            kZInputKeyboardSourceFile,
+            g_zInput_SourceFile_ZinKbdCpp,
             0xb6
         );
         return 1;
@@ -3769,7 +4416,7 @@ void __fastcall Keyboard_PollState(
         if (hresult != kDiInputLost) {
             DI_ReportError(
                 hresult,
-                kZInputKeyboardSourceFile,
+                g_zInput_SourceFile_ZinKbdCpp,
                 0x170
             );
             return;
@@ -3822,7 +4469,7 @@ int __fastcall Keyboard_WaitForAnyKeyPress(
             if (hresult != kDiInputLost) {
                 DI_ReportError(
                     hresult,
-                    kZInputKeyboardSourceFile,
+                    g_zInput_SourceFile_ZinKbdCpp,
                     0x291
                 );
                 return 0;
@@ -4769,7 +5416,7 @@ void Keyboard_ResetTransitionState() {
         } else {
             DI_ReportError(
                 hresult,
-                "D:\\Proj\\GameZRecoil\\zInput\\zin_kbd.cpp",
+                g_zInput_SourceFile_ZinKbdCpp,
                 257
             );
             return;

@@ -49,6 +49,226 @@ extern "C" zSndPlayHandle *g_zSndLastVoiceHandle = 0;
 extern "C" int g_zSndLastVoiceMarkerIndex = 0;
 extern "C" int g_zSndLastVoiceStopMarkerIndex = 0;
 extern "C" int g_zSnd_Flag10PlaybackEnabled = 0;
+/**
+ * Reimplements data 0x4e2288: g_zSndConfig_SyntaxKey.
+ * Owner data: zSound init config/startup literals.
+ * Purpose: names the startup sound-config syntax selector.
+ */
+char g_zSndConfig_SyntaxKey[0x07] = "SYNTAX";
+/**
+ * Reimplements data 0x4e2290: g_zSnd_SourceFile_zsnd_init_cpp.
+ * Owner data: zSound init config/startup literals.
+ * Purpose: supplies the recovered source-file path for zSound startup diagnostics.
+ */
+char g_zSnd_SourceFile_zsnd_init_cpp[0x29] =
+    "D:\\Proj\\GameZRecoil\\zSound\\zsnd_init.cpp";
+/**
+ * Reimplements data 0x4e22bc: g_zSndInitFailedToFindMenuSoundsFmt.
+ * Owner data: zSound init config/startup literals.
+ * Purpose: formats the missing menu-sounds startup diagnostic.
+ */
+char g_zSndInitFailedToFindMenuSoundsFmt[0x20] =
+    "Failed to find menu sounds (%s)";
+/**
+ * Reimplements data 0x4e22dc: g_zSndConfig_SoundGroupsKey.
+ * Owner data: zSound config parser key literals.
+ * Purpose: names the optional sound group list in the sound config tree.
+ */
+char g_zSndConfig_SoundGroupsKey[0x0d] = "SOUND_GROUPS";
+/**
+ * Reimplements data 0x4e22ec: g_zSndConfig_SetsKey.
+ * Owner data: zSound config parser key literals.
+ * Purpose: names the top-level sound set list in the sound config tree.
+ */
+char g_zSndConfig_SetsKey[0x05] = "SETS";
+/**
+ * Reimplements data 0x4e22f4: g_zSndConfig_SpeedOfSoundKey.
+ * Owner data: zSound config parser key literals.
+ * Purpose: names the optional speed-of-sound config value.
+ */
+char g_zSndConfig_SpeedOfSoundKey[0x0f] = "SPEED_OF_SOUND";
+/**
+ * Reimplements data 0x4e2304: g_zSndConfig_SoundPathKey.
+ * Owner data: zSound config parser key literals.
+ * Purpose: names the optional sound archive search path.
+ */
+char g_zSndConfig_SoundPathKey[0x0b] = "SOUND_PATH";
+/**
+ * Reimplements data 0x4e2310: g_zSndConfig_CdTracksKey.
+ * Owner data: zSound config parser key literals.
+ * Purpose: names the optional CD track config block.
+ */
+char g_zSndConfig_CdTracksKey[0x0a] = "CD_TRACKS";
+/**
+ * Reimplements data 0x4e231c: g_zSndConfig_QualityMedToken.
+ * Owner data: zSound config parser key literals.
+ * Purpose: names the medium quality sample variant token.
+ */
+char g_zSndConfig_QualityMedToken[0x04] = "MED";
+/**
+ * Reimplements data 0x4e2320: g_zSndConfig_A3dDistanceKey.
+ * Owner data: zSound config parser key literals.
+ * Purpose: names the optional A3D distance scale value.
+ */
+char g_zSndConfig_A3dDistanceKey[0x08] = "A3DDIST";
+/**
+ * Reimplements data 0x4e2328: g_zSndConfig_VolumeKey.
+ * Owner data: zSound config parser key literals.
+ * Purpose: names the optional per-sample volume value.
+ */
+char g_zSndConfig_VolumeKey[0x07] = "VOLUME";
+/**
+ * Reimplements data 0x4e2330: g_zSndConfig_VoiceKey.
+ * Owner data: zSound config parser key literals.
+ * Purpose: names the optional voice-playback sample flag.
+ */
+char g_zSndConfig_VoiceKey[0x06] = "VOICE";
+/**
+ * Reimplements data 0x4e2338: g_zSndConfig_PurgeableKey.
+ * Owner data: zSound config parser key literals.
+ * Purpose: names the optional purgeable sample flag.
+ */
+char g_zSndConfig_PurgeableKey[0x0a] = "PURGEABLE";
+/**
+ * Reimplements data 0x4e2344: g_zSndConfig_HardwareKey.
+ * Owner data: zSound config parser key literals.
+ * Purpose: names the optional hardware-buffer sample flag.
+ */
+char g_zSndConfig_HardwareKey[0x09] = "HARDWARE";
+/**
+ * Reimplements data 0x4e2350: g_zSndConfig_FrequencyKey.
+ * Owner data: zSound config parser key literals.
+ * Purpose: names the optional frequency-control sample flag.
+ */
+char g_zSndConfig_FrequencyKey[0x0a] = "FREQUENCY";
+/**
+ * Reimplements data 0x4e235c: g_zSndConfig_LoopedKey.
+ * Owner data: zSound config parser key literals.
+ * Purpose: names the optional looped sample flag.
+ */
+char g_zSndConfig_LoopedKey[0x07] = "LOOPED";
+/**
+ * Reimplements data 0x4e2364: g_zSndConfig_3dKey.
+ * Owner data: zSound config parser key literals.
+ * Purpose: names the optional 3D sample flag.
+ */
+char g_zSndConfig_3dKey[0x03] = "3D";
+/**
+ * Reimplements data 0x4e2368: g_zSnd_A3DInitError_AggregateMsg.
+ * Owner data: zSound init backend diagnostic literals.
+ * Purpose: reports CLASS_E_NOAGGREGATION from A3D provider creation.
+ */
+char g_zSnd_A3DInitError_AggregateMsg[0x3c] =
+    "A3D: This class cannot be created as part of an aggregate.\n";
+/**
+ * Reimplements data 0x4e23a4: g_zSnd_A3DInitError_NotRegisteredMsg.
+ * Owner data: zSound init backend diagnostic literals.
+ * Purpose: reports REGDB_E_CLASSNOTREG from A3D provider creation.
+ */
+char g_zSnd_A3DInitError_NotRegisteredMsg[0x33] =
+    "A3D: Not registered in the registration database.\n";
+/**
+ * Reimplements data 0x4e23d8: g_zSnd_A3DInitError_UnknownMsg.
+ * Owner data: zSound init backend diagnostic literals.
+ * Purpose: reports an unclassified failure from A3D provider creation.
+ */
+char g_zSnd_A3DInitError_UnknownMsg[0x15] = "A3D: Unknown error.\n";
+/**
+ * Reimplements data 0x4e24b8: g_zSnd_A3DErrorFmt.
+ * Owner data: zSound init backend diagnostic literals.
+ * Purpose: formats A3D provider error names for zError reporting.
+ */
+char g_zSnd_A3DErrorFmt[0x0f] = "A3D Error [%s]";
+/**
+ * Reimplements data 0x4e2c84: g_zSnd_DirectSoundErrorFmt.
+ * Owner data: zSound init backend diagnostic literals.
+ * Purpose: formats DirectSound provider error names for zError reporting.
+ */
+char g_zSnd_DirectSoundErrorFmt[0x17] = "DirectSound Error [%s]";
+/**
+ * Reimplements data 0x4e2c9c: g_zSnd_DsErrorName_BufferLost.
+ * Owner data: zSound DirectSound error-name literals.
+ * Purpose: names DSERR_BUFFERLOST in DirectSound diagnostics.
+ */
+char g_zSnd_DsErrorName_BufferLost[0x11] = "DSERR_BUFFERLOST";
+/**
+ * Reimplements data 0x4e2cb0: g_zSnd_DsErrorName_OtherAppHasPrio.
+ * Owner data: zSound DirectSound error-name literals.
+ * Purpose: names DSERR_OTHERAPPHASPRIO in DirectSound diagnostics.
+ */
+char g_zSnd_DsErrorName_OtherAppHasPrio[0x16] = "DSERR_OTHERAPPHASPRIO";
+/**
+ * Reimplements data 0x4e2cc8: g_zSnd_DsErrorName_AlreadyInitialized.
+ * Owner data: zSound DirectSound error-name literals.
+ * Purpose: names DSERR_ALREADYINITIALIZED in DirectSound diagnostics.
+ */
+char g_zSnd_DsErrorName_AlreadyInitialized[0x19] = "DSERR_ALREADYINITIALIZED";
+/**
+ * Reimplements data 0x4e2ce4: g_zSnd_DsErrorName_NoDriver.
+ * Owner data: zSound DirectSound error-name literals.
+ * Purpose: names DSERR_NODRIVER in DirectSound diagnostics.
+ */
+char g_zSnd_DsErrorName_NoDriver[0x0f] = "DSERR_NODRIVER";
+/**
+ * Reimplements data 0x4e2cf4: g_zSnd_DsErrorName_BadFormat.
+ * Owner data: zSound DirectSound error-name literals.
+ * Purpose: names DSERR_BADFORMAT in DirectSound diagnostics.
+ */
+char g_zSnd_DsErrorName_BadFormat[0x10] = "DSERR_BADFORMAT";
+/**
+ * Reimplements data 0x4e2d04: g_zSnd_DsErrorName_PrioLevelNeeded.
+ * Owner data: zSound DirectSound error-name literals.
+ * Purpose: names DSERR_PRIOLEVELNEEDED in DirectSound diagnostics.
+ */
+char g_zSnd_DsErrorName_PrioLevelNeeded[0x16] = "DSERR_PRIOLEVELNEEDED";
+/**
+ * Reimplements data 0x4e2d1c: g_zSnd_DsErrorName_InvalidCall.
+ * Owner data: zSound DirectSound error-name literals.
+ * Purpose: names DSERR_INVALIDCALL in DirectSound diagnostics.
+ */
+char g_zSnd_DsErrorName_InvalidCall[0x12] = "DSERR_INVALIDCALL";
+/**
+ * Reimplements data 0x4e2d30: g_zSnd_DsErrorName_ControlUnavail.
+ * Owner data: zSound DirectSound error-name literals.
+ * Purpose: names DSERR_CONTROLUNAVAIL in DirectSound diagnostics.
+ */
+char g_zSnd_DsErrorName_ControlUnavail[0x15] = "DSERR_CONTROLUNAVAIL";
+/**
+ * Reimplements data 0x4e2d48: g_zSnd_DsErrorName_Allocated.
+ * Owner data: zSound DirectSound error-name literals.
+ * Purpose: names DSERR_ALLOCATED in DirectSound diagnostics.
+ */
+char g_zSnd_DsErrorName_Allocated[0x10] = "DSERR_ALLOCATED";
+/**
+ * Reimplements data 0x4e2d58: g_zSnd_DsErrorName_InvalidParam.
+ * Owner data: zSound DirectSound error-name literals.
+ * Purpose: names DSERR_INVALIDPARAM in DirectSound diagnostics.
+ */
+char g_zSnd_DsErrorName_InvalidParam[0x13] = "DSERR_INVALIDPARAM";
+/**
+ * Reimplements data 0x4e2d6c: g_zSnd_DsErrorName_OutOfMemory.
+ * Owner data: zSound DirectSound error-name literals.
+ * Purpose: names DSERR_OUTOFMEMORY in DirectSound diagnostics.
+ */
+char g_zSnd_DsErrorName_OutOfMemory[0x12] = "DSERR_OUTOFMEMORY";
+/**
+ * Reimplements data 0x4e2d80: g_zSnd_DsErrorName_NoAggregation.
+ * Owner data: zSound DirectSound error-name literals.
+ * Purpose: names DSERR_NOAGGREGATION in DirectSound diagnostics.
+ */
+char g_zSnd_DsErrorName_NoAggregation[0x14] = "DSERR_NOAGGREGATION";
+/**
+ * Reimplements data 0x4e2d94: g_zSnd_DsErrorName_Generic.
+ * Owner data: zSound DirectSound error-name literals.
+ * Purpose: names DSERR_GENERIC in DirectSound diagnostics.
+ */
+char g_zSnd_DsErrorName_Generic[0x0e] = "DSERR_GENERIC";
+/**
+ * Reimplements data 0x4e2da4: g_zSnd_DsErrorName_Unsupported.
+ * Owner data: zSound DirectSound error-name literals.
+ * Purpose: names DSERR_UNSUPPORTED in DirectSound diagnostics.
+ */
+char g_zSnd_DsErrorName_Unsupported[0x12] = "DSERR_UNSUPPORTED";
 
 namespace {
 const GUID kCLSID_A3DApi = {0x92fa2c24,
@@ -67,7 +287,6 @@ const GUID kIID_IA3dListener = {0xc398e563,
     0xd90b,
     0x11d1,
     {0x90, 0xfb, 0x00, 0x60, 0x08, 0xa1, 0xf4, 0x41}};
-const char *kZSndInitSourceFile = "D:\\Proj\\GameZRecoil\\zSound\\zsnd_init.cpp";
 
 } // namespace
 
@@ -449,7 +668,7 @@ reportA3D:
         0x400,
         sourceFile,
         sourceLine,
-        "A3D Error [%s]",
+        g_zSnd_A3DErrorFmt,
         errorNameStorage
     );
     return 0;
@@ -471,85 +690,85 @@ int __fastcall ReportDirectSoundError(
     case DSERR_GENERIC:
         sprintf(
             errorNameStorage,
-            "DSERR_GENERIC"
+            g_zSnd_DsErrorName_Generic
         );
         break;
     case DSERR_UNSUPPORTED:
         sprintf(
             errorNameStorage,
-            "DSERR_UNSUPPORTED"
+            g_zSnd_DsErrorName_Unsupported
         );
         break;
     case DSERR_OUTOFMEMORY:
         sprintf(
             errorNameStorage,
-            "DSERR_OUTOFMEMORY"
+            g_zSnd_DsErrorName_OutOfMemory
         );
         break;
     case DSERR_NOAGGREGATION:
         sprintf(
             errorNameStorage,
-            "DSERR_NOAGGREGATION"
+            g_zSnd_DsErrorName_NoAggregation
         );
         break;
     case DSERR_INVALIDPARAM:
         sprintf(
             errorNameStorage,
-            "DSERR_INVALIDPARAM"
+            g_zSnd_DsErrorName_InvalidParam
         );
         break;
     case DSERR_ALLOCATED:
         sprintf(
             errorNameStorage,
-            "DSERR_ALLOCATED"
+            g_zSnd_DsErrorName_Allocated
         );
         break;
     case DSERR_CONTROLUNAVAIL:
         sprintf(
             errorNameStorage,
-            "DSERR_CONTROLUNAVAIL"
+            g_zSnd_DsErrorName_ControlUnavail
         );
         break;
     case DSERR_INVALIDCALL:
         sprintf(
             errorNameStorage,
-            "DSERR_INVALIDCALL"
+            g_zSnd_DsErrorName_InvalidCall
         );
         break;
     case DSERR_PRIOLEVELNEEDED:
         sprintf(
             errorNameStorage,
-            "DSERR_PRIOLEVELNEEDED"
+            g_zSnd_DsErrorName_PrioLevelNeeded
         );
         break;
     case DSERR_BADFORMAT:
         sprintf(
             errorNameStorage,
-            "DSERR_BADFORMAT"
+            g_zSnd_DsErrorName_BadFormat
         );
         break;
     case DSERR_NODRIVER:
         sprintf(
             errorNameStorage,
-            "DSERR_NODRIVER"
+            g_zSnd_DsErrorName_NoDriver
         );
         break;
     case DSERR_ALREADYINITIALIZED:
         sprintf(
             errorNameStorage,
-            "DSERR_ALREADYINITIALIZED"
+            g_zSnd_DsErrorName_AlreadyInitialized
         );
         break;
     case DSERR_BUFFERLOST:
         sprintf(
             errorNameStorage,
-            "DSERR_BUFFERLOST"
+            g_zSnd_DsErrorName_BufferLost
         );
         break;
     case DSERR_OTHERAPPHASPRIO:
         sprintf(
             errorNameStorage,
-            "DSERR_OTHERAPPHASPRIO"
+            g_zSnd_DsErrorName_OtherAppHasPrio
         );
         break;
     case DS_OK:
@@ -566,7 +785,7 @@ int __fastcall ReportDirectSoundError(
         0x400,
         sourceFile,
         sourceLine,
-        "DirectSound Error [%s]",
+        g_zSnd_DirectSoundErrorFmt,
         errorNameStorage
     );
     return 0;
@@ -743,9 +962,9 @@ extern "C" int __fastcall zSndSystem_Init(
     if (g_zSnd_ConfigRootNode == 0) {
         zError::ReportOld(
             0x200,
-            "D:\\Proj\\GameZRecoil\\zSound\\zsnd_init.cpp",
+            g_zSnd_SourceFile_zsnd_init_cpp,
             0x2c9,
-            "Failed to find menu sounds (%s)",
+            g_zSndInitFailedToFindMenuSoundsFmt,
             zrdPath
         );
         return 0;
@@ -754,7 +973,7 @@ extern "C" int __fastcall zSndSystem_Init(
     int syntax = 0;
     if (zReader::ReadNamedInt(
         g_zSnd_ConfigRootNode,
-        "SYNTAX",
+        g_zSndConfig_SyntaxKey,
         &syntax
     ) == 0) {
         syntax = 1;
@@ -784,7 +1003,7 @@ extern "C" int zSndBackend_InitDirectSound() {
     if (directSoundError != DS_OK) {
         return zSnd::ReportDirectSoundError(
             directSoundError,
-            kZSndInitSourceFile,
+            g_zSnd_SourceFile_zsnd_init_cpp,
             0x26a
         );
     }
@@ -797,7 +1016,7 @@ extern "C" int zSndBackend_InitDirectSound() {
     if (directSoundError != DS_OK) {
         return zSnd::ReportDirectSoundError(
             directSoundError,
-            kZSndInitSourceFile,
+            g_zSnd_SourceFile_zsnd_init_cpp,
             0x26d
         );
     }
@@ -807,7 +1026,7 @@ extern "C" int zSndBackend_InitDirectSound() {
     if (directSoundError != DS_OK) {
         return zSnd::ReportDirectSoundError(
             directSoundError,
-            kZSndInitSourceFile,
+            g_zSnd_SourceFile_zsnd_init_cpp,
             0x271
         );
     }
@@ -824,7 +1043,7 @@ extern "C" int zSndBackend_InitDirectSound() {
     if (directSoundError != DS_OK) {
         return zSnd::ReportDirectSoundError(
             directSoundError,
-            kZSndInitSourceFile,
+            g_zSnd_SourceFile_zsnd_init_cpp,
             0x28d
         );
     }
@@ -852,16 +1071,16 @@ extern "C" int zSndBackend_InitA3D() {
     );
     if (a3dError < 0) {
         if (a3dError == CLASS_E_NOAGGREGATION) {
-            printf("A3D: This class cannot be created as part of an aggregate.\n");
+            printf(g_zSnd_A3DInitError_AggregateMsg);
             return 0;
         }
 
         if (a3dError == REGDB_E_CLASSNOTREG) {
-            printf("A3D: Not registered in the registration database.\n");
+            printf(g_zSnd_A3DInitError_NotRegisteredMsg);
             return 0;
         }
 
-        printf("A3D: Unknown error.\n");
+        printf(g_zSnd_A3DInitError_UnknownMsg);
         return 0;
     }
 
@@ -884,7 +1103,7 @@ extern "C" int zSndBackend_InitA3D() {
     if (a3dError != 0) {
         return zSnd::ReportA3DError(
             a3dError,
-            kZSndInitSourceFile,
+            g_zSnd_SourceFile_zsnd_init_cpp,
             0x245
         );
     }
@@ -897,7 +1116,7 @@ extern "C" int zSndBackend_InitA3D() {
     if (a3dError != 0) {
         return zSnd::ReportA3DError(
             a3dError,
-            kZSndInitSourceFile,
+            g_zSnd_SourceFile_zsnd_init_cpp,
             0x24b
         );
     }
@@ -908,7 +1127,7 @@ extern "C" int zSndBackend_InitA3D() {
     if (a3dError != 0) {
         return zSnd::ReportA3DError(
             a3dError,
-            kZSndInitSourceFile,
+            g_zSnd_SourceFile_zsnd_init_cpp,
             0x24e
         );
     }

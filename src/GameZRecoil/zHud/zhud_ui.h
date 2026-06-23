@@ -506,7 +506,10 @@ void __stdcall SetScaleAndRebuild(float scale);
 void __stdcall DispatchSetScale(float deltaTime);
 } // namespace HudScoreboard
 
+extern char g_HudUiMessage_NodeName[8];
 extern char g_HudUiMessage_SeparatorColon[2];
+extern char g_HudSensorTracker_ReadFileFailedFmt[18];
+extern char g_HudZrd_Key_Sound[6];
 extern int g_HudUiMgrObjectiveChatComposeActive;
 struct HudUiObjectiveBar;
 extern HudUiWidget g_HudUiMgrSensorPanel;
@@ -1843,7 +1846,7 @@ struct HudUiMgrObjectiveBlock {
     HudUiChatComposeTextInput chatComposeTextInput;
     HudUiCounterTextPanel *counterTextPanel;
 
-    void Destructor();
+    ~HudUiMgrObjectiveBlock();
 };
 
 struct HudUtil {

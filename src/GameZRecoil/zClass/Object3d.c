@@ -1339,13 +1339,6 @@ namespace zClass_Object3D_ModelRefLerpQueue {
 }
 
 namespace zClass_Node {
-    namespace {
-        struct zDiPartial {
-            int mode;
-            int flags;
-        };
-    }
-
     /**
      * Reimplements 0x4527f0: zClass_Node::HasRenderableDiPredicate
      * (D:\Proj\GameZRecoil\zClass\Object3d.c).
@@ -1353,8 +1346,12 @@ namespace zClass_Node {
      * instance mode without the hidden flag.
      */
     int __fastcall HasRenderableDiPredicate(zClass_NodePartial * node) {
-        zDiPartial *di = (zDiPartial *)((unsigned int)(node->userDataOrDiRef));
-        if (di != 0 && di->mode == 1 && (di->flags & 0x10) == 0) {
+        ::zDiPartial *di = (::zDiPartial *)((unsigned int)(node->userDataOrDiRef));
+        if (di == 0) {
+            return 0;
+        }
+
+        if (di->mode == 1 && (di->flags & 0x10) == 0) {
             return 1;
         }
 

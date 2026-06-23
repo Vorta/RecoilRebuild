@@ -13,30 +13,10 @@
 #include <string.h>
 
 /**
- * Reimplements data 0x56b184: g_zArchive_MountedList.
- * Purpose: store the process-wide list of mounted ZRDR/ZAR index archives.
- */
-extern "C" zArchiveList *g_zArchive_MountedList = 0;
-/**
- * Reimplements data 0x56b188: g_zArchive_Current.
- * Purpose: store the current mounted archive selected by archive mounting.
- */
-extern "C" zArchiveList *g_zArchive_Current = 0;
-/**
- * Reimplements data 0x56b180: g_zRdr_SearchPathList.
- * Purpose: store the global ZRDR search-path list.
- */
-extern "C" zArchiveList *g_zRdr_SearchPathList = 0;
-/**
  * Reimplements data 0x56ae70: g_zUtil_ZRDR_FreePool.
  * Purpose: store reusable archive-list nodes for ZRDR list operations.
  */
 extern "C" zArchiveList *g_zUtil_ZRDR_FreePool = 0;
-/**
- * Reimplements data 0x56bb8c: g_zRdr_ScratchSearchPathList.
- * Purpose: store the temporary ZRDR search-path list used by scoped lookups.
- */
-extern "C" zArchiveList *g_zRdr_ScratchSearchPathList = 0;
 /**
  * Reimplements data 0x56ae74: g_zUtil_ZRDR_TotalAllocated.
  * Purpose: count archive-list nodes allocated for the ZRDR free pool.
@@ -63,15 +43,20 @@ extern "C" char g_zReader_FileExtBuf[0x100] = {0};
  */
 extern "C" char g_zReader_FileNameBuf[0x100] = {0};
 /**
- * Reimplements data 0x56bb88: g_zRdr_SplitDriveBuf.
- * Purpose: store the CRT drive component during ZRDR path resolution.
+ * Reimplements data 0x56b180: g_zRdr_SearchPathList.
+ * Purpose: store the global ZRDR search-path list.
  */
-extern "C" char g_zRdr_SplitDriveBuf[4] = {0};
+extern "C" zArchiveList *g_zRdr_SearchPathList = 0;
 /**
- * Reimplements data 0x56ba88: g_zRdr_SplitDirBuf.
- * Purpose: store the CRT directory component during ZRDR path resolution.
+ * Reimplements data 0x56b184: g_zArchive_MountedList.
+ * Purpose: store the process-wide list of mounted ZRDR/ZAR index archives.
  */
-extern "C" char g_zRdr_SplitDirBuf[0x100] = {0};
+extern "C" zArchiveList *g_zArchive_MountedList = 0;
+/**
+ * Reimplements data 0x56b188: g_zArchive_Current.
+ * Purpose: store the current mounted archive selected by archive mounting.
+ */
+extern "C" zIndexArchive *g_zArchive_Current = 0;
 /**
  * Reimplements data 0x56b678: g_zRdr_SplitFileNameBuf.
  * Purpose: store the CRT basename component during ZRDR path resolution.
@@ -93,20 +78,41 @@ extern "C" char g_zRdr_PathJoinBuf[0x100] = {0};
  */
 extern "C" char g_zRdr_ResolvedPathBuf[0x100] = {0};
 /**
- * Reimplements data 0x56bba4: g_zUtil_ZRDR_WildcardPath.
- * Purpose: store the active in-place wildcard path string.
+ * Reimplements data 0x56ba88: g_zRdr_SplitDirBuf.
+ * Purpose: store the CRT directory component during ZRDR path resolution.
  */
-extern "C" char *g_zUtil_ZRDR_WildcardPath = 0;
+extern "C" char g_zRdr_SplitDirBuf[0x100] = {0};
+/**
+ * Reimplements data 0x56bb88: g_zRdr_SplitDriveBuf.
+ * Purpose: store the CRT drive component during ZRDR path resolution.
+ */
+extern "C" char g_zRdr_SplitDriveBuf[4] = {0};
+/**
+ * Reimplements data 0x56bb8c: g_zRdr_ScratchSearchPathList.
+ * Purpose: store the temporary ZRDR search-path list used by scoped lookups.
+ */
+extern "C" zArchiveList *g_zRdr_ScratchSearchPathList = 0;
 /**
  * Reimplements data 0x56bb90: g_zUtil_ZRDR_WildcardDigits.
  * Purpose: store the odometer digits for active wildcard path expansion.
  */
 extern "C" int g_zUtil_ZRDR_WildcardDigits[5] = {0};
 /**
+ * Reimplements data 0x56bba4: g_zUtil_ZRDR_WildcardPath.
+ * Purpose: store the active in-place wildcard path string.
+ */
+extern "C" char *g_zUtil_ZRDR_WildcardPath = 0;
+/**
  * Reimplements data 0x56bba8: g_zUtil_ZRDR_WildcardStarCount.
  * Purpose: store the number of active wildcard placeholders, capped at five.
  */
 extern "C" int g_zUtil_ZRDR_WildcardStarCount = 0;
+/**
+ * Reimplements reserved data slot 0x56bbac in the ZRDR wildcard state.
+ * Purpose: preserve the unreferenced zero-initialized dword between the
+ * wildcard count and pointer array proven by BN.
+ */
+extern "C" int g_zUtil_ZRDR_WildcardReserved = 0;
 /**
  * Reimplements data 0x56bbb0: g_zUtil_ZRDR_WildcardStarPtrs.
  * Purpose: store pointers to wildcard placeholder bytes inside the active path.
@@ -135,6 +141,11 @@ const char g_zUtil_MissionZrdrSearchPathsFmt[0x3d] =
  */
 const char g_zImage_CommonTextureSearchPaths[0x38] =
     "..\\data\\common\\textures;..\\data\\common\\effects\\textures";
+/**
+ * Reimplements data 0x4e3008: g_zUtil_ZarPathJoinFmt.
+ * Purpose: format a matched ZRDR search directory with the split filename and extension.
+ */
+extern "C" char g_zUtil_ZarPathJoinFmt[0x8] = "%s\\%s%s";
 
 /**
  * Reimplements 0x48c9a0: zArchiveList_LinkNodeBetween.
@@ -697,7 +708,7 @@ extern "C" char *__fastcall zUtil_ZRDR_ResolvePathInSearchPathList(
 
             sprintf(
                 g_zRdr_ResolvedPathBuf,
-                "%s\\%s%s",
+                g_zUtil_ZarPathJoinFmt,
                 matchedDir,
                 g_zRdr_SplitFileNameBuf,
                 g_zRdr_SplitExtBuf
@@ -952,7 +963,7 @@ extern "C" int __fastcall zUtil_ZRDR_UnloadMountedArchives(
     zIndexArchive *archive =
         (zIndexArchive *)(zArchiveList_PopFrontPayload(g_zArchive_MountedList));
     while (archive != 0) {
-        zIndexArchive *const current = (zIndexArchive *)(g_zArchive_Current);
+        zIndexArchive *const current = g_zArchive_Current;
         if (destroyCurrentToo != 0 || archive != current) {
             if (current == archive) {
                 g_zArchive_Current = 0;
@@ -1535,7 +1546,7 @@ int __fastcall MountIndexArchive(
     }
 
     if (setCurrent != 0) {
-        g_zArchive_Current = (zArchiveList *)(payload);
+        g_zArchive_Current = payload;
     }
 
     zArchiveList_PushBackPayload(

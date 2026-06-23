@@ -96,17 +96,54 @@ float g_zMath_ProjDepth = 0.0f;
 float g_zMath_ApproxExpNegTable[256] = {0};
 float g_zMath_ApproxExpNegScale = 0.0f;
 int g_zMath_ApproxExpNegDirty = 1;
+/**
+ * Reimplements data 0x4e0e90: g_zMath_ExceptionFuncNameFloor.
+ * Purpose: names the floor CRT math exception handled by zMath.
+ */
+char g_zMath_ExceptionFuncNameFloor[0x6] = "floor";
+/**
+ * Reimplements data 0x4e0e98: g_zMath_ExceptionFuncNameCeil.
+ * Purpose: names the ceil CRT math exception handled by zMath.
+ */
+char g_zMath_ExceptionFuncNameCeil[0x5] = "ceil";
+/**
+ * Reimplements data 0x4e0ea0: g_zMath_ExceptionFuncNameAsin.
+ * Purpose: names the asin CRT math exception clamped by zMath.
+ */
+char g_zMath_ExceptionFuncNameAsin[0x5] = "asin";
+/**
+ * Reimplements data 0x4e0ea8: g_zMath_ExceptionFmt.
+ * Purpose: formats the stderr CRT math exception diagnostic line.
+ */
+char g_zMath_ExceptionFmt[0x2b] = "Math Exception: type=%d, [%s(%.8f, %.8f)]\n";
+/**
+ * Reimplements data 0x4e0ed4: g_zMath_SourceFile_ZmthMainC.
+ * Purpose: supplies the recovered zmth_main.c source path for zError math
+ * exception reports.
+ */
+char g_zMath_SourceFile_ZmthMainC[0x26] =
+    "D:\\Proj\\GameZRecoil\\zMath\\zmth_main.c";
+/**
+ * Reimplements data 0x4e0efc: g_zMath_ExceptionFmtNoNewline.
+ * Purpose: formats the zError CRT math exception diagnostic message.
+ */
+char g_zMath_ExceptionFmtNoNewline[0x2a] =
+    "Math Exception: type=%d, [%s(%.8f, %.8f)]";
 
-// Reimplements 0x472d30: zMath::CrtMatherrHandler
-// (D:\Proj\GameZRecoil\zMath\zmth_main.c)
+/**
+ * Reimplements 0x472d30: zMath::CrtMatherrHandler
+ * (D:\Proj\GameZRecoil\zMath\zmth_main.c).
+ * Purpose: reports CRT math exceptions and supplies recovered return values
+ * for zMath asin, ceil, and floor failures.
+ */
 int zMath::CrtMatherrHandler(
     _exception *except
 ) {
     zError::ReportOld(
         0x400,
-        "D:\\Proj\\GameZRecoil\\zMath\\zmth_main.c",
+        g_zMath_SourceFile_ZmthMainC,
         376,
-        "Math Exception: type=%d, [%s(%.8f, %.8f)]",
+        g_zMath_ExceptionFmtNoNewline,
         except->type,
         except->name,
         except->arg1,
@@ -114,7 +151,7 @@ int zMath::CrtMatherrHandler(
     );
     fprintf(
         stderr,
-        "Math Exception: type=%d, [%s(%.8f, %.8f)]\n",
+        g_zMath_ExceptionFmt,
         except->type,
         except->name,
         except->arg1,
@@ -123,7 +160,7 @@ int zMath::CrtMatherrHandler(
 
     if (strcmp(
         except->name,
-        "asin"
+        g_zMath_ExceptionFuncNameAsin
     ) == 0) {
         double arg = except->arg1;
         if (arg > 1.0) {
@@ -137,7 +174,7 @@ int zMath::CrtMatherrHandler(
 
     if (strcmp(
         except->name,
-        "ceil"
+        g_zMath_ExceptionFuncNameCeil
     ) == 0) {
         except->retval = 0.0;
         return 1;
@@ -145,7 +182,7 @@ int zMath::CrtMatherrHandler(
 
     if (strcmp(
         except->name,
-        "floor"
+        g_zMath_ExceptionFuncNameFloor
     ) == 0) {
         except->retval = 0.0;
         return 1;

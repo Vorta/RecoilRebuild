@@ -473,12 +473,12 @@ extern "C" int __fastcall zSndSystem_InitNamedSetsSyntax(
 
     zSndCd::Init(zReader_GetNamedNode(
         g_zSnd_ConfigRootNode,
-        "CD_TRACKS"
+        g_zSndConfig_CdTracksKey
     ));
 
     const char *pathText = zReader::ReadNamedString(
         g_zSnd_ConfigRootNode,
-        "SOUND_PATH"
+        g_zSndConfig_SoundPathKey
     );
     if (pathText != 0) {
         if (g_zSnd_SearchPathList == 0) {
@@ -494,7 +494,7 @@ extern "C" int __fastcall zSndSystem_InitNamedSetsSyntax(
     float speedOfSound = 0.0f;
     if (zReader::ReadNamedFloat(
         g_zSnd_ConfigRootNode,
-        "SPEED_OF_SOUND",
+        g_zSndConfig_SpeedOfSoundKey,
         &speedOfSound
     ) != 0) {
         zSnd::SetSpeedOfSoundMps(speedOfSound);
@@ -502,7 +502,7 @@ extern "C" int __fastcall zSndSystem_InitNamedSetsSyntax(
 
     zReader::Node *setsNode = zReader_GetNamedNode(
         g_zSnd_ConfigRootNode,
-        "SETS"
+        g_zSndConfig_SetsKey
     );
     zReader::Node *sets = setsNode->value.nodes;
     const int setCount = (sets[0].value.i32 - 1) / 2;
@@ -531,7 +531,7 @@ extern "C" int __fastcall zSndSystem_InitNamedSetsSyntax(
 
             if (zReader_GetNamedNode(
                 sampleNode,
-                "3D"
+                g_zSndConfig_3dKey
             ) != 0) {
                 sample->replayFields.flags |= 0x04;
             } else {
@@ -540,7 +540,7 @@ extern "C" int __fastcall zSndSystem_InitNamedSetsSyntax(
 
             if (zReader_GetNamedNode(
                 sampleNode,
-                "LOOPED"
+                g_zSndConfig_LoopedKey
             ) != 0) {
                 sample->replayFields.flags |= 0x01;
             } else {
@@ -549,7 +549,7 @@ extern "C" int __fastcall zSndSystem_InitNamedSetsSyntax(
 
             if (zReader_GetNamedNode(
                 sampleNode,
-                "FREQUENCY"
+                g_zSndConfig_FrequencyKey
             ) != 0) {
                 sample->replayFields.flags |= 0x20;
             } else {
@@ -558,7 +558,7 @@ extern "C" int __fastcall zSndSystem_InitNamedSetsSyntax(
 
             if (zReader_GetNamedNode(
                 sampleNode,
-                "HARDWARE"
+                g_zSndConfig_HardwareKey
             ) != 0) {
                 sample->replayFields.flags |= 0x40;
             } else {
@@ -567,7 +567,7 @@ extern "C" int __fastcall zSndSystem_InitNamedSetsSyntax(
 
             if (zReader_GetNamedNode(
                 sampleNode,
-                "PURGEABLE"
+                g_zSndConfig_PurgeableKey
             ) != 0) {
                 sample->replayFields.flags |= 0x02;
             } else {
@@ -576,7 +576,7 @@ extern "C" int __fastcall zSndSystem_InitNamedSetsSyntax(
 
             if (zReader_GetNamedNode(
                 sampleNode,
-                "VOICE"
+                g_zSndConfig_VoiceKey
             ) != 0) {
                 sample->replayFields.flags |= 0x10;
             } else {
@@ -586,7 +586,7 @@ extern "C" int __fastcall zSndSystem_InitNamedSetsSyntax(
             sample->replayFields.gain = 1.0f;
             zReader::ReadNamedFloat(
                 sampleNode,
-                "VOLUME",
+                g_zSndConfig_VolumeKey,
                 &sample->replayFields.gain
             );
             if (sample->replayFields.gain > 1.0f) {
@@ -598,7 +598,7 @@ extern "C" int __fastcall zSndSystem_InitNamedSetsSyntax(
             sample->a3dDistanceScale = 1.0f;
             zReader::ReadNamedFloat(
                 sampleNode,
-                "A3DDIST",
+                g_zSndConfig_A3dDistanceKey,
                 &sample->a3dDistanceScale
             );
 
@@ -640,7 +640,7 @@ extern "C" int __fastcall zSndSystem_InitNamedSetsSyntax(
 
             variantNode = zReader_GetNamedNode(
                 sampleNode,
-                "MED"
+                g_zSndConfig_QualityMedToken
             );
             if (variantNode == 0) {
                 sample->medVariant.sampleName = 0;
@@ -689,7 +689,7 @@ extern "C" int __fastcall zSndSystem_InitNamedSetsSyntax(
 
     zReader::Node *groupsNode = zReader_GetNamedNode(
         g_zSnd_ConfigRootNode,
-        "SOUND_GROUPS"
+        g_zSndConfig_SoundGroupsKey
     );
     if (groupsNode != 0) {
         zSndGroup_QueuePendingLoadsFromConfigNode(groupsNode);
@@ -811,12 +811,12 @@ extern "C" int __fastcall zSndSystem_InitLegacySetsSyntax(
 
     zSndCd::Init(zReader_GetNamedNode(
         g_zSnd_ConfigRootNode,
-        "CD_TRACKS"
+        g_zSndConfig_CdTracksKey
     ));
 
     const char *pathText = zReader::ReadNamedString(
         g_zSnd_ConfigRootNode,
-        "SOUND_PATH"
+        g_zSndConfig_SoundPathKey
     );
     if (pathText != 0) {
         if (g_zSnd_SearchPathList == 0) {
@@ -832,7 +832,7 @@ extern "C" int __fastcall zSndSystem_InitLegacySetsSyntax(
     float speedOfSound = 0.0f;
     if (zReader::ReadNamedFloat(
         g_zSnd_ConfigRootNode,
-        "SPEED_OF_SOUND",
+        g_zSndConfig_SpeedOfSoundKey,
         &speedOfSound
     ) != 0) {
         zSnd::SetSpeedOfSoundMps(speedOfSound);
@@ -840,7 +840,7 @@ extern "C" int __fastcall zSndSystem_InitLegacySetsSyntax(
 
     zReader::Node *setsNode = zReader_GetNamedNode(
         g_zSnd_ConfigRootNode,
-        "SETS"
+        g_zSndConfig_SetsKey
     );
     zReader::Node *sets = setsNode->value.nodes;
     const int setCount = (sets[0].value.i32 - 1) / 2;
@@ -929,7 +929,7 @@ extern "C" int __fastcall zSndSystem_InitLegacySetsSyntax(
 
     zReader::Node *groupsNode = zReader_GetNamedNode(
         g_zSnd_ConfigRootNode,
-        "SOUND_GROUPS"
+        g_zSndConfig_SoundGroupsKey
     );
     if (groupsNode != 0) {
         zSndGroup_QueuePendingLoadsFromConfigNode(groupsNode);

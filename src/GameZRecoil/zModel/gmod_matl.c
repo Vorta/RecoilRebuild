@@ -8,15 +8,78 @@
 #include <stdlib.h>
 #include <string.h>
 
-namespace {
-    const char *kGmodMatlSourceFile = "D:\\Proj\\GameZRecoil\\zModel\\gmod_matl.c";
-
-    const char *kMatlWriteError = "Error writing material buffer.";
-
-    const char *kMatlReadError = "Error reading GameZ Material buffer data.";
-
-    const char *kMatlCycleReadError = "Error reading GameZ Material cycle texture data.";
-}
+/*
+ * BN identifies the gmod_matl.c diagnostics as writable .data char arrays in
+ * this order, including VC alignment padding between rows.
+ */
+/**
+ * Reimplements data 0x4e11a0: g_zModel_GModMatl_FILE.
+ * Purpose: store the writable source-file path passed to material diagnostics.
+ */
+char g_zModel_GModMatl_FILE[0x27] = "D:\\Proj\\GameZRecoil\\zModel\\gmod_matl.c";
+/**
+ * Reimplements data 0x4e11c8: g_zModel_Matl_ErrWriteBuffer.
+ * Purpose: store the writable material-buffer write failure diagnostic.
+ */
+char g_zModel_Matl_ErrWriteBuffer[0x1f] = "Error writing material buffer.";
+/**
+ * Reimplements data 0x4e11e8: g_zModel_ReadMaterialCycleTextureDataErrorMsg.
+ * Purpose: store the writable material-cycle read failure diagnostic.
+ */
+char g_zModel_ReadMaterialCycleTextureDataErrorMsg[0x31] =
+    "Error reading GameZ Material cycle texture data.";
+/**
+ * Reimplements data 0x4e121c: g_zModel_ReadMaterialBufferDataErrorMsg.
+ * Purpose: store the writable material-buffer read failure diagnostic.
+ */
+char g_zModel_ReadMaterialBufferDataErrorMsg[0x2a] =
+    "Error reading GameZ Material buffer data.";
+/**
+ * Reimplements data 0x4e1248: g_zModel_SetMaterialArraySizeLimitFmt.
+ * Purpose: store the writable material-pool size limit diagnostic format.
+ */
+char g_zModel_SetMaterialArraySizeLimitFmt[0x39] =
+    "Error setting material array size to %d; limit is 32767.";
+/**
+ * Reimplements data 0x4e1284: g_zModel_SetMaterialArraySizeAlreadySetFmt.
+ * Purpose: store the writable material-pool already-sized diagnostic format.
+ */
+char g_zModel_SetMaterialArraySizeAlreadySetFmt[0x3b] =
+    "Error setting material array size; size already set to %d.";
+/**
+ * Reimplements data 0x4e12c0: g_zModel_Matl_ErrCycleNullStr.
+ * Purpose: store the writable null material-cycle diagnostic format.
+ */
+char g_zModel_Matl_ErrCycleNullStr[0x2d] =
+    "Material Cycle Pointer is NULL: flag is (%s)";
+/**
+ * Reimplements data 0x4e12f0: g_zModel_SetCycleTextureLoopTextureNotCycledMsg.
+ * Purpose: store the writable SetCycleTextureLoop not-cycled diagnostic.
+ */
+char g_zModel_SetCycleTextureLoopTextureNotCycledMsg[0x29] =
+    "SetCycleTextureLoop:  Texture not cycled";
+/**
+ * Reimplements data 0x4e131c: g_zModel_SetCycleTextureSpeedTextureNotCycledMsg.
+ * Purpose: store the writable SetCycleTextureSpeed not-cycled diagnostic.
+ */
+char g_zModel_SetCycleTextureSpeedTextureNotCycledMsg[0x2a] =
+    "SetCycleTextureSpeed:  Texture not cycled";
+/**
+ * Reimplements data 0x4e1348: g_zModel_CopyMaterialBufferFullUsingDefaultMsg.
+ * Purpose: store the writable material clone fallback diagnostic.
+ */
+char g_zModel_CopyMaterialBufferFullUsingDefaultMsg[0x3e] =
+    "ERROR: Copying material; material buffer full; using default.";
+RECOIL_STATIC_ASSERT(sizeof(g_zModel_GModMatl_FILE) == 0x27);
+RECOIL_STATIC_ASSERT(sizeof(g_zModel_Matl_ErrWriteBuffer) == 0x1f);
+RECOIL_STATIC_ASSERT(sizeof(g_zModel_ReadMaterialCycleTextureDataErrorMsg) == 0x31);
+RECOIL_STATIC_ASSERT(sizeof(g_zModel_ReadMaterialBufferDataErrorMsg) == 0x2a);
+RECOIL_STATIC_ASSERT(sizeof(g_zModel_SetMaterialArraySizeLimitFmt) == 0x39);
+RECOIL_STATIC_ASSERT(sizeof(g_zModel_SetMaterialArraySizeAlreadySetFmt) == 0x3b);
+RECOIL_STATIC_ASSERT(sizeof(g_zModel_Matl_ErrCycleNullStr) == 0x2d);
+RECOIL_STATIC_ASSERT(sizeof(g_zModel_SetCycleTextureLoopTextureNotCycledMsg) == 0x29);
+RECOIL_STATIC_ASSERT(sizeof(g_zModel_SetCycleTextureSpeedTextureNotCycledMsg) == 0x2a);
+RECOIL_STATIC_ASSERT(sizeof(g_zModel_CopyMaterialBufferFullUsingDefaultMsg) == 0x3e);
 
 namespace zDi {
     /**
@@ -73,9 +136,9 @@ namespace zModel_MatlBuffer {
         if (g_zModel_MatlPoolCapacity != 0) {
             zError::ReportOld(
                 0x200,
-                kGmodMatlSourceFile,
+                g_zModel_GModMatl_FILE,
                 0x368,
-                "Error setting material array size; size already set to %d.",
+                g_zModel_SetMaterialArraySizeAlreadySetFmt,
                 g_zModel_MatlPoolCapacity
             );
             return;
@@ -84,9 +147,9 @@ namespace zModel_MatlBuffer {
         if (count > 32767) {
             zError::ReportOld(
                 0x200,
-                kGmodMatlSourceFile,
+                g_zModel_GModMatl_FILE,
                 0x371,
-                "Error setting material array size to %d; limit is 32767.",
+                g_zModel_SetMaterialArraySizeLimitFmt,
                 count
             );
             return;
@@ -114,9 +177,9 @@ namespace zModel_MatlBuffer {
         ) != 1) {
             zError::ReportOld(
                 0x200,
-                kGmodMatlSourceFile,
+                g_zModel_GModMatl_FILE,
                 0x1e9,
-                kMatlWriteError
+                g_zModel_Matl_ErrWriteBuffer
             );
         }
         if (fwrite(
@@ -127,9 +190,9 @@ namespace zModel_MatlBuffer {
         ) != 1) {
             zError::ReportOld(
                 0x200,
-                kGmodMatlSourceFile,
+                g_zModel_GModMatl_FILE,
                 0x1f6,
-                kMatlWriteError
+                g_zModel_Matl_ErrWriteBuffer
             );
         }
         if (fwrite(
@@ -140,9 +203,9 @@ namespace zModel_MatlBuffer {
         ) != 1) {
             zError::ReportOld(
                 0x200,
-                kGmodMatlSourceFile,
+                g_zModel_GModMatl_FILE,
                 0x203,
-                kMatlWriteError
+                g_zModel_Matl_ErrWriteBuffer
             );
         }
         if (fwrite(
@@ -153,9 +216,9 @@ namespace zModel_MatlBuffer {
         ) != 1) {
             zError::ReportOld(
                 0x200,
-                kGmodMatlSourceFile,
+                g_zModel_GModMatl_FILE,
                 0x210,
-                kMatlWriteError
+                g_zModel_Matl_ErrWriteBuffer
             );
         }
 
@@ -189,9 +252,9 @@ namespace zModel_MatlBuffer {
         ) != 1) {
             zError::ReportOld(
                 0x200,
-                kGmodMatlSourceFile,
+                g_zModel_GModMatl_FILE,
                 0x234,
-                kMatlWriteError
+                g_zModel_Matl_ErrWriteBuffer
             );
             result = 0;
         }
@@ -209,9 +272,9 @@ namespace zModel_MatlBuffer {
                     ) != 1) {
                         zError::ReportOld(
                             0x200,
-                            kGmodMatlSourceFile,
+                            g_zModel_GModMatl_FILE,
                             0x249,
-                            kMatlWriteError
+                            g_zModel_Matl_ErrWriteBuffer
                         );
                         result = 0;
                         break;
@@ -243,9 +306,9 @@ namespace zModel_MatlBuffer {
                     ) != 1) {
                         zError::ReportOld(
                             0x200,
-                            kGmodMatlSourceFile,
+                            g_zModel_GModMatl_FILE,
                             0x266,
-                            kMatlWriteError
+                            g_zModel_Matl_ErrWriteBuffer
                         );
                         result = 0;
                         break;
@@ -272,7 +335,7 @@ namespace zModel_MatlBuffer {
     int __fastcall ReadGameZ(void *stream) {
         FILE *const file = (FILE *)(stream);
         const int oldCapacity = g_zModel_MatlPoolCapacity;
-        const char *errorMessage = kMatlReadError;
+        const char *errorMessage = g_zModel_ReadMaterialBufferDataErrorMsg;
         int errorLine = 0;
         int poolBytes = 0;
 
@@ -361,7 +424,7 @@ namespace zModel_MatlBuffer {
                         1,
                         file
                     ) != 1) {
-                        errorMessage = kMatlCycleReadError;
+                        errorMessage = g_zModel_ReadMaterialCycleTextureDataErrorMsg;
                         errorLine = 0x2fa;
                         goto readError;
                     }
@@ -377,7 +440,7 @@ namespace zModel_MatlBuffer {
                         1,
                         file
                     ) != 1) {
-                        errorMessage = kMatlCycleReadError;
+                        errorMessage = g_zModel_ReadMaterialCycleTextureDataErrorMsg;
                         errorLine = 0x30b;
                         goto readError;
                     }
@@ -398,7 +461,7 @@ namespace zModel_MatlBuffer {
     readError:
         zError::ReportOld(
             0x200,
-            kGmodMatlSourceFile,
+            g_zModel_GModMatl_FILE,
             errorLine,
             errorMessage
         );

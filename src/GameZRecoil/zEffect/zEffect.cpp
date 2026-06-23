@@ -536,7 +536,13 @@ bool ReadEventStream(
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function.
+ * Observed callers: 0x460070.
+ * Evidence basis: InitFromPath indexes the same zReader node-array payload for
+ * effect-template rows and material texture-map rows.
+ * Purpose: return the first payload node for a zReader array node.
+ */
 zReader::Node *zReaderArrayBase(
     zReader::Node *node
 ) {
@@ -556,7 +562,13 @@ int zReaderArrayCount(
     return zReaderArrayBase(node)->value.i32;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function.
+ * Observed callers: 0x460070.
+ * Evidence basis: InitFromPath repeatedly reads zReader array payload strings
+ * for model names, looping text, and material texture-map paths.
+ * Purpose: return the string stored at a zReader array payload index.
+ */
 char *zReaderArrayStringAt(
     zReader::Node *node,
     int index
@@ -1035,7 +1047,13 @@ zClass_NodePartial *LoadResetScratchNode(
     return (zClass_NodePartial *)((unsigned int)(entry->resetScratch[index]));
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper evidence: no standalone retail function.
+ * Observed callers: 0x45bc60.
+ * Evidence basis: HandleSurfaceRefEvent repeats the positive node-ref lookup
+ * and the -200 reset-scratch node fallback for child-animation positioning.
+ * Purpose: resolve a serialized node reference or recover the reset-scratch node.
+ */
 zClass_NodePartial *ResolveNodeRefOrResetScratch(
     zEffectAnimEntry *self,
     short nodeRefIndex

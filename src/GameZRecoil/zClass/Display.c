@@ -8,37 +8,40 @@
 namespace {
     const int kZClassNodeDisplay = 4;
 
+    /*
+     * BN diagnostic string data used by Display.c validation paths at
+     * 0x44fdd0, 0x44fe50, 0x44fe90, 0x44ff10, and 0x44ff90.
+     */
+    const char *kDisplaySourceFile = "D:\\Proj\\GameZRecoil\\zClass\\Display.c";
+
     /**
-     * Local helper with no standalone retail function; observed in callers 0x44fe90
-     * and 0x44ff10 through display-node validation failures.
+     * Original static helper observed in callers 0x44fe90 and 0x44ff10
+     * through display-node validation failures.
      *
      * Purpose: report a Display.c class validation failure and return the
      * generic zClass error code.
      */
-    // Source-faithful helper recovered from address-backed callers in this source file.
     int ReportDisplayClassError(
         int sourceLine,
         const char *message
     ) {
         zError::ReportOld(
             0x400,
-            "GameZRecoil/zClass/Display.c",
+            kDisplaySourceFile,
             sourceLine,
             message
         );
         return 5;
     }
 
-    zClass_DisplayDataPartial *
     /**
-     * Local helper with no standalone retail function; observed in callers 0x44fe90
-     * and 0x44ff10 as shared display-node validation.
+     * Original static helper observed in callers 0x44fe90 and 0x44ff10 as
+     * shared display-node validation.
      *
      * Purpose: validate a display node and return its class data for size and
      * position updates.
      */
-    // Source-faithful helper recovered from address-backed callers in this source file.
-    GetDisplayData(
+    zClass_DisplayDataPartial *GetDisplayData(
         zClass_NodePartial * node,
         int nullLine,
         int dataLine,
@@ -63,7 +66,7 @@ namespace {
         if (node->classId != kZClassNodeDisplay) {
             zError::ReportOld(
                 0x400,
-                "GameZRecoil/zClass/Display.c",
+                kDisplaySourceFile,
                 classLine,
                 "Unexpected class id"
             );
@@ -74,13 +77,12 @@ namespace {
     }
 
     /**
-     * Local helper with no standalone retail function; observed in caller
+     * Original static helper observed in caller
      * 0x44ff90 with the original Display.c diagnostic strings.
      *
      * Purpose: validate a display node and preserve the old Display.c error
      * messages for background-color updates.
      */
-    // Source-faithful helper recovered from address-backed callers in this source file.
     zClass_DisplayDataPartial *GetDisplayDataOldMessages(
         zClass_NodePartial * node,
         int nullLine,
@@ -91,7 +93,7 @@ namespace {
         if (node == 0) {
             zError::ReportOld(
                 0x400,
-                "D:\\Proj\\GameZRecoil\\zClass\\Display.c",
+                kDisplaySourceFile,
                 nullLine,
                 "Null node pointer."
             );
@@ -102,7 +104,7 @@ namespace {
         if (node->classData == 0) {
             zError::ReportOld(
                 0x400,
-                "D:\\Proj\\GameZRecoil\\zClass\\Display.c",
+                kDisplaySourceFile,
                 dataLine,
                 "Null class data pointer"
             );
@@ -113,7 +115,7 @@ namespace {
         if (node->classId != kZClassNodeDisplay) {
             zError::ReportOld(
                 0x400,
-                "D:\\Proj\\GameZRecoil\\zClass\\Display.c",
+                kDisplaySourceFile,
                 classLine,
                 "Bad Class Found.\n Wanted (%d)\n Found (%d)",
                 node->classId,
@@ -131,7 +133,7 @@ namespace {
 namespace zClass_Display {
     /**
      * Reimplements 0x44fdd0: zClass_Display::gwDisplayInit
-     * (GameZRecoil/zClass/Display.c).
+     * (D:\Proj\GameZRecoil\zClass\Display.c).
      *
      * Purpose: allocate a display node, initialize its class data defaults, and
      * insert it into the display type list.
@@ -141,7 +143,7 @@ namespace zClass_Display {
         if (node == 0) {
             zError::ReportOld(
                 0x400,
-                "D:\\Proj\\GameZRecoil\\zClass\\Display.c",
+                kDisplaySourceFile,
                 0x41,
                 "Null node pointer."
             );
@@ -172,22 +174,21 @@ namespace zClass_Display {
         return node;
     }
 
-    int __fastcall
     /**
      * Reimplements 0x44fe50: zClass_Display::RemoveChild
-     * (GameZRecoil/zClass/Display.c).
+     * (D:\Proj\GameZRecoil\zClass\Display.c).
      *
      * Purpose: validate the parent and child pointers, then remove the child
      * through the generic zClass child-list helper.
      */
-    RemoveChild(
+    int __fastcall RemoveChild(
         zClass_NodePartial * parent,
         zClass_NodePartial * child
     ) {
         if (parent == 0) {
             zError::ReportOld(
                 0x400,
-                "D:\\Proj\\GameZRecoil\\zClass\\Display.c",
+                kDisplaySourceFile,
                 0x8f,
                 "Null node pointer."
             );
@@ -197,7 +198,7 @@ namespace zClass_Display {
         if (child == 0) {
             zError::ReportOld(
                 0x400,
-                "D:\\Proj\\GameZRecoil\\zClass\\Display.c",
+                kDisplaySourceFile,
                 0x90,
                 "Null node pointer."
             );
@@ -211,14 +212,13 @@ namespace zClass_Display {
         return 0;
     }
 
-    int __fastcall
     /**
      * Reimplements 0x44fe90: zClass_Display::gwDisplaySetSize
-     * (GameZRecoil/zClass/Display.c).
+     * (D:\Proj\GameZRecoil\zClass\Display.c).
      *
      * Purpose: validate a display node and update its stored width and height.
      */
-    gwDisplaySetSize(
+    int __fastcall gwDisplaySetSize(
         zClass_NodePartial * node,
         int width,
         int height
@@ -238,14 +238,13 @@ namespace zClass_Display {
         return 0;
     }
 
-    int __fastcall
     /**
      * Reimplements 0x44ff10: zClass_Display::gwDisplaySetPosition
-     * (GameZRecoil/zClass/Display.c).
+     * (D:\Proj\GameZRecoil\zClass\Display.c).
      *
      * Purpose: validate a display node and update its stored screen position.
      */
-    gwDisplaySetPosition(
+    int __fastcall gwDisplaySetPosition(
         zClass_NodePartial * node,
         int x,
         int y
@@ -265,15 +264,14 @@ namespace zClass_Display {
         return 0;
     }
 
-    int __fastcall
     /**
      * Reimplements 0x44ff90: zClass_Display::gwDisplaySetBackgroundColor
-     * (GameZRecoil/zClass/Display.c).
+     * (D:\Proj\GameZRecoil\zClass\Display.c).
      *
      * Purpose: update the display background color, pack it to the video clear
      * color format, and set the renderer clear color.
      */
-    gwDisplaySetBackgroundColor(
+    int __fastcall gwDisplaySetBackgroundColor(
         zClass_NodePartial * node,
         float red,
         float green,

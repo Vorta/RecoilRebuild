@@ -157,13 +157,89 @@ int g_Player_NextOrdinal = 0;
  * Purpose: Latches completion of the Mode2 State1 saved-state finalization pass.
  */
 int g_Player_AiMode2State1Finalized = 0;
+/**
+ * Reimplements data 0x4da0c0: g_Player_AiMode2_PathFollowPitchInputScale.
+ * BN types this as an initialized .data float used by the Mode2 AI
+ * path-follow pitch steering input.
+ * Purpose: Scales path-follow vertical steering error into pitch input.
+ */
 float g_Player_AiMode2_PathFollowPitchInputScale = 0.0174499992f;
+/**
+ * Reimplements data 0x4da0c4: g_Player_AiMode2_PathFollowPitchTurnGain.
+ * BN types this as an initialized .data float paired with the Mode2 AI
+ * path-follow pitch input scale.
+ * Purpose: Scales path-follow pitch input into turn correction.
+ */
 float g_Player_AiMode2_PathFollowPitchTurnGain = 5.69999981f;
+/**
+ * Reimplements data 0x4da0c8: g_Player_AiMode2_SteeringPitchInputScale.
+ * BN types this as an initialized .data float used by the Mode2 AI steering
+ * substates.
+ * Purpose: Scales steering vertical distance into pitch input.
+ */
 float g_Player_AiMode2_SteeringPitchInputScale = 0.800000012f;
+/**
+ * Reimplements data 0x4da0cc: g_Player_AiMode2_SteeringPitchTurnGain.
+ * BN types this as an initialized .data float paired with the Mode2 AI
+ * steering pitch input scale.
+ * Purpose: Scales steering pitch input into turn correction.
+ */
 float g_Player_AiMode2_SteeringPitchTurnGain = 5.69999981f;
+/**
+ * Reimplements data 0x4da0d0: g_Player_AiMode2_SteeringVerticalErrorScale.
+ * BN types this as an initialized .data float read by the Mode2 AI steering
+ * substates.
+ * Purpose: Scales steering vertical error before pitch correction.
+ */
 float g_Player_AiMode2_SteeringVerticalErrorScale = 0.100000001f;
-float g_Player_AiMode2_OffsetTargetRotateCos15Deg = 0.965925813f;
-float g_Player_AiMode2_OffsetTargetRotateSin15Deg = 0.258819044f;
+/**
+ * Reimplements data 0x4da0d4: g_Player_AiMode2_TuningScalar55A.
+ * BN types this as an initialized .data float in the contiguous Mode2 AI
+ * tuning scalar range.
+ * Purpose: Stores the first Mode2 AI 55.0 tuning scalar.
+ */
+float g_Player_AiMode2_TuningScalar55A = 55.0f;
+/**
+ * Reimplements data 0x4da0d8: g_Player_AiMode2_TuningScalar55B.
+ * BN types this as an initialized .data float in the contiguous Mode2 AI
+ * tuning scalar range.
+ * Purpose: Stores the second Mode2 AI 55.0 tuning scalar.
+ */
+float g_Player_AiMode2_TuningScalar55B = 55.0f;
+/**
+ * Reimplements data 0x4da0dc: g_Player_AiMode2_TuningScalar5.
+ * BN types this as an initialized .data float in the contiguous Mode2 AI
+ * tuning scalar range.
+ * Purpose: Stores the Mode2 AI 5.0 tuning scalar.
+ */
+float g_Player_AiMode2_TuningScalar5 = 5.0f;
+/**
+ * Reimplements data 0x4da0e0: g_Player_AiMode2_TuningScalar10.
+ * BN types this as an initialized .data float in the contiguous Mode2 AI
+ * tuning scalar range.
+ * Purpose: Stores the Mode2 AI 10.0 tuning scalar.
+ */
+float g_Player_AiMode2_TuningScalar10 = 10.0f;
+/**
+ * Reimplements data 0x4da0e4: g_Player_AiMode2_OffsetTargetRotateCos15Deg.
+ * BN types this as an initialized .data float used by the Mode2 AI offset
+ * target steering rotation.
+ * Purpose: Stores the retail cosine scalar for offset-target rotation.
+ */
+float g_Player_AiMode2_OffsetTargetRotateCos15Deg = 0.965900004f;
+/**
+ * Reimplements data 0x4da0e8: g_Player_AiMode2_OffsetTargetRotateSin15Deg.
+ * BN types this as an initialized .data float used by the Mode2 AI offset
+ * target steering rotation.
+ * Purpose: Stores the retail sine scalar for offset-target rotation.
+ */
+float g_Player_AiMode2_OffsetTargetRotateSin15Deg = 0.25879999995f;
+/**
+ * Reimplements data 0x4db5ec: g_Player_HealthySubNodeName.
+ * Purpose: Names the shared healthy child node used by player, pickup, and
+ * turret paths.
+ */
+char g_Player_HealthySubNodeName[8] = "healthy";
 /**
  * Reimplements data 0x4f3760: g_Player_TotalTimeSecScaled.
  * Purpose: Stores the accumulated player-frame time used by gameplay timers.
@@ -1510,14 +1586,30 @@ static inline void PlayerBindSingleWeaponMount(
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists;
+ * observed in address-backed owner 0x439ba0 through the alt-gun transition
+ * state code in this source file.
+ * Evidence basis: repeated typed access to the transition animation scale field
+ * in the lower/raise transition fragments rather than a retail helper call.
+ * Purpose: name the player-state transition animation scale field used while
+ * lowering and raising single-mount alt guns.
+ */
 float &PlayerAltGunTransitionAnimScale(
     zUtil_PlayerStateStorage *playerState
 ) {
     return playerState->altGunTransitionAnimScale;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists;
+ * observed in address-backed caller 0x439ba0 through
+ * TickAltGunTransitionAnimation's state 2 path.
+ * Evidence basis: the delay/timer fragment is part of the recovered transition
+ * state machine in this source file, with no separate retail callee.
+ * Purpose: wait for the retract delay before starting the alt-gun lower
+ * transition and master-type loop SFX.
+ */
 void TickAltGunRetractDelay(
     zUtil_SaveGameState *saveState,
     zUtil_PlayerStateStorage *playerState
@@ -1533,7 +1625,17 @@ void TickAltGunRetractDelay(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists;
+ * observed in address-backed caller 0x439ba0 through
+ * TickAltGunTransitionAnimation's state 4 path.
+ * Evidence basis: recovered inline transition math, node position, scale, and
+ * rotation updates use the same player/controller fields as the surrounding
+ * alt-gun runtime state machine.
+ * Purpose: lower the previous single-mount alt gun toward the door before the
+ * door-open transition.
+ * Original-source helper.
+ */
 void TickAltGunLowerTransition(
     zUtil_PlayerStateStorage *playerState,
     PlayerGunFireController *controller
@@ -1584,7 +1686,14 @@ void TickAltGunLowerTransition(
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists;
+ * observed in address-backed caller 0x439ba0 through
+ * TickAltGunTransitionAnimation's state 8 path.
+ * Evidence basis: door node scale animation is a local fragment of the
+ * transition state switch, not a standalone retail function.
+ * Purpose: open the left/right door nodes and advance to alt-gun activation.
+ */
 void TickAltGunDoorOpen(
     zUtil_PlayerStateStorage *playerState
 ) {
@@ -1610,7 +1719,17 @@ void TickAltGunDoorOpen(
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists;
+ * observed in address-backed caller 0x439ba0 through the state 16 dual-mount
+ * activation path.
+ * Evidence basis: opposite controller node deactivation is repeated typed
+ * controller/bank field access inside the recovered alt-gun activation
+ * fragment, with no separate retail callee.
+ * Purpose: hide the inactive side's alt-gun mount nodes before activating a
+ * dual-mount weapon.
+ * Original-source helper.
+ */
 void DeactivateOppositeAltGunControllerNodes(
     zUtil_PlayerStateStorage *playerState,
     PlayerGunFireController *activeController
@@ -1634,7 +1753,15 @@ void DeactivateOppositeAltGunControllerNodes(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists;
+ * observed in address-backed caller 0x439ba0 through
+ * TickAltGunTransitionAnimation's state 16 path.
+ * Evidence basis: activation, attach-node clone ownership, door state, and
+ * SFX updates are one switch fragment in the recovered owner state machine.
+ * Purpose: remove the outgoing alt gun, activate the selected controller, and
+ * prepare the close/raise transition for single-mount weapons.
+ */
 void TickAltGunActivateTransition(
     zUtil_SaveGameState *saveState,
     zUtil_PlayerStateStorage *playerState
@@ -1734,7 +1861,15 @@ void TickAltGunActivateTransition(
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists;
+ * observed in address-backed caller 0x439ba0 through
+ * TickAltGunTransitionAnimation's state 32 path.
+ * Evidence basis: door close scale animation is a local state-machine fragment
+ * using the same timer field and door nodes as the open path.
+ * Purpose: close the left/right door nodes and advance to the alt-gun raise
+ * transition.
+ */
 void TickAltGunDoorClose(
     zUtil_PlayerStateStorage *playerState
 ) {
@@ -1760,7 +1895,14 @@ void TickAltGunDoorClose(
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists;
+ * observed in address-backed caller 0x439ba0 through
+ * TickAltGunTransitionAnimation's state 64 path.
+ * Evidence basis: recovered inline transition math updates the same attach node
+ * position/scale and transition animation scale field as the lower path.
+ * Purpose: raise the active single-mount alt gun back to its resting mount.
+ */
 void TickAltGunRaiseTransition(
     zUtil_PlayerStateStorage *playerState,
     PlayerGunFireController *controller
@@ -1804,7 +1946,15 @@ void TickAltGunRaiseTransition(
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists;
+ * observed in address-backed caller 0x439ba0 when the alt-gun transition state
+ * is not idle or projectile-camera tethered.
+ * Evidence basis: the switch-lowered state dispatch is local to the recovered
+ * runtime tick owner; 0x43a3a0 and 0x43a3bc are compiler switch-lowering
+ * artifacts, not standalone authored helpers.
+ * Purpose: dispatch the active alt-gun transition animation state.
+ */
 void TickAltGunTransitionAnimation(
     zUtil_SaveGameState *saveState
 ) {
@@ -1845,7 +1995,15 @@ void TickAltGunTransitionAnimation(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists;
+ * observed in address-backed caller 0x439ba0 when transition bits 0x180 are
+ * set.
+ * Evidence basis: projectile tether cleanup and camera toggle handling are
+ * typed player/controller state fragments in the owner tick, with no retail
+ * helper callee.
+ * Purpose: clean up or toggle the projectile-camera alt-gun tether state.
+ */
 void TickAltGunTetherCleanup(
     zUtil_SaveGameState *saveState
 ) {
@@ -1883,7 +2041,15 @@ void TickAltGunTetherCleanup(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists;
+ * observed in address-backed caller 0x439ba0 after dispatch/tether handling.
+ * Evidence basis: trigger-process cleanup, HUD message formatting, and runtime
+ * instance removal are a local owner tick fragment using fixed player state
+ * banks and source-file local OptCatalog/HUD calls.
+ * Purpose: consume the alt-gun trigger process flag and report removed weapon
+ * runtime instances.
+ */
 void TickAltGunTriggerProcessCleanup(
     zUtil_SaveGameState *saveState
 ) {
@@ -1943,7 +2109,15 @@ void TickAltGunTriggerProcessCleanup(
     playerState->altGunTriggerProcessFlag = 0;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists;
+ * observed in address-backed caller 0x439ba0 after the local-player gate.
+ * Evidence basis: ammo drain, trail deactivation, HUD value update, and
+ * auto-switch state changes are a single local ammo-state fragment, with no
+ * standalone retail callee.
+ * Purpose: update active alt-gun charge/ammo and decide whether the remaining
+ * local tick work may continue.
+ */
 int TickAltGunLocalAmmoState(
     zUtil_SaveGameState *saveState
 ) {
@@ -1990,7 +2164,15 @@ int TickAltGunLocalAmmoState(
     return 1;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists;
+ * observed in address-backed caller 0x439ba0 after the local ammo-state update,
+ * and it may call address-backed 0x43a400 for the primary-gun tick.
+ * Evidence basis: alt-fire slot recoil decay and primary-gun tick dispatch are
+ * the final local-player fragment of the recovered owner tick.
+ * Purpose: update alt-fire slot offsets and run the primary-gun dispatch tick
+ * when a primary controller is active.
+ */
 void TickAltGunLocalSlotAndPrimaryState(
     zUtil_SaveGameState *saveState
 ) {
@@ -3494,7 +3676,7 @@ void __fastcall InitStateFromNameAndMasterCommonData(
         zClass_NodePartial *const healthyNode =
             zClass_Class::FindSubNodeByName(
                 playerState->rootNode,
-                "healthy"
+                g_Player_HealthySubNodeName
             );
         if (healthyNode != 0) {
             zClass_Class::gwNodeSetCellPickable(
@@ -3673,8 +3855,14 @@ void __fastcall InitStateFromNameAndMasterCommonData(
     LoadWeaponBanksAndSelectDefaults(saveState);
 }
 
-// Reimplements 0x403750: Player::BuildAiPeerRingsByAiNetId
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x403750: Player::BuildAiPeerRingsByAiNetId.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: link active save states sharing one AI network id into peer rings
+ * used by AI bootstrap while leaving inactive/unlinked records untouched.
+ * Source owner: Player save-state/bootstrap record cluster, not a C++ Player
+ * class.
+ */
 void BuildAiPeerRingsByAiNetId() {
     zUtil_SaveGameState *saveState = g_PlayerSaveStateListHead;
     while (saveState != 0) {
@@ -4861,7 +5049,7 @@ void CacheDisableCopterSndNodesAndStopSample() {
         if (copterRoot != 0) {
             g_Player_CopterHealthyNode1 = zClass_Class::FindSubNodeByName(
                 copterRoot,
-                "healthy"
+                g_Player_HealthySubNodeName
             );
             g_Player_CopterSndNode1 = zClass_Class::FindSubNodeByName(
                 copterRoot,
@@ -4878,7 +5066,7 @@ void CacheDisableCopterSndNodesAndStopSample() {
         if (copterRoot != 0) {
             g_Player_CopterHealthyNode2 = zClass_Class::FindSubNodeByName(
                 copterRoot,
-                "healthy"
+                g_Player_HealthySubNodeName
             );
             g_Player_CopterSndNode2 = zClass_Class::FindSubNodeByName(
                 copterRoot,
@@ -6035,8 +6223,8 @@ void __fastcall AiDiscardNegativeBranchPathNodes(
     } while (aiCurrentPathNode->nodeIndex < 0);
 }
 
-// Reimplements 0x401420: Player::AiMode2ForwardProbeRequiresAutoTurn
-// (src/Battlesport/player.cpp)
+/** Reimplements 0x401420: Player::AiMode2ForwardProbeRequiresAutoTurn (src/Battlesport/player.cpp).
+ * Purpose: Checks forward probe queues and requests auto-turn recovery when blocked. Source model: Player namespace AI mode-2 over save-state/playerState, not a Player class. */
 int __fastcall AiMode2ForwardProbeRequiresAutoTurn(
     zUtil_SaveGameState *saveState
 ) {
@@ -6080,8 +6268,8 @@ int __fastcall AiMode2ForwardProbeRequiresAutoTurn(
     return hasBlockingContacts != 0 ? 1 : 0;
 }
 
-// Reimplements 0x4016a0: Player::AiChooseNextPathBranchIndex
-// (src/Battlesport/player.cpp)
+/** Reimplements 0x4016a0: Player::AiChooseNextPathBranchIndex (src/Battlesport/player.cpp).
+ * Purpose: Selects the next non-excluded AI path branch for mode-2 steering. Source model: Player namespace AI mode-2 over save-state/playerState, not a Player class. */
 int __fastcall AiChooseNextPathBranchIndex(
     zUtil_SaveGameState *saveState,
     AINetNode **currentNodeInOut,
@@ -6116,8 +6304,8 @@ int __fastcall AiChooseNextPathBranchIndex(
     return 1;
 }
 
-// Reimplements 0x401580: Player::AiAdvancePathCursorAndComputeTargetVec
-// (GameZRecoil/Player.cpp)
+/** Reimplements 0x401580: Player::AiAdvancePathCursorAndComputeTargetVec (GameZRecoil/Player.cpp).
+ * Purpose: Advances the AI path cursor and returns the target vector and probe fan. Source model: Player namespace AI mode-2 over save-state/playerState, not a Player class. */
 void __fastcall AiAdvancePathCursorAndComputeTargetVec(
     zUtil_SaveGameState *saveState,
     AINetNode **currentNodeInOut,
@@ -6179,8 +6367,8 @@ void __fastcall AiAdvancePathCursorAndComputeTargetVec(
     outTargetVec->z = playerState->worldPos.z - selectedNode->position.z;
 }
 
-// Reimplements 0x401060: Player::TickAiMode2TopLevel
-// (src/Battlesport/player.cpp)
+/** Reimplements 0x401060: Player::TickAiMode2TopLevel (src/Battlesport/player.cpp).
+ * Purpose: Dispatches the active mode-2 top-level state and attack-pursuit transitions. Source model: Player namespace AI mode-2 over save-state/playerState, not a Player class. */
 void __fastcall TickAiMode2TopLevel(
     zUtil_SaveGameState *saveState
 ) {
@@ -6253,8 +6441,8 @@ void __fastcall TickAiMode2TopLevel(
     }
 }
 
-// Reimplements 0x401180: Player::TickAiMode2PathFollow
-// (src/Battlesport/player.cpp)
+/** Reimplements 0x401180: Player::TickAiMode2PathFollow (src/Battlesport/player.cpp).
+ * Purpose: Steers toward the current AI path edge, advances the cursor, or arms auto-turn. Source model: Player namespace AI mode-2 over save-state/playerState, not a Player class. */
 void __fastcall TickAiMode2PathFollow(
     zUtil_SaveGameState *saveState
 ) {
@@ -6353,8 +6541,8 @@ void __fastcall TickAiMode2PathFollow(
     }
 }
 
-// Reimplements 0x401c60: Player::AiEnterMode2SteeringPursuit
-// (src/Battlesport/player.cpp)
+/** Reimplements 0x401c60: Player::AiEnterMode2SteeringPursuit (src/Battlesport/player.cpp).
+ * Purpose: Saves the prior top-level state and enters steering pursuit for the attack window. Source model: Player namespace AI mode-2 over save-state/playerState, not a Player class. */
 void __fastcall AiEnterMode2SteeringPursuit(
     zUtil_SaveGameState *saveState
 ) {
@@ -6387,8 +6575,8 @@ void __fastcall AiEnterMode2SteeringPursuit(
     zMath::Vec3Normalize(&aiState->aiDynamicOffsetDir);
 }
 
-// Reimplements 0x401c00: Player::AiAlertAttackBuddies
-// (src/Battlesport/player.cpp)
+/** Reimplements 0x401c00: Player::AiAlertAttackBuddies (src/Battlesport/player.cpp).
+ * Purpose: Propagates an attack-pursuit alert around the AI peer ring. Source model: Player namespace AI mode-2 over save-state/playerState, not a Player class. */
 void __fastcall AiAlertAttackBuddies(
     zUtil_SaveGameState *saveState
 ) {
@@ -6408,8 +6596,8 @@ void __fastcall AiAlertAttackBuddies(
     } while (buddySaveState != saveState);
 }
 
-// Reimplements 0x401b20: Player::AiTryEnterMode2AttackPursuitIfLineOfSight
-// (src/Battlesport/player.cpp)
+/** Reimplements 0x401b20: Player::AiTryEnterMode2AttackPursuitIfLineOfSight (src/Battlesport/player.cpp).
+ * Purpose: Tests attack range and local-player line of sight before steering pursuit. Source model: Player namespace AI mode-2 over save-state/playerState, not a Player class. */
 int __fastcall AiTryEnterMode2AttackPursuitIfLineOfSight(
     zUtil_SaveGameState *saveState
 ) {
@@ -6453,8 +6641,8 @@ int __fastcall AiTryEnterMode2AttackPursuitIfLineOfSight(
     return 1;
 }
 
-// Reimplements 0x401f60: Player::AiRebuildSyntheticPathToNodeIfFar
-// (GameZRecoil/Player.cpp)
+/** Reimplements 0x401f60: Player::AiRebuildSyntheticPathToNodeIfFar (GameZRecoil/Player.cpp).
+ * Purpose: Builds a temporary synthetic AI path node back to the requested target. Source model: Player namespace AI mode-2 over save-state/playerState, not a Player class. */
 void __fastcall AiRebuildSyntheticPathToNodeIfFar(
     zUtil_SaveGameState *saveState,
     AINetNode *targetNode
@@ -6496,8 +6684,8 @@ void __fastcall AiRebuildSyntheticPathToNodeIfFar(
         g_Player_TotalTimeSecScaled + kPlayerAiSyntheticPathRebuildDelaySec;
 }
 
-// Reimplements 0x401710: Player::TickAiMode2SteeringSubstate
-// (src/Battlesport/player.cpp)
+/** Reimplements 0x401710: Player::TickAiMode2SteeringSubstate (src/Battlesport/player.cpp).
+ * Purpose: Runs pursuit steering, submarine vertical controls, and pursuit exit checks. Source model: Player namespace AI mode-2 over save-state/playerState, not a Player class. */
 void __fastcall TickAiMode2SteeringSubstate(
     zUtil_SaveGameState *saveState
 ) {
@@ -6611,8 +6799,8 @@ void __fastcall TickAiMode2SteeringSubstate(
     }
 }
 
-// Reimplements 0x401970: Player::UpdateAiMode2MoveAndTurnTowardTarget
-// (src/Battlesport/player.cpp)
+/** Reimplements 0x401970: Player::UpdateAiMode2MoveAndTurnTowardTarget (src/Battlesport/player.cpp).
+ * Purpose: Converts target alignment and pursuit distance into throttle and steering input. Source model: Player namespace AI mode-2 over save-state/playerState, not a Player class. */
 void __fastcall UpdateAiMode2MoveAndTurnTowardTarget(
     zUtil_SaveGameState *saveState,
     float forwardDot,
@@ -6640,8 +6828,8 @@ void __fastcall UpdateAiMode2MoveAndTurnTowardTarget(
     playerState->steeringInputCopy = playerState->steeringInput;
 }
 
-// Reimplements 0x402090: Player::UpdateAiMode2TurnTowardPlayerNoThrottle
-// (src/Battlesport/player.cpp)
+/** Reimplements 0x402090: Player::UpdateAiMode2TurnTowardPlayerNoThrottle (src/Battlesport/player.cpp).
+ * Purpose: Turns toward the local player while holding throttle at zero. Source model: Player namespace AI mode-2 over save-state/playerState, not a Player class. */
 void __fastcall UpdateAiMode2TurnTowardPlayerNoThrottle(
     zUtil_SaveGameState *saveState
 ) {
@@ -6672,8 +6860,8 @@ void __fastcall UpdateAiMode2TurnTowardPlayerNoThrottle(
     playerState->steeringInputCopy = playerState->steeringInput;
 }
 
-// Reimplements 0x402170: Player::UpdateAiMode2TurnInPlaceTowardPlayer
-// (src/Battlesport/player.cpp)
+/** Reimplements 0x402170: Player::UpdateAiMode2TurnInPlaceTowardPlayer (src/Battlesport/player.cpp).
+ * Purpose: Turns in place toward the local player without changing throttle. Source model: Player namespace AI mode-2 over save-state/playerState, not a Player class. */
 void __fastcall UpdateAiMode2TurnInPlaceTowardPlayer(
     zUtil_SaveGameState *saveState
 ) {
@@ -6851,8 +7039,8 @@ void __fastcall SolveAltGunLeadTargetPoint(
     outTargetPos->y -= ((float)(rand()) * 3.05185094e-05f - 0.5f) * -2.0f;
 }
 
-// Reimplements 0x4026d0: Player::UpdateAiMode2MoveAndTurnTowardOffsetTarget
-// (src/Battlesport/player.cpp)
+/** Reimplements 0x4026d0: Player::UpdateAiMode2MoveAndTurnTowardOffsetTarget (src/Battlesport/player.cpp).
+ * Purpose: Rotates the target-to-AI vector by accepted tuning globals and steers to the offset point. Source model: Player namespace AI mode-2 over save-state/playerState, not a Player class. */
 void __fastcall UpdateAiMode2MoveAndTurnTowardOffsetTarget(
     zUtil_SaveGameState *saveState,
     zUtil_SaveGameState *targetState
@@ -6913,8 +7101,8 @@ void __fastcall UpdateAiMode2MoveAndTurnTowardOffsetTarget(
     playerState->steeringInputCopy = playerState->steeringInput;
 }
 
-// Reimplements 0x4028c0: Player::UpdateAiMode2MoveAndTurnTowardDynamicOffsetTarget
-// (src/Battlesport/player.cpp)
+/** Reimplements 0x4028c0: Player::UpdateAiMode2MoveAndTurnTowardDynamicOffsetTarget (src/Battlesport/player.cpp).
+ * Purpose: Blends dynamic pursuit and side-offset steering based on distance to the local player. Source model: Player namespace AI mode-2 over save-state/playerState, not a Player class. */
 void __fastcall UpdateAiMode2MoveAndTurnTowardDynamicOffsetTarget(
     zUtil_SaveGameState *saveState,
     zUtil_SaveGameState *targetState,
@@ -6993,8 +7181,8 @@ void __fastcall UpdateAiMode2MoveAndTurnTowardDynamicOffsetTarget(
     playerState->steeringInputCopy = playerState->steeringInput;
 }
 
-// Reimplements 0x401a40: Player::TickAiMode2OffsetTargetSteering
-// (src/Battlesport/player.cpp)
+/** Reimplements 0x401a40: Player::TickAiMode2OffsetTargetSteering (src/Battlesport/player.cpp).
+ * Purpose: Runs offset-target pursuit or switches to auto-turn recovery when blocked. Source model: Player namespace AI mode-2 over save-state/playerState, not a Player class. */
 void __fastcall TickAiMode2OffsetTargetSteering(
     zUtil_SaveGameState *saveState,
     float unusedForwardDot,
@@ -7029,8 +7217,8 @@ void __fastcall TickAiMode2OffsetTargetSteering(
     playerState->aiCurrentSteeringSubstate = kPlayerAiMode2SteerAutoTurn;
 }
 
-// Reimplements 0x401ab0: Player::TickAiMode2DynamicOffsetTargetSteering
-// (src/Battlesport/player.cpp)
+/** Reimplements 0x401ab0: Player::TickAiMode2DynamicOffsetTargetSteering (src/Battlesport/player.cpp).
+ * Purpose: Runs dynamic-offset pursuit or switches to auto-turn recovery when blocked. Source model: Player namespace AI mode-2 over save-state/playerState, not a Player class. */
 void __fastcall TickAiMode2DynamicOffsetTargetSteering(
     zUtil_SaveGameState *saveState,
     float unusedForwardDot,
@@ -7180,8 +7368,8 @@ void __fastcall AiSteerTowardPathNodeReverse(
     playerState->steeringInput = turnCross;
 }
 
-// Reimplements 0x402b70: Player::TickAiMode2TimedPathSteering
-// (src/Battlesport/player.cpp)
+/** Reimplements 0x402b70: Player::TickAiMode2TimedPathSteering (src/Battlesport/player.cpp).
+ * Purpose: Alternates timed forward and reverse path-node steering around the AI home path node. Source model: Player namespace AI mode-2 over save-state/playerState, not a Player class. */
 void __fastcall TickAiMode2TimedPathSteering(
     zUtil_SaveGameState *saveState
 ) {
@@ -8677,7 +8865,7 @@ void __fastcall DestroyedStateRespawnCallback(
     zClass_NodePartial *const healthyNode =
         zClass_Class::FindNodeRecursiveByName(
             playerState->rootNode,
-            "healthy"
+            g_Player_HealthySubNodeName
         );
     if (healthyNode != 0) {
         zClass_Object3D::gwObject3DSetPosition(
@@ -9015,8 +9203,19 @@ int __fastcall HitCallback_RecordNetContextAndTimedStatus(
     return playerState->recentHitValid;
 }
 
-// Reimplements 0x43c010: Player::ApplyDamageLocal
-// (src/Battlesport/player.cpp)
+/**
+ * Provenance: Reimplements 0x43c010: Player::ApplyDamageLocal.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: finish local damage processing by updating feedback while health
+ * remains, or by starting destroyed-respawn FX, clearing recent-hit feedback,
+ * resetting alt-gun runtime state, and hiding the tracked HUD progress meter.
+ * Source shape: Player damage-local subsystem helper linked to the damage-hit
+ * and destroyed-state callback slice; this is not a whole Player class owner
+ * and is not standalone.
+ * Data: reads and writes the supplied save-state player's damage, respawn,
+ * recent-hit, and selected-probe fields; delegates shared damage feedback,
+ * damage context, alt-gun reset, and HUD progress state to their owners.
+ */
 int __fastcall ApplyDamageLocal(
     zUtil_SaveGameState *saveState
 ) {
@@ -9061,8 +9260,11 @@ int __fastcall ApplyDamageLocal(
     return 1;
 }
 
-// Reimplements 0x41b950: Player::TickRemoteNetworkPlayer
-// (GameZRecoil/player.cpp)
+/**
+ * Reimplements 0x41b950: Player::TickRemoteNetworkPlayer.
+ * Source owner: battlesport_gameplay.player_remote_network_tick.
+ * Purpose: Ticks a remote network player from received network state and updates its gameplay presentation.
+ */
 void __fastcall TickRemoteNetworkPlayer(
     zUtil_SaveGameState *saveState
 ) {
@@ -11895,7 +12097,7 @@ void __fastcall ZAR_ReadVehicleListSection(
         zClass_NodePartial *const healthyNode =
             zClass_Class::FindNodeRecursiveByName(
                 playerState->rootNode,
-                "healthy"
+                g_Player_HealthySubNodeName
             );
         if (healthyNode != 0) {
             zClass_Object3D::gwObject3DSetPosition(
@@ -12359,8 +12561,21 @@ void __fastcall RefreshHudFromState(
     );
 }
 
-// Reimplements 0x43b5d0: Player::ApplyStatusMeterChange
-// (D:\Proj\GameZRecoil\Player\player_status.cpp)
+/**
+ * Reimplements 0x43b5d0: Player::ApplyStatusMeterChange.
+ * Original source path: D:\Proj\GameZRecoil\Player\player_status.cpp.
+ * Purpose: apply an absolute or relative status-meter change, clamp it to the
+ * player's health range, publish the ratio, and refresh the shield HUD meter.
+ * ABI/source shape: __fastcall free function in the Player status-meter source
+ * slice; uses typed zUtil_SaveGameState, zUtil_PlayerStateStorage, and
+ * PlayerMasterCommonData fields rather than raw runtime offsets. The broader
+ * Player source owner remains parent-pending in the plan.
+ * Touched data owner: g_PlayerStatusMeterRatio is covered by accepted
+ * battlesport_gameplay.player_damage_runtime_globals.
+ * Dependencies: HudUiMgrSensor::SetShieldMessageRatio and
+ * PlayerMasterCommonData::maxHealth/invMaxHealth provide the HUD and clamp
+ * contracts used by callers.
+ */
 void __fastcall ApplyStatusMeterChange(
     zUtil_SaveGameState *saveState,
     int mode,
@@ -12385,8 +12600,21 @@ void __fastcall ApplyStatusMeterChange(
     HudUiMgrSensor::SetShieldMessageRatio(g_PlayerStatusMeterRatio);
 }
 
-// Reimplements 0x43b660: Player::UpdateStatusMeter
-// (D:\Proj\GameZRecoil\Player\player_status.cpp)
+/**
+ * Reimplements 0x43b660: Player::UpdateStatusMeter.
+ * Original source path: D:\Proj\GameZRecoil\Player\player_status.cpp.
+ * Purpose: process status-meter restore/gain updates, show localized HUD
+ * feedback, trigger the restore visual path, and reset damage state when the
+ * meter is restored absolutely.
+ * ABI/source shape: __fastcall free function in the Player status-meter source
+ * slice; keeps the original helper dependency on ApplyStatusMeterChange and
+ * typed zUtil_SaveGameState/zUtil_PlayerStateStorage access. The broader Player
+ * source owner remains parent-pending in the plan.
+ * Touched data owner: reads g_PlayerStatusMeterRatio through accepted
+ * battlesport_gameplay.player_damage_runtime_globals.
+ * Dependencies: zLoc/HudUi message formatting, zEffectAnim restore velocity,
+ * and ResetDamageStateAndTimedHitStatus are required side-effect contracts.
+ */
 int __fastcall UpdateStatusMeter(
     zUtil_SaveGameState *saveState,
     int mode,
@@ -13834,8 +14062,17 @@ void __fastcall ApplyAltWeaponSwitch(
         activeController->weaponSideIndex + activeController->weaponBankIndex * 100;
 }
 
-// Reimplements 0x43c800: Player::ResetAltGunDoorAnimationState
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Provenance: Reimplements 0x43c800: Player::ResetAltGunDoorAnimationState.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reset the alternate-gun door animation timer and restore the
+ * left/right door-node scale before runtime state reset.
+ * Source shape: Player alt-gun runtime/reset dispatch subsystem member;
+ * shares typed save-state/player-state field access with the accepted
+ * alt-gun runtime functions and is not a standalone owner.
+ * Data: updates only the supplied save-state player's transition timer and
+ * door-node object scales; no authored globals are touched.
+ */
 void __fastcall ResetAltGunDoorAnimationState(
     zUtil_SaveGameState *saveState
 ) {
@@ -14177,8 +14414,10 @@ void __fastcall ResetDamageStateAndTimedHitStatus(
     playerState->timedHitStatus.ClearLightAndReset();
 }
 
-// Reimplements 0x4399c0: Player::ResetDamageVisualsAndTimedStatus
-// (D:\Proj\GameZRecoil\player.cpp)
+/**
+ * Reimplements 0x4399c0: Player::ResetDamageVisualsAndTimedStatus
+ * Purpose: Clears damage flash state and timed hit status before damage processing.
+ */
 void __fastcall ResetDamageVisualsAndTimedStatus(
     zUtil_SaveGameState *saveState
 ) {
@@ -17345,8 +17584,20 @@ void __fastcall ProcessAltGunDispatchRequest(
     }
 }
 
-// Reimplements 0x43a400: Player::ProcessPrimaryGunDispatchTick
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x43a400: Player::ProcessPrimaryGunDispatchTick.
+ * BN source path: D:\Proj\Battlesport\player.cpp.
+ * Source model: Player source-file runtime tick helper for the active primary
+ * gun controller; preserves the typed controller/player-state source shape
+ * used by the local alt-gun tick owner.
+ * Touched data: updates player-state primary dispatch fields, primary fire
+ * slot/controller ammo and scroll texture state, compares g_GameStateOrMapTable,
+ * and increments g_HudSensorTracker.primaryGunDispatchCount for the active
+ * local game state. Shared 0.0/1.0 literals are compiler-pooled constants, not
+ * exclusive authored globals.
+ * Purpose: process one pending primary-gun dispatch request and route empty
+ * primary weapons through the variant-toggle handler.
+ */
 void __fastcall ProcessPrimaryGunDispatchTick(
     zUtil_SaveGameState *saveState
 ) {
@@ -17406,8 +17657,22 @@ void __fastcall ProcessPrimaryGunDispatchTick(
     }
 }
 
-// Reimplements 0x439ba0: Player::TickAltGunRuntimeState
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x439ba0: Player::TickAltGunRuntimeState.
+ * BN source path: D:\Proj\Battlesport\player.cpp.
+ * Source model: Player source-file runtime tick owner for active alt-gun state;
+ * transition fragments are recovered as original-source helpers with no
+ * standalone retail functions where noted above.
+ * Touched data: updates typed zUtil_PlayerStateStorage and
+ * PlayerGunFireController runtime state, installs OptCatalog pending spawn
+ * target overrides, reads g_GameStateOrMapTable for local-player-only work,
+ * uses accepted g_FrameDeltaTimeSec through transition/ammo helpers, and may
+ * reach g_HudSensorTracker through 0x43a400. BN .rdata literals
+ * 0x4d17a8..0x4d17c0 match the source literals in this owner; 0x43a3a0 and
+ * 0x43a3bc are compiler switch-lowering artifacts.
+ * Purpose: tick active alt-gun dispatch, transition, tether, ammo, slot recoil,
+ * and linked primary-gun runtime state for the current save game.
+ */
 void __fastcall TickAltGunRuntimeState(
     zUtil_SaveGameState *saveState
 ) {

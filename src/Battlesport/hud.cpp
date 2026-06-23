@@ -1891,8 +1891,11 @@ const int kHudCheatMasterTypeHover = 4;
 const int kHudCheatMasterTypeAmphib = 5;
 const int kHudCheatAltGunTransitionReset = 16;
 
-// Reimplements 0x406af0: HudCheat::ExecuteCommandString
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x406af0: HudCheat::ExecuteCommandString.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: Match localized cheat commands, apply pickup effects, restore respawn state, and bind HUD hotkeys.
+ */
 int __fastcall ExecuteCommandString(
     CString *commandString
 ) {
@@ -2033,8 +2036,11 @@ void ClearNanitePanelCheatSentinel() {
 
 namespace zOpt {
 
-// Reimplements 0x413600: zOpt::ToggleHudTypeForCurrentHwMode
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x413600: zOpt::ToggleHudTypeForCurrentHwMode.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: Toggle the HUD type between standard and perspective for the current hardware mode.
+ */
 int ToggleHudTypeForCurrentHwMode() {
     const int currentHudType = GetHudTypeForCurrentHwMode();
     if (currentHudType == ZOPT_HUD_TYPE_STANDARD) {

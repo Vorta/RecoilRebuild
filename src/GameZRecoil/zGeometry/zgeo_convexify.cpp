@@ -7,14 +7,85 @@
 #include <string.h>
 
 namespace {
-const char kZGeoConvexifySourceFile[] = "D:\\Proj\\GameZRecoil\\zGeometry\\zgeo_convexify.cpp";
 const int kTriangulateHoleMaxTriangles = 0x400;
 
+/**
+ * Data evidence: BN 0x4e050c..0x4e059f is the contiguous zgeo_convexify.cpp
+ * diagnostic/source literal owner linked by engine.zgeometry.polygon_convexification.
+ * Purpose: Preserve the writable source/error literals used by polygon convexification diagnostics.
+ */
+char g_zGeometry_ConvexifyNullInputsMsg[0x2a] =
+    "convexify(): One or more inputs are null\n";
+char g_zGeometry_SourceFile_ZgeoConvexifyCpp[0x31] =
+    "D:\\Proj\\GameZRecoil\\zGeometry\\zgeo_convexify.cpp";
+char g_zGeometry_ConvexifyInvalidInputPolygonSizeFmt[0x34] =
+    "convexify(): Invalid input polygon size (%d) verts.";
+
+/**
+ * Data evidence: BN 0x4e05a0 is writable char[0x22]
+ * g_zGeometry_RecursiveTriangulate3ErrorMsg, referenced at 0x46ce97.
+ * Purpose: Preserve the recursive triangulation first-subpolygon failure diagnostic.
+ */
+char g_zGeometry_RecursiveTriangulate3ErrorMsg[0x22] =
+    "Error in recursive triangulate 3\n";
+
+/**
+ * Data evidence: BN 0x4e05c4 is writable char[0x22]
+ * g_zGeometry_RecursiveTriangulate4ErrorMsg, referenced at 0x46ce63.
+ * Purpose: Preserve the recursive triangulation second-subpolygon failure diagnostic.
+ */
+char g_zGeometry_RecursiveTriangulate4ErrorMsg[0x22] =
+    "Error in recursive triangulate 4\n";
+
+/**
+ * Data evidence: BN 0x4e05e8 is writable char[0x22]
+ * g_zGeometry_RecursiveTriangulate2ErrorMsg, referenced at 0x46cd76.
+ * Purpose: Preserve the recursive triangulation non-triangle first-subpolygon failure diagnostic.
+ */
+char g_zGeometry_RecursiveTriangulate2ErrorMsg[0x22] =
+    "Error in recursive triangulate 2\n";
+
+/**
+ * Data evidence: BN 0x4e060c is writable char[0x22]
+ * g_zGeometry_RecursiveTriangulate1ErrorMsg, referenced at 0x46ccf5.
+ * Purpose: Preserve the recursive triangulation non-triangle second-subpolygon failure diagnostic.
+ */
+char g_zGeometry_RecursiveTriangulate1ErrorMsg[0x22] =
+    "Error in recursive triangulate 1\n";
+
+/**
+ * Data evidence: BN 0x4e0630 is writable char[0x2e]
+ * g_zGeometry_TriangulateOnlyVertsReceivedFmt, referenced at 0x46cb6b.
+ * Purpose: Preserve the recursive triangulation input-count guard diagnostic.
+ */
+char g_zGeometry_TriangulateOnlyVertsReceivedFmt[0x2e] =
+    "Error in TRIANGULATE: only %d verts received\n";
+
+/**
+ * Reimplements data 0x53a748: g_zGeometry_TriangulateHole_CombinedPoints.
+ * Purpose: Hold the combined outer/inner point buffer while triangulating a hole.
+ */
 zVec3 *g_zGeometry_TriangulateHole_CombinedPoints = 0;
+/**
+ * Reimplements data 0x53d750: g_zGeometry_TriangulateHole_TriangleCount.
+ * Purpose: Count emitted triangulate-hole triangles in the current pass.
+ */
 int g_zGeometry_TriangulateHole_TriangleCount = 0;
+/**
+ * Reimplements data 0x53d754: g_zGeometry_TriangulateHole_CombinedPointCount.
+ * Purpose: Track the combined outer/inner point count for active edge traversal.
+ */
 int g_zGeometry_TriangulateHole_CombinedPointCount = 0;
+/**
+ * Reimplements data 0x53a750: g_zGeometry_TriangulateHole_TriangleIndices.
+ * Purpose: Store emitted triangulate-hole vertex index triples before output materialization.
+ */
 zGeometry_TriangleIndexTriple
     g_zGeometry_TriangulateHole_TriangleIndices[kTriangulateHoleMaxTriangles];
+/**
+ * Reimplements data 0x53d758: g_zGeometry_TriangulateHole_CachedPlane.
+ * Purpose: Cache the combined ring plane while projecting inner-ring points.
+ */
 zGeometry_PlaneEquationPartial g_zGeometry_TriangulateHole_CachedPlane;
 
 /**
@@ -175,7 +246,12 @@ void CopyOffsetVertex(
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function is present.
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
+ * Observed in address-backed callers in this source file.
+ * Purpose: Convert a point dword offset into the source float tuple base.
+ */
 const float *PointDwordBase(
     const zVec3 *points,
     int pointDwordOffset
@@ -183,7 +259,12 @@ const float *PointDwordBase(
     return (const float *)(points) + pointDwordOffset;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function is present.
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
+ * Observed in address-backed callers in this source file.
+ * Purpose: Append a contiguous source point span to the convexification result.
+ */
 zVec3 *CopySpanPoints(
     zGeometry_ConvexPolygonSetPartial *result,
     zVec3 *outputPointWriteCursor,
@@ -242,7 +323,12 @@ bool IsConvexQuadXY(
     return true;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function is present.
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
+ * Observed in address-backed callers in this source file.
+ * Purpose: Triangulate and append a polygon span into triangle-sized output spans.
+ */
 zVec3 *AppendTriangulatedSpan(
     zGeometry_ConvexPolygonSetPartial *result,
     zVec3 *outputPointWriteCursor,
@@ -290,7 +376,12 @@ zVec3 *AppendTriangulatedSpan(
     return outputPointWriteCursor;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function is present.
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
+ * Observed in address-backed callers in this source file.
+ * Purpose: Access the packed triangle dword-offset payload.
+ */
 int *TrianglePayload(
     zGeometry_TriangleDwordOffsetList *list
 ) {
@@ -1010,7 +1101,7 @@ zGeometry_TriangleDwordOffsetList *__fastcall TriangulatePointDwordOffsetsRecurs
     if (pointCount < 3) {
         fprintf(
             stderr,
-            "Error in TRIANGULATE: only %d verts received\n",
+            g_zGeometry_TriangulateOnlyVertsReceivedFmt,
             pointCount
         );
         return 0;
@@ -1078,6 +1169,22 @@ zGeometry_TriangleDwordOffsetList *__fastcall TriangulatePointDwordOffsetsRecurs
             splitPointLists->pointDwordOffsets,
             pointDwordStrideMode
         );
+    if (triangles0 == 0) {
+        fprintf(
+            stderr,
+            splitPointLists->pointCount1 == 3 ?
+                g_zGeometry_RecursiveTriangulate2ErrorMsg :
+                g_zGeometry_RecursiveTriangulate3ErrorMsg
+        );
+        free(splitPointLists);
+        free(result);
+        if (pointDwordOffsets == 0) {
+            free(workingOffsets);
+        }
+
+        return 0;
+    }
+
     zGeometry_TriangleDwordOffsetList *triangles1 =
         TriangulatePointDwordOffsetsRecursive(
             splitPointLists->pointCount1,
@@ -1087,9 +1194,14 @@ zGeometry_TriangleDwordOffsetList *__fastcall TriangulatePointDwordOffsetsRecurs
             pointDwordStrideMode
         );
 
-    if (triangles0 == 0 || triangles1 == 0) {
+    if (triangles1 == 0) {
+        fprintf(
+            stderr,
+            splitPointLists->pointCount0 == 3 ?
+                g_zGeometry_RecursiveTriangulate1ErrorMsg :
+                g_zGeometry_RecursiveTriangulate4ErrorMsg
+        );
         free(triangles0);
-        free(triangles1);
         free(splitPointLists);
         free(result);
         if (pointDwordOffsets == 0) {
@@ -1136,7 +1248,7 @@ zGeometry_ConvexPolygonSetPartial *__fastcall Convexify(
     if (inputPointCount <= 0 || points == 0) {
         fprintf(
             stderr,
-            "convexify() : One or more inputs are null\n"
+            g_zGeometry_ConvexifyNullInputsMsg
         );
         return 0;
     }
@@ -1200,9 +1312,9 @@ zGeometry_ConvexPolygonSetPartial *__fastcall Convexify(
         } else {
             zError::ReportOld(
                 0x100,
-                kZGeoConvexifySourceFile,
+                g_zGeometry_SourceFile_ZgeoConvexifyCpp,
                 0x38b,
-                "convexify() : Invalid input polygon size (%d) verts.",
+                g_zGeometry_ConvexifyInvalidInputPolygonSizeFmt,
                 inputPolygon->pointCount
             );
             zGeometry_ConvexPolygonSet::Destroy(result);

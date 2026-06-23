@@ -3258,6 +3258,7 @@ extern float g_zClass_CameraAutoClipDistanceMinScale;
 extern int g_zClass_ObjectHseTestEnabled;
 extern zClass_NodePartial *g_zClass_CurrentCamera;
 extern zClass_NodePartial *g_zClass_CameraTargetNode;
+extern char g_zClass_VapStaticsNodeName[0x0c];
 extern zClass_NodePartial *g_MainCamera;
 extern zClass_CameraDataPartial *g_zVideo_pActiveViewContext;
 extern zClass_NodePartial *g_Player_RuntimeDiScene;

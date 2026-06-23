@@ -685,6 +685,21 @@ extern float g_zSndSpeedOfSoundMps;
 extern float g_zSndInvSpeedOfSoundMps;
 }
 
+extern char g_zSndConfig_SoundGroupsKey[0x0d];
+extern char g_zSndConfig_SetsKey[0x05];
+extern char g_zSndConfig_SpeedOfSoundKey[0x0f];
+extern char g_zSndConfig_SoundPathKey[0x0b];
+extern char g_zSndConfig_CdTracksKey[0x0a];
+extern char g_zSndConfig_QualityMedToken[0x04];
+extern char g_zSndConfig_A3dDistanceKey[0x08];
+extern char g_zSndConfig_VolumeKey[0x07];
+extern char g_zSndConfig_VoiceKey[0x06];
+extern char g_zSndConfig_PurgeableKey[0x0a];
+extern char g_zSndConfig_HardwareKey[0x09];
+extern char g_zSndConfig_FrequencyKey[0x0a];
+extern char g_zSndConfig_LoopedKey[0x07];
+extern char g_zSndConfig_3dKey[0x03];
+
 extern "C" int zSndBackend_InitA3D();
 extern "C" int zSndBackend_InitDirectSound();
 extern "C" int __fastcall zSnd_PreInitializeRuntimeState(unsigned int hwnd);

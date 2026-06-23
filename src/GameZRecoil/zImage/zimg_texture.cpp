@@ -2,6 +2,7 @@
 
 #include "GameZRecoil/zError/zError.h"
 #include "GameZRecoil/zGame/zGame.h"
+#include "GameZRecoil/zHud/zhud_ui.h"
 #include "GameZRecoil/zModel/zModel.h"
 #include "GameZRecoil/zReader/zReader.h"
 #include "GameZRecoil/zRndr/zRndr.h"
@@ -138,6 +139,60 @@ zImage_CreateFallbackImageProc g_zImage_pfnCreateFallbackImage = 0;
  * to the hardware texture-record creation callback.
  */
 char g_zImage_DefaultTextureName[0x10] = "DEFAULT_TEXTURE";
+/**
+ * Reimplements data 0x4e0850: g_zImage_FontVariantSuffix.
+ * Data owner: engine.zimage.texture_directory_state.
+ * Purpose: provide the writable mip-chain suffix seed used to identify base
+ * texture variants.
+ *
+ * Retail 0x4e0850: three-byte initialized string "_1". BN xrefs show
+ * zImage_TexDirEntry::BuildMipChain tests texture-directory base names against
+ * this suffix before incrementing the trailing digit in place in the local
+ * variant path. The recovered BN name is misleading; the data belongs to the
+ * zImage texture-directory mip-chain runtime, not font state.
+ */
+char g_zImage_FontVariantSuffix[0x3] = "_1";
+/**
+ * Reimplements data 0x4e0740: g_zImage_SourceFile_ZimgTextureCpp.
+ * Data owner: engine.zimage.texture_directory_diagnostic_literals_data.
+ * Purpose: source-file literal shared by texture-directory diagnostics.
+ *
+ * Retail 0x4e0740: writable source-path literal used by
+ * zImage::WriteTextureDirectory and zImage::ReadTextureDirectory error
+ * reports. BN xrefs at 0x46d3e5, 0x46d43f, and 0x46d47e.
+ */
+char g_zImage_SourceFile_ZimgTextureCpp[] =
+    "D:\\Proj\\GameZRecoil\\zImage\\zimg_texture.cpp";
+/**
+ * Reimplements data 0x4e076c: g_zImage_WriteTextureDirectoryErrorMsg.
+ * Data owner: engine.zimage.texture_directory_diagnostic_literals_data.
+ * Purpose: report texture-directory serialization write failures.
+ *
+ * Retail 0x4e076c: writable diagnostic literal passed by
+ * zImage::WriteTextureDirectory when fwrite fails.
+ */
+char g_zImage_WriteTextureDirectoryErrorMsg[] =
+    "Error writing texture directory.";
+/**
+ * Reimplements data 0x4e0790: g_zImage_ReadGameZTextureDirectoryDataErrorMsg.
+ * Data owner: engine.zimage.texture_directory_diagnostic_literals_data.
+ * Purpose: report texture-directory binary block read failures.
+ *
+ * Retail 0x4e0790: writable diagnostic literal passed by
+ * zImage::ReadTextureDirectory when fread fails.
+ */
+char g_zImage_ReadGameZTextureDirectoryDataErrorMsg[] =
+    "Error reading GameZ Texture directory data.";
+/**
+ * Reimplements data 0x4e07bc: g_zImage_TextureArraySizeExceededMsg.
+ * Data owner: engine.zimage.texture_directory_diagnostic_literals_data.
+ * Purpose: report serialized texture-directory counts beyond table capacity.
+ *
+ * Retail 0x4e07bc: writable diagnostic literal passed by
+ * zImage::ReadTextureDirectory for counts above the 0x1000-entry table.
+ */
+char g_zImage_TextureArraySizeExceededMsg[] =
+    "Too many textures for texture array size.";
 }
 
 namespace zImage {
@@ -293,7 +348,7 @@ RECOIL_NO_GS void __fastcall zImage_TexDirEntryPartial::BuildMipChain() {
     zImage_TexDirEntryPartial *const baseEntry = this;
     char *const suffix = strstr(
         variantPath,
-        "_1"
+        g_zImage_FontVariantSuffix
     );
     if (suffix == 0 || suffix[2] != '\0') {
         return;
@@ -616,9 +671,9 @@ int __fastcall WriteTextureDirectory(
     ) != 1) {
         zError::ReportOld(
             0x200,
-            "D:\\Proj\\GameZRecoil\\zImage\\zimg_texture.cpp",
+            g_zImage_SourceFile_ZimgTextureCpp,
             0x100,
-            "Error writing texture directory."
+            g_zImage_WriteTextureDirectoryErrorMsg
         );
         count = 0;
     }
@@ -652,9 +707,9 @@ int __fastcall ReadTextureDirectory(
     if (count > 0x1000) {
         zError::ReportOld(
             0x100,
-            "D:\\Proj\\GameZRecoil\\zImage\\zimg_texture.cpp",
+            g_zImage_SourceFile_ZimgTextureCpp,
             0x11c,
-            "Too many textures for texture array size."
+            g_zImage_TextureArraySizeExceededMsg
         );
         return -1;
     }
@@ -668,9 +723,9 @@ int __fastcall ReadTextureDirectory(
     ) != 1) {
         zError::ReportOld(
             0x200,
-            "D:\\Proj\\GameZRecoil\\zImage\\zimg_texture.cpp",
+            g_zImage_SourceFile_ZimgTextureCpp,
             0x12a,
-            "Error reading GameZ Texture directory data."
+            g_zImage_ReadGameZTextureDirectoryDataErrorMsg
         );
         return -1;
     }
@@ -731,6 +786,8 @@ void __fastcall SetPathExtension(
     }
 
     if (extension != 0) {
+        /* Retail literal 0x4e084c is the compiler-emitted "." used when
+           appending a missing extension separator. */
         strcat(
             path,
             "."
@@ -804,7 +861,7 @@ int __fastcall FontsLoadFromPath(
             0x200,
             "D:\\Proj\\GameZRecoil\\zImage\\zimg_fonts.cpp",
             0x48,
-            "Failed to read %s",
+            g_HudSensorTracker_ReadFileFailedFmt,
             path
         );
         return -1;

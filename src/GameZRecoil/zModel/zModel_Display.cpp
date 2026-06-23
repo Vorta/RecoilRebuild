@@ -44,7 +44,7 @@ float g_zModel_HardwareInverseZTolerance = 0.0f;
  * Authored zModel display global.
  * Purpose: store the backface-elimination tolerance scalar used by display passes.
  */
-float g_zModel_BFETolerance = 0.0f;
+float g_zModel_BFETolerance = 0.005f;
 zVec3 g_zModel_SharedVec3ScratchAStorage[0x400] = {0};
 zVec3 g_zModel_SharedVec3ScratchBStorage[0x400] = {0};
 zVec3 *g_zModel_TransformedVerts = 0;

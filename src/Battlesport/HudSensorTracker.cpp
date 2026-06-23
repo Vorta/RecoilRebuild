@@ -13,6 +13,7 @@
 #include "GameZRecoil/zEffect/zEffect.h"
 #include "GameZRecoil/zError/zError.h"
 #include "GameZRecoil/zGame/zGame.h"
+#include "GameZRecoil/zHud/zhud_ui.h"
 #include "GameZRecoil/zInput/zInput.h"
 #include "GameZRecoil/zInterp/zInterp.h"
 #include "GameZRecoil/zLoc/zLoc.h"
@@ -182,8 +183,11 @@ zClass_NodePartial *ResolveObjectiveNodePath(
 }
 } // namespace
 
-// Reimplements 0x416390: HudGeom2D::ClassifyPointAgainstSegment
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x416390: HudGeom2D::ClassifyPointAgainstSegment
+ * Source: D:\Proj\Battlesport\hud.cpp
+ * Purpose: Classify a point against a 2D segment using the segment cross product and extents.
+ */
 int __fastcall HudGeom2D::ClassifyPointAgainstSegment(
     const zVec3 *segmentStart,
     const zVec3 *segmentEnd,
@@ -213,8 +217,11 @@ int __fastcall HudGeom2D::ClassifyPointAgainstSegment(
     return 0;
 }
 
-// Reimplements 0x4bd9c0: HudLineClip::ClipEndpointToX
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x4bd9c0: HudLineClip::ClipEndpointToX
+ * Source: D:\Proj\Battlesport\hud.cpp
+ * Purpose: Move one segment endpoint to an X clipping plane and interpolate Y.
+ */
 void __fastcall HudLineClip::ClipEndpointToX(
     zVec3 *endpoint,
     const zVec3 *otherEndpoint,
@@ -225,8 +232,11 @@ void __fastcall HudLineClip::ClipEndpointToX(
     endpoint->x = clipX;
 }
 
-// Reimplements 0x4bdb30: HudLineClip::ClipEndpointToY
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x4bdb30: HudLineClip::ClipEndpointToY
+ * Source: D:\Proj\Battlesport\hud.cpp
+ * Purpose: Move one segment endpoint to a Y clipping plane and interpolate X.
+ */
 void __fastcall HudLineClip::ClipEndpointToY(
     zVec3 *endpoint,
     const zVec3 *otherEndpoint,
@@ -237,8 +247,11 @@ void __fastcall HudLineClip::ClipEndpointToY(
     endpoint->y = clipY;
 }
 
-// Reimplements 0x4bd6f0: HudLineClip::SetCurrentBoundsFromRectI
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x4bd6f0: HudLineClip::SetCurrentBoundsFromRectI
+ * Source: D:\Proj\Battlesport\hud.cpp
+ * Purpose: Copy integer rectangle edges into the current float clip bounds.
+ */
 void __fastcall HudLineClip::SetCurrentBoundsFromRectI(
     const HudRectI *rect
 ) {
@@ -248,8 +261,11 @@ void __fastcall HudLineClip::SetCurrentBoundsFromRectI(
     g_HudLineClip_CurrentBottom = (float)(rect->bottom);
 }
 
-// Reimplements 0x4bd880: HudLineClip::ClipSegmentToCurrentXBounds
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x4bd880: HudLineClip::ClipSegmentToCurrentXBounds
+ * Source: D:\Proj\Battlesport\hud.cpp
+ * Purpose: Reject or clamp a segment against the current left and right bounds.
+ */
 int __fastcall HudLineClip::ClipSegmentToCurrentXBounds(
     zVec3 *point0,
     zVec3 *point1,
@@ -302,8 +318,11 @@ int __fastcall HudLineClip::ClipSegmentToCurrentXBounds(
     return 1;
 }
 
-// Reimplements 0x4bd9f0: HudLineClip::ClipSegmentToCurrentYBounds
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x4bd9f0: HudLineClip::ClipSegmentToCurrentYBounds
+ * Source: D:\Proj\Battlesport\hud.cpp
+ * Purpose: Reject or clamp a segment against the current top and bottom bounds.
+ */
 int __fastcall HudLineClip::ClipSegmentToCurrentYBounds(
     zVec3 *point0,
     zVec3 *point1,
@@ -356,8 +375,11 @@ int __fastcall HudLineClip::ClipSegmentToCurrentYBounds(
     return 1;
 }
 
-// Reimplements 0x4bd840: HudLineClip::ClipSegmentToCurrentBounds
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x4bd840: HudLineClip::ClipSegmentToCurrentBounds
+ * Source: D:\Proj\Battlesport\hud.cpp
+ * Purpose: Clip a segment against the current X bounds, then the current Y bounds.
+ */
 int __fastcall HudLineClip::ClipSegmentToCurrentBounds(
     zVec3 *point0,
     zVec3 *point1,
@@ -382,8 +404,11 @@ int __fastcall HudLineClip::ClipSegmentToCurrentBounds(
     );
 }
 
-// Reimplements 0x416240: HudRectI::CalcOutcode
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x416240: HudRectI::CalcOutcode
+ * Source: D:\Proj\Battlesport\hud.cpp
+ * Purpose: Build the rectangle outside-code bits for a point.
+ */
 int HudRectI::CalcOutcode(
     const zVec3 *point
 ) {
@@ -403,16 +428,22 @@ int HudRectI::CalcOutcode(
     return outcode;
 }
 
-// Reimplements 0x416290: HudRectI::IsCornerOutcode
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x416290: HudRectI::IsCornerOutcode
+ * Source: D:\Proj\Battlesport\hud.cpp
+ * Purpose: Identify outside-code combinations that lie beyond a rectangle corner.
+ */
 int __fastcall HudRectI::IsCornerOutcode(
     int outcode
 ) {
     return outcode == 9 || outcode == 10 || outcode == 5 || outcode == 6 ? 1 : 0;
 }
 
-// Reimplements 0x4162b0: HudRectI::SegmentIntersectsEdge
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x4162b0: HudRectI::SegmentIntersectsEdge
+ * Source: D:\Proj\Battlesport\hud.cpp
+ * Purpose: Test whether a segment crosses the requested rectangle edge.
+ */
 int HudRectI::SegmentIntersectsEdge(
     int edgeCode,
     const zVec3 *segmentStart,
@@ -482,8 +513,11 @@ int HudRectI::SegmentIntersectsEdge(
     return 0;
 }
 
-// Reimplements 0x415fb0: HudRectI::ClipOrSplitSegment
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x415fb0: HudRectI::ClipOrSplitSegment
+ * Source: D:\Proj\Battlesport\hud.cpp
+ * Purpose: Clip or split a segment against this rectangle and preserve split output globals.
+ */
 int HudRectI::ClipOrSplitSegment(
     zVec3 *segmentStart,
     zVec3 *segmentEnd
@@ -650,20 +684,32 @@ int HudRectI::ClipOrSplitSegment(
     return 2;
 }
 
-// Reimplements 0x415ab0: HudSensorMapNode::Init (HudSensorMapNode.cpp)
+/**
+ * Reimplements 0x415ab0: HudSensorMapNode::Init
+ * Source: D:\Proj\Battlesport\HudSensorMapNode.cpp
+ * Purpose: Apply map-node defaults and return this node.
+ */
 HudSensorMapNode * HudSensorMapNode::Init() {
     InitDefaults();
     return this;
 }
 
-// Reimplements 0x415ac0: HudSensorMapNode::FreePointArray (HudSensorMapNode.cpp)
+/**
+ * Reimplements 0x415ac0: HudSensorMapNode::FreePointArray
+ * Source: D:\Proj\Battlesport\HudSensorMapNode.cpp
+ * Purpose: Release the dynamically loaded map point array when present.
+ */
 void HudSensorMapNode::FreePointArray() {
     if (points != 0) {
         free(points);
     }
 }
 
-// Reimplements 0x415ae0: HudSensorMapNode::SetEnabled (HudSensorMapNode.cpp)
+/**
+ * Reimplements 0x415ae0: HudSensorMapNode::SetEnabled
+ * Source: D:\Proj\Battlesport\HudSensorMapNode.cpp
+ * Purpose: Toggle marker visibility, refreshing color state and clearing point selection.
+ */
 int HudSensorMapNode::SetEnabled(
     int enabled
 ) {
@@ -677,7 +723,11 @@ int HudSensorMapNode::SetEnabled(
     return 1;
 }
 
-// Reimplements 0x415b10: HudSensorMapNode::SelectPoint (HudSensorMapNode.cpp)
+/**
+ * Reimplements 0x415b10: HudSensorMapNode::SelectPoint
+ * Source: D:\Proj\Battlesport\HudSensorMapNode.cpp
+ * Purpose: Select an in-range path point or clear the active selection.
+ */
 HudSensorMapPoint * HudSensorMapNode::SelectPoint(
     int pointIndex
 ) {
@@ -690,7 +740,11 @@ HudSensorMapPoint * HudSensorMapNode::SelectPoint(
     return 0;
 }
 
-// Reimplements 0x415b40: HudSensorMapNode::InitDefaults (HudSensorMapNode.cpp)
+/**
+ * Reimplements 0x415b40: HudSensorMapNode::InitDefaults
+ * Source: D:\Proj\Battlesport\HudSensorMapNode.cpp
+ * Purpose: Initialize map-node links, point storage, marker state, and default color fields.
+ */
 int HudSensorMapNode::InitDefaults() {
     colorRgb[0] = (char)(0xff);
     colorRgb[1] = (char)(0xff);
@@ -706,7 +760,11 @@ int HudSensorMapNode::InitDefaults() {
     return 1;
 }
 
-// Reimplements 0x415b70: HudSensorMapNode::SetColorRgb (HudSensorMapNode.cpp)
+/**
+ * Reimplements 0x415b70: HudSensorMapNode::SetColorRgb
+ * Source: D:\Proj\Battlesport\HudSensorMapNode.cpp
+ * Purpose: Optionally copy RGB bytes and rebuild the full/half-intensity packed color pair.
+ */
 int HudSensorMapNode::SetColorRgb(
     const unsigned char *rgbOrNull
 ) {
@@ -733,7 +791,11 @@ int HudSensorMapNode::SetColorRgb(
     return 1;
 }
 
-// Reimplements 0x415bd0: HudSensorMapNode::LoadFromStream (HudSensorMapNode.cpp)
+/**
+ * Reimplements 0x415bd0: HudSensorMapNode::LoadFromStream
+ * Source: D:\Proj\Battlesport\HudSensorMapNode.cpp
+ * Purpose: Load color, points, and objective binding from a sensor-map stream.
+ */
 int HudSensorMapNode::LoadFromStream(
     FILE *stream
 ) {
@@ -781,7 +843,11 @@ int HudSensorMapNode::LoadFromStream(
     return 1;
 }
 
-// Reimplements 0x415c90: HudSensorMapNode::UpdateCachedBounds (HudSensorMapNode.cpp)
+/**
+ * Reimplements 0x415c90: HudSensorMapNode::UpdateCachedBounds
+ * Source: D:\Proj\Battlesport\HudSensorMapNode.cpp
+ * Purpose: Copy cached bounds or recompute X/Z extents from the loaded point array.
+ */
 int HudSensorMapNode::UpdateCachedBounds(
     HudSensorMapBounds *outBoundsOrNull
 ) {
@@ -966,7 +1032,11 @@ int HudSensorTracker::SetTrackedSaveState(
     return 1;
 }
 
-// Reimplements 0x416ad0: HudSensorTracker::MapOverlayEndShow (D:\Proj\Battlesport\map.cpp)
+/**
+ * Reimplements 0x416ad0: HudSensorTracker::MapOverlayEndShow
+ * Source: D:\Proj\Battlesport\map.cpp
+ * Purpose: Stop the active map overlay lerp and queue the deterministic map-off sound path.
+ */
 void HudSensorTracker::MapOverlayEndShow() {
     if (mapScaleLerpActive == 0) {
         return;
@@ -986,7 +1056,11 @@ void HudSensorTracker::MapOverlayEndShow() {
     }
 }
 
-// Reimplements 0x416a30: HudSensorTracker::MapOverlayBeginShow (D:\Proj\Battlesport\map.cpp)
+/**
+ * Reimplements 0x416a30: HudSensorTracker::MapOverlayBeginShow
+ * Source: D:\Proj\Battlesport\map.cpp
+ * Purpose: Begin the map overlay scale lerp from the current scale to the fitted map bounds scale.
+ */
 int HudSensorTracker::MapOverlayBeginShow() {
     if (mapScaleLerpActive != 0) {
         return 0;
@@ -1011,7 +1085,11 @@ int HudSensorTracker::MapOverlayBeginShow() {
     return 1;
 }
 
-// Reimplements 0x416b30: HudSensorTracker::MapOverlayRefToggle (D:\Proj\Battlesport\map.cpp)
+/**
+ * Reimplements 0x416b30: HudSensorTracker::MapOverlayRefToggle
+ * Source: D:\Proj\Battlesport\map.cpp
+ * Purpose: Reference-count map overlay visibility requests and route transitions through begin/end show.
+ */
 int HudSensorTracker::MapOverlayRefToggle(
     int enable
 ) {
@@ -1031,7 +1109,11 @@ int HudSensorTracker::MapOverlayRefToggle(
     return 1;
 }
 
-// Reimplements 0x416b80: HudSensorTracker::MapZoomIn (D:\Proj\Battlesport\map.cpp)
+/**
+ * Reimplements 0x416b80: HudSensorTracker::MapZoomIn
+ * Source: D:\Proj\Battlesport\map.cpp
+ * Purpose: Increase the active overlay zoom and play the map click sound while the overlay is shown.
+ */
 void HudSensorTracker::MapZoomIn() {
     if (mapScaleLerpActive != 0) {
         mapZoom *= 1.10000002f;
@@ -1039,7 +1121,11 @@ void HudSensorTracker::MapZoomIn() {
     }
 }
 
-// Reimplements 0x416bb0: HudSensorTracker::MapZoomOut (D:\Proj\Battlesport\map.cpp)
+/**
+ * Reimplements 0x416bb0: HudSensorTracker::MapZoomOut
+ * Source: D:\Proj\Battlesport\map.cpp
+ * Purpose: Decrease the active overlay zoom and play the map click sound while the overlay is shown.
+ */
 void HudSensorTracker::MapZoomOut() {
     if (mapScaleLerpActive != 0) {
         mapZoom *= 0.899999976f;
@@ -1047,8 +1133,11 @@ void HudSensorTracker::MapZoomOut() {
     }
 }
 
-// Reimplements 0x416be0: HudSensorTracker::UpdateMapScaleLerp
-// (D:\Proj\Battlesport\map.cpp)
+/**
+ * Reimplements 0x416be0: HudSensorTracker::UpdateMapScaleLerp
+ * Source: D:\Proj\Battlesport\map.cpp
+ * Purpose: Advance the map overlay scale interpolation and update the current overlay scale vector.
+ */
 int HudSensorTracker::UpdateMapScaleLerp() {
     if (mapScaleLerpRunning != 0) {
         mapScaleLerpT += mapScaleLerpStep;
@@ -1066,8 +1155,11 @@ int HudSensorTracker::UpdateMapScaleLerp() {
     return 1;
 }
 
-// Reimplements 0x416c90: HudSensorTracker::ProjectWorldPointsToOverlay
-// (D:\Proj\Battlesport\map.cpp)
+/**
+ * Reimplements 0x416c90: HudSensorTracker::ProjectWorldPointsToOverlay
+ * Source: D:\Proj\Battlesport\map.cpp
+ * Purpose: Project world-space map points into overlay coordinates using the tracked origin and forward vector.
+ */
 int HudSensorTracker::ProjectWorldPointsToOverlay(
     const zVec3 *inputWorldPoints,
     zVec3 *projectedOverlayPoints,
@@ -1119,8 +1211,11 @@ float HudSensorTracker::GetSaveStateRelativeVectorLen(
     return lengthSq;
 }
 
-// Reimplements 0x416dd0: HudSensorTracker::DrawMarkerCross
-// (D:\Proj\Battlesport\map.cpp)
+/**
+ * Reimplements 0x416dd0: HudSensorTracker::DrawMarkerCross
+ * Source: D:\Proj\Battlesport\map.cpp
+ * Purpose: Draw a centered cross marker as two clipped immediate line strips.
+ */
 void __fastcall HudSensorTracker::DrawMarkerCross(
     int centerX,
     int centerY,
@@ -1155,8 +1250,11 @@ void __fastcall HudSensorTracker::DrawMarkerCross(
     );
 }
 
-// Reimplements 0x415f40: HudSensorTracker::DrawDiamondMarker
-// (D:\Proj\Battlesport\map.cpp)
+/**
+ * Reimplements 0x415f40: HudSensorTracker::DrawDiamondMarker
+ * Source: D:\Proj\Battlesport\map.cpp
+ * Purpose: Draw a centered diamond marker as a closed clipped immediate line strip.
+ */
 void __fastcall HudSensorTracker::DrawDiamondMarker(
     int centerX,
     int centerY,
@@ -1186,8 +1284,11 @@ void __fastcall HudSensorTracker::DrawDiamondMarker(
     );
 }
 
-// Reimplements 0x416480: HudSensorMapNode::DrawProjectedPath
-// (D:\Proj\Battlesport\map.cpp)
+/**
+ * Reimplements 0x416480: HudSensorMapNode::DrawProjectedPath
+ * Source: D:\Proj\Battlesport\map.cpp
+ * Purpose: Draw the camera-projected sensor-map path with clipped immediate line strips.
+ */
 int HudSensorMapNode::DrawProjectedPath(
     HudSensorTracker *tracker
 ) {
@@ -1259,8 +1360,11 @@ int HudSensorMapNode::DrawProjectedPath(
     return 1;
 }
 
-// Reimplements 0x415d30: HudSensorMapNode::DrawOnTracker
-// (D:\Proj\Battlesport\map.cpp)
+/**
+ * Reimplements 0x415d30: HudSensorMapNode::DrawOnTracker
+ * Source: D:\Proj\Battlesport\map.cpp
+ * Purpose: Draw this map node on the tracker, including blink state and selected-point marker.
+ */
 int HudSensorMapNode::DrawOnTracker(
     HudSensorTracker *tracker,
     const zVec3 *drawPathWorldPos
@@ -1519,7 +1623,11 @@ void HudSensorTracker::Update() {
     }
 }
 
-// Reimplements 0x4167e0: HudSensorTracker::MapRemoveNode (D:\Proj\Battlesport\map.cpp)
+/**
+ * Reimplements 0x4167e0: HudSensorTracker::MapRemoveNode
+ * Source: D:\Proj\Battlesport\map.cpp
+ * Purpose: Unlink the requested map node from the tracker list and release head-node storage.
+ */
 int HudSensorTracker::MapRemoveNode(
     HudSensorMapNode *mapNode
 ) {
@@ -1553,8 +1661,11 @@ int HudSensorTracker::MapRemoveNode(
     return 1;
 }
 
-// Reimplements 0x416840: HudSensorTracker::MapInsertNodeAndGrowBounds
-// (D:\Proj\Battlesport\map.cpp)
+/**
+ * Reimplements 0x416840: HudSensorTracker::MapInsertNodeAndGrowBounds
+ * Source: D:\Proj\Battlesport\map.cpp
+ * Purpose: Insert a map node at the list head and grow the tracker bounds from its cached extent.
+ */
 int HudSensorTracker::MapInsertNodeAndGrowBounds(
     HudSensorMapNode *mapNode
 ) {
@@ -1584,8 +1695,11 @@ int HudSensorTracker::MapInsertNodeAndGrowBounds(
     return 1;
 }
 
-// Reimplements 0x4168d0: HudSensorTracker::LoadMapFromStream
-// (D:\Proj\Battlesport\map.cpp)
+/**
+ * Reimplements 0x4168d0: HudSensorTracker::LoadMapFromStream
+ * Source: D:\Proj\Battlesport\map.cpp
+ * Purpose: Read a versioned map stream into tracker bounds and linked map nodes.
+ */
 int HudSensorTracker::LoadMapFromStream(
     FILE *stream
 ) {
@@ -1642,8 +1756,11 @@ int HudSensorTracker::LoadMapFromStream(
     return 1;
 }
 
-// Reimplements 0x4169d0: HudSensorTracker::LoadMapFromPath
-// (D:\Proj\Battlesport\map.cpp)
+/**
+ * Reimplements 0x4169d0: HudSensorTracker::LoadMapFromPath
+ * Source: D:\Proj\Battlesport\map.cpp
+ * Purpose: Open a map file path, remember it, and load the tracker map from the stream.
+ */
 int HudSensorTracker::LoadMapFromPath(
     const char *path
 ) {
@@ -1665,8 +1782,11 @@ int HudSensorTracker::LoadMapFromPath(
     return result;
 }
 
-// Reimplements 0x417260: HudSensorTracker::LoadMissionMapAndSfx
-// (D:\Proj\Battlesport\map.cpp)
+/**
+ * Reimplements 0x417260: HudSensorTracker::LoadMissionMapAndSfx
+ * Source: D:\Proj\Battlesport\map.cpp
+ * Purpose: Load the mission map path and resolve the map on, off, and click samples.
+ */
 int HudSensorTracker::LoadMissionMapAndSfx(
     int missionIdValue
 ) {
@@ -1684,13 +1804,20 @@ int HudSensorTracker::LoadMissionMapAndSfx(
     return result;
 }
 
-// Reimplements 0x416790: HudSensorTracker::MapShutdownAndResetThunk
-// (D:\Proj\Battlesport\map.cpp)
+/**
+ * Reimplements 0x416790: HudSensorTracker::MapShutdownAndResetThunk
+ * Source: D:\Proj\Battlesport\map.cpp
+ * Purpose: Tail-call the shared map shutdown and reset routine.
+ */
 int HudSensorTracker::MapShutdownAndResetThunk() {
     return MapShutdownAndReset();
 }
 
-// Reimplements 0x4167a0: HudSensorTracker::MapShutdownAndReset (D:\Proj\Battlesport\map.cpp)
+/**
+ * Reimplements 0x4167a0: HudSensorTracker::MapShutdownAndReset
+ * Source: D:\Proj\Battlesport\map.cpp
+ * Purpose: End the overlay, remove loaded map nodes, free the map path, and reset map state.
+ */
 int HudSensorTracker::MapShutdownAndReset() {
     MapOverlayEndShow();
     while (mapNodeListHead != 0) {
@@ -2222,7 +2349,7 @@ void HudSensorTracker::LoadMissionWeatherFx(
             0x200,
             "D:\\Proj\\Battlesport\\mission.cpp",
             0x5f6,
-            "Failed to read %s",
+            g_HudSensorTracker_ReadFileFailedFmt,
             zrdPath
         );
         return;
@@ -2365,7 +2492,7 @@ int HudSensorTracker::LoadObjectivesFromPath(
             0x200,
             "D:\\Proj\\Battlesport\\mission.cpp",
             0x2c7,
-            "Failed to read %s",
+            g_HudSensorTracker_ReadFileFailedFmt,
             path
         );
         return 1;
@@ -2658,7 +2785,7 @@ void HudSensorTracker::RunStartAnimsFromZrd(
             0x200,
             "D:\\Proj\\Battlesport\\mission.cpp",
             0x646,
-            "Failed to read %s",
+            g_HudSensorTracker_ReadFileFailedFmt,
             zrdPath
         );
         return;

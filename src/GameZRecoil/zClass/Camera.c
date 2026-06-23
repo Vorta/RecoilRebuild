@@ -57,6 +57,47 @@ zClass_NodePartial *g_zClass_CurrentCamera = 0;
  */
 zClass_NodePartial *g_zClass_CameraTargetNode = 0;
 /**
+ * Reimplements data 0x4dddbc: g_zClass_FindConvexHullUnexpectedReturnMsg.
+ * BN data inventory declares writable Camera.c diagnostic literal char[0x37].
+ * Purpose: report the unexpected convex-hull exit path during frustum-grid
+ * footprint construction.
+ */
+char g_zClass_FindConvexHullUnexpectedReturnMsg[0x37] =
+    "Returning from find_convex_hull_xz in unexpected line.";
+/**
+ * Reimplements data 0x4dddf4: g_zClass_DiamondTilerNeedMoreRingsMsg.
+ * BN data inventory declares writable Camera.c diagnostic literal char[0x26].
+ * Purpose: report overflow of camera frustum-grid diamond ring buckets.
+ */
+char g_zClass_DiamondTilerNeedMoreRingsMsg[0x26] =
+    "Error: Need more diamond tiler rings.";
+/**
+ * Reimplements data 0x4dde1c: g_zClass_DiamondTilerNeedMoreCellsPerRingMsg.
+ * BN data inventory declares writable Camera.c diagnostic literal char[0x2f].
+ * Purpose: report overflow of a camera frustum-grid diamond ring's cell list.
+ */
+char g_zClass_DiamondTilerNeedMoreCellsPerRingMsg[0x2f] =
+    "Error: Need more diamond tiler cells per ring.";
+/**
+ * Reimplements data 0x4dde4c:
+ * g_zClass_LineErrorPointInPolygonInitCameraFrustumFmt.
+ * BN data inventory declares writable Camera.c diagnostic format char[0x53].
+ * Purpose: format the camera frustum-footprint mesh-face filter failure
+ * diagnostic with the legacy source file and line.
+ */
+char g_zClass_LineErrorPointInPolygonInitCameraFrustumFmt[0x53] =
+    "%s: Line %d: ERROR from gModDIPointInPolygonInit() for camera "
+    "frustrum footprint.\n";
+/**
+ * Reimplements data 0x4ddea0: g_zClass_VapStaticsNodeName.
+ * BN data inventory declares the shared writable zClass VAP statics node-name
+ * literal char[0xc], referenced by Camera.c render filtering and cls_world.c
+ * virtual-area partition creation.
+ * Purpose: name generated virtual-area statics nodes and identify them during
+ * offset-tile camera rendering.
+ */
+char g_zClass_VapStaticsNodeName[0x0c] = "VAP_statics";
+/**
  * Reimplements data 0x56cc40: g_zCamera_FrustumFootprintPoints.
  * Purpose: cache the frustum origin plus four corner points used by camera
  * grid-tile construction; BN bounds this zero-initialized array to five zVec3
@@ -280,8 +321,7 @@ namespace {
             ) == 0) {
             sprintf(
                 g_zError_DebugMsgBuffer,
-                "%s: Line %d: ERROR from gModDIPointInPolygonInit() for camera "
-                "frustrum footprint.\n",
+                g_zClass_LineErrorPointInPolygonInitCameraFrustumFmt,
                 kCameraSourceFile,
                 filterErrorLine
             );
@@ -349,7 +389,7 @@ namespace {
                 0x200,
                 kCameraSourceFile,
                 ringErrorLine,
-                "Error: Need more diamond tiler rings."
+                g_zClass_DiamondTilerNeedMoreRingsMsg
             );
             return;
         }
@@ -361,7 +401,7 @@ namespace {
                 0x200,
                 kCameraSourceFile,
                 cellErrorLine,
-                "Error: Need more diamond tiler cells per ring."
+                g_zClass_DiamondTilerNeedMoreCellsPerRingMsg
             );
             return;
         }
@@ -397,8 +437,14 @@ namespace zClass_Camera {
             (zClass_CameraDataPartial *)(calloc(
                 1,
                 sizeof(zClass_CameraDataPartial)
-            ));
+        ));
         node->classData = data;
+        data->targetOrEuler.x = 0.0f;
+        data->targetOrEuler.y = 0.0f;
+        data->targetOrEuler.z = 0.0f;
+        data->posOffset.x = 0.0f;
+        data->posOffset.y = 0.0f;
+        data->posOffset.z = 0.0f;
         data->viewportWidth = 1.0f;
         data->viewportHeight = 1.0f;
         data->frustumVectorsDirty = 1;
@@ -1285,7 +1331,7 @@ namespace zClass_Camera {
             0x200,
             kCameraSourceFile,
             0x1049,
-            "Returning from find_convex_hull_xz in unexpected line."
+            g_zClass_FindConvexHullUnexpectedReturnMsg
         );
         return 0;
     }
@@ -1759,7 +1805,7 @@ namespace zClass_Camera {
                                 zClass_NodePartial *child = area->childList[childIndex];
                                 if (strstr(
                                     child->name,
-                                    "VAP_statics"
+                                    g_zClass_VapStaticsNodeName
                                 ) != 0) {
                                     zClass_Class::gwNodeRenderDispatch(
                                         child,

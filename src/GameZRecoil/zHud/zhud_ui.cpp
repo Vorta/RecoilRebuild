@@ -129,8 +129,6 @@ int g_zTimedTask_ActiveCount = 0;
 int g_HudCmdMouseDebounceFrames = 0;
 zVidImagePartial *g_HudUiWidget_ExclusiveDrawImage = 0;
 HudUiMgrData g_HudUiMgr;
-zSndSample *g_HudUi_PowerupSample = 0;
-unsigned char g_HudUi_PowerupSampleInitFlags = 0;
 extern "C" {
 HudUiMgrSensorTrackList g_HudUiMgrSensor_TrackList = {0};
 }
@@ -252,6 +250,43 @@ char g_HudUiOptionsPanel_SectionName[] = "OPTIONSPANEL";
  */
 char g_HudFontName_Arial[] = "Arial";
 /**
+ * Reimplements data 0x4dace8: g_HudUiShieldMessageWidget_DefaultPercentText.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: provide the default shield percent text for the HUD shield message widget.
+ */
+char g_HudUiShieldMessageWidget_DefaultPercentText[4] = "000";
+/**
+ * Reimplements data 0x4dacec: g_HudUiTimerPanel_ZeroTimeString.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: provide the timer panel fallback display string for zero or invalid time.
+ */
+char g_HudUiTimerPanel_ZeroTimeString[9] = "00:00:00";
+/**
+ * Reimplements data 0x4dacf8: g_HudUiTimerPanel_TimeFmt.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: provide the timer panel hours/minutes/seconds text format.
+ */
+char g_HudUiTimerPanel_TimeFmt[15] = "%02d:%02d:%02d";
+/**
+ * Reimplements data 0x4dad14: g_HudUiTimerPanel_NodeName.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: name the ZAR HUD timer section registered by HudUiMgr.
+ */
+char g_HudUiTimerPanel_NodeName[9] = "HUDTimer";
+/**
+ * Reimplements data 0x4dad20: g_HudUiTimerPanel_TimerDataSectionName.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: name the serialized timer data blob written by the timer panel callback.
+ */
+char g_HudUiTimerPanel_TimerDataSectionName[10] = "TimerData";
+/**
+ * Reimplements data 0x4dadf4: g_HudSensorTracker_ReadFileFailedFmt.
+ * Shared data owner: hud_ui.shared_zrd_read_failed_format_literal.
+ * Purpose: provide the shared failed-read diagnostic format used by HUD,
+ * mission, pickup, turret, image, and opt-catalog ZRD load paths.
+ */
+char g_HudSensorTracker_ReadFileFailedFmt[18] = "Failed to read %s";
+/**
  * Reimplements data 0x4e4708: g_HudUiCycleSelectorWidget_ZrdKey_Bitmap.
  * Shared data owner: hud_ui.cycle_selector_shared_zrd_key_literals.
  * Purpose: name the shared BITMAP ZRD record consumed by HUD widget loaders.
@@ -260,11 +295,11 @@ char g_HudUiCycleSelectorWidget_ZrdKey_Bitmap[] = "BITMAP";
 /**
  * Reimplements data 0x4e4738: g_HudUiCycleSelectorWidget_ZrdKey_Text.
  * Shared data owner: hud_ui.cycle_selector_shared_zrd_key_literals.
- * BN exposes four TEXT bytes; the following aligned zero padding supplies the
- * C-string terminator in the original data pool.
+ * BN exposes four TEXT bytes followed by aligned zero padding before CYCLE;
+ * keep the whole pool slot contiguous so C-string lookups see the terminator.
  * Purpose: name shared TEXT ZRD records consumed by toggle and cycle widgets.
  */
-char g_HudUiCycleSelectorWidget_ZrdKey_Text[4] = {'T', 'E', 'X', 'T'};
+char g_HudUiCycleSelectorWidget_ZrdKey_Text[16] = {'T', 'E', 'X', 'T'};
 /**
  * Reimplements data 0x4e4748: g_HudUiCycleSelectorWidget_ZrdKey_Cycle.
  * Shared data owner: hud_ui.cycle_selector_shared_zrd_key_literals.
@@ -302,6 +337,13 @@ char g_HudUiZrdWidgetEx17C_Item_ZrdKey_MouseRect[] = "MOUSERECT";
  */
 char g_HudUiZrdToken_Radio[] = "RADIO";
 /**
+ * Reimplements data 0x4dc17c: g_HudZrd_Key_Sound.
+ * Shared data owner: hud_ui.shared_zrd_sound_key_literal.
+ * Purpose: name the shared SOUND ZRD record consumed by HUD widget, pickup,
+ * and opt-catalog sound loaders.
+ */
+char g_HudZrd_Key_Sound[6] = "SOUND";
+/**
  * Reimplements data 0x4dae0c: g_HudLayout_TypeISectionName.
  * Data owner gate remains pending; this docblock records source provenance only.
  * Purpose: name the TYPEI HUD layout section loaded from the HUD ZRD root.
@@ -313,6 +355,12 @@ char g_HudLayout_TypeISectionName[] = "TYPEI";
  * Purpose: name the TYPEII HUD layout section loaded from the HUD ZRD root.
  */
 char g_HudLayout_TypeIISectionName[] = "TYPEII";
+/**
+ * Reimplements data 0x4dae40: g_HudUiMessage_NodeName.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: name the objective HUD message node used for chat and save/load status prompts.
+ */
+char g_HudUiMessage_NodeName[8] = "Message";
 /**
  * Reimplements data 0x4dae48: g_HudUiMessage_SeparatorColon.
  * Data owner gate remains pending; this docblock records source provenance only.
@@ -2358,7 +2406,7 @@ void LoadHudZrdSound(
 ) {
     zReader::Node *const soundNode = zReader_GetNamedNode(
         parentNode,
-        "SOUND"
+        g_HudZrd_Key_Sound
     );
     zReader::Node *const soundBase = ZrdArrayBase(soundNode);
     const char *const name = ZrdArrayString(
@@ -3647,9 +3695,7 @@ void __fastcall StaticDestructor(
 
     g_HudUiMgrSensorBlock.Destructor();
 
-    g_HudUiMgrObjectiveChatComposeTextInput.DestructorCore();
-    g_HudUiMgrObjectiveSensorRect.DestructorCore();
-    g_HudUiMgrObjectiveWidget.DestructorCore();
+    g_HudUiMgr.objective.~HudUiMgrObjectiveBlock();
 
     ((HudUiTripletPanel *)(&g_HudUiMgrNanitePanel))->DestructorCore();
     g_HudUiMgrReticleWidget.DestructorCore();
@@ -3741,7 +3787,7 @@ int __fastcall EnsureHudLoaded(
             0x200,
             "D:\\Proj\\Battlesport\\hud.cpp",
             0x60d,
-            "Failed to read %s",
+            g_HudSensorTracker_ReadFileFailedFmt,
             entryPath
         );
         return 0;
@@ -4177,7 +4223,7 @@ int __fastcall EnsureHudLoaded(
             0,
             &timerClip
         );
-        ((HudUiPanel *)(g_HudUiMgrTimerPanel))->SetTextFmt("00:00:00");
+        ((HudUiPanel *)(g_HudUiMgrTimerPanel))->SetTextFmt(g_HudUiTimerPanel_ZeroTimeString);
 
         HudUiTriplet *const triplet = g_HudUiMgrStatsList->triplet;
         HudUiApplyStatsTripletInt3(
@@ -4783,7 +4829,20 @@ int __fastcall ApplyHudModeSwitch(
     return currentType;
 }
 
-// Reimplements 0x4089c0: HudUiMgr::ScreenToWorld
+/**
+ * Reimplements 0x4089c0: HudUiMgr::ScreenToWorld.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * BN name: MapReplicatedScreenToRenderPoint.
+ * Purpose: map a replicated display-space HUD point back into render-viewport
+ * coordinates before clamping it to the render section.
+ * Source shape: __fastcall function with a single float *pointXY argument;
+ * callers pass the address of the point's x field, and the function updates
+ * pointXY[0] and pointXY[1] in place.
+ * Data dependencies: zOpt render/display view-rect option globals and
+ * replicate mode are covered by accepted owner
+ * engine.zgame.zopt_video_section_option_globals.
+ * HudUi data: touches no HudUi table, singleton, or manager-owned storage.
+ */
 void __fastcall ScreenToWorld(
     float *pointXY
 ) {
@@ -5025,7 +5084,7 @@ int __fastcall InitHudLayouts(
     );
 
     zUtil_ZAR::RegisterSectionHandler(
-        "HUDTimer",
+        g_HudUiTimerPanel_NodeName,
         ZbdCallbackPtr(&HudUiTimerPanel::ZarWriteTimerDataCallback),
         ZbdCallbackPtr(&HudUiTimerPanel::ZarReadTimerData),
         0x64,
@@ -13323,7 +13382,12 @@ int HudCmdBindButtonBase::LoadFromZrd(
     return 1;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered original-source helper, no standalone retail function.
+ * Observed caller: 0x4bf060 HudUiMessageBoxDialog::Constructor.
+ * Purpose: divide signed fallback layout coordinates by a power of two with the
+ * same toward-zero correction pattern emitted in the message-box constructor.
+ */
 int HudUiDialogSignedDivPow2(
     int value,
     int shift
@@ -13332,7 +13396,12 @@ int HudUiDialogSignedDivPow2(
     return (value + (signMask & ((1 << shift) - 1))) >> shift;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered original-source helper, no standalone retail function.
+ * Observed caller: 0x4bf060 HudUiMessageBoxDialog::Constructor.
+ * Purpose: allocate a 16-bit solid-color zVid image for the message-box
+ * fallback path when no ZRD layout section is supplied.
+ */
 zVidImagePartial *HudUiMessageBoxCreateSolidImage(
     int width,
     int height,
@@ -13364,7 +13433,16 @@ zVidImagePartial *HudUiMessageBoxCreateSolidImage(
     return image;
 }
 
-// Reimplements 0x4bf060: HudUiMessageBoxDialog::Constructor
+/**
+ * Reimplements 0x4bf060: HudUiMessageBoxDialog::Constructor.
+ * BN source path: D:\Proj\Battlesport\HudUiMessageBoxDialog.cpp.
+ * Source model: class-first constructor for HudUiMessageBoxDialog; BN table
+ * 0x4d4028 is installed at object offset zero by the constructed C++ object.
+ * Purpose: bind the ZRD-backed message-box widgets, or build the original
+ * solid-image fallback dialog and child widget graph.
+ * Touched data: owns runtime image pointers only; dialog/button table globals
+ * are class identity evidence, not separately promoted data.
+ */
 HudUiMessageBoxDialog * HudUiMessageBoxDialog::Constructor(
     const char *zrdPath,
     const char *sectionName
@@ -13521,7 +13599,14 @@ HudUiMessageBoxDialog * HudUiMessageBoxDialog::Constructor(
     return this;
 }
 
-// Reimplements 0x4bf540: HudUiMessageBoxDialog::ScalarDeletingDestructor
+/**
+ * Reimplements 0x4bf540: HudUiMessageBoxDialog::ScalarDeletingDestructor.
+ * BN source path: D:\Proj\Battlesport\HudUiMessageBoxDialog.cpp.
+ * Source model: compiler-emitted scalar deleting destructor thunk for the
+ * HudUiMessageBoxDialog class owner.
+ * Purpose: run the dialog destructor and conditionally free the object storage.
+ * Touched data: no authored globals; uses class cleanup only.
+ */
 HudUiBackground * HudUiMessageBoxDialog::ScalarDeletingDestructor(
     unsigned int flags
 ) {
@@ -13533,7 +13618,15 @@ HudUiBackground * HudUiMessageBoxDialog::ScalarDeletingDestructor(
     return this;
 }
 
-// Reimplements 0x4bf560: HudUiMessageBoxDialog::Destructor
+/**
+ * Reimplements 0x4bf560: HudUiMessageBoxDialog::Destructor.
+ * BN source path: D:\Proj\Battlesport\HudUiMessageBoxDialog.cpp.
+ * Source model: HudUiMessageBoxDialog class destructor; BN shows the dialog
+ * table 0x4d4028 at offset zero for this owner.
+ * Purpose: release fallback images and tear down message-box child widgets in
+ * the recovered member cleanup order.
+ * Touched data: no authored globals; releases runtime-owned image storage.
+ */
 void HudUiMessageBoxDialog::Destructor() {
     if (backgroundImage != 0) {
         if (backgroundImage->pixels != 0) {
@@ -13553,7 +13646,16 @@ void HudUiMessageBoxDialog::Destructor() {
     this->HudUiBackground::~HudUiBackground();
 }
 
-// Reimplements 0x4bf630: HudUiMessageBoxDialog::RunModal
+/**
+ * Reimplements 0x4bf630: HudUiMessageBoxDialog::RunModal.
+ * BN source path: D:\Proj\Battlesport\HudUiMessageBoxDialog.cpp.
+ * Source model: direct HudUiMessageBoxDialog method called by
+ * HudUi::ShowMessageBox, not a dialog-table slot.
+ * Purpose: switch render/input state to modal drawing, pump frames until the
+ * dialog records a result, then restore the previous framebuffer region.
+ * Touched data: direct globals are renderer/time owners already linked by the
+ * parent handoff; no dialog-owned plan-tracked data is promoted here.
+ */
 int HudUiMessageBoxDialog::RunModal(
     const char *messageText,
     const char *titleText,
@@ -13641,19 +13743,40 @@ int HudUiMessageBoxDialog::RunModal(
     return modalResult;
 }
 
-// Reimplements 0x4bf7c0: HudUiMessageBoxDialog::OnOk
+/**
+ * Reimplements 0x4bf7c0: HudUiMessageBoxDialog::OnOk.
+ * BN source path: D:\Proj\Battlesport\HudUiMessageBoxDialog.cpp.
+ * Source model: HudUiMessageBoxDialog table slot +0x0c in table 0x4d4028.
+ * Purpose: accept the modal dialog and force the modal loop to exit.
+ * Touched data: no authored globals; writes dialog modal fields only.
+ */
 void HudUiMessageBoxDialog::OnOk() {
     modalResult = 1;
     modalFrameCountdown = 0;
 }
 
-// Reimplements 0x4bf7e0: HudUiMessageBoxDialog::OnCancel
+/**
+ * Reimplements 0x4bf7e0: HudUiMessageBoxDialog::OnCancel.
+ * BN source path: D:\Proj\Battlesport\HudUiMessageBoxDialog.cpp.
+ * Source model: HudUiMessageBoxDialog table slot +0x10 in table 0x4d4028.
+ * Purpose: cancel the modal dialog and force the modal loop to exit.
+ * Touched data: no authored globals; writes dialog modal fields only.
+ */
 void HudUiMessageBoxDialog::OnCancel() {
     modalResult = 2;
     modalFrameCountdown = 0;
 }
 
-// Reimplements 0x4bf800: HudUiMessageBoxOkButton::OnActivate
+/**
+ * Reimplements 0x4bf800: HudUiMessageBoxOkButton::OnActivate.
+ * BN source path: D:\Proj\Battlesport\HudUiMessageBoxDialog.cpp.
+ * Source model: HudUiMessageBoxOkButton activation override; button table
+ * 0x4d40c8 overrides slot +0x30 with this method.
+ * Purpose: dispatch through the owner dialog to OnOk, then run the base
+ * HudUiZrdWidget activation behavior.
+ * Touched data: no authored globals; owner vptr dispatch reaches the dialog
+ * table slot before HudUiZrdWidget::OnActivate.
+ */
 void HudUiMessageBoxOkButton::OnActivate() {
     HudUiMessageBoxDialog *const dialog = (HudUiMessageBoxDialog *)(owner);
     dialog->OnOk();
@@ -13661,7 +13784,16 @@ void HudUiMessageBoxOkButton::OnActivate() {
     HudUiZrdWidget::OnActivate();
 }
 
-// Reimplements 0x4bf820: HudUiMessageBoxCancelButton::OnActivate
+/**
+ * Reimplements 0x4bf820: HudUiMessageBoxCancelButton::OnActivate.
+ * BN source path: D:\Proj\Battlesport\HudUiMessageBoxDialog.cpp.
+ * Source model: HudUiMessageBoxCancelButton activation override; button table
+ * 0x4d4040 overrides slot +0x30 with this method.
+ * Purpose: dispatch through the owner dialog to OnCancel, then run the base
+ * HudUiZrdWidget activation behavior.
+ * Touched data: no authored globals; owner vptr dispatch reaches the dialog
+ * table slot before HudUiZrdWidget::OnActivate.
+ */
 void HudUiMessageBoxCancelButton::OnActivate() {
     HudUiMessageBoxDialog *const dialog = (HudUiMessageBoxDialog *)(owner);
     dialog->OnCancel();
@@ -14404,11 +14536,15 @@ void HudUiChatComposeTextInput::OnAccept() {
     GameNet::EndChatComposeAndSendThunk();
 }
 
-// Reimplements 0x40d660: HudUiMgrObjectiveBlock::Destructor
-void HudUiMgrObjectiveBlock::Destructor() {
-    chatComposeTextInput.HudUiTextInput::~HudUiTextInput();
-    objectiveSensorRect.DestructorCore();
-    objectiveWidget.DestructorCore();
+/**
+ * Reimplements 0x40d660: HudUiMgrObjectiveBlock::~HudUiMgrObjectiveBlock.
+ * Binary Ninja shows the compiler-generated member destruction order:
+ * chatComposeTextInput, objectiveBar/objectiveMeter base cleanup, then the
+ * objective sensor and widget subobjects.
+ * Purpose: tear down the embedded objective HUD widgets as the authored C++
+ * destructor owner.
+ */
+HudUiMgrObjectiveBlock::~HudUiMgrObjectiveBlock() {
 }
 
 // Reimplements 0x40d6e0: HudUiMgrSensorBlock::Destructor
@@ -14963,7 +15099,7 @@ int __stdcall HudUiShieldMessageWidget::ApplyLayout(
         &clipRect
     );
 
-    percentTextPanel->SetTextFmt("000");
+    percentTextPanel->SetTextFmt(g_HudUiShieldMessageWidget_DefaultPercentText);
     percentTextPanel->UpdateTextBoundsFromContent();
 
     HudUiLayoutNode::ApplyMeterQuad(
@@ -17037,7 +17173,11 @@ HudUiPanelSimple * HudUiPanelSimple::ConstructorDefaultThunk() {
     );
 }
 
-// Reimplements 0x40ef00: HudUiTimerPanel::SetTimeSeconds
+/**
+ * Reimplements 0x40ef00: HudUiTimerPanel::SetTimeSeconds.
+ * Source owner: hud_ui.hud_ui_timer_panel_class.
+ * Purpose: format the timer panel text from hour, minute, and second fields.
+ */
 void HudUiTimerPanel::SetTimeSeconds(
     int hours,
     int minutes,
@@ -17045,19 +17185,23 @@ void HudUiTimerPanel::SetTimeSeconds(
 ) {
     if (hours >= 0 && minutes >= 0 && seconds >= 0) {
         HudUiPanel::SetTextFmt(
-            "%02d:%02d:%02d",
+            g_HudUiTimerPanel_TimeFmt,
             hours,
             minutes,
             seconds
         );
     } else {
-        HudUiPanel::SetTextFmt("00:00:00");
+        HudUiPanel::SetTextFmt(g_HudUiTimerPanel_ZeroTimeString);
     }
 
     HudUiPanel::UpdateTextBoundsFromContent();
 }
 
-// Reimplements 0x40ee60: HudUiTimerPanel::UpdateHMSFromSeconds
+/**
+ * Reimplements 0x40ee60: HudUiTimerPanel::UpdateHMSFromSeconds.
+ * Source owner: hud_ui.hud_ui_timer_panel_class.
+ * Purpose: cache elapsed seconds and update the visible timer text.
+ */
 void HudUiTimerPanel::UpdateHMSFromSeconds(
     float seconds
 ) {
@@ -17077,6 +17221,7 @@ void HudUiTimerPanel::UpdateHMSFromSeconds(
 
 /**
  * Reimplements 0x40eca0: HudUiTimerPanel::SetRunning.
+ * Source owner: hud_ui.hud_ui_timer_panel_class.
  * Purpose: set the global HUD timer panel stopped flag from the running state.
  */
 void __fastcall HudUiTimerPanel::SetRunning(
@@ -17087,6 +17232,7 @@ void __fastcall HudUiTimerPanel::SetRunning(
 
 /**
  * Reimplements 0x40ecc0: HudUiTimerPanel::SetElapsedSeconds.
+ * Source owner: hud_ui.hud_ui_timer_panel_class.
  * Purpose: store the elapsed seconds on the global HUD timer panel.
  */
 void __stdcall HudUiTimerPanel::SetElapsedSeconds(
@@ -17097,6 +17243,7 @@ void __stdcall HudUiTimerPanel::SetElapsedSeconds(
 
 /**
  * Reimplements 0x40ece0: HudUiTimerPanel::SetSeconds.
+ * Source owner: hud_ui.hud_ui_timer_panel_class.
  * Purpose: update the global HUD timer panel's elapsed display and second step.
  */
 void __stdcall HudUiTimerPanel::SetSeconds(
@@ -17109,13 +17256,18 @@ void __stdcall HudUiTimerPanel::SetSeconds(
 
 /**
  * Reimplements 0x40ed10: HudUiTimerPanel::GetSeconds.
+ * Source owner: hud_ui.hud_ui_timer_panel_class.
  * Purpose: return the elapsed seconds from the global HUD timer panel.
  */
 float HudUiTimerPanel::GetSeconds() {
     return g_HudUiMgrTimerPanel->elapsedSeconds;
 }
 
-// Reimplements 0x40ed20: HudUiTimerPanel::Update
+/**
+ * Reimplements 0x40ed20: HudUiTimerPanel::Update.
+ * Source owner: hud_ui.hud_ui_timer_panel_class.
+ * Purpose: advance the running timer and update base HudUiElement state.
+ */
 void HudUiTimerPanel::Update(
     float deltaSeconds
 ) {
@@ -17131,7 +17283,11 @@ void HudUiTimerPanel::Update(
     HudUiElement::Update(deltaSeconds);
 }
 
-// Reimplements 0x40fbb0: HudUiTimerPanel::ZarReadTimerData
+/**
+ * Reimplements 0x40fbb0: HudUiTimerPanel::ZarReadTimerData.
+ * Source owner: hud_ui.hud_ui_timer_panel_class.
+ * Purpose: load persisted timer seconds and start the objective HUD flow.
+ */
 void __stdcall HudUiTimerPanel::ZarReadTimerData(
     const float *buffer,
     int byteCount,
@@ -17143,20 +17299,28 @@ void __stdcall HudUiTimerPanel::ZarReadTimerData(
     HudUiMgrObjective::Begin();
 }
 
-// Reimplements 0x40fb90: HudUiTimerPanel::ZarWriteTimerDataCallback
+/**
+ * Reimplements 0x40fb90: HudUiTimerPanel::ZarWriteTimerDataCallback.
+ * Source owner: hud_ui.hud_ui_timer_panel_class.
+ * Purpose: write the timer elapsed-seconds blob into the HUD timer data section.
+ */
 void __fastcall HudUiTimerPanel::ZarWriteTimerDataCallback(
     zZbdSectionCallbackCtx *sectionCtx,
     HudUiTimerPanel *userData
 ) {
     zUtil_ZAR::WriteSectionBlob(
         sectionCtx,
-        "TimerData",
+        g_HudUiTimerPanel_TimerDataSectionName,
         &userData->elapsedSeconds,
         sizeof(userData->elapsedSeconds)
     );
 }
 
-// Reimplements 0x40ed80: HudUiTimerPanel::ConstructorDefault
+/**
+ * Reimplements 0x40ed80: HudUiTimerPanel::ConstructorDefault.
+ * Source owner: hud_ui.hud_ui_timer_panel_class.
+ * Purpose: initialize the timer panel font, colors, text, and default stopped state.
+ */
 HudUiTimerPanel * HudUiTimerPanel::ConstructorDefault() {
     HudUiPanel::ConstructorDefault(
         0,
@@ -17192,7 +17356,12 @@ HudUiTimerPanel * HudUiTimerPanel::ConstructorDefault() {
     return this;
 }
 
-// Reimplements 0x40dbf0: HudUiCounterTextPanel::Constructor
+/**
+ * Reimplements 0x40dbf0: HudUiCounterTextPanel::Constructor.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Data owners: hud_ui.hud_font_name_arial_data and hud_ui.hud_ui_mgr_data.
+ * Purpose: initialize the objective counter text panel defaults and register it with the HUD manager.
+ */
 HudUiCounterTextPanel * HudUiCounterTextPanel::Constructor() {
     HudUiPanel::ConstructorDefault(
         0,
@@ -17855,7 +18024,11 @@ int __fastcall ShowMessageBox(
     return result;
 }
 
-// Reimplements 0x426150: HudUi::HandleHotkeyCommand (D:\Proj\Battlesport\hudui.cpp)
+/**
+ * Reimplements 0x426150: HudUi::HandleHotkeyCommand.
+ * Original source path: D:\Proj\Battlesport\hudui.cpp.
+ * Purpose: Dispatch gameplay hotkeys to camera, HUD, cheat, chat, aux overlay, throttle, and save/load commands.
+ */
 void __fastcall HandleHotkeyCommand(
     int commandId
 ) {
@@ -17914,7 +18087,7 @@ void __fastcall HandleHotkeyCommand(
         if (zOpt::GetNetworkEnabled() != 0) {
             HudUiMgrObjective::Show(
                 0,
-                "Message",
+                g_HudUiMessage_NodeName,
                 zLoc::GetMessageString(0x86),
                 2.0f
             );
@@ -17923,7 +18096,7 @@ void __fastcall HandleHotkeyCommand(
         } else {
             HudUiMgrObjective::Show(
                 0,
-                "Message",
+                g_HudUiMessage_NodeName,
                 zLoc::GetMessageString(0x87),
                 2.0f
             );
@@ -17933,7 +18106,7 @@ void __fastcall HandleHotkeyCommand(
         if (zOpt::GetNetworkEnabled() != 0) {
             HudUiMgrObjective::Show(
                 0,
-                "Message",
+                g_HudUiMessage_NodeName,
                 zLoc::GetMessageString(0x85),
                 2.0f
             );
@@ -17944,7 +18117,7 @@ void __fastcall HandleHotkeyCommand(
         } else {
             HudUiMgrObjective::Show(
                 0,
-                "Message",
+                g_HudUiMessage_NodeName,
                 zLoc::GetMessageString(0x82),
                 2.0f
             );
@@ -17955,17 +18128,15 @@ void __fastcall HandleHotkeyCommand(
     }
 }
 
-// Reimplements 0x42bf40: HudUi::PlayPowerupSfx
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x42bf40: HudUi::PlayPowerupSfx.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: lazily resolve the powerup sound sample and play or stop its active voices.
+ */
 void __fastcall PlayPowerupSfx(
     int shouldPlay
 ) {
-    zSndSample *powerupSample = g_HudUi_PowerupSample;
-    if ((g_HudUi_PowerupSampleInitFlags & 1) == 0) {
-        g_HudUi_PowerupSampleInitFlags = (unsigned char)(g_HudUi_PowerupSampleInitFlags | 1);
-        powerupSample = zSnd::FindSampleByName("snd_powerup");
-        g_HudUi_PowerupSample = powerupSample;
-    }
+    static zSndSample *powerupSample = zSnd::FindSampleByName("snd_powerup");
 
     if (shouldPlay != 0) {
         powerupSample->PlayA3DSimple(1.0f);

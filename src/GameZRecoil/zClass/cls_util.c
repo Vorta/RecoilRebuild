@@ -25,6 +25,18 @@ int g_zClass_IsInitialized = 0;
  */
 int g_zClass_CopyNodeCloneDiMode = 1;
 /**
+ * Reimplements data 0x4de4d0: g_zClass_SourceFile_ClsUtilC.
+ * Purpose: store the recovered cls_util.c source path used by zError reports.
+ */
+char g_zClass_SourceFile_ClsUtilC[0x26] =
+    "D:\\Proj\\GameZRecoil\\zClass\\cls_util.c";
+/**
+ * Reimplements data 0x4de4f8: g_zClass_NodeArraySizeAlreadySetFmt.
+ * Purpose: report attempts to resize zClass node storage after configuration.
+ */
+char g_zClass_NodeArraySizeAlreadySetFmt[0x37] =
+    "Error setting node array size; size already set to %d.";
+/**
  * Reimplements data 0x539c9c: g_zClass_CopyNodeDiArg0.
  * Purpose: hold the first display-instance clone argument during node-copy recursion.
  */
@@ -44,10 +56,173 @@ int g_zClass_RebuildGwWorldBltRectOnShutdown = 1;
  * Purpose: store the GWWorld ZBD section name used by the class utility handler.
  */
 char g_zClass_GWWorldNodeName[8] = "GWWorld";
+/**
+ * Reimplements data 0x4de538: g_zClass_CopyNodeZoneIdErrorFmt.
+ * Purpose: report failed zone id copies while cloning common node data.
+ */
+char g_zClass_CopyNodeZoneIdErrorFmt[0x52] =
+    "ERROR copying node while setting zone ID.  Source Node: "
+    "(address =%x) (desc = %s)";
+/**
+ * Reimplements data 0x4de58c: g_zClass_CopyNodeActionCallbackFieldErrorFmt.
+ * Purpose: report failed action callback copies while cloning common node data.
+ */
+char g_zClass_CopyNodeActionCallbackFieldErrorFmt[0x5f] =
+    "ERROR copying node while setting action callback field  Source "
+    "Node: (address =%x) (desc = %s)";
+/**
+ * Reimplements data 0x4de5ec: g_zClass_CopyNodeActionCallbackPriorityFieldErrorFmt.
+ * Purpose: report failed action callback priority copies.
+ */
+char g_zClass_CopyNodeActionCallbackPriorityFieldErrorFmt[0x69] =
+    "ERROR copying node while setting action callback priority field.  "
+    "Source Node: (address =%x) (desc = %s)";
+/**
+ * Reimplements data 0x4de658: g_zClass_CopyNodeEnvironmentDataIgnoredFmt.
+ * Purpose: warn when source node environment data is intentionally skipped.
+ */
+char g_zClass_CopyNodeEnvironmentDataIgnoredFmt[0x32] =
+    "Source node (%s) has environment data.  Ignoring.";
+/**
+ * Reimplements data 0x4de68c: g_zClass_CopyNodeGraphicsDataErrorFmt.
+ * Purpose: report failed display-instance copies.
+ */
+char g_zClass_CopyNodeGraphicsDataErrorFmt[0x4a] =
+    "ERROR copying node graphics data.  Source Node: (address =%x) (desc = %s)";
+/**
+ * Reimplements data 0x4de6d8: g_zClass_CopyNodeOverwriteFlagErrorFmt.
+ * Purpose: report failed overwrite flag copies.
+ */
+char g_zClass_CopyNodeOverwriteFlagErrorFmt[0x58] =
+    "ERROR copying node while setting overwrite flag  Source Node: "
+    "(address =%x) (desc = %s)";
+/**
+ * Reimplements data 0x4de730: g_zClass_CopyNodeDiZoneCheckFlagErrorFmt.
+ * Purpose: report failed DI zone check flag copies.
+ */
+char g_zClass_CopyNodeDiZoneCheckFlagErrorFmt[0x5c] =
+    "ERROR copying node while setting DI zone check flag  Source Node: "
+    "(address =%x) (desc = %s)";
+/**
+ * Reimplements data 0x4de78c: g_zClass_CopyNodeClipToFlagErrorFmt.
+ * Purpose: report failed clip_to flag copies.
+ */
+char g_zClass_CopyNodeClipToFlagErrorFmt[0x56] =
+    "ERROR copying node while setting clip_to flag  Source Node: "
+    "(address =%x) (desc = %s)";
+/**
+ * Reimplements data 0x4de7e4: g_zClass_CopyNodeCanModifyFlagErrorFmt.
+ * Purpose: report failed can_modify flag copies.
+ */
+char g_zClass_CopyNodeCanModifyFlagErrorFmt[0x59] =
+    "ERROR copying node while setting can_modify flag  Source Node: "
+    "(address =%x) (desc = %s)";
+/**
+ * Reimplements data 0x4de840: g_zClass_CopyNodeLandmarkFlagErrorFmt.
+ * Purpose: report failed landmark flag copies.
+ */
+char g_zClass_CopyNodeLandmarkFlagErrorFmt[0x57] =
+    "ERROR copying node while setting landmark flag  Source Node: "
+    "(address =%x) (desc = %s)";
+/**
+ * Reimplements data 0x4de898: g_zClass_CopyNodeProximityFlagErrorFmt.
+ * Purpose: report failed proximity flag copies.
+ */
+char g_zClass_CopyNodeProximityFlagErrorFmt[0x58] =
+    "ERROR copying node while setting proximity flag  Source Node: "
+    "(address =%x) (desc = %s)";
+/**
+ * Reimplements data 0x4de8f0: g_zClass_CopyNodeIntersectBboxFieldErrorFmt.
+ * Purpose: report failed intersect bbox field copies.
+ */
+char g_zClass_CopyNodeIntersectBboxFieldErrorFmt[0x5f] =
+    "ERROR copying node while setting intersect bbox field.  Source "
+    "Node: (address =%x) (desc = %s)";
+/**
+ * Reimplements data 0x4de950: g_zClass_CopyNodeIntersectionFieldErrorFmt.
+ * Purpose: report failed intersection field copies.
+ */
+char g_zClass_CopyNodeIntersectionFieldErrorFmt[0x5d] =
+    "ERROR copying node while setting intersection field.  Source Node: "
+    "(address =%x) (desc = %s)";
+/**
+ * Reimplements data 0x4de9b0: g_zClass_CopyNodeAltitudeSurfaceFieldErrorFmt.
+ * Purpose: report failed altitude surface field copies.
+ */
+char g_zClass_CopyNodeAltitudeSurfaceFieldErrorFmt[0x61] =
+    "ERROR copying node while setting altitude surface field.  Source "
+    "Node: (address =%x) (desc = %s)";
+/**
+ * Reimplements data 0x4dea14: g_zClass_CopyNodeActiveFieldErrorFmt.
+ * Purpose: report failed active field copies.
+ */
+char g_zClass_CopyNodeActiveFieldErrorFmt[0x57] =
+    "ERROR copying node while setting active field.  Source Node: "
+    "(address =%x) (desc = %s)";
+/**
+ * Reimplements data 0x4dea6c: g_zClass_CopyNodeDescriptionFieldErrorFmt.
+ * Purpose: report failed description field copies.
+ */
+char g_zClass_CopyNodeDescriptionFieldErrorFmt[0x5c] =
+    "ERROR copying node while setting description field.  Source Node: "
+    "(address =%x) (desc = %s)";
+/**
+ * Reimplements data 0x4deac8: g_zClass_CopyNodeBaseDataErrorMsg.
+ * Purpose: report generic common-node-data copy failures.
+ */
+char g_zClass_CopyNodeBaseDataErrorMsg[0x1e] =
+    "ERROR copying node base data.";
+/**
+ * Reimplements data 0x4deae8: g_zClass_CopyNodeSourceNodeFmt.
+ * Purpose: append source node address/description context to copy errors.
+ */
+char g_zClass_CopyNodeSourceNodeFmt[0x29] =
+    "  Source Node: (address =%x) (desc = %s)";
+/**
+ * Reimplements data 0x4deb14: g_zClass_CopyLightNodeUnimplementedMsg.
+ * Purpose: report the retail unimplemented light-node copy path.
+ */
+char g_zClass_CopyLightNodeUnimplementedMsg[0x34] =
+    "Can't copy light node; Function not yet implemented";
+/**
+ * Reimplements data 0x4deb48: g_zClass_CopySoundNodeUnimplementedMsg.
+ * Purpose: report the retail unimplemented sound-node copy path.
+ */
+char g_zClass_CopySoundNodeUnimplementedMsg[0x34] =
+    "Can't copy sound node; Function not yet implemented";
+/**
+ * Reimplements data 0x4deb7c: g_zClass_CopyAnimateNodeUnimplementedMsg.
+ * Purpose: report the retail unimplemented animate-node copy path.
+ */
+char g_zClass_CopyAnimateNodeUnimplementedMsg[0x3a] =
+    "ERROR copying animate node; Function not implemented yet.";
+/**
+ * Reimplements data 0x4debb8: g_zClass_CopySequenceNodeUnimplementedMsg.
+ * Purpose: report the retail unimplemented sequence-node copy path.
+ */
+char g_zClass_CopySequenceNodeUnimplementedMsg[0x3b] =
+    "ERROR copying sequence node; Function not implemented yet.";
+/**
+ * Reimplements data 0x4debf4: g_zClass_CopySwitchNodeUnimplementedMsg.
+ * Purpose: report the retail switch-node copy stub path.
+ */
+char g_zClass_CopySwitchNodeUnimplementedMsg[0x39] =
+    "ERROR copying switch node; Function not implemented yet.";
+/**
+ * Reimplements data 0x4dec30: g_zClass_CopyNodeUnrecognizedNodeFmt.
+ * Purpose: report unrecognized node classes during clone dispatch.
+ */
+char g_zClass_CopyNodeUnrecognizedNodeFmt[0x2f] =
+    "ERROR Unrecognized node in copying process: %s";
+/**
+ * Reimplements data 0x4dec60: g_zClass_CopyWorldClassNodesErrorMsg.
+ * Purpose: report the retail rejection of world-class node copies.
+ */
+char g_zClass_CopyWorldClassNodesErrorMsg[0x25] =
+    "ERROR cannot copy world class nodes.";
 }
 
 namespace {
-    const char *kClsUtilSourceFile = "D:\\Proj\\GameZRecoil\\zClass\\cls_util.c";
     const int kDefaultNodeArraySize = 8250;
     const unsigned int kNodeFreeTagIndexMask = 0x00ffffff;
 
@@ -143,15 +318,16 @@ namespace BBox {
 namespace zClass {
     /**
      * Reimplements 0x4518b0: zClass::SetNodeArraySize.
+     * Source owner: engine.zclass.lifecycle_node_array_control.
      * Purpose: set the core zClass node-array capacity before initialization.
      */
     void __fastcall SetNodeArraySize(int size) {
         if (g_zClass_NodeArraySize != 0) {
             zError::ReportOld(
                 0x200,
-                kClsUtilSourceFile,
+                g_zClass_SourceFile_ClsUtilC,
                 0x210,
-                "Error setting node array size; size already set to %d.",
+                g_zClass_NodeArraySizeAlreadySetFmt,
                 g_zClass_NodeArraySize
             );
             return;
@@ -162,6 +338,7 @@ namespace zClass {
 
     /**
      * Reimplements 0x4518f0: zClass::IsInitialized.
+     * Source owner: engine.zclass.lifecycle_node_array_control.
      * Purpose: return the current zClass initialization flag.
      */
     int IsInitialized() {
@@ -171,6 +348,7 @@ namespace zClass {
     /**
      * Reimplements 0x451900: zClass::Init
      * (GameZRecoil/zClass/cls_util.c).
+     * Source owner: engine.zclass.lifecycle_node_array_control.
      * Purpose: initialize zClass node storage and register the GWWorld ZBD handler.
      */
     int Init() {
@@ -224,6 +402,7 @@ namespace zClass {
 
     /**
      * Reimplements 0x451a00: zClass::ShutdownCore.
+     * Source owner: engine.zclass.lifecycle_node_array_control.
      * Purpose: tear down zClass-owned nodes, type lists, node storage, and path state.
      */
     int ShutdownCore() {
@@ -249,6 +428,7 @@ namespace zClass {
     /**
      * Reimplements 0x4518e0: zClass::Shutdown
      * (GameZRecoil/zClass/cls_util.c).
+     * Source owner: engine.zclass.lifecycle_node_array_control.
      * Purpose: run the core zClass shutdown sequence.
      */
     int Shutdown() {
@@ -268,7 +448,7 @@ namespace zClass_Util {
         if (node == 0) {
             zError::ReportOld(
                 0x400,
-                kClsUtilSourceFile,
+                g_zClass_SourceFile_ClsUtilC,
                 0x2b6,
                 "Null node pointer."
             );
@@ -405,10 +585,9 @@ namespace zClass_cls_util {
         if (result != 0) {
             zError::ReportOld(
                 0x400,
-                kClsUtilSourceFile,
+                g_zClass_SourceFile_ClsUtilC,
                 0x34e,
-                "ERROR copying node while setting description field.  Source Node: "
-                "(address =%x) (desc = %s)",
+                g_zClass_CopyNodeDescriptionFieldErrorFmt,
                 source,
                 source
             );
@@ -422,10 +601,9 @@ namespace zClass_cls_util {
         if (result != 0) {
             zError::ReportOld(
                 0x400,
-                kClsUtilSourceFile,
+                g_zClass_SourceFile_ClsUtilC,
                 0x359,
-                "ERROR copying node while setting active field.  Source Node: "
-                "(address =%x) (desc = %s)",
+                g_zClass_CopyNodeActiveFieldErrorFmt,
                 source,
                 source
             );
@@ -439,10 +617,9 @@ namespace zClass_cls_util {
         if (result != 0) {
             zError::ReportOld(
                 0x400,
-                kClsUtilSourceFile,
+                g_zClass_SourceFile_ClsUtilC,
                 0x364,
-                "ERROR copying node while setting altitude surface field.  Source "
-                "Node: (address =%x) (desc = %s)",
+                g_zClass_CopyNodeAltitudeSurfaceFieldErrorFmt,
                 source,
                 source
             );
@@ -456,10 +633,9 @@ namespace zClass_cls_util {
         if (result != 0) {
             zError::ReportOld(
                 0x400,
-                kClsUtilSourceFile,
+                g_zClass_SourceFile_ClsUtilC,
                 0x36f,
-                "ERROR copying node while setting intersection field.  Source Node: "
-                "(address =%x) (desc = %s)",
+                g_zClass_CopyNodeIntersectionFieldErrorFmt,
                 source,
                 source
             );
@@ -473,10 +649,9 @@ namespace zClass_cls_util {
         if (result != 0) {
             zError::ReportOld(
                 0x400,
-                kClsUtilSourceFile,
+                g_zClass_SourceFile_ClsUtilC,
                 0x37a,
-                "ERROR copying node while setting intersect bbox field.  Source "
-                "Node: (address =%x) (desc = %s)",
+                g_zClass_CopyNodeIntersectBboxFieldErrorFmt,
                 source,
                 source
             );
@@ -490,10 +665,9 @@ namespace zClass_cls_util {
         if (result != 0) {
             zError::ReportOld(
                 0x400,
-                kClsUtilSourceFile,
+                g_zClass_SourceFile_ClsUtilC,
                 0x385,
-                "ERROR copying node while setting proximity flag  Source Node: "
-                "(address =%x) (desc = %s)",
+                g_zClass_CopyNodeProximityFlagErrorFmt,
                 source,
                 source
             );
@@ -507,10 +681,9 @@ namespace zClass_cls_util {
         if (result != 0) {
             zError::ReportOld(
                 0x400,
-                kClsUtilSourceFile,
+                g_zClass_SourceFile_ClsUtilC,
                 0x390,
-                "ERROR copying node while setting landmark flag  Source Node: "
-                "(address =%x) (desc = %s)",
+                g_zClass_CopyNodeLandmarkFlagErrorFmt,
                 source,
                 source
             );
@@ -524,10 +697,9 @@ namespace zClass_cls_util {
         if (result != 0) {
             zError::ReportOld(
                 0x400,
-                kClsUtilSourceFile,
+                g_zClass_SourceFile_ClsUtilC,
                 0x39b,
-                "ERROR copying node while setting can_modify flag  Source Node: "
-                "(address =%x) (desc = %s)",
+                g_zClass_CopyNodeCanModifyFlagErrorFmt,
                 source,
                 source
             );
@@ -541,10 +713,9 @@ namespace zClass_cls_util {
         if (result != 0) {
             zError::ReportOld(
                 0x400,
-                kClsUtilSourceFile,
+                g_zClass_SourceFile_ClsUtilC,
                 0x3a6,
-                "ERROR copying node while setting clip_to flag  Source Node: "
-                "(address =%x) (desc = %s)",
+                g_zClass_CopyNodeClipToFlagErrorFmt,
                 source,
                 source
             );
@@ -558,10 +729,9 @@ namespace zClass_cls_util {
         if (result != 0) {
             zError::ReportOld(
                 0x400,
-                kClsUtilSourceFile,
+                g_zClass_SourceFile_ClsUtilC,
                 0x3b1,
-                "ERROR copying node while setting DI zone check flag  Source Node: "
-                "(address =%x) (desc = %s)",
+                g_zClass_CopyNodeDiZoneCheckFlagErrorFmt,
                 source,
                 source
             );
@@ -575,10 +745,9 @@ namespace zClass_cls_util {
         if (result != 0) {
             zError::ReportOld(
                 0x400,
-                kClsUtilSourceFile,
+                g_zClass_SourceFile_ClsUtilC,
                 0x3bc,
-                "ERROR copying node while setting overwrite flag  Source Node: "
-                "(address =%x) (desc = %s)",
+                g_zClass_CopyNodeOverwriteFlagErrorFmt,
                 source,
                 source
             );
@@ -595,9 +764,9 @@ namespace zClass_cls_util {
         if (result != 0) {
             zError::ReportOld(
                 0x400,
-                kClsUtilSourceFile,
+                g_zClass_SourceFile_ClsUtilC,
                 0x3ce,
-                "ERROR copying node graphics data.  Source Node: (address =%x) (desc = %s)",
+                g_zClass_CopyNodeGraphicsDataErrorFmt,
                 source,
                 source
             );
@@ -607,9 +776,9 @@ namespace zClass_cls_util {
         if (source->callbackContext != 0) {
             zError::ReportOld(
                 0x100,
-                kClsUtilSourceFile,
+                g_zClass_SourceFile_ClsUtilC,
                 0x3d8,
-                "Source node (%s) has environment data.  Ignoring.",
+                g_zClass_CopyNodeEnvironmentDataIgnoredFmt,
                 source
             );
         }
@@ -622,10 +791,9 @@ namespace zClass_cls_util {
         if (result != 0) {
             zError::ReportOld(
                 0x100,
-                kClsUtilSourceFile,
+                g_zClass_SourceFile_ClsUtilC,
                 0x3e2,
-                "ERROR copying node while setting action callback priority field.  "
-                "Source Node: (address =%x) (desc = %s)",
+                g_zClass_CopyNodeActionCallbackPriorityFieldErrorFmt,
                 source,
                 source
             );
@@ -639,10 +807,9 @@ namespace zClass_cls_util {
         if (result != 0) {
             zError::ReportOld(
                 0x100,
-                kClsUtilSourceFile,
+                g_zClass_SourceFile_ClsUtilC,
                 0x3ed,
-                "ERROR copying node while setting action callback field  Source "
-                "Node: (address =%x) (desc = %s)",
+                g_zClass_CopyNodeActionCallbackFieldErrorFmt,
                 source,
                 source
             );
@@ -656,9 +823,9 @@ namespace zClass_cls_util {
         if (result != 0) {
             zError::ReportOld(
                 0x100,
-                kClsUtilSourceFile,
+                g_zClass_SourceFile_ClsUtilC,
                 0x3f8,
-                "ERROR copying node while setting zone ID.  Source Node: (address =%x) (desc = %s)",
+                g_zClass_CopyNodeZoneIdErrorFmt,
                 source,
                 source
             );
@@ -687,10 +854,10 @@ namespace zClass_cls_util {
         ) != 0) {
             zError::ReportOld(
                 0x100,
-                kClsUtilSourceFile,
+                g_zClass_SourceFile_ClsUtilC,
                 0x422,
-                "ERROR copying node base data.",
-                "  Source Node: (address =%x) (desc = %s)",
+                g_zClass_CopyNodeBaseDataErrorMsg,
+                g_zClass_CopyNodeSourceNodeFmt,
                 source,
                 source
             );
@@ -779,10 +946,10 @@ namespace zClass_cls_util {
         ) != 0) {
             zError::ReportOld(
                 0x100,
-                kClsUtilSourceFile,
+                g_zClass_SourceFile_ClsUtilC,
                 0x4b9,
-                "ERROR copying node base data.",
-                "  Source Node: (address =%x) (desc = %s)",
+                g_zClass_CopyNodeBaseDataErrorMsg,
+                g_zClass_CopyNodeSourceNodeFmt,
                 source,
                 source
             );
@@ -862,9 +1029,9 @@ namespace zClass_cls_util {
     ) {
         zError::ReportOld(
             0x800,
-            kClsUtilSourceFile,
+            g_zClass_SourceFile_ClsUtilC,
             0x47d,
-            "Can't copy light node; Function not yet implemented"
+            g_zClass_CopyLightNodeUnimplementedMsg
         );
         return 0;
     }
@@ -879,9 +1046,9 @@ namespace zClass_cls_util {
     ) {
         zError::ReportOld(
             0x800,
-            kClsUtilSourceFile,
+            g_zClass_SourceFile_ClsUtilC,
             0x493,
-            "Can't copy sound node; Function not yet implemented"
+            g_zClass_CopySoundNodeUnimplementedMsg
         );
         return 0;
     }
@@ -896,9 +1063,9 @@ namespace zClass_cls_util {
     ) {
         zError::ReportOld(
             0x100,
-            kClsUtilSourceFile,
+            g_zClass_SourceFile_ClsUtilC,
             0x518,
-            "ERROR copying animate node; Function not implemented yet."
+            g_zClass_CopyAnimateNodeUnimplementedMsg
         );
         return 0;
     }
@@ -920,10 +1087,10 @@ namespace zClass_cls_util {
         ) != 0) {
             zError::ReportOld(
                 0x100,
-                kClsUtilSourceFile,
+                g_zClass_SourceFile_ClsUtilC,
                 0x53e,
-                "ERROR copying node base data.",
-                "  Source Node: (address =%x) (desc = %s)",
+                g_zClass_CopyNodeBaseDataErrorMsg,
+                g_zClass_CopyNodeSourceNodeFmt,
                 source,
                 source
             );
@@ -982,9 +1149,9 @@ namespace zClass_cls_util {
     ) {
         zError::ReportOld(
             0x100,
-            kClsUtilSourceFile,
+            g_zClass_SourceFile_ClsUtilC,
             0x585,
-            "ERROR copying sequence node; Function not implemented yet."
+            g_zClass_CopySequenceNodeUnimplementedMsg
         );
         return 0;
     }
@@ -997,9 +1164,9 @@ namespace zClass_cls_util {
     zClass_NodePartial *__fastcall CopySwitchNode_Stub(zClass_NodePartial *) {
         zError::ReportOld(
             0x100,
-            kClsUtilSourceFile,
+            g_zClass_SourceFile_ClsUtilC,
             0x59c,
-            "ERROR copying switch node; Function not implemented yet."
+            g_zClass_CopySwitchNodeUnimplementedMsg
         );
         return 0;
     }
@@ -1015,7 +1182,7 @@ namespace zClass_cls_util {
         if (source == 0) {
             zError::ReportOld(
                 0x400,
-                kClsUtilSourceFile,
+                g_zClass_SourceFile_ClsUtilC,
                 0x5b8,
                 "Null node pointer."
             );
@@ -1032,9 +1199,9 @@ namespace zClass_cls_util {
         case 2:
             zError::ReportOld(
                 0x100,
-                kClsUtilSourceFile,
+                g_zClass_SourceFile_ClsUtilC,
                 0x5e1,
-                "ERROR cannot copy world class nodes."
+                g_zClass_CopyWorldClassNodesErrorMsg
             );
             return 0;
         case 5:
@@ -1059,9 +1226,9 @@ namespace zClass_cls_util {
         default:
             zError::ReportOld(
                 0x100,
-                kClsUtilSourceFile,
+                g_zClass_SourceFile_ClsUtilC,
                 0x5e8,
-                "ERROR Unrecognized node in copying process: %s",
+                g_zClass_CopyNodeUnrecognizedNodeFmt,
                 source
             );
             return 0;
@@ -1081,7 +1248,7 @@ namespace zClass_cls_util {
         if (source == 0) {
             zError::ReportOld(
                 0x400,
-                kClsUtilSourceFile,
+                g_zClass_SourceFile_ClsUtilC,
                 0x60f,
                 "Null node pointer."
             );
@@ -1113,7 +1280,7 @@ namespace zClass_cls_util {
         if (source == 0) {
             zError::ReportOld(
                 0x400,
-                kClsUtilSourceFile,
+                g_zClass_SourceFile_ClsUtilC,
                 0x648,
                 "Null node pointer."
             );
