@@ -283,6 +283,35 @@ int g_zVid_BuiltinTexturePackCount = 0;
 zVidTexturePackEntry *g_zVid_BuiltinTexturePacks = 0;
 int g_zVid_TexturePackCount = 0;
 zVidTexturePackEntry *g_zVid_TexturePacks = 0;
+/**
+ * Reimplements data 0x4e07f8..0x4e0844:
+ * render_video.zvid_texture_pack_archive_literals_data.
+ * Purpose: writable archive filename pieces used by
+ * zVid_TexturePack_EnsureBuiltinTexturePacksLoaded when probing built-in
+ * texture packs.
+ *
+ * Retail keeps these strings in this row order, with padding bytes preserved
+ * by the declared array sizes. The archive extension is the suffix inside the
+ * "texturemax.zbd" row, so no separate "zbd" row is introduced here.
+ */
+char g_zVid_TextureArchiveNameFmt[0x8] = "%s.%s";
+char g_zVid_TextureArchiveSizedNameFmt[0x8] = "%s%d.%s";
+char g_zVid_TextureArchiveMaxName[0x10] = "texturemax.zbd";
+char g_zVid_TextureArchiveSize2Fmt[0x8] = "%s2.%s";
+char g_zVid_TextureArchiveSize4Fmt[0x8] = "%s4.%s";
+char g_zVid_TextureArchiveSize6Fmt[0x8] = "%s6.%s";
+char g_zVid_TextureArchiveSize8Fmt[0x8] = "%s8.%s";
+char g_zVid_TextureArchiveRendererSizedNameFmt[0x0c] = "r%s%d.%s";
+char g_zVid_TextureArchiveStem[0x8] = "texture";
+RECOIL_STATIC_ASSERT(sizeof(g_zVid_TextureArchiveNameFmt) == 0x8);
+RECOIL_STATIC_ASSERT(sizeof(g_zVid_TextureArchiveSizedNameFmt) == 0x8);
+RECOIL_STATIC_ASSERT(sizeof(g_zVid_TextureArchiveMaxName) == 0x10);
+RECOIL_STATIC_ASSERT(sizeof(g_zVid_TextureArchiveSize2Fmt) == 0x8);
+RECOIL_STATIC_ASSERT(sizeof(g_zVid_TextureArchiveSize4Fmt) == 0x8);
+RECOIL_STATIC_ASSERT(sizeof(g_zVid_TextureArchiveSize6Fmt) == 0x8);
+RECOIL_STATIC_ASSERT(sizeof(g_zVid_TextureArchiveSize8Fmt) == 0x8);
+RECOIL_STATIC_ASSERT(sizeof(g_zVid_TextureArchiveRendererSizedNameFmt) == 0x0c);
+RECOIL_STATIC_ASSERT(sizeof(g_zVid_TextureArchiveStem) == 0x8);
 // Standalone palette-remap variant table owner: BN identifies the table count
 // and pointer array at 0x53d778/0x53d77c.
 int g_zVid_PaletteRemapVariantTableCount = 0;
@@ -6772,16 +6801,17 @@ extern "C" RECOIL_NO_GS void zVid_TexturePack_EnsureBuiltinTexturePacksLoaded() 
     int candidateSize = 8;
     int totalBytes = 0;
     int freeBytes = 0;
+    char *const archiveExtension = &g_zVid_TextureArchiveMaxName[11];
 
     if (g_zVideo_pfnQueryTextureMemoryBytes(-1, &totalBytes, &freeBytes) != 0 &&
         g_zVideo_ActiveRendererPath != 0) {
         candidateSize = (unsigned int)(totalBytes) >> 20;
         sprintf(
             filePath,
-            "r%s%d.%s",
-            "texture",
+            g_zVid_TextureArchiveRendererSizedNameFmt,
+            g_zVid_TextureArchiveStem,
             candidateSize,
-            "zbd"
+            archiveExtension
         );
         probeWasRendererMemory = 1;
     } else {
@@ -6789,44 +6819,43 @@ extern "C" RECOIL_NO_GS void zVid_TexturePack_EnsureBuiltinTexturePacksLoaded() 
         case 1:
             sprintf(
                 filePath,
-                "%s8.%s",
-                "texture",
-                "zbd"
+                g_zVid_TextureArchiveSize8Fmt,
+                g_zVid_TextureArchiveStem,
+                archiveExtension
             );
             candidateSize = 8;
             break;
         case 2:
             sprintf(
                 filePath,
-                "%s6.%s",
-                "texture",
-                "zbd"
+                g_zVid_TextureArchiveSize6Fmt,
+                g_zVid_TextureArchiveStem,
+                archiveExtension
             );
             candidateSize = 6;
             break;
         case 3:
             sprintf(
                 filePath,
-                "%s4.%s",
-                "texture",
-                "zbd"
+                g_zVid_TextureArchiveSize4Fmt,
+                g_zVid_TextureArchiveStem,
+                archiveExtension
             );
             candidateSize = 4;
             break;
         case 4:
             sprintf(
                 filePath,
-                "%s2.%s",
-                "texture",
-                "zbd"
+                g_zVid_TextureArchiveSize2Fmt,
+                g_zVid_TextureArchiveStem,
+                archiveExtension
             );
             candidateSize = 2;
             break;
         default:
-            sprintf(
+            strcpy(
                 filePath,
-                "%s",
-                "texturemax.zbd"
+                g_zVid_TextureArchiveMaxName
             );
             candidateSize = 8;
             break;
@@ -6855,32 +6884,31 @@ extern "C" RECOIL_NO_GS void zVid_TexturePack_EnsureBuiltinTexturePacksLoaded() 
                     if (probeWasRendererMemory != 0) {
                         sprintf(
                             filePath,
-                            "r%s%d.%s",
-                            "texture",
+                            g_zVid_TextureArchiveRendererSizedNameFmt,
+                            g_zVid_TextureArchiveStem,
                             size,
-                            "zbd"
+                            archiveExtension
                         );
                     } else {
                         sprintf(
                             filePath,
-                            "%s%d.%s",
-                            "texture",
+                            g_zVid_TextureArchiveSizedNameFmt,
+                            g_zVid_TextureArchiveStem,
                             size,
-                            "zbd"
+                            archiveExtension
                         );
                     }
                 } else if (size == 0) {
-                    sprintf(
+                    strcpy(
                         filePath,
-                        "%s",
-                        "texturemax.zbd"
+                        g_zVid_TextureArchiveMaxName
                     );
                 } else {
                     sprintf(
                         filePath,
-                        "%s.%s",
-                        "texture",
-                        "zbd"
+                        g_zVid_TextureArchiveNameFmt,
+                        g_zVid_TextureArchiveStem,
+                        archiveExtension
                     );
                 }
 

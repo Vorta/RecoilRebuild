@@ -7,6 +7,7 @@
 #include "GameZRecoil/zDEClient/zdec.h"
 #include "GameZRecoil/zEffect/zEffect.h"
 #include "GameZRecoil/zError/zError.h"
+#include "GameZRecoil/zHud/zhud_ui.h"
 #include "GameZRecoil/zLoc/zLoc.h"
 #include "GameZRecoil/zModel/zModel.h"
 #include "GameZRecoil/zReader/zReader.h"
@@ -1076,7 +1077,7 @@ namespace zWeapon {
                 0x200,
                 kZWeaponInitSourceFile,
                 0xc6,
-                "Failed to read %s",
+                g_HudSensorTracker_ReadFileFailedFmt,
                 path
             );
             return -1;
@@ -2027,7 +2028,7 @@ namespace OptCatalog {
 
         fieldNode = zReader_GetNamedNode(
             specNode,
-            "SOUND"
+            g_HudZrd_Key_Sound
         );
         if (fieldNode != 0) {
             const int count = zReaderArrayCount(fieldNode);

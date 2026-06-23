@@ -10,8 +10,10 @@
 #include "GameZRecoil/include/zClipAlt.h"
 #include "GameZRecoil/include/zClipRect.h"
 #include "GameZRecoil/zGame/zGame.h"
+#include "GameZRecoil/zFMV/fmv.h"
 #include "GameZRecoil/zHud/zhud_ui.h"
 #include "GameZRecoil/zRndr/zRndr.h"
+#include "GameZRecoil/zSound/zSound.h"
 #include "GameZRecoil/zUtil/zSaveGame.h"
 #include "GameZRecoil/zVideo/zVideo.h"
 
@@ -22,6 +24,12 @@
 #include <new>
 
 extern "C" std::uint32_t g_HudUi_InvalidateMask;
+extern "C" float g_HudLineClip_CurrentLeft;
+extern "C" float g_HudLineClip_CurrentTop;
+extern "C" float g_HudLineClip_CurrentRight;
+extern "C" float g_HudLineClip_CurrentBottom;
+extern "C" zVec3 g_HudSensor_ClipSegmentStart;
+extern zFMV_Playback *g_HudUiSensorWindowPlayback;
 
 namespace {
 template <typename T> T &TestFieldAt(void *base, std::size_t offset) {
@@ -30,6 +38,96 @@ template <typename T> T &TestFieldAt(void *base, std::size_t offset) {
 
 static std::uintptr_t *TestVTable(void *object) {
     return *reinterpret_cast<std::uintptr_t **>(object);
+}
+
+bool HudFloatNear(float actual, float expected) {
+    const float delta = actual - expected;
+    return delta > -0.0001f && delta < 0.0001f;
+}
+
+int g_HudTestLine5Count = 0;
+void *g_HudTestLineFrameBuffer = nullptr;
+const void *g_HudTestLineClipRect = nullptr;
+int g_HudTestLineArgs[4][5] = {};
+
+void __fastcall HudTestImmediateRaster5(void *frameBuffer, const void *clipRect, int x0,
+                                             int y0, int x1, int y1, int color16) {
+    if (g_HudTestLine5Count < 4) {
+        g_HudTestLineArgs[g_HudTestLine5Count][0] = x0;
+        g_HudTestLineArgs[g_HudTestLine5Count][1] = y0;
+        g_HudTestLineArgs[g_HudTestLine5Count][2] = x1;
+        g_HudTestLineArgs[g_HudTestLine5Count][3] = y1;
+        g_HudTestLineArgs[g_HudTestLine5Count][4] = color16;
+    }
+
+    ++g_HudTestLine5Count;
+    g_HudTestLineFrameBuffer = frameBuffer;
+    g_HudTestLineClipRect = clipRect;
+}
+
+typedef std::int32_t(__stdcall *HudUiTestBackendGetStatusFn)(void *self,
+                                                             std::int32_t *status);
+typedef std::int32_t(__stdcall *HudUiTestBackendSetIntFn)(void *self, std::int32_t value);
+typedef std::int32_t(__stdcall *HudUiTestBackendSimpleFn)(void *self);
+typedef std::int32_t(__stdcall *HudUiTestBackendPlayDirectSoundFn)(
+    void *self, std::uint32_t reserved1, std::uint32_t reserved2, std::uint32_t flags);
+
+struct HudUiTestDirectSoundBufferVTable {
+    void *slots00_0c[4];
+    void *GetCurrentPosition;
+    void *slots14_1c[3];
+    void *GetFrequency;
+    HudUiTestBackendGetStatusFn GetStatus;
+    void *slot28;
+    void *slot2c;
+    HudUiTestBackendPlayDirectSoundFn Play;
+    HudUiTestBackendSetIntFn SetCurrentPosition;
+    void *slot38;
+    HudUiTestBackendSetIntFn SetVolume;
+    HudUiTestBackendSetIntFn SetPan;
+    HudUiTestBackendSetIntFn SetFrequency;
+    HudUiTestBackendSimpleFn Stop;
+    void *slot4c;
+    void *Restore;
+};
+
+struct HudUiTestDirectSoundBuffer {
+    HudUiTestDirectSoundBufferVTable *vtable;
+};
+
+static int g_HudUiTestPowerupPlayCount = 0;
+static int g_HudUiTestPowerupStopCount = 0;
+static int g_HudUiTestPowerupVolumeCount = 0;
+static int g_HudUiTestPowerupPositionCount = 0;
+
+std::int32_t __stdcall HudUiTestDirectSoundGetStatus(void *, std::int32_t *status) {
+    *status = 0;
+    return 0;
+}
+
+std::int32_t __stdcall HudUiTestDirectSoundSetInt(void *, std::int32_t) {
+    return 0;
+}
+
+std::int32_t __stdcall HudUiTestDirectSoundSetVolume(void *, std::int32_t) {
+    ++g_HudUiTestPowerupVolumeCount;
+    return 0;
+}
+
+std::int32_t __stdcall HudUiTestDirectSoundSetCurrentPosition(void *, std::int32_t) {
+    ++g_HudUiTestPowerupPositionCount;
+    return 0;
+}
+
+std::int32_t __stdcall HudUiTestDirectSoundPlay(void *, std::uint32_t, std::uint32_t,
+                                                std::uint32_t) {
+    ++g_HudUiTestPowerupPlayCount;
+    return 0;
+}
+
+std::int32_t __stdcall HudUiTestDirectSoundStop(void *) {
+    ++g_HudUiTestPowerupStopCount;
+    return 0;
 }
 
 static int g_containerUpdateCount = 0;
@@ -278,6 +376,162 @@ struct TestAuxPanel {
 struct TestHudUiPanel_FTable {
     std::uintptr_t slots[30];
 };
+
+int g_trackedProgressVisibleCount = 0;
+void *g_trackedProgressVisibleThis[4] = {};
+int g_trackedProgressVisibleValue[4] = {};
+
+struct TestTrackedProgressVisibleReceiver {
+    void SetVisible(std::int32_t visible) {
+        const int index = g_trackedProgressVisibleCount;
+        if (index >= 0 && index < 4) {
+            g_trackedProgressVisibleThis[index] = this;
+            g_trackedProgressVisibleValue[index] = visible;
+        }
+        ++g_trackedProgressVisibleCount;
+    }
+};
+
+struct HudLifecycleCodeFunctionPatch {
+    void *target;
+    unsigned char original[5];
+    bool active;
+};
+
+bool HudLifecyclePatchFunctionJump(
+    void *target,
+    void *replacement,
+    HudLifecycleCodeFunctionPatch &patch
+) {
+    DWORD oldProtect = 0;
+    if (!VirtualProtect(target, sizeof(patch.original), PAGE_EXECUTE_READWRITE, &oldProtect)) {
+        return false;
+    }
+
+    patch.target = target;
+    std::memcpy(patch.original, target, sizeof(patch.original));
+
+    unsigned char *const bytes = static_cast<unsigned char *>(target);
+    bytes[0] = 0xe9;
+    const std::intptr_t rel = reinterpret_cast<unsigned char *>(replacement) -
+                              (reinterpret_cast<unsigned char *>(target) + 5);
+    *reinterpret_cast<std::int32_t *>(bytes + 1) = static_cast<std::int32_t>(rel);
+
+    FlushInstructionCache(GetCurrentProcess(), target, sizeof(patch.original));
+    DWORD ignored = 0;
+    VirtualProtect(target, sizeof(patch.original), oldProtect, &ignored);
+    patch.active = true;
+    return true;
+}
+
+void HudLifecycleRestoreFunctionPatch(HudLifecycleCodeFunctionPatch &patch) {
+    if (!patch.active) {
+        return;
+    }
+
+    DWORD oldProtect = 0;
+    if (VirtualProtect(patch.target, sizeof(patch.original), PAGE_EXECUTE_READWRITE,
+                       &oldProtect)) {
+        std::memcpy(patch.target, patch.original, sizeof(patch.original));
+        FlushInstructionCache(GetCurrentProcess(), patch.target, sizeof(patch.original));
+        DWORD ignored = 0;
+        VirtualProtect(patch.target, sizeof(patch.original), oldProtect, &ignored);
+    }
+    patch.active = false;
+}
+
+int g_hudMgrMciSendCommandCount = 0;
+MCIDEVICEID g_hudMgrMciDevices[4] = {};
+UINT g_hudMgrMciMessages[4] = {};
+DWORD_PTR g_hudMgrMciFlags[4] = {};
+DWORD_PTR g_hudMgrMciParams[4] = {};
+zFMV_Playback *g_hudMgrExpectedClosePlayback = nullptr;
+int g_hudMgrCloseParamOk = 0;
+
+MCIERROR WINAPI HudMgrFakeMciSendCommandA(
+    MCIDEVICEID deviceId,
+    UINT message,
+    DWORD_PTR flags,
+    DWORD_PTR params
+) {
+    const int index = g_hudMgrMciSendCommandCount;
+    if (index < 4) {
+        g_hudMgrMciDevices[index] = deviceId;
+        g_hudMgrMciMessages[index] = message;
+        g_hudMgrMciFlags[index] = flags;
+        g_hudMgrMciParams[index] = params;
+        if (message == 0x804 && params != 0) {
+            g_hudMgrCloseParamOk = 1;
+        }
+    }
+    ++g_hudMgrMciSendCommandCount;
+    return 0;
+}
+
+struct TestHudMgrLayout : HudLayoutBase {
+    int enableCount;
+    int disableCount;
+
+    void Enable() {
+        ++enableCount;
+    }
+
+    void Disable() {
+        ++disableCount;
+    }
+};
+
+struct TestHudMgrPanel : HudUiPanel {
+    int visibleCount;
+    int lastVisible;
+
+    void SetVisible(int visible) {
+        ++visibleCount;
+        lastVisible = visible;
+    }
+};
+
+struct TestHudMgrTimerPanel : HudUiTimerPanel {
+    int visibleCount;
+    int lastVisible;
+
+    void SetVisible(int visible) {
+        ++visibleCount;
+        lastVisible = visible;
+    }
+};
+
+struct TestHudMgrSwitchLayout : HudLayoutBase {
+    int activeValue;
+    int enableCount;
+    int disableCount;
+
+    int SetActive(int active) {
+        activeValue = active;
+        return 1;
+    }
+
+    void Enable() {
+        ++enableCount;
+    }
+
+    void Disable() {
+        ++disableCount;
+    }
+};
+
+static int g_applyHudModeSwitchCaptureCount;
+static HudLayoutBase *g_applyHudModeSwitchCaptureLayouts[4];
+
+static void __fastcall HudMgrApplyHudModeSwitchCapture(
+    HudLayoutBase *layout
+) {
+    const int index = g_applyHudModeSwitchCaptureCount;
+    if (index >= 0 && index < 4) {
+        g_applyHudModeSwitchCaptureLayouts[index] = layout;
+    }
+    ++g_applyHudModeSwitchCaptureCount;
+}
 } // namespace
 
 extern "C" int hud_ui_aux_overlay_text_lines_smoke(void) {
@@ -326,12 +580,493 @@ extern "C" int hud_ui_aux_overlay_text_lines_smoke(void) {
     return nonEmptyOps && emptyOp && unknownOp && clearOps ? 0 : 1;
 }
 
+extern "C" int zhud_mgr_hide_tracked_progress_meter_if_owner_matches_smoke(void) {
+    TestHudUiPanel_FTable visibleTable = {};
+    visibleTable.slots[24] =
+        HudLifecycleMethodAddress(&TestTrackedProgressVisibleReceiver::SetVisible);
+
+    const HudUiMeter oldMeter = g_HudUiMgrSensorMeter;
+    HudUiSlot *const oldTrackedProgressSlot = g_HudUiMgrSensorTrackedProgressSlot;
+
+    std::memset(g_trackedProgressVisibleThis, 0, sizeof(g_trackedProgressVisibleThis));
+    std::memset(g_trackedProgressVisibleValue, 0, sizeof(g_trackedProgressVisibleValue));
+    g_trackedProgressVisibleCount = 0;
+
+    g_HudUiMgrSensorMeter = HudUiMeter();
+    TestFieldAt<const TestHudUiPanel_FTable *>(&g_HudUiMgrSensorMeter, 0) = &visibleTable;
+
+    int ownerPayload = 0;
+    int otherPayload = 0;
+    HudUiMgrSensorTrackNode trackNode = {};
+    trackNode.payload = &ownerPayload;
+    HudUiSlot slot = {};
+    slot.trackNode = &trackNode;
+    g_HudUiMgrSensorTrackedProgressSlot = &slot;
+
+    HudUiMgr::HideTrackedProgressMeterIfOwnerMatches(&otherPayload);
+    const bool rejectedOwner = g_trackedProgressVisibleCount == 0;
+
+    HudUiMgr::HideTrackedProgressMeterIfOwnerMatches(&ownerPayload);
+    const bool acceptedOwner =
+        g_trackedProgressVisibleCount == 1 &&
+        g_trackedProgressVisibleThis[0] == &g_HudUiMgrSensorMeter &&
+        g_trackedProgressVisibleValue[0] == 0;
+
+    g_HudUiMgrSensorTrackedProgressSlot = nullptr;
+    HudUiMgr::HideTrackedProgressMeterIfOwnerMatches(&ownerPayload);
+    const bool nullSlotIgnored = g_trackedProgressVisibleCount == 1;
+
+    g_HudUiMgrSensorMeter = oldMeter;
+    g_HudUiMgrSensorTrackedProgressSlot = oldTrackedProgressSlot;
+
+    return rejectedOwner && acceptedOwner && nullSlotIgnored ? 0 : 1;
+}
+
+extern "C" int zhud_mgr_destroy_sensor_window_null_smoke(void) {
+    zFMV_Playback *const oldPlayback = g_HudUiSensorWindowPlayback;
+    g_HudUiSensorWindowPlayback = nullptr;
+    HudUiMgr::DestroySensorWindow();
+    const bool cleared = g_HudUiSensorWindowPlayback == nullptr;
+    g_HudUiSensorWindowPlayback = oldPlayback;
+    return cleared ? 0 : 1;
+}
+
+extern "C" int zhud_mgr_destroy_sensor_window_playback_smoke(void) {
+    HudLifecycleCodeFunctionPatch mciPatch = {};
+    if (!HudLifecyclePatchFunctionJump(reinterpret_cast<void *>(&mciSendCommandA),
+                                       reinterpret_cast<void *>(&HudMgrFakeMciSendCommandA),
+                                       mciPatch)) {
+        return 1;
+    }
+
+    zFMV_Playback *const oldPlayback = g_HudUiSensorWindowPlayback;
+    zFMV_Playback *const playback =
+        static_cast<zFMV_Playback *>(::operator new(sizeof(zFMV_Playback)));
+    std::memset(playback, 0, sizeof(*playback));
+    playback->mciDeviceId = 0x2345;
+    playback->mediaPathDup = static_cast<char *>(std::malloc(4));
+    if (playback->mediaPathDup == nullptr) {
+        ::operator delete(playback);
+        g_HudUiSensorWindowPlayback = oldPlayback;
+        HudLifecycleRestoreFunctionPatch(mciPatch);
+        return 2;
+    }
+    std::strcpy(playback->mediaPathDup, "x");
+
+    g_hudMgrMciSendCommandCount = 0;
+    g_hudMgrCloseParamOk = 0;
+    g_hudMgrExpectedClosePlayback = playback;
+    for (int index = 0; index < 4; ++index) {
+        g_hudMgrMciDevices[index] = 0;
+        g_hudMgrMciMessages[index] = 0;
+        g_hudMgrMciFlags[index] = 0;
+        g_hudMgrMciParams[index] = 0;
+    }
+
+    g_HudUiSensorWindowPlayback = playback;
+    HudUiMgr::DestroySensorWindow();
+
+    const bool stoppedAndClosed =
+        g_hudMgrMciSendCommandCount == 2 && g_hudMgrMciDevices[0] == 0x2345 &&
+        g_hudMgrMciMessages[0] == 0x808 && g_hudMgrMciFlags[0] == 2 &&
+        g_hudMgrMciParams[0] == 0 && g_hudMgrMciDevices[1] == 0x2345 &&
+        g_hudMgrMciMessages[1] == 0x804 && g_hudMgrMciFlags[1] == 2 &&
+        g_hudMgrCloseParamOk == 1;
+    const bool clearedGlobal = g_HudUiSensorWindowPlayback == nullptr;
+
+    g_HudUiSensorWindowPlayback = oldPlayback;
+    HudLifecycleRestoreFunctionPatch(mciPatch);
+    return stoppedAndClosed && clearedGlobal ? 0 : 3;
+}
+
+extern "C" int zhud_mgr_disable_hud_smoke(void) {
+    HudUiMgrData oldMgr;
+    std::memcpy(&oldMgr, &g_HudUiMgr, sizeof(oldMgr));
+    HudUiSlot oldSlots[32];
+    std::memcpy(oldSlots, g_HudUiMgrWeaponSlots, sizeof(oldSlots));
+    const HudUiWidget oldObjectiveWidget = g_HudUiMgrObjectiveWidget;
+    const HudUiObjectiveBar oldObjectiveBar = g_HudUiMgrObjectiveBar;
+    const HudUiWidget oldObjectiveSensorRect = g_HudUiMgrObjectiveSensorRect;
+    const HudUiMeter oldObjectiveMeter = g_HudUiMgrObjectiveMeter;
+    HudUiPanel *const oldDescPanel = g_HudUiMgrObjectiveDescTextPanel;
+    HudUiPanel *const oldSummaryPanel = g_HudUiMgrObjectiveSummaryTextPanel;
+    HudUiPanel *const oldLabelPanel = g_HudUiMgrObjectiveLabelTextPanel;
+    HudUiTimerPanel *const oldTimerPanel = g_HudUiMgrTimerPanel;
+    HudLayoutBase *const oldLayout = g_HudUiMgrCurrentLayout;
+    zFMV_Playback *const oldPlayback = g_HudUiSensorWindowPlayback;
+    int *const oldAccelerationOption = ZOPT_VIDEO_ACCELERATION;
+    int *const oldHudTypeSw = ZOPT_HUD_TYPE_SW;
+    const int oldHwMode = g_zOpt_HwMode;
+    const int oldTargetMarkerCount = g_HudUiMgrSensorTargetMarkerCount;
+    const int oldWeaponState = g_HudUiMgrWeaponState;
+    const int oldLayoutDelayFrames = g_HudUiMgrLayoutDelayFrames;
+    const int oldAltClipPassEnabled = gAltClipPassEnabled;
+
+    g_HudUiMgr.enabled = 7;
+    g_HudUiMgr.childHead = nullptr;
+    g_HudUiMgr.childTail = nullptr;
+    g_HudUiMgrSensorTargetMarkerCount = 11;
+    g_HudUiMgrWeaponState = 12;
+    g_HudUiMgrLayoutDelayFrames = 0;
+    gAltClipPassEnabled = 5;
+    g_HudUiSensorWindowPlayback = nullptr;
+
+    for (int index = 0; index < 32; ++index) {
+        g_HudUiMgrWeaponSlots[index] = HudUiSlot();
+        g_HudUiMgrWeaponSlots[index].slotWidget.flags = 0;
+        g_HudUiMgrWeaponSlots[index].trackMarkerWidget.flags = 0;
+    }
+
+    TestHudMgrLayout layout = {};
+    TestHudMgrPanel descPanel = {};
+    TestHudMgrPanel summaryPanel = {};
+    TestHudMgrPanel labelPanel = {};
+    TestHudMgrTimerPanel timerPanel = {};
+
+    g_HudUiMgrCurrentLayout = &layout;
+    g_HudUiMgrObjectiveWidget.flags = 0;
+    g_HudUiMgrObjectiveBar.flags = 0;
+    g_HudUiMgrObjectiveSensorRect.flags = 0;
+    g_HudUiMgrObjectiveMeter.flags = 0;
+    g_HudUiMgrObjectiveDescTextPanel = &descPanel;
+    g_HudUiMgrObjectiveSummaryTextPanel = &summaryPanel;
+    g_HudUiMgrObjectiveLabelTextPanel = &labelPanel;
+    g_HudUiMgrTimerPanel = &timerPanel;
+
+    int accelerationOption = 1;
+    int hudTypeSw = 2;
+    ZOPT_VIDEO_ACCELERATION = &accelerationOption;
+    ZOPT_HUD_TYPE_SW = &hudTypeSw;
+    g_zOpt_HwMode = 0;
+
+    const int previous = HudUiMgr::DisableHud();
+
+    const bool coreState = previous == 7 && g_HudUiMgr.enabled == 0 &&
+                           g_HudUiMgrSensorTargetMarkerCount == 0 &&
+                           g_HudUiMgrWeaponState == 0 && layout.disableCount == 1 &&
+                           gAltClipPassEnabled == 0 && g_HudUiMgrLayoutDelayFrames == 2;
+    const bool weaponVisibility =
+        (g_HudUiMgrWeaponSlots[0].trackMarkerWidget.flags & 0x10) != 0 &&
+        (g_HudUiMgrWeaponSlots[0].slotWidget.flags & 0x10) != 0 &&
+        (g_HudUiMgrWeaponSlots[31].trackMarkerWidget.flags & 0x10) != 0 &&
+        (g_HudUiMgrWeaponSlots[31].slotWidget.flags & 0x10) != 0;
+    const bool objectiveVisibility =
+        (g_HudUiMgrObjectiveWidget.flags & 0x10) != 0 &&
+        (g_HudUiMgrObjectiveBar.flags & 0x10) != 0 &&
+        (g_HudUiMgrObjectiveSensorRect.flags & 0x10) != 0 &&
+        (g_HudUiMgrObjectiveMeter.flags & 0x10) != 0 && descPanel.visibleCount == 1 &&
+        descPanel.lastVisible == 0 && summaryPanel.visibleCount == 1 &&
+        summaryPanel.lastVisible == 0 && labelPanel.visibleCount == 1 &&
+        labelPanel.lastVisible == 0 && timerPanel.visibleCount == 1 &&
+        timerPanel.lastVisible == 1;
+
+    std::memcpy(&g_HudUiMgr, &oldMgr, sizeof(g_HudUiMgr));
+    std::memcpy(g_HudUiMgrWeaponSlots, oldSlots, sizeof(oldSlots));
+    g_HudUiMgrObjectiveWidget = oldObjectiveWidget;
+    g_HudUiMgrObjectiveBar = oldObjectiveBar;
+    g_HudUiMgrObjectiveSensorRect = oldObjectiveSensorRect;
+    g_HudUiMgrObjectiveMeter = oldObjectiveMeter;
+    g_HudUiMgrObjectiveDescTextPanel = oldDescPanel;
+    g_HudUiMgrObjectiveSummaryTextPanel = oldSummaryPanel;
+    g_HudUiMgrObjectiveLabelTextPanel = oldLabelPanel;
+    g_HudUiMgrTimerPanel = oldTimerPanel;
+    g_HudUiMgrCurrentLayout = oldLayout;
+    g_HudUiSensorWindowPlayback = oldPlayback;
+    ZOPT_VIDEO_ACCELERATION = oldAccelerationOption;
+    ZOPT_HUD_TYPE_SW = oldHudTypeSw;
+    g_zOpt_HwMode = oldHwMode;
+    g_HudUiMgrSensorTargetMarkerCount = oldTargetMarkerCount;
+    g_HudUiMgrWeaponState = oldWeaponState;
+    g_HudUiMgrLayoutDelayFrames = oldLayoutDelayFrames;
+    gAltClipPassEnabled = oldAltClipPassEnabled;
+
+    return coreState && weaponVisibility && objectiveVisibility ? 0 : 1;
+}
+
+extern "C" int zhud_mgr_enable_hud_smoke(void) {
+    HudUiMgrData oldMgr;
+    std::memcpy(&oldMgr, &g_HudUiMgr, sizeof(oldMgr));
+    HudLayoutBase *const oldLayout = g_HudUiMgrCurrentLayout;
+    const HudUiMgrSensorBlock oldSensorBlock = g_HudUiMgrSensorBlock;
+    const HudUiWidget oldObjectiveWidget = g_HudUiMgrObjectiveWidget;
+    const int oldObjectivePhase = g_HudUiMgrObjectivePhase;
+    const int oldAltClipPassEnabled = gAltClipPassEnabled;
+    const int oldAltClipValid = gAltClipSourceRectValid;
+    const float oldAltSourceLeft = g_zClipAlt_SourceLeft;
+    const float oldAltSourceTop = g_zClipAlt_SourceTop;
+    const float oldAltSourceWidth = g_zClipAlt_SourceWidth;
+    const float oldAltSourceHeight = g_zClipAlt_SourceHeight;
+
+    g_HudUiMgr.enabled = 9;
+    g_HudUiMgr.childHead = nullptr;
+    g_HudUiMgr.childTail = nullptr;
+    TestHudMgrLayout layout = {};
+    g_HudUiMgrCurrentLayout = &layout;
+    g_HudUiMgrObjectiveWidget.flags = 0x10;
+    g_HudUiMgrObjectivePhase = 0;
+    g_HudUiMgrSensorBlock.sensorPiVSrcRect.left = 2.0f;
+    g_HudUiMgrSensorBlock.sensorPiVSrcRect.top = 3.0f;
+    g_HudUiMgrSensorBlock.sensorPiVSrcRect.right = 22.0f;
+    g_HudUiMgrSensorBlock.sensorPiVSrcRect.bottom = 33.0f;
+    gAltClipPassEnabled = 0;
+    gAltClipSourceRectValid = 0;
+
+    const int previous = HudUiMgr::EnableHud();
+
+    const bool dispatch =
+        previous == 9 && g_HudUiMgr.enabled == 1 && layout.enableCount == 1;
+    const bool objectiveVisible = (g_HudUiMgrObjectiveWidget.flags & 0x10) == 0;
+    const bool clipState = gAltClipPassEnabled == 1 && gAltClipSourceRectValid == 1 &&
+                           g_zClipAlt_SourceLeft == 2.0f && g_zClipAlt_SourceTop == 3.0f &&
+                           g_zClipAlt_SourceWidth == 20.0f &&
+                           g_zClipAlt_SourceHeight == 30.0f;
+
+    std::memcpy(&g_HudUiMgr, &oldMgr, sizeof(g_HudUiMgr));
+    g_HudUiMgrCurrentLayout = oldLayout;
+    g_HudUiMgrSensorBlock = oldSensorBlock;
+    g_HudUiMgrObjectiveWidget = oldObjectiveWidget;
+    g_HudUiMgrObjectivePhase = oldObjectivePhase;
+    gAltClipPassEnabled = oldAltClipPassEnabled;
+    gAltClipSourceRectValid = oldAltClipValid;
+    g_zClipAlt_SourceLeft = oldAltSourceLeft;
+    g_zClipAlt_SourceTop = oldAltSourceTop;
+    g_zClipAlt_SourceWidth = oldAltSourceWidth;
+    g_zClipAlt_SourceHeight = oldAltSourceHeight;
+
+    return dispatch && objectiveVisible && clipState ? 0 : 1;
+}
+
+extern "C" int zhud_mgr_switch_active_dialog_smoke(void) {
+    HudUiMgrData oldMgr;
+    std::memcpy(&oldMgr, &g_HudUiMgr, sizeof(oldMgr));
+    HudUiSlot oldSlots[32];
+    std::memcpy(oldSlots, g_HudUiMgrWeaponSlots, sizeof(oldSlots));
+    const HudUiWidget oldObjectiveWidget = g_HudUiMgrObjectiveWidget;
+    const HudUiObjectiveBar oldObjectiveBar = g_HudUiMgrObjectiveBar;
+    const HudUiWidget oldObjectiveSensorRect = g_HudUiMgrObjectiveSensorRect;
+    const HudUiMeter oldObjectiveMeter = g_HudUiMgrObjectiveMeter;
+    HudUiPanel *const oldDescPanel = g_HudUiMgrObjectiveDescTextPanel;
+    HudUiPanel *const oldSummaryPanel = g_HudUiMgrObjectiveSummaryTextPanel;
+    HudUiPanel *const oldLabelPanel = g_HudUiMgrObjectiveLabelTextPanel;
+    HudUiTimerPanel *const oldTimerPanel = g_HudUiMgrTimerPanel;
+    HudLayoutBase *const oldLayout = g_HudUiMgrCurrentLayout;
+    zFMV_Playback *const oldPlayback = g_HudUiSensorWindowPlayback;
+    int *const oldAccelerationOption = ZOPT_VIDEO_ACCELERATION;
+    int *const oldHudTypeSw = ZOPT_HUD_TYPE_SW;
+    const int oldHwMode = g_zOpt_HwMode;
+    const int oldLayoutDelayFrames = g_HudUiMgrLayoutDelayFrames;
+    const int oldAltClipPassEnabled = gAltClipPassEnabled;
+    const int oldAltClipValid = gAltClipSourceRectValid;
+    const float oldAltSourceLeft = g_zClipAlt_SourceLeft;
+    const float oldAltSourceTop = g_zClipAlt_SourceTop;
+    const float oldAltSourceWidth = g_zClipAlt_SourceWidth;
+    const float oldAltSourceHeight = g_zClipAlt_SourceHeight;
+
+    TestHudMgrSwitchLayout disabledOld = {};
+    TestHudMgrSwitchLayout disabledNew = {};
+    g_HudUiMgr.enabled = 0;
+    g_HudUiMgrLayoutDelayFrames = 0;
+    g_HudUiMgrCurrentLayout = &disabledOld;
+    HudUiMgr::SwitchActiveDialog(&disabledNew);
+    const bool disabledPath = g_HudUiMgrLayoutDelayFrames == 2 &&
+                              disabledOld.activeValue == 0 &&
+                              disabledNew.activeValue == 1 &&
+                              g_HudUiMgrCurrentLayout == &disabledNew &&
+                              disabledOld.disableCount == 0 &&
+                              disabledNew.enableCount == 0;
+
+    TestHudMgrSwitchLayout enabledOld = {};
+    TestHudMgrSwitchLayout enabledNew = {};
+    TestHudMgrPanel descPanel = {};
+    TestHudMgrPanel summaryPanel = {};
+    TestHudMgrPanel labelPanel = {};
+    TestHudMgrTimerPanel timerPanel = {};
+
+    for (int index = 0; index < 32; ++index) {
+        g_HudUiMgrWeaponSlots[index] = HudUiSlot();
+    }
+
+    g_HudUiMgr.enabled = 5;
+    g_HudUiMgr.childHead = nullptr;
+    g_HudUiMgr.childTail = nullptr;
+    g_HudUiMgrCurrentLayout = &enabledOld;
+    g_HudUiMgrObjectiveWidget.flags = 0;
+    g_HudUiMgrObjectiveBar.flags = 0;
+    g_HudUiMgrObjectiveSensorRect.flags = 0;
+    g_HudUiMgrObjectiveMeter.flags = 0;
+    g_HudUiMgrObjectiveDescTextPanel = &descPanel;
+    g_HudUiMgrObjectiveSummaryTextPanel = &summaryPanel;
+    g_HudUiMgrObjectiveLabelTextPanel = &labelPanel;
+    g_HudUiMgrTimerPanel = &timerPanel;
+    g_HudUiSensorWindowPlayback = nullptr;
+    g_HudUiMgrSensorBlock.sensorPiVSrcRect.left = 4.0f;
+    g_HudUiMgrSensorBlock.sensorPiVSrcRect.top = 6.0f;
+    g_HudUiMgrSensorBlock.sensorPiVSrcRect.right = 44.0f;
+    g_HudUiMgrSensorBlock.sensorPiVSrcRect.bottom = 66.0f;
+    gAltClipPassEnabled = 5;
+
+    int accelerationOption = 1;
+    int hudTypeSw = 2;
+    ZOPT_VIDEO_ACCELERATION = &accelerationOption;
+    ZOPT_HUD_TYPE_SW = &hudTypeSw;
+    g_zOpt_HwMode = 0;
+
+    HudUiMgr::SwitchActiveDialog(&enabledNew);
+
+    const bool enabledPath =
+        enabledOld.disableCount == 1 && enabledNew.enableCount == 1 &&
+        enabledOld.activeValue == 0 && enabledNew.activeValue == 1 &&
+        g_HudUiMgrCurrentLayout == &enabledNew && g_HudUiMgr.enabled == 1 &&
+        gAltClipPassEnabled == 1 && g_zClipAlt_SourceLeft == 4.0f &&
+        g_zClipAlt_SourceTop == 6.0f && g_zClipAlt_SourceWidth == 40.0f &&
+        g_zClipAlt_SourceHeight == 60.0f;
+
+    std::memcpy(&g_HudUiMgr, &oldMgr, sizeof(g_HudUiMgr));
+    std::memcpy(g_HudUiMgrWeaponSlots, oldSlots, sizeof(oldSlots));
+    g_HudUiMgrObjectiveWidget = oldObjectiveWidget;
+    g_HudUiMgrObjectiveBar = oldObjectiveBar;
+    g_HudUiMgrObjectiveSensorRect = oldObjectiveSensorRect;
+    g_HudUiMgrObjectiveMeter = oldObjectiveMeter;
+    g_HudUiMgrObjectiveDescTextPanel = oldDescPanel;
+    g_HudUiMgrObjectiveSummaryTextPanel = oldSummaryPanel;
+    g_HudUiMgrObjectiveLabelTextPanel = oldLabelPanel;
+    g_HudUiMgrTimerPanel = oldTimerPanel;
+    g_HudUiMgrCurrentLayout = oldLayout;
+    g_HudUiSensorWindowPlayback = oldPlayback;
+    ZOPT_VIDEO_ACCELERATION = oldAccelerationOption;
+    ZOPT_HUD_TYPE_SW = oldHudTypeSw;
+    g_zOpt_HwMode = oldHwMode;
+    g_HudUiMgrLayoutDelayFrames = oldLayoutDelayFrames;
+    gAltClipPassEnabled = oldAltClipPassEnabled;
+    gAltClipSourceRectValid = oldAltClipValid;
+    g_zClipAlt_SourceLeft = oldAltSourceLeft;
+    g_zClipAlt_SourceTop = oldAltSourceTop;
+    g_zClipAlt_SourceWidth = oldAltSourceWidth;
+    g_zClipAlt_SourceHeight = oldAltSourceHeight;
+
+    return disabledPath && enabledPath ? 0 : 1;
+}
+
+extern "C" int zhud_mgr_apply_hud_mode_switch_smoke(void) {
+    HudLifecycleCodeFunctionPatch switchPatch = {};
+    if (!HudLifecyclePatchFunctionJump(
+            reinterpret_cast<void *>(&HudUiMgr::SwitchActiveDialog),
+            reinterpret_cast<void *>(&HudMgrApplyHudModeSwitchCapture),
+            switchPatch)) {
+        return 2;
+    }
+
+    HudUiMgrData oldMgr;
+    std::memcpy(&oldMgr, &g_HudUiMgr, sizeof(oldMgr));
+    HudLayoutBase *const oldCurrentLayout = g_HudUiMgrCurrentLayout;
+    const int oldLayoutsInitialized = g_HudUiMgrHudLayoutsInitialized;
+    const int oldLayoutDelay = g_HudUiMgrLayoutDelayFrames;
+    int *const oldHudTypeSw = ZOPT_HUD_TYPE_SW;
+    int *const oldHudTypeHw = ZOPT_HUD_TYPE_HW;
+    const int oldHwMode = g_zOpt_HwMode;
+
+    int hudTypeSw = 7;
+    int hudTypeHw = 8;
+    ZOPT_HUD_TYPE_SW = &hudTypeSw;
+    ZOPT_HUD_TYPE_HW = &hudTypeHw;
+    g_zOpt_HwMode = 0;
+    g_HudUiMgr.enabled = 0;
+    g_HudUiMgrLayoutDelayFrames = 0;
+    g_HudUiMgrCurrentLayout = nullptr;
+    g_HudUiMgrHudLayoutsInitialized = 0;
+    g_applyHudModeSwitchCaptureCount = 0;
+    for (int index = 0; index < 4; ++index) {
+        g_applyHudModeSwitchCaptureLayouts[index] = nullptr;
+    }
+
+    const int uninitializedReturn = HudUiMgr::ApplyHudModeSwitch(1);
+    const bool uninitialized =
+        uninitializedReturn == 7 && g_applyHudModeSwitchCaptureCount == 0;
+
+    g_HudUiMgrHudLayoutsInitialized = 1;
+    const int swReturn = HudUiMgr::ApplyHudModeSwitch(1);
+    const bool swSwitch =
+        swReturn == 7 && g_applyHudModeSwitchCaptureCount == 1 &&
+        g_applyHudModeSwitchCaptureLayouts[0] == &g_HudLayoutSW;
+
+    g_zOpt_HwMode = 1;
+    const int hwReturn = HudUiMgr::ApplyHudModeSwitch(2);
+    const bool hwSwitch =
+        hwReturn == 8 && g_applyHudModeSwitchCaptureCount == 2 &&
+        g_applyHudModeSwitchCaptureLayouts[1] ==
+            reinterpret_cast<HudLayoutBase *>(&g_HudLayoutHW);
+
+    const int ignoredReturn = HudUiMgr::ApplyHudModeSwitch(3);
+    const bool ignored =
+        ignoredReturn == 8 && g_applyHudModeSwitchCaptureCount == 2;
+
+    std::memcpy(&g_HudUiMgr, &oldMgr, sizeof(g_HudUiMgr));
+    g_HudUiMgrCurrentLayout = oldCurrentLayout;
+    g_HudUiMgrHudLayoutsInitialized = oldLayoutsInitialized;
+    g_HudUiMgrLayoutDelayFrames = oldLayoutDelay;
+    ZOPT_HUD_TYPE_SW = oldHudTypeSw;
+    ZOPT_HUD_TYPE_HW = oldHudTypeHw;
+    g_zOpt_HwMode = oldHwMode;
+    HudLifecycleRestoreFunctionPatch(switchPatch);
+
+    return uninitialized && swSwitch && hwSwitch && ignored ? 0 : 1;
+}
+
 extern "C" int zhud_mgr_viewport_activation_smoke(void) {
     const int oldMode = g_HudUiMgrReticleMode;
     HudUiMgr::SetReticleMode(2);
     const bool ok = g_HudUiMgrReticleMode == 2;
     g_HudUiMgrReticleMode = oldMode;
     return ok ? 0 : 1;
+}
+
+extern "C" int zhud_mgr_update_target_reticle_smoke(void) {
+    zOpt_ViewRectSection *const oldRenderSection =
+        g_zOpt_RenderSectionOption != nullptr ? *g_zOpt_RenderSectionOption : nullptr;
+    zOpt_ViewRectSection *const oldDisplaySection =
+        g_zOpt_DisplaySectionOption != nullptr ? *g_zOpt_DisplaySectionOption : nullptr;
+    zOpt_ViewRectSection **const oldRenderOption = g_zOpt_RenderSectionOption;
+    zOpt_ViewRectSection **const oldDisplayOption = g_zOpt_DisplaySectionOption;
+    std::int32_t *const oldReplicateOption = ZOPT_REPLICATE;
+
+    zOpt_ViewRectSection renderSection{};
+    renderSection.x = 10;
+    renderSection.y = 20;
+    renderSection.maxXInclusive = 109;
+    renderSection.maxYInclusive = 99;
+    zOpt_ViewRectSection displaySection{};
+    displaySection.x = 0;
+    displaySection.y = 0;
+    displaySection.rightExclusive = 200;
+    displaySection.bottomExclusive = 160;
+    zOpt_ViewRectSection *renderSectionPtr = &renderSection;
+    zOpt_ViewRectSection *displaySectionPtr = &displaySection;
+    g_zOpt_RenderSectionOption = &renderSectionPtr;
+    g_zOpt_DisplaySectionOption = &displaySectionPtr;
+
+    std::int32_t replicate = 0;
+    ZOPT_REPLICATE = &replicate;
+    float point[2] = {80.0f, 60.0f};
+    HudUiMgr::ScreenToWorld(point);
+    const bool noReplicate = point[0] == 80.0f && point[1] == 60.0f;
+
+    replicate = 1;
+    point[0] = 80.0f;
+    point[1] = 60.0f;
+    HudUiMgr::ScreenToWorld(point);
+    const bool replicated = point[0] == 40.0f && point[1] == 50.0f;
+
+    g_zOpt_RenderSectionOption = oldRenderOption;
+    g_zOpt_DisplaySectionOption = oldDisplayOption;
+    if (g_zOpt_RenderSectionOption != nullptr) {
+        *g_zOpt_RenderSectionOption = oldRenderSection;
+    }
+    if (g_zOpt_DisplaySectionOption != nullptr) {
+        *g_zOpt_DisplaySectionOption = oldDisplaySection;
+    }
+    ZOPT_REPLICATE = oldReplicateOption;
+
+    return noReplicate && replicated ? 0 : 1;
 }
 
 extern "C" int zhud_mgr_project_point_to_normalized_clamped_smoke(void) {
@@ -2402,6 +3137,382 @@ extern "C" int hud_ui_new_game_panel_start_activation_smoke(void) {
     return directOk && buttonOk ? 0 : 1;
 }
 
+extern "C" int zhud_play_powerup_sfx_smoke(void) {
+    const int oldSndInitialized = g_zSnd_IsInitialized;
+    const int oldSndPreInitialized = g_zSnd_PreInitialized;
+    const int oldActiveBackend = g_zSnd_ActiveBackend;
+    const int oldMuteDepth = g_zSnd_MuteDepth;
+    const int oldPlaybackEnabled = g_zSnd_Flag10PlaybackEnabled;
+    void *const oldGlobalVolumeScalePtr = g_zSnd_GlobalVolumeScalePtr;
+    const zSndSampleSetRegistry oldSampleRegistry = g_zSnd_SampleSetRegistry;
+
+    HudUiTestDirectSoundBufferVTable directSoundVTable = {};
+    directSoundVTable.GetStatus = &HudUiTestDirectSoundGetStatus;
+    directSoundVTable.SetVolume = &HudUiTestDirectSoundSetVolume;
+    directSoundVTable.SetCurrentPosition = &HudUiTestDirectSoundSetCurrentPosition;
+    directSoundVTable.Play = &HudUiTestDirectSoundPlay;
+    directSoundVTable.Stop = &HudUiTestDirectSoundStop;
+    HudUiTestDirectSoundBuffer directSoundBuffer{&directSoundVTable};
+
+    zSndSample sample = {};
+    sample.replayFields.sampleId = "snd_powerup";
+    sample.replayFields.flags = 8;
+    sample.replayFields.gain = 1.0f;
+    sample.primaryVoice.backendBuffer = reinterpret_cast<zSndBuffer *>(&directSoundBuffer);
+
+    zSndSampleSet sampleSet = {};
+    sampleSet.sampleCount = 1;
+    sampleSet.samples = &sample;
+    zSndSampleSet *sampleSetSlots[1] = {&sampleSet};
+
+    float globalVolume = 1.0f;
+    g_zSnd_IsInitialized = 1;
+    g_zSnd_PreInitialized = 1;
+    g_zSnd_ActiveBackend = 0;
+    g_zSnd_MuteDepth = 0;
+    g_zSnd_Flag10PlaybackEnabled = 1;
+    g_zSnd_GlobalVolumeScalePtr = &globalVolume;
+    g_zSnd_SampleSetRegistry.begin = sampleSetSlots;
+    g_zSnd_SampleSetRegistry.end = sampleSetSlots + 1;
+    g_zSnd_SampleSetRegistry.capacityEnd = sampleSetSlots + 1;
+
+    g_HudUiTestPowerupPlayCount = 0;
+    g_HudUiTestPowerupStopCount = 0;
+    g_HudUiTestPowerupVolumeCount = 0;
+    g_HudUiTestPowerupPositionCount = 0;
+
+    HudUi::PlayPowerupSfx(1);
+    const bool played = g_HudUiTestPowerupPlayCount == 1 &&
+                        g_HudUiTestPowerupVolumeCount == 1 &&
+                        g_HudUiTestPowerupPositionCount == 1;
+
+    g_zSnd_SampleSetRegistry.begin = 0;
+    g_zSnd_SampleSetRegistry.end = 0;
+    g_zSnd_SampleSetRegistry.capacityEnd = 0;
+
+    HudUi::PlayPowerupSfx(0);
+    const bool stopped = g_HudUiTestPowerupStopCount == 1 &&
+                         g_HudUiTestPowerupPlayCount == 1;
+
+    g_zSnd_SampleSetRegistry = oldSampleRegistry;
+    g_zSnd_GlobalVolumeScalePtr = oldGlobalVolumeScalePtr;
+    g_zSnd_Flag10PlaybackEnabled = oldPlaybackEnabled;
+    g_zSnd_MuteDepth = oldMuteDepth;
+    g_zSnd_ActiveBackend = oldActiveBackend;
+    g_zSnd_PreInitialized = oldSndPreInitialized;
+    g_zSnd_IsInitialized = oldSndInitialized;
+
+    return played && stopped ? 0 : 1;
+}
+
+extern "C" int hud_line_clip_current_bounds_smoke(void) {
+    const float oldLeft = g_HudLineClip_CurrentLeft;
+    const float oldTop = g_HudLineClip_CurrentTop;
+    const float oldRight = g_HudLineClip_CurrentRight;
+    const float oldBottom = g_HudLineClip_CurrentBottom;
+
+    HudRectI bounds{10, 20, 110, 220};
+    HudLineClip::SetCurrentBoundsFromRectI(&bounds);
+    const bool boundsOk = HudFloatNear(g_HudLineClip_CurrentLeft, 10.0f) &&
+                          HudFloatNear(g_HudLineClip_CurrentTop, 20.0f) &&
+                          HudFloatNear(g_HudLineClip_CurrentRight, 110.0f) &&
+                          HudFloatNear(g_HudLineClip_CurrentBottom, 220.0f);
+
+    zVec3 endpointX{0.0f, 0.0f, 0.0f};
+    zVec3 otherX{10.0f, 10.0f, 0.0f};
+    HudLineClip::ClipEndpointToX(&endpointX, &otherX, 5.0f);
+    const bool endpointXOk = HudFloatNear(endpointX.x, 5.0f) &&
+                             HudFloatNear(endpointX.y, 5.0f);
+
+    zVec3 endpointY{0.0f, 0.0f, 0.0f};
+    zVec3 otherY{10.0f, 20.0f, 0.0f};
+    HudLineClip::ClipEndpointToY(&endpointY, &otherY, 10.0f);
+    const bool endpointYOk = HudFloatNear(endpointY.x, 5.0f) &&
+                             HudFloatNear(endpointY.y, 10.0f);
+
+    int point0Clipped = 0;
+    int point1Clipped = 0;
+    zVec3 reject0{120.0f, 30.0f, 0.0f};
+    zVec3 reject1{130.0f, 40.0f, 0.0f};
+    const int rejectResult =
+        HudLineClip::ClipSegmentToCurrentXBounds(&reject0, &reject1, &point0Clipped,
+                                                 &point1Clipped);
+    const bool rejectOk = rejectResult == 0 && point0Clipped == 1 && point1Clipped == 1;
+
+    point0Clipped = 0;
+    point1Clipped = 0;
+    zVec3 clipX0{0.0f, 50.0f, 0.0f};
+    zVec3 clipX1{20.0f, 70.0f, 0.0f};
+    const int clipXResult =
+        HudLineClip::ClipSegmentToCurrentXBounds(&clipX0, &clipX1, &point0Clipped,
+                                                 &point1Clipped);
+    const bool clipXOk = clipXResult == 1 && point0Clipped == 1 && point1Clipped == 0 &&
+                         HudFloatNear(clipX0.x, 10.0f) && HudFloatNear(clipX0.y, 60.0f);
+
+    point0Clipped = 0;
+    point1Clipped = 0;
+    zVec3 clipY0{50.0f, 0.0f, 0.0f};
+    zVec3 clipY1{70.0f, 40.0f, 0.0f};
+    const int clipYResult =
+        HudLineClip::ClipSegmentToCurrentYBounds(&clipY0, &clipY1, &point0Clipped,
+                                                 &point1Clipped);
+    const bool clipYOk = clipYResult == 1 && point0Clipped == 1 && point1Clipped == 0 &&
+                         HudFloatNear(clipY0.x, 60.0f) && HudFloatNear(clipY0.y, 20.0f);
+
+    point0Clipped = 0;
+    point1Clipped = 0;
+    zVec3 clipBoth0{0.0f, 0.0f, 0.0f};
+    zVec3 clipBoth1{120.0f, 240.0f, 0.0f};
+    const int clipBothResult =
+        HudLineClip::ClipSegmentToCurrentBounds(&clipBoth0, &clipBoth1, &point0Clipped,
+                                                &point1Clipped);
+    const bool clipBothOk = clipBothResult == 1 && point0Clipped == 1 && point1Clipped == 1 &&
+                            HudFloatNear(clipBoth0.x, 10.0f) &&
+                            HudFloatNear(clipBoth0.y, 20.0f) &&
+                            HudFloatNear(clipBoth1.x, 110.0f) &&
+                            HudFloatNear(clipBoth1.y, 220.0f);
+
+    g_HudLineClip_CurrentLeft = oldLeft;
+    g_HudLineClip_CurrentTop = oldTop;
+    g_HudLineClip_CurrentRight = oldRight;
+    g_HudLineClip_CurrentBottom = oldBottom;
+
+    return boundsOk && endpointXOk && endpointYOk && rejectOk && clipXOk && clipYOk &&
+                   clipBothOk
+               ? 0
+               : 1;
+}
+
+extern "C" int hud_recti_clip_segment_helpers_smoke(void) {
+    HudRectI rect{10, 20, 110, 220};
+    zVec3 inside{50.0f, 50.0f, 0.0f};
+    zVec3 leftTop{5.0f, 10.0f, 0.0f};
+    zVec3 rightPoint{120.0f, 50.0f, 0.0f};
+    zVec3 belowByYOnly{50.0f, 230.0f, 0.0f};
+    zVec3 rightAndBottomByX{230.0f, 50.0f, 0.0f};
+    const bool outcodeOk = rect.CalcOutcode(&inside) == 0 &&
+                           rect.CalcOutcode(&leftTop) == 9 &&
+                           rect.CalcOutcode(&rightPoint) == 2 &&
+                           rect.CalcOutcode(&belowByYOnly) == 0 &&
+                           rect.CalcOutcode(&rightAndBottomByX) == 6;
+
+    const bool cornerOk = HudRectI::IsCornerOutcode(5) == 1 &&
+                          HudRectI::IsCornerOutcode(6) == 1 &&
+                          HudRectI::IsCornerOutcode(9) == 1 &&
+                          HudRectI::IsCornerOutcode(10) == 1 &&
+                          HudRectI::IsCornerOutcode(8) == 0;
+
+    zVec3 segStart{0.0f, 0.0f, 0.0f};
+    zVec3 segEnd{10.0f, 0.0f, 0.0f};
+    zVec3 above{5.0f, 1.0f, 0.0f};
+    zVec3 below{5.0f, -1.0f, 0.0f};
+    zVec3 onSegment{5.0f, 0.0f, 0.0f};
+    zVec3 beforeSegment{-1.0f, 0.0f, 0.0f};
+    zVec3 afterSegment{11.0f, 0.0f, 0.0f};
+    const bool classifyOk =
+        HudGeom2D::ClassifyPointAgainstSegment(&segStart, &segEnd, &above) == 1 &&
+        HudGeom2D::ClassifyPointAgainstSegment(&segStart, &segEnd, &below) == -1 &&
+        HudGeom2D::ClassifyPointAgainstSegment(&segStart, &segEnd, &onSegment) == 0 &&
+        HudGeom2D::ClassifyPointAgainstSegment(&segStart, &segEnd, &beforeSegment) == -1 &&
+        HudGeom2D::ClassifyPointAgainstSegment(&segStart, &segEnd, &afterSegment) == 1;
+
+    zVec3 crossLeftStart{0.0f, 30.0f, 0.0f};
+    zVec3 crossLeftEnd{20.0f, 30.0f, 0.0f};
+    zVec3 missRightStart{0.0f, 0.0f, 0.0f};
+    zVec3 missRightEnd{5.0f, 5.0f, 0.0f};
+    const bool edgeOk = rect.SegmentIntersectsEdge(1, &crossLeftStart, &crossLeftEnd) == 1 &&
+                        rect.SegmentIntersectsEdge(2, &missRightStart, &missRightEnd) == 0;
+
+    HudRectI zeroWidth{10, 20, 10, 220};
+    zVec3 zeroStart{0.0f, 0.0f, 0.0f};
+    zVec3 zeroEnd{100.0f, 100.0f, 0.0f};
+    const bool zeroWidthOk = zeroWidth.ClipOrSplitSegment(&zeroStart, &zeroEnd) == 1;
+
+    zVec3 insideStart{20.0f, 30.0f, 0.0f};
+    zVec3 insideEnd{40.0f, 30.0f, 0.0f};
+    const bool insideOk = rect.ClipOrSplitSegment(&insideStart, &insideEnd) == 0;
+
+    zVec3 rejectStart{0.0f, 30.0f, 0.0f};
+    zVec3 rejectEnd{5.0f, 40.0f, 0.0f};
+    const bool rejectOk = rect.ClipOrSplitSegment(&rejectStart, &rejectEnd) == 1;
+
+    zVec3 oneOutsideStart{50.0f, 50.0f, 0.0f};
+    zVec3 oneOutsideEnd{0.0f, 50.0f, 0.0f};
+    const int oneOutsideResult = rect.ClipOrSplitSegment(&oneOutsideStart, &oneOutsideEnd);
+    const bool oneOutsideOk = oneOutsideResult == 1 &&
+                              HudFloatNear(oneOutsideStart.x, 10.0f) &&
+                              HudFloatNear(oneOutsideStart.y, 50.0f);
+
+    zVec3 splitStart{0.0f, 30.0f, 0.0f};
+    zVec3 splitEnd{120.0f, 30.0f, 0.0f};
+    const int splitResult = rect.ClipOrSplitSegment(&splitStart, &splitEnd);
+    const bool splitOk = splitResult == 2 && HudFloatNear(splitStart.x, 10.0f) &&
+                         HudFloatNear(splitStart.y, 30.0f) &&
+                         HudFloatNear(g_HudSensor_ClipSegmentStart.x, 110.0f) &&
+                         HudFloatNear(g_HudSensor_ClipSegmentStart.y, 30.0f);
+
+    return outcodeOk && cornerOk && classifyOk && edgeOk && zeroWidthOk && insideOk &&
+                   rejectOk && oneOutsideOk && splitOk
+               ? 0
+               : 1;
+}
+
+extern "C" int hud_sensor_tracker_draw_diamond_marker_smoke(void) {
+    void *const oldFrameBuffer = zRndr::g_frameBuffer;
+    zRndr::ImmediateRaster5Proc const oldRaster5 = zRndr::g_pfnImmediateRaster5;
+
+    HudSensorTracker tracker{};
+    zRndr::g_frameBuffer = reinterpret_cast<void *>(0x13572468);
+    zRndr::g_pfnImmediateRaster5 =
+        reinterpret_cast<zRndr::ImmediateRaster5Proc>(HudTestImmediateRaster5);
+    g_HudTestLine5Count = 0;
+    g_HudTestLineFrameBuffer = nullptr;
+    g_HudTestLineClipRect = nullptr;
+    std::memset(g_HudTestLineArgs, 0, sizeof(g_HudTestLineArgs));
+
+    HudSensorTracker::DrawDiamondMarker(100, 200, 7, 11, 0x12345678, &tracker);
+
+    const bool callsOk = g_HudTestLine5Count == 4 &&
+                         g_HudTestLineFrameBuffer == reinterpret_cast<void *>(0x13572468) &&
+                         g_HudTestLineClipRect == &tracker;
+    const bool colorOk = g_HudTestLineArgs[0][4] == 0x5678 &&
+                         g_HudTestLineArgs[1][4] == 0x5678 &&
+                         g_HudTestLineArgs[2][4] == 0x5678 &&
+                         g_HudTestLineArgs[3][4] == 0x5678;
+    const bool pointsOk =
+        g_HudTestLineArgs[0][0] == 93 && g_HudTestLineArgs[0][1] == 200 &&
+        g_HudTestLineArgs[0][2] == 100 && g_HudTestLineArgs[0][3] == 211 &&
+        g_HudTestLineArgs[1][0] == 100 && g_HudTestLineArgs[1][1] == 211 &&
+        g_HudTestLineArgs[1][2] == 107 && g_HudTestLineArgs[1][3] == 200 &&
+        g_HudTestLineArgs[2][0] == 107 && g_HudTestLineArgs[2][1] == 200 &&
+        g_HudTestLineArgs[2][2] == 100 && g_HudTestLineArgs[2][3] == 189 &&
+        g_HudTestLineArgs[3][0] == 100 && g_HudTestLineArgs[3][1] == 189 &&
+        g_HudTestLineArgs[3][2] == 93 && g_HudTestLineArgs[3][3] == 200;
+
+    zRndr::g_frameBuffer = oldFrameBuffer;
+    zRndr::g_pfnImmediateRaster5 = oldRaster5;
+
+    return callsOk && colorOk && pointsOk ? 0 : 1;
+}
+
+extern "C" int hud_sensor_tracker_save_marker_leaf_smoke(void) {
+    void *const oldFrameBuffer = zRndr::g_frameBuffer;
+    zRndr::ImmediateRaster5Proc const oldRaster5 = zRndr::g_pfnImmediateRaster5;
+
+    HudSensorTracker tracker{};
+    zVec3 trackedOrigin{10.0f, 20.0f, 30.0f};
+    tracker.trackedWorldOriginPtr = &trackedOrigin;
+    zUtil_PlayerStateStorage playerState{};
+    playerState.worldPos = {13.0f, 99.0f, 34.0f};
+    zUtil_SaveGameState saveState{};
+    saveState.playerState = &playerState;
+    zVec3 relativeDelta{};
+    const float lengthSq = tracker.GetSaveStateRelativeVectorLen(&saveState, &relativeDelta, 0);
+    const bool lengthSqOk = HudFloatNear(lengthSq, 25.0f) &&
+                            HudFloatNear(relativeDelta.x, 3.0f) &&
+                            HudFloatNear(relativeDelta.y, 0.0f) &&
+                            HudFloatNear(relativeDelta.z, 4.0f);
+    const float length = tracker.GetSaveStateRelativeVectorLen(&saveState, &relativeDelta, 1);
+    const bool lengthOk = HudFloatNear(length, 5.0f);
+
+    zRndr::g_frameBuffer = reinterpret_cast<void *>(0x27182818);
+    zRndr::g_pfnImmediateRaster5 =
+        reinterpret_cast<zRndr::ImmediateRaster5Proc>(HudTestImmediateRaster5);
+    g_HudTestLine5Count = 0;
+    g_HudTestLineFrameBuffer = nullptr;
+    g_HudTestLineClipRect = nullptr;
+    std::memset(g_HudTestLineArgs, 0, sizeof(g_HudTestLineArgs));
+
+    HudSensorTracker::DrawMarkerCross(50, 60, 3, 5, 0x12345678, &tracker);
+    const bool crossOk =
+        g_HudTestLine5Count == 2 &&
+        g_HudTestLineFrameBuffer == reinterpret_cast<void *>(0x27182818) &&
+        g_HudTestLineClipRect == &tracker &&
+        g_HudTestLineArgs[0][0] == 47 && g_HudTestLineArgs[0][1] == 60 &&
+        g_HudTestLineArgs[0][2] == 53 && g_HudTestLineArgs[0][3] == 60 &&
+        g_HudTestLineArgs[0][4] == 0x5678 &&
+        g_HudTestLineArgs[1][0] == 50 && g_HudTestLineArgs[1][1] == 65 &&
+        g_HudTestLineArgs[1][2] == 50 && g_HudTestLineArgs[1][3] == 55 &&
+        g_HudTestLineArgs[1][4] == 0x5678;
+
+    zRndr::g_frameBuffer = oldFrameBuffer;
+    zRndr::g_pfnImmediateRaster5 = oldRaster5;
+
+    return lengthSqOk && lengthOk && crossOk ? 0 : 1;
+}
+
+extern "C" int hud_sensor_tracker_update_map_scale_lerp_smoke(void) {
+    HudSensorTracker tracker{};
+    tracker.mapScaleCurrent.x = 7.0f;
+    tracker.mapScaleCurrent.y = 8.0f;
+    tracker.mapScaleCurrent.z = 9.0f;
+    if (tracker.UpdateMapScaleLerp() != 1 || !HudFloatNear(tracker.mapScaleCurrent.x, 7.0f) ||
+        !HudFloatNear(tracker.mapScaleCurrent.y, 8.0f) ||
+        !HudFloatNear(tracker.mapScaleCurrent.z, 9.0f)) {
+        return 1;
+    }
+
+    tracker.mapScaleLerpRunning = 1;
+    tracker.mapScaleLerpT = 0.25f;
+    tracker.mapScaleLerpStep = 0.5f;
+    tracker.mapScaleStart.x = 2.0f;
+    tracker.mapScaleStart.y = 4.0f;
+    tracker.mapScaleStart.z = 6.0f;
+    tracker.mapScaleGoal.x = 6.0f;
+    tracker.mapScaleGoal.y = 12.0f;
+    tracker.mapScaleGoal.z = 18.0f;
+    if (tracker.UpdateMapScaleLerp() != 1 || tracker.mapScaleLerpRunning != 1 ||
+        !HudFloatNear(tracker.mapScaleLerpT, 0.75f) ||
+        !HudFloatNear(tracker.mapScaleCurrent.x, 5.0f) ||
+        !HudFloatNear(tracker.mapScaleCurrent.y, 10.0f) ||
+        !HudFloatNear(tracker.mapScaleCurrent.z, 15.0f)) {
+        return 2;
+    }
+
+    tracker.mapScaleLerpT = 0.75f;
+    tracker.mapScaleLerpStep = 0.5f;
+    if (tracker.UpdateMapScaleLerp() != 1 || tracker.mapScaleLerpRunning != 0 ||
+        !HudFloatNear(tracker.mapScaleLerpT, 1.0f) ||
+        !HudFloatNear(tracker.mapScaleCurrent.x, 6.0f) ||
+        !HudFloatNear(tracker.mapScaleCurrent.y, 12.0f) ||
+        !HudFloatNear(tracker.mapScaleCurrent.z, 18.0f)) {
+        return 3;
+    }
+
+    return 0;
+}
+
+extern "C" int hud_sensor_tracker_project_world_points_smoke(void) {
+    HudSensorTracker tracker{};
+    zVec3 trackedOrigin{10.0f, 0.0f, 20.0f};
+    zVec3 trackedForward{1.0f, 0.0f, 0.0f};
+    tracker.trackedWorldOriginPtr = &trackedOrigin;
+    tracker.trackedForwardVecPtr = &trackedForward;
+    tracker.mapScaleCurrent.x = 2.0f;
+    tracker.mapScaleCurrent.z = 3.0f;
+    tracker.mapZoom = 0.5f;
+    tracker.mapOverlayCenterX = 100;
+    tracker.mapOverlayCenterY = 200;
+
+    zVec3 output[2] = {{7.0f, 8.0f, 9.0f}, {10.0f, 11.0f, 12.0f}};
+    if (tracker.ProjectWorldPointsToOverlay(nullptr, output, 0) != 1 ||
+        !HudFloatNear(output[0].x, 7.0f) || !HudFloatNear(output[0].y, 8.0f) ||
+        !HudFloatNear(output[1].x, 10.0f) || !HudFloatNear(output[1].y, 11.0f)) {
+        return 1;
+    }
+
+    zVec3 input[2] = {{14.0f, 0.0f, 26.0f}, {8.0f, 0.0f, 18.0f}};
+    if (tracker.ProjectWorldPointsToOverlay(input, output, 2) != 1) {
+        return 2;
+    }
+
+    const bool firstOk = HudFloatNear(output[0].x, 109.0f) &&
+                         HudFloatNear(output[0].y, 196.0f);
+    const bool secondOk = HudFloatNear(output[1].x, 97.0f) &&
+                          HudFloatNear(output[1].y, 202.0f);
+    return firstOk && secondOk ? 0 : 3;
+}
+
 #else
 
 #include "Battlesport/GameNet.h"
@@ -2450,8 +3561,6 @@ extern "C" int hud_ui_new_game_panel_start_activation_smoke(void) {
 #include <new>
 
 extern "C" std::uint32_t g_HudUi_InvalidateMask;
-extern zSndSample *g_HudUi_PowerupSample;
-extern unsigned char g_HudUi_PowerupSampleInitFlags;
 extern "C" int g_Hud_MapOverlayRefCount;
 extern "C" int g_HudSensorTracker_ObjectiveCommandLocked;
 extern "C" float g_HudLineClip_CurrentLeft;
@@ -16683,8 +17792,6 @@ extern "C" int zhud_background_video_widget_set_media_path_missing_smoke(void) {
 }
 
 extern "C" int zhud_play_powerup_sfx_smoke(void) {
-    zSndSample *const oldPowerupSample = g_HudUi_PowerupSample;
-    const unsigned char oldPowerupInitFlags = g_HudUi_PowerupSampleInitFlags;
     const int oldSndInitialized = g_zSnd_IsInitialized;
     const int oldSndPreInitialized = g_zSnd_PreInitialized;
     const int oldActiveBackend = g_zSnd_ActiveBackend;
@@ -16713,8 +17820,6 @@ extern "C" int zhud_play_powerup_sfx_smoke(void) {
     zSndSampleSet *sampleSetSlots[1] = {&sampleSet};
 
     float globalVolume = 1.0f;
-    g_HudUi_PowerupSample = nullptr;
-    g_HudUi_PowerupSampleInitFlags = 0;
     g_zSnd_IsInitialized = 1;
     g_zSnd_PreInitialized = 1;
     g_zSnd_ActiveBackend = 0;
@@ -16731,15 +17836,16 @@ extern "C" int zhud_play_powerup_sfx_smoke(void) {
     g_HudUiTestPowerupPositionCount = 0;
 
     HudUi::PlayPowerupSfx(1);
-    const bool played = g_HudUi_PowerupSample == &sample &&
-                        (g_HudUi_PowerupSampleInitFlags & 1) != 0 &&
-                        g_HudUiTestPowerupPlayCount == 1 &&
+    const bool played = g_HudUiTestPowerupPlayCount == 1 &&
                         g_HudUiTestPowerupVolumeCount == 1 &&
                         g_HudUiTestPowerupPositionCount == 1;
 
+    g_zSnd_SampleSetRegistry.begin = 0;
+    g_zSnd_SampleSetRegistry.end = 0;
+    g_zSnd_SampleSetRegistry.capacityEnd = 0;
+
     HudUi::PlayPowerupSfx(0);
-    const bool stopped = g_HudUi_PowerupSample == &sample &&
-                         g_HudUiTestPowerupStopCount == 1 &&
+    const bool stopped = g_HudUiTestPowerupStopCount == 1 &&
                          g_HudUiTestPowerupPlayCount == 1;
 
     g_zSnd_SampleSetRegistry = oldSampleRegistry;
@@ -16749,8 +17855,6 @@ extern "C" int zhud_play_powerup_sfx_smoke(void) {
     g_zSnd_ActiveBackend = oldActiveBackend;
     g_zSnd_PreInitialized = oldSndPreInitialized;
     g_zSnd_IsInitialized = oldSndInitialized;
-    g_HudUi_PowerupSampleInitFlags = oldPowerupInitFlags;
-    g_HudUi_PowerupSample = oldPowerupSample;
 
     return played && stopped ? 0 : 1;
 }
@@ -19043,11 +20147,9 @@ static int RunHudUiMgrConstructorSmoke(bool useStaticInit, bool useStaticDestruc
         for (int index = 0; index < 4; ++index) {
             g_HudUiMgrModeCounters[index].base.DestructorCore();
         }
-        g_HudUiMgrObjectiveChatComposeTextInput.DestructorCore();
+        g_HudUiMgr.objective.~HudUiMgrObjectiveBlock();
         g_HudUiMgrSensorOverlay.DestructorCore();
         g_HudUiMgrSensorPanel.DestructorCore();
-        g_HudUiMgrObjectiveSensorRect.DestructorCore();
-        g_HudUiMgrObjectiveWidget.DestructorCore();
         g_HudUiMgrReticleWidget.DestructorCore();
         ((HudUiTripletPanel *)(&g_HudUiMgrNanitePanel))->DestructorCore();
         ((HudUiPanel *)(&g_HudUiMgrHudRootPanel))->Destructor();
@@ -19122,31 +20224,37 @@ extern "C" int zhud_mgr_static_init_and_register_at_exit_smoke(void) {
 }
 
 extern "C" int zhud_mgr_objective_block_destructor_smoke(void) {
-    HudUiMgrObjectiveBlock block{};
-    block.chatComposeTextInput.ftable = nullptr;
-    block.objectiveBar.ftable = &g_HudUiBar_FTable;
-    block.objectiveMeter.ftable = &g_HudUiMeter_FTable;
-    block.objectiveSensorRect.ftable = &g_HudUiWidget_FTable;
-    block.objectiveSensorRect.image = &zVid_Image::g_zImage_DefaultImage;
-    block.objectiveSensorRect.ownsImage = 1;
-    block.objectiveWidget.ftable = &g_HudUiWidget_FTable;
-    block.objectiveWidget.image = &zVid_Image::g_zImage_DefaultImage;
-    block.objectiveWidget.ownsImage = 1;
+    void *const storage = ::operator new(sizeof(HudUiMgrObjectiveBlock));
+    HudUiMgrObjectiveBlock *const block = (HudUiMgrObjectiveBlock *)(storage);
+    std::memset(block, 0, sizeof(*block));
+    block->chatComposeTextInput.ftable = nullptr;
+    block->objectiveBar.ftable = &g_HudUiBar_FTable;
+    block->objectiveMeter.ftable = &g_HudUiMeter_FTable;
+    block->objectiveSensorRect.ftable = &g_HudUiWidget_FTable;
+    block->objectiveSensorRect.image = &zVid_Image::g_zImage_DefaultImage;
+    block->objectiveSensorRect.ownsImage = 1;
+    block->objectiveWidget.ftable = &g_HudUiWidget_FTable;
+    block->objectiveWidget.image = &zVid_Image::g_zImage_DefaultImage;
+    block->objectiveWidget.ownsImage = 1;
 
-    block.Destructor();
+    block->~HudUiMgrObjectiveBlock();
 
-    return block.chatComposeTextInput.ftable == &g_HudUiTextInput_FTable &&
-                   TestFieldAt<const void *>(&block.objectiveBar, 0x00) == &g_HudUiCommon_FTable &&
-                   TestFieldAt<const void *>(&block.objectiveMeter, 0x00) ==
+    const int result =
+        block->chatComposeTextInput.ftable == &g_HudUiTextInput_FTable &&
+                TestFieldAt<const void *>(&block->objectiveBar, 0x00) == &g_HudUiCommon_FTable &&
+                TestFieldAt<const void *>(&block->objectiveMeter, 0x00) ==
                        &g_HudUiCommon_FTable &&
-                   block.objectiveSensorRect.image == nullptr &&
-                   block.objectiveSensorRect.ownsImage == 0 &&
-                   TestFieldAt<const void *>(&block.objectiveSensorRect, 0x00) ==
+                block->objectiveSensorRect.image == nullptr &&
+                block->objectiveSensorRect.ownsImage == 0 &&
+                TestFieldAt<const void *>(&block->objectiveSensorRect, 0x00) ==
                        &g_HudUiCommon_FTable &&
-                   block.objectiveWidget.image == nullptr && block.objectiveWidget.ownsImage == 0 &&
-                   TestFieldAt<const void *>(&block.objectiveWidget, 0x00) == &g_HudUiCommon_FTable
-               ? 0
-               : 1;
+                block->objectiveWidget.image == nullptr && block->objectiveWidget.ownsImage == 0 &&
+                TestFieldAt<const void *>(&block->objectiveWidget, 0x00) == &g_HudUiCommon_FTable
+            ? 0
+            : 1;
+
+    ::operator delete(storage);
+    return result;
 }
 
 extern "C" int zhud_slot_destructors_smoke(void) {

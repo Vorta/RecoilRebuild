@@ -4940,8 +4940,8 @@ extern "C" int player_update_ai_mode2_move_and_turn_toward_offset_target_smoke(v
     playerState.steerBasisNorm = {0.0f, 0.0f, 1.0f};
     Player::UpdateAiMode2MoveAndTurnTowardOffsetTarget(&saveState, &targetState);
 
-    const float expectedX = 10.0f * 0.965925813f - 10.0f;
-    const float expectedZ = 10.0f * 0.258819044f;
+    const float expectedX = 10.0f * g_Player_AiMode2_OffsetTargetRotateCos15Deg - 10.0f;
+    const float expectedZ = 10.0f * g_Player_AiMode2_OffsetTargetRotateSin15Deg;
     const float expectedLen =
         static_cast<float>(std::sqrt(expectedX * expectedX + expectedZ * expectedZ));
     const float expectedSteer = expectedX / expectedLen;
@@ -9504,6 +9504,28 @@ extern "C" int player_reset_mouse_control_state_and_recenter_cursor_smoke(void) 
     return resetOk ? 0 : 2;
 }
 
+#endif
+
+#if !defined(RECOIL_NATIVE_PLAYER_TESTS_GUN_DISPATCH_ONLY) || \
+    defined(RECOIL_NATIVE_PLAYER_TESTS_GAMEPLAY_CALLBACK_SMOKE)
+
+#if defined(RECOIL_NATIVE_PLAYER_TESTS_GUN_DISPATCH_ONLY) && \
+    defined(RECOIL_NATIVE_PLAYER_TESTS_GAMEPLAY_CALLBACK_SMOKE)
+namespace {
+void FreePlayerTestOptionList() {
+    zOptionEntryPartial *entry = g_zGame_Options_OptionListHead;
+    while (entry != nullptr) {
+        zOptionEntryPartial *const next = entry->next;
+        std::free(reinterpret_cast<void *>(entry->payloadOrBuffer));
+        std::free(entry->name);
+        std::free(entry);
+        entry = next;
+    }
+    g_zGame_Options_OptionListHead = nullptr;
+}
+} // namespace
+#endif
+
 extern "C" int player_register_gameplay_callbacks_and_ff_smoke(void) {
     zInput_BindMapContext *const oldBindMap = g_zInput_BindMap_Current;
     int *const oldAcceleration = ZOPT_VIDEO_ACCELERATION;
@@ -9590,6 +9612,10 @@ extern "C" int player_register_gameplay_callbacks_and_ff_smoke(void) {
     FreePlayerTestOptionList();
     return failureCode;
 }
+
+#endif
+
+#ifndef RECOIL_NATIVE_PLAYER_TESTS_GUN_DISPATCH_ONLY
 
 extern "C" int player_toggle_steering_mode_and_reset_mouse_look_smoke(void) {
     zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
@@ -13896,9 +13922,9 @@ extern "C" int player_tick_remote_network_player_smoke(void) {
     zUtil_PlayerStateStorage transitionPlayerState = {};
     zClass_NodePartial transitionRootNode = {};
     zClass_Object3DDataPartial transitionRootData = {};
-    GameNetPlayerRow transitionRow = {};
+    GameNetPlayerRow *const transitionRow = AllocZeroedMalloc<GameNetPlayerRow>();
     transitionSaveState.playerState = &transitionPlayerState;
-    transitionSaveState.netPlayerRow = &transitionRow;
+    transitionSaveState.netPlayerRow = transitionRow;
     transitionPlayerState.rootNode = &transitionRootNode;
     transitionPlayerState.worldPos = {10.0f, 20.0f, 30.0f};
     transitionPlayerState.fxOffsetLocal = {1.0f, 2.0f, 3.0f};
@@ -13924,9 +13950,9 @@ extern "C" int player_tick_remote_network_player_smoke(void) {
     PlayerMasterCommonData lerpCommonData = {};
     zClass_NodePartial lerpRootNode = {};
     zClass_Object3DDataPartial lerpRootData = {};
-    GameNetPlayerRow lerpRow = {};
+    GameNetPlayerRow *const lerpRow = AllocZeroedMalloc<GameNetPlayerRow>();
     lerpSaveState.playerState = &lerpPlayerState;
-    lerpSaveState.netPlayerRow = &lerpRow;
+    lerpSaveState.netPlayerRow = lerpRow;
     lerpPlayerState.rootNode = &lerpRootNode;
     lerpPlayerState.masterCommonData = &lerpCommonData;
     lerpCommonData.invMaxHealth = 0.01f;
@@ -13959,6 +13985,8 @@ extern "C" int player_tick_remote_network_player_smoke(void) {
     g_GameNetStatus_NameTags = oldNameTags;
     g_OptCatalogDamageFeedbackIntensityScalar = oldDamageFeedbackScalar;
     g_GameStateOrMapTable = oldGameStateOrMapTable;
+    std::free(transitionRow);
+    std::free(lerpRow);
     if (!transitionOk) {
         return 1;
     }

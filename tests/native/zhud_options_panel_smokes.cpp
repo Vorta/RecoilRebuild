@@ -394,6 +394,44 @@ extern "C" int zhud_options_panel_object_detail_sync_from_options_smoke(void) {
     return swAdvanceOk && swWrapOk && hwAdvanceOk ? 0 : 1;
 }
 
+extern "C" int zopt_toggle_hud_type_for_current_hw_mode_smoke(void) {
+    int *const oldHudTypeSw = ZOPT_HUD_TYPE_SW;
+    int *const oldHudTypeHw = ZOPT_HUD_TYPE_HW;
+    const int oldHwMode = g_zOpt_HwMode;
+    const int oldLayoutsInitialized = g_HudUiMgrHudLayoutsInitialized;
+
+    int hudTypeSw = ZOPT_HUD_TYPE_STANDARD;
+    int hudTypeHw = 7;
+    ZOPT_HUD_TYPE_SW = &hudTypeSw;
+    ZOPT_HUD_TYPE_HW = &hudTypeHw;
+    g_HudUiMgrHudLayoutsInitialized = 0;
+
+    g_zOpt_HwMode = 0;
+    int returned = zOpt::ToggleHudTypeForCurrentHwMode();
+    bool ok = returned == ZOPT_HUD_TYPE_STANDARD &&
+              hudTypeSw == ZOPT_HUD_TYPE_PERSPECTIVE && hudTypeHw == 7;
+
+    returned = zOpt::ToggleHudTypeForCurrentHwMode();
+    ok = ok && returned == ZOPT_HUD_TYPE_PERSPECTIVE &&
+         hudTypeSw == ZOPT_HUD_TYPE_STANDARD && hudTypeHw == 7;
+
+    hudTypeSw = 9;
+    returned = zOpt::ToggleHudTypeForCurrentHwMode();
+    ok = ok && returned == 9 && hudTypeSw == 9 && hudTypeHw == 7;
+
+    g_zOpt_HwMode = 1;
+    hudTypeHw = ZOPT_HUD_TYPE_PERSPECTIVE;
+    returned = zOpt::ToggleHudTypeForCurrentHwMode();
+    ok = ok && returned == ZOPT_HUD_TYPE_PERSPECTIVE &&
+         hudTypeHw == ZOPT_HUD_TYPE_STANDARD && hudTypeSw == 9;
+
+    ZOPT_HUD_TYPE_SW = oldHudTypeSw;
+    ZOPT_HUD_TYPE_HW = oldHudTypeHw;
+    g_zOpt_HwMode = oldHwMode;
+    g_HudUiMgrHudLayoutsInitialized = oldLayoutsInitialized;
+    return ok ? 0 : 1;
+}
+
 extern "C" int zhud_options_panel_texture_memory_init_from_options_smoke(void) {
     int swTextureMemory = 0;
     int hwTextureMemory = 2;

@@ -16504,6 +16504,8 @@ extern "C" int zclass_object3d_init_smoke() {
     return zClass_Object3D::gwObject3DInit() == nullptr ? 0 : 3;
 }
 
+#endif
+#if !defined(RECOIL_ZGAME_TESTS_ZMODEL_CONST_ONLY) || defined(RECOIL_ZGAME_TESTS_ZCLASS_WINDOW)
 extern "C" int zclass_window_new_smoke() {
     for (int i = 0; i < 16; ++i) {
         zClass_TypeList::Head(i) = nullptr;
@@ -16667,6 +16669,8 @@ extern "C" int zclass_window_new_smoke() {
     return zClass_Window::gwWindowNew() == nullptr ? 0 : 22;
 }
 
+#endif
+#ifndef RECOIL_ZGAME_TESTS_ZMODEL_CONST_ONLY
 extern "C" int zclass_display_init_smoke() {
     for (int i = 0; i < 16; ++i) {
         zClass_TypeList::Head(i) = nullptr;

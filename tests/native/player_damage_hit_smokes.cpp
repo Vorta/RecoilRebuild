@@ -24,6 +24,28 @@ bool FloatNear(
     return actual > expected - 0.0001f && actual < expected + 0.0001f;
 }
 
+template <typename Method>
+std::uintptr_t MethodAddress(Method method) {
+    std::uintptr_t address = 0;
+    std::memcpy(&address, &method, sizeof(address));
+    return address;
+}
+
+int g_PlayerDamageHitHudVisibleCount;
+void *g_PlayerDamageHitHudVisibleThis[8];
+int g_PlayerDamageHitHudVisibleValue[8];
+
+struct PlayerDamageHitHudVisibleReceiver {
+    void SetVisible(int visible) {
+        const int index = g_PlayerDamageHitHudVisibleCount;
+        if (index < 8) {
+            g_PlayerDamageHitHudVisibleThis[index] = this;
+            g_PlayerDamageHitHudVisibleValue[index] = visible;
+        }
+        ++g_PlayerDamageHitHudVisibleCount;
+    }
+};
+
 void __fastcall PlayerDestroyedEffectDoneCallback(
     zEffectAnimEntry *,
     void *,
@@ -650,6 +672,56 @@ extern "C" int player_apply_status_meter_change_smoke(void) {
     return replaceOk && maxClampOk && minClampOk ? 0 : 1;
 }
 
+extern "C" int player_update_status_meter_smoke(void) {
+    zUtil_SaveGameState saveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    PlayerMasterCommonData commonData = {};
+    HudUiShieldMessageWidget shield = {};
+    HudUiTextStack4 topStack = {};
+
+    saveState.playerState = &playerState;
+    playerState.masterCommonData = &commonData;
+    commonData.maxHealth = 100.0f;
+    commonData.invMaxHealth = 0.01f;
+
+    shield.meter.fillPixelsMax = 20;
+    shield.meter.points[1].y = 100.0f;
+
+    HudUiShieldMessageWidget *const oldShieldWidget = g_HudUiMgrShieldMessageWidget;
+    HudUiTextStack4 *const oldTopStack = g_HudUiTopMessageStack;
+    const float oldStatusMeterRatio = g_PlayerStatusMeterRatio;
+    const std::uint32_t oldInvalidateMask = g_HudUi_InvalidateMask;
+    g_HudUiMgrShieldMessageWidget = &shield;
+    g_HudUiTopMessageStack = &topStack;
+    g_HudUi_InvalidateMask = 0;
+
+    playerState.statusMeterValue = 20.0f;
+    g_PlayerStatusMeterRatio = 0.2f;
+    const int addResult = Player::UpdateStatusMeter(&saveState, 1, 25.0f);
+    const bool addOk =
+        addResult == 1 && FloatNear(playerState.statusMeterValue, 45.0f) &&
+        FloatNear(g_PlayerStatusMeterRatio, 0.45f) &&
+        std::strcmp(shield.percentTextPanel.cachedText, "45") == 0;
+
+    playerState.statusMeterValue = 10.0f;
+    playerState.damageProtectionActive = 1;
+    playerState.queuedFixedDamageFlag = 1;
+    playerState.damageVisualFlag = 1;
+    g_PlayerStatusMeterRatio = 0.1f;
+    const int refillResult = Player::UpdateStatusMeter(&saveState, 0, 0.0f);
+    const bool refillOk =
+        refillResult == 1 && playerState.statusMeterValue == 100.0f &&
+        FloatNear(g_PlayerStatusMeterRatio, 1.0f) && playerState.damageProtectionActive == 0 &&
+        playerState.queuedFixedDamageFlag == 0 && playerState.damageVisualFlag == 0 &&
+        std::strcmp(shield.percentTextPanel.cachedText, "100") == 0;
+
+    g_HudUiMgrShieldMessageWidget = oldShieldWidget;
+    g_HudUiTopMessageStack = oldTopStack;
+    g_PlayerStatusMeterRatio = oldStatusMeterRatio;
+    g_HudUi_InvalidateMask = oldInvalidateMask;
+    return addOk && refillOk ? 0 : 1;
+}
+
 extern "C" int player_reset_damage_state_and_timed_hit_status_smoke(void) {
     zUtil_SaveGameState saveState = {};
     zUtil_PlayerStateStorage playerState = {};
@@ -675,6 +747,45 @@ extern "C" int player_reset_damage_state_and_timed_hit_status_smoke(void) {
                    playerState.timedHitStatus.nextUpdateTime == 7.0f
                ? 0
                : 1;
+}
+
+extern "C" int player_reset_damage_visuals_and_timed_status_smoke(void) {
+    zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
+    const float oldTime = g_Time_AccumulatedTimeSec;
+    const float oldStatusMeterRatio = g_PlayerStatusMeterRatio;
+    const float oldLowMeterNextBeepTime = g_Hud_LowMeterNextBeepTime;
+    const float oldLowMeterBeepInterval = g_Hud_LowMeterBeepInterval;
+
+    zUtil_SaveGameState saveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    PlayerMasterCommonData commonData = {};
+    zClass_NodePartial rootNode = {};
+    saveState.playerState = &playerState;
+    playerState.masterCommonData = &commonData;
+    playerState.rootNode = &rootNode;
+    playerState.statusMeterValue = 10.0f;
+    playerState.recentHitValid = 1;
+    playerState.recentHitFxExpireTime = 5.0f;
+    playerState.recentHitLightHandle = 0;
+
+    g_GameStateOrMapTable = reinterpret_cast<zInput_GameStateOrMapTablePartial *>(&saveState);
+    g_Time_AccumulatedTimeSec = 10.0f;
+    g_PlayerStatusMeterRatio = 0.2f;
+    g_Hud_LowMeterNextBeepTime = 20.0f;
+    g_Hud_LowMeterBeepInterval = 3.0f;
+
+    Player::ResetDamageVisualsAndTimedStatus(&saveState);
+
+    const bool cleanupOk =
+        playerState.recentHitValid == 0 && playerState.recentHitLightHandle == 0 &&
+        g_Hud_LowMeterNextBeepTime == 20.0f;
+
+    g_GameStateOrMapTable = oldGameStateOrMapTable;
+    g_Time_AccumulatedTimeSec = oldTime;
+    g_PlayerStatusMeterRatio = oldStatusMeterRatio;
+    g_Hud_LowMeterNextBeepTime = oldLowMeterNextBeepTime;
+    g_Hud_LowMeterBeepInterval = oldLowMeterBeepInterval;
+    return cleanupOk ? 0 : 1;
 }
 
 extern "C" int player_apply_pitch_roll_velocity_impulse_from_direction_smoke(void) {
@@ -857,4 +968,120 @@ extern "C" int player_start_destroyed_state_vehicle_effect_smoke(void) {
     g_zEffectAnim_DispatchEnabled = oldDispatchEnabled;
 
     return ok ? 0 : 1;
+}
+
+extern "C" int player_apply_damage_local_smoke(void) {
+    const int oldQueueEnabled = g_zEffectAnim_RecordQueueEnabled;
+    const int oldDispatchEnabled = g_zEffectAnim_DispatchEnabled;
+    zEffectAnimActivationRecord *const oldRecordTable = g_zEffectAnim_ActivationRecordTable;
+    const int oldRecordCapacity = g_zEffectAnim_ActivationRecordCapacity;
+    const int oldRecordCount = g_zEffectAnim_ActivationRecordCount;
+    HudUiSlot *const oldTrackedProgressSlot = g_HudUiMgrSensorTrackedProgressSlot;
+    const HudUiMeter oldSensorMeter = g_HudUiMgrSensorMeter;
+    const int oldDamageContextKind = g_OptCatalog_DamageContextKind;
+    void *const oldDamageContextHitEvent = g_OptCatalog_DamageContextHitEvent;
+    const float oldDamageFeedbackScalar = g_OptCatalogDamageFeedbackIntensityScalar;
+
+    zUtil_SaveGameState liveSaveState = {};
+    zUtil_PlayerStateStorage livePlayerState = {};
+    PlayerMasterCommonData liveCommonData = {};
+    liveSaveState.playerState = &livePlayerState;
+    livePlayerState.masterCommonData = &liveCommonData;
+    liveCommonData.invMaxHealth = 0.025f;
+    livePlayerState.statusMeterValue = 20.0f;
+    g_OptCatalogDamageFeedbackIntensityScalar = 0.0f;
+
+    const int liveResult = Player::ApplyDamageLocal(&liveSaveState);
+    const bool liveOk =
+        liveResult == 0 && FloatNear(g_OptCatalogDamageFeedbackIntensityScalar, 0.5f) &&
+        livePlayerState.destroyedRespawnAsyncHandle == 0;
+
+    zUtil_SaveGameState saveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    PlayerMasterCommonData commonData = {};
+    zClass_NodePartial rootNode = {};
+    zClass_NodePartial destroyedRuntimeNode = {};
+    zClass_NodePartial recentRuntimeNode = {};
+    zEffectAnimEntry destroyedRespawn = {};
+    zEffectAnimEntry recentHitHandle = {};
+    saveState.playerState = &playerState;
+    playerState.masterCommonData = &commonData;
+    playerState.rootNode = &rootNode;
+    playerState.activeAltGunController = &playerState.altWeaponBanks[1].controllerA;
+    playerState.statusMeterValue = 0.0f;
+    playerState.destroyedRespawnFxEntry = &destroyedRespawn;
+    playerState.recentHitValid = 1;
+    playerState.recentHitLightHandle = &recentHitHandle;
+    playerState.altGunTransitionState = 12;
+    playerState.altGunTransitionController = &playerState.altWeaponBanks[2].controllerB;
+    playerState.altGunTransitionTimerA = 3.0f;
+    playerState.selectedProbeSample.node = &rootNode;
+    rootNode.classId = 2;
+
+    InitDestroyedEffectEntry(
+        &destroyedRespawn,
+        &rootNode,
+        &destroyedRuntimeNode,
+        "destroyed_respawn"
+    );
+    InitDestroyedEffectEntry(&recentHitHandle, &rootNode, &recentRuntimeNode, "recent_hit");
+    recentHitHandle.activationState = 2;
+    recentHitHandle.triggerCurrentValue = 8.0f;
+
+    std::uintptr_t visibleTable[25] = {};
+    visibleTable[24] = MethodAddress(&PlayerDamageHitHudVisibleReceiver::SetVisible);
+    HudUiMgrSensorTrackNode trackNode = {};
+    HudUiSlot trackedSlot = {};
+    trackedSlot.trackNode = &trackNode;
+    trackNode.payload = &saveState;
+    std::memset(
+        g_PlayerDamageHitHudVisibleThis,
+        0,
+        sizeof(g_PlayerDamageHitHudVisibleThis)
+    );
+    std::memset(
+    g_PlayerDamageHitHudVisibleValue,
+        0,
+        sizeof(g_PlayerDamageHitHudVisibleValue)
+    );
+    g_PlayerDamageHitHudVisibleCount = 0;
+    g_HudUiMgrSensorMeter = {};
+    *reinterpret_cast<std::uintptr_t **>(&g_HudUiMgrSensorMeter) = visibleTable;
+    g_HudUiMgrSensorTrackedProgressSlot = &trackedSlot;
+
+    g_zEffectAnim_RecordQueueEnabled = 1;
+    g_zEffectAnim_DispatchEnabled = 0;
+    zEffect_Anim::ClearActivationRecords();
+    g_OptCatalog_DamageContextKind = -1;
+    g_OptCatalog_DamageContextHitEvent = 0;
+
+    const int depletedResult = Player::ApplyDamageLocal(&saveState);
+    const bool depletedOk =
+        depletedResult == 1 && playerState.destroyedRespawnAsyncHandle == &destroyedRespawn &&
+        destroyedRespawn.activationState == 2 &&
+        destroyedRespawn.eventCallback == (void *)(&Player::DestroyedStateRespawnCallback) &&
+        destroyedRespawn.eventCallbackContext == &saveState && playerState.recentHitValid == 0 &&
+        playerState.recentHitLightHandle == 0 &&
+        recentHitHandle.triggerCurrentValue == 0.0f &&
+        playerState.altGunTransitionState == 1 &&
+        playerState.altGunTransitionController == 0 &&
+        playerState.altGunTransitionTimerA == 0.0f && g_OptCatalog_DamageContextKind == 1 &&
+        g_OptCatalog_DamageContextHitEvent == &playerState.selectedProbeSample &&
+        g_PlayerDamageHitHudVisibleCount == 1 &&
+        g_PlayerDamageHitHudVisibleThis[0] == &g_HudUiMgrSensorMeter &&
+        g_PlayerDamageHitHudVisibleValue[0] == 0;
+
+    zEffect_Anim::ClearActivationRecords();
+    g_HudUiMgrSensorTrackedProgressSlot = oldTrackedProgressSlot;
+    g_HudUiMgrSensorMeter = oldSensorMeter;
+    g_zEffectAnim_ActivationRecordTable = oldRecordTable;
+    g_zEffectAnim_ActivationRecordCapacity = oldRecordCapacity;
+    g_zEffectAnim_ActivationRecordCount = oldRecordCount;
+    g_zEffectAnim_RecordQueueEnabled = oldQueueEnabled;
+    g_zEffectAnim_DispatchEnabled = oldDispatchEnabled;
+    g_OptCatalog_DamageContextKind = oldDamageContextKind;
+    g_OptCatalog_DamageContextHitEvent = oldDamageContextHitEvent;
+    g_OptCatalogDamageFeedbackIntensityScalar = oldDamageFeedbackScalar;
+
+    return liveOk && depletedOk ? 0 : 1;
 }

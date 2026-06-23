@@ -926,6 +926,112 @@ extern "C" int player_process_alt_gun_fire_dispatch_request_smoke(void) {
     return fireOk && heldOk ? 0 : 1;
 }
 
+extern "C" int player_process_primary_gun_dispatch_request_smoke(void) {
+    OptCatalogRuntimeInstanceStorage *const oldFreeRuntimeList = g_OptCatalogFreeRuntimeInstanceList;
+    zClass_NodePartial *const oldRuntimeWorld = g_OptCatalogRuntimeWorld;
+    const float oldNextSpawnScale = g_OptCatalogNextSpawnScale;
+    const int oldNetworkOptionState = g_OptCatalogNetworkOptionState;
+    OptCatalogAllocRuntimeGateCallback const oldGateCallback =
+        g_OptCatalog_AllocRuntimeGateCallback;
+    zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;
+    int *const oldJoystickOption = ZOPT_INPUT_JOYSTICK;
+    const int oldForceFeedbackCaps = g_zInput_JoystickCaps_ForceFeedback;
+    const int oldPrimaryGunDispatchCount = g_HudSensorTracker.primaryGunDispatchCount;
+
+    int joystickEnabled = 0;
+    ZOPT_INPUT_JOYSTICK = &joystickEnabled;
+    g_zInput_JoystickCaps_ForceFeedback = 0;
+    g_OptCatalogNetworkOptionState = 0;
+    g_OptCatalog_AllocRuntimeGateCallback = nullptr;
+    g_OptCatalogNextSpawnScale = 1.0f;
+
+    zUtil_SaveGameState saveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    PlayerModalState modalState = {};
+    PlayerMasterModalData modalData = {};
+    PlayerGunFireController controller = {};
+    OptCatalogEntryDef entry = {};
+    OptCatalogRuntimeInstanceStorage runtime = {};
+    zClass_NodeFreeListSlot projectile = {};
+    zClass_Object3DDataPartial projectileData = {};
+    zClass_NodePartial rootNode = {};
+    zClass_NodePartial runtimeWorld = {};
+    zClass_NodePartial mountNode = {};
+    zClass_NodePartial gunNode = {};
+    zClass_NodePartial turretNode = {};
+    zClass_Object3DDataPartial gunData = {};
+    zClass_Object3DDataPartial turretData = {};
+
+    const zMat4x3 identityMatrix = {1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+                                    0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f};
+    SetObjectLocalMatrix(&gunData, identityMatrix);
+    SetObjectLocalMatrix(&turretData, identityMatrix);
+    gunNode.classId = 5;
+    gunNode.classData = &gunData;
+    turretNode.classId = 5;
+    turretNode.classData = &turretData;
+
+    saveState.playerState = &playerState;
+    saveState.primaryModalState = &modalState;
+    modalState.masterModalData = &modalData;
+    modalData.masterType = 3;
+    playerState.activePrimaryGunController = &controller;
+    playerState.rootNode = &rootNode;
+    playerState.gunNode = &gunNode;
+    playerState.turretNode = &turretNode;
+    playerState.gunFireTransform = identityMatrix;
+    playerState.aimBasisOrigin = {0.0f, 0.0f, 0.0f};
+    playerState.firePointCenter = {1.0f, 0.0f, 0.0f};
+    playerState.gunFireDir = {0.0f, 0.0f, 1.0f};
+    playerState.usePresetGunFireDir = 1;
+    playerState.projectileSpawnVel = {2.0f, 3.0f, 4.0f};
+    controller.optCatalogEntry = &entry;
+    controller.attachNodePrimary = &mountNode;
+    controller.flags = 1;
+    controller.ammoOrCharge = 2.0f;
+    entry.velocity = 5.0f;
+    entry.fireFxSelectedSoundIndex = -1;
+    entry.fireFxSelectedEffectIndex = -1;
+    entry.flyoutSelectedEffectIndex = -1;
+    projectile.node.classId = 5;
+    projectile.node.classData = &projectileData;
+    runtime.projectileNode = &projectile.node;
+    runtimeWorld.classId = 3;
+    g_OptCatalogRuntimeWorld = &runtimeWorld;
+    g_OptCatalogFreeRuntimeInstanceList = &runtime;
+    g_GameStateOrMapTable = (zInput_GameStateOrMapTablePartial *)&saveState;
+    g_HudSensorTracker.primaryGunDispatchCount = 10;
+
+    playerState.primaryGunDispatchRequested = 0;
+    Player::ProcessPrimaryGunDispatchTick(&saveState);
+    const bool noDispatchOk =
+        playerState.primaryGunDispatchRequested == 0 && controller.ammoOrCharge == 2.0f &&
+        entry.activeRuntimeListHead == nullptr && g_OptCatalogFreeRuntimeInstanceList == &runtime &&
+        g_HudSensorTracker.primaryGunDispatchCount == 10;
+
+    playerState.primaryGunDispatchRequested = 1;
+    Player::ProcessPrimaryGunDispatchTick(&saveState);
+    const bool fireOk =
+        playerState.primaryGunDispatchRequested == 0 && controller.ammoOrCharge == 1.0f &&
+        entry.activeRuntimeListHead == &runtime &&
+        Vec3Equals(playerState.primaryFireOrigin, {1.0f, 0.0f, 0.0f}) &&
+        Vec3Equals(runtime.pos, playerState.primaryFireOrigin) &&
+        Vec3Equals(runtime.dir, playerState.gunFireDir) &&
+        playerState.altFireSlotCenter.offset == 1.5f &&
+        g_HudSensorTracker.primaryGunDispatchCount == 11;
+
+    g_OptCatalogFreeRuntimeInstanceList = oldFreeRuntimeList;
+    g_OptCatalogRuntimeWorld = oldRuntimeWorld;
+    g_OptCatalogNextSpawnScale = oldNextSpawnScale;
+    g_OptCatalogNetworkOptionState = oldNetworkOptionState;
+    g_OptCatalog_AllocRuntimeGateCallback = oldGateCallback;
+    g_GameStateOrMapTable = oldGameStateOrMapTable;
+    ZOPT_INPUT_JOYSTICK = oldJoystickOption;
+    g_zInput_JoystickCaps_ForceFeedback = oldForceFeedbackCaps;
+    g_HudSensorTracker.primaryGunDispatchCount = oldPrimaryGunDispatchCount;
+    return noDispatchOk && fireOk ? 0 : 1;
+}
+
 extern "C" int player_solve_alt_gun_lead_target_point_smoke(void) {
     zUtil_SaveGameState saveState = {};
     zUtil_SaveGameState targetState = {};
@@ -1165,6 +1271,35 @@ extern "C" int player_alt_gun_fire_slot_offset_smoke(void) {
 
     g_FrameDeltaTimeSec = oldFrameDelta;
     return gunlessUnchanged ? 0 : 4;
+}
+
+extern "C" int player_reset_alt_gun_door_animation_state_smoke(void) {
+    zUtil_SaveGameState saveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    saveState.playerState = &playerState;
+
+    zClass_NodePartial leftDoor = {};
+    zClass_NodePartial rightDoor = {};
+    zClass_Object3DDataPartial leftData = {};
+    zClass_Object3DDataPartial rightData = {};
+    leftDoor.classId = 5;
+    leftDoor.classData = &leftData;
+    rightDoor.classId = 5;
+    rightDoor.classData = &rightData;
+    leftData.scale = {0.25f, 0.5f, 0.75f};
+    rightData.scale = {2.0f, 3.0f, 4.0f};
+    playerState.doorLeftNode = &leftDoor;
+    playerState.doorRightNode = &rightDoor;
+    playerState.altGunTransitionTimerB = 6.0f;
+
+    Player::ResetAltGunDoorAnimationState(&saveState);
+
+    return playerState.altGunTransitionTimerB == 0.0f && leftData.scale.x == 1.0f &&
+                   leftData.scale.y == 1.0f && leftData.scale.z == 1.0f &&
+                   rightData.scale.x == 1.0f && rightData.scale.y == 1.0f &&
+                   rightData.scale.z == 1.0f
+               ? 0
+               : 1;
 }
 
 extern "C" int player_reset_alt_gun_runtime_state_smoke(void) {

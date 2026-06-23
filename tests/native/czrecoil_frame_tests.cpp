@@ -32,6 +32,22 @@ struct CodeFunctionPatch {
     unsigned char original[5];
 };
 
+struct RawCZRecoilFrameFixture {
+    alignas(CZRecoilFrame) unsigned char storage[sizeof(CZRecoilFrame)];
+
+    RawCZRecoilFrameFixture() {
+        std::memset(storage, 0, sizeof(storage));
+    }
+
+    CZRecoilFrame *operator->() {
+        return reinterpret_cast<CZRecoilFrame *>(storage);
+    }
+
+    CZRecoilFrame &get() {
+        return *reinterpret_cast<CZRecoilFrame *>(storage);
+    }
+};
+
 int HandleFrameConstructorException(EXCEPTION_POINTERS *exceptionInfo) {
     (void)exceptionInfo;
     return EXCEPTION_EXECUTE_HANDLER;
@@ -158,7 +174,8 @@ extern "C" int czrecoil_frame_set_menu_bar_visibility_smoke(void) {
         return 3;
     }
 
-    CZRecoilFrame frame{};
+    alignas(CZRecoilFrame) unsigned char frameStorage[sizeof(CZRecoilFrame)] = {};
+    CZRecoilFrame &frame = *reinterpret_cast<CZRecoilFrame *>(frameStorage);
     frame.m_hWnd = hwnd;
     frame.m_mainMenu.m_hMenu = menu;
 
@@ -171,8 +188,6 @@ extern "C" int czrecoil_frame_set_menu_bar_visibility_smoke(void) {
     const LONG shownStyle = GetWindowLongA(hwnd, GWL_STYLE);
     const bool shownOk = (shownStyle & WS_SYSMENU) != 0 && GetMenu(hwnd) == menu;
 
-    frame.m_mainMenu.m_hMenu = nullptr;
-    frame.m_hWnd = nullptr;
     DestroyMenu(menu);
     DestroyWindow(hwnd);
     return hiddenOk && shownOk ? 0 : 4;
@@ -1072,8 +1087,8 @@ extern "C" int czrecoil_frame_on_menu_about_smoke(void) {
     }
 
     ResetFrameAboutDialogProbe();
-    CZRecoilFrame frame{};
-    frame.OnMenuAbout();
+    RawCZRecoilFrameFixture frame;
+    frame->OnMenuAbout();
 
     const bool ok = g_frameAboutDialogCtorCalls == 1 &&
                     g_frameAboutDialogDoModalCalls == 1 &&
@@ -1136,7 +1151,8 @@ extern "C" int czrecoil_frame_start_mode_menu_handlers_smoke(void) {
         {&CZRecoilFrame::OnMenuStartCampaignMode5, 6, 0x66},
     };
 
-    CZRecoilFrame frame{};
+    RawCZRecoilFrameFixture frameFixture;
+    CZRecoilFrame &frame = frameFixture.get();
     int result = 0;
     for (int index = 0; index < (int)(sizeof(cases) / sizeof(cases[0])); ++index) {
         ResetFrameStartModeProbe();
@@ -1355,7 +1371,8 @@ extern "C" int czrecoil_frame_video_mode_menu_handlers_smoke(void) {
     g_zOpt_DisplaySectionOption = &displayPtr;
     g_zOpt_WindowSectionOption = &windowPtr;
 
-    CZRecoilFrame frame{};
+    RawCZRecoilFrameFixture frameFixture;
+    CZRecoilFrame &frame = frameFixture.get();
     frame.m_vidMemFreeBytes = 0x800000;
 
     typedef void ( CZRecoilFrame::*Handler)();
@@ -1436,29 +1453,29 @@ extern "C" int czrecoil_frame_configure_mode_feature_flags_smoke(void) {
     ZOPT_VIDEO_MODE = &mode;
     ZOPT_VIDEO_ACCELERATION = &acceleration;
 
-    CZRecoilFrame frame{};
-    frame.ConfigureModeFeatureFlags();
-    if (frame.m_videoModeCmdUiState[0] != 0 || frame.m_videoModeCmdUiState[1] != 0 ||
-        frame.m_videoModeCmdUiState[2] != 0 || frame.m_videoModeCmdUiState[3] != 0 ||
-        frame.m_videoModeCmdUiState[4] != 8 || frame.m_videoModeCmdUiState[5] != 0) {
+    RawCZRecoilFrameFixture frame;
+    frame->ConfigureModeFeatureFlags();
+    if (frame->m_videoModeCmdUiState[0] != 0 || frame->m_videoModeCmdUiState[1] != 0 ||
+        frame->m_videoModeCmdUiState[2] != 0 || frame->m_videoModeCmdUiState[3] != 0 ||
+        frame->m_videoModeCmdUiState[4] != 8 || frame->m_videoModeCmdUiState[5] != 0) {
         return 1;
     }
 
     acceleration = 1;
     mode = 7;
-    frame.m_vidMemFreeBytes = 0x480000;
-    frame.ConfigureModeFeatureFlags();
-    if (frame.m_videoModeCmdUiState[0] != 1 || frame.m_videoModeCmdUiState[1] != 1 ||
-        frame.m_videoModeCmdUiState[2] != 0 || frame.m_videoModeCmdUiState[3] != 0 ||
-        frame.m_videoModeCmdUiState[4] != 0 || frame.m_videoModeCmdUiState[5] != 1) {
+    frame->m_vidMemFreeBytes = 0x480000;
+    frame->ConfigureModeFeatureFlags();
+    if (frame->m_videoModeCmdUiState[0] != 1 || frame->m_videoModeCmdUiState[1] != 1 ||
+        frame->m_videoModeCmdUiState[2] != 0 || frame->m_videoModeCmdUiState[3] != 0 ||
+        frame->m_videoModeCmdUiState[4] != 0 || frame->m_videoModeCmdUiState[5] != 1) {
         return 2;
     }
 
-    frame.m_vidMemFreeBytes = 0x480001;
-    frame.ConfigureModeFeatureFlags();
-    return frame.m_videoModeCmdUiState[0] == 1 && frame.m_videoModeCmdUiState[1] == 1 &&
-                   frame.m_videoModeCmdUiState[2] == 0 && frame.m_videoModeCmdUiState[3] == 0 &&
-                   frame.m_videoModeCmdUiState[4] == 0 && frame.m_videoModeCmdUiState[5] == 8
+    frame->m_vidMemFreeBytes = 0x480001;
+    frame->ConfigureModeFeatureFlags();
+    return frame->m_videoModeCmdUiState[0] == 1 && frame->m_videoModeCmdUiState[1] == 1 &&
+                   frame->m_videoModeCmdUiState[2] == 0 && frame->m_videoModeCmdUiState[3] == 0 &&
+                   frame->m_videoModeCmdUiState[4] == 0 && frame->m_videoModeCmdUiState[5] == 8
                ? 0
                : 3;
 }
@@ -1481,7 +1498,8 @@ extern "C" int czrecoil_frame_video_mode_menu_handlers_smoke(void) {
     g_zOpt_DisplaySectionOption = &displayPtr;
     g_zOpt_WindowSectionOption = &windowPtr;
 
-    CZRecoilFrame frame{};
+    RawCZRecoilFrameFixture frameFixture;
+    CZRecoilFrame &frame = frameFixture.get();
     frame.m_vidMemFreeBytes = 0x800000;
 
     typedef void ( CZRecoilFrame::*Handler)();
@@ -1550,7 +1568,8 @@ bool RunHwApiSelectScenario(
     void ( CZRecoilFrame::*handler)(),
     int selector
 ) {
-    CZRecoilFrame frame{};
+    RawCZRecoilFrameFixture frameFixture;
+    CZRecoilFrame &frame = frameFixture.get();
     g_hwApiSelectExpectedFrame = &frame;
     g_hwApiSelectExpectedSelector = selector;
     g_hwApiSelectEnsureCalls = 0;
@@ -1672,11 +1691,11 @@ extern "C" int czrecoil_frame_set_hw_api_and_init_mode_smoke(void) {
     g_zVideo_HwApiDeviceTable[2].m_videoMemFreeBytes = 0x700000;
     g_zVideo_HwApiDeviceTable[2].m_textureMemTotalBytes = 0x200000;
 
-    CZRecoilFrame frame{};
-    frame.SetHwApiAndInitMode(2);
+    RawCZRecoilFrameFixture frame;
+    frame->SetHwApiAndInitMode(2);
 
-    if (frame.m_vidMemTotalBytes != 0x900000 || frame.m_vidMemFreeBytes != 0x500000 ||
-        frame.m_fullscreenOption != 0 || frame.m_videoModeIndex != 4) {
+    if (frame->m_vidMemTotalBytes != 0x900000 || frame->m_vidMemFreeBytes != 0x500000 ||
+        frame->m_fullscreenOption != 0 || frame->m_videoModeIndex != 4) {
         return 1;
     }
 
@@ -1685,9 +1704,9 @@ extern "C" int czrecoil_frame_set_hw_api_and_init_mode_smoke(void) {
         return 2;
     }
 
-    return frame.m_videoModeCmdUiState[0] == 1 && frame.m_videoModeCmdUiState[1] == 1 &&
-                   frame.m_videoModeCmdUiState[2] == 0 && frame.m_videoModeCmdUiState[3] == 8 &&
-                   frame.m_videoModeCmdUiState[4] == 0 && frame.m_videoModeCmdUiState[5] == 0
+    return frame->m_videoModeCmdUiState[0] == 1 && frame->m_videoModeCmdUiState[1] == 1 &&
+                   frame->m_videoModeCmdUiState[2] == 0 && frame->m_videoModeCmdUiState[3] == 8 &&
+                   frame->m_videoModeCmdUiState[4] == 0 && frame->m_videoModeCmdUiState[5] == 0
                ? 0
                : 3;
 }
@@ -1713,14 +1732,14 @@ extern "C" int czrecoil_frame_init_fallback_mode_smoke(void) {
     g_zOpt_DisplaySectionOption = &displayPtr;
     g_zOpt_WindowSectionOption = &windowPtr;
 
-    CZRecoilFrame frame{};
-    frame.m_fullscreenOption = 0;
-    frame.m_videoModeIndex = 3;
-    frame.InitFallbackMode();
+    RawCZRecoilFrameFixture frame;
+    frame->m_fullscreenOption = 0;
+    frame->m_videoModeIndex = 3;
+    frame->InitFallbackMode();
 
     return hwApi == 0 && acceleration == 0 && g_zOpt_HwMode == 0 && fullscreen == 0 && mode == 3 &&
                    replicate == 1 && render.width == 0x140 && render.height == 0xf0 &&
-                   frame.m_videoModeCmdUiState[1] == 8
+                   frame->m_videoModeCmdUiState[1] == 8
                ? 0
                : 1;
 }
@@ -1749,19 +1768,19 @@ extern "C" int czrecoil_frame_ensure_hw_api_initialized_smoke(void) {
     g_zVideo_HwApiDeviceTable[1].m_videoMemFreeBytes = 0x700000;
     g_zVideo_HwApiDeviceTable[1].m_textureMemTotalBytes = 0x200000;
 
-    CZRecoilFrame frame{};
-    frame.m_hwApiCmdUiState[0] = 8;
-    frame.m_fullscreenOption = 0;
-    frame.m_videoModeIndex = 3;
-    frame.EnsureHwApiInitialized(0);
-    if (hwApi != -1 || acceleration != 0 || frame.m_hwApiCmdUiState[0] != 8) {
+    RawCZRecoilFrameFixture frame;
+    frame->m_hwApiCmdUiState[0] = 8;
+    frame->m_fullscreenOption = 0;
+    frame->m_videoModeIndex = 3;
+    frame->EnsureHwApiInitialized(0);
+    if (hwApi != -1 || acceleration != 0 || frame->m_hwApiCmdUiState[0] != 8) {
         return 1;
     }
 
-    frame.m_hwApiCmdUiState[0] = 8;
-    frame.EnsureHwApiInitialized(2);
-    return frame.m_hwApiCmdUiState[0] == 0 && frame.m_hwApiCmdUiState[1] == 0 &&
-                   frame.m_hwApiCmdUiState[2] == 8 && frame.m_hwApiCmdUiState[3] == 0 &&
+    frame->m_hwApiCmdUiState[0] = 8;
+    frame->EnsureHwApiInitialized(2);
+    return frame->m_hwApiCmdUiState[0] == 0 && frame->m_hwApiCmdUiState[1] == 0 &&
+                   frame->m_hwApiCmdUiState[2] == 8 && frame->m_hwApiCmdUiState[3] == 0 &&
                    hwApi == 1 && acceleration == 1 && mode == 5
                ? 0
                : 2;
@@ -1812,10 +1831,10 @@ extern "C" int czrecoil_frame_init_startup_hw_api_from_options_smoke(void) {
     g_zVideo_HwApiDeviceTable[1].m_videoMemFreeBytes = 0x700000;
     g_zVideo_HwApiDeviceTable[1].m_textureMemTotalBytes = 0x200000;
 
-    CZRecoilFrame frame{};
-    frame.InitStartupHwApiFromOptions();
-    if (frame.m_hwApiCmdUiState[0] != 0 || frame.m_hwApiCmdUiState[2] != 8 ||
-        frame.m_videoModeIndex != 4 || hwApi != 1 || acceleration != 1 || mode != 5) {
+    RawCZRecoilFrameFixture frame;
+    frame->InitStartupHwApiFromOptions();
+    if (frame->m_hwApiCmdUiState[0] != 0 || frame->m_hwApiCmdUiState[2] != 8 ||
+        frame->m_videoModeIndex != 4 || hwApi != 1 || acceleration != 1 || mode != 5) {
         return 1;
     }
 
@@ -1823,10 +1842,10 @@ extern "C" int czrecoil_frame_init_startup_hw_api_from_options_smoke(void) {
     acceleration = 1;
     fullscreen = 1;
     mode = 4;
-    CZRecoilFrame fallbackFrame{};
-    fallbackFrame.InitStartupHwApiFromOptions();
-    return fallbackFrame.m_hwApiCmdUiState[0] == 8 && fallbackFrame.m_videoModeIndex == 5 &&
-                   fallbackFrame.m_fullscreenOption == 1 && hwApi == 0 && acceleration == 0 &&
+    RawCZRecoilFrameFixture fallbackFrame;
+    fallbackFrame->InitStartupHwApiFromOptions();
+    return fallbackFrame->m_hwApiCmdUiState[0] == 8 && fallbackFrame->m_videoModeIndex == 5 &&
+                   fallbackFrame->m_fullscreenOption == 1 && hwApi == 0 && acceleration == 0 &&
                    fullscreen == 1 && mode == 5
                ? 0
                : 2;
@@ -1870,7 +1889,8 @@ extern "C" int czrecoil_frame_menu_toggle_smoke(void) {
     ZOPT_HUD_SW = &hudSw;
     ZOPT_HUD_HW = &hudHw;
 
-    CZRecoilFrame frame{};
+    alignas(CZRecoilFrame) unsigned char frameStorage[sizeof(CZRecoilFrame)] = {};
+    CZRecoilFrame &frame = *reinterpret_cast<CZRecoilFrame *>(frameStorage);
     FakeRecoilCmdUI cmdUi{};
     InitFakeRecoilCmdUI(cmdUi);
 
@@ -1950,7 +1970,6 @@ extern "C" int czrecoil_frame_menu_toggle_smoke(void) {
 
     g_HudSensorTracker.missionFlags = oldMissionFlags;
     g_zSnd_UseArchiveBanksFlag = oldUseArchiveBanksFlag;
-    frame.m_mainMenu.m_hMenu = nullptr;
     DestroyMenu(menu);
     return enabledOk && disabledOk ? 0 : 7;
 }
@@ -1967,20 +1986,19 @@ extern "C" int czrecoil_frame_toggle_texture_packs_smoke(void) {
         return 11;
     }
 
-    CZRecoilFrame frame{};
-    frame.m_mainMenu.m_hMenu = menu;
+    RawCZRecoilFrameFixture frame;
+    frame->m_mainMenu.m_hMenu = menu;
     g_zVid_TexturePackLoadState = 0;
 
-    frame.OnMenuToggleTexturePacks();
+    frame->OnMenuToggleTexturePacks();
     const bool enabledOk = g_zVid_TexturePackLoadState == 1 &&
                            (GetMenuState(menu, 0x9c7b, MF_BYCOMMAND) & MF_CHECKED) != 0;
 
-    frame.OnMenuToggleTexturePacks();
+    frame->OnMenuToggleTexturePacks();
     const bool disabledOk = g_zVid_TexturePackLoadState == 0 &&
                             (GetMenuState(menu, 0x9c7b, MF_BYCOMMAND) & MF_CHECKED) == 0;
 
     g_zVid_TexturePackLoadState = oldTexturePackLoadState;
-    frame.m_mainMenu.m_hMenu = nullptr;
     DestroyMenu(menu);
     return enabledOk && disabledOk ? 0 : 12;
 }
@@ -1989,48 +2007,48 @@ extern "C" int czrecoil_frame_toggle_texture_packs_smoke(void) {
 #if defined(RECOIL_NATIVE_CZRECOIL_FRAME_TESTS_MENU_SMOKES) || \
     !defined(RECOIL_NATIVE_CZRECOIL_FRAME_TESTS_SKIP_SHARED_SMOKES)
 extern "C" int czrecoil_frame_update_video_mode_cmd_ui_smoke(void) {
-    CZRecoilFrame frame{};
+    RawCZRecoilFrameFixture frame;
     FakeRecoilCmdUI cmdUi{};
     InitFakeRecoilCmdUI(cmdUi);
 
-    frame.m_videoModeCmdUiState[0] = 1;
+    frame->m_videoModeCmdUiState[0] = 1;
     g_lastCmdUiEnable = -1;
     g_lastCmdUiCheck = -1;
-    frame.OnUpdateVideoMode2CmdUI(&cmdUi);
+    frame->OnUpdateVideoMode2CmdUI(&cmdUi);
     if (g_lastCmdUiEnable != 0 || g_lastCmdUiCheck != 0) {
         return 1;
     }
 
-    frame.m_videoModeCmdUiState[1] = 8;
+    frame->m_videoModeCmdUiState[1] = 8;
     g_lastCmdUiEnable = -1;
     g_lastCmdUiCheck = -1;
-    frame.OnUpdateVideoMode3CmdUI(&cmdUi);
+    frame->OnUpdateVideoMode3CmdUI(&cmdUi);
     if (g_lastCmdUiEnable != 1 || g_lastCmdUiCheck != 1) {
         return 2;
     }
 
-    frame.m_videoModeCmdUiState[2] = 0;
+    frame->m_videoModeCmdUiState[2] = 0;
     g_lastCmdUiEnable = -1;
     g_lastCmdUiCheck = -1;
-    frame.OnUpdateVideoMode4CmdUI(&cmdUi);
+    frame->OnUpdateVideoMode4CmdUI(&cmdUi);
     if (g_lastCmdUiEnable != 1 || g_lastCmdUiCheck != 0) {
         return 3;
     }
 
-    frame.m_videoModeCmdUiState[3] = 8;
-    frame.m_videoModeCmdUiState[4] = 1;
-    frame.m_videoModeCmdUiState[5] = 0;
-    frame.OnUpdateVideoMode5CmdUI(&cmdUi);
+    frame->m_videoModeCmdUiState[3] = 8;
+    frame->m_videoModeCmdUiState[4] = 1;
+    frame->m_videoModeCmdUiState[5] = 0;
+    frame->OnUpdateVideoMode5CmdUI(&cmdUi);
     if (g_lastCmdUiEnable != 1 || g_lastCmdUiCheck != 1) {
         return 4;
     }
 
-    frame.OnUpdateVideoMode6CmdUI(&cmdUi);
+    frame->OnUpdateVideoMode6CmdUI(&cmdUi);
     if (g_lastCmdUiEnable != 0 || g_lastCmdUiCheck != 0) {
         return 5;
     }
 
-    frame.OnUpdateVideoMode7CmdUI(&cmdUi);
+    frame->OnUpdateVideoMode7CmdUI(&cmdUi);
     return g_lastCmdUiEnable == 1 && g_lastCmdUiCheck == 0 ? 0 : 6;
 }
 #endif
@@ -2038,25 +2056,25 @@ extern "C" int czrecoil_frame_update_video_mode_cmd_ui_smoke(void) {
 #if defined(RECOIL_NATIVE_CZRECOIL_FRAME_TESTS_MENU_SMOKES) || \
     !defined(RECOIL_NATIVE_CZRECOIL_FRAME_TESTS_SKIP_SHARED_SMOKES)
 extern "C" int czrecoil_frame_hw_api_menu_cmd_ui_smoke(void) {
-    CZRecoilFrame frame{};
+    RawCZRecoilFrameFixture frame;
     FakeRecoilCmdUI cmdUi{};
     InitFakeRecoilCmdUI(cmdUi);
 
-    frame.m_hwApiCmdUiState[0] = 8;
+    frame->m_hwApiCmdUiState[0] = 8;
     g_lastCmdUiEnable = -1;
     g_lastCmdUiCheck = -1;
-    frame.OnUpdateHwApi0CmdUI(&cmdUi);
+    frame->OnUpdateHwApi0CmdUI(&cmdUi);
     if (g_lastCmdUiEnable != 1 || g_lastCmdUiCheck != 1) {
         return 1;
     }
 
     strcpy_s(g_zVideo_HwApiDeviceTable[0].m_driverDescription, "Api One");
     strcpy_s(g_zVideo_HwApiDeviceTable[0].m_driverName, "drv1");
-    frame.m_acceptedD3DDeviceCount = 2;
-    frame.m_hwApiCmdUiState[1] = 0;
+    frame->m_acceptedD3DDeviceCount = 2;
+    frame->m_hwApiCmdUiState[1] = 0;
     g_lastCmdUiCheck = -1;
     g_lastCmdUiText[0] = '\0';
-    frame.OnUpdateHwApi1CmdUI(&cmdUi);
+    frame->OnUpdateHwApi1CmdUI(&cmdUi);
     if (g_lastCmdUiCheck != 0 ||
         std::strcmp(g_lastCmdUiText, "Accelerator - Api One (drv1)") != 0) {
         return 2;
@@ -2064,10 +2082,10 @@ extern "C" int czrecoil_frame_hw_api_menu_cmd_ui_smoke(void) {
 
     strcpy_s(g_zVideo_HwApiDeviceTable[1].m_driverDescription, "Test Device");
     strcpy_s(g_zVideo_HwApiDeviceTable[1].m_driverName, "testdrv");
-    frame.m_hwApiCmdUiState[2] = 8;
+    frame->m_hwApiCmdUiState[2] = 8;
     g_lastCmdUiCheck = -1;
     g_lastCmdUiText[0] = '\0';
-    frame.OnUpdateHwApi2CmdUI(&cmdUi);
+    frame->OnUpdateHwApi2CmdUI(&cmdUi);
     if (g_lastCmdUiCheck != 1 ||
         std::strcmp(g_lastCmdUiText, "Accelerator - Test Device (testdrv)") != 0) {
         return 3;
@@ -2081,17 +2099,17 @@ extern "C" int czrecoil_frame_hw_api_menu_cmd_ui_smoke(void) {
     CMenu menuProxy;
     menuProxy.m_hMenu = menu;
     cmdUi.m_pMenu = &menuProxy;
-    frame.m_acceptedD3DDeviceCount = 2;
-    frame.m_hwApiMenuCommandIds[3] = 0x7003;
-    AppendMenuA(menu, MF_STRING, frame.m_hwApiMenuCommandIds[3], "extra");
-    frame.OnUpdateHwApi3CmdUI(&cmdUi);
-    if (GetMenuState(menu, frame.m_hwApiMenuCommandIds[3], MF_BYCOMMAND) != 0xffffffff) {
+    frame->m_acceptedD3DDeviceCount = 2;
+    frame->m_hwApiMenuCommandIds[3] = 0x7003;
+    AppendMenuA(menu, MF_STRING, frame->m_hwApiMenuCommandIds[3], "extra");
+    frame->OnUpdateHwApi3CmdUI(&cmdUi);
+    if (GetMenuState(menu, frame->m_hwApiMenuCommandIds[3], MF_BYCOMMAND) != 0xffffffff) {
         DestroyMenu(menu);
         return 5;
     }
 
     AppendMenuA(menu, MF_STRING, 0x9c4e, "fullscreen");
-    frame.OnUpdateFullscreenCmdUI(&cmdUi);
+    frame->OnUpdateFullscreenCmdUI(&cmdUi);
     const bool fullscreenRemoved = GetMenuState(menu, 0x9c4e, MF_BYCOMMAND) == 0xffffffff;
     DestroyMenu(menu);
     return fullscreenRemoved ? 0 : 6;
@@ -4094,8 +4112,8 @@ extern "C" int czrecoil_frame_on_size_smoke(void) {
     CZGameFrameAppVtable vtable{};
     vtable.OnAppDeactivate = deactivateThunk.function;
     FakeGameFrameApp app{{&vtable}};
-    CZRecoilFrame frame{};
-    reinterpret_cast<CZGameFrame *>(&frame)->m_app = &app;
+    RawCZRecoilFrameFixture frame;
+    reinterpret_cast<CZGameFrame *>(&frame.get())->m_app = &app;
 
     CodeFunctionPatch frameWndOnSizePatch{};
     if (!PatchFunctionJump(CFrameWndOnSizeProc(), reinterpret_cast<void *>(&FakeCFrameWndOnSize),
@@ -4103,9 +4121,9 @@ extern "C" int czrecoil_frame_on_size_smoke(void) {
         return 6;
     }
 
-    frame.m_hWnd = CreateWindowExA(0, "STATIC", "recoil-size-test", WS_OVERLAPPEDWINDOW, 0, 0, 100,
-                                   100, nullptr, nullptr, GetModuleHandleA(nullptr), nullptr);
-    if (frame.m_hWnd == nullptr) {
+    frame->m_hWnd = CreateWindowExA(0, "STATIC", "recoil-size-test", WS_OVERLAPPEDWINDOW, 0, 0, 100,
+                                    100, nullptr, nullptr, GetModuleHandleA(nullptr), nullptr);
+    if (frame->m_hWnd == nullptr) {
         RestoreFunctionPatch(frameWndOnSizePatch);
         return 4;
     }
@@ -4116,8 +4134,8 @@ extern "C" int czrecoil_frame_on_size_smoke(void) {
     const RECT oldCachedRect = g_zVideo_CachedClientRectScreen;
 
     RECT client{};
-    GetClientRect(frame.m_hWnd, &client);
-    g_zVideo_hWnd = frame.m_hWnd;
+    GetClientRect(frame->m_hWnd, &client);
+    g_zVideo_hWnd = frame->m_hWnd;
     g_zVideo_ActiveRendererPath = 1;
     zVid::SetCachedClientRectUpdateMask(1);
     g_zVideo_CachedClientRectScreen = {7, 8, 9, 10};
@@ -4125,13 +4143,13 @@ extern "C" int czrecoil_frame_on_size_smoke(void) {
     g_appDeactivateCalls = 0;
     g_cFrameWndOnSizeCalls = 0;
     g_cFrameWndOnSizeArgsOk = false;
-    frame.OnSize(0, 640, 480);
+    frame->OnSize(0, 640, 480);
     if (g_appDeactivateCalls != 0 || g_cFrameWndOnSizeCalls != 1 || !g_cFrameWndOnSizeArgsOk) {
         g_zVideo_ActiveRendererPath = oldRendererPath;
         g_zVid_CachedClientRectUpdateMask = oldUpdateMask;
         g_zVideo_hWnd = oldVideoHwnd;
         g_zVideo_CachedClientRectScreen = oldCachedRect;
-        DestroyWindow(frame.m_hWnd);
+        DestroyWindow(frame->m_hWnd);
         RestoreFunctionPatch(frameWndOnSizePatch);
         return 1;
     }
@@ -4146,29 +4164,29 @@ extern "C" int czrecoil_frame_on_size_smoke(void) {
         g_zVid_CachedClientRectUpdateMask = oldUpdateMask;
         g_zVideo_hWnd = oldVideoHwnd;
         g_zVideo_CachedClientRectScreen = oldCachedRect;
-        DestroyWindow(frame.m_hWnd);
+        DestroyWindow(frame->m_hWnd);
         RestoreFunctionPatch(frameWndOnSizePatch);
         return 5;
     }
 
-    frame.OnSize(1, 640, 480);
+    frame->OnSize(1, 640, 480);
     if (g_appDeactivateCalls != 1 || g_cFrameWndOnSizeCalls != 2) {
         g_zVideo_ActiveRendererPath = oldRendererPath;
         g_zVid_CachedClientRectUpdateMask = oldUpdateMask;
         g_zVideo_hWnd = oldVideoHwnd;
         g_zVideo_CachedClientRectScreen = oldCachedRect;
-        DestroyWindow(frame.m_hWnd);
+        DestroyWindow(frame->m_hWnd);
         RestoreFunctionPatch(frameWndOnSizePatch);
         return 2;
     }
 
-    frame.OnSize(4, 640, 480);
+    frame->OnSize(4, 640, 480);
     const bool ok = g_appDeactivateCalls == 2 && g_cFrameWndOnSizeCalls == 3;
     g_zVideo_ActiveRendererPath = oldRendererPath;
     g_zVid_CachedClientRectUpdateMask = oldUpdateMask;
     g_zVideo_hWnd = oldVideoHwnd;
     g_zVideo_CachedClientRectScreen = oldCachedRect;
-    DestroyWindow(frame.m_hWnd);
+    DestroyWindow(frame->m_hWnd);
     RestoreFunctionPatch(frameWndOnSizePatch);
     return ok ? 0 : 3;
 }
@@ -5134,8 +5152,8 @@ extern "C" int czgame_frame_on_paint_smoke(void) {
 
 extern "C" int czrecoil_frame_on_size_smoke(void) {
     OnSizeFakeRecoilApp *const app = new OnSizeFakeRecoilApp();
-    CZRecoilFrame frame{};
-    reinterpret_cast<CZGameFrame *>(&frame)->m_app = app;
+    RawCZRecoilFrameFixture frame;
+    reinterpret_cast<CZGameFrame *>(&frame.get())->m_app = app;
 
     CodeFunctionPatch gameFrameOnSizePatch{};
     if (!PatchFunctionJump(
@@ -5149,20 +5167,20 @@ extern "C" int czrecoil_frame_on_size_smoke(void) {
     g_onSizeAppDeactivateCalls = 0;
     g_onSizeGameFrameCalls = 0;
     g_onSizeGameFrameArgsOk = false;
-    frame.OnSize(0, 640, 480);
+    frame->OnSize(0, 640, 480);
     if (g_onSizeAppDeactivateCalls != 0 || g_onSizeGameFrameCalls != 1 ||
         !g_onSizeGameFrameArgsOk) {
         RestoreFunctionPatch(gameFrameOnSizePatch);
         return 1;
     }
 
-    frame.OnSize(1, 640, 480);
+    frame->OnSize(1, 640, 480);
     if (g_onSizeAppDeactivateCalls != 1 || g_onSizeGameFrameCalls != 2) {
         RestoreFunctionPatch(gameFrameOnSizePatch);
         return 2;
     }
 
-    frame.OnSize(4, 640, 480);
+    frame->OnSize(4, 640, 480);
     if (g_onSizeAppDeactivateCalls != 2 || g_onSizeGameFrameCalls != 3) {
         RestoreFunctionPatch(gameFrameOnSizePatch);
         return 3;

@@ -764,7 +764,7 @@ extern "C" int zreader_zrdr_init_search_path_smoke(void) {
     }
 
     g_zArchive_MountedList = nullptr;
-    g_zArchive_Current = reinterpret_cast<zArchiveList *>(0x12345678);
+    g_zArchive_Current = reinterpret_cast<zIndexArchive *>(0x12345678);
     g_zRdr_SearchPathList = nullptr;
 
     zUtil_ZRDR_AppendSearchPath(tempPathA);

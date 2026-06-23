@@ -11,8 +11,31 @@
 #include <string.h>
 
 namespace {
-const char kZGeoModelSourceFile[] = "D:\\Proj\\GameZRecoil\\zGeometry\\zgeo_model.cpp";
 const float kRandToDebugColorScale = 0.00778221991f;
+
+/**
+ * Data evidence: BN 0x4e034c..0x4e0509 is the contiguous zgeo_model.cpp
+ * diagnostic literal owner linked by geometry_model_assets.zgeometry_model_initialized_data.
+ * Purpose: Preserve the writable source/error literals used by model clipping diagnostics.
+ */
+char g_zGeometry_SourceFile_ZgeoModelCpp[0x2d] =
+    "D:\\Proj\\GameZRecoil\\zGeometry\\zgeo_model.cpp";
+char g_zGeometry_GeneratePolygonVertexCountFmt[0x32] =
+    "Attempting to generate polygon with (%d) vertices";
+char g_zGeometry_PolygonVertexBufferErrorMsg[0x30] =
+    "Error getting linear buffer of polygon vertices";
+char g_zGeometry_SkippingClipPolygonVertsFmt[0x29] =
+    "Skipping clip of polygon with (%d) verts";
+char g_zGeometry_NullAreaPartitionOrOutlineClipPatchFmt[0x4a] =
+    "Null Area Partition (0x%08x) or null Outline (0x%08x) passed to ClipPatch";
+char g_zGeometry_WeilerClipInSubjTraceMsg[0x32] =
+    "\nWEILER_CLIP_IN_SUBJ\n\tclip.outside.num_polys = 0\n";
+char g_zGeometry_AddChildPolygonVertexCountFmt[0x33] =
+    "Attempting to add child polygon with (%d) vertices";
+char g_zGeometry_IntersectionFoundNoPolygonsMsg[0x23] =
+    "Intersection found, no polygons...";
+char g_zGeometry_WeilerAlgorithmClipErrorMsg[0x26] =
+    "Weiler algorithm clip error occurred.";
 
 struct zGeometry_ClipPatchModelNodeBoundsView {
     zClass_NodePartial node;
@@ -171,9 +194,9 @@ int __fastcall ProcessClipPatchNode(
         if (pointCount < 3) {
             zError::ReportOld(
                 0x400,
-                kZGeoModelSourceFile,
+                g_zGeometry_SourceFile_ZgeoModelCpp,
                 0x4d7,
-                "Skipping clip of polygon with (%d) verts",
+                g_zGeometry_SkippingClipPolygonVertsFmt,
                 pointCount
             );
             continue;
@@ -188,9 +211,9 @@ int __fastcall ProcessClipPatchNode(
         if (polygonPointsBuffer == 0) {
             zError::ReportOld(
                 0x400,
-                kZGeoModelSourceFile,
+                g_zGeometry_SourceFile_ZgeoModelCpp,
                 0x4df,
-                "Error getting linear buffer of polygon vertices"
+                g_zGeometry_PolygonVertexBufferErrorMsg
             );
             continue;
         }
@@ -298,9 +321,9 @@ int __fastcall ProcessClipPatchNode(
             if (clipOutput.polygonSetB.polygonCount == 0) {
                 zError::ReportOld(
                     0x100,
-                    kZGeoModelSourceFile,
+                    g_zGeometry_SourceFile_ZgeoModelCpp,
                     0x548,
-                    "\nWEILER_CLIP_IN_SUBJ\n\tclip.outside.num_polys = 0\n"
+                    g_zGeometry_WeilerClipInSubjTraceMsg
                 );
                 if (polygonPointsBuffer != 0) {
                     free(polygonPointsBuffer);
@@ -400,9 +423,9 @@ int __fastcall ClipPatch(
     if (featureGridCell == 0 || points == 0) {
         zError::ReportOld(
             0x100,
-            kZGeoModelSourceFile,
+            g_zGeometry_SourceFile_ZgeoModelCpp,
             0x3af,
-            "Null Area Partition (0x%08x) or null Outline (0x%08x) passed to ClipPatch",
+            g_zGeometry_NullAreaPartitionOrOutlineClipPatchFmt,
             featureGridCell,
             points
         );
@@ -865,9 +888,9 @@ int __fastcall SnapPointsNearNodeModelXY(
         if (vertexCount < 3) {
             zError::ReportOld(
                 0x400,
-                kZGeoModelSourceFile,
+                g_zGeometry_SourceFile_ZgeoModelCpp,
                 0x36b,
-                "Skipping clip of polygon with (%d) verts",
+                g_zGeometry_SkippingClipPolygonVertsFmt,
                 vertexCount
             );
         } else {
@@ -880,9 +903,9 @@ int __fastcall SnapPointsNearNodeModelXY(
             if (linearPoints == 0) {
                 zError::ReportOld(
                     0x400,
-                    kZGeoModelSourceFile,
+                    g_zGeometry_SourceFile_ZgeoModelCpp,
                     0x375,
-                    "Error getting linear buffer of polygon vertices"
+                    g_zGeometry_PolygonVertexBufferErrorMsg
                 );
             } else {
                 zGeometry_Vec3Array::RotatePos90AroundX(
@@ -1038,9 +1061,9 @@ int __fastcall AddPolygonToDi(
     if (pointCount < 3) {
         zError::ReportOld(
             0x800,
-            kZGeoModelSourceFile,
+            g_zGeometry_SourceFile_ZgeoModelCpp,
             0x9f,
-            "Attempting to generate polygon with (%d) vertices",
+            g_zGeometry_GeneratePolygonVertexCountFmt,
             pointCount
         );
         return -1;
@@ -1132,9 +1155,9 @@ int __fastcall AddPointListPolygonToDi(
     if (pointCount < 3) {
         zError::ReportOld(
             0x800,
-            kZGeoModelSourceFile,
+            g_zGeometry_SourceFile_ZgeoModelCpp,
             0x111,
-            "Attempting to add child polygon with (%d) vertices",
+            g_zGeometry_AddChildPolygonVertexCountFmt,
             pointCount
         );
         return -1;
@@ -1242,9 +1265,9 @@ int __fastcall IsFullyInsideClipPolygonXY(
             if (pointCount < 3) {
                 zError::ReportOld(
                     0x400,
-                    kZGeoModelSourceFile,
+                    g_zGeometry_SourceFile_ZgeoModelCpp,
                     0x5ce,
-                    "Skipping clip of polygon with (%d) verts",
+                    g_zGeometry_SkippingClipPolygonVertsFmt,
                     pointCount
                 );
                 continue;
@@ -1259,9 +1282,9 @@ int __fastcall IsFullyInsideClipPolygonXY(
             if (polygonPointsBuffer == 0) {
                 zError::ReportOld(
                     0x400,
-                    kZGeoModelSourceFile,
+                    g_zGeometry_SourceFile_ZgeoModelCpp,
                     0x5d5,
-                    "Error getting linear buffer of polygon vertices"
+                    g_zGeometry_PolygonVertexBufferErrorMsg
                 );
                 continue;
             }
@@ -1296,9 +1319,9 @@ int __fastcall IsFullyInsideClipPolygonXY(
             case 0:
                 zError::ReportOld(
                     0x200,
-                    kZGeoModelSourceFile,
+                    g_zGeometry_SourceFile_ZgeoModelCpp,
                     0x5ed,
-                    "Weiler algorithm clip error occurred."
+                    g_zGeometry_WeilerAlgorithmClipErrorMsg
                 );
                 if (polygonPointsBuffer != 0) {
                     free(polygonPointsBuffer);
@@ -1313,9 +1336,9 @@ int __fastcall IsFullyInsideClipPolygonXY(
                 if (clipOutput.polygonSetC.polygonCount == 0) {
                     zError::ReportOld(
                         0x200,
-                        kZGeoModelSourceFile,
+                        g_zGeometry_SourceFile_ZgeoModelCpp,
                         0x5f7,
-                        "Intersection found, no polygons..."
+                        g_zGeometry_IntersectionFoundNoPolygonsMsg
                     );
                 }
                 if (polygonPointsBuffer != 0) {

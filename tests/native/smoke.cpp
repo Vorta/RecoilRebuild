@@ -59,6 +59,7 @@ extern "C" int zinput_keyboard_poll_state_smoke(void);
 extern "C" int zinput_poll_active_devices_smoke(void);
 extern "C" int zopt_fullscreen_accessors_smoke(void);
 extern "C" int zopt_section_accessor_smoke(void);
+extern "C" int zopt_toggle_hud_type_for_current_hw_mode_smoke(void);
 extern "C" int zopt_view_rect_target_side_effects_smoke(void);
 extern "C" int zopt_wol_password_flag_accessor_smoke(void);
 extern "C" int zsnd_option_accessors_smoke(void);
@@ -149,6 +150,8 @@ extern "C" int zsnd_cd_track_list_static_init_atexit_child_smoke(void);
 extern "C" int zsnd_cd_track_list_static_init_atexit_smoke(void);
 extern "C" int zsnd_cached_directsound_get_caps_smoke(void);
 extern "C" int zsnd_options_cpu_and_cached_directsound_smoke(void);
+extern "C" int zsnd_group_load_config_block_smoke(void);
+extern "C" int zsnd_group_load_and_queue_smoke(void);
 extern "C" int zreader_named_int_lookup_smoke(void);
 extern "C" int zreader_get_named_node_smoke(void);
 extern "C" int zreader_named_string_float_lookup_smoke(void);
@@ -187,10 +190,19 @@ extern "C" int znetwork_init_session_runtime_smoke(void);
 extern "C" int znetwork_shutdown_session_runtime_smoke(void);
 extern "C" int znetwork_dplay_create_interface_and_coinitialize_smoke(void);
 extern "C" int znetwork_set_fatal_disconnect_callback_smoke(void);
+extern "C" int pickup_type_key_table_find_index_smoke(void);
+extern "C" int pickup_type_table_free_opt_meta_smoke(void);
+extern "C" int pickup_airdrop_spawn_ref_shutdown_global_smoke(void);
 extern "C" int pickup_airdrop_spawn_ref_init_nodes_smoke(void);
+extern "C" int pickup_airdrop_spawn_ref_init_global_smoke(void);
+extern "C" int pickup_airdrop_spawn_ref_spawn_pickup_type_and_relay_gates_smoke(void);
+extern "C" int pickup_airdrop_spawn_ref_try_spawn_random_pickup_from_global_blocked_smoke(void);
+extern "C" int pickup_map_vtol_drop_group_variant_to_type_index_smoke(void);
+extern "C" int pickup_select_next_vtol_spawn_type_index_smoke(void);
 extern "C" int pickup_archive_write_all_smoke(void);
 extern "C" int pickup_archive_read_record_smoke(void);
 extern "C" int pickup_init_smoke(void);
+extern "C" int pickup_shutdown_smoke(void);
 extern "C" int pickup_register_existing_object_smoke(void);
 extern "C" int pickup_leaf_helpers_smoke(void);
 extern "C" int pickup_spawn_from_parsed_zrd_entry_smoke(void);
@@ -199,17 +211,25 @@ extern "C" int pickup_handle_pkt11_spawn_delta_smoke(void);
 extern "C" int pickup_handle_pkt12_airdrop_spawn_chute_relay_smoke(void);
 extern "C" int pickup_remove_object_smoke(void);
 extern "C" int pickup_respawn_spawn_def_smoke(void);
+extern "C" int pickup_respawn_queue_init_smoke(void);
+extern "C" int pickup_respawn_queue_clear_smoke(void);
 extern "C" int pickup_respawn_queue_update_smoke(void);
+extern "C" int pickup_spawn_list_primary_init_smoke(void);
+extern "C" int pickup_spawn_list_net_copy_init_smoke(void);
 extern "C" int pickup_spawn_list_clear_smoke(void);
 extern "C" int pickup_remove_other_spawns_same_opt_entry_smoke(void);
+extern "C" int pickup_resolve_owner_from_bvol_hit_smoke(void);
 extern "C" int pickup_send_pkt11_delta_smoke(void);
 extern "C" int pickup_send_pkt11_create_delta_smoke(void);
 extern "C" int pickup_reconcile_spawn_lists_smoke(void);
+extern "C" int pickup_grant_ammo_or_weapon_smoke(void);
+extern "C" int pickup_apply_effect_smoke(void);
 extern "C" int gamenet_find_player_row_and_status_bits_smoke(void);
 extern "C" int gamenet_handle_pkt03_remove_remote_player_smoke(void);
 extern "C" int hud_timer_panel_net_state_clear_tail_flags_smoke(void);
 extern "C" int gamenet_send_pkt14_hud_timer_and_flags_sync_smoke(void);
 extern "C" int gamenet_handle_pkt14_hud_timer_and_flags_sync_smoke(void);
+extern "C" int hud_cheat_execute_command_string_smoke(void);
 extern "C" int gamenet_host_update_session_status_fields_smoke(void);
 extern "C" int gamenet_timer_status_packet_smoke(void);
 extern "C" int gamenet_timer_panel_state_packet_smoke(void);
@@ -229,6 +249,7 @@ extern "C" int gamenet_scoreboard_snapshot_packet_smoke(void);
 extern "C" int gamenet_lap_progress_packet_smoke(void);
 extern "C" int gamenet_chat_compose_key_callback_smoke(void);
 extern "C" int gamenet_begin_chat_compose_smoke(void);
+extern "C" int hud_ui_handle_hotkey_command_begin_chat_smoke(void);
 extern "C" int gamenet_end_chat_compose_and_send_smoke(void);
 extern "C" int gamenet_chat_message_packet_smoke(void);
 extern "C" int gamenet_show_player_kill_message_smoke(void);
@@ -374,6 +395,7 @@ extern "C" int player_load_master_common_data_from_node_smoke(void);
 extern "C" int player_load_master_modal_data_from_node_smoke(void);
 extern "C" int player_get_aiv_zrd_path_smoke(void);
 extern "C" int player_extract_vehicle_name_from_aiv_name_smoke(void);
+extern "C" int player_build_ai_peer_rings_by_ai_net_id_smoke(void);
 extern "C" int player_los_from_fx_offset_smoke(void);
 extern "C" int player_init_save_state_list_smoke(void);
 extern "C" int player_clone_type6_node_from_template_and_rename_smoke(void);
@@ -416,6 +438,7 @@ extern "C" int player_apply_camera_state_and_zopt_set_camera_mode_smoke(void);
 extern "C" int player_set_world_pose_and_restart_anchor_smoke(void);
 extern "C" int player_capture_current_object_pose_as_restart_anchor_smoke(void);
 extern "C" int player_reset_mouse_control_state_and_recenter_cursor_smoke(void);
+extern "C" int player_register_gameplay_callbacks_and_ff_smoke(void);
 extern "C" int player_toggle_steering_mode_and_reset_mouse_look_smoke(void);
 extern "C" int player_reset_motion_transient_state_smoke(void);
 extern "C" int player_find_alt_gun_controller_smoke(void);
@@ -427,7 +450,26 @@ extern "C" int player_alt_gun_projectile_dispatch_helpers_smoke(void);
 extern "C" int player_process_alt_gun_fire_dispatch_request_smoke(void);
 extern "C" int player_alt_gun_fire_slot_offset_smoke(void);
 extern "C" int player_solve_alt_gun_lead_target_point_smoke(void);
+extern "C" int player_tick_ai_mode2_top_level_smoke(void);
+extern "C" int player_tick_ai_mode2_path_follow_smoke(void);
+extern "C" int player_ai_mode2_forward_probe_requires_auto_turn_smoke(void);
+extern "C" int player_ai_advance_path_cursor_and_compute_target_vec_smoke(void);
+extern "C" int player_ai_choose_next_path_branch_index_smoke(void);
+extern "C" int player_tick_ai_mode2_steering_substate_smoke(void);
+extern "C" int player_update_ai_mode2_move_and_turn_toward_target_smoke(void);
+extern "C" int player_tick_ai_mode2_offset_target_steering_smoke(void);
+extern "C" int player_tick_ai_mode2_dynamic_offset_target_steering_smoke(void);
+extern "C" int player_ai_try_enter_mode2_attack_pursuit_los_smoke(void);
+extern "C" int player_ai_alert_attack_buddies_smoke(void);
+extern "C" int player_ai_enter_mode2_steering_pursuit_smoke(void);
+extern "C" int player_ai_rebuild_synthetic_path_to_node_if_far_smoke(void);
 extern "C" int player_tick_ai_mode2_alt_gun_attack_window_smoke(void);
+extern "C" int player_update_ai_mode2_turn_toward_player_no_throttle_smoke(void);
+extern "C" int player_update_ai_mode2_turn_in_place_toward_player_smoke(void);
+extern "C" int player_update_ai_mode2_move_and_turn_toward_offset_target_smoke(void);
+extern "C" int player_update_ai_mode2_move_and_turn_toward_dynamic_offset_target_smoke(void);
+extern "C" int player_tick_ai_mode2_timed_path_steering_smoke(void);
+extern "C" int player_tick_remote_network_player_smoke(void);
 extern "C" int player_update_gun_dispatch_requests_from_trigger_latches_smoke(void);
 extern "C" int player_start_slip_sfx_smoke(void);
 extern "C" int player_stop_slip_sfx_smoke(void);
@@ -480,7 +522,9 @@ extern "C" int player_accumulate_slope_forces_smoke(void);
 extern "C" int player_update_vertical_velocity_and_transform_smoke(void);
 extern "C" int player_update_post_move_environment_smoke(void);
 extern "C" int player_apply_amphib_speed_oscillation_smoke(void);
+extern "C" int player_process_primary_gun_dispatch_request_smoke(void);
 extern "C" int player_tick_alt_gun_runtime_state_smoke(void);
+extern "C" int player_reset_alt_gun_door_animation_state_smoke(void);
 extern "C" int player_reset_alt_gun_runtime_state_smoke(void);
 extern "C" int player_build_mission_save_data_smoke(void);
 extern "C" int player_apply_mission_save_data_smoke(void);
@@ -558,9 +602,12 @@ extern "C" int player_hit_callback_record_context_and_timed_status_smoke(void);
 extern "C" int player_enter_local_inactive_destroyed_lifecycle_smoke(void);
 extern "C" int player_enter_destroyed_state_smoke(void);
 extern "C" int player_apply_status_meter_change_smoke(void);
+extern "C" int player_update_status_meter_smoke(void);
 extern "C" int player_reset_damage_state_and_timed_hit_status_smoke(void);
+extern "C" int player_reset_damage_visuals_and_timed_status_smoke(void);
 extern "C" int player_apply_pitch_roll_velocity_impulse_from_direction_smoke(void);
 extern "C" int player_start_destroyed_state_vehicle_effect_smoke(void);
+extern "C" int player_apply_damage_local_smoke(void);
 extern "C" int player_create_from_names_at_pose_smoke(void);
 extern "C" int player_init_state_from_name_and_master_common_data_smoke(void);
 extern "C" int player_bind_modal_state_from_master_modal_data_smoke(void);
@@ -632,6 +679,8 @@ extern "C" int hud_ui_load_game_primary_action_button_on_activate_smoke(void);
 extern "C" int hud_ui_zrd_widget_on_activate_queue_exit_current_state_smoke(void);
 extern "C" int hud_ui_callback_queue_exit_current_state_smoke(void);
 extern "C" int hud_ui_callback_queue_cheat_code_state_smoke(void);
+extern "C" int hud_sensor_queue_mission_fmv_state_for_mission_id_smoke(void);
+extern "C" int hud_sensor_save_and_queue_mission_state_smoke(void);
 extern "C" int hud_ui_credits_quit_button_on_activate_smoke(void);
 extern "C" int hud_cheat_clear_nanite_panel_cheat_sentinel_smoke(void);
 extern "C" int hud_ui_cheat_code_title_widget_on_activate_smoke(void);
@@ -832,6 +881,12 @@ extern "C" int zhud_mgr_static_destructor_smoke(void);
 extern "C" int zhud_mgr_register_at_exit_smoke(void);
 extern "C" int zhud_mgr_static_init_and_register_at_exit_smoke(void);
 extern "C" int zhud_mgr_is_local_player_first_in_stats_list_smoke(void);
+extern "C" int zhud_mgr_destroy_sensor_window_null_smoke(void);
+extern "C" int zhud_mgr_destroy_sensor_window_playback_smoke(void);
+extern "C" int zhud_mgr_disable_hud_smoke(void);
+extern "C" int zhud_mgr_enable_hud_smoke(void);
+extern "C" int zhud_mgr_switch_active_dialog_smoke(void);
+extern "C" int zhud_mgr_apply_hud_mode_switch_smoke(void);
 extern "C" int zhud_scoreboard_set_scale_and_rebuild_smoke(void);
 extern "C" int zhud_scoreboard_dispatch_set_scale_smoke(void);
 extern "C" int zhud_triplet_scoreboard_entry_update_smoke(void);
@@ -843,6 +898,12 @@ extern "C" int zhud_text_stack_clear_and_enable_smoke(void);
 extern "C" int zhud_text_stack_clear_and_disable_smoke(void);
 extern "C" int zhud_text_stack_destructor_core_smoke(void);
 extern "C" int zhud_text_stack_layout_mutators_smoke(void);
+extern "C" int zhud_timer_panel_update_smoke(void);
+extern "C" int zhud_timer_and_counter_constructor_smoke(void);
+extern "C" int zhud_timer_panel_update_hms_smoke(void);
+extern "C" int zhud_timer_panel_set_time_smoke(void);
+extern "C" int zhud_timer_panel_zar_write_smoke(void);
+extern "C" int zhud_timer_panel_zar_read_smoke(void);
 extern "C" int zhud_timer_panel_global_accessors_smoke(void);
 extern "C" int zhud_list_menu_entry_sort_smoke(void);
 extern "C" int zhud_layout_base_load_type_i_from_zar_root_smoke(void);
@@ -880,8 +941,10 @@ extern "C" int zhud_loading_checkpoint_advance_and_log_smoke(void);
 extern "C" int zhud_mgr_tail_bar_layout_smoke(void);
 extern "C" int zhud_mgr_trigger_current_layout_on_activated_smoke(void);
 extern "C" int zhud_mgr_viewport_activation_smoke(void);
+extern "C" int zhud_mgr_update_target_reticle_smoke(void);
 extern "C" int zhud_mgr_project_point_to_normalized_clamped_smoke(void);
 extern "C" int zhud_mgr_sensor_set_shield_message_ratio_smoke(void);
+extern "C" int zhud_mgr_hide_tracked_progress_meter_if_owner_matches_smoke(void);
 extern "C" int zhud_shield_message_widget_destructor_smoke(void);
 extern "C" int zhud_shield_message_widget_apply_layout_smoke(void);
 extern "C" int zhud_objective_refresh_counter_text_smoke(void);
@@ -928,6 +991,7 @@ extern "C" int zhud_background_cursor_widget_set_image_borrowed_refresh_smoke(vo
 extern "C" int zhud_background_cursor_widget_set_image_by_path_owned_refresh_smoke(void);
 extern "C" int zhud_background_video_widget_constructor_smoke(void);
 extern "C" int zhud_background_video_widget_destructor_smoke(void);
+extern "C" int zhud_play_powerup_sfx_smoke(void);
 extern "C" int zhud_background_constructor_smoke(void);
 extern "C" int zhud_background_update_input_focus_smoke(void);
 extern "C" int zhud_background_set_enabled_smoke(void);
@@ -1053,6 +1117,16 @@ extern "C" int zhud_polyline_and_slider_border_constructor_smoke(void);
 extern "C" int zhud_polyline_draw_and_slider_update_smoke(void);
 extern "C" int zhud_numeric_text_input_base_constructor_smoke(void);
 extern "C" int zhud_background_bind_primitive_node_to_element_smoke(void);
+extern "C" int hud_line_clip_current_bounds_smoke(void);
+extern "C" int hud_recti_clip_segment_helpers_smoke(void);
+extern "C" int hud_sensor_tracker_draw_diamond_marker_smoke(void);
+extern "C" int hud_sensor_tracker_save_marker_leaf_smoke(void);
+extern "C" int hud_sensor_tracker_update_map_scale_lerp_smoke(void);
+extern "C" int hud_sensor_tracker_project_world_points_smoke(void);
+extern "C" int hud_sensor_map_node_basics_smoke(void);
+extern "C" int hud_sensor_map_remove_and_shutdown_smoke(void);
+extern "C" int hud_sensor_map_overlay_toggle_smoke(void);
+extern "C" int hud_sensor_tracker_load_map_paths_smoke(void);
 extern "C" int zhud_sensor_track_list_add_smoke(void);
 extern "C" int zhud_std_ptr_vector_clear_no_op_destroy_smoke(void);
 extern "C" int zmath_matrix_stack_and_direction_smoke(void);
@@ -1229,6 +1303,8 @@ extern "C" int zclass_alloc_node_from_free_list_smoke(void);
 extern "C" int zclass_node_free_and_deferred_work_smoke(void);
 extern "C" int zclass_delete_node_from_lists_smoke(void);
 extern "C" int zclass_gwlist_delete_a_node_smoke(void);
+extern "C" int zclass_lifecycle_leaf_smoke(void);
+extern "C" int zclass_init_smoke(void);
 extern "C" int zclass_shutdown_core_smoke(void);
 extern "C" int zclass_node_propagate_transform_dirty_smoke(void);
 extern "C" int zclass_object3d_reset_transform_dirty_smoke(void);
@@ -1264,6 +1340,7 @@ extern "C" int zclass_copy_node_display_instance_smoke(void);
 extern "C" int zclass_set_display_instance_smoke(void);
 extern "C" int zclass_destroy_node_recursive_display_smoke(void);
 extern "C" int zclass_world_animate_delete_node_smoke(void);
+extern "C" int zclass_window_new_smoke(void);
 extern "C" int zclass_display_init_smoke(void);
 extern "C" int zclass_lod_leaf_smoke(void);
 extern "C" int zclass_camera_view_distance_smoke(void);
@@ -1902,7 +1979,9 @@ extern "C" int zhud_triplet_panel_shutdown_items_stub_smoke(void) {
 #define RECOIL_ZGAME_TESTS_ZMODEL_SOFTWARE_PATH_ACTIVE
 #define RECOIL_ZGAME_TESTS_MODEL_REF_LERP_QUEUE
 #define RECOIL_ZGAME_TESTS_ZCLASS_TYPELIST_UPDATE
+#define RECOIL_ZGAME_TESTS_ZCLASS_WINDOW
 #include "zgame_tests.cpp"
+#undef RECOIL_ZGAME_TESTS_ZCLASS_WINDOW
 #undef RECOIL_ZGAME_TESTS_ZCLASS_TYPELIST_UPDATE
 #undef RECOIL_ZGAME_TESTS_MODEL_REF_LERP_QUEUE
 #undef RECOIL_ZGAME_TESTS_ZMODEL_SOFTWARE_PATH_ACTIVE
@@ -2656,6 +2735,64 @@ extern "C" int hud_ui_controls_dialog_constructor_smoke(void) {
     return 0;
 }
 
+extern "C" int pickup_type_key_table_find_index_smoke(void) {
+    PickupType oldTypes[40] = {};
+    for (int index = 0; index < 40; ++index) {
+        oldTypes[index] = g_PickupTypes[index];
+        g_PickupTypes[index] = {};
+    }
+
+    g_PickupTypes[0].logicalName = "first";
+    g_PickupTypes[0].typeIndex = 11;
+    g_PickupTypes[7].logicalName = "mid";
+    g_PickupTypes[7].typeIndex = 77;
+    g_PickupTypes[39].logicalName = "last";
+    g_PickupTypes[39].typeIndex = 99;
+
+    const bool firstOk = PickupTypeKeyTable::FindIndex("first") == 0;
+    const bool nullSkipOk = PickupTypeKeyTable::FindIndex("mid") == 7;
+    const bool lastOk = PickupTypeKeyTable::FindIndex("last") == 39;
+    const bool missOk = PickupTypeKeyTable::FindIndex("missing") == -1;
+    int foundTypeIndex = -1;
+    const bool findByNameOk =
+        PickupType::FindByLogicalName("mid", &foundTypeIndex) == 1 && foundTypeIndex == 77;
+    foundTypeIndex = -1;
+    const bool findByNameMissOk =
+        PickupType::FindByLogicalName("missing", &foundTypeIndex) == 0 && foundTypeIndex == 0;
+
+    for (int index = 0; index < 40; ++index) {
+        g_PickupTypes[index] = oldTypes[index];
+    }
+
+    return firstOk && nullSkipOk && lastOk && missOk && findByNameOk && findByNameMissOk ? 0
+                                                                                         : 1;
+}
+
+extern "C" int pickup_type_table_free_opt_meta_smoke(void) {
+    for (PickupType &pickupType : g_PickupTypes) {
+        pickupType.optMetaImage = 0;
+    }
+
+    zVidImagePartial *const ownedImage = zVid_Image::Create();
+    if (ownedImage == 0) {
+        return 1;
+    }
+
+    g_PickupTypes[0].optMetaImage = &zVid_Image::g_zImage_DefaultImage;
+    g_PickupTypes[17].optMetaImage = ownedImage;
+    g_PickupTypes[39].optMetaImage = &zVid_Image::g_zImage_DefaultImage;
+
+    PickupTypeTable::FreeOptMeta();
+
+    for (const PickupType &pickupType : g_PickupTypes) {
+        if (pickupType.optMetaImage != 0) {
+            return 2;
+        }
+    }
+
+    return 0;
+}
+
 extern "C" int pickup_airdrop_spawn_ref_init_nodes_smoke(void) {
     ResetPickupTestTypeListBucket(6);
 
@@ -2680,6 +2817,159 @@ extern "C" int pickup_airdrop_spawn_ref_init_nodes_smoke(void) {
 
     ResetPickupTestTypeListBucket(6);
     return initialized ? 0 : 1;
+}
+
+extern "C" int pickup_airdrop_spawn_ref_shutdown_global_smoke(void) {
+    auto *const spawnRef =
+        static_cast<PickupAirdropSpawnRef *>(::operator new(sizeof(PickupAirdropSpawnRef)));
+    g_Pickup_GlobalAirdropSpawnRef = spawnRef;
+
+    PickupAirdropSpawnRef::ShutdownGlobal();
+
+    const bool cleared = g_Pickup_GlobalAirdropSpawnRef == nullptr;
+    PickupAirdropSpawnRef::ShutdownGlobal();
+
+    return cleared ? 0 : 1;
+}
+
+extern "C" int pickup_airdrop_spawn_ref_init_global_smoke(void) {
+    ResetPickupTestTypeListBucket(6);
+    g_Pickup_GlobalAirdropSpawnRef = nullptr;
+
+    zClass_NodePartial carrier = {};
+    zClass_NodePartial healthy = {};
+    zClass_NodePartial *children[] = {&healthy};
+    std::strcpy(carrier.name, "carrier01");
+    std::strcpy(healthy.name, "healthy");
+    carrier.listCountB = 1;
+    carrier.listB = children;
+
+    PickupAirdropSpawnRef::InitGlobalFromCarrierNodeName("missing");
+    if (g_Pickup_GlobalAirdropSpawnRef != nullptr) {
+        PickupAirdropSpawnRef::ShutdownGlobal();
+        ResetPickupTestTypeListBucket(6);
+        return 1;
+    }
+
+    zClass_TypeList::Insert(6, &carrier);
+    PickupAirdropSpawnRef::InitGlobalFromCarrierNodeName("carrier01");
+
+    PickupAirdropSpawnRef *const spawnRef = g_Pickup_GlobalAirdropSpawnRef;
+    const bool initialized = spawnRef != nullptr && spawnRef->carrierNode == &carrier &&
+                             spawnRef->dropAttachNode == &healthy;
+
+    PickupAirdropSpawnRef::ShutdownGlobal();
+    ResetPickupTestTypeListBucket(6);
+    return initialized && g_Pickup_GlobalAirdropSpawnRef == nullptr ? 0 : 2;
+}
+
+extern "C" int pickup_airdrop_spawn_ref_spawn_pickup_type_and_relay_gates_smoke(void) {
+    int *const oldNetworkEnabledOption = ZOPT_NETWORK_ENABLED;
+    const int oldHostFlag = g_zNetwork_IsHostFlag;
+    int networkEnabled = 0;
+    ZOPT_NETWORK_ENABLED = &networkEnabled;
+
+    zClass_NodePartial dropAttach = {};
+    PickupAirdropSpawnRef spawnRef = {};
+    spawnRef.dropAttachNode = &dropAttach;
+    spawnRef.worldPos = {1.0f, 2.0f, 3.0f};
+
+    const int inactiveBlocked = spawnRef.SpawnPickupTypeAndRelay(7);
+
+    dropAttach.flags = 4;
+    networkEnabled = 1;
+    g_zNetwork_IsHostFlag = 0;
+    const int nonHostBlocked = spawnRef.SpawnPickupTypeAndRelay(7);
+
+    ZOPT_NETWORK_ENABLED = oldNetworkEnabledOption;
+    g_zNetwork_IsHostFlag = oldHostFlag;
+    return inactiveBlocked == 0 && nonHostBlocked == 0 ? 0 : 1;
+}
+
+extern "C" int pickup_airdrop_spawn_ref_try_spawn_random_pickup_from_global_blocked_smoke(void) {
+    int *const oldNetworkEnabledOption = ZOPT_NETWORK_ENABLED;
+    PickupAirdropSpawnRef *const oldGlobalSpawnRef = g_Pickup_GlobalAirdropSpawnRef;
+    int networkEnabled = 0;
+    ZOPT_NETWORK_ENABLED = &networkEnabled;
+
+    zClass_NodePartial dropAttach = {};
+    PickupAirdropSpawnRef spawnRef = {};
+    spawnRef.dropAttachNode = &dropAttach;
+    g_Pickup_GlobalAirdropSpawnRef = &spawnRef;
+
+    const int result = PickupAirdropSpawnRef::TrySpawnRandomPickupFromGlobal();
+
+    g_Pickup_GlobalAirdropSpawnRef = oldGlobalSpawnRef;
+    ZOPT_NETWORK_ENABLED = oldNetworkEnabledOption;
+    return result == 0 ? 0 : 1;
+}
+
+extern "C" int pickup_map_vtol_drop_group_variant_to_type_index_smoke(void) {
+    if (Pickup::MapVTOLDropGroupVariantToTypeIndex(0, 0) != 0 ||
+        Pickup::MapVTOLDropGroupVariantToTypeIndex(1, 1) != 0 ||
+        Pickup::MapVTOLDropGroupVariantToTypeIndex(10, 0) != 0) {
+        return 1;
+    }
+
+    for (int group = 2; group <= 9; ++group) {
+        const int baseType = (group - 2) * 2 + 1;
+        if (Pickup::MapVTOLDropGroupVariantToTypeIndex(group, 0) != baseType ||
+            Pickup::MapVTOLDropGroupVariantToTypeIndex(group, 3) != baseType + 1) {
+            return 2;
+        }
+    }
+
+    return 0;
+}
+
+extern "C" int pickup_select_next_vtol_spawn_type_index_smoke(void) {
+    zInput_GameStateOrMapTablePartial *const oldGameState = g_GameStateOrMapTable;
+    const int oldLastDropIndex = g_Pickup_LastVTOLDropIndex;
+    int *const oldNetworkEnabledOption = ZOPT_NETWORK_ENABLED;
+    int networkEnabled = 0;
+    int oldPresenceCounts[40] = {};
+    for (int i = 0; i < 40; ++i) {
+        oldPresenceCounts[i] = g_PickupTypes[i].weaponPresenceCount;
+        g_PickupTypes[i].weaponPresenceCount = 0;
+    }
+
+    zUtil_PlayerStateStorage playerState = {};
+    zInput_GameStateOrMapTablePartial gameState = {};
+    gameState.playerState = reinterpret_cast<zInput_PlayerStatePartial *>(&playerState);
+    g_GameStateOrMapTable = &gameState;
+    ZOPT_NETWORK_ENABLED = &networkEnabled;
+
+    networkEnabled = 0;
+    g_Pickup_LastVTOLDropIndex = 3;
+    playerState.altWeaponBanks[2].controllerA.flags = 4;
+    const int localFirst = Pickup::SelectNextVTOLSpawnTypeIndex();
+
+    playerState.altWeaponBanks[2].controllerA.flags = 0;
+    playerState.altWeaponBanks[2].controllerB.flags = 4;
+    const int localSecond = Pickup::SelectNextVTOLSpawnTypeIndex();
+
+    networkEnabled = 1;
+    g_Pickup_LastVTOLDropIndex = 15;
+    g_PickupTypes[30].weaponPresenceCount = 7;
+    const int networkType = Pickup::SelectNextVTOLSpawnTypeIndex();
+
+    networkEnabled = 0;
+    g_Pickup_LastVTOLDropIndex = 19;
+    playerState.altWeaponBanks[2].controllerB.flags = 0;
+    const int fallbackType = Pickup::SelectNextVTOLSpawnTypeIndex();
+    const int fallbackLast = g_Pickup_LastVTOLDropIndex;
+
+    for (int i = 0; i < 40; ++i) {
+        g_PickupTypes[i].weaponPresenceCount = oldPresenceCounts[i];
+    }
+    ZOPT_NETWORK_ENABLED = oldNetworkEnabledOption;
+    g_Pickup_LastVTOLDropIndex = oldLastDropIndex;
+    g_GameStateOrMapTable = oldGameState;
+
+    return localFirst == 1 && localSecond == 2 && networkType == 13 && fallbackType == 0 &&
+                   fallbackLast == 3
+               ? 0
+               : 1;
 }
 
 extern "C" int pickup_archive_write_all_smoke(void) {
@@ -3240,6 +3530,88 @@ extern "C" int pickup_spawn_with_airdrop_chute_smoke(void) {
     return failure;
 }
 
+extern "C" int pickup_spawn_list_primary_init_smoke(void) {
+    const PickupSpawnList oldPrimary = g_PickupSpawnList_Primary;
+
+    PickupSpawnDef head = {};
+    PickupSpawnDef tail = {};
+    g_PickupSpawnList_Primary.unused = &tail;
+    g_PickupSpawnList_Primary.head = &head;
+    g_PickupSpawnList_Primary.tail = &tail;
+    g_PickupSpawnList_Primary.count = 17;
+
+    PickupSpawnList::Primary_Init();
+
+    const bool ok = g_PickupSpawnList_Primary.unused == nullptr &&
+                    g_PickupSpawnList_Primary.head == nullptr &&
+                    g_PickupSpawnList_Primary.tail == nullptr &&
+                    g_PickupSpawnList_Primary.count == 0;
+
+    g_PickupSpawnList_Primary = oldPrimary;
+    return ok ? 0 : 1;
+}
+
+extern "C" int pickup_spawn_list_net_copy_init_smoke(void) {
+    const PickupSpawnList oldNetworkCopy = g_PickupSpawnList_NetworkCopy;
+
+    PickupSpawnDef head = {};
+    PickupSpawnDef tail = {};
+    g_PickupSpawnList_NetworkCopy.unused = &tail;
+    g_PickupSpawnList_NetworkCopy.head = &head;
+    g_PickupSpawnList_NetworkCopy.tail = &tail;
+    g_PickupSpawnList_NetworkCopy.count = 23;
+
+    PickupSpawnList::NetCopy_Init();
+
+    const bool ok = g_PickupSpawnList_NetworkCopy.unused == nullptr &&
+                    g_PickupSpawnList_NetworkCopy.head == nullptr &&
+                    g_PickupSpawnList_NetworkCopy.tail == nullptr &&
+                    g_PickupSpawnList_NetworkCopy.count == 0;
+
+    g_PickupSpawnList_NetworkCopy = oldNetworkCopy;
+    return ok ? 0 : 1;
+}
+
+extern "C" int pickup_respawn_queue_init_smoke(void) {
+    const PickupRespawnQueue oldQueue = g_PickupRespawnQueue;
+
+    PickupRespawnEntry head = {};
+    PickupRespawnEntry tail = {};
+    g_PickupRespawnQueue.unused = &tail;
+    g_PickupRespawnQueue.head = &head;
+    g_PickupRespawnQueue.tail = &tail;
+    g_PickupRespawnQueue.count = 31;
+
+    PickupRespawnQueue::Init();
+
+    const bool ok = g_PickupRespawnQueue.unused == nullptr &&
+                    g_PickupRespawnQueue.head == nullptr &&
+                    g_PickupRespawnQueue.tail == nullptr && g_PickupRespawnQueue.count == 0;
+
+    g_PickupRespawnQueue = oldQueue;
+    return ok ? 0 : 1;
+}
+
+extern "C" int pickup_respawn_queue_clear_smoke(void) {
+    PickupRespawnQueue::Init();
+
+    PickupRespawnEntry *const second = NewRespawnEntry();
+    PickupRespawnEntry *const first = NewRespawnEntry();
+    first->next = second;
+    g_PickupRespawnQueue.unused = &g_PickupRespawnQueue;
+    g_PickupRespawnQueue.head = first;
+    g_PickupRespawnQueue.tail = second;
+    g_PickupRespawnQueue.count = 2;
+
+    g_PickupRespawnQueue.ClearAndFree();
+
+    const bool cleared = g_PickupRespawnQueue.unused == nullptr &&
+                         g_PickupRespawnQueue.head == nullptr &&
+                         g_PickupRespawnQueue.tail == nullptr && g_PickupRespawnQueue.count == 0;
+
+    return cleared ? 0 : 1;
+}
+
 extern "C" int pickup_spawn_list_clear_smoke(void) {
     PickupSpawnList::Primary_Init();
     PickupSpawnList::NetCopy_Init();
@@ -3282,6 +3654,41 @@ extern "C" int pickup_spawn_list_clear_smoke(void) {
                                 g_PickupSpawnList_NetworkCopy.count == 0 && g_NextPickupId == 77;
 
     return primaryCleared && networkCleared ? 0 : 3;
+}
+
+extern "C" int pickup_shutdown_smoke(void) {
+    PickupSpawnList::Primary_Init();
+    PickupSpawnList::NetCopy_Init();
+    PickupRespawnQueue::Init();
+
+    PickupSpawnDef *const primaryNode = NewSpawnDef();
+    PickupSpawnDef *const networkNode = NewSpawnDef();
+    PickupRespawnEntry *const respawnNode = NewRespawnEntry();
+    if (primaryNode == nullptr || networkNode == nullptr) {
+        std::free(primaryNode);
+        std::free(networkNode);
+        ::operator delete(respawnNode);
+        return 1;
+    }
+
+    g_NextPickupId = 91;
+    g_PickupSpawnList_Primary.head = primaryNode;
+    g_PickupSpawnList_Primary.tail = primaryNode;
+    g_PickupSpawnList_Primary.count = 1;
+    g_PickupSpawnList_NetworkCopy.head = networkNode;
+    g_PickupSpawnList_NetworkCopy.tail = networkNode;
+    g_PickupSpawnList_NetworkCopy.count = 1;
+    g_PickupRespawnQueue.head = respawnNode;
+    g_PickupRespawnQueue.tail = respawnNode;
+    g_PickupRespawnQueue.count = 1;
+
+    Pickup::Shutdown();
+
+    const bool cleared = g_PickupSpawnList_Primary.head == nullptr &&
+                         g_PickupSpawnList_NetworkCopy.head == nullptr &&
+                         g_PickupRespawnQueue.head == nullptr && g_NextPickupId == 0;
+
+    return cleared ? 0 : 2;
 }
 
 extern "C" int pickup_remove_object_smoke(void) {
@@ -3879,6 +4286,156 @@ extern "C" int pickup_remove_other_spawns_same_opt_entry_smoke(void) {
     PickupSpawnList::RemoveAndFreeNode(keep, &g_PickupSpawnList_Primary);
     PickupSpawnList::RemoveAndFreeNode(keepOther, &g_PickupSpawnList_Primary);
     return ok ? 0 : 2;
+}
+
+extern "C" int pickup_resolve_owner_from_bvol_hit_smoke(void) {
+    zClass_NodePartial ownerNode = {};
+    PickupBvolHitCallbackContext context = {};
+    context.ownerNode = &ownerNode;
+
+    zClass_NodePartial bvolNode = {};
+    bvolNode.flags = 0x40000;
+    bvolNode.callbackContext = reinterpret_cast<zClass_NodePartial *>(&context);
+
+    zClass_NodePartial *node = &bvolNode;
+    if (Pickup::ResolveOwnerFromBvolHit(&node) != 1 || node != &ownerNode) {
+        return 1;
+    }
+
+    zClass_NodePartial regularNode = {};
+    node = &regularNode;
+    if (Pickup::ResolveOwnerFromBvolHit(&node) != 0 || node != &regularNode) {
+        return 2;
+    }
+
+    node = nullptr;
+    return Pickup::ResolveOwnerFromBvolHit(&node) == 0 && node == nullptr ? 0 : 3;
+}
+
+extern "C" int pickup_grant_ammo_or_weapon_smoke(void) {
+    zUtil_SaveGameState saveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    saveState.playerState = &playerState;
+
+    HudUiMessage &message = g_HudUiMgrMessages[2];
+    message = {};
+    zVidImagePartial images[5] = {};
+    message.variantImages[0] = &images[0];
+    message.variantImages[3] = &images[3];
+    message.sideImageSwaps[0] = &images[4];
+    message.panel.activeSideIndex = 0;
+
+    OptCatalogEntryDef entry = {};
+    entry.ammoOrChargeMax = 10.0f;
+    PickupType pickupType = {};
+    pickupType.msgIdOrClassId = 1;
+    pickupType.defaultAmount = 4;
+
+    PlayerAltWeaponBank &bank = playerState.altWeaponBanks[2];
+    bank.selectedSide = 1;
+    bank.controllerA.optCatalogEntry = &entry;
+    bank.controllerA.weaponBankIndex = 2;
+    bank.controllerA.weaponSideIndex = 0;
+    bank.controllerA.ammoOrCharge = 10.0f;
+    bank.controllerB.optCatalogEntry = &entry;
+    bank.controllerB.weaponBankIndex = 2;
+    bank.controllerB.weaponSideIndex = 1;
+    bank.controllerB.flags = 4;
+    bank.controllerB.ammoOrCharge = 3.0f;
+
+    char messageBuffer[64] = {};
+    if (Pickup::GrantAmmoOrWeapon(&pickupType, messageBuffer, &saveState, 2, 0, 1, 0) != 0 ||
+        bank.controllerA.ammoOrCharge != 10.0f) {
+        g_HudUiMgrMessages[2] = {};
+        return 1;
+    }
+
+    const int oldPrimaryDispatchCount = g_HudSensorTracker.primaryGunDispatchCount;
+    pickupType.weaponKeyName = "weapon";
+    pickupType.optEntry = &entry;
+    bank.controllerA.flags = 0;
+    bank.controllerA.ammoOrCharge = 6.0f;
+    bank.controllerB.flags = 4;
+    bank.controllerB.ammoOrCharge = 3.0f;
+
+    if (Pickup::GrantAmmoOrWeapon(&pickupType, messageBuffer, &saveState, 2, 0, 1, 8) != 1) {
+        g_HudUiMgrMessages[2] = {};
+        return 2;
+    }
+
+    const bool weaponOk =
+        (bank.controllerA.flags & 4) != 0 &&
+        g_HudSensorTracker.primaryGunDispatchCount == oldPrimaryDispatchCount + 1 &&
+        bank.controllerA.ammoOrCharge == 10.0f &&
+        bank.selectedSide == 1 &&
+        message.widget.image == &images[4] &&
+        std::strcmp(message.panel.textBuffer, "") == 0;
+    if (!weaponOk) {
+        g_HudUiMgrMessages[2] = {};
+        return 3;
+    }
+
+    pickupType.weaponKeyName = nullptr;
+    pickupType.optEntry = nullptr;
+    pickupType.defaultAmount = 2;
+    bank.controllerA.ammoOrCharge = 0.0f;
+    bank.controllerB.ammoOrCharge = 0.0f;
+    playerState.activeAltGunController = &bank.controllerA;
+
+    if (Pickup::GrantAmmoOrWeapon(&pickupType, messageBuffer, &saveState, 2, 0, 1, 0) != 1) {
+        g_HudUiMgrMessages[2] = {};
+        return 4;
+    }
+
+    const bool ammoOk = bank.controllerA.ammoOrCharge == 2.0f && bank.selectedSide == 0 &&
+                        message.image == &images[3] &&
+                        std::strcmp(message.panel.textBuffer, "2") == 0;
+
+    g_HudUiMgrMessages[2] = {};
+    return ammoOk ? 0 : 5;
+}
+
+extern "C" int pickup_apply_effect_smoke(void) {
+    zUtil_SaveGameState saveState = {};
+    zUtil_PlayerStateStorage playerState = {};
+    PlayerMasterCommonData commonData = {};
+    HudUiShieldMessageWidget shield = {};
+    HudUiTextStack4 topStack = {};
+
+    saveState.playerState = &playerState;
+    playerState.masterCommonData = &commonData;
+    commonData.maxHealth = 100.0f;
+    commonData.invMaxHealth = 0.01f;
+
+    shield.meter.fillPixelsMax = 20;
+    shield.meter.points[1].y = 100.0f;
+
+    HudUiShieldMessageWidget *const oldShieldWidget = g_HudUiMgrShieldMessageWidget;
+    HudUiTextStack4 *const oldTopStack = g_HudUiTopMessageStack;
+    const float oldStatusMeterRatio = g_PlayerStatusMeterRatio;
+    g_HudUiMgrShieldMessageWidget = &shield;
+    g_HudUiTopMessageStack = &topStack;
+
+    playerState.statusMeterValue = 20.0f;
+    g_PlayerStatusMeterRatio = 0.2f;
+    const int statusAccepted = Pickup::ApplyEffect(0x22, 30, &saveState);
+    const bool statusAcceptedOk =
+        statusAccepted == 1 && playerState.statusMeterValue == 50.0f &&
+        std::strcmp(shield.percentTextPanel.textBuffer, "50") == 0;
+
+    playerState.statusMeterValue = 100.0f;
+    g_PlayerStatusMeterRatio = 1.0f;
+    const int statusRejected = Pickup::ApplyEffect(0x22, 30, &saveState);
+    const bool statusRejectedOk =
+        statusRejected == 0 && playerState.statusMeterValue == 100.0f;
+
+    const int invalidResult = Pickup::ApplyEffect(0x40, 0, &saveState);
+    const bool invalidOk = invalidResult == 0;
+
+    g_HudUiMgrShieldMessageWidget = oldShieldWidget;
+    g_HudUiTopMessageStack = oldTopStack;
+    g_PlayerStatusMeterRatio = oldStatusMeterRatio;
+    return statusAcceptedOk && statusRejectedOk && invalidOk ? 0 : 1;
 }
 
 extern "C" int zclass_node_flag16_flag17_smoke() {
@@ -11653,6 +12210,75 @@ extern "C" int zclass_gwlist_delete_a_node_smoke(void) {
     return 0;
 }
 
+extern "C" int zclass_lifecycle_leaf_smoke(void) {
+    g_zClass_NodeArraySize = 0;
+    g_zClass_IsInitialized = 0;
+
+    zClass::SetNodeArraySize(12);
+    if (g_zClass_NodeArraySize != 12 || zClass::IsInitialized() != 0) {
+        return 1;
+    }
+
+    zClass::SetNodeArraySize(99);
+    if (g_zClass_NodeArraySize != 12) {
+        return 2;
+    }
+
+    g_zClass_IsInitialized = 1;
+    return zClass::IsInitialized() == 1 ? 0 : 3;
+}
+
+extern "C" int zclass_init_smoke(void) {
+    if (g_zClass_NodeArray != nullptr) {
+        std::free(g_zClass_NodeArray);
+    }
+
+    g_zClass_NodeArray = nullptr;
+    g_zClass_NodeArraySize = 3;
+    g_zClass_ActiveNodeCount = 9;
+    g_zClass_NodeFreeHeadIndex = 99;
+    g_zClass_IsInitialized = 0;
+    g_zClass_RebuildGwWorldBltRectOnShutdown = 1;
+
+    zZbdSectionHandlerNode sentinel{};
+    sentinel.next = &sentinel;
+    sentinel.prev = &sentinel;
+    zZbdManager manager{};
+    manager.sectionHandlerListSentinel = &sentinel;
+    g_zUtil_ZbdManager = &manager;
+
+    if (zClass::Init() != 0) {
+        g_zUtil_ZbdManager = nullptr;
+        return 1;
+    }
+
+    const bool nodeArrayOk =
+        g_zClass_NodeArray != nullptr && g_zClass_NodeArraySize == 3 &&
+        g_zClass_ActiveNodeCount == 0 && g_zClass_NodeFreeHeadIndex == 0 &&
+        g_zClass_IsInitialized == 1 && g_zClass_NodeArray[0].freeTag == 1 &&
+        g_zClass_NodeArray[1].freeTag == 2 &&
+        (g_zClass_NodeArray[2].freeTag & 0x00ffffff) == 0x00ffffff;
+
+    const bool handlerOk =
+        manager.sectionHandlerCount == 1 && sentinel.next != &sentinel &&
+        sentinel.next->sectionHandler.sectionName == g_zClass_GWWorldNodeName &&
+        std::strcmp(sentinel.next->sectionHandler.sectionName, "GWWorld") == 0 &&
+        sentinel.next->sectionHandler.onPreLoad != nullptr &&
+        sentinel.next->sectionHandler.onDataReady != nullptr &&
+        sentinel.next->sectionHandler.sortOrder == 1000 &&
+        sentinel.next->sectionHandler.userData == nullptr;
+
+    zClass::ShutdownCore();
+    if (sentinel.next != &sentinel) {
+        zZbdSectionHandlerNode *node = sentinel.next;
+        sentinel.next = &sentinel;
+        sentinel.prev = &sentinel;
+        delete node;
+    }
+    g_zUtil_ZbdManager = nullptr;
+    return nodeArrayOk && handlerOk ? 0 : 2;
+}
+
 extern "C" int zclass_shutdown_core_smoke(void) {
     g_zClass_NodeArray =
         static_cast<zClass_NodeFreeListSlot *>(std::calloc(2, sizeof(zClass_NodeFreeListSlot)));
@@ -15863,11 +16489,12 @@ extern "C" int czrecoil_frame_init_startup_hw_api_from_options_smoke(void) {
     g_zVideo_HwApiDeviceTable[1].m_textureMemTotalBytes = 0x200000;
 
     int result = 0;
-    CZRecoilFrame frame = {};
-    frame.InitStartupHwApiFromOptions();
-    if (frame.m_hwApiCmdUiState[0] != 0 ||
-        frame.m_hwApiCmdUiState[2] != 8 ||
-        frame.m_videoModeIndex != 4 ||
+    alignas(CZRecoilFrame) unsigned char frameStorage[sizeof(CZRecoilFrame)] = {};
+    CZRecoilFrame *const frame = reinterpret_cast<CZRecoilFrame *>(frameStorage);
+    frame->InitStartupHwApiFromOptions();
+    if (frame->m_hwApiCmdUiState[0] != 0 ||
+        frame->m_hwApiCmdUiState[2] != 8 ||
+        frame->m_videoModeIndex != 4 ||
         hwApi != 1 ||
         acceleration != 1 ||
         mode != 5) {
@@ -15877,11 +16504,13 @@ extern "C" int czrecoil_frame_init_startup_hw_api_from_options_smoke(void) {
         acceleration = 1;
         fullscreen = 1;
         mode = 4;
-        CZRecoilFrame fallbackFrame = {};
-        fallbackFrame.InitStartupHwApiFromOptions();
-        if (fallbackFrame.m_hwApiCmdUiState[0] != 8 ||
-            fallbackFrame.m_videoModeIndex != 5 ||
-            fallbackFrame.m_fullscreenOption != 1 ||
+        alignas(CZRecoilFrame) unsigned char fallbackFrameStorage[sizeof(CZRecoilFrame)] = {};
+        CZRecoilFrame *const fallbackFrame =
+            reinterpret_cast<CZRecoilFrame *>(fallbackFrameStorage);
+        fallbackFrame->InitStartupHwApiFromOptions();
+        if (fallbackFrame->m_hwApiCmdUiState[0] != 8 ||
+            fallbackFrame->m_videoModeIndex != 5 ||
+            fallbackFrame->m_fullscreenOption != 1 ||
             hwApi != 0 ||
             acceleration != 0 ||
             fullscreen != 1 ||
@@ -21822,6 +22451,8 @@ int main(int argc, char **argv) {
         {"zinput_poll_active_devices_smoke", zinput_poll_active_devices_smoke},
         {"zopt_fullscreen_accessors_smoke", zopt_fullscreen_accessors_smoke},
         {"zopt_section_accessor_smoke", zopt_section_accessor_smoke},
+        {"zopt_toggle_hud_type_for_current_hw_mode_smoke",
+         zopt_toggle_hud_type_for_current_hw_mode_smoke},
         {"zopt_view_rect_target_side_effects_smoke",
          zopt_view_rect_target_side_effects_smoke},
         {"zopt_wol_password_flag_accessor_smoke",
@@ -21959,6 +22590,9 @@ int main(int argc, char **argv) {
         {"zsnd_cached_directsound_get_caps_smoke", zsnd_cached_directsound_get_caps_smoke},
         {"zsnd_options_cpu_and_cached_directsound_smoke",
          zsnd_options_cpu_and_cached_directsound_smoke},
+        {"zsnd_group_load_config_block_smoke",
+         zsnd_group_load_config_block_smoke},
+        {"zsnd_group_load_and_queue_smoke", zsnd_group_load_and_queue_smoke},
         {"zreader_named_int_lookup_smoke", zreader_named_int_lookup_smoke},
         {"zreader_get_named_node_smoke", zreader_get_named_node_smoke},
         {"zreader_named_string_float_lookup_smoke", zreader_named_string_float_lookup_smoke},
@@ -22017,11 +22651,26 @@ int main(int argc, char **argv) {
          znetwork_dplay_create_interface_and_coinitialize_smoke},
         {"znetwork_set_fatal_disconnect_callback_smoke",
          znetwork_set_fatal_disconnect_callback_smoke},
+        {"pickup_type_key_table_find_index_smoke", pickup_type_key_table_find_index_smoke},
+        {"pickup_type_table_free_opt_meta_smoke", pickup_type_table_free_opt_meta_smoke},
+        {"pickup_airdrop_spawn_ref_shutdown_global_smoke",
+         pickup_airdrop_spawn_ref_shutdown_global_smoke},
         {"pickup_airdrop_spawn_ref_init_nodes_smoke",
          pickup_airdrop_spawn_ref_init_nodes_smoke},
+        {"pickup_airdrop_spawn_ref_init_global_smoke",
+         pickup_airdrop_spawn_ref_init_global_smoke},
+        {"pickup_airdrop_spawn_ref_spawn_pickup_type_and_relay_gates_smoke",
+         pickup_airdrop_spawn_ref_spawn_pickup_type_and_relay_gates_smoke},
+        {"pickup_airdrop_spawn_ref_try_spawn_random_pickup_from_global_blocked_smoke",
+         pickup_airdrop_spawn_ref_try_spawn_random_pickup_from_global_blocked_smoke},
+        {"pickup_map_vtol_drop_group_variant_to_type_index_smoke",
+         pickup_map_vtol_drop_group_variant_to_type_index_smoke},
+        {"pickup_select_next_vtol_spawn_type_index_smoke",
+         pickup_select_next_vtol_spawn_type_index_smoke},
         {"pickup_archive_write_all_smoke", pickup_archive_write_all_smoke},
         {"pickup_archive_read_record_smoke", pickup_archive_read_record_smoke},
         {"pickup_init_smoke", pickup_init_smoke},
+        {"pickup_shutdown_smoke", pickup_shutdown_smoke},
         {"pickup_register_existing_object_smoke", pickup_register_existing_object_smoke},
         {"pickup_leaf_helpers_smoke", pickup_leaf_helpers_smoke},
         {"pickup_spawn_from_parsed_zrd_entry_smoke",
@@ -22032,13 +22681,22 @@ int main(int argc, char **argv) {
          pickup_handle_pkt12_airdrop_spawn_chute_relay_smoke},
         {"pickup_remove_object_smoke", pickup_remove_object_smoke},
         {"pickup_respawn_spawn_def_smoke", pickup_respawn_spawn_def_smoke},
+        {"pickup_respawn_queue_init_smoke", pickup_respawn_queue_init_smoke},
+        {"pickup_respawn_queue_clear_smoke", pickup_respawn_queue_clear_smoke},
         {"pickup_respawn_queue_update_smoke", pickup_respawn_queue_update_smoke},
+        {"pickup_spawn_list_primary_init_smoke", pickup_spawn_list_primary_init_smoke},
+        {"pickup_spawn_list_net_copy_init_smoke",
+         pickup_spawn_list_net_copy_init_smoke},
         {"pickup_spawn_list_clear_smoke", pickup_spawn_list_clear_smoke},
         {"pickup_remove_other_spawns_same_opt_entry_smoke",
          pickup_remove_other_spawns_same_opt_entry_smoke},
+        {"pickup_resolve_owner_from_bvol_hit_smoke",
+         pickup_resolve_owner_from_bvol_hit_smoke},
         {"pickup_send_pkt11_delta_smoke", pickup_send_pkt11_delta_smoke},
         {"pickup_send_pkt11_create_delta_smoke", pickup_send_pkt11_create_delta_smoke},
         {"pickup_reconcile_spawn_lists_smoke", pickup_reconcile_spawn_lists_smoke},
+        {"pickup_grant_ammo_or_weapon_smoke", pickup_grant_ammo_or_weapon_smoke},
+        {"pickup_apply_effect_smoke", pickup_apply_effect_smoke},
         {"gamenet_find_player_row_and_status_bits_smoke",
          gamenet_find_player_row_and_status_bits_smoke},
         {"gamenet_handle_pkt03_remove_remote_player_smoke",
@@ -22049,6 +22707,8 @@ int main(int argc, char **argv) {
          gamenet_send_pkt14_hud_timer_and_flags_sync_smoke},
         {"gamenet_handle_pkt14_hud_timer_and_flags_sync_smoke",
          gamenet_handle_pkt14_hud_timer_and_flags_sync_smoke},
+        {"hud_cheat_execute_command_string_smoke",
+         hud_cheat_execute_command_string_smoke},
         {"gamenet_host_update_session_status_fields_smoke",
          gamenet_host_update_session_status_fields_smoke},
         {"gamenet_timer_status_packet_smoke", gamenet_timer_status_packet_smoke},
@@ -22082,6 +22742,8 @@ int main(int argc, char **argv) {
         {"gamenet_chat_compose_key_callback_smoke",
          gamenet_chat_compose_key_callback_smoke},
         {"gamenet_begin_chat_compose_smoke", gamenet_begin_chat_compose_smoke},
+        {"hud_ui_handle_hotkey_command_begin_chat_smoke",
+         hud_ui_handle_hotkey_command_begin_chat_smoke},
         {"gamenet_end_chat_compose_and_send_smoke",
          gamenet_end_chat_compose_and_send_smoke},
         {"gamenet_chat_message_packet_smoke", gamenet_chat_message_packet_smoke},
@@ -22370,6 +23032,8 @@ int main(int argc, char **argv) {
         {"player_get_aiv_zrd_path_smoke", player_get_aiv_zrd_path_smoke},
         {"player_extract_vehicle_name_from_aiv_name_smoke",
          player_extract_vehicle_name_from_aiv_name_smoke},
+        {"player_build_ai_peer_rings_by_ai_net_id_smoke",
+         player_build_ai_peer_rings_by_ai_net_id_smoke},
         {"player_los_from_fx_offset_smoke", player_los_from_fx_offset_smoke},
         {"player_init_save_state_list_smoke",
          player_init_save_state_list_smoke},
@@ -22452,6 +23116,8 @@ int main(int argc, char **argv) {
          player_capture_current_object_pose_as_restart_anchor_smoke},
         {"player_reset_mouse_control_state_and_recenter_cursor_smoke",
          player_reset_mouse_control_state_and_recenter_cursor_smoke},
+        {"player_register_gameplay_callbacks_and_ff_smoke",
+         player_register_gameplay_callbacks_and_ff_smoke},
         {"player_toggle_steering_mode_and_reset_mouse_look_smoke",
          player_toggle_steering_mode_and_reset_mouse_look_smoke},
         {"player_reset_motion_transient_state_smoke",
@@ -22474,8 +23140,46 @@ int main(int argc, char **argv) {
          player_alt_gun_fire_slot_offset_smoke},
         {"player_solve_alt_gun_lead_target_point_smoke",
          player_solve_alt_gun_lead_target_point_smoke},
+        {"player_tick_ai_mode2_top_level_smoke",
+         player_tick_ai_mode2_top_level_smoke},
+        {"player_tick_ai_mode2_path_follow_smoke",
+         player_tick_ai_mode2_path_follow_smoke},
+        {"player_ai_mode2_forward_probe_requires_auto_turn_smoke",
+         player_ai_mode2_forward_probe_requires_auto_turn_smoke},
+        {"player_ai_advance_path_cursor_and_compute_target_vec_smoke",
+         player_ai_advance_path_cursor_and_compute_target_vec_smoke},
+        {"player_ai_choose_next_path_branch_index_smoke",
+         player_ai_choose_next_path_branch_index_smoke},
+        {"player_tick_ai_mode2_steering_substate_smoke",
+         player_tick_ai_mode2_steering_substate_smoke},
+        {"player_update_ai_mode2_move_and_turn_toward_target_smoke",
+         player_update_ai_mode2_move_and_turn_toward_target_smoke},
+        {"player_tick_ai_mode2_offset_target_steering_smoke",
+         player_tick_ai_mode2_offset_target_steering_smoke},
+        {"player_tick_ai_mode2_dynamic_offset_target_steering_smoke",
+         player_tick_ai_mode2_dynamic_offset_target_steering_smoke},
+        {"player_ai_try_enter_mode2_attack_pursuit_los_smoke",
+         player_ai_try_enter_mode2_attack_pursuit_los_smoke},
+        {"player_ai_alert_attack_buddies_smoke",
+         player_ai_alert_attack_buddies_smoke},
+        {"player_ai_enter_mode2_steering_pursuit_smoke",
+         player_ai_enter_mode2_steering_pursuit_smoke},
+        {"player_ai_rebuild_synthetic_path_to_node_if_far_smoke",
+         player_ai_rebuild_synthetic_path_to_node_if_far_smoke},
         {"player_tick_ai_mode2_alt_gun_attack_window_smoke",
          player_tick_ai_mode2_alt_gun_attack_window_smoke},
+        {"player_update_ai_mode2_turn_toward_player_no_throttle_smoke",
+         player_update_ai_mode2_turn_toward_player_no_throttle_smoke},
+        {"player_update_ai_mode2_turn_in_place_toward_player_smoke",
+         player_update_ai_mode2_turn_in_place_toward_player_smoke},
+        {"player_update_ai_mode2_move_and_turn_toward_offset_target_smoke",
+         player_update_ai_mode2_move_and_turn_toward_offset_target_smoke},
+        {"player_update_ai_mode2_move_and_turn_toward_dynamic_offset_target_smoke",
+         player_update_ai_mode2_move_and_turn_toward_dynamic_offset_target_smoke},
+        {"player_tick_ai_mode2_timed_path_steering_smoke",
+         player_tick_ai_mode2_timed_path_steering_smoke},
+        {"player_tick_remote_network_player_smoke",
+         player_tick_remote_network_player_smoke},
         {"player_update_gun_dispatch_requests_from_trigger_latches_smoke",
          player_update_gun_dispatch_requests_from_trigger_latches_smoke},
         {"player_start_slip_sfx_smoke", player_start_slip_sfx_smoke},
@@ -22577,8 +23281,12 @@ int main(int argc, char **argv) {
          player_update_post_move_environment_smoke},
         {"player_apply_amphib_speed_oscillation_smoke",
          player_apply_amphib_speed_oscillation_smoke},
+        {"player_process_primary_gun_dispatch_request_smoke",
+         player_process_primary_gun_dispatch_request_smoke},
         {"player_tick_alt_gun_runtime_state_smoke",
          player_tick_alt_gun_runtime_state_smoke},
+        {"player_reset_alt_gun_door_animation_state_smoke",
+         player_reset_alt_gun_door_animation_state_smoke},
         {"player_reset_alt_gun_runtime_state_smoke",
          player_reset_alt_gun_runtime_state_smoke},
         {"player_build_mission_save_data_smoke",
@@ -22728,12 +23436,16 @@ int main(int argc, char **argv) {
          player_enter_destroyed_state_smoke},
         {"player_apply_status_meter_change_smoke",
          player_apply_status_meter_change_smoke},
+        {"player_update_status_meter_smoke", player_update_status_meter_smoke},
         {"player_reset_damage_state_and_timed_hit_status_smoke",
          player_reset_damage_state_and_timed_hit_status_smoke},
+        {"player_reset_damage_visuals_and_timed_status_smoke",
+         player_reset_damage_visuals_and_timed_status_smoke},
         {"player_apply_pitch_roll_velocity_impulse_from_direction_smoke",
          player_apply_pitch_roll_velocity_impulse_from_direction_smoke},
         {"player_start_destroyed_state_vehicle_effect_smoke",
          player_start_destroyed_state_vehicle_effect_smoke},
+        {"player_apply_damage_local_smoke", player_apply_damage_local_smoke},
         {"player_create_from_names_at_pose_smoke",
          player_create_from_names_at_pose_smoke},
         {"player_init_state_from_name_and_master_common_data_smoke",
@@ -22860,6 +23572,10 @@ int main(int argc, char **argv) {
          hud_ui_callback_queue_exit_current_state_smoke},
         {"hud_ui_callback_queue_cheat_code_state_smoke",
          hud_ui_callback_queue_cheat_code_state_smoke},
+        {"hud_sensor_queue_mission_fmv_state_for_mission_id_smoke",
+         hud_sensor_queue_mission_fmv_state_for_mission_id_smoke},
+        {"hud_sensor_save_and_queue_mission_state_smoke",
+         hud_sensor_save_and_queue_mission_state_smoke},
         {"hud_ui_credits_quit_button_on_activate_smoke",
          hud_ui_credits_quit_button_on_activate_smoke},
         {"hud_cheat_clear_nanite_panel_cheat_sentinel_smoke",
@@ -23206,6 +23922,16 @@ int main(int argc, char **argv) {
          zhud_mgr_static_init_and_register_at_exit_smoke},
         {"zhud_mgr_is_local_player_first_in_stats_list_smoke",
          zhud_mgr_is_local_player_first_in_stats_list_smoke},
+        {"zhud_mgr_destroy_sensor_window_null_smoke",
+         zhud_mgr_destroy_sensor_window_null_smoke},
+        {"zhud_mgr_destroy_sensor_window_playback_smoke",
+         zhud_mgr_destroy_sensor_window_playback_smoke},
+        {"zhud_mgr_disable_hud_smoke", zhud_mgr_disable_hud_smoke},
+        {"zhud_mgr_enable_hud_smoke", zhud_mgr_enable_hud_smoke},
+        {"zhud_mgr_switch_active_dialog_smoke",
+         zhud_mgr_switch_active_dialog_smoke},
+        {"zhud_mgr_apply_hud_mode_switch_smoke",
+         zhud_mgr_apply_hud_mode_switch_smoke},
         {"zhud_scoreboard_set_scale_and_rebuild_smoke",
          zhud_scoreboard_set_scale_and_rebuild_smoke},
         {"zhud_scoreboard_dispatch_set_scale_smoke",
@@ -23228,6 +23954,16 @@ int main(int argc, char **argv) {
          zhud_text_stack_destructor_core_smoke},
         {"zhud_text_stack_layout_mutators_smoke",
          zhud_text_stack_layout_mutators_smoke},
+        {"zhud_timer_panel_update_smoke", zhud_timer_panel_update_smoke},
+        {"zhud_timer_and_counter_constructor_smoke",
+         zhud_timer_and_counter_constructor_smoke},
+        {"zhud_timer_panel_update_hms_smoke",
+         zhud_timer_panel_update_hms_smoke},
+        {"zhud_timer_panel_set_time_smoke",
+         zhud_timer_panel_set_time_smoke},
+        {"zhud_timer_panel_zar_write_smoke",
+         zhud_timer_panel_zar_write_smoke},
+        {"zhud_timer_panel_zar_read_smoke", zhud_timer_panel_zar_read_smoke},
         {"zhud_timer_panel_global_accessors_smoke",
          zhud_timer_panel_global_accessors_smoke},
         {"zhud_list_menu_entry_sort_smoke", zhud_list_menu_entry_sort_smoke},
@@ -23296,10 +24032,14 @@ int main(int argc, char **argv) {
          zhud_mgr_trigger_current_layout_on_activated_smoke},
         {"zhud_mgr_viewport_activation_smoke",
          zhud_mgr_viewport_activation_smoke},
+        {"zhud_mgr_update_target_reticle_smoke",
+         zhud_mgr_update_target_reticle_smoke},
         {"zhud_mgr_project_point_to_normalized_clamped_smoke",
          zhud_mgr_project_point_to_normalized_clamped_smoke},
         {"zhud_mgr_sensor_set_shield_message_ratio_smoke",
          zhud_mgr_sensor_set_shield_message_ratio_smoke},
+        {"zhud_mgr_hide_tracked_progress_meter_if_owner_matches_smoke",
+         zhud_mgr_hide_tracked_progress_meter_if_owner_matches_smoke},
         {"zhud_shield_message_widget_destructor_smoke",
          zhud_shield_message_widget_destructor_smoke},
         {"zhud_shield_message_widget_apply_layout_smoke",
@@ -23374,6 +24114,7 @@ int main(int argc, char **argv) {
          zhud_background_video_widget_constructor_smoke},
         {"zhud_background_video_widget_destructor_smoke",
          zhud_background_video_widget_destructor_smoke},
+        {"zhud_play_powerup_sfx_smoke", zhud_play_powerup_sfx_smoke},
         {"zhud_background_constructor_smoke", zhud_background_constructor_smoke},
         {"zhud_background_update_input_focus_smoke",
          zhud_background_update_input_focus_smoke},
@@ -23602,6 +24343,22 @@ int main(int argc, char **argv) {
          zhud_numeric_text_input_base_constructor_smoke},
         {"zhud_background_bind_primitive_node_to_element_smoke",
          zhud_background_bind_primitive_node_to_element_smoke},
+        {"hud_line_clip_current_bounds_smoke", hud_line_clip_current_bounds_smoke},
+        {"hud_recti_clip_segment_helpers_smoke", hud_recti_clip_segment_helpers_smoke},
+        {"hud_sensor_tracker_draw_diamond_marker_smoke",
+         hud_sensor_tracker_draw_diamond_marker_smoke},
+        {"hud_sensor_tracker_save_marker_leaf_smoke",
+         hud_sensor_tracker_save_marker_leaf_smoke},
+        {"hud_sensor_tracker_update_map_scale_lerp_smoke",
+         hud_sensor_tracker_update_map_scale_lerp_smoke},
+        {"hud_sensor_tracker_project_world_points_smoke",
+         hud_sensor_tracker_project_world_points_smoke},
+        {"hud_sensor_map_node_basics_smoke", hud_sensor_map_node_basics_smoke},
+        {"hud_sensor_map_remove_and_shutdown_smoke",
+         hud_sensor_map_remove_and_shutdown_smoke},
+        {"hud_sensor_map_overlay_toggle_smoke",
+         hud_sensor_map_overlay_toggle_smoke},
+        {"hud_sensor_tracker_load_map_paths_smoke", hud_sensor_tracker_load_map_paths_smoke},
         {"zhud_sensor_track_list_add_smoke", zhud_sensor_track_list_add_smoke},
         {"zhud_std_ptr_vector_clear_no_op_destroy_smoke",
          zhud_std_ptr_vector_clear_no_op_destroy_smoke},
@@ -23845,6 +24602,8 @@ int main(int argc, char **argv) {
          zclass_delete_node_from_lists_smoke},
         {"zclass_gwlist_delete_a_node_smoke",
          zclass_gwlist_delete_a_node_smoke},
+        {"zclass_lifecycle_leaf_smoke", zclass_lifecycle_leaf_smoke},
+        {"zclass_init_smoke", zclass_init_smoke},
         {"zclass_shutdown_core_smoke", zclass_shutdown_core_smoke},
         {"zclass_node_propagate_transform_dirty_smoke",
          zclass_node_propagate_transform_dirty_smoke},
@@ -23906,6 +24665,7 @@ int main(int argc, char **argv) {
          zclass_destroy_node_recursive_display_smoke},
         {"zclass_world_animate_delete_node_smoke",
          zclass_world_animate_delete_node_smoke},
+        {"zclass_window_new_smoke", zclass_window_new_smoke},
         {"zclass_display_init_smoke", zclass_display_init_smoke},
         {"zclass_lod_leaf_smoke", zclass_lod_leaf_smoke},
         {"zclass_camera_view_distance_smoke",

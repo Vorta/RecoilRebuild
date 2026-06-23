@@ -14,7 +14,35 @@
 #include <stdlib.h>
 #include <string.h>
 
+/**
+ * Reimplements data 0x57d40c: g_zModel_VertexShadingEnabled.
+ * Purpose: gate vertex-shading behavior for zModel render paths.
+ */
 int g_zModel_VertexShadingEnabled = 0;
+/*
+ * BN identifies the gmod_init.c diagnostics as three initialized .data char
+ * arrays in this order, including the VC alignment padding between rows.
+ */
+/**
+ * Reimplements data 0x4e0f28: g_zModel_SourceFile_GmodInitC.
+ * Purpose: store the writable source-file path passed to gmod_init diagnostics.
+ */
+char g_zModel_SourceFile_GmodInitC[0x27] = "D:\\Proj\\GameZRecoil\\zModel\\gmod_init.c";
+/**
+ * Reimplements data 0x4e0f50: g_zModel_SetModel3dArraySizeAlreadySetFmt.
+ * Purpose: store the writable display-instance pool capacity diagnostic format.
+ */
+char g_zModel_SetModel3dArraySizeAlreadySetFmt[0x3a] =
+    "Error setting model3d array size; size already set to %d.";
+/**
+ * Reimplements data 0x4e0f8c: g_zModel_TextureScrollNullPtrErrorMsg.
+ * Purpose: store the writable null display-instance texture-world diagnostic.
+ */
+char g_zModel_TextureScrollNullPtrErrorMsg[0x33] =
+    "ERROR setting model texture scroll data; Null ptr.";
+RECOIL_STATIC_ASSERT(sizeof(g_zModel_SourceFile_GmodInitC) == 0x27);
+RECOIL_STATIC_ASSERT(sizeof(g_zModel_SetModel3dArraySizeAlreadySetFmt) == 0x3a);
+RECOIL_STATIC_ASSERT(sizeof(g_zModel_TextureScrollNullPtrErrorMsg) == 0x33);
 
 namespace {
 const double kVisibleContributionThreshold = 1.0 / 255.0;
@@ -172,7 +200,12 @@ typedef void(__fastcall *SubmitPolygonLitProc)(
     int queueMode
 );
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered original static helper in D:\Proj\GameZRecoil\zModel\zmodel.cpp.
+ * No standalone retail function; observed callers are address-backed zModel
+ * display-instance paths in this source file.
+ * Purpose: return the display-instance pointer stored on a scene node.
+ */
 zDiPartial *NodeDisplayInstance(
     zClass_NodePartial *node
 ) {
@@ -803,7 +836,12 @@ float MaterialAlphaFloat(
     return (float)(MaterialAlphaInt(material)) * (1.0f / 255.0f);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered original static helper in D:\Proj\GameZRecoil\zModel\zmodel.cpp.
+ * No standalone retail function; observed callers are address-backed zModel
+ * material render paths in this source file.
+ * Purpose: return the current render-class pointer for a material texture entry.
+ */
 zVideo_RenderClass *MaterialRenderClass(
     zModel_MaterialPartial *material
 ) {
@@ -2011,9 +2049,9 @@ void __fastcall SetDisplayInstancePoolCapacity(
     if (g_zModel_DiPoolCapacity != 0) {
         zError::ReportOld(
             0x200,
-            "D:\\Proj\\GameZRecoil\\zModel\\gmod_init.c",
+            g_zModel_SourceFile_GmodInitC,
             0x1be,
-            "Error setting model3d array size; size already set to %d.",
+            g_zModel_SetModel3dArraySizeAlreadySetFmt,
             g_zModel_DiPoolCapacity
         );
         return;
@@ -2075,9 +2113,9 @@ int __fastcall SetDiTextureWorldPerMeter(
     if (di == 0) {
         zError::ReportOld(
             0x200,
-            "D:\\Proj\\GameZRecoil\\zModel\\gmod_init.c",
+            g_zModel_SourceFile_GmodInitC,
             0x285,
-            "ERROR setting model texture scroll data; Null ptr."
+            g_zModel_TextureScrollNullPtrErrorMsg
         );
         return 1;
     }

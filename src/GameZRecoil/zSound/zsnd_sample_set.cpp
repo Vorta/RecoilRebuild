@@ -7,6 +7,26 @@
 
 extern "C" zSndSampleSetRegistry g_zSnd_SampleSetRegistry = {0};
 
+/**
+ * Reimplements data 0x4e2238: g_zSndBankArchiveNameLow.
+ * Owner data: audio_fmv archive-bank name buffer; adjacent archive-bank flag
+ * at 0x4e2234 is separately owned.
+ * Purpose: provide the writable low-quality sound archive bank name.
+ */
+char g_zSndBankArchiveNameLow[0x0c] = "soundsL.zbd";
+/**
+ * Reimplements data 0x4e2244: g_zSndBankArchiveNameMedium.
+ * Owner data: audio_fmv archive-bank name buffer.
+ * Purpose: provide the writable medium-quality sound archive bank name.
+ */
+char g_zSndBankArchiveNameMedium[0x0c] = "soundsM.zbd";
+/**
+ * Reimplements data 0x4e2250: g_zSndBankArchiveNameHigh.
+ * Owner data: audio_fmv archive-bank name buffer.
+ * Purpose: provide the writable high-quality sound archive bank name.
+ */
+char g_zSndBankArchiveNameHigh[0x0c] = "soundsH.zbd";
+
 namespace {
 /**
  * Original inline helper; no standalone retail function exists.
@@ -301,7 +321,11 @@ int zSndSampleSet::LoadSamplesFromIndexArchive(
  * from loose sample paths, and mark the set loaded.
  */
 int zSndSampleSet::Init() {
-    const char *const archiveNames[3] = {"soundsH.zbd", "soundsM.zbd", "soundsL.zbd"};
+    const char *const archiveNames[3] = {
+        g_zSndBankArchiveNameHigh,
+        g_zSndBankArchiveNameMedium,
+        g_zSndBankArchiveNameLow
+    };
     int archiveBankIndex = 0;
     int archiveInitialized = 0;
     zIndexArchive archive;

@@ -44,6 +44,16 @@ char g_zInterp_MacroExpansionScratch[1024];
 extern char g_zInterp_PreparedIndexFileNameStr[];
 
 /**
+ * Reimplements data 0x4de4c0: g_zInterp_PrintNodeTree_OffString.
+ * Data owner: zInterp_Context initialized globals.
+ * BN evidence: writable char[0x4] "OFF"; DispatchCoreCommand references it
+ * when reporting Object3DSetScroll with a missing current node.
+ *
+ * Purpose: shared OFF text for Object3D scroll command diagnostics.
+ */
+char g_zInterp_PrintNodeTree_OffString[] = "OFF";
+
+/**
  * Reimplements data 0x4e48f0: g_zInterp_EnablePreparedScripts.
  * Data owner: zInterp_Context initialized globals.
  * BN evidence: 0x4e48f0 contains 01 00 00 00.
@@ -75,6 +85,16 @@ char g_zInterp_LineBuffer[1024] = {0};
  * Purpose: single-character assignment token used by variable binding.
  */
 char g_zInterp_AssignToken_Equal = '=';
+
+/**
+ * Reimplements data 0x4e4a28: k_zInterp_PrintNodeTreeFormat.
+ * Data owner: zInterp_Context initialized globals.
+ * BN evidence: writable char[0x6] "%*s%s"; PrintNodeTree passes it to Logf
+ * for indentation and node-name output.
+ *
+ * Purpose: printf format used by zInterp_Context::PrintNodeTree.
+ */
+char k_zInterp_PrintNodeTreeFormat[] = "%*s%s";
 
 /**
  * Reimplements data 0x56c780: g_zInterp_Object3DCommandIntScratch.
@@ -3267,7 +3287,7 @@ int zInterp_Context::DispatchCoreCommand(
             this,
             "%s %s %.1f %.1f Failed: current_node is NULL",
             commandToken,
-            enabled != 0 ? "ON" : "OFF",
+            enabled != 0 ? "ON" : g_zInterp_PrintNodeTree_OffString,
             textureWorldPerMeter,
             (float)(textureWorldAxis)
         );
@@ -4122,7 +4142,7 @@ void zInterp_Context::PrintNodeTree(
 
     Logf(
         this,
-        "%*s%s",
+        k_zInterp_PrintNodeTreeFormat,
         indent,
         " ",
         node->name

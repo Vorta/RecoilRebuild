@@ -186,9 +186,91 @@ RECOIL_STATIC_ASSERT(
 RECOIL_STATIC_ASSERT(sizeof(PickupArchiveRecord) == 0x30);
 
 namespace {
+/**
+ * Reimplements data 0x4d05bc: kStatusPickupFullThreshold (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: preserve the full-status threshold used before applying health pickup recovery.
+ */
+const float kStatusPickupFullThreshold = 0.99000001f;
+/**
+ * Reimplements data 0x4d178c: kPickupAltAmmoDisabledSentinel (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: preserve the alt-weapon ammo sentinel that disables VTOL airdrop pickup spawning.
+ */
 const float kPickupAltAmmoDisabledSentinel = 123456792.0f;
+/**
+ * Reimplements data 0x4dc16c: kPickupArchiveSectionName (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: name the pickup archive section registered with the ZAR handler table.
+ */
+const char kPickupArchiveSectionName[] = "Pickup";
+/**
+ * Reimplements data 0x4dc174: kPickupConfigImageKey (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: name the pickup config IMAGE key used to load optional metadata images.
+ */
+const char kPickupConfigImageKey[] = "IMAGE";
+/**
+ * Reimplements data 0x4dc184: kPickupConfigDataNodeName (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: name the PICKUP_DATA node in the pickup config tree.
+ */
+const char kPickupConfigDataNodeName[] = "PICKUP_DATA";
+/**
+ * Reimplements data 0x4dc190: kPickupSourceFilePath (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: preserve the source path emitted in pickup zError reports.
+ */
+const char kPickupSourceFilePath[] = "D:\\Proj\\Battlesport\\pickup.cpp";
+/**
+ * Reimplements data 0x4dc1b0: kPickupTemplateNameFormat (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: format pickup template and pickup-removal lookup node names.
+ */
+const char kPickupTemplateNameFormat[] = "pu%03d";
+/**
+ * Reimplements data 0x4dc1b8: kPickupDefaultSoundName (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: name the default pickup sound sample.
+ */
+const char kPickupDefaultSoundName[] = "snd_pickup";
+/**
+ * Reimplements data 0x4dc1c4: kPickupUnhandledTypeFormat (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: format pickup-type error reports when effect dispatch has no handler.
+ */
+const char kPickupUnhandledTypeFormat[] = "Unhandled Pickup Type: %d";
+/**
+ * Reimplements data 0x4dc1e0: kPickupInstanceNameFormat (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: format cloned pickup object names from type and instance suffix.
+ */
+const char kPickupInstanceNameFormat[] = "pu%03d%02d";
+/**
+ * Reimplements data 0x4dc1ec: kPickupMissingBvolFormat (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: format the error for pickup nodes missing the required bvol child.
+ */
+const char kPickupMissingBvolFormat[] = "Pickup: (%s) has no bvol child node";
+/**
+ * Reimplements data 0x4dc210: kPickupBvolNodeName (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: name the pickup collision bvol child node.
+ */
+const char kPickupBvolNodeName[] = "bvol";
+/**
+ * Reimplements data 0x4dc218: kPickupAirdropAttachNodeName (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: name the chute node that receives an airdropped pickup child.
+ */
+const char kPickupAirdropAttachNodeName[] = "airdroppup";
+/**
+ * Reimplements data 0x4dc224: kPickupChuteEffectName (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: name the airdrop chute effect used while spawning pickups.
+ */
+const char kPickupChuteEffectName[] = "chutes";
+/**
+ * Reimplements data 0x4dc22c: kPickupPuppiesEasyZrd (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: name the easy-difficulty puppy spawn ZRD; this starts the
+ * 0x4dc22c..0x4dc25f consecutive puppy ZRD filename data owner.
+ */
 const char kPickupPuppiesEasyZrd[] = "puppies_easy.zrd";
+/**
+ * Reimplements data 0x4dc240: kPickupPuppiesHardZrd (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: name the hard-difficulty puppy spawn ZRD.
+ */
 const char kPickupPuppiesHardZrd[] = "puppies_hard.zrd";
+/**
+ * Reimplements data 0x4dc254: kPickupPuppiesDefaultZrd (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: name the default puppy spawn ZRD fallback.
+ */
 const char kPickupPuppiesDefaultZrd[] = "puppies.zrd";
 
 template <typename T>
@@ -378,7 +460,7 @@ PickupAirdropSpawnRef *PickupAirdropSpawnRef::InitNodesFromCarrierNodeName(
     );
     dropAttachNode = zClass_Class::FindSubNodeByName(
         carrierNode,
-        "healthy"
+        g_Player_HealthySubNodeName
     );
     return this;
 }
@@ -957,14 +1039,14 @@ int __fastcall Init(
 ) {
     g_Pickup_SceneNode = sceneNode;
 
-    zSndSample *const defaultPickupSound = zSnd::FindSampleByName("snd_pickup");
+    zSndSample *const defaultPickupSound = zSnd::FindSampleByName(kPickupDefaultSoundName);
     for (int index = 0; index < 40; ++index) {
         PickupType &pickupType = g_PickupTypes[index];
 
         char templateName[0x28];
         sprintf(
             templateName,
-            "pu%03d",
+            kPickupTemplateNameFormat,
             pickupType.typeIndex
         );
         pickupType.templateNode = zClass::FindByTypeAndName(
@@ -991,9 +1073,9 @@ int __fastcall Init(
     if (rootNode == 0) {
         zError::ReportOld(
             0x200,
-            "D:\\Proj\\Battlesport\\pickup.cpp",
+            kPickupSourceFilePath,
             0xc1,
-            "Pickup: Unable to load %s",
+            g_HudSensorTracker_ReadFileFailedFmt,
             pickupsCfgPath
         );
         return 0;
@@ -1001,7 +1083,7 @@ int __fastcall Init(
 
     zReader::Node *const pickupDataNode = zReader_GetNamedNode(
         rootNode,
-        "PICKUP_DATA"
+        kPickupConfigDataNodeName
     );
     if (pickupDataNode != 0) {
         zReader::Node *const pickupData = pickupDataNode->value.nodes;
@@ -1023,7 +1105,7 @@ int __fastcall Init(
             );
             zReader::Node *const soundNode = zReader_GetNamedNode(
                 entryNode,
-                "SOUND"
+                g_HudZrd_Key_Sound
             );
             if (soundNode != 0) {
                 zSndSample *const pickupSound =
@@ -1037,7 +1119,7 @@ int __fastcall Init(
 
             zReader::Node *const imageNode = zReader_GetNamedNode(
                 entryNode,
-                "IMAGE"
+                kPickupConfigImageKey
             );
             if (imageNode != 0 && pickupType.optMetaImage == 0) {
                 pickupType.optMetaImage =
@@ -1048,7 +1130,7 @@ int __fastcall Init(
 
     zReader::FreeLoadedTree(rootNode);
     zUtil_ZAR::RegisterSectionHandler(
-        "Pickup",
+        kPickupArchiveSectionName,
         ZbdCallbackPtr(&ArchiveWriteAll),
         ZbdCallbackPtr(&ArchiveReadRecord),
         300,
@@ -1226,14 +1308,14 @@ int __fastcall AssignBvolGroupAndId(
 ) {
     zClass_NodePartial *const bvolNode = zClass_Class::FindSubNodeByName(
         pickupObj,
-        "bvol"
+        kPickupBvolNodeName
     );
     if (bvolNode == 0) {
         zError::ReportOld(
             0x400,
-            "D:\\Proj\\Battlesport\\pickup.cpp",
+            kPickupSourceFilePath,
             0x152,
-            "Pickup: (%s) has no bvol child node",
+            kPickupMissingBvolFormat,
             pickupObj
         );
         return 0;
@@ -1294,7 +1376,7 @@ zClass_NodePartial *__fastcall CreateObjectInstance(
     char pickupName[0x40];
     sprintf(
         pickupName,
-        "pu%03d%02d",
+        kPickupInstanceNameFormat,
         pickupType->typeIndex,
         pickupType->nameSuffixMax
     );
@@ -1445,7 +1527,7 @@ int __fastcall SpawnWithAirdropChute(
         position
     );
 
-    zEffectAnimEntry *const chuteTemplate = zEffectAnim::FindEntryByName("chutes");
+    zEffectAnimEntry *const chuteTemplate = zEffectAnim::FindEntryByName(kPickupChuteEffectName);
     zEffectAnimEntry *const chuteEntry = zEffectAnim::SetTransformRotAndVelocity_Thunk(
         chuteTemplate,
         0,
@@ -1462,7 +1544,7 @@ int __fastcall SpawnWithAirdropChute(
     zClass_NodePartial *const chuteRoot = zEffectAnim::GetRootNodeOrNull(chuteEntry);
     zClass_NodePartial *const attachNode = zClass_Class::FindSubNodeByName(
         chuteRoot,
-        "airdroppup"
+        kPickupAirdropAttachNodeName
     );
     zClass_Class::AddChild(
         attachNode,
@@ -1846,7 +1928,7 @@ int __fastcall OnCollected(
     char pickupAnimName[8];
     sprintf(
         pickupAnimName,
-        "pu%03d",
+        kPickupTemplateNameFormat,
         pickupTypeId
     );
     zEffectAnimEntry *const animEntry = zEffectAnim::FindEntryByName(pickupAnimName);
@@ -2184,8 +2266,6 @@ int __fastcall ApplyEffect(
     zUtil_SaveGameState *saveState
 ) {
     const float kUnlimitedAmmoSentinel = 123456792.0f;
-    const float kStatusPickupFullThreshold = 0.99000001f;
-
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
     PlayerMasterCommonData *const masterCommonData = playerState->masterCommonData;
     int result = 1;
@@ -2257,9 +2337,9 @@ int __fastcall ApplyEffect(
     } else if (pickupTypeId < 0 || pickupTypeId > 0x27) {
         zError::ReportOld(
             0x200,
-            "D:\\Proj\\Battlesport\\pickup.cpp",
+            kPickupSourceFilePath,
             0x370,
-            "Unhandled Pickup Type: %d",
+            kPickupUnhandledTypeFormat,
             pickupTypeId
         );
         return 0;
@@ -2366,9 +2446,9 @@ int __fastcall ApplyEffect(
             default:
                 zError::ReportOld(
                     0x200,
-                    "D:\\Proj\\Battlesport\\pickup.cpp",
+                    kPickupSourceFilePath,
                     0x370,
-                    "Unhandled Pickup Type: %d",
+                    kPickupUnhandledTypeFormat,
                     pickupTypeId
                 );
                 return 0;

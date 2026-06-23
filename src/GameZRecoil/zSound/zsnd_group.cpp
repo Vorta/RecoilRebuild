@@ -14,9 +14,114 @@ extern "C" zSndStreamRequest *g_zSndStream_MatchedRequest = 0;
 extern "C" int g_zSndStream_MatchedRequestCount = 0;
 extern "C" zClass_NodePartial *g_zSndStream_RootNode = 0;
 
-namespace {
-const char *kZSndGroupSourceFile = "D:\\Proj\\GameZRecoil\\zSound\\zsnd_grp.cpp";
+extern "C" {
+/**
+ * Reimplements data 0x4e2db8: g_zSnd_SoundGroupRepeatLoadErrorFmt.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: provide the writable REPEAT parser diagnostic format.
+ */
+char g_zSnd_SoundGroupRepeatLoadErrorFmt[0x2a] =
+    "Error loading REPEAT for sound group (%s)";
+/**
+ * Reimplements data 0x4e2de4: g_zSnd_SoundGroupRepeatKey.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: provide the writable REPEAT parser key.
+ */
+char g_zSnd_SoundGroupRepeatKey[0x7] = "REPEAT";
+/**
+ * Reimplements data 0x4e2dec: g_zSnd_SoundGroupPlaySoloKey.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: provide the writable PLAY_SOLO parser key.
+ */
+char g_zSnd_SoundGroupPlaySoloKey[0xa] = "PLAY_SOLO";
+/**
+ * Reimplements data 0x4e2df8: g_zSnd_SourceFile_ZsndGrpCpp.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: provide the writable source-file path used by zSnd group diagnostics.
+ */
+char g_zSnd_SourceFile_ZsndGrpCpp[0x28] =
+    "D:\\Proj\\GameZRecoil\\zSound\\zsnd_grp.cpp";
+/**
+ * Reimplements data 0x4e2e20: g_zSnd_SoundGroupDynamicWeightsLoadErrorFmt.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: provide the writable DYNAMIC_WEIGHTS parser diagnostic format.
+ */
+char g_zSnd_SoundGroupDynamicWeightsLoadErrorFmt[0x33] =
+    "Error loading DYNAMIC_WEIGHTS for sound group (%s)";
+/**
+ * Reimplements data 0x4e2e54: g_zSnd_SoundGroupDynamicWeightsKey.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: provide the writable DYNAMIC_WEIGHTS parser key.
+ */
+char g_zSnd_SoundGroupDynamicWeightsKey[0x10] = "DYNAMIC_WEIGHTS";
+/**
+ * Reimplements data 0x4e2e64: g_zSnd_SoundGroupDelayTerminationLoadErrorFmt.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: provide the writable DELAY_TERMINATION parser diagnostic format.
+ */
+char g_zSnd_SoundGroupDelayTerminationLoadErrorFmt[0x35] =
+    "Error loading DELAY_TERMINATION for sound group (%s)";
+/**
+ * Reimplements data 0x4e2e9c: g_zSnd_SoundGroupDelayTerminationKey.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: provide the writable DELAY_TERMINATION parser key.
+ */
+char g_zSnd_SoundGroupDelayTerminationKey[0x12] = "DELAY_TERMINATION";
+/**
+ * Reimplements data 0x4e2eb0: g_zSnd_SoundGroupDelayRepeatLoadErrorFmt.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: provide the writable DELAY_REPEAT parser diagnostic format.
+ */
+char g_zSnd_SoundGroupDelayRepeatLoadErrorFmt[0x30] =
+    "Error loading DELAY_REPEAT for sound group (%s)";
+/**
+ * Reimplements data 0x4e2ee0: g_zSnd_SoundGroupDelayRepeatKey.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: provide the writable DELAY_REPEAT parser key.
+ */
+char g_zSnd_SoundGroupDelayRepeatKey[0xd] = "DELAY_REPEAT";
+/**
+ * Reimplements data 0x4e2ef0: g_zSnd_SoundGroupWeightLoadErrorFmt.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: provide the writable WEIGHT parser diagnostic format.
+ */
+char g_zSnd_SoundGroupWeightLoadErrorFmt[0x2a] =
+    "Error loading WEIGHT for sound group (%s)";
+/**
+ * Reimplements data 0x4e2f1c: g_zSnd_SoundGroupWeightKey.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: provide the writable WEIGHT parser key.
+ */
+char g_zSnd_SoundGroupWeightKey[0x7] = "WEIGHT";
+/**
+ * Reimplements data 0x4e2f24: g_zSnd_SoundGroupPlayCountLoadErrorFmt.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: provide the writable PLAY_COUNT parser diagnostic format.
+ */
+char g_zSnd_SoundGroupPlayCountLoadErrorFmt[0x2e] =
+    "Error loading PLAY_COUNT for sound group (%s)";
+/**
+ * Reimplements data 0x4e2f54: g_zSnd_SoundGroupPlayCountKey.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: provide the writable PLAY_COUNT parser key.
+ */
+char g_zSnd_SoundGroupPlayCountKey[0xb] = "PLAY_COUNT";
+/**
+ * Reimplements data 0x4e2f60: g_zSnd_SoundGroupDelayPlayLoadErrorFmt.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: provide the writable DELAY_PLAY parser diagnostic format.
+ */
+char g_zSnd_SoundGroupDelayPlayLoadErrorFmt[0x2e] =
+    "Error loading DELAY_PLAY for sound group (%s)";
+/**
+ * Reimplements data 0x4e2f90: g_zSnd_SoundGroupDelayPlayKey.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: provide the writable DELAY_PLAY parser key.
+ */
+char g_zSnd_SoundGroupDelayPlayKey[0xb] = "DELAY_PLAY";
+}
 
+namespace {
 /**
  * Reimplements 0x4a51e0: zSndStreamRequest::MatchRequestPredicate.
  * Purpose: compare an active stream-list payload against the requested play
@@ -70,21 +175,37 @@ int __fastcall UpdateActiveRequestPredicate(
 
 namespace {
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Source-faithful helper recovered from address-backed callers in this source file.
+ * Original helper evidence: no standalone retail function; recovered from
+ * repeated zSnd group parser callers in this source file.
+ * Purpose: return the first payload node in a zReader array node.
+ */
 zReader::Node *ArrayBase(
     zReader::Node *node
 ) {
     return node->value.nodes;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Source-faithful helper recovered from address-backed callers in this source file.
+ * Original helper evidence: no standalone retail function; recovered from
+ * repeated zSnd group parser callers in this source file.
+ * Purpose: return the original zReader array element count.
+ */
 int ArrayCount(
     zReader::Node *node
 ) {
     return ArrayBase(node)[0].value.i32;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Source-faithful helper recovered from address-backed callers in this source file.
+ * Original helper evidence: no standalone retail function; recovered from
+ * repeated zSnd group parser diagnostic call sites.
+ * Purpose: report a sound-group configuration parse error with the recovered
+ * source file string and group name.
+ */
 void ReportConfigError(
     int line,
     const char *message,
@@ -92,14 +213,19 @@ void ReportConfigError(
 ) {
     zError::ReportOld(
         0x200,
-        kZSndGroupSourceFile,
+        g_zSnd_SourceFile_ZsndGrpCpp,
         line,
         message,
         groupFields->groupName
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Source-faithful helper recovered from address-backed callers in this source file.
+ * Original helper evidence: no standalone retail function; recovered from
+ * repeated zSnd group play-count stores.
+ * Purpose: store a play-count limit and reset the current play count.
+ */
 void StorePlayCount(
     zSndGroupConfigBlock *block,
     unsigned short count
@@ -108,7 +234,12 @@ void StorePlayCount(
     block->currentPlayCount = block->maxPlayCount;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Source-faithful helper recovered from address-backed callers in this source file.
+ * Original helper evidence: no standalone retail function; recovered from
+ * repeated zSnd group numeric parser branches.
+ * Purpose: accept zReader float or integer nodes as a float config value.
+ */
 bool StoreFloatField(
     zReader::Node *valueNode,
     float *outValue
@@ -126,7 +257,12 @@ bool StoreFloatField(
     return false;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Source-faithful helper recovered from address-backed callers in this source file.
+ * Original helper evidence: no standalone retail function; recovered from
+ * repeated zSnd group repeat-count parser branches.
+ * Purpose: accept zReader float or integer nodes as a repeat-count value.
+ */
 bool StoreRepeatCount(
     zReader::Node *valueNode,
     unsigned short *outValue
@@ -144,7 +280,12 @@ bool StoreRepeatCount(
     return false;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Source-faithful helper recovered from address-backed callers in this source file.
+ * Original helper evidence: no standalone retail function; recovered from the
+ * accepted zSnd group load-from-config path after config-block parsing.
+ * Purpose: fill missing sound-group weights with the original equal split.
+ */
 void NormalizeDefaultWeights(
     zSndGroup *group
 ) {
@@ -236,7 +377,11 @@ extern "C" zSndSample *__fastcall zSndPendingList_FindByName(
     ));
 }
 
-// Reimplements 0x4a4d10: zSndGroup::SelectWeightedEntry
+/**
+ * Reimplements 0x4a4d10: zSndGroup::SelectWeightedEntry.
+ * Purpose: choose a playable config block using remaining play count and
+ * weighted random selection.
+ */
 zSndGroupConfigBlock * zSndGroup::SelectWeightedEntry() {
     if (configBlockCount == 1) {
         return configBlocks[0].maxPlayCount != 0 ? configBlocks : 0;
@@ -458,7 +603,12 @@ extern "C" int zSndStreamMgr_EnsureInit() {
 
 namespace zSndStreamMgr {
 namespace {
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Source-faithful helper recovered from address-backed callers in this source file.
+ * Original helper evidence: no standalone retail function; recovered from
+ * stream-manager shutdown cleanup paths.
+ * Purpose: release every request payload in a stream-manager archive list.
+ */
 void FreeRequestList(
     zArchiveList *&list
 ) {
@@ -475,7 +625,12 @@ void FreeRequestList(
     list = 0;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Source-faithful helper recovered from address-backed callers in this source file.
+ * Original helper evidence: no standalone retail function; recovered from
+ * pending sound-group cleanup paths.
+ * Purpose: release one pending group config and its nested child blocks.
+ */
 void FreePendingGroupConfig(
     zSndGroup *pendingConfig
 ) {
@@ -496,7 +651,12 @@ void FreePendingGroupConfig(
     free(pendingConfig);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Source-faithful helper recovered from address-backed callers in this source file.
+ * Original helper evidence: no standalone retail function; recovered from
+ * stream-manager shutdown cleanup paths.
+ * Purpose: release every pending group config in a stream-manager archive list.
+ */
 void FreePendingList(
     zArchiveList *&list
 ) {
@@ -664,7 +824,11 @@ extern "C" void zSndStreamMgr_RecycleFinishedRequest() {
     --g_zSndStream_MatchedRequestCount;
 }
 
-// Reimplements 0x4a49b0: zSndGroup_LoadConfigBlock
+/**
+ * Reimplements 0x4a49b0: zSndGroup_LoadConfigBlock.
+ * Purpose: parse one sound-group config block, including nested blocks and
+ * per-entry playback controls.
+ */
 extern "C" int __fastcall zSndGroup_LoadConfigBlock(
     zReader::Node *readerNode,
     zSndGroupRuntimeFields *groupFields,
@@ -713,7 +877,7 @@ extern "C" int __fastcall zSndGroup_LoadConfigBlock(
             zReader::Node *valueNode = &nodeArray[childIndex + 1];
             if (strcmp(
                 key,
-                "DELAY_PLAY"
+                g_zSnd_SoundGroupDelayPlayKey
             ) == 0) {
                 if (valueNode->type == zReader::ZRDR_NODE_FLOAT) {
                     outConfigBlock->delayPlaySec = valueNode->value.f32;
@@ -724,14 +888,14 @@ extern "C" int __fastcall zSndGroup_LoadConfigBlock(
                 } else {
                     ReportConfigError(
                         0xb1,
-                        "Error loading DELAY_PLAY for sound group (%s)",
+                        g_zSnd_SoundGroupDelayPlayLoadErrorFmt,
                         groupFields
                     );
                     ++childIndex;
                 }
             } else if (strcmp(
                 key,
-                "PLAY_COUNT"
+                g_zSnd_SoundGroupPlayCountKey
             ) == 0) {
                 if (valueNode->type == zReader::ZRDR_NODE_FLOAT) {
                     StorePlayCount(
@@ -748,7 +912,7 @@ extern "C" int __fastcall zSndGroup_LoadConfigBlock(
                 } else {
                     ReportConfigError(
                         0xbf,
-                        "Error loading PLAY_COUNT for sound group (%s)",
+                        g_zSnd_SoundGroupPlayCountLoadErrorFmt,
                         groupFields
                     );
                     ++childIndex;
@@ -756,7 +920,7 @@ extern "C" int __fastcall zSndGroup_LoadConfigBlock(
                 }
             } else if (strcmp(
                 key,
-                "WEIGHT"
+                g_zSnd_SoundGroupWeightKey
             ) == 0) {
                 if (valueNode->type == zReader::ZRDR_NODE_FLOAT) {
                     outConfigBlock->weight = valueNode->value.f32;
@@ -767,7 +931,7 @@ extern "C" int __fastcall zSndGroup_LoadConfigBlock(
                 } else {
                     ReportConfigError(
                         0xcf,
-                        "Error loading WEIGHT for sound group (%s)",
+                        g_zSnd_SoundGroupWeightLoadErrorFmt,
                         groupFields
                     );
                     ++childIndex;
@@ -781,7 +945,10 @@ extern "C" int __fastcall zSndGroup_LoadConfigBlock(
     return 1;
 }
 
-// Reimplements 0x4a4590: zSndGroup_LoadFromConfigNode
+/**
+ * Reimplements 0x4a4590: zSndGroup_LoadFromConfigNode.
+ * Purpose: allocate and populate one sound group from a zReader array node.
+ */
 extern "C" zSndGroup *__fastcall zSndGroup_LoadFromConfigNode(
     zReader::Node *readerNode
 ) {
@@ -833,7 +1000,7 @@ extern "C" zSndGroup *__fastcall zSndGroup_LoadFromConfigNode(
             zReader::Node *valueNode = &nodeArray[childIndex + 1];
             if (strcmp(
                 key,
-                "DELAY_REPEAT"
+                g_zSnd_SoundGroupDelayRepeatKey
             ) == 0) {
                 if (!StoreFloatField(
                     valueNode,
@@ -841,14 +1008,14 @@ extern "C" zSndGroup *__fastcall zSndGroup_LoadFromConfigNode(
                 )) {
                     ReportConfigError(
                         0x141,
-                        "Error loading DELAY_REPEAT for sound group (%s)",
+                        g_zSnd_SoundGroupDelayRepeatLoadErrorFmt,
                         (zSndGroupRuntimeFields *)(&result->groupName)
                     );
                 }
                 ++childIndex;
             } else if (strcmp(
                 key,
-                "DELAY_TERMINATION"
+                g_zSnd_SoundGroupDelayTerminationKey
             ) == 0) {
                 if (!StoreFloatField(
                     valueNode,
@@ -856,14 +1023,14 @@ extern "C" zSndGroup *__fastcall zSndGroup_LoadFromConfigNode(
                 )) {
                     ReportConfigError(
                         0x14f,
-                        "Error loading DELAY_TERMINATION for sound group (%s)",
+                        g_zSnd_SoundGroupDelayTerminationLoadErrorFmt,
                         (zSndGroupRuntimeFields *)(&result->groupName)
                     );
                 }
                 ++childIndex;
             } else if (strcmp(
                 key,
-                "DYNAMIC_WEIGHTS"
+                g_zSnd_SoundGroupDynamicWeightsKey
             ) == 0) {
                 result->dynamicWeightsEnabled = 1;
                 if (!StoreFloatField(
@@ -872,7 +1039,7 @@ extern "C" zSndGroup *__fastcall zSndGroup_LoadFromConfigNode(
                 )) {
                     ReportConfigError(
                         0x15f,
-                        "Error loading DYNAMIC_WEIGHTS for sound group (%s)",
+                        g_zSnd_SoundGroupDynamicWeightsLoadErrorFmt,
                         (zSndGroupRuntimeFields *)(&result->groupName)
                     );
                 }
@@ -885,12 +1052,12 @@ extern "C" zSndGroup *__fastcall zSndGroup_LoadFromConfigNode(
                 ++childIndex;
             } else if (strcmp(
                 key,
-                "PLAY_SOLO"
+                g_zSnd_SoundGroupPlaySoloKey
             ) == 0) {
                 result->playSolo = 1;
             } else if (strcmp(
                 key,
-                "REPEAT"
+                g_zSnd_SoundGroupRepeatKey
             ) == 0) {
                 if (!StoreRepeatCount(
                     valueNode,
@@ -898,7 +1065,7 @@ extern "C" zSndGroup *__fastcall zSndGroup_LoadFromConfigNode(
                 )) {
                     ReportConfigError(
                         0x174,
-                        "Error loading REPEAT for sound group (%s)",
+                        g_zSnd_SoundGroupRepeatLoadErrorFmt,
                         (zSndGroupRuntimeFields *)(&result->groupName)
                     );
                 }
@@ -913,7 +1080,11 @@ extern "C" zSndGroup *__fastcall zSndGroup_LoadFromConfigNode(
     return result;
 }
 
-// Reimplements 0x4a4530: zSndGroup_QueuePendingLoadsFromConfigNode
+/**
+ * Reimplements 0x4a4530: zSndGroup_QueuePendingLoadsFromConfigNode.
+ * Purpose: queue every parsed sound group from a top-level config array for
+ * deferred stream loading.
+ */
 extern "C" int __fastcall zSndGroup_QueuePendingLoadsFromConfigNode(
     zReader::Node *readerNode
 ) {

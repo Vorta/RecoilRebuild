@@ -138,6 +138,90 @@ char g_zFMV_SourceFile_FmvScriptCpp[] = "D:\\Proj\\GameZRecoil\\zFMV\\fmv_script
  * Purpose: missing fmv.zrd diagnostic string.
  */
 char g_zFMV_MissingDefinitionsZrdErrorMsg[] = "Failed to find FMV definitions (fmv.zrd)";
+
+/**
+ * Reimplements data 0x4dfc70: g_zSnd_FmvSampleSetName.
+ * BN xrefs: zFMV_Script::BeginCurrentAction initializes the FMV sample set by name.
+ * Purpose: zSnd sample-set selector literal adjacent to the FMV stream diagnostics.
+ */
+char g_zSnd_FmvSampleSetName[] = "FMV";
+
+/**
+ * Reimplements data 0x4dfc74: g_zFMV_SourceFile_FmvStreamCpp.
+ * BN xrefs: zFMV_Stream error paths pass the retail source path to zError.
+ * Purpose: source-file literal for AVI stream diagnostics.
+ */
+char g_zFMV_SourceFile_FmvStreamCpp[] = "D:\\Proj\\GameZRecoil\\zFMV\\fmv_stream.cpp";
+
+/**
+ * Reimplements data 0x4dfc9c: g_zFMV_CannotReadAviStreamInfoMsg.
+ * BN xrefs: zFMV_Stream::Constructor reports AVI video stream-info failures.
+ * Purpose: AVI stream diagnostic literal in retail .data order.
+ */
+char g_zFMV_CannotReadAviStreamInfoMsg[] = "Cannot Read AVI Stream Info";
+
+/**
+ * Reimplements data 0x4dfcb8: g_zFMV_CannotReadAviFormatMsg.
+ * BN xrefs: zFMV_Stream::Constructor reports AVI video format read failures.
+ * Purpose: AVI stream diagnostic literal in retail .data order.
+ */
+char g_zFMV_CannotReadAviFormatMsg[] = "Cannot Read AVI Format";
+
+/**
+ * Reimplements data 0x4dfcd0: g_zFMV_CannotReadAviFormatSizeMsg.
+ * BN xrefs: zFMV_Stream::Constructor reports AVI video format-size failures.
+ * Purpose: AVI stream diagnostic literal in retail .data order.
+ */
+char g_zFMV_CannotReadAviFormatSizeMsg[] = "Cannot Read AVI Format Size";
+
+/**
+ * Reimplements data 0x4dfcec: g_zFMV_CannotOpenAviFileMsg.
+ * BN xrefs: zFMV_Stream::Constructor reports AVI video stream open failures.
+ * Purpose: AVI stream diagnostic literal in retail .data order.
+ */
+char g_zFMV_CannotOpenAviFileMsg[] = "Cannot Open AVI File";
+
+/**
+ * Reimplements data 0x4dfd04: g_zFMV_CannotReadAviSoundStreamMsg.
+ * BN xrefs: zFMV_Stream audio read paths report AVI sound stream failures.
+ * Purpose: AVI stream diagnostic literal in retail .data order.
+ */
+char g_zFMV_CannotReadAviSoundStreamMsg[] = "Cannot Read AVI Sound Stream";
+
+/**
+ * Reimplements data 0x4dfd24: g_zFMV_CannotReadAviSoundStreamInfoMsg.
+ * BN xrefs: zFMV_Stream::OpenAudio reports AVI sound stream-info failures.
+ * Purpose: AVI stream diagnostic literal in retail .data order.
+ */
+char g_zFMV_CannotReadAviSoundStreamInfoMsg[] = "Cannot Read AVI Sound Stream Info";
+
+/**
+ * Reimplements data 0x4dfd48: g_zFMV_CannotReadAviSoundFormatMsg.
+ * BN xrefs: zFMV_Stream::OpenAudio reports AVI sound format read failures.
+ * Purpose: AVI stream diagnostic literal in retail .data order.
+ */
+char g_zFMV_CannotReadAviSoundFormatMsg[] = "Cannot Read AVI Sound Format";
+
+/**
+ * Reimplements data 0x4dfd68: g_zFMV_CannotReadAviSoundFormatSizeMsg.
+ * BN xrefs: zFMV_Stream::OpenAudio reports AVI sound format-size failures.
+ * Purpose: AVI stream diagnostic literal in retail .data order.
+ */
+char g_zFMV_CannotReadAviSoundFormatSizeMsg[] = "Cannot Read AVI Sound Format Size";
+
+/**
+ * Reimplements data 0x4dfd8c: g_zFMV_CannotDecompressAviVideoStreamMsg.
+ * BN xrefs: zFMV_Stream::ReadAndDecodeFrame reports video decompression failures.
+ * Purpose: AVI stream diagnostic literal in retail .data order.
+ */
+char g_zFMV_CannotDecompressAviVideoStreamMsg[] = "Cannot Decompress AVI Video Stream";
+
+/**
+ * Reimplements data 0x4dfdb0: g_zFMV_CannotReadAviVideoStreamMsg.
+ * BN xrefs: zFMV_Stream::ReadAndDecodeFrame reports AVI video read failures.
+ * Purpose: AVI stream diagnostic literal in retail .data order.
+ */
+char g_zFMV_CannotReadAviVideoStreamMsg[] = "Cannot Read AVI Video Stream";
 }
 
 // BN 0x53a728 and 0x53a708 are four-int rect-shaped state records used by
@@ -154,17 +238,6 @@ const int k_zFMV_RendererBackend3dfx = 2;
 const int k_zFMV_BlurModeHorizontal = 1;
 const int k_zFMV_BlurModeVertical = 2;
 const int k_zFMV_BlurModeCombined = 3;
-const char *kFMVStreamSourceFile = "D:\\Proj\\GameZRecoil\\zFMV\\fmv_stream.cpp";
-const char *kCannotOpenAviFile = "Cannot Open AVI File";
-const char *kCannotReadAviFormatSize = "Cannot Read AVI Format Size";
-const char *kCannotReadAviFormat = "Cannot Read AVI Format";
-const char *kCannotReadAviStreamInfo = "Cannot Read AVI Stream Info";
-const char *kCannotReadAviSoundFormatSize = "Cannot Read AVI Sound Format Size";
-const char *kCannotReadAviSoundFormat = "Cannot Read AVI Sound Format";
-const char *kCannotReadAviSoundStreamInfo = "Cannot Read AVI Sound Stream Info";
-const char *kCannotReadAviSoundStream = "Cannot Read AVI Sound Stream";
-const char *kCannotReadAviVideoStream = "Cannot Read AVI Video Stream";
-const char *kCannotDecompressAviVideoStream = "Cannot Decompress AVI Video Stream";
 
 struct zFMV_MciWindowParams {
     DWORD_PTR callback;
@@ -680,9 +753,9 @@ void zFMV_Stream::Constructor() {
     if (openResult != 0) {
         zError::ReportOld(
             0x400,
-            kFMVStreamSourceFile,
+            g_zFMV_SourceFile_FmvStreamCpp,
             0x60,
-            kCannotOpenAviFile
+            g_zFMV_CannotOpenAviFileMsg
         );
         AVIFileExit();
         return;
@@ -697,9 +770,9 @@ void zFMV_Stream::Constructor() {
     ) != 0) {
         zError::ReportOld(
             0x400,
-            kFMVStreamSourceFile,
+            g_zFMV_SourceFile_FmvStreamCpp,
             0x67,
-            kCannotReadAviFormatSize
+            g_zFMV_CannotReadAviFormatSizeMsg
         );
         AVIFileExit();
         return;
@@ -724,9 +797,9 @@ void zFMV_Stream::Constructor() {
     ) != 0) {
         zError::ReportOld(
             0x400,
-            kFMVStreamSourceFile,
+            g_zFMV_SourceFile_FmvStreamCpp,
             0x71,
-            kCannotReadAviFormat
+            g_zFMV_CannotReadAviFormatMsg
         );
         AVIFileExit();
         return;
@@ -740,9 +813,9 @@ void zFMV_Stream::Constructor() {
         ) != 0) {
         zError::ReportOld(
             0x400,
-            kFMVStreamSourceFile,
+            g_zFMV_SourceFile_FmvStreamCpp,
             0x79,
-            kCannotReadAviStreamInfo
+            g_zFMV_CannotReadAviStreamInfoMsg
         );
         AVIFileExit();
         return;
@@ -861,9 +934,9 @@ void zFMV_Stream::OpenAudio() {
     ) != 0) {
         zError::ReportOld(
             0x400,
-            kFMVStreamSourceFile,
+            g_zFMV_SourceFile_FmvStreamCpp,
             0xcb,
-            kCannotReadAviSoundFormatSize
+            g_zFMV_CannotReadAviSoundFormatSizeMsg
         );
         return;
     }
@@ -880,9 +953,9 @@ void zFMV_Stream::OpenAudio() {
     ) != 0) {
         zError::ReportOld(
             0x400,
-            kFMVStreamSourceFile,
+            g_zFMV_SourceFile_FmvStreamCpp,
             0xd2,
-            kCannotReadAviSoundFormat
+            g_zFMV_CannotReadAviSoundFormatMsg
         );
         return;
     }
@@ -894,9 +967,9 @@ void zFMV_Stream::OpenAudio() {
         ) != 0) {
         zError::ReportOld(
             0x400,
-            kFMVStreamSourceFile,
+            g_zFMV_SourceFile_FmvStreamCpp,
             0xd8,
-            kCannotReadAviSoundStreamInfo
+            g_zFMV_CannotReadAviSoundStreamInfoMsg
         );
         return;
     }
@@ -921,9 +994,9 @@ void zFMV_Stream::OpenAudio() {
             ) != 0) {
             zError::ReportOld(
                 0x400,
-                kFMVStreamSourceFile,
+                g_zFMV_SourceFile_FmvStreamCpp,
                 0xe2,
-                kCannotReadAviSoundStream
+                g_zFMV_CannotReadAviSoundStreamMsg
             );
             return;
         }
@@ -957,9 +1030,9 @@ void zFMV_Stream::OpenAudio() {
         ) != 0) {
         zError::ReportOld(
             0x400,
-            kFMVStreamSourceFile,
+            g_zFMV_SourceFile_FmvStreamCpp,
             0xf0,
-            kCannotReadAviSoundStream
+            g_zFMV_CannotReadAviSoundStreamMsg
         );
         return;
     }
@@ -997,9 +1070,9 @@ int zFMV_Stream::ReadAndDecodeFrame(
             ) != 0) {
             zError::ReportOld(
                 0x400,
-                kFMVStreamSourceFile,
+                g_zFMV_SourceFile_FmvStreamCpp,
                 0x105,
-                kCannotReadAviVideoStream
+                g_zFMV_CannotReadAviVideoStreamMsg
             );
             return 0;
         }
@@ -1015,9 +1088,9 @@ int zFMV_Stream::ReadAndDecodeFrame(
             ) != 0) {
             zError::ReportOld(
                 0x400,
-                kFMVStreamSourceFile,
+                g_zFMV_SourceFile_FmvStreamCpp,
                 0x10c,
-                kCannotDecompressAviVideoStream
+                g_zFMV_CannotDecompressAviVideoStreamMsg
             );
             return 0;
         }
@@ -1103,9 +1176,9 @@ int zFMV_Stream::FillAudioBuffer(
             ) != 0) {
             zError::ReportOld(
                 0x400,
-                kFMVStreamSourceFile,
+                g_zFMV_SourceFile_FmvStreamCpp,
                 0x13d,
-                kCannotReadAviSoundStream
+                g_zFMV_CannotReadAviSoundStreamMsg
             );
         }
         readSampleIndex += (unsigned int)(buffer1Bytes) / sampleSize;
@@ -1123,9 +1196,9 @@ int zFMV_Stream::FillAudioBuffer(
             ) != 0) {
             zError::ReportOld(
                 0x400,
-                kFMVStreamSourceFile,
+                g_zFMV_SourceFile_FmvStreamCpp,
                 0x144,
-                kCannotReadAviSoundStream
+                g_zFMV_CannotReadAviSoundStreamMsg
             );
         }
 
@@ -1512,7 +1585,7 @@ int zFMV_Script::BeginCurrentAction(
         zVideo::GetPrimarySurfaceHeight(),
         zVideo::GetPrimarySurfacePitch()
     );
-    zSndSampleSet_InitByName("FMV");
+    zSndSampleSet_InitByName(g_zSnd_FmvSampleSetName);
     zInput::Keyboard_ResetTransitionState();
     m_startTimeSec = startTimeSec;
     m_cur->Begin(0.0);

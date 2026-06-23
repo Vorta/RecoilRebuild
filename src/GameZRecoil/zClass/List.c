@@ -493,7 +493,7 @@ namespace zClass_List {
                 0x400,
                 kListSourceFile,
                 0x8d4,
-                "Unrecognized node class type while deleting node %p (%s) : %d\n",
+                "_gwListDeleteANode(): Unrecognized node class type:node = %s ptr = 0x%08x class_type = %d",
                 node,
                 node,
                 node->classId
@@ -536,7 +536,7 @@ namespace zClass_List {
                 0x400,
                 kListSourceFile,
                 0x92d,
-                "Unable to delete all nodes from list.\n"
+                "ERROR deleting list nodes; Not all nodes were deleteable"
             );
             return 1;
         }
@@ -546,7 +546,7 @@ namespace zClass_List {
                 0x400,
                 kListSourceFile,
                 0x935,
-                "Deleted list still contains nodes.\n"
+                "ERROR deleting list nodes; %d nodes left on list"
             );
             return 1;
         }

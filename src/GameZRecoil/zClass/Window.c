@@ -9,7 +9,14 @@
 namespace {
     const int kZClassNodeWindow = 3;
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original static helper; no standalone retail function exists. Observed
+     * through Window.c validation callers 0x44f8b0 and 0x44f9c0 using the
+     * shared GameZRecoil/zClass/Window.c assertion-report shape and line
+     * constants.
+     * Purpose: report compact window class validation failures and return the
+     * matching error code.
+     */
     int ReportWindowClassError(
         int sourceLine,
         const char *message
@@ -23,9 +30,14 @@ namespace {
         return 5;
     }
 
-    zClass_WindowDataPartial *
-    // Source-faithful helper recovered from address-backed callers in this source file.
-    GetWindowData(
+    /**
+     * Original static helper; no standalone retail function exists. Observed
+     * in address-backed Window.c callers 0x44f8b0 and 0x44f9c0 as the repeated
+     * compact node/class-data/class-id validation sequence.
+     * Purpose: return the typed window class-data record after validating the
+     * node with the compact error-message variant.
+     */
+    zClass_WindowDataPartial *GetWindowData(
         zClass_NodePartial * node,
         int nullLine,
         int dataLine,
@@ -60,7 +72,14 @@ namespace {
         return (zClass_WindowDataPartial *)(node->classData);
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original static helper; no standalone retail function exists. Observed
+     * in address-backed Window.c callers 0x44f930, 0x44fa40, 0x44fad0,
+     * 0x44fb40, 0x44fbd0, and 0x44fcf0 as the repeated legacy absolute-path
+     * validation sequence and out-result error-code convention.
+     * Purpose: return the typed window class-data record after validating the
+     * node with the legacy Window.c diagnostics.
+     */
     zClass_WindowDataPartial *GetWindowDataOldMessages(
         zClass_NodePartial * node,
         int nullLine,
@@ -109,7 +128,12 @@ namespace {
 }
 
 namespace zClass_Window {
-    // Reimplements 0x44f7a0: zClass_Window::gwWindowNew
+    /**
+     * Reimplements 0x44f7a0:
+     * zClass_Window::gwWindowNew.
+     * Purpose: allocate a window node, initialize its window data record from
+     * the active render region, and insert it into the window type bucket.
+     */
     zClass_NodePartial *gwWindowNew() {
         zClass_NodePartial *node = zClass_Class::AllocNodeFromFreeList();
         if (node == 0) {
@@ -162,9 +186,13 @@ namespace zClass_Window {
         return node;
     }
 
-    // Reimplements 0x44f8b0: zClass_Window::gwWindowSetResolution
-    int __fastcall
-    gwWindowSetResolution(
+    /**
+     * Reimplements 0x44f8b0:
+     * zClass_Window::gwWindowSetResolution.
+     * Purpose: validate a window node and store the requested render
+     * resolution in its window data record.
+     */
+    int __fastcall gwWindowSetResolution(
         zClass_NodePartial * node,
         int width,
         int height
@@ -184,9 +212,12 @@ namespace zClass_Window {
         return 0;
     }
 
-    // Reimplements 0x44f930: zClass_Window::gwWindowGetResolution
-    int __fastcall
-    gwWindowGetResolution(
+    /**
+     * Reimplements 0x44f930:
+     * zClass_Window::gwWindowGetResolution.
+     * Purpose: validate a window node and return the stored render resolution.
+     */
+    int __fastcall gwWindowGetResolution(
         zClass_NodePartial * node,
         int *outWidth,
         int *outHeight
@@ -208,9 +239,13 @@ namespace zClass_Window {
         return 0;
     }
 
-    // Reimplements 0x44f9c0: zClass_Window::gwWindowSetSize
-    int __fastcall
-    gwWindowSetSize(
+    /**
+     * Reimplements 0x44f9c0:
+     * zClass_Window::gwWindowSetSize.
+     * Purpose: validate a window node and store the requested viewport size in
+     * its window data record.
+     */
+    int __fastcall gwWindowSetSize(
         zClass_NodePartial * node,
         int width,
         int height
@@ -230,9 +265,12 @@ namespace zClass_Window {
         return 0;
     }
 
-    // Reimplements 0x44fa40: zClass_Window::gwWindowGetSize
-    int __fastcall
-    gwWindowGetSize(
+    /**
+     * Reimplements 0x44fa40:
+     * zClass_Window::gwWindowGetSize.
+     * Purpose: validate a window node and return the stored viewport size.
+     */
+    int __fastcall gwWindowGetSize(
         zClass_NodePartial * node,
         int *outWidth,
         int *outHeight
@@ -255,9 +293,13 @@ namespace zClass_Window {
         return 0;
     }
 
-    // Reimplements 0x44fad0: zClass_Window::gwWindowSetBuffer
-    int __fastcall
-    gwWindowSetBuffer(
+    /**
+     * Reimplements 0x44fad0:
+     * zClass_Window::gwWindowSetBuffer.
+     * Purpose: validate a window node and store the selected render-buffer
+     * index.
+     */
+    int __fastcall gwWindowSetBuffer(
         zClass_NodePartial * node,
         int bufferIndex
     ) {
@@ -278,9 +320,13 @@ namespace zClass_Window {
         return 0;
     }
 
-    // Reimplements 0x44fb40: zClass_Window::gwWindowSetClearPolygon
-    int __fastcall
-    gwWindowSetClearPolygon(
+    /**
+     * Reimplements 0x44fb40:
+     * zClass_Window::gwWindowSetClearPolygon.
+     * Purpose: validate a window node and toggle the high-bit enabled flag on
+     * the clear-polygon index field.
+     */
+    int __fastcall gwWindowSetClearPolygon(
         zClass_NodePartial * node,
         int enabled
     ) {
@@ -306,9 +352,13 @@ namespace zClass_Window {
         return 0;
     }
 
-    // Reimplements 0x44fbd0: zClass_Window::gwWindowAddClearPolygonVertex
-    int __fastcall
-    gwWindowAddClearPolygonVertex(
+    /**
+     * Reimplements 0x44fbd0:
+     * zClass_Window::gwWindowAddClearPolygonVertex.
+     * Purpose: validate a window node and append one vertex to the active
+     * clear polygon, preserving the vertex-count flag bits.
+     */
+    int __fastcall gwWindowAddClearPolygonVertex(
         zClass_NodePartial * node,
         const zVec3 *point
     ) {
@@ -359,7 +409,12 @@ namespace zClass_Window {
         return 0;
     }
 
-    // Reimplements 0x44fcf0: zClass_Window::gwWindowCloseClearPolygon
+    /**
+     * Reimplements 0x44fcf0:
+     * zClass_Window::gwWindowCloseClearPolygon.
+     * Purpose: submit the active clear polygon to the renderer and advance the
+     * stored clear-polygon index.
+     */
     int __fastcall gwWindowCloseClearPolygon(zClass_NodePartial * node) {
         int result = 0;
         zClass_WindowDataPartial *data =

@@ -1928,7 +1928,7 @@ void BeginChatCompose() {
 
     HudUiMgrObjective::Show(
         0,
-        "Message",
+        g_HudUiMessage_NodeName,
         "",
         0.0f
     );

@@ -14,6 +14,7 @@ python tools/recoil.py owner add --id <section.owner> --kind <kind> --section <s
 python tools/recoil.py owner link-address <owner-id> 0xNNNNNN
 python tools/recoil.py owner link-data <owner-id> 0xNNNNNN --name <symbol>
 python tools/recoil.py owner set-gate <owner-id> <boundary|source|data|functional|byte> <pending|accepted|blocked|none|deferred> --evidence "..."
+python tools/recoil.py owner set-gates <owner-id> boundary=accepted source=accepted data=none --evidence "..."
 python tools/recoil.py owner audit --strict
 python tools/recoil.py owner next --lane binary
 ```

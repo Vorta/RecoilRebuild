@@ -1220,7 +1220,7 @@ namespace zClass_Class {
                 0x400,
                 kClassSourceFile,
                 0x3a4,
-                "gwNodeSetActive() : Unrecognized node class type:\n  node = %s class_type = %d\n",
+                "gwNodeSetActive(): Unrecognized node class type:\n  node = %s class_type = %d\n",
                 node,
                 node->classId
             );

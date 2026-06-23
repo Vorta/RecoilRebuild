@@ -7,9 +7,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-namespace {
-const char kZGeoWeilerSourceFile[] = "D:\\Proj\\GameZRecoil\\zGeometry\\zgeo_weiler.cpp";
+extern "C" const char g_zGeometry_WeilerIntersectBufferEntryFailedFmt[0x32] =
+    "%s %d: weiler_intersect call to bufEntry failed.\n";
 
+namespace {
 /**
  * Data evidence: BN 0x4dfdd0 is int32_t[0x51], xrefed by 0x468fa0, and matches these case ids byte-for-byte.
  * Purpose: Map the four ternary edge-side sign classes to the Weiler intersection case id.
@@ -102,6 +103,54 @@ const int kIntersect2dCaseIdBySignClass[0x51] = {0,
  */
 const unsigned char kIntersect2dOutputKindByXingType[0x18] =
     {0, 6, 6, 6, 1, 1, 2, 2, 3, 3, 6, 6, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5};
+
+/**
+ * Data evidence: BN 0x4dff14..0x4e0349 is the contiguous zgeo_weiler.cpp diagnostic
+ * literal owner linked by geometry_model_assets.zgeometry_weiler_initialized_data.
+ * Purpose: Preserve the source-visible error/source literals used by Weiler diagnostics.
+ */
+const char g_zGeometry_WeilerInitFailedMsg[0x27] = "weiler_init call to weilerInit failed.";
+const char g_zGeometry_SourceFile_ZgeoWeilerCpp[0x2e] =
+    "D:\\Proj\\GameZRecoil\\zGeometry\\zgeo_weiler.cpp";
+const char g_zGeometry_BadClipRegionForWeilerClipMsg[0x27] =
+    "Bad clip region passed to Weiler Clip.";
+const char g_zGeometry_WeilerGatherContoursFailedFmt[0x33] =
+    "%s %d: weiler_clip call to gatherContours failed.\n";
+const char g_zGeometry_WeilerBadParametersFmt[0x30] =
+    "%s %d: Bad parameter(s) passed to Weiler Clip.\n";
+const char g_zGeometry_WeilerInitNewContourFailedFmt[0x30] =
+    "%s %d: weilerInit call to _new_contour failed.\n";
+const char g_zGeometry_WeilerInitBufferEntryFailedFmt[0x2c] =
+    "%s %d: weilerInit call to bufEntry failed.\n";
+const char g_zGeometry_ForwardSegmentFailedMsg[0x17] = "Forward Segment Failed";
+const char g_zGeometry_WeedOutCoincidentSegForwardFailedFmt[0x38] =
+    "%s %d: _weed_out_coincident call to segForward failed.\n";
+const char g_zGeometry_WeedOutErrorFmt[0x12] = "WeedOut Error: %s";
+const char g_zGeometry_WeilerCase_BCompletelyInsideA[0x16] = "B_COMPLETELY_INSIDE_A";
+const char g_zGeometry_WeilerDivideEdgeFailedFmt[0x37] =
+    "%s %d: _weiler_intersect call to _divide_edge failed.\n";
+const char g_zGeometry_WeilerIntersectErrorFmt[0x1a] = "weilerIntersect Error: %s";
+const char g_zGeometry_NewContourBufferEntryFailedMsg[0x2a] =
+    "New_contour could not obtain buffer entry";
+const char g_zGeometry_MergeContoursNewContourFailedFmt[0x37] =
+    "%s %d: _merge_contours failed to receive new contour.\n";
+const char g_zGeometry_ContourMergeValidationFailedMsg[0x22] =
+    "contourMerge:  Failed validation\n";
+const char g_zGeometry_OutputContoursFoundMsg[0x19] = "Found to output contours";
+const char g_zGeometry_OutputContoursFailedMsg[0x1a] = "Failed to output contours";
+const char g_zGeometry_OutputContourBufferEntryFailedFmt[0x2f] =
+    "%s %d: outputContour call to bufEntry failed.\n";
+const char g_zGeometry_DivideEdgeBufferEntryFailedFmt[0x2e] =
+    "%s %d: _divide_edge call to bufEntry failed.\n";
+const char g_zGeometry_BufferEntryFailedMsg[0x10] = "bufEntry failed";
+const char g_zGeometry_GenerateOutsideResultsBufferEntryFailedFmt[0x35] =
+    "%s %d: _gen._outside_rslts call to buf_entry failed\n";
+const char g_zGeometry_Intersect2dBufferEntryFailedFmt[0x2e] =
+    "%s %d: _intersect2d call to buf_entry failed\n";
+const char g_zGeometry_ValidateXingNullFmt[0x2e] =
+    "validateXing failed (xing %d) xing_p is NULL!";
+const char g_zGeometry_ValidateXingTypeFmt[0x2a] =
+    "validateXing failed (xing %d) (type = %d)";
 
 struct WeilerPreclassifyContourPacket {
     zGeometry_WeilerContourOutputPartial contourA;
@@ -315,8 +364,8 @@ zGeometry_WeilerXingPartial *AllocWeilerXing(
     if (xing == 0) {
         fprintf(
             stderr,
-            "%s %d: _intersect2d call to buf_entry failed\n",
-            kZGeoWeilerSourceFile,
+            g_zGeometry_Intersect2dBufferEntryFailedFmt,
+            g_zGeometry_SourceFile_ZgeoWeilerCpp,
             errorLine
         );
     }
@@ -440,8 +489,8 @@ void ReportMergeContourOutputFailure(
 ) {
     fprintf(
         stderr,
-        "%s %d: _merge_contours failed to receive new contour.\n",
-        kZGeoWeilerSourceFile,
+        g_zGeometry_MergeContoursNewContourFailedFmt,
+        g_zGeometry_SourceFile_ZgeoWeilerCpp,
         errorLine
     );
 }
@@ -547,10 +596,10 @@ void ReportWeedOutInsideAFailure(
 ) {
     zError::ReportOld(
         0x100,
-        kZGeoWeilerSourceFile,
+        g_zGeometry_SourceFile_ZgeoWeilerCpp,
         errorLine,
-        "WeedOut Error: %s",
-        "B_COMPLETELY_INSIDE_A"
+        g_zGeometry_WeedOutErrorFmt,
+        g_zGeometry_WeilerCase_BCompletelyInsideA
     );
 }
 
@@ -564,10 +613,10 @@ void ReportWeedOutForwardSegmentFailure(
 ) {
     zError::ReportOld(
         0x100,
-        kZGeoWeilerSourceFile,
+        g_zGeometry_SourceFile_ZgeoWeilerCpp,
         errorLine,
-        "WeedOut Error: %s",
-        "Forward Segment Failed"
+        g_zGeometry_WeedOutErrorFmt,
+        g_zGeometry_ForwardSegmentFailedMsg
     );
 }
 
@@ -581,8 +630,8 @@ void ReportWeedOutSegForwardFailure(
 ) {
     fprintf(
         stderr,
-        "%s %d: _weed_out_coincident call to segForward failed.\n",
-        kZGeoWeilerSourceFile,
+        g_zGeometry_WeedOutCoincidentSegForwardFailedFmt,
+        g_zGeometry_SourceFile_ZgeoWeilerCpp,
         errorLine
     );
 }
@@ -706,9 +755,9 @@ void ReportWeilerIntersectError(
 ) {
     zError::ReportOld(
         0x100,
-        kZGeoWeilerSourceFile,
+        g_zGeometry_SourceFile_ZgeoWeilerCpp,
         errorLine,
-        "weilerIntersect Error: %s",
+        g_zGeometry_WeilerIntersectErrorFmt,
         ""
     );
 }
@@ -722,8 +771,8 @@ void ReportWeilerIntersectDivideFailure(
 ) {
     fprintf(
         stderr,
-        "%s %d: _weiler_intersect call to _divide_edge failed.\n",
-        kZGeoWeilerSourceFile,
+        g_zGeometry_WeilerDivideEdgeFailedFmt,
+        g_zGeometry_SourceFile_ZgeoWeilerCpp,
         errorLine
     );
 }
@@ -1351,9 +1400,9 @@ zGeometry_WeilerStatePartial *__fastcall Init(
     if (pointCount == 0 || points == 0) {
         zError::ReportOld(
             0x200,
-            kZGeoWeilerSourceFile,
+            g_zGeometry_SourceFile_ZgeoWeilerCpp,
             0x20d,
-            "Bad clip region passed to Weiler Clip."
+            g_zGeometry_BadClipRegionForWeilerClipMsg
         );
     }
 
@@ -1415,9 +1464,9 @@ zGeometry_WeilerStatePartial *__fastcall Init(
     ) == 0) {
         zError::ReportOld(
             0x200,
-            kZGeoWeilerSourceFile,
+            g_zGeometry_SourceFile_ZgeoWeilerCpp,
             0x24c,
-            "weiler_init call to weilerInit failed."
+            g_zGeometry_WeilerInitFailedMsg
         );
         zGeometry_Weiler::DestroyState(result);
         return 0;
@@ -1446,8 +1495,8 @@ int __fastcall InitInputContourPair(
     if (segments == 0) {
         fprintf(
             stderr,
-            "%s %d: weilerInit call to bufEntry failed.\n",
-            kZGeoWeilerSourceFile,
+            g_zGeometry_WeilerInitBufferEntryFailedFmt,
+            g_zGeometry_SourceFile_ZgeoWeilerCpp,
             0x455
         );
         return 0;
@@ -1466,8 +1515,8 @@ int __fastcall InitInputContourPair(
     ) == 0) {
         fprintf(
             stderr,
-            "%s %d: weilerInit call to _new_contour failed.\n",
-            kZGeoWeilerSourceFile,
+            g_zGeometry_WeilerInitNewContourFailedFmt,
+            g_zGeometry_SourceFile_ZgeoWeilerCpp,
             0x468
         );
         return 0;
@@ -1492,8 +1541,8 @@ int __fastcall InitInputContourPair(
     ) == 0) {
         fprintf(
             stderr,
-            "%s %d: weilerInit call to _new_contour failed.\n",
-            kZGeoWeilerSourceFile,
+            g_zGeometry_WeilerInitNewContourFailedFmt,
+            g_zGeometry_SourceFile_ZgeoWeilerCpp,
             0x485
         );
         return 0;
@@ -1518,8 +1567,8 @@ int __fastcall ClipPointList(
         outClip == 0) {
         fprintf(
             stderr,
-            "%s %d: Bad parameter(s) passed to Weiler Clip.\n",
-            kZGeoWeilerSourceFile,
+            g_zGeometry_WeilerBadParametersFmt,
+            g_zGeometry_SourceFile_ZgeoWeilerCpp,
             0x2a0
         );
         return 0;
@@ -1671,8 +1720,8 @@ int __fastcall ClipPointList(
             if (zGeometry_Weiler::OutputContoursForClipMode(self) == 0) {
                 fprintf(
                     stderr,
-                    "%s %d: weiler_clip call to gatherContours failed.\n",
-                    kZGeoWeilerSourceFile,
+                    g_zGeometry_WeilerGatherContoursFailedFmt,
+                    g_zGeometry_SourceFile_ZgeoWeilerCpp,
                     0x3b2
                 );
                 zGeometry_WeilerClipOutput::Destroy(outClip);
@@ -1777,9 +1826,9 @@ int __fastcall EnsureContourOutput(
         if (contourOutput == 0) {
             zError::ReportOld(
                 0x200,
-                kZGeoWeilerSourceFile,
+                g_zGeometry_SourceFile_ZgeoWeilerCpp,
                 0xc6f,
-                "New_contour could not obtain buffer entry"
+                g_zGeometry_NewContourBufferEntryFailedMsg
             );
             return 0;
         }
@@ -1809,9 +1858,9 @@ int __fastcall MergeContours(
     ) == 0) {
         zError::ReportOld(
             0x100,
-            kZGeoWeilerSourceFile,
+            g_zGeometry_SourceFile_ZgeoWeilerCpp,
             0xc9a,
-            "contourMerge:  Failed validation\n"
+            g_zGeometry_ContourMergeValidationFailedMsg
         );
         return 0;
     }
@@ -2266,8 +2315,8 @@ int __fastcall DivideContourSegmentAtPoint(
         if (nextSegment == 0) {
             fprintf(
                 stderr,
-                "%s %d: _divide_edge call to bufEntry failed.\n",
-                kZGeoWeilerSourceFile,
+                g_zGeometry_DivideEdgeBufferEntryFailedFmt,
+                g_zGeometry_SourceFile_ZgeoWeilerCpp,
                 0x113a
             );
             return 0;
@@ -2328,9 +2377,9 @@ int __fastcall CreateForwardSegmentPairAtPoint(
         if (newSegment == 0) {
             zError::ReportOld(
                 0x200,
-                kZGeoWeilerSourceFile,
+                g_zGeometry_SourceFile_ZgeoWeilerCpp,
                 0x1181,
-                "bufEntry failed"
+                g_zGeometry_BufferEntryFailedMsg
             );
             return 0;
         }
@@ -2735,8 +2784,8 @@ int __fastcall OutputContourToPolygonSet(
     if (outPoint == 0) {
         fprintf(
             stderr,
-            "%s %d: outputContour call to bufEntry failed.\n",
-            kZGeoWeilerSourceFile,
+            g_zGeometry_OutputContourBufferEntryFailedFmt,
+            g_zGeometry_SourceFile_ZgeoWeilerCpp,
             0xfb9
         );
         return 0;
@@ -2782,9 +2831,9 @@ int __fastcall OutputContoursForClipMode(
                 ) == 0) {
                 zError::ReportOld(
                     0x200,
-                    kZGeoWeilerSourceFile,
+                    g_zGeometry_SourceFile_ZgeoWeilerCpp,
                     0xf5e,
-                    "Failed to output contours"
+                    g_zGeometry_OutputContoursFailedMsg
                 );
                 return 0;
             }
@@ -2800,9 +2849,9 @@ int __fastcall OutputContoursForClipMode(
                     ) == 0) {
                     zError::ReportOld(
                         0x200,
-                        kZGeoWeilerSourceFile,
+                        g_zGeometry_SourceFile_ZgeoWeilerCpp,
                         0xf71,
-                        "Failed to output contours"
+                        g_zGeometry_OutputContoursFailedMsg
                     );
                     return 0;
                 }
@@ -2819,9 +2868,9 @@ int __fastcall OutputContoursForClipMode(
                     ) == 0) {
                     zError::ReportOld(
                         0x100,
-                        kZGeoWeilerSourceFile,
+                        g_zGeometry_SourceFile_ZgeoWeilerCpp,
                         0xf7d,
-                        "Found to output contours"
+                        g_zGeometry_OutputContoursFoundMsg
                     );
                     return 0;
                 }
@@ -2914,8 +2963,8 @@ int __fastcall GenerateOutsideResults(
     if (polygon == 0) {
         fprintf(
             stderr,
-            "%s %d: _gen._outside_rslts call to buf_entry failed\n",
-            kZGeoWeilerSourceFile,
+            g_zGeometry_GenerateOutsideResultsBufferEntryFailedFmt,
+            g_zGeometry_SourceFile_ZgeoWeilerCpp,
             0x11f7
         );
         return 0;
@@ -2933,8 +2982,8 @@ int __fastcall GenerateOutsideResults(
     if (outPoint == 0) {
         fprintf(
             stderr,
-            "%s %d: _gen._outside_rslts call to buf_entry failed\n",
-            kZGeoWeilerSourceFile,
+            g_zGeometry_GenerateOutsideResultsBufferEntryFailedFmt,
+            g_zGeometry_SourceFile_ZgeoWeilerCpp,
             0x120f
         );
         return 0;
@@ -3926,18 +3975,18 @@ int __fastcall ValidateXings(
                 if (xing != 0) {
                     zError::ReportOld(
                         0x100,
-                        kZGeoWeilerSourceFile,
+                        g_zGeometry_SourceFile_ZgeoWeilerCpp,
                         0x1788,
-                        "validateXing failed (xing %d) (type = %d)",
+                        g_zGeometry_ValidateXingTypeFmt,
                         xingIndex,
                         xing->xingType
                     );
                 } else {
                     zError::ReportOld(
                         0x100,
-                        kZGeoWeilerSourceFile,
+                        g_zGeometry_SourceFile_ZgeoWeilerCpp,
                         0x179a,
-                        "validateXing failed (xing %d) xing_p is NULL!",
+                        g_zGeometry_ValidateXingNullFmt,
                         xingIndex
                     );
                 }

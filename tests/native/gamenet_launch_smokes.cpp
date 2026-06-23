@@ -1744,9 +1744,10 @@ extern "C" int gamenet_handle_pkt14_hud_timer_and_flags_sync_smoke(void) {
     zNetworkDPlaySessionDescCache *const oldSession = g_zNetwork_CurrentSessionDescCache;
     const int oldIsHost = g_zNetwork_IsHostFlag;
 
-    CZRecoilFrame mainWnd = {};
-    mainWnd.m_useArchiveBanks = 77;
-    g_RecoilApp.m_pMainWnd = (CWnd *)(&mainWnd);
+    alignas(CZRecoilFrame) unsigned char mainWndStorage[sizeof(CZRecoilFrame)] = {};
+    CZRecoilFrame *const mainWnd = reinterpret_cast<CZRecoilFrame *>(mainWndStorage);
+    mainWnd->m_useArchiveBanks = 77;
+    g_RecoilApp.m_pMainWnd = (CWnd *)(mainWnd);
     g_RecoilApp.m_currentStateIndex = -1;
     std::memset(
         g_RecoilApp.m_stateStack,
@@ -3078,6 +3079,66 @@ extern "C" int gamenet_begin_chat_compose_smoke(void) {
     ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
 
     return disabledOk && stateOk && keyOk ? 0 : 1;
+}
+
+extern "C" int hud_ui_handle_hotkey_command_begin_chat_smoke(void) {
+    int networkEnabled = 1;
+    int *const oldNetworkEnabled = ZOPT_NETWORK_ENABLED;
+    ZOPT_NETWORK_ENABLED = &networkEnabled;
+    HudUiChatComposeTextInput oldInput = g_HudUiMgrObjectiveChatComposeTextInput;
+    HudUiPanel *const oldSummaryPanel = g_HudUiMgrObjectiveSummaryTextPanel;
+    HudUiPanel *const oldDescPanel = g_HudUiMgrObjectiveDescTextPanel;
+    const int oldChatComposeActive = g_HudUiMgrObjectiveChatComposeActive;
+    const int oldPhase = g_HudUiMgrObjectivePhase;
+    const int oldState = g_HudUiMgrObjectiveState;
+    zInput::KbdKeyDispatchEntry oldDispatch[0x7de];
+    std::memcpy(
+        oldDispatch,
+        g_zInputKbdKeyDispatchTable,
+        sizeof(oldDispatch)
+    );
+
+    ChatComposePanelFake summaryPanel = {};
+    ChatComposePanelFake descPanel = {};
+    g_HudUiMgrObjectiveSummaryTextPanel = &summaryPanel;
+    g_HudUiMgrObjectiveDescTextPanel = &descPanel;
+    g_HudUiMgrObjectivePhase = 0;
+    g_HudUiMgrObjectiveState = 0;
+    g_HudUiMgrObjectiveChatComposeActive = 0;
+
+    g_HudUiMgrObjectiveChatComposeTextInput = HudUiChatComposeTextInput();
+    g_HudUiMgrObjectiveChatComposeTextInput.Constructor(8);
+    char *const initialBuffer = g_HudUiMgrObjectiveChatComposeTextInput.buffer;
+    zInput::BindMapSystem_Init(1);
+
+    HudUi::HandleHotkeyCommand(42);
+    const void *const callback = (const void *)(&GameNet::ChatComposeKeyCallback);
+    const bool hotkeyOk =
+        g_HudUiMgrObjectiveChatComposeActive == 1 &&
+        g_HudUiMgrObjectiveChatComposeTextInput.capacity == 32 &&
+        g_zInput_BindMapOverlayDepth == 1 &&
+        g_zInputKbdKeyDispatchTable[0x39].callback == callback &&
+        g_zInputKbdKeyDispatchTable[0x42b].callback == callback;
+
+    ::operator delete(initialBuffer);
+    g_HudUiMgrObjectiveChatComposeTextInput.DestructorCore();
+    zInput::BindMapContext_Pop();
+    zInput::BindMapSystem_Shutdown();
+
+    g_HudUiMgrObjectiveChatComposeTextInput = oldInput;
+    g_HudUiMgrObjectiveSummaryTextPanel = oldSummaryPanel;
+    g_HudUiMgrObjectiveDescTextPanel = oldDescPanel;
+    g_HudUiMgrObjectiveChatComposeActive = oldChatComposeActive;
+    g_HudUiMgrObjectivePhase = oldPhase;
+    g_HudUiMgrObjectiveState = oldState;
+    std::memcpy(
+        g_zInputKbdKeyDispatchTable,
+        oldDispatch,
+        sizeof(oldDispatch)
+    );
+    ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
+
+    return hotkeyOk ? 0 : 1;
 }
 
 extern "C" int gamenet_end_chat_compose_and_send_smoke(void) {

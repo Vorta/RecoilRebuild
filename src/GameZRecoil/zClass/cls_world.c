@@ -11,6 +11,60 @@
 #include <stdlib.h>
 #include <string.h>
 
+extern "C" {
+/**
+ * Reimplements data 0x4de23c: g_zClass_LineErrorVirtualAreaPartitionNullFmt.
+ * BN data inventory declares writable cls_world.c diagnostic literal char[0x5b].
+ * Purpose: report a missing virtual-area partition grid during world
+ * partition initialization.
+ */
+char g_zClass_LineErrorVirtualAreaPartitionNullFmt[0x5b] =
+    "%s: Line %d: ERROR initializing virtual area partition; NULL area partitions encountered.\n";
+/**
+ * Reimplements data 0x4de2c0: g_zClass_PartitionMaxDecFeatureCountOverflowFmt.
+ * BN data inventory declares writable cls_world.c diagnostic literal char[0x4d].
+ * Purpose: report clamping of the maximum DEC feature count to the byte-sized
+ * partition storage limit.
+ */
+char g_zClass_PartitionMaxDecFeatureCountOverflowFmt[0x4d] =
+    "ERROR setting Partition Max DEC Feature count to %d:\n"
+    "overflow limit at 255.\n";
+/**
+ * Reimplements data 0x4de310: g_zClass_LineErrorDeleteLightWorldNotFoundFmt.
+ * BN data inventory declares writable cls_world.c diagnostic literal char[0x72].
+ * Purpose: report that a light's attached-world list does not contain the
+ * world being removed.
+ */
+char g_zClass_LineErrorDeleteLightWorldNotFoundFmt[0x72] =
+    "%s: Line %d: ERROR deleting light; world not found in light's world list.\n"
+    "        world_ptr = %x; light_ptr = %x\n";
+/**
+ * Reimplements data 0x4de384: g_zClass_LineErrorDeleteLightNotFoundInWorldListFmt.
+ * BN data inventory declares writable cls_world.c diagnostic literal char[0x64].
+ * Purpose: report that a light node is absent from the world's light list.
+ */
+char g_zClass_LineErrorDeleteLightNotFoundInWorldListFmt[0x64] =
+    "%s: Line %d: ERROR deleting light; not found in world list.\n"
+    "        world_ptr = %x; light_ptr = %x\n";
+/**
+ * Reimplements data 0x4de3e8: g_zClass_LineErrorDeleteSoundWorldNotFoundFmt.
+ * BN data inventory declares writable cls_world.c diagnostic literal char[0x72].
+ * Purpose: report that a sound's attached-world list does not contain the
+ * world being removed.
+ */
+char g_zClass_LineErrorDeleteSoundWorldNotFoundFmt[0x72] =
+    "%s: Line %d: ERROR deleting sound; world not found in sound's world list.\n"
+    "        world_ptr = %x; sound_ptr = %x\n";
+/**
+ * Reimplements data 0x4de45c: g_zClass_LineErrorDeleteSoundNotFoundInWorldListFmt.
+ * BN data inventory declares writable cls_world.c diagnostic literal char[0x64].
+ * Purpose: report that a sound node is absent from the world's sound list.
+ */
+char g_zClass_LineErrorDeleteSoundNotFoundInWorldListFmt[0x64] =
+    "%s: Line %d: ERROR deleting sound; not found in world list.\n"
+    "        world_ptr = %x; sound_ptr = %x\n";
+}
+
 namespace {
     const char *kWorldSourceFile = "D:\\Proj\\GameZRecoil\\zClass\\cls_world.c";
 
@@ -158,7 +212,7 @@ namespace {
         zClass_NodePartial *statics = zClass_Object3D::gwObject3DInit();
         zClass_Class::gwNodeSetName(
             statics,
-            "VAP_statics"
+            g_zClass_VapStaticsNodeName
         );
         while (area->childCount > 0) {
             zClass_NodePartial *child = area->childList[0];
@@ -571,7 +625,7 @@ namespace zClass_World {
                 0x200,
                 kWorldSourceFile,
                 0xc01,
-                "ERROR setting Partition Max DEC Feature count to %d:\noverflow limit at 255.\n",
+                g_zClass_PartitionMaxDecFeatureCountOverflowFmt,
                 maxFeatures
             );
             maxFeatures = 255;
@@ -670,8 +724,7 @@ namespace zClass_World {
         if (data->areaGridRows == 0) {
             sprintf(
                 g_zError_DebugMsgBuffer,
-                "%s: Line %d: ERROR initializing virtual area partition; NULL area partitions "
-                "encountered.\n",
+                g_zClass_LineErrorVirtualAreaPartitionNullFmt,
                 kWorldSourceFile,
                 0x245
             );
@@ -1534,8 +1587,7 @@ namespace zClass_World {
         if (lightIndex < 0) {
             sprintf(
                 g_zError_DebugMsgBuffer,
-                "%s: Line %d: ERROR deleting light; not found in world list.\n"
-                "        world_ptr = %x; light_ptr = %x\n",
+                g_zClass_LineErrorDeleteLightNotFoundInWorldListFmt,
                 kWorldSourceFile,
                 0x108d,
                 (unsigned int)((unsigned int)(world)),
@@ -1563,8 +1615,7 @@ namespace zClass_World {
         if (worldIndex < 0) {
             sprintf(
                 g_zError_DebugMsgBuffer,
-                "%s: Line %d: ERROR deleting light; world not found in light's world list.\n"
-                "        world_ptr = %x; light_ptr = %x\n",
+                g_zClass_LineErrorDeleteLightWorldNotFoundFmt,
                 kWorldSourceFile,
                 0x10b4,
                 (unsigned int)((unsigned int)(world)),
@@ -1676,8 +1727,7 @@ namespace zClass_World {
         if (soundIndex < 0) {
             sprintf(
                 g_zError_DebugMsgBuffer,
-                "%s: Line %d: ERROR deleting sound; not found in world list.\n"
-                "        world_ptr = %x; sound_ptr = %x\n",
+                g_zClass_LineErrorDeleteSoundNotFoundInWorldListFmt,
                 kWorldSourceFile,
                 0x11cc,
                 (unsigned int)((unsigned int)(world)),
@@ -1705,8 +1755,7 @@ namespace zClass_World {
         if (worldIndex < 0) {
             sprintf(
                 g_zError_DebugMsgBuffer,
-                "%s: Line %d: ERROR deleting sound; world not found in sound's world list.\n"
-                "        world_ptr = %x; sound_ptr = %x\n",
+                g_zClass_LineErrorDeleteSoundWorldNotFoundFmt,
                 kWorldSourceFile,
                 0x11f3,
                 (unsigned int)((unsigned int)(world)),

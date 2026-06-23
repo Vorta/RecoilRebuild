@@ -24,6 +24,23 @@ void __fastcall ApplyCameraState(int newState);
 }
 
 extern "C" {
+extern char g_zGame_Options_RegRootPrefix[];
+/**
+ * Reimplements data 0x4e4668: g_zGame_Options_RegKeyVersionSegment.
+ * Purpose: points at the writable registry-root prefix segment used for
+ * options registry key construction.
+ */
+char *g_zGame_Options_RegKeyVersionSegment = g_zGame_Options_RegRootPrefix;
+/**
+ * Reimplements data 0x4e466c: g_zGame_Options_RegRootPrefix.
+ * Purpose: stores the writable SOFTWARE\ registry-root prefix.
+ */
+char g_zGame_Options_RegRootPrefix[] = "SOFTWARE\\";
+/**
+ * Reimplements data 0x4e4678: g_zGame_Options_RegPathSeparator.
+ * Purpose: stores the writable registry path separator.
+ */
+char g_zGame_Options_RegPathSeparator[] = "\\";
 zOptionEntryPartial *g_zGame_Options_OptionListHead = 0;
 char *g_zGame_Options_RegKeyRoot = 0;
 char *g_zGame_Options_RegKeyCurrentUser = 0;
@@ -85,6 +102,302 @@ zOpt_CameraSection **g_zOpt_CameraSectionOption = 0;
 int g_zOpt_HwMode = 0;
 zOptGameControlFlags *ZOPT_GAME_CONTROL_OPTIONS = 0;
 zGame_OptionsRuntimeConfig g_zGame_Options_RuntimeConfig = {0};
+
+/**
+ * Reimplements data 0x4da63c..0x4da8b4: zOpt profile and option literal pool.
+ * Purpose: preserve the writable VC5-era char globals used by profile selection
+ * and option registration.
+ */
+/**
+ * Reimplements data 0x4da63c: g_zOpt_OpStr_TolEq.
+ * Purpose: Stores the writable profile comparison token for approximate equality.
+ */
+char g_zOpt_OpStr_TolEq[] = "~=";
+/**
+ * Reimplements data 0x4da640: g_zOpt_OpStr_Ne.
+ * Purpose: Stores the writable profile comparison token for inequality.
+ */
+char g_zOpt_OpStr_Ne[] = "!=";
+/**
+ * Reimplements data 0x4da644: g_zOpt_OpStr_Ge.
+ * Purpose: Stores the writable profile comparison token for greater-or-equal tests.
+ */
+char g_zOpt_OpStr_Ge[] = ">=";
+/**
+ * Reimplements data 0x4da648: g_zOpt_OpStr_Le.
+ * Purpose: Stores the writable profile comparison token for less-or-equal tests.
+ */
+char g_zOpt_OpStr_Le[] = "<=";
+/**
+ * Reimplements data 0x4da64c: g_zOpt_OpStr_Gt.
+ * Purpose: Stores the writable profile comparison token for greater-than tests.
+ */
+char g_zOpt_OpStr_Gt[] = ">";
+/**
+ * Reimplements data 0x4da650: g_zOpt_OpStr_Lt.
+ * Purpose: Stores the writable profile comparison token for less-than tests.
+ */
+char g_zOpt_OpStr_Lt[] = "<";
+/**
+ * Reimplements data 0x4da654: g_zOpt_OpStr_Eq.
+ * Purpose: Stores the writable profile comparison token for equality tests.
+ */
+char g_zOpt_OpStr_Eq[] = "==";
+/**
+ * Reimplements data 0x4da658: k_zOpt_ProfileMetricDefault.
+ * Purpose: Stores the writable DEFAULT profile metric key.
+ */
+char k_zOpt_ProfileMetricDefault[] = "DEFAULT";
+/**
+ * Reimplements data 0x4da660: k_zOpt_ProfileMetricHwAccel.
+ * Purpose: Stores the writable HW_ACCEL profile metric key.
+ */
+char k_zOpt_ProfileMetricHwAccel[] = "HW_ACCEL";
+/**
+ * Reimplements data 0x4da66c: k_zOpt_ProfileMetricRamKb.
+ * Purpose: Stores the writable RAM_KB profile metric key.
+ */
+char k_zOpt_ProfileMetricRamKb[] = "RAM_KB";
+/**
+ * Reimplements data 0x4da674: k_zOpt_ProfileMetricVideoKb.
+ * Purpose: Stores the writable VIDEO_KB profile metric key.
+ */
+char k_zOpt_ProfileMetricVideoKb[] = "VIDEO_KB";
+/**
+ * Reimplements data 0x4da680: k_zOpt_ProfileMetricCpuMhz.
+ * Purpose: Stores the writable CPU_MHZ profile metric key.
+ */
+char k_zOpt_ProfileMetricCpuMhz[] = "CPU_MHZ";
+/**
+ * Reimplements data 0x4da688: k_zOpt_ProfileMetricCpuClass.
+ * Purpose: Stores the writable CPU_CLASS profile metric key.
+ */
+char k_zOpt_ProfileMetricCpuClass[] = "CPU_CLASS";
+/**
+ * Reimplements data 0x4da694: g_zOpt_OptionName_VStride.
+ * Purpose: Stores the writable option name used to register VStride.
+ */
+char g_zOpt_OptionName_VStride[] = "VStride";
+/**
+ * Reimplements data 0x4da69c: g_zOpt_OptionName_VMode.
+ * Purpose: Stores the writable option name used to register VMode.
+ */
+char g_zOpt_OptionName_VMode[] = "VMode";
+/**
+ * Reimplements data 0x4da6a4: g_zOpt_OptionName_Replicate.
+ * Purpose: Stores the writable option name used to register Replicate.
+ */
+char g_zOpt_OptionName_Replicate[] = "Replicate";
+/**
+ * Reimplements data 0x4da6b0: g_zOpt_OptionName_Window.
+ * Purpose: Stores the writable option name used to register Window.
+ */
+char g_zOpt_OptionName_Window[] = "Window";
+/**
+ * Reimplements data 0x4da6b8: g_zOpt_OptionName_Display.
+ * Purpose: Stores the writable option name used to register Display.
+ */
+char g_zOpt_OptionName_Display[] = "Display";
+/**
+ * Reimplements data 0x4da6c0: g_zOpt_OptionName_Render.
+ * Purpose: Stores the writable option name used to register Render.
+ */
+char g_zOpt_OptionName_Render[] = "Render";
+/**
+ * Reimplements data 0x4da6c8: g_zOpt_OptionName_Camera.
+ * Purpose: Stores the writable option name used to register Camera.
+ */
+char g_zOpt_OptionName_Camera[] = "Camera";
+/**
+ * Reimplements data 0x4da6d0: g_zOpt_OptionName_NetListen.
+ * Purpose: Stores the writable option name used to register NetListen.
+ */
+char g_zOpt_OptionName_NetListen[] = "NetListen";
+/**
+ * Reimplements data 0x4da6dc: g_zOpt_OptionName_NetworkModem.
+ * Purpose: Stores the writable option name used to register NetworkModem.
+ */
+char g_zOpt_OptionName_NetworkModem[] = "NetworkModem";
+/**
+ * Reimplements data 0x4da6ec: g_zOpt_OptionName_Network.
+ * Purpose: Stores the writable option name used to register Network.
+ */
+char g_zOpt_OptionName_Network[] = "Network";
+/**
+ * Reimplements data 0x4da6f4: g_zOpt_OptionName_JoystickNumButtons.
+ * Purpose: Stores the writable option name used to register JoystickNumButtons.
+ */
+char g_zOpt_OptionName_JoystickNumButtons[] = "JoystickNumButtons";
+/**
+ * Reimplements data 0x4da708: g_zOpt_OptionName_JoystickNumAxes.
+ * Purpose: Stores the writable option name used to register JoystickNumAxes.
+ */
+char g_zOpt_OptionName_JoystickNumAxes[] = "JoystickNumAxes";
+/**
+ * Reimplements data 0x4da718: g_zOpt_OptionName_WOLPasswordFlag.
+ * Purpose: Stores the writable option name used to register WOLPasswordFlag.
+ */
+char g_zOpt_OptionName_WOLPasswordFlag[] = "WOLPasswordFlag";
+/**
+ * Reimplements data 0x4da728: g_zOpt_OptionName_Joystick.
+ * Purpose: Stores the writable option name used to register Joystick.
+ */
+char g_zOpt_OptionName_Joystick[] = "Joystick";
+/**
+ * Reimplements data 0x4da734: g_zOpt_OptionName_HwApi.
+ * Purpose: Stores the writable option name used to register HWAPI.
+ */
+char g_zOpt_OptionName_HwApi[] = "HWAPI";
+/**
+ * Reimplements data 0x4da73c: g_zOpt_OptionName_HudTypeHw.
+ * Purpose: Stores the writable option name used to register HUDType_HW.
+ */
+char g_zOpt_OptionName_HudTypeHw[] = "HUDType_HW";
+/**
+ * Reimplements data 0x4da748: g_zOpt_OptionName_HudTypeSw.
+ * Purpose: Stores the writable option name used to register HUDType_SW.
+ */
+char g_zOpt_OptionName_HudTypeSw[] = "HUDType_SW";
+/**
+ * Reimplements data 0x4da754: g_zOpt_OptionName_HudFlagHw.
+ * Purpose: Stores the writable option name used to register HUDFlag_HW.
+ */
+char g_zOpt_OptionName_HudFlagHw[] = "HUDFlag_HW";
+/**
+ * Reimplements data 0x4da760: g_zOpt_OptionName_HudFlagSw.
+ * Purpose: Stores the writable option name used to register HUDFlag_SW.
+ */
+char g_zOpt_OptionName_HudFlagSw[] = "HUDFlag_SW";
+/**
+ * Reimplements data 0x4da76c: g_zOpt_OptionName_FullScreen.
+ * Purpose: Stores the writable option name used to register FullScreen.
+ */
+char g_zOpt_OptionName_FullScreen[] = "FullScreen";
+/**
+ * Reimplements data 0x4da778: g_zOpt_OptionName_CDAudio.
+ * Purpose: Stores the writable option name used to register CDAudio.
+ */
+char g_zOpt_OptionName_CDAudio[] = "CDAudio";
+/**
+ * Reimplements data 0x4da780: g_zOpt_OptionName_PlayerName.
+ * Purpose: Stores the writable option name used to register PlayerName.
+ */
+char g_zOpt_OptionName_PlayerName[] = "PlayerName";
+/**
+ * Reimplements data 0x4da78c: g_zOpt_OptionName_SoundApi.
+ * Purpose: Stores the writable option name used to register SoundAPI.
+ */
+char g_zOpt_OptionName_SoundApi[] = "SoundAPI";
+/**
+ * Reimplements data 0x4da798: g_zOpt_OptionName_SoundLOD.
+ * Purpose: Stores the writable option name used to register SoundLOD.
+ */
+char g_zOpt_OptionName_SoundLOD[] = "SoundLOD";
+/**
+ * Reimplements data 0x4da7a4: g_zOpt_OptionName_SoundVolume.
+ * Purpose: Stores the writable option name used to register SoundVolume.
+ */
+char g_zOpt_OptionName_SoundVolume[] = "SoundVolume";
+/**
+ * Reimplements data 0x4da7b0: g_zOpt_OptionName_MuteSound.
+ * Purpose: Stores the writable option name used to register MuteSound.
+ */
+char g_zOpt_OptionName_MuteSound[] = "MuteSound";
+/**
+ * Reimplements data 0x4da7bc: g_zOpt_OptionName_GameIntensity.
+ * Purpose: Stores the writable option name used to register GameIntensity.
+ */
+char g_zOpt_OptionName_GameIntensity[] = "GameIntensity";
+/**
+ * Reimplements data 0x4da7cc: g_zOpt_OptionName_GameCtlOptions.
+ * Purpose: Stores the writable option name used to register GameCtlOptions.
+ */
+char g_zOpt_OptionName_GameCtlOptions[] = "GameCtlOptions";
+/**
+ * Reimplements data 0x4da7dc: g_zOpt_OptionName_TextureMemoryHw.
+ * Purpose: Stores the writable option name used to register TextureMemory_HW.
+ */
+char g_zOpt_OptionName_TextureMemoryHw[] = "TextureMemory_HW";
+/**
+ * Reimplements data 0x4da7f0: g_zOpt_OptionName_TextureMemorySw.
+ * Purpose: Stores the writable option name used to register TextureMemory_SW.
+ */
+char g_zOpt_OptionName_TextureMemorySw[] = "TextureMemory_SW";
+/**
+ * Reimplements data 0x4da804: g_zOpt_OptionName_ObjectLODHw.
+ * Purpose: Stores the writable option name used to register ObjectLOD_HW.
+ */
+char g_zOpt_OptionName_ObjectLODHw[] = "ObjectLOD_HW";
+/**
+ * Reimplements data 0x4da814: g_zOpt_OptionName_ObjectLODSw.
+ * Purpose: Stores the writable option name used to register ObjectLOD_SW.
+ */
+char g_zOpt_OptionName_ObjectLODSw[] = "ObjectLOD_SW";
+/**
+ * Reimplements data 0x4da824: g_zOpt_OptionName_GlobalLightHw.
+ * Purpose: Stores the writable option name used to register GlobalLight_HW.
+ */
+char g_zOpt_OptionName_GlobalLightHw[] = "GlobalLight_HW";
+/**
+ * Reimplements data 0x4da834: g_zOpt_OptionName_GfxFlagsHw.
+ * Purpose: Stores the writable option name used to register GfxFlags_HW.
+ */
+char g_zOpt_OptionName_GfxFlagsHw[] = "GfxFlags_HW";
+/**
+ * Reimplements data 0x4da840: g_zOpt_OptionName_AllVideoBuffer.
+ * Purpose: Stores the writable option name used to register AllVideoBuffer.
+ */
+char g_zOpt_OptionName_AllVideoBuffer[] = "AllVideoBuffer";
+/**
+ * Reimplements data 0x4da850: g_zOpt_OptionName_GlobalLightSw.
+ * Purpose: Stores the writable option name used to register GlobalLight_SW.
+ */
+char g_zOpt_OptionName_GlobalLightSw[] = "GlobalLight_SW";
+/**
+ * Reimplements data 0x4da860: g_zOpt_OptionName_Perspective.
+ * Purpose: Stores the writable option name used to register Perspective.
+ */
+char g_zOpt_OptionName_Perspective[] = "Perspective";
+/**
+ * Reimplements data 0x4da86c: g_zOpt_OptionName_Lighting.
+ * Purpose: Stores the writable option name used to register Lighting.
+ */
+char g_zOpt_OptionName_Lighting[] = "Lighting";
+/**
+ * Reimplements data 0x4da878: g_zOpt_OptionName_Transparency.
+ * Purpose: Stores the writable option name used to register Transparency.
+ */
+char g_zOpt_OptionName_Transparency[] = "Transparency";
+/**
+ * Reimplements data 0x4da888: g_zOpt_OptionName_GfxFlagsSw.
+ * Purpose: Stores the writable option name used to register GfxFlags_SW.
+ */
+char g_zOpt_OptionName_GfxFlagsSw[] = "GfxFlags_SW";
+/**
+ * Reimplements data 0x4da894: g_zOpt_OptionName_EffectsLevelHw.
+ * Purpose: Stores the writable option name used to register EffectsLevel_HW.
+ */
+char g_zOpt_OptionName_EffectsLevelHw[] = "EffectsLevel_HW";
+/**
+ * Reimplements data 0x4da8a4: g_zOpt_OptionName_EffectsLevelSw.
+ * Purpose: Stores the writable option name used to register EffectsLevel_SW.
+ */
+char g_zOpt_OptionName_EffectsLevelSw[] = "EffectsLevel_SW";
+/**
+ * Reimplements data 0x4da8b4: g_zOpt_OptionName_HwCardFlag.
+ * Purpose: Stores the writable option name used to register HWCardFlag.
+ */
+char g_zOpt_OptionName_HwCardFlag[] = "HWCardFlag";
+/**
+ * Reimplements data 0x4da8c0: g_zOpt_DetailArchiveName.
+ * Purpose: Stores the writable detail archive name used by game option loading.
+ */
+char g_zOpt_DetailArchiveName[] = "detail.zrd";
+/**
+ * Reimplements data 0x4da8cc: g_zOpt_DetailOptionName_Sunlight.
+ * Purpose: Stores the writable node name used to apply the sunlight graphics flag.
+ */
+char g_zOpt_DetailOptionName_Sunlight[] = "sunlight";
 }
 
 RECOIL_STATIC_ASSERT(
@@ -343,21 +656,21 @@ int BuildGraphicsFlags(
     }
     if (zOpt::SelectProfileValueForSystem(
         profileRoot,
-        "Transparency",
+        g_zOpt_OptionName_Transparency,
         1
     ) != 0) {
         flags |= ZOPT_GRAPHICS_TRANSPARENCY;
     }
     if (zOpt::SelectProfileValueForSystem(
         profileRoot,
-        "Lighting",
+        g_zOpt_OptionName_Lighting,
         1
     ) != 0) {
         flags |= ZOPT_GRAPHICS_LIGHTING;
     }
     if (zOpt::SelectProfileValueForSystem(
         profileRoot,
-        "Perspective",
+        g_zOpt_OptionName_Perspective,
         1
     ) != 0) {
         flags |= ZOPT_GRAPHICS_PERSPECTIVE;
@@ -371,7 +684,7 @@ int BuildGraphicsFlags(
     }
     if (zOpt::SelectProfileValueForSystem(
         profileRoot,
-        "AllVideoBuffer",
+        g_zOpt_OptionName_AllVideoBuffer,
         0
     ) != 0) {
         flags |= ZOPT_GRAPHICS_ALL_VIDEO_BUFFER;
@@ -528,13 +841,14 @@ void __fastcall Options_InitRegistryContext(
  * Purpose: load registered option payloads from the configured registry keys.
  */
 RECOIL_NO_GS int Options_LoadFromRegistry() {
-    const size_t subKeyLength = strlen("SOFTWARE\\") + strlen(g_zGame_Options_RegKeyRoot) + 1 +
+    const size_t subKeyLength = strlen(g_zGame_Options_RegKeyVersionSegment) +
+                                strlen(g_zGame_Options_RegKeyRoot) + 1 +
                                 strlen(g_zGame_Options_RegKeyCurrentUser) + 1 +
                                 strlen(g_zGame_Options_RegKeyGame) + 1;
     char *const subKey = (char *)(_alloca((subKeyLength + 3u) & ~(size_t)(3u)));
     strcpy(
         subKey,
-        "SOFTWARE\\"
+        g_zGame_Options_RegRootPrefix
     );
     strcat(
         subKey,
@@ -542,7 +856,7 @@ RECOIL_NO_GS int Options_LoadFromRegistry() {
     );
     strcat(
         subKey,
-        "\\"
+        g_zGame_Options_RegPathSeparator
     );
     strcat(
         subKey,
@@ -550,7 +864,7 @@ RECOIL_NO_GS int Options_LoadFromRegistry() {
     );
     strcat(
         subKey,
-        "\\"
+        g_zGame_Options_RegPathSeparator
     );
     strcat(
         subKey,
@@ -645,13 +959,14 @@ RECOIL_NO_GS int Options_LoadFromRegistry() {
  * Purpose: persist registered option payloads to the configured registry keys.
  */
 RECOIL_NO_GS int Options_SaveToRegistry() {
-    const size_t subKeyLength = strlen("SOFTWARE\\") + strlen(g_zGame_Options_RegKeyRoot) + 1 +
+    const size_t subKeyLength = strlen(g_zGame_Options_RegKeyVersionSegment) +
+                                strlen(g_zGame_Options_RegKeyRoot) + 1 +
                                 strlen(g_zGame_Options_RegKeyCurrentUser) + 1 +
                                 strlen(g_zGame_Options_RegKeyGame) + 1;
     char *const subKey = (char *)(_alloca((subKeyLength + 3u) & ~(size_t)(3u)));
     strcpy(
         subKey,
-        "SOFTWARE\\"
+        g_zGame_Options_RegRootPrefix
     );
     strcat(
         subKey,
@@ -659,7 +974,7 @@ RECOIL_NO_GS int Options_SaveToRegistry() {
     );
     strcat(
         subKey,
-        "\\"
+        g_zGame_Options_RegPathSeparator
     );
     strcat(
         subKey,
@@ -667,7 +982,7 @@ RECOIL_NO_GS int Options_SaveToRegistry() {
     );
     strcat(
         subKey,
-        "\\"
+        g_zGame_Options_RegPathSeparator
     );
     strcat(
         subKey,
@@ -799,12 +1114,15 @@ void Options_ShutdownRegistryContext() {
     g_zGame_Options_RegContextInitialized = 0;
 }
 
-// Reimplements 0x407700: zGame::Options_LoadGameOptions
+/**
+ * Reimplements 0x407700: zGame::Options_LoadGameOptions.
+ * Purpose: load detail.zrd and register the game option globals.
+ */
 RECOIL_NO_GS int Options_LoadGameOptions() {
     ResetOptionPointers();
 
     zReader::Node *const detailRoot = zReader::LoadNodeFromPath(
-        "detail.zrd",
+        g_zOpt_DetailArchiveName,
         0,
         0
     );
@@ -815,7 +1133,7 @@ RECOIL_NO_GS int Options_LoadGameOptions() {
     g_zGame_Options_RuntimeConfig.CopyDefault();
 
     ZOPT_VIDEO_ACCELERATION = OptionValuePointer<int>(Options_GetOrCreateOption(
-        "HWCardFlag",
+        g_zOpt_OptionName_HwCardFlag,
         ZGAME_OPTION_INLINE_DWORD,
         0,
         ZGAME_OPTION_SCOPE_USER
@@ -825,7 +1143,7 @@ RECOIL_NO_GS int Options_LoadGameOptions() {
     }
 
     ZOPT_EFFECTS_LEVEL_SW = OptionValuePointer<int>(Options_GetOrCreateOption(
-        "EffectsLevel_SW",
+        g_zOpt_OptionName_EffectsLevelSw,
         ZGAME_OPTION_INLINE_DWORD,
         0,
         ZGAME_OPTION_SCOPE_USER
@@ -833,12 +1151,12 @@ RECOIL_NO_GS int Options_LoadGameOptions() {
     if (ZOPT_EFFECTS_LEVEL_SW != 0) {
         g_zOpt_HwMode = ZVID_HW_MODE_SOFTWARE;
         zOpt::SetEffectsLevelForCurrentHwMode(
-            zOpt::SelectProfileValueForSystem(detailRoot, "EffectsLevel_SW", 1)
+            zOpt::SelectProfileValueForSystem(detailRoot, g_zOpt_OptionName_EffectsLevelSw, 1)
         );
     }
 
     ZOPT_EFFECTS_LEVEL_HW = OptionValuePointer<int>(Options_GetOrCreateOption(
-        "EffectsLevel_HW",
+        g_zOpt_OptionName_EffectsLevelHw,
         ZGAME_OPTION_INLINE_DWORD,
         0,
         ZGAME_OPTION_SCOPE_USER
@@ -846,12 +1164,12 @@ RECOIL_NO_GS int Options_LoadGameOptions() {
     if (ZOPT_EFFECTS_LEVEL_HW != 0) {
         g_zOpt_HwMode = ZVID_HW_MODE_HARDWARE;
         zOpt::SetEffectsLevelForCurrentHwMode(
-            zOpt::SelectProfileValueForSystem(detailRoot, "EffectsLevel_HW", 0)
+            zOpt::SelectProfileValueForSystem(detailRoot, g_zOpt_OptionName_EffectsLevelHw, 0)
         );
     }
 
     ZOPT_GFX_FLAGS_SW = OptionValuePointer<int>(Options_GetOrCreateOption(
-        "GfxFlags_SW",
+        g_zOpt_OptionName_GfxFlagsSw,
         ZGAME_OPTION_INLINE_DWORD,
         0,
         ZGAME_OPTION_SCOPE_USER
@@ -860,13 +1178,13 @@ RECOIL_NO_GS int Options_LoadGameOptions() {
         g_zOpt_HwMode = ZVID_HW_MODE_SOFTWARE;
         zOpt::SetGraphicsFlagsForCurrentHwMode(BuildGraphicsFlags(
             detailRoot,
-            "GlobalLight_SW",
+            g_zOpt_OptionName_GlobalLightSw,
             0
         ));
     }
 
     ZOPT_GFX_FLAGS_HW = OptionValuePointer<int>(Options_GetOrCreateOption(
-        "GfxFlags_HW",
+        g_zOpt_OptionName_GfxFlagsHw,
         ZGAME_OPTION_INLINE_DWORD,
         0,
         ZGAME_OPTION_SCOPE_USER
@@ -875,13 +1193,13 @@ RECOIL_NO_GS int Options_LoadGameOptions() {
         g_zOpt_HwMode = ZVID_HW_MODE_HARDWARE;
         zOpt::SetGraphicsFlagsForCurrentHwMode(BuildGraphicsFlags(
             detailRoot,
-            "GlobalLight_HW",
+            g_zOpt_OptionName_GlobalLightHw,
             1
         ));
     }
 
     ZOPT_OBJECT_LOD_SW = OptionValuePointer<int>(Options_GetOrCreateOption(
-        "ObjectLOD_SW",
+        g_zOpt_OptionName_ObjectLODSw,
         ZGAME_OPTION_INLINE_DWORD,
         0,
         ZGAME_OPTION_SCOPE_USER
@@ -889,12 +1207,12 @@ RECOIL_NO_GS int Options_LoadGameOptions() {
     if (ZOPT_OBJECT_LOD_SW != 0) {
         g_zOpt_HwMode = ZVID_HW_MODE_SOFTWARE;
         zOpt::SetObjectLODForCurrentHwMode(
-            zOpt::SelectProfileValueForSystem(detailRoot, "ObjectLOD_SW", 0)
+            zOpt::SelectProfileValueForSystem(detailRoot, g_zOpt_OptionName_ObjectLODSw, 0)
         );
     }
 
     ZOPT_OBJECT_LOD_HW = OptionValuePointer<int>(Options_GetOrCreateOption(
-        "ObjectLOD_HW",
+        g_zOpt_OptionName_ObjectLODHw,
         ZGAME_OPTION_INLINE_DWORD,
         0,
         ZGAME_OPTION_SCOPE_USER
@@ -902,12 +1220,12 @@ RECOIL_NO_GS int Options_LoadGameOptions() {
     if (ZOPT_OBJECT_LOD_HW != 0) {
         g_zOpt_HwMode = ZVID_HW_MODE_HARDWARE;
         zOpt::SetObjectLODForCurrentHwMode(
-            zOpt::SelectProfileValueForSystem(detailRoot, "ObjectLOD_HW", 0)
+            zOpt::SelectProfileValueForSystem(detailRoot, g_zOpt_OptionName_ObjectLODHw, 0)
         );
     }
 
     ZOPT_TEXTURE_MEMORY_SW = OptionValuePointer<int>(Options_GetOrCreateOption(
-        "TextureMemory_SW",
+        g_zOpt_OptionName_TextureMemorySw,
         ZGAME_OPTION_INLINE_DWORD,
         0,
         ZGAME_OPTION_SCOPE_USER
@@ -915,12 +1233,12 @@ RECOIL_NO_GS int Options_LoadGameOptions() {
     if (ZOPT_TEXTURE_MEMORY_SW != 0) {
         g_zOpt_HwMode = ZVID_HW_MODE_SOFTWARE;
         zOpt::SetTextureMemoryForCurrentHwMode(
-            zOpt::SelectProfileValueForSystem(detailRoot, "TextureMemory_SW", 0)
+            zOpt::SelectProfileValueForSystem(detailRoot, g_zOpt_OptionName_TextureMemorySw, 0)
         );
     }
 
     ZOPT_TEXTURE_MEMORY_HW = OptionValuePointer<int>(Options_GetOrCreateOption(
-        "TextureMemory_HW",
+        g_zOpt_OptionName_TextureMemoryHw,
         ZGAME_OPTION_INLINE_DWORD,
         0,
         ZGAME_OPTION_SCOPE_USER
@@ -928,12 +1246,12 @@ RECOIL_NO_GS int Options_LoadGameOptions() {
     if (ZOPT_TEXTURE_MEMORY_HW != 0) {
         g_zOpt_HwMode = ZVID_HW_MODE_HARDWARE;
         zOpt::SetTextureMemoryForCurrentHwMode(
-            zOpt::SelectProfileValueForSystem(detailRoot, "TextureMemory_HW", 0)
+            zOpt::SelectProfileValueForSystem(detailRoot, g_zOpt_OptionName_TextureMemoryHw, 0)
         );
     }
 
     ZOPT_GAME_CONTROL_OPTIONS = OptionValuePointer<int>(Options_GetOrCreateOption(
-        "GameCtlOptions",
+        g_zOpt_OptionName_GameCtlOptions,
         ZGAME_OPTION_INLINE_DWORD,
         0,
         ZGAME_OPTION_SCOPE_USER
@@ -943,7 +1261,7 @@ RECOIL_NO_GS int Options_LoadGameOptions() {
     }
 
     g_zOpt_GameDifficultyOption = OptionValuePointer<int>(Options_GetOrCreateOption(
-        "GameIntensity",
+        g_zOpt_OptionName_GameIntensity,
         ZGAME_OPTION_INLINE_DWORD,
         0,
         ZGAME_OPTION_SCOPE_USER
@@ -953,7 +1271,7 @@ RECOIL_NO_GS int Options_LoadGameOptions() {
     }
 
     ZOPT_MUTE_SOUND = OptionValuePointer<int>(Options_GetOrCreateOption(
-        "MuteSound",
+        g_zOpt_OptionName_MuteSound,
         ZGAME_OPTION_INLINE_DWORD,
         0,
         ZGAME_OPTION_SCOPE_USER
@@ -963,7 +1281,7 @@ RECOIL_NO_GS int Options_LoadGameOptions() {
     }
 
     ZOPT_SOUND_VOLUME = OptionValuePointer<float>(Options_GetOrCreateOption(
-        "SoundVolume",
+        g_zOpt_OptionName_SoundVolume,
         ZGAME_OPTION_INLINE_BINARY4,
         0,
         ZGAME_OPTION_SCOPE_USER
@@ -973,25 +1291,25 @@ RECOIL_NO_GS int Options_LoadGameOptions() {
     }
 
     ZOPT_SOUND_LOD = OptionValuePointer<int>(
-        Options_GetOrCreateOption("SoundLOD", ZGAME_OPTION_INLINE_DWORD, 0, ZGAME_OPTION_SCOPE_USER)
+        Options_GetOrCreateOption(g_zOpt_OptionName_SoundLOD, ZGAME_OPTION_INLINE_DWORD, 0, ZGAME_OPTION_SCOPE_USER)
     );
     if (ZOPT_SOUND_LOD != 0) {
         zOpt::SetSoundLODOption(zOpt::SelectProfileValueForSystem(
             detailRoot,
-            "SoundLOD",
+            g_zOpt_OptionName_SoundLOD,
             0
         ));
     }
 
     ZOPT_AUDIO_API = OptionValuePointer<int>(
-        Options_GetOrCreateOption("SoundAPI", ZGAME_OPTION_INLINE_DWORD, 0, ZGAME_OPTION_SCOPE_USER)
+        Options_GetOrCreateOption(g_zOpt_OptionName_SoundApi, ZGAME_OPTION_INLINE_DWORD, 0, ZGAME_OPTION_SCOPE_USER)
     );
     if (ZOPT_AUDIO_API != 0) {
         zSnd::SetAudioApiOption(1);
     }
 
     ZOPT_PLAYER_NAME = Options_GetOrCreateOption(
-        "PlayerName",
+        g_zOpt_OptionName_PlayerName,
         ZGAME_OPTION_STRING_BUFFER,
         0x16,
         ZGAME_OPTION_SCOPE_USER
@@ -1008,14 +1326,14 @@ RECOIL_NO_GS int Options_LoadGameOptions() {
     }
 
     ZOPT_SOUND_CDAUDIO = OptionValuePointer<int>(
-        Options_GetOrCreateOption("CDAudio", ZGAME_OPTION_INLINE_DWORD, 0, ZGAME_OPTION_SCOPE_USER)
+        Options_GetOrCreateOption(g_zOpt_OptionName_CDAudio, ZGAME_OPTION_INLINE_DWORD, 0, ZGAME_OPTION_SCOPE_USER)
     );
     if (ZOPT_SOUND_CDAUDIO != 0) {
         zSnd::SetCDAudioOption(1);
     }
 
     ZOPT_VIDEO_FULLSCREEN = OptionValuePointer<int>(Options_GetOrCreateOption(
-        "FullScreen",
+        g_zOpt_OptionName_FullScreen,
         ZGAME_OPTION_INLINE_DWORD,
         0,
         ZGAME_OPTION_SCOPE_USER
@@ -1025,7 +1343,7 @@ RECOIL_NO_GS int Options_LoadGameOptions() {
     }
 
     ZOPT_HUD_SW = OptionValuePointer<int>(Options_GetOrCreateOption(
-        "HUDFlag_SW",
+        g_zOpt_OptionName_HudFlagSw,
         ZGAME_OPTION_INLINE_DWORD,
         0,
         ZGAME_OPTION_SCOPE_USER
@@ -1033,12 +1351,12 @@ RECOIL_NO_GS int Options_LoadGameOptions() {
     if (ZOPT_HUD_SW != 0) {
         g_zOpt_HwMode = ZVID_HW_MODE_SOFTWARE;
         zOpt::SetHudVisibilityOption(
-            zOpt::SelectProfileValueForSystem(detailRoot, "HUDFlag_SW", 1)
+            zOpt::SelectProfileValueForSystem(detailRoot, g_zOpt_OptionName_HudFlagSw, 1)
         );
     }
 
     ZOPT_HUD_HW = OptionValuePointer<int>(Options_GetOrCreateOption(
-        "HUDFlag_HW",
+        g_zOpt_OptionName_HudFlagHw,
         ZGAME_OPTION_INLINE_DWORD,
         0,
         ZGAME_OPTION_SCOPE_USER
@@ -1046,12 +1364,12 @@ RECOIL_NO_GS int Options_LoadGameOptions() {
     if (ZOPT_HUD_HW != 0) {
         g_zOpt_HwMode = ZVID_HW_MODE_HARDWARE;
         zOpt::SetHudVisibilityOption(
-            zOpt::SelectProfileValueForSystem(detailRoot, "HUDFlag_HW", 1)
+            zOpt::SelectProfileValueForSystem(detailRoot, g_zOpt_OptionName_HudFlagHw, 1)
         );
     }
 
     ZOPT_HUD_TYPE_SW = OptionValuePointer<int>(Options_GetOrCreateOption(
-        "HUDType_SW",
+        g_zOpt_OptionName_HudTypeSw,
         ZGAME_OPTION_INLINE_DWORD,
         0,
         ZGAME_OPTION_SCOPE_USER
@@ -1059,12 +1377,12 @@ RECOIL_NO_GS int Options_LoadGameOptions() {
     if (ZOPT_HUD_TYPE_SW != 0) {
         g_zOpt_HwMode = ZVID_HW_MODE_SOFTWARE;
         zOpt::SetHudTypeForCurrentHwMode(
-            zOpt::SelectProfileValueForSystem(detailRoot, "HUDType_SW", 1)
+            zOpt::SelectProfileValueForSystem(detailRoot, g_zOpt_OptionName_HudTypeSw, 1)
         );
     }
 
     ZOPT_HUD_TYPE_HW = OptionValuePointer<int>(Options_GetOrCreateOption(
-        "HUDType_HW",
+        g_zOpt_OptionName_HudTypeHw,
         ZGAME_OPTION_INLINE_DWORD,
         0,
         ZGAME_OPTION_SCOPE_USER
@@ -1072,26 +1390,26 @@ RECOIL_NO_GS int Options_LoadGameOptions() {
     if (ZOPT_HUD_TYPE_HW != 0) {
         g_zOpt_HwMode = ZVID_HW_MODE_HARDWARE;
         zOpt::SetHudTypeForCurrentHwMode(
-            zOpt::SelectProfileValueForSystem(detailRoot, "HUDType_HW", 1)
+            zOpt::SelectProfileValueForSystem(detailRoot, g_zOpt_OptionName_HudTypeHw, 1)
         );
     }
 
     ZOPT_HW_API = OptionValuePointer<int>(
-        Options_GetOrCreateOption("HWAPI", ZGAME_OPTION_INLINE_DWORD, 0, ZGAME_OPTION_SCOPE_USER)
+        Options_GetOrCreateOption(g_zOpt_OptionName_HwApi, ZGAME_OPTION_INLINE_DWORD, 0, ZGAME_OPTION_SCOPE_USER)
     );
     if (ZOPT_HW_API != 0) {
         zVid::SetHwApiOption(1);
     }
 
     ZOPT_INPUT_JOYSTICK = OptionValuePointer<int>(
-        Options_GetOrCreateOption("Joystick", ZGAME_OPTION_INLINE_DWORD, 0, ZGAME_OPTION_SCOPE_USER)
+        Options_GetOrCreateOption(g_zOpt_OptionName_Joystick, ZGAME_OPTION_INLINE_DWORD, 0, ZGAME_OPTION_SCOPE_USER)
     );
     if (ZOPT_INPUT_JOYSTICK != 0) {
         zInp::SetJoystickOption(0);
     }
 
     g_zOpt_WolPasswordFlagOption = OptionValuePointer<int>(Options_GetOrCreateOption(
-        "WOLPasswordFlag",
+        g_zOpt_OptionName_WOLPasswordFlag,
         ZGAME_OPTION_INLINE_DWORD,
         0,
         ZGAME_OPTION_SCOPE_USER
@@ -1101,7 +1419,7 @@ RECOIL_NO_GS int Options_LoadGameOptions() {
     }
 
     ZOPT_JOYSTICK_NUM_AXES = OptionValuePointer<int>(Options_GetOrCreateOption(
-        "JoystickNumAxes",
+        g_zOpt_OptionName_JoystickNumAxes,
         ZGAME_OPTION_INLINE_DWORD,
         0,
         ZGAME_OPTION_SCOPE_TRANSIENT
@@ -1111,7 +1429,7 @@ RECOIL_NO_GS int Options_LoadGameOptions() {
     }
 
     ZOPT_JOYSTICK_NUM_BUTTONS = OptionValuePointer<int>(Options_GetOrCreateOption(
-        "JoystickNumButtons",
+        g_zOpt_OptionName_JoystickNumButtons,
         ZGAME_OPTION_INLINE_DWORD,
         0,
         ZGAME_OPTION_SCOPE_TRANSIENT
@@ -1121,7 +1439,7 @@ RECOIL_NO_GS int Options_LoadGameOptions() {
     }
 
     ZOPT_NETWORK_ENABLED = OptionValuePointer<int>(Options_GetOrCreateOption(
-        "Network",
+        g_zOpt_OptionName_Network,
         ZGAME_OPTION_INLINE_DWORD,
         0,
         ZGAME_OPTION_SCOPE_TRANSIENT
@@ -1131,7 +1449,7 @@ RECOIL_NO_GS int Options_LoadGameOptions() {
     }
 
     g_zOpt_NetworkModemOption = OptionValuePointer<int>(Options_GetOrCreateOption(
-        "NetworkModem",
+        g_zOpt_OptionName_NetworkModem,
         ZGAME_OPTION_INLINE_DWORD,
         0,
         ZGAME_OPTION_SCOPE_TRANSIENT
@@ -1141,7 +1459,7 @@ RECOIL_NO_GS int Options_LoadGameOptions() {
     }
 
     g_zOpt_NetworkListenOption = OptionValuePointer<int>(Options_GetOrCreateOption(
-        "NetListen",
+        g_zOpt_OptionName_NetListen,
         ZGAME_OPTION_INLINE_DWORD,
         0,
         ZGAME_OPTION_SCOPE_TRANSIENT
@@ -1151,52 +1469,52 @@ RECOIL_NO_GS int Options_LoadGameOptions() {
     }
 
     g_zOpt_CameraSectionOption = OptionValuePointer<zOpt_CameraSection *>(Options_GetOrCreateOption(
-        "Camera",
+        g_zOpt_OptionName_Camera,
         ZGAME_OPTION_HEAP_BUFFER,
         0x0c,
         ZGAME_OPTION_SCOPE_TRANSIENT
     ));
     g_zOpt_RenderSectionOption =
         OptionValuePointer<zOpt_ViewRectSection *>(Options_GetOrCreateOption(
-            "Render",
+            g_zOpt_OptionName_Render,
             ZGAME_OPTION_HEAP_BUFFER,
             0x28,
             ZGAME_OPTION_SCOPE_TRANSIENT
         ));
     g_zOpt_DisplaySectionOption =
         OptionValuePointer<zOpt_ViewRectSection *>(Options_GetOrCreateOption(
-            "Display",
+            g_zOpt_OptionName_Display,
             ZGAME_OPTION_HEAP_BUFFER,
             0x28,
             ZGAME_OPTION_SCOPE_TRANSIENT
         ));
     g_zOpt_WindowSectionOption =
         OptionValuePointer<zOpt_ViewRectSection *>(Options_GetOrCreateOption(
-            "Window",
+            g_zOpt_OptionName_Window,
             ZGAME_OPTION_HEAP_BUFFER,
             0x28,
             ZGAME_OPTION_SCOPE_TRANSIENT
         ));
     ZOPT_REPLICATE = OptionValuePointer<int>(Options_GetOrCreateOption(
-        "Replicate",
+        g_zOpt_OptionName_Replicate,
         ZGAME_OPTION_INLINE_DWORD,
         0,
         ZGAME_OPTION_SCOPE_TRANSIENT
     ));
 
     ZOPT_VIDEO_MODE = OptionValuePointer<int>(
-        Options_GetOrCreateOption("VMode", ZGAME_OPTION_INLINE_DWORD, 0, ZGAME_OPTION_SCOPE_USER)
+        Options_GetOrCreateOption(g_zOpt_OptionName_VMode, ZGAME_OPTION_INLINE_DWORD, 0, ZGAME_OPTION_SCOPE_USER)
     );
     if (ZOPT_VIDEO_MODE != 0) {
         zVid::SetVideoModeIndex(zOpt::SelectProfileValueForSystem(
             detailRoot,
-            "VMode",
+            g_zOpt_OptionName_VMode,
             5
         ));
     }
 
     ZOPT_VIDEO_STRIDE = OptionValuePointer<int>(Options_GetOrCreateOption(
-        "VStride",
+        g_zOpt_OptionName_VStride,
         ZGAME_OPTION_INLINE_DWORD,
         0,
         ZGAME_OPTION_SCOPE_TRANSIENT
@@ -1348,7 +1666,7 @@ int __fastcall EvaluateProfileMetricCondition(
     if (metricConditionNode->type == zReader::ZRDR_NODE_STRING) {
         return strcmp(
             metricConditionNode->value.str,
-            "DEFAULT"
+            k_zOpt_ProfileMetricDefault
         ) == 0;
     }
 
@@ -1368,27 +1686,27 @@ int __fastcall EvaluateProfileMetricCondition(
 
     if (strcmp(
         metricKey,
-        "CPU_CLASS"
+        k_zOpt_ProfileMetricCpuClass
     ) == 0) {
         currentMetricValue = g_zGame_Options_RuntimeConfig.cpuClass;
     } else if (strcmp(
         metricKey,
-        "CPU_MHZ"
+        k_zOpt_ProfileMetricCpuMhz
     ) == 0) {
         currentMetricValue = g_zGame_Options_RuntimeConfig.cpuMhz;
     } else if (strcmp(
         metricKey,
-        "VIDEO_KB"
+        k_zOpt_ProfileMetricVideoKb
     ) == 0) {
         currentMetricValue = (int)(g_zGame_Options_RuntimeConfig.soundHardwareMemKb);
     } else if (strcmp(
         metricKey,
-        "RAM_KB"
+        k_zOpt_ProfileMetricRamKb
     ) == 0) {
         currentMetricValue = (int)(g_zGame_Options_RuntimeConfig.systemRamKb);
     } else if (strcmp(
         metricKey,
-        "HW_ACCEL"
+        k_zOpt_ProfileMetricHwAccel
     ) == 0) {
         currentMetricValue = (int)((g_zGame_Options_RuntimeConfig.defaultFlags >> 6) & 1u);
     } else {
@@ -1450,43 +1768,43 @@ int __fastcall EvalIntCompareOp(
 ) {
     if (strcmp(
         opString,
-        "=="
+        g_zOpt_OpStr_Eq
     ) == 0) {
         return lhs == rhs;
     }
     if (strcmp(
         opString,
-        "<"
+        g_zOpt_OpStr_Lt
     ) == 0) {
         return lhs < rhs;
     }
     if (strcmp(
         opString,
-        ">"
+        g_zOpt_OpStr_Gt
     ) == 0) {
         return lhs > rhs;
     }
     if (strcmp(
         opString,
-        "<="
+        g_zOpt_OpStr_Le
     ) == 0) {
         return lhs <= rhs;
     }
     if (strcmp(
         opString,
-        ">="
+        g_zOpt_OpStr_Ge
     ) == 0) {
         return lhs >= rhs;
     }
     if (strcmp(
         opString,
-        "!="
+        g_zOpt_OpStr_Ne
     ) == 0) {
         return lhs != rhs;
     }
     if (strcmp(
         opString,
-        "~="
+        g_zOpt_OpStr_TolEq
     ) == 0) {
         return (double)(WrappedAbsDifference(
             lhs,
@@ -1811,7 +2129,7 @@ void __fastcall SetGraphicsFlagsForCurrentHwMode(
 
     zClass_NodePartial *const sunlight = zClass::FindByTypeAndName(
         6,
-        "sunlight"
+        g_zOpt_DetailOptionName_Sunlight
     );
     if (sunlight != 0) {
         zClass_Class::gwNodeSetActive(

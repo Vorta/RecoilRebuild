@@ -502,6 +502,23 @@ relying only on per-function plan markers.
 - Dependent plan entries: data entry 0x4db4ac was accepted; function-level
   promotions remain controlled by their respective source-owner gates.
 
+### core_util_archive.shared_path_join_format_literal_data
+
+- Owner symbol/scope: shared pooled path-join format literal used by zReader,
+  zSys, and zUtil path resolution code.
+- BN/source data: `g_SharedPathJoinFormatLiteral` at 0x4dc6c8.
+- Extent/section/nullness: independent 5-byte null-terminated immutable string
+  literal for the percent-s percent-s path join format.
+- Lifecycle/xrefs: `zReader::BuildResolvedParentDir`,
+  `zSys::FindFileOnDriveType`, and `zUtil_ZRDR_ResolvePathInSearchPathList`
+  use the literal at their source call sites. The related zReader backslash
+  join format remains a distinct literal.
+- VC5 evidence: no accepted data-symbol byte target yet covers this pooled
+  literal; byte evidence remains deferred.
+- Dependent plan entries: data entry 0x4dc6c8 was accepted to tier B through
+  owner/source/data gates only; caller function promotions remain controlled by
+  their respective source-owner gates.
+
 ### app_shell.czrecoil_frame_mfc_runtime_message_maps
 
 - Owner symbol/scope: CZRecoilFrame/CZGameFrame MFC runtime-class and

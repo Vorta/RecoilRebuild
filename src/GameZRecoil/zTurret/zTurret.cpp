@@ -7,6 +7,7 @@
 #include "GameZRecoil/zEffect/zEffect.h"
 #include "GameZRecoil/zError/zError.h"
 #include "GameZRecoil/zGame/zGame.h"
+#include "GameZRecoil/zHud/zhud_ui.h"
 #include "GameZRecoil/zInput/zInput.h"
 #include "GameZRecoil/zMath/zMath.h"
 #include "GameZRecoil/zModel/zModel.h"
@@ -453,7 +454,7 @@ void zTurret_Runtime::InitFromReaderNode(
     if (node != 0) {
         healthyNode = zClass_Class::FindNodeRecursiveByName(
             turretWorldNode,
-            "healthy"
+            g_Player_HealthySubNodeName
         );
         if (healthyNode != 0) {
             flags = 1;
@@ -1492,7 +1493,7 @@ int __fastcall LoadDefinitionsFromPath(
             0x200,
             kZTurretSourceFile,
             0x4ce,
-            "Failed to read %s",
+            g_HudSensorTracker_ReadFileFailedFmt,
             path
         );
         return -1;

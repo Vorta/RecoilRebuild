@@ -8,6 +8,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+extern char g_zModel_GModMatl_FILE[0x27];
+extern char g_zModel_Matl_ErrCycleNullStr[0x2d];
+extern char g_zModel_SetCycleTextureLoopTextureNotCycledMsg[0x29];
+extern char g_zModel_SetCycleTextureSpeedTextureNotCycledMsg[0x2a];
+extern char g_zModel_CopyMaterialBufferFullUsingDefaultMsg[0x3e];
+
 namespace {
     /**
      * Original inline helper evidence: no standalone retail function exists;
@@ -781,9 +787,9 @@ namespace zModel_Material {
         if (cycle == 0) {
             zError::ReportOld(
                 0x200,
-                "D:\\Proj\\GameZRecoil\\zModel\\gmod_matl.c",
+                g_zModel_GModMatl_FILE,
                 0x5ca,
-                "Material Cycle Pointer is NULL: flag is (%s)",
+                g_zModel_Matl_ErrCycleNullStr,
                 (material->flags & 0x0400) != 0 ? "TRUE" : "FALSE"
             );
             return;
@@ -830,9 +836,9 @@ namespace zModel_Material {
 
             zError::ReportOld(
                 0x200,
-                "D:\\Proj\\GameZRecoil\\zModel\\gmod_matl.c",
+                g_zModel_GModMatl_FILE,
                 0x5fb,
-                "SetCycleTextureLoop:  Texture not cycled"
+                g_zModel_SetCycleTextureLoopTextureNotCycledMsg
             );
         }
 
@@ -863,9 +869,9 @@ namespace zModel_Material {
 
             zError::ReportOld(
                 0x200,
-                "D:\\Proj\\GameZRecoil\\zModel\\gmod_matl.c",
+                g_zModel_GModMatl_FILE,
                 0x60f,
-                "SetCycleTextureSpeed:  Texture not cycled"
+                g_zModel_SetCycleTextureSpeedTextureNotCycledMsg
             );
         }
 
@@ -890,9 +896,9 @@ namespace zModel_MatlBuffer {
         if (slotIndex < 0) {
             zError::ReportOld(
                 0x400,
-                "D:\\Proj\\GameZRecoil\\zModel\\gmod_matl.c",
+                g_zModel_GModMatl_FILE,
                 0x626,
-                "ERROR: Copying material; material buffer full; using default."
+                g_zModel_CopyMaterialBufferFullUsingDefaultMsg
             );
             return &g_zModel_DefaultMaterial;
         }

@@ -13,6 +13,28 @@ extern "C" {
  * Purpose: store the active ZBD archive manager singleton.
  */
 zZbdManager *g_zUtil_ZbdManager = 0;
+/**
+ * Reimplements data 0x4e3010: g_zUtil_SourceFile_ZutlZarCpp.
+ * BN stores this initialized .data literal immediately before the
+ * GetLastError format used by the ZAR archive-open diagnostic path.
+ * Purpose: name the original zutl_zar.cpp source file in error reports.
+ */
+char g_zUtil_SourceFile_ZutlZarCpp[0x27] =
+    "D:\\Proj\\GameZRecoil\\zUtil\\zutl_zar.cpp";
+/**
+ * Reimplements data 0x4e3038: g_zUtil_GetLastErrorFmt.
+ * BN xrefs this adjacent literal from zIndexArchive::Init's CreateFileA
+ * failure path while reporting ZAR load errors.
+ * Purpose: format Win32 GetLastError diagnostics for failed archive opens.
+ */
+char g_zUtil_GetLastErrorFmt[0x19] = "GetLastError(0x%08x): %s";
+/**
+ * Reimplements data 0x4e48e8: g_zUtil_ZbdSectionRecordFmt.
+ * BN stores this writable .data format literal and xrefs it only from
+ * zZbdManager::WriteSectionRecord's section/token path formatting.
+ * Purpose: format ZBD section record paths as "section/token".
+ */
+char g_zUtil_ZbdSectionRecordFmt[0x6] = "%s/%s";
 }
 
 namespace zUtil {
@@ -441,7 +463,7 @@ int zZbdManager::WriteSectionRecord(
     char recordPath[0x50] = {0};
     sprintf(
         recordPath,
-        "%s/%s",
+        g_zUtil_ZbdSectionRecordFmt,
         callbackCtx->sectionHandler->sectionName,
         sectionToken
     );

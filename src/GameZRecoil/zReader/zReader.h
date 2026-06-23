@@ -141,7 +141,7 @@ RECOIL_STATIC_ASSERT(sizeof(zArchiveListNode) == 0x0c);
 RECOIL_STATIC_ASSERT(sizeof(zArchiveList) == 0x14);
 
 extern zArchiveList *g_zArchive_MountedList;
-extern zArchiveList *g_zArchive_Current;
+extern zIndexArchive *g_zArchive_Current;
 extern zArchiveList *g_zRdr_SearchPathList;
 extern zArchiveList *g_zUtil_ZRDR_FreePool;
 extern zArchiveList *g_zRdr_ScratchSearchPathList;
