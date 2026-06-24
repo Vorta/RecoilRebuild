@@ -35,6 +35,22 @@ artifacts remain authoritative for individual functions.
 - zSys CPU probes: the CPU feature-detection group is a documented raw-assembly
   exception through `vc5_zsys_cpu_raw_asm`; do not generalize that exception to
   new production functions without explicit approval.
+- zRndr overlay MMX rows: `0x48d510` and `0x48d5f0` are a user-approved
+  address-scoped raw-assembly exception through
+  `vc5_o2_ob0_md_zrndr_mmx_raw_asm_facs`, because VC5SP3 exposes no usable MMX
+  intrinsic surface and retail uses authored qword MMX row loops. This permits
+  narrow inline `__asm` loops inside ordinary C++ functions only; it does not
+  permit `__declspec(naked)`, `_emit`, `.asm`, raw byte emission, other zRndr
+  span/MMX families, provider shims, or future raw assembly.
+- zRndr ESP-pivot span leaves: `0x49b7e0`, `0x49bbf0`, `0x49e6c0`,
+  `0x49edc0`, and `0x49f180` are a user-approved address-scoped raw-assembly
+  exception through `vc5_o2_ob0_md_zrndr_esp_pivot_raw_asm_facs`, but only for
+  narrow inline `__asm` loops inside ordinary C++ functions. Parent validation
+  found no viable C++ codegen route for `0x49b7e0` under `/Ob0`, `/Oy`, `/Ob1`,
+  or `/Ob2` profiles, and BN evidence proves real ESP-pivot stack writes. This
+  exception does not permit `__declspec(naked)`, `_emit`, `.asm`, raw byte
+  emission, `0x49ea80`/`0x49ec20`, other zRndr span/MMX families, provider
+  shims, or future raw assembly.
 
 ## Use
 

@@ -44268,12 +44268,12 @@
       ],
       "gates": {
         "boundary": "accepted",
-        "source": "blocked",
+        "source": "accepted",
         "data": "accepted",
         "functional": "accepted",
         "byte": "deferred"
       },
-      "blocker": "Blocked: retail 0x48d510/0x48d5f0 are authored zRndr MMX qword row loops using movq/pand/psrlw/pmullw/paddw/emms. Current source is portable C behavior-equivalent only. Local VC5SP3 evidence exposes no approved MMX intrinsic surface, provider-boundary classification is invalid, and AGENTS forbids production raw assembly/naked/_emit outside documented CPU probing. Source owner remains blocked until a historically valid intrinsic/provider route or explicit raw-assembly exception is approved.",
+      "blocker": "none",
       "evidence": [
         "Provider/data classifier bounded the authored overlay blend callback-global tuple: one fastcall callback slot plus six cached scalar/MMX blend operands, written/read by authored zRndr/zVid overlay setup and row callbacks; adjacent zVid FX/noise globals are dependencies, not members.",
         "Classifier proved the complete seven-global authored callback/scratch tuple for zRndr overlay blending and excluded adjacent zVid FX/noise globals.",
@@ -44285,7 +44285,77 @@
         "Data-symbol evidence is accepted for the seven-global tuple, but source and functional gates remain blocked/pending as recorded.",
         "zRndr worker verified 0x48d450 scalar row and 0x48d7a0 selector context, linked overlay row callbacks to this owner, and confirmed data gate already accepted while MMX row callbacks remain the source-shape blocker.",
         "Current-session source worker verified functional targets for 0x48d450, 0x48d4b0, 0x48d510, 0x48d5f0, 0x48d6d0, and 0x48d7a0; source gate remains blocked by true MMX row source-shape policy.",
-        "Scaffold audit found no safe VC5-era C/C++ source-faithful MMX model and confirmed current raw-assembly/source-shape guards pass only because production source stays portable-C behavior-equivalent."
+        "Scaffold audit found no safe VC5-era C/C++ source-faithful MMX model and confirmed current raw-assembly/source-shape guards pass only because production source stays portable-C behavior-equivalent.",
+        "Superseded duplicate owner now shares the accepted six-function/seven-data overlay callback source scope with render_video.zrndr_overlay_blend_callbacks_source; user-approved MMX row raw-asm exception has current VC5 zero-mismatch evidence for 0x48d510 and 0x48d5f0, and scalar/submit/flush members remain source-faithful tier B with accepted owner/data gates.",
+        "Stale MMX source-shape blocker cleared after canonical owner render_video.zrndr_overlay_blend_callbacks_source accepted the user-approved MMX row raw-assembly exception; byte remains deferred for the duplicate owner because scalar/submit/flush VC5 byte targets are not yet zero-mismatch."
+      ]
+    },
+    {
+      "id": "render_video.zrndr_overlay_blend_callbacks_source",
+      "kind": "callback-table",
+      "name": "zRndr overlay blend callback source cluster",
+      "section": "render_video",
+      "state": "discovered",
+      "anchors": [
+        "0x48d7a0"
+      ],
+      "member_addresses": [
+        "0x48d450",
+        "0x48d4b0",
+        "0x48d510",
+        "0x48d5f0",
+        "0x48d6d0",
+        "0x48d7a0"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x56b198",
+          "name": "gRndr_SwOverlayPremulPackedRot16"
+        },
+        {
+          "address": "0x56b19c",
+          "name": "gRndr_SwOverlayDstScale5"
+        },
+        {
+          "address": "0x56b1b0",
+          "name": "gRndr_SwOverlayPremulPacked"
+        },
+        {
+          "address": "0x56b1d8",
+          "name": "gRndr_pfnOverlayBlendRow"
+        },
+        {
+          "address": "0x56b1dc",
+          "name": "gRndr_SwOverlayPremulRPair"
+        },
+        {
+          "address": "0x56b1e0",
+          "name": "gRndr_SwOverlayPremulBPair"
+        },
+        {
+          "address": "0x56b1e4",
+          "name": "gRndr_SwOverlayPremulGPair"
+        }
+      ],
+      "source_paths": [
+        "src/GameZRecoil/zRndr/zRndr.cpp"
+      ],
+      "dependencies": [
+        "render_video.zvid_palette_remap_runtime"
+      ],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "accepted",
+        "byte": "deferred"
+      },
+      "blocker": "none",
+      "evidence": [
+        "User-approved render-mmx raw-assembly exception reconstructs 0x48d510 and 0x48d5f0; existing scalar/submit/flush source and accepted data evidence bound the zRndr overlay callback/global source cluster.",
+        "Current BN confirms the six-member zRndr overlay callback/global cluster; user-approved render-mmx raw assembly gives source-faithful MMX row bodies for 0x48d510/0x48d5f0; functional targets for the MMX rows and FlushSw passed; VC5 data-symbol target zrndr_overlay_blend_callbacks_globals passed for all seven globals. Owner byte remains deferred because scalar/submit/flush member byte evidence is not complete.",
+        "Source blocker cleared by user-approved render-mmx raw assembly for 0x48d510/0x48d5f0 plus current functional, VC5 data-symbol, and owner-boundary evidence.",
+        "Owner data gate already accepted for the seven-global zRndr overlay callback/scratch tuple; VC5 data-symbol target zrndr_overlay_blend_callbacks_globals passed all seven 4-byte symbols with zero unmasked mismatches."
       ]
     },
     {
@@ -44619,7 +44689,7 @@
       "data_addresses": [
         {
           "address": "0x57da38",
-          "name": "pending"
+          "name": "gRndr_SavedEspSlot"
         }
       ],
       "source_paths": [
@@ -44629,12 +44699,12 @@
       "dependencies": [],
       "gates": {
         "boundary": "accepted",
-        "source": "blocked",
-        "data": "blocked",
-        "functional": "blocked",
-        "byte": "pending"
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "accepted",
+        "byte": "accepted"
       },
-      "blocker": "Blocked: current BN assembly requires authored ESP-as-destination push word/sub esp,2 span writes through gRndr_SavedEspSlot; current AGENTS rules forbid raw assembly/naked/_emit, and VC5-era C/C++ pointer loops are behavior-only, not source-faithful. 0x49ea80/0x49ec20 are separate MMX tex16 span routines, not members of this ESP-pivot family.",
+      "blocker": "none",
       "evidence": [
         "Render-video mapper bounded the 0x49b7e0/0x49bbf0/0x49e6c0/0x49edc0/0x49f180/0x4997d0 family and active span globals to original zRndr_Span.cpp ESP-pivot surface.",
         "Render-video source-owner mapper bounded the ESP-pivot/push-write span callback family and active span globals to authored zRndr_Span.cpp surface; implementation/source/data gates remain blocked by unresolved source model.",
@@ -44645,7 +44715,13 @@
         "Functional behavior may exist through pointer-loop equivalents, but owner-level functional gate stays blocked because source-faithful ESP-pivot owner model is not implementable under current AGENTS rules.",
         "gRndr_SavedEspSlot 0x57da38 data acceptance is coupled to the blocked ESP-pivot source model.",
         "BN fact mapper inspected 0x49b7e0/0x49bbf0/0x49e6c0/0x49edc0/0x49f180 and gRndr_SavedEspSlot 0x57da38; assembly pivots ESP to framebuffer end and uses push/sub-esp as writes. It also confirmed 0x49ea80/0x49ec20 have no 0x57da38 xrefs and belong to a separate MMX span owner.",
-        "No lawful non-raw-assembly C/C++ source model found for ESP-as-destination push/sub-esp writes under current AGENTS rules."
+        "No lawful non-raw-assembly C/C++ source model found for ESP-as-destination push/sub-esp writes under current AGENTS rules.",
+        "Five ESP-pivot span routines 0x49b7e0/0x49bbf0/0x49e6c0/0x49edc0/0x49f180 rewritten as ordinary VC5 C++ switch functions with narrow inline asm only for ESP-pivot push/sub-esp loops; raw-assembly, modern-cpp, source-shape, and original-symbol guards pass; all five functional targets pass. Data and byte gates remain blocked.",
+        "Source/functional owner gates accepted after source-faithful rewrite and current validation; preserving data=blocked and byte=pending.",
+        "Data gate accepted for ESP-pivot span family: source defines g_spanSavedEspSlot for BN gRndr_SavedEspSlot 0x57da38 with data docblock; docs/reconstruction/data_owner_audit.md records the owner extent/lifecycle; current VC5SP3 target zrndr_span_esp_pivot_saved_esp_slot passes with zero unmasked data-byte mismatches, relocation identity, bn-size=4, vc5-size=4; current switch-vshift VC targets also report OK data symbols for active span globals including 0x57da38.",
+        "Data blocker cleared by current VC5 data-symbol evidence; byte blocker preserved from current function compare failures.",
+        "VC5SP3 table-inclusive ESP-pivot owner byte evidence accepted: zrndr_span_copy_16_from_tex16_switch_vshift 0x49e6c0 OK bn-size=884 vc5-size=896 reloc-masked=292 trim-nops=12; zrndr_span_masked_16_from_tex16_switch_vshift 0x49b7e0 OK bn-size=1028 vc5-size=1040 reloc-masked=292 trim-nops=12; zrndr_span_copy_16_from_pal8_switch_vshift 0x49edc0 OK bn-size=956 vc5-size=960 reloc-masked=324 trim-nops=4; zrndr_span_masked_16_from_pal8_switch_vshift 0x49bbf0 OK bn-size=1068 vc5-size=1072 reloc-masked=324 trim-nops=4; zrndr_span_shade_16_from_pal8_switch_vshift 0x49f180 OK bn-size=1172 vc5-size=1184 reloc-masked=420 trim-nops=12; data target zrndr_span_esp_pivot_saved_esp_slot 0x57da38 OK bn-size=4 vc5-size=4; profile vc5_o2_ob0_md_zrndr_esp_pivot_raw_asm_facs; manifests use BN reference caches for owner-accepted adjacent switch tables and generated zRndr.obj/zRndr.cod artifacts under build/vc5-verify.",
+        "VC5SP3 table-inclusive ESP-pivot owner byte evidence accepted: zrndr_span_copy_16_from_tex16_switch_vshift 0x49e6c0 OK bn-size=884 vc5-size=896 reloc-masked=292 trim-nops=12; zrndr_span_masked_16_from_tex16_switch_vshift 0x49b7e0 OK bn-size=1028 vc5-size=1040 reloc-masked=292 trim-nops=12; zrndr_span_copy_16_from_pal8_switch_vshift 0x49edc0 OK bn-size=956 vc5-size=960 reloc-masked=324 trim-nops=4; zrndr_span_masked_16_from_pal8_switch_vshift 0x49bbf0 OK bn-size=1068 vc5-size=1072 reloc-masked=324 trim-nops=4; zrndr_span_shade_16_from_pal8_switch_vshift 0x49f180 OK bn-size=1172 vc5-size=1184 reloc-masked=420 trim-nops=12; data target zrndr_span_esp_pivot_saved_esp_slot 0x57da38 OK bn-size=4 vc5-size=4; profile vc5_o2_ob0_md_zrndr_esp_pivot_raw_asm_facs; manifests use BN reference caches for owner-accepted adjacent switch tables and generated zRndr.obj/zRndr.cod artifacts under build/vc5-verify."
       ]
     },
     {

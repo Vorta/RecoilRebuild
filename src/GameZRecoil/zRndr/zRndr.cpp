@@ -227,8 +227,10 @@ char *g_spanActiveTexAlphaMap = 0;
 // zMmxQword and lane-indexed mask/factor vectors as four 16-bit lanes, which
 // preserves the same eight-byte authored zRndr span data shape.
 zMmxQword g_mmxUStepDup2 = {0};
-// BN names this BSS pointer gRndr_SavedEspSlot. The original switch-vshift
-// span loops save the real ESP here before pivoting to the destination span.
+/**
+ * Reimplements data 0x57da38: gRndr_SavedEspSlot.
+ * Purpose: Hold the saved real ESP pointer while the switch-vshift span loops pivot ESP to the destination span.
+ */
 zRndr_SpanEspPivotSave *g_spanSavedEspSlot = 0;
 zMmxQword g_mmxUMask = {0};
 int g_spanActiveConstAlphaBits = 0;
@@ -1684,12 +1686,98 @@ void __fastcall OverlayBlendRow565_Scalar(
  * Reimplements 0x48d510: zRndr::OverlayBlendRow555_Mmx
  * Source-shape evidence: BN zRndr_Overlay.cpp builds replicated 555 masks,
  * premul RGB pairs, and destination-scale words on the stack, then processes
- * four 16-bit pixels per MMX qword before emms. The current C++ preserves
- * tier C behavior with the same four-pixel grouping and premul-pair globals
- * while the retail MMX instruction source shape remains pending.
+ * four 16-bit pixels per MMX qword before emms. The guarded VC5 x86 path keeps
+ * C++ responsible for the function shell and stack constants, and uses narrow
+ * inline asm only for the MMX qword loop; the portable fallback remains
+ * behavior-only.
  * Owner: shared zRndr_Overlay.cpp overlay callback/global owner with 0x48d7a0,
  * 0x48d450, 0x48d4b0, and 0x48d5f0.
- * Purpose: Preserve the MMX row-blend contract with scalar behavior while the retail MMX source shape remains pending.
+ * Purpose: Blend one RGB555 overlay row through the user-approved zRndr MMX inline-assembly exception.
+ */
+#if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZRNDR_OVERLAY_MMX_RAW_ASM)
+/**
+ * Reimplements 0x48d510: zRndr::OverlayBlendRow555_Mmx
+ * Purpose: Blend one RGB555 overlay row through the user-approved zRndr MMX inline-assembly exception.
+ */
+void __fastcall OverlayBlendRow555_Mmx(
+    unsigned short *rowPixels16,
+    int pixelCount
+) {
+    unsigned short scaleWords[4];
+    unsigned int redMasks[2];
+    unsigned int greenMasks[2];
+    unsigned int blueMasks[2];
+    unsigned int premulR[2];
+    unsigned int premulG[2];
+    unsigned int premulB[2];
+    const unsigned short scale = (unsigned short)(g_swOverlayDstScale5);
+
+    scaleWords[3] = scale;
+    scaleWords[2] = scale;
+    scaleWords[1] = scale;
+    scaleWords[0] = scale;
+    redMasks[1] = 0x7c007c00U;
+    redMasks[0] = 0x7c007c00U;
+    greenMasks[1] = 0x03e003e0U;
+    greenMasks[0] = 0x03e003e0U;
+    blueMasks[1] = 0x001f001fU;
+    blueMasks[0] = 0x001f001fU;
+    premulR[1] = g_swOverlayPremulRPair;
+    premulR[0] = g_swOverlayPremulRPair;
+    premulG[1] = g_swOverlayPremulGPair;
+    premulG[0] = g_swOverlayPremulGPair;
+    premulB[1] = g_swOverlayPremulBPair;
+    premulB[0] = g_swOverlayPremulBPair;
+
+    __asm {
+        mov eax, pixelCount
+        mov esi, rowPixels16
+        shr eax, 2
+        lea esi, [esi+eax*8]
+        xor eax, 0ffffffffh
+        inc eax
+        jge recoil_overlay555_done
+
+        movq mm3, qword ptr [scaleWords]
+        movq mm4, qword ptr [redMasks]
+        movq mm5, qword ptr [greenMasks]
+        movq mm6, qword ptr [blueMasks]
+        movq mm7, qword ptr [premulR]
+        movq mm2, qword ptr [esi+eax*8]
+
+    recoil_overlay555_loop:
+        movq mm0, mm2
+        movq mm1, mm2
+        pand mm0, mm4
+        pand mm1, mm5
+        pand mm2, mm6
+        psrlw mm0, 5
+        psrlw mm1, 5
+        pmullw mm2, mm3
+        pmullw mm0, mm3
+        pmullw mm1, mm3
+        inc eax
+        psrlw mm2, 5
+        paddw mm0, mm7
+        paddw mm1, qword ptr [premulG]
+        pand mm0, mm4
+        paddw mm2, qword ptr [premulB]
+        pand mm1, mm5
+        pand mm2, mm6
+        paddw mm0, mm1
+        paddw mm0, mm2
+        movq mm2, qword ptr [esi+eax*8]
+        movq qword ptr [esi+eax*8-8], mm0
+        jne recoil_overlay555_loop
+
+    recoil_overlay555_done:
+        emms
+    }
+}
+#else
+/**
+ * Reimplements 0x48d510: zRndr::OverlayBlendRow555_Mmx
+ * Purpose: Preserve portable RGB555 overlay row behavior when the VC5 inline-MMX exception is disabled.
  */
 void __fastcall OverlayBlendRow555_Mmx(
     unsigned short *rowPixels16,
@@ -1718,17 +1806,103 @@ void __fastcall OverlayBlendRow555_Mmx(
         ++groupIndex;
     }
 }
+#endif
 
 /**
  * Reimplements 0x48d5f0: zRndr::OverlayBlendRow565_Mmx
  * Source-shape evidence: BN zRndr_Overlay.cpp mirrors the 555 MMX row loop
  * with 565 masks, replicated premul RGB pairs, and four 16-bit pixels per MMX
- * qword before emms. The current C++ preserves tier C behavior with the same
- * four-pixel grouping and premul-pair globals while the retail MMX instruction
- * source shape remains pending.
+ * qword before emms. The guarded VC5 x86 path keeps C++ responsible for the
+ * function shell and stack constants, and uses narrow inline asm only for the
+ * MMX qword loop; the portable fallback remains behavior-only.
  * Owner: shared zRndr_Overlay.cpp overlay callback/global owner with 0x48d7a0,
  * 0x48d450, 0x48d4b0, and 0x48d510.
- * Purpose: Preserve the MMX row-blend contract with scalar behavior while the retail MMX source shape remains pending.
+ * Purpose: Blend one RGB565 overlay row through the user-approved zRndr MMX inline-assembly exception.
+ */
+#if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZRNDR_OVERLAY_MMX_RAW_ASM)
+/**
+ * Reimplements 0x48d5f0: zRndr::OverlayBlendRow565_Mmx
+ * Purpose: Blend one RGB565 overlay row through the user-approved zRndr MMX inline-assembly exception.
+ */
+void __fastcall OverlayBlendRow565_Mmx(
+    unsigned short *rowPixels16,
+    int pixelCount
+) {
+    unsigned short scaleWords[4];
+    unsigned int redMasks[2];
+    unsigned int greenMasks[2];
+    unsigned int blueMasks[2];
+    unsigned int premulR[2];
+    unsigned int premulG[2];
+    unsigned int premulB[2];
+    const unsigned short scale = (unsigned short)(g_swOverlayDstScale5);
+
+    scaleWords[3] = scale;
+    scaleWords[2] = scale;
+    scaleWords[1] = scale;
+    scaleWords[0] = scale;
+    redMasks[1] = 0xf800f800U;
+    redMasks[0] = 0xf800f800U;
+    greenMasks[1] = 0x07e007e0U;
+    greenMasks[0] = 0x07e007e0U;
+    blueMasks[1] = 0x001f001fU;
+    blueMasks[0] = 0x001f001fU;
+    premulR[1] = g_swOverlayPremulRPair;
+    premulR[0] = g_swOverlayPremulRPair;
+    premulG[1] = g_swOverlayPremulGPair;
+    premulG[0] = g_swOverlayPremulGPair;
+    premulB[1] = g_swOverlayPremulBPair;
+    premulB[0] = g_swOverlayPremulBPair;
+
+    __asm {
+        mov eax, pixelCount
+        mov esi, rowPixels16
+        shr eax, 2
+        lea esi, [esi+eax*8]
+        xor eax, 0ffffffffh
+        inc eax
+        jge recoil_overlay565_done
+
+        movq mm3, qword ptr [scaleWords]
+        movq mm4, qword ptr [redMasks]
+        movq mm5, qword ptr [greenMasks]
+        movq mm6, qword ptr [blueMasks]
+        movq mm7, qword ptr [premulR]
+        movq mm2, qword ptr [esi+eax*8]
+
+    recoil_overlay565_loop:
+        movq mm0, mm2
+        movq mm1, mm2
+        pand mm0, mm4
+        pand mm1, mm5
+        pand mm2, mm6
+        psrlw mm0, 5
+        psrlw mm1, 5
+        pmullw mm2, mm3
+        pmullw mm0, mm3
+        pmullw mm1, mm3
+        inc eax
+        psrlw mm2, 5
+        paddw mm0, mm7
+        paddw mm1, qword ptr [premulG]
+        pand mm0, mm4
+        paddw mm2, qword ptr [premulB]
+        pand mm1, mm5
+        pand mm2, mm6
+        paddw mm0, mm1
+        paddw mm0, mm2
+        movq mm2, qword ptr [esi+eax*8]
+        movq qword ptr [esi+eax*8-8], mm0
+        jne recoil_overlay565_loop
+
+    recoil_overlay565_done:
+        emms
+    }
+}
+#else
+/**
+ * Reimplements 0x48d5f0: zRndr::OverlayBlendRow565_Mmx
+ * Purpose: Preserve portable RGB565 overlay row behavior when the VC5 inline-MMX exception is disabled.
  */
 void __fastcall OverlayBlendRow565_Mmx(
     unsigned short *rowPixels16,
@@ -1757,6 +1931,7 @@ void __fastcall OverlayBlendRow565_Mmx(
         ++groupIndex;
     }
 }
+#endif
 
 /**
  * Reimplements 0x49e140: zRndr::SpanMmxSetPixelFormatMasks
@@ -4334,11 +4509,288 @@ void __fastcall FogBlendSpan555Mmx(
  * Source-shape evidence: BN assembly uses a texVShift 10..17 jump table, saves
  * real ESP in gRndr_SavedEspSlot, pivots ESP to gRndr_CurrentSpanBaseAddr +
  * count, samples gRndr_ActiveTexPixels as 16-bit texels, pushes every sampled
- * word backward, and restores ESP at case exit. This C++ body preserves
- * behavior while the retail ESP-pivot source shape remains owner/data debt for
- * the span-family pass; current VC5SP3 /O2 output emits normal pointer stores,
- * and production raw assembly is not an accepted span-source substitute.
+ * word backward, and restores ESP at case exit. The guarded VC5 x86 path keeps
+ * C++ responsible for dispatch and uses narrow inline asm only for the
+ * ESP-pivot write loop; the portable fallback below remains behavior-only.
  * Purpose: Copy 16-bit texels into the active span using the variable-texVShift reverse span contract.
+ */
+#if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZRNDR_ESP_PIVOT_RAW_ASM)
+/**
+ * Reimplements 0x49e6c0: zRndr::SpanCopy16FromTex16SwitchVShift
+ * Purpose: Copy 16-bit texels through C++ switch cases with narrow inline asm for the approved zRndr ESP-pivot loop.
+ */
+void __fastcall SpanCopy16FromTex16SwitchVShift(
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+) {
+    switch (texVShift) {
+    default:
+        return;
+
+    case 10:
+        __asm {
+            push ebp
+            mov dword ptr [g_spanSavedEspSlot], esp
+            mov ecx, texU
+            mov edx, texV
+            mov edi, pixelCount
+            mov esp, dword ptr [g_spanCurrentSpanBaseAddr]
+            add edi, edi
+            mov ebp, dword ptr [g_spanActiveTexPixels]
+            add esp, edi
+            mov ebx, dword ptr [g_spanActiveTexUStepFixed20]
+            neg edi
+            mov esi, dword ptr [g_spanActiveTexVMask]
+        zRndr_span_copy_tex16_switch_loop10:
+            mov eax, ecx
+            and esi, edx
+            sar eax, 14h
+            add ecx, ebx
+            shr esi, 0ah
+            and eax, 3ffh
+            add eax, esi
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            add edx, dword ptr [g_spanActiveTexVStepFixed20]
+            add edi, 2
+            push word ptr [ebp+eax*2]
+            jne zRndr_span_copy_tex16_switch_loop10
+            mov esp, dword ptr [g_spanSavedEspSlot]
+            pop ebp
+        }
+        return;
+
+    case 11:
+        __asm {
+            push ebp
+            mov dword ptr [g_spanSavedEspSlot], esp
+            mov ecx, texU
+            mov edx, texV
+            mov edi, pixelCount
+            mov esp, dword ptr [g_spanCurrentSpanBaseAddr]
+            add edi, edi
+            mov ebp, dword ptr [g_spanActiveTexPixels]
+            add esp, edi
+            mov ebx, dword ptr [g_spanActiveTexUStepFixed20]
+            neg edi
+            mov esi, dword ptr [g_spanActiveTexVMask]
+        zRndr_span_copy_tex16_switch_loop11:
+            mov eax, ecx
+            and esi, edx
+            sar eax, 14h
+            add ecx, ebx
+            shr esi, 0bh
+            and eax, 1ffh
+            add eax, esi
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            add edx, dword ptr [g_spanActiveTexVStepFixed20]
+            add edi, 2
+            push word ptr [ebp+eax*2]
+            jne zRndr_span_copy_tex16_switch_loop11
+            mov esp, dword ptr [g_spanSavedEspSlot]
+            pop ebp
+        }
+        return;
+
+    case 12:
+        __asm {
+            push ebp
+            mov dword ptr [g_spanSavedEspSlot], esp
+            mov ecx, texU
+            mov edx, texV
+            mov edi, pixelCount
+            mov esp, dword ptr [g_spanCurrentSpanBaseAddr]
+            add edi, edi
+            mov ebp, dword ptr [g_spanActiveTexPixels]
+            add esp, edi
+            mov ebx, dword ptr [g_spanActiveTexUStepFixed20]
+            neg edi
+            mov esi, dword ptr [g_spanActiveTexVMask]
+        zRndr_span_copy_tex16_switch_loop12:
+            mov eax, ecx
+            and esi, edx
+            sar eax, 14h
+            add ecx, ebx
+            shr esi, 0ch
+            and eax, 0ffh
+            add eax, esi
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            add edx, dword ptr [g_spanActiveTexVStepFixed20]
+            add edi, 2
+            push word ptr [ebp+eax*2]
+            jne zRndr_span_copy_tex16_switch_loop12
+            mov esp, dword ptr [g_spanSavedEspSlot]
+            pop ebp
+        }
+        return;
+
+    case 13:
+        __asm {
+            push ebp
+            mov dword ptr [g_spanSavedEspSlot], esp
+            mov ecx, texU
+            mov edx, texV
+            mov edi, pixelCount
+            mov esp, dword ptr [g_spanCurrentSpanBaseAddr]
+            add edi, edi
+            mov ebp, dword ptr [g_spanActiveTexPixels]
+            add esp, edi
+            mov ebx, dword ptr [g_spanActiveTexUStepFixed20]
+            neg edi
+            mov esi, dword ptr [g_spanActiveTexVMask]
+        zRndr_span_copy_tex16_switch_loop13:
+            mov eax, ecx
+            and esi, edx
+            sar eax, 14h
+            add ecx, ebx
+            shr esi, 0dh
+            and eax, 7fh
+            add eax, esi
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            add edx, dword ptr [g_spanActiveTexVStepFixed20]
+            add edi, 2
+            push word ptr [ebp+eax*2]
+            jne zRndr_span_copy_tex16_switch_loop13
+            mov esp, dword ptr [g_spanSavedEspSlot]
+            pop ebp
+        }
+        return;
+
+    case 14:
+        __asm {
+            push ebp
+            mov dword ptr [g_spanSavedEspSlot], esp
+            mov ecx, texU
+            mov edx, texV
+            mov edi, pixelCount
+            mov esp, dword ptr [g_spanCurrentSpanBaseAddr]
+            add edi, edi
+            mov ebp, dword ptr [g_spanActiveTexPixels]
+            add esp, edi
+            mov ebx, dword ptr [g_spanActiveTexUStepFixed20]
+            neg edi
+            mov esi, dword ptr [g_spanActiveTexVMask]
+        zRndr_span_copy_tex16_switch_loop14:
+            mov eax, ecx
+            and esi, edx
+            sar eax, 14h
+            add ecx, ebx
+            shr esi, 0eh
+            and eax, 3fh
+            add eax, esi
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            add edx, dword ptr [g_spanActiveTexVStepFixed20]
+            add edi, 2
+            push word ptr [ebp+eax*2]
+            jne zRndr_span_copy_tex16_switch_loop14
+            mov esp, dword ptr [g_spanSavedEspSlot]
+            pop ebp
+        }
+        return;
+
+    case 15:
+        __asm {
+            push ebp
+            mov dword ptr [g_spanSavedEspSlot], esp
+            mov ecx, texU
+            mov edx, texV
+            mov edi, pixelCount
+            mov esp, dword ptr [g_spanCurrentSpanBaseAddr]
+            add edi, edi
+            mov ebp, dword ptr [g_spanActiveTexPixels]
+            add esp, edi
+            mov ebx, dword ptr [g_spanActiveTexUStepFixed20]
+            neg edi
+            mov esi, dword ptr [g_spanActiveTexVMask]
+        zRndr_span_copy_tex16_switch_loop15:
+            mov eax, ecx
+            and esi, edx
+            sar eax, 14h
+            add ecx, ebx
+            shr esi, 0fh
+            and eax, 1fh
+            add eax, esi
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            add edx, dword ptr [g_spanActiveTexVStepFixed20]
+            add edi, 2
+            push word ptr [ebp+eax*2]
+            jne zRndr_span_copy_tex16_switch_loop15
+            mov esp, dword ptr [g_spanSavedEspSlot]
+            pop ebp
+        }
+        return;
+
+    case 16:
+        __asm {
+            push ebp
+            mov dword ptr [g_spanSavedEspSlot], esp
+            mov ecx, texU
+            mov edx, texV
+            mov edi, pixelCount
+            mov esp, dword ptr [g_spanCurrentSpanBaseAddr]
+            add edi, edi
+            mov ebp, dword ptr [g_spanActiveTexPixels]
+            add esp, edi
+            mov ebx, dword ptr [g_spanActiveTexUStepFixed20]
+            neg edi
+            mov esi, dword ptr [g_spanActiveTexVMask]
+        zRndr_span_copy_tex16_switch_loop16:
+            mov eax, ecx
+            and esi, edx
+            sar eax, 14h
+            add ecx, ebx
+            shr esi, 10h
+            and eax, 0fh
+            add eax, esi
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            add edx, dword ptr [g_spanActiveTexVStepFixed20]
+            add edi, 2
+            push word ptr [ebp+eax*2]
+            jne zRndr_span_copy_tex16_switch_loop16
+            mov esp, dword ptr [g_spanSavedEspSlot]
+            pop ebp
+        }
+        return;
+
+    case 17:
+        __asm {
+            push ebp
+            mov dword ptr [g_spanSavedEspSlot], esp
+            mov ecx, texU
+            mov edx, texV
+            mov edi, pixelCount
+            mov esp, dword ptr [g_spanCurrentSpanBaseAddr]
+            add edi, edi
+            mov ebp, dword ptr [g_spanActiveTexPixels]
+            add esp, edi
+            mov ebx, dword ptr [g_spanActiveTexUStepFixed20]
+            neg edi
+            mov esi, dword ptr [g_spanActiveTexVMask]
+        zRndr_span_copy_tex16_switch_loop17:
+            mov eax, ecx
+            and esi, edx
+            sar eax, 14h
+            add ecx, ebx
+            shr esi, 11h
+            and eax, 7
+            add eax, esi
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            add edx, dword ptr [g_spanActiveTexVStepFixed20]
+            add edi, 2
+            push word ptr [ebp+eax*2]
+            jne zRndr_span_copy_tex16_switch_loop17
+            mov esp, dword ptr [g_spanSavedEspSlot]
+            pop ebp
+        }
+        return;
+
+    }
+}
+#else
+/**
+ * Reimplements 0x49e6c0: zRndr::SpanCopy16FromTex16SwitchVShift
+ * Purpose: Preserve portable tex16 copy behavior when the ESP-pivot raw-assembly exception is disabled.
  */
 void __fastcall SpanCopy16FromTex16SwitchVShift(
     int texU,
@@ -4471,6 +4923,7 @@ void __fastcall SpanCopy16FromTex16SwitchVShift(
     }
     }
 }
+#endif
 
 /**
  * Reimplements 0x49b7e0: zRndr::SpanMasked16FromTex16SwitchVShift
@@ -4479,12 +4932,352 @@ void __fastcall SpanCopy16FromTex16SwitchVShift(
  * through gRndr_SavedEspSlot, pivots ESP to gRndr_CurrentSpanBaseAddr + count,
  * samples gRndr_ActiveTexPixels as 16-bit texels, and either pushes a nonzero
  * word or subtracts two bytes so zero texels leave the destination transparent.
- * This C++ body preserves behavior while the retail ESP-pivot source shape
- * remains owner/data debt for the span-family pass; the retained negative-byte
- * countdown mirrors BN's loop counter, but current VC5SP3 /O2 output still
- * emits normal pointer stores, and production raw assembly is not an accepted
- * span-source substitute.
+ * The guarded VC5 x86 path keeps C++ responsible for dispatch and uses narrow
+ * inline asm only for the ESP-pivot masked write/skip loop; the portable
+ * fallback below remains behavior-only.
  * Purpose: Write nonzero 16-bit texels into the active span using the texVShift-specialized reverse span loops.
+ */
+#if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZRNDR_ESP_PIVOT_RAW_ASM)
+/**
+ * Reimplements 0x49b7e0: zRndr::SpanMasked16FromTex16SwitchVShift
+ * Purpose: Write nonzero 16-bit texels through C++ switch cases with narrow inline asm for the approved zRndr ESP-pivot loop.
+ */
+void __fastcall SpanMasked16FromTex16SwitchVShift(
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+) {
+    switch (texVShift) {
+    default:
+        return;
+
+    case 10:
+        __asm {
+            push ebp
+            mov dword ptr [g_spanSavedEspSlot], esp
+            mov ecx, texU
+            mov edx, texV
+            mov edi, pixelCount
+            mov esp, dword ptr [g_spanCurrentSpanBaseAddr]
+            add edi, edi
+            mov ebp, dword ptr [g_spanActiveTexPixels]
+            add esp, edi
+            mov ebx, dword ptr [g_spanActiveTexUStepFixed20]
+            neg edi
+            mov esi, dword ptr [g_spanActiveTexVMask]
+        zRndr_span_mask_tex16_switch_loop10:
+            mov eax, ecx
+            and esi, edx
+            sar eax, 14h
+            add ecx, ebx
+            shr esi, 0ah
+            and eax, 3ffh
+            add eax, esi
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            add edx, dword ptr [g_spanActiveTexVStepFixed20]
+            cmp word ptr [ebp+eax*2], 0
+            je zRndr_span_mask_tex16_switch_skip10
+            push word ptr [ebp+eax*2]
+            add edi, 2
+            jne zRndr_span_mask_tex16_switch_loop10
+            jmp zRndr_span_mask_tex16_switch_restore10
+        zRndr_span_mask_tex16_switch_skip10:
+            sub esp, 2
+            add edi, 2
+            jne zRndr_span_mask_tex16_switch_loop10
+        zRndr_span_mask_tex16_switch_restore10:
+            mov esp, dword ptr [g_spanSavedEspSlot]
+            pop ebp
+        }
+        return;
+
+    case 11:
+        __asm {
+            push ebp
+            mov dword ptr [g_spanSavedEspSlot], esp
+            mov ecx, texU
+            mov edx, texV
+            mov edi, pixelCount
+            mov esp, dword ptr [g_spanCurrentSpanBaseAddr]
+            add edi, edi
+            mov ebp, dword ptr [g_spanActiveTexPixels]
+            add esp, edi
+            mov ebx, dword ptr [g_spanActiveTexUStepFixed20]
+            neg edi
+            mov esi, dword ptr [g_spanActiveTexVMask]
+        zRndr_span_mask_tex16_switch_loop11:
+            mov eax, ecx
+            and esi, edx
+            sar eax, 14h
+            add ecx, ebx
+            shr esi, 0bh
+            and eax, 1ffh
+            add eax, esi
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            add edx, dword ptr [g_spanActiveTexVStepFixed20]
+            cmp word ptr [ebp+eax*2], 0
+            je zRndr_span_mask_tex16_switch_skip11
+            push word ptr [ebp+eax*2]
+            add edi, 2
+            jne zRndr_span_mask_tex16_switch_loop11
+            jmp zRndr_span_mask_tex16_switch_restore11
+        zRndr_span_mask_tex16_switch_skip11:
+            sub esp, 2
+            add edi, 2
+            jne zRndr_span_mask_tex16_switch_loop11
+        zRndr_span_mask_tex16_switch_restore11:
+            mov esp, dword ptr [g_spanSavedEspSlot]
+            pop ebp
+        }
+        return;
+
+    case 12:
+        __asm {
+            push ebp
+            mov dword ptr [g_spanSavedEspSlot], esp
+            mov ecx, texU
+            mov edx, texV
+            mov edi, pixelCount
+            mov esp, dword ptr [g_spanCurrentSpanBaseAddr]
+            add edi, edi
+            mov ebp, dword ptr [g_spanActiveTexPixels]
+            add esp, edi
+            mov ebx, dword ptr [g_spanActiveTexUStepFixed20]
+            neg edi
+            mov esi, dword ptr [g_spanActiveTexVMask]
+        zRndr_span_mask_tex16_switch_loop12:
+            mov eax, ecx
+            and esi, edx
+            sar eax, 14h
+            add ecx, ebx
+            shr esi, 0ch
+            and eax, 0ffh
+            add eax, esi
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            add edx, dword ptr [g_spanActiveTexVStepFixed20]
+            cmp word ptr [ebp+eax*2], 0
+            je zRndr_span_mask_tex16_switch_skip12
+            push word ptr [ebp+eax*2]
+            add edi, 2
+            jne zRndr_span_mask_tex16_switch_loop12
+            jmp zRndr_span_mask_tex16_switch_restore12
+        zRndr_span_mask_tex16_switch_skip12:
+            sub esp, 2
+            add edi, 2
+            jne zRndr_span_mask_tex16_switch_loop12
+        zRndr_span_mask_tex16_switch_restore12:
+            mov esp, dword ptr [g_spanSavedEspSlot]
+            pop ebp
+        }
+        return;
+
+    case 13:
+        __asm {
+            push ebp
+            mov dword ptr [g_spanSavedEspSlot], esp
+            mov ecx, texU
+            mov edx, texV
+            mov edi, pixelCount
+            mov esp, dword ptr [g_spanCurrentSpanBaseAddr]
+            add edi, edi
+            mov ebp, dword ptr [g_spanActiveTexPixels]
+            add esp, edi
+            mov ebx, dword ptr [g_spanActiveTexUStepFixed20]
+            neg edi
+            mov esi, dword ptr [g_spanActiveTexVMask]
+        zRndr_span_mask_tex16_switch_loop13:
+            mov eax, ecx
+            and esi, edx
+            sar eax, 14h
+            add ecx, ebx
+            shr esi, 0dh
+            and eax, 7fh
+            add eax, esi
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            add edx, dword ptr [g_spanActiveTexVStepFixed20]
+            cmp word ptr [ebp+eax*2], 0
+            je zRndr_span_mask_tex16_switch_skip13
+            push word ptr [ebp+eax*2]
+            add edi, 2
+            jne zRndr_span_mask_tex16_switch_loop13
+            jmp zRndr_span_mask_tex16_switch_restore13
+        zRndr_span_mask_tex16_switch_skip13:
+            sub esp, 2
+            add edi, 2
+            jne zRndr_span_mask_tex16_switch_loop13
+        zRndr_span_mask_tex16_switch_restore13:
+            mov esp, dword ptr [g_spanSavedEspSlot]
+            pop ebp
+        }
+        return;
+
+    case 14:
+        __asm {
+            push ebp
+            mov dword ptr [g_spanSavedEspSlot], esp
+            mov ecx, texU
+            mov edx, texV
+            mov edi, pixelCount
+            mov esp, dword ptr [g_spanCurrentSpanBaseAddr]
+            add edi, edi
+            mov ebp, dword ptr [g_spanActiveTexPixels]
+            add esp, edi
+            mov ebx, dword ptr [g_spanActiveTexUStepFixed20]
+            neg edi
+            mov esi, dword ptr [g_spanActiveTexVMask]
+        zRndr_span_mask_tex16_switch_loop14:
+            mov eax, ecx
+            and esi, edx
+            sar eax, 14h
+            add ecx, ebx
+            shr esi, 0eh
+            and eax, 3fh
+            add eax, esi
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            add edx, dword ptr [g_spanActiveTexVStepFixed20]
+            cmp word ptr [ebp+eax*2], 0
+            je zRndr_span_mask_tex16_switch_skip14
+            push word ptr [ebp+eax*2]
+            add edi, 2
+            jne zRndr_span_mask_tex16_switch_loop14
+            jmp zRndr_span_mask_tex16_switch_restore14
+        zRndr_span_mask_tex16_switch_skip14:
+            sub esp, 2
+            add edi, 2
+            jne zRndr_span_mask_tex16_switch_loop14
+        zRndr_span_mask_tex16_switch_restore14:
+            mov esp, dword ptr [g_spanSavedEspSlot]
+            pop ebp
+        }
+        return;
+
+    case 15:
+        __asm {
+            push ebp
+            mov dword ptr [g_spanSavedEspSlot], esp
+            mov ecx, texU
+            mov edx, texV
+            mov edi, pixelCount
+            mov esp, dword ptr [g_spanCurrentSpanBaseAddr]
+            add edi, edi
+            mov ebp, dword ptr [g_spanActiveTexPixels]
+            add esp, edi
+            mov ebx, dword ptr [g_spanActiveTexUStepFixed20]
+            neg edi
+            mov esi, dword ptr [g_spanActiveTexVMask]
+        zRndr_span_mask_tex16_switch_loop15:
+            mov eax, ecx
+            and esi, edx
+            sar eax, 14h
+            add ecx, ebx
+            shr esi, 0fh
+            and eax, 1fh
+            add eax, esi
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            add edx, dword ptr [g_spanActiveTexVStepFixed20]
+            cmp word ptr [ebp+eax*2], 0
+            je zRndr_span_mask_tex16_switch_skip15
+            push word ptr [ebp+eax*2]
+            add edi, 2
+            jne zRndr_span_mask_tex16_switch_loop15
+            jmp zRndr_span_mask_tex16_switch_restore15
+        zRndr_span_mask_tex16_switch_skip15:
+            sub esp, 2
+            add edi, 2
+            jne zRndr_span_mask_tex16_switch_loop15
+        zRndr_span_mask_tex16_switch_restore15:
+            mov esp, dword ptr [g_spanSavedEspSlot]
+            pop ebp
+        }
+        return;
+
+    case 16:
+        __asm {
+            push ebp
+            mov dword ptr [g_spanSavedEspSlot], esp
+            mov ecx, texU
+            mov edx, texV
+            mov edi, pixelCount
+            mov esp, dword ptr [g_spanCurrentSpanBaseAddr]
+            add edi, edi
+            mov ebp, dword ptr [g_spanActiveTexPixels]
+            add esp, edi
+            mov ebx, dword ptr [g_spanActiveTexUStepFixed20]
+            neg edi
+            mov esi, dword ptr [g_spanActiveTexVMask]
+        zRndr_span_mask_tex16_switch_loop16:
+            mov eax, ecx
+            and esi, edx
+            sar eax, 14h
+            add ecx, ebx
+            shr esi, 10h
+            and eax, 0fh
+            add eax, esi
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            add edx, dword ptr [g_spanActiveTexVStepFixed20]
+            cmp word ptr [ebp+eax*2], 0
+            je zRndr_span_mask_tex16_switch_skip16
+            push word ptr [ebp+eax*2]
+            add edi, 2
+            jne zRndr_span_mask_tex16_switch_loop16
+            jmp zRndr_span_mask_tex16_switch_restore16
+        zRndr_span_mask_tex16_switch_skip16:
+            sub esp, 2
+            add edi, 2
+            jne zRndr_span_mask_tex16_switch_loop16
+        zRndr_span_mask_tex16_switch_restore16:
+            mov esp, dword ptr [g_spanSavedEspSlot]
+            pop ebp
+        }
+        return;
+
+    case 17:
+        __asm {
+            push ebp
+            mov dword ptr [g_spanSavedEspSlot], esp
+            mov ecx, texU
+            mov edx, texV
+            mov edi, pixelCount
+            mov esp, dword ptr [g_spanCurrentSpanBaseAddr]
+            add edi, edi
+            mov ebp, dword ptr [g_spanActiveTexPixels]
+            add esp, edi
+            mov ebx, dword ptr [g_spanActiveTexUStepFixed20]
+            neg edi
+            mov esi, dword ptr [g_spanActiveTexVMask]
+        zRndr_span_mask_tex16_switch_loop17:
+            mov eax, ecx
+            and esi, edx
+            sar eax, 14h
+            add ecx, ebx
+            shr esi, 11h
+            and eax, 7
+            add eax, esi
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            add edx, dword ptr [g_spanActiveTexVStepFixed20]
+            cmp word ptr [ebp+eax*2], 0
+            je zRndr_span_mask_tex16_switch_skip17
+            push word ptr [ebp+eax*2]
+            add edi, 2
+            jne zRndr_span_mask_tex16_switch_loop17
+            jmp zRndr_span_mask_tex16_switch_restore17
+        zRndr_span_mask_tex16_switch_skip17:
+            sub esp, 2
+            add edi, 2
+            jne zRndr_span_mask_tex16_switch_loop17
+        zRndr_span_mask_tex16_switch_restore17:
+            mov esp, dword ptr [g_spanSavedEspSlot]
+            pop ebp
+        }
+        return;
+
+    }
+}
+#else
+/**
+ * Reimplements 0x49b7e0: zRndr::SpanMasked16FromTex16SwitchVShift
+ * Purpose: Preserve portable masked tex16 behavior when the ESP-pivot raw-assembly exception is disabled.
  */
 void __fastcall SpanMasked16FromTex16SwitchVShift(
     int texU,
@@ -4657,6 +5450,7 @@ void __fastcall SpanMasked16FromTex16SwitchVShift(
     }
     }
 }
+#endif
 
 /**
  * Reimplements 0x49ea40: zRndr::SpanMmxSetTexUvMasksAndVShift
@@ -4818,10 +5612,304 @@ void __fastcall SpanCopy16FromTex16ExplicitVShift(
  * each case saves through gRndr_SavedEspSlot, pivots ESP to
  * gRndr_CurrentSpanBaseAddr + count, samples an 8-bit texel from
  * gRndr_ActiveTexPixels, expands it through gRndr_ActiveTexPalette, then pushes
- * the 16-bit palette word backward into the span. This C++ body models the same
- * case dispatch and descending writes while the shared retail pivot source shape
- * remains unresolved.
+ * the 16-bit palette word backward into the span. The guarded VC5 x86 path
+ * keeps C++ responsible for dispatch and uses narrow inline asm only for the
+ * ESP-pivot write loop; the portable fallback below remains behavior-only.
  * Purpose: Copy palettized texels into the active 16-bit span using the variable-texVShift reverse span contract.
+ */
+#if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZRNDR_ESP_PIVOT_RAW_ASM)
+/**
+ * Reimplements 0x49edc0: zRndr::SpanCopy16FromPal8SwitchVShift
+ * Purpose: Copy palettized texels through C++ switch cases with narrow inline asm for the approved zRndr ESP-pivot loop.
+ */
+void __fastcall SpanCopy16FromPal8SwitchVShift(
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+) {
+    switch (texVShift) {
+    default:
+        return;
+
+    case 10:
+        __asm {
+            push ebp
+            mov dword ptr [g_spanSavedEspSlot], esp
+            mov ecx, texU
+            mov edx, texV
+            mov edi, pixelCount
+            mov esp, dword ptr [g_spanCurrentSpanBaseAddr]
+            add edi, edi
+            mov ebp, dword ptr [g_spanActiveTexPixels]
+            add esp, edi
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            mov ebx, dword ptr [g_spanActiveTexPalette]
+            neg edi
+        zRndr_span_copy_pal8_switch_loop10:
+            mov eax, ecx
+            and esi, edx
+            sar eax, 14h
+            add ecx, dword ptr [g_spanActiveTexUStepFixed20]
+            shr esi, 0ah
+            and eax, 3ffh
+            add esi, eax
+            xor eax, eax
+            add edx, dword ptr [g_spanActiveTexVStepFixed20]
+            mov al, byte ptr [ebp+esi]
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            add edi, 2
+            push word ptr [ebx+eax*2]
+            jne zRndr_span_copy_pal8_switch_loop10
+            mov esp, dword ptr [g_spanSavedEspSlot]
+            pop ebp
+        }
+        return;
+
+    case 11:
+        __asm {
+            push ebp
+            mov dword ptr [g_spanSavedEspSlot], esp
+            mov ecx, texU
+            mov edx, texV
+            mov edi, pixelCount
+            mov esp, dword ptr [g_spanCurrentSpanBaseAddr]
+            add edi, edi
+            mov ebp, dword ptr [g_spanActiveTexPixels]
+            add esp, edi
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            mov ebx, dword ptr [g_spanActiveTexPalette]
+            neg edi
+        zRndr_span_copy_pal8_switch_loop11:
+            mov eax, ecx
+            and esi, edx
+            sar eax, 14h
+            add ecx, dword ptr [g_spanActiveTexUStepFixed20]
+            shr esi, 0bh
+            and eax, 1ffh
+            add esi, eax
+            xor eax, eax
+            add edx, dword ptr [g_spanActiveTexVStepFixed20]
+            mov al, byte ptr [ebp+esi]
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            add edi, 2
+            push word ptr [ebx+eax*2]
+            jne zRndr_span_copy_pal8_switch_loop11
+            mov esp, dword ptr [g_spanSavedEspSlot]
+            pop ebp
+        }
+        return;
+
+    case 12:
+        __asm {
+            push ebp
+            mov dword ptr [g_spanSavedEspSlot], esp
+            mov ecx, texU
+            mov edx, texV
+            mov edi, pixelCount
+            mov esp, dword ptr [g_spanCurrentSpanBaseAddr]
+            add edi, edi
+            mov ebp, dword ptr [g_spanActiveTexPixels]
+            add esp, edi
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            mov ebx, dword ptr [g_spanActiveTexPalette]
+            neg edi
+        zRndr_span_copy_pal8_switch_loop12:
+            mov eax, ecx
+            and esi, edx
+            sar eax, 14h
+            add ecx, dword ptr [g_spanActiveTexUStepFixed20]
+            shr esi, 0ch
+            and eax, 0ffh
+            add esi, eax
+            xor eax, eax
+            add edx, dword ptr [g_spanActiveTexVStepFixed20]
+            mov al, byte ptr [ebp+esi]
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            add edi, 2
+            push word ptr [ebx+eax*2]
+            jne zRndr_span_copy_pal8_switch_loop12
+            mov esp, dword ptr [g_spanSavedEspSlot]
+            pop ebp
+        }
+        return;
+
+    case 13:
+        __asm {
+            push ebp
+            mov dword ptr [g_spanSavedEspSlot], esp
+            mov ecx, texU
+            mov edx, texV
+            mov edi, pixelCount
+            mov esp, dword ptr [g_spanCurrentSpanBaseAddr]
+            add edi, edi
+            mov ebp, dword ptr [g_spanActiveTexPixels]
+            add esp, edi
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            mov ebx, dword ptr [g_spanActiveTexPalette]
+            neg edi
+        zRndr_span_copy_pal8_switch_loop13:
+            mov eax, ecx
+            and esi, edx
+            sar eax, 14h
+            add ecx, dword ptr [g_spanActiveTexUStepFixed20]
+            shr esi, 0dh
+            and eax, 7fh
+            add esi, eax
+            xor eax, eax
+            add edx, dword ptr [g_spanActiveTexVStepFixed20]
+            mov al, byte ptr [ebp+esi]
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            add edi, 2
+            push word ptr [ebx+eax*2]
+            jne zRndr_span_copy_pal8_switch_loop13
+            mov esp, dword ptr [g_spanSavedEspSlot]
+            pop ebp
+        }
+        return;
+
+    case 14:
+        __asm {
+            push ebp
+            mov dword ptr [g_spanSavedEspSlot], esp
+            mov ecx, texU
+            mov edx, texV
+            mov edi, pixelCount
+            mov esp, dword ptr [g_spanCurrentSpanBaseAddr]
+            add edi, edi
+            mov ebp, dword ptr [g_spanActiveTexPixels]
+            add esp, edi
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            mov ebx, dword ptr [g_spanActiveTexPalette]
+            neg edi
+        zRndr_span_copy_pal8_switch_loop14:
+            mov eax, ecx
+            and esi, edx
+            sar eax, 14h
+            add ecx, dword ptr [g_spanActiveTexUStepFixed20]
+            shr esi, 0eh
+            and eax, 3fh
+            add esi, eax
+            xor eax, eax
+            add edx, dword ptr [g_spanActiveTexVStepFixed20]
+            mov al, byte ptr [ebp+esi]
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            add edi, 2
+            push word ptr [ebx+eax*2]
+            jne zRndr_span_copy_pal8_switch_loop14
+            mov esp, dword ptr [g_spanSavedEspSlot]
+            pop ebp
+        }
+        return;
+
+    case 15:
+        __asm {
+            push ebp
+            mov dword ptr [g_spanSavedEspSlot], esp
+            mov ecx, texU
+            mov edx, texV
+            mov edi, pixelCount
+            mov esp, dword ptr [g_spanCurrentSpanBaseAddr]
+            add edi, edi
+            mov ebp, dword ptr [g_spanActiveTexPixels]
+            add esp, edi
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            mov ebx, dword ptr [g_spanActiveTexPalette]
+            neg edi
+        zRndr_span_copy_pal8_switch_loop15:
+            mov eax, ecx
+            and esi, edx
+            sar eax, 14h
+            add ecx, dword ptr [g_spanActiveTexUStepFixed20]
+            shr esi, 0fh
+            and eax, 1fh
+            add esi, eax
+            xor eax, eax
+            add edx, dword ptr [g_spanActiveTexVStepFixed20]
+            mov al, byte ptr [ebp+esi]
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            add edi, 2
+            push word ptr [ebx+eax*2]
+            jne zRndr_span_copy_pal8_switch_loop15
+            mov esp, dword ptr [g_spanSavedEspSlot]
+            pop ebp
+        }
+        return;
+
+    case 16:
+        __asm {
+            push ebp
+            mov dword ptr [g_spanSavedEspSlot], esp
+            mov ecx, texU
+            mov edx, texV
+            mov edi, pixelCount
+            mov esp, dword ptr [g_spanCurrentSpanBaseAddr]
+            add edi, edi
+            mov ebp, dword ptr [g_spanActiveTexPixels]
+            add esp, edi
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            mov ebx, dword ptr [g_spanActiveTexPalette]
+            neg edi
+        zRndr_span_copy_pal8_switch_loop16:
+            mov eax, ecx
+            and esi, edx
+            sar eax, 14h
+            add ecx, dword ptr [g_spanActiveTexUStepFixed20]
+            shr esi, 10h
+            and eax, 0fh
+            add esi, eax
+            xor eax, eax
+            add edx, dword ptr [g_spanActiveTexVStepFixed20]
+            mov al, byte ptr [ebp+esi]
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            add edi, 2
+            push word ptr [ebx+eax*2]
+            jne zRndr_span_copy_pal8_switch_loop16
+            mov esp, dword ptr [g_spanSavedEspSlot]
+            pop ebp
+        }
+        return;
+
+    case 17:
+        __asm {
+            push ebp
+            mov dword ptr [g_spanSavedEspSlot], esp
+            mov ecx, texU
+            mov edx, texV
+            mov edi, pixelCount
+            mov esp, dword ptr [g_spanCurrentSpanBaseAddr]
+            add edi, edi
+            mov ebp, dword ptr [g_spanActiveTexPixels]
+            add esp, edi
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            mov ebx, dword ptr [g_spanActiveTexPalette]
+            neg edi
+        zRndr_span_copy_pal8_switch_loop17:
+            mov eax, ecx
+            and esi, edx
+            sar eax, 14h
+            add ecx, dword ptr [g_spanActiveTexUStepFixed20]
+            shr esi, 11h
+            and eax, 7
+            add esi, eax
+            xor eax, eax
+            add edx, dword ptr [g_spanActiveTexVStepFixed20]
+            mov al, byte ptr [ebp+esi]
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            add edi, 2
+            push word ptr [ebx+eax*2]
+            jne zRndr_span_copy_pal8_switch_loop17
+            mov esp, dword ptr [g_spanSavedEspSlot]
+            pop ebp
+        }
+        return;
+
+    }
+}
+#else
+/**
+ * Reimplements 0x49edc0: zRndr::SpanCopy16FromPal8SwitchVShift
+ * Purpose: Preserve portable palettized copy behavior when the ESP-pivot raw-assembly exception is disabled.
  */
 void __fastcall SpanCopy16FromPal8SwitchVShift(
     int texU,
@@ -4970,6 +6058,7 @@ void __fastcall SpanCopy16FromPal8SwitchVShift(
     }
     }
 }
+#endif
 
 /**
  * Reimplements 0x49bbf0: zRndr::SpanMasked16FromPal8SwitchVShift
@@ -4979,10 +6068,369 @@ void __fastcall SpanCopy16FromPal8SwitchVShift(
  * gRndr_CurrentSpanBaseAddr + count, samples an 8-bit texel from
  * gRndr_ActiveTexPixels, skips zero texels by reserving the destination word,
  * and expands nonzero texels through gRndr_ActiveTexPalette before pushing the
- * 16-bit palette word backward into the span. This C++ body models the same
- * case dispatch, transparent-zero skip, and descending writes while the shared
- * retail pivot source shape remains unresolved.
+ * 16-bit palette word backward into the span. The guarded VC5 x86 path keeps
+ * C++ responsible for dispatch and uses narrow inline asm only for the
+ * ESP-pivot masked write/skip loop; the portable fallback below remains
+ * behavior-only.
  * Purpose: Write nonzero palettized texels into the active 16-bit span using the variable-texVShift reverse span contract.
+ */
+#if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZRNDR_ESP_PIVOT_RAW_ASM)
+/**
+ * Reimplements 0x49bbf0: zRndr::SpanMasked16FromPal8SwitchVShift
+ * Purpose: Write nonzero palettized texels through C++ switch cases with narrow inline asm for the approved zRndr ESP-pivot loop.
+ */
+void __fastcall SpanMasked16FromPal8SwitchVShift(
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+) {
+    switch (texVShift) {
+    default:
+        return;
+
+    case 10:
+        __asm {
+            push ebp
+            mov dword ptr [g_spanSavedEspSlot], esp
+            mov ecx, texU
+            mov edx, texV
+            mov edi, pixelCount
+            mov esp, dword ptr [g_spanCurrentSpanBaseAddr]
+            add edi, edi
+            mov ebp, dword ptr [g_spanActiveTexPixels]
+            add esp, edi
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            mov ebx, dword ptr [g_spanActiveTexPalette]
+            neg edi
+        zRndr_span_mask_pal8_switch_loop10:
+            mov eax, ecx
+            and esi, edx
+            sar eax, 14h
+            add ecx, dword ptr [g_spanActiveTexUStepFixed20]
+            shr esi, 0ah
+            and eax, 3ffh
+            add esi, eax
+            xor eax, eax
+            add edx, dword ptr [g_spanActiveTexVStepFixed20]
+            mov al, byte ptr [ebp+esi]
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            or eax, eax
+            je zRndr_span_mask_pal8_switch_skip10
+            add edi, 2
+            push word ptr [ebx+eax*2]
+            jne zRndr_span_mask_pal8_switch_loop10
+            jmp zRndr_span_mask_pal8_switch_restore10
+        zRndr_span_mask_pal8_switch_skip10:
+            sub esp, 2
+            add edi, 2
+            jne zRndr_span_mask_pal8_switch_loop10
+        zRndr_span_mask_pal8_switch_restore10:
+            mov esp, dword ptr [g_spanSavedEspSlot]
+            pop ebp
+        }
+        return;
+
+    case 11:
+        __asm {
+            push ebp
+            mov dword ptr [g_spanSavedEspSlot], esp
+            mov ecx, texU
+            mov edx, texV
+            mov edi, pixelCount
+            mov esp, dword ptr [g_spanCurrentSpanBaseAddr]
+            add edi, edi
+            mov ebp, dword ptr [g_spanActiveTexPixels]
+            add esp, edi
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            mov ebx, dword ptr [g_spanActiveTexPalette]
+            neg edi
+        zRndr_span_mask_pal8_switch_loop11:
+            mov eax, ecx
+            and esi, edx
+            sar eax, 14h
+            add ecx, dword ptr [g_spanActiveTexUStepFixed20]
+            shr esi, 0bh
+            and eax, 1ffh
+            add esi, eax
+            xor eax, eax
+            add edx, dword ptr [g_spanActiveTexVStepFixed20]
+            mov al, byte ptr [ebp+esi]
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            or eax, eax
+            je zRndr_span_mask_pal8_switch_skip11
+            add edi, 2
+            push word ptr [ebx+eax*2]
+            jne zRndr_span_mask_pal8_switch_loop11
+            jmp zRndr_span_mask_pal8_switch_restore11
+        zRndr_span_mask_pal8_switch_skip11:
+            sub esp, 2
+            add edi, 2
+            jne zRndr_span_mask_pal8_switch_loop11
+        zRndr_span_mask_pal8_switch_restore11:
+            mov esp, dword ptr [g_spanSavedEspSlot]
+            pop ebp
+        }
+        return;
+
+    case 12:
+        __asm {
+            push ebp
+            mov dword ptr [g_spanSavedEspSlot], esp
+            mov ecx, texU
+            mov edx, texV
+            mov edi, pixelCount
+            mov esp, dword ptr [g_spanCurrentSpanBaseAddr]
+            add edi, edi
+            mov ebp, dword ptr [g_spanActiveTexPixels]
+            add esp, edi
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            mov ebx, dword ptr [g_spanActiveTexPalette]
+            neg edi
+        zRndr_span_mask_pal8_switch_loop12:
+            mov eax, ecx
+            and esi, edx
+            sar eax, 14h
+            add ecx, dword ptr [g_spanActiveTexUStepFixed20]
+            shr esi, 0ch
+            and eax, 0ffh
+            add esi, eax
+            xor eax, eax
+            add edx, dword ptr [g_spanActiveTexVStepFixed20]
+            mov al, byte ptr [ebp+esi]
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            or eax, eax
+            je zRndr_span_mask_pal8_switch_skip12
+            add edi, 2
+            push word ptr [ebx+eax*2]
+            jne zRndr_span_mask_pal8_switch_loop12
+            jmp zRndr_span_mask_pal8_switch_restore12
+        zRndr_span_mask_pal8_switch_skip12:
+            sub esp, 2
+            add edi, 2
+            jne zRndr_span_mask_pal8_switch_loop12
+        zRndr_span_mask_pal8_switch_restore12:
+            mov esp, dword ptr [g_spanSavedEspSlot]
+            pop ebp
+        }
+        return;
+
+    case 13:
+        __asm {
+            push ebp
+            mov dword ptr [g_spanSavedEspSlot], esp
+            mov ecx, texU
+            mov edx, texV
+            mov edi, pixelCount
+            mov esp, dword ptr [g_spanCurrentSpanBaseAddr]
+            add edi, edi
+            mov ebp, dword ptr [g_spanActiveTexPixels]
+            add esp, edi
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            mov ebx, dword ptr [g_spanActiveTexPalette]
+            neg edi
+        zRndr_span_mask_pal8_switch_loop13:
+            mov eax, ecx
+            and esi, edx
+            sar eax, 14h
+            add ecx, dword ptr [g_spanActiveTexUStepFixed20]
+            shr esi, 0dh
+            and eax, 7fh
+            add esi, eax
+            xor eax, eax
+            add edx, dword ptr [g_spanActiveTexVStepFixed20]
+            mov al, byte ptr [ebp+esi]
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            or eax, eax
+            je zRndr_span_mask_pal8_switch_skip13
+            add edi, 2
+            push word ptr [ebx+eax*2]
+            jne zRndr_span_mask_pal8_switch_loop13
+            jmp zRndr_span_mask_pal8_switch_restore13
+        zRndr_span_mask_pal8_switch_skip13:
+            sub esp, 2
+            add edi, 2
+            jne zRndr_span_mask_pal8_switch_loop13
+        zRndr_span_mask_pal8_switch_restore13:
+            mov esp, dword ptr [g_spanSavedEspSlot]
+            pop ebp
+        }
+        return;
+
+    case 14:
+        __asm {
+            push ebp
+            mov dword ptr [g_spanSavedEspSlot], esp
+            mov ecx, texU
+            mov edx, texV
+            mov edi, pixelCount
+            mov esp, dword ptr [g_spanCurrentSpanBaseAddr]
+            add edi, edi
+            mov ebp, dword ptr [g_spanActiveTexPixels]
+            add esp, edi
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            mov ebx, dword ptr [g_spanActiveTexPalette]
+            neg edi
+        zRndr_span_mask_pal8_switch_loop14:
+            mov eax, ecx
+            and esi, edx
+            sar eax, 14h
+            add ecx, dword ptr [g_spanActiveTexUStepFixed20]
+            shr esi, 0eh
+            and eax, 3fh
+            add esi, eax
+            xor eax, eax
+            add edx, dword ptr [g_spanActiveTexVStepFixed20]
+            mov al, byte ptr [ebp+esi]
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            or eax, eax
+            je zRndr_span_mask_pal8_switch_skip14
+            add edi, 2
+            push word ptr [ebx+eax*2]
+            jne zRndr_span_mask_pal8_switch_loop14
+            jmp zRndr_span_mask_pal8_switch_restore14
+        zRndr_span_mask_pal8_switch_skip14:
+            sub esp, 2
+            add edi, 2
+            jne zRndr_span_mask_pal8_switch_loop14
+        zRndr_span_mask_pal8_switch_restore14:
+            mov esp, dword ptr [g_spanSavedEspSlot]
+            pop ebp
+        }
+        return;
+
+    case 15:
+        __asm {
+            push ebp
+            mov dword ptr [g_spanSavedEspSlot], esp
+            mov ecx, texU
+            mov edx, texV
+            mov edi, pixelCount
+            mov esp, dword ptr [g_spanCurrentSpanBaseAddr]
+            add edi, edi
+            mov ebp, dword ptr [g_spanActiveTexPixels]
+            add esp, edi
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            mov ebx, dword ptr [g_spanActiveTexPalette]
+            neg edi
+        zRndr_span_mask_pal8_switch_loop15:
+            mov eax, ecx
+            and esi, edx
+            sar eax, 14h
+            add ecx, dword ptr [g_spanActiveTexUStepFixed20]
+            shr esi, 0fh
+            and eax, 1fh
+            add esi, eax
+            xor eax, eax
+            add edx, dword ptr [g_spanActiveTexVStepFixed20]
+            mov al, byte ptr [ebp+esi]
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            or eax, eax
+            je zRndr_span_mask_pal8_switch_skip15
+            add edi, 2
+            push word ptr [ebx+eax*2]
+            jne zRndr_span_mask_pal8_switch_loop15
+            jmp zRndr_span_mask_pal8_switch_restore15
+        zRndr_span_mask_pal8_switch_skip15:
+            sub esp, 2
+            add edi, 2
+            jne zRndr_span_mask_pal8_switch_loop15
+        zRndr_span_mask_pal8_switch_restore15:
+            mov esp, dword ptr [g_spanSavedEspSlot]
+            pop ebp
+        }
+        return;
+
+    case 16:
+        __asm {
+            push ebp
+            mov dword ptr [g_spanSavedEspSlot], esp
+            mov ecx, texU
+            mov edx, texV
+            mov edi, pixelCount
+            mov esp, dword ptr [g_spanCurrentSpanBaseAddr]
+            add edi, edi
+            mov ebp, dword ptr [g_spanActiveTexPixels]
+            add esp, edi
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            mov ebx, dword ptr [g_spanActiveTexPalette]
+            neg edi
+        zRndr_span_mask_pal8_switch_loop16:
+            mov eax, ecx
+            and esi, edx
+            sar eax, 14h
+            add ecx, dword ptr [g_spanActiveTexUStepFixed20]
+            shr esi, 10h
+            and eax, 0fh
+            add esi, eax
+            xor eax, eax
+            add edx, dword ptr [g_spanActiveTexVStepFixed20]
+            mov al, byte ptr [ebp+esi]
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            or eax, eax
+            je zRndr_span_mask_pal8_switch_skip16
+            add edi, 2
+            push word ptr [ebx+eax*2]
+            jne zRndr_span_mask_pal8_switch_loop16
+            jmp zRndr_span_mask_pal8_switch_restore16
+        zRndr_span_mask_pal8_switch_skip16:
+            sub esp, 2
+            add edi, 2
+            jne zRndr_span_mask_pal8_switch_loop16
+        zRndr_span_mask_pal8_switch_restore16:
+            mov esp, dword ptr [g_spanSavedEspSlot]
+            pop ebp
+        }
+        return;
+
+    case 17:
+        __asm {
+            push ebp
+            mov dword ptr [g_spanSavedEspSlot], esp
+            mov ecx, texU
+            mov edx, texV
+            mov edi, pixelCount
+            mov esp, dword ptr [g_spanCurrentSpanBaseAddr]
+            add edi, edi
+            mov ebp, dword ptr [g_spanActiveTexPixels]
+            add esp, edi
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            mov ebx, dword ptr [g_spanActiveTexPalette]
+            neg edi
+        zRndr_span_mask_pal8_switch_loop17:
+            mov eax, ecx
+            and esi, edx
+            sar eax, 14h
+            add ecx, dword ptr [g_spanActiveTexUStepFixed20]
+            shr esi, 11h
+            and eax, 7
+            add esi, eax
+            xor eax, eax
+            add edx, dword ptr [g_spanActiveTexVStepFixed20]
+            mov al, byte ptr [ebp+esi]
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            or eax, eax
+            je zRndr_span_mask_pal8_switch_skip17
+            add edi, 2
+            push word ptr [ebx+eax*2]
+            jne zRndr_span_mask_pal8_switch_loop17
+            jmp zRndr_span_mask_pal8_switch_restore17
+        zRndr_span_mask_pal8_switch_skip17:
+            sub esp, 2
+            add edi, 2
+            jne zRndr_span_mask_pal8_switch_loop17
+        zRndr_span_mask_pal8_switch_restore17:
+            mov esp, dword ptr [g_spanSavedEspSlot]
+            pop ebp
+        }
+        return;
+
+    }
+}
+#else
+/**
+ * Reimplements 0x49bbf0: zRndr::SpanMasked16FromPal8SwitchVShift
+ * Purpose: Preserve portable masked palettized behavior when the ESP-pivot raw-assembly exception is disabled.
  */
 void __fastcall SpanMasked16FromPal8SwitchVShift(
     int texU,
@@ -5131,6 +6579,7 @@ void __fastcall SpanMasked16FromPal8SwitchVShift(
     }
     }
 }
+#endif
 
 /**
  * Reimplements 0x49f180: zRndr::SpanShade16FromPal8SwitchVShift
@@ -5140,10 +6589,353 @@ void __fastcall SpanMasked16FromPal8SwitchVShift(
  * gRndr_CurrentSpanBaseAddr + count, samples an 8-bit texel from
  * gRndr_ActiveTexPixels, adds the current shade bucket from
  * gRndr_ActiveShadeFixed16, advances by gRndr_ActiveShadeStepFixed16, then
- * pushes the shade-adjusted 16-bit palette word backward into the span. This
- * C++ body models the same case dispatch and descending writes while the shared
- * retail pivot source shape remains unresolved.
+ * pushes the shade-adjusted 16-bit palette word backward into the span. The
+ * guarded VC5 x86 path keeps C++ responsible for dispatch and uses narrow
+ * inline asm only for the ESP-pivot shade write loop; the portable fallback
+ * below remains behavior-only.
  * Purpose: Shade palettized texels through the active palette and write them into the reverse active span.
+ */
+#if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZRNDR_ESP_PIVOT_RAW_ASM)
+/**
+ * Reimplements 0x49f180: zRndr::SpanShade16FromPal8SwitchVShift
+ * Purpose: Shade palettized texels through C++ switch cases with narrow inline asm for the approved zRndr ESP-pivot loop.
+ */
+void __fastcall SpanShade16FromPal8SwitchVShift(
+    int texU,
+    int texV,
+    int pixelCount,
+    int texVShift
+) {
+    switch (texVShift) {
+    default:
+        return;
+
+    case 10:
+        __asm {
+            push ebp
+            mov dword ptr [g_spanSavedEspSlot], esp
+            mov ecx, texU
+            mov edx, texV
+            mov edi, pixelCount
+            mov esp, dword ptr [g_spanCurrentSpanBaseAddr]
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            add esp, edi
+            mov ebx, dword ptr [g_spanActiveTexPalette]
+            add esp, edi
+        zRndr_span_shade_pal8_switch_loop10:
+            mov eax, ecx
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            sar eax, 14h
+            and esi, edx
+            shr esi, 0ah
+            and eax, 3ffh
+            mov ebp, dword ptr [g_spanActiveTexPixels]
+            add esi, eax
+            xor eax, eax
+            add edx, dword ptr [g_spanActiveTexVStepFixed20]
+            mov al, byte ptr [ebp+esi]
+            mov ebp, dword ptr [g_spanActiveShadeFixed16]
+            mov esi, ebp
+            and ebp, 0f80000h
+            shr ebp, 0bh
+            add esi, dword ptr [g_spanActiveShadeStepFixed16]
+            add eax, ebp
+            mov dword ptr [g_spanActiveShadeFixed16], esi
+            add ecx, dword ptr [g_spanActiveTexUStepFixed20]
+            dec edi
+            push word ptr [ebx+eax*2]
+            jne zRndr_span_shade_pal8_switch_loop10
+            mov esp, dword ptr [g_spanSavedEspSlot]
+            pop ebp
+        }
+        return;
+
+    case 11:
+        __asm {
+            push ebp
+            mov dword ptr [g_spanSavedEspSlot], esp
+            mov ecx, texU
+            mov edx, texV
+            mov edi, pixelCount
+            mov esp, dword ptr [g_spanCurrentSpanBaseAddr]
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            add esp, edi
+            mov ebx, dword ptr [g_spanActiveTexPalette]
+            add esp, edi
+        zRndr_span_shade_pal8_switch_loop11:
+            mov eax, ecx
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            sar eax, 14h
+            and esi, edx
+            shr esi, 0bh
+            and eax, 1ffh
+            mov ebp, dword ptr [g_spanActiveTexPixels]
+            add esi, eax
+            xor eax, eax
+            add edx, dword ptr [g_spanActiveTexVStepFixed20]
+            mov al, byte ptr [ebp+esi]
+            mov ebp, dword ptr [g_spanActiveShadeFixed16]
+            mov esi, ebp
+            and ebp, 0f80000h
+            shr ebp, 0bh
+            add esi, dword ptr [g_spanActiveShadeStepFixed16]
+            add eax, ebp
+            mov dword ptr [g_spanActiveShadeFixed16], esi
+            add ecx, dword ptr [g_spanActiveTexUStepFixed20]
+            dec edi
+            push word ptr [ebx+eax*2]
+            jne zRndr_span_shade_pal8_switch_loop11
+            mov esp, dword ptr [g_spanSavedEspSlot]
+            pop ebp
+        }
+        return;
+
+    case 12:
+        __asm {
+            push ebp
+            mov dword ptr [g_spanSavedEspSlot], esp
+            mov ecx, texU
+            mov edx, texV
+            mov edi, pixelCount
+            mov esp, dword ptr [g_spanCurrentSpanBaseAddr]
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            add esp, edi
+            mov ebx, dword ptr [g_spanActiveTexPalette]
+            add esp, edi
+        zRndr_span_shade_pal8_switch_loop12:
+            mov eax, ecx
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            sar eax, 14h
+            and esi, edx
+            shr esi, 0ch
+            and eax, 0ffh
+            mov ebp, dword ptr [g_spanActiveTexPixels]
+            add esi, eax
+            xor eax, eax
+            add edx, dword ptr [g_spanActiveTexVStepFixed20]
+            mov al, byte ptr [ebp+esi]
+            mov ebp, dword ptr [g_spanActiveShadeFixed16]
+            mov esi, ebp
+            and ebp, 0f80000h
+            shr ebp, 0bh
+            add esi, dword ptr [g_spanActiveShadeStepFixed16]
+            add eax, ebp
+            mov dword ptr [g_spanActiveShadeFixed16], esi
+            add ecx, dword ptr [g_spanActiveTexUStepFixed20]
+            dec edi
+            push word ptr [ebx+eax*2]
+            jne zRndr_span_shade_pal8_switch_loop12
+            mov esp, dword ptr [g_spanSavedEspSlot]
+            pop ebp
+        }
+        return;
+
+    case 13:
+        __asm {
+            push ebp
+            mov dword ptr [g_spanSavedEspSlot], esp
+            mov ecx, texU
+            mov edx, texV
+            mov edi, pixelCount
+            mov esp, dword ptr [g_spanCurrentSpanBaseAddr]
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            add esp, edi
+            mov ebx, dword ptr [g_spanActiveTexPalette]
+            add esp, edi
+        zRndr_span_shade_pal8_switch_loop13:
+            mov eax, ecx
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            sar eax, 14h
+            and esi, edx
+            shr esi, 0dh
+            and eax, 7fh
+            mov ebp, dword ptr [g_spanActiveTexPixels]
+            add esi, eax
+            xor eax, eax
+            add edx, dword ptr [g_spanActiveTexVStepFixed20]
+            mov al, byte ptr [ebp+esi]
+            mov ebp, dword ptr [g_spanActiveShadeFixed16]
+            mov esi, ebp
+            and ebp, 0f80000h
+            shr ebp, 0bh
+            add esi, dword ptr [g_spanActiveShadeStepFixed16]
+            add eax, ebp
+            mov dword ptr [g_spanActiveShadeFixed16], esi
+            add ecx, dword ptr [g_spanActiveTexUStepFixed20]
+            dec edi
+            push word ptr [ebx+eax*2]
+            jne zRndr_span_shade_pal8_switch_loop13
+            mov esp, dword ptr [g_spanSavedEspSlot]
+            pop ebp
+        }
+        return;
+
+    case 14:
+        __asm {
+            push ebp
+            mov dword ptr [g_spanSavedEspSlot], esp
+            mov ecx, texU
+            mov edx, texV
+            mov edi, pixelCount
+            mov esp, dword ptr [g_spanCurrentSpanBaseAddr]
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            add esp, edi
+            mov ebx, dword ptr [g_spanActiveTexPalette]
+            add esp, edi
+        zRndr_span_shade_pal8_switch_loop14:
+            mov eax, ecx
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            sar eax, 14h
+            and esi, edx
+            shr esi, 0eh
+            and eax, 3fh
+            mov ebp, dword ptr [g_spanActiveTexPixels]
+            add esi, eax
+            xor eax, eax
+            add edx, dword ptr [g_spanActiveTexVStepFixed20]
+            mov al, byte ptr [ebp+esi]
+            mov ebp, dword ptr [g_spanActiveShadeFixed16]
+            mov esi, ebp
+            and ebp, 0f80000h
+            shr ebp, 0bh
+            add esi, dword ptr [g_spanActiveShadeStepFixed16]
+            add eax, ebp
+            mov dword ptr [g_spanActiveShadeFixed16], esi
+            add ecx, dword ptr [g_spanActiveTexUStepFixed20]
+            dec edi
+            push word ptr [ebx+eax*2]
+            jne zRndr_span_shade_pal8_switch_loop14
+            mov esp, dword ptr [g_spanSavedEspSlot]
+            pop ebp
+        }
+        return;
+
+    case 15:
+        __asm {
+            push ebp
+            mov dword ptr [g_spanSavedEspSlot], esp
+            mov ecx, texU
+            mov edx, texV
+            mov edi, pixelCount
+            mov esp, dword ptr [g_spanCurrentSpanBaseAddr]
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            add esp, edi
+            mov ebx, dword ptr [g_spanActiveTexPalette]
+            add esp, edi
+        zRndr_span_shade_pal8_switch_loop15:
+            mov eax, ecx
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            sar eax, 14h
+            and esi, edx
+            shr esi, 0fh
+            and eax, 1fh
+            mov ebp, dword ptr [g_spanActiveTexPixels]
+            add esi, eax
+            xor eax, eax
+            add edx, dword ptr [g_spanActiveTexVStepFixed20]
+            mov al, byte ptr [ebp+esi]
+            mov ebp, dword ptr [g_spanActiveShadeFixed16]
+            mov esi, ebp
+            and ebp, 0f80000h
+            shr ebp, 0bh
+            add esi, dword ptr [g_spanActiveShadeStepFixed16]
+            add eax, ebp
+            mov dword ptr [g_spanActiveShadeFixed16], esi
+            add ecx, dword ptr [g_spanActiveTexUStepFixed20]
+            dec edi
+            push word ptr [ebx+eax*2]
+            jne zRndr_span_shade_pal8_switch_loop15
+            mov esp, dword ptr [g_spanSavedEspSlot]
+            pop ebp
+        }
+        return;
+
+    case 16:
+        __asm {
+            push ebp
+            mov dword ptr [g_spanSavedEspSlot], esp
+            mov ecx, texU
+            mov edx, texV
+            mov edi, pixelCount
+            mov esp, dword ptr [g_spanCurrentSpanBaseAddr]
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            add esp, edi
+            mov ebx, dword ptr [g_spanActiveTexPalette]
+            add esp, edi
+        zRndr_span_shade_pal8_switch_loop16:
+            mov eax, ecx
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            sar eax, 14h
+            and esi, edx
+            shr esi, 10h
+            and eax, 0fh
+            mov ebp, dword ptr [g_spanActiveTexPixels]
+            add esi, eax
+            xor eax, eax
+            add edx, dword ptr [g_spanActiveTexVStepFixed20]
+            mov al, byte ptr [ebp+esi]
+            mov ebp, dword ptr [g_spanActiveShadeFixed16]
+            mov esi, ebp
+            and ebp, 0f80000h
+            shr ebp, 0bh
+            add esi, dword ptr [g_spanActiveShadeStepFixed16]
+            add eax, ebp
+            mov dword ptr [g_spanActiveShadeFixed16], esi
+            add ecx, dword ptr [g_spanActiveTexUStepFixed20]
+            dec edi
+            push word ptr [ebx+eax*2]
+            jne zRndr_span_shade_pal8_switch_loop16
+            mov esp, dword ptr [g_spanSavedEspSlot]
+            pop ebp
+        }
+        return;
+
+    case 17:
+        __asm {
+            push ebp
+            mov dword ptr [g_spanSavedEspSlot], esp
+            mov ecx, texU
+            mov edx, texV
+            mov edi, pixelCount
+            mov esp, dword ptr [g_spanCurrentSpanBaseAddr]
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            add esp, edi
+            mov ebx, dword ptr [g_spanActiveTexPalette]
+            add esp, edi
+        zRndr_span_shade_pal8_switch_loop17:
+            mov eax, ecx
+            mov esi, dword ptr [g_spanActiveTexVMask]
+            sar eax, 14h
+            and esi, edx
+            shr esi, 11h
+            and eax, 7
+            mov ebp, dword ptr [g_spanActiveTexPixels]
+            add esi, eax
+            xor eax, eax
+            add edx, dword ptr [g_spanActiveTexVStepFixed20]
+            mov al, byte ptr [ebp+esi]
+            mov ebp, dword ptr [g_spanActiveShadeFixed16]
+            mov esi, ebp
+            and ebp, 0f80000h
+            shr ebp, 0bh
+            add esi, dword ptr [g_spanActiveShadeStepFixed16]
+            add eax, ebp
+            mov dword ptr [g_spanActiveShadeFixed16], esi
+            add ecx, dword ptr [g_spanActiveTexUStepFixed20]
+            dec edi
+            push word ptr [ebx+eax*2]
+            jne zRndr_span_shade_pal8_switch_loop17
+            mov esp, dword ptr [g_spanSavedEspSlot]
+            pop ebp
+        }
+        return;
+
+    }
+}
+#else
+/**
+ * Reimplements 0x49f180: zRndr::SpanShade16FromPal8SwitchVShift
+ * Purpose: Preserve portable palettized shade behavior when the ESP-pivot raw-assembly exception is disabled.
  */
 void __fastcall SpanShade16FromPal8SwitchVShift(
     int texU,
@@ -5300,6 +7092,7 @@ void __fastcall SpanShade16FromPal8SwitchVShift(
     }
     }
 }
+#endif
 
 /**
  * Reimplements 0x49b1e0: zRndr::FogColor_SetRgb01Clamped
@@ -8187,6 +9980,7 @@ void __fastcall zRndr_OverlayRect_Submit(
     zVidRect32 *rectOrNull,
     double alpha
 ) {
+    const unsigned short overlayColor16 = (unsigned short)(packedColor16);
     zVidRect32 rect;
     int xMax;
     if (rectOrNull != 0) {
@@ -8204,7 +9998,7 @@ void __fastcall zRndr_OverlayRect_Submit(
     if (g_zVideo_ActiveRendererPath != 0) {
         rect.right = xMax + 1;
         zVideo_dd3d::QueueSolidQuad(
-            packedColor16 & 0xffffU,
+            overlayColor16,
             &rect,
             alpha
         );
@@ -8216,7 +10010,7 @@ void __fastcall zRndr_OverlayRect_Submit(
     zRndr::g_overlayBlendRectBottom = rect.bottom;
     zRndr::g_overlayBlendRectLeft = rect.left;
     zRndr::g_overlayBlendEnabled = 1;
-    zRndr::g_overlayBlendPackedColor16 = packedColor16 & 0xffffU;
+    zRndr::g_overlayBlendPackedColor16 = overlayColor16;
     zRndr::g_overlayBlendAlpha = alpha;
 }
 
@@ -8236,8 +10030,8 @@ void zRndr_OverlayRect_FlushSw() {
         return;
     }
 
-    const int graphicsFlags = zRndr::g_graphicsFlags != 0 ? *zRndr::g_graphicsFlags : 0;
-    if ((graphicsFlags & 4) != 0) {
+    const unsigned char graphicsFlags = *(const unsigned char *)(zRndr::g_graphicsFlags);
+    if ((graphicsFlags & 4U) != 0) {
         if (zRndr::g_pixelPackGreenBits == 5) {
             zRndr::g_pfnOverlayBlendRow = zRndr::OverlayBlendRow555_Mmx;
         } else {
@@ -8273,15 +10067,15 @@ void zRndr_OverlayRect_FlushSw() {
     zRndr::g_swOverlayPremulBPair = premulBPair;
     zRndr::g_swOverlayPremulPacked =
         (((blueMask & premulBPair) | (redMask & premulRPair)) << 16) | (greenMask & premulGPair);
-    zRndr::g_swOverlayPremulPackedRot16 =
-        (zRndr::g_swOverlayPremulPacked >> 16) | (zRndr::g_swOverlayPremulPacked << 16);
+    zRndr::g_swOverlayPremulPackedRot16 = _rotr(zRndr::g_swOverlayPremulPacked, 16);
     zRndr::g_swOverlayDstScale5 = (int)((1.0 - zRndr::g_overlayBlendAlpha) * 32.0);
 
+    const int pitchPixels16 = g_zVideo_FxSurfacePitchPixels16;
     int rowY = zRndr::g_overlayBlendRectTop;
     const int rectLeft = zRndr::g_overlayBlendRectLeft;
     const int pixelCount = zRndr::g_overlayBlendRectRight - rectLeft;
     unsigned short *rowPixels16 =
-        g_zVideo_FxSurfacePixels16 + g_zVideo_FxSurfacePitchPixels16 * rowY + rectLeft;
+        g_zVideo_FxSurfacePixels16 + pitchPixels16 * rowY + rectLeft;
     while (rowY < zRndr::g_overlayBlendRectBottom) {
         zRndr::g_pfnOverlayBlendRow(
             rowPixels16,

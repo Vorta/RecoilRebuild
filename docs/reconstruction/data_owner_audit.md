@@ -117,6 +117,32 @@ recovered and verified.
 Future data-owner acceptances should append compact entries here rather than
 relying only on per-function plan markers.
 
+## 2026-06-24 Accepted Data Owners
+
+### render_video.zrndr_span_esp_pivot_saved_esp_slot
+
+- Owner symbol/scope: zRndr ESP-pivot saved-stack scratch pointer used by the
+  switch-vshift span callback family in `src/GameZRecoil/zRndr/zRndr.cpp`.
+- BN/source data: `gRndr_SavedEspSlot` at 0x57da38, implemented as
+  `zRndr::g_spanSavedEspSlot`.
+- Extent/section/nullness: independent 4-byte `.data` pointer storage,
+  initialized to null. Source types the pointee as `zRndr_SpanEspPivotSave`,
+  the saved register frame used by the narrow ESP-pivot write loops.
+- Lifecycle/xrefs: the five switch-vshift span leaves
+  `0x49b7e0`, `0x49bbf0`, `0x49e6c0`, `0x49edc0`, and `0x49f180` save the
+  real ESP through this pointer before pivoting ESP to
+  `gRndr_CurrentSpanBaseAddr + count`, then restore ESP before returning.
+- VC5 evidence: `python tools/recoil.py verify vc5
+  zrndr_span_esp_pivot_saved_esp_slot` passed with zero unmasked data-byte
+  mismatches for the generated symbol
+  `?g_spanSavedEspSlot@zRndr@@3PAUzRndr_SpanEspPivotSave@1@A` using
+  `vc5_o2_ob0_md_zrndr_esp_pivot_raw_asm_facs`; the report includes the COFF
+  relocation mask, relocation identity, byte diff, triage, object, and listing
+  artifacts under `build/vc5-verify/zrndr_span_esp_pivot_saved_esp_slot/`.
+- Dependent plan entries: supports the data gate for the ESP-pivot span leaves
+  `0x49b7e0`, `0x49bbf0`, `0x49e6c0`, `0x49edc0`, and `0x49f180`, plus the
+  standalone data row `0x57da38`.
+
 ## 2026-06-22 Data Evidence Candidates
 
 ### legacy.audio_fmv.data_zfmv_action_tag_strings

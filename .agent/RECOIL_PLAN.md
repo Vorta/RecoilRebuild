@@ -22093,80 +22093,80 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x48d450:
   - [✅] Reconstructed (Name: zRndr::OverlayBlendRow555_Scalar)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zRndr; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: callback-table; Parent: render_video.zrndr_overlay_blend_callbacks_source; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zRndr::OverlayBlendRow555_Scalar;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_overlay_blend_row555_scalar;
     - Group: engine.zrndr;
-    - Model: pending;
-    - Blocker: Overlay row scalar source shape matches BN zRndr_Overlay.cpp paired uint32 loop and functional target zrndr_overlay_blend_row555_scalar passes. Source-owner mapping rejects scalar-only B promotion: Source owner/Data remain pending under the shared zRndr_Overlay.cpp callback/global owner with 0x48d7a0 and the MMX row callbacks.
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x48d4b0:
   - [✅] Reconstructed (Name: zRndr::OverlayBlendRow565_Scalar)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zRndr; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: callback-table; Parent: render_video.zrndr_overlay_blend_callbacks_source; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zRndr::OverlayBlendRow565_Scalar;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_overlay_blend_row565_scalar;
     - Group: engine.zrndr;
-    - Model: pending;
-    - Blocker: Overlay row 565 source shape matches BN zRndr_Overlay.cpp paired uint32 loop using precomputed overlay premul globals and functional target zrndr_overlay_blend_row565_scalar passes. Source-owner mapping rejects scalar-only B promotion: Source owner/Data remain pending under the shared zRndr_Overlay.cpp callback/global owner with 0x48d7a0 and the MMX row callbacks.
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x48d510:
   - [✅] Reconstructed (Name: zRndr::OverlayBlendRow555_Mmx)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zRndr; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: callback-table; Parent: render_video.zrndr_overlay_blend_callbacks_source; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: zRndr::OverlayBlendRow555_Mmx;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_overlay_blend_row555_mmx;
     - Group: engine.zrndr;
-    - Model: pending;
-    - Blocker: BN zRndr_Overlay.cpp 555 MMX row leaf uses true MMX movq/pand/psrlw/pmullw/paddw/emms qword loop and stack mask vectors. Same-session source pass reshaped the portable C equivalent to the BN-observed reverse-indexed group loop, so functional target zrndr_overlay_blend_row555_mmx still passes and VC5SP3 drift improves from 207 to 204 unmasked mismatches after 16 relocation-masked bytes and 11 trailing VC NOPs, BN size 223, VC5 size 144. Source owner/Data remain blocked under shared zRndr overlay/span callback-global owner until an approved source-faithful MMX strategy exists.
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x48d5f0:
   - [✅] Reconstructed (Name: zRndr::OverlayBlendRow565_Mmx)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zRndr; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: callback-table; Parent: render_video.zrndr_overlay_blend_callbacks_source; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: zRndr::OverlayBlendRow565_Mmx;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_overlay_blend_row565_mmx;
     - Group: engine.zrndr;
-    - Model: pending;
-    - Blocker: BN zRndr_Overlay.cpp 565 MMX row leaf uses true MMX movq/pand/psrlw/pmullw/paddw/emms qword loop and stack mask vectors. Same-session source pass reshaped the portable C equivalent to the BN-observed reverse-indexed group loop, so functional target zrndr_overlay_blend_row565_mmx still passes and VC5SP3 drift improves from 207 to 205 unmasked mismatches after 16 relocation-masked bytes and 11 trailing VC NOPs, BN size 223, VC5 size 144. Source owner/Data remain blocked under shared zRndr overlay/span callback-global owner until an approved source-faithful MMX strategy exists.
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x48d6d0:
   - [☑️] Reconstructed (Name: zRndr_OverlayRect::Submit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zRndr; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: callback-table; Parent: render_video.zrndr_overlay_blend_callbacks_source; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zRndr_OverlayRect_Submit;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_overlay_rect_submit;
     - Group: engine.zrndr;
-    - Model: pending;
-    - Blocker: BN/source audit and functional target pass for zRndr_OverlayRect_Submit; local VC5SP3 COFF compare zrndr_overlay_rect_submit fails with 131 unmasked mismatches after 48 relocation-masked bytes and 6 trimmed VC NOPs, BN size 195 bytes and VC5 symbol size 192 bytes. Source owner/Data remain pending under the shared zRndr_Overlay.cpp callback/global owner because selected overlay row/MMX callback source shape is still unresolved.
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x48d7a0:
   - [✅] Reconstructed (Name: zRndr_OverlayRect::FlushSw)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zRndr; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: callback-table; Parent: render_video.zrndr_overlay_blend_callbacks_source; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: zRndr_OverlayRect_FlushSw;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_overlay_rect_flush_sw;
     - Group: engine.zrndr;
-    - Model: pending;
-    - Blocker: BN zRndr_OverlayRect::FlushSw selects the 555/565 scalar or MMX overlay row callback, precomputes the software overlay premul/destination-scale globals through x87/_ftol, writes the BN premul RGB-pair globals consumed by the MMX rows, and calls the selected row callback for each FX-surface row. Functional target zrndr_overlay_rect_flush_sw passes, but Source owner/Data remain pending under the shared zRndr overlay/span callback-global owner because the selected MMX row callbacks remain tier C source-shape blockers.
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x48ff80:
   - [☑️] Reconstructed (Name: zRndr::SelectSpanRoutines)
@@ -23016,28 +23016,28 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x49b7e0:
   - [☑️] Reconstructed (Name: zRndr::SpanMasked16FromTex16SwitchVShift)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zRndr; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zRndr; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: zRndr::SpanMasked16FromTex16SwitchVShift;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_span_masked_16_from_tex16_switch_vshift;
     - Group: engine.zrndr;
-    - Model: data-equivalent-only;
-    - Blocker: ESP-pivot switch-vshift source-family unresolved: same-session BN fact packet confirms texVShift 10..17 jump-table cases save through gRndr_SavedEspSlot, pivot ESP to gRndr_CurrentSpanBaseAddr + pixelCount*2, and use push-word/sub-esp reverse writes; VC5SP3 zrndr_span_masked_16_from_tex16_switch_vshift still fails 779 unmasked bytes after 196 relocation-masked bytes and 4 trimmed VC NOPs, while functional target passes. Scaffold audit found current C switch/pointer-loop source acceptable as behavior-only tier C but not source-faithful owner/data evidence.
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x49bbf0:
   - [☑️] Reconstructed (Name: zRndr::SpanMasked16FromPal8SwitchVShift)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zRndr; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zRndr; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: zRndr::SpanMasked16FromPal8SwitchVShift;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_span_masked_16_from_pal8_switch_vshift;
     - Group: engine.zrndr;
-    - Model: data-equivalent-only;
-    - Blocker: ESP-pivot pal8 masked switch-vshift source-family unresolved: BN/subagent evidence confirms retail saves through gRndr_SavedEspSlot, pivots ESP to gRndr_CurrentSpanBaseAddr + pixelCount, skips zero pal8 texels with sub-esp, and push-writes expanded palette words for texVShift 10..17 with the V component computed as a logical shift of (gRndr_ActiveTexVMask & texV). Source now inlines the pal8 source-index expression inside each switch case, keeps the destination end case-local, and spells the masked V shift as unsigned; same-session checks keep VC5SP3 COFF drift at 782 unmasked mismatches after 228 relocation-masked bytes and 8 trimmed VC NOPs, with functional smoke passing. A positive-count do-while probe regressed to 790 mismatches and a negative-byte-countdown probe regressed to 792 mismatches with 4 trimmed VC NOPs, so both were reverted. Source owner/Data remain blocked until the shared zRndr_Span.cpp ESP-pivot push/sub-esp source model is recovered.
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x49c020:
   - [☑️] Reconstructed (Name: zRndr::SpanMasked16FromPal8To565)
@@ -23367,15 +23367,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x49e6c0:
   - [☑️] Reconstructed (Name: zRndr::SpanCopy16FromTex16SwitchVShift)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zRndr; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zRndr; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: zRndr::SpanCopy16FromTex16SwitchVShift;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_span_copy_16_from_tex16_switch_vshift;
     - Group: engine.zrndr;
-    - Model: data-equivalent-only;
-    - Blocker: ESP-pivot switch-vshift source-family unresolved: same-session BN fact packet confirms texVShift 10..17 cases save real ESP through gRndr_SavedEspSlot, pivot ESP to gRndr_CurrentSpanBaseAddr + pixelCount*2, loop with negative byte count in EDI, and emit unconditional push-word reverse writes. Source now spells the V component as an unsigned masked shift to match BN's logical (gRndr_ActiveTexVMask & texVFixed20) >> texVShift calculation, and functional target zrndr_span_copy_16_from_tex16_switch_vshift passes, but VC5SP3 still fails with 640 unmasked mismatches after 196 relocation-masked bytes and no trimmed VC NOPs (BN 851 bytes, VC5 768 bytes). Source owner/Data remain blocked by the shared zRndr_Span.cpp ESP-pivot push-write source model; prior positive-count and negative-byte-countdown probes regressed and production raw assembly remains disallowed without explicit approval.
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x49ea40:
   - [✅] Reconstructed (Name: zRndr::SpanMmxSetTexUvMasksAndVShift)
@@ -23419,28 +23419,28 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x49edc0:
   - [☑️] Reconstructed (Name: zRndr::SpanCopy16FromPal8SwitchVShift)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zRndr; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zRndr; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: zRndr::SpanCopy16FromPal8SwitchVShift;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_span_copy_16_from_pal8_switch_vshift;
     - Group: engine.zrndr;
-    - Model: data-equivalent-only;
-    - Blocker: ESP-pivot pal8 switch-vshift source-family unresolved: BN assembly confirms retail saves through gRndr_SavedEspSlot, pivots ESP to gRndr_CurrentSpanBaseAddr + pixelCount, samples pal8 texels, expands through gRndr_ActiveTexPalette, and push-writes reverse span words for texVShift 10..17. Source now inlines pal8 sampling/palette expansion inside each case, keeps the destination-end load case-local, spells masked V shifts as unsigned, and uses the BN-shaped negative-byte-countdown loop; functional target zrndr_span_copy_16_from_pal8_switch_vshift passes and VC5SP3 COFF drift is 676 unmasked mismatches after 228 relocation-masked bytes and 4 trimmed VC NOPs, with zero unmasked data-symbol mismatches for active pal8/span globals. Source owner/Data remain blocked until the shared zRndr_Span.cpp ESP-pivot push-write source model is recovered.
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x49f180:
   - [☑️] Reconstructed (Name: zRndr::SpanShade16FromPal8SwitchVShift)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: namespace; Parent: zRndr; State: parent-pending)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Source owner (Kind: namespace; Parent: zRndr; State: implemented)
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [S]
     - Name: zRndr::SpanShade16FromPal8SwitchVShift;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_span_shade_16_from_pal8_switch_vshift;
     - Group: engine.zrndr;
-    - Model: data-equivalent-only;
-    - Blocker: ESP-pivot pal8 shade switch-vshift source-family unresolved: BN/subagent evidence confirms retail saves through gRndr_SavedEspSlot, pivots ESP to gRndr_CurrentSpanBaseAddr + pixelCount, samples pal8 texels, adds the high-five-bit shade bucket from gRndr_ActiveShadeFixed16, advances gRndr_ActiveShadeFixed16 by gRndr_ActiveShadeStepFixed16, and push-writes shade-adjusted palette words for texVShift 10..17 with the V component computed as a logical shift of (gRndr_ActiveTexVMask & texV). Source now inlines the pal8 source-index expression inside each switch case, keeps the destination end case-local, and spells the masked V shift as unsigned; same-session checks keep VC5SP3 COFF drift at 795 unmasked mismatches after 324 relocation-masked bytes, with functional smoke passing and data-symbol checks already covering the active span and shade globals. A shade-bucket mask-shift probe was byte-neutral at 795 mismatches and was reverted. Source owner/Data remain blocked until the shared zRndr_Span.cpp ESP-pivot push-write source model is recovered.
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x48fd80:
   - [✅] Reconstructed (Name: zRndr::InitGlobals)
@@ -61504,25 +61504,25 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x56b198:
   - [✅] Reconstructed (Kind: data; Name: gRndr_SwOverlayPremulPackedRot16; Section: .data; Size: 4; Type: uint32_t)
-  - [❌] Source owner (Kind: global-data; Parent: pending; State: audit-pending)
-  - [❌] Reimplemented [X]
+  - [✅] Source owner (Kind: global-data; Parent: render_video.zrndr_overlay_blend_callbacks_source; State: implemented)
+  - [✅] Reimplemented [B]
     - Name: gRndr_SwOverlayPremulPackedRot16;
-    - File: pending;
-    - Target: pending;
+    - File: src/GameZRecoil/zRndr/zRndr.cpp;
+    - Target: zrndr_overlay_blend_callbacks_globals;
     - Group: data.render_video;
-    - Model: pending;
-    - Blocker: data owner audit pending
+    - Model: data-equivalent-only;
+    - Blocker: none
 
 - 0x56b19c:
   - [✅] Reconstructed (Kind: data; Name: gRndr_SwOverlayDstScale5; Section: .data; Size: 4; Type: int32_t)
-  - [❌] Source owner (Kind: global-data; Parent: pending; State: audit-pending)
-  - [❌] Reimplemented [X]
+  - [✅] Source owner (Kind: global-data; Parent: render_video.zrndr_overlay_blend_callbacks_source; State: implemented)
+  - [✅] Reimplemented [B]
     - Name: gRndr_SwOverlayDstScale5;
-    - File: pending;
-    - Target: pending;
+    - File: src/GameZRecoil/zRndr/zRndr.cpp;
+    - Target: zrndr_overlay_blend_callbacks_globals;
     - Group: data.render_video;
-    - Model: pending;
-    - Blocker: data owner audit pending
+    - Model: data-equivalent-only;
+    - Blocker: none
 
 - 0x56b1a0:
   - [✅] Reconstructed (Kind: data; Name: g_zVideo_FxPass3_ClipMinX; Section: .data; Size: 4; Type: int32_t)
@@ -61570,14 +61570,14 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x56b1b0:
   - [✅] Reconstructed (Kind: data; Name: gRndr_SwOverlayPremulPacked; Section: .data; Size: 4; Type: uint32_t)
-  - [❌] Source owner (Kind: global-data; Parent: pending; State: audit-pending)
-  - [❌] Reimplemented [X]
+  - [✅] Source owner (Kind: global-data; Parent: render_video.zrndr_overlay_blend_callbacks_source; State: implemented)
+  - [✅] Reimplemented [B]
     - Name: gRndr_SwOverlayPremulPacked;
-    - File: pending;
-    - Target: pending;
+    - File: src/GameZRecoil/zRndr/zRndr.cpp;
+    - Target: zrndr_overlay_blend_callbacks_globals;
     - Group: data.render_video;
-    - Model: pending;
-    - Blocker: data owner audit pending
+    - Model: data-equivalent-only;
+    - Blocker: none
 
 - 0x56b1b8:
   - [✅] Reconstructed (Kind: data; Name: g_zVid_NoiseByteTableSize; Section: .data; Size: 4; Type: int32_t)
@@ -61669,47 +61669,47 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x56b1d8:
   - [✅] Reconstructed (Kind: data; Name: gRndr_pfnOverlayBlendRow; Section: .data; Size: 4; Type: void (__fastcall*)(uint16_t* rowPixels16, int32_t pixelCount))
-  - [❌] Source owner (Kind: global-data; Parent: pending; State: audit-pending)
-  - [❌] Reimplemented [X]
+  - [✅] Source owner (Kind: global-data; Parent: render_video.zrndr_overlay_blend_callbacks_source; State: implemented)
+  - [✅] Reimplemented [B]
     - Name: gRndr_pfnOverlayBlendRow;
-    - File: pending;
-    - Target: pending;
+    - File: src/GameZRecoil/zRndr/zRndr.cpp;
+    - Target: zrndr_overlay_blend_callbacks_globals;
     - Group: data.render_video;
-    - Model: pending;
-    - Blocker: data owner audit pending
+    - Model: data-equivalent-only;
+    - Blocker: none
 
 - 0x56b1dc:
   - [✅] Reconstructed (Kind: data; Name: gRndr_SwOverlayPremulRPair; Section: .data; Size: 4; Type: uint32_t)
-  - [❌] Source owner (Kind: global-data; Parent: pending; State: audit-pending)
-  - [❌] Reimplemented [X]
+  - [✅] Source owner (Kind: global-data; Parent: render_video.zrndr_overlay_blend_callbacks_source; State: implemented)
+  - [✅] Reimplemented [B]
     - Name: gRndr_SwOverlayPremulRPair;
-    - File: pending;
-    - Target: pending;
+    - File: src/GameZRecoil/zRndr/zRndr.cpp;
+    - Target: zrndr_overlay_blend_callbacks_globals;
     - Group: data.render_video;
-    - Model: pending;
-    - Blocker: data owner audit pending
+    - Model: data-equivalent-only;
+    - Blocker: none
 
 - 0x56b1e0:
   - [✅] Reconstructed (Kind: data; Name: gRndr_SwOverlayPremulBPair; Section: .data; Size: 4; Type: uint32_t)
-  - [❌] Source owner (Kind: global-data; Parent: pending; State: audit-pending)
-  - [❌] Reimplemented [X]
+  - [✅] Source owner (Kind: global-data; Parent: render_video.zrndr_overlay_blend_callbacks_source; State: implemented)
+  - [✅] Reimplemented [B]
     - Name: gRndr_SwOverlayPremulBPair;
-    - File: pending;
-    - Target: pending;
+    - File: src/GameZRecoil/zRndr/zRndr.cpp;
+    - Target: zrndr_overlay_blend_callbacks_globals;
     - Group: data.render_video;
-    - Model: pending;
-    - Blocker: data owner audit pending
+    - Model: data-equivalent-only;
+    - Blocker: none
 
 - 0x56b1e4:
   - [✅] Reconstructed (Kind: data; Name: gRndr_SwOverlayPremulGPair; Section: .data; Size: 4; Type: uint32_t)
-  - [❌] Source owner (Kind: global-data; Parent: pending; State: audit-pending)
-  - [❌] Reimplemented [X]
+  - [✅] Source owner (Kind: global-data; Parent: render_video.zrndr_overlay_blend_callbacks_source; State: implemented)
+  - [✅] Reimplemented [B]
     - Name: gRndr_SwOverlayPremulGPair;
-    - File: pending;
-    - Target: pending;
+    - File: src/GameZRecoil/zRndr/zRndr.cpp;
+    - Target: zrndr_overlay_blend_callbacks_globals;
     - Group: data.render_video;
-    - Model: pending;
-    - Blocker: data owner audit pending
+    - Model: data-equivalent-only;
+    - Blocker: none
 
 - 0x56b1f0:
   - [✅] Reconstructed (Kind: data; Name: gRndr_PerspTexScaledUOverZ0; Section: .data; Size: 4; Type: float)
@@ -62549,14 +62549,14 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x57da38:
   - [✅] Reconstructed (Kind: data; Name: gRndr_SavedEspSlot; Section: .data; Size: 4; Type: struct zRndr_SpanEspPivotSave*)
-  - [❌] Source owner (Kind: global-data; Parent: pending; State: audit-pending)
-  - [❌] Reimplemented [X]
+  - [✅] Source owner (Kind: global-data; Parent: render_video.zrndr_span_esp_pivot_family; State: implemented)
+  - [✅] Reimplemented [S]
     - Name: gRndr_SavedEspSlot;
-    - File: pending;
-    - Target: pending;
+    - File: src/GameZRecoil/zRndr/zRndr.cpp;
+    - Target: zrndr_span_esp_pivot_saved_esp_slot;
     - Group: data.render_video;
-    - Model: pending;
-    - Blocker: data owner audit pending
+    - Model: data-equivalent-only;
+    - Blocker: none
 
 - 0x57da40:
   - [✅] Reconstructed (Kind: data; Name: gRndr_Mmx_UMask; Section: .data; Size: 8; Type: struct zMmxQword)

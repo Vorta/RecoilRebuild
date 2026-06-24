@@ -33,6 +33,8 @@ Accepted per-target verification profiles are intentionally narrow:
 - `vc5_o2_ob2_facs` and `vc5_o2_ob2_gx_facs`: VC5SP3 profiles for local evidence requiring aggressive inlining.
 - `vc5_o2_oy_ob0_facs`: documented VC5SP3 profile with frame-pointer omission for targets whose evidence requires `/Oy`.
 - `vc5_zsys_cpu_raw_asm`: documented exception for approved zSys CPU raw-assembly probes.
+- `vc5_o2_ob0_md_zrndr_mmx_raw_asm_facs`: documented user-approved exception for the zRndr overlay RGB555/RGB565 MMX row leaves, enabled only with `RECOIL_ENABLE_ZRNDR_OVERLAY_MMX_RAW_ASM`. This permits narrow inline `__asm` MMX loops inside ordinary C++ functions only; it does not permit `__declspec(naked)`, `_emit`, `.asm`, raw byte emission, other zRndr span/MMX families, provider shims, or future raw assembly.
+- `vc5_o2_ob0_md_zrndr_esp_pivot_raw_asm_facs`: documented user-approved exception for the five zRndr ESP-pivot span leaves at `0x49b7e0`, `0x49bbf0`, `0x49e6c0`, `0x49edc0`, and `0x49f180`, enabled only with `RECOIL_ENABLE_ZRNDR_ESP_PIVOT_RAW_ASM`. This permits narrow inline `__asm` loops inside ordinary C++ functions only; it does not permit `__declspec(naked)`, `_emit`, `.asm`, raw byte emission, `0x49ea80`/`0x49ec20`, other zRndr span/MMX families, provider shims, or future raw assembly.
 
 New VC verification manifests should use `"compiler_profile": "<profile-name>"`.
 Adding a new compiler environment or flag tuple requires updating this ledger

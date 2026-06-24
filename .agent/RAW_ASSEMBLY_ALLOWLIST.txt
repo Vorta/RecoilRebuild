@@ -26,3 +26,10 @@ src/GameZRecoil/zSys/zSys_cpu_asm.inl 0x4b3ca0 __asm cpu-probe Split 64-bit CPU 
 src/GameZRecoil/zSys/zSys_cpu_asm.inl 0x4b3ca0 _emit cpu-probe Split 64-bit CPU timing subtraction byte-shape helper; documented zSys CPU timing exception.
 src/GameZRecoil/zGame/zGame.cpp 0x4b3160 __asm cpu-probe CPUID vendor string read; user-approved zGame runtime-options CPU probing exception.
 src/GameZRecoil/zGame/zGame.cpp 0x4b3160 _emit cpu-probe CPUID opcode emission for vendor string read; user-approved zGame runtime-options CPU probing exception.
+src/GameZRecoil/zRndr/zRndr.cpp 0x48d510 __asm render-mmx user-approved zRndr RGB555 overlay MMX row exception; retail uses authored movq/pand/psrlw/pmullw/paddw/emms loop and VC5SP3 has no usable MMX intrinsic surface.
+src/GameZRecoil/zRndr/zRndr.cpp 0x48d5f0 __asm render-mmx user-approved zRndr RGB565 overlay MMX row exception; retail uses authored movq/pand/psrlw/pmullw/paddw/emms loop and VC5SP3 has no usable MMX intrinsic surface.
+src/GameZRecoil/zRndr/zRndr.cpp 0x49b7e0 __asm render-esp-pivot user-approved zRndr ESP-pivot span exception; parent C++ profile sweep stayed at 779 mismatches and BN proves real ESP pivot stack writes.
+src/GameZRecoil/zRndr/zRndr.cpp 0x49bbf0 __asm render-esp-pivot user-approved zRndr ESP-pivot span exception; scoped only to this ESP-pivot span family after the 0x49b7e0 C++ route failed.
+src/GameZRecoil/zRndr/zRndr.cpp 0x49e6c0 __asm render-esp-pivot user-approved zRndr ESP-pivot span exception; scoped only to this ESP-pivot span family after the 0x49b7e0 C++ route failed.
+src/GameZRecoil/zRndr/zRndr.cpp 0x49edc0 __asm render-esp-pivot user-approved zRndr ESP-pivot span exception; scoped only to this ESP-pivot span family after the 0x49b7e0 C++ route failed.
+src/GameZRecoil/zRndr/zRndr.cpp 0x49f180 __asm render-esp-pivot user-approved zRndr ESP-pivot span exception; scoped only to this ESP-pivot span family after the 0x49b7e0 C++ route failed.
