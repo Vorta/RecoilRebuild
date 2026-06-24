@@ -133,6 +133,9 @@ const char kBrowseRecordLatencyStep6Text[] = " ||||||||||||| ";
 const char kBrowseRecordLatencyStep7Text[] = " ||||||||||||||| ";
 const char kBootstrapServerTypeIrc[] = "IRC";
 const unsigned int kBootstrapServerCopiedBytes = 0xf8;
+RECOIL_STATIC_ASSERT(
+    sizeof(WestwoodOnlineUpgradeBootstrapServerRecord) == kBootstrapServerCopiedBytes
+);
 
 /**
  * Original helper evidence: no standalone retail function; observed in
@@ -145,10 +148,16 @@ IWestwoodOnlineUpgradeProviderApiCallbacks *GetCallbackApiComObject() {
 }
 } // namespace
 
+/**
+ * Reimplements data 0x4f53e4: g_WestwoodOnlineUpgradeEventSinkLiveCount.
+ * Purpose: Tracks live Westwood Online upgrade event-sink instances.
+ */
 extern "C" LONG g_WestwoodOnlineUpgradeEventSinkLiveCount = 0;
 
-// Recovered interface map used by 0x441660. BN data at 0x4d1ba0 contains
-// {IID_WestwoodOnlineUpgradeApiEventSink, offset 0, direct} followed by end.
+/**
+ * Reimplements data 0x4d1ba0: g_WestwoodOnlineUpgradeApiEventSink_InterfaceMap.
+ * Purpose: Describes the single direct COM interface exposed by the API event sink.
+ */
 extern const zCom::InterfaceMapEntry g_WestwoodOnlineUpgradeApiEventSink_InterfaceMap[2] = {
     {&g_WestwoodOnlineUpgradeApiEventSink_IID, 0, zCom::ZCOM_INTERFACE_MAP_DIRECT},
     {0, 0, zCom::ZCOM_INTERFACE_MAP_END},

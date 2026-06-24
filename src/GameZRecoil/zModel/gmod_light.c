@@ -10,6 +10,34 @@
 #include <string.h>
 
 /**
+ * Reimplements data 0x4e17f8: g_zModel_SourceFile_GmodLightC.
+ * Data owner: geometry_model_assets.zmodel_gmod_light_diagnostics_data.
+ * Purpose: store the writable gmod_light.c source-file path used by model
+ * lighting diagnostics.
+ *
+ * Retail 0x4e17f8: initialized .data char[0x28] literal
+ * "D:\\Proj\\GameZRecoil\\zModel\\gmod_light.c".
+ */
+char g_zModel_SourceFile_GmodLightC[0x28] =
+    "D:\\Proj\\GameZRecoil\\zModel\\gmod_light.c";
+/**
+ * Reimplements data 0x4e1820: g_zModel_MaxLightsRequestFmt.
+ * Data owner: geometry_model_assets.zmodel_gmod_light_diagnostics_data.
+ * Purpose: store the writable active-light overflow diagnostic format.
+ */
+char g_zModel_MaxLightsRequestFmt[0x2c] =
+    "Not enough MAX_LIGHTS: %d; requesting more.";
+/**
+ * Reimplements data 0x4e184c: g_zModel_NeverGetHereMsg.
+ * Data owner: geometry_model_assets.zmodel_gmod_light_diagnostics_data.
+ * Purpose: store the writable active-light unreachable-state diagnostic.
+ */
+char g_zModel_NeverGetHereMsg[0x10] = "Never get here?";
+RECOIL_STATIC_ASSERT(sizeof(g_zModel_SourceFile_GmodLightC) == 0x28);
+RECOIL_STATIC_ASSERT(sizeof(g_zModel_MaxLightsRequestFmt) == 0x2c);
+RECOIL_STATIC_ASSERT(sizeof(g_zModel_NeverGetHereMsg) == 0x10);
+
+/**
  * Reimplements data 0x57d930: gModel_FogEnabled.
  * Authored zModel light/fog global.
  * Purpose: gate fog calculations during model lighting and vertex color setup.
@@ -974,9 +1002,9 @@ void __fastcall zModel_Light_PointInPolygonInitXZ(
         if (gModel_ActiveLightCount == 0x40) {
             zError::ReportOld(
                 0x200,
-                "D:\\Proj\\GameZRecoil\\zModel\\gmod_light.c",
+                g_zModel_SourceFile_GmodLightC,
                 0x46,
-                "Not enough MAX_LIGHTS: %d; requesting more.",
+                g_zModel_MaxLightsRequestFmt,
                 0x40
             );
             break;
@@ -1419,9 +1447,9 @@ namespace zModel_Light {
             if ((entry.lightState->flags & 4) == 0) {
                 zError::ReportOld(
                     0x200,
-                    "D:\\Proj\\GameZRecoil\\zModel\\gmod_light.c",
+                    g_zModel_SourceFile_GmodLightC,
                     0xfa,
-                    "Never get here?"
+                    g_zModel_NeverGetHereMsg
                 );
                 continue;
             }

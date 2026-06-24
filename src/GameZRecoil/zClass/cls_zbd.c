@@ -11,11 +11,263 @@
 extern "C" {
 zClass_NodePartial **g_GameZ_Zbd_NodeIndexScratch = 0;
 int g_GameZ_Zbd_NodeIndexScratchCapacity = 0;
+/**
+ * Reimplements data 0x4dee1c: g_zClass_SourceFile_ClsZbdC.
+ * Purpose: preserve the legacy source-file literal for cls_zbd.c diagnostics.
+ */
+char g_zClass_SourceFile_ClsZbdC[0x25] =
+    "D:\\Proj\\GameZRecoil\\zClass\\cls_zbd.c";
+RECOIL_STATIC_ASSERT(sizeof(g_zClass_SourceFile_ClsZbdC) == 0x25);
+/**
+ * Reimplements data 0x4dee44: g_zClass_WriteNodeDataErrorMsg.
+ * Purpose: preserve the legacy write-node diagnostic literal.
+ */
+char g_zClass_WriteNodeDataErrorMsg[0x19] =
+    "Error writing node data.";
+RECOIL_STATIC_ASSERT(sizeof(g_zClass_WriteNodeDataErrorMsg) == 0x19);
+/**
+ * Reimplements data 0x4dee60: g_zClass_WriteWorldAreaPartitionDataErrorMsg.
+ * Purpose: preserve the legacy world-area write diagnostic literal.
+ */
+char g_zClass_WriteWorldAreaPartitionDataErrorMsg[0x29] =
+    "Error writing world area partition data.";
+RECOIL_STATIC_ASSERT(sizeof(g_zClass_WriteWorldAreaPartitionDataErrorMsg) == 0x29);
+/**
+ * Reimplements data 0x4dee8c: g_zClass_WriteNodeWorldDataErrorMsg.
+ * Purpose: preserve the legacy write-node-world diagnostic literal.
+ */
+char g_zClass_WriteNodeWorldDataErrorMsg[0x1f] =
+    "Error writing node world data.";
+RECOIL_STATIC_ASSERT(sizeof(g_zClass_WriteNodeWorldDataErrorMsg) == 0x1f);
+/**
+ * Reimplements data 0x4deeac: g_zClass_WriteNodeWindowDataErrorMsg.
+ * Purpose: preserve the legacy write-node-window diagnostic literal.
+ */
+char g_zClass_WriteNodeWindowDataErrorMsg[0x20] =
+    "Error writing node window data.";
+RECOIL_STATIC_ASSERT(sizeof(g_zClass_WriteNodeWindowDataErrorMsg) == 0x20);
+/**
+ * Reimplements data 0x4deecc: g_zClass_WriteNodeDisplayDataErrorMsg.
+ * Purpose: preserve the legacy write-node-display diagnostic literal.
+ */
+char g_zClass_WriteNodeDisplayDataErrorMsg[0x21] =
+    "Error writing node display data.";
+RECOIL_STATIC_ASSERT(sizeof(g_zClass_WriteNodeDisplayDataErrorMsg) == 0x21);
+/**
+ * Reimplements data 0x4deef0: g_zClass_WriteNodeCameraDataErrorMsg.
+ * Purpose: preserve the legacy write-node-camera diagnostic literal.
+ */
+char g_zClass_WriteNodeCameraDataErrorMsg[0x20] =
+    "Error writing node camera data.";
+RECOIL_STATIC_ASSERT(sizeof(g_zClass_WriteNodeCameraDataErrorMsg) == 0x20);
+/**
+ * Reimplements data 0x4def10: g_zClass_WriteNodeLightDataErrorMsg.
+ * Purpose: preserve the legacy write-node-light diagnostic literal.
+ */
+char g_zClass_WriteNodeLightDataErrorMsg[0x1f] =
+    "Error writing node light data.";
+RECOIL_STATIC_ASSERT(sizeof(g_zClass_WriteNodeLightDataErrorMsg) == 0x1f);
+/**
+ * Reimplements data 0x4def30: g_zClass_WriteNodeLodDataErrorMsg.
+ * Purpose: preserve the legacy write-node-lod diagnostic literal.
+ */
+char g_zClass_WriteNodeLodDataErrorMsg[0x1d] =
+    "Error writing node lod data.";
+RECOIL_STATIC_ASSERT(sizeof(g_zClass_WriteNodeLodDataErrorMsg) == 0x1d);
+/**
+ * Reimplements data 0x4def50: g_zClass_WriteNodeObject3DDataErrorMsg.
+ * Purpose: preserve the legacy write-node-object3d diagnostic literal.
+ */
+char g_zClass_WriteNodeObject3DDataErrorMsg[0x22] =
+    "Error writing node object3d data.";
+RECOIL_STATIC_ASSERT(sizeof(g_zClass_WriteNodeObject3DDataErrorMsg) == 0x22);
+/**
+ * Reimplements data 0x4def74: g_zClass_WriteNodeUnrecognizedClassTypeFmt.
+ * Purpose: preserve the legacy write-node class-type diagnostic format.
+ */
+char g_zClass_WriteNodeUnrecognizedClassTypeFmt[0x4c] =
+    "gClsWriteNode(): Unrecognized node class type:\n"
+    "  node = %s class_type = %d\n";
+RECOIL_STATIC_ASSERT(sizeof(g_zClass_WriteNodeUnrecognizedClassTypeFmt) == 0x4c);
+/**
+ * Reimplements data 0x4defc0: g_zClass_WriteNodeSoundDataErrorMsg.
+ * Purpose: preserve the legacy write-node-sound diagnostic literal.
+ */
+char g_zClass_WriteNodeSoundDataErrorMsg[0x1f] =
+    "Error writing node sound data.";
+RECOIL_STATIC_ASSERT(sizeof(g_zClass_WriteNodeSoundDataErrorMsg) == 0x1f);
+/**
+ * Reimplements data 0x4defe0: g_zClass_WriteSoundNodeDataIncompleteMsg.
+ * Purpose: preserve the legacy incomplete write-sound-node diagnostic literal.
+ */
+char g_zClass_WriteSoundNodeDataIncompleteMsg[0x31] =
+    "Writing sound node data: Must complete software.";
+RECOIL_STATIC_ASSERT(sizeof(g_zClass_WriteSoundNodeDataIncompleteMsg) == 0x31);
+/**
+ * Reimplements data 0x4df014: g_zClass_WriteGameZNodeActionCallbackDefinedFmt.
+ * Purpose: preserve the legacy write-node action-callback diagnostic format.
+ */
+char g_zClass_WriteGameZNodeActionCallbackDefinedFmt[0x38] =
+    "Writing gamez.zbd; node %s has action callback defined.";
+RECOIL_STATIC_ASSERT(sizeof(g_zClass_WriteGameZNodeActionCallbackDefinedFmt) == 0x38);
+/**
+ * Reimplements data 0x4df04c: g_zClass_WriteGameZHeaderDataErrorMsg.
+ * Purpose: preserve the legacy write-GameZ-header diagnostic literal.
+ */
+char g_zClass_WriteGameZHeaderDataErrorMsg[0x21] =
+    "Error writing GameZ header data.";
+RECOIL_STATIC_ASSERT(sizeof(g_zClass_WriteGameZHeaderDataErrorMsg) == 0x21);
+/**
+ * Reimplements data 0x4df070: g_zClass_ZbdFilenameTooLongFmt.
+ * Purpose: preserve the legacy zbd filename length diagnostic format.
+ */
+char g_zClass_ZbdFilenameTooLongFmt[0x37] =
+    "zbd_filename length %d exceeds storage string size %d.";
+RECOIL_STATIC_ASSERT(sizeof(g_zClass_ZbdFilenameTooLongFmt) == 0x37);
+/**
+ * Reimplements data 0x4df0a8: g_zClass_ReadGameZNodeListErrorMsg.
+ * Purpose: preserve the legacy read-node-list diagnostic literal.
+ */
+char g_zClass_ReadGameZNodeListErrorMsg[0x1f] =
+    "Error reading GameZ Node list.";
+RECOIL_STATIC_ASSERT(sizeof(g_zClass_ReadGameZNodeListErrorMsg) == 0x1f);
+/**
+ * Reimplements data 0x4df0c8: g_zClass_ReadWorldAreaPartitionDataErrorMsg.
+ * Purpose: preserve the legacy read-world-area diagnostic literal.
+ */
+char g_zClass_ReadWorldAreaPartitionDataErrorMsg[0x29] =
+    "Error reading world area partition data.";
+RECOIL_STATIC_ASSERT(sizeof(g_zClass_ReadWorldAreaPartitionDataErrorMsg) == 0x29);
+/**
+ * Reimplements data 0x4df0f4: g_zClass_ReadNodeUnrecognizedClassTypeFmt.
+ * Purpose: preserve the legacy read-node class-type diagnostic format.
+ */
+char g_zClass_ReadNodeUnrecognizedClassTypeFmt[0x4b] =
+    "gClsReadNode(): Unrecognized node class type:\n"
+    "  node = %s class_type = %d\n";
+RECOIL_STATIC_ASSERT(sizeof(g_zClass_ReadNodeUnrecognizedClassTypeFmt) == 0x4b);
+/**
+ * Reimplements data 0x4df140: g_zClass_ReadNodeWorldDataErrorMsg.
+ * Purpose: preserve the legacy read-node-world diagnostic literal.
+ */
+char g_zClass_ReadNodeWorldDataErrorMsg[0x1f] =
+    "Error reading node world data.";
+RECOIL_STATIC_ASSERT(sizeof(g_zClass_ReadNodeWorldDataErrorMsg) == 0x1f);
+/**
+ * Reimplements data 0x4df160: g_zClass_ReadNodeWindowDataErrorMsg.
+ * Purpose: preserve the legacy read-node-window diagnostic literal.
+ */
+char g_zClass_ReadNodeWindowDataErrorMsg[0x20] =
+    "Error reading node window data.";
+RECOIL_STATIC_ASSERT(sizeof(g_zClass_ReadNodeWindowDataErrorMsg) == 0x20);
+/**
+ * Reimplements data 0x4df180: g_zClass_ReadNodeDisplayDataErrorMsg.
+ * Purpose: preserve the legacy read-node-display diagnostic literal.
+ */
+char g_zClass_ReadNodeDisplayDataErrorMsg[0x21] =
+    "Error reading node display data.";
+RECOIL_STATIC_ASSERT(sizeof(g_zClass_ReadNodeDisplayDataErrorMsg) == 0x21);
+/**
+ * Reimplements data 0x4df1a4: g_zClass_ReadNodeCameraDataErrorMsg.
+ * Purpose: preserve the legacy read-node-camera diagnostic literal.
+ */
+char g_zClass_ReadNodeCameraDataErrorMsg[0x20] =
+    "Error reading node camera data.";
+RECOIL_STATIC_ASSERT(sizeof(g_zClass_ReadNodeCameraDataErrorMsg) == 0x20);
+/**
+ * Reimplements data 0x4df1c4: g_zClass_ReadNodeLightDataErrorMsg.
+ * Purpose: preserve the legacy read-node-light diagnostic literal.
+ */
+char g_zClass_ReadNodeLightDataErrorMsg[0x1f] =
+    "Error reading node light data.";
+RECOIL_STATIC_ASSERT(sizeof(g_zClass_ReadNodeLightDataErrorMsg) == 0x1f);
+/**
+ * Reimplements data 0x4df1e4: g_zClass_ReadNodeLodDataErrorMsg.
+ * Purpose: preserve the legacy read-node-lod diagnostic literal.
+ */
+char g_zClass_ReadNodeLodDataErrorMsg[0x1d] =
+    "Error reading node lod data.";
+RECOIL_STATIC_ASSERT(sizeof(g_zClass_ReadNodeLodDataErrorMsg) == 0x1d);
+/**
+ * Reimplements data 0x4df204: g_zClass_ReadNodeObject3DDataErrorMsg.
+ * Purpose: preserve the legacy read-node-object3d diagnostic literal.
+ */
+char g_zClass_ReadNodeObject3DDataErrorMsg[0x22] =
+    "Error reading node object3d data.";
+RECOIL_STATIC_ASSERT(sizeof(g_zClass_ReadNodeObject3DDataErrorMsg) == 0x22);
+/**
+ * Reimplements data 0x4df228: g_zClass_ReadNodeSoundDataErrorMsg.
+ * Purpose: preserve the legacy read-node-sound diagnostic literal.
+ */
+char g_zClass_ReadNodeSoundDataErrorMsg[0x1f] =
+    "Error reading node sound data.";
+RECOIL_STATIC_ASSERT(sizeof(g_zClass_ReadNodeSoundDataErrorMsg) == 0x1f);
+/**
+ * Reimplements data 0x4df248: g_zClass_ReadSoundNodeDataIncompleteMsg.
+ * Purpose: preserve the legacy incomplete read-sound-node diagnostic literal.
+ */
+char g_zClass_ReadSoundNodeDataIncompleteMsg[0x31] =
+    "Reading sound node data: Must complete software.";
+RECOIL_STATIC_ASSERT(sizeof(g_zClass_ReadSoundNodeDataIncompleteMsg) == 0x31);
+/**
+ * Reimplements data 0x4df27c: g_zClass_ReadGameZNodeBufferErrorMsg.
+ * Purpose: preserve the legacy read-node-buffer diagnostic literal.
+ */
+char g_zClass_ReadGameZNodeBufferErrorMsg[0x21] =
+    "Error reading GameZ Node buffer.";
+RECOIL_STATIC_ASSERT(sizeof(g_zClass_ReadGameZNodeBufferErrorMsg) == 0x21);
+/**
+ * Reimplements data 0x4df2a0: g_zClass_ReadGameZNodeDataErrorMsg.
+ * Purpose: preserve the legacy read-GameZ-node diagnostic literal.
+ */
+char g_zClass_ReadGameZNodeDataErrorMsg[0x1f] =
+    "Error reading GameZ node data.";
+RECOIL_STATIC_ASSERT(sizeof(g_zClass_ReadGameZNodeDataErrorMsg) == 0x1f);
+/**
+ * Reimplements data 0x4df2c0: g_zClass_ReadGameZModel3DDataErrorMsg.
+ * Purpose: preserve the legacy read-GameZ-model3d diagnostic literal.
+ */
+char g_zClass_ReadGameZModel3DDataErrorMsg[0x22] =
+    "Error reading GameZ model3d data.";
+RECOIL_STATIC_ASSERT(sizeof(g_zClass_ReadGameZModel3DDataErrorMsg) == 0x22);
+/**
+ * Reimplements data 0x4df2e4: g_zClass_ReadGameZMaterialDataErrorMsg.
+ * Purpose: preserve the legacy read-GameZ-material diagnostic literal.
+ */
+char g_zClass_ReadGameZMaterialDataErrorMsg[0x23] =
+    "Error reading GameZ material data.";
+RECOIL_STATIC_ASSERT(sizeof(g_zClass_ReadGameZMaterialDataErrorMsg) == 0x23);
+/**
+ * Reimplements data 0x4df308: g_zClass_ReadGameZTextureDataErrorMsg.
+ * Purpose: preserve the legacy read-GameZ-texture diagnostic literal.
+ */
+char g_zClass_ReadGameZTextureDataErrorMsg[0x22] =
+    "Error reading GameZ texture data.";
+RECOIL_STATIC_ASSERT(sizeof(g_zClass_ReadGameZTextureDataErrorMsg) == 0x22);
+/**
+ * Reimplements data 0x4df32c: g_zClass_ReadGameZHeaderIncompatibleVersionMsg.
+ * Purpose: preserve the legacy incompatible-version read-header diagnostic literal.
+ */
+char g_zClass_ReadGameZHeaderIncompatibleVersionMsg[0x3b] =
+    "Error reading GameZ header data; incompatible file version";
+RECOIL_STATIC_ASSERT(sizeof(g_zClass_ReadGameZHeaderIncompatibleVersionMsg) == 0x3b);
+/**
+ * Reimplements data 0x4df368: g_zClass_ReadGameZHeaderIncompatibleTypeMsg.
+ * Purpose: preserve the legacy incompatible-type read-header diagnostic literal.
+ */
+char g_zClass_ReadGameZHeaderIncompatibleTypeMsg[0x38] =
+    "Error reading GameZ header data; incompatible file type";
+RECOIL_STATIC_ASSERT(sizeof(g_zClass_ReadGameZHeaderIncompatibleTypeMsg) == 0x38);
+/**
+ * Reimplements data 0x4df3a0: g_zClass_ReadGameZHeaderDataErrorMsg.
+ * Purpose: preserve the legacy read-GameZ-header diagnostic literal.
+ */
+char g_zClass_ReadGameZHeaderDataErrorMsg[0x21] =
+    "Error reading GameZ header data.";
+RECOIL_STATIC_ASSERT(sizeof(g_zClass_ReadGameZHeaderDataErrorMsg) == 0x21);
 }
 
 namespace {
-    const char *kClsZbdSourceFile = "D:\\Proj\\GameZRecoil\\zClass\\cls_zbd.c";
-
     const int kZClassNodeCamera = 1;
     const int kZClassNodeWorld = 2;
     const int kZClassNodeWindow = 3;
@@ -32,7 +284,7 @@ namespace {
     ) {
         zError::ReportOld(
             0x200,
-            kClsZbdSourceFile,
+            g_zClass_SourceFile_ClsZbdC,
             sourceLine,
             message
         );
@@ -46,7 +298,7 @@ namespace {
     ) {
         zError::ReportOld(
             0x200,
-            kClsZbdSourceFile,
+            g_zClass_SourceFile_ClsZbdC,
             sourceLine,
             message
         );
@@ -100,9 +352,9 @@ namespace GameZ {
         } else {
             zError::ReportOld(
                 0x200,
-                kClsZbdSourceFile,
+                g_zClass_SourceFile_ClsZbdC,
                 0x272,
-                "zbd_filename length %d exceeds storage string size %d.",
+                g_zClass_ZbdFilenameTooLongFmt,
                 (int)(filenameLength),
                 0x30
             );
@@ -127,7 +379,7 @@ namespace GameZ {
         ) != 1) {
             return ReportZbdWriteFailure(
                 0x285,
-                "Error writing GameZ header data."
+                g_zClass_WriteGameZHeaderDataErrorMsg
             );
         }
 
@@ -155,7 +407,7 @@ namespace GameZ {
         ) != 1) {
             return ReportZbdWriteFailure(
                 0x2aa,
-                "Error writing GameZ header data."
+                g_zClass_WriteGameZHeaderDataErrorMsg
             );
         }
 
@@ -180,9 +432,9 @@ namespace GameZ {
         } else {
             zError::ReportOld(
                 0x200,
-                kClsZbdSourceFile,
+                g_zClass_SourceFile_ClsZbdC,
                 0x551,
-                "zbd_filename length %d exceeds storage string size %d.",
+                g_zClass_ZbdFilenameTooLongFmt,
                 (int)(filenameLength),
                 0x30
             );
@@ -210,7 +462,7 @@ namespace GameZ {
             file
         ) < 0) {
             sourceLine = 0x562;
-            message = "Error reading GameZ texture data.";
+            message = g_zClass_ReadGameZTextureDataErrorMsg;
             goto readError;
         }
 
@@ -221,7 +473,7 @@ namespace GameZ {
         );
         if (zModel_MatlBuffer::ReadGameZ(file) < 0) {
             sourceLine = 0x56e;
-            message = "Error reading GameZ material data.";
+            message = g_zClass_ReadGameZMaterialDataErrorMsg;
             goto readError;
         }
 
@@ -232,7 +484,7 @@ namespace GameZ {
         );
         if (zModel_DiPool::ReadFromStream(file) < 0) {
             sourceLine = 0x57a;
-            message = "Error reading GameZ model3d data.";
+            message = g_zClass_ReadGameZModel3DDataErrorMsg;
             goto readError;
         }
 
@@ -246,7 +498,7 @@ namespace GameZ {
             file
         ) < 0) {
             sourceLine = 0x586;
-            message = "Error reading GameZ node data.";
+            message = g_zClass_ReadGameZNodeDataErrorMsg;
             goto readError;
         }
 
@@ -257,7 +509,7 @@ namespace GameZ {
     readError:
         zError::ReportOld(
             0x200,
-            kClsZbdSourceFile,
+            g_zClass_SourceFile_ClsZbdC,
             sourceLine,
             message
         );
@@ -288,13 +540,13 @@ namespace GameZ {
             1,
             file
         ) != 1) {
-            message = "Error reading GameZ header data.";
+            message = g_zClass_ReadGameZHeaderDataErrorMsg;
             sourceLine = 0x515;
         } else if (outHeader->magic != 0x02971222) {
-            message = "Error reading GameZ header data; incompatible file type";
+            message = g_zClass_ReadGameZHeaderIncompatibleTypeMsg;
             sourceLine = 0x51e;
         } else if (outHeader->version != 0x0f) {
-            message = "Error reading GameZ header data; incompatible file version";
+            message = g_zClass_ReadGameZHeaderIncompatibleVersionMsg;
             sourceLine = 0x527;
         } else {
             return file;
@@ -302,7 +554,7 @@ namespace GameZ {
 
         zError::ReportOld(
             0x200,
-            kClsZbdSourceFile,
+            g_zClass_SourceFile_ClsZbdC,
             sourceLine,
             message
         );
@@ -392,9 +644,9 @@ namespace GameZ_ZBD {
         ) != 1) {
             zError::ReportOld(
                 0x200,
-                kClsZbdSourceFile,
+                g_zClass_SourceFile_ClsZbdC,
                 0xd7,
-                "Error writing node data."
+                g_zClass_WriteNodeDataErrorMsg
             );
             return -1;
         }
@@ -413,9 +665,9 @@ namespace GameZ_ZBD {
         if (node->actionCallback != 0) {
             zError::ReportOld(
                 0x200,
-                kClsZbdSourceFile,
+                g_zClass_SourceFile_ClsZbdC,
                 0xf1,
-                "Writing gamez.zbd; node %s has action callback defined.",
+                g_zClass_WriteGameZNodeActionCallbackDefinedFmt,
                 node->name
             );
         }
@@ -428,9 +680,9 @@ namespace GameZ_ZBD {
             result = 1;
             zError::ReportOld(
                 0x200,
-                kClsZbdSourceFile,
+                g_zClass_SourceFile_ClsZbdC,
                 0xfc,
-                "Writing sound node data: Must complete software."
+                g_zClass_WriteSoundNodeDataIncompleteMsg
             );
 
             zClass_SoundDataPartial *data = (zClass_SoundDataPartial *)(node->classData);
@@ -441,7 +693,7 @@ namespace GameZ_ZBD {
             )) {
                 return ReportZbdWriteFailure(
                     0x105,
-                    "Error writing node sound data."
+                    g_zClass_WriteNodeSoundDataErrorMsg
                 );
             }
 
@@ -464,7 +716,7 @@ namespace GameZ_ZBD {
             )) {
                 return ReportZbdWriteFailure(
                     0x119,
-                    "Error writing node object3d data."
+                    g_zClass_WriteNodeObject3DDataErrorMsg
                 );
             }
             break;
@@ -478,7 +730,7 @@ namespace GameZ_ZBD {
             )) {
                 return ReportZbdWriteFailure(
                     0x128,
-                    "Error writing node lod data."
+                    g_zClass_WriteNodeLodDataErrorMsg
                 );
             }
             break;
@@ -493,7 +745,7 @@ namespace GameZ_ZBD {
             )) {
                 return ReportZbdWriteFailure(
                     0x137,
-                    "Error writing node light data."
+                    g_zClass_WriteNodeLightDataErrorMsg
                 );
             }
 
@@ -527,7 +779,7 @@ namespace GameZ_ZBD {
             )) {
                 return ReportZbdWriteFailure(
                     0x15a,
-                    "Error writing node camera data."
+                    g_zClass_WriteNodeCameraDataErrorMsg
                 );
             }
             break;
@@ -542,7 +794,7 @@ namespace GameZ_ZBD {
             )) {
                 return ReportZbdWriteFailure(
                     0x16a,
-                    "Error writing node display data."
+                    g_zClass_WriteNodeDisplayDataErrorMsg
                 );
             }
             break;
@@ -556,7 +808,7 @@ namespace GameZ_ZBD {
             )) {
                 return ReportZbdWriteFailure(
                     0x179,
-                    "Error writing node window data."
+                    g_zClass_WriteNodeWindowDataErrorMsg
                 );
             }
             break;
@@ -571,7 +823,7 @@ namespace GameZ_ZBD {
             )) {
                 return ReportZbdWriteFailure(
                     0x18c,
-                    "Error writing node world data."
+                    g_zClass_WriteNodeWorldDataErrorMsg
                 );
             }
 
@@ -602,7 +854,7 @@ namespace GameZ_ZBD {
                             )) {
                                 return ReportZbdWriteFailure(
                                     0x1a8,
-                                    "Error writing world area partition data."
+                                    g_zClass_WriteWorldAreaPartitionDataErrorMsg
                                 );
                             }
 
@@ -624,10 +876,9 @@ namespace GameZ_ZBD {
         default:
             zError::ReportOld(
                 0x400,
-                kClsZbdSourceFile,
+                g_zClass_SourceFile_ClsZbdC,
                 0x1bd,
-                "gClsWriteNode() : Unrecognized node class type:\n"
-                "  node = %s class_type = %d\n",
+                g_zClass_WriteNodeUnrecognizedClassTypeFmt,
                 node->name,
                 node->classId
             );
@@ -694,9 +945,9 @@ namespace GameZ_ZBD {
         ) != 1) {
             zError::ReportOld(
                 0x200,
-                kClsZbdSourceFile,
+                g_zClass_SourceFile_ClsZbdC,
                 0x218,
-                "Error writing node data."
+                g_zClass_WriteNodeDataErrorMsg
             );
             result = 0;
         }
@@ -725,9 +976,9 @@ namespace GameZ_ZBD {
             1) {
             zError::ReportOld(
                 0x200,
-                kClsZbdSourceFile,
+                g_zClass_SourceFile_ClsZbdC,
                 0x23a,
-                "Error writing node data."
+                g_zClass_WriteNodeDataErrorMsg
             );
             result = 0;
         }
@@ -767,9 +1018,9 @@ namespace GameZ_ZBD {
         ) != 1) {
             zError::ReportOld(
                 0x200,
-                kClsZbdSourceFile,
+                g_zClass_SourceFile_ClsZbdC,
                 0x2d0,
-                "Error reading GameZ Node list."
+                g_zClass_ReadGameZNodeListErrorMsg
             );
             return -1;
         }
@@ -798,9 +1049,9 @@ namespace GameZ_ZBD {
             result = 1;
             zError::ReportOld(
                 0x200,
-                kClsZbdSourceFile,
+                g_zClass_SourceFile_ClsZbdC,
                 0x2f1,
-                "Reading sound node data: Must complete software."
+                g_zClass_ReadSoundNodeDataIncompleteMsg
             );
 
             zClass_SoundDataPartial *data =
@@ -813,7 +1064,7 @@ namespace GameZ_ZBD {
             )) {
                 return ReportZbdReadFailure(
                     0x2fc,
-                    "Error reading node sound data."
+                    g_zClass_ReadNodeSoundDataErrorMsg
                 );
             }
 
@@ -853,7 +1104,7 @@ namespace GameZ_ZBD {
             )) {
                 return ReportZbdReadFailure(
                     0x323,
-                    "Error reading node object3d data."
+                    g_zClass_ReadNodeObject3DDataErrorMsg
                 );
             }
             zClass_TypeList::Insert(
@@ -872,7 +1123,7 @@ namespace GameZ_ZBD {
             )) {
                 return ReportZbdReadFailure(
                     0x338,
-                    "Error reading node lod data."
+                    g_zClass_ReadNodeLodDataErrorMsg
                 );
             }
             zClass_TypeList::Insert(
@@ -893,7 +1144,7 @@ namespace GameZ_ZBD {
             )) {
                 return ReportZbdReadFailure(
                     0x34d,
-                    "Error reading node light data."
+                    g_zClass_ReadNodeLightDataErrorMsg
                 );
             }
 
@@ -933,7 +1184,7 @@ namespace GameZ_ZBD {
             )) {
                 return ReportZbdReadFailure(
                     0x371,
-                    "Error reading node camera data."
+                    g_zClass_ReadNodeCameraDataErrorMsg
                 );
             }
 
@@ -975,7 +1226,7 @@ namespace GameZ_ZBD {
             )) {
                 return ReportZbdReadFailure(
                     0x39a,
-                    "Error reading node display data."
+                    g_zClass_ReadNodeDisplayDataErrorMsg
                 );
             }
 
@@ -1006,7 +1257,7 @@ namespace GameZ_ZBD {
             )) {
                 return ReportZbdReadFailure(
                     0x3b7,
-                    "Error reading node window data."
+                    g_zClass_ReadNodeWindowDataErrorMsg
                 );
             }
             zClass_TypeList::Insert(
@@ -1031,7 +1282,7 @@ namespace GameZ_ZBD {
             )) {
                 return ReportZbdReadFailure(
                     0x3d4,
-                    "Error reading node world data."
+                    g_zClass_ReadNodeWorldDataErrorMsg
                 );
             }
 
@@ -1095,7 +1346,7 @@ namespace GameZ_ZBD {
                             )) {
                                 return ReportZbdReadFailure(
                                     0x423,
-                                    "Error reading world area partition data."
+                                    g_zClass_ReadWorldAreaPartitionDataErrorMsg
                                 );
                             }
 
@@ -1159,10 +1410,9 @@ namespace GameZ_ZBD {
         default:
             zError::ReportOld(
                 0x400,
-                kClsZbdSourceFile,
+                g_zClass_SourceFile_ClsZbdC,
                 0x45d,
-                "gClsReadNode() : Unrecognized node class type:\n"
-                "  node = %s class_type = %d\n",
+                g_zClass_ReadNodeUnrecognizedClassTypeFmt,
                 node->name,
                 node->classId
             );
@@ -1234,9 +1484,9 @@ namespace GameZ_ZBD {
         ) != 1) {
             zError::ReportOld(
                 0x200,
-                kClsZbdSourceFile,
+                g_zClass_SourceFile_ClsZbdC,
                 0x4a9,
-                "Error reading GameZ Node buffer."
+                g_zClass_ReadGameZNodeBufferErrorMsg
             );
             return -1;
         }
@@ -1348,9 +1598,9 @@ namespace GameZ_ZBD {
         ) != 1) {
             zError::ReportOld(
                 0x200,
-                kClsZbdSourceFile,
+                g_zClass_SourceFile_ClsZbdC,
                 0x5b5,
-                "Error reading GameZ Node buffer."
+                g_zClass_ReadGameZNodeBufferErrorMsg
             );
             return 1;
         }

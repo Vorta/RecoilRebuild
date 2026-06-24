@@ -224,11 +224,34 @@ char g_zFMV_CannotDecompressAviVideoStreamMsg[] = "Cannot Decompress AVI Video S
 char g_zFMV_CannotReadAviVideoStreamMsg[] = "Cannot Read AVI Video Stream";
 }
 
-// BN 0x53a728 and 0x53a708 are four-int rect-shaped state records used by
-// zFMV_ActionImage constructors before copying into the action instance.
-extern "C" zVidRect32 g_zFMV_ActionImage_BlitRect = {0};
+/**
+ * Reimplements data 0x53a708-0x53a714: g_zFMV_ActionImage_ActiveRegion.
+ * BN xrefs: zFMV_ActionImage::ConstructorScaled clears the origin, writes
+ * width and height through zRndr::GetActiveRegionState, then copies the full
+ * record into the action instance.
+ * Purpose: transient active-region rectangle used while constructing scaled
+ * image actions.
+ */
 extern "C" zVidRect32 g_zFMV_ActionImage_ActiveRegion = {0};
+
+/**
+ * Reimplements data 0x53a718-0x53a727: g_zFMV_ActionPlayMci_DestRect.
+ * BN xrefs: zFMV_ActionPlayMci::Constructor clears the origin, writes width
+ * and height through zRndr::GetActiveRegionState, then passes the complete
+ * rect to zFMV_Playback::SetDestRect.
+ * Purpose: transient MCI playback destination rectangle, semantically separate
+ * from the adjacent ActionImage rectangle globals in retail .data order.
+ */
 extern "C" zFMV_Rect g_zFMV_ActionPlayMci_DestRect = {0};
+
+/**
+ * Reimplements data 0x53a728-0x53a734: g_zFMV_ActionImage_BlitRect.
+ * BN xrefs: zFMV_ActionImage::ConstructorWithScreenRect writes the origin and
+ * copies the full record into the action instance.
+ * Purpose: transient screen-origin rectangle used while constructing image
+ * actions.
+ */
+extern "C" zVidRect32 g_zFMV_ActionImage_BlitRect = {0};
 // BN 0x4d2580 is a single float consumed by the multimedia-timer wrappers.
 extern "C" const float g_zFMV_ScriptTimeGetTimeToSecondsScale = 0.00100000005f;
 

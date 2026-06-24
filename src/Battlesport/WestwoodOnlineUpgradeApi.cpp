@@ -19,6 +19,11 @@ extern "C" void *g_pWestwoodOnlineUpgradeApiEventSink = 0;
 extern "C" DWORD g_WestwoodOnlineUpgradeApiAdviseCookie = 0;
 extern "C" int g_WestwoodOnlineUpgradeApiShutdownState = 0;
 extern "C" int g_WestwoodOnlineUpgradeApiAsyncErrorFlag = 0;
+/**
+ * Reimplements data 0x4dd24c: g_WestwoodOnlineUpgradeAbortFlag.
+ * Purpose: carries the upgrade dialog/provider disconnect abort state, starting
+ * in the aborted state until the API init flow clears it.
+ */
 extern "C" int g_WestwoodOnlineUpgradeAbortFlag = 1;
 
 // Session-browser/dialog state: defined here by the recovered source file, but

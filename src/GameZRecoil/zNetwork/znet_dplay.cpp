@@ -15,6 +15,30 @@ extern "C" HWND g_RecoilApp_hWndMain;
 
 extern "C" {
 /**
+ * Reimplements data 0x4db5b0: g_zNetwork_ProviderName_Modem.
+ * Data owner: network_online.znetwork_provider_session_literals.
+ * Purpose: provide the DirectPlay provider-name token used to identify modem providers.
+ */
+char g_zNetwork_ProviderName_Modem[0x6] = "Modem";
+/**
+ * Reimplements data 0x4db5b8: g_zNetwork_ProviderName_TcpIp.
+ * Data owner: network_online.znetwork_provider_session_literals.
+ * Purpose: provide the DirectPlay provider-name token used to identify TCP/IP providers.
+ */
+char g_zNetwork_ProviderName_TcpIp[0x7] = "TCP/IP";
+/**
+ * Reimplements data 0x4db5c0: g_zNetwork_ProviderName_Ipx.
+ * Data owner: network_online.znetwork_provider_session_literals.
+ * Purpose: provide the DirectPlay provider-name token used to identify IPX providers.
+ */
+char g_zNetwork_ProviderName_Ipx[0x4] = "IPX";
+/**
+ * Reimplements data 0x4db5c4: g_zNetwork_ModemSessionName.
+ * Data owner: network_online.znetwork_provider_session_literals.
+ * Purpose: provide the default DirectPlay session name for immediate modem-host creation.
+ */
+char g_zNetwork_ModemSessionName[0xd] = "ModemSession";
+/**
  * Reimplements data 0x56aaf0: Symbol.
  * Data owner: engine.znetwork.directplay_runtime_globals.
  * Purpose: cache the active IDirectPlay4A interface for zNetwork session calls.
@@ -1074,11 +1098,11 @@ int __fastcall SelectServiceProviderAndInitConnection(
 
     g_zNetwork_ActiveProviderIsModem = strstr(
         providerInfo->displayName,
-        "Modem"
+        g_zNetwork_ProviderName_Modem
     ) != 0;
     g_zNetwork_ActiveProviderIsTcpIp = strstr(
         providerInfo->displayName,
-        "TCP/IP"
+        g_zNetwork_ProviderName_TcpIp
     ) != 0;
     g_zNetwork_TcpIpAsyncSendEnabled = g_zNetwork_ActiveProviderIsTcpIp;
 

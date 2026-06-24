@@ -11,6 +11,11 @@
 
 extern "C" {
 /**
+ * Reimplements data 0x4cc850: g_AINetPathProbeHalfWidthScale.
+ * Purpose: Stores the read-only half-width scale used for minimum probe-fan travel.
+ */
+extern const float g_AINetPathProbeHalfWidthScale = 0.5f;
+/**
  * Reimplements data 0x4e5c58: g_AINetListHead.
  * Purpose: Stores the zero-initialized head pointer for the loaded AINet global list.
  */
@@ -573,7 +578,7 @@ void AINetPathProbeFan::InitFromSegment(
     delta.z = toPosition.z - fromPosition.z;
 
     const float xzLength = sqrt(delta.x * delta.x + delta.z * delta.z);
-    const float minimumTravel = pathWidth * 0.5f;
+    const float minimumTravel = pathWidth * g_AINetPathProbeHalfWidthScale;
     const float availableTravel = xzLength - pathWidth;
     clampedTravel = availableTravel < minimumTravel ? minimumTravel : availableTravel;
 

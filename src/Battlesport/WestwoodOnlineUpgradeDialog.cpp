@@ -117,6 +117,47 @@ int g_WestwoodOnlineUpgradeSelectedMissionIndex = 0;
 char g_WestwoodOnlineUpgradeStatusAppendBuffer[1024] = "";
 }
 
+/**
+ * Reimplements data 0x4dd25c: g_WestwoodOnlineUpgradeSessionQueryPayloadFmt.
+ * Purpose: CString::Format payload used by
+ * WestwoodOnlineUpgradeDialog::UpdateSessionListQueryFromControls to encode
+ * the provider session-list query fields.
+ */
+char g_WestwoodOnlineUpgradeSessionQueryPayloadFmt[] = "%1d%4d%4d%1d%1d%1d";
+/**
+ * Reimplements data 0x4dd270: g_WestwoodOnlineUpgradeSessionQueryDisplayFmt.
+ * Purpose: status-list format used when submitting typed status text without
+ * selected session rows.
+ */
+char g_WestwoodOnlineUpgradeSessionQueryDisplayFmt[] = "{ %s } %s";
+/**
+ * Reimplements data 0x4dd27c: g_WestwoodOnlineUpgradeSingleDigitFieldMaxText_4.
+ * Purpose: normalized max-player edit text for the upper single-digit query
+ * bound.
+ */
+char g_WestwoodOnlineUpgradeSingleDigitFieldMaxText_4[] = "4";
+/**
+ * Reimplements data 0x4dd280: g_WestwoodOnlineUpgradeSingleDigitFieldMinText_2.
+ * Purpose: normalized edit text for the lower single-digit query bound shared
+ * by max-player and value/time controls.
+ */
+char g_WestwoodOnlineUpgradeSingleDigitFieldMinText_2[] = "2";
+/**
+ * Reimplements data 0x4dd284: g_WestwoodOnlineUpgradeMaxPlayersMaxText_1000.
+ * Purpose: normalized auxiliary-parameter edit text for the 1000 upper bound.
+ */
+char g_WestwoodOnlineUpgradeMaxPlayersMaxText_1000[] = "1000";
+/**
+ * Reimplements data 0x4dd28c: g_WestwoodOnlineUpgradeMaxPlayersMinText_1.
+ * Purpose: normalized auxiliary-parameter edit text for the lower query bound.
+ */
+char g_WestwoodOnlineUpgradeMaxPlayersMinText_1[] = "1";
+/**
+ * Reimplements data 0x4dd290: g_WestwoodOnlineUpgradeAuxParamMaxText_2000.
+ * Purpose: normalized value/time edit text for the 2000 upper bound.
+ */
+char g_WestwoodOnlineUpgradeAuxParamMaxText_2000[] = "2000";
+
 namespace {
 const unsigned int kStatusAppendBufferSize = 1024;
 const unsigned int kStatusListMaxLineCount = 100;
@@ -179,8 +220,6 @@ const int kWolVisibleSessionSelectionLimit = 1024;
 const int kWolQueryStatusMessageBoxTextBufferSize = 128;
 const int kWolQueryStatusMessageBoxTitleBufferSize = 128;
 const char kWolQueryStatusTokenDelimiter[] = " ";
-const char kWolEncodedSessionListQueryFormat[] = "%1d%4d%4d%1d%1d%1d";
-const char kWolSubmitStatusAppendFormat[] = "{ %s } %s";
 const int kWolQuerySessionNameCopyMaxChars = 16;
 const int kWolQuerySessionsByNameListMode = 17;
 const int kWolSessionModeCount = 7;
@@ -212,6 +251,13 @@ const UINT kMfcMessageMapSigVoid = 12;
 const UINT kMfcMessageMapSigVoidUInt = 13;
 
 RECOIL_STATIC_ASSERT(sizeof(g_WestwoodOnlineUpgradeStatusAppendBuffer) == kStatusAppendBufferSize);
+RECOIL_STATIC_ASSERT(sizeof(g_WestwoodOnlineUpgradeSessionQueryPayloadFmt) == 0x13);
+RECOIL_STATIC_ASSERT(sizeof(g_WestwoodOnlineUpgradeSessionQueryDisplayFmt) == 0x0a);
+RECOIL_STATIC_ASSERT(sizeof(g_WestwoodOnlineUpgradeSingleDigitFieldMaxText_4) == 0x02);
+RECOIL_STATIC_ASSERT(sizeof(g_WestwoodOnlineUpgradeSingleDigitFieldMinText_2) == 0x02);
+RECOIL_STATIC_ASSERT(sizeof(g_WestwoodOnlineUpgradeMaxPlayersMaxText_1000) == 0x05);
+RECOIL_STATIC_ASSERT(sizeof(g_WestwoodOnlineUpgradeMaxPlayersMinText_1) == 0x02);
+RECOIL_STATIC_ASSERT(sizeof(g_WestwoodOnlineUpgradeAuxParamMaxText_2000) == 0x05);
 
 /**
  * Original helper evidence: no standalone retail function; observed in
@@ -1045,7 +1091,7 @@ void WestwoodOnlineUpgradeDialog::UpdateSessionListQueryFromControls() {
     );
     WestwoodOnlineUpgradeDialog *const dialog = g_pWestwoodOnlineUpgradeDialog;
     encodedQuery.Format(
-        kWolEncodedSessionListQueryFormat,
+        g_WestwoodOnlineUpgradeSessionQueryPayloadFmt,
         selectedMode,
         dialog->m_queryValueOrTime,
         dialog->m_queryAuxParam,
@@ -1304,7 +1350,7 @@ void WestwoodOnlineUpgradeDialog::SubmitVisibleSessionRequestsAndStatusText() {
         api->SubmitStatusText(pendingStatusText
         );
         AppendStatusTextFmt(
-            kWolSubmitStatusAppendFormat,
+            g_WestwoodOnlineUpgradeSessionQueryDisplayFmt,
             (const char *)m_selectedProfilePlayerName,
             (const char *)pendingStatusText
         );
@@ -1670,13 +1716,15 @@ void WestwoodOnlineUpgradeDialog::OnMaxPlayersEditChange() {
  */
 void WestwoodOnlineUpgradeDialog::OnMaxPlayersEditKillFocus() {
     if ((int)m_queryMaxPlayers < kWolMinPlayersPerSession) {
-        ((CWnd *)&m_queryMaxPlayersEdit)->SetWindowTextA("2");
+        ((CWnd *)&m_queryMaxPlayersEdit)
+            ->SetWindowTextA(g_WestwoodOnlineUpgradeSingleDigitFieldMinText_2);
         m_queryMaxPlayers = kWolMinPlayersPerSession;
         return;
     }
 
     if ((int)m_queryMaxPlayers > kWolMaxPlayersPerSession) {
-        ((CWnd *)&m_queryMaxPlayersEdit)->SetWindowTextA("4");
+        ((CWnd *)&m_queryMaxPlayersEdit)
+            ->SetWindowTextA(g_WestwoodOnlineUpgradeSingleDigitFieldMaxText_4);
         m_queryMaxPlayers = kWolMaxPlayersPerSession;
         return;
     }
@@ -1697,13 +1745,15 @@ void WestwoodOnlineUpgradeDialog::OnMaxPlayersEditKillFocus() {
  */
 void WestwoodOnlineUpgradeDialog::OnAuxParamEditKillFocus() {
     if ((int)m_queryAuxParam < kWolMinQueryAuxParam) {
-        ((CWnd *)&m_queryAuxParamEdit)->SetWindowTextA("1");
+        ((CWnd *)&m_queryAuxParamEdit)
+            ->SetWindowTextA(g_WestwoodOnlineUpgradeMaxPlayersMinText_1);
         m_queryAuxParam = kWolMinQueryAuxParam;
         return;
     }
 
     if ((int)m_queryAuxParam > kWolMaxQueryAuxParam) {
-        ((CWnd *)&m_queryAuxParamEdit)->SetWindowTextA("1000");
+        ((CWnd *)&m_queryAuxParamEdit)
+            ->SetWindowTextA(g_WestwoodOnlineUpgradeMaxPlayersMaxText_1000);
         m_queryAuxParam = kWolMaxQueryAuxParam;
         return;
     }
@@ -1724,13 +1774,15 @@ void WestwoodOnlineUpgradeDialog::OnAuxParamEditKillFocus() {
  */
 void WestwoodOnlineUpgradeDialog::OnValueOrTimeEditKillFocus() {
     if ((int)m_queryValueOrTime < kWolMinQueryValueOrTime) {
-        ((CWnd *)&m_queryValueOrTimeEdit)->SetWindowTextA("2");
+        ((CWnd *)&m_queryValueOrTimeEdit)
+            ->SetWindowTextA(g_WestwoodOnlineUpgradeSingleDigitFieldMinText_2);
         m_queryValueOrTime = kWolMinQueryValueOrTime;
         return;
     }
 
     if ((int)m_queryValueOrTime > kWolMaxQueryValueOrTime) {
-        ((CWnd *)&m_queryValueOrTimeEdit)->SetWindowTextA("2000");
+        ((CWnd *)&m_queryValueOrTimeEdit)
+            ->SetWindowTextA(g_WestwoodOnlineUpgradeAuxParamMaxText_2000);
         m_queryValueOrTime = kWolMaxQueryValueOrTime;
         return;
     }

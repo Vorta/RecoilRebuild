@@ -265,6 +265,129 @@ char g_zEffectAnim_ZarSectionName_RunningAnim[12] = "RunningAnim";
  * Purpose: Stores the ZAR section token for queued activation records.
  */
 char g_zEffectAnim_ZarSectionName_AnimActivation[15] = "AnimActivation";
+/**
+ * Reimplements data 0x4df820: g_zEffectAnim_ActivationPrereqNodeNotFoundFmt.
+ * Purpose: Stores the activation-prerequisite missing-node diagnostic format
+ * used while loading animation ZBD records.
+ */
+char g_zEffectAnim_ActivationPrereqNodeNotFoundFmt[0x4e] =
+    "ACTIVATION_PREREQUISITE error; couldn't find node.\n"
+    "  Animation: %s; node: %s\n";
+/**
+ * Reimplements data 0x4df8d4: g_zEffectAnim_CorruptAnimationLoadedFmt.
+ * Purpose: Reports an invalid animation entry encountered after loading the
+ * animation ZBD.
+ */
+char g_zEffectAnim_CorruptAnimationLoadedFmt[0x2b] =
+    "Corrupt animation loaded:\n  Animation: %s\n";
+/**
+ * Reimplements data 0x4df900: g_zEffectAnim_TokenLooping.
+ * Purpose: Names the LOOPING parser field in runtime effect material map rows.
+ */
+char g_zEffectAnim_TokenLooping[0x8] = "LOOPING";
+/**
+ * Reimplements data 0x4df908: g_zEffectAnim_TokenSpeed.
+ * Purpose: Names the SPEED parser field in runtime effect material map rows.
+ */
+char g_zEffectAnim_TokenSpeed[0x6] = "SPEED";
+/**
+ * Reimplements data 0x4df910: g_zEffect_FailedToFindGfxDataFmt.
+ * Purpose: Reports effect templates whose model node has no graphics data.
+ */
+char g_zEffect_FailedToFindGfxDataFmt[0x29] =
+    "Failed to find gfx data for effect (%s)\n";
+/**
+ * Reimplements data 0x4df93c: g_zEffect_NodeLookupFailedFmt.
+ * Purpose: Reports missing model nodes while loading runtime effect templates.
+ */
+char g_zEffect_NodeLookupFailedFmt[0x2b] =
+    "%s(%d): Failed to find node (%s) for (%s)\n";
+/**
+ * Reimplements data 0x4df968: g_zEffect_TokenMaps.
+ * Purpose: Names the MAPS parser field in runtime effect template rows.
+ */
+char g_zEffect_TokenMaps[0x5] = "MAPS";
+/**
+ * Reimplements data 0x4df970: g_zEffect_ReadFieldFailedFmt.
+ * Purpose: Reports failed zReader effect data loads from zeff_init.c.
+ */
+char g_zEffect_ReadFieldFailedFmt[0x1b] = "%s(%d): Failed to read %s\n";
+/**
+ * Reimplements data 0x4df98c: g_zEffect_SourceFile_ZeffInitC.
+ * Purpose: Stores the original zeff_init.c diagnostic source path.
+ */
+char g_zEffect_SourceFile_ZeffInitC[0x28] =
+    "D:\\Proj\\GameZRecoil\\zEffect\\zeff_init.c";
+/**
+ * Reimplements data 0x4df9bc: g_zEffectAnim_ActivationSectionNameFmt.
+ * Purpose: Formats queued activation-record ZAR section names.
+ */
+char g_zEffectAnim_ActivationSectionNameFmt[0xf] = "Activation%04d";
+/**
+ * Reimplements data 0x4df9cc: g_zEffectAnim_RestoreNodeFmt.
+ * Purpose: Reports tracked-node restoration during animation save loading.
+ */
+char g_zEffectAnim_RestoreNodeFmt[0x14] = "Restore node: %s %d";
+/**
+ * Reimplements data 0x4df9e0: g_zEffectAnim_StateInvalidMsg.
+ * Purpose: Reports restored activation records forced to ANIM_STATE_INVALID.
+ */
+char g_zEffectAnim_StateInvalidMsg[0x24] =
+    "Set anim_state = ANIM_STATE_INVALID";
+/**
+ * Reimplements data 0x4dfa04: g_zEffectAnim_ResetFunctionName.
+ * Purpose: Names the animation reset diagnostic path.
+ */
+char g_zEffectAnim_ResetFunctionName[0xe] = "zEffAnimReset";
+/**
+ * Reimplements data 0x4dfa14: g_zEffectAnim_StateExecutedMsg.
+ * Purpose: Reports restored activation records forced to ANIM_STATE_EXECUTED.
+ */
+char g_zEffectAnim_StateExecutedMsg[0x25] =
+    "Set anim_state = ANIM_STATE_EXECUTED";
+/**
+ * Reimplements data 0x4dfa3c: g_zEffectAnim_ProcessActivationRecordName.
+ * Purpose: Names the queued activation-record processing diagnostic path.
+ */
+char g_zEffectAnim_ProcessActivationRecordName[0x1c] =
+    "zEffProcessActivationRecord";
+/**
+ * Reimplements data 0x4dfa58: g_zEffect_SourceFile_ZeffAnimSaveC.
+ * Purpose: Stores the original zeff_anim_save.c diagnostic source path.
+ */
+char g_zEffect_SourceFile_ZeffAnimSaveC[0x2d] =
+    "D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_save.c";
+/**
+ * Reimplements data 0x4dfa88: g_zEffectAnim_ResetActivationRecordFmt.
+ * Purpose: Reports reset of queued activation records during save loading.
+ */
+char g_zEffectAnim_ResetActivationRecordFmt[0x1e] =
+    "zEffResetActivationRecord: %s";
+/**
+ * Reimplements data 0x4dfaa8: g_zEffectAnim_ActivationSectionName0.
+ * Purpose: Names the first activation-record ZAR section.
+ */
+char g_zEffectAnim_ActivationSectionName0[0xf] = "Activation0000";
+/**
+ * Reimplements data 0x4dfab8: g_zEffectAnim_RunningSectionNameFmt.
+ * Purpose: Formats running-animation ZAR section names.
+ */
+char g_zEffectAnim_RunningSectionNameFmt[0xc] = "Running%03d";
+/**
+ * Reimplements data 0x4dfac4: g_zEffectAnim_AnimSectionNameFmt.
+ * Purpose: Formats non-running animation ZAR section names.
+ */
+char g_zEffectAnim_AnimSectionNameFmt[0x9] = "Anim%04d";
+/**
+ * Reimplements data 0x4dfad0: g_zEffect_StringNone.
+ * Purpose: Stores the empty animation section sentinel name.
+ */
+char g_zEffect_StringNone[0x5] = "None";
+/**
+ * Reimplements data 0x4dfad8: g_zEffectAnim_ResetTraceFmt.
+ * Purpose: Reports reset of animation entries during save loading.
+ */
+char g_zEffectAnim_ResetTraceFmt[0x12] = "zEffAnimReset: %s";
 }
 
 extern char g_EffectsZrdNodeName[8];
@@ -288,7 +411,7 @@ const short kEffectAnimResetScratchRefIndex = -200;
 const short kEffectAnimBoundNodeRefIndex = -100;
 const char *kZeffAnimInitSourceFile = "D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_init.c";
 const char *kZeffAnimRunSourceFile = "D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_run.c";
-const char *kZeffInitSourceFile = "D:\\Proj\\GameZRecoil\\zEffect\\zeff_init.c";
+const char *kZeffInitSourceFile = g_zEffect_SourceFile_ZeffInitC;
 const char *kAnimationNodeNotFoundMessage =
     "Animation node not found.\n  Animation: %s; Node: %s\n";
 
@@ -3717,8 +3840,7 @@ int LoadZbd() {
                         0x400,
                         kZeffAnimInitSourceFile,
                         0x2c17,
-                        "ACTIVATION_PREREQUISITE error; couldn't find node.\n"
-                        "  Animation: %s; node: %s\n",
+                        g_zEffectAnim_ActivationPrereqNodeNotFoundFmt,
                         entry,
                         nodeName
                     );
@@ -3864,7 +3986,7 @@ int LoadAndInstantiate() {
                 0x400,
                 kZeffAnimInitSourceFile,
                 0x2d55,
-                "Corrupt animation loaded:\n  Animation: %s\n",
+                g_zEffectAnim_CorruptAnimationLoadedFmt,
                 entry
             );
         }
@@ -4028,7 +4150,7 @@ int __fastcall SaveActivationRecords(
         char sectionName[0x14];
         sprintf(
             sectionName,
-            "Activation%04d",
+            g_zEffectAnim_ActivationSectionNameFmt,
             i
         );
         result = zUtil_ZAR::WriteSectionBlob(
@@ -4076,16 +4198,16 @@ void __fastcall LoadActivationRecords(
 
     if (strcmp(
         sectionToken,
-        "Activation0000"
+        g_zEffectAnim_ActivationSectionName0
     ) == 0) {
         for (int i = 0; i < GetActivationRecordCount(); ++i) {
             zEffectAnimActivationRecord *const queued = GetActivationRecordAt(i);
             ResetFromActivationRecord(queued);
             zError::ReportOld(
                 0x100,
-                "D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_save.c",
+                g_zEffect_SourceFile_ZeffAnimSaveC,
                 0x190,
-                "zEffResetActivationRecord: %s",
+                g_zEffectAnim_ResetActivationRecordFmt,
                 queued->animName
             );
         }
@@ -4130,9 +4252,9 @@ void __fastcall LoadActivationRecords(
             entry = ProcessActivationRecord(&record->base);
             zError::ReportOld(
                 0x100,
-                "D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_save.c",
+                g_zEffect_SourceFile_ZeffAnimSaveC,
                 0x1b6,
-                "zEffProcessActivationRecord"
+                g_zEffectAnim_ProcessActivationRecordName
             );
         }
         if (record->base.nodeToken == -1) {
@@ -4150,9 +4272,9 @@ void __fastcall LoadActivationRecords(
         }
         zError::ReportOld(
             0x100,
-            "D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_save.c",
+            g_zEffect_SourceFile_ZeffAnimSaveC,
             0x1c9,
-            "Set anim_state = ANIM_STATE_EXECUTED"
+            g_zEffectAnim_StateExecutedMsg
         );
     }
 
@@ -4167,9 +4289,9 @@ void __fastcall LoadActivationRecords(
             );
             zError::ReportOld(
                 0x100,
-                "D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_save.c",
+                g_zEffect_SourceFile_ZeffAnimSaveC,
                 0x1d3,
-                "zEffAnimReset"
+                g_zEffectAnim_ResetFunctionName
             );
         }
         if (record->base.nodeToken == -1) {
@@ -4189,9 +4311,9 @@ void __fastcall LoadActivationRecords(
             entry = ProcessActivationRecord(&record->base);
             zError::ReportOld(
                 0x100,
-                "D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_save.c",
+                g_zEffect_SourceFile_ZeffAnimSaveC,
                 0x1e4,
-                "zEffProcessActivationRecord"
+                g_zEffectAnim_ProcessActivationRecordName
             );
         }
         if (record->base.nodeToken == -1) {
@@ -4205,9 +4327,9 @@ void __fastcall LoadActivationRecords(
             entry->activationState = 4;
             zError::ReportOld(
                 0x100,
-                "D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_save.c",
+                g_zEffect_SourceFile_ZeffAnimSaveC,
                 0x1f5,
-                "Set anim_state = ANIM_STATE_INVALID"
+                g_zEffectAnim_StateInvalidMsg
             );
         }
         if (record->base.nodeToken == -1) {
@@ -4224,9 +4346,9 @@ void __fastcall LoadActivationRecords(
 
         zError::ReportOld(
             0x100,
-            "D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_save.c",
+            g_zEffect_SourceFile_ZeffAnimSaveC,
             0x201,
-            "Restore node: %s %d",
+            g_zEffectAnim_RestoreNodeFmt,
             node,
             tracked->activeFlag
         );
@@ -4320,7 +4442,7 @@ int __fastcall SaveRunningAnimRecord(
     char sectionName[0x14];
     sprintf(
         sectionName,
-        "Running%03d",
+        g_zEffectAnim_RunningSectionNameFmt,
         runningIndex
     );
 
@@ -4710,35 +4832,40 @@ int __fastcall SaveAnimRecords(
     int result = 1;
     for (int i = 1; result != 0 && i < g_zEffectAnim_EntryCount; ++i) {
         zEffectAnimEntry *const entry = &g_zEffectAnim_EntryList[i];
-        if (entry->activationState == 5) {
-            continue;
-        }
 
-        const unsigned short flags = (unsigned short)(entry->flags);
-        if (((flags & 0x1000) != 0 && (flags & 0x2000) == 0) ||
-            g_zEffectAnim_RecordQueueEnabled == 0) {
-            continue;
-        }
-
-        unsigned char trackedNodeCount = 0;
-        if (entry->trackedNodeList != 0) {
-            trackedNodeCount = entry->trackedNodeCount;
-        }
-
-        const unsigned int payloadSize =
-            sizeof(zEffectAnimSaveHeader) +
-            sizeof(zEffectAnimTrackedNodeSaveRecord) * trackedNodeCount;
         zEffectAnimSaveRecord saveRecord = {0};
-
         zEffectAnimSaveHeader *const header = &saveRecord.header;
-        strncpy(
-            header->base.animName,
-            entry->name,
-            sizeof(header->base.animName)
-        );
-        header->entryTableIndex = i;
-        header->savedActivationState = entry->activationState;
-        header->trackedNodeCount = trackedNodeCount;
+        unsigned char trackedNodeCount = 0;
+        if (entry == 0) {
+            strncpy(
+                header->base.animName,
+                g_zEffect_StringNone,
+                sizeof(header->base.animName)
+            );
+        } else {
+            if (entry->activationState == 5) {
+                continue;
+            }
+
+            const unsigned short flags = (unsigned short)(entry->flags);
+            if (((flags & 0x1000) != 0 && (flags & 0x2000) == 0) ||
+                g_zEffectAnim_RecordQueueEnabled == 0) {
+                continue;
+            }
+
+            if (entry->trackedNodeList != 0) {
+                trackedNodeCount = entry->trackedNodeCount;
+            }
+
+            strncpy(
+                header->base.animName,
+                entry->name,
+                sizeof(header->base.animName)
+            );
+            header->entryTableIndex = i;
+            header->savedActivationState = entry->activationState;
+            header->trackedNodeCount = trackedNodeCount;
+        }
 
         zEffectAnimTrackedNodeSaveRecord *const records = saveRecord.trackedNodes;
         {
@@ -4784,10 +4911,13 @@ int __fastcall SaveAnimRecords(
             }
         }
 
+        const unsigned int payloadSize =
+            sizeof(zEffectAnimSaveHeader) +
+            sizeof(zEffectAnimTrackedNodeSaveRecord) * trackedNodeCount;
         char sectionName[0x14];
         sprintf(
             sectionName,
-            "Anim%04d",
+            g_zEffectAnim_AnimSectionNameFmt,
             i + g_zEffectAnim_ActivationRecordCount
         );
         result = zUtil_ZAR::WriteSectionBlob(
@@ -4835,9 +4965,9 @@ void __fastcall LoadAnimRecords(
         );
         zError::ReportOld(
             0x100,
-            "D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_save.c",
+            g_zEffect_SourceFile_ZeffAnimSaveC,
             0x419,
-            "zEffAnimReset: %s",
+            g_zEffectAnim_ResetTraceFmt,
             entry
         );
     }
@@ -4850,9 +4980,9 @@ void __fastcall LoadAnimRecords(
             );
             zError::ReportOld(
                 0x100,
-                "D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_save.c",
+                g_zEffect_SourceFile_ZeffAnimSaveC,
                 0x41f,
-                "zEffAnimReset: %s",
+                g_zEffectAnim_ResetTraceFmt,
                 cursor
             );
         }
@@ -4869,9 +4999,9 @@ void __fastcall LoadAnimRecords(
 
         zError::ReportOld(
             0x100,
-            "D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_save.c",
+            g_zEffect_SourceFile_ZeffAnimSaveC,
             0x426,
-            "Restore node: %s %d",
+            g_zEffectAnim_RestoreNodeFmt,
             node,
             record->activeFlag
         );
@@ -5936,7 +6066,7 @@ int __fastcall InitFromPath(
     if (rootNode == 0) {
         fprintf(
             stderr,
-            "%s(%d) : Failed to read %s\n",
+            g_zEffect_ReadFieldFailedFmt,
             kZeffInitSourceFile,
             0xd8,
             path
@@ -5960,7 +6090,7 @@ int __fastcall InitFromPath(
         zReader::Node *const effectNode = &zReaderArrayBase(effectsNode)[i + 1];
         zReader::Node *const mapsNode = zReader_GetNamedNode(
             effectNode,
-            "MAPS"
+            g_zEffect_TokenMaps
         );
         zEffect_RuntimeEntry *const runtimeEntry = &g_zEffect_RuntimeManager.templates[i];
         runtimeEntry->effectIndex = -1;
@@ -5982,7 +6112,7 @@ int __fastcall InitFromPath(
         if (templateNode == 0) {
             fprintf(
                 stderr,
-                "%s(%d) : Failed to find node (%s) for (%s)\n",
+                g_zEffect_NodeLookupFailedFmt,
                 kZeffInitSourceFile,
                 0xf3,
                 runtimeEntry->modelNodeName,
@@ -5997,7 +6127,7 @@ int __fastcall InitFromPath(
                 0x400,
                 kZeffInitSourceFile,
                 0xfb,
-                "Failed to find gfx data for effect (%s)\n",
+                g_zEffect_FailedToFindGfxDataFmt,
                 runtimeEntry->modelNodeName
             );
             continue;
@@ -6032,7 +6162,7 @@ int __fastcall InitFromPath(
         float textureSpeed = 0.0f;
         zReader::ReadNamedFloat(
             effectNode,
-            "SPEED",
+            g_zEffectAnim_TokenSpeed,
             &textureSpeed
         );
         zModel_Material::SetCycleTextureSpeed(
@@ -6042,7 +6172,7 @@ int __fastcall InitFromPath(
 
         zReader::Node *const loopingNode = zReader_GetNamedNode(
             effectNode,
-            "LOOPING"
+            g_zEffectAnim_TokenLooping
         );
         if (loopingNode != 0) {
             const char *const loopingText = loopingNode->type == zReader::ZRDR_NODE_ARRAY

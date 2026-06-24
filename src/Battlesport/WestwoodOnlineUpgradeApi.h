@@ -17,7 +17,6 @@ struct WestwoodOnlineUpgradeBootstrapServerRecord {
     char m_connectData[0x80];
     char m_playerName[0x0a];
     char m_connectString[0x0a];
-    unsigned char reserved0f8[0x0c];
 };
 
 struct WestwoodOnlineUpgradeBrowseRecord {
@@ -254,7 +253,7 @@ extern const IID g_WestwoodOnlineUpgradeApi_IID;
 extern const IID g_WestwoodOnlineUpgradeApiEventSink_IID;
 
 RECOIL_STATIC_ASSERT(sizeof(WestwoodOnlineUpgradeApiInitState) == 0x64);
-RECOIL_STATIC_ASSERT(sizeof(WestwoodOnlineUpgradeBootstrapServerRecord) == 0x104);
+RECOIL_STATIC_ASSERT(sizeof(WestwoodOnlineUpgradeBootstrapServerRecord) == 0xf8);
 RECOIL_STATIC_ASSERT(
     offsetof(
         WestwoodOnlineUpgradeBootstrapServerRecord,

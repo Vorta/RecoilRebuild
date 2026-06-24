@@ -49,8 +49,16 @@ int g_PlayerMasterCommonDataListAux = 0;
 PlayerMasterCommonData *g_PlayerMasterCommonDataHead = 0;
 PlayerMasterCommonData *g_PlayerMasterCommonDataTail = 0;
 int g_PlayerMasterCommonDataCount = 0;
-// Data owner 0x4f3688..0x4f3697: zero-initialized PlayerMasterModalData
-// intrusive-list globals cleared by Player::InitMasterModalDataList.
+/**
+ * Reimplements data 0x4f3688..0x4f3697:
+ * g_PlayerMasterModalDataListAux, g_PlayerMasterModalDataHead,
+ * g_PlayerMasterModalDataTail, and g_PlayerMasterModalDataCount.
+ * BN types this as a zero-filled .data PlayerMasterModalData intrusive-list
+ * bootstrap group cleared by Player::InitMasterModalDataList, appended by
+ * PlayerAllocMasterModalData, and drained by Player::ClearLoadedData.
+ * Purpose: Stores the master modal-data intrusive list used while creating
+ * players from name/bootstrap data.
+ */
 int g_PlayerMasterModalDataListAux = 0;
 PlayerMasterModalData *g_PlayerMasterModalDataHead = 0;
 PlayerMasterModalData *g_PlayerMasterModalDataTail = 0;
@@ -106,6 +114,12 @@ int g_Player_UnderwaterCamStepCount = 0;
 float g_Player_UnderwaterCamFar = 0.0f;
 unsigned int g_Player_UnderwaterCamPackedColor = 0;
 float g_Player_UnderwaterCamAlpha = 0.0f;
+/**
+ * Reimplements data 0x4dc970: g_Player_GameplayInputStepScale.
+ * BN types this as an initialized .data float read by local mouse/cursor
+ * steering when cursor mode uses mouse deltas.
+ * Purpose: Scales mouse delta input into player steering command steps.
+ */
 float g_Player_GameplayInputStepScale = 0.03f;
 float g_Player_CameraHeadingDotAbs = 1.0f;
 float g_Player_CameraHeadingLerpBaseWhenFlagClear = 3.0f;
@@ -1273,25 +1287,6 @@ void PlayerLoadPlayerZrdTuning(
     g_Hud_LowMeterNextBeepTime = 0.0f;
     g_Player_CopterSndSample = zSnd::FindSampleByName("snd_chopper");
 }
-
-struct PlayerWeatherFxEmitterOverlay {
-    HudUiElement ui;
-    unsigned char unknown_34[0x1c];
-    zClass_NodePartial *cameraNode;
-    int particleAgeTick;
-};
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerWeatherFxEmitterOverlay,
-        cameraNode
-    ) == 0x50
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerWeatherFxEmitterOverlay,
-        particleAgeTick
-    ) == 0x54
-);
 
 // Source-faithful helper recovered from address-backed callers in this source file.
 void TriggerZeroVelocityFxList(
@@ -5741,8 +5736,16 @@ int __fastcall ApplyMasterTypeTransition(
 }
 } // namespace Player
 
-// Reimplements 0x425060: HudSensorTracker::ParseCheckpointNumberFromNode
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x425060: HudSensorTracker::ParseCheckpointNumberFromNode
+ * Source: src/Battlesport/player.cpp
+ * Source model: checkpoint-node name parser used by player contact handling;
+ * MFC CString construction/Right/destruction are provider behavior.
+ * Touched data: no authored globals; reads only the node flags, callback
+ * context flags, and context node name.
+ * Purpose: parse a nonnegative checkpoint number from the callback context node
+ * name when checkpoint flags permit it.
+ */
 int __fastcall HudSensorTracker::ParseCheckpointNumberFromNode(
     zClass_NodePartial *node
 ) {
@@ -5755,13 +5758,18 @@ int __fastcall HudSensorTracker::ParseCheckpointNumberFromNode(
         return 0;
     }
 
-    const char *const name = contextNode->name;
-    const size_t nameLen = strlen(name);
-    if (nameLen <= 10) {
+    CString name(contextNode->name);
+    int suffixLength = name.GetLength() - 10;
+    if (suffixLength < 0) {
+        suffixLength = 0;
+    }
+
+    CString checkpointNumber = name.Right(suffixLength);
+    if (checkpointNumber.GetLength() == 0) {
         return 0;
     }
 
-    const long parsedNumber = atol(name + 10);
+    const long parsedNumber = atol((const char *)checkpointNumber);
     return parsedNumber < 0 ? 0 : (int)(parsedNumber);
 }
 
@@ -10944,9 +10952,9 @@ void UpdateCameraWeatherFxEmitterVisibility() {
         return;
     }
 
-    PlayerWeatherFxEmitterOverlay *const fxEmitter = (PlayerWeatherFxEmitterOverlay *)(fxElement);
-    fxEmitter->cameraNode = g_MainCamera;
-    fxEmitter->particleAgeTick = zOpt::GetReplicateMode() == 0 ? 1 : 0;
+    HudWeatherFx *const weatherFx = (HudWeatherFx *)(fxElement);
+    weatherFx->camera = g_MainCamera;
+    weatherFx->activeParticleCount = zOpt::GetReplicateMode() == 0 ? 1 : 0;
 }
 
 /**

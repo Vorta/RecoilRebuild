@@ -154,6 +154,49 @@ RecoilApp g_RecoilApp;
 RecoilStateSaveLoadTransition g_RecoilStateSaveLoadTransition;
 
 /**
+ * Reimplements data 0x4dcad4: g_RecoilApp_SoundsZrdName.
+ *
+ * Purpose: names the startup sound archive passed to zSndSystem during engine
+ * startup.
+ */
+const char g_RecoilApp_SoundsZrdName[0x0b] = "sounds.zrd";
+RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_SoundsZrdName) == 0x0b);
+/**
+ * Reimplements data 0x4dcae0: g_RecoilApp_TurretStatusPrintfFmt.
+ *
+ * Purpose: formats the turret subsystem startup status line.
+ */
+const char g_RecoilApp_TurretStatusPrintfFmt[0x0f] = "turret:    %s\n";
+RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_TurretStatusPrintfFmt) == 0x0f);
+/**
+ * Reimplements data 0x4dcaf0: g_RecoilApp_StartupStatusFailed.
+ *
+ * Purpose: supplies the shared failed startup status text.
+ */
+const char g_RecoilApp_StartupStatusFailed[0x07] = "FAILED";
+RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_StartupStatusFailed) == 0x07);
+/**
+ * Reimplements data 0x4dcaf8: g_RecoilApp_StartupStatusPassed.
+ *
+ * Purpose: supplies the shared passed startup status text.
+ */
+const char g_RecoilApp_StartupStatusPassed[0x07] = "PASSED";
+RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_StartupStatusPassed) == 0x07);
+/**
+ * Reimplements data 0x4dcb00: g_RecoilApp_OpenHseAbortMsg.
+ *
+ * Purpose: reports HSE startup failure before aborting display initialization.
+ */
+const char g_RecoilApp_OpenHseAbortMsg[0x23] = "Error opening HSE... ABORTING RUN\n";
+RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_OpenHseAbortMsg) == 0x23);
+/**
+ * Reimplements data 0x4dcb24: g_RecoilApp_OpenVideoAbortMsg.
+ *
+ * Purpose: reports video startup failure before aborting display initialization.
+ */
+const char g_RecoilApp_OpenVideoAbortMsg[0x25] = "Error opening video... ABORTING RUN\n";
+RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_OpenVideoAbortMsg) == 0x25);
+/**
  * Reimplements data 0x4dcb4c: g_RecoilApp_StartupArchivePath.
  *
  * Purpose: names the startup ZRDR archive mounted during app initialization
@@ -203,6 +246,34 @@ const char g_RecoilApp_AttractFmvTag[0x08] = "ATTRACT";
  * Purpose: initializes the stack mission-FMV tag before the mission digit is patched in.
  */
 const char g_RecoilApp_MissionFmvTagTemplate[0x04] = "M0";
+/**
+ * Reimplements data 0x4dcc78: g_RecoilApp_NewGameStartAnimStateName.
+ *
+ * Purpose: selects the new-game start-animation node when play state starts
+ * without a pending saved-game ZAR.
+ */
+extern "C" const char g_RecoilApp_NewGameStartAnimStateName[0x0f] = "NEW_GAME_START";
+RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_NewGameStartAnimStateName) == 0x0f);
+/**
+ * Reimplements data 0x4dcc88: g_RecoilApp_CommonSoundsSampleSetName.
+ *
+ * Purpose: names the common sound sample set loaded at play-state startup.
+ */
+extern "C" const char g_RecoilApp_CommonSoundsSampleSetName[0x06] = {
+    'C', 'O', 'M', 'M', 'O', 'N'
+};
+RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_CommonSoundsSampleSetName) == 0x06);
+/**
+ * Reimplements data 0x4dcc90: g_RecoilApp_LoadingCommonSoundsMsg.
+ *
+ * Purpose: labels the loading checkpoint logged before the common sound set
+ * is initialized.
+ */
+extern "C" const char g_RecoilApp_LoadingCommonSoundsMsg[0x15] = {
+    'L', 'o', 'a', 'd', 'i', 'n', 'g', ' ', 'c', 'o', 'm',
+    'm', 'o', 'n', ' ', 's', 'o', 'u', 'n', 'd', 's'
+};
+RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_LoadingCommonSoundsMsg) == 0x15);
 /**
  * Reimplements data 0x4dccb0: g_zFMV_GrandPrizeScriptName.
  *
@@ -1847,9 +1918,6 @@ int RecoilApp::InitMainWindow() {
 }
 
 namespace {
-const char kEngineInitFailed[] = "FAILED";
-const char kEngineInitPassed[] = "PASSED";
-
 // Source-faithful helper recovered from address-backed callers in this source file.
 inline void PrintEngineInitZeroStatus(
     const char *format,
@@ -1857,7 +1925,7 @@ inline void PrintEngineInitZeroStatus(
 ) {
     printf(
         format,
-        result == 0 ? kEngineInitPassed : kEngineInitFailed
+        result == 0 ? g_RecoilApp_StartupStatusPassed : g_RecoilApp_StartupStatusFailed
     );
 }
 
@@ -1868,7 +1936,7 @@ inline void PrintEngineInitNonzeroStatus(
 ) {
     printf(
         format,
-        result != 0 ? kEngineInitPassed : kEngineInitFailed
+        result != 0 ? g_RecoilApp_StartupStatusPassed : g_RecoilApp_StartupStatusFailed
     );
 }
 
@@ -1941,14 +2009,14 @@ int __fastcall RecoilApp::InitializeDisplay(
             zOpt::GetFullscreenOption(),
             zVid::GetVideoModeIndexFromOptions()
         ) != 0) {
-        printf("Error opening video... ABORTING RUN\n");
+        printf(g_RecoilApp_OpenVideoAbortMsg);
         fflush(stdout);
         return 0;
     }
 
     if (zVid::GetAccelerationOption() == 0 &&
         zRndr::SpanOcclusionInit(zOpt::GetWindowSectionHeight()) != 0) {
-        printf("Error opening HSE... ABORTING RUN\n");
+        printf(g_RecoilApp_OpenHseAbortMsg);
         fflush(stdout);
         return 0;
     }
@@ -1991,13 +2059,13 @@ RECOIL_NO_GS int RecoilApp::StartEngine(
 ) {
     EngineInit(hwnd);
     PrintEngineInitZeroStatus(
-        "turret:    %s\n",
+        g_RecoilApp_TurretStatusPrintfFmt,
         zTurret_System::ResetIterationState()
     );
 
     zSndSystem_Init(
         (RecoilPtr32)((unsigned int)hwnd),
-        "sounds.zrd"
+        g_RecoilApp_SoundsZrdName
     );
     zSnd::SetAudioApiOption(zSnd::GetActiveBackend());
 
@@ -2813,8 +2881,8 @@ int RecoilApp_PlayState::OnTryBecomeCurrent() {
 
     HudUiMgr::EnsureHudLoaded("hud.zrd");
     HudUiLoadingCheckpoint::InitTable();
-    HudUiLoadingCheckpoint::AdvanceAndLog("Loading common sounds");
-    zSndSampleSet_InitByName("COMMON");
+    HudUiLoadingCheckpoint::AdvanceAndLog(g_RecoilApp_LoadingCommonSoundsMsg);
+    zSndSampleSet_InitByName(g_RecoilApp_CommonSoundsSampleSetName);
 
     Briefing::StartForMission(g_HudSensorTracker.GetMissionId());
 
@@ -2865,13 +2933,13 @@ int RecoilApp_PlayState::OnTryBecomeCurrent() {
         zUtil::ZAR_LoadFileGlobal(pendingLoadPath);
         free(pendingLoadPath);
         pPendingLoadGameStartPath = 0;
-        startAnimNodeName = "LOAD_GAME_START";
+        startAnimNodeName = g_RecoilApp_LoadGameStartAnimStateName;
     } else {
-        startAnimNodeName = "NEW_GAME_START";
+        startAnimNodeName = g_RecoilApp_NewGameStartAnimStateName;
     }
 
     g_HudSensorTracker.RunStartAnimsFromZrd(
-        "StartAnims.zrd",
+        g_HudSensorTracker_StartAnimsZrdPath,
         startAnimNodeName
     );
 

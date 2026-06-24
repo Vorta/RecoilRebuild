@@ -417,7 +417,6 @@ const int kNetSessionBrowserModemEventCode = 256;
 const int kNetSessionBrowserModemValueOrTime = 10;
 const int kNetSessionBrowserModemAuxParam = 10;
 const int kNetSessionBrowserModemMaxPlayers = 2;
-const char kNetSessionBrowserModemSessionName[] = "ModemSession";
 // Reimplements 0x41b8ac: NetSessionBrowserDialog::kHelpDocsFindExecutableErrorClassTable
 // (D:\Proj\Battlesport\GameNet.cpp)
 const unsigned char kNetSessionBrowserHelpDocsFindExecutableErrorClassTable[32] = {
@@ -748,10 +747,11 @@ BOOL NetSessionBrowserDialog::OnInitDialog() {
     for (providerIndex = 0; providerIndex < providerCount; ++providerIndex) {
         zNetworkDPlayServiceProviderInfo *const providerInfo = providerList->begin[providerIndex];
         char *const displayName = providerInfo->displayName;
-        if (strstr(displayName, "IPX") != 0 || strstr(displayName, "TCP/IP") != 0 ||
+        if (strstr(displayName, g_zNetwork_ProviderName_Ipx) != 0 ||
+            strstr(displayName, g_zNetwork_ProviderName_TcpIp) != 0 ||
             strstr(
                 displayName,
-                "Modem"
+                g_zNetwork_ProviderName_Modem
             ) != 0) {
             const LRESULT comboIndex =
                 ::SendMessageA(
@@ -1279,7 +1279,7 @@ void NetSessionBrowserDialog::ConnectSelectedProvider() {
 
     if (strstr(
         providerInfo->displayName,
-        "TCP/IP"
+        g_zNetwork_ProviderName_TcpIp
     ) != 0 && g_NetUiTcpIpProviderWarningShown == 0) {
         g_NetUiTcpIpProviderWarningShown = 1;
 
@@ -1314,7 +1314,7 @@ void NetSessionBrowserDialog::ConnectSelectedProvider() {
     zNetworkDPlay::SelectServiceProviderAndInitConnection(providerInfo);
     if (strstr(
         providerInfo->displayName,
-        "Modem"
+        g_zNetwork_ProviderName_Modem
     ) != 0) {
         ::SendMessageA(
             m_sessionList.m_hWnd,
@@ -1470,7 +1470,7 @@ void NetSessionBrowserDialog::OnCreateSession() {
         statusFields.maxPlayers = kNetSessionBrowserModemMaxPlayers;
         strcpy(
             statusFields.sessionNameBuf,
-            kNetSessionBrowserModemSessionName
+            g_zNetwork_ModemSessionName
         );
 
         if (zNetwork_DPlay::CreateSessionFromStatusFields(&statusFields) != 0) {

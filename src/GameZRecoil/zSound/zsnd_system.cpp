@@ -55,6 +55,8 @@ extern "C" zSndFadeListNode *g_zSndFadeDispatchListSentinel = 0;
  */
 extern "C" int g_zSndFadeDispatchListCount = 0;
 
+extern "C" char g_zEffectAnim_TokenRange[0x6];
+
 namespace {
 /**
  * Original inline helper; no standalone retail function exists.
@@ -604,7 +606,7 @@ extern "C" int __fastcall zSndSystem_InitNamedSetsSyntax(
 
             zReader::Node *rangeNode = zReader_GetNamedNode(
                 sampleNode,
-                "RANGE"
+                g_zEffectAnim_TokenRange
             );
             if (rangeNode != 0) {
                 sample->replayFields.flags |= 0x04;

@@ -29,7 +29,51 @@ const int kPreparedScriptVersion = 7;
 const double kDegreesToRadians = 0.01745329251994;
 const char kGlobalContextSearchPath[] = ".;zbd";
 const char kCommandNameWeaponSetMaxTetherAltitude[] = "WeaponSetMaxTetherAltitude";
-const char kTokenDelimiters[] = ", \t\n";
+/**
+ * Reimplements data 0x4e4918: k_zInterp_TokenDelimiters.
+ * Data owner: zInterp_Context initialized globals.
+ * BN evidence: char[0x5] ", \t\n"; TokenizeLine passes it to strpbrk
+ * while splitting command tokens.
+ *
+ * Purpose: delimiter set used by zInterp_Context::TokenizeLine.
+ */
+const char k_zInterp_TokenDelimiters[] = ", \t\n";
+/**
+ * Reimplements data 0x4e4920: g_zInterp_PrintTokenWithSpaceFmt.
+ * Data owner: zInterp parser/runtime initialized format-string run.
+ * BN evidence: writable char[0x4] "%s "; adjacent to the DumpVarEntry
+ * format strings at 0x4e4924, 0x4e4934, and 0x4e4944.
+ *
+ * Purpose: printf format used by zInterp_Context::EchoTokens.
+ */
+char g_zInterp_PrintTokenWithSpaceFmt[] = "%s ";
+/**
+ * Reimplements data 0x4e4924: k_zInterp_FormatVarInt.
+ * Data owner: zInterp parser/runtime initialized format-string run.
+ * BN evidence: writable char[0xe] "%s = (int) %d"; first DumpVarEntry
+ * format string in the contiguous run that starts at 0x4e4920.
+ *
+ * Purpose: Logf format for integer script variable entries.
+ */
+char k_zInterp_FormatVarInt[] = "%s = (int) %d";
+/**
+ * Reimplements data 0x4e4934: k_zInterp_FormatVarFloat.
+ * Data owner: zInterp parser/runtime initialized format-string run.
+ * BN evidence: writable char[0x10] "%s = (float) %f"; second DumpVarEntry
+ * format string in the contiguous run that starts at 0x4e4920.
+ *
+ * Purpose: Logf format for floating-point script variable entries.
+ */
+char k_zInterp_FormatVarFloat[] = "%s = (float) %f";
+/**
+ * Reimplements data 0x4e4944: k_zInterp_FormatVarString.
+ * Data owner: zInterp parser/runtime initialized format-string run.
+ * BN evidence: writable char[0x11] "%s = (char*)\"%s\""; final DumpVarEntry
+ * format string in the contiguous run that starts at 0x4e4920.
+ *
+ * Purpose: Logf format for character-pointer script variable entries.
+ */
+char k_zInterp_FormatVarString[] = "%s = (char*)\"%s\"";
 /**
  * Reimplements data 0x56c378: g_zInterp_MacroExpansionScratch.
  * Data owner: zInterp_Context initialized globals.
@@ -97,6 +141,16 @@ char g_zInterp_AssignToken_Equal = '=';
 char k_zInterp_PrintNodeTreeFormat[] = "%*s%s";
 
 /**
+ * Reimplements data 0x4e5af8: g_zInterp_ScrollAlwaysNodeName.
+ * Data owner: zInterp parser/runtime initialized object command literals.
+ * BN evidence: writable char[0xd] "ScrollAlways"; RegisterScrollAlwaysNode
+ * passes this storage to gwNodeSetName for the driver callback node.
+ *
+ * Purpose: node name assigned to the texture-scroll driver object.
+ */
+char g_zInterp_ScrollAlwaysNodeName[] = "ScrollAlways";
+
+/**
  * Reimplements data 0x56c780: g_zInterp_Object3DCommandIntScratch.
  * Data owner: zInterp_Context initialized globals.
  * BN evidence: int32 BSS slot between the macro-expansion scratch buffer and
@@ -149,6 +203,16 @@ char *g_zInterp_PreparedIndexFileName = g_zInterp_PreparedIndexFileNameStr;
  * Purpose: backing storage for the default prepared script index path.
  */
 char g_zInterp_PreparedIndexFileNameStr[] = "interp.zbd";
+
+/**
+ * Reimplements data 0x4df81c: g_zEffectAnim_FileModeRead.
+ * Data owner: zInterp parser/runtime initialized file-mode literal.
+ * BN evidence: writable char[0x2] "r"; RunScriptFile passes this exact
+ * storage to fopen when prepared-script input is unavailable.
+ *
+ * Purpose: read-mode string used when opening plain script files.
+ */
+extern "C" char g_zEffectAnim_FileModeRead[] = "r";
 
 namespace {
 /**
@@ -782,7 +846,7 @@ int zInterp_Context::RegisterScrollAlwaysNode(
         );
         zClass_Class::gwNodeSetName(
             scrollAlwaysDriverNode,
-            "ScrollAlways"
+            g_zInterp_ScrollAlwaysNodeName
         );
         scrollAlwaysDriverNode->callbackContext = (zClass_NodePartial *)(this);
     }
@@ -1044,7 +1108,7 @@ void zInterp_Context::DumpVarEntry(
     if (entry->type == 0) {
         Logf(
             this,
-            "%s = (int) %d",
+            k_zInterp_FormatVarInt,
             entry->name,
             *entry->valuePtr.intPtr
         );
@@ -1054,7 +1118,7 @@ void zInterp_Context::DumpVarEntry(
     if (entry->type == 1) {
         Logf(
             this,
-            "%s = (float) %f",
+            k_zInterp_FormatVarFloat,
             entry->name,
             *entry->valuePtr.floatPtr
         );
@@ -1066,7 +1130,7 @@ void zInterp_Context::DumpVarEntry(
         // not the string pointer. Keep that source-shape bug visible for the cluster pass.
         Logf(
             this,
-            "%s = (char*)\"%s\"",
+            k_zInterp_FormatVarString,
             entry->name,
             *entry->valuePtr.charPtr
         );
@@ -1373,7 +1437,7 @@ int zInterp_Context::RunScriptFile(
     if (scriptFile == 0) {
         scriptFile = fopen(
             filePath,
-            "r"
+            g_zEffectAnim_FileModeRead
         );
         ++includeDepth;
     }
@@ -1476,7 +1540,7 @@ int zInterp_Context::RunStream(
                 if (errorCount == 3) {
                     Logf(
                         this,
-                        "BadCommand (%s) : %s",
+                        "BadCommand (%s): %s",
                         commandToken,
                         lineBuffer
                     );
@@ -1536,7 +1600,7 @@ int zInterp_Context::TokenizeLine(
 
     char *separator = strpbrk(
         cursor,
-        kTokenDelimiters
+        k_zInterp_TokenDelimiters
     );
     while (separator != 0) {
         tokenList[tokenCount] = cursor;
@@ -1555,7 +1619,7 @@ int zInterp_Context::TokenizeLine(
 
         separator = strpbrk(
             cursor,
-            kTokenDelimiters
+            k_zInterp_TokenDelimiters
         );
     }
 
@@ -1576,7 +1640,7 @@ int zInterp_Context::TokenizeLine(
 int zInterp_Context::EchoTokens() {
     for (unsigned int tokenIndex = 0; tokenIndex < tokenCount; ++tokenIndex) {
         printf(
-            "%s ",
+            g_zInterp_PrintTokenWithSpaceFmt,
             tokenList[tokenIndex]
         );
     }
