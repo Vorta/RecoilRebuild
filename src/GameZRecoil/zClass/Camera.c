@@ -521,12 +521,14 @@ namespace zClass_Camera {
         );
     }
 
-    int __fastcall
     /**
      * Reimplements 0x449d20: zClass_Camera::gwCameraSetFlagBit0.
+     * Source: D:\Proj\GameZRecoil\zClass\Camera.c.
+     * Camera data flag bit 0 gates the zSound listener-state update in
+     * BuildWorldTransform.
      * Purpose: validate a camera node and set or clear camera flag bit 0.
      */
-    gwCameraSetFlagBit0(
+    int __fastcall gwCameraSetFlagBit0(
         zClass_NodePartial * node,
         int enabled
     ) {

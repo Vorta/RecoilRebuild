@@ -81,6 +81,173 @@ zReader::Node *g_zDEClient_ConfigReaderRoot = 0;
  */
 int g_zDEClient_RebuildBltRectOnReload = 1;
 /**
+ * Reimplements data 0x4df3c8: g_zDEClient_NodeName.
+ * Purpose: Names the zDEClient ZAR section handler registered after config
+ * loading.
+ */
+char g_zDEClient_NodeName[] = "zDEClient";
+/**
+ * Reimplements data 0x4df3d4: g_zDEClient_QuickSandUntexturedMsg.
+ * Purpose: Reports the quicksand fallback when no texture path was configured.
+ */
+char g_zDEClient_QuickSandUntexturedMsg[] = "Quick sand will NOT be textured";
+/**
+ * Reimplements data 0x4df3f4: g_zDEClient_QuickSandNodeName.
+ * Purpose: Names the QUICK_SAND config node in declient.zrd.
+ */
+char g_zDEClient_QuickSandNodeName[] = "QUICK_SAND";
+/**
+ * Reimplements data 0x4df400: g_zDEClient_TextureAnimNodeName.
+ * Purpose: Names the crater texture animation config node.
+ */
+char g_zDEClient_TextureAnimNodeName[] = "TEXTURE_ANIM";
+/**
+ * Reimplements data 0x4df410: g_zDEClient_DefaultAnimNodeName.
+ * Purpose: Names the default crater animation field.
+ */
+char g_zDEClient_DefaultAnimNodeName[] = "DEFAULT_ANIM";
+/**
+ * Reimplements data 0x4df420: g_zDEClient_DefaultTextureNodeName.
+ * Purpose: Names the default crater/quicksand texture field.
+ */
+char g_zDEClient_DefaultTextureNodeName[] = "DEFAULT_TEXTURE";
+/**
+ * Reimplements data 0x4df430: g_zDEClient_RadiusFieldName.
+ * Purpose: Names the feature radius config field.
+ */
+char g_zDEClient_RadiusFieldName[] = "RADIUS";
+/**
+ * Reimplements data 0x4df438: g_zDEClient_DepthFieldName.
+ * Purpose: Names the feature depth config field.
+ */
+char g_zDEClient_DepthFieldName[] = "DEPTH";
+/**
+ * Reimplements data 0x4df440: g_zDEClient_SlopeFieldName.
+ * Purpose: Names the feature slope config field.
+ */
+char g_zDEClient_SlopeFieldName[] = "SLOPE";
+/**
+ * Reimplements data 0x4df448: g_zDEClient_PointsFieldName.
+ * Purpose: Names the feature point-count config field.
+ */
+char g_zDEClient_PointsFieldName[] = "POINTS";
+/**
+ * Reimplements data 0x4df450: g_zDEClient_CraterNodeName.
+ * Purpose: Names the CRATER config node in declient.zrd.
+ */
+char g_zDEClient_CraterNodeName[] = "CRATER";
+/**
+ * Reimplements data 0x4df458: g_zDEClient_ReadDefaultsFallbackFmt.
+ * Purpose: Formats the declient.zrd load warning that keeps built-in
+ * defaults.
+ */
+char g_zDEClient_ReadDefaultsFallbackFmt[] = "Failed to read (%s), using defaults";
+/**
+ * Reimplements data 0x4df47c: g_zDEClient_ConfigArchiveName.
+ * Purpose: Names the zDEClient config archive loaded at startup.
+ */
+char g_zDEClient_ConfigArchiveName[] = "declient.zrd";
+/**
+ * Reimplements data 0x4df48c: g_zDEClient_SourceFile_ZdecInitCpp.
+ * Purpose: Provides the original source path for zDEClient config diagnostics.
+ */
+char g_zDEClient_SourceFile_ZdecInitCpp[] =
+    "D:\\Proj\\GameZRecoil\\zDEClient\\zdec_init.cpp";
+/**
+ * Reimplements data 0x4df4b8: g_zDEClient_WorldNodeNullErrorMsg.
+ * Purpose: Reports a missing world node during zDEClient config loading.
+ */
+char g_zDEClient_WorldNodeNullErrorMsg[] = "Failed to DEClient: world node is NULL.";
+/**
+ * Reimplements data 0x4df4e0: g_zDEClient_QuickSandInstanceTessellationFailedMsg.
+ * Purpose: Reports quicksand instancing failure when tessellation fails.
+ */
+char g_zDEClient_QuickSandInstanceTessellationFailedMsg[] =
+    "Failed to instance quick sand: Tesselation Failed";
+/**
+ * Reimplements data 0x4df514: g_zDEClient_QuickSandInstanceClipFailedMsg.
+ * Purpose: Reports quicksand instancing failure when feature clipping fails.
+ */
+char g_zDEClient_QuickSandInstanceClipFailedMsg[] =
+    "Failed to instance quick sand: Clip Failed";
+/**
+ * Reimplements data 0x4df540: g_zDEClient_SourceFile_ZdecQsandCpp.
+ * Purpose: Provides the original source path for quicksand feature diagnostics.
+ */
+char g_zDEClient_SourceFile_ZdecQsandCpp[] =
+    "D:\\Proj\\GameZRecoil\\zDEClient\\zdec_qsand.cpp";
+/**
+ * Reimplements data 0x4df570: g_zDEClient_QuickSandInstanceBuildFailedMsg.
+ * Purpose: Reports quicksand instancing failure when display construction fails.
+ */
+char g_zDEClient_QuickSandInstanceBuildFailedMsg[] =
+    "Failed to instance quick sand: Build Failed";
+/**
+ * Reimplements data 0x4df59c: g_zDEClient_FeatureNodeName.
+ * Purpose: Names generated zDEClient terrain feature nodes.
+ */
+char g_zDEClient_FeatureNodeName[] = "ZDEC_FEATURE";
+/**
+ * Reimplements data 0x4df5ac: g_zDEClient_CraterInstanceTessellationFailedMsg.
+ * Purpose: Reports crater instancing failure when tessellation fails.
+ */
+char g_zDEClient_CraterInstanceTessellationFailedMsg[] =
+    "Failed to instance crater: Tesselation Failed";
+/**
+ * Reimplements data 0x4df5dc: g_zDEClient_CraterInstanceClipFailedMsg.
+ * Purpose: Reports crater instancing failure when feature clipping fails.
+ */
+char g_zDEClient_CraterInstanceClipFailedMsg[] =
+    "Failed to instance crater: Clip Failed";
+/**
+ * Reimplements data 0x4df604: g_zDEClient_SourceFile_ZdecCraterCpp.
+ * Purpose: Provides the original source path for crater feature diagnostics.
+ */
+char g_zDEClient_SourceFile_ZdecCraterCpp[] =
+    "D:\\Proj\\GameZRecoil\\zDEClient\\zdec_crater.cpp";
+/**
+ * Reimplements data 0x4df634: g_zDEClient_CraterInstanceBuildFailedMsg.
+ * Purpose: Reports crater instancing failure when display construction fails.
+ */
+char g_zDEClient_CraterInstanceBuildFailedMsg[] =
+    "Failed to instance crater: Build Failed";
+/**
+ * Reimplements data 0x4df65c: g_zDEClient_CraterNameFmt.
+ * Purpose: Formats saved crater feature section names.
+ */
+char g_zDEClient_CraterNameFmt[] = "Crater%d";
+/**
+ * Reimplements data 0x4df668: g_zDEClient_QuickSandNameFmt.
+ * Purpose: Formats saved quicksand feature section names.
+ */
+char g_zDEClient_QuickSandNameFmt[] = "QSand%d";
+RECOIL_STATIC_ASSERT(sizeof(g_zDEClient_NodeName) == 0x0a);
+RECOIL_STATIC_ASSERT(sizeof(g_zDEClient_QuickSandUntexturedMsg) == 0x20);
+RECOIL_STATIC_ASSERT(sizeof(g_zDEClient_QuickSandNodeName) == 0x0b);
+RECOIL_STATIC_ASSERT(sizeof(g_zDEClient_TextureAnimNodeName) == 0x0d);
+RECOIL_STATIC_ASSERT(sizeof(g_zDEClient_DefaultAnimNodeName) == 0x0d);
+RECOIL_STATIC_ASSERT(sizeof(g_zDEClient_DefaultTextureNodeName) == 0x10);
+RECOIL_STATIC_ASSERT(sizeof(g_zDEClient_RadiusFieldName) == 0x07);
+RECOIL_STATIC_ASSERT(sizeof(g_zDEClient_DepthFieldName) == 0x06);
+RECOIL_STATIC_ASSERT(sizeof(g_zDEClient_SlopeFieldName) == 0x06);
+RECOIL_STATIC_ASSERT(sizeof(g_zDEClient_PointsFieldName) == 0x07);
+RECOIL_STATIC_ASSERT(sizeof(g_zDEClient_CraterNodeName) == 0x07);
+RECOIL_STATIC_ASSERT(sizeof(g_zDEClient_ReadDefaultsFallbackFmt) == 0x24);
+RECOIL_STATIC_ASSERT(sizeof(g_zDEClient_ConfigArchiveName) == 0x0d);
+RECOIL_STATIC_ASSERT(sizeof(g_zDEClient_SourceFile_ZdecInitCpp) == 0x2c);
+RECOIL_STATIC_ASSERT(sizeof(g_zDEClient_WorldNodeNullErrorMsg) == 0x28);
+RECOIL_STATIC_ASSERT(sizeof(g_zDEClient_QuickSandInstanceTessellationFailedMsg) == 0x32);
+RECOIL_STATIC_ASSERT(sizeof(g_zDEClient_QuickSandInstanceClipFailedMsg) == 0x2b);
+RECOIL_STATIC_ASSERT(sizeof(g_zDEClient_SourceFile_ZdecQsandCpp) == 0x2d);
+RECOIL_STATIC_ASSERT(sizeof(g_zDEClient_QuickSandInstanceBuildFailedMsg) == 0x2c);
+RECOIL_STATIC_ASSERT(sizeof(g_zDEClient_FeatureNodeName) == 0x0d);
+RECOIL_STATIC_ASSERT(sizeof(g_zDEClient_CraterInstanceTessellationFailedMsg) == 0x2e);
+RECOIL_STATIC_ASSERT(sizeof(g_zDEClient_CraterInstanceClipFailedMsg) == 0x27);
+RECOIL_STATIC_ASSERT(sizeof(g_zDEClient_SourceFile_ZdecCraterCpp) == 0x2e);
+RECOIL_STATIC_ASSERT(sizeof(g_zDEClient_CraterInstanceBuildFailedMsg) == 0x28);
+RECOIL_STATIC_ASSERT(sizeof(g_zDEClient_CraterNameFmt) == 0x09);
+RECOIL_STATIC_ASSERT(sizeof(g_zDEClient_QuickSandNameFmt) == 0x08);
+/**
  * Reimplements data 0x539df0: g_zDEClient_FeatureListFlags.
  * Purpose: Stores the feature entry vector initialization flag byte.
  */
@@ -663,7 +830,7 @@ zDEClient_CraterFeature *__fastcall InitFeatureFromEventTemplate(
                 zGeometry_ClipPatchNodeView *node = *nodeCursor;
                 if (strcmp(
                     node->name,
-                    "ZDEC_FEATURE"
+                    g_zDEClient_FeatureNodeName
                 ) == 0) {
                     zDEClient_FeatureContextOverlapView *context =
                         (zDEClient_FeatureContextOverlapView *)(node->callbackContext);
@@ -752,7 +919,7 @@ int __fastcall CreateFeature(
     if (node != 0) {
         zClass_Class::gwNodeSetName(
             node,
-            "ZDEC_FEATURE"
+            g_zDEClient_FeatureNodeName
         );
         node->callbackContext = (zClass_NodePartial *)(featureInstance);
     }
@@ -902,9 +1069,9 @@ int __fastcall InstanceEvent(
     if (featureInstance == 0) {
         zError::ReportOld(
             0x100,
-            "D:\\Proj\\GameZRecoil\\zDEClient\\zdec_crater.cpp",
+            g_zDEClient_SourceFile_ZdecCraterCpp,
             0x8b,
-            "Failed to instance crater: Build Failed"
+            g_zDEClient_CraterInstanceBuildFailedMsg
         );
         zModel_Const::SetVertexMergeEpsilon(vertexMergeEpsilon);
         return -1;
@@ -914,9 +1081,9 @@ int __fastcall InstanceEvent(
         DestroyFeature(featureInstance);
         zError::ReportOld(
             0x100,
-            "D:\\Proj\\GameZRecoil\\zDEClient\\zdec_crater.cpp",
+            g_zDEClient_SourceFile_ZdecCraterCpp,
             0xc3,
-            "Failed to instance crater: Clip Failed"
+            g_zDEClient_CraterInstanceClipFailedMsg
         );
         zModel_Const::SetVertexMergeEpsilon(vertexMergeEpsilon);
         return -1;
@@ -926,9 +1093,9 @@ int __fastcall InstanceEvent(
         DestroyFeature(featureInstance);
         zError::ReportOld(
             0x100,
-            "D:\\Proj\\GameZRecoil\\zDEClient\\zdec_crater.cpp",
+            g_zDEClient_SourceFile_ZdecCraterCpp,
             0xd2,
-            "Failed to instance crater: Tesselation Failed"
+            g_zDEClient_CraterInstanceTessellationFailedMsg
         );
         zModel_Const::SetVertexMergeEpsilon(vertexMergeEpsilon);
         return -1;
@@ -1199,7 +1366,7 @@ zDEClient_QSandFeature *__fastcall InitFeatureFromEventTemplate(
                 zGeometry_ClipPatchNodeView *node = *nodeCursor;
                 if (strcmp(
                     node->name,
-                    "ZDEC_FEATURE"
+                    g_zDEClient_FeatureNodeName
                 ) == 0) {
                     zDEClient_FeatureContextOverlapView *context =
                         (zDEClient_FeatureContextOverlapView *)(node->callbackContext);
@@ -1301,7 +1468,7 @@ int __fastcall CreateFeature(
 
     zClass_Class::gwNodeSetName(
         node,
-        "ZDEC_FEATURE"
+        g_zDEClient_FeatureNodeName
     );
     node->callbackContext = (zClass_NodePartial *)(featureInstance);
 
@@ -1435,7 +1602,7 @@ int __fastcall CreateFeature(
 
     zClass_Class::gwNodeSetName(
         capNode,
-        "ZDEC_FEATURE"
+        g_zDEClient_FeatureNodeName
     );
     capNode->callbackContext = (zClass_NodePartial *)(featureInstance);
 
@@ -1502,9 +1669,9 @@ int __fastcall InstanceEventMaybeRelay(
     if (featureInstance == 0) {
         zError::ReportOld(
             0x100,
-            "D:\\Proj\\GameZRecoil\\zDEClient\\zdec_qsand.cpp",
+            g_zDEClient_SourceFile_ZdecQsandCpp,
             0x81,
-            "Failed to instance quick sand: Build Failed"
+            g_zDEClient_QuickSandInstanceBuildFailedMsg
         );
         zModel_Const::SetVertexMergeEpsilon(vertexMergeEpsilon);
         return -1;
@@ -1514,9 +1681,9 @@ int __fastcall InstanceEventMaybeRelay(
         DestroyFeature(featureInstance);
         zError::ReportOld(
             0x100,
-            "D:\\Proj\\GameZRecoil\\zDEClient\\zdec_qsand.cpp",
+            g_zDEClient_SourceFile_ZdecQsandCpp,
             0x92,
-            "Failed to instance quick sand: Clip Failed"
+            g_zDEClient_QuickSandInstanceClipFailedMsg
         );
         zModel_Const::SetVertexMergeEpsilon(vertexMergeEpsilon);
         return -1;
@@ -1526,9 +1693,9 @@ int __fastcall InstanceEventMaybeRelay(
         DestroyFeature(featureInstance);
         zError::ReportOld(
             0x100,
-            "D:\\Proj\\GameZRecoil\\zDEClient\\zdec_qsand.cpp",
+            g_zDEClient_SourceFile_ZdecQsandCpp,
             0xa1,
-            "Failed to instance quick sand: Tesselation Failed"
+            g_zDEClient_QuickSandInstanceTessellationFailedMsg
         );
         zModel_Const::SetVertexMergeEpsilon(vertexMergeEpsilon);
         return -1;
@@ -2192,9 +2359,9 @@ int __fastcall LoadConfigResources(
     if (worldNode == 0) {
         zError::ReportOld(
             0x200,
-            "D:\\Proj\\GameZRecoil\\zDEClient\\zdec_init.cpp",
+            g_zDEClient_SourceFile_ZdecInitCpp,
             0x44,
-            "Failed to DEClient: world node is NULL."
+            g_zDEClient_WorldNodeNullErrorMsg
         );
         return -1;
     }
@@ -2204,7 +2371,7 @@ int __fastcall LoadConfigResources(
     zVideo::ReturnSuccessStub();
 
     g_zDEClient_ConfigReaderRoot = zReader::LoadNodeFromPath(
-        "declient.zrd",
+        g_zDEClient_ConfigArchiveName,
         0,
         0
     );
@@ -2213,16 +2380,16 @@ int __fastcall LoadConfigResources(
     if (g_zDEClient_ConfigReaderRoot == 0) {
         zError::ReportOld(
             0x100,
-            "D:\\Proj\\GameZRecoil\\zDEClient\\zdec_init.cpp",
+            g_zDEClient_SourceFile_ZdecInitCpp,
             0x57,
-            "Failed to read (%s), using defaults",
-            "declient.zrd"
+            g_zDEClient_ReadDefaultsFallbackFmt,
+            g_zDEClient_ConfigArchiveName
         );
     }
 
     zReader::Node *const craterNode = zReader_GetNamedNode(
         g_zDEClient_ConfigReaderRoot,
-        "CRATER"
+        g_zDEClient_CraterNodeName
     );
     g_zDEClient_CraterEventTemplateDefaults.featureFlags = 0x100c;
     g_zDEClient_CraterEventTemplateDefaults.pointCount = 7;
@@ -2232,22 +2399,22 @@ int __fastcall LoadConfigResources(
 
     zReader::ReadNamedInt(
         craterNode,
-        "POINTS",
+        g_zDEClient_PointsFieldName,
         &g_zDEClient_CraterEventTemplateDefaults.pointCount
     );
     zReader::ReadNamedFloat(
         craterNode,
-        "SLOPE",
+        g_zDEClient_SlopeFieldName,
         &g_zDEClient_CraterEventTemplateDefaults.slope
     );
     zReader::ReadNamedFloat(
         craterNode,
-        "DEPTH",
+        g_zDEClient_DepthFieldName,
         &g_zDEClient_CraterEventTemplateDefaults.depth
     );
     zReader::ReadNamedFloat(
         craterNode,
-        "RADIUS",
+        g_zDEClient_RadiusFieldName,
         &g_zDEClient_CraterEventTemplateDefaults.radius
     );
 
@@ -2262,7 +2429,7 @@ int __fastcall LoadConfigResources(
             &defaultDisplaySource->craterMaterial,
             (char *)(zReader::ReadNamedString(
                 craterNode,
-                "DEFAULT_TEXTURE"
+                g_zDEClient_DefaultTextureNodeName
             ))
         ) != 0) {
         textureLoadPending = 1;
@@ -2271,12 +2438,12 @@ int __fastcall LoadConfigResources(
     defaultDisplaySource->effectAnimEntry =
         zEffectAnim::FindEntryByName(zReader::ReadNamedString(
             craterNode,
-            "DEFAULT_ANIM"
+            g_zDEClient_DefaultAnimNodeName
         ));
 
     zReader::Node *const textureAnimNode = zReader_GetNamedNode(
         craterNode,
-        "TEXTURE_ANIM"
+        g_zDEClient_TextureAnimNodeName
     );
     if (textureAnimNode != 0) {
         const int textureAnimCount = zReaderArrayCount(textureAnimNode);
@@ -2334,7 +2501,7 @@ int __fastcall LoadConfigResources(
     zReader::Node *const quickSandNode =
         zReader_GetNamedNode(
             g_zDEClient_ConfigReaderRoot,
-            "QUICK_SAND"
+            g_zDEClient_QuickSandNodeName
         );
     if (quickSandNode == 0) {
         g_zDEClient_QuickSandEnabled = 0;
@@ -2342,7 +2509,7 @@ int __fastcall LoadConfigResources(
         zReader::Node *const defaultTextureNode =
             zReader_GetNamedNode(
                 quickSandNode,
-                "DEFAULT_TEXTURE"
+                g_zDEClient_DefaultTextureNodeName
             );
         int textureCount = 1;
         if (defaultTextureNode != 0) {
@@ -2372,22 +2539,22 @@ int __fastcall LoadConfigResources(
 
         zReader::ReadNamedInt(
             quickSandNode,
-            "POINTS",
+            g_zDEClient_PointsFieldName,
             &g_zDEClient_QuickSandEventTemplateDefaults.pointCount
         );
         zReader::ReadNamedFloat(
             quickSandNode,
-            "SLOPE",
+            g_zDEClient_SlopeFieldName,
             &g_zDEClient_QuickSandEventTemplateDefaults.slope
         );
         zReader::ReadNamedFloat(
             quickSandNode,
-            "DEPTH",
+            g_zDEClient_DepthFieldName,
             &g_zDEClient_QuickSandEventTemplateDefaults.depth
         );
         zReader::ReadNamedFloat(
             quickSandNode,
-            "RADIUS",
+            g_zDEClient_RadiusFieldName,
             &g_zDEClient_QuickSandEventTemplateDefaults.radius
         );
 
@@ -2427,9 +2594,9 @@ int __fastcall LoadConfigResources(
             g_zDEClient_QuickSandMaterial = 0;
             zError::ReportOld(
                 0x100,
-                "D:\\Proj\\GameZRecoil\\zDEClient\\zdec_init.cpp",
+                g_zDEClient_SourceFile_ZdecInitCpp,
                 0xef,
-                "Quick sand will NOT be textured"
+                g_zDEClient_QuickSandUntexturedMsg
             );
         }
 
@@ -2467,7 +2634,7 @@ int __fastcall LoadConfigResources(
 
     if (rebuildBltRectOnReload != 0) {
         zUtil_ZAR::RegisterSectionHandler(
-            "zDEClient",
+            g_zDEClient_NodeName,
             ZbdCallbackPtr(&WriteFeatureSectionsToZAR),
             ZbdCallbackPtr(&ApplyFeatureEntry),
             0x3e8,
@@ -2723,7 +2890,7 @@ int __fastcall WriteFeatureSectionsToZAR(
         if (featureEntry.featureType == 1) {
             sprintf(
                 sectionName,
-                "Crater%d",
+                g_zDEClient_CraterNameFmt,
                 craterSectionIndex
             );
             ++craterSectionIndex;
@@ -2736,7 +2903,7 @@ int __fastcall WriteFeatureSectionsToZAR(
         } else if (featureEntry.featureType == 3) {
             sprintf(
                 sectionName,
-                "QSand%d",
+                g_zDEClient_QuickSandNameFmt,
                 qSandSectionIndex
             );
             ++qSandSectionIndex;
@@ -2848,7 +3015,7 @@ void ClearFeatureDisplayNodes() {
 
     zClass_NodePartial *child = zClass::FindByTypeAndName(
         6,
-        "ZDEC_FEATURE"
+        g_zDEClient_FeatureNodeName
     );
     while (child != 0) {
         while (child->listCountA > 0) {
@@ -2875,7 +3042,7 @@ void ClearFeatureDisplayNodes() {
         zClass_Class::DeleteNodeByType(child);
         child = zClass::FindByTypeAndName(
             6,
-            "ZDEC_FEATURE"
+            g_zDEClient_FeatureNodeName
         );
     }
 }

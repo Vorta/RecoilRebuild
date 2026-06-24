@@ -1993,7 +1993,6 @@ int Init() {
         gModel_RenderFn = zModel::RenderNodeHardware;
         g_zModel_SoftwarePathActive = 0;
     } else {
-        gModel_RenderFn = zModel::RenderNodeSoftware;
         g_zModel_SoftwarePathActive = 1;
     }
 
@@ -2007,10 +2006,6 @@ int Init() {
 
     const size_t poolBytes = (size_t)(capacity) * sizeof(zDiPartial);
     g_zModel_DiPoolBase = (zDiPartial *)(malloc(poolBytes));
-    if (g_zModel_DiPoolBase == 0) {
-        return 1;
-    }
-
     memset(
         g_zModel_DiPoolBase,
         0,

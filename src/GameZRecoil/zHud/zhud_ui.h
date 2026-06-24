@@ -2704,6 +2704,12 @@ struct HudUiShieldMessageWidget {
 
 typedef HudUiShieldMessageWidget HudUiShieldMessageWidgetState;
 
+/**
+ * HudUiTimerPanelFloat owner evidence: BN constructor 0x40ef60 installs the
+ * class table at 0x4ce7d8 after HudUiPanel construction, and BN table slot 1
+ * references Draw at 0x40f040 as the only derived override found for this
+ * class.
+ */
 struct HudUiTimerPanelFloat : HudUiPanel {
     float sampleElapsedSec;
     float displayValue;
@@ -2713,6 +2719,13 @@ struct HudUiTimerPanelFloat : HudUiPanel {
     void Draw();
 };
 
+/**
+ * HudUiStringMenu owner evidence: BN InitHudLayouts 0x40f4c0 allocates
+ * 0x3cdc bytes, constructs the HudUiContainer base, array-constructs 23
+ * HudUiPanelSimple items at offset 0x20, installs the string-menu class
+ * table, and later ShutdownResources 0x40fbd0 calls DestructorCore 0x40fdd0
+ * before deleting the object.
+ */
 struct HudUiStringMenu : HudUiContainer {
     unsigned char unknown_10[0x10];
     HudUiPanelSimple items[23];

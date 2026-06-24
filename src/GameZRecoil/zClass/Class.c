@@ -98,6 +98,7 @@ int g_zClass_RenderAlphaScaleStackTop = -1;
  * Purpose: store nested render alpha scale values for traversal restore.
  */
 float g_zClass_RenderAlphaScaleStack[0x10] = {0};
+extern char g_zClass_SourceFile_SwitchC[0x24];
 /**
  * Reimplements data 0x4ddd40: g_zClass_SoftwarePathStateStackTop.
  * BN evidence: object render traversal pushes and pops this index while
@@ -135,7 +136,6 @@ namespace {
     const int kSingleParentFlag = 0x00080000;
     const int kNodeVariantGateFlag = 0x01000000;
     const int kNodeTransformDirtyPropagatedFlag = 0x02000000;
-    const char *kSwitchSourceFile = "D:\\Proj\\GameZRecoil\\zClass\\Switch.c";
 
     /**
      * Original-source helper evidence: no standalone retail function is
@@ -190,7 +190,7 @@ namespace {
         if (parent == 0) {
             zError::ReportOld(
                 0x400,
-                kSwitchSourceFile,
+                g_zClass_SourceFile_SwitchC,
                 nullParentLine,
                 "Null node pointer."
             );
@@ -199,7 +199,7 @@ namespace {
         if (child == 0) {
             zError::ReportOld(
                 0x400,
-                kSwitchSourceFile,
+                g_zClass_SourceFile_SwitchC,
                 nullChildLine,
                 "Null node pointer."
             );
@@ -208,7 +208,7 @@ namespace {
         if (parent->classData == 0) {
             zError::ReportOld(
                 0x400,
-                kSwitchSourceFile,
+                g_zClass_SourceFile_SwitchC,
                 nullClassDataLine,
                 "Null class data pointer"
             );

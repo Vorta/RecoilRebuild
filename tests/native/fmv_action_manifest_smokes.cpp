@@ -1,4 +1,5 @@
 #include "GameZRecoil/zFMV/fmv.h"
+#include "GameZRecoil/include/zImage.h"
 #include "GameZRecoil/zReader/zReader.h"
 #include "GameZRecoil/zRndr/zRndr.h"
 #include "GameZRecoil/zVideo/zVideo.h"
@@ -43,10 +44,24 @@ zVidRect32 *g_fakeFmvAdjustSurfacesSrcRect;
 zVidRect32 *g_fakeFmvAdjustSurfacesDstRect;
 int g_fakeFmvAdjustSurfacesWaitForPresent;
 int g_fakeFmvAdjustSurfacesBlitPrimaryToSwFirst;
+int g_fakeFmvTexDirFindCount;
+const char *g_fakeFmvTexDirFindPath;
+zVidImagePartial *g_fakeFmvTexDirFindResult;
 int g_fakeFmvPostprocessCount;
 int g_fakeFmvSwPostprocessCount;
+int g_fakeFmvBlitToActiveTargetCount;
+zVidImagePartial *g_fakeFmvBlitToActiveTargetImage;
+int g_fakeFmvBlitToActiveTargetDstX;
+int g_fakeFmvBlitToActiveTargetDstY;
+int g_fakeFmvBlitToActiveTargetClipFlags;
+zVidRect32 *g_fakeFmvBlitToActiveTargetSrcRect;
 int g_fakeFmvUnlockPrimaryCount;
 int g_fakeFmvUnlockSwCount;
+int g_fakeFmvSwBltCount;
+zVidImagePartial *g_fakeFmvSwBltImage;
+int g_fakeFmvSwBltColorKeyEnable;
+zVidRect32 *g_fakeFmvSwBltSrcRect;
+zVidRect32 *g_fakeFmvSwBltDstRect;
 int g_fakeFmvSwToPrimaryDirectCount;
 zVidRect32 *g_fakeFmvSwToPrimaryDirectSrcRect;
 zVidRect32 *g_fakeFmvSwToPrimaryDirectDstRect;
@@ -163,6 +178,14 @@ int __fastcall FakeFmvAdjustSurfacesIfEnabled(
     return 0x1234;
 }
 
+zVidImagePartial *__fastcall FakeFmvTexDirFindOrCreateByPath(
+    const char *path
+) {
+    ++g_fakeFmvTexDirFindCount;
+    g_fakeFmvTexDirFindPath = path;
+    return g_fakeFmvTexDirFindResult;
+}
+
 int FakeFmvRunPostprocessOnPrimaryBuffer() {
     ++g_fakeFmvPostprocessCount;
     return 1;
@@ -170,6 +193,21 @@ int FakeFmvRunPostprocessOnPrimaryBuffer() {
 
 void FakeFmvRunPostprocessOnSwBuffer() {
     ++g_fakeFmvSwPostprocessCount;
+}
+
+void __fastcall FakeFmvBlitToActiveTarget(
+    zVidImagePartial *image,
+    int dstX,
+    int dstY,
+    int clipFlags,
+    zVidRect32 *srcRect
+) {
+    ++g_fakeFmvBlitToActiveTargetCount;
+    g_fakeFmvBlitToActiveTargetImage = image;
+    g_fakeFmvBlitToActiveTargetDstX = dstX;
+    g_fakeFmvBlitToActiveTargetDstY = dstY;
+    g_fakeFmvBlitToActiveTargetClipFlags = clipFlags;
+    g_fakeFmvBlitToActiveTargetSrcRect = srcRect;
 }
 
 int FakeFmvDispatchUnlockPrimarySurfaceState() {
@@ -180,6 +218,19 @@ int FakeFmvDispatchUnlockPrimarySurfaceState() {
 int FakeFmvDispatchUnlockSwSurfaceState() {
     ++g_fakeFmvUnlockSwCount;
     return 1;
+}
+
+void __fastcall FakeFmvBltSwToPrimaryRect(
+    zVidImagePartial *srcImage,
+    int srcColorKeyEnable,
+    zVidRect32 *srcRect,
+    zVidRect32 *dstRect
+) {
+    ++g_fakeFmvSwBltCount;
+    g_fakeFmvSwBltImage = srcImage;
+    g_fakeFmvSwBltColorKeyEnable = srcColorKeyEnable;
+    g_fakeFmvSwBltSrcRect = srcRect;
+    g_fakeFmvSwBltDstRect = dstRect;
 }
 
 void __fastcall FakeFmvBltSwToPrimaryRectDirect(
@@ -532,6 +583,234 @@ extern "C" int zfmv_action_image_constructor_scaled_smoke(void) {
                    action.blitRect.bottom == 600
                ? 0
                : 1;
+}
+
+extern "C" int zfmv_action_image_begin_smoke(void) {
+    CodeFunctionPatch findPatch = {};
+    if (!PatchFunctionJump(
+            reinterpret_cast<void *>(&zImage::TexDir_FindOrCreateByPath),
+            reinterpret_cast<void *>(&FakeFmvTexDirFindOrCreateByPath),
+            findPatch
+        )) {
+        return 1;
+    }
+
+    zVidImagePartial image = {};
+    zFMV_ActionImage action = {};
+    action.imagePath = const_cast<char *>("begin.raw");
+    action.image = reinterpret_cast<void *>(0x33333333);
+    g_fakeFmvTexDirFindCount = 0;
+    g_fakeFmvTexDirFindPath = 0;
+    g_fakeFmvTexDirFindResult = &image;
+
+    action.Begin(45.0);
+
+    const bool ok =
+        action.image == &image &&
+        g_fakeFmvTexDirFindCount == 1 &&
+        g_fakeFmvTexDirFindPath == action.imagePath;
+
+    action.image = 0;
+    action.imagePath = 0;
+    RestoreFunctionPatch(findPatch);
+    return ok ? 0 : 2;
+}
+
+extern "C" int zfmv_action_image_update_smoke(void) {
+    CodeFunctionPatch postPatch = {};
+    if (!PatchFunctionJump(
+            reinterpret_cast<void *>(&zVideo::RunPostprocessOnPrimaryBuffer),
+            reinterpret_cast<void *>(&FakeFmvRunPostprocessOnPrimaryBuffer),
+            postPatch
+        )) {
+        return 1;
+    }
+
+    CodeFunctionPatch blitPatch = {};
+    if (!PatchFunctionJump(
+            reinterpret_cast<void *>(&zVid_Image::BlitToActiveTarget),
+            reinterpret_cast<void *>(&FakeFmvBlitToActiveTarget),
+            blitPatch
+        )) {
+        RestoreFunctionPatch(postPatch);
+        return 2;
+    }
+
+    CodeFunctionPatch unlockPatch = {};
+    if (!PatchFunctionJump(
+            reinterpret_cast<void *>(&zVideo::Dispatch_UnlockPrimarySurfaceState),
+            reinterpret_cast<void *>(&FakeFmvDispatchUnlockPrimarySurfaceState),
+            unlockPatch
+        )) {
+        RestoreFunctionPatch(blitPatch);
+        RestoreFunctionPatch(postPatch);
+        return 3;
+    }
+
+    CodeFunctionPatch adjustPatch = {};
+    if (!PatchFunctionJump(
+            reinterpret_cast<void *>(&zVideo::AdjustSurfacesIfEnabled),
+            reinterpret_cast<void *>(&FakeFmvAdjustSurfacesIfEnabled),
+            adjustPatch
+        )) {
+        RestoreFunctionPatch(unlockPatch);
+        RestoreFunctionPatch(blitPatch);
+        RestoreFunctionPatch(postPatch);
+        return 4;
+    }
+
+    const int oldRendererPath = g_zVideo_ActiveRendererPath;
+    zVideo_BltImageRectProc oldSwBlt = g_zVideo_pfnBltSwToPrimaryRect;
+    g_zVideo_pfnBltSwToPrimaryRect = &FakeFmvBltSwToPrimaryRect;
+
+    zVidImagePartial image = {};
+    zFMV_ActionImage action = {};
+    action.imagePath = 0;
+    action.image = 0;
+    g_zVideo_ActiveRendererPath = 2;
+    g_fakeFmvPostprocessCount = 0;
+    g_fakeFmvBlitToActiveTargetCount = 0;
+    g_fakeFmvUnlockPrimaryCount = 0;
+    g_fakeFmvSwBltCount = 0;
+    g_fakeFmvAdjustSurfacesCount = 0;
+    const bool nullImageOk =
+        action.Update(1.25) == 0 &&
+        g_fakeFmvPostprocessCount == 0 &&
+        g_fakeFmvBlitToActiveTargetCount == 0 &&
+        g_fakeFmvUnlockPrimaryCount == 0 &&
+        g_fakeFmvSwBltCount == 0 &&
+        g_fakeFmvAdjustSurfacesCount == 0;
+
+    action.image = &image;
+    action.forcePrimaryPostprocess = 0;
+    action.doAdjustSurfaces = 1;
+    action.blitRect.left = 10;
+    action.blitRect.top = 20;
+    action.blitRect.right = 300;
+    action.blitRect.bottom = 400;
+    g_zVideo_ActiveRendererPath = 0;
+    g_fakeFmvSwBltCount = 0;
+    g_fakeFmvSwBltImage = 0;
+    g_fakeFmvSwBltColorKeyEnable = -1;
+    g_fakeFmvSwBltSrcRect = reinterpret_cast<zVidRect32 *>(0x11111111);
+    g_fakeFmvSwBltDstRect = 0;
+    g_fakeFmvAdjustSurfacesCount = 0;
+    g_fakeFmvAdjustSurfacesSrcRect = reinterpret_cast<zVidRect32 *>(0x22222222);
+    g_fakeFmvAdjustSurfacesDstRect = reinterpret_cast<zVidRect32 *>(0x33333333);
+    g_fakeFmvAdjustSurfacesWaitForPresent = 0;
+    g_fakeFmvAdjustSurfacesBlitPrimaryToSwFirst = 0;
+    g_fakeFmvPostprocessCount = 0;
+    g_fakeFmvBlitToActiveTargetCount = 0;
+    g_fakeFmvUnlockPrimaryCount = 0;
+    const bool softwareOk =
+        action.Update(2.5) == 0 &&
+        g_fakeFmvSwBltCount == 1 &&
+        g_fakeFmvSwBltImage == &image &&
+        g_fakeFmvSwBltColorKeyEnable == 0 &&
+        g_fakeFmvSwBltSrcRect == 0 &&
+        g_fakeFmvSwBltDstRect == &action.blitRect &&
+        g_fakeFmvAdjustSurfacesCount == 1 &&
+        g_fakeFmvAdjustSurfacesSrcRect == 0 &&
+        g_fakeFmvAdjustSurfacesDstRect == 0 &&
+        g_fakeFmvAdjustSurfacesWaitForPresent == 1 &&
+        g_fakeFmvAdjustSurfacesBlitPrimaryToSwFirst == 1 &&
+        g_fakeFmvPostprocessCount == 0 &&
+        g_fakeFmvBlitToActiveTargetCount == 0 &&
+        g_fakeFmvUnlockPrimaryCount == 0;
+
+    action.doAdjustSurfaces = 0;
+    action.forcePrimaryPostprocess = 0;
+    action.blitRect.left = 33;
+    action.blitRect.top = 44;
+    g_zVideo_ActiveRendererPath = 2;
+    g_fakeFmvPostprocessCount = 0;
+    g_fakeFmvBlitToActiveTargetCount = 0;
+    g_fakeFmvBlitToActiveTargetImage = 0;
+    g_fakeFmvBlitToActiveTargetDstX = 0;
+    g_fakeFmvBlitToActiveTargetDstY = 0;
+    g_fakeFmvBlitToActiveTargetClipFlags = -1;
+    g_fakeFmvBlitToActiveTargetSrcRect =
+        reinterpret_cast<zVidRect32 *>(0x44444444);
+    g_fakeFmvUnlockPrimaryCount = 0;
+    g_fakeFmvAdjustSurfacesCount = 0;
+    g_fakeFmvSwBltCount = 0;
+    const bool postprocessOk =
+        action.Update(3.75) == 0 &&
+        g_fakeFmvPostprocessCount == 2 &&
+        g_fakeFmvBlitToActiveTargetCount == 2 &&
+        g_fakeFmvBlitToActiveTargetImage == &image &&
+        g_fakeFmvBlitToActiveTargetDstX == 33 &&
+        g_fakeFmvBlitToActiveTargetDstY == 44 &&
+        g_fakeFmvBlitToActiveTargetClipFlags == 0 &&
+        g_fakeFmvBlitToActiveTargetSrcRect == 0 &&
+        g_fakeFmvUnlockPrimaryCount == 2 &&
+        g_fakeFmvAdjustSurfacesCount == 0 &&
+        g_fakeFmvSwBltCount == 0;
+
+    action.image = 0;
+    g_zVideo_pfnBltSwToPrimaryRect = oldSwBlt;
+    g_zVideo_ActiveRendererPath = oldRendererPath;
+    RestoreFunctionPatch(adjustPatch);
+    RestoreFunctionPatch(unlockPatch);
+    RestoreFunctionPatch(blitPatch);
+    RestoreFunctionPatch(postPatch);
+    return nullImageOk && softwareOk && postprocessOk ? 0 : 5;
+}
+
+extern "C" int zfmv_action_image_lifecycle_smoke(void) {
+    zFMV_ActionImage action = {};
+    action.imagePath = 0;
+    action.image = 0;
+    action.End();
+    const bool nullEndOk = action.image == 0;
+
+    action.image = &zVid_Image::g_zImage_DefaultImage;
+    action.End();
+    const bool releaseEndOk = action.image == 0;
+
+    if (!nullEndOk || !releaseEndOk) {
+        return 4;
+    }
+
+    void *const directStorage = std::malloc(sizeof(zFMV_ActionImage));
+    if (directStorage == 0) {
+        return 1;
+    }
+    zFMV_ActionImage *const directAction =
+        new (directStorage) zFMV_ActionImage();
+    directAction->image = &zVid_Image::g_zImage_DefaultImage;
+    directAction->imagePath = 0;
+    directAction->imagePath = static_cast<char *>(std::malloc(6));
+    if (directAction->imagePath == 0) {
+        std::free(directStorage);
+        return 2;
+    }
+    std::strcpy(
+        directAction->imagePath,
+        "path"
+    );
+    directAction->~zFMV_ActionImage();
+    const bool destructorOk =
+        directAction->image == 0 &&
+        directAction->imagePath == 0;
+    std::free(directStorage);
+
+    zFMV_ActionImage *const heapAction = new zFMV_ActionImage();
+    heapAction->image = &zVid_Image::g_zImage_DefaultImage;
+    heapAction->imagePath = 0;
+    heapAction->imagePath = static_cast<char *>(std::malloc(5));
+    if (heapAction->imagePath == 0) {
+        heapAction->image = 0;
+        delete heapAction;
+        return 3;
+    }
+    std::strcpy(
+        heapAction->imagePath,
+        "heap"
+    );
+    delete heapAction;
+
+    return nullEndOk && releaseEndOk && destructorOk ? 0 : 4;
 }
 
 extern "C" int zfmv_action_fade_constructor_smoke(void) {

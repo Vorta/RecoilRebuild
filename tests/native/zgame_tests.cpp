@@ -226,6 +226,69 @@ bool EnterSupportDirectoryForRetailZbdTest(char *oldDir, DWORD oldDirSize) {
     return false;
 }
 
+bool ExistingNonEmptyFileForTest(const char *path) {
+    WIN32_FILE_ATTRIBUTE_DATA data = {};
+    if (GetFileAttributesExA(path, GetFileExInfoStandard, &data) == 0) {
+        return false;
+    }
+    return (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0 &&
+        (data.nFileSizeHigh != 0 || data.nFileSizeLow != 0);
+}
+
+bool RetailMissionScriptFixturesAvailableForTest(void) {
+    const char *const requiredFiles[] = {
+        "support\\initm1.gw",
+        "support\\initm3.gw",
+        "support\\commonm1.gw",
+        "support\\loadm1.gw",
+        "support\\tex_fxm1.gw",
+        "support\\commonm3.gw",
+        "support\\loadm3.gw",
+        "support\\tex_fxm3.gw",
+        "m1.gs",
+        "m1_zbd.gs",
+        "m3.gs",
+        "m3_zbd.gs",
+    };
+    for (int index = 0;
+         index < static_cast<int>(sizeof(requiredFiles) / sizeof(requiredFiles[0]));
+         ++index) {
+        if (!ExistingNonEmptyFileForTest(requiredFiles[index])) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool EnterRetailSupportScriptsDirectoryForTest(char *oldDir, DWORD oldDirSize) {
+    if (GetCurrentDirectoryA(oldDirSize, oldDir) == 0) {
+        return false;
+    }
+
+    const char *candidates[] = {
+        "support\\scripts",
+        "..\\support\\scripts",
+        "..\\..\\support\\scripts",
+        "..\\..\\..\\support\\scripts",
+        "..\\..\\..\\..\\support\\scripts",
+    };
+    for (int i = 0; i < static_cast<int>(sizeof(candidates) / sizeof(candidates[0])); ++i) {
+        const DWORD attributes = GetFileAttributesA(candidates[i]);
+        if (attributes != INVALID_FILE_ATTRIBUTES &&
+            (attributes & FILE_ATTRIBUTE_DIRECTORY) != 0 &&
+            SetCurrentDirectoryA(candidates[i]) != 0) {
+            if (RetailMissionScriptFixturesAvailableForTest()) {
+                return true;
+            }
+            if (SetCurrentDirectoryA(oldDir) == 0) {
+                return false;
+            }
+        }
+    }
+
+    return false;
+}
+
 std::int32_t FloatBitsForTest(float value) {
     std::int32_t raw = 0;
     std::memcpy(&raw, &value, sizeof(raw));
@@ -438,6 +501,9 @@ extern "C" int zmodel_small_poly_reject_thresholds_smoke() {
     return negativeOk ? 0 : 2;
 }
 
+#endif
+#if !defined(RECOIL_ZGAME_TESTS_ZMODEL_CONST_ONLY) || \
+    defined(RECOIL_ZGAME_TESTS_ZMODEL_VERTEX_SHADING_ENABLED)
 extern "C" int zmodel_set_vertex_shading_enabled_smoke() {
     const int savedVertexShadingEnabled = g_zModel_VertexShadingEnabled;
 
@@ -454,6 +520,8 @@ extern "C" int zmodel_set_vertex_shading_enabled_smoke() {
     return signedValueOk ? 0 : 2;
 }
 
+#endif
+#ifndef RECOIL_ZGAME_TESTS_ZMODEL_CONST_ONLY
 extern "C" int zmodel_render_state_setters_smoke(void) {
     gModel_RenderVertexAlphaEnabled = -1;
     zModel_RenderVertexAlphaEnabled_SetCurrent(3);
@@ -4873,7 +4941,7 @@ extern "C" int zmodel_init_smoke(void) {
 
     g_zModel_DiPoolBase = nullptr;
     g_zModel_DiPoolCapacity = 0;
-    gModel_RenderFn = savedRenderFn;
+    gModel_RenderFn = zModel::RenderNodeHardware;
     g_zModel_SoftwarePathActive = 0;
     g_zVideo_ActiveRendererPath = 0;
 
@@ -4882,7 +4950,7 @@ extern "C" int zmodel_init_smoke(void) {
     const bool softwareOk = softwareResult == 0 && defaultPool != nullptr &&
                             g_zModel_DiPoolCapacity == 1750 &&
                             g_zModel_SoftwarePathActive == 1 &&
-                            gModel_RenderFn == zModel::RenderNodeSoftware &&
+                            gModel_RenderFn == zModel::RenderNodeHardware &&
                             defaultPool[1749].nextFreeIndex == -1;
     std::free(defaultPool);
 
@@ -7274,6 +7342,7 @@ extern "C" int hud_sensor_tracker_load_mission_core_resources_smoke() {
     zOpt_CameraSection **const oldCamera = g_zOpt_CameraSectionOption;
     zVideo_QueryMemoryBytesProc oldQueryTextureMemory = g_zVideo_pfnQueryTextureMemoryBytes;
     int *const oldTextureMemoryOption = g_zImage_TextureMemoryOption;
+    char oldCurrentDir[MAX_PATH] = {};
 
     zOpt_ViewRectSection render{};
     zOpt_ViewRectSection display{};
@@ -7289,36 +7358,34 @@ extern "C" int hud_sensor_tracker_load_mission_core_resources_smoke() {
     g_zVideo_pfnQueryTextureMemoryBytes = TextureMemoryQueryMissingStub;
     g_zImage_TextureMemoryOption = &textureMemoryOption;
 
-    CreateDirectoryA("support", nullptr);
+    if (!EnterRetailSupportScriptsDirectoryForTest(oldCurrentDir, sizeof(oldCurrentDir))) {
+        g_zArchive_MountedList = oldMountedList;
+        g_zOpt_RenderSectionOption = oldRender;
+        g_zOpt_DisplaySectionOption = oldDisplay;
+        g_zOpt_CameraSectionOption = oldCamera;
+        g_zVideo_pfnQueryTextureMemoryBytes = oldQueryTextureMemory;
+        g_zImage_TextureMemoryOption = oldTextureMemoryOption;
+        return 1;
+    }
 
-    const char *paths[] = {
-        "support\\initm1.gw",
-        "support\\initm3.gw",
-        "m1.gs",
-        "custom_mission.gs",
-    };
-
-    for (int index = 0; index < 4; ++index) {
-        FILE *const file = std::fopen(paths[index], "wb");
-        if (file == nullptr) {
-            g_zArchive_MountedList = oldMountedList;
-            g_zOpt_RenderSectionOption = oldRender;
-            g_zOpt_DisplaySectionOption = oldDisplay;
-            g_zOpt_CameraSectionOption = oldCamera;
-            g_zVideo_pfnQueryTextureMemoryBytes = oldQueryTextureMemory;
-            g_zImage_TextureMemoryOption = oldTextureMemoryOption;
-            return 1;
-        }
-        std::fclose(file);
+    if (!RetailMissionScriptFixturesAvailableForTest()) {
+        SetCurrentDirectoryA(oldCurrentDir);
+        g_zArchive_MountedList = oldMountedList;
+        g_zOpt_RenderSectionOption = oldRender;
+        g_zOpt_DisplaySectionOption = oldDisplay;
+        g_zOpt_CameraSectionOption = oldCamera;
+        g_zVideo_pfnQueryTextureMemoryBytes = oldQueryTextureMemory;
+        g_zImage_TextureMemoryOption = oldTextureMemoryOption;
+        return 1;
     }
 
     HudSensorTracker defaultTracker = {};
     defaultTracker.Constructor();
-    defaultTracker.missionFlags = 0;
+    defaultTracker.SetZbdPath("support\\initm1.gw");
     const int defaultResult = defaultTracker.LoadMissionCoreResources();
     const bool defaultOk =
         defaultResult == 1 && defaultTracker.missionId == 1 &&
-        std::strcmp((const char *)defaultTracker.zbdPath, "m1.gs") == 0 &&
+        std::strcmp((const char *)defaultTracker.zbdPath, "support\\initm1.gw") == 0 &&
         defaultTracker.missionLoaded == 1 && defaultTracker.raceCheckpointMode == 0 &&
         std::strcmp(g_HudSensor_MissionSoundSetName, "M1") == 0 &&
         defaultTracker.worldNode == nullptr && defaultTracker.cameraNode == nullptr &&
@@ -7328,18 +7395,15 @@ extern "C" int hud_sensor_tracker_load_mission_core_resources_smoke() {
     HudSensorTracker customTracker = {};
     customTracker.Constructor();
     customTracker.missionId = 3;
-    customTracker.SetZbdPath("custom_mission.gs");
+    customTracker.SetZbdPath("support\\initm3.gw");
     const int customResult = customTracker.LoadMissionCoreResources();
     const bool customOk =
         customResult == 1 && customTracker.missionId == 3 &&
-        std::strcmp((const char *)customTracker.zbdPath, "custom_mission.gs") == 0 &&
+        std::strcmp((const char *)customTracker.zbdPath, "support\\initm3.gw") == 0 &&
         customTracker.missionLoaded == 1 &&
         std::strcmp(g_HudSensor_MissionSoundSetName, "M3") == 0;
 
-    for (int index = 0; index < 4; ++index) {
-        DeleteFileA(paths[index]);
-    }
-    RemoveDirectoryA("support");
+    SetCurrentDirectoryA(oldCurrentDir);
 
     defaultTracker.Shutdown();
     customTracker.Shutdown();

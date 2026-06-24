@@ -267,6 +267,22 @@ OptCatalogAllocRuntimeGateCallback g_OptCatalog_AltGunDispatchNoOpCallback = 0;
  * is being handled.
  */
 int g_OptCatalogProcessRuntimeRelayEnabled = 1;
+/**
+ * Reimplements data 0x4df804: g_zEffectAnim_TokenRange.
+ * BN data shape: char[0x6] "RANGE"; xrefs from
+ * zSndSystem::InitNamedSetsSyntax and zWeapon::LoadOptCatalogFromPath.
+ * Purpose: names the RANGE parser field shared by sound sample ranges and
+ * OptCatalog projectile ranges.
+ */
+char g_zEffectAnim_TokenRange[0x6] = "RANGE";
+/**
+ * Reimplements data 0x4df80c: g_zEffectAnim_TokenBounceSound.
+ * BN data shape: char[0x0d] "BOUNCE_SOUND"; xref from
+ * OptCatalog::LoadFxSpecFromReaderNode.
+ * Purpose: names the optional bounce-sound sample list in OptCatalog effect
+ * specs.
+ */
+char g_zEffectAnim_TokenBounceSound[0x0d] = "BOUNCE_SOUND";
 }
 
 namespace {
@@ -1385,7 +1401,7 @@ namespace zWeapon {
 
                     if (zReader::ReadNamedFloat(
                         entryNode,
-                        "RANGE",
+                        g_zEffectAnim_TokenRange,
                         &entry->range
                     ) != 0) {
                         entry->rangeSq = entry->range * entry->range;
@@ -2046,7 +2062,7 @@ namespace OptCatalog {
 
         fieldNode = zReader_GetNamedNode(
             specNode,
-            "BOUNCE_SOUND"
+            g_zEffectAnim_TokenBounceSound
         );
         if (fieldNode != 0) {
             const int count = zReaderArrayCount(fieldNode);

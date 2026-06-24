@@ -6379,6 +6379,8 @@ westwood_online_upgrade_api_event_sink_on_bootstrap_server_list_smoke(void)
     HANDLE const oldInitWaitEvent0 = g_WestwoodOnlineUpgradeInitWaitEvents[0];
     WestwoodOnlineUpgradeBootstrapServerRecord const oldSelected =
         g_WestwoodOnlineUpgradeSelectedBootstrapServer;
+    int const oldSelectedMissionIndex =
+        g_WestwoodOnlineUpgradeSelectedMissionIndex;
 
     unsigned char dialogStorage[sizeof(WestwoodOnlineUpgradeDialog)] = {0};
 
@@ -6405,7 +6407,6 @@ westwood_online_upgrade_api_event_sink_on_bootstrap_server_list_smoke(void)
     strcpy(serverB.m_connectData, "beta-data");
     strcpy(serverB.m_playerName, "OldP");
     strcpy(serverB.m_connectString, "OldC");
-    serverB.reserved0f8[0] = 0x7c;
     serverC.m_gameType = 3;
     strcpy(serverC.m_serverName, "Gamma");
     strcpy(serverC.m_serverType, "IRC");
@@ -6449,7 +6450,7 @@ westwood_online_upgrade_api_event_sink_on_bootstrap_server_list_smoke(void)
     memset(&g_WestwoodOnlineUpgradeSelectedBootstrapServer,
            0,
            sizeof(g_WestwoodOnlineUpgradeSelectedBootstrapServer));
-    g_WestwoodOnlineUpgradeSelectedBootstrapServer.reserved0f8[0] = 0x6b;
+    g_WestwoodOnlineUpgradeSelectedMissionIndex = 0x12345678;
     g_bootstrapSetEventCalls = 0;
     result =
         WestwoodOnlineUpgradeApiEventSink::OnBootstrapServerList(0, 0, &serverA);
@@ -6469,7 +6470,7 @@ westwood_online_upgrade_api_event_sink_on_bootstrap_server_list_smoke(void)
                 "Pilot") != 0 ||
          strcmp(g_WestwoodOnlineUpgradeSelectedBootstrapServer.m_connectString,
                 "Conn") != 0 ||
-         g_WestwoodOnlineUpgradeSelectedBootstrapServer.reserved0f8[0] != 0x6b))
+         g_WestwoodOnlineUpgradeSelectedMissionIndex != 0x12345678))
     {
         failure = 4;
     }
@@ -6480,6 +6481,7 @@ westwood_online_upgrade_api_event_sink_on_bootstrap_server_list_smoke(void)
     g_WestwoodOnlineUpgradeFailureEvent = oldFailureEvent;
     g_WestwoodOnlineUpgradeInitWaitEvents[0] = oldInitWaitEvent0;
     g_WestwoodOnlineUpgradeSelectedBootstrapServer = oldSelected;
+    g_WestwoodOnlineUpgradeSelectedMissionIndex = oldSelectedMissionIndex;
     RestoreImportPatch(setEventPatch);
     return failure;
 }

@@ -2,6 +2,17 @@
 #include "GameZRecoil/zMath/zMath.h"
 #include "GameZRecoil/zVideo/zVideo.h"
 
+extern "C" {
+/**
+ * Reimplements data 0x4dec88: g_zClass_SourceFile_SwitchC.
+ * BN data inventory declares writable Switch.c source path char[0x24], and
+ * Switch.c parent/child validation callers reference it for zError reports.
+ * Purpose: preserve the legacy source-file literal for switch-node diagnostics.
+ */
+char g_zClass_SourceFile_SwitchC[0x24] =
+    "D:\\Proj\\GameZRecoil\\zClass\\Switch.c";
+}
+
 namespace {
     /**
      * Original-source helper evidence: no standalone retail function exists.

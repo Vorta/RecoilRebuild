@@ -274,6 +274,10 @@ extern int g_zNetwork_PlayerColorInUseFlags[16];
 extern zNetworkDispatchHandlerListNode *g_zNetwork_DispatchHandlerListSentinel;
 extern int g_zNetwork_DispatchHandlerListCount;
 extern unsigned char g_zNetwork_DispatchHandlerListFlags;
+extern char g_zNetwork_ProviderName_Modem[0x6];
+extern char g_zNetwork_ProviderName_TcpIp[0x7];
+extern char g_zNetwork_ProviderName_Ipx[0x4];
+extern char g_zNetwork_ModemSessionName[0xd];
 
 int zNetwork_DPlay_DestroyCachedLocalPlayer();
 int zNetwork_GetLocalPlayerKey();

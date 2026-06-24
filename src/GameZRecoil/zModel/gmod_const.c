@@ -7,13 +7,172 @@
 #include <stdlib.h>
 #include <string.h>
 
+/**
+ * Reimplements data 0x4e13a0: g_zModel_SourceFile_GmodConstC.
+ * Data owner: geometry_model_assets.zmodel_gmod_const_literals.
+ * Purpose: store the writable gmod_const.c source-file path used by model
+ * buffer diagnostics.
+ *
+ * Retail 0x4e13a0: initialized .data char[0x28] literal
+ * "D:\\Proj\\GameZRecoil\\zModel\\gmod_const.c".
+ */
+char g_zModel_SourceFile_GmodConstC[0x28] =
+    "D:\\Proj\\GameZRecoil\\zModel\\gmod_const.c";
+RECOIL_STATIC_ASSERT(sizeof(g_zModel_SourceFile_GmodConstC) == 0x28);
+
+/*
+ * BN identifies the gmod_const.c Model3D diagnostics as writable .data char
+ * arrays in this order, including VC alignment padding between rows.
+ */
+/**
+ * Reimplements data 0x4e13c8: g_zModel_WriteModel3dBufferErrorMsg.
+ * Purpose: store the writable Model3D buffer write failure diagnostic.
+ */
+char g_zModel_WriteModel3dBufferErrorMsg[0x1e] =
+    "Error writing model3d buffer.";
+/**
+ * Reimplements data 0x4e13e8: g_zModel_ReadModel3dBufferDataErrorMsg.
+ * Purpose: store the writable Model3D buffer read failure diagnostic.
+ */
+char g_zModel_ReadModel3dBufferDataErrorMsg[0x29] =
+    "Error reading GameZ Model3D buffer data.";
+/**
+ * Reimplements data 0x4e1414: g_zModel_ReadModel3dBufferHeaderErrorMsg.
+ * Purpose: store the writable Model3D buffer header read failure diagnostic.
+ */
+char g_zModel_ReadModel3dBufferHeaderErrorMsg[0x30] =
+    "Error reading GameZ Model3D buffer header data.";
+/**
+ * Reimplements data 0x4e1444: g_zModel_ReadModel3dPolyTexVertDataErrorMsg.
+ * Purpose: store the writable Model3D polygon texture-vertex read diagnostic.
+ */
+char g_zModel_ReadModel3dPolyTexVertDataErrorMsg[0x39] =
+    "Error reading GameZ Model3D polygon texture vertex data.";
+/**
+ * Reimplements data 0x4e1480: g_zModel_ReadModel3dPolyVertNormalIndexErrorMsg.
+ * Purpose: store the writable Model3D polygon normal-index read diagnostic.
+ */
+char g_zModel_ReadModel3dPolyVertNormalIndexErrorMsg[0x39] =
+    "Error reading GameZ Model3D polygon vertex normal index.";
+/**
+ * Reimplements data 0x4e14bc: g_zModel_ReadModel3dPolyVertIndexErrorMsg.
+ * Purpose: store the writable Model3D polygon vertex-index read diagnostic.
+ */
+char g_zModel_ReadModel3dPolyVertIndexErrorMsg[0x32] =
+    "Error reading GameZ Model3D polygon vertex index.";
+/**
+ * Reimplements data 0x4e14f0: g_zModel_ReadModel3dPolygonBufferErrorMsg.
+ * Purpose: store the writable Model3D polygon-buffer read diagnostic.
+ */
+char g_zModel_ReadModel3dPolygonBufferErrorMsg[0x2c] =
+    "Error reading GameZ Model3D polygon buffer.";
+/**
+ * Reimplements data 0x4e151c: g_zModel_ReadModel3dPointLightDataErrorMsg.
+ * Purpose: store the writable Model3D point-light data read diagnostic.
+ */
+char g_zModel_ReadModel3dPointLightDataErrorMsg[0x2e] =
+    "Error reading GameZ Model3D point light data.";
+/**
+ * Reimplements data 0x4e154c: g_zModel_ReadModel3dMorphVertexDataErrorMsg.
+ * Purpose: store the writable Model3D morph-vertex read diagnostic.
+ */
+char g_zModel_ReadModel3dMorphVertexDataErrorMsg[0x2f] =
+    "Error reading GameZ Model3D morph vertex data.";
+/**
+ * Reimplements data 0x4e157c: g_zModel_ReadModel3dVertexNormalDataErrorMsg.
+ * Purpose: store the writable Model3D vertex-normal read diagnostic.
+ */
+char g_zModel_ReadModel3dVertexNormalDataErrorMsg[0x30] =
+    "Error reading GameZ Model3D vertex normal data.";
+/**
+ * Reimplements data 0x4e15ac: g_zModel_ReadModel3dVertexDataErrorMsg.
+ * Purpose: store the writable Model3D vertex read diagnostic.
+ */
+char g_zModel_ReadModel3dVertexDataErrorMsg[0x29] =
+    "Error reading GameZ Model3D vertex data.";
+/**
+ * Reimplements data 0x4e15d8: g_zModel_CreateModel3dBufferFullErrorMsg.
+ * Purpose: store the writable Model3D create-buffer-full diagnostic.
+ */
+char g_zModel_CreateModel3dBufferFullErrorMsg[0x2c] =
+    "ERROR: Creating Model3D; model buffer full.";
+/**
+ * Reimplements data 0x4e1604: g_zModel_CreateModel3dApproachingLimitFmt.
+ * Purpose: store the writable Model3D creation limit warning format.
+ */
+char g_zModel_CreateModel3dApproachingLimitFmt[0x28] =
+    "         Approaching max allowable: %d\n";
+/**
+ * Reimplements data 0x4e162c: g_zModel_VertexCountWarningFmt.
+ * Purpose: store the writable model vertex-count warning format.
+ */
+char g_zModel_VertexCountWarningFmt[0x2f] =
+    "%s: Line %d: WARNING: Model vertex count = %d\n";
+/**
+ * Reimplements data 0x4e165c: g_zModel_NormalCountWarningFmt.
+ * Purpose: store the writable model normal-count warning format.
+ */
+char g_zModel_NormalCountWarningFmt[0x2f] =
+    "%s: Line %d: WARNING: Model normal count = %d\n";
+/**
+ * Reimplements data 0x4e168c: g_zModel_AddPolygonTooFewVertsFmt.
+ * Purpose: store the writable AddPolygon too-few-vertices diagnostic format.
+ */
+char g_zModel_AddPolygonTooFewVertsFmt[0x2d] =
+    "Attempting to add polygon with only %d verts";
+/**
+ * Reimplements data 0x4e16bc: g_zModel_AddNonPlanarPolygonTriangulatingFmt.
+ * Purpose: store the writable non-planar AddPolygon triangulation diagnostic.
+ */
+char g_zModel_AddNonPlanarPolygonTriangulatingFmt[0x42] =
+    "Attempting to add non-planar polygon (%d verts), triangulating...";
+/**
+ * Reimplements data 0x4e1700: g_zModel_DiscardPolygonAfterCheckColinearityFmt.
+ * Purpose: store the writable AddPolygon colinearity discard diagnostic.
+ */
+char g_zModel_DiscardPolygonAfterCheckColinearityFmt[0x41] =
+    "Discarding Polygon: (%d of %d) verts after 'check_colinearity()'";
+/**
+ * Reimplements data 0x4e1744: g_zModel_PolyVertexCountApproachingLimitFmt.
+ * Purpose: store the writable polygon vertex-count limit warning format.
+ */
+char g_zModel_PolyVertexCountApproachingLimitFmt[0x2e] =
+    "Poly vertex count approaching limit (%d / %d)";
+/**
+ * Reimplements data 0x4e1774: g_zModel_AddPolygonOnlyVertsErrorFmt.
+ * Purpose: store the writable AddPolygon only-vertices error format.
+ */
+char g_zModel_AddPolygonOnlyVertsErrorFmt[0x3b] =
+    "ERROR: You're trying to add a Polygon with only (%d) verts";
+/**
+ * Reimplements data 0x4e17b0: g_zModel_SetModelCycleTextureNullModelFmt.
+ * Purpose: store the writable SetModelCycleTexture null-model diagnostic.
+ */
+char g_zModel_SetModelCycleTextureNullModelFmt[0x46] =
+    "%s(%d): ERROR setting model cycle texture. Model 3D pointer is NULL.\n";
+RECOIL_STATIC_ASSERT(sizeof(g_zModel_WriteModel3dBufferErrorMsg) == 0x1e);
+RECOIL_STATIC_ASSERT(sizeof(g_zModel_ReadModel3dBufferDataErrorMsg) == 0x29);
+RECOIL_STATIC_ASSERT(sizeof(g_zModel_ReadModel3dBufferHeaderErrorMsg) == 0x30);
+RECOIL_STATIC_ASSERT(sizeof(g_zModel_ReadModel3dPolyTexVertDataErrorMsg) == 0x39);
+RECOIL_STATIC_ASSERT(sizeof(g_zModel_ReadModel3dPolyVertNormalIndexErrorMsg) == 0x39);
+RECOIL_STATIC_ASSERT(sizeof(g_zModel_ReadModel3dPolyVertIndexErrorMsg) == 0x32);
+RECOIL_STATIC_ASSERT(sizeof(g_zModel_ReadModel3dPolygonBufferErrorMsg) == 0x2c);
+RECOIL_STATIC_ASSERT(sizeof(g_zModel_ReadModel3dPointLightDataErrorMsg) == 0x2e);
+RECOIL_STATIC_ASSERT(sizeof(g_zModel_ReadModel3dMorphVertexDataErrorMsg) == 0x2f);
+RECOIL_STATIC_ASSERT(sizeof(g_zModel_ReadModel3dVertexNormalDataErrorMsg) == 0x30);
+RECOIL_STATIC_ASSERT(sizeof(g_zModel_ReadModel3dVertexDataErrorMsg) == 0x29);
+RECOIL_STATIC_ASSERT(sizeof(g_zModel_CreateModel3dBufferFullErrorMsg) == 0x2c);
+RECOIL_STATIC_ASSERT(sizeof(g_zModel_CreateModel3dApproachingLimitFmt) == 0x28);
+RECOIL_STATIC_ASSERT(sizeof(g_zModel_VertexCountWarningFmt) == 0x2f);
+RECOIL_STATIC_ASSERT(sizeof(g_zModel_NormalCountWarningFmt) == 0x2f);
+RECOIL_STATIC_ASSERT(sizeof(g_zModel_AddPolygonTooFewVertsFmt) == 0x2d);
+RECOIL_STATIC_ASSERT(sizeof(g_zModel_AddNonPlanarPolygonTriangulatingFmt) == 0x42);
+RECOIL_STATIC_ASSERT(sizeof(g_zModel_DiscardPolygonAfterCheckColinearityFmt) == 0x41);
+RECOIL_STATIC_ASSERT(sizeof(g_zModel_PolyVertexCountApproachingLimitFmt) == 0x2e);
+RECOIL_STATIC_ASSERT(sizeof(g_zModel_AddPolygonOnlyVertsErrorFmt) == 0x3b);
+RECOIL_STATIC_ASSERT(sizeof(g_zModel_SetModelCycleTextureNullModelFmt) == 0x46);
+
 namespace {
-    const char *kGmodConstSourceFile = "D:\\Proj\\GameZRecoil\\zModel\\gmod_const.c";
-
-    const char *kModel3DBufferWriteError = "Error writing model3d buffer.";
-
-    const char *kModel3DBufferReadError = "Error reading GameZ Model3D buffer data.";
-
     /**
      * Original static helper observed in zModel_DiPool read paths
      * (D:\Proj\GameZRecoil\zModel\gmod_const.c).
@@ -25,7 +184,7 @@ namespace {
     ) {
         zError::ReportOld(
             0x200,
-            kGmodConstSourceFile,
+            g_zModel_SourceFile_GmodConstC,
             line,
             message
         );
@@ -39,9 +198,9 @@ namespace {
     void ReportModel3DBufferWriteError(int line) {
         zError::ReportOld(
             0x200,
-            kGmodConstSourceFile,
+            g_zModel_SourceFile_GmodConstC,
             line,
-            kModel3DBufferWriteError
+            g_zModel_WriteModel3dBufferErrorMsg
         );
     }
 }
@@ -51,6 +210,10 @@ namespace {
  * Purpose: Stores g zModel ConstVertexMergeEpsilon data used by engine.zmodel.vertex_merge_epsilon_global.
  */
 float g_zModel_ConstVertexMergeEpsilon = 0.001f;
+/**
+ * Reimplements data 0x4e139c: g_zModel_MaxPolygonVertexCountBeforeSplit.
+ * Purpose: store the AddPolygonEx vertex-count threshold before chunk splitting.
+ */
 int g_zModel_MaxPolygonVertexCountBeforeSplit = 48;
 double g_zModel_ConstVertexWarnThreshold = 921.6;
 double g_zModel_NormalMergeEpsilon = 0.0001;
@@ -367,7 +530,7 @@ namespace zModel_DiPool {
         ) != 1) {
             ReportModel3DBufferReadError(
                 0x28b,
-                kModel3DBufferReadError
+                g_zModel_ReadModel3dBufferDataErrorMsg
             );
             return -1;
         }
@@ -379,7 +542,7 @@ namespace zModel_DiPool {
         ) != 1) {
             ReportModel3DBufferReadError(
                 0x298,
-                kModel3DBufferReadError
+                g_zModel_ReadModel3dBufferDataErrorMsg
             );
             return -1;
         }
@@ -391,7 +554,7 @@ namespace zModel_DiPool {
         ) != 1) {
             ReportModel3DBufferReadError(
                 0x2a5,
-                kModel3DBufferReadError
+                g_zModel_ReadModel3dBufferDataErrorMsg
             );
             return -1;
         }
@@ -421,7 +584,7 @@ namespace zModel_DiPool {
             ) != 1) {
                 ReportModel3DBufferReadError(
                     0x31c,
-                    "Error reading GameZ Model3D vertex data."
+                    g_zModel_ReadModel3dVertexDataErrorMsg
                 );
                 return -1;
             }
@@ -438,7 +601,7 @@ namespace zModel_DiPool {
             ) != 1) {
                 ReportModel3DBufferReadError(
                     0x32f,
-                    "Error reading GameZ Model3D vertex normal data."
+                    g_zModel_ReadModel3dVertexNormalDataErrorMsg
                 );
                 return -1;
             }
@@ -455,7 +618,7 @@ namespace zModel_DiPool {
             ) != 1) {
                 ReportModel3DBufferReadError(
                     0x342,
-                    "Error reading GameZ Model3D morph vertex data."
+                    g_zModel_ReadModel3dMorphVertexDataErrorMsg
                 );
                 return -1;
             }
@@ -472,7 +635,7 @@ namespace zModel_DiPool {
             ) != 1) {
                 ReportModel3DBufferReadError(
                     0x358,
-                    "Error reading GameZ Model3D point light data."
+                    g_zModel_ReadModel3dPointLightDataErrorMsg
                 );
                 return -1;
             }
@@ -498,7 +661,7 @@ namespace zModel_DiPool {
                         ) != 1) {
                             ReportModel3DBufferReadError(
                                 0x372,
-                                "Error reading GameZ Model3D point light data."
+                                g_zModel_ReadModel3dPointLightDataErrorMsg
                             );
                             return -1;
                         }
@@ -521,7 +684,7 @@ namespace zModel_DiPool {
         ) != 1) {
             ReportModel3DBufferReadError(
                 0x38f,
-                "Error reading GameZ Model3D polygon buffer."
+                g_zModel_ReadModel3dPolygonBufferErrorMsg
             );
             return -1;
         }
@@ -550,7 +713,7 @@ namespace zModel_DiPool {
                     ) != 1) {
                         ReportModel3DBufferReadError(
                             0x3ae,
-                            "Error reading GameZ Model3D polygon vertex index."
+                            g_zModel_ReadModel3dPolyVertIndexErrorMsg
                         );
                         return -1;
                     }
@@ -567,7 +730,7 @@ namespace zModel_DiPool {
                     ) != 1) {
                         ReportModel3DBufferReadError(
                             0x3c0,
-                            "Error reading GameZ Model3D polygon vertex normal index."
+                            g_zModel_ReadModel3dPolyVertNormalIndexErrorMsg
                         );
                         return -1;
                     }
@@ -584,7 +747,7 @@ namespace zModel_DiPool {
                     ) != 1) {
                         ReportModel3DBufferReadError(
                             0x3d4,
-                            "Error reading GameZ Model3D polygon texture vertex data."
+                            g_zModel_ReadModel3dPolyTexVertDataErrorMsg
                         );
                         return -1;
                     }
@@ -617,7 +780,7 @@ namespace zModel_DiPool {
             ) != 0) {
             ReportModel3DBufferReadError(
                 0x401,
-                "Error reading GameZ Model3D buffer header data."
+                g_zModel_ReadModel3dBufferHeaderErrorMsg
             );
             return 0;
         }
@@ -645,7 +808,7 @@ namespace zModel_DiPool {
         ) != 1) {
             ReportModel3DBufferReadError(
                 0x41a,
-                kModel3DBufferReadError
+                g_zModel_ReadModel3dBufferDataErrorMsg
             );
             return 0;
         }
@@ -693,7 +856,7 @@ namespace zModel_DiPool {
             ) != 0) {
             ReportModel3DBufferReadError(
                 0x45b,
-                "Error reading GameZ Model3D buffer header data."
+                g_zModel_ReadModel3dBufferHeaderErrorMsg
             );
             return -1;
         }
@@ -720,7 +883,7 @@ namespace zModel_DiPool {
         ) != 1) {
             ReportModel3DBufferReadError(
                 0x476,
-                kModel3DBufferReadError
+                g_zModel_ReadModel3dBufferDataErrorMsg
             );
             return -1;
         }

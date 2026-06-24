@@ -303,6 +303,14 @@ char g_zVid_TextureArchiveSize6Fmt[0x8] = "%s6.%s";
 char g_zVid_TextureArchiveSize8Fmt[0x8] = "%s8.%s";
 char g_zVid_TextureArchiveRendererSizedNameFmt[0x0c] = "r%s%d.%s";
 char g_zVid_TextureArchiveStem[0x8] = "texture";
+/**
+ * Reimplements data 0x4e3054: g_zVideo_SourceFile_ZvidBuffC.
+ * BN types this writable char[0x27] as the zvid_buff.c source-path literal
+ * passed to zVideo_dd::ReportError by BltSourceToPrimaryClipped.
+ * Purpose: Supplies the original zVideo buffer source-file path for diagnostics.
+ */
+char g_zVideo_SourceFile_ZvidBuffC[0x27] =
+    "D:\\Proj\\GameZRecoil\\zVideo\\zvid_buff.c";
 RECOIL_STATIC_ASSERT(sizeof(g_zVid_TextureArchiveNameFmt) == 0x8);
 RECOIL_STATIC_ASSERT(sizeof(g_zVid_TextureArchiveSizedNameFmt) == 0x8);
 RECOIL_STATIC_ASSERT(sizeof(g_zVid_TextureArchiveMaxName) == 0x10);
@@ -312,6 +320,7 @@ RECOIL_STATIC_ASSERT(sizeof(g_zVid_TextureArchiveSize6Fmt) == 0x8);
 RECOIL_STATIC_ASSERT(sizeof(g_zVid_TextureArchiveSize8Fmt) == 0x8);
 RECOIL_STATIC_ASSERT(sizeof(g_zVid_TextureArchiveRendererSizedNameFmt) == 0x0c);
 RECOIL_STATIC_ASSERT(sizeof(g_zVid_TextureArchiveStem) == 0x8);
+RECOIL_STATIC_ASSERT(sizeof(g_zVideo_SourceFile_ZvidBuffC) == 0x27);
 // Standalone palette-remap variant table owner: BN identifies the table count
 // and pointer array at 0x53d778/0x53d77c.
 int g_zVid_PaletteRemapVariantTableCount = 0;
@@ -2745,7 +2754,7 @@ void __fastcall BltSourceToPrimaryClipped(
     if (hresult != DD_OK) {
         zVideo_dd::ReportError(
             (int)(hresult),
-            "D:\\Proj\\GameZRecoil\\zVideo\\zvid_buff.c",
+            ::g_zVideo_SourceFile_ZvidBuffC,
             0x150
         );
     }

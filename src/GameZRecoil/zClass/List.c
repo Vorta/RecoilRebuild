@@ -88,14 +88,29 @@ zClass_TypeListLink **g_zClass_TypeList_TailSlotPtrs[16] = {
 };
 /**
  * Reimplements data 0x539b98: g_zClass_FilterIterCursor.
+ * Owner extent: 0x539b98..0x539bab is five zero-initialized authored
+ * dwords used by the filtered type-list iterator; the unnamed slots are
+ * modeled explicitly below and are not padding.
  * Purpose: cursor for continued filtered type-list iteration.
  */
 zClass_TypeListLink *g_zClass_FilterIterCursor = 0;
+/**
+ * Reimplements anonymous data 0x539b9c in the filtered iterator dword block.
+ * Purpose: authored zero dword reserved by the List.c filtered iterator data
+ * owner between the cursor and filter text pointer.
+ */
+unsigned int g_zClass_FilterIterUnknownDword0 = 0;
 /**
  * Reimplements data 0x539ba0: g_zClass_FilterIterText.
  * Purpose: active exact or prefix text used by filtered type-list predicates.
  */
 const char *g_zClass_FilterIterText = 0;
+/**
+ * Reimplements anonymous data 0x539ba4 in the filtered iterator dword block.
+ * Purpose: authored zero dword reserved by the List.c filtered iterator data
+ * owner between the filter text pointer and prefix length.
+ */
+unsigned int g_zClass_FilterIterUnknownDword1 = 0;
 /**
  * Reimplements data 0x539ba8: g_zClass_FilterIterPrefixLen.
  * Purpose: cached prefix length used by filtered type-list prefix searches.

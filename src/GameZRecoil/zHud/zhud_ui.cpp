@@ -159,6 +159,12 @@ int g_HudUi_AuxOverlayEnabled = 0;
 // VC5 emits the 0x40bc20/0x40bc30/0x40bc40/0x40bc50 static init and at-exit
 // thunks from this global object.
 HudCmdDialogState g_HudCmdDialogState;
+/**
+ * Reimplements data 0x4ed714: g_HudUiTripletWndClassName.
+ * MFC CString provider glue constructs/destructs the object through the
+ * compiler-generated static init and at-exit thunks.
+ * Purpose: store the registered window class name used by HUD triplet panels.
+ */
 CString g_HudUiTripletWndClassName("");
 
 /**
@@ -2916,7 +2922,11 @@ void __fastcall SetShieldMessageRatio(
     percentTextPanel->Invalidate();
 }
 
-// Reimplements 0x410d10: HudUiMgrSensor::SetViewportRect
+/**
+ * Reimplements 0x410d10: HudUiMgrSensor::SetViewportRect.
+ * Original source path: D:\Proj\GameZRecoil\zhud_ui.cpp.
+ * Purpose: store raw/scaled HUD sensor viewport bounds and update the active source rectangle.
+ */
 void __fastcall SetViewportRect(
     int x,
     int y,
@@ -3055,8 +3065,12 @@ void __fastcall RefreshCounterText(
     panel->UpdateTextBoundsFromContent();
 }
 
-// Reimplements 0x411760: HudUiMgrObjective::SetVisibleAndResetMeterFill
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x411760: HudUiMgrObjective::SetVisibleAndResetMeterFill.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: toggle the objective label and meter visibility, and restart the
+ * objective meter fill animation from the meter bottom when showing.
+ */
 void __fastcall SetVisibleAndResetMeterFill(
     int visible
 ) {
@@ -3752,7 +3766,11 @@ void TriggerCurrentLayoutOnActivated() {
     }
 }
 
-// Reimplements 0x410140: HudUiMgr::TickLayoutDelay
+/**
+ * Reimplements 0x410140: HudUiMgr::TickLayoutDelay.
+ * Purpose: consume one pending HUD layout delay frame when a delayed layout
+ * transition is active.
+ */
 int TickLayoutDelay() {
     if (g_HudUiMgrLayoutDelayFrames == 0) {
         return 0;
@@ -3768,8 +3786,12 @@ int IsLocalPlayerFirstInStatsList() {
     return g_HudUiMgrStatsList->triplet->IsLocalPlayerFirstEntry();
 }
 
-// Reimplements 0x410160: HudUiMgr::EnsureHudLoaded
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x410160: HudUiMgr::EnsureHudLoaded.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: load the HUD archive tree, construct the HudUiMgr singleton-owned
+ * widgets, initialize layout resources, and finalize HUD visibility state.
+ */
 int __fastcall EnsureHudLoaded(
     const char *entryPath
 ) {
@@ -4386,7 +4408,11 @@ void __fastcall SetModeCounterState(
 // Reimplements 0x411710: HudUiMgr::ReticleStaticAtexitStub
 void ReticleStaticAtexitStub() {}
 
-// Reimplements 0x411720: HudUiMgr::CopyReticleProjection
+/**
+ * Reimplements 0x411720: HudUiMgr::CopyReticleProjection.
+ * Purpose: copy the HudUiMgr reticle projection vector into the caller-owned
+ * three-float output buffer.
+ */
 void __fastcall CopyReticleProjection(
     float *outProjection
 ) {
@@ -4684,7 +4710,12 @@ int ToggleHud() {
     return 1;
 }
 
-// Reimplements 0x410fe0: HudUiMgr::UpdateFrame (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x410fe0: HudUiMgr::UpdateFrame.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: run the per-frame HudUiMgr update sequence for the active layout,
+ * HUD containers, timers, reticle widget, and transient weapon slot state.
+ */
 void UpdateFrame() {
     g_HudUiMgrCurrentLayout->LayoutPreUpdate();
 
@@ -4861,7 +4892,12 @@ void __fastcall ScreenToWorld(
     );
 }
 
-// Reimplements 0x40ff80: HudUiMgr::OnViewportChanged
+/**
+ * Reimplements 0x40ff80: HudUiMgr::OnViewportChanged.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: update HUD/view rectangle globals and refresh active viewport HUD
+ * widgets after a viewport change.
+ */
 void __fastcall OnViewportChanged(
     const HudUiRect *hudRectOrNull,
     const HudUiRect *viewRectOrNull
@@ -4925,7 +4961,12 @@ void __fastcall OnViewportChanged(
     }
 }
 
-// Reimplements 0x40ff50: HudUiMgr::ActivateHud
+/**
+ * Reimplements 0x40ff50: HudUiMgr::ActivateHud.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: activate the HUD viewport, reset shield message state, and enable
+ * the sensor HUD block.
+ */
 void __fastcall ActivateHud(
     const HudUiRect *hudRectOrNull,
     const HudUiRect *viewRectOrNull
@@ -5099,7 +5140,10 @@ int __fastcall InitHudLayouts(
     return 1;
 }
 
-// Reimplements 0x40fbd0: HudUiMgr::ShutdownResources
+/**
+ * Reimplements 0x40fbd0: HudUiMgr::ShutdownResources.
+ * Purpose: release HUD image resources, destroy allocated HUD widgets, and reset manager-owned globals during shutdown.
+ */
 void ShutdownResources() {
     zVid_Image::ReleaseIfNotDefault(g_HudUiMgrReticleImages[0]);
     zVid_Image::ReleaseIfNotDefault(g_HudUiMgrReticleImages[1]);
@@ -14649,12 +14693,15 @@ HudUiElement * HudUiStatsListElement::ScalarDeletingDestructor(
     return this;
 }
 
-// Reimplements 0x40fdd0: HudUiStringMenu::DestructorCore
+/**
+ * Reimplements 0x40fdd0: HudUiStringMenu::DestructorCore.
+ * Purpose: destroy the fixed menu item panels before chaining into HudUiContainer teardown.
+ */
 void HudUiStringMenu::DestructorCore() {
     {
         int itemIndex;
-        for (itemIndex = 0; itemIndex < 23; ++itemIndex) {
-            ((HudUiPanel *)(&items[itemIndex]))->~HudUiPanel();
+        for (itemIndex = 23; itemIndex > 0; --itemIndex) {
+            items[itemIndex - 1].HudUiPanel::~HudUiPanel();
         }
     }
 
@@ -18387,17 +18434,25 @@ void HudUiChatMessageStack::DestructorCore() {
     DestroyTextStackLines(this);
 }
 
-// Reimplements 0x40f040: HudUiTimerPanelFloat::Draw
+/**
+ * Reimplements 0x40f040: HudUiTimerPanelFloat::Draw.
+ * Purpose: refresh the floating timer display text before drawing the base
+ * panel.
+ */
 void HudUiTimerPanelFloat::Draw() {
-    HudUiPanel::Invalidate();
-    HudUiPanel::SetTextFmt(
+    Invalidate();
+    SetTextFmt(
         "%2.1f",
         (double)(displayValue)
     );
     HudUiPanel::Draw();
 }
 
-// Reimplements 0x40ef60: HudUiTimerPanelFloat::ConstructorDefault
+/**
+ * Reimplements 0x40ef60: HudUiTimerPanelFloat::ConstructorDefault.
+ * Purpose: initialize the floating timer panel class state and hide it until
+ * gameplay enables the overlay.
+ */
 HudUiTimerPanelFloat * HudUiTimerPanelFloat::ConstructorDefault() {
     HudUiPanel::ConstructorDefault(
         " ",
@@ -18424,10 +18479,11 @@ HudUiTimerPanelFloat * HudUiTimerPanelFloat::ConstructorDefault() {
     clipRect.top = y;
     clipRect.right = x + 0x3c;
 
+    new (this) HudUiTimerPanelFloat;
     sampleFrameCount = 0.0f;
     displayValue = 0.0f;
     sampleElapsedSec = 0.0f;
     clipRect.bottom = y + 0x0f;
-    HudUiElement::SetVisible(0);
+    SetVisible(0);
     return this;
 }

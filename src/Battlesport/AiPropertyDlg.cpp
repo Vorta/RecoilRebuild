@@ -4,13 +4,37 @@ namespace {
 const int kAiPropertyDlgBehaviorComboId = 1089;
 const int kAiPropertyDlgFirstPropertyLabelId = 1107;
 const int kAiPropertyDlgSecondPropertyLabelId = 1108;
-
-const char kAiPropertyDlgLabelUnused[] = "Unused";
-const char kAiPropertyDlgLabelAttackRange[] = "Attack Range";
-const char kAiPropertyDlgLabelMovement[] = "Movement";
-const char kAiPropertyDlgLabelMinPursuitRange[] = "Min Pursuit Rng";
-const char kAiPropertyDlgLabelMaxPursuitRange[] = "Max Pursuit Rng";
 } // namespace
+
+/**
+ * Reimplements data 0x4db604: g_AiPropertyDlg_LabelUnused.
+ * Purpose: Supplies the AI property dialog label used when a behavior mode has no property.
+ */
+char g_AiPropertyDlg_LabelUnused[] = "Unused";
+
+/**
+ * Reimplements data 0x4db60c: g_AiPropertyDlg_LabelMovement.
+ * Purpose: Supplies the AI property dialog label for movement behavior properties.
+ */
+char g_AiPropertyDlg_LabelMovement[] = "Movement";
+
+/**
+ * Reimplements data 0x4db618: g_AiPropertyDlg_LabelAttackRange.
+ * Purpose: Supplies the AI property dialog label for attack range properties.
+ */
+char g_AiPropertyDlg_LabelAttackRange[] = "Attack Range";
+
+/**
+ * Reimplements data 0x4db628: g_AiPropertyDlg_LabelMaxPursuitRange.
+ * Purpose: Supplies the AI property dialog label for maximum pursuit range properties.
+ */
+char g_AiPropertyDlg_LabelMaxPursuitRange[] = "Max Pursuit Rng";
+
+/**
+ * Reimplements data 0x4db638: g_AiPropertyDlg_LabelMinPursuitRange.
+ * Purpose: Supplies the AI property dialog label for minimum pursuit range properties.
+ */
+char g_AiPropertyDlg_LabelMinPursuitRange[] = "Min Pursuit Rng";
 
 // Provider-boundary accessor for imported MFC42 CDialog metadata; this does not reimplement
 // CDialog behavior.
@@ -131,25 +155,25 @@ void AiPropertyDlg::UpdatePropertyLabels() {
 
     switch ((unsigned int)m_selectedBehaviorIndex) {
     case 0:
-        firstLabel = kAiPropertyDlgLabelMinPursuitRange;
-        secondLabel = kAiPropertyDlgLabelMaxPursuitRange;
+        firstLabel = g_AiPropertyDlg_LabelMinPursuitRange;
+        secondLabel = g_AiPropertyDlg_LabelMaxPursuitRange;
         break;
 
     case 1:
-        firstLabel = kAiPropertyDlgLabelAttackRange;
-        secondLabel = kAiPropertyDlgLabelUnused;
+        firstLabel = g_AiPropertyDlg_LabelAttackRange;
+        secondLabel = g_AiPropertyDlg_LabelUnused;
         break;
 
     case 2:
-        firstLabel = kAiPropertyDlgLabelAttackRange;
-        secondLabel = kAiPropertyDlgLabelMovement;
+        firstLabel = g_AiPropertyDlg_LabelAttackRange;
+        secondLabel = g_AiPropertyDlg_LabelMovement;
         break;
 
     case 3:
     case 4:
     case 5:
-        firstLabel = kAiPropertyDlgLabelUnused;
-        secondLabel = kAiPropertyDlgLabelUnused;
+        firstLabel = g_AiPropertyDlg_LabelUnused;
+        secondLabel = g_AiPropertyDlg_LabelUnused;
         break;
 
     default:

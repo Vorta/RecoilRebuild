@@ -24,6 +24,12 @@ HudUiNewGamePanelOverlayOwner g_HudUiNewGamePanelOverlayOwner;
 HudUiOptionsPanelOverlayOwner g_HudUiOptionsPanelOverlayOwner;
 RecoilStateConfirmQuit g_RecoilState_ConfirmQuit;
 extern "C" int g_RecoilState_MainMenuSkipExitDelay = 0;
+/**
+ * Reimplements data 0x4e5dd0: g_RecoilStateControls.
+ * Source owner: legacy.app_shell.class_recoilstatecontrols.
+ * Purpose: Holds the zero-initialized global controls app-state singleton
+ * constructed by the CRT static initializer.
+ */
 RecoilStateControls g_RecoilStateControls;
 /**
  * Reimplements data 0x4e5ce8: g_RecoilStateCheatCode.
@@ -1590,27 +1596,39 @@ RecoilStateConfirmQuit::~RecoilStateConfirmQuit() {
     }
 }
 
-// Reimplements 0x408d20: RecoilStateControls::StaticInitAndRegisterAtExit
-// (D:\Proj\Battlesport\recoil_state.cpp)
+/**
+ * Reimplements 0x408d20: RecoilStateControls::StaticInitAndRegisterAtExit.
+ * Original source path: D:\Proj\Battlesport\recoil_state.cpp.
+ * Purpose: construct the global controls app state and register its CRT shutdown destructor.
+ */
 void RecoilStateControls::StaticInitAndRegisterAtExit() {
     StaticInit();
     RegisterAtExit();
 }
 
-// Reimplements 0x408d30: RecoilStateControls::StaticInit
-// (D:\Proj\Battlesport\recoil_state.cpp)
+/**
+ * Reimplements 0x408d30: RecoilStateControls::StaticInit.
+ * Original source path: D:\Proj\Battlesport\recoil_state.cpp.
+ * Purpose: placement-construct the zero-initialized global controls app state singleton.
+ */
 RecoilStateControls *RecoilStateControls::StaticInit() {
     return new (&g_RecoilStateControls) RecoilStateControls;
 }
 
-// Reimplements 0x408d40: RecoilStateControls::RegisterAtExit
-// (D:\Proj\Battlesport\recoil_state.cpp)
+/**
+ * Reimplements 0x408d40: RecoilStateControls::RegisterAtExit.
+ * Original source path: D:\Proj\Battlesport\recoil_state.cpp.
+ * Purpose: register the global controls app state destructor with the CRT atexit list.
+ */
 void RecoilStateControls::RegisterAtExit() {
     atexit(AtExitDestructor);
 }
 
-// Reimplements 0x408d50: RecoilStateControls::AtExitDestructor
-// (D:\Proj\Battlesport\recoil_state.cpp)
+/**
+ * Reimplements 0x408d50: RecoilStateControls::AtExitDestructor.
+ * Original source path: D:\Proj\Battlesport\recoil_state.cpp.
+ * Purpose: destroy the global controls app state during CRT shutdown.
+ */
 void RecoilStateControls::AtExitDestructor() {
     g_RecoilStateControls.~RecoilStateControls();
 }
@@ -1624,8 +1642,11 @@ RecoilStateControls::RecoilStateControls() {
     m_dialog = 0;
 }
 
-// Reimplements 0x408d90: RecoilStateControls::Destructor
-// (D:\Proj\Battlesport\recoil_state.cpp)
+/**
+ * Reimplements 0x408d90: RecoilStateControls::Destructor.
+ * Original source path: D:\Proj\Battlesport\recoil_state.cpp.
+ * Purpose: release the owned controls dialog and clear the dialog pointer.
+ */
 RecoilStateControls::~RecoilStateControls() {
     HudUiControlsDialog *dialog = m_dialog;
     if (dialog != 0) {
@@ -1635,8 +1656,11 @@ RecoilStateControls::~RecoilStateControls() {
     m_dialog = 0;
 }
 
-// Reimplements 0x408df0: RecoilStateControls::OnTryBecomeCurrent
-// (D:\Proj\Battlesport\recoil_state.cpp)
+/**
+ * Reimplements 0x408df0: RecoilStateControls::OnTryBecomeCurrent.
+ * Original source path: D:\Proj\Battlesport\recoil_state.cpp.
+ * Purpose: lazily create and enable the controls dialog, then seed option selectors.
+ */
 int RecoilStateControls::OnTryBecomeCurrent() {
     if (m_dialog == 0) {
         HudUiControlsDialog *dialog =
@@ -1661,8 +1685,11 @@ int RecoilStateControls::OnTryBecomeCurrent() {
     return 1;
 }
 
-// Reimplements 0x408ec0: RecoilStateControls::OnDeactivate
-// (D:\Proj\Battlesport\recoil_state.cpp)
+/**
+ * Reimplements 0x408ec0: RecoilStateControls::OnDeactivate.
+ * Original source path: D:\Proj\Battlesport\recoil_state.cpp.
+ * Purpose: commit controls dialog selections, deactivate and blit the dialog, then delete it.
+ */
 void RecoilStateControls::OnDeactivate() {
     if (m_dialog == 0) {
         return;
@@ -1694,8 +1721,11 @@ void RecoilStateControls::OnDeactivate() {
     m_dialog = 0;
 }
 
-// Reimplements 0x408fa0: RecoilStateControls::OnResume
-// (D:\Proj\Battlesport\recoil_state.cpp)
+/**
+ * Reimplements 0x408fa0: RecoilStateControls::OnResume.
+ * Original source path: D:\Proj\Battlesport\recoil_state.cpp.
+ * Purpose: resume the controls dialog after a nested app state returns.
+ */
 void RecoilStateControls::OnResume(
     int activateCode
 ) {
@@ -1723,8 +1753,11 @@ void RecoilStateControls::OnResume(
     );
 }
 
-// Reimplements 0x408ff0: RecoilStateControls::QueueEnter
-// (D:\Proj\Battlesport\recoil_state.cpp)
+/**
+ * Reimplements 0x408ff0: RecoilStateControls::QueueEnter.
+ * Original source path: D:\Proj\Battlesport\recoil_state.cpp.
+ * Purpose: queue the global controls app state on the Recoil app state stack.
+ */
 void RecoilStateControls::QueueEnter() {
     g_RecoilApp.QueuePushState(
         &g_RecoilStateControls,

@@ -625,29 +625,38 @@ extern "C" int briefing_start_for_mission_smoke(void) {
 
 extern "C" int briefing_set_progress_and_sleep_smoke(void) {
     HudUiBriefingRuntime *const oldRuntime = g_Briefing_Runtime;
-    static TestBriefingRuntime runtime;
-    static unsigned int transportProgressFtable[34];
+    const unsigned int oldInvalidateMask = g_HudUi_InvalidateMask;
+    alignas(4) static unsigned char runtimeStorage[sizeof(HudUiBriefingRuntime)];
+    HudUiBriefingRuntime *const runtime =
+        reinterpret_cast<HudUiBriefingRuntime *>(runtimeStorage);
+    static zVidImagePartial fillImage;
 
-    std::memset(&runtime, 0, sizeof(runtime));
-    std::memset(transportProgressFtable, 0, sizeof(transportProgressFtable));
-    transportProgressFtable[0x84 / 4] = MakeSetNormalizedValueThunk();
-    runtime.transportProgress.ftable =
-        reinterpret_cast<const HudUiCommon_FTable *>(transportProgressFtable);
-    g_setProgressCount = 0;
-    g_setProgressValue = 0.0f;
-    g_setProgressThis = nullptr;
+    std::memset(runtime, 0, sizeof(*runtime));
+    std::memset(&fillImage, 0, sizeof(fillImage));
+    fillImage.width = 120;
+    fillImage.height = 16;
+    runtime->transportProgress.fillImage = &fillImage;
+    runtime->transportProgress.flags = 0;
+    g_HudUi_InvalidateMask = 0x04;
 
-    g_Briefing_Runtime = &runtime;
+    g_Briefing_Runtime = runtime;
     Briefing::SetProgressAndSleep(0.375f);
     const bool runtimeOk =
-        g_setProgressCount == 1 && g_setProgressValue == 0.375f &&
-        g_setProgressThis == &runtime.transportProgress;
+        runtime->transportProgress.normalizedValue == 0.375f &&
+        runtime->transportProgress.fillRect.left == 0 &&
+        runtime->transportProgress.fillRect.top == 0 &&
+        runtime->transportProgress.fillRect.right == 45 &&
+        runtime->transportProgress.fillRect.bottom == 16 &&
+        (runtime->transportProgress.flags & 0x04u) != 0;
 
     g_Briefing_Runtime = nullptr;
     Briefing::SetProgressAndSleep(0.875f);
-    const bool nullOk = g_setProgressCount == 1;
+    const bool nullOk =
+        runtime->transportProgress.normalizedValue == 0.375f &&
+        runtime->transportProgress.fillRect.right == 45;
 
     g_Briefing_Runtime = oldRuntime;
+    g_HudUi_InvalidateMask = oldInvalidateMask;
     return runtimeOk && nullOk ? 0 : 1;
 }
 

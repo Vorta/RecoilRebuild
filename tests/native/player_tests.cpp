@@ -2246,17 +2246,15 @@ extern "C" int player_init_mission_runtime_missing_aiv_smoke(void) {
     topStack.Constructor();
     HudUiElement *const oldTopStackTail = topStack.base.childTail;
     g_HudUiTopMessageStack = &topStack;
-    HudUiCommon_FTable visibleTable = g_HudUiCommon_FTable;
-    visibleTable.slots[24] = MethodAddress(&TestPlayerHudVisibleReceiver::SetVisible);
-    g_Player_TopMsgPanel1 = {};
-    g_Player_TopMsgPanel2 = {};
-    g_Player_TopMsgPanel1.vtbl = &g_HudUiPanel_FTable;
-    g_Player_TopMsgPanel2.vtbl = &g_HudUiPanel_FTable;
-    g_Player_UnderwaterFxPass3Ui = {};
-    g_Player_State7FxPass3Ui = {};
-    g_Player_UnderwaterFxPass3Ui.ftable = &visibleTable;
-    g_Player_State7FxPass3Ui.ftable = &visibleTable;
-    *fxContainer = {};
+    std::memset(&g_Player_TopMsgPanel1, 0, sizeof(g_Player_TopMsgPanel1));
+    std::memset(&g_Player_TopMsgPanel2, 0, sizeof(g_Player_TopMsgPanel2));
+    g_Player_TopMsgPanel1.ConstructorDefault("", 0, 0);
+    g_Player_TopMsgPanel2.ConstructorDefault("", 0, 0);
+    std::memset(&g_Player_UnderwaterFxPass3Ui, 0, sizeof(g_Player_UnderwaterFxPass3Ui));
+    std::memset(&g_Player_State7FxPass3Ui, 0, sizeof(g_Player_State7FxPass3Ui));
+    g_Player_UnderwaterFxPass3Ui.Constructor();
+    g_Player_State7FxPass3Ui.Constructor();
+    std::memset(fxContainer, 0, sizeof(*fxContainer));
 
     zClass_NodePartial worldNode = {};
     zClass_WorldDataPartial worldData = {};
@@ -2447,6 +2445,21 @@ extern "C" int player_init_mission_runtime_missing_aiv_smoke(void) {
 }
 
 extern "C" int hud_sensor_tracker_init_mission_gameplay_systems_smoke(void) {
+    char oldCurrentDir[MAX_PATH] = {};
+    if (GetCurrentDirectoryA(sizeof(oldCurrentDir), oldCurrentDir) != 0) {
+        const char *const rootCandidates[] = {"..\\..\\..\\..", "."};
+        for (int index = 0; index < 2; ++index) {
+            char supportPath[MAX_PATH] = {};
+            std::snprintf(supportPath, sizeof(supportPath), "%s\\support\\zbd",
+                          rootCandidates[index]);
+            const DWORD attrs = GetFileAttributesA(supportPath);
+            if (attrs != INVALID_FILE_ATTRIBUTES && (attrs & FILE_ATTRIBUTE_DIRECTORY) != 0) {
+                SetCurrentDirectoryA(rootCandidates[index]);
+                break;
+            }
+        }
+    }
+
     zUtil_SaveGameState *const oldSaveHead = g_PlayerSaveStateListHead;
     zUtil_SaveGameState *const oldSaveTail = g_PlayerSaveStateListTail;
     const int oldSaveAux = g_PlayerSaveStateListAux;
@@ -2544,8 +2557,14 @@ extern "C" int hud_sensor_tracker_init_mission_gameplay_systems_smoke(void) {
     const int oldMatlActiveHeadIndex = g_zModel_MatlActiveHeadIndex;
     zModel_MaterialPartial *const oldMatlReuseCache = g_zModel_MatlReuseCache;
     const int oldTexDirEntryCount = g_zImage_TexDirEntryCount;
-    zImage_TexDirEntryPartial oldTexDirEntries[0x1000] = {};
-    std::memcpy(oldTexDirEntries, g_zImage_TexDirEntries, sizeof(oldTexDirEntries));
+    zImage_TexDirEntryPartial *const oldTexDirEntries =
+        static_cast<zImage_TexDirEntryPartial *>(
+            std::calloc(0x1000, sizeof(zImage_TexDirEntryPartial)));
+    if (oldTexDirEntries == nullptr) {
+        return 3;
+    }
+    std::memcpy(oldTexDirEntries, g_zImage_TexDirEntries,
+                sizeof(zImage_TexDirEntryPartial) * 0x1000);
     const int oldZdeclientRebuildBltRect = g_zDEClient_RebuildBltRectOnReload;
     const int oldRendererPath = g_zVideo_ActiveRendererPath;
     const int oldBuiltinTexturePackCount = g_zVid_BuiltinTexturePackCount;
@@ -2602,7 +2621,7 @@ extern "C" int hud_sensor_tracker_init_mission_gameplay_systems_smoke(void) {
     MakeAinetReaderArrayNode(stealthItems[4], modalItems, 3);
     MakeAinetReaderStringNode(modalItems[1], "mode");
     MakeAinetReaderArrayNode(modalItems[2], modeItems, 2);
-    MakeAinetReaderStringNode(modeItems[1], "stealth");
+    MakeAinetReaderStringNode(modeItems[1], "basic");
 
     zReader::Node declientRoot = {};
     zReader::Node declientItems[3] = {};
@@ -2641,42 +2660,36 @@ extern "C" int hud_sensor_tracker_init_mission_gameplay_systems_smoke(void) {
     topStack.Constructor();
     g_HudUiTopMessageStack = &topStack;
     g_HudUiChatMessageStack = nullptr;
-    HudUiCommon_FTable visibleTable = g_HudUiCommon_FTable;
-    visibleTable.slots[24] = MethodAddress(&TestPlayerHudVisibleReceiver::SetVisible);
-    g_Player_TopMsgPanel1 = {};
-    g_Player_TopMsgPanel2 = {};
-    g_Player_TopMsgPanel1.vtbl = &g_HudUiPanel_FTable;
-    g_Player_TopMsgPanel2.vtbl = &g_HudUiPanel_FTable;
-    g_Player_UnderwaterFxPass3Ui = {};
-    g_Player_State7FxPass3Ui = {};
-    g_Player_UnderwaterFxPass3Ui.ftable = &visibleTable;
-    g_Player_State7FxPass3Ui.ftable = &visibleTable;
-    *fxContainer = {};
+    std::memset(&g_Player_TopMsgPanel1, 0, sizeof(g_Player_TopMsgPanel1));
+    std::memset(&g_Player_TopMsgPanel2, 0, sizeof(g_Player_TopMsgPanel2));
+    g_Player_TopMsgPanel1.ConstructorDefault("", 0, 0);
+    g_Player_TopMsgPanel2.ConstructorDefault("", 0, 0);
+    std::memset(&g_Player_UnderwaterFxPass3Ui, 0, sizeof(g_Player_UnderwaterFxPass3Ui));
+    std::memset(&g_Player_State7FxPass3Ui, 0, sizeof(g_Player_State7FxPass3Ui));
+    g_Player_UnderwaterFxPass3Ui.Constructor();
+    g_Player_State7FxPass3Ui.Constructor();
+    std::memset(fxContainer, 0, sizeof(*fxContainer));
 
     HudUiShieldMessageWidget shield = {};
-    shield.widget.Constructor(0);
+    new (&shield.widget) HudUiWidget(0);
     reinterpret_cast<HudUiPanel *>(&shield.percentTextPanel)->ConstructorDefault("", 0, 0);
-    shield.meter.Constructor();
+    new (&shield.meter) HudUiMeter();
     shield.meter.fillPixelsMax = 100;
     shield.meter.points[1].y = 100.0f;
+    g_HudUiMgrSensorBlock = {};
     g_HudUiMgrShieldMessageWidget = &shield;
     g_HudUiMgrCurrentLayout = nullptr;
-    g_HudUiMgrSensorBlock = {};
     g_HudUiMgrSensorBlock.sensorParam = 1.0f;
     g_HudUiMgrSensorFxRect = {0, 0, 100, 80};
     g_HudUiMgrSensorFxViewportWidth = 100;
     g_HudUiMgrSensorFxViewportHeight = 80;
-    g_HudUiMgrNanitePanel = {};
-    g_HudUiMgrNanitePanel.base.ftable =
-        reinterpret_cast<const HudUiCommon_FTable *>(&g_HudUiTripletPanel_FTable);
-    for (HudUiWidget &item : g_HudUiMgrNanitePanel.items) {
-        item.ftable = &g_HudUiWidget_FTable;
-    }
+    std::memset(&g_HudUiMgrNanitePanel, 0, sizeof(g_HudUiMgrNanitePanel));
+    static_cast<HudUiTripletPanel *>(&g_HudUiMgrNanitePanel)->Constructor();
     for (HudUiMessage &message : g_HudUiMgrMessages) {
         message.Constructor();
     }
     for (HudUiCounter &counter : g_HudUiMgrModeCounters) {
-        counter.Constructor();
+        new (&counter) HudUiCounter();
     }
     g_HudUiMgrObjectiveWidget.Constructor(0);
     g_HudUiMgrObjectivePhase = 0;
@@ -2791,15 +2804,11 @@ extern "C" int hud_sensor_tracker_init_mission_gameplay_systems_smoke(void) {
     g_HudSensorTracker.missionId = 2;
     g_HudSensorTracker.raceCheckpointMode = 0;
     g_HudSensorTracker.missionStat1 = 0;
-    std::memset(g_PlayerTestHudVisibleThis, 0, sizeof(g_PlayerTestHudVisibleThis));
-    std::memset(g_PlayerTestHudVisibleValue, 0, sizeof(g_PlayerTestHudVisibleValue));
-    g_PlayerTestHudVisibleCount = 0;
-
     g_zEffect_World = nullptr;
     g_zEffect_ResourceNode = nullptr;
     g_zEffectAnim_EntryList = nullptr;
     g_zEffectAnim_EntryCount = 0;
-    g_zEffectAnim_EntriesInstantiated = 0;
+    g_zEffectAnim_EntriesInstantiated = 1;
     g_zEffectAnim_ZbdFilename[0] = '\0';
     g_OptCatalogThermalGlowFreeList = nullptr;
     g_Player_HudCounterValue = 123;
@@ -2858,6 +2867,9 @@ extern "C" int hud_sensor_tracker_init_mission_gameplay_systems_smoke(void) {
     tracker.menuTransitionDelaySec = 2.0f;
 
     const int result = tracker.InitMissionGameplaySystems();
+    if (oldCurrentDir[0] != '\0') {
+        SetCurrentDirectoryA(oldCurrentDir);
+    }
     const zInputCommandCallbackFn objectiveCallback =
         (zInputCommandCallbackFn)(HudSensorTracker::OnObjectiveCommand);
     const bool callbacksOk =
@@ -2999,7 +3011,9 @@ extern "C" int hud_sensor_tracker_init_mission_gameplay_systems_smoke(void) {
     g_zModel_MatlFreeHeadIndex = oldMatlFreeHeadIndex;
     g_zModel_MatlActiveHeadIndex = oldMatlActiveHeadIndex;
     g_zModel_MatlReuseCache = oldMatlReuseCache;
-    std::memcpy(g_zImage_TexDirEntries, oldTexDirEntries, sizeof(oldTexDirEntries));
+    std::memcpy(g_zImage_TexDirEntries, oldTexDirEntries,
+                sizeof(zImage_TexDirEntryPartial) * 0x1000);
+    std::free(oldTexDirEntries);
     g_zImage_TexDirEntryCount = oldTexDirEntryCount;
     g_zDEClient_RebuildBltRectOnReload = oldZdeclientRebuildBltRect;
     g_zVideo_ActiveRendererPath = oldRendererPath;
@@ -10411,7 +10425,8 @@ extern "C" int player_set_auto_turn_target_dir_from_world_point_smoke(void) {
                : 1;
 }
 
-#ifndef RECOIL_NATIVE_PLAYER_TESTS_GUN_DISPATCH_ONLY
+#if !defined(RECOIL_NATIVE_PLAYER_TESTS_GUN_DISPATCH_ONLY) || \
+    defined(RECOIL_NATIVE_PLAYER_TESTS_CAMERA_SMOKES)
 
 extern "C" int player_tick_local_player_controls_smoke(void) {
     int *const oldJoystickOption = ZOPT_INPUT_JOYSTICK;
@@ -10496,7 +10511,6 @@ extern "C" int player_tick_local_player_controls_smoke(void) {
     currentImage.height = 8;
     zVidImagePartial missImage = {};
     g_HudUiMgrReticleWidget = {};
-    g_HudUiMgrReticleWidget.ftable = &g_HudUiWidget_FTable;
     g_HudUiMgrReticleWidget.image = &currentImage;
     g_HudUiMgrReticleWidgetHalfW = 5;
     g_HudUiMgrReticleWidgetHalfH = 4;
@@ -19470,6 +19484,17 @@ extern "C" int player_shutdown_mission_runtime_smoke(void) {
 #endif
 
 #ifdef RECOIL_NATIVE_PLAYER_TESTS_GUN_DISPATCH_ONLY
+extern "C" int player_float_sign_smoke(void) {
+    if (Player::FloatSign(0.0f) != 0) {
+        return 1;
+    }
+    if (Player::FloatSign(-0.25f) != -1) {
+        return 2;
+    }
+
+    return Player::FloatSign(4.0f) == 1 ? 0 : 3;
+}
+
 #ifdef RECOIL_NATIVE_PLAYER_TESTS_ASYNC_COMMAND_CALLBACK_SMOKE
 extern "C" int player_async_command_callback_basic_smoke(void) {
     zInput_GameStateOrMapTablePartial *const oldGameStateOrMapTable = g_GameStateOrMapTable;

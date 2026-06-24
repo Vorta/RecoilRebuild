@@ -119,6 +119,12 @@ char g_zSnd_SoundGroupDelayPlayLoadErrorFmt[0x2e] =
  * Purpose: provide the writable DELAY_PLAY parser key.
  */
 char g_zSnd_SoundGroupDelayPlayKey[0xb] = "DELAY_PLAY";
+/**
+ * Reimplements data 0x4e2f9c: g_zSnd_NullToken.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: provide the writable stream-sample NULL token.
+ */
+char g_zSnd_NullToken[0x5] = "NULL";
 }
 
 namespace {
@@ -496,7 +502,7 @@ void zSndStreamRequest::StatePlayCurrentEntry() {
                 const char *sampleName = entry->streamName;
                 if (strcmp(
                         sampleName,
-                        "NULL"
+                        g_zSnd_NullToken
                     ) != 0) {
                     entry->cachedSample = zSnd::FindSampleByName(sampleName);
                 }

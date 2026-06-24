@@ -268,7 +268,7 @@ int g_Briefing_SystemActiveFlag = 0;
 
 /**
  * Reimplements data 0x4da24c: g_Briefing_ProgressEventCode.
- * Purpose: track the most recent briefing sample progress event for queued waits.
+ * Purpose: track the most recent briefing sample progress event, initialized to no event.
  */
 int g_Briefing_ProgressEventCode = -1;
 }

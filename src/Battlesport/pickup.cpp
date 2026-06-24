@@ -26,52 +26,109 @@
 #include <stdlib.h>
 #include <string.h>
 
+extern char g_PickupLogicalName_ERFPG_AMMO[];
+extern char g_PickupLogicalName_HEMORTAR_AMMO[];
+extern char g_PickupLogicalName_QMORTAR_AMMO[];
+extern char g_PickupLogicalName_FREON_AMMO[];
+extern char g_PickupLogicalName_NAPALM_AMMO[];
+extern char g_PickupLogicalName_P_HEMINE_AMMO[];
+extern char g_PickupLogicalName_P_QMINE_AMMO[];
+extern char g_PickupLogicalName_R_HEMINE_AMMO[];
+extern char g_PickupLogicalName_R_QMINE_AMMO[];
+extern char g_PickupLogicalName_LOCKON_LASER_AMMO[];
+extern char g_PickupLogicalName_LASER_SABRE_AMMO[];
+extern char g_PickupLogicalName_SONIC_CANNON_AMMO[];
+extern char g_PickupLogicalName_ARC_SABRE_AMMO[];
+extern char g_PickupLogicalName_MISSILE_AMMO[];
+extern char g_PickupLogicalName_GUIDED_MISSILE_AMMO[];
+extern char g_PickupLogicalName_NUKE_AMMO[];
+extern char g_PickupLogicalName_GUIDED_NUKE_AMMO[];
+extern char g_PickupOptKey_Wep1_1[];
+extern char g_PickupLogicalName_ERFPG_WEAPON[];
+extern char g_PickupOptKey_Wep2_0[];
+extern char g_PickupLogicalName_HEMORTAR_WEAPON[];
+extern char g_PickupOptKey_Wep2_1[];
+extern char g_PickupLogicalName_QMORTAR_WEAPON[];
+extern char g_PickupOptKey_Wep3_0[];
+extern char g_PickupLogicalName_FREON_WEAPON[];
+extern char g_PickupOptKey_Wep3_1[];
+extern char g_PickupLogicalName_NAPALM_WEAPON[];
+extern char g_PickupOptKey_Wep4_0[];
+extern char g_PickupLogicalName_P_HEMINE_WEAPON[];
+extern char g_PickupOptKey_Wep4_1[];
+extern char g_PickupLogicalName_P_QMINE_WEAPON[];
+extern char g_PickupOptKey_Wep5_0[];
+extern char g_PickupLogicalName_R_HEMINE_WEAPON[];
+extern char g_PickupOptKey_Wep5_1[];
+extern char g_PickupLogicalName_R_QMINE_WEAPON[];
+extern char g_PickupOptKey_Wep6_0[];
+extern char g_PickupLogicalName_LOCKON_LASER_WEAPON[];
+extern char g_PickupOptKey_Wep6_1[];
+extern char g_PickupLogicalName_LASER_SABRE_WEAPON[];
+extern char g_PickupOptKey_Wep7_0[];
+extern char g_PickupLogicalName_SONIC_CANNON_WEAPON[];
+extern char g_PickupOptKey_Wep7_1[];
+extern char g_PickupLogicalName_ARC_SABRE_WEAPON[];
+extern char g_PickupOptKey_Wep8_0[];
+extern char g_PickupLogicalName_MISSILE_WEAPON[];
+extern char g_PickupOptKey_Wep8_1[];
+extern char g_PickupLogicalName_GUIDED_MISSILE_WEAPON[];
+extern char g_PickupOptKey_Wep9_0[];
+extern char g_PickupLogicalName_NUKE_WEAPON[];
+extern char g_PickupOptKey_Wep9_1[];
+extern char g_PickupLogicalName_GUIDED_NUKE_WEAPON[];
+extern char g_PickupLogicalName_NANITE100[];
+extern char g_PickupLogicalName_NANO_CANISTER[];
+extern char g_PickupLogicalName_PUP_AMPHIB[];
+extern char g_PickupLogicalName_PUP_HOVER[];
+extern char g_PickupLogicalName_PUP_SUB[];
+
 /**
  * Reimplements data 0x4db6e8: g_PickupTypes (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: define the 40-row pickup type table used by pickup spawning and
  * effect application.
  */
 PickupType g_PickupTypes[40] = {
-    {0, 515, 0, 30, "ERFPG_AMMO", 0, 0, 0, 0, 0, 0, 0},
-    {0, 517, 1, 3, "HEMORTAR_AMMO", 0, 0, 0, 0, 0, 0, 0},
-    {0, 519, 2, 3, "QMORTAR_AMMO", 0, 0, 0, 0, 0, 0, 0},
-    {0, 526, 3, 10, "FREON_AMMO", 0, 0, 0, 0, 0, 0, 0},
-    {0, 523, 4, 10, "NAPALM_AMMO", 0, 0, 0, 0, 0, 0, 0},
-    {0, 545, 5, 5, "P_HEMINE_AMMO", 0, 0, 0, 0, 0, 0, 0},
-    {0, 547, 6, 5, "P_QMINE_AMMO", 0, 0, 0, 0, 0, 0, 0},
-    {0, 549, 7, 5, "R_HEMINE_AMMO", 0, 0, 0, 0, 0, 0, 0},
-    {0, 551, 8, 5, "R_QMINE_AMMO", 0, 0, 0, 0, 0, 0, 0},
-    {0, 553, 9, 10, "LOCKON_LASER_AMMO", 0, 0, 0, 0, 0, 0, 0},
-    {0, 555, 10, 10, "LASER_SABRE_AMMO", 0, 0, 0, 0, 0, 0, 0},
-    {0, 557, 11, 2, "SONIC_CANNON_AMMO", 0, 0, 0, 0, 0, 0, 0},
-    {0, 559, 12, 10, "ARC_SABRE_AMMO", 0, 0, 0, 0, 0, 0, 0},
-    {0, 521, 13, 3, "MISSILE_AMMO", 0, 0, 0, 0, 0, 0, 0},
-    {0, 561, 14, 5, "GUIDED_MISSILE_AMMO", 0, 0, 0, 0, 0, 0, 0},
-    {0, 565, 15, 1, "NUKE_AMMO", 0, 0, 0, 0, 0, 0, 0},
-    {0, 563, 16, 1, "GUIDED_NUKE_AMMO", 0, 0, 0, 0, 0, 0, 0},
-    {"wep_1.1", 516, 17, 30, "ERFPG_WEAPON", 0, 0, 0, 0, 0, 0, 0},
-    {"wep_2.0", 518, 18, 3, "HEMORTAR_WEAPON", 0, 0, 0, 0, 0, 0, 0},
-    {"wep_2.1", 520, 19, 3, "QMORTAR_WEAPON", 0, 0, 0, 0, 0, 0, 0},
-    {"wep_3.0", 527, 20, 10, "FREON_WEAPON", 0, 0, 0, 0, 0, 0, 0},
-    {"wep_3.1", 524, 21, 10, "NAPALM_WEAPON", 0, 0, 0, 0, 0, 0, 0},
-    {"wep_4.0", 546, 22, 5, "P_HEMINE_WEAPON", 0, 0, 0, 0, 0, 0, 0},
-    {"wep_4.1", 548, 23, 5, "P_QMINE_WEAPON", 0, 0, 0, 0, 0, 0, 0},
-    {"wep_5.0", 550, 24, 5, "R_HEMINE_WEAPON", 0, 0, 0, 0, 0, 0, 0},
-    {"wep_5.1", 552, 25, 5, "R_QMINE_WEAPON", 0, 0, 0, 0, 0, 0, 0},
-    {"wep_6.0", 554, 26, 10, "LOCKON_LASER_WEAPON", 0, 0, 0, 0, 0, 0, 0},
-    {"wep_6.1", 556, 27, 10, "LASER_SABRE_WEAPON", 0, 0, 0, 0, 0, 0, 0},
-    {"wep_7.0", 558, 28, 10, "SONIC_CANNON_WEAPON", 0, 0, 0, 0, 0, 0, 0},
-    {"wep_7.1", 560, 29, 10, "ARC_SABRE_WEAPON", 0, 0, 0, 0, 0, 0, 0},
-    {"wep_8.0", 522, 30, 3, "MISSILE_WEAPON", 0, 0, 0, 0, 0, 0, 0},
-    {"wep_8.1", 562, 31, 5, "GUIDED_MISSILE_WEAPON", 0, 0, 0, 0, 0, 0, 0},
-    {"wep_9.0", 566, 32, 1, "NUKE_WEAPON", 0, 0, 0, 0, 0, 0, 0},
-    {"wep_9.1", 564, 33, 1, "GUIDED_NUKE_WEAPON", 0, 0, 0, 0, 0, 0, 0},
+    {0, 515, 0, 30, g_PickupLogicalName_ERFPG_AMMO, 0, 0, 0, 0, 0, 0, 0},
+    {0, 517, 1, 3, g_PickupLogicalName_HEMORTAR_AMMO, 0, 0, 0, 0, 0, 0, 0},
+    {0, 519, 2, 3, g_PickupLogicalName_QMORTAR_AMMO, 0, 0, 0, 0, 0, 0, 0},
+    {0, 526, 3, 10, g_PickupLogicalName_FREON_AMMO, 0, 0, 0, 0, 0, 0, 0},
+    {0, 523, 4, 10, g_PickupLogicalName_NAPALM_AMMO, 0, 0, 0, 0, 0, 0, 0},
+    {0, 545, 5, 5, g_PickupLogicalName_P_HEMINE_AMMO, 0, 0, 0, 0, 0, 0, 0},
+    {0, 547, 6, 5, g_PickupLogicalName_P_QMINE_AMMO, 0, 0, 0, 0, 0, 0, 0},
+    {0, 549, 7, 5, g_PickupLogicalName_R_HEMINE_AMMO, 0, 0, 0, 0, 0, 0, 0},
+    {0, 551, 8, 5, g_PickupLogicalName_R_QMINE_AMMO, 0, 0, 0, 0, 0, 0, 0},
+    {0, 553, 9, 10, g_PickupLogicalName_LOCKON_LASER_AMMO, 0, 0, 0, 0, 0, 0, 0},
+    {0, 555, 10, 10, g_PickupLogicalName_LASER_SABRE_AMMO, 0, 0, 0, 0, 0, 0, 0},
+    {0, 557, 11, 2, g_PickupLogicalName_SONIC_CANNON_AMMO, 0, 0, 0, 0, 0, 0, 0},
+    {0, 559, 12, 10, g_PickupLogicalName_ARC_SABRE_AMMO, 0, 0, 0, 0, 0, 0, 0},
+    {0, 521, 13, 3, g_PickupLogicalName_MISSILE_AMMO, 0, 0, 0, 0, 0, 0, 0},
+    {0, 561, 14, 5, g_PickupLogicalName_GUIDED_MISSILE_AMMO, 0, 0, 0, 0, 0, 0, 0},
+    {0, 565, 15, 1, g_PickupLogicalName_NUKE_AMMO, 0, 0, 0, 0, 0, 0, 0},
+    {0, 563, 16, 1, g_PickupLogicalName_GUIDED_NUKE_AMMO, 0, 0, 0, 0, 0, 0, 0},
+    {g_PickupOptKey_Wep1_1, 516, 17, 30, g_PickupLogicalName_ERFPG_WEAPON, 0, 0, 0, 0, 0, 0, 0},
+    {g_PickupOptKey_Wep2_0, 518, 18, 3, g_PickupLogicalName_HEMORTAR_WEAPON, 0, 0, 0, 0, 0, 0, 0},
+    {g_PickupOptKey_Wep2_1, 520, 19, 3, g_PickupLogicalName_QMORTAR_WEAPON, 0, 0, 0, 0, 0, 0, 0},
+    {g_PickupOptKey_Wep3_0, 527, 20, 10, g_PickupLogicalName_FREON_WEAPON, 0, 0, 0, 0, 0, 0, 0},
+    {g_PickupOptKey_Wep3_1, 524, 21, 10, g_PickupLogicalName_NAPALM_WEAPON, 0, 0, 0, 0, 0, 0, 0},
+    {g_PickupOptKey_Wep4_0, 546, 22, 5, g_PickupLogicalName_P_HEMINE_WEAPON, 0, 0, 0, 0, 0, 0, 0},
+    {g_PickupOptKey_Wep4_1, 548, 23, 5, g_PickupLogicalName_P_QMINE_WEAPON, 0, 0, 0, 0, 0, 0, 0},
+    {g_PickupOptKey_Wep5_0, 550, 24, 5, g_PickupLogicalName_R_HEMINE_WEAPON, 0, 0, 0, 0, 0, 0, 0},
+    {g_PickupOptKey_Wep5_1, 552, 25, 5, g_PickupLogicalName_R_QMINE_WEAPON, 0, 0, 0, 0, 0, 0, 0},
+    {g_PickupOptKey_Wep6_0, 554, 26, 10, g_PickupLogicalName_LOCKON_LASER_WEAPON, 0, 0, 0, 0, 0, 0, 0},
+    {g_PickupOptKey_Wep6_1, 556, 27, 10, g_PickupLogicalName_LASER_SABRE_WEAPON, 0, 0, 0, 0, 0, 0, 0},
+    {g_PickupOptKey_Wep7_0, 558, 28, 10, g_PickupLogicalName_SONIC_CANNON_WEAPON, 0, 0, 0, 0, 0, 0, 0},
+    {g_PickupOptKey_Wep7_1, 560, 29, 10, g_PickupLogicalName_ARC_SABRE_WEAPON, 0, 0, 0, 0, 0, 0, 0},
+    {g_PickupOptKey_Wep8_0, 522, 30, 3, g_PickupLogicalName_MISSILE_WEAPON, 0, 0, 0, 0, 0, 0, 0},
+    {g_PickupOptKey_Wep8_1, 562, 31, 5, g_PickupLogicalName_GUIDED_MISSILE_WEAPON, 0, 0, 0, 0, 0, 0, 0},
+    {g_PickupOptKey_Wep9_0, 566, 32, 1, g_PickupLogicalName_NUKE_WEAPON, 0, 0, 0, 0, 0, 0, 0},
+    {g_PickupOptKey_Wep9_1, 564, 33, 1, g_PickupLogicalName_GUIDED_NUKE_WEAPON, 0, 0, 0, 0, 0, 0, 0},
     {0, 528, 34, 60, "NANITE", 0, 0, 0, 0, 0, 0, 0},
-    {0, 586, 35, 100, "NANITE100", 0, 0, 0, 0, 0, 0, 0},
-    {0, 525, 36, 1, "NANO-CANISTER", 0, 0, 0, 0, 0, 0, 0},
-    {0, 577, 37, 1, "PUP_AMPHIB", 0, 0, 0, 0, 0, 0, 0},
-    {0, 578, 38, 1, "PUP_HOVER", 0, 0, 0, 0, 0, 0, 0},
-    {0, 581, 39, 1, "PUP_SUB", 0, 0, 0, 0, 0, 0, 0}
+    {0, 586, 35, 100, g_PickupLogicalName_NANITE100, 0, 0, 0, 0, 0, 0, 0},
+    {0, 525, 36, 1, g_PickupLogicalName_NANO_CANISTER, 0, 0, 0, 0, 0, 0, 0},
+    {0, 577, 37, 1, g_PickupLogicalName_PUP_AMPHIB, 0, 0, 0, 0, 0, 0, 0},
+    {0, 578, 38, 1, g_PickupLogicalName_PUP_HOVER, 0, 0, 0, 0, 0, 0, 0},
+    {0, 581, 39, 1, g_PickupLogicalName_PUP_SUB, 0, 0, 0, 0, 0, 0, 0}
 };
 PickupSpawnList g_PickupSpawnList_NetworkCopy = {0};
 /**
@@ -90,6 +147,342 @@ int g_NextPickupId = 0;
  * Purpose: remember the rotating VTOL weapon-drop cursor between airdrops.
  */
 int g_Pickup_LastVTOLDropIndex = 19;
+/**
+ * Reimplements data 0x4dbe6c: g_PickupLogicalName_PUP_SUB.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: name the submarine puppy pickup type in g_PickupTypes.
+ */
+char g_PickupLogicalName_PUP_SUB[] = "PUP_SUB";
+/**
+ * Reimplements data 0x4dbe74: g_PickupLogicalName_PUP_HOVER.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: name the hover puppy pickup type in g_PickupTypes.
+ */
+char g_PickupLogicalName_PUP_HOVER[] = "PUP_HOVER";
+/**
+ * Reimplements data 0x4dbe80: g_PickupLogicalName_PUP_AMPHIB.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: name the amphibious puppy pickup type in g_PickupTypes.
+ */
+char g_PickupLogicalName_PUP_AMPHIB[] = "PUP_AMPHIB";
+/**
+ * Reimplements data 0x4dbe8c: g_PickupLogicalName_NANO_CANISTER.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: name the nano-canister pickup type in g_PickupTypes.
+ */
+char g_PickupLogicalName_NANO_CANISTER[] = "NANO-CANISTER";
+/**
+ * Reimplements data 0x4dbe9c: g_PickupLogicalName_NANITE100.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: name the full nanite pickup type in g_PickupTypes.
+ */
+char g_PickupLogicalName_NANITE100[] = "NANITE100";
+/**
+ * Reimplements data 0x4dbea8: g_PickupLogicalName_GUIDED_NUKE_WEAPON.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: name the guided nuke weapon pickup type in g_PickupTypes.
+ */
+char g_PickupLogicalName_GUIDED_NUKE_WEAPON[] = "GUIDED_NUKE_WEAPON";
+/**
+ * Reimplements data 0x4dbebc: g_PickupOptKey_Wep9_1.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: bind the guided nuke weapon pickup to the wep_9.1 option key.
+ */
+char g_PickupOptKey_Wep9_1[] = "wep_9.1";
+/**
+ * Reimplements data 0x4dbec4: g_PickupLogicalName_NUKE_WEAPON.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: name the nuke weapon pickup type in g_PickupTypes.
+ */
+char g_PickupLogicalName_NUKE_WEAPON[] = "NUKE_WEAPON";
+/**
+ * Reimplements data 0x4dbed0: g_PickupOptKey_Wep9_0.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: bind the nuke weapon pickup to the wep_9.0 option key.
+ */
+char g_PickupOptKey_Wep9_0[] = "wep_9.0";
+/**
+ * Reimplements data 0x4dbed8: g_PickupLogicalName_GUIDED_MISSILE_WEAPON.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: name the guided missile weapon pickup type in g_PickupTypes.
+ */
+char g_PickupLogicalName_GUIDED_MISSILE_WEAPON[] = "GUIDED_MISSILE_WEAPON";
+/**
+ * Reimplements data 0x4dbef0: g_PickupOptKey_Wep8_1.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: bind the guided missile weapon pickup to the wep_8.1 option key.
+ */
+char g_PickupOptKey_Wep8_1[] = "wep_8.1";
+/**
+ * Reimplements data 0x4dbef8: g_PickupLogicalName_MISSILE_WEAPON.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: name the missile weapon pickup type in g_PickupTypes.
+ */
+char g_PickupLogicalName_MISSILE_WEAPON[] = "MISSILE_WEAPON";
+/**
+ * Reimplements data 0x4dbf08: g_PickupOptKey_Wep8_0.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: bind the missile weapon pickup to the wep_8.0 option key.
+ */
+char g_PickupOptKey_Wep8_0[] = "wep_8.0";
+/**
+ * Reimplements data 0x4dbf10: g_PickupLogicalName_ARC_SABRE_WEAPON.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: name the arc sabre weapon pickup type in g_PickupTypes.
+ */
+char g_PickupLogicalName_ARC_SABRE_WEAPON[] = "ARC_SABRE_WEAPON";
+/**
+ * Reimplements data 0x4dbf24: g_PickupOptKey_Wep7_1.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: bind the arc sabre weapon pickup to the wep_7.1 option key.
+ */
+char g_PickupOptKey_Wep7_1[] = "wep_7.1";
+/**
+ * Reimplements data 0x4dbf2c: g_PickupLogicalName_SONIC_CANNON_WEAPON.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: name the sonic cannon weapon pickup type in g_PickupTypes.
+ */
+char g_PickupLogicalName_SONIC_CANNON_WEAPON[] = "SONIC_CANNON_WEAPON";
+/**
+ * Reimplements data 0x4dbf40: g_PickupOptKey_Wep7_0.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: bind the sonic cannon weapon pickup to the wep_7.0 option key.
+ */
+char g_PickupOptKey_Wep7_0[] = "wep_7.0";
+/**
+ * Reimplements data 0x4dbf48: g_PickupLogicalName_LASER_SABRE_WEAPON.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: name the laser sabre weapon pickup type in g_PickupTypes.
+ */
+char g_PickupLogicalName_LASER_SABRE_WEAPON[] = "LASER_SABRE_WEAPON";
+/**
+ * Reimplements data 0x4dbf5c: g_PickupOptKey_Wep6_1.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: bind the laser sabre weapon pickup to the wep_6.1 option key.
+ */
+char g_PickupOptKey_Wep6_1[] = "wep_6.1";
+/**
+ * Reimplements data 0x4dbf64: g_PickupLogicalName_LOCKON_LASER_WEAPON.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: name the lock-on laser weapon pickup type in g_PickupTypes.
+ */
+char g_PickupLogicalName_LOCKON_LASER_WEAPON[] = "LOCKON_LASER_WEAPON";
+/**
+ * Reimplements data 0x4dbf78: g_PickupOptKey_Wep6_0.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: bind the lock-on laser weapon pickup to the wep_6.0 option key.
+ */
+char g_PickupOptKey_Wep6_0[] = "wep_6.0";
+/**
+ * Reimplements data 0x4dbf80: g_PickupLogicalName_R_QMINE_WEAPON.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: name the red quantum mine weapon pickup type in g_PickupTypes.
+ */
+char g_PickupLogicalName_R_QMINE_WEAPON[] = "R_QMINE_WEAPON";
+/**
+ * Reimplements data 0x4dbf90: g_PickupOptKey_Wep5_1.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: bind the red quantum mine weapon pickup to the wep_5.1 option key.
+ */
+char g_PickupOptKey_Wep5_1[] = "wep_5.1";
+/**
+ * Reimplements data 0x4dbf98: g_PickupLogicalName_R_HEMINE_WEAPON.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: name the red high-explosive mine weapon pickup type in g_PickupTypes.
+ */
+char g_PickupLogicalName_R_HEMINE_WEAPON[] = "R_HEMINE_WEAPON";
+/**
+ * Reimplements data 0x4dbfa8: g_PickupOptKey_Wep5_0.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: bind the red high-explosive mine weapon pickup to the wep_5.0 option key.
+ */
+char g_PickupOptKey_Wep5_0[] = "wep_5.0";
+/**
+ * Reimplements data 0x4dbfb0: g_PickupLogicalName_P_QMINE_WEAPON.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: name the proximity quantum mine weapon pickup type in g_PickupTypes.
+ */
+char g_PickupLogicalName_P_QMINE_WEAPON[] = "P_QMINE_WEAPON";
+/**
+ * Reimplements data 0x4dbfc0: g_PickupOptKey_Wep4_1.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: bind the proximity quantum mine weapon pickup to the wep_4.1 option key.
+ */
+char g_PickupOptKey_Wep4_1[] = "wep_4.1";
+/**
+ * Reimplements data 0x4dbfc8: g_PickupLogicalName_P_HEMINE_WEAPON.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: name the proximity high-explosive mine weapon pickup type in g_PickupTypes.
+ */
+char g_PickupLogicalName_P_HEMINE_WEAPON[] = "P_HEMINE_WEAPON";
+/**
+ * Reimplements data 0x4dbfd8: g_PickupOptKey_Wep4_0.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: bind the proximity high-explosive mine weapon pickup to the wep_4.0 option key.
+ */
+char g_PickupOptKey_Wep4_0[] = "wep_4.0";
+/**
+ * Reimplements data 0x4dbfe0: g_PickupLogicalName_NAPALM_WEAPON.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: name the napalm weapon pickup type in g_PickupTypes.
+ */
+char g_PickupLogicalName_NAPALM_WEAPON[] = "NAPALM_WEAPON";
+/**
+ * Reimplements data 0x4dbff0: g_PickupOptKey_Wep3_1.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: bind the napalm weapon pickup to the wep_3.1 option key.
+ */
+char g_PickupOptKey_Wep3_1[] = "wep_3.1";
+/**
+ * Reimplements data 0x4dbff8: g_PickupLogicalName_FREON_WEAPON.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: name the freon weapon pickup type in g_PickupTypes.
+ */
+char g_PickupLogicalName_FREON_WEAPON[] = "FREON_WEAPON";
+/**
+ * Reimplements data 0x4dc008: g_PickupOptKey_Wep3_0.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: bind the freon weapon pickup to the wep_3.0 option key.
+ */
+char g_PickupOptKey_Wep3_0[] = "wep_3.0";
+/**
+ * Reimplements data 0x4dc010: g_PickupLogicalName_QMORTAR_WEAPON.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: name the quantum mortar weapon pickup type in g_PickupTypes.
+ */
+char g_PickupLogicalName_QMORTAR_WEAPON[] = "QMORTAR_WEAPON";
+/**
+ * Reimplements data 0x4dc020: g_PickupOptKey_Wep2_1.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: bind the quantum mortar weapon pickup to the wep_2.1 option key.
+ */
+char g_PickupOptKey_Wep2_1[] = "wep_2.1";
+/**
+ * Reimplements data 0x4dc028: g_PickupLogicalName_HEMORTAR_WEAPON.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: name the high-explosive mortar weapon pickup type in g_PickupTypes.
+ */
+char g_PickupLogicalName_HEMORTAR_WEAPON[] = "HEMORTAR_WEAPON";
+/**
+ * Reimplements data 0x4dc038: g_PickupOptKey_Wep2_0.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: bind the high-explosive mortar weapon pickup to the wep_2.0 option key.
+ */
+char g_PickupOptKey_Wep2_0[] = "wep_2.0";
+/**
+ * Reimplements data 0x4dc040: g_PickupLogicalName_ERFPG_WEAPON.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: name the ERFPG weapon pickup type in g_PickupTypes.
+ */
+char g_PickupLogicalName_ERFPG_WEAPON[] = "ERFPG_WEAPON";
+/**
+ * Reimplements data 0x4dc050: g_PickupOptKey_Wep1_1.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: bind the ERFPG weapon pickup to the wep_1.1 option key.
+ */
+char g_PickupOptKey_Wep1_1[] = "wep_1.1";
+/**
+ * Reimplements data 0x4dc058: g_PickupLogicalName_GUIDED_NUKE_AMMO.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: name the guided nuke ammo pickup type in g_PickupTypes.
+ */
+char g_PickupLogicalName_GUIDED_NUKE_AMMO[] = "GUIDED_NUKE_AMMO";
+/**
+ * Reimplements data 0x4dc06c: g_PickupLogicalName_NUKE_AMMO.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: name the nuke ammo pickup type in g_PickupTypes.
+ */
+char g_PickupLogicalName_NUKE_AMMO[] = "NUKE_AMMO";
+/**
+ * Reimplements data 0x4dc078: g_PickupLogicalName_GUIDED_MISSILE_AMMO.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: name the guided missile ammo pickup type in g_PickupTypes.
+ */
+char g_PickupLogicalName_GUIDED_MISSILE_AMMO[] = "GUIDED_MISSILE_AMMO";
+/**
+ * Reimplements data 0x4dc08c: g_PickupLogicalName_MISSILE_AMMO.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: name the missile ammo pickup type in g_PickupTypes.
+ */
+char g_PickupLogicalName_MISSILE_AMMO[] = "MISSILE_AMMO";
+/**
+ * Reimplements data 0x4dc09c: g_PickupLogicalName_ARC_SABRE_AMMO.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: name the arc sabre ammo pickup type in g_PickupTypes.
+ */
+char g_PickupLogicalName_ARC_SABRE_AMMO[] = "ARC_SABRE_AMMO";
+/**
+ * Reimplements data 0x4dc0ac: g_PickupLogicalName_SONIC_CANNON_AMMO.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: name the sonic cannon ammo pickup type in g_PickupTypes.
+ */
+char g_PickupLogicalName_SONIC_CANNON_AMMO[] = "SONIC_CANNON_AMMO";
+/**
+ * Reimplements data 0x4dc0c0: g_PickupLogicalName_LASER_SABRE_AMMO.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: name the laser sabre ammo pickup type in g_PickupTypes.
+ */
+char g_PickupLogicalName_LASER_SABRE_AMMO[] = "LASER_SABRE_AMMO";
+/**
+ * Reimplements data 0x4dc0d4: g_PickupLogicalName_LOCKON_LASER_AMMO.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: name the lock-on laser ammo pickup type in g_PickupTypes.
+ */
+char g_PickupLogicalName_LOCKON_LASER_AMMO[] = "LOCKON_LASER_AMMO";
+/**
+ * Reimplements data 0x4dc0e8: g_PickupLogicalName_R_QMINE_AMMO.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: name the red quantum mine ammo pickup type in g_PickupTypes.
+ */
+char g_PickupLogicalName_R_QMINE_AMMO[] = "R_QMINE_AMMO";
+/**
+ * Reimplements data 0x4dc0f8: g_PickupLogicalName_R_HEMINE_AMMO.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: name the red high-explosive mine ammo pickup type in g_PickupTypes.
+ */
+char g_PickupLogicalName_R_HEMINE_AMMO[] = "R_HEMINE_AMMO";
+/**
+ * Reimplements data 0x4dc108: g_PickupLogicalName_P_QMINE_AMMO.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: name the proximity quantum mine ammo pickup type in g_PickupTypes.
+ */
+char g_PickupLogicalName_P_QMINE_AMMO[] = "P_QMINE_AMMO";
+/**
+ * Reimplements data 0x4dc118: g_PickupLogicalName_P_HEMINE_AMMO.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: name the proximity high-explosive mine ammo pickup type in g_PickupTypes.
+ */
+char g_PickupLogicalName_P_HEMINE_AMMO[] = "P_HEMINE_AMMO";
+/**
+ * Reimplements data 0x4dc128: g_PickupLogicalName_NAPALM_AMMO.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: name the napalm ammo pickup type in g_PickupTypes.
+ */
+char g_PickupLogicalName_NAPALM_AMMO[] = "NAPALM_AMMO";
+/**
+ * Reimplements data 0x4dc134: g_PickupLogicalName_FREON_AMMO.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: name the freon ammo pickup type in g_PickupTypes.
+ */
+char g_PickupLogicalName_FREON_AMMO[] = "FREON_AMMO";
+/**
+ * Reimplements data 0x4dc140: g_PickupLogicalName_QMORTAR_AMMO.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: name the quantum mortar ammo pickup type in g_PickupTypes.
+ */
+char g_PickupLogicalName_QMORTAR_AMMO[] = "QMORTAR_AMMO";
+/**
+ * Reimplements data 0x4dc150: g_PickupLogicalName_HEMORTAR_AMMO.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: name the high-explosive mortar ammo pickup type in g_PickupTypes.
+ */
+char g_PickupLogicalName_HEMORTAR_AMMO[] = "HEMORTAR_AMMO";
+/**
+ * Reimplements data 0x4dc160: g_PickupLogicalName_ERFPG_AMMO.
+ * Data owner: battlesport_gameplay.pickup_type_name_key_literals_data.
+ * Purpose: name the ERFPG ammo pickup type in g_PickupTypes.
+ */
+char g_PickupLogicalName_ERFPG_AMMO[] = "ERFPG_AMMO";
 /**
  * Reimplements data 0x4f3328: g_Pickup_SceneNode (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: cache the scene node used as the parent and terrain query root for pickups.
@@ -272,6 +665,16 @@ const char kPickupPuppiesHardZrd[] = "puppies_hard.zrd";
  * Purpose: name the default puppy spawn ZRD fallback.
  */
 const char kPickupPuppiesDefaultZrd[] = "puppies.zrd";
+
+} // namespace
+
+/**
+ * Reimplements data 0x4dc260: g_Pickup_NodePrefix (D:\Proj\Battlesport\pickup.cpp).
+ * Purpose: name the pickup scene-node type prefix used while enumerating puppy spawns.
+ */
+char g_Pickup_NodePrefix[3] = "pu";
+
+namespace {
 
 template <typename T>
 /**
@@ -814,7 +1217,7 @@ int InitAndLoadPuppySpawns() {
     g_PickupSpawnList_Primary.Clear();
 
     zClass::FindNextByTypePrefix(
-        "pu",
+        g_Pickup_NodePrefix,
         6
     );
     zClass_NodePartial *pickupObj = zClass::FindNextByTypePrefix(

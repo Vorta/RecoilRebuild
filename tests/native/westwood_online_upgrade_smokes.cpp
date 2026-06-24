@@ -1,6 +1,8 @@
 #include "Battlesport/WestwoodOnlineUpgradeConfigDialog.h"
 #include "Battlesport/WestwoodOnlineUpgradeApiEventSink.h"
 #include "Battlesport/WestwoodOnlineUpgradeApi.h"
+#include "Battlesport/CZRecoilFrame.h"
+#include "Battlesport/RecoilApp.h"
 #include "Battlesport/WestwoodOnlineUpgradeDialog.h"
 #include "Battlesport/WestwoodOnlineUpgradeRefCountAndLock.h"
 #include "GameZRecoil/Time/Time.h"
@@ -238,6 +240,18 @@ int g_initProcessCallbacksCalls;
 int g_initRequestListModeCalls;
 int g_initRequestListMode;
 int g_initRequestListModeEnabled;
+int g_showModalSelectedMissionIndex;
+int g_showModalMenuStep;
+int g_showModalMenuVisible[2];
+void *g_showModalMenuThis[2];
+int g_showModalDoModalCalls;
+int g_showModalDialogDtorCalls;
+int g_showModalCStringDtorCalls;
+int g_showModalListDtorCalls;
+int g_showModalEditDtorCalls;
+int g_showModalComboDtorCalls;
+int g_showModalButtonDtorCalls;
+bool g_showModalArgsOk;
 int g_modalTimeTickCalls;
 int g_beginConnectGetWindowTextCalls;
 void *g_beginConnectGetWindowTextThis;
@@ -620,6 +634,69 @@ void __fastcall FakeConfigOnOkBaseOnOK(CDialog *self, void *) {
 
 void FakeModalTimeTick() {
     ++g_modalTimeTickCalls;
+}
+
+void ResetShowModalProbe() {
+    g_showModalSelectedMissionIndex = -1;
+    g_showModalMenuStep = 0;
+    g_showModalMenuVisible[0] = -1;
+    g_showModalMenuVisible[1] = -1;
+    g_showModalMenuThis[0] = 0;
+    g_showModalMenuThis[1] = 0;
+    g_showModalDoModalCalls = 0;
+    g_showModalDialogDtorCalls = 0;
+    g_showModalCStringDtorCalls = 0;
+    g_showModalListDtorCalls = 0;
+    g_showModalEditDtorCalls = 0;
+    g_showModalComboDtorCalls = 0;
+    g_showModalButtonDtorCalls = 0;
+    g_showModalArgsOk = true;
+}
+
+void __fastcall FakeShowModalSetMenuBarVisibility(CZRecoilFrame *self, void *, int visible) {
+    if (g_showModalMenuStep < 2) {
+        g_showModalMenuThis[g_showModalMenuStep] = self;
+        g_showModalMenuVisible[g_showModalMenuStep] = visible;
+    }
+    ++g_showModalMenuStep;
+}
+
+int __fastcall FakeShowModalDoModal(void *self, void *) {
+    ++g_showModalDoModalCalls;
+    g_showModalArgsOk =
+        g_showModalArgsOk &&
+        self == g_pWestwoodOnlineUpgradeDialog &&
+        g_pWestwoodOnlineUpgradeDialog != 0 &&
+        g_pWestwoodOnlineUpgradeProgressDialog != 0 &&
+        TestObjectVtable(g_pWestwoodOnlineUpgradeDialog) != 0 &&
+        TestObjectVtable(g_pWestwoodOnlineUpgradeProgressDialog) != 0 &&
+        g_WestwoodOnlineUpgradeSelectedMissionIndex == -1;
+    g_WestwoodOnlineUpgradeSelectedMissionIndex = g_showModalSelectedMissionIndex;
+    return 1;
+}
+
+void __fastcall FakeShowModalDialogDtor(void *, void *) {
+    ++g_showModalDialogDtorCalls;
+}
+
+void __fastcall FakeShowModalCStringDtor(void *, void *) {
+    ++g_showModalCStringDtorCalls;
+}
+
+void __fastcall FakeShowModalListDtor(void *, void *) {
+    ++g_showModalListDtorCalls;
+}
+
+void __fastcall FakeShowModalEditDtor(void *, void *) {
+    ++g_showModalEditDtorCalls;
+}
+
+void __fastcall FakeShowModalComboDtor(void *, void *) {
+    ++g_showModalComboDtorCalls;
+}
+
+void __fastcall FakeShowModalButtonDtor(void *, void *) {
+    ++g_showModalButtonDtorCalls;
 }
 
 long __fastcall FakeWestwoodDefault(CWnd *, void *) {
@@ -1069,6 +1146,71 @@ void RestoreFunctionPatch(CodeFunctionPatch &patch) {
     patch.address = 0;
 }
 
+bool InstallShowModalPatches(ImportFunctionPatch *imports, CodeFunctionPatch &menuPatch) {
+    const WORD kMfc42CDialogDoModalOrdinal = 2514;
+    const WORD kMfc42CStringDtorOrdinal = 800;
+    const WORD kMfc42CComboBoxDtorOrdinal = 616;
+    const WORD kMfc42CListBoxDtorOrdinal = 692;
+    const WORD kMfc42CButtonDtorOrdinal = 609;
+    const WORD kMfc42CEditDtorOrdinal = 656;
+    const WORD kMfc42CDialogDtorOrdinal = 641;
+
+    return PatchImportByOrdinal(
+               "MFC42.DLL",
+               kMfc42CDialogDoModalOrdinal,
+               (void *)&FakeShowModalDoModal,
+               imports[0]
+           ) &&
+           PatchImportByOrdinal(
+               "MFC42.DLL",
+               kMfc42CStringDtorOrdinal,
+               (void *)&FakeShowModalCStringDtor,
+               imports[1]
+           ) &&
+           PatchImportByOrdinal(
+               "MFC42.DLL",
+               kMfc42CComboBoxDtorOrdinal,
+               (void *)&FakeShowModalComboDtor,
+               imports[2]
+           ) &&
+           PatchImportByOrdinal(
+               "MFC42.DLL",
+               kMfc42CListBoxDtorOrdinal,
+               (void *)&FakeShowModalListDtor,
+               imports[3]
+           ) &&
+           PatchImportByOrdinal(
+               "MFC42.DLL",
+               kMfc42CButtonDtorOrdinal,
+               (void *)&FakeShowModalButtonDtor,
+               imports[4]
+           ) &&
+           PatchImportByOrdinal(
+               "MFC42.DLL",
+               kMfc42CEditDtorOrdinal,
+               (void *)&FakeShowModalEditDtor,
+               imports[5]
+           ) &&
+           PatchImportByOrdinal(
+               "MFC42.DLL",
+               kMfc42CDialogDtorOrdinal,
+               (void *)&FakeShowModalDialogDtor,
+               imports[6]
+           ) &&
+           PatchFunctionJump(
+               MethodAddress(&CZRecoilFrame::SetMenuBarVisibility),
+               (void *)&FakeShowModalSetMenuBarVisibility,
+               menuPatch
+           );
+}
+
+void RestoreShowModalPatches(ImportFunctionPatch *imports, CodeFunctionPatch &menuPatch) {
+    RestoreFunctionPatch(menuPatch);
+    for (int index = 6; index >= 0; --index) {
+        RestoreImportPatch(imports[index]);
+    }
+}
+
 } // namespace
 
 extern "C" int westwood_online_upgrade_config_dialog_constructor_smoke(void) {
@@ -1234,6 +1376,100 @@ extern "C" int westwood_online_upgrade_config_dialog_on_init_smoke(void) {
     RestoreFunctionPatch(patches[0]);
     RestoreImportPatch(imports[1]);
     RestoreImportPatch(imports[0]);
+    return failure;
+}
+
+extern "C" int westwood_online_upgrade_dialog_show_modal_smoke(void) {
+    ImportFunctionPatch imports[7] = {};
+    CodeFunctionPatch menuPatch = {};
+    if (!InstallShowModalPatches(imports, menuPatch)) {
+        RestoreShowModalPatches(imports, menuPatch);
+        return 10;
+    }
+
+    CWnd *const oldMainWnd = g_RecoilApp.m_pMainWnd;
+    HINSTANCE const oldInstance = g_RecoilApp.m_hInstance;
+    HINSTANCE const oldModuleInstance = g_hWestwoodOnlineUpgradeModuleInstance;
+    WestwoodOnlineUpgradeDialog *const oldDialog = g_pWestwoodOnlineUpgradeDialog;
+    WestwoodOnlineUpgradeProgressDialog *const oldProgress =
+        g_pWestwoodOnlineUpgradeProgressDialog;
+    const int oldSelected = g_WestwoodOnlineUpgradeSelectedMissionIndex;
+
+    g_RecoilApp.m_pMainWnd = (CWnd *)0x12345678;
+    g_RecoilApp.m_hInstance = (HINSTANCE)0x2468ace0;
+
+    ResetShowModalProbe();
+    g_showModalSelectedMissionIndex = 8;
+    int selectedMissionIndex = -55;
+    int result =
+        WestwoodOnlineUpgradeDialog::ShowModalAndGetSelectedMissionIndex(&selectedMissionIndex);
+    int failure = 0;
+    if (result != 1 || selectedMissionIndex != 8) {
+        failure = 1;
+    } else if (!g_showModalArgsOk) {
+        failure = 2;
+    } else if (g_hWestwoodOnlineUpgradeModuleInstance != (HINSTANCE)0x2468ace0) {
+        failure = 3;
+    } else if (
+        g_showModalMenuStep != 2 ||
+        g_showModalMenuThis[0] != (void *)0x12345678 ||
+        g_showModalMenuThis[1] != (void *)0x12345678 ||
+        g_showModalMenuVisible[0] != 0 ||
+        g_showModalMenuVisible[1] != 1
+    ) {
+        failure = 4;
+    } else if (g_showModalDoModalCalls != 1) {
+        failure = 50 + g_showModalDoModalCalls;
+    } else if (g_showModalDialogDtorCalls != 2) {
+        failure = 60 + g_showModalDialogDtorCalls;
+    } else if (g_showModalCStringDtorCalls != 3) {
+        failure = 70 + g_showModalCStringDtorCalls;
+    } else if (g_showModalListDtorCalls != 3) {
+        failure = 80 + g_showModalListDtorCalls;
+    } else if (g_showModalEditDtorCalls != 7) {
+        failure = 90 + g_showModalEditDtorCalls;
+    } else if (g_showModalComboDtorCalls != 1) {
+        failure = 100 + g_showModalComboDtorCalls;
+    } else if (g_showModalButtonDtorCalls != 6) {
+        failure = 110 + g_showModalButtonDtorCalls;
+    }
+
+    ResetShowModalProbe();
+    g_showModalSelectedMissionIndex = -1;
+    selectedMissionIndex = -77;
+    result =
+        WestwoodOnlineUpgradeDialog::ShowModalAndGetSelectedMissionIndex(&selectedMissionIndex);
+    if (failure == 0) {
+        if (result != 0 || selectedMissionIndex != -77) {
+            failure = 6;
+        } else if (
+            !g_showModalArgsOk ||
+            g_showModalMenuStep != 2 ||
+            g_showModalMenuVisible[0] != 0 ||
+            g_showModalMenuVisible[1] != 1 ||
+            g_showModalDoModalCalls != 1
+        ) {
+            failure = 7;
+        } else if (
+            g_showModalDialogDtorCalls != 2 ||
+            g_showModalCStringDtorCalls != 3 ||
+            g_showModalListDtorCalls != 3 ||
+            g_showModalEditDtorCalls != 7 ||
+            g_showModalComboDtorCalls != 1 ||
+            g_showModalButtonDtorCalls != 6
+        ) {
+            failure = 8;
+        }
+    }
+
+    g_RecoilApp.m_pMainWnd = oldMainWnd;
+    g_RecoilApp.m_hInstance = oldInstance;
+    g_hWestwoodOnlineUpgradeModuleInstance = oldModuleInstance;
+    g_pWestwoodOnlineUpgradeDialog = oldDialog;
+    g_pWestwoodOnlineUpgradeProgressDialog = oldProgress;
+    g_WestwoodOnlineUpgradeSelectedMissionIndex = oldSelected;
+
+    RestoreShowModalPatches(imports, menuPatch);
     return failure;
 }
 

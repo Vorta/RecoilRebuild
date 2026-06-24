@@ -6,6 +6,12 @@
 /**
  * Reimplements data 0x4edc58: g_RecoilState_MainMenuTransition.
  *
+ * Data owner: legacy.app_shell.class_recoilstatemainmenutransition. BN exposes
+ * a 0x18-byte zero-initialized .data object of type
+ * RecoilStateMainMenuTransition at 0x4edc58. StaticInit constructs it in place;
+ * AtExitDestructor destroys that same object. BN base-object xrefs are
+ * StaticInit, AtExitDestructor, and QueueEnter.
+ *
  * Purpose: own the global app-state singleton used while transitioning into
  * the main menu.
  */

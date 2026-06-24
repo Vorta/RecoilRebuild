@@ -1873,6 +1873,7 @@ extern int g_zEffectAnim_EnableZarRegistration;
 extern char g_zEffectAnim_ZarSectionName_Anim[5];
 extern char g_zEffectAnim_ZarSectionName_RunningAnim[12];
 extern char g_zEffectAnim_ZarSectionName_AnimActivation[15];
+extern char g_zEffectAnim_ActivationPrereqNodeNotFoundFmt[0x4e];
 }
 
 namespace zEffect_Anim {

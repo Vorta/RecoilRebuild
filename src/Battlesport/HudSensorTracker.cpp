@@ -62,13 +62,104 @@ struct HudSensorTrackerMissionData {
 
 RECOIL_STATIC_ASSERT(sizeof(HudSensorTrackerMissionData) == 0x5c);
 
-const unsigned char g_HudSensorTracker_ObjectiveMarkerColorBlueRgb24[4] = {0x00, 0x00, 0xff, 0x00};
-
+/**
+ * Reimplements data 0x4daf94: g_HudSensorTracker_ObjectiveBlinkColorRedRgb24 (D:\Proj\Battlesport\map.cpp).
+ * Purpose: supply the RGB24 red objective-marker blink color with VC5 four-byte storage.
+ */
 const unsigned char g_HudSensorTracker_ObjectiveBlinkColorRedRgb24[4] = {0xff, 0x00, 0x00, 0x00};
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectiveBlinkColorRedRgb24) == 4);
+
+/**
+ * Reimplements data 0x4daf98: g_HudSensorTracker_ObjectiveMarkerColorBlueRgb24 (D:\Proj\Battlesport\map.cpp).
+ * Purpose: supply the RGB24 blue objective-marker color with VC5 four-byte storage.
+ */
+const unsigned char g_HudSensorTracker_ObjectiveMarkerColorBlueRgb24[4] = {0x00, 0x00, 0xff, 0x00};
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectiveMarkerColorBlueRgb24) == 4);
+
+
+/**
+ * Reimplements data 0x4db048: kHudSensorTrackerWeatherArchiveName (D:\Proj\Battlesport\map.cpp).
+ * Purpose: name the mission weather archive loaded during HUD mission startup.
+ */
+const char kHudSensorTrackerWeatherArchiveName[] = "Weather.zrd";
+/**
+ * Reimplements data 0x4db054: g_HudSensorTracker_FindMissionObjectivesMsg.
+ * Purpose: report the objective-loading phase during HUD mission startup.
+ */
+const char g_HudSensorTracker_FindMissionObjectivesMsg[0x18] = "Find mission objectives";
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_FindMissionObjectivesMsg) == 0x18);
+/**
+ * Reimplements data 0x4db06c: g_HudSensorTracker_DefaultAirdropCarrierNodeName.
+ * Purpose: name the default carrier node used for pickup airdrop spawn setup.
+ */
+const char g_HudSensorTracker_DefaultAirdropCarrierNodeName[0x06] = "vtol2";
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_DefaultAirdropCarrierNodeName) == 0x06);
+/**
+ * Reimplements data 0x4db074: kHudSensorTrackerAiArchiveName (D:\Proj\Battlesport\map.cpp).
+ * Purpose: name the turret/AI definition archive loaded during HUD mission startup.
+ */
+const char kHudSensorTrackerAiArchiveName[] = "ai.zrd";
+/**
+ * Reimplements data 0x4db07c: kHudSensorTrackerWeaponsArchiveName (D:\Proj\Battlesport\map.cpp).
+ * Purpose: name the weapon opt-catalog archive loaded during HUD mission startup.
+ */
+const char kHudSensorTrackerWeaponsArchiveName[] = "weapons.zrd";
+/**
+ * Reimplements data 0x4db088: g_zEffectAnim_DefaultArchiveName.
+ * Purpose: keep the standalone default animation archive-name literal separate
+ * from HudSensorTracker mission archive names and zEffect runtime filename state.
+ */
+char g_zEffectAnim_DefaultArchiveName[0x09] = "anim.zrd";
+RECOIL_STATIC_ASSERT(sizeof(g_zEffectAnim_DefaultArchiveName) == 0x09);
+/**
+ * Reimplements data 0x4db094: kHudSensorTrackerEffectsArchiveName (D:\Proj\Battlesport\map.cpp).
+ * Purpose: name the effects archive loaded during HUD mission startup.
+ */
+const char kHudSensorTrackerEffectsArchiveName[] = "effects.zrd";
+/**
+ * Reimplements data 0x4db0a0: kHudSensorTrackerPickupArchiveName (D:\Proj\Battlesport\map.cpp).
+ * Purpose: name the pickup archive loaded during HUD mission startup.
+ */
+const char kHudSensorTrackerPickupArchiveName[] = "pickup.zrd";
+/**
+ * Reimplements data 0x4db0ac: g_HudSensorTracker_MissionUnloadedMsg.
+ * Purpose: report completion of mission gameplay shutdown.
+ */
+const char g_HudSensorTracker_MissionUnloadedMsg[0x14] = "...Mission Unloaded";
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_MissionUnloadedMsg) == 0x14);
+/**
+ * Reimplements data 0x4db230: g_HudSensorTracker_MissionCppSourcePath.
+ * Purpose: preserve the mission.cpp source path used by HUD mission-load error
+ * reports.
+ */
+char g_HudSensorTracker_MissionCppSourcePath[0x20] = "D:\\Proj\\Battlesport\\mission.cpp";
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_MissionCppSourcePath) == 0x20);
+/**
+ * Reimplements data 0x4db460: kHudSensorTrackerRaceCheckpointCountNodeName (D:\Proj\Battlesport\map.cpp).
+ * Purpose: name the race checkpoint count node queried from race.zrd.
+ */
+const char kHudSensorTrackerRaceCheckpointCountNodeName[] = "cp_count";
+/**
+ * Reimplements data 0x4db46c: kHudSensorTrackerRaceCheckpointArchiveName (D:\Proj\Battlesport\map.cpp).
+ * Purpose: name the race checkpoint metadata archive loaded during mission startup.
+ */
+const char kHudSensorTrackerRaceCheckpointArchiveName[] = "race.zrd";
+/**
+ * Reimplements data 0x4db478: kHudSensorTrackerRaceZrdrSearchPathFmt (D:\Proj\Battlesport\map.cpp).
+ * Purpose: format the mission-specific ZRDR search path used to load race.zrd.
+ */
+const char kHudSensorTrackerRaceZrdrSearchPathFmt[] = "..\\data\\m%d\\zrdr";
 
 template <typename T>
-// Source-faithful helper recovered from address-backed callers in this source file.
-zZbdSectionCallback ZbdCallbackPtr(
+/**
+ * Original-source helper evidence: no standalone retail function exists;
+ * observed in HudSensorTracker ZAR registration caller 0x417640.
+ * Evidence: the address-backed caller stores member/static callback addresses
+ * into the ZAR callback field with pointer-width representation.
+ * Purpose: preserve the callback pointer representation expected by ZAR section
+ * registration without adding a runtime adapter.
+ */
+inline zZbdSectionCallback ZbdCallbackPtr(
     T callback
 ) {
     RECOIL_STATIC_ASSERT(sizeof(T) == sizeof(zZbdSectionCallback));
@@ -80,8 +171,17 @@ zZbdSectionCallback ZbdCallbackPtr(
     return value.raw;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
-int FloatToRawSeconds(
+/**
+ * Original-source helper evidence: no standalone retail function exists;
+ * observed in HudSensorTracker callers 0x417ee0, 0x4184e0, 0x4188f0,
+ * 0x418d40, 0x4193c0, and 0x419470.
+ * Evidence: repeated stores preserve the IEEE-754 float bit pattern in integer
+ * timer/deadline fields consumed by the HUD objective and race checkpoint
+ * runtime; original-source helper evidence is the repeated inlined store idiom.
+ * Purpose: store second values in the integer-backed timer fields used by the
+ * original HUD mission runtime layout.
+ */
+inline int FloatToRawSeconds(
     float value
 ) {
     int rawValue;
@@ -93,7 +193,14 @@ int FloatToRawSeconds(
     return rawValue;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists;
+ * observed in HudSensorTracker objective-flow callers 0x4184e0, 0x418c70,
+ * 0x418d40, and race checkpoint caller 0x4193c0.
+ * Evidence: repeated caller patterns reinterpret integer-backed HUD timer
+ * fields as seconds values without changing their stored bit pattern.
+ * Purpose: read integer-backed HUD timer fields as float seconds.
+ */
 float RawSecondsToFloat(
     int rawValue
 ) {
@@ -136,7 +243,13 @@ bool IsPointStrictlyInsideRect(
            (float)(rect.top) < point.y && (float)(rect.bottom) > point.y;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists;
+ * observed in HudSensorTracker pickup-info formatting caller 0x418940.
+ * Evidence: repeated append-only feature-string construction is inlined into
+ * the reconstructed pickup info source cluster.
+ * Purpose: append one pickup feature label to the HUD feature text buffer.
+ */
 void AppendPickupFeature(
     char *featureText,
     const char *feature
@@ -147,7 +260,13 @@ void AppendPickupFeature(
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists;
+ * observed in HudSensorTracker objective loader caller 0x418230.
+ * Evidence: ACTIVE and INACTIVE path resolution share the same zClass lookup,
+ * child-node walk, and original mission.cpp error reporting pattern.
+ * Purpose: resolve an objective ZRD node path to a zClass node.
+ */
 zClass_NodePartial *ResolveObjectiveNodePath(
     zReader::Node *pathNode,
     int objectiveIndex,
@@ -182,6 +301,25 @@ zClass_NodePartial *ResolveObjectiveNodePath(
     return resolvedNode;
 }
 } // namespace
+
+/**
+ * Reimplements data 0x4dafdc: g_HudSensorTracker_StartAnimsZrdPath.
+ *
+ * Purpose: names the start-animation ZRDR loaded during play-state startup
+ * and late mission restore.
+ */
+extern "C" const char g_HudSensorTracker_StartAnimsZrdPath[0x0e] = {
+    'S', 't', 'a', 'r', 't', 'A', 'n', 'i', 'm', 's', '.', 'z', 'r', 'd'
+};
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_StartAnimsZrdPath) == 0x0e);
+/**
+ * Reimplements data 0x4dafec: g_RecoilApp_LoadGameStartAnimStateName.
+ *
+ * Purpose: selects the saved-game start-animation node during play-state
+ * startup and late mission restore.
+ */
+extern "C" const char g_RecoilApp_LoadGameStartAnimStateName[0x10] = "LOAD_GAME_START";
+RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_LoadGameStartAnimStateName) == 0x10);
 
 /**
  * Reimplements 0x416390: HudGeom2D::ClassifyPointAgainstSegment
@@ -931,8 +1069,15 @@ HudSensorTracker * HudSensorTracker::InitNoBounds() {
     return this;
 }
 
-// Reimplements 0x417390: HudSensorTracker::Constructor
-// (D:\Proj\Battlesport\map.cpp)
+/**
+ * Reimplements 0x417390: HudSensorTracker::Constructor
+ * Source: D:\Proj\Battlesport\map.cpp
+ * Source model: member constructor for the global HudSensorTracker record; VC5
+ * EH state only surrounds the three CString default constructors.
+ * Touched data: initializes this HudSensorTracker instance and then resets its
+ * mission state through ResetMissionState.
+ * Purpose: Construct the tracker singleton storage before mission/map runtime use.
+ */
 HudSensorTracker * HudSensorTracker::Constructor() {
     InitNoBounds();
     missionDataPath.Empty();
@@ -947,20 +1092,38 @@ HudSensorTracker * HudSensorTracker::Constructor() {
     return this;
 }
 
-// Reimplements 0x417360: HudSensorTracker::ConstructGlobal
-// (D:\Proj\Battlesport\map.cpp)
+/**
+ * Reimplements 0x417360: HudSensorTracker::ConstructGlobal
+ * Source: D:\Proj\Battlesport\map.cpp
+ * Source model: global construction thunk for the CZRecoilFrame-owned
+ * g_HudSensorTracker object.
+ * Touched data: constructs the accepted zero-filled global data owner
+ * g_HudSensorTracker.
+ * Purpose: Construct and return the global HUD sensor tracker instance.
+ */
 HudSensorTracker *HudSensorTracker::ConstructGlobal() {
     return g_HudSensorTracker.Constructor();
 }
 
-// Reimplements 0x417370: HudSensorTracker::RegisterGlobalOnExit
-// (D:\Proj\Battlesport\map.cpp)
+/**
+ * Reimplements 0x417370: HudSensorTracker::RegisterGlobalOnExit
+ * Source: D:\Proj\Battlesport\map.cpp
+ * Source model: global lifetime registration helper for the tracker singleton.
+ * Touched data: registers ShutdownGlobal as the CRT atexit callback.
+ * Purpose: Schedule HUD sensor tracker shutdown during process exit.
+ */
 void HudSensorTracker::RegisterGlobalOnExit() {
     atexit(&HudSensorTracker::ShutdownGlobal);
 }
 
-// Reimplements 0x417380: HudSensorTracker::ShutdownGlobal
-// (D:\Proj\Battlesport\map.cpp)
+/**
+ * Reimplements 0x417380: HudSensorTracker::ShutdownGlobal
+ * Source: D:\Proj\Battlesport\map.cpp
+ * Source model: global destruction thunk for the CZRecoilFrame-owned
+ * g_HudSensorTracker object.
+ * Touched data: tears down g_HudSensorTracker through its member Shutdown path.
+ * Purpose: Run tracker cleanup for the singleton registered with atexit.
+ */
 void HudSensorTracker::ShutdownGlobal() {
     g_HudSensorTracker.Shutdown();
 }
@@ -1186,8 +1349,11 @@ int HudSensorTracker::ProjectWorldPointsToOverlay(
     return 1;
 }
 
-// Reimplements 0x416e50: HudSensorTracker::GetSaveStateRelativeVectorLen
-// (D:\Proj\Battlesport\map.cpp)
+/**
+ * Reimplements 0x416e50: HudSensorTracker::GetSaveStateRelativeVectorLen
+ * Source: D:\Proj\Battlesport\map.cpp
+ * Purpose: Compute the flat relative vector and squared or true distance to a save-state marker.
+ */
 float HudSensorTracker::GetSaveStateRelativeVectorLen(
     zUtil_SaveGameState *saveState,
     zVec3 *relativeDelta,
@@ -1455,8 +1621,11 @@ int HudSensorMapNode::DrawOnTracker(
     return 1;
 }
 
-// Reimplements 0x416d50: HudSensorTracker::DrawTrackedSaveStateMarker
-// (D:\Proj\Battlesport\map.cpp)
+/**
+ * Reimplements 0x416d50: HudSensorTracker::DrawTrackedSaveStateMarker
+ * Source: D:\Proj\Battlesport\map.cpp
+ * Purpose: Draw the cross marker for the currently tracked save-state at its projected map position.
+ */
 int HudSensorTracker::DrawTrackedSaveStateMarker() {
     unsigned short markerColor;
     if (zOpt::GetNetworkEnabled() != 0) {
@@ -1488,8 +1657,11 @@ int HudSensorTracker::DrawTrackedSaveStateMarker() {
     return 1;
 }
 
-// Reimplements 0x416f10: HudSensorTracker::DrawSaveStateMarker
-// (D:\Proj\Battlesport\map.cpp)
+/**
+ * Reimplements 0x416f10: HudSensorTracker::DrawSaveStateMarker
+ * Source: D:\Proj\Battlesport\map.cpp
+ * Purpose: Draw one non-tracked save-state marker or its edge-clamped network marker.
+ */
 int HudSensorTracker::DrawSaveStateMarker(
     zUtil_SaveGameState *saveState
 ) {
@@ -1578,8 +1750,11 @@ int HudSensorTracker::DrawSaveStateMarker(
     return 1;
 }
 
-// Reimplements 0x417130: HudSensorTracker::Update
-// (D:\Proj\Battlesport\map.cpp)
+/**
+ * Reimplements 0x417130: HudSensorTracker::Update
+ * Source: D:\Proj\Battlesport\map.cpp
+ * Purpose: Advance map interpolation, draw map nodes, and draw save-state tracker markers.
+ */
 void HudSensorTracker::Update() {
     mapScaleLerpStep = 0.150000006f;
     if (mapScaleLerpActive == 0 && mapScaleLerpRunning == 0) {
@@ -1832,8 +2007,16 @@ int HudSensorTracker::MapShutdownAndReset() {
     return 1;
 }
 
-// Reimplements 0x419490: HudSensorTracker::Shutdown
-// (D:\Proj\Battlesport\map.cpp)
+/**
+ * Reimplements 0x419490: HudSensorTracker::Shutdown
+ * Source: D:\Proj\Battlesport\map.cpp
+ * Source model: HudSensorTracker lifetime cleanup method; CString destruction
+ * and EH state are MFC/VC5 provider scaffolding, while map teardown remains the
+ * accepted map shutdown/reset owner.
+ * Touched data: no authored globals; clears owned mission path strings and
+ * resets map runtime state through MapShutdownAndResetThunk.
+ * Purpose: release mission/map path state when the tracker shuts down.
+ */
 void HudSensorTracker::Shutdown() {
     missionGsPath.Empty();
     zbdPath.Empty();
@@ -1841,7 +2024,18 @@ void HudSensorTracker::Shutdown() {
     MapShutdownAndResetThunk();
 }
 
-// Reimplements 0x4176f0: HudSensorTracker::ResetMissionState (D:\Proj\Battlesport\map.cpp)
+/**
+ * Reimplements 0x4176f0: HudSensorTracker::ResetMissionState.
+ * Original source path: D:\Proj\Battlesport\map.cpp.
+ * Source model: HudSensorTracker mission reset method; weather FX teardown is
+ * the recovered HudUiElement virtual visibility/deleting-destructor dispatch,
+ * not a local table or raw slot helper.
+ * Touched data: clears mission identity/path/world/objective fields and
+ * releases the mission-owned pass-3 weather FX element from the global
+ * zVideo pass-3 HUD container.
+ * Purpose: reset per-mission HUD tracker state and delete any active weather
+ * FX emitter.
+ */
 int HudSensorTracker::ResetMissionState() {
     missionLoaded = 0;
     missionId = 0;
@@ -1854,12 +2048,10 @@ int HudSensorTracker::ResetMissionState() {
 
     if (fxElement != 0) {
         fxElement->SetVisible(0);
-        ((HudUiContainer *)(&g_zVideo_FxPass3ConfigLocal))->RemoveChild(fxPass3Obj);
+        ((HudUiContainer *)(&g_zVideo_FxPass3ConfigLocal))->RemoveChild(fxElement);
 
         if (fxPass3Obj != 0) {
-            HudWeatherFx *const weatherFx = (HudWeatherFx *)(fxPass3Obj);
-            weatherFx->Destructor();
-            ::operator delete(weatherFx);
+            fxPass3Obj->ScalarDeletingDestructor(1);
         }
 
         fxPass3Obj = 0;
@@ -1868,7 +2060,16 @@ int HudSensorTracker::ResetMissionState() {
     return 1;
 }
 
-// Reimplements 0x417f60: HudSensorObjectiveSlot::Reset
+/**
+ * Reimplements 0x417f60: HudSensorObjectiveSlot::Reset
+ * Source: D:\Proj\Battlesport\mission.cpp
+ * Source model: embedded HudSensorObjectiveSlot reset method for the objective
+ * slot array owned by HudSensorTracker.
+ * Touched data: no authored globals; releases only the slot-owned objective
+ * image through the accepted zVid image provider helper.
+ * Purpose: clear objective text/status fields and drop the retained objective
+ * image reference.
+ */
 void HudSensorObjectiveSlot::Reset() {
     zVidImagePartial *const image = objectiveImage;
     objectiveTitle[0] = '\0';
@@ -1881,7 +2082,14 @@ void HudSensorObjectiveSlot::Reset() {
     }
 }
 
-// Reimplements 0x417430: HudSensorTracker::WriteMissionDataSection
+/**
+ * Reimplements 0x417430: HudSensorTracker::WriteMissionDataSection
+ * Source: D:\Proj\Battlesport\map.cpp
+ * Source model: member serializer for the fixed MissionData ZAR payload.
+ * Touched data: reads the tracker mission counters, ten objective completion
+ * flags, and the provider-owned difficulty option.
+ * Purpose: Serialize HUD mission state into the MissionData ZAR section.
+ */
 int HudSensorTracker::WriteMissionDataSection(
     zZbdSectionCallbackCtx *writer
 ) {
@@ -1914,8 +2122,14 @@ int HudSensorTracker::WriteMissionDataSection(
     );
 }
 
-// Reimplements 0x4174f0: HudSensorTracker::ApplyMissionDataAndReload
-// (D:\Proj\Battlesport\map.cpp)
+/**
+ * Reimplements 0x4174f0: HudSensorTracker::ApplyMissionDataAndReload
+ * Source: D:\Proj\Battlesport\map.cpp
+ * Source model: member restore helper for the fixed MissionData ZAR payload.
+ * Touched data: updates tracker mission state, pending player-save state,
+ * objective completion flags, and provider-owned difficulty option.
+ * Purpose: Apply saved HUD mission state and reload mission resources when needed.
+ */
 int HudSensorTracker::ApplyMissionDataAndReload(
     void *,
     const char *,
@@ -1987,7 +2201,14 @@ int HudSensorTracker::ApplyMissionDataAndReload(
     return 1;
 }
 
-// Reimplements 0x417640: HudSensorTracker::RegisterMissionSectionHandlers
+/**
+ * Reimplements 0x417640: HudSensorTracker::RegisterMissionSectionHandlers
+ * Source: D:\Proj\Battlesport\map.cpp
+ * Source model: member registration helper for mission ZAR save/restore callbacks.
+ * Touched data: registers this tracker as callback context for Mission and
+ * MissionLate sections.
+ * Purpose: Install HUD mission save/load section handlers.
+ */
 void HudSensorTracker::RegisterMissionSectionHandlers() {
     zUtil_ZAR::RegisterSectionHandler(
         "Mission",
@@ -2005,7 +2226,12 @@ void HudSensorTracker::RegisterMissionSectionHandlers() {
     );
 }
 
-// Reimplements 0x417770: HudSensorTracker::InitMissionIdAndFlags
+/**
+ * Reimplements 0x417770: HudSensorTracker::InitMissionIdAndFlags.
+ * Original source path: GameZRecoil/HudSensorTracker.cpp.
+ * Purpose: store the current mission id and flags, clearing the ZBD override
+ * path when a nonzero mission id is supplied.
+ */
 int HudSensorTracker::InitMissionIdAndFlags(
     int newMissionId,
     int flags
@@ -2019,7 +2245,11 @@ int HudSensorTracker::InitMissionIdAndFlags(
     return 1;
 }
 
-// Reimplements 0x4177d0: HudSensorTracker::SetZbdPath
+/**
+ * Reimplements 0x4177d0: HudSensorTracker::SetZbdPath.
+ * Original source path: GameZRecoil/HudSensorTracker.cpp.
+ * Purpose: replace or clear the explicit mission ZBD path override.
+ */
 int HudSensorTracker::SetZbdPath(
     const char *path
 ) {
@@ -2053,8 +2283,12 @@ int HudSensorTracker::GetMissionId() {
     return missionId;
 }
 
-// Reimplements 0x417810: HudSensorTracker::LoadMissionCoreResources
-// (D:\Proj\Battlesport\map.cpp)
+/**
+ * Reimplements 0x417810: HudSensorTracker::LoadMissionCoreResources.
+ * Original source path: D:\Proj\Battlesport\map.cpp.
+ * Purpose: load the core mission script/resources, bind world/camera/window
+ * nodes, and activate the render/display/camera sections.
+ */
 int HudSensorTracker::LoadMissionCoreResources() {
     CString scriptPath;
     zImg::Init();
@@ -2129,8 +2363,13 @@ int HudSensorTracker::LoadMissionCoreResources() {
     return 1;
 }
 
-// Reimplements 0x417a00: HudSensorTracker::InitMissionGameplaySystems
-// (D:\Proj\Battlesport\map.cpp)
+/**
+ * Reimplements 0x417a00: HudSensorTracker::InitMissionGameplaySystems.
+ * Original source path: D:\Proj\Battlesport\map.cpp.
+ * Purpose: initialize mission HUD/gameplay systems, objective commands,
+ * player runtime, networking, objectives, weather FX, map overlay, and final
+ * HUD state refresh.
+ */
 int HudSensorTracker::InitMissionGameplaySystems() {
     missionStat0 = 0;
     missionStat1 = 0;
@@ -2175,13 +2414,13 @@ int HudSensorTracker::InitMissionGameplaySystems() {
 
     Pickup::Init(
         worldNode,
-        "pickup.zrd"
+        kHudSensorTrackerPickupArchiveName
     );
     HudUiLoadingCheckpoint::AdvanceAndLog(zLoc::GetMessageString(0x106));
     zEffect::InitFromPath(
         worldNode,
         cameraNode,
-        "effects.zrd"
+        kHudSensorTrackerEffectsArchiveName
     );
     HudUiLoadingCheckpoint::AdvanceAndLog(zLoc::GetMessageString(0x108));
     zEffect::SetWorldNode(worldNode);
@@ -2192,16 +2431,16 @@ int HudSensorTracker::InitMissionGameplaySystems() {
     HudUiLoadingCheckpoint::AdvanceAndLog(zLoc::GetMessageString(0x109));
     zWeapon::LoadOptCatalogFromPath(
         worldNode,
-        "weapons.zrd",
+        kHudSensorTrackerWeaponsArchiveName,
         zOpt::GetNetworkEnabled(),
         zWeapon_OptCatalog::LoadKillVerbString
     );
     HudUiLoadingCheckpoint::AdvanceAndLog(zLoc::GetMessageString(0x10a));
     zTurret_System::LoadDefinitionsFromPath(
         worldNode,
-        "ai.zrd"
+        kHudSensorTrackerAiArchiveName
     );
-    PickupAirdropSpawnRef::InitGlobalFromCarrierNodeName("vtol2");
+    PickupAirdropSpawnRef::InitGlobalFromCarrierNodeName(g_HudSensorTracker_DefaultAirdropCarrierNodeName);
     HudUiLoadingCheckpoint::AdvanceAndLog(zLoc::GetMessageString(0x10b));
 
     HudUiMgr::ActivateHud(
@@ -2228,9 +2467,9 @@ int HudSensorTracker::InitMissionGameplaySystems() {
         Net::InitFromZrd();
     }
 
-    HudUiLoadingCheckpoint::AdvanceAndLog("Find mission objectives");
+    HudUiLoadingCheckpoint::AdvanceAndLog(g_HudSensorTracker_FindMissionObjectivesMsg);
     LoadObjectivesFromZrd("objectives.zrd");
-    LoadMissionWeatherFx("Weather.zrd");
+    LoadMissionWeatherFx(kHudSensorTrackerWeatherArchiveName);
     zInput::Keyboard_ResetTransitionState();
 
     if (zOpt::GetNetworkEnabled() != 0 && GameNet::GetStatusBitAllowMaps() != 0) {
@@ -2249,8 +2488,12 @@ int HudSensorTracker::InitMissionGameplaySystems() {
     return 1;
 }
 
-// Reimplements 0x417d40: HudSensorTracker::ShutdownMissionGameplaySystems
-// (D:\Proj\Battlesport\map.cpp)
+/**
+ * Reimplements 0x417d40: HudSensorTracker::ShutdownMissionGameplaySystems.
+ * Original source path: D:\Proj\Battlesport\map.cpp.
+ * Purpose: shut down mission gameplay/HUD systems, release mission resources,
+ * clear core node refs, and return the tracker to reset mission state.
+ */
 int HudSensorTracker::ShutdownMissionGameplaySystems() {
     if (missionLoaded == 0) {
         return 1;
@@ -2322,7 +2565,7 @@ int HudSensorTracker::ShutdownMissionGameplaySystems() {
     );
     zSndSampleSet_DestroyByName(g_HudSensor_MissionSoundSetName + 16);
 
-    HudUiLoadingCheckpoint::AdvanceAndLog("...Mission Unloaded");
+    HudUiLoadingCheckpoint::AdvanceAndLog(g_HudSensorTracker_MissionUnloadedMsg);
     HudUiLoadingCheckpoint::AdvanceAndLog(0);
 
     displayNode = 0;
@@ -2334,8 +2577,15 @@ int HudSensorTracker::ShutdownMissionGameplaySystems() {
     return 1;
 }
 
-// Reimplements 0x419050: HudSensorTracker::LoadMissionWeatherFx
-// (D:\Proj\Battlesport\map.cpp)
+/**
+ * Reimplements 0x419050: HudSensorTracker::LoadMissionWeatherFx.
+ * Original source path: D:\Proj\Battlesport\map.cpp.
+ * Source model: mission weather FX loader creates the recovered
+ * HudWeatherFxSnow/HudWeatherFxRain class owner and stores it as the
+ * HudSensorTracker pass-3 element.
+ * Purpose: parse Weather.zrd, construct the requested weather emitter, apply
+ * optional tuning fields, and attach it to the global pass-3 HUD container.
+ */
 void HudSensorTracker::LoadMissionWeatherFx(
     const char *zrdPath
 ) {
@@ -2455,7 +2705,12 @@ void HudSensorTracker::LoadMissionWeatherFx(
     zReader::FreeLoadedTree(rootNode);
 }
 
-// Reimplements 0x417ee0: HudSensorTracker::UnloadObjectives
+/**
+ * Reimplements 0x417ee0: HudSensorTracker::UnloadObjectives.
+ * Original source path: D:\Proj\Battlesport\mission.cpp.
+ * Purpose: reset loaded objective slots in single-player mode and free the
+ * loaded objective ZRD tree.
+ */
 int HudSensorTracker::UnloadObjectives() {
     if (zOpt::GetNetworkEnabled() == 0) {
         {
@@ -2477,8 +2732,11 @@ int HudSensorTracker::UnloadObjectives() {
     return 1;
 }
 
-// Reimplements 0x417f90: HudSensorTracker::LoadObjectivesFromPath
-// (D:\Proj\Battlesport\mission.cpp)
+/**
+ * Reimplements 0x417f90: HudSensorTracker::LoadObjectivesFromPath.
+ * Original source path: D:\Proj\Battlesport\mission.cpp.
+ * Purpose: load mission objective data, timing values, image resources, and objective slots from a ZRD path.
+ */
 int HudSensorTracker::LoadObjectivesFromPath(
     const char *path
 ) {
@@ -2629,8 +2887,12 @@ int HudSensorTracker::LoadObjectivesFromPath(
     return 0;
 }
 
-// Reimplements 0x418230: HudSensorTracker::LoadObjectivesFromZrd
-// (D:\Proj\Battlesport\mission.cpp)
+/**
+ * Reimplements 0x418230: HudSensorTracker::LoadObjectivesFromZrd.
+ * Original source path: D:\Proj\Battlesport\mission.cpp.
+ * Purpose: bind objective sounds and node paths from the loaded objective ZRD,
+ * then select the first incomplete objective for the HUD.
+ */
 int HudSensorTracker::LoadObjectivesFromZrd(
     const char *
 ) {
@@ -2733,25 +2995,29 @@ int HudSensorTracker::LoadObjectivesFromZrd(
     return 0;
 }
 
-// Reimplements 0x4193c0: HudSensorTracker::LoadRaceCheckpointMeta
-// (D:\Proj\Battlesport\map.cpp)
+/**
+ * Reimplements 0x4193c0: HudSensorTracker::LoadRaceCheckpointMeta.
+ * Original source path: D:\Proj\Battlesport\map.cpp.
+ * Purpose: load mission race checkpoint metadata and publish timer/count state
+ * when a cp_count node is present.
+ */
 int HudSensorTracker::LoadRaceCheckpointMeta() {
     CString raceZrdrSearchPath;
     raceZrdrSearchPath.Format(
-        "..\\data\\m%d\\zrdr",
+        kHudSensorTrackerRaceZrdrSearchPathFmt,
         missionId
     );
 
     int raceCheckpointMode = 0;
     zReader::Node *raceRoot = zReader::LoadNodeFromPath(
-        "race.zrd",
+        kHudSensorTrackerRaceCheckpointArchiveName,
         raceZrdrSearchPath,
         0
     );
     if (raceRoot != 0) {
         zReader::Node *cpCountNode = zReader_GetNamedNode(
             raceRoot,
-            "cp_count"
+            kHudSensorTrackerRaceCheckpointCountNodeName
         );
         if (cpCountNode != 0) {
             raceCheckpointMode = 1;
@@ -2765,8 +3031,16 @@ int HudSensorTracker::LoadRaceCheckpointMeta() {
     return raceCheckpointMode;
 }
 
-// Reimplements 0x4192d0: HudSensorTracker::RunStartAnimsFromZrd
-// (D:\Proj\Battlesport\mission.cpp)
+/**
+ * Reimplements 0x4192d0: HudSensorTracker::RunStartAnimsFromZrd
+ * Source: D:\Proj\Battlesport\mission.cpp
+ * Source model: mission-start helper on HudSensorTracker; animation lookup and
+ * tree loading are accepted zEffect/zReader provider-source dependencies.
+ * Touched data: reads network option state and mutates resolved zEffect
+ * animation entries only through accepted zEffect animation APIs.
+ * Purpose: run named mission start animations from a ZRD list outside network
+ * mode.
+ */
 void HudSensorTracker::RunStartAnimsFromZrd(
     const char *zrdPath,
     const char *namedNodeName
@@ -2783,7 +3057,7 @@ void HudSensorTracker::RunStartAnimsFromZrd(
     if (rootNode == 0) {
         zError::ReportOld(
             0x200,
-            "D:\\Proj\\Battlesport\\mission.cpp",
+            g_HudSensorTracker_MissionCppSourcePath,
             0x646,
             g_HudSensorTracker_ReadFileFailedFmt,
             zrdPath
@@ -2867,8 +3141,11 @@ int HudSensorTracker::GetObjectiveBriefingStringsAndImageRef(
     return 1;
 }
 
-// Reimplements 0x4172c0: HudSensorTracker::SetObjectiveMarkerEnabledAndColor
-// (HudSensorTracker.cpp)
+/**
+ * Reimplements 0x4172c0: HudSensorTracker::SetObjectiveMarkerEnabledAndColor
+ * Source: HudSensorTracker.cpp
+ * Purpose: Apply visibility and RGB color to every map node for the requested objective index.
+ */
 int HudSensorTracker::SetObjectiveMarkerEnabledAndColor(
     int objectiveIndex,
     int enabled,
@@ -2887,8 +3164,11 @@ int HudSensorTracker::SetObjectiveMarkerEnabledAndColor(
     return 1;
 }
 
-// Reimplements 0x417300: HudSensorTracker::SetObjectiveMarkerColorBlink
-// (D:\Proj\Battlesport\map.cpp)
+/**
+ * Reimplements 0x417300: HudSensorTracker::SetObjectiveMarkerColorBlink
+ * Source: D:\Proj\Battlesport\map.cpp
+ * Purpose: Recolor matching objective map nodes and swap their packed full/half 565 blink colors.
+ */
 int HudSensorTracker::SetObjectiveMarkerColorBlink(
     int objectiveIndex,
     const unsigned char *colorRgb24
@@ -2908,8 +3188,12 @@ int HudSensorTracker::SetObjectiveMarkerColorBlink(
     return 1;
 }
 
-// Reimplements 0x418c30: HudSensorTracker::FindAndHighlightFirstIncompleteObjective
-// (HudSensorTracker.cpp)
+/**
+ * Reimplements 0x418c30: HudSensorTracker::FindAndHighlightFirstIncompleteObjective.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: find the first active incomplete objective and enable its blue map
+ * marker.
+ */
 int HudSensorTracker::FindAndHighlightFirstIncompleteObjective() {
     int objectiveIndex = 0;
     while (objectiveIndex < objectiveCount && objectiveSlots[objectiveIndex].completedFlag != 0) {
@@ -2940,8 +3224,12 @@ void HudSensorTracker::SetRuntimeTimerSecAndGoalValue(
     runtimeTimerSecRaw = timerSecRaw;
 }
 
-// Reimplements 0x418620: HudSensorTracker::SetObjectiveReviewVisible
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x418620: HudSensorTracker::SetObjectiveReviewVisible.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: show or hide the objective review panel and restore HUD sound state
+ * when the review closes.
+ */
 int HudSensorTracker::SetObjectiveReviewVisible(
     int visible
 ) {
@@ -2976,8 +3264,12 @@ int HudSensorTracker::SetObjectiveReviewVisible(
     return 1;
 }
 
-// Reimplements 0x419380: HudSensorTracker::OnObjectiveReadSoundEvent
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x419380: HudSensorTracker::OnObjectiveReadSoundEvent.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: handle objective read-sound events that open/close the review UI or
+ * restore HUD sound volume.
+ */
 void __fastcall HudSensorTracker::OnObjectiveReadSoundEvent(
     int eventCode
 ) {
@@ -2991,8 +3283,12 @@ void __fastcall HudSensorTracker::OnObjectiveReadSoundEvent(
     }
 }
 
-// Reimplements 0x4184e0: HudSensorTracker::AdvanceObjectiveState
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x4184e0: HudSensorTracker::AdvanceObjectiveState.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: advance objective review/readout flow and transition HUD sound
+ * ducking state.
+ */
 void HudSensorTracker::AdvanceObjectiveState() {
     const int flowState = objectiveFlowState;
     if (flowState != 0x6b && flowState != 0x67 && flowState != 0x64) {
@@ -3038,8 +3334,12 @@ void HudSensorTracker::AdvanceObjectiveState() {
     zSnd::SetFlag10PlaybackEnabled(0);
 }
 
-// Reimplements 0x417ca0: HudSensorTracker::OnObjectiveCommand
-// (D:\Proj\Battlesport\map.cpp)
+/**
+ * Reimplements 0x417ca0: HudSensorTracker::OnObjectiveCommand.
+ * Original source path: D:\Proj\Battlesport\map.cpp.
+ * Purpose: dispatch bound HUD objective/map command ids to the global
+ * HudSensorTracker while honoring network map and objective-command gates.
+ */
 void __fastcall HudSensorTracker::OnObjectiveCommand(
     int commandId
 ) {
@@ -3083,8 +3383,16 @@ void __fastcall HudSensorTracker::OnObjectiveCommand(
     }
 }
 
-// Reimplements 0x418c70: HudSensorTracker::ResetHudForMissionStart
-// (D:\Proj\Battlesport\map.cpp)
+/**
+ * Reimplements 0x418c70: HudSensorTracker::ResetHudForMissionStart
+ * Source: D:\Proj\Battlesport\map.cpp
+ * Source model: HudSensorTracker mission-start HUD/objective state reset
+ * method; HUD-manager and option calls are external owner dependencies.
+ * Touched data: mutates only this tracker and accepted HUD/option globals
+ * through their typed APIs.
+ * Purpose: reset objective/timer flow for a mission start and restore network
+ * HUD presentation when multiplayer is active.
+ */
 void HudSensorTracker::ResetHudForMissionStart() {
     objectiveMeterSeconds = 0.0f;
     HudUiMgrObjective::SetVisibleAndResetMeterFill(0);
@@ -3128,15 +3436,23 @@ void HudSensorTracker::ResetHudForMissionStart() {
         FloatToRawSeconds(readSoundDelaySec + g_Time_UnscaledAccumulatedTimeSec);
 }
 
-// Reimplements 0x418730: HudSensorTracker::Command_ToggleObjectivePanel
-// (D:\Proj\Battlesport\map.cpp)
+/**
+ * Reimplements 0x418730: HudSensorTracker::Command_ToggleObjectivePanel.
+ * Original source path: D:\Proj\Battlesport\map.cpp.
+ * Purpose: play the objective review click and toggle the objective summary
+ * panel.
+ */
 void HudSensorTracker::Command_ToggleObjectivePanel() {
     objectiveReviewSfx->PlayA3DSimple(1.0f);
     SetObjectivePanelVisible(objectiveUiMode != 2 ? 1 : 0);
 }
 
-// Reimplements 0x418760: HudSensorTracker::SetObjectivePanelVisible
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x418760: HudSensorTracker::SetObjectivePanelVisible.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: show or hide the objective summary panel and format the mission
+ * status text displayed in it.
+ */
 void HudSensorTracker::SetObjectivePanelVisible(
     int visible
 ) {
@@ -3219,8 +3535,12 @@ void HudSensorTracker::SetObjectivePanelVisible(
     );
 }
 
-// Reimplements 0x4188f0: HudSensorTracker::Command_ShowObjectivePickupInfo
-// (D:\Proj\Battlesport\map.cpp)
+/**
+ * Reimplements 0x4188f0: HudSensorTracker::Command_ShowObjectivePickupInfo.
+ * Original source path: D:\Proj\Battlesport\map.cpp.
+ * Purpose: play the objective review click and toggle pickup information for
+ * the local player's active alternate weapon.
+ */
 void HudSensorTracker::Command_ShowObjectivePickupInfo() {
     objectiveReviewSfx->PlayA3DSimple(1.0f);
 
@@ -3234,8 +3554,12 @@ void HudSensorTracker::Command_ShowObjectivePickupInfo() {
     );
 }
 
-// Reimplements 0x418940: HudSensorTracker::ShowObjectivePickupInfo
-// (D:\Proj\Battlesport\map.cpp)
+/**
+ * Reimplements 0x418940: HudSensorTracker::ShowObjectivePickupInfo.
+ * Original source path: D:\Proj\Battlesport\map.cpp.
+ * Purpose: show or hide active-pickup information and format the weapon stat
+ * text for the objective HUD panel.
+ */
 void HudSensorTracker::ShowObjectivePickupInfo(
     int visible,
     int startAutoAdvance,
@@ -3348,8 +3672,11 @@ void HudSensorTracker::ShowObjectivePickupInfo(
     objectiveUiMode = 3;
 }
 
-// Reimplements 0x418d40: HudSensorTracker::UpdateObjectiveFlow
-// (D:\Proj\Battlesport\map.cpp)
+/**
+ * Reimplements 0x418d40: HudSensorTracker::UpdateObjectiveFlow.
+ * Original source path: D:\Proj\Battlesport\map.cpp.
+ * Purpose: Advance mission objective UI state, timers, and post-read transitions.
+ */
 int HudSensorTracker::UpdateObjectiveFlow() {
     objectiveMeterSeconds = HudUiTimerPanel::GetSeconds();
 
@@ -3460,7 +3787,13 @@ int HudSensorTracker::UpdateObjectiveFlow() {
     return 1;
 }
 
-// Reimplements 0x417680: HudSensorTracker::ZarMission_SaveCallback
+/**
+ * Reimplements 0x417680: HudSensorTracker::ZarMission_SaveCallback
+ * Source: D:\Proj\Battlesport\map.cpp
+ * Source model: static ZAR callback that receives HudSensorTracker as user data.
+ * Touched data: serializes the callback tracker through WriteMissionDataSection.
+ * Purpose: Forward Mission section save requests to the tracker serializer.
+ */
 int __fastcall HudSensorTracker::ZarMission_SaveCallback(
     zZbdSectionCallbackCtx *writer,
     HudSensorTracker *self
@@ -3468,8 +3801,13 @@ int __fastcall HudSensorTracker::ZarMission_SaveCallback(
     return self->WriteMissionDataSection(writer);
 }
 
-// Reimplements 0x417690: HudSensorTracker::ZarMission_RestoreCallback
-// (D:\Proj\Battlesport\map.cpp)
+/**
+ * Reimplements 0x417690: HudSensorTracker::ZarMission_RestoreCallback
+ * Source: D:\Proj\Battlesport\map.cpp
+ * Source model: static ZAR callback that receives HudSensorTracker as user data.
+ * Touched data: restores the callback tracker through ApplyMissionDataAndReload.
+ * Purpose: Forward Mission section restore payloads to the tracker restore helper.
+ */
 int __fastcall HudSensorTracker::ZarMission_RestoreCallback(
     void *reader,
     const char *token,
@@ -3486,7 +3824,13 @@ int __fastcall HudSensorTracker::ZarMission_RestoreCallback(
     return 1;
 }
 
-// Reimplements 0x4176b0: HudSensorTracker::ZarMissionLate_SaveCallback
+/**
+ * Reimplements 0x4176b0: HudSensorTracker::ZarMissionLate_SaveCallback
+ * Source: D:\Proj\Battlesport\map.cpp
+ * Source model: static ZAR callback for the late mission restore marker section.
+ * Touched data: writes a one-word LateMissionData marker payload.
+ * Purpose: Emit the late mission marker section used during saved-game restore.
+ */
 void __fastcall HudSensorTracker::ZarMissionLate_SaveCallback(
     zZbdSectionCallbackCtx *writer,
     HudSensorTracker *
@@ -3500,8 +3844,13 @@ void __fastcall HudSensorTracker::ZarMissionLate_SaveCallback(
     );
 }
 
-// Reimplements 0x4176d0: HudSensorTracker::ZarMissionLate_RestoreCallback
-// (D:\Proj\Battlesport\map.cpp)
+/**
+ * Reimplements 0x4176d0: HudSensorTracker::ZarMissionLate_RestoreCallback
+ * Source: D:\Proj\Battlesport\map.cpp
+ * Source model: static ZAR callback that receives HudSensorTracker as user data.
+ * Touched data: runs the callback tracker start-animation script after late restore.
+ * Purpose: Resume mission start animations after late mission data is restored.
+ */
 void __fastcall HudSensorTracker::ZarMissionLate_RestoreCallback(
     void *,
     const char *,
@@ -3510,7 +3859,7 @@ void __fastcall HudSensorTracker::ZarMissionLate_RestoreCallback(
     HudSensorTracker *self
 ) {
     self->RunStartAnimsFromZrd(
-        "StartAnims.zrd",
-        "LOAD_GAME_START"
+        g_HudSensorTracker_StartAnimsZrdPath,
+        g_RecoilApp_LoadGameStartAnimStateName
     );
 }
