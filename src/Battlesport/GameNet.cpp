@@ -1026,6 +1026,9 @@ void __fastcall FormatIpv4Address(
 
     sprintf(
         outText,
+        /* Retail literal 0x4dd250 is the anonymous compiler string for the
+           dotted-quad IPv4 format; data ownership remains blocked outside
+           this source slice. */
         "%d.%d.%d.%d",
         octets[0],
         octets[1],
@@ -2511,7 +2514,7 @@ int __fastcall SpawnRemotePlayerFromPkt06_PlayerStateSnapshot(
 
     zUtil_SaveGameState *const saveState = Player::CreateFromNamesAtPoseGetState(
         &packet->worldPos,
-        "bft",
+        g_Player_NodeName_Bft,
         packet->vehicleRotationAngles.y,
         netNodeName
     );
@@ -2536,7 +2539,7 @@ int __fastcall SpawnRemotePlayerFromPkt06_PlayerStateSnapshot(
     row->lapCount = 0;
     row->turretNode = zClass_Class::FindSubNodeByName(
         clonedNode,
-        "turret"
+        g_Player_NodeName_Turret
     );
     row->gunNode = zClass_Class::FindSubNodeByName(
         clonedNode,
@@ -3464,6 +3467,9 @@ int __fastcall HandlePkt0D_HudTimerPanelState(
 
     if ((statusBits & 0x20) != 0) {
         zEffectAnim::SetVelocity_Thunk(
+            /* Retail literal 0x4dcfd4 names the replicated start-countdown
+               effect animation; data ownership remains blocked outside this
+               source slice. */
             zEffectAnim::FindEntryByName("startcountdown"),
             0,
             0.0f,

@@ -4,6 +4,8 @@
 
 #include <windows.h>
 
+extern char g_HudUiDialogSampleSetName[0x7];
+
 namespace zVideo {
 int __fastcall SetHalfResAdjustMode(int mode);
 int __fastcall Init_ApplyModeIndex(int modeIndex);
@@ -155,7 +157,7 @@ void RecoilStateMainMenuTransition::OnDeactivate() {
 
     if (g_RecoilState_MainMenuSkipExitDelay == 0) {
         Sleep(0x3e8);
-        zSndSampleSet_DestroyByName("DIALOG");
+        zSndSampleSet_DestroyByName(g_HudUiDialogSampleSetName);
 
         zSndPlayHandleSnapshot *snapshot =
             (zSndPlayHandleSnapshot *)(unsigned int)m_pausedAudioSnapshot;

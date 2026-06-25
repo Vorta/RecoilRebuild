@@ -277,6 +277,7 @@ extern "C" int gamenet_get_nearest_other_player_distance_to_spawn_point_smoke(vo
 extern "C" int gamenet_wait_for_local_player_color_index_smoke(void);
 extern "C" int gamenet_update_remote_player_hud_widget_screen_pos_smoke(void);
 extern "C" int net_format_ipv4_address_smoke(void);
+extern "C" int netui_verify_winsock2_or_prompt_continue_smoke(void);
 extern "C" int net_session_browser_dialog_constructor_smoke(void);
 extern "C" int net_session_browser_dialog_scalar_deleting_dtor_smoke(void);
 extern "C" int net_session_browser_dialog_destructor_smoke(void);
@@ -651,14 +652,25 @@ extern "C" int zfmv_action_image_begin_smoke(void);
 extern "C" int zfmv_action_image_update_smoke(void);
 extern "C" int zfmv_action_image_lifecycle_smoke(void);
 extern "C" int zfmv_action_fade_constructor_smoke(void);
-extern "C" int zfmv_action_play_avi_constructor_existing_file_smoke(void);
-extern "C" int zfmv_action_play_avi_constructor_drive_fallback_smoke(void);
+extern "C" int zfmv_action_fade_begin_smoke(void);
+extern "C" int zfmv_action_fade_update_smoke(void);
+extern "C" int zfmv_action_fade_end_smoke(void);
 extern "C" int zfmv_playback_constructor_smoke(void);
 extern "C" int zfmv_playback_destructor_smoke(void);
 extern "C" int zfmv_playback_report_mci_error_smoke(void);
 extern "C" int zfmv_playback_open_and_play_smoke(void);
 extern "C" int zfmv_playback_stop_and_close_smoke(void);
 extern "C" int zfmv_playback_set_dest_rect_smoke(void);
+extern "C" int zfmv_action_play_avi_lifecycle_smoke(void);
+extern "C" int zfmv_action_play_avi_update_smoke(void);
+extern "C" int zfmv_action_play_avi_begin_end_smoke(void);
+extern "C" int zfmv_stream_destructor_empty_smoke(void);
+extern "C" int zfmv_stream_constructor_missing_file_smoke(void);
+extern "C" int zfmv_stream_constructor_success_smoke(void);
+extern "C" int zfmv_stream_open_audio_missing_file_smoke(void);
+extern "C" int zfmv_stream_init_missing_file_smoke(void);
+extern "C" int zfmv_stream_fill_audio_buffer_smoke(void);
+extern "C" int zfmv_stream_read_and_decode_frame_smoke(void);
 extern "C" int zfmv_action_play_mci_constructor_smoke(void);
 extern "C" int zfmv_action_blur_constructor_smoke(void);
 extern "C" int zfmv_action_blur_update_smoke(void);
@@ -726,6 +738,7 @@ extern "C" int recoil_app_run_queue_transitions_smoke(void);
 extern "C" int recoil_app_mfc_ole_module_constructor_smoke(void);
 extern "C" int recoil_app_mfc_ole_module_destructor_smoke(void);
 extern "C" int recoil_app_constructor_destructor_smoke(void);
+extern "C" int recoil_app_init_std_log_files_smoke(void);
 extern "C" int czgame_frame_constructor_smoke(void);
 extern "C" int czgame_frame_create_object_smoke(void);
 extern "C" int czgame_frame_destructor_smoke(void);
@@ -782,6 +795,7 @@ extern "C" int recoil_state_main_menu_transition_constructor_smoke(void);
 extern "C" int recoil_state_main_menu_transition_static_init_smoke(void);
 extern "C" int recoil_state_main_menu_transition_set_deferred_video_mode_index_smoke(void);
 extern "C" int recoil_state_main_menu_transition_queue_enter_smoke(void);
+extern "C" int recoil_state_main_menu_transition_on_try_become_current_smoke(void);
 extern "C" int hud_ui_main_menu_dialog_constructor_smoke(void);
 extern "C" int recoil_state_cheat_code_constructor_smoke(void);
 extern "C" int recoil_state_cheat_code_destructor_smoke(void);
@@ -817,6 +831,8 @@ extern "C" int hud_ui_save_game_dialog_destructor_smoke(void);
 extern "C" int hud_ui_load_game_dialog_destructor_smoke(void);
 extern "C" int hud_ui_save_game_dialog_init_layout_smoke(void);
 extern "C" int hud_ui_main_menu_dialog_save_load_checks_smoke(void);
+extern "C" int recoil_state_save_load_transition_on_try_become_current_smoke(void);
+extern "C" int recoil_state_save_load_transition_on_deactivate_smoke(void);
 extern "C" int zarchive_list_get_at_smoke(void);
 extern "C" int zarchive_list_get_count_smoke(void);
 extern "C" int zutil_zar_register_section_handler_smoke(void);
@@ -885,6 +901,7 @@ extern "C" int hud_ui_net_game_setup_launch_button_smoke(void);
 extern "C" int hud_ui_net_game_setup_next_world_button_smoke(void);
 extern "C" int hud_ui_net_game_setup_prev_world_button_smoke(void);
 extern "C" int hud_ui_net_game_setup_overlay_owner_on_try_smoke(void);
+extern "C" int hud_ui_net_game_setup_overlay_owner_on_deactivate_smoke(void);
 extern "C" int zhud_slot_destructors_smoke(void);
 extern "C" int zhud_slot_draw_smoke(void);
 extern "C" int zhud_triplet_panel_constructor_smoke(void);
@@ -963,6 +980,12 @@ extern "C" int zhud_layout_hw_load_type_ii_from_zar_root_smoke(void);
 extern "C" int zhud_objective_update_meter_xpoints_smoke(void);
 extern "C" int zhud_objective_show_smoke(void);
 extern "C" int zhud_objective_begin_smoke(void);
+extern "C" int zhud_objective_tick_meter_fill_animation_smoke(void);
+extern "C" int zhud_objective_start_hide_smoke(void);
+extern "C" int zhud_timed_task_remove_from_active_list_smoke(void);
+extern "C" int zhud_timed_task_run_immediate_action_smoke(void);
+extern "C" int zhud_timed_task_tick_active_list_smoke(void);
+extern "C" int zhud_mgr_update_frame_smoke(void);
 extern "C" int hud_ui_aux_overlay_text_lines_smoke(void);
 extern "C" int zhud_loading_checkpoint_init_table_smoke(void);
 extern "C" int zhud_loading_checkpoint_advance_and_log_smoke(void);
@@ -972,7 +995,12 @@ extern "C" int zhud_mgr_viewport_activation_smoke(void);
 extern "C" int zhud_mgr_update_target_reticle_smoke(void);
 extern "C" int zhud_mgr_project_point_to_normalized_clamped_smoke(void);
 extern "C" int zhud_mgr_sensor_set_shield_message_ratio_smoke(void);
+extern "C" int zhud_mgr_sensor_block_destructor_smoke(void);
 extern "C" int zhud_mgr_hide_tracked_progress_meter_if_owner_matches_smoke(void);
+extern "C" int zhud_mgr_target_update_selected_progress_meter_smoke(void);
+extern "C" int zhud_mgr_sensor_place_track_counter_widget_smoke(void);
+extern "C" int zhud_mgr_sensor_place_track_marker_smoke(void);
+extern "C" int zhud_mgr_sensor_update_markers_and_progress_smoke(void);
 extern "C" int zhud_mgr_init_layouts_reentry_smoke(void);
 extern "C" int zhud_mgr_ensure_hud_loaded_minimal_smoke(void);
 extern "C" int zhud_mgr_shutdown_resources_smoke(void);
@@ -1021,19 +1049,31 @@ extern "C" int hud_weather_fx_rain_update_smoke(void);
 extern "C" int hud_weather_fx_snow_update_smoke(void);
 extern "C" int zhud_background_cursor_widget_member_constructor_smoke(void);
 extern "C" int zhud_background_cursor_widget_rebuild_captured_image_smoke(void);
+extern "C" int zhud_background_cursor_widget_set_image_borrowed_refresh_if_changed_smoke(void);
 extern "C" int zhud_background_cursor_widget_set_image_borrowed_refresh_smoke(void);
 extern "C" int zhud_background_cursor_widget_set_image_by_path_owned_refresh_smoke(void);
+extern "C" int zhud_background_cursor_widget_set_capture_enabled_smoke(void);
+extern "C" int zhud_background_cursor_widget_set_pos_smoke(void);
+extern "C" int zhud_background_cursor_widget_draw_smoke(void);
+extern "C" int zhud_background_cursor_widget_draw_base_smoke(void);
 extern "C" int zhud_background_video_widget_constructor_smoke(void);
 extern "C" int zhud_background_video_widget_destructor_smoke(void);
+extern "C" int zhud_background_video_widget_update_smoke(void);
+extern "C" int zhud_background_video_widget_draw_smoke(void);
+extern "C" int zhud_background_video_widget_draw_base_smoke(void);
+extern "C" int zhud_background_video_widget_rebuild_blt_rect_smoke(void);
 extern "C" int zhud_play_powerup_sfx_smoke(void);
 extern "C" int zhud_background_constructor_smoke(void);
 extern "C" int zhud_background_update_input_focus_smoke(void);
 extern "C" int zhud_background_set_enabled_smoke(void);
 extern "C" int zhud_text_label_constructor_and_extents_smoke(void);
+extern "C" int zhud_text_label_on_draw_smoke(void);
+extern "C" int zhud_text_label_hit_test_smoke(void);
 extern "C" int zhud_panel_constructor_default_smoke(void);
 extern "C" int zhud_panel_copy_construct_core_smoke(void);
 extern "C" int zhud_panel_draw_smoke(void);
 extern "C" int zhud_panel_set_font_smoke(void);
+extern "C" int zhud_panel_set_clip_smoke(void);
 extern "C" int zhud_panel_set_text_fmt_smoke(void);
 extern "C" int zhud_panel_query_text_height_smoke(void);
 extern "C" int zhud_panel_simple_constructor_smoke(void);
@@ -1142,6 +1182,7 @@ extern "C" int zhud_cmd_dialog_constructor_smoke(void);
 extern "C" int zhud_cmd_dialog_destructor_smoke(void);
 extern "C" int zhud_cmd_dialog_scalar_deleting_destructor_smoke(void);
 extern "C" int zhud_cmd_dialog_state_lifecycle_smoke(void);
+extern "C" int zhud_cmd_dialog_state_queue_enter_smoke(void);
 extern "C" int zhud_cmd_dialog_state_on_try_become_current_smoke(void);
 extern "C" int zhud_cmd_dialog_state_on_deactivate_smoke(void);
 extern "C" int zhud_text_input_constructor_smoke(void);
@@ -1155,6 +1196,8 @@ extern "C" int hud_line_clip_current_bounds_smoke(void);
 extern "C" int hud_recti_clip_segment_helpers_smoke(void);
 extern "C" int hud_sensor_tracker_draw_diamond_marker_smoke(void);
 extern "C" int hud_sensor_tracker_save_marker_leaf_smoke(void);
+extern "C" int hud_sensor_tracker_save_state_marker_smoke(void);
+extern "C" int hud_sensor_tracker_update_smoke(void);
 extern "C" int hud_sensor_tracker_update_map_scale_lerp_smoke(void);
 extern "C" int hud_sensor_tracker_project_world_points_smoke(void);
 extern "C" int hud_sensor_map_node_basics_smoke(void);
@@ -1165,8 +1208,20 @@ extern "C" int hud_sensor_reset_mission_state_smoke(void);
 extern "C" int hud_sensor_tracker_init_mission_gameplay_systems_smoke(void);
 extern "C" int hud_sensor_shutdown_mission_gameplay_systems_early_smoke(void);
 extern "C" int hud_sensor_run_start_anims_from_zrd_smoke(void);
+extern "C" int hud_sensor_tracker_constructor_smoke(void);
+extern "C" int hud_sensor_tracker_construct_global_smoke(void);
+extern "C" int hud_sensor_tracker_shutdown_global_smoke(void);
+extern "C" int hud_sensor_tracker_register_global_on_exit_smoke(void);
+extern "C" int mission_init_objectives_smoke(void);
+extern "C" int hud_sensor_tracker_write_mission_data_section_smoke(void);
+extern "C" int hud_sensor_register_mission_sections_smoke(void);
+extern "C" int hud_sensor_tracker_zar_mission_save_callback_smoke(void);
+extern "C" int hud_sensor_tracker_zar_mission_late_save_callback_smoke(void);
+extern "C" int hud_sensor_tracker_apply_mission_data_smoke(void);
+extern "C" int hud_sensor_zar_mission_late_restore_callback_smoke(void);
 extern "C" int hud_sensor_tracker_shutdown_smoke(void);
 extern "C" int hud_sensor_find_first_incomplete_objective_smoke(void);
+extern "C" int hud_sensor_objective_marker_enable_color_smoke(void);
 extern "C" int hud_sensor_objective_slot_reset_smoke(void);
 extern "C" int hud_sensor_tracker_unload_objectives_smoke(void);
 extern "C" int hud_sensor_tracker_load_objectives_from_path_smoke(void);
@@ -1176,6 +1231,7 @@ extern "C" int hud_sensor_tracker_objective_panel_visible_smoke(void);
 extern "C" int hud_sensor_tracker_reset_hud_for_mission_start_smoke(void);
 extern "C" int briefing_set_progress_and_sleep_smoke(void);
 extern "C" int zhud_sensor_viewport_rect_smoke(void);
+extern "C" int zhud_sensor_get_fx_rect_smoke(void);
 extern "C" int zhud_sensor_track_list_add_smoke(void);
 extern "C" int zhud_std_ptr_vector_clear_no_op_destroy_smoke(void);
 extern "C" int zmath_matrix_stack_and_direction_smoke(void);
@@ -1351,6 +1407,14 @@ extern "C" int hud_sensor_tracker_get_objective_briefing_strings_smoke(void);
 extern "C" int hud_sensor_tracker_load_mission_weather_fx_smoke(void);
 extern "C" int zclass_type_list_alloc_and_insert_smoke(void);
 extern "C" int zclass_zbd_leaf_helpers_smoke(void);
+extern "C" int zclass_zbd_node_ref_list_indices_smoke(void);
+extern "C" int zclass_zbd_single_node_class_data_smoke(void);
+extern "C" int zclass_zbd_write_node_table_smoke(void);
+extern "C" int gamez_write_zbd_file_smoke(void);
+extern "C" int zclass_zbd_read_single_node_class_data_smoke(void);
+extern "C" int zclass_zbd_read_node_table_smoke(void);
+extern "C" int gamez_read_zbd_file_smoke(void);
+extern "C" int gamez_read_retail_m1_zbd_smoke(void);
 extern "C" int zclass_alloc_node_from_free_list_smoke(void);
 extern "C" int zclass_node_free_and_deferred_work_smoke(void);
 extern "C" int zclass_delete_node_from_lists_smoke(void);
@@ -1377,12 +1441,20 @@ extern "C" int zclass_remove_wrapper_matrix_smoke(void);
 extern "C" int zclass_object3d_child_wrappers_smoke(void);
 extern "C" int zclass_remove_dispatch_smoke(void);
 extern "C" int zclass_node_world_child_smoke(void);
+extern "C" int zclass_world_new_smoke(void);
+extern "C" int zclass_world_virtual_partition_statics_smoke(void);
+extern "C" int zclass_world_set_origin_smoke(void);
+extern "C" int zclass_world_set_size_smoke(void);
+extern "C" int zclass_world_set_virtual_area_partition_smoke(void);
+extern "C" int zclass_world_partition_tolerance_smoke(void);
+extern "C" int zclass_world_max_dec_features_smoke(void);
 extern "C" int zclass_world_add_child_at_grid_smoke(void);
 extern "C" int zclass_world_free_virtual_area_partitions_smoke(void);
 extern "C" int zclass_world_queue_area_update_smoke(void);
 extern "C" int zclass_world_rebuild_area_bounds_smoke(void);
 extern "C" int zclass_world_ensure_grid_cell_display_position_smoke(void);
 extern "C" int zclass_world_apply_pending_fog_settings_smoke(void);
+extern "C" int zclass_world_settings_section_callbacks_smoke(void);
 extern "C" int zclass_world_get_area_partition_at_grid_smoke(void);
 extern "C" int zclass_world_to_grid_coords_clamped_smoke(void);
 extern "C" int zclass_world_build_active_light_list_smoke(void);
@@ -1395,8 +1467,12 @@ extern "C" int zclass_world_animate_delete_node_smoke(void);
 extern "C" int zclass_window_new_smoke(void);
 extern "C" int zclass_display_init_smoke(void);
 extern "C" int zclass_lod_leaf_smoke(void);
+extern "C" int zclass_camera_convex_hull_xz_smoke(void);
 extern "C" int zclass_camera_view_distance_smoke(void);
+extern "C" int zclass_camera_build_frustum_grid_tiles_from_params_smoke(void);
+extern "C" int zclass_camera_build_frustum_grid_tiles_smoke(void);
 extern "C" int zclass_camera_render_frustum_grid_tiles_smoke(void);
+extern "C" int zclass_camera_render_overlay_nodes_smoke(void);
 extern "C" int zclass_camera_render_scene_smoke(void);
 extern "C" int zclass_camera_sync_view_context_positions_smoke(void);
 extern "C" int zclass_list_render_active_cameras_smoke(void);
@@ -1404,7 +1480,10 @@ extern "C" int zclass_render_traverse_dispatch_smoke(void);
 extern "C" int zmodel_material_defaults_and_find_smoke(void);
 extern "C" int zmodel_material_pool_entry_smoke(void);
 extern "C" int zmodel_material_and_di_clone_smoke(void);
+extern "C" int zmodel_material_update_cycle_if_needed_smoke(void);
 extern "C" int zmodel_init_smoke(void);
+extern "C" int zmodel_render_node_software_flat_smoke(void);
+extern "C" int zmodel_render_point_queue_entry_smoke(void);
 extern "C" int zmodel_display_init_smoke(void);
 extern "C" int zmodel_display_shutdown_smoke(void);
 extern "C" int zmodel_set_software_path_active_smoke(void);
@@ -1458,6 +1537,9 @@ extern "C" int zclass_typelist_update_bucket_smoke(void);
 extern "C" int zclass_typelist_update_all_buckets_smoke(void);
 extern "C" int zclass_typelist_update_sequences_smoke(void);
 extern "C" int zclass_typelist_update_animations_smoke(void);
+extern "C" int zclass_animate_update_smoke(void);
+extern "C" int zclass_sequence_new_add_child_smoke(void);
+extern "C" int zclass_sequence_update_smoke(void);
 extern "C" int zclass_gwnode_update_all_smoke(void);
 extern "C" int zclass_cls_di_point_query_chain_smoke(void);
 extern "C" int zclass_cls_di_segment_batch_vs_polygon_smoke(void);
@@ -2041,6 +2123,1077 @@ extern "C" int zhud_triplet_panel_shutdown_items_stub_smoke(void) {
 #define RECOIL_ZGAME_TESTS_ZCLASS_TYPELIST_UPDATE
 #define RECOIL_ZGAME_TESTS_ZCLASS_WINDOW
 #include "zgame_tests.cpp"
+
+extern "C" int zclass_animate_update_smoke() {
+    auto nearFloat = [](float a, float b) { return std::fabs(a - b) <= 0.0001f; };
+
+    zClass_AnimateKeyframePartial keyframes[3]{};
+    keyframes[0].rotation = {0.0f, 2.0f, 4.0f};
+    keyframes[0].position = {10.0f, 20.0f, 30.0f};
+    keyframes[0].scale = {1.0f, 2.0f, 3.0f};
+    keyframes[1].rotation = {10.0f, 12.0f, 14.0f};
+    keyframes[1].position = {30.0f, 40.0f, 50.0f};
+    keyframes[1].scale = {3.0f, 4.0f, 5.0f};
+    keyframes[2].rotation = {20.0f, 22.0f, 24.0f};
+    keyframes[2].position = {50.0f, 60.0f, 70.0f};
+    keyframes[2].scale = {5.0f, 6.0f, 7.0f};
+
+    zClass_AnimateRuntimePartial runtime{};
+    runtime.keyframes = keyframes;
+    runtime.duration = 4.0f;
+    runtime.currentTime = 1.0f;
+    runtime.maxFrameIndex = 3;
+    runtime.loopCount = -1;
+    runtime.outputRotationScale = {2.0f, 3.0f, 4.0f};
+    runtime.outputPositionScale = {1.0f, 0.5f, 0.25f};
+    runtime.outputScaleScale = {1.0f, 2.0f, 3.0f};
+
+    if (zClass_Animate::SampleTransform(&runtime) != 1 ||
+        !nearFloat(runtime.sampledRotation.x, 10.0f) ||
+        !nearFloat(runtime.sampledRotation.y, 21.0f) ||
+        !nearFloat(runtime.sampledRotation.z, 36.0f) ||
+        !nearFloat(runtime.sampledPosition.x, 20.0f) ||
+        !nearFloat(runtime.sampledPosition.y, 15.0f) ||
+        !nearFloat(runtime.sampledPosition.z, 10.0f) || !nearFloat(runtime.sampledScale.x, 2.0f) ||
+        !nearFloat(runtime.sampledScale.y, 6.0f) || !nearFloat(runtime.sampledScale.z, 12.0f)) {
+        return 1;
+    }
+
+    runtime.state = 2;
+    if (zClass_Animate::SampleTransform(&runtime) != 2) {
+        return 2;
+    }
+
+    zClass_AnimateRuntimePartial endRuntime{};
+    endRuntime.duration = 2.0f;
+    endRuntime.currentTime = 1.5f;
+    endRuntime.loopCount = -1;
+    if (zClass_Animate::AdvanceTime(&endRuntime, 0.75f) != 1 || endRuntime.state != 2 ||
+        endRuntime.currentTime != 0.0f || zClass_Animate::AdvanceTime(&endRuntime, 0.25f) != 2) {
+        return 3;
+    }
+
+    zClass_AnimateRuntimePartial loopRuntime{};
+    loopRuntime.duration = 10.0f;
+    loopRuntime.currentTime = 1.0f;
+    loopRuntime.startTime = 1.5f;
+    loopRuntime.loopBase = 0.25f;
+    loopRuntime.loopCount = 0;
+    if (zClass_Animate::AdvanceTime(&loopRuntime, 1.0f) != 1 ||
+        !nearFloat(loopRuntime.currentTime, 0.75f)) {
+        return 4;
+    }
+
+    if (zClass_Animate::UpdateNode(nullptr) != 5) {
+        return 6;
+    }
+    zClass_NodePartial missingDataNode{};
+    if (zClass_Animate::UpdateNode(&missingDataNode) != 5) {
+        return 7;
+    }
+
+    zClass_AnimateDataPartial stoppedData{};
+    stoppedData.statusFlags = 0x04;
+    stoppedData.runtime.state = 2;
+    stoppedData.runtime.duration = 1.0f;
+    stoppedData.runtime.currentTime = 0.9f;
+    stoppedData.runtime.loopCount = -1;
+    zClass_NodePartial stoppedNode{};
+    stoppedNode.classData = &stoppedData;
+    g_FrameDeltaTimeSec = 0.2f;
+    if (zClass_Animate::UpdateNode(&stoppedNode) != 0 ||
+        (stoppedData.statusFlags & 0x04) != 0 || stoppedNode.flags != 0) {
+        return 8;
+    }
+
+    reset_zclass_type_lists_for_test();
+    zClass_AnimateDataPartial data{};
+    data.statusFlags = 0x04;
+    data.runtime.keyframes = keyframes;
+    data.runtime.duration = 4.0f;
+    data.runtime.currentTime = 1.0f;
+    data.runtime.maxFrameIndex = 3;
+    data.runtime.loopCount = -1;
+    data.runtime.outputRotationScale = {1.0f, 1.0f, 1.0f};
+    data.runtime.outputPositionScale = {1.0f, 1.0f, 1.0f};
+    data.runtime.outputScaleScale = {1.0f, 1.0f, 1.0f};
+    zClass_NodePartial node{};
+    node.flags = 0x04;
+    node.classData = &data;
+    g_FrameDeltaTimeSec = 1.0f;
+
+    if (zClass_Animate::UpdateNode(&node) != 0 || data.flags != 1 || (node.flags & 0x07) != 0x07 ||
+        zClass_TypeList::Head(7) == nullptr || zClass_TypeList::Head(7)->node != &node ||
+        !nearFloat(data.runtime.currentTime, 2.0f) ||
+        !nearFloat(data.runtime.sampledRotation.x, 10.0f) ||
+        !nearFloat(data.runtime.sampledPosition.y, 40.0f) ||
+        !nearFloat(data.runtime.sampledScale.z, 5.0f)) {
+        free_zclass_type_lists_for_test();
+        return 5;
+    }
+
+    free_zclass_type_lists_for_test();
+    return 0;
+}
+
+extern "C" int zclass_sequence_new_add_child_smoke() {
+    reset_zclass_type_lists_for_test();
+    zClass_NodeFreeListSlot slots[1]{};
+    slots[0].freeTag = 0x00ffffff;
+    g_zClass_NodeArray = slots;
+    g_zClass_NodeFreeHeadIndex = 0;
+    g_zClass_ActiveNodeCount = 0;
+
+    zClass_NodePartial *sequence = zClass_Sequence::gwSequenceNew();
+    if (sequence != &slots[0].node || sequence->classId != 7 || sequence->classData == nullptr ||
+        g_zClass_NodeFreeHeadIndex != -1 || zClass_TypeList::Head(11) == nullptr ||
+        zClass_TypeList::Head(11)->node != sequence) {
+        if (sequence != nullptr) {
+            std::free(sequence->classData);
+        }
+        free_zclass_type_lists_for_test();
+        return 1;
+    }
+
+    zClass_SequenceDataPartial *sequenceData =
+        static_cast<zClass_SequenceDataPartial *>(sequence->classData);
+    if (sequenceData->step != 1 || sequenceData->entryCount != 0) {
+        std::free(sequence->classData);
+        free_zclass_type_lists_for_test();
+        return 2;
+    }
+
+    std::free(sequence->classData);
+    free_zclass_type_lists_for_test();
+
+    reset_zclass_type_lists_for_test();
+    zClass_NodePartial parent{};
+    zClass_NodePartial first{};
+    zClass_NodePartial second{};
+    zClass_NodePartial inserted{};
+    const std::size_t twoEntryBytes =
+        sizeof(zClass_SequenceDataPartial) + sizeof(zClass_SequenceEntryPartial);
+    sequenceData = static_cast<zClass_SequenceDataPartial *>(std::calloc(1, twoEntryBytes));
+    if (sequenceData == nullptr) {
+        return 3;
+    }
+    sequenceData->entryCount = 2;
+    sequenceData->entries[0].node = &first;
+    sequenceData->entries[0].triggerTime = 1.0f;
+    sequenceData->entries[1].node = &second;
+    sequenceData->entries[1].triggerTime = 3.0f;
+    parent.classData = sequenceData;
+
+    if (zClass_Sequence::gwSequenceAddChild(&parent, &inserted, 1, 2.0f) != 0) {
+        std::free(parent.classData);
+        free_zclass_type_lists_for_test();
+        return 4;
+    }
+
+    sequenceData = static_cast<zClass_SequenceDataPartial *>(parent.classData);
+    if (zClass_Sequence::SetActive(&parent, 7) != 0 ||
+        zClass_Sequence::SetRepeat(&parent, 8) != 0 || zClass_Sequence::SetLoop(&parent, 9) != 0 ||
+        zClass_Sequence::SetPause(&parent, 10) != 0) {
+        std::free(parent.listB);
+        std::free(inserted.listA);
+        std::free(parent.classData);
+        free_zclass_type_lists_for_test();
+        return 5;
+    }
+
+    const bool ok =
+        sequenceData->entryCount == 3 && sequenceData->isActive == 7 &&
+        sequenceData->repeatAtBounds == 8 && sequenceData->wrapAtBounds == 9 &&
+        sequenceData->isPaused == 10 && sequenceData->entries[0].node == &first &&
+        sequenceData->entries[0].triggerTime == 1.0f &&
+        sequenceData->entries[1].node == &inserted &&
+        sequenceData->entries[1].triggerTime == 2.0f && sequenceData->entries[2].node == &second &&
+        sequenceData->entries[2].triggerTime == 3.0f && parent.listCountB == 1 &&
+        parent.listB[0] == &inserted && inserted.listCountA == 1 && inserted.listA[0] == &parent &&
+        zClass_TypeList::Head(7) != nullptr && zClass_TypeList::Head(7)->node == &parent;
+
+    std::free(parent.listB);
+    std::free(inserted.listA);
+    std::free(parent.classData);
+    free_zclass_type_lists_for_test();
+    return ok ? 0 : 6;
+}
+
+extern "C" int zclass_sequence_update_smoke() {
+    auto nearFloat = [](float lhs, float rhs) { return std::fabs(lhs - rhs) <= 0.0001f; };
+    auto allocSequenceData = [](int entryCount) -> zClass_SequenceDataPartial * {
+        const std::size_t bytes =
+            sizeof(zClass_SequenceDataPartial) +
+            sizeof(zClass_SequenceEntryPartial) * static_cast<std::size_t>(entryCount - 1);
+        return static_cast<zClass_SequenceDataPartial *>(std::calloc(1, bytes));
+    };
+
+    if (zClass_Sequence::Update(nullptr) != 5) {
+        return 1;
+    }
+
+    zClass_NodePartial node{};
+    if (zClass_Sequence::Update(&node) != 5) {
+        return 2;
+    }
+
+    zClass_SequenceDataPartial *data = allocSequenceData(3);
+    if (data == nullptr) {
+        return 3;
+    }
+    node.classData = data;
+    data->isActive = 1;
+    data->isPaused = 1;
+    data->step = 1;
+    data->currentIndex = 0;
+    data->currentTime = 2.0f;
+    data->entryCount = 3;
+    data->entries[0].triggerTime = 4.0f;
+    data->entries[1].triggerTime = 4.0f;
+    data->entries[2].triggerTime = 4.0f;
+    g_FrameDeltaTimeSec = 1.0f;
+    if (zClass_Sequence::Update(&node) != 0 || !nearFloat(data->currentTime, 2.0f) ||
+        data->currentIndex != 0) {
+        std::free(data);
+        return 4;
+    }
+
+    data->isPaused = 0;
+    data->isActive = 0;
+    if (zClass_Sequence::Update(&node) != 0 || !nearFloat(data->currentTime, 2.0f) ||
+        data->currentIndex != 0) {
+        std::free(data);
+        return 5;
+    }
+
+    data->isActive = 1;
+    data->currentTime = 0.5f;
+    data->entries[0].triggerTime = 2.0f;
+    if (zClass_Sequence::Update(&node) != 0 || !nearFloat(data->currentTime, 1.5f) ||
+        data->currentIndex != 0) {
+        std::free(data);
+        return 6;
+    }
+
+    data->currentTime = 0.0f;
+    data->entryCount = 3;
+    data->step = 1;
+    data->currentIndex = 0;
+    data->entries[0].triggerTime = 1.0f;
+    data->entries[1].triggerTime = 1.0f;
+    data->entries[2].triggerTime = 5.0f;
+    g_FrameDeltaTimeSec = 3.5f;
+    if (zClass_Sequence::Update(&node) != 0 || data->currentIndex != 2 ||
+        !nearFloat(data->currentTime, 1.5f)) {
+        std::free(data);
+        return 7;
+    }
+
+    data->isActive = 1;
+    data->repeatAtBounds = 0;
+    data->wrapAtBounds = 0;
+    data->entryCount = 2;
+    data->step = 1;
+    data->currentIndex = 1;
+    data->currentTime = 0.9f;
+    data->entries[1].triggerTime = 1.0f;
+    g_FrameDeltaTimeSec = 0.3f;
+    if (zClass_Sequence::Update(&node) != 0 || data->currentIndex != 1 ||
+        data->step != -1 || data->isActive != 0 || !nearFloat(data->currentTime, 0.2f)) {
+        std::free(data);
+        return 8;
+    }
+
+    data->isActive = 1;
+    data->repeatAtBounds = 1;
+    data->wrapAtBounds = 1;
+    data->entryCount = 2;
+    data->step = 1;
+    data->currentIndex = 1;
+    data->currentTime = 0.9f;
+    data->entries[0].triggerTime = 1.0f;
+    data->entries[1].triggerTime = 1.0f;
+    if (zClass_Sequence::Update(&node) != 0 || data->currentIndex != 0 ||
+        data->step != 1 || data->isActive != 1 || !nearFloat(data->currentTime, 0.2f)) {
+        std::free(data);
+        return 9;
+    }
+
+    data->isActive = 1;
+    data->repeatAtBounds = 0;
+    data->wrapAtBounds = 0;
+    data->entryCount = 2;
+    data->step = -1;
+    data->currentIndex = 0;
+    data->currentTime = 0.9f;
+    data->entries[0].triggerTime = 1.0f;
+    if (zClass_Sequence::Update(&node) != 0 || data->currentIndex != 0 ||
+        data->step != 1 || data->isActive != 0 || !nearFloat(data->currentTime, 0.2f)) {
+        std::free(data);
+        return 10;
+    }
+
+    std::free(data);
+    return 0;
+}
+
+namespace {
+bool EnterSupportDirectoryForRetailZbdTest(char *oldDir, DWORD oldDirSize) {
+    if (GetCurrentDirectoryA(oldDirSize, oldDir) == 0) {
+        return false;
+    }
+
+    const char *candidates[] = {
+        "support",
+        "..\\..\\..\\..\\support",
+    };
+    for (int i = 0; i < static_cast<int>(sizeof(candidates) / sizeof(candidates[0])); ++i) {
+        const DWORD attributes = GetFileAttributesA(candidates[i]);
+        if (attributes != INVALID_FILE_ATTRIBUTES &&
+            (attributes & FILE_ATTRIBUTE_DIRECTORY) != 0 &&
+            SetCurrentDirectoryA(candidates[i]) != 0) {
+            if (GetFileAttributesA("zbd\\m1\\gamez.zbd") != INVALID_FILE_ATTRIBUTES) {
+                return true;
+            }
+            if (SetCurrentDirectoryA(oldDir) == 0) {
+                return false;
+            }
+        }
+    }
+
+    return false;
+}
+} // namespace
+
+extern "C" int zclass_zbd_node_ref_list_indices_smoke() {
+    zClass_NodeFreeListSlot slots[3]{};
+    g_zClass_NodeArray = slots;
+
+    zClass_NodePartial *refs[3] = {
+        &slots[2].node,
+        nullptr,
+        &slots[0].node,
+    };
+
+    std::FILE *file = std::tmpfile();
+    if (file == nullptr) {
+        return 1;
+    }
+
+    if (GameZ_ZBD::WriteNodeRefListIndices(refs, 3, file) != 0 ||
+        GameZ_ZBD::WriteNodeRefListIndices(refs, 0, file) != 0) {
+        std::fclose(file);
+        return 2;
+    }
+
+    std::rewind(file);
+    std::int32_t indices[3] = {};
+    if (std::fread(indices, sizeof(indices), 1, file) != 1 || indices[0] != 2 || indices[1] != -1 ||
+        indices[2] != 0) {
+        std::fclose(file);
+        return 3;
+    }
+
+    std::rewind(file);
+    zClass_NodePartial *readRefs[3] = {};
+    if (GameZ_ZBD::ReadNodeRefListIndices(readRefs, 3, file) != 0 ||
+        readRefs[0] != &slots[2].node || readRefs[1] != nullptr || readRefs[2] != &slots[0].node ||
+        GameZ_ZBD::ReadNodeRefListIndices(readRefs, 0, file) != 0) {
+        std::fclose(file);
+        return 4;
+    }
+
+    std::fclose(file);
+    std::free(g_GameZ_Zbd_NodeIndexScratch);
+    g_GameZ_Zbd_NodeIndexScratch = nullptr;
+    g_GameZ_Zbd_NodeIndexScratchCapacity = 0;
+    return 0;
+}
+
+extern "C" int zclass_zbd_single_node_class_data_smoke() {
+    zClass_NodeFreeListSlot slots[5]{};
+    g_zClass_NodeArray = slots;
+
+    zClass_CameraDataPartial cameraData{};
+    cameraData.worldNode = &slots[2].node;
+    cameraData.windowNode = &slots[0].node;
+    cameraData.horizonNode = nullptr;
+    cameraData.horizonXZNode = &slots[4].node;
+    cameraData.cameraFlags = 0x12345678;
+
+    zClass_NodePartial *cameraListA[1] = {&slots[1].node};
+    zClass_NodePartial *cameraListB[1] = {&slots[3].node};
+    zClass_NodePartial cameraNode{};
+    std::strcpy(cameraNode.name, "camera_node");
+    cameraNode.classId = 1;
+    cameraNode.classData = &cameraData;
+    cameraNode.listCountA = 1;
+    cameraNode.listA = cameraListA;
+    cameraNode.listCountB = 1;
+    cameraNode.listB = cameraListB;
+
+    std::FILE *file = std::tmpfile();
+    if (file == nullptr) {
+        return 1;
+    }
+
+    if (GameZ_ZBD::WriteSingleNodeClassData(&cameraNode, file) != 1) {
+        std::fclose(file);
+        return 2;
+    }
+
+    if (std::fseek(file, 0, SEEK_END) != 0 ||
+        std::ftell(file) != static_cast<long>(sizeof(zClass_CameraDataPartial) + 8)) {
+        std::fclose(file);
+        return 3;
+    }
+
+    std::rewind(file);
+    std::int32_t cameraIndices[4] = {};
+    if (std::fread(cameraIndices, sizeof(cameraIndices), 1, file) != 1 || cameraIndices[0] != 2 ||
+        cameraIndices[1] != 0 || cameraIndices[2] != -1 || cameraIndices[3] != 4) {
+        std::fclose(file);
+        return 4;
+    }
+
+    std::int32_t cameraListIndices[2] = {};
+    if (std::fseek(file, static_cast<long>(sizeof(zClass_CameraDataPartial)), SEEK_SET) != 0 ||
+        std::fread(cameraListIndices, sizeof(cameraListIndices), 1, file) != 1 ||
+        cameraListIndices[0] != 1 || cameraListIndices[1] != 3) {
+        std::fclose(file);
+        return 5;
+    }
+
+    std::fclose(file);
+
+    zClass_NodePartial *lightNodes[1] = {&slots[4].node};
+    zClass_NodePartial *soundNodes[2] = {nullptr, &slots[1].node};
+    zClass_NodePartial *areaChildren[1] = {&slots[2].node};
+    zWorldAreaPartial areas[2] = {};
+    areas[0].areaFlags = 0x55aa;
+    areas[0].childCount = 1;
+    areas[0].childList = areaChildren;
+    areas[1].areaFlags = 0x33cc;
+    zWorldAreaPartial *rows[1] = {areas};
+
+    zClass_WorldDataPartial worldData{};
+    worldData.areaGridColCount = 2;
+    worldData.areaGridRowCount = 1;
+    worldData.areaGridRows = rows;
+    worldData.lightCount = 1;
+    worldData.lightNodes = lightNodes;
+    worldData.soundCount = 2;
+    worldData.soundNodes = soundNodes;
+
+    zClass_NodePartial worldNode{};
+    std::strcpy(worldNode.name, "world_node");
+    worldNode.classId = 2;
+    worldNode.classData = &worldData;
+
+    file = std::tmpfile();
+    if (file == nullptr) {
+        return 6;
+    }
+
+    if (GameZ_ZBD::WriteSingleNodeClassData(&worldNode, file) != 1) {
+        std::fclose(file);
+        return 7;
+    }
+
+    const long worldNodeListOffset = static_cast<long>(sizeof(zClass_WorldDataPartial));
+    const long firstAreaOffset = worldNodeListOffset + 12;
+    const long firstAreaChildRefOffset =
+        firstAreaOffset + static_cast<long>(sizeof(zWorldAreaPartial));
+    const long expectedWorldBytes =
+        firstAreaChildRefOffset + 4 + static_cast<long>(sizeof(zWorldAreaPartial));
+    if (std::fseek(file, 0, SEEK_END) != 0 || std::ftell(file) != expectedWorldBytes) {
+        std::fclose(file);
+        return 8;
+    }
+
+    std::int32_t worldIndices[3] = {};
+    if (std::fseek(file, worldNodeListOffset, SEEK_SET) != 0 ||
+        std::fread(worldIndices, sizeof(worldIndices), 1, file) != 1 || worldIndices[0] != 4 ||
+        worldIndices[1] != -1 || worldIndices[2] != 1) {
+        std::fclose(file);
+        return 9;
+    }
+
+    std::int32_t areaChildIndex = 0;
+    zWorldAreaPartial secondArea{};
+    if (std::fseek(file, firstAreaChildRefOffset, SEEK_SET) != 0 ||
+        std::fread(&areaChildIndex, sizeof(areaChildIndex), 1, file) != 1 || areaChildIndex != 2 ||
+        std::fread(&secondArea, sizeof(secondArea), 1, file) != 1 ||
+        secondArea.areaFlags != 0x33cc) {
+        std::fclose(file);
+        return 10;
+    }
+
+    std::fclose(file);
+    std::free(g_GameZ_Zbd_NodeIndexScratch);
+    g_GameZ_Zbd_NodeIndexScratch = nullptr;
+    g_GameZ_Zbd_NodeIndexScratchCapacity = 0;
+    return 0;
+}
+
+extern "C" int zclass_zbd_read_single_node_class_data_smoke() {
+    zClass_NodeFreeListSlot slots[6]{};
+    g_zClass_NodeArray = slots;
+
+    reset_zclass_type_lists_for_test();
+
+    zClass_CameraDataPartial cameraDisk{};
+    cameraDisk.worldNode = reinterpret_cast<zClass_NodePartial *>(2);
+    cameraDisk.windowNode = reinterpret_cast<zClass_NodePartial *>(-1);
+    cameraDisk.horizonNode = reinterpret_cast<zClass_NodePartial *>(0);
+    cameraDisk.horizonXZNode = reinterpret_cast<zClass_NodePartial *>(4);
+    cameraDisk.nearClip = 0.25f;
+    cameraDisk.farClip = 500.0f;
+    cameraDisk.viewportWidth = 320.0f;
+    cameraDisk.viewportHeight = 200.0f;
+    cameraDisk.frustumWidth = 640.0f;
+    cameraDisk.frustumHeight = 480.0f;
+
+    std::FILE *file = std::tmpfile();
+    if (file == nullptr) {
+        free_zclass_type_lists_for_test();
+        return 1;
+    }
+
+    const std::int32_t cameraListIndices[2] = {1, 3};
+    if (std::fwrite(&cameraDisk, sizeof(cameraDisk), 1, file) != 1 ||
+        std::fwrite(cameraListIndices, sizeof(cameraListIndices), 1, file) != 1) {
+        std::fclose(file);
+        free_zclass_type_lists_for_test();
+        return 2;
+    }
+    std::rewind(file);
+
+    zClass_NodePartial cameraNode{};
+    std::strcpy(cameraNode.name, "camera_read");
+    cameraNode.classId = 1;
+    cameraNode.listCountA = 1;
+    cameraNode.listCountB = 1;
+
+    if (GameZ_ZBD::ReadSingleNodeClassData(&cameraNode, file) != 1) {
+        std::fclose(file);
+        free_zclass_type_lists_for_test();
+        return 3;
+    }
+    std::fclose(file);
+
+    zClass_CameraDataPartial *cameraData =
+        static_cast<zClass_CameraDataPartial *>(cameraNode.classData);
+    const float maxCameraFov = 1.39600003f;
+    const bool cameraOk =
+        cameraData != nullptr && cameraData->worldNode == &slots[2].node &&
+        cameraData->windowNode == nullptr && cameraData->horizonNode == &slots[0].node &&
+        cameraData->horizonXZNode == &slots[4].node && cameraData->nearClip == 0.25f &&
+        cameraData->farClip == 500.0f && cameraData->viewportWidth == 320.0f &&
+        cameraData->viewportHeight == 200.0f && cameraData->fovX == maxCameraFov &&
+        cameraData->fovY == maxCameraFov && cameraData->frustumVectorsDirty == 1 &&
+        cameraData->localFrustumNormalsDirty == 1 && cameraNode.listA != nullptr &&
+        cameraNode.listA[0] == &slots[1].node && cameraNode.listB != nullptr &&
+        cameraNode.listB[0] == &slots[3].node && zClass_TypeList::Head(8) != nullptr &&
+        zClass_TypeList::Head(8)->node == &cameraNode;
+    std::free(cameraNode.listA);
+    std::free(cameraNode.listB);
+    std::free(cameraData);
+    cameraNode.listA = nullptr;
+    cameraNode.listB = nullptr;
+    cameraNode.classData = nullptr;
+    free_zclass_type_lists_for_test();
+    if (!cameraOk) {
+        return 4;
+    }
+
+    reset_zclass_type_lists_for_test();
+
+    zClass_WorldDataPartial worldDisk{};
+    worldDisk.fogState = 2;
+    worldDisk.ambientColor.red = 0.25f;
+    worldDisk.ambientColor.green = 0.5f;
+    worldDisk.ambientColor.blue = 0.75f;
+    worldDisk.fogDistanceStart = 12.0f;
+    worldDisk.fogDistanceEnd = 64.0f;
+    worldDisk.fogHeightHigh = 18.0f;
+    worldDisk.fogHeightLow = -4.0f;
+    worldDisk.fogDensity = 0.125f;
+    worldDisk.areaGridColCount = 2;
+    worldDisk.areaGridRowCount = 1;
+    worldDisk.lightCount = 1;
+    worldDisk.soundCount = 1;
+
+    zWorldAreaPartial firstArea{};
+    firstArea.areaFlags = 0x22;
+    firstArea.childCount = 1;
+    zWorldAreaPartial secondArea{};
+    secondArea.areaFlags = 0x44;
+
+    const std::int32_t worldLightIndex = 1;
+    const std::int32_t worldSoundIndex = 2;
+    const std::int32_t areaChildIndex = 3;
+
+    file = std::tmpfile();
+    if (file == nullptr) {
+        free_zclass_type_lists_for_test();
+        return 5;
+    }
+    if (std::fwrite(&worldDisk, sizeof(worldDisk), 1, file) != 1 ||
+        std::fwrite(&worldLightIndex, sizeof(worldLightIndex), 1, file) != 1 ||
+        std::fwrite(&worldSoundIndex, sizeof(worldSoundIndex), 1, file) != 1 ||
+        std::fwrite(&firstArea, sizeof(firstArea), 1, file) != 1 ||
+        std::fwrite(&areaChildIndex, sizeof(areaChildIndex), 1, file) != 1 ||
+        std::fwrite(&secondArea, sizeof(secondArea), 1, file) != 1) {
+        std::fclose(file);
+        free_zclass_type_lists_for_test();
+        return 6;
+    }
+    std::rewind(file);
+
+    zClass_NodePartial worldNode{};
+    std::strcpy(worldNode.name, "world_read");
+    worldNode.classId = 2;
+
+    if (GameZ_ZBD::ReadSingleNodeClassData(&worldNode, file) != 1) {
+        std::fclose(file);
+        free_zclass_type_lists_for_test();
+        return 7;
+    }
+    std::fclose(file);
+
+    zClass_WorldDataPartial *worldData =
+        static_cast<zClass_WorldDataPartial *>(worldNode.classData);
+    const bool worldOk =
+        worldData != nullptr && worldData->flags == 0 && worldData->pendingAreaUpdateCount == 0 &&
+        worldData->pendingAreaUpdateCapacity == 0 && worldData->pendingAreaUpdates == nullptr &&
+        worldData->lightNodes != nullptr && worldData->lightNodes[0] == &slots[1].node &&
+        worldData->lightDataList != nullptr && worldData->soundNodes != nullptr &&
+        worldData->soundNodes[0] == &slots[2].node && worldData->soundDataList != nullptr &&
+        worldData->areaGridRows != nullptr && worldData->areaGridRows[0] != nullptr &&
+        worldData->areaGridRows[0][0].areaFlags == 0x22 &&
+        worldData->areaGridRows[0][0].childList != nullptr &&
+        worldData->areaGridRows[0][0].childList[0] == &slots[3].node &&
+        worldData->areaGridRows[0][1].areaFlags == 0x44 &&
+        worldData->areaGridRows[0][1].childList == nullptr &&
+        zClass_TypeList::Head(13) != nullptr && zClass_TypeList::Head(13)->node == &worldNode;
+
+    if (worldData != nullptr) {
+        std::free(worldData->lightNodes);
+        std::free(worldData->lightDataList);
+        std::free(worldData->soundNodes);
+        std::free(worldData->soundDataList);
+        if (worldData->areaGridRows != nullptr) {
+            if (worldData->areaGridRows[0] != nullptr) {
+                std::free(worldData->areaGridRows[0][0].childList);
+                std::free(worldData->areaGridRows[0]);
+            }
+            std::free(worldData->areaGridRows);
+        }
+        std::free(worldData);
+    }
+    free_zclass_type_lists_for_test();
+    return worldOk ? 0 : 8;
+}
+
+extern "C" int zclass_zbd_read_node_table_smoke() {
+    reset_zclass_type_lists_for_test();
+
+    zClass_NodeFreeListSlot diskSlots[3]{};
+    std::strcpy(diskSlots[0].node.name, "world_table");
+    diskSlots[0].node.classId = 2;
+    diskSlots[0].node.userDataOrDiRef = static_cast<std::uint32_t>(-1);
+    diskSlots[0].freeTag = 0x12000000u;
+    std::strcpy(diskSlots[1].node.name, "light_table");
+    diskSlots[1].node.classId = 9;
+    diskSlots[1].node.userDataOrDiRef = static_cast<std::uint32_t>(-1);
+    diskSlots[1].freeTag = 0x34000000u;
+    std::strcpy(diskSlots[2].node.name, "sound_table");
+    diskSlots[2].node.classId = 10;
+    diskSlots[2].node.userDataOrDiRef = static_cast<std::uint32_t>(-1);
+    diskSlots[2].freeTag = 0x56000000u;
+
+    zClass_WorldDataPartial worldDisk{};
+    worldDisk.lightCount = 1;
+    worldDisk.soundCount = 1;
+    worldDisk.fogState = 0;
+    worldDisk.fogDistanceStart = 10.0f;
+    worldDisk.fogDistanceEnd = 20.0f;
+    worldDisk.fogHeightHigh = 30.0f;
+    worldDisk.fogHeightLow = 5.0f;
+    worldDisk.fogDensity = 0.5f;
+    const std::int32_t lightIndex = 1;
+    const std::int32_t soundIndex = 2;
+    zClass_LightDataPartial lightDisk{};
+    zClass_SoundDataPartial soundDisk{};
+
+    std::FILE *file = std::tmpfile();
+    if (file == nullptr) {
+        free_zclass_type_lists_for_test();
+        return 1;
+    }
+    if (std::fwrite(diskSlots, sizeof(diskSlots), 1, file) != 1 ||
+        std::fwrite(&worldDisk, sizeof(worldDisk), 1, file) != 1 ||
+        std::fwrite(&lightIndex, sizeof(lightIndex), 1, file) != 1 ||
+        std::fwrite(&soundIndex, sizeof(soundIndex), 1, file) != 1 ||
+        std::fwrite(&lightDisk, sizeof(lightDisk), 1, file) != 1 ||
+        std::fwrite(&soundDisk, sizeof(soundDisk), 1, file) != 1) {
+        std::fclose(file);
+        free_zclass_type_lists_for_test();
+        return 2;
+    }
+    std::rewind(file);
+
+    g_zClass_NodeArray = nullptr;
+    g_zClass_NodeArraySize = 0;
+    g_zClass_ActiveNodeCount = 0;
+
+    if (GameZ_ZBD::ReadNodeTable(3, file) != 3) {
+        std::fclose(file);
+        free_zclass_type_lists_for_test();
+        return 3;
+    }
+    std::fclose(file);
+
+    zClass_WorldDataPartial *worldData =
+        static_cast<zClass_WorldDataPartial *>(g_zClass_NodeArray[0].node.classData);
+    const bool tableOk = g_zClass_NodeArraySize == 3 && g_zClass_ActiveNodeCount == 3 &&
+                         (g_zClass_NodeArray[0].freeTag & 0x01000000u) != 0 &&
+                         (g_zClass_NodeArray[1].freeTag & 0x01000000u) != 0 &&
+                         (g_zClass_NodeArray[2].freeTag & 0x01000000u) != 0 &&
+                         g_zClass_NodeArray[0].node.actionCallback == nullptr &&
+                         g_zClass_NodeArray[1].node.actionCallback == nullptr &&
+                         g_zClass_NodeArray[2].node.actionCallback == nullptr &&
+                         worldData != nullptr && worldData->lightNodes != nullptr &&
+                         worldData->lightNodes[0] == &g_zClass_NodeArray[1].node &&
+                         worldData->soundNodes != nullptr &&
+                         worldData->soundNodes[0] == &g_zClass_NodeArray[2].node &&
+                         worldData->lightDataList != nullptr &&
+                         worldData->lightDataList[0] == g_zClass_NodeArray[1].node.classData &&
+                         worldData->soundDataList != nullptr &&
+                         worldData->soundDataList[0] == g_zClass_NodeArray[2].node.classData &&
+                         zClass_TypeList::Head(13) != nullptr &&
+                         zClass_TypeList::Head(13)->node == &g_zClass_NodeArray[0].node;
+
+    if (worldData != nullptr) {
+        std::free(worldData->lightNodes);
+        std::free(worldData->lightDataList);
+        std::free(worldData->soundNodes);
+        std::free(worldData->soundDataList);
+        std::free(worldData->areaGridRows);
+        std::free(worldData);
+    }
+    std::free(g_zClass_NodeArray[1].node.classData);
+    std::free(g_zClass_NodeArray[2].node.classData);
+    std::free(g_zClass_NodeArray);
+    g_zClass_NodeArray = nullptr;
+    g_zClass_NodeArraySize = 0;
+    g_zClass_ActiveNodeCount = 0;
+    free_zclass_type_lists_for_test();
+    return tableOk ? 0 : 4;
+}
+
+extern "C" int zclass_zbd_write_node_table_smoke() {
+    zClass_NodeFreeListSlot slots[2]{};
+    g_zClass_NodeArray = slots;
+    g_zClass_NodeArraySize = 2;
+
+    zDiPartial diPool[2]{};
+    g_zModel_DiPoolBase = diPool;
+
+    zClass_Object3DDataPartial objectData{};
+    objectData.flags = 0x1357;
+    zClass_NodePartial *staleList[1] = {&slots[1].node};
+    std::strcpy(slots[0].node.name, "object_node");
+    slots[0].node.classId = 5;
+    slots[0].node.classData = &objectData;
+    slots[0].node.userDataOrDiRef =
+        static_cast<std::uint32_t>(reinterpret_cast<std::uintptr_t>(&diPool[1]));
+    slots[0].node.actionCallback = staleList;
+    slots[0].node.listCountA = 0;
+    slots[0].node.listA = staleList;
+    slots[0].node.listCountB = 0;
+    slots[0].node.listB = staleList;
+    slots[0].freeTag = 0xab123456u;
+
+    std::strcpy(slots[1].node.name, "empty_node");
+    slots[1].node.classId = 0;
+    slots[1].freeTag = 0xcd654321u;
+
+    g_GameZ_Zbd_NodeIndexScratch = static_cast<zClass_NodePartial **>(std::malloc(8));
+    g_GameZ_Zbd_NodeIndexScratchCapacity = 2;
+
+    std::FILE *file = std::tmpfile();
+    if (file == nullptr) {
+        return 1;
+    }
+
+    if (GameZ_ZBD::WriteNodeTable(file) != 2 || g_GameZ_Zbd_NodeIndexScratch != nullptr ||
+        g_GameZ_Zbd_NodeIndexScratchCapacity != 0) {
+        std::fclose(file);
+        return 2;
+    }
+
+    const long tableBytes = static_cast<long>(sizeof(zClass_NodeFreeListSlot) * 2);
+    const long expectedBytes = tableBytes + static_cast<long>(sizeof(zClass_Object3DDataPartial));
+    if (std::fseek(file, 0, SEEK_END) != 0 || std::ftell(file) != expectedBytes) {
+        std::fclose(file);
+        return 3;
+    }
+
+    zClass_NodeFreeListSlot written[2]{};
+    std::rewind(file);
+    if (std::fread(written, sizeof(written), 1, file) != 1) {
+        std::fclose(file);
+        return 4;
+    }
+
+    if (written[0].node.userDataOrDiRef != 1 ||
+        written[1].node.userDataOrDiRef != static_cast<std::uint32_t>(-1) ||
+        written[0].node.actionCallback != nullptr || written[0].node.listA != nullptr ||
+        written[0].node.listB != nullptr) {
+        std::fclose(file);
+        return 5;
+    }
+
+    const std::uint32_t expectedFreeTag =
+        (slots[0].freeTag & 0xff000000u) | static_cast<std::uint32_t>(tableBytes);
+    if (written[0].freeTag != expectedFreeTag || written[1].freeTag != slots[1].freeTag) {
+        std::fclose(file);
+        return 6;
+    }
+
+    zClass_Object3DDataPartial writtenObject{};
+    if (std::fseek(file, tableBytes, SEEK_SET) != 0 ||
+        std::fread(&writtenObject, sizeof(writtenObject), 1, file) != 1 ||
+        writtenObject.flags != objectData.flags) {
+        std::fclose(file);
+        return 7;
+    }
+
+    std::fclose(file);
+    g_zClass_NodeArraySize = 0;
+    return 0;
+}
+
+extern "C" int gamez_write_zbd_file_smoke() {
+    const char *path = "zbd_smoke.tmp";
+    std::remove(path);
+
+    std::strcpy(g_zClass_CurrentZbdPath, "old.zbd");
+    g_zImage_TexDirEntryCount = 0;
+
+    zModel_MaterialSlot materialSlots[1] = {};
+    g_zModel_MatlPool = materialSlots;
+    g_zModel_MatlPoolCapacity = 1;
+    g_zModel_MatlPoolInUseCount = 0;
+    g_zModel_MatlFreeHeadIndex = 0;
+    g_zModel_MatlActiveHeadIndex = -1;
+
+    g_zModel_DiPoolBase = nullptr;
+    g_zModel_DiPoolCapacity = 0;
+    g_zModel_DiPoolInUseCount = 0;
+    g_zModel_DiPoolFreeHeadIndex = -1;
+
+    g_zClass_NodeArray = nullptr;
+    g_zClass_NodeArraySize = 0;
+    g_zClass_NodeFreeHeadIndex = 5;
+    g_zClass_NodeList_PendingFreeHead = nullptr;
+
+    if (GameZ::WriteZBDFile(path) != 0 || std::strcmp(g_zClass_CurrentZbdPath, path) != 0) {
+        std::remove(path);
+        return 1;
+    }
+
+    std::FILE *file = std::fopen(path, "rb");
+    if (file == nullptr) {
+        std::remove(path);
+        return 2;
+    }
+
+    zClass_ZbdHeader header = {};
+    if (std::fread(&header, sizeof(header), 1, file) != 1) {
+        std::fclose(file);
+        std::remove(path);
+        return 3;
+    }
+
+    const long materialOffset = 0x24;
+    const long model3dOffset = materialOffset + 16 + static_cast<long>(sizeof(zModel_MaterialSlot));
+    const long nodeTableOffset = model3dOffset + 12;
+    const bool headerOk = header.magic == 0x02971222 && header.version == 0x0f &&
+                          header.texDirArg == 0 && header.texDirOffset == 0x24 &&
+                          header.matlOffset == materialOffset &&
+                          header.model3dOffset == model3dOffset && header.nodeCount == 0 &&
+                          header.nodeFreeHead == 5 && header.nodeTableOffset == nodeTableOffset;
+
+    std::int32_t materialHeader[4] = {};
+    const bool materialOk = std::fseek(file, materialOffset, SEEK_SET) == 0 &&
+                            std::fread(materialHeader, sizeof(materialHeader), 1, file) == 1 &&
+                            materialHeader[0] == 1 && materialHeader[1] == 0 &&
+                            materialHeader[2] == 0 && materialHeader[3] == -1;
+
+    const bool sizeOk = std::fseek(file, 0, SEEK_END) == 0 && std::ftell(file) == nodeTableOffset;
+
+    std::fclose(file);
+    std::remove(path);
+    g_zModel_MatlPool = nullptr;
+    g_zModel_MatlPoolCapacity = 0;
+    g_zModel_MatlPoolInUseCount = 0;
+    g_zModel_MatlFreeHeadIndex = -1;
+    g_zModel_MatlActiveHeadIndex = -1;
+    g_zClass_NodeFreeHeadIndex = -1;
+    g_zClass_CurrentZbdPath[0] = '\0';
+
+    return headerOk && materialOk && sizeOk ? 0 : 4;
+}
+
+extern "C" int gamez_read_zbd_file_smoke() {
+    const char *path = "zbd_read_smoke.tmp";
+    std::remove(path);
+
+    std::strcpy(g_zClass_CurrentZbdPath, "old.zbd");
+    g_zImage_TexDirEntryCount = 0;
+
+    zModel_MaterialSlot materialSlots[1] = {};
+    g_zModel_MatlPool = materialSlots;
+    g_zModel_MatlPoolCapacity = 1;
+    g_zModel_MatlPoolInUseCount = 0;
+    g_zModel_MatlFreeHeadIndex = 0;
+    g_zModel_MatlActiveHeadIndex = -1;
+
+    g_zModel_DiPoolBase = nullptr;
+    g_zModel_DiPoolCapacity = 0;
+    g_zModel_DiPoolInUseCount = 0;
+    g_zModel_DiPoolFreeHeadIndex = -1;
+
+    g_zClass_NodeArray = nullptr;
+    g_zClass_NodeArraySize = 0;
+    g_zClass_NodeFreeHeadIndex = 5;
+    g_zClass_NodeList_PendingFreeHead = nullptr;
+
+    if (GameZ::WriteZBDFile(path) != 0) {
+        std::remove(path);
+        return 1;
+    }
+
+    std::strcpy(g_zClass_CurrentZbdPath, "before-read.zbd");
+    g_zModel_MatlPool = nullptr;
+    g_zModel_MatlPoolCapacity = 0;
+    g_zModel_MatlPoolInUseCount = 0;
+    g_zModel_MatlFreeHeadIndex = -1;
+    g_zModel_MatlActiveHeadIndex = -1;
+    g_zModel_DiPoolBase = nullptr;
+    g_zModel_DiPoolCapacity = -3;
+    g_zModel_DiPoolInUseCount = -4;
+    g_zModel_DiPoolFreeHeadIndex = -5;
+    g_zClass_NodeFreeHeadIndex = -6;
+
+    if (GameZ::ReadZBDFile(path) != 0) {
+        std::free(g_zModel_MatlPool);
+        g_zModel_MatlPool = nullptr;
+        std::remove(path);
+        return 2;
+    }
+
+    const bool ok = std::strcmp(g_zClass_CurrentZbdPath, path) == 0 &&
+                    g_zClass_NodeFreeHeadIndex == 5 && g_zModel_MatlPool != nullptr &&
+                    g_zModel_MatlPoolCapacity == 1 && g_zModel_MatlPoolInUseCount == 0 &&
+                    g_zModel_MatlFreeHeadIndex == 0 && g_zModel_MatlActiveHeadIndex == -1 &&
+                    g_zModel_DiPoolBase == nullptr && g_zModel_DiPoolCapacity == 0 &&
+                    g_zModel_DiPoolInUseCount == 0 && g_zModel_DiPoolFreeHeadIndex == -1;
+
+    std::free(g_zModel_MatlPool);
+    g_zModel_MatlPool = nullptr;
+    g_zModel_MatlPoolCapacity = 0;
+    g_zModel_MatlPoolInUseCount = 0;
+    g_zModel_MatlFreeHeadIndex = -1;
+    g_zModel_MatlActiveHeadIndex = -1;
+    g_zClass_NodeFreeHeadIndex = -1;
+    g_zClass_CurrentZbdPath[0] = '\0';
+    std::remove(path);
+
+    return ok ? 0 : 3;
+}
+
+extern "C" int gamez_read_retail_m1_zbd_smoke() {
+    char oldDir[MAX_PATH] = {};
+    if (!EnterSupportDirectoryForRetailZbdTest(oldDir, sizeof(oldDir))) {
+        return 1;
+    }
+
+    int result = 0;
+    const char *const path = "zbd\\m1\\gamez.zbd";
+    zClass_ZbdHeader header = {};
+    std::FILE *file = GameZ::OpenAndReadZBDHeader(path, &header);
+    if (file == nullptr) {
+        result = 2;
+        goto cleanup;
+    }
+
+    if (header.magic != 0x02971222 || header.version != 15 || header.texDirArg != 471 ||
+        header.texDirOffset != 36 || header.matlOffset != 16992 ||
+        header.model3dOffset != 237008 || header.nodeCount != 16000 ||
+        header.nodeFreeHead != 4199 || header.nodeTableOffset != 1785172) {
+        std::fclose(file);
+        file = nullptr;
+        result = 3;
+        goto cleanup;
+    }
+    std::fclose(file);
+    file = nullptr;
+
+    reset_zclass_type_lists_for_test();
+    std::memset(g_zImage_TexDirEntries, 0, sizeof(g_zImage_TexDirEntries));
+    g_zImage_TexDirEntryCount = 0;
+    g_zModel_MatlPool = nullptr;
+    g_zModel_MatlPoolCapacity = 0;
+    g_zModel_MatlPoolInUseCount = 0;
+    g_zModel_MatlFreeHeadIndex = -1;
+    g_zModel_MatlActiveHeadIndex = -1;
+    g_zModel_DiPoolBase = nullptr;
+    g_zModel_DiPoolCapacity = 0;
+    g_zModel_DiPoolInUseCount = 0;
+    g_zModel_DiPoolFreeHeadIndex = -1;
+    g_zClass_NodeArray = nullptr;
+    g_zClass_NodeArraySize = 0;
+    g_zClass_ActiveNodeCount = 0;
+    g_zClass_NodeFreeHeadIndex = -1;
+    g_zClass_CurrentZbdPath[0] = '\0';
+
+    if (GameZ::ReadZBDFile(path) != 0) {
+        result = 4;
+        goto cleanup;
+    }
+
+    if (std::strcmp(g_zClass_CurrentZbdPath, path) != 0 || g_zClass_NodeArray == nullptr ||
+        g_zClass_NodeArraySize != 16000 || g_zClass_ActiveNodeCount != 4199 ||
+        g_zClass_NodeFreeHeadIndex != 4199 || g_zImage_TexDirEntryCount != 471 ||
+        g_zModel_MatlPool == nullptr || g_zModel_MatlPoolCapacity <= 0 ||
+        g_zModel_MatlPoolInUseCount <= 0 || g_zModel_DiPoolBase == nullptr ||
+        g_zModel_DiPoolCapacity <= 0 || g_zModel_DiPoolInUseCount <= 0) {
+        result = 5;
+        goto cleanup;
+    }
+
+cleanup:
+    if (file != nullptr) {
+        std::fclose(file);
+    }
+    zModel_Display::Shutdown();
+    if (g_zClass_NodeArray != nullptr) {
+        std::free(g_zClass_NodeArray);
+    }
+    g_zClass_NodeArray = nullptr;
+    g_zClass_NodeArraySize = 0;
+    g_zClass_ActiveNodeCount = 0;
+    g_zClass_NodeFreeHeadIndex = -1;
+    g_zClass_CurrentZbdPath[0] = '\0';
+    free_zclass_type_lists_for_test();
+    SetCurrentDirectoryA(oldDir);
+    return result;
+}
+
 #undef RECOIL_ZGAME_TESTS_ZCLASS_WINDOW
 #undef RECOIL_ZGAME_TESTS_ZCLASS_TYPELIST_UPDATE
 #undef RECOIL_ZGAME_TESTS_MODEL_REF_LERP_QUEUE
@@ -2053,12 +3206,27 @@ extern "C" int zhud_triplet_panel_shutdown_items_stub_smoke(void) {
 namespace {
 int g_zmodelReleaseTextureUploadCount = 0;
 zVideo_TextureRecordPartial *g_zmodelReleaseTextureUploadLast = nullptr;
+zProjectedPoint g_zmodelDrawPointLastPoint = {};
+unsigned int g_zmodelDrawPointLastColor = 0;
+int g_zmodelDrawPointLastCount = 0;
+int g_zmodelDrawPointCallCount = 0;
 
 void __fastcall TestReleaseTextureUploadSurfaceRef(
     zVideo_TextureRecordPartial *textureRecord
 ) {
     ++g_zmodelReleaseTextureUploadCount;
     g_zmodelReleaseTextureUploadLast = textureRecord;
+}
+
+void __fastcall TestZModelDrawPointColor16(
+    zVideo_XyzVertex *point,
+    unsigned int packedColor16,
+    int pointCount
+) {
+    g_zmodelDrawPointLastPoint = *(zProjectedPoint *)(point);
+    g_zmodelDrawPointLastColor = packedColor16;
+    g_zmodelDrawPointLastCount = pointCount;
+    ++g_zmodelDrawPointCallCount;
 }
 } // namespace
 
@@ -2168,6 +3336,78 @@ extern "C" int zmodel_matl_init_globals_smoke(void) {
     return poolOk && defaultsOk ? 0 : 2;
 }
 
+extern "C" int zmodel_material_update_cycle_if_needed_smoke(void) {
+    const int savedFrameTick = g_zVideo_FrameTick;
+    const float savedFrameDeltaTimeSec = g_FrameDeltaTimeSec;
+
+    zImage_TexDirEntryPartial frameA = {};
+    zImage_TexDirEntryPartial frameB = {};
+    zImage_TexDirEntryPartial frameC = {};
+    zImage_TexDirEntryPartial *frames[3] = {&frameA, &frameB, &frameC};
+    zModel_MaterialCyclePartial cycle = {};
+    zModel_MaterialPartial material = {};
+
+    material.flags = 0x0400;
+    material.cycle = &cycle;
+    material.currentTextureDirectoryEntry = &frameA;
+    cycle.loopEnabled = 1;
+    cycle.lastUpdateFrameTick = 99;
+    cycle.currentFrame = 1.0f;
+    cycle.framesPerSecond = 2.0f;
+    cycle.frameCount = 3;
+    cycle.frameTable = frames;
+    g_zVideo_FrameTick = 100;
+    g_FrameDeltaTimeSec = 0.5f;
+
+    zModel_Material::UpdateCycleIfNeeded(&material);
+    if (material.currentTextureDirectoryEntry != &frameB ||
+        cycle.currentFrame != 2.0f ||
+        cycle.lastUpdateFrameTick != 100) {
+        g_zVideo_FrameTick = savedFrameTick;
+        g_FrameDeltaTimeSec = savedFrameDeltaTimeSec;
+        return 1;
+    }
+
+    material.currentTextureDirectoryEntry = &frameA;
+    zModel_Material::UpdateCycleIfNeeded(&material);
+    if (material.currentTextureDirectoryEntry != &frameA ||
+        cycle.currentFrame != 2.0f) {
+        g_zVideo_FrameTick = savedFrameTick;
+        g_FrameDeltaTimeSec = savedFrameDeltaTimeSec;
+        return 2;
+    }
+
+    cycle.loopEnabled = 0;
+    cycle.lastUpdateFrameTick = 100;
+    cycle.currentFrame = 2.5f;
+    cycle.framesPerSecond = 2.0f;
+    material.currentTextureDirectoryEntry = &frameA;
+    g_zVideo_FrameTick = 101;
+    zModel_Material::UpdateCycleIfNeeded(&material);
+    if (material.currentTextureDirectoryEntry != &frameC ||
+        cycle.currentFrame != 2.0f) {
+        g_zVideo_FrameTick = savedFrameTick;
+        g_FrameDeltaTimeSec = savedFrameDeltaTimeSec;
+        return 3;
+    }
+
+    cycle.loopEnabled = 1;
+    cycle.lastUpdateFrameTick = 101;
+    cycle.currentFrame = 0.0f;
+    cycle.framesPerSecond = -2.0f;
+    material.currentTextureDirectoryEntry = &frameC;
+    g_zVideo_FrameTick = 102;
+    g_FrameDeltaTimeSec = 1.0f;
+    zModel_Material::UpdateCycleIfNeeded(&material);
+    const bool negativeWrapOk =
+        material.currentTextureDirectoryEntry == &frameA &&
+        cycle.currentFrame == 4.0f;
+
+    g_zVideo_FrameTick = savedFrameTick;
+    g_FrameDeltaTimeSec = savedFrameDeltaTimeSec;
+    return negativeWrapOk ? 0 : 4;
+}
+
 extern "C" int zmodel_init_smoke(void) {
     const int savedRendererPath = g_zVideo_ActiveRendererPath;
     zDiPartial *const savedDiPool = g_zModel_DiPoolBase;
@@ -2259,10 +3499,207 @@ extern "C" int zmodel_init_smoke(void) {
     return softwareOk ? 0 : 2;
 }
 
+extern "C" int zmodel_render_node_software_flat_smoke(void) {
+    static std::int32_t matrixFlags[1] = {1};
+    static float *matrixSlots[1] = {};
+    zMat4x3 matrix{1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+                   0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f};
+    zMath::g_zMath_CameraScratchA = matrix;
+    zMath::g_zMath_CameraScratchB = matrix;
+    matrixSlots[0] = reinterpret_cast<float *>(&matrix);
+    zMath::g_currentMatrixIdentityFlagSlot = &matrixFlags[0];
+    zMath::g_currentMatrixPtrSlot = &matrixSlots[0];
+
+    g_zModel_TransformedVerts = g_zModel_SharedVec3ScratchAStorage;
+    g_zVideo_ActiveRendererPath = 0;
+    g_zMath_ProjScaleX = 10.0f;
+    g_zMath_ProjScaleY = 10.0f;
+    g_zMath_ProjOffsetX = 0.0f;
+    g_zMath_ProjOffsetY = 0.0f;
+    g_zRndr_InverseZTolerance = 0.25f;
+    g_zModel_BFETolerance = 0.0f;
+    gModel_FogEnabled = 0;
+    gModel_HasActiveLights = 0;
+    gModel_RenderAlphaScaleCurrent = 1.0f;
+    gModel_RenderVertexAlphaEnabled = 0;
+    gAltClipPassEnabled = 0;
+    gModel_SmallPolyRejectArea2x = 0.0f;
+    zRndr::g_transparentQueueCount = 0;
+    zRndr::g_overwriteQueueCount = 0;
+    zRndr::g_transparentQueue[0] = {};
+    zRndr::g_perspectiveTextureEnabled = 0;
+
+    gClipRect_Primary.xMin = -100.0f;
+    gClipRect_Primary.yMin = -100.0f;
+    gClipRect_Primary.zMin = 1.0f;
+    gClipRect_Primary.xMax = 100.0f;
+    gClipRect_Primary.yMax = 100.0f;
+    gClipRect_Primary.zMax = 1000.0f;
+    gClipRect_Primary.xMaxAlt = 100.0f;
+    gClipRect_Primary.yMaxAlt = 100.0f;
+
+    zVec3 verts[3] = {
+        {-1.0f, 0.0f, 10.0f},
+        {0.0f, 1.0f, 8.0f},
+        {1.0f, 0.0f, 10.0f},
+    };
+    int indices[3] = {0, 2, 1};
+    zModel_MaterialPartial material{};
+    material.flags = 0x80;
+    material.packedColor = 0x3456;
+    zDiEntryPartial entry{};
+    entry.flagsAndIndexCount = 3;
+    entry.drawFlags = 2;
+    entry.vertexIndices = indices;
+    entry.material = &material;
+    zDiPartial di{};
+    di.entryCount = 1;
+    di.vertCount = 3;
+    di.entries = &entry;
+    di.verts = verts;
+    zClass_NodePartial node{};
+    node.userDataOrDiRef = static_cast<std::uint32_t>(reinterpret_cast<std::uintptr_t>(&di));
+
+    zModel::RenderNodeSoftware(&node, 0x3f);
+
+    if (zRndr::g_overwriteQueueCount != 0 || zRndr::g_transparentQueueCount != 1) {
+        return 1;
+    }
+    const zRndr::TransparentQueuedPolyDrawCmd &cmd = zRndr::g_transparentQueue[0];
+    if (cmd.vertexCount != 3) {
+        return 2;
+    }
+    if (cmd.alphaOrShadeBits != 128) {
+        return 3;
+    }
+    if (cmd.shadeOrSpanMode != 0x3456) {
+        return 4;
+    }
+    if (cmd.scanConvertMode != 1) {
+        return 5;
+    }
+    if (cmd.savedInvDepthBias != 0.0f) {
+        return 6;
+    }
+    if (cmd.savedInvDepthScale < 1.499f || cmd.savedInvDepthScale > 1.501f) {
+        return 7;
+    }
+    if (zRndr::g_perspectiveTextureEnabled != 0) {
+        return 8;
+    }
+    return 0;
+}
+
+extern "C" int zmodel_render_point_queue_entry_smoke(void) {
+    const int savedRendererPath = g_zVideo_ActiveRendererPath;
+    const zVideo_DrawPointColor16Proc savedDrawPoint =
+        g_zVideo_pfnDrawPointColor16;
+    const float savedInverseZTolerance = g_zRndr_InverseZTolerance;
+    const float savedInverseDepthBias = zRndr::g_inverseDepthBias;
+    const float savedInverseDepthScale = zRndr::g_inverseDepthScale;
+    const int savedQueueCount = zRndr::g_lensFlareSampleQueueCount;
+    int *const savedMatrixFlagSlot = zMath::g_currentMatrixIdentityFlagSlot;
+    float **const savedMatrixPtrSlot = zMath::g_currentMatrixPtrSlot;
+    const float savedProjScaleX = g_zMath_ProjScaleX;
+    const float savedProjScaleY = g_zMath_ProjScaleY;
+    const float savedProjOffsetX = g_zMath_ProjOffsetX;
+    const float savedProjOffsetY = g_zMath_ProjOffsetY;
+    const float savedProjSphereRadiusScale = g_zMath_ProjSphereRadiusScale;
+    const float savedClipZMin = gClipRect_Primary.zMin;
+    const float savedClipLeft = g_zVideo_ProjectClipLeft;
+    const float savedClipTop = g_zVideo_ProjectClipTop;
+    const float savedClipRight = g_zVideo_ProjectClipRight;
+    const float savedClipBottom = g_zVideo_ProjectClipBottom;
+    int result = 0;
+
+    static int matrixFlags[1] = {1};
+    static float *matrixSlots[1] = {};
+    zMat4x3 matrix = {1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+                      0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f};
+    matrixSlots[0] = reinterpret_cast<float *>(&matrix);
+    zMath::g_currentMatrixIdentityFlagSlot = &matrixFlags[0];
+    zMath::g_currentMatrixPtrSlot = &matrixSlots[0];
+
+    g_zMath_ProjScaleX = 1.0f;
+    g_zMath_ProjScaleY = 1.0f;
+    g_zMath_ProjOffsetX = 0.0f;
+    g_zMath_ProjOffsetY = 0.0f;
+    g_zMath_ProjSphereRadiusScale = 10.0f;
+    gClipRect_Primary.zMin = 1.0f;
+    g_zVideo_ProjectClipLeft = 0.0f;
+    g_zVideo_ProjectClipTop = 0.0f;
+    g_zVideo_ProjectClipRight = 2.0f;
+    g_zVideo_ProjectClipBottom = 3.0f;
+    zRndr::g_inverseDepthBias = 0.0f;
+    zRndr::g_inverseDepthScale = 1.0f;
+    zRndr::g_lensFlareSampleQueueCount = 0;
+    g_zmodelDrawPointCallCount = 0;
+
+    zModel_PointEntryPartial entry = {};
+    zVec3 point = {10.0f, 20.0f, 10.0f};
+    g_zVideo_ActiveRendererPath = 0;
+    zModel_RenderPointQueueEntry(&point, 0x1234beef, &entry);
+    if (zRndr::g_lensFlareSampleQueueCount != 1 ||
+        zRndr::g_lensFlareSampleQueue[0].packedColor16 != 0xbeef ||
+        zRndr::g_lensFlareSampleQueue[0].x < 0.999f ||
+        zRndr::g_lensFlareSampleQueue[0].x > 1.001f ||
+        zRndr::g_lensFlareSampleQueue[0].y < 1.999f ||
+        zRndr::g_lensFlareSampleQueue[0].y > 2.001f ||
+        zRndr::g_lensFlareSampleQueue[0].reciprocalZ < 0.099f ||
+        zRndr::g_lensFlareSampleQueue[0].reciprocalZ > 0.101f) {
+        result = 1;
+        goto cleanup;
+    }
+
+    point.z = 1.0f;
+    zModel_RenderPointQueueEntry(&point, 0xbeef, &entry);
+    if (zRndr::g_lensFlareSampleQueueCount != 1) {
+        result = 2;
+        goto cleanup;
+    }
+
+    point = {10.0f, 20.0f, 10.0f};
+    entry.depthBiasWord = 2;
+    g_zRndr_InverseZTolerance = 0.5f;
+    zRndr::g_lensFlareSampleQueueCount = 0;
+    g_zVideo_ActiveRendererPath = 1;
+    g_zVideo_pfnDrawPointColor16 = TestZModelDrawPointColor16;
+    zModel_RenderPointQueueEntry(&point, 0x1ffff, &entry);
+    if (g_zmodelDrawPointCallCount != 1 ||
+        g_zmodelDrawPointLastColor != 0xffff ||
+        g_zmodelDrawPointLastCount != 1 ||
+        g_zmodelDrawPointLastPoint.reciprocalZ < 1.999f ||
+        g_zmodelDrawPointLastPoint.reciprocalZ > 2.001f ||
+        zRndr::g_lensFlareSampleQueueCount != 1) {
+        result = 3;
+    }
+
+cleanup:
+    g_zVideo_pfnDrawPointColor16 = savedDrawPoint;
+    g_zVideo_ActiveRendererPath = savedRendererPath;
+    g_zRndr_InverseZTolerance = savedInverseZTolerance;
+    zRndr::g_inverseDepthBias = savedInverseDepthBias;
+    zRndr::g_inverseDepthScale = savedInverseDepthScale;
+    zRndr::g_lensFlareSampleQueueCount = savedQueueCount;
+    zMath::g_currentMatrixIdentityFlagSlot = savedMatrixFlagSlot;
+    zMath::g_currentMatrixPtrSlot = savedMatrixPtrSlot;
+    g_zMath_ProjScaleX = savedProjScaleX;
+    g_zMath_ProjScaleY = savedProjScaleY;
+    g_zMath_ProjOffsetX = savedProjOffsetX;
+    g_zMath_ProjOffsetY = savedProjOffsetY;
+    g_zMath_ProjSphereRadiusScale = savedProjSphereRadiusScale;
+    gClipRect_Primary.zMin = savedClipZMin;
+    g_zVideo_ProjectClipLeft = savedClipLeft;
+    g_zVideo_ProjectClipTop = savedClipTop;
+    g_zVideo_ProjectClipRight = savedClipRight;
+    g_zVideo_ProjectClipBottom = savedClipBottom;
+    return result;
+}
+
 extern "C" int zmodel_display_init_smoke(void) {
     g_zVideo_ActiveRendererPath = 0;
     gModel_DefaultGraphicsFlags = 0;
-    g_zModel_GraphicsFlagsOption = nullptr;
+    gModel_pGraphicsFlags = nullptr;
     gModel_RenderFn = nullptr;
     gModel_ClipMaskStackTop = nullptr;
     g_Variant_CurrentTag.count = 3;
@@ -2273,11 +3710,11 @@ extern "C" int zmodel_display_init_smoke(void) {
         gModel_FogDistanceStart != 500.0f || gModel_FogDistanceEnd != 700.0f ||
         gModel_FogDistanceInvRange != 0.005f || gModel_FogHeightHigh != 300.0f ||
         gModel_FogHeightLow != 200.0f || gModel_FogHeightInvRange != 0.01f ||
-        gModel_FogDensity != 2.0f || g_zModel_InverseZTolerance != 0.01f ||
+        gModel_FogDensity != 2.0f || g_zRndr_InverseZTolerance != 0.01f ||
         gModel_RenderFn != zModel::RenderNodeSoftware ||
         gModel_ClipMaskStackTop != gModel_ClipMaskStack ||
         gModel_DefaultGraphicsFlags != -1 ||
-        g_zModel_GraphicsFlagsOption != &gModel_DefaultGraphicsFlags ||
+        gModel_pGraphicsFlags != &gModel_DefaultGraphicsFlags ||
         g_Variant_CurrentTag.count != 0 || g_Variant_CurrentTag.tags[0] != 0xff) {
         return 1;
     }
@@ -2288,16 +3725,16 @@ extern "C" int zmodel_display_init_smoke(void) {
     option.next = nullptr;
     g_zGame_Options_OptionListHead = &option;
     g_zVideo_ActiveRendererPath = 1;
-    g_zModel_HardwareInverseZTolerance = 0.0f;
-    g_zModel_GraphicsFlagsOption = nullptr;
+    g_zVideo_InverseZTolerancePending = 0.0f;
+    gModel_pGraphicsFlags = nullptr;
 
     const bool hardwareOk =
         zModel_Display_Init() == 0 &&
-        g_zModel_InverseZTolerance == 0.02f &&
-        g_zModel_HardwareInverseZTolerance == 0.02f &&
+        g_zRndr_InverseZTolerance == 0.02f &&
+        g_zVideo_InverseZTolerancePending == 0.02f &&
         gModel_RenderFn == zModel::RenderNodeSoftware &&
         gModel_ClipMaskStackTop == gModel_ClipMaskStack &&
-        g_zModel_GraphicsFlagsOption == &option;
+        gModel_pGraphicsFlags == &option.payloadOrBuffer;
 
     g_zGame_Options_OptionListHead = nullptr;
     g_zVideo_ActiveRendererPath = 0;
@@ -2811,6 +4248,14 @@ void ClearSmokeRecoilAppQueue(RecoilApp_StateQueue &queue) {
     std::memset(&queue, 0, sizeof(queue));
 }
 
+int g_smokeHudCmdDialogStateQueueEnterOnEnterCount;
+
+struct SmokeHudCmdDialogStateQueueEnterState : RecoilApp_IState {
+    void OnEnter() {
+        ++g_smokeHudCmdDialogStateQueueEnterOnEnterCount;
+    }
+};
+
 bool HudUiControlsCommandActivationQueuesDialog() {
     const RecoilApp_StateQueue savedQueue = g_RecoilApp.m_stateQueue;
     if (savedQueue.m_itemCount != 0 || savedQueue.m_chunkBaseList != 0) {
@@ -2916,6 +4361,277 @@ int __fastcall HudSensorTextureMemoryQueryMissingForSmoke(int, int *, int *) {
     return 0;
 }
 } // namespace
+
+// Local smoke copy because zhud_ui_tests.cpp is lifecycle-gated in recoil_native_smoke.
+namespace {
+int g_cursorWidgetBlitCount = 0;
+zVidImagePartial *g_cursorWidgetBlitImages[8] = {};
+std::int32_t g_cursorWidgetBlitX[8] = {};
+std::int32_t g_cursorWidgetBlitY[8] = {};
+std::int32_t g_cursorWidgetBlitFlags[8] = {};
+zVidRect32 g_cursorWidgetBlitRects[8] = {};
+std::int32_t g_cursorWidgetBlitHasRect[8] = {};
+
+void __fastcall CursorWidgetBltSourceToPrimary(
+    zVidImagePartial *self,
+    std::int32_t dstX,
+    std::int32_t dstY,
+    std::int32_t clipFlags,
+    zVidRect32 *srcRect
+) {
+    const int index = g_cursorWidgetBlitCount;
+    if (index < 8) {
+        g_cursorWidgetBlitImages[index] = self;
+        g_cursorWidgetBlitX[index] = dstX;
+        g_cursorWidgetBlitY[index] = dstY;
+        g_cursorWidgetBlitFlags[index] = clipFlags;
+        g_cursorWidgetBlitHasRect[index] = srcRect != nullptr ? 1 : 0;
+        if (srcRect != nullptr) {
+            g_cursorWidgetBlitRects[index] = *srcRect;
+        }
+    }
+    ++g_cursorWidgetBlitCount;
+}
+} // namespace
+
+extern "C" int
+zhud_background_cursor_widget_set_image_borrowed_refresh_if_changed_smoke(void) {
+    std::uint16_t surfacePixels[12] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
+    zVidImagePartial sourceImage{};
+    sourceImage.width = 2;
+    sourceImage.height = 2;
+
+    g_zVideo_SwSurfaceState = {};
+    g_zVideo_SwSurfaceState.width = 4;
+    g_zVideo_SwSurfaceState.height = 3;
+    g_zVideo_SwSurfaceState.pitch = 8;
+    g_zVideo_SwSurfaceState.pixels = surfacePixels;
+
+    HudUiBackgroundCursorWidget cursor(nullptr, 1);
+    cursor.x = 1;
+    cursor.y = 1;
+    cursor.captureEnabled = 1;
+    cursor.captureSourceSelector = 0;
+
+    cursor.SetImageBorrowedAndRefreshIfChanged(&sourceImage);
+    std::uint16_t *const capturedPixels =
+        static_cast<std::uint16_t *>(cursor.capturedImage != nullptr
+                                         ? cursor.capturedImage->pixels
+                                         : nullptr);
+    const bool refreshed =
+        cursor.image == &sourceImage &&
+        cursor.capturedImage != nullptr &&
+        cursor.bltSource == cursor.capturedImage &&
+        capturedPixels != nullptr &&
+        capturedPixels[0] == 6 &&
+        capturedPixels[1] == 7 &&
+        capturedPixels[2] == 10 &&
+        capturedPixels[3] == 11;
+
+    zVidImagePartial *const capturedBeforeNull = cursor.capturedImage;
+    cursor.SetImageBorrowedAndRefreshIfChanged(nullptr);
+    const bool nullSkippedRefresh =
+        cursor.image == nullptr &&
+        cursor.capturedImage == capturedBeforeNull &&
+        cursor.bltSource == capturedBeforeNull;
+
+    if (cursor.capturedImage != nullptr) {
+        zVid_Image::Destroy(cursor.capturedImage);
+        cursor.capturedImage = nullptr;
+    }
+
+    return refreshed && nullSkippedRefresh ? 0 : 1;
+}
+
+extern "C" int zhud_background_cursor_widget_set_capture_enabled_smoke(void) {
+    HudUiBackgroundCursorWidget cursor(nullptr, 1);
+    cursor.bltSource = reinterpret_cast<void *>(0x11111111);
+    cursor.captureEnabled = 1;
+    cursor.capturedImage = zVid_Image::Create();
+    if (cursor.capturedImage == nullptr) {
+        return 1;
+    }
+
+    zVid_Image::SetSize(cursor.capturedImage, 2, 2);
+    zVid_Image_SetPixels(cursor.capturedImage, std::malloc(8), nullptr);
+
+    cursor.SetImageOwnedAndRefresh(0);
+
+    return cursor.captureEnabled == 0 &&
+                   cursor.capturedImage == nullptr &&
+                   cursor.bltSource == nullptr
+               ? 0
+               : 1;
+}
+
+extern "C" int zhud_background_cursor_widget_set_pos_smoke(void) {
+    std::uint16_t surfacePixels[20] = {1,  2,  3,  4,  5,  6,  7,  8,  9,  10,
+                                       11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
+    zVidImagePartial sourceImage{};
+    sourceImage.width = 2;
+    sourceImage.height = 2;
+
+    g_zVideo_SwSurfaceState = {};
+    g_zVideo_SwSurfaceState.width = 5;
+    g_zVideo_SwSurfaceState.height = 4;
+    g_zVideo_SwSurfaceState.pitch = 10;
+    g_zVideo_SwSurfaceState.pixels = surfacePixels;
+
+    HudUiBackgroundCursorWidget cursor(nullptr, 1);
+    cursor.image = &sourceImage;
+    cursor.alignFlags = 1;
+    cursor.captureEnabled = 1;
+    cursor.captureSourceSelector = 0;
+    cursor.capturedImage = zVid_Image::Create();
+    if (cursor.capturedImage == nullptr) {
+        return 1;
+    }
+
+    zVid_Image::SetSize(cursor.capturedImage, 2, 2);
+    zVid_Image_SetPixels(cursor.capturedImage, std::malloc(8), nullptr);
+    cursor.capturedImage->formatFlagsPacked =
+        static_cast<unsigned char>(cursor.capturedImage->formatFlagsPacked | 0x20u);
+
+    cursor.SetPos(4, 3);
+    std::uint16_t *const capturedPixels =
+        static_cast<std::uint16_t *>(cursor.capturedImage != nullptr
+                                         ? cursor.capturedImage->pixels
+                                         : nullptr);
+    const bool ok =
+        cursor.x == 3 &&
+        cursor.y == 2 &&
+        cursor.bltSource == cursor.capturedImage &&
+        cursor.clipRect.left == 0 &&
+        cursor.clipRect.top == 0 &&
+        cursor.clipRect.right == 2 &&
+        cursor.clipRect.bottom == 2 &&
+        capturedPixels != nullptr &&
+        capturedPixels[0] == 14 &&
+        capturedPixels[1] == 15 &&
+        capturedPixels[2] == 19 &&
+        capturedPixels[3] == 20;
+
+    if (cursor.capturedImage != nullptr) {
+        zVid_Image::Destroy(cursor.capturedImage);
+        cursor.capturedImage = nullptr;
+    }
+
+    return ok ? 0 : 1;
+}
+
+extern "C" int zhud_background_cursor_widget_draw_smoke(void) {
+    zVideo_BltSourceToPrimaryProc oldBlit = g_zVideo_pfnBltSourceToPrimary;
+    zVidImagePartial *oldExclusiveImage = g_HudUiWidget_ExclusiveDrawImage;
+
+    zVidImagePartial image{};
+    zVidImagePartial capturedImage{};
+    HudUiRect foregroundClip = {1, 2, 7, 9};
+
+    HudUiBackgroundCursorWidget cursor(nullptr, 0);
+    cursor.image = &image;
+    cursor.x = 17;
+    cursor.y = 23;
+    cursor.bltSource = &capturedImage;
+    cursor.clipRect = {3, 4, 11, 13};
+    cursor.bltClipRectOrNull = &foregroundClip;
+
+    g_cursorWidgetBlitCount = 0;
+    g_zVideo_pfnBltSourceToPrimary = CursorWidgetBltSourceToPrimary;
+    g_HudUiWidget_ExclusiveDrawImage = nullptr;
+
+    cursor.Draw();
+
+    const bool ok =
+        g_cursorWidgetBlitCount == 2 &&
+        g_cursorWidgetBlitImages[0] == &capturedImage &&
+        g_cursorWidgetBlitX[0] == 17 &&
+        g_cursorWidgetBlitY[0] == 23 &&
+        g_cursorWidgetBlitFlags[0] == 0 &&
+        g_cursorWidgetBlitHasRect[0] == 1 &&
+        g_cursorWidgetBlitRects[0].left == 3 &&
+        g_cursorWidgetBlitRects[0].top == 4 &&
+        g_cursorWidgetBlitRects[0].right == 11 &&
+        g_cursorWidgetBlitRects[0].bottom == 13 &&
+        g_cursorWidgetBlitImages[1] == &image &&
+        g_cursorWidgetBlitX[1] == 17 &&
+        g_cursorWidgetBlitY[1] == 23 &&
+        g_cursorWidgetBlitFlags[1] == 0 &&
+        g_cursorWidgetBlitHasRect[1] == 1 &&
+        g_cursorWidgetBlitRects[1].left == 1 &&
+        g_cursorWidgetBlitRects[1].top == 2 &&
+        g_cursorWidgetBlitRects[1].right == 7 &&
+        g_cursorWidgetBlitRects[1].bottom == 9;
+
+    g_zVideo_pfnBltSourceToPrimary = oldBlit;
+    g_HudUiWidget_ExclusiveDrawImage = oldExclusiveImage;
+    return ok ? 0 : 1;
+}
+
+extern "C" int zhud_background_cursor_widget_draw_base_smoke(void) {
+    zVideo_BltSourceToPrimaryProc oldBlit = g_zVideo_pfnBltSourceToPrimary;
+
+    zVidImagePartial capturedImage{};
+
+    HudUiBackgroundCursorWidget cursor(nullptr, 0);
+    cursor.x = 17;
+    cursor.y = 23;
+    cursor.clipRect = {3, 4, 11, 13};
+
+    g_cursorWidgetBlitCount = 0;
+    g_zVideo_pfnBltSourceToPrimary = CursorWidgetBltSourceToPrimary;
+    cursor.DrawBase();
+    const bool nullSkipped = g_cursorWidgetBlitCount == 0;
+
+    cursor.bltSource = &capturedImage;
+    cursor.DrawBase();
+    const bool blitted =
+        g_cursorWidgetBlitCount == 1 &&
+        g_cursorWidgetBlitImages[0] == &capturedImage &&
+        g_cursorWidgetBlitX[0] == 17 &&
+        g_cursorWidgetBlitY[0] == 23 &&
+        g_cursorWidgetBlitFlags[0] == 0 &&
+        g_cursorWidgetBlitHasRect[0] == 1 &&
+        g_cursorWidgetBlitRects[0].left == 3 &&
+        g_cursorWidgetBlitRects[0].top == 4 &&
+        g_cursorWidgetBlitRects[0].right == 11 &&
+        g_cursorWidgetBlitRects[0].bottom == 13;
+
+    g_zVideo_pfnBltSourceToPrimary = oldBlit;
+    return nullSkipped && blitted ? 0 : 1;
+}
+
+extern "C" int zhud_cmd_dialog_state_queue_enter_smoke(void) {
+    unsigned char oldApp[sizeof(g_RecoilApp)];
+    unsigned char oldState[sizeof(g_HudCmdDialogState)];
+    std::memcpy(oldApp, &g_RecoilApp, sizeof(oldApp));
+    std::memcpy(oldState, &g_HudCmdDialogState, sizeof(oldState));
+
+    SmokeHudCmdDialogStateQueueEnterState testState;
+    std::memset(&g_RecoilApp, 0, sizeof(g_RecoilApp));
+    g_RecoilApp.m_currentStateIndex = -1;
+    *reinterpret_cast<void **>(&g_HudCmdDialogState) =
+        *reinterpret_cast<void **>(&testState);
+    g_smokeHudCmdDialogStateQueueEnterOnEnterCount = 0;
+
+    HudCmdDialogState::QueueEnter();
+
+    RecoilApp_StateQueue &queue = g_RecoilApp.m_stateQueue;
+    RecoilApp_StateQueueItem *const item =
+        queue.m_readBlock.m_cursor != 0 ? queue.m_readBlock.m_cursor[0] : 0;
+    const bool queued =
+        queue.m_itemCount == 1 &&
+        g_smokeHudCmdDialogStateQueueEnterOnEnterCount == 1 &&
+        item != 0 &&
+        item->m_kind == RecoilApp_StateQueueKind_PushState &&
+        item->m_stateObj == &g_HudCmdDialogState &&
+        item->m_param == 0;
+
+    ClearSmokeRecoilAppQueue(queue);
+    std::memcpy(&g_RecoilApp, oldApp, sizeof(oldApp));
+    std::memcpy(&g_HudCmdDialogState, oldState, sizeof(oldState));
+
+    return queued ? 0 : 1;
+}
 
 extern "C" int hud_sensor_tracker_load_race_checkpoint_meta_smoke() {
     zArchiveList *const oldMountedList = g_zArchive_MountedList;
@@ -24216,6 +25932,8 @@ int main(int argc, char **argv) {
         {"gamenet_wait_for_local_player_color_index_smoke",
          gamenet_wait_for_local_player_color_index_smoke},
         {"net_format_ipv4_address_smoke", net_format_ipv4_address_smoke},
+        {"netui_verify_winsock2_or_prompt_continue_smoke",
+         netui_verify_winsock2_or_prompt_continue_smoke},
         {"net_session_browser_dialog_constructor_smoke",
          net_session_browser_dialog_constructor_smoke},
         {"net_session_browser_dialog_scalar_deleting_dtor_smoke",
@@ -24938,10 +26656,12 @@ int main(int argc, char **argv) {
          zfmv_action_image_lifecycle_smoke},
         {"zfmv_action_fade_constructor_smoke",
          zfmv_action_fade_constructor_smoke},
-        {"zfmv_action_play_avi_constructor_existing_file_smoke",
-         zfmv_action_play_avi_constructor_existing_file_smoke},
-        {"zfmv_action_play_avi_constructor_drive_fallback_smoke",
-         zfmv_action_play_avi_constructor_drive_fallback_smoke},
+        {"zfmv_action_fade_begin_smoke",
+         zfmv_action_fade_begin_smoke},
+        {"zfmv_action_fade_update_smoke",
+         zfmv_action_fade_update_smoke},
+        {"zfmv_action_fade_end_smoke",
+         zfmv_action_fade_end_smoke},
         {"zfmv_playback_constructor_smoke", zfmv_playback_constructor_smoke},
         {"zfmv_playback_destructor_smoke", zfmv_playback_destructor_smoke},
         {"zfmv_playback_report_mci_error_smoke",
@@ -24949,6 +26669,26 @@ int main(int argc, char **argv) {
         {"zfmv_playback_open_and_play_smoke", zfmv_playback_open_and_play_smoke},
         {"zfmv_playback_stop_and_close_smoke", zfmv_playback_stop_and_close_smoke},
         {"zfmv_playback_set_dest_rect_smoke", zfmv_playback_set_dest_rect_smoke},
+        {"zfmv_action_play_avi_lifecycle_smoke",
+         zfmv_action_play_avi_lifecycle_smoke},
+        {"zfmv_action_play_avi_update_smoke",
+         zfmv_action_play_avi_update_smoke},
+        {"zfmv_action_play_avi_begin_end_smoke",
+         zfmv_action_play_avi_begin_end_smoke},
+        {"zfmv_stream_destructor_empty_smoke",
+         zfmv_stream_destructor_empty_smoke},
+        {"zfmv_stream_constructor_missing_file_smoke",
+         zfmv_stream_constructor_missing_file_smoke},
+        {"zfmv_stream_constructor_success_smoke",
+         zfmv_stream_constructor_success_smoke},
+        {"zfmv_stream_open_audio_missing_file_smoke",
+         zfmv_stream_open_audio_missing_file_smoke},
+        {"zfmv_stream_init_missing_file_smoke",
+         zfmv_stream_init_missing_file_smoke},
+        {"zfmv_stream_fill_audio_buffer_smoke",
+         zfmv_stream_fill_audio_buffer_smoke},
+        {"zfmv_stream_read_and_decode_frame_smoke",
+         zfmv_stream_read_and_decode_frame_smoke},
         {"zfmv_action_play_mci_constructor_smoke",
          zfmv_action_play_mci_constructor_smoke},
         {"zfmv_action_blur_constructor_smoke",
@@ -25083,6 +26823,8 @@ int main(int argc, char **argv) {
          recoil_app_mfc_ole_module_destructor_smoke},
         {"recoil_app_constructor_destructor_smoke",
          recoil_app_constructor_destructor_smoke},
+        {"recoil_app_init_std_log_files_smoke",
+         recoil_app_init_std_log_files_smoke},
         {"czgame_frame_constructor_smoke", czgame_frame_constructor_smoke},
         {"czgame_frame_create_object_smoke", czgame_frame_create_object_smoke},
         {"czgame_frame_destructor_smoke", czgame_frame_destructor_smoke},
@@ -25181,6 +26923,8 @@ int main(int argc, char **argv) {
          recoil_state_main_menu_transition_set_deferred_video_mode_index_smoke},
         {"recoil_state_main_menu_transition_queue_enter_smoke",
          recoil_state_main_menu_transition_queue_enter_smoke},
+        {"recoil_state_main_menu_transition_on_try_become_current_smoke",
+         recoil_state_main_menu_transition_on_try_become_current_smoke},
         {"hud_ui_main_menu_dialog_constructor_smoke",
          hud_ui_main_menu_dialog_constructor_smoke},
         {"recoil_state_cheat_code_constructor_smoke",
@@ -25249,6 +26993,10 @@ int main(int argc, char **argv) {
          hud_ui_save_game_dialog_init_layout_smoke},
         {"hud_ui_main_menu_dialog_save_load_checks_smoke",
          hud_ui_main_menu_dialog_save_load_checks_smoke},
+        {"recoil_state_save_load_transition_on_try_become_current_smoke",
+         recoil_state_save_load_transition_on_try_become_current_smoke},
+        {"recoil_state_save_load_transition_on_deactivate_smoke",
+         recoil_state_save_load_transition_on_deactivate_smoke},
         {"zarchive_list_get_at_smoke", zarchive_list_get_at_smoke},
         {"zarchive_list_get_count_smoke", zarchive_list_get_count_smoke},
         {"zutil_zar_register_section_handler_smoke",
@@ -25353,6 +27101,8 @@ int main(int argc, char **argv) {
          hud_ui_net_game_setup_prev_world_button_smoke},
         {"hud_ui_net_game_setup_overlay_owner_on_try_smoke",
          hud_ui_net_game_setup_overlay_owner_on_try_smoke},
+        {"hud_ui_net_game_setup_overlay_owner_on_deactivate_smoke",
+         hud_ui_net_game_setup_overlay_owner_on_deactivate_smoke},
         {"zhud_slot_destructors_smoke", zhud_slot_destructors_smoke},
         {"zhud_slot_draw_smoke", zhud_slot_draw_smoke},
         {"zhud_triplet_panel_constructor_smoke",
@@ -25494,6 +27244,16 @@ int main(int argc, char **argv) {
          zhud_objective_update_meter_xpoints_smoke},
         {"zhud_objective_show_smoke", zhud_objective_show_smoke},
         {"zhud_objective_begin_smoke", zhud_objective_begin_smoke},
+        {"zhud_objective_tick_meter_fill_animation_smoke",
+         zhud_objective_tick_meter_fill_animation_smoke},
+        {"zhud_objective_start_hide_smoke", zhud_objective_start_hide_smoke},
+        {"zhud_timed_task_remove_from_active_list_smoke",
+         zhud_timed_task_remove_from_active_list_smoke},
+        {"zhud_timed_task_run_immediate_action_smoke",
+         zhud_timed_task_run_immediate_action_smoke},
+        {"zhud_timed_task_tick_active_list_smoke",
+         zhud_timed_task_tick_active_list_smoke},
+        {"zhud_mgr_update_frame_smoke", zhud_mgr_update_frame_smoke},
         {"hud_ui_aux_overlay_text_lines_smoke",
          hud_ui_aux_overlay_text_lines_smoke},
         {"zhud_loading_checkpoint_init_table_smoke",
@@ -25511,8 +27271,18 @@ int main(int argc, char **argv) {
          zhud_mgr_project_point_to_normalized_clamped_smoke},
         {"zhud_mgr_sensor_set_shield_message_ratio_smoke",
          zhud_mgr_sensor_set_shield_message_ratio_smoke},
+        {"zhud_mgr_sensor_block_destructor_smoke",
+         zhud_mgr_sensor_block_destructor_smoke},
         {"zhud_mgr_hide_tracked_progress_meter_if_owner_matches_smoke",
          zhud_mgr_hide_tracked_progress_meter_if_owner_matches_smoke},
+        {"zhud_mgr_target_update_selected_progress_meter_smoke",
+         zhud_mgr_target_update_selected_progress_meter_smoke},
+        {"zhud_mgr_sensor_place_track_counter_widget_smoke",
+         zhud_mgr_sensor_place_track_counter_widget_smoke},
+        {"zhud_mgr_sensor_place_track_marker_smoke",
+         zhud_mgr_sensor_place_track_marker_smoke},
+        {"zhud_mgr_sensor_update_markers_and_progress_smoke",
+         zhud_mgr_sensor_update_markers_and_progress_smoke},
         {"zhud_mgr_init_layouts_reentry_smoke",
          zhud_mgr_init_layouts_reentry_smoke},
         {"zhud_mgr_ensure_hud_loaded_minimal_smoke",
@@ -25591,14 +27361,32 @@ int main(int argc, char **argv) {
          zhud_background_cursor_widget_member_constructor_smoke},
         {"zhud_background_cursor_widget_rebuild_captured_image_smoke",
          zhud_background_cursor_widget_rebuild_captured_image_smoke},
+        {"zhud_background_cursor_widget_set_image_borrowed_refresh_if_changed_smoke",
+         zhud_background_cursor_widget_set_image_borrowed_refresh_if_changed_smoke},
         {"zhud_background_cursor_widget_set_image_borrowed_refresh_smoke",
          zhud_background_cursor_widget_set_image_borrowed_refresh_smoke},
         {"zhud_background_cursor_widget_set_image_by_path_owned_refresh_smoke",
          zhud_background_cursor_widget_set_image_by_path_owned_refresh_smoke},
+        {"zhud_background_cursor_widget_set_capture_enabled_smoke",
+         zhud_background_cursor_widget_set_capture_enabled_smoke},
+        {"zhud_background_cursor_widget_set_pos_smoke",
+         zhud_background_cursor_widget_set_pos_smoke},
+        {"zhud_background_cursor_widget_draw_smoke",
+         zhud_background_cursor_widget_draw_smoke},
+        {"zhud_background_cursor_widget_draw_base_smoke",
+         zhud_background_cursor_widget_draw_base_smoke},
         {"zhud_background_video_widget_constructor_smoke",
          zhud_background_video_widget_constructor_smoke},
         {"zhud_background_video_widget_destructor_smoke",
          zhud_background_video_widget_destructor_smoke},
+        {"zhud_background_video_widget_update_smoke",
+         zhud_background_video_widget_update_smoke},
+        {"zhud_background_video_widget_draw_smoke",
+         zhud_background_video_widget_draw_smoke},
+        {"zhud_background_video_widget_draw_base_smoke",
+         zhud_background_video_widget_draw_base_smoke},
+        {"zhud_background_video_widget_rebuild_blt_rect_smoke",
+         zhud_background_video_widget_rebuild_blt_rect_smoke},
         {"zhud_play_powerup_sfx_smoke", zhud_play_powerup_sfx_smoke},
         {"zhud_background_constructor_smoke", zhud_background_constructor_smoke},
         {"zhud_background_update_input_focus_smoke",
@@ -25606,10 +27394,13 @@ int main(int argc, char **argv) {
         {"zhud_background_set_enabled_smoke", zhud_background_set_enabled_smoke},
         {"zhud_text_label_constructor_and_extents_smoke",
          zhud_text_label_constructor_and_extents_smoke},
+        {"zhud_text_label_on_draw_smoke", zhud_text_label_on_draw_smoke},
+        {"zhud_text_label_hit_test_smoke", zhud_text_label_hit_test_smoke},
         {"zhud_panel_constructor_default_smoke", zhud_panel_constructor_default_smoke},
         {"zhud_panel_copy_construct_core_smoke", zhud_panel_copy_construct_core_smoke},
         {"zhud_panel_draw_smoke", zhud_panel_draw_smoke},
         {"zhud_panel_set_font_smoke", zhud_panel_set_font_smoke},
+        {"zhud_panel_set_clip_smoke", zhud_panel_set_clip_smoke},
         {"zhud_panel_set_text_fmt_smoke", zhud_panel_set_text_fmt_smoke},
         {"zhud_panel_query_text_height_smoke",
          zhud_panel_query_text_height_smoke},
@@ -25811,6 +27602,8 @@ int main(int argc, char **argv) {
          zhud_cmd_dialog_scalar_deleting_destructor_smoke},
         {"zhud_cmd_dialog_state_lifecycle_smoke",
          zhud_cmd_dialog_state_lifecycle_smoke},
+        {"zhud_cmd_dialog_state_queue_enter_smoke",
+         zhud_cmd_dialog_state_queue_enter_smoke},
         {"zhud_cmd_dialog_state_on_try_become_current_smoke",
          zhud_cmd_dialog_state_on_try_become_current_smoke},
         {"zhud_cmd_dialog_state_on_deactivate_smoke",
@@ -25834,6 +27627,10 @@ int main(int argc, char **argv) {
          hud_sensor_tracker_draw_diamond_marker_smoke},
         {"hud_sensor_tracker_save_marker_leaf_smoke",
          hud_sensor_tracker_save_marker_leaf_smoke},
+        {"hud_sensor_tracker_save_state_marker_smoke",
+         hud_sensor_tracker_save_state_marker_smoke},
+        {"hud_sensor_tracker_update_smoke",
+         hud_sensor_tracker_update_smoke},
         {"hud_sensor_tracker_update_map_scale_lerp_smoke",
          hud_sensor_tracker_update_map_scale_lerp_smoke},
         {"hud_sensor_tracker_project_world_points_smoke",
@@ -25852,10 +27649,33 @@ int main(int argc, char **argv) {
          hud_sensor_shutdown_mission_gameplay_systems_early_smoke},
         {"hud_sensor_run_start_anims_from_zrd_smoke",
          hud_sensor_run_start_anims_from_zrd_smoke},
+        {"hud_sensor_tracker_constructor_smoke",
+         hud_sensor_tracker_constructor_smoke},
+        {"hud_sensor_tracker_construct_global_smoke",
+         hud_sensor_tracker_construct_global_smoke},
+        {"hud_sensor_tracker_shutdown_global_smoke",
+         hud_sensor_tracker_shutdown_global_smoke},
+        {"hud_sensor_tracker_register_global_on_exit_smoke",
+         hud_sensor_tracker_register_global_on_exit_smoke},
+        {"mission_init_objectives_smoke", mission_init_objectives_smoke},
+        {"hud_sensor_tracker_write_mission_data_section_smoke",
+         hud_sensor_tracker_write_mission_data_section_smoke},
+        {"hud_sensor_register_mission_sections_smoke",
+         hud_sensor_register_mission_sections_smoke},
+        {"hud_sensor_tracker_zar_mission_save_callback_smoke",
+         hud_sensor_tracker_zar_mission_save_callback_smoke},
+        {"hud_sensor_tracker_zar_mission_late_save_callback_smoke",
+         hud_sensor_tracker_zar_mission_late_save_callback_smoke},
+        {"hud_sensor_tracker_apply_mission_data_smoke",
+         hud_sensor_tracker_apply_mission_data_smoke},
+        {"hud_sensor_zar_mission_late_restore_callback_smoke",
+         hud_sensor_zar_mission_late_restore_callback_smoke},
         {"hud_sensor_tracker_shutdown_smoke",
          hud_sensor_tracker_shutdown_smoke},
         {"hud_sensor_find_first_incomplete_objective_smoke",
          hud_sensor_find_first_incomplete_objective_smoke},
+        {"hud_sensor_objective_marker_enable_color_smoke",
+         hud_sensor_objective_marker_enable_color_smoke},
         {"hud_sensor_objective_slot_reset_smoke",
          hud_sensor_objective_slot_reset_smoke},
         {"hud_sensor_tracker_unload_objectives_smoke",
@@ -25877,6 +27697,7 @@ int main(int argc, char **argv) {
         {"hud_sensor_tracker_load_mission_core_resources_smoke",
          hud_sensor_tracker_load_mission_core_resources_smoke},
         {"zhud_sensor_viewport_rect_smoke", zhud_sensor_viewport_rect_smoke},
+        {"zhud_sensor_get_fx_rect_smoke", zhud_sensor_get_fx_rect_smoke},
         {"zhud_sensor_track_list_add_smoke", zhud_sensor_track_list_add_smoke},
         {"zhud_std_ptr_vector_clear_no_op_destroy_smoke",
          zhud_std_ptr_vector_clear_no_op_destroy_smoke},
@@ -26114,6 +27935,20 @@ int main(int argc, char **argv) {
         {"zclass_type_list_alloc_and_insert_smoke",
          zclass_type_list_alloc_and_insert_smoke},
         {"zclass_zbd_leaf_helpers_smoke", zclass_zbd_leaf_helpers_smoke},
+        {"zclass_zbd_node_ref_list_indices_smoke",
+         zclass_zbd_node_ref_list_indices_smoke},
+        {"zclass_zbd_single_node_class_data_smoke",
+         zclass_zbd_single_node_class_data_smoke},
+        {"zclass_zbd_write_node_table_smoke",
+         zclass_zbd_write_node_table_smoke},
+        {"gamez_write_zbd_file_smoke", gamez_write_zbd_file_smoke},
+        {"zclass_zbd_read_single_node_class_data_smoke",
+         zclass_zbd_read_single_node_class_data_smoke},
+        {"zclass_zbd_read_node_table_smoke",
+         zclass_zbd_read_node_table_smoke},
+        {"gamez_read_zbd_file_smoke", gamez_read_zbd_file_smoke},
+        {"gamez_read_retail_m1_zbd_smoke",
+         gamez_read_retail_m1_zbd_smoke},
         {"zclass_alloc_node_from_free_list_smoke",
          zclass_alloc_node_from_free_list_smoke},
         {"zclass_node_free_and_deferred_work_smoke",
@@ -26156,6 +27991,17 @@ int main(int argc, char **argv) {
          zclass_object3d_child_wrappers_smoke},
         {"zclass_remove_dispatch_smoke", zclass_remove_dispatch_smoke},
         {"zclass_node_world_child_smoke", zclass_node_world_child_smoke},
+        {"zclass_world_new_smoke", zclass_world_new_smoke},
+        {"zclass_world_virtual_partition_statics_smoke",
+         zclass_world_virtual_partition_statics_smoke},
+        {"zclass_world_set_origin_smoke", zclass_world_set_origin_smoke},
+        {"zclass_world_set_size_smoke", zclass_world_set_size_smoke},
+        {"zclass_world_set_virtual_area_partition_smoke",
+         zclass_world_set_virtual_area_partition_smoke},
+        {"zclass_world_partition_tolerance_smoke",
+         zclass_world_partition_tolerance_smoke},
+        {"zclass_world_max_dec_features_smoke",
+         zclass_world_max_dec_features_smoke},
         {"zclass_world_add_child_at_grid_smoke",
          zclass_world_add_child_at_grid_smoke},
         {"zclass_world_free_virtual_area_partitions_smoke",
@@ -26168,6 +28014,8 @@ int main(int argc, char **argv) {
          zclass_world_ensure_grid_cell_display_position_smoke},
         {"zclass_world_apply_pending_fog_settings_smoke",
          zclass_world_apply_pending_fog_settings_smoke},
+        {"zclass_world_settings_section_callbacks_smoke",
+         zclass_world_settings_section_callbacks_smoke},
         {"zclass_world_get_area_partition_at_grid_smoke",
          zclass_world_get_area_partition_at_grid_smoke},
         {"zclass_world_to_grid_coords_clamped_smoke",
@@ -26188,10 +28036,18 @@ int main(int argc, char **argv) {
         {"zclass_window_new_smoke", zclass_window_new_smoke},
         {"zclass_display_init_smoke", zclass_display_init_smoke},
         {"zclass_lod_leaf_smoke", zclass_lod_leaf_smoke},
+        {"zclass_camera_convex_hull_xz_smoke",
+         zclass_camera_convex_hull_xz_smoke},
         {"zclass_camera_view_distance_smoke",
          zclass_camera_view_distance_smoke},
+        {"zclass_camera_build_frustum_grid_tiles_from_params_smoke",
+         zclass_camera_build_frustum_grid_tiles_from_params_smoke},
+        {"zclass_camera_build_frustum_grid_tiles_smoke",
+         zclass_camera_build_frustum_grid_tiles_smoke},
         {"zclass_camera_render_frustum_grid_tiles_smoke",
          zclass_camera_render_frustum_grid_tiles_smoke},
+        {"zclass_camera_render_overlay_nodes_smoke",
+         zclass_camera_render_overlay_nodes_smoke},
         {"zclass_camera_render_scene_smoke",
          zclass_camera_render_scene_smoke},
         {"zclass_camera_sync_view_context_positions_smoke",
@@ -26205,7 +28061,13 @@ int main(int argc, char **argv) {
         {"zmodel_matl_init_globals_smoke", zmodel_matl_init_globals_smoke},
         {"zmodel_material_pool_entry_smoke", zmodel_material_pool_entry_smoke},
         {"zmodel_material_and_di_clone_smoke", zmodel_material_and_di_clone_smoke},
+        {"zmodel_material_update_cycle_if_needed_smoke",
+         zmodel_material_update_cycle_if_needed_smoke},
         {"zmodel_init_smoke", zmodel_init_smoke},
+        {"zmodel_render_node_software_flat_smoke",
+         zmodel_render_node_software_flat_smoke},
+        {"zmodel_render_point_queue_entry_smoke",
+         zmodel_render_point_queue_entry_smoke},
         {"zmodel_display_init_smoke", zmodel_display_init_smoke},
         {"zmodel_display_shutdown_smoke", zmodel_display_shutdown_smoke},
         {"zmodel_set_software_path_active_smoke",
@@ -26314,6 +28176,10 @@ int main(int argc, char **argv) {
          zclass_typelist_update_sequences_smoke},
         {"zclass_typelist_update_animations_smoke",
          zclass_typelist_update_animations_smoke},
+        {"zclass_animate_update_smoke", zclass_animate_update_smoke},
+        {"zclass_sequence_new_add_child_smoke",
+         zclass_sequence_new_add_child_smoke},
+        {"zclass_sequence_update_smoke", zclass_sequence_update_smoke},
         {"zclass_gwnode_update_all_smoke", zclass_gwnode_update_all_smoke},
         {"zclass_cls_di_point_query_chain_smoke",
          zclass_cls_di_point_query_chain_smoke},

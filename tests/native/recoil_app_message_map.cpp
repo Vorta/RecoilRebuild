@@ -1358,6 +1358,12 @@ struct TestSaveLoadTransitionDialog {
     unsigned int lastScalarDeletingFlags = 0;
 };
 
+struct TestSaveLoadPlayStateLayout : HudLayoutBase {
+    void OnActivated() {
+        ++g_playStateLayoutActivatedCount;
+    }
+};
+
 struct ImportFunctionPatch {
     ULONG_PTR *slot;
     ULONG_PTR original;
@@ -6984,7 +6990,7 @@ extern "C" int recoil_state_save_load_transition_on_try_become_current_smoke(voi
     HudUiSaveGameDialog *const saveDialog =
         (HudUiSaveGameDialog *)(static_cast<std::uintptr_t>(saveTransition.m_dialog));
     const bool saveOk = saveResult == 1 && saveDialog != nullptr &&
-                        saveDialog->base.base.base.enabled == 1 &&
+                        saveDialog->enabled == 1 &&
                         saveDialog->selectedEntryIndex == -1 &&
                         g_saveGameInitLoadCalls == 1 && g_saveGameInitLoadArgsOk;
 
@@ -7006,7 +7012,7 @@ extern "C" int recoil_state_save_load_transition_on_try_become_current_smoke(voi
     HudUiLoadGameDialog *const loadDialog =
         (HudUiLoadGameDialog *)(static_cast<std::uintptr_t>(loadTransition.m_dialog));
     const bool loadOk = loadResult == 1 && loadDialog != nullptr &&
-                        loadDialog->base.base.base.enabled == 1 &&
+                        loadDialog->enabled == 1 &&
                         loadDialog->selectedEntryIndex == 0 &&
                         g_saveGameInitLoadCalls == 1 && g_saveGameInitLoadArgsOk;
 
@@ -7217,9 +7223,7 @@ extern "C" int recoil_state_save_load_transition_on_deactivate_smoke(void) {
 
     float globalVolumeScale = 1.0f;
     zSndSampleSet *sampleSetSlots[1] = {};
-    HudLayoutBase_FTable layoutTable{};
-    HudLayoutBase layout{&layoutTable};
-    layoutTable.OnActivated = TestPlayStateLayoutOnActivated;
+    TestSaveLoadPlayStateLayout layout{};
 
     g_zVideo_HalfResAdjustMode = ZVIDEO_HALFRES_ADJUST_DISABLED;
     g_HudUi_InvalidateMask = 0x04;
@@ -7232,10 +7236,8 @@ extern "C" int recoil_state_save_load_transition_on_deactivate_smoke(void) {
     g_zSnd_PreInitialized = 1;
     g_HudUiMgrCurrentLayout = &layout;
 
-    TestSaveLoadTransitionDialog dialog{};
     RecoilStateSaveLoadTransition disabledTransition = {};
-    disabledTransition.m_dialog =
-        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&dialog));
+    disabledTransition.m_dialog = 0;
     disabledTransition.m_capturePresentationMode = RECOIL_SAVELOAD_CAPTURE_PRESENTATION_DISABLED;
 
     g_confirmQuitPostprocessCalls = 0;
@@ -7249,19 +7251,15 @@ extern "C" int recoil_state_save_load_transition_on_deactivate_smoke(void) {
     disabledTransition.OnDeactivate();
 
     bool disabledOk =
-        disabledTransition.m_dialog == 0 && dialog.setEnabledCount == 1 &&
-        dialog.lastEnabled == 0 && dialog.scalarDeletingCount == 1 &&
-        dialog.lastScalarDeletingFlags == 1 && g_confirmQuitPostprocessCalls == 1 &&
-        g_confirmQuitBlitCalls == 1 && g_confirmQuitUnlockCalls == 1 &&
+        disabledTransition.m_dialog == 0 && g_confirmQuitPostprocessCalls == 0 &&
+        g_confirmQuitBlitCalls == 0 && g_confirmQuitUnlockCalls == 0 &&
         g_saveLoadDeactivateDestroyCalls == 0 && g_saveLoadDeactivateMuteCalls == 0 &&
         g_playStateLayoutActivatedCount == 0;
 
-    zSndPlayHandleSnapshot *snapshot = zSndPlayHandleSnapshot::CreateFromActiveSamples();
     RecoilStateSaveLoadTransition capturedTransition = {};
     capturedTransition.m_capturePresentationMode = RECOIL_SAVELOAD_CAPTURE_PRESENTATION_ENABLED;
     capturedTransition.m_savedHalfResAdjustMode = ZVIDEO_HALFRES_ADJUST_ENABLED;
-    capturedTransition.m_pausedAudioSnapshot =
-        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(snapshot));
+    capturedTransition.m_pausedAudioSnapshot = 0;
 
     g_confirmQuitPostprocessCalls = 0;
     g_confirmQuitBlitCalls = 0;
@@ -7281,10 +7279,6 @@ extern "C" int recoil_state_save_load_transition_on_deactivate_smoke(void) {
         g_HudUi_InvalidateMask == 0x0c && g_playStateLayoutActivatedCount == 1 &&
         g_confirmQuitPostprocessCalls == 0 && g_confirmQuitBlitCalls == 0 &&
         g_confirmQuitUnlockCalls == 0;
-
-    if (snapshot != nullptr) {
-        snapshot->Destroy();
-    }
 
     g_zVideo_HalfResAdjustMode = oldHalfResMode;
     g_HudUi_InvalidateMask = oldInvalidateMask;

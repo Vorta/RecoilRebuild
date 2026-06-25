@@ -68,6 +68,19 @@ zVidRect32 *g_fakeFmvSwToPrimaryDirectDstRect;
 int g_fakeFmvBlurByModeCount;
 zVidRect32 *g_fakeFmvBlurByModeRect;
 int g_fakeFmvBlurByModeModes[8];
+int g_fakeFmvCaptureSurfaceCount;
+int g_fakeFmvCaptureSurfaceSelector;
+zVidImagePartial *g_fakeFmvCaptureSurfaceResult;
+int g_fakeFmvReleaseImageCount;
+zVidImagePartial *g_fakeFmvReleaseImage;
+int g_fakeFmvOverlaySubmitCount;
+unsigned int g_fakeFmvOverlaySubmitColor;
+zVidRect32 *g_fakeFmvOverlaySubmitRect;
+double g_fakeFmvOverlaySubmitAlpha;
+int g_fakeFmvOverlayFlushSwCount;
+int g_fakeFmvSceneEnterCount;
+int g_fakeFmvSceneLeaveCount;
+int g_fakeFmvFlushQuadBatchCount;
 
 struct TestFmvMciOpenParams {
     DWORD_PTR callback;
@@ -252,6 +265,57 @@ void __fastcall FakeFmvBlurRegionByMode(
     }
     ++g_fakeFmvBlurByModeCount;
     g_fakeFmvBlurByModeRect = rect;
+}
+
+void __fastcall FakeFmvOverlayRectSubmit(
+    unsigned int packedColor16,
+    zVidRect32 *rectOrNull,
+    double alpha
+) {
+    ++g_fakeFmvOverlaySubmitCount;
+    g_fakeFmvOverlaySubmitColor = packedColor16;
+    g_fakeFmvOverlaySubmitRect = rectOrNull;
+    g_fakeFmvOverlaySubmitAlpha = alpha;
+}
+
+void FakeFmvOverlayRectFlushSw() {
+    ++g_fakeFmvOverlayFlushSwCount;
+}
+
+int FakeFmvSceneEnter() {
+    ++g_fakeFmvSceneEnterCount;
+    return 1;
+}
+
+int FakeFmvSceneLeave() {
+    ++g_fakeFmvSceneLeaveCount;
+    return 1;
+}
+
+void FakeFmvFlushQuadBatch() {
+    ++g_fakeFmvFlushQuadBatchCount;
+}
+
+zVidImagePartial *__fastcall FakeFmvCaptureSurfaceToImage(int selector) {
+    ++g_fakeFmvCaptureSurfaceCount;
+    g_fakeFmvCaptureSurfaceSelector = selector;
+    return g_fakeFmvCaptureSurfaceResult;
+}
+
+unsigned int FmvFloatBits(float value) {
+    unsigned int bits = 0;
+    std::memcpy(
+        &bits,
+        &value,
+        sizeof(bits)
+    );
+    return bits;
+}
+
+int __fastcall FakeFmvReleaseImageIfNotDefault(zVidImagePartial *image) {
+    ++g_fakeFmvReleaseImageCount;
+    g_fakeFmvReleaseImage = image;
+    return 1;
 }
 
 bool PatchFunctionJump(
@@ -843,6 +907,302 @@ extern "C" int zfmv_action_fade_constructor_smoke(void) {
                    action.startSec == 12.5
                ? 0
                : 1;
+}
+
+extern "C" int zfmv_action_fade_begin_smoke(void) {
+    CodeFunctionPatch capturePatch = {};
+    if (!PatchFunctionJump(
+            reinterpret_cast<void *>(&zVideo_buff_CaptureSurfaceToImage),
+            reinterpret_cast<void *>(&FakeFmvCaptureSurfaceToImage),
+            capturePatch
+        )) {
+        return 1;
+    }
+
+    zVidImagePartial image = {};
+    zFMV_ActionFade action = {};
+    action.startSec = -1.0;
+    action.capturedFrame = reinterpret_cast<void *>(0x11111111);
+    g_fakeFmvCaptureSurfaceCount = 0;
+    g_fakeFmvCaptureSurfaceSelector = 0;
+    g_fakeFmvCaptureSurfaceResult = &image;
+
+    action.Begin(12.75);
+
+    const bool ok =
+        action.capturedFrame == &image && action.startSec == 12.75 &&
+        g_fakeFmvCaptureSurfaceCount == 1 && g_fakeFmvCaptureSurfaceSelector == 1;
+
+    RestoreFunctionPatch(capturePatch);
+    return ok ? 0 : 2;
+}
+
+extern "C" int zfmv_action_fade_update_smoke(void) {
+    CodeFunctionPatch primaryPostPatch = {};
+    if (!PatchFunctionJump(
+            reinterpret_cast<void *>(&zVideo::RunPostprocessOnPrimaryBuffer),
+            reinterpret_cast<void *>(&FakeFmvRunPostprocessOnPrimaryBuffer),
+            primaryPostPatch
+        )) {
+        return 1;
+    }
+
+    CodeFunctionPatch swPostPatch = {};
+    if (!PatchFunctionJump(
+            reinterpret_cast<void *>(&zVideo::RunPostprocessOnSwBuffer),
+            reinterpret_cast<void *>(&FakeFmvRunPostprocessOnSwBuffer),
+            swPostPatch
+        )) {
+        RestoreFunctionPatch(primaryPostPatch);
+        return 2;
+    }
+
+    CodeFunctionPatch blitPatch = {};
+    if (!PatchFunctionJump(
+            reinterpret_cast<void *>(&zVid_Image::BlitToActiveTarget),
+            reinterpret_cast<void *>(&FakeFmvBlitToActiveTarget),
+            blitPatch
+        )) {
+        RestoreFunctionPatch(swPostPatch);
+        RestoreFunctionPatch(primaryPostPatch);
+        return 3;
+    }
+
+    CodeFunctionPatch unlockPrimaryPatch = {};
+    if (!PatchFunctionJump(
+            reinterpret_cast<void *>(&zVideo::Dispatch_UnlockPrimarySurfaceState),
+            reinterpret_cast<void *>(&FakeFmvDispatchUnlockPrimarySurfaceState),
+            unlockPrimaryPatch
+        )) {
+        RestoreFunctionPatch(blitPatch);
+        RestoreFunctionPatch(swPostPatch);
+        RestoreFunctionPatch(primaryPostPatch);
+        return 4;
+    }
+
+    CodeFunctionPatch unlockSwPatch = {};
+    if (!PatchFunctionJump(
+            reinterpret_cast<void *>(&zVideo::Dispatch_UnlockSwSurfaceState),
+            reinterpret_cast<void *>(&FakeFmvDispatchUnlockSwSurfaceState),
+            unlockSwPatch
+        )) {
+        RestoreFunctionPatch(unlockPrimaryPatch);
+        RestoreFunctionPatch(blitPatch);
+        RestoreFunctionPatch(swPostPatch);
+        RestoreFunctionPatch(primaryPostPatch);
+        return 5;
+    }
+
+    CodeFunctionPatch overlayPatch = {};
+    if (!PatchFunctionJump(
+            reinterpret_cast<void *>(&zRndr_OverlayRect_Submit),
+            reinterpret_cast<void *>(&FakeFmvOverlayRectSubmit),
+            overlayPatch
+        )) {
+        RestoreFunctionPatch(unlockSwPatch);
+        RestoreFunctionPatch(unlockPrimaryPatch);
+        RestoreFunctionPatch(blitPatch);
+        RestoreFunctionPatch(swPostPatch);
+        RestoreFunctionPatch(primaryPostPatch);
+        return 6;
+    }
+
+    CodeFunctionPatch overlayFlushPatch = {};
+    if (!PatchFunctionJump(
+            reinterpret_cast<void *>(&zRndr_OverlayRect_FlushSw),
+            reinterpret_cast<void *>(&FakeFmvOverlayRectFlushSw),
+            overlayFlushPatch
+        )) {
+        RestoreFunctionPatch(overlayPatch);
+        RestoreFunctionPatch(unlockSwPatch);
+        RestoreFunctionPatch(unlockPrimaryPatch);
+        RestoreFunctionPatch(blitPatch);
+        RestoreFunctionPatch(swPostPatch);
+        RestoreFunctionPatch(primaryPostPatch);
+        return 7;
+    }
+
+    CodeFunctionPatch sceneEnterPatch = {};
+    if (!PatchFunctionJump(
+            reinterpret_cast<void *>(&zVideoD3D::SceneEnter),
+            reinterpret_cast<void *>(&FakeFmvSceneEnter),
+            sceneEnterPatch
+        )) {
+        RestoreFunctionPatch(overlayFlushPatch);
+        RestoreFunctionPatch(overlayPatch);
+        RestoreFunctionPatch(unlockSwPatch);
+        RestoreFunctionPatch(unlockPrimaryPatch);
+        RestoreFunctionPatch(blitPatch);
+        RestoreFunctionPatch(swPostPatch);
+        RestoreFunctionPatch(primaryPostPatch);
+        return 8;
+    }
+
+    CodeFunctionPatch sceneLeavePatch = {};
+    if (!PatchFunctionJump(
+            reinterpret_cast<void *>(&zVideoD3D::SceneLeave),
+            reinterpret_cast<void *>(&FakeFmvSceneLeave),
+            sceneLeavePatch
+        )) {
+        RestoreFunctionPatch(sceneEnterPatch);
+        RestoreFunctionPatch(overlayFlushPatch);
+        RestoreFunctionPatch(overlayPatch);
+        RestoreFunctionPatch(unlockSwPatch);
+        RestoreFunctionPatch(unlockPrimaryPatch);
+        RestoreFunctionPatch(blitPatch);
+        RestoreFunctionPatch(swPostPatch);
+        RestoreFunctionPatch(primaryPostPatch);
+        return 9;
+    }
+
+    CodeFunctionPatch adjustPatch = {};
+    if (!PatchFunctionJump(
+            reinterpret_cast<void *>(&zVideo::AdjustSurfacesIfEnabled),
+            reinterpret_cast<void *>(&FakeFmvAdjustSurfacesIfEnabled),
+            adjustPatch
+        )) {
+        RestoreFunctionPatch(sceneLeavePatch);
+        RestoreFunctionPatch(sceneEnterPatch);
+        RestoreFunctionPatch(overlayFlushPatch);
+        RestoreFunctionPatch(overlayPatch);
+        RestoreFunctionPatch(unlockSwPatch);
+        RestoreFunctionPatch(unlockPrimaryPatch);
+        RestoreFunctionPatch(blitPatch);
+        RestoreFunctionPatch(swPostPatch);
+        RestoreFunctionPatch(primaryPostPatch);
+        return 10;
+    }
+
+    const int oldRendererPath = g_zVideo_ActiveRendererPath;
+    zVideo_FlushProc const oldFlushQuadBatch = g_zVideo_pfnFlushQuadBatch;
+    g_zVideo_pfnFlushQuadBatch = FakeFmvFlushQuadBatch;
+
+    zVidImagePartial image = {};
+    zFMV_ActionFade action = {};
+    action.capturedFrame = 0;
+    g_zVideo_ActiveRendererPath = 0;
+    g_fakeFmvPostprocessCount = 0;
+    g_fakeFmvSwPostprocessCount = 0;
+    g_fakeFmvBlitToActiveTargetCount = 0;
+    g_fakeFmvOverlaySubmitCount = 0;
+    g_fakeFmvAdjustSurfacesCount = 0;
+    const bool nullOk =
+        action.Update(11.0) == 0 && g_fakeFmvPostprocessCount == 0 &&
+        g_fakeFmvSwPostprocessCount == 0 && g_fakeFmvBlitToActiveTargetCount == 0 &&
+        g_fakeFmvOverlaySubmitCount == 0 && g_fakeFmvAdjustSurfacesCount == 0;
+
+    action.capturedFrame = &image;
+    action.startSec = 10.0;
+    action.durationSecRaw = FmvFloatBits(4.0f);
+    action.fadeDirectionSign = 1;
+    action.fadeColorPacked16 = 0x7bef;
+    action.maxAlpha = 100;
+    g_fakeFmvPostprocessCount = 0;
+    g_fakeFmvSwPostprocessCount = 0;
+    g_fakeFmvBlitToActiveTargetCount = 0;
+    g_fakeFmvBlitToActiveTargetImage = 0;
+    g_fakeFmvBlitToActiveTargetDstX = -1;
+    g_fakeFmvBlitToActiveTargetDstY = -1;
+    g_fakeFmvBlitToActiveTargetClipFlags = -1;
+    g_fakeFmvBlitToActiveTargetSrcRect = reinterpret_cast<zVidRect32 *>(0x11111111);
+    g_fakeFmvOverlaySubmitCount = 0;
+    g_fakeFmvOverlaySubmitColor = 0;
+    g_fakeFmvOverlaySubmitRect = reinterpret_cast<zVidRect32 *>(0x22222222);
+    g_fakeFmvOverlaySubmitAlpha = -1.0;
+    g_fakeFmvOverlayFlushSwCount = 0;
+    g_fakeFmvUnlockPrimaryCount = 0;
+    g_fakeFmvUnlockSwCount = 0;
+    g_fakeFmvAdjustSurfacesCount = 0;
+    g_fakeFmvAdjustSurfacesWaitForPresent = 0;
+    g_fakeFmvAdjustSurfacesBlitPrimaryToSwFirst = 0;
+    g_fakeFmvSceneEnterCount = 0;
+    g_fakeFmvSceneLeaveCount = 0;
+    g_fakeFmvFlushQuadBatchCount = 0;
+    const bool softwareOk =
+        action.Update(12.0) == 1 && g_fakeFmvPostprocessCount == 1 &&
+        g_fakeFmvSwPostprocessCount == 0 && g_fakeFmvBlitToActiveTargetCount == 1 &&
+        g_fakeFmvBlitToActiveTargetImage == &image &&
+        g_fakeFmvBlitToActiveTargetDstX == 0 &&
+        g_fakeFmvBlitToActiveTargetDstY == 0 &&
+        g_fakeFmvBlitToActiveTargetClipFlags == 0 &&
+        g_fakeFmvBlitToActiveTargetSrcRect == 0 &&
+        g_fakeFmvOverlaySubmitCount == 1 && g_fakeFmvOverlaySubmitColor == 0x7bef &&
+        g_fakeFmvOverlaySubmitRect == 0 && g_fakeFmvOverlaySubmitAlpha == 50.0 &&
+        g_fakeFmvOverlayFlushSwCount == 1 && g_fakeFmvUnlockPrimaryCount == 1 &&
+        g_fakeFmvUnlockSwCount == 0 && g_fakeFmvAdjustSurfacesCount == 1 &&
+        g_fakeFmvAdjustSurfacesWaitForPresent == 1 &&
+        g_fakeFmvAdjustSurfacesBlitPrimaryToSwFirst == 1 &&
+        g_fakeFmvSceneEnterCount == 0 && g_fakeFmvSceneLeaveCount == 0 &&
+        g_fakeFmvFlushQuadBatchCount == 0;
+
+    action.fadeDirectionSign = -1;
+    g_zVideo_ActiveRendererPath = 1;
+    g_fakeFmvPostprocessCount = 0;
+    g_fakeFmvSwPostprocessCount = 0;
+    g_fakeFmvBlitToActiveTargetCount = 0;
+    g_fakeFmvOverlaySubmitCount = 0;
+    g_fakeFmvOverlaySubmitAlpha = -1.0;
+    g_fakeFmvOverlayFlushSwCount = 0;
+    g_fakeFmvUnlockPrimaryCount = 0;
+    g_fakeFmvUnlockSwCount = 0;
+    g_fakeFmvAdjustSurfacesCount = 0;
+    g_fakeFmvAdjustSurfacesWaitForPresent = -1;
+    g_fakeFmvAdjustSurfacesBlitPrimaryToSwFirst = -1;
+    g_fakeFmvSceneEnterCount = 0;
+    g_fakeFmvSceneLeaveCount = 0;
+    g_fakeFmvFlushQuadBatchCount = 0;
+    const bool hardwareOk =
+        action.Update(15.0) == 0 && g_fakeFmvPostprocessCount == 0 &&
+        g_fakeFmvSwPostprocessCount == 1 && g_fakeFmvBlitToActiveTargetCount == 1 &&
+        g_fakeFmvOverlaySubmitCount == 1 && g_fakeFmvOverlaySubmitAlpha == 0.0 &&
+        g_fakeFmvOverlayFlushSwCount == 0 && g_fakeFmvUnlockPrimaryCount == 0 &&
+        g_fakeFmvUnlockSwCount == 1 && g_fakeFmvAdjustSurfacesCount == 1 &&
+        g_fakeFmvAdjustSurfacesWaitForPresent == 0 &&
+        g_fakeFmvAdjustSurfacesBlitPrimaryToSwFirst == 0 &&
+        g_fakeFmvSceneEnterCount == 1 && g_fakeFmvSceneLeaveCount == 1 &&
+        g_fakeFmvFlushQuadBatchCount == 1;
+
+    g_zVideo_pfnFlushQuadBatch = oldFlushQuadBatch;
+    g_zVideo_ActiveRendererPath = oldRendererPath;
+    RestoreFunctionPatch(adjustPatch);
+    RestoreFunctionPatch(sceneLeavePatch);
+    RestoreFunctionPatch(sceneEnterPatch);
+    RestoreFunctionPatch(overlayFlushPatch);
+    RestoreFunctionPatch(overlayPatch);
+    RestoreFunctionPatch(unlockSwPatch);
+    RestoreFunctionPatch(unlockPrimaryPatch);
+    RestoreFunctionPatch(blitPatch);
+    RestoreFunctionPatch(swPostPatch);
+    RestoreFunctionPatch(primaryPostPatch);
+    return nullOk && softwareOk && hardwareOk ? 0 : 11;
+}
+
+extern "C" int zfmv_action_fade_end_smoke(void) {
+    CodeFunctionPatch releasePatch = {};
+    if (!PatchFunctionJump(
+            reinterpret_cast<void *>(&zVid_Image::ReleaseIfNotDefault),
+            reinterpret_cast<void *>(&FakeFmvReleaseImageIfNotDefault),
+            releasePatch
+        )) {
+        return 1;
+    }
+
+    zVidImagePartial image = {};
+    zFMV_ActionFade action = {};
+    action.capturedFrame = 0;
+    g_fakeFmvReleaseImageCount = 0;
+    g_fakeFmvReleaseImage = 0;
+    action.End();
+    const bool nullOk = action.capturedFrame == 0 && g_fakeFmvReleaseImageCount == 0;
+
+    action.capturedFrame = &image;
+    action.End();
+    const bool releaseOk =
+        action.capturedFrame == 0 && g_fakeFmvReleaseImageCount == 1 &&
+        g_fakeFmvReleaseImage == &image;
+
+    RestoreFunctionPatch(releasePatch);
+    return nullOk && releaseOk ? 0 : 2;
 }
 
 extern "C" int zfmv_action_play_avi_constructor_existing_file_smoke(void) {

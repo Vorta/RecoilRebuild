@@ -211,13 +211,39 @@ Active queue sections:
     `zvideo_selected_hw_api_device_record_global` covers
     `g_zVideo_pSelectedHwApiDeviceRecord`, and plan entries 0x4a7d90,
     0x4a7dd0, and 0x4a7e10 are now tier B; tier S remains globally deferred.
-  - Same-session BN/source-worker packets for the 0x49b7e0-led switch-vshift
-    span family confirm the retail source shape intentionally pivots ESP
-    through gRndr_SavedEspSlot and writes destination words with push/sub-esp.
-    No safe VC5-era production C++ model was found under the current no raw
-    assembly/scaffold rules, so this owner/data gate remains blocked until a
-    policy-approved source model is identified or the raw-assembly prohibition
-    is explicitly changed.
+  - 2026-06-24 update: `render_video.zrndr_span_esp_pivot_family` now carries
+    accepted boundary/source/data/functional/byte owner gates for the
+    0x49b7e0-led switch-vshift family and `gRndr_SavedEspSlot`. The remaining
+    0x48ff80 selector callback-bank owner blocker now routes through unresolved
+    zRndr MMX span source/data owners, not the accepted ESP-pivot owner.
+  - 2026-06-24 update: parent added
+    `render_video.zrndr_tex16_copy_mmx_pair` for 0x49ea80/0x49ec20 after
+    status/frontier showed no linked owner and a shared tex16 MMX packed-index
+    source-model blocker. Boundary and functional gates are accepted; source
+    and data gates remain blocked. Source-worker and BN fact-mapper packets
+    found no lawful non-raw-assembly source-faithful implementation under
+    current policy: retail uses authored MMX movq/pand/psrld/paddd/psrlq/movd
+    packed-index loops over `gRndr_Mmx_*`, VC5SP3 has no accepted MMX intrinsic
+    surface, and current raw-assembly exceptions exclude 0x49ea80/0x49ec20.
+  - 2026-06-24 update: parent added
+    `render_video.zrndr_fog_mmx_pair` for 0x49e400/0x49e560 after
+    status/plan showed no linked owner and a shared fog MMX source-model
+    blocker. Boundary and functional gates are accepted; source and data gates
+    remain blocked. Source-worker and BN fact-mapper packets found no lawful
+    non-raw-assembly source-faithful implementation under current policy:
+    retail uses authored MMX qword channel math and quad stores, VC5SP3 has no
+    accepted MMX intrinsic surface, and current raw-assembly exceptions exclude
+    0x49e400/0x49e560.
+  - 2026-06-24 update: parent added
+    `render_video.zrndr_alpha_mmx_alpha8_family` for
+    0x49cbb0/0x49cea0/0x49da80/0x49ddb0 after status showed no linked owner
+    and a shared alpha-map MMX source-family blocker. Boundary and functional
+    gates are accepted; source and data gates remain blocked. Source-worker and
+    BN fact-mapper packets found no lawful non-raw-assembly source-faithful
+    implementation under current policy: retail uses authored
+    `__alloca_probe` scratch buffers plus MMX alpha-map blend loops, VC5SP3 has
+    no accepted MMX intrinsic surface, and current raw-assembly exceptions
+    exclude 0x49cbb0/0x49cea0/0x49da80/0x49ddb0.
   - Accepted recent work is durable elsewhere: zRndr queue/lens/fog/palette
     slices, cached-client-rect mask helpers, DirectDraw present/clear/data
     passes, and circle helpers have source/plan/verification evidence. Keep
@@ -227,11 +253,19 @@ Active queue sections:
     0x49b020, 0x49b780, 0x46e720, and 0x4a8790; revisit them only after the
     global owner/data gate opens or explicit user direction.
 - Next action:
-  - Do not reassign the 0x49b7e0-led ESP-pivot span-family slice without new
-    BN/source-model evidence or explicit user approval for a lower-level
-    implementation strategy. Prefer another active owner/data WIP while that
-    slice remains blocked by the current source rules.
-  - If the caller/data path is resumed, start with
+  - No active source-worker implementation remains for
+    0x49ea80/0x49ec20 tex16 MMX copy under current AGENTS.md rules; keep the
+    owner source/data gates blocked and pick the next owner/data candidate
+    instead of weakening the raw-assembly policy.
+  - No active source-worker implementation remains for 0x49e400/0x49e560 fog
+    MMX under current AGENTS.md rules; keep the owner source/data gates blocked
+    and move to the next owner/data candidate instead of broadening
+    raw-assembly policy.
+  - No active source-worker implementation remains for
+    0x49cbb0/0x49cea0/0x49da80/0x49ddb0 alpha-map MMX under current AGENTS.md
+    rules; keep the owner source/data gates blocked and move to the next
+    owner/data candidate instead of broadening raw-assembly policy.
+  - If the caller/data path is resumed afterward, start with
     `python tools/recoil.py status 0x42e330 --lane binary`, then route through
     the 0x48ff70 data blocker before assigning any source worker.
   - Re-run `python tools/recoil.py audit groups --summary --wip-limit 4` after

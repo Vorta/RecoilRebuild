@@ -57,6 +57,27 @@ zClass_NodePartial *g_zClass_CurrentCamera = 0;
  */
 zClass_NodePartial *g_zClass_CameraTargetNode = 0;
 /**
+ * Reimplements data 0x4f4988: g_Camera_PrevListenerPosX.
+ * BN data inventory classifies this as an adjacent zero-initialized legacy
+ * Camera.c float with no current source or BN consumers.
+ * Purpose: preserve the retired camera previous-listener-position X storage.
+ */
+float g_Camera_PrevListenerPosX = 0.0f;
+/**
+ * Reimplements data 0x4f498c: g_Camera_PrevListenerPosY.
+ * BN data inventory classifies this as an adjacent zero-initialized legacy
+ * Camera.c float with no current source or BN consumers.
+ * Purpose: preserve the retired camera previous-listener-position Y storage.
+ */
+float g_Camera_PrevListenerPosY = 0.0f;
+/**
+ * Reimplements data 0x4f4990: g_Camera_PrevListenerPosZ.
+ * BN data inventory classifies this as an adjacent zero-initialized legacy
+ * Camera.c float with no current source or BN consumers.
+ * Purpose: preserve the retired camera previous-listener-position Z storage.
+ */
+float g_Camera_PrevListenerPosZ = 0.0f;
+/**
  * Reimplements data 0x4dddbc: g_zClass_FindConvexHullUnexpectedReturnMsg.
  * BN data inventory declares writable Camera.c diagnostic literal char[0x37].
  * Purpose: report the unexpected convex-hull exit path during frustum-grid

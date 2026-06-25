@@ -46,6 +46,8 @@ struct zClass_NodePartial;
 // boundary here, not a local CString reimplementation.
 class CString;
 
+extern char g_HudUiDialogSampleSetName[0x7];
+
 struct HudWeatherFxPointBatch {
     float x;
     float y;

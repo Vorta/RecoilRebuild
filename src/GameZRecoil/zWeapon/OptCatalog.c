@@ -283,6 +283,14 @@ char g_zEffectAnim_TokenRange[0x6] = "RANGE";
  * specs.
  */
 char g_zEffectAnim_TokenBounceSound[0x0d] = "BOUNCE_SOUND";
+/**
+ * Reimplements data 0x4dd218: g_Player_KillVerbToken.
+ * BN data shape: char[0x0a] "KILL_VERB"; xref only from
+ * zWeapon_OptCatalog::LoadKillVerbString at 0x43ca20.
+ * Purpose: names the optional kill-verb parser field in OptCatalog entry
+ * records.
+ */
+char g_Player_KillVerbToken[0x0a] = "KILL_VERB";
 }
 
 namespace {
@@ -323,7 +331,6 @@ namespace {
     const float kOptCatalogAimPitchRangeScale = -0.239999995f;
     const float kOptCatalogTrailDamageBlendLimit = 0.25f;
     const double kOptCatalogPi = 3.14159265358979323846;
-    const char *kZWeaponInitSourceFile = "D:\\Proj\\GameZRecoil\\zWeapon\\zwep_init.c";
     /**
      * Reimplements data 0x4e4600: g_zWeapon_BeamReflectNameFmt.
      * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
@@ -1046,7 +1053,7 @@ namespace zWeapon_OptCatalog {
 
         zReader::Node *const killVerbNode = zReader_GetNamedNode(
             entryNode,
-            "KILL_VERB"
+            g_Player_KillVerbToken
         );
         const char *sourceText = 0;
         if (killVerbNode != 0) {
@@ -1091,7 +1098,7 @@ namespace zWeapon {
         if (rootNode == 0) {
             zError::ReportOld(
                 0x200,
-                kZWeaponInitSourceFile,
+                "D:\\Proj\\GameZRecoil\\zWeapon\\zwep_init.c",
                 0xc6,
                 g_HudSensorTracker_ReadFileFailedFmt,
                 path
@@ -1106,7 +1113,7 @@ namespace zWeapon {
         if (versionNode == 0) {
             zError::ReportOld(
                 0x400,
-                kZWeaponInitSourceFile,
+                "D:\\Proj\\GameZRecoil\\zWeapon\\zwep_init.c",
                 0xdb,
                 "No ZWEP version found"
             );
@@ -1122,7 +1129,7 @@ namespace zWeapon {
         if (version != kOptCatalogRequiredVersion) {
             zError::ReportOld(
                 0x400,
-                kZWeaponInitSourceFile,
+                "D:\\Proj\\GameZRecoil\\zWeapon\\zwep_init.c",
                 0xd3,
                 "Incorrect ZWEP version (found %d, wanted %d)",
                 version,
@@ -1608,7 +1615,7 @@ namespace zWeapon {
         if (callbackNode == 0) {
             zError::ReportOld(
                 0x400,
-                kZWeaponInitSourceFile,
+                "D:\\Proj\\GameZRecoil\\zWeapon\\zwep_init.c",
                 0x2d9,
                 "Error allocating weapon_tick callback"
             );

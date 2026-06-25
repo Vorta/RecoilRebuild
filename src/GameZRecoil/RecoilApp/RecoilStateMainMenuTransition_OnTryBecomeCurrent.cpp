@@ -3,6 +3,8 @@
 #include "GameZRecoil/zFMV/fmv.h"
 #include "GameZRecoil/zVideo/zVideo.h"
 
+extern char g_HudUiDialogSampleSetName[0x7];
+
 namespace {
 enum zVideoHalfResAdjustMode {
     ZVIDEO_HALFRES_ADJUST_DISABLED = 0,
@@ -88,7 +90,7 @@ RECOIL_NO_GS int RecoilStateMainMenuTransition::OnTryBecomeCurrent() {
     m_pausedAudioSnapshot = (RecoilPtr32)(unsigned int)audioSnapshot;
     audioSnapshot->StopAllIfPlaying();
 
-    zSndSampleSet_InitByName("DIALOG");
+    zSndSampleSet_InitByName(g_HudUiDialogSampleSetName);
 
     HudUiMainMenuDialog *const dialog = new HudUiMainMenuDialog(m_entryRoute);
 

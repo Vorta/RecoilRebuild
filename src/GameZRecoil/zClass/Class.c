@@ -12,6 +12,47 @@
 
 extern "C" {
 /**
+ * Reimplements data 0x4f4a90: g_zClass_NodeCount.
+ * Owner extent: 0x4f4a90..0x4f4ad7 is an unreferenced all-zero authored
+ * zClass node/core shadow block, separate from the live node pool globals.
+ * Purpose: preserve the retail zero-shadow node count slot without routing
+ * runtime node allocation through it.
+ */
+int g_zClass_NodeCount = 0;
+/**
+ * Reimplements data 0x4f4a94: g_zClass_NodeTableBase.
+ * Purpose: dead zero-shadow counterpart of the node table base pointer.
+ */
+zClass_NodePartial *g_zClass_NodeTableBase = 0;
+/**
+ * Reimplements data 0x4f4a98: g_zClass_NodeActiveCount.
+ * Purpose: dead zero-shadow counterpart of the active node count.
+ */
+int g_zClass_NodeActiveCount = 0;
+/**
+ * Reimplements data 0x4f4a9c: g_zClass_CopyNodeCloneMaterialRefs.
+ * Purpose: dead zero-shadow counterpart of the copy-node material-reference
+ * clone policy flag.
+ */
+int g_zClass_CopyNodeCloneMaterialRefs = 0;
+/**
+ * Reimplements data 0x4f4aa0: g_zClass_CopyNodeCloneAllMaterialsIfRelevant.
+ * Purpose: dead zero-shadow counterpart of the copy-node all-materials clone
+ * policy flag.
+ */
+int g_zClass_CopyNodeCloneAllMaterialsIfRelevant = 0;
+/**
+ * Reimplements data 0x4f4aa4: g_zClass_CoreInitialized.
+ * Purpose: dead zero-shadow counterpart of the zClass core initialization
+ * flag.
+ */
+int g_zClass_CoreInitialized = 0;
+/**
+ * Reimplements data 0x4f4aa8: g_zClass_LastZbdPath.
+ * Purpose: dead zero-shadow counterpart of the last zClass ZBD path buffer.
+ */
+char g_zClass_LastZbdPath[0x30] = {0};
+/**
  * Reimplements data 0x539c94: g_zClass_NodeArray.
  * BN evidence: zClass::Init/ShutdownCore and ZBD node-table helpers reference
  * this global node pool pointer, and Class.c alloc/free paths index through it.

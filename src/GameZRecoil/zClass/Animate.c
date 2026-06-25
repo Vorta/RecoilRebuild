@@ -14,7 +14,10 @@ namespace {
     const short kAnimateLoopDisabled = -1;
 
     /**
-     * Original inline helper recovered with zClass_Animate::SampleTransform.
+     * Original-source helper evidence: no standalone retail function exists.
+     * Observed in caller 0x453d20 (zClass_Animate::SampleTransform); BN keeps
+     * the three component interpolation and output-scale multiplies inline at
+     * each sampled transform channel.
      *
      * Purpose: linearly interpolate a three-component keyframe value and apply
      * the corresponding output scale.

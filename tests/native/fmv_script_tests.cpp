@@ -1,6 +1,519 @@
 #ifdef RECOIL_FMV_SCRIPT_TESTS_WAIT_ONLY
 
 #include "GameZRecoil/zFMV/fmv.h"
+#include "GameZRecoil/zRndr/zRndr.h"
+#include "GameZRecoil/zSound/zSound.h"
+#include "GameZRecoil/zVideo/zVideo.h"
+
+#include <cstdint>
+#include <cstdlib>
+#include <cstring>
+#include <new>
+
+namespace {
+struct CodeFunctionPatch {
+    unsigned char *address;
+    unsigned char original[5];
+};
+
+int g_fakeFmvOperatorDeleteCount;
+void *g_fakeFmvOperatorDeletePtr;
+int g_fakeAviStreamReadCount;
+PAVISTREAM g_fakeAviStreams[4];
+LONG g_fakeAviStarts[4];
+LONG g_fakeAviSamples[4];
+void *g_fakeAviBuffers[4];
+LONG g_fakeAviBufferBytes[4];
+HRESULT g_fakeAviReturn;
+int g_fakeIcDecompressCount;
+HIC g_fakeIcLastCodec;
+DWORD g_fakeIcLastFlags;
+BITMAPINFOHEADER *g_fakeIcLastSrcFormat;
+void *g_fakeIcLastCompressedFrame;
+BITMAPINFOHEADER *g_fakeIcLastDstFormat;
+void *g_fakeIcLastPixels;
+LRESULT g_fakeIcReturn;
+int g_fakeFmvPostprocessCount;
+int g_fakeFmvUnlockPrimaryCount;
+int g_fakeFmvAdjustSurfacesCount;
+int g_fakeFmvAdjustSurfacesWaitForPresent;
+int g_fakeFmvAdjustSurfacesBlitPrimaryToSwFirst;
+int g_fakeFmvSwBltCount;
+zVidImagePartial *g_fakeFmvSwBltImage;
+int g_fakeFmvSwBltColorKeyEnable;
+zVidRect32 *g_fakeFmvSwBltSrcRect;
+zVidRect32 *g_fakeFmvSwBltDstRect;
+int g_fakeFmvReadDecodeCount;
+zFMV_Stream *g_fakeFmvReadDecodeStreams[4];
+unsigned int g_fakeFmvReadDecodeFrames[4];
+int g_fakeFmvReadDecodeNextResult;
+int g_fakeFmvStreamOpenCount;
+PAVISTREAM g_fakeFmvOpenedStream;
+const char *g_fakeFmvOpenedPath;
+DWORD g_fakeFmvOpenedType;
+LONG g_fakeFmvOpenedParam;
+UINT g_fakeFmvOpenedMode;
+int g_fakeFmvReadFormatCount;
+PAVISTREAM g_fakeFmvReadFormatStream;
+LONG g_fakeFmvReadFormatPosition;
+int g_fakeFmvStreamLengthCount;
+PAVISTREAM g_fakeFmvStreamLengthStream;
+int g_fakeFmvStreamInfoCount;
+PAVISTREAM g_fakeFmvStreamInfoStream;
+LONG g_fakeFmvStreamInfoSize;
+int g_fakeFmvIcLocateCount;
+DWORD g_fakeFmvIcLocateType;
+DWORD g_fakeFmvIcLocateHandler;
+void *g_fakeFmvIcLocateSrcFormat;
+void *g_fakeFmvIcLocateDstFormat;
+WORD g_fakeFmvIcLocateMode;
+HIC g_fakeFmvLocatedCodec;
+int g_fakeFmvIcSendMessageCount;
+HIC g_fakeFmvIcSendCodec;
+UINT g_fakeFmvIcSendMessage;
+DWORD_PTR g_fakeFmvIcSendSrcParam;
+DWORD_PTR g_fakeFmvIcSendDstParam;
+int g_fakeFmvLockCount;
+int g_fakeFmvUnlockCount;
+int g_fakeFmvGetCurrentPositionCount;
+unsigned int g_fakeFmvLastLockOffset;
+unsigned int g_fakeFmvLastLockBytes;
+unsigned int g_fakeFmvLastLockFlags;
+int g_fakeFmvLockResult;
+int g_fakeFmvUnlockResult;
+void *g_fakeFmvLockPtr1;
+void *g_fakeFmvLockPtr2;
+int g_fakeFmvLockBytes1;
+int g_fakeFmvLockBytes2;
+std::uint32_t g_fakeFmvPlayCursor;
+void *g_fakeFmvUnlockPtr1;
+void *g_fakeFmvUnlockPtr2;
+int g_fakeFmvUnlockBytes1;
+int g_fakeFmvUnlockBytes2;
+
+void __cdecl FakeFmvOperatorDelete(void *ptr) {
+    ++g_fakeFmvOperatorDeleteCount;
+    g_fakeFmvOperatorDeletePtr = ptr;
+}
+
+HRESULT WINAPI FakeFmvAVIStreamRead(
+    PAVISTREAM stream,
+    LONG start,
+    LONG samples,
+    void *buffer,
+    LONG bufferBytes,
+    LONG *,
+    LONG *
+) {
+    const int index = g_fakeAviStreamReadCount;
+    if (index < 4) {
+        g_fakeAviStreams[index] = stream;
+        g_fakeAviStarts[index] = start;
+        g_fakeAviSamples[index] = samples;
+        g_fakeAviBuffers[index] = buffer;
+        g_fakeAviBufferBytes[index] = bufferBytes;
+    }
+    ++g_fakeAviStreamReadCount;
+    return g_fakeAviReturn;
+}
+
+LRESULT __cdecl FakeFmvICDecompress(
+    HIC codec,
+    DWORD flags,
+    BITMAPINFOHEADER *srcFormat,
+    void *compressedFrame,
+    BITMAPINFOHEADER *dstFormat,
+    void *pixels
+) {
+    ++g_fakeIcDecompressCount;
+    g_fakeIcLastCodec = codec;
+    g_fakeIcLastFlags = flags;
+    g_fakeIcLastSrcFormat = srcFormat;
+    g_fakeIcLastCompressedFrame = compressedFrame;
+    g_fakeIcLastDstFormat = dstFormat;
+    g_fakeIcLastPixels = pixels;
+    return g_fakeIcReturn;
+}
+
+int FakeFmvRunPostprocessOnPrimaryBuffer() {
+    ++g_fakeFmvPostprocessCount;
+    return 1;
+}
+
+int FakeFmvDispatchUnlockPrimarySurfaceState() {
+    ++g_fakeFmvUnlockPrimaryCount;
+    return 1;
+}
+
+int __fastcall FakeFmvAdjustSurfacesIfEnabled(
+    zVidRect32 *,
+    zVidRect32 *,
+    int waitForPresent,
+    int blitPrimaryToSwFirst
+) {
+    ++g_fakeFmvAdjustSurfacesCount;
+    g_fakeFmvAdjustSurfacesWaitForPresent = waitForPresent;
+    g_fakeFmvAdjustSurfacesBlitPrimaryToSwFirst = blitPrimaryToSwFirst;
+    return 0x1234;
+}
+
+void __fastcall FakeFmvBltSwToPrimaryRect(
+    zVidImagePartial *srcImage,
+    int srcColorKeyEnable,
+    zVidRect32 *srcRect,
+    zVidRect32 *dstRect
+) {
+    ++g_fakeFmvSwBltCount;
+    g_fakeFmvSwBltImage = srcImage;
+    g_fakeFmvSwBltColorKeyEnable = srcColorKeyEnable;
+    g_fakeFmvSwBltSrcRect = srcRect;
+    g_fakeFmvSwBltDstRect = dstRect;
+}
+
+struct FakeFmvStreamThunk {
+    int ReadAndDecodeFrame(unsigned int frameIndex);
+};
+
+int FakeFmvStreamThunk::ReadAndDecodeFrame(unsigned int frameIndex) {
+    const int index = g_fakeFmvReadDecodeCount;
+    if (index < 4) {
+        g_fakeFmvReadDecodeStreams[index] = reinterpret_cast<zFMV_Stream *>(this);
+        g_fakeFmvReadDecodeFrames[index] = frameIndex;
+    }
+    ++g_fakeFmvReadDecodeCount;
+    return g_fakeFmvReadDecodeNextResult >= 0
+               ? g_fakeFmvReadDecodeNextResult
+               : static_cast<int>(frameIndex + 1);
+}
+
+void *zFMV_Stream_ReadAndDecodeFrameProc() {
+    union MemberToFunction {
+        int ( zFMV_Stream::*member)(unsigned int);
+        void *function;
+    };
+
+    MemberToFunction thunk{};
+    thunk.member = &zFMV_Stream::ReadAndDecodeFrame;
+    return thunk.function;
+}
+
+void *FakeFmvStreamReadAndDecodeFrameProc() {
+    union MemberToFunction {
+        int ( FakeFmvStreamThunk::*member)(unsigned int);
+        void *function;
+    };
+
+    MemberToFunction thunk{};
+    thunk.member = &FakeFmvStreamThunk::ReadAndDecodeFrame;
+    return thunk.function;
+}
+
+bool PatchFunctionJump(
+    void *target,
+    void *replacement,
+    CodeFunctionPatch &patch
+) {
+    patch.address = static_cast<unsigned char *>(target);
+    std::memcpy(
+        patch.original,
+        patch.address,
+        sizeof(patch.original)
+    );
+
+    DWORD oldProtect = 0;
+    if (VirtualProtect(
+            patch.address,
+            sizeof(patch.original),
+            PAGE_EXECUTE_READWRITE,
+            &oldProtect
+        ) == 0) {
+        patch.address = 0;
+        return false;
+    }
+
+    patch.address[0] = 0xe9;
+    const std::intptr_t relativeOffset =
+        reinterpret_cast<std::intptr_t>(replacement) -
+        reinterpret_cast<std::intptr_t>(patch.address + sizeof(patch.original));
+    *reinterpret_cast<std::int32_t *>(patch.address + 1) =
+        static_cast<std::int32_t>(relativeOffset);
+
+    DWORD ignored = 0;
+    VirtualProtect(
+        patch.address,
+        sizeof(patch.original),
+        oldProtect,
+        &ignored
+    );
+    FlushInstructionCache(
+        GetCurrentProcess(),
+        patch.address,
+        sizeof(patch.original)
+    );
+    return true;
+}
+
+void RestoreFunctionPatch(
+    CodeFunctionPatch &patch
+) {
+    if (patch.address == 0) {
+        return;
+    }
+
+    DWORD oldProtect = 0;
+    if (VirtualProtect(
+            patch.address,
+            sizeof(patch.original),
+            PAGE_EXECUTE_READWRITE,
+            &oldProtect
+        ) != 0) {
+        std::memcpy(
+            patch.address,
+            patch.original,
+            sizeof(patch.original)
+        );
+        DWORD ignored = 0;
+        VirtualProtect(
+            patch.address,
+            sizeof(patch.original),
+            oldProtect,
+            &ignored
+        );
+        FlushInstructionCache(
+            GetCurrentProcess(),
+            patch.address,
+            sizeof(patch.original)
+        );
+    }
+
+    patch.address = 0;
+}
+
+HRESULT WINAPI FakeFmvAVIStreamOpenFromFileA(
+    PAVISTREAM *stream,
+    LPCSTR path,
+    DWORD type,
+    LONG param,
+    UINT mode,
+    CLSID *
+) {
+    ++g_fakeFmvStreamOpenCount;
+    g_fakeFmvOpenedPath = path;
+    g_fakeFmvOpenedType = type;
+    g_fakeFmvOpenedParam = param;
+    g_fakeFmvOpenedMode = mode;
+    *stream = g_fakeFmvOpenedStream;
+    return 0;
+}
+
+HRESULT WINAPI FakeFmvAVIStreamReadFormat(
+    PAVISTREAM stream,
+    LONG position,
+    void *format,
+    LONG *formatBytes
+) {
+    ++g_fakeFmvReadFormatCount;
+    g_fakeFmvReadFormatStream = stream;
+    g_fakeFmvReadFormatPosition = position;
+    if (formatBytes != 0) {
+        *formatBytes = sizeof(BITMAPINFOHEADER);
+    }
+    if (format != 0) {
+        BITMAPINFOHEADER *const header = reinterpret_cast<BITMAPINFOHEADER *>(format);
+        std::memset(
+            header,
+            0,
+            sizeof(*header)
+        );
+        header->biSize = sizeof(BITMAPINFOHEADER);
+        header->biWidth = 5;
+        header->biHeight = 4;
+        header->biPlanes = 1;
+        header->biBitCount = 16;
+    }
+    return 0;
+}
+
+LONG WINAPI FakeFmvAVIStreamLength(
+    PAVISTREAM stream
+) {
+    ++g_fakeFmvStreamLengthCount;
+    g_fakeFmvStreamLengthStream = stream;
+    return 9;
+}
+
+HRESULT WINAPI FakeFmvAVIStreamInfoA(
+    PAVISTREAM stream,
+    AVISTREAMINFOA *info,
+    LONG size
+) {
+    ++g_fakeFmvStreamInfoCount;
+    g_fakeFmvStreamInfoStream = stream;
+    g_fakeFmvStreamInfoSize = size;
+    std::memset(
+        info,
+        0,
+        sizeof(*info)
+    );
+    info->fccHandler = mmioFOURCC('T', 'E', 'S', 'T');
+    info->dwScale = 1;
+    info->dwRate = 30;
+    info->dwSuggestedBufferSize = 48;
+    return 0;
+}
+
+HIC WINAPI FakeFmvICLocate(
+    DWORD type,
+    DWORD handler,
+    LPBITMAPINFOHEADER srcFormat,
+    LPBITMAPINFOHEADER dstFormat,
+    WORD mode
+) {
+    ++g_fakeFmvIcLocateCount;
+    g_fakeFmvIcLocateType = type;
+    g_fakeFmvIcLocateHandler = handler;
+    g_fakeFmvIcLocateSrcFormat = srcFormat;
+    g_fakeFmvIcLocateDstFormat = dstFormat;
+    g_fakeFmvIcLocateMode = mode;
+    return g_fakeFmvLocatedCodec;
+}
+
+LRESULT WINAPI FakeFmvICSendMessage(
+    HIC codec,
+    UINT message,
+    DWORD_PTR srcParam,
+    DWORD_PTR dstParam
+) {
+    ++g_fakeFmvIcSendMessageCount;
+    g_fakeFmvIcSendCodec = codec;
+    g_fakeFmvIcSendMessage = message;
+    g_fakeFmvIcSendSrcParam = srcParam;
+    g_fakeFmvIcSendDstParam = dstParam;
+    return 0;
+}
+
+using TestFmvGetCurrentPositionFn =
+    std::int32_t(__stdcall *)(void *self, std::uint32_t *playCursor, std::uint32_t *writeCursor);
+using TestFmvLockFn = std::int32_t(__stdcall *)(
+    void *self,
+    std::uint32_t offset,
+    std::uint32_t bytes,
+    void **outPtr1,
+    std::int32_t *outBytes1,
+    void **outPtr2,
+    std::int32_t *outBytes2,
+    std::uint32_t flags
+);
+using TestFmvUnlockFn =
+    std::int32_t(__stdcall *)(void *self, void *ptr1, std::int32_t bytes1, void *ptr2, std::int32_t bytes2);
+
+struct TestFmvDirectSoundBufferVTable {
+    void *slots00_0c[4];
+    TestFmvGetCurrentPositionFn GetCurrentPosition;
+    void *slots14_28[6];
+    TestFmvLockFn Lock;
+    void *slots30_48[7];
+    TestFmvUnlockFn Unlock;
+};
+
+struct TestFmvDirectSoundBuffer {
+    TestFmvDirectSoundBufferVTable *vtable;
+};
+
+std::int32_t __stdcall TestFmvGetCurrentPosition(
+    void *,
+    std::uint32_t *playCursor,
+    std::uint32_t *writeCursor
+) {
+    ++g_fakeFmvGetCurrentPositionCount;
+    *playCursor = g_fakeFmvPlayCursor;
+    *writeCursor = 0;
+    return 0;
+}
+
+std::int32_t __stdcall TestFmvLockSoundBuffer(
+    void *,
+    std::uint32_t offset,
+    std::uint32_t bytes,
+    void **outPtr1,
+    std::int32_t *outBytes1,
+    void **outPtr2,
+    std::int32_t *outBytes2,
+    std::uint32_t flags
+) {
+    ++g_fakeFmvLockCount;
+    g_fakeFmvLastLockOffset = offset;
+    g_fakeFmvLastLockBytes = bytes;
+    g_fakeFmvLastLockFlags = flags;
+    *outPtr1 = g_fakeFmvLockPtr1;
+    *outBytes1 = g_fakeFmvLockBytes1;
+    *outPtr2 = g_fakeFmvLockPtr2;
+    *outBytes2 = g_fakeFmvLockBytes2;
+    return g_fakeFmvLockResult;
+}
+
+std::int32_t __stdcall TestFmvUnlockSoundBuffer(
+    void *,
+    void *ptr1,
+    std::int32_t bytes1,
+    void *ptr2,
+    std::int32_t bytes2
+) {
+    ++g_fakeFmvUnlockCount;
+    g_fakeFmvUnlockPtr1 = ptr1;
+    g_fakeFmvUnlockBytes1 = bytes1;
+    g_fakeFmvUnlockPtr2 = ptr2;
+    g_fakeFmvUnlockBytes2 = bytes2;
+    return g_fakeFmvUnlockResult;
+}
+
+void ResetFmvAudioFillFakes(
+    void *ptr1,
+    int bytes1,
+    void *ptr2,
+    int bytes2
+) {
+    g_fakeAviStreamReadCount = 0;
+    std::memset(g_fakeAviStreams, 0, sizeof(g_fakeAviStreams));
+    std::memset(g_fakeAviStarts, 0, sizeof(g_fakeAviStarts));
+    std::memset(g_fakeAviSamples, 0, sizeof(g_fakeAviSamples));
+    std::memset(g_fakeAviBuffers, 0, sizeof(g_fakeAviBuffers));
+    std::memset(g_fakeAviBufferBytes, 0, sizeof(g_fakeAviBufferBytes));
+    g_fakeAviReturn = 0;
+    g_fakeIcDecompressCount = 0;
+    g_fakeIcLastCodec = 0;
+    g_fakeIcLastFlags = 0;
+    g_fakeIcLastSrcFormat = 0;
+    g_fakeIcLastCompressedFrame = 0;
+    g_fakeIcLastDstFormat = 0;
+    g_fakeIcLastPixels = 0;
+    g_fakeIcReturn = 0;
+    g_fakeFmvLockCount = 0;
+    g_fakeFmvUnlockCount = 0;
+    g_fakeFmvGetCurrentPositionCount = 0;
+    g_fakeFmvLastLockOffset = 0;
+    g_fakeFmvLastLockBytes = 0;
+    g_fakeFmvLastLockFlags = 0xffffffffu;
+    g_fakeFmvLockResult = 0;
+    g_fakeFmvUnlockResult = 0;
+    g_fakeFmvLockPtr1 = ptr1;
+    g_fakeFmvLockPtr2 = ptr2;
+    g_fakeFmvLockBytes1 = bytes1;
+    g_fakeFmvLockBytes2 = bytes2;
+    g_fakeFmvPlayCursor = 0;
+    g_fakeFmvUnlockPtr1 = 0;
+    g_fakeFmvUnlockPtr2 = 0;
+    g_fakeFmvUnlockBytes1 = 0;
+    g_fakeFmvUnlockBytes2 = 0;
+}
+
+template <typename T> T &TestFieldAt(
+    void *base,
+    std::size_t offset
+) {
+    return *reinterpret_cast<T *>(static_cast<std::uint8_t *>(base) + offset);
+}
+} // namespace
 
 extern "C" int zfmv_action_wait_begin_update_smoke(void) {
     zFMV_ActionWait action{};
@@ -11,6 +524,700 @@ extern "C" int zfmv_action_wait_begin_update_smoke(void) {
 
     return action.startSec == 10.25f && action.Update(12.0) == 1 && action.Update(12.75) == 0 ? 0
                                                                                               : 1;
+}
+
+extern "C" int zfmv_action_play_avi_lifecycle_smoke(void) {
+    void *const stackStorage = std::malloc(sizeof(zFMV_ActionPlayAvi));
+    if (stackStorage == 0) {
+        return 1;
+    }
+
+    zFMV_ActionPlayAvi *const action = new (stackStorage) zFMV_ActionPlayAvi;
+    action->mediaPath = static_cast<char *>(std::malloc(6));
+    action->modeFlags = 9;
+    if (action->mediaPath == 0) {
+        action->~zFMV_ActionPlayAvi();
+        std::free(stackStorage);
+        return 2;
+    }
+    std::strcpy(
+        action->mediaPath,
+        "intro"
+    );
+
+    action->~zFMV_ActionPlayAvi();
+    const bool stackOk = action->mediaPath == 0 && action->modeFlags == 9;
+    std::free(stackStorage);
+
+    CodeFunctionPatch deletePatch{};
+    void(__cdecl *operatorDeleteFn)(void *) = &operator delete;
+    if (!PatchFunctionJump(
+            reinterpret_cast<void *>(operatorDeleteFn),
+            reinterpret_cast<void *>(&FakeFmvOperatorDelete),
+            deletePatch
+        )) {
+        return 3;
+    }
+
+    void *const heapStorage = std::malloc(sizeof(zFMV_ActionPlayAvi));
+    if (heapStorage == 0) {
+        RestoreFunctionPatch(deletePatch);
+        return 4;
+    }
+
+    zFMV_ActionPlayAvi *const heapAction = new (heapStorage) zFMV_ActionPlayAvi;
+    heapAction->mediaPath = static_cast<char *>(std::malloc(6));
+    if (heapAction->mediaPath == 0) {
+        RestoreFunctionPatch(deletePatch);
+        heapAction->~zFMV_ActionPlayAvi();
+        std::free(heapStorage);
+        return 5;
+    }
+    std::strcpy(
+        heapAction->mediaPath,
+        "intro"
+    );
+
+    g_fakeFmvOperatorDeleteCount = 0;
+    g_fakeFmvOperatorDeletePtr = 0;
+    delete heapAction;
+    const bool heapOk = heapAction->mediaPath == 0 &&
+                        g_fakeFmvOperatorDeleteCount == 1 &&
+                        g_fakeFmvOperatorDeletePtr == heapAction;
+
+    RestoreFunctionPatch(deletePatch);
+    std::free(heapStorage);
+    return stackOk && heapOk ? 0 : 6;
+}
+
+extern "C" int zfmv_action_play_avi_update_smoke(void) {
+    CodeFunctionPatch readDecodePatch{};
+    CodeFunctionPatch postPatch{};
+    CodeFunctionPatch unlockPatch{};
+    CodeFunctionPatch adjustPatch{};
+
+    if (!PatchFunctionJump(
+            zFMV_Stream_ReadAndDecodeFrameProc(),
+            FakeFmvStreamReadAndDecodeFrameProc(),
+            readDecodePatch
+        )) {
+        return 1;
+    }
+    if (!PatchFunctionJump(
+            reinterpret_cast<void *>(&zVideo::RunPostprocessOnPrimaryBuffer),
+            reinterpret_cast<void *>(&FakeFmvRunPostprocessOnPrimaryBuffer),
+            postPatch
+        )) {
+        RestoreFunctionPatch(readDecodePatch);
+        return 2;
+    }
+    if (!PatchFunctionJump(
+            reinterpret_cast<void *>(&zVideo::Dispatch_UnlockPrimarySurfaceState),
+            reinterpret_cast<void *>(&FakeFmvDispatchUnlockPrimarySurfaceState),
+            unlockPatch
+        )) {
+        RestoreFunctionPatch(postPatch);
+        RestoreFunctionPatch(readDecodePatch);
+        return 3;
+    }
+    if (!PatchFunctionJump(
+            reinterpret_cast<void *>(&zVideo::AdjustSurfacesIfEnabled),
+            reinterpret_cast<void *>(&FakeFmvAdjustSurfacesIfEnabled),
+            adjustPatch
+        )) {
+        RestoreFunctionPatch(unlockPatch);
+        RestoreFunctionPatch(postPatch);
+        RestoreFunctionPatch(readDecodePatch);
+        return 4;
+    }
+
+    const int oldRendererPath = g_zVideo_ActiveRendererPath;
+    zVideo_BltImageRectProc oldSwBlt = g_zVideo_pfnBltSwToPrimaryRect;
+    g_zVideo_pfnBltSwToPrimaryRect = &FakeFmvBltSwToPrimaryRect;
+
+    zFMV_Stream stream{};
+    stream.videoFramesPerSecond = 4;
+
+    zFMV_ActionPlayAvi action{};
+    action.mediaPath = 0;
+    action.stream = &stream;
+    action.lastDecodedFrameIndex = -1;
+    action.destRect.left = 11;
+    action.destRect.top = 22;
+    action.destRect.right = 333;
+    action.destRect.bottom = 444;
+
+    g_fakeFmvPostprocessCount = 0;
+    g_fakeFmvUnlockPrimaryCount = 0;
+    g_fakeFmvAdjustSurfacesCount = 0;
+    g_fakeFmvSwBltCount = 0;
+    g_fakeFmvReadDecodeCount = 0;
+    g_fakeFmvReadDecodeNextResult = -1;
+    g_zVideo_ActiveRendererPath = 0;
+
+    const bool softwareOk =
+        action.Update(1.0) == 1 && action.startTimeSec == 1.0 &&
+        action.lastDecodedFrameIndex == 0 && g_fakeFmvPostprocessCount == 1 &&
+        g_fakeFmvUnlockPrimaryCount == 1 && g_fakeFmvReadDecodeCount == 1 &&
+        g_fakeFmvReadDecodeStreams[0] == &stream &&
+        g_fakeFmvReadDecodeFrames[0] == 0 &&
+        g_fakeFmvSwBltCount == 1 &&
+        g_fakeFmvSwBltImage == reinterpret_cast<zVidImagePartial *>(&stream) &&
+        g_fakeFmvSwBltColorKeyEnable == 0 && g_fakeFmvSwBltSrcRect == 0 &&
+        g_fakeFmvSwBltDstRect == reinterpret_cast<zVidRect32 *>(&action.destRect) &&
+        g_fakeFmvAdjustSurfacesCount == 1 &&
+        g_fakeFmvAdjustSurfacesWaitForPresent == 1 &&
+        g_fakeFmvAdjustSurfacesBlitPrimaryToSwFirst == 1;
+
+    const bool sameFrameOk =
+        action.Update(1.0) == 1 && action.lastDecodedFrameIndex == 0 &&
+        g_fakeFmvReadDecodeCount == 1 && g_fakeFmvSwBltCount == 1 &&
+        g_fakeFmvAdjustSurfacesCount == 1;
+
+    g_zVideo_ActiveRendererPath = 2;
+    const bool hardwareOk =
+        action.Update(1.5) == 3 && action.lastDecodedFrameIndex == 2 &&
+        g_fakeFmvPostprocessCount == 1 && g_fakeFmvUnlockPrimaryCount == 1 &&
+        g_fakeFmvReadDecodeCount == 2 && g_fakeFmvReadDecodeFrames[1] == 2 &&
+        g_fakeFmvSwBltCount == 2 && g_fakeFmvAdjustSurfacesCount == 2 &&
+        g_fakeFmvAdjustSurfacesBlitPrimaryToSwFirst == 0;
+
+    g_fakeFmvReadDecodeNextResult = 0;
+    const bool failureOk =
+        action.Update(2.0) == 0 && action.lastDecodedFrameIndex == 4 &&
+        g_fakeFmvReadDecodeCount == 3 && g_fakeFmvReadDecodeFrames[2] == 4 &&
+        g_fakeFmvSwBltCount == 3 && g_fakeFmvAdjustSurfacesCount == 3;
+
+    g_zVideo_pfnBltSwToPrimaryRect = oldSwBlt;
+    g_zVideo_ActiveRendererPath = oldRendererPath;
+    RestoreFunctionPatch(adjustPatch);
+    RestoreFunctionPatch(unlockPatch);
+    RestoreFunctionPatch(postPatch);
+    RestoreFunctionPatch(readDecodePatch);
+    return softwareOk && sameFrameOk && hardwareOk && failureOk ? 0 : 6;
+}
+
+extern "C" int zfmv_action_play_avi_begin_end_smoke(void) {
+    const int oldWidth = zRndr::g_activeRegionWidth;
+    const int oldHeight = zRndr::g_activeRegionHeight;
+    const int oldPitch = zRndr::g_pitchBytes;
+    const int oldBytesPerPixel = zRndr::g_bytesPerPixel;
+    zRndr::g_activeRegionWidth = 640;
+    zRndr::g_activeRegionHeight = 360;
+    zRndr::g_pitchBytes = 1280;
+    zRndr::g_bytesPerPixel = 2;
+
+    zFMV_ActionPlayAvi action{};
+    action.mediaPath = const_cast<char *>("__missing_playavi_begin__.avi");
+    action.modeFlags = 7;
+    action.stream = reinterpret_cast<zFMV_Stream *>(0x11111111);
+    action.lastDecodedFrameIndex = 123;
+
+    action.Begin(25.0);
+    zFMV_Stream *const initializedStream = action.stream;
+    const bool beginOk =
+        initializedStream != 0 && action.destRect.left == 0 && action.destRect.top == 0 &&
+        action.destRect.right == 640 && action.destRect.bottom == 360 &&
+        action.lastDecodedFrameIndex == -1;
+
+    CodeFunctionPatch deletePatch{};
+    void(__cdecl *operatorDeleteFn)(void *) = &operator delete;
+    if (!PatchFunctionJump(
+            reinterpret_cast<void *>(operatorDeleteFn),
+            reinterpret_cast<void *>(&FakeFmvOperatorDelete),
+            deletePatch
+        )) {
+        action.End();
+        action.mediaPath = 0;
+        zRndr::g_activeRegionWidth = oldWidth;
+        zRndr::g_activeRegionHeight = oldHeight;
+        zRndr::g_pitchBytes = oldPitch;
+        zRndr::g_bytesPerPixel = oldBytesPerPixel;
+        return 1;
+    }
+
+    g_fakeFmvOperatorDeleteCount = 0;
+    g_fakeFmvOperatorDeletePtr = 0;
+    action.End();
+    const bool endOk = action.stream == 0 && g_fakeFmvOperatorDeleteCount == 1 &&
+                       g_fakeFmvOperatorDeletePtr == initializedStream;
+
+    RestoreFunctionPatch(deletePatch);
+    if (initializedStream != 0) {
+        ::operator delete(initializedStream);
+    }
+    action.End();
+    action.mediaPath = 0;
+
+    zRndr::g_activeRegionWidth = oldWidth;
+    zRndr::g_activeRegionHeight = oldHeight;
+    zRndr::g_pitchBytes = oldPitch;
+    zRndr::g_bytesPerPixel = oldBytesPerPixel;
+    return beginOk && endOk && action.stream == 0 ? 0 : 2;
+}
+
+extern "C" int zfmv_stream_destructor_empty_smoke(void) {
+    alignas(8) std::uint8_t storage[0x1d4] = {};
+    zFMV_Stream *const stream = reinterpret_cast<zFMV_Stream *>(storage);
+
+    TestFieldAt<char *>(stream, 0x38) = static_cast<char *>(std::malloc(4));
+    if (TestFieldAt<char *>(stream, 0x38) == 0) {
+        return 1;
+    }
+
+    std::strcpy(TestFieldAt<char *>(stream, 0x38), "x");
+    InitializeCriticalSection(&TestFieldAt<CRITICAL_SECTION>(stream, 0x108));
+
+    stream->Destructor();
+    return 0;
+}
+
+extern "C" int zfmv_stream_constructor_missing_file_smoke(void) {
+    alignas(8) std::uint8_t storage[0x1d4] = {};
+    zFMV_Stream *const stream = reinterpret_cast<zFMV_Stream *>(storage);
+
+    TestFieldAt<char *>(stream, 0x38) = const_cast<char *>("__missing_stream_ctor__.avi");
+    TestFieldAt<std::int32_t>(stream, 0x104) = 0x12345678;
+
+    stream->Constructor();
+
+    return TestFieldAt<std::int32_t>(stream, 0x104) == 0 &&
+                   TestFieldAt<std::int32_t>(stream, 0x3c) == 0
+               ? 0
+               : 1;
+}
+
+extern "C" int zfmv_stream_constructor_success_smoke(void) {
+    CodeFunctionPatch openPatch{};
+    CodeFunctionPatch readFormatPatch{};
+    CodeFunctionPatch lengthPatch{};
+    CodeFunctionPatch infoPatch{};
+    CodeFunctionPatch locatePatch{};
+    CodeFunctionPatch sendPatch{};
+
+    if (!PatchFunctionJump(
+            reinterpret_cast<void *>(&AVIStreamOpenFromFileA),
+            reinterpret_cast<void *>(&FakeFmvAVIStreamOpenFromFileA),
+            openPatch
+        )) {
+        return 1;
+    }
+    if (!PatchFunctionJump(
+            reinterpret_cast<void *>(&AVIStreamReadFormat),
+            reinterpret_cast<void *>(&FakeFmvAVIStreamReadFormat),
+            readFormatPatch
+        )) {
+        RestoreFunctionPatch(openPatch);
+        return 2;
+    }
+    if (!PatchFunctionJump(
+            reinterpret_cast<void *>(&AVIStreamLength),
+            reinterpret_cast<void *>(&FakeFmvAVIStreamLength),
+            lengthPatch
+        )) {
+        RestoreFunctionPatch(readFormatPatch);
+        RestoreFunctionPatch(openPatch);
+        return 3;
+    }
+    if (!PatchFunctionJump(
+            reinterpret_cast<void *>(&AVIStreamInfoA),
+            reinterpret_cast<void *>(&FakeFmvAVIStreamInfoA),
+            infoPatch
+        )) {
+        RestoreFunctionPatch(lengthPatch);
+        RestoreFunctionPatch(readFormatPatch);
+        RestoreFunctionPatch(openPatch);
+        return 4;
+    }
+    if (!PatchFunctionJump(
+            reinterpret_cast<void *>(&ICLocate),
+            reinterpret_cast<void *>(&FakeFmvICLocate),
+            locatePatch
+        )) {
+        RestoreFunctionPatch(infoPatch);
+        RestoreFunctionPatch(lengthPatch);
+        RestoreFunctionPatch(readFormatPatch);
+        RestoreFunctionPatch(openPatch);
+        return 5;
+    }
+    if (!PatchFunctionJump(
+            reinterpret_cast<void *>(&ICSendMessage),
+            reinterpret_cast<void *>(&FakeFmvICSendMessage),
+            sendPatch
+        )) {
+        RestoreFunctionPatch(locatePatch);
+        RestoreFunctionPatch(infoPatch);
+        RestoreFunctionPatch(lengthPatch);
+        RestoreFunctionPatch(readFormatPatch);
+        RestoreFunctionPatch(openPatch);
+        return 6;
+    }
+
+    const int oldBpp = g_zVideo_DisplayModeBpp;
+    const unsigned int oldRMask = g_zVideo_PixelPack.rMask;
+    const unsigned int oldGMask = g_zVideo_PixelPack.gMask;
+    const unsigned int oldBMask = g_zVideo_PixelPack.bMask;
+    g_zVideo_DisplayModeBpp = 16;
+    g_zVideo_PixelPack.rMask = 0xf800;
+    g_zVideo_PixelPack.gMask = 0x07e0;
+    g_zVideo_PixelPack.bMask = 0x001f;
+
+    g_fakeFmvStreamOpenCount = 0;
+    g_fakeFmvOpenedStream = reinterpret_cast<PAVISTREAM>(0x24681357);
+    g_fakeFmvOpenedPath = 0;
+    g_fakeFmvOpenedType = 0;
+    g_fakeFmvOpenedParam = 0;
+    g_fakeFmvOpenedMode = 0;
+    g_fakeFmvReadFormatCount = 0;
+    g_fakeFmvReadFormatStream = 0;
+    g_fakeFmvReadFormatPosition = -1;
+    g_fakeFmvStreamLengthCount = 0;
+    g_fakeFmvStreamLengthStream = 0;
+    g_fakeFmvStreamInfoCount = 0;
+    g_fakeFmvStreamInfoStream = 0;
+    g_fakeFmvStreamInfoSize = 0;
+    g_fakeFmvIcLocateCount = 0;
+    g_fakeFmvIcLocateType = 0;
+    g_fakeFmvIcLocateHandler = 0;
+    g_fakeFmvIcLocateSrcFormat = 0;
+    g_fakeFmvIcLocateDstFormat = 0;
+    g_fakeFmvIcLocateMode = 0;
+    g_fakeFmvLocatedCodec = reinterpret_cast<HIC>(0x11223344);
+    g_fakeFmvIcSendMessageCount = 0;
+    g_fakeFmvIcSendCodec = 0;
+    g_fakeFmvIcSendMessage = 0;
+    g_fakeFmvIcSendSrcParam = 0;
+    g_fakeFmvIcSendDstParam = 0;
+
+    alignas(8) std::uint8_t storage[0x1e4] = {};
+    zFMV_Stream *const stream = reinterpret_cast<zFMV_Stream *>(storage);
+    TestFieldAt<char *>(stream, 0x38) = const_cast<char *>("success.avi");
+    TestFieldAt<std::int32_t>(stream, 0x104) = 0x12345678;
+
+    stream->Constructor();
+
+    BITMAPINFOHEADER *const src = TestFieldAt<BITMAPINFOHEADER *>(stream, 0x44);
+    BITMAPV4HEADER *const dst = TestFieldAt<BITMAPV4HEADER *>(stream, 0x48);
+    const DWORD testHandler = mmioFOURCC('T', 'E', 'S', 'T');
+    const bool providerOk =
+        g_fakeFmvStreamOpenCount == 1 &&
+        g_fakeFmvOpenedPath == TestFieldAt<char *>(stream, 0x38) &&
+        g_fakeFmvOpenedType == streamtypeVIDEO && g_fakeFmvOpenedParam == 0 &&
+        g_fakeFmvOpenedMode == 0x10 && g_fakeFmvReadFormatCount == 2 &&
+        g_fakeFmvReadFormatStream == g_fakeFmvOpenedStream &&
+        g_fakeFmvReadFormatPosition == 0 && g_fakeFmvStreamLengthCount == 1 &&
+        g_fakeFmvStreamLengthStream == g_fakeFmvOpenedStream &&
+        g_fakeFmvStreamInfoCount == 1 &&
+        g_fakeFmvStreamInfoStream == g_fakeFmvOpenedStream &&
+        g_fakeFmvStreamInfoSize == 0x8c && g_fakeFmvIcLocateCount == 1 &&
+        g_fakeFmvIcLocateType == ICTYPE_VIDEO &&
+        g_fakeFmvIcLocateHandler == testHandler && g_fakeFmvIcLocateSrcFormat == src &&
+        g_fakeFmvIcLocateDstFormat == dst && g_fakeFmvIcLocateMode == ICMODE_DECOMPRESS &&
+        g_fakeFmvIcSendMessageCount == 1 &&
+        g_fakeFmvIcSendCodec == g_fakeFmvLocatedCodec &&
+        g_fakeFmvIcSendMessage == ICM_DECOMPRESS_BEGIN &&
+        g_fakeFmvIcSendSrcParam == reinterpret_cast<DWORD_PTR>(src) &&
+        g_fakeFmvIcSendDstParam == reinterpret_cast<DWORD_PTR>(dst);
+
+    const bool headerZeros =
+        TestFieldAt<std::uint32_t>(stream, 0x08) == 0 &&
+        TestFieldAt<void *>(stream, 0x14) == 0 &&
+        TestFieldAt<void *>(stream, 0x18) == 0 &&
+        TestFieldAt<void *>(stream, 0x1c) == 0 &&
+        TestFieldAt<void *>(stream, 0x20) == 0 &&
+        TestFieldAt<void *>(stream, 0x24) == 0 &&
+        TestFieldAt<void *>(stream, 0x28) == 0 &&
+        TestFieldAt<void *>(stream, 0x2c) == 0 &&
+        TestFieldAt<void *>(stream, 0x30) == 0;
+
+    const bool layoutOk =
+        TestFieldAt<PAVISTREAM>(stream, 0x40) == g_fakeFmvOpenedStream && src != 0 &&
+        dst != 0 && src->biSize == sizeof(BITMAPINFOHEADER) && src->biWidth == 5 &&
+        src->biHeight == 4 && src->biBitCount == 16 &&
+        TestFieldAt<std::int32_t>(stream, 0x4c) == 9 &&
+        TestFieldAt<std::uint32_t>(stream, 0x54) == testHandler &&
+        TestFieldAt<std::uint32_t>(stream, 0x64) == 1 &&
+        TestFieldAt<std::uint32_t>(stream, 0x68) == 30 &&
+        TestFieldAt<std::uint32_t>(stream, 0x78) == 48 &&
+        dst->bV4Size == sizeof(BITMAPV4HEADER) && dst->bV4Width == 5 &&
+        dst->bV4Height == -4 && dst->bV4Planes == 1 && dst->bV4BitCount == 16 &&
+        dst->bV4V4Compression == BI_BITFIELDS && dst->bV4SizeImage == 64 &&
+        dst->bV4RedMask == 0xf800 && dst->bV4GreenMask == 0x07e0 &&
+        dst->bV4BlueMask == 0x001f && dst->bV4AlphaMask == 0 &&
+        TestFieldAt<std::int32_t>(stream, 0xdc) == 48 &&
+        TestFieldAt<HIC>(stream, 0xe0) == g_fakeFmvLocatedCodec &&
+        TestFieldAt<void *>(stream, 0xe4) != 0 &&
+        TestFieldAt<std::int32_t>(stream, 0xe8) == 10 &&
+        TestFieldAt<std::uint32_t>(stream, 0xec) == 30 &&
+        TestFieldAt<std::uint32_t>(stream, 0xf0) == 33 &&
+        TestFieldAt<std::int32_t>(stream, 0xf4) == 0 &&
+        TestFieldAt<std::int32_t>(stream, 0xf8) == 0 &&
+        TestFieldAt<std::int32_t>(stream, 0xfc) == 5 &&
+        TestFieldAt<std::int32_t>(stream, 0x100) == 4 &&
+        TestFieldAt<std::int32_t>(stream, 0x104) == 0 &&
+        TestFieldAt<void *>(stream, 0x10) != 0 &&
+        TestFieldAt<std::int32_t>(stream, 0) == 64 &&
+        TestFieldAt<std::int16_t>(stream, 4) == 5 &&
+        TestFieldAt<std::int16_t>(stream, 6) == 4 &&
+        TestFieldAt<std::int32_t>(stream, 0x34) == 5 &&
+        TestFieldAt<std::int32_t>(stream, 0x3c) == 1 && headerZeros;
+
+    std::free(TestFieldAt<void *>(stream, 0x44));
+    std::free(TestFieldAt<void *>(stream, 0x48));
+    std::free(TestFieldAt<void *>(stream, 0xe4));
+    std::free(TestFieldAt<void *>(stream, 0x10));
+
+    g_zVideo_DisplayModeBpp = oldBpp;
+    g_zVideo_PixelPack.rMask = oldRMask;
+    g_zVideo_PixelPack.gMask = oldGMask;
+    g_zVideo_PixelPack.bMask = oldBMask;
+    RestoreFunctionPatch(sendPatch);
+    RestoreFunctionPatch(locatePatch);
+    RestoreFunctionPatch(infoPatch);
+    RestoreFunctionPatch(lengthPatch);
+    RestoreFunctionPatch(readFormatPatch);
+    RestoreFunctionPatch(openPatch);
+    return providerOk && layoutOk ? 0 : 7;
+}
+
+extern "C" int zfmv_stream_open_audio_missing_file_smoke(void) {
+    alignas(8) std::uint8_t storage[0x1e4] = {};
+    zFMV_Stream *const stream = reinterpret_cast<zFMV_Stream *>(storage);
+
+    TestFieldAt<char *>(stream, 0x38) = const_cast<char *>("__missing_stream_audio__.avi");
+    TestFieldAt<void *>(stream, 0x134) = reinterpret_cast<void *>(0x11111111);
+    TestFieldAt<std::int32_t>(stream, 0x130) = 0x22222222;
+    TestFieldAt<std::int32_t>(stream, 0x1e0) = 5;
+
+    stream->OpenAudio();
+
+    return TestFieldAt<void *>(stream, 0x134) == 0 &&
+                   TestFieldAt<std::int32_t>(stream, 0x130) == 0x22222222 &&
+                   TestFieldAt<std::int32_t>(stream, 0x1e0) == 5
+               ? 0
+               : 1;
+}
+
+extern "C" int zfmv_stream_init_missing_file_smoke(void) {
+    alignas(8) std::uint8_t storage[0x1e4] = {};
+    zFMV_Stream *const stream = reinterpret_cast<zFMV_Stream *>(storage);
+
+    zFMV_Stream *const returned = stream->Init("__missing_stream_init__.avi", 7);
+    const bool ok =
+        returned == stream && TestFieldAt<char *>(stream, 0x38) != 0 &&
+        std::strcmp(TestFieldAt<char *>(stream, 0x38), "__missing_stream_init__.avi") == 0 &&
+        TestFieldAt<std::int32_t>(stream, 0x1d4) == 1 &&
+        TestFieldAt<std::int32_t>(stream, 0x1e0) == 7 &&
+        TestFieldAt<std::int32_t>(stream, 0x130) == 0 &&
+        TestFieldAt<std::int32_t>(stream, 0x3c) == 0 &&
+        TestFieldAt<std::int32_t>(stream, 0x104) == 0;
+
+    stream->Destructor();
+    return ok ? 0 : 1;
+}
+
+extern "C" int zfmv_stream_fill_audio_buffer_smoke(void) {
+    CodeFunctionPatch aviPatch{};
+    if (!PatchFunctionJump(
+            reinterpret_cast<void *>(&AVIStreamRead),
+            reinterpret_cast<void *>(&FakeFmvAVIStreamRead),
+            aviPatch
+        )) {
+        return 1;
+    }
+
+    const int oldBackend = g_zSnd_ActiveBackend;
+    g_zSnd_ActiveBackend = 0;
+
+    unsigned char streamStorage[0x1e4] = {};
+    zFMV_Stream *const stream = reinterpret_cast<zFMV_Stream *>(streamStorage);
+    zSndSample sample = {};
+    TestFmvDirectSoundBufferVTable bufferVTable = {};
+    bufferVTable.Lock = &TestFmvLockSoundBuffer;
+    bufferVTable.Unlock = &TestFmvUnlockSoundBuffer;
+    TestFmvDirectSoundBuffer soundBuffer{&bufferVTable};
+    unsigned char span1[8] = {};
+    unsigned char span2[8] = {};
+    PAVISTREAM const aviStream = reinterpret_cast<PAVISTREAM>(0x13572468);
+
+    sample.primaryVoice.backendBuffer = reinterpret_cast<zSndBuffer *>(&soundBuffer);
+    TestFieldAt<PAVISTREAM>(stream, 0x134) = aviStream;
+    TestFieldAt<std::uint32_t>(stream, 0x168) = 2;
+    TestFieldAt<zSndSample *>(stream, 0x1d0) = &sample;
+
+    ResetFmvAudioFillFakes(span1, 4, 0, 0);
+    g_fakeFmvLockResult = 0x12345678;
+    TestFieldAt<std::uint32_t>(stream, 0x1d8) = 5;
+    const bool lockFailure =
+        stream->FillAudioBuffer(10, 12) == 0 && g_fakeFmvLockCount == 1 &&
+        g_fakeFmvUnlockCount == 0 && g_fakeAviStreamReadCount == 0 &&
+        TestFieldAt<std::uint32_t>(stream, 0x1d8) == 5;
+
+    ResetFmvAudioFillFakes(span1, 4, 0, 0);
+    TestFieldAt<std::uint32_t>(stream, 0x1d8) = 5;
+    const bool firstSpan =
+        stream->FillAudioBuffer(10, 12) == 1 && g_fakeFmvLockCount == 1 &&
+        g_fakeFmvUnlockCount == 1 && g_fakeFmvLastLockOffset == 10 &&
+        g_fakeFmvLastLockBytes == 12 && g_fakeFmvLastLockFlags == 0 &&
+        g_fakeAviStreamReadCount == 1 && g_fakeAviStreams[0] == aviStream &&
+        g_fakeAviStarts[0] == 5 && g_fakeAviSamples[0] == 2 &&
+        g_fakeAviBuffers[0] == span1 && g_fakeAviBufferBytes[0] == 4 &&
+        g_fakeFmvUnlockPtr1 == span1 && g_fakeFmvUnlockBytes1 == 4 &&
+        g_fakeFmvUnlockPtr2 == 0 && g_fakeFmvUnlockBytes2 == 0 &&
+        TestFieldAt<std::uint32_t>(stream, 0x1d8) == 7;
+
+    ResetFmvAudioFillFakes(span1, 4, span2, 6);
+    TestFieldAt<std::uint32_t>(stream, 0x1d8) = 3;
+    const bool wrappedSpans =
+        stream->FillAudioBuffer(20, 14) == 1 && g_fakeAviStreamReadCount == 2 &&
+        g_fakeAviStarts[0] == 3 && g_fakeAviSamples[0] == 2 &&
+        g_fakeAviBuffers[0] == span1 && g_fakeAviBufferBytes[0] == 4 &&
+        g_fakeAviStarts[1] == 5 && g_fakeAviSamples[1] == 3 &&
+        g_fakeAviBuffers[1] == span2 && g_fakeAviBufferBytes[1] == 6 &&
+        g_fakeFmvUnlockPtr1 == span1 && g_fakeFmvUnlockBytes1 == 4 &&
+        g_fakeFmvUnlockPtr2 == span2 && g_fakeFmvUnlockBytes2 == 6 &&
+        TestFieldAt<std::uint32_t>(stream, 0x1d8) == 7;
+
+    ResetFmvAudioFillFakes(span1, 4, 0, 0);
+    g_fakeAviReturn = 0x80004005;
+    TestFieldAt<std::uint32_t>(stream, 0x1d8) = 9;
+    const bool aviFailureStillUnlocks =
+        stream->FillAudioBuffer(0, 4) == 1 && g_fakeAviStreamReadCount == 1 &&
+        g_fakeFmvUnlockCount == 1 && TestFieldAt<std::uint32_t>(stream, 0x1d8) == 11;
+
+    ResetFmvAudioFillFakes(span1, 4, 0, 0);
+    g_fakeFmvUnlockResult = 0x12345678;
+    TestFieldAt<std::uint32_t>(stream, 0x1d8) = 1;
+    const bool unlockFailure =
+        stream->FillAudioBuffer(0, 4) == 0 && g_fakeAviStreamReadCount == 1 &&
+        g_fakeFmvUnlockCount == 1 && TestFieldAt<std::uint32_t>(stream, 0x1d8) == 3;
+
+    g_zSnd_ActiveBackend = oldBackend;
+    RestoreFunctionPatch(aviPatch);
+    return lockFailure && firstSpan && wrappedSpans && aviFailureStillUnlocks && unlockFailure
+               ? 0
+               : 2;
+}
+
+extern "C" int zfmv_stream_read_and_decode_frame_smoke(void) {
+    CodeFunctionPatch aviPatch{};
+    CodeFunctionPatch icPatch{};
+    if (!PatchFunctionJump(
+            reinterpret_cast<void *>(&AVIStreamRead),
+            reinterpret_cast<void *>(&FakeFmvAVIStreamRead),
+            aviPatch
+        )) {
+        return 1;
+    }
+    if (!PatchFunctionJump(
+            reinterpret_cast<void *>(&ICDecompress),
+            reinterpret_cast<void *>(&FakeFmvICDecompress),
+            icPatch
+        )) {
+        RestoreFunctionPatch(aviPatch);
+        return 2;
+    }
+
+    const int oldBackend = g_zSnd_ActiveBackend;
+    g_zSnd_ActiveBackend = 0;
+
+    unsigned char streamStorage[0x1e4] = {};
+    zFMV_Stream *const stream = reinterpret_cast<zFMV_Stream *>(streamStorage);
+    unsigned char compressedFrame[16] = {};
+    unsigned char pixels[16] = {};
+    BITMAPINFOHEADER srcFormat = {};
+    BITMAPINFOHEADER dstFormat = {};
+    PAVISTREAM const videoStream = reinterpret_cast<PAVISTREAM>(0x24681357);
+    PAVISTREAM const audioStream = reinterpret_cast<PAVISTREAM>(0x13572468);
+    HIC const codec = reinterpret_cast<HIC>(0x11223344);
+
+    TestFieldAt<void *>(stream, 0x10) = pixels;
+    TestFieldAt<PAVISTREAM>(stream, 0x40) = videoStream;
+    TestFieldAt<BITMAPINFOHEADER *>(stream, 0x44) = &srcFormat;
+    TestFieldAt<BITMAPINFOHEADER *>(stream, 0x48) = &dstFormat;
+    TestFieldAt<std::uint32_t>(stream, 0x4c) = 3;
+    TestFieldAt<int>(stream, 0xdc) = sizeof(compressedFrame);
+    TestFieldAt<HIC>(stream, 0xe0) = codec;
+    TestFieldAt<void *>(stream, 0xe4) = compressedFrame;
+    InitializeCriticalSection(&TestFieldAt<CRITICAL_SECTION>(stream, 0x108));
+
+    ResetFmvAudioFillFakes(0, 0, 0, 0);
+    const bool videoDecode =
+        stream->ReadAndDecodeFrame(1) == 2 && g_fakeAviStreamReadCount == 1 &&
+        g_fakeAviStreams[0] == videoStream && g_fakeAviStarts[0] == 1 &&
+        g_fakeAviSamples[0] == 1 && g_fakeAviBuffers[0] == compressedFrame &&
+        g_fakeAviBufferBytes[0] == sizeof(compressedFrame) &&
+        g_fakeIcDecompressCount == 1 && g_fakeIcLastCodec == codec &&
+        g_fakeIcLastFlags == 0 && g_fakeIcLastSrcFormat == &srcFormat &&
+        g_fakeIcLastCompressedFrame == compressedFrame &&
+        g_fakeIcLastDstFormat == &dstFormat && g_fakeIcLastPixels == pixels &&
+        TestFieldAt<std::uint32_t>(stream, 0x104) == 2;
+
+    ResetFmvAudioFillFakes(0, 0, 0, 0);
+    const bool frameWrap =
+        stream->ReadAndDecodeFrame(2) == 0 && g_fakeAviStreamReadCount == 1 &&
+        g_fakeAviStarts[0] == 2 && g_fakeIcDecompressCount == 1 &&
+        TestFieldAt<std::uint32_t>(stream, 0x104) == 0;
+
+    ResetFmvAudioFillFakes(0, 0, 0, 0);
+    g_fakeAviReturn = 0x80004005;
+    TestFieldAt<std::uint32_t>(stream, 0x104) = 0;
+    const bool videoReadFailure =
+        stream->ReadAndDecodeFrame(0) == 0 && g_fakeAviStreamReadCount == 1 &&
+        g_fakeIcDecompressCount == 0 && TestFieldAt<std::uint32_t>(stream, 0x104) == 0;
+
+    ResetFmvAudioFillFakes(0, 0, 0, 0);
+    g_fakeIcReturn = 1;
+    const bool decompressFailure =
+        stream->ReadAndDecodeFrame(0) == 0 && g_fakeAviStreamReadCount == 1 &&
+        g_fakeIcDecompressCount == 1 && TestFieldAt<std::uint32_t>(stream, 0x104) == 0;
+    LeaveCriticalSection(&TestFieldAt<CRITICAL_SECTION>(stream, 0x108));
+
+    TestFmvDirectSoundBufferVTable bufferVTable = {};
+    bufferVTable.GetCurrentPosition = &TestFmvGetCurrentPosition;
+    bufferVTable.Lock = &TestFmvLockSoundBuffer;
+    bufferVTable.Unlock = &TestFmvUnlockSoundBuffer;
+    TestFmvDirectSoundBuffer soundBuffer{&bufferVTable};
+    zSndSample sample = {};
+    unsigned char audioSpan[8] = {};
+    sample.primaryVoice.backendBuffer = reinterpret_cast<zSndBuffer *>(&soundBuffer);
+    TestFieldAt<PAVISTREAM>(stream, 0x134) = audioStream;
+    TestFieldAt<int>(stream, 0x130) = 1;
+    TestFieldAt<std::uint32_t>(stream, 0x168) = 2;
+    TestFieldAt<zSndSample *>(stream, 0x1d0) = &sample;
+    TestFieldAt<int>(stream, 0x1d4) = 0;
+    TestFieldAt<int>(stream, 0x1e0) = 1;
+    TestFieldAt<std::uint32_t>(stream, 0x1c8) = 8;
+    TestFieldAt<std::uint32_t>(stream, 0x4c) = 0;
+
+    ResetFmvAudioFillFakes(audioSpan, 4, 0, 0);
+    g_fakeFmvPlayCursor = 9;
+    TestFieldAt<int>(stream, 0x1dc) = 0;
+    TestFieldAt<std::uint32_t>(stream, 0x1d8) = 4;
+    const bool firstHalfRefill =
+        stream->ReadAndDecodeFrame(0xffffffffu) == 0 && g_fakeFmvGetCurrentPositionCount == 1 &&
+        g_fakeFmvLockCount == 1 && g_fakeFmvLastLockOffset == 0 &&
+        g_fakeFmvLastLockBytes == 8 && g_fakeAviStreamReadCount == 1 &&
+        g_fakeAviStreams[0] == audioStream && TestFieldAt<int>(stream, 0x1dc) == 1;
+
+    ResetFmvAudioFillFakes(audioSpan, 4, 0, 0);
+    g_fakeFmvPlayCursor = 4;
+    TestFieldAt<int>(stream, 0x1dc) = 1;
+    TestFieldAt<std::uint32_t>(stream, 0x1d8) = 6;
+    const bool secondHalfRefill =
+        stream->ReadAndDecodeFrame(0xffffffffu) == 0 && g_fakeFmvGetCurrentPositionCount == 1 &&
+        g_fakeFmvLockCount == 1 && g_fakeFmvLastLockOffset == 8 &&
+        g_fakeFmvLastLockBytes == 8 && g_fakeAviStreamReadCount == 1 &&
+        g_fakeAviStreams[0] == audioStream && TestFieldAt<int>(stream, 0x1dc) == 0;
+
+    DeleteCriticalSection(&TestFieldAt<CRITICAL_SECTION>(stream, 0x108));
+    g_zSnd_ActiveBackend = oldBackend;
+    RestoreFunctionPatch(icPatch);
+    RestoreFunctionPatch(aviPatch);
+    return videoDecode && frameWrap && videoReadFailure && decompressFailure &&
+                   firstHalfRefill && secondHalfRefill
+               ? 0
+               : 3;
 }
 
 #else

@@ -429,7 +429,7 @@ extern "C" int zgame_options_init_registry_context_smoke() {
 extern "C" int zmodel_display_init_smoke() {
     g_zVideo_ActiveRendererPath = 0;
     gModel_DefaultGraphicsFlags = 0;
-    g_zModel_GraphicsFlagsOption = nullptr;
+    gModel_pGraphicsFlags = nullptr;
     gModel_RenderFn = nullptr;
     gModel_ClipMaskStackTop = nullptr;
     g_Variant_CurrentTag.count = 3;
@@ -440,11 +440,11 @@ extern "C" int zmodel_display_init_smoke() {
         gModel_FogDistanceStart != 500.0f || gModel_FogDistanceEnd != 700.0f ||
         gModel_FogDistanceInvRange != 0.005f || gModel_FogHeightHigh != 300.0f ||
         gModel_FogHeightLow != 200.0f || gModel_FogHeightInvRange != 0.01f ||
-        gModel_FogDensity != 2.0f || g_zModel_InverseZTolerance != 0.01f ||
+        gModel_FogDensity != 2.0f || g_zRndr_InverseZTolerance != 0.01f ||
         gModel_RenderFn != zModel::RenderNodeSoftware ||
         gModel_ClipMaskStackTop != gModel_ClipMaskStack ||
         gModel_DefaultGraphicsFlags != -1 ||
-        g_zModel_GraphicsFlagsOption != &gModel_DefaultGraphicsFlags ||
+        gModel_pGraphicsFlags != &gModel_DefaultGraphicsFlags ||
         g_Variant_CurrentTag.count != 0 || g_Variant_CurrentTag.tags[0] != 0xff) {
         return 1;
     }
@@ -455,14 +455,14 @@ extern "C" int zmodel_display_init_smoke() {
     option.next = nullptr;
     g_zGame_Options_OptionListHead = &option;
     g_zVideo_ActiveRendererPath = 1;
-    g_zModel_HardwareInverseZTolerance = 0.0f;
-    g_zModel_GraphicsFlagsOption = nullptr;
+    g_zVideo_InverseZTolerancePending = 0.0f;
+    gModel_pGraphicsFlags = nullptr;
 
-    const bool hardwareOk = zModel_Display_Init() == 0 && g_zModel_InverseZTolerance == 0.02f &&
-                            g_zModel_HardwareInverseZTolerance == 0.02f &&
+    const bool hardwareOk = zModel_Display_Init() == 0 && g_zRndr_InverseZTolerance == 0.02f &&
+                            g_zVideo_InverseZTolerancePending == 0.02f &&
                             gModel_RenderFn == zModel::RenderNodeSoftware &&
                             gModel_ClipMaskStackTop == gModel_ClipMaskStack &&
-                            g_zModel_GraphicsFlagsOption == &option;
+                            gModel_pGraphicsFlags == &option.payloadOrBuffer;
 
     g_zGame_Options_OptionListHead = nullptr;
     g_zVideo_ActiveRendererPath = 0;
@@ -5650,8 +5650,8 @@ extern "C" int zmodel_light_fog_fade_smoke() {
     gModel_HasActiveLights = 1;
     g_zModel_SoftwarePathActive = 0;
     g_zModel_FogTargetColorOverride = {};
-    static std::int32_t graphicsFlags = 1;
-    g_zModel_GraphicsFlagsOption = &graphicsFlags;
+    static int graphicsFlags = 1;
+    gModel_pGraphicsFlags = &graphicsFlags;
     zRndr::g_fogParamsActive = {};
     zRndr::g_fogParamsActive.colorRgb01[0] = -1.0f;
     zRndr::g_fogParamsActive.colorRgb01[1] = -1.0f;
@@ -5713,7 +5713,7 @@ extern "C" int zmodel_light_fog_fade_smoke() {
     g_zModel_SoftwarePathActive = 0;
     g_zModel_FogTargetColorOverride = {};
     gModel_DefaultGraphicsFlags = 0;
-    g_zModel_GraphicsFlagsOption = &gModel_DefaultGraphicsFlags;
+    gModel_pGraphicsFlags = &gModel_DefaultGraphicsFlags;
 
     return overrideOnlyOk ? 0 : 10;
 }
@@ -15554,12 +15554,31 @@ extern "C" int zclass_cls_di_region_filter_mesh_faces_smoke() {
 }
 
 extern "C" int zclass_camera_build_frustum_grid_tiles_from_params_smoke() {
+    auto setIdentity = [](float *matrix) {
+        const zMat4x3 identity{1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+                               0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f};
+        std::memcpy(matrix, &identity, sizeof(identity));
+    };
+
     zVec3 polygonVertices[8] = {};
     zVec3 polygonNormals[8] = {};
     zVec3 *const savedPolygonVertices = g_zModel_PointInPolygonVertices;
     zVec3 *const savedPolygonNormals = g_zModel_PointInPolygonEdgeNormals;
     const int savedPolygonVertexCount = g_zModel_PointInPolygonVertexCount;
     zClass_CameraDataPartial *const savedViewContext = g_zVideo_pActiveViewContext;
+    zClass_CameraDataPartial *const savedProjectionViewContext =
+        g_zVideo_pActiveProjectionViewContext;
+    int *const savedMatrixIdentitySlot = zMath::g_currentMatrixIdentityFlagSlot;
+    float **const savedMatrixPtrSlot = zMath::g_currentMatrixPtrSlot;
+
+    int matrixIdentityFlags[16] = {};
+    float *matrixSlots[16] = {};
+    zMat4x3 matrixStorage[16] = {};
+    setIdentity(reinterpret_cast<float *>(&matrixStorage[0]));
+    matrixIdentityFlags[0] = 1;
+    matrixSlots[0] = reinterpret_cast<float *>(&matrixStorage[0]);
+    zMath::g_currentMatrixIdentityFlagSlot = &matrixIdentityFlags[0];
+    zMath::g_currentMatrixPtrSlot = &matrixSlots[0];
 
     g_zModel_PointInPolygonVertices = polygonVertices;
     g_zModel_PointInPolygonEdgeNormals = polygonNormals;
@@ -15601,6 +15620,7 @@ extern "C" int zclass_camera_build_frustum_grid_tiles_from_params_smoke() {
     cameraData.frustumCorners[0] = {5.0f, 0.0f, -5.0f};
     cameraData.frustumCorners[1] = {-5.0f, 0.0f, 5.0f};
     g_zVideo_pActiveViewContext = &cameraData;
+    g_zVideo_pActiveProjectionViewContext = &cameraData;
 
     int result = zClass_Camera::BuildFrustumGridTilesFromParams(&world, &worldData, &cameraData);
     int status = 0;
@@ -15634,19 +15654,41 @@ extern "C" int zclass_camera_build_frustum_grid_tiles_from_params_smoke() {
     }
 
     g_zVideo_pActiveViewContext = savedViewContext;
+    g_zVideo_pActiveProjectionViewContext = savedProjectionViewContext;
     g_zModel_PointInPolygonVertices = savedPolygonVertices;
     g_zModel_PointInPolygonEdgeNormals = savedPolygonNormals;
     g_zModel_PointInPolygonVertexCount = savedPolygonVertexCount;
+    zMath::g_currentMatrixIdentityFlagSlot = savedMatrixIdentitySlot;
+    zMath::g_currentMatrixPtrSlot = savedMatrixPtrSlot;
     return status;
 }
 
 extern "C" int zclass_camera_build_frustum_grid_tiles_smoke() {
+    auto setIdentity = [](float *matrix) {
+        const zMat4x3 identity{1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+                               0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f};
+        std::memcpy(matrix, &identity, sizeof(identity));
+    };
+
     zVec3 polygonVertices[8] = {};
     zVec3 polygonNormals[8] = {};
     zVec3 *const savedPolygonVertices = g_zModel_PointInPolygonVertices;
     zVec3 *const savedPolygonNormals = g_zModel_PointInPolygonEdgeNormals;
     const int savedPolygonVertexCount = g_zModel_PointInPolygonVertexCount;
     zClass_CameraDataPartial *const savedViewContext = g_zVideo_pActiveViewContext;
+    zClass_CameraDataPartial *const savedProjectionViewContext =
+        g_zVideo_pActiveProjectionViewContext;
+    int *const savedMatrixIdentitySlot = zMath::g_currentMatrixIdentityFlagSlot;
+    float **const savedMatrixPtrSlot = zMath::g_currentMatrixPtrSlot;
+
+    int matrixIdentityFlags[16] = {};
+    float *matrixSlots[16] = {};
+    zMat4x3 matrixStorage[16] = {};
+    setIdentity(reinterpret_cast<float *>(&matrixStorage[0]));
+    matrixIdentityFlags[0] = 1;
+    matrixSlots[0] = reinterpret_cast<float *>(&matrixStorage[0]);
+    zMath::g_currentMatrixIdentityFlagSlot = &matrixIdentityFlags[0];
+    zMath::g_currentMatrixPtrSlot = &matrixSlots[0];
 
     g_zModel_PointInPolygonVertices = polygonVertices;
     g_zModel_PointInPolygonEdgeNormals = polygonNormals;
@@ -15688,6 +15730,7 @@ extern "C" int zclass_camera_build_frustum_grid_tiles_smoke() {
     cameraData.frustumCorners[0] = {10.0f, 0.0f, 0.0f};
     cameraData.frustumCorners[1] = {0.0f, 0.0f, 12.0f};
     g_zVideo_pActiveViewContext = &cameraData;
+    g_zVideo_pActiveProjectionViewContext = &cameraData;
 
     int result = zClass_Camera::BuildFrustumGridTiles(&world, &worldData, &cameraData);
     int status = 0;
@@ -15724,9 +15767,12 @@ extern "C" int zclass_camera_build_frustum_grid_tiles_smoke() {
     }
 
     g_zVideo_pActiveViewContext = savedViewContext;
+    g_zVideo_pActiveProjectionViewContext = savedProjectionViewContext;
     g_zModel_PointInPolygonVertices = savedPolygonVertices;
     g_zModel_PointInPolygonEdgeNormals = savedPolygonNormals;
     g_zModel_PointInPolygonVertexCount = savedPolygonVertexCount;
+    zMath::g_currentMatrixIdentityFlagSlot = savedMatrixIdentitySlot;
+    zMath::g_currentMatrixPtrSlot = savedMatrixPtrSlot;
     return status;
 }
 
@@ -15763,6 +15809,8 @@ extern "C" int zclass_camera_render_frustum_grid_tiles_smoke() {
     zVec3 *const savedPolygonNormals = g_zModel_PointInPolygonEdgeNormals;
     const int savedPolygonVertexCount = g_zModel_PointInPolygonVertexCount;
     zClass_CameraDataPartial *const savedViewContext = g_zVideo_pActiveViewContext;
+    zClass_CameraDataPartial *const savedProjectionViewContext =
+        g_zVideo_pActiveProjectionViewContext;
     zClass_RenderFn const savedRenderFn = gModel_RenderFn;
     int *const savedClipStackTop = gModel_ClipMaskStackTop;
     const int savedClipStack0 = gModel_ClipMaskStack[0];
@@ -15863,6 +15911,7 @@ extern "C" int zclass_camera_render_frustum_grid_tiles_smoke() {
     zClass_NodePartial camera{};
     camera.classData = &cameraData;
     g_zVideo_pActiveViewContext = &cameraData;
+    g_zVideo_pActiveProjectionViewContext = &cameraData;
 
     const int result = zClass_Camera::RenderFrustumGridTiles(&world, &camera, &cameraData);
     int status = 0;
@@ -15889,6 +15938,7 @@ extern "C" int zclass_camera_render_frustum_grid_tiles_smoke() {
     g_zModel_PointInPolygonEdgeNormals = savedPolygonNormals;
     g_zModel_PointInPolygonVertexCount = savedPolygonVertexCount;
     g_zVideo_pActiveViewContext = savedViewContext;
+    g_zVideo_pActiveProjectionViewContext = savedProjectionViewContext;
     gModel_RenderFn = savedRenderFn;
     gModel_ClipMaskStackTop = savedClipStackTop;
     gModel_ClipMaskStack[0] = savedClipStack0;
@@ -15921,6 +15971,8 @@ extern "C" int zclass_camera_render_overlay_nodes_smoke() {
     int *const savedClipStackTop = gModel_ClipMaskStackTop;
     const int savedClipStack0 = gModel_ClipMaskStack[0];
     zClass_CameraDataPartial *const savedViewContext = g_zVideo_pActiveViewContext;
+    zClass_CameraDataPartial *const savedProjectionViewContext =
+        g_zVideo_pActiveProjectionViewContext;
     const int savedBoundsContext = g_zClass_RenderBoundsContextActive;
     const int savedObjectHseTestEnabled = g_zClass_ObjectHseTestEnabled;
     const int savedFrustumGridTileIndex = g_zClass_RenderFrustumGridTileIndex;
@@ -15950,6 +16002,7 @@ extern "C" int zclass_camera_render_overlay_nodes_smoke() {
     cameraData.worldFrustumNormals[4] = {0.0f, 0.0f, 1.0f};
     cameraData.worldFrustumNormals[5] = {0.0f, 0.0f, 1.0f};
     g_zVideo_pActiveViewContext = &cameraData;
+    g_zVideo_pActiveProjectionViewContext = &cameraData;
     gModel_RenderFn = TestZClassRenderTraverseCallback;
     gModel_ClipMaskStackTop = gModel_ClipMaskStack;
     gModel_ClipMaskStack[0] = 0;
@@ -16001,6 +16054,7 @@ extern "C" int zclass_camera_render_overlay_nodes_smoke() {
     gModel_ClipMaskStackTop = savedClipStackTop;
     gModel_ClipMaskStack[0] = savedClipStack0;
     g_zVideo_pActiveViewContext = savedViewContext;
+    g_zVideo_pActiveProjectionViewContext = savedProjectionViewContext;
     g_zClass_RenderBoundsContextActive = savedBoundsContext;
     g_zClass_ObjectHseTestEnabled = savedObjectHseTestEnabled;
     g_zClass_RenderFrustumGridTileIndex = savedFrustumGridTileIndex;

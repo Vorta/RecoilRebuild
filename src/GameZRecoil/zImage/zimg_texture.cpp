@@ -2,7 +2,6 @@
 
 #include "GameZRecoil/zError/zError.h"
 #include "GameZRecoil/zGame/zGame.h"
-#include "GameZRecoil/zHud/zhud_ui.h"
 #include "GameZRecoil/zModel/zModel.h"
 #include "GameZRecoil/zReader/zReader.h"
 #include "GameZRecoil/zRndr/zRndr.h"
@@ -10,6 +9,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+extern char g_HudSensorTracker_ReadFileFailedFmt[18];
 
 extern "C" {
 /**

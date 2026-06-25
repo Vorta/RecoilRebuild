@@ -56,6 +56,16 @@ std::int32_t FloatBitsForTest(float value) {
     return raw;
 }
 
+float WorldPartitionRadiusBiasForTest(float cellSizeX, float cellSizeZ) {
+    const float rangeSq = cellSizeX * cellSizeX + cellSizeZ * cellSizeZ;
+    int bits = 0;
+    std::memcpy(&bits, &rangeSq, sizeof(bits));
+    bits = (bits >> 1) + 0x1fc00000;
+    float range = 0.0f;
+    std::memcpy(&range, &bits, sizeof(range));
+    return range * -0.5f;
+}
+
 std::int32_t __fastcall zclass_test_node_type_0x42(zClass_NodePartial *node) {
     return node->nodeType == 0x42 ? 1 : 0;
 }
@@ -2018,6 +2028,15 @@ extern "C" int zclass_display_init_smoke() {
         return 1;
     }
 
+    zClass_DisplayDataPartial *const displayData =
+        static_cast<zClass_DisplayDataPartial *>(node->classData);
+    if (displayData->x != 0 || displayData->y != 0 || displayData->width != 1 ||
+        displayData->height != 1 || displayData->backgroundR != 0.392f ||
+        displayData->backgroundG != 0.392f || displayData->backgroundB != 1.0f) {
+        FreeTypeListsForTest();
+        return 4;
+    }
+
     zClass_NodePartial removeParent{};
     zClass_NodePartial child{};
     zClass_NodePartial *children[] = {&child};
@@ -2035,7 +2054,12 @@ extern "C" int zclass_display_init_smoke() {
         return 2;
     }
 
-    zClass_Object3D::DeleteNode(node);
+    if (zClass_Class::DeleteNodeByType(node) != 0 || g_zClass_ActiveNodeCount != 0 ||
+        node->classData != nullptr) {
+        FreeTypeListsForTest();
+        return 5;
+    }
+
     FreeTypeListsForTest();
 
     g_zClass_NodeFreeHeadIndex = -1;
@@ -2402,6 +2426,206 @@ extern "C" int zclass_world_queue_area_update_smoke() {
 
     std::free(worldData.pendingAreaUpdates);
     return 0;
+}
+
+extern "C" int zclass_world_new_smoke() {
+    ResetTypeListsForTest();
+
+    zClass_NodeFreeListSlot slot{};
+    slot.freeTag = 0x00ffffff;
+    g_zClass_NodeArray = &slot;
+    g_zClass_NodeArraySize = 1;
+    g_zClass_NodeFreeHeadIndex = 0;
+    g_zClass_ActiveNodeCount = 0;
+    g_zClass_DeferredProcessingEnabled = 1;
+
+    zClass_NodePartial *node = zClass_World::gwWorldNew();
+    if (node != &slot.node || node->classId != 2 || node->classData == nullptr ||
+        g_zClass_NodeFreeHeadIndex != -1 || g_zClass_ActiveNodeCount != 1 ||
+        zClass_TypeList::Head(13) == nullptr || zClass_TypeList::Head(13)->node != node) {
+        std::free(node != nullptr ? node->classData : nullptr);
+        FreeTypeListsForTest();
+        g_zClass_NodeArray = nullptr;
+        g_zClass_NodeArraySize = 0;
+        return 1;
+    }
+
+    zClass_WorldDataPartial *data =
+        static_cast<zClass_WorldDataPartial *>(node->classData);
+    const bool defaultsOk =
+        data->fogState == 0 && data->lightCount == 0 && data->lightNodes == nullptr &&
+        data->soundCount == 0 && data->soundNodes == nullptr && data->scaleX == 1.0f &&
+        data->scaleY == 1.0f && data->scaleZ == 1.0f &&
+        data->clampQueriesToBounds == 0 && data->flags == 1 &&
+        data->partitionMaxDecFeatureCount == 16;
+
+    std::free(node->classData);
+    node->classData = nullptr;
+    zClass_TypeList::FreeAll();
+    FreeTypeListsForTest();
+    g_zClass_NodeArray = nullptr;
+    g_zClass_NodeArraySize = 0;
+    g_zClass_NodeFreeHeadIndex = -1;
+    g_zClass_ActiveNodeCount = 0;
+    return defaultsOk ? 0 : 2;
+}
+
+extern "C" int zclass_world_set_origin_smoke() {
+    zClass_NodePartial world{};
+    zClass_WorldDataPartial worldData{};
+    world.classData = &worldData;
+    worldData.worldSizeX = 120.0f;
+    worldData.worldSizeZ = -80.0f;
+
+    return zClass_World::gwWorldSetOrigin(&world, 12.5f, 48.0f) == 0 &&
+                   worldData.originX == 12.5f && worldData.originZ == 48.0f &&
+                   worldData.worldMaxX == 132.5f && worldData.worldMaxZ == -32.0f
+               ? 0
+               : 1;
+}
+
+extern "C" int zclass_world_set_size_smoke() {
+    zClass_NodePartial world{};
+    zClass_WorldDataPartial worldData{};
+    world.classData = &worldData;
+    worldData.originX = -30.0f;
+    worldData.originZ = 75.0f;
+
+    return zClass_World::gwWorldSetSize(&world, 300.0f, -150.0f) == 0 &&
+                   worldData.worldSizeX == 300.0f && worldData.worldSizeZ == -150.0f &&
+                   worldData.worldMaxX == 270.0f && worldData.worldMaxZ == -75.0f
+               ? 0
+               : 1;
+}
+
+extern "C" int zclass_world_set_virtual_area_partition_smoke() {
+    zClass_NodePartial world{};
+    zClass_WorldDataPartial worldData{};
+    world.classData = &worldData;
+    worldData.originX = 10.0f;
+    worldData.originZ = 100.0f;
+    worldData.worldSizeX = 100.0f;
+    worldData.worldSizeZ = -100.0f;
+
+    if (zClass_World::gwWorldSetVirtualAreaPartition(&world, 25.0f, -40.0f) != 0) {
+        return 1;
+    }
+
+    int result = 0;
+    if (worldData.areaGridColCount != 4 || worldData.areaGridRowCount != 3 ||
+        worldData.areaCellSizeX != 25.0f || worldData.areaCellSizeZ != -40.0f ||
+        worldData.areaHalfSizeX != 12.5f || worldData.areaHalfSizeZ != -20.0f ||
+        worldData.areaInvSizeX != 0.04f || worldData.areaInvSizeZ != -0.025f ||
+        worldData.partitionInclusionTolX != 3.125f ||
+        worldData.partitionInclusionTolZ != 5.0f ||
+        FloatBitsForTest(worldData.areaCellRadiusBias) !=
+            FloatBitsForTest(WorldPartitionRadiusBiasForTest(25.0f, -40.0f))) {
+        result = 2;
+    } else if (worldData.areaGridRows == nullptr || worldData.areaGridRows[0] == nullptr ||
+               worldData.areaGridRows[2] == nullptr) {
+        result = 3;
+    } else {
+        zWorldAreaPartial *first = &worldData.areaGridRows[0][0];
+        zWorldAreaPartial *last = &worldData.areaGridRows[2][3];
+        if ((first->areaFlags & 0x100) == 0 || first->areaIndex != -1 ||
+            first->cellMinX != 10.0f || first->cellMinZ != 100.0f ||
+            first->bbox[0] != 10.0f || first->bbox[3] != 35.0f ||
+            first->bbox[2] != 60.0f || first->bbox[5] != 100.0f ||
+            first->bboxCenter.x != 22.5f || first->bboxCenter.z != 80.0f) {
+            result = 4;
+        } else if ((last->areaFlags & 0x100) == 0 || last->areaIndex != -1 ||
+                   last->cellMinX != 85.0f || last->cellMinZ != 20.0f ||
+                   last->bbox[0] != 85.0f || last->bbox[3] != 110.0f ||
+                   last->bbox[2] != -20.0f || last->bbox[5] != 20.0f) {
+            result = 5;
+        }
+    }
+
+    zClass_World::FreeVirtualAreaPartitions(&world);
+    return result;
+}
+
+extern "C" int zclass_world_virtual_partition_statics_smoke() {
+    ResetTypeListsForTest();
+
+    zClass_NodePartial world{};
+    zClass_WorldDataPartial worldData{};
+    world.classId = 2;
+    world.flags = 1;
+    world.classData = &worldData;
+
+    if (zClass_World::SetVirtualPartition(&world, 0) != 0 ||
+        worldData.clampQueriesToBounds != 0) {
+        FreeTypeListsForTest();
+        return 2;
+    }
+
+    zWorldAreaPartial row0[2]{};
+    zWorldAreaPartial row1[2]{};
+    zWorldAreaPartial *rows[2] = {row0, row1};
+    for (int row = 0; row < 2; ++row) {
+        for (int col = 0; col < 2; ++col) {
+            rows[row][col].areaFlags = 1;
+            rows[row][col].cellMinX = static_cast<float>(col * 50);
+            rows[row][col].cellMinZ = 100.0f - static_cast<float>(row * 50);
+        }
+    }
+
+    worldData.originX = 0.0f;
+    worldData.originZ = 100.0f;
+    worldData.worldSizeX = 100.0f;
+    worldData.worldSizeZ = -100.0f;
+    worldData.worldMaxX = 100.0f;
+    worldData.worldMaxZ = 0.0f;
+    worldData.areaCellSizeX = 50.0f;
+    worldData.areaCellSizeZ = -50.0f;
+    worldData.areaInvSizeX = 0.02f;
+    worldData.areaInvSizeZ = -0.02f;
+    worldData.partitionInclusionTolX = 2.0f;
+    worldData.partitionInclusionTolZ = 2.0f;
+    worldData.areaGridColCount = 2;
+    worldData.areaGridRowCount = 2;
+    worldData.areaGridRows = rows;
+    worldData.areaGridExternalOwnership = 1;
+
+    const int setResult = zClass_World::SetVirtualPartition(&world, 1);
+    const bool unchangedEmptyGrid =
+        row0[0].childCount == 0 && row0[1].childCount == 0 &&
+        row1[0].childCount == 0 && row1[1].childCount == 0 &&
+        world.listCountB == 0 && world.listB == nullptr;
+    FreeTypeListsForTest();
+    return setResult == 0 && worldData.clampQueriesToBounds == 1 && unchangedEmptyGrid ? 0 : 3;
+}
+
+extern "C" int zclass_world_partition_tolerance_smoke() {
+    zClass_NodePartial world{};
+    zClass_WorldDataPartial worldData{};
+    world.classData = &worldData;
+
+    return zClass_World::gwWorldSetPartitionInclusionTolerance(&world, 1.25f, -2.5f) == 0 &&
+                   worldData.partitionInclusionTolX == 1.25f &&
+                   worldData.partitionInclusionTolZ == -2.5f
+               ? 0
+               : 1;
+}
+
+extern "C" int zclass_world_max_dec_features_smoke() {
+    zClass_NodePartial world{};
+    zClass_WorldDataPartial worldData{};
+    world.classData = &worldData;
+
+    if (zClass_World::gwWorldSetMaxDecFeatures(&world, 17) != 0 ||
+        worldData.partitionMaxDecFeatureCount != 17) {
+        return 1;
+    }
+    if (zClass_World::gwWorldSetMaxDecFeatures(&world, 300) != 0 ||
+        worldData.partitionMaxDecFeatureCount != 255) {
+        return 2;
+    }
+    return zClass_World::gwWorldSetMaxDecFeatures(&world, -1) == 0 &&
+                   worldData.partitionMaxDecFeatureCount == 255
+               ? 0
+               : 3;
 }
 
 extern "C" int zclass_world_apply_pending_fog_settings_smoke() {

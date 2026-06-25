@@ -1,5 +1,6 @@
 #include "GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.h"
 
+#include <cstdint>
 #include <cstring>
 #include <new>
 
@@ -15,6 +16,18 @@ extern "C" int(__fastcall *g_zVideo_pfnLockSurfaceState)(
     zVideo_SurfaceStatePartial *surfaceState);
 extern "C" int(__fastcall *g_zVideo_pfnUnlockSurfaceState)(
     zVideo_SurfaceStatePartial *surfaceState);
+
+namespace zVideo {
+int __fastcall SetHalfResAdjustMode(int mode);
+}
+
+namespace HudUi {
+void __fastcall SetInvalidateMode(int mode);
+}
+
+namespace zSnd {
+int GetCDAudioOption();
+}
 
 struct RecoilStateCredits {
     RecoilPtr32 vftable;
@@ -94,6 +107,69 @@ zSndPlayHandleSnapshot *NewEmptySnapshot() {
     snapshot->listHead = listHead;
     snapshot->itemCount = 0;
     return snapshot;
+}
+
+struct CodeFunctionPatch {
+    void *target;
+    unsigned char original[5];
+    bool active;
+};
+
+bool PatchFunctionJump(void *target, void *replacement, CodeFunctionPatch &patch) {
+    DWORD oldProtect = 0;
+    if (!VirtualProtect(target, sizeof(patch.original), PAGE_EXECUTE_READWRITE, &oldProtect)) {
+        return false;
+    }
+
+    patch.target = target;
+    std::memcpy(patch.original, target, sizeof(patch.original));
+
+    unsigned char *const bytes = static_cast<unsigned char *>(target);
+    bytes[0] = 0xe9;
+    const std::intptr_t rel = reinterpret_cast<unsigned char *>(replacement) -
+                              (reinterpret_cast<unsigned char *>(target) + 5);
+    *reinterpret_cast<std::int32_t *>(bytes + 1) = static_cast<std::int32_t>(rel);
+
+    DWORD ignored = 0;
+    VirtualProtect(target, sizeof(patch.original), oldProtect, &ignored);
+    FlushInstructionCache(GetCurrentProcess(), target, sizeof(patch.original));
+    patch.active = true;
+    return true;
+}
+
+void RestoreFunctionPatch(CodeFunctionPatch &patch) {
+    if (!patch.active) {
+        return;
+    }
+
+    DWORD oldProtect = 0;
+    if (VirtualProtect(patch.target, sizeof(patch.original), PAGE_EXECUTE_READWRITE,
+                       &oldProtect)) {
+        std::memcpy(patch.target, patch.original, sizeof(patch.original));
+        DWORD ignored = 0;
+        VirtualProtect(patch.target, sizeof(patch.original), oldProtect, &ignored);
+        FlushInstructionCache(GetCurrentProcess(), patch.target, sizeof(patch.original));
+    }
+    patch.active = false;
+}
+
+zSndPlayHandleSnapshot *FakeMainMenuCreateSnapshot() {
+    return NewEmptySnapshot();
+}
+
+int __fastcall FakeMainMenuSetHalfResAdjustMode(int) {
+    return 0;
+}
+
+void __fastcall FakeMainMenuSetInvalidateMode(int) {
+}
+
+int __fastcall FakeMainMenuSampleSetInitByName(const char *) {
+    return 1;
+}
+
+int FakeMainMenuGetCDAudioOption() {
+    return 0;
 }
 } // namespace
 
@@ -1100,8 +1176,34 @@ extern "C" int recoil_state_main_menu_transition_on_try_become_current_smoke(voi
     g_zSnd_PreInitialized = 1;
     g_zSnd_ActiveBackend = 0;
 
+    CodeFunctionPatch patches[5] = {};
+    if (!PatchFunctionJump(
+            reinterpret_cast<void *>(&zVideo::SetHalfResAdjustMode),
+            reinterpret_cast<void *>(&FakeMainMenuSetHalfResAdjustMode),
+            patches[0]) ||
+        !PatchFunctionJump(
+            reinterpret_cast<void *>(&HudUi::SetInvalidateMode),
+            reinterpret_cast<void *>(&FakeMainMenuSetInvalidateMode),
+            patches[1]) ||
+        !PatchFunctionJump(
+            reinterpret_cast<void *>(&zSndPlayHandleSnapshot::CreateFromActiveSamples),
+            reinterpret_cast<void *>(&FakeMainMenuCreateSnapshot),
+            patches[2]) ||
+        !PatchFunctionJump(
+            reinterpret_cast<void *>(&zSndSampleSet_InitByName),
+            reinterpret_cast<void *>(&FakeMainMenuSampleSetInitByName),
+            patches[3]) ||
+        !PatchFunctionJump(
+            reinterpret_cast<void *>(&zSnd::GetCDAudioOption),
+            reinterpret_cast<void *>(&FakeMainMenuGetCDAudioOption),
+            patches[4])) {
+        for (int i = 4; i >= 0; --i) {
+            RestoreFunctionPatch(patches[i]);
+        }
+        return 5;
+    }
+
     RecoilStateMainMenuTransition state{};
-    state.Constructor();
     state.m_entryRoute = RECOIL_MAINMENU_ROUTE_FRONTEND;
 
     const int result = state.OnTryBecomeCurrent();
@@ -1119,7 +1221,11 @@ extern "C" int recoil_state_main_menu_transition_on_try_become_current_smoke(voi
         failure = 4;
     }
 
-    RecoilStateMainMenuTransition::ClearPausedAudioSnapshot();
+    state.m_pausedAudioSnapshot = 0;
+    state.m_mainMenuDialog = 0;
+    for (int i = 4; i >= 0; --i) {
+        RestoreFunctionPatch(patches[i]);
+    }
     g_zVideo_ActiveRendererPath = oldRendererPath;
     g_zVideo_pfnBltSwToPrimaryRectDirect = oldBltDirect;
     g_zVideo_pfnLockSurfaceState = oldLockSurfaceState;

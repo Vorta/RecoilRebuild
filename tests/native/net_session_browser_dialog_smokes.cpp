@@ -2574,6 +2574,98 @@ extern "C" int net_session_browser_dialog_on_create_session_smoke(void) {
     return result;
 }
 
+extern "C" int netui_verify_winsock2_or_prompt_continue_smoke(void) {
+    const WORD kWs2WsaStartupOrdinal = 115;
+    const WORD kWs2WsaCleanupOrdinal = 116;
+    ImportFunctionPatch patches[5] = {};
+    const bool installed =
+        PatchImportByOrdinal("WS2_32.dll", kWs2WsaStartupOrdinal,
+                             reinterpret_cast<void *>(&FakeNetUiWsaStartup),
+                             patches[0]) &&
+        PatchImportByOrdinal("WS2_32.dll", kWs2WsaCleanupOrdinal,
+                             reinterpret_cast<void *>(&FakeNetUiWsaCleanup),
+                             patches[1]) &&
+        PatchImportByName("USER32.dll", "MessageBeep",
+                          reinterpret_cast<void *>(&FakeNetUiMessageBeep),
+                          patches[2]) &&
+        PatchImportByName("USER32.dll", "GetFocus",
+                          reinterpret_cast<void *>(&FakeNetUiGetFocus),
+                          patches[3]) &&
+        PatchImportByName("USER32.dll", "MessageBoxA",
+                          reinterpret_cast<void *>(&FakeNetUiMessageBoxA),
+                          patches[4]);
+
+    int result = 0;
+    if (!installed) {
+        result = 10;
+    } else {
+        g_netUiWsaStartupResult = 0;
+        g_netUiWsaStartupHighVersion = 2;
+        g_netUiMessageBoxResult = IDNO;
+        g_netUiGetFocusResult = reinterpret_cast<HWND>(0x2468);
+        ResetNetUiWinsockPromptLog();
+        const int okResult =
+            NetUi::VerifyWinsock2OrPromptContinue("Network", "Need %u.%u");
+        const bool successOk =
+            okResult == 1 &&
+            g_netUiWsaStartupCalls == 1 &&
+            g_netUiWsaStartupVersion == 2 &&
+            g_netUiWsaCleanupCalls == 0 &&
+            g_netUiMessageBeepCalls == 0 &&
+            g_netUiMessageBoxCalls == 0;
+
+        g_netUiWsaStartupResult = 0;
+        g_netUiWsaStartupHighVersion = 0x0101;
+        g_netUiMessageBoxResult = IDNO;
+        ResetNetUiWinsockPromptLog();
+        const int mismatchNoResult =
+            NetUi::VerifyWinsock2OrPromptContinue("Network", "Need %u.%u");
+        const bool mismatchNoOk =
+            mismatchNoResult == 0 &&
+            g_netUiWsaStartupCalls == 1 &&
+            g_netUiWsaCleanupCalls == 1 &&
+            g_netUiMessageBeepCalls == 1 &&
+            g_netUiMessageBeepType == MB_ICONEXCLAMATION &&
+            g_netUiGetFocusCalls == 1 &&
+            g_netUiMessageBoxCalls == 1 &&
+            g_netUiMessageBoxHwnd == g_netUiGetFocusResult &&
+            std::strcmp(g_netUiMessageBoxText, "Need 1.1") == 0 &&
+            std::strcmp(g_netUiMessageBoxCaption, "Network") == 0 &&
+            g_netUiMessageBoxType == (MB_ICONQUESTION | MB_YESNO);
+
+        g_netUiWsaStartupResult = 0;
+        g_netUiWsaStartupHighVersion = 0x0101;
+        g_netUiMessageBoxResult = IDYES;
+        ResetNetUiWinsockPromptLog();
+        const int mismatchYesResult =
+            NetUi::VerifyWinsock2OrPromptContinue("Network", "Need %u.%u");
+        const bool mismatchYesOk =
+            mismatchYesResult == 1 &&
+            g_netUiWsaCleanupCalls == 1 &&
+            g_netUiMessageBoxCalls == 1;
+
+        g_netUiWsaStartupResult = 99;
+        g_netUiWsaStartupHighVersion = 1;
+        g_netUiMessageBoxResult = IDNO;
+        ResetNetUiWinsockPromptLog();
+        const int startupFailResult =
+            NetUi::VerifyWinsock2OrPromptContinue("Network", "Need %u.%u");
+        const bool startupFailOk =
+            startupFailResult == 0 &&
+            g_netUiWsaStartupCalls == 1 &&
+            g_netUiWsaCleanupCalls == 0 &&
+            g_netUiMessageBoxCalls == 1 &&
+            std::strcmp(g_netUiMessageBoxText, "Need 1.0") == 0;
+
+        result = successOk && mismatchNoOk && mismatchYesOk && startupFailOk ? 0 : 11;
+    }
+
+    for (int index = 4; index >= 0; --index) {
+        RestoreImportPatch(patches[index]);
+    }
+    return result;
+}
+
 extern "C" int net_session_browser_dialog_connect_selected_provider_smoke(void) {
     ImportFunctionPatch importPatches[3] = {};
     CodeFunctionPatch functionPatches[6] = {};

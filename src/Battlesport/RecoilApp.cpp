@@ -153,6 +153,52 @@ inline int SaveLoadEntryCount(
 RecoilApp g_RecoilApp;
 RecoilStateSaveLoadTransition g_RecoilStateSaveLoadTransition;
 
+extern "C" {
+/**
+ * Reimplements data 0x4da248: g_zApp_LogFileOpenMode.
+ *
+ * Purpose: supplies the freopen mode used when redirecting stdout and stderr
+ * to startup log files.
+ */
+char g_zApp_LogFileOpenMode[0x02] = "w";
+RECOIL_STATIC_ASSERT(sizeof(g_zApp_LogFileOpenMode) == 0x02);
+/**
+ * Reimplements data 0x4e2fbc: g_zApp_DefaultStdoutLogName.
+ *
+ * Purpose: names the fallback stdout log file appended under the temp path.
+ */
+char g_zApp_DefaultStdoutLogName[0x0a] = "gamez.out";
+RECOIL_STATIC_ASSERT(sizeof(g_zApp_DefaultStdoutLogName) == 0x0a);
+/**
+ * Reimplements data 0x4e2fc8: g_zApp_StdoutLogSuffix.
+ *
+ * Purpose: supplies the stdout log suffix appended to the executable path.
+ */
+char g_zApp_StdoutLogSuffix[0x05] = ".out";
+RECOIL_STATIC_ASSERT(sizeof(g_zApp_StdoutLogSuffix) == 0x05);
+/**
+ * Reimplements data 0x4e2fd0: g_zApp_LogFileStartBanner.
+ *
+ * Purpose: writes the startup banner to each redirected standard log stream.
+ */
+char g_zApp_LogFileStartBanner[0x12] = "File started\n---\n";
+RECOIL_STATIC_ASSERT(sizeof(g_zApp_LogFileStartBanner) == 0x12);
+/**
+ * Reimplements data 0x4e2fe4: g_zApp_DefaultStderrLogName.
+ *
+ * Purpose: names the fallback stderr log file appended under the temp path.
+ */
+char g_zApp_DefaultStderrLogName[0x0a] = "gamez.err";
+RECOIL_STATIC_ASSERT(sizeof(g_zApp_DefaultStderrLogName) == 0x0a);
+/**
+ * Reimplements data 0x4e2ff0: g_zApp_StderrLogSuffix.
+ *
+ * Purpose: supplies the stderr log suffix appended to the executable path.
+ */
+char g_zApp_StderrLogSuffix[0x05] = ".err";
+RECOIL_STATIC_ASSERT(sizeof(g_zApp_StderrLogSuffix) == 0x05);
+}
+
 /**
  * Reimplements data 0x4dcad4: g_RecoilApp_SoundsZrdName.
  *
@@ -222,6 +268,35 @@ const char g_zUtil_ZbdSearchPathLeaf[0x04] = "zbd";
  * Purpose: names the startup FMV file probed before display and engine startup.
  */
 const char g_RecoilApp_IntroFmvPath[0x13] = "video\\intro_01.avi";
+/**
+ * Reimplements data 0x4dcb88: g_RecoilApp_DoubleNewline.
+ *
+ * Purpose: separates the system failure text from the missing messages DLL name.
+ */
+const char g_RecoilApp_DoubleNewline[0x03] = "\n\n";
+RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_DoubleNewline) == 0x03);
+/**
+ * Reimplements data 0x4dcb8c: g_RecoilApp_ExitAtFileLineFmt.
+ *
+ * Purpose: formats the debug trace emitted before the messages DLL failure box.
+ */
+const char g_RecoilApp_ExitAtFileLineFmt[0x0f] = "Exit at %s:%d\n";
+RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_ExitAtFileLineFmt) == 0x0f);
+/**
+ * Reimplements data 0x4dcb9c: g_RecoilApp_SourceFile_RecoilAppCpp.
+ *
+ * Purpose: preserves the original RecoilApp.cpp source path used by the failure trace.
+ */
+const char g_RecoilApp_SourceFile_RecoilAppCpp[0x22] =
+    "D:\\Proj\\Battlesport\\RecoilApp.cpp";
+RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_SourceFile_RecoilAppCpp) == 0x22);
+/**
+ * Reimplements data 0x4dcbc0: g_RecoilApp_MessagesDllName.
+ *
+ * Purpose: names the localization DLL loaded during app initialization.
+ */
+const char g_RecoilApp_MessagesDllName[0x0d] = "MESSAGES.DLL";
+RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_MessagesDllName) == 0x0d);
 /**
  * Reimplements data 0x4dcbd0: g_zFMV_ScriptFileName.
  *
@@ -298,6 +373,69 @@ const char g_RecoilApp_LeavingNetworkingMsg[0x13] = "Leaving Networking";
  * Purpose: labels the play-state teardown checkpoint.
  */
 const char g_RecoilApp_LeavingPlayStateMsg[0x13] = "Leaving Play State";
+/**
+ * Reimplements data 0x4dd520: g_RecoilApp_ZInInitStatusFmt.
+ *
+ * Purpose: formats the input subsystem startup status line.
+ */
+const char g_RecoilApp_ZInInitStatusFmt[0x0e] = "zInInit:  %s\n";
+RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_ZInInitStatusFmt) == 0x0e);
+/**
+ * Reimplements data 0x4dd530: g_RecoilApp_ZImgInitStatusFmt.
+ *
+ * Purpose: formats the image subsystem startup status line.
+ */
+const char g_RecoilApp_ZImgInitStatusFmt[0x0f] = "zImgInit:  %s\n";
+RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_ZImgInitStatusFmt) == 0x0f);
+/**
+ * Reimplements data 0x4dd540: g_RecoilApp_ZWepInitStatusFmt.
+ *
+ * Purpose: formats the weapon subsystem startup status line.
+ */
+const char g_RecoilApp_ZWepInitStatusFmt[0x0f] = "zWepInit:  %s\n";
+RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_ZWepInitStatusFmt) == 0x0f);
+/**
+ * Reimplements data 0x4dd550: g_RecoilApp_ZUtlInitStatusFmt.
+ *
+ * Purpose: formats the utility subsystem startup status line.
+ */
+const char g_RecoilApp_ZUtlInitStatusFmt[0x0f] = "zUtlInit:  %s\n";
+RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_ZUtlInitStatusFmt) == 0x0f);
+/**
+ * Reimplements data 0x4dd560: g_RecoilApp_ZSndInitStatusFmt.
+ *
+ * Purpose: formats the sound subsystem startup status line.
+ */
+const char g_RecoilApp_ZSndInitStatusFmt[0x0f] = "zSndInit:  %s\n";
+RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_ZSndInitStatusFmt) == 0x0f);
+/**
+ * Reimplements data 0x4dd570: g_RecoilApp_ZRndrInitStatusFmt.
+ *
+ * Purpose: formats the renderer subsystem startup status line.
+ */
+const char g_RecoilApp_ZRndrInitStatusFmt[0x0f] = "zRndrInit: %s\n";
+RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_ZRndrInitStatusFmt) == 0x0f);
+/**
+ * Reimplements data 0x4dd580: g_RecoilApp_ZEffInitStatusFmt.
+ *
+ * Purpose: formats the effect subsystem startup status line.
+ */
+const char g_RecoilApp_ZEffInitStatusFmt[0x0f] = "zEffInit:  %s\n";
+RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_ZEffInitStatusFmt) == 0x0f);
+/**
+ * Reimplements data 0x4dd590: g_RecoilApp_GClsInitStatusFmt.
+ *
+ * Purpose: formats the class subsystem startup status line.
+ */
+const char g_RecoilApp_GClsInitStatusFmt[0x0f] = "gClsInit:  %s\n";
+RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_GClsInitStatusFmt) == 0x0f);
+/**
+ * Reimplements data 0x4dd5a0: g_RecoilApp_GModInitStatusFmt.
+ *
+ * Purpose: formats the model subsystem startup status line.
+ */
+const char g_RecoilApp_GModInitStatusFmt[0x0f] = "gModInit:  %s\n";
+RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_GModInitStatusFmt) == 0x0f);
 
 extern "C" {
 /**
@@ -1500,7 +1638,7 @@ int RecoilStateSaveLoadTransition::OnTryBecomeCurrent() {
         }
         blurAction.End();
 
-        zSndSampleSet_InitByName("DIALOG");
+        zSndSampleSet_InitByName(g_HudUiDialogSampleSetName);
     }
 
     HudUiSaveLoadDialog *dialog = 0;
@@ -1582,7 +1720,7 @@ void RecoilStateSaveLoadTransition::OnDeactivate() {
         return;
     }
 
-    zSndSampleSet_DestroyByName("DIALOG");
+    zSndSampleSet_DestroyByName(g_HudUiDialogSampleSetName);
 
     zSndPlayHandleSnapshot *const audioSnapshot =
         (zSndPlayHandleSnapshot *)((unsigned int)m_pausedAudioSnapshot);
@@ -1751,12 +1889,12 @@ RECOIL_NO_GS int RecoilApp::InitInstance() {
     char sharedTextBuffer[0x100];
     char registryCompanyNameBuffer[0x100];
 
-    if (zLoc::LoadMessagesDll("MESSAGES.DLL") == 0) {
+    if (zLoc::LoadMessagesDll(g_RecoilApp_MessagesDllName) == 0) {
         char *systemErrorText = 0;
         sprintf(
             errorTextBuffer,
-            "Exit at %s:%d\n",
-            "D:\\Proj\\Battlesport\\RecoilApp.cpp",
+            g_RecoilApp_ExitAtFileLineFmt,
+            g_RecoilApp_SourceFile_RecoilAppCpp,
             0x188
         );
         OutputDebugStringA(errorTextBuffer);
@@ -1775,11 +1913,11 @@ RECOIL_NO_GS int RecoilApp::InitInstance() {
         );
         strcat(
             errorTextBuffer,
-            "\n\n"
+            g_RecoilApp_DoubleNewline
         );
         strcat(
             errorTextBuffer,
-            "MESSAGES.DLL"
+            g_RecoilApp_MessagesDllName
         );
         LocalFree(systemErrorText);
         zVideo_dd::FlipToGDIIfAttached();
@@ -1950,35 +2088,35 @@ int RecoilApp::EngineInit(
     zUtil::ZRDR_Init(0);
 
     PrintEngineInitZeroStatus(
-        "gModInit:  %s\n",
+        g_RecoilApp_GModInitStatusFmt,
         zModel_Display_Init()
     );
     PrintEngineInitZeroStatus(
-        "gClsInit:  %s\n",
+        g_RecoilApp_GClsInitStatusFmt,
         zVideo::ReturnSuccessStub()
     );
     PrintEngineInitZeroStatus(
-        "zEffInit:  %s\n",
+        g_RecoilApp_ZEffInitStatusFmt,
         zEffect::Init()
     );
     PrintEngineInitZeroStatus(
-        "zRndrInit: %s\n",
+        g_RecoilApp_ZRndrInitStatusFmt,
         zRndr::InitGlobals()
     );
     PrintEngineInitNonzeroStatus(
-        "zSndInit:  %s\n",
+        g_RecoilApp_ZSndInitStatusFmt,
         zSnd_PreInitializeRuntimeState((RecoilPtr32)((unsigned int)hwnd))
     );
     PrintEngineInitZeroStatus(
-        "zUtlInit:  %s\n",
+        g_RecoilApp_ZUtlInitStatusFmt,
         zVideo::ReturnSuccessStub()
     );
     PrintEngineInitZeroStatus(
-        "zWepInit:  %s\n",
+        g_RecoilApp_ZWepInitStatusFmt,
         zWepInit()
     );
     PrintEngineInitZeroStatus(
-        "zImgInit:  %s\n",
+        g_RecoilApp_ZImgInitStatusFmt,
         zImage_Init(0)
     );
 
@@ -1987,7 +2125,7 @@ int RecoilApp::EngineInit(
     }
 
     PrintEngineInitZeroStatus(
-        "zInInit:  %s\n",
+        g_RecoilApp_ZInInitStatusFmt,
         zInput::Init((HWND)((unsigned int)(hwnd)), (HINSTANCE)((unsigned int)(m_hInstance)))
     );
     Time::Reset();
@@ -2237,7 +2375,12 @@ extern const AFX_MSGMAP g_RecoilApp_MessageMap = {
     &g_RecoilApp_MessageEntries[0],
 };
 
-// Reimplements 0x4a5780: RecoilApp::InitStdLogFiles
+/**
+ * Reimplements 0x4a5780: RecoilApp::InitStdLogFiles.
+ *
+ * Purpose: redirects stdout and stderr to per-run log files and writes their
+ * startup banners.
+ */
 RECOIL_NO_GS void __fastcall RecoilApp::InitStdLogFiles(
     const char *exePath
 ) {
@@ -2253,11 +2396,11 @@ RECOIL_NO_GS void __fastcall RecoilApp::InitStdLogFiles(
     );
     strcat(
         pathBuf,
-        ".err"
+        g_zApp_StderrLogSuffix
     );
     FILE *stream = freopen(
         pathBuf,
-        "w",
+        g_zApp_LogFileOpenMode,
         stderr
     );
     if (stream == 0 && GetTempPathA(
@@ -2266,18 +2409,18 @@ RECOIL_NO_GS void __fastcall RecoilApp::InitStdLogFiles(
     ) != 0) {
         strcat(
             pathBuf,
-            "gamez.err"
+            g_zApp_DefaultStderrLogName
         );
         stream = freopen(
             pathBuf,
-            "w",
+            g_zApp_LogFileOpenMode,
             stderr
         );
     }
     if (stream != 0) {
         fprintf(
             stream,
-            "File started\n---\n"
+            g_zApp_LogFileStartBanner
         );
         fflush(stream);
     }
@@ -2288,11 +2431,11 @@ RECOIL_NO_GS void __fastcall RecoilApp::InitStdLogFiles(
     );
     strcat(
         pathBuf,
-        ".out"
+        g_zApp_StdoutLogSuffix
     );
     stream = freopen(
         pathBuf,
-        "w",
+        g_zApp_LogFileOpenMode,
         stdout
     );
     if (stream == 0 && GetTempPathA(
@@ -2301,18 +2444,18 @@ RECOIL_NO_GS void __fastcall RecoilApp::InitStdLogFiles(
     ) != 0) {
         strcat(
             pathBuf,
-            "gamez.out"
+            g_zApp_DefaultStdoutLogName
         );
         stream = freopen(
             pathBuf,
-            "w",
+            g_zApp_LogFileOpenMode,
             stdout
         );
     }
     if (stream != 0) {
         fprintf(
             stream,
-            "File started\n---\n"
+            g_zApp_LogFileStartBanner
         );
         fflush(stream);
     }

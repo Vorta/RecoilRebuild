@@ -131,7 +131,6 @@ const char kBrowseRecordLatencyStep4Text[] = " ||||||||| ";
 const char kBrowseRecordLatencyStep5Text[] = " ||||||||||| ";
 const char kBrowseRecordLatencyStep6Text[] = " ||||||||||||| ";
 const char kBrowseRecordLatencyStep7Text[] = " ||||||||||||||| ";
-const char kBootstrapServerTypeIrc[] = "IRC";
 const unsigned int kBootstrapServerCopiedBytes = 0xf8;
 RECOIL_STATIC_ASSERT(
     sizeof(WestwoodOnlineUpgradeBootstrapServerRecord) == kBootstrapServerCopiedBytes
@@ -277,6 +276,8 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnBootstrapServerList(
     char debugText[4096];
     sprintf(
         debugText,
+        /* Retail literal 0x4dd2dc is the compiler-emitted bootstrap-server
+           callback result dump format. */
         "\nOnServerList:\n\tResult Code: %d\n",
         resultCode
     );
@@ -292,7 +293,9 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnBootstrapServerList(
     while (server != 0) {
         if (strcmp(
             server->m_serverType,
-            kBootstrapServerTypeIrc
+            /* Retail literal 0x4dd2d8 is the compiler-emitted bootstrap
+               server type selector for IRC records. */
+            "IRC"
         ) == 0 && foundIrcServer == 0) {
             memcpy(
                 &g_WestwoodOnlineUpgradeSelectedBootstrapServer,
@@ -304,6 +307,8 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnBootstrapServerList(
 
         sprintf(
             debugText,
+            /* Retail literal 0x4dd298 is the compiler-emitted per-server
+               bootstrap diagnostic dump format. */
             "\n\tServer:\n\t\tName: %s\n\t\tType: %s\n\t\tConndata: %s\n\t\tGameType: %d\n",
             server->m_serverName,
             server->m_serverType,
