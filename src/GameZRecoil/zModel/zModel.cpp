@@ -69,8 +69,7 @@ zVec3 TransformPointByCurrentMatrix(
  * Purpose: test whether graphics option flag bit 0 is enabled.
  */
 bool ModelGraphicsFlagBit0Enabled() {
-    const int *graphicsFlags = (const int *)(g_zModel_GraphicsFlagsOption);
-    return graphicsFlags != 0 && ((*graphicsFlags & 1) != 0);
+    return gModel_pGraphicsFlags != 0 && ((*gModel_pGraphicsFlags & 1) != 0);
 }
 
 /**

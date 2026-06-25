@@ -167,7 +167,7 @@ namespace zClass_Display {
             15,
             node
         ) != 0) {
-            zClass_Object3D::DeleteNode(node);
+            zClass_Class::DeleteNodeByType(node);
             return 0;
         }
 

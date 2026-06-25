@@ -16,6 +16,68 @@ namespace zModel_DiPool {
 
 extern "C" {
 /**
+ * Reimplements data 0x4f49ac..0x4f4a6b: g_zClass_TypeListZeroShadowBuckets.
+ * Owner extent: first 0xc0 bytes of the unreferenced 0x4f49ac..0x4f4a7b
+ * TypeList zero-shadow block; BN shows no xrefs into this shadow storage.
+ * Purpose: dead zero-initialized TypeList bucket storage preserved in the
+ * retail data image apart from the live List.c type-list owner.
+ */
+zClass_TypeListBucket g_zClass_TypeListZeroShadowBuckets[16] = {0};
+/**
+ * Reimplements data 0x4f4a6c: g_zClass_TypeListZeroShadowFreeLinkHead.
+ * Purpose: dead zero-shadow counterpart of the type-list recycled-link head.
+ */
+zClass_TypeListLink *g_zClass_TypeListZeroShadowFreeLinkHead = 0;
+/**
+ * Reimplements data 0x4f4a70: g_zClass_NodeListZeroShadowHead.
+ * Purpose: dead zero-shadow counterpart of the pending node-list head.
+ */
+zClass_TypeListLink *g_zClass_NodeListZeroShadowHead = 0;
+/**
+ * Reimplements data 0x4f4a74: g_zClass_TypeListZeroShadowAllocCount.
+ * Purpose: dead zero-shadow counterpart of the type-list live allocation
+ * counter.
+ */
+int g_zClass_TypeListZeroShadowAllocCount = 0;
+/**
+ * Reimplements data 0x4f4a78: g_zClass_TypeListZeroShadowAllocPeak.
+ * Purpose: dead zero-shadow counterpart of the type-list peak allocation
+ * counter.
+ */
+int g_zClass_TypeListZeroShadowAllocPeak = 0;
+/**
+ * Reimplements data 0x4f4a7c: g_zClass_FilterIterZeroShadowCursor.
+ * Owner extent: 0x4f4a7c..0x4f4a8f is five zero-initialized authored
+ * dwords with no BN xrefs, mirroring the live filtered-iterator state at
+ * 0x539b98..0x539bab without participating in runtime iteration.
+ * Purpose: dead zero-shadow counterpart of the filtered iterator cursor.
+ */
+zClass_TypeListLink *g_zClass_FilterIterZeroShadowCursor = 0;
+/**
+ * Reimplements data 0x4f4a80: g_zClass_FilterIterZeroShadowUnknownDword0.
+ * Purpose: dead zero-shadow counterpart of the filtered iterator reserved
+ * dword between cursor and filter text.
+ */
+unsigned int g_zClass_FilterIterZeroShadowUnknownDword0 = 0;
+/**
+ * Reimplements data 0x4f4a84: g_zClass_FilterIterZeroShadowText.
+ * Purpose: dead zero-shadow counterpart of the filtered iterator text
+ * pointer.
+ */
+const char *g_zClass_FilterIterZeroShadowText = 0;
+/**
+ * Reimplements data 0x4f4a88: g_zClass_FilterIterZeroShadowUnknownDword1.
+ * Purpose: dead zero-shadow counterpart of the filtered iterator reserved
+ * dword between filter text and prefix length.
+ */
+unsigned int g_zClass_FilterIterZeroShadowUnknownDword1 = 0;
+/**
+ * Reimplements data 0x4f4a8c: g_zClass_FilterIterZeroShadowPrefixLen.
+ * Purpose: dead zero-shadow counterpart of the filtered iterator cached
+ * prefix length.
+ */
+int g_zClass_FilterIterZeroShadowPrefixLen = 0;
+/**
  * Reimplements data 0x539c6c: g_zClass_TypeList_FreeLinkHead.
  * Purpose: head of the recycled type-list link cache used by list allocation.
  */

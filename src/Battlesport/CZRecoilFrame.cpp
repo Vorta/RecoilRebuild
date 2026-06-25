@@ -71,6 +71,30 @@ extern const char g_CZRecoilFrame_CmdCampaigns[] = "/campaigns";
  */
 extern const char g_CZRecoilFrame_LogBaseName[] = "recoil";
 /**
+ * Reimplements data 0x4dcd54: g_RecoilApp_WindowTitle.
+ *
+ * Purpose: provide the default Recoil main-window title used by the frame UI.
+ */
+extern const char g_RecoilApp_WindowTitle[0x7] = "RECOIL";
+/**
+ * Reimplements data 0x4dcd5c: g_RecoilApp_WindowTitle3Dfx.
+ *
+ * Purpose: provide the 3Dfx renderer main-window title used by the frame UI.
+ */
+extern const char g_RecoilApp_WindowTitle3Dfx[0xe] = "RECOIL (3Dfx)";
+/**
+ * Reimplements data 0x4dcd6c: g_CZRecoilFrame_DefaultFileExt.
+ *
+ * Purpose: preserve the common-dialog default extension for campaign files.
+ */
+extern const char g_CZRecoilFrame_DefaultFileExt[0x3] = "gs";
+/**
+ * Reimplements data 0x4dcd70: g_CZRecoilFrame_AcceleratorMenuLabelFmt.
+ *
+ * Purpose: format the hardware accelerator command label shown in the frame UI.
+ */
+extern "C" char g_CZRecoilFrame_AcceleratorMenuLabelFmt[0x16] = "Accelerator - %s (%s)";
+/**
  * Reimplements data 0x4f3efc: Symbol.
  *
  * Purpose: remember whether the Westwood Online registry key was found during
@@ -672,11 +696,11 @@ CString * CZRecoilFrame::BuildWindowTitle(
 ) {
     volatile int constructedTitleState = 0;
     if (g_zVideo_ActiveRendererPath == kRendererBackend3dfx) {
-        outTitle->CString::CString("RECOIL (3Dfx)");
+        outTitle->CString::CString(g_RecoilApp_WindowTitle3Dfx);
         return outTitle;
     }
 
-    outTitle->CString::CString("RECOIL");
+    outTitle->CString::CString(g_RecoilApp_WindowTitle);
     return outTitle;
 }
 
@@ -740,7 +764,7 @@ RECOIL_NO_GS void CZRecoilFrame::OnOpenFileDialog() {
     ofn.lpstrFileTitle = fileTitle;
     ofn.nMaxFileTitle = 0x200;
     ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
-    ofn.lpstrDefExt = "gs";
+    ofn.lpstrDefExt = g_CZRecoilFrame_DefaultFileExt;
 
     if (GetOpenFileNameA((LPOPENFILENAMEA)(&ofn)) != 0) {
         strcpy(
@@ -1446,7 +1470,7 @@ RECOIL_NO_GS void CZRecoilFrame::UpdateHwApiMenuItem(
     char menuLabelText[0x40];
     sprintf(
         menuLabelText,
-        "Accelerator - %s (%s)",
+        g_CZRecoilFrame_AcceleratorMenuLabelFmt,
         zVid::GetHwApiDescription(apiIndex - 1),
         zVid::GetHwApiDriverName(apiIndex - 1)
     );

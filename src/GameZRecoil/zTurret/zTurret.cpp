@@ -1514,7 +1514,9 @@ int __fastcall LoadDefinitionsFromPath(
             ));
     }
 
-    zEffectAnimEntry *const napalmDestroyAnim = zEffectAnim::FindEntryByName("napalm_vehicle");
+    zEffectAnimEntry *const napalmDestroyAnim = zEffectAnim::FindEntryByName(
+        g_Player_NapalmVehicleEffectName
+    );
     zReader::Node *const turretListNode = zReader_GetNamedNode(
         rootNode,
         "TURRET"

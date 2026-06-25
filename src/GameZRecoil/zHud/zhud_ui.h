@@ -87,7 +87,7 @@ extern int g_HudUiMgrActiveWeaponSideIndex;
 extern HudUiCounter g_HudUiMgrModeCounters[4];
 extern HudUiSlot g_HudUiMgrWeaponSlots[32];
 extern HudUiSlot *g_HudUiMgrSensorTrackedProgressSlot;
-extern int g_HudUiMgrSensorRoundRobinTrackIndex;
+extern int g_HudUiMgrSensor_RoundRobinTrackIndex;
 extern int g_HudUiMgrActiveModeCounterIndex;
 extern int g_HudUiMgrSensorTargetMarkerCount;
 extern int g_HudUiMgrWeaponState;
@@ -572,7 +572,14 @@ struct HudUiTextLabel : HudUiElement {
     int centerBoundsRight;
     int alignMode;
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original helper; no standalone retail function exists. Observed in the
+     * HudUiTextLabel/HudUiPanel method cluster where 0x4ba850 constructs raw
+     * panel storage before the 0x4bcbe0 text-label copy constructor rebuilds
+     * the base state.
+     * Purpose: keep caller-owned text-label storage from running the
+     * address-backed 0x4bcb50 constructor implicitly.
+     */
     HudUiTextLabel() {
     }
     HudUiTextLabel(

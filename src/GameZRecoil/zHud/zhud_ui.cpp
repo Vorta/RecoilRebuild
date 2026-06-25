@@ -122,9 +122,9 @@ RECOIL_STATIC_ASSERT(offsetof(zTimedTask, alpha255) == 0xc0);
 RECOIL_STATIC_ASSERT(offsetof(zTimedTask, rasterVertexCount) == 0x10c);
 RECOIL_STATIC_ASSERT(offsetof(zTimedTask, rasterDrawParam) == 0x110);
 
+int g_zTimedTask_ActiveCount = 0;
 zTimedTask *g_zTimedTask_ActiveHead = 0;
 zTimedTask *g_zTimedTask_ActiveTail = 0;
-int g_zTimedTask_ActiveCount = 0;
 
 int g_HudCmdMouseDebounceFrames = 0;
 zVidImagePartial *g_HudUiWidget_ExclusiveDrawImage = 0;
@@ -132,7 +132,13 @@ HudUiMgrData g_HudUiMgr;
 extern "C" {
 HudUiMgrSensorTrackList g_HudUiMgrSensor_TrackList = {0};
 }
-int g_HudUiMgrSensorRoundRobinTrackIndex = 0;
+/**
+ * Reimplements data 0x4dd1d8: g_HudUiMgrSensor_RoundRobinTrackIndex.
+ * Owner data: four-byte signed index initialized to -1 (ff ff ff ff).
+ * Purpose: seed the sensor-target round-robin candidate selector before
+ * HudUiMgrSensor::UpdateMarkersAndProgressFromVariantTag advances it.
+ */
+int g_HudUiMgrSensor_RoundRobinTrackIndex = -1;
 HudUiRect g_HudUiMgrSensor_FxRectScratch = {0};
 HudUiNetGameSetupOverlayOwner g_HudUiNetGameSetupOverlayOwner;
 HudUiRect g_HudUiMgrSensorFxRect = {0};
@@ -255,6 +261,31 @@ char g_HudUiOptionsPanel_SectionName[] = "OPTIONSPANEL";
  * panel font setup.
  */
 char g_HudFontName_Arial[] = "Arial";
+/**
+ * Reimplements data 0x4dacc8: g_HudUiCounterText_KillsLabel.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: label the kills column in the HUD triplet scoreboard header.
+ */
+char g_HudUiCounterText_KillsLabel[] = "Kills";
+/**
+ * Reimplements data 0x4dacd0: g_HudUiCounterText_LapsLabel.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: label the laps column in the HUD triplet scoreboard header.
+ */
+char g_HudUiCounterText_LapsLabel[] = "Laps";
+/**
+ * Reimplements data 0x4dacd8: g_HudUiCounterText_PlayerLabel.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: label the player-name column in HUD triplet scoreboard headers and
+ * register the Player ZAR section name.
+ */
+char g_HudUiCounterText_PlayerLabel[] = "Player";
+/**
+ * Reimplements data 0x4dace0: g_HudUiCounterText_PlayerIndexFmt.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: format localized triplet header text with the active race or score target.
+ */
+char g_HudUiCounterText_PlayerIndexFmt[] = "%s(%d)";
 /**
  * Reimplements data 0x4dace8: g_HudUiShieldMessageWidget_DefaultPercentText.
  * Data owner gate remains pending; this docblock records source provenance only.
@@ -2530,8 +2561,16 @@ HudUiMgrSensorTrackNode *__fastcall TrackList_Add(
     return trackNode;
 }
 
-// Reimplements 0x412070: HudUiMgrSensor::PlaceTrackCounterWidget
-// (D:\Proj\Battlesport\HudUiMgrSensor.cpp)
+/**
+ * Reimplements 0x412070: HudUiMgrSensor::PlaceTrackCounterWidget.
+ * Original source path: D:\Proj\Battlesport\HudUiMgrSensor.cpp.
+ * Binary Ninja/source evidence keeps this in the sensor-target runtime owner:
+ * one typed HudUiSlot is taken from g_HudUiMgrWeaponSlots, projected through
+ * zMath into the slot screen fields, then clamped against the recovered
+ * HudUiMgrSensorBlock viewport bounds for edge marker placement.
+ * Purpose: reserve and position one sensor target marker slot for a tracked
+ * player or turret world point.
+ */
 int __fastcall PlaceTrackCounterWidget(
     HudUiMgrSensorTrackNode *trackNode,
     const zVec3 *worldPoint
@@ -2650,8 +2689,16 @@ int __fastcall PlaceTrackCounterWidget(
     return inBounds;
 }
 
-// Reimplements 0x4122c0: HudUiMgrSensor::PlaceTrackMarker
-// (D:\Proj\Battlesport\HudUiMgrSensor.cpp)
+/**
+ * Reimplements 0x4122c0: HudUiMgrSensor::PlaceTrackMarker.
+ * Original source path: D:\Proj\Battlesport\HudUiMgrSensor.cpp.
+ * The recovered source model walks the typed HudUiSlot sensor-marker range,
+ * preserves the selected HudUiSlot pointer for progress updates, and uses the
+ * track node kind as the discriminant for zUtil_SaveGameState versus
+ * zTurret_Runtime payload casts before filling PlayerProgressTargetSlotRuntime.
+ * Purpose: collect visible progress targets and highlight the nearest in-bounds
+ * sensor marker when snap targeting is active.
+ */
 int __fastcall PlaceTrackMarker(
     int markerMode,
     PlayerProgressTargetSlotRuntime *outputSlots
@@ -2740,8 +2787,16 @@ int __fastcall PlaceTrackMarker(
     return 1;
 }
 
-// Reimplements 0x439690: HudUiMgrSensor::UpdateMarkersAndProgressFromVariantTag
-// (D:\Proj\Battlesport\HudUiMgrSensor.cpp)
+/**
+ * Reimplements 0x439690: HudUiMgrSensor::UpdateMarkersAndProgressFromVariantTag.
+ * Original source path: D:\Proj\Battlesport\HudUiMgrSensor.cpp.
+ * BN/source evidence ties this to the sensor-target runtime owner: the track
+ * list stores discriminated player/turret payloads, candidate filtering uses
+ * variant tags and scene-path projection visibility, and marker creation feeds
+ * the typed HudUiSlot placement/update path rather than raw HUD offsets.
+ * Purpose: refresh candidate sensor targets for the requested variant tag,
+ * place visible markers, and update the selected target progress slots.
+ */
 void __fastcall UpdateMarkersAndProgressFromVariantTag(
     const zTag4Partial *requiredVariantTag
 ) {
@@ -2790,11 +2845,11 @@ void __fastcall UpdateMarkersAndProgressFromVariantTag(
     }
 
     if (candidateCount != 0) {
-        int selectedIndex = g_HudUiMgrSensorRoundRobinTrackIndex + 1;
-        g_HudUiMgrSensorRoundRobinTrackIndex = selectedIndex;
+        int selectedIndex = g_HudUiMgrSensor_RoundRobinTrackIndex + 1;
+        g_HudUiMgrSensor_RoundRobinTrackIndex = selectedIndex;
         if (selectedIndex >= candidateCount) {
             selectedIndex = 0;
-            g_HudUiMgrSensorRoundRobinTrackIndex = 0;
+            g_HudUiMgrSensor_RoundRobinTrackIndex = 0;
         }
 
         HudUiMgrSensorTrackNode *const selectedTrackNode = candidateTrackNodes[selectedIndex];
@@ -2983,8 +3038,16 @@ void __fastcall GetFxRect(
 } // namespace HudUiMgrSensor
 
 namespace HudUiMgrTarget {
-// Reimplements 0x4124b0: HudUiMgrTarget::UpdateSelectedProgressMeter
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x4124b0: HudUiMgrTarget::UpdateSelectedProgressMeter.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * The selected progress meter consumes the HudUiSlot pointer saved by the
+ * sensor-target runtime, casts the HudUiMgrSensorTrackNode payload according to
+ * its track-kind discriminant, remaps the slot projection through zClipAlt, and
+ * updates the recovered HudUiMgrSensorBlock-owned meter.
+ * Purpose: show the selected target health meter at the projected sensor marker
+ * position, or clear the selection when requested.
+ */
 void __fastcall UpdateSelectedProgressMeter(
     int clearSelectedTrack
 ) {
@@ -3105,8 +3168,12 @@ void UpdateMeterXPoints() {
     g_HudUiMgrObjectiveMeter.points[3].x = right;
 }
 
-// Reimplements 0x4117f0: HudUiMgrObjective::TickMeterFillAnimation
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x4117f0: HudUiMgrObjective::TickMeterFillAnimation.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: advance the objective meter fill timer, update the animated top
+ * edge, and stop the animation once the meter reaches full height.
+ */
 void TickMeterFillAnimation() {
     g_HudUiMgrObjectiveMeterFillAnimTimerSec += g_Time_UnscaledDeltaTimeSec;
 
@@ -3125,14 +3192,29 @@ void TickMeterFillAnimation() {
     g_HudUiMgrObjectiveMeter.points[3].y = (float)(top);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered original helper with no standalone retail function. Observed in
+ * caller 0x411ac0: HudUiMgrObjective::StartHide.
+ * Evidence basis: repeated objective phase runtime update of the widget right
+ * edge after slide-position changes.
+ * Purpose: refresh the cached objective widget right edge from its current
+ * center position and borrowed image width.
+ */
 static void HudUiMgrObjective_UpdateWidgetRightX() {
     const zVidImagePartial *const image = g_HudUiMgrObjectiveWidget.image;
     const int width = image != 0 ? image->width : 0;
     g_HudUiMgrObjectiveWidgetRightX = g_HudUiMgrObjectiveWidget.GetCenterX() + width;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered original helper with no standalone retail function. Observed in
+ * caller 0x411ac0: HudUiMgrObjective::StartHide.
+ * Evidence basis: repeated phase animation sequence updates the objective bar
+ * slide edge, invalidates the bar, moves the widget, and recomputes meter X
+ * points as one source-level operation.
+ * Purpose: apply the objective panel slide X position and dependent meter
+ * geometry.
+ */
 static void HudUiMgrObjective_SetSlidePosition(
     float slideX
 ) {
@@ -3143,14 +3225,29 @@ static void HudUiMgrObjective_SetSlidePosition(
     HudUiMgrObjective::UpdateMeterXPoints();
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered original helper with no standalone retail function. Observed in
+ * caller 0x411ac0: HudUiMgrObjective::StartHide.
+ * Evidence basis: phase-3 animation branches share the same hardware-HUD dirty
+ * rectangle gate through zOpt::GetHudTypeForCurrentHwMode.
+ * Purpose: update the hardware HUD objective dirty rectangle only for the
+ * hardware perspective HUD mode.
+ */
 static void HudUiMgrObjective_UpdateHwDirtyRectIfNeeded() {
     if (zOpt::GetHudTypeForCurrentHwMode() == 2) {
         g_HudLayoutHW.UpdateObjectiveDirtyRect();
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered original helper with no standalone retail function. Observed in
+ * caller 0x411ac0: HudUiMgrObjective::StartHide.
+ * Evidence basis: phase-1 and phase-3 animation branches share the sensor
+ * image null guard, mirrored fade-to-noise calculation, visibility update, and
+ * zVid::DrawNoiseRect call sequence.
+ * Purpose: draw objective sensor transition noise while optionally revealing or
+ * hiding the sensor rectangle when the fade passes the midpoint.
+ */
 static void HudUiMgrObjective_DrawSensorNoise(
     float fade,
     int visibleWhenCovered
@@ -3253,8 +3350,13 @@ void Begin() {
     }
 }
 
-// Reimplements 0x411ac0: HudUiMgrObjective::StartHide
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x411ac0: HudUiMgrObjective::StartHide.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: advance objective panel show/hide phases, keep slide and meter
+ * geometry synchronized, manage transition visibility, and trigger auto-hide
+ * completion.
+ */
 void StartHide() {
     g_HudUiMgrObjectivePhaseTimerSec += g_Time_UnscaledDeltaTimeSec;
 
@@ -5633,15 +5735,17 @@ void HudUiElement::EnableWordWrapWithRect(
 ) {}
 
 /**
- * No standalone retail function has been identified; restored as the default
- * HudUiTextLabel text-tail virtual while HudUiPanel overrides the slot.
+ * Original helper; no standalone retail function has been identified.
+ * Restored as the default HudUiTextLabel text-tail virtual while HudUiPanel
+ * overrides the slot.
  * Purpose: keep text virtual ownership on the text-label family.
  */
 void HudUiTextLabel::UpdateTextBoundsFromContent() {}
 
 /**
- * No standalone retail function has been identified; restored as the default
- * HudUiTextLabel text-tail virtual while HudUiPanel overrides the slot.
+ * Original helper; no standalone retail function has been identified.
+ * Restored as the default HudUiTextLabel text-tail virtual while HudUiPanel
+ * overrides the slot.
  * Purpose: keep font lookup ownership on the text-label family.
  */
 HGDIOBJ HudUiTextLabel::GetFont() {
@@ -5649,8 +5753,9 @@ HGDIOBJ HudUiTextLabel::GetFont() {
 }
 
 /**
- * No standalone retail function has been identified; restored as the default
- * HudUiTextLabel text-tail virtual while HudUiPanel overrides the slot.
+ * Original helper; no standalone retail function has been identified.
+ * Restored as the default HudUiTextLabel text-tail virtual while HudUiPanel
+ * overrides the slot.
  * Purpose: keep font assignment ownership on the text-label family.
  */
 void HudUiTextLabel::SetFont(
@@ -5664,8 +5769,9 @@ void HudUiTextLabel::SetFont(
 ) {}
 
 /**
- * No standalone retail function has been identified; restored as the default
- * HudUiTextLabel text-tail virtual while HudUiPanel overrides the slot.
+ * Original helper; no standalone retail function has been identified.
+ * Restored as the default HudUiTextLabel text-tail virtual while HudUiPanel
+ * overrides the slot.
  * Purpose: keep font-handle ownership on the text-label family.
  */
 void HudUiTextLabel::SetFontHandle(
@@ -5673,8 +5779,9 @@ void HudUiTextLabel::SetFontHandle(
 ) {}
 
 /**
- * No standalone retail function has been identified; restored as the default
- * HudUiTextLabel text-tail virtual while HudUiPanel overrides the slot.
+ * Original helper; no standalone retail function has been identified.
+ * Restored as the default HudUiTextLabel text-tail virtual while HudUiPanel
+ * overrides the slot.
  * Purpose: keep formatted text ownership on the text-label family.
  */
 void HudUiTextLabel::SetTextFmtV(
@@ -5683,8 +5790,9 @@ void HudUiTextLabel::SetTextFmtV(
 ) {}
 
 /**
- * No standalone retail function has been identified; restored as the default
- * HudUiTextLabel text-tail virtual while HudUiPanel overrides the slot.
+ * Original helper; no standalone retail function has been identified.
+ * Restored as the default HudUiTextLabel text-tail virtual while HudUiPanel
+ * overrides the slot.
  * Purpose: keep text assignment ownership on the text-label family.
  */
 void HudUiTextLabel::SetText(
@@ -5692,8 +5800,9 @@ void HudUiTextLabel::SetText(
 ) {}
 
 /**
- * No standalone retail function has been identified; restored as the default
- * HudUiTextLabel text-tail virtual while HudUiPanel overrides the slot.
+ * Original helper; no standalone retail function has been identified.
+ * Restored as the default HudUiTextLabel text-tail virtual while HudUiPanel
+ * overrides the slot.
  * Purpose: keep text-rectangle rebuild ownership on the text-label family.
  */
 void HudUiTextLabel::RebuildTextRect() {}
@@ -8584,8 +8693,10 @@ void HudUiBackgroundCursorWidget::DrawBase() {
     }
 }
 
-// Reimplements 0x4bfc80: HudUiBackgroundVideoWidget::HudUiBackgroundVideoWidget
-// (D:\Proj\Battlesport\hudui_background.cpp)
+/**
+ * Reimplements 0x4bfc80: HudUiBackgroundVideoWidget::HudUiBackgroundVideoWidget.
+ * Purpose: Initializes the background video element state before a stream is assigned.
+ */
 HudUiBackgroundVideoWidget::HudUiBackgroundVideoWidget()
     : HudUiElement(0, 0) {
     mediaPath[0] = '\0';
@@ -8602,14 +8713,18 @@ HudUiBackgroundVideoWidget::~HudUiBackgroundVideoWidget() {
     }
 }
 
-// Reimplements 0x4bfcd0: HudUiBackgroundVideoWidget::Destructor
-// (D:\Proj\Battlesport\hudui_background.cpp)
+/**
+ * Reimplements 0x4bfcd0: HudUiBackgroundVideoWidget::Destructor.
+ * Purpose: Runs the authored video-widget destructor entry used by the HUD UI owner.
+ */
 void HudUiBackgroundVideoWidget::Destructor() {
     this->~HudUiBackgroundVideoWidget();
 }
 
-// Reimplements 0x4bfd40: HudUiBackgroundVideoWidget::SetMediaPathOwnedAndRefresh
-// (D:\Proj\Battlesport\hudui_background.cpp)
+/**
+ * Reimplements 0x4bfd40: HudUiBackgroundVideoWidget::SetMediaPathOwnedAndRefresh.
+ * Purpose: Stores the movie path, resolves missing media, opens the stream, and refreshes clipping.
+ */
 void HudUiBackgroundVideoWidget::SetMediaPathOwnedAndRefresh(
     const char *path
 ) {
@@ -8669,8 +8784,10 @@ void HudUiBackgroundVideoWidget::SetColorKey565(
     colorKey565 = colorKey;
 }
 
-// Reimplements 0x4bfe40: HudUiBackgroundVideoWidget::Update
-// (D:\Proj\Battlesport\hudui_background.cpp)
+/**
+ * Reimplements 0x4bfe40: HudUiBackgroundVideoWidget::Update.
+ * Purpose: Advances decoded video frames while preserving the base element update behavior.
+ */
 void HudUiBackgroundVideoWidget::Update(
     float deltaSeconds
 ) {
@@ -8687,8 +8804,10 @@ void HudUiBackgroundVideoWidget::Update(
     elapsedTimeSec += deltaSeconds;
 }
 
-// Reimplements 0x4bfe90: HudUiBackgroundVideoWidget::Draw
-// (D:\Proj\Battlesport\hudui_background.cpp)
+/**
+ * Reimplements 0x4bfe90: HudUiBackgroundVideoWidget::Draw.
+ * Purpose: Draws the background layer and blits the active stream with the stored color key.
+ */
 void HudUiBackgroundVideoWidget::Draw() {
     DrawBase();
 
@@ -8703,8 +8822,10 @@ void HudUiBackgroundVideoWidget::Draw() {
     }
 }
 
-// Reimplements 0x4bfec0: HudUiBackgroundVideoWidget::DrawBase
-// (D:\Proj\Battlesport\hudui_background.cpp)
+/**
+ * Reimplements 0x4bfec0: HudUiBackgroundVideoWidget::DrawBase.
+ * Purpose: Blits the configured background source into the current clipped video area.
+ */
 void HudUiBackgroundVideoWidget::DrawBase() {
     zVidImagePartial *const bltSource = (zVidImagePartial *)(this->bltSource);
     if (bltSource != 0) {
@@ -8720,8 +8841,10 @@ void HudUiBackgroundVideoWidget::DrawBase() {
     }
 }
 
-// Reimplements 0x4bff00: HudUiBackgroundVideoWidget::RebuildBltRect
-// (D:\Proj\Battlesport\hudui_background.cpp)
+/**
+ * Reimplements 0x4bff00: HudUiBackgroundVideoWidget::RebuildBltRect.
+ * Purpose: Recomputes the stream clip rectangle against the background blit source.
+ */
 void HudUiBackgroundVideoWidget::RebuildBltRect() {
     HudUiRect rect;
     rect.left = GetCenterX() > 0 ? GetCenterX() : 0;
@@ -14591,12 +14714,17 @@ void HudUiChatComposeTextInput::OnAccept() {
 HudUiMgrObjectiveBlock::~HudUiMgrObjectiveBlock() {
 }
 
-// Reimplements 0x40d6e0: HudUiMgrSensorBlock::Destructor
-// Binary Ninja models the retail HUD manager as one contiguous object and reaches
-// sensorPanel, sensorOverlay, and sensorMeter by offsets from this block. The
-// current source keeps those recovered subobjects as globals in the HUD manager
-// cluster, so this method applies the same teardown to the named objects.
+/**
+ * Reimplements 0x40d6e0: HudUiMgrSensorBlock::Destructor.
+ * Binary Ninja models the retail HUD manager as one contiguous object and reaches
+ * sensorPanel, sensorOverlay, and sensorMeter by offsets from this block. The
+ * current source keeps those recovered subobjects as named fields in the HUD
+ * manager cluster, so this method applies the same teardown to those subobjects.
+ * Purpose: reset the embedded sensor meter table and destroy the sensor overlay
+ * and panel widgets.
+ */
 void HudUiMgrSensorBlock::Destructor() {
+    g_HudUiMgrSensorMeter.~HudUiMeter();
     g_HudUiMgrSensorOverlay.DestructorCore();
     g_HudUiMgrSensorPanel.DestructorCore();
 }
@@ -15999,7 +16127,7 @@ int HudUiNetGameSetupOverlayOwner::OnTryBecomeCurrent() {
         pitchBytes
     );
 
-    zSndSampleSet_InitByName("DIALOG");
+    zSndSampleSet_InitByName(g_HudUiDialogSampleSetName);
 
     HudUiNetGameSetupPanel *panel =
         (HudUiNetGameSetupPanel *) ::operator new(sizeof(HudUiNetGameSetupPanel));
@@ -16024,7 +16152,7 @@ int HudUiNetGameSetupOverlayOwner::OnTryBecomeCurrent() {
 // (D:\Proj\Battlesport\HudUi.cpp)
 void HudUiNetGameSetupOverlayOwner::OnDeactivate() {
     Sleep(1000);
-    zSndSampleSet_DestroyByName("DIALOG");
+    zSndSampleSet_DestroyByName(g_HudUiDialogSampleSetName);
 
     HudUiNetGameSetupPanel *panel = m_panel;
     if (panel == 0) {
@@ -16079,7 +16207,10 @@ HudUiMeter * HudUiMeter::ConstructorEx() {
     return this;
 }
 
-// Reimplements 0x4bcb50: HudUiTextLabel::HudUiTextLabel
+/**
+ * Reimplements 0x4bcb50: HudUiTextLabel::HudUiTextLabel.
+ * Purpose: initialize label text, position, font handle, and alignment state.
+ */
 HudUiTextLabel::HudUiTextLabel(
     const char *text,
     int initX,
@@ -16099,6 +16230,12 @@ HudUiTextLabel::HudUiTextLabel(
     alignMode = 0;
 }
 
+/**
+ * Original helper; no standalone retail function exists. Observed in the
+ * HudUiTextLabel method cluster as the caller-owned storage wrapper around
+ * the 0x4bcb50 address-backed constructor.
+ * Purpose: construct a text label in caller-provided storage and return it.
+ */
 HudUiTextLabel * HudUiTextLabel::ConstructorWithPosAndFlags(
     const char *text,
     int initX,
@@ -16158,7 +16295,11 @@ HudUiTextLabel * HudUiTextLabel::Constructor(
     return this;
 }
 
-// Reimplements 0x4bccf0: HudUiTextLabel::SetTextFmt
+/**
+ * Reimplements 0x4bccf0: HudUiTextLabel::SetTextFmt.
+ * Purpose: format label text, refresh centered extents when needed, and
+ * invalidate the element.
+ */
 void HudUiTextLabel::SetTextFmt(
     const char *format,
     ...
@@ -16191,7 +16332,10 @@ void HudUiTextLabel::SetTextFmt(
     Invalidate();
 }
 
-// Reimplements 0x4bcd80: HudUiTextLabel::RebuildTextBounds
+/**
+ * Reimplements 0x4bcd80: HudUiTextLabel::RebuildTextBounds.
+ * Purpose: rebuild the clip rectangle from the current formatted text size.
+ */
 void HudUiTextLabel::RebuildTextBounds() {
     int widthPx;
     int lineAdvance;
@@ -16205,7 +16349,10 @@ void HudUiTextLabel::RebuildTextBounds() {
     clipRect.bottom = clipRect.top + lineAdvance;
 }
 
-// Reimplements 0x4bcdc0: HudUiTextLabel::MeasureTextWidth
+/**
+ * Reimplements 0x4bcdc0: HudUiTextLabel::MeasureTextWidth.
+ * Purpose: return the measured pixel width of the current label text.
+ */
 int HudUiTextLabel::MeasureTextWidth() {
     int widthPx;
     int lineAdvance;
@@ -16218,7 +16365,10 @@ int HudUiTextLabel::MeasureTextWidth() {
     return widthPx;
 }
 
-// Reimplements 0x4bce30: HudUiTextLabel::OnDraw
+/**
+ * Reimplements 0x4bce30: HudUiTextLabel::OnDraw.
+ * Purpose: draw non-empty label text with the recovered alignment handling.
+ */
 void HudUiTextLabel::OnDraw() {
     DrawBase();
 
@@ -16251,7 +16401,11 @@ void HudUiTextLabel::OnDraw() {
     );
 }
 
-// Reimplements 0x4bcea0: HudUiTextLabel::HitTest
+/**
+ * Reimplements 0x4bcea0: HudUiTextLabel::HitTest.
+ * Purpose: test coordinates against the visible text bounds unless input is
+ * disabled.
+ */
 int HudUiTextLabel::HitTest(
     int px,
     int py
@@ -16276,7 +16430,11 @@ int HudUiTextLabel::HitTest(
     return py <= y + lineAdvance ? 1 : 0;
 }
 
-// Reimplements 0x4bcdf0: HudUiTextLabel::UpdateTextExtents
+/**
+ * Reimplements 0x4bcdf0: HudUiTextLabel::UpdateTextExtents.
+ * Purpose: recenter the label inside its stored bounds and refresh clip
+ * extents when a blit source is active.
+ */
 void HudUiTextLabel::UpdateTextExtents() {
     const int widthPx = MeasureTextWidth();
     x = centerBoundsLeft + (centerBoundsRight - widthPx - centerBoundsLeft) / 2;
@@ -17472,9 +17630,9 @@ HudUiTriplet * HudUiTriplet::Constructor() {
     headerPanels[0]->alignMode = 2;
     headerPanels[1]->alignMode = 1;
     headerPanels[2]->alignMode = 1;
-    headerPanels[0]->SetTextFmt("Player");
-    headerPanels[1]->SetTextFmt("Laps");
-    headerPanels[2]->SetTextFmt("Kills");
+    headerPanels[0]->SetTextFmt(g_HudUiCounterText_PlayerLabel);
+    headerPanels[1]->SetTextFmt(g_HudUiCounterText_LapsLabel);
+    headerPanels[2]->SetTextFmt(g_HudUiCounterText_KillsLabel);
 
     HudUiPanel **rowCell = rowCells;
     {
@@ -17669,7 +17827,7 @@ void HudUiTriplet::RebuildDisplay() {
     );
     if (g_HudSensorTracker.raceCheckpointMode != 0) {
         headerPanels[1]->SetTextFmt(
-            "%s(%d)",
+            g_HudUiCounterText_PlayerIndexFmt,
             zLoc::GetMessageString(0x113),
             g_HudSensorTracker.runtimeGoalValue
         );
@@ -17687,7 +17845,7 @@ void HudUiTriplet::RebuildDisplay() {
         );
     } else {
         headerPanels[1]->SetTextFmt(
-            "%s(%d)",
+            g_HudUiCounterText_PlayerIndexFmt,
             zLoc::GetMessageString(0x114),
             g_HudSensorTracker.runtimeGoalValue
         );

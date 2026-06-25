@@ -37,8 +37,6 @@ float g_zModel_FogHeightInvRange = 0.0f;
 float g_zModel_FogDensity = 0.0f;
 int g_zModel_FogReserved = 0;
 float g_zModel_FogScale = 0.0f;
-float g_zModel_InverseZTolerance = 0.0f;
-float g_zModel_HardwareInverseZTolerance = 0.0f;
 /**
  * Reimplements data 0x4e0fc0: Symbol.
  * Authored zModel display global.
@@ -141,7 +139,12 @@ int g_zModel_OptCatalogAux1 = 0;
  * Purpose: provide the fallback graphics-flags storage when the options catalog has no entry.
  */
 int gModel_DefaultGraphicsFlags = 0;
-void *g_zModel_GraphicsFlagsOption = 0;
+/**
+ * Reimplements data 0x57d9c0: gModel_pGraphicsFlags.
+ * Authored zModel display global.
+ * Purpose: point model display code at the active graphics-flags integer value.
+ */
+int *gModel_pGraphicsFlags = 0;
 extern "C" {
 /**
  * Reimplements data 0x57d9e0: gModel_RenderFn.
@@ -619,10 +622,10 @@ int zModel_Display_Init() {
     g_zModel_FogScale = 1.0f;
 
     if (g_zVideo_ActiveRendererPath != 0) {
-        g_zModel_InverseZTolerance = 0.02f;
-        g_zModel_HardwareInverseZTolerance = 0.02f;
+        g_zRndr_InverseZTolerance = 0.02f;
+        g_zVideo_InverseZTolerancePending = 0.02f;
     } else {
-        g_zModel_InverseZTolerance = 0.01f;
+        g_zRndr_InverseZTolerance = 0.01f;
     }
 
     g_zModel_TransformedVerts = g_zModel_SharedVec3ScratchAStorage;
@@ -647,11 +650,10 @@ int zModel_Display_Init() {
     g_zModel_OptCatalogAux1 = 0;
     gModel_DefaultGraphicsFlags = -1;
 
-    g_zModel_GraphicsFlagsOption =
+    zOptionEntryPartial *graphicsFlagsOption =
         zGame::Options_FindOption(g_zVideo_ActiveRendererPath != 0 ? "GfxFlags_HW" : "GfxFlags_SW");
-    if (g_zModel_GraphicsFlagsOption == 0) {
-        g_zModel_GraphicsFlagsOption = &gModel_DefaultGraphicsFlags;
-    }
+    gModel_pGraphicsFlags =
+        graphicsFlagsOption != 0 ? &graphicsFlagsOption->payloadOrBuffer : &gModel_DefaultGraphicsFlags;
 
     zTag4::Clear(&g_Variant_CurrentTag);
     return 0;

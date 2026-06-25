@@ -215,9 +215,25 @@ float g_zModel_ConstVertexMergeEpsilon = 0.001f;
  * Purpose: store the AddPolygonEx vertex-count threshold before chunk splitting.
  */
 int g_zModel_MaxPolygonVertexCountBeforeSplit = 48;
+/**
+ * Reimplements data 0x4e1378: g_zModel_ConstVertexWarnThreshold.
+ * Purpose: store the vertex and normal count warning threshold.
+ */
 double g_zModel_ConstVertexWarnThreshold = 921.6;
+/**
+ * Reimplements data 0x4e1380: g_zModel_NormalMergeEpsilon.
+ * Purpose: store the normal merge epsilon used when adding model normals.
+ */
 double g_zModel_NormalMergeEpsilon = 0.0001;
+/**
+ * Reimplements data 0x4e1388: g_zModel_CoplanarTolerance.
+ * Purpose: store the coplanar polygon tolerance.
+ */
 double g_zModel_CoplanarTolerance = 0.001;
+/**
+ * Reimplements data 0x4e1390: g_zModel_ColinearTolerance.
+ * Purpose: store the colinear polygon tolerance.
+ */
 double g_zModel_ColinearTolerance = 0.001;
 float g_zModel_UvQuantizeBias = -0.001953125f;
 float g_zModel_UvQuantizeScale = 256.0f;

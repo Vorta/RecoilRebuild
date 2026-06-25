@@ -114,204 +114,6 @@ inline int PlayerMenuSaveLoadBlocked(
     return playerState->environmentAttachmentActive;
 }
 
-/**
- * Recovered original inline source helper: no standalone retail function.
- * Evidence: HudUiMainMenuDialog::HudUiMainMenuDialog binds each member widget
- * by name through this repeated call shape.
- * Purpose: Bind one named ZRD widget node to a main-menu dialog member.
- */
-inline void BindButton(
-    HudUiMainMenuDialog *dialog,
-    zReader::Node *loadedSection,
-    HudUiZrdWidget *widget,
-    const char *name
-) {
-    dialog->BindWidgetByName(
-        loadedSection,
-        widget,
-        name
-    );
-}
-
-/**
- * Recovered original static helper: no standalone retail function.
- * Evidence: HudUiMainMenuDialog::HudUiMainMenuDialog uses this MAINMENU3
- * binding sequence for in-game lifecycle state 4.
- * Purpose: Bind the reduced new/load/quit button set.
- */
-void BindNewLoadQuit(
-    HudUiMainMenuDialog *dialog,
-    zReader::Node *loadedSection
-) {
-    BindButton(
-        dialog,
-        loadedSection,
-        &dialog->newGameButton,
-        "NEWGAME"
-    );
-    BindButton(
-        dialog,
-        loadedSection,
-        &dialog->loadGameButton,
-        "LOADGAME"
-    );
-    BindButton(
-        dialog,
-        loadedSection,
-        &dialog->quitButton,
-        "QUIT"
-    );
-}
-
-/**
- * Recovered original static helper: no standalone retail function.
- * Evidence: HudUiMainMenuDialog::HudUiMainMenuDialog uses this MAINMENU0
- * binding sequence for frontend entry.
- * Purpose: Bind the frontend main-menu button set.
- */
-void BindFrontendButtons(
-    HudUiMainMenuDialog *dialog,
-    zReader::Node *loadedSection
-) {
-    BindButton(
-        dialog,
-        loadedSection,
-        &dialog->newGameButton,
-        "NEWGAME"
-    );
-    BindButton(
-        dialog,
-        loadedSection,
-        &dialog->loadGameButton,
-        "LOADGAME"
-    );
-    BindButton(
-        dialog,
-        loadedSection,
-        &dialog->optionsButton,
-        "OPTIONS"
-    );
-    BindButton(
-        dialog,
-        loadedSection,
-        &dialog->controlsButton,
-        "CONTROLS"
-    );
-    BindButton(
-        dialog,
-        loadedSection,
-        &dialog->creditsButton,
-        "CREDITS"
-    );
-    BindButton(
-        dialog,
-        loadedSection,
-        &dialog->quitButton,
-        "QUIT"
-    );
-}
-
-/**
- * Recovered original static helper: no standalone retail function.
- * Evidence: HudUiMainMenuDialog::HudUiMainMenuDialog uses this MAINMENU1
- * binding sequence for full in-game entry.
- * Purpose: Bind the full in-game main-menu button set.
- */
-void BindFullInGameButtons(
-    HudUiMainMenuDialog *dialog,
-    zReader::Node *loadedSection
-) {
-    BindButton(
-        dialog,
-        loadedSection,
-        &dialog->newGameButton,
-        "NEWGAME"
-    );
-    BindButton(
-        dialog,
-        loadedSection,
-        &dialog->saveGameButton,
-        "SAVEGAME"
-    );
-    BindButton(
-        dialog,
-        loadedSection,
-        &dialog->loadGameButton,
-        "LOADGAME"
-    );
-    BindButton(
-        dialog,
-        loadedSection,
-        &dialog->optionsButton,
-        "OPTIONS"
-    );
-    BindButton(
-        dialog,
-        loadedSection,
-        &dialog->controlsButton,
-        "CONTROLS"
-    );
-    BindButton(
-        dialog,
-        loadedSection,
-        &dialog->creditsButton,
-        "CREDITS"
-    );
-    BindButton(
-        dialog,
-        loadedSection,
-        &dialog->backButton,
-        "BACK"
-    );
-    BindButton(
-        dialog,
-        loadedSection,
-        &dialog->quitButton,
-        "QUIT"
-    );
-}
-
-/**
- * Recovered original static helper: no standalone retail function.
- * Evidence: HudUiMainMenuDialog::HudUiMainMenuDialog uses this MAINMENU2
- * binding sequence when network play is enabled.
- * Purpose: Bind the network-enabled main-menu button set.
- */
-void BindNetworkButtons(
-    HudUiMainMenuDialog *dialog,
-    zReader::Node *loadedSection
-) {
-    BindButton(
-        dialog,
-        loadedSection,
-        &dialog->optionsButton,
-        "OPTIONS"
-    );
-    BindButton(
-        dialog,
-        loadedSection,
-        &dialog->controlsButton,
-        "CONTROLS"
-    );
-    BindButton(
-        dialog,
-        loadedSection,
-        &dialog->creditsButton,
-        "CREDITS"
-    );
-    BindButton(
-        dialog,
-        loadedSection,
-        &dialog->backButton,
-        "BACK"
-    );
-    BindButton(
-        dialog,
-        loadedSection,
-        &dialog->quitButton,
-        "QUIT"
-    );
-}
 } // namespace
 
 /**
@@ -540,32 +342,27 @@ HudUiMainMenuDialog::HudUiMainMenuDialog(
             0
         );
         if (loadedSection != 0) {
-            BindButton(
-                this,
+            BindWidgetByName(
                 loadedSection,
                 &optionsButton,
                 "OPTIONS"
             );
-            BindButton(
-                this,
+            BindWidgetByName(
                 loadedSection,
                 &controlsButton,
                 "CONTROLS"
             );
-            BindButton(
-                this,
+            BindWidgetByName(
                 loadedSection,
                 &creditsButton,
                 "CREDITS"
             );
-            BindButton(
-                this,
+            BindWidgetByName(
                 loadedSection,
                 &backButton,
                 "BACK"
             );
-            BindButton(
-                this,
+            BindWidgetByName(
                 loadedSection,
                 quitButtonPtr,
                 "QUIT"
@@ -586,20 +383,17 @@ HudUiMainMenuDialog::HudUiMainMenuDialog(
                 0
             );
             if (loadedSection != 0) {
-                BindButton(
-                    this,
+                BindWidgetByName(
                     loadedSection,
                     &newGameButton,
                     "NEWGAME"
                 );
-                BindButton(
-                    this,
+                BindWidgetByName(
                     loadedSection,
                     loadButton,
                     "LOADGAME"
                 );
-                BindButton(
-                    this,
+                BindWidgetByName(
                     loadedSection,
                     quitButtonPtr,
                     "QUIT"
@@ -613,50 +407,42 @@ HudUiMainMenuDialog::HudUiMainMenuDialog(
                 0
             );
             if (loadedSection != 0) {
-                BindButton(
-                    this,
+                BindWidgetByName(
                     loadedSection,
                     &newGameButton,
                     "NEWGAME"
                 );
-                BindButton(
-                    this,
+                BindWidgetByName(
                     loadedSection,
                     saveButton,
                     "SAVEGAME"
                 );
-                BindButton(
-                    this,
+                BindWidgetByName(
                     loadedSection,
                     loadButton,
                     "LOADGAME"
                 );
-                BindButton(
-                    this,
+                BindWidgetByName(
                     loadedSection,
                     &optionsButton,
                     "OPTIONS"
                 );
-                BindButton(
-                    this,
+                BindWidgetByName(
                     loadedSection,
                     &controlsButton,
                     "CONTROLS"
                 );
-                BindButton(
-                    this,
+                BindWidgetByName(
                     loadedSection,
                     &creditsButton,
                     "CREDITS"
                 );
-                BindButton(
-                    this,
+                BindWidgetByName(
                     loadedSection,
                     &backButton,
                     "BACK"
                 );
-                BindButton(
-                    this,
+                BindWidgetByName(
                     loadedSection,
                     quitButtonPtr,
                     "QUIT"
@@ -678,38 +464,32 @@ HudUiMainMenuDialog::HudUiMainMenuDialog(
         0
     );
     if (loadedSection != 0) {
-        BindButton(
-            this,
+        BindWidgetByName(
             loadedSection,
             &newGameButton,
             "NEWGAME"
         );
-        BindButton(
-            this,
+        BindWidgetByName(
             loadedSection,
             loadButton,
             "LOADGAME"
         );
-        BindButton(
-            this,
+        BindWidgetByName(
             loadedSection,
             &optionsButton,
             "OPTIONS"
         );
-        BindButton(
-            this,
+        BindWidgetByName(
             loadedSection,
             &controlsButton,
             "CONTROLS"
         );
-        BindButton(
-            this,
+        BindWidgetByName(
             loadedSection,
             &creditsButton,
             "CREDITS"
         );
-        BindButton(
-            this,
+        BindWidgetByName(
             loadedSection,
             quitButtonPtr,
             "QUIT"

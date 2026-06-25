@@ -1,5 +1,6 @@
 #include "Battlesport/RecoilApp.h"
 #include "Battlesport/HudUiMpExitDialog.h"
+#include "Battlesport/hud.h"
 #include "GameZRecoil/Time/Time.h"
 #include "GameZRecoil/zGame/zGame.h"
 #include "GameZRecoil/zInput/zInput.h"
@@ -249,7 +250,7 @@ int RecoilApp_MpExitDialogState::OnTryBecomeCurrent() {
         zVideo::GetPrimarySurfacePitch()
     );
 
-    zSndSampleSet_InitByName("DIALOG");
+    zSndSampleSet_InitByName(g_HudUiDialogSampleSetName);
     zInput::BindMapContext_Push(0);
     zInput::BindMapCurrent_ResetAllBindings();
 
@@ -276,7 +277,7 @@ void RecoilApp_MpExitDialogState::OnDeactivate() {
     g_HudUiMpExitDialog = 0;
     zInput::BindMapContext_Pop();
     Sleep(1000);
-    zSndSampleSet_DestroyByName("DIALOG");
+    zSndSampleSet_DestroyByName(g_HudUiDialogSampleSetName);
     HudScoreboard::SetScaleAndRebuild(0.0f);
 }
 

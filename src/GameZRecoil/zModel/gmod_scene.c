@@ -1,6 +1,14 @@
 #include "GameZRecoil/zModel/zModel.h"
 
+/**
+ * Reimplements data 0x57624c: gModel_SmallPolyRejectArea2x.
+ * Purpose: cache the doubled small-polygon reject-area threshold.
+ */
 float gModel_SmallPolyRejectArea2x = 0.0f;
+/**
+ * Reimplements data 0x576250: gModel_SmallPolyRejectArea20x.
+ * Purpose: cache the twenty-times small-polygon reject-area threshold.
+ */
 float gModel_SmallPolyRejectArea20x = 0.0f;
 
 namespace zModel {

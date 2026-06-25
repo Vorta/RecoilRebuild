@@ -9,8 +9,22 @@
 #include <string.h>
 
 extern "C" {
+/**
+ * Reimplements data 0x539cd8: g_GameZ_Zbd_NodeIndexScratch.
+ * Evidence: parent-linked BN data name/type for a 4-byte writable pointer
+ * followed by the capacity global at 0x539cdc.
+ * Purpose: own the reusable ZBD node-reference conversion scratch buffer.
+ */
 zClass_NodePartial **g_GameZ_Zbd_NodeIndexScratch = 0;
+RECOIL_STATIC_ASSERT(sizeof(g_GameZ_Zbd_NodeIndexScratch) == 4);
+/**
+ * Reimplements data 0x539cdc: g_GameZ_Zbd_NodeIndexScratchCapacity.
+ * Evidence: parent-linked BN data name/type for the 4-byte entry count paired
+ * with g_GameZ_Zbd_NodeIndexScratch.
+ * Purpose: track the current pointer/index capacity of the ZBD scratch buffer.
+ */
 int g_GameZ_Zbd_NodeIndexScratchCapacity = 0;
+RECOIL_STATIC_ASSERT(sizeof(g_GameZ_Zbd_NodeIndexScratchCapacity) == 4);
 /**
  * Reimplements data 0x4dee1c: g_zClass_SourceFile_ClsZbdC.
  * Purpose: preserve the legacy source-file literal for cls_zbd.c diagnostics.
@@ -277,7 +291,13 @@ namespace {
     const int kZClassNodeLight = 9;
     const int kZClassNodeSound = 10;
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original inline/static helper; no standalone retail function is known.
+     * Observed callers are 0x454a50 and 0x4544b0 in this owner.
+     * Evidence: repeated BN/source-file zError::ReportOld write-failure
+     * callsites share the cls_zbd.c source literal and return -1.
+     * Purpose: report a ZBD write failure and return the caller's error code.
+     */
     inline int ReportZbdWriteFailure(
         int sourceLine,
         const char *message
@@ -291,7 +311,13 @@ namespace {
         return -1;
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original inline/static helper; no standalone retail function is known.
+     * Observed caller is 0x454c60 in this owner.
+     * Evidence: repeated BN/source-file zError::ReportOld read-failure
+     * callsites share the cls_zbd.c source literal and return -1.
+     * Purpose: report a ZBD read failure and return the caller's error code.
+     */
     inline int ReportZbdReadFailure(
         int sourceLine,
         const char *message
@@ -305,7 +331,13 @@ namespace {
         return -1;
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original inline/static helper; no standalone retail function is known.
+     * Observed caller is 0x4544b0 in this owner.
+     * Evidence: BN/source-file write-node branches use identical fwrite
+     * element-count checks for serialized class-data blobs.
+     * Purpose: write one fixed-size ZBD blob to the active FILE stream.
+     */
     inline bool WriteZbdBlob(
         const void *data,
         size_t byteCount,
@@ -319,7 +351,13 @@ namespace {
         ) == 1;
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original inline/static helper; no standalone retail function is known.
+     * Observed caller is 0x454c60 in this owner.
+     * Evidence: BN/source-file read-node branches use identical fread
+     * element-count checks for serialized class-data blobs.
+     * Purpose: read one fixed-size ZBD blob from the active FILE stream.
+     */
     inline bool ReadZbdBlob(
         void *data,
         size_t byteCount,
@@ -335,8 +373,12 @@ namespace {
 }
 
 namespace GameZ {
-    // Reimplements 0x454a50: GameZ::WriteZBDFile
-    // (D:\Proj\GameZRecoil\zClass\cls_zbd.c)
+    /**
+     * Reimplements 0x454a50: GameZ::WriteZBDFile.
+     * Evidence: BN name/source-file comment and cls_zbd.c callees serialize
+     * the header, texture directory, material pool, DI pool, and node table.
+     * Purpose: write a GameZ ZBD archive and patch the header offsets.
+     */
     RECOIL_NO_GS int __fastcall WriteZBDFile(const char *filename) {
         const size_t filenameLength = strlen(filename);
         if (filenameLength == 0) {
@@ -415,8 +457,12 @@ namespace GameZ {
         return 0;
     }
 
-    // Reimplements 0x455520: GameZ::ReadZBDFile
-    // (D:\Proj\GameZRecoil\zClass\cls_zbd.c)
+    /**
+     * Reimplements 0x455520: GameZ::ReadZBDFile.
+     * Evidence: BN name/source-file comment and cls_zbd.c callee order reload
+     * texture, material, model, and node-table sections from header offsets.
+     * Purpose: read a GameZ ZBD archive into the engine resource state.
+     */
     RECOIL_NO_GS int __fastcall ReadZBDFile(const char *filename) {
         const size_t filenameLength = strlen(filename);
         if (filenameLength == 0) {
@@ -517,10 +563,13 @@ namespace GameZ {
         return -1;
     }
 
-    // Reimplements 0x4556a0: GameZ::OpenAndReadZBDHeader
-    // (D:\Proj\GameZRecoil\zClass\cls_zbd.c)
-    FILE *__fastcall
-    OpenAndReadZBDHeader(
+    /**
+     * Reimplements 0x4556a0: GameZ::OpenAndReadZBDHeader.
+     * Evidence: BN name/source-file comment and callers 0x455520/0x455730 use
+     * this shared header validation before reading ZBD sections.
+     * Purpose: open a ZBD file, read its header, and reject bad magic/version.
+     */
+    FILE *__fastcall OpenAndReadZBDHeader(
         const char *filename,
         zClass_ZbdHeader *outHeader
     ) {
@@ -605,9 +654,13 @@ namespace GameZ_ZBD {
         return &g_zClass_NodeArray[index].node;
     }
 
-    // Reimplements 0x4543f0: GameZ_ZBD::WriteNodeRefListIndices
-    int __fastcall
-    WriteNodeRefListIndices(
+    /**
+     * Reimplements 0x4543f0: GameZ_ZBD::WriteNodeRefListIndices.
+     * Evidence: BN name/source-file comment and write-node callers convert node
+     * pointer lists through the shared scratch buffer before fwrite.
+     * Purpose: serialize a node-reference list as node-table indices.
+     */
+    int __fastcall WriteNodeRefListIndices(
         zClass_NodePartial * *nodeRefList,
         int entryCount,
         void *stream
@@ -654,10 +707,13 @@ namespace GameZ_ZBD {
         return 0;
     }
 
-    // Reimplements 0x4544b0: GameZ_ZBD::WriteSingleNodeClassData
-    // (D:\Proj\GameZRecoil\zClass\cls_zbd.c)
-    RECOIL_NO_GS int __fastcall
-    WriteSingleNodeClassData(
+    /**
+     * Reimplements 0x4544b0: GameZ_ZBD::WriteSingleNodeClassData.
+     * Evidence: BN name/source-file comment and class-id switch serialize the
+     * node class payloads and nested node-reference lists.
+     * Purpose: write one node's class-specific ZBD payload.
+     */
+    RECOIL_NO_GS int __fastcall WriteSingleNodeClassData(
         zClass_NodePartial * node,
         void *stream
     ) {
@@ -905,8 +961,12 @@ namespace GameZ_ZBD {
         return result;
     }
 
-    // Reimplements 0x454890: GameZ_ZBD::WriteNodeTable
-    // (D:\Proj\GameZRecoil\zClass\cls_zbd.c)
+    /**
+     * Reimplements 0x454890: GameZ_ZBD::WriteNodeTable.
+     * Evidence: BN name/source-file comment and cls_zbd.c writes copy the node
+     * array, append payloads, and patch encoded class-data offsets.
+     * Purpose: serialize the live ZBD node table and associated payload blocks.
+     */
     int __fastcall WriteNodeTable(void *stream) {
         int result = g_zClass_NodeArraySize;
         if (result == 0) {
@@ -998,9 +1058,13 @@ namespace GameZ_ZBD {
         return result;
     }
 
-    // Reimplements 0x454bf0: GameZ_ZBD::ReadNodeRefListIndices
-    int __fastcall
-    ReadNodeRefListIndices(
+    /**
+     * Reimplements 0x454bf0: GameZ_ZBD::ReadNodeRefListIndices.
+     * Evidence: BN name/source-file comment and read-node callers read integer
+     * indices into the destination list before resolving node pointers.
+     * Purpose: deserialize a node-reference list from node-table indices.
+     */
+    int __fastcall ReadNodeRefListIndices(
         zClass_NodePartial * *nodeRefList,
         int entryCount,
         void *stream
@@ -1033,10 +1097,13 @@ namespace GameZ_ZBD {
         return 0;
     }
 
-    // Reimplements 0x454c60: GameZ_ZBD::ReadSingleNodeClassData
-    // (D:\Proj\GameZRecoil\zClass\cls_zbd.c)
-    int __fastcall
-    ReadSingleNodeClassData(
+    /**
+     * Reimplements 0x454c60: GameZ_ZBD::ReadSingleNodeClassData.
+     * Evidence: BN name/source-file comment and class-id switch allocate/read
+     * the node class payloads, node-reference lists, and type-list entries.
+     * Purpose: read one node's class-specific ZBD payload.
+     */
+    int __fastcall ReadSingleNodeClassData(
         zClass_NodePartial * node,
         void *stream
     ) {
@@ -1447,8 +1514,12 @@ namespace GameZ_ZBD {
         return result;
     }
 
-    // Reimplements 0x455350: GameZ_ZBD::ReadNodeTable
-    // (D:\Proj\GameZRecoil\zClass\cls_zbd.c)
+    /**
+     * Reimplements 0x455350: GameZ_ZBD::ReadNodeTable.
+     * Evidence: BN name/source-file comment and cls_zbd.c reload path read the
+     * node slots, rebuild class payloads, and reconnect world light/sound data.
+     * Purpose: deserialize the ZBD node table into the runtime node array.
+     */
     int __fastcall ReadNodeTable(
         int nodeCount,
         void *stream
@@ -1532,11 +1603,13 @@ namespace GameZ_ZBD {
         return g_zClass_NodeArraySize;
     }
 
-    // Reimplements 0x455730:
-    // GameZ_ZBD::ReloadDisplayInstancesFromCurrentPath_Local
-    // (D:\Proj\GameZRecoil\zClass\cls_zbd.c)
-    RECOIL_NO_GS int __fastcall
-    ReloadDisplayInstancesFromCurrentPath_Local(
+    /**
+     * Reimplements 0x455730: GameZ_ZBD::ReloadDisplayInstancesFromCurrentPath_Local.
+     * Evidence: BN name/source-file comment and caller shape open the current
+     * ZBD path, then delegate display-instance replacement to 0x4557a0.
+     * Purpose: reload display instances for a node subtree from the current ZBD.
+     */
+    RECOIL_NO_GS int __fastcall ReloadDisplayInstancesFromCurrentPath_Local(
         zClass_NodePartial * node,
         int recurseChildren
     ) {
@@ -1564,9 +1637,12 @@ namespace GameZ_ZBD {
         return result;
     }
 
-    // Reimplements 0x4557a0:
-    // GameZ_ZBD::ReloadDisplayInstancesRecursive_Local
-    // (D:\Proj\GameZRecoil\zClass\cls_zbd.c)
+    /**
+     * Reimplements 0x4557a0: GameZ_ZBD::ReloadDisplayInstancesRecursive_Local.
+     * Evidence: BN name/source-file comment and recursive caller path seek to
+     * the serialized node slot, load the DI entry, and optionally visit children.
+     * Purpose: replace one node's display instance from a ZBD and recurse.
+     */
     RECOIL_NO_GS int __fastcall ReloadDisplayInstancesRecursive_Local(
         void *stream,
         zClass_ZbdHeader *zbdHeader,

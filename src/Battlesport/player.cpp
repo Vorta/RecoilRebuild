@@ -30,6 +30,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+extern char g_HudUiCounterText_PlayerLabel[];
+
 extern "C" {
 /**
  * Reimplements data 0x4f3764: g_Player_HudCounterValue.
@@ -124,6 +126,152 @@ float g_Player_GameplayInputStepScale = 0.03f;
 float g_Player_CameraHeadingDotAbs = 1.0f;
 float g_Player_CameraHeadingLerpBaseWhenFlagClear = 3.0f;
 float g_Player_CameraHeadingLerpBaseWhenFlagSet = 2.0f;
+/**
+ * Reimplements data 0x4dc9a8: g_Player_HudReadoutFmt_PosYaw.
+ * BN types this as a writable .data char[0x14] read by
+ * Player::UpdateDebugOverlayHud for the position/yaw debug overlay line.
+ * Purpose: Formats the debug HUD position and yaw readout.
+ */
+char g_Player_HudReadoutFmt_PosYaw[0x14] = "POS %d %d %d YAW %d";
+RECOIL_STATIC_ASSERT(sizeof(g_Player_HudReadoutFmt_PosYaw) == 0x14);
+/**
+ * Reimplements data 0x4dc9bc: g_Player_HudReadoutFmt_Dynamics.
+ * BN types this as a writable .data char[0x15] read by
+ * Player::UpdateDebugOverlayHud for the normal dynamics debug overlay line.
+ * Purpose: Formats the debug HUD player dynamics readout.
+ */
+char g_Player_HudReadoutFmt_Dynamics[0x15] = "%s using %s dynamics";
+RECOIL_STATIC_ASSERT(sizeof(g_Player_HudReadoutFmt_Dynamics) == 0x15);
+/**
+ * Reimplements data 0x4dc9d4: g_Player_HudReadoutFmt_DynamicsS.
+ * BN types this as a writable .data char[0x19] read by
+ * Player::UpdateDebugOverlayHud for the slipping dynamics debug overlay line.
+ * Purpose: Formats the debug HUD player dynamics readout while slipping.
+ */
+char g_Player_HudReadoutFmt_DynamicsS[0x19] = "%s using %s dynamics - S";
+RECOIL_STATIC_ASSERT(sizeof(g_Player_HudReadoutFmt_DynamicsS) == 0x19);
+/**
+ * Reimplements data 0x4dc9f0: g_Player_HudReadoutFmt_DynamicsA.
+ * BN types this as a writable .data char[0x19] read by
+ * Player::UpdateDebugOverlayHud for the airborne dynamics debug overlay line.
+ * Purpose: Formats the debug HUD player dynamics readout while airborne.
+ */
+char g_Player_HudReadoutFmt_DynamicsA[0x19] = "%s using %s dynamics - A";
+RECOIL_STATIC_ASSERT(sizeof(g_Player_HudReadoutFmt_DynamicsA) == 0x19);
+/**
+ * Reimplements data 0x4dca0c: g_Player_HudReadoutFmt_Dead.
+ * BN types this as a writable .data char[0x0c] read by
+ * Player::UpdateDebugOverlayHud for the inactive-player debug overlay line.
+ * Purpose: Formats the debug HUD inactive player readout.
+ */
+char g_Player_HudReadoutFmt_Dead[0x0c] = "%s is DEAD!";
+RECOIL_STATIC_ASSERT(sizeof(g_Player_HudReadoutFmt_Dead) == 0x0c);
+/**
+ * Reimplements data 0x4dca18: g_Player_HudReadoutFmt_ModeGoalNode.
+ * BN types this as a writable .data char[0x26] read by
+ * Player::UpdateDebugOverlayHud for the AI mode/goal-node debug overlay line.
+ * Purpose: Formats the debug HUD AI mode and goal-node readout.
+ */
+char g_Player_HudReadoutFmt_ModeGoalNode[0x26] =
+    "%s is in mode %d and had goal node %d";
+RECOIL_STATIC_ASSERT(sizeof(g_Player_HudReadoutFmt_ModeGoalNode) == 0x26);
+/**
+ * Reimplements data 0x4dca40: g_Player_MasterTypeName_Unknown.
+ * BN types this as a writable .data char[0x08] shared by
+ * Player::UpdateDebugOverlayHud, zNetwork_DPlay_ReportError, and zSnd error
+ * reporters for fallback "UNKNOWN" diagnostics.
+ * Purpose: Names the shared fallback diagnostic/master-type token.
+ */
+char g_Player_MasterTypeName_Unknown[0x08] = "UNKNOWN";
+RECOIL_STATIC_ASSERT(sizeof(g_Player_MasterTypeName_Unknown) == 0x08);
+/**
+ * Reimplements data 0x4dca48: g_Player_MasterTypeName_Fly.
+ * BN types this as a writable .data char[0x04] read by
+ * Player::UpdateDebugOverlayHud's inlined master-type-name switch.
+ * Purpose: Names the fly master type in the debug HUD.
+ */
+char g_Player_MasterTypeName_Fly[0x04] = "FLY";
+RECOIL_STATIC_ASSERT(sizeof(g_Player_MasterTypeName_Fly) == 0x04);
+/**
+ * Reimplements data 0x4dca4c: g_Player_MasterTypeName_Sub.
+ * BN types this as a writable .data char[0x04] read by
+ * Player::UpdateDebugOverlayHud's inlined master-type-name switch.
+ * Purpose: Names the sub master type in the debug HUD.
+ */
+char g_Player_MasterTypeName_Sub[0x04] = "SUB";
+RECOIL_STATIC_ASSERT(sizeof(g_Player_MasterTypeName_Sub) == 0x04);
+/**
+ * Reimplements data 0x4dca50: g_Player_MasterTypeName_Amphib.
+ * BN types this as a writable .data char[0x07] read by
+ * Player::UpdateDebugOverlayHud's inlined master-type-name switch.
+ * Purpose: Names the amphib master type in the debug HUD.
+ */
+char g_Player_MasterTypeName_Amphib[0x07] = "AMPHIB";
+RECOIL_STATIC_ASSERT(sizeof(g_Player_MasterTypeName_Amphib) == 0x07);
+/**
+ * Reimplements data 0x4dca58: g_Player_MasterTypeName_Hover.
+ * BN types this as a writable .data char[0x06] read by
+ * Player::UpdateDebugOverlayHud's inlined master-type-name switch.
+ * Purpose: Names the hover master type in the debug HUD.
+ */
+char g_Player_MasterTypeName_Hover[0x06] = "HOVER";
+RECOIL_STATIC_ASSERT(sizeof(g_Player_MasterTypeName_Hover) == 0x06);
+/**
+ * Reimplements data 0x4dca60: g_Player_MasterTypeName_Track.
+ * BN types this as a writable .data char[0x06] read by
+ * Player::UpdateDebugOverlayHud's inlined master-type-name switch.
+ * Purpose: Names the track master type in the debug HUD.
+ */
+char g_Player_MasterTypeName_Track[0x06] = "TRACK";
+RECOIL_STATIC_ASSERT(sizeof(g_Player_MasterTypeName_Track) == 0x06);
+/**
+ * Reimplements data 0x4dca68: g_Player_MasterTypeName_Basic.
+ * BN types this as a writable .data char[0x06] read by
+ * Player::UpdateDebugOverlayHud's inlined master-type-name switch.
+ * Purpose: Names the basic master type in the debug HUD.
+ */
+char g_Player_MasterTypeName_Basic[0x06] = "BASIC";
+RECOIL_STATIC_ASSERT(sizeof(g_Player_MasterTypeName_Basic) == 0x06);
+/**
+ * Reimplements data 0x4dca70: g_Player_CopterTypeName02.
+ * BN types this as a writable .data char[0x09] used by the copter sound-node
+ * cache when binding the second copter actor by type/name.
+ * Purpose: Names the second copter object for copter sound-node caching.
+ */
+char g_Player_CopterTypeName02[0x09] = "copter02";
+RECOIL_STATIC_ASSERT(sizeof(g_Player_CopterTypeName02) == 0x09);
+/**
+ * Reimplements data 0x4dca7c: g_Player_CopterTypeName01.
+ * BN types this as a writable .data char[0x09] used by the copter sound-node
+ * cache when binding the first copter actor by type/name.
+ * Purpose: Names the first copter object for copter sound-node caching.
+ */
+char g_Player_CopterTypeName01[0x09] = "copter01";
+RECOIL_STATIC_ASSERT(sizeof(g_Player_CopterTypeName01) == 0x09);
+/**
+ * Reimplements data 0x4dca88: g_PickupOptKey_Drop.
+ * BN types this as a writable .data char[0x05] used by Player async command
+ * callback case 914 when spawning a carrier-node pickup.
+ * Purpose: Names the drop pickup option key used by async debug commands.
+ */
+char g_PickupOptKey_Drop[0x05] = "drop";
+RECOIL_STATIC_ASSERT(sizeof(g_PickupOptKey_Drop) == 0x05);
+/**
+ * Reimplements data 0x4dca90: g_PickupOptKey_Crbox.
+ * BN types this as a writable .data char[0x06] used by Player async command
+ * callback case 913 when spawning a carrier-node pickup.
+ * Purpose: Names the crbox pickup option key used by async debug commands.
+ */
+char g_PickupOptKey_Crbox[0x06] = "crbox";
+RECOIL_STATIC_ASSERT(sizeof(g_PickupOptKey_Crbox) == 0x06);
+/**
+ * Reimplements data 0x4dca98: g_PickupOptKey_Vwbus.
+ * BN types this as a writable .data char[0x06] used by Player async command
+ * callback case 912 when spawning a carrier-node pickup.
+ * Purpose: Names the vwbus pickup option key used by async debug commands.
+ */
+char g_PickupOptKey_Vwbus[0x06] = "vwbus";
+RECOIL_STATIC_ASSERT(sizeof(g_PickupOptKey_Vwbus) == 0x06);
 /**
  * Reimplements data owner 0x4f3a78..0x4f3a87: player save-state intrusive list.
  * BN exposes the zero-filled .data aux/head/tail/count fields used by player
@@ -384,12 +532,511 @@ int g_PlayerEnvProbe_AboveGroundCount = 0;
 zEffectAnimEntry *g_PlayerRecentHitFxAnimEntry = 0;
 zVec3 *g_Player_LocalFxOffsetWorldPtr = 0;
 /**
+ * Reimplements data 0x4dc264: g_PlayerSaveStateListAuxPtr.
+ * BN types this as initialized .data pointing at 0x4f3a78
+ * g_PlayerSaveStateListAux, with no code xrefs.
+ * Purpose: Preserves the retail initialized pointer to the save-state list aux field.
+ */
+int *g_PlayerSaveStateListAuxPtr = &g_PlayerSaveStateListAux;
+/**
  * Reimplements data 0x4dc268: g_Player_MissionInitFirstRunFlag.
  * BN types this as an initialized .data int with value 1, cleared after the
  * first mission-runtime HUD top-message panel registration.
  * Purpose: Ensures one-time attachment of player top-message HUD panels.
  */
 int g_Player_MissionInitFirstRunFlag = 1;
+/**
+ * Reimplements data 0x4dc26c: g_Player_SourceFile_PlayerCpp.
+ * BN types this as a writable player.cpp diagnostic source-file literal
+ * referenced by ApplyMissionSaveData and ZAR_ReadVehicleListSection.
+ * Purpose: Stores the Player source-file path used by save/ZAR diagnostics.
+ */
+char g_Player_SourceFile_PlayerCpp[31] = "D:\\Proj\\Battlesport\\player.cpp";
+/**
+ * Reimplements data 0x4dc28c: g_Player_SaveDataModifiedMsg.
+ * BN types this as a writable diagnostic literal referenced by
+ * ApplyMissionSaveData when a Player save payload has an unexpected size.
+ * Purpose: Reports incompatible Player mission-save data.
+ */
+char g_Player_SaveDataModifiedMsg[72] =
+    "Player save data structure has been modified. Cannot use this save set.";
+/**
+ * Reimplements data 0x4dc2d4: g_Player_SaveVehicleListSectionName.
+ * BN types this as a writable ZAR section-name literal referenced by
+ * ZAR_RegisterSections for the VehicleList callbacks.
+ * Purpose: Names the Player VehicleList ZAR section.
+ */
+char g_Player_SaveVehicleListSectionName[12] = "VehicleList";
+/**
+ * Reimplements data 0x4dc2e0: g_Player_VehicleSaveDataModifiedMsg.
+ * BN types this as a writable diagnostic literal referenced by
+ * ZAR_ReadVehicleListSection when a VehicleList payload has an unexpected size.
+ * Purpose: Reports incompatible VehicleList save data.
+ */
+char g_Player_VehicleSaveDataModifiedMsg[73] =
+    "Vehicle save data structure has been modified. Cannot use this save set.";
+/**
+ * Reimplements data 0x4dc368: g_Player_AivArchiveMissingMsg.
+ * BN types this as a writable diagnostic literal referenced by
+ * Player::InitMissionRuntimeFromWorldAndCamera when aiv.zrd is missing.
+ * Purpose: Reports that the mission AIV archive could not be loaded.
+ */
+char g_Player_AivArchiveMissingMsg[0x15] = "Cannot find aiv.zrd!";
+/**
+ * Reimplements Player mission/player.zrd literal data 0x4dc380..0x4dc4cc.
+ * BN types these as writable .data char arrays used by mission runtime
+ * bootstrap, player.zrd tuning, vehicle/common/modal loaders, and copter
+ * sound-node caching.
+ * Purpose: Stores Player mission runtime and player.zrd literal names.
+ */
+char g_Player_ConfigNode_Basic[6] = "basic";
+char g_Player_ConfigNode_CommonMode[12] = "common_mode";
+char g_Player_ConfigNode_Stealth[8] = "stealth";
+char g_Player_DisplayName_Stealth[8] = "Stealth";
+char g_Player_CopterSndName[11] = {
+    's', 'n', 'd', '_', 'c', 'h', 'o', 'p', 'p', 'e', 'r'
+};
+char g_Player_LowShieldSndName[15] = "low_shield_snd";
+char g_Player_BurningAnimName[13] = "burning_anim";
+char g_Player_ConfigKey_MakeCold[10] = "make_cold";
+char g_Player_ConfigKey_MakeHot[9] = "make_hot";
+char g_Player_ConfigKey_MaxSlope[10] = "max_slope";
+char g_Player_ConfigKey_LavaSink[10] = "lava_sink";
+char g_Player_ConfigKey_QuicksandSink[11] = "qsand_sink";
+char g_Player_ConfigKey_QuicksandGravity[12] = "qsd_gravity";
+char g_Player_ConfigKey_WaterGravity[12] = "wat_gravity";
+char g_Player_ConfigKey_NormalGravity[12] = "nom_gravity";
+char g_Player_ConfigKey_MaxCamTetherAngle[21] = "max_cam_tether_angle";
+char g_Player_ConfigKey_CameraElastic[15] = "camera_elastic";
+char g_Player_ConfigKey_UnderwaterCam[15] = "underwater_cam";
+char g_Player_ConfigKey_FirstPersonCamElevationLimit[14] = "fp_cam_el_lim";
+char g_Player_ConfigKey_FirstPersonCamElevationRate[15] = "fp_cam_el_rate";
+char g_Player_ConfigKey_MousePush[11] = "mouse_push";
+char g_Player_ConfigKey_MaxCamYawRate[17] = "max_cam_yaw_rate";
+char g_Player_ConfigKey_CameraZone[12] = "camera_zone";
+char g_Player_ConfigArchiveName[11] = "player.zrd";
+char g_Player_BftSplashAnimName[9] = {
+    'b', 'f', 't', 's', 'p', 'l', 'a', 's', 'h'
+};
+char g_Player_NodeName_Horizon[8] = "horizon";
+/**
+ * Reimplements data 0x4dc4f0: g_Player_NodeName_Shadow.
+ * Purpose: Player init-state node name for the shadow/mode-variant node.
+ */
+char g_Player_NodeName_Shadow[7] = "shadow";
+/**
+ * Reimplements data 0x4dc4f8: g_Player_NodeName_DoorRight.
+ * Purpose: Player init-state node name for the right door node.
+ */
+char g_Player_NodeName_DoorRight[10] = "doorright";
+/**
+ * Reimplements data 0x4dc504: g_Player_NodeName_DoorLeft.
+ * Purpose: Player init-state node name for the left door node.
+ */
+char g_Player_NodeName_DoorLeft[9] = "doorleft";
+/**
+ * Reimplements data 0x4dc510: g_Player_NodeName_Turret.
+ * Purpose: Shared Player/GameNet node name for the turret node.
+ */
+char g_Player_NodeName_Turret[7] = "turret";
+/**
+ * Reimplements data 0x4dc518: g_Player_NodeName_Body.
+ * Purpose: Player init-state node name for the body node.
+ */
+char g_Player_NodeName_Body[5] = "body";
+/**
+ * Reimplements data 0x4dc520: g_Player_NodeName_Target.
+ * Purpose: Player init-state node name for the target node.
+ */
+char g_Player_NodeName_Target[7] = "target";
+/**
+ * Reimplements data 0x4dc528: g_Player_NodeName_Bft.
+ * Purpose: Shared Player/GameNet node name for BFT state lookup.
+ */
+char g_Player_NodeName_Bft[4] = "bft";
+/**
+ * Reimplements data 0x4dc52c: g_Player_NodeName_Bft00.
+ * Purpose: Player bootstrap node name for the initial BFT actor.
+ */
+char g_Player_NodeName_Bft00[7] = "bft_00";
+/**
+ * Reimplements data 0x4dc538: g_Player_NodeName_Subt.
+ * Purpose: Player init-state animation/effect name for the subt node.
+ */
+char g_Player_NodeName_Subt[5] = "subt";
+/**
+ * Reimplements data 0x4dc540: g_Player_BftBubbleEffectName.
+ * Purpose: Player init-state effect name for the BFT bubble animation.
+ */
+char g_Player_BftBubbleEffectName[12] = "bft_bubble1";
+/**
+ * Reimplements data 0x4dc54c: g_Player_NapalmVehicleEffectName.
+ * Purpose: Shared Player/zTurret effect name for napalm vehicle animation.
+ */
+char g_Player_NapalmVehicleEffectName[15] = "napalm_vehicle";
+/**
+ * Reimplements data 0x4dc55c: g_Player_ShockVehicleEffectName.
+ * Purpose: Player init-state effect name for shock vehicle animation.
+ */
+char g_Player_ShockVehicleEffectName[14] = "shock_vehicle";
+/**
+ * Reimplements data 0x4dc56c: g_Player_ShatterVehicleEffectName.
+ * Purpose: Player init-state effect name for shatter vehicle animation.
+ */
+char g_Player_ShatterVehicleEffectName[16] = "shatter_vehicle";
+/**
+ * Reimplements data 0x4dc57c: g_Player_BftExhaustTrailName.
+ * Purpose: Player init-state trail name for BFT exhaust.
+ */
+char g_Player_BftExhaustTrailName[18] = "bft_exhaust_trail";
+/**
+ * Reimplements data 0x4dc590: g_Player_BoatWakeTrailName.
+ * Purpose: Player init-state trail name for boat wake.
+ */
+char g_Player_BoatWakeTrailName[16] = "boat_wake_trail";
+/**
+ * Reimplements data 0x4dc5a0: g_Player_RegenSkinNodeName.
+ * Purpose: Player init-state effect name for the regen skin node.
+ */
+char g_Player_RegenSkinNodeName[11] = "regen_skin";
+/**
+ * Reimplements data 0x4dc5ac: g_Player_MasterCommonDataMissingFmt.
+ * Purpose: Diagnostic emitted when Player master common data is missing.
+ */
+char g_Player_MasterCommonDataMissingFmt[39] =
+    "Cannot find Master Common Data for %s!";
+/**
+ * Reimplements Player modal-bind literal data owner rows at 0x4dc5d4,
+ * 0x4dc5fc, 0x4dc620..0x4dc698, 0x4dc6d0, and 0x4dc6dc.
+ * BN types these as writable .data char arrays used by modal-state node
+ * binding and model-derived support/collision point construction; the
+ * intervening Bft99 and shared path-join literals belong to separate owners.
+ * Purpose: Stores Player modal binding and modal point-builder literal names.
+ */
+char g_Player_CollisionPointsMissingFmt[37] =
+    "Cannot find collision points for %s!";
+char g_Player_SupportPointsMissingFmt[35] =
+    "Cannot find support points for %s!";
+char g_Player_EffectNodeName_DustRight[7] = "dust_r";
+char g_Player_EffectNodeName_DustLeft[7] = "dust_l";
+char g_Player_EffectNodeName_SplashRight[9] = "splash_r";
+char g_Player_EffectNodeName_SplashLeft[9] = "splash_l";
+char g_Player_EffectNodeName_Wake[5] = "wake";
+char g_Player_EffectNodeName_Caustic1[9] = "caustic1";
+char g_Player_NodeName_Props[6] = "props";
+char g_Player_NodeName_LeftTracks[8] = "ltracks";
+char g_Player_NodeName_RightTracks[8] = "rtracks";
+char g_Player_NodeName_Chassis[8] = "chassis";
+char g_Player_NodeName_LeftMorphs[12] = "left_morphs";
+char g_Player_NodeName_RightMorphs[13] = "right_morphs";
+char g_Player_MasterModalDataMissingFmt[38] =
+    "Cannot find Master Modal Data for %s!";
+char g_Player_CollisionPointNodeNameFmt[12] = "collide%02d";
+char g_Player_SupportPointNodeNameFmt[12] = "support%02d";
+/**
+ * Reimplements Player master ZRD record-loader literal data
+ * 0x4dc6e8..0x4dc96b.
+ * BN types these as writable .data char arrays used by
+ * Player::LoadMasterCommonDataFromNode and
+ * Player::LoadMasterModalDataFromNode for common-mode, modal, sound, FX,
+ * wave, movement, collision, platform, and master-type ZRD record lookups.
+ * Purpose: Stores Player master ZRD record-loader literal names.
+ */
+/**
+ * Reimplements data 0x4dc6e8: g_Player_NodeName_Weapons.
+ * Purpose: Names the common-mode weapons record.
+ */
+char g_Player_NodeName_Weapons[8] = "weapons";
+/**
+ * Reimplements data 0x4dc6f0: g_Player_NodeName_Pickups.
+ * Purpose: Names the common-mode pickups record.
+ */
+char g_Player_NodeName_Pickups[8] = "pickups";
+/**
+ * Reimplements data 0x4dc6f8: g_Player_NodeName_Health.
+ * Purpose: Names the common-mode health record.
+ */
+char g_Player_NodeName_Health[7] = "health";
+/**
+ * Reimplements data 0x4dc700: g_Player_NodeName_TrackSwitch.
+ * Purpose: Names the common-mode track-switch record.
+ */
+char g_Player_NodeName_TrackSwitch[13] = "track_switch";
+/**
+ * Reimplements data 0x4dc710: g_Player_NodeName_CameraUdSwing.
+ * Purpose: Names the common-mode camera swing record.
+ */
+char g_Player_NodeName_CameraUdSwing[16] = "camera_ud_swing";
+/**
+ * Reimplements data 0x4dc720: g_Player_NodeName_AimY.
+ * Purpose: Names the common-mode aim-yaw record.
+ */
+char g_Player_NodeName_AimY[5] = "aimy";
+/**
+ * Reimplements data 0x4dc728: g_Player_NodeName_CamBack.
+ * Purpose: Names the common-mode camera-back record.
+ */
+char g_Player_NodeName_CamBack[8] = "camback";
+/**
+ * Reimplements data 0x4dc730: g_Player_NodeName_StartAnims.
+ * Purpose: Names the common-mode start-animations record.
+ */
+char g_Player_NodeName_StartAnims[12] = "start_anims";
+/**
+ * Reimplements data 0x4dc73c: g_Player_NodeName_Activation.
+ * Purpose: Names the common-mode activation record.
+ */
+char g_Player_NodeName_Activation[11] = "activation";
+/**
+ * Reimplements data 0x4dc748: g_Player_NodeName_Pinging.
+ * Purpose: Names the common-mode pinging sound record.
+ */
+char g_Player_NodeName_Pinging[8] = "pinging";
+/**
+ * Reimplements data 0x4dc750: g_Player_NodeName_WeaponSelect.
+ * Purpose: Names the common-mode weapon-select sound record.
+ */
+char g_Player_NodeName_WeaponSelect[14] = "weapon_select";
+/**
+ * Reimplements data 0x4dc760: g_Player_NodeName_WeaponUp.
+ * Purpose: Names the common-mode weapon-up sound record.
+ */
+char g_Player_NodeName_WeaponUp[10] = "weapon_up";
+/**
+ * Reimplements data 0x4dc76c: g_Player_NodeName_Sounds.
+ * Purpose: Names the master record sounds child.
+ */
+char g_Player_NodeName_Sounds[7] = "sounds";
+/**
+ * Reimplements data 0x4dc774: g_Player_NodeName_Nanite.
+ * Purpose: Names the common-mode nanite record.
+ */
+char g_Player_NodeName_Nanite[7] = "nanite";
+/**
+ * Reimplements data 0x4dc77c: g_Player_NodeName_VolumeScale.
+ * Purpose: Names the modal sound volume scale record.
+ */
+char g_Player_NodeName_VolumeScale[13] = "volume_scale";
+/**
+ * Reimplements data 0x4dc78c: g_Player_NodeName_PitchScale.
+ * Purpose: Names the modal sound pitch scale record.
+ */
+char g_Player_NodeName_PitchScale[12] = "pitch_scale";
+/**
+ * Reimplements data 0x4dc798: g_Player_NodeName_Land.
+ * Purpose: Names the modal land sound record.
+ */
+char g_Player_NodeName_Land[5] = "land";
+/**
+ * Reimplements data 0x4dc7a0: g_Player_NodeName_Collide.
+ * Purpose: Names the modal collide sound record.
+ */
+char g_Player_NodeName_Collide[8] = "collide";
+/**
+ * Reimplements data 0x4dc7a8: g_Player_NodeName_External.
+ * Purpose: Names the modal external-engine sound record.
+ */
+char g_Player_NodeName_External[9] = "external";
+/**
+ * Reimplements data 0x4dc7b4: g_Player_NodeName_Engine.
+ * Purpose: Names the modal engine sound record.
+ */
+char g_Player_NodeName_Engine[7] = "engine";
+/**
+ * Reimplements data 0x4dc7bc: g_Player_NodeName_Skid.
+ * Purpose: Names the modal skid sound record.
+ */
+char g_Player_NodeName_Skid[5] = "skid";
+/**
+ * Reimplements data 0x4dc7c4: g_Player_NodeName_Idle.
+ * Purpose: Names the modal idle sound record.
+ */
+char g_Player_NodeName_Idle[5] = "idle";
+/**
+ * Reimplements data 0x4dc7cc: g_Player_NodeName_S2AAnims.
+ * Purpose: Names the sub-to-amphib FX list record.
+ */
+char g_Player_NodeName_S2AAnims[10] = "s2a_anims";
+/**
+ * Reimplements data 0x4dc7d8: g_Player_NodeName_A2SAnims.
+ * Purpose: Names the amphib-to-sub FX list record.
+ */
+char g_Player_NodeName_A2SAnims[10] = "a2s_anims";
+/**
+ * Reimplements data 0x4dc7e4: g_Player_NodeName_H2AAnims.
+ * Purpose: Names the hover-to-amphib FX list record.
+ */
+char g_Player_NodeName_H2AAnims[10] = "h2a_anims";
+/**
+ * Reimplements data 0x4dc7f0: g_Player_NodeName_A2HAnims.
+ * Purpose: Names the amphib-to-hover FX list record.
+ */
+char g_Player_NodeName_A2HAnims[10] = "a2h_anims";
+/**
+ * Reimplements data 0x4dc7fc: g_Player_NodeName_H2TAnims.
+ * Purpose: Names the hover-to-track FX list record.
+ */
+char g_Player_NodeName_H2TAnims[10] = "h2t_anims";
+/**
+ * Reimplements data 0x4dc808: g_Player_NodeName_T2HAnims.
+ * Purpose: Names the track-to-hover FX list record.
+ */
+char g_Player_NodeName_T2HAnims[10] = "t2h_anims";
+/**
+ * Reimplements data 0x4dc814: g_Player_NodeName_A2TAnims.
+ * Purpose: Names the amphib-to-track FX list record.
+ */
+char g_Player_NodeName_A2TAnims[10] = "a2t_anims";
+/**
+ * Reimplements data 0x4dc820: g_Player_NodeName_T2AAnims.
+ * Purpose: Names the track-to-amphib FX list record.
+ */
+char g_Player_NodeName_T2AAnims[10] = "t2a_anims";
+/**
+ * Reimplements data 0x4dc82c: g_Player_NodeName_CollisionDamage.
+ * Purpose: Names the modal collision damping record.
+ */
+char g_Player_NodeName_CollisionDamage[12] = "collision_d";
+/**
+ * Reimplements data 0x4dc838: g_Player_NodeName_ChassisRoll.
+ * Purpose: Names the modal chassis roll record.
+ */
+char g_Player_NodeName_ChassisRoll[10] = "chas_roll";
+/**
+ * Reimplements data 0x4dc844: g_Player_NodeName_ChassisPitch.
+ * Purpose: Names the modal chassis pitch record.
+ */
+char g_Player_NodeName_ChassisPitch[11] = "chas_pitch";
+/**
+ * Reimplements data 0x4dc850: g_Player_NodeName_ChassisSmooth.
+ * Purpose: Names the modal chassis smoothing record.
+ */
+char g_Player_NodeName_ChassisSmooth[12] = "chas_smooth";
+/**
+ * Reimplements data 0x4dc85c: g_Player_NodeName_ModeAlt.
+ * Purpose: Names the modal alternate-mode transition record.
+ */
+char g_Player_NodeName_ModeAlt[9] = "mode_alt";
+/**
+ * Reimplements data 0x4dc868: g_Player_ConfigKey_SubWave.
+ * Purpose: Names the modal submarine wave record.
+ */
+char g_Player_ConfigKey_SubWave[9] = "sub_wave";
+/**
+ * Reimplements data 0x4dc874: g_Player_ConfigKey_HoverWave.
+ * Purpose: Names the modal hover wave record.
+ */
+char g_Player_ConfigKey_HoverWave[11] = "hover_wave";
+/**
+ * Reimplements data 0x4dc880: g_Player_ConfigKey_AmphibWave.
+ * Purpose: Names the modal amphib wave record.
+ */
+char g_Player_ConfigKey_AmphibWave[12] = "amphib_wave";
+/**
+ * Reimplements data 0x4dc88c: g_Player_ConfigKey_GunPitch.
+ * Purpose: Names the modal gun pitch record.
+ */
+char g_Player_ConfigKey_GunPitch[10] = "gun_pitch";
+/**
+ * Reimplements data 0x4dc898: g_Player_ConfigKey_Mass.
+ * Purpose: Names the modal mass record.
+ */
+char g_Player_ConfigKey_Mass[5] = "mass";
+/**
+ * Reimplements data 0x4dc8a0: g_Player_ConfigKey_AltControl.
+ * Purpose: Names the modal alternate-control record.
+ */
+char g_Player_ConfigKey_AltControl[12] = "alt_control";
+/**
+ * Reimplements data 0x4dc8ac: g_Player_ConfigKey_AccelDamping.
+ * Purpose: Names the modal acceleration damping record.
+ */
+char g_Player_ConfigKey_AccelDamping[10] = "a_damping";
+/**
+ * Reimplements data 0x4dc8b8: g_Player_ConfigKey_RateDamping.
+ * Purpose: Names the modal rate damping record.
+ */
+char g_Player_ConfigKey_RateDamping[13] = "rate_damping";
+/**
+ * Reimplements data 0x4dc8c8: g_Player_ConfigKey_TurnDamping.
+ * Purpose: Names the modal turn damping record.
+ */
+char g_Player_ConfigKey_TurnDamping[13] = "turn_damping";
+/**
+ * Reimplements data 0x4dc8d8: g_Player_ConfigKey_Turns.
+ * Purpose: Names the modal turn-rate record.
+ */
+char g_Player_ConfigKey_Turns[6] = "turns";
+/**
+ * Reimplements data 0x4dc8e0: g_Player_ConfigKey_LavaSlowdown.
+ * Purpose: Names the modal lava slowdown record.
+ */
+char g_Player_ConfigKey_LavaSlowdown[14] = "lava_slowdown";
+/**
+ * Reimplements data 0x4dc8f0: g_Player_ConfigKey_QuicksandSlowdown.
+ * Purpose: Names the modal quicksand slowdown record.
+ */
+char g_Player_ConfigKey_QuicksandSlowdown[19] = "quicksand_slowdown";
+/**
+ * Reimplements data 0x4dc904: g_Player_ConfigKey_Stopping.
+ * Purpose: Names the modal stopping-force record.
+ */
+char g_Player_ConfigKey_Stopping[9] = "stopping";
+/**
+ * Reimplements data 0x4dc910: g_Player_ConfigKey_Friction.
+ * Purpose: Names the modal friction record.
+ */
+char g_Player_ConfigKey_Friction[9] = "friction";
+/**
+ * Reimplements data 0x4dc91c: g_Player_ConfigKey_Rates.
+ * Purpose: Names the modal acceleration-rate record.
+ */
+char g_Player_ConfigKey_Rates[6] = "rates";
+/**
+ * Reimplements data 0x4dc924: g_Player_ConfigKey_Collision.
+ * Purpose: Names the modal collision probe list record.
+ */
+char g_Player_ConfigKey_Collision[10] = "collision";
+/**
+ * Reimplements data 0x4dc930: g_Player_ConfigKey_Platform.
+ * Purpose: Names the modal platform probe list record.
+ */
+char g_Player_ConfigKey_Platform[9] = "platform";
+/**
+ * Reimplements data 0x4dc93c: g_Player_ConfigValue_MasterTypeUnknown.
+ * Purpose: Stores the fallback modal master type name.
+ */
+char g_Player_ConfigValue_MasterTypeUnknown[8] = "unknown";
+/**
+ * Reimplements data 0x4dc944: g_Player_ConfigValue_MasterTypeFly.
+ * Purpose: Stores the fly modal master type name.
+ */
+char g_Player_ConfigValue_MasterTypeFly[4] = "fly";
+/**
+ * Reimplements data 0x4dc948: g_Player_ConfigValue_MasterTypeSub.
+ * Purpose: Stores the sub modal master type name.
+ */
+char g_Player_ConfigValue_MasterTypeSub[4] = "sub";
+/**
+ * Reimplements data 0x4dc94c: g_Player_ConfigValue_MasterTypeAmphib.
+ * Purpose: Stores the amphib modal master type name.
+ */
+char g_Player_ConfigValue_MasterTypeAmphib[7] = "amphib";
+/**
+ * Reimplements data 0x4dc954: g_Player_ConfigValue_MasterTypeHover.
+ * Purpose: Stores the hover modal master type name.
+ */
+char g_Player_ConfigValue_MasterTypeHover[6] = "hover";
+/**
+ * Reimplements data 0x4dc95c: g_Player_ConfigValue_MasterTypeTrack.
+ * Purpose: Stores the track modal master type name.
+ */
+char g_Player_ConfigValue_MasterTypeTrack[6] = "track";
+/**
+ * Reimplements data 0x4dc964: g_Player_ConfigNode_Mode.
+ * Purpose: Names the modal mode record.
+ */
+char g_Player_ConfigNode_Mode[5] = "mode";
 // Data owner 0x4f37b0..0x4f3a57 and 0x4f33a8..0x4f364f:
 // zero-initialized top-message HUD panel singletons constructed at startup
 // and destroyed by their CRT exit callbacks.
@@ -1031,7 +1678,7 @@ void PlayerLoadPlayerZrdTuning(
 ) {
     zReader::Node *node = zReader_GetNamedNode(
         root,
-        "camera_zone"
+        g_Player_ConfigKey_CameraZone
     );
     if (node != 0) {
         const float cameraZone = PlayerZrdArrayFloat(
@@ -1046,7 +1693,7 @@ void PlayerLoadPlayerZrdTuning(
 
     node = zReader_GetNamedNode(
         root,
-        "max_cam_yaw_rate"
+        g_Player_ConfigKey_MaxCamYawRate
     );
     g_Player_MaxCamYawRate = node != 0 ? PlayerZrdArrayFloat(
         node,
@@ -1055,7 +1702,7 @@ void PlayerLoadPlayerZrdTuning(
 
     node = zReader_GetNamedNode(
         root,
-        "mouse_push"
+        g_Player_ConfigKey_MousePush
     );
     if (node != 0) {
         g_Player_MousePushX = PlayerZrdArrayFloat(
@@ -1073,7 +1720,7 @@ void PlayerLoadPlayerZrdTuning(
 
     node = zReader_GetNamedNode(
         root,
-        "fp_cam_el_rate"
+        g_Player_ConfigKey_FirstPersonCamElevationRate
     );
     g_Player_FpCamElevationRate = node != 0 ? PlayerZrdArrayFloat(
         node,
@@ -1082,7 +1729,7 @@ void PlayerLoadPlayerZrdTuning(
 
     node = zReader_GetNamedNode(
         root,
-        "fp_cam_el_lim"
+        g_Player_ConfigKey_FirstPersonCamElevationLimit
     );
     if (node != 0) {
         g_Player_FpCamElevationMin = PlayerZrdArrayFloat(
@@ -1100,7 +1747,7 @@ void PlayerLoadPlayerZrdTuning(
 
     node = zReader_GetNamedNode(
         root,
-        "underwater_cam"
+        g_Player_ConfigKey_UnderwaterCam
     );
     if (node != 0) {
         int rBits = 0;
@@ -1155,7 +1802,7 @@ void PlayerLoadPlayerZrdTuning(
 
     node = zReader_GetNamedNode(
         root,
-        "camera_elastic"
+        g_Player_ConfigKey_CameraElastic
     );
     if (node != 0) {
         g_Player_CameraElastic = PlayerZrdArrayFloat(
@@ -1166,7 +1813,7 @@ void PlayerLoadPlayerZrdTuning(
 
     node = zReader_GetNamedNode(
         root,
-        "max_cam_tether_angle"
+        g_Player_ConfigKey_MaxCamTetherAngle
     );
     if (node != 0) {
         g_Player_MaxCamTetherAngleRad = PlayerZrdArrayFloat(
@@ -1177,7 +1824,7 @@ void PlayerLoadPlayerZrdTuning(
 
     node = zReader_GetNamedNode(
         root,
-        "nom_gravity"
+        g_Player_ConfigKey_NormalGravity
     );
     g_Player_NominalGravity = node != 0 ? PlayerZrdArrayFloat(
         node,
@@ -1186,7 +1833,7 @@ void PlayerLoadPlayerZrdTuning(
 
     node = zReader_GetNamedNode(
         root,
-        "wat_gravity"
+        g_Player_ConfigKey_WaterGravity
     );
     g_Player_WaterGravity =
         node != 0 ? PlayerZrdArrayFloat(
@@ -1196,7 +1843,7 @@ void PlayerLoadPlayerZrdTuning(
 
     node = zReader_GetNamedNode(
         root,
-        "qsd_gravity"
+        g_Player_ConfigKey_QuicksandGravity
     );
     g_Player_QuicksandGravity =
         node != 0 ? PlayerZrdArrayFloat(
@@ -1206,7 +1853,7 @@ void PlayerLoadPlayerZrdTuning(
 
     node = zReader_GetNamedNode(
         root,
-        "qsand_sink"
+        g_Player_ConfigKey_QuicksandSink
     );
     g_Player_QuicksandSinkRate = node != 0 ? PlayerZrdArrayFloat(
         node,
@@ -1215,7 +1862,7 @@ void PlayerLoadPlayerZrdTuning(
 
     node = zReader_GetNamedNode(
         root,
-        "lava_sink"
+        g_Player_ConfigKey_LavaSink
     );
     g_Player_LavaSinkRate = node != 0 ? PlayerZrdArrayFloat(
         node,
@@ -1224,7 +1871,7 @@ void PlayerLoadPlayerZrdTuning(
 
     node = zReader_GetNamedNode(
         root,
-        "max_slope"
+        g_Player_ConfigKey_MaxSlope
     );
     g_Player_MaxSlope = node != 0 ? PlayerZrdArrayFloat(
         node,
@@ -1233,7 +1880,7 @@ void PlayerLoadPlayerZrdTuning(
 
     node = zReader_GetNamedNode(
         root,
-        "make_hot"
+        g_Player_ConfigKey_MakeHot
     );
     if (node != 0) {
         g_Player_MakeHotOptEntry = OptCatalog::FindEntryByName(PlayerZrdArrayString(
@@ -1244,7 +1891,7 @@ void PlayerLoadPlayerZrdTuning(
 
     node = zReader_GetNamedNode(
         root,
-        "make_cold"
+        g_Player_ConfigKey_MakeCold
     );
     if (node != 0) {
         g_Player_MakeColdOptEntry = OptCatalog::FindEntryByName(PlayerZrdArrayString(
@@ -1255,7 +1902,7 @@ void PlayerLoadPlayerZrdTuning(
 
     node = zReader_GetNamedNode(
         root,
-        "burning_anim"
+        g_Player_BurningAnimName
     );
     if (node != 0) {
         g_PlayerRecentHitFxAnimEntry = zEffectAnim::FindEntryByName(PlayerZrdArrayString(
@@ -1266,7 +1913,7 @@ void PlayerLoadPlayerZrdTuning(
 
     node = zReader_GetNamedNode(
         root,
-        "low_shield_snd"
+        g_Player_LowShieldSndName
     );
     if (node != 0) {
         g_Hud_LowMeterBeepSample = zSnd::FindSampleByName(PlayerZrdArrayString(
@@ -1285,7 +1932,7 @@ void PlayerLoadPlayerZrdTuning(
 
     g_PlayerStatusMeterRatio = 1.0f;
     g_Hud_LowMeterNextBeepTime = 0.0f;
-    g_Player_CopterSndSample = zSnd::FindSampleByName("snd_chopper");
+    g_Player_CopterSndSample = zSnd::FindSampleByName(g_Player_CopterSndName);
 }
 
 // Source-faithful helper recovered from address-backed callers in this source file.
@@ -1344,19 +1991,19 @@ const char *PlayerDebugMasterTypeName(
 ) {
     switch (masterType) {
     case 0:
-        return "BASIC";
+        return g_Player_MasterTypeName_Basic;
     case kPlayerMasterTypeFly:
-        return "FLY";
+        return g_Player_MasterTypeName_Fly;
     case kPlayerMasterTypeSub:
-        return "SUB";
+        return g_Player_MasterTypeName_Sub;
     case kPlayerMasterTypeTrack:
-        return "TRACK";
+        return g_Player_MasterTypeName_Track;
     case kPlayerMasterTypeHover:
-        return "HOVER";
+        return g_Player_MasterTypeName_Hover;
     case kPlayerMasterTypeAmphib:
-        return "AMPHIB";
+        return g_Player_MasterTypeName_Amphib;
     default:
-        return "UNKNOWN";
+        return g_Player_MasterTypeName_Unknown;
     }
 }
 
@@ -2878,14 +3525,14 @@ int __fastcall CreateFromNamesAtPose(
 ) {
     const int objectIsBft00 = strcmp(
         objectName,
-        "bft_00"
+        g_Player_NodeName_Bft00
     ) == 0;
     zClass_NodePartial *rootNode = 0;
 
     if (zOpt::GetNetworkEnabled() != 0 && objectIsBft00 != 0) {
         rootNode = zClass::FindByTypeAndName(
             6,
-            "bft_00"
+            g_Player_NodeName_Bft00
         );
         if (rootNode == 0) {
             return 0;
@@ -3108,7 +3755,7 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
     g_MainCamera = cameraNode;
     g_Player_HorizonNode = zClass_Class::FindSubNodeByName(
         g_HudSensorTracker.worldNode,
-        "horizon"
+        g_Player_NodeName_Horizon
     );
 
     float fovX = 0.0f;
@@ -3158,10 +3805,10 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
     g_Player_CameraZoneInvRange = 10.0f;
     g_Player_CopterSndNode1 = 0;
     g_Player_CopterSndNode2 = 0;
-    g_Player_BftSplashAnimEntry = zEffectAnim::FindEntryByName("bftsplash");
+    g_Player_BftSplashAnimEntry = zEffectAnim::FindEntryByName(g_Player_BftSplashAnimName);
 
     zReader::Node *playerRoot = zReader::LoadNodeFromPath(
-        "player.zrd",
+        g_Player_ConfigArchiveName,
         0,
         0
     );
@@ -3235,7 +3882,7 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
     stealthPlayerState->rootNode = zClass_Object3D::gwObject3DInit();
     zClass_Class::gwNodeSetName(
         stealthPlayerState->rootNode,
-        "Stealth"
+        g_Player_DisplayName_Stealth
     );
     zClass_Object3D::gwObject3DSetPosition(
         stealthPlayerState->rootNode,
@@ -3264,20 +3911,20 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
     zReader_GetNamedNode(
         zReader_GetNamedNode(
             vehicleRoot,
-            "stealth"
+            g_Player_ConfigNode_Stealth
         ),
-        "common_mode"
+        g_Player_ConfigNode_CommonMode
     );
     InitStateFromNameAndMasterCommonData(
         stealthSaveState,
-        "stealth",
-        "stealth"
+        g_Player_ConfigNode_Stealth,
+        g_Player_ConfigNode_Stealth
     );
     BindModalStateFromMasterModalData(
         stealthSaveState,
         stealthModalState,
-        "stealth",
-        "basic"
+        g_Player_ConfigNode_Stealth,
+        g_Player_ConfigNode_Basic
     );
     InitSpawnStateFromPrimaryModalData(stealthSaveState);
     stealthSaveState->firstSaveState->playerState->projectileSpawnVel.x = 0.0f;
@@ -3293,7 +3940,7 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(
             0x800,
             "D:\\Proj\\Battlesport\\player.cpp",
             0x399,
-            "Cannot find aiv.zrd!"
+            g_Player_AivArchiveMissingMsg
         );
         return;
     }
@@ -3587,7 +4234,7 @@ void __fastcall InitStateFromNameAndMasterCommonData(
         char errorText[0x80];
         sprintf(
             errorText,
-            "Cannot find Master Common Data for %s!",
+            g_Player_MasterCommonDataMissingFmt,
             objectName
         );
         zError::ReportOld(
@@ -3705,26 +4352,36 @@ void __fastcall InitStateFromNameAndMasterCommonData(
         playerState->aiStateStartTime = playerState->aiStateUntilTime;
     }
 
-    playerState->regenSkinFxEntry = zEffectAnim::FindEntryByName("regen_skin");
+    playerState->regenSkinFxEntry = zEffectAnim::FindEntryByName(g_Player_RegenSkinNodeName);
     playerState->masterTypeTransitionToAmphibNodeAction =
-        zEffectAnim::FindEntryByName("boat_wake_trail");
+        zEffectAnim::FindEntryByName(g_Player_BoatWakeTrailName);
     playerState->masterTypeTransitionToTrackNodeAction =
-        zEffectAnim::FindEntryByName("bft_exhaust_trail");
-    playerState->shatterVehicleFxEntry = zEffectAnim::FindEntryByName("shatter_vehicle");
-    playerState->shockVehicleFxEntry = zEffectAnim::FindEntryByName("shock_vehicle");
-    playerState->napalmVehicleFxEntry = zEffectAnim::FindEntryByName("napalm_vehicle");
-    playerState->masterTypeTransitionToSubNodeAction = zEffectAnim::FindEntryByName("bft_bubble1");
-    playerState->subTransitionFxEntry = zEffectAnim::FindEntryByName("subt");
+        zEffectAnim::FindEntryByName(g_Player_BftExhaustTrailName);
+    playerState->shatterVehicleFxEntry = zEffectAnim::FindEntryByName(
+        g_Player_ShatterVehicleEffectName
+    );
+    playerState->shockVehicleFxEntry = zEffectAnim::FindEntryByName(
+        g_Player_ShockVehicleEffectName
+    );
+    playerState->napalmVehicleFxEntry = zEffectAnim::FindEntryByName(
+        g_Player_NapalmVehicleEffectName
+    );
+    playerState->masterTypeTransitionToSubNodeAction = zEffectAnim::FindEntryByName(
+        g_Player_BftBubbleEffectName
+    );
+    playerState->subTransitionFxEntry = zEffectAnim::FindEntryByName(g_Player_NodeName_Subt);
 
     const int objectIsNetwork = strstr(
         objectName,
         "net"
     ) != 0;
     playerState->destroyedRespawnFxEntry =
-        zEffectAnim::FindEntryByName(objectIsNetwork != 0 ? "bft_00" : objectName);
+        zEffectAnim::FindEntryByName(
+            objectIsNetwork != 0 ? g_Player_NodeName_Bft00 : objectName
+        );
     if (objectIsNetwork != 0 || strstr(
         objectName,
-        "bft"
+        g_Player_NodeName_Bft
     ) != 0) {
         playerState->masterTypeTransitionToTrackLightHandle = zEffectAnim::SetVelocity_Thunk(
             playerState->masterTypeTransitionToTrackNodeAction,
@@ -3775,7 +4432,7 @@ void __fastcall InitStateFromNameAndMasterCommonData(
     zClass_NodePartial *const targetNode =
         zClass_Class::FindSubNodeByName(
             playerState->rootNode,
-            "target"
+            g_Player_NodeName_Target
         );
     if (targetNode != 0) {
         zClass_Object3D::gwObject3DGetPosition(
@@ -3801,24 +4458,24 @@ void __fastcall InitStateFromNameAndMasterCommonData(
 
     playerState->bodyNode = zClass_Class::FindSubNodeByName(
         playerState->rootNode,
-        "body"
+        g_Player_NodeName_Body
     );
     playerState->turretNode = zClass_Class::FindSubNodeByName(
         playerState->rootNode,
-        "turret"
+        g_Player_NodeName_Turret
     );
     playerState->doorLeftNode = zClass_Class::FindSubNodeByName(
         playerState->rootNode,
-        "doorleft"
+        g_Player_NodeName_DoorLeft
     );
     playerState->doorRightNode =
         zClass_Class::FindSubNodeByName(
             playerState->rootNode,
-            "doorright"
+            g_Player_NodeName_DoorRight
         );
     playerState->modeVariantNode = zClass_Class::FindSubNodeByName(
         playerState->rootNode,
-        "shadow"
+        g_Player_NodeName_Shadow
     );
 
     CacheGunHardpointsAndDetachDisplays(
@@ -3912,7 +4569,7 @@ void __fastcall BindModalStateFromMasterModalData(
         char errorText[0x100];
         sprintf(
             errorText,
-            "Cannot find Master Modal Data for %s!",
+            g_Player_MasterModalDataMissingFmt,
             objectName
         );
         zError::ReportOld(
@@ -3926,51 +4583,51 @@ void __fastcall BindModalStateFromMasterModalData(
     zClass_NodePartial *const rootNode = playerState->rootNode;
     modalState->nodeRightMorphs = zClass_Class::FindSubNodeByName(
         rootNode,
-        "right_morphs"
+        g_Player_NodeName_RightMorphs
     );
     modalState->nodeLeftMorphs = zClass_Class::FindSubNodeByName(
         rootNode,
-        "left_morphs"
+        g_Player_NodeName_LeftMorphs
     );
     modalState->modalNode = zClass_Class::FindSubNodeByName(
         rootNode,
-        "chassis"
+        g_Player_NodeName_Chassis
     );
     modalState->nodeRTracks = zClass_Class::FindSubNodeByName(
         rootNode,
-        "rtracks"
+        g_Player_NodeName_RightTracks
     );
     modalState->nodeLTracks = zClass_Class::FindSubNodeByName(
         rootNode,
-        "ltracks"
+        g_Player_NodeName_LeftTracks
     );
     modalState->nodeProps = zClass_Class::FindSubNodeByName(
         rootNode,
-        "props"
+        g_Player_NodeName_Props
     );
     modalState->nodeCaustic1 = zClass_Class::FindSubNodeByName(
         rootNode,
-        "caustic1"
+        g_Player_EffectNodeName_Caustic1
     );
     modalState->nodeWake = zClass_Class::FindSubNodeByName(
         rootNode,
-        "wake"
+        g_Player_EffectNodeName_Wake
     );
     modalState->nodeSplashL = zClass_Class::FindSubNodeByName(
         rootNode,
-        "splash_l"
+        g_Player_EffectNodeName_SplashLeft
     );
     modalState->nodeSplashR = zClass_Class::FindSubNodeByName(
         rootNode,
-        "splash_r"
+        g_Player_EffectNodeName_SplashRight
     );
     modalState->nodeDustL = zClass_Class::FindSubNodeByName(
         rootNode,
-        "dust_l"
+        g_Player_EffectNodeName_DustLeft
     );
     modalState->nodeDustR = zClass_Class::FindSubNodeByName(
         rootNode,
-        "dust_r"
+        g_Player_EffectNodeName_DustRight
     );
 
     modalState->chassisRollFilterState = 0.0f;
@@ -3982,7 +4639,7 @@ void __fastcall BindModalStateFromMasterModalData(
         char errorText[0x100];
         sprintf(
             errorText,
-            "Cannot find support points for %s!",
+            g_Player_SupportPointsMissingFmt,
             objectName
         );
         zError::ReportOld(
@@ -4001,7 +4658,7 @@ void __fastcall BindModalStateFromMasterModalData(
         char errorText[0x100];
         sprintf(
             errorText,
-            "Cannot find collision points for %s!",
+            g_Player_CollisionPointsMissingFmt,
             objectName
         );
         zError::ReportOld(
@@ -4175,7 +4832,7 @@ int __fastcall BuildCollisionPointsFromModel(
         char nodeName[0x50];
         sprintf(
             nodeName,
-            "collide%02d",
+            g_Player_CollisionPointNodeNameFmt,
             i
         );
         zClass_NodePartial *const collisionNode =
@@ -4233,7 +4890,7 @@ int __fastcall BuildSupportPointsFromModel(
         char nodeName[0x50];
         sprintf(
             nodeName,
-            "support%02d",
+            g_Player_SupportPointNodeNameFmt,
             i
         );
         zClass_NodePartial *const supportNode =
@@ -4285,11 +4942,11 @@ void __fastcall LoadMasterCommonDataFromNode(
 
     zReader::Node *const commonModeNode = zReader_GetNamedNode(
         vehicleNode,
-        "common_mode"
+        g_Player_ConfigNode_CommonMode
     );
     zReader::Node *node = zReader_GetNamedNode(
         commonModeNode,
-        "nanite"
+        g_Player_NodeName_Nanite
     );
     if (node != 0) {
         commonData->naniteBuildRate = PlayerZrdArrayInt(
@@ -4307,29 +4964,29 @@ void __fastcall LoadMasterCommonDataFromNode(
 
     zReader::Node *const soundsNode = zReader_GetNamedNode(
         commonModeNode,
-        "sounds"
+        g_Player_NodeName_Sounds
     );
     if (soundsNode != 0) {
         PlayerLoadSoundSample(
             soundsNode,
-            "weapon_up",
+            g_Player_NodeName_WeaponUp,
             &commonData->sfxWeaponUp[0]
         );
         PlayerLoadSoundSample(
             soundsNode,
-            "weapon_select",
+            g_Player_NodeName_WeaponSelect,
             &commonData->sfxWeaponUp[2]
         );
         PlayerLoadSoundSample(
             soundsNode,
-            "pinging",
+            g_Player_NodeName_Pinging,
             &commonData->sfxWeaponUp[3]
         );
     }
 
     node = zReader_GetNamedNode(
         commonModeNode,
-        "activation"
+        g_Player_NodeName_Activation
     );
     if (node != 0) {
         const float activationRange = PlayerZrdArrayFloat(
@@ -4368,7 +5025,7 @@ void __fastcall LoadMasterCommonDataFromNode(
 
     node = zReader_GetNamedNode(
         commonModeNode,
-        "start_anims"
+        g_Player_NodeName_StartAnims
     );
     if (node != 0) {
         PlayerCopyZrdArrayString(
@@ -4380,7 +5037,7 @@ void __fastcall LoadMasterCommonDataFromNode(
 
     node = zReader_GetNamedNode(
         commonModeNode,
-        "camback"
+        g_Player_NodeName_CamBack
     );
     if (node != 0) {
         zReader::Node *const first = PlayerZrdArrayBase(node)[1].value.nodes;
@@ -4409,7 +5066,7 @@ void __fastcall LoadMasterCommonDataFromNode(
 
     node = zReader_GetNamedNode(
         commonModeNode,
-        "aimy"
+        g_Player_NodeName_AimY
     );
     if (node != 0) {
         commonData->aimYawRate = PlayerZrdArrayFloat(
@@ -4427,7 +5084,7 @@ void __fastcall LoadMasterCommonDataFromNode(
 
     node = zReader_GetNamedNode(
         commonModeNode,
-        "camera_ud_swing"
+        g_Player_NodeName_CameraUdSwing
     );
     if (node != 0) {
         commonData->cameraUdSwing[0] = PlayerZrdArrayFloat(
@@ -4455,7 +5112,7 @@ void __fastcall LoadMasterCommonDataFromNode(
 
     node = zReader_GetNamedNode(
         commonModeNode,
-        "track_switch"
+        g_Player_NodeName_TrackSwitch
     );
     if (node != 0) {
         commonData->trackSwitchDist0 = PlayerZrdArrayFloat(
@@ -4478,7 +5135,7 @@ void __fastcall LoadMasterCommonDataFromNode(
 
     node = zReader_GetNamedNode(
         commonModeNode,
-        "health"
+        g_Player_NodeName_Health
     );
     if (node != 0) {
         commonData->maxHealth = zOpt::GetNetworkEnabled() != 0 ? PlayerZrdArrayFloat(node, 2)
@@ -4493,7 +5150,7 @@ void __fastcall LoadMasterCommonDataFromNode(
 
     node = zReader_GetNamedNode(
         commonModeNode,
-        "pickups"
+        g_Player_NodeName_Pickups
     );
     if (node != 0) {
         PickupType::FindByLogicalName(
@@ -4514,7 +5171,7 @@ void __fastcall LoadMasterCommonDataFromNode(
 
     node = zReader_GetNamedNode(
         commonModeNode,
-        "weapons"
+        g_Player_NodeName_Weapons
     );
     if (node == 0) {
         return;
@@ -4580,7 +5237,7 @@ void __fastcall LoadMasterModalDataFromNode(
 
     zReader::Node *node = zReader_GetNamedNode(
         modalNode,
-        "mode"
+        g_Player_ConfigNode_Mode
     );
     if (node != 0) {
         PlayerCopyZrdArrayString(
@@ -4591,44 +5248,44 @@ void __fastcall LoadMasterModalDataFromNode(
     } else {
         strcpy(
             modalData->modeName,
-            "unknown"
+            g_Player_ConfigValue_MasterTypeUnknown
         );
     }
 
     modalData->masterType = 0;
     if (strncmp(
         modalData->modeName,
-        "basic",
+        g_Player_ConfigNode_Basic,
         2
     ) == 0) {
         modalData->masterType = 0;
     } else if (strncmp(
         modalData->modeName,
-        "track",
+        g_Player_ConfigValue_MasterTypeTrack,
         2
     ) == 0) {
         modalData->masterType = 3;
     } else if (strncmp(
         modalData->modeName,
-        "hover",
+        g_Player_ConfigValue_MasterTypeHover,
         2
     ) == 0) {
         modalData->masterType = 4;
     } else if (strncmp(
         modalData->modeName,
-        "amphib",
+        g_Player_ConfigValue_MasterTypeAmphib,
         2
     ) == 0) {
         modalData->masterType = 5;
     } else if (strncmp(
         modalData->modeName,
-        "sub",
+        g_Player_ConfigValue_MasterTypeSub,
         2
     ) == 0) {
         modalData->masterType = 2;
     } else if (strncmp(
         modalData->modeName,
-        "fly",
+        g_Player_ConfigValue_MasterTypeFly,
         2
     ) == 0) {
         modalData->masterType = 1;
@@ -4637,7 +5294,7 @@ void __fastcall LoadMasterModalDataFromNode(
     PlayerLoadModalPointList(
         zReader_GetNamedNode(
             modalNode,
-            "platform"
+            g_Player_ConfigKey_Platform
         ),
         &modalData->probePoints[15],
         &modalData->platformPointCount
@@ -4645,7 +5302,7 @@ void __fastcall LoadMasterModalDataFromNode(
     PlayerLoadModalPointList(
         zReader_GetNamedNode(
             modalNode,
-            "collision"
+            g_Player_ConfigKey_Collision
         ),
         modalData->probePoints,
         &modalData->probePointCount
@@ -4653,7 +5310,7 @@ void __fastcall LoadMasterModalDataFromNode(
 
     node = zReader_GetNamedNode(
         modalNode,
-        "rates"
+        g_Player_ConfigKey_Rates
     );
     if (node != 0) {
         modalData->accelRate = PlayerZrdArrayFloat(
@@ -4671,7 +5328,7 @@ void __fastcall LoadMasterModalDataFromNode(
 
     node = zReader_GetNamedNode(
         modalNode,
-        "friction"
+        g_Player_ConfigKey_Friction
     );
     if (node != 0) {
         modalData->frictionStatic = PlayerZrdArrayFloat(
@@ -4697,7 +5354,7 @@ void __fastcall LoadMasterModalDataFromNode(
 
     node = zReader_GetNamedNode(
         modalNode,
-        "stopping"
+        g_Player_ConfigKey_Stopping
     );
     modalData->stoppingForce = node != 0 ? PlayerZrdArrayFloat(
         node,
@@ -4706,7 +5363,7 @@ void __fastcall LoadMasterModalDataFromNode(
 
     node = zReader_GetNamedNode(
         modalNode,
-        "quicksand_slowdown"
+        g_Player_ConfigKey_QuicksandSlowdown
     );
     modalData->quicksandSlowdown = node != 0 ? PlayerZrdArrayFloat(
         node,
@@ -4715,7 +5372,7 @@ void __fastcall LoadMasterModalDataFromNode(
 
     node = zReader_GetNamedNode(
         modalNode,
-        "lava_slowdown"
+        g_Player_ConfigKey_LavaSlowdown
     );
     modalData->lavaSlowdown = node != 0 ? PlayerZrdArrayFloat(
         node,
@@ -4724,7 +5381,7 @@ void __fastcall LoadMasterModalDataFromNode(
 
     node = zReader_GetNamedNode(
         modalNode,
-        "turns"
+        g_Player_ConfigKey_Turns
     );
     if (node != 0) {
         modalData->yawAccel = PlayerZrdArrayFloat(
@@ -4742,7 +5399,7 @@ void __fastcall LoadMasterModalDataFromNode(
 
     node = zReader_GetNamedNode(
         modalNode,
-        "turn_damping"
+        g_Player_ConfigKey_TurnDamping
     );
     modalData->yawDamping = node != 0 ? PlayerZrdArrayFloat(
         node,
@@ -4751,7 +5408,7 @@ void __fastcall LoadMasterModalDataFromNode(
 
     node = zReader_GetNamedNode(
         modalNode,
-        "rate_damping"
+        g_Player_ConfigKey_RateDamping
     );
     if (node != 0) {
         modalData->rateDampingAccel = PlayerZrdArrayFloat(
@@ -4769,7 +5426,7 @@ void __fastcall LoadMasterModalDataFromNode(
 
     node = zReader_GetNamedNode(
         modalNode,
-        "a_damping"
+        g_Player_ConfigKey_AccelDamping
     );
     modalData->aDamping = node != 0 ? PlayerZrdArrayFloat(
         node,
@@ -4778,7 +5435,7 @@ void __fastcall LoadMasterModalDataFromNode(
 
     node = zReader_GetNamedNode(
         modalNode,
-        "alt_control"
+        g_Player_ConfigKey_AltControl
     );
     if (node != 0) {
         modalData->hoverLiftDampingRate = PlayerZrdArrayFloat(
@@ -4801,7 +5458,7 @@ void __fastcall LoadMasterModalDataFromNode(
 
     node = zReader_GetNamedNode(
         modalNode,
-        "mass"
+        g_Player_ConfigKey_Mass
     );
     modalData->mass = node != 0 ? PlayerZrdArrayFloat(
         node,
@@ -4811,7 +5468,7 @@ void __fastcall LoadMasterModalDataFromNode(
 
     node = zReader_GetNamedNode(
         modalNode,
-        "gun_pitch"
+        g_Player_ConfigKey_GunPitch
     );
     if (node != 0) {
         modalData->gunPitchMin = PlayerZrdArrayFloat(
@@ -4829,7 +5486,7 @@ void __fastcall LoadMasterModalDataFromNode(
 
     node = zReader_GetNamedNode(
         modalNode,
-        "mode_alt"
+        g_Player_NodeName_ModeAlt
     );
     modalData->modeAltTransitionTime = node != 0 ? PlayerZrdArrayFloat(
         node,
@@ -4838,7 +5495,7 @@ void __fastcall LoadMasterModalDataFromNode(
 
     node = zReader_GetNamedNode(
         modalNode,
-        "chas_smooth"
+        g_Player_NodeName_ChassisSmooth
     );
     modalData->chassisSmoothFactor = node != 0 ? (float)(fabs(PlayerZrdArrayFloat(
         node,
@@ -4847,7 +5504,7 @@ void __fastcall LoadMasterModalDataFromNode(
 
     node = zReader_GetNamedNode(
         modalNode,
-        "chas_pitch"
+        g_Player_NodeName_ChassisPitch
     );
     if (node != 0) {
         modalData->chassisPitchRate = PlayerZrdArrayFloat(
@@ -4870,7 +5527,7 @@ void __fastcall LoadMasterModalDataFromNode(
 
     node = zReader_GetNamedNode(
         modalNode,
-        "chas_roll"
+        g_Player_NodeName_ChassisRoll
     );
     if (node != 0) {
         modalData->chassisRollRate = PlayerZrdArrayFloat(
@@ -4895,22 +5552,22 @@ void __fastcall LoadMasterModalDataFromNode(
     PlayerLoadModalWaveParams(
         modalData,
         modalNode,
-        "amphib_wave"
+        g_Player_ConfigKey_AmphibWave
     );
     PlayerLoadModalWaveParams(
         modalData,
         modalNode,
-        "hover_wave"
+        g_Player_ConfigKey_HoverWave
     );
     PlayerLoadModalWaveParams(
         modalData,
         modalNode,
-        "sub_wave"
+        g_Player_ConfigKey_SubWave
     );
 
     node = zReader_GetNamedNode(
         modalNode,
-        "collision_d"
+        g_Player_NodeName_CollisionDamage
     );
     if (node != 0) {
         modalData->collisionDampingA = PlayerZrdArrayFloat(
@@ -4928,48 +5585,48 @@ void __fastcall LoadMasterModalDataFromNode(
 
     PlayerLoadModalFxList(
         modalNode,
-        "t2a_anims",
+        g_Player_NodeName_T2AAnims,
         modalData->fxList_fromTrackToAmphib
     );
     PlayerLoadModalFxList(
         modalNode,
-        "a2t_anims",
+        g_Player_NodeName_A2TAnims,
         modalData->fxList_fromAmphibToTrack
     );
     PlayerLoadModalFxList(
         modalNode,
-        "t2h_anims",
+        g_Player_NodeName_T2HAnims,
         modalData->fxList_fromTrackToHover
     );
     PlayerLoadModalFxList(
         modalNode,
-        "h2t_anims",
+        g_Player_NodeName_H2TAnims,
         modalData->fxList_fromHoverToTrack
     );
     PlayerLoadModalFxList(
         modalNode,
-        "s2a_anims",
+        g_Player_NodeName_S2AAnims,
         modalData->fxList_fromSubToAmphib
     );
     PlayerLoadModalFxList(
         modalNode,
-        "a2s_anims",
+        g_Player_NodeName_A2SAnims,
         modalData->fxList_fromAmphibToSub
     );
     PlayerLoadModalFxList(
         modalNode,
-        "h2a_anims",
+        g_Player_NodeName_H2AAnims,
         modalData->fxList_fromHoverToAmphib
     );
     PlayerLoadModalFxList(
         modalNode,
-        "a2h_anims",
+        g_Player_NodeName_A2HAnims,
         modalData->fxList_fromAmphibToHover
     );
 
     zReader::Node *const soundsNode = zReader_GetNamedNode(
         modalNode,
-        "sounds"
+        g_Player_NodeName_Sounds
     );
     if (soundsNode == 0) {
         return;
@@ -4977,38 +5634,38 @@ void __fastcall LoadMasterModalDataFromNode(
 
     PlayerLoadSoundSample(
         soundsNode,
-        "engine",
+        g_Player_NodeName_Engine,
         &modalData->sfxEngine[0]
     );
     PlayerLoadSoundSample(
         soundsNode,
-        "external",
+        g_Player_NodeName_External,
         &modalData->sfxEngine[1]
     );
     PlayerLoadSoundSample(
         soundsNode,
-        "idle",
+        g_Player_NodeName_Idle,
         &modalData->sfxEngine[2]
     );
     PlayerLoadSoundSample(
         soundsNode,
-        "skid",
+        g_Player_NodeName_Skid,
         &modalData->sfxEngine[3]
     );
     PlayerLoadSoundSample(
         soundsNode,
-        "collide",
+        g_Player_NodeName_Collide,
         &modalData->sfxCollide
     );
     PlayerLoadSoundSample(
         soundsNode,
-        "land",
+        g_Player_NodeName_Land,
         &modalData->sfxLand
     );
 
     node = zReader_GetNamedNode(
         soundsNode,
-        "pitch_scale"
+        g_Player_NodeName_PitchScale
     );
     if (node != 0) {
         modalData->sfxPitchScale = PlayerZrdArrayFloat(
@@ -5019,7 +5676,7 @@ void __fastcall LoadMasterModalDataFromNode(
 
     node = zReader_GetNamedNode(
         soundsNode,
-        "volume_scale"
+        g_Player_NodeName_VolumeScale
     );
     if (node != 0) {
         modalData->sfxVolumeScale = PlayerZrdArrayFloat(
@@ -5039,7 +5696,7 @@ void CacheDisableCopterSndNodesAndStopSample() {
     if (g_Player_CopterSndNode1 == 0) {
         zClass_NodePartial *const copterRoot = zClass::FindByTypeAndName(
             6,
-            "copter01"
+            g_Player_CopterTypeName01
         );
         if (copterRoot != 0) {
             g_Player_CopterHealthyNode1 = zClass_Class::FindSubNodeByName(
@@ -5048,7 +5705,7 @@ void CacheDisableCopterSndNodesAndStopSample() {
             );
             g_Player_CopterSndNode1 = zClass_Class::FindSubNodeByName(
                 copterRoot,
-                "snd_chopper"
+                g_Player_CopterSndName
             );
         }
     }
@@ -5056,7 +5713,7 @@ void CacheDisableCopterSndNodesAndStopSample() {
     if (g_Player_CopterSndNode2 == 0) {
         zClass_NodePartial *const copterRoot = zClass::FindByTypeAndName(
             6,
-            "copter02"
+            g_Player_CopterTypeName02
         );
         if (copterRoot != 0) {
             g_Player_CopterHealthyNode2 = zClass_Class::FindSubNodeByName(
@@ -5065,7 +5722,7 @@ void CacheDisableCopterSndNodesAndStopSample() {
             );
             g_Player_CopterSndNode2 = zClass_Class::FindSubNodeByName(
                 copterRoot,
-                "snd_chopper"
+                g_Player_CopterSndName
             );
         }
     }
@@ -9993,8 +10650,12 @@ void RegisterGameplayCommandCallbacksAndCreateFfEffects() {
     }
 }
 
-// Reimplements 0x42bb30: Player::AsyncCommandCallback
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x42bb30: Player::AsyncCommandCallback
+ * (D:\Proj\Battlesport\player.cpp)
+ * Purpose: Dispatches script async command events that toggle HUD/gameplay
+ * state, apply debug damage, and spawn debug pickup carrier nodes.
+ */
 void __fastcall AsyncCommandCallback(
     zEffectAnimEntry *animEntry,
     void *,
@@ -10133,7 +10794,7 @@ void __fastcall AsyncCommandCallback(
 
     case 912:
         Pickup::SpawnAtCarrierNodeByName(
-            "vwbus",
+            g_PickupOptKey_Vwbus,
             32,
             1
         );
@@ -10141,7 +10802,7 @@ void __fastcall AsyncCommandCallback(
 
     case 913:
         Pickup::SpawnAtCarrierNodeByName(
-            "crbox",
+            g_PickupOptKey_Crbox,
             36,
             1
         );
@@ -10149,7 +10810,7 @@ void __fastcall AsyncCommandCallback(
 
     case 914:
         Pickup::SpawnAtCarrierNodeByName(
-            "drop",
+            g_PickupOptKey_Drop,
             30,
             1
         );
@@ -11681,9 +12342,9 @@ void __fastcall ApplyMissionSaveData(
         saveData->size != kPlayerMissionSaveLegacySize) {
         zError::ReportOld(
             0x200,
-            "D:\\Proj\\Battlesport\\player.cpp",
+            g_Player_SourceFile_PlayerCpp,
             0xd1,
-            "Player save data structure has been modified. Cannot use this save set."
+            g_Player_SaveDataModifiedMsg
         );
         return;
     }
@@ -11951,14 +12612,14 @@ void __fastcall ZAR_ReadMissionSaveDataSection(
 void ZAR_RegisterSections() {
     g_Player_RuntimeInputFlags = 0;
     zUtil_ZAR::RegisterSectionHandler(
-        "VehicleList",
+        g_Player_SaveVehicleListSectionName,
         ZbdCallbackPtr(&ZAR_WriteVehicleListSection),
         ZbdCallbackPtr(&ZAR_ReadVehicleListSection),
         100,
         0
     );
     zUtil_ZAR::RegisterSectionHandler(
-        "Player",
+        g_HudUiCounterText_PlayerLabel,
         ZbdCallbackPtr(&ZAR_WriteMissionSaveDataSection),
         ZbdCallbackPtr(&ZAR_ReadMissionSaveDataSection),
         200,
@@ -12009,10 +12670,9 @@ void __fastcall ZAR_ReadVehicleListSection(
     if (saveData->size != 128) {
         zError::ReportOld(
             0x200,
-            "D:\\Proj\\Battlesport\\player.cpp",
+            g_Player_SourceFile_PlayerCpp,
             419,
-            "Vehicle save data structure has been modified. Cannot use this save "
-            "set."
+            g_Player_VehicleSaveDataModifiedMsg
         );
         return;
     }
@@ -12390,7 +13050,7 @@ void __fastcall UpdateDebugOverlayHud(
     if (playerState->lifecycleState == kPlayerLifecycleAi) {
         sprintf(
             debugLine,
-            "%s is in mode %d and had goal node %d",
+            g_Player_HudReadoutFmt_ModeGoalNode,
             rootName,
             playerState->aiTopLevelState,
             playerState->aiCurrentPathNode->nodeIndex
@@ -12398,7 +13058,7 @@ void __fastcall UpdateDebugOverlayHud(
     } else if (playerState->lifecycleState == kPlayerLifecycleInactive) {
         sprintf(
             debugLine,
-            "%s is DEAD!",
+            g_Player_HudReadoutFmt_Dead,
             rootName
         );
     } else if (playerState->lifecycleState == kPlayerLifecycleLocal ||
@@ -12406,21 +13066,21 @@ void __fastcall UpdateDebugOverlayHud(
         if (playerState->airborneFlag != 0) {
             sprintf(
                 debugLine,
-                "%s using %s dynamics - A",
+                g_Player_HudReadoutFmt_DynamicsA,
                 rootName,
                 masterTypeName
             );
         } else if (playerState->slipSfxActive != 0) {
             sprintf(
                 debugLine,
-                "%s using %s dynamics - S",
+                g_Player_HudReadoutFmt_DynamicsS,
                 rootName,
                 masterTypeName
             );
         } else {
             sprintf(
                 debugLine,
-                "%s using %s dynamics",
+                g_Player_HudReadoutFmt_Dynamics,
                 rootName,
                 masterTypeName
             );
@@ -12435,7 +13095,7 @@ void __fastcall UpdateDebugOverlayHud(
 
     sprintf(
         debugLine,
-        "POS %d %d %d YAW %d",
+        g_Player_HudReadoutFmt_PosYaw,
         (int)(playerState->worldPos.x),
         (int)(playerState->worldPos.y),
         (int)(playerState->worldPos.z),

@@ -71,6 +71,15 @@ float g_Hud_LowMeterBeepInterval = 0.0f;
 float g_Hud_LowMeterNextBeepTime = 0.0f;
 
 /**
+ * Reimplements data 0x4da3d8: g_HudUiDialogSampleSetName.
+ * Source owner: hud_ui.shared_dialog_sample_set_name.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: names the shared dialog sample set loaded by HUD/menu dialog states.
+ */
+char g_HudUiDialogSampleSetName[0x7] = "DIALOG";
+RECOIL_STATIC_ASSERT(sizeof(g_HudUiDialogSampleSetName) == 0x7);
+
+/**
  * Reimplements data 0x4da8d8: g_HudUiControlsDialog_CameraModeSelectorNodeName.
  * Source owner: hud_ui.hud_ui_controls_dialog_strings.
  * Data owner gate remains pending; this docblock records source provenance only.
@@ -1469,7 +1478,7 @@ int RecoilStateCheatCode::OnTryBecomeCurrent() {
     m_audioSnapshot = (RecoilPtr32)(unsigned int)audioSnapshot;
     audioSnapshot->StopAllIfPlaying();
 
-    zSndSampleSet_InitByName("DIALOG");
+    zSndSampleSet_InitByName(g_HudUiDialogSampleSetName);
 
     m_dialog = new HudUiCheatCodeDialog;
 
@@ -1504,7 +1513,7 @@ void RecoilStateCheatCode::OnDeactivate() {
         m_dialog = 0;
     }
 
-    zSndSampleSet_DestroyByName("DIALOG");
+    zSndSampleSet_DestroyByName(g_HudUiDialogSampleSetName);
 
     zSndPlayHandleSnapshot *const audioSnapshot =
         (zSndPlayHandleSnapshot *)(unsigned int)m_audioSnapshot;

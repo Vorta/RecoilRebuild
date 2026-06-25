@@ -3147,9 +3147,11 @@ void __fastcall SpanAlphaBlend555ConstAlphaFromTex16Alpha8(
 
 /**
  * Reimplements 0x49cbb0: zRndr::SpanAlphaBlend565MmxFromTex16Alpha8
- * Source-shape evidence: BN builds paired U/V indices with the MMX mask and
+ * BN retail evidence: BN builds paired U/V indices with the MMX mask and
  * step globals, stages sampled tex16 pixels and alpha bytes in a stack scratch
  * area, blends packed groups, then runs a scalar tail with the 565 gates.
+ * Current source model: behavior/data-equivalent scalar emulation pending a
+ * lawful MMX source model; source-owner acceptance remains blocked.
  * Purpose: Blend tex16 alpha-map samples into a 565 span using the MMX-selected path shape.
  */
 void __fastcall SpanAlphaBlend565MmxFromTex16Alpha8(
@@ -3210,8 +3212,10 @@ void __fastcall SpanAlphaBlend565MmxFromTex16Alpha8(
 
 /**
  * Reimplements 0x49cea0: zRndr::SpanAlphaBlend555MmxFromTex16Alpha8
- * Source-shape evidence: BN matches the 565 MMX alpha-map staging loop but
+ * BN retail evidence: BN matches the 565 MMX alpha-map staging loop but
  * uses the 555 red/green masks and an alpha > 7 scalar-tail gate.
+ * Current source model: behavior/data-equivalent scalar emulation pending a
+ * lawful MMX source model; source-owner acceptance remains blocked.
  * Purpose: Blend tex16 alpha-map samples into a 555 span using the MMX-selected path shape.
  */
 void __fastcall SpanAlphaBlend555MmxFromTex16Alpha8(
@@ -3541,9 +3545,11 @@ void __fastcall SpanAlphaBlend555ConstAlphaFromPal8Alpha8(
 
 /**
  * Reimplements 0x49da80: zRndr::SpanAlphaBlend565MmxFromPal8Alpha8
- * Source-shape evidence: BN stages paired pal8 samples through the active
+ * BN retail evidence: BN stages paired pal8 samples through the active
  * palette, alpha bytes through the active alpha map, and packed 565 blends
  * through the same MMX U/V index body before the scalar tail.
+ * Current source model: behavior/data-equivalent scalar emulation pending a
+ * lawful MMX source model; source-owner acceptance remains blocked.
  * Purpose: Blend pal8 alpha-map samples into a 565 span using the MMX-selected path shape.
  */
 void __fastcall SpanAlphaBlend565MmxFromPal8Alpha8(
@@ -3605,8 +3611,10 @@ void __fastcall SpanAlphaBlend565MmxFromPal8Alpha8(
 
 /**
  * Reimplements 0x49ddb0: zRndr::SpanAlphaBlend555MmxFromPal8Alpha8
- * Source-shape evidence: BN matches the pal8 MMX alpha-map staging loop but
+ * BN retail evidence: BN matches the pal8 MMX alpha-map staging loop but
  * uses the 555 red/green masks and an alpha > 7 scalar-tail gate.
+ * Current source model: behavior/data-equivalent scalar emulation pending a
+ * lawful MMX source model; source-owner acceptance remains blocked.
  * Purpose: Blend pal8 alpha-map samples into a 555 span using the MMX-selected path shape.
  */
 void __fastcall SpanAlphaBlend555MmxFromPal8Alpha8(
@@ -3997,8 +4005,10 @@ static inline unsigned int FogBlendPair555(
 }
 
 /**
- * Recovered inline helper: zRndr signed MMX word subtract
- * Original-source inline helper evidence: No standalone retail function is expected; observed in 0x49e400 and 0x49e560 MMX-lane fog blend reconstruction.
+ * Scalar emulation helper: zRndr signed MMX word subtract
+ * BN retail evidence: 0x49e400 and 0x49e560 use MMX signed saturating word
+ * subtracts inside the fog blend lanes; this helper is not accepted
+ * original-source inline-helper evidence.
  * Purpose: Emulate the saturating signed word subtract used by the MMX fog lane.
  */
 static inline short SaturatingSubWord(
@@ -4016,8 +4026,10 @@ static inline short SaturatingSubWord(
 }
 
 /**
- * Recovered inline helper: zRndr signed MMX low-word multiply
- * Original-source inline helper evidence: No standalone retail function is expected; observed in 0x49e400 and 0x49e560 MMX-lane fog blend reconstruction.
+ * Scalar emulation helper: zRndr signed MMX low-word multiply
+ * BN retail evidence: 0x49e400 and 0x49e560 use MMX signed low-word
+ * multiplies inside the fog blend lanes; this helper is not accepted
+ * original-source inline-helper evidence.
  * Purpose: Emulate the low-word signed multiply used by the MMX fog lane.
  */
 static inline unsigned short MultiplyLowWord(
@@ -4028,8 +4040,10 @@ static inline unsigned short MultiplyLowWord(
 }
 
 /**
- * Recovered inline helper: zRndr MMX fog lane blend
- * Original-source inline helper evidence: No standalone retail function is expected; observed in 0x49e400 and 0x49e560 as repeated per-lane MMX fog math.
+ * Scalar emulation helper: zRndr MMX fog lane blend
+ * BN retail evidence: 0x49e400 and 0x49e560 repeat this per-lane MMX fog
+ * math pattern; this helper is behavior/data-equivalent scalar emulation, not
+ * accepted original-source inline-helper evidence.
  * Purpose: Blend one lane of the MMX-shaped fog quad with active mask globals.
  */
 static inline unsigned short FogBlendMmxLane(
@@ -4319,6 +4333,9 @@ void __fastcall FogBlendSpan555Scalar(
 
 /**
  * Reimplements 0x49e400: zRndr::FogBlendSpan565Mmx
+ * Current source model: behavior/data-equivalent C++ scalar-emulates the
+ * retail MMX quad body; source-owner acceptance remains blocked pending a
+ * lawful MMX source model.
  * Purpose: Blend a 565 span through scalar edge handling and the MMX-shaped quad body.
  */
 void __fastcall FogBlendSpan565Mmx(
@@ -4412,6 +4429,9 @@ void __fastcall FogBlendSpan565Mmx(
 
 /**
  * Reimplements 0x49e560: zRndr::FogBlendSpan555Mmx
+ * Current source model: behavior/data-equivalent C++ scalar-emulates the
+ * retail MMX quad body; source-owner acceptance remains blocked pending a
+ * lawful MMX source model.
  * Purpose: Blend a 555 span through scalar edge handling and the MMX-shaped quad body.
  */
 void __fastcall FogBlendSpan555Mmx(
@@ -10192,6 +10212,7 @@ void zRndr_FlushTransparentQueue() {
  * Purpose: Draw queued overwrite polygons through the appropriate flat or textured paths.
  */
 void zRndr_FlushOverwriteQueue() {
+    zRndr::g_pfnBuildSpanList = zRndr_SpanOcclusion_InsertSpanNode_NoDepthTest;
     zRndr::g_pfnBuildSpanListSecondary = zRndr_SpanOcclusion_BuildSpanListFast;
 
     {

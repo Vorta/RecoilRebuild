@@ -9,6 +9,7 @@
 #include "recoil/recoil_types.h"
 #include <stdio.h>
 
+extern "C" char g_Player_MasterTypeName_Unknown[0x08];
 extern "C" LPDIRECTSOUND g_zSnd_BackendDevice = 0;
 extern "C" LPDIRECTSOUNDBUFFER g_zSnd_BackendListenerHandle = 0;
 extern "C" DSCAPS g_zSnd_BackendAuxHandleOrConfig = {0};
@@ -660,7 +661,7 @@ int __fastcall ReportA3DError(
 reportUnknownA3D:
     sprintf(
         errorNameStorage,
-        "UNKNOWN"
+        g_Player_MasterTypeName_Unknown
     );
 
 reportA3D:
@@ -776,7 +777,7 @@ int __fastcall ReportDirectSoundError(
     default:
         sprintf(
             errorNameStorage,
-            "UNKNOWN"
+            g_Player_MasterTypeName_Unknown
         );
         break;
     }
