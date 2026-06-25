@@ -672,7 +672,12 @@ extern "C" int zfmv_stream_init_missing_file_smoke(void);
 extern "C" int zfmv_stream_fill_audio_buffer_smoke(void);
 extern "C" int zfmv_stream_read_and_decode_frame_smoke(void);
 extern "C" int zfmv_action_play_mci_constructor_smoke(void);
+extern "C" int zfmv_action_play_mci_update_smoke(void);
+extern "C" int zfmv_action_play_mci_begin_smoke(void);
+extern "C" int zfmv_action_play_mci_end_smoke(void);
+extern "C" int zfmv_action_play_mci_lifecycle_smoke(void);
 extern "C" int zfmv_action_blur_constructor_smoke(void);
+extern "C" int zfmv_action_blur_begin_end_smoke(void);
 extern "C" int zfmv_action_blur_update_smoke(void);
 extern "C" int hud_ui_save_load_entry_is_newer_than_smoke(void);
 extern "C" int player_underwater_fx_pass3_ui_constructor_smoke(void);
@@ -832,7 +837,9 @@ extern "C" int hud_ui_load_game_dialog_destructor_smoke(void);
 extern "C" int hud_ui_save_game_dialog_init_layout_smoke(void);
 extern "C" int hud_ui_main_menu_dialog_save_load_checks_smoke(void);
 extern "C" int recoil_state_save_load_transition_on_try_become_current_smoke(void);
+extern "C" int recoil_state_save_load_transition_on_update_should_quit_smoke(void);
 extern "C" int recoil_state_save_load_transition_on_deactivate_smoke(void);
+extern "C" int recoil_state_save_load_transition_queue_dialogs_smoke(void);
 extern "C" int zarchive_list_get_at_smoke(void);
 extern "C" int zarchive_list_get_count_smoke(void);
 extern "C" int zutil_zar_register_section_handler_smoke(void);
@@ -900,6 +907,8 @@ extern "C" int hud_ui_net_game_setup_cancel_button_smoke(void);
 extern "C" int hud_ui_net_game_setup_launch_button_smoke(void);
 extern "C" int hud_ui_net_game_setup_next_world_button_smoke(void);
 extern "C" int hud_ui_net_game_setup_prev_world_button_smoke(void);
+extern "C" int hud_ui_net_game_setup_queue_enter_reconfigure_smoke(void);
+extern "C" int hud_ui_net_game_setup_overlay_owner_lifecycle_smoke(void);
 extern "C" int hud_ui_net_game_setup_overlay_owner_on_try_smoke(void);
 extern "C" int hud_ui_net_game_setup_overlay_owner_on_deactivate_smoke(void);
 extern "C" int zhud_slot_destructors_smoke(void);
@@ -1021,6 +1030,8 @@ extern "C" int zhud_message_load_weapon_layout_from_node_smoke(void);
 extern "C" int zhud_message_destructors_smoke(void);
 extern "C" int hud_ui_set_invalidate_mode_smoke(void);
 extern "C" int zhud_bar_and_meter_constructor_smoke(void);
+extern "C" int zhud_bar_draw_smoke(void);
+extern "C" int zhud_bar_set_point_xy_smoke(void);
 extern "C" int zhud_widget_release_image_if_owned_smoke(void);
 extern "C" int zhud_widget_set_image_borrowed_and_invalidate_smoke(void);
 extern "C" int zhud_widget_destructor_core_smoke(void);
@@ -1062,6 +1073,9 @@ extern "C" int zhud_background_video_widget_update_smoke(void);
 extern "C" int zhud_background_video_widget_draw_smoke(void);
 extern "C" int zhud_background_video_widget_draw_base_smoke(void);
 extern "C" int zhud_background_video_widget_rebuild_blt_rect_smoke(void);
+extern "C" int zhud_message_box_constructor_fallback_smoke(void);
+extern "C" int zhud_message_box_run_modal_smoke(void);
+extern "C" int zhud_message_box_destructor_smoke(void);
 extern "C" int zhud_play_powerup_sfx_smoke(void);
 extern "C" int zhud_background_constructor_smoke(void);
 extern "C" int zhud_background_update_input_focus_smoke(void);
@@ -1076,6 +1090,7 @@ extern "C" int zhud_panel_set_font_smoke(void);
 extern "C" int zhud_panel_set_clip_smoke(void);
 extern "C" int zhud_panel_set_text_fmt_smoke(void);
 extern "C" int zhud_panel_query_text_height_smoke(void);
+extern "C" int zhud_panel_scalar_deleting_destructor_smoke(void);
 extern "C" int zhud_panel_simple_constructor_smoke(void);
 extern "C" int zhud_panel_layout_entry_copy_construct_smoke(void);
 extern "C" int zhud_panel_layout_entry_copy_assign_smoke(void);
@@ -1097,6 +1112,7 @@ extern "C" int zhud_composite_panel_destructor_smoke(void);
 extern "C" int zhud_composite_panel_update_smoke(void);
 extern "C" int zhud_transition_text_panel_update_smoke(void);
 extern "C" int zhud_transition_text_panel_flash_rate_smoke(void);
+extern "C" int zhud_flash_panel_compute_blend_color_smoke(void);
 extern "C" int zhud_composite_panel_layout_entries_smoke(void);
 extern "C" int zhud_composite_panel_set_text_fmt_smoke(void);
 extern "C" int zhud_composite_panel_set_font_smoke(void);
@@ -1201,6 +1217,8 @@ extern "C" int hud_sensor_tracker_update_smoke(void);
 extern "C" int hud_sensor_tracker_update_map_scale_lerp_smoke(void);
 extern "C" int hud_sensor_tracker_project_world_points_smoke(void);
 extern "C" int hud_sensor_map_node_basics_smoke(void);
+extern "C" int hud_sensor_map_node_draw_projected_path_smoke(void);
+extern "C" int hud_sensor_map_node_draw_on_tracker_smoke(void);
 extern "C" int hud_sensor_map_remove_and_shutdown_smoke(void);
 extern "C" int hud_sensor_map_overlay_toggle_smoke(void);
 extern "C" int hud_sensor_tracker_load_map_paths_smoke(void);
@@ -1232,6 +1250,7 @@ extern "C" int hud_sensor_tracker_reset_hud_for_mission_start_smoke(void);
 extern "C" int briefing_set_progress_and_sleep_smoke(void);
 extern "C" int zhud_sensor_viewport_rect_smoke(void);
 extern "C" int zhud_sensor_get_fx_rect_smoke(void);
+extern "C" int zhud_sensor_track_list_reset_smoke(void);
 extern "C" int zhud_sensor_track_list_add_smoke(void);
 extern "C" int zhud_std_ptr_vector_clear_no_op_destroy_smoke(void);
 extern "C" int zmath_matrix_stack_and_direction_smoke(void);
@@ -1478,15 +1497,23 @@ extern "C" int zclass_camera_sync_view_context_positions_smoke(void);
 extern "C" int zclass_list_render_active_cameras_smoke(void);
 extern "C" int zclass_render_traverse_dispatch_smoke(void);
 extern "C" int zmodel_material_defaults_and_find_smoke(void);
+extern "C" int zmodel_dipool_write_to_stream_smoke(void);
+extern "C" int zmodel_dipool_read_from_stream_smoke(void);
+extern "C" int zmodel_dipool_read_entry_by_index_from_stream_smoke(void);
 extern "C" int zmodel_material_pool_entry_smoke(void);
 extern "C" int zmodel_material_and_di_clone_smoke(void);
+extern "C" int zmodel_scrolling_texture_update_smoke(void);
 extern "C" int zmodel_material_update_cycle_if_needed_smoke(void);
 extern "C" int zmodel_init_smoke(void);
 extern "C" int zmodel_render_node_software_flat_smoke(void);
+extern "C" int zmodel_render_node_hardware_flat_smoke(void);
+extern "C" int zmodel_render_node_hardware_point_smoke(void);
 extern "C" int zmodel_render_point_queue_entry_smoke(void);
 extern "C" int zmodel_display_init_smoke(void);
 extern "C" int zmodel_display_shutdown_smoke(void);
 extern "C" int zmodel_set_software_path_active_smoke(void);
+extern "C" int zmodel_set_display_instance_pool_capacity_smoke(void);
+extern "C" int zmodel_backface_elimination_tolerance_smoke(void);
 extern "C" int zmodel_matlslot_release_smoke(void);
 extern "C" int zmodel_matlbuffer_release_all_active_smoke(void);
 extern "C" int zmodel_matlbuffer_release_texture_surfaces_smoke(void);
@@ -1499,6 +1526,9 @@ extern "C" int zmodel_light_build_attr1_falloff_smoke(void);
 extern "C" int zmodel_light_point_in_polygon_init_smoke(void);
 extern "C" int zdi_ref_and_pool_free_smoke(void);
 extern "C" int zdi_add_polygon_wrapper_smoke(void);
+extern "C" int zdi_reset_current_variant_smoke(void);
+extern "C" int zdi_set_current_variant_smoke(void);
+extern "C" int zdi_entry_material_helpers_smoke(void);
 extern "C" int ztag4_clear_smoke(void);
 extern "C" int zmodel_set_di_texture_world_per_meter_smoke(void);
 extern "C" int zmodel_set_vertex_shading_enabled_smoke(void);
@@ -1557,6 +1587,7 @@ extern "C" int zclass_cls_di_region_filter_mesh_faces_smoke(void);
 extern "C" int zclass_node_predicate_helpers_smoke(void);
 extern "C" int zloc_message_lookup_failure_smoke(void);
 extern "C" int zloc_load_unload_messages_dll_smoke(void);
+extern "C" int zloc_get_id_messages_lookup_smoke(void);
 extern "C" int zimage_font_glyph_scan_smoke(void);
 extern "C" int zimage_font_measure_string_smoke(void);
 extern "C" int zimage_font_blit_string_smoke(void);
@@ -2118,7 +2149,10 @@ extern "C" int zhud_triplet_panel_shutdown_items_stub_smoke(void) {
 #define RECOIL_ZGAME_TESTS_ZMODEL_ACTIVE_LIGHTS
 #define RECOIL_ZGAME_TESTS_ZMODEL_LIGHT_POINT_IN_POLYGON_INIT
 #define RECOIL_ZGAME_TESTS_ZMODEL_SOFTWARE_PATH_ACTIVE
+#define RECOIL_ZGAME_TESTS_ZMODEL_DISPLAY_INSTANCE_POOL_CAPACITY
+#define RECOIL_ZGAME_TESTS_ZMODEL_BACKFACE_TOLERANCE
 #define RECOIL_ZGAME_TESTS_ZMODEL_VERTEX_SHADING_ENABLED
+#define RECOIL_ZGAME_TESTS_ZMODEL_SCROLLING_TEXTURE_UPDATE
 #define RECOIL_ZGAME_TESTS_MODEL_REF_LERP_QUEUE
 #define RECOIL_ZGAME_TESTS_ZCLASS_TYPELIST_UPDATE
 #define RECOIL_ZGAME_TESTS_ZCLASS_WINDOW
@@ -3197,7 +3231,10 @@ cleanup:
 #undef RECOIL_ZGAME_TESTS_ZCLASS_WINDOW
 #undef RECOIL_ZGAME_TESTS_ZCLASS_TYPELIST_UPDATE
 #undef RECOIL_ZGAME_TESTS_MODEL_REF_LERP_QUEUE
+#undef RECOIL_ZGAME_TESTS_ZMODEL_SCROLLING_TEXTURE_UPDATE
 #undef RECOIL_ZGAME_TESTS_ZMODEL_VERTEX_SHADING_ENABLED
+#undef RECOIL_ZGAME_TESTS_ZMODEL_BACKFACE_TOLERANCE
+#undef RECOIL_ZGAME_TESTS_ZMODEL_DISPLAY_INSTANCE_POOL_CAPACITY
 #undef RECOIL_ZGAME_TESTS_ZMODEL_SOFTWARE_PATH_ACTIVE
 #undef RECOIL_ZGAME_TESTS_ZMODEL_LIGHT_POINT_IN_POLYGON_INIT
 #undef RECOIL_ZGAME_TESTS_ZMODEL_ACTIVE_LIGHTS
@@ -3210,6 +3247,13 @@ zProjectedPoint g_zmodelDrawPointLastPoint = {};
 unsigned int g_zmodelDrawPointLastColor = 0;
 int g_zmodelDrawPointLastCount = 0;
 int g_zmodelDrawPointCallCount = 0;
+int g_zmodelSubmitFlatCallCount = 0;
+int g_zmodelSubmitFlatLastVertexCount = 0;
+int g_zmodelSubmitFlatLastAlpha = 0;
+unsigned int g_zmodelSubmitFlatLastColor = 0;
+unsigned int g_zmodelSubmitFlatLastRenderParam = 0;
+int g_zmodelSubmitFlatLastQueueMode = 0;
+zVideo_XyzVertex g_zmodelSubmitFlatLastVerts[0x40] = {};
 
 void __fastcall TestReleaseTextureUploadSurfaceRef(
     zVideo_TextureRecordPartial *textureRecord
@@ -3227,6 +3271,25 @@ void __fastcall TestZModelDrawPointColor16(
     g_zmodelDrawPointLastColor = packedColor16;
     g_zmodelDrawPointLastCount = pointCount;
     ++g_zmodelDrawPointCallCount;
+}
+
+void __fastcall TestZModelSubmitPolyFlatColor16(
+    zVideo_XyzVertex *vertices,
+    unsigned int packedColor16,
+    int alpha,
+    int renderParam,
+    int vertexCount,
+    int queueMode
+) {
+    ++g_zmodelSubmitFlatCallCount;
+    g_zmodelSubmitFlatLastVertexCount = vertexCount;
+    g_zmodelSubmitFlatLastAlpha = alpha;
+    g_zmodelSubmitFlatLastColor = packedColor16;
+    g_zmodelSubmitFlatLastRenderParam = static_cast<unsigned int>(renderParam);
+    g_zmodelSubmitFlatLastQueueMode = queueMode;
+    for (int i = 0; i < vertexCount && i < 0x40; ++i) {
+        g_zmodelSubmitFlatLastVerts[i] = vertices[i];
+    }
 }
 } // namespace
 
@@ -3334,6 +3397,204 @@ extern "C" int zmodel_matl_init_globals_smoke(void) {
     g_zModel_MatlFreeHeadIndex = -1;
     g_zModel_MatlActiveHeadIndex = -1;
     return poolOk && defaultsOk ? 0 : 2;
+}
+
+extern "C" int zmodel_matlbuffer_set_array_size_smoke(void) {
+    g_zModel_MatlPoolCapacity = 0;
+    zModel_MatlBuffer::SetArraySize(12);
+    const bool setOk = g_zModel_MatlPoolCapacity == 12;
+
+    zModel_MatlBuffer::SetArraySize(13);
+    const bool alreadySetOk = g_zModel_MatlPoolCapacity == 12;
+
+    g_zModel_MatlPoolCapacity = 0;
+    zModel_MatlBuffer::SetArraySize(32768);
+    const bool limitOk = g_zModel_MatlPoolCapacity == 0;
+
+    zModel_MatlBuffer::SetArraySize(-4);
+    const bool signedCompareOk = g_zModel_MatlPoolCapacity == -4;
+
+    g_zModel_MatlPoolCapacity = 0;
+    return setOk && alreadySetOk && limitOk && signedCompareOk ? 0 : 1;
+}
+
+extern "C" int zmodel_material_write_gamez_smoke(void) {
+    std::memset(g_zImage_TexDirEntries, 0, sizeof(g_zImage_TexDirEntries));
+
+    zImage_TexDirEntryPartial *frameTable[2] = {
+        &g_zImage_TexDirEntries[2],
+        nullptr,
+    };
+    zModel_MaterialCyclePartial cycle = {};
+    cycle.frameCount = 2;
+    cycle.frameTable = frameTable;
+
+    zModel_MaterialSlot slots[2] = {};
+    slots[0].material.flags = 0x0500;
+    slots[0].material.currentTextureDirectoryEntry = &g_zImage_TexDirEntries[1];
+    slots[0].material.cycle = &cycle;
+    slots[0].prevPoolIndex = -1;
+    slots[0].nextPoolIndex = 1;
+    slots[1].material.flags = 0x0100;
+    slots[1].material.currentTextureDirectoryEntry = &g_zImage_TexDirEntries[0];
+    slots[1].prevPoolIndex = 0;
+    slots[1].nextPoolIndex = -1;
+
+    g_zModel_MatlPool = slots;
+    g_zModel_MatlPoolCapacity = 2;
+    g_zModel_MatlPoolInUseCount = 2;
+    g_zModel_MatlFreeHeadIndex = -1;
+    g_zModel_MatlActiveHeadIndex = 0;
+
+    std::FILE *file = std::tmpfile();
+    if (file == nullptr) {
+        return 1;
+    }
+
+    if (zModel_MatlBuffer::WriteGameZ(file) != 2) {
+        std::fclose(file);
+        return 2;
+    }
+
+    const long poolOffset = 16;
+    const long poolBytes = static_cast<long>(sizeof(zModel_MaterialSlot) * 2);
+    const long cycleOffset = poolOffset + poolBytes;
+    const long frameOffset =
+        cycleOffset + static_cast<long>(sizeof(zModel_MaterialCyclePartial));
+    const long expectedBytes = frameOffset + 8;
+    if (std::fseek(file, 0, SEEK_END) != 0 || std::ftell(file) != expectedBytes) {
+        std::fclose(file);
+        return 3;
+    }
+
+    std::int32_t header[4] = {};
+    zModel_MaterialSlot writtenSlots[2] = {};
+    std::rewind(file);
+    if (std::fread(header, sizeof(header), 1, file) != 1 || header[0] != 2 ||
+        header[1] != 2 || header[2] != -1 || header[3] != 0 ||
+        std::fread(writtenSlots, sizeof(writtenSlots), 1, file) != 1) {
+        std::fclose(file);
+        return 4;
+    }
+
+    if (reinterpret_cast<std::intptr_t>(
+            writtenSlots[0].material.currentTextureDirectoryEntry) != 1 ||
+        reinterpret_cast<std::intptr_t>(
+            writtenSlots[1].material.currentTextureDirectoryEntry) != 0 ||
+        slots[0].material.currentTextureDirectoryEntry != &g_zImage_TexDirEntries[1]) {
+        std::fclose(file);
+        return 5;
+    }
+
+    zModel_MaterialCyclePartial writtenCycle = {};
+    std::int32_t frameIndices[2] = {};
+    if (std::fread(&writtenCycle, sizeof(writtenCycle), 1, file) != 1 ||
+        writtenCycle.frameCount != 2 ||
+        std::fread(frameIndices, sizeof(frameIndices), 1, file) != 1 ||
+        frameIndices[0] != 2 || frameIndices[1] != -1) {
+        std::fclose(file);
+        return 6;
+    }
+
+    std::fclose(file);
+    g_zModel_MatlPool = nullptr;
+    g_zModel_MatlPoolCapacity = 0;
+    g_zModel_MatlPoolInUseCount = 0;
+    g_zModel_MatlFreeHeadIndex = -1;
+    g_zModel_MatlActiveHeadIndex = -1;
+    return 0;
+}
+
+extern "C" int zmodel_material_read_gamez_smoke(void) {
+    zVideo::PixelPack_SetupFromMasks(5, 6, 5, 0xf800, 0x07e0, 0x001f);
+
+    zModel_MaterialSlot serializedSlots[3] = {};
+    serializedSlots[0].material.colorRgb.red = 255.0f;
+    serializedSlots[0].material.colorRgb.green = 0.0f;
+    serializedSlots[0].material.colorRgb.blue = 0.0f;
+    serializedSlots[0].prevPoolIndex = -1;
+    serializedSlots[0].nextPoolIndex = 1;
+
+    serializedSlots[1].material.flags = 0x0100;
+    serializedSlots[1].material.currentTextureDirectoryEntry =
+        reinterpret_cast<zImage_TexDirEntryPartial *>(static_cast<std::intptr_t>(2));
+    serializedSlots[1].prevPoolIndex = 0;
+    serializedSlots[1].nextPoolIndex = 2;
+
+    serializedSlots[2].material.flags = 0x0500;
+    serializedSlots[2].material.currentTextureDirectoryEntry =
+        reinterpret_cast<zImage_TexDirEntryPartial *>(static_cast<std::intptr_t>(1));
+    serializedSlots[2].prevPoolIndex = 1;
+    serializedSlots[2].nextPoolIndex = -1;
+
+    zModel_MaterialCyclePartial serializedCycle = {};
+    serializedCycle.currentFrame = 0.5f;
+    serializedCycle.frameCount = 2;
+    zImage_TexDirEntryPartial *serializedFrames[2] = {
+        reinterpret_cast<zImage_TexDirEntryPartial *>(static_cast<std::intptr_t>(0)),
+        reinterpret_cast<zImage_TexDirEntryPartial *>(static_cast<std::intptr_t>(-1)),
+    };
+
+    std::FILE *file = std::tmpfile();
+    if (file == nullptr) {
+        return 1;
+    }
+
+    std::int32_t header[4] = {3, 3, -1, 0};
+    if (std::fwrite(header, sizeof(header), 1, file) != 1 ||
+        std::fwrite(serializedSlots, sizeof(serializedSlots), 1, file) != 1 ||
+        std::fwrite(&serializedCycle, sizeof(serializedCycle), 1, file) != 1 ||
+        std::fwrite(serializedFrames, sizeof(serializedFrames), 1, file) != 1) {
+        std::fclose(file);
+        return 2;
+    }
+
+    g_zModel_MatlPool =
+        static_cast<zModel_MaterialSlot *>(std::malloc(sizeof(zModel_MaterialSlot)));
+    if (g_zModel_MatlPool == nullptr) {
+        std::fclose(file);
+        return 3;
+    }
+    g_zModel_MatlPoolCapacity = 1;
+    g_zModel_MatlPoolInUseCount = 0;
+    g_zModel_MatlFreeHeadIndex = -1;
+    g_zModel_MatlActiveHeadIndex = -1;
+
+    std::rewind(file);
+    if (zModel_MatlBuffer::ReadGameZ(file) != 3) {
+        std::fclose(file);
+        std::free(g_zModel_MatlPool);
+        g_zModel_MatlPool = nullptr;
+        g_zModel_MatlPoolCapacity = 0;
+        return 4;
+    }
+    std::fclose(file);
+
+    zModel_MaterialSlot *const loadedSlots = g_zModel_MatlPool;
+    zModel_MaterialCyclePartial *const loadedCycle = loadedSlots[2].material.cycle;
+    const bool ok =
+        g_zModel_MatlPoolCapacity == 3 && g_zModel_MatlPoolInUseCount == 3 &&
+        g_zModel_MatlFreeHeadIndex == -1 && g_zModel_MatlActiveHeadIndex == 0 &&
+        loadedSlots[0].material.packedColor == 0xf800 &&
+        loadedSlots[1].material.currentTextureDirectoryEntry == &g_zImage_TexDirEntries[2] &&
+        loadedSlots[2].material.currentTextureDirectoryEntry == &g_zImage_TexDirEntries[1] &&
+        loadedCycle != nullptr && loadedCycle->frameCount == 2 &&
+        loadedCycle->frameTable != nullptr &&
+        loadedCycle->frameTable[0] == &g_zImage_TexDirEntries[0] &&
+        loadedCycle->frameTable[1] == nullptr;
+
+    if (loadedCycle != nullptr) {
+        std::free(loadedCycle->frameTable);
+        std::free(loadedCycle);
+    }
+    std::free(g_zModel_MatlPool);
+    g_zModel_MatlPool = nullptr;
+    g_zModel_MatlPoolCapacity = 0;
+    g_zModel_MatlPoolInUseCount = 0;
+    g_zModel_MatlFreeHeadIndex = -1;
+    g_zModel_MatlActiveHeadIndex = -1;
+
+    return ok ? 0 : 5;
 }
 
 extern "C" int zmodel_material_update_cycle_if_needed_smoke(void) {
@@ -3537,6 +3798,10 @@ extern "C" int zmodel_render_node_software_flat_smoke(void) {
     gClipRect_Primary.zMax = 1000.0f;
     gClipRect_Primary.xMaxAlt = 100.0f;
     gClipRect_Primary.yMaxAlt = 100.0f;
+    g_zVideo_ProjectClipLeft = -100.0f;
+    g_zVideo_ProjectClipTop = -100.0f;
+    g_zVideo_ProjectClipRight = 100.0f;
+    g_zVideo_ProjectClipBottom = 100.0f;
 
     zVec3 verts[3] = {
         {-1.0f, 0.0f, 10.0f},
@@ -3587,6 +3852,168 @@ extern "C" int zmodel_render_node_software_flat_smoke(void) {
     if (zRndr::g_perspectiveTextureEnabled != 0) {
         return 8;
     }
+    return 0;
+}
+
+extern "C" int zmodel_render_node_hardware_flat_smoke(void) {
+    static std::int32_t matrixFlags[1] = {1};
+    static float *matrixSlots[1] = {};
+    zMat4x3 matrix{1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+                   0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f};
+    zMath::g_zMath_CameraScratchA = matrix;
+    zMath::g_zMath_CameraScratchB = matrix;
+    matrixSlots[0] = reinterpret_cast<float *>(&matrix);
+    zMath::g_currentMatrixIdentityFlagSlot = &matrixFlags[0];
+    zMath::g_currentMatrixPtrSlot = &matrixSlots[0];
+
+    g_zModel_TransformedVerts = g_zModel_SharedVec3ScratchAStorage;
+    g_zModel_TransformedNormals = g_zModel_SharedVec3ScratchBStorage;
+    g_zVideo_ActiveRendererPath = 1;
+    g_zVideo_pfnSubmitPolyFlatColor16 = TestZModelSubmitPolyFlatColor16;
+    g_zVideo_pfnSubmitPolyColorAttr = 0;
+    g_zVideo_pfnSubmitPolygon = 0;
+    g_zVideo_pfnSubmitPolygonLit = 0;
+    g_zVideo_pfnSubmitPolyRenderClass = 0;
+    g_zMath_ProjScaleX = 10.0f;
+    g_zMath_ProjScaleY = 10.0f;
+    g_zMath_ProjOffsetX = 0.0f;
+    g_zMath_ProjOffsetY = 0.0f;
+    g_zMath_ProjSphereRadiusScale = 10.0f;
+    g_zRndr_InverseZTolerance = 0.25f;
+    g_zModel_BFETolerance = 0.0f;
+    gModel_FogEnabled = 0;
+    gModel_HasActiveLights = 0;
+    gModel_RenderAlphaScaleCurrent = 1.0f;
+    gModel_RenderVertexAlphaEnabled = 7;
+    gAltClipPassEnabled = 0;
+    g_zmodelSubmitFlatCallCount = 0;
+
+    gClipRect_Primary.xMin = -100.0f;
+    gClipRect_Primary.yMin = -100.0f;
+    gClipRect_Primary.zMin = 1.0f;
+    gClipRect_Primary.xMax = 100.0f;
+    gClipRect_Primary.yMax = 100.0f;
+    gClipRect_Primary.zMax = 1000.0f;
+    gClipRect_Primary.xMaxAlt = 100.0f;
+    gClipRect_Primary.yMaxAlt = 100.0f;
+
+    zVec3 verts[3] = {
+        {-1.0f, 0.0f, 10.0f},
+        {0.0f, 1.0f, 8.0f},
+        {1.0f, 0.0f, 10.0f},
+    };
+    int indices[3] = {0, 2, 1};
+    zModel_MaterialPartial material{};
+    material.flags = 0xff;
+    material.packedColor = 0x1234;
+    zDiEntryPartial entry{};
+    entry.flagsAndIndexCount = 3;
+    entry.drawFlags = 2;
+    entry.vertexIndices = indices;
+    entry.material = &material;
+    zDiPartial di{};
+    di.entryCount = 1;
+    di.vertCount = 3;
+    di.entries = &entry;
+    di.verts = verts;
+    zClass_NodePartial node{};
+    node.userDataOrDiRef = static_cast<std::uint32_t>(reinterpret_cast<std::uintptr_t>(&di));
+
+    zModel::RenderNodeHardware(&node, 0x3f);
+
+    g_zVideo_pfnSubmitPolyFlatColor16 = 0;
+    g_zVideo_ActiveRendererPath = 0;
+    if (g_zmodelSubmitFlatCallCount != 1) {
+        return 1;
+    }
+    if (g_zmodelSubmitFlatLastVertexCount != 3) {
+        return 3;
+    }
+    if (g_zmodelSubmitFlatLastAlpha != 255 || g_zmodelSubmitFlatLastColor != 0x1234) {
+        return 4;
+    }
+    if (g_zmodelSubmitFlatLastRenderParam != 2 || g_zmodelSubmitFlatLastQueueMode != 7) {
+        return 5;
+    }
+
+    const float expectedDepths[3] = {1.5f, 1.5f, 1.875f};
+    for (int i = 0; i < 3; ++i) {
+        if (g_zmodelSubmitFlatLastVerts[i].z < expectedDepths[i] - 0.001f ||
+            g_zmodelSubmitFlatLastVerts[i].z > expectedDepths[i] + 0.001f) {
+            return 2;
+        }
+    }
+
+    return 0;
+}
+
+extern "C" int zmodel_render_node_hardware_point_smoke(void) {
+    static std::int32_t matrixFlags[1] = {1};
+    static float *matrixSlots[1] = {};
+    zMat4x3 matrix{1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+                   0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f};
+    zMath::g_zMath_CameraScratchA = matrix;
+    zMath::g_zMath_CameraScratchB = matrix;
+    matrixSlots[0] = reinterpret_cast<float *>(&matrix);
+    zMath::g_currentMatrixIdentityFlagSlot = &matrixFlags[0];
+    zMath::g_currentMatrixPtrSlot = &matrixSlots[0];
+
+    g_zModel_TransformedVerts = g_zModel_SharedVec3ScratchAStorage;
+    g_zModel_TransformedNormals = g_zModel_SharedVec3ScratchBStorage;
+    g_zVideo_ActiveRendererPath = 1;
+    g_zVideo_pfnDrawPointColor16 = TestZModelDrawPointColor16;
+    g_zMath_ProjScaleX = 1.0f;
+    g_zMath_ProjScaleY = 1.0f;
+    g_zMath_ProjOffsetX = 0.0f;
+    g_zMath_ProjOffsetY = 0.0f;
+    g_zMath_ProjSphereRadiusScale = 10.0f;
+    g_zRndr_InverseZTolerance = 0.5f;
+    zRndr::g_inverseDepthBias = 0.0f;
+    zRndr::g_inverseDepthScale = 1.0f;
+    zRndr::g_lensFlareSampleQueueCount = 0;
+    g_zmodelDrawPointCallCount = 0;
+
+    gClipRect_Primary.xMin = -100.0f;
+    gClipRect_Primary.yMin = -100.0f;
+    gClipRect_Primary.zMin = 1.0f;
+    gClipRect_Primary.xMax = 100.0f;
+    gClipRect_Primary.yMax = 100.0f;
+    gClipRect_Primary.zMax = 1000.0f;
+    g_zVideo_ProjectClipLeft = 0.0f;
+    g_zVideo_ProjectClipTop = 0.0f;
+    g_zVideo_ProjectClipRight = 2.0f;
+    g_zVideo_ProjectClipBottom = 3.0f;
+
+    zVec3 pointCamList[1] = {{10.0f, 20.0f, 10.0f}};
+    zModel_PointEntryPartial pointEntry{};
+    pointEntry.pointCamCount = 1;
+    pointEntry.depthBiasWord = 2;
+    pointEntry.packedColor16 = 0x1ffff;
+    pointEntry.pointCamList = pointCamList;
+    zDiPartial di{};
+    di.flags = 8;
+    di.pointCount = 1;
+    di.pointEntries = &pointEntry;
+    zClass_NodePartial node{};
+    node.userDataOrDiRef = static_cast<std::uint32_t>(reinterpret_cast<std::uintptr_t>(&di));
+
+    zModel::RenderNodeHardware(&node, 0x3f);
+
+    g_zVideo_pfnDrawPointColor16 = 0;
+    g_zVideo_ActiveRendererPath = 0;
+    if (g_zmodelDrawPointCallCount != 1 || g_zmodelDrawPointLastColor != 0xffff ||
+        g_zmodelDrawPointLastCount != 1) {
+        return 1;
+    }
+    if (g_zmodelDrawPointLastPoint.reciprocalZ < 1.999f ||
+        g_zmodelDrawPointLastPoint.reciprocalZ > 2.001f) {
+        return 2;
+    }
+    if (zRndr::g_lensFlareSampleQueueCount != 1 ||
+        zRndr::g_lensFlareSampleQueue[0].packedColor16 != 0xffff) {
+        return 3;
+    }
+
     return 0;
 }
 
@@ -4393,6 +4820,26 @@ void __fastcall CursorWidgetBltSourceToPrimary(
     ++g_cursorWidgetBlitCount;
 }
 } // namespace
+
+extern "C" int zhud_panel_scalar_deleting_destructor_smoke(void) {
+    HudUiPanel panel;
+    panel.ConstructorDefault("panel", 0, 0);
+    panel.textPick = 0;
+    panel.hFont = 0;
+
+    HudUiElement *const result = panel.ScalarDeletingDestructor(0);
+    if (result != static_cast<HudUiElement *>(&panel)) {
+        return 1;
+    }
+
+    HudUiPanel *const heapPanel = static_cast<HudUiPanel *>(::operator new(sizeof(HudUiPanel)));
+    heapPanel->ConstructorDefault("heap", 0, 0);
+    heapPanel->textPick = 0;
+    heapPanel->hFont = 0;
+
+    HudUiElement *const heapResult = heapPanel->ScalarDeletingDestructor(1);
+    return heapResult == static_cast<HudUiElement *>(heapPanel) ? 0 : 2;
+}
 
 extern "C" int
 zhud_background_cursor_widget_set_image_borrowed_refresh_if_changed_smoke(void) {
@@ -25137,6 +25584,154 @@ extern "C" int zhud_bar_and_meter_constructor_smoke(void) {
     return barConstructed && meterConstructed && meterExConstructed ? 0 : 1;
 }
 
+namespace {
+struct SmokeHudUiBarFTable {
+    std::uintptr_t slots[30];
+};
+
+int g_barDrawBaseCount = 0;
+int g_barDrawSpanCount = 0;
+int g_barDrawLastContext = 0;
+int g_barDrawLastPixelCount = 0;
+std::uint16_t *g_barDrawLastDst = nullptr;
+
+void __fastcall SmokeBarDrawBase(HudUiElement *) {
+    ++g_barDrawBaseCount;
+}
+
+void __fastcall SmokeBarSpanOp(int spanOpContext, int pixelCount) {
+    ++g_barDrawSpanCount;
+    g_barDrawLastContext = spanOpContext;
+    g_barDrawLastPixelCount = pixelCount;
+    g_barDrawLastDst = zRndr::g_spanCurrentSpanBaseAddr;
+}
+
+int g_barSetPointSetPosCount = 0;
+void *g_barSetPointSetPosThis = nullptr;
+int g_barSetPointSetPosX = 0;
+int g_barSetPointSetPosY = 0;
+int g_barSetPointInvalidateCount = 0;
+void *g_barSetPointInvalidateThis = nullptr;
+
+struct SmokeBarSetPointReceiver {
+    void SetPos(int x, int y) {
+        ++g_barSetPointSetPosCount;
+        g_barSetPointSetPosThis = this;
+        g_barSetPointSetPosX = x;
+        g_barSetPointSetPosY = y;
+    }
+
+    void Invalidate() {
+        ++g_barSetPointInvalidateCount;
+        g_barSetPointInvalidateThis = this;
+    }
+};
+} // namespace
+
+extern "C" int zhud_bar_draw_smoke(void) {
+    zRndr::SpanRoutineProc const oldSelectedSpanOp = zRndr::g_pfnSelectedSpanOp;
+    void *const oldFrameBuffer = zRndr::g_frameBuffer;
+    const int oldPitchBytes = zRndr::g_pitchBytes;
+    const int oldBytesPerPixel = zRndr::g_bytesPerPixel;
+    const int oldScanConvertMode = zRndr::g_scanConvertMode;
+
+    SmokeHudUiBarFTable table = {};
+    table.slots[2] = reinterpret_cast<std::uintptr_t>(SmokeBarDrawBase);
+
+    HudUiBar bar{};
+    *reinterpret_cast<const SmokeHudUiBarFTable **>(&bar) = &table;
+
+    g_barDrawBaseCount = 0;
+    g_barDrawSpanCount = 0;
+    bar.drawVertexCount = 0;
+    bar.Draw();
+    const bool baseOnly = g_barDrawBaseCount == 1 && g_barDrawSpanCount == 0;
+
+    std::uint16_t frame[8 * 8] = {};
+    zRndr::g_frameBuffer = frame;
+    zRndr::g_pitchBytes = 8 * static_cast<int>(sizeof(std::uint16_t));
+    zRndr::g_bytesPerPixel = static_cast<int>(sizeof(std::uint16_t));
+    zRndr::g_scanConvertMode = 1;
+    zRndr::g_pfnSelectedSpanOp = SmokeBarSpanOp;
+
+    bar.points[0].x = 1.0f;
+    bar.points[0].y = 1.0f;
+    bar.points[1].x = 5.0f;
+    bar.points[1].y = 1.0f;
+    bar.points[2].x = 5.0f;
+    bar.points[2].y = 1.0f;
+    bar.points[3].x = 5.0f;
+    bar.points[3].y = 5.0f;
+    bar.points[4].x = 1.0f;
+    bar.points[4].y = 5.0f;
+    bar.points[5].x = 1.0f;
+    bar.points[5].y = 1.0f;
+    bar.drawVertexCount = 6;
+    bar.drawParam = 0x7788;
+
+    g_barDrawBaseCount = 0;
+    g_barDrawSpanCount = 0;
+    g_barDrawLastContext = 0;
+    g_barDrawLastPixelCount = 0;
+    g_barDrawLastDst = nullptr;
+    bar.Draw();
+    const bool rasterized =
+        g_barDrawBaseCount == 1 && g_barDrawSpanCount == 4 &&
+        g_barDrawLastContext == 0x7788 && g_barDrawLastPixelCount == 3 &&
+        g_barDrawLastDst == frame + 33;
+
+    zRndr::g_pfnSelectedSpanOp = oldSelectedSpanOp;
+    zRndr::g_frameBuffer = oldFrameBuffer;
+    zRndr::g_pitchBytes = oldPitchBytes;
+    zRndr::g_bytesPerPixel = oldBytesPerPixel;
+    zRndr::g_scanConvertMode = oldScanConvertMode;
+
+    return baseOnly && rasterized ? 0 : 1;
+}
+
+extern "C" int zhud_bar_set_point_xy_smoke(void) {
+    SmokeHudUiBarFTable table{};
+    table.slots[3] = reinterpret_cast<std::uintptr_t>(
+        SmokeMethodAddress(&SmokeBarSetPointReceiver::SetPos)
+    );
+    table.slots[8] = reinterpret_cast<std::uintptr_t>(
+        SmokeMethodAddress(&SmokeBarSetPointReceiver::Invalidate)
+    );
+
+    HudUiBar bar{};
+    *reinterpret_cast<const SmokeHudUiBarFTable **>(&bar) = &table;
+    bar.drawVertexCount = 2;
+
+    g_barSetPointSetPosCount = 0;
+    g_barSetPointSetPosThis = nullptr;
+    g_barSetPointSetPosX = 0;
+    g_barSetPointSetPosY = 0;
+    g_barSetPointInvalidateCount = 0;
+    g_barSetPointInvalidateThis = nullptr;
+
+    bar.SetPointXY(0, 5.75f, -3.25f);
+    const bool firstPoint =
+        bar.points[0].x == 5.75f && bar.points[0].y == -3.25f &&
+        bar.drawVertexCount == 2 && g_barSetPointSetPosCount == 1 &&
+        g_barSetPointSetPosThis == &bar && g_barSetPointSetPosX == 5 &&
+        g_barSetPointSetPosY == -3 && g_barSetPointInvalidateCount == 1 &&
+        g_barSetPointInvalidateThis == &bar;
+
+    bar.SetPointXY(4, 9.0f, 10.0f);
+    const bool laterPoint =
+        bar.points[4].x == 9.0f && bar.points[4].y == 10.0f &&
+        bar.drawVertexCount == 5 && g_barSetPointSetPosCount == 1 &&
+        g_barSetPointInvalidateCount == 2;
+
+    bar.SetPointXY(21, 100.0f, 200.0f);
+    bar.SetPointXY(-1, 300.0f, 400.0f);
+    const bool rejected = bar.drawVertexCount == 5 &&
+                          g_barSetPointSetPosCount == 1 &&
+                          g_barSetPointInvalidateCount == 4;
+
+    return firstPoint && laterPoint && rejected ? 0 : 1;
+}
+
 extern "C" int zhud_timer_panel_global_accessors_smoke(void) {
     HudUiTimerPanel timer = {};
     HudUiPanel *const panel = (HudUiPanel *)(&timer);
@@ -26691,8 +27286,18 @@ int main(int argc, char **argv) {
          zfmv_stream_read_and_decode_frame_smoke},
         {"zfmv_action_play_mci_constructor_smoke",
          zfmv_action_play_mci_constructor_smoke},
+        {"zfmv_action_play_mci_update_smoke",
+         zfmv_action_play_mci_update_smoke},
+        {"zfmv_action_play_mci_begin_smoke",
+         zfmv_action_play_mci_begin_smoke},
+        {"zfmv_action_play_mci_end_smoke",
+         zfmv_action_play_mci_end_smoke},
+        {"zfmv_action_play_mci_lifecycle_smoke",
+         zfmv_action_play_mci_lifecycle_smoke},
         {"zfmv_action_blur_constructor_smoke",
          zfmv_action_blur_constructor_smoke},
+        {"zfmv_action_blur_begin_end_smoke",
+         zfmv_action_blur_begin_end_smoke},
         {"zfmv_action_blur_update_smoke",
          zfmv_action_blur_update_smoke},
         {"hud_ui_save_load_entry_is_newer_than_smoke",
@@ -26995,8 +27600,12 @@ int main(int argc, char **argv) {
          hud_ui_main_menu_dialog_save_load_checks_smoke},
         {"recoil_state_save_load_transition_on_try_become_current_smoke",
          recoil_state_save_load_transition_on_try_become_current_smoke},
+        {"recoil_state_save_load_transition_on_update_should_quit_smoke",
+         recoil_state_save_load_transition_on_update_should_quit_smoke},
         {"recoil_state_save_load_transition_on_deactivate_smoke",
          recoil_state_save_load_transition_on_deactivate_smoke},
+        {"recoil_state_save_load_transition_queue_dialogs_smoke",
+         recoil_state_save_load_transition_queue_dialogs_smoke},
         {"zarchive_list_get_at_smoke", zarchive_list_get_at_smoke},
         {"zarchive_list_get_count_smoke", zarchive_list_get_count_smoke},
         {"zutil_zar_register_section_handler_smoke",
@@ -27099,6 +27708,10 @@ int main(int argc, char **argv) {
          hud_ui_net_game_setup_next_world_button_smoke},
         {"hud_ui_net_game_setup_prev_world_button_smoke",
          hud_ui_net_game_setup_prev_world_button_smoke},
+        {"hud_ui_net_game_setup_queue_enter_reconfigure_smoke",
+         hud_ui_net_game_setup_queue_enter_reconfigure_smoke},
+        {"hud_ui_net_game_setup_overlay_owner_lifecycle_smoke",
+         hud_ui_net_game_setup_overlay_owner_lifecycle_smoke},
         {"hud_ui_net_game_setup_overlay_owner_on_try_smoke",
          hud_ui_net_game_setup_overlay_owner_on_try_smoke},
         {"hud_ui_net_game_setup_overlay_owner_on_deactivate_smoke",
@@ -27316,6 +27929,8 @@ int main(int argc, char **argv) {
         {"zhud_message_destructors_smoke", zhud_message_destructors_smoke},
         {"hud_ui_set_invalidate_mode_smoke", hud_ui_set_invalidate_mode_smoke},
         {"zhud_bar_and_meter_constructor_smoke", zhud_bar_and_meter_constructor_smoke},
+        {"zhud_bar_draw_smoke", zhud_bar_draw_smoke},
+        {"zhud_bar_set_point_xy_smoke", zhud_bar_set_point_xy_smoke},
         {"zhud_widget_release_image_if_owned_smoke",
          zhud_widget_release_image_if_owned_smoke},
         {"zhud_widget_set_image_borrowed_and_invalidate_smoke",
@@ -27387,6 +28002,10 @@ int main(int argc, char **argv) {
          zhud_background_video_widget_draw_base_smoke},
         {"zhud_background_video_widget_rebuild_blt_rect_smoke",
          zhud_background_video_widget_rebuild_blt_rect_smoke},
+        {"zhud_message_box_constructor_fallback_smoke",
+         zhud_message_box_constructor_fallback_smoke},
+        {"zhud_message_box_run_modal_smoke", zhud_message_box_run_modal_smoke},
+        {"zhud_message_box_destructor_smoke", zhud_message_box_destructor_smoke},
         {"zhud_play_powerup_sfx_smoke", zhud_play_powerup_sfx_smoke},
         {"zhud_background_constructor_smoke", zhud_background_constructor_smoke},
         {"zhud_background_update_input_focus_smoke",
@@ -27404,6 +28023,8 @@ int main(int argc, char **argv) {
         {"zhud_panel_set_text_fmt_smoke", zhud_panel_set_text_fmt_smoke},
         {"zhud_panel_query_text_height_smoke",
          zhud_panel_query_text_height_smoke},
+        {"zhud_panel_scalar_deleting_destructor_smoke",
+         zhud_panel_scalar_deleting_destructor_smoke},
         {"zhud_panel_simple_constructor_smoke",
          zhud_panel_simple_constructor_smoke},
         {"zhud_panel_layout_entry_copy_construct_smoke",
@@ -27443,6 +28064,8 @@ int main(int argc, char **argv) {
          zhud_transition_text_panel_update_smoke},
         {"zhud_transition_text_panel_flash_rate_smoke",
          zhud_transition_text_panel_flash_rate_smoke},
+        {"zhud_flash_panel_compute_blend_color_smoke",
+         zhud_flash_panel_compute_blend_color_smoke},
         {"zhud_composite_panel_layout_entries_smoke",
          zhud_composite_panel_layout_entries_smoke},
         {"zhud_composite_panel_set_text_fmt_smoke",
@@ -27636,6 +28259,10 @@ int main(int argc, char **argv) {
         {"hud_sensor_tracker_project_world_points_smoke",
          hud_sensor_tracker_project_world_points_smoke},
         {"hud_sensor_map_node_basics_smoke", hud_sensor_map_node_basics_smoke},
+        {"hud_sensor_map_node_draw_projected_path_smoke",
+         hud_sensor_map_node_draw_projected_path_smoke},
+        {"hud_sensor_map_node_draw_on_tracker_smoke",
+         hud_sensor_map_node_draw_on_tracker_smoke},
         {"hud_sensor_map_remove_and_shutdown_smoke",
          hud_sensor_map_remove_and_shutdown_smoke},
         {"hud_sensor_map_overlay_toggle_smoke",
@@ -27698,6 +28325,7 @@ int main(int argc, char **argv) {
          hud_sensor_tracker_load_mission_core_resources_smoke},
         {"zhud_sensor_viewport_rect_smoke", zhud_sensor_viewport_rect_smoke},
         {"zhud_sensor_get_fx_rect_smoke", zhud_sensor_get_fx_rect_smoke},
+        {"zhud_sensor_track_list_reset_smoke", zhud_sensor_track_list_reset_smoke},
         {"zhud_sensor_track_list_add_smoke", zhud_sensor_track_list_add_smoke},
         {"zhud_std_ptr_vector_clear_no_op_destroy_smoke",
          zhud_std_ptr_vector_clear_no_op_destroy_smoke},
@@ -28059,19 +28687,39 @@ int main(int argc, char **argv) {
         {"zmodel_material_defaults_and_find_smoke",
          zmodel_material_defaults_and_find_smoke},
         {"zmodel_matl_init_globals_smoke", zmodel_matl_init_globals_smoke},
+        {"zmodel_matlbuffer_set_array_size_smoke",
+         zmodel_matlbuffer_set_array_size_smoke},
+        {"zmodel_material_write_gamez_smoke",
+         zmodel_material_write_gamez_smoke},
+        {"zmodel_material_read_gamez_smoke", zmodel_material_read_gamez_smoke},
+        {"zmodel_dipool_write_to_stream_smoke",
+         zmodel_dipool_write_to_stream_smoke},
+        {"zmodel_dipool_read_from_stream_smoke",
+         zmodel_dipool_read_from_stream_smoke},
+        {"zmodel_dipool_read_entry_by_index_from_stream_smoke",
+         zmodel_dipool_read_entry_by_index_from_stream_smoke},
         {"zmodel_material_pool_entry_smoke", zmodel_material_pool_entry_smoke},
         {"zmodel_material_and_di_clone_smoke", zmodel_material_and_di_clone_smoke},
+        {"zmodel_scrolling_texture_update_smoke", zmodel_scrolling_texture_update_smoke},
         {"zmodel_material_update_cycle_if_needed_smoke",
          zmodel_material_update_cycle_if_needed_smoke},
         {"zmodel_init_smoke", zmodel_init_smoke},
         {"zmodel_render_node_software_flat_smoke",
          zmodel_render_node_software_flat_smoke},
+        {"zmodel_render_node_hardware_flat_smoke",
+         zmodel_render_node_hardware_flat_smoke},
+        {"zmodel_render_node_hardware_point_smoke",
+         zmodel_render_node_hardware_point_smoke},
         {"zmodel_render_point_queue_entry_smoke",
          zmodel_render_point_queue_entry_smoke},
         {"zmodel_display_init_smoke", zmodel_display_init_smoke},
         {"zmodel_display_shutdown_smoke", zmodel_display_shutdown_smoke},
         {"zmodel_set_software_path_active_smoke",
          zmodel_set_software_path_active_smoke},
+        {"zmodel_set_display_instance_pool_capacity_smoke",
+         zmodel_set_display_instance_pool_capacity_smoke},
+        {"zmodel_backface_elimination_tolerance_smoke",
+         zmodel_backface_elimination_tolerance_smoke},
         {"zmodel_matlslot_release_smoke", zmodel_matlslot_release_smoke},
         {"zmodel_matlbuffer_release_all_active_smoke",
          zmodel_matlbuffer_release_all_active_smoke},
@@ -28092,6 +28740,9 @@ int main(int argc, char **argv) {
          zmodel_light_point_in_polygon_init_smoke},
         {"zdi_ref_and_pool_free_smoke", zdi_ref_and_pool_free_smoke},
         {"zdi_add_polygon_wrapper_smoke", zdi_add_polygon_wrapper_smoke},
+        {"zdi_reset_current_variant_smoke", zdi_reset_current_variant_smoke},
+        {"zdi_set_current_variant_smoke", zdi_set_current_variant_smoke},
+        {"zdi_entry_material_helpers_smoke", zdi_entry_material_helpers_smoke},
         {"ztag4_clear_smoke", ztag4_clear_smoke},
         {"zmodel_set_di_texture_world_per_meter_smoke",
          zmodel_set_di_texture_world_per_meter_smoke},
@@ -28211,6 +28862,7 @@ int main(int argc, char **argv) {
          zclass_node_predicate_helpers_smoke},
         {"zloc_message_lookup_failure_smoke", zloc_message_lookup_failure_smoke},
         {"zloc_load_unload_messages_dll_smoke", zloc_load_unload_messages_dll_smoke},
+        {"zloc_get_id_messages_lookup_smoke", zloc_get_id_messages_lookup_smoke},
         {"zimage_font_glyph_scan_smoke", zimage_font_glyph_scan_smoke},
         {"zimage_font_measure_string_smoke", zimage_font_measure_string_smoke},
         {"zimage_font_blit_string_smoke", zimage_font_blit_string_smoke},

@@ -140,6 +140,13 @@ HudUiMgrSensorTrackList g_HudUiMgrSensor_TrackList = {0};
  */
 int g_HudUiMgrSensor_RoundRobinTrackIndex = -1;
 HudUiRect g_HudUiMgrSensor_FxRectScratch = {0};
+/**
+ * Reimplements data 0x4f32a0: g_HudUiNetGameSetupOverlayOwner.
+ * Source model: zero-initialized global object storage for the
+ * HudUiNetGameSetupOverlayOwner static lifecycle.
+ * Purpose: hold the multiplayer setup overlay owner singleton constructed by
+ * the static initializer and destroyed through the at-exit thunk.
+ */
 HudUiNetGameSetupOverlayOwner g_HudUiNetGameSetupOverlayOwner;
 HudUiRect g_HudUiMgrSensorFxRect = {0};
 int g_HudUiMgrSensorFxViewportWidth = 0;
@@ -172,6 +179,45 @@ HudCmdDialogState g_HudCmdDialogState;
  * Purpose: store the registered window class name used by HUD triplet panels.
  */
 CString g_HudUiTripletWndClassName("");
+
+/**
+ * Reimplements data 0x4dd1c8: g_HudUiMessageBoxDialog_SectionName.
+ * BN source path: D:\Proj\Battlesport\HudUiMessageBoxDialog.cpp.
+ * Source model: local MESSAGEBOX ZRD section-name data for the
+ * HudUi::ShowMessageBox entrypoint wrapper; exact .data extent is the
+ * writable char[11] bytes "MESSAGEBOX\0" with the sole xref in 0x438350.
+ * Purpose: name the dialog.zrd section loaded by the modal message-box
+ * wrapper.
+ */
+char g_HudUiMessageBoxDialog_SectionName[11] = "MESSAGEBOX";
+/**
+ * Reimplements data 0x4e489c: k_msgBoxWidgetName_Message.
+ * Source model: writable ZRD widget-name literal used only by
+ * HudUiMessageBoxDialog::Constructor.
+ * Purpose: bind the message text primitive from a loaded message-box layout.
+ */
+char k_msgBoxWidgetName_Message[8] = "MESSAGE";
+/**
+ * Reimplements data 0x4e48a4: k_msgBoxWidgetName_Title.
+ * Source model: writable ZRD widget-name literal used only by
+ * HudUiMessageBoxDialog::Constructor.
+ * Purpose: bind the title primitive from a loaded message-box layout.
+ */
+char k_msgBoxWidgetName_Title[6] = "TITLE";
+/**
+ * Reimplements data 0x4e48ac: k_msgBoxWidgetName_Cancel.
+ * Source model: writable ZRD widget-name literal used only by
+ * HudUiMessageBoxDialog::Constructor.
+ * Purpose: bind the cancel button from a loaded message-box layout.
+ */
+char k_msgBoxWidgetName_Cancel[10] = "MB_CANCEL";
+/**
+ * Reimplements data 0x4e48b8: k_msgBoxWidgetName_OK.
+ * Source model: writable ZRD widget-name literal used only by
+ * HudUiMessageBoxDialog::Constructor.
+ * Purpose: bind the OK button from a loaded message-box layout.
+ */
+char k_msgBoxWidgetName_OK[6] = "MB_OK";
 
 /**
  * Reimplements data 0x4dac00: g_HudUiOptionsPanel_ResolutionCycleNodeName.
@@ -305,6 +351,12 @@ char g_HudUiTimerPanel_ZeroTimeString[9] = "00:00:00";
  */
 char g_HudUiTimerPanel_TimeFmt[15] = "%02d:%02d:%02d";
 /**
+ * Reimplements data 0x4dad0c: g_HudUiTimerPanelFloat_DrawFormat.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: provide the floating timer panel decimal display format.
+ */
+char g_HudUiTimerPanelFloat_DrawFormat[6] = "%2.1f";
+/**
  * Reimplements data 0x4dad14: g_HudUiTimerPanel_NodeName.
  * Data owner gate remains pending; this docblock records source provenance only.
  * Purpose: name the ZAR HUD timer section registered by HudUiMgr.
@@ -317,6 +369,31 @@ char g_HudUiTimerPanel_NodeName[9] = "HUDTimer";
  */
 char g_HudUiTimerPanel_TimerDataSectionName[10] = "TimerData";
 /**
+ * Reimplements data 0x4dad2c..0x4dadd8:
+ * hud_ui.hud_ui_mgr_ensure_hud_loaded_literals.
+ * Source model: writable HUD ZRD key/source-path string globals used by
+ * HudUiMgr::EnsureHudLoaded.
+ * Purpose: name the HUD layout sections and diagnostics consumed while the
+ * HUD singleton loads its ZRD tree.
+ */
+char g_HudCfgKey_Modes[6] = "MODES";
+char g_HudCfgKey_Weapon[7] = "WEAPON";
+char g_HudCfgKey_Target[7] = "TARGET";
+char g_HudCfgKey_Shield[7] = "SHIELD";
+char g_HudUiBlankSpaces8[9] = "        ";
+char g_HudCfgKey_Stats[6] = "STATS";
+char g_HudCfgKey_Reticule[9] = "RETICULE";
+char g_HudCfgKey_Objective[10] = "OBJECTIVE";
+char g_HudCfgKey_Sensor[7] = "SENSOR";
+char g_HudCfgKey_Nanite[7] = "NANITE";
+char g_HudCfgKey_Ammo[5] = "AMMO";
+char g_HudCfgKey_Strings[8] = "STRINGS";
+char g_HudCfgKey_ObjectiveDescription[16] = "OBJ_DESCRIPTION";
+char g_HudCfgKey_ObjectiveSummary[12] = "OBJ_SUMMARY";
+char g_HudCfgKey_Fonts[6] = "FONTS";
+char g_Hud_ImageSearchPath_Hud[26] = "..\\data\\common\\images\\hud";
+char g_Hud_SourceFile_HudCpp[28] = "D:\\Proj\\Battlesport\\hud.cpp";
+/**
  * Reimplements data 0x4dadf4: g_HudSensorTracker_ReadFileFailedFmt.
  * Shared data owner: hud_ui.shared_zrd_read_failed_format_literal.
  * Purpose: provide the shared failed-read diagnostic format used by HUD,
@@ -324,19 +401,69 @@ char g_HudUiTimerPanel_TimerDataSectionName[10] = "TimerData";
  */
 char g_HudSensorTracker_ReadFileFailedFmt[18] = "Failed to read %s";
 /**
+ * Reimplements data 0x4db428: g_HudZrd_Key_Color.
+ * Shared data owner: hud_ui.background_primitive_zrd_key_literals.
+ * Purpose: name shared COLOR ZRD records consumed by HUD primitive binding.
+ */
+char g_HudZrd_Key_Color[0x6] = "COLOR";
+/**
+ * Reimplements data 0x4e46d0..0x4e4704:
+ * hud_ui.hud_ui_zrd_widget_base_zrd_key_literals.
+ * Source model: writable HUD ZRD key string globals consumed by the base
+ * HudUiZrdWidget loaders. BN shows the six char[] objects in this order with
+ * the address-aligned padding between ACTIVATE/DISABLE, RATE/FLASH,
+ * FLASH/LABEL, LABEL/ROLLOVER, and ROLLOVER/BITMAP.
+ * Purpose: name the optional activation, disable, rollover, label, and flash
+ * records in a recovered HudUiZrdWidget section.
+ */
+char g_HudZrd_Key_Activate[0x9] = "ACTIVATE";
+char g_HudZrd_Key_Disable[0x8] = "DISABLE";
+char g_HudZrd_Key_Rate[0x5] = "RATE";
+char g_HudZrd_Key_Flash[0x6] = "FLASH";
+char g_HudZrd_Key_Label[0x6] = "LABEL";
+char g_HudZrd_Key_Rollover[0x9] = "ROLLOVER";
+RECOIL_STATIC_ASSERT(sizeof(g_HudZrd_Key_Activate) == 0x9);
+RECOIL_STATIC_ASSERT(sizeof(g_HudZrd_Key_Disable) == 0x8);
+RECOIL_STATIC_ASSERT(sizeof(g_HudZrd_Key_Rate) == 0x5);
+RECOIL_STATIC_ASSERT(sizeof(g_HudZrd_Key_Flash) == 0x6);
+RECOIL_STATIC_ASSERT(sizeof(g_HudZrd_Key_Label) == 0x6);
+RECOIL_STATIC_ASSERT(sizeof(g_HudZrd_Key_Rollover) == 0x9);
+/**
  * Reimplements data 0x4e4708: g_HudUiCycleSelectorWidget_ZrdKey_Bitmap.
  * Shared data owner: hud_ui.cycle_selector_shared_zrd_key_literals.
  * Purpose: name the shared BITMAP ZRD record consumed by HUD widget loaders.
  */
 char g_HudUiCycleSelectorWidget_ZrdKey_Bitmap[] = "BITMAP";
 /**
+ * Reimplements data 0x4e4710: g_HudZrd_Key_Position.
+ * Shared data owner: hud_ui.background_primitive_zrd_key_literals.
+ * Purpose: name shared POSITION ZRD records consumed by HUD widget loaders.
+ */
+char g_HudZrd_Key_Position[0x9] = "POSITION";
+/**
+ * Reimplements data 0x4e471c..0x4e4744:
+ * hud_ui.hud_ui_check_toggle_zrd_key_literals.
+ * Source model: writable HUD ZRD key string globals consumed by
+ * HudUiCheckToggleWidget::LoadFromZrd. BN shows DISABLE_SEL and
+ * DISABLE_UNSEL in address order before the shared TEXT key, then CHECKED
+ * immediately after TEXT with one aligned padding byte before CYCLE.
+ * Purpose: name the check-toggle checked/disabled ZRD variant records.
+ */
+char g_HudUiZrdKey_DisableSel[0xb] = {
+    'D', 'I', 'S', 'A', 'B', 'L', 'E', '_', 'S', 'E', 'L'
+};
+char g_HudUiZrdKey_DisableUnsel[0xd] = {
+    'D', 'I', 'S', 'A', 'B', 'L', 'E', '_', 'U', 'N', 'S', 'E', 'L'
+};
+/**
  * Reimplements data 0x4e4738: g_HudUiCycleSelectorWidget_ZrdKey_Text.
  * Shared data owner: hud_ui.cycle_selector_shared_zrd_key_literals.
- * BN exposes four TEXT bytes followed by aligned zero padding before CYCLE;
- * keep the whole pool slot contiguous so C-string lookups see the terminator.
+ * BN exposes four TEXT bytes followed by aligned zero padding before CHECKED;
+ * keep the pool slot contiguous so C-string lookups see the terminator.
  * Purpose: name shared TEXT ZRD records consumed by toggle and cycle widgets.
  */
-char g_HudUiCycleSelectorWidget_ZrdKey_Text[16] = {'T', 'E', 'X', 'T'};
+char g_HudUiCycleSelectorWidget_ZrdKey_Text[8] = {'T', 'E', 'X', 'T'};
+char g_HudUiZrdKey_Checked[0x7] = {'C', 'H', 'E', 'C', 'K', 'E', 'D'};
 /**
  * Reimplements data 0x4e4748: g_HudUiCycleSelectorWidget_ZrdKey_Cycle.
  * Shared data owner: hud_ui.cycle_selector_shared_zrd_key_literals.
@@ -355,6 +482,61 @@ char g_HudUiCycleSelectorWidget_ZrdKey_TextOffset[] = "TEXTOFFSET";
  * Purpose: name shared FONT ZRD records consumed by HUD widget loaders.
  */
 char g_HudUiCycleSelectorWidget_ZrdKey_Font[] = "FONT";
+/**
+ * Reimplements data 0x4e47c0..0x4e4835:
+ * hud_ui.zhud_background_config_zrd_key_literals.
+ * Source model: writable HudUiBackground ZRD key string globals consumed by
+ * HudUiBackground::LoadZrdAndSection. BN shows the keys in this order, with
+ * VC5 char-array alignment padding between adjacent slots.
+ * Purpose: name the background resource, cursor, capture, and sound records
+ * in a recovered background ZRD section.
+ */
+char zHudCfgKey_BACKGROUND_SOUNDS[0x12] = "BACKGROUND_SOUNDS";
+char zHudCfgKey_CAPTURE[0x8] = "CAPTURE";
+char zHudCfgKey_CURSOR[0x7] = "CURSOR";
+char zHudCfgKey_BACKGROUND_TEXT[0x10] = "BACKGROUND_TEXT";
+char zHudCfgKey_BACKGROUND_VIDEOS[0x12] = "BACKGROUND_VIDEOS";
+char zHudCfgKey_BACKGROUND_IMAGES[0x12] = "BACKGROUND_IMAGES";
+char zHudCfgKey_SHARED_IMAGE_PATH[0x12] = "SHARED_IMAGE_PATH";
+RECOIL_STATIC_ASSERT(sizeof(zHudCfgKey_BACKGROUND_SOUNDS) == 0x12);
+RECOIL_STATIC_ASSERT(sizeof(zHudCfgKey_CAPTURE) == 0x8);
+RECOIL_STATIC_ASSERT(sizeof(zHudCfgKey_CURSOR) == 0x7);
+RECOIL_STATIC_ASSERT(sizeof(zHudCfgKey_BACKGROUND_TEXT) == 0x10);
+RECOIL_STATIC_ASSERT(sizeof(zHudCfgKey_BACKGROUND_VIDEOS) == 0x12);
+RECOIL_STATIC_ASSERT(sizeof(zHudCfgKey_BACKGROUND_IMAGES) == 0x12);
+RECOIL_STATIC_ASSERT(sizeof(zHudCfgKey_SHARED_IMAGE_PATH) == 0x12);
+/**
+ * Reimplements data 0x4e4838: g_HudUiZrdToken_Buttons.
+ * Data owner: hud_ui.hud_ui_background_buttons_zrd_key_literal.
+ * Purpose: name the BUTTONS child table consumed by
+ * HudUiBackground::BindButtonsNodeToWidgetByName.
+ */
+char g_HudUiZrdToken_Buttons[0x8] = "BUTTONS";
+RECOIL_STATIC_ASSERT(sizeof(g_HudUiZrdToken_Buttons) == 0x8);
+/**
+ * Reimplements data 0x4e4840: g_HudUiZrdToken_EndPointAbsolute.
+ * Data owner: hud_ui.background_primitive_zrd_key_literals.
+ * Purpose: name the absolute endpoint ZRD record consumed by HUD primitive binding.
+ */
+char g_HudUiZrdToken_EndPointAbsolute[0x9] = "ENDP_ABS";
+/**
+ * Reimplements data 0x4e484c: g_HudUiZrdToken_EndPointRelative.
+ * Data owner: hud_ui.background_primitive_zrd_key_literals.
+ * Purpose: name the relative endpoint ZRD record consumed by HUD primitive binding.
+ */
+char g_HudUiZrdToken_EndPointRelative[0x9] = "ENDP_REL";
+/**
+ * Reimplements data 0x4e4858: g_HudUiZrdToken_WordWrap.
+ * Data owner: hud_ui.background_primitive_zrd_key_literals.
+ * Purpose: name the WORDWRAP ZRD record consumed by HUD primitive binding.
+ */
+char g_HudUiZrdToken_WordWrap[0x9] = "WORDWRAP";
+/**
+ * Reimplements data 0x4e4864: g_HudUiBackground_ZrdKey_Primitives.
+ * Data owner: hud_ui.background_primitive_zrd_key_literals.
+ * Purpose: name the PRIMITIVES ZRD container consumed by HUD primitive binding.
+ */
+char g_HudUiBackground_ZrdKey_Primitives[0xb] = "PRIMITIVES";
 /**
  * Reimplements data 0x4e4764: g_HudUiFillBitmap_ZrdKey_FillBitmap.
  * Data owner: hud_ui.hud_ui_fill_bitmap_zrd_key_literals.
@@ -381,6 +563,16 @@ char g_HudUiZrdToken_Radio[] = "RADIO";
  */
 char g_HudZrd_Key_Sound[6] = "SOUND";
 /**
+ * Reimplements data 0x4dae08: g_HudUiMessage_ClearSpecialToken165.
+ * Data owner: hud_ui.hud_ui_message_clear_special_token_literal.
+ * Exact extent is the writable 4-byte .data object a5 00 00 00 referenced by
+ * HudUiMessage::SetValueIfOwnerMatches and
+ * HudUiMessage::UpdateSelectedWeaponDisplay.
+ * Purpose: provide the special one-byte token string used to clear HUD message
+ * panel text when the sentinel float value is passed.
+ */
+char g_HudUiMessage_ClearSpecialToken165[4] = "\xa5";
+/**
  * Reimplements data 0x4dae0c: g_HudLayout_TypeISectionName.
  * Data owner gate remains pending; this docblock records source provenance only.
  * Purpose: name the TYPEI HUD layout section loaded from the HUD ZRD root.
@@ -392,6 +584,21 @@ char g_HudLayout_TypeISectionName[] = "TYPEI";
  * Purpose: name the TYPEII HUD layout section loaded from the HUD ZRD root.
  */
 char g_HudLayout_TypeIISectionName[] = "TYPEII";
+/**
+ * Reimplements data 0x4dae1c: g_HudUiBlankSpaces3.
+ * Data owner: hud_ui.hud_ui_message_layout_literals.
+ * Exact extent is the writable 4-byte .data object 20 20 20 00 referenced by
+ * HudUiMessage::LoadWeaponLayoutFromNode.
+ * Purpose: provide the initial blank weapon-message panel text.
+ */
+char g_HudUiBlankSpaces3[4] = "   ";
+/**
+ * Reimplements data 0x4dae20: g_Hud_CheckpointOverflowMsg.
+ * Data owner gate remains pending; this docblock records source provenance only.
+ * Purpose: provide the writable checkpoint-overflow diagnostic text used by
+ * HudUiLoadingCheckpoint::AdvanceAndLog.
+ */
+char g_Hud_CheckpointOverflowMsg[20] = "Checkpoint overflow";
 /**
  * Reimplements data 0x4dae40: g_HudUiMessage_NodeName.
  * Data owner gate remains pending; this docblock records source provenance only.
@@ -1637,7 +1844,6 @@ HudUiPanel *NewObjectivePanel() {
     return (HudUiPanel *)(storage);
 }
 
-const char kHudUiMessageClearSpecialToken165[] = "\xa5";
 const float kHudUiMessageClearSpecialTokenValue = 123456792.0f;
 
 /**
@@ -2317,7 +2523,7 @@ void LoadHudZrdLabelSection(
 ) {
     zReader::Node *const labelNode = zReader_GetNamedNode(
         parentNode,
-        "LABEL"
+        g_HudZrd_Key_Label
     );
     zReader::Node *const labelBase = ZrdArrayBase(labelNode);
     if (labelBase == 0) {
@@ -2365,7 +2571,7 @@ void ApplyHudZrdFlashSection(
 ) {
     zReader::Node *const flashNode = zReader_GetNamedNode(
         parentNode,
-        "FLASH"
+        g_HudZrd_Key_Flash
     );
     if (flashNode == 0) {
         return;
@@ -2374,7 +2580,7 @@ void ApplyHudZrdFlashSection(
     float flashRate = 0.0f;
     zReader::ReadNamedFloat(
         flashNode,
-        "RATE",
+        g_HudZrd_Key_Rate,
         &flashRate
     );
 
@@ -2521,8 +2727,12 @@ void DestroyTextStackLines(
 } // namespace
 
 namespace HudUiMgrSensor {
-// Reimplements 0x41ebd0: HudUiMgrSensor::TrackList_Reset
-// (D:\Proj\Battlesport\HudUiMgrSensor.cpp)
+/**
+ * Reimplements 0x41ebd0: HudUiMgrSensor::TrackList_Reset.
+ * Original source path: D:\Proj\Battlesport\HudUiMgrSensor.cpp.
+ * Purpose: clear the recovered sensor track-list global before target
+ * tracking records are appended for the current HUD update pass.
+ */
 void TrackList_Reset() {
     memset(
         &g_HudUiMgrSensor_TrackList,
@@ -2531,8 +2741,12 @@ void TrackList_Reset() {
     );
 }
 
-// Reimplements 0x438920: HudUiMgrSensor::TrackList_Add
-// (D:\Proj\Battlesport\HudUiMgrSensor.cpp)
+/**
+ * Reimplements 0x438920: HudUiMgrSensor::TrackList_Add.
+ * Original source path: D:\Proj\Battlesport\HudUiMgrSensor.cpp.
+ * Purpose: append one payload-bearing sensor tracking node to the recovered
+ * global track-list owner while preserving its head, tail, and count fields.
+ */
 HudUiMgrSensorTrackNode *__fastcall TrackList_Add(
     int trackKind,
     void *payload
@@ -3467,7 +3681,7 @@ void __fastcall AdvanceAndLog(
             0x800,
             "D:\\Proj\\Battlesport\\hud.cpp",
             0x1184,
-            "Checkpoint overflow"
+            g_Hud_CheckpointOverflowMsg
         );
     } else {
         g_HudUiLoadingCheckpointCurrentProgress = g_HudUiLoadingCheckpointProgress[currentIndex];
@@ -3909,7 +4123,7 @@ int __fastcall EnsureHudLoaded(
     if (root == 0) {
         zError::ReportOld(
             0x200,
-            "D:\\Proj\\Battlesport\\hud.cpp",
+            g_Hud_SourceFile_HudCpp,
             0x60d,
             g_HudSensorTracker_ReadFileFailedFmt,
             entryPath
@@ -3919,7 +4133,7 @@ int __fastcall EnsureHudLoaded(
 
     HudUiEnsureLoaderWidgetsConstructed();
 
-    zImage_InitMissionResources("..\\data\\common\\images\\hud");
+    zImage_InitMissionResources(g_Hud_ImageSearchPath_Hud);
     g_HudLayoutSW.LoadTypeIFromZarRoot(root);
     g_HudLayoutHW.LoadTypeIIFromZarRoot(root);
     SwitchActiveDialog(&g_HudLayoutSW);
@@ -3930,12 +4144,12 @@ int __fastcall EnsureHudLoaded(
 
     zReader::Node *const fontsNode = zReader_GetNamedNode(
         root,
-        "FONTS"
+        g_HudCfgKey_Fonts
     );
     if (fontsNode != 0) {
         if (zReader::Node *const node = zReader_GetNamedNode(
             fontsNode,
-            "OBJ_SUMMARY"
+            g_HudCfgKey_ObjectiveSummary
         )) {
             HudUiLayoutNode::ReadRect(
                 node,
@@ -3944,7 +4158,7 @@ int __fastcall EnsureHudLoaded(
         }
         if (zReader::Node *const node = zReader_GetNamedNode(
             fontsNode,
-            "OBJ_DESCRIPTION"
+            g_HudCfgKey_ObjectiveDescription
         )) {
             HudUiLayoutNode::ReadRect(
                 node,
@@ -3953,7 +4167,7 @@ int __fastcall EnsureHudLoaded(
         }
         if (zReader::Node *const node = zReader_GetNamedNode(
             fontsNode,
-            "STRINGS"
+            g_HudCfgKey_Strings
         )) {
             HudUiPanelFontParams *const fontArgs =
                 (HudUiPanelFontParams *)(&g_HudUiMgrStringMenu->unknown_10[0]);
@@ -4007,7 +4221,7 @@ int __fastcall EnsureHudLoaded(
         }
         if (zReader::Node *const node = zReader_GetNamedNode(
             fontsNode,
-            "AMMO"
+            g_HudCfgKey_Ammo
         )) {
             HudUiLayoutNode::ReadRect(
                 node,
@@ -4018,14 +4232,14 @@ int __fastcall EnsureHudLoaded(
 
     if (zReader::Node *const naniteNode = zReader_GetNamedNode(
         root,
-        "NANITE"
+        g_HudCfgKey_Nanite
     )) {
         g_HudUiMgrNanitePanel.InitLayout(naniteNode);
     }
 
     zReader::Node *const sensorNode = zReader_GetNamedNode(
         root,
-        "SENSOR"
+        g_HudCfgKey_Sensor
     );
     int sensorCenterX = 0;
     int sensorCenterY = 0;
@@ -4127,7 +4341,7 @@ int __fastcall EnsureHudLoaded(
     if (zReader::Node *const objectivePayload =
             HudUiZrdPayload(zReader_GetNamedNode(
                 root,
-                "OBJECTIVE"
+                g_HudCfgKey_Objective
             ))) {
         g_HudUiMgrObjectivePhaseDurationSec = objectivePayload[1].value.f32;
 
@@ -4266,7 +4480,7 @@ int __fastcall EnsureHudLoaded(
     if (zReader::Node *const reticlePayload =
             HudUiZrdPayload(zReader_GetNamedNode(
                 root,
-                "RETICULE"
+                g_HudCfgKey_Reticule
             ))) {
         g_HudUiMgrReticleImages[0] =
             zImage::TexDir_FindOrCreateByPath(HudUiZrdStringAt(
@@ -4295,7 +4509,7 @@ int __fastcall EnsureHudLoaded(
 
     if (zReader::Node *const statsPayload = HudUiZrdPayload(zReader_GetNamedNode(
         root,
-        "STATS"
+        g_HudCfgKey_Stats
     ))) {
         HudUiWidget *const layoutWidget = &g_HudLayoutHW.widget1;
         const int layoutCenterX = layoutWidget->GetCenterX();
@@ -4322,7 +4536,7 @@ int __fastcall EnsureHudLoaded(
             0,
             &counterClip
         );
-        ((HudUiPanel *)(g_HudUiMgrObjectiveCounterTextPanel))->SetTextFmt("        ");
+        ((HudUiPanel *)(g_HudUiMgrObjectiveCounterTextPanel))->SetTextFmt(g_HudUiBlankSpaces8);
         ((HudUiPanel *)(g_HudUiMgrObjectiveCounterTextPanel))->UpdateTextBoundsFromContent();
         ((HudUiPanel *)(g_HudUiMgrObjectiveCounterTextPanel))->SetTextFmt(
             "%d",
@@ -4400,7 +4614,7 @@ int __fastcall EnsureHudLoaded(
 
     if (zReader::Node *const shieldNode = zReader_GetNamedNode(
         root,
-        "SHIELD"
+        g_HudCfgKey_Shield
     )) {
         HudUiShieldMessageWidget::ApplyLayout(shieldNode);
     }
@@ -4408,7 +4622,7 @@ int __fastcall EnsureHudLoaded(
     if (zReader::Node *const targetPayload =
             HudUiZrdPayload(zReader_GetNamedNode(
                 root,
-                "TARGET"
+                g_HudCfgKey_Target
             ))) {
         {
             for (int index = 0; index < 5; ++index) {
@@ -4449,7 +4663,7 @@ int __fastcall EnsureHudLoaded(
 
     zReader::Node *weaponPayload = HudUiZrdPayload(zReader_GetNamedNode(
         root,
-        "WEAPON"
+        g_HudCfgKey_Weapon
     ));
     if (weaponPayload != 0) {
         {
@@ -4464,7 +4678,7 @@ int __fastcall EnsureHudLoaded(
 
     zReader::Node *modesPayload = HudUiZrdPayload(zReader_GetNamedNode(
         root,
-        "MODES"
+        g_HudCfgKey_Modes
     ));
     if (modesPayload != 0) {
         {
@@ -6421,7 +6635,10 @@ HudUiCompositePanelEntry *__fastcall HudUiCompositePanelEntry::ConstructorCopyRa
     return dest;
 }
 
-// Reimplements 0x4bb0c0: HudUiFlashPanel::ComputeFlashBlendColor
+/**
+ * Reimplements 0x4bb0c0: HudUiFlashPanel::ComputeFlashBlendColor.
+ * Purpose: clamp endpoint flash colors and blend RGB channels for intermediate flash values.
+ */
 unsigned int __fastcall HudUiFlashPanel::ComputeFlashBlendColor(
     unsigned int color0,
     unsigned int color1,
@@ -7661,7 +7878,7 @@ zReader::Node * HudUiBackground::LoadZrdAndSection(
         zReader::Node *const sharedImagePath =
             zReader_GetNamedNode(
                 loadedRootNode,
-                "SHARED_IMAGE_PATH"
+                zHudCfgKey_SHARED_IMAGE_PATH
             );
         zReader::Node *const sharedImagePathBase = ZrdArrayBase(sharedImagePath);
         if (sharedImagePathBase != 0) {
@@ -7780,7 +7997,7 @@ zReader::Node * HudUiBackground::LoadZrdAndSection(
         zReader::Node *const imageList =
             ZrdArrayBase(zReader_GetNamedNode(
                 cfgRoot,
-                "BACKGROUND_IMAGES"
+                zHudCfgKey_BACKGROUND_IMAGES
             ));
         int imageCount = ZrdArrayCount(imageList);
         if (imageCount > 20) {
@@ -7825,7 +8042,7 @@ zReader::Node * HudUiBackground::LoadZrdAndSection(
         zReader::Node *const videoList =
             ZrdArrayBase(zReader_GetNamedNode(
                 cfgRoot,
-                "BACKGROUND_VIDEOS"
+                zHudCfgKey_BACKGROUND_VIDEOS
             ));
         int videoCount = ZrdArrayCount(videoList);
         if (videoCount > 10) {
@@ -7893,7 +8110,7 @@ zReader::Node * HudUiBackground::LoadZrdAndSection(
         zReader::Node *const textList =
             ZrdArrayBase(zReader_GetNamedNode(
                 cfgRoot,
-                "BACKGROUND_TEXT"
+                zHudCfgKey_BACKGROUND_TEXT
             ));
         int textCount = ZrdArrayCount(textList);
         if (textCount > 50) {
@@ -7950,7 +8167,7 @@ zReader::Node * HudUiBackground::LoadZrdAndSection(
 
         zReader::Node *const cursorNode = zReader_GetNamedNode(
             cfgRoot,
-            "CURSOR"
+            zHudCfgKey_CURSOR
         );
         if (cursorNode != 0) {
             zReader::Node *const bitmapNode =
@@ -7982,7 +8199,7 @@ zReader::Node * HudUiBackground::LoadZrdAndSection(
             int cursorCapture = 1;
             zReader::ReadNamedInt(
                 cursorNode,
-                "CAPTURE",
+                zHudCfgKey_CAPTURE,
                 &cursorCapture
             );
             cursorWidget.SetImageOwnedAndRefresh(cursorCapture);
@@ -7991,7 +8208,7 @@ zReader::Node * HudUiBackground::LoadZrdAndSection(
         zReader::Node *const soundList =
             ZrdArrayBase(zReader_GetNamedNode(
                 cfgRoot,
-                "BACKGROUND_SOUNDS"
+                zHudCfgKey_BACKGROUND_SOUNDS
             ));
         int soundCount = ZrdArrayCount(soundList);
         if (soundCount > 10) {
@@ -8077,7 +8294,7 @@ unsigned char __fastcall HudUiBackground::BindButtonsNodeToWidgetByName(
     if (parentNode != 0) {
         zReader::Node *const buttonsNode = zReader_GetNamedNode(
             parentNode,
-            "BUTTONS"
+            g_HudUiZrdToken_Buttons
         );
         zReader::Node *const widgetNode = zReader_GetNamedNode(
             buttonsNode,
@@ -8127,7 +8344,7 @@ int HudUiBackground::BindPrimitiveNodeToElement(
 
     zReader::Node *const primitivesNode = zReader_GetNamedNode(
         cfgRoot,
-        "PRIMITIVES"
+        g_HudUiBackground_ZrdKey_Primitives
     );
     if (primitivesNode == 0) {
         return 0;
@@ -8155,7 +8372,7 @@ int HudUiBackground::BindPrimitiveNodeToElement(
 
     zReader::Node *positionNode = zReader_GetNamedNode(
         primitiveNode,
-        "POSITION"
+        g_HudZrd_Key_Position
     );
     if (positionNode != 0) {
         zReader::Node *const positionBase = positionNode->value.nodes;
@@ -8167,7 +8384,7 @@ int HudUiBackground::BindPrimitiveNodeToElement(
 
     zReader::Node *wordWrapNode = zReader_GetNamedNode(
         primitiveNode,
-        "WORDWRAP"
+        g_HudUiZrdToken_WordWrap
     );
     if (wordWrapNode != 0) {
         zReader::Node *const wordWrapBase = wordWrapNode->value.nodes;
@@ -8209,7 +8426,7 @@ int HudUiBackground::BindPrimitiveNodeToElement(
 
     zReader::Node *colorNode = zReader_GetNamedNode(
         primitiveNode,
-        "COLOR"
+        g_HudZrd_Key_Color
     );
     if (colorNode != 0) {
         zReader::Node *const colorBase = colorNode->value.nodes;
@@ -8225,7 +8442,7 @@ int HudUiBackground::BindPrimitiveNodeToElement(
 
     zReader::Node *relativeEndNode = zReader_GetNamedNode(
         primitiveNode,
-        "ENDP_REL"
+        g_HudUiZrdToken_EndPointRelative
     );
     if (relativeEndNode != 0) {
         zReader::Node *const relativeEndBase = relativeEndNode->value.nodes;
@@ -8242,7 +8459,7 @@ int HudUiBackground::BindPrimitiveNodeToElement(
 
     zReader::Node *absoluteEndNode = zReader_GetNamedNode(
         primitiveNode,
-        "ENDP_ABS"
+        g_HudUiZrdToken_EndPointAbsolute
     );
     if (absoluteEndNode != 0) {
         zReader::Node *const absoluteEndBase = absoluteEndNode->value.nodes;
@@ -8935,7 +9152,7 @@ int HudUiZrdWidget::LoadFromZrd(
 
     zReader::Node *const positionNode = zReader_GetNamedNode(
         zrdSection,
-        "POSITION"
+        g_HudZrd_Key_Position
     );
     zReader::Node *const positionBase = ZrdArrayBase(positionNode);
     if (positionBase != 0) {
@@ -8996,7 +9213,7 @@ int HudUiZrdWidget::LoadFromZrd(
 
     zReader::Node *const rolloverNode = zReader_GetNamedNode(
         zrdSection,
-        "ROLLOVER"
+        g_HudZrd_Key_Rollover
     );
     if (rolloverNode != 0) {
         LoadHudZrdBitmap(
@@ -9022,7 +9239,7 @@ int HudUiZrdWidget::LoadFromZrd(
 
     zReader::Node *const disableNode = zReader_GetNamedNode(
         zrdSection,
-        "DISABLE"
+        g_HudZrd_Key_Disable
     );
     if (disableNode != 0) {
         LoadHudZrdBitmap(
@@ -9044,7 +9261,7 @@ int HudUiZrdWidget::LoadFromZrd(
 
     zReader::Node *const activateNode = zReader_GetNamedNode(
         zrdSection,
-        "ACTIVATE"
+        g_HudZrd_Key_Activate
     );
     if (activateNode != 0) {
         LoadHudZrdBitmap(
@@ -9853,7 +10070,7 @@ int HudUiCheckToggleWidget::LoadFromZrd(
 
     zReader::Node *const checkedNode = zReader_GetNamedNode(
         zrdSection,
-        "CHECKED"
+        g_HudUiZrdKey_Checked
     );
     if (checkedNode != 0) {
         LoadHudZrdBitmap(
@@ -9876,7 +10093,7 @@ int HudUiCheckToggleWidget::LoadFromZrd(
 
     zReader::Node *const disabledUnselectedNode = zReader_GetNamedNode(
         zrdSection,
-        "DISABLE_UNSEL"
+        g_HudUiZrdKey_DisableUnsel
     );
     if (disabledUnselectedNode != 0) {
         LoadHudZrdBitmap(
@@ -9905,7 +10122,7 @@ int HudUiCheckToggleWidget::LoadFromZrd(
 
     zReader::Node *const disabledSelectedNode = zReader_GetNamedNode(
         zrdSection,
-        "DISABLE_SEL"
+        g_HudUiZrdKey_DisableSel
     );
     if (disabledSelectedNode != 0) {
         LoadHudZrdBitmap(
@@ -11439,6 +11656,8 @@ void HudCmdBindButtonBase::ClearBindingEntries() {
  * Original source path: D:\Proj\Battlesport\HudCmdBindButton.cpp.
  * Purpose: destroy owned command-binding entries, release vector storage, and
  * tear down embedded and inherited widget state.
+ * Touched data: no authored globals; only owned instance fields, heap storage,
+ * provider delete/free calls, and inherited widget destructors are touched.
  */
 void HudCmdBindButtonBase::DestructorCore() {
 
@@ -13410,6 +13629,8 @@ void HudCmdBindButtonBase::RebuildBindingSlotWidgets(
  * Original source path: D:\Proj\Battlesport\HudCmdBindButton.cpp.
  * Purpose: load binding button fonts, spacing, offsets, slot counts, and
  * child panel setup from a ZRD node.
+ * Touched data: uses accepted ZRD-key literal owner
+ * hud_ui.hudcmd_bind_button_base_zrd_key_literals.
  */
 int HudCmdBindButtonBase::LoadFromZrd(
     zReader::Node *zrdSection,
@@ -13645,22 +13866,22 @@ HudUiMessageBoxDialog * HudUiMessageBoxDialog::Constructor(
             BindWidgetByName(
                 loadedSection,
                 &okButton,
-                "MB_OK"
+                k_msgBoxWidgetName_OK
             );
             BindWidgetByName(
                 loadedSection,
                 &cancelButton,
-                "MB_CANCEL"
+                k_msgBoxWidgetName_Cancel
             );
             BindPrimitiveNodeToElement(
                 loadedSection,
                 &titlePanel,
-                "TITLE"
+                k_msgBoxWidgetName_Title
             );
             BindPrimitiveNodeToElement(
                 loadedSection,
                 &messagePanel,
-                "MESSAGE"
+                k_msgBoxWidgetName_Message
             );
         }
 
@@ -15009,7 +15230,7 @@ int HudUiMessage::LoadWeaponLayoutFromNode(
         0,
         2
     );
-    panel.SetTextFmt("   ");
+    panel.SetTextFmt(g_HudUiBlankSpaces3);
 
     g_HudUiMgr.AddChild(this);
     g_HudUiMgr.AddChild(&widget);
@@ -15116,7 +15337,7 @@ void __fastcall HudUiMessage::SetValueIfOwnerMatches(
     }
 
     if (valueOrClearToken == kHudUiMessageClearSpecialTokenValue) {
-        message.panel.SetText(kHudUiMessageClearSpecialToken165);
+        message.panel.SetText(g_HudUiMessage_ClearSpecialToken165);
         return;
     }
 
@@ -15169,7 +15390,7 @@ void __fastcall HudUiMessage::UpdateSelectedWeaponDisplay(
     }
 
     if (valueOrClearToken == kHudUiMessageClearSpecialTokenValue) {
-        message.panel.SetTextFmt(kHudUiMessageClearSpecialToken165);
+        message.panel.SetTextFmt(g_HudUiMessage_ClearSpecialToken165);
         return;
     }
 
@@ -15329,7 +15550,13 @@ HudUiBar::HudUiBar() : HudUiElement(
     Invalidate();
 }
 
-// Reimplements 0x4bcff0: HudUiBar::Draw
+/**
+ * Reimplements 0x4bcff0: HudUiBar::Draw.
+ * Binary Ninja evidence: dispatches the base DrawBase method, reads
+ * drawVertexCount, and calls zRndr::RasterizePoly with points and drawParam
+ * only when at least one vertex is active.
+ * Purpose: Draw the bar base and rasterize the populated point list.
+ */
 void HudUiBar::Draw() {
     DrawBase();
     if (drawVertexCount != 0) {
@@ -15341,8 +15568,14 @@ void HudUiBar::Draw() {
     }
 }
 
-// Reimplements 0x4bcf80: HudUiBar::SetPointXY
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x4bcf80: HudUiBar::SetPointXY.
+ * Original file: D:\Proj\Battlesport\hud.cpp.
+ * Binary Ninja evidence: bounds-checks pointIndex against the 21-element point
+ * array, writes the HudUiBarPoint x/y fields, raises drawVertexCount, dispatches
+ * SetPos for point zero, and always invalidates the element.
+ * Purpose: Update one bar point and keep the element position/count state dirty.
+ */
 void HudUiBar::SetPointXY(
     int pointIndex,
     float x,
@@ -16064,39 +16297,63 @@ void HudUiNetGameSetupTextInput::OnActivate() {
     OnActivateFocusAndCursor();
 }
 
-// Reimplements 0x41ab60: HudUiNetGameSetupOverlayOwner::StaticInitAndRegisterAtExit
-// (D:\Proj\Battlesport\HudUi.cpp)
+/**
+ * Reimplements 0x41ab60: HudUiNetGameSetupOverlayOwner::StaticInitAndRegisterAtExit.
+ * BN source path: D:\Proj\Battlesport\HudUi.cpp.
+ * Purpose: construct the static multiplayer setup overlay owner and register
+ * its at-exit destructor during HUD static initialization.
+ */
 void HudUiNetGameSetupOverlayOwner::StaticInitAndRegisterAtExit() {
     StaticInit();
     RegisterAtExit();
 }
 
-// Reimplements 0x41ab70: HudUiNetGameSetupOverlayOwner::StaticInit
-// (D:\Proj\Battlesport\HudUi.cpp)
+/**
+ * Reimplements 0x41ab70: HudUiNetGameSetupOverlayOwner::StaticInit.
+ * BN source path: D:\Proj\Battlesport\HudUi.cpp.
+ * Purpose: placement-construct the global multiplayer setup overlay owner
+ * singleton in its zero-initialized storage.
+ */
 HudUiNetGameSetupOverlayOwner *HudUiNetGameSetupOverlayOwner::StaticInit() {
     return new (&g_HudUiNetGameSetupOverlayOwner) HudUiNetGameSetupOverlayOwner;
 }
 
-// Reimplements 0x41ab80: HudUiNetGameSetupOverlayOwner::RegisterAtExit
-// (D:\Proj\Battlesport\HudUi.cpp)
+/**
+ * Reimplements 0x41ab80: HudUiNetGameSetupOverlayOwner::RegisterAtExit.
+ * BN source path: D:\Proj\Battlesport\HudUi.cpp.
+ * Purpose: register the static overlay owner destructor with the CRT atexit
+ * list after the singleton is constructed.
+ */
 void HudUiNetGameSetupOverlayOwner::RegisterAtExit() {
     atexit(AtExitDestructor);
 }
 
-// Reimplements 0x41ab90: HudUiNetGameSetupOverlayOwner::AtExitDestructor
-// (D:\Proj\Battlesport\HudUi.cpp)
+/**
+ * Reimplements 0x41ab90: HudUiNetGameSetupOverlayOwner::AtExitDestructor.
+ * BN source path: D:\Proj\Battlesport\HudUi.cpp.
+ * Purpose: destroy the global multiplayer setup overlay owner from the CRT
+ * at-exit callback.
+ */
 void HudUiNetGameSetupOverlayOwner::AtExitDestructor() {
     g_HudUiNetGameSetupOverlayOwner.~HudUiNetGameSetupOverlayOwner();
 }
 
-// Reimplements 0x41aba0: HudUiNetGameSetupOverlayOwner::HudUiNetGameSetupOverlayOwner
-// (D:\Proj\Battlesport\HudUi.cpp)
+/**
+ * Reimplements 0x41aba0: HudUiNetGameSetupOverlayOwner::HudUiNetGameSetupOverlayOwner.
+ * BN source path: D:\Proj\Battlesport\HudUi.cpp.
+ * Purpose: initialize the overlay owner state with no active setup panel and
+ * no pending reconfigure request.
+ */
 HudUiNetGameSetupOverlayOwner::HudUiNetGameSetupOverlayOwner()
     : m_panel(0),
       m_reconfigureExistingSession(0) {}
 
-// Reimplements 0x41abe0: HudUiNetGameSetupOverlayOwner::~HudUiNetGameSetupOverlayOwner
-// (D:\Proj\Battlesport\HudUi.cpp)
+/**
+ * Reimplements 0x41abe0: HudUiNetGameSetupOverlayOwner::~HudUiNetGameSetupOverlayOwner.
+ * BN source path: D:\Proj\Battlesport\HudUi.cpp.
+ * Purpose: disable and delete any live multiplayer setup panel before clearing
+ * the owner singleton's panel pointer.
+ */
 HudUiNetGameSetupOverlayOwner::~HudUiNetGameSetupOverlayOwner() {
     HudUiNetGameSetupPanel *panel = m_panel;
     if (panel != 0) {
@@ -16111,8 +16368,12 @@ HudUiNetGameSetupOverlayOwner::~HudUiNetGameSetupOverlayOwner() {
     }
 }
 
-// Reimplements 0x41ac50: HudUiNetGameSetupOverlayOwner::OnTryBecomeCurrent
-// (D:\Proj\Battlesport\HudUi.cpp)
+/**
+ * Reimplements 0x41ac50: HudUiNetGameSetupOverlayOwner::OnTryBecomeCurrent.
+ * BN source path: D:\Proj\Battlesport\HudUi.cpp.
+ * Purpose: configure HUD video and dialog audio state, create and enable the
+ * network setup panel, then start the menu CD track when enabled.
+ */
 int HudUiNetGameSetupOverlayOwner::OnTryBecomeCurrent() {
     zVideo::SetHalfResAdjustMode(ZVIDEO_HALFRES_ADJUST_DISABLED);
     HudUi::SetInvalidateMode(0);
@@ -16148,8 +16409,12 @@ int HudUiNetGameSetupOverlayOwner::OnTryBecomeCurrent() {
     return 1;
 }
 
-// Reimplements 0x41ad20: HudUiNetGameSetupOverlayOwner::OnDeactivate
-// (D:\Proj\Battlesport\HudUi.cpp)
+/**
+ * Reimplements 0x41ad20: HudUiNetGameSetupOverlayOwner::OnDeactivate.
+ * BN source path: D:\Proj\Battlesport\HudUi.cpp.
+ * Purpose: tear down dialog audio and the active setup panel while restoring
+ * the primary surface after the multiplayer setup overlay exits.
+ */
 void HudUiNetGameSetupOverlayOwner::OnDeactivate() {
     Sleep(1000);
     zSndSampleSet_DestroyByName(g_HudUiDialogSampleSetName);
@@ -16175,8 +16440,12 @@ void HudUiNetGameSetupOverlayOwner::OnDeactivate() {
     m_panel = 0;
 }
 
-// Reimplements 0x41ad80: HudUiNetGameSetupOverlayOwner::QueueEnterWithReconfigureFlag
-// (D:\Proj\GameZRecoil\zHud\HudUiNetGameSetup.cpp)
+/**
+ * Reimplements 0x41ad80: HudUiNetGameSetupOverlayOwner::QueueEnterWithReconfigureFlag.
+ * BN source path: D:\Proj\GameZRecoil\zHud\HudUiNetGameSetup.cpp.
+ * Purpose: store the requested reconfigure mode on the static overlay owner
+ * and queue that owner as the next application state.
+ */
 void HudUiNetGameSetupOverlayOwner::QueueEnterWithReconfigureFlag(
     int reconfigureExistingSession
 ) {
@@ -18208,7 +18477,17 @@ void __fastcall SetInvalidateMode(
     g_HudUi_InvalidateMask = mode != 0 ? 0x0c : 0x04;
 }
 
-// Reimplements 0x438350: HudUi::ShowMessageBox (D:\Proj\Battlesport\HudUiMessageBoxDialog.cpp)
+/**
+ * Reimplements 0x438350: HudUi::ShowMessageBox.
+ * BN source path: D:\Proj\Battlesport\HudUiMessageBoxDialog.cpp.
+ * Source model: HudUiMessageBoxDialog.cpp entrypoint wrapper that constructs
+ * the stack HudUiMessageBoxDialog, not a broad HudUi owner or table scaffold.
+ * Purpose: load the MESSAGEBOX section from dialog.zrd, run the dialog modally
+ * with the caller strings/context and infinite timeout, then destroy it.
+ * Touched data: g_HudUiMessageBoxDialog_SectionName at 0x4dd1c8 is the local
+ * writable char[11] MESSAGEBOX section-name data; dialog.zrd is the accepted
+ * shared dialog path literal.
+ */
 int __fastcall ShowMessageBox(
     const char *messageText,
     const char *titleText,
@@ -18217,7 +18496,7 @@ int __fastcall ShowMessageBox(
     HudUiMessageBoxDialog dialog;
     dialog.Constructor(
         "dialog.zrd",
-        "MESSAGEBOX"
+        g_HudUiMessageBoxDialog_SectionName
     );
     const int result = dialog.RunModal(
         messageText,
@@ -18600,7 +18879,7 @@ void HudUiChatMessageStack::DestructorCore() {
 void HudUiTimerPanelFloat::Draw() {
     Invalidate();
     SetTextFmt(
-        "%2.1f",
+        g_HudUiTimerPanelFloat_DrawFormat,
         (double)(displayValue)
     );
     HudUiPanel::Draw();

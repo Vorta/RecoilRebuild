@@ -1,0 +1,334 @@
+0x10005000 PSTR (__stdcall* const KERNEL32:GetEnvironmentStrings)() = GetEnvironmentStrings
+0x10005004 uint32_t (__stdcall* const KERNEL32:GetVersion)() = GetVersion
+0x10005008 void (__stdcall* const KERNEL32:ExitProcess)(uint32_t uExitCode) __noreturn = ExitProcess
+0x1000500c BOOL (__stdcall* const KERNEL32:TerminateProcess)(HANDLE hProcess, uint32_t uExitCode) = TerminateProcess
+0x10005010 HANDLE (__stdcall* const KERNEL32:GetCurrentProcess)() = GetCurrentProcess
+0x10005014 uint32_t (__stdcall* const KERNEL32:GetCurrentThreadId)() = GetCurrentThreadId
+0x10005018 BOOL (__stdcall* const KERNEL32:TlsSetValue)(uint32_t dwTlsIndex, void* lpTlsValue) = TlsSetValue
+0x1000501c uint32_t (__stdcall* const KERNEL32:TlsAlloc)() = TlsAlloc
+0x10005020 BOOL (__stdcall* const KERNEL32:TlsFree)(uint32_t dwTlsIndex) = TlsFree
+0x10005024 void (__stdcall* const KERNEL32:SetLastError)(enum WIN32_ERROR dwErrCode) = SetLastError
+0x10005028 void* (__stdcall* const KERNEL32:TlsGetValue)(uint32_t dwTlsIndex) = TlsGetValue
+0x1000502c enum WIN32_ERROR (__stdcall* const KERNEL32:GetLastError)() = GetLastError
+0x10005030 uint32_t (__stdcall* const KERNEL32:SetHandleCount)(uint32_t uNumber) = SetHandleCount
+0x10005034 HANDLE (__stdcall* const KERNEL32:GetStdHandle)(enum STD_HANDLE nStdHandle) = GetStdHandle
+0x10005038 enum FILE_TYPE (__stdcall* const KERNEL32:GetFileType)(HANDLE hFile) = GetFileType
+0x1000503c void (__stdcall* const KERNEL32:GetStartupInfoA)(STARTUPINFOA* lpStartupInfo) = GetStartupInfoA
+0x10005040 void (__stdcall* const KERNEL32:DeleteCriticalSection)(CRITICAL_SECTION* lpCriticalSection) = DeleteCriticalSection
+0x10005044 uint32_t (__stdcall* const KERNEL32:GetModuleFileNameA)(HMODULE hModule, uint8_t* lpFilename, uint32_t nSize) = GetModuleFileNameA
+0x10005048 BOOL (__stdcall* const KERNEL32:GetCPInfo)(uint32_t CodePage, CPINFO* lpCPInfo) = GetCPInfo
+0x1000504c uint32_t (__stdcall* const KERNEL32:GetACP)() = GetACP
+0x10005050 uint32_t (__stdcall* const KERNEL32:GetOEMCP)() = GetOEMCP
+0x10005054 BOOL (__stdcall* const KERNEL32:FreeEnvironmentStringsA)(PSTR penv) = FreeEnvironmentStringsA
+0x10005058 int32_t (__stdcall* const KERNEL32:MultiByteToWideChar)(uint32_t CodePage, enum MULTI_BYTE_TO_WIDE_CHAR_FLAGS dwFlags, uint8_t* lpMultiByteStr, int32_t cbMultiByte, wchar16* lpWideCharStr, int32_t cchWideChar) = MultiByteToWideChar
+0x1000505c BOOL (__stdcall* const KERNEL32:FreeEnvironmentStringsW)(PWSTR penv) = FreeEnvironmentStringsW
+0x10005060 PSTR (__stdcall* const KERNEL32:GetCommandLineA)() = GetCommandLineA
+0x10005064 PWSTR (__stdcall* const KERNEL32:GetEnvironmentStringsW)() = GetEnvironmentStringsW
+0x10005068 int32_t (__stdcall* const KERNEL32:WideCharToMultiByte)(uint32_t CodePage, uint32_t dwFlags, wchar16* lpWideCharStr, int32_t cchWideChar, PSTR lpMultiByteStr, int32_t cbMultiByte, PSTR lpDefaultChar, BOOL* lpUsedDefaultChar) = WideCharToMultiByte
+0x1000506c BOOL (__stdcall* const KERNEL32:HeapDestroy)(HANDLE hHeap) = HeapDestroy
+0x10005070 HANDLE (__stdcall* const KERNEL32:HeapCreate)(enum HEAP_FLAGS flOptions, uint32_t dwInitialSize, uint32_t dwMaximumSize) = HeapCreate
+0x10005074 BOOL (__stdcall* const KERNEL32:VirtualFree)(void* lpAddress, uint32_t dwSize, enum VIRTUAL_FREE_TYPE dwFreeType) = VirtualFree
+0x10005078 BOOL (__stdcall* const KERNEL32:WriteFile)(HANDLE hFile, uint8_t* lpBuffer, uint32_t nNumberOfBytesToWrite, uint32_t* lpNumberOfBytesWritten, OVERLAPPED* lpOverlapped) = WriteFile
+0x1000507c void (__stdcall* const KERNEL32:InitializeCriticalSection)(CRITICAL_SECTION* lpCriticalSection) = InitializeCriticalSection
+0x10005080 void (__stdcall* const KERNEL32:EnterCriticalSection)(CRITICAL_SECTION* lpCriticalSection) = EnterCriticalSection
+0x10005084 void (__stdcall* const KERNEL32:LeaveCriticalSection)(CRITICAL_SECTION* lpCriticalSection) = LeaveCriticalSection
+0x10005088 void* (__stdcall* const KERNEL32:HeapAlloc)(HANDLE hHeap, enum HEAP_FLAGS dwFlags, uint32_t dwBytes) = HeapAlloc
+0x1000508c BOOL (__stdcall* const KERNEL32:HeapFree)(HANDLE hHeap, enum HEAP_FLAGS dwFlags, void* lpMem) = HeapFree
+0x10005090 int32_t (__stdcall* const KERNEL32:LCMapStringA)(uint32_t Locale, uint32_t dwMapFlags, uint8_t* lpSrcStr, int32_t cchSrc, PSTR lpDestStr, int32_t cchDest) = LCMapStringA
+0x10005094 int32_t (__stdcall* const KERNEL32:LCMapStringW)(uint32_t Locale, uint32_t dwMapFlags, wchar16* lpSrcStr, int32_t cchSrc, PWSTR lpDestStr, int32_t cchDest) = LCMapStringW
+0x10005098 BOOL (__stdcall* const KERNEL32:GetStringTypeA)(uint32_t Locale, uint32_t dwInfoType, uint8_t* lpSrcStr, int32_t cchSrc, uint16_t* lpCharType) = GetStringTypeA
+0x1000509c BOOL (__stdcall* const KERNEL32:GetStringTypeW)(uint32_t dwInfoType, wchar16* lpSrcStr, int32_t cchSrc, uint16_t* lpCharType) = GetStringTypeW
+0x100050a0 void* (__stdcall* const KERNEL32:VirtualAlloc)(void* lpAddress, uint32_t dwSize, enum VIRTUAL_ALLOCATION_TYPE flAllocationType, enum PAGE_PROTECTION_FLAGS flProtect) = VirtualAlloc
+0x100050a4 FARPROC (__stdcall* const KERNEL32:GetProcAddress)(HMODULE hModule, PSTR lpProcName) = GetProcAddress
+0x100050a8 HMODULE (__stdcall* const KERNEL32:LoadLibraryA)(PSTR lpLibFileName) = LoadLibraryA
+0x100050ac BOOL (__stdcall* const KERNEL32:FlushFileBuffers)(HANDLE hFile) = FlushFileBuffers
+0x100050b0 BOOL (__stdcall* const KERNEL32:CloseHandle)(HANDLE hObject) = CloseHandle
+0x100050b4 BOOL (__stdcall* const KERNEL32:SetStdHandle)(enum STD_HANDLE nStdHandle, HANDLE hHandle) = SetStdHandle
+0x100050b8 uint32_t (__stdcall* const KERNEL32:SetFilePointer)(HANDLE hFile, int32_t lDistanceToMove, int32_t* lpDistanceToMoveHigh, enum SET_FILE_POINTER_MOVE_METHOD dwMoveMethod) = SetFilePointer
+0x100050bc                                                                                     00 00 00 00                              ....
+0x100050c0 char g_CRT_runtimeErrorPrefix[0xf] = "runtime error ", 0
+0x100050cf                                              00                                                                 .
+0x100050d0 char g_CRT_crlf[0x3] = "\r\n", 0
+0x100050d3                                                          00                                                         .
+0x100050d4 char const data_100050d4[0xe] = "TLOSS error\r\n", 0
+0x100050e2       00 00                                                                                        ..
+0x100050e4 char const data_100050e4[0xd] = "SING error\r\n", 0
+0x100050f1                                                    00 00 00                                                       ...
+0x100050f4 char const data_100050f4[0xf] = "DOMAIN error\r\n", 0
+0x10005103          00                                                                                         .
+0x10005104 char const data_10005104[0x25] = "R6028\r\n"
+0x10005104     "- unable to initialize heap\r\n", 0
+0x10005129                            00 00 00                                                                       ...
+0x1000512c char const data_1000512c[0x35] = "R6027\r\n"
+0x1000512c     "- not enough space for lowio initialization\r\n", 0
+0x10005161    00 00 00                                                                                       ...
+0x10005164 char const data_10005164[0x35] = "R6026\r\n"
+0x10005164     "- not enough space for stdio initialization\r\n", 0
+0x10005199                                                                            00 00 00                                       ...
+0x1000519c char const data_1000519c[0x26] = "R6025\r\n"
+0x1000519c     "- pure virtual function call\r\n", 0
+0x100051c2       00 00                                                                                        ..
+0x100051c4 char const data_100051c4[0x35] = "R6024\r\n"
+0x100051c4     "- not enough space for _onexit/atexit table\r\n", 0
+0x100051f9                                                                            00 00 00                                       ...
+0x100051fc char const data_100051fc[0x29] = "R6019\r\n"
+0x100051fc     "- unable to open console device\r\n", 0
+0x10005225                00 00 00                                                                               ...
+0x10005228 char const data_10005228[0x21] = "R6018\r\n"
+0x10005228     "- unexpected heap error\r\n", 0
+0x10005249                            00 00 00                                                                       ...
+0x1000524c char const data_1000524c[0x2d] = "R6017\r\n"
+0x1000524c     "- unexpected multithread lock error\r\n", 0
+0x10005279                                                                            00 00 00                                       ...
+0x1000527c char const data_1000527c[0x2c] = "R6016\r\n"
+0x1000527c     "- not enough space for thread data\r\n", 0
+0x100052a8 char const data_100052a8[0x21] = "\r\nabnormal program termination\r\n", 0
+0x100052c9                            00 00 00                                                                       ...
+0x100052cc char const data_100052cc[0x2c] = "R6009\r\n"
+0x100052cc     "- not enough space for environment\r\n", 0
+0x100052f8 char const data_100052f8[0x2a] = "R6008\r\n"
+0x100052f8     "- not enough space for arguments\r\n", 0
+0x10005322       00 00                                                                                        ..
+0x10005324 char const data_10005324[0x25] = "R6002\r\n"
+0x10005324     "- floating point not loaded\r\n", 0
+0x10005349                            00 00 00                                                                       ...
+0x1000534c char g_CRT_runtimeLibraryTitle[0x25] = "Microsoft Visual C++ Runtime Library", 0
+0x10005371                                                    00 00 00                                                       ...
+// CRT message-box separator string used by _NMSG_WRITE between program name and runtime-error text.
+// CRT message-box separator string used by _NMSG_WRITE between program name and
+// runtime-error text.
+0x10005374 char g_CRT_doubleNewline[0x3] = "\n\n", 0
+0x10005377                                                                      00                                                 .
+0x10005378 char g_CRT_runtimeErrorProgramPrefix[0x1a] = "Runtime Error!\n\n"
+0x10005378     "Program: ", 0
+0x10005392                                                       00 00                                                        ..
+0x10005394 char g_CRT_ellipsis[0x4] = "...", 0
+0x10005398 char g_CRT_unknownProgramName[0x17] = "<program name unknown>", 0
+0x100053af                                              00                                                                 .
+0x100053b0 char const g_crtEmptyStringA[0x1] = "", 0
+0x100053b1                                                    00 00 00                                                       ...
+0x100053b4 wchar16 const g_crtEmptyStringW[0x1] = "", 0
+0x100053b6                                                                   00 00                                                ..
+0x100053b8 char const data_100053b8[0x13] = "GetLastActivePopup", 0
+0x100053cb                                  00                                                                         .
+0x100053cc char const data_100053cc[0x10] = "GetActiveWindow", 0
+0x100053dc char const data_100053dc[0xc] = "MessageBoxA", 0
+0x100053e8 char const data_100053e8[0xb] = "user32.dll", 0
+0x100053f3                                                          00                                                         .
+0x100053f4 struct Import_Directory_Table __import_directory_entries[0x2] =
+0x100053f4 {
+0x100053f4     [0x0] =
+0x100053f4     {
+0x100053f4         uint32_t importLookupTableRva = 0x541c
+0x100053f8         uint32_t timeDateStamp = 0x0
+0x100053fc         uint32_t forwarderChain = 0x0
+0x10005400         uint32_t nameRva = 0x5812
+0x10005404         uint32_t importAddressTableRva = 0x5000
+0x10005408     }
+0x10005408     [0x1] =
+0x10005408     {
+0x10005408         uint32_t importLookupTableRva = 0x0
+0x1000540c         uint32_t timeDateStamp = 0x0
+0x10005410         uint32_t forwarderChain = 0x0
+0x10005414         uint32_t nameRva = 0x0
+0x10005418         uint32_t importAddressTableRva = 0x0
+0x1000541c     }
+0x1000541c }
+0x1000541c uint32_t __import_lookup_table_0(KERNEL32:GetEnvironmentStrings) = 0x5676
+0x10005420 uint32_t __import_lookup_table_0(KERNEL32:GetVersion) = 0x54ee
+0x10005424 uint32_t __import_lookup_table_0(KERNEL32:ExitProcess) = 0x54fc
+0x10005428 uint32_t __import_lookup_table_0(KERNEL32:TerminateProcess) = 0x550a
+0x1000542c uint32_t __import_lookup_table_0(KERNEL32:GetCurrentProcess) = 0x551e
+0x10005430 uint32_t __import_lookup_table_0(KERNEL32:GetCurrentThreadId) = 0x5532
+0x10005434 uint32_t __import_lookup_table_0(KERNEL32:TlsSetValue) = 0x5548
+0x10005438 uint32_t __import_lookup_table_0(KERNEL32:TlsAlloc) = 0x5556
+0x1000543c uint32_t __import_lookup_table_0(KERNEL32:TlsFree) = 0x5562
+0x10005440 uint32_t __import_lookup_table_0(KERNEL32:SetLastError) = 0x556c
+0x10005444 uint32_t __import_lookup_table_0(KERNEL32:TlsGetValue) = 0x557c
+0x10005448 uint32_t __import_lookup_table_0(KERNEL32:GetLastError) = 0x558a
+0x1000544c uint32_t __import_lookup_table_0(KERNEL32:SetHandleCount) = 0x559a
+0x10005450 uint32_t __import_lookup_table_0(KERNEL32:GetStdHandle) = 0x55ac
+0x10005454 uint32_t __import_lookup_table_0(KERNEL32:GetFileType) = 0x55bc
+0x10005458 uint32_t __import_lookup_table_0(KERNEL32:GetStartupInfoA) = 0x55ca
+0x1000545c uint32_t __import_lookup_table_0(KERNEL32:DeleteCriticalSection) = 0x55dc
+0x10005460 uint32_t __import_lookup_table_0(KERNEL32:GetModuleFileNameA) = 0x55f4
+0x10005464 uint32_t __import_lookup_table_0(KERNEL32:GetCPInfo) = 0x560a
+0x10005468 uint32_t __import_lookup_table_0(KERNEL32:GetACP) = 0x5616
+0x1000546c uint32_t __import_lookup_table_0(KERNEL32:GetOEMCP) = 0x5620
+0x10005470 uint32_t __import_lookup_table_0(KERNEL32:FreeEnvironmentStringsA) = 0x562c
+0x10005474 uint32_t __import_lookup_table_0(KERNEL32:MultiByteToWideChar) = 0x5646
+0x10005478 uint32_t __import_lookup_table_0(KERNEL32:FreeEnvironmentStringsW) = 0x565c
+0x1000547c uint32_t __import_lookup_table_0(KERNEL32:GetCommandLineA) = 0x54dc
+0x10005480 uint32_t __import_lookup_table_0(KERNEL32:GetEnvironmentStringsW) = 0x568e
+0x10005484 uint32_t __import_lookup_table_0(KERNEL32:WideCharToMultiByte) = 0x56a8
+0x10005488 uint32_t __import_lookup_table_0(KERNEL32:HeapDestroy) = 0x56be
+0x1000548c uint32_t __import_lookup_table_0(KERNEL32:HeapCreate) = 0x56cc
+0x10005490 uint32_t __import_lookup_table_0(KERNEL32:VirtualFree) = 0x56da
+0x10005494 uint32_t __import_lookup_table_0(KERNEL32:WriteFile) = 0x56e8
+0x10005498 uint32_t __import_lookup_table_0(KERNEL32:InitializeCriticalSection) = 0x56f4
+0x1000549c uint32_t __import_lookup_table_0(KERNEL32:EnterCriticalSection) = 0x5710
+0x100054a0 uint32_t __import_lookup_table_0(KERNEL32:LeaveCriticalSection) = 0x5728
+0x100054a4 uint32_t __import_lookup_table_0(KERNEL32:HeapAlloc) = 0x5740
+0x100054a8 uint32_t __import_lookup_table_0(KERNEL32:HeapFree) = 0x574c
+0x100054ac uint32_t __import_lookup_table_0(KERNEL32:LCMapStringA) = 0x5758
+0x100054b0 uint32_t __import_lookup_table_0(KERNEL32:LCMapStringW) = 0x5768
+0x100054b4 uint32_t __import_lookup_table_0(KERNEL32:GetStringTypeA) = 0x5778
+0x100054b8 uint32_t __import_lookup_table_0(KERNEL32:GetStringTypeW) = 0x578a
+0x100054bc uint32_t __import_lookup_table_0(KERNEL32:VirtualAlloc) = 0x579c
+0x100054c0 uint32_t __import_lookup_table_0(KERNEL32:GetProcAddress) = 0x57ac
+0x100054c4 uint32_t __import_lookup_table_0(KERNEL32:LoadLibraryA) = 0x57be
+0x100054c8 uint32_t __import_lookup_table_0(KERNEL32:FlushFileBuffers) = 0x57ce
+0x100054cc uint32_t __import_lookup_table_0(KERNEL32:CloseHandle) = 0x57e2
+0x100054d0 uint32_t __import_lookup_table_0(KERNEL32:SetStdHandle) = 0x57f0
+0x100054d4 uint32_t __import_lookup_table_0(KERNEL32:SetFilePointer) = 0x5800
+0x100054d8 uint32_t data_100054d8 = 0x0
+0x100054dc uint16_t __export_name_ptr_table_0(KERNEL32:GetCommandLineA) = 0xaa
+0x100054de char __import_name_0(KERNEL32:GetCommandLineA)[0x10] = "GetCommandLineA", 0
+0x100054ee uint16_t __export_name_ptr_table_0(KERNEL32:GetVersion) = 0x14c
+0x100054f0 char __import_name_0(KERNEL32:GetVersion)[0xb] = "GetVersion", 0
+0x100054fb                                                                                  00                                         .
+0x100054fc uint16_t __export_name_ptr_table_0(KERNEL32:ExitProcess) = 0x6b
+0x100054fe char __import_name_0(KERNEL32:ExitProcess)[0xc] = "ExitProcess", 0
+0x1000550a uint16_t __export_name_ptr_table_0(KERNEL32:TerminateProcess) = 0x246
+0x1000550c char __import_name_0(KERNEL32:TerminateProcess)[0x11] = "TerminateProcess", 0
+0x1000551d                                                                                        00                                     .
+0x1000551e uint16_t __export_name_ptr_table_0(KERNEL32:GetCurrentProcess) = 0xd3
+0x10005520 char __import_name_0(KERNEL32:GetCurrentProcess)[0x12] = "GetCurrentProcess", 0
+0x10005532 uint16_t __export_name_ptr_table_0(KERNEL32:GetCurrentThreadId) = 0xd6
+0x10005534 char __import_name_0(KERNEL32:GetCurrentThreadId)[0x13] = "GetCurrentThreadId", 0
+0x10005547                      00                                                                                 .
+0x10005548 uint16_t __export_name_ptr_table_0(KERNEL32:TlsSetValue) = 0x24b
+0x1000554a char __import_name_0(KERNEL32:TlsSetValue)[0xc] = "TlsSetValue", 0
+0x10005556 uint16_t __export_name_ptr_table_0(KERNEL32:TlsAlloc) = 0x248
+0x10005558 char __import_name_0(KERNEL32:TlsAlloc)[0x9] = "TlsAlloc", 0
+0x10005561    00                                                                                             .
+0x10005562 uint16_t __export_name_ptr_table_0(KERNEL32:TlsFree) = 0x249
+0x10005564 char __import_name_0(KERNEL32:TlsFree)[0x8] = "TlsFree", 0
+0x1000556c uint16_t __export_name_ptr_table_0(KERNEL32:SetLastError) = 0x21e
+0x1000556e char __import_name_0(KERNEL32:SetLastError)[0xd] = "SetLastError", 0
+0x1000557b                                                                                  00                                         .
+0x1000557c uint16_t __export_name_ptr_table_0(KERNEL32:TlsGetValue) = 0x24a
+0x1000557e char __import_name_0(KERNEL32:TlsGetValue)[0xc] = "TlsGetValue", 0
+0x1000558a uint16_t __export_name_ptr_table_0(KERNEL32:GetLastError) = 0xf4
+0x1000558c char __import_name_0(KERNEL32:GetLastError)[0xd] = "GetLastError", 0
+0x10005599                                                                            00                                             .
+0x1000559a uint16_t __export_name_ptr_table_0(KERNEL32:SetHandleCount) = 0x21b
+0x1000559c char __import_name_0(KERNEL32:SetHandleCount)[0xf] = "SetHandleCount", 0
+0x100055ab                                  00                                                                         .
+0x100055ac uint16_t __export_name_ptr_table_0(KERNEL32:GetStdHandle) = 0x12a
+0x100055ae char __import_name_0(KERNEL32:GetStdHandle)[0xd] = "GetStdHandle", 0
+0x100055bb                                                                                  00                                         .
+0x100055bc uint16_t __export_name_ptr_table_0(KERNEL32:GetFileType) = 0xef
+0x100055be char __import_name_0(KERNEL32:GetFileType)[0xc] = "GetFileType", 0
+0x100055ca uint16_t __export_name_ptr_table_0(KERNEL32:GetStartupInfoA) = 0x128
+0x100055cc char __import_name_0(KERNEL32:GetStartupInfoA)[0x10] = "GetStartupInfoA", 0
+0x100055dc uint16_t __export_name_ptr_table_0(KERNEL32:DeleteCriticalSection) = 0x4c
+0x100055de char __import_name_0(KERNEL32:DeleteCriticalSection)[0x16] = "DeleteCriticalSection", 0
+0x100055f4 uint16_t __export_name_ptr_table_0(KERNEL32:GetModuleFileNameA) = 0xfc
+0x100055f6 char __import_name_0(KERNEL32:GetModuleFileNameA)[0x13] = "GetModuleFileNameA", 0
+0x10005609                            00                                                                             .
+0x1000560a uint16_t __export_name_ptr_table_0(KERNEL32:GetCPInfo) = 0xa3
+0x1000560c char __import_name_0(KERNEL32:GetCPInfo)[0xa] = "GetCPInfo", 0
+0x10005616 uint16_t __export_name_ptr_table_0(KERNEL32:GetACP) = 0x9d
+0x10005618 char __import_name_0(KERNEL32:GetACP)[0x7] = "GetACP", 0
+0x1000561f                                                                                              00                                 .
+0x10005620 uint16_t __export_name_ptr_table_0(KERNEL32:GetOEMCP) = 0x109
+0x10005622 char __import_name_0(KERNEL32:GetOEMCP)[0x9] = "GetOEMCP", 0
+0x1000562b                                  00                                                                         .
+0x1000562c uint16_t __export_name_ptr_table_0(KERNEL32:FreeEnvironmentStringsA) = 0x96
+0x1000562e char __import_name_0(KERNEL32:FreeEnvironmentStringsA)[0x18] = "FreeEnvironmentStringsA", 0
+0x10005646 uint16_t __export_name_ptr_table_0(KERNEL32:MultiByteToWideChar) = 0x1ab
+0x10005648 char __import_name_0(KERNEL32:MultiByteToWideChar)[0x14] = "MultiByteToWideChar", 0
+0x1000565c uint16_t __export_name_ptr_table_0(KERNEL32:FreeEnvironmentStringsW) = 0x97
+0x1000565e char __import_name_0(KERNEL32:FreeEnvironmentStringsW)[0x18] = "FreeEnvironmentStringsW", 0
+0x10005676 uint16_t __export_name_ptr_table_0(KERNEL32:GetEnvironmentStrings) = 0xe1
+0x10005678 char __import_name_0(KERNEL32:GetEnvironmentStrings)[0x16] = "GetEnvironmentStrings", 0
+0x1000568e uint16_t __export_name_ptr_table_0(KERNEL32:GetEnvironmentStringsW) = 0xe3
+0x10005690 char __import_name_0(KERNEL32:GetEnvironmentStringsW)[0x17] = "GetEnvironmentStringsW", 0
+0x100056a7                      00                                                                                 .
+0x100056a8 uint16_t __export_name_ptr_table_0(KERNEL32:WideCharToMultiByte) = 0x26e
+0x100056aa char __import_name_0(KERNEL32:WideCharToMultiByte)[0x14] = "WideCharToMultiByte", 0
+0x100056be uint16_t __export_name_ptr_table_0(KERNEL32:HeapDestroy) = 0x16c
+0x100056c0 char __import_name_0(KERNEL32:HeapDestroy)[0xc] = "HeapDestroy", 0
+0x100056cc uint16_t __export_name_ptr_table_0(KERNEL32:HeapCreate) = 0x16a
+0x100056ce char __import_name_0(KERNEL32:HeapCreate)[0xb] = "HeapCreate", 0
+0x100056d9                                                                            00                                             .
+0x100056da uint16_t __export_name_ptr_table_0(KERNEL32:VirtualFree) = 0x25e
+0x100056dc char __import_name_0(KERNEL32:VirtualFree)[0xc] = "VirtualFree", 0
+0x100056e8 uint16_t __export_name_ptr_table_0(KERNEL32:WriteFile) = 0x27b
+0x100056ea char __import_name_0(KERNEL32:WriteFile)[0xa] = "WriteFile", 0
+0x100056f4 uint16_t __export_name_ptr_table_0(KERNEL32:InitializeCriticalSection) = 0x179
+0x100056f6 char __import_name_0(KERNEL32:InitializeCriticalSection)[0x1a] = "InitializeCriticalSection", 0
+0x10005710 uint16_t __export_name_ptr_table_0(KERNEL32:EnterCriticalSection) = 0x58
+0x10005712 char __import_name_0(KERNEL32:EnterCriticalSection)[0x15] = "EnterCriticalSection", 0
+0x10005727                      00                                                                                 .
+0x10005728 uint16_t __export_name_ptr_table_0(KERNEL32:LeaveCriticalSection) = 0x18f
+0x1000572a char __import_name_0(KERNEL32:LeaveCriticalSection)[0x15] = "LeaveCriticalSection", 0
+0x1000573f                                                                                              00                                 .
+0x10005740 uint16_t __export_name_ptr_table_0(KERNEL32:HeapAlloc) = 0x168
+0x10005742 char __import_name_0(KERNEL32:HeapAlloc)[0xa] = "HeapAlloc", 0
+0x1000574c uint16_t __export_name_ptr_table_0(KERNEL32:HeapFree) = 0x16e
+0x1000574e char __import_name_0(KERNEL32:HeapFree)[0x9] = "HeapFree", 0
+0x10005757                                                                      00                                                 .
+0x10005758 uint16_t __export_name_ptr_table_0(KERNEL32:LCMapStringA) = 0x18d
+0x1000575a char __import_name_0(KERNEL32:LCMapStringA)[0xd] = "LCMapStringA", 0
+0x10005767                      00                                                                                 .
+0x10005768 uint16_t __export_name_ptr_table_0(KERNEL32:LCMapStringW) = 0x18e
+0x1000576a char __import_name_0(KERNEL32:LCMapStringW)[0xd] = "LCMapStringW", 0
+0x10005777                                                                      00                                                 .
+0x10005778 uint16_t __export_name_ptr_table_0(KERNEL32:GetStringTypeA) = 0x12b
+0x1000577a char __import_name_0(KERNEL32:GetStringTypeA)[0xf] = "GetStringTypeA", 0
+0x10005789                            00                                                                             .
+0x1000578a uint16_t __export_name_ptr_table_0(KERNEL32:GetStringTypeW) = 0x12e
+0x1000578c char __import_name_0(KERNEL32:GetStringTypeW)[0xf] = "GetStringTypeW", 0
+0x1000579b                                                                                  00                                         .
+0x1000579c uint16_t __export_name_ptr_table_0(KERNEL32:VirtualAlloc) = 0x25b
+0x1000579e char __import_name_0(KERNEL32:VirtualAlloc)[0xd] = "VirtualAlloc", 0
+0x100057ab                                  00                                                                         .
+0x100057ac uint16_t __export_name_ptr_table_0(KERNEL32:GetProcAddress) = 0x116
+0x100057ae char __import_name_0(KERNEL32:GetProcAddress)[0xf] = "GetProcAddress", 0
+0x100057bd                                                                                        00                                     .
+0x100057be uint16_t __export_name_ptr_table_0(KERNEL32:LoadLibraryA) = 0x190
+0x100057c0 char __import_name_0(KERNEL32:LoadLibraryA)[0xd] = "LoadLibraryA", 0
+0x100057cd                                        00                                                                     .
+0x100057ce uint16_t __export_name_ptr_table_0(KERNEL32:FlushFileBuffers) = 0x8e
+0x100057d0 char __import_name_0(KERNEL32:FlushFileBuffers)[0x11] = "FlushFileBuffers", 0
+0x100057e1    00                                                                                             .
+0x100057e2 uint16_t __export_name_ptr_table_0(KERNEL32:CloseHandle) = 0x18
+0x100057e4 char __import_name_0(KERNEL32:CloseHandle)[0xc] = "CloseHandle", 0
+0x100057f0 uint16_t __export_name_ptr_table_0(KERNEL32:SetStdHandle) = 0x229
+0x100057f2 char __import_name_0(KERNEL32:SetStdHandle)[0xd] = "SetStdHandle", 0
+0x100057ff                                                                                              00                                 .
+0x10005800 uint16_t __export_name_ptr_table_0(KERNEL32:SetFilePointer) = 0x219
+0x10005802 char __import_name_0(KERNEL32:SetFilePointer)[0xf] = "SetFilePointer", 0
+0x10005811                                                    00                                                             .
+0x10005812 char __import_dll_name(KERNEL32)[0xd] = "KERNEL32.dll", 0
+0x1000581f                                                                                              00                                 .
+0x10005820 struct Export_Directory_Table __export_directory_table =
+0x10005820 {
+0x10005820     uint32_t exportFlags = 0x0
+0x10005824     uint32_t timeDateStamp = 0x369be673
+0x10005828     uint16_t majorVersion = 0x0
+0x1000582a     uint16_t minorVersion = 0x0
+0x1000582c     uint32_t nameRva = 0x5852
+0x10005830     uint32_t ordinalBase = 0x1
+0x10005834     uint32_t addressTableEntries = 0x1
+0x10005838     uint32_t numberOfNamePointers = 0x1
+0x1000583c     uint32_t exportAddressTableRva = 0x5848
+0x10005840     uint32_t namePointerRva = 0x584c
+0x10005844     uint32_t ordinalTableRva = 0x5850
+0x10005848 }
+0x10005848 uint32_t __pe_Messages_export_address_table[0x1] =
+0x10005848 {
+0x10005848     [0x0] =  0x00001010
+0x1000584c }
+0x1000584c uint32_t __pe_Messages_export_name_pointer_table[0x1] =
+0x1000584c {
+0x1000584c     [0x0] =  0x0000585f
+0x10005850 }
+0x10005850 uint16_t __pe_Messages_export_ordinal_table[0x1] =
+0x10005850 {
+0x10005850     [0x0] =  0x0000
+0x10005852 }
+0x10005852 char __pe_Messages_export_dll_name[0xd] = "Messages.dll", 0
+0x1000585f char __export_name(ZLocGetID)[0xa] = "ZLocGetID", 0

@@ -59,7 +59,11 @@ class RecoilMfcWinAppAccess : public CWinApp {
     static const AFX_MSGMAP *__stdcall GetMessageMapForRecoilApp();
 };
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * MFC provider-boundary accessor for imported CWinApp message-map metadata.
+ * Purpose: exposes CWinApp::messageMap through the callback shape expected by
+ * the RecoilApp message map.
+ */
 const AFX_MSGMAP *__stdcall RecoilMfcWinAppAccess::GetMessageMapForRecoilApp() {
     return &CWinApp::messageMap;
 }
@@ -75,6 +79,9 @@ HINSTANCE __stdcall AfxFindResourceHandle(
     LPCSTR resourceType
 );
 
+extern "C" char g_HudSensorTracker_ObjectivesZrdPath[0x0e];
+extern "C" const char g_HudLoading_StopAllSoundsMsg[0x10];
+
 namespace {
 enum zVideoRendererBackend {
     ZVID_RENDERER_BACKEND_SOFTWARE = 0,
@@ -89,6 +96,10 @@ enum zVideoClearScreenBufferState {
     ZVIDEO_CLEAR_SCREEN_BUFFER_ENABLED = 1,
 };
 
+/**
+ * Reimplements data 0x4d1598: k_SaveGameNameAllowedChars.
+ * Purpose: save-game name raw-key allowlist consumed by HudUiSaveLoadGameNameInput::OnRawKeyboardEvent.
+ */
 const char k_SaveGameNameAllowedChars[] =
     "abcdefghijklmnopqrstuvwxyzABCDEFGHIKJKLMNOPQRSTUVWXYZ0123456789_ \x1b\r\x08\x7f\x02\x06";
 RECOIL_STATIC_ASSERT(sizeof(k_SaveGameNameAllowedChars) == 0x48);
@@ -151,6 +162,13 @@ inline int SaveLoadEntryCount(
 } // namespace
 
 RecoilApp g_RecoilApp;
+/**
+ * Reimplements data 0x4f3fb0: g_RecoilStateSaveLoadTransition.
+ *
+ * Purpose: stores the zero-initialized singleton save/load app-state
+ * transition object; retail evidence models this as the complete 0x1c-byte
+ * owner data object for RecoilStateSaveLoadTransition.
+ */
 RecoilStateSaveLoadTransition g_RecoilStateSaveLoadTransition;
 
 extern "C" {
@@ -350,6 +368,15 @@ extern "C" const char g_RecoilApp_LoadingCommonSoundsMsg[0x15] = {
 };
 RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_LoadingCommonSoundsMsg) == 0x15);
 /**
+ * Reimplements data 0x4dcca8: g_HudUiMgr_HudArchiveName.
+ *
+ * Purpose: names the HUD archive loaded when play state becomes current.
+ */
+extern "C" const char g_HudUiMgr_HudArchiveName[0x07] = {
+    'h', 'u', 'd', '.', 'z', 'r', 'd'
+};
+RECOIL_STATIC_ASSERT(sizeof(g_HudUiMgr_HudArchiveName) == 0x07);
+/**
  * Reimplements data 0x4dccb0: g_zFMV_GrandPrizeScriptName.
  *
  * Purpose: identifies the grand-prize credits FMV script action.
@@ -436,6 +463,153 @@ RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_GClsInitStatusFmt) == 0x0f);
  */
 const char g_RecoilApp_GModInitStatusFmt[0x0f] = "gModInit:  %s\n";
 RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_GModInitStatusFmt) == 0x0f);
+/**
+ * Reimplements data 0x4dd610: g_RecoilApp_Run_FatalGeneralErrorMessage.
+ *
+ * Purpose: supplies the catch-all fatal exception dialog message in
+ * RecoilApp::Run.
+ */
+char g_RecoilApp_Run_FatalGeneralErrorMessage[0x29] =
+    "Fatal error, please contact tech support";
+RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_Run_FatalGeneralErrorMessage) == 0x29);
+/**
+ * Reimplements data 0x4dd63c: g_RecoilApp_Run_GeneralErrorTitle.
+ *
+ * Purpose: supplies the catch-all exception dialog title in RecoilApp::Run.
+ */
+char g_RecoilApp_Run_GeneralErrorTitle[0x0e] = "General Error";
+RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_Run_GeneralErrorTitle) == 0x0e);
+/**
+ * Reimplements data 0x4dd64c: g_RecoilApp_Run_FileErrorTitle.
+ *
+ * Purpose: supplies the CFileException dialog title in RecoilApp::Run.
+ */
+char g_RecoilApp_Run_FileErrorTitle[0x0b] = "File Error";
+RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_Run_FileErrorTitle) == 0x0b);
+/**
+ * Reimplements data 0x4dd658: g_RecoilApp_Run_FileErrorEndOfFileMessage.
+ *
+ * Purpose: reports CFileException::endOfFile in RecoilApp::Run.
+ */
+char g_RecoilApp_Run_FileErrorEndOfFileMessage[0x1d] =
+    "The end of file was reached.";
+RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_Run_FileErrorEndOfFileMessage) == 0x1d);
+/**
+ * Reimplements data 0x4dd678: g_RecoilApp_Run_FileErrorDiskFullMessage.
+ *
+ * Purpose: reports CFileException::diskFull in RecoilApp::Run.
+ */
+char g_RecoilApp_Run_FileErrorDiskFullMessage[0x12] = "The disk is full.";
+RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_Run_FileErrorDiskFullMessage) == 0x12);
+/**
+ * Reimplements data 0x4dd68c: g_RecoilApp_Run_FileErrorLockViolationMessage.
+ *
+ * Purpose: reports CFileException::lockViolation in RecoilApp::Run.
+ */
+char g_RecoilApp_Run_FileErrorLockViolationMessage[0x3f] =
+    "There was an attempt to lock a region that was already locked.";
+RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_Run_FileErrorLockViolationMessage) == 0x3f);
+/**
+ * Reimplements data 0x4dd6cc: g_RecoilApp_Run_FileErrorSharingViolationMessage.
+ *
+ * Purpose: reports CFileException::sharingViolation in RecoilApp::Run.
+ */
+char g_RecoilApp_Run_FileErrorSharingViolationMessage[0x39] =
+    "SHARE.EXE was not loaded, or a shared region was locked.";
+RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_Run_FileErrorSharingViolationMessage) == 0x39);
+/**
+ * Reimplements data 0x4dd708: g_RecoilApp_Run_FileErrorHardIoMessage.
+ *
+ * Purpose: reports CFileException::hardIO in RecoilApp::Run.
+ */
+char g_RecoilApp_Run_FileErrorHardIoMessage[0x1c] = "There was a hardware error.";
+RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_Run_FileErrorHardIoMessage) == 0x1c);
+/**
+ * Reimplements data 0x4dd724: g_RecoilApp_Run_FileErrorBadSeekMessage.
+ *
+ * Purpose: reports CFileException::badSeek in RecoilApp::Run.
+ */
+char g_RecoilApp_Run_FileErrorBadSeekMessage[0x33] =
+    "There was an error trying to set the file pointer.";
+RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_Run_FileErrorBadSeekMessage) == 0x33);
+/**
+ * Reimplements data 0x4dd758: g_RecoilApp_Run_FileErrorDirectoryFullMessage.
+ *
+ * Purpose: reports CFileException::directoryFull in RecoilApp::Run.
+ */
+char g_RecoilApp_Run_FileErrorDirectoryFullMessage[0x25] =
+    "There are no more directory entries.";
+RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_Run_FileErrorDirectoryFullMessage) == 0x25);
+/**
+ * Reimplements data 0x4dd780: g_RecoilApp_Run_FileErrorRemoveCurrentDirMessage.
+ *
+ * Purpose: reports CFileException::removeCurrentDir in RecoilApp::Run.
+ */
+char g_RecoilApp_Run_FileErrorRemoveCurrentDirMessage[0x31] =
+    "The current working directory cannot be removed.";
+RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_Run_FileErrorRemoveCurrentDirMessage) == 0x31);
+/**
+ * Reimplements data 0x4dd7b4: g_RecoilApp_Run_FileErrorInvalidFileMessage.
+ *
+ * Purpose: reports CFileException::invalidFile in RecoilApp::Run.
+ */
+char g_RecoilApp_Run_FileErrorInvalidFileMessage[0x34] =
+    "There was an attempt to use an invalid file handle.";
+RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_Run_FileErrorInvalidFileMessage) == 0x34);
+/**
+ * Reimplements data 0x4dd7e8: g_RecoilApp_Run_FileErrorAccessDeniedMessage.
+ *
+ * Purpose: reports CFileException::accessDenied in RecoilApp::Run.
+ */
+char g_RecoilApp_Run_FileErrorAccessDeniedMessage[0x20] =
+    "The file could not be accessed.";
+RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_Run_FileErrorAccessDeniedMessage) == 0x20);
+/**
+ * Reimplements data 0x4dd808: g_RecoilApp_Run_FileErrorTooManyOpenFilesMessage.
+ *
+ * Purpose: reports CFileException::tooManyOpenFiles in RecoilApp::Run.
+ */
+char g_RecoilApp_Run_FileErrorTooManyOpenFilesMessage[0x31] =
+    "The permitted number of open files was exceeded.";
+RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_Run_FileErrorTooManyOpenFilesMessage) == 0x31);
+/**
+ * Reimplements data 0x4dd83c: g_RecoilApp_Run_FileErrorBadPathMessage.
+ *
+ * Purpose: reports CFileException::badPath in RecoilApp::Run.
+ */
+char g_RecoilApp_Run_FileErrorBadPathMessage[0x23] =
+    "All or part of the path is invalid";
+RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_Run_FileErrorBadPathMessage) == 0x23);
+/**
+ * Reimplements data 0x4dd860: g_RecoilApp_Run_FileErrorFileNotFoundMessage.
+ *
+ * Purpose: reports CFileException::fileNotFound in RecoilApp::Run.
+ */
+char g_RecoilApp_Run_FileErrorFileNotFoundMessage[0x1e] =
+    "The file could not be located";
+RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_Run_FileErrorFileNotFoundMessage) == 0x1e);
+/**
+ * Reimplements data 0x4dd880: g_RecoilApp_Run_FileErrorUnknownMessage.
+ *
+ * Purpose: reports unmapped CFileException causes in RecoilApp::Run.
+ */
+char g_RecoilApp_Run_FileErrorUnknownMessage[0x0e] = "Unknown error";
+RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_Run_FileErrorUnknownMessage) == 0x0e);
+/**
+ * Reimplements data 0x4dd890: g_RecoilApp_Run_FatalOutOfMemoryMessage.
+ *
+ * Purpose: supplies the CMemoryException dialog message in RecoilApp::Run.
+ */
+char g_RecoilApp_Run_FatalOutOfMemoryMessage[0x3c] =
+    "Fatal out-of-memory error, Freeing some disk space may help";
+RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_Run_FatalOutOfMemoryMessage) == 0x3c);
+/**
+ * Reimplements data 0x4dd8cc: g_RecoilApp_Run_MemoryErrorTitle.
+ *
+ * Purpose: supplies the CMemoryException dialog title in RecoilApp::Run.
+ */
+char g_RecoilApp_Run_MemoryErrorTitle[0x0d] = "Memory Error";
+RECOIL_STATIC_ASSERT(sizeof(g_RecoilApp_Run_MemoryErrorTitle) == 0x0d);
 
 extern "C" {
 /**
@@ -1783,7 +1957,11 @@ void __fastcall RecoilStateSaveLoadTransition::QueueOpenLoadDialog(
     );
 }
 
-// Reimplements 0x430c90: RecoilApp::FatalErrorAndExit (D:\Proj\Battlesport\RecoilApp.cpp)
+/**
+ * Reimplements 0x430c90: RecoilApp::FatalErrorAndExit.
+ * Purpose: report the localized fatal error, shut down active subsystems, and
+ * terminate the process through the app cleanup path.
+ */
 RECOIL_NO_GS void __fastcall RecoilApp::FatalErrorAndExit(
     int errorCode
 ) {
@@ -1823,7 +2001,11 @@ RECOIL_NO_GS void __fastcall RecoilApp::FatalErrorAndExit(
     zSys::ExitProcessWithCleanup(0);
 }
 
-// Reimplements 0x42e930: RecoilApp::ExitInstance
+/**
+ * Reimplements 0x42e930: RecoilApp::ExitInstance.
+ * Purpose: unregister the app window class, save and tear down global app
+ * services, then exit through the system cleanup path.
+ */
 int RecoilApp::ExitInstance() {
     if (g_RecoilApp_WindowClassRegistered != 0) {
         HINSTANCE instanceHandle = AfxGetModuleState()->m_hCurrentInstanceHandle;
@@ -1846,7 +2028,11 @@ int RecoilApp::ExitInstance() {
     return 0;
 }
 
-// Reimplements 0x42e520: RecoilApp::InitInstance
+/**
+ * Reimplements 0x42e520: RecoilApp::InitInstance.
+ * Purpose: initialize the singleton app instance, main window, localization,
+ * required media checks, platform options, and startup video configuration.
+ */
 RECOIL_NO_GS int RecoilApp::InitInstance() {
     if (ActivateExistingInstance() == 0) {
         return 0;
@@ -2043,7 +2229,10 @@ CZRecoilFrame * RecoilApp::CreateMainWnd() {
     return frame;
 }
 
-// Reimplements 0x4429d0: RecoilApp::InitMainWindow
+/**
+ * Reimplements 0x4429d0: RecoilApp::InitMainWindow.
+ * Purpose: create, connect, show, and update the primary Recoil frame window.
+ */
 int RecoilApp::InitMainWindow() {
     Enable3dControls();
 
@@ -2056,7 +2245,13 @@ int RecoilApp::InitMainWindow() {
 }
 
 namespace {
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original inline/static helper; no standalone retail function exists.
+ * Observed in address-backed callers 0x442a50 and 0x42e220 as the repeated
+ * VC5-emitted printf status pattern where zero means startup success.
+ *
+ * Purpose: print a subsystem startup status line for zero-valued success APIs.
+ */
 inline void PrintEngineInitZeroStatus(
     const char *format,
     int result
@@ -2067,7 +2262,14 @@ inline void PrintEngineInitZeroStatus(
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original inline/static helper; no standalone retail function exists.
+ * Caller evidence: 0x442a50 uses this nonzero-success variant, while 0x42e220
+ * shares the same engine-startup status-printing source cluster through the
+ * zero-success helper above.
+ *
+ * Purpose: print a subsystem startup status line for nonzero-valued success APIs.
+ */
 inline void PrintEngineInitNonzeroStatus(
     const char *format,
     int result
@@ -2080,7 +2282,11 @@ inline void PrintEngineInitNonzeroStatus(
 
 } // namespace
 
-// Reimplements 0x442a50: RecoilApp::EngineInit
+/**
+ * Reimplements 0x442a50: RecoilApp::EngineInit.
+ * Purpose: initialize core engine subsystems and print their startup status
+ * lines before frame timing and input state are reset.
+ */
 int RecoilApp::EngineInit(
     HWND hwnd
 ) {
@@ -2191,7 +2397,11 @@ int __fastcall RecoilApp::InitializeDisplay(
     return 1;
 }
 
-// Reimplements 0x42e220: RecoilApp::StartEngine
+/**
+ * Reimplements 0x42e220: RecoilApp::StartEngine.
+ * Purpose: run engine startup, initialize sound, display, input, and HUD layout
+ * state for the main window.
+ */
 RECOIL_NO_GS int RecoilApp::StartEngine(
     HWND hwnd
 ) {
@@ -2242,7 +2452,11 @@ RECOIL_NO_GS int RecoilApp::StartEngine(
     return 1;
 }
 
-// Reimplements 0x42e990: RecoilApp::ActivateExistingInstance
+/**
+ * Reimplements 0x42e990: RecoilApp::ActivateExistingInstance.
+ * Purpose: detect an already running Recoil window, restore it if minimized,
+ * and foreground its active popup instead of starting another instance.
+ */
 int RecoilApp::ActivateExistingInstance() {
     CWnd *const existingWindow = CWnd::FromHandle(FindWindowA(
         g_RecoilApp_WndClassNamePtr,
@@ -2261,7 +2475,10 @@ int RecoilApp::ActivateExistingInstance() {
     return 1;
 }
 
-// Reimplements 0x42e9f0: RecoilApp::PreTranslateMessage
+/**
+ * Reimplements 0x42e9f0: RecoilApp::PreTranslateMessage.
+ * Purpose: consume system-key messages while accelerated rendering is active.
+ */
 int RecoilApp::PreTranslateMessage(
     tagMSG *msg
 ) {
@@ -2287,7 +2504,11 @@ namespace zDEClient {
 int ShutdownGlobals();
 }
 
-// Reimplements 0x442bc0: RecoilApp::ShutdownSubsystems
+/**
+ * Reimplements 0x442bc0: RecoilApp::ShutdownSubsystems.
+ * Purpose: tear down input, rendering resources, catalogs, models, sound, and
+ * mounted ZRDR state during app engine shutdown.
+ */
 void RecoilApp::ShutdownSubsystems() {
     zInput::Shutdown();
     zImage::ShutdownSubsystem();
@@ -2302,7 +2523,11 @@ void RecoilApp::ShutdownSubsystems() {
     zUtil_ZRDR_FreeNodePool();
 }
 
-// Reimplements 0x42e430: RecoilApp::ShutdownEngine
+/**
+ * Reimplements 0x42e430: RecoilApp::ShutdownEngine.
+ * Purpose: shut down mission, audio, rendering, HUD, networking, subsystem,
+ * and video services in the app-owned engine shutdown sequence.
+ */
 void RecoilApp::ShutdownEngine() {
     if (zSnd::GetCDAudioOption() != 0) {
         zSndCd::Stop();
@@ -2362,10 +2587,21 @@ int RecoilApp::LoadZbdAndSetupSensorTracker(
     return 1;
 }
 
+/**
+ * Reimplements data 0x4d0998: g_RecoilApp_MessageEntries.
+ *
+ * Purpose: provide RecoilApp's terminal MFC message-map sentinel entry.
+ */
 extern const AFX_MSGMAP_ENTRY g_RecoilApp_MessageEntries[1] = {
     {0, 0, 0, 0, 0, 0},
 };
 
+/**
+ * Reimplements data 0x4d0990: g_RecoilApp_MessageMap.
+ *
+ * Purpose: link RecoilApp's message entries to the MFC CWinApp base
+ * message-map accessor used as the retail base-map callback.
+ */
 extern const AFX_MSGMAP g_RecoilApp_MessageMap = {
 #if defined(_AFXDLL)
     &RecoilApp::GetBaseMessageMapForMfc,
@@ -2726,7 +2962,10 @@ const AFX_MSGMAP *__stdcall RecoilApp::GetBaseMessageMapForMfc() {
     return RecoilMfcWinAppAccess::GetMessageMapForRecoilApp();
 }
 
-// Reimplements 0x42de10: RecoilApp::GetMessageMap
+/**
+ * Reimplements 0x42de10: RecoilApp::GetMessageMap.
+ * Purpose: return RecoilApp's authored MFC message map for runtime dispatch.
+ */
 const AFX_MSGMAP * RecoilApp::GetMessageMap() const {
     return &g_RecoilApp_MessageMap;
 }
@@ -3022,7 +3261,7 @@ int RecoilApp_PlayState::OnTryBecomeCurrent() {
     }
     zOpt::SetEffectsLevelForCurrentHwMode(effectsLevel);
 
-    HudUiMgr::EnsureHudLoaded("hud.zrd");
+    HudUiMgr::EnsureHudLoaded(g_HudUiMgr_HudArchiveName);
     HudUiLoadingCheckpoint::InitTable();
     HudUiLoadingCheckpoint::AdvanceAndLog(g_RecoilApp_LoadingCommonSoundsMsg);
     zSndSampleSet_InitByName(g_RecoilApp_CommonSoundsSampleSetName);
@@ -3056,7 +3295,7 @@ int RecoilApp_PlayState::OnTryBecomeCurrent() {
 
     HudUiLoadingCheckpoint::AdvanceAndLog(zLoc::GetMessageString(0x10d));
 
-    g_HudSensorTracker.LoadObjectivesFromPath("objectives.zrd");
+    g_HudSensorTracker.LoadObjectivesFromPath(g_HudSensorTracker_ObjectivesZrdPath);
     Player::ZAR_RegisterSections();
     Briefing::BuildObjectiveActionsGlobal(completedObjectiveCount);
 
@@ -3278,7 +3517,7 @@ void RecoilApp_PlayState::OnDeactivate() {
     }
 
     if (zOpt::GetNetworkEnabled() == 0) {
-        HudUiLoadingCheckpoint::AdvanceAndLog("Stop All Sounds");
+        HudUiLoadingCheckpoint::AdvanceAndLog(g_HudLoading_StopAllSoundsMsg);
         zSndPlayHandleSnapshot *const snapshot = zSndPlayHandleSnapshot::CreateFromActiveSamples();
         snapshot->StopAllIfPlaying();
     }
@@ -3299,7 +3538,12 @@ void RecoilApp_PlayState::OnDeactivate() {
     fmvScript.Cleanup();
 }
 
-// Reimplements 0x42f9d0: RecoilApp_LeaveNetworkState::OnTryBecomeCurrent
+/**
+ * Reimplements 0x42f9d0: RecoilApp_LeaveNetworkState::OnTryBecomeCurrent.
+ * Original source path: D:\Proj\Battlesport\RecoilApp.cpp.
+ * Purpose: Leaves network play by destroying the cached DirectPlay local player,
+ * shutting down the engine, and shutting down the sound backend.
+ */
 int RecoilApp_LeaveNetworkState::OnTryBecomeCurrent() {
     zNetwork_DPlay_DestroyCachedLocalPlayer();
     g_RecoilApp.ShutdownEngine();

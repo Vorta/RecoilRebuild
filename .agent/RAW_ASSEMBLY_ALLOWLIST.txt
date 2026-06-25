@@ -33,3 +33,11 @@ src/GameZRecoil/zRndr/zRndr.cpp 0x49bbf0 __asm render-esp-pivot user-approved zR
 src/GameZRecoil/zRndr/zRndr.cpp 0x49e6c0 __asm render-esp-pivot user-approved zRndr ESP-pivot span exception; scoped only to this ESP-pivot span family after the 0x49b7e0 C++ route failed.
 src/GameZRecoil/zRndr/zRndr.cpp 0x49edc0 __asm render-esp-pivot user-approved zRndr ESP-pivot span exception; scoped only to this ESP-pivot span family after the 0x49b7e0 C++ route failed.
 src/GameZRecoil/zRndr/zRndr.cpp 0x49f180 __asm render-esp-pivot user-approved zRndr ESP-pivot span exception; scoped only to this ESP-pivot span family after the 0x49b7e0 C++ route failed.
+src/GameZRecoil/zRndr/zRndr.cpp 0x49ea80 __asm render-mmx user-approved zRndr span MMX-block exception; retail uses authored MMX packed-index loops and VC5SP3 has no usable MMX intrinsic surface.
+src/GameZRecoil/zRndr/zRndr.cpp 0x49ec20 __asm render-mmx user-approved zRndr span MMX-block exception; retail uses authored MMX packed-index loops and VC5SP3 has no usable MMX intrinsic surface.
+src/GameZRecoil/zRndr/zRndr.cpp 0x49e400 __asm render-mmx user-approved zRndr span MMX-block exception; retail uses authored MMX fog qword channel math and VC5SP3 has no usable MMX intrinsic surface.
+src/GameZRecoil/zRndr/zRndr.cpp 0x49e560 __asm render-mmx user-approved zRndr span MMX-block exception; retail uses authored MMX fog qword channel math and VC5SP3 has no usable MMX intrinsic surface.
+src/GameZRecoil/zRndr/zRndr.cpp 0x49cbb0 __asm render-mmx user-approved zRndr span MMX-block exception; retail uses authored MMX alpha-map span loops and VC5SP3 has no usable MMX intrinsic surface.
+src/GameZRecoil/zRndr/zRndr.cpp 0x49cea0 __asm render-mmx user-approved zRndr span MMX-block exception; retail uses authored MMX alpha-map span loops and VC5SP3 has no usable MMX intrinsic surface.
+src/GameZRecoil/zRndr/zRndr.cpp 0x49da80 __asm render-mmx user-approved zRndr span MMX-block exception; retail uses authored MMX alpha-map span loops and VC5SP3 has no usable MMX intrinsic surface.
+src/GameZRecoil/zRndr/zRndr.cpp 0x49ddb0 __asm render-mmx user-approved zRndr span MMX-block exception; retail uses authored MMX alpha-map span loops and VC5SP3 has no usable MMX intrinsic surface.

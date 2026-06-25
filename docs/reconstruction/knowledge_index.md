@@ -15,6 +15,8 @@ for function identity, types, markers, and acceptance state.
 - `inlined_helpers.md` - compact ledger for likely original helpers and methods
   that were fully inlined by the retail compiler, with caller evidence and
   verification limits.
+- `messages_dll.md` - companion `messages.dll` reconstruction scope, generated
+  message-table source, lookup-table source, and validation commands.
 - `original_classes.md` - compact policy and ledger for class, record,
   vtable/function-table, provider, and namespace-style subsystem boundaries.
 - `owner_led_workflow.md` - durable source-owner ledger commands and promotion

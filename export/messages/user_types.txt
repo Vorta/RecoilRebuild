@@ -1,0 +1,160 @@
+#ifndef BN_TYPE_PARSER
+#include <stdint.h>
+#include <stddef.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <wchar.h>
+
+#define __packed
+#define __noreturn
+#define __convention(name)
+#define __syscall(number)
+#define __offset(...)
+#define __padding
+#define __named(name)
+#define __inherited
+#define __base(name, offset)
+#define __ptr_offset(offset)
+#define __data_var_refs
+#define __vtable
+#define __pure
+#define __ptr_width(width)
+#define __ptr8
+#define __ptr16
+// __ptr32 and __ptr64 are real keywords on MSVC
+// #define __ptr32
+// #define __ptr64
+#define __based(...)
+typedef uint16_t wchar16;
+typedef uint32_t wchar32;
+#endif
+
+//------------------------------------------------------------------------------
+// Forward Declarations of Structures
+//------------------------------------------------------------------------------
+
+struct CRT_FILEX;
+struct CRT_MBCPInfo;
+struct CRT_RuntimeErrorMessage;
+struct CRT_iobuf;
+struct CRT_ioinfo;
+struct MessagesLookupRow;
+struct _XCPT_ACTION;
+struct __sbh_page_entry;
+struct __sbh_region;
+struct _tiddata;
+//------------------------------------------------------------------------------
+// Type Definitions
+//------------------------------------------------------------------------------
+
+// "CRT_FILEX"
+struct CRT_FILEX
+{
+	struct CRT_iobuf file;
+	uint8_t lock[0x18];
+};
+
+// "CRT_MBCPInfo"
+struct CRT_MBCPInfo
+{
+	uint32_t codePage;
+	uint32_t mbulinfo[0x3];
+	uint8_t ranges[0x4][0x8];
+};
+
+// "CRT_RuntimeErrorMessage"
+struct CRT_RuntimeErrorMessage
+{
+	int32_t error_number;
+	char const* message;
+};
+
+// "CRT_iobuf"
+struct CRT_iobuf
+{
+	char* _ptr;
+	int32_t _cnt;
+	char* _base;
+	int32_t _flag;
+	int32_t _file;
+	int32_t _charbuf;
+	int32_t _bufsiz;
+	char* _tmpfname;
+};
+
+// "CRT_ioinfo"
+struct CRT_ioinfo
+{
+	uint8_t osfhnd[0x4];
+	char osfile;
+	char pipech;
+	char pad_06[0x2];
+	int32_t lockinitflag;
+	uint8_t lock[0x18];
+};
+
+// "MessagesLookupRow"
+struct MessagesLookupRow
+{
+	char const* name;
+	uint32_t id;
+};
+
+// "PVFI"
+typedef void (* PVFI)(int32_t status);
+
+// "PVFV"
+typedef void (* PVFV)();
+
+// "_XCPT_ACTION"
+struct _XCPT_ACTION
+{
+	uint32_t xcode;
+	int32_t action;
+	void* func;
+};
+
+// "__sbh_page_entry"
+struct __sbh_page_entry
+{
+	int32_t free_bytes;
+	int32_t largest_free;
+};
+
+// "__sbh_region"
+struct __sbh_region
+{
+	struct __sbh_region* next;
+	struct __sbh_region* prev;
+	struct __sbh_page_entry* scan_entry;
+	struct __sbh_page_entry* first_uncommitted;
+	uint8_t* reserved_base;
+	uint8_t* reserved_limit;
+	struct __sbh_page_entry page[0x400];
+	uint32_t unused_2018;
+	uint32_t unused_201c;
+};
+
+// "_tiddata"
+struct _tiddata
+{
+	uint32_t tid;
+	uint32_t thread_handle;
+	int32_t terrno;
+	uint32_t doserrno;
+	uint32_t fpds;
+	uint32_t holdrand;
+	char unknown_18[0xc];
+	void* errmsg;
+	void* namebuf0;
+	char unknown_2c[0x4];
+	void* namebuf1;
+	char unknown_34[0x4];
+	void* asctimebuf;
+	char unknown_3c[0x4];
+	void* gmtimebuf;
+	void* cvtbuf;
+	char unknown_48[0x8];
+	struct _XCPT_ACTION* xcptacttab;
+	char unknown_54[0x20];
+};

@@ -5,7 +5,6 @@
 #include "Battlesport/GameNet.h"
 #include "Battlesport/HudSensorTracker.h"
 #include "Battlesport/RecoilApp.h"
-#include "GameZRecoil/zClass/cls_stubs.h"
 #include "GameZRecoil/zGame/zGame.h"
 #include "GameZRecoil/zNetwork/zNetwork.h"
 #include "GameZRecoil/zReader/zReader.h"
@@ -59,7 +58,7 @@ inline void SetZrdWidgetEnabled(
  * Source: D:\Proj\Battlesport\HudUiNetGameSetup.cpp
  * Purpose: Initialize clamped integer text input bounds and visible text.
  */
-void InitClampedInput(
+inline void InitClampedInput(
     HudUiClampedIntTextInput *input,
     int minValue,
     int maxValue,
@@ -84,7 +83,7 @@ void InitClampedInput(
  * Source: D:\Proj\Battlesport\HudUiNetGameSetup.cpp
  * Purpose: Bind a step button to its target clamped integer input.
  */
-void ConfigureStepButton(
+inline void ConfigureStepButton(
     HudUiClampedIntStepButton *button,
     HudUiClampedIntTextInput *targetInput,
     int stepDelta
@@ -589,7 +588,7 @@ void HudUiNetGameSetupPanel_CancelButton::OnActivate() {
 
 /**
  * Reimplements 0x41a5b0: HudUiNetGameSetupPanel_LaunchButton::OnActivate
- * Source: D:\Proj\Battlesport\HudUi.cpp
+ * Source: D:\Proj\Battlesport\HudUiNetGameSetup.cpp
  * Purpose: Commit setup values and start or reconfigure the network game session.
  */
 void HudUiNetGameSetupPanel_LaunchButton::OnActivate() {
@@ -667,7 +666,7 @@ void HudUiNetGameSetupPanel_LaunchButton::OnActivate() {
 
 /**
  * Reimplements 0x41a820: HudUiNetGameSetupPanel_NextWorldButton::OnActivate
- * Source: D:\Proj\Battlesport\HudUi.cpp
+ * Source: D:\Proj\Battlesport\HudUiNetGameSetup.cpp
  * Purpose: Advance the selected world and apply the related setup side effects.
  */
 void HudUiNetGameSetupPanel_NextWorldButton::OnActivate() {
@@ -748,7 +747,7 @@ void HudUiNetGameSetupPanel_NextWorldButton::OnActivate() {
 
 /**
  * Reimplements 0x41a9c0: HudUiNetGameSetupPanel_PrevWorldButton::OnActivate
- * Source: D:\Proj\Battlesport\HudUi.cpp
+ * Source: D:\Proj\Battlesport\HudUiNetGameSetup.cpp
  * Purpose: Move to the previous world and apply the related setup side effects.
  */
 void HudUiNetGameSetupPanel_PrevWorldButton::OnActivate() {

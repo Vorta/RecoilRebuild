@@ -76,7 +76,6 @@ const int kZClassNodeObject3D = 6;
 const unsigned int kOptCatalogFlagCreateTrail = 0x02;
 const unsigned int kOptCatalogFlagUseNapalmVehicleDestroyAnim = 0x1000;
 const unsigned int kOptCatalogFlagRemoveRuntimeOnTurretFire = 0x2000;
-const char *const kZTurretSourceFile = "D:\\Proj\\Battlesport\\turret.cpp";
 
 /**
  * Recovered inline helper: zTurret_ReaderArrayCount.
@@ -1491,7 +1490,7 @@ int __fastcall LoadDefinitionsFromPath(
     if (rootNode == 0) {
         zError::ReportOld(
             0x200,
-            kZTurretSourceFile,
+            "D:\\Proj\\Battlesport\\turret.cpp",
             0x4ce,
             g_HudSensorTracker_ReadFileFailedFmt,
             path

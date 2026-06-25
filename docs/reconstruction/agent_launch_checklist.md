@@ -52,7 +52,8 @@ python tools/recoil.py docs readme-progress --check
 ```
 
 Run without `--check` only when intentionally refreshing the visitor-facing
-`README.md` generated progress table from the current plan.
+`README.md` generated progress tables from the current Recoil.exe and
+`messages.dll` plans.
 
 For generated local artifact inventory and cleanup planning:
 
@@ -63,11 +64,17 @@ python tools/recoil.py audit artifacts
 `audit artifacts` is dry-run by default. Review the selected stale roots before
 rerunning with `--delete`.
 
-If a tool, instruction, environment, or workspace setup blocks work or forces a
-workaround, use the `AGENTS.md` issue commands and boundary rules. Do not file
-normal reconstruction backlog, stale tests/code/manifests/markers, missing or
-unregistered smokes, owner/data blockers, tier debt, or missing evidence as
-workspace issues. When a workspace issue is reported or a local tool upgrade is
+If a tool, instruction, environment, workspace setup, workspace rule, or
+validation path blocks work or forces a workaround, use the `AGENTS.md` issue
+commands and boundary rules. Do not file normal reconstruction backlog, stale
+tests/code/manifests/markers, missing or unregistered smokes, owner/data
+blockers, tier debt, or missing evidence as workspace issues. Do file or return
+an issue candidate when the workspace rule itself blocks source-faithful code or
+would force weaker evidence, marker criteria, source faithfulness, or provider
+boundaries. The report must name the blocking rule surface, explain the
+source-faithfulness impact, cite the BN/source evidence, describe why safe
+alternatives do not work, and suggest the corrected rule wording or behavior
+for user review. When a workspace issue is reported or a local tool upgrade is
 requested, inspect the focused issue/tool surface, then spawn
 `recoil_tool_maintainer` by default for the repair. Parent tool edits are
 limited to small integration fixes after worker return, or cases where
@@ -90,6 +97,7 @@ Resume active WIP before starting new work:
 
 ```powershell
 python tools/recoil.py audit groups --summary --wip-limit 4
+python tools/recoil.py audit groups --binary messages --summary --wip-limit 4
 python tools/recoil.py owner audit --strict
 python tools/recoil.py owner next --lane binary
 python tools/recoil.py audit sections --strict
@@ -97,19 +105,24 @@ python tools/recoil.py audit sections --pressure
 ```
 
 If active groups exist, choose the first actionable group in
-`.agent/IMPLEMENTATION_GROUPS.md`, then follow its anchor or next action with
-focused status/frontier checks. Skip a group only when current BN, plan, or
-source evidence proves it stale, contradicted, completed, or explicitly lower
-priority than another active group.
+`.agent/IMPLEMENTATION_GROUPS.md` or `.agent/IMPLEMENTATION_GROUPS_MESSAGES.md`,
+then follow its anchor or next action with target-qualified status/frontier
+checks. Compare the Recoil.exe and `messages.dll` queues instead of assuming the
+default executable queue is the only open work. Skip a group only when current
+BN, plan, or source evidence proves it stale, contradicted, completed, or
+explicitly lower priority than another active group.
 
 Use current plan state, not stale notes. Run `plan next --lane binary` only
-when no active group exists, active groups have been refreshed/pruned or proven
-unactionable, or the user explicitly directs new work:
+when no active group exists for that target, active groups have been
+refreshed/pruned or proven unactionable, or the user explicitly directs new
+work:
 
 ```powershell
 python tools/recoil.py plan next --lane binary
+python tools/recoil.py plan next --binary messages --lane binary
 python tools/recoil.py plan batch --lane binary
 python tools/recoil.py plan batch --lane binary --spawnable-only
+python tools/recoil.py plan batch --binary messages --lane binary --spawnable-only
 python tools/recoil.py plan batch --lane binary --json
 python tools/recoil.py plan batch --lane binary --handoff-template
 python tools/recoil.py section show ui.zhud
@@ -118,13 +131,18 @@ python tools/recoil.py owner show 0xNNNNNN
 python tools/recoil.py status 0xNNNNNN
 ```
 
-`plan next --lane binary` prints `primary`, `secondary`, and `tertiary`
-ranked owner/work scopes. `audit sections --pressure` summarizes scheduling
-risk and spawnable capacity. `plan batch --lane binary` prints
+`plan next --lane binary` and `plan next --binary messages --lane binary` print
+target-qualified `primary`, `secondary`, and `tertiary` ranked owner/work
+scopes. `audit sections --pressure` summarizes scheduling risk and spawnable
+capacity. `plan batch --lane binary` and
+`plan batch --binary messages --lane binary --spawnable-only` print
 section-isolated worker candidates for parallel scheduling; add
 `--spawnable-only` for live handoffs that exclude pathless or parent-narrowing
 blocks, and add `--json` or `--handoff-template` for machine-readable output or
 a parent batch card.
+The parent may schedule Recoil.exe and `messages.dll` workers in the same batch
+only when BN database targets, sections, source paths, ledgers, and generated
+outputs do not overlap.
 If evidence shows a plan group is in the wrong scheduling section, inspect with
 `section show`, then the parent validates `section move <plan-group>
 <section-id> --reason "..." --dry-run` before applying the same command without
@@ -143,10 +161,11 @@ selecting active WIP or binary-lane work, partition non-overlapping owner/source
 scopes and spawn `recoil_source_worker` agents for source/test edits.
 
 Use the role pipeline deliberately: the parent schedules and integrates;
-workspace/BN/owner/provider/scaffold roles return evidence packets only; source
-workers edit one assigned slice; tool maintainers fix one assigned
-workspace/tool issue; verifier agents run targeted checks after the parent fixes
-the validation scope.
+workspace/BN fact/owner/provider/scaffold roles return evidence packets only;
+`recoil_bn_reconstructor` performs one assigned BN-state slice; source workers
+edit one assigned slice; tool maintainers fix one assigned workspace/tool
+issue; verifier agents run targeted checks after the parent fixes the
+validation scope.
 
 Create a short parent batch card before any implementation or verification
 handoff. It should record the task kind, active group or address, evidence
@@ -192,6 +211,20 @@ Minimum tool-maintainer handoff fields:
 - Return packet fields: changed files, command results, validation gaps,
   blockers, and issue-resolution candidate text.
 
+Minimum BN reconstructor handoff fields:
+
+- Already-open binary target.
+- Non-overlapping address/function, dependency cycle, owner-sized BN cluster, or
+  type/global/table packet.
+- Exact allowed BN state changes and forbidden BN actions.
+- Evidence packet inputs.
+- Reanalysis and save expectations.
+- Return packet fields: inspected addresses/types/globals, exact BN changes,
+  evidence used, propagation checked, reanalysis/save status, and blockers.
+
+For `messages.dll`, unresolved `Reconstructed` blockers should normally be
+assigned to `recoil_bn_reconstructor` with target binary `messages`.
+
 Before launching live markdown handoff blocks, run:
 
 ```powershell
@@ -199,12 +232,14 @@ python tools/recoil.py audit handoff --path .agent/IMPLEMENTATION_GROUPS.md --st
 ```
 
 Workers may inspect BN and edit only assigned source/test files. Tool
-maintainers may edit only assigned tool/docs/skill/role/test files. Subagents
-must not change BN names/types/comments, save BN, update plan markers, file
-workspace issues, run git commands, or select follow-up work. They return
-changed paths, evidence or command results, checks, blockers, and
-non-authoritative recommendations. The parent reviews changed files, reruns
-checks, performs BN/plan/issue work, and owns final claims.
+maintainers may edit only assigned tool/docs/skill/role/test files. Only
+`recoil_bn_reconstructor` may change BN names/types/comments or save BN, and
+only inside its parent-assigned non-overlapping BN scope. Subagents must not
+update plan markers, file workspace issues, run git commands, or select
+follow-up work. They return changed paths, evidence or command results, checks,
+blockers, and non-authoritative recommendations. The parent reviews changed
+files, reruns checks, assigns and accepts BN/plan/issue work, and owns final
+claims.
 
 Parent source edits are limited to small integration/conflict fixes after worker
 return, or cases where delegation is impossible; record the exception before

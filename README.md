@@ -49,25 +49,47 @@ testing, or review practical without changing the recovered engine contract.
 ## Status
 
 <!-- RECOIL_PROGRESS:START -->
-Generated from `.agent/RECOIL_PLAN.md`.
+Generated from `.agent/RECOIL_PLAN.md` and `.agent/RECOIL_MESSAGES_PLAN.md`.
+
+### Recoil.exe Plan
 
 | Plan marker | Scope | ✅ | ☑️ | ❎ | ❌ | ❓ | Total |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| Reconstructed | all entries | 6027 | 1117 | 0 | 5 | 0 | 7149 |
-| Source dependencies satisfied | authored entries | 3512 | 0 | 0 | 1 | 3081 | 6594 |
-| Source owner | authored entries | 6112 | 0 | 0 | 470 | 12 | 6594 |
-| Data reimplemented | authored entries | 2272 | 0 | 846 | 395 | 3081 | 6594 |
-| Reimplemented | authored entries | 6120 | 0 | 0 | 462 | 12 | 6594 |
-| Provider-boundary | provider entries | 554 | 1 | 0 | 0 | 0 | 555 |
+| Reconstructed | all entries | 5960 | 1117 | 0 | 0 | 0 | 7077 |
+| Source dependencies satisfied | authored entries | 3513 | 0 | 0 | 0 | 2986 | 6499 |
+| Source owner | authored entries | 6499 | 0 | 0 | 0 | 0 | 6499 |
+| Data reimplemented | authored entries | 2605 | 0 | 889 | 19 | 2986 | 6499 |
+| Reimplemented | authored entries | 6499 | 0 | 0 | 0 | 0 | 6499 |
+| Provider-boundary | provider entries | 577 | 1 | 0 | 0 | 0 | 578 |
 
 | Reimplementation tier | Count | Percent of authored |
 | --- | ---: | ---: |
-| X | 474 | 7.2% |
-| F | 1 | 0.0% |
-| C | 394 | 6.0% |
-| B | 3367 | 51.1% |
-| A | 100 | 1.5% |
-| S | 2258 | 34.2% |
+| X | 0 | 0.0% |
+| F | 0 | 0.0% |
+| C | 19 | 0.3% |
+| B | 3830 | 58.9% |
+| A | 166 | 2.6% |
+| S | 2484 | 38.2% |
+
+### messages.dll Plan
+
+| Plan marker | Scope | ✅ | ☑️ | ❎ | ❌ | ❓ | Total |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Reconstructed | all entries | 152 | 0 | 0 | 0 | 0 | 152 |
+| Source dependencies satisfied | authored entries | 1 | 0 | 0 | 0 | 1 | 2 |
+| Source owner | authored entries | 2 | 0 | 0 | 0 | 0 | 2 |
+| Data reimplemented | authored entries | 1 | 0 | 0 | 0 | 1 | 2 |
+| Reimplemented | authored entries | 2 | 0 | 0 | 0 | 0 | 2 |
+| Provider-boundary | provider entries | 150 | 0 | 0 | 0 | 0 | 150 |
+
+| Reimplementation tier | Count | Percent of authored |
+| --- | ---: | ---: |
+| X | 0 | 0.0% |
+| F | 0 | 0.0% |
+| C | 0 | 0.0% |
+| B | 0 | 0.0% |
+| A | 0 | 0.0% |
+| S | 2 | 100.0% |
 <!-- RECOIL_PROGRESS:END -->
 
 Reconstruction is ongoing. Some subsystems have source-level implementations

@@ -147,6 +147,14 @@ int gModel_LightInputCount = 0;
  * Purpose: gate software-renderer lighting paths that need polygon normals.
  */
 int g_zModel_SoftwarePathActive = 0;
+/**
+ * Reimplements data 0x566a28: gModel_LightVertexDistanceSqScratch.
+ * Data owner: engine.zmodel.light_vertex_distance_scratch.
+ * Purpose: store per-light/per-vertex distance scratch values while building
+ * model light weights.
+ */
+float gModel_LightVertexDistanceSqScratch[0x40][0x40] = {0};
+RECOIL_STATIC_ASSERT(sizeof(gModel_LightVertexDistanceSqScratch) == 0x4000);
 float g_Clip_PolyAttr0[0x40] = {0};
 float g_Clip_PolyAttr1[0x40] = {0};
 float g_Clip_PolyAttr2[0x40] = {0};
@@ -798,7 +806,6 @@ int __fastcall zModel_Light_BuildLightWeights(
 
     bool hasAnyCandidate = false;
     bool valid[0x40][0x40] = {0};
-    float distances[0x40][0x40] = {0};
     zVec3 lightToVertex[0x40][0x40] = {0};
 
     {
@@ -829,17 +836,18 @@ int __fastcall zModel_Light_BuildLightWeights(
                         delta,
                         delta
                     );
-                    distances[lightIndex][vertexIndex] = distanceSq;
+                    gModel_LightVertexDistanceSqScratch[lightIndex][vertexIndex] = distanceSq;
                     if (distanceSq >= light->range2Sq) {
                         continue;
                     }
 
                     if (distanceSq != 0.0f) {
-                        distances[lightIndex][vertexIndex] = ApproximateSqrtFromBits(distanceSq);
+                        gModel_LightVertexDistanceSqScratch[lightIndex][vertexIndex] =
+                            ApproximateSqrtFromBits(distanceSq);
                         zMath_Vec3_DivScalar(
                             &delta,
                             &delta,
-                            distances[lightIndex][vertexIndex]
+                            gModel_LightVertexDistanceSqScratch[lightIndex][vertexIndex]
                         );
                     }
 
@@ -913,7 +921,7 @@ int __fastcall zModel_Light_BuildLightWeights(
                     if (entry.useFullWeight == 0) {
                         const float distanceWeight = zModel_Light::EvalDistanceWeight(
                             light,
-                            distances[lightIndex][vertexIndex]
+                            gModel_LightVertexDistanceSqScratch[lightIndex][vertexIndex]
                         );
                         if (light->isPointMode != 0) {
                             const float farWeight = 1.0f - light->intensityScale;

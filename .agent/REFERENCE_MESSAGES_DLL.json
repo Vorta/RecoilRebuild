@@ -1,0 +1,222 @@
+{
+  "characteristics": "0x210e",
+  "checksum": "0x0",
+  "data_directories": [
+    {
+      "file_offset": "0x4020",
+      "name": "export",
+      "rva": "0x5820",
+      "size": "0x49"
+    },
+    {
+      "file_offset": "0x3bf4",
+      "name": "import",
+      "rva": "0x53f4",
+      "size": "0x28"
+    },
+    {
+      "file_offset": "0xbc00",
+      "name": "resource",
+      "rva": "0xf000",
+      "size": "0x5ed0"
+    },
+    {
+      "file_offset": null,
+      "name": "exception",
+      "rva": "0x0",
+      "size": "0x0"
+    },
+    {
+      "file_offset": null,
+      "name": "certificate",
+      "rva": "0x0",
+      "size": "0x0"
+    },
+    {
+      "file_offset": "0x11c00",
+      "name": "base_reloc",
+      "rva": "0x15000",
+      "size": "0x9e8"
+    },
+    {
+      "file_offset": null,
+      "name": "debug",
+      "rva": "0x0",
+      "size": "0x0"
+    },
+    {
+      "file_offset": null,
+      "name": "architecture",
+      "rva": "0x0",
+      "size": "0x0"
+    },
+    {
+      "file_offset": null,
+      "name": "global_ptr",
+      "rva": "0x0",
+      "size": "0x0"
+    },
+    {
+      "file_offset": null,
+      "name": "tls",
+      "rva": "0x0",
+      "size": "0x0"
+    },
+    {
+      "file_offset": null,
+      "name": "load_config",
+      "rva": "0x0",
+      "size": "0x0"
+    },
+    {
+      "file_offset": null,
+      "name": "bound_import",
+      "rva": "0x0",
+      "size": "0x0"
+    },
+    {
+      "file_offset": "0x3800",
+      "name": "iat",
+      "rva": "0x5000",
+      "size": "0xc0"
+    },
+    {
+      "file_offset": null,
+      "name": "delay_import",
+      "rva": "0x0",
+      "size": "0x0"
+    },
+    {
+      "file_offset": null,
+      "name": "com_descriptor",
+      "rva": "0x0",
+      "size": "0x0"
+    },
+    {
+      "file_offset": null,
+      "name": "reserved",
+      "rva": "0x0",
+      "size": "0x0"
+    }
+  ],
+  "entry_point_rva": "0x1190",
+  "entry_point_va": "0x10001190",
+  "exports": [
+    {
+      "name": "ZLocGetID",
+      "ordinal": 1,
+      "rva": "0x1010"
+    }
+  ],
+  "file_alignment": "0x200",
+  "image_base": "0x10000000",
+  "imports": [
+    {
+      "count": 47,
+      "dll": "KERNEL32.dll",
+      "symbols": [
+        "GetEnvironmentStrings",
+        "GetVersion",
+        "ExitProcess",
+        "TerminateProcess",
+        "GetCurrentProcess",
+        "GetCurrentThreadId",
+        "TlsSetValue",
+        "TlsAlloc",
+        "TlsFree",
+        "SetLastError",
+        "TlsGetValue",
+        "GetLastError",
+        "SetHandleCount",
+        "GetStdHandle",
+        "GetFileType",
+        "GetStartupInfoA",
+        "DeleteCriticalSection",
+        "GetModuleFileNameA",
+        "GetCPInfo",
+        "GetACP",
+        "GetOEMCP",
+        "FreeEnvironmentStringsA",
+        "MultiByteToWideChar",
+        "FreeEnvironmentStringsW",
+        "GetCommandLineA",
+        "GetEnvironmentStringsW",
+        "WideCharToMultiByte",
+        "HeapDestroy",
+        "HeapCreate",
+        "VirtualFree",
+        "WriteFile",
+        "InitializeCriticalSection",
+        "EnterCriticalSection",
+        "LeaveCriticalSection",
+        "HeapAlloc",
+        "HeapFree",
+        "LCMapStringA",
+        "LCMapStringW",
+        "GetStringTypeA",
+        "GetStringTypeW",
+        "VirtualAlloc",
+        "GetProcAddress",
+        "LoadLibraryA",
+        "FlushFileBuffers",
+        "CloseHandle",
+        "SetStdHandle",
+        "SetFilePointer"
+      ]
+    }
+  ],
+  "machine": "0x14c",
+  "number_of_rva_and_sizes": 16,
+  "optional_header_magic": "0x10b",
+  "path": "support/messages.dll",
+  "pe_offset": "0xc8",
+  "section_alignment": "0x1000",
+  "section_count": 5,
+  "sections": [
+    {
+      "characteristics": "0x60000020",
+      "name": ".text",
+      "raw_pointer": "0x400",
+      "raw_size": "0x3400",
+      "virtual_address": "0x1000",
+      "virtual_size": "0x3380"
+    },
+    {
+      "characteristics": "0x40000040",
+      "name": ".rdata",
+      "raw_pointer": "0x3800",
+      "raw_size": "0xa00",
+      "virtual_address": "0x5000",
+      "virtual_size": "0x869"
+    },
+    {
+      "characteristics": "0xc0000040",
+      "name": ".data",
+      "raw_pointer": "0x4200",
+      "raw_size": "0x7a00",
+      "virtual_address": "0x6000",
+      "virtual_size": "0x8f58"
+    },
+    {
+      "characteristics": "0x40000040",
+      "name": ".rsrc",
+      "raw_pointer": "0xbc00",
+      "raw_size": "0x6000",
+      "virtual_address": "0xf000",
+      "virtual_size": "0x5ed0"
+    },
+    {
+      "characteristics": "0x42000040",
+      "name": ".reloc",
+      "raw_pointer": "0x11c00",
+      "raw_size": "0xc00",
+      "virtual_address": "0x15000",
+      "virtual_size": "0xb6c"
+    }
+  ],
+  "sha256": "1a58760503771208b16cb46c4872746e8fc61252cb6c80629af14d9fffcd8993",
+  "size": 75776,
+  "size_of_image": "0x16000",
+  "subsystem": 2,
+  "timestamp": 916186740
+}

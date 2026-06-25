@@ -179,143 +179,6 @@ int __fastcall UpdateActiveRequestPredicate(
 }
 } // namespace zSndStreamMgr
 
-namespace {
-
-/**
- * Source-faithful helper recovered from address-backed callers in this source file.
- * Original helper evidence: no standalone retail function; recovered from
- * repeated zSnd group parser callers in this source file.
- * Purpose: return the first payload node in a zReader array node.
- */
-zReader::Node *ArrayBase(
-    zReader::Node *node
-) {
-    return node->value.nodes;
-}
-
-/**
- * Source-faithful helper recovered from address-backed callers in this source file.
- * Original helper evidence: no standalone retail function; recovered from
- * repeated zSnd group parser callers in this source file.
- * Purpose: return the original zReader array element count.
- */
-int ArrayCount(
-    zReader::Node *node
-) {
-    return ArrayBase(node)[0].value.i32;
-}
-
-/**
- * Source-faithful helper recovered from address-backed callers in this source file.
- * Original helper evidence: no standalone retail function; recovered from
- * repeated zSnd group parser diagnostic call sites.
- * Purpose: report a sound-group configuration parse error with the recovered
- * source file string and group name.
- */
-void ReportConfigError(
-    int line,
-    const char *message,
-    const zSndGroupRuntimeFields *groupFields
-) {
-    zError::ReportOld(
-        0x200,
-        g_zSnd_SourceFile_ZsndGrpCpp,
-        line,
-        message,
-        groupFields->groupName
-    );
-}
-
-/**
- * Source-faithful helper recovered from address-backed callers in this source file.
- * Original helper evidence: no standalone retail function; recovered from
- * repeated zSnd group play-count stores.
- * Purpose: store a play-count limit and reset the current play count.
- */
-void StorePlayCount(
-    zSndGroupConfigBlock *block,
-    unsigned short count
-) {
-    block->maxPlayCount = count;
-    block->currentPlayCount = block->maxPlayCount;
-}
-
-/**
- * Source-faithful helper recovered from address-backed callers in this source file.
- * Original helper evidence: no standalone retail function; recovered from
- * repeated zSnd group numeric parser branches.
- * Purpose: accept zReader float or integer nodes as a float config value.
- */
-bool StoreFloatField(
-    zReader::Node *valueNode,
-    float *outValue
-) {
-    if (valueNode->type == zReader::ZRDR_NODE_FLOAT) {
-        *outValue = valueNode->value.f32;
-        return true;
-    }
-
-    if (valueNode->type == zReader::ZRDR_NODE_INT) {
-        *outValue = (float)(valueNode->value.i32);
-        return true;
-    }
-
-    return false;
-}
-
-/**
- * Source-faithful helper recovered from address-backed callers in this source file.
- * Original helper evidence: no standalone retail function; recovered from
- * repeated zSnd group repeat-count parser branches.
- * Purpose: accept zReader float or integer nodes as a repeat-count value.
- */
-bool StoreRepeatCount(
-    zReader::Node *valueNode,
-    unsigned short *outValue
-) {
-    if (valueNode->type == zReader::ZRDR_NODE_FLOAT) {
-        *outValue = (unsigned short)(valueNode->value.f32);
-        return true;
-    }
-
-    if (valueNode->type == zReader::ZRDR_NODE_INT) {
-        *outValue = (unsigned short)(valueNode->value.i32);
-        return true;
-    }
-
-    return false;
-}
-
-/**
- * Source-faithful helper recovered from address-backed callers in this source file.
- * Original helper evidence: no standalone retail function; recovered from the
- * accepted zSnd group load-from-config path after config-block parsing.
- * Purpose: fill missing sound-group weights with the original equal split.
- */
-void NormalizeDefaultWeights(
-    zSndGroup *group
-) {
-    bool needsDefaultWeights = false;
-    for (int i = 0; i < group->configBlockCount; ++i) {
-        if (group->configBlocks[i].weight < 0.0001f) {
-            needsDefaultWeights = true;
-            break;
-        }
-    }
-
-    if (!needsDefaultWeights || group->configBlockCount <= 0) {
-        return;
-    }
-
-    const float defaultWeight = 100.0f / (float)(group->configBlockCount);
-    {
-        for (int defaultIndex = 0; defaultIndex < group->configBlockCount; ++defaultIndex) {
-            group->configBlocks[defaultIndex].weight = defaultWeight;
-        }
-    }
-}
-} // namespace
-
 /**
  * Reimplements 0x4a51f0: zSndStreamRequest::StopIfActive.
  * Purpose: find an active stream request matching the play handle and move it
@@ -684,7 +547,7 @@ void FreePendingList(
 /**
  * Reimplements 0x4a50a0: zSndStreamMgr::Shutdown.
  * Purpose: drain stream-manager lists, release pending stream configs, clear
- * stream-manager globals, and return success.
+ * stream-manager root/list globals, and return success.
  */
 int Shutdown() {
     if (g_zSndStream_RootNode != 0 && zClass::IsInitialized() != 0) {
@@ -699,8 +562,6 @@ int Shutdown() {
     FreeRequestList(g_zSndStream_ActiveList);
     FreeRequestList(g_zSndStream_FreeList);
     FreePendingList(g_zSndStream_PendingList);
-    g_zSndStream_MatchedRequest = 0;
-    g_zSndStream_MatchedRequestCount = 0;
     return 1;
 }
 } // namespace zSndStreamMgr
@@ -845,9 +706,9 @@ extern "C" int __fastcall zSndGroup_LoadConfigBlock(
     }
     outConfigBlock->currentPlayCount = outConfigBlock->maxPlayCount;
 
-    zReader::Node *nodeArray = ArrayBase(readerNode);
+    zReader::Node *nodeArray = readerNode->value.nodes;
     {
-        for (int childIndex = 1; childIndex < ArrayCount(readerNode); ++childIndex) {
+        for (int childIndex = 1; childIndex < nodeArray[0].value.i32; ++childIndex) {
             zReader::Node *childNode = &nodeArray[childIndex];
             if (childNode->type == zReader::ZRDR_NODE_ARRAY) {
                 if (childIndex == 1) {
@@ -892,10 +753,12 @@ extern "C" int __fastcall zSndGroup_LoadConfigBlock(
                     outConfigBlock->delayPlaySec = (float)(valueNode->value.i32);
                     ++childIndex;
                 } else {
-                    ReportConfigError(
+                    zError::ReportOld(
+                        0x200,
+                        g_zSnd_SourceFile_ZsndGrpCpp,
                         0xb1,
                         g_zSnd_SoundGroupDelayPlayLoadErrorFmt,
-                        groupFields
+                        groupFields->groupName
                     );
                     ++childIndex;
                 }
@@ -904,22 +767,22 @@ extern "C" int __fastcall zSndGroup_LoadConfigBlock(
                 g_zSnd_SoundGroupPlayCountKey
             ) == 0) {
                 if (valueNode->type == zReader::ZRDR_NODE_FLOAT) {
-                    StorePlayCount(
-                        outConfigBlock,
-                        (unsigned short)(valueNode->value.f32 + 0.5f)
-                    );
+                    outConfigBlock->maxPlayCount =
+                        (unsigned short)(valueNode->value.f32 + 0.5f);
+                    outConfigBlock->currentPlayCount = outConfigBlock->maxPlayCount;
                     ++childIndex;
                 } else if (valueNode->type == zReader::ZRDR_NODE_INT) {
-                    StorePlayCount(
-                        outConfigBlock,
-                        (unsigned short)(valueNode->value.i32)
-                    );
+                    outConfigBlock->maxPlayCount =
+                        (unsigned short)(valueNode->value.i32);
+                    outConfigBlock->currentPlayCount = outConfigBlock->maxPlayCount;
                     ++childIndex;
                 } else {
-                    ReportConfigError(
+                    zError::ReportOld(
+                        0x200,
+                        g_zSnd_SourceFile_ZsndGrpCpp,
                         0xbf,
                         g_zSnd_SoundGroupPlayCountLoadErrorFmt,
-                        groupFields
+                        groupFields->groupName
                     );
                     ++childIndex;
                     outConfigBlock->currentPlayCount = outConfigBlock->maxPlayCount;
@@ -935,10 +798,12 @@ extern "C" int __fastcall zSndGroup_LoadConfigBlock(
                     outConfigBlock->weight = (float)(valueNode->value.i32);
                     ++childIndex;
                 } else {
-                    ReportConfigError(
+                    zError::ReportOld(
+                        0x200,
+                        g_zSnd_SourceFile_ZsndGrpCpp,
                         0xcf,
                         g_zSnd_SoundGroupWeightLoadErrorFmt,
-                        groupFields
+                        groupFields->groupName
                     );
                     ++childIndex;
                 }
@@ -971,9 +836,9 @@ extern "C" zSndGroup *__fastcall zSndGroup_LoadFromConfigNode(
     }
 
     result->createGuard = 1;
-    zReader::Node *nodeArray = ArrayBase(readerNode);
+    zReader::Node *nodeArray = readerNode->value.nodes;
     {
-        for (int childIndex = 1; childIndex < ArrayCount(readerNode); ++childIndex) {
+        for (int childIndex = 1; childIndex < nodeArray[0].value.i32; ++childIndex) {
             zReader::Node *childNode = &nodeArray[childIndex];
             if (childNode->type == zReader::ZRDR_NODE_ARRAY) {
                 zSndGroupConfigBlock *blocks = (zSndGroupConfigBlock *)(realloc(
@@ -1008,14 +873,17 @@ extern "C" zSndGroup *__fastcall zSndGroup_LoadFromConfigNode(
                 key,
                 g_zSnd_SoundGroupDelayRepeatKey
             ) == 0) {
-                if (!StoreFloatField(
-                    valueNode,
-                    &result->delayRepeatSec
-                )) {
-                    ReportConfigError(
+                if (valueNode->type == zReader::ZRDR_NODE_FLOAT) {
+                    result->delayRepeatSec = valueNode->value.f32;
+                } else if (valueNode->type == zReader::ZRDR_NODE_INT) {
+                    result->delayRepeatSec = (float)(valueNode->value.i32);
+                } else {
+                    zError::ReportOld(
+                        0x200,
+                        g_zSnd_SourceFile_ZsndGrpCpp,
                         0x141,
                         g_zSnd_SoundGroupDelayRepeatLoadErrorFmt,
-                        (zSndGroupRuntimeFields *)(&result->groupName)
+                        result->groupName
                     );
                 }
                 ++childIndex;
@@ -1023,14 +891,17 @@ extern "C" zSndGroup *__fastcall zSndGroup_LoadFromConfigNode(
                 key,
                 g_zSnd_SoundGroupDelayTerminationKey
             ) == 0) {
-                if (!StoreFloatField(
-                    valueNode,
-                    &result->delayTerminationSec
-                )) {
-                    ReportConfigError(
+                if (valueNode->type == zReader::ZRDR_NODE_FLOAT) {
+                    result->delayTerminationSec = valueNode->value.f32;
+                } else if (valueNode->type == zReader::ZRDR_NODE_INT) {
+                    result->delayTerminationSec = (float)(valueNode->value.i32);
+                } else {
+                    zError::ReportOld(
+                        0x200,
+                        g_zSnd_SourceFile_ZsndGrpCpp,
                         0x14f,
                         g_zSnd_SoundGroupDelayTerminationLoadErrorFmt,
-                        (zSndGroupRuntimeFields *)(&result->groupName)
+                        result->groupName
                     );
                 }
                 ++childIndex;
@@ -1039,14 +910,17 @@ extern "C" zSndGroup *__fastcall zSndGroup_LoadFromConfigNode(
                 g_zSnd_SoundGroupDynamicWeightsKey
             ) == 0) {
                 result->dynamicWeightsEnabled = 1;
-                if (!StoreFloatField(
-                    valueNode,
-                    &result->dynamicWeightScale
-                )) {
-                    ReportConfigError(
+                if (valueNode->type == zReader::ZRDR_NODE_FLOAT) {
+                    result->dynamicWeightScale = valueNode->value.f32;
+                } else if (valueNode->type == zReader::ZRDR_NODE_INT) {
+                    result->dynamicWeightScale = (float)(valueNode->value.i32);
+                } else {
+                    zError::ReportOld(
+                        0x200,
+                        g_zSnd_SourceFile_ZsndGrpCpp,
                         0x15f,
                         g_zSnd_SoundGroupDynamicWeightsLoadErrorFmt,
-                        (zSndGroupRuntimeFields *)(&result->groupName)
+                        result->groupName
                     );
                 }
 
@@ -1065,14 +939,17 @@ extern "C" zSndGroup *__fastcall zSndGroup_LoadFromConfigNode(
                 key,
                 g_zSnd_SoundGroupRepeatKey
             ) == 0) {
-                if (!StoreRepeatCount(
-                    valueNode,
-                    &result->repeatCount
-                )) {
-                    ReportConfigError(
+                if (valueNode->type == zReader::ZRDR_NODE_FLOAT) {
+                    result->repeatCount = (unsigned short)(valueNode->value.f32);
+                } else if (valueNode->type == zReader::ZRDR_NODE_INT) {
+                    result->repeatCount = (unsigned short)(valueNode->value.i32);
+                } else {
+                    zError::ReportOld(
+                        0x200,
+                        g_zSnd_SourceFile_ZsndGrpCpp,
                         0x174,
                         g_zSnd_SoundGroupRepeatLoadErrorFmt,
-                        (zSndGroupRuntimeFields *)(&result->groupName)
+                        result->groupName
                     );
                 }
                 ++childIndex;
@@ -1082,7 +959,21 @@ extern "C" zSndGroup *__fastcall zSndGroup_LoadFromConfigNode(
         }
     }
 
-    NormalizeDefaultWeights(result);
+    int needsDefaultWeights = 0;
+    for (int i = 0; i < result->configBlockCount; ++i) {
+        if (result->configBlocks[i].weight < 0.0001f) {
+            needsDefaultWeights = 1;
+            break;
+        }
+    }
+
+    if (needsDefaultWeights != 0 && result->configBlockCount > 0) {
+        const float defaultWeight = 100.0f / (float)(result->configBlockCount);
+        for (int defaultIndex = 0; defaultIndex < result->configBlockCount; ++defaultIndex) {
+            result->configBlocks[defaultIndex].weight = defaultWeight;
+        }
+    }
+
     return result;
 }
 

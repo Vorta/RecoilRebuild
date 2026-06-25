@@ -42,6 +42,14 @@ artifacts remain authoritative for individual functions.
   narrow inline `__asm` loops inside ordinary C++ functions only; it does not
   permit `__declspec(naked)`, `_emit`, `.asm`, raw byte emission, other zRndr
   span/MMX families, provider shims, or future raw assembly.
+- zRndr span MMX blocks: `0x49ea80`, `0x49ec20`, `0x49e400`, `0x49e560`,
+  `0x49cbb0`, `0x49cea0`, `0x49da80`, and `0x49ddb0` are a user-approved
+  MMX-block-only raw-assembly exception through
+  `vc5_o2_ob0_md_zrndr_span_mmx_raw_asm_facs`. C++ must retain the function
+  shell, setup, scalar edge/tail behavior, scratch-buffer preparation, and portable
+  fallback; inline `__asm` is limited to the BN-proven MMX blocks. This does
+  not permit whole-function raw assembly, `__declspec(naked)`, `_emit`, `.asm`,
+  raw byte emission, provider shims, or non-MMX blocks.
 - zRndr ESP-pivot span leaves: `0x49b7e0`, `0x49bbf0`, `0x49e6c0`,
   `0x49edc0`, and `0x49f180` are a user-approved address-scoped raw-assembly
   exception through `vc5_o2_ob0_md_zrndr_esp_pivot_raw_asm_facs`, but only for
@@ -49,8 +57,8 @@ artifacts remain authoritative for individual functions.
   found no viable C++ codegen route for `0x49b7e0` under `/Ob0`, `/Oy`, `/Ob1`,
   or `/Ob2` profiles, and BN evidence proves real ESP-pivot stack writes. This
   exception does not permit `__declspec(naked)`, `_emit`, `.asm`, raw byte
-  emission, `0x49ea80`/`0x49ec20`, other zRndr span/MMX families, provider
-  shims, or future raw assembly.
+  emission, the user-approved span-MMX block family, provider shims, or future
+  raw assembly.
 
 ## Use
 

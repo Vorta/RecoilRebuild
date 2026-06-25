@@ -5179,6 +5179,27 @@ extern "C" int zhud_mgr_shutdown_resources_smoke(void) {
     return cleared ? 0 : 1;
 }
 
+extern "C" int zhud_sensor_track_list_reset_smoke(void) {
+    const HudUiMgrSensorTrackList oldTrackList = g_HudUiMgrSensor_TrackList;
+    HudUiMgrSensorTrackNode head{};
+    HudUiMgrSensorTrackNode tail{};
+    g_HudUiMgrSensor_TrackList.trackListAux = 5;
+    g_HudUiMgrSensor_TrackList.head = &head;
+    g_HudUiMgrSensor_TrackList.tail = &tail;
+    g_HudUiMgrSensor_TrackList.count = 2;
+
+    HudUiMgrSensor::TrackList_Reset();
+
+    const bool resetOk =
+        g_HudUiMgrSensor_TrackList.trackListAux == 0 &&
+        g_HudUiMgrSensor_TrackList.head == nullptr &&
+        g_HudUiMgrSensor_TrackList.tail == nullptr &&
+        g_HudUiMgrSensor_TrackList.count == 0;
+
+    g_HudUiMgrSensor_TrackList = oldTrackList;
+    return resetOk ? 0 : 1;
+}
+
 extern "C" int zhud_mgr_sensor_block_destructor_smoke(void) {
     unsigned char oldPanel[sizeof(g_HudUiMgrSensorPanel)];
     unsigned char oldOverlay[sizeof(g_HudUiMgrSensorOverlay)];
@@ -5219,6 +5240,18 @@ extern "C" int zhud_mgr_sensor_block_destructor_smoke(void) {
     std::memcpy(&g_HudUiMgrSensorMeter, oldMeter, sizeof(oldMeter));
 
     return startedFromDerivedTables && meterReset && overlayDestroyed && panelDestroyed ? 0 : 1;
+}
+
+extern "C" int zhud_flash_panel_compute_blend_color_smoke(void) {
+    const std::uint32_t from = 0x00102030;
+    const std::uint32_t to = 0x00a0c0e0;
+
+    const bool clamps = HudUiFlashPanel::ComputeFlashBlendColor(from, to, 0.0005f) == from &&
+                        HudUiFlashPanel::ComputeFlashBlendColor(from, to, 1.0f) == to;
+    const bool blends =
+        HudUiFlashPanel::ComputeFlashBlendColor(0x00000000, 0x00020406, 0.5f) == 0x00010203;
+
+    return clamps && blends ? 0 : 1;
 }
 
 #else
@@ -18262,8 +18295,9 @@ extern "C" int zhud_message_box_constructor_fallback_smoke(void) {
     g_zVideo_PrimarySurfaceState.width = 640;
     g_zVideo_PrimarySurfaceState.height = 480;
 
-    HudUiMessageBoxDialog dialog{};
-    HudUiMessageBoxDialog *const result = dialog.Constructor(nullptr, nullptr);
+    alignas(HudUiMessageBoxDialog) std::uint8_t dialogStorage[sizeof(HudUiMessageBoxDialog)]{};
+    auto *const dialog = reinterpret_cast<HudUiMessageBoxDialog *>(dialogStorage);
+    HudUiMessageBoxDialog *const result = dialog->Constructor(nullptr, nullptr);
 
     const unsigned short backgroundColor =
         static_cast<unsigned short>(zVid_PackColorRGB(128, 128, 128));
@@ -18273,64 +18307,47 @@ extern "C" int zhud_message_box_constructor_fallback_smoke(void) {
         static_cast<unsigned short>(zVid_PackColorRGB(160, 192, 160));
 
     const auto *const dialogFTable =
-        TestFieldAt<const HudUiMessageBoxDialog_FTable *>(&dialog, 0);
+        TestFieldAt<const void *>(dialog, 0);
     const bool coreFields =
-        result == &dialog && dialogFTable == &g_HudUiMessageBoxDialog_FTable &&
-        dialog.blitRect.left == 11 && dialog.blitRect.top == 22 &&
-        dialog.blitRect.right == 640 && dialog.blitRect.bottom == 480 &&
-        dialog.fallbackWidth == 300 && dialog.fallbackHeight == 200;
+        result == dialog && dialogFTable != nullptr &&
+        dialog->blitRect.left == 11 && dialog->blitRect.top == 22 &&
+        dialog->blitRect.right == 640 && dialog->blitRect.bottom == 480 &&
+        dialog->fallbackWidth == 300 && dialog->fallbackHeight == 200;
 
     const bool images =
-        dialog.backgroundImage != nullptr && dialog.backgroundImage->width == 300 &&
-        dialog.backgroundImage->height == 200 &&
-        zVid_Image::QueryBytesPerPixel(dialog.backgroundImage) == 2 &&
-        static_cast<unsigned short *>(dialog.backgroundImage->pixels)[0] == backgroundColor &&
-        dialog.okButtonNormalImage != nullptr && dialog.okButtonNormalImage->width == 75 &&
-        dialog.okButtonNormalImage->height == 50 &&
-        static_cast<unsigned short *>(dialog.okButtonNormalImage->pixels)[0] == normalColor &&
-        dialog.okButtonPressedImage != nullptr && dialog.okButtonPressedImage->width == 75 &&
-        dialog.okButtonPressedImage->height == 50 &&
-        static_cast<unsigned short *>(dialog.okButtonPressedImage->pixels)[0] == pressedColor;
+        dialog->backgroundImage != nullptr && dialog->backgroundImage->width == 300 &&
+        dialog->backgroundImage->height == 200 &&
+        zVid_Image::QueryBytesPerPixel(dialog->backgroundImage) == 2 &&
+        static_cast<unsigned short *>(dialog->backgroundImage->pixels)[0] == backgroundColor &&
+        dialog->okButtonNormalImage != nullptr && dialog->okButtonNormalImage->width == 75 &&
+        dialog->okButtonNormalImage->height == 50 &&
+        static_cast<unsigned short *>(dialog->okButtonNormalImage->pixels)[0] == normalColor &&
+        dialog->okButtonPressedImage != nullptr && dialog->okButtonPressedImage->width == 75 &&
+        dialog->okButtonPressedImage->height == 50 &&
+        static_cast<unsigned short *>(dialog->okButtonPressedImage->pixels)[0] == pressedColor;
 
     const bool bindings =
-        dialog.backdropWidget.image == dialog.backgroundImage &&
-        dialog.okButton.base.base.image == dialog.okButtonNormalImage &&
-        dialog.okButton.base.defaultImage == dialog.okButtonNormalImage &&
-        dialog.okButton.base.rolloverImage == dialog.okButtonPressedImage &&
-        dialog.okButton.base.owner == &dialog &&
-        dialog.okButton.base.base.ftable ==
-            reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiMessageBoxOkButton_Vtbl) &&
-        dialog.cancelButton.base.base.ftable ==
-            reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiMessageBoxCancelButton_Vtbl);
+        dialog->backdropWidget.image == dialog->backgroundImage &&
+        dialog->okButton.image == dialog->okButtonNormalImage &&
+        dialog->okButton.defaultImage == dialog->okButtonNormalImage &&
+        dialog->okButton.rolloverImage == dialog->okButtonPressedImage &&
+        dialog->okButton.owner == dialog &&
+        dialog->cancelButton.owner == nullptr;
 
     const bool positions =
-        dialog.backdropWidget.x == 170 && dialog.backdropWidget.y == 140 &&
-        reinterpret_cast<HudUiElement *>(&dialog.titlePanel)->x == 180 &&
-        reinterpret_cast<HudUiElement *>(&dialog.titlePanel)->y == 150 &&
-        reinterpret_cast<HudUiElement *>(&dialog.messagePanel)->x == 180 &&
-        reinterpret_cast<HudUiElement *>(&dialog.messagePanel)->y == 170 &&
-        dialog.okButton.base.base.x == 283 && dialog.okButton.base.base.y == 280;
+        dialog->backdropWidget.x == 170 && dialog->backdropWidget.y == 140 &&
+        reinterpret_cast<HudUiElement *>(&dialog->titlePanel)->x == 180 &&
+        reinterpret_cast<HudUiElement *>(&dialog->titlePanel)->y == 150 &&
+        reinterpret_cast<HudUiElement *>(&dialog->messagePanel)->x == 180 &&
+        reinterpret_cast<HudUiElement *>(&dialog->messagePanel)->y == 170 &&
+        dialog->okButton.x == 283 && dialog->okButton.y == 280;
 
     const bool visibleFlags =
-        (reinterpret_cast<HudUiElement *>(&dialog.messagePanel)->flags & 0x10u) == 0 &&
-        (reinterpret_cast<HudUiElement *>(&dialog.titlePanel)->flags & 0x10u) == 0 &&
-        (dialog.okButton.base.base.flags & 0x10u) != 0;
+        (reinterpret_cast<HudUiElement *>(&dialog->messagePanel)->flags & 0x10u) == 0 &&
+        (reinterpret_cast<HudUiElement *>(&dialog->titlePanel)->flags & 0x10u) == 0 &&
+        (dialog->okButton.flags & 0x10u) != 0;
 
-    if (dialog.backgroundImage != nullptr) {
-        free(dialog.backgroundImage->pixels);
-        dialog.backgroundImage->pixels = nullptr;
-        zVid_Image::Destroy(dialog.backgroundImage);
-    }
-    if (dialog.okButtonNormalImage != nullptr) {
-        free(dialog.okButtonNormalImage->pixels);
-        dialog.okButtonNormalImage->pixels = nullptr;
-        zVid_Image::Destroy(dialog.okButtonNormalImage);
-    }
-    if (dialog.okButtonPressedImage != nullptr) {
-        free(dialog.okButtonPressedImage->pixels);
-        dialog.okButtonPressedImage->pixels = nullptr;
-        zVid_Image::Destroy(dialog.okButtonPressedImage);
-    }
+    dialog->Destructor();
 
     g_zVideo_PrimarySurfaceState = savedPrimaryState;
     g_zVideo_PrimarySurfaceRectScratch = savedPrimaryRectScratch;
@@ -18345,19 +18362,13 @@ int g_messageBoxRunModalLastEnabled = -1;
 float g_messageBoxRunModalLastDelta = -1.0f;
 zVideo_SurfaceStatePartial *g_messageBoxRunModalUnlockedState = nullptr;
 
-struct TestMessageBoxRunModalDispatch : HudUiContainer {
+struct TestMessageBoxRunModalElement : HudUiElement {
     void Update(float deltaSeconds) {
         ++g_messageBoxRunModalUpdateCount;
         g_messageBoxRunModalLastDelta = deltaSeconds;
-        auto *const dialog = reinterpret_cast<HudUiMessageBoxDialog *>(this);
+        auto *const dialog = static_cast<HudUiMessageBoxDialog *>(parent);
         dialog->modalResult = 1;
         dialog->modalFrameCountdown = 0;
-    }
-
-    void SetEnabled(int enabledValue) {
-        ++g_messageBoxRunModalSetEnabledCount;
-        g_messageBoxRunModalLastEnabled = enabledValue;
-        enabled = enabledValue;
     }
 };
 
@@ -18366,12 +18377,17 @@ int __fastcall TestMessageBoxRunModalUnlockSurface(zVideo_SurfaceStatePartial *s
     return 0;
 }
 
+void __fastcall TestMessageBoxRunModalBltNoOp(zVidRect32 *, zVidRect32 *) {
+}
+
 extern "C" int zhud_message_box_run_modal_smoke(void) {
     const int savedRendererPath = g_zVideo_ActiveRendererPath;
     const int savedRendererType = g_zVideo_RendererType;
     const int savedUseHalfRes = g_zVideo_UseHalfResBackbuffer;
+    const int savedHalfResMode = g_zVideo_HalfResAdjustMode;
     const int savedAdjustDisableGate = g_zVideo_AdjustSurfacesDisableGate;
     const zVideo_SurfaceStateProc savedUnlockSurfaceState = g_zVideo_pfnUnlockSurfaceState;
+    const zVideo_BltRectDirectProc savedBltPrimaryToSw = g_zVideo_pfnBltPrimaryToSwRectDirect;
     const zVideo_SurfaceStatePartial savedPrimaryState = g_zVideo_PrimarySurfaceState;
     const zVideo_SurfaceStatePartial savedSwState = g_zVideo_SwSurfaceState;
     const zVidRect32 savedPrimaryRectScratch = g_zVideo_PrimarySurfaceRectScratch;
@@ -18396,8 +18412,10 @@ extern "C" int zhud_message_box_run_modal_smoke(void) {
     g_zVideo_ActiveRendererPath = 0;
     g_zVideo_RendererType = 0;
     g_zVideo_UseHalfResBackbuffer = 0;
+    g_zVideo_HalfResAdjustMode = 0;
     g_zVideo_AdjustSurfacesDisableGate = 1;
     g_zVideo_pfnUnlockSurfaceState = TestMessageBoxRunModalUnlockSurface;
+    g_zVideo_pfnBltPrimaryToSwRectDirect = TestMessageBoxRunModalBltNoOp;
     g_zInputMouseFlags = 0;
     g_zInputMousePollRefCount = 0;
     g_zInputJoystickFlags = 0;
@@ -18425,53 +18443,42 @@ extern "C" int zhud_message_box_run_modal_smoke(void) {
     previousRegion.bottomExclusive = 84;
     zRndr::SetFrameBufferRegion(reinterpret_cast<void *>(0x11223344), &previousRegion, 24, 777);
 
-    HudUiMessageBoxDialog dialog{};
-    dialog.Constructor(nullptr, nullptr);
+    alignas(HudUiMessageBoxDialog) std::uint8_t dialogStorage[sizeof(HudUiMessageBoxDialog)]{};
+    auto *const dialog = reinterpret_cast<HudUiMessageBoxDialog *>(dialogStorage);
+    dialog->Constructor(nullptr, nullptr);
 
-    HudUiMessageBoxDialog_FTable dispatchTable{};
-    dispatchTable.slots[0] =
-        static_cast<unsigned int>(MethodAddress(&TestMessageBoxRunModalDispatch::Update));
-    dispatchTable.slots[1] = g_HudUiMessageBoxDialog_FTable.slots[1];
-    dialog.base.base.vptr = reinterpret_cast<const HudUiContainer_FTable *>(&dispatchTable);
+    TestMessageBoxRunModalElement updateProbe{};
+    dialog->childHead = &updateProbe;
+    dialog->childTail = &updateProbe;
+    updateProbe.next = nullptr;
+    updateProbe.parent = dialog;
 
-    const int result = dialog.RunModal("BODY", "TITLE");
+    const int result = dialog->RunModal("BODY", "TITLE");
 
     const bool modal =
-        result == 1 && dialog.modalResult == 1 && dialog.modalFrameCountdown == -1 &&
-        g_messageBoxRunModalUpdateCount == 1 && dialog.base.base.enabled == 0 &&
+        result == 1 && dialog->modalResult == 1 && dialog->modalFrameCountdown == -1 &&
+        g_messageBoxRunModalUpdateCount == 1 && dialog->enabled == 0 &&
         g_messageBoxRunModalLastDelta >= 0.0f &&
         g_messageBoxRunModalUnlockedState == &g_zVideo_PrimarySurfaceState;
     const bool textAndButton =
-        std::strcmp(&TestFieldAt<char>(&dialog.messagePanel, 0x34), "BODY") == 0 &&
-        std::strcmp(&TestFieldAt<char>(&dialog.titlePanel, 0x34), "TITLE") == 0 &&
-        (dialog.okButton.base.base.flags & 0x10u) == 0;
+        std::strcmp(&TestFieldAt<char>(&dialog->messagePanel, 0x34), "BODY") == 0 &&
+        std::strcmp(&TestFieldAt<char>(&dialog->titlePanel, 0x34), "TITLE") == 0 &&
+        (dialog->okButton.flags & 0x10u) == 0;
     const bool restored =
         zRndr::g_frameBuffer == reinterpret_cast<void *>(0x11223344) &&
         zRndr::g_activeRegionWidth == 100 && zRndr::g_activeRegionHeight == 80 &&
         zRndr::g_pitchBytes == 777 && zRndr::g_bytesPerPixel == 3 &&
         g_zVideo_UseHalfResBackbuffer == 0;
 
-    if (dialog.backgroundImage != nullptr) {
-        free(dialog.backgroundImage->pixels);
-        dialog.backgroundImage->pixels = nullptr;
-        zVid_Image::Destroy(dialog.backgroundImage);
-    }
-    if (dialog.okButtonNormalImage != nullptr) {
-        free(dialog.okButtonNormalImage->pixels);
-        dialog.okButtonNormalImage->pixels = nullptr;
-        zVid_Image::Destroy(dialog.okButtonNormalImage);
-    }
-    if (dialog.okButtonPressedImage != nullptr) {
-        free(dialog.okButtonPressedImage->pixels);
-        dialog.okButtonPressedImage->pixels = nullptr;
-        zVid_Image::Destroy(dialog.okButtonPressedImage);
-    }
+    dialog->Destructor();
 
     g_zVideo_ActiveRendererPath = savedRendererPath;
     g_zVideo_RendererType = savedRendererType;
     g_zVideo_UseHalfResBackbuffer = savedUseHalfRes;
+    g_zVideo_HalfResAdjustMode = savedHalfResMode;
     g_zVideo_AdjustSurfacesDisableGate = savedAdjustDisableGate;
     g_zVideo_pfnUnlockSurfaceState = savedUnlockSurfaceState;
+    g_zVideo_pfnBltPrimaryToSwRectDirect = savedBltPrimaryToSw;
     g_zVideo_PrimarySurfaceState = savedPrimaryState;
     g_zVideo_SwSurfaceState = savedSwState;
     g_zVideo_PrimarySurfaceRectScratch = savedPrimaryRectScratch;
@@ -18492,7 +18499,7 @@ extern "C" int zhud_message_box_run_modal_smoke(void) {
                     "count=%d set=%d last=%d countdown=%d frame=%p w=%d h=%d pitch=%d bpp=%d\n",
                     modal ? 1 : 0, textAndButton ? 1 : 0, restored ? 1 : 0, result,
                     g_messageBoxRunModalUpdateCount, g_messageBoxRunModalSetEnabledCount,
-                    g_messageBoxRunModalLastEnabled, dialog.modalFrameCountdown,
+                    g_messageBoxRunModalLastEnabled, dialog->modalFrameCountdown,
                     zRndr::g_frameBuffer, zRndr::g_activeRegionWidth,
                     zRndr::g_activeRegionHeight, zRndr::g_pitchBytes, zRndr::g_bytesPerPixel);
     }
@@ -18508,25 +18515,19 @@ extern "C" int zhud_message_box_destructor_smoke(void) {
     g_zVideo_PrimarySurfaceState.height = 480;
     g_zVideo_PrimarySurfaceRectScratch = {0, 0, 640, 480};
 
-    HudUiMessageBoxDialog dialog{};
-    dialog.Constructor(nullptr, nullptr);
-    void *const okNormalPixels = dialog.okButtonNormalImage->pixels;
-    void *const okPressedPixels = dialog.okButtonPressedImage->pixels;
+    alignas(HudUiMessageBoxDialog) std::uint8_t dialogStorage[sizeof(HudUiMessageBoxDialog)]{};
+    auto *const dialog = reinterpret_cast<HudUiMessageBoxDialog *>(dialogStorage);
+    dialog->Constructor(nullptr, nullptr);
+    const bool hadImages =
+        dialog->backgroundImage != nullptr && dialog->okButtonNormalImage != nullptr &&
+        dialog->okButtonPressedImage != nullptr;
 
-    dialog.Destructor();
+    dialog->Destructor();
 
     const bool destructed =
-        dialog.backgroundImage == nullptr &&
-        dialog.okButton.base.base.ftable ==
-            reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable) &&
-        dialog.cancelButton.base.base.ftable ==
-            reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable) &&
-        dialog.backdropWidget.ftable ==
-            reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable) &&
-        dialog.base.base.vptr == &g_HudUiContainer_FTable;
+        hadImages && dialog->backgroundImage == nullptr &&
+        TestFieldAt<const void *>(dialog, 0) != nullptr;
 
-    free(okNormalPixels);
-    free(okPressedPixels);
     g_zVideo_PrimarySurfaceState = savedPrimaryState;
     g_zVideo_PrimarySurfaceRectScratch = savedPrimaryRectScratch;
 
@@ -31460,7 +31461,6 @@ extern "C" int zhud_mgr_shutdown_resources_smoke(void) {
 
 extern "C" int zhud_sensor_track_list_reset_smoke(void) {
     const HudUiMgrSensorTrackList oldTrackList = g_HudUiMgrSensor_TrackList;
-
     HudUiMgrSensorTrackNode head{};
     HudUiMgrSensorTrackNode tail{};
     g_HudUiMgrSensor_TrackList.trackListAux = 5;

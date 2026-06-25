@@ -9,6 +9,7 @@ endif()
 
 option(RECOIL_BUILD_NATIVE_TESTS "Build native CTest smoke and behavior tests." ON)
 option(RECOIL_BUILD_ZBD_VIEWERS "Build standalone ZBD asset viewer executables." OFF)
+option(RECOIL_BUILD_MESSAGES_DLL "Build the reconstructed messages.dll companion target." OFF)
 option(RECOIL_REQUIRE_32BIT "Fail configure unless the selected native compiler targets 32-bit." OFF)
 option(RECOIL_EMIT_ASM "Ask MSVC to emit assembly listings for tier S byte/assembly comparison." OFF)
 
@@ -69,4 +70,8 @@ endif()
 
 if(RECOIL_BUILD_ZBD_VIEWERS)
     add_subdirectory(tests/zbd_viewer)
+endif()
+
+if(RECOIL_BUILD_MESSAGES_DLL)
+    add_subdirectory(src/Messages)
 endif()

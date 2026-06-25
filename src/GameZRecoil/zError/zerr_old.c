@@ -2,7 +2,7 @@
 
 extern "C" HWND g_RecoilError_OutputHWnd = 0;
 extern "C" int g_RecoilError_OutputMaxBytes = 0;
-extern "C" int g_RecoilError_OutputByteCount = 0;
+extern "C" int g_RecoilError_OutputBytesWritten = 0;
 extern "C" char g_zError_DebugMsgBuffer[1024] = {0};
 
 namespace zError {
@@ -15,7 +15,7 @@ namespace zError {
         int maxBytes,
         const char *
     ) {
-        g_RecoilError_OutputByteCount = 0;
+        g_RecoilError_OutputBytesWritten = 0;
         g_RecoilError_OutputMaxBytes = maxBytes;
         g_RecoilError_OutputHWnd = hWnd;
         return 0;

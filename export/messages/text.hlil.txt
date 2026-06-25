@@ -1,0 +1,3285 @@
+// VC5 CRT default DllMain provider stub: returns TRUE for all reasons. Retail body at 0x10001000 is mov eax, 1; ret 0xc.
+0x10001000 int32_t __stdcall DllMain(void* hinstDLL, uint32_t fdwReason, void* lpvReserved) __pure
+{
+    return 1
+}
+
+// messages.dll lookup export. Scans 749 g_MessagesLookupRows entries [0x10006030, 0x10007798); returns row.id on exact bytewise string equality and 0 on miss. The sbb pair at 0x10001047 is a strcmp-style mismatch/nonzero path; HLIL flag lifting there is unreliable.
+0x10001010 uint32_t ZLocGetID(char const* name)
+{
+    int32_t ebx
+    int32_t var_4 = ebx
+    int32_t ebp = 0
+    struct MessagesLookupRow* edi = &g_MessagesLookupRows
+
+    while (true)
+        char const* name_1 = edi->name
+        char const* name_2 = name
+        int32_t eax_2
+
+        while (true)
+            ebx.b = *name_2
+            char const temp0_1 = *name_1
+            bool c_1 = ebx.b u< temp0_1
+
+            if (ebx.b == temp0_1)
+                if (ebx.b == 0)
+                    eax_2 = 0
+                    break
+
+                ebx.b = name_2[1]
+                char temp3_1 = name_1[1]
+                c_1 = ebx.b u< temp3_1
+
+                if (ebx.b == temp3_1)
+                    name_2 = &name_2[2]
+                    name_1 = &name_1[2]
+
+                    if (ebx.b != 0)
+                        continue
+
+                    eax_2 = 0
+                    break
+
+    // sbb/sbb forms a strcmp-style mismatch result. ZLocGetID only tests equality/nonzero; BN HLIL flag lifting at this pair is unreliable.
+            bool c_2 = unimplemented  {sbb eax, eax}
+            eax_2 = sbb.d(sbb.d(name_2, name_2, c_1), 0xffffffff, c_2)
+            break
+
+        if (eax_2 == 0)
+            return g_MessagesLookupRows[ebp].id
+
+        edi = &edi[1]
+        ebp += 1
+
+        if (edi u>= "MSG_WOL_RESTART_REQUIRED")
+            break
+
+    return 0
+}
+
+// VC5 CRT provider routine from LIBCMT:dllcrt0.obj. Handles DLL process/thread attach-detach CRT initialization around the authored messages export.
+0x10001070 int32_t __stdcall __CRT_INIT(void* hinstDLL, uint32_t fdwReason, void* lpvReserved)
+{
+    if (fdwReason != 1)
+        if (fdwReason != 0)
+            if (fdwReason == 3)
+                _freeptd(nullptr)
+
+            return 1
+
+        int32_t eax_13 = data_1000d9c8
+
+        if (eax_13 s<= 0)
+            return 0
+
+        bool cond:0 = _C_Exit_Done != 0
+        data_1000d9c8 = eax_13 - 1
+
+        if (not(cond:0))
+            _cexit()
+
+        _ioterm()
+        __mtterm()
+        __heap_term()
+        return 1
+
+    data_1000d9e0 = GetVersion()
+    int32_t result = __heap_init()
+
+    if (result == 0)
+        return result
+
+    int32_t ecx = data_1000d9e0
+    int32_t edx
+    edx.b = ecx:1.b
+    uint32_t eax_2 = ecx.b
+    data_1000d9ec = edx
+    data_1000d9e8 = eax_2
+    data_1000d9e4 = (eax_2 << 8) + edx
+    data_1000d9e0 = ecx u>> 0x10
+
+    if (__mtinit() == 0)
+        __heap_term()
+        return 0
+
+    _acmdln = GetCommandLineA()
+    PSTR eax_8 = __crtGetEnvironmentStringsA()
+    char* _acmdln_1 = _acmdln
+    _aenvptr = eax_8
+
+    if (_acmdln_1 == 0 || eax_8 == 0)
+        __mtterm()
+        __heap_term()
+        return 0
+
+    _ioinit()
+    __initmbctable()
+    __setargv()
+    _setenvp()
+    _cinit()
+    data_1000d9c8 += 1
+    return 1
+}
+
+// VC5 CRT DLL startup entrypoint from LIBCMT:dllcrt0.obj. Reference PE entrypoint dispatches raw callbacks, __CRT_INIT, and DllMain.
+0x10001190 int32_t __stdcall __DllMainCRTStartup(void* hinstDLL, uint32_t fdwReason, void* lpvReserved)
+{
+    int32_t eax = 1
+
+    if (fdwReason == 0 && data_1000d9c8 == 0)
+        return 0
+
+    if (fdwReason == 1 || fdwReason == 2)
+        int32_t ecx_2 = data_1000ef54
+
+        if (ecx_2 != 0)
+            eax = ecx_2(hinstDLL, fdwReason, lpvReserved)
+
+        int32_t eax_2
+
+        if (eax != 0)
+            eax_2 = __CRT_INIT(hinstDLL, fdwReason, lpvReserved)
+
+        if (eax == 0 || eax_2 == 0)
+            return 0
+
+    int32_t result = 1
+
+    if (fdwReason == 0 || fdwReason == 3)
+        if (__CRT_INIT(hinstDLL, fdwReason, lpvReserved) == 0)
+            result = 0
+
+        if (result != 0)
+            int32_t eax_5 = data_1000ef54
+
+            if (eax_5 != 0)
+                return eax_5(hinstDLL, fdwReason, lpvReserved)
+
+    return result
+}
+
+// VC CRT runtime-message helper (crt0msg.c): emits optional fatal-error banner, writes runtime error number, then dispatches through __aexit_rtn(255). Provider-boundary candidate, not authored messages.dll logic.
+0x10001240 void __amsg_exit(int32_t rterrnum)
+{
+    int32_t CRT_errorMode_1 = g_CRT_errorMode
+
+    if (CRT_errorMode_1 == 1)
+        _FF_MSGBANNER()
+    else if (CRT_errorMode_1 == 0 && g_CRT_appType == 1)
+        _FF_MSGBANNER()
+
+    _NMSG_WRITE(rterrnum)
+    __aexit_rtn(0xff)
+}
+
+// VC5 CRT provider routine from crt0dat.c: invokes optional _FPinit, then _initterm over __xi_a..__xi_z and __xc_a..__xc_z during DLL process attach.
+0x10001280 void _cinit()
+{
+    void (* _FPinit_1)() = _FPinit
+
+    if (_FPinit_1 != 0)
+        _FPinit_1()
+
+    _initterm(&__xi_a, &__xi_z)
+    _initterm(&__xc_a, &__xc_z)
+}
+
+// VC5 CRT provider routine: _exit(status) wrapper for doexit(status, quick=1, retcaller=0). Referenced by __aexit_rtn; doexit path terminates the process.
+0x100012b0 void _exit(int32_t status)
+{
+    doexit(status, 1, 0)
+}
+
+// VC5 CRT provider routine: _cexit() wrapper for doexit(0, quick=0, retcaller=1). Called by __CRT_INIT on DLL detach when _C_Exit_Done is clear.
+0x100012d0 void _cexit()
+{
+    doexit(0, 0, 1)
+}
+
+// VC5 CRT provider helper from crt0dat.c: locks exit state, records _C_Exit_Done/__exitflag, walks _onexit and __xp/__xt tables, then either returns to caller or calls ExitProcess.
+0x100012e0 void doexit(int32_t status, int32_t quick, int32_t retcaller)
+{
+    lockexit()
+
+    if (_C_Termination_Done == 1)
+        TerminateProcess(GetCurrentProcess(), status)
+        noreturn
+
+    _C_Exit_Done = 1
+    __exitflag = retcaller.b
+
+    if (quick == 0)
+        PVFV* _onexitbegin_1 = _onexitbegin
+
+        if (_onexitbegin_1 != 0)
+            for (int32_t* i = _onexitend - 4; i u>= _onexitbegin_1; i -= 4)
+                int32_t eax_3 = *i
+
+                if (eax_3 != 0)
+                    eax_3()
+                    _onexitbegin_1 = _onexitbegin
+
+        _initterm(&__xp_a, &__xp_z)
+
+    _initterm(&__xt_a, &__xt_z)
+
+    if (retcaller != 0)
+        unlockexit()
+        return
+
+    _C_Termination_Done = 1
+    ExitProcess(status)
+    noreturn
+}
+
+// VC5 CRT provider helper: locks the CRT exit lock by calling the lock routine with lock id 0x0d (_EXIT_LOCK1).
+0x100013a0 void lockexit()
+{
+    __lock(0xd)
+}
+
+// VC5 CRT provider helper: unlocks the CRT exit lock by calling __unlock with lock id 0x0d (_EXIT_LOCK1).
+0x100013b0 void unlockexit()
+{
+    __unlock(0xd)
+}
+
+// VC5 CRT provider helper: iterates a [_PVFV first, last) table and calls each non-null initializer/terminator function pointer.
+0x100013c0 void _initterm(PVFV* first, PVFV* last)
+{
+    for (PVFV* i = first; i u< last; i = &i[1])
+        void (* eax_1)() = *i
+
+        if (eax_1 != 0)
+            eax_1()
+}
+
+// VC5 CRT provider routine: initializes multithread CRT TLS by allocating __tlsindex, allocating a 0x74-byte _tiddata block, storing it with TlsSetValue, and seeding tid/thread_handle.
+0x100013e0 int32_t __mtinit()
+{
+    __mtinitlocks()
+    uint32_t eax = TlsAlloc()
+    __tlsindex = eax
+
+    if (eax != 0xffffffff)
+        struct _tiddata* ptd = _calloc_crt(1, 0x74)
+
+        if (ptd != 0 && TlsSetValue(__tlsindex, ptd) != 0)
+            _initptd(ptd)
+            ptd->tid = GetCurrentThreadId()
+            ptd->thread_handle = 0xffffffff
+            return 1
+
+    return 0
+}
+
+// VC5 CRT provider multithread termination. Calls __mtdeletelocks, frees __tlsindex with TlsFree when allocated, and resets __tlsindex to 0xffffffff.
+0x10001440 void __mtterm()
+{
+    __mtdeletelocks()
+    uint32_t __tlsindex_1 = __tlsindex
+
+    if (__tlsindex_1 != 0xffffffff)
+        TlsFree(__tlsindex_1)
+        __tlsindex = 0xffffffff
+}
+
+// VC5 CRT provider routine: initializes a _tiddata block by installing the per-thread exception action table pointer at offset 0x50 and setting holdrand at offset 0x14 to 1; returns the same _tiddata pointer.
+0x10001470 struct _tiddata* _initptd(struct _tiddata* ptd)
+{
+    ptd->xcptacttab = &_XcptActTab
+    ptd->holdrand = 1
+    return ptd
+}
+
+// VC5 CRT provider routine: returns the per-thread _tiddata from __tlsindex, allocating/initializing a 0x74-byte _tiddata on first use, preserving/restoring LastError, and aborting via __amsg_exit(_RT_THREAD=0x10) on TLS/allocation failure.
+0x10001490 struct _tiddata* _getptd()
+{
+    enum WIN32_ERROR savedLastError = GetLastError()
+    struct _tiddata* ptd = TlsGetValue(__tlsindex)
+
+    if (ptd == 0)
+        ptd = _calloc_crt(1, 0x74)
+
+        if (ptd != 0 && TlsSetValue(__tlsindex, ptd) != 0)
+            _initptd(ptd)
+            ptd->tid = GetCurrentThreadId()
+            ptd->thread_handle = 0xffffffff
+            SetLastError(savedLastError)
+            return ptd
+
+        __amsg_exit(0x10)
+
+    SetLastError(savedLastError)
+    return ptd
+}
+
+// VC5 CRT provider routine: frees heap-backed fields in a _tiddata block, frees a non-default exception action table, frees the _tiddata itself, and clears the TLS slot when operating on the current thread block.
+0x10001510 void _freeptd(struct _tiddata* ptd)
+{
+    uint32_t __tlsindex_1 = __tlsindex
+
+    if (__tlsindex_1 == 0xffffffff)
+        return
+
+    struct _tiddata* ptdCurrent = ptd
+
+    if (ptdCurrent != 0)
+    label_10001534:
+        void* errmsg = ptdCurrent->errmsg
+
+        if (errmsg != 0)
+            _free(errmsg)
+
+        void* namebuf0 = ptdCurrent->namebuf0
+
+        if (namebuf0 != 0)
+            _free(namebuf0)
+
+        void* namebuf1 = ptdCurrent->namebuf1
+
+        if (namebuf1 != 0)
+            _free(namebuf1)
+
+        void* asctimebuf = ptdCurrent->asctimebuf
+
+        if (asctimebuf != 0)
+            _free(asctimebuf)
+
+        void* gmtimebuf = ptdCurrent->gmtimebuf
+
+        if (gmtimebuf != 0)
+            _free(gmtimebuf)
+
+        void* cvtbuf = ptdCurrent->cvtbuf
+
+        if (cvtbuf != 0)
+            _free(cvtbuf)
+
+        struct _XCPT_ACTION* xcptacttab = ptdCurrent->xcptacttab
+
+        if (xcptacttab != &_XcptActTab)
+            _free(xcptacttab)
+
+        _free(ptdCurrent)
+    else
+        ptdCurrent = TlsGetValue(__tlsindex_1)
+
+        if (ptdCurrent != 0)
+            goto label_10001534
+
+    TlsSetValue(__tlsindex, nullptr)
+}
+
+// VC5 CRT lowio _ioinit provider routine. Allocates the first __pioinfo page, initializes 32-entry CRT_ioinfo pages (0x24 bytes each), imports inherited STARTUPINFOA handles, initializes stdin/stdout/stderr from Win32 std handles, then calls SetHandleCount(g_CRT_nhandle).
+0x100015c0 void _ioinit()
+{
+    struct CRT_ioinfo* i = _malloc_crt(0x480)
+
+    if (i == 0)
+        __amsg_exit(0x1b)
+
+    g_CRT_pioinfo[0] = i
+    g_CRT_nhandle = 0x20
+
+    if (i u< &i[0x20])
+        do
+            i->osfile = 0
+            i->osfhnd = 0xffffffff
+            i->pipech = 0xa
+            i->lockinitflag = 0
+            i = &i[1]
+        while (i u< &g_CRT_pioinfo[0][0x20])
+
+    STARTUPINFOA startupInfo
+    GetStartupInfoA(&startupInfo)
+
+    if (startupInfo.cbReserved2 != 0)
+        BYTE* lpReserved2 = startupInfo.lpReserved2
+
+        if (lpReserved2 != 0)
+            int32_t inheritedHandleCount_1 = *lpReserved2
+            BYTE* inheritedFlags = &lpReserved2[4]
+            int32_t inheritedHandleCount = inheritedHandleCount_1
+            int32_t* ebp_1 = &inheritedFlags[inheritedHandleCount_1]
+
+            if (inheritedHandleCount_1 s>= 0x800)
+                inheritedHandleCount = 0x800
+
+            if (g_CRT_nhandle s< inheritedHandleCount)
+                struct CRT_ioinfo** esi = &g_CRT_pioinfo[1]
+
+                do
+                    struct CRT_ioinfo* j = _malloc_crt(0x480)
+
+                    if (j == 0)
+                        inheritedHandleCount = g_CRT_nhandle
+                        break
+
+                    int32_t currentHandleCount = g_CRT_nhandle
+                    *esi = j
+                    g_CRT_nhandle = currentHandleCount + 0x20
+
+                    if (j u< &j[0x20])
+                        do
+                            j->osfile = 0
+                            j->osfhnd = 0xffffffff
+                            j->pipech = 0xa
+                            j->lockinitflag = 0
+                            j = &j[1]
+                        while (j u< &(*esi)[0x20])
+
+                    esi = &esi[1]
+                while (g_CRT_nhandle s< inheritedHandleCount)
+
+            int32_t esi_1 = 0
+
+            if (inheritedHandleCount s> 0)
+                do
+                    HANDLE hFile = *ebp_1
+
+                    if (hFile != 0xffffffff)
+                        int32_t eax_4
+                        eax_4.b = *inheritedFlags
+
+                        if ((eax_4.b & 1) != 0)
+                            enum FILE_TYPE eax_5
+
+                            if ((eax_4.b & 8) == 0)
+                                eax_5 = GetFileType(hFile)
+
+                            if ((eax_4.b & 8) != 0 || eax_5 != FILE_TYPE_UNKNOWN)
+                                struct CRT_ioinfo* inheritedInfo = &g_CRT_pioinfo[esi_1 s>> 5][esi_1 & 0x1f]
+                                inheritedInfo->osfhnd = *ebp_1
+                                int32_t edx_7
+                                edx_7.b = *inheritedFlags
+                                inheritedInfo->osfile = edx_7.b
+
+                    esi_1 += 1
+                    inheritedFlags = &inheritedFlags[1]
+                    ebp_1 = &ebp_1[1]
+                while (esi_1 s< inheritedHandleCount)
+
+    for (int32_t stdIndex = 0; stdIndex s< 3; stdIndex += 1)
+        struct CRT_ioinfo* firstPage = g_CRT_pioinfo[0]
+        int32_t eax_9 = stdIndex * 9
+        struct CRT_ioinfo* stdInfo = firstPage + (eax_9 << 2)
+        HANDLE eax_10
+
+        if (*(firstPage + (eax_9 << 2)) != 0xffffffff)
+            eax_10.b = stdInfo->osfile
+            eax_10.b |= 0x80
+            stdInfo->osfile = eax_10.b
+        else
+            stdInfo->osfile = 0x81
+            enum STD_HANDLE nStdHandle
+
+            if (stdIndex != 0)
+                int32_t eax_13 = neg.d(stdIndex - 1)
+                nStdHandle = sbb.d(eax_13, eax_13, stdIndex != 1) - 0xb
+            else
+                nStdHandle = STD_INPUT_HANDLE
+
+            HANDLE hFile_1 = GetStdHandle(nStdHandle)
+
+            if (hFile_1 != 0xffffffff)
+                eax_10 = GetFileType(hFile_1)
+
+            if (hFile_1 == 0xffffffff || eax_10 == 0)
+                eax_10.b = stdInfo->osfile
+                eax_10.b |= 0x40
+                stdInfo->osfile = eax_10.b
+            else
+                eax_10 &= 0xff
+                stdInfo->osfhnd = hFile_1
+
+                if (eax_10 == 2)
+                    eax_10.b = stdInfo->osfile
+                    eax_10.b |= 0x40
+                    stdInfo->osfile = eax_10.b
+                else if (eax_10 == 3)
+                    eax_10.b = stdInfo->osfile
+                    eax_10.b |= 8
+                    stdInfo->osfile = eax_10.b
+
+    SetHandleCount(g_CRT_nhandle)
+}
+
+// VC5 CRT lowio _ioterm provider routine. During DLL process detach, deletes initialized CRT_ioinfo critical sections across g_CRT_pioinfo pages, frees each page, and clears the page slot.
+0x100017d0 void _ioterm()
+{
+    for (struct CRT_ioinfo** i = &g_CRT_pioinfo; i s< &g_CRT_nhandle; i = &i[1])
+        struct CRT_ioinfo* j = *i
+
+        if (j != 0)
+            if (j u< &j[0x20])
+                struct _RTL_CRITICAL_SECTION* lpCriticalSection = &j->lock
+
+                do
+                    if ((lpCriticalSection - 0xc)->lockinitflag != 0)
+                        DeleteCriticalSection(lpCriticalSection)
+
+                    j = &j[1]
+                    lpCriticalSection += 0x24
+                while (j u< &(*i)[0x20])
+
+            _free(*i)
+            *i = nullptr
+}
+
+// VC5 CRT provider _setenvp. Builds __initenv from the _aenvptr environment block, skipping entries whose first byte is '='; allocates the char** table and per-string copies with _malloc_crt, calls __amsg_exit(9) on allocation failure, frees _aenvptr, then clears _aenvptr and writes the terminating null entry.
+0x10001830 void _setenvp()
+{
+    int32_t ecx
+    int32_t var_4 = ecx
+    char* _aenvptr_1 = _aenvptr
+    char i = *_aenvptr_1
+    int32_t esi = 0
+
+    while (i != 0)
+        if (i != 0x3d)
+            esi += 1
+
+        char* _aenvptr_3 = _aenvptr_1
+        int32_t j = 0xffffffff
+
+        while (j != 0)
+            bool cond:2_1 = 0 != *_aenvptr_3
+            _aenvptr_3 = &_aenvptr_3[1]
+            j -= 1
+
+            if (not(cond:2_1))
+                break
+
+        i = _aenvptr_1[not.d(j)]
+        _aenvptr_1 = &_aenvptr_1[not.d(j)]
+
+    char** envp_cursor_3
+    int32_t edx
+    envp_cursor_3, edx = _malloc_crt((esi << 2) + 4)
+    char** envp_cursor_2 = envp_cursor_3
+    char** envp_cursor = envp_cursor_2
+    __initenv = envp_cursor_2
+
+    if (envp_cursor_2 == 0)
+        __amsg_exit(9)
+
+    char* _aenvptr_2 = _aenvptr
+    edx.b = *_aenvptr_2
+
+    while (edx.b != 0)
+        char* _aenvptr_4 = _aenvptr_2
+        int32_t i_1 = 0xffffffff
+
+        while (i_1 != 0)
+            bool cond:3_1 = 0 != *_aenvptr_4
+            _aenvptr_4 = &_aenvptr_4[1]
+            i_1 -= 1
+
+            if (not(cond:3_1))
+                break
+
+        if (edx.b != 0x3d)
+            char* eax_1 = _malloc_crt(not.d(i_1))
+            *envp_cursor_2 = eax_1
+
+            if (eax_1 == 0)
+                __amsg_exit(9)
+
+            char* _aenvptr_5 = _aenvptr_2
+            int32_t i_2 = 0xffffffff
+
+            while (i_2 != 0)
+                bool cond:4_1 = 0 != *_aenvptr_5
+                _aenvptr_5 = &_aenvptr_5[1]
+                i_2 -= 1
+
+                if (not(cond:4_1))
+                    break
+
+            int32_t ecx_5 = not.d(i_2)
+            int32_t esi_2
+            int32_t edi_3
+            edi_3, esi_2 = __builtin_memcpy(*envp_cursor, _aenvptr_5 - ecx_5, ecx_5 & 0xfffffffc)
+            char** envp_cursor_1 = &envp_cursor[1]
+            __builtin_memcpy(edi_3, esi_2, ecx_5 & 3)
+            envp_cursor = envp_cursor_1
+            envp_cursor_2 = envp_cursor_1
+
+        edx.b = _aenvptr_2[not.d(i_1)]
+        _aenvptr_2 = &_aenvptr_2[not.d(i_1)]
+
+    _free(_aenvptr)
+    _aenvptr = nullptr
+    *envp_cursor_2 = nullptr
+}
+
+// VC5 CRT provider __setargv. Reads _acmdln from GetCommandLineA, falls back to the GetModuleFileNameA program-name buffer when empty, calls parse_cmdline once to size the argv table/string block, allocates it with _malloc_crt, calls __amsg_exit(8) on allocation failure, parses again, then stores __argv and __argc.
+0x10001920 void __setargv()
+{
+    GetModuleFileNameA(nullptr, &g_CRT_pgmname_buffer, 0x104)
+    char* _acmdln_1 = _acmdln
+    _pgmptr = &g_CRT_pgmname_buffer
+
+    if (*_acmdln_1 == 0)
+        _acmdln_1 = &g_CRT_pgmname_buffer
+
+    int32_t numargs
+    int32_t numchars
+    parse_cmdline(_acmdln_1, nullptr, nullptr, &numargs, &numchars)
+    char** argv = _malloc_crt(numchars + (numargs << 2))
+
+    if (argv == 0)
+        __amsg_exit(8)
+
+    parse_cmdline(_acmdln_1, argv, &argv[numargs], &numargs, &numchars)
+    int32_t eax_2 = numargs - 1
+    __argv = argv
+    __argc = eax_2
+}
+
+// VC5 CRT provider helper from stdargv-style startup code. Parses the ANSI command line into optional argv/string storage and counts argv entries/bytes; tests _mbctype[ch + 1] bit 0x04 for DBCS lead bytes.
+0x100019c0 void parse_cmdline(char* cmdstart, char** argv, char* args, int32_t* numargs, int32_t* numchars)
+{
+    char** argv_1 = argv
+    char* args_1 = args
+    int32_t* numchars_2 = numchars
+    *numchars_2 = 0
+    *numargs = 1
+    char* cmdstart_1 = cmdstart
+
+    if (argv_1 != 0)
+        *argv_1 = args_1
+        argv_1 = &argv_1[1]
+        argv = argv_1
+
+    int32_t ecx
+
+    if (*cmdstart_1 != 0x22)
+        while (true)
+            *numchars_2 += 1
+
+            if (args_1 != 0)
+                ecx.b = *cmdstart_1
+                *args_1 = ecx.b
+                args_1 = &args_1[1]
+
+            ecx.b = *cmdstart_1
+            cmdstart_1 = &cmdstart_1[1]
+            numchars.b = ecx.b
+
+            if ((_mbctype[1 + numchars.b] & 4) != 0)
+                *numchars_2 += 1
+
+                if (args_1 != 0)
+                    int32_t edx_12
+                    edx_12.b = *cmdstart_1
+                    *args_1 = edx_12.b
+                    args_1 = &args_1[1]
+
+                cmdstart_1 = &cmdstart_1[1]
+
+            if (ecx.b == 0x20)
+            label_10001a95:
+
+                if (ecx.b != 0)
+                    if (args_1 != 0)
+                        args_1[0xffffffff] = 0
+
+                    break
+            else if (ecx.b != 0)
+                if (ecx.b == 9)
+                    goto label_10001a95
+
+                continue
+
+            cmdstart_1 -= 1
+            break
+    else
+        ecx.b = cmdstart_1[1]
+        cmdstart_1 = &cmdstart_1[1]
+
+        if (ecx.b != 0x22)
+            while (ecx.b != 0)
+                if ((_mbctype[1 + (ecx & 0xff)] & 4) != 0)
+                    *numchars_2 += 1
+
+                    if (args_1 != 0)
+                        ecx.b = *cmdstart_1
+                        *args_1 = ecx.b
+                        args_1 = &args_1[1]
+                        cmdstart_1 = &cmdstart_1[1]
+
+                *numchars_2 += 1
+
+                if (args_1 != 0)
+                    int32_t edx_4
+                    edx_4.b = *cmdstart_1
+                    *args_1 = edx_4.b
+                    args_1 = &args_1[1]
+
+                ecx.b = cmdstart_1[1]
+                cmdstart_1 = &cmdstart_1[1]
+
+                if (ecx.b == 0x22)
+                    break
+
+        *numchars_2 += 1
+
+        if (args_1 != 0)
+            *args_1 = 0
+            args_1 = &args_1[1]
+
+        if (*cmdstart_1 == 0x22)
+            cmdstart_1 = &cmdstart_1[1]
+
+    int32_t* numchars_1 = nullptr
+    numchars = nullptr
+
+    while (*cmdstart_1 != 0)
+        while (true)
+            ecx.b = *cmdstart_1
+
+            if (ecx.b != 0x20 && ecx.b != 9)
+                break
+
+            cmdstart_1 = &cmdstart_1[1]
+
+        if (*cmdstart_1 == 0)
+            break
+
+        if (argv_1 != 0)
+            *argv_1 = args_1
+            argv = &argv_1[1]
+
+        *numargs += 1
+
+        while (true)
+            uint32_t ebx
+            ebx.b = *cmdstart_1
+            uint32_t i_2 = 0
+            int32_t ebp_1 = 1
+
+            while (ebx.b == 0x5c)
+                ebx.b = cmdstart_1[1]
+                cmdstart_1 = &cmdstart_1[1]
+                i_2 += 1
+
+            if (*cmdstart_1 == 0x22)
+                if ((i_2.b & 1) == 0)
+                    if (numchars_1 == 0 || cmdstart_1[1] != 0x22)
+                        ebp_1 = 0
+                    else
+                        cmdstart_1 = &cmdstart_1[1]
+
+                    numchars_1.b = numchars == 0
+                    numchars = numchars_1
+
+                i_2 u>>= 1
+
+            int32_t i_1
+
+            if (i_2 != 0)
+                i_1 = i_2
+                int32_t i
+
+                do
+                    if (args_1 != 0)
+                        *args_1 = 0x5c
+                        args_1 = &args_1[1]
+
+                    i = i_1
+                    i_1 -= 1
+                    *numchars_2 += 1
+                while (i != 1)
+
+            i_1.b = *cmdstart_1
+
+            if (i_1.b == 0)
+                break
+
+            if (numchars_1 == 0)
+                if (i_1.b == 0x20)
+                    break
+
+                if (i_1.b == 9)
+                    break
+
+            if (ebp_1 != 0)
+                if (args_1 == 0)
+                    if ((_mbctype[1 + (i_1 & 0xff)] & 4) != 0)
+                        cmdstart_1 = &cmdstart_1[1]
+                        *numchars_2 += 1
+
+                    *numchars_2 += 1
+                else
+                    if ((_mbctype[1 + i_1.b] & 4) != 0)
+                        *args_1 = i_1.b
+                        args_1 = &args_1[1]
+                        cmdstart_1 = &cmdstart_1[1]
+                        *numchars_2 += 1
+
+                    i_1.b = *cmdstart_1
+                    *args_1 = i_1.b
+                    args_1 = &args_1[1]
+                    *numchars_2 += 1
+                    cmdstart_1 = &cmdstart_1[1]
+                    continue
+
+            cmdstart_1 = &cmdstart_1[1]
+
+        if (args_1 != 0)
+            *args_1 = 0
+            args_1 = &args_1[1]
+
+        argv_1 = argv
+        *numchars_2 += 1
+
+    if (argv_1 != 0)
+        *argv_1 = nullptr
+
+    *numargs += 1
+}
+
+// CRT multibyte code-page setup provider routine. Uses __lock/__unlock(0x19), maps _MB_CP_* sentinels through GetACP/GetOEMCP/__lc_codepage, updates _mbctype/_mbcasemap and __mbcodepage globals.
+0x10001bd0 int32_t _setmbcp(int32_t codePage)
+{
+    int32_t ebx
+    int32_t var_18 = ebx
+    __lock(0x19)
+    int32_t eax_1 = crt_getSystemCP(codePage)
+
+    if (eax_1 == __mbcodepage)
+        __unlock(0x19)
+        return 0
+
+    if (eax_1 == 0)
+        crt_setSBCS()
+        crt_setSBUpLow()
+        __unlock(0x19)
+        return 0
+
+    int32_t edx = 0
+    int32_t* eax_5 = &g_crtMBCPInfoTable
+
+    while (true)
+        if (*eax_5 == eax_1)
+            int32_t ecx_1
+            char* edi_4
+            edi_4, ecx_1 = __builtin_memset(&_mbctype, 0, 0x100)
+            *edi_4 = 0
+            int32_t i = 0
+            char* ebp_1 = &g_crtMBCPInfoTable[edx].ranges
+
+            do
+                int32_t eax_12
+                eax_12.b = *ebp_1
+                char* esi_1 = ebp_1
+
+                while (eax_12.b != 0)
+                    ecx_1.b = esi_1[1]
+
+                    if (ecx_1.b == 0)
+                        break
+
+                    ecx_1 &= 0xff
+                    eax_12.b = *esi_1
+
+                    if (eax_12 u<= ecx_1)
+                        edx.b = g_crtMbctypeFlagBits[i]
+
+                        do
+                            _mbctype[1 + eax_12] |= edx.b
+                            eax_12 += 1
+                        while (eax_12 u<= ecx_1)
+
+                    eax_12.b = esi_1[2]
+                    esi_1 = &esi_1[2]
+
+                i += 1
+                ebp_1 = &ebp_1[8]
+            while (i u< 4)
+
+            __ismbcodepage = 1
+            __mbcodepage = eax_1
+            uint32_t eax_14 = crt_getLCIDFromCodePage(eax_1)
+            uint32_t ecx_2 = g_crtMBCPInfoTable[edx].mbulinfo[0]
+            uint32_t edx_2 = (*g_crtMBCPInfoTable[0].mbulinfo)[1 + edx * 0xc]
+            __mblcid = eax_14
+            __mbulinfo[0] = ecx_2
+            uint32_t eax_16 = g_crtMBCPInfoTable[edx].mbulinfo[2]
+            __mbulinfo[1] = edx_2
+            __mbulinfo[2] = eax_16
+            break
+
+        eax_5 = &eax_5[0xc]
+        edx += 1
+
+        if (eax_5 u>= 0x1000b3d8)
+            CPINFO cPInfo
+
+            if (GetCPInfo(eax_1, &cPInfo) != 1)
+                if (__mbcodepage_set == 0)
+                    __unlock(0x19)
+                    return 0xffffffff
+
+                crt_setSBCS()
+            else
+                char* edi_1 = __builtin_memset(&_mbctype, 0, 0x100)
+                uint32_t MaxCharSize = cPInfo.MaxCharSize
+                *edi_1 = 0
+                __mbcodepage = eax_1
+                __mblcid = 0
+
+                if (MaxCharSize u<= 1)
+                    __ismbcodepage = 0
+                else
+                    if (cPInfo.LeadByte[0] != 0)
+                        var_d
+                        char* edx_1 = &var_d
+                        int32_t i_1
+
+                        do
+                            MaxCharSize.b = *edx_1
+
+                            if (MaxCharSize.b == 0)
+                                break
+
+                            i_1.b = edx_1[0xffffffff]
+
+                            for (; i_1 u<= (MaxCharSize & 0xff); i_1 += 1)
+                                ebx.b = _mbctype[1 + i_1]
+                                ebx.b |= 4
+                                _mbctype[1 + i_1] = ebx.b
+
+                            i_1.b = edx_1[1]
+                            edx_1 = &edx_1[2]
+                        while (i_1.b != 0)
+
+                    for (int32_t i_2 = 1; i_2 u< 0xff; i_2 += 1)
+                        ebx.b = _mbctype[1 + i_2]
+                        ebx.b |= 8
+                        _mbctype[1 + i_2] = ebx.b
+
+                    __mblcid = crt_getLCIDFromCodePage(eax_1)
+                    __ismbcodepage = 1
+
+                __mbulinfo[0] = 0
+                __mbulinfo[1] = 0
+                __mbulinfo[2] = 0
+
+            break
+
+    crt_setSBUpLow()
+    __unlock(0x19)
+    return 0
+}
+
+0x10001e00 int32_t crt_getSystemCP(int32_t codePage)
+{
+    int32_t __lc_codepage_1 = codePage
+    __mbcodepage_set = 0
+
+    if (__lc_codepage_1 == 0xfffffffe)
+        __mbcodepage_set = 1
+        return GetOEMCP() __tailcall
+
+    if (__lc_codepage_1 == 0xfffffffd)
+        __mbcodepage_set = 1
+        return GetACP() __tailcall
+
+    if (__lc_codepage_1 == 0xfffffffc)
+        __lc_codepage_1 = __lc_codepage
+        __mbcodepage_set = 1
+
+    return __lc_codepage_1
+}
+
+0x10001e50 uint32_t crt_getLCIDFromCodePage(uint32_t codePage)
+{
+    if (codePage - 0x3a4 u<= 0x12)
+        int32_t ecx_1
+        ecx_1.b = *(codePage + parse_cmdline+0x138)
+
+        switch (ecx_1)
+            case 0
+                return 0x411
+            case 1
+                return 0x804
+            case 2
+                return 0x412
+            case 3
+                return 0x404
+
+    return 0
+}
+
+0x10001eb0 void crt_setSBCS()
+{
+    *__builtin_memset(&_mbctype, 0, 0x100) = 0
+    __mbcodepage = 0
+    __ismbcodepage = 0
+    __mblcid = 0
+    __mbulinfo[0] = 0
+    __mbulinfo[1] = 0
+    __mbulinfo[2] = 0
+}
+
+0x10001ef0 void crt_setSBUpLow()
+{
+    CPINFO cPInfo
+
+    if (GetCPInfo(__mbcodepage, &cPInfo) != 1)
+        for (int32_t i = 0; i u< 0x100; i += 1)
+            if (i u>= 0x41 && i u<= 0x5a)
+                _mbctype[1 + i] |= 0x10
+                _mbcasemap[i] = i.b + 0x20
+            else if (i u< 0x61 || i u> 0x7a)
+                _mbcasemap[i] = 0
+            else
+                _mbctype[1 + i] |= 0x20
+                _mbcasemap[i] = i.b - 0x20
+
+        return
+
+    uint8_t srcStr[0x100]
+    int32_t i_1
+
+    for (i_1 = 0; i_1 u< 0x100; i_1 += 1)
+        srcStr[i_1] = i_1.b
+
+    i_1.b = cPInfo.LeadByte[0]
+    srcStr[0] = 0x20
+
+    if (i_1.b != 0)
+        var_50d
+        char* edx_2 = &var_50d
+
+        do
+            i_1 &= 0xff
+            int32_t ecx_1
+            ecx_1.b = *edx_2
+
+            if (i_1 u<= ecx_1)
+                int32_t ecx_3 = ecx_1 - i_1 + 1
+                int32_t __saved_esi
+                __builtin_memset(__builtin_memset(&__saved_esi + i_1 + 0x20, 0x20202020, ecx_3 & 0xfffffffc), 0x20, ecx_3 & 3)
+
+            i_1.b = edx_2[1]
+            edx_2 = &edx_2[2]
+        while (i_1.b != 0)
+
+    uint16_t charType[0x100]
+    __crtGetStringTypeA(1, &srcStr, 0x100, &charType, __mbcodepage, __mblcid, 0)
+    char destStr[0x100]
+    __crtLCMapStringA(__mblcid, 0x100, &srcStr, 0x100, &destStr, 0x100, __mbcodepage, 0)
+    char destStr_1[0x100]
+    __crtLCMapStringA(__mblcid, 0x200, &srcStr, 0x100, &destStr_1, 0x100, __mbcodepage, 0)
+    int32_t i_2 = 0
+    uint16_t (* edx_4)[0x100] = &charType
+
+    do
+        uint8_t ecx_9 = (*edx_4).b
+
+        if ((ecx_9 & 1) != 0)
+            _mbctype[1 + i_2] |= 0x10
+            _mbcasemap[i_2] = destStr[i_2]
+        else if ((ecx_9 & 2) == 0)
+            _mbcasemap[i_2] = 0
+        else
+            _mbctype[1 + i_2] |= 0x20
+            _mbcasemap[i_2] = destStr_1[i_2]
+
+        i_2 += 1
+        edx_4 = &(*edx_4)[1]
+    while (i_2 u< 0x100)
+}
+
+0x100020d0 void __initmbctable()
+{
+    _setmbcp(0xfffffffd)
+}
+
+// Provider-boundary: VC5 CRT helper __crtGetEnvironmentStringsA. Uses cached mode at g_crtEnvironmentStringsMode (0 unknown, 1 W, 2 A), Kernel32 environment APIs, _malloc_crt/_free, and returns an allocated ANSI environment block for _aenvptr.
+0x100020e0 PSTR __crtGetEnvironmentStringsA()
+{
+    int32_t crtEnvironmentStringsMode_1 = g_crtEnvironmentStringsMode
+    PWSTR wideEnv = nullptr
+    PSTR penv = nullptr
+
+    if (crtEnvironmentStringsMode_1 != 0)
+        goto label_10002122
+
+    wideEnv = GetEnvironmentStringsW()
+
+    if (wideEnv == 0)
+        penv = GetEnvironmentStrings()
+
+        if (penv != 0)
+            crtEnvironmentStringsMode_1 = 2
+            goto label_1000211d
+    else
+        crtEnvironmentStringsMode_1 = 1
+    label_1000211d:
+        g_crtEnvironmentStringsMode = crtEnvironmentStringsMode_1
+    label_10002122:
+
+        if (crtEnvironmentStringsMode_1 == 1)
+            if (wideEnv != 0)
+            label_1000213f:
+                PWSTR wideEnv_1 = wideEnv
+
+                if (*wideEnv != 0)
+                    while (true)
+                        wideEnv_1 = &wideEnv_1[1]
+
+                        if (*wideEnv_1 == 0)
+                            wideEnv_1 = &wideEnv_1[1]
+
+                            if (*wideEnv_1 == 0)
+                                break
+
+                int32_t eax_6 = WideCharToMultiByte(0, 0, wideEnv, ((wideEnv_1 - wideEnv) s>> 1) + 1, nullptr, 0, nullptr, nullptr)
+
+                if (eax_6 != 0)
+                    PSTR wideConvertedEnv = _malloc_crt(eax_6)
+
+                    if (wideConvertedEnv != 0)
+                        if (WideCharToMultiByte(0, 0, wideEnv, ((wideEnv_1 - wideEnv) s>> 1) + 1, wideConvertedEnv, eax_6, nullptr, nullptr) == 0)
+                            _free(wideConvertedEnv)
+                            wideConvertedEnv = nullptr
+
+                        FreeEnvironmentStringsW(wideEnv)
+                        return wideConvertedEnv
+
+                FreeEnvironmentStringsW(wideEnv)
+                return 0
+
+            wideEnv = GetEnvironmentStringsW()
+
+            if (wideEnv != 0)
+                goto label_1000213f
+        else if (crtEnvironmentStringsMode_1 == 2)
+            if (penv != 0)
+            label_100021d5:
+                PSTR penv_1 = penv
+
+                if (*penv != 0)
+                    while (true)
+                        char ecx = penv_1[1]
+                        penv_1 = &penv_1[1]
+
+                        if (ecx == 0)
+                            ecx = penv_1[1]
+                            penv_1 = &penv_1[1]
+
+                            if (ecx == 0)
+                                break
+
+                void* eax_14 = _malloc_crt(penv_1 - penv + 1)
+
+                if (eax_14 == 0)
+                    FreeEnvironmentStringsA(penv)
+                    return 0
+
+                int32_t esi_2
+                int32_t edi_2
+                edi_2, esi_2 = __builtin_memcpy(eax_14, penv, (penv_1 - penv + 1) & 0xfffffffc)
+                __builtin_memcpy(edi_2, esi_2, (penv_1 - penv + 1) & 3)
+                FreeEnvironmentStringsA(penv)
+                return eax_14
+
+            penv = GetEnvironmentStrings()
+
+            if (penv != 0)
+                goto label_100021d5
+
+    return 0
+}
+
+// VC5 CRT provider heap initializer. Called by __CRT_INIT for DLL_PROCESS_ATTACH; creates _crtheap with HeapCreate(0, 0x1000, 0), calls the small-block heap initializer at 0x10002ca0, and destroys the heap on failure.
+0x10002240 int32_t __heap_init()
+{
+    HANDLE result = HeapCreate(HEAP_NONE, 0x1000, 0)
+    _crtheap = result
+
+    if (result == 0)
+        return result
+
+    if (__sbh_alloc_new_region() != 0)
+        return 1
+
+    HeapDestroy(_crtheap)
+    return 0
+}
+
+// VC5 CRT provider heap terminator. Called by __CRT_INIT on attach failure and DLL_PROCESS_DETACH after _ioterm/__mtterm; walks the small-block heap region list rooted at 0x1000b5b8, VirtualFree(MEM_RELEASE)s non-null region bases at +0x10, then HeapDestroy(_crtheap).
+0x10002280 void __heap_term()
+{
+    struct __sbh_region* next = &__sbh_static_region
+
+    do
+        void* lpAddress = next->reserved_base
+
+        if (lpAddress != 0)
+            VirtualFree(lpAddress, 0, MEM_RELEASE)
+
+        next = next->next
+    while (next != &__sbh_static_region)
+
+    HeapDestroy(_crtheap)
+}
+
+// VC CRT runtime-message helper (crt0msg.c): writes CR/LF and runtime-error banner via _NMSG_WRITE; optional zero-initialized callback at g_CRT_bannerCallback is invoked between them when present. Provider-boundary candidate.
+0x100022c0 void _FF_MSGBANNER()
+{
+    int32_t CRT_errorMode_1 = g_CRT_errorMode
+
+    if (CRT_errorMode_1 == 1)
+    label_100022dc:
+        _NMSG_WRITE(0xfc)
+        void (* CRT_bannerCallback_1)() = g_CRT_bannerCallback
+
+        if (CRT_bannerCallback_1 != 0)
+            CRT_bannerCallback_1()
+
+        _NMSG_WRITE(0xff)
+    else if (CRT_errorMode_1 == 0 && g_CRT_appType == 1)
+        goto label_100022dc
+}
+
+// VC CRT runtime-message helper (crt0msg.c): looks up rterrnum in g_CRT_runtimeErrorMessages; writes to stderr/console using WriteFile or builds a MessageBoxA text/title path for GUI/default error mode. Provider-boundary candidate.
+0x10002300 void _NMSG_WRITE(int32_t rterrnum)
+{
+    struct CRT_RuntimeErrorMessage* eax = &g_CRT_runtimeErrorMessages
+    int32_t ebp = 0
+
+    while (rterrnum != eax->error_number)
+        eax = &eax[1]
+        ebp += 1
+
+        if (eax u>= &__locktable)
+            break
+
+    if (rterrnum != g_CRT_runtimeErrorMessages[ebp].error_number)
+        return
+
+    int32_t CRT_errorMode_1 = g_CRT_errorMode
+    uint32_t var_1bc
+
+    if (CRT_errorMode_1 == 1 || (CRT_errorMode_1 == 0 && g_CRT_appType == 1))
+        struct CRT_ioinfo* eax_2 = g_CRT_pioinfo[0]
+        HANDLE hFile
+
+        if (eax_2 != 0)
+            hFile = eax_2->__offset(0x48).d
+
+        if (eax_2 == 0 || hFile == 0xffffffff)
+            var_1bc = 0xfffffff4
+            hFile = GetStdHandle(var_1bc)
+
+        char const* message = g_CRT_runtimeErrorMessages[ebp].message
+        var_1bc = 0
+        char const* message_2 = message
+        int32_t i = 0xffffffff
+
+        while (i != 0)
+            bool cond:0_1 = 0 != *message_2
+            message_2 = &message_2[1]
+            i -= 1
+
+            if (not(cond:0_1))
+                break
+
+        uint32_t numberOfBytesWritten
+        WriteFile(hFile, message, not.d(i) - 1, &numberOfBytesWritten, var_1bc)
+    else if (rterrnum != 0xfc)
+        var_1bc = 0x104
+        char moduleFileName[0x104]
+
+        if (GetModuleFileNameA(nullptr, &moduleFileName, var_1bc) == 0)
+            int16_t* esi_1
+            int16_t* edi_1
+            edi_1, esi_1 = __builtin_strncpy(&moduleFileName, "<program name unknown>", 0x14)
+            *edi_1 = *esi_1
+            edi_1[1].b = esi_1[1].b
+
+        char (* edi_4)[0x104] = &moduleFileName
+        int32_t i_1 = 0xffffffff
+        char (* ebx)[0x104] = &moduleFileName
+
+        while (i_1 != 0)
+            bool cond:1_1 = 0 != *edi_4
+            edi_4 = &(*edi_4)[1]
+            i_1 -= 1
+
+            if (not(cond:1_1))
+                break
+
+        char messageBoxText[0xa0]
+
+        if (not.d(i_1) u> 0x3c)
+            char (* edi_5)[0x104] = &moduleFileName
+            int32_t i_2 = 0xffffffff
+
+            while (i_2 != 0)
+                bool cond:8_1 = 0 != *edi_5
+                edi_5 = &(*edi_5)[1]
+                i_2 -= 1
+
+                if (not(cond:8_1))
+                    break
+
+            var_1bc = 3
+            ebx = &messageBoxText[not.d(i_2) + 0x64]
+            strncpy(ebx, "...", var_1bc)
+
+        int16_t* esi_4
+        int16_t* edi_6
+        edi_6, esi_4 = __builtin_strncpy(&messageBoxText, "Runtime Error!\n\nProgram: ", 0x18)
+        *edi_6 = *esi_4
+        int32_t i_3 = 0xffffffff
+        char (* edi_8)[0x104] = ebx
+
+        while (i_3 != 0)
+            bool cond:2_1 = 0 != *edi_8
+            edi_8 = &(*edi_8)[1]
+            i_3 -= 1
+
+            if (not(cond:2_1))
+                break
+
+        int32_t ecx_3 = not.d(i_3)
+        int32_t i_4 = 0xffffffff
+        char (* edi_10)[0xa0] = &messageBoxText
+
+        while (i_4 != 0)
+            bool cond:3_1 = 0 != *edi_10
+            edi_10 = &(*edi_10)[1]
+            i_4 -= 1
+
+            if (not(cond:3_1))
+                break
+
+        int32_t esi_7
+        int32_t edi_12
+        edi_12, esi_7 = __builtin_memcpy(edi_10 - 1, edi_8 - ecx_3, ecx_3 & 0xfffffffc)
+        var_1bc = 0x12010
+        __builtin_memcpy(edi_12, esi_7, ecx_3 & 3)
+        char* const edi_13 = "\n\n"
+        int32_t i_5 = 0xffffffff
+
+        while (i_5 != 0)
+            bool cond:4_1 = 0 != *edi_13
+            edi_13 = &edi_13[1]
+            i_5 -= 1
+
+            if (not(cond:4_1))
+                break
+
+        int32_t ecx_8 = not.d(i_5)
+        char (* edi_15)[0xa0] = &messageBoxText
+        int32_t i_6 = 0xffffffff
+
+        while (i_6 != 0)
+            bool cond:5_1 = 0 != *edi_15
+            edi_15 = &(*edi_15)[1]
+            i_6 -= 1
+
+            if (not(cond:5_1))
+                break
+
+        int32_t esi_9
+        int32_t edi_17
+        edi_17, esi_9 = __builtin_memcpy(edi_15 - 1, edi_13 - ecx_8, ecx_8 & 0xfffffffc)
+        __builtin_memcpy(edi_17, esi_9, ecx_8 & 3)
+        int32_t message_1 = g_CRT_runtimeErrorMessages[ebp].message
+        int32_t i_7 = 0xffffffff
+
+        while (i_7 != 0)
+            bool cond:6_1 = 0 != *message_1
+            message_1 += 1
+            i_7 -= 1
+
+            if (not(cond:6_1))
+                break
+
+        int32_t ecx_13 = not.d(i_7)
+        char (* edi_19)[0xa0] = &messageBoxText
+        int32_t i_8 = 0xffffffff
+
+        while (i_8 != 0)
+            bool cond:7_1 = 0 != *edi_19
+            edi_19 = &(*edi_19)[1]
+            i_8 -= 1
+
+            if (not(cond:7_1))
+                break
+
+        int32_t esi_11
+        int32_t edi_21
+        edi_21, esi_11 = __builtin_memcpy(edi_19 - 1, message_1 - ecx_13, ecx_13 & 0xfffffffc)
+        __builtin_memcpy(edi_21, esi_11, ecx_13 & 3)
+        __crtMessageBoxA(&messageBoxText, "Microsoft Visual C++ Runtime Library", var_1bc)
+}
+
+// VC5 CRT provider lock initialization. Initializes static __locktable slots 17, 13, 9, and 1 with InitializeCriticalSection; paired with __mtdeletelocks.
+0x100024e0 void __mtinitlocks()
+{
+    InitializeCriticalSection(__locktable[0x11])
+    InitializeCriticalSection(__locktable[0xd])
+    InitializeCriticalSection(__locktable[9])
+    InitializeCriticalSection(__locktable[1])
+}
+
+// VC5 CRT provider lock teardown. Iterates __locktable[0..47], deletes/frees dynamic CRITICAL_SECTION entries except static slots 1, 9, 13, and 17, then deletes those static critical sections.
+0x10002510 void __mtdeletelocks()
+{
+    for (CRITICAL_SECTION** i = &__locktable; i s< &_XcptActTab; i = &i[1])
+        CRITICAL_SECTION* lpCriticalSection = *i
+
+        if (lpCriticalSection != 0 && i != &__locktable[0x11] && i != &__locktable[0xd] && i != &__locktable[9] && i != &__locktable[1])
+            DeleteCriticalSection(lpCriticalSection)
+            _free(*i)
+
+    DeleteCriticalSection(__locktable[9])
+    DeleteCriticalSection(__locktable[0xd])
+    DeleteCriticalSection(__locktable[0x11])
+    DeleteCriticalSection(__locktable[1])
+}
+
+// VC CRT lock helper: lazily allocates/initializes __locktable[locknum] CRITICAL_SECTION under lock 0x11, then enters the requested critical section. Provider-boundary/runtime code, not authored messages.dll logic.
+0x10002590 void __lock(int32_t locknum)
+{
+    if (__locktable[locknum] == 0)
+        CRITICAL_SECTION* eax_1 = _malloc_crt(0x18)
+
+        if (eax_1 == 0)
+            __amsg_exit(0x11)
+
+        __lock(0x11)
+
+        if (__locktable[locknum] != 0)
+            _free(eax_1)
+        else
+            InitializeCriticalSection(eax_1)
+            __locktable[locknum] = eax_1
+
+        __unlock(0x11)
+
+    EnterCriticalSection(__locktable[locknum])
+}
+
+0x10002610 int32_t __unlock(int32_t arg1)
+{
+    return LeaveCriticalSection(__locktable[arg1])
+}
+
+// VC5 CRT _lock_file provider helper. Locks one of the 20 static __iob streams via __lock(index + 0x1c); non-__iob streams carry a CRITICAL_SECTION at FILE+0x20.
+0x10002630 void __lock_file(struct CRT_iobuf* stream)
+{
+    if (stream u>= &__iob && stream u<= &__iob[0x13])
+        __lock(((stream - &__iob) s>> 5) + 0x1c)
+        return
+
+    EnterCriticalSection(&stream[1])
+
+    // [comments not attached to rendered lines]
+    // [comment @ 0x10002644]
+    // __iob is 20 CRT_iobuf entries (0x20 bytes each); stream index selects CRT lock numbers 0x1c..0x2f.
+    // [comment @ 0x1000265a]
+    // Non-static CRT stream path: lock field is the CRITICAL_SECTION immediately after CRT_iobuf at +0x20.
+}
+
+// VC5 CRT _lock_file2 provider helper. If stream_index < 20, locks CRT stream lock number stream_index + 0x1c via __lock; otherwise locks the extended stream CRITICAL_SECTION at CRT_FILEX.lock (offset 0x20).
+0x10002670 void __lock_file2(int32_t stream_index, struct CRT_FILEX* stream)
+{
+    if (stream_index s>= 0x14)
+        EnterCriticalSection(&stream->lock)
+        return
+
+    __lock(stream_index + 0x1c)
+}
+
+// VC5 CRT _unlock_file provider helper. Unlocks one of the 20 static __iob streams via __unlock(index + 0x1c); non-__iob streams carry a CRITICAL_SECTION at CRT_iobuf+0x20.
+0x100026a0 void __unlock_file(struct CRT_iobuf* stream)
+{
+    if (stream u>= &__iob && stream u<= &__iob[0x13])
+        __unlock(((stream - &__iob) s>> 5) + 0x1c)
+        return
+
+    LeaveCriticalSection(&stream[1])
+}
+
+// VC5 CRT _unlock_file2 provider helper. If stream_index < 20, unlocks CRT stream lock number stream_index + 0x1c via __unlock; otherwise leaves the extended stream CRITICAL_SECTION at CRT_FILEX.lock (offset 0x20).
+0x100026e0 void __unlock_file2(int32_t stream_index, struct CRT_FILEX* stream)
+{
+    if (stream_index s>= 0x14)
+        LeaveCriticalSection(&stream->lock)
+        return
+
+    __unlock(stream_index + 0x1c)
+}
+
+// VC5 CRT heap helper: calloc-style count*size allocation with 16-byte alignment, small-block heap fast path, HeapAlloc(HEAP_ZERO_MEMORY) fallback, and new-handler retry path. Direct dependency of _getptd for _tiddata allocation.
+0x10002710 void* _calloc_crt(uint32_t count, uint32_t size)
+{
+    uint32_t dwBytes = size * count
+
+    if (dwBytes u<= 0xffffffe0)
+        dwBytes = dwBytes u<= 0 ? 0x10 : (dwBytes + 0xf) & 0xfffffff0
+
+    int32_t i
+
+    do
+        void* block = nullptr
+
+        if (dwBytes u<= 0xffffffe0)
+            if (dwBytes u> __sbh_threshold)
+            label_10002784:
+
+                if (block != 0)
+                    return block
+            else
+                __lock(9)
+                block = __sbh_alloc_block(dwBytes u>> 4)
+                __unlock(9)
+
+                if (block != 0)
+                    __builtin_memset(__builtin_memset(block, 0, dwBytes & 0xfffffffc), 0, dwBytes & 3)
+                    goto label_10002784
+
+            block = HeapAlloc(_crtheap, HEAP_ZERO_MEMORY, dwBytes)
+
+        if (block != 0 || g_CRT_newmode == 0)
+            return block
+
+        i = _callnewh(dwBytes)
+    while (i != 0)
+
+    return i
+}
+
+// VC5 CRT provider heap free path used by __mtdeletelocks for dynamically allocated critical-section objects.
+0x100027c0 void _free(void* lpMem)
+{
+    struct __sbh_region* entry_ecx
+    struct __sbh_region* var_4 = entry_ecx
+    void* lpMem_1 = lpMem
+
+    if (lpMem_1 == 0)
+        return
+
+    __lock(9)
+    char* block_header = __sbh_find_block(lpMem_1, &var_4, &lpMem)
+
+    if (block_header != 0)
+        __sbh_free_block(var_4, lpMem, block_header)
+        __unlock(9)
+        return
+
+    __unlock(9)
+    HeapFree(_crtheap, HEAP_NONE, lpMem_1)
+}
+
+// VC5 CRT heap helper _malloc_crt(size): forwards to _nh_malloc(size, _newmode). Direct allocator used by _ioinit for 0x480-byte CRT_ioinfo pages.
+0x10002830 void* _malloc_crt(uint32_t size)
+{
+    return _nh_malloc(size, g_CRT_newmode)
+}
+
+// VC5 CRT _nh_malloc(size, nhFlag): normalizes zero-size allocation to 1, calls _heap_alloc, and invokes _callnewh(size) while nhFlag is nonzero.
+0x10002850 void* _nh_malloc(uint32_t size, int32_t nhFlag)
+{
+    uint32_t size_1 = size
+
+    if (size_1 u<= 0xffffffe0)
+        if (size_1 == 0)
+            size_1 = 1
+
+        while (true)
+            void* result
+
+            if (size_1 u> 0xffffffe0)
+                result = nullptr
+            else
+                result = _heap_alloc(size_1)
+
+            if (result != 0 || nhFlag == 0)
+                return result
+
+            if (_callnewh(size_1) == 0)
+                break
+
+            continue
+
+    return nullptr
+}
+
+// VC5 CRT heap helper/provider boundary: rounds requested size to 16 bytes, uses small-block heap under __lock(9)/__unlock(9) when <= __sbh_threshold, otherwise falls back to HeapAlloc(_crtheap, HEAP_NONE, rounded_size). Called by _nh_malloc.
+0x100028a0 void* _heap_alloc(uint32_t size)
+{
+    uint32_t dwBytes = (size + 0xf) & 0xfffffff0
+
+    if (dwBytes u<= __sbh_threshold)
+        __lock(9)
+        void* result = __sbh_alloc_block(dwBytes u>> 4)
+        __unlock(9)
+
+        if (result != 0)
+            return result
+
+    return HeapAlloc(_crtheap, HEAP_NONE, dwBytes)
+}
+
+// CRT provider wrapper: cdecl __crtLCMapStringA. Probes LCMapStringW/A support with empty-string sentinels, caches mode 1=W/2=A, converts through MultiByteToWideChar/WideCharToMultiByte using CodePage or __lc_codepage, and calls KERNEL32 LCMapStringA/W.
+0x10002900 int32_t __crtLCMapStringA(uint32_t Locale, uint32_t dwMapFlags, uint8_t* lpSrcStr, int32_t cchSrc, PSTR lpDestStr, int32_t cchDest, uint32_t CodePage, int32_t bError)
+{
+    int32_t crtLCMapStringA_mode_1 = g_crtLCMapStringA_mode
+
+    if (crtLCMapStringA_mode_1 != 0)
+        goto label_1000295c
+
+    if (LCMapStringW(0, 0x100, &g_crtEmptyStringW, 1, nullptr, 0) == 0)
+        if (LCMapStringA(0, 0x100, &g_crtEmptyStringA, 1, nullptr, 0) != 0)
+            crtLCMapStringA_mode_1 = 2
+            goto label_10002957
+    else
+        crtLCMapStringA_mode_1 = 1
+    label_10002957:
+        g_crtLCMapStringA_mode = crtLCMapStringA_mode_1
+    label_1000295c:
+        int32_t cchSrc_1 = cchSrc
+        uint8_t* lpSrcStr_1
+
+        if (cchSrc_1 s<= 0)
+            lpSrcStr_1 = lpSrcStr
+        else
+            lpSrcStr_1 = lpSrcStr
+            cchSrc_1 = _strncnt(lpSrcStr_1, cchSrc_1)
+            crtLCMapStringA_mode_1 = g_crtLCMapStringA_mode
+
+        if (crtLCMapStringA_mode_1 == 2)
+            return LCMapStringA(Locale, dwMapFlags, lpSrcStr_1, cchSrc_1, lpDestStr, cchDest)
+
+        if (crtLCMapStringA_mode_1 != 1)
+            return crtLCMapStringA_mode_1
+
+        uint32_t CodePage_1 = CodePage
+        cchSrc = 0
+
+        if (CodePage_1 == 0)
+            uint32_t __lc_codepage_1 = __lc_codepage
+            CodePage = __lc_codepage_1
+            CodePage_1 = __lc_codepage_1
+
+        int32_t edx_3 = neg.d(bError)
+        int32_t eax_6 = MultiByteToWideChar(CodePage_1, (sbb.d(edx_3, edx_3, bError != 0) & 8) + 1, lpSrcStr_1, cchSrc_1, nullptr, 0)
+
+        if (eax_6 == 0)
+            return eax_6
+
+        wchar16* eax_8 = _malloc_crt(eax_6 * 2)
+
+        if (eax_8 == 0)
+            return eax_8
+
+        if (MultiByteToWideChar(CodePage_1, MB_PRECOMPOSED, lpSrcStr, cchSrc_1, eax_8, eax_6) != 0)
+            int32_t esi_1 = LCMapStringW(Locale, dwMapFlags, eax_8, eax_6, nullptr, 0)
+
+            if (esi_1 != 0)
+                if ((dwMapFlags & 0x400) == 0)
+                    PWSTR lpDestStr_1 = _malloc_crt(esi_1 * 2)
+                    cchSrc = lpDestStr_1
+
+                    if (lpDestStr_1 != 0 && LCMapStringW(Locale, dwMapFlags, eax_8, eax_6, lpDestStr_1, esi_1) != 0)
+                        if (cchDest != 0)
+                            esi_1 = WideCharToMultiByte(CodePage, 0x220, cchSrc, esi_1, lpDestStr, cchDest, nullptr, nullptr)
+
+                            if (esi_1 != 0)
+                                goto label_10002a70
+                        else
+                            esi_1 = WideCharToMultiByte(CodePage, 0x220, cchSrc, esi_1, nullptr, 0, nullptr, nullptr)
+
+                            if (esi_1 != 0)
+                                goto label_10002a70
+                else
+                    if (cchDest == 0)
+                    label_10002a70:
+                        _free(eax_8)
+                        _free(cchSrc)
+                        return esi_1
+
+                    if (esi_1 s<= cchDest && LCMapStringW(Locale, dwMapFlags, eax_8, eax_6, lpDestStr, cchDest) != 0)
+                        goto label_10002a70
+
+        _free(eax_8)
+        _free(cchSrc)
+
+    return 0
+}
+
+// VC CRT provider helper: cdecl _strncnt. Bounded strlen used by __crtLCMapStringA; returns the byte count before NUL up to count, or count if no NUL appears.
+0x10002b30 uint32_t _strncnt(char const* string, uint32_t count)
+{
+    char const* string_1 = string
+    int32_t ecx = count - 1
+
+    if (count != 0)
+        while (*string_1 != 0)
+            string_1 = &string_1[1]
+            int32_t edi_1 = ecx
+            ecx -= 1
+
+            if (edi_1 == 0)
+                break
+
+    if (*string_1 != 0)
+        return count
+
+    return string_1 - string
+}
+
+// CRT provider wrapper: cdecl __crtGetStringTypeA. Probes GetStringTypeW/A support with empty-string sentinels, caches mode 1=W/2=A, falls back to Locale or locale handle for A path, and converts through MultiByteToWideChar for W path.
+0x10002b60 BOOL __crtGetStringTypeA(uint32_t dwInfoType, uint8_t* lpSrcStr, int32_t cchSrc, uint16_t* lpCharType, uint32_t CodePage, uint32_t Locale, int32_t bError)
+{
+    int32_t crtGetStringTypeA_mode_1 = g_crtGetStringTypeA_mode
+    wchar16* edi = nullptr
+    int32_t __saved_ecx
+
+    if (crtGetStringTypeA_mode_1 == 0)
+        if (GetStringTypeW(1, &g_crtEmptyStringW, 1, &__saved_ecx:2) == 0)
+            if (GetStringTypeA(0, 1, &g_crtEmptyStringA, 1, &__saved_ecx:2) == 0)
+                return 0
+
+            crtGetStringTypeA_mode_1 = 2
+            g_crtGetStringTypeA_mode = 2
+        else
+            crtGetStringTypeA_mode_1 = 1
+            g_crtGetStringTypeA_mode = 1
+
+    if (crtGetStringTypeA_mode_1 == 2)
+        uint32_t Locale_1 = Locale
+
+        if (Locale_1 == 0)
+            Locale_1 = __lc_handle[2]
+
+        return GetStringTypeA(Locale_1, dwInfoType, lpSrcStr, cchSrc, lpCharType)
+
+    if (crtGetStringTypeA_mode_1 != 1)
+        return crtGetStringTypeA_mode_1
+
+    uint32_t __lc_codepage_1 = CodePage
+
+    if (__lc_codepage_1 == 0)
+        __lc_codepage_1 = __lc_codepage
+
+    int32_t eax_3 = neg.d(bError)
+    int32_t eax_7 = MultiByteToWideChar(__lc_codepage_1, (sbb.d(eax_3, eax_3, bError != 0) & 8) + 1, lpSrcStr, cchSrc, nullptr, 0)
+
+    if (eax_7 != 0)
+        edi = _calloc_crt(2, eax_7)
+
+        if (edi != 0)
+            int32_t cchSrc_1 = MultiByteToWideChar(__lc_codepage_1, MB_PRECOMPOSED, lpSrcStr, cchSrc, edi, eax_7)
+
+            if (cchSrc_1 != 0)
+                BOOL eax_10 = GetStringTypeW(dwInfoType, edi, cchSrc_1, lpCharType)
+                _free(edi)
+                return eax_10
+
+    _free(edi)
+    return 0
+}
+
+// VC CRT small-block heap provider routine. Allocates or initializes a __sbh_region header, reserves 0x400000 bytes with VirtualAlloc, commits the first 0x10000 bytes, links the region into the __sbh_static_region list, initializes 1024 page descriptors, and returns NULL on allocation/commit failure.
+0x10002ca0 struct __sbh_region* __sbh_alloc_new_region()
+{
+    struct __sbh_region* region
+
+    if (__sbh_static_region.reserved_base != 0xffffffff)
+        region = HeapAlloc(_crtheap, HEAP_NONE, 0x2020)
+
+        if (region != 0)
+            goto label_10002ce7
+    else
+        region = &__sbh_static_region
+    label_10002ce7:
+        uint32_t* page_base = VirtualAlloc(nullptr, 0x400000, MEM_RESERVE, PAGE_READWRITE)
+
+        if (page_base != 0)
+            if (VirtualAlloc(page_base, 0x10000, MEM_COMMIT, PAGE_READWRITE) != 0)
+                if (region != &__sbh_static_region)
+                    region->next = &__sbh_static_region
+                    region->prev = __sbh_static_region.prev
+                    __sbh_static_region.prev = region
+                    region->prev->next = region
+                else
+                    if (__sbh_static_region.next == 0)
+                        __sbh_static_region.next = &__sbh_static_region
+
+                    if (__sbh_static_region.prev == 0)
+                        __sbh_static_region.prev = &__sbh_static_region
+
+                struct __sbh_page_entry* page_entry = &region->page
+                region->reserved_limit = &page_base[0x100000]
+                region->reserved_base = page_base
+                region->scan_entry = page_entry
+                region->first_uncommitted = &region->page[0x10]
+
+                for (int32_t page_index = 0; page_index s< 0x400; )
+                    int32_t edx_3
+                    edx_3.b = page_index s>= 0x10
+                    page_entry = &page_entry[1]
+                    page_index += 1
+                    page_entry->__offset(0xfffffffffffffff8).d = ((edx_3 - 1) & 0xf1) - 1
+                    page_entry->__offset(0xfffffffffffffffc).d = 0xf1
+
+                __builtin_memset(page_base, 0, 0x10000)
+
+                for (; page_base u< &region->reserved_base[0x10000]; page_base = &page_base[0x400])
+                    page_base[1] = 0xf0
+                    *page_base = &page_base[2]
+                    page_base[0x3e].b = 0xff
+
+                return region
+
+            VirtualFree(page_base, 0, MEM_RELEASE)
+
+        if (region != &__sbh_static_region)
+            HeapFree(_crtheap, HEAP_NONE, region)
+    return 0
+}
+
+// VC CRT small-block heap internal helper. Releases region->reserved_base with VirtualFree(..., 0, MEM_RELEASE), updates __sbh_pHeaderScan/list links, and frees non-static region headers with HeapFree(_crtheap, 0, region).
+0x10002e10 void __sbh_free_region(struct __sbh_region* region)
+{
+    VirtualFree(region->reserved_base, 0, MEM_RELEASE)
+
+    if (__sbh_pHeaderScan == region)
+        __sbh_pHeaderScan = region->prev
+
+    if (region == &__sbh_static_region)
+        __sbh_static_region.reserved_base = 0xffffffff
+        return
+
+    region->prev->next = region->next
+    region->next->prev = region->prev
+    HeapFree(_crtheap, HEAP_NONE, region)
+}
+
+// VC5 CRT small-block heap provider helper. Decommits up to count fully-free SBH pages with VirtualFree(..., 0x1000, MEM_DECOMMIT), marks page descriptors uncommitted, adjusts the global decommittable-page count, and frees an entirely uncommitted region via __sbh_free_region.
+0x10002e70 void __sbh_decommit_pages(int32_t count)
+{
+    struct __sbh_region* prev = __sbh_static_region.prev
+
+    do
+        if (prev->reserved_base != 0xffffffff)
+            int32_t ebp_1 = 0
+            struct __sbh_page_entry* esi_1 = &prev->page[0x3ff]
+
+            for (int32_t j = 0x3ff000; j s>= 0; )
+                if (esi_1->free_bytes == 0xf0 && VirtualFree(&prev->reserved_base[j], 0x1000, MEM_DECOMMIT) != 0)
+                    esi_1->free_bytes = 0xffffffff
+                    data_1000dde4 -= 1
+                    struct __sbh_page_entry* first_uncommitted = prev->first_uncommitted
+
+                    if (first_uncommitted == 0 || first_uncommitted u> esi_1)
+                        prev->first_uncommitted = esi_1
+
+                    ebp_1 += 1
+                    bool cond:0_1 = count == 1
+                    count -= 1
+
+                    if (cond:0_1)
+                        break
+
+                j -= 0x1000
+                esi_1 -= 8
+
+            struct __sbh_region* region = prev
+            prev = prev->prev
+
+            if (ebp_1 != 0 && region->page[0].free_bytes == 0xffffffff)
+                int32_t eax_6 = 1
+                struct __sbh_page_entry* ecx_1 = &region->page[1]
+
+                while (ecx_1->free_bytes == 0xffffffff)
+                    eax_6 += 1
+                    ecx_1 = &ecx_1[1]
+
+                    if (eax_6 s>= 0x400)
+                        break
+
+                if (eax_6 == 0x400)
+                    __sbh_free_region(region)
+
+        if (prev == __sbh_static_region.prev)
+            break
+    while (count s> 0)
+}
+
+// VC5 CRT small-block heap provider helper. Walks the __sbh_static_region list to locate a candidate allocation, rejects non-16-byte aligned/out-of-page-header blocks, writes region/page-base outputs, and returns the page allocation-map byte pointer or NULL.
+0x10002f40 char* __sbh_find_block(void* block, struct __sbh_region** region_out, void** page_base_out)
+{
+    struct __sbh_region* region = &__sbh_static_region
+
+    do
+        if (block u> region->reserved_base && block u< region->reserved_limit)
+            if ((block.b & 0xf) != 0 || (block & 0xfff) u< 0x100)
+                break
+
+            *region_out = region
+            void* eax_1 = block & 0xfffff000
+            *page_base_out = eax_1
+            return ((block - eax_1 - 0x100) s>> 4) + eax_1 + 8
+
+        region = region->next
+    while (region != &__sbh_static_region)
+
+    return 0
+}
+
+// VC5 CRT small-block heap provider helper. Frees one SBH block: derives the page entry from the region and page base, adds the block's paragraph count back to page free_bytes, clears the block header byte, sets largest_free to 0xf1, and when a page reaches 0xf0 free bytes increments the decommittable-page counter at 0x1000dde4 and calls __sbh_decommit_pages(0x10) at a threshold of 0x20.
+0x10002fa0 void __sbh_free_block(struct __sbh_region* region, void* page_base, uint8_t* block_header)
+{
+    int32_t ecx_2 = (page_base - region->reserved_base) s>> 0xc
+    int32_t edx
+    edx.b = *block_header
+    region->page[ecx_2].free_bytes += edx
+    *block_header = 0
+    region->page[ecx_2].largest_free = 0xf1
+
+    if (region->page[ecx_2].free_bytes != 0xf0)
+        return
+
+    int32_t eax_2 = data_1000dde4 + 1
+    data_1000dde4 = eax_2
+
+    if (eax_2 == 0x20)
+        __sbh_decommit_pages(0x10)
+}
+
+// VC5 CRT small-block heap provider helper. Takes a 16-byte paragraph count from _heap_alloc/_calloc_crt, scans __sbh_pHeaderScan/__sbh_static_region page entries, commits 0x1000-byte pages with VirtualAlloc, and returns a heap block pointer or null.
+0x10003000 void* __sbh_alloc_block(uint32_t size_paragraphs)
+{
+    int32_t ecx
+    int32_t var_4_1 = ecx
+    struct __sbh_region* i = __sbh_pHeaderScan
+    uint32_t size_paragraphs_1 = size_paragraphs
+    struct __sbh_region* var_4 = i
+
+    do
+        uint8_t* reserved_base = i->reserved_base
+
+        if (reserved_base != 0xffffffff)
+            struct __sbh_page_entry* scan_entry_1 = i->scan_entry
+            void* page_base = &reserved_base[(scan_entry_1 - i - 0x18) s>> 3 << 0xc]
+
+            while (scan_entry_1 u< &i->unused_2018)
+                int32_t free_bytes = scan_entry_1->free_bytes
+
+                if (free_bytes s>= size_paragraphs_1 && scan_entry_1->largest_free u> size_paragraphs_1)
+                    void* eax_1 = __sbh_alloc_block_from_page(page_base, free_bytes, size_paragraphs_1)
+
+                    if (eax_1 != 0)
+                        __sbh_pHeaderScan = var_4
+                        scan_entry_1->free_bytes -= size_paragraphs_1
+                        var_4->scan_entry = scan_entry_1
+                        return eax_1
+
+                    i = var_4
+                    scan_entry_1->largest_free = size_paragraphs_1
+
+                scan_entry_1 = &scan_entry_1[1]
+                page_base += 0x1000
+
+            struct __sbh_page_entry* scan_entry = i->scan_entry
+            uint8_t* reserved_base_2 = i->reserved_base
+            struct __sbh_page_entry* esi_6 = &i->page
+
+            while (esi_6 u< scan_entry)
+                int32_t free_bytes_1 = esi_6->free_bytes
+
+                if (free_bytes_1 s>= size_paragraphs_1 && esi_6->largest_free u> size_paragraphs_1)
+                    void* eax_2 = __sbh_alloc_block_from_page(reserved_base_2, free_bytes_1, size_paragraphs_1)
+
+                    if (eax_2 != 0)
+                        __sbh_pHeaderScan = var_4
+                        esi_6->free_bytes -= size_paragraphs_1
+                        var_4->scan_entry = esi_6
+                        return eax_2
+
+                    i = var_4
+                    esi_6->largest_free = size_paragraphs_1
+
+                esi_6 = &esi_6[1]
+                reserved_base_2 = &reserved_base_2[0x1000]
+
+        i = i->next
+        var_4 = i
+    while (i != __sbh_pHeaderScan)
+
+    struct __sbh_region* next = &__sbh_static_region
+
+    while (true)
+        if (next->reserved_base != 0xffffffff && next->first_uncommitted != 0)
+            struct __sbh_page_entry* first_uncommitted = next->first_uncommitted
+            size_paragraphs = first_uncommitted
+            int32_t* lpAddress = &next->reserved_base[(first_uncommitted - next - 0x18) s>> 3 << 0xc]
+            int32_t i_1 = 0
+
+            if (first_uncommitted->free_bytes == 0xffffffff)
+                while (i_1 s< 0x10)
+                    int32_t edx_6 = first_uncommitted->__offset(0x8).d
+                    first_uncommitted = &first_uncommitted[1]
+                    i_1 += 1
+
+                    if (edx_6 != 0xffffffff)
+                        break
+
+            int32_t dwSize = i_1 << 0xc
+            var_4 = dwSize
+
+            if (VirtualAlloc(lpAddress, dwSize, MEM_COMMIT, PAGE_READWRITE) != lpAddress)
+                break
+
+            struct __sbh_page_entry* size_paragraphs_2 = size_paragraphs
+            struct __sbh_page_entry* size_paragraphs_3 = size_paragraphs_2
+
+            if (i_1 s> 0)
+                int32_t* eax_8 = &lpAddress[1]
+                int32_t i_2
+
+                do
+                    *eax_8 = 0xf0
+                    eax_8[-1] = &eax_8[1]
+                    eax_8[0x3d].b = 0xff
+                    size_paragraphs_3->free_bytes = 0xf0
+                    size_paragraphs_3->largest_free = 0xf1
+                    eax_8 = &eax_8[0x400]
+                    size_paragraphs_3 = &size_paragraphs_3[1]
+                    i_2 = i_1
+                    i_1 -= 1
+                while (i_2 != 1)
+                size_paragraphs_2 = size_paragraphs
+
+            __sbh_pHeaderScan = next
+            bool c = size_paragraphs_3 u< &next->unused_2018
+
+            if (c)
+                while (size_paragraphs_3->free_bytes != 0xffffffff)
+                    size_paragraphs_3 = &size_paragraphs_3[1]
+
+                    if (size_paragraphs_3 u>= &next->unused_2018)
+                        break
+
+                c = size_paragraphs_3 u< &next->unused_2018
+
+            next->first_uncommitted = sbb.d(&next->unused_2018, &next->unused_2018, c) & size_paragraphs_3
+            lpAddress[2].b = size_paragraphs_1.b
+            next->scan_entry = size_paragraphs_2
+            size_paragraphs_2->free_bytes -= size_paragraphs_1
+            lpAddress[1] -= size_paragraphs_1
+            *lpAddress = lpAddress + size_paragraphs_1 + 8
+            return &lpAddress[0x40]
+
+        next = next->next
+
+        if (next == &__sbh_static_region)
+            struct __sbh_region* eax_15 = __sbh_alloc_new_region()
+
+            if (eax_15 == 0)
+                break
+
+            uint8_t* reserved_base_1 = eax_15->reserved_base
+            reserved_base_1[8] = size_paragraphs_1.b
+            __sbh_pHeaderScan = eax_15
+            *reserved_base_1 = &reserved_base_1[size_paragraphs_1 + 8]
+            *(reserved_base_1 + 4) = 0xf0 - size_paragraphs_1
+            eax_15->page[0].free_bytes -= size_paragraphs_1 & 0xff
+            return &reserved_base_1[0x100]
+
+    return 0
+}
+
+// Direct helper for __sbh_alloc_block: allocates size_paragraphs from one committed SBH page, updates the page free cursor/free-byte count, and returns the user block pointer or null.
+0x10003240 void* __sbh_alloc_block_from_page(void* page_base, uint32_t free_bytes, uint32_t size_paragraphs)
+{
+    void** page_base_2 = page_base
+    void* eax = page_base_2[1]
+    void* page_base_1 = *page_base_2
+    page_base = page_base_1
+    char* page_base_3 = page_base_1
+
+    if (eax u>= size_paragraphs)
+        *page_base_1 = size_paragraphs.b
+
+        if (page_base_1 + size_paragraphs u>= &page_base_2[0x3e])
+            page_base_2[1] = 0
+            *page_base_2 = &page_base_2[2]
+        else
+            int32_t eax_3 = page_base_2[1] - size_paragraphs
+            *page_base_2 += size_paragraphs
+            page_base_2[1] = eax_3
+
+        return ((page_base_1 + 8) << 4) - page_base_2 * 0xf
+
+    char* page_base_4 = eax + page_base_1
+
+    if (*page_base_4 != 0)
+        page_base_3 = page_base_4
+
+    uint32_t free_bytes_1 = free_bytes
+
+    if (&page_base_3[size_paragraphs] u>= &page_base_2[0x3e])
+    label_10003327:
+        page_base_3 = &page_base_2[2]
+
+        if (page_base_3 u>= page_base_1)
+            return 0
+
+        int32_t ecx_4
+
+        while (true)
+            if (&page_base_3[size_paragraphs] u>= &page_base_2[0x3e])
+                return 0
+
+            void* eax_12
+            eax_12.b = *page_base_3
+
+            if (eax_12.b != 0)
+                page_base_3 += eax_12 & 0xff
+            else
+                char* page_base_6 = &page_base_3[1]
+                ecx_4 = 1
+
+                if (page_base_3[1] == 0)
+                    do
+                        page_base_6 = &page_base_6[1]
+                        ecx_4 += 1
+                    while (*page_base_6 == 0)
+
+                if (ecx_4 u>= size_paragraphs)
+                    break
+
+                free_bytes_1 -= ecx_4
+
+                if (free_bytes_1 u< size_paragraphs)
+                    return 0
+
+                page_base_3 = page_base_6
+
+            if (page_base_3 u>= page_base)
+                return 0
+
+        void* eax_15 = &page_base_3[size_paragraphs]
+
+        if (eax_15 u>= &page_base_2[0x3e])
+            *page_base_2 = &page_base_2[2]
+            page_base_2[1] = 0
+        else
+            *page_base_2 = eax_15
+            page_base_2[1] = ecx_4 - size_paragraphs
+    else
+        while (true)
+            void* eax_9
+            eax_9.b = *page_base_3
+
+            if (eax_9.b != 0)
+                page_base_3 += eax_9 & 0xff
+            else
+                char* page_base_5 = &page_base_3[1]
+                int32_t ecx = 1
+
+                if (page_base_3[1] == 0)
+                    do
+                        page_base_5 = &page_base_5[1]
+                        ecx += 1
+                    while (*page_base_5 == 0)
+
+                if (ecx u>= size_paragraphs)
+                    void* eax_11 = &page_base_3[size_paragraphs]
+
+                    if (eax_11 u>= &page_base_2[0x3e])
+                        *page_base_2 = &page_base_2[2]
+                        break
+
+                    *page_base_2 = eax_11
+                    page_base_2[1] = ecx - size_paragraphs
+                    goto label_10003396
+
+                if (page_base_3 != page_base)
+                    free_bytes_1 -= ecx
+
+                    if (free_bytes_1 u< size_paragraphs)
+                        return 0
+
+                    page_base_1 = page_base
+                    page_base_3 = page_base_5
+                else
+                    page_base_2[1] = ecx
+                    page_base_3 = page_base_5
+                    page_base_1 = page_base
+
+            if (&page_base_3[size_paragraphs] u>= &page_base_2[0x3e])
+                goto label_10003327
+
+        page_base_2[1] = 0
+
+    label_10003396:
+    *page_base_3 = size_paragraphs.b
+    return (&page_base_3[8] << 4) - page_base_2 * 0xf
+}
+
+// VC5 CRT provider helper from CRTMBOX.C: dynamically loads user32.dll, resolves MessageBoxA/GetActiveWindow/GetLastActivePopup, chooses the active popup as parent when possible, then calls MessageBoxA(lpText, lpCaption, uType).
+0x100033c0 int32_t __crtMessageBoxA(LPCSTR lpText, LPCSTR lpCaption, UINT uType)
+{
+    HWND hWndParent = nullptr
+
+    if (data_1000dde8 == 0)
+        HMODULE hModule = LoadLibraryA("user32.dll")
+        int32_t eax
+
+        if (hModule != 0)
+            eax = GetProcAddress(hModule, "MessageBoxA")
+            data_1000dde8 = eax
+
+        if (hModule == 0 || eax == 0)
+            return 0
+
+        data_1000ddec = GetProcAddress(hModule, "GetActiveWindow")
+        data_1000ddf0 = GetProcAddress(hModule, "GetLastActivePopup")
+
+    int32_t eax_3 = data_1000ddec
+
+    if (eax_3 != 0)
+        hWndParent = eax_3()
+
+    if (hWndParent != 0)
+        int32_t eax_5 = data_1000ddf0
+
+        if (eax_5 != 0)
+            hWndParent = eax_5(hWndParent)
+
+    return data_1000dde8(hWndParent, lpText, lpCaption, uType)
+}
+
+// VC CRT provider boundary: strncpy from the statically linked VC5 CRT string library. Assembly copies at most count bytes from src to dest, pads remaining bytes with NUL after the first source NUL, and returns dest; only known caller is CRT _NMSG_WRITE truncating a long program name with g_CRT_ellipsis.
+0x10003450 char* strncpy(char* dest, char const* src, uint32_t count)
+{
+    uint32_t count_1 = count
+
+    if (count_1 == 0)
+        return dest
+
+    uint32_t count_2 = count_1
+    char const* src_1 = src
+    char* dest_1 = dest
+    int32_t eax
+    uint32_t i_2
+    uint32_t i_3
+
+    if ((src_1 & 3) != 0)
+        do
+            eax.b = *src_1
+            src_1 = &src_1[1]
+            *dest_1 = eax.b
+            dest_1 = &dest_1[1]
+            uint32_t count_3 = count_1
+            count_1 -= 1
+
+            if (count_3 == 1)
+                return dest
+
+            if (eax.b == 0)
+                while ((dest_1 & 3) != 0)
+                    *dest_1 = eax.b
+                    dest_1 = &dest_1[1]
+                    uint32_t count_4 = count_1
+                    count_1 -= 1
+
+                    if (count_4 == 1)
+                        return dest
+
+                count_2 = count_1
+                i_3 = count_1 u>> 2
+
+                if (i_3 == 0)
+                    goto label_100034cb
+
+            label_10003537:
+                eax = 0
+                uint32_t i
+
+                do
+                    *dest_1 = 0
+                    dest_1 = &dest_1[4]
+                    i = i_3
+                    i_3 -= 1
+                while (i != 1)
+            label_10003541:
+                count_2 &= 3
+
+                if (count_2 != 0)
+                    goto label_100034cb
+
+                return dest
+        while ((src_1 & 3) != 0)
+
+        count_2 = count_1
+        i_2 = count_1 u>> 2
+
+        if (i_2 != 0)
+            goto label_100034df
+
+    label_10003490:
+        count_2 &= 3
+
+        if (count_2 != 0)
+            goto label_10003495
+    else
+        i_2 = count_1 u>> 2
+
+        if (i_2 != 0)
+        label_100034df:
+            uint32_t i_1
+
+            do
+                int32_t eax_3 = *src_1
+                int32_t edx_2 = *src_1
+                src_1 = &src_1[4]
+
+                if (((eax_3 ^ 0xffffffff ^ (0x7efefeff + eax_3)) & 0x81010100) != 0)
+                    if (edx_2.b == 0)
+                        *dest_1 = 0
+                    label_1000352f:
+                        dest_1 = &dest_1[4]
+                        eax = 0
+                        i_3 = i_2 - 1
+
+                        if (i_2 == 1)
+                            goto label_10003541
+
+                        goto label_10003537
+
+                    if (edx_2:1.b == 0)
+                        *dest_1 = edx_2 & 0xff
+                        goto label_1000352f
+
+                    if ((edx_2 & 0xff0000) == 0)
+                        *dest_1 = edx_2 & 0xffff
+                        goto label_1000352f
+
+                    if ((edx_2 & 0xff000000) == 0)
+                        *dest_1 = edx_2
+                        goto label_1000352f
+
+                *dest_1 = edx_2
+                dest_1 = &dest_1[4]
+                i_1 = i_2
+                i_2 -= 1
+            while (i_1 != 1)
+            goto label_10003490
+
+    label_10003495:
+
+        while (true)
+            eax.b = *src_1
+            src_1 = &src_1[1]
+            *dest_1 = eax.b
+            dest_1 = &dest_1[1]
+
+            if (eax.b == 0)
+                while (true)
+                    uint32_t count_5 = count_2
+                    count_2 -= 1
+
+                    if (count_5 == 1)
+                        return dest
+
+                label_100034cb:
+                    *dest_1 = eax.b
+                    dest_1 = &dest_1[1]
+            else
+                uint32_t count_6 = count_2
+                count_2 -= 1
+
+                if (count_6 == 1)
+                    break
+    return dest
+}
+
+// VC5 CRT stdio initializer from _file.c, installed in the __xi_a CRT initializer table. Allocates __piob for _nstream entries (fallback 20), seeds __piob[0..19] from __iob, and marks the first three stdio FILE._file slots -1 when lowio handles are invalid/zero. Provider-boundary, not messages.dll authored logic.
+0x10003550 void __initstdio()
+{
+    uint32_t count = data_1000ee20
+
+    if (count == 0)
+        count = 0x200
+        data_1000ee20 = count
+    else if (count s< 0x14)
+        count = 0x14
+        data_1000ee20 = count
+
+    struct CRT_iobuf** eax = _calloc_crt(count, 4)
+    data_1000de00 = eax
+
+    if (eax == 0)
+        data_1000ee20 = 0x14
+        eax = _calloc_crt(0x14, 4)
+        data_1000de00 = eax
+
+        if (eax == 0)
+            __amsg_exit(0x1a)
+            eax = data_1000de00
+
+    int32_t edx = 0
+    struct CRT_iobuf* ecx = &__iob
+
+    while (true)
+        *(eax + edx) = ecx
+        ecx = &ecx[1]
+        edx += 4
+
+        if (ecx s>= &data_1000d860)
+            break
+
+        eax = data_1000de00
+
+    int32_t ecx_1 = 0
+    int32_t* i = &__iob[0]._file
+
+    do
+        int32_t osfhnd = g_CRT_pioinfo[ecx_1 s>> 5][ecx_1 & 0x1f].osfhnd
+
+        if (osfhnd == 0xffffffff || osfhnd == 0)
+            *i = 0xffffffff
+
+        i = &i[8]
+        ecx_1 += 1
+    while (i s< &__iob[3]._file)
+}
+
+// VC5 CRT internal stream-exit terminator (_ioexit): assembly calls flush-all helper, then tests CRT __exitflag at 0x1000da14 and tailcalls fclose-all/ioterm helper at 0x10003990 only when process exit is active. Function pointer is registered in CRT __xp_a pre-terminator array at 0x10006018.
+0x10003610 void __ioexit()
+{
+    __flushall()
+
+    if (__exitflag == 0)
+        return
+
+    return __fcloseall() __tailcall
+}
+
+// VC5 CRT _callnewh: invokes the CRT new-handler pointer at 0x1000ddf8 with requested size and returns 1 only when a handler exists and returns nonzero.
+0x10003630 int32_t _callnewh(uint32_t size)
+{
+    int32_t eax_3 = data_1000ddf8
+
+    if (eax_3 != 0 && eax_3(size) != 0)
+        return 1
+
+    return 0
+}
+
+// VC5 CRT memmove provider routine: cdecl void *(dest, src, count), overlap-aware forward/backward copy with alignment jump tables; returns dest.
+0x10003650 void* _memmove(void* dest, void const* src, uint32_t count)
+{
+    void const* src_1 = src
+    void* dest_1 = dest
+    void* eax_1
+
+    if (dest_1 u> src_1 && dest_1 u< count + src_1)
+        void* esi = count + src_1 - 4
+        void* edi = count + dest_1 - 4
+        uint32_t ecx_4
+
+        if ((edi & 3) == 0)
+            ecx_4 = count u>> 2
+
+            if (ecx_4 u< 8)
+                jump((&jump_table_100038e0)[neg.d(ecx_4)])
+
+            edi, esi = __builtin_memcpy(edi - (ecx_4 << 2), esi - (ecx_4 << 2), ecx_4 << 2)
+
+            switch (count & 3)
+                case 0
+                    return dest
+                case 1
+                    goto label_10003948
+                case 2
+                    goto label_10003958
+                case 3
+                    goto label_1000396c
+        else if (count u< 4)
+            switch (count)
+                case 0
+                    return dest
+                case 1
+                label_10003948:
+                    eax_1.b = *(esi + 3)
+                    *(edi + 3) = eax_1.b
+                    return dest
+                case 2
+                label_10003958:
+                    eax_1.b = *(esi + 3)
+                    *(edi + 3) = eax_1.b
+                    eax_1.b = *(esi + 2)
+                    *(edi + 2) = eax_1.b
+                    return dest
+                case 3
+                label_1000396c:
+                    eax_1.b = *(esi + 3)
+                    *(edi + 3) = eax_1.b
+                    eax_1.b = *(esi + 2)
+                    *(edi + 2) = eax_1.b
+                    eax_1.b = *(esi + 1)
+                    *(edi + 1) = eax_1.b
+                    return dest
+        else
+            eax_1 = edi & 3
+            void* ecx_6 = count - eax_1
+
+            switch (jump_table_10003838[eax_1])
+                case 0x10003848
+                    eax_1.b = *(esi + 3)
+                    *(edi + 3) = eax_1.b
+                    ecx_4 = ecx_6 u>> 2
+
+                    if (ecx_4 u< 8)
+                        jump((&jump_table_100038e0)[neg.d(ecx_4)])
+
+                    edi, esi = __builtin_memcpy(edi - 1 - (ecx_4 << 2), esi - 1 - (ecx_4 << 2), ecx_4 << 2)
+
+                    switch (3 & ecx_6)
+                        case nullptr
+                            return dest
+                        case 1
+                            goto label_10003948
+                        case 2
+                            goto label_10003958
+                        case 3
+                            goto label_1000396c
+                case 0x10003868
+                    eax_1.b = *(esi + 3)
+                    *(edi + 3) = eax_1.b
+                    eax_1.b = *(esi + 2)
+                    ecx_4 = ecx_6 u>> 2
+                    *(edi + 2) = eax_1.b
+
+                    if (ecx_4 u< 8)
+                        jump((&jump_table_100038e0)[neg.d(ecx_4)])
+
+                    edi, esi = __builtin_memcpy(edi - 2 - (ecx_4 << 2), esi - 2 - (ecx_4 << 2), ecx_4 << 2)
+
+                    switch (3 & ecx_6)
+                        case nullptr
+                            return dest
+                        case 1
+                            goto label_10003948
+                        case 2
+                            goto label_10003958
+                        case 3
+                            goto label_1000396c
+                case 0x10003890
+                    eax_1.b = *(esi + 3)
+                    *(edi + 3) = eax_1.b
+                    eax_1.b = *(esi + 2)
+                    *(edi + 2) = eax_1.b
+                    eax_1.b = *(esi + 1)
+                    ecx_4 = ecx_6 u>> 2
+                    *(edi + 1) = eax_1.b
+
+                    if (ecx_4 u< 8)
+                        jump((&jump_table_100038e0)[neg.d(ecx_4)])
+
+                    edi, esi = __builtin_memcpy(edi - 3 - (ecx_4 << 2), esi - 3 - (ecx_4 << 2), ecx_4 << 2)
+
+                    switch (3 & ecx_6)
+                        case nullptr
+                            return dest
+                        case 1
+                            goto label_10003948
+                        case 2
+                            goto label_10003958
+                        case 3
+                            goto label_1000396c
+
+    uint32_t ecx_1
+    void* edx_1
+
+    if ((dest_1 & 3) != 0)
+        if (count u< 4)
+            jump(*(((count - 4) << 2) + &data_100037a8))
+
+        eax_1 = dest_1 & 3
+        void* ecx_3 = count - 4 + eax_1
+
+        switch (jump_table_100036b0[eax_1])
+            case 0x100036c0
+                edx_1 = 3 & ecx_3
+                eax_1.b = *src_1
+                *dest_1 = eax_1.b
+                eax_1.b = *(src_1 + 1)
+                *(dest_1 + 1) = eax_1.b
+                eax_1.b = *(src_1 + 2)
+                ecx_1 = ecx_3 u>> 2
+                *(dest_1 + 2) = eax_1.b
+                src_1 += 3
+                dest_1 += 3
+
+                if (ecx_1 u>= 8)
+                    dest_1, src_1 = __builtin_memcpy(dest_1, src_1, ecx_1 << 2)
+
+                    switch (edx_1)
+                        case nullptr
+                            return dest
+                        case 1
+                            goto label_100037b0
+                        case 2
+                            goto label_100037bc
+                        case 3
+                            goto label_100037d0
+            case 0x100036ec
+                edx_1 = 3 & ecx_3
+                eax_1.b = *src_1
+                *dest_1 = eax_1.b
+                eax_1.b = *(src_1 + 1)
+                ecx_1 = ecx_3 u>> 2
+                *(dest_1 + 1) = eax_1.b
+                src_1 += 2
+                dest_1 += 2
+
+                if (ecx_1 u>= 8)
+                    dest_1, src_1 = __builtin_memcpy(dest_1, src_1, ecx_1 << 2)
+
+                    switch (edx_1)
+                        case nullptr
+                            return dest
+                        case 1
+                            goto label_100037b0
+                        case 2
+                            goto label_100037bc
+                        case 3
+                            goto label_100037d0
+            case 0x10003710
+                edx_1 = 3 & ecx_3
+                eax_1.b = *src_1
+                *dest_1 = eax_1.b
+                src_1 += 1
+                ecx_1 = ecx_3 u>> 2
+                dest_1 += 1
+
+                if (ecx_1 u>= 8)
+                    dest_1, src_1 = __builtin_memcpy(dest_1, src_1, ecx_1 << 2)
+
+                    switch (edx_1)
+                        case nullptr
+                            return dest
+                        case 1
+                            goto label_100037b0
+                        case 2
+                            goto label_100037bc
+                        case 3
+                            goto label_100037d0
+    else
+        ecx_1 = count u>> 2
+        edx_1 = count & 3
+
+        if (ecx_1 u>= 8)
+            dest_1, src_1 = __builtin_memcpy(dest_1, src_1, ecx_1 << 2)
+
+            switch (edx_1)
+                case nullptr
+                    return dest
+                case 1
+                    goto label_100037b0
+                case 2
+                    goto label_100037bc
+                case 3
+                    goto label_100037d0
+
+    switch (ecx_1)
+        case 0
+            goto label_1000378f
+        case 1
+            goto label_10003780
+        case 2
+            goto label_10003778
+        case 3
+            goto label_10003770
+        case 4
+            goto label_10003768
+        case 5
+            goto label_10003760
+        case 6
+            goto label_10003758
+        case 7
+            *(dest_1 + (ecx_1 << 2) - 0x1c) = *(src_1 + (ecx_1 << 2) - 0x1c)
+        label_10003758:
+            *(dest_1 + (ecx_1 << 2) - 0x18) = *(src_1 + (ecx_1 << 2) - 0x18)
+        label_10003760:
+            *(dest_1 + (ecx_1 << 2) - 0x14) = *(src_1 + (ecx_1 << 2) - 0x14)
+        label_10003768:
+            *(dest_1 + (ecx_1 << 2) - 0x10) = *(src_1 + (ecx_1 << 2) - 0x10)
+        label_10003770:
+            *(dest_1 + (ecx_1 << 2) - 0xc) = *(src_1 + (ecx_1 << 2) - 0xc)
+        label_10003778:
+            *(dest_1 + (ecx_1 << 2) - 8) = *(src_1 + (ecx_1 << 2) - 8)
+        label_10003780:
+            *(dest_1 + (ecx_1 << 2) - 4) = *(src_1 + (ecx_1 << 2) - 4)
+            eax_1 = ecx_1 << 2
+            src_1 += eax_1
+            dest_1 += eax_1
+        label_1000378f:
+
+            switch (edx_1)
+                case nullptr
+                    return dest
+                case 1
+                label_100037b0:
+                    eax_1.b = *src_1
+                    *dest_1 = eax_1.b
+                    return dest
+                case 2
+                label_100037bc:
+                    eax_1.b = *src_1
+                    *dest_1 = eax_1.b
+                    eax_1.b = *(src_1 + 1)
+                    *(dest_1 + 1) = eax_1.b
+                    return dest
+                case 3
+                label_100037d0:
+                    eax_1.b = *src_1
+                    *dest_1 = eax_1.b
+                    eax_1.b = *(src_1 + 1)
+                    *(dest_1 + 1) = eax_1.b
+                    eax_1.b = *(src_1 + 2)
+                    *(dest_1 + 2) = eax_1.b
+                    return dest
+}
+
+// Spurious overlapping analysis artifact inside VC5 CRT _memmove: starts at byte 3 of the 0x100038e8 backward-copy instruction, has no xrefs, and is reached only through _memmove jump-table/internal flow.
+0x100038eb int32_t __convention("regparm") sub_100038eb(int16_t* arg1, int32_t arg2, int32_t arg3, int32_t* arg4 @ ebp, void* arg5 @ esi, void* arg6 @ edi, int32_t arg7)
+{
+    bool c
+    arg1.b = sbb.b(arg1.b, 0x8b, c)
+    *arg1
+    *(arg6 + (arg3 << 2) + 0x18) = arg1
+    *(arg6 + (arg3 << 2) + 0x14) = *(arg5 + (arg3 << 2) + 0x14)
+    *(arg6 + (arg3 << 2) + 0x10) = *(arg5 + (arg3 << 2) + 0x10)
+    *(arg6 + (arg3 << 2) + 0xc) = *(arg5 + (arg3 << 2) + 0xc)
+    *(arg6 + (arg3 << 2) + 8) = *(arg5 + (arg3 << 2) + 8)
+    *(arg6 + (arg3 << 2) + 4) = *(arg5 + (arg3 << 2) + 4)
+    int32_t eax_5 = arg3 << 2
+    void* esi = arg5 + eax_5
+    void* edi = arg6 + eax_5
+
+    switch (arg2)
+        case 0
+            *arg4
+            return arg4[2]
+        case 1
+            eax_5.b = *(esi + 3)
+            *(edi + 3) = eax_5.b
+            *arg4
+            return arg4[2]
+        case 2
+            eax_5.b = *(esi + 3)
+            *(edi + 3) = eax_5.b
+            eax_5.b = *(esi + 2)
+            *(edi + 2) = eax_5.b
+            *arg4
+            return arg4[2]
+        case 3
+            eax_5.b = *(esi + 3)
+            *(edi + 3) = eax_5.b
+            eax_5.b = *(esi + 2)
+            *(edi + 2) = eax_5.b
+            eax_5.b = *(esi + 1)
+            *(edi + 1) = eax_5.b
+            *arg4
+            return arg4[2]
+}
+
+// VC5 CRT _fcloseall provider routine: locked walk of CRT stream table from index 3; calls fclose helper for open streams and frees/deletes dynamically allocated stream records (index >= 0x14) during process-exit I/O cleanup.
+0x10003990 int32_t __fcloseall()
+{
+    int32_t result = 0
+    __lock(2)
+    int32_t i = 3
+
+    if (data_1000ee20 s> 3)
+        do
+            struct CRT_iobuf* stream = *(data_1000de00 + (i << 2))
+
+            if (stream != 0)
+                if ((stream->_flag.b & 0x83) != 0 && fclose(stream) != 0xffffffff)
+                    result += 1
+
+                if (i s>= 0x14)
+                    DeleteCriticalSection(*(data_1000de00 + (i << 2)) + 0x20)
+                    _free(*(data_1000de00 + (i << 2)))
+                    *(data_1000de00 + (i << 2)) = 0
+
+            i += 1
+        while (i s< data_1000ee20)
+
+    __unlock(2)
+    return result
+}
+
+// VC5 CRT _fflush_lk provider routine: calls the internal stream flush helper and, when _IOCOMMIT is set, calls _commit on stream->_file; returns 0 or EOF (-1).
+0x10003a30 int32_t _fflush_lk(struct CRT_iobuf* stream)
+{
+    if (_flush(stream) != 0)
+        return 0xffffffff
+
+    if (((stream->_flag).w:1.b & 0x40) == 0)
+        return 0
+
+    int32_t eax_4 = _commit(stream->_file)
+    int32_t eax_5 = neg.d(eax_4)
+    return sbb.d(eax_5, eax_5, eax_4 != 0)
+}
+
+// VC5 CRT internal _flush provider routine: flushes pending bytes from a CRT_iobuf through the CRT write path, resets _cnt/_ptr, records write errors in _flag, and returns 0 or EOF (-1).
+0x10003a70 int32_t _flush(struct CRT_iobuf* stream)
+{
+    int32_t result = 0
+    int32_t _flag = stream->_flag
+
+    if ((_flag.b & 3) == 2 && (_flag & 0x108) != 0)
+        char* _base = stream->_base
+        uint32_t count = stream->_ptr - _base
+
+        if (count s> 0)
+            bool cond:0_1 = _write(stream->_file, _base, count) != count
+            int32_t _flag_1 = stream->_flag
+
+            if (cond:0_1)
+                _flag_1.b |= 0x20
+                result = 0xffffffff
+                stream->_flag = _flag_1
+            else if ((_flag_1.b & 0x80) != 0)
+                _flag_1.b &= 0xfd
+                stream->_cnt = 0
+                stream->_flag = _flag_1
+                stream->_ptr = stream->_base
+                return 0
+
+    char* _base_1 = stream->_base
+    stream->_cnt = 0
+    stream->_ptr = _base_1
+    return result
+}
+
+// VC5 CRT provider boundary for _flushall. Assembly is a cdecl wrapper that pushes mode 1 and returns the result from internal stream flush sweep at 0x10003af0; __ioexit calls it before checking __exitflag and tailcalling __fcloseall.
+0x10003ae0 int32_t __flushall()
+{
+    return _flsall(1)
+}
+
+// VC5 CRT provider boundary: internal all-stream flush sweep used by __flushall/_flushall-style CRT paths. Locks CRT lock 2, walks __piob[0.._nstream), locks each active FILE, calls _fflush_lk, then returns the flushed stream count for flush_flag == 1 or an EOF/error accumulator for flush_flag == 0.
+0x10003af0 int32_t _flsall(int32_t flush_flag)
+{
+    int32_t ecx
+    int32_t var_4 = ecx
+    int32_t stream_index = 0
+    int32_t flushed_count = 0
+    int32_t error_result = 0
+    __lock(2)
+
+    if (data_1000ee20 s> 0)
+        do
+            struct CRT_FILEX* stream = *(data_1000de00 + (stream_index << 2))
+
+            if (stream != 0 && (stream->file._flag.b & 0x83) != 0)
+                __lock_file2(stream_index, stream)
+                struct CRT_iobuf* stream_1 = *(data_1000de00 + (stream_index << 2))
+                char stream_flags = (stream_1->_flag).b
+
+                if ((0x83 & stream_flags) != 0)
+                    if (flush_flag == 1)
+                        if (_fflush_lk(stream_1) != 0xffffffff)
+                            flushed_count += 1
+                    else if (flush_flag == 0 && (stream_flags & 2) != 0)
+                        int32_t eax_3 = _fflush_lk(stream_1)
+
+                        if (eax_3 == 0xffffffff)
+                            error_result |= eax_3
+
+                __unlock_file2(stream_index, *(data_1000de00 + (stream_index << 2)))
+
+            stream_index += 1
+        while (stream_index s< data_1000ee20)
+
+    __unlock(2)
+
+    if (flush_flag == 1)
+        return flushed_count
+
+    return error_result
+}
+
+// VC5 CRT fclose provider routine: returns EOF and clears _flag for _IOSTRG streams; otherwise locks the CRT_iobuf, calls _fclose_lk, unlocks, and returns the callee result.
+0x10003bb0 int32_t fclose(struct CRT_iobuf* stream)
+{
+    if ((stream->_flag.b & 0x40) != 0)
+        stream->_flag = 0
+        return 0xffffffff
+
+    __lock_file(stream)
+    int32_t result = _fclose_lk(stream)
+    __unlock_file(stream)
+    return result
+}
+
+// VC5 CRT provider _fclose_lk: lock-free fclose helper. Caller fclose locks/unlocks the CRT_iobuf around this call; this body flushes the stream, frees the buffer via 0x10004090, closes stream->_file via 0x10003f90, frees stream->_tmpfname, then clears stream->_flag.
+0x10003bf0 int32_t _fclose_lk(struct CRT_iobuf* stream)
+{
+    int32_t result = 0xffffffff
+
+    if ((stream->_flag.b & 0x83) != 0)
+        result = _flush(stream)
+        _freebuf(stream)
+
+        if (_close(stream->_file) s< 0)
+            stream->_flag = 0
+            return 0xffffffff
+
+        char* _tmpfname = stream->_tmpfname
+
+        if (_tmpfname != 0)
+            _free(_tmpfname)
+            stream->_tmpfname = nullptr
+
+    stream->_flag = 0
+    return result
+}
+
+// VC5 CRT _commit provider routine: validates the CRT file descriptor in g_CRT_pioinfo/g_CRT_nhandle, locks the descriptor, calls FlushFileBuffers(_get_osfhandle(fd)), records OS failure in __doserrno and EBADF in errno, unlocks, and returns 0 or -1.
+0x10003c60 int32_t _commit(int32_t fd)
+{
+    if (fd u< g_CRT_nhandle && (g_CRT_pioinfo[fd s>> 5][fd & 0x1f].osfile & 1) != 0)
+        _lock_fhandle(fd)
+        enum WIN32_ERROR result
+
+        if ((g_CRT_pioinfo[fd s>> 5][fd & 0x1f].osfile & 1) == 0)
+            *_errno() = 9
+            result = ~NO_ERROR
+        else
+            if (FlushFileBuffers(_get_osfhandle(fd)) != 0)
+                result = NO_ERROR
+            else
+                result = GetLastError()
+
+            if (result != NO_ERROR)
+                *__doserrno() = result
+                *_errno() = 9
+                result = ~NO_ERROR
+
+        _unlock_fhandle(fd)
+        return result
+
+    *_errno() = 9
+    return 0xffffffff
+}
+
+// VC5 CRT provider _write: validates CRT fd against g_CRT_nhandle/g_CRT_pioinfo, locks the per-fd CRT_ioinfo, delegates to the internal write_lk body, unlocks, and returns -1 with errno=EBADF/doserrno=0 for invalid or unopened handles.
+0x10003d00 int32_t _write(int32_t fd, void const* buffer, uint32_t count)
+{
+    if (fd u< g_CRT_nhandle && (g_CRT_pioinfo[fd s>> 5][fd & 0x1f].osfile & 1) != 0)
+        _lock_fhandle(fd)
+        int32_t result = _write_lk(fd, buffer, count)
+        _unlock_fhandle(fd)
+        return result
+
+    *_errno() = 9
+    *__doserrno() = 0
+    return 0xffffffff
+}
+
+// VC5 CRT lowio provider _write_lk: unlocked _write body. Assembly matches CRT WRITE.C: zero-count return, FAPPEND seek-to-end through _lseek_lk, FTEXT LF-to-CRLF translation with the 1025-byte lfbuf filled up to BUF_SIZE-1, WriteFile/GetLastError handling, ERROR_ACCESS_DENIED mapped to EBADF/_doserrno, ENOSPC on zero bytes, FDEV+CTRLZ returns 0, and return value adjusts for inserted CR bytes.
+0x10003d80 int32_t _write_lk(int32_t fh, void const* buf, uint32_t cnt)
+{
+    uint32_t charcount = 0
+    int32_t lfcount = 0
+
+    if (cnt == 0)
+        return 0
+
+    if ((g_CRT_pioinfo[fh s>> 5][fh & 0x1f].osfile & 0x20) != 0)
+        _lseek_lk(fh, 0, 2)
+
+    int32_t* eax_6 = &g_CRT_pioinfo[fh s>> 5][fh & 0x1f]
+    uint32_t dosretval
+    uint8_t* bufBytes
+    uint32_t written
+
+    if ((eax_6[1].b & 0x80) == 0)
+        bufBytes = buf
+
+        if (WriteFile(*eax_6, bufBytes, cnt, &written, nullptr) == 0)
+            dosretval = GetLastError()
+        else
+            dosretval = 0
+            charcount = written
+    else
+        bufBytes = buf
+        dosretval = 0
+        uint8_t* p = bufBytes
+
+        if (cnt u> 0)
+            do
+                uint8_t lfbuf[0x404]
+                uint8_t (* eax_7)[0x404] = &lfbuf
+
+                while (p - bufBytes u< cnt)
+                    int32_t ecx_2
+                    ecx_2.b = *p
+                    p = &p[1]
+
+                    if (ecx_2.b == 0xa)
+                        *eax_7 = 0xd
+                        eax_7 = &(*eax_7)[1]
+                        lfcount += 1
+
+                    *eax_7 = ecx_2.b
+                    eax_7 = &(*eax_7)[1]
+
+                    if (eax_7 - &lfbuf s>= 0x400)
+                        break
+
+                uint32_t writeCount = eax_7 - &lfbuf
+
+                if (WriteFile(g_CRT_pioinfo[fh s>> 5][fh & 0x1f].osfhnd, &lfbuf, writeCount, &written, nullptr) == 0)
+                    dosretval = GetLastError()
+                    break
+
+                uint32_t writtenThisCall = written
+                charcount += writtenThisCall
+
+                if (writtenThisCall s< writeCount)
+                    break
+            while (p - bufBytes u< cnt)
+
+    if (charcount != 0)
+        return charcount - lfcount
+
+    if (dosretval == 0)
+        if ((g_CRT_pioinfo[fh s>> 5][fh & 0x1f].osfile & 0x40) != 0 && *bufBytes == 0x1a)
+            return 0
+
+        *_errno() = 0x1c
+        *__doserrno() = 0
+        return 0xffffffff
+
+    if (dosretval != 5)
+        _dosmaperr(dosretval)
+        return 0xffffffff
+
+    *_errno() = 9
+    *__doserrno() = 5
+    return 0xffffffff
+}
+
+// VC5 CRT provider _close from CRT/SRC/CLOSE.C (_MT path): validates fh against _nhandle/_osfile(FOPEN), locks fh, calls _close_lk, unlocks fh, returns 0 or -1 with errno=EBADF and _doserrno=0 on invalid handle.
+0x10003f90 int32_t _close(int32_t fh)
+{
+    if (fh u< g_CRT_nhandle && (g_CRT_pioinfo[fh s>> 5][fh & 0x1f].osfile & 1) != 0)
+        _lock_fhandle(fh)
+        int32_t result = _close_lk(fh)
+        _unlock_fhandle(fh)
+        return result
+
+    *_errno() = 9
+    *__doserrno() = 0
+    return 0xffffffff
+}
+
+// VC5 CRT provider: _close_lk from VC5SP3 CRT/SRC/CLOSE.C (_MT path). Called by _close after handle validation/locking; closes or skips INVALID_HANDLE_VALUE/stdout-stderr alias, frees OS handle, clears _osfile, maps CloseHandle errors with _dosmaperr.
+0x10004000 int32_t _close_lk(int32_t fh)
+{
+    DWORD dosretval
+
+    if (_get_osfhandle(fh) == 0xffffffff)
+        dosretval = 0
+    else if (fh == 1 || fh == 2)
+        if (_get_osfhandle(1) != _get_osfhandle(2))
+            goto label_10004042
+
+        dosretval = 0
+    else
+    label_10004042:
+
+        if (CloseHandle(_get_osfhandle(fh)) != 0)
+            dosretval = 0
+        else
+            dosretval = GetLastError()
+
+    _free_osfhnd(fh)
+    g_CRT_pioinfo[fh s>> 5][fh & 0x1f].osfile = 0
+
+    if (dosretval == 0)
+        return 0
+
+    _dosmaperr(dosretval)
+    return 0xffffffff
+}
+
+// VC5SP3 CRT provider _freebuf from CRT/SRC/_FREEBUF.C. Frees stream->_base only when inuse(stream) and mbuf(stream); clears _IOMYBUF|_IOSETVBUF, _ptr/_base/_cnt. Caller holds the stream lock.
+0x10004090 void _freebuf(struct CRT_iobuf* stream)
+{
+    char _flag = (stream->_flag).b
+
+    if ((_flag & 0x83) == 0 || (_flag & 8) == 0)
+        return
+
+    _free(stream->_base)
+    stream->_flag &= 0xfffffbf7
+    stream->_ptr = 0
+    stream->_base = nullptr
+    stream->_cnt = 0
+}
+
+// VC5 CRT lowio provider: _free_osfhnd from VC5SP3 CRT/SRC/OSFINFO.C. Marks _pioinfo(fh)->osfhnd INVALID_HANDLE_VALUE when fh is open and valid; for console app standard handles 0/1/2 first clears the corresponding Win32 standard handle; on invalid fh sets errno=EBADF and _doserrno=0.
+0x100040d0 int32_t _free_osfhnd(int32_t fh)
+{
+    if (fh u< g_CRT_nhandle)
+        void* edx_1 = g_CRT_pioinfo[fh s>> 5]
+        int32_t esi_2 = (fh & 0x1f) * 0x24
+        int32_t ebx
+        ebx.b = *(edx_1 + esi_2 + 4)
+
+        if ((1 & ebx.b) != 0 && *(edx_1 + esi_2) != 0xffffffff)
+            if (g_CRT_appType == 1)
+                if (fh == 0)
+                    int32_t var_10_3 = 0
+                    SetStdHandle(STD_INPUT_HANDLE, nullptr)
+                else if (fh == 1)
+                    int32_t var_10_2 = 0
+                    SetStdHandle(STD_OUTPUT_HANDLE, nullptr)
+                else if (fh == 2)
+                    int32_t var_10_1 = 0
+                    SetStdHandle(STD_ERROR_HANDLE, nullptr)
+
+            g_CRT_pioinfo[fh s>> 5][(fh & 0x1f) * 9] = 0xffffffff
+            return 0
+
+    *_errno() = 9
+    *__doserrno() = 0
+    return 0xffffffff
+}
+
+// VC5SP3 CRT provider boundary: _get_osfhandle from CRT/SRC/OSFINFO.C. Uses __pioinfo/_nhandle lowio state; returns _osfhnd(fh) when fh is in range and FOPEN is set, otherwise sets errno=EBADF and _doserrno=0 then returns -1.
+0x10004170 int32_t _get_osfhandle(int32_t fh)
+{
+    if (fh u< g_CRT_nhandle)
+        int32_t edx_1 = (fh & 0x1f) * 9
+        int32_t eax_1 = g_CRT_pioinfo[fh s>> 5]
+        int32_t ecx_2
+        ecx_2.b = *(eax_1 + (edx_1 << 2) + 4)
+
+        if ((ecx_2.b & 1) != 0)
+            return *(eax_1 + (edx_1 << 2))
+
+    *_errno() = 9
+    *__doserrno() = 0
+    return 0xffffffff
+}
+
+// VC5 CRT provider boundary: _lock_fhandle(int fh) from CRT/SRC/OSFINFO.C (_MT lowio). Uses _pioinfo(fh) = __pioinfo[fh >> 5] + (fh & 0x1f), lazily initializes ioinfo.lock under _LOCKTAB_LOCK (0x11), then EnterCriticalSection(&pio->lock).
+0x100041c0 void _lock_fhandle(int32_t fh)
+{
+    int32_t ecx_1 = fh s>> 5
+    void* esi_1 = &g_CRT_pioinfo[ecx_1][fh & 0x1f]
+
+    if (*(esi_1 + 8) == 0)
+        __lock(0x11)
+
+        if (*(esi_1 + 8) == 0)
+            InitializeCriticalSection(esi_1 + 0xc)
+            *(esi_1 + 8) += 1
+
+        __unlock(0x11)
+
+    EnterCriticalSection(&g_CRT_pioinfo[ecx_1][fh & 0x1f].lock)
+}
+
+// Provider-boundary evidence: VC5SP3 CRT lowio helper _unlock_fhandle in CRT/SRC/OSFINFO.C (_MT), exposed through MTDLL.H as _unlock_fh(fh). Computes &_pioinfo(fh)->lock from g_CRT_pioinfo[fh >> 5][fh & 0x1f] and calls LeaveCriticalSection; cdecl void, caller supplies CRT file handle.
+0x10004230 void _unlock_fhandle(int32_t fh)
+{
+    LeaveCriticalSection(&g_CRT_pioinfo[fh s>> 5][fh & 0x1f].lock)
+}
+
+// VC5SP3 CRT provider _dosmaperr from CRT/SRC/DOSMAP.C: stores the OS error in _doserrno, scans the static errtable at 0x1000d860, maps access/exec error ranges, and writes errno. Not authored messages.dll logic.
+0x10004260 void _dosmaperr(uint32_t oserrno)
+{
+    int32_t esi = 0
+    *__doserrno() = oserrno
+
+    for (int32_t* i = &data_1000d860; i u< &data_1000d9c8; )
+        if (oserrno == *i)
+            int32_t* eax_4 = _errno()
+            *eax_4 = *((esi << 3) + &data_1000d864)
+            return
+
+        i = &i[2]
+        esi += 1
+
+    if (oserrno u>= 0x13 && oserrno u<= 0x24)
+        *_errno() = 0xd
+        return
+
+    if (oserrno u>= 0xbc && oserrno u<= 0xca)
+        *_errno() = 8
+        return
+
+    *_errno() = 0x16
+}
+
+// VC5 CRT provider accessor: returns &_getptd()->terrno.
+0x100042e0 int32_t* _errno()
+{
+    return &_getptd()->terrno
+}
+
+// VC5 CRT provider accessor: returns &_getptd()->doserrno.
+0x100042f0 uint32_t* __doserrno()
+{
+    return &_getptd()->doserrno
+}
+
+// VC5SP3 CRT lowio provider _lseek_lk from CRT/SRC/LSEEK.C. Uses _get_osfhandle(fh), SetFilePointer(osHandle,pos,NULL,mthd), maps GetLastError via _dosmaperr on failure, clears FEOFLAG in _osfile(fh), returns new file position or -1.
+0x10004300 int32_t _lseek_lk(int32_t fh, int32_t pos, int32_t mthd)
+{
+    int32_t hFile = _get_osfhandle(fh)
+
+    if (hFile == 0xffffffff)
+        *_errno() = 9
+        return 0xffffffff
+
+    uint32_t newpos = SetFilePointer(hFile, pos, nullptr, mthd)
+    enum WIN32_ERROR oserrno
+
+    if (newpos != 0xffffffff)
+        oserrno = NO_ERROR
+    else
+        oserrno = GetLastError()
+
+    if (oserrno != NO_ERROR)
+        _dosmaperr(oserrno)
+        return 0xffffffff
+
+    int32_t ecx_1 = (fh & 0x1f) * 9
+    int32_t edx_1 = g_CRT_pioinfo[fh s>> 5]
+    char* eax_5 = edx_1 + (ecx_1 << 2) + 4
+    ecx_1.b = *(edx_1 + (ecx_1 << 2) + 4)
+    ecx_1.b &= 0xfd
+    *eax_5 = ecx_1.b
+    return newpos
+}
+

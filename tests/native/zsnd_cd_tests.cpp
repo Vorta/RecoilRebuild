@@ -1103,18 +1103,21 @@ extern "C" int zsnd_option_accessors_smoke(void) {
     ZOPT_AUDIO_API = &audioApi;
     ZOPT_SOUND_CDAUDIO = &cdAudio;
 
-    g_zSnd_IsInitialized = 0;
+    g_zSnd_PreInitialized = 0;
+    g_zSnd_IsInitialized = 1;
     g_zSnd_ActiveBackend = 0;
     if (zSnd::SetAudioApiOption(1) != 1 || audioApi != 1 || g_zSnd_ActiveBackend != 1 ||
         zSnd::GetAudioApiOption() != 1 || zSnd::GetActiveBackend() != 1) {
         return 1;
     }
 
-    g_zSnd_IsInitialized = 1;
+    g_zSnd_PreInitialized = 1;
+    g_zSnd_IsInitialized = 0;
     if (zSnd::SetActiveBackendPreInit(0) != 0 || g_zSnd_ActiveBackend != 1) {
         return 2;
     }
 
+    g_zSnd_PreInitialized = 0;
     zSnd::SetCDAudioOption(1);
     return cdAudio == 1 && zSnd::GetCDAudioOption() == 1 ? 0 : 3;
 }
@@ -3006,7 +3009,8 @@ extern "C" int zsnd_stream_mgr_recycle_finished_request_smoke(void) {
 
 extern "C" int zsnd_stream_mgr_shutdown_lists_smoke(void) {
     g_zSndStream_RootNode = nullptr;
-    g_zSndStream_MatchedRequest = reinterpret_cast<zSndStreamRequest *>(0x1234);
+    zSndStreamRequest *const matchedRequest = reinterpret_cast<zSndStreamRequest *>(0x1234);
+    g_zSndStream_MatchedRequest = matchedRequest;
     g_zSndStream_MatchedRequestCount = 3;
 
     EnsureZrdrFreePool();
@@ -3059,11 +3063,14 @@ extern "C" int zsnd_stream_mgr_shutdown_lists_smoke(void) {
     pending->configBlocks[1].child = childC;
     zArchiveList_PushFrontPayload(g_zSndStream_PendingList, pending);
 
-    return zSndStreamMgr::Shutdown() == 1 && g_zSndStream_ActiveList == nullptr &&
-                   g_zSndStream_FreeList == nullptr && g_zSndStream_PendingList == nullptr &&
-                   g_zSndStream_MatchedRequest == nullptr && g_zSndStream_MatchedRequestCount == 0
-               ? 0
-               : 5;
+    const bool shutdownOk =
+        zSndStreamMgr::Shutdown() == 1 && g_zSndStream_ActiveList == nullptr &&
+        g_zSndStream_FreeList == nullptr && g_zSndStream_PendingList == nullptr &&
+        g_zSndStream_MatchedRequest == matchedRequest && g_zSndStream_MatchedRequestCount == 3;
+
+    g_zSndStream_MatchedRequest = nullptr;
+    g_zSndStream_MatchedRequestCount = 0;
+    return shutdownOk ? 0 : 5;
 }
 
 extern "C" int zsnd_backend_shutdown_release_smoke(void) {

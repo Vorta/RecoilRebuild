@@ -12,7 +12,7 @@ extern "C" unsigned int g_zSys_CpuVendorNonIntelMarker;
 
 extern "C" HWND g_RecoilError_OutputHWnd;
 extern "C" std::int32_t g_RecoilError_OutputMaxBytes;
-extern "C" std::int32_t g_RecoilError_OutputByteCount;
+extern "C" std::int32_t g_RecoilError_OutputBytesWritten;
 extern "C" char g_zError_DebugMsgBuffer[1024];
 
 extern "C" int zsys_find_file_on_drive_type_negative_smoke(void) {
@@ -160,12 +160,12 @@ extern "C" int zsys_exit_process_with_cleanup_smoke(void) {
 extern "C" int zerror_init_output_context_smoke(void) {
     g_RecoilError_OutputHWnd = nullptr;
     g_RecoilError_OutputMaxBytes = 0;
-    g_RecoilError_OutputByteCount = 7;
+    g_RecoilError_OutputBytesWritten = 7;
 
     HWND hwnd = reinterpret_cast<HWND>(0x1234);
     return zError::InitOutputContext(hwnd, 0xe00, "recoil.err") == 0 &&
                    g_RecoilError_OutputHWnd == hwnd && g_RecoilError_OutputMaxBytes == 0xe00 &&
-                   g_RecoilError_OutputByteCount == 0
+                   g_RecoilError_OutputBytesWritten == 0
                ? 0
                : 1;
 }
@@ -178,7 +178,7 @@ extern "C" int zerror_emit_debug_buffer_smoke(void) {
 }
 
 extern "C" int zerror_report_old_noop_smoke(void) {
-    g_RecoilError_OutputByteCount = 11;
+    g_RecoilError_OutputBytesWritten = 11;
     g_zError_DebugMsgBuffer[0] = 'q';
     g_zError_DebugMsgBuffer[1] = '\0';
 
@@ -197,7 +197,7 @@ extern "C" int zerror_report_old_noop_smoke(void) {
         nullptr
     );
 
-    return g_RecoilError_OutputByteCount == 11 &&
+    return g_RecoilError_OutputBytesWritten == 11 &&
                    g_zError_DebugMsgBuffer[0] == 'q' && g_zError_DebugMsgBuffer[1] == '\0'
                ? 0
                : 1;

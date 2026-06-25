@@ -130,12 +130,12 @@ void StaticInit() {
 namespace zSnd {
 /**
  * Reimplements 0x4a1290: zSnd::SetActiveBackendPreInit.
- * Purpose: Select the sound backend before the runtime is initialized.
+ * Purpose: Select the sound backend before the runtime is preinitialized.
  */
 int __fastcall SetActiveBackendPreInit(
     int backend
 ) {
-    if (g_zSnd_IsInitialized != 0) {
+    if (g_zSnd_PreInitialized != 0) {
         return 0;
     }
 

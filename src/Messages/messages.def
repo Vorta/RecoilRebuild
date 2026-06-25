@@ -1,0 +1,4 @@
+LIBRARY messages
+
+EXPORTS
+    ZLocGetID @1

@@ -13,9 +13,18 @@
 #include <stdlib.h>
 #include <string.h>
 
-int g_zModel_DisplayInitFlagA = 0;
-int g_zModel_DisplayInitFlagB = 0;
-int g_zModel_DisplayInitFlagC = 0;
+/**
+ * Reimplements data 0x57d92c: gModel_DisplayInitWriteOnlyFlag.
+ * Authored zModel display-init lifecycle global.
+ * Purpose: record that display initialization has run.
+ */
+int gModel_DisplayInitWriteOnlyFlag = 0;
+/**
+ * Reimplements data 0x576210: gModel_RenderMode.
+ * Authored zModel display-init lifecycle global.
+ * Purpose: select the default model render mode during display initialization.
+ */
+int gModel_RenderMode = 0;
 int g_zModel_DisplayClipMode = 0;
 int g_zModel_DisplayClipX = 0;
 int g_zModel_DisplayClipY = 0;
@@ -35,6 +44,12 @@ float g_zModel_FogHeightLow = 0.0f;
 float g_zModel_FogDistanceInvRange = 0.0f;
 float g_zModel_FogHeightInvRange = 0.0f;
 float g_zModel_FogDensity = 0.0f;
+/**
+ * Reimplements data 0x57d928: gModel_DisplayClearedWriteOnlyFlag.
+ * Authored zModel display-init lifecycle global.
+ * Purpose: clear the display lifecycle write-only state before fog defaults are installed.
+ */
+int gModel_DisplayClearedWriteOnlyFlag = 0;
 int g_zModel_FogReserved = 0;
 float g_zModel_FogScale = 0.0f;
 /**
@@ -45,7 +60,17 @@ float g_zModel_FogScale = 0.0f;
 float g_zModel_BFETolerance = 0.005f;
 zVec3 g_zModel_SharedVec3ScratchAStorage[0x400] = {0};
 zVec3 g_zModel_SharedVec3ScratchBStorage[0x400] = {0};
+/**
+ * Reimplements data 0x57c2bc: g_zModel_TransformedVerts.
+ * Authored zModel display scratch pointer global.
+ * Purpose: point transformed-vertex passes at the primary shared Vec3 scratch buffer.
+ */
 zVec3 *g_zModel_TransformedVerts = 0;
+/**
+ * Reimplements data 0x57c2c0: g_zModel_TransformedNormals.
+ * Authored zModel display scratch pointer global.
+ * Purpose: point transformed-normal passes at the secondary shared Vec3 scratch buffer.
+ */
 zVec3 *g_zModel_TransformedNormals = 0;
 /**
  * Reimplements data 0x57d97c: Symbol.
@@ -582,10 +607,9 @@ int __fastcall TestProjectedSphereVisible(
  * Purpose: initialize zModel display globals, fog defaults, scratch buffers, and damage-mask state.
  */
 int zModel_Display_Init() {
-    g_zModel_DisplayInitFlagA = 1;
-    g_zModel_DisplayInitFlagB = 1;
-    g_zModel_DisplayInitFlagC = 1;
+    gModel_DisplayInitWriteOnlyFlag = 1;
 
+    gModel_RenderMode = 2;
     g_zModel_DisplayClipMode = 2;
     g_zModel_SpanOcclusionProc = (void *)(&zModel::RenderNodeSoftware);
     gModel_RenderFn = zModel::RenderNodeSoftware;
@@ -600,6 +624,7 @@ int zModel_Display_Init() {
     gModel_SmallPolyRejectArea2x = 4.0f;
     gModel_SmallPolyRejectArea20x = 40.0f;
     g_zModel_DisplayClipReserved = 0;
+    gModel_DisplayClearedWriteOnlyFlag = 0;
 
     gModel_FogEnabled = 1;
     gModel_FogLinearModeEnabled = 1;
@@ -610,6 +635,8 @@ int zModel_Display_Init() {
     gModel_FogHeightLow = 200.0f;
     gModel_FogHeightInvRange = 0.01f;
     gModel_FogDensity = 2.0f;
+    gModel_RenderVertexAlphaEnabled = 0;
+    gModel_RenderAlphaScaleCurrent = 1.0f;
 
     g_zModel_FogStart = 500.0f;
     g_zModel_FogEnd = 700.0f;

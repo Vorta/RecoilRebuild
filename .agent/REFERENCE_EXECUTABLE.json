@@ -101,6 +101,7 @@
   ],
   "entry_point_rva": "0xc6140",
   "entry_point_va": "0x4c6140",
+  "exports": [],
   "file_alignment": "0x200",
   "image_base": "0x400000",
   "imports": [

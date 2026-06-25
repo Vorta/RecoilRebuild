@@ -142,6 +142,11 @@ const char g_zUtil_MissionZrdrSearchPathsFmt[0x3d] =
 const char g_zImage_CommonTextureSearchPaths[0x38] =
     "..\\data\\common\\textures;..\\data\\common\\effects\\textures";
 /**
+ * Reimplements data 0x4e3004: g_zRdr_PathDelimStr.
+ * Purpose: delimit semicolon-separated ZRDR search paths for CRT tokenization.
+ */
+extern "C" char g_zRdr_PathDelimStr[2] = ";";
+/**
  * Reimplements data 0x4e3008: g_zUtil_ZarPathJoinFmt.
  * Purpose: format a matched ZRDR search directory with the split filename and extension.
  */
@@ -845,7 +850,7 @@ void __fastcall ZRDR_AddSearchPaths(
             char *copy = _strdup(pathText);
             char *token = strtok(
                 copy,
-                ";"
+                g_zRdr_PathDelimStr
             );
             while (token != 0) {
                 if (zReader_FileExists_Wrapper(token) != 0 &&
@@ -862,7 +867,7 @@ void __fastcall ZRDR_AddSearchPaths(
 
                 token = strtok(
                     0,
-                    ";"
+                    g_zRdr_PathDelimStr
                 );
             }
 

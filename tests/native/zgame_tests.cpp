@@ -469,6 +469,9 @@ extern "C" int zmodel_display_init_smoke() {
     return hardwareOk ? 0 : 2;
 }
 
+#endif
+#if !defined(RECOIL_ZGAME_TESTS_ZMODEL_CONST_ONLY) || \
+    defined(RECOIL_ZGAME_TESTS_ZMODEL_BACKFACE_TOLERANCE)
 extern "C" int zmodel_backface_elimination_tolerance_smoke() {
     g_zModel_BFETolerance = -1.0f;
     zModel::SetBackfaceEliminationToleranceScalar(0.125f);
@@ -481,6 +484,8 @@ extern "C" int zmodel_backface_elimination_tolerance_smoke() {
     return zModel::GetBackfaceEliminationToleranceScalar() == -3.5f ? 0 : 2;
 }
 
+#endif
+#ifndef RECOIL_ZGAME_TESTS_ZMODEL_CONST_ONLY
 extern "C" int zmodel_small_poly_reject_thresholds_smoke() {
     const float savedArea2x = gModel_SmallPolyRejectArea2x;
     const float savedArea20x = gModel_SmallPolyRejectArea20x;
@@ -1407,6 +1412,9 @@ extern "C" int zmodel_matlbuffer_set_array_size_smoke() {
     return setOk && alreadySetOk && limitOk && signedCompareOk ? 0 : 1;
 }
 
+#endif
+#if !defined(RECOIL_ZGAME_TESTS_ZMODEL_CONST_ONLY) || \
+    defined(RECOIL_ZGAME_TESTS_ZMODEL_DISPLAY_INSTANCE_POOL_CAPACITY)
 extern "C" int zmodel_set_display_instance_pool_capacity_smoke() {
     g_zModel_DiPoolCapacity = 0;
     zModel::SetDisplayInstancePoolCapacity(24);
@@ -4737,6 +4745,9 @@ extern "C" int zmodel_material_and_di_clone_smoke() {
     return 0;
 }
 
+#endif
+#if !defined(RECOIL_ZGAME_TESTS_ZMODEL_CONST_ONLY) || \
+    defined(RECOIL_ZGAME_TESTS_ZMODEL_SCROLLING_TEXTURE_UPDATE)
 extern "C" int zmodel_scrolling_texture_update_smoke(void) {
     zModel_TextureScrollInfoPartial texture{};
     texture.wrapShiftU = 0;
@@ -4793,6 +4804,8 @@ extern "C" int zmodel_scrolling_texture_update_smoke(void) {
 
     return zModel_Instance_UpdateScrollingTexturesIfNeeded(nullptr) == -1 ? 0 : 5;
 }
+#endif
+#ifndef RECOIL_ZGAME_TESTS_ZMODEL_CONST_ONLY
 
 extern "C" int zmodel_material_update_cycle_if_needed_smoke(void) {
     zImage_TexDirEntryPartial frameA{};

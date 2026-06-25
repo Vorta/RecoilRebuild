@@ -290,6 +290,23 @@ zVidTexturePackEntry *g_zVid_BuiltinTexturePacks = 0;
 int g_zVid_TexturePackCount = 0;
 zVidTexturePackEntry *g_zVid_TexturePacks = 0;
 /**
+ * Reimplements data 0x4e07e8: g_zVid_DefaultImageTexturePackReadonlyNameFmt.
+ * BN identifies this row as g_str_fmt_r_s, a writable char[0x04] format
+ * literal used by zVid_TexturePack_EnsureDefaultImagePackLoaded.
+ * Purpose: provide the renderer-prefixed default image-pack filename format.
+ *
+ * Retail stores this row immediately before the "image.zbd" row; both remain
+ * mutable .data char arrays rather than const string literals.
+ */
+char g_zVid_DefaultImageTexturePackReadonlyNameFmt[0x04] = "r%s";
+/**
+ * Reimplements data 0x4e07ec: g_zVid_DefaultImageTexturePackName.
+ * BN identifies this row as g_str_image_zbd, a writable char[0x0a] literal
+ * used by zVid_TexturePack_EnsureDefaultImagePackLoaded.
+ * Purpose: provide the default image texture-pack archive filename.
+ */
+char g_zVid_DefaultImageTexturePackName[0x0a] = "image.zbd";
+/**
  * Reimplements data 0x4e07f8..0x4e0844:
  * render_video.zvid_texture_pack_archive_literals_data.
  * Purpose: writable archive filename pieces used by
@@ -391,6 +408,8 @@ char g_zVideo_D3DEnumDriverPrintfFmt[0x10] =
  * Purpose: supply the default Direct3D device name for zVid callers.
  */
 char g_zVideo_DefaultD3DDeviceName[0x6] = "GameZ";
+RECOIL_STATIC_ASSERT(sizeof(g_zVid_DefaultImageTexturePackReadonlyNameFmt) == 0x04);
+RECOIL_STATIC_ASSERT(sizeof(g_zVid_DefaultImageTexturePackName) == 0x0a);
 RECOIL_STATIC_ASSERT(sizeof(g_zVid_TextureArchiveNameFmt) == 0x8);
 RECOIL_STATIC_ASSERT(sizeof(g_zVid_TextureArchiveSizedNameFmt) == 0x8);
 RECOIL_STATIC_ASSERT(sizeof(g_zVid_TextureArchiveMaxName) == 0x10);
@@ -7371,14 +7390,14 @@ extern "C" void zVid_TexturePack_EnsureDefaultImagePackLoaded() {
     );
     strcpy(
         entry->filePath,
-        "image.zbd"
+        g_zVid_DefaultImageTexturePackName
     );
 
     if (zVid_TexturePackEntry_LoadFromFile(entry) == 0) {
         sprintf(
             entry->filePath,
-            "r%s",
-            "image.zbd"
+            g_zVid_DefaultImageTexturePackReadonlyNameFmt,
+            g_zVid_DefaultImageTexturePackName
         );
         if (zVid_TexturePackEntry_LoadFromFile(entry) == 0) {
             return;
