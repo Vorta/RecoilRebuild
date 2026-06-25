@@ -21,6 +21,12 @@
 #include <string.h>
 
 HudUiNewGamePanelOverlayOwner g_HudUiNewGamePanelOverlayOwner;
+/**
+ * Reimplements data 0x4e5e08: g_HudUiOptionsPanelOverlayOwner.
+ * Source owner: legacy.hud_ui.class_huduioptionspaneloverlayowner.
+ * Purpose: Holds the zero-initialized global options-panel overlay app-state
+ * owner constructed by the CRT static initializer.
+ */
 HudUiOptionsPanelOverlayOwner g_HudUiOptionsPanelOverlayOwner;
 RecoilStateConfirmQuit g_RecoilState_ConfirmQuit;
 extern "C" int g_RecoilState_MainMenuSkipExitDelay = 0;
@@ -135,6 +141,28 @@ char g_HudUiResumeButtonNodeName[] = "RESUME";
  * Purpose: name the ZRD controls dialog section loaded by HudUiControlsDialog.
  */
 char g_HudUiControlsDialogSectionName[] = "CONTROLS_DIALOG";
+
+/**
+ * Reimplements data 0x4daedc: g_HudUiBackgroundConfirmQuit_CancelButtonNodeName.
+ * Source owner: hud_ui.confirm_quit_dialog_literal_strings.
+ * Purpose: name the ZRD cancel button node bound by HudUiBackgroundConfirmQuit.
+ */
+char g_HudUiBackgroundConfirmQuit_CancelButtonNodeName[0xc] = "CANCEL_QUIT";
+RECOIL_STATIC_ASSERT(sizeof(g_HudUiBackgroundConfirmQuit_CancelButtonNodeName) == 0xc);
+/**
+ * Reimplements data 0x4daee8: g_HudUiBackgroundConfirmQuit_OkButtonNodeName.
+ * Source owner: hud_ui.confirm_quit_dialog_literal_strings.
+ * Purpose: name the ZRD OK button node bound by HudUiBackgroundConfirmQuit.
+ */
+char g_HudUiBackgroundConfirmQuit_OkButtonNodeName[0xb] = "OK_TO_QUIT";
+RECOIL_STATIC_ASSERT(sizeof(g_HudUiBackgroundConfirmQuit_OkButtonNodeName) == 0xb);
+/**
+ * Reimplements data 0x4daef4: g_HudUiBackgroundConfirmQuit_SectionName.
+ * Source owner: hud_ui.confirm_quit_dialog_literal_strings.
+ * Purpose: name the confirm-quit ZRD section loaded by HudUiBackgroundConfirmQuit.
+ */
+char g_HudUiBackgroundConfirmQuit_SectionName[0xd] = "CONFIRM_QUIT";
+RECOIL_STATIC_ASSERT(sizeof(g_HudUiBackgroundConfirmQuit_SectionName) == 0xd);
 
 namespace {
 const int kHudWeatherFxRainSlantDelta = 1;
@@ -1292,19 +1320,19 @@ HudUiBackgroundConfirmQuit * HudUiBackgroundConfirmQuit::Constructor() {
 
     zReader::Node *const dialogRoot = HudUiBackground::LoadFromZrd(
         "dialog.zrd",
-        "CONFIRM_QUIT",
+        g_HudUiBackgroundConfirmQuit_SectionName,
         0
     );
     if (dialogRoot != 0) {
         HudUiBackground::BindWidgetByName(
             dialogRoot,
             &okButton,
-            "OK_TO_QUIT"
+            g_HudUiBackgroundConfirmQuit_OkButtonNodeName
         );
         HudUiBackground::BindWidgetByName(
             dialogRoot,
             &cancelButton,
-            "CANCEL_QUIT"
+            g_HudUiBackgroundConfirmQuit_CancelButtonNodeName
         );
         HudUiBackground::FreeLoadedTreeRoots((int)dialogRoot);
     }

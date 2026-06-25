@@ -29,6 +29,14 @@ char g_zUtil_SourceFile_ZutlZarCpp[0x27] =
  */
 char g_zUtil_GetLastErrorFmt[0x19] = "GetLastError(0x%08x): %s";
 /**
+ * Reimplements data 0x4e48e4: k_zar_StrTokSlash.
+ * BN stores this writable two-byte .data delimiter immediately before
+ * g_zUtil_ZbdSectionRecordFmt and xrefs it from zZbdManager::LoadZarFile's
+ * first strtok call.
+ * Purpose: split ZAR record paths at the section/token slash delimiter.
+ */
+char k_zar_StrTokSlash[0x2] = "/";
+/**
  * Reimplements data 0x4e48e8: g_zUtil_ZbdSectionRecordFmt.
  * BN stores this writable .data format literal and xrefs it only from
  * zZbdManager::WriteSectionRecord's section/token path formatting.
@@ -374,7 +382,7 @@ int zZbdManager::LoadZarFile(
             sectionName,
             strtok(
                 recordPath,
-                "/"
+                k_zar_StrTokSlash
             ),
             sizeof(sectionName)
         );

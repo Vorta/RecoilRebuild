@@ -63,6 +63,48 @@ struct HudSensorTrackerMissionData {
 RECOIL_STATIC_ASSERT(sizeof(HudSensorTrackerMissionData) == 0x5c);
 
 /**
+ * Reimplements data 0x4daf04: g_HudSensorTracker_MapCppSourcePath (D:\Proj\Battlesport\map.cpp).
+ * Purpose: preserve the map.cpp source path used by map-load error reports.
+ */
+char g_HudSensorTracker_MapCppSourcePath[0x1c] = "D:\\Proj\\Battlesport\\map.cpp";
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_MapCppSourcePath) == 0x1c);
+
+/**
+ * Reimplements data 0x4daf20: g_HudSensorTracker_IncorrectMapFileVersionFmt (D:\Proj\Battlesport\map.cpp).
+ * Purpose: format the map-file version mismatch diagnostic.
+ */
+char g_HudSensorTracker_IncorrectMapFileVersionFmt[0x32] = "Incorrect Map File Version (found %d, wanted %d)\n";
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_IncorrectMapFileVersionFmt) == 0x32);
+
+/**
+ * Reimplements data 0x4daf5c: g_HudSensorTracker_MapClickSfxName (D:\Proj\Battlesport\map.cpp).
+ * Purpose: name the map-click HUD sound sample.
+ */
+char g_HudSensorTracker_MapClickSfxName[0x0d] = "snd_mapClick";
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_MapClickSfxName) == 0x0d);
+
+/**
+ * Reimplements data 0x4daf6c: g_HudSensorTracker_MapOffSfxName (D:\Proj\Battlesport\map.cpp).
+ * Purpose: name the map-off HUD sound sample.
+ */
+char g_HudSensorTracker_MapOffSfxName[0x0b] = "snd_mapOff";
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_MapOffSfxName) == 0x0b);
+
+/**
+ * Reimplements data 0x4daf78: g_HudSensorTracker_MapOnSfxName (D:\Proj\Battlesport\map.cpp).
+ * Purpose: name the map-on HUD sound sample.
+ */
+char g_HudSensorTracker_MapOnSfxName[0x0a] = "snd_mapOn";
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_MapOnSfxName) == 0x0a);
+
+/**
+ * Reimplements data 0x4daf84: g_HudSensorTracker_MissionMapPathFmt (D:\Proj\Battlesport\map.cpp).
+ * Purpose: format the mission-specific map path.
+ */
+char g_HudSensorTracker_MissionMapPathFmt[0x10] = ".\\maps\\m%d.zmap";
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_MissionMapPathFmt) == 0x10);
+
+/**
  * Reimplements data 0x4daf94: g_HudSensorTracker_ObjectiveBlinkColorRedRgb24 (D:\Proj\Battlesport\map.cpp).
  * Purpose: supply the RGB24 red objective-marker blink color with VC5 four-byte storage.
  */
@@ -76,6 +118,94 @@ RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectiveBlinkColorRedRgb24) == 4
 const unsigned char g_HudSensorTracker_ObjectiveMarkerColorBlueRgb24[4] = {0x00, 0x00, 0xff, 0x00};
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectiveMarkerColorBlueRgb24) == 4);
 
+} // namespace
+
+extern "C" {
+/**
+ * Reimplements data 0x4daf9c: g_HudSensorTracker_ZarSectionName_MissionData.
+ * Purpose: names the fixed HUD mission-state ZAR payload section.
+ */
+char g_HudSensorTracker_ZarSectionName_MissionData[0x0c] = "MissionData";
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ZarSectionName_MissionData) == 0x0c);
+/**
+ * Reimplements data 0x4dafa8: g_HudSensorTracker_ObjectivesZrdPath.
+ * Purpose: names the objective definition archive loaded during mission startup
+ * and saved-game mission restore.
+ */
+char g_HudSensorTracker_ObjectivesZrdPath[0x0e] = {
+    'o', 'b', 'j', 'e', 'c', 't', 'i', 'v', 'e', 's', '.', 'z', 'r', 'd'
+};
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectivesZrdPath) == 0x0e);
+/**
+ * Reimplements data 0x4dafb8: g_HudSensorTracker_ZarHandlerName_MissionLate.
+ * Purpose: names the late mission restore ZAR callback section.
+ */
+char g_HudSensorTracker_ZarHandlerName_MissionLate[0x0c] = "MissionLate";
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ZarHandlerName_MissionLate) == 0x0c);
+/**
+ * Reimplements data 0x4dafc4: g_HudSensorTracker_ZarHandlerName_Mission.
+ * Purpose: names the primary HUD mission save/restore ZAR callback section.
+ */
+char g_HudSensorTracker_ZarHandlerName_Mission[0x08] = "Mission";
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ZarHandlerName_Mission) == 0x08);
+/**
+ * Reimplements data 0x4dafcc: g_HudSensorTracker_LateMissionDataSectionName.
+ * Purpose: names the one-word marker payload written for late mission restore.
+ */
+char g_HudSensorTracker_LateMissionDataSectionName[0x10] = "LateMissionData";
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_LateMissionDataSectionName) == 0x10);
+}
+
+namespace {
+
+/**
+ * Reimplements data 0x4daffc: g_HudSensorTracker_DisplayNodeName.
+ * Purpose: name the display node activated during core mission resource load.
+ */
+char g_HudSensorTracker_DisplayNodeName[0x08] = "display";
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_DisplayNodeName) == 0x08);
+/**
+ * Reimplements data 0x4db004: g_HudSensorTracker_WindowNodeName.
+ * Purpose: name the render target window node activated during mission load.
+ */
+char g_HudSensorTracker_WindowNodeName[0x08] = "window1";
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_WindowNodeName) == 0x08);
+/**
+ * Reimplements data 0x4db00c: g_HudSensorTracker_CameraNodeName.
+ * Purpose: name the active camera node used by mission load and HUD runtime.
+ */
+char g_HudSensorTracker_CameraNodeName[0x08] = "camera1";
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_CameraNodeName) == 0x08);
+/**
+ * Reimplements data 0x4db014: g_HudSensorTracker_WorldNodeName.
+ * Purpose: name the mission world node bound after core scripts load.
+ */
+char g_HudSensorTracker_WorldNodeName[0x07] = "world1";
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_WorldNodeName) == 0x07);
+/**
+ * Reimplements data 0x4db01c: g_HudSensorTracker_MissionSoundSetNameFmt.
+ * Purpose: format the mission sound-set name for load and shutdown.
+ */
+char g_HudSensorTracker_MissionSoundSetNameFmt[0x04] = "M%d";
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_MissionSoundSetNameFmt) == 0x04);
+/**
+ * Reimplements data 0x4db020: g_HudSensorTracker_MissionGsFmt.
+ * Purpose: format the normal mission game-state script name.
+ */
+char g_HudSensorTracker_MissionGsFmt[0x07] = "m%d.gs";
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_MissionGsFmt) == 0x07);
+/**
+ * Reimplements data 0x4db028: g_HudSensorTracker_MissionZbdGsFmt.
+ * Purpose: format the mission game-state script name used when ZBD flags are set.
+ */
+char g_HudSensorTracker_MissionZbdGsFmt[0x0b] = "m%d_zbd.gs";
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_MissionZbdGsFmt) == 0x0b);
+/**
+ * Reimplements data 0x4db034: g_HudSensorTracker_InitScriptPathFmt.
+ * Purpose: format the support init script path for the selected mission.
+ */
+char g_HudSensorTracker_InitScriptPathFmt[0x13] = "support\\initm%d.gw";
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_InitScriptPathFmt) == 0x13);
 
 /**
  * Reimplements data 0x4db048: kHudSensorTrackerWeatherArchiveName (D:\Proj\Battlesport\map.cpp).
@@ -128,12 +258,294 @@ const char kHudSensorTrackerPickupArchiveName[] = "pickup.zrd";
 const char g_HudSensorTracker_MissionUnloadedMsg[0x14] = "...Mission Unloaded";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_MissionUnloadedMsg) == 0x14);
 /**
+ * Reimplements data 0x4db0c0: g_HudSensorTracker_ClosingModelsMsg.
+ * Purpose: report the model-system shutdown checkpoint.
+ */
+const char g_HudSensorTracker_ClosingModelsMsg[0x0f] = "Closing Models";
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ClosingModelsMsg) == 0x0f);
+/**
+ * Reimplements data 0x4db0d0: g_HudSensorTracker_ClosingClassMsg.
+ * Purpose: report the class-system shutdown checkpoint.
+ */
+const char g_HudSensorTracker_ClosingClassMsg[0x0e] = "Closing Class";
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ClosingClassMsg) == 0x0e);
+/**
+ * Reimplements data 0x4db0e0: g_HudSensorTracker_LargeModelsCheckpointFmt.
+ * Purpose: format the world large-model count checkpoint during shutdown.
+ */
+const char g_HudSensorTracker_LargeModelsCheckpointFmt[0x11] = "Large Models: %d";
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_LargeModelsCheckpointFmt) == 0x11);
+/**
+ * Reimplements data 0x4db0f4: g_HudSensorTracker_ClosingAnimationsMsg.
+ * Purpose: report the animation-system shutdown checkpoint.
+ */
+const char g_HudSensorTracker_ClosingAnimationsMsg[0x13] = "Closing Animations";
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ClosingAnimationsMsg) == 0x13);
+/**
+ * Reimplements data 0x4db108: g_HudSensorTracker_ClosingEffectsMsg.
+ * Purpose: report the effects-system shutdown checkpoint.
+ */
+const char g_HudSensorTracker_ClosingEffectsMsg[0x10] = "Closing Effects";
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ClosingEffectsMsg) == 0x10);
+/**
+ * Reimplements data 0x4db118: g_HudSensorTracker_ClosingWeaponsMsg.
+ * Purpose: report the weapon-catalog shutdown checkpoint.
+ */
+const char g_HudSensorTracker_ClosingWeaponsMsg[0x10] = "Closing Weapons";
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ClosingWeaponsMsg) == 0x10);
+/**
+ * Reimplements data 0x4db128: g_HudSensorTracker_ClosingPlayerMsg.
+ * Purpose: report the player/gameplay runtime shutdown checkpoint.
+ */
+const char g_HudSensorTracker_ClosingPlayerMsg[0x0f] = "Closing Player";
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ClosingPlayerMsg) == 0x0f);
+/**
+ * Reimplements data 0x4db138: g_HudSensorTracker_UnloadObjectivesMsg.
+ * Purpose: report the objective-runtime unload checkpoint.
+ */
+const char g_HudSensorTracker_UnloadObjectivesMsg[0x12] = "Unload Objectives";
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_UnloadObjectivesMsg) == 0x12);
+} // namespace
+
+/**
+ * Reimplements data 0x4db14c: g_HudLoading_StopAllSoundsMsg.
+ * Purpose: report the shared sound shutdown checkpoint used by mission shutdown
+ * and play-state deactivation without duplicating literal storage.
+ */
+extern "C" const char g_HudLoading_StopAllSoundsMsg[0x10] = "Stop All Sounds";
+RECOIL_STATIC_ASSERT(sizeof(g_HudLoading_StopAllSoundsMsg) == 0x10);
+
+namespace {
+/**
+ * Reimplements data 0x4db15c: g_HudSensorTracker_UnloadingMissionMsg.
+ * Purpose: report the beginning of mission gameplay shutdown.
+ */
+const char g_HudSensorTracker_UnloadingMissionMsg[0x15] = "Unloading Mission...";
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_UnloadingMissionMsg) == 0x15);
+/**
+ * Reimplements data 0x4db174: g_HudSensorTracker_ObjectiveImageMissingFmt.
+ * Purpose: format the missing objective image diagnostic during objective ZRD load.
+ */
+char g_HudSensorTracker_ObjectiveImageMissingFmt[0x2b] =
+    "Cannot find objective %d's image file - %s";
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectiveImageMissingFmt) == 0x2b);
+/**
+ * Reimplements data 0x4db1a0: g_HudSensorTracker_ObjectivesArrayOverflowFmt.
+ * Purpose: format the mission objective array-capacity diagnostic.
+ */
+char g_HudSensorTracker_ObjectivesArrayOverflowFmt[0x36] =
+    "Mission objectives array overflow; MAX allowable = %d";
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectivesArrayOverflowFmt) == 0x36);
+/**
+ * Reimplements data 0x4db1d8: g_HudSensorTracker_ObjectiveNode_Autoplay.
+ * Purpose: name the objective autoplay flag node in objectives.zrd.
+ */
+char g_HudSensorTracker_ObjectiveNode_Autoplay[0x09] = "AUTOPLAY";
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectiveNode_Autoplay) == 0x09);
+/**
+ * Reimplements data 0x4db1e4: g_HudSensorTracker_ObjectiveNodeNameFmt.
+ * Purpose: format numbered objective node names in objectives.zrd.
+ */
+char g_HudSensorTracker_ObjectiveNodeNameFmt[0x0c] = "OBJECTIVE%d";
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectiveNodeNameFmt) == 0x0c);
+/**
+ * Reimplements data 0x4db1f0: g_HudSensorTracker_ObjectiveNode_FinalMission.
+ * Purpose: name the final-mission objective flag node in objectives.zrd.
+ */
+char g_HudSensorTracker_ObjectiveNode_FinalMission[0x0e] = "FINAL_MISSION";
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectiveNode_FinalMission) == 0x0e);
+/**
+ * Reimplements data 0x4db200: g_HudSensorTracker_ObjectiveNode_ReviewDelay.
+ * Purpose: name the objective review-delay node in objectives.zrd.
+ */
+char g_HudSensorTracker_ObjectiveNode_ReviewDelay[0x0d] = "REVIEW_DELAY";
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectiveNode_ReviewDelay) == 0x0d);
+/**
+ * Reimplements data 0x4db210: g_HudSensorTracker_ObjectiveNode_ReadTime.
+ * Purpose: name the objective read-time node in objectives.zrd.
+ */
+char g_HudSensorTracker_ObjectiveNode_ReadTime[0x0a] = "READ_TIME";
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectiveNode_ReadTime) == 0x0a);
+/**
+ * Reimplements data 0x4db21c: g_HudSensorTracker_MissionImageSearchPathFmt.
+ * Purpose: format the mission-specific image search path for objective artwork.
+ */
+char g_HudSensorTracker_MissionImageSearchPathFmt[0x14] = "..\\data\\m%d\\images\\";
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_MissionImageSearchPathFmt) == 0x14);
+/**
  * Reimplements data 0x4db230: g_HudSensorTracker_MissionCppSourcePath.
  * Purpose: preserve the mission.cpp source path used by HUD mission-load error
  * reports.
  */
 char g_HudSensorTracker_MissionCppSourcePath[0x20] = "D:\\Proj\\Battlesport\\mission.cpp";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_MissionCppSourcePath) == 0x20);
+/**
+ * Reimplements data 0x4db250: g_HudSensorTracker_ObjectiveIncomingSfxName.
+ * Purpose: name the default incoming-objective HUD sound sample.
+ */
+char g_HudSensorTracker_ObjectiveIncomingSfxName[0x0d] = "snd_incoming";
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectiveIncomingSfxName) == 0x0d);
+/**
+ * Reimplements data 0x4db260: g_HudSensorTracker_ObjectiveNode_ObjectiveSound.
+ * Purpose: name the objective-complete sound node in objectives.zrd.
+ */
+char g_HudSensorTracker_ObjectiveNode_ObjectiveSound[0x10] = "OBJECTIVE_SOUND";
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectiveNode_ObjectiveSound) == 0x10);
+/**
+ * Reimplements data 0x4db270: g_HudSensorTracker_ObjectiveNode_ReadSound.
+ * Purpose: name the objective read-sound node in objectives.zrd.
+ */
+char g_HudSensorTracker_ObjectiveNode_ReadSound[0x0b] = "READ_SOUND";
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectiveNode_ReadSound) == 0x0b);
+/**
+ * Reimplements data 0x4db27c: g_HudSensorTracker_ObjectiveInactivationNodeMissingFmt.
+ * Purpose: format the missing objective inactivation-node diagnostic.
+ */
+char g_HudSensorTracker_ObjectiveInactivationNodeMissingFmt[0x31] =
+    "Cannot find Objective %d's inactivation node: %s";
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectiveInactivationNodeMissingFmt) == 0x31);
+/**
+ * Reimplements data 0x4db2b0: g_HudSensorTracker_ObjectiveNode_Inactive.
+ * Purpose: name the objective inactivation path node in objectives.zrd.
+ */
+char g_HudSensorTracker_ObjectiveNode_Inactive[0x09] = "INACTIVE";
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectiveNode_Inactive) == 0x09);
+/**
+ * Reimplements data 0x4db2bc: g_HudSensorTracker_ObjectiveActivationNodeMissingFmt.
+ * Purpose: format the missing objective activation-node diagnostic.
+ */
+char g_HudSensorTracker_ObjectiveActivationNodeMissingFmt[0x2f] =
+    "Cannot find Objective %d's activation node: %s";
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectiveActivationNodeMissingFmt) == 0x2f);
+/**
+ * Reimplements data 0x4db2ec: g_HudSensorTracker_ObjectiveNode_Active.
+ * Purpose: name the objective activation path node in objectives.zrd.
+ */
+char g_HudSensorTracker_ObjectiveNode_Active[0x07] = "ACTIVE";
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectiveNode_Active) == 0x07);
+/**
+ * Reimplements data 0x4db2f4: g_HudSensorTracker_ObjectiveNode_ReviewSound.
+ * Purpose: name the objective review-sound node in objectives.zrd.
+ */
+char g_HudSensorTracker_ObjectiveNode_ReviewSound[0x0d] = "REVIEW_SOUND";
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectiveNode_ReviewSound) == 0x0d);
+/**
+ * Reimplements data 0x4db304: g_HudSensorTracker_ObjectivePanelThreeLineFmt.
+ * Purpose: format the objective summary panel as three localized text lines.
+ */
+char g_HudSensorTracker_ObjectivePanelThreeLineFmt[0x09] = "%s\n%s\n%s";
+RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectivePanelThreeLineFmt) == 0x09);
+/**
+ * Reimplements data 0x4db310: g_HudUiWeaponStatsFmt_Basic.
+ * Purpose: format active pickup weapon stats when no proximity value is shown.
+ */
+char g_HudUiWeaponStatsFmt_Basic[0x3f] =
+    "Fire Rate: %d rds/min   Max. Range: %d m\nDamage Power: %.1f\n%s";
+RECOIL_STATIC_ASSERT(sizeof(g_HudUiWeaponStatsFmt_Basic) == 0x3f);
+/**
+ * Reimplements data 0x4db350: g_HudUiWeaponStatsFmt_Proximity.
+ * Purpose: format active pickup weapon stats when proximity damage is shown.
+ */
+char g_HudUiWeaponStatsFmt_Proximity[0x5b] =
+    "Fire Rate: %d rds/min   Max. Range: %d m\n"
+    "Damage Power: %.1f      Damage Proximity: %d m\n%s";
+RECOIL_STATIC_ASSERT(sizeof(g_HudUiWeaponStatsFmt_Proximity) == 0x5b);
+/**
+ * Reimplements data 0x4db3ac: g_HudUiWeaponFeatureSuffix_Mine.
+ * Purpose: append the mine feature label to active pickup feature text.
+ */
+char g_HudUiWeaponFeatureSuffix_Mine[0x06] = " Mine";
+RECOIL_STATIC_ASSERT(sizeof(g_HudUiWeaponFeatureSuffix_Mine) == 0x06);
+/**
+ * Reimplements data 0x4db3b4: g_HudUiWeaponFeatureSuffix_Beam.
+ * Purpose: append the beam feature label to active pickup feature text.
+ */
+char g_HudUiWeaponFeatureSuffix_Beam[0x06] = " Beam";
+RECOIL_STATIC_ASSERT(sizeof(g_HudUiWeaponFeatureSuffix_Beam) == 0x06);
+/**
+ * Reimplements data 0x4db3bc: g_HudUiWeaponFeatureSuffix_LockOn.
+ * Purpose: append the lock-on feature label to active pickup feature text.
+ */
+char g_HudUiWeaponFeatureSuffix_LockOn[0x09] = " Lock On";
+RECOIL_STATIC_ASSERT(sizeof(g_HudUiWeaponFeatureSuffix_LockOn) == 0x09);
+/**
+ * Reimplements data 0x4db3c8: g_HudUiWeaponFeatureSuffix_Tether.
+ * Purpose: append the tether feature label to active pickup feature text.
+ */
+char g_HudUiWeaponFeatureSuffix_Tether[0x08] = " Tether";
+RECOIL_STATIC_ASSERT(sizeof(g_HudUiWeaponFeatureSuffix_Tether) == 0x08);
+/**
+ * Reimplements data 0x4db3d0: g_HudUiWeaponFeatureSuffix_Multi.
+ * Purpose: append the multi-shot feature label to active pickup feature text.
+ */
+char g_HudUiWeaponFeatureSuffix_Multi[0x07] = " Multi";
+RECOIL_STATIC_ASSERT(sizeof(g_HudUiWeaponFeatureSuffix_Multi) == 0x07);
+/**
+ * Reimplements data 0x4db3d8: g_HudUiWeaponFeatureSuffix_Thermal.
+ * Purpose: append the thermal feature label to active pickup feature text.
+ */
+char g_HudUiWeaponFeatureSuffix_Thermal[0x09] = " Thermal";
+RECOIL_STATIC_ASSERT(sizeof(g_HudUiWeaponFeatureSuffix_Thermal) == 0x09);
+/**
+ * Reimplements data 0x4db3e4: g_HudUiWeaponFeatureSuffix_Remote.
+ * Purpose: append the remote feature label to active pickup feature text.
+ */
+char g_HudUiWeaponFeatureSuffix_Remote[0x08] = " Remote";
+RECOIL_STATIC_ASSERT(sizeof(g_HudUiWeaponFeatureSuffix_Remote) == 0x08);
+/**
+ * Reimplements data 0x4db3ec: g_HudUiWeaponFeaturesLabel.
+ * Purpose: seed active pickup feature text before suffixes are appended.
+ */
+char g_HudUiWeaponFeaturesLabel[0x0a] = "Features:";
+RECOIL_STATIC_ASSERT(sizeof(g_HudUiWeaponFeaturesLabel) == 0x0a);
+/**
+ * Reimplements data 0x4db3f8: g_HudWeatherFx_AlphaGradientNodeName.
+ * Purpose: name the optional alpha-gradient tuning node in Weather.zrd.
+ */
+char g_HudWeatherFx_AlphaGradientNodeName[0x0f] = "ALPHA_GRADIENT";
+RECOIL_STATIC_ASSERT(sizeof(g_HudWeatherFx_AlphaGradientNodeName) == 0x0f);
+/**
+ * Reimplements data 0x4db410: g_HudWeatherFx_WindVelocityNodeName.
+ * Purpose: name the optional wind-velocity tuning node in Weather.zrd.
+ */
+char g_HudWeatherFx_WindVelocityNodeName[0x09] = "WIND_VEL";
+RECOIL_STATIC_ASSERT(sizeof(g_HudWeatherFx_WindVelocityNodeName) == 0x09);
+/**
+ * Reimplements data 0x4db41c: g_HudWeatherFx_WindDirectionNodeName.
+ * Purpose: name the optional wind-direction tuning node in Weather.zrd.
+ */
+char g_HudWeatherFx_WindDirectionNodeName[0x09] = "WIND_DIR";
+RECOIL_STATIC_ASSERT(sizeof(g_HudWeatherFx_WindDirectionNodeName) == 0x09);
+/**
+ * Reimplements data 0x4db430: g_HudWeatherFx_TypeValue_Rain.
+ * Purpose: select the rain weather FX class from Weather.zrd TYPE values.
+ */
+char g_HudWeatherFx_TypeValue_Rain[0x05] = "RAIN";
+RECOIL_STATIC_ASSERT(sizeof(g_HudWeatherFx_TypeValue_Rain) == 0x05);
+/**
+ * Reimplements data 0x4db438: g_HudWeatherFx_TypeValue_Snow.
+ * Purpose: select the snow weather FX class from Weather.zrd TYPE values.
+ */
+char g_HudWeatherFx_TypeValue_Snow[0x05] = "SNOW";
+RECOIL_STATIC_ASSERT(sizeof(g_HudWeatherFx_TypeValue_Snow) == 0x05);
+/**
+ * Reimplements data 0x4db440: g_HudWeatherFx_TypeNodeName.
+ * Purpose: name the Weather.zrd node that selects rain or snow FX.
+ */
+char g_HudWeatherFx_TypeNodeName[0x05] = "TYPE";
+RECOIL_STATIC_ASSERT(sizeof(g_HudWeatherFx_TypeNodeName) == 0x05);
+/**
+ * Reimplements data 0x4db448: g_HudWeatherFx_ParticlesNodeName.
+ * Purpose: name the optional particle-count tuning node in Weather.zrd.
+ */
+char g_HudWeatherFx_ParticlesNodeName[0x0a] = "PARTICLES";
+RECOIL_STATIC_ASSERT(sizeof(g_HudWeatherFx_ParticlesNodeName) == 0x0a);
+/**
+ * Reimplements data 0x4db454: g_HudWeatherFx_MissionNodeNameFmt.
+ * Purpose: format the mission-specific Weather.zrd node name.
+ */
+char g_HudWeatherFx_MissionNodeNameFmt[0x0a] = "MISSION%d";
+RECOIL_STATIC_ASSERT(sizeof(g_HudWeatherFx_MissionNodeNameFmt) == 0x0a);
 /**
  * Reimplements data 0x4db460: kHudSensorTrackerRaceCheckpointCountNodeName (D:\Proj\Battlesport\map.cpp).
  * Purpose: name the race checkpoint count node queried from race.zrd.
@@ -1891,9 +2303,9 @@ int HudSensorTracker::LoadMapFromStream(
     if (mapFileVersion != 5) {
         zError::ReportOld(
             0x200,
-            "D:\\Proj\\Battlesport\\map.cpp",
+            g_HudSensorTracker_MapCppSourcePath,
             0x30e,
-            "Incorrect Map File Version (found %d, wanted %d)\n",
+            g_HudSensorTracker_IncorrectMapFileVersionFmt,
             mapFileVersion,
             5
         );
@@ -1968,14 +2380,14 @@ int HudSensorTracker::LoadMissionMapAndSfx(
     char mapPath[0x40];
     sprintf(
         mapPath,
-        ".\\maps\\m%d.zmap",
+        g_HudSensorTracker_MissionMapPathFmt,
         missionIdValue
     );
 
     const int result = LoadMapFromPath(mapPath);
-    mapSndOn = zSnd::FindSampleByName("snd_mapOn");
-    mapSndOff = zSnd::FindSampleByName("snd_mapOff");
-    mapSndClick = zSnd::FindSampleByName("snd_mapClick");
+    mapSndOn = zSnd::FindSampleByName(g_HudSensorTracker_MapOnSfxName);
+    mapSndOff = zSnd::FindSampleByName(g_HudSensorTracker_MapOffSfxName);
+    mapSndClick = zSnd::FindSampleByName(g_HudSensorTracker_MapClickSfxName);
     return result;
 }
 
@@ -2116,7 +2528,7 @@ int HudSensorTracker::WriteMissionDataSection(
     missionData.difficultyMode = zOpt::GetGameDifficultyMode();
     return zUtil_ZAR::WriteSectionBlob(
         writer,
-        "MissionData",
+        g_HudSensorTracker_ZarSectionName_MissionData,
         &missionData,
         sizeof(missionData)
     );
@@ -2162,7 +2574,7 @@ int HudSensorTracker::ApplyMissionDataAndReload(
         );
         zUtil_ZRDR_UnloadMountedArchives(0);
         zUtil::SetMissionZrdrPathsAndMountZbd(missionData->missionId);
-        LoadObjectivesFromPath("objectives.zrd");
+        LoadObjectivesFromPath(g_HudSensorTracker_ObjectivesZrdPath);
         LoadMissionCoreResources();
         InitMissionGameplaySystems();
         if (zVid::GetAccelerationOption() != 0) {
@@ -2211,14 +2623,14 @@ int HudSensorTracker::ApplyMissionDataAndReload(
  */
 void HudSensorTracker::RegisterMissionSectionHandlers() {
     zUtil_ZAR::RegisterSectionHandler(
-        "Mission",
+        g_HudSensorTracker_ZarHandlerName_Mission,
         ZbdCallbackPtr(&HudSensorTracker::ZarMission_SaveCallback),
         ZbdCallbackPtr(&HudSensorTracker::ZarMission_RestoreCallback),
         0,
         this
     );
     zUtil_ZAR::RegisterSectionHandler(
-        "MissionLate",
+        g_HudSensorTracker_ZarHandlerName_MissionLate,
         ZbdCallbackPtr(&HudSensorTracker::ZarMissionLate_SaveCallback),
         ZbdCallbackPtr(&HudSensorTracker::ZarMissionLate_RestoreCallback),
         0x7d0,
@@ -2299,7 +2711,7 @@ int HudSensorTracker::LoadMissionCoreResources() {
 
     raceCheckpointMode = LoadRaceCheckpointMeta();
     scriptPath.Format(
-        "support\\initm%d.gw",
+        g_HudSensorTracker_InitScriptPathFmt,
         missionId
     );
     g_zInterp_GlobalContext.RunScriptFile(scriptPath);
@@ -2310,12 +2722,12 @@ int HudSensorTracker::LoadMissionCoreResources() {
     if (((const char *)zbdPath)[0] == '\0') {
         if (missionFlags != 0) {
             zbdPath.Format(
-                "m%d_zbd.gs",
+                g_HudSensorTracker_MissionZbdGsFmt,
                 missionId
             );
         } else {
             zbdPath.Format(
-                "m%d.gs",
+                g_HudSensorTracker_MissionGsFmt,
                 missionId
             );
         }
@@ -2327,7 +2739,7 @@ int HudSensorTracker::LoadMissionCoreResources() {
     HudUiLoadingCheckpoint::AdvanceAndLog(zLoc::GetMessageString(0x10e));
     sprintf(
         g_HudSensor_MissionSoundSetName,
-        "M%d",
+        g_HudSensorTracker_MissionSoundSetNameFmt,
         missionId
     );
     zSndSampleSet_InitByName(g_HudSensor_MissionSoundSetName);
@@ -2338,19 +2750,19 @@ int HudSensorTracker::LoadMissionCoreResources() {
     HudUiLoadingCheckpoint::AdvanceAndLog(zLoc::GetMessageString(0x104));
     worldNode = zClass::FindByTypeAndName(
         13,
-        "world1"
+        g_HudSensorTracker_WorldNodeName
     );
     cameraNode = zClass::FindByTypeAndName(
         8,
-        "camera1"
+        g_HudSensorTracker_CameraNodeName
     );
     windowNode = zClass::FindByTypeAndName(
         14,
-        "window1"
+        g_HudSensorTracker_WindowNodeName
     );
     displayNode = zClass::FindByTypeAndName(
         15,
-        "display"
+        g_HudSensorTracker_DisplayNodeName
     );
 
     zClass_Class::gwNodeUpdateAll();
@@ -2468,7 +2880,7 @@ int HudSensorTracker::InitMissionGameplaySystems() {
     }
 
     HudUiLoadingCheckpoint::AdvanceAndLog(g_HudSensorTracker_FindMissionObjectivesMsg);
-    LoadObjectivesFromZrd("objectives.zrd");
+    LoadObjectivesFromZrd(g_HudSensorTracker_ObjectivesZrdPath);
     LoadMissionWeatherFx(kHudSensorTrackerWeatherArchiveName);
     zInput::Keyboard_ResetTransitionState();
 
@@ -2499,7 +2911,7 @@ int HudSensorTracker::ShutdownMissionGameplaySystems() {
         return 1;
     }
 
-    HudUiLoadingCheckpoint::AdvanceAndLog("Unloading Mission...");
+    HudUiLoadingCheckpoint::AdvanceAndLog(g_HudSensorTracker_UnloadingMissionMsg);
     HudUiMgr::UpdateTargetReticleFromCursor(
         0,
         0,
@@ -2510,7 +2922,7 @@ int HudSensorTracker::ShutdownMissionGameplaySystems() {
     HudUiLoadingCheckpoint::AdvanceAndLog(0);
     HudUiAuxOverlay::ClearTextLines();
 
-    HudUiLoadingCheckpoint::AdvanceAndLog("Stop All Sounds");
+    HudUiLoadingCheckpoint::AdvanceAndLog(g_HudLoading_StopAllSoundsMsg);
     zSndPlayHandleSnapshot *const soundSnapshot = zSndPlayHandleSnapshot::CreateFromActiveSamples();
     soundSnapshot->StopAllIfPlaying();
     zClass_Camera::gwCameraSetFlagBit0(
@@ -2519,22 +2931,22 @@ int HudSensorTracker::ShutdownMissionGameplaySystems() {
     );
     MapShutdownAndReset();
 
-    HudUiLoadingCheckpoint::AdvanceAndLog("Unload Objectives");
+    HudUiLoadingCheckpoint::AdvanceAndLog(g_HudSensorTracker_UnloadObjectivesMsg);
     UnloadObjectives();
 
-    HudUiLoadingCheckpoint::AdvanceAndLog("Closing Player");
+    HudUiLoadingCheckpoint::AdvanceAndLog(g_HudSensorTracker_ClosingPlayerMsg);
     GameNet::UnregisterGameplayPacketHandlers();
     Player::ShutdownMissionRuntime();
     PickupAirdropSpawnRef::ShutdownGlobal();
     zTurret_System::FreeAllRuntimes();
 
-    HudUiLoadingCheckpoint::AdvanceAndLog("Closing Weapons");
+    HudUiLoadingCheckpoint::AdvanceAndLog(g_HudSensorTracker_ClosingWeaponsMsg);
     OptCatalog::ShutdownCore();
 
-    HudUiLoadingCheckpoint::AdvanceAndLog("Closing Effects");
+    HudUiLoadingCheckpoint::AdvanceAndLog(g_HudSensorTracker_ClosingEffectsMsg);
     zEffect::Reset();
 
-    HudUiLoadingCheckpoint::AdvanceAndLog("Closing Animations");
+    HudUiLoadingCheckpoint::AdvanceAndLog(g_HudSensorTracker_ClosingAnimationsMsg);
     zEffect_Anim::Shutdown();
     zDEClient::ShutdownGlobals();
     Pickup::Shutdown();
@@ -2546,21 +2958,21 @@ int HudSensorTracker::ShutdownMissionGameplaySystems() {
     char loadingMessage[80];
     sprintf(
         loadingMessage,
-        "Large Models: %d",
+        g_HudSensorTracker_LargeModelsCheckpointFmt,
         worldNode->listCountB
     );
     HudUiLoadingCheckpoint::AdvanceAndLog(loadingMessage);
 
-    HudUiLoadingCheckpoint::AdvanceAndLog("Closing Class");
+    HudUiLoadingCheckpoint::AdvanceAndLog(g_HudSensorTracker_ClosingClassMsg);
     zClass::ShutdownCore();
 
-    HudUiLoadingCheckpoint::AdvanceAndLog("Closing Models");
+    HudUiLoadingCheckpoint::AdvanceAndLog(g_HudSensorTracker_ClosingModelsMsg);
     zModel_Display::Shutdown();
     zImage::Shutdown();
 
     sprintf(
         g_HudSensor_MissionSoundSetName + 16,
-        "M%d",
+        g_HudSensorTracker_MissionSoundSetNameFmt,
         missionId
     );
     zSndSampleSet_DestroyByName(g_HudSensor_MissionSoundSetName + 16);
@@ -2608,7 +3020,7 @@ void HudSensorTracker::LoadMissionWeatherFx(
     char missionNodeName[0x40];
     sprintf(
         missionNodeName,
-        "MISSION%d",
+        g_HudWeatherFx_MissionNodeNameFmt,
         missionId
     );
     zReader::Node *missionNode = zReader_GetNamedNode(
@@ -2619,7 +3031,7 @@ void HudSensorTracker::LoadMissionWeatherFx(
         int particleCount = 100;
         zReader::Node *particleNode = zReader_GetNamedNode(
             missionNode,
-            "PARTICLES"
+            g_HudWeatherFx_ParticlesNodeName
         );
         if (particleNode != 0) {
             particleCount = particleNode->value.i32;
@@ -2627,20 +3039,20 @@ void HudSensorTracker::LoadMissionWeatherFx(
 
         zReader::Node *typeNode = zReader_GetNamedNode(
             missionNode,
-            "TYPE"
+            g_HudWeatherFx_TypeNodeName
         );
         if (typeNode != 0) {
             const char *const weatherType = typeNode->value.str;
             if (strcmp(
                 weatherType,
-                "SNOW"
+                g_HudWeatherFx_TypeValue_Snow
             ) == 0) {
                 HudWeatherFxSnow *const snow =
                     (HudWeatherFxSnow *)(::operator new(sizeof(HudWeatherFxSnow)));
                 fxPass3Obj = snow != 0 ? snow->Constructor(particleCount) : 0;
             } else if (strcmp(
                 weatherType,
-                "RAIN"
+                g_HudWeatherFx_TypeValue_Rain
             ) == 0) {
                 HudWeatherFxRain *const rain =
                     (HudWeatherFxRain *)(::operator new(sizeof(HudWeatherFxRain)));
@@ -2666,7 +3078,7 @@ void HudSensorTracker::LoadMissionWeatherFx(
 
             zReader::Node *windDirNode = zReader_GetNamedNode(
                 missionNode,
-                "WIND_DIR"
+                g_HudWeatherFx_WindDirectionNodeName
             );
             if (windDirNode != 0) {
                 weatherFx->windDirection = windDirNode->value.f32;
@@ -2674,7 +3086,7 @@ void HudSensorTracker::LoadMissionWeatherFx(
 
             zReader::Node *windVelNode = zReader_GetNamedNode(
                 missionNode,
-                "WIND_VEL"
+                g_HudWeatherFx_WindVelocityNodeName
             );
             if (windVelNode != 0) {
                 weatherFx->windVelocity = windVelNode->value.f32;
@@ -2690,7 +3102,7 @@ void HudSensorTracker::LoadMissionWeatherFx(
 
             zReader::Node *alphaGradientNode = zReader_GetNamedNode(
                 missionNode,
-                "ALPHA_GRADIENT"
+                g_HudWeatherFx_AlphaGradientNodeName
             );
             if (alphaGradientNode != 0) {
                 zReader::Node *const alphaFields = alphaGradientNode->value.nodes;
@@ -2761,7 +3173,7 @@ int HudSensorTracker::LoadObjectivesFromPath(
     char imagesPath[0x40];
     sprintf(
         imagesPath,
-        "..\\data\\m%d\\images\\",
+        g_HudSensorTracker_MissionImageSearchPathFmt,
         missionId
     );
     zImage_InitMissionResources(imagesPath);
@@ -2772,7 +3184,7 @@ int HudSensorTracker::LoadObjectivesFromPath(
 
     zReader::Node *readTimeNode = zReader_GetNamedNode(
         rootNode,
-        "READ_TIME"
+        g_HudSensorTracker_ObjectiveNode_ReadTime
     );
     if (readTimeNode != 0) {
         objectiveReadTimeSecRaw =
@@ -2781,7 +3193,7 @@ int HudSensorTracker::LoadObjectivesFromPath(
 
     zReader::Node *reviewDelayNode = zReader_GetNamedNode(
         rootNode,
-        "REVIEW_DELAY"
+        g_HudSensorTracker_ObjectiveNode_ReviewDelay
     );
     if (reviewDelayNode != 0) {
         objectiveReviewDelaySecRaw =
@@ -2794,7 +3206,7 @@ int HudSensorTracker::LoadObjectivesFromPath(
 
     zReader::Node *finalMissionNode = zReader_GetNamedNode(
         rootNode,
-        "FINAL_MISSION"
+        g_HudSensorTracker_ObjectiveNode_FinalMission
     );
     if (finalMissionNode != 0) {
         finalMissionFlag = finalMissionNode->value.nodes[1].value.i32;
@@ -2808,7 +3220,7 @@ int HudSensorTracker::LoadObjectivesFromPath(
             char objectiveName[0x20];
             sprintf(
                 objectiveName,
-                "OBJECTIVE%d",
+                g_HudSensorTracker_ObjectiveNodeNameFmt,
                 objectiveNumber
             );
 
@@ -2831,7 +3243,7 @@ int HudSensorTracker::LoadObjectivesFromPath(
                     0x800,
                     "D:\\Proj\\Battlesport\\mission.cpp",
                     0x2ff,
-                    "Cannot find objective %d's image file - %s",
+                    g_HudSensorTracker_ObjectiveImageMissingFmt,
                     objectiveNumber,
                     imagePath
                 );
@@ -2862,7 +3274,7 @@ int HudSensorTracker::LoadObjectivesFromPath(
             slot.completedFlag = 0;
             if (zReader_GetNamedNode(
                 objectiveNode,
-                "AUTOPLAY"
+                g_HudSensorTracker_ObjectiveNode_Autoplay
             ) != 0) {
                 slot.autoplayFlag = 1;
             }
@@ -2872,7 +3284,7 @@ int HudSensorTracker::LoadObjectivesFromPath(
                     0x400,
                     "D:\\Proj\\Battlesport\\mission.cpp",
                     0x2ee,
-                    "Mission objectives array overflow; MAX allowable = %d",
+                    g_HudSensorTracker_ObjectivesArrayOverflowFmt,
                     objectiveNumber
                 );
                 break;
@@ -2898,7 +3310,7 @@ int HudSensorTracker::LoadObjectivesFromZrd(
 ) {
     zReader::Node *reviewSoundNode = zReader_GetNamedNode(
         objectivesRootNode,
-        "REVIEW_SOUND"
+        g_HudSensorTracker_ObjectiveNode_ReviewSound
     );
     if (reviewSoundNode != 0) {
         objectiveReviewSfx = zSnd::FindSampleByName(reviewSoundNode->value.nodes[1].value.str);
@@ -2912,7 +3324,7 @@ int HudSensorTracker::LoadObjectivesFromZrd(
     int objectiveNumber = 1;
     sprintf(
         objectiveName,
-        "OBJECTIVE%d",
+        g_HudSensorTracker_ObjectiveNodeNameFmt,
         objectiveNumber
     );
 
@@ -2925,27 +3337,27 @@ int HudSensorTracker::LoadObjectivesFromZrd(
 
         zReader::Node *activeNode = zReader_GetNamedNode(
             objectiveNode,
-            "ACTIVE"
+            g_HudSensorTracker_ObjectiveNode_Active
         );
         if (activeNode != 0) {
             slot.activationNode = ResolveObjectiveNodePath(
                 activeNode,
                 objectiveNumber - 1,
-                "Cannot find Objective %d's activation node: %s",
+                g_HudSensorTracker_ObjectiveActivationNodeMissingFmt,
                 0x355
             );
             slot.inactivationNode = 0;
         } else {
             zReader::Node *inactiveNode = zReader_GetNamedNode(
                 objectiveNode,
-                "INACTIVE"
+                g_HudSensorTracker_ObjectiveNode_Inactive
             );
             if (inactiveNode != 0) {
                 slot.activationNode = 0;
                 slot.inactivationNode = ResolveObjectiveNodePath(
                     inactiveNode,
                     objectiveNumber - 1,
-                    "Cannot find Objective %d's inactivation node: %s",
+                    g_HudSensorTracker_ObjectiveInactivationNodeMissingFmt,
                     0x36b
                 );
             } else {
@@ -2957,7 +3369,7 @@ int HudSensorTracker::LoadObjectivesFromZrd(
         slot.objectiveReadFlag = 0;
         zReader::Node *readSoundNode = zReader_GetNamedNode(
             objectiveNode,
-            "READ_SOUND"
+            g_HudSensorTracker_ObjectiveNode_ReadSound
         );
         if (readSoundNode != 0) {
             zReader::Node *const readSoundFields = readSoundNode->value.nodes;
@@ -2973,7 +3385,7 @@ int HudSensorTracker::LoadObjectivesFromZrd(
         ++objectiveNumber;
         sprintf(
             objectiveName,
-            "OBJECTIVE%d",
+            g_HudSensorTracker_ObjectiveNodeNameFmt,
             objectiveNumber
         );
         objectiveNode = zReader_GetNamedNode(
@@ -2984,13 +3396,13 @@ int HudSensorTracker::LoadObjectivesFromZrd(
 
     zReader::Node *objectiveSoundNode = zReader_GetNamedNode(
         objectivesRootNode,
-        "OBJECTIVE_SOUND"
+        g_HudSensorTracker_ObjectiveNode_ObjectiveSound
     );
     if (objectiveSoundNode != 0) {
         objectiveCompleteSfx = zSnd::FindSampleByName(objectiveSoundNode->value.nodes[1].value.str);
     }
 
-    objectiveIncomingSfx = zSnd::FindSampleByName("snd_incoming");
+    objectiveIncomingSfx = zSnd::FindSampleByName(g_HudSensorTracker_ObjectiveIncomingSfxName);
     firstIncompleteObjectiveIndex = FindAndHighlightFirstIncompleteObjective();
     return 0;
 }
@@ -3509,7 +3921,7 @@ void HudSensorTracker::SetObjectivePanelVisible(
 
     sprintf(
         objectiveSummaryText,
-        "%s\n%s\n%s",
+        g_HudSensorTracker_ObjectivePanelThreeLineFmt,
         objectiveLine,
         statLine,
         timeLine
@@ -3574,49 +3986,49 @@ void HudSensorTracker::ShowObjectivePickupInfo(
     char featureText[0x40];
     strcpy(
         featureText,
-        "Features:"
+        g_HudUiWeaponFeaturesLabel
     );
 
     const unsigned int flags = optEntry->flags;
     if ((flags & 0x00080000) != 0) {
         AppendPickupFeature(
             featureText,
-            " Remote"
+            g_HudUiWeaponFeatureSuffix_Remote
         );
     }
     if ((flags & 0x00200000) != 0) {
         AppendPickupFeature(
             featureText,
-            " Thermal"
+            g_HudUiWeaponFeatureSuffix_Thermal
         );
     }
     if ((flags & 0x00010000) != 0) {
         AppendPickupFeature(
             featureText,
-            " Multi"
+            g_HudUiWeaponFeatureSuffix_Multi
         );
     }
     if ((flags & 0x00100000) != 0) {
         AppendPickupFeature(
             featureText,
-            " Tether"
+            g_HudUiWeaponFeatureSuffix_Tether
         );
     } else if ((flags & 0x00004000) != 0) {
         AppendPickupFeature(
             featureText,
-            " Lock On"
+            g_HudUiWeaponFeatureSuffix_LockOn
         );
     }
     if ((flags & 0x00000002) != 0) {
         AppendPickupFeature(
             featureText,
-            " Beam"
+            g_HudUiWeaponFeatureSuffix_Beam
         );
     }
     if ((flags & 0x00002000) != 0) {
         AppendPickupFeature(
             featureText,
-            " Mine"
+            g_HudUiWeaponFeatureSuffix_Mine
         );
     }
 
@@ -3634,8 +4046,7 @@ void HudSensorTracker::ShowObjectivePickupInfo(
     if (optEntry->impactProximity > 0.0f) {
         sprintf(
             weaponStatsText,
-            "Fire Rate: %d rds/min   Max. Range: %d m\n"
-            "Damage Power: %.1f      Damage Proximity: %d m\n%s",
+            g_HudUiWeaponStatsFmt_Proximity,
             fireRatePerMinute,
             maxRange,
             (double)(optEntry->damage),
@@ -3645,8 +4056,7 @@ void HudSensorTracker::ShowObjectivePickupInfo(
     } else {
         sprintf(
             weaponStatsText,
-            "Fire Rate: %d rds/min   Max. Range: %d m\n"
-            "Damage Power: %.1f\n%s",
+            g_HudUiWeaponStatsFmt_Basic,
             fireRatePerMinute,
             maxRange,
             (double)(optEntry->damage),
@@ -3838,7 +4248,7 @@ void __fastcall HudSensorTracker::ZarMissionLate_SaveCallback(
     unsigned int lateMissionData = 1;
     zUtil_ZAR::WriteSectionBlob(
         writer,
-        "LateMissionData",
+        g_HudSensorTracker_LateMissionDataSectionName,
         &lateMissionData,
         sizeof(lateMissionData)
     );

@@ -1848,6 +1848,10 @@ zFMV_ActionFade::zFMV_ActionFade(
 /**
  * Reimplements 0x463410: zFMV_ActionFade::Begin.
  * Purpose: capture the current surface and record the fade start time.
+ *
+ * Data audit: Begin/End have no direct authored global data references.
+ * Update reads only the accepted zVideo renderer-dispatch globals
+ * g_zVideo_ActiveRendererPath and g_zVideo_pfnFlushQuadBatch.
  */
 void zFMV_ActionFade::Begin(double timeSec) {
     capturedFrame = zVideo_buff_CaptureSurfaceToImage(1);

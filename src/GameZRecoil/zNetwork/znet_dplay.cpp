@@ -41,13 +41,13 @@ char g_zNetwork_ProviderName_Ipx[0x4] = "IPX";
 char g_zNetwork_ModemSessionName[0xd] = "ModemSession";
 /**
  * Reimplements data 0x56aaf0: Symbol.
- * Data owner: engine.znetwork.directplay_runtime_globals.
+ * Data owner: engine.znetwork.host_flag_accessor.
  * Purpose: cache the active IDirectPlay4A interface for zNetwork session calls.
  */
 zNetwork_DPlay4 *g_zNetwork_pDirectPlay4 = 0;
 /**
  * Reimplements data 0x56aaf8: Symbol.
- * Data owner: engine.znetwork.directplay_runtime_globals.
+ * Data owner: engine.znetwork.player_record_accessors.
  * Purpose: hold the local DirectPlay player record while joined to a session.
  */
 zNetwork_PlayerRecord *g_zNetwork_LocalPlayerRecord = 0;
@@ -172,7 +172,7 @@ zArchiveList *g_zNetwork_EnumeratedSessionList = 0;
 zNetworkServiceProviderListVec *g_zNetwork_ServiceProviderList = 0;
 /**
  * Reimplements data 0x56ab34: Symbol.
- * Data owner: engine.znetwork.directplay_runtime_globals.
+ * Data owner: engine.znetwork.player_record_accessors.
  * Purpose: own the recovered intrusive list of player records.
  */
 zNetworkPlayerRecordList *g_zNetwork_PlayerRecordList = 0;

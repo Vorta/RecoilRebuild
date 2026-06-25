@@ -551,7 +551,9 @@ RECOIL_STATIC_ASSERT(
 );
 
 struct RecoilStateSaveLoadTransition : RecoilApp_IState {
-    RecoilPtr32 m_dialog; // HudUiDialogController*
+    // Current x86 owner-data evidence keeps these nullable object references
+    // as 32-bit slots inside the 0x1c-byte singleton.
+    RecoilPtr32 m_dialog; // HudUiSaveLoadDialog*
     RecoilSaveLoadDialogKind m_dialogKind;
     zVideoHalfResAdjustMode m_savedHalfResAdjustMode;
     RecoilSaveLoadPresentationCaptureMode m_capturePresentationMode;
@@ -576,6 +578,12 @@ RECOIL_STATIC_ASSERT(sizeof(RecoilStateSaveLoadTransition) == 0x1c);
 RECOIL_STATIC_ASSERT(
     offsetof(
         RecoilStateSaveLoadTransition,
+        m_dialog
+    ) == 0x04
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        RecoilStateSaveLoadTransition,
         m_dialogKind
     ) == 0x08
 );
@@ -590,6 +598,12 @@ RECOIL_STATIC_ASSERT(
         RecoilStateSaveLoadTransition,
         m_transitionMode
     ) == 0x14
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        RecoilStateSaveLoadTransition,
+        m_pausedAudioSnapshot
+    ) == 0x18
 );
 
 extern RecoilStateSaveLoadTransition g_RecoilStateSaveLoadTransition;

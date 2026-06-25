@@ -100,6 +100,127 @@ int g_zRndr_ActivePaletteRemapKey = -1;
  */
 int g_zRndr_ActivePaletteShadeRecipeIndex = -1;
 /**
+ * Reimplements data 0x56b1f0: gRndr_PerspTexScaledUOverZ0.
+ * BN xrefs from zRndr::DrawTexturedQueued stage vertex 0 scaled U/Z for queued
+ * perspective texture interpolation and mip metric selection.
+ * Purpose: first queued-texture scaled U/Z scratch sample.
+ */
+float gRndr_PerspTexScaledUOverZ0 = 0.0f;
+/**
+ * Reimplements data 0x56b1f4: gRndr_PerspTexScaledVOverZ0.
+ * BN xrefs from zRndr::DrawTexturedQueued stage vertex 0 scaled V/Z beside the
+ * U sample in the authored perspective scratch bank.
+ * Purpose: first queued-texture scaled V/Z scratch sample.
+ */
+float gRndr_PerspTexScaledVOverZ0 = 0.0f;
+/**
+ * Reimplements data 0x56b1f8: gRndr_PerspTexScaledUOverZ1.
+ * BN xrefs from zRndr::DrawTexturedQueued stage vertex 1 scaled U/Z for plane
+ * construction and mip metric selection.
+ * Purpose: second queued-texture scaled U/Z scratch sample.
+ */
+float gRndr_PerspTexScaledUOverZ1 = 0.0f;
+/**
+ * Reimplements data 0x56b1fc: gRndr_PerspTexScaledVOverZ1.
+ * BN xrefs from zRndr::DrawTexturedQueued stage vertex 1 scaled V/Z for plane
+ * construction and mip metric selection.
+ * Purpose: second queued-texture scaled V/Z scratch sample.
+ */
+float gRndr_PerspTexScaledVOverZ1 = 0.0f;
+/**
+ * Reimplements data 0x56b200: gRndr_PerspTexScaledUOverZ2.
+ * BN xrefs from zRndr::DrawTexturedQueued stage vertex 2 scaled U/Z for plane
+ * construction and mip metric selection.
+ * Purpose: third queued-texture scaled U/Z scratch sample.
+ */
+float gRndr_PerspTexScaledUOverZ2 = 0.0f;
+/**
+ * Reimplements data 0x56b204: gRndr_PerspTexScaledVOverZ2.
+ * BN xrefs from zRndr::DrawTexturedQueued stage vertex 2 scaled V/Z for plane
+ * construction and mip metric selection.
+ * Purpose: third queued-texture scaled V/Z scratch sample.
+ */
+float gRndr_PerspTexScaledVOverZ2 = 0.0f;
+/**
+ * Reimplements data 0x56b208: gRndr_PerspTexScaledUOverZBase.
+ * BN xrefs from zRndr::DrawTexturedQueued and clipped-triangle interpolation
+ * store the scaled U/Z plane base before span chunk dispatch.
+ * Purpose: queued-texture scaled U/Z plane base.
+ */
+float gRndr_PerspTexScaledUOverZBase = 0.0f;
+int gRndr_PerspScratchReserved0 = 0;
+/**
+ * Reimplements data 0x56b210: gRndr_PerspPlaneOriginX.
+ * BN xrefs from zRndr::DrawTexturedQueued store the screen-space X origin used
+ * to evaluate the queued texture perspective planes.
+ * Purpose: queued-texture perspective plane X origin.
+ */
+float gRndr_PerspPlaneOriginX = 0.0f;
+/**
+ * Reimplements data 0x56b214: gRndr_PerspPlaneOriginY.
+ * BN xrefs from zRndr::DrawTexturedQueued store the screen-space Y origin used
+ * to evaluate the queued texture perspective planes.
+ * Purpose: queued-texture perspective plane Y origin.
+ */
+float gRndr_PerspPlaneOriginY = 0.0f;
+/**
+ * Reimplements data 0x56b218: gRndr_PerspTexScaledUOverZStepX.
+ * BN xrefs from zRndr::DrawTexturedQueued store the X gradient for the scaled
+ * U/Z perspective plane and pass it to mip metric selection.
+ * Purpose: queued-texture scaled U/Z plane X step.
+ */
+float gRndr_PerspTexScaledUOverZStepX = 0.0f;
+/**
+ * Reimplements data 0x56b21c: gRndr_PerspTexScaledUOverZStepY.
+ * BN xrefs from zRndr::DrawTexturedQueued store the Y gradient for the scaled
+ * U/Z perspective plane.
+ * Purpose: queued-texture scaled U/Z plane Y step.
+ */
+float gRndr_PerspTexScaledUOverZStepY = 0.0f;
+/**
+ * Reimplements data 0x56b220: gRndr_PerspInvDepthBase.
+ * BN xrefs from zRndr::DrawTexturedQueued store the reciprocal-depth plane base
+ * before span-list depth setup and chunked texture dispatch.
+ * Purpose: queued-texture inverse-depth plane base.
+ */
+float gRndr_PerspInvDepthBase = 0.0f;
+int gRndr_PerspScratchReserved1 = 0;
+/**
+ * Reimplements data 0x56b228: gRndr_PerspInvDepthStepX.
+ * BN xrefs from zRndr::DrawTexturedQueued store the reciprocal-depth X gradient
+ * for span depth setup, chunk selection, and mip metric selection.
+ * Purpose: queued-texture inverse-depth plane X step.
+ */
+float gRndr_PerspInvDepthStepX = 0.0f;
+/**
+ * Reimplements data 0x56b22c: gRndr_PerspInvDepthStepY.
+ * BN xrefs from zRndr::DrawTexturedQueued store the reciprocal-depth Y gradient
+ * for per-scanline span depth setup.
+ * Purpose: queued-texture inverse-depth plane Y step.
+ */
+float gRndr_PerspInvDepthStepY = 0.0f;
+/**
+ * Reimplements data 0x56b230: gRndr_PerspTexScaledVOverZStepX.
+ * BN xrefs from zRndr::DrawTexturedQueued store the X gradient for the scaled
+ * V/Z perspective plane and pass it to mip metric selection.
+ * Purpose: queued-texture scaled V/Z plane X step.
+ */
+float gRndr_PerspTexScaledVOverZStepX = 0.0f;
+/**
+ * Reimplements data 0x56b234: gRndr_PerspTexScaledVOverZStepY.
+ * BN xrefs from zRndr::DrawTexturedQueued store the Y gradient for the scaled
+ * V/Z perspective plane.
+ * Purpose: queued-texture scaled V/Z plane Y step.
+ */
+float gRndr_PerspTexScaledVOverZStepY = 0.0f;
+/**
+ * Reimplements data 0x56b238: gRndr_PerspTexScaledVOverZBase.
+ * BN xrefs from zRndr::DrawTexturedQueued and clipped-triangle interpolation
+ * store the scaled V/Z plane base before span chunk dispatch.
+ * Purpose: queued-texture scaled V/Z plane base.
+ */
+float gRndr_PerspTexScaledVOverZBase = 0.0f;
+/**
  * Reimplements data 0x56b23c: g_zRndr_CircleCenterX.
  * BN xrefs: zRndr circle drawing setup stores the center X coordinate before
  * circle span callbacks consume it.
@@ -115,8 +236,9 @@ int g_zRndr_CircleCenterX = 0;
 int g_zRndr_CircleCenterY = 0;
 /**
  * Reimplements data 0x56b244: g_zRndr_CircleDrawAuxArg.
- * BN xrefs: zRndr circle drawing setup stores the auxiliary draw argument for
- * the selected circle span callback.
+ * BN xrefs: zRndr circle drawing setup stores the auxiliary draw argument;
+ * current BN shows no later read, so the accepted extent is this write-only
+ * staging dword.
  * Purpose: staged callback argument for software circle rendering.
  */
 int g_zRndr_CircleDrawAuxArg = 0;
@@ -125,6 +247,13 @@ namespace zRndr {
 // Default software render target bank from zRndr_Draw.cpp. BN names the
 // clipped-framebuffer globals at 0x632050, 0x632054, 0x632058, and 0x63205c;
 // lens-flare and span leaves consume them as the active 16-bit framebuffer.
+/**
+ * Reimplements data 0x632050: gRndr_pFrameBuffer.
+ * BN xrefs: zRndr active-region setup stores this pointer; queued raster,
+ * immediate line, circle, lens-flare, and span-occlusion sample paths load it
+ * as the active software framebuffer before dispatching row/pixel callbacks.
+ * Purpose: active 16-bit software renderer framebuffer base.
+ */
 void *g_frameBuffer = 0;
 int g_activeRegionWidth = 0;
 int g_activeRegionHeight = 0;
@@ -133,7 +262,18 @@ int g_pitchBytes = 0;
 int g_bytesPerPixel = 0;
 int g_videoStrideMirror0 = 0;
 int g_videoStrideMirror1 = 0;
+/**
+ * Reimplements data 0x57dac8: g_scanConvertMode.
+ * Purpose: Store the active zRndr scan-conversion mode consumed by queued raster paths.
+ */
 int g_scanConvertMode = 0;
+/**
+ * Reimplements data 0x57dacc: gRndr_PerspectiveTextureEnabled.
+ * BN xrefs: zRndr::InitGlobals enables this flag at startup; zModel render
+ * paths toggle it while selecting camera/projection setup for textured model
+ * submission.
+ * Purpose: runtime perspective-texture enable flag for zRndr draw paths.
+ */
 int g_perspectiveTextureEnabled = 0;
 int g_perspectiveTextureDeltaXInput = 0;
 int g_perspectiveTextureDeltaXShift = 0;
@@ -144,7 +284,15 @@ float g_perspectiveTextureFarZInv = 0.0f;
 int g_perspectiveAdaptiveMinSpan = 0;
 int g_perspectiveAdaptiveMaxSpan = 0;
 float g_perspectiveAdaptiveSlope = 0.0f;
+/**
+ * Reimplements data 0x57dac0: g_inverseDepthBias.
+ * Purpose: Cache the inverse-depth bias applied when queued spans and lens-flare samples write depth.
+ */
 float g_inverseDepthBias = 0.0f;
+/**
+ * Reimplements data 0x57dac4: g_inverseDepthScale.
+ * Purpose: Cache the inverse-depth scale applied with g_inverseDepthBias for software raster depth.
+ */
 float g_inverseDepthScale = 0.0f;
 float g_spanDepthBias = 0.0f;
 float g_spanDepthBiasPlusOne = 0.0f;
@@ -272,7 +420,21 @@ TexturedQueuedSpanProc g_pfnPolyTlvSpanOpAlt_Mode1 = 0;
 ImmediateRaster4Proc g_pfnImmediateRaster4 = 0;
 ImmediateRasterSegmentedProc g_pfnImmediateRasterReserved = 0;
 ImmediateRaster5Proc g_pfnImmediateRaster5 = 0;
+/**
+ * Reimplements data 0x6320fc: gRndr_pfnPointOpCandidate.
+ * BN xrefs: zRndr::SelectSpanRoutines writes the candidate point operation
+ * next to the active point callback selected for immediate/circle sample
+ * drawing.
+ * Purpose: staged software point operation selected by zRndr span routines.
+ */
 PointOpProc g_pfnPointOpCandidate = 0;
+/**
+ * Reimplements data 0x632100: gRndr_pfnPointOpActive.
+ * BN xrefs: zRndr::SelectSpanRoutines installs zRndr_PlotPixel16; span
+ * occlusion sample and circle octant emitters load this fastcall callback with
+ * gRndr_pFrameBuffer plus y/x/color stack arguments.
+ * Purpose: active software point operation used by sample and circle drawing.
+ */
 PointOpProc g_pfnPointOpActive = 0;
 /**
  * Reimplements data 0x632104: gRndr_pfnTexturedQueuedFinalize.
@@ -291,7 +453,15 @@ SpanRoutineProc g_pfnTexturedQueuedFinalizeAlt = 0;
 TransparentQueuedPolyDrawCmd g_transparentQueue[0x15e] = {0};
 OverwriteQueuedPolyDrawCmd g_overwriteQueue[0x15e] = {0};
 int g_transparentQueueSortIndices[0x15e] = {0};
+/**
+ * Reimplements data 0x57de7c: g_transparentQueueCount.
+ * Purpose: Track the number of queued transparent software polygon draw commands.
+ */
 int g_transparentQueueCount = 0;
+/**
+ * Reimplements data 0x5cb270: g_overwriteQueueCount.
+ * Purpose: Track the number of queued overwrite software polygon draw commands.
+ */
 int g_overwriteQueueCount = 0;
 /*
  * zRndr_Overlay.cpp software overlay rectangle staging bank:
@@ -355,15 +525,41 @@ double g_overlayBlendAlpha = 0.0;
 // count at 0x631ccc, the 64-entry visible pointer list at 0x631cd0, the
 // visibility-active flag at 0x56b248, and four stage texture pointers at
 // 0x56b250.
+/**
+ * Reimplements data 0x62ea00: g_lensFlareSampleQueueCount.
+ * Purpose: Track the number of queued projected lens-flare samples for the frame.
+ */
 int g_lensFlareSampleQueueCount = 0;
 LensFlareSamplePartial g_lensFlareSampleQueue[0x28a] = {0};
+/**
+ * Reimplements data 0x631ccc: g_lensFlareVisibleSampleCount.
+ * Purpose: Track the number of lens-flare samples accepted into the visible-sample list.
+ */
 int g_lensFlareVisibleSampleCount = 0;
+/**
+ * Reimplements data 0x56b248: g_lensFlareVisibilityActive.
+ * Purpose: Record whether all lens-flare visibility stage textures are ready for drawing.
+ */
 int g_lensFlareVisibilityActive = 0;
 zImage_TexDirEntryPartial *g_lensFlareVisibleSampleStages[4] = {0};
 zRndr_LensFlareVisibleSampleDef *g_lensFlareVisibleSampleDefs[0x40] = {0};
+// zRndr texture-mip runtime selector globals. BN places these adjacent int32
+// data entries at 0x63209c..0x6320a0, after the render-state init bank ending
+// at 0x632098 and before the span callback/function-pointer bank at 0x6320a4.
+/**
+ * Reimplements data 0x63209c: gRndr_TextureMipSelectionEnabled.
+ * Purpose: Enable texture mip variant selection at runtime.
+ */
 int g_textureMipSelectionEnabled = 0;
+/**
+ * Reimplements data 0x6320a0: gRndr_TextureMipReservedWriteOnly.
+ * Purpose: Preserve the adjacent InitGlobals-cleared texture mip companion slot.
+ */
 int g_textureMipReservedWriteOnly = 0;
-int g_renderStateReadyWriteOnlyFlag = 0;
+// zRndr::InitGlobals-only render-state latch bank. BN orders these eight
+// zero-initialized int32 globals as 0x63207c..0x632098; InitGlobals writes the
+// 0x632088..0x632098 tail first, then the 0x63207c..0x632084 head. Current
+// BN xrefs show no other readers or writers.
 int g_renderStateReservedWriteOnly = 0;
 int g_initField00 = 0;
 int g_initField04 = 0;
@@ -371,6 +567,7 @@ int g_initField08 = 0;
 int g_initField0C = 0;
 int g_initField10 = 0;
 int g_initField14 = 0;
+int g_renderStateReadyWriteOnlyFlag = 0;
 int g_defaultGraphicsFlags = 0;
 int *g_graphicsFlags = 0;
 
@@ -3150,8 +3347,9 @@ void __fastcall SpanAlphaBlend555ConstAlphaFromTex16Alpha8(
  * BN retail evidence: BN builds paired U/V indices with the MMX mask and
  * step globals, stages sampled tex16 pixels and alpha bytes in a stack scratch
  * area, blends packed groups, then runs a scalar tail with the 565 gates.
- * Current source model: behavior/data-equivalent scalar emulation pending a
- * lawful MMX source model; source-owner acceptance remains blocked.
+ * Source-shape evidence: the VC5 x86 path keeps the retail MMX paired-index
+ * gather and quad blend over stack texel/alpha scratch; portable builds keep
+ * the behavior/data-equivalent scalar fallback.
  * Purpose: Blend tex16 alpha-map samples into a 565 span using the MMX-selected path shape.
  */
 void __fastcall SpanAlphaBlend565MmxFromTex16Alpha8(
@@ -3164,6 +3362,152 @@ void __fastcall SpanAlphaBlend565MmxFromTex16Alpha8(
     const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexPixels);
     const unsigned char *alphaMap = (const unsigned char *)(g_spanActiveTexAlphaMap);
 
+#if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZRNDR_SPAN_MMX_RAW_ASM)
+    unsigned short texelScratch[1024];
+    unsigned short alphaScratch[1024];
+    unsigned short *texelScratchBase = texelScratch;
+    unsigned short *alphaScratchBase = alphaScratch;
+    const int pairCount = pixelCount >> 1;
+    const int pairPixels = pairCount << 1;
+
+    g_mmxVPair.hi = texV;
+    g_mmxVPair.lo = texV + g_spanActiveTexVStepFixed20;
+    g_mmxUPair.hi = texU;
+    g_mmxUPair.lo = texU + g_spanActiveTexUStepFixed20;
+    g_mmxVStepDup2.lo = g_spanActiveTexVStepFixed20 * 2;
+    g_mmxVStepDup2.hi = g_spanActiveTexVStepFixed20 * 2;
+    g_mmxUStepDup2.lo = g_spanActiveTexUStepFixed20 * 2;
+    g_mmxUStepDup2.hi = g_spanActiveTexUStepFixed20 * 2;
+
+    if (pairCount != 0) {
+        unsigned short *alphaScratchEnd = alphaScratchBase + pairPixels;
+        __asm {
+            mov eax, pairCount
+            mov esi, texels16
+            mov edi, texelScratchBase
+            lea edi, [edi+eax*4]
+            neg eax
+            movq mm0, qword ptr [g_mmxVPair]
+            movq mm1, qword ptr [g_mmxUPair]
+            movq mm4, qword ptr [g_mmxVMask]
+            movq mm5, qword ptr [g_mmxUMask]
+            movq mm6, qword ptr [g_mmxVStepDup2]
+            movq mm7, qword ptr [g_mmxUStepDup2]
+            xor edx, edx
+
+        zRndr_span_alpha565_tex16_alpha8_gather_loop:
+            movq mm2, mm0
+            movq mm3, mm1
+            pand mm2, mm4
+            pand mm3, mm5
+            psrld mm2, qword ptr [g_mmxVShiftCounts]
+            paddd mm0, mm6
+            psrld mm3, 14h
+            paddd mm1, mm7
+            paddd mm2, mm3
+            movd ebx, mm2
+            psrlq mm2, 20h
+            mov cx, word ptr [esi+ebx*2]
+            mov edx, alphaMap
+            mov dl, byte ptr [edx+ebx]
+            and edx, 0ffh
+            movd ebx, mm2
+            shl ecx, 10h
+            shl edx, 10h
+            inc eax
+            mov cx, word ptr [esi+ebx*2]
+            mov esi, alphaMap
+            mov dl, byte ptr [esi+ebx]
+            mov esi, alphaScratchEnd
+            mov dword ptr [edi+eax*4-4], ecx
+            mov dword ptr [esi+eax*4-4], edx
+            mov esi, texels16
+            jne zRndr_span_alpha565_tex16_alpha8_gather_loop
+        }
+    }
+
+    if ((pixelCount & 1) != 0) {
+        const int sourceIndex =
+            SpanTex16SampleIndex(
+                texU + pairPixels * g_spanActiveTexUStepFixed20,
+                texV + pairPixels * g_spanActiveTexVStepFixed20,
+                texVShift,
+                g_spanActiveTexUMask
+            );
+        texelScratch[pairPixels] = texels16[sourceIndex];
+        alphaScratch[pairPixels] = (unsigned char)(alphaMap[sourceIndex]);
+    }
+
+    const int quadPixels = pixelCount & ~3;
+    const int quadCount = pixelCount >> 2;
+    if (quadCount != 0) {
+        __asm {
+            mov eax, quadCount
+            mov esi, texelScratchBase
+            mov edi, dst
+            lea esi, [esi+eax*8]
+            lea edi, [edi+eax*8]
+            neg eax
+            movq mm0, qword ptr [esi+eax*8]
+            movq mm1, mm0
+
+        zRndr_span_alpha565_tex16_alpha8_blend_loop:
+            movq mm7, qword ptr [edi+eax*8]
+            movq mm2, mm0
+            pand mm1, qword ptr [g_mmxMaskGreenBits]
+            movq mm4, mm7
+            pand mm2, qword ptr [g_mmxMaskBlueBits]
+            psrlw mm0, 0bh
+            movq mm5, mm7
+            movq mm6, mm7
+            pand mm5, qword ptr [g_mmxMaskGreenBits]
+            psrlw mm1, 5
+            pand mm6, qword ptr [g_mmxMaskBlueBits]
+            psrlw mm4, 0bh
+            mov ebx, alphaScratchBase
+            movq mm3, qword ptr [ebx+eax*8]
+            psrlw mm5, 5
+            psubw mm0, mm4
+            psubw mm1, mm5
+            pmullw mm0, mm3
+            psubw mm2, mm6
+            pmullw mm1, mm3
+            inc eax
+            pmullw mm2, mm3
+            psllw mm0, 3
+            pand mm0, qword ptr [g_mmxMaskRedPacked]
+            psraw mm1, 3
+            pand mm1, qword ptr [g_mmxMaskGreenPacked]
+            paddw mm7, mm0
+            psraw mm2, 8
+            paddw mm7, mm1
+            movq mm0, qword ptr [esi+eax*8]
+            paddw mm7, mm2
+            movq qword ptr [edi+eax*8-8], mm7
+            movq mm1, mm0
+            jne zRndr_span_alpha565_tex16_alpha8_blend_loop
+        }
+        dst += quadPixels;
+    }
+
+    for (int i = quadPixels; i < pixelCount; ++i) {
+        const int alpha = alphaScratch[i];
+        const unsigned short sourceTexel = texelScratch[i];
+        if (alpha > 3) {
+            if (alpha >= 0xfc) {
+                *dst = sourceTexel;
+            } else {
+                *dst = BlendPixel565Alpha8(
+                    *dst,
+                    sourceTexel,
+                    alpha
+                );
+            }
+        }
+
+        ++dst;
+    }
+#else
     const int quadPixels = pixelCount & ~3;
     for (int i = 0; i < quadPixels; ++i) {
         const int sourceIndex = SpanTex16SampleIndex(
@@ -3208,14 +3552,16 @@ void __fastcall SpanAlphaBlend565MmxFromTex16Alpha8(
         texV += g_spanActiveTexVStepFixed20;
         ++dst;
     }
+#endif
 }
 
 /**
  * Reimplements 0x49cea0: zRndr::SpanAlphaBlend555MmxFromTex16Alpha8
  * BN retail evidence: BN matches the 565 MMX alpha-map staging loop but
  * uses the 555 red/green masks and an alpha > 7 scalar-tail gate.
- * Current source model: behavior/data-equivalent scalar emulation pending a
- * lawful MMX source model; source-owner acceptance remains blocked.
+ * Source-shape evidence: the VC5 x86 path keeps the retail MMX paired-index
+ * gather and quad blend over stack texel/alpha scratch; portable builds keep
+ * the behavior/data-equivalent scalar fallback.
  * Purpose: Blend tex16 alpha-map samples into a 555 span using the MMX-selected path shape.
  */
 void __fastcall SpanAlphaBlend555MmxFromTex16Alpha8(
@@ -3228,6 +3574,152 @@ void __fastcall SpanAlphaBlend555MmxFromTex16Alpha8(
     const unsigned short *texels16 = (const unsigned short *)(g_spanActiveTexPixels);
     const unsigned char *alphaMap = (const unsigned char *)(g_spanActiveTexAlphaMap);
 
+#if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZRNDR_SPAN_MMX_RAW_ASM)
+    unsigned short texelScratch[1024];
+    unsigned short alphaScratch[1024];
+    unsigned short *texelScratchBase = texelScratch;
+    unsigned short *alphaScratchBase = alphaScratch;
+    const int pairCount = pixelCount >> 1;
+    const int pairPixels = pairCount << 1;
+
+    g_mmxVPair.hi = texV;
+    g_mmxVPair.lo = texV + g_spanActiveTexVStepFixed20;
+    g_mmxUPair.hi = texU;
+    g_mmxUPair.lo = texU + g_spanActiveTexUStepFixed20;
+    g_mmxVStepDup2.lo = g_spanActiveTexVStepFixed20 * 2;
+    g_mmxVStepDup2.hi = g_spanActiveTexVStepFixed20 * 2;
+    g_mmxUStepDup2.lo = g_spanActiveTexUStepFixed20 * 2;
+    g_mmxUStepDup2.hi = g_spanActiveTexUStepFixed20 * 2;
+
+    if (pairCount != 0) {
+        unsigned short *alphaScratchEnd = alphaScratchBase + pairPixels;
+        __asm {
+            mov eax, pairCount
+            mov esi, texels16
+            mov edi, texelScratchBase
+            lea edi, [edi+eax*4]
+            neg eax
+            movq mm0, qword ptr [g_mmxVPair]
+            movq mm1, qword ptr [g_mmxUPair]
+            movq mm4, qword ptr [g_mmxVMask]
+            movq mm5, qword ptr [g_mmxUMask]
+            movq mm6, qword ptr [g_mmxVStepDup2]
+            movq mm7, qword ptr [g_mmxUStepDup2]
+            xor edx, edx
+
+        zRndr_span_alpha555_tex16_alpha8_gather_loop:
+            movq mm2, mm0
+            movq mm3, mm1
+            pand mm2, mm4
+            pand mm3, mm5
+            psrld mm2, qword ptr [g_mmxVShiftCounts]
+            paddd mm0, mm6
+            psrld mm3, 14h
+            paddd mm1, mm7
+            paddd mm2, mm3
+            movd ebx, mm2
+            psrlq mm2, 20h
+            mov cx, word ptr [esi+ebx*2]
+            mov edx, alphaMap
+            mov dl, byte ptr [edx+ebx]
+            and edx, 0ffh
+            movd ebx, mm2
+            shl ecx, 10h
+            shl edx, 10h
+            inc eax
+            mov cx, word ptr [esi+ebx*2]
+            mov esi, alphaMap
+            mov dl, byte ptr [esi+ebx]
+            mov esi, alphaScratchEnd
+            mov dword ptr [edi+eax*4-4], ecx
+            mov dword ptr [esi+eax*4-4], edx
+            mov esi, texels16
+            jne zRndr_span_alpha555_tex16_alpha8_gather_loop
+        }
+    }
+
+    if ((pixelCount & 1) != 0) {
+        const int sourceIndex =
+            SpanTex16SampleIndex(
+                texU + pairPixels * g_spanActiveTexUStepFixed20,
+                texV + pairPixels * g_spanActiveTexVStepFixed20,
+                texVShift,
+                g_spanActiveTexUMask
+            );
+        texelScratch[pairPixels] = texels16[sourceIndex];
+        alphaScratch[pairPixels] = (unsigned char)(alphaMap[sourceIndex]);
+    }
+
+    const int quadPixels = pixelCount & ~3;
+    const int quadCount = pixelCount >> 2;
+    if (quadCount != 0) {
+        __asm {
+            mov eax, quadCount
+            mov esi, texelScratchBase
+            mov edi, dst
+            lea esi, [esi+eax*8]
+            lea edi, [edi+eax*8]
+            neg eax
+            movq mm0, qword ptr [esi+eax*8]
+            movq mm1, mm0
+
+        zRndr_span_alpha555_tex16_alpha8_blend_loop:
+            movq mm7, qword ptr [edi+eax*8]
+            movq mm2, mm0
+            pand mm1, qword ptr [g_mmxMaskGreenBits]
+            movq mm4, mm7
+            pand mm2, qword ptr [g_mmxMaskBlueBits]
+            psrlw mm0, 0ah
+            movq mm5, mm7
+            movq mm6, mm7
+            pand mm5, qword ptr [g_mmxMaskGreenBits]
+            psrlw mm1, 5
+            pand mm6, qword ptr [g_mmxMaskBlueBits]
+            psrlw mm4, 0ah
+            mov ebx, alphaScratchBase
+            movq mm3, qword ptr [ebx+eax*8]
+            psrlw mm5, 5
+            psubw mm0, mm4
+            psubw mm1, mm5
+            pmullw mm0, mm3
+            psubw mm2, mm6
+            pmullw mm1, mm3
+            inc eax
+            pmullw mm2, mm3
+            psllw mm0, 2
+            pand mm0, qword ptr [g_mmxMaskRedPacked]
+            psraw mm1, 3
+            pand mm1, qword ptr [g_mmxMaskGreenPacked]
+            paddw mm7, mm0
+            psraw mm2, 8
+            paddw mm7, mm1
+            movq mm0, qword ptr [esi+eax*8]
+            paddw mm7, mm2
+            movq qword ptr [edi+eax*8-8], mm7
+            movq mm1, mm0
+            jne zRndr_span_alpha555_tex16_alpha8_blend_loop
+        }
+        dst += quadPixels;
+    }
+
+    for (int i = quadPixels; i < pixelCount; ++i) {
+        const int alpha = alphaScratch[i];
+        const unsigned short sourceTexel = texelScratch[i];
+        if (alpha > 7) {
+            if (alpha >= 0xfc) {
+                *dst = sourceTexel;
+            } else {
+                *dst = BlendPixel555Alpha8(
+                    *dst,
+                    sourceTexel,
+                    alpha
+                );
+            }
+        }
+
+        ++dst;
+    }
+#else
     const int quadPixels = pixelCount & ~3;
     for (int i = 0; i < quadPixels; ++i) {
         const int sourceIndex = SpanTex16SampleIndex(
@@ -3272,6 +3764,7 @@ void __fastcall SpanAlphaBlend555MmxFromTex16Alpha8(
         texV += g_spanActiveTexVStepFixed20;
         ++dst;
     }
+#endif
 }
 
 /**
@@ -3548,8 +4041,9 @@ void __fastcall SpanAlphaBlend555ConstAlphaFromPal8Alpha8(
  * BN retail evidence: BN stages paired pal8 samples through the active
  * palette, alpha bytes through the active alpha map, and packed 565 blends
  * through the same MMX U/V index body before the scalar tail.
- * Current source model: behavior/data-equivalent scalar emulation pending a
- * lawful MMX source model; source-owner acceptance remains blocked.
+ * Source-shape evidence: the VC5 x86 path keeps the retail MMX paired-index
+ * gather, pal8 palette expansion, and quad blend over stack texel/alpha
+ * scratch; portable builds keep the behavior/data-equivalent scalar fallback.
  * Purpose: Blend pal8 alpha-map samples into a 565 span using the MMX-selected path shape.
  */
 void __fastcall SpanAlphaBlend565MmxFromPal8Alpha8(
@@ -3563,6 +4057,159 @@ void __fastcall SpanAlphaBlend565MmxFromPal8Alpha8(
     const unsigned char *alphaMap = (const unsigned char *)(g_spanActiveTexAlphaMap);
     const unsigned short *palette = g_spanActiveTexPalette;
 
+#if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZRNDR_SPAN_MMX_RAW_ASM)
+    unsigned short texelScratch[1024];
+    unsigned short alphaScratch[1024];
+    unsigned short *texelScratchBase = texelScratch;
+    unsigned short *alphaScratchBase = alphaScratch;
+    const int pairCount = pixelCount >> 1;
+    const int pairPixels = pairCount << 1;
+
+    g_mmxVPair.hi = texV;
+    g_mmxVPair.lo = texV + g_spanActiveTexVStepFixed20;
+    g_mmxUPair.hi = texU;
+    g_mmxUPair.lo = texU + g_spanActiveTexUStepFixed20;
+    g_mmxVStepDup2.lo = g_spanActiveTexVStepFixed20 * 2;
+    g_mmxVStepDup2.hi = g_spanActiveTexVStepFixed20 * 2;
+    g_mmxUStepDup2.lo = g_spanActiveTexUStepFixed20 * 2;
+    g_mmxUStepDup2.hi = g_spanActiveTexUStepFixed20 * 2;
+
+    if (pairCount != 0) {
+        unsigned short *alphaScratchEnd = alphaScratchBase + pairPixels;
+        __asm {
+            mov eax, pairCount
+            mov esi, texels8
+            mov edi, texelScratchBase
+            lea edi, [edi+eax*4]
+            neg eax
+            movq mm0, qword ptr [g_mmxVPair]
+            movq mm1, qword ptr [g_mmxUPair]
+            movq mm4, qword ptr [g_mmxVMask]
+            movq mm5, qword ptr [g_mmxUMask]
+            movq mm6, qword ptr [g_mmxVStepDup2]
+            movq mm7, qword ptr [g_mmxUStepDup2]
+            xor edx, edx
+
+        zRndr_span_alpha565_pal8_alpha8_gather_loop:
+            movq mm2, mm0
+            movq mm3, mm1
+            pand mm2, mm4
+            pand mm3, mm5
+            psrld mm2, qword ptr [g_mmxVShiftCounts]
+            paddd mm0, mm6
+            psrld mm3, 14h
+            paddd mm1, mm7
+            paddd mm2, mm3
+            movd ebx, mm2
+            psrlq mm2, 20h
+            mov cl, byte ptr [esi+ebx]
+            and ecx, 0ffh
+            mov edx, palette
+            mov cx, word ptr [edx+ecx*2]
+            mov edx, alphaMap
+            mov dl, byte ptr [edx+ebx]
+            and edx, 0ffh
+            movd ebx, mm2
+            shl ecx, 10h
+            shl edx, 10h
+            mov esi, alphaMap
+            mov dl, byte ptr [esi+ebx]
+            mov esi, texels8
+            mov bl, byte ptr [esi+ebx]
+            and ebx, 0ffh
+            mov esi, palette
+            mov cx, word ptr [esi+ebx*2]
+            inc eax
+            mov esi, alphaScratchEnd
+            mov dword ptr [edi+eax*4-4], ecx
+            mov dword ptr [esi+eax*4-4], edx
+            mov esi, texels8
+            jne zRndr_span_alpha565_pal8_alpha8_gather_loop
+        }
+    }
+
+    if ((pixelCount & 1) != 0) {
+        const int sourceIndex =
+            SpanTex16SampleIndex(
+                texU + pairPixels * g_spanActiveTexUStepFixed20,
+                texV + pairPixels * g_spanActiveTexVStepFixed20,
+                texVShift,
+                g_spanActiveTexUMask
+            );
+        texelScratch[pairPixels] = palette[texels8[sourceIndex]];
+        alphaScratch[pairPixels] = (unsigned char)(alphaMap[sourceIndex]);
+    }
+
+    const int quadPixels = pixelCount & ~3;
+    const int quadCount = pixelCount >> 2;
+    if (quadCount != 0) {
+        __asm {
+            mov eax, quadCount
+            mov esi, texelScratchBase
+            mov edi, dst
+            lea esi, [esi+eax*8]
+            lea edi, [edi+eax*8]
+            neg eax
+            movq mm0, qword ptr [esi+eax*8]
+            movq mm1, mm0
+
+        zRndr_span_alpha565_pal8_alpha8_blend_loop:
+            movq mm7, qword ptr [edi+eax*8]
+            movq mm2, mm0
+            pand mm1, qword ptr [g_mmxMaskGreenBits]
+            movq mm4, mm7
+            pand mm2, qword ptr [g_mmxMaskBlueBits]
+            psrlw mm0, 0bh
+            movq mm5, mm7
+            movq mm6, mm7
+            pand mm5, qword ptr [g_mmxMaskGreenBits]
+            psrlw mm1, 5
+            pand mm6, qword ptr [g_mmxMaskBlueBits]
+            psrlw mm4, 0bh
+            mov ebx, alphaScratchBase
+            movq mm3, qword ptr [ebx+eax*8]
+            psrlw mm5, 5
+            psubw mm0, mm4
+            psubw mm1, mm5
+            pmullw mm0, mm3
+            psubw mm2, mm6
+            pmullw mm1, mm3
+            inc eax
+            pmullw mm2, mm3
+            psllw mm0, 3
+            pand mm0, qword ptr [g_mmxMaskRedPacked]
+            psraw mm1, 3
+            pand mm1, qword ptr [g_mmxMaskGreenPacked]
+            paddw mm7, mm0
+            psraw mm2, 8
+            paddw mm7, mm1
+            movq mm0, qword ptr [esi+eax*8]
+            paddw mm7, mm2
+            movq qword ptr [edi+eax*8-8], mm7
+            movq mm1, mm0
+            jne zRndr_span_alpha565_pal8_alpha8_blend_loop
+        }
+        dst += quadPixels;
+    }
+
+    for (int i = quadPixels; i < pixelCount; ++i) {
+        const int alpha = alphaScratch[i];
+        const unsigned short sourcePixel = texelScratch[i];
+        if (alpha > 3) {
+            if (alpha >= 0xfc) {
+                *dst = sourcePixel;
+            } else {
+                *dst = BlendPixel565Alpha8(
+                    *dst,
+                    sourcePixel,
+                    alpha
+                );
+            }
+        }
+
+        ++dst;
+    }
+#else
     const int quadPixels = pixelCount & ~3;
     for (int i = 0; i < quadPixels; ++i) {
         const int sourceIndex = SpanTex16SampleIndex(
@@ -3607,14 +4254,16 @@ void __fastcall SpanAlphaBlend565MmxFromPal8Alpha8(
         texV += g_spanActiveTexVStepFixed20;
         ++dst;
     }
+#endif
 }
 
 /**
  * Reimplements 0x49ddb0: zRndr::SpanAlphaBlend555MmxFromPal8Alpha8
  * BN retail evidence: BN matches the pal8 MMX alpha-map staging loop but
  * uses the 555 red/green masks and an alpha > 7 scalar-tail gate.
- * Current source model: behavior/data-equivalent scalar emulation pending a
- * lawful MMX source model; source-owner acceptance remains blocked.
+ * Source-shape evidence: the VC5 x86 path keeps the retail MMX paired-index
+ * gather, pal8 palette expansion, and quad blend over stack texel/alpha
+ * scratch; portable builds keep the behavior/data-equivalent scalar fallback.
  * Purpose: Blend pal8 alpha-map samples into a 555 span using the MMX-selected path shape.
  */
 void __fastcall SpanAlphaBlend555MmxFromPal8Alpha8(
@@ -3628,6 +4277,159 @@ void __fastcall SpanAlphaBlend555MmxFromPal8Alpha8(
     const unsigned char *alphaMap = (const unsigned char *)(g_spanActiveTexAlphaMap);
     const unsigned short *palette = g_spanActiveTexPalette;
 
+#if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZRNDR_SPAN_MMX_RAW_ASM)
+    unsigned short texelScratch[1024];
+    unsigned short alphaScratch[1024];
+    unsigned short *texelScratchBase = texelScratch;
+    unsigned short *alphaScratchBase = alphaScratch;
+    const int pairCount = pixelCount >> 1;
+    const int pairPixels = pairCount << 1;
+
+    g_mmxVPair.hi = texV;
+    g_mmxVPair.lo = texV + g_spanActiveTexVStepFixed20;
+    g_mmxUPair.hi = texU;
+    g_mmxUPair.lo = texU + g_spanActiveTexUStepFixed20;
+    g_mmxVStepDup2.lo = g_spanActiveTexVStepFixed20 * 2;
+    g_mmxVStepDup2.hi = g_spanActiveTexVStepFixed20 * 2;
+    g_mmxUStepDup2.lo = g_spanActiveTexUStepFixed20 * 2;
+    g_mmxUStepDup2.hi = g_spanActiveTexUStepFixed20 * 2;
+
+    if (pairCount != 0) {
+        unsigned short *alphaScratchEnd = alphaScratchBase + pairPixels;
+        __asm {
+            mov eax, pairCount
+            mov esi, texels8
+            mov edi, texelScratchBase
+            lea edi, [edi+eax*4]
+            neg eax
+            movq mm0, qword ptr [g_mmxVPair]
+            movq mm1, qword ptr [g_mmxUPair]
+            movq mm4, qword ptr [g_mmxVMask]
+            movq mm5, qword ptr [g_mmxUMask]
+            movq mm6, qword ptr [g_mmxVStepDup2]
+            movq mm7, qword ptr [g_mmxUStepDup2]
+            xor edx, edx
+
+        zRndr_span_alpha555_pal8_alpha8_gather_loop:
+            movq mm2, mm0
+            movq mm3, mm1
+            pand mm2, mm4
+            pand mm3, mm5
+            psrld mm2, qword ptr [g_mmxVShiftCounts]
+            paddd mm0, mm6
+            psrld mm3, 14h
+            paddd mm1, mm7
+            paddd mm2, mm3
+            movd ebx, mm2
+            psrlq mm2, 20h
+            mov cl, byte ptr [esi+ebx]
+            and ecx, 0ffh
+            mov edx, palette
+            mov cx, word ptr [edx+ecx*2]
+            mov edx, alphaMap
+            mov dl, byte ptr [edx+ebx]
+            and edx, 0ffh
+            movd ebx, mm2
+            shl ecx, 10h
+            shl edx, 10h
+            mov esi, alphaMap
+            mov dl, byte ptr [esi+ebx]
+            mov esi, texels8
+            mov bl, byte ptr [esi+ebx]
+            and ebx, 0ffh
+            mov esi, palette
+            mov cx, word ptr [esi+ebx*2]
+            inc eax
+            mov esi, alphaScratchEnd
+            mov dword ptr [edi+eax*4-4], ecx
+            mov dword ptr [esi+eax*4-4], edx
+            mov esi, texels8
+            jne zRndr_span_alpha555_pal8_alpha8_gather_loop
+        }
+    }
+
+    if ((pixelCount & 1) != 0) {
+        const int sourceIndex =
+            SpanTex16SampleIndex(
+                texU + pairPixels * g_spanActiveTexUStepFixed20,
+                texV + pairPixels * g_spanActiveTexVStepFixed20,
+                texVShift,
+                g_spanActiveTexUMask
+            );
+        texelScratch[pairPixels] = palette[texels8[sourceIndex]];
+        alphaScratch[pairPixels] = (unsigned char)(alphaMap[sourceIndex]);
+    }
+
+    const int quadPixels = pixelCount & ~3;
+    const int quadCount = pixelCount >> 2;
+    if (quadCount != 0) {
+        __asm {
+            mov eax, quadCount
+            mov esi, texelScratchBase
+            mov edi, dst
+            lea esi, [esi+eax*8]
+            lea edi, [edi+eax*8]
+            neg eax
+            movq mm0, qword ptr [esi+eax*8]
+            movq mm1, mm0
+
+        zRndr_span_alpha555_pal8_alpha8_blend_loop:
+            movq mm7, qword ptr [edi+eax*8]
+            movq mm2, mm0
+            pand mm1, qword ptr [g_mmxMaskGreenBits]
+            movq mm4, mm7
+            pand mm2, qword ptr [g_mmxMaskBlueBits]
+            psrlw mm0, 0ah
+            movq mm5, mm7
+            movq mm6, mm7
+            pand mm5, qword ptr [g_mmxMaskGreenBits]
+            psrlw mm1, 5
+            pand mm6, qword ptr [g_mmxMaskBlueBits]
+            psrlw mm4, 0ah
+            mov ebx, alphaScratchBase
+            movq mm3, qword ptr [ebx+eax*8]
+            psrlw mm5, 5
+            psubw mm0, mm4
+            psubw mm1, mm5
+            pmullw mm0, mm3
+            psubw mm2, mm6
+            pmullw mm1, mm3
+            inc eax
+            pmullw mm2, mm3
+            psllw mm0, 2
+            pand mm0, qword ptr [g_mmxMaskRedPacked]
+            psraw mm1, 3
+            pand mm1, qword ptr [g_mmxMaskGreenPacked]
+            paddw mm7, mm0
+            psraw mm2, 8
+            paddw mm7, mm1
+            movq mm0, qword ptr [esi+eax*8]
+            paddw mm7, mm2
+            movq qword ptr [edi+eax*8-8], mm7
+            movq mm1, mm0
+            jne zRndr_span_alpha555_pal8_alpha8_blend_loop
+        }
+        dst += quadPixels;
+    }
+
+    for (int i = quadPixels; i < pixelCount; ++i) {
+        const int alpha = alphaScratch[i];
+        const unsigned short sourcePixel = texelScratch[i];
+        if (alpha > 7) {
+            if (alpha >= 0xfc) {
+                *dst = sourcePixel;
+            } else {
+                *dst = BlendPixel555Alpha8(
+                    *dst,
+                    sourcePixel,
+                    alpha
+                );
+            }
+        }
+
+        ++dst;
+    }
+#else
     const int quadPixels = pixelCount & ~3;
     for (int i = 0; i < quadPixels; ++i) {
         const int sourceIndex = SpanTex16SampleIndex(
@@ -3672,6 +4474,7 @@ void __fastcall SpanAlphaBlend555MmxFromPal8Alpha8(
         texV += g_spanActiveTexVStepFixed20;
         ++dst;
     }
+#endif
 }
 
 /**
@@ -4333,9 +5136,10 @@ void __fastcall FogBlendSpan555Scalar(
 
 /**
  * Reimplements 0x49e400: zRndr::FogBlendSpan565Mmx
- * Current source model: behavior/data-equivalent C++ scalar-emulates the
- * retail MMX quad body; source-owner acceptance remains blocked pending a
- * lawful MMX source model.
+ * Source-shape evidence: BN retail keeps scalar edge calls in C++ call shape
+ * and uses a narrow MMX quad body over gRndr_SpanShade16_MmxFogFactors and
+ * the accepted channel-mask vectors. The guarded VC5 x86 path preserves that
+ * raw MMX block; the portable fallback remains behavior-only scalar emulation.
  * Purpose: Blend a 565 span through scalar edge handling and the MMX-shaped quad body.
  */
 void __fastcall FogBlendSpan565Mmx(
@@ -4368,6 +5172,73 @@ void __fastcall FogBlendSpan565Mmx(
 
     const int tailPixels = remaining & 3;
     unsigned int quadCount = (unsigned int)(remaining) >> 2;
+#if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZRNDR_SPAN_MMX_RAW_ASM)
+    if (quadCount != 0) {
+        __asm {
+            mov ecx, quadCount
+            mov edx, cursor
+            mov eax, fogCoord
+            mov ebx, fogStep
+            add eax, ebx
+            mov esi, eax
+            add eax, ebx
+            shr esi, 10h
+            mov edi, eax
+            and edi, 0ffff0000h
+
+        zRndr_fog565_mmx_loop:
+            add eax, ebx
+            or edi, esi
+            mov esi, eax
+            add eax, ebx
+            shr esi, 10h
+            mov dword ptr [g_mmxFogFactors], edi
+            mov edi, eax
+            and edi, 0ffff0000h
+            or edi, esi
+            mov dword ptr [g_mmxFogFactors+4], edi
+            movq mm0, qword ptr [edx]
+            movq mm1, mm0
+            movq mm2, mm0
+            movq mm4, qword ptr [g_mmxFogFactors]
+            movq mm3, mm0
+            pand mm1, qword ptr [g_mmxMaskGreenBits]
+            pand mm2, qword ptr [g_mmxMaskBlueBits]
+            psrlw mm0, 0bh
+            movq mm5, qword ptr [g_mmxBitsRed255]
+            psrlw mm1, 5
+            movq mm6, qword ptr [g_mmxBitsGreen255]
+            psubsw mm5, mm0
+            movq mm7, qword ptr [g_mmxBitsBlue255]
+            psubsw mm6, mm1
+            psubsw mm7, mm2
+            pmullw mm5, mm4
+            add eax, ebx
+            pmullw mm6, mm4
+            mov esi, eax
+            pmullw mm7, mm4
+            add eax, ebx
+            psllw mm5, 3
+            shr esi, 10h
+            psraw mm6, 3
+            mov edi, eax
+            psraw mm7, 8
+            and edi, 0ffff0000h
+            pand mm5, qword ptr [g_mmxMaskRedPacked]
+            pand mm6, qword ptr [g_mmxMaskGreenPacked]
+            paddw mm3, mm5
+            paddw mm3, mm6
+            add edx, 8
+            paddw mm3, mm7
+            dec ecx
+            movq qword ptr [edx-8], mm3
+            jne zRndr_fog565_mmx_loop
+
+            mov dword ptr [cursor], edx
+            mov dword ptr [fogCoord], eax
+        }
+    }
+#else
     while (quadCount != 0) {
         fogCoord += fogStep;
         g_mmxFogFactors[0] = (unsigned short)(fogCoord >> 16);
@@ -4416,6 +5287,7 @@ void __fastcall FogBlendSpan565Mmx(
         cursor += 4;
         --quadCount;
     }
+#endif
 
     if (tailPixels != 0) {
         FogBlendSpan565Scalar(
@@ -4429,9 +5301,9 @@ void __fastcall FogBlendSpan565Mmx(
 
 /**
  * Reimplements 0x49e560: zRndr::FogBlendSpan555Mmx
- * Current source model: behavior/data-equivalent C++ scalar-emulates the
- * retail MMX quad body; source-owner acceptance remains blocked pending a
- * lawful MMX source model.
+ * Source-shape evidence: BN retail matches the 565 scalar-edge/MMX-quad shape
+ * with 555 red extraction and packed red terms. The guarded VC5 x86 path keeps
+ * the raw MMX block; the portable fallback remains behavior-only scalar emulation.
  * Purpose: Blend a 555 span through scalar edge handling and the MMX-shaped quad body.
  */
 void __fastcall FogBlendSpan555Mmx(
@@ -4464,6 +5336,73 @@ void __fastcall FogBlendSpan555Mmx(
 
     const int tailPixels = remaining & 3;
     unsigned int quadCount = (unsigned int)(remaining) >> 2;
+#if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZRNDR_SPAN_MMX_RAW_ASM)
+    if (quadCount != 0) {
+        __asm {
+            mov ecx, quadCount
+            mov edx, cursor
+            mov eax, fogCoord
+            mov ebx, fogStep
+            add eax, ebx
+            mov esi, eax
+            add eax, ebx
+            shr esi, 10h
+            mov edi, eax
+            and edi, 0ffff0000h
+
+        zRndr_fog555_mmx_loop:
+            add eax, ebx
+            or edi, esi
+            mov esi, eax
+            add eax, ebx
+            shr esi, 10h
+            mov dword ptr [g_mmxFogFactors], edi
+            mov edi, eax
+            and edi, 0ffff0000h
+            or edi, esi
+            mov dword ptr [g_mmxFogFactors+4], edi
+            movq mm0, qword ptr [edx]
+            movq mm1, mm0
+            movq mm2, mm0
+            movq mm4, qword ptr [g_mmxFogFactors]
+            movq mm3, mm0
+            pand mm1, qword ptr [g_mmxMaskGreenBits]
+            pand mm2, qword ptr [g_mmxMaskBlueBits]
+            psrlw mm0, 0ah
+            movq mm5, qword ptr [g_mmxBitsRed255]
+            psrlw mm1, 5
+            movq mm6, qword ptr [g_mmxBitsGreen255]
+            psubsw mm5, mm0
+            movq mm7, qword ptr [g_mmxBitsBlue255]
+            psubsw mm6, mm1
+            psubsw mm7, mm2
+            pmullw mm5, mm4
+            add eax, ebx
+            pmullw mm6, mm4
+            mov esi, eax
+            pmullw mm7, mm4
+            add eax, ebx
+            psllw mm5, 2
+            shr esi, 10h
+            psraw mm6, 3
+            mov edi, eax
+            psraw mm7, 8
+            and edi, 0ffff0000h
+            pand mm5, qword ptr [g_mmxMaskRedPacked]
+            pand mm6, qword ptr [g_mmxMaskGreenPacked]
+            paddw mm3, mm5
+            paddw mm3, mm6
+            add edx, 8
+            paddw mm3, mm7
+            dec ecx
+            movq qword ptr [edx-8], mm3
+            jne zRndr_fog555_mmx_loop
+
+            mov dword ptr [cursor], edx
+            mov dword ptr [fogCoord], eax
+        }
+    }
+#else
     while (quadCount != 0) {
         fogCoord += fogStep;
         g_mmxFogFactors[0] = (unsigned short)(fogCoord >> 16);
@@ -4512,6 +5451,7 @@ void __fastcall FogBlendSpan555Mmx(
         cursor += 4;
         --quadCount;
     }
+#endif
 
     if (tailPixels != 0) {
         FogBlendSpan555Scalar(
@@ -5495,8 +6435,8 @@ void __fastcall SpanMmxSetTexUvMasksAndVShift(
  * Source-shape evidence: BN handles an optional unaligned leading texel, sets
  * paired MMX U/V and doubled-step scratch globals, samples two tex16 indices
  * per packed loop through the active MMX masks, then writes an odd tail texel.
- * This C++ body keeps the scalar edge samples and inlines the packed two-pixel
- * scalar loop while the retail MMX packed-index source model remains blocked.
+ * This C++ body keeps scalar edge samples and uses the guarded raw MMX block
+ * only for the packed two-pixel loop; the portable fallback remains scalar.
  * Purpose: Copy a 16-bit textured span while priming the paired MMX U/V scratch records.
  */
 void __fastcall SpanCopy16FromTex16(
@@ -5531,6 +6471,50 @@ void __fastcall SpanCopy16FromTex16(
     g_mmxUStepDup2.hi = g_spanActiveTexUStepFixed20 * 2;
 
     int pairCount = pixelCount >> 1;
+#if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZRNDR_SPAN_MMX_RAW_ASM)
+    const int pairPixels = pairCount << 1;
+    if (pairCount != 0) {
+        __asm {
+            mov eax, pairCount
+            mov esi, texels16
+            mov edi, dst
+            movq mm0, qword ptr [g_mmxVPair]
+            movq mm1, qword ptr [g_mmxUPair]
+            movq mm4, qword ptr [g_mmxVMask]
+            movq mm5, qword ptr [g_mmxUMask]
+            movq mm6, qword ptr [g_mmxVStepDup2]
+            movq mm7, qword ptr [g_mmxUStepDup2]
+
+        zRndr_span_copy_tex16_mmx_loop:
+            movq mm2, mm0
+            movq mm3, mm1
+            pand mm2, mm4
+            pand mm3, mm5
+            psrld mm2, qword ptr [g_mmxVShiftCounts]
+            paddd mm0, mm6
+            psrld mm3, 14h
+            paddd mm1, mm7
+            paddd mm2, mm3
+            movd ebx, mm2
+            psrlq mm2, 20h
+            xor ecx, ecx
+            mov cx, word ptr [esi+ebx*2]
+            movd ebx, mm2
+            shl ecx, 10h
+            xor edx, edx
+            mov dx, word ptr [esi+ebx*2]
+            or ecx, edx
+            mov dword ptr [edi], ecx
+            add edi, 4
+            dec eax
+            jne zRndr_span_copy_tex16_mmx_loop
+
+            mov dword ptr [dst], edi
+        }
+        texU += pairPixels * g_spanActiveTexUStepFixed20;
+        texV += pairPixels * g_spanActiveTexVStepFixed20;
+    }
+#else
     while (pairCount != 0) {
         const int firstIndex =
             ((unsigned int)(texV & g_spanActiveTexVMask) >> texVShift) +
@@ -5549,6 +6533,7 @@ void __fastcall SpanCopy16FromTex16(
         texV += g_spanActiveTexVStepFixed20;
         --pairCount;
     }
+#endif
 
     if ((pixelCount & 1) != 0) {
         const int sourceIndex =
@@ -5562,8 +6547,8 @@ void __fastcall SpanCopy16FromTex16(
  * Reimplements 0x49ec20: zRndr::SpanCopy16FromTex16ExplicitVShift
  * Source-shape evidence: BN matches the generic tex16 copy body with the
  * caller-supplied V shift feeding the MMX packed-index loop and odd tail. This
- * C++ body keeps the scalar edge samples and inlines the packed two-pixel
- * scalar loop while the retail MMX packed-index source model remains blocked.
+ * C++ body keeps scalar edge samples and uses the guarded raw MMX block only
+ * for the packed two-pixel loop; the portable fallback remains scalar.
  * Purpose: Copy a 16-bit textured span with the caller-supplied V shift and MMX U/V scratch records.
  */
 void __fastcall SpanCopy16FromTex16ExplicitVShift(
@@ -5598,6 +6583,50 @@ void __fastcall SpanCopy16FromTex16ExplicitVShift(
     g_mmxUStepDup2.hi = g_spanActiveTexUStepFixed20 * 2;
 
     int pairCount = pixelCount >> 1;
+#if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZRNDR_SPAN_MMX_RAW_ASM)
+    const int pairPixels = pairCount << 1;
+    if (pairCount != 0) {
+        __asm {
+            mov eax, pairCount
+            mov esi, texels16
+            mov edi, dst
+            movq mm0, qword ptr [g_mmxVPair]
+            movq mm1, qword ptr [g_mmxUPair]
+            movq mm4, qword ptr [g_mmxVMask]
+            movq mm5, qword ptr [g_mmxUMask]
+            movq mm6, qword ptr [g_mmxVStepDup2]
+            movq mm7, qword ptr [g_mmxUStepDup2]
+
+        zRndr_span_copy_tex16_explicit_mmx_loop:
+            movq mm2, mm0
+            movq mm3, mm1
+            pand mm2, mm4
+            pand mm3, mm5
+            psrld mm2, qword ptr [g_mmxVShiftCounts]
+            paddd mm0, mm6
+            psrld mm3, 14h
+            paddd mm1, mm7
+            paddd mm2, mm3
+            movd ebx, mm2
+            psrlq mm2, 20h
+            xor ecx, ecx
+            mov cx, word ptr [esi+ebx*2]
+            movd ebx, mm2
+            shl ecx, 10h
+            xor edx, edx
+            mov dx, word ptr [esi+ebx*2]
+            or ecx, edx
+            mov dword ptr [edi], ecx
+            add edi, 4
+            dec eax
+            jne zRndr_span_copy_tex16_explicit_mmx_loop
+
+            mov dword ptr [dst], edi
+        }
+        texU += pairPixels * g_spanActiveTexUStepFixed20;
+        texV += pairPixels * g_spanActiveTexVStepFixed20;
+    }
+#else
     while (pairCount != 0) {
         const int firstIndex =
             ((unsigned int)(texV & g_spanActiveTexVMask) >> texVShift) +
@@ -5616,6 +6645,7 @@ void __fastcall SpanCopy16FromTex16ExplicitVShift(
         texV += g_spanActiveTexVStepFixed20;
         --pairCount;
     }
+#endif
 
     if ((pixelCount & 1) != 0) {
         const int sourceIndex =
@@ -7913,17 +8943,13 @@ void __fastcall zRndr_SpanOcclusion_TestColumnVisibility(
 int __fastcall zRndr_SpanOcclusion_TestPointVisibility(
     zVec3 *samplePoint
 ) {
-    if (samplePoint == 0 || zRndr::g_spanAllocCursor == 0) {
-        return 0;
-    }
-
     zRndr::g_spanAllocCursor->invDepth = samplePoint->z;
     zRndr::g_spanAllocCursor->invDepthStep = samplePoint->z;
     zRndr::g_spanAllocCursor->depthSlope = 0.0f;
     zRndr::g_spanAllocCursor->sampleXMin = (int)(samplePoint->x);
     zRndr::g_spanAllocCursor->sampleXMax = zRndr::g_spanAllocCursor->sampleXMin;
 
-    int isVisible = 0;
+    int isVisible;
     zRndr_SpanOcclusion_TestColumnVisibility(
         (int)(samplePoint->y),
         &isVisible
@@ -8806,7 +9832,13 @@ TexturedPlanes BuildQueuedTexturePlanes(
     float imageWidth,
     float imageHeight
 ) {
-    TexturedPlanes planes = {0};
+    gRndr_PerspTexScaledUOverZ0 = imageWidth * triVerts[0].z * triUVs[0].x;
+    gRndr_PerspTexScaledVOverZ0 = imageHeight * triVerts[0].z * triUVs[0].y;
+    gRndr_PerspTexScaledUOverZ1 = imageWidth * triVerts[1].z * triUVs[1].x;
+    gRndr_PerspTexScaledVOverZ1 = imageHeight * triVerts[1].z * triUVs[1].y;
+    gRndr_PerspTexScaledUOverZ2 = imageWidth * triVerts[2].z * triUVs[2].x;
+    gRndr_PerspTexScaledVOverZ2 = imageHeight * triVerts[2].z * triUVs[2].y;
+
     const bool useClippedNearPlane =
         clippedTriVerts != 0 && (clippedTriVerts[0].z < 10.0f || clippedTriVerts[1].z < 10.0f ||
                                     clippedTriVerts[2].z < 10.0f);
@@ -8815,46 +9847,75 @@ TexturedPlanes BuildQueuedTexturePlanes(
         zMath_BuildPerspectiveTextureInterpolants(
             clippedTriVerts,
             triUVs,
-            &planes.reciprocalZ.gradient,
-            &planes.reciprocalZ.base,
-            &planes.uOverZ.gradient,
-            &planes.uOverZ.base,
-            &planes.vOverZ.gradient,
-            &planes.vOverZ.base
+            (zVec2 *)(&gRndr_PerspInvDepthStepX),
+            &gRndr_PerspInvDepthBase,
+            (zVec2 *)(&gRndr_PerspTexScaledUOverZStepX),
+            &gRndr_PerspTexScaledUOverZBase,
+            (zVec2 *)(&gRndr_PerspTexScaledVOverZStepX),
+            &gRndr_PerspTexScaledVOverZBase
         );
-        planes.uOverZ.gradient.x *= imageWidth;
-        planes.uOverZ.gradient.y *= imageWidth;
-        planes.uOverZ.base *= imageWidth;
-        planes.vOverZ.gradient.x *= imageHeight;
-        planes.vOverZ.gradient.y *= imageHeight;
-        planes.vOverZ.base *= imageHeight;
-        planes.originX = g_zMath_ProjOffsetX;
-        planes.originY = g_zMath_ProjOffsetY;
+        gRndr_PerspTexScaledUOverZStepX *= imageWidth;
+        gRndr_PerspTexScaledUOverZStepY *= imageWidth;
+        gRndr_PerspTexScaledUOverZBase *= imageWidth;
+        gRndr_PerspTexScaledVOverZStepX *= imageHeight;
+        gRndr_PerspTexScaledVOverZStepY *= imageHeight;
+        gRndr_PerspTexScaledVOverZBase *= imageHeight;
+        gRndr_PerspPlaneOriginX = g_zMath_ProjOffsetX;
+        gRndr_PerspPlaneOriginY = g_zMath_ProjOffsetY;
     } else {
-        float reciprocalValues[3] = {0};
-        float uValues[3] = {0};
-        float vValues[3] = {0};
-        for (int i = 0; i < 3; ++i) {
-            reciprocalValues[i] = triVerts[i].z;
-            uValues[i] = imageWidth * triVerts[i].z * triUVs[i].x;
-            vValues[i] = imageHeight * triVerts[i].z * triUVs[i].y;
-        }
+        const float reciprocalValues[3] = {
+            triVerts[0].z,
+            triVerts[1].z,
+            triVerts[2].z
+        };
+        const float uValues[3] = {
+            gRndr_PerspTexScaledUOverZ0,
+            gRndr_PerspTexScaledUOverZ1,
+            gRndr_PerspTexScaledUOverZ2
+        };
+        const float vValues[3] = {
+            gRndr_PerspTexScaledVOverZ0,
+            gRndr_PerspTexScaledVOverZ1,
+            gRndr_PerspTexScaledVOverZ2
+        };
 
-        planes.reciprocalZ = BuildPlaneFromTriangle(
+        const Plane2f reciprocalZ = BuildPlaneFromTriangle(
             triVerts,
             reciprocalValues
         );
-        planes.uOverZ = BuildPlaneFromTriangle(
+        const Plane2f uOverZ = BuildPlaneFromTriangle(
             triVerts,
             uValues
         );
-        planes.vOverZ = BuildPlaneFromTriangle(
+        const Plane2f vOverZ = BuildPlaneFromTriangle(
             triVerts,
             vValues
         );
-        planes.originX = triVerts[0].x;
-        planes.originY = triVerts[0].y;
+        gRndr_PerspInvDepthStepX = reciprocalZ.gradient.x;
+        gRndr_PerspInvDepthStepY = reciprocalZ.gradient.y;
+        gRndr_PerspInvDepthBase = reciprocalZ.base;
+        gRndr_PerspTexScaledUOverZStepX = uOverZ.gradient.x;
+        gRndr_PerspTexScaledUOverZStepY = uOverZ.gradient.y;
+        gRndr_PerspTexScaledUOverZBase = uOverZ.base;
+        gRndr_PerspTexScaledVOverZStepX = vOverZ.gradient.x;
+        gRndr_PerspTexScaledVOverZStepY = vOverZ.gradient.y;
+        gRndr_PerspTexScaledVOverZBase = vOverZ.base;
+        gRndr_PerspPlaneOriginX = triVerts[0].x;
+        gRndr_PerspPlaneOriginY = triVerts[0].y;
     }
+
+    TexturedPlanes planes = {0};
+    planes.reciprocalZ.gradient.x = gRndr_PerspInvDepthStepX;
+    planes.reciprocalZ.gradient.y = gRndr_PerspInvDepthStepY;
+    planes.reciprocalZ.base = gRndr_PerspInvDepthBase;
+    planes.uOverZ.gradient.x = gRndr_PerspTexScaledUOverZStepX;
+    planes.uOverZ.gradient.y = gRndr_PerspTexScaledUOverZStepY;
+    planes.uOverZ.base = gRndr_PerspTexScaledUOverZBase;
+    planes.vOverZ.gradient.x = gRndr_PerspTexScaledVOverZStepX;
+    planes.vOverZ.gradient.y = gRndr_PerspTexScaledVOverZStepY;
+    planes.vOverZ.base = gRndr_PerspTexScaledVOverZBase;
+    planes.originX = gRndr_PerspPlaneOriginX;
+    planes.originY = gRndr_PerspPlaneOriginY;
 
     const float adjustX = planes.originX - 0.5f;
     const float adjustY = planes.originY - 0.5f;
@@ -8877,6 +9938,23 @@ float EvalPlane(
     float y
 ) {
     return x * plane.gradient.x + y * plane.gradient.y + plane.base;
+}
+
+/**
+ * Recovered helper: EvalPerspectiveScratchPlane.
+ * Original-source helper evidence: No standalone plan entry was found; recovered from
+ * zRndr queued texture span callers that consume the gRndr_Persp* scratch bank.
+ * Purpose: Evaluate one queued texture scratch plane at the same sample point as the adjusted local planes.
+ */
+float EvalPerspectiveScratchPlane(
+    float stepX,
+    float stepY,
+    float base,
+    float x,
+    float y
+) {
+    return (x + 0.5f - gRndr_PerspPlaneOriginX) * stepX +
+           (y + 0.5f - gRndr_PerspPlaneOriginY) * stepY + base;
 }
 
 /**
@@ -8925,7 +10003,6 @@ int SelectPerspectiveChunkPixels(
  */
 void DispatchTexturedSpanChunks(
     zRndr::TexturedQueuedSpanProc spanProc,
-    const TexturedPlanes &planes,
     const Plane2f *shadePlane,
     zRndr::SpanNodePartial *span,
     int y,
@@ -8943,13 +10020,17 @@ void DispatchTexturedSpanChunks(
         const float startX = (float)(x);
         const float endX = (float)(x + count);
         const float sampleY = (float)(y);
-        const float startInvZ = EvalPlane(
-            planes.reciprocalZ,
+        const float startInvZ = EvalPerspectiveScratchPlane(
+            gRndr_PerspInvDepthStepX,
+            gRndr_PerspInvDepthStepY,
+            gRndr_PerspInvDepthBase,
             startX,
             sampleY
         );
-        const float endInvZ = EvalPlane(
-            planes.reciprocalZ,
+        const float endInvZ = EvalPerspectiveScratchPlane(
+            gRndr_PerspInvDepthStepX,
+            gRndr_PerspInvDepthStepY,
+            gRndr_PerspInvDepthBase,
             endX,
             sampleY
         );
@@ -8959,23 +10040,31 @@ void DispatchTexturedSpanChunks(
             continue;
         }
 
-        const float startU = EvalPlane(
-            planes.uOverZ,
+        const float startU = EvalPerspectiveScratchPlane(
+            gRndr_PerspTexScaledUOverZStepX,
+            gRndr_PerspTexScaledUOverZStepY,
+            gRndr_PerspTexScaledUOverZBase,
             startX,
             sampleY
         ) / startInvZ;
-        const float startV = EvalPlane(
-            planes.vOverZ,
+        const float startV = EvalPerspectiveScratchPlane(
+            gRndr_PerspTexScaledVOverZStepX,
+            gRndr_PerspTexScaledVOverZStepY,
+            gRndr_PerspTexScaledVOverZBase,
             startX,
             sampleY
         ) / startInvZ;
-        const float endU = EvalPlane(
-            planes.uOverZ,
+        const float endU = EvalPerspectiveScratchPlane(
+            gRndr_PerspTexScaledUOverZStepX,
+            gRndr_PerspTexScaledUOverZStepY,
+            gRndr_PerspTexScaledUOverZBase,
             endX,
             sampleY
         ) / endInvZ;
-        const float endV = EvalPlane(
-            planes.vOverZ,
+        const float endV = EvalPerspectiveScratchPlane(
+            gRndr_PerspTexScaledVOverZStepX,
+            gRndr_PerspTexScaledVOverZStepY,
+            gRndr_PerspTexScaledVOverZBase,
             endX,
             sampleY
         ) / endInvZ;
@@ -10428,12 +11517,6 @@ void __fastcall zRndr_DrawFlatQueued(
     const float imageWidth = (float)(selectedImage->width);
     const float imageHeight = (float)(selectedImage->height);
 
-    zVec2 vertexUvPairs[3] = {0};
-    for (int i = 0; i < 3; ++i) {
-        vertexUvPairs[i].x = imageWidth * triVerts[i].z * triUVs[i].x;
-        vertexUvPairs[i].y = imageHeight * triVerts[i].z * triUVs[i].y;
-    }
-
     TexturedPlanes planes = BuildQueuedTexturePlanes(
         0,
         triVerts,
@@ -10447,10 +11530,10 @@ void __fastcall zRndr_DrawFlatQueued(
             entry,
             triVerts,
             3,
-            vertexUvPairs,
-            &planes.reciprocalZ.gradient,
-            &planes.uOverZ.gradient,
-            &planes.vOverZ.gradient
+            (const zVec2 *)(&gRndr_PerspTexScaledUOverZ0),
+            (const zVec2 *)(&gRndr_PerspInvDepthStepX),
+            (const zVec2 *)(&gRndr_PerspTexScaledUOverZStepX),
+            (const zVec2 *)(&gRndr_PerspTexScaledVOverZStepX)
         );
     }
 
@@ -10613,7 +11696,6 @@ void __fastcall zRndr_DrawFlatQueued(
                                            (int)(span->sampleXMin) * zRndr::g_bytesPerPixel);
                     DispatchTexturedSpanChunks(
                         spanProc,
-                        planes,
                         0,
                         span,
                         y,
@@ -10653,11 +11735,6 @@ void __fastcall zRndr_DrawTexturedQueued(
     zVidImagePartial *selectedImage = entry->image;
     const float imageWidth = (float)(selectedImage->width);
     const float imageHeight = (float)(selectedImage->height);
-    zVec2 vertexUvPairs[3] = {0};
-    for (int i = 0; i < 3; ++i) {
-        vertexUvPairs[i].x = imageWidth * triVerts[i].z * triUVs[i].x;
-        vertexUvPairs[i].y = imageHeight * triVerts[i].z * triUVs[i].y;
-    }
 
     TexturedPlanes planes =
         BuildQueuedTexturePlanes(
@@ -10674,10 +11751,10 @@ void __fastcall zRndr_DrawTexturedQueued(
             entry,
             triVerts,
             3,
-            vertexUvPairs,
-            &planes.reciprocalZ.gradient,
-            &planes.uOverZ.gradient,
-            &planes.vOverZ.gradient
+            (const zVec2 *)(&gRndr_PerspTexScaledUOverZ0),
+            (const zVec2 *)(&gRndr_PerspInvDepthStepX),
+            (const zVec2 *)(&gRndr_PerspTexScaledUOverZStepX),
+            (const zVec2 *)(&gRndr_PerspTexScaledVOverZStepX)
         );
         if (selectedImage == 0) {
             return;
@@ -10848,7 +11925,6 @@ void __fastcall zRndr_DrawTexturedQueued(
                                            (int)(span->sampleXMin) * zRndr::g_bytesPerPixel);
                     DispatchTexturedSpanChunks(
                         spanProc,
-                        planes,
                         activeShadePlane,
                         span,
                         y,
@@ -10883,11 +11959,6 @@ void __fastcall Renderer_DrawPolyTLV(
     zVidImagePartial *selectedImage = entry->image;
     const float imageWidth = (float)(selectedImage->width);
     const float imageHeight = (float)(selectedImage->height);
-    zVec2 vertexUvPairs[3] = {0};
-    for (int i = 0; i < 3; ++i) {
-        vertexUvPairs[i].x = imageWidth * triVerts[i].z * triUVs[i].x;
-        vertexUvPairs[i].y = imageHeight * triVerts[i].z * triUVs[i].y;
-    }
 
     TexturedPlanes planes = BuildQueuedTexturePlanes(
         0,
@@ -10903,10 +11974,10 @@ void __fastcall Renderer_DrawPolyTLV(
             entry,
             triVerts,
             3,
-            vertexUvPairs,
-            &planes.reciprocalZ.gradient,
-            &planes.uOverZ.gradient,
-            &planes.vOverZ.gradient
+            (const zVec2 *)(&gRndr_PerspTexScaledUOverZ0),
+            (const zVec2 *)(&gRndr_PerspInvDepthStepX),
+            (const zVec2 *)(&gRndr_PerspTexScaledUOverZStepX),
+            (const zVec2 *)(&gRndr_PerspTexScaledVOverZStepX)
         );
         if (selectedImage == 0) {
             return;
@@ -11062,7 +12133,6 @@ void __fastcall Renderer_DrawPolyTLV(
                                            (int)(span->sampleXMin) * zRndr::g_bytesPerPixel);
                     DispatchTexturedSpanChunks(
                         spanProc,
-                        planes,
                         0,
                         span,
                         y,
@@ -11098,12 +12168,6 @@ void __fastcall zRndr_DrawTexturedQueuedAlpha(
     const float imageWidth = (float)(selectedImage->width);
     const float imageHeight = (float)(selectedImage->height);
 
-    zVec2 vertexUvPairs[3] = {0};
-    for (int i = 0; i < 3; ++i) {
-        vertexUvPairs[i].x = imageWidth * triVerts[i].z * triUVs[i].x;
-        vertexUvPairs[i].y = imageHeight * triVerts[i].z * triUVs[i].y;
-    }
-
     TexturedPlanes planes =
         BuildQueuedTexturePlanes(
             clippedTriVerts,
@@ -11119,10 +12183,10 @@ void __fastcall zRndr_DrawTexturedQueuedAlpha(
             entry,
             triVerts,
             3,
-            vertexUvPairs,
-            &planes.reciprocalZ.gradient,
-            &planes.uOverZ.gradient,
-            &planes.vOverZ.gradient
+            (const zVec2 *)(&gRndr_PerspTexScaledUOverZ0),
+            (const zVec2 *)(&gRndr_PerspInvDepthStepX),
+            (const zVec2 *)(&gRndr_PerspTexScaledUOverZStepX),
+            (const zVec2 *)(&gRndr_PerspTexScaledVOverZStepX)
         );
         if (selectedImage == 0) {
             return;
@@ -11272,7 +12336,6 @@ void __fastcall zRndr_DrawTexturedQueuedAlpha(
                                            (int)(span->sampleXMin) * zRndr::g_bytesPerPixel);
                     DispatchTexturedSpanChunks(
                         spanProc,
-                        planes,
                         0,
                         span,
                         y,
@@ -11309,12 +12372,6 @@ void __fastcall zRndr_DrawTexturedFanTri(
     const float imageWidth = (float)(selectedImage->width);
     const float imageHeight = (float)(selectedImage->height);
 
-    zVec2 vertexUvPairs[3] = {0};
-    for (int i = 0; i < 3; ++i) {
-        vertexUvPairs[i].x = imageWidth * triVerts[i].z * triUVs[i].x;
-        vertexUvPairs[i].y = imageHeight * triVerts[i].z * triUVs[i].y;
-    }
-
     TexturedPlanes planes =
         BuildQueuedTexturePlanes(
             clippedTriVerts,
@@ -11330,10 +12387,10 @@ void __fastcall zRndr_DrawTexturedFanTri(
             entry,
             triVerts,
             3,
-            vertexUvPairs,
-            &planes.reciprocalZ.gradient,
-            &planes.uOverZ.gradient,
-            &planes.vOverZ.gradient
+            (const zVec2 *)(&gRndr_PerspTexScaledUOverZ0),
+            (const zVec2 *)(&gRndr_PerspInvDepthStepX),
+            (const zVec2 *)(&gRndr_PerspTexScaledUOverZStepX),
+            (const zVec2 *)(&gRndr_PerspTexScaledVOverZStepX)
         );
         if (selectedImage == 0) {
             return;
@@ -11481,7 +12538,6 @@ void __fastcall zRndr_DrawTexturedFanTri(
                                            (int)(span->sampleXMin) * zRndr::g_bytesPerPixel);
                     DispatchTexturedSpanChunks(
                         spanProc,
-                        planes,
                         0,
                         span,
                         y,

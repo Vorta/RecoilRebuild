@@ -105,6 +105,12 @@ RECOIL_STATIC_ASSERT(sizeof(CSpinButtonCtrl) == 0x40);
 
 extern "C" {
 /**
+ * Reimplements data 0x4dae34: g_Hud_TripleStringFmt.
+ * Purpose: Stores the writable sprintf format used for multiplayer
+ * kill-feed top-message lines.
+ */
+char g_Hud_TripleStringFmt[9] = "%s %s %s";
+/**
  * Reimplements data 0x4f3f10: g_GameNetPlayerRowList.
  * Purpose: Owns the multiplayer player-row linked-list header for active
  * local and remote network participants.
@@ -3191,7 +3197,7 @@ void __fastcall ShowPlayerKillMessage(
     char message[0x50];
     sprintf(
         message,
-        "%s %s %s",
+        g_Hud_TripleStringFmt,
         victimRow->displayName,
         killVerb,
         killerRow->displayName
