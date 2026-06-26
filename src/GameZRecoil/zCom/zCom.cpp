@@ -5,12 +5,11 @@ template <typename T> struct ComReleaseOnExit {
     T *ptr;
 
     /**
-     * Local template helper with no standalone retail function; observed in callers 0x42dc30
-     * and 0x42dcf0 through EH cleanup.
+     * Recovered original helper with no standalone retail function; observed in
+     * callers 0x42dc30 and 0x42dcf0 through EH cleanup.
      *
      * Purpose: release a COM interface pointer when the helper leaves scope.
      */
-    // Source-faithful helper recovered from address-backed callers in this source file.
     ~ComReleaseOnExit() {
         if (ptr != 0) {
             ptr->Release();

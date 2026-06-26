@@ -146,11 +146,21 @@ int g_zVideo_TexturePixelPack_RMaskShifted = 0;
 int g_zVideo_TexturePixelPack_GMaskShifted = 0;
 int g_zVideo_TexturePixelPack_BMaskShifted = 0;
 int g_zVideo_TexturePixelPack_NonRgbMaskShifted = 0;
-// Palette-remap recipe owner: BN identifies the recipe count/array at
-// 0x53d780/0x53d784 and BuildPaletteVariant grows this bank before rebuilding
-// per-image and standalone palette variant tables.
+/**
+ * Reimplements data 0x53d780: g_zVid_PaletteRemapRecipeCount.
+ * Reimplements data 0x53d784: g_zVid_PaletteRemapRecipes.
+ * Palette-remap recipe owner: BuildPaletteVariant grows this bank before
+ * rebuilding per-image and standalone palette variant tables.
+ * Purpose: track the active palette-remap recipe bank.
+ */
 int g_zVid_PaletteRemapRecipeCount = 0;
 zVidPaletteRemapRecipe *g_zVid_PaletteRemapRecipes = 0;
+/**
+ * Reimplements data 0x632120: g_zVideo_RendererType.
+ * Reimplements data 0x56bbe8: g_zVideo_ActiveRendererPath.
+ * Reimplements data 0x56bbd8: g_zVideo_FrameTick.
+ * Purpose: cache the selected renderer path and current video frame tick.
+ */
 int g_zVideo_RendererType = 0;
 int g_zVideo_ActiveRendererPath = 0;
 int g_zVideo_FrameTick = 0;
@@ -206,12 +216,28 @@ float g_zVideo_ProjectClipRight = 0.0f;
  * Purpose: cache the active view's bottom project-clip edge for projection users.
  */
 float g_zVideo_ProjectClipBottom = 0.0f;
+/**
+ * Reimplements data 0x63214c: gVideo_resolutionMenuValid.
+ * Reimplements data 0x6321cc: g_zVideo_ClearColorPacked16.
+ * Reimplements data 0x632130: g_zVideo_ClearScreenBufferEnabled.
+ * Purpose: cache global video initialization and clear-screen options.
+ */
 int gVideo_resolutionMenuValid = 0;
 unsigned int g_zVideo_ClearColorPacked16 = 0;
 int g_zVideo_ClearScreenBufferEnabled = 0;
-// BN data owner 0x56b564 is a zero-initialized int32 touched only by the
-// cached-client-rect update-mask setter and renderer-path query helpers.
+/**
+ * Reimplements data 0x56b564: g_zVid_CachedClientRectUpdateMask.
+ * BN xrefs identify this zero-initialized int32 as the cached-client-rect
+ * update mask used by the setter and renderer-path query helpers.
+ * Purpose: gate refreshes of the cached client rectangle.
+ */
 int g_zVid_CachedClientRectUpdateMask = 0;
+/**
+ * Reimplements data 0x632154: g_zVideo_IsInitialized.
+ * Reimplements data 0x632144: g_zVideo_AdjustSurfacesDisableGate.
+ * Reimplements data 0x632124: g_zVideo_FullscreenOption.
+ * Purpose: cache video initialization, adjust-surface, and fullscreen state.
+ */
 int g_zVideo_IsInitialized = 0;
 int g_zVideo_AdjustSurfacesDisableGate = 0;
 int g_zVideo_FullscreenOption = 0;
@@ -226,19 +252,43 @@ int g_zVideo_FullscreenOption = 0;
  * by FlipToGDIIfAttached before calling IDirectDraw2::FlipToGDISurface.
  */
 int g_zVideo_PrimaryHasAttachedBackbuffer = 0;
+/**
+ * Reimplements data 0x632128: g_zVideo_UseHalfResBackbuffer.
+ * Reimplements data 0x63212c: g_zVideo_HalfResAdjustMode.
+ * Purpose: cache half-resolution backbuffer presentation state.
+ */
 int g_zVideo_UseHalfResBackbuffer = 0;
 int g_zVideo_HalfResAdjustMode = 0;
-// Retail initializes the authored zVideo debug/software-mode hotkey gate enabled.
+/**
+ * Reimplements data 0x4dd1c0: g_zVideo_SoftwareModeHotkeyEnabled.
+ * Retail initializes the authored zVideo debug/software-mode hotkey gate enabled.
+ * Purpose: gate the software-mode hotkey command.
+ */
 int g_zVideo_SoftwareModeHotkeyEnabled = 1;
+/**
+ * Reimplements data 0x633434: g_zVideo_CachedFogModeLightState.
+ * Reimplements data 0x633430: g_zVideo_CachedFogEnableRenderState.
+ * Reimplements data 0x633438: g_zVideo_CachedFogStartLightStateValue.
+ * Reimplements data 0x63343c: g_zVideo_CachedFogEndLightStateValue.
+ * Purpose: cache the Direct3D fog render-state values already applied.
+ */
 int g_zVideo_CachedFogModeLightState = 0;
 int g_zVideo_CachedFogEnableRenderState = 0;
 float g_zVideo_CachedFogStartLightStateValue = 0.0f;
 float g_zVideo_CachedFogEndLightStateValue = 0.0f;
-/*
+/**
+ * Reimplements data 0x632140: g_zVideo_D3DColorNormalizeChannelIndex.
+ * Reimplements data 0x6321d0: g_zVideo_FogColorPendingR255.
+ * Reimplements data 0x6321d4: g_zVideo_FogColorPendingG255.
+ * Reimplements data 0x6321d8: g_zVideo_FogColorPendingB255.
+ * Reimplements data 0x6321dc: g_zVideo_D3DColorAttrBiasR.
+ * Reimplements data 0x6321e0: g_zVideo_D3DColorAttrBiasG.
+ * Reimplements data 0x6321e4: g_zVideo_D3DColorAttrBiasB.
  * D3D fog/color-attribute bias owner data. Current BN models the channel index
  * at 0x632140 separately from the adjacent RGB bias floats at 0x6321dc-0x6321e4;
  * 0x4a7250 writes them and the submitters at 0x4ab320, 0x4abb20, and 0x4ac370
  * consume them while packing D3D TLVERTEX colors.
+ * Purpose: stage pending fog color and color-attribute bias for D3D submitters.
  */
 int g_zVideo_D3DColorNormalizeChannelIndex = 0;
 float g_zVideo_FogColorPendingR255 = 0.0f;
@@ -247,12 +297,25 @@ float g_zVideo_FogColorPendingB255 = 0.0f;
 float g_zVideo_D3DColorAttrBiasR = 0.0f;
 float g_zVideo_D3DColorAttrBiasG = 0.0f;
 float g_zVideo_D3DColorAttrBiasB = 0.0f;
+/**
+ * Reimplements data 0x6321e8: g_zVideo_FogTargetColorR255.
+ * Reimplements data 0x6321ec: g_zVideo_FogTargetColorG255.
+ * Reimplements data 0x6321f0: g_zVideo_FogTargetColorB255.
+ * Reimplements data 0x6321f4: g_zVideo_FogColorAppliedR255.
+ * Reimplements data 0x6321f8: g_zVideo_FogColorAppliedG255.
+ * Reimplements data 0x6321fc: g_zVideo_FogColorAppliedB255.
+ * Purpose: cache target and applied D3D fog color channels.
+ */
 float g_zVideo_FogTargetColorR255 = 0.0f;
 float g_zVideo_FogTargetColorG255 = 0.0f;
 float g_zVideo_FogTargetColorB255 = 0.0f;
 float g_zVideo_FogColorAppliedR255 = 0.0f;
 float g_zVideo_FogColorAppliedG255 = 0.0f;
 float g_zVideo_FogColorAppliedB255 = 0.0f;
+/**
+ * Reimplements data 0x63213c: g_zVideo_PendingDitherEnable.
+ * Purpose: stage the Direct3D dither render-state value before scene entry.
+ */
 int g_zVideo_PendingDitherEnable = 0;
 /**
  * Reimplements data 0x56bbf4: g_zVideo_InverseZTolerancePending.
@@ -261,6 +324,11 @@ int g_zVideo_PendingDitherEnable = 0;
  * Purpose: cache the inverse-Z tolerance pending for non-software renderer paths.
  */
 float g_zVideo_InverseZTolerancePending = 0.0f;
+/**
+ * Reimplements data 0x56bbec: g_zVideo_D3DAppendFanCloseVertexPending.
+ * Reimplements data 0x632138: g_zVideo_PendingWireframeState.
+ * Purpose: stage Direct3D fan-closing and wireframe render state.
+ */
 int g_zVideo_D3DAppendFanCloseVertexPending = 0;
 int g_zVideo_PendingWireframeState = 0;
 /**
@@ -283,7 +351,16 @@ int g_zVideo_D3DSceneDepth = 0;
 int g_zVid_AcceptedHardwareRendererCount = 0;
 int g_zVideo_NumAcceptedDirectDrawDevices = 0;
 int g_zVideo_DirectDrawEnumOrdinal = 0;
-// Retail starts with texture-pack loading enabled; zVid accessors toggle this between 0 and 1.
+/**
+ * Reimplements data 0x4e073c: g_zVid_TexturePackLoadState.
+ * Reimplements data 0x53d768: g_zVid_BuiltinTexturePackCount.
+ * Reimplements data 0x53d76c: g_zVid_BuiltinTexturePacks.
+ * Reimplements data 0x53d770: g_zVid_TexturePackCount.
+ * Reimplements data 0x53d774: g_zVid_TexturePacks.
+ * Retail starts with texture-pack loading enabled; zVid accessors toggle this
+ * between 0 and 1.
+ * Purpose: cache built-in and loaded texture-pack runtime arrays.
+ */
 int g_zVid_TexturePackLoadState = 1;
 int g_zVid_BuiltinTexturePackCount = 0;
 zVidTexturePackEntry *g_zVid_BuiltinTexturePacks = 0;
@@ -335,8 +412,9 @@ char g_zVid_TextureArchiveStem[0x8] = "texture";
 char g_zVideo_SourceFile_ZvidBuffC[0x27] =
     "D:\\Proj\\GameZRecoil\\zVideo\\zvid_buff.c";
 /**
- * Reimplements data 0x4e3084, 0x4e30a0, and 0x4e30c8:
- * render_video.zvideo_init_diagnostic_strings.
+ * Reimplements data 0x4e3084: g_zVideo_InitFailSetModeMsg.
+ * Reimplements data 0x4e30a0: g_zVideo_SourceFile_ZvidInitC.
+ * Reimplements data 0x4e30c8: g_zVideo_InitFailOpenVideoModeMsg.
  * Purpose: writable zvid_init.c diagnostics passed by InitVideoSystem when
  * opening or setting the selected video mode fails.
  *
@@ -438,10 +516,21 @@ RECOIL_STATIC_ASSERT(sizeof(g_zVideo_D3DEnumSkipNoRgbColorMsg) == 0x2b);
 RECOIL_STATIC_ASSERT(sizeof(g_zVideo_D3DEnumSkipNoHardwareMsg) == 0x31);
 RECOIL_STATIC_ASSERT(sizeof(g_zVideo_D3DEnumDriverPrintfFmt) == 0x10);
 RECOIL_STATIC_ASSERT(sizeof(g_zVideo_DefaultD3DDeviceName) == 0x6);
-// Standalone palette-remap variant table owner: BN identifies the table count
-// and pointer array at 0x53d778/0x53d77c.
+/**
+ * Reimplements data 0x53d778: g_zVid_PaletteRemapVariantTableCount.
+ * Reimplements data 0x53d77c: g_zVid_PaletteRemapVariantTables.
+ * Standalone palette-remap variant table owner: BN identifies the table count
+ * and pointer array at 0x53d778/0x53d77c.
+ * Purpose: cache standalone palette-remap variant tables.
+ */
 int g_zVid_PaletteRemapVariantTableCount = 0;
 unsigned short **g_zVid_PaletteRemapVariantTables = 0;
+/**
+ * Reimplements data 0x4e5d30: ZOPT_VIDEO_MODE.
+ * Reimplements data 0x4e5d58: ZOPT_VIDEO_ACCELERATION.
+ * Reimplements data 0x4e5d5c: ZOPT_HW_API.
+ * Purpose: point at the video option storage used by zVid option accessors.
+ */
 int *ZOPT_VIDEO_MODE = 0;
 int *ZOPT_VIDEO_ACCELERATION = 0;
 int *ZOPT_HW_API = 0;
@@ -995,16 +1084,44 @@ zVideo_TextureRecordPartial *g_zVideo_DefaultTextureRecord = 0;
 char g_zVideo_PaletteOpenFailedFormat[0x21] =
     "ZVID: could not open palette %s\n";
 char g_zVideo_PalettePathBuffer[0x100] = {0};
+/**
+ * Reimplements data 0x632360: g_zVideo_PaletteBrightnessLevel.
+ * Purpose: cache the palette brightness adjustment used by palette loading.
+ */
 int g_zVideo_PaletteBrightnessLevel = 0;
 PALETTEENTRY g_zVideo_PaletteFileEntries[0x100] = {0};
 PALETTEENTRY g_zVideo_SystemPaletteEntries[0x100] = {0};
 RECOIL_STATIC_ASSERT(sizeof(g_zVideo_PaletteOpenFailedFormat) == 0x21);
 RECOIL_STATIC_ASSERT(sizeof(g_zVideo_PaletteBrightnessLevel) == 4);
 
-/*
+/**
+ * Reimplements data 0x6333ac: g_zVideo_pfnOpenVideoMode.
+ * Reimplements data 0x6333b0: g_zVideo_pfnShutdownVideoSystem.
+ * Reimplements data 0x6333b8: g_zVideo_pfnPaletteSetEntries.
+ * Reimplements data 0x6333bc: g_zVideo_pfnSetVideoMode.
+ * Reimplements data 0x6333b4: g_zVideo_pfnAdjustSurfaces.
+ * Reimplements data 0x6333c4: g_zVideo_pfnLockSurfaceState.
+ * Reimplements data 0x6333c0: g_zVideo_pfnUnlockSurfaceState.
+ * Reimplements data 0x6333d0: g_zVideo_pfnClearZBufferRect.
+ * Reimplements data 0x6333cc: g_zVideo_pfnClearSwSurfaceAndZBuffer.
+ * Reimplements data 0x6333c8: g_zVideo_pfnClearStateSurfaceAndZBuffer.
+ * Reimplements data 0x6333d4: g_zVideo_pfnUpdateFogColor.
+ * Reimplements data 0x56bc2c: g_zVideo_pfnQueryDeviceVideoMemoryBytes.
+ * Reimplements data 0x56bc30: g_zVideo_pfnQueryTextureMemoryBytes.
+ * Reimplements data 0x56bbfc: g_zVideo_pfnBltSwToPrimaryRectDirect.
+ * Reimplements data 0x56bc00: g_zVideo_pfnBltPrimaryToSwRectDirect.
+ * Reimplements data 0x56bc04: g_zVideo_pfnBltSwToPrimaryRect.
+ * Reimplements data 0x56bc34: g_zVideo_pfnGetHwApiDeviceFeatureFlags.
+ * Reimplements data 0x56bc38: g_zVideo_pfnImageUploadPixelsToSurface.
+ * Reimplements data 0x56bc3c: g_zVideo_pfnImageReleaseSurface.
+ * Reimplements data 0x56bc08: g_zVideo_pfnCreateTextureRecord.
+ * Reimplements data 0x56bc0c: g_zVideo_pfnTextureRecordLockUploadSurface.
+ * Reimplements data 0x56bc10: g_zVideo_pfnTextureRecordUnlockUploadSurface.
+ * Reimplements data 0x56bc14: g_zVideo_pfnTextureRecordReleaseUploadSurfaceRef.
  * Renderer dispatch owner: BN 0x4a77a0 initializes this backend function
  * pointer set from zVideo_dd/zVideo_dd3d entry points and leaves the globals
  * zero-initialized before BindRendererDispatch runs.
+ * Purpose: hold the active renderer dispatch vector.
  */
 zVideo_StatusProc g_zVideo_pfnOpenVideoMode = 0;
 zVideo_ShutdownVideoSystemProc g_zVideo_pfnShutdownVideoSystem = 0;
@@ -1030,10 +1147,33 @@ zVideo_TextureRecordLockUploadSurfaceProc g_zVideo_pfnTextureRecordLockUploadSur
 zVideo_TextureRecordUnlockUploadSurfaceProc g_zVideo_pfnTextureRecordUnlockUploadSurface = 0;
 zVideo_TextureRecordReleaseUploadSurfaceRefProc
     g_zVideo_pfnTextureRecordReleaseUploadSurfaceRef = 0;
+/**
+ * Reimplements data 0x56bc18: g_zVideo_pfnTextureRecordFinalizeUpload.
+ * Reimplements data 0x56bc1c: g_zVideo_pfnTextureRecordDestroy.
+ * Reimplements data 0x56bc20: g_zVideo_pfnTextureRecordReleaseAllUploadSurfaces.
+ * Purpose: dispatch texture-record upload finalization, destruction, and
+ * upload-surface release hooks.
+ */
 zVideo_TextureRecordFinalizeUploadProc g_zVideo_pfnTextureRecordFinalizeUpload = 0;
 zVideo_DestroyTextureRecordProc g_zVideo_pfnTextureRecordDestroy = 0;
 zVideo_ReleaseAllTextureUploadSurfacesProc
     g_zVideo_pfnTextureRecordReleaseAllUploadSurfaces = 0;
+/**
+ * Reimplements data 0x56bc24: g_zVideo_pfnImageLazyCreateVideoMemorySurface.
+ * Reimplements data 0x56bc28: g_zVideo_pfnImageEnsureSurfaceForCurrentDevice.
+ * Reimplements data 0x56bc40: g_zVideo_pfnSetFogEnable.
+ * Reimplements data 0x56bc44: g_zVideo_pfnSetFogStart.
+ * Reimplements data 0x56bc48: g_zVideo_pfnSetFogEnd.
+ * Reimplements data 0x56bc4c: g_zVideo_pfnApplyFogStateFromGlobals.
+ * Reimplements data 0x56bc50: g_zVideo_pfnSubmitPolyFlatColor16.
+ * Reimplements data 0x56bc54: g_zVideo_pfnSubmitPolyGouraudColor16.
+ * Reimplements data 0x56bc58: g_zVideo_pfnSubmitPolyColorAttr.
+ * Reimplements data 0x56bc5c: g_zVideo_pfnSubmitPolyRenderClass.
+ * Reimplements data 0x56bc60: g_zVideo_pfnSubmitPolygon.
+ * Reimplements data 0x56bc64: g_zVideo_pfnSubmitPolygonLit.
+ * Reimplements data 0x56bc68: g_zVideo_pfnDrawPointColor16.
+ * Purpose: dispatch image-surface, fog, and polygon submit hooks.
+ */
 zVideo_ImageLazyCreateSurfaceProc g_zVideo_pfnImageLazyCreateVideoMemorySurface = 0;
 zVideo_ImageProc g_zVideo_pfnImageEnsureSurfaceForCurrentDevice = 0;
 zVideo_SetFogEnableProc g_zVideo_pfnSetFogEnable = 0;
@@ -1071,14 +1211,17 @@ char g_zVideo_DefaultHwApiDescription[8] = "Default";
 
 /**
  * Reimplements data 0x633e44: g_zVideo_HwApiDeviceTable.
- * Reimplements data 0x633e40: g_zVideo_pSelectedHwApiDeviceRecord.
  * Cached DirectDraw hardware-device owner: BN models four 0x6ec-byte records
- * at 0x633e44 and a selected-record pointer at 0x633e40. The DirectDraw
- * enumeration callbacks populate the records; memory-query, renderer-selection,
- * and DirectDraw surface paths consume the cached record fields.
- * Purpose: cache accepted DirectDraw hardware API records and the active record.
+ * at 0x633e44. The DirectDraw enumeration callbacks populate the records;
+ * memory-query, renderer-selection, and DirectDraw surface paths consume the
+ * cached record fields.
+ * Purpose: cache accepted DirectDraw hardware API records.
  */
 zVidHwApiDeviceRecordPartial g_zVideo_HwApiDeviceTable[4] = {0};
+/**
+ * Reimplements data 0x633e40: g_zVideo_pSelectedHwApiDeviceRecord.
+ * Purpose: point at the selected DirectDraw hardware API record.
+ */
 zVidHwApiDeviceRecordPartial *g_zVideo_pSelectedHwApiDeviceRecord = 0;
 /**
  * Reimplements data 0x6359f4: g_zVideo_pSelectedD3DDeviceInfo.
@@ -1091,6 +1234,11 @@ zVidHwApiDeviceRecordPartial *g_zVideo_pSelectedHwApiDeviceRecord = 0;
 zVidD3DDriverRecordPartial *g_zVideo_pSelectedD3DDeviceInfo = 0;
 D3DDEVICEDESC g_zVideo_D3DHalDeviceDesc = {0};
 D3DDEVICEDESC g_zVideo_D3DHelDeviceDesc = {0};
+/**
+ * Reimplements data 0x633404: g_zVideo_D3DMaterialHandle.
+ * Reimplements data 0x633638: g_zVideo_QuadBatchCount.
+ * Purpose: cache the active Direct3D material handle and queued quad count.
+ */
 D3DMATERIALHANDLE g_zVideo_D3DMaterialHandle = 0;
 int g_zVideo_QuadBatchCount = 0;
 zVideo_QuadBatchItemPartial g_zVideo_QuadBatchItemsBase[16] = {0};
@@ -1098,9 +1246,22 @@ D3DTLVERTEX g_zVideo_D3DSubmitTempVertices[64] = {0};
 int g_zVideo_SortedPolyDrawOrder[256] = {0};
 zVideo_SortedPolyQueueEntry g_zVideo_SortedPolyQueueBase[256] = {0};
 zVideo_OverwriteQueueEntry g_zVideo_OverwriteQueueBase[0x180] = {0};
+/**
+ * Reimplements data 0x632fa0: g_zVideo_SortedPolyQueueCount.
+ * Reimplements data 0x6333a4: g_zVideo_OverwriteQueueCount.
+ * Purpose: track queued sorted and overwrite polygon counts.
+ */
 int g_zVideo_SortedPolyQueueCount = 0;
 int g_zVideo_OverwriteQueueCount = 0;
 zVideo_D3DRenderStateCacheLive g_zVideo_D3DRenderStateCache = {0};
+/**
+ * Reimplements data 0x633400: g_zVideo_pD3DMaterial2.
+ * Reimplements data 0x6333fc: g_zVideo_pD3DViewport2.
+ * Reimplements data 0x6333f0: g_zVideo_pD3DDevice.
+ * Reimplements data 0x6333ec: g_zVideo_pD3D2.
+ * Reimplements data 0x6333dc: g_zVideo_pClipper.
+ * Purpose: hold active Direct3D and DirectDraw provider interfaces.
+ */
 IDirect3DMaterial2 *g_zVideo_pD3DMaterial2 = 0;
 IDirect3DViewport2 *g_zVideo_pD3DViewport2 = 0;
 IDirect3DDevice2 *g_zVideo_pD3DDevice = 0;
@@ -1116,6 +1277,15 @@ IDirectDrawClipper *g_zVideo_pClipper = 0;
  * FlipToGDIIfAttached, and releases/clears it during video teardown.
  */
 IDirectDraw2 *g_zVideo_pDirectDraw2 = 0;
+/**
+ * Reimplements data 0x6333f4: g_zVideo_pZBufferSurface.
+ * Reimplements data 0x6333f8: g_zVideo_pZBufferAttachSurface.
+ * Reimplements data 0x6333e0: g_zVideo_pPageUnlockSurface.
+ * Reimplements data 0x6333e8: g_zVideo_pSurfaceLockVerifier.
+ * Reimplements data 0x635d0c: g_zVideo_SurfaceLockVerifyContext.
+ * Reimplements data 0x635cf4: g_zVideo_SurfaceLockVerifyFlags.
+ * Purpose: hold DirectDraw surface-lock verification state.
+ */
 IDirectDrawSurface3 *g_zVideo_pZBufferSurface = 0;
 IDirectDrawSurface *g_zVideo_pZBufferAttachSurface = 0;
 IDirectDrawSurface3 *g_zVideo_pPageUnlockSurface = 0;
@@ -1271,7 +1441,12 @@ RECOIL_STATIC_ASSERT(sizeof(zVideoFxPass3Config) == 0x1f0);
  */
 zVideoFxPass3Config g_zVideo_FxPass3ConfigLocal;
 zVidRect32 g_zVideo_PrimarySurfaceRectScratch = {0};
-// BN models g_zVideo_DisplayModeBpp as the zero-initialized int32 at 0x632150.
+/**
+ * Reimplements data 0x632150: g_zVideo_DisplayModeBpp.
+ * BN models this as the zero-initialized int32 written when mode geometry is
+ * applied.
+ * Purpose: cache the active display mode bit depth.
+ */
 int g_zVideo_DisplayModeBpp = 0;
 /**
  * Reimplements data 0x56b1b8: g_zVid_NoiseByteTableSize.
@@ -1404,6 +1579,11 @@ int g_zVideo_FxPass3_ClipMaxX = 0;
  * Purpose: cache the exclusive maximum Y clip edge for pass-3 scatter copies.
  */
 int g_zVideo_FxPass3_ClipMaxY = 0;
+/**
+ * Reimplements data 0x6333e4: g_zVideo_pDDPalette.
+ * Reimplements data 0x6321c8: g_zVideo_hWnd.
+ * Purpose: hold the active DirectDraw palette and target window handle.
+ */
 IDirectDrawPalette *g_zVideo_pDDPalette = 0;
 HWND g_zVideo_hWnd = 0;
 RECT g_zVideo_CachedClientRectScreen = {0};
@@ -1424,7 +1604,6 @@ unsigned int __fastcall zVid_PackColorRGB(
         ((unsigned char)blue >> g_zVideo_PixelPack.bShiftTo8);
 }
 
-// Reimplements 0x4a6ca0: zVid_PackColor00RRGGBB
 /**
  * Reimplements 0x4a6ca0: zVid_PackColor00RRGGBB.
  * Purpose: provide the recovered zVid_PackColor00RRGGBB behavior.
@@ -1505,8 +1684,6 @@ void __fastcall zVideo_SetPendingFogTargetColorFromRgb01(
         g_zVideo_D3DColorAttrBiasR >= g_zVideo_D3DColorAttrBiasB ? 0 : 2;
 }
 
-// Reimplements 0x479ce0: zVideo_SetActiveViewContext
-// (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
 /**
  * Reimplements 0x479ce0: zVideo_SetActiveViewContext.
  * Original source path: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
@@ -1627,8 +1804,6 @@ void __fastcall zVideo_SetActiveViewContext(
     );
 }
 
-// Reimplements 0x44d600: zVideo_sw::RenderFrame
-// (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
 /**
  * Reimplements 0x44d600: zVideo_sw::RenderFrame.
  * Original source path: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
@@ -1799,8 +1974,6 @@ int __fastcall zVideo_sw_RenderFrame(
     return 0;
 }
 
-// Reimplements 0x47a0c0: zVideo_UpdateProjectionStateFromCameraData
-// (GameZRecoil/zVideo/zVideo.cpp)
 /**
  * Reimplements 0x47a0c0: zVideo_UpdateProjectionStateFromCameraData.
  * Original source path: GameZRecoil/zVideo/zVideo.cpp.
@@ -2029,7 +2202,6 @@ int __fastcall zVideo_FrustumTestSphereClipMask(
     return 0;
 }
 
-// Reimplements 0x4a7770: zVideo_RestoreIconicFullscreenWindowIfNeeded
 /**
  * Reimplements 0x4a7770: zVideo_RestoreIconicFullscreenWindowIfNeeded.
  * Purpose: provide the recovered zVideo_RestoreIconicFullscreenWindowIfNeeded behavior.
@@ -2468,7 +2640,6 @@ void __fastcall SetHwApiOption(
     *ZOPT_HW_API = hwApiOption;
 }
 
-// Reimplements 0x408310: zVid::GetAccelerationOption
 /**
  * Reimplements 0x408310: zVid::GetAccelerationOption.
  * Purpose: provide the recovered zVid::GetAccelerationOption behavior.
@@ -2477,7 +2648,6 @@ int GetAccelerationOption() {
     return *ZOPT_VIDEO_ACCELERATION;
 }
 
-// Reimplements 0x408320: zVid::GetHwApiOption
 /**
  * Reimplements 0x408320: zVid::GetHwApiOption.
  * Purpose: provide the recovered zVid::GetHwApiOption behavior.
@@ -2496,7 +2666,6 @@ int GetAcceptedDirectDrawDeviceCount() {
     return zVideo_dd::GetAcceptedDirectDrawDeviceCountCached();
 }
 
-// Reimplements 0x4a9910: zVid::GetAcceptedHardwareRendererCount_Cached
 /**
  * Reimplements 0x4a9910: zVid::GetAcceptedHardwareRendererCount_Cached.
  * Purpose: provide the recovered zVid::GetAcceptedHardwareRendererCount_Cached behavior.
@@ -2505,7 +2674,6 @@ int GetAcceptedHardwareRendererCount_Cached() {
     return g_zVid_AcceptedHardwareRendererCount;
 }
 
-// Reimplements 0x4b3220: zVid::HasAcceptedHardwareRenderer
 /**
  * Reimplements 0x4b3220: zVid::HasAcceptedHardwareRenderer.
  * Purpose: provide the recovered zVid::HasAcceptedHardwareRenderer behavior.
@@ -2532,7 +2700,6 @@ void __fastcall SetTexturePackLoadState(
     g_zVid_TexturePackLoadState = texturePackLoadState;
 }
 
-// Reimplements 0x4086b0: zVid::GetVideoModeIndexFromOptions
 /**
  * Reimplements 0x4086b0: zVid::GetVideoModeIndexFromOptions.
  * Purpose: provide the recovered zVid::GetVideoModeIndexFromOptions behavior.
@@ -2860,7 +3027,6 @@ char *GetSelectedD3DDeviceNameOrDefault() {
                : g_zVideo_DefaultD3DDeviceName;
 }
 
-// Reimplements 0x4a7430: zVid::GetHwApiDescription
 /**
  * Reimplements 0x4a7430: zVid::GetHwApiDescription.
  * Purpose: provide the recovered zVid::GetHwApiDescription behavior.
@@ -2871,7 +3037,6 @@ char *__fastcall GetHwApiDescription(
     return g_zVideo_HwApiDeviceTable[index].m_driverDescription;
 }
 
-// Reimplements 0x4a7450: zVid::GetHwApiDriverName
 /**
  * Reimplements 0x4a7450: zVid::GetHwApiDriverName.
  * Purpose: provide the recovered zVid::GetHwApiDriverName behavior.
@@ -2883,12 +3048,10 @@ char *__fastcall GetHwApiDriverName(
 }
 } // namespace zVid
 
-// Reimplements 0x4bdb60: zVideoFxPass3Element::Draw
-// Draws the common HUD base, publishes the parent pass-3 source surface, then
-// dispatches the element-specific pass callback once for each configured input
-// rectangle.
 /**
  * Reimplements 0x4bdb60: zVideoFxPass3Element::Draw.
+ * Draws the common HUD base, publishes the parent pass-3 source surface, then dispatches the
+ * element-specific pass callback once for each configured input rectangle.
  * Purpose: provide the recovered zVideoFxPass3Element::Draw behavior.
  */
 void zVideoFxPass3Element::Draw() {
@@ -2932,11 +3095,10 @@ void zVideoFxPass3Element::Draw() {
  */
 void zVideoFxPass3Element::ApplyPass3() {}
 
-// Reimplements 0x4bdbc0: zVideoFxPass3RootElement::ApplyPass3
-// Root pass-3 callback submits the currently selected input rectangle as a
-// framebuffer overlay using the root element's recovered color and alpha.
 /**
  * Reimplements 0x4bdbc0: zVideoFxPass3RootElement::ApplyPass3.
+ * Root pass-3 callback submits the currently selected input rectangle as a framebuffer overlay
+ * using the root element's recovered color and alpha.
  * Purpose: provide the recovered zVideoFxPass3RootElement::ApplyPass3 behavior.
  */
 void zVideoFxPass3RootElement::ApplyPass3() {
@@ -2947,11 +3109,10 @@ void zVideoFxPass3RootElement::ApplyPass3() {
     );
 }
 
-// Reimplements 0x4bdbe0: zVideoFxPass3Slot::Constructor
-// Installs the pass-3 slot table after the HudUiElement base constructor and
-// clears the input clip consumed by zVideoFxPass3Element::Draw.
 /**
  * Reimplements 0x4bdbe0: zVideoFxPass3Slot::Constructor.
+ * Installs the pass-3 slot table after the HudUiElement base constructor and clears the input
+ * clip consumed by zVideoFxPass3Element::Draw.
  * Purpose: provide the recovered zVideoFxPass3Slot::Constructor behavior.
  */
 zVideoFxPass3Slot * zVideoFxPass3Slot::Constructor() {
@@ -2964,8 +3125,6 @@ zVideoFxPass3Slot * zVideoFxPass3Slot::Constructor() {
     return this;
 }
 
-// Reimplements 0x4bdc00: zVideoFxPass3Slot::SetRectAndPayload
-// (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
 /**
  * Reimplements 0x4bdc00: zVideoFxPass3Slot::SetRectAndPayload.
  * Original source path: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
@@ -2992,12 +3151,10 @@ void zVideoFxPass3Slot::SetRectAndPayload(
     sinPhase = sinPhaseValue;
 }
 
-// Reimplements 0x4bdc40: zVideoFxPass3Slot::ApplyPass3
-// The pass callback forwards the slot position, integer radius
-// payload, sine parameters, and active input clip to the shared pass-3 radial
-// warp routine.
 /**
  * Reimplements 0x4bdc40: zVideoFxPass3Slot::ApplyPass3.
+ * The pass callback forwards the slot position, integer radius payload, sine parameters, and
+ * active input clip to the shared pass-3 radial warp routine.
  * Purpose: provide the recovered zVideoFxPass3Slot::ApplyPass3 behavior.
  */
 void zVideoFxPass3Slot::ApplyPass3() {
@@ -3013,12 +3170,11 @@ void zVideoFxPass3Slot::ApplyPass3() {
     );
 }
 
-// Reimplements 0x4bef90: zVideoFxPass3Config::Constructor
-// Constructs the pass-3 singleton as a HudUiContainer, installs the config and
-// element tables, links the root plus five slot children, hides them, and enables
-// the container. The retail constructor leaves surfacePitchBytes untouched.
 /**
  * Reimplements 0x4bef90: zVideoFxPass3Config::Constructor.
+ * Constructs the pass-3 singleton as a HudUiContainer, installs the config and element tables,
+ * links the root plus five slot children, hides them, and enables the container. The retail
+ * constructor leaves surfacePitchBytes untouched.
  * Purpose: provide the recovered zVideoFxPass3Config::Constructor behavior.
  */
 zVideoFxPass3Config * zVideoFxPass3Config::Constructor() {
@@ -3055,11 +3211,9 @@ zVideoFxPass3Config * zVideoFxPass3Config::Constructor() {
     return this;
 }
 
-// Reimplements 0x4bee80: zVideoFxPass3Config::Destructor
-// Destruction mirrors the MSVC array-destructor path, then tears down the
-// container.
 /**
  * Reimplements 0x4bee80: zVideoFxPass3Config::Destructor.
+ * Destruction mirrors the MSVC array-destructor path, then tears down the container.
  * Purpose: provide the recovered zVideoFxPass3Config::Destructor behavior.
  */
 void zVideoFxPass3Config::Destructor() {
@@ -3071,12 +3225,14 @@ void zVideoFxPass3Config::Destructor() {
     HudUiContainer::DestructorCore();
 }
 
-// Reimplements 0x4bee50: zVideoFxPass3Config::ConstructGlobalSingleton
+/**
+ * Reimplements 0x4bee50: zVideoFxPass3Config::ConstructGlobalSingleton.
+ * Purpose: construct and return the local pass-3 config singleton.
+ */
 zVideoFxPass3Config *zVideoFxPass3Config::ConstructGlobalSingleton() {
     return g_zVideo_FxPass3ConfigLocal.Constructor();
 }
 
-// Reimplements 0x4bee70: zVideoFxPass3Config::DestroyGlobalSingleton
 /**
  * Reimplements 0x4bee70: zVideoFxPass3Config::DestroyGlobalSingleton.
  * Purpose: provide the recovered zVideoFxPass3Config::DestroyGlobalSingleton behavior.
@@ -3085,7 +3241,6 @@ void zVideoFxPass3Config::DestroyGlobalSingleton() {
     g_zVideo_FxPass3ConfigLocal.Destructor();
 }
 
-// Reimplements 0x4bee60: zVideoFxPass3Config::RegisterDestroyAtExit
 /**
  * Reimplements 0x4bee60: zVideoFxPass3Config::RegisterDestroyAtExit.
  * Purpose: provide the recovered zVideoFxPass3Config::RegisterDestroyAtExit behavior.
@@ -3094,7 +3249,6 @@ void zVideoFxPass3Config::RegisterDestroyAtExit() {
     atexit(DestroyGlobalSingleton);
 }
 
-// Reimplements 0x4bee40: zVideoFxPass3Config::CrtInitGlobalSingleton
 /**
  * Reimplements 0x4bee40: zVideoFxPass3Config::CrtInitGlobalSingleton.
  * Purpose: provide the recovered zVideoFxPass3Config::CrtInitGlobalSingleton behavior.
@@ -3104,8 +3258,6 @@ void zVideoFxPass3Config::CrtInitGlobalSingleton() {
     RegisterDestroyAtExit();
 }
 
-// Reimplements 0x4bee00: zVideoFxPass3Config::SetInputRectByIndex
-// (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
 /**
  * Reimplements 0x4bee00: zVideoFxPass3Config::SetInputRectByIndex.
  * Original source path: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
@@ -3121,7 +3273,6 @@ void zVideoFxPass3Config::SetInputRectByIndex(
 }
 
 namespace zVideo_buff {
-// Reimplements 0x4a69c0: zVideo_buff::ClipCoordToRange
 /**
  * Reimplements 0x4a69c0: zVideo_buff::ClipCoordToRange.
  * Purpose: provide the recovered zVideo_buff::ClipCoordToRange behavior.
@@ -3144,8 +3295,6 @@ int __fastcall ClipCoordToRange(
     return clipped;
 }
 
-// Reimplements 0x4a6fe0: zVideo_buff::CopySurfaceRectToImage
-// (GameZRecoil/zImage/zvid_buff.c)
 /**
  * Reimplements 0x4a6fe0: zVideo_buff::CopySurfaceRectToImage.
  * Original source path: GameZRecoil/zImage/zvid_buff.c.
@@ -3260,7 +3409,6 @@ zVidImagePartial *__fastcall CopySurfaceRectToImage(
     return image;
 }
 
-// Reimplements 0x4a69e0: zVideo_buff::BltSourceToPrimaryClipped
 /**
  * Reimplements 0x4a69e0: zVideo_buff::BltSourceToPrimaryClipped.
  * Purpose: provide the recovered zVideo_buff::BltSourceToPrimaryClipped behavior.
@@ -3513,8 +3661,6 @@ int __fastcall SetHalfResAdjustMode(
     return previousMode;
 }
 
-// Reimplements 0x437ef0: zVideo::HandleSoftwareModeHotkeyCommand
-// (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
 /**
  * Reimplements 0x437ef0: zVideo::HandleSoftwareModeHotkeyCommand.
  * Original source path: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
@@ -3690,8 +3836,6 @@ int GetDisplayModeBpp() {
     return g_zVideo_DisplayModeBpp;
 }
 
-// Reimplements 0x4c7fd0: zVideo::LoadPaletteFileAndApplyBrightness
-// (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
 /**
  * Reimplements 0x4c7fd0: zVideo::LoadPaletteFileAndApplyBrightness.
  * Original source path: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
@@ -3730,8 +3874,6 @@ int __fastcall LoadPaletteFileAndApplyBrightness(
     return ApplyBrightnessToPaletteEntries(g_zVideo_PaletteFileEntries);
 }
 
-// Reimplements 0x4c8070: zVideo::ApplyBrightnessToPaletteEntries
-// (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
 /**
  * Reimplements 0x4c8070: zVideo::ApplyBrightnessToPaletteEntries.
  * Original source path: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
@@ -3865,7 +4007,6 @@ void __fastcall Init_SetSurfaceGeometryFromModeIndex(
     g_zVideo_DisplayModeBpp = bitsPerPixel;
 }
 
-// Reimplements 0x4a66f0: zVideo::Init_ApplyModeIndex
 /**
  * Reimplements 0x4a66f0: zVideo::Init_ApplyModeIndex.
  * Purpose: provide the recovered zVideo::Init_ApplyModeIndex behavior.
@@ -3996,9 +4137,6 @@ void __fastcall Fx_SetSurfaceState(
     g_zVideo_FxSurfacePitchPixels16 = pitchBytes / 2;
 }
 
-// Reimplements 0x48da60: zVideo::FxPass3_CopySurfacePixelToScratchClipped
-// Pass-3 ring warp uses center-relative deltas; this helper applies the
-// current center bias and rejects copies unless both endpoints are in bounds.
 /**
  * Reimplements 0x48da60: zVideo::FxPass3_CopySurfacePixelToScratchClipped.
  * Source owner evidence: current BN assembly shows a zVideo namespace helper
@@ -4010,6 +4148,8 @@ void __fastcall Fx_SetSurfaceState(
  * g_zVideo_FxSurfacePitchPixels16, g_zVideo_FxSurfaceWidth, and
  * g_zVideo_FxPass3_ScratchPixels16. This slice documents the touched
  * scratch/clip globals but does not prove the complete zVideo data owner.
+ * Pass-3 ring warp uses center-relative deltas; this helper applies the current center bias
+ * and rejects copies unless both endpoints are in bounds.
  * Purpose: copy one biased 16-bpp FX-surface pixel into pass-3 scratch only
  * when both the source and destination endpoints are inside the active clip.
  */
@@ -4288,10 +4428,6 @@ static void __fastcall zVideoFxPass3CopyScratchToSurface(
     }
 }
 
-// Reimplements 0x48daf0: zVideo::FxPass3_ApplyToCurrentSurface
-// Animated radial ring warp for local pass-3 effects. The retail code keeps a
-// fast direct path when the whole ring fits the clip and falls back to the
-// clipped pixel helper when any endpoint can cross the active rectangle.
 /**
  * Reimplements 0x48daf0: zVideo::FxPass3_ApplyToCurrentSurface.
  * Source owner evidence: current BN assembly identifies the original file as
@@ -4304,6 +4440,9 @@ static void __fastcall zVideoFxPass3CopyScratchToSurface(
  * writes g_zVideo_FxPass3_ScratchOffsetX/Y only for the clipped helper path;
  * it also consumes the active FX surface descriptor and scratch pointer. The
  * complete zVideo data owner remains broader than this function pair.
+ * Animated radial ring warp for local pass-3 effects. The retail code keeps a fast direct path
+ * when the whole ring fits the clip and falls back to the clipped pixel helper when any
+ * endpoint can cross the active rectangle.
  * Purpose: apply the local pass-3 animated radial ring warp to the active
  * 16-bpp FX surface.
  */
@@ -4844,8 +4983,6 @@ void zVideoFxPass3Config::QueuePrimitiveRaw(
 
 namespace zVideo {
 
-// Reimplements 0x4bed30: zVideo::zVideoFxPass3Config_UpdateLocal
-// (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
 /**
  * Reimplements 0x4bed30: zVideo::zVideoFxPass3Config_UpdateLocal.
  * Original source path: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
@@ -4862,7 +4999,6 @@ void __fastcall zVideoFxPass3Config_UpdateLocal(
     config->slotWriteIndex = 0;
 }
 
-// Reimplements 0x4bed50: zVideo::zVideoFxPass3Config_SetPrimaryElementParamsLocal
 /**
  * Reimplements 0x4bed50: zVideo::zVideoFxPass3Config_SetPrimaryElementParamsLocal.
  * Original source path: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
@@ -4883,7 +5019,6 @@ void __fastcall zVideoFxPass3Config_SetPrimaryElementParamsLocal(
     config->rootElement.flags |= 0x01u;
 }
 
-// Reimplements 0x4beee0: zVideo::FxPass3_SetPrimaryElementParamsLocal
 /**
  * Reimplements 0x4beee0: zVideo::FxPass3_SetPrimaryElementParamsLocal.
  * Purpose: provide the recovered zVideo::FxPass3_SetPrimaryElementParamsLocal behavior.
@@ -4899,7 +5034,6 @@ void __fastcall FxPass3_SetPrimaryElementParamsLocal(
     );
 }
 
-// Reimplements 0x4bed90: zVideo::zVideoFxPass3Config_QueueElementLocal
 /**
  * Reimplements 0x4bed90: zVideo::zVideoFxPass3Config_QueueElementLocal.
  * Source-shape evidence: this is the same local-config helper family as
@@ -4937,7 +5071,6 @@ void __fastcall zVideoFxPass3Config_QueueElementLocal(
     slot->flags |= 0x01u;
 }
 
-// Reimplements 0x4bef10: zVideo::FxPass3_QueueElementLocal
 /**
  * Reimplements 0x4bef10: zVideo::FxPass3_QueueElementLocal.
  * Purpose: provide the recovered zVideo::FxPass3_QueueElementLocal behavior.
@@ -4981,8 +5114,6 @@ void __fastcall FxPass3_QueuePrimitive(
     );
 }
 
-// Reimplements 0x4bef40: zVideo::FxPass3_SetInputRectByIndex
-// (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
 /**
  * Reimplements 0x4bef40: zVideo::FxPass3_SetInputRectByIndex.
  * Original source path: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
@@ -4998,8 +5129,6 @@ void __fastcall FxPass3_SetInputRectByIndex(
     );
 }
 
-// Reimplements 0x4bef70: zVideo::FxPass3_UpdateLocal
-// (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
 /**
  * Reimplements 0x4bef70: zVideo::FxPass3_UpdateLocal.
  * Original source path: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
@@ -5014,8 +5143,6 @@ void __fastcall FxPass3_UpdateLocal(
     );
 }
 
-// Reimplements 0x4a6770: zVideo::RunPostprocessOnSwBuffer
-// (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
 /**
  * Reimplements 0x4a6770: zVideo::RunPostprocessOnSwBuffer.
  * Original source path: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
@@ -5581,7 +5708,6 @@ void Noise_InitBuffers() {
     zRndr::g_pfnOverlayBlendRow = zRndr::OverlayBlendRow555_Scalar;
 }
 
-// Reimplements 0x48d3e0: zVid::Noise_ShutdownBuffers
 /**
  * Reimplements 0x48d3e0: zVid::Noise_ShutdownBuffers.
  * Original source path: D:\Proj\GameZRecoil\zImage\zvid_buff.c.
@@ -5682,12 +5808,12 @@ int ShutdownFrameScratchBuffers() {
 } // namespace zVid
 
 namespace zVideo_FxSurface {
-// BN shows these as namespace functions in zVideo.cpp with no constructor,
-// vtable, or owned object layout evidence. Model this slice as a source-file
-// namespace cluster over the typed FX-surface globals above.
 /**
  * Original-source helper evidence: no standalone retail function; repeated
  * float-to-int truncation in 0x48ed60 uses the VC5 _ftol lowering pattern.
+ * BN shows these as namespace functions in zVideo.cpp with no constructor, vtable, or owned
+ * object layout evidence. Model this slice as a source-file namespace cluster over the typed
+ * FX-surface globals above.
  * Purpose: truncate FX line-clipping intermediates toward zero.
  */
 static int TruncateFloat(
@@ -5803,8 +5929,6 @@ static void DrawFxSurfaceSpanPixel(
     );
 }
 
-// Reimplements 0x48ea20: zVideo_FxSurface::ApplyBlueTintRect
-// (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
 /**
  * Reimplements 0x48ea20: zVideo_FxSurface::ApplyBlueTintRect.
  * Original source path: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
@@ -5872,8 +5996,6 @@ void __fastcall ApplyBlueTintRect(
     } while (y < clipRect.bottom);
 }
 
-// Reimplements 0x48eb80: zVideo_FxSurface::ApplyGreenMaskRect
-// (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
 /**
  * Reimplements 0x48eb80: zVideo_FxSurface::ApplyGreenMaskRect.
  * Original source path: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
@@ -5935,8 +6057,6 @@ void __fastcall ApplyGreenMaskRect(
     } while (y < clipRect.bottom);
 }
 
-// Reimplements 0x48ed60: zVideo_FxSurface::DrawAlphaBlendedLine
-// (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
 /**
  * Reimplements 0x48ed60: zVideo_FxSurface::DrawAlphaBlendedLine.
  * Original source path: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
@@ -6154,8 +6274,6 @@ void __fastcall DrawAlphaBlendedLine(
     }
 }
 
-// Reimplements 0x48ec90: zVideo_FxSurface::DrawColoredLinesBatch
-// (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
 /**
  * Reimplements 0x48ec90: zVideo_FxSurface::DrawColoredLinesBatch.
  * Original source path: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
@@ -6243,7 +6361,11 @@ zVidImagePartial g_zImage_DefaultImage = {
     0
 };
 
-// Reimplements 0x46ec00: zVid_Image::Create
+/**
+ * Reimplements 0x46ec00: zVid_Image::Create.
+ * Original file: GameZRecoil/zImage/zimg_texture.cpp.
+ * Purpose: allocate and zero-initialize a zVid image record.
+ */
 zVidImagePartial *Create() {
     zVidImagePartial *image = (zVidImagePartial *)(malloc(sizeof(zVidImagePartial)));
     memset(
@@ -6527,7 +6649,6 @@ void __fastcall BlitToFramebufferClipped(
     }
 }
 
-// Reimplements 0x46ecf0: zVid_Image::ReleaseOwnedBuffers
 /**
  * Reimplements 0x46ecf0: zVid_Image::ReleaseOwnedBuffers.
  * Purpose: provide the recovered zVid_Image::ReleaseOwnedBuffers behavior.
@@ -6557,7 +6678,6 @@ void __fastcall ReleaseOwnedBuffers(
     }
 }
 
-// Reimplements 0x46ec20: zVid_Image::QueryBytesPerPixel
 /**
  * Reimplements 0x46ec20: zVid_Image::QueryBytesPerPixel.
  * Purpose: provide the recovered zVid_Image::QueryBytesPerPixel behavior.
@@ -6568,7 +6688,6 @@ int __fastcall QueryBytesPerPixel(
     return (image->formatFlagsPacked & 1) != 0 ? 2 : 1;
 }
 
-// Reimplements 0x46ec30: zVid_Image::SetHeaderFlagsByte
 /**
  * Reimplements 0x46ec30: zVid_Image::SetHeaderFlagsByte.
  * Purpose: provide the recovered zVid_Image::SetHeaderFlagsByte behavior.
@@ -6581,7 +6700,6 @@ int __fastcall SetHeaderFlagsByte(
     return 0;
 }
 
-// Reimplements 0x46ec60: zVid_Image::SetFormatCode
 /**
  * Reimplements 0x46ec60: zVid_Image::SetFormatCode.
  * Purpose: provide the recovered zVid_Image::SetFormatCode behavior.
@@ -6594,7 +6712,6 @@ int __fastcall SetFormatCode(
     return 0;
 }
 
-// Reimplements 0x46ec90: zVid_Image::SetSize
 /**
  * Reimplements 0x46ec90: zVid_Image::SetSize.
  * Purpose: provide the recovered zVid_Image::SetSize behavior.
@@ -6611,8 +6728,6 @@ int __fastcall SetSize(
     return 0;
 }
 
-// Reimplements 0x4902b0: zVid_Image::CalcPow2ScratchFields
-// (GameZRecoil/zImage/zimg_texture.cpp)
 /**
  * Reimplements 0x4902b0: zVid_Image::CalcPow2ScratchFields.
  * Original source path: GameZRecoil/zImage/zimg_texture.cpp.
@@ -6643,7 +6758,6 @@ void __fastcall CalcPow2ScratchFields(
     image->vMaskFixed20 = (1 << image->vPow2Shift << 20) - 0x100000;
 }
 
-// Reimplements 0x46ec70: zVid_Image_SetPixels
 /**
  * Reimplements 0x46ec70: zVid_Image_SetPixels.
  * Purpose: provide the recovered zVid_Image_SetPixels behavior.
@@ -6732,7 +6846,6 @@ extern "C" zVidImagePartial *__fastcall zVideo_buff_CaptureSurfaceToImage(
     return image;
 }
 
-// Reimplements 0x46ec40: zVid_Image::QueryPixelDataBytes
 /**
  * Reimplements 0x46ec40: zVid_Image::QueryPixelDataBytes.
  * Purpose: provide the recovered zVid_Image::QueryPixelDataBytes behavior.
@@ -6747,7 +6860,6 @@ int __fastcall QueryPixelDataBytes(
     return QueryBytesPerPixel(image) * image->pixelCount;
 }
 
-// Reimplements 0x46d870: zVid_Image::ClearZeroAlphaPixelsInPlace
 /**
  * Reimplements 0x46d870: zVid_Image::ClearZeroAlphaPixelsInPlace.
  * Purpose: provide the recovered zVid_Image::ClearZeroAlphaPixelsInPlace behavior.
@@ -6810,7 +6922,6 @@ struct zVidImageFileHeader {
 RECOIL_STATIC_ASSERT(sizeof(zVidImageFileHeader) == 0x10);
 } // namespace
 
-// Reimplements 0x46ed70: zVid_Image::ReadHeader
 /**
  * Reimplements 0x46ed70: zVid_Image::ReadHeader.
  * Purpose: provide the recovered zVid_Image::ReadHeader behavior.
@@ -6848,7 +6959,6 @@ int __fastcall ReadHeader(
     return 0;
 }
 
-// Reimplements 0x46ede0: zVid_Image::ReadData
 /**
  * Reimplements 0x46ede0: zVid_Image::ReadData.
  * Purpose: provide the recovered zVid_Image::ReadData behavior.
@@ -6942,7 +7052,6 @@ int __fastcall ReadData(
     return 0;
 }
 
-// Reimplements 0x46ef70: zVid_Image::ReadFromFile
 /**
  * Reimplements 0x46ef70: zVid_Image::ReadFromFile.
  * Purpose: provide the recovered zVid_Image::ReadFromFile behavior.
@@ -7407,8 +7516,6 @@ extern "C" void zVid_TexturePack_EnsureDefaultImagePackLoaded() {
     ++g_zVid_TexturePackCount;
 }
 
-// Reimplements 0x46df50: zVid_TexturePack_EnsureBuiltinTexturePacksLoaded
-// (D:\Proj\GameZRecoil\zVideo\zVideo.cpp)
 /**
  * Reimplements 0x46df50: zVid_TexturePack_EnsureBuiltinTexturePacksLoaded.
  * Original source path: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
@@ -7564,7 +7671,12 @@ extern "C" RECOIL_NO_GS void zVid_TexturePack_EnsureBuiltinTexturePacksLoaded() 
 }
 
 namespace {
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Recovered helper: LoadTexturePackImageByName.
+ * Original-source helper evidence: no standalone retail function is present;
+ * recovered from address-backed callers 0x46d940 and 0x46dd30 in this source file.
+ * Purpose: find and load an image record from a texture-pack entry array.
+ */
 zVidImagePartial *LoadTexturePackImageByName(
     zVidTexturePackEntry *entries,
     int count,
@@ -7613,7 +7725,6 @@ zVidImagePartial *LoadTexturePackImageByName(
 }
 } // namespace
 
-// Reimplements 0x46d940: zVid_TexturePack_LoadImageByName
 /**
  * Reimplements 0x46d940: zVid_TexturePack_LoadImageByName.
  * Purpose: provide the recovered zVid_TexturePack_LoadImageByName behavior.
@@ -7651,7 +7762,6 @@ zVid_TexturePack_LoadBuiltinImageByName(
 }
 
 namespace zVid_TexturePack {
-// Source-faithful helper recovered from address-backed callers in this source file.
 /**
  * Original-source helper evidence: source-faithful helper recovered from address-backed callers in this source file.
  * Purpose: provide the recovered zVid_TexturePack::ClosePackEntry helper behavior for zVideo callers.
@@ -7670,7 +7780,6 @@ void ClosePackEntry(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
 /**
  * Original-source helper evidence: source-faithful helper recovered from address-backed callers in this source file.
  * Purpose: provide the recovered zVid_TexturePack::FreePackEntryRecords helper behavior for zVideo callers.
@@ -7713,7 +7822,6 @@ int ShutdownTextureDirectoryRuntime() {
 } // namespace zImage
 
 namespace zVid_TexturePack {
-// Reimplements 0x46d6b0: zVid_TexturePack::ShutdownBuiltinPacks
 /**
  * Reimplements 0x46d6b0: zVid_TexturePack::ShutdownBuiltinPacks.
  * Purpose: provide the recovered zVid_TexturePack::ShutdownBuiltinPacks behavior.
@@ -7939,7 +8047,6 @@ DWORD PackFogColorFrom255Floats(
     return ((redByte << 8) | greenByte) << 8 | blueByte;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
 /**
  * Original-source helper evidence: source-faithful helper recovered from address-backed callers in this source file.
  * Purpose: provide the recovered PackD3DColorFrom16 helper behavior for zVideo callers.
@@ -7954,7 +8061,6 @@ DWORD PackD3DColorFrom16(
     return ((((red | ((DWORD)(alpha) << 8)) << 8) | green) << 8) | blue;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
 /**
  * Original-source helper evidence: source-faithful helper recovered from address-backed callers in this source file.
  * Purpose: provide the recovered WriteFlatTlVertex helper behavior for zVideo callers.
@@ -7972,7 +8078,6 @@ void WriteFlatTlVertex(
     dst.specular = 0xff000000;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
 /**
  * Original-source helper evidence: source-faithful helper recovered from address-backed callers in this source file.
  * Purpose: provide the recovered CopyFlatVerticesReverse helper behavior for zVideo callers.
@@ -7992,7 +8097,6 @@ void CopyFlatVerticesReverse(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
 /**
  * Original-source helper evidence: source-faithful helper recovered from address-backed callers in this source file.
  * Purpose: provide the recovered CopyGouraudVerticesReverse helper behavior for zVideo callers.
@@ -8113,7 +8217,6 @@ void FillColorAttrColorsReverse(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
 /**
  * Original-source helper evidence: source-faithful helper recovered from address-backed callers in this source file.
  * Purpose: provide the recovered CopyPositionsReverse helper behavior for zVideo callers.
@@ -8132,7 +8235,6 @@ void CopyPositionsReverse(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
 /**
  * Original-source helper evidence: source-faithful helper recovered from address-backed callers in this source file.
  * Purpose: provide the recovered PackAlphaWhite helper behavior for zVideo callers.
@@ -8143,7 +8245,6 @@ DWORD PackAlphaWhite(
     return ((DWORD)((int)(alpha * 255.0f)) << 24) | 0x00ffffff;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
 /**
  * Original-source helper evidence: source-faithful helper recovered from address-backed callers in this source file.
  * Purpose: provide the recovered WriteTexturedTlVertex helper behavior for zVideo callers.
@@ -8164,7 +8265,6 @@ void WriteTexturedTlVertex(
     dst.tv = texCoord.v;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
 /**
  * Original-source helper evidence: source-faithful helper recovered from address-backed callers in this source file.
  * Purpose: provide the recovered CopyTexturedVerticesReverse helper behavior for zVideo callers.
@@ -8308,7 +8408,6 @@ void FillPolygonLitColorsReverse(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
 /**
  * Original-source helper evidence: source-faithful helper recovered from address-backed callers in this source file.
  * Purpose: provide the recovered CopyPositionUvReversePreserveColor helper behavior for zVideo callers.
@@ -8332,7 +8431,6 @@ void CopyPositionUvReversePreserveColor(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
 /**
  * Original-source helper evidence: source-faithful helper recovered from address-backed callers in this source file.
  * Purpose: provide the recovered CopyPositionUvWithPreparedColorReverse helper behavior for zVideo callers.
@@ -8359,7 +8457,6 @@ void CopyPositionUvWithPreparedColorReverse(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
 /**
  * Original-source helper evidence: source-faithful helper recovered from address-backed callers in this source file.
  * Purpose: provide the recovered AppendFanCloseVertexIfNeeded helper behavior for zVideo callers.
@@ -11024,7 +11121,6 @@ void __fastcall TextureRecord_Destroy(
 
 namespace zVideoD3D {
 
-// Reimplements 0x4a74d0: zVideoD3D::SceneEnter
 /**
  * Reimplements 0x4a74d0: zVideoD3D::SceneEnter.
  * Data evidence: BN reads g_zVideo_D3DSceneDepth at 0x632148, calls
@@ -11041,7 +11137,6 @@ int SceneEnter() {
     return 0;
 }
 
-// Reimplements 0x4a74f0: zVideoD3D::SceneLeave
 /**
  * Reimplements 0x4a74f0: zVideoD3D::SceneLeave.
  * Data evidence: BN reads g_zVideo_D3DSceneDepth at 0x632148, calls
@@ -11104,7 +11199,6 @@ void ReleaseComInterface(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
 /**
  * Original-source helper evidence: source-faithful helper recovered from address-backed callers in this source file.
  * Purpose: provide the recovered PageUnlockBeforeRelease helper behavior for zVideo callers.

@@ -257,6 +257,18 @@ local owner/data/byte gates. For the detailed owner/data gates, use
 `owner_led_workflow.md` and `data_owner_audit.md`; this checklist only names
 the launch commands.
 
+When the final candidate `Recoil.exe` exists and PE comparison reports `.data`
+section/layout drift, check final linked data before preserving or accepting
+data-entry `S`:
+
+```powershell
+python tools/recoil.py audit final-data --include-plan --strict --json-out build/vc5-final/final_data_diff.json --plan-actions-json build/vc5-final/final_data_plan_actions.json
+```
+
+Treat a strict nonzero result from `.data` section deltas as a final byte
+identity blocker. Review generated action batches, then dry-run/apply only
+through governed `owner` and `plan` commands; do not hand-edit `.agent` files.
+
 Treat the address as an evidence anchor, not necessarily the implementation
 unit. Expand to the proven owner boundary: class/interface, table-shaped
 dispatch owner, provider boundary, source-file cluster, or dependency group.

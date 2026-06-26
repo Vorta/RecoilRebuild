@@ -19,7 +19,37 @@ declaration builds and matches basic BN symbol facts, `C` means the complete
 source data-owner model is accepted, `B` means the linked owner data gate is
 accepted, `A` means reviewed relocation-masked data-symbol evidence is
 near-byte-equivalent, and `S` means accepted data-symbol bytes plus relocation
-identity and linked owner byte gate acceptance.
+identity, linked owner byte gate acceptance, and no current final executable
+`.data` section/layout contradiction for that data row or owner byte gate.
+
+## Final Executable Data Audit
+
+VC5 `verify vc5` `data_symbols` evidence compares generated COFF symbol bytes
+and relocation identity. It does not by itself prove that the final linked
+`Recoil.exe` places the same `.data` raw bytes, virtual extent, zero-fill tail,
+or map symbols as retail. When `python tools/recoil.py verify final-build`
+produces `build/vc5-final/Recoil.exe` and the PE comparison reports `.data`
+section drift, audit the final linked data layout before preserving or accepting
+data `Reimplemented [S]`:
+
+```powershell
+python tools/recoil.py audit final-data --include-plan --strict --json-out build/vc5-final/final_data_diff.json --plan-actions-json build/vc5-final/final_data_plan_actions.json
+```
+
+`--strict` returns nonzero when section deltas are present. For this audit that
+is evidence that final data byte identity is blocked, not necessarily a tool
+failure. `--include-plan` correlates final-data issues with current data `S`
+rows, and `--plan-actions-json` writes governed owner/plan command batches for
+review, dry-run, and application through `python tools/recoil.py owner ...` and
+`python tools/recoil.py plan ...`; do not hand-edit `.agent` ledgers.
+
+The 2026-06-26 final-data audit downgraded 2,239 data rows from `S` to `B`.
+Of those, 2,170 had direct final-data audit issues while at tier `S`: candidate
+address drift or missing candidate map symbols. The remaining 69 were expanded
+through affected owner byte gates. This was not a global blanket downgrade, but
+it also was not byte-for-byte proof that every affected initializer's contents
+mismatch. It was a conservative owner-byte-gate block caused by final executable
+`.data` raw/virtual layout drift.
 
 ## Acceptance Packet
 

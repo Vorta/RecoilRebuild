@@ -12,8 +12,10 @@ void __stdcall EnableAlways(CCmdUI *cmdUi);
 
 class RecoilApp;
 
-// Authored Recoil frame reconstructed over imported MFC42 frame/window
-// providers; MFC base behavior is not reimplemented here.
+/**
+ * Authored Recoil frame reconstructed over imported MFC42 frame/window
+ * providers; MFC base behavior is not reimplemented here.
+ */
 struct CZRecoilFrame : CZGameFrame {
     char m_openZbdFilePath[0x104];
     CMenu m_mainMenu;

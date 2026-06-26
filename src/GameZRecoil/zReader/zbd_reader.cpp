@@ -45,7 +45,11 @@ struct NodeRecord32 {
 };
 RECOIL_STATIC_ASSERT(sizeof(NodeRecord32) == 0xC4);
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original static helper recovered from zBD reader source-file callers; no
+ * standalone retail address is listed for this helper in source_file_map.
+ * Purpose: formats a Win32 error code as a trimmed wide string.
+ */
 static wstring Win32LastErrorToString(
     DWORD err
 ) {
@@ -81,7 +85,11 @@ static wstring Win32LastErrorToString(
     return out;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original static helper recovered from zBD reader source-file callers; no
+ * standalone retail address is listed for this helper in source_file_map.
+ * Purpose: reads an exact byte count from a FILE stream.
+ */
 static bool ReadExact(
     FILE *f,
     void *dst,
@@ -95,7 +103,11 @@ static bool ReadExact(
     ) == sz;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original static helper recovered from zBD reader source-file callers; no
+ * standalone retail address is listed for this helper in source_file_map.
+ * Purpose: resets a zBD summary record before parsing a file.
+ */
 static void InitSummary(
     Summary &s
 ) {
@@ -109,7 +121,12 @@ static void InitSummary(
     s.classTypeHistogram.clear();
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original static helper recovered from zBD reader source-file callers; no
+ * standalone retail address is listed for this helper in source_file_map.
+ * Purpose: returns a file's 64-bit size or zero when attributes cannot be
+ * read.
+ */
 static unsigned __int64 GetFileSizeOrZero(
     const wstring &path
 ) {
@@ -127,7 +144,11 @@ static unsigned __int64 GetFileSizeOrZero(
     return size.QuadPart;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original static helper recovered from zBD reader source-file callers; no
+ * standalone retail address is listed for this helper in source_file_map.
+ * Purpose: orders class-type histogram entries by descending count.
+ */
 static bool ClassTypeCountGreater(
     const pair<
         unsigned int,
@@ -139,7 +160,11 @@ static bool ClassTypeCountGreater(
     return lhs.second > rhs.second;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original static helper recovered from zBD reader source-file callers; no
+ * standalone retail address is listed for this helper in source_file_map.
+ * Purpose: reads a little-endian unsigned 32-bit value from a byte buffer.
+ */
 static unsigned int ReadU32FromBuffer(
     const unsigned char *buf,
     size_t offset
@@ -153,7 +178,11 @@ static unsigned int ReadU32FromBuffer(
     return value;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original static helper recovered from zBD reader source-file callers; no
+ * standalone retail address is listed for this helper in source_file_map.
+ * Purpose: reads a little-endian signed 32-bit value from a byte buffer.
+ */
 static int ReadI32FromBuffer(
     const unsigned char *buf,
     size_t offset
@@ -167,7 +196,11 @@ static int ReadI32FromBuffer(
     return value;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original static helper recovered from zBD reader source-file callers; no
+ * standalone retail address is listed for this helper in source_file_map.
+ * Purpose: converts raw bytes into lowercase hexadecimal text.
+ */
 static wstring BytesToHex(
     const unsigned char *p,
     size_t n
@@ -183,7 +216,11 @@ static wstring BytesToHex(
     return out;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original static helper recovered from zBD reader source-file callers; no
+ * standalone retail address is listed for this helper in source_file_map.
+ * Purpose: formats the parsed zBD header and class-type histogram summary.
+ */
 static wstring FormatSummary(
     const Summary &s
 ) {
@@ -231,7 +268,11 @@ static wstring FormatSummary(
     return ss.str();
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper recovered from zBD reader source-file evidence; no
+ * standalone retail address is listed for this helper in source_file_map.
+ * Purpose: reads a zBD file header and node table to produce summary text.
+ */
 wstring ReadZbdSummaryText(
     const wstring &path
 ) {
@@ -360,7 +401,11 @@ struct PayloadSanitySummary {
     vector<unsigned int> sampleSoundVarRangeFail;
 };
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original static helper recovered from zBD reader source-file callers; no
+ * standalone retail address is listed for this helper in source_file_map.
+ * Purpose: seeks to an absolute file offset and reads an exact byte range.
+ */
 static bool ReadAt(
     FILE *f,
     unsigned __int64 off,
@@ -380,7 +425,11 @@ static bool ReadAt(
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original static helper recovered from zBD reader source-file callers; no
+ * standalone retail address is listed for this helper in source_file_map.
+ * Purpose: checks whether a byte range fits inside a known file size.
+ */
 static bool CanAddRange(
     unsigned __int64 base,
     unsigned __int64 add,
@@ -393,7 +442,11 @@ static bool CanAddRange(
     return base <= (fileSize - add);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original static helper recovered from zBD reader source-file callers; no
+ * standalone retail address is listed for this helper in source_file_map.
+ * Purpose: validates serialized node-reference indices in a bounded list.
+ */
 static bool ValidateNodeRefList(
     FILE *f,
     unsigned __int64 off,
@@ -435,7 +488,12 @@ static bool ValidateNodeRefList(
     return true;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original static helper recovered from zBD reader source-file callers; no
+ * standalone retail address is listed for this helper in source_file_map.
+ * Purpose: returns the fixed class-data payload size for known zBD class
+ * types.
+ */
 static unsigned int PayloadSizeForClassType(
     unsigned int classType
 ) {
@@ -462,7 +520,11 @@ static unsigned int PayloadSizeForClassType(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original static helper recovered from zBD reader source-file callers; no
+ * standalone retail address is listed for this helper in source_file_map.
+ * Purpose: emits detailed strong-anomaly sample rows into a zBD report.
+ */
 static void PrintStrongSamples(
     wstringstream &ss,
     const Summary &s,
@@ -488,7 +550,11 @@ static void PrintStrongSamples(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original static helper recovered from zBD reader source-file callers; no
+ * standalone retail address is listed for this helper in source_file_map.
+ * Purpose: emits runtime pointer-field sample rows into a zBD report.
+ */
 static void PrintPointerFieldSamples(
     wstringstream &ss,
     const Summary &s,
@@ -516,7 +582,11 @@ static void PrintPointerFieldSamples(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original static helper recovered from zBD reader source-file callers; no
+ * standalone retail address is listed for this helper in source_file_map.
+ * Purpose: formats one named header offset with in-range status.
+ */
 static void PrintOffsetLine(
     wstringstream &ss,
     const Summary &s,
@@ -530,7 +600,11 @@ static void PrintOffsetLine(
         ss << L" (out of range)\n";
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original static helper recovered from zBD reader source-file callers; no
+ * standalone retail address is listed for this helper in source_file_map.
+ * Purpose: emits payload-offset sample rows into a zBD report.
+ */
 static void PrintPayloadOffsetSamples(
     wstringstream &ss,
     const vector<NodePayloadInfo> &payloadOffsets,
@@ -551,7 +625,12 @@ static void PrintPayloadOffsetSamples(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original static helper recovered from zBD reader source-file callers; no
+ * standalone retail address is listed for this helper in source_file_map.
+ * Purpose: formats the detailed zBD report from header, node payload, and
+ * sanity-check summaries.
+ */
 static wstring FormatDetailed(
     const Summary &s,
     const vector<NodePayloadInfo> &payloadOffsets,
@@ -1106,7 +1185,12 @@ static wstring FormatDetailed(
     return ss.str();
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper recovered from zBD reader source-file evidence; no
+ * standalone retail address is listed for this helper in source_file_map.
+ * Purpose: reads a zBD file and produces the detailed node payload and sanity
+ * report.
+ */
 wstring ReadZbdDetailedText(
     const wstring &path
 ) {
@@ -1667,7 +1751,11 @@ wstring ReadZbdDetailedText(
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper recovered from zBD reader source-file evidence; no
+ * standalone retail address is listed for this helper in source_file_map.
+ * Purpose: reads a zBD node table and formats node records as CSV text.
+ */
 wstring ReadZbdNodesCsvText(
     const wstring &path
 ) {

@@ -638,6 +638,7 @@ extern "C" int zfmv_script_init_null_path_smoke(void);
 extern "C" int zfmv_script_reset_smoke(void);
 extern "C" int zfmv_script_cleanup_smoke(void);
 extern "C" int zfmv_script_append_action_smoke(void);
+extern "C" int zfmv_script_run_blocking_empty_smoke(void);
 extern "C" int zfmv_script_begin_current_action_smoke(void);
 extern "C" int zfmv_script_begin_at_time_smoke(void);
 extern "C" int zfmv_script_update_smoke(void);
@@ -742,6 +743,12 @@ extern "C" int recoil_app_run_current_state_quit_smoke(void);
 extern "C" int recoil_app_run_queue_transitions_smoke(void);
 extern "C" int recoil_app_mfc_ole_module_constructor_smoke(void);
 extern "C" int recoil_app_mfc_ole_module_destructor_smoke(void);
+extern "C" int recoil_app_play_state_constructor_smoke(void);
+extern "C" int recoil_app_play_state_on_wnd_activate_smoke(void);
+extern "C" int recoil_app_play_state_tick_and_render_frame_quit_smoke(void);
+extern "C" int recoil_app_play_state_on_update_should_quit_transition_smoke(void);
+extern "C" int recoil_app_play_state_on_resume_cd_disabled_smoke(void);
+extern "C" int recoil_app_play_state_on_deactivate_skip_gameplay_smoke(void);
 extern "C" int recoil_app_constructor_destructor_smoke(void);
 extern "C" int recoil_app_init_std_log_files_smoke(void);
 extern "C" int czgame_frame_constructor_smoke(void);
@@ -892,6 +899,8 @@ extern "C" int briefing_locator_panel_update_smoke(void);
 extern "C" int briefing_objective_picture_draw_noise_overlay_smoke(void);
 extern "C" int briefing_runtime_update_smoke(void);
 extern "C" int briefing_build_objective_actions_smoke(void);
+extern "C" int briefing_start_for_mission_smoke(void);
+extern "C" int briefing_thread_main_one_iteration_smoke(void);
 extern "C" int zhud_element_invalidate_smoke(void);
 extern "C" int zhud_element_clip_and_invalidate_smoke(void);
 extern "C" int zhud_element_constructor_smoke(void);
@@ -1436,6 +1445,7 @@ extern "C" int hud_sensor_tracker_load_mission_core_resources_smoke(void);
 extern "C" int hud_sensor_tracker_set_runtime_timer_sec_and_goal_value_smoke(void);
 extern "C" int hud_sensor_tracker_get_objective_briefing_strings_smoke(void);
 extern "C" int hud_sensor_tracker_load_mission_weather_fx_smoke(void);
+extern "C" int zstub_vtable_stubs_smoke(void);
 extern "C" int zclass_type_list_alloc_and_insert_smoke(void);
 extern "C" int zclass_zbd_leaf_helpers_smoke(void);
 extern "C" int zclass_zbd_node_ref_list_indices_smoke(void);
@@ -27239,6 +27249,8 @@ int main(int argc, char **argv) {
         {"zfmv_script_reset_smoke", zfmv_script_reset_smoke},
         {"zfmv_script_cleanup_smoke", zfmv_script_cleanup_smoke},
         {"zfmv_script_append_action_smoke", zfmv_script_append_action_smoke},
+        {"zfmv_script_run_blocking_empty_smoke",
+         zfmv_script_run_blocking_empty_smoke},
         {"zfmv_script_begin_current_action_smoke",
          zfmv_script_begin_current_action_smoke},
         {"zfmv_script_begin_at_time_smoke", zfmv_script_begin_at_time_smoke},
@@ -27438,6 +27450,18 @@ int main(int argc, char **argv) {
          recoil_app_mfc_ole_module_constructor_smoke},
         {"recoil_app_mfc_ole_module_destructor_smoke",
          recoil_app_mfc_ole_module_destructor_smoke},
+        {"recoil_app_play_state_constructor_smoke",
+         recoil_app_play_state_constructor_smoke},
+        {"recoil_app_play_state_on_wnd_activate_smoke",
+         recoil_app_play_state_on_wnd_activate_smoke},
+        {"recoil_app_play_state_tick_and_render_frame_quit_smoke",
+         recoil_app_play_state_tick_and_render_frame_quit_smoke},
+        {"recoil_app_play_state_on_update_should_quit_transition_smoke",
+         recoil_app_play_state_on_update_should_quit_transition_smoke},
+        {"recoil_app_play_state_on_resume_cd_disabled_smoke",
+         recoil_app_play_state_on_resume_cd_disabled_smoke},
+        {"recoil_app_play_state_on_deactivate_skip_gameplay_smoke",
+         recoil_app_play_state_on_deactivate_skip_gameplay_smoke},
         {"recoil_app_constructor_destructor_smoke",
          recoil_app_constructor_destructor_smoke},
         {"recoil_app_init_std_log_files_smoke",
@@ -27702,6 +27726,9 @@ int main(int argc, char **argv) {
         {"briefing_runtime_update_smoke", briefing_runtime_update_smoke},
         {"briefing_build_objective_actions_smoke",
          briefing_build_objective_actions_smoke},
+        {"briefing_start_for_mission_smoke", briefing_start_for_mission_smoke},
+        {"briefing_thread_main_one_iteration_smoke",
+         briefing_thread_main_one_iteration_smoke},
         {"zhud_element_invalidate_smoke", zhud_element_invalidate_smoke},
         {"zhud_element_clip_and_invalidate_smoke",
          zhud_element_clip_and_invalidate_smoke},
@@ -28596,6 +28623,7 @@ int main(int argc, char **argv) {
          hud_sensor_tracker_get_objective_briefing_strings_smoke},
         {"hud_sensor_tracker_load_mission_weather_fx_smoke",
          hud_sensor_tracker_load_mission_weather_fx_smoke},
+        {"zstub_vtable_stubs_smoke", zstub_vtable_stubs_smoke},
         {"zclass_type_list_alloc_and_insert_smoke",
          zclass_type_list_alloc_and_insert_smoke},
         {"zclass_zbd_leaf_helpers_smoke", zclass_zbd_leaf_helpers_smoke},

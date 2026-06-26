@@ -18,9 +18,11 @@ struct zEffectAnimActivationRecord;
 struct zUtil_PlayerStateStorage;
 struct zUtil_SaveGameState;
 
-// Authored Recoil dialog reconstructed over imported MFC42 CDialog and
-// control classes. MFC control behavior is provided by MFC42, not reimplemented
-// in this source tree.
+/**
+ * Authored Recoil dialog reconstructed over imported MFC42 CDialog and
+ * control classes. MFC control behavior is provided by MFC42, not reimplemented
+ * in this source tree.
+ */
 struct NetSessionBrowserDialog : CDialog {
     int m_selectedSessionIndex;
     int m_sessionCount;
@@ -118,9 +120,11 @@ RECOIL_STATIC_ASSERT(
     ) == 0x1b0
 );
 
-// Authored Recoil dialog reconstructed over imported MFC42 CDialog and
-// control classes. MFC control behavior is provided by MFC42, not reimplemented
-// in this source tree.
+/**
+ * Authored Recoil dialog reconstructed over imported MFC42 CDialog and
+ * control classes. MFC control behavior is provided by MFC42, not reimplemented
+ * in this source tree.
+ */
 struct NetSessionConfigDialog : CDialog {
     int m_selectedMapIndex;
     int m_defaultExerciseOrdinal;

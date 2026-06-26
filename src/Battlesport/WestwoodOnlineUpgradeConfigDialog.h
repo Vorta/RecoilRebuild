@@ -7,9 +7,11 @@
 #include "recoil/recoil_callconv.h"
 #include "recoil/recoil_types.h"
 
-// Authored Recoil dialog reconstructed over imported MFC42 CDialog and
-// control classes. MFC control behavior is provided by MFC42, not reimplemented
-// in this source tree.
+/**
+ * Authored Recoil dialog reconstructed over imported MFC42 CDialog and
+ * control classes. MFC control behavior is provided by MFC42, not reimplemented
+ * in this source tree.
+ */
 struct WestwoodOnlineUpgradeConfigDialog : CDialog {
   public:
     CComboBox m_profileCombo;

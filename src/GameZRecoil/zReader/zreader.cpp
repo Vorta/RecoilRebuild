@@ -88,13 +88,11 @@ int __cdecl zReader_ReadNode(
 );
 void __cdecl zReader_FreeNodeRecursive(struct zReader_Node *node);
 
-/* ==================================================================
- * zUtil_ZRDR_Init — 0x48CC70
- * Initializes the ZRD reader subsystem. Creates mounted archive list
- * if not already created, sets the search path, clears current archive.
- * Called from RecoilApp_EngineInit.
- * ================================================================== */
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Reimplements 0x48cc70: zUtil_ZRDR_Init.
+ * Purpose: initializes the ZRD reader archive list, search path, and current
+ * archive state.
+ */
 int __cdecl zUtil_ZRDR_Init(
     const char *searchPath
 ) {
@@ -106,12 +104,11 @@ int __cdecl zUtil_ZRDR_Init(
     return 0;
 }
 
-/* ==================================================================
- * zReader_TryResolvePath — 0x48CD40
- * Resolves a file path by checking: direct existence, optional search
- * path text, then the global search path list.
- * ================================================================== */
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Reimplements 0x48cd40: zReader_TryResolvePath.
+ * Purpose: resolves a requested ZRD path directly, through an optional search
+ * path list, or through the global reader search path list.
+ */
 const char *__cdecl zReader_TryResolvePath(
     const char *file,
     const char *optionalSearchPathListText
@@ -143,12 +140,11 @@ const char *__cdecl zReader_TryResolvePath(
     return result;
 }
 
-/* ==================================================================
- * zReader_AllocateNode — 0x48CDA0
- * Allocates a block of zReader_Node(s). count is the number of nodes.
- * type is stored in the first node's type field.
- * ================================================================== */
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Reimplements 0x48cda0: zReader_AllocateNode.
+ * Purpose: allocates a node block and stores the caller-supplied node type in
+ * the first node.
+ */
 zReader_Node *__cdecl zReader_AllocateNode(
     int type,
     int count
@@ -158,13 +154,11 @@ zReader_Node *__cdecl zReader_AllocateNode(
     return result;
 }
 
-/* ==================================================================
- * zReader_LoadNodeFromPath — 0x48CDC0
- * Loads a ZRD file by path. Strips path to filename, appends extension,
- * opens from mounted archives, reads the node tree.
- * Returns a root array node, or NULL if file not found.
- * ================================================================== */
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Reimplements 0x48cdc0: zReader_LoadNodeFromPath.
+ * Purpose: strips a path to mounted-archive filename form, opens it, and
+ * deserializes the root ZRD node tree.
+ */
 zReader_Node *__cdecl zReader_LoadNodeFromPath(
     const char *path
 ) {
@@ -199,11 +193,10 @@ zReader_Node *__cdecl zReader_LoadNodeFromPath(
     return outNode;
 }
 
-/* ==================================================================
- * zReader_FreeLoadedTree — 0x48CE40
- * Frees a loaded ZRD node tree (recursive free + free root).
- * ================================================================== */
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Reimplements 0x48ce40: zReader_FreeLoadedTree.
+ * Purpose: recursively frees a loaded ZRD tree and releases the root node.
+ */
 void __cdecl zReader_FreeLoadedTree(
     zReader_Node *loaded
 ) {
@@ -213,12 +206,10 @@ void __cdecl zReader_FreeLoadedTree(
     }
 }
 
-/* ==================================================================
- * zReader_FreeNodeRecursive — 0x48CE60
- * Recursively frees child nodes. For string nodes, frees the string.
- * For array nodes, recurses into children then frees the array block.
- * ================================================================== */
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Reimplements 0x48ce60: zReader_FreeNodeRecursive.
+ * Purpose: recursively releases string and array payloads owned by a ZRD node.
+ */
 void __cdecl zReader_FreeNodeRecursive(
     zReader_Node *node
 ) {
@@ -239,14 +230,11 @@ void __cdecl zReader_FreeNodeRecursive(
     }
 }
 
-/* ==================================================================
- * zReader_FindChildRecursive — 0x48CEC0
- * Searches an array node for a child whose string value matches 'name'.
- * When found, returns the NEXT node (the value node in a name-value pair).
- * If a child is an array, recurses into it.
- * startIndex is the first child index to search from.
- * ================================================================== */
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Reimplements 0x48cec0: zReader_FindChildRecursive.
+ * Purpose: searches nested array nodes for a named string key and returns the
+ * following value node.
+ */
 zReader_Node *__cdecl zReader_FindChildRecursive(
     zReader_Node *self,
     const char *name,
@@ -287,11 +275,11 @@ zReader_Node *__cdecl zReader_FindChildRecursive(
     return NULL;
 }
 
-/* ==================================================================
- * zReader_GetCurrentRootNode — 0x48CF70
- * Convenience wrapper: finds a named child starting at index 1.
- * ================================================================== */
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Reimplements 0x48cf70: zReader_GetCurrentRootNode.
+ * Purpose: finds a named child value from the current root using the standard
+ * first-child search index.
+ */
 zReader_Node *__cdecl zReader_GetCurrentRootNode(
     zReader_Node *parent,
     const char *name
@@ -303,13 +291,11 @@ zReader_Node *__cdecl zReader_GetCurrentRootNode(
     );
 }
 
-/* ==================================================================
- * zReader_ReadNamedString — 0x48CF80
- * Looks up a named child and returns its string value.
- * Handles both direct string nodes and arrays containing a string.
- * Returns NULL if not found or wrong type.
- * ================================================================== */
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Reimplements 0x48cf80: zReader_ReadNamedString.
+ * Purpose: looks up a named value and returns its string payload, including
+ * the first string inside array-valued nodes.
+ */
 const char *__cdecl zReader_ReadNamedString(
     zReader_Node *parent,
     const char *name
@@ -335,14 +321,11 @@ const char *__cdecl zReader_ReadNamedString(
     return NULL;
 }
 
-/* ==================================================================
- * zReader_ReadNamedFloat — 0x48CFB0
- * Looks up a named child and reads its float value.
- * Handles: direct float, direct int (converts to float), array[float],
- * and array[int] (converts to float).
- * Returns 1 on success, 0 on failure.
- * ================================================================== */
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Reimplements 0x48cfb0: zReader_ReadNamedFloat.
+ * Purpose: looks up a named value and writes its float form from direct or
+ * array-contained float/int nodes.
+ */
 int __cdecl zReader_ReadNamedFloat(
     zReader_Node *parent,
     const char *name,
@@ -382,13 +365,11 @@ int __cdecl zReader_ReadNamedFloat(
     return 0;
 }
 
-/* ==================================================================
- * zReader_ReadNamedInt — 0x48D030
- * Looks up a named child and reads its int32 value.
- * Handles direct int and array[int].
- * Returns 1 on success, 0 on failure.
- * ================================================================== */
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Reimplements 0x48d030: zReader_ReadNamedInt.
+ * Purpose: looks up a named value and writes its integer form from direct or
+ * array-contained integer nodes.
+ */
 int __cdecl zReader_ReadNamedInt(
     zReader_Node *parent,
     const char *name,
@@ -419,17 +400,11 @@ int __cdecl zReader_ReadNamedInt(
     return 0;
 }
 
-/* ==================================================================
- * zReader_ReadNode — 0x48D080
- * Core ZRD deserialization: reads one node from an open file handle.
- * First reads 4 bytes for the type tag, then reads the value based on
- * the type. For arrays, reads child count then recursively reads children.
- * Returns total bytes read.
- *
- * Error string: "Invalid reader node type in zRdrRead()"
- * Source file:  "D:\Proj\GameZRecoil\zReader\zreader.cpp" line 0x40C (1036)
- * ================================================================== */
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Reimplements 0x48d080: zReader_ReadNode.
+ * Purpose: deserializes one typed ZRD node from an open file handle,
+ * recursively reading child array nodes.
+ */
 int __cdecl zReader_ReadNode(
     HANDLE hFile,
     zReader_Node *outNode
@@ -503,12 +478,11 @@ int __cdecl zReader_ReadNode(
     }
 }
 
-/* ==================================================================
- * zReader_OpenFileFromMountedArchives — 0x48D1C0
- * Iterates mounted archive list, attempting to open the file from each.
- * Returns a file handle or INVALID_HANDLE_VALUE (-1) if not found.
- * ================================================================== */
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Reimplements 0x48d1c0: zReader_OpenFileFromMountedArchives.
+ * Purpose: scans mounted archives and returns the first archive file handle
+ * for the requested filename.
+ */
 int __cdecl zReader_OpenFileFromMountedArchives(
     const char *filename
 ) {

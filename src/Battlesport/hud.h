@@ -42,8 +42,10 @@ struct HudUiCheatCodeDialog;
 struct zSndSample;
 struct zSndPlayHandleSnapshot;
 struct zClass_NodePartial;
-// Forward declaration for imported MFC42 CString. This is only a pointer
-// boundary here, not a local CString reimplementation.
+/**
+ * Forward declaration for imported MFC42 CString. This is only a pointer
+ * boundary here, not a local CString reimplementation.
+ */
 class CString;
 
 extern char g_HudUiDialogSampleSetName[0x7];
@@ -618,7 +620,9 @@ struct HudUiNewGamePanel_NameInput : HudUiNumericTextInput {
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNewGamePanel_NameInput) == 0x374);
 
-// BN 0x41c313 installs the panel-owned option selector table after the shared base constructor.
+/**
+ * BN 0x41c313 installs the panel-owned option selector table after the shared base constructor.
+ */
 struct HudUiNewGamePanel_Intensity : HudUiZrdWidgetEx17C {};
 RECOIL_STATIC_ASSERT(sizeof(HudUiNewGamePanel_Intensity) == 0x17c);
 

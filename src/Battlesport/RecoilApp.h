@@ -21,7 +21,9 @@ extern const char g_RecoilApp_CommonSoundsSampleSetName[0x06];
 extern const char g_RecoilApp_LoadingCommonSoundsMsg[0x15];
 }
 
-// App-owned state transition request queued by RecoilApp::Run.
+/**
+ * App-owned state transition request queued by RecoilApp::Run.
+ */
 enum RecoilApp_StateQueueKind {
     RecoilApp_StateQueueKind_ExitCurrent = 1,
     RecoilApp_StateQueueKind_PushState = 2,
@@ -33,9 +35,11 @@ enum RecoilAppMissionShutdownMode {
     RECOILAPP_MISSION_SHUTDOWN_SKIP_GAMEPLAY = 1,
 };
 
-// Authored app-state interface. Retail evidence shows constructor-owned state
-// objects with a common vptr at offset zero and lifecycle calls through that
-// table; the source model is a VC-era virtual interface, not copied table data.
+/**
+ * Authored app-state interface. Retail evidence shows constructor-owned state
+ * objects with a common vptr at offset zero and lifecycle calls through that
+ * table; the source model is a VC-era virtual interface, not copied table data.
+ */
 struct RecoilApp_IState {
     /**
      * Reimplements 0x42df90: RecoilApp_IState::~RecoilApp_IState.
@@ -99,9 +103,11 @@ RECOIL_STATIC_ASSERT(
     ) == 0x0c
 );
 
-// VC5 deque-shaped app-state queue recovered from the queueing functions.
-// Retail stores 0x1000-byte chunks and a centered chunk-base list; queued
-// items themselves are consumed and deleted by RecoilApp::Run.
+/**
+ * VC5 deque-shaped app-state queue recovered from the queueing functions.
+ * Retail stores 0x1000-byte chunks and a centered chunk-base list; queued
+ * items themselves are consumed and deleted by RecoilApp::Run.
+ */
 struct RecoilApp_StateQueueBlock {
     RecoilApp_StateQueueItem **m_chunkBegin;
     RecoilApp_StateQueueItem **m_chunkEnd;
@@ -188,8 +194,10 @@ struct RecoilApp_FmvState : RecoilApp_IState {
 };
 RECOIL_STATIC_ASSERT(sizeof(RecoilApp_FmvState) == 0x04);
 
-// Embedded FMV script member used by RecoilApp states. Retail state
-// constructors initialize this subobject before installing the final state vptr.
+/**
+ * Embedded FMV script member used by RecoilApp states. Retail state
+ * constructors initialize this subobject before installing the final state vptr.
+ */
 struct RecoilApp_FmvScript : zFMV_Script {
     /**
      * No standalone retail function; original inline helper observed in callers
@@ -308,8 +316,10 @@ RECOIL_STATIC_ASSERT(sizeof(RecoilApp_MpExitDialogState) == 0x08);
 struct CZRecoilFrame;
 struct tagMSG;
 
-// Authored MFC/OLE app shell recovered from the constructor/destructor pair at
-// 0x442c70/0x4428b0. MFC base behavior stays provider-owned.
+/**
+ * Authored MFC/OLE app shell recovered from the constructor/destructor pair at
+ * 0x442c70/0x4428b0. MFC base behavior stays provider-owned.
+ */
 class RecoilApp_MfcOleModule : public CWinApp {
   public:
 #if !defined(_AFXDLL)
@@ -328,8 +338,10 @@ class RecoilApp_MfcOleModule : public CWinApp {
     virtual ~RecoilApp_MfcOleModule();
 };
 
-// Authored MFC app shell recovered from the message map, constructor,
-// destructor, and run-state host.
+/**
+ * Authored MFC app shell recovered from the message map, constructor,
+ * destructor, and run-state host.
+ */
 class RecoilApp : public RecoilApp_MfcOleModule {
   public:
     int m_skipIntroFmv;

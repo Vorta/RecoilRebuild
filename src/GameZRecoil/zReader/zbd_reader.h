@@ -27,17 +27,23 @@ struct Summary {
     map<unsigned int, unsigned int> classTypeHistogram; // classType_34 -> count
 };
 
-// Returns a human-readable summary. If parsing fails, returns an error message.
+/**
+ * Returns a human-readable summary. If parsing fails, returns an error message.
+ */
 wstring ReadZbdSummaryText(const wstring &path);
 
-// More detailed report for reverse engineering / validation.
-// Includes node table stats and per-node payload offsets (flags_C0 & 0x00FFFFFF).
+/**
+ * More detailed report for reverse engineering / validation.
+ * Includes node table stats and per-node payload offsets (flags_C0 & 0x00FFFFFF).
+ */
 wstring ReadZbdDetailedText(const wstring &path);
 
-// CSV export of node table records (one row per node).
-// NOTE: Returned text is UTF-16; the launcher currently writes UTF-16LE with BOM.
-// Columns:
-//   index,nameHex,classType,payloadOff24,flags,nodeRecOff,classDataPtr_38,actionCallback_48,
-//   listCountA_54,listA_ptr_58,listCountB_5C,listB_ptr_60
+/**
+ * CSV export of node table records (one row per node).
+ * NOTE: Returned text is UTF-16; the launcher currently writes UTF-16LE with BOM.
+ * Columns:
+ * index,nameHex,classType,payloadOff24,flags,nodeRecOff,classDataPtr_38,actionCallback_48,
+ * listCountA_54,listA_ptr_58,listCountB_5C,listB_ptr_60
+ */
 wstring ReadZbdNodesCsvText(const wstring &path);
 } // namespace zbd

@@ -17,6 +17,10 @@
 
 extern "C" HWND g_RecoilApp_hWndMain;
 
+/**
+ * Reimplements data 0x4f329c: g_HudUiMpExitDialog.
+ * Purpose: preserve the recovered HUD global storage for g_HudUiMpExitDialog.
+ */
 HudUiMpExitDialog *g_HudUiMpExitDialog = 0;
 
 /**

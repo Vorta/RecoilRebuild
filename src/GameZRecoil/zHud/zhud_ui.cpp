@@ -122,12 +122,36 @@ RECOIL_STATIC_ASSERT(offsetof(zTimedTask, alpha255) == 0xc0);
 RECOIL_STATIC_ASSERT(offsetof(zTimedTask, rasterVertexCount) == 0x10c);
 RECOIL_STATIC_ASSERT(offsetof(zTimedTask, rasterDrawParam) == 0x110);
 
+/**
+ * Reimplements data 0x56bd30: g_zTimedTask_ActiveCount.
+ * Purpose: preserve the recovered HUD global storage for g_zTimedTask_ActiveCount.
+ */
 int g_zTimedTask_ActiveCount = 0;
+/**
+ * Reimplements data 0x56bd34: g_zTimedTask_ActiveHead.
+ * Purpose: preserve the recovered HUD global storage for g_zTimedTask_ActiveHead.
+ */
 zTimedTask *g_zTimedTask_ActiveHead = 0;
+/**
+ * Reimplements data 0x56bd38: g_zTimedTask_ActiveTail.
+ * Purpose: preserve the recovered HUD global storage for g_zTimedTask_ActiveTail.
+ */
 zTimedTask *g_zTimedTask_ActiveTail = 0;
 
+/**
+ * Reimplements data 0x4e5e00: g_HudCmdMouseDebounceFrames.
+ * Purpose: preserve the recovered HUD global storage for g_HudCmdMouseDebounceFrames.
+ */
 int g_HudCmdMouseDebounceFrames = 0;
+/**
+ * Reimplements data 0x56bd1c: g_HudUiWidget_ExclusiveDrawImage.
+ * Purpose: preserve the recovered HUD global storage for g_HudUiWidget_ExclusiveDrawImage.
+ */
 zVidImagePartial *g_HudUiWidget_ExclusiveDrawImage = 0;
+/**
+ * Reimplements data 0x4e5ed0: g_HudUiMgr.
+ * Purpose: preserve the recovered HUD global storage for g_HudUiMgr.
+ */
 HudUiMgrData g_HudUiMgr;
 extern "C" {
 HudUiMgrSensorTrackList g_HudUiMgrSensor_TrackList = {0};
@@ -163,14 +187,37 @@ HudLayoutHW g_HudLayoutHW;
  * Purpose: store the global software HUD layout instance.
  */
 HudLayoutSW g_HudLayoutSW;
+/**
+ * Reimplements data 0x56bd20: g_HudUiChatMessageStack.
+ * Purpose: preserve the recovered HUD global storage for g_HudUiChatMessageStack.
+ */
 HudUiTextStack4 *g_HudUiChatMessageStack = 0;
+/**
+ * Reimplements data 0x56bd24: g_HudUiTopMessageStack.
+ * Purpose: preserve the recovered HUD global storage for g_HudUiTopMessageStack.
+ */
 HudUiTextStack4 *g_HudUiTopMessageStack = 0;
+/**
+ * Reimplements data 0x4edb70: g_HudUiSensorWindowPlayback.
+ * Purpose: preserve the recovered HUD global storage for g_HudUiSensorWindowPlayback.
+ */
 zFMV_Playback *g_HudUiSensorWindowPlayback = 0;
+/**
+ * Reimplements data 0x4e5e90: g_HudUiSensorWindow.
+ * Purpose: preserve the recovered HUD global storage for g_HudUiSensorWindow.
+ */
 CWnd g_HudUiSensorWindow;
+/**
+ * Reimplements data 0x4f3aa8: g_HudUi_AuxOverlayEnabled.
+ * Purpose: preserve the recovered HUD global storage for g_HudUi_AuxOverlayEnabled.
+ */
 int g_HudUi_AuxOverlayEnabled = 0;
-// BN identifies 0x4e5df0 as an eight-byte BSS HudCmdDialogState object.
-// VC5 emits the 0x40bc20/0x40bc30/0x40bc40/0x40bc50 static init and at-exit
-// thunks from this global object.
+/**
+ * Reimplements data 0x4e5df0: g_HudCmdDialogState.
+ * BN identifies 0x4e5df0 as an eight-byte BSS HudCmdDialogState object. VC5 emits the
+ * 0x40bc20/0x40bc30/0x40bc40/0x40bc50 static init and at-exit thunks from this global object.
+ * Purpose: preserve the recovered HUD global storage for g_HudCmdDialogState.
+ */
 HudCmdDialogState g_HudCmdDialogState;
 /**
  * Reimplements data 0x4ed714: g_HudUiTripletWndClassName.
@@ -376,22 +423,90 @@ char g_HudUiTimerPanel_TimerDataSectionName[10] = "TimerData";
  * Purpose: name the HUD layout sections and diagnostics consumed while the
  * HUD singleton loads its ZRD tree.
  */
+/**
+ * Reimplements data 0x4dad2c: g_HudCfgKey_Modes.
+ * Purpose: preserve the recovered HUD global storage for g_HudCfgKey_Modes.
+ */
 char g_HudCfgKey_Modes[6] = "MODES";
+/**
+ * Reimplements data 0x4dad34: g_HudCfgKey_Weapon.
+ * Purpose: preserve the recovered HUD global storage for g_HudCfgKey_Weapon.
+ */
 char g_HudCfgKey_Weapon[7] = "WEAPON";
+/**
+ * Reimplements data 0x4dad3c: g_HudCfgKey_Target.
+ * Purpose: preserve the recovered HUD global storage for g_HudCfgKey_Target.
+ */
 char g_HudCfgKey_Target[7] = "TARGET";
+/**
+ * Reimplements data 0x4dad44: g_HudCfgKey_Shield.
+ * Purpose: preserve the recovered HUD global storage for g_HudCfgKey_Shield.
+ */
 char g_HudCfgKey_Shield[7] = "SHIELD";
+/**
+ * Reimplements data 0x4dad4c: g_HudUiBlankSpaces8.
+ * Purpose: preserve the recovered HUD global storage for g_HudUiBlankSpaces8.
+ */
 char g_HudUiBlankSpaces8[9] = "        ";
+/**
+ * Reimplements data 0x4dad58: g_HudCfgKey_Stats.
+ * Purpose: preserve the recovered HUD global storage for g_HudCfgKey_Stats.
+ */
 char g_HudCfgKey_Stats[6] = "STATS";
+/**
+ * Reimplements data 0x4dad60: g_HudCfgKey_Reticule.
+ * Purpose: preserve the recovered HUD global storage for g_HudCfgKey_Reticule.
+ */
 char g_HudCfgKey_Reticule[9] = "RETICULE";
+/**
+ * Reimplements data 0x4dad6c: g_HudCfgKey_Objective.
+ * Purpose: preserve the recovered HUD global storage for g_HudCfgKey_Objective.
+ */
 char g_HudCfgKey_Objective[10] = "OBJECTIVE";
+/**
+ * Reimplements data 0x4dad78: g_HudCfgKey_Sensor.
+ * Purpose: preserve the recovered HUD global storage for g_HudCfgKey_Sensor.
+ */
 char g_HudCfgKey_Sensor[7] = "SENSOR";
+/**
+ * Reimplements data 0x4dad80: g_HudCfgKey_Nanite.
+ * Purpose: preserve the recovered HUD global storage for g_HudCfgKey_Nanite.
+ */
 char g_HudCfgKey_Nanite[7] = "NANITE";
+/**
+ * Reimplements data 0x4dad88: g_HudCfgKey_Ammo.
+ * Purpose: preserve the recovered HUD global storage for g_HudCfgKey_Ammo.
+ */
 char g_HudCfgKey_Ammo[5] = "AMMO";
+/**
+ * Reimplements data 0x4dad90: g_HudCfgKey_Strings.
+ * Purpose: preserve the recovered HUD global storage for g_HudCfgKey_Strings.
+ */
 char g_HudCfgKey_Strings[8] = "STRINGS";
+/**
+ * Reimplements data 0x4dad98: g_HudCfgKey_ObjectiveDescription.
+ * Purpose: preserve the recovered HUD global storage for g_HudCfgKey_ObjectiveDescription.
+ */
 char g_HudCfgKey_ObjectiveDescription[16] = "OBJ_DESCRIPTION";
+/**
+ * Reimplements data 0x4dada8: g_HudCfgKey_ObjectiveSummary.
+ * Purpose: preserve the recovered HUD global storage for g_HudCfgKey_ObjectiveSummary.
+ */
 char g_HudCfgKey_ObjectiveSummary[12] = "OBJ_SUMMARY";
+/**
+ * Reimplements data 0x4dadb4: g_HudCfgKey_Fonts.
+ * Purpose: preserve the recovered HUD global storage for g_HudCfgKey_Fonts.
+ */
 char g_HudCfgKey_Fonts[6] = "FONTS";
+/**
+ * Reimplements data 0x4dadbc: g_Hud_ImageSearchPath_Hud.
+ * Purpose: preserve the recovered HUD global storage for g_Hud_ImageSearchPath_Hud.
+ */
 char g_Hud_ImageSearchPath_Hud[26] = "..\\data\\common\\images\\hud";
+/**
+ * Reimplements data 0x4dadd8: g_Hud_SourceFile_HudCpp.
+ * Purpose: preserve the recovered HUD global storage for g_Hud_SourceFile_HudCpp.
+ */
 char g_Hud_SourceFile_HudCpp[28] = "D:\\Proj\\Battlesport\\hud.cpp";
 /**
  * Reimplements data 0x4dadf4: g_HudSensorTracker_ReadFileFailedFmt.
@@ -416,11 +531,35 @@ char g_HudZrd_Key_Color[0x6] = "COLOR";
  * Purpose: name the optional activation, disable, rollover, label, and flash
  * records in a recovered HudUiZrdWidget section.
  */
+/**
+ * Reimplements data 0x4e46d0: g_HudZrd_Key_Activate.
+ * Purpose: preserve the recovered HUD global storage for g_HudZrd_Key_Activate.
+ */
 char g_HudZrd_Key_Activate[0x9] = "ACTIVATE";
+/**
+ * Reimplements data 0x4e46dc: g_HudZrd_Key_Disable.
+ * Purpose: preserve the recovered HUD global storage for g_HudZrd_Key_Disable.
+ */
 char g_HudZrd_Key_Disable[0x8] = "DISABLE";
+/**
+ * Reimplements data 0x4e46e4: g_HudZrd_Key_Rate.
+ * Purpose: preserve the recovered HUD global storage for g_HudZrd_Key_Rate.
+ */
 char g_HudZrd_Key_Rate[0x5] = "RATE";
+/**
+ * Reimplements data 0x4e46ec: g_HudZrd_Key_Flash.
+ * Purpose: preserve the recovered HUD global storage for g_HudZrd_Key_Flash.
+ */
 char g_HudZrd_Key_Flash[0x6] = "FLASH";
+/**
+ * Reimplements data 0x4e46f4: g_HudZrd_Key_Label.
+ * Purpose: preserve the recovered HUD global storage for g_HudZrd_Key_Label.
+ */
 char g_HudZrd_Key_Label[0x6] = "LABEL";
+/**
+ * Reimplements data 0x4e46fc: g_HudZrd_Key_Rollover.
+ * Purpose: preserve the recovered HUD global storage for g_HudZrd_Key_Rollover.
+ */
 char g_HudZrd_Key_Rollover[0x9] = "ROLLOVER";
 RECOIL_STATIC_ASSERT(sizeof(g_HudZrd_Key_Activate) == 0x9);
 RECOIL_STATIC_ASSERT(sizeof(g_HudZrd_Key_Disable) == 0x8);
@@ -491,12 +630,40 @@ char g_HudUiCycleSelectorWidget_ZrdKey_Font[] = "FONT";
  * Purpose: name the background resource, cursor, capture, and sound records
  * in a recovered background ZRD section.
  */
+/**
+ * Reimplements data 0x4e47c0: zHudCfgKey_BACKGROUND_SOUNDS.
+ * Purpose: preserve the recovered HUD global storage for zHudCfgKey_BACKGROUND_SOUNDS.
+ */
 char zHudCfgKey_BACKGROUND_SOUNDS[0x12] = "BACKGROUND_SOUNDS";
+/**
+ * Reimplements data 0x4e47d4: zHudCfgKey_CAPTURE.
+ * Purpose: preserve the recovered HUD global storage for zHudCfgKey_CAPTURE.
+ */
 char zHudCfgKey_CAPTURE[0x8] = "CAPTURE";
+/**
+ * Reimplements data 0x4e47dc: zHudCfgKey_CURSOR.
+ * Purpose: preserve the recovered HUD global storage for zHudCfgKey_CURSOR.
+ */
 char zHudCfgKey_CURSOR[0x7] = "CURSOR";
+/**
+ * Reimplements data 0x4e47e4: zHudCfgKey_BACKGROUND_TEXT.
+ * Purpose: preserve the recovered HUD global storage for zHudCfgKey_BACKGROUND_TEXT.
+ */
 char zHudCfgKey_BACKGROUND_TEXT[0x10] = "BACKGROUND_TEXT";
+/**
+ * Reimplements data 0x4e47f4: zHudCfgKey_BACKGROUND_VIDEOS.
+ * Purpose: preserve the recovered HUD global storage for zHudCfgKey_BACKGROUND_VIDEOS.
+ */
 char zHudCfgKey_BACKGROUND_VIDEOS[0x12] = "BACKGROUND_VIDEOS";
+/**
+ * Reimplements data 0x4e4808: zHudCfgKey_BACKGROUND_IMAGES.
+ * Purpose: preserve the recovered HUD global storage for zHudCfgKey_BACKGROUND_IMAGES.
+ */
 char zHudCfgKey_BACKGROUND_IMAGES[0x12] = "BACKGROUND_IMAGES";
+/**
+ * Reimplements data 0x4e4824: zHudCfgKey_SHARED_IMAGE_PATH.
+ * Purpose: preserve the recovered HUD global storage for zHudCfgKey_SHARED_IMAGE_PATH.
+ */
 char zHudCfgKey_SHARED_IMAGE_PATH[0x12] = "SHARED_IMAGE_PATH";
 RECOIL_STATIC_ASSERT(sizeof(zHudCfgKey_BACKGROUND_SOUNDS) == 0x12);
 RECOIL_STATIC_ASSERT(sizeof(zHudCfgKey_CAPTURE) == 0x8);
@@ -1337,15 +1504,23 @@ const char kClampedIntTextInputAcceptedRawKeyChars[] = "0123456789\x1b\r\x08\x7f
 // modern compiler codegen.
 template <typename T> class FieldAt {
   public:
-    // Source-faithful helper recovered from address-backed callers in this source file.
-    FieldAt(
+    /**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x4135f0 HudLayoutHW::Disable callers.
+ * Purpose: preserve the recovered HUD behavior for FieldAt.
+ */
+FieldAt(
         void *base,
         size_t offset
     )
         : address((T *)((unsigned char *)(base) + offset)) {}
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
-    FieldAt(
+    /**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x4135f0 HudLayoutHW::Disable callers.
+ * Purpose: preserve the recovered HUD behavior for FieldAt.
+ */
+FieldAt(
         const void *base,
         size_t offset
     )
@@ -1392,7 +1567,11 @@ template <typename T> class FieldAt {
 };
 #else
 template <typename T>
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x4135f0 HudLayoutHW::Disable callers.
+ * Purpose: preserve the recovered HUD behavior for FieldAt.
+ */
 T &FieldAt(
     void *base,
     size_t offset
@@ -1401,7 +1580,11 @@ T &FieldAt(
 }
 
 template <typename T>
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x40d220 HudUiListMenuEntry::CompareSortKey callers.
+ * Purpose: preserve the recovered HUD behavior for FieldAt.
+ */
 const T &FieldAt(
     const void *base,
     size_t offset
@@ -1810,13 +1993,21 @@ void HudUiTripletPrepareCell(
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x414670 HudUiTripletEntries::GetCount callers.
+ * Purpose: preserve the recovered HUD behavior for AllocateHudObject.
+ */
 template <typename T> T *AllocateHudObject() {
     return (T *)(::operator new(sizeof(T)));
 }
 
 template <typename T>
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x414670 HudUiTripletEntries::GetCount callers.
+ * Purpose: preserve the recovered HUD behavior for ZbdCallbackPtr.
+ */
 zZbdSectionCallback ZbdCallbackPtr(
     T callback
 ) {
@@ -1829,7 +2020,11 @@ zZbdSectionCallback ZbdCallbackPtr(
     return value.raw;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x414670 HudUiTripletEntries::GetCount callers.
+ * Purpose: preserve the recovered HUD behavior for NewObjectivePanel.
+ */
 HudUiPanel *NewObjectivePanel() {
     HudUiPanelSimple *const storage = AllocateHudObject<HudUiPanelSimple>();
     if (storage == 0) {
@@ -1862,7 +2057,11 @@ void HudUiSetPanelVectorVisible(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x414670 HudUiTripletEntries::GetCount callers.
+ * Purpose: preserve the recovered HUD behavior for ZrdArrayBase.
+ */
 zReader::Node *ZrdArrayBase(
     zReader::Node *node
 ) {
@@ -1873,14 +2072,22 @@ zReader::Node *ZrdArrayBase(
     return node->value.nodes;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x414670 HudUiTripletEntries::GetCount callers.
+ * Purpose: preserve the recovered HUD behavior for ZrdArrayCount.
+ */
 int ZrdArrayCount(
     zReader::Node *arrayBase
 ) {
     return arrayBase != 0 ? arrayBase[0].value.i32 : 0;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x414670 HudUiTripletEntries::GetCount callers.
+ * Purpose: preserve the recovered HUD behavior for ZrdArrayItem.
+ */
 zReader::Node *ZrdArrayItem(
     zReader::Node *arrayBase,
     int index
@@ -1888,7 +2095,11 @@ zReader::Node *ZrdArrayItem(
     return arrayBase != 0 ? &arrayBase[index] : 0;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x414670 HudUiTripletEntries::GetCount callers.
+ * Purpose: preserve the recovered HUD behavior for ZrdArrayString.
+ */
 const char *ZrdArrayString(
     zReader::Node *arrayBase,
     int index
@@ -1900,7 +2111,11 @@ const char *ZrdArrayString(
     return item != 0 && item->type == zReader::ZRDR_NODE_STRING ? item->value.str : 0;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x414670 HudUiTripletEntries::GetCount callers.
+ * Purpose: preserve the recovered HUD behavior for ZrdArrayInt.
+ */
 int ZrdArrayInt(
     zReader::Node *arrayBase,
     int index,
@@ -1913,7 +2128,11 @@ int ZrdArrayInt(
     return item != 0 && item->type == zReader::ZRDR_NODE_INT ? item->value.i32 : fallback;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x414670 HudUiTripletEntries::GetCount callers.
+ * Purpose: preserve the recovered HUD behavior for ZrdArrayFloat.
+ */
 float ZrdArrayFloat(
     zReader::Node *arrayBase,
     int index,
@@ -1996,8 +2215,11 @@ void __stdcall HudUiTripletEntries::FillN(
 }
 
 namespace HudUiLayoutNode {
-// Reimplements 0x413aa0: HudUiLayoutNode::ReadRect
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x413aa0: HudUiLayoutNode::ReadRect.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: read recovered HUD ZRD/layout data for HudUiLayoutNode::ReadRect.
+ */
 int __fastcall ReadRect(
     zReader::Node *node,
     HudUiRect *outRect
@@ -2014,8 +2236,11 @@ int __fastcall ReadRect(
     return 1;
 }
 
-// Reimplements 0x413ad0: HudUiLayoutNode::ReadInt3
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x413ad0: HudUiLayoutNode::ReadInt3.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: read recovered HUD ZRD/layout data for HudUiLayoutNode::ReadInt3.
+ */
 int __fastcall ReadInt3(
     zReader::Node *node,
     int *out0,
@@ -2042,8 +2267,11 @@ int __fastcall ReadInt3(
     return 1;
 }
 
-// Reimplements 0x413b10: HudUiLayoutNode::ApplyCornerTextQuad
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x413b10: HudUiLayoutNode::ApplyCornerTextQuad.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: apply the recovered HUD layout or option state handled by HudUiLayoutNode::ApplyCornerTextQuad.
+ */
 int __fastcall ApplyCornerTextQuad(
     zReader::Node *node,
     HudUiBar *target,
@@ -2102,8 +2330,11 @@ int __fastcall ApplyCornerTextQuad(
     return 1;
 }
 
-// Reimplements 0x413c10: HudUiLayoutNode::ApplyMeterQuad
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x413c10: HudUiLayoutNode::ApplyMeterQuad.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: apply the recovered HUD layout or option state handled by HudUiLayoutNode::ApplyMeterQuad.
+ */
 int __fastcall ApplyMeterQuad(
     zReader::Node *node,
     HudUiMeter *target,
@@ -2169,8 +2400,11 @@ int __fastcall ApplyMeterQuad(
     return 1;
 }
 
-// Reimplements 0x413a10: HudUiLayoutNode::ReadRectOffsetAndSize
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x413a10: HudUiLayoutNode::ReadRectOffsetAndSize.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: read recovered HUD ZRD/layout data for HudUiLayoutNode::ReadRectOffsetAndSize.
+ */
 int __fastcall ReadRectOffsetAndSize(
     zReader::Node *node,
     HudUiRect *outRect,
@@ -2206,8 +2440,11 @@ int __fastcall ReadRectOffsetAndSize(
     return 1;
 }
 
-// Reimplements 0x413990: HudUiLayoutNode::ApplyTextLabel
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x413990: HudUiLayoutNode::ApplyTextLabel.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: apply the recovered HUD layout or option state handled by HudUiLayoutNode::ApplyTextLabel.
+ */
 int __fastcall ApplyTextLabel(
     zReader::Node *layoutNode,
     HudUiPanel *target,
@@ -2238,8 +2475,11 @@ int __fastcall ApplyTextLabel(
     return 1;
 }
 
-// Reimplements 0x413d30: HudUiLayoutNode::ApplyImageWidget
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x413d30: HudUiLayoutNode::ApplyImageWidget.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: apply the recovered HUD layout or option state handled by HudUiLayoutNode::ApplyImageWidget.
+ */
 zVidImagePartial *__fastcall ApplyImageWidget(
     zReader::Node *layoutNode,
     HudUiWidget *widget,
@@ -2316,7 +2556,11 @@ struct HudUiListSelectorItemArrayHeader {
     int count;
 };
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x413d30 HudUiLayoutNode::ApplyImageWidget callers.
+ * Purpose: preserve the recovered HUD behavior for HudUiZrdOwnerFontStyle.
+ */
 const HudFontStyle *HudUiZrdOwnerFontStyle(
     const HudUiBackground *owner,
     int styleIndex
@@ -2325,7 +2569,11 @@ const HudFontStyle *HudUiZrdOwnerFontStyle(
     return style->validMarker != 0 ? style : 0;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x413d30 HudUiLayoutNode::ApplyImageWidget callers.
+ * Purpose: apply the recovered HUD layout or option state handled by ApplyHudFontStyleToPanel.
+ */
 void ApplyHudFontStyleToPanel(
     HudUiPanel *panel,
     const HudFontStyle *style
@@ -2354,7 +2602,11 @@ void ApplyHudFontStyleToPanel(
     panel->bkColor = style->bkColor;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x413d30 HudUiLayoutNode::ApplyImageWidget callers.
+ * Purpose: apply the recovered HUD layout or option state handled by ApplyHudFontStyleTextOnly.
+ */
 void ApplyHudFontStyleTextOnly(
     HudUiPanel *panel,
     const HudFontStyle *style
@@ -2380,7 +2632,11 @@ void ApplyHudFontStyleTextOnly(
     panel->shadowOffsetY = 1;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x413d30 HudUiLayoutNode::ApplyImageWidget callers.
+ * Purpose: preserve the recovered HUD behavior for DeleteHudUiListSelectorItemArray.
+ */
 void DeleteHudUiListSelectorItemArray(
     HudUiListSelectorItem *items
 ) {
@@ -2400,7 +2656,11 @@ void DeleteHudUiListSelectorItemArray(
     ::operator delete(header);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x413d30 HudUiLayoutNode::ApplyImageWidget callers.
+ * Purpose: preserve the recovered HUD behavior for CreateHudZrdLabelPanel.
+ */
 HudUiPanel *CreateHudZrdLabelPanel(
     HudUiZrdWidget *widget,
     zReader::Node *labelSpecBase,
@@ -2446,7 +2706,11 @@ HudUiPanel *CreateHudZrdLabelPanel(
     return panel;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x413d30 HudUiLayoutNode::ApplyImageWidget callers.
+ * Purpose: preserve the recovered HUD behavior for AppendHudZrdLabelPanel.
+ */
 void AppendHudZrdLabelPanel(
     HudUiZrdWidget *widget,
     HudUiPanelPtrVector &panels,
@@ -2467,7 +2731,11 @@ void AppendHudZrdLabelPanel(
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x413d30 HudUiLayoutNode::ApplyImageWidget callers.
+ * Purpose: preserve the recovered HUD behavior for CreateHudZrdTextPanel.
+ */
 HudUiPanel *CreateHudZrdTextPanel(
     HudUiZrdWidget *widget,
     zReader::Node *textNode,
@@ -2515,7 +2783,11 @@ HudUiPanel *CreateHudZrdTextPanel(
     return panel;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x41ebd0 HudUiMgrSensor::TrackList_Reset callers.
+ * Purpose: load the recovered HUD data handled by LoadHudZrdLabelSection.
+ */
 void LoadHudZrdLabelSection(
     HudUiZrdWidget *widget,
     zReader::Node *parentNode,
@@ -2564,7 +2836,11 @@ void LoadHudZrdLabelSection(
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x41ebd0 HudUiMgrSensor::TrackList_Reset callers.
+ * Purpose: apply the recovered HUD layout or option state handled by ApplyHudZrdFlashSection.
+ */
 void ApplyHudZrdFlashSection(
     zReader::Node *parentNode,
     HudUiPanelPtrVector &panels
@@ -2621,7 +2897,11 @@ void ApplyHudZrdFlashSection(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x41ebd0 HudUiMgrSensor::TrackList_Reset callers.
+ * Purpose: load the recovered HUD data handled by LoadHudZrdBitmap.
+ */
 void LoadHudZrdBitmap(
     zReader::Node *parentNode,
     const char *sectionName,
@@ -2641,7 +2921,11 @@ void LoadHudZrdBitmap(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x41ebd0 HudUiMgrSensor::TrackList_Reset callers.
+ * Purpose: load the recovered HUD data handled by LoadHudZrdSound.
+ */
 void LoadHudZrdSound(
     zReader::Node *parentNode,
     zSndSample **outSound,
@@ -3243,7 +3527,10 @@ void __fastcall SetViewportRect(
     zClipAlt::SetSourceRect(&g_HudUiMgrSensorBlock.sensorPiVSrcRect);
 }
 
-// Reimplements 0x414300: HudUiMgrSensor::GetFxRect (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x414300: HudUiMgrSensor::GetFxRect.
+ * Purpose: return the recovered HUD value exposed by HudUiMgrSensor::GetFxRect.
+ */
 void __fastcall GetFxRect(
     HudUiRect *outRect
 ) {
@@ -3641,7 +3928,10 @@ void StartHide() {
     }
 }
 
-// Reimplements 0x411eb0: HudUiMgrObjective::Update
+/**
+ * Reimplements 0x411eb0: HudUiMgrObjective::Update.
+ * Purpose: advance the recovered HUD update path for HudUiMgrObjective::Update.
+ */
 void Update() {
     g_HudUiMgrObjectiveWidget.SetVisible(1);
     if (g_HudUiMgrObjectivePhase == 0) {
@@ -3797,14 +4087,22 @@ void ClearTextLines() {
 } // namespace HudUiAuxOverlay
 
 namespace {
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x4137c0 HudUiAuxOverlay::ClearTextLines callers.
+ * Purpose: preserve the recovered HUD behavior for HudUiZrdPayload.
+ */
 zReader::Node *HudUiZrdPayload(
     zReader::Node *node
 ) {
     return node != 0 && node->type == zReader::ZRDR_NODE_ARRAY ? node->value.nodes : 0;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x4137c0 HudUiAuxOverlay::ClearTextLines callers.
+ * Purpose: preserve the recovered HUD behavior for HudUiZrdStringAt.
+ */
 const char *HudUiZrdStringAt(
     zReader::Node *payload,
     int index
@@ -3812,7 +4110,11 @@ const char *HudUiZrdStringAt(
     return payload != 0 ? payload[index].value.str : 0;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x4137c0 HudUiAuxOverlay::ClearTextLines callers.
+ * Purpose: preserve the recovered HUD behavior for HudUiZrdIntAt.
+ */
 int HudUiZrdIntAt(
     zReader::Node *payload,
     int index
@@ -3820,7 +4122,11 @@ int HudUiZrdIntAt(
     return payload != 0 ? payload[index].value.i32 : 0;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x4137c0 HudUiAuxOverlay::ClearTextLines callers.
+ * Purpose: preserve the recovered HUD behavior for HudUiEnsureLoaderWidgetsConstructed.
+ */
 void HudUiEnsureLoaderWidgetsConstructed() {
     g_HudUiMgrSensorPanel.Constructor(0);
     g_HudUiMgrSensorOverlay.Constructor(0);
@@ -3862,7 +4168,11 @@ void HudUiEnsureLoaderWidgetsConstructed() {
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x40d7e0 HudUiMgr::Constructor callers.
+ * Purpose: preserve the recovered HUD behavior for HudUiSetFontFromRect.
+ */
 void HudUiSetFontFromRect(
     HudUiPanel *panel,
     const HudUiRect &fontSpec
@@ -3878,7 +4188,11 @@ void HudUiSetFontFromRect(
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x40d7e0 HudUiMgr::Constructor callers.
+ * Purpose: preserve the recovered HUD behavior for HudUiSetPanelClipWithSource.
+ */
 void HudUiSetPanelClipWithSource(
     HudUiPanel *panel,
     void *source,
@@ -3890,7 +4204,11 @@ void HudUiSetPanelClipWithSource(
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x40d7e0 HudUiMgr::Constructor callers.
+ * Purpose: preserve the recovered HUD behavior for HudUiApplyStatsTripletInt3.
+ */
 void HudUiApplyStatsTripletInt3(
     zReader::Node *payload,
     int nodeIndex,
@@ -3971,33 +4289,47 @@ HudUiContainer *__fastcall Constructor(
     return manager;
 }
 
-// Reimplements 0x40d400: HudUiMgr::StaticInitAndRegisterAtExit
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x40d400: HudUiMgr::StaticInitAndRegisterAtExit.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: preserve the recovered HUD behavior for HudUiMgr::StaticInitAndRegisterAtExit.
+ */
 void StaticInitAndRegisterAtExit() {
     StaticInit();
     RegisterAtExit();
 }
 
-// Reimplements 0x40d410: HudUiMgr::StaticInit (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x40d410: HudUiMgr::StaticInit.
+ * Purpose: preserve the recovered HUD behavior for HudUiMgr::StaticInit.
+ */
 HudUiContainer *StaticInit() {
     return Constructor(&g_HudUiMgr);
 }
 
-// Reimplements 0x40d420: HudUiMgr::RegisterAtExit (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x40d420: HudUiMgr::RegisterAtExit.
+ * Purpose: preserve the recovered HUD behavior for HudUiMgr::RegisterAtExit.
+ */
 void RegisterAtExit() {
     atexit(AtExitDestructor);
 }
 
-// Reimplements 0x40d430: HudUiMgr::AtExitDestructor (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x40d430: HudUiMgr::AtExitDestructor.
+ * Purpose: run the recovered HudUiMgr::AtExitDestructor teardown path.
+ */
 void AtExitDestructor() {
     StaticDestructor(&g_HudUiMgr);
 }
 
-// Reimplements 0x40d440: HudUiMgr::StaticDestructor (D:\Proj\Battlesport\hud.cpp)
-//
-// The original object is contiguous; the current source model keeps the same
-// embedded HUD manager subobjects as recovered globals. Keep the destruction
-// order aligned with the retail static destructor.
+/**
+ * Reimplements 0x40d440: HudUiMgr::StaticDestructor.
+ * The original object is contiguous; the current source model keeps the same embedded HUD
+ * manager subobjects as recovered globals. Keep the destruction order aligned with the retail
+ * static destructor.
+ * Purpose: run the recovered HudUiMgr::StaticDestructor teardown path.
+ */
 void __fastcall StaticDestructor(
     HudUiContainer *self
 ) {
@@ -4033,8 +4365,11 @@ void __fastcall StaticDestructor(
     self->DestructorCore();
 }
 
-// Reimplements 0x411170: HudUiMgr::ProjectPointToNormalizedClamped
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x411170: HudUiMgr::ProjectPointToNormalizedClamped.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: preserve the recovered HUD behavior for HudUiMgr::ProjectPointToNormalizedClamped.
+ */
 int __fastcall ProjectPointToNormalizedClamped(
     const zVec3 *srcPoint,
     zVec3 *projectedPoint
@@ -4096,8 +4431,11 @@ int TickLayoutDelay() {
     return 1;
 }
 
-// Reimplements 0x4143a0: HudUiMgr::IsLocalPlayerFirstInStatsList
-// (D:\Proj\Battlesport\HudUi.cpp)
+/**
+ * Reimplements 0x4143a0: HudUiMgr::IsLocalPlayerFirstInStatsList.
+ * Original source path: D:\Proj\Battlesport\HudUi.cpp.
+ * Purpose: preserve the recovered HUD behavior for HudUiMgr::IsLocalPlayerFirstInStatsList.
+ */
 int IsLocalPlayerFirstInStatsList() {
     return g_HudUiMgrStatsList->triplet->IsLocalPlayerFirstEntry();
 }
@@ -4699,14 +5037,20 @@ int __fastcall EnsureHudLoaded(
     return 1;
 }
 
-// Reimplements 0x411750: HudUiMgr::SetNanitePanelCount
+/**
+ * Reimplements 0x411750: HudUiMgr::SetNanitePanelCount.
+ * Purpose: apply the recovered HUD state change handled by HudUiMgr::SetNanitePanelCount.
+ */
 void __fastcall SetNanitePanelCount(
     int count
 ) {
     g_HudUiMgrNanitePanel.SetVisibleCount(count);
 }
 
-// Reimplements 0x40f1a0: HudUiMgr::SetModeCounterState
+/**
+ * Reimplements 0x40f1a0: HudUiMgr::SetModeCounterState.
+ * Purpose: apply the recovered HUD state change handled by HudUiMgr::SetModeCounterState.
+ */
 void __fastcall SetModeCounterState(
     int counterIndex,
     int state
@@ -4721,7 +5065,10 @@ void __fastcall SetModeCounterState(
     counter.SetImageBorrowedAndInvalidate(counter.stateImages[state]);
 }
 
-// Reimplements 0x411710: HudUiMgr::ReticleStaticAtexitStub
+/**
+ * Reimplements 0x411710: HudUiMgr::ReticleStaticAtexitStub.
+ * Purpose: preserve the recovered HUD behavior for HudUiMgr::ReticleStaticAtexitStub.
+ */
 void ReticleStaticAtexitStub() {}
 
 /**
@@ -4749,7 +5096,10 @@ void __fastcall SetReticleMode(
     g_HudUiMgrReticleMode = mode;
 }
 
-// Reimplements 0x411270: HudUiMgr::UpdateTargetReticleFromCursor (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x411270: HudUiMgr::UpdateTargetReticleFromCursor.
+ * Purpose: advance the recovered HUD update path for HudUiMgr::UpdateTargetReticleFromCursor.
+ */
 int __fastcall UpdateTargetReticleFromCursor(
     int reticleMode,
     zVec3 *worldHitPoint,
@@ -4938,7 +5288,10 @@ int __fastcall UpdateTargetReticleFromCursor(
     return 0;
 }
 
-// Reimplements 0x413730: HudUiMgr::DestroySensorWindow
+/**
+ * Reimplements 0x413730: HudUiMgr::DestroySensorWindow.
+ * Purpose: preserve the recovered HUD behavior for HudUiMgr::DestroySensorWindow.
+ */
 void DestroySensorWindow() {
     zFMV_Playback *playback = g_HudUiSensorWindowPlayback;
     if (playback == 0) {
@@ -4957,8 +5310,11 @@ void DestroySensorWindow() {
     g_HudUiSensorWindow.CWnd::DestroyWindow();
 }
 
-// Reimplements 0x410e90: HudUiMgr::EnableHud
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x410e90: HudUiMgr::EnableHud.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: preserve the recovered HUD behavior for HudUiMgr::EnableHud.
+ */
 int EnableHud() {
     const int previouslyEnabled = g_HudUiMgr.enabled;
     g_HudUiMgr.SetEnabled(1);
@@ -4971,7 +5327,10 @@ int EnableHud() {
     return previouslyEnabled;
 }
 
-// Reimplements 0x410ed0: HudUiMgr::DisableHud
+/**
+ * Reimplements 0x410ed0: HudUiMgr::DisableHud.
+ * Purpose: preserve the recovered HUD behavior for HudUiMgr::DisableHud.
+ */
 int DisableHud() {
     const int previouslyEnabled = g_HudUiMgr.enabled;
     DestroySensorWindow();
@@ -5015,8 +5374,11 @@ int DisableHud() {
     return previouslyEnabled;
 }
 
-// Reimplements 0x413640: HudUiMgr::ToggleHud
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x413640: HudUiMgr::ToggleHud.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: preserve the recovered HUD behavior for HudUiMgr::ToggleHud.
+ */
 int ToggleHud() {
     if (g_HudUiMgr.enabled != 0) {
         DisableHud();
@@ -5098,8 +5460,11 @@ void UpdateFrame() {
     g_HudUiMgrWeaponState = 0;
 }
 
-// Reimplements 0x413660: HudUiMgr::SwitchActiveDialog
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x413660: HudUiMgr::SwitchActiveDialog.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: preserve the recovered HUD behavior for HudUiMgr::SwitchActiveDialog.
+ */
 void __fastcall SwitchActiveDialog(
     HudLayoutBase *newDialog
 ) {
@@ -5122,8 +5487,11 @@ void __fastcall SwitchActiveDialog(
     }
 }
 
-// Reimplements 0x413770: HudUiMgr::SetFloatTimerVisible
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x413770: HudUiMgr::SetFloatTimerVisible.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: apply the recovered HUD state change handled by HudUiMgr::SetFloatTimerVisible.
+ */
 void __fastcall SetFloatTimerVisible(
     int visible
 ) {
@@ -5134,8 +5502,11 @@ void __fastcall SetFloatTimerVisible(
     }
 }
 
-// Reimplements 0x412620: HudUiMgr::HideTrackedProgressMeterIfOwnerMatches
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x412620: HudUiMgr::HideTrackedProgressMeterIfOwnerMatches.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: preserve the recovered HUD behavior for HudUiMgr::HideTrackedProgressMeterIfOwnerMatches.
+ */
 void __fastcall HideTrackedProgressMeterIfOwnerMatches(
     void *ownerPayload
 ) {
@@ -5151,16 +5522,22 @@ void __fastcall HideTrackedProgressMeterIfOwnerMatches(
     }
 }
 
-// Reimplements 0x4137a0: HudUiMgr::SetAuxOverlayVisible
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x4137a0: HudUiMgr::SetAuxOverlayVisible.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: apply the recovered HUD state change handled by HudUiMgr::SetAuxOverlayVisible.
+ */
 void __fastcall SetAuxOverlayVisible(
     int visible
 ) {
     g_HudUiMgrStringMenu->SetEnabled(visible != 0 ? 1 : 0);
 }
 
-// Reimplements 0x4136b0: HudUiMgr::ApplyHudModeSwitch
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x4136b0: HudUiMgr::ApplyHudModeSwitch.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: apply the recovered HUD layout or option state handled by HudUiMgr::ApplyHudModeSwitch.
+ */
 int __fastcall ApplyHudModeSwitch(
     int hudType
 ) {
@@ -5580,6 +5957,10 @@ HudUiElement::HudUiElement(
     );
 }
 
+/**
+ * Reimplements 0x4b4070: HudUiElement::Constructor.
+ * Purpose: initialize the recovered HudUiElement::Constructor state.
+ */
 HudUiElement * HudUiElement::Constructor(
     int initX,
     int initY
@@ -5653,7 +6034,10 @@ HudUiElement * HudUiElement::ScalarDeletingDestructor(
     return this;
 }
 
-// Reimplements 0x404ca0: HudUiElement::Draw
+/**
+ * Reimplements 0x404ca0: HudUiElement::Draw.
+ * Purpose: preserve the recovered HUD behavior for HudUiElement::Draw.
+ */
 void HudUiElement::Draw() {
     DrawBase();
 }
@@ -5803,7 +6187,10 @@ void HudUiElement::SetTimer(
     }
 }
 
-// Reimplements 0x4b4190: HudUiElement::SetBltSourceAndClipRect
+/**
+ * Reimplements 0x4b4190: HudUiElement::SetBltSourceAndClipRect.
+ * Purpose: apply the recovered HUD state change handled by HudUiElement::SetBltSourceAndClipRect.
+ */
 void HudUiElement::SetBltSourceAndClipRect(
     void *bltSourceOrNull,
     const HudUiRect *rectOrNull
@@ -5828,7 +6215,10 @@ void HudUiElement::SetClipRect(
     clipRect = *rect;
 }
 
-// Reimplements 0x4bcd40: HudUiPanel::SetClip
+/**
+ * Reimplements 0x4bcd40: HudUiPanel::SetClip.
+ * Purpose: apply the recovered HUD state change handled by HudUiPanel::SetClip.
+ */
 void HudUiPanel::SetClip(
     void *bltSourceOrNull,
     const HudUiRect *rectOrNull
@@ -5890,37 +6280,87 @@ int HudUiElement::GetCenterY() {
     return y;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Reimplements 0x404d60: HudUiElement::GetY.
+ * Source model note: Source-faithful helper recovered from address-backed callers in this
+ * source file.
+ * Purpose: return the recovered HUD value exposed by HudUiElement::GetY.
+ */
 void HudUiElement::OnHoverRepeat() {}
 
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x404d60 HudUiElement::GetY callers.
+ * Purpose: return the recovered HUD value exposed by HudUiElement::GetBoundsRectOrNull.
+ */
 HudUiRect * HudUiElement::GetBoundsRectOrNull() {
     return 0;
 }
 
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x404d60 HudUiElement::GetY callers.
+ * Purpose: handle the recovered HUD event path for HudUiElement::OnActivate.
+ */
 void HudUiElement::OnActivate() {}
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x404d60 HudUiElement::GetY callers.
+ * Purpose: handle the recovered HUD event path for HudUiElement::OnClearBinding.
+ */
 void HudUiElement::OnClearBinding() {}
 
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x404d60 HudUiElement::GetY callers.
+ * Purpose: preserve the recovered HUD behavior for HudUiElement::ShowPreview.
+ */
 void HudUiElement::ShowPreview() {}
 
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x404d60 HudUiElement::GetY callers.
+ * Purpose: preserve the recovered HUD behavior for HudUiElement::HidePreview.
+ */
 void HudUiElement::HidePreview() {}
 
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x404d60 HudUiElement::GetY callers.
+ * Purpose: handle the recovered HUD event path for HudUiElement::OnBeginCapture.
+ */
 void HudUiElement::OnBeginCapture() {}
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x404d60 HudUiElement::GetY callers.
+ * Purpose: handle the recovered HUD event path for HudUiElement::OnEndCapture.
+ */
 void HudUiElement::OnEndCapture() {}
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x404d60 HudUiElement::GetY callers.
+ * Purpose: handle the recovered HUD event path for HudUiElement::OnPointerButtonState.
+ */
 void HudUiElement::OnPointerButtonState(
     int,
     int
 ) {}
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x404d60 HudUiElement::GetY callers.
+ * Purpose: handle the recovered HUD event path for HudUiElement::OnCapturedPrimaryRelease.
+ */
 void HudUiElement::OnCapturedPrimaryRelease() {}
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x404d60 HudUiElement::GetY callers.
+ * Purpose: preserve the recovered HUD behavior for HudUiElement::ShouldHandleInput.
+ */
 int HudUiElement::ShouldHandleInput(
     HudUiBackground *,
     int
@@ -5928,12 +6368,21 @@ int HudUiElement::ShouldHandleInput(
     return 1;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x404d60 HudUiElement::GetY callers.
+ * Purpose: preserve the recovered HUD behavior for HudUiElement::AfterInputUpdate.
+ */
 void HudUiElement::AfterInputUpdate(
     HudUiBackground *,
     int
 ) {}
 
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x404d60 HudUiElement::GetY callers.
+ * Purpose: preserve the recovered HUD behavior for HudUiElement::HitTest.
+ */
 int HudUiElement::HitTest(
     int px,
     int py
@@ -5944,6 +6393,11 @@ int HudUiElement::HitTest(
     );
 }
 
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x404d60 HudUiElement::GetY callers.
+ * Purpose: preserve the recovered HUD behavior for HudUiElement::EnableWordWrapWithRect.
+ */
 void HudUiElement::EnableWordWrapWithRect(
     const HudUiRect *
 ) {}
@@ -6022,15 +6476,18 @@ void HudUiTextLabel::SetText(
 void HudUiTextLabel::RebuildTextRect() {}
 
 /**
+ * Original-source helper evidence: no standalone retail function exists.
  * No standalone retail function has been identified; restored as the default
  * HudUiZrdWidget post-load virtual observed as the ZRD widget tail slot before
  * numeric input adds raw-key virtuals.
  * Purpose: keep ZRD loading ownership on HudUiZrdWidget.
  */
-// Source-faithful helper recovered from address-backed callers in this source file.
 void HudUiZrdWidget::PostLoadFromZrd() {}
 
-// Reimplements 0x4bffb0: HudUiPrimitiveBindTarget::SetSegmentEndpoints (HudUiBackground.cpp)
+/**
+ * Reimplements 0x4bffb0: HudUiPrimitiveBindTarget::SetSegmentEndpoints.
+ * Purpose: apply the recovered HUD state change handled by HudUiPrimitiveBindTarget::SetSegmentEndpoints.
+ */
 void HudUiPrimitiveBindTarget::SetSegmentEndpoints(
     int startX,
     int startY,
@@ -6665,7 +7122,10 @@ unsigned int __fastcall HudUiFlashPanel::ComputeFlashBlendColor(
     return (red << 16) | (green << 8) | blue;
 }
 
-// Reimplements 0x4bc780: HudUiContainer::HudUiContainer
+/**
+ * Reimplements 0x4bc780: HudUiContainer::HudUiContainer.
+ * Purpose: preserve the recovered HUD behavior for HudUiContainer::HudUiContainer.
+ */
 HudUiContainer::HudUiContainer() {
     HudUiContainer *const container = this;
     container->SetEnabled(0);
@@ -6690,14 +7150,20 @@ void HudUiContainer::DestructorCore() {
     this->HudUiContainer::~HudUiContainer();
 }
 
-// Reimplements 0x40d9d0: HudUiContainer::SetEnabled
+/**
+ * Reimplements 0x40d9d0: HudUiContainer::SetEnabled.
+ * Purpose: apply the recovered HUD state change handled by HudUiContainer::SetEnabled.
+ */
 void HudUiContainer::SetEnabled(
     int enabledValue
 ) {
     enabled = enabledValue;
 }
 
-// Reimplements 0x4bc7c0: HudUiContainer::AddChild
+/**
+ * Reimplements 0x4bc7c0: HudUiContainer::AddChild.
+ * Purpose: preserve the recovered HUD behavior for HudUiContainer::AddChild.
+ */
 int HudUiContainer::AddChild(
     HudUiElement *child
 ) {
@@ -6823,39 +7289,66 @@ void HudUiContainer::UpdateAll(
     }
 }
 
-// Reimplements 0x4ba3a0: HudUiContainer::InvalidateChildren
+/**
+ * Reimplements 0x4ba3a0: HudUiContainer::InvalidateChildren.
+ * Purpose: preserve the recovered HUD behavior for HudUiContainer::InvalidateChildren.
+ */
 void HudUiContainer::InvalidateChildren() {
     for (HudUiElement *child = childHead; child != 0; child = child->next) {
         child->Invalidate();
     }
 }
 
-// Reimplements 0x42ee40: HudUiBackgroundContainer::SetEnabled
+/**
+ * Reimplements 0x42ee40: HudUiBackgroundContainer::SetEnabled.
+ * Purpose: apply the recovered HUD state change handled by HudUiBackgroundContainer::SetEnabled.
+ */
 void HudUiBackgroundContainer::SetEnabled(
     int enabled
 ) {
     HudUiContainer::SetEnabled(enabled);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Reimplements 0x42ee40: HudUiBackgroundContainer::SetEnabled.
+ * Source model note: Source-faithful helper recovered from address-backed callers in this
+ * source file.
+ * Purpose: apply the recovered HUD state change handled by HudUiBackgroundContainer::SetEnabled.
+ */
 inline HudUiCreditsBackButton::HudUiCreditsBackButton() : HudUiZrdWidget() {
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x42ee40 HudUiBackgroundContainer::SetEnabled callers.
+ * Purpose: run the recovered HudUiCreditsBackButton::~HudUiCreditsBackButton teardown path.
+ */
 inline HudUiCreditsBackButton::~HudUiCreditsBackButton() {
     HudUiZrdWidget::DestructorCore();
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x42ee40 HudUiBackgroundContainer::SetEnabled callers.
+ * Purpose: preserve the recovered HUD behavior for HudUiCreditsQuitButton::HudUiCreditsQuitButton.
+ */
 inline HudUiCreditsQuitButton::HudUiCreditsQuitButton() : HudUiZrdWidget() {
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x4091e0 HudUiZrdScrollingText::Destructor callers.
+ * Purpose: run the recovered HudUiCreditsQuitButton::~HudUiCreditsQuitButton teardown path.
+ */
 inline HudUiCreditsQuitButton::~HudUiCreditsQuitButton() {
     HudUiZrdWidget::DestructorCore();
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x4091e0 HudUiZrdScrollingText::Destructor callers.
+ * Purpose: preserve the recovered HUD behavior for HudUiZrdScrollingText::HudUiZrdScrollingText.
+ */
 inline HudUiZrdScrollingText::HudUiZrdScrollingText() : HudUiZrdWidget() {
 }
 
@@ -6897,8 +7390,11 @@ void HudUiZrdScrollingText::Destructor() {
     HudUiZrdWidget::DestructorCore();
 }
 
-// Reimplements 0x409040: HudUiCreditsPanel::HudUiCreditsPanel
-// (D:\Proj\Battlesport\HudUiCreditsPanel.cpp)
+/**
+ * Reimplements 0x409040: HudUiCreditsPanel::HudUiCreditsPanel.
+ * Original source path: D:\Proj\Battlesport\HudUiCreditsPanel.cpp.
+ * Purpose: preserve the recovered HUD behavior for HudUiCreditsPanel::HudUiCreditsPanel.
+ */
 HudUiCreditsPanel::HudUiCreditsPanel() : HudUiBackground() {
     fadeProgress = 0.0f;
     fadeStep = 0.05f;
@@ -6946,6 +7442,10 @@ void HudUiZrdScrollingText::OnActivateResetOwnerFade() {
     ((HudUiCreditsPanel *)(owner))->fadeProgress = 0.0f;
 }
 
+/**
+ * Reimplements 0x409570: HudUiZrdScrollingText::LoadFromZrd.
+ * Purpose: load the recovered HUD data handled by HudUiZrdScrollingText::LoadFromZrd.
+ */
 void HudUiZrdScrollingText::OnActivate() {
     OnActivateResetOwnerFade();
 }
@@ -7235,6 +7735,10 @@ void HudUiCreditsPanel::UpdateFadeAndExit(
     g_RecoilApp.QueueExitCurrentState(0);
 }
 
+/**
+ * Reimplements 0x4092a0: HudUiCreditsPanel::Destructor.
+ * Purpose: run the recovered HudUiCreditsPanel::Destructor teardown path.
+ */
 void HudUiCreditsPanel::Update(
     float deltaSeconds
 ) {
@@ -7674,7 +8178,10 @@ void HudUiPanelSpan::DestroyAndFree() {
     cap = 0;
 }
 
-// Reimplements 0x4bc510: HudUiBackgroundContainer::HudUiBackgroundContainer
+/**
+ * Reimplements 0x4bc510: HudUiBackgroundContainer::HudUiBackgroundContainer.
+ * Purpose: preserve the recovered HUD behavior for HudUiBackgroundContainer::HudUiBackgroundContainer.
+ */
 HudUiBackgroundContainer::HudUiBackgroundContainer(
     int initFlag
 ) : HudUiContainer() {
@@ -7708,8 +8215,11 @@ HudUiElement * HudUiBackgroundContainer::GetInputFocus() {
     return inputFocusElement;
 }
 
-// Reimplements 0x4b9540: HudUiBackground::HudUiBackground
-// (D:\Proj\Battlesport\hudui_background.cpp)
+/**
+ * Reimplements 0x4b9540: HudUiBackground::HudUiBackground.
+ * Original source path: D:\Proj\Battlesport\hudui_background.cpp.
+ * Purpose: preserve the recovered HUD behavior for HudUiBackground::HudUiBackground.
+ */
 HudUiBackground::HudUiBackground()
     : HudUiBackgroundContainer(1),
       cursorWidget(0, 1) {
@@ -7807,7 +8317,11 @@ void HudUiDialogController::BlitOwnedSurfaceToPrimary() {
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x4ba380 HudUiDialogController::BlitOwnedSurfaceToPrimary callers.
+ * Purpose: preserve the recovered HUD behavior for HudUiReadPackedColor.
+ */
 unsigned int HudUiReadPackedColor(
     zReader::Node *colorBase
 ) {
@@ -7838,8 +8352,11 @@ unsigned int HudUiReadPackedColor(
     return red | (green << 8) | (blue << 16);
 }
 
-// Reimplements 0x4b98d0: HudUiBackground::LoadFromZrd
-// (D:\Proj\Battlesport\hudui_background.cpp)
+/**
+ * Reimplements 0x4b98d0: HudUiBackground::LoadFromZrd.
+ * Original source path: D:\Proj\Battlesport\hudui_background.cpp.
+ * Purpose: load the recovered HUD data handled by HudUiBackground::LoadFromZrd.
+ */
 zReader::Node * HudUiBackground::LoadFromZrd(
     const char *zrdPath,
     const char *sectionName,
@@ -7858,8 +8375,11 @@ zReader::Node * HudUiBackground::LoadFromZrd(
     );
 }
 
-// Reimplements 0x4b9900: HudUiBackground::LoadZrdAndSection
-// (D:\Proj\Battlesport\hudui_background.cpp)
+/**
+ * Reimplements 0x4b9900: HudUiBackground::LoadZrdAndSection.
+ * Original source path: D:\Proj\Battlesport\hudui_background.cpp.
+ * Purpose: load the recovered HUD data handled by HudUiBackground::LoadZrdAndSection.
+ */
 zReader::Node * HudUiBackground::LoadZrdAndSection(
     zReader::Node *loadedRootNode,
     const char *sectionName,
@@ -8285,7 +8805,10 @@ void HudUiBackground::SetEnabled(
     HudUiBackgroundContainer::SetEnabled(enabled);
 }
 
-// Reimplements 0x4ba070: HudUiBackground::BindButtonsNodeToWidgetByName
+/**
+ * Reimplements 0x4ba070: HudUiBackground::BindButtonsNodeToWidgetByName.
+ * Purpose: preserve the recovered HUD behavior for HudUiBackground::BindButtonsNodeToWidgetByName.
+ */
 unsigned char __fastcall HudUiBackground::BindButtonsNodeToWidgetByName(
     zReader::Node *parentNode,
     HudUiZrdWidget *widget,
@@ -8312,7 +8835,10 @@ unsigned char __fastcall HudUiBackground::BindButtonsNodeToWidgetByName(
     return 0;
 }
 
-// Reimplements 0x4ba0c0: HudUiBackground::BindWidgetByName
+/**
+ * Reimplements 0x4ba0c0: HudUiBackground::BindWidgetByName.
+ * Purpose: preserve the recovered HUD behavior for HudUiBackground::BindWidgetByName.
+ */
 int HudUiBackground::BindWidgetByName(
     zReader::Node *,
     HudUiZrdWidget *widget,
@@ -8486,7 +9012,10 @@ int HudUiBackground::BindPrimitiveNodeToElement(
     return 0;
 }
 
-// Reimplements 0x4ba350: HudUiBackground::FreeLoadedTreeRoots (HudUiBackground.cpp)
+/**
+ * Reimplements 0x4ba350: HudUiBackground::FreeLoadedTreeRoots.
+ * Purpose: preserve the recovered HUD behavior for HudUiBackground::FreeLoadedTreeRoots.
+ */
 void HudUiBackground::FreeLoadedTreeRoots(
     int
 ) {
@@ -8611,6 +9140,7 @@ void HudUiBackgroundContainer::UpdateAll(
 }
 
 /**
+ * Reimplements 0x4ba4a0: HudFontStyle::HudFontStyle.
  * Compatibility helper: HudUiBackground::Update.
  * No standalone retail function exists after the background update routine is
  * modeled as the HudUiBackgroundContainer slot-0 override at 0x4bc570.
@@ -8623,7 +9153,10 @@ void HudUiBackground::Update(
     HudUiBackgroundContainer::UpdateAll(deltaSeconds);
 }
 
-// Reimplements 0x4ba4a0: HudFontStyle::HudFontStyle
+/**
+ * Reimplements 0x4ba4a0: HudFontStyle::HudFontStyle.
+ * Purpose: preserve the recovered HUD behavior for HudFontStyle::HudFontStyle.
+ */
 HudFontStyle::HudFontStyle() {
     validMarker = 0;
     fontName = 0;
@@ -8634,17 +9167,28 @@ HudFontStyle::HudFontStyle() {
     fontWeight = 0x1f4;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Reimplements 0x4ba4c0: HudFontStyle::Destructor.
+ * Source model note: Source-faithful helper recovered from address-backed callers in this
+ * source file.
+ * Purpose: run the recovered HudFontStyle::Destructor teardown path.
+ */
 HudFontStyle::~HudFontStyle() {
     Destructor();
 }
 
-// Reimplements 0x4ba4c0: HudFontStyle::Destructor
+/**
+ * Reimplements 0x4ba4c0: HudFontStyle::Destructor.
+ * Purpose: run the recovered HudFontStyle::Destructor teardown path.
+ */
 void HudFontStyle::Destructor() {
     validMarker = 0;
 }
 
-// Reimplements 0x4b3d00: HudUiWidget::Constructor
+/**
+ * Reimplements 0x4b3d00: HudUiWidget::Constructor.
+ * Purpose: initialize the recovered HudUiWidget::Constructor state.
+ */
 HudUiWidget::HudUiWidget(
     unsigned int initAlignFlags
 ) : HudUiElement(0, 0) {
@@ -8663,6 +9207,10 @@ HudUiWidget::HudUiWidget(
     }
 }
 
+/**
+ * Reimplements 0x4b3d00: HudUiWidget::Constructor.
+ * Purpose: initialize the recovered HudUiWidget::Constructor state.
+ */
 HudUiWidget * HudUiWidget::Constructor(
     unsigned int initAlignFlags
 ) {
@@ -8733,8 +9281,11 @@ void HudUiWidget::InvalidateRect(
     Invalidate();
 }
 
-// Reimplements 0x4bf980: HudUiBackgroundCursorWidget::HudUiBackgroundCursorWidget
-// (D:\Proj\Battlesport\hudui_background.cpp)
+/**
+ * Reimplements 0x4bf980: HudUiBackgroundCursorWidget::HudUiBackgroundCursorWidget.
+ * Original source path: D:\Proj\Battlesport\hudui_background.cpp.
+ * Purpose: preserve the recovered HUD behavior for HudUiBackgroundCursorWidget::HudUiBackgroundCursorWidget.
+ */
 HudUiBackgroundCursorWidget::HudUiBackgroundCursorWidget(
     const char *imagePath,
     int initCaptureEnabled
@@ -8761,8 +9312,11 @@ HudUiBackgroundCursorWidget::~HudUiBackgroundCursorWidget() {
     }
 }
 
-// Reimplements 0x4bfa50: HudUiBackgroundCursorWidget::SetImageByPathOwnedAndRefresh
-// (D:\Proj\Battlesport\hudui_background.cpp)
+/**
+ * Reimplements 0x4bfa50: HudUiBackgroundCursorWidget::SetImageByPathOwnedAndRefresh.
+ * Original source path: D:\Proj\Battlesport\hudui_background.cpp.
+ * Purpose: apply the recovered HUD state change handled by HudUiBackgroundCursorWidget::SetImageByPathOwnedAndRefresh.
+ */
 void HudUiBackgroundCursorWidget::SetImageByPathOwnedAndRefresh(
     const char *imagePath
 ) {
@@ -8771,8 +9325,11 @@ void HudUiBackgroundCursorWidget::SetImageByPathOwnedAndRefresh(
     }
 }
 
-// Reimplements 0x4bfa70: HudUiBackgroundCursorWidget::SetImageBorrowedAndRefreshIfChanged
-// (D:\Proj\Battlesport\hudui_background.cpp)
+/**
+ * Reimplements 0x4bfa70: HudUiBackgroundCursorWidget::SetImageBorrowedAndRefreshIfChanged.
+ * Original source path: D:\Proj\Battlesport\hudui_background.cpp.
+ * Purpose: apply the recovered HUD state change handled by HudUiBackgroundCursorWidget::SetImageBorrowedAndRefreshIfChanged.
+ */
 void HudUiBackgroundCursorWidget::SetImageBorrowedAndRefreshIfChanged(
     zVidImagePartial *image
 ) {
@@ -8781,8 +9338,11 @@ void HudUiBackgroundCursorWidget::SetImageBorrowedAndRefreshIfChanged(
     }
 }
 
-// Reimplements 0x4bfa90: HudUiBackgroundCursorWidget::SetImageOwnedAndRefresh
-// (D:\Proj\Battlesport\hudui_background.cpp)
+/**
+ * Reimplements 0x4bfa90: HudUiBackgroundCursorWidget::SetImageOwnedAndRefresh.
+ * Original source path: D:\Proj\Battlesport\hudui_background.cpp.
+ * Purpose: apply the recovered HUD state change handled by HudUiBackgroundCursorWidget::SetImageOwnedAndRefresh.
+ */
 void HudUiBackgroundCursorWidget::SetImageOwnedAndRefresh(
     int newCaptureEnabled
 ) {
@@ -8802,8 +9362,11 @@ void HudUiBackgroundCursorWidget::SetImageOwnedAndRefresh(
     }
 }
 
-// Reimplements 0x4bfae0: HudUiBackgroundCursorWidget::SetImageBorrowedAndRefresh
-// (D:\Proj\Battlesport\hudui_background.cpp)
+/**
+ * Reimplements 0x4bfae0: HudUiBackgroundCursorWidget::SetImageBorrowedAndRefresh.
+ * Original source path: D:\Proj\Battlesport\hudui_background.cpp.
+ * Purpose: apply the recovered HUD state change handled by HudUiBackgroundCursorWidget::SetImageBorrowedAndRefresh.
+ */
 void HudUiBackgroundCursorWidget::SetImageBorrowedAndRefresh() {
     if (captureEnabled == 0 || image == 0) {
         return;
@@ -8839,8 +9402,11 @@ void HudUiBackgroundCursorWidget::SetImageBorrowedAndRefresh() {
     );
 }
 
-// Reimplements 0x4bfb70: HudUiBackgroundCursorWidget::SetPos
-// (D:\Proj\Battlesport\hudui_background.cpp)
+/**
+ * Reimplements 0x4bfb70: HudUiBackgroundCursorWidget::SetPos.
+ * Original source path: D:\Proj\Battlesport\hudui_background.cpp.
+ * Purpose: apply the recovered HUD state change handled by HudUiBackgroundCursorWidget::SetPos.
+ */
 void HudUiBackgroundCursorWidget::SetPos(
     int newX,
     int newY
@@ -8855,8 +9421,11 @@ void HudUiBackgroundCursorWidget::SetPos(
     );
 }
 
-// Reimplements 0x4bfba0: HudUiBackgroundCursorWidget::RebuildCapturedImage
-// (D:\Proj\Battlesport\hudui_background.cpp)
+/**
+ * Reimplements 0x4bfba0: HudUiBackgroundCursorWidget::RebuildCapturedImage.
+ * Original source path: D:\Proj\Battlesport\hudui_background.cpp.
+ * Purpose: preserve the recovered HUD behavior for HudUiBackgroundCursorWidget::RebuildCapturedImage.
+ */
 void HudUiBackgroundCursorWidget::RebuildCapturedImage(
     int originX,
     int originY
@@ -8890,14 +9459,20 @@ void HudUiBackgroundCursorWidget::RebuildCapturedImage(
     );
 }
 
-// Reimplements 0x4bfc50: HudUiBackgroundCursorWidget::Draw
-// (D:\Proj\Battlesport\hudui_background.cpp)
+/**
+ * Reimplements 0x4bfc50: HudUiBackgroundCursorWidget::Draw.
+ * Original source path: D:\Proj\Battlesport\hudui_background.cpp.
+ * Purpose: preserve the recovered HUD behavior for HudUiBackgroundCursorWidget::Draw.
+ */
 void HudUiBackgroundCursorWidget::Draw() {
     HudUiWidget::Draw();
 }
 
-// Reimplements 0x4bfc60: HudUiBackgroundCursorWidget::DrawBase
-// (D:\Proj\Battlesport\hudui_background.cpp)
+/**
+ * Reimplements 0x4bfc60: HudUiBackgroundCursorWidget::DrawBase.
+ * Original source path: D:\Proj\Battlesport\hudui_background.cpp.
+ * Purpose: preserve the recovered HUD behavior for HudUiBackgroundCursorWidget::DrawBase.
+ */
 void HudUiBackgroundCursorWidget::DrawBase() {
     if (bltSource != 0) {
         zVid_Image::BlitToActiveTarget(
@@ -8921,6 +9496,11 @@ HudUiBackgroundVideoWidget::HudUiBackgroundVideoWidget()
     elapsedTimeSec = 0.0f;
 }
 
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x4bfc80 HudUiBackgroundVideoWidget::HudUiBackgroundVideoWidget callers.
+ * Purpose: run the recovered HudUiBackgroundVideoWidget::~HudUiBackgroundVideoWidget teardown path.
+ */
 HudUiBackgroundVideoWidget::~HudUiBackgroundVideoWidget() {
     zFMV_Stream *const oldStream = stream;
     if (oldStream != 0) {
@@ -9124,7 +9704,10 @@ HudUiZrdWidget::HudUiZrdWidget() : HudUiWidget(0) {
     flags = (visibleFlag & 0x10u) | 0x02u;
 }
 
-// Reimplements 0x4b4ee0: HudUiZrdWidget::Constructor
+/**
+ * Reimplements 0x4b4ee0: HudUiZrdWidget::Constructor.
+ * Purpose: initialize the recovered HudUiZrdWidget::Constructor state.
+ */
 HudUiZrdWidget * HudUiZrdWidget::Constructor() {
     new (this) HudUiZrdWidget;
     return this;
@@ -9578,6 +10161,7 @@ HudUiZrdWidget::~HudUiZrdWidget() {
 }
 
 /**
+ * Reimplements 0x4b50a0: HudUiZrdWidget::ScalarDeletingDestructor.
  * No standalone retail function; source compatibility wrapper for recovered
  * HudUiZrdWidget cleanup callers that historically named the destructor body
  * DestructorCore in this reconstruction.
@@ -9639,7 +10223,10 @@ void HudUiZrdWidget::Invalidate() {
     }
 }
 
-// Reimplements 0x4b5350: HudUiZrdWidget::GetBoundsRectOrNull
+/**
+ * Reimplements 0x4b5350: HudUiZrdWidget::GetBoundsRectOrNull.
+ * Purpose: return the recovered HUD value exposed by HudUiZrdWidget::GetBoundsRectOrNull.
+ */
 HudUiRect * HudUiZrdWidget::GetBoundsRectOrNull() {
     if (modeOrEnabled == 0) {
         return 0;
@@ -9758,7 +10345,10 @@ void HudUiZrdWidget::RefreshState() {
     Invalidate();
 }
 
-// Reimplements 0x4b5630: HudUiZrdWidget::ShowPreview
+/**
+ * Reimplements 0x4b5630: HudUiZrdWidget::ShowPreview.
+ * Purpose: preserve the recovered HUD behavior for HudUiZrdWidget::ShowPreview.
+ */
 void HudUiZrdWidget::ShowPreview() {
     if (rolloverImage != 0) {
         if (defaultImage == 0) {
@@ -9873,7 +10463,10 @@ void HudUiZrdWidget::HidePreview() {
     }
 }
 
-// Reimplements 0x4b6fc0: HudUiCheckToggleWidget::HudUiCheckToggleWidget
+/**
+ * Reimplements 0x4b6fc0: HudUiCheckToggleWidget::HudUiCheckToggleWidget.
+ * Purpose: preserve the recovered HUD behavior for HudUiCheckToggleWidget::HudUiCheckToggleWidget.
+ */
 HudUiCheckToggleWidget::HudUiCheckToggleWidget() : HudUiZrdWidget() {
     checked = 0;
     uncheckedImage = 0;
@@ -9883,7 +10476,10 @@ HudUiCheckToggleWidget::HudUiCheckToggleWidget() : HudUiZrdWidget() {
     disabledCheckedFallbackImage = 0;
 }
 
-// Reimplements 0x4b6fc0: HudUiCheckToggleWidget::Constructor
+/**
+ * Reimplements 0x4b6fc0: HudUiCheckToggleWidget::Constructor.
+ * Purpose: initialize the recovered HudUiCheckToggleWidget::Constructor state.
+ */
 HudUiCheckToggleWidget * HudUiCheckToggleWidget::Constructor() {
     new (this) HudUiCheckToggleWidget;
     return this;
@@ -9909,6 +10505,7 @@ HudUiCheckToggleWidget::~HudUiCheckToggleWidget() {
 }
 
 /**
+ * Reimplements 0x40cf30: HudUiCheckToggleWidget::DestructorCoreThunk.
  * No standalone retail function; source compatibility wrapper for recovered
  * callers that historically named the destructor body DestructorCore.
  * Original source path: D:\Proj\Battlesport\HudUiZrdWidget.cpp.
@@ -9918,12 +10515,18 @@ void HudUiCheckToggleWidget::DestructorCore() {
     this->HudUiCheckToggleWidget::~HudUiCheckToggleWidget();
 }
 
-// Reimplements 0x40cf30: HudUiCheckToggleWidget::DestructorCoreThunk
+/**
+ * Reimplements 0x40cf30: HudUiCheckToggleWidget::DestructorCoreThunk.
+ * Purpose: run the recovered HudUiCheckToggleWidget::DestructorCoreThunk teardown path.
+ */
 void HudUiCheckToggleWidget::DestructorCoreThunk() {
     DestructorCore();
 }
 
-// Reimplements 0x4b7000: HudUiCheckToggleWidget::ScalarDeletingDestructor
+/**
+ * Reimplements 0x4b7000: HudUiCheckToggleWidget::ScalarDeletingDestructor.
+ * Purpose: run the recovered HudUiCheckToggleWidget::ScalarDeletingDestructor teardown path.
+ */
 HudUiElement * HudUiCheckToggleWidget::ScalarDeletingDestructor(
     unsigned int flags
 ) {
@@ -9952,12 +10555,18 @@ HudUiCheckToggleWidget * HudUiCheckToggleWidget::ScalarDeletingDestructorThunk(
     return this;
 }
 
-// Reimplements 0x4b70b0: HudUiCheckToggleWidget::GetBoundsRectOrNull
+/**
+ * Reimplements 0x4b70b0: HudUiCheckToggleWidget::GetBoundsRectOrNull.
+ * Purpose: return the recovered HUD value exposed by HudUiCheckToggleWidget::GetBoundsRectOrNull.
+ */
 HudUiRect * HudUiCheckToggleWidget::GetBoundsRectOrNull() {
     return &boundsRect;
 }
 
-// Reimplements 0x4b70c0: HudUiCheckToggleWidget::RefreshState
+/**
+ * Reimplements 0x4b70c0: HudUiCheckToggleWidget::RefreshState.
+ * Purpose: preserve the recovered HUD behavior for HudUiCheckToggleWidget::RefreshState.
+ */
 void HudUiCheckToggleWidget::RefreshState() {
     HudUiSetPanelVectorVisible(
         rolloverLabelPanels,
@@ -10011,7 +10620,10 @@ void HudUiCheckToggleWidget::RefreshState() {
     Invalidate();
 }
 
-// Reimplements 0x4b7210: HudUiCheckToggleWidget::ShowPreview
+/**
+ * Reimplements 0x4b7210: HudUiCheckToggleWidget::ShowPreview.
+ * Purpose: preserve the recovered HUD behavior for HudUiCheckToggleWidget::ShowPreview.
+ */
 void HudUiCheckToggleWidget::ShowPreview() {
     if (modeOrEnabled == 0 || checked != 0) {
         return;
@@ -10024,7 +10636,10 @@ void HudUiCheckToggleWidget::ShowPreview() {
     HudUiZrdWidget::ShowPreview();
 }
 
-// Reimplements 0x4b7250: HudUiCheckToggleWidget::HidePreview
+/**
+ * Reimplements 0x4b7250: HudUiCheckToggleWidget::HidePreview.
+ * Purpose: preserve the recovered HUD behavior for HudUiCheckToggleWidget::HidePreview.
+ */
 void HudUiCheckToggleWidget::HidePreview() {
     if (modeOrEnabled == 0 || checked != 0) {
         return;
@@ -10038,7 +10653,10 @@ void HudUiCheckToggleWidget::HidePreview() {
     HudUiZrdWidget::HidePreview();
 }
 
-// Reimplements 0x4b7290: HudUiCheckToggleWidget::OnActivate
+/**
+ * Reimplements 0x4b7290: HudUiCheckToggleWidget::OnActivate.
+ * Purpose: handle the recovered HUD event path for HudUiCheckToggleWidget::OnActivate.
+ */
 void HudUiCheckToggleWidget::OnActivate() {
     if (modeOrEnabled == 0) {
         return;
@@ -10048,7 +10666,10 @@ void HudUiCheckToggleWidget::OnActivate() {
     HudUiZrdWidget::OnActivate();
 }
 
-// Reimplements 0x40caa0: HudUiCheckToggleWidget::OnActivateThunk
+/**
+ * Reimplements 0x40caa0: HudUiCheckToggleWidget::OnActivateThunk.
+ * Purpose: handle the recovered HUD event path for HudUiCheckToggleWidget::OnActivateThunk.
+ */
 void HudUiCheckToggleWidget::OnActivateThunk() {
     OnActivate();
 }
@@ -10177,7 +10798,10 @@ int HudUiCheckToggleWidget::LoadFromZrd(
     return 1;
 }
 
-// Reimplements 0x4b72c0: HudUiCheckToggleWidget::SetChecked
+/**
+ * Reimplements 0x4b72c0: HudUiCheckToggleWidget::SetChecked.
+ * Purpose: apply the recovered HUD state change handled by HudUiCheckToggleWidget::SetChecked.
+ */
 int HudUiCheckToggleWidget::SetChecked(
     int newChecked
 ) {
@@ -10208,7 +10832,10 @@ int HudUiCheckToggleWidget::SetChecked(
     return previousChecked;
 }
 
-// Reimplements 0x4b7d60: HudUiCycleSelectorWidget::HudUiCycleSelectorWidget
+/**
+ * Reimplements 0x4b7d60: HudUiCycleSelectorWidget::HudUiCycleSelectorWidget.
+ * Purpose: preserve the recovered HUD behavior for HudUiCycleSelectorWidget::HudUiCycleSelectorWidget.
+ */
 HudUiCycleSelectorWidget::HudUiCycleSelectorWidget() : HudUiZrdWidget() {
     selectedIndex = 0;
     itemCount = 0;
@@ -10224,7 +10851,10 @@ HudUiCycleSelectorWidget::HudUiCycleSelectorWidget() : HudUiZrdWidget() {
     textOffsetX = 0;
 }
 
-// Reimplements 0x4b7d60: HudUiCycleSelectorWidget::Constructor
+/**
+ * Reimplements 0x4b7d60: HudUiCycleSelectorWidget::Constructor.
+ * Purpose: initialize the recovered HudUiCycleSelectorWidget::Constructor state.
+ */
 HudUiCycleSelectorWidget * HudUiCycleSelectorWidget::Constructor() {
     new (this) HudUiCycleSelectorWidget;
     return this;
@@ -10250,6 +10880,7 @@ HudUiCycleSelectorWidget::~HudUiCycleSelectorWidget() {
 }
 
 /**
+ * Reimplements 0x40cf40: HudUiCycleSelectorWidget::DestructorCoreThunk.
  * No standalone retail function; source compatibility wrapper for recovered
  * callers that historically named the destructor body DestructorCore.
  * Original source path: D:\Proj\Battlesport\HudUiZrdWidget.cpp.
@@ -10259,12 +10890,18 @@ void HudUiCycleSelectorWidget::DestructorCore() {
     this->HudUiCycleSelectorWidget::~HudUiCycleSelectorWidget();
 }
 
-// Reimplements 0x40cf40: HudUiCycleSelectorWidget::DestructorCoreThunk
+/**
+ * Reimplements 0x40cf40: HudUiCycleSelectorWidget::DestructorCoreThunk.
+ * Purpose: run the recovered HudUiCycleSelectorWidget::DestructorCoreThunk teardown path.
+ */
 void HudUiCycleSelectorWidget::DestructorCoreThunk() {
     DestructorCore();
 }
 
-// Reimplements 0x4b7dc0: HudUiCycleSelectorWidget::ScalarDeletingDestructor
+/**
+ * Reimplements 0x4b7dc0: HudUiCycleSelectorWidget::ScalarDeletingDestructor.
+ * Purpose: run the recovered HudUiCycleSelectorWidget::ScalarDeletingDestructor teardown path.
+ */
 HudUiElement * HudUiCycleSelectorWidget::ScalarDeletingDestructor(
     unsigned int flags
 ) {
@@ -10276,7 +10913,10 @@ HudUiElement * HudUiCycleSelectorWidget::ScalarDeletingDestructor(
     return this;
 }
 
-// Reimplements 0x41a570: HudUiCycleSelectorWidget::ScalarDeletingDestructorThunk
+/**
+ * Reimplements 0x41a570: HudUiCycleSelectorWidget::ScalarDeletingDestructorThunk.
+ * Purpose: run the recovered HudUiCycleSelectorWidget::ScalarDeletingDestructorThunk teardown path.
+ */
 HudUiCycleSelectorWidget * HudUiCycleSelectorWidget::ScalarDeletingDestructorThunk(
     unsigned int flags
 ) {
@@ -10370,7 +11010,10 @@ void HudUiCycleSelectorWidget::SetVisibleRange(
     }
 }
 
-// Reimplements 0x4b7e60: HudUiCycleSelectorWidget::Update
+/**
+ * Reimplements 0x4b7e60: HudUiCycleSelectorWidget::Update.
+ * Purpose: advance the recovered HUD update path for HudUiCycleSelectorWidget::Update.
+ */
 void HudUiCycleSelectorWidget::Update(
     float deltaSeconds
 ) {
@@ -10655,7 +11298,10 @@ void HudUiCycleSelectorWidget::ApplyFontStyleForEntry(
     panel->bkColor = backgroundColor;
 }
 
-// Reimplements 0x4b8200: HudUiCycleSelectorWidget::AddBitmapEntry
+/**
+ * Reimplements 0x4b8200: HudUiCycleSelectorWidget::AddBitmapEntry.
+ * Purpose: preserve the recovered HUD behavior for HudUiCycleSelectorWidget::AddBitmapEntry.
+ */
 void HudUiCycleSelectorWidget::AddBitmapEntry(
     int index,
     const char *imagePath,
@@ -10690,7 +11336,10 @@ void HudUiCycleSelectorWidget::AddBitmapEntry(
     ((HudUiContainer *)(owner))->AddChild((HudUiElement *)(bitmapWidget));
 }
 
-// Reimplements 0x4b82e0: HudUiCycleSelectorWidget::LoadFromZrd
+/**
+ * Reimplements 0x4b82e0: HudUiCycleSelectorWidget::LoadFromZrd.
+ * Purpose: load the recovered HUD data handled by HudUiCycleSelectorWidget::LoadFromZrd.
+ */
 int HudUiCycleSelectorWidget::LoadFromZrd(
     zReader::Node *zrdSection,
     HudUiBackground *ownerDialog
@@ -10816,7 +11465,10 @@ int HudUiCycleSelectorWidget::LoadFromZrd(
     return 1;
 }
 
-// Reimplements 0x4b8450: HudUiFillBitmap::HudUiFillBitmap
+/**
+ * Reimplements 0x4b8450: HudUiFillBitmap::HudUiFillBitmap.
+ * Purpose: preserve the recovered HUD behavior for HudUiFillBitmap::HudUiFillBitmap.
+ */
 HudUiFillBitmap::HudUiFillBitmap() : HudUiZrdWidget() {
     normalizedValue = 0.0f;
     previewImage = 0;
@@ -10853,6 +11505,7 @@ HudUiFillBitmap::~HudUiFillBitmap() {
 }
 
 /**
+ * Reimplements 0x40cf50: HudUiFillBitmap::DestructorCoreThunk.
  * No standalone retail function; source compatibility wrapper for recovered
  * callers that historically named the destructor body DestructorCore.
  * Original source path: HudUiFillBitmap.cpp.
@@ -10862,12 +11515,18 @@ void HudUiFillBitmap::DestructorCore() {
     this->HudUiFillBitmap::~HudUiFillBitmap();
 }
 
-// Reimplements 0x40cf50: HudUiFillBitmap::DestructorCoreThunk
+/**
+ * Reimplements 0x40cf50: HudUiFillBitmap::DestructorCoreThunk.
+ * Purpose: run the recovered HudUiFillBitmap::DestructorCoreThunk teardown path.
+ */
 void HudUiFillBitmap::DestructorCoreThunk() {
     DestructorCore();
 }
 
-// Reimplements 0x4b84b0: HudUiFillBitmap::ScalarDeletingDestructor
+/**
+ * Reimplements 0x4b84b0: HudUiFillBitmap::ScalarDeletingDestructor.
+ * Purpose: run the recovered HudUiFillBitmap::ScalarDeletingDestructor teardown path.
+ */
 HudUiElement * HudUiFillBitmap::ScalarDeletingDestructor(
     unsigned int flags
 ) {
@@ -10879,7 +11538,10 @@ HudUiElement * HudUiFillBitmap::ScalarDeletingDestructor(
     return this;
 }
 
-// Reimplements 0x4b8520: HudUiFillBitmap::Draw
+/**
+ * Reimplements 0x4b8520: HudUiFillBitmap::Draw.
+ * Purpose: preserve the recovered HUD behavior for HudUiFillBitmap::Draw.
+ */
 void HudUiFillBitmap::Draw() {
     if (previewImage == 0 || fillImage == 0) {
         return;
@@ -10908,7 +11570,10 @@ void HudUiFillBitmap::Draw() {
     }
 }
 
-// Reimplements 0x4b85c0: HudUiFillBitmap::LoadFromZrd
+/**
+ * Reimplements 0x4b85c0: HudUiFillBitmap::LoadFromZrd.
+ * Purpose: load the recovered HUD data handled by HudUiFillBitmap::LoadFromZrd.
+ */
 int HudUiFillBitmap::LoadFromZrd(
     zReader::Node *zrdSection,
     HudUiBackground *ownerDialog
@@ -10969,7 +11634,10 @@ void HudUiFillBitmap::UpdateNormalizedFromCursor() {
     OnActivate();
 }
 
-// Reimplements 0x4ba3c0: HudUiFillBitmap::SetNormalizedValue
+/**
+ * Reimplements 0x4ba3c0: HudUiFillBitmap::SetNormalizedValue.
+ * Purpose: apply the recovered HUD state change handled by HudUiFillBitmap::SetNormalizedValue.
+ */
 void HudUiFillBitmap::SetNormalizedValue(
     float value
 ) {
@@ -10987,7 +11655,10 @@ void HudUiFillBitmap::SetNormalizedValue(
     Invalidate();
 }
 
-// Reimplements 0x4b86b0: HudUiFillBitmap::SetNormalizedValueAndRebuild
+/**
+ * Reimplements 0x4b86b0: HudUiFillBitmap::SetNormalizedValueAndRebuild.
+ * Purpose: apply the recovered HUD state change handled by HudUiFillBitmap::SetNormalizedValueAndRebuild.
+ */
 void HudUiFillBitmap::SetNormalizedValueAndRebuild(
     float value
 ) {
@@ -11021,7 +11692,10 @@ void HudUiFillBitmap::SetNormalizedValueAndRebuild(
     previewOffsetY = 0;
 }
 
-// Reimplements 0x4b8760: HudUiZrdWidgetEx17C_Item::HudUiZrdWidgetEx17C_Item
+/**
+ * Reimplements 0x4b8760: HudUiZrdWidgetEx17C_Item::HudUiZrdWidgetEx17C_Item.
+ * Purpose: preserve the recovered HUD behavior for HudUiZrdWidgetEx17C_Item::HudUiZrdWidgetEx17C_Item.
+ */
 HudUiZrdWidgetEx17C_Item::HudUiZrdWidgetEx17C_Item() : HudUiZrdWidget() {
     selected = 0;
     selectedImage = 0;
@@ -11030,17 +11704,27 @@ HudUiZrdWidgetEx17C_Item::HudUiZrdWidgetEx17C_Item() : HudUiZrdWidget() {
     mouseRectValid = 0;
 }
 
+/**
+ * Reimplements 0x4b87c0: HudUiZrdWidgetEx17C_Item::DestructorCore.
+ * Purpose: run the recovered HudUiZrdWidgetEx17C_Item::DestructorCore teardown path.
+ */
 HudUiZrdWidgetEx17C_Item * HudUiZrdWidgetEx17C_Item::Constructor() {
     new (this) HudUiZrdWidgetEx17C_Item;
     return this;
 }
 
-// Reimplements 0x4b87c0: HudUiZrdWidgetEx17C_Item::DestructorCore
+/**
+ * Reimplements 0x4b87c0: HudUiZrdWidgetEx17C_Item::DestructorCore.
+ * Purpose: run the recovered HudUiZrdWidgetEx17C_Item::DestructorCore teardown path.
+ */
 void HudUiZrdWidgetEx17C_Item::DestructorCore() {
     HudUiZrdWidget::DestructorCore();
 }
 
-// Reimplements 0x4b87a0: HudUiZrdWidgetEx17C_Item::ScalarDeletingDestructor
+/**
+ * Reimplements 0x4b87a0: HudUiZrdWidgetEx17C_Item::ScalarDeletingDestructor.
+ * Purpose: run the recovered HudUiZrdWidgetEx17C_Item::ScalarDeletingDestructor teardown path.
+ */
 HudUiElement * HudUiZrdWidgetEx17C_Item::ScalarDeletingDestructor(
     unsigned int flags
 ) {
@@ -11052,29 +11736,46 @@ HudUiElement * HudUiZrdWidgetEx17C_Item::ScalarDeletingDestructor(
     return this;
 }
 
-// Reimplements 0x4b87d0: HudUiZrdWidgetEx17C_Item::ShowPreviewIfNotSelected
+/**
+ * Reimplements 0x4b87d0: HudUiZrdWidgetEx17C_Item::ShowPreviewIfNotSelected.
+ * Purpose: preserve the recovered HUD behavior for HudUiZrdWidgetEx17C_Item::ShowPreviewIfNotSelected.
+ */
 void HudUiZrdWidgetEx17C_Item::ShowPreviewIfNotSelected() {
     if (selected == 0) {
         HudUiZrdWidget::ShowPreview();
     }
 }
 
+/**
+ * Reimplements 0x4b87e0: HudUiZrdWidgetEx17C_Item::HidePreviewIfNotSelected.
+ * Purpose: preserve the recovered HUD behavior for HudUiZrdWidgetEx17C_Item::HidePreviewIfNotSelected.
+ */
 void HudUiZrdWidgetEx17C_Item::ShowPreview() {
     ShowPreviewIfNotSelected();
 }
 
-// Reimplements 0x4b87e0: HudUiZrdWidgetEx17C_Item::HidePreviewIfNotSelected
+/**
+ * Reimplements 0x4b87e0: HudUiZrdWidgetEx17C_Item::HidePreviewIfNotSelected.
+ * Purpose: preserve the recovered HUD behavior for HudUiZrdWidgetEx17C_Item::HidePreviewIfNotSelected.
+ */
 void HudUiZrdWidgetEx17C_Item::HidePreviewIfNotSelected() {
     if (selected == 0) {
         HudUiZrdWidget::HidePreview();
     }
 }
 
+/**
+ * Reimplements 0x4b87f0: HudUiZrdWidgetEx17C_Item::OnActivateSelectSelf.
+ * Purpose: handle the recovered HUD event path for HudUiZrdWidgetEx17C_Item::OnActivateSelectSelf.
+ */
 void HudUiZrdWidgetEx17C_Item::HidePreview() {
     HidePreviewIfNotSelected();
 }
 
-// Reimplements 0x4b87f0: HudUiZrdWidgetEx17C_Item::OnActivateSelectSelf
+/**
+ * Reimplements 0x4b87f0: HudUiZrdWidgetEx17C_Item::OnActivateSelectSelf.
+ * Purpose: handle the recovered HUD event path for HudUiZrdWidgetEx17C_Item::OnActivateSelectSelf.
+ */
 void HudUiZrdWidgetEx17C_Item::OnActivateSelectSelf() {
     ownerSelector->SetSelectedIndex(itemIndex);
     ownerSelector->OnActivate();
@@ -11088,11 +11789,18 @@ void HudUiZrdWidgetEx17C_Item::OnActivateSelectSelf() {
     }
 }
 
+/**
+ * Reimplements 0x4b8850: HudUiZrdWidgetEx17C_Item::LoadFromZrd.
+ * Purpose: load the recovered HUD data handled by HudUiZrdWidgetEx17C_Item::LoadFromZrd.
+ */
 void HudUiZrdWidgetEx17C_Item::OnActivate() {
     OnActivateSelectSelf();
 }
 
-// Reimplements 0x4b8850: HudUiZrdWidgetEx17C_Item::LoadFromZrd
+/**
+ * Reimplements 0x4b8850: HudUiZrdWidgetEx17C_Item::LoadFromZrd.
+ * Purpose: load the recovered HUD data handled by HudUiZrdWidgetEx17C_Item::LoadFromZrd.
+ */
 int HudUiZrdWidgetEx17C_Item::LoadFromZrd(
     zReader::Node *zrdSection,
     HudUiBackground *ownerDialog
@@ -11207,12 +11915,18 @@ void HudUiZrdWidgetEx17C_Item::SetSelected(
     SetImageBorrowedAndInvalidate(defaultImage);
 }
 
-// Reimplements 0x4b8af0: HudUiZrdWidgetEx17C_Item::GetMouseRectOrBounds
+/**
+ * Reimplements 0x4b8af0: HudUiZrdWidgetEx17C_Item::GetMouseRectOrBounds.
+ * Purpose: return the recovered HUD value exposed by HudUiZrdWidgetEx17C_Item::GetMouseRectOrBounds.
+ */
 HudUiRect * HudUiZrdWidgetEx17C_Item::GetMouseRectOrBounds() {
     return mouseRectValid != 0 ? &mouseRect : GetBoundsRectOrNull();
 }
 
-// Reimplements 0x4b8b10: HudUiZrdWidgetEx17C::HudUiZrdWidgetEx17C
+/**
+ * Reimplements 0x4b8b10: HudUiZrdWidgetEx17C::HudUiZrdWidgetEx17C.
+ * Purpose: preserve the recovered HUD behavior for HudUiZrdWidgetEx17C::HudUiZrdWidgetEx17C.
+ */
 HudUiZrdWidgetEx17C::HudUiZrdWidgetEx17C() : HudUiZrdWidget() {
     optionCount = 0;
 
@@ -11224,6 +11938,10 @@ HudUiZrdWidgetEx17C::HudUiZrdWidgetEx17C() : HudUiZrdWidget() {
     }
 }
 
+/**
+ * Reimplements 0x4b8b60: HudUiZrdWidgetEx17C::DestructorCore.
+ * Purpose: run the recovered HudUiZrdWidgetEx17C::DestructorCore teardown path.
+ */
 HudUiZrdWidgetEx17C * HudUiZrdWidgetEx17C::Constructor() {
     new (this) HudUiZrdWidgetEx17C;
     return this;
@@ -11282,7 +12000,10 @@ HudUiZrdWidgetEx17C * HudUiZrdWidgetEx17C::ScalarDeletingDestructorThunk(
     return this;
 }
 
-// Reimplements 0x4b8be0: HudUiZrdWidgetEx17C::LoadFromZrd
+/**
+ * Reimplements 0x4b8be0: HudUiZrdWidgetEx17C::LoadFromZrd.
+ * Purpose: load the recovered HUD data handled by HudUiZrdWidgetEx17C::LoadFromZrd.
+ */
 int HudUiZrdWidgetEx17C::LoadFromZrd(
     zReader::Node *zrdSection,
     HudUiBackground *ownerDialog
@@ -11338,7 +12059,12 @@ void HudUiZrdWidgetEx17C::EnableChildAtIndex(
     option->RefreshState();
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Reimplements 0x4b8cf0: HudUiZrdWidgetEx17C::SetSelectedIndex.
+ * Source model note: Source-faithful helper recovered from address-backed callers in this
+ * source file.
+ * Purpose: apply the recovered HUD state change handled by HudUiZrdWidgetEx17C::SetSelectedIndex.
+ */
 void HudUiZrdWidgetEx17C::SetVisible(
     int childIndex
 ) {
@@ -11366,9 +12092,12 @@ int HudUiZrdWidgetEx17C::SetSelectedIndex(
     return 1;
 }
 
-// Reimplements 0x4b92a0: HudUiListSelectorItem::HudUiListSelectorItem
-// Source model lives in the inline class-body constructor in zhud_ui.h.
-// Reimplements 0x4b9520: HudUiListSelectorItem::OnActivate
+/**
+ * Reimplements 0x4b9520: HudUiListSelectorItem::OnActivate.
+ * Source model note: Reimplements 0x4b92a0: HudUiListSelectorItem::HudUiListSelectorItem.
+ * Source model lives in the inline class-body constructor in zhud_ui.h.
+ * Purpose: handle the recovered HUD event path for HudUiListSelectorItem::OnActivate.
+ */
 void HudUiListSelectorItem::OnActivate() {
     typedef void( * OnSelectedIndexChangedFn)(
         void *self,
@@ -11386,7 +12115,10 @@ void HudUiListSelectorItem::OnActivate() {
     }
 }
 
-// Reimplements 0x4ba410: HudUiListSelectorItem::Draw
+/**
+ * Reimplements 0x4ba410: HudUiListSelectorItem::Draw.
+ * Purpose: preserve the recovered HUD behavior for HudUiListSelectorItem::Draw.
+ */
 void HudUiListSelectorItem::Draw() {
     HudUiPanel::Draw();
 
@@ -11401,7 +12133,10 @@ void HudUiListSelectorItem::Draw() {
     clipRect.bottom = textHeight + GetCenterY();
 }
 
-// Reimplements 0x4b8d30: HudCmdBindButtonBase::HudCmdBindButtonBase
+/**
+ * Reimplements 0x4b8d30: HudCmdBindButtonBase::HudCmdBindButtonBase.
+ * Purpose: preserve the recovered HUD behavior for HudCmdBindButtonBase::HudCmdBindButtonBase.
+ */
 HudCmdBindButtonBase::HudCmdBindButtonBase() :
     HudUiCheckToggleWidget()
 {
@@ -11415,7 +12150,10 @@ HudCmdBindButtonBase::HudCmdBindButtonBase() :
     selectedBindingIndex = -1;
 }
 
-// Reimplements 0x40bdf0: StdPtrVector::ClearNoOpDestroy
+/**
+ * Reimplements 0x40bdf0: StdPtrVector::ClearNoOpDestroy.
+ * Purpose: preserve the recovered HUD behavior for StdPtrVector::ClearNoOpDestroy.
+ */
 void StdPtrVector::ClearNoOpDestroy(
     int *begin,
     int *end
@@ -11462,6 +12200,7 @@ HudCmdBindingEntry **__fastcall HudCmdBindingEntry::CopyRange(
  * Reimplements 0x40bf20: HudCmdBindingEntry::DeleteAndReturnNull.
  * Binary Ninja shows a static HudCmdBindButton.cpp helper that destroys a
  * non-null binding entry, deletes its storage, and returns null.
+ * Purpose: preserve the recovered HUD behavior for HudCmdBindingEntry::DeleteAndReturnNull.
  */
 HudCmdBindingEntry *__stdcall HudCmdBindingEntry::DeleteAndReturnNull(
     HudCmdBindingEntry *entry
@@ -11478,6 +12217,7 @@ HudCmdBindingEntry *__stdcall HudCmdBindingEntry::DeleteAndReturnNull(
  * Binary Ninja shows the HudCmdBindButton.cpp method allocating a
  * HudCmdBindingEntry, duplicating the display text, assigning the command id,
  * and appending it to the binding vector with growth when capacity is full.
+ * Purpose: preserve the recovered HUD behavior for HudCmdBindButtonBase::AddBindingEntry.
  */
 int HudCmdBindButtonBase::AddBindingEntry(
     const char *displayText,
@@ -11492,16 +12232,22 @@ int HudCmdBindButtonBase::AddBindingEntry(
     return oldCount;
 }
 
-// Reimplements 0x4b9320: HudCmdBindButtonBase::OnSelectedIndexChanged
-// (D:\Proj\Battlesport\HudCmdBindButton.cpp)
+/**
+ * Reimplements 0x4b9320: HudCmdBindButtonBase::OnSelectedIndexChanged.
+ * Original source path: D:\Proj\Battlesport\HudCmdBindButton.cpp.
+ * Purpose: handle the recovered HUD event path for HudCmdBindButtonBase::OnSelectedIndexChanged.
+ */
 void HudCmdBindButtonBase::OnSelectedIndexChanged(
     int selectedIndex
 ) {
     SetSelectedEntry(selectedIndex);
 }
 
-// Reimplements 0x4b9330: HudCmdBindButtonBase::SetSelectedEntry
-// (D:\Proj\Battlesport\HudCmdBindButton.cpp)
+/**
+ * Reimplements 0x4b9330: HudCmdBindButtonBase::SetSelectedEntry.
+ * Original source path: D:\Proj\Battlesport\HudCmdBindButton.cpp.
+ * Purpose: apply the recovered HUD state change handled by HudCmdBindButtonBase::SetSelectedEntry.
+ */
 void HudCmdBindButtonBase::SetSelectedEntry(
     int selectedIndex
 ) {
@@ -11601,6 +12347,7 @@ void **__fastcall zUtil_StdPtrVector_Clear(
 }
 
 /**
+ * Original-source helper; no standalone retail function exists.
  * Restores the VC5 std::vector<HudCmdBindingEntry *>::erase(first,last)
  * dependency used by 0x40b680 after the caller destroys each pointed-to
  * binding entry. The caller-visible retail body invokes the vector erase
@@ -11628,7 +12375,10 @@ HudCmdBindingEntry ** HudCmdBindingVector::EraseRange(
     return first;
 }
 
-// Reimplements 0x40c1d0: HudCmdBindButtonBase::ClearBindingEntries
+/**
+ * Reimplements 0x40c1d0: HudCmdBindButtonBase::ClearBindingEntries.
+ * Purpose: preserve the recovered HUD behavior for HudCmdBindButtonBase::ClearBindingEntries.
+ */
 void HudCmdBindButtonBase::ClearBindingEntries() {
     HudCmdBindingEntry **entry = (HudCmdBindingEntry **)(bindingVec.begin);
     HudCmdBindingEntry **const end = (HudCmdBindingEntry **)(bindingVec.end);
@@ -12188,8 +12938,11 @@ HudCmdDialog * HudCmdDialog::Constructor() {
     return this;
 }
 
-// Reimplements 0x40adf0: HudCmdDialog::Destructor
-// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+/**
+ * Reimplements 0x40adf0: HudCmdDialog::Destructor.
+ * Original source path: D:\Proj\Battlesport\HudCmdDialog.cpp.
+ * Purpose: run the recovered HudCmdDialog::Destructor teardown path.
+ */
 void HudCmdDialog::Destructor() {
     descriptionPanel.HudUiPanel::~HudUiPanel();
     ((HudUiPanel *)(&promptPanel))->~HudUiPanel();
@@ -12210,8 +12963,11 @@ void HudCmdDialog::Destructor() {
     this->HudUiBackground::~HudUiBackground();
 }
 
-// Reimplements 0x40a920: HudCmdDialog::ScalarDeletingDestructor
-// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+/**
+ * Reimplements 0x40a920: HudCmdDialog::ScalarDeletingDestructor.
+ * Original source path: D:\Proj\Battlesport\HudCmdDialog.cpp.
+ * Purpose: run the recovered HudCmdDialog::ScalarDeletingDestructor teardown path.
+ */
 HudUiBackground * HudCmdDialog::ScalarDeletingDestructor(
     unsigned int flags
 ) {
@@ -12249,6 +13005,7 @@ void HudUiOptionsPanelBackButton::OnActivate() {
 }
 
 /**
+ * Original-source helper; no standalone retail function exists.
  * Recovered compatibility wrapper for HudUiOptionsPanel_Lighting::SyncFromOptions.
  * No standalone retail function is assigned to this wrapper; 0x40c9e0 is the
  * address-backed option-sync body in this owner cluster.
@@ -12259,6 +13016,7 @@ void HudUiOptionsPanel_Lighting::OnActivate() {
 }
 
 /**
+ * Reimplements 0x40c9c0: HudUiOptionsPanel_Lighting::InitFromOptions.
  * Source-faithful helper: no standalone retail function is assigned; 0x40c9c0
  * is the address-backed option-init body in this HudOptionsDialog owner cluster.
  * The wrapper preserves the recovered virtual PostLoadFromZrd call shape.
@@ -12289,6 +13047,7 @@ void HudUiOptionsPanel_Lighting::SyncFromOptions() {
 }
 
 /**
+ * Original-source helper; no standalone retail function exists.
  * Recovered compatibility wrapper for HudUiOptionsPanel_Perspective::SyncFromOptions.
  * No standalone retail function is assigned to this wrapper; 0x40ca40 is the
  * address-backed option-sync body in this owner cluster.
@@ -12299,6 +13058,7 @@ void HudUiOptionsPanel_Perspective::OnActivate() {
 }
 
 /**
+ * Reimplements 0x40ca20: HudUiOptionsPanel_Perspective::InitFromOptions.
  * Source-faithful helper: no standalone retail function is assigned; 0x40ca20
  * is the address-backed option-init body in this HudOptionsDialog owner cluster.
  * The wrapper preserves the recovered virtual PostLoadFromZrd call shape.
@@ -12330,6 +13090,7 @@ void HudUiOptionsPanel_Perspective::SyncFromOptions() {
 }
 
 /**
+ * Reimplements 0x40ca80: HudUiOptionsPanel_FullHud::InitFromOptions.
  * Source-faithful helper: no standalone retail function is assigned; 0x40ca80
  * is the address-backed option-init body in this HudOptionsDialog owner cluster.
  * The wrapper preserves the recovered virtual PostLoadFromZrd call shape.
@@ -12348,6 +13109,7 @@ void HudUiOptionsPanel_FullHud::InitFromOptions() {
 }
 
 /**
+ * Original-source helper; no standalone retail function exists.
  * Recovered compatibility wrapper for HudUiOptionsPanel_ObjectDetail::SyncFromOptions.
  * No standalone retail function is assigned to this wrapper; 0x40cad0 is the
  * address-backed option-sync body in this owner cluster.
@@ -12358,6 +13120,7 @@ void HudUiOptionsPanel_ObjectDetail::OnActivate() {
 }
 
 /**
+ * Reimplements 0x40cab0: HudUiOptionsPanel_ObjectDetail::InitFromOptions.
  * Source-faithful helper: no standalone retail function is assigned; 0x40cab0
  * is the address-backed option-init body in this HudOptionsDialog owner cluster.
  * The wrapper preserves the recovered virtual PostLoadFromZrd call shape.
@@ -12384,11 +13147,20 @@ void HudUiOptionsPanel_ObjectDetail::SyncFromOptions() {
     zOpt::SetObjectLODForCurrentHwMode(selectedIndex);
 }
 
+/**
+ * Reimplements 0x40cad0: HudUiOptionsPanel_ObjectDetail::SyncFromOptions.
+ * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_ObjectDetail::SyncFromOptions.
+ */
 void HudUiOptionsPanel_TextureMemory::OnActivate() {
     SyncFromOptions();
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Reimplements 0x40caf0: HudUiOptionsPanel_TextureMemory::InitFromOptions.
+ * Source model note: Source-faithful helper recovered from address-backed callers in this
+ * source file.
+ * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_TextureMemory::InitFromOptions.
+ */
 void HudUiOptionsPanel_TextureMemory::PostLoadFromZrd() {
     InitFromOptions();
 }
@@ -12410,11 +13182,20 @@ void HudUiOptionsPanel_TextureMemory::SyncFromOptions() {
     zOpt::SetTextureMemoryForCurrentHwMode(selectedIndex);
 }
 
+/**
+ * Reimplements 0x40cb10: HudUiOptionsPanel_TextureMemory::SyncFromOptions.
+ * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_TextureMemory::SyncFromOptions.
+ */
 void HudUiOptionsPanel_Effects::OnActivate() {
     SyncFromOptions();
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Reimplements 0x40cb30: HudUiOptionsPanel_Effects::InitFromOptions.
+ * Source model note: Source-faithful helper recovered from address-backed callers in this
+ * source file.
+ * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_Effects::InitFromOptions.
+ */
 void HudUiOptionsPanel_Effects::PostLoadFromZrd() {
     InitFromOptions();
 }
@@ -12447,11 +13228,20 @@ void HudUiOptionsPanel_Effects::SyncFromOptions() {
     zOpt::SetEffectsLevelForCurrentHwMode(selectedIndex);
 }
 
+/**
+ * Reimplements 0x40cb70: HudUiOptionsPanel_Effects::SyncFromOptions.
+ * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_Effects::SyncFromOptions.
+ */
 void HudUiOptionsPanel_SoundActive::OnActivate() {
     SyncFromOptions();
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Reimplements 0x40cb90: HudUiOptionsPanel_SoundActive::InitFromOptions.
+ * Source model note: Source-faithful helper recovered from address-backed callers in this
+ * source file.
+ * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_SoundActive::InitFromOptions.
+ */
 void HudUiOptionsPanel_SoundActive::PostLoadFromZrd() {
     InitFromOptions();
 }
@@ -12473,11 +13263,20 @@ void HudUiOptionsPanel_SoundActive::SyncFromOptions() {
     zOpt::SetMuteSoundOption(checked == 0);
 }
 
+/**
+ * Reimplements 0x40cbb0: HudUiOptionsPanel_SoundActive::SyncFromOptions.
+ * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_SoundActive::SyncFromOptions.
+ */
 void HudUiOptionsPanel_SoundQuality::OnActivate() {
     SyncFromOptions();
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Reimplements 0x40cbd0: HudUiOptionsPanel_SoundQuality::InitFromOptions.
+ * Source model note: Source-faithful helper recovered from address-backed callers in this
+ * source file.
+ * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_SoundQuality::InitFromOptions.
+ */
 void HudUiOptionsPanel_SoundQuality::PostLoadFromZrd() {
     InitFromOptions();
 }
@@ -12499,7 +13298,12 @@ void HudUiOptionsPanel_SoundQuality::SyncFromOptions() {
     zOpt::SetSoundLODOption(selectedIndex);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Reimplements 0x40cc10: HudUiOptionsPanel_SoundVolume::SyncFromOptions.
+ * Source model note: Source-faithful helper recovered from address-backed callers in this
+ * source file.
+ * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_SoundVolume::SyncFromOptions.
+ */
 void HudUiOptionsPanel_SoundVolume::PostLoadFromZrd() {
     SyncFromOptions();
 }
@@ -12522,7 +13326,12 @@ void HudUiOptionsPanel_SoundVolume::OnActivate() {
     SetNormalizedValue(zOpt::GetSoundVolumeOption());
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Reimplements 0x40cc60: HudUiOptionsPanel_MusicEnable::SyncFromOptions.
+ * Source model note: Source-faithful helper recovered from address-backed callers in this
+ * source file.
+ * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_MusicEnable::SyncFromOptions.
+ */
 void HudUiOptionsPanel_MusicEnable::PostLoadFromZrd() {
     SyncFromOptions();
 }
@@ -12553,7 +13362,12 @@ void HudUiOptionsPanel_MusicEnable::OnActivate() {
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Reimplements 0x40ccc0: HudUiOptionsPanel_MusicVolume::SyncFromOptions.
+ * Source model note: Source-faithful helper recovered from address-backed callers in this
+ * source file.
+ * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_MusicVolume::SyncFromOptions.
+ */
 void HudUiOptionsPanel_MusicVolume::PostLoadFromZrd() {
     SyncFromOptions();
 }
@@ -12585,7 +13399,12 @@ void HudUiOptionsPanel_MusicVolume::OnActivate() {
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Reimplements 0x40cd30: HudUiOptionsPanel_Resolution::SyncFromOptions.
+ * Source model note: Source-faithful helper recovered from address-backed callers in this
+ * source file.
+ * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_Resolution::SyncFromOptions.
+ */
 void HudUiOptionsPanel_Resolution::PostLoadFromZrd() {
     SyncFromOptions();
 }
@@ -12957,8 +13776,11 @@ HudCmdDialogState::~HudCmdDialogState() {
     }
 }
 
-// Reimplements 0x40b5e0: HudCmdDialog::SelectGroupRelative
-// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+/**
+ * Reimplements 0x40b5e0: HudCmdDialog::SelectGroupRelative.
+ * Original source path: D:\Proj\Battlesport\HudCmdDialog.cpp.
+ * Purpose: preserve the recovered HUD behavior for HudCmdDialog::SelectGroupRelative.
+ */
 int HudCmdDialog::SelectGroupRelative(
     int delta
 ) {
@@ -12975,8 +13797,11 @@ int HudCmdDialog::SelectGroupRelative(
     return selectedIndex;
 }
 
-// Reimplements 0x40b630: HudCmdDialog::SelectCommandRelative
-// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+/**
+ * Reimplements 0x40b630: HudCmdDialog::SelectCommandRelative.
+ * Original source path: D:\Proj\Battlesport\HudCmdDialog.cpp.
+ * Purpose: preserve the recovered HUD behavior for HudCmdDialog::SelectCommandRelative.
+ */
 int HudCmdDialog::SelectCommandRelative(
     int delta
 ) {
@@ -13001,8 +13826,11 @@ int HudCmdDialog::SelectCommandRelative(
     return currentIndex;
 }
 
-// Reimplements 0x40b930: HudCmdResetButton::OnActivate
-// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+/**
+ * Reimplements 0x40b930: HudCmdResetButton::OnActivate.
+ * Original source path: D:\Proj\Battlesport\HudCmdDialog.cpp.
+ * Purpose: handle the recovered HUD event path for HudCmdResetButton::OnActivate.
+ */
 void HudCmdResetButton::OnActivate() {
     HudCmdDialog *const dialog = (HudCmdDialog *)(owner);
     zInput::BindMap_InitDefaultBindings();
@@ -13022,8 +13850,11 @@ void HudCmdSetListWidget::OnActivate() {
     ((HudCmdDialog *)(owner))->RebuildCommandBindingListsForGroup(selectedIndex);
 }
 
-// Reimplements 0x40ba30: HudCmdKeyAButton::OnBeginCapture
-// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+/**
+ * Reimplements 0x40ba30: HudCmdKeyAButton::OnBeginCapture.
+ * Original source path: D:\Proj\Battlesport\HudCmdDialog.cpp.
+ * Purpose: handle the recovered HUD event path for HudCmdKeyAButton::OnBeginCapture.
+ */
 void HudCmdKeyAButton::OnBeginCapture() {
     ((HudCmdDialog *)(owner))->descriptionPanel.captureState = 1;
     zInput::ResetAllTransitionState();
@@ -13055,8 +13886,11 @@ void HudCmdBindButtonBase::OnSelectionChangedRefresh(
     ((HudCmdDialog *)(owner))->OnCommandSelectionChanged(selectedIndex);
 }
 
-// Reimplements 0x40bab0: HudCmdKeyBButton::OnBeginCapture
-// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+/**
+ * Reimplements 0x40bab0: HudCmdKeyBButton::OnBeginCapture.
+ * Original source path: D:\Proj\Battlesport\HudCmdDialog.cpp.
+ * Purpose: handle the recovered HUD event path for HudCmdKeyBButton::OnBeginCapture.
+ */
 void HudCmdKeyBButton::OnBeginCapture() {
     ((HudCmdDialog *)(owner))->descriptionPanel.captureState = 2;
     zInput::ResetAllTransitionState();
@@ -13075,8 +13909,11 @@ void HudCmdKeyBButton::OnClearBinding() {
     );
 }
 
-// Reimplements 0x40bb00: HudCmdJoyButton::OnBeginCapture
-// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+/**
+ * Reimplements 0x40bb00: HudCmdJoyButton::OnBeginCapture.
+ * Original source path: D:\Proj\Battlesport\HudCmdDialog.cpp.
+ * Purpose: handle the recovered HUD event path for HudCmdJoyButton::OnBeginCapture.
+ */
 void HudCmdJoyButton::OnBeginCapture() {
     ((HudCmdDialog *)(owner))->descriptionPanel.captureState = 3;
     zInput::ResetAllTransitionState();
@@ -13096,8 +13933,11 @@ void HudCmdJoyButton::OnClearBinding() {
         );
 }
 
-// Reimplements 0x40bb50: HudCmdMouseButton::OnBeginCapture
-// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+/**
+ * Reimplements 0x40bb50: HudCmdMouseButton::OnBeginCapture.
+ * Original source path: D:\Proj\Battlesport\HudCmdDialog.cpp.
+ * Purpose: handle the recovered HUD event path for HudCmdMouseButton::OnBeginCapture.
+ */
 void HudCmdMouseButton::OnBeginCapture() {
     if (g_HudCmdMouseDebounceFrames > 0) {
         return;
@@ -13124,36 +13964,51 @@ void HudCmdMouseButton::OnClearBinding() {
     );
 }
 
-// Reimplements 0x40bba0: HudCmdNextSetButton::OnActivate
-// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+/**
+ * Reimplements 0x40bba0: HudCmdNextSetButton::OnActivate.
+ * Original source path: D:\Proj\Battlesport\HudCmdDialog.cpp.
+ * Purpose: handle the recovered HUD event path for HudCmdNextSetButton::OnActivate.
+ */
 void HudCmdNextSetButton::OnActivate() {
     ((HudCmdDialog *)(owner))->SelectGroupRelative(1);
     HudUiZrdWidget::OnActivate();
 }
 
-// Reimplements 0x40bbc0: HudCmdPrevSetButton::OnActivate
-// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+/**
+ * Reimplements 0x40bbc0: HudCmdPrevSetButton::OnActivate.
+ * Original source path: D:\Proj\Battlesport\HudCmdDialog.cpp.
+ * Purpose: handle the recovered HUD event path for HudCmdPrevSetButton::OnActivate.
+ */
 void HudCmdPrevSetButton::OnActivate() {
     ((HudCmdDialog *)(owner))->SelectGroupRelative(-1);
     HudUiZrdWidget::OnActivate();
 }
 
-// Reimplements 0x40bbe0: HudCmdNextCommandButton::OnActivate
-// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+/**
+ * Reimplements 0x40bbe0: HudCmdNextCommandButton::OnActivate.
+ * Original source path: D:\Proj\Battlesport\HudCmdDialog.cpp.
+ * Purpose: handle the recovered HUD event path for HudCmdNextCommandButton::OnActivate.
+ */
 void HudCmdNextCommandButton::OnActivate() {
     ((HudCmdDialog *)(owner))->SelectCommandRelative(1);
     HudUiZrdWidget::OnActivate();
 }
 
-// Reimplements 0x40bc00: HudCmdPrevCommandButton::OnActivate
-// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+/**
+ * Reimplements 0x40bc00: HudCmdPrevCommandButton::OnActivate.
+ * Original source path: D:\Proj\Battlesport\HudCmdDialog.cpp.
+ * Purpose: handle the recovered HUD event path for HudCmdPrevCommandButton::OnActivate.
+ */
 void HudCmdPrevCommandButton::OnActivate() {
     ((HudCmdDialog *)(owner))->SelectCommandRelative(-1);
     HudUiZrdWidget::OnActivate();
 }
 
-// Reimplements 0x40b680: HudCmdDialog::RebuildCommandBindingListsForGroup
-// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+/**
+ * Reimplements 0x40b680: HudCmdDialog::RebuildCommandBindingListsForGroup.
+ * Original source path: D:\Proj\Battlesport\HudCmdDialog.cpp.
+ * Purpose: preserve the recovered HUD behavior for HudCmdDialog::RebuildCommandBindingListsForGroup.
+ */
 void HudCmdDialog::RebuildCommandBindingListsForGroup(
     int groupIndex
 ) {
@@ -13332,8 +14187,11 @@ void HudCmdDialog::OnCommandSelectionChanged(
     }
 }
 
-// Reimplements 0x40b140: HudCmdDialog::UpdateCaptureState
-// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+/**
+ * Reimplements 0x40b140: HudCmdDialog::UpdateCaptureState.
+ * Original source path: D:\Proj\Battlesport\HudCmdDialog.cpp.
+ * Purpose: advance the recovered HUD update path for HudCmdDialog::UpdateCaptureState.
+ */
 void HudCmdDialog::UpdateCaptureState(
     float deltaTime
 ) {
@@ -13437,8 +14295,11 @@ void HudCmdDialog::UpdateCaptureState(
     }
 }
 
-// Reimplements 0x40b3e0: HudCmdDialog::ApplyPrimaryKeyRebind
-// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+/**
+ * Reimplements 0x40b3e0: HudCmdDialog::ApplyPrimaryKeyRebind.
+ * Original source path: D:\Proj\Battlesport\HudCmdDialog.cpp.
+ * Purpose: apply the recovered HUD layout or option state handled by HudCmdDialog::ApplyPrimaryKeyRebind.
+ */
 int HudCmdDialog::ApplyPrimaryKeyRebind(
     int keyCode,
     int commandIndex
@@ -13470,8 +14331,11 @@ int HudCmdDialog::ApplyPrimaryKeyRebind(
     return 1;
 }
 
-// Reimplements 0x40b460: HudCmdDialog::ApplySecondaryKeyRebind
-// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+/**
+ * Reimplements 0x40b460: HudCmdDialog::ApplySecondaryKeyRebind.
+ * Original source path: D:\Proj\Battlesport\HudCmdDialog.cpp.
+ * Purpose: apply the recovered HUD layout or option state handled by HudCmdDialog::ApplySecondaryKeyRebind.
+ */
 int HudCmdDialog::ApplySecondaryKeyRebind(
     int keyCode,
     int commandIndex
@@ -13503,8 +14367,11 @@ int HudCmdDialog::ApplySecondaryKeyRebind(
     return 1;
 }
 
-// Reimplements 0x40b4e0: HudCmdDialog::ApplyJoystickButtonRebind
-// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+/**
+ * Reimplements 0x40b4e0: HudCmdDialog::ApplyJoystickButtonRebind.
+ * Original source path: D:\Proj\Battlesport\HudCmdDialog.cpp.
+ * Purpose: apply the recovered HUD layout or option state handled by HudCmdDialog::ApplyJoystickButtonRebind.
+ */
 int HudCmdDialog::ApplyJoystickButtonRebind(
     int buttonCode,
     int commandIndex
@@ -13533,8 +14400,11 @@ int HudCmdDialog::ApplyJoystickButtonRebind(
     return 1;
 }
 
-// Reimplements 0x40b560: HudCmdDialog::ApplyMouseButtonRebind
-// (D:\Proj\Battlesport\HudCmdDialog.cpp)
+/**
+ * Reimplements 0x40b560: HudCmdDialog::ApplyMouseButtonRebind.
+ * Original source path: D:\Proj\Battlesport\HudCmdDialog.cpp.
+ * Purpose: apply the recovered HUD layout or option state handled by HudCmdDialog::ApplyMouseButtonRebind.
+ */
 int HudCmdDialog::ApplyMouseButtonRebind(
     int buttonCode,
     int commandIndex
@@ -14189,11 +15059,18 @@ void HudUiMessageBoxCancelButton::OnActivate() {
     HudUiZrdWidget::OnActivate();
 }
 
-// Reimplements 0x40f2d0: HudUiWidget::HudUiWidget
+/**
+ * Reimplements 0x40f2d0: HudUiWidget::HudUiWidget.
+ * Purpose: preserve the recovered HUD behavior for HudUiWidget::HudUiWidget.
+ */
 HudUiWidget::HudUiWidget() {
     Constructor(0);
 }
 
+/**
+ * Reimplements 0x40f2d0: HudUiWidget::HudUiWidget.
+ * Purpose: preserve the recovered HUD behavior for HudUiWidget::HudUiWidget.
+ */
 HudUiWidget::~HudUiWidget() {
     ReleaseImageIfOwned();
 }
@@ -14224,7 +15101,10 @@ int HudUiWidget::GetCenterY() {
     return y;
 }
 
-// Reimplements 0x4b4030: HudUiWidget::HitTest
+/**
+ * Reimplements 0x4b4030: HudUiWidget::HitTest.
+ * Purpose: preserve the recovered HUD behavior for HudUiWidget::HitTest.
+ */
 int HudUiWidget::HitTest(
     int px,
     int py
@@ -14243,7 +15123,10 @@ int HudUiWidget::HitTest(
                : 0;
 }
 
-// Reimplements 0x404e10: HudUiWidget::RebuildBltRectFromImage
+/**
+ * Reimplements 0x404e10: HudUiWidget::RebuildBltRectFromImage.
+ * Purpose: preserve the recovered HUD behavior for HudUiWidget::RebuildBltRectFromImage.
+ */
 RECOIL_NO_GS void HudUiWidget::RebuildBltRectFromImage() {
     zVidImagePartial *const sourceImage = image;
     int right = x;
@@ -14362,7 +15245,10 @@ zVidImagePartial * HudUiWidget::SetImageByPathOwned(
     return image;
 }
 
-// Reimplements 0x4b3d50: HudUiWidget::DestructorCore
+/**
+ * Reimplements 0x4b3d50: HudUiWidget::DestructorCore.
+ * Purpose: run the recovered HudUiWidget::DestructorCore teardown path.
+ */
 void HudUiWidget::DestructorCore() {
     this->~HudUiWidget();
 }
@@ -14382,7 +15268,10 @@ HudUiElement * HudUiWidget::ScalarDeletingDestructor(
     return this;
 }
 
-// Reimplements 0x4b3dd0: HudUiWidget::SetPos
+/**
+ * Reimplements 0x4b3dd0: HudUiWidget::SetPos.
+ * Purpose: apply the recovered HUD state change handled by HudUiWidget::SetPos.
+ */
 void HudUiWidget::SetPos(
     int newX,
     int newY
@@ -14493,8 +15382,11 @@ void HudUiTripletPanel::SetVisibleCount(
     Invalidate();
 }
 
-// Reimplements 0x40f2e0: HudUiNanitePanel::InitLayout
-// (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x40f2e0: HudUiNanitePanel::InitLayout.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: preserve the recovered HUD behavior for HudUiNanitePanel::InitLayout.
+ */
 void HudUiNanitePanel::InitLayout(
     zReader::Node *layoutRoot
 ) {
@@ -14609,48 +15501,87 @@ void HudUiTriplet::InterpolateLayout(
     fontWeight = (int)((float)(fontWeightEnd - fontWeightStart) * t + fontWeightStart);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x40e910 HudUiTriplet::InterpolateLayout callers.
+ * Purpose: handle the recovered HUD event path for HudUiTextInput::OnPrintableKey.
+ */
 void HudUiTextInput::OnPrintableKey(
     int key
 ) {
     InsertCharAtCursor(key);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x40e910 HudUiTriplet::InterpolateLayout callers.
+ * Purpose: handle the recovered HUD event path for HudUiTextInput::OnIgnoredKey.
+ */
 void HudUiTextInput::OnIgnoredKey(
     int
 ) {
 }
 
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x40e910 HudUiTriplet::InterpolateLayout callers.
+ * Purpose: handle the recovered HUD event path for HudUiTextInput::OnAccept.
+ */
 void HudUiTextInput::OnAccept() {
     zGame::ReturnOnlyStub();
 }
 
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x4b4370 HudUiTextInput::~HudUiTextInput callers.
+ * Purpose: handle the recovered HUD event path for HudUiTextInput::OnCancel.
+ */
 void HudUiTextInput::OnCancel() {
     zGame::ReturnOnlyStub();
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x4b4370 HudUiTextInput::~HudUiTextInput callers.
+ * Purpose: handle the recovered HUD event path for HudUiTextInput::OnBackspace.
+ */
 void HudUiTextInput::OnBackspace() {
     BackspaceDeleteChar();
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x4b4370 HudUiTextInput::~HudUiTextInput callers.
+ * Purpose: handle the recovered HUD event path for HudUiTextInput::OnDeleteForward.
+ */
 void HudUiTextInput::OnDeleteForward() {
     DeleteCharForward();
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x4b4370 HudUiTextInput::~HudUiTextInput callers.
+ * Purpose: handle the recovered HUD event path for HudUiTextInput::OnMoveCursorLeft.
+ */
 void HudUiTextInput::OnMoveCursorLeft() {
     MoveCursorLeft();
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x4b4370 HudUiTextInput::~HudUiTextInput callers.
+ * Purpose: handle the recovered HUD event path for HudUiTextInput::OnMoveCursorRight.
+ */
 void HudUiTextInput::OnMoveCursorRight() {
     MoveCursorRight();
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Reimplements 0x4b4370: HudUiTextInput::~HudUiTextInput.
+ * Source model note: Source-faithful helper recovered from address-backed callers in this
+ * source file.
+ * Purpose: run the recovered HudUiTextInput::~HudUiTextInput teardown path.
+ */
 void HudUiTextInput::OnOverflow() {
     zGame::ReturnOnlyStub();
 }
@@ -14677,7 +15608,10 @@ void HudUiTextInput::DestructorCore() {
     this->HudUiTextInput::~HudUiTextInput();
 }
 
-// Reimplements 0x4b4390: HudUiTextInput::AllocTextBuffer
+/**
+ * Reimplements 0x4b4390: HudUiTextInput::AllocTextBuffer.
+ * Purpose: preserve the recovered HUD behavior for HudUiTextInput::AllocTextBuffer.
+ */
 void HudUiTextInput::AllocTextBuffer(
     int bufferSize
 ) {
@@ -14700,7 +15634,10 @@ void HudUiTextInput::AllocTextBuffer(
     buffer = newBuffer;
 }
 
-// Reimplements 0x4b42f0: HudUiTextInput::HudUiTextInput
+/**
+ * Reimplements 0x4b42f0: HudUiTextInput::HudUiTextInput.
+ * Purpose: preserve the recovered HUD behavior for HudUiTextInput::HudUiTextInput.
+ */
 HudUiTextInput::HudUiTextInput(
     int bufferSize
 ) {
@@ -14730,6 +15667,10 @@ HudUiTextInput::HudUiTextInput(
     input->keyActionMap[0x06] = 7;
 }
 
+/**
+ * Reimplements 0x4b4420: HudUiTextInput::SetCursorPosition.
+ * Purpose: apply the recovered HUD state change handled by HudUiTextInput::SetCursorPosition.
+ */
 HudUiTextInput * HudUiTextInput::Constructor(
     int bufferSize
 ) {
@@ -14737,7 +15678,10 @@ HudUiTextInput * HudUiTextInput::Constructor(
     return this;
 }
 
-// Reimplements 0x4b4420: HudUiTextInput::SetCursorPosition
+/**
+ * Reimplements 0x4b4420: HudUiTextInput::SetCursorPosition.
+ * Purpose: apply the recovered HUD state change handled by HudUiTextInput::SetCursorPosition.
+ */
 void HudUiTextInput::SetCursorPosition(
     int position
 ) {
@@ -14747,7 +15691,10 @@ void HudUiTextInput::SetCursorPosition(
             : (unsigned int)(strlen(buffer));
 }
 
-// Reimplements 0x4b43d0: HudUiTextInput::SetContents
+/**
+ * Reimplements 0x4b43d0: HudUiTextInput::SetContents.
+ * Purpose: apply the recovered HUD state change handled by HudUiTextInput::SetContents.
+ */
 void HudUiTextInput::SetContents(
     const char *source
 ) {
@@ -14760,7 +15707,10 @@ void HudUiTextInput::SetContents(
     SetCursorPosition((int)(cursor));
 }
 
-// Reimplements 0x4b4410: HudUiTextInput::GetBuffer
+/**
+ * Reimplements 0x4b4410: HudUiTextInput::GetBuffer.
+ * Purpose: return the recovered HUD value exposed by HudUiTextInput::GetBuffer.
+ */
 char * HudUiTextInput::GetBuffer() {
     return buffer;
 }
@@ -14914,12 +15864,19 @@ void HudUiTextInput::DispatchKeyAction(
     }
 }
 
-// Reimplements 0x4ba3e0: HudUiOwnedTextInput::OnAccept
+/**
+ * Reimplements 0x4ba3e0: HudUiOwnedTextInput::OnAccept.
+ * Purpose: handle the recovered HUD event path for HudUiOwnedTextInput::OnAccept.
+ */
 void HudUiOwnedTextInput::OnAccept() {
     zGame::ReturnOnlyStub();
     owner->OnAcceptForwardToCommit();
 }
 
+/**
+ * Reimplements 0x40d660: HudUiMgrObjectiveBlock::~HudUiMgrObjectiveBlock.
+ * Purpose: run the recovered HudUiMgrObjectiveBlock::~HudUiMgrObjectiveBlock teardown path.
+ */
 void HudUiChatComposeTextInput::OnAccept() {
     GameNet::EndChatComposeAndSendThunk();
 }
@@ -15600,7 +16557,10 @@ void HudUiBar::SetPointXY(
     Invalidate();
 }
 
-// Reimplements 0x4bf840: HudUiPolyline::HudUiPolyline
+/**
+ * Reimplements 0x4bf840: HudUiPolyline::HudUiPolyline.
+ * Purpose: preserve the recovered HUD behavior for HudUiPolyline::HudUiPolyline.
+ */
 HudUiPolyline::HudUiPolyline()
     : HudUiElement(
           0,
@@ -15616,12 +16576,19 @@ HudUiPolyline::HudUiPolyline()
     clipRect = 0;
 }
 
+/**
+ * Reimplements 0x4bf900: HudUiPolyline::Draw.
+ * Purpose: preserve the recovered HUD behavior for HudUiPolyline::Draw.
+ */
 HudUiPolyline * HudUiPolyline::Constructor() {
     new (this) HudUiPolyline;
     return this;
 }
 
-// Reimplements 0x4bf900: HudUiPolyline::Draw
+/**
+ * Reimplements 0x4bf900: HudUiPolyline::Draw.
+ * Purpose: preserve the recovered HUD behavior for HudUiPolyline::Draw.
+ */
 void HudUiPolyline::Draw() {
     DrawBase();
 
@@ -15655,7 +16622,10 @@ void HudUiPolyline::Draw() {
     }
 }
 
-// Reimplements 0x4bf8b0: HudUiPolyline::SetPoint
+/**
+ * Reimplements 0x4bf8b0: HudUiPolyline::SetPoint.
+ * Purpose: apply the recovered HUD state change handled by HudUiPolyline::SetPoint.
+ */
 void HudUiPolyline::SetPoint(
     int index,
     int pointX,
@@ -15678,7 +16648,10 @@ void HudUiPolyline::SetPoint(
     Invalidate();
 }
 
-// Reimplements 0x4b4620: HudUiSliderBorder::HudUiSliderBorder
+/**
+ * Reimplements 0x4b4620: HudUiSliderBorder::HudUiSliderBorder.
+ * Purpose: preserve the recovered HUD behavior for HudUiSliderBorder::HudUiSliderBorder.
+ */
 HudUiSliderBorder::HudUiSliderBorder() {
     originX = 0;
     originY = 0;
@@ -15756,12 +16729,19 @@ HudUiSliderBorder::HudUiSliderBorder() {
     );
 }
 
+/**
+ * Reimplements 0x4b47b0: HudUiSliderBorder::Update.
+ * Purpose: advance the recovered HUD update path for HudUiSliderBorder::Update.
+ */
 HudUiSliderBorder * HudUiSliderBorder::Constructor() {
     new (this) HudUiSliderBorder;
     return this;
 }
 
-// Reimplements 0x4b47b0: HudUiSliderBorder::Update
+/**
+ * Reimplements 0x4b47b0: HudUiSliderBorder::Update.
+ * Purpose: advance the recovered HUD update path for HudUiSliderBorder::Update.
+ */
 void HudUiSliderBorder::Update(
     float deltaSeconds
 ) {
@@ -15886,6 +16866,10 @@ HudUiNumericTextInput::HudUiNumericTextInput()
     element->SetVisible(1);
 }
 
+/**
+ * Reimplements 0x41a190: HudUiNumericTextInput::Constructor.
+ * Purpose: initialize the recovered HudUiNumericTextInput::Constructor state.
+ */
 HudUiNumericTextInput * HudUiNumericTextInput::BaseConstructor() {
     new (this) HudUiNumericTextInput;
     return this;
@@ -15921,14 +16905,20 @@ HudUiClampedIntTextInput::HudUiClampedIntTextInput(
     maxValue = 2147483647;
 }
 
-// Reimplements 0x4b4e40: HudUiNumericTextInput::AllocTextBuffer
+/**
+ * Reimplements 0x4b4e40: HudUiNumericTextInput::AllocTextBuffer.
+ * Purpose: preserve the recovered HUD behavior for HudUiNumericTextInput::AllocTextBuffer.
+ */
 void HudUiNumericTextInput::AllocTextBuffer(
     unsigned int bufferSize
 ) {
     textInput.AllocTextBuffer(bufferSize);
 }
 
-// Reimplements 0x4b4ed0: HudUiNumericTextInput::GetBuffer
+/**
+ * Reimplements 0x4b4ed0: HudUiNumericTextInput::GetBuffer.
+ * Purpose: return the recovered HUD value exposed by HudUiNumericTextInput::GetBuffer.
+ */
 char * HudUiNumericTextInput::GetBuffer() {
     return textInput.GetBuffer();
 }
@@ -15952,7 +16942,10 @@ void HudUiNumericTextInput::Update(
     Invalidate();
 }
 
-// Reimplements 0x4b4ca0: HudUiNumericTextInput::UpdateCaptureUiAndClip
+/**
+ * Reimplements 0x4b4ca0: HudUiNumericTextInput::UpdateCaptureUiAndClip.
+ * Purpose: advance the recovered HUD update path for HudUiNumericTextInput::UpdateCaptureUiAndClip.
+ */
 RECOIL_NO_GS void HudUiNumericTextInput::UpdateCaptureUiAndClip(
     float deltaSeconds
 ) {
@@ -16014,7 +17007,10 @@ RECOIL_NO_GS void HudUiNumericTextInput::UpdateCaptureUiAndClip(
     sliderBorder.Update(deltaSeconds);
 }
 
-// Reimplements 0x4b4c50: HudUiNumericTextInput::SetRawKeyboardCapture
+/**
+ * Reimplements 0x4b4c50: HudUiNumericTextInput::SetRawKeyboardCapture.
+ * Purpose: apply the recovered HUD state change handled by HudUiNumericTextInput::SetRawKeyboardCapture.
+ */
 void HudUiNumericTextInput::SetRawKeyboardCapture(
     int enable
 ) {
@@ -16037,7 +17033,10 @@ void HudUiNumericTextInput::SetRawKeyboardCapture(
     }
 }
 
-// Reimplements 0x4b4c90: HudUiNumericTextInput::OnActivate
+/**
+ * Reimplements 0x4b4c90: HudUiNumericTextInput::OnActivate.
+ * Purpose: handle the recovered HUD event path for HudUiNumericTextInput::OnActivate.
+ */
 void HudUiNumericTextInput::OnActivate() {
     sliderBorder.inputActive = 1;
     HudUiZrdWidget::OnActivate();
@@ -16055,6 +17054,7 @@ HudUiNumericTextInput::~HudUiNumericTextInput() {
 }
 
 /**
+ * Reimplements 0x41a3f0: HudUiNumericTextInput::DestructorThunk.
  * Source-faithful helper wrapper for legacy native smoke call sites; the
  * address-backed retail body is the C++ destructor above.
  * Purpose: route compatibility calls through the recovered C++ destructor.
@@ -16072,7 +17072,10 @@ void HudUiNumericTextInput::DestructorThunk() {
     Destructor();
 }
 
-// Reimplements 0x4b4a90: HudUiNumericTextInput::ScalarDeletingDestructor
+/**
+ * Reimplements 0x4b4a90: HudUiNumericTextInput::ScalarDeletingDestructor.
+ * Purpose: run the recovered HudUiNumericTextInput::ScalarDeletingDestructor teardown path.
+ */
 HudUiElement * HudUiNumericTextInput::ScalarDeletingDestructor(
     unsigned int flags
 ) {
@@ -16100,7 +17103,10 @@ HudUiNumericTextInput * HudUiNumericTextInput::ScalarDeletingDestructorThunk(
     return this;
 }
 
-// Reimplements 0x4b4b30: HudUiNumericTextInput::RawKeyboardCallback
+/**
+ * Reimplements 0x4b4b30: HudUiNumericTextInput::RawKeyboardCallback.
+ * Purpose: preserve the recovered HUD behavior for HudUiNumericTextInput::RawKeyboardCallback.
+ */
 int __fastcall HudUiNumericTextInput::RawKeyboardCallback(
     int key,
     HudUiNumericTextInput *callbackCtx
@@ -16147,7 +17153,10 @@ int HudUiNumericTextInput::SetInputActive(
     return previousActive;
 }
 
-// Reimplements 0x4b4b50: HudUiNumericTextInput::OnRawKeyboardChar
+/**
+ * Reimplements 0x4b4b50: HudUiNumericTextInput::OnRawKeyboardChar.
+ * Purpose: handle the recovered HUD event path for HudUiNumericTextInput::OnRawKeyboardChar.
+ */
 int HudUiNumericTextInput::OnRawKeyboardChar(
     int key
 ) {
@@ -16166,12 +17175,16 @@ int HudUiNumericTextInput::OnRawKeyboardChar(
     return 0;
 }
 
-// Reimplements 0x41a290: HudUiNumericTextInput::OnAcceptForwardToCommit
+/**
+ * Reimplements 0x41a290: HudUiNumericTextInput::OnAcceptForwardToCommit.
+ * Purpose: handle the recovered HUD event path for HudUiNumericTextInput::OnAcceptForwardToCommit.
+ */
 int HudUiNumericTextInput::OnAcceptForwardToCommit() {
     return CommitAndGetValue();
 }
 
 /**
+ * Reimplements 0x41a2a0: HudUiClampedIntTextInput::OnRawKeyboardChar.
  * No standalone retail function has been identified for the base numeric
  * text-input commit slot; clamped/save-game owners override the slot when they
  * need committed values.
@@ -16181,7 +17194,10 @@ int HudUiNumericTextInput::CommitAndGetValue() {
     return 0;
 }
 
-// Reimplements 0x41a2a0: HudUiClampedIntTextInput::OnRawKeyboardChar
+/**
+ * Reimplements 0x41a2a0: HudUiClampedIntTextInput::OnRawKeyboardChar.
+ * Purpose: handle the recovered HUD event path for HudUiClampedIntTextInput::OnRawKeyboardChar.
+ */
 int HudUiClampedIntTextInput::OnRawKeyboardChar(
     int key
 ) {
@@ -16195,7 +17211,10 @@ int HudUiClampedIntTextInput::OnRawKeyboardChar(
     return 0;
 }
 
-// Reimplements 0x41a2d0: HudUiClampedIntTextInput::CommitAndGetValue
+/**
+ * Reimplements 0x41a2d0: HudUiClampedIntTextInput::CommitAndGetValue.
+ * Purpose: preserve the recovered HUD behavior for HudUiClampedIntTextInput::CommitAndGetValue.
+ */
 int HudUiClampedIntTextInput::CommitAndGetValue() {
     char *const text = GetBuffer();
     int value;
@@ -16293,6 +17312,10 @@ void HudUiNetGameSetupTextInput::OnActivateFocusAndCursor() {
     HudUiNumericTextInput::OnActivate();
 }
 
+/**
+ * Reimplements 0x41ab60: HudUiNetGameSetupOverlayOwner::StaticInitAndRegisterAtExit.
+ * Purpose: preserve the recovered HUD behavior for HudUiNetGameSetupOverlayOwner::StaticInitAndRegisterAtExit.
+ */
 void HudUiNetGameSetupTextInput::OnActivate() {
     OnActivateFocusAndCursor();
 }
@@ -16750,6 +17773,11 @@ HudUiPanel::HudUiPanel(
     textWidthPx = 0;
 }
 
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x4bd100 HudUiPanel::ConstructorDefaultThunk callers.
+ * Purpose: preserve the recovered HUD behavior for HudUiPanel::ConstructorDefault.
+ */
 HudUiPanel * HudUiPanel::ConstructorDefault(
     const char *text,
     int initX,
@@ -16763,7 +17791,10 @@ HudUiPanel * HudUiPanel::ConstructorDefault(
     return this;
 }
 
-// Reimplements 0x4bd100: HudUiPanel::ConstructorDefaultThunk
+/**
+ * Reimplements 0x4bd100: HudUiPanel::ConstructorDefaultThunk.
+ * Purpose: preserve the recovered HUD behavior for HudUiPanel::ConstructorDefaultThunk.
+ */
 HudUiPanel * HudUiPanel::ConstructorDefaultThunk() {
     return ConstructorDefault(
         0,
@@ -17008,25 +18039,37 @@ void HudUiPanel::GetTextRect(
     outRect->bottom = outRect->top + QueryTextHeight();
 }
 
-// Reimplements 0x40be90: HudUiPanel::Invalidate
+/**
+ * Reimplements 0x40be90: HudUiPanel::Invalidate.
+ * Purpose: preserve the recovered HUD behavior for HudUiPanel::Invalidate.
+ */
 void HudUiPanel::Invalidate() {
     textDirty = 1;
     HudUiElement::Invalidate();
 }
 
-// Reimplements 0x40bea0: HudUiPanel::GetFont
+/**
+ * Reimplements 0x40bea0: HudUiPanel::GetFont.
+ * Purpose: return the recovered HUD value exposed by HudUiPanel::GetFont.
+ */
 HGDIOBJ HudUiPanel::GetFont() {
     return hFont;
 }
 
-// Reimplements 0x40beb0: HudUiPanel::SetFontHandle
+/**
+ * Reimplements 0x40beb0: HudUiPanel::SetFontHandle.
+ * Purpose: apply the recovered HUD state change handled by HudUiPanel::SetFontHandle.
+ */
 void HudUiPanel::SetFontHandle(
     HGDIOBJ fontHandle
 ) {
     hFont = fontHandle;
 }
 
-// Reimplements 0x40bec0: HudUiPanel::EnableWordWrapWithRect
+/**
+ * Reimplements 0x40bec0: HudUiPanel::EnableWordWrapWithRect.
+ * Purpose: preserve the recovered HUD behavior for HudUiPanel::EnableWordWrapWithRect.
+ */
 void HudUiPanel::EnableWordWrapWithRect(
     const HudUiRect *rect
 ) {
@@ -17253,7 +18296,10 @@ void HudUiPanel::SetText(
     );
 }
 
-// Reimplements 0x4bac10: HudUiPanel::RebuildTextRect
+/**
+ * Reimplements 0x4bac10: HudUiPanel::RebuildTextRect.
+ * Purpose: preserve the recovered HUD behavior for HudUiPanel::RebuildTextRect.
+ */
 void HudUiPanel::RebuildTextRect() {
     if (strlen(textBuffer) == 0) {
         memset(
@@ -17541,7 +18587,10 @@ void HudUiPanel::UpdateTextBoundsFromContent() {
     DeleteDC(hdc);
 }
 
-// Reimplements 0x4bb1c0: HudUiPanel::MeasureTextPrefixRect
+/**
+ * Reimplements 0x4bb1c0: HudUiPanel::MeasureTextPrefixRect.
+ * Purpose: preserve the recovered HUD behavior for HudUiPanel::MeasureTextPrefixRect.
+ */
 int HudUiPanel::MeasureTextPrefixRect(
     int maxChars,
     RECT *outRect
@@ -18305,7 +19354,10 @@ HudUiPanel * HudUiTextStack4::PushLine(
     return &lines[0];
 }
 
-// Reimplements 0x4bd470: zTimedTask::RemoveFromActiveList (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x4bd470: zTimedTask::RemoveFromActiveList.
+ * Purpose: preserve the recovered HUD behavior for zTimedTask::RemoveFromActiveList.
+ */
 void zTimedTask::RemoveFromActiveList() {
     zTimedTask *node = g_zTimedTask_ActiveHead;
     zTimedTask *previous = 0;
@@ -18335,7 +19387,10 @@ void zTimedTask::RemoveFromActiveList() {
     --g_zTimedTask_ActiveCount;
 }
 
-// Reimplements 0x4bd4d0: zTimedTask::RunImmediateAction (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x4bd4d0: zTimedTask::RunImmediateAction.
+ * Purpose: preserve the recovered HUD behavior for zTimedTask::RunImmediateAction.
+ */
 void zTimedTask::RunImmediateAction() {
     switch (kind) {
     case 1:
@@ -18443,7 +19498,10 @@ void zTimedTask::RunImmediateAction() {
     }
 }
 
-// Reimplements 0x4bd660: zTimedTask::TickActiveList (D:\Proj\Battlesport\hud.cpp)
+/**
+ * Reimplements 0x4bd660: zTimedTask::TickActiveList.
+ * Purpose: preserve the recovered HUD behavior for zTimedTask::TickActiveList.
+ */
 void zTimedTask::TickActiveList() {
     zTimedTask *task = g_zTimedTask_ActiveHead;
     while (task != 0) {
@@ -18470,7 +19528,10 @@ void zTimedTask::TickActiveList() {
 }
 
 namespace HudUi {
-// Reimplements 0x4bc760: HudUi::SetInvalidateMode (D:\Proj\Battlesport\hudui.cpp)
+/**
+ * Reimplements 0x4bc760: HudUi::SetInvalidateMode.
+ * Purpose: apply the recovered HUD state change handled by HudUi::SetInvalidateMode.
+ */
 void __fastcall SetInvalidateMode(
     int mode
 ) {
@@ -18666,7 +19727,10 @@ void __fastcall ShowChatLine(
     }
 }
 
-// Reimplements 0x4143b0: HudUi::RefreshScoreboardEntryRow (D:\Proj\Battlesport\HudUi.cpp)
+/**
+ * Reimplements 0x4143b0: HudUi::RefreshScoreboardEntryRow.
+ * Purpose: preserve the recovered HUD behavior for HudUi::RefreshScoreboardEntryRow.
+ */
 void __fastcall RefreshScoreboardEntryRow(
     GameNetPlayerRow *entryData
 ) {

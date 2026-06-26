@@ -459,7 +459,13 @@ namespace {
                    (candidate->hitPos.x - polygonVertices[0].x) * vGrad0 + faceUvData->uvs[0].y;
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original static helper; no standalone retail function exists. Observed
+     * in address-backed transformed pick callers including 0x484e00,
+     * 0x4857f0, and 0x485d10 through the active matrix slot access pattern.
+     * Purpose: return the current model matrix used by cls_di point and normal
+     * transforms.
+     */
     const zMat4x3 *CurrentMatrix() {
         return (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
     }
@@ -525,7 +531,12 @@ namespace {
         }
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original static helper; no standalone retail function exists. Observed
+     * in address-backed segment and point pick callers including 0x445650,
+     * 0x445b20, and 0x445c20 as the typed mesh face payload access.
+     * Purpose: view the node DI payload as polygon/mesh pick face data.
+     */
     zModel_PickFaceData *NodePickFaceData(zClass_NodePartial * node) {
         return (zModel_PickFaceData *)((unsigned int)(node->userDataOrDiRef));
     }
@@ -1004,7 +1015,13 @@ namespace {
         );
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original static helper; no standalone retail function exists. Observed
+     * in address-backed segment-batch callers including 0x4476f0 and
+     * 0x486290 as the packed segment endpoint view of the active point array.
+     * Purpose: reinterpret the active pick point array as segment endpoint
+     * pairs for batched segment traversal.
+     */
     zClass_DiSegmentEndpoints *SegmentEndpointBatchFromPickPointArray() {
         return (zClass_DiSegmentEndpoints *)((void *)(g_DiPickPointArray));
     }
@@ -1208,7 +1225,13 @@ namespace {
         }
     }
 
-    // Source-faithful helper recovered from address-backed callers in this source file.
+    /**
+     * Original static helper; no standalone retail function exists. Observed
+     * in address-backed cls_di point and segment traversal callers including
+     * 0x443f80, 0x444890, 0x444c50, 0x444d10, and 0x446440.
+     * Purpose: view the node payload pointer as a zDi record for point and
+     * segment pick tests.
+     */
     zDiPartial *NodeDiRef(zClass_NodePartial * node) {
         return (zDiPartial *)((unsigned int)(node->userDataOrDiRef));
     }

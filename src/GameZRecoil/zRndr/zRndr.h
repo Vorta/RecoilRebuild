@@ -15,8 +15,10 @@ struct zOpt_ViewRectSection;
 struct zImage_TexDirEntryPartial;
 struct HudUiRect;
 
-// Authored zRndr lens-flare descriptor. BN xrefs from the queue and visible
-// sample paths use the enable flag at +0x0c and fade window at +0x14/+0x18.
+/**
+ * Authored zRndr lens-flare descriptor. BN xrefs from the queue and visible
+ * sample paths use the enable flag at +0x0c and fade window at +0x14/+0x18.
+ */
 struct zRndr_LensFlareSource {
     float depthFadeInvZMin;
     float depthFadeInvZMax;
@@ -29,8 +31,10 @@ struct zRndr_LensFlareSource {
 
 RECOIL_STATIC_ASSERT(sizeof(zRndr_LensFlareSource) == 0x1c);
 
-// Authored visible lens-flare sample record. Queue entries share this first
-// 0x14-byte layout when promoted into the visible-sample pointer list.
+/**
+ * Authored visible lens-flare sample record. Queue entries share this first
+ * 0x14-byte layout when promoted into the visible-sample pointer list.
+ */
 struct zRndr_LensFlareVisibleSampleDef {
     float sampleCenterX;
     float sampleCenterY;
@@ -105,12 +109,14 @@ struct ActiveRegionRectPartial {
     int bottom;
 };
 
-// Authored zRndr fog-parameter record. BN types the four adjacent zeroed BSS
-// records as zRndr_FogParams in Color, Staged, Direct, Active order at
-// 0x631dd0, 0x631e70, 0x631f10, and 0x631fb0, and scalar fog spans read packedColor16,
-// packedColor16Dup, and packedColorRamp from the active record. BN shows the
-// 0x49e0e0 helper stores packedColor16 as a word and leaves the following word
-// as padding before packedColor16Dup.
+/**
+ * Authored zRndr fog-parameter record. BN types the four adjacent zeroed BSS
+ * records as zRndr_FogParams in Color, Staged, Direct, Active order at
+ * 0x631dd0, 0x631e70, 0x631f10, and 0x631fb0, and scalar fog spans read packedColor16,
+ * packedColor16Dup, and packedColorRamp from the active record. BN shows the
+ * 0x49e0e0 helper stores packedColor16 as a word and leaves the following word
+ * as padding before packedColor16Dup.
+ */
 struct FogParamsPartial {
     float colorRgb01[3];
     int packedColorRed;
@@ -136,8 +142,10 @@ struct SpanNodePartial {
     float depthSlope;
 };
 
-// BN evidence: the switch-vshift span routines use gRndr_SavedEspSlot as the
-// stack-pivot scratch pointer while writing 16-bit spans backward.
+/**
+ * BN evidence: the switch-vshift span routines use gRndr_SavedEspSlot as the
+ * stack-pivot scratch pointer while writing 16-bit spans backward.
+ */
 struct zRndr_SpanEspPivotSave {
     int *savedEbp;
     int savedEdi;
@@ -147,10 +155,12 @@ struct zRndr_SpanEspPivotSave {
 
 RECOIL_STATIC_ASSERT(sizeof(zRndr_SpanEspPivotSave) == 0x10);
 
-// BN models the MMX scratch globals as qword records; lo is the dword at the
-// symbol base used by MOVQ loads/stores.
-// BN names the MMX scratch globals as zMmxQword lo/hi records; these are
-// authored renderer data records, not provider-owned MMX intrinsic state.
+/**
+ * BN models the MMX scratch globals as qword records; lo is the dword at the
+ * symbol base used by MOVQ loads/stores.
+ * BN names the MMX scratch globals as zMmxQword lo/hi records; these are
+ * authored renderer data records, not provider-owned MMX intrinsic state.
+ */
 struct zMmxQword {
     int lo;
     int hi;

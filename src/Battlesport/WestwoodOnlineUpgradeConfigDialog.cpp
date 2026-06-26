@@ -6,8 +6,10 @@
 
 #include <string.h>
 
-// Provider-boundary accessor for imported MFC42 CDialog members; this does not reimplement
-// provider behavior.
+/**
+ * Provider-boundary accessor for imported MFC42 CDialog members; this does not reimplement
+ * provider behavior.
+ */
 class CDialogProviderAccessor : public CDialog {
   public:
     static const AFX_MSGMAP *__stdcall GetMessageMap();

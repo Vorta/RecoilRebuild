@@ -1,14 +1,18 @@
 #include "Battlesport/Mfc42Abi.h"
 
-// Provider-boundary accessor for imported MFC42 CDialog metadata; this does
-// not reimplement CDialog behavior.
+/**
+ * Provider-boundary accessor for imported MFC42 CDialog metadata; this does
+ * not reimplement CDialog behavior.
+ */
 class MfcThreeFloatCDialogMessageMapAccessor : public CDialog {
   public:
     static const AFX_MSGMAP *__stdcall GetMessageMap();
 };
 
-// Authored Recoil dialog reconstructed over imported MFC42 CDialog; MFC base
-// behavior is provided by MFC42.
+/**
+ * Authored Recoil dialog reconstructed over imported MFC42 CDialog; MFC base
+ * behavior is provided by MFC42.
+ */
 class MfcThreeFloatDialog : public CDialog {
   public:
     static const AFX_MSGMAP messageMap;

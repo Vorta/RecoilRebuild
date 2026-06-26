@@ -58,7 +58,7 @@ Generated from `.agent/RECOIL_PLAN.md` and `.agent/RECOIL_MESSAGES_PLAN.md`.
 | Reconstructed | all entries | 5961 | 1117 | 0 | 0 | 0 | 7078 |
 | Source dependencies satisfied | authored entries | 3513 | 0 | 0 | 0 | 2986 | 6499 |
 | Source owner | authored entries | 6499 | 0 | 0 | 0 | 0 | 6499 |
-| Data reimplemented | authored entries | 2618 | 0 | 889 | 6 | 2986 | 6499 |
+| Data reimplemented | authored entries | 2624 | 0 | 889 | 0 | 2986 | 6499 |
 | Reimplemented | authored entries | 6499 | 0 | 0 | 0 | 0 | 6499 |
 | Provider-boundary | provider entries | 578 | 1 | 0 | 0 | 0 | 579 |
 
@@ -66,10 +66,10 @@ Generated from `.agent/RECOIL_PLAN.md` and `.agent/RECOIL_MESSAGES_PLAN.md`.
 | --- | ---: | ---: |
 | X | 0 | 0.0% |
 | F | 0 | 0.0% |
-| C | 6 | 0.1% |
-| B | 3843 | 59.1% |
+| C | 0 | 0.0% |
+| B | 6072 | 93.4% |
 | A | 166 | 2.6% |
-| S | 2484 | 38.2% |
+| S | 261 | 4.0% |
 
 ### messages.dll Plan
 

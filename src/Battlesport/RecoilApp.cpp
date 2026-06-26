@@ -52,8 +52,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Provider-boundary accessor for imported MFC42 CWinApp protected members; this does not
-// reimplement CWinApp behavior.
+/**
+ * Provider-boundary accessor for imported MFC42 CWinApp protected members; this does not
+ * reimplement CWinApp behavior.
+ */
 class RecoilMfcWinAppAccess : public CWinApp {
   public:
     static const AFX_MSGMAP *__stdcall GetMessageMapForRecoilApp();
@@ -104,21 +106,30 @@ const char k_SaveGameNameAllowedChars[] =
     "abcdefghijklmnopqrstuvwxyzABCDEFGHIKJKLMNOPQRSTUVWXYZ0123456789_ \x1b\r\x08\x7f\x02\x06";
 RECOIL_STATIC_ASSERT(sizeof(k_SaveGameNameAllowedChars) == 0x48);
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper: source-local with no standalone retail function address.
+ * Purpose: casts an option payload pointer to the view-rectangle section type.
+ */
 zOpt_ViewRectSection *ViewRectFromPtr(
     void *ptr
 ) {
     return (zOpt_ViewRectSection *)ptr;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper: source-local with no standalone retail function address.
+ * Purpose: forms a Win32 integer resource pointer from a numeric identifier.
+ */
 LPCSTR IntResource(
     unsigned int value
 ) {
     return (LPCSTR)(value);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original inline helper with no standalone retail function address.
+ * Purpose: extends or starts the play-state fade timer and mutes game sound.
+ */
 inline void ExtendPlayStateTransitionTimer(
     float seconds
 ) {
@@ -131,7 +142,10 @@ inline void ExtendPlayStateTransitionTimer(
     zOpt::SetMuteSoundOption(1);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper: source-local with no standalone retail function address.
+ * Purpose: runs the grand-prize blur action before returning to the front end.
+ */
 void RunGrandPrizeBlurAction() {
     zFMV_ActionBlur blurAction(
         12,
@@ -148,9 +162,10 @@ void RunGrandPrizeBlurAction() {
     RecoilStateCredits::QueuePush();
 }
 
-// original-source inline helper: retail has no standalone function address, and
-// BN callers 0x434fb0, 0x435160, and 0x4351b0 inline this same nullable
-// HudUiSaveLoadEntries count expression.
+/**
+ * Original inline helper with no standalone retail function address.
+ * Purpose: returns the nullable save/load entry count for dialog navigation.
+ */
 inline int SaveLoadEntryCount(
     const HudUiSaveLoadDialog *dialog
 ) {
@@ -161,6 +176,11 @@ inline int SaveLoadEntryCount(
 
 } // namespace
 
+/**
+ * Reimplements data 0x4f3ca8: g_RecoilApp.
+ *
+ * Purpose: stores the process-wide Recoil application object and embedded states.
+ */
 RecoilApp g_RecoilApp;
 /**
  * Reimplements data 0x4f3fb0: g_RecoilStateSaveLoadTransition.
@@ -640,6 +660,11 @@ const char *g_RecoilApp_WndClassNamePtr = g_RecoilApp_WndClassName;
  * networking, FMV, and dialog owner paths.
  */
 HWND g_RecoilApp_hWndMain = 0;
+/**
+ * Reimplements data 0x4f3ed0: g_RecoilApp_WindowClassRegistered.
+ *
+ * Purpose: tracks whether RecoilClass has already been registered with MFC.
+ */
 int g_RecoilApp_WindowClassRegistered = 0;
 /**
  * Reimplements data 0x4dcac4: g_RecoilApp_AttractFmvReloadMode.
@@ -2219,7 +2244,10 @@ RECOIL_NO_GS int RecoilApp::InitInstance() {
     return 1;
 }
 
-// Reimplements 0x42e110: RecoilApp::CreateMainWnd
+/**
+ * Reimplements 0x42e110: RecoilApp::CreateMainWnd.
+ * Purpose: allocates the main Recoil frame window object.
+ */
 CZRecoilFrame * RecoilApp::CreateMainWnd() {
     CZRecoilFrame *frame = new CZRecoilFrame;
     if (frame == 0) {
@@ -2552,7 +2580,10 @@ void RecoilApp::ShutdownEngine() {
     zVideo::ReturnSuccessStub();
 }
 
-// Reimplements 0x42e490: RecoilApp::LoadZbdAndStartEngine
+/**
+ * Reimplements 0x42e490: RecoilApp::LoadZbdAndStartEngine.
+ * Purpose: mounts startup archives, starts the engine, and registers mission sections.
+ */
 int RecoilApp::LoadZbdAndStartEngine() {
     if (g_HudSensorTracker.missionFlags != 0) {
         zArchive::MountIndexArchive(
@@ -2566,7 +2597,10 @@ int RecoilApp::LoadZbdAndStartEngine() {
     return 1;
 }
 
-// Reimplements 0x42e4d0: RecoilApp::LoadZbdAndSetupSensorTracker
+/**
+ * Reimplements 0x42e4d0: RecoilApp::LoadZbdAndSetupSensorTracker.
+ * Purpose: starts the engine and configures the sensor tracker for mission entry.
+ */
 int RecoilApp::LoadZbdAndSetupSensorTracker(
     int missionId,
     const char *zbdPath,
@@ -2712,11 +2746,11 @@ RecoilApp_StateQueueBlock * RecoilApp_StateQueueBlock::InitFromCursor(
     return this;
 }
 
+#if !(defined(RECOILAPP_VC5_STL_STATE_QUEUE_MEMBER) && defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86))
 /**
  * Reimplements 0x443690: RecoilApp_StateQueue::GrowAndCenterChunkBaseList.
  * Purpose: Grows the chunk-map and recenters the active chunk-slot range in the new map.
  */
-#if !(defined(RECOILAPP_VC5_STL_STATE_QUEUE_MEMBER) && defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86))
 RecoilApp_StateQueueItem *** RecoilApp_StateQueue::GrowAndCenterChunkBaseList(
     int newCapacity
 ) {
@@ -2745,17 +2779,26 @@ RecoilApp_StateQueueItem *** RecoilApp_StateQueue::GrowAndCenterChunkBaseList(
     return centeredSlot;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original inline member helper with no standalone retail function address.
+ * Purpose: tests whether the recovered state queue has no pending transition items.
+ */
 inline bool RecoilApp_StateQueue::Empty() const {
     return m_itemCount == 0;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original inline member helper with no standalone retail function address.
+ * Purpose: returns the pending transition item at the front of the recovered queue.
+ */
 inline RecoilApp_StateQueueItem *RecoilApp_StateQueue::Front() const {
     return *m_readBlock.m_cursor;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original inline member helper with no standalone retail function address.
+ * Purpose: removes the pending transition item at the front of the recovered queue.
+ */
 inline void RecoilApp_StateQueue::PopFront() {
     ++m_readBlock.m_cursor;
     --m_itemCount;
@@ -2953,11 +2996,13 @@ RecoilApp::RecoilApp()
     m_transitionFadeTimer = 0.0f;
 }
 
-// Reimplements 0x42de60: RecoilApp::~RecoilApp.
-// The implementation is the implicit VC5 destructor over embedded state
-// members and the MFC/OLE base.
-
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Provider boundary MFC message-map helper with no standalone retail function address.
+ * Source model note: Reimplements 0x42de60: RecoilApp::~RecoilApp.
+ * The implementation is the implicit VC5 destructor over embedded state members and the
+ * MFC/OLE base.
+ * Purpose: returns the imported CWinApp base message map for RecoilApp metadata.
+ */
 const AFX_MSGMAP *__stdcall RecoilApp::GetBaseMessageMapForMfc() {
     return RecoilMfcWinAppAccess::GetMessageMapForRecoilApp();
 }
@@ -2970,12 +3015,18 @@ const AFX_MSGMAP * RecoilApp::GetMessageMap() const {
     return &g_RecoilApp_MessageMap;
 }
 
-// Reimplements 0x442c00: RecoilApp::GetMainWnd
+/**
+ * Reimplements 0x442c00: RecoilApp::GetMainWnd.
+ * Purpose: returns the main window pointer as the concrete Recoil frame type.
+ */
 CZRecoilFrame * RecoilApp::GetMainWnd() const {
     return (CZRecoilFrame *)m_pMainWnd;
 }
 
-// Reimplements 0x443140: RecoilApp::GetCurrentState
+/**
+ * Reimplements 0x443140: RecoilApp::GetCurrentState.
+ * Purpose: returns the active app state when the state-stack index is valid.
+ */
 RecoilApp_IState * RecoilApp::GetCurrentState() const {
     if (m_currentStateIndex < 0) {
         return 0;
@@ -3057,7 +3108,10 @@ RecoilApp_IState * RecoilApp::QueueExitCurrentState(
     return currentState;
 }
 
-// Reimplements 0x442c10: RecoilApp::StartEngineAndQueueStartupState
+/**
+ * Reimplements 0x442c10: RecoilApp::StartEngineAndQueueStartupState.
+ * Purpose: starts gameplay systems and queues the pending startup app state.
+ */
 int RecoilApp::StartEngineAndQueueStartupState() {
     CZRecoilFrame *const mainWnd = GetMainWnd();
 
@@ -3075,7 +3129,10 @@ int RecoilApp::StartEngineAndQueueStartupState() {
     return 1;
 }
 
-// Reimplements 0x443650: RecoilApp::OnIdleOrDispatch
+/**
+ * Reimplements 0x443650: RecoilApp::OnIdleOrDispatch.
+ * Purpose: handles idle/dispatch notifications for CD sound and the current state.
+ */
 int RecoilApp::OnIdleOrDispatch(
     unsigned int wParam,
     unsigned int lParam
@@ -3095,32 +3152,46 @@ int RecoilApp::OnIdleOrDispatch(
     );
 }
 
-// Reimplements 0x442a10: RecoilApp::TakeSkipWaitMessage
+/**
+ * Reimplements 0x442a10: RecoilApp::TakeSkipWaitMessage.
+ * Purpose: consumes and clears the app-shell skip-wait-message flag.
+ */
 int RecoilApp::TakeSkipWaitMessage() {
     const int wasSkipped = m_skipWait;
     m_skipWait = 0;
     return wasSkipped;
 }
 
-// Reimplements 0x442a30: RecoilApp::MarkSkipWaitMessage
+/**
+ * Reimplements 0x442a30: RecoilApp::MarkSkipWaitMessage.
+ * Purpose: sets the app-shell skip-wait-message flag and returns its prior state.
+ */
 int RecoilApp::MarkSkipWaitMessage() {
     const int wasSkipped = m_skipWait;
     m_skipWait = 1;
     return wasSkipped;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper: app-shell with no standalone retail function address.
+ * Purpose: marks the message wait loop to skip after app activation.
+ */
 void RecoilApp::OnAppActivate() {
     MarkSkipWaitMessage();
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper: app-shell with no standalone retail function address.
+ * Purpose: clears the skip-wait flag when the app deactivates.
+ */
 void RecoilApp::OnAppDeactivate() {
     TakeSkipWaitMessage();
 }
 
-// Reimplements 0x442d00: RecoilApp::Run
-// (D:\Proj\Battlesport\RecoilApp.cpp)
+/**
+ * Reimplements 0x442d00: RecoilApp::Run.
+ * Purpose: runs the app-shell message loop, queued state transitions, and exception dialogs.
+ */
 int RecoilApp::Run() {
     CWinThread::SetThreadPriority(THREAD_PRIORITY_HIGHEST);
 
@@ -3218,13 +3289,19 @@ int RecoilApp::Run() {
     }
 }
 
-// Reimplements 0x42eea0: RecoilApp_PlayState::RecoilApp_PlayState
+/**
+ * Reimplements 0x42eea0: RecoilApp_PlayState::RecoilApp_PlayState.
+ * Purpose: initializes play-state transition scratch storage before the state becomes active.
+ */
 RecoilApp_PlayState::RecoilApp_PlayState() {
     m_transitionScratch = 0;
     pPendingLoadGameStartPath = 0;
 }
 
-// Reimplements 0x42eec0: RecoilApp_PlayState::OnWndActivate
+/**
+ * Reimplements 0x42eec0: RecoilApp_PlayState::OnWndActivate.
+ * Purpose: forwards window activation to the current HUD layout while gameplay is active.
+ */
 void RecoilApp_PlayState::OnWndActivate(
     int bActivate
 ) {
@@ -3233,8 +3310,10 @@ void RecoilApp_PlayState::OnWndActivate(
     }
 }
 
-// Reimplements 0x42eed0: RecoilApp_PlayState::OnTryBecomeCurrent
-// (D:\Proj\Battlesport\RecoilApp.cpp)
+/**
+ * Reimplements 0x42eed0: RecoilApp_PlayState::OnTryBecomeCurrent.
+ * Purpose: prepares HUD, audio, timing, and mission state when gameplay becomes current.
+ */
 int RecoilApp_PlayState::OnTryBecomeCurrent() {
     const int completedObjectiveCount = g_HudSensorTracker.completedObjectiveCount;
 
@@ -3384,8 +3463,10 @@ int RecoilApp_PlayState::OnTryBecomeCurrent() {
     return 1;
 }
 
-// Reimplements 0x42f5e0: RecoilApp_PlayState::OnUpdateShouldQuit
-// (D:\Proj\Battlesport\RecoilApp.cpp)
+/**
+ * Reimplements 0x42f5e0: RecoilApp_PlayState::OnUpdateShouldQuit.
+ * Purpose: advances gameplay frames and handles fade, credits, and menu-exit transitions.
+ */
 int RecoilApp_PlayState::OnUpdateShouldQuit() {
     if (g_RecoilApp.m_transitionFadeTimer > 0.0f) {
         g_zVideo_SoftwareModeHotkeyEnabled = ZVIDEO_SOFTWARE_MODE_HOTKEY_DISABLED;
@@ -3479,7 +3560,10 @@ int RecoilApp_PlayState::OnUpdateShouldQuit() {
     return 0;
 }
 
-// Reimplements 0x42f8a0: RecoilApp_PlayState::OnResume
+/**
+ * Reimplements 0x42f8a0: RecoilApp_PlayState::OnResume.
+ * Purpose: resumes mission CD audio playback after returning to the play state.
+ */
 void RecoilApp_PlayState::OnResume(
     int
 ) {
@@ -3493,8 +3577,10 @@ void RecoilApp_PlayState::OnResume(
     }
 }
 
-// Reimplements 0x42f8e0: RecoilApp_PlayState::OnDeactivate
-// (D:\Proj\Battlesport\RecoilApp.cpp)
+/**
+ * Reimplements 0x42f8e0: RecoilApp_PlayState::OnDeactivate.
+ * Purpose: tears down play-state HUD, audio, networking, and screen-saver state.
+ */
 void RecoilApp_PlayState::OnDeactivate() {
     HudUiLoadingCheckpoint::AdvanceAndLog(g_RecoilApp_LeavingPlayStateMsg);
 
@@ -3806,38 +3892,71 @@ int RecoilApp_MissionFmvState::OnUpdateShouldQuit() {
     return 0;
 }
 
-// Reimplements 0x42df90: RecoilApp_IState::~RecoilApp_IState is
-// header-visible in RecoilApp.h so VC5 can inline base vptr restoration into
-// derived app-state destructors outside this translation unit.
+/**
+ * Original helper: default state hook with no standalone retail function address.
+ * Source model note: Reimplements 0x42df90: RecoilApp_IState::~RecoilApp_IState is
+ * header-visible in RecoilApp.h so VC5 can inline base vptr restoration into
+ * derived app-state destructors outside this translation unit.
+ * Purpose: accepts window-activation notifications for states that do not override them.
+ */
 void RecoilApp_IState::OnWndActivate(
     int
 ) {}
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper: default state hook with no standalone retail function address.
+ * Purpose: supplies the no-op enter callback for states without enter work.
+ */
 void RecoilApp_IState::OnEnter() {}
 
+/**
+ * Original helper: default state hook with no standalone retail function address.
+ * Purpose: allows a state transition to become current by default.
+ */
 int RecoilApp_IState::OnTryBecomeCurrent() {
     return 1;
 }
 
+/**
+ * Original helper: default state hook with no standalone retail function address.
+ * Purpose: reports that a default state does not request app shutdown.
+ */
 int RecoilApp_IState::OnUpdateShouldQuit() {
     return 0;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper: default state hook with no standalone retail function address.
+ * Purpose: supplies the no-op exit callback for states without exit work.
+ */
 void RecoilApp_IState::OnExit() {}
 
+/**
+ * Original helper: default state hook with no standalone retail function address.
+ * Purpose: supplies the no-op deactivate callback for states without deactivate work.
+ */
 void RecoilApp_IState::OnDeactivate() {}
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original helper: default state hook with no standalone retail function address.
+ * Purpose: accepts suspend notifications for states that do not override them.
+ */
 void RecoilApp_IState::OnSuspend(
     int
 ) {}
 
+/**
+ * Original helper: default state hook with no standalone retail function address.
+ * Purpose: accepts resume notifications for states that do not override them.
+ */
 void RecoilApp_IState::OnResume(
     int
 ) {}
 
+/**
+ * Original helper: default state hook with no standalone retail function address.
+ * Purpose: lets default states keep the idle/dispatch loop alive.
+ */
 int RecoilApp_IState::OnIdleOrDispatch(
     unsigned int,
     unsigned int

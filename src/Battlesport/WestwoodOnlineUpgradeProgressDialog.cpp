@@ -9,8 +9,10 @@
 RECOIL_STATIC_ASSERT(sizeof(CWnd) == 0x40);
 RECOIL_STATIC_ASSERT(sizeof(CDialog) == 0x60);
 
-// Provider-boundary accessor for imported MFC42 CDialog metadata; this does not reimplement
-// CDialog behavior.
+/**
+ * Provider-boundary accessor for imported MFC42 CDialog metadata; this does not reimplement
+ * CDialog behavior.
+ */
 class WestwoodOnlineUpgradeProgressCDialogMessageMapAccessor : public CDialog {
   public:
     static const AFX_MSGMAP *__stdcall GetMessageMap();

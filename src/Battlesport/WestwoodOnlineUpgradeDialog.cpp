@@ -12,22 +12,28 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Provider-boundary accessor for imported MFC42 CDialog::OnCancel; this does not reimplement
-// CDialog behavior.
+/**
+ * Provider-boundary accessor for imported MFC42 CDialog::OnCancel; this does not reimplement
+ * CDialog behavior.
+ */
 class CDialogCancelAccessor : public CDialog {
   public:
     void CallBaseOnCancel();
 };
 
-// Provider-boundary accessor for imported MFC42 CDialog metadata; this does not reimplement
-// CDialog behavior.
+/**
+ * Provider-boundary accessor for imported MFC42 CDialog metadata; this does not reimplement
+ * CDialog behavior.
+ */
 class WestwoodOnlineUpgradeCDialogMessageMapAccessor : public CDialog {
   public:
     static const AFX_MSGMAP *__stdcall GetMessageMap();
 };
 
-// Provider-boundary accessor for imported MFC42 CWnd::Default; this does not reimplement
-// CWnd behavior.
+/**
+ * Provider-boundary accessor for imported MFC42 CWnd::Default; this does not reimplement
+ * CWnd behavior.
+ */
 class WestwoodOnlineUpgradeCWndAccess : public CWnd {
   public:
     long CallDefault();

@@ -920,15 +920,15 @@ void ThreadMain(
     while (g_Briefing_ThreadRunFlag != 0) {
         if (zOpt::GetNetworkEnabled() == 0 && g_Briefing_AllowAdvanceFlag != 0 &&
             zInput_WaitForAnyKeyPressWithTimeoutMs(100) != 0) {
-            if (g_Briefing_CurrentSndHandle != 0) {
-                g_Briefing_CurrentSndHandle->StopIfActive();
-            }
-
             /**
              * Reimplements data 0x4e5cb4: g_Briefing_Runtime.
              * Purpose: snapshot the active runtime while input cancellation resets the visible panels.
              */
             HudUiBriefingRuntime *const runtime = g_Briefing_Runtime;
+            if (g_Briefing_CurrentSndHandle != 0) {
+                g_Briefing_CurrentSndHandle->StopIfActive();
+            }
+
             Briefing_ActionQueue *const actionQueue = BriefingActionQueue(runtime);
             actionQueue->sequenceActive = 0;
             g_Briefing_SequenceActiveFlag = 0;

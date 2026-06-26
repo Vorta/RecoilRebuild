@@ -625,7 +625,11 @@ float RawSecondsToFloat(
     return value;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x416390 HudGeom2D::ClassifyPointAgainstSegment callers.
+ * Purpose: preserve the recovered HUD behavior for ApproxSqrtScaleFromBits.
+ */
 float ApproxSqrtScaleFromBits(
     float value
 ) {
@@ -646,7 +650,11 @@ float ApproxSqrtScaleFromBits(
     return approxValue;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x416390 HudGeom2D::ClassifyPointAgainstSegment callers.
+ * Purpose: preserve the recovered HUD behavior for IsPointStrictlyInsideRect.
+ */
 bool IsPointStrictlyInsideRect(
     const HudUiRect &rect,
     const zVec3 &point
@@ -2674,7 +2682,10 @@ int HudSensorTracker::SetZbdPath(
     return 1;
 }
 
-// Reimplements 0x4177a0: HudSensorTracker::SetMissionId
+/**
+ * Reimplements 0x4177a0: HudSensorTracker::SetMissionId.
+ * Purpose: apply the recovered HUD state change handled by HudSensorTracker::SetMissionId.
+ */
 int HudSensorTracker::SetMissionId(
     int newMissionId
 ) {
@@ -3506,8 +3517,11 @@ void HudSensorTracker::RunStartAnimsFromZrd(
     zReader::FreeLoadedTree(rootNode);
 }
 
-// Reimplements 0x419010: HudSensorTracker::QueueMissionFmvStateForMissionId
-// (D:\Proj\GameZRecoil\recoilapp.cpp)
+/**
+ * Reimplements 0x419010: HudSensorTracker::QueueMissionFmvStateForMissionId.
+ * Original source path: D:\Proj\GameZRecoil\recoilapp.cpp.
+ * Purpose: queue the recovered HUD application-state transition for HudSensorTracker::QueueMissionFmvStateForMissionId.
+ */
 int HudSensorTracker::QueueMissionFmvStateForMissionId(
     int missionId
 ) {
@@ -3520,8 +3534,11 @@ int HudSensorTracker::QueueMissionFmvStateForMissionId(
     return 1;
 }
 
-// Reimplements 0x418fb0: HudSensorTracker::SaveAndQueueMissionState
-// (D:\Proj\Battlesport\map.cpp)
+/**
+ * Reimplements 0x418fb0: HudSensorTracker::SaveAndQueueMissionState.
+ * Original source path: D:\Proj\Battlesport\map.cpp.
+ * Purpose: preserve the recovered HUD behavior for HudSensorTracker::SaveAndQueueMissionState.
+ */
 void HudSensorTracker::SaveAndQueueMissionState() {
     if (finalMissionFlag != 0) {
         g_RecoilApp_QuitAfterCredits = 1;

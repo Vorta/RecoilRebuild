@@ -78,21 +78,6 @@ zSndFadeList *DispatchFadeList() {
     return (zSndFadeList *)(&g_zSndFadeDispatchListFlags);
 }
 
-/**
- * Original inline helper; no standalone retail function exists.
- * Observed in 0x4a39b0, 0x4a3c20, 0x4a3d20, and 0x4a3e50 fade-list cleanup
- * callers.
- * Purpose: unlink one fade-list node from its intrusive list and release its
- * storage.
- */
-void UnlinkAndDeleteFadeNode(
-    zSndFadeListNode *node
-) {
-    node->prev->next = node->next;
-    node->next->prev = node->prev;
-    ::operator delete(node);
-}
-
 } // namespace
 
 namespace zSndFadeLists {
@@ -148,7 +133,9 @@ void ShutdownAtExit() {
     node = activeSentinel->next;
     while (node != activeSentinel) {
         zSndFadeListNode *const next = node->next;
-        UnlinkAndDeleteFadeNode(node);
+        node->prev->next = node->next;
+        node->next->prev = node->prev;
+        ::operator delete(node);
         /**
          * Reimplements data 0x56b3f8: g_zSndFadeActiveListCount.
          * Data: g_zSndFadeActiveListCount.
@@ -364,10 +351,14 @@ void zSndFadeList::DeleteNodeAndAdvanceCursor(
     zSndFadeListNode *node,
     zSndFadeListNode **outCursor
 ) {
+    zSndFadeListNode *const previous = node->prev;
     zSndFadeListNode *const next = node->next;
-    UnlinkAndDeleteFadeNode(node);
+    zSndFadeListNode *const outNext = node->next;
+    previous->next = next;
+    next->prev = previous;
+    ::operator delete(node);
     --count;
-    *outCursor = next;
+    *outCursor = outNext;
 }
 
 /**

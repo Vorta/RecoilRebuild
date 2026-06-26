@@ -36,8 +36,10 @@ char g_AiPropertyDlg_LabelMaxPursuitRange[] = "Max Pursuit Rng";
  */
 char g_AiPropertyDlg_LabelMinPursuitRange[] = "Min Pursuit Rng";
 
-// Provider-boundary accessor for imported MFC42 CDialog metadata; this does not reimplement
-// CDialog behavior.
+/**
+ * Provider-boundary accessor for imported MFC42 CDialog metadata; this does not reimplement
+ * CDialog behavior.
+ */
 class AiPropertyDlgCDialogMessageMapAccessor : public CDialog {
   public:
     static const AFX_MSGMAP *__stdcall GetMessageMap();
