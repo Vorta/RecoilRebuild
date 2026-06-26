@@ -17,13 +17,9 @@ void RecoilStateMainMenuTransition::OnResume(
 
     zVideo::RunPostprocessOnPrimaryBuffer();
 
-    HudUiMainMenuDialog *dialog = m_mainMenuDialog;
-    dialog->SetEnabled(1);
-
-    ((HudUiContainer *)dialog)->InvalidateChildren();
-
-    dialog = m_mainMenuDialog;
-    dialog->Update(0.0f);
+    m_mainMenuDialog->SetEnabled(1);
+    ((HudUiContainer *)m_mainMenuDialog)->InvalidateChildren();
+    ((HudUiContainer *)m_mainMenuDialog)->UpdateAll(0.0f);
 
     zVideo::Dispatch_UnlockPrimarySurfaceState();
 

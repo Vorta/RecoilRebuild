@@ -20865,7 +20865,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zvideo_module_init;
     - Group: engine.zvideo;
     - Model: source-faithful;
-    - Blocker: Tier S remains blocked on VC5SP3 byte drift: 81 unmasked mismatches after 64 relocation bytes masked; register-zero selection, store encoding, argument setup ordering, and call relocation drift remain.
+    - Blocker: Launch crash fixed by source-owned zVideo reset; all ModuleInit touched globals have VC5 data-symbol coverage and the 45 touched-global data targets passed, but touched-global data tier S remains blocked by final Recoil.exe .data layout drift while function tier S remains blocked by known VC5SP3 byte drift.
 
 - 0x4a75e0:
   - [✅] Reconstructed (Name: zVideo::ReturnSuccessStub)
@@ -45460,7 +45460,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: class; Parent: RecoilStateMainMenuTransition; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: RecoilStateMainMenuTransition::OnResume;
     - File: src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition_OnResume.cpp;
     - Target: recoil_state_main_menu_transition_on_resume;
@@ -46858,10 +46858,10 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: class; Parent: RecoilStateSaveLoadTransition; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
-    - Name: RecoilStateSaveLoadTransition::OnUpdateShouldQuit;
-    - File: src/Battlesport/RecoilApp.cpp;
-    - Target: recoil_state_save_load_transition_on_update_should_quit;
+  - [✅] Reimplemented [S]
+    - Name: RecoilStateMainMenuTransition::OnUpdateShouldQuit;
+    - File: src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition_OnUpdateShouldQuit.cpp;
+    - Target: recoil_state_main_menu_transition_on_update_should_quit;
     - Group: app.recoil_app.core;
     - Model: source-faithful;
     - Blocker: none
@@ -62180,10 +62180,10 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reimplemented [B]
     - Name: g_zVid_CachedClientRectUpdateMask;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
-    - Target: pending;
+    - Target: zvid_cached_client_rect_update_mask_data;
     - Group: data.render_video;
     - Model: source-faithful;
-    - Blocker: data byte manifest open
+    - Blocker: none
 
 - 0x56bbc8:
   - [✅] Reconstructed (Kind: data; Name: g_zVideo_PrimarySurfaceRectScratch; Section: .data; Size: 16; Type: struct zVid_Rect32)

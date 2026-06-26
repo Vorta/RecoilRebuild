@@ -32,6 +32,7 @@ add_library(recoil_native STATIC
     ../GameZRecoil/RecoilApp/RecoilStateDialogHost.cpp
     ../GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.cpp
     ../GameZRecoil/RecoilApp/RecoilStateMainMenuTransition_OnTryBecomeCurrent.cpp
+    ../GameZRecoil/RecoilApp/RecoilStateMainMenuTransition_OnUpdateShouldQuit.cpp
     ../GameZRecoil/RecoilApp/RecoilStateMainMenuTransition_OnResume.cpp
     ../GameZRecoil/RecoilApp/RecoilStateMainMenuTransition_OnDeactivate.cpp
     ../GameZRecoil/RecoilApp/RecoilStateMainMenuTransition_ClearPausedAudioSnapshot.cpp

@@ -40957,7 +40957,8 @@
         "0x4153d0",
         "0x415630",
         "0x415670",
-        "0x415110"
+        "0x415110",
+        "0x435e80"
       ],
       "data_addresses": [
         {
@@ -46583,13 +46584,15 @@
         "source": "accepted",
         "data": "accepted",
         "functional": "accepted",
-        "byte": "deferred"
+        "byte": "blocked"
       },
-      "blocker": "none",
+      "blocker": "tier S blocked by remaining VC5 code mismatches at 0x4a75f0, 0x4a8870, 0x4a9950, 0x4a9a30, 0x4a7530, 0x48d340, 0x48d910, 0x4a6db0, 0x48daf0 plus external dependency 0x4a6bf0, and by final .data layout drift for zVideo data byte gates",
       "evidence": [
         "Owner-ledger reconciliation for legacy accepted Source owner markers: the address plan already carried accepted owner metadata before strict SOURCE_OWNERS link enforcement; this record links that accepted owner scope without adding data, functional, or byte evidence.",
         "Direct zVideo memory-query globals are linked to accepted data owners: g_zVideo_RendererType 0x632120, g_zVideo_pDirectDraw2 0x6333d8, g_zVideo_pSelectedHwApiDeviceRecord 0x633e40, and g_zVideo_HwApiDeviceTable 0x633e44. BN/source audit for 0x4a9950/0x4a9a30 shows no missing provider boundary; IDirectDraw2::GetAvailableVidMem is a DirectX provider COM method through the stored provider pointer.",
-        "zVideo::GetPrimarySurfaceRectScratch touches accepted scratch-rect data owner 0x56bbc8 in addition to existing accepted zVideo namespace data dependencies."
+        "zVideo::GetPrimarySurfaceRectScratch touches accepted scratch-rect data owner 0x56bbc8 in addition to existing accepted zVideo namespace data dependencies.",
+        "2026-06-26 zVideo VC5 owner sweep: 26 member functions are byte-clean, but 0x4a75f0, 0x4a8870, 0x4a9950, 0x4a9a30, 0x4a7530, 0x48d340, 0x48d910, 0x4a6db0, 0x48daf0 and external dependency 0x4a6bf0 still fail VC5 byte comparison; final .data layout drift still blocks data byte acceptance.",
+        "2026-06-26 owner sweep and data/final-build triage."
       ]
     },
     {
@@ -54111,12 +54114,15 @@
         "source": "accepted",
         "data": "accepted",
         "functional": "accepted",
-        "byte": "deferred"
+        "byte": "blocked"
       },
-      "blocker": "none",
+      "blocker": "final-data audit blocks touched-global data tier S: candidate Recoil.exe .data raw_size +0x1a00, virtual_size -0x1cc0, zero_fill_tail -0x36c0",
       "evidence": [
         "BN/provider-data packet: 0x4a59a0 stores the 4-byte authored g_zVid_CachedClientRectUpdateMask at 0x56b564 and 0x4a59b0 reads it with accepted g_zVideo_ActiveRendererPath; source defines the scalar in zVideo.cpp and declares it in zVideo.h; no provider/import boundary is involved.",
-        "Same-session data classifier: BN xrefs bound the full 0x56b564 scalar owner to Set/Query cached-client-rect mask helpers; source definition/declaration match section, size, type, zero-init model; functional checks for 0x4a59a0 and 0x4a59b0 passed; data byte manifest for 0x56b564 is not present, so byte stays deferred."
+        "Same-session data classifier: BN xrefs bound the full 0x56b564 scalar owner to Set/Query cached-client-rect mask helpers; source definition/declaration match section, size, type, zero-init model; functional checks for 0x4a59a0 and 0x4a59b0 passed; data byte manifest for 0x56b564 is not present, so byte stays deferred.",
+        "VC5SP3 targets zvid_cached_client_rect_update_mask, zvid_cached_client_rect_update_mask_helpers, and zvid_cached_client_rect_update_mask_data passed with zero unmasked byte/data mismatches for 0x4a59a0, 0x4a59b0, 0x443a40, and g_zVid_CachedClientRectUpdateMask 0x56b564; final-data audit reported no direct S-tier issue or affected owner for the touched zVideo rows.",
+        "final-data audit: candidate Recoil.exe .data mismatches retail section/layout evidence; raw_size +0x1a00, virtual_size -0x1cc0, zero_fill_tail -0x36c0, so final data tier S byte identity is not accepted.",
+        "ModuleInit reset fix touched these data owners; VC5 data-symbol targets zvideo_texture_pixel_pack_state_global, zvideo_primary_surface_rect_scratch_data, and zvid_cached_client_rect_update_mask_data passed, but final-data audit still reports executable .data section/layout drift, so data tier S byte identity is not accepted."
       ]
     },
     {
@@ -57625,14 +57631,15 @@
         "source": "accepted",
         "data": "accepted",
         "functional": "accepted",
-        "byte": "deferred"
+        "byte": "blocked"
       },
-      "blocker": "none",
+      "blocker": "final-data audit blocks touched-global data tier S: candidate Recoil.exe .data raw_size +0x1a00, virtual_size -0x1cc0, zero_fill_tail -0x36c0",
       "evidence": [
         "BN declares 0x56bbc8 as a 16-byte zero-initialized zVid_Rect32; zVideo::GetPrimarySurfaceRectScratch updates right/bottom from accepted g_zVideo_PrimarySurfaceState and returns the scratch rect; source declares zVidRect32 g_zVideo_PrimarySurfaceRectScratch in zVideo.cpp.",
         "Complete zVideo primary surface scratch rect owner accepted: BN/source agree on a 16-byte zero-initialized zVid_Rect32 at 0x56bbc8; 0x4a7200 updates right/bottom from accepted primary surface state and returns the scratch rect; dependent DirectDraw surface-state globals are accepted.",
         "No blocker remains for the accepted scratch rect data owner; byte verification is deferred by policy.",
-        "Complete zVideo primary surface scratch rect data owner accepted: BN/source agree on a 16-byte zero-initialized zVid_Rect32 used by 0x4a7200 and HudUiMessageBoxDialog constructor; DirectDraw surface-state dependency is accepted."
+        "Complete zVideo primary surface scratch rect data owner accepted: BN/source agree on a 16-byte zero-initialized zVid_Rect32 used by 0x4a7200 and HudUiMessageBoxDialog constructor; DirectDraw surface-state dependency is accepted.",
+        "ModuleInit reset fix touched these data owners; VC5 data-symbol targets zvideo_texture_pixel_pack_state_global, zvideo_primary_surface_rect_scratch_data, and zvid_cached_client_rect_update_mask_data passed, but final-data audit still reports executable .data section/layout drift, so data tier S byte identity is not accepted."
       ]
     },
     {
@@ -58235,12 +58242,13 @@
         "source": "accepted",
         "data": "accepted",
         "functional": "accepted",
-        "byte": "deferred"
+        "byte": "blocked"
       },
-      "blocker": "pending",
+      "blocker": "final-data audit blocks touched-global data tier S: candidate Recoil.exe .data raw_size +0x1a00, virtual_size -0x1cc0, zero_fill_tail -0x36c0",
       "evidence": [
         "BN declares g_zVideo_TexturePixelPack at 0x632188 as a 64-byte .data zVideo_TexturePixelPackState; source zVideo.cpp defines the matching zero-initialized scalar block and 0x4a6db0 writes every field.",
-        "Complete scalar field order/storage/lifecycle for 0x632188..0x6321c4 matches BN/source: 16 contiguous 4-byte zero-initialized fields in zVideo.cpp/zVideo.h, and 0x4a6db0 writes every field with no imports/providers/relocations/strings/tables. Byte gate deferred pending focused VC data-symbol check."
+        "Complete scalar field order/storage/lifecycle for 0x632188..0x6321c4 matches BN/source: 16 contiguous 4-byte zero-initialized fields in zVideo.cpp/zVideo.h, and 0x4a6db0 writes every field with no imports/providers/relocations/strings/tables. Byte gate deferred pending focused VC data-symbol check.",
+        "ModuleInit reset fix touched these data owners; VC5 data-symbol targets zvideo_texture_pixel_pack_state_global, zvideo_primary_surface_rect_scratch_data, and zvid_cached_client_rect_update_mask_data passed, but final-data audit still reports executable .data section/layout drift, so data tier S byte identity is not accepted."
       ]
     },
     {
