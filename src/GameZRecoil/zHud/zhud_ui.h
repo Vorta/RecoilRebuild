@@ -7,6 +7,7 @@
 #include <string.h>
 
 #include "Battlesport/RecoilApp.h"
+#include "GameZRecoil/RecoilApp/RecoilStateDialogHost.h"
 #include "GameZRecoil/zReader/zReader.h"
 #include "GameZRecoil/zVideo/zVideo.h"
 #include "GameZRecoil/zInput/zInput.h"
@@ -1828,8 +1829,7 @@ struct HudUiNetGameSetupTextInput : HudUiNumericTextInput {
     void OnActivateFocusAndCursor();
 };
 
-struct HudUiNetGameSetupOverlayOwner : RecoilApp_IState {
-    HudUiNetGameSetupPanel *m_panel;
+struct HudUiNetGameSetupOverlayOwner : RecoilStateDialogHost {
     int m_reconfigureExistingSession;
 
     HudUiNetGameSetupOverlayOwner();
@@ -1846,7 +1846,7 @@ RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupOverlayOwner) == 0x0c);
 RECOIL_STATIC_ASSERT(
     offsetof(
         HudUiNetGameSetupOverlayOwner,
-        m_panel
+        m_dialog
     ) == 0x04
 );
 RECOIL_STATIC_ASSERT(
@@ -2638,9 +2638,7 @@ struct HudOptionsDialog : HudUiBackground {
     HudUiBackground * ScalarDeletingDestructor(unsigned int flags);
 };
 
-struct HudCmdDialogState : RecoilApp_IState {
-    HudCmdDialog *m_dialog;
-
+struct HudCmdDialogState : RecoilStateDialogHost {
     HudCmdDialogState();
     static void StaticInitAndRegisterAtExit();
     static HudCmdDialogState *StaticInit();

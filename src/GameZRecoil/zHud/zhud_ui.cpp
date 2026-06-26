@@ -7,6 +7,7 @@
 #include "Battlesport/GameNet.h"
 #include "Battlesport/HudSensorTracker.h"
 #include "Battlesport/HudUiNetGameSetup.h"
+#include "Battlesport/RecoilStateCredits.h"
 #include "Battlesport/hud.h"
 #include "Battlesport/player.h"
 #include "GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.h"
@@ -13746,7 +13747,7 @@ int HudCmdDialogState::OnTryBecomeCurrent() {
 void HudCmdDialogState::OnDeactivate() {
     zInput::Keyboard_ResumeFromSuspend();
 
-    HudCmdDialog *dialog = m_dialog;
+    HudCmdDialog *dialog = (HudCmdDialog *)m_dialog;
     if (dialog == 0) {
         return;
     }
@@ -13754,7 +13755,7 @@ void HudCmdDialogState::OnDeactivate() {
     dialog->SetEnabled(0);
     ((HudUiDialogController *)m_dialog)->BlitOwnedSurfaceToPrimary();
 
-    dialog = m_dialog;
+    dialog = (HudCmdDialog *)m_dialog;
     if (dialog != 0) {
         dialog->ScalarDeletingDestructor(1);
     }
@@ -13769,7 +13770,7 @@ void HudCmdDialogState::OnDeactivate() {
  * Purpose: Delete any active command dialog owned by the state during teardown.
  */
 HudCmdDialogState::~HudCmdDialogState() {
-    HudCmdDialog *const dialog = m_dialog;
+    HudCmdDialog *const dialog = (HudCmdDialog *)m_dialog;
     if (dialog != 0) {
         dialog->ScalarDeletingDestructor(1);
         m_dialog = 0;
@@ -17368,8 +17369,9 @@ void HudUiNetGameSetupOverlayOwner::AtExitDestructor() {
  * no pending reconfigure request.
  */
 HudUiNetGameSetupOverlayOwner::HudUiNetGameSetupOverlayOwner()
-    : m_panel(0),
-      m_reconfigureExistingSession(0) {}
+    : m_reconfigureExistingSession(0) {
+    m_dialog = 0;
+}
 
 /**
  * Reimplements 0x41abe0: HudUiNetGameSetupOverlayOwner::~HudUiNetGameSetupOverlayOwner.
@@ -17378,16 +17380,16 @@ HudUiNetGameSetupOverlayOwner::HudUiNetGameSetupOverlayOwner()
  * the owner singleton's panel pointer.
  */
 HudUiNetGameSetupOverlayOwner::~HudUiNetGameSetupOverlayOwner() {
-    HudUiNetGameSetupPanel *panel = m_panel;
+    HudUiNetGameSetupPanel *panel = (HudUiNetGameSetupPanel *)m_dialog;
     if (panel != 0) {
         panel->SetEnabled(0);
 
-        panel = m_panel;
+        panel = (HudUiNetGameSetupPanel *)m_dialog;
         if (panel != 0) {
             panel->ScalarDeletingDestructor(1);
         }
 
-        m_panel = 0;
+        m_dialog = 0;
     }
 }
 
@@ -17419,7 +17421,7 @@ int HudUiNetGameSetupOverlayOwner::OnTryBecomeCurrent() {
         panel = new (panel) HudUiNetGameSetupPanel(m_reconfigureExistingSession);
     }
 
-    m_panel = panel;
+    m_dialog = panel;
     panel->SetEnabled(1);
 
     if (zSnd::GetCDAudioOption() != 0) {
@@ -17442,25 +17444,25 @@ void HudUiNetGameSetupOverlayOwner::OnDeactivate() {
     Sleep(1000);
     zSndSampleSet_DestroyByName(g_HudUiDialogSampleSetName);
 
-    HudUiNetGameSetupPanel *panel = m_panel;
+    HudUiNetGameSetupPanel *panel = (HudUiNetGameSetupPanel *)m_dialog;
     if (panel == 0) {
         return;
     }
 
     zVideo::RunPostprocessOnPrimaryBuffer();
 
-    panel = m_panel;
+    panel = (HudUiNetGameSetupPanel *)m_dialog;
     panel->SetEnabled(0);
 
-    ((HudUiDialogController *)m_panel)->BlitOwnedSurfaceToPrimary();
+    ((HudUiDialogController *)m_dialog)->BlitOwnedSurfaceToPrimary();
     zVideo::Dispatch_UnlockPrimarySurfaceState();
 
-    panel = m_panel;
+    panel = (HudUiNetGameSetupPanel *)m_dialog;
     if (panel != 0) {
         panel->ScalarDeletingDestructor(1);
     }
 
-    m_panel = 0;
+    m_dialog = 0;
 }
 
 /**

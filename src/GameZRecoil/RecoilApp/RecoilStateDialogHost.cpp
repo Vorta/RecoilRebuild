@@ -1,15 +1,89 @@
 #include "GameZRecoil/RecoilApp/RecoilStateDialogHost.h"
 
+#include "GameZRecoil/Time/Time.h"
+#include "GameZRecoil/zGame/zGame.h"
+#include "GameZRecoil/zHud/zhud_ui.h"
+#include "GameZRecoil/zInput/zInput.h"
+#include "GameZRecoil/zVideo/zVideo.h"
+
 /**
- * Reimplements 0x408f50: RecoilStateDialogHost::OnWndActivate.
+ * Reimplements 0x4099a0: RecoilStateDialogHost::OnWndActivate.
  *
- * Purpose: redraw and re-present the hosted HUD dialog when the application
- * receives a window activation notification.
+ * Purpose: refresh the hosted HUD dialog surfaces when the application is
+ * reactivated.
  */
 void RecoilStateDialogHost::OnWndActivate(
     int activateCode
 ) {
-    (void)activateCode;
+    if (activateCode == 0) {
+        return;
+    }
+
+    if (m_dialog == 0) {
+        return;
+    }
+
+    ((HudUiDialogController *)m_dialog)->BlitOwnedSurfaceToPrimary();
+    m_dialog->InvalidateChildren();
+}
+
+/**
+ * Reimplements 0x435e80: RecoilStateDialogHost::OnUpdateShouldQuit.
+ *
+ * Purpose: update and present the hosted HUD dialog each frame while a dialog
+ * app state is current.
+ */
+int RecoilStateDialogHost::OnUpdateShouldQuit() {
+    zInput::PollActiveDevices(0);
+
+    if (m_dialog != 0) {
+        Time::Tick();
+        zVideo::RunPostprocessOnPrimaryBuffer();
+
+        m_dialog->UpdateAll(g_FrameDeltaTimeSec);
+
+        zVideo::Dispatch_UnlockPrimarySurfaceState();
+    }
+
+    zVideo::AdjustSurfacesIfEnabled(
+        (zVidRect32 *)zOpt::GetWindowSection(),
+        (zVidRect32 *)zOpt::GetWindowSection(),
+        1,
+        1
+    );
+    return 0;
+}
+
+/**
+ * Reimplements 0x409ad0: RecoilStateDialogHost::OnDeactivate.
+ *
+ * Purpose: disable, repaint, destroy, and clear the active hosted HUD dialog.
+ */
+void RecoilStateDialogHost::OnDeactivate() {
+    if (m_dialog == 0) {
+        return;
+    }
+
+    m_dialog->SetEnabled(0);
+    ((HudUiDialogController *)m_dialog)->BlitOwnedSurfaceToPrimary();
+
+    if (m_dialog != 0) {
+        ((HudUiBackground *)m_dialog)->ScalarDeletingDestructor(1);
+    }
+
+    m_dialog = 0;
+}
+
+/**
+ * Reimplements 0x408f50: RecoilStateDialogHost::OnSuspend.
+ *
+ * Purpose: disable, blit, unlock, and present the hosted HUD dialog when
+ * another app state is pushed on top of it.
+ */
+void RecoilStateDialogHost::OnSuspend(
+    int suspendParam
+) {
+    (void)suspendParam;
 
     if (m_dialog == 0) {
         return;
@@ -18,8 +92,7 @@ void RecoilStateDialogHost::OnWndActivate(
     zVideo::RunPostprocessOnPrimaryBuffer();
 
     m_dialog->SetEnabled(0);
-
-    m_dialog->BlitOwnedSurfaceToPrimary();
+    ((HudUiDialogController *)m_dialog)->BlitOwnedSurfaceToPrimary();
     zVideo::Dispatch_UnlockPrimarySurfaceState();
 
     zVideo::AdjustSurfacesIfEnabled(

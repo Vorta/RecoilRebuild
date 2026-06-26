@@ -1,4 +1,5 @@
 #include "Battlesport/RecoilStateCredits.h"
+#include "Battlesport/hud.h"
 #include "GameZRecoil/zHud/zhud_ui.h"
 
 #include <new>
@@ -22,7 +23,9 @@ RecoilStateCredits g_RecoilStateCredits;
  * Purpose: initialize the credits app-state object and clear the active
  * credits-panel pointer.
  */
-RecoilStateCredits::RecoilStateCredits() : m_dialog(0) {}
+RecoilStateCredits::RecoilStateCredits() {
+    m_dialog = 0;
+}
 
 /**
  * Reimplements 0x409950: RecoilStateCredits::StaticInitAndRegisterAtExit.
@@ -65,26 +68,6 @@ void RecoilStateCredits::RegisterAtExit() {
 }
 
 /**
- * Reimplements 0x4099a0: RecoilStateCredits::OnWndActivate.
- *
- * Purpose: refresh the credits dialog surfaces when the application is
- * reactivated.
- */
-void RecoilStateCredits::OnWndActivate(
-    int activateCode
-) {
-    if (activateCode == 0) {
-        return;
-    }
-
-    HudUiCreditsPanel *const creditsPanel = m_dialog;
-    if (creditsPanel != 0) {
-        ((HudUiDialogController *)creditsPanel)->BlitOwnedSurfaceToPrimary();
-        ((HudUiContainer *)creditsPanel)->InvalidateChildren();
-    }
-}
-
-/**
  * Reimplements 0x409a60: RecoilStateCredits::OnTryBecomeCurrent.
  *
  * Purpose: allocate, construct, and enable the credits dialog when the credits
@@ -103,39 +86,16 @@ int RecoilStateCredits::OnTryBecomeCurrent() {
 }
 
 /**
- * Reimplements 0x409ad0: RecoilStateCredits::OnDeactivate.
- *
- * Purpose: disable, repaint, destroy, and clear the active credits dialog when
- * leaving the credits state.
- */
-void RecoilStateCredits::OnDeactivate() {
-    HudUiCreditsPanel *creditsPanel = m_dialog;
-    if (creditsPanel == 0) {
-        return;
-    }
-
-    creditsPanel->SetEnabled(0);
-    ((HudUiDialogController *)creditsPanel)->BlitOwnedSurfaceToPrimary();
-
-    creditsPanel = m_dialog;
-    if (creditsPanel != 0) {
-        creditsPanel->ScalarDeletingDestructor(1);
-    }
-
-    m_dialog = 0;
-}
-
-/**
  * Reimplements 0x4099f0: RecoilStateCredits::~RecoilStateCredits.
  *
  * Purpose: tear down the owned credits dialog during static state destruction.
  */
 RecoilStateCredits::~RecoilStateCredits() {
-    HudUiCreditsPanel *creditsPanel = m_dialog;
+    HudUiCreditsPanel *creditsPanel = (HudUiCreditsPanel *)m_dialog;
     if (creditsPanel != 0) {
         creditsPanel->SetEnabled(0);
 
-        creditsPanel = m_dialog;
+        creditsPanel = (HudUiCreditsPanel *)m_dialog;
         if (creditsPanel != 0) {
             creditsPanel->ScalarDeletingDestructor(1);
         }

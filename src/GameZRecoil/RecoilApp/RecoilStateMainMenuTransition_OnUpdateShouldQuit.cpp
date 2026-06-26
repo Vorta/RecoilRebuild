@@ -32,3 +32,33 @@ int RecoilStateMainMenuTransition::OnUpdateShouldQuit() {
     );
     return 0;
 }
+
+/**
+ * Original-source helper evidence: No standalone retail function exists for
+ * this typed vtable wrapper; BN shows the retail main-menu transition
+ * OnSuspend slot pointing at 0x408f50 RecoilStateDialogHost::OnWndActivate.
+ * Purpose: disable, blit, unlock, and present the hosted main-menu dialog when
+ * a submenu state is pushed on top of it.
+ */
+void RecoilStateMainMenuTransition::OnSuspend(
+    int param
+) {
+    (void)param;
+
+    if (m_mainMenuDialog == 0) {
+        return;
+    }
+
+    zVideo::RunPostprocessOnPrimaryBuffer();
+
+    m_mainMenuDialog->SetEnabled(0);
+    ((HudUiDialogController *)m_mainMenuDialog)->BlitOwnedSurfaceToPrimary();
+    zVideo::Dispatch_UnlockPrimarySurfaceState();
+
+    zVideo::AdjustSurfacesIfEnabled(
+        (zVidRect32 *)zOpt::GetWindowSection(),
+        (zVidRect32 *)zOpt::GetWindowSection(),
+        1,
+        1
+    );
+}

@@ -36,6 +36,7 @@ struct RecoilStateMainMenuTransition : RecoilApp_IState {
     RECOIL_NO_GS ~RecoilStateMainMenuTransition();
     RECOIL_NO_GS int OnTryBecomeCurrent();
     int OnUpdateShouldQuit();
+    void OnSuspend(int param);
     void OnResume(int param);
     void OnDeactivate();
 
