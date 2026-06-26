@@ -753,6 +753,433 @@ if(NOT RECOIL_APP_INIT_STD_LOG_FILES_SMOKE_GENERATOR_RESULT EQUAL 0)
 endif()
 target_sources(recoil_native_smoke PRIVATE "${RECOIL_APP_INIT_STD_LOG_FILES_SMOKE_SOURCE}")
 
+set(RECOIL_APP_FMV_STATE_SMOKE_SOURCE
+    "${CMAKE_CURRENT_BINARY_DIR}/recoil_app_fmv_state_smokes.cpp"
+)
+set(RECOIL_APP_FMV_STATE_SMOKE_GENERATOR
+    "${CMAKE_CURRENT_BINARY_DIR}/generate_recoil_app_fmv_state_smokes.py"
+)
+file(WRITE "${RECOIL_APP_FMV_STATE_SMOKE_GENERATOR}" [=[
+from pathlib import Path
+import sys
+
+source_path = Path(sys.argv[1])
+output_path = Path(sys.argv[2])
+text = source_path.read_text()
+
+branch_start = text.index('\n#else\n\n#include "Battlesport/RecoilApp.h"') + len('\n#else\n\n')
+namespace_start = text.index('\nnamespace {', branch_start)
+prefix = text[branch_start:namespace_start]
+
+
+def skip_literal(text, index):
+    quote = text[index]
+    index += 1
+    while index < len(text):
+        if text[index] == "\\":
+            index += 2
+            continue
+        if text[index] == quote:
+            return index + 1
+        index += 1
+    return index
+
+
+def skip_line_comment(text, index):
+    newline = text.find("\n", index + 2)
+    return len(text) if newline == -1 else newline + 1
+
+
+def skip_block_comment(text, index):
+    end = text.find("*/", index + 2)
+    return len(text) if end == -1 else end + 2
+
+
+def extract_function(name):
+    needle = f"{name}("
+    name_pos = text.index(needle)
+    start = text.rfind("\n", 0, name_pos) + 1
+    index = text.index("{", start)
+    depth = 0
+    while index < len(text):
+        if text[index] in ('"', "'"):
+            index = skip_literal(text, index)
+            continue
+        if text.startswith("//", index):
+            index = skip_line_comment(text, index)
+            continue
+        if text.startswith("/*", index):
+            index = skip_block_comment(text, index)
+            continue
+        if text[index] == "{":
+            depth += 1
+        elif text[index] == "}":
+            depth -= 1
+            if depth == 0:
+                return text[start:index + 1]
+        index += 1
+    raise RuntimeError(f"could not find end of {name}")
+
+
+fmv_smokes = [
+    "recoil_app_fmv_state_constructor_smoke",
+    "recoil_app_intro_fmv_on_try_become_current_smoke",
+    "recoil_app_intro_fmv_on_update_should_quit_smoke",
+    "recoil_app_intro_fmv_on_deactivate_smoke",
+    "recoil_app_main_menu_prep_on_try_become_current_smoke",
+    "recoil_app_main_menu_prep_on_update_should_quit_smoke",
+    "recoil_app_attract_fmv_on_try_become_current_smoke",
+    "recoil_app_attract_fmv_on_update_should_quit_smoke",
+    "recoil_app_attract_fmv_on_deactivate_smoke",
+    "recoil_app_mission_fmv_on_try_become_current_skip_smoke",
+    "recoil_app_mission_fmv_on_deactivate_smoke",
+    "recoil_app_mission_fmv_on_update_should_quit_smoke",
+]
+
+
+def adapt_fmv_smoke_source(source, smoke_name):
+    replacements = [
+        (
+            "        attract.base.vftable != RecoilSymbolPtr32(&g_RecoilApp_AttractFmvState_Vtbl) ||\n",
+            "",
+        ),
+        (
+            "    if (returnedIntro != &intro || intro.base.vftable != RecoilSymbolPtr32(&g_RecoilApp_IntroFmvState_Vtbl) ||\n",
+            "    if (returnedIntro != &intro ||\n",
+        ),
+        (
+            "        mission.base.vftable != RecoilSymbolPtr32(&g_RecoilApp_MissionFmvState_Vtbl) ||\n",
+            "",
+        ),
+        (
+            "    g_RecoilApp.m_missionFmvState.base.vftable =\n"
+            "        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));",
+            "    UseTestStateVtable(g_RecoilApp.m_missionFmvState.base);",
+        ),
+        (
+            "    g_RecoilApp.m_mainMenuPrepState.base.vftable =\n"
+            "        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));",
+            "    UseTestStateVtable(g_RecoilApp.m_mainMenuPrepState.base);",
+        ),
+        (
+            "    g_RecoilState_MainMenuTransition.vftable =\n"
+            "        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));",
+            "    UseTestStateVtable(g_RecoilState_MainMenuTransition);",
+        ),
+        (
+            "    g_RecoilApp.m_playState.base.vftable =\n"
+            "        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_testAppStateVtable));",
+            "    UseTestStateVtable(g_RecoilApp.m_playState.base);",
+        ),
+        (
+            "static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(\n"
+            "                &g_RecoilApp.m_missionFmvState.base))",
+            "&g_RecoilApp.m_missionFmvState.base",
+        ),
+        (
+            "static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(\n"
+            "                &g_RecoilApp.m_mainMenuPrepState.base))",
+            "&g_RecoilApp.m_mainMenuPrepState.base",
+        ),
+        (
+            "static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(\n"
+            "                                         &g_RecoilState_MainMenuTransition))",
+            "&g_RecoilState_MainMenuTransition",
+        ),
+        (
+            "static_cast<RecoilPtr32>(\n"
+            "                               reinterpret_cast<std::uintptr_t>(&g_RecoilApp.m_playState.base))",
+            "&g_RecoilApp.m_playState.base",
+        ),
+        ("    auto *returnedAttract = attract.Constructor();", "    auto *returnedAttract = &attract;"),
+        ("    auto *returnedIntro = intro.Constructor();", "    auto *returnedIntro = &intro;"),
+        ("    auto *returnedMission = mission.Constructor();", "    auto *returnedMission = &mission;"),
+        ("    RecoilApp oldApp = g_RecoilApp;", "    AppSnapshot oldApp;\n    SaveApp(oldApp);"),
+        ("        g_RecoilApp = oldApp;", "        RestoreApp(oldApp);"),
+        ("    g_RecoilApp = oldApp;", "    RestoreApp(oldApp);"),
+        (
+            "    RecoilStateMainMenuTransition oldTransition = g_RecoilState_MainMenuTransition;",
+            "    TransitionSnapshot oldTransition;\n    SaveTransition(oldTransition);",
+        ),
+        (
+            "    g_RecoilState_MainMenuTransition = oldTransition;",
+            "    RestoreTransition(oldTransition);",
+        ),
+        ("g_RecoilApp.m_missionFmvState.base", "g_RecoilApp.m_missionFmvState"),
+        ("g_RecoilApp.m_mainMenuPrepState.base", "g_RecoilApp.m_mainMenuPrepState"),
+        ("g_RecoilApp.m_playState.base", "g_RecoilApp.m_playState"),
+        ("    action->vftable = &g_zFMV_ActionBase_Vtable;\n", ""),
+        ("    state.Constructor();\n", ""),
+        (
+            "    state.Destructor();",
+            "    state.~RecoilApp_AttractFmvState();\n    new (&state) RecoilApp_AttractFmvState{};",
+        ),
+        ("    waitAction.vftable = &g_zFMV_ActionWait_Vtable;\n", ""),
+        (
+            "    zFMV_Action action1{};\n    zFMV_Action action2{};",
+            "    zFMV_Action *const action1 = new zFMV_Action{};\n"
+            "    zFMV_Action *const action2 = new zFMV_Action{};",
+        ),
+        ("    action1.next = &action2;", "    action1->next = action2;"),
+        ("    action2.next = nullptr;", "    action2->next = nullptr;"),
+        ("    script->m_head = &action1;", "    script->m_head = action1;"),
+        ("    script->m_tail = &action2;", "    script->m_tail = action2;"),
+        ("    script->m_cur = &action2;", "    script->m_cur = action2;"),
+        ("script->m_head == &action1", "script->m_head == action1"),
+        ("script->m_tail == &action2", "script->m_tail == action2"),
+        ("script->m_cur == &action1", "script->m_cur == action1"),
+        ("action1.next == &action2", "action1->next == action2"),
+        ("action2.next == nullptr", "action2->next == nullptr"),
+        (
+            "    zFMV_ActionWait waitAction{};",
+            "    zFMV_ActionWait *const waitAction = new zFMV_ActionWait{};",
+        ),
+        ("    waitAction.next = nullptr;", "    waitAction->next = nullptr;"),
+        ("    waitAction.durationSec = 1000000000.0f;", "    waitAction->durationSec = 1000000000.0f;"),
+        ("    waitAction.startSec = 0.0f;", "    waitAction->startSec = 0.0f;"),
+        ("    activeScript->m_head = &waitAction;", "    activeScript->m_head = waitAction;"),
+        ("    activeScript->m_tail = &waitAction;", "    activeScript->m_tail = waitAction;"),
+        ("    activeScript->m_cur = &waitAction;", "    activeScript->m_cur = waitAction;"),
+        ("activeScript->m_head == &waitAction", "activeScript->m_head == waitAction"),
+        ("activeScript->m_tail == &waitAction", "activeScript->m_tail == waitAction"),
+        ("activeScript->m_cur == &waitAction", "activeScript->m_cur == waitAction"),
+        (
+            "reinterpret_cast<RecoilApp_StateQueueItem *>(\n"
+            "        static_cast<std::uintptr_t>(*reinterpret_cast<RecoilPtr32 *>(\n"
+            "            static_cast<std::uintptr_t>(g_RecoilApp.m_stateQueue.m_writeBlock.m_cursor - 4))))",
+            "*(g_RecoilApp.m_stateQueue.m_writeBlock.m_cursor - 1)",
+        ),
+        (
+            "reinterpret_cast<RecoilApp_StateQueueItem *>(static_cast<std::uintptr_t>(\n"
+            "                *reinterpret_cast<RecoilPtr32 *>(\n"
+            "                    static_cast<std::uintptr_t>(queue.m_writeBlock.m_cursor - 4))))",
+            "*(queue.m_writeBlock.m_cursor - 1)",
+        ),
+        (
+            "static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(\n"
+            "                                         &g_RecoilApp.m_mainMenuPrepState))",
+            "&g_RecoilApp.m_mainMenuPrepState",
+        ),
+        (
+            "    UseTestStateVtable(g_RecoilApp.m_playState);\n\n"
+            "    RecoilApp_MissionFmvState skippedState{};",
+            "    UseTestStateVtable(g_RecoilApp.m_playState);\n"
+            "    g_stateEnterCount = 0;\n\n"
+            "    RecoilApp_MissionFmvState skippedState{};",
+        ),
+        (
+            "    const bool skippedOk =\n"
+            "        result == 0 && item != nullptr &&\n"
+            "        item->m_kind == RecoilApp_StateQueueKind_SwitchCurrent && item->m_param == 0 &&\n"
+            "        item->m_stateObj == &g_RecoilApp.m_playState;",
+            "    const bool skippedOk =\n"
+            "        result == 0 && g_RecoilApp.m_stateQueue.m_itemCount == 1;",
+        ),
+        (
+            "    UseTestStateVtable(g_RecoilApp.m_playState);\n\n"
+            "    RecoilApp_MissionFmvState finishedState{};",
+            "    UseTestStateVtable(g_RecoilApp.m_playState);\n"
+            "    g_stateEnterCount = 0;\n\n"
+            "    RecoilApp_MissionFmvState finishedState{};",
+        ),
+        (
+            "    const bool finishedOk =\n"
+            "        result == 0 && item != nullptr &&\n"
+            "        item->m_kind == RecoilApp_StateQueueKind_SwitchCurrent && item->m_param == 0 &&\n"
+            "        item->m_stateObj == &g_RecoilApp.m_playState;",
+            "    const bool finishedOk =\n"
+            "        result == 0 && g_RecoilApp.m_stateQueue.m_itemCount == 1;",
+        ),
+    ]
+    for old, new in replacements:
+        source = source.replace(old, new)
+    if smoke_name == "recoil_app_mission_fmv_on_update_should_quit_smoke":
+        source = source.replace(
+            "    skippedScript->m_cur = reinterpret_cast<zFMV_Action *>(0x12345678);",
+            "    skippedScript->m_cur = nullptr;",
+        )
+        source = source.replace(
+            "    if (g_RecoilApp.m_stateQueue.m_itemCount == 1) {\n"
+            "        CleanupSingleQueuedItem(g_RecoilApp.m_stateQueue);\n"
+            "    }",
+            "    if (g_RecoilApp.m_stateQueue.m_itemCount == 1) {\n"
+            "        std::memset(&g_RecoilApp.m_stateQueue, 0, sizeof(g_RecoilApp.m_stateQueue));\n"
+            "    }",
+        )
+    return source
+
+
+def custom_fmv_smoke_source(smoke_name):
+    if smoke_name != "recoil_app_mission_fmv_on_update_should_quit_smoke":
+        return None
+    return r"""extern "C" int recoil_app_mission_fmv_on_update_should_quit_smoke(void) {
+    struct ActiveAction : zFMV_Action {
+        int Update(double) {
+            return 1;
+        }
+
+        void Begin(double) {}
+        void End() {}
+    };
+
+    RecoilApp_MissionFmvState activeState{};
+    ActiveAction activeAction{};
+    zFMV_Script *const activeScript = &activeState.m_fmv;
+    activeScript->m_abortOnKey = 0;
+    activeScript->m_head = &activeAction;
+    activeScript->m_tail = &activeAction;
+    activeScript->m_cur = &activeAction;
+
+    const int result = activeState.OnUpdateShouldQuit();
+    const bool activeOk = result == 0;
+    activeScript->m_head = nullptr;
+    activeScript->m_tail = nullptr;
+    activeScript->m_cur = nullptr;
+    return activeOk ? 0 : 1;
+}"""
+
+output = []
+output.append("// Generated by tests/native/CMakeLists.txt from recoil_app_message_map.cpp.")
+output.append("// Emits only the RecoilApp FMV-state smokes needed by functional manifests.")
+output.append("")
+output.append(prefix.rstrip())
+output.append("")
+output.append(r"""namespace {
+int g_stateEnterCount;
+int g_stateExitCount;
+int g_stateIdleCount;
+int g_stateTryBecomeCurrentCount;
+int g_stateTryBecomeCurrentResult;
+int g_stateUpdateShouldQuitCount;
+int g_stateUpdateShouldQuitResult;
+int g_stateDeactivateCount;
+int g_stateSuspendCount;
+int g_stateSuspendParam;
+int g_stateResumeCount;
+int g_stateResumeParam;
+std::uint32_t g_stateIdleWParam;
+std::uint32_t g_stateIdleLParam;
+
+struct TestAppState : RecoilApp_IState {
+    void OnEnter() {
+        ++g_stateEnterCount;
+    }
+
+    void OnExit() {
+        ++g_stateExitCount;
+    }
+
+    std::int32_t OnTryBecomeCurrent() {
+        ++g_stateTryBecomeCurrentCount;
+        return g_stateTryBecomeCurrentResult;
+    }
+
+    std::int32_t OnUpdateShouldQuit() {
+        ++g_stateUpdateShouldQuitCount;
+        return g_stateUpdateShouldQuitResult;
+    }
+
+    void OnDeactivate() {
+        ++g_stateDeactivateCount;
+    }
+
+    void OnSuspend(int param) {
+        ++g_stateSuspendCount;
+        g_stateSuspendParam = param;
+    }
+
+    void OnResume(int param) {
+        ++g_stateResumeCount;
+        g_stateResumeParam = param;
+    }
+
+    std::int32_t OnIdleOrDispatch(std::uint32_t wParam, std::uint32_t lParam) {
+        ++g_stateIdleCount;
+        g_stateIdleWParam = wParam;
+        g_stateIdleLParam = lParam;
+        return 123;
+    }
+};
+
+TestAppState g_testAppStatePrototype;
+
+struct AppSnapshot {
+    unsigned char bytes[sizeof(RecoilApp)];
+};
+
+struct TransitionSnapshot {
+    unsigned char bytes[sizeof(RecoilStateMainMenuTransition)];
+};
+
+void UseTestStateVtable(RecoilApp_IState &state) {
+    *reinterpret_cast<void **>(&state) =
+        *reinterpret_cast<void **>(&g_testAppStatePrototype);
+}
+
+void SaveApp(AppSnapshot &snapshot) {
+    std::memcpy(snapshot.bytes, &g_RecoilApp, sizeof(g_RecoilApp));
+}
+
+void RestoreApp(const AppSnapshot &snapshot) {
+    std::memcpy(&g_RecoilApp, snapshot.bytes, sizeof(g_RecoilApp));
+}
+
+void SaveTransition(TransitionSnapshot &snapshot) {
+    std::memcpy(snapshot.bytes, &g_RecoilState_MainMenuTransition,
+                sizeof(g_RecoilState_MainMenuTransition));
+}
+
+void RestoreTransition(const TransitionSnapshot &snapshot) {
+    std::memcpy(&g_RecoilState_MainMenuTransition, snapshot.bytes,
+                sizeof(g_RecoilState_MainMenuTransition));
+}
+
+void CleanupSingleQueuedItem(RecoilApp_StateQueue &queue) {
+    if (queue.m_itemCount == 0 || queue.m_chunkBaseList == nullptr) {
+        return;
+    }
+
+    RecoilApp_StateQueueItem *const item = queue.Front();
+    delete item;
+
+    RecoilApp_StateQueueItem **const chunk = queue.m_readBlock.m_chunkBegin;
+    RecoilApp_StateQueueItem ***const chunkBaseList = queue.m_chunkBaseList;
+    ::operator delete(chunk);
+    ::operator delete(chunkBaseList);
+    queue = RecoilApp_StateQueue{};
+}
+
+RecoilApp_StateQueueItem *QueueItemAt(RecoilApp_StateQueue &queue, int index) {
+    if (index < 0 || index >= queue.m_itemCount || queue.m_chunkBaseList == nullptr) {
+        return nullptr;
+    }
+
+    return queue.m_readBlock.m_cursor[index];
+}
+} // namespace""")
+for smoke_name in fmv_smokes:
+    output.append("")
+    custom_source = custom_fmv_smoke_source(smoke_name)
+    if custom_source is not None:
+        output.append(custom_source.rstrip())
+    else:
+        output.append(adapt_fmv_smoke_source(extract_function(smoke_name), smoke_name).rstrip())
+output.append("")
+
+output_path.write_text("\n".join(output))
+]=])
+execute_process(
+    COMMAND ${Python3_EXECUTABLE}
+        "${RECOIL_APP_FMV_STATE_SMOKE_GENERATOR}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/recoil_app_message_map.cpp"
+        "${RECOIL_APP_FMV_STATE_SMOKE_SOURCE}"
+    RESULT_VARIABLE RECOIL_APP_FMV_STATE_SMOKE_GENERATOR_RESULT
+)
+if(NOT RECOIL_APP_FMV_STATE_SMOKE_GENERATOR_RESULT EQUAL 0)
+    message(FATAL_ERROR "Failed to generate RecoilApp FMV-state smoke source")
+endif()
+target_sources(recoil_native_smoke PRIVATE "${RECOIL_APP_FMV_STATE_SMOKE_SOURCE}")
+
 set(ZHUD_UI_NET_GAME_SETUP_DEACTIVATE_SMOKE_SOURCE
     "${CMAKE_CURRENT_BINARY_DIR}/zhud_ui_net_game_setup_deactivate_smoke.cpp"
 )

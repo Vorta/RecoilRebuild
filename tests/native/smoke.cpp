@@ -785,6 +785,18 @@ extern "C" int czrecoil_frame_toggle_texture_packs_smoke(void);
 extern "C" int czrecoil_frame_on_menu_westwood_online_upgrade_smoke(void);
 extern "C" int czrecoil_frame_open_multiplayer_session_browser_smoke(void);
 extern "C" int czrecoil_frame_on_size_smoke(void);
+extern "C" int recoil_app_fmv_state_constructor_smoke(void);
+extern "C" int recoil_app_intro_fmv_on_try_become_current_smoke(void);
+extern "C" int recoil_app_intro_fmv_on_update_should_quit_smoke(void);
+extern "C" int recoil_app_intro_fmv_on_deactivate_smoke(void);
+extern "C" int recoil_app_main_menu_prep_on_try_become_current_smoke(void);
+extern "C" int recoil_app_main_menu_prep_on_update_should_quit_smoke(void);
+extern "C" int recoil_app_attract_fmv_on_try_become_current_smoke(void);
+extern "C" int recoil_app_attract_fmv_on_update_should_quit_smoke(void);
+extern "C" int recoil_app_attract_fmv_on_deactivate_smoke(void);
+extern "C" int recoil_app_mission_fmv_on_try_become_current_skip_smoke(void);
+extern "C" int recoil_app_mission_fmv_on_deactivate_smoke(void);
+extern "C" int recoil_app_mission_fmv_on_update_should_quit_smoke(void);
 extern "C" int recoil_app_fmv_state_destructor_smoke(void);
 extern "C" int recoil_app_scalar_deleting_destructor_smoke(void);
 extern "C" int recoil_app_mission_fmv_state_destructor_smoke(void);
@@ -27498,6 +27510,30 @@ int main(int argc, char **argv) {
         {"czrecoil_frame_open_multiplayer_session_browser_smoke",
          czrecoil_frame_open_multiplayer_session_browser_smoke},
         {"czrecoil_frame_on_size_smoke", czrecoil_frame_on_size_smoke},
+        {"recoil_app_fmv_state_constructor_smoke",
+         recoil_app_fmv_state_constructor_smoke},
+        {"recoil_app_intro_fmv_on_try_become_current_smoke",
+         recoil_app_intro_fmv_on_try_become_current_smoke},
+        {"recoil_app_intro_fmv_on_update_should_quit_smoke",
+         recoil_app_intro_fmv_on_update_should_quit_smoke},
+        {"recoil_app_intro_fmv_on_deactivate_smoke",
+         recoil_app_intro_fmv_on_deactivate_smoke},
+        {"recoil_app_main_menu_prep_on_try_become_current_smoke",
+         recoil_app_main_menu_prep_on_try_become_current_smoke},
+        {"recoil_app_main_menu_prep_on_update_should_quit_smoke",
+         recoil_app_main_menu_prep_on_update_should_quit_smoke},
+        {"recoil_app_attract_fmv_on_try_become_current_smoke",
+         recoil_app_attract_fmv_on_try_become_current_smoke},
+        {"recoil_app_attract_fmv_on_update_should_quit_smoke",
+         recoil_app_attract_fmv_on_update_should_quit_smoke},
+        {"recoil_app_attract_fmv_on_deactivate_smoke",
+         recoil_app_attract_fmv_on_deactivate_smoke},
+        {"recoil_app_mission_fmv_on_try_become_current_skip_smoke",
+         recoil_app_mission_fmv_on_try_become_current_skip_smoke},
+        {"recoil_app_mission_fmv_on_deactivate_smoke",
+         recoil_app_mission_fmv_on_deactivate_smoke},
+        {"recoil_app_mission_fmv_on_update_should_quit_smoke",
+         recoil_app_mission_fmv_on_update_should_quit_smoke},
         {"recoil_app_fmv_state_destructor_smoke",
          recoil_app_fmv_state_destructor_smoke},
         {"recoil_app_scalar_deleting_destructor_smoke",

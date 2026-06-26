@@ -801,9 +801,9 @@ These original-source labels differ only by case on Windows; confirm placement a
 ## GameZRecoil/recoilapp.cpp
 
 - `0x419010` `HudSensorTracker::QueueMissionFmvStateForMissionId` -> `src/Battlesport/HudSensorTracker.cpp:3509`
-- `0x42edb0` `RecoilApp_MissionFmvState::OnTryBecomeCurrent` -> `src/Battlesport/RecoilApp.cpp:3710`
-- `0x42ee50` `RecoilApp_MissionFmvState::OnDeactivate` -> `src/Battlesport/RecoilApp.cpp:3746`
-- `0x42ee70` `RecoilApp_MissionFmvState::OnUpdateShouldQuit` -> `src/Battlesport/RecoilApp.cpp:3756`
+- `0x42edb0` `RecoilApp_MissionFmvState::OnTryBecomeCurrent` -> `src/Battlesport/RecoilApp.cpp:3742`
+- `0x42ee50` `RecoilApp_MissionFmvState::OnDeactivate` -> `src/Battlesport/RecoilApp.cpp:3781`
+- `0x42ee70` `RecoilApp_MissionFmvState::OnUpdateShouldQuit` -> `src/Battlesport/RecoilApp.cpp:3794`
 
 ## GameZRecoil/RecoilApp/RecoilApp.cpp
 
@@ -2125,12 +2125,12 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x42dda0` `WestwoodOnlineUpgradeApiInitState::Init` -> `src/Battlesport/WestwoodOnlineUpgradeApi.cpp:234`
 - `0x42de10` `RecoilApp::GetMessageMap` -> `src/Battlesport/RecoilApp.cpp:2966`
 - `0x42de60` `RecoilApp::~RecoilApp` -> `src/Battlesport/RecoilApp.cpp:2956`
-- `0x42df10` `RecoilApp_AttractFmvState::~RecoilApp_AttractFmvState` -> `src/Battlesport/RecoilApp.cpp:3808`
-- `0x42df50` `RecoilApp_IntroFmvState::~RecoilApp_IntroFmvState` -> `src/Battlesport/RecoilApp.cpp:3810`
-- `0x42df90` `RecoilApp_IState::~RecoilApp_IState is` -> `src/Battlesport/RecoilApp.cpp:3769`
+- `0x42df10` `RecoilApp_AttractFmvState::~RecoilApp_AttractFmvState` -> `src/Battlesport/RecoilApp.cpp:3848`
+- `0x42df50` `RecoilApp_IntroFmvState::~RecoilApp_IntroFmvState` -> `src/Battlesport/RecoilApp.cpp:3850`
+- `0x42df90` `RecoilApp_IState::~RecoilApp_IState is` -> `src/Battlesport/RecoilApp.cpp:3809`
 - `0x42df90` `RecoilApp_IState::~RecoilApp_IState` -> `src/Battlesport/RecoilApp.h:41`
 - `0x42dfa0` `RecoilApp::RecoilApp` -> `src/Battlesport/RecoilApp.cpp:2948`
-- `0x42e070` `RecoilApp_MissionFmvState::~RecoilApp_MissionFmvState` -> `src/Battlesport/RecoilApp.cpp:3812`
+- `0x42e070` `RecoilApp_MissionFmvState::~RecoilApp_MissionFmvState` -> `src/Battlesport/RecoilApp.cpp:3852`
 - `0x42e110` `RecoilApp::CreateMainWnd` -> `src/Battlesport/RecoilApp.cpp:2222`
 - `0x42e220` `RecoilApp::StartEngine` -> `src/Battlesport/RecoilApp.cpp:2401`
 - `0x42e430` `RecoilApp::ShutdownEngine` -> `src/Battlesport/RecoilApp.cpp:2527`
@@ -2140,18 +2140,18 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x42e930` `RecoilApp::ExitInstance` -> `src/Battlesport/RecoilApp.cpp:2005`
 - `0x42e990` `RecoilApp::ActivateExistingInstance` -> `src/Battlesport/RecoilApp.cpp:2456`
 - `0x42e9f0` `RecoilApp::PreTranslateMessage` -> `src/Battlesport/RecoilApp.cpp:2479`
-- `0x42ea20` `RecoilApp_IntroFmvState::OnTryBecomeCurrent` -> `src/Battlesport/RecoilApp.cpp:3559`
-- `0x42eac0` `RecoilApp_IntroFmvState::OnUpdateShouldQuit` -> `src/Battlesport/RecoilApp.cpp:3594`
-- `0x42eb00` `RecoilApp_FmvState::OnIdleOrDispatch` -> `src/Battlesport/RecoilApp.cpp:3616`
-- `0x42eb10` `RecoilApp_IntroFmvState::OnDeactivate` -> `src/Battlesport/RecoilApp.cpp:3624`
-- `0x42eb20` `RecoilApp_MainMenuPrepState::OnTryBecomeCurrent` -> `src/Battlesport/RecoilApp.cpp:3629`
-- `0x42eb60` `RecoilApp_MainMenuPrepState::OnUpdateShouldQuit` -> `src/Battlesport/RecoilApp.cpp:3641`
-- `0x42eb70` `RecoilApp_AttractFmvState::Constructor` -> `src/Battlesport/RecoilApp.cpp:3554`
-- `0x42ebf0` `RecoilApp_AttractFmvState::OnTryBecomeCurrent` -> `src/Battlesport/RecoilApp.cpp:3647`
-- `0x42ec80` `RecoilApp_AttractFmvState::OnUpdateShouldQuit` -> `src/Battlesport/RecoilApp.cpp:3684`
-- `0x42eca0` `RecoilApp_AttractFmvState::OnDeactivate` -> `src/Battlesport/RecoilApp.cpp:3698`
+- `0x42ea20` `RecoilApp_IntroFmvState::OnTryBecomeCurrent` -> `src/Battlesport/RecoilApp.cpp:3562`
+- `0x42eac0` `RecoilApp_IntroFmvState::OnUpdateShouldQuit` -> `src/Battlesport/RecoilApp.cpp:3600`
+- `0x42eb00` `RecoilApp_FmvState::OnIdleOrDispatch` -> `src/Battlesport/RecoilApp.cpp:3625`
+- `0x42eb10` `RecoilApp_IntroFmvState::OnDeactivate` -> `src/Battlesport/RecoilApp.cpp:3636`
+- `0x42eb20` `RecoilApp_MainMenuPrepState::OnTryBecomeCurrent` -> `src/Battlesport/RecoilApp.cpp:3644`
+- `0x42eb60` `RecoilApp_MainMenuPrepState::OnUpdateShouldQuit` -> `src/Battlesport/RecoilApp.cpp:3659`
+- `0x42eb70` `RecoilApp_AttractFmvState::Constructor` -> `src/Battlesport/RecoilApp.cpp:3555`
+- `0x42ebf0` `RecoilApp_AttractFmvState::OnTryBecomeCurrent` -> `src/Battlesport/RecoilApp.cpp:3668`
+- `0x42ec80` `RecoilApp_AttractFmvState::OnUpdateShouldQuit` -> `src/Battlesport/RecoilApp.cpp:3708`
+- `0x42eca0` `RecoilApp_AttractFmvState::OnDeactivate` -> `src/Battlesport/RecoilApp.cpp:3725`
 - `0x42ecb0` `zUtil::SetMissionZrdrPathsAndMountZbd` -> `src/GameZRecoil/zReader/zreader_load.cpp:1084`
-- `0x42ed30` `RecoilApp_MissionFmvState::Constructor` -> `src/Battlesport/RecoilApp.cpp:3703`
+- `0x42ed30` `RecoilApp_MissionFmvState::Constructor` -> `src/Battlesport/RecoilApp.cpp:3733`
 - `0x42ee40` `HudUiBackgroundContainer::SetEnabled` -> `src/GameZRecoil/zHud/zhud_ui.cpp:6833`
 - `0x42eea0` `RecoilApp_PlayState::RecoilApp_PlayState` -> `src/Battlesport/RecoilApp.cpp:3221`
 - `0x42eec0` `RecoilApp_PlayState::OnWndActivate` -> `src/Battlesport/RecoilApp.cpp:3227`

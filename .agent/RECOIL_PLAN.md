@@ -1985,6 +1985,10 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: SetMenu)
   - [✅] Provider-boundary (Kind: Win32 USER32 import pointer; Name: SetMenu; Origin: BN import symbol SetMenu at 0x4cc610; xref 0x4a6939 in zVideo_dd::PrepareWindowForMode; File: external; Target: pending; Group: provider.imports)
 
+- 0x4cc670:
+  - [✅] Reconstructed (Name: GetClientRect)
+  - [✅] Provider-boundary (Kind: Win32 USER32 import pointer; Name: GetClientRect; Origin: BN data symbol GetClientRect @ 0x4cc670 is a const USER32 IAT function pointer called by RecoilApp_AttractFmvState::OnTryBecomeCurrent at 0x42ec20; File: external; Target: pending; Group: provider.imports)
+
 - 0x4cc68c:
   - [✅] Reconstructed (Name: GetDC)
   - [✅] Provider-boundary (Kind: Win32 USER32 import pointer; Name: GetDC; Origin: BN import symbol GetDC at 0x4cc68c; xref 0x4a6989 in zVideo_dd::PrepareWindowForMode; File: external; Target: pending; Group: provider.imports)
@@ -47639,8 +47643,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: RecoilApp_IntroFmvState::OnTryBecomeCurrent)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: cluster; Parent: RecoilApp_FmvState; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: RecoilApp_IntroFmvState::OnTryBecomeCurrent;
     - File: src/Battlesport/RecoilApp.cpp;
     - Target: recoil_app_intro_fmv_on_try_become_current;
@@ -47652,8 +47656,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: RecoilApp_IntroFmvState::OnUpdateShouldQuit)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: cluster; Parent: RecoilApp_FmvState; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: RecoilApp_IntroFmvState::OnUpdateShouldQuit;
     - File: src/Battlesport/RecoilApp.cpp;
     - Target: recoil_app_intro_fmv_on_update_should_quit;
@@ -47678,8 +47682,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: RecoilApp_IntroFmvState::OnDeactivate)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: cluster; Parent: RecoilApp_FmvState; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: RecoilApp_IntroFmvState::OnDeactivate;
     - File: src/Battlesport/RecoilApp.cpp;
     - Target: recoil_app_intro_fmv_on_deactivate;
@@ -47691,8 +47695,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: RecoilApp_MainMenuPrepState::OnTryBecomeCurrent)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: cluster; Parent: RecoilApp_FmvState; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: RecoilApp_MainMenuPrepState::OnTryBecomeCurrent;
     - File: src/Battlesport/RecoilApp.cpp;
     - Target: recoil_app_main_menu_prep_on_try_become_current;
@@ -47704,8 +47708,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: RecoilApp_MainMenuPrepState::OnUpdateShouldQuit)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: cluster; Parent: RecoilApp_FmvState; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: RecoilApp_MainMenuPrepState::OnUpdateShouldQuit;
     - File: src/Battlesport/RecoilApp.cpp;
     - Target: recoil_app_main_menu_prep_on_update_should_quit;
@@ -47717,8 +47721,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: RecoilApp_AttractFmvState::Constructor)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: cluster; Parent: RecoilApp_FmvState; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: RecoilApp_AttractFmvState::Constructor;
     - File: src/Battlesport/RecoilApp.cpp;
     - Target: recoil_app_fmv_state_constructors;
@@ -47730,8 +47734,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: RecoilApp_AttractFmvState::OnTryBecomeCurrent)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: cluster; Parent: RecoilApp_FmvState; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: RecoilApp_AttractFmvState::OnTryBecomeCurrent;
     - File: src/Battlesport/RecoilApp.cpp;
     - Target: recoil_app_attract_fmv_on_try_become_current;
@@ -47743,8 +47747,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: RecoilApp_AttractFmvState::OnUpdateShouldQuit)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: cluster; Parent: RecoilApp_FmvState; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: RecoilApp_AttractFmvState::OnUpdateShouldQuit;
     - File: src/Battlesport/RecoilApp.cpp;
     - Target: recoil_app_attract_fmv_on_update_should_quit;
@@ -47756,8 +47760,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: RecoilApp_AttractFmvState::OnDeactivate)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: cluster; Parent: RecoilApp_FmvState; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: RecoilApp_AttractFmvState::OnDeactivate;
     - File: src/Battlesport/RecoilApp.cpp;
     - Target: recoil_app_attract_fmv_on_deactivate;
@@ -47807,8 +47811,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: RecoilApp_MissionFmvState::Constructor)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: cluster; Parent: RecoilApp_FmvState; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: RecoilApp_MissionFmvState::Constructor;
     - File: src/Battlesport/RecoilApp.cpp;
     - Target: recoil_app_fmv_state_constructors;
@@ -47820,8 +47824,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [☑️] Reconstructed (Name: RecoilApp_MissionFmvState::OnTryBecomeCurrent)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: subsystem; Parent: RecoilApp_FmvState; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: RecoilApp_MissionFmvState::OnTryBecomeCurrent;
     - File: src/Battlesport/RecoilApp.cpp;
     - Target: recoil_app_mission_fmv_on_try_become_current;
@@ -47833,8 +47837,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: RecoilApp_MissionFmvState::OnDeactivate)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: subsystem; Parent: RecoilApp_FmvState; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: RecoilApp_MissionFmvState::OnDeactivate;
     - File: src/Battlesport/RecoilApp.cpp;
     - Target: recoil_app_mission_fmv_on_deactivate;
@@ -47846,8 +47850,8 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: RecoilApp_MissionFmvState::OnUpdateShouldQuit)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: subsystem; Parent: RecoilApp_FmvState; State: implemented)
-  - [❌] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Data reimplemented
+  - [✅] Reimplemented [B]
     - Name: RecoilApp_MissionFmvState::OnUpdateShouldQuit;
     - File: src/Battlesport/RecoilApp.cpp;
     - Target: recoil_app_mission_fmv_on_update_should_quit;

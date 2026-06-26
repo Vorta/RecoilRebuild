@@ -3551,12 +3551,17 @@ int RecoilApp_LeaveNetworkState::OnTryBecomeCurrent() {
     return 1;
 }
 
-// Reimplements 0x42eb70: RecoilApp_AttractFmvState::Constructor
-// Actual C++ construction lets VC emit the one-state IState cleanup funclet.
+/**
+ * Reimplements 0x42eb70: RecoilApp_AttractFmvState::Constructor.
+ * Purpose: constructs the attract FMV state while leaving member initialization to the C++ defaults.
+ */
 RecoilApp_AttractFmvState::RecoilApp_AttractFmvState() {
 }
 
-// Reimplements 0x42ea20: RecoilApp_IntroFmvState::OnTryBecomeCurrent
+/**
+ * Reimplements 0x42ea20: RecoilApp_IntroFmvState::OnTryBecomeCurrent.
+ * Purpose: prepares the video surface and starts the intro FMV script when intro playback is enabled.
+ */
 int RecoilApp_IntroFmvState::OnTryBecomeCurrent() {
     zRndr::SetFrameBufferRegion(
         zVideo::GetPrimarySurfacePixels(),
@@ -3591,7 +3596,10 @@ int RecoilApp_IntroFmvState::OnTryBecomeCurrent() {
     return 1;
 }
 
-// Reimplements 0x42eac0: RecoilApp_IntroFmvState::OnUpdateShouldQuit
+/**
+ * Reimplements 0x42eac0: RecoilApp_IntroFmvState::OnUpdateShouldQuit.
+ * Purpose: advances intro FMV playback and queues the next startup state when the FMV finishes or is skipped.
+ */
 int RecoilApp_IntroFmvState::OnUpdateShouldQuit() {
     if (g_RecoilApp.m_skipIntroFmv != 0) {
         g_RecoilApp.QueueSwitchCurrentState(
@@ -3613,7 +3621,10 @@ int RecoilApp_IntroFmvState::OnUpdateShouldQuit() {
     return 0;
 }
 
-// Reimplements 0x42eb00: RecoilApp_FmvState::OnIdleOrDispatch
+/**
+ * Reimplements 0x42eb00: RecoilApp_FmvState::OnIdleOrDispatch.
+ * Purpose: reports that FMV states consume idle or dispatch processing without additional work.
+ */
 int RecoilApp_FmvState::OnIdleOrDispatch(
     unsigned int,
     unsigned int
@@ -3621,12 +3632,18 @@ int RecoilApp_FmvState::OnIdleOrDispatch(
     return 1;
 }
 
-// Reimplements 0x42eb10: RecoilApp_IntroFmvState::OnDeactivate
+/**
+ * Reimplements 0x42eb10: RecoilApp_IntroFmvState::OnDeactivate.
+ * Purpose: forces the intro FMV script to its terminal time when leaving the state.
+ */
 void RecoilApp_IntroFmvState::OnDeactivate() {
     m_fmv.BeginNow(1);
 }
 
-// Reimplements 0x42eb20: RecoilApp_MainMenuPrepState::OnTryBecomeCurrent
+/**
+ * Reimplements 0x42eb20: RecoilApp_MainMenuPrepState::OnTryBecomeCurrent.
+ * Purpose: restores the primary video surface and resets the main-menu preparation state data.
+ */
 int RecoilApp_MainMenuPrepState::OnTryBecomeCurrent() {
     zVideo::Fx_SetSurfaceState(
         zVideo::GetPrimarySurfacePixels(),
@@ -3638,13 +3655,19 @@ int RecoilApp_MainMenuPrepState::OnTryBecomeCurrent() {
     return 1;
 }
 
-// Reimplements 0x42eb60: RecoilApp_MainMenuPrepState::OnUpdateShouldQuit
+/**
+ * Reimplements 0x42eb60: RecoilApp_MainMenuPrepState::OnUpdateShouldQuit.
+ * Purpose: queues entry into the front-end main-menu transition state.
+ */
 int RecoilApp_MainMenuPrepState::OnUpdateShouldQuit() {
     RecoilStateMainMenuTransition::QueueEnter(RECOIL_MAINMENU_ROUTE_FRONTEND);
     return 0;
 }
 
-// Reimplements 0x42ebf0: RecoilApp_AttractFmvState::OnTryBecomeCurrent
+/**
+ * Reimplements 0x42ebf0: RecoilApp_AttractFmvState::OnTryBecomeCurrent.
+ * Purpose: prepares attract-mode playback, reloads the script when requested, and starts the attract FMV.
+ */
 int RecoilApp_AttractFmvState::OnTryBecomeCurrent() {
     zVideo::Fx_SetSurfaceState(
         zVideo::GetPrimarySurfacePixels(),
@@ -3681,7 +3704,10 @@ int RecoilApp_AttractFmvState::OnTryBecomeCurrent() {
     return 1;
 }
 
-// Reimplements 0x42ec80: RecoilApp_AttractFmvState::OnUpdateShouldQuit
+/**
+ * Reimplements 0x42ec80: RecoilApp_AttractFmvState::OnUpdateShouldQuit.
+ * Purpose: advances attract FMV playback and returns to main-menu preparation when it finishes.
+ */
 int RecoilApp_AttractFmvState::OnUpdateShouldQuit() {
     zFMV_Script *const script = &m_fmv;
     const int stateParam = script->UpdateAtTime();
@@ -3695,20 +3721,28 @@ int RecoilApp_AttractFmvState::OnUpdateShouldQuit() {
     return 0;
 }
 
-// Reimplements 0x42eca0: RecoilApp_AttractFmvState::OnDeactivate
+/**
+ * Reimplements 0x42eca0: RecoilApp_AttractFmvState::OnDeactivate.
+ * Purpose: rewinds the attract FMV script state when attract playback deactivates.
+ */
 void RecoilApp_AttractFmvState::OnDeactivate() {
     m_fmv.BeginNow(0);
 }
 
-// Reimplements 0x42ed30: RecoilApp_MissionFmvState::Constructor
-// Actual C++ construction lets VC emit the one-state IState cleanup funclet.
+/**
+ * Reimplements 0x42ed30: RecoilApp_MissionFmvState::Constructor.
+ * Purpose: initializes the mission FMV state fields after the default C++ member construction.
+ */
 RecoilApp_MissionFmvState::RecoilApp_MissionFmvState() {
     m_missionId = 0;
     m_skipMissionFmv = 0;
 }
 
-// Reimplements 0x42edb0: RecoilApp_MissionFmvState::OnTryBecomeCurrent
-// (D:\Proj\GameZRecoil\recoilapp.cpp)
+/**
+ * Reimplements 0x42edb0: RecoilApp_MissionFmvState::OnTryBecomeCurrent.
+ * Original source path: D:\Proj\GameZRecoil\recoilapp.cpp.
+ * Purpose: selects the active mission archive and starts the matching mission FMV when playback is enabled.
+ */
 int RecoilApp_MissionFmvState::OnTryBecomeCurrent() {
     if (m_missionId == 0) {
         m_missionId = g_HudSensorTracker.GetMissionId();
@@ -3743,8 +3777,11 @@ int RecoilApp_MissionFmvState::OnTryBecomeCurrent() {
     return 1;
 }
 
-// Reimplements 0x42ee50: RecoilApp_MissionFmvState::OnDeactivate
-// (D:\Proj\GameZRecoil\recoilapp.cpp)
+/**
+ * Reimplements 0x42ee50: RecoilApp_MissionFmvState::OnDeactivate.
+ * Original source path: D:\Proj\GameZRecoil\recoilapp.cpp.
+ * Purpose: clears mission FMV state and terminates playback when the mission movie was not skipped.
+ */
 void RecoilApp_MissionFmvState::OnDeactivate() {
     const int skipMissionFmv = m_skipMissionFmv;
     m_missionId = 0;
@@ -3753,8 +3790,11 @@ void RecoilApp_MissionFmvState::OnDeactivate() {
     }
 }
 
-// Reimplements 0x42ee70: RecoilApp_MissionFmvState::OnUpdateShouldQuit
-// (D:\Proj\GameZRecoil\recoilapp.cpp)
+/**
+ * Reimplements 0x42ee70: RecoilApp_MissionFmvState::OnUpdateShouldQuit.
+ * Original source path: D:\Proj\GameZRecoil\recoilapp.cpp.
+ * Purpose: advances mission FMV playback and queues the play state when the movie ends or is skipped.
+ */
 int RecoilApp_MissionFmvState::OnUpdateShouldQuit() {
     if (m_skipMissionFmv != 0 || m_fmv.UpdateAtTime() == 0) {
         g_RecoilApp.QueueSwitchCurrentState(
