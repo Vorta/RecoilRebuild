@@ -528,13 +528,9 @@ void EnsureFeatureMapTreeInitialized(
  * zDEClient::LoadConfigResources.
  * Purpose: read the element count stored at the front of a zReader array node.
  */
-int zReaderArrayCount(
+inline int zReaderArrayCount(
     zReader::Node *node
 ) {
-    if (node == 0 || node->type != zReader::ZRDR_NODE_ARRAY || node->value.nodes == 0) {
-        return 0;
-    }
-
     return node->value.nodes[0].value.i32;
 }
 
@@ -544,7 +540,7 @@ int zReaderArrayCount(
  * zDEClient::LoadConfigResources.
  * Purpose: read a string element from a zReader array node.
  */
-char *zReaderArrayString(
+inline char *zReaderArrayString(
     zReader::Node *node,
     int index
 ) {
@@ -2446,8 +2442,7 @@ int __fastcall LoadConfigResources(
         g_zDEClient_TextureAnimNodeName
     );
     if (textureAnimNode != 0) {
-        const int textureAnimCount = zReaderArrayCount(textureAnimNode);
-        const int additionalDisplaySourceCount = (textureAnimCount - 1) / 2;
+        const int additionalDisplaySourceCount = (zReaderArrayCount(textureAnimNode) - 1) / 2;
         g_zDEClient_CraterDisplaySourceCount += additionalDisplaySourceCount;
 
         g_zDEClient_CraterDisplaySourceList = (zDEClient_CraterDisplaySourceEntry *)(realloc(
@@ -2457,14 +2452,10 @@ int __fastcall LoadConfigResources(
         ));
 
         zDEClient_CraterDisplaySourceEntry *displaySource = &g_zDEClient_CraterDisplaySourceList[1];
-        for (int i = 1; i < textureAnimCount; i += 2) {
-            char *const sourceTexturePath = zReaderArrayString(
-                textureAnimNode,
-                i
-            );
+        for (int i = 1; i < zReaderArrayCount(textureAnimNode); i += 2) {
             if (LoadMaterialFromTexturePath_Local(
                     &displaySource->sourceMaterial,
-                    sourceTexturePath
+                    zReaderArrayString(textureAnimNode, i)
                 ) != 0) {
                 textureLoadPending = 1;
             }
@@ -2472,7 +2463,7 @@ int __fastcall LoadConfigResources(
             zReader::Node *const entryNode =
                 zReader_GetNamedNode(
                     textureAnimNode,
-                    sourceTexturePath
+                    zReaderArrayString(textureAnimNode, i)
                 );
             if (entryNode != 0) {
                 if (LoadMaterialFromTexturePath_Local(
@@ -2513,16 +2504,16 @@ int __fastcall LoadConfigResources(
             );
         int textureCount = 1;
         if (defaultTextureNode != 0) {
-            zReader::Node *const defaultTextureArray = defaultTextureNode->value.nodes;
-            g_zDEClient_QuickSandAnimSpeed = defaultTextureArray[1].value.f32;
-            textureCount = defaultTextureArray[0].value.i32 - 2;
+            g_zDEClient_QuickSandAnimSpeed = defaultTextureNode->value.nodes[1].value.f32;
+            textureCount = defaultTextureNode->value.nodes[0].value.i32 - 2;
             g_zDEClient_QuickSandTextureCount = textureCount;
 
             if (textureCount > 0) {
                 g_zDEClient_QuickSandTexturePaths =
                     (char **)(malloc((size_t)(textureCount) * sizeof(char *)));
                 for (int i = 0; i < textureCount; ++i) {
-                    g_zDEClient_QuickSandTexturePaths[i] = defaultTextureArray[i + 2].value.str;
+                    g_zDEClient_QuickSandTexturePaths[i] =
+                        defaultTextureNode->value.nodes[i + 2].value.str;
                 }
             } else {
                 g_zDEClient_QuickSandTexturePaths = 0;

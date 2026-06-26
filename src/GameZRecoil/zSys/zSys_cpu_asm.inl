@@ -233,10 +233,8 @@ int ReadCpuidVendorAndFamily() {
  * Purpose: Selects CMOS RTC register 0 and returns the raw seconds BCD byte.
  */
 unsigned int ReadCmosRtcSecondsBcd() {
-    volatile unsigned int result = 0;
     _outp(0x70, 0);
-    result = (unsigned short)_inp(0x71);
-    return result;
+    return _inp(0x71);
 }
 
 /**
@@ -397,8 +395,9 @@ int DetectIs80286ByEflagsHiBits() {
  * Purpose: Toggles the EFLAGS AC bit to distinguish 80386-class behavior from later CPUs.
  */
 int DetectIs80386ByAcFlag() {
-    int result = 0xffff;
+    int result;
     __asm {
+        mov dword ptr [result], 0ffffh
         mov bx, sp
         and sp, 0fffch
         pushfd
@@ -421,6 +420,5 @@ int DetectIs80386ByAcFlag() {
         and eax, 0ffffh
         mov ax, word ptr [result]
     }
-    return result;
 }
 } // namespace zSys

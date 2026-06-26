@@ -2223,7 +2223,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: source-file; Parent: src/GameZRecoil/zSys/zSys.cpp; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: zSys::ProbePlatformAndVideoCaps;
     - File: src/GameZRecoil/zSys/zSys.cpp;
     - Target: zsys_probe_platform;
@@ -2236,7 +2236,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zSys; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: zSys::HasCpuidSupportRuntimeOptions;
     - File: src/GameZRecoil/zSys/zSys.cpp;
     - Target: zsys_has_cpuid_support_runtime_options;
@@ -2431,7 +2431,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zSys; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: zSys::DetectIs80386ByAcFlag;
     - File: src/GameZRecoil/zSys/zSys_cpu_asm.inl;
     - Target: zsys_detect_is_80386_by_ac_flag;
@@ -2601,7 +2601,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zmath_vec3_normalize;
     - Group: engine.zmath;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S blocked: VC5SP3 zmath_vec3_normalize still fails with 89 unmasked mismatches; retail bytes use nonvolatile-register prologue and direct x87 self-multiply sequence while current source/profile emits stack temporaries and different x87 cleanup shape.
 
 - 0x42d560:
   - [✅] Reconstructed (Name: zMath::Vec3Midpoint)
@@ -4946,7 +4946,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: source-file; Parent: engine.zclass.node_recursive_flag_state; State: implemented)
   - [❎] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: zClass_Node::MaskExtraFlagsRecursive;
     - File: src/GameZRecoil/zClass/Class.c;
     - Target: zclass_node_mask_extra_flags_recursive;
@@ -4959,7 +4959,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: source-file; Parent: engine.zclass.node_recursive_flag_state; State: implemented)
   - [❎] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: zClass_Node::PropagateExtraFlagsRecursive;
     - File: src/GameZRecoil/zClass/Class.c;
     - Target: zclass_node_propagate_extra_flags_recursive;
@@ -4972,7 +4972,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: source-file; Parent: engine.zclass.node_recursive_flag_state; State: implemented)
   - [❎] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: zClass_Node::PropagateFlagsRecursive;
     - File: src/GameZRecoil/zClass/Class.c;
     - Target: zclass_node_propagate_flags_recursive;
@@ -4998,7 +4998,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: source-file; Parent: engine.zclass.node_recursive_flag_state; State: implemented)
   - [❎] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: zClass_Node::SetDiFlagBit0Recursive;
     - File: src/GameZRecoil/zClass/Class.c;
     - Target: zclass_node_set_di_flag_bit0_recursive;
@@ -5180,13 +5180,13 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: standalone; Parent: none; State: standalone)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: zClass_Class::gwNodeGetUserData;
     - File: src/GameZRecoil/zClass/Class.c;
     - Target: zclass_node_get_user_data;
     - Group: engine.zclass.core;
     - Model: source-faithful;
-    - Blocker: tier S deferred: zclass_display_instance_accessors VC5 function-byte comparison still mismatches for 0x447f00; owner/data gates accepted
+    - Blocker: none
 
 - 0x447f30:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeSetActionCallback)
@@ -5934,7 +5934,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: cluster; Parent: zClass; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: zClass_TypeList::FreeLink;
     - File: src/GameZRecoil/zClass/List.c;
     - Target: zclass_typelist_free_link;
@@ -9595,7 +9595,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: source-file; Parent: engine.zgeometry.zcliprect_clipper; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: zClipRect::TrivialRejectPolyXY;
     - File: src/GameZRecoil/zGeometry/zClipRect.cpp;
     - Target: zcliprect_trivial_reject_poly_xy;
@@ -11535,7 +11535,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: subsystem; Parent: engine.zinput.bindgroup_static_lifetime; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: zInput::BindGroupListStaticInit;
     - File: src/GameZRecoil/zInput/zInput.cpp;
     - Target: zinput_bindgroup_list_static_init;
@@ -16023,7 +16023,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: source-file; Parent: engine.zmodel.zdi_flag_leaf_setters; State: implemented)
   - [❎] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: zDi::SetFlagBit0;
     - File: src/GameZRecoil/zModel/gdi.c;
     - Target: zdi_set_flag_bit0;
@@ -17123,7 +17123,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: subsystem; Parent: engine.zsound.zsnd_system_tick_fade_slice; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: zSndFadeDispatchList::PushBack;
     - File: src/GameZRecoil/zSound/zsnd_system.cpp;
     - Target: zsnd_fade_dispatch_list_push_back;
@@ -24021,7 +24021,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: subsystem; Parent: engine.zeffect.zdeclient_camera_feature_accessors; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: zDEClient::SetCameraNode;
     - File: src/GameZRecoil/zDEClient/zdec_init.cpp;
     - Target: zdeclient_set_camera_node;
@@ -27769,7 +27769,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: briefing_start_for_mission;
     - Group: battlesport.briefing;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S blocked: VC5SP3 briefing_start_for_mission still fails with 163 unmasked mismatches because current source lacks BN-proven C++ EH state around allocation and HudUiBriefingRuntime construction; same-owner constructor 0x403930 also remains byte-mismatched.
 
 - 0x404280:
   - [✅] Reconstructed (Name: Briefing::RunMissionBriefingLoop)

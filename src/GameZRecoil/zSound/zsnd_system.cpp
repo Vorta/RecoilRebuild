@@ -114,8 +114,8 @@ void ShutdownAtExit() {
     while (node != dispatchSentinel) {
         zSndFadeListNode *outCursor = 0;
         DispatchFadeList()->DeleteNodeAndAdvanceCursor(
-            node,
-            &outCursor
+            &outCursor,
+            node
         );
         node = outCursor;
     }
@@ -348,8 +348,8 @@ extern "C" void __stdcall zSndFadeActiveList_TickAll(
  * the caller's cursor to the next node.
  */
 void zSndFadeList::DeleteNodeAndAdvanceCursor(
-    zSndFadeListNode *node,
-    zSndFadeListNode **outCursor
+    zSndFadeListNode **outCursor,
+    zSndFadeListNode *node
 ) {
     zSndFadeListNode *const previous = node->prev;
     zSndFadeListNode *const next = node->next;
@@ -723,11 +723,11 @@ void StopAllAndShutdown() {
         zSndFadeListNode *outNode = 0;
         zSndFadeListNode *outCursor = 0;
         ((zSndFadeList *)(&g_zSndFadeActiveListFlags))->DeleteNodeAndAdvanceCursor(
+            &outCursor,
             *cursor.PopFrontCursor(
                 &outNode,
                 0
-            ),
-            &outCursor
+            )
         );
         cursor.node = outCursor;
     }

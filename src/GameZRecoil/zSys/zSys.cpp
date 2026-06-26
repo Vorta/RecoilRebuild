@@ -1131,11 +1131,11 @@ zSys::CpuBenchmarkResult * CpuBenchmarkResolver::ResolveCpuBenchmarkPacket(
     }
 
     unsigned int expectedCycles;
-    bool forcedLowHint = false;
+    int forcedLowHint = 0;
     if (cpuClassHint <= 0) {
         expectedCycles = g_zSys_CpuBenchmarkDurationTable[cpuClass & 0xffff] * 4000u;
     } else if (cpuClassHint <= 0x96) {
-        forcedLowHint = true;
+        forcedLowHint = 1;
         expectedCycles = (unsigned int)(cpuClassHint) * 4000u;
     } else {
         expectedCycles = (unsigned int)((unsigned int)(outBuffer));

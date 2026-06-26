@@ -240,7 +240,7 @@ CZGameFrame::~CZGameFrame() {
 CString * CZGameFrame::BuildWindowTitle(
     CString *outTitle
 ) {
-    new (outTitle) CString("Zipper Interactive");
+    outTitle->CString::CString("Zipper Interactive");
     return outTitle;
 }
 
@@ -285,50 +285,48 @@ void CZGameFrame::OnClose() {
  */
 void CZGameFrame::OnPaint() {
     CPaintDC paintDc((CWnd *)(void *)this);
-    if (zVid::QueryCachedClientRectUpdateMaskIf3dfx() != 0) {
-        return;
-    }
-
-    PAINTSTRUCT paintStruct = paintDc.m_ps;
-    HDC compatibleDc = CreateCompatibleDC(paintDc.m_hDC);
-    SelectObject(
-        compatibleDc,
-        m_gameBitmap.m_hObject
-    );
-
-    const int paintLeft = paintStruct.rcPaint.left;
-    const int paintTop = paintStruct.rcPaint.top;
-    const int paintWidth = paintStruct.rcPaint.right - paintLeft;
-    const int paintHeight = paintStruct.rcPaint.bottom - paintTop;
-    if (paintHeight > 480) {
-        StretchBlt(
-            paintDc.m_hDC,
-            paintLeft,
-            paintTop,
-            paintWidth,
-            paintHeight,
+    if (zVid::QueryCachedClientRectUpdateMaskIf3dfx() == 0) {
+        PAINTSTRUCT paintStruct = paintDc.m_ps;
+        HDC compatibleDc = CreateCompatibleDC(paintDc.GetSafeHdc());
+        SelectObject(
             compatibleDc,
-            paintLeft,
-            paintTop,
-            640,
-            480,
-            SRCCOPY
+            m_gameBitmap.GetSafeHandle()
         );
-    } else {
-        BitBlt(
-            paintDc.m_hDC,
-            paintLeft,
-            paintTop,
-            paintWidth,
-            paintHeight,
-            compatibleDc,
-            paintLeft,
-            paintTop,
-            SRCCOPY
-        );
-    }
 
-    DeleteDC(compatibleDc);
+        const int paintLeft = paintStruct.rcPaint.left;
+        const int paintTop = paintStruct.rcPaint.top;
+        const int paintWidth = paintStruct.rcPaint.right - paintLeft;
+        const int paintHeight = paintStruct.rcPaint.bottom - paintTop;
+        if (paintHeight > 480) {
+            StretchBlt(
+                paintDc.GetSafeHdc(),
+                paintLeft,
+                paintTop,
+                paintWidth,
+                paintHeight,
+                compatibleDc,
+                paintLeft,
+                paintTop,
+                640,
+                480,
+                SRCCOPY
+            );
+        } else {
+            BitBlt(
+                paintDc.GetSafeHdc(),
+                paintLeft,
+                paintTop,
+                paintWidth,
+                paintHeight,
+                compatibleDc,
+                paintLeft,
+                paintTop,
+                SRCCOPY
+            );
+        }
+
+        DeleteDC(compatibleDc);
+    }
 }
 
 /**

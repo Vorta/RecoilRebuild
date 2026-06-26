@@ -1630,7 +1630,8 @@ unsigned short __fastcall zVid_PackColorRgbFloats(
     unsigned short packed;
 
     packed = (unsigned short)(int)(color->r + 0.5f);
-    packed = (unsigned short)((packed & g_zVideo_PixelPack.rMaskShifted) << g_zVideo_PixelPack.packedBase);
+    packed &= (unsigned short)(g_zVideo_PixelPack.rMaskShifted);
+    packed <<= (unsigned char)(g_zVideo_PixelPack.packedBase);
     packed = (unsigned short)(packed |
         (((int)(color->g + 0.5f) & g_zVideo_PixelPack.gMaskShifted) << g_zVideo_PixelPack.sumMinus8));
     packed = (unsigned short)(packed |
@@ -7186,21 +7187,32 @@ void __fastcall ApplyRecipeToPaletteVariant(
 
     const float variantWeight = (float)(variantIndex) * 0.0322580636f;
     const float inverseVariantWeight = 1.0f - variantWeight;
+    float r;
+    float g;
+    float b;
+    int red;
+    int green;
+    int blue;
+    zVideo_ColorRgbFloat color;
 
     while (colorCount > 0) {
         const int packed = *sourceColors;
-        float r = 0.0f;
-        float g = 0.0f;
+        r = 0.0f;
+        g = 0.0f;
         if (gBits == 5) {
-            r = (float)(packed & 0x7c00) * 3.15020152e-05f;
-            g = (float)(packed & 0x03e0) * 0.00100806449f;
+            red = packed & 0x7c00;
+            green = packed & 0x03e0;
+            r = (float)(red) * 3.15020152e-05f;
+            g = (float)(green) * 0.00100806449f;
         } else {
-            r = (float)(packed & 0xf800) * 1.57510076e-05f;
-            g = (float)(packed & 0x07e0) * 0.000496031775f;
+            red = packed & 0xf800;
+            green = packed & 0x07e0;
+            r = (float)(red) * 1.57510076e-05f;
+            g = (float)(green) * 0.000496031775f;
         }
-        const float b = (float)(packed & 0x001f) * 0.0322580636f;
+        blue = packed & 0x001f;
+        b = (float)(blue) * 0.0322580636f;
 
-        zVideo_ColorRgbFloat color;
         color.r = ((recipe->color0R - r) * inverseVariantWeight * recipe->color0Strength +
                       (recipe->color1R - r) * variantWeight * recipe->color1Strength + r) *
                   255.0f;
@@ -7211,8 +7223,9 @@ void __fastcall ApplyRecipeToPaletteVariant(
                       (recipe->color0B - b) * inverseVariantWeight * recipe->color0Strength + b) *
                   255.0f;
 
-        *destColors++ = zVid_PackColorRgbFloats(&color);
+        *destColors = zVid_PackColorRgbFloats(&color);
         ++sourceColors;
+        ++destColors;
         --colorCount;
     }
 }

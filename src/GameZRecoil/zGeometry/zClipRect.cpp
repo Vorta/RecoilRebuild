@@ -1629,13 +1629,14 @@ int __fastcall ClipPolyZRange_NoUV(
     zClipRectPartial *clipRect,
     int *vertexCount
 ) {
-    const int count = *vertexCount;
-    const int flags = clipRect->flags;
+    zClipRectPartial *const localClipRect = clipRect;
+    int *const localVertexCount = vertexCount;
+    const int flags = localClipRect->flags;
 
     if ((flags & 0x20) != 0) {
         int allBeyondFar = 1;
-        for (int i = 0; i < count && allBeyondFar != 0; ++i) {
-            if (g_Clip_PolyVertsScratch[i].z < clipRect->zMax) {
+        for (int i = 0; i < *localVertexCount && allBeyondFar != 0; ++i) {
+            if (g_Clip_PolyVertsScratch[i].z < localClipRect->zMax) {
                 allBeyondFar = 0;
             }
         }
@@ -1650,56 +1651,69 @@ int __fastcall ClipPolyZRange_NoUV(
     }
 
     int allInsideNear = 1;
-    for (int i = 0; i < count && allInsideNear != 0; ++i) {
-        if (g_Clip_PolyVertsScratch[i].z < clipRect->zMin) {
+    for (int i = 0; i < *localVertexCount && allInsideNear != 0; ++i) {
+        if (g_Clip_PolyVertsScratch[i].z < localClipRect->zMin) {
             allInsideNear = 0;
         }
     }
 
     if (allInsideNear != 0) {
-        return count >= 3 ? 1 : 0;
+        return *localVertexCount >= 3 ? 1 : 0;
     }
 
-    zClipVert clippedVerts[kClipBufferCapacity] = {0};
+    zClipVert clippedVerts[kClipBufferCapacity];
     int outputCount = 0;
+    int edgeIndex = 0;
 
-    if (count > 0) {
-        zClipVert prevVert = g_Clip_PolyVertsScratch[count - 1];
-        bool prevInside = IsInsideNear(
-            prevVert,
-            clipRect->zMin
-        );
+    if (*localVertexCount > 0) {
+        int prevIndex = *localVertexCount - 1;
 
-        for (int i = 0; i < count; ++i) {
-            const zClipVert currVert = g_Clip_PolyVertsScratch[i];
-            const bool currInside = IsInsideNear(
-                currVert,
-                clipRect->zMin
-            );
-
-            if (prevInside != currInside) {
-                const float t = (clipRect->zMin - prevVert.z) / (currVert.z - prevVert.z);
-                AppendClippedVert(
-                    clippedVerts,
-                    outputCount,
-                    InterpolateVert(prevVert, currVert, t, clipRect->zMin)
-                );
+        while (edgeIndex < *localVertexCount) {
+            const zClipVert &prevVert = g_Clip_PolyVertsScratch[prevIndex];
+            const zClipVert &currVert = g_Clip_PolyVertsScratch[edgeIndex];
+            if (
+                prevVert.z >= localClipRect->zMin
+                && currVert.z >= localClipRect->zMin
+            ) {
+                clippedVerts[outputCount] = currVert;
+                ++outputCount;
+            } else if (
+                prevVert.z >= localClipRect->zMin
+                && currVert.z < localClipRect->zMin
+            ) {
+                const float t =
+                    (localClipRect->zMin - prevVert.z) /
+                    (currVert.z - prevVert.z);
+                clippedVerts[outputCount].x =
+                    prevVert.x +
+                    (currVert.x - prevVert.x) * t;
+                clippedVerts[outputCount].y =
+                    prevVert.y +
+                    (currVert.y - prevVert.y) * t;
+                clippedVerts[outputCount].z = localClipRect->zMin;
+                ++outputCount;
+            } else if (currVert.z >= localClipRect->zMin) {
+                const float t =
+                    (localClipRect->zMin - prevVert.z) /
+                    (currVert.z - prevVert.z);
+                clippedVerts[outputCount].x =
+                    prevVert.x +
+                    (currVert.x - prevVert.x) * t;
+                clippedVerts[outputCount].y =
+                    prevVert.y +
+                    (currVert.y - prevVert.y) * t;
+                clippedVerts[outputCount].z = localClipRect->zMin;
+                ++outputCount;
+                clippedVerts[outputCount] = currVert;
+                ++outputCount;
             }
 
-            if (currInside) {
-                AppendClippedVert(
-                    clippedVerts,
-                    outputCount,
-                    currVert
-                );
-            }
-
-            prevVert = currVert;
-            prevInside = currInside;
+            prevIndex = edgeIndex;
+            ++edgeIndex;
         }
     }
 
-    *vertexCount = outputCount;
+    *localVertexCount = outputCount;
     if (outputCount < 3) {
         return 0;
     }

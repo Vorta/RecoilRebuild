@@ -1329,10 +1329,13 @@ namespace zClass_Class {
         zClass_NodePartial * node,
         zDiPartial * displayInstance
     ) {
-        if (ReportNullNode(
-            0x424,
-            node
-        )) {
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                "D:\\Proj\\GameZRecoil\\zClass\\Class.c",
+                0x424,
+                "Null node pointer."
+            );
             return 5;
         }
 
@@ -1342,19 +1345,17 @@ namespace zClass_Class {
         }
 
         node->userDataOrDiRef = (unsigned int)((unsigned int)(displayInstance));
-        int flags = node->flags;
         if (displayInstance != 0) {
             zDi::AddRef(displayInstance);
             zDi::RebuildBounds(
-                displayInstance,
-                (zBoundsMinMaxPartial *)(PrimaryBBox(node))
+                (zDiPartial *)((unsigned int)(node->userDataOrDiRef)),
+                (zBoundsMinMaxPartial *)(&((zClass_NodeFreeListSlot *)node)->primaryBounds)
             );
-            flags |= 0x200;
+            node->flags |= 0x200;
         } else {
-            flags &= ~0x200;
+            node->flags &= ~0x200;
         }
 
-        node->flags = flags;
         node->boundsFlags |= 0x01;
         if ((node->flags & kTypeListInsertedFlag) == 0) {
             zClass_TypeList::Insert(
@@ -1428,10 +1429,13 @@ namespace zClass_Class {
         zClass_NodePartial * node,
         unsigned int *outData
     ) {
-        if (ReportNullNode(
-            0x464,
-            node
-        )) {
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                "D:\\Proj\\GameZRecoil\\zClass\\Class.c",
+                0x464,
+                "Null node pointer."
+            );
             return 5;
         }
 
