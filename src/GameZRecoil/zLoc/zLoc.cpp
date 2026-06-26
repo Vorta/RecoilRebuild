@@ -3,6 +3,13 @@
 #include <string.h>
 
 extern "C" {
+/**
+ * Reimplements data 0x56b670: g_zLoc_MessagesDllHandle.
+ * Reimplements data 0x56b568: g_zLoc_GetIdProc.
+ * Reimplements data 0x56b570: g_zLoc_TempMessageBuffer.
+ * Purpose: stores the loaded messages DLL handle, resolved ZLocGetID export,
+ * and shared temporary localization message buffer.
+ */
 HMODULE g_zLoc_MessagesDllHandle = 0;
 unsigned int(*g_zLoc_GetIdProc)(const char *key) = 0;
 char g_zLoc_TempMessageBuffer[0x100] = {0};

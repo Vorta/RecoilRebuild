@@ -34,30 +34,38 @@
 #include <new>
 #endif
 
-// Provider-boundary accessor for imported MFC42 CDialog metadata; this does not reimplement
-// CDialog behavior.
+/**
+ * Provider-boundary accessor for imported MFC42 CDialog metadata; this does not reimplement
+ * CDialog behavior.
+ */
 class NetSessionBrowserCDialogMessageMapAccessor : public CDialog {
   public:
     static const AFX_MSGMAP *__stdcall GetMessageMap();
 };
 
-// Provider-boundary accessor for imported MFC42 CDialog metadata; this does not reimplement
-// CDialog behavior.
+/**
+ * Provider-boundary accessor for imported MFC42 CDialog metadata; this does not reimplement
+ * CDialog behavior.
+ */
 class NetSessionConfigCDialogMessageMapAccessor : public CDialog {
   public:
     static const AFX_MSGMAP *__stdcall GetMessageMap();
 };
 
-// Provider-boundary accessor for imported MFC42 protected window/dialog members; this does
-// not reimplement provider behavior.
+/**
+ * Provider-boundary accessor for imported MFC42 protected window/dialog members; this does
+ * not reimplement provider behavior.
+ */
 class GameNetMfcWndAccess : public CWnd {
   public:
     long CallDefault();
     void CallOnDestroy();
 };
 
-// Provider-boundary accessor for imported MFC42 protected dialog members; this does not
-// reimplement provider behavior.
+/**
+ * Provider-boundary accessor for imported MFC42 protected dialog members; this does not
+ * reimplement provider behavior.
+ */
 class GameNetMfcDialogAccess : public CDialog {
   public:
     void CallOnOK();

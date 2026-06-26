@@ -5,8 +5,10 @@
 #include "Battlesport/Mfc42Abi.h"
 #include "recoil/recoil_callconv.h"
 
-// Authored Recoil About dialog reconstructed over imported MFC42 CDialog;
-// MFC base behavior is not reimplemented here.
+/**
+ * Authored Recoil About dialog reconstructed over imported MFC42 CDialog;
+ * MFC base behavior is not reimplemented here.
+ */
 class CAboutDlg : public CDialog {
   public:
     CAboutDlg(CWnd *parentWnd = 0);

@@ -28,9 +28,11 @@ const unsigned int kFmtChunkMagic = 0x20746d66;
 const unsigned int kDataChunkMagic = 0x61746164;
 const unsigned int kCueChunkMagic = 0x20657563;
 
-// DirectSound provider ABI prefix consumed by the retail CreateSoundBuffer call
-// at 0x4a3180. The modern SDK's DSBUFFERDESC is larger, but the original code
-// passed only this DirectSound v1-compatible prefix with dwSize == 20.
+/**
+ * DirectSound provider ABI prefix consumed by the retail CreateSoundBuffer call
+ * at 0x4a3180. The modern SDK's DSBUFFERDESC is larger, but the original code
+ * passed only this DirectSound v1-compatible prefix with dwSize == 20.
+ */
 struct zSndDirectSoundLegacyBufferDesc {
     DWORD dwSize;
     DWORD dwFlags;

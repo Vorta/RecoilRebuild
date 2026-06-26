@@ -72,7 +72,11 @@ RECOIL_STATIC_ASSERT(
     ) == 0xa0
 );
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function; observed in address-backed
+ * callers 0x46b550 and 0x46b030 in this source file.
+ * Purpose: Recover the model draw-batch pointer stored in a clip-patch node.
+ */
 zModel_DrawBatchBasePartial *ModelDrawBatchFromNode(
     zGeometry_ClipPatchNodeView *node
 ) {
@@ -111,7 +115,11 @@ bool IsClipPatchNodeOutsideClipBoundsXY(
     return false;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function; observed in address-backed
+ * caller 0x46b6d0 in this source file.
+ * Purpose: Address a point list by the recovered dword offset stored in clipped polygon spans.
+ */
 zVec3 *PointAtDwordOffset(
     zVec3 *points,
     int pointDwordOffset
@@ -119,6 +127,10 @@ zVec3 *PointAtDwordOffset(
     return (zVec3 *)((float *)(points) + pointDwordOffset);
 }
 
+/**
+ * Reimplements data 0x53a73c: g_zGeometry_Model_LastRandomDebugMaterial.
+ * Purpose: Remember the last randomized debug material cloned for generated model polygons.
+ */
 zModel_MaterialPartial *g_zGeometry_Model_LastRandomDebugMaterial = 0;
 } // namespace
 

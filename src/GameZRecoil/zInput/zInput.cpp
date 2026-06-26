@@ -790,14 +790,19 @@ float g_zInput_MouseSensitivityX = 1.3f;
  * Purpose: Stores the vertical mouse sensitivity multiplier.
  */
 float g_zInput_MouseSensitivityY = 1.3f;
+/**
+ * Reimplements data 0x561cac: g_zInput_MouseWrapModeFlag.
+ * Purpose: stores whether mouse motion wraps around the client area instead
+ * of clamping to its bounds.
+ */
 int g_zInput_MouseWrapModeFlag = 0;
-// zin_kbd.cpp keyboard source-state globals; BN 0x46f690/0x46f450 uses the
-// typed DirectInput event buffer, modifier bitfield, dispatch slots, and raw
-// callback storage as one keyboard polling owner.
 /**
  * Reimplements data 0x561848: g_zInput_KbdDikToAsciiTable.
  * BN types this as a zero-filled 256-entry int table, cleared and populated by
  * Keyboard_InitDikToAsciiTable and read by Keyboard_TranslateDikToAscii.
+ * zin_kbd.cpp keyboard source-state globals; BN 0x46f690/0x46f450 uses the typed DirectInput
+ * event buffer, modifier bitfield, dispatch slots, and raw callback storage as one keyboard
+ * polling owner.
  * Purpose: Stores base ASCII/control codes for DirectInput keyboard scan codes.
  */
 int g_zInput_KbdDikToAsciiTable[0x100] = {0};
@@ -1579,7 +1584,11 @@ namespace zInput {
  * Purpose: Default-constructs the global bind-group pointer vector storage.
  */
 void BindGroupListStaticInit() {
-    g_zInput_BindGroupInfoList.allocatorByte = 0;
+    zInput_BindGroupInfoListAllocator allocator;
+#if !defined(_MSC_VER) || _MSC_VER >= 1200
+    allocator.value = 0;
+#endif
+    g_zInput_BindGroupInfoList.allocatorProxy = allocator;
     g_zInput_BindGroupInfoList.begin = 0;
     g_zInput_BindGroupInfoList.end = 0;
     g_zInput_BindGroupInfoList.capacity = 0;
@@ -1594,7 +1603,8 @@ void BindGroupListStaticInit() {
  * Purpose: Releases the global bind-group pointer vector buffer at process exit.
  */
 void BindGroupListAtExitDestructor() {
-    ::operator delete(g_zInput_BindGroupInfoList.begin);
+    zInput_BindGroupInfo **const oldBegin = g_zInput_BindGroupInfoList.begin;
+    ::operator delete(oldBegin);
     g_zInput_BindGroupInfoList.begin = 0;
     g_zInput_BindGroupInfoList.end = 0;
     g_zInput_BindGroupInfoList.capacity = 0;

@@ -107,6 +107,7 @@ const unsigned char kIntersect2dOutputKindByXingType[0x18] =
 /**
  * Data evidence: BN 0x4dff14..0x4e0349 is the contiguous zgeo_weiler.cpp diagnostic
  * literal owner linked by geometry_model_assets.zgeometry_weiler_initialized_data.
+ * Reimplements data 0x4dff14: g_zGeometry_WeilerInitFailedMsg.
  * Purpose: Preserve the source-visible error/source literals used by Weiler diagnostics.
  */
 const char g_zGeometry_WeilerInitFailedMsg[0x27] = "weiler_init call to weilerInit failed.";
@@ -122,13 +123,29 @@ const char g_zGeometry_WeilerInitNewContourFailedFmt[0x30] =
     "%s %d: weilerInit call to _new_contour failed.\n";
 const char g_zGeometry_WeilerInitBufferEntryFailedFmt[0x2c] =
     "%s %d: weilerInit call to bufEntry failed.\n";
+/**
+ * Reimplements data 0x4e0054: g_zGeometry_ForwardSegmentFailedMsg.
+ * Purpose: Preserve the weed-out diagnostic label for failed forward segment traversal.
+ */
 const char g_zGeometry_ForwardSegmentFailedMsg[0x17] = "Forward Segment Failed";
 const char g_zGeometry_WeedOutCoincidentSegForwardFailedFmt[0x38] =
     "%s %d: _weed_out_coincident call to segForward failed.\n";
+/**
+ * Reimplements data 0x4e00a4: g_zGeometry_WeedOutErrorFmt.
+ * Purpose: Preserve the old zError format used by coincident-edge weed-out failures.
+ */
 const char g_zGeometry_WeedOutErrorFmt[0x12] = "WeedOut Error: %s";
+/**
+ * Reimplements data 0x4e00b8: g_zGeometry_WeilerCase_BCompletelyInsideA.
+ * Purpose: Preserve the Weiler case label reported when contour B is inside contour A.
+ */
 const char g_zGeometry_WeilerCase_BCompletelyInsideA[0x16] = "B_COMPLETELY_INSIDE_A";
 const char g_zGeometry_WeilerDivideEdgeFailedFmt[0x37] =
     "%s %d: _weiler_intersect call to _divide_edge failed.\n";
+/**
+ * Reimplements data 0x4e013c: g_zGeometry_WeilerIntersectErrorFmt.
+ * Purpose: Preserve the old zError format used by Weiler intersection failures.
+ */
 const char g_zGeometry_WeilerIntersectErrorFmt[0x1a] = "weilerIntersect Error: %s";
 const char g_zGeometry_NewContourBufferEntryFailedMsg[0x2a] =
     "New_contour could not obtain buffer entry";
@@ -136,12 +153,24 @@ const char g_zGeometry_MergeContoursNewContourFailedFmt[0x37] =
     "%s %d: _merge_contours failed to receive new contour.\n";
 const char g_zGeometry_ContourMergeValidationFailedMsg[0x22] =
     "contourMerge:  Failed validation\n";
+/**
+ * Reimplements data 0x4e01e0: g_zGeometry_OutputContoursFoundMsg.
+ * Purpose: Preserve the trace literal emitted when output contours are found.
+ */
 const char g_zGeometry_OutputContoursFoundMsg[0x19] = "Found to output contours";
+/**
+ * Reimplements data 0x4e01fc: g_zGeometry_OutputContoursFailedMsg.
+ * Purpose: Preserve the diagnostic literal emitted when output contour generation fails.
+ */
 const char g_zGeometry_OutputContoursFailedMsg[0x1a] = "Failed to output contours";
 const char g_zGeometry_OutputContourBufferEntryFailedFmt[0x2f] =
     "%s %d: outputContour call to bufEntry failed.\n";
 const char g_zGeometry_DivideEdgeBufferEntryFailedFmt[0x2e] =
     "%s %d: _divide_edge call to bufEntry failed.\n";
+/**
+ * Reimplements data 0x4e0278: g_zGeometry_BufferEntryFailedMsg.
+ * Purpose: Preserve the shared Weiler buffer-entry failure diagnostic label.
+ */
 const char g_zGeometry_BufferEntryFailedMsg[0x10] = "bufEntry failed";
 const char g_zGeometry_GenerateOutsideResultsBufferEntryFailedFmt[0x35] =
     "%s %d: _gen._outside_rslts call to buf_entry failed\n";

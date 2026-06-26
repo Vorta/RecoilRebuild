@@ -58,8 +58,10 @@ struct WestwoodOnlineUpgradeQueryRequest {
     char m_serverAddress[0x35];
 };
 
-// Westwood Online ActiveX provider boundary. The source keeps call-site views
-// typed by observed slot order without modeling provider storage or tables.
+/**
+ * Westwood Online ActiveX provider boundary. The source keeps call-site views
+ * typed by observed slot order without modeling provider storage or tables.
+ */
 struct IWestwoodOnlineUpgradeProviderApi : IUnknown {
     virtual void STDMETHODCALLTYPE ProcessCallbacks() = 0;
     virtual void STDMETHODCALLTYPE BeginConnect(

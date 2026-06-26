@@ -906,11 +906,13 @@ namespace zClass_Node {
             return;
         }
 
-        for (int i = 0; i < node->listCountB; ++i) {
-            AssignDamageHandlerRecursiveIfMissing(
-                node->listB[i],
-                handler
-            );
+        if (node->listCountB != 0) {
+            for (int i = 0; i < node->listCountB; ++i) {
+                AssignDamageHandlerRecursiveIfMissing(
+                    node->listB[i],
+                    handler
+                );
+            }
         }
 
         ((zClass_NodeFreeListSlot *)(node))->damageHandler = handler;
@@ -925,11 +927,13 @@ namespace zClass_Node {
         zClass_NodePartial * node,
         OptCatalogDamageHandlerPartial * handler
     ) {
-        for (int i = 0; i < node->listCountB; ++i) {
-            ClearDamageHandlerRecursive(
-                node->listB[i],
-                handler
-            );
+        if (node->listCountB != 0) {
+            for (int i = 0; i < node->listCountB; ++i) {
+                ClearDamageHandlerRecursive(
+                    node->listB[i],
+                    handler
+                );
+            }
         }
 
         if (((zClass_NodeFreeListSlot *)(node))->damageHandler == handler) {
@@ -960,8 +964,8 @@ namespace zClass_Node {
             return 0;
         }
 
-        handler->hitContext = context;
-        handler->hitCallback = callback;
+        handler->hitCallback = context;
+        handler->hitContext = callback;
         AssignDamageHandlerRecursiveIfMissing(
             node,
             handler

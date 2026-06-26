@@ -6,8 +6,10 @@
 #include "recoil/recoil_callconv.h"
 #include "recoil/recoil_types.h"
 
-// Authored Recoil dialog reconstructed over imported MFC42 CDialog and
-// combo-box controls. MFC control behavior is provided by MFC42.
+/**
+ * Authored Recoil dialog reconstructed over imported MFC42 CDialog and
+ * combo-box controls. MFC control behavior is provided by MFC42.
+ */
 struct AiPropertyDlg : CDialog {
     LRESULT m_selectedPropertyIndex;
     LRESULT m_selectedBehaviorIndex;

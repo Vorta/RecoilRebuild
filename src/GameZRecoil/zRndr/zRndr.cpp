@@ -244,14 +244,14 @@ int g_zRndr_CircleCenterY = 0;
 int g_zRndr_CircleDrawAuxArg = 0;
 
 namespace zRndr {
-// Default software render target bank from zRndr_Draw.cpp. BN names the
-// clipped-framebuffer globals at 0x632050, 0x632054, 0x632058, and 0x63205c;
-// lens-flare and span leaves consume them as the active 16-bit framebuffer.
 /**
  * Reimplements data 0x632050: gRndr_pFrameBuffer.
  * BN xrefs: zRndr active-region setup stores this pointer; queued raster,
  * immediate line, circle, lens-flare, and span-occlusion sample paths load it
  * as the active software framebuffer before dispatching row/pixel callbacks.
+ * Default software render target bank from zRndr_Draw.cpp. BN names the clipped-framebuffer
+ * globals at 0x632050, 0x632054, 0x632058, and 0x63205c; lens-flare and span leaves consume
+ * them as the active 16-bit framebuffer.
  * Purpose: active 16-bit software renderer framebuffer base.
  */
 void *g_frameBuffer = 0;
@@ -343,9 +343,11 @@ unsigned int g_pixelPackBlueMask = 0;
 int g_pixelPackRedShift = 0;
 int g_pixelPackGreenShift = 0;
 int g_pixelPackBlueShift = 0;
-// BN keeps queued texture alpha setup in this initialized slot at 0x4e21ec as
-// pointer value 0x00000007; the queued and fan-triangle paths overwrite it from
-// zVidImagePartial::queuedAlphaMap before queued-alpha use.
+/**
+ * BN keeps queued texture alpha setup in this initialized slot at 0x4e21ec as
+ * pointer value 0x00000007; the queued and fan-triangle paths overwrite it from
+ * zVidImagePartial::queuedAlphaMap before queued-alpha use.
+ */
 enum {
     kQueuedTexAlphaMapStartupSentinel = 7
 };
@@ -520,13 +522,12 @@ unsigned int g_overlayBlendPackedColor16 = 0;
  * Purpose: cache the staged overlay alpha as the x87 double consumed by software overlay paths.
  */
 double g_overlayBlendAlpha = 0.0;
-// zRndr lens-flare frame-state bank. BN identifies the zero-initialized queue
-// count at 0x62ea00, the 0x28a-entry sample queue at 0x62ea04, the visible
-// count at 0x631ccc, the 64-entry visible pointer list at 0x631cd0, the
-// visibility-active flag at 0x56b248, and four stage texture pointers at
-// 0x56b250.
 /**
  * Reimplements data 0x62ea00: g_lensFlareSampleQueueCount.
+ * zRndr lens-flare frame-state bank. BN identifies the zero-initialized queue count at
+ * 0x62ea00, the 0x28a-entry sample queue at 0x62ea04, the visible count at 0x631ccc, the
+ * 64-entry visible pointer list at 0x631cd0, the visibility-active flag at 0x56b248, and four
+ * stage texture pointers at 0x56b250.
  * Purpose: Track the number of queued projected lens-flare samples for the frame.
  */
 int g_lensFlareSampleQueueCount = 0;
@@ -543,11 +544,11 @@ int g_lensFlareVisibleSampleCount = 0;
 int g_lensFlareVisibilityActive = 0;
 zImage_TexDirEntryPartial *g_lensFlareVisibleSampleStages[4] = {0};
 zRndr_LensFlareVisibleSampleDef *g_lensFlareVisibleSampleDefs[0x40] = {0};
-// zRndr texture-mip runtime selector globals. BN places these adjacent int32
-// data entries at 0x63209c..0x6320a0, after the render-state init bank ending
-// at 0x632098 and before the span callback/function-pointer bank at 0x6320a4.
 /**
  * Reimplements data 0x63209c: gRndr_TextureMipSelectionEnabled.
+ * zRndr texture-mip runtime selector globals. BN places these adjacent int32 data entries at
+ * 0x63209c..0x6320a0, after the render-state init bank ending at 0x632098 and before the span
+ * callback/function-pointer bank at 0x6320a4.
  * Purpose: Enable texture mip variant selection at runtime.
  */
 int g_textureMipSelectionEnabled = 0;

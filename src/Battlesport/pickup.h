@@ -51,14 +51,24 @@ struct PickupNodeRuntimeFields {
     int amount;
 };
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in address-backed callers 0x41de70 Pickup::InitAndLoadPuppySpawns, 0x41ccf0 Pickup::Init, 0x41db60 Pickup::AssignBvolGroupAndId, 0x41dab0 Pickup::CreateObjectInstance.
+ * Purpose: provide the recovered pickup node fields helper for
+ * the Player/Pickup gameplay source cluster.
+ */
 inline PickupNodeRuntimeFields *PickupNodeFields(
     zClass_NodePartial *node
 ) {
     return (PickupNodeRuntimeFields *)(node->name);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in address-backed callers 0x41de70 Pickup::InitAndLoadPuppySpawns, 0x41ccf0 Pickup::Init, 0x41db60 Pickup::AssignBvolGroupAndId, 0x41dab0 Pickup::CreateObjectInstance.
+ * Purpose: provide the recovered pickup node fields helper for
+ * the Player/Pickup gameplay source cluster.
+ */
 inline const PickupNodeRuntimeFields *PickupNodeFields(
     const zClass_NodePartial *node
 ) {

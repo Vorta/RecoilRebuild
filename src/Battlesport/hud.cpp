@@ -20,6 +20,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+/**
+ * Reimplements data 0x4f32c8: g_HudUiNewGamePanelOverlayOwner.
+ * Purpose: preserve the recovered HUD global storage for g_HudUiNewGamePanelOverlayOwner.
+ */
 HudUiNewGamePanelOverlayOwner g_HudUiNewGamePanelOverlayOwner;
 /**
  * Reimplements data 0x4e5e08: g_HudUiOptionsPanelOverlayOwner.
@@ -28,6 +32,10 @@ HudUiNewGamePanelOverlayOwner g_HudUiNewGamePanelOverlayOwner;
  * owner constructed by the CRT static initializer.
  */
 HudUiOptionsPanelOverlayOwner g_HudUiOptionsPanelOverlayOwner;
+/**
+ * Reimplements data 0x4edc48: g_RecoilState_ConfirmQuit.
+ * Purpose: preserve the recovered HUD global storage for g_RecoilState_ConfirmQuit.
+ */
 RecoilStateConfirmQuit g_RecoilState_ConfirmQuit;
 extern "C" int g_RecoilState_MainMenuSkipExitDelay = 0;
 /**
@@ -1234,8 +1242,11 @@ int HudUiOptionsPanelOverlayOwner::OnTryBecomeCurrent() {
     return 1;
 }
 
-// Reimplements 0x4159b0: RecoilStateConfirmQuit::QueueEnter
-// (D:\Proj\Battlesport\HudConfirmQuitDialog.cpp)
+/**
+ * Reimplements 0x4159b0: RecoilStateConfirmQuit::QueueEnter.
+ * Original source path: D:\Proj\Battlesport\HudConfirmQuitDialog.cpp.
+ * Purpose: queue the recovered HUD application-state transition for RecoilStateConfirmQuit::QueueEnter.
+ */
 void RecoilStateConfirmQuit::QueueEnter() {
     g_RecoilApp.QueuePushState(
         &g_RecoilState_ConfirmQuit,
@@ -1266,27 +1277,39 @@ void HudUiCreditsQuitButton::OnActivate() {
     HudUiZrdWidget::OnActivate();
 }
 
-// Reimplements 0x415810: RecoilStateConfirmQuit::StaticInitAndRegisterAtExit
-// (D:\Proj\Battlesport\HudConfirmQuitDialog.cpp)
+/**
+ * Reimplements 0x415810: RecoilStateConfirmQuit::StaticInitAndRegisterAtExit.
+ * Original source path: D:\Proj\Battlesport\HudConfirmQuitDialog.cpp.
+ * Purpose: preserve the recovered HUD behavior for RecoilStateConfirmQuit::StaticInitAndRegisterAtExit.
+ */
 void RecoilStateConfirmQuit::StaticInitAndRegisterAtExit() {
     StaticInit();
     RegisterAtExit();
 }
 
-// Reimplements 0x415820: RecoilStateConfirmQuit::StaticInit
-// (D:\Proj\Battlesport\HudConfirmQuitDialog.cpp)
+/**
+ * Reimplements 0x415820: RecoilStateConfirmQuit::StaticInit.
+ * Original source path: D:\Proj\Battlesport\HudConfirmQuitDialog.cpp.
+ * Purpose: preserve the recovered HUD behavior for RecoilStateConfirmQuit::StaticInit.
+ */
 RecoilStateConfirmQuit *RecoilStateConfirmQuit::StaticInit() {
     return new (&g_RecoilState_ConfirmQuit) RecoilStateConfirmQuit;
 }
 
-// Reimplements 0x415830: RecoilStateConfirmQuit::RegisterAtExit
-// (D:\Proj\Battlesport\HudConfirmQuitDialog.cpp)
+/**
+ * Reimplements 0x415830: RecoilStateConfirmQuit::RegisterAtExit.
+ * Original source path: D:\Proj\Battlesport\HudConfirmQuitDialog.cpp.
+ * Purpose: preserve the recovered HUD behavior for RecoilStateConfirmQuit::RegisterAtExit.
+ */
 void RecoilStateConfirmQuit::RegisterAtExit() {
     atexit(AtExitDestructor);
 }
 
-// Reimplements 0x415840: RecoilStateConfirmQuit::AtExitDestructor
-// (D:\Proj\Battlesport\HudConfirmQuitDialog.cpp)
+/**
+ * Reimplements 0x415840: RecoilStateConfirmQuit::AtExitDestructor.
+ * Original source path: D:\Proj\Battlesport\HudConfirmQuitDialog.cpp.
+ * Purpose: run the recovered RecoilStateConfirmQuit::AtExitDestructor teardown path.
+ */
 void RecoilStateConfirmQuit::AtExitDestructor() {
     g_RecoilState_ConfirmQuit.~RecoilStateConfirmQuit();
 }
@@ -1578,8 +1601,11 @@ RecoilStateConfirmQuit::RecoilStateConfirmQuit() {
     m_dialog = 0;
 }
 
-// Reimplements 0x4158f0: RecoilStateConfirmQuit::OnTryBecomeCurrent
-// (D:\Proj\Battlesport\HudConfirmQuitDialog.cpp)
+/**
+ * Reimplements 0x4158f0: RecoilStateConfirmQuit::OnTryBecomeCurrent.
+ * Original source path: D:\Proj\Battlesport\HudConfirmQuitDialog.cpp.
+ * Purpose: handle the recovered HUD event path for RecoilStateConfirmQuit::OnTryBecomeCurrent.
+ */
 int RecoilStateConfirmQuit::OnTryBecomeCurrent() {
     HudUiBackgroundConfirmQuit *dialog =
         (HudUiBackgroundConfirmQuit *) ::operator new(sizeof(HudUiBackgroundConfirmQuit));
@@ -1593,8 +1619,11 @@ int RecoilStateConfirmQuit::OnTryBecomeCurrent() {
     return 1;
 }
 
-// Reimplements 0x415960: RecoilStateConfirmQuit::OnDeactivate
-// (D:\Proj\Battlesport\HudConfirmQuitDialog.cpp)
+/**
+ * Reimplements 0x415960: RecoilStateConfirmQuit::OnDeactivate.
+ * Original source path: D:\Proj\Battlesport\HudConfirmQuitDialog.cpp.
+ * Purpose: handle the recovered HUD event path for RecoilStateConfirmQuit::OnDeactivate.
+ */
 void RecoilStateConfirmQuit::OnDeactivate() {
     if (m_dialog == 0) {
         return;
@@ -1617,8 +1646,11 @@ void RecoilStateConfirmQuit::OnDeactivate() {
     Sleep(1000);
 }
 
-// Reimplements 0x415880: RecoilStateConfirmQuit::~RecoilStateConfirmQuit
-// (D:\Proj\Battlesport\RecoilStateConfirmQuit.cpp)
+/**
+ * Reimplements 0x415880: RecoilStateConfirmQuit::~RecoilStateConfirmQuit.
+ * Original source path: D:\Proj\Battlesport\RecoilStateConfirmQuit.cpp.
+ * Purpose: run the recovered RecoilStateConfirmQuit::~RecoilStateConfirmQuit teardown path.
+ */
 RecoilStateConfirmQuit::~RecoilStateConfirmQuit() {
     HudUiBackgroundConfirmQuit *dialog = m_dialog;
     if (dialog != 0) {

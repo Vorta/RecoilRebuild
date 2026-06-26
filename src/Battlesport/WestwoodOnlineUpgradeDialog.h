@@ -8,8 +8,10 @@
 
 struct WestwoodOnlineUpgradeDownloadReadyEntry;
 
-// Authored Recoil dialog reconstructed over imported MFC42 CDialog. MFC
-// dialog behavior is provided by MFC42, not reimplemented in this source tree.
+/**
+ * Authored Recoil dialog reconstructed over imported MFC42 CDialog. MFC
+ * dialog behavior is provided by MFC42, not reimplemented in this source tree.
+ */
 struct WestwoodOnlineUpgradeProgressDialog : CDialog {
     WestwoodOnlineUpgradeProgressDialog(
         CWnd *parentWnd
@@ -39,9 +41,11 @@ struct WestwoodOnlineUpgradeProgressDialog : CDialog {
     );
 };
 
-// Authored Recoil dialog reconstructed over imported MFC42 CDialog and
-// control classes. MFC control behavior is provided by MFC42, not reimplemented
-// in this source tree.
+/**
+ * Authored Recoil dialog reconstructed over imported MFC42 CDialog and
+ * control classes. MFC control behavior is provided by MFC42, not reimplemented
+ * in this source tree.
+ */
 struct WestwoodOnlineUpgradeDialog : CDialog {
     CEdit m_serverAddressEdit;
     CEdit m_statusTokenEdit;

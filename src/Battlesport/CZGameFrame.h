@@ -7,8 +7,10 @@
 #include "Battlesport/RecoilApp.h"
 #include "recoil/recoil_callconv.h"
 
-// Authored Recoil game frame reconstructed over imported MFC42 CFrameWnd and
-// GDI providers; MFC base behavior is not reimplemented here.
+/**
+ * Authored Recoil game frame reconstructed over imported MFC42 CFrameWnd and
+ * GDI providers; MFC base behavior is not reimplemented here.
+ */
 struct CZGameFrame : CFrameWnd {
     RecoilApp *m_app;
     CBitmap m_gameBitmap;

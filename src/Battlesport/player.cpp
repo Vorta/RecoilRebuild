@@ -45,11 +45,27 @@ unsigned char g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy = 0;
 PlayerNodeFlagRestoreEntry *g_PlayerNodeFlagRestoreEntriesBegin = 0;
 PlayerNodeFlagRestoreEntry *g_PlayerNodeFlagRestoreEntriesEnd = 0;
 PlayerNodeFlagRestoreEntry *g_PlayerNodeFlagRestoreEntriesCapacityEnd = 0;
-// Data owner 0x4f3a68..0x4f3a77: zero-initialized PlayerMasterCommonData
-// intrusive-list globals cleared by Player::InitMasterCommonDataList.
+/**
+ * Reimplements data 0x4f3a68: g_PlayerMasterCommonDataListAux.
+ * Data owner 0x4f3a68..0x4f3a77: zero-initialized PlayerMasterCommonData intrusive-list
+ * globals cleared by Player::InitMasterCommonDataList.
+ * Purpose: stores the plan-tracked g_PlayerMasterCommonDataListAux gameplay data symbol.
+ */
 int g_PlayerMasterCommonDataListAux = 0;
+/**
+ * Reimplements data 0x4f3a6c: g_PlayerMasterCommonDataHead.
+ * Purpose: stores the plan-tracked g_PlayerMasterCommonDataHead gameplay data symbol.
+ */
 PlayerMasterCommonData *g_PlayerMasterCommonDataHead = 0;
+/**
+ * Reimplements data 0x4f3a70: g_PlayerMasterCommonDataTail.
+ * Purpose: stores the plan-tracked g_PlayerMasterCommonDataTail gameplay data symbol.
+ */
 PlayerMasterCommonData *g_PlayerMasterCommonDataTail = 0;
+/**
+ * Reimplements data 0x4f3a74: g_PlayerMasterCommonDataCount.
+ * Purpose: stores the plan-tracked g_PlayerMasterCommonDataCount gameplay data symbol.
+ */
 int g_PlayerMasterCommonDataCount = 0;
 /**
  * Reimplements data 0x4f3688..0x4f3697:
@@ -61,9 +77,25 @@ int g_PlayerMasterCommonDataCount = 0;
  * Purpose: Stores the master modal-data intrusive list used while creating
  * players from name/bootstrap data.
  */
+/**
+ * Reimplements data 0x4f3688: g_PlayerMasterModalDataListAux.
+ * Purpose: stores the plan-tracked g_PlayerMasterModalDataListAux gameplay data symbol.
+ */
 int g_PlayerMasterModalDataListAux = 0;
+/**
+ * Reimplements data 0x4f368c: g_PlayerMasterModalDataHead.
+ * Purpose: stores the plan-tracked g_PlayerMasterModalDataHead gameplay data symbol.
+ */
 PlayerMasterModalData *g_PlayerMasterModalDataHead = 0;
+/**
+ * Reimplements data 0x4f3690: g_PlayerMasterModalDataTail.
+ * Purpose: stores the plan-tracked g_PlayerMasterModalDataTail gameplay data symbol.
+ */
 PlayerMasterModalData *g_PlayerMasterModalDataTail = 0;
+/**
+ * Reimplements data 0x4f3694: g_PlayerMasterModalDataCount.
+ * Purpose: stores the plan-tracked g_PlayerMasterModalDataCount gameplay data symbol.
+ */
 int g_PlayerMasterModalDataCount = 0;
 /**
  * Reimplements data 0x4f36b0: g_Player_LocalControlEnabled.
@@ -102,19 +134,75 @@ float g_Player_CameraZoneInvRange = 0.0f;
  * camera, underwater-camera, gravity/sink, slope, and heat/cold option tuning.
  * Purpose: Stores mission runtime tuning loaded from player.zrd.
  */
+/**
+ * Reimplements data 0x4f36f8: g_Player_MaxCamYawRate.
+ * Purpose: stores the plan-tracked g_Player_MaxCamYawRate gameplay data symbol.
+ */
 float g_Player_MaxCamYawRate = 0.0f;
+/**
+ * Reimplements data 0x4f36fc: g_Player_MousePushX.
+ * Purpose: stores the plan-tracked g_Player_MousePushX gameplay data symbol.
+ */
 float g_Player_MousePushX = 0.0f;
+/**
+ * Reimplements data 0x4f3700: g_Player_MousePushY.
+ * Purpose: stores the plan-tracked g_Player_MousePushY gameplay data symbol.
+ */
 float g_Player_MousePushY = 0.0f;
+/**
+ * Reimplements data 0x4f3704: g_Player_CameraElastic.
+ * Purpose: stores the plan-tracked g_Player_CameraElastic gameplay data symbol.
+ */
 float g_Player_CameraElastic = 0.0f;
+/**
+ * Reimplements data 0x4f3708: g_Player_MaxCamTetherAngleRad.
+ * Purpose: stores the plan-tracked g_Player_MaxCamTetherAngleRad gameplay data symbol.
+ */
 float g_Player_MaxCamTetherAngleRad = 0.0f;
+/**
+ * Reimplements data 0x4f370c: g_Player_FpCamElevationRate.
+ * Purpose: stores the plan-tracked g_Player_FpCamElevationRate gameplay data symbol.
+ */
 float g_Player_FpCamElevationRate = 0.0f;
+/**
+ * Reimplements data 0x4f3710: g_Player_FpCamElevationMax.
+ * Purpose: stores the plan-tracked g_Player_FpCamElevationMax gameplay data symbol.
+ */
 float g_Player_FpCamElevationMax = 0.0f;
+/**
+ * Reimplements data 0x4f3714: g_Player_FpCamElevationMin.
+ * Purpose: stores the plan-tracked g_Player_FpCamElevationMin gameplay data symbol.
+ */
 float g_Player_FpCamElevationMin = 0.0f;
+/**
+ * Reimplements data 0x4f371c: g_Player_UnderwaterCamDistance.
+ * Purpose: stores the plan-tracked g_Player_UnderwaterCamDistance gameplay data symbol.
+ */
 float g_Player_UnderwaterCamDistance = 0.0f;
+/**
+ * Reimplements data 0x4f3720: g_Player_UnderwaterCamHeight.
+ * Purpose: stores the plan-tracked g_Player_UnderwaterCamHeight gameplay data symbol.
+ */
 float g_Player_UnderwaterCamHeight = 0.0f;
+/**
+ * Reimplements data 0x4f3724: g_Player_UnderwaterCamStepCount.
+ * Purpose: stores the plan-tracked g_Player_UnderwaterCamStepCount gameplay data symbol.
+ */
 int g_Player_UnderwaterCamStepCount = 0;
+/**
+ * Reimplements data 0x4f3728: g_Player_UnderwaterCamFar.
+ * Purpose: stores the plan-tracked g_Player_UnderwaterCamFar gameplay data symbol.
+ */
 float g_Player_UnderwaterCamFar = 0.0f;
+/**
+ * Reimplements data 0x4f372c: g_Player_UnderwaterCamPackedColor.
+ * Purpose: stores the plan-tracked g_Player_UnderwaterCamPackedColor gameplay data symbol.
+ */
 unsigned int g_Player_UnderwaterCamPackedColor = 0;
+/**
+ * Reimplements data 0x4f3730: g_Player_UnderwaterCamAlpha.
+ * Purpose: stores the plan-tracked g_Player_UnderwaterCamAlpha gameplay data symbol.
+ */
 float g_Player_UnderwaterCamAlpha = 0.0f;
 /**
  * Reimplements data 0x4dc970: g_Player_GameplayInputStepScale.
@@ -123,8 +211,20 @@ float g_Player_UnderwaterCamAlpha = 0.0f;
  * Purpose: Scales mouse delta input into player steering command steps.
  */
 float g_Player_GameplayInputStepScale = 0.03f;
+/**
+ * Reimplements data 0x4da398: g_Player_CameraHeadingDotAbs.
+ * Purpose: stores the plan-tracked g_Player_CameraHeadingDotAbs gameplay data symbol.
+ */
 float g_Player_CameraHeadingDotAbs = 1.0f;
+/**
+ * Reimplements data 0x4da39c: g_Player_CameraHeadingLerpBaseWhenFlagClear.
+ * Purpose: stores the plan-tracked g_Player_CameraHeadingLerpBaseWhenFlagClear gameplay data symbol.
+ */
 float g_Player_CameraHeadingLerpBaseWhenFlagClear = 3.0f;
+/**
+ * Reimplements data 0x4da3a0: g_Player_CameraHeadingLerpBaseWhenFlagSet.
+ * Purpose: stores the plan-tracked g_Player_CameraHeadingLerpBaseWhenFlagSet gameplay data symbol.
+ */
 float g_Player_CameraHeadingLerpBaseWhenFlagSet = 2.0f;
 /**
  * Reimplements data 0x4dc9a8: g_Player_HudReadoutFmt_PosYaw.
@@ -278,9 +378,25 @@ RECOIL_STATIC_ASSERT(sizeof(g_PickupOptKey_Vwbus) == 0x06);
  * creation, teardown, and ZAR VehicleList traversal/serialization.
  * Purpose: Tracks every active player save-state record in mission order.
  */
+/**
+ * Reimplements data 0x4f3a78: g_PlayerSaveStateListAux.
+ * Purpose: stores the plan-tracked g_PlayerSaveStateListAux gameplay data symbol.
+ */
 int g_PlayerSaveStateListAux = 0;
+/**
+ * Reimplements data 0x4f3a7c: g_PlayerSaveStateListHead.
+ * Purpose: stores the plan-tracked g_PlayerSaveStateListHead gameplay data symbol.
+ */
 zUtil_SaveGameState *g_PlayerSaveStateListHead = 0;
+/**
+ * Reimplements data 0x4f3a80: g_PlayerSaveStateListTail.
+ * Purpose: stores the plan-tracked g_PlayerSaveStateListTail gameplay data symbol.
+ */
 zUtil_SaveGameState *g_PlayerSaveStateListTail = 0;
+/**
+ * Reimplements data 0x4f3a84: g_PlayerSaveStateCount.
+ * Purpose: stores the plan-tracked g_PlayerSaveStateCount gameplay data symbol.
+ */
 int g_PlayerSaveStateCount = 0;
 /**
  * Reimplements data 0x4f36a4: g_LocalPlayerSaveState.
@@ -297,6 +413,10 @@ zUtil_SaveGameState *g_LocalPlayerSaveState = 0;
  * Purpose: Holds the hidden second-player/stealth save-state record.
  */
 zUtil_SaveGameState *g_Player2SaveState = 0;
+/**
+ * Reimplements data 0x4f36a8: g_CurrentPlayerSaveState.
+ * Purpose: stores the plan-tracked g_CurrentPlayerSaveState gameplay data symbol.
+ */
 zUtil_SaveGameState *g_CurrentPlayerSaveState = 0;
 /**
  * Reimplements data 0x4f3718: g_Player_LastValidCameraVariantTag.
@@ -305,11 +425,31 @@ zUtil_SaveGameState *g_CurrentPlayerSaveState = 0;
  * Purpose: Remembers the last camera variant tag valid for mission save/load.
  */
 zTag4Partial g_Player_LastValidCameraVariantTag = {0};
+/**
+ * Reimplements data 0x4da3a4: g_Player_ThirdPersonCameraSideProbeOffsetScale.
+ * Purpose: stores the plan-tracked g_Player_ThirdPersonCameraSideProbeOffsetScale gameplay data symbol.
+ */
 float g_Player_ThirdPersonCameraSideProbeOffsetScale = 1.0f;
+/**
+ * Reimplements data 0x4e5cc0: g_Player_CameraVariantUpdatedThisTick.
+ * Purpose: stores the plan-tracked g_Player_CameraVariantUpdatedThisTick gameplay data symbol.
+ */
 int g_Player_CameraVariantUpdatedThisTick = 0;
+/**
+ * Reimplements data 0x4e5cd8: g_Player_RebuildCameraDirFlatFromCurrentTarget.
+ * Purpose: stores the plan-tracked g_Player_RebuildCameraDirFlatFromCurrentTarget gameplay data symbol.
+ */
 int g_Player_RebuildCameraDirFlatFromCurrentTarget = 0;
 zVec3 g_Player_AmphibBasisUpRef = {0.0f, 1.0f, 0.0f};
+/**
+ * Reimplements data 0x4dc9a4: g_Player_AmphibSteerBasisLerpRate.
+ * Purpose: stores the plan-tracked g_Player_AmphibSteerBasisLerpRate gameplay data symbol.
+ */
 float g_Player_AmphibSteerBasisLerpRate = 3.0f;
+/**
+ * Reimplements data 0x4f3a94: g_Player_NextOrdinal.
+ * Purpose: stores the plan-tracked g_Player_NextOrdinal gameplay data symbol.
+ */
 int g_Player_NextOrdinal = 0;
 /**
  * Reimplements data 0x4f36ac: g_Player_AiMode2State1Finalized.
@@ -427,6 +567,10 @@ float g_Player_InvDeltaTime = 0.0f;
  * Purpose: Stores the 0.01-scaled player-frame delta time shared with zInput.
  */
 float g_Player_DeltaTimeScaled001 = 0.0f;
+/**
+ * Reimplements data 0x4f3a98: g_PlayerPendingCheckpointNumber.
+ * Purpose: stores the plan-tracked g_PlayerPendingCheckpointNumber gameplay data symbol.
+ */
 int g_PlayerPendingCheckpointNumber = 0;
 /**
  * Reimplements data 0x4dc4e0: g_Checkpoint_NodeNameFmt.
@@ -454,19 +598,49 @@ float g_Player_NominalGravity = 0.0f;
  * absent.
  * Purpose: Stores terrain and gravity tuning loaded from player.zrd.
  */
+/**
+ * Reimplements data 0x4f3ab8: g_Player_WaterGravity.
+ * Purpose: stores the plan-tracked g_Player_WaterGravity gameplay data symbol.
+ */
 float g_Player_WaterGravity = 0.0f;
+/**
+ * Reimplements data 0x4f3ac0: g_Player_QuicksandGravity.
+ * Purpose: stores the plan-tracked g_Player_QuicksandGravity gameplay data symbol.
+ */
 float g_Player_QuicksandGravity = 0.0f;
+/**
+ * Reimplements data 0x4f376c: g_Player_QuicksandSinkRate.
+ * Purpose: stores the plan-tracked g_Player_QuicksandSinkRate gameplay data symbol.
+ */
 float g_Player_QuicksandSinkRate = 0.0f;
+/**
+ * Reimplements data 0x4f3698: g_Player_LavaSinkRate.
+ * Purpose: stores the plan-tracked g_Player_LavaSinkRate gameplay data symbol.
+ */
 float g_Player_LavaSinkRate = 0.0f;
+/**
+ * Reimplements data 0x4f3338: g_Player_MaxSlope.
+ * Purpose: stores the plan-tracked g_Player_MaxSlope gameplay data symbol.
+ */
 float g_Player_MaxSlope = 0.0f;
+/**
+ * Reimplements data 0x4dc96c: g_Player_CollisionContactResolveScale.
+ * Purpose: stores the plan-tracked g_Player_CollisionContactResolveScale gameplay data symbol.
+ */
 float g_Player_CollisionContactResolveScale = 0.2f;
-// Data owner 0x4f3778: zero-initialized underwater pass-3 HUD overlay
-// singleton, constructed by 0x41eb00 and reset by the atexit callback at
-// 0x41eb20.
+/**
+ * Reimplements data 0x4f3778: g_Player_UnderwaterFxPass3Ui.
+ * Data owner 0x4f3778: zero-initialized underwater pass-3 HUD overlay singleton, constructed
+ * by 0x41eb00 and reset by the atexit callback at 0x41eb20.
+ * Purpose: stores the plan-tracked g_Player_UnderwaterFxPass3Ui gameplay data symbol.
+ */
 Player_UnderwaterFxPass3Ui g_Player_UnderwaterFxPass3Ui;
-// Data owner 0x4f3650..0x4f3687: zero-initialized projectile-camera
-// pass-3 HUD overlay singleton, constructed by 0x41eb60 and reset by the
-// atexit callback at 0x41eb80.
+/**
+ * Reimplements data 0x4f3650: g_Player_State7FxPass3Ui.
+ * Data owner 0x4f3650..0x4f3687: zero-initialized projectile-camera pass-3 HUD overlay
+ * singleton, constructed by 0x41eb60 and reset by the atexit callback at 0x41eb80.
+ * Purpose: stores the plan-tracked g_Player_State7FxPass3Ui gameplay data symbol.
+ */
 Player_ProjectileCameraFxPass3Ui g_Player_State7FxPass3Ui;
 /**
  * Reimplements Player ZRD runtime tuning data 0x4f3734 and 0x4f3738.
@@ -475,7 +649,15 @@ Player_ProjectileCameraFxPass3Ui g_Player_State7FxPass3Ui;
  * Player::InitMissionRuntimeFromWorldAndCamera.
  * Purpose: Caches heat/cold gameplay option catalog entries for player damage paths.
  */
+/**
+ * Reimplements data 0x4f3734: g_Player_MakeHotOptEntry.
+ * Purpose: stores the plan-tracked g_Player_MakeHotOptEntry gameplay data symbol.
+ */
 OptCatalogEntryDef *g_Player_MakeHotOptEntry = 0;
+/**
+ * Reimplements data 0x4f3738: g_Player_MakeColdOptEntry.
+ * Purpose: stores the plan-tracked g_Player_MakeColdOptEntry gameplay data symbol.
+ */
 OptCatalogEntryDef *g_Player_MakeColdOptEntry = 0;
 /**
  * Reimplements data 0x4f3740: g_Player_BftSplashAnimEntry.
@@ -484,6 +666,10 @@ OptCatalogEntryDef *g_Player_MakeColdOptEntry = 0;
  * Purpose: Caches the battle-force splash animation entry for gameplay FX.
  */
 zEffectAnimEntry *g_Player_BftSplashAnimEntry = 0;
+/**
+ * Reimplements data 0x4f3a90: g_Player_ActiveDebugScriptAsyncEntry.
+ * Purpose: stores the plan-tracked g_Player_ActiveDebugScriptAsyncEntry gameplay data symbol.
+ */
 zEffectAnimEntry *g_Player_ActiveDebugScriptAsyncEntry = 0;
 /**
  * Reimplements data 0x4f3768: g_Player_HorizonNodeFollowCameraEnabled.
@@ -505,31 +691,67 @@ int g_PlayerPrevCameraState = 0;
  * Purpose: Stores g PlayerPrevSteeringMode data used by battlesport_gameplay.player_damage_runtime_globals.
  */
 int g_PlayerPrevSteeringMode = 0;
+/**
+ * Reimplements data 0x4e5cc4: g_Player_SavedSteeringMode.
+ * Purpose: stores the plan-tracked g_Player_SavedSteeringMode gameplay data symbol.
+ */
 int g_Player_SavedSteeringMode = 0;
-// Data owner 0x4f36c4/0x4f36c8/0x4f36cc and 0x4f3bbc/0x4f3bc0:
-// zero-initialized copter sound-node cache used by the player.cpp copter
-// sound helpers. Mission init seeds the sample/cache, 0x42b630 lazily binds
-// the copter nodes, and 0x42b5a0 reactivates sound nodes while healthy.
+/**
+ * Reimplements data 0x4f3bbc: g_Player_CopterHealthyNode1.
+ * Data owner 0x4f36c4/0x4f36c8/0x4f36cc and 0x4f3bbc/0x4f3bc0: zero-initialized copter
+ * sound-node cache used by the player.cpp copter sound helpers. Mission init seeds the
+ * sample/cache, 0x42b630 lazily binds the copter nodes, and 0x42b5a0 reactivates sound nodes
+ * while healthy.
+ * Purpose: stores the plan-tracked g_Player_CopterHealthyNode1 gameplay data symbol.
+ */
 zClass_NodePartial *g_Player_CopterHealthyNode1 = 0;
+/**
+ * Reimplements data 0x4f3bc0: g_Player_CopterHealthyNode2.
+ * Purpose: stores the plan-tracked g_Player_CopterHealthyNode2 gameplay data symbol.
+ */
 zClass_NodePartial *g_Player_CopterHealthyNode2 = 0;
+/**
+ * Reimplements data 0x4f36c4: g_Player_CopterSndNode1.
+ * Purpose: stores the plan-tracked g_Player_CopterSndNode1 gameplay data symbol.
+ */
 zClass_NodePartial *g_Player_CopterSndNode1 = 0;
+/**
+ * Reimplements data 0x4f36c8: g_Player_CopterSndNode2.
+ * Purpose: stores the plan-tracked g_Player_CopterSndNode2 gameplay data symbol.
+ */
 zClass_NodePartial *g_Player_CopterSndNode2 = 0;
+/**
+ * Reimplements data 0x4f36cc: g_Player_CopterSndSample.
+ * Purpose: stores the plan-tracked g_Player_CopterSndSample gameplay data symbol.
+ */
 zSndSample *g_Player_CopterSndSample = 0;
-// Data owner 0x4f3bc8..0x4f3c8f: zero-initialized Player
-// post-move environment probe globals. BN exposes seven live world-point
-// samples; the remaining zero bytes in this owner are bounded padding.
+/**
+ * Reimplements data 0x4f3bc8: g_PlayerEnvProbeSampleCount.
+ * Data owner 0x4f3bc8..0x4f3c8f: zero-initialized Player post-move environment probe globals.
+ * BN exposes seven live world-point samples; the remaining zero bytes in this owner are
+ * bounded padding.
+ * Purpose: stores the plan-tracked g_PlayerEnvProbeSampleCount gameplay data symbol.
+ */
 int g_PlayerEnvProbeSampleCount = 0;
 unsigned char g_PlayerEnvProbeSampleCountPadding[4] = {0};
 int g_PlayerEnvProbe_AboveGroundFlags[10] = {0};
 int g_PlayerEnvProbe_AboveGroundIndices[10] = {0};
 zVec3 g_PlayerEnvProbeWorldPoints[7] = {0};
 unsigned char g_PlayerEnvProbeWorldPointsTailPadding[24] = {0};
+/**
+ * Reimplements data 0x4f3c8c: g_PlayerEnvProbe_AboveGroundCount.
+ * Purpose: stores the plan-tracked g_PlayerEnvProbe_AboveGroundCount gameplay data symbol.
+ */
 int g_PlayerEnvProbe_AboveGroundCount = 0;
 /**
  * Reimplements data 0x4f373c: g_PlayerRecentHitFxAnimEntry.
  * Purpose: Stores g PlayerRecentHitFxAnimEntry data used by battlesport_gameplay.player_damage_runtime_globals.
  */
 zEffectAnimEntry *g_PlayerRecentHitFxAnimEntry = 0;
+/**
+ * Reimplements data 0x779aa8: g_Player_LocalFxOffsetWorldPtr.
+ * Purpose: stores the plan-tracked g_Player_LocalFxOffsetWorldPtr gameplay data symbol.
+ */
 zVec3 *g_Player_LocalFxOffsetWorldPtr = 0;
 /**
  * Reimplements data 0x4dc264: g_PlayerSaveStateListAuxPtr.
@@ -589,35 +811,131 @@ char g_Player_AivArchiveMissingMsg[0x15] = "Cannot find aiv.zrd!";
  * sound-node caching.
  * Purpose: Stores Player mission runtime and player.zrd literal names.
  */
+/**
+ * Reimplements data 0x4dc380: g_Player_ConfigNode_Basic.
+ * Purpose: stores the plan-tracked g_Player_ConfigNode_Basic gameplay data symbol.
+ */
 char g_Player_ConfigNode_Basic[6] = "basic";
+/**
+ * Reimplements data 0x4dc388: g_Player_ConfigNode_CommonMode.
+ * Purpose: stores the plan-tracked g_Player_ConfigNode_CommonMode gameplay data symbol.
+ */
 char g_Player_ConfigNode_CommonMode[12] = "common_mode";
+/**
+ * Reimplements data 0x4dc394: g_Player_ConfigNode_Stealth.
+ * Purpose: stores the plan-tracked g_Player_ConfigNode_Stealth gameplay data symbol.
+ */
 char g_Player_ConfigNode_Stealth[8] = "stealth";
+/**
+ * Reimplements data 0x4dc39c: g_Player_DisplayName_Stealth.
+ * Purpose: stores the plan-tracked g_Player_DisplayName_Stealth gameplay data symbol.
+ */
 char g_Player_DisplayName_Stealth[8] = "Stealth";
 char g_Player_CopterSndName[11] = {
     's', 'n', 'd', '_', 'c', 'h', 'o', 'p', 'p', 'e', 'r'
 };
+/**
+ * Reimplements data 0x4dc3b0: g_Player_LowShieldSndName.
+ * Purpose: stores the plan-tracked g_Player_LowShieldSndName gameplay data symbol.
+ */
 char g_Player_LowShieldSndName[15] = "low_shield_snd";
+/**
+ * Reimplements data 0x4dc3c0: g_Player_BurningAnimName.
+ * Purpose: stores the plan-tracked g_Player_BurningAnimName gameplay data symbol.
+ */
 char g_Player_BurningAnimName[13] = "burning_anim";
+/**
+ * Reimplements data 0x4dc3d0: g_Player_ConfigKey_MakeCold.
+ * Purpose: stores the plan-tracked g_Player_ConfigKey_MakeCold gameplay data symbol.
+ */
 char g_Player_ConfigKey_MakeCold[10] = "make_cold";
+/**
+ * Reimplements data 0x4dc3dc: g_Player_ConfigKey_MakeHot.
+ * Purpose: stores the plan-tracked g_Player_ConfigKey_MakeHot gameplay data symbol.
+ */
 char g_Player_ConfigKey_MakeHot[9] = "make_hot";
+/**
+ * Reimplements data 0x4dc3e8: g_Player_ConfigKey_MaxSlope.
+ * Purpose: stores the plan-tracked g_Player_ConfigKey_MaxSlope gameplay data symbol.
+ */
 char g_Player_ConfigKey_MaxSlope[10] = "max_slope";
+/**
+ * Reimplements data 0x4dc3f4: g_Player_ConfigKey_LavaSink.
+ * Purpose: stores the plan-tracked g_Player_ConfigKey_LavaSink gameplay data symbol.
+ */
 char g_Player_ConfigKey_LavaSink[10] = "lava_sink";
+/**
+ * Reimplements data 0x4dc400: g_Player_ConfigKey_QuicksandSink.
+ * Purpose: stores the plan-tracked g_Player_ConfigKey_QuicksandSink gameplay data symbol.
+ */
 char g_Player_ConfigKey_QuicksandSink[11] = "qsand_sink";
+/**
+ * Reimplements data 0x4dc40c: g_Player_ConfigKey_QuicksandGravity.
+ * Purpose: stores the plan-tracked g_Player_ConfigKey_QuicksandGravity gameplay data symbol.
+ */
 char g_Player_ConfigKey_QuicksandGravity[12] = "qsd_gravity";
+/**
+ * Reimplements data 0x4dc418: g_Player_ConfigKey_WaterGravity.
+ * Purpose: stores the plan-tracked g_Player_ConfigKey_WaterGravity gameplay data symbol.
+ */
 char g_Player_ConfigKey_WaterGravity[12] = "wat_gravity";
+/**
+ * Reimplements data 0x4dc424: g_Player_ConfigKey_NormalGravity.
+ * Purpose: stores the plan-tracked g_Player_ConfigKey_NormalGravity gameplay data symbol.
+ */
 char g_Player_ConfigKey_NormalGravity[12] = "nom_gravity";
+/**
+ * Reimplements data 0x4dc430: g_Player_ConfigKey_MaxCamTetherAngle.
+ * Purpose: stores the plan-tracked g_Player_ConfigKey_MaxCamTetherAngle gameplay data symbol.
+ */
 char g_Player_ConfigKey_MaxCamTetherAngle[21] = "max_cam_tether_angle";
+/**
+ * Reimplements data 0x4dc448: g_Player_ConfigKey_CameraElastic.
+ * Purpose: stores the plan-tracked g_Player_ConfigKey_CameraElastic gameplay data symbol.
+ */
 char g_Player_ConfigKey_CameraElastic[15] = "camera_elastic";
+/**
+ * Reimplements data 0x4dc458: g_Player_ConfigKey_UnderwaterCam.
+ * Purpose: stores the plan-tracked g_Player_ConfigKey_UnderwaterCam gameplay data symbol.
+ */
 char g_Player_ConfigKey_UnderwaterCam[15] = "underwater_cam";
+/**
+ * Reimplements data 0x4dc468: g_Player_ConfigKey_FirstPersonCamElevationLimit.
+ * Purpose: stores the plan-tracked g_Player_ConfigKey_FirstPersonCamElevationLimit gameplay data symbol.
+ */
 char g_Player_ConfigKey_FirstPersonCamElevationLimit[14] = "fp_cam_el_lim";
+/**
+ * Reimplements data 0x4dc478: g_Player_ConfigKey_FirstPersonCamElevationRate.
+ * Purpose: stores the plan-tracked g_Player_ConfigKey_FirstPersonCamElevationRate gameplay data symbol.
+ */
 char g_Player_ConfigKey_FirstPersonCamElevationRate[15] = "fp_cam_el_rate";
+/**
+ * Reimplements data 0x4dc488: g_Player_ConfigKey_MousePush.
+ * Purpose: stores the plan-tracked g_Player_ConfigKey_MousePush gameplay data symbol.
+ */
 char g_Player_ConfigKey_MousePush[11] = "mouse_push";
+/**
+ * Reimplements data 0x4dc494: g_Player_ConfigKey_MaxCamYawRate.
+ * Purpose: stores the plan-tracked g_Player_ConfigKey_MaxCamYawRate gameplay data symbol.
+ */
 char g_Player_ConfigKey_MaxCamYawRate[17] = "max_cam_yaw_rate";
+/**
+ * Reimplements data 0x4dc4a8: g_Player_ConfigKey_CameraZone.
+ * Purpose: stores the plan-tracked g_Player_ConfigKey_CameraZone gameplay data symbol.
+ */
 char g_Player_ConfigKey_CameraZone[12] = "camera_zone";
+/**
+ * Reimplements data 0x4dc4b4: g_Player_ConfigArchiveName.
+ * Purpose: stores the plan-tracked g_Player_ConfigArchiveName gameplay data symbol.
+ */
 char g_Player_ConfigArchiveName[11] = "player.zrd";
 char g_Player_BftSplashAnimName[9] = {
     'b', 'f', 't', 's', 'p', 'l', 'a', 's', 'h'
 };
+/**
+ * Reimplements data 0x4dc4cc: g_Player_NodeName_Horizon.
+ * Purpose: stores the plan-tracked g_Player_NodeName_Horizon gameplay data symbol.
+ */
 char g_Player_NodeName_Horizon[8] = "horizon";
 /**
  * Reimplements data 0x4dc4f0: g_Player_NodeName_Shadow.
@@ -717,21 +1035,77 @@ char g_Player_CollisionPointsMissingFmt[37] =
     "Cannot find collision points for %s!";
 char g_Player_SupportPointsMissingFmt[35] =
     "Cannot find support points for %s!";
+/**
+ * Reimplements data 0x4dc620: g_Player_EffectNodeName_DustRight.
+ * Purpose: stores the plan-tracked g_Player_EffectNodeName_DustRight gameplay data symbol.
+ */
 char g_Player_EffectNodeName_DustRight[7] = "dust_r";
+/**
+ * Reimplements data 0x4dc628: g_Player_EffectNodeName_DustLeft.
+ * Purpose: stores the plan-tracked g_Player_EffectNodeName_DustLeft gameplay data symbol.
+ */
 char g_Player_EffectNodeName_DustLeft[7] = "dust_l";
+/**
+ * Reimplements data 0x4dc630: g_Player_EffectNodeName_SplashRight.
+ * Purpose: stores the plan-tracked g_Player_EffectNodeName_SplashRight gameplay data symbol.
+ */
 char g_Player_EffectNodeName_SplashRight[9] = "splash_r";
+/**
+ * Reimplements data 0x4dc63c: g_Player_EffectNodeName_SplashLeft.
+ * Purpose: stores the plan-tracked g_Player_EffectNodeName_SplashLeft gameplay data symbol.
+ */
 char g_Player_EffectNodeName_SplashLeft[9] = "splash_l";
+/**
+ * Reimplements data 0x4dc648: g_Player_EffectNodeName_Wake.
+ * Purpose: stores the plan-tracked g_Player_EffectNodeName_Wake gameplay data symbol.
+ */
 char g_Player_EffectNodeName_Wake[5] = "wake";
+/**
+ * Reimplements data 0x4dc650: g_Player_EffectNodeName_Caustic1.
+ * Purpose: stores the plan-tracked g_Player_EffectNodeName_Caustic1 gameplay data symbol.
+ */
 char g_Player_EffectNodeName_Caustic1[9] = "caustic1";
+/**
+ * Reimplements data 0x4dc65c: g_Player_NodeName_Props.
+ * Purpose: stores the plan-tracked g_Player_NodeName_Props gameplay data symbol.
+ */
 char g_Player_NodeName_Props[6] = "props";
+/**
+ * Reimplements data 0x4dc664: g_Player_NodeName_LeftTracks.
+ * Purpose: stores the plan-tracked g_Player_NodeName_LeftTracks gameplay data symbol.
+ */
 char g_Player_NodeName_LeftTracks[8] = "ltracks";
+/**
+ * Reimplements data 0x4dc66c: g_Player_NodeName_RightTracks.
+ * Purpose: stores the plan-tracked g_Player_NodeName_RightTracks gameplay data symbol.
+ */
 char g_Player_NodeName_RightTracks[8] = "rtracks";
+/**
+ * Reimplements data 0x4dc674: g_Player_NodeName_Chassis.
+ * Purpose: stores the plan-tracked g_Player_NodeName_Chassis gameplay data symbol.
+ */
 char g_Player_NodeName_Chassis[8] = "chassis";
+/**
+ * Reimplements data 0x4dc67c: g_Player_NodeName_LeftMorphs.
+ * Purpose: stores the plan-tracked g_Player_NodeName_LeftMorphs gameplay data symbol.
+ */
 char g_Player_NodeName_LeftMorphs[12] = "left_morphs";
+/**
+ * Reimplements data 0x4dc688: g_Player_NodeName_RightMorphs.
+ * Purpose: stores the plan-tracked g_Player_NodeName_RightMorphs gameplay data symbol.
+ */
 char g_Player_NodeName_RightMorphs[13] = "right_morphs";
 char g_Player_MasterModalDataMissingFmt[38] =
     "Cannot find Master Modal Data for %s!";
+/**
+ * Reimplements data 0x4dc6d0: g_Player_CollisionPointNodeNameFmt.
+ * Purpose: stores the plan-tracked g_Player_CollisionPointNodeNameFmt gameplay data symbol.
+ */
 char g_Player_CollisionPointNodeNameFmt[12] = "collide%02d";
+/**
+ * Reimplements data 0x4dc6dc: g_Player_SupportPointNodeNameFmt.
+ * Purpose: stores the plan-tracked g_Player_SupportPointNodeNameFmt gameplay data symbol.
+ */
 char g_Player_SupportPointNodeNameFmt[12] = "support%02d";
 /**
  * Reimplements Player master ZRD record-loader literal data
@@ -1037,10 +1411,17 @@ char g_Player_ConfigValue_MasterTypeTrack[6] = "track";
  * Purpose: Names the modal mode record.
  */
 char g_Player_ConfigNode_Mode[5] = "mode";
-// Data owner 0x4f37b0..0x4f3a57 and 0x4f33a8..0x4f364f:
-// zero-initialized top-message HUD panel singletons constructed at startup
-// and destroyed by their CRT exit callbacks.
+/**
+ * Reimplements data 0x4f37b0: g_Player_TopMsgPanel1.
+ * Data owner 0x4f37b0..0x4f3a57 and 0x4f33a8..0x4f364f: zero-initialized top-message HUD panel
+ * singletons constructed at startup and destroyed by their CRT exit callbacks.
+ * Purpose: stores the plan-tracked g_Player_TopMsgPanel1 gameplay data symbol.
+ */
 HudUiPanel g_Player_TopMsgPanel1;
+/**
+ * Reimplements data 0x4f33a8: g_Player_TopMsgPanel2.
+ * Purpose: stores the plan-tracked g_Player_TopMsgPanel2 gameplay data symbol.
+ */
 HudUiPanel g_Player_TopMsgPanel2;
 /**
  * Reimplements data 0x4e5b50: g_Player_AivParentDir.
@@ -1082,7 +1463,12 @@ float PlayerFloatFromBits(
     );
     return value;
 }
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in address-backed callers 0x4024a0 Player::SolveAltGunLeadTargetPoint, 0x43b500 Player::ApplyAimPitchToDirection, 0x43a4f0 Player::UpdateGunAndTurretAimNodes.
+ * Purpose: provide the recovered player fast sqrt estimate helper for
+ * the Player/Pickup gameplay source cluster.
+ */
 float PlayerFastSqrtEstimate(
     float value
 ) {
@@ -1100,13 +1486,23 @@ float PlayerFastSqrtEstimate(
     );
     return value;
 }
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in address-backed callers 0x428520 Player::UpdateMasterTypeSub, 0x426770 Player::UpdateMasterTypeTrack.
+ * Purpose: provide the recovered player damping from rate helper for
+ * the Player/Pickup gameplay source cluster.
+ */
 float PlayerDampingFromRate(
     float rate
 ) {
     return PlayerFloatFromBits((int)(-rate * g_Player_DeltaTime * 12102200.0f) + 0x3f800000);
 }
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in address-backed callers 0x428520 Player::UpdateMasterTypeSub, 0x426770 Player::UpdateMasterTypeTrack, 0x4279f0 Player::UpdateMasterTypeAmphib, 0x427140 Player::UpdateMasterTypeHover.
+ * Purpose: provide the recovered player wrap signed two pi helper for
+ * the Player/Pickup gameplay source cluster.
+ */
 float PlayerWrapSignedTwoPi(
     float angle
 ) {
@@ -1118,7 +1514,12 @@ float PlayerWrapSignedTwoPi(
     }
     return angle;
 }
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in address-backed callers 0x425a20 Player::TickLocalPlayerControls, 0x428520 Player::UpdateMasterTypeSub, 0x426770 Player::UpdateMasterTypeTrack, 0x427440 Player::UpdateMasterTypeHover_FromModalProbe.
+ * Purpose: provide the recovered player clamp signed helper for
+ * the Player/Pickup gameplay source cluster.
+ */
 float PlayerClampSigned(
     float value,
     float limit
@@ -1131,7 +1532,12 @@ float PlayerClampSigned(
     }
     return value;
 }
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in address-backed callers 0x426770 Player::UpdateMasterTypeTrack, 0x427440 Player::UpdateMasterTypeHover_FromModalProbe, 0x43a600 Player::UpdateAltGunAimDirection.
+ * Purpose: provide the recovered transform world vector to local helper for
+ * the Player/Pickup gameplay source cluster.
+ */
 zVec3 TransformWorldVectorToLocal(
     const zVec3 &vec,
     const zMat4x3 &matrix
@@ -1143,7 +1549,12 @@ zVec3 TransformWorldVectorToLocal(
     return out;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in address-backed callers 0x428520 Player::UpdateMasterTypeSub, 0x426770 Player::UpdateMasterTypeTrack, 0x427440 Player::UpdateMasterTypeHover_FromModalProbe, 0x427140 Player::UpdateMasterTypeHover.
+ * Purpose: provide the recovered transform local vector to world helper for
+ * the Player/Pickup gameplay source cluster.
+ */
 zVec3 TransformLocalVectorToWorld(
     const zVec3 &vec,
     const zMat4x3 &matrix
@@ -1575,7 +1986,12 @@ void PlayerLoadModalWaveParams(
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in address-backed callers 0x41fe90 Player::InitMissionRuntimeFromWorldAndCamera, 0x42ac90 Player::TransitionToMasterTypeTrack, 0x42aeb0 Player::TransitionToMasterTypeAmphib, 0x42b0f0 Player::TransitionToMasterTypeHover.
+ * Purpose: provide the recovered set hud ui element visible helper for
+ * the Player/Pickup gameplay source cluster.
+ */
 void SetHudUiElementVisible(
     HudUiElement *element,
     int visible
@@ -1583,7 +1999,12 @@ void SetHudUiElementVisible(
     element->SetVisible(visible);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in address-backed caller 0x41fe90 Player::InitMissionRuntimeFromWorldAndCamera.
+ * Purpose: provide the recovered set hud panel visible helper for
+ * the Player/Pickup gameplay source cluster.
+ */
 void SetHudPanelVisible(
     HudUiPanel *panel,
     int visible
@@ -1594,7 +2015,12 @@ void SetHudPanelVisible(
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in address-backed caller 0x41fe90 Player::InitMissionRuntimeFromWorldAndCamera.
+ * Purpose: provide the recovered player init action callback node helper for
+ * the Player/Pickup gameplay source cluster.
+ */
 void PlayerInitActionCallbackNode(
     void *callback
 ) {
@@ -1609,7 +2035,12 @@ void PlayerInitActionCallbackNode(
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in address-backed caller 0x41fe90 Player::InitMissionRuntimeFromWorldAndCamera.
+ * Purpose: provide the recovered player alloc master common data helper for
+ * the Player/Pickup gameplay source cluster.
+ */
 PlayerMasterCommonData *PlayerAllocMasterCommonData() {
     PlayerMasterCommonData *const commonData =
         (PlayerMasterCommonData *)(::operator new(sizeof(PlayerMasterCommonData)));
@@ -1629,7 +2060,12 @@ PlayerMasterCommonData *PlayerAllocMasterCommonData() {
     return commonData;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in address-backed caller 0x41fe90 Player::InitMissionRuntimeFromWorldAndCamera.
+ * Purpose: provide the recovered player alloc master modal data helper for
+ * the Player/Pickup gameplay source cluster.
+ */
 PlayerMasterModalData *PlayerAllocMasterModalData() {
     PlayerMasterModalData *const modalData =
         (PlayerMasterModalData *)(::operator new(sizeof(PlayerMasterModalData)));
@@ -1649,7 +2085,12 @@ PlayerMasterModalData *PlayerAllocMasterModalData() {
     return modalData;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in address-backed caller 0x41fe90 Player::InitMissionRuntimeFromWorldAndCamera.
+ * Purpose: provide the recovered player alloc linked save state helper for
+ * the Player/Pickup gameplay source cluster.
+ */
 zUtil_SaveGameState *PlayerAllocLinkedSaveState() {
     zUtil_SaveGameState *saveState =
         (zUtil_SaveGameState *)(::operator new(sizeof(zUtil_SaveGameState)));
@@ -1935,7 +2376,12 @@ void PlayerLoadPlayerZrdTuning(
     g_Player_CopterSndSample = zSnd::FindSampleByName(g_Player_CopterSndName);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in address-backed callers 0x42ac90 Player::TransitionToMasterTypeTrack, 0x42aeb0 Player::TransitionToMasterTypeAmphib, 0x42b2a0 Player::TransitionToMasterTypeSub, 0x42b0f0 Player::TransitionToMasterTypeHover.
+ * Purpose: provide the recovered trigger zero velocity fx list helper for
+ * the Player/Pickup gameplay source cluster.
+ */
 void TriggerZeroVelocityFxList(
     zEffectAnimEntry **entries,
     zClass_NodePartial *rootNode,
@@ -1955,7 +2401,12 @@ void TriggerZeroVelocityFxList(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in address-backed caller 0x42d5c0 Player::ApplyEnvironmentProbeResult.
+ * Purpose: provide the recovered copy node cached world matrix helper for
+ * the Player/Pickup gameplay source cluster.
+ */
 void CopyNodeCachedWorldMatrix(
     zMat4x3 *outMatrix,
     zClass_NodePartial *node
@@ -1968,7 +2419,12 @@ void CopyNodeCachedWorldMatrix(
     );
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in address-backed callers 0x426770 Player::UpdateMasterTypeTrack, 0x42d5c0 Player::ApplyEnvironmentProbeResult, 0x4279f0 Player::UpdateMasterTypeAmphib.
+ * Purpose: provide the recovered extract yaw from matrix helper for
+ * the Player/Pickup gameplay source cluster.
+ */
 float ExtractYawFromMatrix(
     const zMat4x3 *matrix
 ) {
@@ -2007,7 +2463,12 @@ const char *PlayerDebugMasterTypeName(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in address-backed callers 0x426770 Player::UpdateMasterTypeTrack, 0x42d5c0 Player::ApplyEnvironmentProbeResult.
+ * Purpose: provide the recovered cache attachment local offset helper for
+ * the Player/Pickup gameplay source cluster.
+ */
 void CacheAttachmentLocalOffset(
     zUtil_PlayerStateStorage *playerState
 ) {
@@ -2021,7 +2482,12 @@ void CacheAttachmentLocalOffset(
     playerState->fxOffsetLocal.z = dx * matrix->zx + dy * matrix->zy + dz * matrix->zz;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in address-backed caller 0x41f1d0 Player::ApplyMissionSaveData.
+ * Purpose: provide the recovered player saved weapon controller helper for
+ * the Player/Pickup gameplay source cluster.
+ */
 PlayerGunFireController *PlayerSavedWeaponController(
     PlayerAltWeaponBank *bank,
     int sideIndex
@@ -2029,7 +2495,12 @@ PlayerGunFireController *PlayerSavedWeaponController(
     return sideIndex == 0 ? &bank->controllerA : &bank->controllerB;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in address-backed caller 0x41f1d0 Player::ApplyMissionSaveData.
+ * Purpose: provide the recovered player restore saved weapon side helper for
+ * the Player/Pickup gameplay source cluster.
+ */
 void PlayerRestoreSavedWeaponSide(
     PlayerGunFireController *controller,
     const PlayerMissionSaveWeaponSide *savedSide
@@ -2041,7 +2512,12 @@ void PlayerRestoreSavedWeaponSide(
     controller->ammoOrCharge = savedSide->ammoOrCharge;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in address-backed caller 0x41f1d0 Player::ApplyMissionSaveData.
+ * Purpose: provide the recovered player refresh saved weapon bank hud helper for
+ * the Player/Pickup gameplay source cluster.
+ */
 void PlayerRefreshSavedWeaponBankHud(
     int bankIndex,
     PlayerAltWeaponBank *bank
@@ -2067,7 +2543,12 @@ void PlayerRefreshSavedWeaponBankHud(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in address-backed caller 0x41f1d0 Player::ApplyMissionSaveData.
+ * Purpose: provide the recovered player refresh previous weapon controller hud helper for
+ * the Player/Pickup gameplay source cluster.
+ */
 void PlayerRefreshPreviousWeaponControllerHud(
     PlayerGunFireController *controller
 ) {
@@ -3226,15 +3707,23 @@ void Destructor() {
 
 namespace PlayerNodeFlagRestore {
 
-// Reimplements 0x41ef30: PlayerNodeFlagRestore::InitGlobals
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x41ef30: PlayerNodeFlagRestore::InitGlobals.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reimplement PlayerNodeFlagRestore::InitGlobals from the recovered
+ * Battlesport gameplay source file.
+ */
 void InitGlobals() {
     InitInstance();
     RegisterAtExit();
 }
 
-// Reimplements 0x41ef40: PlayerNodeFlagRestore::InitInstance
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x41ef40: PlayerNodeFlagRestore::InitInstance.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reimplement PlayerNodeFlagRestore::InitInstance from the recovered
+ * Battlesport gameplay source file.
+ */
 void InitInstance() {
     g_PlayerNodeFlagRestoreEntriesAllocatorOrProxy = 0;
     g_PlayerNodeFlagRestoreEntriesBegin = 0;
@@ -3242,14 +3731,22 @@ void InitInstance() {
     g_PlayerNodeFlagRestoreEntriesCapacityEnd = 0;
 }
 
-// Reimplements 0x41ef60: PlayerNodeFlagRestore::RegisterAtExit
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x41ef60: PlayerNodeFlagRestore::RegisterAtExit.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reimplement PlayerNodeFlagRestore::RegisterAtExit from the recovered
+ * Battlesport gameplay source file.
+ */
 void RegisterAtExit() {
     atexit(ShutdownInstance);
 }
 
-// Reimplements 0x41ef70: PlayerNodeFlagRestore::ShutdownInstance
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x41ef70: PlayerNodeFlagRestore::ShutdownInstance.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reimplement PlayerNodeFlagRestore::ShutdownInstance from the recovered
+ * Battlesport gameplay source file.
+ */
 void ShutdownInstance() {
     ::operator delete(g_PlayerNodeFlagRestoreEntriesBegin);
     g_PlayerNodeFlagRestoreEntriesBegin = 0;
@@ -4121,8 +4618,12 @@ void BindActiveGameStateAsCurrentSaveState() {
     g_CurrentPlayerSaveState = activeSaveState;
 }
 
-// Reimplements 0x42b810: Player::SyncLocalPoseFromRootNode
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x42b810: Player::SyncLocalPoseFromRootNode.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reimplement Player::SyncLocalPoseFromRootNode from the recovered
+ * Battlesport gameplay source file.
+ */
 void SyncLocalPoseFromRootNode() {
     zUtil_PlayerStateStorage *const playerState =
         ((zUtil_SaveGameState *)g_GameStateOrMapTable)->playerState;
@@ -5801,8 +6302,12 @@ void ReactivateCopterSndNodesIfHealthy() {
     }
 }
 
-// Reimplements 0x42b4a0: Player::StopBftBubbleFxHandle
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x42b4a0: Player::StopBftBubbleFxHandle.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reimplement Player::StopBftBubbleFxHandle from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall StopBftBubbleFxHandle(
     zUtil_SaveGameState *saveState
 ) {
@@ -6562,8 +7067,12 @@ void __fastcall UpdatePlayerLapProgressAndNotifyNet(
 }
 } // namespace Checkpoint
 
-// Reimplements 0x424010: PlayerPendingContact::SelectPreferred
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x424010: PlayerPendingContact::SelectPreferred.
+ * Original source path: src/Battlesport/player.cpp.
+ * Purpose: reimplement PlayerPendingContact::SelectPreferred from the recovered
+ * Battlesport gameplay source file.
+ */
 PlayerPendingContact *__fastcall PlayerPendingContact::SelectPreferred(
     PlayerPendingContact *rhs
 ) {
@@ -6579,7 +7088,12 @@ PlayerPendingContact *__fastcall PlayerPendingContact::SelectPreferred(
 }
 
 namespace Player {
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in address-backed callers 0x424010 PlayerPendingContact::SelectPreferred, 0x4251f0 Player::CollectPendingCollisionContactsForQuadProbe, 0x426770 Player::UpdateMasterTypeTrack, 0x428d60 Player::ProbeModalSampleHeights.
+ * Purpose: provide the recovered transform point by matrix helper for
+ * the Player/Pickup gameplay source cluster.
+ */
 zVec3 TransformPointByMatrix(
     const zVec3 &point,
     const zMat4x3 &matrix
@@ -6616,14 +7130,24 @@ struct PlayerContactSurfacePayload {
     int impactSlot;
 };
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in address-backed caller 0x405c90 Player::ApplyCameraState.
+ * Purpose: provide the recovered set state7 fx pass3 visible helper for
+ * the Player/Pickup gameplay source cluster.
+ */
 void SetState7FxPass3Visible(
     int visible
 ) {
     g_Player_State7FxPass3Ui.SetVisible(visible);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in address-backed caller 0x423c20 Player::ClassifyPendingContactsForSegment.
+ * Purpose: provide the recovered append pending contact helper for
+ * the Player/Pickup gameplay source cluster.
+ */
 PlayerPendingContact *AppendPendingContact(
     PlayerPendingContactQueue *queue
 ) {
@@ -6647,7 +7171,12 @@ PlayerPendingContact *AppendPendingContact(
     return contact;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in address-backed caller 0x423c20 Player::ClassifyPendingContactsForSegment.
+ * Purpose: provide the recovered copy pending contact payload helper for
+ * the Player/Pickup gameplay source cluster.
+ */
 void CopyPendingContactPayload(
     PlayerPendingContact *contact,
     const zClassDiPickCandidateEntry *candidate,
@@ -6661,14 +7190,24 @@ void CopyPendingContactPayload(
     contact->segmentTag = segmentTag;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in address-backed caller 0x423c20 Player::ClassifyPendingContactsForSegment.
+ * Purpose: provide the recovered get node damage handler helper for
+ * the Player/Pickup gameplay source cluster.
+ */
 OptCatalogDamageHandlerPartial *GetNodeDamageHandler(
     zClass_NodePartial *node
 ) {
     return (OptCatalogDamageHandlerPartial *)(((zClass_NodeFreeListSlot *)(node))->damageHandler);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in address-backed caller 0x423530 Player::ClearPendingContactQueues.
+ * Purpose: provide the recovered free pending contact queue helper for
+ * the Player/Pickup gameplay source cluster.
+ */
 void FreePendingContactQueue(
     PlayerPendingContactQueue *queue
 ) {
@@ -6685,7 +7224,12 @@ void FreePendingContactQueue(
     queue->count = 0;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in address-backed callers 0x424010 PlayerPendingContact::SelectPreferred, 0x424d00 Player::ProcessTransferContactQueue.
+ * Purpose: provide the recovered append existing pending contact helper for
+ * the Player/Pickup gameplay source cluster.
+ */
 void AppendExistingPendingContact(
     PlayerPendingContactQueue *queue,
     PlayerPendingContact *contact
@@ -6702,7 +7246,12 @@ void AppendExistingPendingContact(
     ++queue->count;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in address-backed caller 0x424d00 Player::ProcessTransferContactQueue.
+ * Purpose: provide the recovered remove existing pending contact helper for
+ * the Player/Pickup gameplay source cluster.
+ */
 void RemoveExistingPendingContact(
     PlayerPendingContactQueue *queue,
     PlayerPendingContact *contact
@@ -6735,7 +7284,12 @@ void RemoveExistingPendingContact(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in address-backed callers 0x4251f0 Player::CollectPendingCollisionContactsForQuadProbe, 0x424ed0 Player::TryResolvePendingCollisionProbeSweep.
+ * Purpose: provide the recovered move transfer contacts to preferred collision helper for
+ * the Player/Pickup gameplay source cluster.
+ */
 void MoveTransferContactsToPreferredCollision(
     zUtil_PlayerStateStorage *playerState
 ) {
@@ -6757,7 +7311,12 @@ void MoveTransferContactsToPreferredCollision(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in address-backed caller 0x4236b0 Player::BuildPendingContactQueues.
+ * Purpose: provide the recovered enable contact segment helper for
+ * the Player/Pickup gameplay source cluster.
+ */
 void EnableContactSegment(
     int *enabledSegmentFlags,
     int index
@@ -6765,7 +7324,12 @@ void EnableContactSegment(
     enabledSegmentFlags[index] = 1;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in address-backed caller 0x4236b0 Player::BuildPendingContactQueues.
+ * Purpose: provide the recovered build modal and root probe world caches helper for
+ * the Player/Pickup gameplay source cluster.
+ */
 void BuildModalAndRootProbeWorldCaches(
     zUtil_PlayerStateStorage *playerState,
     const PlayerMasterModalData *masterModalData
@@ -6784,14 +7348,24 @@ void BuildModalAndRootProbeWorldCaches(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in address-backed caller 0x424270 Player::ResolvePendingCollisionContact.
+ * Purpose: provide the recovered vec3 length helper for
+ * the Player/Pickup gameplay source cluster.
+ */
 float Vec3Length(
     const zVec3 &vec
 ) {
     return (float)(sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z));
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in address-backed caller 0x424270 Player::ResolvePendingCollisionContact.
+ * Purpose: provide the recovered vec3 dot helper for
+ * the Player/Pickup gameplay source cluster.
+ */
 float Vec3Dot(
     const zVec3 &a,
     const zVec3 &b
@@ -6799,7 +7373,12 @@ float Vec3Dot(
     return a.x * b.x + a.y * b.y + a.z * b.z;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in address-backed caller 0x424270 Player::ResolvePendingCollisionContact.
+ * Purpose: provide the recovered vec3 dot xz helper for
+ * the Player/Pickup gameplay source cluster.
+ */
 float Vec3DotXZ(
     const zVec3 &a,
     const zVec3 &b
@@ -6807,7 +7386,12 @@ float Vec3DotXZ(
     return a.x * b.x + a.z * b.z;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in address-backed caller 0x424270 Player::ResolvePendingCollisionContact.
+ * Purpose: provide the recovered vec3 cross helper for
+ * the Player/Pickup gameplay source cluster.
+ */
 zVec3 Vec3Cross(
     const zVec3 &a,
     const zVec3 &b
@@ -6837,8 +7421,12 @@ void __fastcall AddScaledHudCounterValue(
     g_Player_HudCounterValue += (int)(value * scale * 1000.0f);
 }
 
-// Reimplements 0x41bab0: Player::UpdateGunDispatchRequestsFromTriggerLatches
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x41bab0: Player::UpdateGunDispatchRequestsFromTriggerLatches.
+ * Original source path: src/Battlesport/player.cpp.
+ * Purpose: reimplement Player::UpdateGunDispatchRequestsFromTriggerLatches from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall UpdateGunDispatchRequestsFromTriggerLatches(
     zUtil_SaveGameState *saveState
 ) {
@@ -7557,8 +8145,12 @@ void __fastcall UpdateAiMode2TurnInPlaceTowardPlayer(
     playerState->throttleInputCopy = 0.0f;
 }
 
-// Reimplements 0x402250: Player::TickAiMode2AltGunAttackWindow
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x402250: Player::TickAiMode2AltGunAttackWindow.
+ * Original source path: src/Battlesport/player.cpp.
+ * Purpose: reimplement Player::TickAiMode2AltGunAttackWindow from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall TickAiMode2AltGunAttackWindow(
     zUtil_SaveGameState *saveState,
     float targetDistance,
@@ -7649,8 +8241,12 @@ void __fastcall TickAiMode2AltGunAttackWindow(
     );
 }
 
-// Reimplements 0x4024a0: Player::SolveAltGunLeadTargetPoint
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x4024a0: Player::SolveAltGunLeadTargetPoint.
+ * Original source path: src/Battlesport/player.cpp.
+ * Purpose: reimplement Player::SolveAltGunLeadTargetPoint from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall SolveAltGunLeadTargetPoint(
     zUtil_SaveGameState *saveState,
     zUtil_SaveGameState *targetSaveState,
@@ -7931,8 +8527,12 @@ void __fastcall AiRestoreSavedTopLevelState(
     playerState->aiTopLevelState = playerState->aiSavedTopLevelState;
 }
 
-// Reimplements 0x402be0: Player::AiSteerTowardPathNodeForward
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x402be0: Player::AiSteerTowardPathNodeForward.
+ * Original source path: src/Battlesport/player.cpp.
+ * Purpose: reimplement Player::AiSteerTowardPathNodeForward from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall AiSteerTowardPathNodeForward(
     zUtil_SaveGameState *saveState
 ) {
@@ -7980,8 +8580,12 @@ void __fastcall AiSteerTowardPathNodeForward(
     playerState->steeringInput = turnCross;
 }
 
-// Reimplements 0x402d60: Player::AiSteerTowardPathNodeReverse
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x402d60: Player::AiSteerTowardPathNodeReverse.
+ * Original source path: src/Battlesport/player.cpp.
+ * Purpose: reimplement Player::AiSteerTowardPathNodeReverse from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall AiSteerTowardPathNodeReverse(
     zUtil_SaveGameState *saveState
 ) {
@@ -8057,8 +8661,12 @@ void __fastcall TickAiMode2TimedPathSteering(
     playerState->recentHitFlag = 1;
 }
 
-// Reimplements 0x423530: Player::ClearPendingContactQueues
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x423530: Player::ClearPendingContactQueues.
+ * Original source path: src/Battlesport/player.cpp.
+ * Purpose: reimplement Player::ClearPendingContactQueues from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall ClearPendingContactQueues(
     zUtil_SaveGameState *saveState
 ) {
@@ -8071,8 +8679,12 @@ void __fastcall ClearPendingContactQueues(
     FreePendingContactQueue(&playerState->transferQueue);
 }
 
-// Reimplements 0x406730: Player::FilterCameraProbeBlockingHits
-// (D:\Proj\GameZRecoil\Player\player_camera.c)
+/**
+ * Reimplements 0x406730: Player::FilterCameraProbeBlockingHits.
+ * Original source path: D:\Proj\GameZRecoil\Player\player_camera.c.
+ * Purpose: reimplement Player::FilterCameraProbeBlockingHits from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall FilterCameraProbeBlockingHits(
     PlayerProbeSampleCandidateBuffer *batches,
     int batchCount
@@ -8112,8 +8724,12 @@ void __fastcall FilterCameraProbeBlockingHits(
     }
 }
 
-// Reimplements 0x42b6e0: Player::FindNearestThirdPersonCameraProbePoint
-// (D:\Proj\GameZRecoil\Player\player_camera.c)
+/**
+ * Reimplements 0x42b6e0: Player::FindNearestThirdPersonCameraProbePoint.
+ * Original source path: D:\Proj\GameZRecoil\Player\player_camera.c.
+ * Purpose: reimplement Player::FindNearestThirdPersonCameraProbePoint from the recovered
+ * Battlesport gameplay source file.
+ */
 int __fastcall FindNearestThirdPersonCameraProbePoint(
     PlayerProbeSampleCandidateBuffer *batches,
     int batchCount,
@@ -8168,8 +8784,12 @@ int __fastcall FindNearestThirdPersonCameraProbePoint(
     return 1;
 }
 
-// Reimplements 0x4067a0: Player::AdjustSubCameraFocusForObstruction
-// (D:\Proj\GameZRecoil\Player\player_camera.c)
+/**
+ * Reimplements 0x4067a0: Player::AdjustSubCameraFocusForObstruction.
+ * Original source path: D:\Proj\GameZRecoil\Player\player_camera.c.
+ * Purpose: reimplement Player::AdjustSubCameraFocusForObstruction from the recovered
+ * Battlesport gameplay source file.
+ */
 int __fastcall AdjustSubCameraFocusForObstruction(
     zUtil_SaveGameState *saveState,
     zVec3 *focusPos
@@ -8217,8 +8837,12 @@ int __fastcall AdjustSubCameraFocusForObstruction(
     return 0;
 }
 
-// Reimplements 0x405ee0: Player::AdjustThirdPersonCameraByOffsetProbes
-// (D:\Proj\GameZRecoil\Player\player_camera.c)
+/**
+ * Reimplements 0x405ee0: Player::AdjustThirdPersonCameraByOffsetProbes.
+ * Original source path: D:\Proj\GameZRecoil\Player\player_camera.c.
+ * Purpose: reimplement Player::AdjustThirdPersonCameraByOffsetProbes from the recovered
+ * Battlesport gameplay source file.
+ */
 int __fastcall AdjustThirdPersonCameraByOffsetProbes(
     zUtil_SaveGameState *saveState,
     zVec3 *cameraPos,
@@ -8323,8 +8947,12 @@ int __fastcall AdjustThirdPersonCameraByOffsetProbes(
     return result;
 }
 
-// Reimplements 0x406510: Player::UpdateCameraVariantFromAnchor
-// (D:\Proj\GameZRecoil\Player\player_camera.c)
+/**
+ * Reimplements 0x406510: Player::UpdateCameraVariantFromAnchor.
+ * Original source path: D:\Proj\GameZRecoil\Player\player_camera.c.
+ * Purpose: reimplement Player::UpdateCameraVariantFromAnchor from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall UpdateCameraVariantFromAnchor(
     PlayerProbeSampleCandidateBuffer *candidates,
     zVec3 *cameraPos,
@@ -8379,8 +9007,12 @@ void __fastcall UpdateCameraVariantFromAnchor(
     zEffect::SetVariantOverridePackedIdsIfComplete(&g_VariantTag_Current);
 }
 
-// Reimplements 0x406470: Player::UpdateCameraVariantFromCameraPos
-// (D:\Proj\GameZRecoil\Player\player_camera.c)
+/**
+ * Reimplements 0x406470: Player::UpdateCameraVariantFromCameraPos.
+ * Original source path: D:\Proj\GameZRecoil\Player\player_camera.c.
+ * Purpose: reimplement Player::UpdateCameraVariantFromCameraPos from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall UpdateCameraVariantFromCameraPos(
     zUtil_SaveGameState *saveState,
     zVec3 *cameraPos
@@ -8427,8 +9059,12 @@ void __fastcall UpdateCameraVariantFromCameraPos(
     g_Player_CameraVariantUpdatedThisTick = 1;
 }
 
-// Reimplements 0x406110: Player::AdjustThirdPersonCameraBySideProbes
-// (D:\Proj\GameZRecoil\Player\player_camera.c)
+/**
+ * Reimplements 0x406110: Player::AdjustThirdPersonCameraBySideProbes.
+ * Original source path: D:\Proj\GameZRecoil\Player\player_camera.c.
+ * Purpose: reimplement Player::AdjustThirdPersonCameraBySideProbes from the recovered
+ * Battlesport gameplay source file.
+ */
 int __fastcall AdjustThirdPersonCameraBySideProbes(
     zUtil_SaveGameState *saveState,
     zVec3 *cameraPos,
@@ -8573,8 +9209,12 @@ int __fastcall AdjustThirdPersonCameraBySideProbes(
     return 1;
 }
 
-// Reimplements 0x423c20: Player::ClassifyPendingContactsForSegment
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x423c20: Player::ClassifyPendingContactsForSegment.
+ * Original source path: src/Battlesport/player.cpp.
+ * Purpose: reimplement Player::ClassifyPendingContactsForSegment from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall ClassifyPendingContactsForSegment(
     zUtil_SaveGameState *saveState,
     PlayerProbeSampleCandidateBuffer *sceneResults,
@@ -8651,8 +9291,12 @@ void __fastcall ClassifyPendingContactsForSegment(
     }
 }
 
-// Reimplements 0x423b10: Player::CollectPendingContactsForSegments
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x423b10: Player::CollectPendingContactsForSegments.
+ * Original source path: src/Battlesport/player.cpp.
+ * Purpose: reimplement Player::CollectPendingContactsForSegments from the recovered
+ * Battlesport gameplay source file.
+ */
 int __fastcall CollectPendingContactsForSegments(
     zUtil_SaveGameState *saveState,
     zClass_DiSegmentEndpoints *segmentPairs,
@@ -8701,8 +9345,12 @@ int __fastcall CollectPendingContactsForSegments(
                : 0;
 }
 
-// Reimplements 0x424210: Player::ProcessPendingPickupContacts
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x424210: Player::ProcessPendingPickupContacts.
+ * Original source path: src/Battlesport/player.cpp.
+ * Purpose: reimplement Player::ProcessPendingPickupContacts from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall ProcessPendingPickupContacts(
     zUtil_SaveGameState *saveState
 ) {
@@ -8735,8 +9383,12 @@ void __fastcall ProcessPendingPickupContacts(
 
 namespace PlayerPickupContact {
 
-// Reimplements 0x424150: PlayerPickupContact::PassesCollectionTest
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x424150: PlayerPickupContact::PassesCollectionTest.
+ * Original source path: src/Battlesport/player.cpp.
+ * Purpose: reimplement PlayerPickupContact::PassesCollectionTest from the recovered
+ * Battlesport gameplay source file.
+ */
 int __fastcall PassesCollectionTest(
     zUtil_SaveGameState *saveState,
     PlayerPendingContact *contact
@@ -8790,8 +9442,12 @@ int __fastcall PassesCollectionTest(
 
 namespace Player {
 
-// Reimplements 0x4251f0: Player::CollectPendingCollisionContactsForQuadProbe
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x4251f0: Player::CollectPendingCollisionContactsForQuadProbe.
+ * Original source path: src/Battlesport/player.cpp.
+ * Purpose: reimplement Player::CollectPendingCollisionContactsForQuadProbe from the recovered
+ * Battlesport gameplay source file.
+ */
 int __fastcall CollectPendingCollisionContactsForQuadProbe(
     zUtil_SaveGameState *saveState,
     float expandRadius
@@ -8845,8 +9501,12 @@ int __fastcall CollectPendingCollisionContactsForQuadProbe(
                : 0;
 }
 
-// Reimplements 0x424ed0: Player::TryResolvePendingCollisionProbeSweep
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x424ed0: Player::TryResolvePendingCollisionProbeSweep.
+ * Original source path: src/Battlesport/player.cpp.
+ * Purpose: reimplement Player::TryResolvePendingCollisionProbeSweep from the recovered
+ * Battlesport gameplay source file.
+ */
 int __fastcall TryResolvePendingCollisionProbeSweep(
     zUtil_SaveGameState *saveState
 ) {
@@ -8881,8 +9541,12 @@ int __fastcall TryResolvePendingCollisionProbeSweep(
     return 1;
 }
 
-// Reimplements 0x423fc0: Player::SelectAndResolvePreferredPendingCollisionContact
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x423fc0: Player::SelectAndResolvePreferredPendingCollisionContact.
+ * Original source path: src/Battlesport/player.cpp.
+ * Purpose: reimplement Player::SelectAndResolvePreferredPendingCollisionContact from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall SelectAndResolvePreferredPendingCollisionContact(
     zUtil_SaveGameState *saveState
 ) {
@@ -8901,8 +9565,12 @@ void __fastcall SelectAndResolvePreferredPendingCollisionContact(
     playerState->preferredCollisionResolved = 1;
 }
 
-// Reimplements 0x4248e0: Player::PreparePendingWorldCollisionResponse
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x4248e0: Player::PreparePendingWorldCollisionResponse.
+ * Original source path: src/Battlesport/player.cpp.
+ * Purpose: reimplement Player::PreparePendingWorldCollisionResponse from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall PreparePendingWorldCollisionResponse(
     zUtil_SaveGameState *saveState,
     PlayerPendingContact *worldContacts
@@ -8959,8 +9627,12 @@ void __fastcall PreparePendingWorldCollisionResponse(
                               projectileVel.z * motionBasis.zz;
 }
 
-// Reimplements 0x424110: Player::ResolvePendingWorldCollisionContact
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x424110: Player::ResolvePendingWorldCollisionContact.
+ * Original source path: src/Battlesport/player.cpp.
+ * Purpose: reimplement Player::ResolvePendingWorldCollisionContact from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall ResolvePendingWorldCollisionContact(
     zUtil_SaveGameState *saveState
 ) {
@@ -9019,8 +9691,12 @@ void __fastcall ApplyPitchRollVelocityImpulseFromDirection(
     playerState->localVel.z -= localDirection.z * velocityScale;
 }
 
-// Reimplements 0x424270: Player::ResolvePendingCollisionContact
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x424270: Player::ResolvePendingCollisionContact.
+ * Original source path: src/Battlesport/player.cpp.
+ * Purpose: reimplement Player::ResolvePendingCollisionContact from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall ResolvePendingCollisionContact(
     zUtil_SaveGameState *saveState,
     PlayerPendingContact *contact
@@ -9188,8 +9864,12 @@ void __fastcall ResolvePendingCollisionContact(
     }
 }
 
-// Reimplements 0x424ac0: Player::ResolvePendingPlayerCollisionContact
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x424ac0: Player::ResolvePendingPlayerCollisionContact.
+ * Original source path: src/Battlesport/player.cpp.
+ * Purpose: reimplement Player::ResolvePendingPlayerCollisionContact from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall ResolvePendingPlayerCollisionContact(
     zUtil_SaveGameState *saveState
 ) {
@@ -9243,8 +9923,12 @@ void __fastcall ResolvePendingPlayerCollisionContact(
     }
 }
 
-// Reimplements 0x424d00: Player::ProcessTransferContactQueue
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x424d00: Player::ProcessTransferContactQueue.
+ * Original source path: src/Battlesport/player.cpp.
+ * Purpose: reimplement Player::ProcessTransferContactQueue from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall ProcessTransferContactQueue(
     zUtil_SaveGameState *saveState
 ) {
@@ -10258,8 +10942,12 @@ void __fastcall StartDestroyedStateVehicleEffect(
     HudUiMgr::HideTrackedProgressMeterIfOwnerMatches(saveState);
 }
 
-// Reimplements 0x4236b0: Player::BuildPendingContactQueues
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x4236b0: Player::BuildPendingContactQueues.
+ * Original source path: src/Battlesport/player.cpp.
+ * Purpose: reimplement Player::BuildPendingContactQueues from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall BuildPendingContactQueues(
     zUtil_SaveGameState *saveState
 ) {
@@ -10483,8 +11171,12 @@ void __fastcall BuildPendingContactQueues(
     }
 }
 
-// Reimplements 0x423460: Player::ProcessPendingContactQueues
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x423460: Player::ProcessPendingContactQueues.
+ * Original source path: src/Battlesport/player.cpp.
+ * Purpose: reimplement Player::ProcessPendingContactQueues from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall ProcessPendingContactQueues(
     zUtil_SaveGameState *saveState
 ) {
@@ -10536,8 +11228,12 @@ void __fastcall ProcessPendingContactQueues(
     ClearPendingContactQueues(saveState);
 }
 
-// Reimplements 0x425770: Player::ApplyPendingCollisionProbeVelocity
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x425770: Player::ApplyPendingCollisionProbeVelocity.
+ * Original source path: src/Battlesport/player.cpp.
+ * Purpose: reimplement Player::ApplyPendingCollisionProbeVelocity from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall ApplyPendingCollisionProbeVelocity(
     zUtil_SaveGameState *saveState
 ) {
@@ -10591,8 +11287,12 @@ void __fastcall ApplyPendingCollisionProbeVelocity(
         pushVel.x * motionBasis.zx + pushVel.y * motionBasis.zy + pushVel.z * motionBasis.zz;
 }
 
-// Reimplements 0x425920: Player::RegisterGameplayCommandCallbacksAndCreateFfEffects
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x425920: Player::RegisterGameplayCommandCallbacksAndCreateFfEffects.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reimplement Player::RegisterGameplayCommandCallbacksAndCreateFfEffects from the recovered
+ * Battlesport gameplay source file.
+ */
 void RegisterGameplayCommandCallbacksAndCreateFfEffects() {
     // zInput's keyboard bridge tail-jumps to these handlers with commandId in ECX.
     zInputCommandCallbackFn hudHotkeyCallback =
@@ -10843,8 +11543,12 @@ void AiFinalizeMode2State1ForAllPlayers() {
     g_Player_AiMode2State1Finalized = 1;
 }
 
-// Reimplements 0x42be00: Player::SetWorldPoseAndRestartAnchor
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x42be00: Player::SetWorldPoseAndRestartAnchor.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reimplement Player::SetWorldPoseAndRestartAnchor from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall SetWorldPoseAndRestartAnchor(
     zUtil_SaveGameState *saveState,
     const zVec3 *position,
@@ -10867,8 +11571,12 @@ void __fastcall SetWorldPoseAndRestartAnchor(
     playerState->variantTag = g_VariantTag_Current;
 }
 
-// Reimplements 0x42be70: Player::CaptureCurrentObjectPoseAsRestartAnchor
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x42be70: Player::CaptureCurrentObjectPoseAsRestartAnchor.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reimplement Player::CaptureCurrentObjectPoseAsRestartAnchor from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall CaptureCurrentObjectPoseAsRestartAnchor(
     zUtil_SaveGameState *saveState
 ) {
@@ -10917,8 +11625,12 @@ void __fastcall ResetMouseControlStateAndRecenterCursor(
     zInput::Mouse_RecenterCursor();
 }
 
-// Reimplements 0x426390: PlayerMgr::TickAllPlayers
-// (GameZRecoil/player.cpp)
+/**
+ * Reimplements 0x426390: PlayerMgr::TickAllPlayers.
+ * Original source path: GameZRecoil/player.cpp.
+ * Purpose: reimplement PlayerMgr::TickAllPlayers from the recovered
+ * Battlesport gameplay source file.
+ */
 void TickAllPlayers() {
     g_Player_DeltaTime = g_FrameDeltaTimeSec >= kPlayerMinFrameDeltaSec ? g_FrameDeltaTimeSec
                                                                         : kPlayerMinFrameDeltaSec;
@@ -11095,8 +11807,12 @@ void TickAllPlayers() {
     );
 }
 
-// Reimplements 0x404e90: Player::TickActiveCameraState
-// (D:\Proj\GameZRecoil\Player\player_camera.c)
+/**
+ * Reimplements 0x404e90: Player::TickActiveCameraState.
+ * Original source path: D:\Proj\GameZRecoil\Player\player_camera.c.
+ * Purpose: reimplement Player::TickActiveCameraState from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall TickActiveCameraState(
     zUtil_SaveGameState *saveState
 ) {
@@ -11170,8 +11886,12 @@ void __fastcall TickActiveCameraState(
     }
 }
 
-// Reimplements 0x405040: Player::UpdateChaseCameraFromInput
-// (D:\Proj\GameZRecoil\Player\player_camera.c)
+/**
+ * Reimplements 0x405040: Player::UpdateChaseCameraFromInput.
+ * Original source path: D:\Proj\GameZRecoil\Player\player_camera.c.
+ * Purpose: reimplement Player::UpdateChaseCameraFromInput from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall UpdateChaseCameraFromInput(
     zUtil_SaveGameState *saveState
 ) {
@@ -11373,8 +12093,12 @@ void __fastcall UpdateChaseCameraFromInput(
     playerState->cameraDir = playerState->cameraDirNext;
 }
 
-// Reimplements 0x4057d0: Player::UpdateTopDownCameraState
-// (D:\Proj\GameZRecoil\Player\player_camera.c)
+/**
+ * Reimplements 0x4057d0: Player::UpdateTopDownCameraState.
+ * Original source path: D:\Proj\GameZRecoil\Player\player_camera.c.
+ * Purpose: reimplement Player::UpdateTopDownCameraState from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall UpdateTopDownCameraState(
     zUtil_SaveGameState *saveState
 ) {
@@ -11400,8 +12124,12 @@ void __fastcall UpdateTopDownCameraState(
     playerState->cameraDir.z = 0.0f;
 }
 
-// Reimplements 0x4059a0: Player::UpdateFirstPersonCameraFromInput
-// (D:\Proj\GameZRecoil\Player\player_camera.c)
+/**
+ * Reimplements 0x4059a0: Player::UpdateFirstPersonCameraFromInput.
+ * Original source path: D:\Proj\GameZRecoil\Player\player_camera.c.
+ * Purpose: reimplement Player::UpdateFirstPersonCameraFromInput from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall UpdateFirstPersonCameraFromInput(
     zUtil_SaveGameState *saveState
 ) {
@@ -11485,8 +12213,12 @@ void __fastcall UpdateFirstPersonCameraFromInput(
     playerState->cameraDir = playerState->steerBasisRaw;
 }
 
-// Reimplements 0x405870: Player::UpdateCameraFromStoredTargetTowardPlayer
-// (D:\Proj\GameZRecoil\Player\player_camera.c)
+/**
+ * Reimplements 0x405870: Player::UpdateCameraFromStoredTargetTowardPlayer.
+ * Original source path: D:\Proj\GameZRecoil\Player\player_camera.c.
+ * Purpose: reimplement Player::UpdateCameraFromStoredTargetTowardPlayer from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall UpdateCameraFromStoredTargetTowardPlayer(
     zUtil_SaveGameState *saveState
 ) {
@@ -11528,8 +12260,12 @@ void __fastcall UpdateCameraFromStoredTargetTowardPlayer(
     );
 }
 
-// Reimplements 0x4063f0: Player::RestoreThirdPersonCameraFromObstructionState
-// (D:\Proj\GameZRecoil\Player\player_camera.c)
+/**
+ * Reimplements 0x4063f0: Player::RestoreThirdPersonCameraFromObstructionState.
+ * Original source path: D:\Proj\GameZRecoil\Player\player_camera.c.
+ * Purpose: reimplement Player::RestoreThirdPersonCameraFromObstructionState from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall RestoreThirdPersonCameraFromObstructionState(
     zUtil_SaveGameState *saveState
 ) {
@@ -11541,8 +12277,12 @@ void __fastcall RestoreThirdPersonCameraFromObstructionState(
     playerState->cameraDir = playerState->cameraObstructionDir;
 }
 
-// Reimplements 0x406610: Player::UpdateCameraWeatherFxEmitterVisibility
-// (D:\Proj\GameZRecoil\Player\player_camera.c)
+/**
+ * Reimplements 0x406610: Player::UpdateCameraWeatherFxEmitterVisibility.
+ * Original source path: D:\Proj\GameZRecoil\Player\player_camera.c.
+ * Purpose: reimplement Player::UpdateCameraWeatherFxEmitterVisibility from the recovered
+ * Battlesport gameplay source file.
+ */
 void UpdateCameraWeatherFxEmitterVisibility() {
     HudUiElement *const fxElement = g_HudSensorTracker.fxPass3Obj;
     if (fxElement == 0) {
@@ -11887,8 +12627,12 @@ void ToggleSteeringModeAndResetMouseLook() {
     zOpt::SetSteeringMode(zOpt::GetSteeringMode() == 0 ? 1 : 0);
 }
 
-// Reimplements 0x42bed0: Player::ResetMotionTransientState
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x42bed0: Player::ResetMotionTransientState.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reimplement Player::ResetMotionTransientState from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall ResetMotionTransientState(
     zUtil_SaveGameState *saveState
 ) {
@@ -11913,8 +12657,12 @@ void __fastcall ResetMotionTransientState(
     playerState->throttleInputCopy = 0.0f;
 }
 
-// Reimplements 0x4283f0: Player::UpdateBankVelocityFromSteerInput
-// (D:\Proj\GameZRecoil\player.cpp)
+/**
+ * Reimplements 0x4283f0: Player::UpdateBankVelocityFromSteerInput.
+ * Original source path: D:\Proj\GameZRecoil\player.cpp.
+ * Purpose: reimplement Player::UpdateBankVelocityFromSteerInput from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall UpdateBankVelocityFromSteerInput(
     zUtil_SaveGameState *saveState
 ) {
@@ -11986,8 +12734,12 @@ void __fastcall UpdateAutoTurnAndSteerFromTarget(
     }
 }
 
-// Reimplements 0x428490: Player::IntegrateYawAndWrapFromYawVelocity
-// (D:\Proj\GameZRecoil\player.cpp)
+/**
+ * Reimplements 0x428490: Player::IntegrateYawAndWrapFromYawVelocity.
+ * Original source path: D:\Proj\GameZRecoil\player.cpp.
+ * Purpose: reimplement Player::IntegrateYawAndWrapFromYawVelocity from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall IntegrateYawAndWrapFromYawVelocity(
     zUtil_SaveGameState *saveState
 ) {
@@ -12016,8 +12768,12 @@ void __fastcall IntegrateYawAndWrapFromYawVelocity(
     }
 }
 
-// Reimplements 0x4294d0: Player::RebuildSteerBasisFromMotionBasis
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x4294d0: Player::RebuildSteerBasisFromMotionBasis.
+ * Original source path: src/Battlesport/player.cpp.
+ * Purpose: reimplement Player::RebuildSteerBasisFromMotionBasis from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall RebuildSteerBasisFromMotionBasis(
     zUtil_SaveGameState *saveState
 ) {
@@ -12039,8 +12795,12 @@ void __fastcall RebuildSteerBasisFromMotionBasis(
     );
 }
 
-// Reimplements 0x42b8c0: Player::RebuildSteerBasisRawFromRef
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x42b8c0: Player::RebuildSteerBasisRawFromRef.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reimplement Player::RebuildSteerBasisRawFromRef from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall RebuildSteerBasisRawFromRef(
     zUtil_SaveGameState *saveState
 ) {
@@ -12059,8 +12819,12 @@ void __fastcall RebuildSteerBasisRawFromRef(
     playerState->steerBasisRaw = rawBasis;
 }
 
-// Reimplements 0x429240: Player::ApplyAmphibSpeedOscillation
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x429240: Player::ApplyAmphibSpeedOscillation.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reimplement Player::ApplyAmphibSpeedOscillation from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall ApplyAmphibSpeedOscillation(
     zUtil_SaveGameState *saveState,
     zVec3 *inOutUpVector,
@@ -12111,8 +12875,12 @@ void __fastcall ApplyAmphibSpeedOscillation(
                        original.z * oscillationBasis.zz;
 }
 
-// Reimplements 0x42b970: Player::RebuildMotionBasisFromSteerBasis
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x42b970: Player::RebuildMotionBasisFromSteerBasis.
+ * Original source path: src/Battlesport/player.cpp.
+ * Purpose: reimplement Player::RebuildMotionBasisFromSteerBasis from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall RebuildMotionBasisFromSteerBasis(
     zUtil_SaveGameState *saveState
 ) {
@@ -12143,8 +12911,12 @@ void __fastcall RebuildMotionBasisFromSteerBasis(
     playerState->motionBasis = motionBasis;
 }
 
-// Reimplements 0x429560: Player::RebuildSteerBasisFromMotionAxes
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x429560: Player::RebuildSteerBasisFromMotionAxes.
+ * Original source path: src/Battlesport/player.cpp.
+ * Purpose: reimplement Player::RebuildSteerBasisFromMotionAxes from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall RebuildSteerBasisFromMotionAxes(
     zUtil_SaveGameState *saveState
 ) {
@@ -12232,8 +13004,12 @@ void __fastcall RebuildSteerBasisFromMotionAxes(
     playerState->angVelYaw = 0.0f;
 }
 
-// Reimplements 0x42bab0: Player::SetAutoTurnTargetDirFromWorldPoint
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x42bab0: Player::SetAutoTurnTargetDirFromWorldPoint.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reimplement Player::SetAutoTurnTargetDirFromWorldPoint from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall SetAutoTurnTargetDirFromWorldPoint(
     zUtil_SaveGameState *saveState,
     const zVec3 *worldPoint
@@ -12493,8 +13269,12 @@ void __fastcall ApplyMissionSaveData(
     }
 }
 
-// Reimplements 0x41ecd0: Player::RecordNodeFlagsForRestore
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x41ecd0: Player::RecordNodeFlagsForRestore.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reimplement Player::RecordNodeFlagsForRestore from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall RecordNodeFlagsForRestore(
     zClass_NodePartial *node
 ) {
@@ -12541,8 +13321,12 @@ void __fastcall RecordNodeFlagsForRestore(
     g_PlayerNodeFlagRestoreEntriesEnd = end + 1;
 }
 
-// Reimplements 0x41efa0: Player::RestoreRecordedNodeFlags
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x41efa0: Player::RestoreRecordedNodeFlags.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reimplement Player::RestoreRecordedNodeFlags from the recovered
+ * Battlesport gameplay source file.
+ */
 void RestoreRecordedNodeFlags() {
     PlayerNodeFlagRestoreEntry *entry = g_PlayerNodeFlagRestoreEntriesBegin;
     while (entry != g_PlayerNodeFlagRestoreEntriesEnd) {
@@ -13620,8 +14404,12 @@ void __fastcall CheckMissionWeaponAvailability(
     }
 }
 
-// Reimplements 0x426350: Player::FloatSign
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x426350: Player::FloatSign.
+ * Original source path: src/Battlesport/player.cpp.
+ * Purpose: reimplement Player::FloatSign from the recovered
+ * Battlesport gameplay source file.
+ */
 int __stdcall FloatSign(
     float value
 ) {
@@ -13636,8 +14424,12 @@ int __stdcall FloatSign(
     return 1;
 }
 
-// Reimplements 0x429ed0: Player::StartSlipSfx
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x429ed0: Player::StartSlipSfx.
+ * Original source path: src/Battlesport/player.cpp.
+ * Purpose: reimplement Player::StartSlipSfx from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall StartSlipSfx(
     zUtil_SaveGameState *saveState
 ) {
@@ -13648,8 +14440,12 @@ void __fastcall StartSlipSfx(
     );
 }
 
-// Reimplements 0x429ef0: Player::StopSlipSfx
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x429ef0: Player::StopSlipSfx.
+ * Original source path: src/Battlesport/player.cpp.
+ * Purpose: reimplement Player::StopSlipSfx from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall StopSlipSfx(
     zUtil_SaveGameState *saveState
 ) {
@@ -13657,8 +14453,12 @@ void __fastcall StopSlipSfx(
     saveState->StopModalLoopSfxHandle(3);
 }
 
-// Reimplements 0x429b40: Player::UpdateBankAndTurnDynamics
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x429b40: Player::UpdateBankAndTurnDynamics.
+ * Original source path: src/Battlesport/player.cpp.
+ * Purpose: reimplement Player::UpdateBankAndTurnDynamics from the recovered
+ * Battlesport gameplay source file.
+ */
 float __fastcall UpdateBankAndTurnDynamics(
     zUtil_SaveGameState *saveState
 ) {
@@ -13771,8 +14571,12 @@ void __fastcall ConstrainToUnitDistanceFrom(
     pos->z = center->z + delta.z;
 }
 
-// Reimplements 0x429d30: Player::ComputeTurnSlipDelta
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x429d30: Player::ComputeTurnSlipDelta.
+ * Original source path: src/Battlesport/player.cpp.
+ * Purpose: reimplement Player::ComputeTurnSlipDelta from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall ComputeTurnSlipDelta(
     zUtil_SaveGameState *saveState
 ) {
@@ -13818,8 +14622,12 @@ void __fastcall ComputeTurnSlipDelta(
     }
 }
 
-// Reimplements 0x4289f0: Player::UpdateSubModeWaterProbeState
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x4289f0: Player::UpdateSubModeWaterProbeState.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reimplement Player::UpdateSubModeWaterProbeState from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall UpdateSubModeWaterProbeState(
     zUtil_SaveGameState *saveState
 ) {
@@ -13971,8 +14779,12 @@ void __fastcall UpdateSubVerticalDamping(
     }
 }
 
-// Reimplements 0x429870: Player::UpdateYawVelocityFromSteerInput
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x429870: Player::UpdateYawVelocityFromSteerInput.
+ * Original source path: src/Battlesport/player.cpp.
+ * Purpose: reimplement Player::UpdateYawVelocityFromSteerInput from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall UpdateYawVelocityFromSteerInput(
     zUtil_SaveGameState *saveState
 ) {
@@ -14071,8 +14883,12 @@ void __fastcall UpdateYawVelocityFromSteerInput(
     }
 }
 
-// Reimplements 0x428520: Player::UpdateMasterTypeSub
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x428520: Player::UpdateMasterTypeSub.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reimplement Player::UpdateMasterTypeSub from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall UpdateMasterTypeSub(
     zUtil_SaveGameState *saveState
 ) {
@@ -14204,8 +15020,12 @@ void __fastcall UpdateMasterTypeSub(
     }
 }
 
-// Reimplements 0x4266b0: Player::TickMasterTypeAndForceFeedback
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x4266b0: Player::TickMasterTypeAndForceFeedback.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reimplement Player::TickMasterTypeAndForceFeedback from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall TickMasterTypeAndForceFeedback(
     zUtil_SaveGameState *saveState
 ) {
@@ -14254,8 +15074,12 @@ void __fastcall TickMasterTypeAndForceFeedback(
     }
 }
 
-// Reimplements 0x426770: Player::UpdateMasterTypeTrack
-// (src/Battlesport/player.cpp)
+/**
+ * Reimplements 0x426770: Player::UpdateMasterTypeTrack.
+ * Original source path: src/Battlesport/player.cpp.
+ * Purpose: reimplement Player::UpdateMasterTypeTrack from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall UpdateMasterTypeTrack(
     zUtil_SaveGameState *saveState
 ) {
@@ -14561,8 +15385,12 @@ PlayerGunFireController *__fastcall FindAltGunFireControllerForWeaponId(
     return &playerState->altWeaponBanks[1].controllerA;
 }
 
-// Reimplements 0x43c630: Player::IsAltWeaponAllowedInCurrentMasterMode
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x43c630: Player::IsAltWeaponAllowedInCurrentMasterMode.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reimplement Player::IsAltWeaponAllowedInCurrentMasterMode from the recovered
+ * Battlesport gameplay source file.
+ */
 int __fastcall IsAltWeaponAllowedInCurrentMasterMode(
     zUtil_SaveGameState *saveState,
     OptCatalogEntryDef *entry
@@ -14578,7 +15406,12 @@ int __fastcall IsAltWeaponAllowedInCurrentMasterMode(
     return 1;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in address-backed caller 0x43c660 Player::AutoSwitchToNextUsableAltWeapon.
+ * Purpose: provide the recovered is usable alt weapon controller helper for
+ * the Player/Pickup gameplay source cluster.
+ */
 static int IsUsableAltWeaponController(
     zUtil_SaveGameState *saveState,
     PlayerGunFireController *controller
@@ -14591,8 +15424,12 @@ static int IsUsableAltWeaponController(
            controller->ammoOrCharge > 0.0f;
 }
 
-// Reimplements 0x43c660: Player::AutoSwitchToNextUsableAltWeapon
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x43c660: Player::AutoSwitchToNextUsableAltWeapon.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reimplement Player::AutoSwitchToNextUsableAltWeapon from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall AutoSwitchToNextUsableAltWeapon(
     zUtil_SaveGameState *saveState
 ) {
@@ -14768,7 +15605,12 @@ void __fastcall ResetAltGunDoorAnimationState(
     }
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in address-backed caller 0x43c850 Player::ResetAltGunRuntimeState.
+ * Purpose: provide the recovered reset alt gun attach node helper for
+ * the Player/Pickup gameplay source cluster.
+ */
 void ResetAltGunAttachNode(
     PlayerGunFireController *controller
 ) {
@@ -14888,8 +15730,12 @@ void __fastcall RemoveAllDeployedMines(
     }
 }
 
-// Reimplements 0x439260: Player::HandleAltWeaponBankSelectInput
-// (D:\Proj\Battlesport\zWeapon.cpp)
+/**
+ * Reimplements 0x439260: Player::HandleAltWeaponBankSelectInput.
+ * Original source path: D:\Proj\Battlesport\zWeapon.cpp.
+ * Purpose: reimplement Player::HandleAltWeaponBankSelectInput from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall HandleAltWeaponBankSelectInput(
     int inputCode
 ) {
@@ -14997,8 +15843,12 @@ void __fastcall HandleAltWeaponBankSelectInput(
     );
 }
 
-// Reimplements 0x439460: Player::HandlePrimaryWeaponVariantToggleInput
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x439460: Player::HandlePrimaryWeaponVariantToggleInput.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reimplement Player::HandlePrimaryWeaponVariantToggleInput from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall HandlePrimaryWeaponVariantToggleInput(
     int keyCode
 ) {
@@ -15528,8 +16378,12 @@ void __fastcall ApplyCameraState(
     }
 }
 
-// Reimplements 0x4290f0: Player::SelectProbeSampleHeightFromCandidates
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x4290f0: Player::SelectProbeSampleHeightFromCandidates.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reimplement Player::SelectProbeSampleHeightFromCandidates from the recovered
+ * Battlesport gameplay source file.
+ */
 float __fastcall SelectProbeSampleHeightFromCandidates(
     PlayerProbeSampleCandidateBuffer *candidateBuffer,
     int *outBestCandidateIndex,
@@ -15754,8 +16608,12 @@ void __fastcall ProbeModalSampleHeights(
     playerState->probeImpactSlot4SeenFlag = outTypeHistogram->countByImpactSlot[4] > 0 ? 1 : 0;
 }
 
-// Reimplements 0x42cf90: Player::BuildEnvironmentProbeResult
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x42cf90: Player::BuildEnvironmentProbeResult.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reimplement Player::BuildEnvironmentProbeResult from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall BuildEnvironmentProbeResult(
     zUtil_SaveGameState *saveState,
     PlayerEnvProbeResult *outProbe
@@ -15889,8 +16747,12 @@ void __fastcall BuildEnvironmentProbeResult(
     playerState->probeImpactSlot1SeenFlag = outProbe->hitHistogram.countByImpactSlot[1];
 }
 
-// Reimplements 0x42d5c0: Player::ApplyEnvironmentProbeResult
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x42d5c0: Player::ApplyEnvironmentProbeResult.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reimplement Player::ApplyEnvironmentProbeResult from the recovered
+ * Battlesport gameplay source file.
+ */
 int __fastcall ApplyEnvironmentProbeResult(
     zUtil_SaveGameState *saveState,
     PlayerEnvProbeResult *envProbe
@@ -16073,8 +16935,12 @@ int __fastcall ApplyEnvironmentProbeResult(
     return 1;
 }
 
-// Reimplements 0x42cde0: Player::SolveHeightOnSurface
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x42cde0: Player::SolveHeightOnSurface.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reimplement Player::SolveHeightOnSurface from the recovered
+ * Battlesport gameplay source file.
+ */
 float __fastcall SolveHeightOnSurface(
     zUtil_SaveGameState *saveState,
     float supportPlaneDot
@@ -16090,8 +16956,12 @@ float __fastcall SolveHeightOnSurface(
            steerBasisRefY;
 }
 
-// Reimplements 0x42cb50: Player::ResetTerrainContactImpulsesAndPlayImpactSfx
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x42cb50: Player::ResetTerrainContactImpulsesAndPlayImpactSfx.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reimplement Player::ResetTerrainContactImpulsesAndPlayImpactSfx from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall ResetTerrainContactImpulsesAndPlayImpactSfx(
     zUtil_SaveGameState *saveState
 ) {
@@ -16115,8 +16985,12 @@ void __fastcall ResetTerrainContactImpulsesAndPlayImpactSfx(
     );
 }
 
-// Reimplements 0x42c8d0: Player::ApplyTerrainTilt
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x42c8d0: Player::ApplyTerrainTilt.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reimplement Player::ApplyTerrainTilt from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall ApplyTerrainTilt(
     zUtil_SaveGameState *saveState,
     const zVec3 *tiltVector,
@@ -16163,8 +17037,12 @@ void __fastcall ApplyTerrainTilt(
     playerState->projectileSpawnVel.z += impulse.z;
 }
 
-// Reimplements 0x42ce50: Player::ComputeTriangleNormal
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x42ce50: Player::ComputeTriangleNormal.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reimplement Player::ComputeTriangleNormal from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall ComputeTriangleNormal(
     zUtil_SaveGameState *saveState,
     const zVec3 *pointA,
@@ -16196,8 +17074,12 @@ void __fastcall ComputeTriangleNormal(
     playerState->steerBasisRef = normal;
 }
 
-// Reimplements 0x42c520: Player::ComputeSurfaceFrom1Probe
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x42c520: Player::ComputeSurfaceFrom1Probe.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reimplement Player::ComputeSurfaceFrom1Probe from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall ComputeSurfaceFrom1Probe(
     zUtil_SaveGameState *saveState,
     PlayerEnvProbeResult *probeResult
@@ -16235,8 +17117,12 @@ void __fastcall ComputeSurfaceFrom1Probe(
     );
 }
 
-// Reimplements 0x42c640: Player::ComputeSurfaceFrom2Probes
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x42c640: Player::ComputeSurfaceFrom2Probes.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reimplement Player::ComputeSurfaceFrom2Probes from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall ComputeSurfaceFrom2Probes(
     zUtil_SaveGameState *saveState,
     PlayerEnvProbeResult *probeResult
@@ -16310,8 +17196,12 @@ void __fastcall ComputeSurfaceFrom2Probes(
     );
 }
 
-// Reimplements 0x42cbd0: Player::CheckProbeSampleMaskOverlap
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x42cbd0: Player::CheckProbeSampleMaskOverlap.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reimplement Player::CheckProbeSampleMaskOverlap from the recovered
+ * Battlesport gameplay source file.
+ */
 int __fastcall CheckProbeSampleMaskOverlap(
     int sampleIndexA,
     int sampleIndexB,
@@ -16322,8 +17212,12 @@ int __fastcall CheckProbeSampleMaskOverlap(
            g_PlayerEnvProbeSampleMaskTable[sampleIndexA];
 }
 
-// Reimplements 0x42cf60: Player::RebuildAboveGroundIndices
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x42cf60: Player::RebuildAboveGroundIndices.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reimplement Player::RebuildAboveGroundIndices from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall RebuildAboveGroundIndices() {
     int *aboveGroundIndexCursor = g_PlayerEnvProbe_AboveGroundIndices;
     for (int sampleIndex = 0; sampleIndex < g_PlayerEnvProbeSampleCount; ++sampleIndex) {
@@ -16334,8 +17228,12 @@ void __fastcall RebuildAboveGroundIndices() {
     }
 }
 
-// Reimplements 0x42cc00: Player::SelectBestProbesByDotProduct
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x42cc00: Player::SelectBestProbesByDotProduct.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reimplement Player::SelectBestProbesByDotProduct from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall SelectBestProbesByDotProduct(
     const zVec3 *referenceNormal,
     PlayerEnvProbeResult *probeResult
@@ -16413,8 +17311,12 @@ void __fastcall SelectBestProbesByDotProduct(
     RebuildAboveGroundIndices();
 }
 
-// Reimplements 0x42ca40: Player::ComputeSurfaceFrom3Probes
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x42ca40: Player::ComputeSurfaceFrom3Probes.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reimplement Player::ComputeSurfaceFrom3Probes from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall ComputeSurfaceFrom3Probes(
     zUtil_SaveGameState *saveState,
     PlayerEnvProbeResult *probeResult
@@ -16451,8 +17353,12 @@ void __fastcall ComputeSurfaceFrom3Probes(
     playerState->angVelRoll = 0.0f;
 }
 
-// Reimplements 0x42bf90: Player::UpdatePostMoveEnvironment
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x42bf90: Player::UpdatePostMoveEnvironment.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reimplement Player::UpdatePostMoveEnvironment from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall UpdatePostMoveEnvironment(
     zUtil_SaveGameState *saveState,
     int probeSampleCount
@@ -16521,8 +17427,12 @@ void __fastcall UpdatePostMoveEnvironment(
     );
 }
 
-// Reimplements 0x42c0d0: Player::ProcessEnvProbeResults
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x42c0d0: Player::ProcessEnvProbeResults.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reimplement Player::ProcessEnvProbeResults from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall ProcessEnvProbeResults(
     zUtil_SaveGameState *saveState,
     PlayerEnvProbeResult *probeResult
@@ -16614,8 +17524,12 @@ void __fastcall ProcessEnvProbeResults(
     playerState->airborneFlag = 0;
 }
 
-// Reimplements 0x42da40: Player::RebuildOrientationFromNormal
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x42da40: Player::RebuildOrientationFromNormal.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reimplement Player::RebuildOrientationFromNormal from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall RebuildOrientationFromNormal(
     zUtil_SaveGameState *saveState
 ) {
@@ -16650,8 +17564,12 @@ void __fastcall RebuildOrientationFromNormal(
     playerState->motionBasis.posZ = playerState->worldPos.z;
 }
 
-// Reimplements 0x42d320: Player::FindThirdProbeAndComputeNormal
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x42d320: Player::FindThirdProbeAndComputeNormal.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reimplement Player::FindThirdProbeAndComputeNormal from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall FindThirdProbeAndComputeNormal(
     zUtil_SaveGameState *saveState,
     PlayerEnvProbeResult *probeResult
@@ -16720,8 +17638,12 @@ void __fastcall FindThirdProbeAndComputeNormal(
     RebuildOrientationFromNormal(saveState);
 }
 
-// Reimplements 0x42c420: Player::AccumulateSlopeForces
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x42c420: Player::AccumulateSlopeForces.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reimplement Player::AccumulateSlopeForces from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall AccumulateSlopeForces(
     zUtil_SaveGameState *saveState,
     PlayerEnvProbeResult *probeResult
@@ -16746,8 +17668,12 @@ void __fastcall AccumulateSlopeForces(
     }
 }
 
-// Reimplements 0x42c2e0: Player::UpdateVerticalVelocityAndTransform
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x42c2e0: Player::UpdateVerticalVelocityAndTransform.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reimplement Player::UpdateVerticalVelocityAndTransform from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall UpdateVerticalVelocityAndTransform(
     zUtil_SaveGameState *saveState,
     PlayerEnvProbeResult *probeResult
@@ -16792,8 +17718,12 @@ void __fastcall UpdateVerticalVelocityAndTransform(
     }
 }
 
-// Reimplements 0x428350: Player::UpdateMasterTypeBasicOrTrack_FromModalProbe
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x428350: Player::UpdateMasterTypeBasicOrTrack_FromModalProbe.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reimplement Player::UpdateMasterTypeBasicOrTrack_FromModalProbe from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall UpdateMasterTypeBasicOrTrack_FromModalProbe(
     zUtil_SaveGameState *saveState
 ) {
@@ -16834,8 +17764,12 @@ void __fastcall UpdateMasterTypeBasicOrTrack_FromModalProbe(
     playerState->worldPos.y = masterModalData->modeAltTransitionTime + maxSampleHeight;
 }
 
-// Reimplements 0x427440: Player::UpdateMasterTypeHover_FromModalProbe
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x427440: Player::UpdateMasterTypeHover_FromModalProbe.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reimplement Player::UpdateMasterTypeHover_FromModalProbe from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall UpdateMasterTypeHover_FromModalProbe(
     zUtil_SaveGameState *saveState
 ) {
@@ -17008,8 +17942,12 @@ void __fastcall UpdateMasterTypeHover_FromModalProbe(
     );
 }
 
-// Reimplements 0x427ec0: Player::UpdateMasterTypeAmphib_FromModalProbe
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x427ec0: Player::UpdateMasterTypeAmphib_FromModalProbe.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reimplement Player::UpdateMasterTypeAmphib_FromModalProbe from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall UpdateMasterTypeAmphib_FromModalProbe(
     zUtil_SaveGameState *saveState
 ) {
@@ -17104,8 +18042,12 @@ void __fastcall UpdateMasterTypeAmphib_FromModalProbe(
     );
 }
 
-// Reimplements 0x4279f0: Player::UpdateMasterTypeAmphib
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x4279f0: Player::UpdateMasterTypeAmphib.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reimplement Player::UpdateMasterTypeAmphib from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall UpdateMasterTypeAmphib(
     zUtil_SaveGameState *saveState
 ) {
@@ -17254,8 +18196,12 @@ void __fastcall UpdateMasterTypeAmphib(
     }
 }
 
-// Reimplements 0x427140: Player::UpdateMasterTypeHover
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x427140: Player::UpdateMasterTypeHover.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reimplement Player::UpdateMasterTypeHover from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall UpdateMasterTypeHover(
     zUtil_SaveGameState *saveState
 ) {
@@ -17351,8 +18297,12 @@ void __fastcall UpdateMasterTypeHover(
     playerState->cachedRollRad = playerState->vehicleRollRad;
 }
 
-// Reimplements 0x428120: Player::UpdateMasterTypeBasic
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x428120: Player::UpdateMasterTypeBasic.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reimplement Player::UpdateMasterTypeBasic from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall UpdateMasterTypeBasic(
     zUtil_SaveGameState *saveState
 ) {
@@ -17759,8 +18709,12 @@ void __fastcall ComposeAimBasisWorldMatrix(
     outMatrix34->posZ = playerState->aimBasisOrigin.z;
 }
 
-// Reimplements 0x43a900: Player::DecayAndApplyAltFireSlotOffsetToNode
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x43a900: Player::DecayAndApplyAltFireSlotOffsetToNode.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reimplement Player::DecayAndApplyAltFireSlotOffsetToNode from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall DecayAndApplyAltFireSlotOffsetToNode(
     PlayerGunFireSlot *slot,
     zClass_NodePartial *slotNode,
@@ -17784,8 +18738,12 @@ void __fastcall DecayAndApplyAltFireSlotOffsetToNode(
     }
 }
 
-// Reimplements 0x43a980: Player::ApplyGunFireSlotOffsetToNode
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x43a980: Player::ApplyGunFireSlotOffsetToNode.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reimplement Player::ApplyGunFireSlotOffsetToNode from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall ApplyGunFireSlotOffsetToNode(
     zUtil_SaveGameState *saveState
 ) {
@@ -17896,8 +18854,12 @@ void __fastcall SelectAltGunFirePointAndSlot(
     }
 }
 
-// Reimplements 0x43acf0: Player::SelectPrimaryGunFirePointAndSlot
-// (D:\Proj\Battlesport\player.cpp)
+/**
+ * Reimplements 0x43acf0: Player::SelectPrimaryGunFirePointAndSlot.
+ * Original source path: D:\Proj\Battlesport\player.cpp.
+ * Purpose: reimplement Player::SelectPrimaryGunFirePointAndSlot from the recovered
+ * Battlesport gameplay source file.
+ */
 void __fastcall SelectPrimaryGunFirePointAndSlot(
     zUtil_SaveGameState *saveState,
     PlayerGunFireSlot **outActiveFireSlotPtr

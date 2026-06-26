@@ -1972,42 +1972,80 @@ extern int g_zClass_LodDistanceStateStackTop;
 extern zClass_LodDistanceState g_zClass_LodDistanceStateStack[4];
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original inline helper; no standalone retail function exists. Observed in
+ * address-backed node-bounds callers including 0x448e90, 0x4491b0, and
+ * 0x449420 as the typed access to the node free-list slot storage.
+ * Purpose: view a scene node as the enclosing free-list slot record that owns
+ * the cached primary and secondary bounds.
+ */
 inline zClass_NodeFreeListSlot *zClass_NodeSlotFromNode(
     zClass_NodePartial *node
 ) {
     return (zClass_NodeFreeListSlot *)node;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original inline helper; no standalone retail function exists. Observed in
+ * address-backed const node-bounds callers including 0x448e90 and bbox query
+ * paths using the same free-list slot storage.
+ * Purpose: view a const scene node as the enclosing free-list slot record that
+ * owns the cached primary and secondary bounds.
+ */
 inline const zClass_NodeFreeListSlot *zClass_NodeSlotFromNode(
     const zClass_NodePartial *node
 ) {
     return (const zClass_NodeFreeListSlot *)node;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original inline helper; no standalone retail function exists. Observed in
+ * address-backed render/update callers including 0x448920, 0x448e90,
+ * 0x453bd0, 0x453ee0, and 0x4542a0 as the cached view-sphere center access.
+ * Purpose: return the primary bounds center field used as the node view-sphere
+ * center.
+ */
 inline zVec3 *zClass_NodeViewSphereCenter(
     zClass_NodePartial *node
 ) {
     return (zVec3 *)(&zClass_NodeSlotFromNode(node)->primaryBounds.minX);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original inline helper; no standalone retail function exists. Observed in
+ * address-backed render/update callers including 0x448920, 0x448e90,
+ * 0x453bd0, 0x453ee0, and 0x4542a0 as the cached const view-sphere center
+ * access.
+ * Purpose: return the const primary bounds center field used as the node
+ * view-sphere center.
+ */
 inline const zVec3 *zClass_NodeViewSphereCenter(
     const zClass_NodePartial *node
 ) {
     return (const zVec3 *)(&zClass_NodeSlotFromNode(node)->primaryBounds.minX);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original inline helper; no standalone retail function exists. Observed in
+ * address-backed render/update callers including 0x448920, 0x448e90,
+ * 0x453bd0, 0x453ee0, and 0x4542a0 as the cached view-sphere radius access.
+ * Purpose: return the primary bounds radius field used as the node view-sphere
+ * radius.
+ */
 inline float *zClass_NodeViewSphereRadius(
     zClass_NodePartial *node
 ) {
     return &zClass_NodeSlotFromNode(node)->primaryBounds.maxX;
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original inline helper; no standalone retail function exists. Observed in
+ * address-backed render/update callers including 0x448920, 0x448e90,
+ * 0x453bd0, 0x453ee0, and 0x4542a0 as the cached const view-sphere radius
+ * access.
+ * Purpose: return the const primary bounds radius field used as the node
+ * view-sphere radius.
+ */
 inline const float *zClass_NodeViewSphereRadius(
     const zClass_NodePartial *node
 ) {

@@ -41,6 +41,15 @@ char g_zGame_Options_RegRootPrefix[] = "SOFTWARE\\";
  * Purpose: stores the writable registry path separator.
  */
 char g_zGame_Options_RegPathSeparator[] = "\\";
+/**
+ * Reimplements data 0x56bcd0: g_zGame_Options_OptionListHead.
+ * Reimplements data 0x56bcd8: g_zGame_Options_RegKeyRoot.
+ * Reimplements data 0x56bcdc: g_zGame_Options_RegKeyCurrentUser.
+ * Reimplements data 0x56bce0: g_zGame_Options_RegKeyGame.
+ * Reimplements data 0x56bcd4: g_zGame_Options_RegContextInitialized.
+ * Purpose: stores the runtime registry option-list head and allocated registry
+ * key context pointers for zGame option load/save.
+ */
 zOptionEntryPartial *g_zGame_Options_OptionListHead = 0;
 char *g_zGame_Options_RegKeyRoot = 0;
 char *g_zGame_Options_RegKeyCurrentUser = 0;
@@ -52,13 +61,31 @@ zGame_OptionsRuntimeConfig g_zGame_Options_RuntimeConfigDefaults = {0};
  * Purpose: Stores ZOPT VIDEO FULLSCREEN data used by engine.zgame.zopt_fullscreen_option_global.
  */
 int *ZOPT_VIDEO_FULLSCREEN = 0;
+/**
+ * Reimplements data 0x4e5d70: ZOPT_VIDEO_STRIDE.
+ * Purpose: stores the option-value pointer populated by game option loading
+ * for video stride.
+ */
 int *ZOPT_VIDEO_STRIDE = 0;
 int *ZOPT_HUD_SW = 0;
 int *ZOPT_HUD_HW = 0;
+/**
+ * Reimplements data 0x4e5d28: ZOPT_HUD_TYPE_SW.
+ * Reimplements data 0x4e5d2c: ZOPT_HUD_TYPE_HW.
+ * Reimplements data 0x4e5d6c: ZOPT_REPLICATE.
+ * Purpose: stores option-value pointers for HUD type in software/hardware
+ * modes and video replicate mode.
+ */
 int *ZOPT_HUD_TYPE_SW = 0;
 int *ZOPT_HUD_TYPE_HW = 0;
 int *ZOPT_REPLICATE = 0;
 int *ZOPT_NETWORK_ENABLED = 0;
+/**
+ * Reimplements data 0x4e5d90: g_zOpt_NetworkModemOption.
+ * Reimplements data 0x4e5d78: g_zOpt_NetworkListenOption.
+ * Purpose: stores option-value pointers for network modem and network listen
+ * configuration.
+ */
 int *g_zOpt_NetworkModemOption = 0;
 int *g_zOpt_NetworkListenOption = 0;
 /**
@@ -66,6 +93,15 @@ int *g_zOpt_NetworkListenOption = 0;
  * Purpose: Stores g zOpt GameDifficultyOption data used by engine.zgame.zopt_game_difficulty_option_global.
  */
 int *g_zOpt_GameDifficultyOption = 0;
+/**
+ * Reimplements data 0x4e5d94: g_zOpt_WolPasswordFlagOption.
+ * Reimplements data 0x4e5d00: ZOPT_EFFECTS_LEVEL_SW.
+ * Reimplements data 0x4e5d04: ZOPT_EFFECTS_LEVEL_HW.
+ * Reimplements data 0x4e5d10: ZOPT_OBJECT_LOD_SW.
+ * Reimplements data 0x4e5d14: ZOPT_OBJECT_LOD_HW.
+ * Purpose: stores option-value pointers populated by game option loading for
+ * the WOL password flag, effects level, and object LOD settings.
+ */
 int *g_zOpt_WolPasswordFlagOption = 0;
 int *ZOPT_EFFECTS_LEVEL_SW = 0;
 int *ZOPT_EFFECTS_LEVEL_HW = 0;
@@ -86,6 +122,12 @@ float *ZOPT_SOUND_VOLUME = 0;
  * Purpose: Stores ZOPT SOUND LOD data used by engine.zgame.zopt_sound_option_globals.
  */
 int *ZOPT_SOUND_LOD = 0;
+/**
+ * Reimplements data 0x4e5d18: ZOPT_TEXTURE_MEMORY_SW.
+ * Reimplements data 0x4e5d1c: ZOPT_TEXTURE_MEMORY_HW.
+ * Purpose: stores option-value pointers populated by game option loading for
+ * software and hardware texture-memory limits.
+ */
 int *ZOPT_TEXTURE_MEMORY_SW = 0;
 int *ZOPT_TEXTURE_MEMORY_HW = 0;
 /**
@@ -93,6 +135,18 @@ int *ZOPT_TEXTURE_MEMORY_HW = 0;
  * Purpose: Stores ZOPT PLAYER NAME data used by engine.zgame.zopt_player_name_option_global.
  */
 zOptionEntryPartial *ZOPT_PLAYER_NAME = 0;
+/**
+ * Reimplements data 0x4e5d08: ZOPT_GFX_FLAGS_SW.
+ * Reimplements data 0x4e5d0c: ZOPT_GFX_FLAGS_HW.
+ * Reimplements data 0x4e5d80: g_zOpt_RenderSectionOption.
+ * Reimplements data 0x4e5d84: g_zOpt_DisplaySectionOption.
+ * Reimplements data 0x4e5d88: g_zOpt_WindowSectionOption.
+ * Reimplements data 0x4e5d7c: g_zOpt_CameraSectionOption.
+ * Reimplements data 0x4e5dcc: g_zOpt_HwMode.
+ * Reimplements data 0x4e5d3c: ZOPT_GAME_CONTROL_OPTIONS.
+ * Purpose: stores graphics, view-section, camera-section, current hardware
+ * mode, and game-control option globals used by zOpt accessors.
+ */
 int *ZOPT_GFX_FLAGS_SW = 0;
 int *ZOPT_GFX_FLAGS_HW = 0;
 zOpt_ViewRectSection **g_zOpt_RenderSectionOption = 0;
@@ -637,14 +691,22 @@ const int ZOPT_GRAPHICS_GLOBAL_LIGHT = 0x10;
 const int ZOPT_GRAPHICS_ALL_VIDEO_BUFFER = 0x20;
 
 template <typename T>
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in caller 0x407700 from repeated option-entry pointer casts in option loading.
+ * Purpose: return an option entry as the typed option-value pointer stored by zOpt globals.
+ */
 T *OptionValuePointer(
     zOptionEntryPartial *entry
 ) {
     return (T *)(entry);
 }
 
-// Source-faithful helper recovered from address-backed callers in this source file.
+/**
+ * Restores likely original static helper; no standalone retail function exists.
+ * Observed in caller 0x407700 from repeated profile metric selection for graphics flags.
+ * Purpose: build the graphics option bitmask selected for the active profile.
+ */
 int BuildGraphicsFlags(
     zReader::Node *profileRoot,
     const char *globalLightKey,
@@ -738,7 +800,10 @@ void ResetOptionPointers() {
 }
 } // namespace
 
-// Reimplements 0x4076f0: zGame::ReturnOnlyStub
+/**
+ * Reimplements 0x4076f0: zGame::ReturnOnlyStub.
+ * Purpose: preserve the empty zGame stub used by the option/load cluster.
+ */
 void ReturnOnlyStub() {}
 
 /**
@@ -2199,7 +2264,10 @@ int GetNetworkModemEnabled() {
     return *g_zOpt_NetworkModemOption;
 }
 
-// Reimplements 0x408a10: zOpt::SetWolPasswordFlag
+/**
+ * Reimplements 0x408a10: zOpt::SetWolPasswordFlag.
+ * Purpose: store the WOL password flag option value through its option pointer.
+ */
 void __fastcall SetWolPasswordFlag(
     int value
 ) {
@@ -2652,17 +2720,26 @@ char *zOpt_GetPlayerName() {
     return (char *)(ZOPT_PLAYER_NAME->payloadOrBuffer);
 }
 
-// Reimplements 0x408a20: zOpt_GetWolPasswordFlagValue
+/**
+ * Reimplements 0x408a20: zOpt_GetWolPasswordFlagValue.
+ * Purpose: return the WOL password flag option value through its option pointer.
+ */
 int zOpt_GetWolPasswordFlagValue() {
     return *g_zOpt_WolPasswordFlagOption;
 }
 
-// Reimplements 0x408660: zOpt_DisplaySection_GetWidth
+/**
+ * Reimplements 0x408660: zOpt_DisplaySection_GetWidth.
+ * Purpose: return the active display section width.
+ */
 int zOpt_DisplaySection_GetWidth() {
     return (*g_zOpt_DisplaySectionOption)->width;
 }
 
-// Reimplements 0x408670: zOpt_DisplaySection_GetHeight
+/**
+ * Reimplements 0x408670: zOpt_DisplaySection_GetHeight.
+ * Purpose: return the active display section height.
+ */
 int zOpt_DisplaySection_GetHeight() {
     return (*g_zOpt_DisplaySectionOption)->height;
 }

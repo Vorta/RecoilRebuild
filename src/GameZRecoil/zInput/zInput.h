@@ -163,7 +163,9 @@ struct zInput_BindMapOverlayStackNode {
 };
 RECOIL_STATIC_ASSERT(sizeof(zInput_BindMapOverlayStackNode) == 0x0c);
 
-// Bind-group command ids use the same VC vector triplet recovered in zin_cmd.cpp.
+/**
+ * Bind-group command ids use the same VC vector triplet recovered in zin_cmd.cpp.
+ */
 struct zInput_CommandIdVector {
     unsigned char allocatorByte;
     unsigned char allocatorPadding[3];
@@ -185,7 +187,9 @@ RECOIL_STATIC_ASSERT(
 );
 RECOIL_STATIC_ASSERT(sizeof(zInput_CommandIdVector) == 0x10);
 
-// Bind-group record: CString title followed by the command-id vector.
+/**
+ * Bind-group record: CString title followed by the command-id vector.
+ */
 struct zInput_BindGroupInfo {
     CString title;
     zInput_CommandIdVector commandIds;
@@ -218,8 +222,12 @@ RECOIL_STATIC_ASSERT(
 );
 RECOIL_STATIC_ASSERT(sizeof(zInput_BindGroupInfo) == 0x14);
 
+struct zInput_BindGroupInfoListAllocator {
+    unsigned char value;
+};
+
 struct zInput_BindGroupInfoList {
-    unsigned char allocatorByte;
+    zInput_BindGroupInfoListAllocator allocatorProxy;
     unsigned char allocatorPadding[3];
     zInput_BindGroupInfo **begin;
     zInput_BindGroupInfo **end;
@@ -744,11 +752,13 @@ void OnAppActivate();
 void OnAppDeactivate();
 } // namespace zInput
 
-// Static zero-filled input lifetime object at 0x561cb0..0x565ebc. BN currently
-// proves the DirectInput root, device registry, keyboard dispatch storage,
-// joystick current/previous state, force-feedback caps, mouse current/previous
-// state, and bind-map overlay tail; the 0x4144..0x4163 interval remains
-// bounded unknown storage.
+/**
+ * Static zero-filled input lifetime object at 0x561cb0..0x565ebc. BN currently
+ * proves the DirectInput root, device registry, keyboard dispatch storage,
+ * joystick current/previous state, force-feedback caps, mouse current/previous
+ * state, and bind-map overlay tail; the 0x4144..0x4163 interval remains
+ * bounded unknown storage.
+ */
 struct zInput_DeviceRegistry {
     unsigned char keyboardFlags;
     unsigned char joystickFlags;
