@@ -67,9 +67,9 @@ Generated from `.agent/RECOIL_PLAN.md` and `.agent/RECOIL_MESSAGES_PLAN.md`.
 | X | 0 | 0.0% |
 | F | 0 | 0.0% |
 | C | 0 | 0.0% |
-| B | 6058 | 93.2% |
+| B | 6056 | 93.2% |
 | A | 166 | 2.6% |
-| S | 275 | 4.2% |
+| S | 277 | 4.3% |
 
 ### messages.dll Plan
 
