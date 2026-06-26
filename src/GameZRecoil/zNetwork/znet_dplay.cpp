@@ -2622,13 +2622,17 @@ namespace zNetwork {
 void DeleteAllDispatchHandlers() {
     zNetworkDispatchHandlerListNode *const sentinel = g_zNetwork_DispatchHandlerListSentinel;
     zNetworkDispatchHandlerListNode *node = sentinel->next;
-    while (node != sentinel) {
-        zNetworkDispatchHandlerListNode *const next = node->next;
-        node->prev->next = node->next;
-        node->next->prev = node->prev;
-        ::operator delete(node);
-        --g_zNetwork_DispatchHandlerListCount;
-        node = next;
+    bool hasNode = node != sentinel;
+    if (hasNode != 0) {
+        do {
+            zNetworkDispatchHandlerListNode *const deleteNode = node;
+            node = node->next;
+            deleteNode->prev->next = deleteNode->next;
+            deleteNode->next->prev = deleteNode->prev;
+            ::operator delete(deleteNode);
+            --g_zNetwork_DispatchHandlerListCount;
+            hasNode = node != sentinel;
+        } while (hasNode != 0);
     }
 }
 } // namespace zNetwork
@@ -2772,20 +2776,20 @@ int EnumSessionsForCurrentApp() {
  * Purpose: delete the packet-dispatch handler sentinel and all list nodes.
  */
 extern "C" void zNetwork_DestroyDispatchHandlerList() {
-    zNetworkDispatchHandlerListNode *const sentinel = g_zNetwork_DispatchHandlerListSentinel;
-    if (sentinel == 0) {
-        g_zNetwork_DispatchHandlerListCount = 0;
-        return;
-    }
-
+    zNetworkDispatchHandlerListNode *sentinel = g_zNetwork_DispatchHandlerListSentinel;
     zNetworkDispatchHandlerListNode *node = sentinel->next;
-    while (node != sentinel) {
-        zNetworkDispatchHandlerListNode *const next = node->next;
-        node->prev->next = node->next;
-        node->next->prev = node->prev;
-        ::operator delete(node);
-        --g_zNetwork_DispatchHandlerListCount;
-        node = next;
+    bool hasNode = node != sentinel;
+    if (hasNode != 0) {
+        do {
+            zNetworkDispatchHandlerListNode *const deleteNode = node;
+            node = node->next;
+            deleteNode->prev->next = deleteNode->next;
+            deleteNode->next->prev = deleteNode->prev;
+            ::operator delete(deleteNode);
+            --g_zNetwork_DispatchHandlerListCount;
+            hasNode = node != sentinel;
+        } while (hasNode != 0);
+        sentinel = g_zNetwork_DispatchHandlerListSentinel;
     }
 
     ::operator delete(sentinel);
@@ -3008,36 +3012,48 @@ int __fastcall UnregisterPacketHandler(
 ) {
     zNetworkDispatchHandlerListNode *const sentinel = g_zNetwork_DispatchHandlerListSentinel;
     zNetworkDispatchHandlerListNode *node = sentinel->next;
-    while (node != sentinel) {
-        zNetworkDispatchHandlerRecord *const record = node->record;
-        if (record->packetType == packetType && record->handler == handlerProc) {
-            break;
-        }
+    bool hasNode = node != sentinel;
+    if (hasNode != 0) {
+        do {
+            zNetworkDispatchHandlerRecord *const record = node->record;
+            if (record->packetType == packetType && record->handler == handlerProc) {
+                break;
+            }
 
-        node = node->next;
+            node = node->next;
+            hasNode = node != sentinel;
+        } while (hasNode != 0);
     }
 
     if (node != sentinel) {
         zNetworkDispatchHandlerListNode *write = node;
         node = node->next;
-        while (node != sentinel) {
-            zNetworkDispatchHandlerRecord *const record = node->record;
-            if (record->packetType != packetType || record->handler != handlerProc) {
-                write->record = record;
-                write = write->next;
-            }
+        hasNode = node != sentinel;
+        if (hasNode != 0) {
+            do {
+                zNetworkDispatchHandlerRecord *const record = node->record;
+                if (record->packetType != packetType || record->handler != handlerProc) {
+                    write->record = record;
+                    write = write->next;
+                }
 
-            node = node->next;
+                node = node->next;
+                hasNode = node != sentinel;
+            } while (hasNode != 0);
         }
 
         node = write;
-        while (node != sentinel) {
-            zNetworkDispatchHandlerListNode *const next = node->next;
-            node->prev->next = next;
-            next->prev = node->prev;
-            ::operator delete(node);
-            --g_zNetwork_DispatchHandlerListCount;
-            node = next;
+        hasNode = node != sentinel;
+        if (hasNode != 0) {
+            do {
+                zNetworkDispatchHandlerListNode *const next = node->next;
+                node->prev->next = next;
+                next->prev = node->prev;
+                ::operator delete(node);
+                --g_zNetwork_DispatchHandlerListCount;
+                node = next;
+                hasNode = node != sentinel;
+            } while (hasNode != 0);
         }
     }
 
@@ -3056,16 +3072,20 @@ void __fastcall DispatchPacketToHandlers(
 ) {
     zNetworkDispatchHandlerListNode *const sentinel = g_zNetwork_DispatchHandlerListSentinel;
     zNetworkDispatchHandlerListNode *node = sentinel->next;
-    while (node != sentinel) {
-        zNetworkDispatchHandlerRecord *const record = node->record;
-        if (record->packetType == packet->packetType) {
-            record->handler(
-                senderPlayerId,
-                packet
-            );
-        }
+    bool hasNode = node != sentinel;
+    if (hasNode != 0) {
+        do {
+            zNetworkDispatchHandlerRecord *const record = node->record;
+            if (record->packetType == packet->packetType) {
+                record->handler(
+                    senderPlayerId,
+                    packet
+                );
+            }
 
-        node = node->next;
+            node = node->next;
+            hasNode = node != sentinel;
+        } while (hasNode != 0);
     }
 }
 } // namespace zNetwork_DPlay

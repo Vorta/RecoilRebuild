@@ -378,8 +378,8 @@ struct zSndFadeList {
     int count;
 
     void DeleteNodeAndAdvanceCursor(
-        zSndFadeListNode *node,
-        zSndFadeListNode **outCursor
+        zSndFadeListNode **outCursor,
+        zSndFadeListNode *node
     );
 };
 
