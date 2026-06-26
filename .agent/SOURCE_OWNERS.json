@@ -40790,7 +40790,9 @@
         "Current session source worker restored functional targets for 0x406f60 and 0x407010; VC5 data-symbol checks for 0x4e5ce8 and 0x4ccd28 pass; 0x406ea0 remains absent from plan/status.",
         "Class data gate covers g_RecoilStateCheatCode 0x4e5ce8 and implicit VC5 class vtable 0x4ccd28; both VC5SP3 data-symbol checks passed with zero unmasked mismatches, and the missing 0x406ea0 plan entry is now added.",
         "Functional smokes passed in-session for 0x406ea0, 0x406f60, and 0x407010; existing constructor/static-init coverage remains linked to this class owner.",
-        "Class data/vtable byte checks pass, but pure code tier S remains globally deferred."
+        "Class data/vtable byte checks pass, but pure code tier S remains globally deferred.",
+        "dialog-host inheritance/source model not recovered; previous typed vtable-slot wrappers compiled as virtual self-dispatch, so concrete class owner is not source-faithful yet",
+        "source model restored: concrete dialog-host states inherit the recovered 0x8 RecoilStateDialogHost base, with shared OnWndActivate/OnUpdateShouldQuit/OnDeactivate/OnSuspend hooks and inherited offset-4 dialog pointer; final build map/vtables show concrete states using RecoilStateDialogHost shared functions"
       ]
     },
     {
@@ -40833,7 +40835,9 @@
       "blocker": "none",
       "evidence": [
         "Owner-ledger reconciliation for legacy accepted Source owner markers: the address plan already carried accepted owner metadata before strict SOURCE_OWNERS link enforcement; this record links that accepted owner scope without adding data, functional, or byte evidence.",
-        "BN/provider-data classifier proved 0x4edc48 is the complete authored 8-byte g_RecoilState_ConfirmQuit object in hud.cpp; VC5 target hud_confirm_quit_state_data passed with zero unmasked data-byte mismatches."
+        "BN/provider-data classifier proved 0x4edc48 is the complete authored 8-byte g_RecoilState_ConfirmQuit object in hud.cpp; VC5 target hud_confirm_quit_state_data passed with zero unmasked data-byte mismatches.",
+        "dialog-host inheritance/source model not recovered; previous typed vtable-slot wrappers compiled as virtual self-dispatch, so concrete class owner is not source-faithful yet",
+        "source model restored: concrete dialog-host states inherit the recovered 0x8 RecoilStateDialogHost base, with shared OnWndActivate/OnUpdateShouldQuit/OnDeactivate/OnSuspend hooks and inherited offset-4 dialog pointer; final build map/vtables show concrete states using RecoilStateDialogHost shared functions"
       ]
     },
     {
@@ -40877,7 +40881,9 @@
       "blocker": "none",
       "evidence": [
         "Owner-ledger reconciliation for legacy accepted Source owner markers: the address plan already carried accepted owner metadata before strict SOURCE_OWNERS link enforcement; this record links that accepted owner scope without adding data, functional, or byte evidence.",
-        "BN/source audit bounded g_RecoilStateControls at 0x4e5dd0 as the complete direct authored data for RecoilStateControls static lifecycle/queue methods; g_GameStateOrMapTable and g_RecoilApp direct dependencies are already accepted; functional target recoil_state_controls_lifecycle passed all four smokes in this session."
+        "BN/source audit bounded g_RecoilStateControls at 0x4e5dd0 as the complete direct authored data for RecoilStateControls static lifecycle/queue methods; g_GameStateOrMapTable and g_RecoilApp direct dependencies are already accepted; functional target recoil_state_controls_lifecycle passed all four smokes in this session.",
+        "dialog-host inheritance/source model not recovered; previous typed vtable-slot wrappers compiled as virtual self-dispatch, so concrete class owner is not source-faithful yet",
+        "source model restored: concrete dialog-host states inherit the recovered 0x8 RecoilStateDialogHost base, with shared OnWndActivate/OnUpdateShouldQuit/OnDeactivate/OnSuspend hooks and inherited offset-4 dialog pointer; final build map/vtables show concrete states using RecoilStateDialogHost shared functions"
       ]
     },
     {
@@ -40908,7 +40914,9 @@
       "evidence": [
         "Owner-ledger reconciliation for legacy accepted Source owner markers: the address plan already carried accepted owner metadata before strict SOURCE_OWNERS link enforcement; this record links that accepted owner scope without adding data, functional, or byte evidence.",
         "Functional target recoil_state_credits_on_try_become_current now passes for 0x409a60 after registering/implementing the callback-only native smoke.",
-        "0x409a60 data audit: BN frontier shows only provider operator new/EH glue and HudUiCreditsPanel::HudUiCreditsPanel 0x409040; HudUiCreditsPanel data gate is now accepted, and OnTryBecomeCurrent has no authored globals of its own."
+        "0x409a60 data audit: BN frontier shows only provider operator new/EH glue and HudUiCreditsPanel::HudUiCreditsPanel 0x409040; HudUiCreditsPanel data gate is now accepted, and OnTryBecomeCurrent has no authored globals of its own.",
+        "dialog-host inheritance/source model not recovered; previous typed vtable-slot wrappers compiled as virtual self-dispatch, so concrete class owner is not source-faithful yet",
+        "source model restored: concrete dialog-host states inherit the recovered 0x8 RecoilStateDialogHost base, with shared OnWndActivate/OnUpdateShouldQuit/OnDeactivate/OnSuspend hooks and inherited offset-4 dialog pointer; final build map/vtables show concrete states using RecoilStateDialogHost shared functions"
       ]
     },
     {
@@ -40921,7 +40929,9 @@
         "0x408f50"
       ],
       "member_addresses": [
-        "0x408f50"
+        "0x408f50",
+        "0x4099a0",
+        "0x409ad0"
       ],
       "data_addresses": [],
       "source_paths": [
@@ -40931,13 +40941,16 @@
       "gates": {
         "boundary": "accepted",
         "source": "accepted",
-        "data": "pending",
-        "functional": "pending",
-        "byte": "deferred"
+        "data": "accepted",
+        "functional": "accepted",
+        "byte": "accepted"
       },
       "blocker": "none",
       "evidence": [
-        "Owner-ledger reconciliation for legacy accepted Source owner markers: the address plan already carried accepted owner metadata before strict SOURCE_OWNERS link enforcement; this record links that accepted owner scope without adding data, functional, or byte evidence."
+        "Owner-ledger reconciliation for legacy accepted Source owner markers: the address plan already carried accepted owner metadata before strict SOURCE_OWNERS link enforcement; this record links that accepted owner scope without adding data, functional, or byte evidence.",
+        "shared RecoilStateDialogHost hook recovery: VC5 target recoil_state_dialog_host proves 0x4099a0 OnWndActivate and 0x409ad0 OnDeactivate are base-class methods using inherited offset-4 dialog pointer",
+        "RecoilStateDialogHost shared hook owner audit: 0x4099a0, 0x409ad0, and 0x408f50 use only the inherited dialog pointer and provider/global calls already modeled by dependencies; recoil_state_dialog_host VC5 verification reports zero unmasked byte mismatches for all three hooks",
+        "RecoilStateDialogHost owner gate corrected after shared-hook recovery: the class adds no new storage beyond inherited dialog pointer, and the hook callees/global dependencies remain audited; recoil_state_dialog_host VC5 verification reports zero unmasked byte mismatches for 0x4099a0, 0x409ad0, and 0x408f50"
       ]
     },
     {
@@ -43117,7 +43130,9 @@
         "Owner-ledger reconciliation for legacy accepted Source owner markers: the address plan already carried accepted owner metadata before strict SOURCE_OWNERS link enforcement; this record links that accepted owner scope without adding data, functional, or byte evidence.",
         "BN resolves 0x4e5df0 as the complete 8-byte .data singleton struct HudCmdDialogState g_HudCmdDialogState with zero initializer bytes, members vtbl@0 and m_dialog@4, no larger containing data owner, source defines the singleton with size/offset asserts, and VC5 target hud_cmd_dialog_state_lifecycle verified zero unmasked data-byte mismatches.",
         "VC5 data-symbol target hud_cmd_dialog_state_lifecycle verified 0x4e5df0 g_HudCmdDialogState with zero unmasked data-byte mismatches and zero relocations for the complete class singleton storage.",
-        "final-data audit: candidate Recoil.exe .data mismatches retail section/layout evidence; raw_size +0x1a00, virtual_size -0x1ca8, zero_fill_tail -0x36a8, so final data tier S byte identity is not accepted"
+        "final-data audit: candidate Recoil.exe .data mismatches retail section/layout evidence; raw_size +0x1a00, virtual_size -0x1ca8, zero_fill_tail -0x36a8, so final data tier S byte identity is not accepted",
+        "dialog-host inheritance/source model not recovered; previous typed vtable-slot wrappers compiled as virtual self-dispatch, so concrete class owner is not source-faithful yet",
+        "source model restored: concrete dialog-host states inherit the recovered 0x8 RecoilStateDialogHost base, with shared OnWndActivate/OnUpdateShouldQuit/OnDeactivate/OnSuspend hooks and inherited offset-4 dialog pointer; final build map/vtables show concrete states using RecoilStateDialogHost shared functions"
       ]
     },
     {
@@ -44329,7 +44344,9 @@
       "blocker": "none",
       "evidence": [
         "Owner-ledger reconciliation for legacy accepted Source owner markers: the address plan already carried accepted owner metadata before strict SOURCE_OWNERS link enforcement; this record links that accepted owner scope without adding data, functional, or byte evidence.",
-        "Source worker confirmed g_HudUiNetGameSetupOverlayOwner remains the existing 12-byte zero-initialized static lifecycle object in zHud/zhud_ui.cpp; BN static-init/atexit/queue xrefs match, and hud_ui_net_game_setup_overlay_owner_static_lifecycle_data plus address check passed with zero unmasked data-byte mismatches."
+        "Source worker confirmed g_HudUiNetGameSetupOverlayOwner remains the existing 12-byte zero-initialized static lifecycle object in zHud/zhud_ui.cpp; BN static-init/atexit/queue xrefs match, and hud_ui_net_game_setup_overlay_owner_static_lifecycle_data plus address check passed with zero unmasked data-byte mismatches.",
+        "dialog-host inheritance/source model not recovered; previous typed vtable-slot wrappers compiled as virtual self-dispatch, so concrete class owner is not source-faithful yet",
+        "source model restored: concrete dialog-host states inherit the recovered 0x8 RecoilStateDialogHost base, with shared OnWndActivate/OnUpdateShouldQuit/OnDeactivate/OnSuspend hooks and inherited offset-4 dialog pointer; final build map/vtables show concrete states using RecoilStateDialogHost shared functions"
       ]
     },
     {
@@ -44570,7 +44587,9 @@
         "Owner-ledger reconciliation for legacy accepted Source owner markers: the address plan already carried accepted owner metadata before strict SOURCE_OWNERS link enforcement; this record links that accepted owner scope without adding data, functional, or byte evidence.",
         "HudUiNewGamePanel overlay-owner global data owner is accepted with VC5 data-symbol evidence for 0x4f32c8.",
         "Functional verification passed for overlay-owner lifecycle and queue-enter targets.",
-        "Tier S remains deferred for lifecycle members without full owner byte coverage."
+        "Tier S remains deferred for lifecycle members without full owner byte coverage.",
+        "dialog-host inheritance/source model not recovered; previous typed vtable-slot wrappers compiled as virtual self-dispatch, so concrete class owner is not source-faithful yet",
+        "source model restored: concrete dialog-host states inherit the recovered 0x8 RecoilStateDialogHost base, with shared OnWndActivate/OnUpdateShouldQuit/OnDeactivate/OnSuspend hooks and inherited offset-4 dialog pointer; final build map/vtables show concrete states using RecoilStateDialogHost shared functions"
       ]
     },
     {
@@ -44665,7 +44684,9 @@
         "Owner-ledger reconciliation for legacy accepted Source owner markers: the address plan already carried accepted owner metadata before strict SOURCE_OWNERS link enforcement; this record links that accepted owner scope without adding data, functional, or byte evidence.",
         "HudUiOptionsPanelOverlayOwner owner data is the complete 8-byte zero-initialized global g_HudUiOptionsPanelOverlayOwner at 0x4e5e08; source docblock and VC5 data-symbol evidence in hud_ui_options_panel_overlay_owner_static_lifecycle passed with zero unmasked mismatches.",
         "Focused functional verification passed for 0x40d070, 0x40d080, 0x40d0a0, and 0x40d1c0 in the same worker pass.",
-        "Data-symbol byte evidence exists for g_HudUiOptionsPanelOverlayOwner, but code/function S promotion remains globally deferred while authored owner/data blockers remain."
+        "Data-symbol byte evidence exists for g_HudUiOptionsPanelOverlayOwner, but code/function S promotion remains globally deferred while authored owner/data blockers remain.",
+        "dialog-host inheritance/source model not recovered; previous typed vtable-slot wrappers compiled as virtual self-dispatch, so concrete class owner is not source-faithful yet",
+        "source model restored: concrete dialog-host states inherit the recovered 0x8 RecoilStateDialogHost base, with shared OnWndActivate/OnUpdateShouldQuit/OnDeactivate/OnSuspend hooks and inherited offset-4 dialog pointer; final build map/vtables show concrete states using RecoilStateDialogHost shared functions"
       ]
     },
     {

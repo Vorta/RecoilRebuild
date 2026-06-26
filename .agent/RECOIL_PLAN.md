@@ -20937,7 +20937,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: subsystem; Parent: render_video.zvideo_dd_primary_sw_blit; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: zVideo_dd::BltSwToPrimaryRect;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd_blt_sw_to_primary_rect;
@@ -35918,119 +35918,119 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x40bc20:
   - [✅] Reconstructed (Name: HudCmdDialogState::StaticInitAndRegisterAtExit)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: HudCmdDialogState; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: HudCmdDialogState; State: parent-pending)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: HudCmdDialogState::StaticInitAndRegisterAtExit;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_dialog_state_static_init_and_register_at_exit;
     - Group: ui.zhud;
-    - Model: source-faithful;
-    - Blocker: tier S deferred by global authored owner/data gate policy
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x40bc30:
   - [✅] Reconstructed (Name: HudCmdDialogState::StaticInit)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: HudCmdDialogState; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: HudCmdDialogState; State: parent-pending)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: HudCmdDialogState::StaticInit;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_dialog_state_static_init;
     - Group: ui.zhud;
-    - Model: source-faithful;
-    - Blocker: tier S deferred by global authored owner/data gate policy
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x40bc40:
   - [✅] Reconstructed (Name: HudCmdDialogState::RegisterAtExit)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: HudCmdDialogState; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: HudCmdDialogState; State: parent-pending)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: HudCmdDialogState::RegisterAtExit;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_dialog_state_register_at_exit;
     - Group: ui.zhud;
-    - Model: source-faithful;
-    - Blocker: tier S deferred by global authored owner/data gate policy
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x40bc50:
   - [✅] Reconstructed (Name: HudCmdDialogState::AtExitDestructor)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: HudCmdDialogState; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: HudCmdDialogState; State: parent-pending)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: HudCmdDialogState::AtExitDestructor;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_dialog_state_at_exit_destructor;
     - Group: ui.zhud;
-    - Model: source-faithful;
-    - Blocker: tier S deferred by global authored owner/data gate policy
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x40bc60:
   - [✅] Reconstructed (Name: HudCmdDialogState::Constructor)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: HudCmdDialogState; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: HudCmdDialogState; State: parent-pending)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: HudCmdDialogState::Constructor;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_dialog_state_constructor;
     - Group: ui.zhud;
-    - Model: source-faithful;
-    - Blocker: tier S deferred by global authored owner/data gate policy
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x40bc90:
   - [☑️] Reconstructed (Name: HudCmdDialogState::DestructorCore)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: HudCmdDialogState; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: HudCmdDialogState; State: parent-pending)
   - [❎] Data reimplemented
-  - [✅] Reimplemented [S]
+  - [✅] Reimplemented [F]
     - Name: HudCmdDialogState::DestructorCore;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_dialog_state_destructor_core;
     - Group: ui.zhud;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x40bcf0:
   - [✅] Reconstructed (Name: HudCmdDialogState::OnTryBecomeCurrent)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: HudCmdDialogState; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: HudCmdDialogState; State: parent-pending)
   - [❎] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: HudCmdDialogState::OnTryBecomeCurrent;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_dialog_state_on_try_become_current;
     - Group: ui.zhud;
-    - Model: source-faithful;
-    - Blocker: tier S remains open: no VC5 verification manifest currently covers 0x40bcf0
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x40bd60:
   - [✅] Reconstructed (Name: HudCmdDialogState::OnDeactivate)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: HudCmdDialogState; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: HudCmdDialogState; State: parent-pending)
   - [❎] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: HudCmdDialogState::OnDeactivate;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_dialog_state_on_deactivate;
     - Group: ui.zhud;
-    - Model: source-faithful;
-    - Blocker: tier S remains open: no VC5 verification manifest currently covers 0x40bd60
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x40bda0:
   - [✅] Reconstructed (Name: HudCmdDialogState::QueueEnter)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: HudCmdDialogState; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: HudCmdDialogState; State: parent-pending)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: HudCmdDialogState::QueueEnter;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_dialog_state_queue_enter;
     - Group: ui.zhud;
-    - Model: source-faithful;
-    - Blocker: tier S deferred by global authored owner/data gate policy
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x40be00:
   - [✅] Reconstructed (Name: HudCmdBinding::DestroyRange)
@@ -36433,67 +36433,67 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x40d070:
   - [✅] Reconstructed (Name: HudUiOptionsPanelOverlayOwner::StaticInitAndRegisterAtExit)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: HudUiOptionsPanelOverlayOwner; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: HudUiOptionsPanelOverlayOwner; State: parent-pending)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: HudUiOptionsPanelOverlayOwner::StaticInitAndRegisterAtExit;
     - File: src/Battlesport/hud.cpp;
     - Target: hud_ui_options_panel_overlay_owner_static_init_and_register_at_exit;
     - Group: ui.zhud;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x40d080:
   - [✅] Reconstructed (Name: HudUiOptionsPanelOverlayOwner::StaticInit)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: HudUiOptionsPanelOverlayOwner; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: HudUiOptionsPanelOverlayOwner; State: parent-pending)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: HudUiOptionsPanelOverlayOwner::StaticInit;
     - File: src/Battlesport/hud.cpp;
     - Target: hud_ui_options_panel_overlay_owner_static_init;
     - Group: ui.zhud;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x40d090:
   - [✅] Reconstructed (Name: HudUiOptionsPanelOverlayOwner::RegisterAtExit)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: HudUiOptionsPanelOverlayOwner; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: HudUiOptionsPanelOverlayOwner; State: parent-pending)
   - [❎] Data reimplemented
-  - [✅] Reimplemented [S]
+  - [✅] Reimplemented [F]
     - Name: HudUiOptionsPanelOverlayOwner::RegisterAtExit;
     - File: src/Battlesport/hud.cpp;
     - Target: hud_ui_options_panel_overlay_owner_register_at_exit;
     - Group: ui.zhud;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x40d0a0:
   - [✅] Reconstructed (Name: HudUiOptionsPanelOverlayOwner::AtExitDestructor)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: HudUiOptionsPanelOverlayOwner; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: HudUiOptionsPanelOverlayOwner; State: parent-pending)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: HudUiOptionsPanelOverlayOwner::AtExitDestructor;
     - File: src/Battlesport/hud.cpp;
     - Target: hud_ui_options_panel_overlay_owner_at_exit_destructor;
     - Group: ui.zhud;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x40d0b0:
   - [✅] Reconstructed (Name: HudUiOptionsPanelOverlayOwner::Constructor)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: HudUiOptionsPanelOverlayOwner; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: HudUiOptionsPanelOverlayOwner; State: parent-pending)
   - [❎] Data reimplemented
-  - [✅] Reimplemented [S]
+  - [✅] Reimplemented [F]
     - Name: HudUiOptionsPanelOverlayOwner::Constructor;
     - File: src/Battlesport/hud.cpp;
     - Target: hud_ui_options_panel_overlay_owner_constructor;
     - Group: ui.zhud;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x40d0c0:
   - [✅] Reconstructed (Name: HudUiOptionsPanelOverlayOwner::ScalarDeletingDestructor)
@@ -36502,28 +36502,28 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x40d150:
   - [☑️] Reconstructed (Name: HudUiOptionsPanelOverlayOwner::OnTryBecomeCurrent)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: HudUiOptionsPanelOverlayOwner; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: HudUiOptionsPanelOverlayOwner; State: parent-pending)
   - [❎] Data reimplemented
-  - [✅] Reimplemented [S]
+  - [✅] Reimplemented [F]
     - Name: HudUiOptionsPanelOverlayOwner::OnTryBecomeCurrent;
     - File: src/Battlesport/hud.cpp;
     - Target: hud_ui_options_panel_overlay_owner_on_try_become_current;
     - Group: ui.zhud;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x40d1c0:
   - [✅] Reconstructed (Name: HudUiOptionsPanelOverlayOwner::QueueEnter)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: HudUiOptionsPanelOverlayOwner; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: HudUiOptionsPanelOverlayOwner; State: parent-pending)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: HudUiOptionsPanelOverlayOwner::QueueEnter;
     - File: src/Battlesport/hud.cpp;
     - Target: hud_ui_options_panel_overlay_owner_queue_enter;
     - Group: ui.zhud;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x40d220:
   - [☑️] Reconstructed (Name: HudUiListMenuEntry::CompareSortKey)
@@ -37181,93 +37181,93 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x41c560:
   - [✅] Reconstructed (Name: HudUiNewGamePanelOverlayOwner::OnTryBecomeCurrent)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: HudUiNewGamePanelOverlayOwner; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: HudUiNewGamePanelOverlayOwner; State: parent-pending)
   - [❎] Data reimplemented
-  - [✅] Reimplemented [S]
+  - [✅] Reimplemented [F]
     - Name: HudUiNewGamePanelOverlayOwner::OnTryBecomeCurrent;
     - File: src/Battlesport/hud.cpp;
     - Target: hud_ui_new_game_panel_overlay_owner_on_try_become_current;
     - Group: ui.zhud;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x41c5e0:
   - [✅] Reconstructed (Name: HudUiNewGamePanelOverlayOwner::StaticInitAndRegisterAtExit)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: HudUiNewGamePanelOverlayOwner; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: HudUiNewGamePanelOverlayOwner; State: parent-pending)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: HudUiNewGamePanelOverlayOwner::StaticInitAndRegisterAtExit;
     - File: src/Battlesport/hud.cpp;
     - Target: hud_ui_new_game_panel_overlay_owner_lifecycle;
     - Group: ui.zhud;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x41c5f0:
   - [✅] Reconstructed (Name: HudUiNewGamePanelOverlayOwner::StaticInit)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: HudUiNewGamePanelOverlayOwner; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: HudUiNewGamePanelOverlayOwner; State: parent-pending)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: HudUiNewGamePanelOverlayOwner::StaticInit;
     - File: src/Battlesport/hud.cpp;
     - Target: hud_ui_new_game_panel_overlay_owner_lifecycle;
     - Group: ui.zhud;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x41c630:
   - [✅] Reconstructed (Name: HudUiNewGamePanelOverlayOwner::Destructor)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: HudUiNewGamePanelOverlayOwner; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: HudUiNewGamePanelOverlayOwner; State: parent-pending)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: HudUiNewGamePanelOverlayOwner::~HudUiNewGamePanelOverlayOwner;
     - File: src/Battlesport/hud.cpp;
     - Target: hud_ui_new_game_panel_overlay_owner_lifecycle;
     - Group: ui.zhud;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x41c6a0:
   - [✅] Reconstructed (Name: HudUiNewGamePanelOverlayOwner::RegisterAtExit)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: HudUiNewGamePanelOverlayOwner; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: HudUiNewGamePanelOverlayOwner; State: parent-pending)
   - [❎] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: HudUiNewGamePanelOverlayOwner::RegisterAtExit;
     - File: src/Battlesport/hud.cpp;
     - Target: hud_ui_new_game_panel_overlay_owner_lifecycle;
     - Group: ui.zhud;
-    - Model: source-faithful;
-    - Blocker: tier S verification deferred; no VC5 byte target currently covers HudUiNewGamePanelOverlayOwner::RegisterAtExit
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x41c6b0:
   - [✅] Reconstructed (Name: HudUiNewGamePanelOverlayOwner::AtExitDestructor)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: HudUiNewGamePanelOverlayOwner; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: HudUiNewGamePanelOverlayOwner; State: parent-pending)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: HudUiNewGamePanelOverlayOwner::AtExitDestructor;
     - File: src/Battlesport/hud.cpp;
     - Target: hud_ui_new_game_panel_overlay_owner_lifecycle;
     - Group: ui.zhud;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x41c6c0:
   - [✅] Reconstructed (Name: HudUiNewGamePanelOverlayOwner::QueueEnter)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: HudUiNewGamePanelOverlayOwner; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: HudUiNewGamePanelOverlayOwner; State: parent-pending)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: HudUiNewGamePanelOverlayOwner::QueueEnter;
     - File: src/Battlesport/hud.cpp;
     - Target: hud_ui_new_game_panel_overlay_owner_queue_enter;
     - Group: ui.zhud;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x4b4390:
   - [✅] Reconstructed (Name: HudUiTextInput::AllocTextBuffer)
@@ -42665,119 +42665,119 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x41ab60:
   - [✅] Reconstructed (Name: HudUiNetGameSetupOverlayOwner::StaticInitAndRegisterAtExit)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: HudUiNetGameSetupOverlayOwner; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: HudUiNetGameSetupOverlayOwner; State: parent-pending)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: HudUiNetGameSetupOverlayOwner::StaticInitAndRegisterAtExit;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_net_game_setup_overlay_owner_static_init_and_register_at_exit;
     - Group: ui.zhud;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x41ab70:
   - [✅] Reconstructed (Name: HudUiNetGameSetupOverlayOwner::StaticInit)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: HudUiNetGameSetupOverlayOwner; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: HudUiNetGameSetupOverlayOwner; State: parent-pending)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: HudUiNetGameSetupOverlayOwner::StaticInit;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_net_game_setup_overlay_owner_static_init;
     - Group: ui.zhud;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x41ab80:
   - [✅] Reconstructed (Name: HudUiNetGameSetupOverlayOwner::RegisterAtExit)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: HudUiNetGameSetupOverlayOwner; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: HudUiNetGameSetupOverlayOwner; State: parent-pending)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: HudUiNetGameSetupOverlayOwner::RegisterAtExit;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_net_game_setup_overlay_owner_register_at_exit;
     - Group: ui.zhud;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x41ab90:
   - [✅] Reconstructed (Name: HudUiNetGameSetupOverlayOwner::AtExitDestructor)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: HudUiNetGameSetupOverlayOwner; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: HudUiNetGameSetupOverlayOwner; State: parent-pending)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: HudUiNetGameSetupOverlayOwner::AtExitDestructor;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_net_game_setup_overlay_owner_at_exit_destructor;
     - Group: ui.zhud;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x41aba0:
   - [✅] Reconstructed (Name: HudUiNetGameSetupOverlayOwner::Constructor)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: HudUiNetGameSetupOverlayOwner; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: HudUiNetGameSetupOverlayOwner; State: parent-pending)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: HudUiNetGameSetupOverlayOwner::Constructor;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_net_game_setup_overlay_owner_constructor;
     - Group: ui.zhud;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x41abe0:
   - [✅] Reconstructed (Name: HudUiNetGameSetupOverlayOwner::Destructor)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: HudUiNetGameSetupOverlayOwner; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: HudUiNetGameSetupOverlayOwner; State: parent-pending)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: HudUiNetGameSetupOverlayOwner::Destructor;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_net_game_setup_overlay_owner_destructor;
     - Group: ui.zhud;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x41ac50:
   - [✅] Reconstructed (Name: HudUiNetGameSetupOverlayOwner::OnTryBecomeCurrent)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: HudUiNetGameSetupOverlayOwner; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: HudUiNetGameSetupOverlayOwner; State: parent-pending)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: HudUiNetGameSetupOverlayOwner::OnTryBecomeCurrent;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_net_game_setup_overlay_owner_on_try_become_current;
     - Group: ui.zhud;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x41ad20:
   - [✅] Reconstructed (Name: HudUiNetGameSetupOverlayOwner::OnDeactivate)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: HudUiNetGameSetupOverlayOwner; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: HudUiNetGameSetupOverlayOwner; State: parent-pending)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: HudUiNetGameSetupOverlayOwner::OnDeactivate;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_net_game_setup_overlay_owner_on_deactivate;
     - Group: ui.zhud;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x41ad80:
   - [✅] Reconstructed (Name: HudUiNetGameSetupOverlayOwner::QueueEnterWithReconfigureFlag)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: HudUiNetGameSetupOverlayOwner; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: HudUiNetGameSetupOverlayOwner; State: parent-pending)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: HudUiNetGameSetupOverlayOwner::QueueEnterWithReconfigureFlag;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_net_game_setup_queue_enter_reconfigure;
     - Group: ui.zhud;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x41bd80:
   - [☑️] Reconstructed (Name: HudUiNetExitPanel::Constructor)
@@ -43384,15 +43384,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x40d0e0:
   - [✅] Reconstructed (Name: HudUiOptionsPanelOverlayOwner::DestructorCore)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: HudUiOptionsPanelOverlayOwner; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: HudUiOptionsPanelOverlayOwner; State: parent-pending)
   - [❎] Data reimplemented
-  - [✅] Reimplemented [S]
+  - [✅] Reimplemented [F]
     - Name: HudUiOptionsPanelOverlayOwner::DestructorCore;
     - File: src/Battlesport/hud.cpp;
     - Target: hud_ui_options_panel_overlay_owner_destructor_core;
     - Group: ui.zhud;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x415790:
   - [✅] Reconstructed (Name: HudUiBackgroundConfirmQuit::ScalarDeletingDestructor)
@@ -44943,12 +44943,12 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Provider-boundary (Kind: VC++ scalar deleting destructor; Name: RecoilStateBase::ScalarDeletingDestructor; Origin: compiler-generated scalar deleting destructor glue; BN assembly writes the base RecoilApp_IState vptr constant, tests flags bit 0, optionally calls operator delete, returns this; File: external; Target: recoil_state_base_scalar_deleting_destructor; Group: app.recoil_state_base)
 
 - 0x408f50:
-  - [✅] Reconstructed (Name: RecoilStateDialogHost::OnWndActivate)
+  - [✅] Reconstructed (Name: RecoilStateDialogHost::OnSuspend)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: class; Parent: RecoilStateDialogHost; State: implemented)
   - [❎] Data reimplemented
   - [✅] Reimplemented [S]
-    - Name: RecoilStateDialogHost::OnWndActivate;
+    - Name: RecoilStateDialogHost::OnSuspend;
     - File: src/GameZRecoil/RecoilApp/RecoilStateDialogHost.cpp;
     - Target: recoil_state_dialog_host;
     - Group: app.recoil_state_base;
@@ -44975,67 +44975,67 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x406e90:
   - [☑️] Reconstructed (Name: RecoilStateCheatCode::StaticInitAndRegisterAtExit)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: RecoilStateCheatCode; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: RecoilStateCheatCode; State: parent-pending)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: RecoilStateCheatCode::StaticInitAndRegisterAtExit;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_cheat_code_static_init_and_register_at_exit;
     - Group: app.recoil_state_base;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x406ea0:
   - [✅] Reconstructed (Name: RecoilStateCheatCode::ConstructGlobal)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: legacy.app_shell.class_recoilstatecheatcode; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: legacy.app_shell.class_recoilstatecheatcode; State: parent-pending)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: RecoilStateCheatCode::ConstructGlobal;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_cheat_code_construct_global;
     - Group: app.recoil_state_base;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x406eb0:
   - [✅] Reconstructed (Name: RecoilStateCheatCode::StaticInit)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: RecoilStateCheatCode; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: RecoilStateCheatCode; State: parent-pending)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: RecoilStateCheatCode::StaticInit;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_cheat_code_static_init;
     - Group: app.recoil_state_base;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x406ec0:
   - [☑️] Reconstructed (Name: RecoilStateCheatCode::AtExitDestructor)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: RecoilStateCheatCode; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: RecoilStateCheatCode; State: parent-pending)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: RecoilStateCheatCode::AtExitDestructor;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_cheat_code_at_exit_destructor;
     - Group: app.recoil_state_base;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x406ed0:
   - [✅] Reconstructed (Name: RecoilStateCheatCode::Constructor)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: RecoilStateCheatCode; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: RecoilStateCheatCode; State: parent-pending)
   - [❎] Data reimplemented
-  - [✅] Reimplemented [S]
+  - [✅] Reimplemented [F]
     - Name: RecoilStateCheatCode::Constructor;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_cheat_code_constructor;
     - Group: app.recoil_state_base;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x406ee0:
   - [✅] Reconstructed (Name: RecoilStateCheatCode::ScalarDeletingDestructor)
@@ -45044,41 +45044,41 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x406f00:
   - [☑️] Reconstructed (Name: RecoilStateCheatCode::Destructor)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: RecoilStateCheatCode; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: RecoilStateCheatCode; State: parent-pending)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: RecoilStateCheatCode::Destructor;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_cheat_code_destructor;
     - Group: app.recoil_state_base;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x406f60:
   - [✅] Reconstructed (Name: RecoilStateCheatCode::OnTryBecomeCurrent)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: RecoilStateCheatCode; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: RecoilStateCheatCode; State: parent-pending)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: RecoilStateCheatCode::OnTryBecomeCurrent;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_cheat_code_on_try_become_current;
     - Group: app.recoil_state_base;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x407010:
   - [☑️] Reconstructed (Name: RecoilStateCheatCode::OnDeactivate)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: RecoilStateCheatCode; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: RecoilStateCheatCode; State: parent-pending)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: RecoilStateCheatCode::OnDeactivate;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_cheat_code_on_deactivate;
     - Group: app.recoil_state_base;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x409990:
   - [✅] Reconstructed (Name: RecoilStateCredits::Constructor)
@@ -45094,14 +45094,14 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Blocker: none
 
 - 0x4099a0:
-  - [✅] Reconstructed (Name: RecoilStateCredits::OnWndActivate)
+  - [✅] Reconstructed (Name: RecoilStateDialogHost::OnWndActivate)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: RecoilStateBase; State: implemented)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateDialogHost; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
-    - Name: RecoilStateCredits::OnWndActivate;
-    - File: src/Battlesport/RecoilStateCredits.cpp;
-    - Target: recoil_state_credits_on_wnd_activate;
+  - [✅] Reimplemented [S]
+    - Name: RecoilStateDialogHost::OnWndActivate;
+    - File: src/GameZRecoil/RecoilApp/RecoilStateDialogHost.cpp;
+    - Target: recoil_state_dialog_host_on_wnd_activate;
     - Group: app.recoil_state_base;
     - Model: source-faithful;
     - Blocker: none
@@ -45109,25 +45109,25 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x409a60:
   - [☑️] Reconstructed (Name: RecoilStateCredits::OnTryBecomeCurrent)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: RecoilStateCredits; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: RecoilStateCredits; State: parent-pending)
   - [❎] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: RecoilStateCredits::OnTryBecomeCurrent;
     - File: src/Battlesport/RecoilStateCredits.cpp;
     - Target: recoil_state_credits_on_try_become_current;
     - Group: app.recoil_state_base;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x409ad0:
-  - [✅] Reconstructed (Name: RecoilStateCredits::OnDeactivate)
+  - [✅] Reconstructed (Name: RecoilStateDialogHost::OnDeactivate)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: RecoilStateBase; State: implemented)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateDialogHost; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
-    - Name: RecoilStateCredits::OnDeactivate;
-    - File: src/Battlesport/RecoilStateCredits.cpp;
-    - Target: recoil_state_credits_on_deactivate;
+  - [✅] Reimplemented [S]
+    - Name: RecoilStateDialogHost::OnDeactivate;
+    - File: src/GameZRecoil/RecoilApp/RecoilStateDialogHost.cpp;
+    - Target: recoil_state_dialog_host_on_deactivate;
     - Group: app.recoil_state_base;
     - Model: source-faithful;
     - Blocker: none
@@ -45148,184 +45148,184 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x415810:
   - [✅] Reconstructed (Name: RecoilStateConfirmQuit::StaticInitAndRegisterAtExit)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: RecoilStateConfirmQuit; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: RecoilStateConfirmQuit; State: parent-pending)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: RecoilStateConfirmQuit::StaticInitAndRegisterAtExit;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_confirm_quit_static_init_thunks;
     - Group: app.recoil_state_base;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x415820:
   - [✅] Reconstructed (Name: RecoilStateConfirmQuit::StaticInit)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: RecoilStateConfirmQuit; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: RecoilStateConfirmQuit; State: parent-pending)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: RecoilStateConfirmQuit::StaticInit;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_confirm_quit_static_init_thunks;
     - Group: app.recoil_state_base;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x415830:
   - [✅] Reconstructed (Name: RecoilStateConfirmQuit::RegisterAtExit)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: RecoilStateConfirmQuit; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: RecoilStateConfirmQuit; State: parent-pending)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: RecoilStateConfirmQuit::RegisterAtExit;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_confirm_quit_static_init_thunks;
     - Group: app.recoil_state_base;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x415840:
   - [✅] Reconstructed (Name: RecoilStateConfirmQuit::AtExitDestructor)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: RecoilStateConfirmQuit; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: RecoilStateConfirmQuit; State: parent-pending)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: RecoilStateConfirmQuit::AtExitDestructor;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_confirm_quit_static_init_thunks;
     - Group: app.recoil_state_base;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x415850:
   - [✅] Reconstructed (Name: RecoilStateConfirmQuit::Constructor)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: RecoilStateConfirmQuit; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: RecoilStateConfirmQuit; State: parent-pending)
   - [❎] Data reimplemented
-  - [✅] Reimplemented [S]
+  - [✅] Reimplemented [F]
     - Name: RecoilStateConfirmQuit::Constructor;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_confirm_quit_destructors;
     - Group: app.recoil_state_base;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x415880:
   - [☑️] Reconstructed (Name: RecoilStateConfirmQuit::Destructor)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: RecoilStateConfirmQuit; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: RecoilStateConfirmQuit; State: parent-pending)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: RecoilStateConfirmQuit::~RecoilStateConfirmQuit;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_confirm_quit_destructor;
     - Group: app.recoil_state_base;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x4158f0:
   - [☑️] Reconstructed (Name: RecoilStateConfirmQuit::OnTryBecomeCurrent)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: RecoilStateConfirmQuit; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: RecoilStateConfirmQuit; State: parent-pending)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: RecoilStateConfirmQuit::OnTryBecomeCurrent;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_confirm_quit_on_try_become_current;
     - Group: app.recoil_state_base;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x415960:
   - [✅] Reconstructed (Name: RecoilStateConfirmQuit::OnDeactivate)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: RecoilStateConfirmQuit; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: RecoilStateConfirmQuit; State: parent-pending)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: RecoilStateConfirmQuit::OnDeactivate;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_confirm_quit_on_deactivate;
     - Group: app.recoil_state_base;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x4159b0:
   - [✅] Reconstructed (Name: RecoilStateConfirmQuit::QueueEnter)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: RecoilStateConfirmQuit; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: RecoilStateConfirmQuit; State: parent-pending)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: RecoilStateConfirmQuit::QueueEnter;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_confirm_quit_destructors;
     - Group: app.recoil_state_base;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x408d20:
   - [✅] Reconstructed (Name: RecoilStateControls::StaticInitAndRegisterAtExit)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: RecoilStateControls; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: RecoilStateControls; State: parent-pending)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: RecoilStateControls::StaticInitAndRegisterAtExit;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_controls_lifecycle;
     - Group: app.recoil_state_base;
-    - Model: source-faithful;
-    - Blocker: owner byte gate deferred for RecoilStateControls class
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x408d30:
   - [✅] Reconstructed (Name: RecoilStateControls::StaticInit)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: RecoilStateControls; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: RecoilStateControls; State: parent-pending)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: RecoilStateControls::StaticInit;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_controls_lifecycle;
     - Group: app.recoil_state_base;
-    - Model: source-faithful;
-    - Blocker: owner byte gate deferred for RecoilStateControls class
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x408d40:
   - [✅] Reconstructed (Name: RecoilStateControls::RegisterAtExit)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: RecoilStateControls; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: RecoilStateControls; State: parent-pending)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: RecoilStateControls::RegisterAtExit;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_controls_lifecycle;
     - Group: app.recoil_state_base;
-    - Model: source-faithful;
-    - Blocker: owner byte gate deferred for RecoilStateControls class
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x408d50:
   - [✅] Reconstructed (Name: RecoilStateControls::AtExitDestructor)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: RecoilStateControls; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: RecoilStateControls; State: parent-pending)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: RecoilStateControls::AtExitDestructor;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_controls_lifecycle;
     - Group: app.recoil_state_base;
-    - Model: source-faithful;
-    - Blocker: owner byte gate deferred for RecoilStateControls class
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x408d60:
   - [✅] Reconstructed (Name: RecoilStateControls::Constructor)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: RecoilStateControls; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: RecoilStateControls; State: parent-pending)
   - [❎] Data reimplemented
-  - [✅] Reimplemented [S]
+  - [✅] Reimplemented [F]
     - Name: RecoilStateControls::Constructor;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_controls_lifecycle;
     - Group: app.recoil_state_base;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x408d70:
   - [✅] Reconstructed (Name: RecoilStateControls::ScalarDeletingDestructor)
@@ -45334,67 +45334,67 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x408d90:
   - [☑️] Reconstructed (Name: RecoilStateControls::Destructor)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: RecoilStateControls; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: RecoilStateControls; State: parent-pending)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: RecoilStateControls::Destructor;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_controls_lifecycle;
     - Group: app.recoil_state_base;
-    - Model: source-faithful;
-    - Blocker: owner byte gate deferred for RecoilStateControls class
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x408df0:
   - [☑️] Reconstructed (Name: RecoilStateControls::OnTryBecomeCurrent)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: RecoilStateControls; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: RecoilStateControls; State: parent-pending)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: RecoilStateControls::OnTryBecomeCurrent;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_controls_lifecycle;
     - Group: app.recoil_state_base;
-    - Model: source-faithful;
-    - Blocker: owner byte gate deferred for RecoilStateControls class
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x408ec0:
   - [✅] Reconstructed (Name: RecoilStateControls::OnDeactivate)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: RecoilStateControls; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: RecoilStateControls; State: parent-pending)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: RecoilStateControls::OnDeactivate;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_controls_lifecycle;
     - Group: app.recoil_state_base;
-    - Model: source-faithful;
-    - Blocker: owner byte gate deferred for RecoilStateControls class
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x408fa0:
   - [✅] Reconstructed (Name: RecoilStateControls::OnResume)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: RecoilStateControls; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: RecoilStateControls; State: parent-pending)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: RecoilStateControls::OnResume;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_controls_lifecycle;
     - Group: app.recoil_state_base;
-    - Model: source-faithful;
-    - Blocker: owner byte gate deferred for RecoilStateControls class
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x408ff0:
   - [✅] Reconstructed (Name: RecoilStateControls::QueueEnter)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: class; Parent: RecoilStateControls; State: implemented)
+  - [❌] Source owner (Kind: class; Parent: RecoilStateControls; State: parent-pending)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [F]
     - Name: RecoilStateControls::QueueEnter;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_controls_queue_enter;
     - Group: app.recoil_state_base;
-    - Model: source-faithful;
-    - Blocker: owner byte gate deferred for RecoilStateControls class
+    - Model: pending;
+    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
 
 - 0x409950:
   - [✅] Reconstructed (Name: RecoilStateCredits::StaticInitAndRegisterAtExit)

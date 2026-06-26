@@ -2,6 +2,7 @@
 #include "Battlesport/hud.h"
 
 #include "Battlesport/GameNet.h"
+#include "Battlesport/RecoilStateCredits.h"
 #include "Battlesport/pickup.h"
 #include "Battlesport/player.h"
 #include "Battlesport/zStr.h"
@@ -998,7 +999,9 @@ void HudUiNewGamePanelOverlayOwner::AtExitDestructor() {
  *
  * Purpose: initialize the typed new-game overlay app-state owner.
  */
-HudUiNewGamePanelOverlayOwner::HudUiNewGamePanelOverlayOwner() : m_panel(0) {}
+HudUiNewGamePanelOverlayOwner::HudUiNewGamePanelOverlayOwner() {
+    m_dialog = 0;
+}
 
 /**
  * Reimplements 0x41c630: HudUiNewGamePanelOverlayOwner::~HudUiNewGamePanelOverlayOwner.
@@ -1006,16 +1009,16 @@ HudUiNewGamePanelOverlayOwner::HudUiNewGamePanelOverlayOwner() : m_panel(0) {}
  * Purpose: Disable and destroy the active new-game panel owned by this app state.
  */
 HudUiNewGamePanelOverlayOwner::~HudUiNewGamePanelOverlayOwner() {
-    HudUiNewGamePanel *panel = m_panel;
+    HudUiNewGamePanel *panel = (HudUiNewGamePanel *)m_dialog;
     if (panel != 0) {
         panel->SetEnabled(0);
 
-        panel = m_panel;
+        panel = (HudUiNewGamePanel *)m_dialog;
         if (panel != 0) {
             panel->ScalarDeletingDestructor(1);
         }
 
-        m_panel = 0;
+        m_dialog = 0;
     }
 }
 
@@ -1025,9 +1028,10 @@ HudUiNewGamePanelOverlayOwner::~HudUiNewGamePanelOverlayOwner() {
  * Purpose: Create, enable, and retain the new-game panel for the overlay state.
  */
 int HudUiNewGamePanelOverlayOwner::OnTryBecomeCurrent() {
-    m_panel = new HudUiNewGamePanel;
-    m_panel->SyncIntensityFromDifficulty();
-    m_panel->SetEnabled(1);
+    HudUiNewGamePanel *const panel = new HudUiNewGamePanel;
+    m_dialog = panel;
+    panel->SyncIntensityFromDifficulty();
+    panel->SetEnabled(1);
     return 1;
 }
 
@@ -1209,7 +1213,7 @@ void HudUiOptionsPanelOverlayOwner::AtExitDestructor() {
  * Purpose: Initialize the options overlay owner with no active panel.
  */
 HudUiOptionsPanelOverlayOwner::HudUiOptionsPanelOverlayOwner() {
-    m_panel = 0;
+    m_dialog = 0;
 }
 
 /**
@@ -1218,16 +1222,16 @@ HudUiOptionsPanelOverlayOwner::HudUiOptionsPanelOverlayOwner() {
  * Purpose: Disable and destroy the active options dialog panel during owner teardown.
  */
 HudUiOptionsPanelOverlayOwner::~HudUiOptionsPanelOverlayOwner() {
-    HudOptionsDialog *panel = m_panel;
+    HudOptionsDialog *panel = (HudOptionsDialog *)m_dialog;
     if (panel != 0) {
         panel->SetEnabled(0);
 
-        panel = m_panel;
+        panel = (HudOptionsDialog *)m_dialog;
         if (panel != 0) {
             panel->ScalarDeletingDestructor(1);
         }
 
-        m_panel = 0;
+        m_dialog = 0;
     }
 }
 
@@ -1237,8 +1241,9 @@ HudUiOptionsPanelOverlayOwner::~HudUiOptionsPanelOverlayOwner() {
  * Purpose: Create and enable the options dialog panel when the overlay owner becomes current.
  */
 int HudUiOptionsPanelOverlayOwner::OnTryBecomeCurrent() {
-    m_panel = new HudOptionsDialog;
-    m_panel->SetEnabled(1);
+    HudOptionsDialog *const panel = new HudOptionsDialog;
+    m_dialog = panel;
+    panel->SetEnabled(1);
     return 1;
 }
 
@@ -1531,9 +1536,10 @@ int RecoilStateCheatCode::OnTryBecomeCurrent() {
 
     zSndSampleSet_InitByName(g_HudUiDialogSampleSetName);
 
-    m_dialog = new HudUiCheatCodeDialog;
+    HudUiCheatCodeDialog *const dialog = new HudUiCheatCodeDialog;
+    m_dialog = dialog;
 
-    m_dialog->SetEnabled(1);
+    dialog->SetEnabled(1);
     return 1;
 }
 
@@ -1545,7 +1551,7 @@ int RecoilStateCheatCode::OnTryBecomeCurrent() {
 void RecoilStateCheatCode::OnDeactivate() {
     CString commandString;
 
-    HudUiCheatCodeDialog *dialog = m_dialog;
+    HudUiCheatCodeDialog *dialog = (HudUiCheatCodeDialog *)m_dialog;
     if (dialog != 0) {
         commandString = dialog->cheatInputWidget.GetBuffer();
 
@@ -1556,7 +1562,7 @@ void RecoilStateCheatCode::OnDeactivate() {
         ((HudUiDialogController *)m_dialog)->BlitOwnedSurfaceToPrimary();
         zVideo::Dispatch_UnlockPrimarySurfaceState();
 
-        dialog = m_dialog;
+        dialog = (HudUiCheatCodeDialog *)m_dialog;
         if (dialog != 0) {
             dialog->ScalarDeletingDestructor(1);
         }
@@ -1584,7 +1590,7 @@ void RecoilStateCheatCode::OnDeactivate() {
  * Purpose: release any active cheat-code dialog and clear the app-state dialog pointer.
  */
 RecoilStateCheatCode::~RecoilStateCheatCode() {
-    HudUiCheatCodeDialog *dialog = m_dialog;
+    HudUiCheatCodeDialog *dialog = (HudUiCheatCodeDialog *)m_dialog;
     if (dialog != 0) {
         dialog->ScalarDeletingDestructor(1);
     }
@@ -1631,13 +1637,13 @@ void RecoilStateConfirmQuit::OnDeactivate() {
 
     zVideo::RunPostprocessOnPrimaryBuffer();
 
-    HudUiBackgroundConfirmQuit *dialog = m_dialog;
+    HudUiBackgroundConfirmQuit *dialog = (HudUiBackgroundConfirmQuit *)m_dialog;
     dialog->SetEnabled(0);
 
     ((HudUiDialogController *)m_dialog)->BlitOwnedSurfaceToPrimary();
     zVideo::Dispatch_UnlockPrimarySurfaceState();
 
-    dialog = m_dialog;
+    dialog = (HudUiBackgroundConfirmQuit *)m_dialog;
     if (dialog != 0) {
         dialog->ScalarDeletingDestructor(1);
     }
@@ -1652,11 +1658,11 @@ void RecoilStateConfirmQuit::OnDeactivate() {
  * Purpose: run the recovered RecoilStateConfirmQuit::~RecoilStateConfirmQuit teardown path.
  */
 RecoilStateConfirmQuit::~RecoilStateConfirmQuit() {
-    HudUiBackgroundConfirmQuit *dialog = m_dialog;
+    HudUiBackgroundConfirmQuit *dialog = (HudUiBackgroundConfirmQuit *)m_dialog;
     if (dialog != 0) {
         dialog->SetEnabled(0);
 
-        dialog = m_dialog;
+        dialog = (HudUiBackgroundConfirmQuit *)m_dialog;
         if (dialog != 0) {
             dialog->ScalarDeletingDestructor(1);
         }
@@ -1717,7 +1723,7 @@ RecoilStateControls::RecoilStateControls() {
  * Purpose: release the owned controls dialog and clear the dialog pointer.
  */
 RecoilStateControls::~RecoilStateControls() {
-    HudUiControlsDialog *dialog = m_dialog;
+    HudUiControlsDialog *dialog = (HudUiControlsDialog *)m_dialog;
     if (dialog != 0) {
         dialog->ScalarDeletingDestructor(1);
     }
@@ -1740,7 +1746,7 @@ int RecoilStateControls::OnTryBecomeCurrent() {
         m_dialog = dialog;
     }
 
-    HudUiControlsDialog *const dialog = m_dialog;
+    HudUiControlsDialog *const dialog = (HudUiControlsDialog *)m_dialog;
     dialog->SetEnabled(1);
 
     dialog->mouseOrJoystickSelector.SetSelectedIndex(zInp::GetJoystickOption());
@@ -1764,7 +1770,7 @@ void RecoilStateControls::OnDeactivate() {
         return;
     }
 
-    HudUiControlsDialog *const dialog = m_dialog;
+    HudUiControlsDialog *const dialog = (HudUiControlsDialog *)m_dialog;
     zInp::SetJoystickOption(
         zInput::DI_SetJoystickEnabled(dialog->mouseOrJoystickSelector.selectedIndex)
     );
@@ -1782,7 +1788,7 @@ void RecoilStateControls::OnDeactivate() {
     dialog->SetEnabled(0);
     ((HudUiDialogController *)m_dialog)->BlitOwnedSurfaceToPrimary();
 
-    HudUiControlsDialog *dialogToDelete = m_dialog;
+    HudUiControlsDialog *dialogToDelete = (HudUiControlsDialog *)m_dialog;
     if (dialogToDelete != 0) {
         dialogToDelete->ScalarDeletingDestructor(1);
     }
@@ -1806,7 +1812,7 @@ void RecoilStateControls::OnResume(
 
     zVideo::RunPostprocessOnPrimaryBuffer();
 
-    HudUiControlsDialog *const dialog = m_dialog;
+    HudUiControlsDialog *const dialog = (HudUiControlsDialog *)m_dialog;
     dialog->SetEnabled(1);
     ((HudUiContainer *)dialog)->InvalidateChildren();
     dialog->Update(0.0f);

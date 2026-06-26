@@ -19451,7 +19451,7 @@ extern "C" int zvideo_dd_blt_sw_to_primary_rect_smoke(void) {
         g_smokeDirectDrawSurface3LastBltSource == image.surface &&
         g_smokeDirectDrawSurface3LastBltFx == 0 &&
         g_smokeDirectDrawSurface3LastBltFlags ==
-            (DDBLT_WAIT | DDBLT_KEYSRCOVERRIDE | DDBLT_KEYSRC) &&
+            (DDBLT_WAIT | DDBLT_ASYNC | DDBLT_KEYSRC) &&
         g_smokeDirectDrawSurface3LastBltDstRectArg != 0 &&
         g_smokeDirectDrawSurface3LastBltDstRectValue.left == 0 &&
         g_smokeDirectDrawSurface3LastBltDstRectValue.top == 0 &&
@@ -19481,7 +19481,7 @@ extern "C" int zvideo_dd_blt_sw_to_primary_rect_smoke(void) {
         g_smokeDirectDrawSurface3UnlockCalls == 0 &&
         g_smokeDirectDrawSurface3LockCalls == 0 &&
         g_smokeDirectDrawSurface3LastBltFlags ==
-            (DDBLT_WAIT | DDBLT_KEYSRCOVERRIDE) &&
+            (DDBLT_WAIT | DDBLT_ASYNC) &&
         g_smokeDirectDrawSurface3LastBltDstRectArg != 0 &&
         g_smokeDirectDrawSurface3LastBltDstRectValue.left == 0 &&
         g_smokeDirectDrawSurface3LastBltDstRectValue.top == 0 &&

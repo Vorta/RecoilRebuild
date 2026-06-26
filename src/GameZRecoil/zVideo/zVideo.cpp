@@ -12541,8 +12541,8 @@ int __fastcall PresentDisplayModeSurface(
  * builds default source and destination rectangles, clips destination against
  * g_zVideo_PrimarySurfaceState width/height while mirroring offsets into the
  * source rect, unlocks/relocks the primary state if it was locked, calls
- * IDirectDrawSurface3::Blt with DDBLT_WAIT | DDBLT_KEYSRCOVERRIDE plus
- * optional DDBLT_KEYSRC, and reports line 0x159 on Blt failure.
+ * IDirectDrawSurface3::Blt with DDBLT_WAIT | DDBLT_ASYNC plus optional
+ * DDBLT_KEYSRC, and reports line 0x159 on Blt failure.
  */
 void __fastcall BltSwToPrimaryRect(
     zVidImagePartial *srcImage,
@@ -12551,14 +12551,16 @@ void __fastcall BltSwToPrimaryRect(
     zVidRect32 *dstRect
 ) {
     if (srcImage->surface == 0) {
-        const unsigned int caps =
-            g_zVideo_pSelectedHwApiDeviceRecord != 0 &&
-                    g_zVideo_pSelectedHwApiDeviceRecord->m_deviceFeatureFlags != 0
-                ? 0x20004000
-                : DDSCAPS_SYSTEMMEMORY;
-        if (Image_LazyCreateBackingSurface(
+        if (g_zVideo_pSelectedHwApiDeviceRecord->m_deviceFeatureFlags != 0) {
+            if (Image_LazyCreateBackingSurface(
+                srcImage,
+                0x20004000
+            ) == 0) {
+                return;
+            }
+        } else if (Image_LazyCreateBackingSurface(
             srcImage,
-            caps
+            DDSCAPS_SYSTEMMEMORY
         ) == 0) {
             return;
         }
@@ -12579,10 +12581,13 @@ void __fastcall BltSwToPrimaryRect(
         dstRectLocal = *dstRect;
     } else {
         dstRectLocal.left = 0;
-        dstRectLocal.top = 0;
         dstRectLocal.right = srcRectLocal.right - srcRectLocal.left;
+        dstRectLocal.top = 0;
         dstRectLocal.bottom = srcRectLocal.bottom - srcRectLocal.top;
     }
+
+    const DWORD bltFlags =
+        DDBLT_WAIT + DDBLT_ASYNC + (srcColorKeyEnable != 0 ? DDBLT_KEYSRC : 0);
 
     int clipped = zVideo_buff::ClipCoordToRange(
         &dstRectLocal.left,
@@ -12637,8 +12642,6 @@ void __fastcall BltSwToPrimaryRect(
         UnlockSurfaceState(&g_zVideo_PrimarySurfaceState);
     }
 
-    const DWORD bltFlags =
-        DDBLT_WAIT | DDBLT_KEYSRCOVERRIDE | (srcColorKeyEnable != 0 ? DDBLT_KEYSRC : 0);
     const HRESULT hresult =
         g_zVideo_PrimarySurfaceState.surf
             ->Blt(

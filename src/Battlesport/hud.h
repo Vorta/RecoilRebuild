@@ -5,6 +5,7 @@
 #include <windows.h>
 
 #include "Battlesport/RecoilApp.h"
+#include "GameZRecoil/RecoilApp/RecoilStateDialogHost.h"
 #include "GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.h"
 #include "GameZRecoil/include/zClass.h"
 #include "GameZRecoil/zHud/zhud_ui.h"
@@ -675,9 +676,7 @@ RECOIL_STATIC_ASSERT(
     0xb0d0
 );
 
-struct HudUiNewGamePanelOverlayOwner : RecoilApp_IState {
-    HudUiNewGamePanel *m_panel;
-
+struct HudUiNewGamePanelOverlayOwner : RecoilStateDialogHost {
     HudUiNewGamePanelOverlayOwner();
     static void StaticInitAndRegisterAtExit();
     static HudUiNewGamePanelOverlayOwner *StaticInit();
@@ -689,9 +688,7 @@ struct HudUiNewGamePanelOverlayOwner : RecoilApp_IState {
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNewGamePanelOverlayOwner) == 0x08);
 
-struct HudUiOptionsPanelOverlayOwner : RecoilApp_IState {
-    HudOptionsDialog *m_panel;
-
+struct HudUiOptionsPanelOverlayOwner : RecoilStateDialogHost {
     HudUiOptionsPanelOverlayOwner();
     static void StaticInitAndRegisterAtExit();
     static HudUiOptionsPanelOverlayOwner *StaticInit();
@@ -703,9 +700,7 @@ struct HudUiOptionsPanelOverlayOwner : RecoilApp_IState {
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiOptionsPanelOverlayOwner) == 0x08);
 
-struct RecoilStateConfirmQuit : RecoilApp_IState {
-    HudUiBackgroundConfirmQuit *m_dialog;
-
+struct RecoilStateConfirmQuit : RecoilStateDialogHost {
     RecoilStateConfirmQuit();
     static void StaticInitAndRegisterAtExit();
     static RecoilStateConfirmQuit *StaticInit();
@@ -718,9 +713,7 @@ struct RecoilStateConfirmQuit : RecoilApp_IState {
 };
 RECOIL_STATIC_ASSERT(sizeof(RecoilStateConfirmQuit) == 0x08);
 
-struct RecoilStateControls : RecoilApp_IState {
-    HudUiControlsDialog *m_dialog;
-
+struct RecoilStateControls : RecoilStateDialogHost {
     RecoilStateControls();
     static void StaticInitAndRegisterAtExit();
     static RecoilStateControls *StaticInit();
@@ -847,8 +840,7 @@ RECOIL_STATIC_ASSERT(
     0xabe4
 );
 
-struct RecoilStateCheatCode : RecoilApp_IState {
-    HudUiCheatCodeDialog *m_dialog;
+struct RecoilStateCheatCode : RecoilStateDialogHost {
     zVideoHalfResAdjustMode m_prevHalfResAdjustMode;
     RecoilPtr32 m_audioSnapshot; // zSndPlayHandleSnapshot*
 
