@@ -12,6 +12,9 @@ for function identity, types, markers, and acceptance state.
   assumptions guarded by `python tools/recoil.py audit provenance --strict`.
 - `data_owner_audit.md` - complete data-owner acceptance rules and the current
   compact data-gate ledger.
+- `final_executable_repro.md` - final VC5SP3 executable/DLL reproducibility
+  lane, including `final-repro`, final-build, PE/resource comparison, and
+  linked `.data` layout blockers.
 - `inlined_helpers.md` - compact ledger for likely original helpers and methods
   that were fully inlined by the retail compiler, with caller evidence and
   verification limits.

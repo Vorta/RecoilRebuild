@@ -100,6 +100,7 @@ python tools/recoil.py audit groups --summary --wip-limit 4
 python tools/recoil.py audit groups --binary messages --summary --wip-limit 4
 python tools/recoil.py owner audit --strict
 python tools/recoil.py owner next --lane binary
+python tools/recoil.py owner next --binary messages --lane binary
 python tools/recoil.py audit sections --strict
 python tools/recoil.py audit sections --pressure
 ```
@@ -112,10 +113,12 @@ default executable queue is the only open work. Skip a group only when current
 BN, plan, or source evidence proves it stale, contradicted, completed, or
 explicitly lower priority than another active group.
 
-Use current plan state, not stale notes. Run `plan next --lane binary` only
-when no active group exists for that target, active groups have been
-refreshed/pruned or proven unactionable, or the user explicitly directs new
-work:
+Use current owner and plan state, not stale notes. The source owner is the
+default binary-lane work unit; the address plan is the acceptance ledger and
+address rows are evidence anchors. Run `plan next --lane binary` only as an
+address-led fallback or inspection command when no active group/source-owner
+unit exists for that target, active groups have been refreshed/pruned or proven
+unactionable, or the user explicitly directs new work:
 
 ```powershell
 python tools/recoil.py plan next --lane binary
@@ -131,15 +134,27 @@ python tools/recoil.py owner show 0xNNNNNN
 python tools/recoil.py status 0xNNNNNN
 ```
 
-`plan next --lane binary` and `plan next --binary messages --lane binary` print
+`owner next --lane binary` prints global final executable work units first when
+present, then source-owner work units, including accepted owners that are still
+byte-blocked for tier `S`. `work_unit=final-repro` is the final executable
+reproducibility lane; `work_unit=final-data-layout` is its nested Recoil.exe
+linked `.data` layout blocker. Neither is a SOURCE_OWNERS record. `plan next
+--lane binary` and `plan next --binary messages --lane binary` print
 target-qualified `primary`, `secondary`, and `tertiary` ranked owner/work
-scopes. `audit sections --pressure` summarizes scheduling risk and spawnable
-capacity. `plan batch --lane binary` and
+scopes for address-led inspection. If a plan row lacks a concrete owner link,
+the scheduler reports `source-owner-discovery`; the parent must map or refresh
+the owner before spawning source-worker implementation. `audit sections
+--pressure` summarizes scheduling risk and spawnable capacity. `plan batch
+--lane binary` and
 `plan batch --binary messages --lane binary --spawnable-only` print
 section-isolated worker candidates for parallel scheduling; add
 `--spawnable-only` for live handoffs that exclude pathless or parent-narrowing
 blocks, and add `--json` or `--handoff-template` for machine-readable output or
 a parent batch card.
+The scheduler must not split a non-standalone source-owner work unit into
+source-file slices. If a source owner spans too many files or sections, the
+parent must verify/remap the owner boundary with evidence or schedule the
+complete owner.
 The parent may schedule Recoil.exe and `messages.dll` workers in the same batch
 only when BN database targets, sections, source paths, ledgers, and generated
 outputs do not overlap.
@@ -172,15 +187,17 @@ handoff. It should record the task kind, active group or address, evidence
 packets required and received, worker allocation, validation scope, and exit
 criteria.
 
-Source-worker handoffs must name the owner/source scope, selected section,
-address or group anchor, allowed and forbidden paths, evidence inputs, expected
-source model, and narrow validation commands. Do not assign overlapping
+Source-worker handoffs must name the complete source-owner work unit, selected
+section, address or group anchor, allowed and forbidden paths, evidence inputs,
+expected source model, and narrow validation commands. For tier `S`, the work
+unit is the whole linked owner; isolated function byte work is valid only for a
+true standalone owner proven by current owner evidence. Do not assign overlapping
 production source files, verification manifests, generated outputs, BN database
 state, or `.agent` ledgers.
 
 Minimum source-worker handoff fields:
 
-- Owner/source scope.
+- Complete source-owner work unit.
 - Section.
 - Anchor addresses or group.
 - Allowed write paths and forbidden paths.
@@ -250,12 +267,21 @@ required user input, true blockers, worker handoff decisions, validation
 failures, or final results. Any unavoidable interim update must be one short
 sentence with no evidence dump or command output unless requested.
 
-Normal binary-lane selection is owner-first after reconstruction/dependency
-readiness: resolve owner structure and touched data before isolated behavior or
-pure code/function tier `S` work. Data-entry `S` work follows the data entry's
+Normal binary-lane selection is source-owner-first after
+reconstruction/dependency readiness: resolve owner structure and touched data
+before isolated behavior or pure code/function tier `S` work. Tier `S` source
+passes must validate and reshape the complete linked owner: class/interface,
+source-file cluster, subsystem, callback/data owner, initialized-global data
+set, or true standalone leaf. Data-entry `S` work follows the data entry's
 local owner/data/byte gates. For the detailed owner/data gates, use
 `owner_led_workflow.md` and `data_owner_audit.md`; this checklist only names
 the launch commands.
+
+When working on final executable identity, start with:
+
+```powershell
+python tools/recoil.py audit final-repro --json
+```
 
 When the final candidate `Recoil.exe` exists and PE comparison reports `.data`
 section/layout drift, check final linked data before preserving or accepting

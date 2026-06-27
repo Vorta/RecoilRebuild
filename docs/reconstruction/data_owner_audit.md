@@ -36,6 +36,16 @@ data `Reimplemented [S]`:
 python tools/recoil.py audit final-data --include-plan --strict --json-out build/vc5-final/final_data_diff.json --plan-actions-json build/vc5-final/final_data_plan_actions.json
 ```
 
+Final executable reproducibility is tracked separately in
+`final_executable_repro.md`. When final-build artifacts exist and section
+deltas or plan-correlated layout contradictions remain,
+`python tools/recoil.py owner next --lane binary` and
+`python tools/recoil.py audit backlog --lane binary` report global work units.
+`work_unit=final-repro` is the whole final executable lane;
+`work_unit=final-data-layout` is the nested linked-data blocker. Neither is a
+SOURCE_OWNERS record and neither should be accepted by editing
+`.agent/SOURCE_OWNERS.json`.
+
 `--strict` returns nonzero when section deltas are present. For this audit that
 is evidence that final data byte identity is blocked, not necessarily a tool
 failure. `--include-plan` correlates final-data issues with current data `S`

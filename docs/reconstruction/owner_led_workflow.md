@@ -16,8 +16,37 @@ python tools/recoil.py owner link-data <owner-id> 0xNNNNNN --name <symbol>
 python tools/recoil.py owner set-gate <owner-id> <boundary|source|data|functional|byte> <pending|accepted|blocked|none|deferred> --evidence "..."
 python tools/recoil.py owner set-gates <owner-id> boundary=accepted source=accepted data=none --evidence "..."
 python tools/recoil.py owner audit --strict
+python tools/recoil.py owner relationships <owner-id-or-address> --json
 python tools/recoil.py owner next --lane binary
+python tools/recoil.py verify vc5 --owner <owner-id-or-address> --auto-chunk
 ```
+
+`owner next --lane binary` can also report global, non-ledger work units before
+source owners. `work_unit=final-repro` is the final executable
+reproducibility lane: final-build artifacts, executed summary state,
+PE/resource comparison commands, and embedded final-data blockers.
+`work_unit=final-data-layout` means the final linked `Recoil.exe` `.data`
+section/raw/virtual/zero-fill or map placement still contradicts retail. Both
+are first-class binary-lane targets, but neither is a source owner. Resolve
+them by fixing the final-build or ranked object/source-file layout blockers,
+not by adding synthetic owner records.
+
+Owner links have a normalized relationship model. Schema version 1 ledgers are
+derived from `anchors`, `member_addresses`, `data_addresses`, and
+`dependencies`; schema version 2 stores explicit `relationships` while keeping
+those legacy fields as compatibility mirrors. Use `owner relationships` to
+distinguish anchor-only addresses, primary function/data ownership, and
+owner-to-owner dependencies before changing gates or plan markers. Use
+`owner migrate-relationships --dry-run --json` to inspect a v2 conversion; do
+not apply it until validation findings are resolved and the migration is
+explicitly authorized.
+
+For tier `S` byte-gate work, run VC5 verification at source-owner scope with
+`verify vc5 --owner`. The command resolves the owner id or linked plan address,
+requires every linked authored function/data row to have exactly one VC5
+manifest item, and reports missing coverage before compiling. Explicit
+target/address VC5 selectors are for diagnostics or manifest development unless
+current evidence proves a true standalone owner.
 
 Owner gate meanings:
 
@@ -25,7 +54,7 @@ Owner gate meanings:
 - `source`: source-faithful owner model is implemented, not an address slice or scaffold.
 - `data`: all touched authored `.data`, `.rdata`, and BSS owner facts are reconstructed.
 - `functional`: current behavior evidence exists at the owner or accepted target level.
-- `byte`: tier `S` owner-level byte/provider ABI evidence. For function/code owners this may be `deferred` while global owner/data blockers remain; for data-owner entries it is accepted when the data-symbol byte and relocation identity evidence is accepted.
+- `byte`: tier `S` owner-level byte/provider ABI evidence. For function/code owners this may be `deferred` while global owner/data blockers remain; when tier `S` is in scope, `python tools/recoil.py verify vc5 --owner <owner-id-or-address> --auto-chunk` is the default verification command. For data-owner entries it is accepted when the data-symbol byte and relocation identity evidence is accepted.
 
 `plan set` now gates positive markers through this ledger. `Source owner ✅`
 requires a linked owner whose `boundary` and `source` gates are accepted, unless
@@ -62,3 +91,4 @@ current only when the owner ledger and current BN/source/build evidence agree.
 
 For complete data-owner acceptance requirements, use `data_owner_audit.md`.
 For launch sequencing, use `agent_launch_checklist.md`.
+For final executable lane details, use `final_executable_repro.md`.
