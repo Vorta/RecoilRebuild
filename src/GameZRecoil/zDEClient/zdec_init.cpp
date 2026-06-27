@@ -2494,9 +2494,7 @@ int __fastcall LoadConfigResources(
             g_zDEClient_ConfigReaderRoot,
             g_zDEClient_QuickSandNodeName
         );
-    if (quickSandNode == 0) {
-        g_zDEClient_QuickSandEnabled = 0;
-    } else {
+    if (quickSandNode != 0) {
         zReader::Node *const defaultTextureNode =
             zReader_GetNamedNode(
                 quickSandNode,
@@ -2511,7 +2509,7 @@ int __fastcall LoadConfigResources(
             if (textureCount > 0) {
                 g_zDEClient_QuickSandTexturePaths =
                     (char **)(malloc((size_t)(textureCount) * sizeof(char *)));
-                for (int i = 0; i < textureCount; ++i) {
+                for (int i = 0; i < g_zDEClient_QuickSandTextureCount; ++i) {
                     g_zDEClient_QuickSandTexturePaths[i] =
                         defaultTextureNode->value.nodes[i + 2].value.str;
                 }
@@ -2576,7 +2574,7 @@ int __fastcall LoadConfigResources(
 
             textureLoadPending = 1;
             g_zDEClient_QuickSandMaterial = zModel_Material::FindOrClone(&material);
-        } else if (textureCount == 1 && g_zDEClient_QuickSandTexturePaths != 0) {
+        } else if (textureCount == 1) {
             zImage::TexDir_FindOrAppendByPath(g_zDEClient_QuickSandTexturePaths[0]);
             textureLoadPending = 1;
             g_zDEClient_QuickSandMaterial = zModel_Material::FindOrClone(&material);
@@ -2613,6 +2611,8 @@ int __fastcall LoadConfigResources(
             g_zDEClient_QuickSandMaterialCycle = 0;
             g_zDEClient_QuickSandEnabled = 1;
         }
+    } else {
+        g_zDEClient_QuickSandEnabled = 0;
     }
 
     if (textureLoadPending != 0) {

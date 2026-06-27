@@ -169,7 +169,7 @@ zClass_LodDistanceState g_zClass_LodDistanceStateStack[4] = {0};
 }
 
 namespace {
-    const char *kClassSourceFile = "D:\\Proj\\GameZRecoil\\zClass\\Class.c";
+    const char kClassSourceFile[] = "D:\\Proj\\GameZRecoil\\zClass\\Class.c";
     const int kQueuedTreeBucket = 7;
     const int kTypeListInsertedFlag = 0x01;
     const int kTransformQueuedFlag = 0x02;
@@ -2072,13 +2072,31 @@ namespace zClass_Class {
         zClass_NodePartial * parent,
         zClass_NodePartial * child
     ) {
-        if (ValidateParentChildForSwitch(
-            parent,
-            child,
-            0x9f,
-            0xa0,
-            0xa1
-        ) != 0) {
+        if (parent == 0) {
+            zError::ReportOld(
+                0x400,
+                g_zClass_SourceFile_SwitchC,
+                0x9f,
+                "Null node pointer."
+            );
+            return 5;
+        }
+        if (child == 0) {
+            zError::ReportOld(
+                0x400,
+                g_zClass_SourceFile_SwitchC,
+                0xa0,
+                "Null node pointer."
+            );
+            return 5;
+        }
+        if (parent->classData == 0) {
+            zError::ReportOld(
+                0x400,
+                g_zClass_SourceFile_SwitchC,
+                0xa1,
+                "Null node class data pointer."
+            );
             return 5;
         }
 
@@ -2209,62 +2227,74 @@ namespace zClass_Class {
             return 5;
         }
 
+        int result;
         switch (parent->classId) {
-        case 1:
-            return zClass_Camera::gwCameraRemoveChild(
-                parent,
-                child
-            );
         case 2:
-            return zClass_World::RemoveChildAtGrid(
+            result = zClass_World::RemoveChildAtGrid(
                 parent,
                 child
             );
-        case 3:
-            return zClass::RemoveChildChecked(
-                parent,
-                child
-            );
-        case 4:
-            return zClass_Display::RemoveChild(
-                parent,
-                child
-            );
+            break;
         case 5:
-            return zClass_Object3D::RemoveChild(
+            result = zClass_Object3D::RemoveChild(
                 parent,
                 child
             );
-        case 6:
-            return zClass_Lod::RemoveChild(
-                parent,
-                child
-            );
-        case 7:
-            return zClass_Sequence::RemoveChild(
-                parent,
-                child
-            );
-        case 8:
-            return zClass_Animate::RemoveChild(
-                parent,
-                child
-            );
+            break;
         case 9:
-            return zClass_Light::RemoveChild(
+            result = zClass_Light::RemoveChild(
                 parent,
                 child
             );
+            break;
         case 10:
-            return zClass_Sound::RemoveChild(
+            result = zClass_Sound::RemoveChild(
                 parent,
                 child
             );
+            break;
+        case 1:
+            result = zClass_Camera::gwCameraRemoveChild(
+                parent,
+                child
+            );
+            break;
+        case 3:
+            result = zClass::RemoveChildChecked(
+                parent,
+                child
+            );
+            break;
+        case 4:
+            result = zClass_Display::RemoveChild(
+                parent,
+                child
+            );
+            break;
+        case 6:
+            result = zClass_Lod::RemoveChild(
+                parent,
+                child
+            );
+            break;
+        case 7:
+            result = zClass_Sequence::RemoveChild(
+                parent,
+                child
+            );
+            break;
+        case 8:
+            result = zClass_Animate::RemoveChild(
+                parent,
+                child
+            );
+            break;
         case 11:
-            return zClass_Class::RemoveChildValidated(
+            result = zClass_Class::RemoveChildValidated(
                 parent,
                 child
             );
+            break;
         default:
             sprintf(
                 g_zError_DebugMsgBuffer,
@@ -2276,6 +2306,8 @@ namespace zClass_Class {
             zError::EmitDebugBuffer(1);
             return 1;
         }
+
+        return result;
     }
 
     /**
@@ -2350,15 +2382,17 @@ namespace zClass_Class {
                 child,
                 parent
             );
-        } else {
-            for (int i = childIndex + 1; i < parent->listCountB; ++i) {
-                parent->listB[i - 1] = parent->listB[i];
+        }
+        if (childIndex >= 0) {
+            for (int i = childIndex; i < parent->listCountB - 1; ++i) {
+                parent->listB[i] = parent->listB[i + 1];
             }
             --parent->listCountB;
         }
 
         int parentIndex = -1;
-        for (int i_1261 = 0; i_1261 < child->listCountA; ++i_1261) {
+        const int parentCount = child->listCountA;
+        for (int i_1261 = 0; i_1261 < parentCount; ++i_1261) {
             if (child->listA[i_1261] == parent) {
                 parentIndex = i_1261;
                 break;
@@ -2366,8 +2400,8 @@ namespace zClass_Class {
         }
 
         if (parentIndex >= 0) {
-            for (int i = parentIndex + 1; i < child->listCountA; ++i) {
-                child->listA[i - 1] = child->listA[i];
+            for (int i = parentIndex; i < child->listCountA - 1; ++i) {
+                child->listA[i] = child->listA[i + 1];
             }
             --child->listCountA;
             if (child->listCountA == 1 && (parent->flags & kSingleParentFlag) != 0) {
@@ -2472,10 +2506,14 @@ namespace zClass_Class {
      * Purpose: validate node ownership and dispatch deletion by classId.
      */
     int __fastcall DeleteNodeByType(zClass_NodePartial * node) {
-        if (ReportNullNode(
-            0x231,
-            node
-        )) {
+        zClass_NodePartial * nodeValue = node;
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                kClassSourceFile,
+                0x231,
+                "Null node pointer."
+            );
             return 5;
         }
 
@@ -2484,25 +2522,31 @@ namespace zClass_Class {
         }
 
         switch (node->classId) {
-        case 0:
-            TryFreeNode(node);
-            return (int)((unsigned int)(node));
-        case 1:
-        case 3:
-        case 4:
         case 5:
-        case 6:
-        case 7:
-        case 11:
+            return zClass_Object3D::DeleteNode(node);
+        case 1:
             return zClass_Object3D::DeleteNode(node);
         case 2:
             return zClass_World::DeleteNode(node);
+        case 3:
+            return zClass_Object3D::DeleteNode(node);
+        case 4:
+            return zClass_Object3D::DeleteNode(node);
+        case 6:
+            return zClass_Object3D::DeleteNode(node);
+        case 7:
+            return zClass_Object3D::DeleteNode(node);
         case 8:
             return zClass_Animate::DeleteNode(node);
         case 9:
             return zClass_Light::DeleteNode(node);
         case 10:
             return zClass_Sound::DeleteNode(node);
+        case 11:
+            return zClass_Object3D::DeleteNode(node);
+        case 0:
+            TryFreeNode(node);
+            return (int)((unsigned int)(nodeValue));
         default:
             zError::ReportOld(
                 0x400,
@@ -2989,6 +3033,9 @@ namespace zClass_Node {
     /**
      * Reimplements 0x437e60: zClass_Node::SetContextRecursive
      * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * BN evidence: fastcall self/context, stack flagMask, callbackContext at
+     * 0x40, flags at 0x24, signed listCountB at 0x5c, listB at 0x60,
+     * recursive self-call only, and no global data references.
      * Purpose: assign a callback context and OR flag bits through a node
      * subtree using the zClass child-list links.
      */

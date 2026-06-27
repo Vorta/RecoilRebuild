@@ -6723,17 +6723,29 @@ inline HudUiTransitionTextPanel::HudUiTransitionTextPanel()
 }
 
 /**
- * Reimplements 0x4bb790: HudUiCompositePanel::ConstructorWithEntryCount.
+ * Reimplements 0x4bb790: HudUiCompositePanel::HudUiCompositePanel.
  * Purpose: initialize a composite panel and allocate its entry history vector.
+ *
+ * Evidence: BN retail 0x4bb790 constructs the HudUiPanel base, initializes the
+ * vector member, installs g_HudUiCompositePanel_FTable, builds a stack
+ * HudUiTransitionTextPanel template entry, resizes the entry vector, applies
+ * text "W", relayouts, and sets the panel visible. BN caller 0x403930 invokes
+ * this entry-count construction for HudUiBriefingRuntime::messagesPanel before
+ * constructing locatorPanels, matching a C++ member-initializer constructor.
+ * Reimplements 0x4bb790 as the recovered constructor symbol
+ * ??0HudUiCompositePanel@@QAE@H@Z.
  */
-HudUiCompositePanel * HudUiCompositePanel::ConstructorWithEntryCount(
+HudUiCompositePanel::HudUiCompositePanel(
     int entryCount
-) {
-    new (this) HudUiCompositePanel;
-
+)
+    : HudUiPanel(
+        0,
+        0,
+        0
+    ) {
+    activeEntryCount = 0;
     HudUiCompositePanelEntry templateEntry;
-    entryVector.InsertCopies(
-        entryVector.end,
+    entryVector.Resize(
         (unsigned int)(entryCount),
         &templateEntry
     );
@@ -6745,6 +6757,20 @@ HudUiCompositePanel * HudUiCompositePanel::ConstructorWithEntryCount(
     );
     ResizeEntryVectorAndRelayout(entryCount);
     SetVisible(1);
+}
+
+/**
+ * Original inline helper; no standalone retail function exists.
+ * Observed in current native smokes and reconstructed source call sites that
+ * predate the recovered entry-count constructor model; VC byte evidence for
+ * retail 0x4bb790 is now tied to HudUiCompositePanel::HudUiCompositePanel(int).
+ * Purpose: preserve the legacy source API while routing construction through
+ * the recovered member-initializer-capable constructor.
+ */
+HudUiCompositePanel * HudUiCompositePanel::ConstructorWithEntryCount(
+    int entryCount
+) {
+    new (this) HudUiCompositePanel(entryCount);
     return this;
 }
 

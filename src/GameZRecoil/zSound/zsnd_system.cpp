@@ -112,12 +112,13 @@ void ShutdownAtExit() {
     zSndFadeListNode *dispatchSentinel = g_zSndFadeDispatchListSentinel;
     zSndFadeListNode *node = dispatchSentinel->next;
     while (node != dispatchSentinel) {
-        zSndFadeListNode *outCursor = 0;
+        zSndFadeListNode *const deadNode = node;
+        zSndFadeListNode *outCursor;
+        node = node->next;
         DispatchFadeList()->DeleteNodeAndAdvanceCursor(
             &outCursor,
-            node
+            deadNode
         );
-        node = outCursor;
     }
 
     ::operator delete(dispatchSentinel);
@@ -132,17 +133,17 @@ void ShutdownAtExit() {
     zSndFadeListNode *activeSentinel = g_zSndFadeActiveListSentinel;
     node = activeSentinel->next;
     while (node != activeSentinel) {
-        zSndFadeListNode *const next = node->next;
-        node->prev->next = node->next;
-        node->next->prev = node->prev;
-        ::operator delete(node);
+        zSndFadeListNode *const deadNode = node;
+        node = node->next;
+        deadNode->prev->next = deadNode->next;
+        deadNode->next->prev = deadNode->prev;
+        ::operator delete(deadNode);
         /**
          * Reimplements data 0x56b3f8: g_zSndFadeActiveListCount.
          * Data: g_zSndFadeActiveListCount.
          * Purpose: track active fade-list node removal.
          */
         --g_zSndFadeActiveListCount;
-        node = next;
     }
 
     ::operator delete(activeSentinel);
@@ -291,23 +292,20 @@ extern "C" void __stdcall zSndFadeActiveList_TickAll(
          */
         zSndFadeListNode *const sentinel = g_zSndFadeActiveListSentinel;
         zSndFadeListNode *node = sentinel->next;
-        int nodeIsActive = (node == sentinel);
-        nodeIsActive = !nodeIsActive;
+        int nodeIsActive = !(node == sentinel);
         while (nodeIsActive != 0) {
             if (node->fadeEntry->TickAndMaybeDispatch(deltaTime) != 0) {
                 break;
             }
             node = node->next;
-            nodeIsActive = (node == sentinel);
-            nodeIsActive = !nodeIsActive;
+            nodeIsActive = !(node == sentinel);
         }
 
         bool nodeIsSentinel = (node == sentinel);
         if (!nodeIsSentinel) {
             zSndFadeListNode *write = node;
             zSndFadeListNode *read = node->next;
-            int readIsActive = (read == sentinel);
-            readIsActive = !readIsActive;
+            int readIsActive = !(read == sentinel);
             while (readIsActive != 0) {
                 if (read->fadeEntry->TickAndMaybeDispatch(deltaTime) == 0) {
                     zSndFadeEntry *const fadeEntry = read->fadeEntry;
@@ -316,14 +314,12 @@ extern "C" void __stdcall zSndFadeActiveList_TickAll(
                     savedWrite->fadeEntry = fadeEntry;
                 }
                 read = read->next;
-                readIsActive = (read == sentinel);
-                readIsActive = !readIsActive;
+                readIsActive = !(read == sentinel);
             }
             node = write;
         }
 
-        int deleteNode = (node == sentinel);
-        deleteNode = !deleteNode;
+        int deleteNode = !(node == sentinel);
         while (deleteNode != 0) {
             zSndFadeListNode *const deadNode = node;
             node = node->next;
@@ -336,8 +332,7 @@ extern "C" void __stdcall zSndFadeActiveList_TickAll(
              * Purpose: track active fade-list node deletion after compaction.
              */
             --g_zSndFadeActiveListCount;
-            deleteNode = (node == sentinel);
-            deleteNode = !deleteNode;
+            deleteNode = !(node == sentinel);
         }
     }
 }
@@ -351,11 +346,9 @@ void zSndFadeList::DeleteNodeAndAdvanceCursor(
     zSndFadeListNode **outCursor,
     zSndFadeListNode *node
 ) {
-    zSndFadeListNode *const previous = node->prev;
-    zSndFadeListNode *const next = node->next;
+    node->prev->next = node->next;
+    node->next->prev = node->prev;
     zSndFadeListNode *const outNext = node->next;
-    previous->next = next;
-    next->prev = previous;
     ::operator delete(node);
     --count;
     *outCursor = outNext;
@@ -437,19 +430,6 @@ extern "C" void __fastcall zSnd_Tick(
     }
 
     g_zSndLastVoiceMarkerIndex = markerIndex + 1;
-}
-
-/**
- * Reimplements 0x49f614: zSnd::TickWrapper.
- * Evidence: BN shows a 12-byte NOP range that falls through into 0x49f620,
- * and HLIL renders the wrapper as a tailcall to zSnd::Tick.
- * Purpose: preserve the retail fallthrough wrapper entry while forwarding the
- * skip-A3D-commit flag into zSnd::Tick.
- */
-extern "C" void __fastcall zSnd_TickWrapper(
-    int skipA3dCommit
-) {
-    zSnd_Tick(skipA3dCommit);
 }
 
 /**

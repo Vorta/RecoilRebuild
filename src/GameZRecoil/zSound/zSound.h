@@ -760,7 +760,6 @@ void __fastcall PushBack(zSndFadeEntry *fadeEntry);
 }
 extern "C" void __stdcall zSndFadeActiveList_TickAll(float deltaTime);
 extern "C" void __fastcall zSnd_Tick(int skipA3dCommit);
-extern "C" void __fastcall zSnd_TickWrapper(int skipA3dCommit);
 extern "C" int __fastcall zSndSystem_InitNamedSetsSyntax(
     zReader::Node *configRootNode
 );

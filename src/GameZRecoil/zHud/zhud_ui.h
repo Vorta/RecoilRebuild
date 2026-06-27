@@ -2166,6 +2166,39 @@ struct HudUiCompositePanelVector {
         unsigned int insertCount,
         const HudUiCompositePanelEntry *templateEntry
     );
+    /**
+     * Original inline helper; no standalone retail function exists. Observed
+     * in 0x4bb790 as the VC5 inlined vector resize path before the composite
+     * panel applies its placeholder glyph and relayout.
+     * Purpose: resize composite-panel entry storage using the recovered
+     * std::vector-style grow/shrink behavior.
+     */
+    void Resize(
+        unsigned int entryCount,
+        const HudUiCompositePanelEntry *templateEntry
+    ) {
+        const unsigned int oldCount =
+            begin != 0 ? (unsigned int)(end - begin) : 0;
+        if (oldCount < entryCount) {
+            InsertCopies(
+                end,
+                entryCount - oldCount,
+                templateEntry
+            );
+        } else if (entryCount < oldCount) {
+            HudUiCompositePanelEntry *const newEnd = begin + entryCount;
+            HudUiCompositePanelEntry *const destroyBegin =
+                HudUiCompositePanelEntry::ConstructorCopyRange(
+                    end,
+                    end,
+                    newEnd
+                );
+            for (HudUiCompositePanelEntry *entry = destroyBegin; entry != end; ++entry) {
+                entry->panel.ScalarDeletingDestructor(0);
+            }
+            end = destroyBegin;
+        }
+    }
 };
 
 struct HudUiCompositePanel : HudUiPanel {
@@ -2173,11 +2206,10 @@ struct HudUiCompositePanel : HudUiPanel {
     HudUiCompositePanelVector entryVector;
 
     /**
-     * Original inline helper; no standalone retail function exists.
-     * Observed in 0x4bb790 HudUiCompositePanel::ConstructorWithEntryCount.
-     * Purpose: install the composite-panel C++ object identity and clear its
-     * entry vector before the address-backed constructor fills the requested
-     * entries.
+     * Original inline constructor evidence: no standalone retail function
+     * exists; observed in retail 0x4bb790 before the entry-count constructor
+     * body installs the composite ftable and initializes entry history.
+     * Purpose: initialize the base panel slice and empty composite state.
      */
     HudUiCompositePanel()
         : HudUiPanel(
@@ -2187,6 +2219,13 @@ struct HudUiCompositePanel : HudUiPanel {
         ) {
         activeEntryCount = 0;
     }
+    /**
+     * Recovered original constructor form for retail 0x4bb790. BN caller
+     * 0x403930 constructs messagesPanel with entry count 25 before the
+     * locatorPanels array, which requires a member-initializer-capable
+     * constructor instead of a default construction plus later body call.
+     */
+    HudUiCompositePanel(int entryCount);
     HudUiCompositePanel * ConstructorWithEntryCount(int entryCount);
     virtual void SetPos(
         int x,

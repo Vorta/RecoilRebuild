@@ -28,12 +28,12 @@ namespace {
      * Purpose: clamp model-reference, color, and alpha inputs to the unit
      * interval used by object render state.
      */
-    float ClampUnit(float value) {
-        if (value < 0.0f) {
-            return 0.0f;
-        }
+    inline float ClampUnit(float value) {
         if (value > 1.0f) {
             return 1.0f;
+        }
+        if (value < 0.0f) {
+            return 0.0f;
         }
         return value;
     }
@@ -739,14 +739,38 @@ namespace zClass_Object3D {
         zClass_NodePartial * node,
         float alphaScale
     ) {
-        zClass_Object3DDataPartial *data = GetObject3DData(
-            node,
-            0x21f,
-            0x220,
-            0x221
-        );
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c",
+                0x21f,
+                "Null node pointer."
+            );
+            return 5;
+        }
+
+        zClass_Object3DDataPartial *data =
+            (zClass_Object3DDataPartial *)(node->classData);
         if (data == 0) {
-            return node != 0 && node->classData != 0 ? 3 : 5;
+            zError::ReportOld(
+                0x400,
+                "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c",
+                0x220,
+                "Null class data pointer"
+            );
+            return 5;
+        }
+
+        if (node->classId != kZClassNodeObject3D) {
+            zError::ReportOld(
+                0x400,
+                "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c",
+                0x221,
+                "Bad Class Found.\n Wanted (%d)\n Found (%d)",
+                node->classId,
+                kZClassNodeObject3D
+            );
+            return 3;
         }
 
         data->alphaScale = alphaScale;
@@ -763,14 +787,38 @@ namespace zClass_Object3D {
         zClass_NodePartial * node,
         float *outAlphaScale
     ) {
-        zClass_Object3DDataPartial *data = GetObject3DData(
-            node,
-            0x238,
-            0x239,
-            0x23a
-        );
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c",
+                0x238,
+                "Null node pointer."
+            );
+            return 5;
+        }
+
+        zClass_Object3DDataPartial *data =
+            (zClass_Object3DDataPartial *)(node->classData);
         if (data == 0) {
-            return node != 0 && node->classData != 0 ? 3 : 5;
+            zError::ReportOld(
+                0x400,
+                "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c",
+                0x239,
+                "Null class data pointer"
+            );
+            return 5;
+        }
+
+        if (node->classId != kZClassNodeObject3D) {
+            zError::ReportOld(
+                0x400,
+                "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c",
+                0x23a,
+                "Bad Class Found.\n Wanted (%d)\n Found (%d)",
+                node->classId,
+                kZClassNodeObject3D
+            );
+            return 3;
         }
 
         *outAlphaScale = data->alphaScale;
@@ -787,14 +835,38 @@ namespace zClass_Object3D {
         zClass_NodePartial * node,
         int lit
     ) {
-        zClass_Object3DDataPartial *data = GetObject3DData(
-            node,
-            0x254,
-            0x255,
-            0x256
-        );
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c",
+                0x254,
+                "Null node pointer."
+            );
+            return 5;
+        }
+
+        zClass_Object3DDataPartial *data =
+            (zClass_Object3DDataPartial *)(node->classData);
         if (data == 0) {
-            return node != 0 && node->classData != 0 ? 3 : 5;
+            zError::ReportOld(
+                0x400,
+                "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c",
+                0x255,
+                "Null class data pointer"
+            );
+            return 5;
+        }
+
+        if (node->classId != kZClassNodeObject3D) {
+            zError::ReportOld(
+                0x400,
+                "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c",
+                0x256,
+                "Bad Class Found.\n Wanted (%d)\n Found (%d)",
+                node->classId,
+                kZClassNodeObject3D
+            );
+            return 3;
         }
 
         if (lit != 0) {
@@ -1159,7 +1231,7 @@ zClass_Object3D_ModelRefLerpQueueState g_ModelRefLerpQueueState = {0};
 
 namespace zClass_Object3D_ModelRefLerpQueue {
     /**
-     * Reimplements 0x437fe4: zClass_Object3D_ModelRefLerpQueue::ClearGlobalState
+     * Reimplements 0x438000: zClass_Object3D_ModelRefLerpQueue::ClearGlobalState
      * (D:\Proj\GameZRecoil\zClass\Object3d.c).
      * Purpose: clear the global model-reference lerp queue head, tail, aux, and
      * count fields.
@@ -1212,10 +1284,13 @@ namespace zClass_Object3D_ModelRefLerpQueue {
         targetModelRef = ClampUnit(targetModelRef);
         task->targetModelRef = targetModelRef;
         startModelRef = ClampUnit(startModelRef);
-        task->currentModelRef = startModelRef;
-
         const float delta = targetModelRef - startModelRef;
-        task->modelRefDeltaPerSec = durationSec == 0.0f ? 99999997952.0f : delta / durationSec;
+        task->currentModelRef = startModelRef;
+        if (durationSec == 0.0f) {
+            task->modelRefDeltaPerSec = 99999997952.0f;
+        } else {
+            task->modelRefDeltaPerSec = delta / durationSec;
+        }
         if (delta < 0.0f) {
             task->targetModelRef = 1.0f - targetModelRef;
             task->invertModelRef = 1;
@@ -1282,36 +1357,41 @@ namespace zClass_Object3D_ModelRefLerpQueue {
                     );
                 }
 
-                zClass_Object3D_ModelRefLerpTask *const nextTask = task->next;
-                if (g_ModelRefLerpQueueState.count != 0) {
-                    zClass_Object3D_ModelRefLerpTask *prevTask = g_ModelRefLerpQueueState.head;
-                    if (task == prevTask) {
-                        --g_ModelRefLerpQueueState.count;
-                        g_ModelRefLerpQueueState.head = task->next;
-                        if (g_ModelRefLerpQueueState.head == 0) {
-                            g_ModelRefLerpQueueState.listAux = 0;
-                            g_ModelRefLerpQueueState.tail = 0;
-                        }
-                        ::operator delete(task);
-                    } else if (prevTask != 0) {
-                        while (prevTask != 0) {
-                            zClass_Object3D_ModelRefLerpTask *const prevNext = prevTask->next;
-                            if (prevNext == task) {
-                                --g_ModelRefLerpQueueState.count;
-                                prevTask->next = task->next;
-                                if (g_ModelRefLerpQueueState.tail == task) {
-                                    g_ModelRefLerpQueueState.tail = prevTask;
-                                }
-                                ::operator delete(task);
-                                break;
+                zClass_Object3D_ModelRefLerpTask *const nextTask = task != 0
+                    ? task->next
+                    : 0;
+                if (task != 0) {
+                    if (g_ModelRefLerpQueueState.count != 0) {
+                        zClass_Object3D_ModelRefLerpTask *prevTask = g_ModelRefLerpQueueState.head;
+                        if (task == prevTask) {
+                            --g_ModelRefLerpQueueState.count;
+                            g_ModelRefLerpQueueState.head = task->next;
+                            if (g_ModelRefLerpQueueState.head == 0) {
+                                g_ModelRefLerpQueueState.listAux = 0;
+                                g_ModelRefLerpQueueState.tail = 0;
                             }
-                            prevTask = prevNext;
+                            ::operator delete(task);
+                        } else {
+                            while (prevTask != 0) {
+                                if (prevTask->next == task) {
+                                    --g_ModelRefLerpQueueState.count;
+                                    prevTask->next = task->next;
+                                    if (g_ModelRefLerpQueueState.tail == task) {
+                                        g_ModelRefLerpQueueState.tail = prevTask;
+                                    }
+                                    ::operator delete(task);
+                                    break;
+                                }
+                                prevTask = prevTask->next;
+                            }
                         }
                     }
                 }
                 task = nextTask;
             } else {
-                task = task->next;
+                task = task != 0
+                    ? task->next
+                    : 0;
             }
         }
     }
@@ -1325,16 +1405,17 @@ namespace zClass_Object3D_ModelRefLerpQueue {
     void Reset() {
         zClass_Object3D_ModelRefLerpTask *task = g_ModelRefLerpQueueState.head;
         while (task != 0) {
-            zClass_Object3D_ModelRefLerpTask *const next = task->next;
+            zClass_Object3D_ModelRefLerpTask *const next = task != 0
+                ? task->next
+                : 0;
             ::operator delete(task);
             task = next;
         }
 
-        memset(
-            &g_ModelRefLerpQueueState,
-            0,
-            sizeof(g_ModelRefLerpQueueState)
-        );
+        g_ModelRefLerpQueueState.listAux = 0;
+        g_ModelRefLerpQueueState.tail = 0;
+        g_ModelRefLerpQueueState.head = 0;
+        g_ModelRefLerpQueueState.count = 0;
     }
 }
 

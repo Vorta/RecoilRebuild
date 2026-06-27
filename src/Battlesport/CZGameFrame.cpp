@@ -216,11 +216,11 @@ const AFX_MSGMAP * CZGameFrame::GetMessageMap() const {
 int CZGameFrame::IsWindowValid(
     CWnd *pWnd
 ) const {
-    if (pWnd == 0) {
-        return 0;
+    if (pWnd != 0) {
+        return pWnd->IsWindowEnabled() == 0 ? 1 : 0;
     }
 
-    return pWnd->IsWindowEnabled() == 0 ? 1 : 0;
+    return 0;
 }
 
 /**
@@ -240,6 +240,7 @@ CZGameFrame::~CZGameFrame() {
 CString * CZGameFrame::BuildWindowTitle(
     CString *outTitle
 ) {
+    volatile int constructedTitleState = 0;
     outTitle->CString::CString("Zipper Interactive");
     return outTitle;
 }
@@ -293,20 +294,16 @@ void CZGameFrame::OnPaint() {
             m_gameBitmap.GetSafeHandle()
         );
 
-        const int paintLeft = paintStruct.rcPaint.left;
-        const int paintTop = paintStruct.rcPaint.top;
-        const int paintWidth = paintStruct.rcPaint.right - paintLeft;
-        const int paintHeight = paintStruct.rcPaint.bottom - paintTop;
-        if (paintHeight > 480) {
+        if (paintStruct.rcPaint.bottom - paintStruct.rcPaint.top > 480) {
             StretchBlt(
                 paintDc.GetSafeHdc(),
-                paintLeft,
-                paintTop,
-                paintWidth,
-                paintHeight,
+                paintStruct.rcPaint.left,
+                paintStruct.rcPaint.top,
+                paintStruct.rcPaint.right - paintStruct.rcPaint.left,
+                paintStruct.rcPaint.bottom - paintStruct.rcPaint.top,
                 compatibleDc,
-                paintLeft,
-                paintTop,
+                paintStruct.rcPaint.left,
+                paintStruct.rcPaint.top,
                 640,
                 480,
                 SRCCOPY
@@ -314,13 +311,13 @@ void CZGameFrame::OnPaint() {
         } else {
             BitBlt(
                 paintDc.GetSafeHdc(),
-                paintLeft,
-                paintTop,
-                paintWidth,
-                paintHeight,
+                paintStruct.rcPaint.left,
+                paintStruct.rcPaint.top,
+                paintStruct.rcPaint.right - paintStruct.rcPaint.left,
+                paintStruct.rcPaint.bottom - paintStruct.rcPaint.top,
                 compatibleDc,
-                paintLeft,
-                paintTop,
+                paintStruct.rcPaint.left,
+                paintStruct.rcPaint.top,
                 SRCCOPY
             );
         }
