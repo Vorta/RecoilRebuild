@@ -1,4 +1,55 @@
 {
   "version": 1,
-  "issues": []
+  "issues": [
+    {
+      "id": "WSI-20260626-001",
+      "status": "resolved",
+      "kind": "tool-error",
+      "severity": "medium",
+      "created": "2026-06-26T23:54:01Z",
+      "updated": "2026-06-27T00:25:42Z",
+      "summary": "plan set-meta reports success but blocker text remains stale",
+      "area": "tools/recoil.py plan set-meta",
+      "impact": "Parent cannot reliably refresh tier-S blocker evidence in focused plan rows after current VC5 verification, leaving plan next/show with stale mismatch counts despite owner-ledger evidence being current.",
+      "next_action": "Inspect plan_cli set-meta write path for authored Reimplemented metadata rows and ensure it mutates the displayed nested Blocker field or fails instead of reporting success.",
+      "commands": [],
+      "files": [],
+      "tags": [],
+      "history": [
+        {
+          "at": "2026-06-26T23:54:01Z",
+          "action": "created",
+          "note": "Issue recorded for future agent tooling/process repair."
+        },
+        {
+          "at": "2026-06-27T00:05:38Z",
+          "action": "resolved",
+          "note": "Resolved by adding post-save persistence verification to single-address plan set-meta, matching set-meta-batch behavior. The command now reloads the plan after save and fails with a clear persistence mismatch error if displayed authored Reimplemented metadata on disk does not match the computed update. Added focused tests for tier-B blocker display refresh and persistence mismatch failure. Parent validation passed: python -m unittest tests.tools.recoil_plan_cli_tests; python tools/recoil.py plan audit --strict; python tools/recoil.py owner audit --strict; python tools/recoil.py issue audit --strict. Real rows including 0x4B36F0, 0x429F80, 0x46E4E0, 0x4A6D40, and zSound blocker rows were updated and displayed correctly through plan show."
+        },
+        {
+          "at": "2026-06-27T00:06:09Z",
+          "action": "reopened",
+          "note": "Parent validation found the original failure still reproduces for some real rows after the first fix: plan set-meta reported success for 0x429F80 and 0x42A070, but subsequent plan show still displayed stale blocker strings. Rows such as 0x4B36F0, 0x46E4E0, and zSound entries do persist, so the remaining defect may involve duplicate/address selection or row-specific update matching rather than generic save persistence."
+        },
+        {
+          "at": "2026-06-27T00:17:56Z",
+          "action": "resolved",
+          "note": "Resolved after confirming current plan set-meta updates the same authored Reimplemented metadata block that plan show parses for the real zInput row shape. Temp-plan reproduction for 0x42A070 passed in the tool-maintainer handoff; parent then ran plan set-meta on real 0x42A070 and plan show displayed the requested blocker. The command now verifies persisted displayed metadata and cannot report false success for this row shape. Validation from worker: python -m unittest tests.tools.recoil_plan_cli_tests; issue audit; agent-surface audit. Parent display verification passed for 0x42A070."
+        },
+        {
+          "at": "2026-06-27T00:25:07Z",
+          "action": "reopened",
+          "note": "Parent validation found another real row shape still reports false success after the latest fix: plan set-meta reported success for 0x438020 and 0x438180 with non-none zClass blocker text, but subsequent plan show still displays Blocker: none for both rows. This is distinct from 0x42A070, which now updates correctly."
+        },
+        {
+          "at": "2026-06-27T00:25:42Z",
+          "action": "resolved",
+          "note": "Resolved. The original set-meta parser/persistence defects were fixed and validated on real 0x429F80/0x42A070 row shapes. The later zClass anomaly was parent-induced by running multiple plan set-meta mutations in parallel against the same plan file; rerunning the affected 0x438020 and 0x438180 updates sequentially persisted and plan show displayed the requested blockers. Validation: issue audit passes; plan show verified 0x438020, 0x438180, 0x4381D0 after sequential updates. Process note: do not parallelize plan mutations against the same ledger."
+        }
+      ],
+      "actual": "Commands such as plan set-meta 0x4b36f0/0x429f80/0x46e4e0 reported 'updated ... source metadata', but subsequent plan show and plan next still displayed old blocker strings and mismatch counts.",
+      "repro": "Run python tools/recoil.py plan set-meta 0x4b36f0 --group engine.zsys --model source-faithful --blocker 'tier S blocked: VC5SP3 zsys_cpu now fails only 0x4b36f0 with 155 unmasked mismatches ...'; then run python tools/recoil.py plan show 0x4b36f0 and observe the old 157-mismatch blocker remains.",
+      "resolution": "Resolved. The original set-meta parser/persistence defects were fixed and validated on real 0x429F80/0x42A070 row shapes. The later zClass anomaly was parent-induced by running multiple plan set-meta mutations in parallel against the same plan file; rerunning the affected 0x438020 and 0x438180 updates sequentially persisted and plan show displayed the requested blockers. Validation: issue audit passes; plan show verified 0x438020, 0x438180, 0x4381D0 after sequential updates. Process note: do not parallelize plan mutations against the same ledger."
+    }
+  ]
 }

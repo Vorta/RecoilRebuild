@@ -4334,7 +4334,7 @@ extern "C" int zsnd_fade_list_cursor_helpers_smoke(void) {
 
     zSndFadeList list{0, g_zSndFadeActiveListSentinel, 2};
     zSndFadeListNode *outCursor = nullptr;
-    list.DeleteNodeAndAdvanceCursor(first, &outCursor);
+    list.DeleteNodeAndAdvanceCursor(&outCursor, first);
 
     const bool ok = list.count == 1 && outCursor == second &&
                     g_zSndFadeActiveListSentinel->next == second &&
@@ -4549,13 +4549,13 @@ extern "C" int zsnd_tick_backend_markers_smoke(void) {
     }
 
     ResetStopBackendCounters();
-    zSnd_TickWrapper(0);
+    zSnd_Tick(0);
     if (g_testCommitDeferredSettingsCount != 1 || g_testA3dDeviceTickCount != 1) {
         result = 3;
         goto cleanup;
     }
 
-    zSnd_TickWrapper(1);
+    zSnd_Tick(1);
     if (g_testCommitDeferredSettingsCount != 1 || g_testA3dDeviceTickCount != 1) {
         result = 4;
         goto cleanup;
@@ -4608,7 +4608,7 @@ extern "C" int zsnd_tick_backend_markers_smoke(void) {
     g_zSndLastVoiceMarkerIndex = 7;
     g_zSndLastVoiceStopMarkerIndex = 3;
     sample.markerValues = nullptr;
-    zSnd_TickWrapper(1);
+    zSnd_Tick(1);
     result = g_zSndLastVoice == nullptr && g_zSndLastVoiceMarkerIndex == 0 &&
                      g_zSndLastVoiceStopMarkerIndex == 999
                  ? 0

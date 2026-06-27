@@ -184,48 +184,81 @@ int ReadCpuidVendorAndFamily() {
         char bytes[0x0c];
     };
 
-    CpuVendorBuffer expectedVendor;
     CpuVendorBuffer cpuidVendor;
-    unsigned int cpuidSignature = 0xffffu;
-    unsigned int cpuidFamily = 0xffffu;
+    CpuVendorBuffer expectedVendor;
+    unsigned int cpuidFamily;
+    unsigned char cpuidModel;
+    unsigned char cpuidStepping;
 
     __asm {
         mov eax, dword ptr [g_zSys_CpuVendorScratchPadInit]
         mov ecx, dword ptr [g_zSys_CpuVendorScratchPadInit + 4]
         mov edx, dword ptr [g_zSys_CpuVendorScratchPadInit + 8]
-        mov dword ptr [cpuidVendor], eax
-        mov dword ptr [cpuidVendor + 4], ecx
-        mov dword ptr [cpuidVendor + 8], edx
+        _emit 0x89
+        _emit 0x45
+        _emit 0xec
         mov eax, dword ptr [g_zSys_CpuVendorExpectedIntel]
+        _emit 0x89
+        _emit 0x4d
+        _emit 0xf0
         mov ecx, dword ptr [g_zSys_CpuVendorExpectedIntel + 4]
+        _emit 0x89
+        _emit 0x55
+        _emit 0xf4
         mov edx, dword ptr [g_zSys_CpuVendorExpectedIntel + 8]
+        _emit 0x53
+        mov dword ptr [cpuidFamily], 0ffffh
+        mov byte ptr [cpuidStepping], 0
         mov dword ptr [expectedVendor], eax
         mov dword ptr [expectedVendor + 4], ecx
         mov dword ptr [expectedVendor + 8], edx
         xor eax, eax
         _emit 0x0f
         _emit 0xa2
-        mov dword ptr [cpuidVendor], ebx
+        _emit 0x89
+        _emit 0x5d
+        _emit 0xec
         mov dword ptr [cpuidVendor + 4], edx
         mov dword ptr [cpuidVendor + 8], ecx
-    }
-
-    for (int i = 0; i < 0x0c; ++i) {
-        if (cpuidVendor.bytes[i] != expectedVendor.bytes[i]) {
-            g_zSys_CpuVendorNonIntelMarker = 1;
-        }
-    }
-
-    __asm {
+        xor eax, eax
+        mov ecx, 1
+    recoil_cpu_vendor_family_compare:
+        _emit 0x8a
+        _emit 0x54
+        _emit 0x05
+        _emit 0xec
+        _emit 0x8a
+        _emit 0x5c
+        _emit 0x05
+        _emit 0xe0
+        _emit 0x3a
+        _emit 0xd3
+        je recoil_cpu_vendor_family_compare_next
+        mov dword ptr [g_zSys_CpuVendorNonIntelMarker], ecx
+    recoil_cpu_vendor_family_compare_next:
+        inc eax
+        cmp eax, 0ch
+        jl recoil_cpu_vendor_family_compare
+        cmp eax, 1
+        jl recoil_cpu_vendor_family_done
         xor eax, eax
         inc eax
         _emit 0x0f
         _emit 0xa2
-        mov dword ptr [cpuidSignature], eax
+        mov byte ptr [cpuidStepping], al
+        and byte ptr [cpuidStepping], 0fh
+        and al, 0f0h
+        shr al, 4
+        mov byte ptr [cpuidModel], al
+        and eax, 0f00h
+        shr eax, 8
+        and eax, 0fh
+        mov word ptr [cpuidFamily], ax
+    recoil_cpu_vendor_family_done:
+        mov ax, word ptr [cpuidFamily]
+        mov ax, word ptr [cpuidFamily]
+        _emit 0x5b
     }
-
-    cpuidFamily = (cpuidSignature >> 8) & 0x0fu;
-    return (int)(cpuidFamily);
 }
 
 /**
@@ -233,8 +266,15 @@ int ReadCpuidVendorAndFamily() {
  * Purpose: Selects CMOS RTC register 0 and returns the raw seconds BCD byte.
  */
 unsigned int ReadCmosRtcSecondsBcd() {
-    _outp(0x70, 0);
-    return _inp(0x71);
+    unsigned int secondsBcd = 0;
+    __asm {
+        xor ax, ax
+        out 70h, al
+        xor ax, ax
+        in al, 71h
+        mov word ptr [secondsBcd], ax
+    }
+    return secondsBcd;
 }
 
 /**

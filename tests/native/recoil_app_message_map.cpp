@@ -50,6 +50,12 @@ int g_creditsOnWndActivateInvalidateCalls;
 int g_creditsOnWndActivateCallOrder;
 int g_creditsOnWndActivateBlitOrder;
 int g_creditsOnWndActivateInvalidateOrder;
+int g_confirmQuitBackgroundLoadCalls;
+bool g_confirmQuitBackgroundLoadArgsOk;
+int g_confirmQuitBackgroundBindCalls;
+bool g_confirmQuitBackgroundBindArgsOk;
+int g_confirmQuitBackgroundFreeCalls;
+bool g_confirmQuitBackgroundFreeArgsOk;
 
 struct TestAppState : RecoilApp_IState {
     void OnEnter() {
@@ -145,6 +151,137 @@ void FakeCreditsOnWndActivateThunk::BlitOwnedSurfaceToPrimary() {
 void FakeCreditsOnWndActivateThunk::InvalidateChildren() {
     ++g_creditsOnWndActivateInvalidateCalls;
     g_creditsOnWndActivateInvalidateOrder = ++g_creditsOnWndActivateCallOrder;
+}
+
+struct FakeConfirmQuitBackgroundThunk {
+    zReader::Node * LoadFromZrd(const char *zrdPath,
+                                const char *sectionName,
+                                int capturePrimary);
+    int BindWidgetByName(zReader::Node *loadedSectionNode,
+                         HudUiZrdWidget *widget,
+                         const char *name);
+    void FreeLoadedTreeRoots(int loadedRoot);
+};
+
+zReader::Node g_confirmQuitBackgroundFakeNode;
+
+zReader::Node * FakeConfirmQuitBackgroundThunk::LoadFromZrd(
+    const char *zrdPath,
+    const char *sectionName,
+    int capturePrimary
+) {
+    ++g_confirmQuitBackgroundLoadCalls;
+    g_confirmQuitBackgroundLoadArgsOk =
+        this != 0 && zrdPath != 0 && std::strcmp(zrdPath, "dialog.zrd") == 0 &&
+        sectionName != 0 && std::strcmp(sectionName, "CONFIRM_QUIT") == 0 &&
+        capturePrimary == 0;
+    return &g_confirmQuitBackgroundFakeNode;
+}
+
+int FakeConfirmQuitBackgroundThunk::BindWidgetByName(
+    zReader::Node *loadedSectionNode,
+    HudUiZrdWidget *widget,
+    const char *name
+) {
+    ++g_confirmQuitBackgroundBindCalls;
+
+    HudUiBackgroundConfirmQuit *const dialog =
+        static_cast<HudUiBackgroundConfirmQuit *>(static_cast<void *>(this));
+    const bool widgetOk =
+        (g_confirmQuitBackgroundBindCalls == 1 &&
+         widget == &dialog->okButton &&
+         name != 0 && std::strcmp(name, "OK_TO_QUIT") == 0) ||
+        (g_confirmQuitBackgroundBindCalls == 2 &&
+         widget == &dialog->cancelButton &&
+         name != 0 && std::strcmp(name, "CANCEL_QUIT") == 0);
+    g_confirmQuitBackgroundBindArgsOk =
+        g_confirmQuitBackgroundBindArgsOk &&
+        loadedSectionNode == &g_confirmQuitBackgroundFakeNode && widgetOk;
+    return 0;
+}
+
+void FakeConfirmQuitBackgroundThunk::FreeLoadedTreeRoots(int loadedRoot) {
+    ++g_confirmQuitBackgroundFreeCalls;
+    g_confirmQuitBackgroundFreeArgsOk =
+        loadedRoot == static_cast<int>(
+                          reinterpret_cast<std::uintptr_t>(
+                              &g_confirmQuitBackgroundFakeNode
+                          )
+                      );
+}
+
+void *HudUiBackgroundLoadFromZrdProc() {
+    union MemberToFunction {
+        zReader::Node *( HudUiBackground::*member)(const char *, const char *, int);
+        void *function;
+    };
+
+    MemberToFunction thunk = {};
+    thunk.member = &HudUiBackground::LoadFromZrd;
+    return thunk.function;
+}
+
+void *FakeConfirmQuitBackgroundLoadFromZrdProc() {
+    union MemberToFunction {
+        zReader::Node *( FakeConfirmQuitBackgroundThunk::*member)(
+            const char *,
+            const char *,
+            int
+        );
+        void *function;
+    };
+
+    MemberToFunction thunk = {};
+    thunk.member = &FakeConfirmQuitBackgroundThunk::LoadFromZrd;
+    return thunk.function;
+}
+
+void *HudUiBackgroundBindWidgetByNameProc() {
+    union MemberToFunction {
+        int ( HudUiBackground::*member)(zReader::Node *, HudUiZrdWidget *, const char *);
+        void *function;
+    };
+
+    MemberToFunction thunk = {};
+    thunk.member = &HudUiBackground::BindWidgetByName;
+    return thunk.function;
+}
+
+void *FakeConfirmQuitBackgroundBindWidgetByNameProc() {
+    union MemberToFunction {
+        int ( FakeConfirmQuitBackgroundThunk::*member)(
+            zReader::Node *,
+            HudUiZrdWidget *,
+            const char *
+        );
+        void *function;
+    };
+
+    MemberToFunction thunk = {};
+    thunk.member = &FakeConfirmQuitBackgroundThunk::BindWidgetByName;
+    return thunk.function;
+}
+
+void *HudUiBackgroundFreeLoadedTreeRootsProc() {
+    union MemberToFunction {
+        void ( HudUiBackground::*member)(int);
+        void *function;
+    };
+
+    MemberToFunction thunk = {};
+    thunk.member = &HudUiBackground::FreeLoadedTreeRoots;
+    return thunk.function;
+}
+
+void *FakeConfirmQuitBackgroundFreeLoadedTreeRootsProc() {
+    union MemberToFunction {
+        void ( FakeConfirmQuitBackgroundThunk::*member)(int);
+        void *function;
+    };
+
+    MemberToFunction thunk = {};
+    thunk.member = &FakeConfirmQuitBackgroundThunk::FreeLoadedTreeRoots;
+    return thunk.function;
 }
 
 int __fastcall TestCreditsVideoSurfaceStateNoOp(
@@ -481,6 +618,48 @@ extern "C" int recoil_state_credits_constructor_smoke(void) {
     return state.m_dialog == 0 ? 0 : 1;
 }
 
+extern "C" int recoil_state_credits_static_init_smoke(void) {
+    RecoilApp_IState baseState;
+    const unsigned int baseVptr = ReadObjectVptr(&baseState);
+    TestCreditsPanel panel;
+
+    g_RecoilStateCredits.m_dialog =
+        reinterpret_cast<HudUiCreditsPanel *>(&panel);
+    const unsigned int sentinelVptr = 0x11111111;
+    std::memcpy(&g_RecoilStateCredits, &sentinelVptr, sizeof(sentinelVptr));
+
+    RecoilStateCredits::StaticInitAndRegisterAtExit();
+    const bool staticInitAndRegisterOk =
+        ReadObjectVptr(&g_RecoilStateCredits) != 0 &&
+        ReadObjectVptr(&g_RecoilStateCredits) != sentinelVptr &&
+        g_RecoilStateCredits.m_dialog == 0;
+
+    RecoilStateCredits::StaticInit();
+
+    const unsigned int destructorSentinelVptr = 0x22222222;
+    std::memcpy(
+        &g_RecoilStateCredits,
+        &destructorSentinelVptr,
+        sizeof(destructorSentinelVptr)
+    );
+    g_RecoilStateCredits.m_dialog =
+        reinterpret_cast<HudUiCreditsPanel *>(&panel);
+    panel.setEnabledCount = 0;
+    panel.scalarDeletingCount = 0;
+    panel.lastScalarDeletingFlags = 0;
+    RecoilStateCredits::RegisterAtExit();
+    const bool registerAtExitOk =
+        ReadObjectVptr(&g_RecoilStateCredits) == baseVptr &&
+        g_RecoilStateCredits.m_dialog == 0 &&
+        panel.setEnabledCount == 1 &&
+        panel.lastEnabled == 0 &&
+        panel.scalarDeletingCount == 1 &&
+        panel.lastScalarDeletingFlags == 1;
+
+    g_RecoilStateCredits.m_dialog = 0;
+    return staticInitAndRegisterOk && registerAtExitOk ? 0 : 1;
+}
+
 extern "C" int recoil_state_credits_on_wnd_activate_smoke(void) {
     CodeFunctionPatch blitPatch{};
     CodeFunctionPatch invalidatePatch{};
@@ -595,7 +774,7 @@ extern "C" int recoil_state_credits_on_try_become_current_smoke(void) {
 
     RecoilStateCredits state;
     const int result = state.OnTryBecomeCurrent();
-    HudUiCreditsPanel *const dialog = state.m_dialog;
+    HudUiCreditsPanel *const dialog = (HudUiCreditsPanel *)state.m_dialog;
 
     int failure = result == 1 ? 0 : 4;
     failure |= dialog != 0 ? 0 : 8;
@@ -770,6 +949,61 @@ extern "C" int recoil_state_confirm_quit_static_init_smoke(void) {
     }
 
     return 0;
+}
+
+extern "C" int recoil_state_confirm_quit_on_try_become_current_smoke(void) {
+    CodeFunctionPatch loadPatch = {};
+    CodeFunctionPatch bindPatch = {};
+    CodeFunctionPatch freePatch = {};
+
+    if (!PatchFunctionJump(HudUiBackgroundLoadFromZrdProc(),
+                           FakeConfirmQuitBackgroundLoadFromZrdProc(), loadPatch)) {
+        return 1;
+    }
+    if (!PatchFunctionJump(HudUiBackgroundBindWidgetByNameProc(),
+                           FakeConfirmQuitBackgroundBindWidgetByNameProc(), bindPatch)) {
+        RestoreFunctionPatch(loadPatch);
+        return 2;
+    }
+    if (!PatchFunctionJump(HudUiBackgroundFreeLoadedTreeRootsProc(),
+                           FakeConfirmQuitBackgroundFreeLoadedTreeRootsProc(), freePatch)) {
+        RestoreFunctionPatch(bindPatch);
+        RestoreFunctionPatch(loadPatch);
+        return 3;
+    }
+
+    g_confirmQuitBackgroundLoadCalls = 0;
+    g_confirmQuitBackgroundLoadArgsOk = false;
+    g_confirmQuitBackgroundBindCalls = 0;
+    g_confirmQuitBackgroundBindArgsOk = true;
+    g_confirmQuitBackgroundFreeCalls = 0;
+    g_confirmQuitBackgroundFreeArgsOk = false;
+
+    RecoilStateConfirmQuit state;
+    const int accepted = state.OnTryBecomeCurrent();
+    HudUiBackgroundConfirmQuit *const dialog =
+        static_cast<HudUiBackgroundConfirmQuit *>(state.m_dialog);
+
+    int result = 0;
+    if (accepted != 1 || dialog == 0 ||
+        g_confirmQuitBackgroundLoadCalls != 1 ||
+        !g_confirmQuitBackgroundLoadArgsOk ||
+        g_confirmQuitBackgroundBindCalls != 2 ||
+        !g_confirmQuitBackgroundBindArgsOk ||
+        g_confirmQuitBackgroundFreeCalls != 1 ||
+        !g_confirmQuitBackgroundFreeArgsOk) {
+        result = 4;
+    }
+
+    if (dialog != 0) {
+        dialog->ScalarDeletingDestructor(1);
+    }
+    state.m_dialog = 0;
+
+    RestoreFunctionPatch(freePatch);
+    RestoreFunctionPatch(bindPatch);
+    RestoreFunctionPatch(loadPatch);
+    return result;
 }
 
 extern "C" int hud_ui_callback_queue_cheat_code_state_smoke(void) {
@@ -3481,7 +3715,8 @@ extern "C" int recoil_state_controls_queue_enter_smoke(void) {
 extern "C" int recoil_state_controls_lifecycle_smoke(void) {
     RecoilStateControls state{};
     state.vftable = 0x11111111;
-    state.m_dialog = 0x22222222;
+    state.m_dialog =
+        reinterpret_cast<HudUiContainer *>(static_cast<std::uintptr_t>(0x22222222));
 
     RecoilStateControls *const constructed = state.Constructor();
     if (constructed != &state || state.vftable == 0 || state.vftable == 0x11111111 ||
@@ -3491,7 +3726,7 @@ extern "C" int recoil_state_controls_lifecycle_smoke(void) {
 
     TestConfirmQuitDialog dialog{};
     state.vftable = 0x33333333;
-    state.m_dialog = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&dialog));
+    state.m_dialog = reinterpret_cast<HudUiContainer *>(&dialog);
     state.~RecoilStateControls();
     if (state.vftable != RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) || state.m_dialog != 0 ||
         dialog.scalarDeletingCount != 1 || dialog.lastScalarDeletingFlags != 1) {
@@ -3545,7 +3780,7 @@ extern "C" int recoil_state_controls_activation_smoke(void) {
     RecoilStateControls state{};
     const int accepted = state.OnTryBecomeCurrent();
     HudUiControlsDialog *const dialog =
-        reinterpret_cast<HudUiControlsDialog *>(static_cast<std::uintptr_t>(state.m_dialog));
+        static_cast<HudUiControlsDialog *>(state.m_dialog);
     const bool activationOk =
         accepted == 1 && dialog != nullptr && dialog->base.base.enabled == 1 &&
         dialog->mouseOrJoystickSelector.selectedIndex == 1 &&
@@ -3647,7 +3882,7 @@ extern "C" int recoil_state_controls_on_resume_smoke(void) {
     TestControlsResumeDialog dialog{};
 
     RecoilStateControls state{};
-    state.m_dialog = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&dialog));
+    state.m_dialog = reinterpret_cast<HudUiContainer *>(&dialog);
 
     g_controlsResumeSetEnabledCalls = 0;
     g_controlsResumeLastEnabled = 0;
@@ -3938,8 +4173,7 @@ extern "C" int recoil_state_confirm_quit_on_try_become_current_smoke(void) {
     RecoilStateConfirmQuit state{};
     const int accepted = state.OnTryBecomeCurrent();
     HudUiBackgroundConfirmQuit *const dialog =
-        reinterpret_cast<HudUiBackgroundConfirmQuit *>(
-            static_cast<std::uintptr_t>(state.m_dialog));
+        static_cast<HudUiBackgroundConfirmQuit *>(state.m_dialog);
 
     int result = 0;
     if (accepted != 1 || dialog == nullptr ||
@@ -3966,7 +4200,8 @@ extern "C" int recoil_state_confirm_quit_static_init_smoke(void) {
     TestConfirmQuitDialog dialog{};
 
     g_RecoilState_ConfirmQuit.vftable = 0x11111111;
-    g_RecoilState_ConfirmQuit.m_dialog = 0x22222222;
+    g_RecoilState_ConfirmQuit.m_dialog =
+        reinterpret_cast<HudUiContainer *>(static_cast<std::uintptr_t>(0x22222222));
     RecoilStateConfirmQuit *const staticInitReturned =
         RecoilStateConfirmQuit::StaticInit();
     if (staticInitReturned != &g_RecoilState_ConfirmQuit ||
@@ -3976,7 +4211,7 @@ extern "C" int recoil_state_confirm_quit_static_init_smoke(void) {
     }
 
     g_RecoilState_ConfirmQuit.m_dialog =
-        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&dialog));
+        reinterpret_cast<HudUiContainer *>(&dialog);
     RecoilStateConfirmQuit::AtExitDestructor();
     if (g_RecoilState_ConfirmQuit.vftable != RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) ||
         g_RecoilState_ConfirmQuit.m_dialog != 0 ||
@@ -4002,7 +4237,7 @@ extern "C" int recoil_state_cheat_code_destructor_smoke(void) {
     RecoilStateCheatCode state{};
     state.vftable = 0x11111111;
     state.m_dialog =
-        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&dialog));
+        reinterpret_cast<HudUiContainer *>(&dialog);
     state.m_prevHalfResAdjustMode = ZVIDEO_HALFRES_ADJUST_ENABLED;
     state.m_audioSnapshot = 0x33333333;
 
@@ -4050,7 +4285,8 @@ extern "C" int recoil_state_cheat_code_static_init_thunks_smoke(void) {
     TestConfirmQuitDialog dialog{};
 
     g_RecoilStateCheatCode.vftable = 0x11111111;
-    g_RecoilStateCheatCode.m_dialog = 0x22222222;
+    g_RecoilStateCheatCode.m_dialog =
+        reinterpret_cast<HudUiContainer *>(static_cast<std::uintptr_t>(0x22222222));
     g_RecoilStateCheatCode.m_prevHalfResAdjustMode = ZVIDEO_HALFRES_ADJUST_ENABLED;
     g_RecoilStateCheatCode.m_audioSnapshot = 0x33333333;
     RecoilStateCheatCode *const constructReturned =
@@ -4066,7 +4302,7 @@ extern "C" int recoil_state_cheat_code_static_init_thunks_smoke(void) {
     RecoilStateCheatCode::StaticInit();
 
     g_RecoilStateCheatCode.m_dialog =
-        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&dialog));
+        reinterpret_cast<HudUiContainer *>(&dialog);
     RecoilStateCheatCode::AtExitDestructor();
     if (g_RecoilStateCheatCode.vftable != RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) ||
         g_RecoilStateCheatCode.m_dialog != 0 ||
@@ -4076,7 +4312,8 @@ extern "C" int recoil_state_cheat_code_static_init_thunks_smoke(void) {
     }
 
     g_RecoilStateCheatCode.vftable = 0x44444444;
-    g_RecoilStateCheatCode.m_dialog = 0x55555555;
+    g_RecoilStateCheatCode.m_dialog =
+        reinterpret_cast<HudUiContainer *>(static_cast<std::uintptr_t>(0x55555555));
     RecoilStateCheatCode::StaticInitAndRegisterAtExit();
     if (g_RecoilStateCheatCode.vftable == 0 ||
         g_RecoilStateCheatCode.m_dialog != 0) {
@@ -4141,7 +4378,7 @@ extern "C" int recoil_state_cheat_code_on_try_become_current_smoke(void) {
 
     const int accepted = state.OnTryBecomeCurrent();
     HudUiCheatCodeDialog *const dialog =
-        reinterpret_cast<HudUiCheatCodeDialog *>(static_cast<std::uintptr_t>(state.m_dialog));
+        static_cast<HudUiCheatCodeDialog *>(state.m_dialog);
     zSndPlayHandleSnapshot *const snapshot =
         reinterpret_cast<zSndPlayHandleSnapshot *>(static_cast<std::uintptr_t>(state.m_audioSnapshot));
 
@@ -4734,7 +4971,7 @@ extern "C" int hud_ui_new_game_panel_overlay_owner_on_try_become_current_smoke(v
     HudUiNewGamePanelOverlayOwner state{};
     const int accepted = state.OnTryBecomeCurrent();
     HudUiNewGamePanel *const panel =
-        reinterpret_cast<HudUiNewGamePanel *>(static_cast<std::uintptr_t>(state.m_panel));
+        static_cast<HudUiNewGamePanel *>(state.m_dialog);
 
     const bool ok =
         accepted == 1 && panel != nullptr && panel->base.base.enabled == 1 &&
@@ -4745,7 +4982,7 @@ extern "C" int hud_ui_new_game_panel_overlay_owner_on_try_become_current_smoke(v
 
     if (panel != nullptr) {
         panel->ScalarDeletingDestructor(1);
-        state.m_panel = 0;
+        state.m_dialog = 0;
     }
 
     ZOPT_PLAYER_NAME = oldPlayerNameOption;
@@ -4802,7 +5039,8 @@ extern "C" int hud_ui_new_game_panel_overlay_owner_lifecycle_smoke(void) {
     g_zVideo_PrimarySurfaceState.pitch = sizeof(std::uint16_t) * 2;
 
     g_HudUiNewGamePanelOverlayOwner.vftable = 0x11111111;
-    g_HudUiNewGamePanelOverlayOwner.m_panel = 0x22222222;
+    g_HudUiNewGamePanelOverlayOwner.m_dialog =
+        reinterpret_cast<HudUiContainer *>(static_cast<std::uintptr_t>(0x22222222));
     HudUiNewGamePanelOverlayOwner *const staticInitReturned =
         HudUiNewGamePanelOverlayOwner::StaticInit();
     const bool staticInitOk =
@@ -4810,18 +5048,17 @@ extern "C" int hud_ui_new_game_panel_overlay_owner_lifecycle_smoke(void) {
         g_HudUiNewGamePanelOverlayOwner.vftable ==
             static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(
                 &g_HudUiNewGamePanelOverlayOwner_Vtbl)) &&
-        g_HudUiNewGamePanelOverlayOwner.m_panel == 0;
+        g_HudUiNewGamePanelOverlayOwner.m_dialog == 0;
 
     HudUiNewGamePanel *const atExitPanel =
         static_cast<HudUiNewGamePanel *>(::operator new(sizeof(HudUiNewGamePanel)));
     atExitPanel->Constructor();
     atExitPanel->base.base.SetEnabled(1);
-    g_HudUiNewGamePanelOverlayOwner.m_panel =
-        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(atExitPanel));
+    g_HudUiNewGamePanelOverlayOwner.m_dialog = atExitPanel;
     HudUiNewGamePanelOverlayOwner::AtExitDestructor();
     const bool atExitOk =
         g_HudUiNewGamePanelOverlayOwner.vftable == RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) &&
-        g_HudUiNewGamePanelOverlayOwner.m_panel == 0;
+        g_HudUiNewGamePanelOverlayOwner.m_dialog == 0;
 
     HudUiNewGamePanel *const destructorPanel =
         static_cast<HudUiNewGamePanel *>(::operator new(sizeof(HudUiNewGamePanel)));
@@ -4829,28 +5066,29 @@ extern "C" int hud_ui_new_game_panel_overlay_owner_lifecycle_smoke(void) {
     destructorPanel->base.base.SetEnabled(1);
     HudUiNewGamePanelOverlayOwner state{};
     state.vftable = 0x33333333;
-    state.m_panel = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(destructorPanel));
+    state.m_dialog = destructorPanel;
     state.Destructor();
     const bool destructorOk =
-        state.vftable == RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) && state.m_panel == 0;
+        state.vftable == RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) && state.m_dialog == 0;
 
     HudUiNewGamePanel *const scalarPanel =
         static_cast<HudUiNewGamePanel *>(::operator new(sizeof(HudUiNewGamePanel)));
     scalarPanel->Constructor();
     HudUiNewGamePanelOverlayOwner scalarState{};
     scalarState.vftable = 0x44444444;
-    scalarState.m_panel = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(scalarPanel));
+    scalarState.m_dialog = scalarPanel;
     HudUiNewGamePanelOverlayOwner *const scalarReturned =
         scalarState.ScalarDeletingDestructor(0);
     const bool scalarOk =
         scalarReturned == &scalarState &&
-        scalarState.vftable == RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) && scalarState.m_panel == 0;
+        scalarState.vftable == RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) &&
+        scalarState.m_dialog == 0;
 
     HudUiNewGamePanelOverlayOwner *const deletingState =
         static_cast<HudUiNewGamePanelOverlayOwner *>(
             ::operator new(sizeof(HudUiNewGamePanelOverlayOwner)));
     deletingState->vftable = 0x55555555;
-    deletingState->m_panel = 0;
+    deletingState->m_dialog = 0;
     HudUiNewGamePanelOverlayOwner *const deletingReturned =
         deletingState->ScalarDeletingDestructor(1);
     const bool deletingOk = deletingReturned == deletingState;
@@ -4858,13 +5096,14 @@ extern "C" int hud_ui_new_game_panel_overlay_owner_lifecycle_smoke(void) {
     HudUiNewGamePanelOverlayOwner::RegisterAtExit();
 
     g_HudUiNewGamePanelOverlayOwner.vftable = 0x66666666;
-    g_HudUiNewGamePanelOverlayOwner.m_panel = 0x77777777;
+    g_HudUiNewGamePanelOverlayOwner.m_dialog =
+        reinterpret_cast<HudUiContainer *>(static_cast<std::uintptr_t>(0x77777777));
     HudUiNewGamePanelOverlayOwner::StaticInitAndRegisterAtExit();
     const bool staticInitRegisterOk =
         g_HudUiNewGamePanelOverlayOwner.vftable ==
             static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(
                 &g_HudUiNewGamePanelOverlayOwner_Vtbl)) &&
-        g_HudUiNewGamePanelOverlayOwner.m_panel == 0;
+        g_HudUiNewGamePanelOverlayOwner.m_dialog == 0;
 
     ZOPT_PLAYER_NAME = oldPlayerNameOption;
     g_zOpt_GameDifficultyOption = oldDifficultyOption;
@@ -4886,14 +5125,15 @@ extern "C" int hud_ui_new_game_panel_overlay_owner_lifecycle_smoke(void) {
 extern "C" int hud_ui_options_panel_overlay_owner_constructor_smoke(void) {
     HudUiOptionsPanelOverlayOwner state{};
     state.vftable = 0x11111111;
-    state.m_panel = 0x22222222;
+    state.m_dialog =
+        reinterpret_cast<HudUiContainer *>(static_cast<std::uintptr_t>(0x22222222));
 
     HudUiOptionsPanelOverlayOwner *const returned = state.Constructor();
     if (returned != &state ||
         state.vftable !=
             static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(
                 &g_HudUiOptionsPanelOverlayOwner_Vtbl)) ||
-        state.m_panel != 0) {
+        state.m_dialog != 0) {
         return 1;
     }
 
@@ -4905,19 +5145,19 @@ extern "C" int hud_ui_options_panel_overlay_owner_destructor_core_smoke(void) {
 
     HudUiOptionsPanelOverlayOwner state{};
     state.vftable = 0x11111111;
-    state.m_panel = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&panel));
+    state.m_dialog = reinterpret_cast<HudUiContainer *>(&panel);
 
     state.DestructorCore();
-    if (state.vftable != RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) || state.m_panel != 0 ||
+    if (state.vftable != RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) || state.m_dialog != 0 ||
         panel.setEnabledCount != 1 || panel.lastEnabled != 0 ||
         panel.scalarDeletingCount != 1 || panel.lastScalarDeletingFlags != 1) {
         return 1;
     }
 
     state.vftable = 0x22222222;
-    state.m_panel = 0;
+    state.m_dialog = 0;
     state.DestructorCore();
-    if (state.vftable != RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) || state.m_panel != 0) {
+    if (state.vftable != RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) || state.m_dialog != 0) {
         return 2;
     }
 
@@ -4929,12 +5169,12 @@ extern "C" int hud_ui_options_panel_overlay_owner_scalar_deleting_destructor_smo
 
     HudUiOptionsPanelOverlayOwner state{};
     state.vftable = 0x11111111;
-    state.m_panel = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&panel));
+    state.m_dialog = reinterpret_cast<HudUiContainer *>(&panel);
 
     HudUiOptionsPanelOverlayOwner *const returned =
         state.ScalarDeletingDestructor(0);
     if (returned != &state || state.vftable != RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) ||
-        state.m_panel != 0 || panel.setEnabledCount != 1 || panel.lastEnabled != 0 ||
+        state.m_dialog != 0 || panel.setEnabledCount != 1 || panel.lastEnabled != 0 ||
         panel.scalarDeletingCount != 1 || panel.lastScalarDeletingFlags != 1) {
         return 1;
     }
@@ -4943,7 +5183,7 @@ extern "C" int hud_ui_options_panel_overlay_owner_scalar_deleting_destructor_smo
         static_cast<HudUiOptionsPanelOverlayOwner *>(
             ::operator new(sizeof(HudUiOptionsPanelOverlayOwner)));
     deletingState->vftable = 0x22222222;
-    deletingState->m_panel = 0;
+    deletingState->m_dialog = 0;
     HudUiOptionsPanelOverlayOwner *const deletingReturned =
         deletingState->ScalarDeletingDestructor(1);
 
@@ -4954,22 +5194,23 @@ extern "C" int hud_ui_options_panel_overlay_owner_static_init_thunks_smoke(void)
     TestConfirmQuitDialog panel{};
 
     g_HudUiOptionsPanelOverlayOwner.vftable = 0x11111111;
-    g_HudUiOptionsPanelOverlayOwner.m_panel = 0x22222222;
+    g_HudUiOptionsPanelOverlayOwner.m_dialog =
+        reinterpret_cast<HudUiContainer *>(static_cast<std::uintptr_t>(0x22222222));
     HudUiOptionsPanelOverlayOwner *const staticInitReturned =
         HudUiOptionsPanelOverlayOwner::StaticInit();
     if (staticInitReturned != &g_HudUiOptionsPanelOverlayOwner ||
         g_HudUiOptionsPanelOverlayOwner.vftable !=
             static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(
                 &g_HudUiOptionsPanelOverlayOwner_Vtbl)) ||
-        g_HudUiOptionsPanelOverlayOwner.m_panel != 0) {
+        g_HudUiOptionsPanelOverlayOwner.m_dialog != 0) {
         return 1;
     }
 
-    g_HudUiOptionsPanelOverlayOwner.m_panel =
-        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&panel));
+    g_HudUiOptionsPanelOverlayOwner.m_dialog =
+        reinterpret_cast<HudUiContainer *>(&panel);
     HudUiOptionsPanelOverlayOwner::AtExitDestructor();
     if (g_HudUiOptionsPanelOverlayOwner.vftable != RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl) ||
-        g_HudUiOptionsPanelOverlayOwner.m_panel != 0 ||
+        g_HudUiOptionsPanelOverlayOwner.m_dialog != 0 ||
         panel.setEnabledCount != 1 || panel.lastEnabled != 0 ||
         panel.scalarDeletingCount != 1 || panel.lastScalarDeletingFlags != 1) {
         return 2;
@@ -4978,12 +5219,13 @@ extern "C" int hud_ui_options_panel_overlay_owner_static_init_thunks_smoke(void)
     HudUiOptionsPanelOverlayOwner::RegisterAtExit();
 
     g_HudUiOptionsPanelOverlayOwner.vftable = 0x33333333;
-    g_HudUiOptionsPanelOverlayOwner.m_panel = 0x44444444;
+    g_HudUiOptionsPanelOverlayOwner.m_dialog =
+        reinterpret_cast<HudUiContainer *>(static_cast<std::uintptr_t>(0x44444444));
     HudUiOptionsPanelOverlayOwner::StaticInitAndRegisterAtExit();
     if (g_HudUiOptionsPanelOverlayOwner.vftable !=
             static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(
                 &g_HudUiOptionsPanelOverlayOwner_Vtbl)) ||
-        g_HudUiOptionsPanelOverlayOwner.m_panel != 0) {
+        g_HudUiOptionsPanelOverlayOwner.m_dialog != 0) {
         return 3;
     }
 
@@ -5003,7 +5245,7 @@ extern "C" int hud_ui_options_panel_overlay_owner_on_try_become_current_smoke(vo
     HudUiOptionsPanelOverlayOwner state{};
     const int accepted = state.OnTryBecomeCurrent();
     HudOptionsDialog *const dialog =
-        reinterpret_cast<HudOptionsDialog *>(static_cast<std::uintptr_t>(state.m_panel));
+        static_cast<HudOptionsDialog *>(state.m_dialog);
 
     int result = 0;
     if (accepted != 1 || dialog == nullptr ||
@@ -8864,7 +9106,8 @@ extern "C" int recoil_state_credits_queue_push_smoke(void) {
 extern "C" int recoil_state_confirm_quit_destructor_smoke(void) {
     RecoilStateConfirmQuit constructed{};
     constructed.vftable = 0x11111111;
-    constructed.m_dialog = 0x22222222;
+    constructed.m_dialog =
+        reinterpret_cast<HudUiContainer *>(static_cast<std::uintptr_t>(0x22222222));
     RecoilStateConfirmQuit *const constructedReturned = constructed.Constructor();
     if (constructedReturned != &constructed || constructed.vftable == 0 ||
         constructed.m_dialog != 0) {
@@ -8875,7 +9118,7 @@ extern "C" int recoil_state_confirm_quit_destructor_smoke(void) {
     TestConfirmQuitDialog dialog{};
 
     state.vftable = 0x11111111;
-    state.m_dialog = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&dialog));
+    state.m_dialog = reinterpret_cast<HudUiContainer *>(&dialog);
 
     state.~RecoilStateConfirmQuit();
 
@@ -8959,7 +9202,7 @@ extern "C" int recoil_state_confirm_quit_destructor_smoke(void) {
     dialog.scalarDeletingCount = 0;
     dialog.lastScalarDeletingFlags = 0;
 
-    state.m_dialog = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&dialog));
+    state.m_dialog = reinterpret_cast<HudUiContainer *>(&dialog);
     state.OnDeactivate();
 
     const bool deactivateOk =

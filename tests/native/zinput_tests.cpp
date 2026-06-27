@@ -467,13 +467,13 @@ extern "C" int zinput_bindgroup_static_lifetime_smoke(void) {
         return 0;
     }
 
-    g_zInput_BindGroupInfoList.allocatorByte = 0x78;
+    g_zInput_BindGroupInfoList.allocatorProxy.value = 0x78;
     g_zInput_BindGroupInfoList.begin = reinterpret_cast<zInput_BindGroupInfo **>(0x1111);
     g_zInput_BindGroupInfoList.end = reinterpret_cast<zInput_BindGroupInfo **>(0x2222);
     g_zInput_BindGroupInfoList.capacity = reinterpret_cast<zInput_BindGroupInfo **>(0x3333);
 
     zInput::BindGroupListStaticInit();
-    if (g_zInput_BindGroupInfoList.allocatorByte != 0 ||
+    if (g_zInput_BindGroupInfoList.allocatorProxy.value != 0 ||
         g_zInput_BindGroupInfoList.begin != nullptr ||
         g_zInput_BindGroupInfoList.end != nullptr ||
         g_zInput_BindGroupInfoList.capacity != nullptr) {
@@ -498,13 +498,13 @@ extern "C" int zinput_bindgroup_static_lifetime_smoke(void) {
         return 3;
     }
 
-    g_zInput_BindGroupInfoList.allocatorByte = 0x78;
+    g_zInput_BindGroupInfoList.allocatorProxy.value = 0x78;
     g_zInput_BindGroupInfoList.begin = reinterpret_cast<zInput_BindGroupInfo **>(0x1111);
     g_zInput_BindGroupInfoList.end = reinterpret_cast<zInput_BindGroupInfo **>(0x2222);
     g_zInput_BindGroupInfoList.capacity = reinterpret_cast<zInput_BindGroupInfo **>(0x3333);
 
     if (zInput::BindGroupList_StaticInitAndRegisterAtExit() != 0 ||
-        g_zInput_BindGroupInfoList.allocatorByte != 0 ||
+        g_zInput_BindGroupInfoList.allocatorProxy.value != 0 ||
         g_zInput_BindGroupInfoList.begin != nullptr ||
         g_zInput_BindGroupInfoList.end != nullptr ||
         g_zInput_BindGroupInfoList.capacity != nullptr) {

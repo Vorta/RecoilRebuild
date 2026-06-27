@@ -463,6 +463,10 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Reconstructed (Name: g_CrtInitFn_RecoilStateCheatCode)
   - [✅] Provider-boundary (Kind: VC++ CRT initializer table; Name: g_CrtInitFn_RecoilStateCheatCode; Origin: compiler/linker-generated __xc initializer slot pointing to RecoilStateCheatCode::StaticInitAndRegisterAtExit; File: external; Target: pending; Group: provider.compiler)
 
+- 0x437ff0:
+  - [✅] Reconstructed (Name: zClass_Object3D_ModelRefLerpQueue::ClearGlobalState_CrtInitThunk)
+  - [✅] Provider-boundary (Kind: VC5 CRT initializer thunk; Name: zClass_Object3D_ModelRefLerpQueue::ClearGlobalState_CrtInitThunk; Origin: Binary Ninja saved state identifies 0x437ff0 as compiler/linker-generated CRT initializer thunk referenced by data slot 0x4da090 and jumping to authored ClearGlobalState body 0x438000; no authored source body lives at 0x437ff0.; File: external; Target: pending; Group: provider.compiler)
+
 - 0x4c8608:
   - [✅] Reconstructed (Name: __ehhandler_RecoilStateControls_Destructor)
   - [✅] Provider-boundary (Kind: compiler-generated glue; Name: __ehhandler_RecoilStateControls_Destructor; Origin: compiler-generated; File: external; Target: pending; Group: provider.compiler)
@@ -2262,7 +2266,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zSys; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: zSys::HasCpuidSupport;
     - File: src/GameZRecoil/zSys/zSys.cpp;
     - Target: zsys_has_cpuid_support;
@@ -2275,7 +2279,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zSys; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: zSys::DetectCpuClassAndFeatures;
     - File: src/GameZRecoil/zSys/zSys_cpu_detect.inl;
     - Target: zsys_detect_cpu_class_and_features;
@@ -2301,7 +2305,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zSys; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: zSys::FindFileOnDriveType;
     - File: src/GameZRecoil/zSys/zSys.cpp;
     - Target: zsys_find_file_on_drive_type;
@@ -2327,7 +2331,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zSys; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: zSys::GetCpuClass;
     - File: src/GameZRecoil/zSys/zSys_cpu_get_class.inl;
     - Target: zsys_get_cpu_class;
@@ -2340,7 +2344,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zSys; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: zSys::GetCpuMhz;
     - File: src/GameZRecoil/zSys/zSys.cpp;
     - Target: zsys_get_cpu_mhz;
@@ -2353,7 +2357,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zSys; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: zSys::ReturnZeroStub;
     - File: src/GameZRecoil/zSys/zSys.cpp;
     - Target: zsys_return_zero_stub;
@@ -2366,7 +2370,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zSys; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: zSys::GetTotalPhysKb;
     - File: src/GameZRecoil/zSys/zSys.cpp;
     - Target: zsys_get_total_phys_kb;
@@ -2379,7 +2383,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zSys; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: zSys::ReadCpuidFeatureFlags;
     - File: src/GameZRecoil/zSys/zSys_cpu_asm.inl;
     - Target: zsys_read_cpuid_feature_flags;
@@ -2392,7 +2396,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zSys; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: zSys::ProbeDivZeroFlagBehavior;
     - File: src/GameZRecoil/zSys/zSys_cpu_asm.inl;
     - Target: zsys_probe_div_zero_flag_behavior;
@@ -2405,7 +2409,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zSys; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: zSys::DetectIs8086ByEflagsHiBits;
     - File: src/GameZRecoil/zSys/zSys_cpu_asm.inl;
     - Target: zsys_detect_is_8086_by_eflags_hi_bits;
@@ -2418,7 +2422,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zSys; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: zSys::DetectIs80286ByEflagsHiBits;
     - File: src/GameZRecoil/zSys/zSys_cpu_asm.inl;
     - Target: zsys_detect_is_80286_by_eflags_hi_bits;
@@ -2444,7 +2448,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: subsystem; Parent: engine.zsys.cpu_feature_detection; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: zSys::ReadCpuidVendorAndFamily;
     - File: src/GameZRecoil/zSys/zSys_cpu_asm.inl;
     - Target: zsys_read_cpuid_vendor_and_family;
@@ -2463,14 +2467,14 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zsys_resolve_cpu_benchmark_packet;
     - Group: engine.zsys;
     - Model: source-faithful;
-    - Blocker: tier S deferred: aggregate resolver VC5 byte compare still has known mismatches
+    - Blocker: tier S blocked: VC5SP3 zsys_cpu now fails only 0x4b36f0 with 155 unmasked mismatches after 24 relocation bytes, BN size 249 vs VC5 size 256 with 13 trimmed NOPs; aggregate result assignment improved from 157 but high-bit test, selector/result zeroing, and fallback copy structure still drift.
 
 - 0x4b37f0:
   - [☑️] Reconstructed (Name: zSys::MeasureMhzViaBsfLoop_Qpc)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: source-file; Parent: engine.zsys.cpu_benchmark_resolver; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: CpuBenchmarkResolver::MeasureMhzViaBsfLoop_Qpc;
     - File: src/GameZRecoil/zSys/zSys.cpp;
     - Target: zsys_measure_mhz_via_bsf_loop_qpc;
@@ -2483,7 +2487,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: source-file; Parent: engine.zsys.cpu_benchmark_resolver; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: CpuBenchmarkResolver::MeasureCpuMhz_RdtscQpc;
     - File: src/GameZRecoil/zSys/zSys.cpp;
     - Target: zsys_measure_cpu_mhz_rdtsc_qpc;
@@ -2496,7 +2500,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: source-file; Parent: engine.zsys.cpu_benchmark_resolver; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: zSys::ReadCmosRtcSecondsBcd;
     - File: src/GameZRecoil/zSys/zSys.cpp;
     - Target: zsys_read_cmos_rtc_seconds_bcd;
@@ -2509,7 +2513,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: source-file; Parent: engine.zsys.cpu_benchmark_resolver; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: zSys::ReadTsc64;
     - File: src/GameZRecoil/zSys/zSys.cpp;
     - Target: zsys_read_tsc64;
@@ -2522,7 +2526,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: source-file; Parent: engine.zsys.cpu_benchmark_resolver; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: CpuBenchmarkResolver::MeasureCpuMhz_CmosRtc;
     - File: src/GameZRecoil/zSys/zSys.cpp;
     - Target: zsys_measure_cpu_mhz_cmos_rtc;
@@ -2535,7 +2539,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: namespace; Parent: zSys; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: zSys::Sub64;
     - File: src/GameZRecoil/zSys/zSys_cpu_asm.inl;
     - Target: zsys_sub64;
@@ -2614,7 +2618,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zmath_vec3_midpoint;
     - Group: engine.zmath;
     - Model: source-faithful;
-    - Blocker: tier S blocked by local VC5SP3 manifest zmath_vec3_midpoint: source now has required docblock and explicit BN-observed sum-then-scale behavior, but vc5_o2_ob0_facs still emits a 96-byte frameless/reordered FPU body versus BN 92 with 75 unmasked byte mismatches after 12 relocation bytes masked and 13 VC NOPs trimmed; vc5_o2_ob1_gx_facs also leaves 75 mismatches and vc5_o2_ob1_md_gx_facs leaves 78, with remaining drift in the retail EBP-frame/callee-saved EBX shape and post-sum scale pass ordering
+    - Blocker: tier S blocked: focused frame-pointer pragma now gives the VC5 output an EBP-frame start, but zmath_vec3_midpoint still fails under vc5_o2_ob0_facs with 72 unmasked mismatches, VC5 size 80 vs BN 92, and remaining drift in retail stack-local/EBX pointer reload plus x87 sum/scale ordering
 
 - 0x472670:
   - [☑️] Reconstructed (Name: zMath::Vec3DeltaLengthSq)
@@ -3394,7 +3398,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zmath_vec3_triangle_normal;
     - Group: engine.zmath;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S blocked: VC5SP3 coverage is now present via zmath_vec3_triangle_normal, but verify vc5 0x475070 still fails with 170 unmasked mismatches after 4 relocation bytes and 10 trailing VC5 NOPs trimmed; retail body has larger EBP-frame/local-storage, push ebx, and different argument/local staging than current source output
 
 - 0x475130:
   - [✅] Reconstructed (Name: zMath::SolveLinearGradient2D)
@@ -4983,9 +4987,9 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x437e60:
   - [✅] Reconstructed (Name: zClass_Node::SetContextRecursive)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: cluster; Parent: zClass; State: implemented)
+  - [✅] Source owner (Kind: source-file; Parent: engine.zclass.node_recursive_flag_state; State: implemented)
   - [❎] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: zClass_Node::SetContextRecursive;
     - File: src/GameZRecoil/zClass/Class.c;
     - Target: zclass_node_set_context_recursive;
@@ -5011,39 +5015,39 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: subsystem; Parent: engine.zclass.object3d_model_ref_lerp_queue; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: zClass_Object3D_ModelRefLerpQueue::Add;
     - File: src/GameZRecoil/zClass/Object3d.c;
     - Target: zclass_object3d_model_ref_lerp_queue_add;
     - Group: engine.zclass.core;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S accepted for owner engine.zclass.object3d_model_ref_lerp_queue: BN split tracks 0x437fe4/0x437ff0 as provider artifacts and VC5SP3 zclass_model_ref_lerp_queue_owner compares 0x438000, 0x438020, 0x438180, 0x4381d0, and data 0x4f41f0 with zero unmasked mismatches.
 
 - 0x438180:
   - [✅] Reconstructed (Name: zClass_Object3D_ModelRefLerpQueue::Reset)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: subsystem; Parent: engine.zclass.object3d_model_ref_lerp_queue; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: zClass_Object3D_ModelRefLerpQueue::Reset;
     - File: src/GameZRecoil/zClass/Object3d.c;
     - Target: zclass_object3d_model_ref_lerp_queue_reset;
     - Group: engine.zclass.core;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S accepted for owner engine.zclass.object3d_model_ref_lerp_queue: BN split tracks 0x437fe4/0x437ff0 as provider artifacts and VC5SP3 zclass_model_ref_lerp_queue_owner compares 0x438000, 0x438020, 0x438180, 0x4381d0, and data 0x4f41f0 with zero unmasked mismatches.
 
 - 0x4381d0:
   - [☑️] Reconstructed (Name: zClass_Object3D_ModelRefLerpQueue::Update)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: subsystem; Parent: engine.zclass.object3d_model_ref_lerp_queue; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: zClass_Object3D_ModelRefLerpQueue::Update;
     - File: src/GameZRecoil/zClass/Object3d.c;
     - Target: zclass_object3d_model_ref_lerp_queue_update;
     - Group: engine.zclass.core;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S accepted for owner engine.zclass.object3d_model_ref_lerp_queue: BN split tracks 0x437fe4/0x437ff0 as provider artifacts and VC5SP3 zclass_model_ref_lerp_queue_owner compares 0x438000, 0x438020, 0x438180, 0x4381d0, and data 0x4f41f0 with zero unmasked mismatches.
 
 - 0x447980:
   - [✅] Reconstructed (Name: zClass_Class::DeleteNodeByType)
@@ -5056,7 +5060,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zclass_class_delete_node_by_type;
     - Group: engine.zclass.core;
     - Model: source-faithful;
-    - Blocker: tier S deferred while global owner/data blockers remain
+    - Blocker: tier S blocked: focused VC5SP3 target zclass_remove_child_delete_dispatch now fails 0x447980 with 111 unmasked mismatches after 86 relocation bytes and 4 trimmed VC5 NOPs, BN size 190 vs VC5 size 208; remaining drift is saved-argument/register-allocation shape around class-id dispatch, while 0x448570/0x448660/0x452970 remain byte-clean.
 
 - 0x447a70:
   - [✅] Reconstructed (Name: zClass_Class::FreeNodeToFreeList)
@@ -5420,7 +5424,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zclass_class_remove_child;
     - Group: engine.zclass.core;
     - Model: source-faithful;
-    - Blocker: tier S deferred while global owner/data blockers remain
+    - Blocker: tier S evidence candidate: VC5SP3 target zclass_remove_child_delete_dispatch compares 0x448570 RemoveChild with zero unmasked mismatches after 128 relocation bytes and 12 trimmed VC5 NOPs when the switch jump table is included via bn_byte_length 228; no isolated S promotion because owner engine.zclass.remove_child_delete_dispatch byte gate remains blocked by sibling 0x447980 and wider owner byte evidence.
 
 - 0x448660:
   - [✅] Reconstructed (Name: zClass_Class::RemoveChildGeneric)
@@ -5433,7 +5437,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zclass_remove_child_generic;
     - Group: engine.zclass.core;
     - Model: source-faithful;
-    - Blocker: tier S deferred while global owner/data blockers remain
+    - Blocker: tier S evidence candidate: VC5SP3 target zclass_remove_child_delete_dispatch and existing zclass_add_child_generic compare 0x448660 RemoveChildGeneric with zero unmasked mismatches after relocation masking; no isolated S promotion because owner engine.zclass.remove_child_delete_dispatch byte gate remains blocked by sibling 0x447980 and wider owner byte evidence.
 
 - 0x448760:
   - [✅] Reconstructed (Name: zClass_Class::gwNodeGetBBox)
@@ -5752,39 +5756,39 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: subsystem; Parent: zClass Object3D alpha/lit setters; State: implemented)
   - [❎] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: zClass_Object3D::gwObject3DSetAlphaScale;
     - File: src/GameZRecoil/zClass/Object3d.c;
     - Target: zclass_object3d_set_alpha_scale;
     - Group: engine.zclass.core;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S accepted for owner engine.zclass.object3d_alpha_lit_setters: VC5SP3 zclass_object3d_copy_dependencies compares 0x44dd90 with zero unmasked mismatches after 28 relocation bytes and 10 trimmed NOPs; sibling owner members 0x44de10 and 0x44de80 also compare byte-clean.
 
 - 0x44de10:
   - [✅] Reconstructed (Name: zClass_Object3D::gwObject3DGetAlphaScale)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: subsystem; Parent: engine.zclass.object3d_alpha_lit_setters; State: implemented)
   - [❎] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: zClass_Object3D::gwObject3DGetAlphaScale;
     - File: src/GameZRecoil/zClass/Object3d.c;
     - Target: zclass_object3d_get_alpha_scale;
     - Group: engine.zclass.core;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S accepted for owner engine.zclass.object3d_alpha_lit_setters: VC5SP3 zclass_object3d_copy_dependencies covers 0x44de10 and compares it with zero unmasked mismatches after 28 relocation bytes and 2 trimmed NOPs; sibling owner members 0x44dd90 and 0x44de80 also compare byte-clean.
 
 - 0x44de80:
   - [✅] Reconstructed (Name: zClass_Object3D::gwObject3DSetLitFlag)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: subsystem; Parent: zClass Object3D alpha/lit setters; State: implemented)
   - [❎] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: zClass_Object3D::gwObject3DSetLitFlag;
     - File: src/GameZRecoil/zClass/Object3d.c;
     - Target: zclass_object3d_set_lit_flag;
     - Group: engine.zclass.core;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S accepted for owner engine.zclass.object3d_alpha_lit_setters: VC5SP3 zclass_object3d_copy_dependencies compares 0x44de80 with zero unmasked mismatches after 28 relocation bytes and 4 trimmed NOPs; sibling owner members 0x44dd90 and 0x44de10 also compare byte-clean.
 
 - 0x44df00:
   - [☑️] Reconstructed (Name: zClass_Object3D::gwObject3DSetScale)
@@ -6525,7 +6529,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zclass_class_remove_child_validated;
     - Group: engine.zclass.core;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S evidence candidate: VC5SP3 target zclass_remove_child_delete_dispatch compares 0x452970 RemoveChildValidated with zero unmasked mismatches after 24 relocation bytes and 2 trimmed VC5 NOPs; no isolated S promotion because owner engine.zclass.remove_child_delete_dispatch byte gate remains blocked by sibling 0x447980 and wider owner byte evidence.
 
 - 0x4542a0:
   - [✅] Reconstructed (Name: zClass_Lod::gwLodNew)
@@ -9519,16 +9523,20 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x437fe4:
   - [✅] Reconstructed (Name: zClass_Object3D_ModelRefLerpQueue::ClearGlobalState)
+  - [✅] Provider-boundary (Kind: VC5 linker padding/fallthrough artifact; Name: zClass_Object3D_ModelRefLerpQueue::ClearGlobalState_PreEntryPadding; Origin: Binary Ninja saved state identifies 0x437fe4 as pre-entry padding/fallthrough before the compiler CRT initializer thunk at 0x437ff0; no authored ClearGlobalState body lives at 0x437fe4, and the authored body starts at 0x438000.; File: external; Target: pending; Group: engine.zclass.core)
+
+- 0x438000:
+  - [✅] Reconstructed (Name: zClass_Object3D_ModelRefLerpQueue::ClearGlobalState)
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: subsystem; Parent: engine.zclass.object3d_model_ref_lerp_queue; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: zClass_Object3D_ModelRefLerpQueue::ClearGlobalState;
     - File: src/GameZRecoil/zClass/Object3d.c;
     - Target: zclass_object3d_model_ref_lerp_queue_clear_global_state;
     - Group: engine.zclass.core;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S accepted for owner engine.zclass.object3d_model_ref_lerp_queue: BN split tracks 0x437fe4/0x437ff0 as provider artifacts and VC5SP3 zclass_model_ref_lerp_queue_owner compares 0x438000, 0x438020, 0x438180, 0x4381d0, and data 0x4f41f0 with zero unmasked mismatches.
 
 - 0x44d990:
   - [✅] Reconstructed (Name: zClass_Node::PropagateTransformDirtyRecursive)
@@ -9614,7 +9622,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zcliprect_clip_poly_zrange_no_uv;
     - Group: engine.zgeometry;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S blocked: zcliprect_clip_poly_zrange_no_uv functional smoke passes and the source has been reshaped toward the BN loop/local-frame order, but VC5SP3 still fails for 0x47a200 with 534 unmasked mismatches after 120 COFF relocation bytes and 6 trailing VC5 NOPs trimmed, BN size 730 vs VC5 size 720; remaining drift is prologue/register allocation and loop scheduling around in/out count reloads and clipped-vertex output cursor handling.
 
 - 0x47a4e0:
   - [☑️] Reconstructed (Name: zClipRect::ClipPolyZRange_NoUV_WithAttribs)
@@ -11522,7 +11530,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: subsystem; Parent: engine.zinput.bindgroup_static_lifetime; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: zInput::BindGroupList_StaticInitAndRegisterAtExit;
     - File: src/GameZRecoil/zInput/zInput.cpp;
     - Target: zinput_bindgroup_list_static_init_and_register_at_exit;
@@ -11548,7 +11556,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: subsystem; Parent: engine.zinput.bindgroup_static_lifetime; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: zInput::BindGroupListRegisterAtExit;
     - File: src/GameZRecoil/zInput/zInput.cpp;
     - Target: zinput_bindgroup_list_register_at_exit;
@@ -11561,7 +11569,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source dependencies satisfied
   - [✅] Source owner (Kind: subsystem; Parent: engine.zinput.bindgroup_static_lifetime; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
+  - [✅] Reimplemented [S]
     - Name: zInput::BindGroupListAtExitDestructor;
     - File: src/GameZRecoil/zInput/zInput.cpp;
     - Target: zinput_bindgroup_list_at_exit_destructor;
@@ -11580,7 +11588,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zinput_bindgroup_list_clear;
     - Group: engine.zinput;
     - Model: source-faithful;
-    - Blocker: tier S deferred: zInput bind-group default setup owner/data gates accepted; 0x42a550 still has known default-table/loop byte drift and owner-level byte promotion remains deferred by global owner/data policy.
+    - Blocker: tier S blocked: VC5SP3 zinput_bindmap_context now fails BindGroupList_Clear with 64 unmasked mismatches after 48 relocation bytes and 10 trimmed VC5 NOPs, BN size 116 vs VC5 size 112; retained VC5 std::vector erase-source model improved the prior 82-mismatch blocker, but owner byte gate remains blocked by sibling 0x42a070 and 0x42a550 drift.
 
 - 0x42a000:
   - [☑️] Reconstructed (Name: zInput_BindGroupInfo::Destroy)
@@ -11606,7 +11614,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zinput_bindgroup_list_add_group;
     - Group: engine.zinput;
     - Model: source-faithful;
-    - Blocker: tier S deferred: zInput bind-group default setup owner/data gates accepted; 0x42a550 still has known default-table/loop byte drift and owner-level byte promotion remains deferred by global owner/data policy.
+    - Blocker: tier S blocked: retained zinput_bindmap_context profile vc5_o2_ob0_md_gx_gr_facs now fails BindGroupList_AddGroup with 501 unmasked mismatches after 68 relocation bytes and 12 trimmed VC5 NOPs, BN size 579 vs VC5 size 320; 0x429f80 remains 64, 0x42a500 remains byte-clean, and 0x42a550 remains 616.
 
 - 0x42a2c0:
   - [☑️] Reconstructed (Name: zInput::BindGroupList_AddCommandToGroup)
@@ -11931,7 +11939,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zinput_bindmap_binding_record_cluster;
     - Group: engine.zinput;
     - Model: source-faithful;
-    - Blocker: tier S deferred: zInput bind-group default setup owner/data gates accepted; 0x42a550 still has known default-table/loop byte drift and owner-level byte promotion remains deferred by global owner/data policy.
+    - Blocker: tier S deferred at owner level: 0x42a500 remains byte-clean in zinput_bindmap_context with zero unmasked mismatches, but no isolated S promotion is accepted while same owner rows 0x429f80, 0x42a070, and 0x42a550 still fail.
 
 - 0x42a550:
   - [✅] Reconstructed (Name: zInput::BindMap_InitDefaultBindings)
@@ -11944,7 +11952,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zinput_bindmap_init_default_bindings;
     - Group: engine.zinput;
     - Model: source-faithful;
-    - Blocker: tier S deferred: zInput bind-group default setup owner/data gates accepted; 0x42a550 still has known default-table/loop byte drift and owner-level byte promotion remains deferred by global owner/data policy.
+    - Blocker: tier S blocked: source has been reshaped from the stale default-table/loop model to BN's straight-line default bind setup, but VC5SP3 zinput_bindmap_context still fails for 0x42a550 with 616 unmasked mismatches after 244 COFF relocation bytes and 7 trailing VC5 NOPs trimmed, BN size 1145 vs VC5 size 1152; remaining drift is fastcall argument scheduling/order plus small size drift.
 
 - 0x42a9d0:
   - [✅] Reconstructed (Name: zInput_BindGroupInfoVec::Count)
@@ -12815,7 +12823,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zinput_bindmap_context_set_command_callback;
     - Group: engine.zinput;
     - Model: source-faithful;
-    - Blocker: tier S verify debt: VC5SP3 function-byte comparison still differs or lacks a narrow accepted zero-mismatch target
+    - Blocker: tier S blocked with real VC5 byte evidence: zinput_bindmap_context now covers 0x470df0 zInput_BindMapContext::SetCommandCallback and compares it with 101 unmasked mismatches after 24 relocation bytes and 14 trimmed NOPs, BN size 129 vs VC5 size 128; previous missing-COFF-symbol manifest blocker is resolved.
 
 - 0x470e80:
   - [☑️] Reconstructed (Name: zInput_BindMapContext::DispatchFromKeyboardEvent)
@@ -16041,16 +16049,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x49f614:
   - [✅] Reconstructed (Name: zSnd::TickWrapper)
-  - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: subsystem; Parent: engine.zsound.zsnd_system_tick_fade_slice; State: implemented)
-  - [✅] Data reimplemented
-  - [✅] Reimplemented [B]
-    - Name: zSnd_TickWrapper;
-    - File: src/GameZRecoil/zSound/zsnd_system.cpp;
-    - Target: zsnd_tick_wrapper;
-    - Group: engine.zsound;
-    - Model: source-faithful;
-    - Blocker: Tier B accepted; pure tier S byte comparison remains deferred by global owner/data policy or existing address-specific byte drift.
+  - [✅] Provider-boundary (Kind: VC5 linker; Name: zSnd::TickWrapper padding/fallthrough; Origin: linker padding/fallthrough artifact before zSnd::Tick; File: external; Target: pending; Group: engine.zsound)
 
 - 0x49f620:
   - [☑️] Reconstructed (Name: zSnd::Tick)
@@ -16063,7 +16062,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zsnd_tick;
     - Group: engine.zsound;
     - Model: source-faithful;
-    - Blocker: Tier B accepted; pure tier S byte comparison remains deferred by global owner/data policy or existing address-specific byte drift.
+    - Blocker: tier S deferred at owner level: 0x49f620 zSnd::Tick passes VC5SP3 zsnd_tick with zero unmasked byte mismatches after 72 COFF relocation bytes and 5 trailing VC5 NOPs trimmed, and 0x49f614 is now classified as VC5 linker padding/fallthrough rather than authored source; no isolated S promotion is accepted while sibling fade-list rows still have byte mismatches and engine.zsound.zsnd_system_tick_fade_slice byte gate remains blocked by final-data layout drift.
 
 - 0x4a0810:
   - [☑️] Reconstructed (Name: zSnd::SetUseArchiveBanks)
@@ -17090,7 +17089,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zsnd_fade_lists_init_globals;
     - Group: engine.zsound;
     - Model: source-faithful;
-    - Blocker: Tier B accepted; pure tier S byte comparison remains deferred by global owner/data policy or existing address-specific byte drift.
+    - Blocker: tier S blocked: VC5SP3 zsnd_fade_lists_init_shutdown still fails InitGlobals with 46 unmasked mismatches after 32 relocation bytes and 9 trimmed VC5 NOPs, BN size 82 vs VC5 size 80; remaining drift is around BN-observed static-init/flag-byte writes, not safe to chase with uninitialized-byte source.
 
 - 0x4a39a0:
   - [✅] Reconstructed (Name: zSndFadeLists::RegisterShutdownAtExit)
@@ -17116,7 +17115,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zsnd_fade_lists_shutdown_at_exit;
     - Group: engine.zsound;
     - Model: source-faithful;
-    - Blocker: Tier B accepted; pure tier S byte comparison remains deferred by global owner/data policy or existing address-specific byte drift.
+    - Blocker: tier S blocked: VC5SP3 zsnd_fade_lists_init_shutdown now fails ShutdownAtExit with 145 unmasked mismatches after 52 relocation bytes and 12 trimmed VC5 NOPs, BN size 204 vs VC5 size 160; dispatch/active drain source shape now advances dead nodes before deletion and improved from 147, but loop/test codegen and unlink scheduling still drift.
 
 - 0x4a3a80:
   - [☑️] Reconstructed (Name: zSndFadeDispatchList::PushBack)
@@ -17155,7 +17154,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zsnd_fade_active_list_tick_all;
     - Group: engine.zsound;
     - Model: source-faithful;
-    - Blocker: Tier B accepted; pure tier S byte comparison remains deferred by global owner/data policy or existing address-specific byte drift.
+    - Blocker: tier S blocked: VC5SP3 zsnd_fade_active_list_tick_all still fails TickAll with 205 unmasked mismatches; source-preserving sentinel-test simplification did not change output, and remaining drift is VC5 empty-list/test materialization plus intrusive-list traversal scheduling.
 
 - 0x4a3d20:
   - [☑️] Reconstructed (Name: zSndFadeLists::StopAllAndShutdown)
@@ -17168,7 +17167,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zsnd_fade_lists_stop_all_shutdown;
     - Group: engine.zsound;
     - Model: source-faithful;
-    - Blocker: Tier B accepted; pure tier S byte comparison remains deferred by global owner/data policy or existing address-specific byte drift.
+    - Blocker: tier S blocked: VC5SP3 zsnd_fade_lists_stop_all_shutdown still fails StopAllAndShutdown with 245 unmasked mismatches; a cursor-pop-flow candidate worsened output and was reverted, leaving destructive intrusive-list traversal/test codegen drift.
 
 - 0x4a3e50:
   - [✅] Reconstructed (Name: zSndFadeList::DeleteNodeAndAdvanceCursor)
@@ -17181,7 +17180,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zsnd_fade_list_delete_node_and_advance_cursor;
     - Group: engine.zsound;
     - Model: source-faithful;
-    - Blocker: tier S blocked: VC5SP3 zsnd_fade_list_delete_node_and_advance_cursor compare still fails with 42 unmasked mismatches after 4 relocation-masked bytes and 11 trimmed VC NOPs; remaining drift is unlink/delete load ordering and helper inlining shape.
+    - Blocker: tier S blocked: VC5SP3 zsnd_fade_list_delete_node_and_advance_cursor now fails DeleteNodeAndAdvanceCursor with 12 unmasked mismatches after 4 relocation bytes and 12 trimmed VC5 NOPs, BN size 52 vs VC5 size 64; saved-next cursor reload moved after intrusive unlink stores improved from 35, but local scheduling around the saved-next load and delete call setup still drifts.
 
 - 0x4a3e90:
   - [✅] Reconstructed (Name: zSndFadeList::PopFrontCursor)
@@ -18660,7 +18659,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: znetwork_delete_all_dispatch_handlers;
     - Group: engine.znetwork;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S blocked at owner level: current VC5SP3 check for 0x48bf40 fails with 51 unmasked mismatches after 16 relocation bytes and 6 trimmed VC5 NOPs, with BN size 84 and VC5 size 80; sibling dispatch/list rows also remain byte-mismatched, so no isolated tier-S promotion is accepted.
 
 - 0x489d00:
   - [☑️] Reconstructed (Name: zNetwork::InitSessionRuntime)
@@ -19284,7 +19283,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: znetwork_create_empty_dispatch_handler_list;
     - Group: engine.znetwork;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S blocked at owner level: zNetworkDispatchHandlerList source/data owner is recovered and 0x48bfb0 passes byte verification, but sibling dispatch/list functions still have VC5 byte mismatches, so no isolated tier-S promotion is accepted.
 
 - 0x48bfe0:
   - [✅] Reconstructed (Name: zNetwork::RegisterDispatchHandlerListShutdown)
@@ -19297,7 +19296,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: znetwork_register_dispatch_handler_list_shutdown;
     - Group: engine.znetwork;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S blocked at owner level: zNetworkDispatchHandlerList source/data owner is recovered and 0x48bfb0 passes byte verification, but sibling dispatch/list functions still have VC5 byte mismatches, so no isolated tier-S promotion is accepted.
 
 - 0x48bff0:
   - [☑️] Reconstructed (Name: zNetwork::DestroyDispatchHandlerList)
@@ -19310,7 +19309,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: znetwork_destroy_dispatch_handler_list;
     - Group: engine.znetwork;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S blocked at owner level: current VC5SP3 check for 0x48bff0 fails with 62 unmasked mismatches after 32 relocation bytes and 11 trimmed VC5 NOPs, with BN size 111 and VC5 size 112; sibling dispatch/list rows also remain byte-mismatched, so no isolated tier-S promotion is accepted.
 
 - 0x48c060:
   - [✅] Reconstructed (Name: zNetwork::SendPacketUnreliable)
@@ -19349,7 +19348,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: znetwork_register_packet_handler;
     - Group: engine.znetwork;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S blocked at owner level: zNetworkDispatchHandlerList source/data owner is recovered, but VC5SP3 0x48c0a0 still fails with 88 unmasked mismatches after 20 relocation bytes and 2 trimmed VC5 NOPs, BN size 117 vs VC5 size 112; payload-slot assignment source shape improved from 90, but sibling dispatch/list functions and VC5 iterator end-test lowering remain byte-mismatched.
 
 - 0x48c120:
   - [☑️] Reconstructed (Name: zNetwork::UnregisterPacketHandler)
@@ -19362,7 +19361,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: znetwork_unregister_packet_handler;
     - Group: engine.znetwork;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S blocked at owner level: current VC5SP3 check still fails for 0x48c120 with 191 unmasked mismatches after iterator/end-test source-shape improvements; verification resolves through znetwork_shutdown_runtime.
 
 - 0x48c200:
   - [☑️] Reconstructed (Name: zNetwork_DPlay::DispatchPacketToHandlers)
@@ -19375,7 +19374,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: znetwork_dplay_dispatch_packet_to_handlers;
     - Group: engine.znetwork;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S blocked at owner level: current VC5SP3 check for 0x48c200 fails with 65 unmasked mismatches after 4 relocation bytes and 1 trimmed VC5 NOP, with BN size 74 and VC5 size 64; sibling dispatch/list rows also remain byte-mismatched, so no isolated tier-S promotion is accepted.
 
 - 0x48c250:
   - [✅] Reconstructed (Name: zNetwork_DPlay::ReportError)
@@ -19401,7 +19400,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: znetwork_init_message_handlers;
     - Group: engine.znetwork;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S blocked at owner level: zNetworkDispatchHandlerList source/data owner is recovered and 0x48bfb0 passes byte verification, but sibling dispatch/list functions still have VC5 byte mismatches, so no isolated tier-S promotion is accepted.
 
 ## G017. Video initialization, DirectDraw/Direct3D, buffers, and FX
 
@@ -19461,7 +19460,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zvid_palette_remap_apply_recipe_to_palette_variant;
     - Group: engine.zvideo;
     - Model: source-faithful;
-    - Blocker: tier S blocked: local VC5SP3 target zvid_palette_remap_apply_recipe_to_palette_variant now covers this source-faithful palette-remap helper and fails with 33 unmasked function-byte mismatches after 48 relocation-masked bytes, BN size 416 and VC5 size 416. Source was adjusted to match BN output-only rgb-bit locals, zero-extended source-color load, tail cursor advance, and fully assigned color local before zVid_PackColorRgbFloats; functional target passes. Remaining blocker includes direct lower tier-S debt in 0x4a6d40 zVid_PackColorRgbFloats plus residual stack/layout and relocation-sensitive scheduling drift.
+    - Blocker: tier S blocked: current zvid_palette_remap_apply_recipe_to_palette_variant still fails 0x46e4e0 with 31 unmasked mismatches after 48 relocation bytes, BN/VC5 size 416/416; direct dependency 0x4a6d40 is now byte-clean, so remaining drift is local stack-slot/local allocation displacement.
 
 - 0x46e680:
   - [☑️] Reconstructed (Name: zVid_PaletteRemap::FindRecipeIndex)
@@ -19474,7 +19473,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zvid_palette_remap_find_recipe_index;
     - Group: engine.zvideo;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S deferred at owner level: zVid_PaletteRemap::FindRecipeIndex remains byte-clean in zvid_palette_remap_find_recipe_index_from_rgb with zero unmasked mismatches after 8 relocation bytes and 7 trimmed VC5 NOPs, but render_video.zvid_palette_remap_runtime remains below S because sibling 0x46e4e0 still fails with 31 mismatches.
 
 - 0x478c70:
   - [☑️] Reconstructed (Name: zVideo::FrustumTestSphereClipMask)
@@ -19708,7 +19707,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zvid_palette_remap_build_palette_variant;
     - Group: engine.zvideo;
     - Model: source-faithful;
-    - Blocker: tier S blocked: local VC5SP3 target zvid_palette_remap_build_palette_variant now covers production source and fails with 302 unmasked mismatches after 108 relocation-masked bytes and 5 trimmed VC NOP bytes (BN size 420, VC5 size 400). Source now matches BN's no-image-null texture-directory scans and inline recipe-count palette byte expression, improving the initial local compare from 303 mismatches. Remaining drift is function entry/prologue plus register/stack allocation around loop/index storage; functional zvid_palette_remap_build_palette_variant passes.
+    - Blocker: tier S deferred at owner level: zvid_palette_remap_build_palette_variant now passes VC5SP3 COFF byte comparison for 0x46e720 with zero unmasked mismatches after 112 relocation bytes and 12 trimmed VC5 NOPs, BN size 420 vs VC5 size 432, but render_video.zvid_palette_remap_runtime remains below S because sibling 0x46e4e0 still fails with 31 mismatches.
 
 - 0x46e8d0:
   - [✅] Reconstructed (Name: zVid_PaletteRemap::BuildAllRecipeVariantsForPalette)
@@ -19721,7 +19720,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zvid_palette_remap_build_all_recipe_variants_for_palette;
     - Group: engine.zvideo;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S deferred at owner level: zvid_palette_remap_build_all_recipe_variants_for_palette now passes VC5SP3 COFF byte comparison for 0x46e8d0 with zero unmasked mismatches after 24 relocation bytes, BN size 144 vs VC5 size 144, but render_video.zvid_palette_remap_runtime remains below S because sibling 0x46e4e0 still fails with 31 mismatches.
 
 - 0x46e960:
   - [✅] Reconstructed (Name: zVid_PaletteRemap::FindRecipeIndexFromRgb)
@@ -19734,7 +19733,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zvid_palette_remap_find_recipe_index_from_rgb;
     - Group: engine.zvideo;
     - Model: source-faithful;
-    - Blocker: tier S blocked: VC5SP3 target zvid_palette_remap_find_recipe_index_from_rgb fails for 0x46e960 with 61 unmasked mismatches after 4 relocation-masked bytes and 11 trimmed VC NOP bytes; drift is stack recipe zero-initialization/codegen shape
+    - Blocker: tier S deferred at owner level: zvid_palette_remap_find_recipe_index_from_rgb remains byte-clean with zero unmasked mismatches after 4 relocation bytes and 4 trimmed VC5 NOPs, BN size 76 vs VC5 size 80, but render_video.zvid_palette_remap_runtime remains below S because sibling 0x46e4e0 still fails with 31 mismatches.
 
 - 0x4c7fd0:
   - [☑️] Reconstructed (Name: zVideo::LoadPaletteFileAndApplyBrightness)
@@ -21970,7 +21969,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zvideo_pixel_pack_get_rgb_bits;
     - Group: engine.zvideo;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S deferred: current VC5SP3 target zvideo_pixel_pack_get_rgb_bits passes with zero unmasked byte mismatches, but linked render_video.zvideo_pixel_pack_state owner byte gate remains deferred while sibling pixel-pack/palette rows remain byte-blocked
 
 - 0x4a6bb0:
   - [✅] Reconstructed (Name: zVideo::PixelPack_GetRgbMasks)
@@ -22048,7 +22047,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zvid_pack_color_rgb_floats;
     - Group: engine.zvideo;
     - Model: source-faithful;
-    - Blocker: tier S blocked: local VC5SP3 target zvid_pack_color_rgb_floats now fails with 7 unmasked function-byte mismatches after 44 relocation-masked bytes and 14 trimmed VC NOP bytes; BN size 98, VC5 size 112. Source now uses a VC5-era unsigned short accumulator matching retail 16-bit red packing and blue shift shape, improving the previous 45-mismatch baseline. Functional target passes. Remaining drift is focused first-channel scheduling: VC5 still loads color->g before color->r while retail loads color->r first.
+    - Blocker: tier S evidence candidate: VC5SP3 zvid_pack_color_rgb_floats now compares 0x4a6d40 with zero unmasked mismatches after 44 relocation bytes and 14 trimmed VC5 NOPs, BN size 98 vs VC5 size 112; no isolated S promotion because owner render_video.zvid_color_pack_pixel_pack byte gate remains blocked by sibling 0x4a6cf0 drift and missing 0x4a6ca0 VC5 coverage.
 
 - 0x4a6db0:
   - [☑️] Reconstructed (Name: zVideo_TexturePixelPack::SetupFromMasks)
@@ -23676,7 +23675,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zdeclient_load_config_resources;
     - Group: engine.zeffect;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S blocked: VC5SP3 zdeclient_load_config_resources now fails for 0x4558f0 with 639 unmasked mismatches after 508 relocation bytes and 12 trimmed VC5 NOPs, BN size 1235 vs VC5 size 1248; quicksand-node fallthrough and global-count reload source shape improved from 655 while 0x455dd0 remains byte-clean, but ReturnSuccessStub/load-node scheduling, quicksand control flow, register allocation, and size drift remain.
 
 - 0x455dd0:
   - [✅] Reconstructed (Name: zDEClient::LoadOrCreateMaterialFromTexturePath)
@@ -23689,7 +23688,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zdeclient_load_material_from_texture_path;
     - Group: engine.zeffect;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S deferred at owner level: 0x455dd0 zDEClient::LoadOrCreateMaterialFromTexturePath passes VC5SP3 zdeclient_load_config_resources with zero unmasked byte mismatches after 20 COFF relocation bytes and 11 trailing VC5 NOPs trimmed, but no isolated S promotion is accepted while engine.zeffect.zdeclient_init_config_resources byte gate remains blocked by 0x4558f0.
 
 - 0x455e40:
   - [✅] Reconstructed (Name: zDEClient::ShutdownGlobals)
@@ -23702,7 +23701,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zdeclient_shutdown_globals;
     - Group: engine.zeffect;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S deferred at owner level: duplicate VC5 coverage was removed and 0x455e40 zDEClient::ShutdownGlobals now passes exact VC5SP3 verification under zdeclient_shutdown_globals with zero unmasked byte mismatches after 36 COFF relocation bytes and 3 trailing VC5 NOPs trimmed, but no isolated S promotion is accepted while engine.zeffect.zdeclient_init_config_resources byte gate remains blocked by 0x4558f0.
 
 - 0x455ea0:
   - [✅] Reconstructed (Name: zDEClient_QSand::DestroyFeature)
@@ -27769,7 +27768,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: briefing_start_for_mission;
     - Group: battlesport.briefing;
     - Model: source-faithful;
-    - Blocker: tier S blocked: VC5SP3 briefing_start_for_mission still fails with 163 unmasked mismatches because current source lacks BN-proven C++ EH state around allocation and HudUiBriefingRuntime construction; same-owner constructor 0x403930 also remains byte-mismatched.
+    - Blocker: tier S deferred at owner level: 0x404180 remains byte-clean under briefing_start_for_mission with zero unmasked mismatches after 96 relocation bytes and 5 trimmed VC5 NOPs, but same-owner constructor 0x403930 still fails briefing_runtime_constructor with 153 unmasked mismatches after 236 relocation bytes and 1 trimmed VC5 NOP, so no isolated S promotion is accepted.
 
 - 0x404280:
   - [✅] Reconstructed (Name: Briefing::RunMissionBriefingLoop)
@@ -35051,7 +35050,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: briefing_runtime_constructor;
     - Group: battlesport.briefing;
     - Model: source-faithful;
-    - Blocker: byte gate open
+    - Blocker: tier S blocked: briefing_runtime_constructor now passes functional smoke after recovering actionQueue unwind ownership, post-construction virtual SetEnabled dispatch, and the loadedRoot FreeLoadedTreeRoots argument, but VC5SP3 still fails 0x403930 with 153 unmasked mismatches after 236 relocation bytes and 1 trimmed VC5 NOP, BN size 736 vs VC5 size 736; remaining drift starts near 0x403993 around transportProgress/missionName register allocation and member-pointer reuse.
 
 - 0x403c10:
   - [✅] Reconstructed (Name: HudUiBriefingLocatorPanel::Constructor)
@@ -35918,119 +35917,119 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x40bc20:
   - [✅] Reconstructed (Name: HudCmdDialogState::StaticInitAndRegisterAtExit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudCmdDialogState; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudCmdDialogState; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: HudCmdDialogState::StaticInitAndRegisterAtExit;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_dialog_state_static_init_and_register_at_exit;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x40bc30:
   - [✅] Reconstructed (Name: HudCmdDialogState::StaticInit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudCmdDialogState; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudCmdDialogState; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: HudCmdDialogState::StaticInit;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_dialog_state_static_init;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x40bc40:
   - [✅] Reconstructed (Name: HudCmdDialogState::RegisterAtExit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudCmdDialogState; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudCmdDialogState; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: HudCmdDialogState::RegisterAtExit;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_dialog_state_register_at_exit;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x40bc50:
   - [✅] Reconstructed (Name: HudCmdDialogState::AtExitDestructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudCmdDialogState; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudCmdDialogState; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: HudCmdDialogState::AtExitDestructor;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_dialog_state_at_exit_destructor;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x40bc60:
   - [✅] Reconstructed (Name: HudCmdDialogState::Constructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudCmdDialogState; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudCmdDialogState; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: HudCmdDialogState::Constructor;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_dialog_state_constructor;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x40bc90:
   - [☑️] Reconstructed (Name: HudCmdDialogState::DestructorCore)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudCmdDialogState; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudCmdDialogState; State: implemented)
   - [❎] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: HudCmdDialogState::DestructorCore;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_dialog_state_destructor_core;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x40bcf0:
   - [✅] Reconstructed (Name: HudCmdDialogState::OnTryBecomeCurrent)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudCmdDialogState; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudCmdDialogState; State: implemented)
   - [❎] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: HudCmdDialogState::OnTryBecomeCurrent;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_dialog_state_on_try_become_current;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x40bd60:
   - [✅] Reconstructed (Name: HudCmdDialogState::OnDeactivate)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudCmdDialogState; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudCmdDialogState; State: implemented)
   - [❎] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: HudCmdDialogState::OnDeactivate;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_dialog_state_on_deactivate;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x40bda0:
   - [✅] Reconstructed (Name: HudCmdDialogState::QueueEnter)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudCmdDialogState; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudCmdDialogState; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: HudCmdDialogState::QueueEnter;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_cmd_dialog_state_queue_enter;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x40be00:
   - [✅] Reconstructed (Name: HudCmdBinding::DestroyRange)
@@ -36433,67 +36432,67 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x40d070:
   - [✅] Reconstructed (Name: HudUiOptionsPanelOverlayOwner::StaticInitAndRegisterAtExit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiOptionsPanelOverlayOwner; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiOptionsPanelOverlayOwner; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: HudUiOptionsPanelOverlayOwner::StaticInitAndRegisterAtExit;
     - File: src/Battlesport/hud.cpp;
     - Target: hud_ui_options_panel_overlay_owner_static_init_and_register_at_exit;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x40d080:
   - [✅] Reconstructed (Name: HudUiOptionsPanelOverlayOwner::StaticInit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiOptionsPanelOverlayOwner; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiOptionsPanelOverlayOwner; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: HudUiOptionsPanelOverlayOwner::StaticInit;
     - File: src/Battlesport/hud.cpp;
     - Target: hud_ui_options_panel_overlay_owner_static_init;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x40d090:
   - [✅] Reconstructed (Name: HudUiOptionsPanelOverlayOwner::RegisterAtExit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiOptionsPanelOverlayOwner; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiOptionsPanelOverlayOwner; State: implemented)
   - [❎] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: HudUiOptionsPanelOverlayOwner::RegisterAtExit;
     - File: src/Battlesport/hud.cpp;
     - Target: hud_ui_options_panel_overlay_owner_register_at_exit;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x40d0a0:
   - [✅] Reconstructed (Name: HudUiOptionsPanelOverlayOwner::AtExitDestructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiOptionsPanelOverlayOwner; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiOptionsPanelOverlayOwner; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: HudUiOptionsPanelOverlayOwner::AtExitDestructor;
     - File: src/Battlesport/hud.cpp;
     - Target: hud_ui_options_panel_overlay_owner_at_exit_destructor;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x40d0b0:
   - [✅] Reconstructed (Name: HudUiOptionsPanelOverlayOwner::Constructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiOptionsPanelOverlayOwner; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiOptionsPanelOverlayOwner; State: implemented)
   - [❎] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: HudUiOptionsPanelOverlayOwner::Constructor;
     - File: src/Battlesport/hud.cpp;
     - Target: hud_ui_options_panel_overlay_owner_constructor;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x40d0c0:
   - [✅] Reconstructed (Name: HudUiOptionsPanelOverlayOwner::ScalarDeletingDestructor)
@@ -36502,28 +36501,28 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x40d150:
   - [☑️] Reconstructed (Name: HudUiOptionsPanelOverlayOwner::OnTryBecomeCurrent)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiOptionsPanelOverlayOwner; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiOptionsPanelOverlayOwner; State: implemented)
   - [❎] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: HudUiOptionsPanelOverlayOwner::OnTryBecomeCurrent;
     - File: src/Battlesport/hud.cpp;
     - Target: hud_ui_options_panel_overlay_owner_on_try_become_current;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x40d1c0:
   - [✅] Reconstructed (Name: HudUiOptionsPanelOverlayOwner::QueueEnter)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiOptionsPanelOverlayOwner; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiOptionsPanelOverlayOwner; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: HudUiOptionsPanelOverlayOwner::QueueEnter;
     - File: src/Battlesport/hud.cpp;
     - Target: hud_ui_options_panel_overlay_owner_queue_enter;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x40d220:
   - [☑️] Reconstructed (Name: HudUiListMenuEntry::CompareSortKey)
@@ -37181,93 +37180,93 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x41c560:
   - [✅] Reconstructed (Name: HudUiNewGamePanelOverlayOwner::OnTryBecomeCurrent)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiNewGamePanelOverlayOwner; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiNewGamePanelOverlayOwner; State: implemented)
   - [❎] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: HudUiNewGamePanelOverlayOwner::OnTryBecomeCurrent;
     - File: src/Battlesport/hud.cpp;
     - Target: hud_ui_new_game_panel_overlay_owner_on_try_become_current;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x41c5e0:
   - [✅] Reconstructed (Name: HudUiNewGamePanelOverlayOwner::StaticInitAndRegisterAtExit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiNewGamePanelOverlayOwner; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiNewGamePanelOverlayOwner; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: HudUiNewGamePanelOverlayOwner::StaticInitAndRegisterAtExit;
     - File: src/Battlesport/hud.cpp;
     - Target: hud_ui_new_game_panel_overlay_owner_lifecycle;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x41c5f0:
   - [✅] Reconstructed (Name: HudUiNewGamePanelOverlayOwner::StaticInit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiNewGamePanelOverlayOwner; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiNewGamePanelOverlayOwner; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: HudUiNewGamePanelOverlayOwner::StaticInit;
     - File: src/Battlesport/hud.cpp;
     - Target: hud_ui_new_game_panel_overlay_owner_lifecycle;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x41c630:
   - [✅] Reconstructed (Name: HudUiNewGamePanelOverlayOwner::Destructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiNewGamePanelOverlayOwner; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiNewGamePanelOverlayOwner; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: HudUiNewGamePanelOverlayOwner::~HudUiNewGamePanelOverlayOwner;
     - File: src/Battlesport/hud.cpp;
     - Target: hud_ui_new_game_panel_overlay_owner_lifecycle;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x41c6a0:
   - [✅] Reconstructed (Name: HudUiNewGamePanelOverlayOwner::RegisterAtExit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiNewGamePanelOverlayOwner; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiNewGamePanelOverlayOwner; State: implemented)
   - [❎] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: HudUiNewGamePanelOverlayOwner::RegisterAtExit;
     - File: src/Battlesport/hud.cpp;
     - Target: hud_ui_new_game_panel_overlay_owner_lifecycle;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x41c6b0:
   - [✅] Reconstructed (Name: HudUiNewGamePanelOverlayOwner::AtExitDestructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiNewGamePanelOverlayOwner; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiNewGamePanelOverlayOwner; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: HudUiNewGamePanelOverlayOwner::AtExitDestructor;
     - File: src/Battlesport/hud.cpp;
     - Target: hud_ui_new_game_panel_overlay_owner_lifecycle;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x41c6c0:
   - [✅] Reconstructed (Name: HudUiNewGamePanelOverlayOwner::QueueEnter)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiNewGamePanelOverlayOwner; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiNewGamePanelOverlayOwner; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: HudUiNewGamePanelOverlayOwner::QueueEnter;
     - File: src/Battlesport/hud.cpp;
     - Target: hud_ui_new_game_panel_overlay_owner_queue_enter;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4b4390:
   - [✅] Reconstructed (Name: HudUiTextInput::AllocTextBuffer)
@@ -41191,7 +41190,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: hud_ui_composite_panel_constructor_with_entry_count;
     - Group: ui.zhud;
     - Model: source-faithful;
-    - Blocker: tier S blocked: functional target hud_ui_composite_panel_constructor_with_entry_count passes and data gate is accepted from generated HudUiCompositePanel table evidence at 0x4d3b40 with zero-mismatch VC5 data-symbol compare and matching relocation identity, but verify vc5 0x4bb790 still fails with 395 unmasked mismatches, 52 relocation-masked bytes, 2 trimmed VC5 NOPs, BN 461 bytes vs VC5 288; remaining drift is constructor EH/inlined vector/member construction source shape and lower HudUiPanel helper tier-S debt.
+    - Blocker: tier S blocked: functional target hud_ui_composite_panel_constructor_with_entry_count passes and data gate remains accepted from generated HudUiCompositePanel table evidence at 0x4d3b40 with zero-mismatch VC5 data-symbol compare; retail 0x4bb790 is now modeled as HudUiCompositePanel::HudUiCompositePanel(int) with ConstructorWithEntryCount as a compatibility wrapper, but verify vc5 0x4bb790 still fails with 339 unmasked mismatches, 60 relocation-masked bytes, 13 trimmed VC5 NOPs, BN size 461 vs VC5 size 400; remaining drift is constructor EH/member construction, allocator byte spelling, inline resize/destruction sequencing, register allocation, and lower HudUiPanel helper byte debt.
 
 - 0x4bb960:
   - [✅] Reconstructed (Name: HudUiCompositePanel::ScalarDeletingDestructor)
@@ -42665,119 +42664,119 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x41ab60:
   - [✅] Reconstructed (Name: HudUiNetGameSetupOverlayOwner::StaticInitAndRegisterAtExit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiNetGameSetupOverlayOwner; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiNetGameSetupOverlayOwner; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: HudUiNetGameSetupOverlayOwner::StaticInitAndRegisterAtExit;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_net_game_setup_overlay_owner_static_init_and_register_at_exit;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x41ab70:
   - [✅] Reconstructed (Name: HudUiNetGameSetupOverlayOwner::StaticInit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiNetGameSetupOverlayOwner; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiNetGameSetupOverlayOwner; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: HudUiNetGameSetupOverlayOwner::StaticInit;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_net_game_setup_overlay_owner_static_init;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x41ab80:
   - [✅] Reconstructed (Name: HudUiNetGameSetupOverlayOwner::RegisterAtExit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiNetGameSetupOverlayOwner; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiNetGameSetupOverlayOwner; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: HudUiNetGameSetupOverlayOwner::RegisterAtExit;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_net_game_setup_overlay_owner_register_at_exit;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x41ab90:
   - [✅] Reconstructed (Name: HudUiNetGameSetupOverlayOwner::AtExitDestructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiNetGameSetupOverlayOwner; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiNetGameSetupOverlayOwner; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: HudUiNetGameSetupOverlayOwner::AtExitDestructor;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_net_game_setup_overlay_owner_at_exit_destructor;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x41aba0:
   - [✅] Reconstructed (Name: HudUiNetGameSetupOverlayOwner::Constructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiNetGameSetupOverlayOwner; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiNetGameSetupOverlayOwner; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: HudUiNetGameSetupOverlayOwner::Constructor;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_net_game_setup_overlay_owner_constructor;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x41abe0:
   - [✅] Reconstructed (Name: HudUiNetGameSetupOverlayOwner::Destructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiNetGameSetupOverlayOwner; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiNetGameSetupOverlayOwner; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: HudUiNetGameSetupOverlayOwner::Destructor;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_net_game_setup_overlay_owner_destructor;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x41ac50:
   - [✅] Reconstructed (Name: HudUiNetGameSetupOverlayOwner::OnTryBecomeCurrent)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiNetGameSetupOverlayOwner; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiNetGameSetupOverlayOwner; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: HudUiNetGameSetupOverlayOwner::OnTryBecomeCurrent;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_net_game_setup_overlay_owner_on_try_become_current;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x41ad20:
   - [✅] Reconstructed (Name: HudUiNetGameSetupOverlayOwner::OnDeactivate)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiNetGameSetupOverlayOwner; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiNetGameSetupOverlayOwner; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: HudUiNetGameSetupOverlayOwner::OnDeactivate;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_net_game_setup_overlay_owner_on_deactivate;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x41ad80:
   - [✅] Reconstructed (Name: HudUiNetGameSetupOverlayOwner::QueueEnterWithReconfigureFlag)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiNetGameSetupOverlayOwner; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiNetGameSetupOverlayOwner; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: HudUiNetGameSetupOverlayOwner::QueueEnterWithReconfigureFlag;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_net_game_setup_queue_enter_reconfigure;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x41bd80:
   - [☑️] Reconstructed (Name: HudUiNetExitPanel::Constructor)
@@ -43384,15 +43383,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x40d0e0:
   - [✅] Reconstructed (Name: HudUiOptionsPanelOverlayOwner::DestructorCore)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: HudUiOptionsPanelOverlayOwner; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: HudUiOptionsPanelOverlayOwner; State: implemented)
   - [❎] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: HudUiOptionsPanelOverlayOwner::DestructorCore;
     - File: src/Battlesport/hud.cpp;
     - Target: hud_ui_options_panel_overlay_owner_destructor_core;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x415790:
   - [✅] Reconstructed (Name: HudUiBackgroundConfirmQuit::ScalarDeletingDestructor)
@@ -44975,67 +44974,67 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x406e90:
   - [☑️] Reconstructed (Name: RecoilStateCheatCode::StaticInitAndRegisterAtExit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilStateCheatCode; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateCheatCode; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: RecoilStateCheatCode::StaticInitAndRegisterAtExit;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_cheat_code_static_init_and_register_at_exit;
     - Group: app.recoil_state_base;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x406ea0:
   - [✅] Reconstructed (Name: RecoilStateCheatCode::ConstructGlobal)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: legacy.app_shell.class_recoilstatecheatcode; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateCheatCode; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: RecoilStateCheatCode::ConstructGlobal;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_cheat_code_construct_global;
     - Group: app.recoil_state_base;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x406eb0:
   - [✅] Reconstructed (Name: RecoilStateCheatCode::StaticInit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilStateCheatCode; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateCheatCode; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: RecoilStateCheatCode::StaticInit;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_cheat_code_static_init;
     - Group: app.recoil_state_base;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x406ec0:
   - [☑️] Reconstructed (Name: RecoilStateCheatCode::AtExitDestructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilStateCheatCode; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateCheatCode; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: RecoilStateCheatCode::AtExitDestructor;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_cheat_code_at_exit_destructor;
     - Group: app.recoil_state_base;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x406ed0:
   - [✅] Reconstructed (Name: RecoilStateCheatCode::Constructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilStateCheatCode; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateCheatCode; State: implemented)
   - [❎] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: RecoilStateCheatCode::Constructor;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_cheat_code_constructor;
     - Group: app.recoil_state_base;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x406ee0:
   - [✅] Reconstructed (Name: RecoilStateCheatCode::ScalarDeletingDestructor)
@@ -45044,41 +45043,41 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x406f00:
   - [☑️] Reconstructed (Name: RecoilStateCheatCode::Destructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilStateCheatCode; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateCheatCode; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: RecoilStateCheatCode::Destructor;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_cheat_code_destructor;
     - Group: app.recoil_state_base;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x406f60:
   - [✅] Reconstructed (Name: RecoilStateCheatCode::OnTryBecomeCurrent)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilStateCheatCode; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateCheatCode; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: RecoilStateCheatCode::OnTryBecomeCurrent;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_cheat_code_on_try_become_current;
     - Group: app.recoil_state_base;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x407010:
   - [☑️] Reconstructed (Name: RecoilStateCheatCode::OnDeactivate)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilStateCheatCode; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateCheatCode; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: RecoilStateCheatCode::OnDeactivate;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_cheat_code_on_deactivate;
     - Group: app.recoil_state_base;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x409990:
   - [✅] Reconstructed (Name: RecoilStateCredits::Constructor)
@@ -45109,15 +45108,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x409a60:
   - [☑️] Reconstructed (Name: RecoilStateCredits::OnTryBecomeCurrent)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilStateCredits; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateCredits; State: implemented)
   - [❎] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: RecoilStateCredits::OnTryBecomeCurrent;
     - File: src/Battlesport/RecoilStateCredits.cpp;
     - Target: recoil_state_credits_on_try_become_current;
     - Group: app.recoil_state_base;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x409ad0:
   - [✅] Reconstructed (Name: RecoilStateDialogHost::OnDeactivate)
@@ -45148,184 +45147,184 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x415810:
   - [✅] Reconstructed (Name: RecoilStateConfirmQuit::StaticInitAndRegisterAtExit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilStateConfirmQuit; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateConfirmQuit; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: RecoilStateConfirmQuit::StaticInitAndRegisterAtExit;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_confirm_quit_static_init_thunks;
     - Group: app.recoil_state_base;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x415820:
   - [✅] Reconstructed (Name: RecoilStateConfirmQuit::StaticInit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilStateConfirmQuit; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateConfirmQuit; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: RecoilStateConfirmQuit::StaticInit;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_confirm_quit_static_init_thunks;
     - Group: app.recoil_state_base;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x415830:
   - [✅] Reconstructed (Name: RecoilStateConfirmQuit::RegisterAtExit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilStateConfirmQuit; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateConfirmQuit; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: RecoilStateConfirmQuit::RegisterAtExit;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_confirm_quit_static_init_thunks;
     - Group: app.recoil_state_base;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x415840:
   - [✅] Reconstructed (Name: RecoilStateConfirmQuit::AtExitDestructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilStateConfirmQuit; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateConfirmQuit; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: RecoilStateConfirmQuit::AtExitDestructor;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_confirm_quit_static_init_thunks;
     - Group: app.recoil_state_base;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x415850:
   - [✅] Reconstructed (Name: RecoilStateConfirmQuit::Constructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilStateConfirmQuit; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateConfirmQuit; State: implemented)
   - [❎] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: RecoilStateConfirmQuit::Constructor;
     - File: src/Battlesport/hud.cpp;
-    - Target: recoil_state_confirm_quit_destructors;
+    - Target: recoil_state_confirm_quit_constructor;
     - Group: app.recoil_state_base;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x415880:
   - [☑️] Reconstructed (Name: RecoilStateConfirmQuit::Destructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilStateConfirmQuit; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateConfirmQuit; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: RecoilStateConfirmQuit::~RecoilStateConfirmQuit;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_confirm_quit_destructor;
     - Group: app.recoil_state_base;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4158f0:
   - [☑️] Reconstructed (Name: RecoilStateConfirmQuit::OnTryBecomeCurrent)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilStateConfirmQuit; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateConfirmQuit; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: RecoilStateConfirmQuit::OnTryBecomeCurrent;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_confirm_quit_on_try_become_current;
     - Group: app.recoil_state_base;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x415960:
   - [✅] Reconstructed (Name: RecoilStateConfirmQuit::OnDeactivate)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilStateConfirmQuit; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateConfirmQuit; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: RecoilStateConfirmQuit::OnDeactivate;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_confirm_quit_on_deactivate;
     - Group: app.recoil_state_base;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x4159b0:
   - [✅] Reconstructed (Name: RecoilStateConfirmQuit::QueueEnter)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilStateConfirmQuit; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateConfirmQuit; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: RecoilStateConfirmQuit::QueueEnter;
     - File: src/Battlesport/hud.cpp;
-    - Target: recoil_state_confirm_quit_destructors;
+    - Target: recoil_state_confirm_quit_queue_enter;
     - Group: app.recoil_state_base;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x408d20:
   - [✅] Reconstructed (Name: RecoilStateControls::StaticInitAndRegisterAtExit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilStateControls; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateControls; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: RecoilStateControls::StaticInitAndRegisterAtExit;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_controls_lifecycle;
     - Group: app.recoil_state_base;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x408d30:
   - [✅] Reconstructed (Name: RecoilStateControls::StaticInit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilStateControls; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateControls; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: RecoilStateControls::StaticInit;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_controls_lifecycle;
     - Group: app.recoil_state_base;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x408d40:
   - [✅] Reconstructed (Name: RecoilStateControls::RegisterAtExit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilStateControls; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateControls; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: RecoilStateControls::RegisterAtExit;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_controls_lifecycle;
     - Group: app.recoil_state_base;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x408d50:
   - [✅] Reconstructed (Name: RecoilStateControls::AtExitDestructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilStateControls; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateControls; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: RecoilStateControls::AtExitDestructor;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_controls_lifecycle;
     - Group: app.recoil_state_base;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x408d60:
   - [✅] Reconstructed (Name: RecoilStateControls::Constructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilStateControls; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateControls; State: implemented)
   - [❎] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: RecoilStateControls::Constructor;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_controls_lifecycle;
     - Group: app.recoil_state_base;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x408d70:
   - [✅] Reconstructed (Name: RecoilStateControls::ScalarDeletingDestructor)
@@ -45334,67 +45333,67 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x408d90:
   - [☑️] Reconstructed (Name: RecoilStateControls::Destructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilStateControls; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateControls; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: RecoilStateControls::Destructor;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_controls_lifecycle;
     - Group: app.recoil_state_base;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x408df0:
   - [☑️] Reconstructed (Name: RecoilStateControls::OnTryBecomeCurrent)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilStateControls; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateControls; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: RecoilStateControls::OnTryBecomeCurrent;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_controls_lifecycle;
     - Group: app.recoil_state_base;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x408ec0:
   - [✅] Reconstructed (Name: RecoilStateControls::OnDeactivate)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilStateControls; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateControls; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: RecoilStateControls::OnDeactivate;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_controls_lifecycle;
     - Group: app.recoil_state_base;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x408fa0:
   - [✅] Reconstructed (Name: RecoilStateControls::OnResume)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilStateControls; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateControls; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: RecoilStateControls::OnResume;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_controls_lifecycle;
     - Group: app.recoil_state_base;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x408ff0:
   - [✅] Reconstructed (Name: RecoilStateControls::QueueEnter)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: class; Parent: RecoilStateControls; State: parent-pending)
+  - [✅] Source owner (Kind: class; Parent: RecoilStateControls; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [F]
+  - [✅] Reimplemented [B]
     - Name: RecoilStateControls::QueueEnter;
     - File: src/Battlesport/hud.cpp;
     - Target: recoil_state_controls_queue_enter;
     - Group: app.recoil_state_base;
-    - Model: pending;
-    - Blocker: dialog-host inheritance/source model not recovered; duplicated typed vtable-slot bodies are interim behavior fixes after virtual self-dispatch wrapper bug
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x409950:
   - [✅] Reconstructed (Name: RecoilStateCredits::StaticInitAndRegisterAtExit)
@@ -46401,7 +46400,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: czgameframe_destructor;
     - Group: app.frame_windows;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S blocked: czgameframe_window_methods still fails CZGameFrame destructor with 53 unmasked mismatches after 36 relocation bytes, BN size 106 vs VC5 size 112; remaining drift is destructor/provider cleanup call ordering.
 
 - 0x4438a0:
   - [✅] Reconstructed (Name: CZGameFrame::IsWindowValid)
@@ -46453,7 +46452,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: czgame_frame_on_paint;
     - Group: app.frame_windows;
     - Model: source-faithful;
-    - Blocker: none
+    - Blocker: tier S deferred at owner level: czgameframe_window_methods now verifies OnPaint with zero unmasked mismatches, but same CZGameFrame class owner still fails 0x443830 and 0x4438a0, so no isolated S promotion is accepted.
 
 - 0x443a20:
   - [✅] Reconstructed (Name: CZGameFrame::OnSize)
@@ -81277,14 +81276,3 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Group: data.render_video;
     - Model: source-faithful;
     - Blocker: owner byte gate deferred; data-symbol bytes matched but owner byte acceptance remains deferred
-
-ker: data owner audit pending
-
-g
-
-it pending
-
-ker: data owner audit pending
-
-g
-

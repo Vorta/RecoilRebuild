@@ -55,21 +55,21 @@ Generated from `.agent/RECOIL_PLAN.md` and `.agent/RECOIL_MESSAGES_PLAN.md`.
 
 | Plan marker | Scope | ✅ | ☑️ | ❎ | ❌ | ❓ | Total |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| Reconstructed | all entries | 5961 | 1117 | 0 | 0 | 0 | 7078 |
-| Source dependencies satisfied | authored entries | 3513 | 0 | 0 | 0 | 2986 | 6499 |
-| Source owner | authored entries | 6499 | 0 | 0 | 0 | 0 | 6499 |
-| Data reimplemented | authored entries | 2624 | 0 | 889 | 0 | 2986 | 6499 |
-| Reimplemented | authored entries | 6499 | 0 | 0 | 0 | 0 | 6499 |
-| Provider-boundary | provider entries | 578 | 1 | 0 | 0 | 0 | 579 |
+| Reconstructed | all entries | 5963 | 1117 | 0 | 0 | 0 | 7080 |
+| Source dependencies satisfied | authored entries | 3512 | 0 | 0 | 0 | 2986 | 6498 |
+| Source owner | authored entries | 6498 | 0 | 0 | 0 | 0 | 6498 |
+| Data reimplemented | authored entries | 2623 | 0 | 889 | 0 | 2986 | 6498 |
+| Reimplemented | authored entries | 6498 | 0 | 0 | 0 | 0 | 6498 |
+| Provider-boundary | provider entries | 581 | 1 | 0 | 0 | 0 | 582 |
 
 | Reimplementation tier | Count | Percent of authored |
 | --- | ---: | ---: |
 | X | 0 | 0.0% |
 | F | 0 | 0.0% |
 | C | 0 | 0.0% |
-| B | 6055 | 93.2% |
+| B | 6032 | 92.8% |
 | A | 166 | 2.6% |
-| S | 278 | 4.3% |
+| S | 300 | 4.6% |
 
 ### messages.dll Plan
 

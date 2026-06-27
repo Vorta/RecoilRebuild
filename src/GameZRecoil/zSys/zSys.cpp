@@ -29,6 +29,9 @@ typedef HRESULT(WINAPI *zDirectDrawCreateFn)(
     IUnknown *
 );
 typedef HMODULE(__stdcall *zLoadLibraryAFn)(const char *);
+using zSys::ReadCmosRtcSecondsBcd;
+using zSys::ReadTsc64;
+using zSys::Sub64;
 
 /**
  * Reimplements data 0x4daaf0: g_zSys_ProbeCreatePrimarySurfaceFailedMsg.
@@ -1027,6 +1030,161 @@ zSys::CpuBenchmarkResult * CpuBenchmarkResolver::MeasureCpuMhz_RdtscQpc(
 }
 #endif
 
+#if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZSYS_CPU_RAW_ASM)
+/*
+ * The VC5 raw-assembly profile keeps the CMOS/RTC timing fallback in assembly
+ * because the second-rollover loops, ReadTsc64/Sub64 call shape, and fixed-point
+ * scaling sequence are byte-verified with the rest of the zSys CPU resolver.
+ */
+/**
+ * Reimplements 0x4b3b50: CpuBenchmarkResolver::MeasureCpuMhz_CmosRtc.
+ * Purpose: Measures CPU MHz by timing a busy loop against CMOS RTC second ticks.
+ */
+__declspec(naked) zSys::CpuBenchmarkResult * CpuBenchmarkResolver::MeasureCpuMhz_CmosRtc(
+    zSys::CpuBenchmarkResult *
+) {
+    __asm {
+        sub esp, 028h
+        push ebx
+        push ebp
+        push esi
+        push edi
+        call dword ptr [GetCurrentThread]
+        mov ebp, eax
+        xor eax, eax
+        mov dword ptr [esp + 028h], eax
+        push ebp
+        mov dword ptr [esp + 030h], eax
+        mov dword ptr [esp + 034h], eax
+        mov dword ptr [esp + 038h], eax
+        call dword ptr [GetThreadPriority]
+        mov ebx, eax
+        cmp ebx, 07fffffffh
+        je recoil_cpu_cmos_priority_ready
+        lea ecx, [ebx + 001h]
+        push ecx
+        push ebp
+        call dword ptr [SetThreadPriority]
+
+    recoil_cpu_cmos_priority_ready:
+        call ReadCmosRtcSecondsBcd
+        mov esi, eax
+
+    recoil_cpu_cmos_wait_start:
+        call ReadCmosRtcSecondsBcd
+        mov edi, eax
+        cmp edi, esi
+        jge recoil_cpu_cmos_start_forward
+        sub eax, esi
+        add eax, 00ah
+        jmp recoil_cpu_cmos_start_delta_ready
+
+    recoil_cpu_cmos_start_forward:
+        mov edx, edi
+        xor eax, eax
+        sub edx, esi
+        test edx, edx
+        setg al
+
+    recoil_cpu_cmos_start_delta_ready:
+        test eax, eax
+        je recoil_cpu_cmos_wait_start
+        lea edx, [esp + 018h]
+        lea ecx, [esp + 01ch]
+        call ReadTsc64
+
+    recoil_cpu_cmos_wait_end:
+        call ReadCmosRtcSecondsBcd
+        mov esi, eax
+        cmp esi, edi
+        jge recoil_cpu_cmos_end_forward
+        sub eax, edi
+        add eax, 00ah
+        jmp recoil_cpu_cmos_end_delta_ready
+
+    recoil_cpu_cmos_end_forward:
+        sub eax, edi
+        xor ecx, ecx
+        test eax, eax
+        setg cl
+        mov eax, ecx
+
+    recoil_cpu_cmos_end_delta_ready:
+        test eax, eax
+        je recoil_cpu_cmos_wait_end
+        lea edx, [esp + 010h]
+        lea ecx, [esp + 014h]
+        call ReadTsc64
+        cmp ebx, 07fffffffh
+        je recoil_cpu_cmos_priority_restored
+        push ebx
+        push ebp
+        call dword ptr [SetThreadPriority]
+
+    recoil_cpu_cmos_priority_restored:
+        mov ecx, dword ptr [esp + 010h]
+        lea edx, [esp + 020h]
+        lea eax, [esp + 024h]
+        push edx
+        mov edx, dword ptr [esp + 018h]
+        push eax
+        push ecx
+        mov ecx, dword ptr [esp + 028h]
+        push edx
+        mov edx, dword ptr [esp + 028h]
+        call Sub64
+        mov ebp, dword ptr [esp + 020h]
+        mov eax, 0431bde83h
+        mul ebp
+        mov eax, 04f8b588fh
+        mov ebx, edx
+        mul ebp
+        mov eax, ebp
+        sub eax, edx
+        shr ebx, 012h
+        shr eax, 1
+        add eax, edx
+        lea ecx, [ebx + ebx * 4]
+        shr eax, 010h
+        shl ecx, 1
+        sub eax, ecx
+        mov dword ptr [esp + 030h], ebx
+        cmp eax, 6
+        jb recoil_cpu_cmos_mhz_rounded
+        inc ebx
+
+    recoil_cpu_cmos_mhz_rounded:
+        lea eax, [edi + edi * 4]
+        pop edi
+        lea eax, [eax + eax * 4]
+        lea eax, [eax + eax * 4]
+        lea eax, [eax + eax * 4]
+        lea eax, [eax + eax * 4]
+        lea edx, [eax + eax * 4]
+        lea eax, [esi + esi * 4]
+        shl edx, 6
+        lea eax, [eax + eax * 4]
+        pop esi
+        lea eax, [eax + eax * 4]
+        lea eax, [eax + eax * 4]
+        lea eax, [eax + eax * 4]
+        lea ecx, [eax + eax * 4]
+        mov eax, dword ptr [esp + 034h]
+        shl ecx, 6
+        sub ecx, edx
+        mov edx, eax
+        mov dword ptr [edx], ebp
+        pop ebp
+        mov dword ptr [edx + 004h], ecx
+        mov ecx, dword ptr [esp + 024h]
+        mov dword ptr [edx + 008h], ecx
+        mov dword ptr [edx + 00ch], ebx
+        pop ebx
+        add esp, 028h
+        ret 4
+    }
+}
+#else
 /**
  * Reimplements 0x4b3b50: CpuBenchmarkResolver::MeasureCpuMhz_CmosRtc.
  * Purpose: Measures CPU MHz by timing a busy loop against CMOS RTC second ticks.
@@ -1110,6 +1268,7 @@ zSys::CpuBenchmarkResult * CpuBenchmarkResolver::MeasureCpuMhz_CmosRtc(
     outBuffer->cpuMhzRounded = cpuMhzRounded;
     return outBuffer;
 }
+#endif
 
 /**
  * Reimplements 0x4b36f0: CpuBenchmarkResolver::ResolveCpuBenchmarkPacket.
@@ -1144,10 +1303,10 @@ zSys::CpuBenchmarkResult * CpuBenchmarkResolver::ResolveCpuBenchmarkPacket(
     zSys::CpuBenchmarkResult localResult;
     zSys::CpuBenchmarkResult *measured;
     if ((featureFlags & 0x10u) != 0 && !forcedLowHint) {
-        if (cpuClassHint != 0) {
-            measured = ((CpuBenchmarkResolver *)expectedCycles)->MeasureCpuMhz_CmosRtc(&localResult);
-        } else {
+        if (cpuClassHint == 0) {
             measured = ((CpuBenchmarkResolver *)expectedCycles)->MeasureCpuMhz_RdtscQpc(&localResult);
+        } else {
+            measured = ((CpuBenchmarkResolver *)expectedCycles)->MeasureCpuMhz_CmosRtc(&localResult);
         }
     } else if ((cpuClass & 0xffff) >= 3) {
         measured =
@@ -1160,10 +1319,7 @@ zSys::CpuBenchmarkResult * CpuBenchmarkResolver::ResolveCpuBenchmarkPacket(
         return outBuffer;
     }
 
-    outBuffer->totalCycles = measured->totalCycles;
-    outBuffer->totalMicroseconds = measured->totalMicroseconds;
-    outBuffer->cpuMhzRaw = measured->cpuMhzRaw;
-    outBuffer->cpuMhzRounded = measured->cpuMhzRounded;
+    *outBuffer = *measured;
     return outBuffer;
 }
 

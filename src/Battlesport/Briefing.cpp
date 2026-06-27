@@ -274,58 +274,99 @@ int g_Briefing_ProgressEventCode = -1;
 }
 
 /**
- * Reimplements 0x403930: HudUiBriefingRuntime::Constructor.
- * Original source path: D:\Proj\Battlesport\Briefing.cpp.
- * Purpose: construct the briefing UI runtime, bind its ZRD widgets, and run the first frame.
+ * Original inline constructor; no standalone retail function exists.
+ * Observed in caller 0x403930 as the first runtime member construction state.
+ * Purpose: initialize the mission-owned briefing action queue and empty node ring.
  */
-HudUiBriefingRuntime * HudUiBriefingRuntime::Constructor(
-    int missionId
+inline Briefing_ActionQueue::Briefing_ActionQueue(
+    int missionIdValue
 ) {
-    new ((HudUiBackground *)this) HudUiBackground;
-
-    actionQueue.missionId = missionId & 0xff;
+    missionId = (unsigned char)(missionIdValue);
     BriefingActionNode *const sentinel = new BriefingActionNode;
     sentinel->prev = sentinel;
     sentinel->next = sentinel;
-    actionQueue.headSentinel = sentinel;
-    actionQueue.nodeCount = 0;
-    actionQueue.sequenceActive = 0;
+    headSentinel = sentinel;
+    nodeCount = 0;
+    sequenceActive = 0;
     g_Briefing_ProgressEventCode = -1;
+}
 
-    transportProgress.Constructor();
-
-    missionName.ConstructorDefault(
-        0,
-        0,
-        0
-    );
-    objectiveSummary.ConstructorDefault(
-        0,
-        0,
-        0
-    );
-    objectiveDesc.ConstructorDefault(
-        0,
-        0,
-        0
-    );
-
-    new (&objectivePicture) HudUiBriefingObjectivePicture;
-    objectivePicture.noiseAlpha = 0.0f;
-    objectivePicture.Invalidate();
-
-    transmissionHalted.ConstructorDefault(
-        0,
-        0,
-        0
-    );
-    messagesPanel.ConstructorWithEntryCount(0x19);
-    {
-        for (int index = 0; index < 6; ++index) {
-            new (&locatorPanels[index]) HudUiBriefingLocatorPanel;
-        }
+/**
+ * Original inline destructor; no standalone retail function exists.
+ * Observed in 0x403930 constructor unwind state after action-queue construction.
+ * Purpose: release the briefing action queue's sentinel and queued action records.
+ */
+inline Briefing_ActionQueue::~Briefing_ActionQueue() {
+    BriefingActionNode *node = headSentinel;
+    if (node == 0) {
+        return;
     }
 
+    while (nodeCount > 0) {
+        BriefingActionNode *const previous = node->prev;
+        delete previous->action;
+        delete previous;
+        --nodeCount;
+    }
+
+    delete node;
+    headSentinel = 0;
+    currentNode = 0;
+    sequenceActive = 0;
+}
+
+/**
+ * Original inline constructor; no standalone retail function exists.
+ * Observed in caller 0x403930 as the transport-progress member construction.
+ * Purpose: construct the briefing progress bar through its fill-bitmap base.
+ */
+inline HudUiBriefingTransportProgress::HudUiBriefingTransportProgress()
+    : HudUiFillBitmap() {
+}
+
+/**
+ * Original inline constructor; no standalone retail function exists.
+ * Observed in caller 0x403930 as the objective-picture member construction.
+ * Purpose: construct the briefing picture widget and clear its noise overlay state.
+ */
+inline HudUiBriefingObjectivePicture::HudUiBriefingObjectivePicture()
+    : HudUiWidget(0) {
+    noiseAlpha = 0.0f;
+    Invalidate();
+}
+
+/**
+ * Reimplements 0x403930: HudUiBriefingRuntime::HudUiBriefingRuntime.
+ * Original source path: D:\Proj\Battlesport\Briefing.cpp.
+ * Purpose: construct the briefing UI runtime, bind its ZRD widgets, and run the first frame.
+ */
+HudUiBriefingRuntime::HudUiBriefingRuntime(
+    int missionId
+) : HudUiBackground(),
+    actionQueue(missionId),
+    transportProgress(),
+    missionName(
+        0,
+        0,
+        0
+    ),
+    objectiveSummary(
+        0,
+        0,
+        0
+    ),
+    objectiveDesc(
+        0,
+        0,
+        0
+    ),
+    objectivePicture(),
+    transmissionHalted(
+        0,
+        0,
+        0
+    ),
+    messagesPanel(25) {
     char campaignSection[0x20];
     sprintf(
         campaignSection,
@@ -403,12 +444,12 @@ HudUiBriefingRuntime * HudUiBriefingRuntime::Constructor(
             (HudUiElement *)(&locatorPanels[5]),
             "LOCATOR6"
         );
-        FreeLoadedTreeRoots(0);
+        FreeLoadedTreeRoots((int)(unsigned int)loadedRoot);
     }
 
     missionName.SetVisible(0);
     messagesPanel.SetVisible(1);
-    SetEnabled(1);
+    ((HudUiContainer *)(this))->SetEnabled(1);
 
     Time::Tick();
     zSnd_Tick(1);
@@ -421,7 +462,18 @@ HudUiBriefingRuntime * HudUiBriefingRuntime::Constructor(
         1,
         1
     );
-    return this;
+}
+
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: retained for native callers that construct into explicit storage
+ * while retail caller 0x404180 uses the C++ new-expression constructor path.
+ * Purpose: preserve storage-based construction for source-level tests.
+ */
+HudUiBriefingRuntime * HudUiBriefingRuntime::Constructor(
+    int missionId
+) {
+    return new (this) HudUiBriefingRuntime(missionId);
 }
 
 /**
@@ -867,11 +919,7 @@ int __fastcall StartForMission(
 ) {
     g_Briefing_SystemActiveFlag = 1;
 
-    HudUiBriefingRuntime *runtime =
-        (HudUiBriefingRuntime *)(::operator new(sizeof(HudUiBriefingRuntime)));
-    if (runtime != 0) {
-        runtime = runtime->Constructor(missionId);
-    }
+    HudUiBriefingRuntime *const runtime = new HudUiBriefingRuntime(missionId);
 
     g_Briefing_Runtime = runtime;
     sprintf(

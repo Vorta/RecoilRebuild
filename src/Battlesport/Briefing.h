@@ -30,12 +30,15 @@ struct BriefingActionNode {
  * the action insertion/tick ownership.
  */
 struct Briefing_ActionQueue {
-    int missionId;
+    unsigned char missionId;
+    char missionIdPadding[3];
     BriefingActionNode *headSentinel;
     int nodeCount;
     BriefingActionNode *currentNode;
     int sequenceActive;
 
+    Briefing_ActionQueue(int missionId);
+    ~Briefing_ActionQueue();
     int InsertAction(BriefingAction *action);
     int AddHideElement(HudUiElement *element);
     int AddShowElement(HudUiElement *element);
@@ -84,6 +87,7 @@ struct HudUiBriefingLocatorPanel : HudUiCircle {
 struct HudUiBriefingObjectivePicture : HudUiWidget {
     float noiseAlpha;
 
+    HudUiBriefingObjectivePicture();
     void Draw();
 };
 RECOIL_STATIC_ASSERT(offsetof(HudUiBriefingObjectivePicture, noiseAlpha) == 0xbc);
@@ -93,6 +97,7 @@ RECOIL_STATIC_ASSERT(offsetof(HudUiBriefingObjectivePicture, noiseAlpha) == 0xbc
  * fill-bitmap-derived member owned by HudUiBriefingRuntime.
  */
 struct HudUiBriefingTransportProgress : HudUiFillBitmap {
+    HudUiBriefingTransportProgress();
 };
 
 /**
@@ -110,6 +115,7 @@ struct HudUiBriefingRuntime : HudUiBackground {
     HudUiCompositePanel messagesPanel;
     HudUiBriefingLocatorPanel locatorPanels[6];
 
+    HudUiBriefingRuntime(int missionId);
     HudUiBriefingRuntime * Constructor(int missionId);
     void Destructor();
     int BuildObjectiveActionsFromIndex(int objectiveIndex);

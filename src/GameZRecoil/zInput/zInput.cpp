@@ -11,6 +11,9 @@
 #endif
 
 #include <math.h>
+#if defined(_MSC_VER) && _MSC_VER < 1200
+#include <vector>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -901,6 +904,10 @@ int zInput_Keyboard_IsUnsuspended() {
 }
 
 namespace {
+#if defined(_MSC_VER) && _MSC_VER < 1200
+typedef std::vector<zInput_BindGroupInfo *> zInput_BindGroupInfoStdVector;
+#endif
+
 /**
  * Reimplements data 0x4e5ce0: k_EmptyString.
  * BN types this as a one-byte initialized empty string returned by bind-map
@@ -908,15 +915,6 @@ namespace {
  * Purpose: Provides a stable empty C string for input binding names.
  */
 char k_EmptyString[] = "";
-
-struct BindMapDefaultBindingSpec {
-    int commandId;
-    int messageId;
-    int primaryKey;
-    int secondaryKey;
-    int joystickSlot;
-    int mouseSlot;
-};
 
 /**
  * Original inline helper evidence: bind-map overlay list head detach.
@@ -1597,14 +1595,21 @@ void BindGroupListStaticInit() {
 /**
  * Reimplements 0x429f50: zInput::BindGroupListAtExitDestructor.
  * Original source path: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
- * Binary Ninja shows the process-exit destructor deletes the global vector
- * buffer and clears begin/end/capacity; stack scratch stores are compiler
- * artifacts, not source-owned fields.
+ * Binary Ninja shows the VC5 std::vector<T*> destructor shape: an inlined
+ * _Destroy(first,end) range over pointer elements, allocator buffer free, then
+ * cleared begin/end/capacity. Pointer elements have no destructor, but the
+ * optimized range still accounts for the saved first-iterator scratch slot.
  * Purpose: Releases the global bind-group pointer vector buffer at process exit.
  */
 void BindGroupListAtExitDestructor() {
-    zInput_BindGroupInfo **const oldBegin = g_zInput_BindGroupInfoList.begin;
-    ::operator delete(oldBegin);
+    for (
+        zInput_BindGroupInfo **first = g_zInput_BindGroupInfoList.begin;
+        first != g_zInput_BindGroupInfoList.end;
+        ++first
+    ) {
+        // VC5 std::vector<T*>::_Destroy visits pointer elements with no body.
+    }
+    ::operator delete(g_zInput_BindGroupInfoList.begin);
     g_zInput_BindGroupInfoList.begin = 0;
     g_zInput_BindGroupInfoList.end = 0;
     g_zInput_BindGroupInfoList.capacity = 0;
@@ -2807,9 +2812,12 @@ int __fastcall BindGroupList_GetGroupCommandId(
  * Purpose: Destroys active bind-group records and resets the vector end pointer.
  */
 void BindGroupList_Clear() {
-    zInput_BindGroupInfo **cursor = g_zInput_BindGroupInfoList.begin;
-    zInput_BindGroupInfo **const end = g_zInput_BindGroupInfoList.end;
-    while (cursor != end) {
+#if defined(_MSC_VER) && _MSC_VER < 1200
+    zInput_BindGroupInfoStdVector *groups =
+        (zInput_BindGroupInfoStdVector *)(&g_zInput_BindGroupInfoList);
+    zInput_BindGroupInfoStdVector::iterator cursor = groups->begin();
+    zInput_BindGroupInfoStdVector::iterator last = groups->end();
+    while (cursor != last) {
         zInput_BindGroupInfo *const group = *cursor;
         if (group != 0) {
             group->Destroy();
@@ -2819,7 +2827,32 @@ void BindGroupList_Clear() {
         ++cursor;
     }
 
-    g_zInput_BindGroupInfoList.end = g_zInput_BindGroupInfoList.begin;
+    groups->erase(groups->begin(), groups->end());
+#else
+    zInput_BindGroupInfo **first = g_zInput_BindGroupInfoList.begin;
+    zInput_BindGroupInfo **last = g_zInput_BindGroupInfoList.end;
+    zInput_BindGroupInfo **cursor = first;
+    while (cursor != last) {
+        const int zeroOffset = (int)(first - cursor);
+        zInput_BindGroupInfo *const group = *cursor;
+        if (group != 0) {
+            group->Destroy();
+            ::operator delete(group);
+        }
+        cursor[zeroOffset] = 0;
+        ++cursor;
+    }
+
+    zInput_BindGroupInfo **copy = g_zInput_BindGroupInfoList.end;
+    zInput_BindGroupInfo **result = g_zInput_BindGroupInfoList.begin;
+    zInput_BindGroupInfo **finish = g_zInput_BindGroupInfoList.end;
+    while (copy != finish) {
+        *result = *copy;
+        ++copy;
+        ++result;
+    }
+    g_zInput_BindGroupInfoList.end = result;
+#endif
 }
 
 /**
@@ -2829,16 +2862,16 @@ void BindGroupList_Clear() {
 int __fastcall BindGroupList_AddGroup(
     const char *title
 ) {
-    const int groupIndex = BindGroupList_GetCount();
+    zInput_BindGroupInfo **begin = g_zInput_BindGroupInfoList.begin;
+    const int groupIndex = begin != 0 ? (int)(g_zInput_BindGroupInfoList.end - begin) : 0;
 
     zInput_BindGroupInfo *group = new zInput_BindGroupInfo;
-    group->title = title;
     group->commandIds.allocatorByte = 0;
     group->commandIds.begin = 0;
     group->commandIds.end = 0;
     group->commandIds.capacity = 0;
+    group->title = title;
 
-    zInput_BindGroupInfo **begin = g_zInput_BindGroupInfoList.begin;
     zInput_BindGroupInfo **end = g_zInput_BindGroupInfoList.end;
     zInput_BindGroupInfo **const capacity = g_zInput_BindGroupInfoList.capacity;
     if (end != 0 && capacity != 0 && capacity - end >= 1) {
@@ -2966,91 +2999,57 @@ void __fastcall BindMap_AddDefaultBinding(
  * Purpose: Clear the bind-group list and seed the retail default command bindings.
  */
 int BindMap_InitDefaultBindings() {
-    static const BindMapDefaultBindingSpec kGroup0[] = {
-        {0x04, 0x806, 0x0c8, 0, 0, 0},
-        {0x01, 0x800, 0x0d0, 0, 0, 0},
-        {0x02, 0x802, 0x0cb, 0, 0, 0},
-        {0x03, 0x804, 0x0cd, 0, 0, 0},
-        {0x2b, 0x8c6, 0x01f, 0, 0, 0},
-        {0x25, 0x874, 0x03b, 0, 0, 0},
-        {0x26, 0x876, 0x03c, 0, 0, 0},
-        {0x27, 0x878, 0x03d, 0, 0, 0},
-        {0x28, 0x87a, 0x03e, 0, 0, 0},
-        {0x05, 0x80e, 0x01e, 0, 0, 0},
-        {0x06, 0x810, 0x02c, 0, 0, 0},
-        {0x07, 0x82a, 0x02e, 0, 6, 0},
-        {0x08, 0x82c, 0x02b, 0, 5, 0},
-        {0x09, 0x872, 0x030, 0, 0, 0},
-        {0x0a, 0x8c2, 0x230, 0, 0, 0},
-    };
-    static const BindMapDefaultBindingSpec kGroup1[] = {
-        {0x0b, 0x88c, 0, 0, 1, 1},
-        {0x0c, 0x88e, 0, 0, 2, 2},
-        {0x0d, 0x8b8, 0x039, 0, 3, 0},
-        {0x0f, 0x812, 0x002, 0x04f, 0, 0},
-        {0x10, 0x814, 0x003, 0x050, 0, 0},
-        {0x11, 0x816, 0x004, 0x051, 0, 0},
-        {0x12, 0x818, 0x005, 0x04b, 0, 0},
-        {0x13, 0x81a, 0x006, 0x04c, 0, 0},
-        {0x14, 0x81c, 0x007, 0x04d, 0, 0},
-        {0x15, 0x81e, 0x008, 0x047, 0, 0},
-        {0x16, 0x820, 0x009, 0x048, 0, 0},
-        {0x17, 0x822, 0x00a, 0x049, 0, 0},
-    };
-    static const BindMapDefaultBindingSpec kGroup2[] = {
-        {0x1e, 0x84e, 0x02f, 0, 0, 0},
-        {0x20, 0x888, 0x03f, 0, 0, 0},
-        {0x21, 0x8a6, 0x040, 0, 0, 0},
-        {0x22, 0x8a8, 0x041, 0, 0, 0},
-    };
-    static const BindMapDefaultBindingSpec kGroup3[] = {
-        {0x19, 0x8a4, 0x013, 0, 0, 0},
-        {0x18, 0x826, 0x018, 0, 0, 0},
-        {0x1a, 0x8c4, 0x011, 0, 0, 0},
-    };
-    static const BindMapDefaultBindingSpec kGroup4[] = {
-        {0x2d, 0x8b6, 0x042, 0, 0, 0},
-        {0x2c, 0x8b4, 0x043, 0, 0, 0},
-        {0x2a, 0x8bc, 0x014, 0, 0, 0},
-        {0x1b, 0x864, 0x032, 0, 0, 0},
-        {0x1c, 0x866, 0x034, 0, 0, 0},
-        {0x1d, 0x868, 0x033, 0, 0, 0},
-        {0x23, 0x88a, 0x22d, 0, 0, 0},
-    };
+    BindGroupList_Clear();
+    g_zInput_CurrentBindGroupIndex = BindGroupList_AddGroup(zLoc::GetMessageString(0x750));
+    BindMap_AddDefaultBinding(0x04, 0x806, 0x0c8, 0, 0, 0);
+    BindMap_AddDefaultBinding(0x01, 0x800, 0x0d0, 0, 0, 0);
+    BindMap_AddDefaultBinding(0x02, 0x802, 0x0cb, 0, 0, 0);
+    BindMap_AddDefaultBinding(0x03, 0x804, 0x0cd, 0, 0, 0);
+    BindMap_AddDefaultBinding(0x2b, 0x8c6, 0x01f, 0, 0, 0);
+    BindMap_AddDefaultBinding(0x25, 0x874, 0x03b, 0, 0, 0);
+    BindMap_AddDefaultBinding(0x26, 0x876, 0x03c, 0, 0, 0);
+    BindMap_AddDefaultBinding(0x27, 0x878, 0x03d, 0, 0, 0);
+    BindMap_AddDefaultBinding(0x28, 0x87a, 0x03e, 0, 0, 0);
+    BindMap_AddDefaultBinding(0x05, 0x80e, 0x01e, 0, 0, 0);
+    BindMap_AddDefaultBinding(0x06, 0x810, 0x02c, 0, 0, 0);
+    BindMap_AddDefaultBinding(0x07, 0x82a, 0x02e, 0, 6, 0);
+    BindMap_AddDefaultBinding(0x08, 0x82c, 0x02b, 0, 5, 0);
+    BindMap_AddDefaultBinding(0x09, 0x872, 0x030, 0, 0, 0);
+    BindMap_AddDefaultBinding(0x0a, 0x8c2, 0x230, 0, 0, 0);
 
-    struct BindMapDefaultGroupSpec {
-        int titleMessageId;
-        const BindMapDefaultBindingSpec *bindings;
-        size_t bindingCount;
-    };
-    static const BindMapDefaultGroupSpec kGroups[] = {
-        {0x750, kGroup0, sizeof(kGroup0) / sizeof(kGroup0[0])},
-        {0x751, kGroup1, sizeof(kGroup1) / sizeof(kGroup1[0])},
-        {0x752, kGroup2, sizeof(kGroup2) / sizeof(kGroup2[0])},
-        {0x753, kGroup3, sizeof(kGroup3) / sizeof(kGroup3[0])},
-        {0x754, kGroup4, sizeof(kGroup4) / sizeof(kGroup4[0])},
-    };
+    g_zInput_CurrentBindGroupIndex = BindGroupList_AddGroup(zLoc::GetMessageString(0x751));
+    BindMap_AddDefaultBinding(0x0b, 0x88c, 0, 0, 1, 1);
+    BindMap_AddDefaultBinding(0x0c, 0x88e, 0, 0, 2, 2);
+    BindMap_AddDefaultBinding(0x0d, 0x8b8, 0x039, 0, 3, 0);
+    BindMap_AddDefaultBinding(0x0f, 0x812, 0x002, 0x04f, 0, 0);
+    BindMap_AddDefaultBinding(0x10, 0x814, 0x003, 0x050, 0, 0);
+    BindMap_AddDefaultBinding(0x11, 0x816, 0x004, 0x051, 0, 0);
+    BindMap_AddDefaultBinding(0x12, 0x818, 0x005, 0x04b, 0, 0);
+    BindMap_AddDefaultBinding(0x13, 0x81a, 0x006, 0x04c, 0, 0);
+    BindMap_AddDefaultBinding(0x14, 0x81c, 0x007, 0x04d, 0, 0);
+    BindMap_AddDefaultBinding(0x15, 0x81e, 0x008, 0x047, 0, 0);
+    BindMap_AddDefaultBinding(0x16, 0x820, 0x009, 0x048, 0, 0);
+    BindMap_AddDefaultBinding(0x17, 0x822, 0x00a, 0x049, 0, 0);
 
-    {
-        int groupIndex2;
-        for (groupIndex2 = 0; groupIndex2 < (int)(sizeof(kGroups) / sizeof((kGroups)[0]));
-            ++groupIndex2) {
-            const BindMapDefaultGroupSpec &group = (kGroups)[groupIndex2];
-            g_zInput_CurrentBindGroupIndex =
-                BindGroupList_AddGroup(zLoc::GetMessageString(group.titleMessageId));
-            for (size_t i = 0; i < group.bindingCount; ++i) {
-                const BindMapDefaultBindingSpec &binding = group.bindings[i];
-                BindMap_AddDefaultBinding(
-                    binding.commandId,
-                    binding.messageId,
-                    binding.primaryKey,
-                    binding.secondaryKey,
-                    binding.joystickSlot,
-                    binding.mouseSlot
-                );
-            }
-        }
-    }
+    g_zInput_CurrentBindGroupIndex = BindGroupList_AddGroup(zLoc::GetMessageString(0x752));
+    BindMap_AddDefaultBinding(0x1e, 0x84e, 0x02f, 0, 0, 0);
+    BindMap_AddDefaultBinding(0x20, 0x888, 0x03f, 0, 0, 0);
+    BindMap_AddDefaultBinding(0x21, 0x8a6, 0x040, 0, 0, 0);
+    BindMap_AddDefaultBinding(0x22, 0x8a8, 0x041, 0, 0, 0);
+
+    g_zInput_CurrentBindGroupIndex = BindGroupList_AddGroup(zLoc::GetMessageString(0x753));
+    BindMap_AddDefaultBinding(0x19, 0x8a4, 0x013, 0, 0, 0);
+    BindMap_AddDefaultBinding(0x18, 0x826, 0x018, 0, 0, 0);
+    BindMap_AddDefaultBinding(0x1a, 0x8c4, 0x011, 0, 0, 0);
+
+    g_zInput_CurrentBindGroupIndex = BindGroupList_AddGroup(zLoc::GetMessageString(0x754));
+    BindMap_AddDefaultBinding(0x2d, 0x8b6, 0x042, 0, 0, 0);
+    BindMap_AddDefaultBinding(0x2c, 0x8b4, 0x043, 0, 0, 0);
+    BindMap_AddDefaultBinding(0x2a, 0x8bc, 0x014, 0, 0, 0);
+    BindMap_AddDefaultBinding(0x1b, 0x864, 0x032, 0, 0, 0);
+    BindMap_AddDefaultBinding(0x1c, 0x866, 0x034, 0, 0, 0);
+    BindMap_AddDefaultBinding(0x1d, 0x868, 0x033, 0, 0, 0);
+    BindMap_AddDefaultBinding(0x23, 0x88a, 0x22d, 0, 0, 0);
 
     BindMap_Current_SetBindingRecord(
         0x24,

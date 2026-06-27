@@ -807,6 +807,7 @@ extern "C" int recoil_app_mission_fmv_on_update_should_quit_smoke(void);
 extern "C" int recoil_app_fmv_state_destructor_smoke(void);
 extern "C" int recoil_app_scalar_deleting_destructor_smoke(void);
 extern "C" int recoil_app_mission_fmv_state_destructor_smoke(void);
+extern "C" int recoil_state_credits_static_init_smoke(void);
 extern "C" int recoil_state_credits_constructor_smoke(void);
 extern "C" int recoil_state_credits_destructor_smoke(void);
 extern "C" int recoil_state_credits_on_wnd_activate_smoke(void);
@@ -833,6 +834,7 @@ extern "C" int recoil_state_controls_queue_enter_smoke(void);
 extern "C" int recoil_state_confirm_quit_queue_enter_smoke(void);
 extern "C" int recoil_state_confirm_quit_static_init_smoke(void);
 extern "C" int recoil_state_confirm_quit_destructor_smoke(void);
+extern "C" int recoil_state_confirm_quit_on_try_become_current_smoke(void);
 extern "C" int hud_ui_confirm_quit_ok_button_on_activate_smoke(void);
 extern "C" int hud_ui_background_confirm_quit_lifecycle_smoke(void);
 extern "C" int hud_ui_load_game_dialog_on_primary_action_smoke(void);
@@ -27564,6 +27566,8 @@ int main(int argc, char **argv) {
          recoil_app_scalar_deleting_destructor_smoke},
         {"recoil_app_mission_fmv_state_destructor_smoke",
          recoil_app_mission_fmv_state_destructor_smoke},
+        {"recoil_state_credits_static_init_smoke",
+         recoil_state_credits_static_init_smoke},
         {"recoil_state_credits_constructor_smoke",
          recoil_state_credits_constructor_smoke},
         {"recoil_state_credits_destructor_smoke",
@@ -27616,6 +27620,8 @@ int main(int argc, char **argv) {
          recoil_state_confirm_quit_static_init_smoke},
         {"recoil_state_confirm_quit_destructor_smoke",
          recoil_state_confirm_quit_destructor_smoke},
+        {"recoil_state_confirm_quit_on_try_become_current_smoke",
+         recoil_state_confirm_quit_on_try_become_current_smoke},
         {"hud_ui_confirm_quit_ok_button_on_activate_smoke",
          hud_ui_confirm_quit_ok_button_on_activate_smoke},
         {"hud_ui_background_confirm_quit_lifecycle_smoke",

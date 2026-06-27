@@ -24,4 +24,12 @@ extern "C" int mfc_cstring_default_ctor_provider_smoke(void) {
 BOOL CWinThread::SetThreadPriority(int priority) {
     return ::SetThreadPriority(m_hThread, priority);
 }
+
+HGDIOBJ CGdiObject::GetSafeHandle() const {
+    return this == 0 ? 0 : m_hObject;
+}
+
+HDC CDC::GetSafeHdc() const {
+    return this == 0 ? 0 : m_hDC;
+}
 #endif

@@ -245,6 +245,31 @@ struct zNetworkDispatchHandlerListNode {
     zNetworkDispatchHandlerRecord *record;
 };
 
+struct zNetworkDispatchHandlerListAllocator {
+    unsigned char value;
+};
+
+struct zNetworkDispatchHandlerList {
+    zNetworkDispatchHandlerListAllocator allocatorProxy;
+    unsigned char allocatorPadding[3];
+    zNetworkDispatchHandlerListNode *sentinel;
+    int count;
+};
+
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zNetworkDispatchHandlerList,
+        sentinel
+    ) == 0x04
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(
+        zNetworkDispatchHandlerList,
+        count
+    ) == 0x08
+);
+RECOIL_STATIC_ASSERT(sizeof(zNetworkDispatchHandlerList) == 0x0c);
+
 extern "C" {
 extern zNetwork_DPlay4 *g_zNetwork_pDirectPlay4;
 extern zNetwork_PlayerRecord *g_zNetwork_LocalPlayerRecord;
@@ -271,9 +296,7 @@ extern zNetworkPlayerRecordList *g_zNetwork_PlayerRecordList;
 extern void *g_zNetwork_ReceiveBuffer;
 extern unsigned int g_zNetwork_ReceiveBufferCapacity;
 extern int g_zNetwork_PlayerColorInUseFlags[16];
-extern zNetworkDispatchHandlerListNode *g_zNetwork_DispatchHandlerListSentinel;
-extern int g_zNetwork_DispatchHandlerListCount;
-extern unsigned char g_zNetwork_DispatchHandlerListFlags;
+extern zNetworkDispatchHandlerList g_zNetwork_DispatchHandlerList;
 extern char g_zNetwork_ProviderName_Modem[0x6];
 extern char g_zNetwork_ProviderName_TcpIp[0x7];
 extern char g_zNetwork_ProviderName_Ipx[0x4];
@@ -323,6 +346,13 @@ int __fastcall zNetwork_ApplyStatusFieldsToSessionDesc(
     zNetworkSessionDescStatusFields *statusFields
 );
 }
+
+#define g_zNetwork_DispatchHandlerListFlags \
+    (g_zNetwork_DispatchHandlerList.allocatorProxy.value)
+#define g_zNetwork_DispatchHandlerListSentinel \
+    (g_zNetwork_DispatchHandlerList.sentinel)
+#define g_zNetwork_DispatchHandlerListCount \
+    (g_zNetwork_DispatchHandlerList.count)
 
 namespace zNetwork_DPlay {
 int RefreshServiceProviderList();

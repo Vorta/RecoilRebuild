@@ -1631,7 +1631,7 @@ unsigned short __fastcall zVid_PackColorRgbFloats(
 
     packed = (unsigned short)(int)(color->r + 0.5f);
     packed &= (unsigned short)(g_zVideo_PixelPack.rMaskShifted);
-    packed <<= (unsigned char)(g_zVideo_PixelPack.packedBase);
+    packed = (unsigned short)((int)(packed) << g_zVideo_PixelPack.packedBase);
     packed = (unsigned short)(packed |
         (((int)(color->g + 0.5f) & g_zVideo_PixelPack.gMaskShifted) << g_zVideo_PixelPack.sumMinus8));
     packed = (unsigned short)(packed |
@@ -7340,9 +7340,6 @@ void __fastcall ApplyRecipeToPaletteVariant(
     float r;
     float g;
     float b;
-    int red;
-    int green;
-    int blue;
     zVideo_ColorRgbFloat color;
 
     while (colorCount > 0) {
@@ -7350,17 +7347,17 @@ void __fastcall ApplyRecipeToPaletteVariant(
         r = 0.0f;
         g = 0.0f;
         if (gBits == 5) {
-            red = packed & 0x7c00;
-            green = packed & 0x03e0;
+            const int red = packed & 0x7c00;
+            const int green = packed & 0x03e0;
             r = (float)(red) * 3.15020152e-05f;
             g = (float)(green) * 0.00100806449f;
         } else {
-            red = packed & 0xf800;
-            green = packed & 0x07e0;
+            const int red = packed & 0xf800;
+            const int green = packed & 0x07e0;
             r = (float)(red) * 1.57510076e-05f;
             g = (float)(green) * 0.000496031775f;
         }
-        blue = packed & 0x001f;
+        const int blue = packed & 0x001f;
         b = (float)(blue) * 0.0322580636f;
 
         color.r = ((recipe->color0R - r) * inverseVariantWeight * recipe->color0Strength +
@@ -7402,8 +7399,10 @@ extern "C" int __fastcall zVid_PaletteRemap_BuildPaletteVariant(
     ));
     g_zVid_PaletteRemapRecipes[g_zVid_PaletteRemapRecipeCount - 1] = *recipe;
 
-    for (int i = 0; i < g_zImage_TexDirEntryCount; ++i) {
-        zVidImagePartial *image = g_zImage_TexDirEntries[i].image;
+    int i = 0;
+    zImage_TexDirEntryPartial *texDirEntry = g_zImage_TexDirEntries;
+    for (; i < g_zImage_TexDirEntryCount; ++i, ++texDirEntry) {
+        zVidImagePartial *image = texDirEntry->image;
         if (image->paletteMetaPacked == 0 || (image->formatFlagsPacked & 0x10) != 0) {
             continue;
         }
@@ -7415,15 +7414,14 @@ extern "C" int __fastcall zVid_PaletteRemap_BuildPaletteVariant(
                 kZVidPaletteColorCount
             ) * sizeof(unsigned short)
         );
-        unsigned short *palette = (unsigned short *)(image->palette);
         {
             for (int variant = 0; variant < kZVidPaletteRemapVariantCount; ++variant) {
                 zVid_PaletteRemap::ApplyRecipeToPaletteVariant(
                     recipe,
-                    palette,
+                    (unsigned short *)(image->palette),
                     image->paletteMetaPacked,
                     variant,
-                    &palette[(
+                    &((unsigned short *)(image->palette))[(
                         ((g_zVid_PaletteRemapRecipeCount - 1) *
                             kZVidPaletteRemapVariantCount) +
                         variant +
@@ -7441,19 +7439,18 @@ extern "C" int __fastcall zVid_PaletteRemap_BuildPaletteVariant(
                 oldTable,
                 (size_t)(
                     (g_zVid_PaletteRemapRecipeCount * kZVidPaletteRemapColorsPerRecipe) +
-                    kZVidPaletteColorCount
-                ) * sizeof(unsigned short)
-            ));
-        unsigned short *table = g_zVid_PaletteRemapVariantTables[tableIndex];
+                kZVidPaletteColorCount
+            ) * sizeof(unsigned short)
+        ));
 
         {
             for (int variant = 0; variant < kZVidPaletteRemapVariantCount; ++variant) {
                 zVid_PaletteRemap::ApplyRecipeToPaletteVariant(
                     recipe,
-                    table,
+                    g_zVid_PaletteRemapVariantTables[tableIndex],
                     kZVidPaletteColorCount,
                     variant,
-                    &table[(
+                    &g_zVid_PaletteRemapVariantTables[tableIndex][(
                         ((g_zVid_PaletteRemapRecipeCount - 1) *
                             kZVidPaletteRemapVariantCount) +
                         variant +
@@ -7463,10 +7460,13 @@ extern "C" int __fastcall zVid_PaletteRemap_BuildPaletteVariant(
             }
         }
 
-        for (int i = 0; i < g_zImage_TexDirEntryCount; ++i) {
-            zVidImagePartial *image = g_zImage_TexDirEntries[i].image;
-            if (image->palette == oldTable) {
-                image->palette = table;
+        {
+            zImage_TexDirEntryPartial *texDirEntry = g_zImage_TexDirEntries;
+            for (int i = 0; i < g_zImage_TexDirEntryCount; ++i, ++texDirEntry) {
+                zVidImagePartial *image = texDirEntry->image;
+                if (image->palette == oldTable) {
+                    image->palette = g_zVid_PaletteRemapVariantTables[tableIndex];
+                }
             }
         }
     }
@@ -7478,12 +7478,7 @@ extern "C" int __fastcall zVid_PaletteRemap_BuildPaletteVariant(
  * Reimplements 0x46e8d0: zVid_PaletteRemap_BuildAllRecipeVariantsForPalette.
  * Purpose: expand a palette with all variants for every active palette-remap recipe.
  */
-extern "C" unsigned short *__fastcall
-/**
- * Reimplements 0x46e8d0: zVid_PaletteRemap_BuildAllRecipeVariantsForPalette.
- * Purpose: provide the recovered zVid_PaletteRemap_BuildAllRecipeVariantsForPalette behavior.
- */
-zVid_PaletteRemap_BuildAllRecipeVariantsForPalette(
+extern "C" unsigned short *__fastcall zVid_PaletteRemap_BuildAllRecipeVariantsForPalette(
     unsigned short *palette,
     int colorCount
 ) {
@@ -7493,25 +7488,30 @@ zVid_PaletteRemap_BuildAllRecipeVariantsForPalette(
 
     unsigned short *result = (unsigned short *)(realloc(
         palette,
-        zVidPaletteRemapTableBytesForRecipeCount(g_zVid_PaletteRemapRecipeCount)
+        (size_t)(
+            (g_zVid_PaletteRemapRecipeCount * kZVidPaletteRemapColorsPerRecipe) +
+            kZVidPaletteColorCount
+        ) * sizeof(unsigned short)
     ));
 
-    for (int recipeIndex = 0; recipeIndex < g_zVid_PaletteRemapRecipeCount; ++recipeIndex) {
-        unsigned short *dest =
-            &result[kZVidPaletteColorCount + recipeIndex * kZVidPaletteRemapColorsPerRecipe];
-        zVidPaletteRemapRecipe *recipe = &g_zVid_PaletteRemapRecipes[recipeIndex];
-        {
-            for (int variant = 0; variant < kZVidPaletteRemapVariantCount; ++variant) {
+    int recipeIndex = 0;
+    if (g_zVid_PaletteRemapRecipeCount > 0) {
+        unsigned short *dest = &result[kZVidPaletteColorCount];
+        do {
+            int variant = 0;
+            do {
                 zVid_PaletteRemap::ApplyRecipeToPaletteVariant(
-                    recipe,
+                    &g_zVid_PaletteRemapRecipes[recipeIndex],
                     result,
                     colorCount,
                     variant,
                     dest
                 );
+                ++variant;
                 dest += kZVidPaletteColorCount;
-            }
-        }
+            } while (variant < kZVidPaletteRemapVariantCount);
+            ++recipeIndex;
+        } while (recipeIndex < g_zVid_PaletteRemapRecipeCount);
     }
 
     return result;
@@ -7528,7 +7528,11 @@ zVid_PaletteRemap_BuildAllRecipeVariantsForPalette(
 extern "C" int __fastcall zVid_PaletteRemap_FindRecipeIndexFromRgb(
     zColorRgb *rgb
 ) {
-    zVidPaletteRemapRecipe recipe = {0};
+    zVidPaletteRemapRecipe recipe;
+    recipe.color0R = 0.0f;
+    recipe.color0G = 0.0f;
+    recipe.color0B = 0.0f;
+    recipe.color0Strength = 0.0f;
     recipe.color1R = rgb->red;
     recipe.color1G = rgb->green;
     recipe.color1B = rgb->blue;

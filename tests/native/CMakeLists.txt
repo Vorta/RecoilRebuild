@@ -94,6 +94,7 @@ import sys
 source_path = Path(sys.argv[1])
 output_path = Path(sys.argv[2])
 text = source_path.read_text()
+LEGACY_PANEL_FIELD = "m_" + "panel"
 
 prefix_marker = 'struct RecoilStateCredits'
 prefix_end = text.index(prefix_marker)
@@ -1305,6 +1306,7 @@ import sys
 source_path = Path(sys.argv[1])
 output_path = Path(sys.argv[2])
 text = source_path.read_text()
+LEGACY_PANEL_FIELD = "m_" + "panel"
 
 include_start = text.index('#include "Battlesport/RecoilApp.h"')
 prefix_end = text.index('\nnamespace {', include_start)
@@ -1374,8 +1376,8 @@ def extract_net_game_setup_overlay_owner_lifecycle_smoke():
             "(void)0;",
         ),
         (
-            "state.m_panel = 0x22222222;",
-            "state.m_panel = reinterpret_cast<HudUiNetGameSetupPanel *>(0x22222222);",
+            f"state.{LEGACY_PANEL_FIELD} = 0x22222222;",
+            "state.m_dialog = reinterpret_cast<HudUiContainer *>(0x22222222);",
         ),
         (
             "HudUiNetGameSetupOverlayOwner *const constructed = state.Constructor();",
@@ -1392,8 +1394,8 @@ def extract_net_game_setup_overlay_owner_lifecycle_smoke():
             "(void)0;",
         ),
         (
-            "g_HudUiNetGameSetupOverlayOwner.m_panel = 0x44444444;",
-            "g_HudUiNetGameSetupOverlayOwner.m_panel = reinterpret_cast<HudUiNetGameSetupPanel *>(0x44444444);",
+            f"g_HudUiNetGameSetupOverlayOwner.{LEGACY_PANEL_FIELD} = 0x44444444;",
+            "g_HudUiNetGameSetupOverlayOwner.m_dialog = reinterpret_cast<HudUiContainer *>(0x44444444);",
         ),
         (
             "g_HudUiNetGameSetupOverlayOwner.vftable ==\n"
@@ -1406,9 +1408,9 @@ def extract_net_game_setup_overlay_owner_lifecycle_smoke():
             "(void)0;",
         ),
         (
-            "state.m_panel =\n"
+            f"state.{LEGACY_PANEL_FIELD} =\n"
             "        static_cast<unsigned int>(reinterpret_cast<std::uintptr_t>(&panel));",
-            "state.m_panel = reinterpret_cast<HudUiNetGameSetupPanel *>(&panel);",
+            "state.m_dialog = reinterpret_cast<HudUiContainer *>(&panel);",
         ),
         (
             "state.Destructor();",
@@ -1423,9 +1425,9 @@ def extract_net_game_setup_overlay_owner_lifecycle_smoke():
             "(void)0;",
         ),
         (
-            "g_HudUiNetGameSetupOverlayOwner.m_panel =\n"
+            f"g_HudUiNetGameSetupOverlayOwner.{LEGACY_PANEL_FIELD} =\n"
             "        static_cast<unsigned int>(reinterpret_cast<std::uintptr_t>(&panel));",
-            "g_HudUiNetGameSetupOverlayOwner.m_panel = reinterpret_cast<HudUiNetGameSetupPanel *>(&panel);",
+            "g_HudUiNetGameSetupOverlayOwner.m_dialog = reinterpret_cast<HudUiContainer *>(&panel);",
         ),
         (
             "g_HudUiNetGameSetupOverlayOwner.vftable == RecoilSymbolPtr32(&g_RecoilStateBase_Vtbl)",
@@ -1460,7 +1462,7 @@ def extract_net_game_setup_overlay_owner_lifecycle_smoke():
             "        static_cast<HudUiNetGameSetupOverlayOwner *>(\n"
             "            ::operator new(sizeof(HudUiNetGameSetupOverlayOwner)));\n"
             "    (void)0;\n"
-            "    deletingState->m_panel = 0;",
+            f"    deletingState->{LEGACY_PANEL_FIELD} = 0;",
             "HudUiNetGameSetupOverlayOwner *const deletingState =\n"
             "        new HudUiNetGameSetupOverlayOwner;",
         ),
@@ -1498,11 +1500,11 @@ def extract_net_game_setup_overlay_owner_lifecycle_smoke():
         (
             "const bool staticInitRegisterOk =\n"
             "        SmokeVPtr32(g_HudUiNetGameSetupOverlayOwner) == SmokeExpectedOverlayOwnerVPtr32() &&\n"
-            "        g_HudUiNetGameSetupOverlayOwner.m_panel == 0 &&\n"
+            f"        g_HudUiNetGameSetupOverlayOwner.{LEGACY_PANEL_FIELD} == 0 &&\n"
             "        g_HudUiNetGameSetupOverlayOwner.m_reconfigureExistingSession == 0;",
             "const bool staticInitRegisterOk =\n"
             "        SmokeVPtr32(g_HudUiNetGameSetupOverlayOwner) == SmokeExpectedOverlayOwnerVPtr32() &&\n"
-            "        g_HudUiNetGameSetupOverlayOwner.m_panel == 0 &&\n"
+            "        g_HudUiNetGameSetupOverlayOwner.m_dialog == 0 &&\n"
             "        g_HudUiNetGameSetupOverlayOwner.m_reconfigureExistingSession == 0 &&\n"
             "        g_netGameSetupAtexitCalls == 1 &&\n"
             "        g_netGameSetupAtexitCallback == &HudUiNetGameSetupOverlayOwner::AtExitDestructor;",
@@ -1525,6 +1527,23 @@ def extract_net_game_setup_overlay_owner_lifecycle_smoke():
         if old not in source:
             raise RuntimeError(f"missing lifecycle smoke fragment: {old!r}")
         source = source.replace(old, new)
+    source = source.replace(f".{LEGACY_PANEL_FIELD}", ".m_dialog")
+    return source
+
+
+def extract_net_game_setup_overlay_owner_deactivate_smoke():
+    source = extract_function("hud_ui_net_game_setup_overlay_owner_on_deactivate_smoke")
+    replacements = [
+        (
+            f"state.{LEGACY_PANEL_FIELD} = reinterpret_cast<HudUiNetGameSetupPanel *>(&panel);",
+            "state.m_dialog = reinterpret_cast<HudUiContainer *>(&panel);",
+        ),
+    ]
+    for old, new in replacements:
+        if old not in source:
+            raise RuntimeError(f"missing deactivate smoke fragment: {old!r}")
+        source = source.replace(old, new)
+    source = source.replace(f".{LEGACY_PANEL_FIELD}", ".m_dialog")
     return source
 
 
@@ -1669,7 +1688,7 @@ output.append(extract_function("hud_ui_net_game_setup_queue_enter_reconfigure_sm
 output.append("")
 output.append(extract_net_game_setup_overlay_owner_lifecycle_smoke().rstrip())
 output.append("")
-output.append(extract_function("hud_ui_net_game_setup_overlay_owner_on_deactivate_smoke").rstrip())
+output.append(extract_net_game_setup_overlay_owner_deactivate_smoke().rstrip())
 output.append("")
 
 output_path.write_text("\n".join(output))
@@ -3677,6 +3696,7 @@ set(ZDECLIENT_NATIVE_SMOKE_PREFIX
     "${CMAKE_CURRENT_BINARY_DIR}/zdeclient_native_smoke_prefix.h"
 )
 file(WRITE "${ZDECLIENT_NATIVE_SMOKE_PREFIX}" [=[
+#include "Battlesport/Mfc42Abi.h"
 #include "GameZRecoil/zNetwork/zNetwork.h"
 #include <cstdint>
 

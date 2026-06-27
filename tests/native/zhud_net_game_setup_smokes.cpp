@@ -808,7 +808,8 @@ extern "C" int hud_ui_net_game_setup_overlay_owner_on_try_smoke(void) {
     HudUiNetGameSetupOverlayOwner state;
     state.m_reconfigureExistingSession = 1;
     const int result = installed ? state.OnTryBecomeCurrent() : 0;
-    HudUiNetGameSetupPanel *const panel = state.m_panel;
+    HudUiNetGameSetupPanel *const panel =
+        static_cast<HudUiNetGameSetupPanel *>(state.m_dialog);
     const bool cdEnabledPath =
         installed &&
         result == 1 &&
@@ -840,14 +841,15 @@ extern "C" int hud_ui_net_game_setup_overlay_owner_on_try_smoke(void) {
         ::operator delete(panel);
     }
 
-    state.m_panel = 0;
+    state.m_dialog = 0;
     state.m_reconfigureExistingSession = 0;
     ResetNetGameSetupProbe();
     ResetNetGameSetupTryProbe();
     g_netSetupLoadResult = reinterpret_cast<zReader::Node *>(&fakeNodeStorage);
     g_netSetupTryCdAudioOption = 0;
     const int noCdResult = installed ? state.OnTryBecomeCurrent() : 0;
-    HudUiNetGameSetupPanel *const noCdPanel = state.m_panel;
+    HudUiNetGameSetupPanel *const noCdPanel =
+        static_cast<HudUiNetGameSetupPanel *>(state.m_dialog);
     const bool cdDisabledPath =
         installed &&
         noCdResult == 1 &&
@@ -860,7 +862,7 @@ extern "C" int hud_ui_net_game_setup_overlay_owner_on_try_smoke(void) {
         noCdPanel->Destructor();
         ::operator delete(noCdPanel);
     }
-    state.m_panel = 0;
+    state.m_dialog = 0;
 
     RestorePatches(
         patches,

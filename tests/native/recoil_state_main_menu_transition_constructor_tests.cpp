@@ -721,7 +721,7 @@ extern "C" int hud_ui_new_game_panel_overlay_owner_on_try_become_current_smoke(v
 
     HudUiNewGamePanelOverlayOwner state;
     const int accepted = state.OnTryBecomeCurrent();
-    HudUiNewGamePanel *const panel = state.m_panel;
+    HudUiNewGamePanel *const panel = (HudUiNewGamePanel *)state.m_dialog;
     const bool ok =
         accepted == 1 &&
         panel != 0 &&
@@ -732,7 +732,7 @@ extern "C" int hud_ui_new_game_panel_overlay_owner_on_try_become_current_smoke(v
 
     if (panel != 0) {
         panel->ScalarDeletingDestructor(1);
-        state.m_panel = 0;
+        state.m_dialog = 0;
     }
 
     ZOPT_PLAYER_NAME = oldPlayerNameOption;
@@ -787,35 +787,37 @@ extern "C" int hud_ui_new_game_panel_overlay_owner_lifecycle_smoke(void) {
     g_zVideo_PrimarySurfaceState.height = 2;
     g_zVideo_PrimarySurfaceState.pitch = sizeof(unsigned short) * 2;
 
-    g_HudUiNewGamePanelOverlayOwner.m_panel = (HudUiNewGamePanel *)0x22222222;
+    g_HudUiNewGamePanelOverlayOwner.m_dialog =
+        (HudUiContainer *)0x22222222;
     HudUiNewGamePanelOverlayOwner *const staticInitReturned =
         HudUiNewGamePanelOverlayOwner::StaticInit();
     const bool staticInitOk =
         staticInitReturned == &g_HudUiNewGamePanelOverlayOwner &&
-        g_HudUiNewGamePanelOverlayOwner.m_panel == 0;
+        g_HudUiNewGamePanelOverlayOwner.m_dialog == 0;
 
     HudUiNewGamePanel *const atExitPanel =
         (HudUiNewGamePanel *)(::operator new(sizeof(HudUiNewGamePanel)));
     new (atExitPanel) HudUiNewGamePanel;
     atExitPanel->SetEnabled(1);
-    g_HudUiNewGamePanelOverlayOwner.m_panel = atExitPanel;
+    g_HudUiNewGamePanelOverlayOwner.m_dialog = atExitPanel;
     HudUiNewGamePanelOverlayOwner::AtExitDestructor();
-    const bool atExitOk = g_HudUiNewGamePanelOverlayOwner.m_panel == 0;
+    const bool atExitOk = g_HudUiNewGamePanelOverlayOwner.m_dialog == 0;
 
     HudUiNewGamePanel *const destructorPanel =
         (HudUiNewGamePanel *)(::operator new(sizeof(HudUiNewGamePanel)));
     new (destructorPanel) HudUiNewGamePanel;
     destructorPanel->SetEnabled(1);
     HudUiNewGamePanelOverlayOwner state;
-    state.m_panel = destructorPanel;
+    state.m_dialog = destructorPanel;
     state.~HudUiNewGamePanelOverlayOwner();
-    const bool destructorOk = state.m_panel == 0;
+    const bool destructorOk = state.m_dialog == 0;
 
     HudUiNewGamePanelOverlayOwner::RegisterAtExit();
 
-    g_HudUiNewGamePanelOverlayOwner.m_panel = (HudUiNewGamePanel *)0x77777777;
+    g_HudUiNewGamePanelOverlayOwner.m_dialog =
+        (HudUiContainer *)0x77777777;
     HudUiNewGamePanelOverlayOwner::StaticInitAndRegisterAtExit();
-    const bool staticInitRegisterOk = g_HudUiNewGamePanelOverlayOwner.m_panel == 0;
+    const bool staticInitRegisterOk = g_HudUiNewGamePanelOverlayOwner.m_dialog == 0;
 
     ZOPT_PLAYER_NAME = oldPlayerNameOption;
     g_zOpt_GameDifficultyOption = oldDifficultyOption;
@@ -926,7 +928,7 @@ extern "C" int recoil_state_cheat_code_on_try_become_current_smoke(void) {
 
     RecoilStateCheatCode state;
     const int accepted = state.OnTryBecomeCurrent();
-    HudUiCheatCodeDialog *const dialog = state.m_dialog;
+    HudUiCheatCodeDialog *const dialog = (HudUiCheatCodeDialog *)state.m_dialog;
     zSndPlayHandleSnapshot *const snapshot =
         reinterpret_cast<zSndPlayHandleSnapshot *>(static_cast<unsigned int>(state.m_audioSnapshot));
 

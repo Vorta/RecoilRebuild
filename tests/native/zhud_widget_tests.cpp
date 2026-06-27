@@ -5873,7 +5873,7 @@ extern "C" int hud_ui_options_panel_overlay_owner_constructor_smoke(void) {
 
     HudUiOptionsPanelOverlayOwner *const state =
         new (stateStorage) HudUiOptionsPanelOverlayOwner;
-    const bool constructed = state->m_panel == nullptr;
+    const bool constructed = state->m_dialog == nullptr;
 
     state->~HudUiOptionsPanelOverlayOwner();
     ::operator delete(stateStorage);
@@ -5890,10 +5890,10 @@ extern "C" int hud_ui_options_panel_overlay_owner_destructor_core_smoke(void) {
     void *const stateStorage = ::operator new(sizeof(HudUiOptionsPanelOverlayOwner));
     HudUiOptionsPanelOverlayOwner *const state =
         new (stateStorage) HudUiOptionsPanelOverlayOwner;
-    state->m_panel = dialog;
+    state->m_dialog = dialog;
     state->~HudUiOptionsPanelOverlayOwner();
 
-    const bool cleared = state->m_panel == nullptr;
+    const bool cleared = state->m_dialog == nullptr;
     ::operator delete(stateStorage);
     return cleared ? 0 : 2;
 }
@@ -5902,7 +5902,7 @@ extern "C" int hud_ui_options_panel_overlay_owner_static_init_thunks_smoke(void)
     HudUiOptionsPanelOverlayOwner *const staticInitReturned =
         HudUiOptionsPanelOverlayOwner::StaticInit();
     if (staticInitReturned != &g_HudUiOptionsPanelOverlayOwner ||
-        g_HudUiOptionsPanelOverlayOwner.m_panel != nullptr) {
+        g_HudUiOptionsPanelOverlayOwner.m_dialog != nullptr) {
         return 1;
     }
 
@@ -5912,15 +5912,15 @@ extern "C" int hud_ui_options_panel_overlay_owner_static_init_thunks_smoke(void)
         return 2;
     }
 
-    g_HudUiOptionsPanelOverlayOwner.m_panel = dialog;
+    g_HudUiOptionsPanelOverlayOwner.m_dialog = dialog;
     HudUiOptionsPanelOverlayOwner::AtExitDestructor();
-    if (g_HudUiOptionsPanelOverlayOwner.m_panel != nullptr) {
+    if (g_HudUiOptionsPanelOverlayOwner.m_dialog != nullptr) {
         return 3;
     }
 
     HudUiOptionsPanelOverlayOwner::RegisterAtExit();
     HudUiOptionsPanelOverlayOwner::StaticInitAndRegisterAtExit();
-    return g_HudUiOptionsPanelOverlayOwner.m_panel == nullptr ? 0 : 4;
+    return g_HudUiOptionsPanelOverlayOwner.m_dialog == nullptr ? 0 : 4;
 }
 
 extern "C" int hud_ui_options_panel_overlay_owner_queue_enter_smoke(void) {
@@ -5945,7 +5945,7 @@ extern "C" int hud_ui_options_panel_overlay_owner_on_try_become_current_smoke(vo
     HudUiOptionsPanelOverlayOwner *const state =
         new (stateStorage) HudUiOptionsPanelOverlayOwner;
     const int accepted = state->OnTryBecomeCurrent();
-    HudOptionsDialog *const dialog = state->m_panel;
+    HudOptionsDialog *const dialog = (HudOptionsDialog *)state->m_dialog;
 
     const bool becameCurrent =
         accepted == 1 &&

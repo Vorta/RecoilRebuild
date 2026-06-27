@@ -214,7 +214,7 @@ extern "C" int zhud_cmd_dialog_state_on_try_become_current_smoke(void) {
     StateStorage storage = {};
     HudCmdDialogState *state = new (storage.bytes) HudCmdDialogState();
     const int became = state->OnTryBecomeCurrent();
-    HudCmdDialog *const dialog = state->m_dialog;
+    HudCmdDialog *const dialog = (HudCmdDialog *)state->m_dialog;
     const bool becameCurrent =
         became == 1 &&
         g_hudCmdDialogConstructorProbeCalls == 1 &&

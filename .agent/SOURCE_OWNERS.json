@@ -191,7 +191,8 @@
         "CZGameFrame class data is linked to owner and covered by same-session VC5 data-symbol checks: czgameframe_vtable_data passed for 0x4d21d8 and czgameframe_class_data/address checks passed for 0x4dd8e8, 0x4dd8f0, and 0x4dd904 with zero unmasked mismatches.",
         "CZGameFrame class source/data/functional gates accepted in this session; prior blocker about failing constructor/create-object smokes and missing 0x4dd8f0 VC coverage is stale after functional reruns and czgameframe_class_data/czgameframe_vtable_data verification.",
         "CZGameFrame class owner uses class string data now tracked by split data owner; class function/vtable byte gate remains separate.",
-        "Current-session VC5SP3 target czgameframe_window_methods still fails for coherent CZGameFrame class byte gate: 0x443830 has 53 unmasked mismatches, 0x4438a0 has 13, 0x4438c0 has 25, and 0x443900 has 188; 0x4438f0/0x443a20/0x443a50/0x443a60/0x443ab0/0x443ae0 pass but class-level byte gate remains blocked. Functional 0x443830 passed; CZGameFrame.cpp docblock/raw/source-shape guards and provenance audit passed."
+        "Current-session VC5SP3 target czgameframe_window_methods still fails for coherent CZGameFrame class byte gate: 0x443830 has 53 unmasked mismatches, 0x4438a0 has 13, 0x4438c0 has 25, and 0x443900 has 188; 0x4438f0/0x443a20/0x443a50/0x443a60/0x443ab0/0x443ae0 pass but class-level byte gate remains blocked. Functional 0x443830 passed; CZGameFrame.cpp docblock/raw/source-shape guards and provenance audit passed.",
+        "owner byte gate blocked: czgameframe_window_methods now has byte-clean 0x4438c0 and 0x443900 after source-shape cleanup and keeps prior clean window handlers, but class owner still fails 0x443830=53 and 0x4438a0=1 unmasked mismatches; no isolated S promotion accepted inside coherent CZGameFrame class"
       ]
     },
     {
@@ -15446,7 +15447,7 @@
         "source": "accepted",
         "data": "none",
         "functional": "accepted",
-        "byte": "deferred"
+        "byte": "accepted"
       },
       "blocker": "none",
       "evidence": [
@@ -15458,7 +15459,9 @@
         "BN xrefs/assembly for 0x421d60, 0x421da0, 0x421de0, and 0x437ea0 show no authored global/data refs; 0x437ea0 only mutates caller-owned zDi state through 0x4826d0.",
         "Boundary/source/data-none/functional gates accepted for the zClass node recursive flag-state owner; byte remains deferred.",
         "Linked 0x437e60 zClass_Node::SetContextRecursive after same-session mapper identified it as part of the accepted Class.c recursive node flag-state owner; functional target zclass_node_set_context_recursive passed and plan entry remains B/data-none.",
-        "Pure tier S remains deferred to a coherent zClass/Class.c source-cluster pass; current owner has accepted source/data-none/functional gates."
+        "Pure tier S remains deferred to a coherent zClass/Class.c source-cluster pass; current owner has accepted source/data-none/functional gates.",
+        "VC5SP3 zclass_node_mask_extra_flags_recursive now verifies all five recursive node flag-state owner members 0x421d60, 0x421da0, 0x421de0, 0x437e60, and 0x437ea0 with zero unmasked byte mismatches after COFF relocation masking; 0x437e60 was added to the coherent owner manifest and sibling S rows remain byte-clean.",
+        "Owner byte gate accepted after coherent VC5SP3 verification of all recursive node flag-state members."
       ]
     },
     {
@@ -15675,7 +15678,7 @@
         "source": "accepted",
         "data": "none",
         "functional": "accepted",
-        "byte": "deferred"
+        "byte": "accepted"
       },
       "blocker": "none",
       "evidence": [
@@ -15689,7 +15692,8 @@
         "Object3d.c implements SetAlphaScale/GetAlphaScale/SetLitFlag with typed zClass_NodePartial and zClass_Object3DDataPartial access and no raw runtime-state offsets or scaffolds.",
         "The three alpha/lit accessors touch only caller-owned node/classData fields and diagnostic strings through accepted zError paths; no direct authored global storage is read or written.",
         "Source/data/functional gates are accepted for the three-function accessor slice; code byte verification remains deferred.",
-        "Functional target zclass_object3d_get_alpha_scale passes with the same zclass_object3d_alpha_scale_and_lit_smoke already covering the setter/lit behavior."
+        "Functional target zclass_object3d_get_alpha_scale passes with the same zclass_object3d_alpha_scale_and_lit_smoke already covering the setter/lit behavior.",
+        "VC5SP3 zclass_object3d_copy_dependencies now compares all owner members byte-clean: 0x44dd90 gwObject3DSetAlphaScale OK with zero unmasked mismatches after 28 relocation bytes and 10 trimmed NOPs, 0x44de10 gwObject3DGetAlphaScale OK with zero unmasked mismatches after 28 relocation bytes and 2 trimmed NOPs, and 0x44de80 gwObject3DSetLitFlag OK with zero unmasked mismatches after 28 relocation bytes and 4 trimmed NOPs; broader manifest still fails only on out-of-owner Object3D functions/data."
       ]
     },
     {
@@ -15735,10 +15739,10 @@
         "0x438020"
       ],
       "member_addresses": [
-        "0x437fe4",
         "0x438020",
         "0x438180",
-        "0x4381d0"
+        "0x4381d0",
+        "0x438000"
       ],
       "data_addresses": [
         {
@@ -15758,9 +15762,9 @@
         "source": "accepted",
         "data": "accepted",
         "functional": "accepted",
-        "byte": "blocked"
+        "byte": "accepted"
       },
-      "blocker": "final-data audit blocks byte gate: candidate Recoil.exe .data section/raw/virtual layout differs from retail",
+      "blocker": "none",
       "evidence": [
         "BN/source prove a bounded Object3D model-reference lerp queue subsystem: ClearGlobalState/Add/Reset/Update share g_ModelRefLerpQueueState and zClass_Object3D_ModelRefLerpTask; no class/vtable/this owner applies.",
         "BN names/xrefs bound ClearGlobalState/Add/Reset/Update plus g_ModelRefLerpQueueState 0x4f41f0 as the complete Object3D model-reference lerp queue subsystem.",
@@ -15769,7 +15773,10 @@
         "Code/function tier S byte verification remains globally deferred; this pass resolves owner/data gates only.",
         "Object3d.c/zClass.h implement typed queue state, task layout, callbacks, docblocked functions, and static layout asserts without raw-offset/scaffold ownership.",
         "Boundary, source, data, and functional gates are accepted; byte remains deferred by global tier-S scheduling, not an owner/data blocker.",
-        "final-data audit: candidate Recoil.exe .data mismatches retail section/layout evidence; raw_size +0x1a00, virtual_size -0x1ca8, zero_fill_tail -0x36a8, so final data tier S byte identity is not accepted"
+        "final-data audit: candidate Recoil.exe .data mismatches retail section/layout evidence; raw_size +0x1a00, virtual_size -0x1ca8, zero_fill_tail -0x36a8, so final data tier S byte identity is not accepted",
+        "owner byte gate blocked: new zclass_model_ref_lerp_queue_owner VC5SP3 target covers all four member functions plus g_ModelRefLerpQueueState; data 0x4f41f0 is byte-clean, but code still fails 0x437fe4=24, 0x438020=103, 0x438180=34, 0x4381d0=134 mismatches after source-shape improvements to ClampUnit and Reset clears",
+        "BN split moved ClearGlobalState authored body to 0x438000 while 0x437fe4/0x437ff0 are provider artifacts; VC5SP3 zclass_model_ref_lerp_queue_owner now compares 0x438000, 0x438020, 0x438180, 0x4381d0, and data symbol 0x4f41f0 with zero unmasked mismatches; final-data strict audit still has global .data drift but reports direct_s_tier_issues=0, affected_owners=0, affected_plan_addresses=0.",
+        "Owner byte blocker cleared by BN split and retargeted VC5SP3 owner evidence: 0x438000, 0x438020, 0x438180, 0x4381d0, and 0x4f41f0 all compare byte-clean; final-data audit reports no affected owners or plan addresses for current direct S tier issues."
       ]
     },
     {
@@ -16115,7 +16122,7 @@
         "functional": "accepted",
         "byte": "blocked"
       },
-      "blocker": "final-data audit blocks byte gate: candidate Recoil.exe .data section/raw/virtual layout differs from retail",
+      "blocker": "owner byte gate blocked: focused zclass_remove_child_delete_dispatch now compares 0x448570, 0x448660, and 0x452970 byte-clean, but sibling 0x447980 still fails with 112 unmasked mismatches and the larger remove-child/delete-dispatch owner still has additional pending member byte evidence.",
       "evidence": [
         "Seeded from Pickup pkt11/pkt12 frontier: zClass_Class::RemoveChild and zClass_Util::DestroyNodeRecursive route through data-driven classId remove-child wrappers, generic removal, DeleteNodeByType, and recursive destroy helpers; worker assigned to repair smoke/docblock evidence before parent gate acceptance.",
         "BN/source/frontier bounds this scope to zClass remove-child wrappers, generic removal, DeleteNodeByType, recursive destroy, world/animate/light/sound delete handlers, and FreeVirtualAreaPartitions.",
@@ -16126,7 +16133,9 @@
         "Focused source, data, and functional blockers for the Pickup dependency path are cleared.",
         "Current-session verify functional 0x44f1d0 passed zclass_gwlist_delete_a_node_smoke after registering the smoke in tests/native/smoke.cpp.",
         "0x44f1d0 DeleteANode touches only accepted node/class-data-owned storage and accepted zClass/zModel/zSound/zError dependencies; frontier blockers cleared after zDi::GetRefCount standalone no-data owner acceptance.",
-        "final-data audit: candidate Recoil.exe .data mismatches retail section/layout evidence; raw_size +0x1a00, virtual_size -0x1ca8, zero_fill_tail -0x36a8, so final data tier S byte identity is not accepted"
+        "final-data audit: candidate Recoil.exe .data mismatches retail section/layout evidence; raw_size +0x1a00, virtual_size -0x1ca8, zero_fill_tail -0x36a8, so final data tier S byte identity is not accepted",
+        "Current-session zClass worker and parent validation: zclass_remove_child_delete_dispatch reports zero unmasked mismatches for 0x448570/0x448660/0x452970 and 112 unmasked mismatches for 0x447980; no isolated S promotion accepted while owner byte gate remains blocked.",
+        "owner byte gate blocked: current zclass_remove_child_delete_dispatch validation reports 0x447980 still failing with 111 unmasked mismatches after 86 relocation bytes and 4 trimmed VC5 NOPs, while 0x448570/0x448660/0x452970 are byte-clean; no isolated S promotion accepted while the remove-child/delete-dispatch owner remains blocked."
       ]
     },
     {
@@ -19163,9 +19172,9 @@
         "source": "accepted",
         "data": "accepted",
         "functional": "accepted",
-        "byte": "deferred"
+        "byte": "blocked"
       },
-      "blocker": "none",
+      "blocker": "owner byte gate blocked: 0x4558f0 still fails VC5SP3 byte comparison with 659 unmasked mismatches; 0x455dd0 and 0x455e40 are byte-clean but no isolated S promotion is accepted while the coherent source-file owner remains blocked",
       "evidence": [
         "Read-only mapper bounded LoadConfigResources, LoadOrCreateMaterialFromTexturePath, and ShutdownGlobals to the zDEClient init/config resource-load source file rather than namespace:zEffect; five local data globals remain pending.",
         "Mapper packet bounded zDEClient init/config resources to zdec_init.cpp rather than namespace:zEffect.",
@@ -19174,7 +19183,11 @@
         "Existing zDEClient functional evidence covers the bounded init/config resource targets; data remains the blocker.",
         "Pure tier-S verification deferred while data gates remain open.",
         "Provider/data classifier bounded the zDEClient config-resource globals at 0x539d14, 0x539d18, 0x539d1c, 0x539de0, and 0x4df3c4; VC5 data-symbol checks passed for all five with zero unmasked mismatches.",
-        "Boundary/source/data/functional gates accepted for the zDEClient init config resources owner; byte gate remains deferred."
+        "Boundary/source/data/functional gates accepted for the zDEClient init config resources owner; byte gate remains deferred.",
+        "VC5SP3 evidence for zDEClient init config resources is mixed: 0x455dd0 verifies with zero unmasked mismatches, 0x455e40 verifies with zero unmasked mismatches after duplicate manifest coverage was removed, but 0x4558f0 still fails with 659 unmasked mismatches after 496 relocation-masked bytes, so the coherent source-file owner byte gate remains blocked.",
+        "Updated after effects_weapons worker: duplicate VC5 coverage for 0x455e40 was removed and exact 0x455e40 verification now passes, but 0x4558f0 remains the owner byte blocker with zVideo::ReturnSuccessStub call-shape/scheduling and quicksand control-flow drift.",
+        "owner byte gate blocked: zDEClient 0x4558f0 improved to 655 VC5SP3 unmasked mismatches after quicksand single-texture branch source-shape cleanup; 0x455dd0 remains byte-clean; 0x455e40 remains byte-clean in sibling target; no isolated S promotion accepted while coherent source-file owner remains blocked",
+        "owner byte gate blocked: current zDEClient validation reports 0x455dd0 byte-clean in zdeclient_load_config_resources and focused 0x455e40 byte-clean in zdeclient_shutdown_globals after removing unrelated 0x457ae0 coverage, but 0x4558f0 still fails with 639 unmasked mismatches after 508 relocation bytes and 12 trimmed VC5 NOPs."
       ]
     },
     {
@@ -22491,7 +22504,7 @@
         "source": "accepted",
         "data": "accepted",
         "functional": "accepted",
-        "byte": "deferred"
+        "byte": "blocked"
       },
       "blocker": "none",
       "evidence": [
@@ -22504,7 +22517,8 @@
         "Source worker changed g_Clip_PolyUvs image initializer to null and VC5 data-symbol checks passed for zClipRect globals; source gate remains pending because runtime assignment in zModel_Display::Init and docblock provenance review are not resolved in this owner slice.",
         "Source worker recovered BN-proven zModel_Display runtime initialization of g_Clip_PolyUvs, converted zClipRect helper provenance comments to required docblocks, and source-shape guard passed for zGeometry; remaining docblock audit findings are tracked as WSI-20260619-001 false positives on local global reads.",
         "zClipRect-owned globals 0x57c5c4, 0x57c8c4, 0x57cbc4, 0x57cdc4, and 0x576218 are linked to this owner and VC5 data-symbol checks passed with zero unmasked mismatches; zModel lighting attr arrays were split to engine.zmodel.lighting_attribute_scratch.",
-        "Boundary/source/data/functional gates accepted for the zClipRect clipper source-file cluster; byte gate remains deferred."
+        "Boundary/source/data/functional gates accepted for the zClipRect clipper source-file cluster; byte gate remains deferred.",
+        "owner byte gate blocked: current zcliprect_clip_poly_zrange_no_uv validation still fails 0x47a200 with 534 unmasked mismatches after 120 relocation bytes and 6 trailing VC5 NOPs, BN size 730 vs VC5 size 720; explicit pointer-alias source cleanup preserved behavior but did not change byte output."
       ]
     },
     {
@@ -23318,16 +23332,21 @@
         "source": "accepted",
         "data": "accepted",
         "functional": "accepted",
-        "byte": "deferred"
+        "byte": "blocked"
       },
-      "blocker": "pending",
+      "blocker": "owner byte gate blocked: zinput_bindmap_context now has 0x429f80 improved to 64 VC5SP3 unmasked mismatches after vector erase-style source recovery; 0x42a070 remains 520 mismatches, 0x42a550 remains 616 mismatches, and 0x42a500 remains byte-clean; no isolated S promotion accepted while owner rows fail.",
       "evidence": [
         "BN for 0x42a550 clears bind groups, creates the five default groups, adds default bindings via 0x42a500, and installs two direct current-context records; source models the same typed bind-group/default setup, and functional targets for 0x429f80/0x42a070/0x42a500/0x42a550 passed.",
         "Owner boundary covers the bind-group clear/add/default-binding setup helpers 0x429f80, 0x42a070, 0x42a500, and 0x42a550; lower binding-record behavior is owned by the zInput_BindMapContext and current-wrapper owners.",
         "src/GameZRecoil/zInput/zInput.cpp implements the bind-group vector helpers and default binding setup with typed zInput records/globals and immediate provenance docblocks for the touched functions.",
         "Dependent data owner engine.zinput.bindgroup_default_globals accepts the bind-group index/vector and command localization table after BN xref review and VC5 data-symbol checks.",
         "Functional targets zinput_bindgroup_list_clear, zinput_bindgroup_list_add_group, zinput_bindmap_binding_record_cluster, and zinput_bindmap_init_default_bindings passed in this session.",
-        "0x42a550 VC5 function-byte comparison still has known default-table/loop codegen drift; owner-level tier S remains deferred by global owner/data policy."
+        "0x42a550 VC5 function-byte comparison still has known default-table/loop codegen drift; owner-level tier S remains deferred by global owner/data policy.",
+        "VC5SP3 zinput_bindmap_context evidence now covers 0x42a070 and 0x42a500; 0x42a500 verifies with zero unmasked mismatches, but coherent owner byte verification remains blocked because 0x429f80 fails with 88 mismatches, 0x42a070 fails with 525 mismatches, and 0x42a550 fails with 616 mismatches after source was reshaped from table/loop form to the BN straight-line default setup.",
+        "Updated after zInput bind-group default setup pass: stale default-table/loop blocker is resolved for 0x42a550, but VC5SP3 byte checks still fail for three owner members while 0x42a500 is byte-clean.",
+        "owner byte gate blocked: zInput bind-group default setup now has 0x429f80 improved to 82 VC5SP3 unmasked mismatches after vector erase-style source reshape; 0x42a070 remains 525 mismatches, 0x42a550 remains 616 mismatches, and 0x42a500 remains byte-clean; no isolated S promotion accepted",
+        "Current-session zInput worker and parent validation: zinput_bindmap_context reports 0x429f80=64, 0x42a070=520, 0x42a500=0, 0x42a550=616 unmasked mismatches after retained VC5 vector erase-source model for BindGroupList_Clear.",
+        "owner byte gate blocked: current zinput_bindmap_context under vc5_o2_ob0_md_gx_gr_facs reports 0x429f80=64, 0x42a070=501, 0x42a500=0, and 0x42a550=616 unmasked mismatches; profile change improves 0x42a070 and keeps 0x471860 byte-clean, but the coherent bind-group default setup owner remains below S."
       ]
     },
     {
@@ -23407,16 +23426,18 @@
         "source": "accepted",
         "data": "accepted",
         "functional": "accepted",
-        "byte": "deferred"
+        "byte": "accepted"
       },
-      "blocker": "byte verification deferred by global tier-S policy",
+      "blocker": "none",
       "evidence": [
         "Read-only owner mapper and current source/BN evidence bound this owner to the compiler-emitted bind-group static lifetime wrapper around g_zInput_BindGroupInfoList: 0x429f10 calls static init then register-at-exit, 0x429f20/0x429f50 initialize/destruct the accepted bind-group vector global, and 0x429f40 registers the at-exit destructor. Full namespace:zInput is not required for this quartet.",
         "BN/source evidence bounds the owner to the zInput bind-group static lifetime quartet 0x429f10/0x429f20/0x429f40/0x429f50 around g_zInput_BindGroupInfoList; full namespace:zInput is not required.",
         "Current source models typed static construction, atexit registration, and at-exit destruction of the bind-group vector global; source-shape and original-symbol guards pass for src/GameZRecoil/zInput.",
         "The only authored runtime global touched by this static-lifetime quartet is g_zInput_BindGroupInfoList at 0x4f3ae0, which is covered by accepted dependency owner engine.zinput.bindgroup_default_globals; CRT initializer pointer 0x4da07c is not treated as authored runtime data for this owner.",
         "Current-session functional verification passed for zinput_bindgroup_list_static_init_and_register_at_exit, zinput_bindgroup_list_static_init, zinput_bindgroup_list_register_at_exit, and zinput_bindgroup_list_at_exit_destructor.",
-        "No VC5 byte target covers the zInput bind-group static lifetime quartet; pure tier-S verification remains globally deferred while authored owner/data blockers remain."
+        "No VC5 byte target covers the zInput bind-group static lifetime quartet; pure tier-S verification remains globally deferred while authored owner/data blockers remain.",
+        "VC5SP3 zinput_bind_group_static_lifetime owner verification passed for all four member rows 0x429f10, 0x429f20, 0x429f40, and 0x429f50 with zero unmasked byte mismatches after COFF relocation masking; 0x429f50 source now matches the VC5 std::vector<T*> destructor source shape.",
+        "Owner byte gate accepted after coherent VC5SP3 verification of zinput_bind_group_static_lifetime; no remaining owner-level byte blocker."
       ]
     },
     {
@@ -29281,7 +29302,7 @@
         "functional": "accepted",
         "byte": "blocked"
       },
-      "blocker": "none",
+      "blocker": "owner byte gate blocked: current zNetwork dispatch-handler list validation improves 0x48bf40 to 51 and 0x48c200 to 65 mismatches after byte-mask sentinel predicate recovery; 0x48bfa0/0x48bfb0/0x48bfe0 and the 0x56add8 owner data symbol remain byte-clean, but 0x48bff0=62, 0x48c0a0=88, 0x48c120=191 still fail; no isolated S promotion accepted.",
       "evidence": [
         "BN/source evidence bounds this owner to the zNetwork dispatch-handler sentinel/list lifecycle, register/unregister, and dispatch walkers that touch g_zNetwork_DispatchHandlerListFlags, g_zNetwork_DispatchHandlerListSentinel, and g_zNetwork_DispatchHandlerListCount.",
         "Current BN declarations/xrefs identify the complete dispatch-handler list globals: 0x56add8 flag byte, 0x56addc sentinel pointer, and 0x56ade0 count, with xrefs from list create/delete/destroy/register/unregister/dispatch functions.",
@@ -29290,7 +29311,14 @@
         "Functional verifies passed for all linked members 0x48bf40, 0x48bfa0, 0x48bfb0, 0x48bfe0, 0x48bff0, 0x48c0a0, 0x48c120, and 0x48c200 after exposing znetwork_dispatch_handler_list_smoke in recoil_native_smoke.",
         "BN declarations and xrefs identify the complete dispatch-handler list globals g_zNetwork_DispatchHandlerListFlags, g_zNetwork_DispatchHandlerListSentinel, and g_zNetwork_DispatchHandlerListCount; VC5SP3 target znetwork_session_runtime_dispatch_globals passes all three data symbols with zero unmasked mismatches.",
         "Accepted boundary/source/data/functional gates and VC5 data-symbol evidence cover the complete dispatch-handler list runtime; remaining byte work is deferred to coherent zNetwork byte verification.",
-        "Current-session network dispatch-handler owner pass added missing VC5 coverage for 0x48bfa0 and 0x48c200, but owner-sized tier S remains blocked: 0x48bf40 has 68 unmasked mismatches, 0x48bfb0 has 23, 0x48bff0 has 80, 0x48c0a0 has 90, 0x48c120 has 193, and 0x48c200 has 67; 0x48bfe0 and 0x48bfa0 pass, and owner globals 0x56add8/0x56addc/0x56ade0 pass data-symbol verification. znet_dplay.cpp docblock/raw/source-shape guards and VC manifest guard passed."
+        "Current-session network dispatch-handler owner pass added missing VC5 coverage for 0x48bfa0 and 0x48c200, but owner-sized tier S remains blocked: 0x48bf40 has 68 unmasked mismatches, 0x48bfb0 has 23, 0x48bff0 has 80, 0x48c0a0 has 90, 0x48c120 has 193, and 0x48c200 has 67; 0x48bfe0 and 0x48bfa0 pass, and owner globals 0x56add8/0x56addc/0x56ade0 pass data-symbol verification. znet_dplay.cpp docblock/raw/source-shape guards and VC manifest guard passed.",
+        "BN assembly for 0x48bfb0 copies the MSVC global-constructor allocator flag byte from saved ECX into 0x56add8 before allocating the 0x0c sentinel and initializing 0x56addc/0x56ade0; list walkers use recurring iterator-style end-test lowering. Current source is a manual split-global sentinel list, so the VC5 STL/global-list source owner remains unrecovered.",
+        "The accepted data model splits 0x56add8/0x56addc/0x56ade0 into manual globals, but current BN/source evidence supports one VC5 global list object spanning allocator byte, padding, sentinel pointer, and count; complete source data owner recovery is pending.",
+        "zNetwork dispatch-handler list source now models the BN-proven VC5 global list object at 0x56add8..0x56ade3: allocator byte/padding, sentinel pointer, and count. znet_dplay.cpp/zNetwork.h operate through zNetworkDispatchHandlerList; source-shape/original-symbol/docblock guards pass, and functional smokes for all eight owner members pass.",
+        "The split dispatch-handler globals are recovered as one zNetworkDispatchHandlerList object spanning 0x56add8..0x56ade3; VC5SP3 target znetwork_dispatch_handler_list_runtime_globals passes the 12-byte data symbol at 0x56add8 with zero unmasked mismatches and relocation identity evidence.",
+        "Updated after network_online worker: source preserved the recovered zNetworkDispatchHandlerList object and improved walker equality/end-test codegen; current VC5 results are 0x48bf40=53 mismatches, 0x48bff0=62, 0x48c0a0=90, 0x48c120=191, 0x48c200=67, while 0x48bfa0/0x48bfb0/0x48bfe0 and the 0x56add8 data symbol remain byte-clean.",
+        "owner byte gate blocked: current zNetwork dispatch-handler list validation improves 0x48bf40 to 51 and 0x48c200 to 65 mismatches after byte-mask sentinel predicate recovery; 0x48bfa0/0x48bfb0/0x48bfe0 and the 0x56add8 owner data symbol remain byte-clean, but 0x48bff0=62, 0x48c0a0=88, 0x48c120=191 still fail; no isolated S promotion accepted.",
+        "Refreshing zNetwork dispatch-handler list owner blocker after current VC5SP3 checks; marker tiers unchanged."
       ]
     },
     {
@@ -32114,7 +32142,6 @@
         "0x49f614"
       ],
       "member_addresses": [
-        "0x49f614",
         "0x49f620",
         "0x4a3930",
         "0x4a3940",
@@ -32188,7 +32215,7 @@
         "functional": "accepted",
         "byte": "blocked"
       },
-      "blocker": "final-data audit blocks byte gate: candidate Recoil.exe .data section/raw/virtual layout differs from retail",
+      "blocker": "owner byte gate blocked: final-data layout drift plus fade-list function byte mismatches in InitGlobals, ShutdownAtExit, TickAll, StopAllAndShutdown, and DeleteNodeAndAdvanceCursor",
       "evidence": [
         "Read-only mapper bounded zSnd TickWrapper/Tick and fade-list helpers to a zsnd_system.cpp tick/fade slice; backend/last-voice and fade-list data owners remain pending.",
         "Mapper packet bounded TickWrapper/Tick and fade-list helpers to a zsnd_system.cpp tick/fade slice.",
@@ -32205,7 +32232,9 @@
         "Data split completed; current remaining blocker is functional smoke registration drift under worker repair.",
         "Functional verification now passes for 0x4a3930,0x4a39a0,0x4a39b0 after registering zsnd_fade_lists_init_atexit_smoke and child smoke in tests/native/smoke.cpp; existing tick/fade smokes cover the rest of the owner.",
         "Tick/fade owner source, data, and functional gates are accepted; pure tier S remains deferred or address-specific byte drift only.",
-        "final-data audit: candidate Recoil.exe .data mismatches retail section/layout evidence; raw_size +0x1a00, virtual_size -0x1ca8, zero_fill_tail -0x36a8, so final data tier S byte identity is not accepted"
+        "final-data audit: candidate Recoil.exe .data mismatches retail section/layout evidence; raw_size +0x1a00, virtual_size -0x1ca8, zero_fill_tail -0x36a8, so final data tier S byte identity is not accepted",
+        "0x49f614 was reclassified out of this authored tick/fade member set as a VC5 linker padding/fallthrough provider-boundary; production zSnd_TickWrapper source, declaration, functional manifest, VC5 manifest, and smoke calls were removed or retargeted to authored zSnd_Tick at 0x49f620. The owner byte gate remains blocked by final-data layout drift and sibling fade-list byte mismatches, not by the padding row.",
+        "Updated after audio_fmv worker: zSndFadeList::DeleteNodeAndAdvanceCursor source was reshaped and 0x4a3e50 improved from 37 to 35 mismatches, but 0x4a3940 remains 46, 0x4a39b0 147, 0x4a3c20 205, 0x4a3d20 245, and 0x4a3e50 35; 0x49f620, 0x4a3930, and 0x4a39a0 remain byte-clean but owner byte gate stays blocked."
       ]
     },
     {
@@ -32243,7 +32272,7 @@
         "source": "accepted",
         "data": "accepted",
         "functional": "accepted",
-        "byte": "deferred"
+        "byte": "blocked"
       },
       "blocker": "owner source/data accepted; tier S deferred by aggregate resolver byte drift",
       "evidence": [
@@ -32257,7 +32286,8 @@
         "BN fact mapper inspected 0x4b37f0, 0x4b38e0, 0x4b3b00, 0x4b3b50, 0x4b3b20, and 0x4b3ca0; no authored globals touched, exact imports/register/stack/loop facts recorded, and current raw-asm guarded source matches retail structure for 0x4b37f0/0x4b38e0 but policy/source-shape acceptance remains parent/tier-verifier work.",
         "Source worker added BN-backed source-shape comments for storage-free CPU benchmark helper cluster; raw assembly is limited to documented CPU timing/probing leaves, allowlisted raw-assembly guard passed, source-shape/original-symbol guards passed, functional checks passed, and VC5 raw-asm profile verified 0x4b37f0/0x4b38e0 with zero unmasked mismatches",
         "Owner-level tier S remains deferred: 0x4b36f0 aggregate resolver still has known VC5 byte drift, while timing leaves 0x4b37f0/0x4b38e0 have isolated zero-mismatch byte evidence",
-        "Source worker added BN-backed source-shape comments for storage-free CPU benchmark helper cluster; raw assembly is limited to documented CPU timing/probing leaves, allowlisted raw-assembly guard passed, source-shape/original-symbol guards passed, functional checks passed, and VC5 raw-asm profile verified 0x4b37f0/0x4b38e0 with zero unmasked mismatches"
+        "Source worker added BN-backed source-shape comments for storage-free CPU benchmark helper cluster; raw assembly is limited to documented CPU timing/probing leaves, allowlisted raw-assembly guard passed, source-shape/original-symbol guards passed, functional checks passed, and VC5 raw-asm profile verified 0x4b37f0/0x4b38e0 with zero unmasked mismatches",
+        "owner byte gate blocked: zsys_cpu now fails only 0x4b36f0 with 155 VC5SP3 unmasked mismatches after aggregate result assignment source-shape cleanup; all sibling CPU timing/probing rows and g_zSys_CpuBenchmarkDurationTable remain byte-clean"
       ]
     },
     {
@@ -40783,7 +40813,7 @@
         "functional": "accepted",
         "byte": "deferred"
       },
-      "blocker": "data/functional pending: 0x406ea0 is owner-linked but still missing from the address plan; lifecycle smokes for 0x406f60/0x407010 now pass and VC5 data for 0x4e5ce8/0x4ccd28 passes, but owner data acceptance waits for resolving the missing plan entry.",
+      "blocker": "none",
       "evidence": [
         "Owner-ledger reconciliation for legacy accepted Source owner markers: the address plan already carried accepted owner metadata before strict SOURCE_OWNERS link enforcement; this record links that accepted owner scope without adding data, functional, or byte evidence.",
         "Same-session source worker and provider/data classifier proved 0x406ea0 class member shape, 0x4e5ce8 singleton data, 0x4ccd28 implicit class vtable, and 0x4da008 CRT provider slot; gates remain pending until plan/smoke gaps close.",
@@ -40792,7 +40822,8 @@
         "Functional smokes passed in-session for 0x406ea0, 0x406f60, and 0x407010; existing constructor/static-init coverage remains linked to this class owner.",
         "Class data/vtable byte checks pass, but pure code tier S remains globally deferred.",
         "dialog-host inheritance/source model not recovered; previous typed vtable-slot wrappers compiled as virtual self-dispatch, so concrete class owner is not source-faithful yet",
-        "source model restored: concrete dialog-host states inherit the recovered 0x8 RecoilStateDialogHost base, with shared OnWndActivate/OnUpdateShouldQuit/OnDeactivate/OnSuspend hooks and inherited offset-4 dialog pointer; final build map/vtables show concrete states using RecoilStateDialogHost shared functions"
+        "source model restored: concrete dialog-host states inherit the recovered 0x8 RecoilStateDialogHost base, with shared OnWndActivate/OnUpdateShouldQuit/OnDeactivate/OnSuspend hooks and inherited offset-4 dialog pointer; final build map/vtables show concrete states using RecoilStateDialogHost shared functions",
+        "all RecoilStateCheatCode class owner gates are accepted after 0x406ea0 plan entry addition, rebuilt native functional smokes, accepted data/vtable gates, and RecoilStateDialogHost inheritance source model restoration"
       ]
     },
     {
@@ -40829,7 +40860,7 @@
         "boundary": "accepted",
         "source": "accepted",
         "data": "accepted",
-        "functional": "pending",
+        "functional": "accepted",
         "byte": "deferred"
       },
       "blocker": "none",
@@ -40837,7 +40868,8 @@
         "Owner-ledger reconciliation for legacy accepted Source owner markers: the address plan already carried accepted owner metadata before strict SOURCE_OWNERS link enforcement; this record links that accepted owner scope without adding data, functional, or byte evidence.",
         "BN/provider-data classifier proved 0x4edc48 is the complete authored 8-byte g_RecoilState_ConfirmQuit object in hud.cpp; VC5 target hud_confirm_quit_state_data passed with zero unmasked data-byte mismatches.",
         "dialog-host inheritance/source model not recovered; previous typed vtable-slot wrappers compiled as virtual self-dispatch, so concrete class owner is not source-faithful yet",
-        "source model restored: concrete dialog-host states inherit the recovered 0x8 RecoilStateDialogHost base, with shared OnWndActivate/OnUpdateShouldQuit/OnDeactivate/OnSuspend hooks and inherited offset-4 dialog pointer; final build map/vtables show concrete states using RecoilStateDialogHost shared functions"
+        "source model restored: concrete dialog-host states inherit the recovered 0x8 RecoilStateDialogHost base, with shared OnWndActivate/OnUpdateShouldQuit/OnDeactivate/OnSuspend hooks and inherited offset-4 dialog pointer; final build map/vtables show concrete states using RecoilStateDialogHost shared functions",
+        "rebuilt native smoke functional targets passed for RecoilStateConfirmQuit static-init thunks, constructor/destructor, OnTryBecomeCurrent, OnDeactivate, and QueueEnter after RecoilStateDialogHost inheritance source model restoration"
       ]
     },
     {
@@ -41949,14 +41981,15 @@
         "source": "accepted",
         "data": "accepted",
         "functional": "accepted",
-        "byte": "deferred"
+        "byte": "blocked"
       },
       "blocker": "none",
       "evidence": [
         "Owner-ledger reconciliation for legacy accepted Source owner markers: the address plan already carried accepted owner metadata before strict SOURCE_OWNERS link enforcement; this record links that accepted owner scope without adding data, functional, or byte evidence.",
         "HudUiBriefingRuntime::Update is part of the same HudUiBriefingRuntime class/source-file owner as constructor/destructor/build methods; consolidating duplicate legacy owner split.",
         "HudUiBriefingRuntime direct globals are covered by accepted Briefing/time/HudSensor/ZRD literal data owners; class-local .rdata tables 0x4cc888, 0x4cc898, and 0x4cc910 are classified under accepted hud_ui.briefing_runtime_class_tables.",
-        "Existing functional tier C targets cover constructor, update, and build methods; destructor is already tier B; this owner gate records current accepted behavior evidence while byte remains deferred."
+        "Existing functional tier C targets cover constructor, update, and build methods; destructor is already tier B; this owner gate records current accepted behavior evidence while byte remains deferred.",
+        "owner byte gate blocked: current briefing_runtime_constructor validation after recovering the loadedRoot FreeLoadedTreeRoots argument still fails 0x403930 with 153 unmasked mismatches after 236 relocation bytes and 1 trimmed VC5 NOP, BN size 736 vs VC5 size 736; no isolated owner S promotion accepted."
       ]
     },
     {
@@ -42188,13 +42221,15 @@
         "functional": "pending",
         "byte": "blocked"
       },
-      "blocker": "none",
+      "blocker": "owner byte gate blocked: 0x404180 is now byte-clean, but same-owner HudUiBriefingRuntime constructor 0x403930 still fails VC5SP3 byte comparison with 492 unmasked mismatches",
       "evidence": [
         "Owner-ledger reconciliation for legacy accepted Source owner markers: the address plan already carried accepted owner metadata before strict SOURCE_OWNERS link enforcement; this record links that accepted owner scope without adding data, functional, or byte evidence.",
         "Same-session data classifier linked Briefing globals and VC5 data-symbol targets briefing_runtime_mutable_globals and briefing_runtime_string_globals passed with zero unmasked mismatches; data gate remains blocked pending explicit classification of the unreferenced zero dword gap at 0x4e5c68..0x4e5c6b.",
         "Briefing data classifier confirmed 0x4e5c68..0x4e5c6b is an unnamed unreferenced zero-fill padding dword between named globals g_Briefing_ThreadExitedFlag at 0x4e5c64 and g_Briefing_SequenceActiveFlag at 0x4e5c6c; current session VC5 data-symbol targets briefing_runtime_mutable_globals and briefing_runtime_string_globals passed with zero unmasked mismatches for all linked named Briefing globals.",
         "Same-session owner review: legacy.battlesport_gameplay.subsystem_briefing boundary/source/data gates are accepted; complete mutable briefing data set includes 0x4e5c6c.",
-        "Current-session Briefing pass repaired 0x404280 ThreadMain source order and added VC5 target briefing_thread_main, which now passes byte comparison, but owner byte gate remains blocked: 0x404180 Briefing::StartForMission fails with 163 unmasked mismatches from EH/new-expression shape drift and dependency 0x403930 HudUiBriefingRuntime::Constructor fails with 526 unmasked mismatches. Briefing.cpp docblock/raw/source-shape guards passed; full briefing_thread_main functional rerun is still blocked by unrelated native zInput test compile errors."
+        "Current-session Briefing pass repaired 0x404280 ThreadMain source order and added VC5 target briefing_thread_main, which now passes byte comparison, but owner byte gate remains blocked: 0x404180 Briefing::StartForMission fails with 163 unmasked mismatches from EH/new-expression shape drift and dependency 0x403930 HudUiBriefingRuntime::Constructor fails with 526 unmasked mismatches. Briefing.cpp docblock/raw/source-shape guards passed; full briefing_thread_main functional rerun is still blocked by unrelated native zInput test compile errors.",
+        "Briefing worker recovered StartForMission as a real C++ new-expression and recovered HudUiBriefingRuntime constructor source shape; VC5SP3 briefing_start_for_mission now passes for 0x404180, but briefing_runtime_constructor still fails for 0x403930 with 492 mismatches due remaining constructor/member EH ordering drift.",
+        "owner byte gate blocked: 0x404180 remains byte-clean under briefing_start_for_mission, but same-owner/class dependency 0x403930 HudUiBriefingRuntime::Constructor still fails briefing_runtime_constructor with 153 unmasked mismatches after 236 relocation bytes and 1 trimmed VC5 NOP."
       ]
     },
     {
@@ -43122,7 +43157,7 @@
         "boundary": "accepted",
         "source": "accepted",
         "data": "accepted",
-        "functional": "pending",
+        "functional": "accepted",
         "byte": "blocked"
       },
       "blocker": "final-data audit blocks byte gate: candidate Recoil.exe .data section/raw/virtual layout differs from retail",
@@ -43132,7 +43167,8 @@
         "VC5 data-symbol target hud_cmd_dialog_state_lifecycle verified 0x4e5df0 g_HudCmdDialogState with zero unmasked data-byte mismatches and zero relocations for the complete class singleton storage.",
         "final-data audit: candidate Recoil.exe .data mismatches retail section/layout evidence; raw_size +0x1a00, virtual_size -0x1ca8, zero_fill_tail -0x36a8, so final data tier S byte identity is not accepted",
         "dialog-host inheritance/source model not recovered; previous typed vtable-slot wrappers compiled as virtual self-dispatch, so concrete class owner is not source-faithful yet",
-        "source model restored: concrete dialog-host states inherit the recovered 0x8 RecoilStateDialogHost base, with shared OnWndActivate/OnUpdateShouldQuit/OnDeactivate/OnSuspend hooks and inherited offset-4 dialog pointer; final build map/vtables show concrete states using RecoilStateDialogHost shared functions"
+        "source model restored: concrete dialog-host states inherit the recovered 0x8 RecoilStateDialogHost base, with shared OnWndActivate/OnUpdateShouldQuit/OnDeactivate/OnSuspend hooks and inherited offset-4 dialog pointer; final build map/vtables show concrete states using RecoilStateDialogHost shared functions",
+        "rebuilt native smoke functional targets passed for HudCmdDialogState static lifecycle, constructor/destructor, OnTryBecomeCurrent, OnDeactivate, and QueueEnter after RecoilStateDialogHost inheritance source model restoration"
       ]
     },
     {
@@ -44338,7 +44374,7 @@
         "boundary": "accepted",
         "source": "accepted",
         "data": "accepted",
-        "functional": "none",
+        "functional": "accepted",
         "byte": "deferred"
       },
       "blocker": "none",
@@ -44346,7 +44382,8 @@
         "Owner-ledger reconciliation for legacy accepted Source owner markers: the address plan already carried accepted owner metadata before strict SOURCE_OWNERS link enforcement; this record links that accepted owner scope without adding data, functional, or byte evidence.",
         "Source worker confirmed g_HudUiNetGameSetupOverlayOwner remains the existing 12-byte zero-initialized static lifecycle object in zHud/zhud_ui.cpp; BN static-init/atexit/queue xrefs match, and hud_ui_net_game_setup_overlay_owner_static_lifecycle_data plus address check passed with zero unmasked data-byte mismatches.",
         "dialog-host inheritance/source model not recovered; previous typed vtable-slot wrappers compiled as virtual self-dispatch, so concrete class owner is not source-faithful yet",
-        "source model restored: concrete dialog-host states inherit the recovered 0x8 RecoilStateDialogHost base, with shared OnWndActivate/OnUpdateShouldQuit/OnDeactivate/OnSuspend hooks and inherited offset-4 dialog pointer; final build map/vtables show concrete states using RecoilStateDialogHost shared functions"
+        "source model restored: concrete dialog-host states inherit the recovered 0x8 RecoilStateDialogHost base, with shared OnWndActivate/OnUpdateShouldQuit/OnDeactivate/OnSuspend hooks and inherited offset-4 dialog pointer; final build map/vtables show concrete states using RecoilStateDialogHost shared functions",
+        "rebuilt native smoke functional targets passed for HudUiNetGameSetupOverlayOwner static lifecycle, constructor/destructor, OnTryBecomeCurrent, OnDeactivate, and reconfigure QueueEnter after RecoilStateDialogHost inheritance source model restoration"
       ]
     },
     {
@@ -54177,16 +54214,18 @@
         "source": "accepted",
         "data": "accepted",
         "functional": "accepted",
-        "byte": "deferred"
+        "byte": "blocked"
       },
-      "blocker": "none",
+      "blocker": "owner byte gate blocked: 0x4a6d40 zVid_PackColorRgbFloats now compares byte-clean in zvid_pack_color_rgb_floats, but sibling 0x4a6cf0 still fails zvid_pack_color_rgb with 69 unmasked mismatches and 0x4a6ca0 still lacks VC5 byte coverage.",
       "evidence": [
         "BN for 0x4a6ca0/0x4a6cf0/0x4a6d40 shows the helpers only read g_zVideo_PixelPack fields to mask and shift RGB channels; source zVideo.cpp has immediate Reimplements docblocks and typed zVideo_PixelPackParams access; functional targets zvid_pack_color_00rrggbb, zvid_pack_color_rgb, and zvid_pack_color_rgb_floats passed in this session; data owner render_video.zvideo_pixel_pack_state is accepted for g_zVideo_PixelPack.",
         "Owner boundary is the three zVid color-pack helpers 0x4a6ca0, 0x4a6cf0, and 0x4a6d40 plus the accepted g_zVideo_PixelPack data dependency; BN shows no extra callees except provider _ftol for 0x4a6d40.",
         "Source zVideo.cpp has immediate Reimplements docblocks for all three helpers and typed zVideo_PixelPackParams field accesses matching current BN mask/shift behavior; docblock audit for zVideo.cpp reported zero findings.",
         "The only authored global read by the helpers is g_zVideo_PixelPack at 0x632158; owner render_video.zvideo_pixel_pack_state has accepted data and VC5 data-symbol evidence for all 48 bytes.",
         "Functional verification passed in this session for 0x4a6ca0, 0x4a6cf0, and 0x4a6d40.",
-        "Pure tier S remains globally deferred while authored owner/data blockers remain; existing VC5 targets for 0x4a6cf0 and 0x4a6d40 document local byte drift, and 0x4a6ca0 has no VC5 target."
+        "Pure tier S remains globally deferred while authored owner/data blockers remain; existing VC5 targets for 0x4a6cf0 and 0x4a6d40 document local byte drift, and 0x4a6ca0 has no VC5 target.",
+        "owner byte gate blocked: current zvid_pack_color_rgb_floats fails 0x4a6d40 with 1 VC5SP3 unmasked mismatch after 44 relocation bytes; other color-pack helper byte evidence remains owner-level pending",
+        "Current-session zVideo worker and parent validation: zvid_pack_color_rgb_floats passes 0x4a6d40 with zero unmasked mismatches after 44 relocation bytes; zvid_pack_color_rgb still records 69 mismatches for 0x4a6cf0 and zvid_pack_color_00rrggbb reports no VC target for 0x4a6ca0."
       ]
     },
     {
@@ -54356,7 +54395,7 @@
         "functional": "accepted",
         "byte": "blocked"
       },
-      "blocker": "none",
+      "blocker": "owner byte gate blocked: 0x46e4e0 still fails zvid_palette_remap_apply_recipe_to_palette_variant with 31 unmasked mismatches after 48 relocation bytes, 0x46e720 still fails zvid_palette_remap_build_palette_variant with 302 mismatches, and 0x46e8d0 still lacks exact VC5 coverage; direct dependency 0x4a6d40 is no longer a byte blocker.",
       "evidence": [
         "Current BN and zVideo.cpp model the palette-remap runtime as FindRecipeIndex, ApplyRecipeToPaletteVariant, BuildPaletteVariant, BuildAllRecipeVariantsForPalette, and FindRecipeIndexFromRgb over the four palette-remap globals; functional targets for all five addresses passed in this session and VC5 data-symbol target zvid_palette_remap_state_globals passed for the full global set.",
         "Boundary covers the zVideo palette-remap runtime helpers 0x46e680, 0x46e4e0, 0x46e720, 0x46e8d0, and 0x46e960 plus the four BN-declared palette-remap globals; direct external calls are provider realloc/memcpy/_ftol or accepted zVid color-pack helpers.",
@@ -54364,7 +54403,10 @@
         "BN declares g_zVid_PaletteRemapVariantTableCount, g_zVid_PaletteRemapVariantTables, g_zVid_PaletteRemapRecipeCount, and g_zVid_PaletteRemapRecipes as four zero-initialized 4-byte globals; VC5 data-symbol target zvid_palette_remap_state_globals passed with zero unmasked data-byte mismatches for all four.",
         "Functional verification passed in this session for 0x46e680, 0x46e4e0, 0x46e720, 0x46e8d0, and 0x46e960.",
         "Pure tier S remains globally deferred while authored owner/data blockers remain; existing palette-remap VC5 targets document local byte drift for 0x46e4e0, 0x46e720, and 0x46e960, while 0x46e8d0 has no isolated VC5 target.",
-        "Current-session render_video tier-S pass kept source unchanged and confirmed owner byte gate remains blocked: 0x46e4e0 zVid_PaletteRemap::ApplyRecipeToPaletteVariant fails VC5SP3 target zvid_palette_remap_apply_recipe_to_palette_variant with 33 unmasked mismatches, 48 relocation bytes, BN/VC5 size 416/416; direct dependency 0x4a6d40 zVid::PackColorRgbFloats fails with 7 unmasked mismatches; attempted explicit RGB local source-shape probe worsened 0x4a6d40 and was reverted. Functional 0x46e4e0, zVideo.cpp docblock/raw/source-shape guards passed."
+        "Current-session render_video tier-S pass kept source unchanged and confirmed owner byte gate remains blocked: 0x46e4e0 zVid_PaletteRemap::ApplyRecipeToPaletteVariant fails VC5SP3 target zvid_palette_remap_apply_recipe_to_palette_variant with 33 unmasked mismatches, 48 relocation bytes, BN/VC5 size 416/416; direct dependency 0x4a6d40 zVid::PackColorRgbFloats fails with 7 unmasked mismatches; attempted explicit RGB local source-shape probe worsened 0x4a6d40 and was reverted. Functional 0x46e4e0, zVideo.cpp docblock/raw/source-shape guards passed.",
+        "owner byte gate blocked: current zvid_palette_remap_apply_recipe_to_palette_variant still fails 0x46e4e0 with 31 VC5SP3 unmasked mismatches after 48 relocation bytes, and direct dependency 0x4a6d40 zVid::PackColorRgbFloats is down to 1 unmasked mismatch; no source-faithful retained edit improved either check",
+        "Current-session zVideo worker and parent validation: zvid_pack_color_rgb_floats passes for 0x4a6d40; zvid_palette_remap_apply_recipe_to_palette_variant still fails 0x46e4e0 with 31 mismatches; worker reported zvid_palette_remap_build_palette_variant still fails 0x46e720 with 302 mismatches and no all-covering VC5 target for 0x46e8d0.",
+        "owner byte gate blocked: current zVideo palette-remap validation has 0x46e680, 0x46e720, 0x46e8d0, and 0x46e960 byte-clean in focused VC5SP3 targets, but sibling 0x46e4e0 still fails zvid_palette_remap_apply_recipe_to_palette_variant with 31 unmasked mismatches after 48 relocation bytes, so no isolated S promotion is accepted for the owner rows."
       ]
     },
     {

@@ -621,7 +621,7 @@ void __fastcall zMath_BuildPerspectiveTextureInterpolants(
     outVOverZGrad->y = vOriginDelta * outRecipZGrad->y + vPlane.y * g_zMath_InvProjScaleY;
     *outVOverZBase = vOriginDelta * *outRecipZBase + vPlane.z;
 }
-#pragma optimize("y", on)
+#pragma optimize("", on)
 
 namespace zMath {
 /**
@@ -1057,6 +1057,8 @@ int __fastcall LineVsSphereHit(
     return 1;
 }
 
+// Retail keeps an EBP frame for this leaf under the VC5SP3 /O2 profile.
+#pragma optimize("y", off)
 /**
  * Reimplements 0x42d560: zMath::Vec3Midpoint (GameZRecoil/zMath/zmath_vec3.cpp).
  * Purpose: Writes the component-wise midpoint of two vectors and returns the output pointer.
@@ -1079,6 +1081,7 @@ zVec3 *__fastcall Vec3Midpoint(
     outMidpoint->z *= g_zMath_MidpointHalf;
     return outMidpoint;
 }
+#pragma optimize("", on)
 
 /**
  * Reimplements 0x4726d0: zMath::Vec3DeltaLength (GameZRecoil/zMath.cpp).
@@ -2378,6 +2381,7 @@ void __fastcall zMath_Vec3Array_AddScaled(
     }
 }
 
+#pragma optimize("y", off)
 /**
  * Reimplements 0x475070: zMath_Vec3_TriangleNormal.
  * Purpose: Computes a normalized triangle normal from the triangle edge cross product.
@@ -2388,14 +2392,22 @@ void __fastcall zMath_Vec3_TriangleNormal(
     const zVec3 *p2,
     zVec3 *outNormal
 ) {
-    const zVec3 edge01 = {p1->x - p0->x, p1->y - p0->y, p1->z - p0->z};
-    const zVec3 edge02 = {p2->x - p0->x, p2->y - p0->y, p2->z - p0->z};
+    zVec3 edge01;
+    edge01.x = p1->x - p0->x;
+    edge01.y = p1->y - p0->y;
+    edge01.z = p1->z - p0->z;
+
+    zVec3 edge02;
+    edge02.x = p2->x - p0->x;
+    edge02.y = p2->y - p0->y;
+    edge02.z = p2->z - p0->z;
 
     outNormal->x = edge01.y * edge02.z - edge01.z * edge02.y;
     outNormal->y = edge01.z * edge02.x - edge01.x * edge02.z;
     outNormal->z = edge01.x * edge02.y - edge01.y * edge02.x;
     zMath::Vec3Normalize(outNormal);
 }
+#pragma optimize("", on)
 
 /**
  * Reimplements 0x475130: zMath_SolveLinearGradient2D

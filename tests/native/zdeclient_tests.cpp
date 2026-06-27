@@ -1,6 +1,5 @@
-#include "GameZRecoil/zDEClient/zdec.h"
-
 #include "Battlesport/GameNet.h"
+#include "GameZRecoil/zDEClient/zdec.h"
 #include "Battlesport/player.h"
 #include "GameZRecoil/zEffect/zEffect.h"
 #include "GameZRecoil/zModel/zModel.h"
@@ -9,8 +8,6 @@
 #include "GameZRecoil/zUtil/zZbd.h"
 #include "GameZRecoil/zVideo/zVideo.h"
 #include "zDi.h"
-
-#include <windows.h>
 
 #include <cmath>
 #include <cstdint>
