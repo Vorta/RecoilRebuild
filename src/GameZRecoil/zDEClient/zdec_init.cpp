@@ -19,6 +19,10 @@
 #include <string.h>
 #include <time.h>
 
+#if defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86)
+#include <yvals.h>
+#endif
+
 /**
  * Reimplements data 0x539d10: g_zDEClient_QuickSandEnabled.
  * Purpose: Tracks whether quicksand runtime globals were initialized and need
@@ -1882,6 +1886,9 @@ zDiPartial *__fastcall CreateFeatureNodeAndDiFromClipPatchPartition(
 zDEClient_MapTreeNode ** zDEClient_MapTreeState::IterNextNodeRef(
     zDEClient_MapTreeNode **nodeRef
 ) {
+#if defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86)
+    std::_Lockit _Lk;
+#endif
     zDEClient_MapTreeNode *node = *nodeRef;
     if (!IsNil(node->right)) {
         *nodeRef = TreeMinimum(node->right);
@@ -1911,6 +1918,9 @@ zDEClient_MapTreeNode ** zDEClient_MapTreeState::IterNextNodeRef(
 void zDEClient_MapTreeState::IterPrevNodeRef(
     zDEClient_MapTreeNode **nodeRef
 ) {
+#if defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86)
+    std::_Lockit _Lk;
+#endif
     zDEClient_MapTreeNode *node = *nodeRef;
     if (node->colorOrNil == 0 && node->parent->parent == node) {
         *nodeRef = node->right;
@@ -1943,6 +1953,9 @@ zDEClient_MapTreeNode ** zDEClient_MapTreeState::InsertAt(
     zDEClient_MapTreeNode *parent,
     zGeometry_ClipPatchNodeDiPair *key
 ) {
+#if defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86)
+    std::_Lockit _Lk;
+#endif
     zDEClient_MapTreeNode *inserted =
         (zDEClient_MapTreeNode *)(::operator new(sizeof(zDEClient_MapTreeNode)));
     inserted->left = g_zDEClient_FeatureMapTreeNil;
@@ -2034,6 +2047,9 @@ zDEClient_MapTreeNode ** zDEClient_MapTreeState::InsertAt(
 void zDEClient_MapTreeState::DestroySubtree(
     zDEClient_MapTreeNode *node
 ) {
+#if defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86)
+    std::_Lockit _Lk;
+#endif
     while (!IsNil(node)) {
         DestroySubtree(node->right);
         zDEClient_MapTreeNode *const left = node->left;
@@ -2055,6 +2071,9 @@ zDEClient_MapTreeNode ** zDEClient_MapTreeState::EraseAndAdvance(
     zDEClient_MapTreeNode *next = node;
     IterNextNodeRef(&next);
 
+#if defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86)
+    std::_Lockit _Lk;
+#endif
     if (IsNil(node->left)) {
         Transplant(
             this,
@@ -2110,6 +2129,9 @@ zDEClient_MapTreeNode ** zDEClient_MapTreeState::EraseRange(
     zDEClient_MapTreeNode *last
 ) {
     if (nodeCount != 0 && first == header->left && last == header) {
+#if defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86)
+        std::_Lockit _Lk;
+#endif
         DestroySubtree(header->parent);
         nodeCount = 0;
         ResetHeader(this);
@@ -2146,16 +2168,23 @@ zDEClient_MapTreeLocateResult * zDEClient_MapTreeState::FindOrInsertKey(
     zDEClient_MapTreeNode *cursor = header->parent;
     unsigned char insertLeft = 1;
 
-    while (!IsNil(cursor)) {
-        parent = cursor;
-        if (nodeKey < cursor->key) {
-            insertLeft = 1;
-            cursor = cursor->left;
-        } else {
-            insertLeft = 0;
-            cursor = cursor->right;
+#if defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86)
+    {
+        std::_Lockit _Lk;
+#endif
+        while (!IsNil(cursor)) {
+            parent = cursor;
+            if (nodeKey < cursor->key) {
+                insertLeft = 1;
+                cursor = cursor->left;
+            } else {
+                insertLeft = 0;
+                cursor = cursor->right;
+            }
         }
+#if defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86)
     }
+#endif
 
     if (allowInsert != 0) {
         zDEClient_MapTreeNode *inserted = 0;
@@ -2222,6 +2251,9 @@ zDEClient_MapTreeState * zDEClient_MapTreeState::InitState(
     flags = *flagsValue;
     allowInsert = 0;
 
+#if defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86)
+    std::_Lockit _Lk;
+#endif
     if (g_zDEClient_FeatureMapTreeNil == 0) {
         g_zDEClient_FeatureMapTreeNil =
             (zDEClient_MapTreeNode *)(::operator new(sizeof(zDEClient_MapTreeNode)));
@@ -2263,11 +2295,18 @@ void zDEClient_MapTreeState::Destroy() {
     header = 0;
     nodeCount = 0;
 
-    --g_zDEClient_FeatureMapTreeNilRefCount;
-    if (g_zDEClient_FeatureMapTreeNilRefCount == 0) {
-        ::operator delete(g_zDEClient_FeatureMapTreeNil);
-        g_zDEClient_FeatureMapTreeNil = 0;
+#if defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86)
+    {
+        std::_Lockit _Lk;
+#endif
+        --g_zDEClient_FeatureMapTreeNilRefCount;
+        if (g_zDEClient_FeatureMapTreeNilRefCount == 0) {
+            ::operator delete(g_zDEClient_FeatureMapTreeNil);
+            g_zDEClient_FeatureMapTreeNil = 0;
+        }
+#if defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86)
     }
+#endif
 }
 
 namespace zDEClient {

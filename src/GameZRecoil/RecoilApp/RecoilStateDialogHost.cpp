@@ -28,8 +28,15 @@ void RecoilStateDialogHost::OnWndActivate(
 }
 
 /**
- * Reimplements 0x435e80: RecoilStateDialogHost::OnUpdateShouldQuit.
+ * Reimplements 0x435e80: RecoilStateSaveLoadTransition::OnUpdateShouldQuit
+ * (BN canonical folded body).
  *
+ * Source owner: app_shell.folded_dialog_update_should_quit. BN shows the
+ * retail body shared by DialogHost, MainMenuTransition, SaveLoadTransition,
+ * and other dialog-hosted state vtable slots; this definition preserves the
+ * DialogHost typed participant.
+ *
+ * Original-source function evidence: folded retail body 0x435e80.
  * Purpose: update and present the hosted HUD dialog each frame while a dialog
  * app state is current.
  */

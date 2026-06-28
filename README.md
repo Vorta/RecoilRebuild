@@ -57,7 +57,7 @@ Generated from `.agent/RECOIL_PLAN.md` and `.agent/RECOIL_MESSAGES_PLAN.md`.
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | Reconstructed | all entries | 5963 | 1117 | 0 | 0 | 0 | 7080 |
 | Source dependencies satisfied | authored entries | 3512 | 0 | 0 | 0 | 2986 | 6498 |
-| Source owner | authored entries | 6448 | 0 | 0 | 50 | 0 | 6498 |
+| Source owner | authored entries | 6401 | 0 | 0 | 97 | 0 | 6498 |
 | Data reimplemented | authored entries | 2623 | 0 | 889 | 0 | 2986 | 6498 |
 | Reimplemented | authored entries | 6498 | 0 | 0 | 0 | 0 | 6498 |
 | Provider-boundary | provider entries | 581 | 1 | 0 | 0 | 0 | 582 |
@@ -65,9 +65,9 @@ Generated from `.agent/RECOIL_PLAN.md` and `.agent/RECOIL_MESSAGES_PLAN.md`.
 | Reimplementation tier | Count | Percent of authored |
 | --- | ---: | ---: |
 | X | 0 | 0.0% |
-| F | 2 | 0.0% |
-| C | 48 | 0.7% |
-| B | 6244 | 96.1% |
+| F | 96 | 1.5% |
+| C | 1 | 0.0% |
+| B | 6197 | 95.4% |
 | A | 165 | 2.5% |
 | S | 39 | 0.6% |
 

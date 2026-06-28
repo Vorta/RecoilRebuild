@@ -64,9 +64,9 @@ struct WestwoodOnlineUpgradeDialog : CDialog {
     CEdit m_statusServerEdit;
     CEdit m_sessionNameEdit;
     CListBox m_browseRecordList;
-    unsigned int m_queryAuxParam;
-    unsigned int m_queryMaxPlayers;
-    unsigned int m_queryValueOrTime;
+    int m_queryAuxParam;
+    int m_queryMaxPlayers;
+    int m_queryValueOrTime;
     unsigned int m_queryStatusFlagBit0;
     unsigned int m_queryStatusFlagBit1;
     unsigned int m_querySessionModeKind;

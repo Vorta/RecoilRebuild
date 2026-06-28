@@ -3747,6 +3747,68 @@ namespace OptCatalog {
                     recycleRuntime = 1;
                 } else {
                     if (runtimeInstance->speed != 0.0f) {
+                        if ((entry->flags & kOptCatalogFlagLockOn) != 0 &&
+                            runtimeInstance->pendingTargetA != 0) {
+                            zVec3 targetDirection;
+                            zMath::Vec3DirectionTo(
+                                &runtimeInstance->pos,
+                                (zVec3 *)(runtimeInstance->pendingTargetA),
+                                &targetDirection
+                            );
+
+                            float turnBlend;
+                            if (runtimeInstance->spawnGateAccum < entry->turnSuspendTime) {
+                                turnBlend = 0.0f;
+                            } else if (entry->lockOnTime + entry->turnSuspendTime <=
+                                entry->turnSuspendTime) {
+                                turnBlend = 1.0f;
+                            } else {
+                                turnBlend =
+                                    (runtimeInstance->spawnGateAccum - entry->turnSuspendTime) /
+                                    entry->lockOnTime;
+                            }
+
+                            if ((entry->flags & kOptCatalogFlagTetherGuided) == 0) {
+                                const float turnStep =
+                                    entry->turnRate * turnBlend * g_OptCatalogRuntimeDeltaTime;
+                                const float directionDot =
+                                    runtimeInstance->dir.x * targetDirection.x +
+                                    runtimeInstance->dir.y * targetDirection.y +
+                                    runtimeInstance->dir.z * targetDirection.z;
+                                float turnAngle;
+                                if (directionDot >= 1.0f) {
+                                    turnAngle = 0.0f;
+                                } else if (directionDot <= -1.0f) {
+                                    turnAngle = (float)(kOptCatalogPi);
+                                } else {
+                                    turnAngle = (float)(acos(directionDot));
+                                    while (turnAngle < 0.0f) {
+                                        turnAngle += 6.28318548f;
+                                    }
+                                    while (turnAngle >= 6.28318548f) {
+                                        turnAngle -= 6.28318548f;
+                                    }
+                                    if (turnAngle > (float)(kOptCatalogPi)) {
+                                        turnAngle = 6.28318548f - turnAngle;
+                                    }
+                                }
+
+                                if (turnAngle > 0.0f) {
+                                    float slerpAmount = turnStep;
+                                    if (slerpAmount > turnAngle) {
+                                        slerpAmount = turnAngle;
+                                    }
+                                    zMath::Vec3Slerp(
+                                        &runtimeInstance->dir,
+                                        &targetDirection,
+                                        slerpAmount / turnAngle,
+                                        &runtimeInstance->dir
+                                    );
+                                    zMath::Vec3Normalize(&runtimeInstance->dir);
+                                }
+                            }
+                        }
+
                         runtimeInstance->velocity.x =
                             runtimeInstance->dir.x * runtimeInstance->speed;
                         runtimeInstance->velocity.y =

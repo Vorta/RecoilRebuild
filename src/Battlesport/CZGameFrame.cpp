@@ -51,6 +51,20 @@ typedef void( *RecoilStateWndActivateMethod)(
 );
 typedef CObject *(PASCAL *MfcCreateObjectProc)();
 
+/*
+ * BN evidence for 0x4438a0 loads the explicit CWnd argument's object pointer
+ * and calls the fifth virtual entry. MFC42 CWnd::IsWindowEnabled is
+ * nonvirtual/provider-backed and would add a retail-absent import, so keep
+ * this as a narrow query view without assigning a provider method name.
+ */
+struct MfcWindowValidityTarget {
+    virtual int ProviderEntry0() const;
+    virtual int ProviderEntry1() const;
+    virtual int ProviderEntry2() const;
+    virtual int ProviderEntry3() const;
+    virtual int QueryWindowValidity() const;
+};
+
 const UINT kMfcMessageMapSigIntCreateStruct = 9;
 const UINT kMfcMessageMapSigLongWparamLparam = 10;
 const UINT kMfcMessageMapSigVoid = 12;
@@ -217,7 +231,8 @@ int CZGameFrame::IsWindowValid(
     CWnd *pWnd
 ) const {
     if (pWnd != 0) {
-        return pWnd->IsWindowEnabled() == 0 ? 1 : 0;
+        return ((const MfcWindowValidityTarget *)(const void *)pWnd)
+            ->QueryWindowValidity() == 0 ? 1 : 0;
     }
 
     return 0;

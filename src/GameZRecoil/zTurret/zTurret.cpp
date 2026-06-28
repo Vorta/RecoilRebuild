@@ -17,6 +17,9 @@
 #include <math.h>
 #include <string.h>
 
+extern char g_HudCfgKey_Weapon[7];
+extern char g_HudCfgKey_Ammo[5];
+
 extern "C" {
 /**
  * Data owner: zTurret writable runtime globals.
@@ -686,7 +689,7 @@ void zTurret_Runtime::InitFromReaderNode(
 
     parentNode = zReader_GetNamedNode(
         readerNode,
-        "WEAPON"
+        g_HudCfgKey_Weapon
     );
     if (parentNode != 0) {
         node = zReader_GetNamedNode(
@@ -701,7 +704,7 @@ void zTurret_Runtime::InitFromReaderNode(
         }
         node = zReader_GetNamedNode(
             parentNode,
-            "AMMO"
+            g_HudCfgKey_Ammo
         );
         if (node != 0) {
             weaponAmmo = zTurret_ReaderArrayInt(

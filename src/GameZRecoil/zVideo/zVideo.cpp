@@ -124,6 +124,51 @@ int zVideo_GetAlphaSkipThreshold() {
 }
 } // namespace
 
+namespace zVid_Image {
+/**
+ * Reimplements data 0x4e0660: g_zImage_DefaultImagePixels.
+ * Reimplements data 0x4e06e0: g_zImage_DefaultImage.
+ * Retail places this initialized zImage default-image owner before the
+ * texture-directory state rows at 0x4e0718 and the zVideo texture-pack state
+ * rows at 0x4e073c. Keep the writable pixel array and typed image record in
+ * source order so final linked .data can follow the retail initialized-data
+ * boundary instead of the later zVid_Image function cluster.
+ * Purpose: provide the fallback 8x8 default image and backing pixels.
+ */
+unsigned short g_zImage_DefaultImagePixels[64] = {
+    0xf800, 0xf800, 0x03e0, 0x03e0, 0xf800, 0xf800, 0x03e0, 0x03e0,
+    0x03e0, 0x03e0, 0xf800, 0xf800, 0x03e0, 0x03e0, 0xf800, 0xf800,
+    0xf800, 0xf800, 0x03e0, 0x03e0, 0xf800, 0xf800, 0x03e0, 0x03e0,
+    0x03e0, 0x03e0, 0xf800, 0xf800, 0x03e0, 0x03e0, 0xf800, 0xf800,
+    0xf800, 0xf800, 0x03e0, 0x03e0, 0xf800, 0xf800, 0x03e0, 0x03e0,
+    0x03e0, 0x03e0, 0xf800, 0xf800, 0x03e0, 0x03e0, 0xf800, 0xf800,
+    0xf800, 0xf800, 0x03e0, 0x03e0, 0xf800, 0xf800, 0x03e0, 0x03e0,
+    0x03e0, 0x03e0, 0xf800, 0xf800, 0x03e0, 0x03e0, 0xf800, 0xf800
+};
+
+zVidImagePartial g_zImage_DefaultImage = {
+    64,
+    8,
+    8,
+    0,
+    5,
+    0,
+    0,
+    0,
+    0,
+    g_zImage_DefaultImagePixels,
+    0,
+    0,
+    0.0f,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+};
+} // namespace zVid_Image
+
 extern "C" {
 zVideo_PixelPackParams g_zVideo_PixelPack = {0};
 /*
@@ -242,6 +287,18 @@ int g_zVideo_IsInitialized = 0;
 int g_zVideo_AdjustSurfacesDisableGate = 0;
 int g_zVideo_FullscreenOption = 0;
 /**
+ * Reimplements data 0x632150: g_zVideo_DisplayModeBpp.
+ * BN models this as the zero-initialized int32 written when mode geometry is
+ * applied.
+ * Purpose: cache the active display mode bit depth.
+ */
+int g_zVideo_DisplayModeBpp = 0;
+/**
+ * Reimplements data 0x6321c8: g_zVideo_hWnd.
+ * Purpose: hold the active video target window handle.
+ */
+HWND g_zVideo_hWnd = 0;
+/**
  * Reimplements data 0x632134: g_zVideo_PrimaryHasAttachedBackbuffer.
  * Purpose: remember whether the primary DirectDraw surface has an attached
  * backbuffer that can be flipped back to GDI during shutdown or mode changes.
@@ -265,17 +322,6 @@ int g_zVideo_HalfResAdjustMode = 0;
  * Purpose: gate the software-mode hotkey command.
  */
 int g_zVideo_SoftwareModeHotkeyEnabled = 1;
-/**
- * Reimplements data 0x633434: g_zVideo_CachedFogModeLightState.
- * Reimplements data 0x633430: g_zVideo_CachedFogEnableRenderState.
- * Reimplements data 0x633438: g_zVideo_CachedFogStartLightStateValue.
- * Reimplements data 0x63343c: g_zVideo_CachedFogEndLightStateValue.
- * Purpose: cache the Direct3D fog render-state values already applied.
- */
-int g_zVideo_CachedFogModeLightState = 0;
-int g_zVideo_CachedFogEnableRenderState = 0;
-float g_zVideo_CachedFogStartLightStateValue = 0.0f;
-float g_zVideo_CachedFogEndLightStateValue = 0.0f;
 /**
  * Reimplements data 0x632140: g_zVideo_D3DColorNormalizeChannelIndex.
  * Reimplements data 0x6321d0: g_zVideo_FogColorPendingR255.
@@ -339,8 +385,8 @@ int g_zVideo_PendingWireframeState = 0;
  */
 int g_zVideo_D3DSceneDepth = 0;
 /**
- * Reimplements data 0x632f9c: g_zVid_AcceptedHardwareRendererCount.
  * Reimplements data 0x632f98: g_zVideo_NumAcceptedDirectDrawDevices.
+ * Reimplements data 0x632f9c: g_zVid_AcceptedHardwareRendererCount.
  * Reimplements data 0x56bc98: g_zVideo_DirectDrawEnumOrdinal.
  * DirectDraw/D3D enumeration counters. BN ties the accepted DirectDraw count
  * at 0x632f98 to the public zVid thunk at 0x4a7480, the accepted renderer
@@ -348,8 +394,8 @@ int g_zVideo_D3DSceneDepth = 0;
  * ordinal at 0x56bc98 only to DirectDrawEnumCallback logging.
  * Purpose: cache startup DirectDraw and Direct3D enumeration totals.
  */
-int g_zVid_AcceptedHardwareRendererCount = 0;
 int g_zVideo_NumAcceptedDirectDrawDevices = 0;
+int g_zVid_AcceptedHardwareRendererCount = 0;
 int g_zVideo_DirectDrawEnumOrdinal = 0;
 /**
  * Reimplements data 0x4e073c: g_zVid_TexturePackLoadState.
@@ -411,6 +457,12 @@ char g_zVid_TextureArchiveStem[0x8] = "texture";
  */
 char g_zVideo_SourceFile_ZvidBuffC[0x27] =
     "D:\\Proj\\GameZRecoil\\zVideo\\zvid_buff.c";
+/**
+ * Reimplements data 0x4e307c: g_zVideo_DefaultHwApiDescription.
+ * Purpose: provide the writable fallback hardware API description returned
+ * when no DirectDraw hardware API record is selected.
+ */
+char g_zVideo_DefaultHwApiDescription[8] = "Default";
 /**
  * Reimplements data 0x4e3084: g_zVideo_InitFailSetModeMsg.
  * Reimplements data 0x4e30a0: g_zVideo_SourceFile_ZvidInitC.
@@ -534,16 +586,6 @@ unsigned short **g_zVid_PaletteRemapVariantTables = 0;
 int *ZOPT_VIDEO_MODE = 0;
 int *ZOPT_VIDEO_ACCELERATION = 0;
 int *ZOPT_HW_API = 0;
-/**
- * Reimplements data 0x6359f8: g_zVideo_DDrawCapsHal.
- * Reimplements data 0x635b74: g_zVideo_DDrawCapsHel.
- * DirectDraw enumeration capability scratch buffers. EnumDirectDrawDeviceCallback
- * clears these zero-initialized 0x17c-byte provider records, sets dwSize, and
- * passes them to IDirectDraw2::GetCaps before accepting a hardware API record.
- * Purpose: hold HAL and HEL DirectDraw capability snapshots during enumeration.
- */
-DDCAPS g_zVideo_DDrawCapsHal = {0};
-DDCAPS g_zVideo_DDrawCapsHel = {0};
 /*
  * zVideo hardware default texture owner: BN 0x4a75f0 passes this separate
  * 8x8 four-color checker image directly to the active texture-record callback
@@ -1063,6 +1105,49 @@ RECOIL_STATIC_ASSERT(sizeof(g_zVideo_DDErrorName_NotInitialized) == 0x15);
 RECOIL_STATIC_ASSERT(sizeof(g_zVideo_DDErrorName_Generic) == 0x0e);
 RECOIL_STATIC_ASSERT(sizeof(g_zVideo_DDErrorName_Unsupported) == 0x12);
 /**
+ * Reimplements data 0x4e5b28: g_zVideo_PaletteOpenFailedFormat.
+ * Data owner: render_video.zvideo_palette_brightness_runtime.
+ * Purpose: supplies the palette-open diagnostic format used before the
+ * palette loader returns its failure code.
+ */
+char g_zVideo_PaletteOpenFailedFormat[0x21] =
+    "ZVID: could not open palette %s\n";
+/*
+ * BN models these as zero-initialized 0x20-byte zVideo_SurfaceState records:
+ * the software, primary, and display-mode globals are adjacent at 0x632200,
+ * 0x632220, and 0x632240.
+ */
+zVideo_SurfaceStatePartial g_zVideo_SwSurfaceState = {0};
+zVideo_SurfaceStatePartial g_zVideo_PrimarySurfaceState = {0};
+zVideo_SurfaceStatePartial g_zVideo_DisplayModeSurfaceState = {0};
+char g_zVideo_PalettePathBuffer[0x100] = {0};
+/**
+ * Reimplements data 0x632360: g_zVideo_PaletteBrightnessLevel.
+ * Purpose: cache the palette brightness adjustment used by palette loading.
+ */
+int g_zVideo_PaletteBrightnessLevel = 0;
+PALETTEENTRY g_zVideo_PaletteFileEntries[0x100] = {0};
+PALETTEENTRY g_zVideo_SystemPaletteEntries[0x100] = {0};
+RECOIL_STATIC_ASSERT(sizeof(g_zVideo_PaletteOpenFailedFormat) == 0x21);
+RECOIL_STATIC_ASSERT(sizeof(g_zVideo_PaletteBrightnessLevel) == 4);
+/**
+ * Reimplements data 0x632f88: g_zVideo_CachedClientRectScreen.
+ * Purpose: cache the client rectangle converted to screen coordinates.
+ */
+RECT g_zVideo_CachedClientRectScreen = {0};
+
+/**
+ * Reimplements data 0x632fa0: g_zVideo_SortedPolyQueueCount.
+ * Reimplements data 0x632fa4: g_zVideo_SortedPolyDrawOrder.
+ * Reimplements data 0x6333a4: g_zVideo_OverwriteQueueCount.
+ * Purpose: track queued sorted and overwrite polygon counts and the sorted
+ * polygon draw order.
+ */
+int g_zVideo_SortedPolyQueueCount = 0;
+int g_zVideo_SortedPolyDrawOrder[256] = {0};
+int g_zVideo_OverwriteQueueCount = 0;
+
+/**
  * Reimplements data 0x6333a8: g_zVideo_DefaultTextureRecord.
  * Data owner: render_video.zvideo_default_texture_record_runtime.
  * Purpose: hold the hardware default texture record created by zVideo startup
@@ -1075,24 +1160,6 @@ RECOIL_STATIC_ASSERT(sizeof(g_zVideo_DDErrorName_Unsupported) == 0x12);
  * separate storage owned by zImage::InitTextureDirectory.
  */
 zVideo_TextureRecordPartial *g_zVideo_DefaultTextureRecord = 0;
-/**
- * Reimplements data 0x4e5b28: g_zVideo_PaletteOpenFailedFormat.
- * Data owner: render_video.zvideo_palette_brightness_runtime.
- * Purpose: supplies the palette-open diagnostic format used before the
- * palette loader returns its failure code.
- */
-char g_zVideo_PaletteOpenFailedFormat[0x21] =
-    "ZVID: could not open palette %s\n";
-char g_zVideo_PalettePathBuffer[0x100] = {0};
-/**
- * Reimplements data 0x632360: g_zVideo_PaletteBrightnessLevel.
- * Purpose: cache the palette brightness adjustment used by palette loading.
- */
-int g_zVideo_PaletteBrightnessLevel = 0;
-PALETTEENTRY g_zVideo_PaletteFileEntries[0x100] = {0};
-PALETTEENTRY g_zVideo_SystemPaletteEntries[0x100] = {0};
-RECOIL_STATIC_ASSERT(sizeof(g_zVideo_PaletteOpenFailedFormat) == 0x21);
-RECOIL_STATIC_ASSERT(sizeof(g_zVideo_PaletteBrightnessLevel) == 4);
 
 /**
  * Reimplements data 0x6333ac: g_zVideo_pfnOpenVideoMode.
@@ -1202,13 +1269,72 @@ zVideo_FlushProc g_zVideo_pfnFlushOverwritePolys = 0;
  * Purpose: dispatch the active renderer's queued quad-batch flush routine.
  */
 zVideo_FlushProc g_zVideo_pfnFlushQuadBatch = 0;
-/**
- * Reimplements data 0x4e307c: g_zVideo_DefaultHwApiDescription.
- * Purpose: provide the writable fallback hardware API description returned
- * when no DirectDraw hardware API record is selected.
- */
-char g_zVideo_DefaultHwApiDescription[8] = "Default";
 
+/**
+ * Reimplements data 0x6333d8: g_zVideo_pDirectDraw2.
+ * Reimplements data 0x6333dc: g_zVideo_pClipper.
+ * Reimplements data 0x6333e0: g_zVideo_pPageUnlockSurface.
+ * Reimplements data 0x6333e4: g_zVideo_pDDPalette.
+ * Reimplements data 0x6333e8: g_zVideo_pSurfaceLockVerifier.
+ * Reimplements data 0x6333ec: g_zVideo_pD3D2.
+ * Reimplements data 0x6333f0: g_zVideo_pD3DDevice.
+ * Reimplements data 0x6333f4: g_zVideo_pZBufferSurface.
+ * Reimplements data 0x6333f8: g_zVideo_pZBufferAttachSurface.
+ * Reimplements data 0x6333fc: g_zVideo_pD3DViewport2.
+ * Reimplements data 0x633400: g_zVideo_pD3DMaterial2.
+ * Purpose: hold active DirectDraw and Direct3D provider interfaces.
+ */
+IDirectDraw2 *g_zVideo_pDirectDraw2 = 0;
+IDirectDrawClipper *g_zVideo_pClipper = 0;
+IDirectDrawSurface3 *g_zVideo_pPageUnlockSurface = 0;
+IDirectDrawPalette *g_zVideo_pDDPalette = 0;
+zVideo_SurfaceLockVerifier *g_zVideo_pSurfaceLockVerifier = 0;
+IDirect3D2 *g_zVideo_pD3D2 = 0;
+IDirect3DDevice2 *g_zVideo_pD3DDevice = 0;
+IDirectDrawSurface3 *g_zVideo_pZBufferSurface = 0;
+IDirectDrawSurface *g_zVideo_pZBufferAttachSurface = 0;
+IDirect3DViewport2 *g_zVideo_pD3DViewport2 = 0;
+IDirect3DMaterial2 *g_zVideo_pD3DMaterial2 = 0;
+/**
+ * Reimplements data 0x633404: g_zVideo_D3DMaterialHandle.
+ * Purpose: cache the active Direct3D material handle.
+ */
+D3DMATERIALHANDLE g_zVideo_D3DMaterialHandle = 0;
+/**
+ * Reimplements data 0x633408: g_zVideo_D3DRenderStateCache.
+ * Purpose: cache the Direct3D render states most recently applied to the
+ * active device.
+ */
+zVideo_D3DRenderStateCacheLive g_zVideo_D3DRenderStateCache = {0};
+/**
+ * Reimplements data 0x633434: g_zVideo_CachedFogModeLightState.
+ * Reimplements data 0x633430: g_zVideo_CachedFogEnableRenderState.
+ * Reimplements data 0x633438: g_zVideo_CachedFogStartLightStateValue.
+ * Reimplements data 0x63343c: g_zVideo_CachedFogEndLightStateValue.
+ * Purpose: cache the Direct3D fog render-state values already applied.
+ */
+int g_zVideo_CachedFogEnableRenderState = 0;
+int g_zVideo_CachedFogModeLightState = 0;
+float g_zVideo_CachedFogStartLightStateValue = 0.0f;
+float g_zVideo_CachedFogEndLightStateValue = 0.0f;
+/**
+ * Reimplements data 0x633440: g_zVideo_D3DHalDeviceDesc.
+ * Reimplements data 0x63353c: g_zVideo_D3DHelDeviceDesc.
+ * Purpose: hold Direct3D HAL and HEL device capability snapshots.
+ */
+D3DDEVICEDESC g_zVideo_D3DHalDeviceDesc = {0};
+D3DDEVICEDESC g_zVideo_D3DHelDeviceDesc = {0};
+/**
+ * Reimplements data 0x633638: g_zVideo_QuadBatchCount.
+ * Purpose: cache the queued Direct3D quad count.
+ */
+int g_zVideo_QuadBatchCount = 0;
+zVideo_QuadBatchItemPartial g_zVideo_QuadBatchItemsBase[16] = {0};
+/**
+ * Reimplements data 0x633e40: g_zVideo_pSelectedHwApiDeviceRecord.
+ * Purpose: point at the selected DirectDraw hardware API record.
+ */
+zVidHwApiDeviceRecordPartial *g_zVideo_pSelectedHwApiDeviceRecord = 0;
 /**
  * Reimplements data 0x633e44: g_zVideo_HwApiDeviceTable.
  * Cached DirectDraw hardware-device owner: BN models four 0x6ec-byte records
@@ -1219,11 +1345,6 @@ char g_zVideo_DefaultHwApiDescription[8] = "Default";
  */
 zVidHwApiDeviceRecordPartial g_zVideo_HwApiDeviceTable[4] = {0};
 /**
- * Reimplements data 0x633e40: g_zVideo_pSelectedHwApiDeviceRecord.
- * Purpose: point at the selected DirectDraw hardware API record.
- */
-zVidHwApiDeviceRecordPartial *g_zVideo_pSelectedHwApiDeviceRecord = 0;
-/**
  * Reimplements data 0x6359f4: g_zVideo_pSelectedD3DDeviceInfo.
  * Selected Direct3D device-info pointer. BN types the retail 4-byte
  * zero-initialized slot as a zVidD3DDeviceInfo pointer; zVideo stores either
@@ -1232,76 +1353,32 @@ zVidHwApiDeviceRecordPartial *g_zVideo_pSelectedHwApiDeviceRecord = 0;
  * creation queries.
  */
 zVidD3DDriverRecordPartial *g_zVideo_pSelectedD3DDeviceInfo = 0;
-D3DDEVICEDESC g_zVideo_D3DHalDeviceDesc = {0};
-D3DDEVICEDESC g_zVideo_D3DHelDeviceDesc = {0};
 /**
- * Reimplements data 0x633404: g_zVideo_D3DMaterialHandle.
- * Reimplements data 0x633638: g_zVideo_QuadBatchCount.
- * Purpose: cache the active Direct3D material handle and queued quad count.
+ * Reimplements data 0x6359f8: g_zVideo_DDrawCapsHal.
+ * Reimplements data 0x635b74: g_zVideo_DDrawCapsHel.
+ * DirectDraw enumeration capability scratch buffers. EnumDirectDrawDeviceCallback
+ * clears these zero-initialized 0x17c-byte provider records, sets dwSize, and
+ * passes them to IDirectDraw2::GetCaps before accepting a hardware API record.
+ * Purpose: hold HAL and HEL DirectDraw capability snapshots during enumeration.
  */
-D3DMATERIALHANDLE g_zVideo_D3DMaterialHandle = 0;
-int g_zVideo_QuadBatchCount = 0;
-zVideo_QuadBatchItemPartial g_zVideo_QuadBatchItemsBase[16] = {0};
-D3DTLVERTEX g_zVideo_D3DSubmitTempVertices[64] = {0};
-int g_zVideo_SortedPolyDrawOrder[256] = {0};
-zVideo_SortedPolyQueueEntry g_zVideo_SortedPolyQueueBase[256] = {0};
-zVideo_OverwriteQueueEntry g_zVideo_OverwriteQueueBase[0x180] = {0};
+DDCAPS g_zVideo_DDrawCapsHal = {0};
+DDCAPS g_zVideo_DDrawCapsHel = {0};
 /**
- * Reimplements data 0x632fa0: g_zVideo_SortedPolyQueueCount.
- * Reimplements data 0x6333a4: g_zVideo_OverwriteQueueCount.
- * Purpose: track queued sorted and overwrite polygon counts.
- */
-int g_zVideo_SortedPolyQueueCount = 0;
-int g_zVideo_OverwriteQueueCount = 0;
-zVideo_D3DRenderStateCacheLive g_zVideo_D3DRenderStateCache = {0};
-/**
- * Reimplements data 0x633400: g_zVideo_pD3DMaterial2.
- * Reimplements data 0x6333fc: g_zVideo_pD3DViewport2.
- * Reimplements data 0x6333f0: g_zVideo_pD3DDevice.
- * Reimplements data 0x6333ec: g_zVideo_pD3D2.
- * Reimplements data 0x6333dc: g_zVideo_pClipper.
- * Purpose: hold active Direct3D and DirectDraw provider interfaces.
- */
-IDirect3DMaterial2 *g_zVideo_pD3DMaterial2 = 0;
-IDirect3DViewport2 *g_zVideo_pD3DViewport2 = 0;
-IDirect3DDevice2 *g_zVideo_pD3DDevice = 0;
-IDirect3D2 *g_zVideo_pD3D2 = 0;
-IDirectDrawClipper *g_zVideo_pClipper = 0;
-/**
- * Reimplements data 0x6333d8: g_zVideo_pDirectDraw2.
- * Purpose: hold the active IDirectDraw2 provider interface used by DirectDraw
- * surface creation, GDI flipping, and subsystem teardown.
- *
- * DirectDraw/Direct3D interface owner data. BN stores the IDirectDraw2
- * provider pointer after QueryInterface, reads it from surface creation and
- * FlipToGDIIfAttached, and releases/clears it during video teardown.
- */
-IDirectDraw2 *g_zVideo_pDirectDraw2 = 0;
-/**
- * Reimplements data 0x6333f4: g_zVideo_pZBufferSurface.
- * Reimplements data 0x6333f8: g_zVideo_pZBufferAttachSurface.
- * Reimplements data 0x6333e0: g_zVideo_pPageUnlockSurface.
- * Reimplements data 0x6333e8: g_zVideo_pSurfaceLockVerifier.
- * Reimplements data 0x635d0c: g_zVideo_SurfaceLockVerifyContext.
  * Reimplements data 0x635cf4: g_zVideo_SurfaceLockVerifyFlags.
+ * Reimplements data 0x635d0c: g_zVideo_SurfaceLockVerifyContext.
  * Purpose: hold DirectDraw surface-lock verification state.
  */
-IDirectDrawSurface3 *g_zVideo_pZBufferSurface = 0;
-IDirectDrawSurface *g_zVideo_pZBufferAttachSurface = 0;
-IDirectDrawSurface3 *g_zVideo_pPageUnlockSurface = 0;
-zVideo_SurfaceLockVerifier *g_zVideo_pSurfaceLockVerifier = 0;
-int g_zVideo_SurfaceLockVerifyContext = 0;
 unsigned char g_zVideo_SurfaceLockVerifyFlags = 0;
-/*
- * BN models these as zero-initialized 0x20-byte zVideo_SurfaceState records:
- * the software, primary, and display-mode globals are adjacent at 0x632200,
- * 0x632220, and 0x632240; the swap scratch record is the same shape at
- * 0x56bc78 and is used only by the software present adjustment path.
+int g_zVideo_SurfaceLockVerifyContext = 0;
+/**
+ * Reimplements data 0x635d18: g_zVideo_D3DSubmitTempVertices.
+ * Reimplements data 0x636518: g_zVideo_SortedPolyQueueBase.
+ * Reimplements data 0x6b7118: g_zVideo_OverwriteQueueBase.
+ * Purpose: store Direct3D submit scratch vertices and queued polygons.
  */
-zVideo_SurfaceStatePartial g_zVideo_SwSurfaceState = {0};
-zVideo_SurfaceStatePartial g_zVideo_PrimarySurfaceState = {0};
-zVideo_SurfaceStatePartial g_zVideo_DisplayModeSurfaceState = {0};
-zVideo_SurfaceStatePartial g_zVideo_SurfaceStateSwapScratch = {0};
+D3DTLVERTEX g_zVideo_D3DSubmitTempVertices[64] = {0};
+zVideo_SortedPolyQueueEntry g_zVideo_SortedPolyQueueBase[256] = {0};
+zVideo_OverwriteQueueEntry g_zVideo_OverwriteQueueBase[0x180] = {0};
 
 struct zVideoFxPass3RootElement : zVideoFxPass3Element {
     unsigned short packedColor16;
@@ -1431,95 +1508,6 @@ RECOIL_STATIC_ASSERT(
 RECOIL_STATIC_ASSERT(sizeof(zVideoFxPass3Config) == 0x1f0);
 #endif
 
-/**
- * Reimplements data 0x56bd58: g_zVideo_FxPass3ConfigLocal.
- * Data owner evidence: retail 0x56bd58 is the authored zero-initialized
- * zVideoFxPass3Config singleton, complete size 0x1f0. Sibling pass-3 scratch,
- * clip, and surface globals are separate zVideo data owners.
- * Purpose: store the local pass-3 UI config used by the zVideo namespace
- * wrapper functions.
- */
-zVideoFxPass3Config g_zVideo_FxPass3ConfigLocal;
-zVidRect32 g_zVideo_PrimarySurfaceRectScratch = {0};
-/**
- * Reimplements data 0x632150: g_zVideo_DisplayModeBpp.
- * BN models this as the zero-initialized int32 written when mode geometry is
- * applied.
- * Purpose: cache the active display mode bit depth.
- */
-int g_zVideo_DisplayModeBpp = 0;
-/**
- * Reimplements data 0x56b1b8: g_zVid_NoiseByteTableSize.
- * Data owner evidence: zVid::Noise_InitBuffers writes the primary-surface
- * width multiplied by 25 before filling the byte table; DrawNoiseRect uses it
- * as the random row-window limit.
- * Purpose: cache the allocated noise-byte table length.
- */
-int g_zVid_NoiseByteTableSize = 0;
-/**
- * Reimplements data 0x56b1bc: g_zVid_NoiseByteTable.
- * Data owner evidence: zVid::Noise_InitBuffers allocates and fills this byte
- * table, DrawNoiseRect samples it, and zVid::Noise_ShutdownBuffers frees and
- * clears it when non-null.
- * Purpose: hold the software noise bytes used by the FX surface overlay path.
- */
-unsigned char *g_zVid_NoiseByteTable = 0;
-/**
- * Reimplements data 0x56b1c0: g_zVideo_FxPass3_ScratchPixels16.
- * Data owner evidence: zVid::Noise_InitBuffers allocates a width*height
- * 16-bpp scratch buffer and stores it after clearing the active FX-surface
- * descriptor; zVid::Noise_ShutdownBuffers frees and clears it when non-null.
- * zVideo::FxPass3_CopySurfacePixelToScratchClipped at 0x48da60 writes through
- * this pointer with tight g_zVideo_FxSurfaceWidth row stride, while
- * zVideo::FxPass3_ApplyToCurrentSurface at 0x48daf0 stages the radial ring
- * warp here before copying back to the active FX surface.
- * Purpose: stage pass-3 warp, blur, and related 16-bpp FX surface pixels.
- */
-unsigned short *g_zVideo_FxPass3_ScratchPixels16 = 0;
-/**
- * Reimplements data 0x56b1c4: g_zVideo_FxSurfacePixels16.
- * Data owner evidence: zVideo::Fx_SetSurfaceState writes this active surface
- * pointer, zVid::Noise_InitBuffers clears it during scratch initialization,
- * and noise/blur/pass-3/FX-surface routines use it as the 16-bpp destination.
- * zVideo::FxPass3_CopySurfacePixelToScratchClipped at 0x48da60 reads source
- * pixels through this pointer using g_zVideo_FxSurfacePitchPixels16.
- * Purpose: point at the currently active 16-bpp FX surface pixel buffer.
- */
-unsigned short *g_zVideo_FxSurfacePixels16 = 0;
-/**
- * Reimplements data 0x56b1c8: g_zVideo_FxSurfaceWidth.
- * Data owner evidence: zVideo::Fx_SetSurfaceState writes the active width,
- * zVid::Noise_InitBuffers clears it, and FX/noise/blur paths use it for bounds
- * and tight scratch-buffer row stride. FxPass3 clipped copies use this for
- * scratch row indexing, distinct from the provider pitch used for source rows.
- * Purpose: cache the active FX surface width in pixels.
- */
-int g_zVideo_FxSurfaceWidth = 0;
-/**
- * Reimplements data 0x56b1cc: g_zVideo_FxSurfaceHeight.
- * Data owner evidence: zVideo::Fx_SetSurfaceState writes the active height,
- * zVid::Noise_InitBuffers clears it, and FX/noise/blur paths use it for full
- * surface clipping.
- * Purpose: cache the active FX surface height in pixels.
- */
-int g_zVideo_FxSurfaceHeight = 0;
-/**
- * Reimplements data 0x56b1d0: g_zVideo_FxSurfacePitchBytes.
- * Data owner evidence: zVideo::Fx_SetSurfaceState writes the provider pitch in
- * bytes and zVid::Noise_InitBuffers clears it with the active surface record.
- * Purpose: retain the active FX surface row pitch in bytes.
- */
-int g_zVideo_FxSurfacePitchBytes = 0;
-/**
- * Reimplements data 0x56b1d4: g_zVideo_FxSurfacePitchPixels16.
- * Data owner evidence: zVideo::Fx_SetSurfaceState derives this from pitch
- * bytes divided by two; FX/noise/blur paths use it for source/destination row
- * stepping while scratch rows use g_zVideo_FxSurfaceWidth. BN assembly for
- * 0x48da60 multiplies the biased source Y by this value before reading
- * g_zVideo_FxSurfacePixels16.
- * Purpose: retain the active FX surface row pitch in 16-bpp pixels.
- */
-int g_zVideo_FxSurfacePitchPixels16 = 0;
 /*
  * FxPass3 scratch/clip data-owner note:
  * 0x48da60 reads the two scratch offsets, four clip bounds, active FX-surface
@@ -1537,7 +1525,7 @@ int g_zVideo_FxSurfacePitchPixels16 = 0;
  * delta before clip tests.
  * Purpose: cache the pass-3 clipped copy X offset.
  */
-int g_zVideo_FxPass3_ScratchOffsetX = 0;
+int g_zVideo_FxPass3_ScratchOffsetX;
 /**
  * Reimplements data 0x56b194: g_zVideo_FxPass3_ScratchOffsetY.
  * Data owner evidence: zVideo::FxPass3_ApplyToCurrentSurface writes the center
@@ -1546,7 +1534,7 @@ int g_zVideo_FxPass3_ScratchOffsetX = 0;
  * delta before clip tests.
  * Purpose: cache the pass-3 clipped copy Y offset.
  */
-int g_zVideo_FxPass3_ScratchOffsetY = 0;
+int g_zVideo_FxPass3_ScratchOffsetY;
 /**
  * Reimplements data 0x56b1a0: g_zVideo_FxPass3_ClipMinX.
  * Data owner evidence: zVideo::FxPass3_ApplyToCurrentSurface writes the
@@ -1554,7 +1542,7 @@ int g_zVideo_FxPass3_ScratchOffsetY = 0;
  * and destination X coordinates against it as an inclusive lower bound.
  * Purpose: cache the inclusive minimum X clip edge for pass-3 scatter copies.
  */
-int g_zVideo_FxPass3_ClipMinX = 0;
+int g_zVideo_FxPass3_ClipMinX;
 /**
  * Reimplements data 0x56b1a4: g_zVideo_FxPass3_ClipMinY.
  * Data owner evidence: zVideo::FxPass3_ApplyToCurrentSurface writes the
@@ -1562,7 +1550,7 @@ int g_zVideo_FxPass3_ClipMinX = 0;
  * and destination Y coordinates against it as an inclusive lower bound.
  * Purpose: cache the inclusive minimum Y clip edge for pass-3 scatter copies.
  */
-int g_zVideo_FxPass3_ClipMinY = 0;
+int g_zVideo_FxPass3_ClipMinY;
 /**
  * Reimplements data 0x56b1a8: g_zVideo_FxPass3_ClipMaxX.
  * Data owner evidence: zVideo::FxPass3_ApplyToCurrentSurface writes the
@@ -1570,7 +1558,7 @@ int g_zVideo_FxPass3_ClipMinY = 0;
  * the exclusive maximum X edge.
  * Purpose: cache the exclusive maximum X clip edge for pass-3 scatter copies.
  */
-int g_zVideo_FxPass3_ClipMaxX = 0;
+int g_zVideo_FxPass3_ClipMaxX;
 /**
  * Reimplements data 0x56b1ac: g_zVideo_FxPass3_ClipMaxY.
  * Data owner evidence: zVideo::FxPass3_ApplyToCurrentSurface writes the
@@ -1578,15 +1566,100 @@ int g_zVideo_FxPass3_ClipMaxX = 0;
  * the exclusive maximum Y edge.
  * Purpose: cache the exclusive maximum Y clip edge for pass-3 scatter copies.
  */
-int g_zVideo_FxPass3_ClipMaxY = 0;
+int g_zVideo_FxPass3_ClipMaxY;
 /**
- * Reimplements data 0x6333e4: g_zVideo_pDDPalette.
- * Reimplements data 0x6321c8: g_zVideo_hWnd.
- * Purpose: hold the active DirectDraw palette and target window handle.
+ * Reimplements data 0x56b1b8: g_zVid_NoiseByteTableSize.
+ * Data owner evidence: zVid::Noise_InitBuffers writes the primary-surface
+ * width multiplied by 25 before filling the byte table; DrawNoiseRect uses it
+ * as the random row-window limit.
+ * Purpose: cache the allocated noise-byte table length.
  */
-IDirectDrawPalette *g_zVideo_pDDPalette = 0;
-HWND g_zVideo_hWnd = 0;
-RECT g_zVideo_CachedClientRectScreen = {0};
+int g_zVid_NoiseByteTableSize;
+/**
+ * Reimplements data 0x56b1bc: g_zVid_NoiseByteTable.
+ * Data owner evidence: zVid::Noise_InitBuffers allocates and fills this byte
+ * table, DrawNoiseRect samples it, and zVid::Noise_ShutdownBuffers frees and
+ * clears it when non-null.
+ * Purpose: hold the software noise bytes used by the FX surface overlay path.
+ */
+unsigned char *g_zVid_NoiseByteTable;
+/**
+ * Reimplements data 0x56b1c0: g_zVideo_FxPass3_ScratchPixels16.
+ * Data owner evidence: zVid::Noise_InitBuffers allocates a width*height
+ * 16-bpp scratch buffer and stores it after clearing the active FX-surface
+ * descriptor; zVid::Noise_ShutdownBuffers frees and clears it when non-null.
+ * zVideo::FxPass3_CopySurfacePixelToScratchClipped at 0x48da60 writes through
+ * this pointer with tight g_zVideo_FxSurfaceWidth row stride, while
+ * zVideo::FxPass3_ApplyToCurrentSurface at 0x48daf0 stages the radial ring
+ * warp here before copying back to the active FX surface.
+ * Purpose: stage pass-3 warp, blur, and related 16-bpp FX surface pixels.
+ */
+unsigned short *g_zVideo_FxPass3_ScratchPixels16;
+/**
+ * Reimplements data 0x56b1c4: g_zVideo_FxSurfacePixels16.
+ * Data owner evidence: zVideo::Fx_SetSurfaceState writes this active surface
+ * pointer, zVid::Noise_InitBuffers clears it during scratch initialization,
+ * and noise/blur/pass-3/FX-surface routines use it as the 16-bpp destination.
+ * zVideo::FxPass3_CopySurfacePixelToScratchClipped at 0x48da60 reads source
+ * pixels through this pointer using g_zVideo_FxSurfacePitchPixels16.
+ * Purpose: point at the currently active 16-bpp FX surface pixel buffer.
+ */
+unsigned short *g_zVideo_FxSurfacePixels16;
+/**
+ * Reimplements data 0x56b1c8: g_zVideo_FxSurfaceWidth.
+ * Data owner evidence: zVideo::Fx_SetSurfaceState writes the active width,
+ * zVid::Noise_InitBuffers clears it, and FX/noise/blur paths use it for bounds
+ * and tight scratch-buffer row stride. FxPass3 clipped copies use this for
+ * scratch row indexing, distinct from the provider pitch used for source rows.
+ * Purpose: cache the active FX surface width in pixels.
+ */
+int g_zVideo_FxSurfaceWidth;
+/**
+ * Reimplements data 0x56b1cc: g_zVideo_FxSurfaceHeight.
+ * Data owner evidence: zVideo::Fx_SetSurfaceState writes the active height,
+ * zVid::Noise_InitBuffers clears it, and FX/noise/blur paths use it for full
+ * surface clipping.
+ * Purpose: cache the active FX surface height in pixels.
+ */
+int g_zVideo_FxSurfaceHeight;
+/**
+ * Reimplements data 0x56b1d0: g_zVideo_FxSurfacePitchBytes.
+ * Data owner evidence: zVideo::Fx_SetSurfaceState writes the provider pitch in
+ * bytes and zVid::Noise_InitBuffers clears it with the active surface record.
+ * Purpose: retain the active FX surface row pitch in bytes.
+ */
+int g_zVideo_FxSurfacePitchBytes;
+/**
+ * Reimplements data 0x56b1d4: g_zVideo_FxSurfacePitchPixels16.
+ * Data owner evidence: zVideo::Fx_SetSurfaceState derives this from pitch
+ * bytes divided by two; FX/noise/blur paths use it for source/destination row
+ * stepping while scratch rows use g_zVideo_FxSurfaceWidth. BN assembly for
+ * 0x48da60 multiplies the biased source Y by this value before reading
+ * g_zVideo_FxSurfacePixels16.
+ * Purpose: retain the active FX surface row pitch in 16-bpp pixels.
+ */
+int g_zVideo_FxSurfacePitchPixels16;
+zVidRect32 g_zVideo_PrimarySurfaceRectScratch;
+/*
+ * BN models this as a zero-initialized 0x20-byte zVideo_SurfaceState record:
+ * the swap scratch record is the same shape as the software, primary, and
+ * display-mode globals but retail stores it earlier at 0x56bc78, before the
+ * pass-3 config singleton at 0x56bd58. It is used only by the software
+ * present adjustment path.
+ */
+zVideo_SurfaceStatePartial g_zVideo_SurfaceStateSwapScratch;
+/**
+ * Reimplements data 0x56bd58: g_zVideo_FxPass3ConfigLocal.
+ * Data owner evidence: retail 0x56bd58 is the authored zero-initialized
+ * zVideoFxPass3Config singleton, complete size 0x1f0. Sibling pass-3 scratch,
+ * clip, and surface globals are separate zVideo data owners.
+ * Purpose: store the local pass-3 UI config used by the zVideo namespace
+ * wrapper functions.
+ */
+#undef g_zVideo_FxPass3ConfigLocal
+unsigned long g_zVideo_FxPass3ConfigLocal[0x1f0 / sizeof(unsigned long)];
+RECOIL_STATIC_ASSERT(sizeof(g_zVideo_FxPass3ConfigLocal) == 0x1f0);
+#define g_zVideo_FxPass3ConfigLocal (*(zVideoFxPass3Config *)(void *)g_zVideo_FxPass3ConfigLocal)
 
 /**
  * Reimplements 0x4a6cf0: zVid_PackColorRGB.
@@ -6479,39 +6552,6 @@ void __fastcall DrawColoredLinesBatch(
 } // namespace zVideo_FxSurface
 
 namespace zVid_Image {
-unsigned short g_zImage_DefaultImagePixels[64] = {
-    0xf800, 0xf800, 0x03e0, 0x03e0, 0xf800, 0xf800, 0x03e0, 0x03e0,
-    0x03e0, 0x03e0, 0xf800, 0xf800, 0x03e0, 0x03e0, 0xf800, 0xf800,
-    0xf800, 0xf800, 0x03e0, 0x03e0, 0xf800, 0xf800, 0x03e0, 0x03e0,
-    0x03e0, 0x03e0, 0xf800, 0xf800, 0x03e0, 0x03e0, 0xf800, 0xf800,
-    0xf800, 0xf800, 0x03e0, 0x03e0, 0xf800, 0xf800, 0x03e0, 0x03e0,
-    0x03e0, 0x03e0, 0xf800, 0xf800, 0x03e0, 0x03e0, 0xf800, 0xf800,
-    0xf800, 0xf800, 0x03e0, 0x03e0, 0xf800, 0xf800, 0x03e0, 0x03e0,
-    0x03e0, 0x03e0, 0xf800, 0xf800, 0x03e0, 0x03e0, 0xf800, 0xf800
-};
-
-zVidImagePartial g_zImage_DefaultImage = {
-    64,
-    8,
-    8,
-    0,
-    5,
-    0,
-    0,
-    0,
-    0,
-    g_zImage_DefaultImagePixels,
-    0,
-    0,
-    0.0f,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0
-};
-
 /**
  * Reimplements 0x46ec00: zVid_Image::Create.
  * Original file: GameZRecoil/zImage/zimg_texture.cpp.

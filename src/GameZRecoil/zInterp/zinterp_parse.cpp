@@ -74,6 +74,17 @@ char k_zInterp_FormatVarFloat[] = "%s = (float) %f";
  * Purpose: Logf format for character-pointer script variable entries.
  */
 char k_zInterp_FormatVarString[] = "%s = (char*)\"%s\"";
+} // namespace
+
+/**
+ * Reimplements data 0x56bf78: g_zInterp_LineBuffer.
+ * Data owner: zInterp_Context initialized globals.
+ *
+ * Purpose: shared line buffer used while reading and running script input.
+ */
+char g_zInterp_LineBuffer[1024] = {0};
+
+namespace {
 /**
  * Reimplements data 0x56c378: g_zInterp_MacroExpansionScratch.
  * Data owner: zInterp_Context initialized globals.
@@ -113,14 +124,6 @@ int g_zInterp_EnablePreparedScripts = 1;
  * Purpose: controls script parser logging verbosity.
  */
 int g_zInterp_VerboseLevel = 0;
-
-/**
- * Reimplements data 0x56bf78: g_zInterp_LineBuffer.
- * Data owner: zInterp_Context initialized globals.
- *
- * Purpose: shared line buffer used while reading and running script input.
- */
-char g_zInterp_LineBuffer[1024] = {0};
 
 /**
  * Reimplements data 0x4e4988: g_zInterp_AssignToken_Equal.
@@ -1563,6 +1566,8 @@ int zInterp_Context::RunStream(
 /**
  * Reimplements 0x4c13c0: zInterp_Context::TokenizeLine.
  * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ * BN evidence: retail imports iswspace and sign-extends token bytes before
+ * each whitespace classification call.
  *
  * Purpose: copy a text line, strip comments, and split command tokens.
  */
@@ -1594,7 +1599,7 @@ int zInterp_Context::TokenizeLine(
     }
 
     char *cursor = tempAlloc;
-    while (isspace((unsigned char)(*cursor)) != 0) {
+    while (iswspace(*cursor) != 0) {
         ++cursor;
     }
 
@@ -1613,7 +1618,7 @@ int zInterp_Context::TokenizeLine(
             break;
         }
 
-        while (isspace((unsigned char)(*cursor)) != 0) {
+        while (iswspace(*cursor) != 0) {
             ++cursor;
         }
 

@@ -47,7 +47,7 @@ void __stdcall DDX_Control(
 void __stdcall DDX_Text(
     CDataExchange *dataExchange,
     int controlId,
-    unsigned int &value
+    int &value
 );
 void __stdcall DDX_Check(
     CDataExchange *dataExchange,

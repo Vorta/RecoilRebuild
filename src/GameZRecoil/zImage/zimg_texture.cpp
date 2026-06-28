@@ -11,6 +11,7 @@
 #include <string.h>
 
 extern char g_HudSensorTracker_ReadFileFailedFmt[18];
+extern char g_HudCfgKey_Fonts[6];
 
 extern "C" {
 /**
@@ -871,7 +872,7 @@ int __fastcall FontsLoadFromPath(
     zImage_InitMissionResources("..\\data\\common\\fonts");
     zReader::Node *fontsNode = zReader_GetNamedNode(
         tree,
-        "FONTS"
+        g_HudCfgKey_Fonts
     );
     if (fontsNode == 0) {
         zError::ReportOld(

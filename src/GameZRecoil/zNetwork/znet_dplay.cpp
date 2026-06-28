@@ -202,842 +202,114 @@ int g_zNetwork_PlayerColorInUseFlags[16] = {0};
  * Purpose: own the global packet-dispatch handler list object.
  */
 zNetworkDispatchHandlerList g_zNetwork_DispatchHandlerList = {0};
-/**
- * Reimplements data 0x4e1860..0x4e18ff:
- * network_online.znetwork_dplay_literal_pool diagnostics header.
- * Purpose: provide writable znet_dplay.cpp source/capability literals used by
- * DirectPlay reporting and TCP/IP send-mode diagnostics.
- */
-/**
- * Reimplements data 0x4e1860: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_SourceFile_ZnetDplayCpp[0x2c] =
-    "D:\\Proj\\GameZRecoil\\zNetwork\\znet_dplay.cpp";
-/**
- * Reimplements data 0x4e188c: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_UsingTcpIpFmt[0x19] =
-    "Network using TCP/IP %s\n";
-/**
- * Reimplements data 0x4e18a8: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_SyncModeName[0x6] = "SYNCH";
-/**
- * Reimplements data 0x4e18b0: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_AsyncModeName[0x7] = "ASYNCH";
-/**
- * Reimplements data 0x4e18b8: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_GuaranteedTcpIpNotSupportedMsg[0x22] =
-    "Guaranteed TCP/IP not supported n";
-/**
- * Reimplements data 0x4e18dc: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_GetCapabilitiesFailedMsg[0x24] =
-    "Failed to get network capabilities\n";
-/**
- * Reimplements data 0x4e1900..0x4e1ad8:
- * network_online.znetwork_dplay_literal_pool DirectPlay open-failure text.
- * Purpose: provide the writable UI strings selected by the recovered
- * ReportDPlayOpenFailure helper.
- */
-/**
- * Reimplements data 0x4e1900: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorText_SignatureFailure[0x12] = "Signature Failure";
-/**
- * Reimplements data 0x4e1914: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorText_LogonDenied[0xd] = "Logon Denied";
-/**
- * Reimplements data 0x4e1924: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorText_EncryptionNotSupported[0x19] =
-    "Encryption Not Supported";
-/**
- * Reimplements data 0x4e1940: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorText_EncryptionFailed[0x12] = "Encryption Failed";
-/**
- * Reimplements data 0x4e1954: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorText_SecuritySupportProviderError[0x20] =
-    "Security Support Provider Error";
-/**
- * Reimplements data 0x4e1974: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorText_CannotLoadSecurityPackage[0x1d] =
-    "Cannot Load Security Package";
-/**
- * Reimplements data 0x4e1994: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorText_CryptographyServicesError[0x1c] =
-    "Cryptography Services Error";
-/**
- * Reimplements data 0x4e19b0: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorText_AuthenticationFailed[0x16] =
-    "Authentication Failed";
-/**
- * Reimplements data 0x4e19c8: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorText_ConnectionLost[0x10] = "Connection Lost";
-/**
- * Reimplements data 0x4e19d8: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorText_ErrorConnecting[0x11] = "Error Connecting";
-/**
- * Reimplements data 0x4e19ec: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorText_InvalidPassword[0x11] = "Invalid Password";
-/**
- * Reimplements data 0x4e1a00: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorText_NoNewPlayersAllowed[0x17] =
-    "No New Players Allowed";
-/**
- * Reimplements data 0x4e1a18: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorText_InitializationError[0x15] =
-    "Initialization Error";
-/**
- * Reimplements data 0x4e1a30: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorText_CannotCreateServer[0x15] =
-    "Cannot Create Server";
-/**
- * Reimplements data 0x4e1a48: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorText_TimeoutError[0xe] = "Timeout Error";
-/**
- * Reimplements data 0x4e1a58: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorText_NoExistingSessions[0x15] =
-    "No Existing Sessions";
-/**
- * Reimplements data 0x4e1a70: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorText_NoConnection[0xe] = "No Connection";
-/**
- * Reimplements data 0x4e1a80: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorText_InvalidFlags[0x15] =
-    "Sorry, Invalid Flags";
-/**
- * Reimplements data 0x4e1a98: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorText_AccessDenied[0xe] = "Access Denied";
-/**
- * Reimplements data 0x4e1aa8: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorText_AlreadyInitialized[0x14] =
-    "Already Initialized";
-/**
- * Reimplements data 0x4e1abc: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorText_InvalidParameters[0x1a] =
-    "Sorry, Invalid Parameters";
-/**
- * Reimplements data 0x4e1ad8: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_RecoilNetworkErrorMsg[0x15] = "Recoil Network Error";
-/**
- * Reimplements data 0x4e1af0..0x4e1c48:
- * network_online.znetwork_dplay_literal_pool runtime diagnostics.
- * Purpose: provide writable player/session, receive-buffer, COM, and
- * DirectPlay report-format literals used by znet_dplay.cpp.
- */
-/**
- * Reimplements data 0x4e1af0: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_NoNetworkConnectionMsg[0x16] = "No Network Connection";
-/**
- * Reimplements data 0x4e1b08: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_NetworkConnectionLostMsg[0x26] =
-    "Your Network Connection Has Been Lost";
-/**
- * Reimplements data 0x4e1b30: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_InvalidPlayerParametersMsg[0x21] =
-    "Sorry, Invalid Player Parameters";
-/**
- * Reimplements data 0x4e1b54: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_CannotCreateAnotherPlayerMsg[0x1d] =
-    "Cannot Create Another Player";
-/**
- * Reimplements data 0x4e1b74: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_CannotAddAnotherPlayerMsg[0x1a] =
-    "Cannot Add Another Player";
-/**
- * Reimplements data 0x4e1b90: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DefaultPlayerName[0x7] = "noname";
-/**
- * Reimplements data 0x4e1b98: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_ReceiveBufferIncreasedFmt[0x2e] =
-    "Receiving buffer size increased from %d to %d";
-/**
- * Reimplements data 0x4e1bc8: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_UnhandledDirectPlaySystemMessageMsg[0x24] =
-    "Unhandled DirectPlay system message";
-/**
- * Reimplements data 0x4e1bec: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_CoCreateNotInitializedMsg[0x19] =
-    "CoCreate not initialized";
-/**
- * Reimplements data 0x4e1c08: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_ClassCannotBeCreatedMsg[0x18] =
-    "Class cannot be created";
-/**
- * Reimplements data 0x4e1c20: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_ClassNotRegisteredMsg[0x15] = "Class not registered";
-/**
- * Reimplements data 0x4e1c38: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_ForcedTcpIpModeName[0xe] = "forced TCP/IP";
-/**
- * Reimplements data 0x4e1c48: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DirectPlayErrorFmt[0x1e] =
-    "DirectPlay Error (0x%08x)[%s]";
-/**
- * Reimplements data 0x4e1c68..0x4e20f8:
- * network_online.znetwork_dplay_literal_pool DirectPlay HRESULT names.
- * Purpose: provide the writable strings selected by zNetwork_DPlay_ReportError.
- */
-/**
- * Reimplements data 0x4e1c68: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_LogonDenied[0x13] = "DPERR_LOGONDENIED ";
-/**
- * Reimplements data 0x4e1c7c: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_NotLoggedIn[0x12] = "DPERR_NOTLOGGEDIN";
-/**
- * Reimplements data 0x4e1c90: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_CantLoadCapi[0x13] = "DPERR_CANTLOADCAPI";
-/**
- * Reimplements data 0x4e1ca4: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_EncryptionNotSupported[0x1d] =
-    "DPERR_ENCRYPTIONNOTSUPPORTED";
-/**
- * Reimplements data 0x4e1cc4: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_CantLoadSecurityPackage[0x1e] =
-    "DPERR_CANTLOADSECURITYPACKAGE";
-/**
- * Reimplements data 0x4e1ce4: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_SignFailed[0x11] = "DPERR_SIGNFAILED";
-/**
- * Reimplements data 0x4e1cf8: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_EncryptionFailed[0x17] =
-    "DPERR_ENCRYPTIONFAILED";
-/**
- * Reimplements data 0x4e1d10: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_CantLoadSspi[0x13] = "DPERR_CANTLOADSSPI";
-/**
- * Reimplements data 0x4e1d24: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_AuthenticationFailed[0x1b] =
-    "DPERR_AUTHENTICATIONFAILED";
-/**
- * Reimplements data 0x4e1d40: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_NotLobbied[0x11] = "DPERR_NOTLOBBIED";
-/**
- * Reimplements data 0x4e1d54: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_UnknownApplication[0x19] =
-    "DPERR_UNKNOWNAPPLICATION";
-/**
- * Reimplements data 0x4e1d70: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_InvalidInterface[0x18] =
-    "DPERR_INVALIDINTERFACE ";
-/**
- * Reimplements data 0x4e1d88: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_AppNotStarted[0x14] = "DPERR_APPNOTSTARTED";
-/**
- * Reimplements data 0x4e1d9c: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_CantCreateProcess[0x18] =
-    "DPERR_CANTCREATEPROCESS";
-/**
- * Reimplements data 0x4e1db4: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_BufferTooLarge[0x15] =
-    "DPERR_BUFFERTOOLARGE";
-/**
- * Reimplements data 0x4e1dcc: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_InvalidPriority[0x16] =
-    "DPERR_INVALIDPRIORITY";
-/**
- * Reimplements data 0x4e1de4: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_CancelFailed[0x13] = "DPERR_CANCELFAILED";
-/**
- * Reimplements data 0x4e1df8: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_UnknownMessage[0x15] =
-    "DPERR_UNKNOWNMESSAGE";
-/**
- * Reimplements data 0x4e1e10: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_ConnectionLost[0x15] =
-    "DPERR_CONNECTIONLOST";
-/**
- * Reimplements data 0x4e1e28: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_Connecting[0x11] = "DPERR_CONNECTING";
-/**
- * Reimplements data 0x4e1e3c: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_NoNewPlayers[0x13] = "DPERR_NONEWPLAYERS";
-/**
- * Reimplements data 0x4e1e50: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_Uninitialized[0x15] =
-    "DPERR_UNINITIALIZED ";
-/**
- * Reimplements data 0x4e1e68: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_SessionLost[0x12] = "DPERR_SESSIONLOST";
-/**
- * Reimplements data 0x4e1e7c: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_PlayerLost[0x12] = "DPERR_PLAYERLOST ";
-/**
- * Reimplements data 0x4e1e90: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_CannotCreateServer[0x19] =
-    "DPERR_CANNOTCREATESERVER";
-/**
- * Reimplements data 0x4e1eac: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_UserCancel[0x11] = "DPERR_USERCANCEL";
-/**
- * Reimplements data 0x4e1ec0: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_Busy[0xb] = "DPERR_BUSY";
-/**
- * Reimplements data 0x4e1ecc: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_Unavailable[0x12] = "DPERR_UNAVAILABLE";
-/**
- * Reimplements data 0x4e1ee0: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_Timeout[0xe] = "DPERR_TIMEOUT";
-/**
- * Reimplements data 0x4e1ef0: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_SendTooBig[0x11] = "DPERR_SENDTOOBIG";
-/**
- * Reimplements data 0x4e1f04: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_NoSessions[0x11] = "DPERR_NOSESSIONS";
-/**
- * Reimplements data 0x4e1f18: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_NoPlayers[0x10] = "DPERR_NOPLAYERS";
-/**
- * Reimplements data 0x4e1f28: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_NoNameServerFound[0x18] =
-    "DPERR_NONAMESERVERFOUND";
-/**
- * Reimplements data 0x4e1f40: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_NoMessages[0x12] = "DPERR_NOMESSAGES ";
-/**
- * Reimplements data 0x4e1f54: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_NoConnection[0x13] = "DPERR_NOCONNECTION";
-/**
- * Reimplements data 0x4e1f68: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_NoCaps[0xd] = "DPERR_NOCAPS";
-/**
- * Reimplements data 0x4e1f78: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_InvalidGroup[0x13] = "DPERR_INVALIDGROUP";
-/**
- * Reimplements data 0x4e1f8c: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_InvalidPlayer[0x14] = "DPERR_INVALIDPLAYER";
-/**
- * Reimplements data 0x4e1fa0: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_InvalidObject[0x14] = "DPERR_INVALIDOBJECT";
-/**
- * Reimplements data 0x4e1fb4: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_InvalidFlags[0x13] = "DPERR_INVALIDFLAGS";
-/**
- * Reimplements data 0x4e1fc8: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_Exception[0x10] = "DPERR_EXCEPTION";
-/**
- * Reimplements data 0x4e1fd8: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_CapsNotAvailableYet[0x1a] =
-    "DPERR_CAPSNOTAVAILABLEYET";
-/**
- * Reimplements data 0x4e1ff4: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_CantCreateSession[0x18] =
-    "DPERR_CANTCREATESESSION";
-/**
- * Reimplements data 0x4e200c: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_CantCreatePlayer[0x17] =
-    "DPERR_CANTCREATEPLAYER";
-/**
- * Reimplements data 0x4e2024: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_CantCreateGroup[0x17] =
-    "DPERR_CANTCREATEGROUP:";
-/**
- * Reimplements data 0x4e203c: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_CantAddPlayer[0x14] = "DPERR_CANTADDPLAYER";
-/**
- * Reimplements data 0x4e2050: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_BufferTooSmall[0x15] =
-    "DPERR_BUFFERTOOSMALL";
-/**
- * Reimplements data 0x4e2068: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_ActivePlayers[0x14] = "DPERR_ACTIVEPLAYERS";
-/**
- * Reimplements data 0x4e207c: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_AccessDenied[0x13] = "DPERR_ACCESSDENIED";
-/**
- * Reimplements data 0x4e2090: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_AlreadyInitialized[0x19] =
-    "DPERR_ALREADYINITIALIZED";
-/**
- * Reimplements data 0x4e20ac: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_InvalidParams[0x14] = "DPERR_INVALIDPARAMS";
-/**
- * Reimplements data 0x4e20c0: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_OutOfMemory[0x12] = "DPERR_OUTOFMEMORY";
-/**
- * Reimplements data 0x4e20d4: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_Generic[0xe] = "DPERR_GENERIC";
-/**
- * Reimplements data 0x4e20e4: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_Unsupported[0x12] = "DPERR_UNSUPPORTED";
-/**
- * Reimplements data 0x4e20f8: Symbol.
- * Data owner: network_online.znetwork_dplay_literal_pool.
- * Purpose: provide a writable DirectPlay diagnostic/reporting literal.
- */
-char g_zNetwork_DpErrorName_Pending[0xe] = "DPERR_PENDING";
-}
+} // extern "C"
 
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_SourceFile_ZnetDplayCpp) == 0x2c);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_UsingTcpIpFmt) == 0x19);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_SyncModeName) == 0x6);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_AsyncModeName) == 0x7);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_GuaranteedTcpIpNotSupportedMsg) == 0x22);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_GetCapabilitiesFailedMsg) == 0x24);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorText_SignatureFailure) == 0x12);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorText_LogonDenied) == 0xd);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorText_EncryptionNotSupported) == 0x19);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorText_EncryptionFailed) == 0x12);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorText_SecuritySupportProviderError) == 0x20);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorText_CannotLoadSecurityPackage) == 0x1d);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorText_CryptographyServicesError) == 0x1c);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorText_AuthenticationFailed) == 0x16);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorText_ConnectionLost) == 0x10);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorText_ErrorConnecting) == 0x11);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorText_InvalidPassword) == 0x11);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorText_NoNewPlayersAllowed) == 0x17);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorText_InitializationError) == 0x15);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorText_CannotCreateServer) == 0x15);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorText_TimeoutError) == 0xe);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorText_NoExistingSessions) == 0x15);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorText_NoConnection) == 0xe);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorText_InvalidFlags) == 0x15);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorText_AccessDenied) == 0xe);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorText_AlreadyInitialized) == 0x14);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorText_InvalidParameters) == 0x1a);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_RecoilNetworkErrorMsg) == 0x15);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_NoNetworkConnectionMsg) == 0x16);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_NetworkConnectionLostMsg) == 0x26);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_InvalidPlayerParametersMsg) == 0x21);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_CannotCreateAnotherPlayerMsg) == 0x1d);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_CannotAddAnotherPlayerMsg) == 0x1a);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DefaultPlayerName) == 0x7);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_ReceiveBufferIncreasedFmt) == 0x2e);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_UnhandledDirectPlaySystemMessageMsg) == 0x24);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_CoCreateNotInitializedMsg) == 0x19);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_ClassCannotBeCreatedMsg) == 0x18);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_ClassNotRegisteredMsg) == 0x15);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_ForcedTcpIpModeName) == 0xe);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DirectPlayErrorFmt) == 0x1e);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_LogonDenied) == 0x13);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_NotLoggedIn) == 0x12);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_CantLoadCapi) == 0x13);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_EncryptionNotSupported) == 0x1d);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_CantLoadSecurityPackage) == 0x1e);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_SignFailed) == 0x11);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_EncryptionFailed) == 0x17);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_CantLoadSspi) == 0x13);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_AuthenticationFailed) == 0x1b);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_NotLobbied) == 0x11);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_UnknownApplication) == 0x19);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_InvalidInterface) == 0x18);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_AppNotStarted) == 0x14);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_CantCreateProcess) == 0x18);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_BufferTooLarge) == 0x15);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_InvalidPriority) == 0x16);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_CancelFailed) == 0x13);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_UnknownMessage) == 0x15);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_ConnectionLost) == 0x15);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_Connecting) == 0x11);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_NoNewPlayers) == 0x13);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_Uninitialized) == 0x15);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_SessionLost) == 0x12);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_PlayerLost) == 0x12);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_CannotCreateServer) == 0x19);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_UserCancel) == 0x11);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_Busy) == 0xb);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_Unavailable) == 0x12);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_Timeout) == 0xe);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_SendTooBig) == 0x11);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_NoSessions) == 0x11);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_NoPlayers) == 0x10);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_NoNameServerFound) == 0x18);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_NoMessages) == 0x12);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_NoConnection) == 0x13);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_NoCaps) == 0xd);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_InvalidGroup) == 0x13);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_InvalidPlayer) == 0x14);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_InvalidObject) == 0x14);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_InvalidFlags) == 0x13);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_Exception) == 0x10);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_CapsNotAvailableYet) == 0x1a);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_CantCreateSession) == 0x18);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_CantCreatePlayer) == 0x17);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_CantCreateGroup) == 0x17);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_CantAddPlayer) == 0x14);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_BufferTooSmall) == 0x15);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_ActivePlayers) == 0x14);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_AccessDenied) == 0x13);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_AlreadyInitialized) == 0x19);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_InvalidParams) == 0x14);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_OutOfMemory) == 0x12);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_Generic) == 0xe);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_Unsupported) == 0x12);
-RECOIL_STATIC_ASSERT(sizeof(g_zNetwork_DpErrorName_Pending) == 0xe);
+/*
+ * BN labels 0x4e1860..0x4e2107 are compiler-emitted znet_dplay.cpp
+ * string literals packed in .data. Keep these as macros so callsites
+ * materialize literal addresses without authored global char objects.
+ */
+#define g_zNetwork_SourceFile_ZnetDplayCpp "D:\\Proj\\GameZRecoil\\zNetwork\\znet_dplay.cpp"
+#define g_zNetwork_UsingTcpIpFmt "Network using TCP/IP %s\n"
+#define g_zNetwork_SyncModeName "SYNCH"
+#define g_zNetwork_AsyncModeName "ASYNCH"
+#define g_zNetwork_GuaranteedTcpIpNotSupportedMsg "Guaranteed TCP/IP not supported n"
+#define g_zNetwork_GetCapabilitiesFailedMsg "Failed to get network capabilities\n"
+#define g_zNetwork_DpErrorText_SignatureFailure "Signature Failure"
+#define g_zNetwork_DpErrorText_LogonDenied "Logon Denied"
+#define g_zNetwork_DpErrorText_EncryptionNotSupported "Encryption Not Supported"
+#define g_zNetwork_DpErrorText_EncryptionFailed "Encryption Failed"
+#define g_zNetwork_DpErrorText_SecuritySupportProviderError "Security Support Provider Error"
+#define g_zNetwork_DpErrorText_CannotLoadSecurityPackage "Cannot Load Security Package"
+#define g_zNetwork_DpErrorText_CryptographyServicesError "Cryptography Services Error"
+#define g_zNetwork_DpErrorText_AuthenticationFailed "Authentication Failed"
+#define g_zNetwork_DpErrorText_ConnectionLost "Connection Lost"
+#define g_zNetwork_DpErrorText_ErrorConnecting "Error Connecting"
+#define g_zNetwork_DpErrorText_InvalidPassword "Invalid Password"
+#define g_zNetwork_DpErrorText_NoNewPlayersAllowed "No New Players Allowed"
+#define g_zNetwork_DpErrorText_InitializationError "Initialization Error"
+#define g_zNetwork_DpErrorText_CannotCreateServer "Cannot Create Server"
+#define g_zNetwork_DpErrorText_TimeoutError "Timeout Error"
+#define g_zNetwork_DpErrorText_NoExistingSessions "No Existing Sessions"
+#define g_zNetwork_DpErrorText_NoConnection "No Connection"
+#define g_zNetwork_DpErrorText_InvalidFlags "Sorry, Invalid Flags"
+#define g_zNetwork_DpErrorText_AccessDenied "Access Denied"
+#define g_zNetwork_DpErrorText_AlreadyInitialized "Already Initialized"
+#define g_zNetwork_DpErrorText_InvalidParameters "Sorry, Invalid Parameters"
+#define g_zNetwork_RecoilNetworkErrorMsg "Recoil Network Error"
+#define g_zNetwork_NoNetworkConnectionMsg "No Network Connection"
+#define g_zNetwork_NetworkConnectionLostMsg "Your Network Connection Has Been Lost"
+#define g_zNetwork_InvalidPlayerParametersMsg "Sorry, Invalid Player Parameters"
+#define g_zNetwork_CannotCreateAnotherPlayerMsg "Cannot Create Another Player"
+#define g_zNetwork_CannotAddAnotherPlayerMsg "Cannot Add Another Player"
+#define g_zNetwork_DefaultPlayerName "noname"
+#define g_zNetwork_ReceiveBufferIncreasedFmt "Receiving buffer size increased from %d to %d"
+#define g_zNetwork_UnhandledDirectPlaySystemMessageMsg "Unhandled DirectPlay system message"
+#define g_zNetwork_CoCreateNotInitializedMsg "CoCreate not initialized"
+#define g_zNetwork_ClassCannotBeCreatedMsg "Class cannot be created"
+#define g_zNetwork_ClassNotRegisteredMsg "Class not registered"
+#define g_zNetwork_ForcedTcpIpModeName "forced TCP/IP"
+#define g_zNetwork_DirectPlayErrorFmt "DirectPlay Error (0x%08x)[%s]"
+#define g_zNetwork_DpErrorName_LogonDenied "DPERR_LOGONDENIED "
+#define g_zNetwork_DpErrorName_NotLoggedIn "DPERR_NOTLOGGEDIN"
+#define g_zNetwork_DpErrorName_CantLoadCapi "DPERR_CANTLOADCAPI"
+#define g_zNetwork_DpErrorName_EncryptionNotSupported "DPERR_ENCRYPTIONNOTSUPPORTED"
+#define g_zNetwork_DpErrorName_CantLoadSecurityPackage "DPERR_CANTLOADSECURITYPACKAGE"
+#define g_zNetwork_DpErrorName_SignFailed "DPERR_SIGNFAILED"
+#define g_zNetwork_DpErrorName_EncryptionFailed "DPERR_ENCRYPTIONFAILED"
+#define g_zNetwork_DpErrorName_CantLoadSspi "DPERR_CANTLOADSSPI"
+#define g_zNetwork_DpErrorName_AuthenticationFailed "DPERR_AUTHENTICATIONFAILED"
+#define g_zNetwork_DpErrorName_NotLobbied "DPERR_NOTLOBBIED"
+#define g_zNetwork_DpErrorName_UnknownApplication "DPERR_UNKNOWNAPPLICATION"
+#define g_zNetwork_DpErrorName_InvalidInterface "DPERR_INVALIDINTERFACE "
+#define g_zNetwork_DpErrorName_AppNotStarted "DPERR_APPNOTSTARTED"
+#define g_zNetwork_DpErrorName_CantCreateProcess "DPERR_CANTCREATEPROCESS"
+#define g_zNetwork_DpErrorName_BufferTooLarge "DPERR_BUFFERTOOLARGE"
+#define g_zNetwork_DpErrorName_InvalidPriority "DPERR_INVALIDPRIORITY"
+#define g_zNetwork_DpErrorName_CancelFailed "DPERR_CANCELFAILED"
+#define g_zNetwork_DpErrorName_UnknownMessage "DPERR_UNKNOWNMESSAGE"
+#define g_zNetwork_DpErrorName_ConnectionLost "DPERR_CONNECTIONLOST"
+#define g_zNetwork_DpErrorName_Connecting "DPERR_CONNECTING"
+#define g_zNetwork_DpErrorName_NoNewPlayers "DPERR_NONEWPLAYERS"
+#define g_zNetwork_DpErrorName_Uninitialized "DPERR_UNINITIALIZED "
+#define g_zNetwork_DpErrorName_SessionLost "DPERR_SESSIONLOST"
+#define g_zNetwork_DpErrorName_PlayerLost "DPERR_PLAYERLOST "
+#define g_zNetwork_DpErrorName_CannotCreateServer "DPERR_CANNOTCREATESERVER"
+#define g_zNetwork_DpErrorName_UserCancel "DPERR_USERCANCEL"
+#define g_zNetwork_DpErrorName_Busy "DPERR_BUSY"
+#define g_zNetwork_DpErrorName_Unavailable "DPERR_UNAVAILABLE"
+#define g_zNetwork_DpErrorName_Timeout "DPERR_TIMEOUT"
+#define g_zNetwork_DpErrorName_SendTooBig "DPERR_SENDTOOBIG"
+#define g_zNetwork_DpErrorName_NoSessions "DPERR_NOSESSIONS"
+#define g_zNetwork_DpErrorName_NoPlayers "DPERR_NOPLAYERS"
+#define g_zNetwork_DpErrorName_NoNameServerFound "DPERR_NONAMESERVERFOUND"
+#define g_zNetwork_DpErrorName_NoMessages "DPERR_NOMESSAGES "
+#define g_zNetwork_DpErrorName_NoConnection "DPERR_NOCONNECTION"
+#define g_zNetwork_DpErrorName_NoCaps "DPERR_NOCAPS"
+#define g_zNetwork_DpErrorName_InvalidGroup "DPERR_INVALIDGROUP"
+#define g_zNetwork_DpErrorName_InvalidPlayer "DPERR_INVALIDPLAYER"
+#define g_zNetwork_DpErrorName_InvalidObject "DPERR_INVALIDOBJECT"
+#define g_zNetwork_DpErrorName_InvalidFlags "DPERR_INVALIDFLAGS"
+#define g_zNetwork_DpErrorName_Exception "DPERR_EXCEPTION"
+#define g_zNetwork_DpErrorName_CapsNotAvailableYet "DPERR_CAPSNOTAVAILABLEYET"
+#define g_zNetwork_DpErrorName_CantCreateSession "DPERR_CANTCREATESESSION"
+#define g_zNetwork_DpErrorName_CantCreatePlayer "DPERR_CANTCREATEPLAYER"
+#define g_zNetwork_DpErrorName_CantCreateGroup "DPERR_CANTCREATEGROUP:"
+#define g_zNetwork_DpErrorName_CantAddPlayer "DPERR_CANTADDPLAYER"
+#define g_zNetwork_DpErrorName_BufferTooSmall "DPERR_BUFFERTOOSMALL"
+#define g_zNetwork_DpErrorName_ActivePlayers "DPERR_ACTIVEPLAYERS"
+#define g_zNetwork_DpErrorName_AccessDenied "DPERR_ACCESSDENIED"
+#define g_zNetwork_DpErrorName_AlreadyInitialized "DPERR_ALREADYINITIALIZED"
+#define g_zNetwork_DpErrorName_InvalidParams "DPERR_INVALIDPARAMS"
+#define g_zNetwork_DpErrorName_OutOfMemory "DPERR_OUTOFMEMORY"
+#define g_zNetwork_DpErrorName_Generic "DPERR_GENERIC"
+#define g_zNetwork_DpErrorName_Unsupported "DPERR_UNSUPPORTED"
+#define g_zNetwork_DpErrorName_Pending "DPERR_PENDING"
 
 namespace {
 const int kDPlayPending = (int)(0x8000000a);
 const int kDPlayBufferTooSmall = (int)(0x8877001e);
 const int kDPlayConnecting = (int)(0x8877015e);
-
-/**
- * Recovered local helper: ReportDPlayOpenFailure.
- * Original source path: D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp.
- * Original helper evidence: no standalone retail address; used by address-backed caller
- * zNetworkDPlay::OpenSelectedSessionAndReadStatusFields at 0x48a520.
- * Purpose: display the DirectPlay Open failure message for selected HRESULTs.
- */
-int ReportDPlayOpenFailure(
-    int hresult
-) {
-    const char *message = 0;
-    switch (hresult) {
-    case (int)(0x80070057) :
-        message = g_zNetwork_DpErrorText_InvalidParameters;
-        break;
-    case (int)(0x88770005) :
-        message = g_zNetwork_DpErrorText_AlreadyInitialized;
-        break;
-    case (int)(0x8877000a) :
-        message = g_zNetwork_DpErrorText_AccessDenied;
-        break;
-    case (int)(0x88770078) :
-        message = g_zNetwork_DpErrorText_InvalidFlags;
-        break;
-    case (int)(0x887700aa) :
-        message = g_zNetwork_DpErrorText_NoConnection;
-        break;
-    case (int)(0x887700dc) :
-        message = g_zNetwork_DpErrorText_NoExistingSessions;
-        break;
-    case (int)(0x887700f0) :
-        message = g_zNetwork_DpErrorText_TimeoutError;
-        break;
-    case (int)(0x88770122) :
-        message = g_zNetwork_DpErrorText_CannotCreateServer;
-        break;
-    case (int)(0x88770140) :
-        message = g_zNetwork_DpErrorText_InitializationError;
-        break;
-    case (int)(0x8877014a) :
-        message = g_zNetwork_DpErrorText_NoNewPlayersAllowed;
-        break;
-    case (int)(0x88770154) :
-        message = g_zNetwork_DpErrorText_InvalidPassword;
-        break;
-    case (int)(0x8877015e) :
-        message = g_zNetwork_DpErrorText_ErrorConnecting;
-        break;
-    case (int)(0x88770168) :
-        message = g_zNetwork_DpErrorText_ConnectionLost;
-        break;
-    case (int)(0x887707d0) :
-        message = g_zNetwork_DpErrorText_AuthenticationFailed;
-        break;
-    case (int)(0x887707da) :
-        message = g_zNetwork_DpErrorText_SecuritySupportProviderError;
-        break;
-    case (int)(0x887707e4) :
-        message = g_zNetwork_DpErrorText_EncryptionFailed;
-        break;
-    case (int)(0x887707ee) :
-        message = g_zNetwork_DpErrorText_SignatureFailure;
-        break;
-    case (int)(0x887707f8) :
-        message = g_zNetwork_DpErrorText_CannotLoadSecurityPackage;
-        break;
-    case (int)(0x88770802) :
-        message = g_zNetwork_DpErrorText_EncryptionNotSupported;
-        break;
-    case (int)(0x8877080c) :
-        message = g_zNetwork_DpErrorText_CryptographyServicesError;
-        break;
-    case (int)(0x88770820) :
-        message = g_zNetwork_DpErrorText_LogonDenied;
-        break;
-    }
-
-    if (message != 0) {
-        MessageBoxA(
-            g_RecoilApp_hWndMain,
-            message,
-            g_zNetwork_RecoilNetworkErrorMsg,
-            MB_OK
-        );
-    }
-
-    return 0;
-}
 
 /**
  * Recovered local helper: AppendServiceProviderInfo.
@@ -1400,205 +672,6 @@ extern "C" int __fastcall zNetwork_SendPacketReliable(
         packet,
         packetSizeBytes
     );
-}
-
-/**
- * Reimplements 0x48c250: zNetwork_DPlay_ReportError.
- * Purpose: report a DirectPlay HRESULT with the original inline error-name
- * comparisons and message format.
- */
-extern "C" RECOIL_NO_GS int __fastcall zNetwork_DPlay_ReportError(
-    int hresult,
-    const char *sourceFile,
-    int sourceLine
-) {
-    if (hresult == 0) {
-        return 1;
-    }
-
-    const char *errorName = g_Player_MasterTypeName_Unknown;
-    switch (hresult) {
-    case (int)(0x8000000a) :
-        errorName = g_zNetwork_DpErrorName_Pending;
-        break;
-    case (int)(0x80004001) :
-        errorName = g_zNetwork_DpErrorName_Unsupported;
-        break;
-    case (int)(0x80004005) :
-        errorName = g_zNetwork_DpErrorName_Generic;
-        break;
-    case (int)(0x8007000e) :
-        errorName = g_zNetwork_DpErrorName_OutOfMemory;
-        break;
-    case (int)(0x80070057) :
-        errorName = g_zNetwork_DpErrorName_InvalidParams;
-        break;
-    case (int)(0x88770005) :
-        errorName = g_zNetwork_DpErrorName_AlreadyInitialized;
-        break;
-    case (int)(0x8877000a) :
-        errorName = g_zNetwork_DpErrorName_AccessDenied;
-        break;
-    case (int)(0x88770014) :
-        errorName = g_zNetwork_DpErrorName_ActivePlayers;
-        break;
-    case (int)(0x8877001e) :
-        errorName = g_zNetwork_DpErrorName_BufferTooSmall;
-        break;
-    case (int)(0x88770028) :
-        errorName = g_zNetwork_DpErrorName_CantAddPlayer;
-        break;
-    case (int)(0x88770032) :
-        errorName = g_zNetwork_DpErrorName_CantCreateGroup;
-        break;
-    case (int)(0x8877003c) :
-        errorName = g_zNetwork_DpErrorName_CantCreatePlayer;
-        break;
-    case (int)(0x88770046) :
-        errorName = g_zNetwork_DpErrorName_CantCreateSession;
-        break;
-    case (int)(0x88770050) :
-        errorName = g_zNetwork_DpErrorName_CapsNotAvailableYet;
-        break;
-    case (int)(0x8877005a) :
-        errorName = g_zNetwork_DpErrorName_Exception;
-        break;
-    case (int)(0x88770078) :
-        errorName = g_zNetwork_DpErrorName_InvalidFlags;
-        break;
-    case (int)(0x88770082) :
-        errorName = g_zNetwork_DpErrorName_InvalidObject;
-        break;
-    case (int)(0x88770096) :
-        errorName = g_zNetwork_DpErrorName_InvalidPlayer;
-        break;
-    case (int)(0x8877009b) :
-        errorName = g_zNetwork_DpErrorName_InvalidGroup;
-        break;
-    case (int)(0x887700a0) :
-        errorName = g_zNetwork_DpErrorName_NoCaps;
-        break;
-    case (int)(0x887700aa) :
-        errorName = g_zNetwork_DpErrorName_NoConnection;
-        break;
-    case (int)(0x887700be) :
-        errorName = g_zNetwork_DpErrorName_NoMessages;
-        break;
-    case (int)(0x887700c8) :
-        errorName = g_zNetwork_DpErrorName_NoNameServerFound;
-        break;
-    case (int)(0x887700d2) :
-        errorName = g_zNetwork_DpErrorName_NoPlayers;
-        break;
-    case (int)(0x887700dc) :
-        errorName = g_zNetwork_DpErrorName_NoSessions;
-        break;
-    case (int)(0x887700e6) :
-        errorName = g_zNetwork_DpErrorName_SendTooBig;
-        break;
-    case (int)(0x887700f0) :
-        errorName = g_zNetwork_DpErrorName_Timeout;
-        break;
-    case (int)(0x887700fa) :
-        errorName = g_zNetwork_DpErrorName_Unavailable;
-        break;
-    case (int)(0x8877010e) :
-        errorName = g_zNetwork_DpErrorName_Busy;
-        break;
-    case (int)(0x88770118) :
-        errorName = g_zNetwork_DpErrorName_UserCancel;
-        break;
-    case (int)(0x88770122) :
-        errorName = g_zNetwork_DpErrorName_CannotCreateServer;
-        break;
-    case (int)(0x8877012c) :
-        errorName = g_zNetwork_DpErrorName_PlayerLost;
-        break;
-    case (int)(0x88770136) :
-        errorName = g_zNetwork_DpErrorName_SessionLost;
-        break;
-    case (int)(0x88770140) :
-        errorName = g_zNetwork_DpErrorName_Uninitialized;
-        break;
-    case (int)(0x8877014a) :
-        errorName = g_zNetwork_DpErrorName_NoNewPlayers;
-        break;
-    case (int)(0x8877015e) :
-        errorName = g_zNetwork_DpErrorName_Connecting;
-        break;
-    case (int)(0x88770168) :
-        errorName = g_zNetwork_DpErrorName_ConnectionLost;
-        break;
-    case (int)(0x88770172) :
-        errorName = g_zNetwork_DpErrorName_UnknownMessage;
-        break;
-    case (int)(0x8877017c) :
-        errorName = g_zNetwork_DpErrorName_CancelFailed;
-        break;
-    case (int)(0x88770186) :
-        errorName = g_zNetwork_DpErrorName_InvalidPriority;
-        break;
-    case (int)(0x887703e8) :
-        errorName = g_zNetwork_DpErrorName_BufferTooLarge;
-        break;
-    case (int)(0x887703f2) :
-        errorName = g_zNetwork_DpErrorName_CantCreateProcess;
-        break;
-    case (int)(0x887703fc) :
-        errorName = g_zNetwork_DpErrorName_AppNotStarted;
-        break;
-    case (int)(0x88770406) :
-        errorName = g_zNetwork_DpErrorName_InvalidInterface;
-        break;
-    case (int)(0x8877041a) :
-        errorName = g_zNetwork_DpErrorName_UnknownApplication;
-        break;
-    case (int)(0x8877042e) :
-        errorName = g_zNetwork_DpErrorName_NotLobbied;
-        break;
-    case (int)(0x887707d0) :
-        errorName = g_zNetwork_DpErrorName_AuthenticationFailed;
-        break;
-    case (int)(0x887707da) :
-        errorName = g_zNetwork_DpErrorName_CantLoadSspi;
-        break;
-    case (int)(0x887707e4) :
-        errorName = g_zNetwork_DpErrorName_EncryptionFailed;
-        break;
-    case (int)(0x887707ee) :
-        errorName = g_zNetwork_DpErrorName_SignFailed;
-        break;
-    case (int)(0x887707f8) :
-        errorName = g_zNetwork_DpErrorName_CantLoadSecurityPackage;
-        break;
-    case (int)(0x88770802) :
-        errorName = g_zNetwork_DpErrorName_EncryptionNotSupported;
-        break;
-    case (int)(0x8877080c) :
-        errorName = g_zNetwork_DpErrorName_CantLoadCapi;
-        break;
-    case (int)(0x88770816) :
-        errorName = g_zNetwork_DpErrorName_NotLoggedIn;
-        break;
-    case (int)(0x88770820) :
-        errorName = g_zNetwork_DpErrorName_LogonDenied;
-        break;
-    }
-
-    char errorNameBuffer[0x100];
-    sprintf(
-        errorNameBuffer,
-        errorName
-    );
-    zError::ReportOld(
-        0x400,
-        sourceFile,
-        sourceLine,
-        g_zNetwork_DirectPlayErrorFmt,
-        hresult,
-        errorNameBuffer
-    );
-    return 0;
 }
 
 /**
@@ -1983,6 +1056,666 @@ int QueryCapsAndConfigureSendMode() {
     return 1;
 }
 
+} // namespace zNetworkDPlay
+
+namespace zNetwork {
+/**
+ * Reimplements 0x48b9e0: zNetwork::RemovePlayerRecordByKey.
+ * Purpose: remove a player record by DirectPlay key and release its color slot.
+ */
+void __fastcall RemovePlayerRecordByKey(
+    int playerKey
+) {
+    zNetwork_PlayerRecord *const playerRecord = zNetwork_FindPlayerRecordByKey(playerKey);
+    if (playerRecord == 0) {
+        return;
+    }
+
+    const int colorIndex = playerRecord->colorIndex;
+    if (colorIndex > 0) {
+        g_zNetwork_PlayerColorInUseFlags[colorIndex] = 0;
+    }
+
+    zNetworkPlayerRecordList *const list = g_zNetwork_PlayerRecordList;
+    zNetworkPlayerRecordListNode *const sentinel = list->sentinelNode;
+    zNetworkPlayerRecordListNode *node = sentinel->next;
+    while (node != sentinel) {
+        if (node->playerRecord == playerRecord) {
+            zNetworkPlayerRecordListNode *const deleteNode = node;
+            node = node->next;
+            deleteNode->prev->next = deleteNode->next;
+            deleteNode->next->prev = deleteNode->prev;
+            ::operator delete(deleteNode);
+            --list->count;
+        } else {
+            node = node->next;
+        }
+    }
+}
+} // namespace zNetwork
+
+namespace zNetworkDPlay {
+/**
+ * Reimplements 0x48b660: zNetworkDPlay::EnumPlayerCallback_AddPlayerRecord.
+ * Purpose: append an enumerated DirectPlay player record if it is not cached.
+ */
+int __stdcall EnumPlayerCallback_AddPlayerRecord(
+    DPID playerId,
+    DWORD,
+    const zNetworkDPlayName *playerNameInfo,
+    DWORD,
+    void *
+) {
+    if (zNetwork_FindPlayerRecordByKey((int)(playerId)) != 0) {
+        return 1;
+    }
+
+    zNetwork_PlayerRecord *const playerRecord =
+        (zNetwork_PlayerRecord *)(::operator new(sizeof(zNetwork_PlayerRecord)));
+    strncpy(
+        playerRecord->playerName,
+        playerNameInfo->lpszShortNameA,
+        0x50
+    );
+    playerRecord->playerName[0x4f] = 0;
+    playerRecord->playerKey = playerId;
+
+    zNetworkPlayerRecordList *const list = g_zNetwork_PlayerRecordList;
+    zNetworkPlayerRecordListNode *const sentinel = list->sentinelNode;
+    zNetworkPlayerRecordListNode *prev = sentinel->prev;
+    zNetworkPlayerRecordListNode *const node =
+        (zNetworkPlayerRecordListNode *)(::operator new(sizeof(zNetworkPlayerRecordListNode)));
+
+    node->next = sentinel != 0 ? sentinel : node;
+    if (prev == 0) {
+        prev = node;
+    }
+    node->prev = prev;
+    sentinel->prev = node;
+    node->prev->next = node;
+    node->playerRecord = playerRecord;
+    ++list->count;
+    return 1;
+}
+} // namespace zNetworkDPlay
+
+namespace zNetwork_DPlay {
+/**
+ * Reimplements 0x48a220: zNetwork_DPlay::EnumSessions.
+ * Purpose: enumerate current-app DirectPlay sessions into the session cache.
+ */
+int EnumSessions() {
+    zNetwork::ClearEnumeratedSessionList();
+
+    zNetwork_DPlay4 *const directPlay = g_zNetwork_pDirectPlay4;
+    if (directPlay == 0) {
+        return 0;
+    }
+
+    zNetworkDPlaySessionDesc desc;
+    memset(
+        &desc,
+        0,
+        sizeof(desc)
+    );
+    desc.dwSize = sizeof(zNetworkDPlaySessionDesc);
+    desc.guidApplication = *g_zNetwork_AppGuid;
+
+    const int hresult = directPlay->EnumSessions(
+        (LPDPSESSIONDESC2)&desc,
+        0,
+        (LPDPENUMSESSIONSCALLBACK2)
+            zNetworkDPlay::EnumSessionCallback_AddSessionDescCache,
+        0,
+        2
+    );
+    if (hresult == (int)(0x88770118)) {
+        return -1;
+    }
+
+    if (hresult < 0) {
+        return zNetwork_DPlay_ReportError(
+            hresult,
+            g_zNetwork_SourceFile_ZnetDplayCpp,
+            0xb3
+        );
+    }
+
+    return zArchiveList_GetCount(g_zNetwork_EnumeratedSessionList);
+}
+
+/**
+ * Reimplements 0x48a310: zNetwork_DPlay::EnumPlayers.
+ * Purpose: enumerate DirectPlay players into the recovered player-record list.
+ */
+int EnumPlayers() {
+    zNetwork_DPlay4 *const directPlay = g_zNetwork_pDirectPlay4;
+    const int hresult = directPlay->EnumPlayers(
+        0,
+        (LPDPENUMPLAYERSCALLBACK2)
+            zNetworkDPlay::EnumPlayerCallback_AddPlayerRecord,
+        0,
+        0
+    );
+    if (hresult < 0) {
+        return zNetwork_DPlay_ReportError(
+            hresult,
+            g_zNetwork_SourceFile_ZnetDplayCpp,
+            0xd9
+        );
+    }
+
+    return g_zNetwork_PlayerRecordList->count;
+}
+
+/**
+ * Reimplements 0x48a410: zNetwork_DPlay::CreateSessionFromStatusFields.
+ * Purpose: create a DirectPlay host session from the recovered status-field
+ * record and cache the opened session descriptor.
+ */
+int __fastcall CreateSessionFromStatusFields(
+    zNetworkSessionDescStatusFields *statusFields
+) {
+    memcpy(
+        g_zNetwork_SessionNameCache,
+        statusFields->sessionNameBuf,
+        strlen(statusFields->sessionNameBuf) + 1
+    );
+
+    zNetworkDPlaySessionDescCache *const cache =
+        (zNetworkDPlaySessionDescCache *)(malloc(sizeof(zNetworkDPlaySessionDescCache)));
+    memset(
+        cache,
+        0,
+        sizeof(zNetworkDPlaySessionDescCache)
+    );
+    cache->desc.dwFlags = 0x44;
+    cache->desc.dwSize = sizeof(zNetworkDPlaySessionDesc);
+    cache->desc.guidApplication = *g_zNetwork_AppGuid;
+    cache->desc.dwMaxPlayers = statusFields->maxPlayers;
+    cache->desc.dwUser1 = statusFields->eventCode;
+    cache->desc.dwUser2 = statusFields->statusFlags;
+    cache->desc.dwUser3 = statusFields->valueOrTime;
+    cache->desc.dwUser4 = statusFields->auxParam;
+    cache->desc.lpszSessionNameA = _strdup(g_zNetwork_SessionNameCache);
+
+    zNetwork_DPlay4 *const directPlay = g_zNetwork_pDirectPlay4;
+    const int hresult = directPlay->Open(
+        (LPDPSESSIONDESC2)&cache->desc,
+        2
+    );
+    if (hresult == (int)(0x88770118)) {
+        return 0;
+    }
+
+    if (hresult < 0) {
+        return zNetwork_DPlay_ReportError(
+            hresult,
+            g_zNetwork_SourceFile_ZnetDplayCpp,
+            0x11e
+        );
+    }
+
+    if (zNetworkDPlay::QueryCapsAndConfigureSendMode() == 0) {
+        directPlay->Close();
+        return 0;
+    }
+
+    zNetworkDPlaySessionDescCache *const oldCache = g_zNetwork_CurrentSessionDescCache;
+    if (oldCache != 0) {
+        free(oldCache);
+    }
+    g_zNetwork_CurrentSessionDescCache = cache;
+    return 1;
+}
+} // namespace zNetwork_DPlay
+
+namespace zNetworkDPlay {
+/**
+ * Reimplements 0x48a520: zNetworkDPlay::OpenSelectedSessionAndReadStatusFields.
+ * Original source path: D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp.
+ * Purpose: open an enumerated DirectPlay session and copy its status fields.
+ */
+int __fastcall OpenSelectedSessionAndReadStatusFields(
+    zNetworkSessionDescStatusFields *statusFields
+) {
+    zNetworkDPlaySessionDescCache *const sessionCache = (zNetworkDPlaySessionDescCache *)
+        zArchiveList_GetAt(
+            g_zNetwork_EnumeratedSessionList,
+            statusFields->selectedSessionIndex
+        );
+    g_zNetwork_CurrentSessionDescCache = sessionCache;
+    if (sessionCache == 0) {
+        return 0;
+    }
+
+    sessionCache->openMode = 1;
+    sessionCache->desc.dwSize = sizeof(zNetworkDPlaySessionDesc);
+
+    zNetwork_DPlay4 *const directPlay = g_zNetwork_pDirectPlay4;
+    const int openResult = directPlay->Open(
+        (LPDPSESSIONDESC2)&sessionCache->desc,
+        1
+    );
+    if (openResult < 0) {
+        switch (openResult) {
+        case (int)(0x80070057) :
+            MessageBoxA(
+                g_RecoilApp_hWndMain,
+                g_zNetwork_DpErrorText_InvalidParameters,
+                g_zNetwork_RecoilNetworkErrorMsg,
+                MB_OK
+            );
+            return 0;
+        case (int)(0x88770005) :
+            MessageBoxA(
+                g_RecoilApp_hWndMain,
+                g_zNetwork_DpErrorText_AlreadyInitialized,
+                g_zNetwork_RecoilNetworkErrorMsg,
+                MB_OK
+            );
+            return 0;
+        case (int)(0x8877000a) :
+            MessageBoxA(
+                g_RecoilApp_hWndMain,
+                g_zNetwork_DpErrorText_AccessDenied,
+                g_zNetwork_RecoilNetworkErrorMsg,
+                MB_OK
+            );
+            return 0;
+        case (int)(0x88770078) :
+            MessageBoxA(
+                g_RecoilApp_hWndMain,
+                g_zNetwork_DpErrorText_InvalidFlags,
+                g_zNetwork_RecoilNetworkErrorMsg,
+                MB_OK
+            );
+            return 0;
+        case (int)(0x887700aa) :
+            MessageBoxA(
+                g_RecoilApp_hWndMain,
+                g_zNetwork_DpErrorText_NoConnection,
+                g_zNetwork_RecoilNetworkErrorMsg,
+                MB_OK
+            );
+            return 0;
+        case (int)(0x887700dc) :
+            MessageBoxA(
+                g_RecoilApp_hWndMain,
+                g_zNetwork_DpErrorText_NoExistingSessions,
+                g_zNetwork_RecoilNetworkErrorMsg,
+                MB_OK
+            );
+            return 0;
+        case (int)(0x887700f0) :
+            MessageBoxA(
+                g_RecoilApp_hWndMain,
+                g_zNetwork_DpErrorText_TimeoutError,
+                g_zNetwork_RecoilNetworkErrorMsg,
+                MB_OK
+            );
+            return 0;
+        case (int)(0x88770122) :
+            MessageBoxA(
+                g_RecoilApp_hWndMain,
+                g_zNetwork_DpErrorText_CannotCreateServer,
+                g_zNetwork_RecoilNetworkErrorMsg,
+                MB_OK
+            );
+            return 0;
+        case (int)(0x88770140) :
+            MessageBoxA(
+                g_RecoilApp_hWndMain,
+                g_zNetwork_DpErrorText_InitializationError,
+                g_zNetwork_RecoilNetworkErrorMsg,
+                MB_OK
+            );
+            return 0;
+        case (int)(0x8877014a) :
+            MessageBoxA(
+                g_RecoilApp_hWndMain,
+                g_zNetwork_DpErrorText_NoNewPlayersAllowed,
+                g_zNetwork_RecoilNetworkErrorMsg,
+                MB_OK
+            );
+            return 0;
+        case (int)(0x88770154) :
+            MessageBoxA(
+                g_RecoilApp_hWndMain,
+                g_zNetwork_DpErrorText_InvalidPassword,
+                g_zNetwork_RecoilNetworkErrorMsg,
+                MB_OK
+            );
+            return 0;
+        case (int)(0x8877015e) :
+            MessageBoxA(
+                g_RecoilApp_hWndMain,
+                g_zNetwork_DpErrorText_ErrorConnecting,
+                g_zNetwork_RecoilNetworkErrorMsg,
+                MB_OK
+            );
+            return 0;
+        case (int)(0x88770168) :
+            MessageBoxA(
+                g_RecoilApp_hWndMain,
+                g_zNetwork_DpErrorText_ConnectionLost,
+                g_zNetwork_RecoilNetworkErrorMsg,
+                MB_OK
+            );
+            return 0;
+        case (int)(0x887707d0) :
+            MessageBoxA(
+                g_RecoilApp_hWndMain,
+                g_zNetwork_DpErrorText_AuthenticationFailed,
+                g_zNetwork_RecoilNetworkErrorMsg,
+                MB_OK
+            );
+            return 0;
+        case (int)(0x8877080c) :
+            MessageBoxA(
+                g_RecoilApp_hWndMain,
+                g_zNetwork_DpErrorText_CryptographyServicesError,
+                g_zNetwork_RecoilNetworkErrorMsg,
+                MB_OK
+            );
+            return 0;
+        case (int)(0x887707f8) :
+            MessageBoxA(
+                g_RecoilApp_hWndMain,
+                g_zNetwork_DpErrorText_CannotLoadSecurityPackage,
+                g_zNetwork_RecoilNetworkErrorMsg,
+                MB_OK
+            );
+            return 0;
+        case (int)(0x887707da) :
+            MessageBoxA(
+                g_RecoilApp_hWndMain,
+                g_zNetwork_DpErrorText_SecuritySupportProviderError,
+                g_zNetwork_RecoilNetworkErrorMsg,
+                MB_OK
+            );
+            return 0;
+        case (int)(0x887707e4) :
+            MessageBoxA(
+                g_RecoilApp_hWndMain,
+                g_zNetwork_DpErrorText_EncryptionFailed,
+                g_zNetwork_RecoilNetworkErrorMsg,
+                MB_OK
+            );
+            return 0;
+        case (int)(0x88770802) :
+            MessageBoxA(
+                g_RecoilApp_hWndMain,
+                g_zNetwork_DpErrorText_EncryptionNotSupported,
+                g_zNetwork_RecoilNetworkErrorMsg,
+                MB_OK
+            );
+            return 0;
+        case (int)(0x88770820) :
+            MessageBoxA(
+                g_RecoilApp_hWndMain,
+                g_zNetwork_DpErrorText_LogonDenied,
+                g_zNetwork_RecoilNetworkErrorMsg,
+                MB_OK
+            );
+            return 0;
+        case (int)(0x887707ee) :
+            MessageBoxA(
+                g_RecoilApp_hWndMain,
+                g_zNetwork_DpErrorText_SignatureFailure,
+                g_zNetwork_RecoilNetworkErrorMsg,
+                MB_OK
+            );
+            return 0;
+        }
+        return 0;
+    }
+
+    if (QueryCapsAndConfigureSendMode() == 0) {
+        directPlay->Close();
+        return 0;
+    }
+
+    statusFields->eventCode = sessionCache->desc.dwUser1;
+    statusFields->statusFlags = sessionCache->desc.dwUser2;
+    statusFields->valueOrTime = sessionCache->desc.dwUser3;
+    statusFields->auxParam = sessionCache->desc.dwUser4;
+    statusFields->maxPlayers = sessionCache->desc.dwMaxPlayers;
+    memcpy(
+        statusFields->sessionNameBuf,
+        sessionCache->desc.lpszSessionNameA,
+        strlen(sessionCache->desc.lpszSessionNameA) + 1
+    );
+    return 1;
+}
+} // namespace zNetworkDPlay
+
+namespace zNetwork_DPlay {
+/**
+ * Reimplements 0x48a9c0: zNetwork_DPlay::CreateLocalPlayerRecordAndRegister.
+ * Original source path: D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp.
+ * Purpose: create the local player record, register it with DirectPlay, and
+ * insert it into the player list.
+ */
+int __fastcall CreateLocalPlayerRecordAndRegister(
+    char *playerName
+) {
+    zNetwork_PlayerRecord *const localPlayerRecord =
+        (zNetwork_PlayerRecord *)(::operator new(sizeof(zNetwork_PlayerRecord)));
+    if (localPlayerRecord != 0) {
+        strncpy(
+            localPlayerRecord->playerName,
+            g_zNetwork_DefaultPlayerName,
+            0x50
+        );
+        localPlayerRecord->playerName[0x4f] = 0;
+    }
+
+    EnumPlayers();
+    g_zNetwork_LocalPlayerRecord = localPlayerRecord;
+
+    memcpy(
+        g_zNetwork_LocalPlayerNameScratch,
+        playerName,
+        strlen(playerName) + 1
+    );
+    localPlayerRecord->playerNameInfo.lpszShortNameA = g_zNetwork_LocalPlayerNameScratch;
+    localPlayerRecord->playerNameInfo.lpszLongNameA = g_zNetwork_LocalPlayerNameScratch;
+    localPlayerRecord->createPlayerEventHandle = 0;
+    localPlayerRecord->playerNameInfo.dwSize = sizeof(zNetworkDPlayName);
+    localPlayerRecord->playerNameInfo.dwFlags = 0;
+    memcpy(
+        localPlayerRecord->playerName,
+        g_zNetwork_LocalPlayerNameScratch,
+        strlen(g_zNetwork_LocalPlayerNameScratch) + 1
+    );
+    memcpy(
+        localPlayerRecord->altName,
+        localPlayerRecord->playerNameInfo.lpszShortNameA,
+        strlen(localPlayerRecord->playerNameInfo.lpszShortNameA) + 1
+    );
+
+    zNetwork_DPlay4 *const directPlay = g_zNetwork_pDirectPlay4;
+    const int createResult = directPlay->CreatePlayer(
+        (LPDPID)&localPlayerRecord->playerKey,
+        (LPDPNAME)&localPlayerRecord->playerNameInfo,
+        (HANDLE)localPlayerRecord->createPlayerEventHandle,
+        0,
+        0,
+        0
+    );
+    if (createResult < 0) {
+        switch (createResult) {
+        case (int)(0x88770028) :
+            MessageBoxA(
+                g_RecoilApp_hWndMain,
+                g_zNetwork_CannotAddAnotherPlayerMsg,
+                g_zNetwork_RecoilNetworkErrorMsg,
+                MB_OK
+            );
+            break;
+        case (int)(0x8877003c) :
+            MessageBoxA(
+                g_RecoilApp_hWndMain,
+                g_zNetwork_CannotCreateAnotherPlayerMsg,
+                g_zNetwork_RecoilNetworkErrorMsg,
+                MB_OK
+            );
+            break;
+        case (int)(0x80070057) :
+        case (int)(0x88770078) :
+            MessageBoxA(
+                g_RecoilApp_hWndMain,
+                g_zNetwork_InvalidPlayerParametersMsg,
+                g_zNetwork_RecoilNetworkErrorMsg,
+                MB_OK
+            );
+            break;
+        case (int)(0x88770168) :
+            MessageBoxA(
+                g_RecoilApp_hWndMain,
+                g_zNetwork_NetworkConnectionLostMsg,
+                g_zNetwork_RecoilNetworkErrorMsg,
+                MB_OK
+            );
+            break;
+        case (int)(0x887700aa) :
+            MessageBoxA(
+                g_RecoilApp_hWndMain,
+                g_zNetwork_NoNetworkConnectionMsg,
+                g_zNetwork_RecoilNetworkErrorMsg,
+                MB_OK
+            );
+            break;
+        }
+        return 0;
+    }
+
+    memset(
+        &localPlayerRecord->playerCaps,
+        0,
+        sizeof(zNetworkDPlayCaps)
+    );
+    localPlayerRecord->playerCaps.dwSize = sizeof(zNetworkDPlayCaps);
+    const int capsResult = directPlay->GetPlayerCaps(
+        localPlayerRecord->playerKey,
+        (LPDPCAPS)&localPlayerRecord->playerCaps,
+        0
+    );
+    g_zNetwork_IsHostFlag = localPlayerRecord->playerCaps.dwFlags & 2;
+    zNetworkDPlay::ReceivePendingMessages(-1);
+    if (capsResult < 0) {
+        return zNetwork_DPlay_ReportError(
+            capsResult,
+            g_zNetwork_SourceFile_ZnetDplayCpp,
+            0x20e
+        );
+    }
+
+    zNetworkPlayerRecordList *const list = g_zNetwork_PlayerRecordList;
+    g_zNetworkCurrentPlayerCountCached =
+        g_zNetwork_CurrentSessionDescCache->desc.dwCurrentPlayers + 1;
+    g_zNetwork_LocalPlayerKey = localPlayerRecord->playerKey;
+
+    zNetworkPlayerRecordListNode *const sentinel = list->sentinelNode;
+    zNetworkPlayerRecordListNode *prev = sentinel->prev;
+    zNetworkPlayerRecordListNode *const node =
+        (zNetworkPlayerRecordListNode *)(::operator new(sizeof(zNetworkPlayerRecordListNode)));
+    node->next = sentinel != 0 ? sentinel : node;
+    if (prev == 0) {
+        prev = node;
+    }
+    node->prev = prev;
+    sentinel->prev = node;
+    node->prev->next = node;
+    node->playerRecord = localPlayerRecord;
+    ++list->count;
+
+    if (zNetwork::IsHost() != 0) {
+        localPlayerRecord->colorIndex = zNetwork::AllocFreePlayerColorIndex();
+    } else {
+        localPlayerRecord->colorIndex = 0;
+    }
+
+    return localPlayerRecord->playerKey;
+}
+} // namespace zNetwork_DPlay
+
+namespace zNetworkDPlay {
+/**
+ * Reimplements 0x48ae70: zNetworkDPlay::ReceivePendingMessages.
+ * Purpose: receive pending DirectPlay messages, grow the receive buffer, and
+ * dispatch player or system packets.
+ */
+int __fastcall ReceivePendingMessages(
+    int messageBudget
+) {
+    if (g_zNetwork_SessionRuntimeInitialized == 0) {
+        return 0;
+    }
+
+    if (g_zNetwork_FatalDisconnectTriggered != 0) {
+        return -1;
+    }
+
+    int processedCount = 0;
+    int pumpResult = 0;
+    while (true) {
+        unsigned int receiveBufferCapacity = g_zNetwork_ReceiveBufferCapacity;
+        unsigned int fromPlayer = 0;
+        unsigned int toPlayer = 0;
+        const int hresult = g_zNetwork_pDirectPlay4->Receive(
+            (LPDPID)&fromPlayer,
+            (LPDPID)&toPlayer,
+            1,
+            g_zNetwork_ReceiveBuffer,
+            (LPDWORD)&receiveBufferCapacity
+        );
+
+        if (hresult == kDPlayBufferTooSmall) {
+            const unsigned int oldCapacity = g_zNetwork_ReceiveBufferCapacity;
+            g_zNetwork_ReceiveBuffer = realloc(
+                g_zNetwork_ReceiveBuffer,
+                receiveBufferCapacity
+            );
+            zError::ReportOld(
+                0x100,
+                g_zNetwork_SourceFile_ZnetDplayCpp,
+                0x299,
+                g_zNetwork_ReceiveBufferIncreasedFmt,
+                oldCapacity,
+                receiveBufferCapacity
+            );
+            g_zNetwork_ReceiveBufferCapacity = receiveBufferCapacity;
+            continue;
+        }
+
+        if (hresult < 0) {
+            break;
+        }
+
+        if (receiveBufferCapacity >= 4) {
+            --messageBudget;
+            ++processedCount;
+            if (fromPlayer != 0) {
+                zNetwork_DPlay::DispatchPacketToHandlers(
+                    (int)(fromPlayer),
+                    (zNetworkPacketHeader *)(g_zNetwork_ReceiveBuffer)
+                );
+            } else {
+                pumpResult =
+                    PumpIncomingMessages((zNetworkDPlaySystemMessage *)(g_zNetwork_ReceiveBuffer));
+            }
+        }
+
+        if (messageBudget == 0 || pumpResult != 0) {
+            break;
+        }
+    }
+
+    return processedCount;
+}
+
 /**
  * Reimplements 0x48afe0: zNetworkDPlay::PumpIncomingMessages.
  * Purpose: handle DirectPlay system messages and dispatch synthesized packets.
@@ -2125,508 +1858,83 @@ int __fastcall PumpIncomingMessages(
 }
 } // namespace zNetworkDPlay
 
-namespace zNetwork {
-/**
- * Reimplements 0x48b9e0: zNetwork::RemovePlayerRecordByKey.
- * Purpose: remove a player record by DirectPlay key and release its color slot.
- */
-void __fastcall RemovePlayerRecordByKey(
-    int playerKey
-) {
-    zNetwork_PlayerRecord *const playerRecord = zNetwork_FindPlayerRecordByKey(playerKey);
-    if (playerRecord == 0) {
-        return;
-    }
-
-    const int colorIndex = playerRecord->colorIndex;
-    if (colorIndex > 0) {
-        g_zNetwork_PlayerColorInUseFlags[colorIndex] = 0;
-    }
-
-    zNetworkPlayerRecordList *const list = g_zNetwork_PlayerRecordList;
-    zNetworkPlayerRecordListNode *const sentinel = list->sentinelNode;
-    zNetworkPlayerRecordListNode *node = sentinel->next;
-    while (node != sentinel) {
-        if (node->playerRecord == playerRecord) {
-            zNetworkPlayerRecordListNode *const deleteNode = node;
-            node = node->next;
-            deleteNode->prev->next = deleteNode->next;
-            deleteNode->next->prev = deleteNode->prev;
-            ::operator delete(deleteNode);
-            --list->count;
-        } else {
-            node = node->next;
-        }
-    }
-}
-} // namespace zNetwork
-
-namespace zNetworkDPlay {
-/**
- * Reimplements 0x48ae70: zNetworkDPlay::ReceivePendingMessages.
- * Purpose: receive pending DirectPlay messages, grow the receive buffer, and
- * dispatch player or system packets.
- */
-int __fastcall ReceivePendingMessages(
-    int messageBudget
-) {
-    if (g_zNetwork_SessionRuntimeInitialized == 0) {
-        return 0;
-    }
-
-    if (g_zNetwork_FatalDisconnectTriggered != 0) {
-        return -1;
-    }
-
-    int processedCount = 0;
-    int pumpResult = 0;
-    while (true) {
-        unsigned int receiveBufferCapacity = g_zNetwork_ReceiveBufferCapacity;
-        unsigned int fromPlayer = 0;
-        unsigned int toPlayer = 0;
-        const int hresult = g_zNetwork_pDirectPlay4->Receive(
-            (LPDPID)&fromPlayer,
-            (LPDPID)&toPlayer,
-            1,
-            g_zNetwork_ReceiveBuffer,
-            (LPDWORD)&receiveBufferCapacity
-        );
-
-        if (hresult == kDPlayBufferTooSmall) {
-            const unsigned int oldCapacity = g_zNetwork_ReceiveBufferCapacity;
-            g_zNetwork_ReceiveBuffer = realloc(
-                g_zNetwork_ReceiveBuffer,
-                receiveBufferCapacity
-            );
-            zError::ReportOld(
-                0x100,
-                g_zNetwork_SourceFile_ZnetDplayCpp,
-                0x299,
-                g_zNetwork_ReceiveBufferIncreasedFmt,
-                oldCapacity,
-                receiveBufferCapacity
-            );
-            g_zNetwork_ReceiveBufferCapacity = receiveBufferCapacity;
-            continue;
-        }
-
-        if (hresult < 0) {
-            break;
-        }
-
-        if (receiveBufferCapacity >= 4) {
-            --messageBudget;
-            ++processedCount;
-            if (fromPlayer != 0) {
-                zNetwork_DPlay::DispatchPacketToHandlers(
-                    (int)(fromPlayer),
-                    (zNetworkPacketHeader *)(g_zNetwork_ReceiveBuffer)
-                );
-            } else {
-                pumpResult =
-                    PumpIncomingMessages((zNetworkDPlaySystemMessage *)(g_zNetwork_ReceiveBuffer));
-            }
-        }
-
-        if (messageBudget == 0 || pumpResult != 0) {
-            break;
-        }
-    }
-
-    return processedCount;
-}
-
-/**
- * Reimplements 0x48b660: zNetworkDPlay::EnumPlayerCallback_AddPlayerRecord.
- * Purpose: append an enumerated DirectPlay player record if it is not cached.
- */
-int __stdcall EnumPlayerCallback_AddPlayerRecord(
-    DPID playerId,
-    DWORD,
-    const zNetworkDPlayName *playerNameInfo,
-    DWORD,
-    void *
-) {
-    if (zNetwork_FindPlayerRecordByKey((int)(playerId)) != 0) {
-        return 1;
-    }
-
-    zNetwork_PlayerRecord *const playerRecord =
-        (zNetwork_PlayerRecord *)(::operator new(sizeof(zNetwork_PlayerRecord)));
-    strncpy(
-        playerRecord->playerName,
-        playerNameInfo->lpszShortNameA,
-        0x50
-    );
-    playerRecord->playerName[0x4f] = 0;
-    playerRecord->playerKey = playerId;
-
-    zNetworkPlayerRecordList *const list = g_zNetwork_PlayerRecordList;
-    zNetworkPlayerRecordListNode *const sentinel = list->sentinelNode;
-    zNetworkPlayerRecordListNode *prev = sentinel->prev;
-    zNetworkPlayerRecordListNode *const node =
-        (zNetworkPlayerRecordListNode *)(::operator new(sizeof(zNetworkPlayerRecordListNode)));
-
-    node->next = sentinel != 0 ? sentinel : node;
-    if (prev == 0) {
-        prev = node;
-    }
-    node->prev = prev;
-    sentinel->prev = node;
-    node->prev->next = node;
-    node->playerRecord = playerRecord;
-    ++list->count;
-    return 1;
-}
-} // namespace zNetworkDPlay
-
 namespace zNetwork_DPlay {
 /**
- * Reimplements 0x48a220: zNetwork_DPlay::EnumSessions.
- * Purpose: enumerate current-app DirectPlay sessions into the session cache.
+ * Reimplements 0x48b730: zNetwork_DPlay::CreateInterfaceAndCoInitialize.
+ * Purpose: initialize COM and create the DirectPlay4A interface.
  */
-int EnumSessions() {
-    zNetwork::ClearEnumeratedSessionList();
-
-    zNetwork_DPlay4 *const directPlay = g_zNetwork_pDirectPlay4;
-    if (directPlay == 0) {
-        return 0;
-    }
-
-    zNetworkDPlaySessionDesc desc;
-    memset(
-        &desc,
-        0,
-        sizeof(desc)
-    );
-    desc.dwSize = sizeof(zNetworkDPlaySessionDesc);
-    desc.guidApplication = *g_zNetwork_AppGuid;
-
-    const int hresult = directPlay->EnumSessions(
-        (LPDPSESSIONDESC2)&desc,
-        0,
-        (LPDPENUMSESSIONSCALLBACK2)
-            zNetworkDPlay::EnumSessionCallback_AddSessionDescCache,
-        0,
-        2
-    );
-    if (hresult == (int)(0x88770118)) {
-        return -1;
-    }
-
-    if (hresult < 0) {
-        return zNetwork_DPlay_ReportError(
-            hresult,
-            g_zNetwork_SourceFile_ZnetDplayCpp,
-            0xb3
-        );
-    }
-
-    return zArchiveList_GetCount(g_zNetwork_EnumeratedSessionList);
-}
-
-/**
- * Reimplements 0x48a310: zNetwork_DPlay::EnumPlayers.
- * Purpose: enumerate DirectPlay players into the recovered player-record list.
- */
-int EnumPlayers() {
-    zNetwork_DPlay4 *const directPlay = g_zNetwork_pDirectPlay4;
-    const int hresult = directPlay->EnumPlayers(
-        0,
-        (LPDPENUMPLAYERSCALLBACK2)
-            zNetworkDPlay::EnumPlayerCallback_AddPlayerRecord,
-        0,
-        0
-    );
-    if (hresult < 0) {
-        return zNetwork_DPlay_ReportError(
-            hresult,
-            g_zNetwork_SourceFile_ZnetDplayCpp,
-            0xd9
-        );
-    }
-
-    return g_zNetwork_PlayerRecordList->count;
-}
-
-/**
- * Reimplements 0x48a9c0: zNetwork_DPlay::CreateLocalPlayerRecordAndRegister.
- * Original source path: D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp.
- * Purpose: create the local player record, register it with DirectPlay, and
- * insert it into the player list.
- */
-int __fastcall CreateLocalPlayerRecordAndRegister(
-    char *playerName
+int __fastcall CreateInterfaceAndCoInitialize(
+    zNetwork_DPlay4 **outDirectPlay4
 ) {
-    zNetwork_PlayerRecord *const localPlayerRecord =
-        (zNetwork_PlayerRecord *)(::operator new(sizeof(zNetwork_PlayerRecord)));
-    if (localPlayerRecord != 0) {
-        strncpy(
-            localPlayerRecord->playerName,
-            g_zNetwork_DefaultPlayerName,
-            0x50
-        );
-        localPlayerRecord->playerName[0x4f] = 0;
-    }
+    const int kClassNotRegistered = (int)(0x80040154);
+    const int kClassCannotBeCreated = (int)(0x80040110);
+    const int kCoCreateNotInitialized = (int)(0x800401f0);
 
-    EnumPlayers();
-    g_zNetwork_LocalPlayerRecord = localPlayerRecord;
-
-    memcpy(
-        g_zNetwork_LocalPlayerNameScratch,
-        playerName,
-        strlen(playerName) + 1
-    );
-    localPlayerRecord->playerNameInfo.lpszShortNameA = g_zNetwork_LocalPlayerNameScratch;
-    localPlayerRecord->playerNameInfo.lpszLongNameA = g_zNetwork_LocalPlayerNameScratch;
-    localPlayerRecord->createPlayerEventHandle = 0;
-    localPlayerRecord->playerNameInfo.dwSize = sizeof(zNetworkDPlayName);
-    localPlayerRecord->playerNameInfo.dwFlags = 0;
-    memcpy(
-        localPlayerRecord->playerName,
-        g_zNetwork_LocalPlayerNameScratch,
-        strlen(g_zNetwork_LocalPlayerNameScratch) + 1
-    );
-    memcpy(
-        localPlayerRecord->altName,
-        localPlayerRecord->playerNameInfo.lpszShortNameA,
-        strlen(localPlayerRecord->playerNameInfo.lpszShortNameA) + 1
-    );
-
-    zNetwork_DPlay4 *const directPlay = g_zNetwork_pDirectPlay4;
-    const int createResult = directPlay->CreatePlayer(
-        (LPDPID)&localPlayerRecord->playerKey,
-        (LPDPNAME)&localPlayerRecord->playerNameInfo,
-        (HANDLE)localPlayerRecord->createPlayerEventHandle,
+    zNetwork_DPlay4 *directPlay4 = 0;
+    CoInitialize(0);
+    const int hresult = CoCreateInstance(
+        CLSID_DirectPlay,
         0,
-        0,
-        0
+        CLSCTX_INPROC_SERVER,
+        IID_IDirectPlay4A,
+        (void **)&directPlay4
     );
-    if (createResult < 0) {
-        if (createResult == (int)(0x88770028)) {
-            MessageBoxA(
-                g_RecoilApp_hWndMain,
-                g_zNetwork_CannotAddAnotherPlayerMsg,
-                g_zNetwork_RecoilNetworkErrorMsg,
-                MB_OK
-            );
-        } else if (createResult == (int)(0x80070057) || createResult == (int)(0x88770078)) {
-            MessageBoxA(
-                g_RecoilApp_hWndMain,
-                g_zNetwork_InvalidPlayerParametersMsg,
-                g_zNetwork_RecoilNetworkErrorMsg,
-                MB_OK
-            );
-        } else if (createResult == (int)(0x8877003c)) {
-            MessageBoxA(
-                g_RecoilApp_hWndMain,
-                g_zNetwork_CannotCreateAnotherPlayerMsg,
-                g_zNetwork_RecoilNetworkErrorMsg,
-                MB_OK
-            );
-        } else if (createResult == (int)(0x887700aa)) {
-            MessageBoxA(
-                g_RecoilApp_hWndMain,
-                g_zNetwork_NoNetworkConnectionMsg,
-                g_zNetwork_RecoilNetworkErrorMsg,
-                MB_OK
-            );
-        } else if (createResult == (int)(0x88770168)) {
-            MessageBoxA(
-                g_RecoilApp_hWndMain,
-                g_zNetwork_NetworkConnectionLostMsg,
-                g_zNetwork_RecoilNetworkErrorMsg,
-                MB_OK
-            );
-        }
-        return 0;
-    }
+    *outDirectPlay4 = directPlay4;
 
-    memset(
-        &localPlayerRecord->playerCaps,
-        0,
-        sizeof(zNetworkDPlayCaps)
-    );
-    localPlayerRecord->playerCaps.dwSize = sizeof(zNetworkDPlayCaps);
-    const int capsResult = directPlay->GetPlayerCaps(
-        localPlayerRecord->playerKey,
-        (LPDPCAPS)&localPlayerRecord->playerCaps,
-        0
-    );
-    g_zNetwork_IsHostFlag = localPlayerRecord->playerCaps.dwFlags & 2;
-    zNetworkDPlay::ReceivePendingMessages(-1);
-    if (capsResult < 0) {
-        return zNetwork_DPlay_ReportError(
-            capsResult,
+    if (hresult == kClassNotRegistered) {
+        zError::ReportOld(
+            0x400,
             g_zNetwork_SourceFile_ZnetDplayCpp,
-            0x20e
+            0x394,
+            g_zNetwork_ClassNotRegisteredMsg
         );
     }
 
-    zNetworkPlayerRecordList *const list = g_zNetwork_PlayerRecordList;
-    g_zNetworkCurrentPlayerCountCached =
-        g_zNetwork_CurrentSessionDescCache->desc.dwCurrentPlayers + 1;
-    g_zNetwork_LocalPlayerKey = localPlayerRecord->playerKey;
-
-    zNetworkPlayerRecordListNode *const sentinel = list->sentinelNode;
-    zNetworkPlayerRecordListNode *prev = sentinel->prev;
-    zNetworkPlayerRecordListNode *const node =
-        (zNetworkPlayerRecordListNode *)(::operator new(sizeof(zNetworkPlayerRecordListNode)));
-    node->next = sentinel != 0 ? sentinel : node;
-    if (prev == 0) {
-        prev = node;
-    }
-    node->prev = prev;
-    sentinel->prev = node;
-    node->prev->next = node;
-    node->playerRecord = localPlayerRecord;
-    ++list->count;
-
-    if (zNetwork::IsHost() != 0) {
-        localPlayerRecord->colorIndex = zNetwork::AllocFreePlayerColorIndex();
-    } else {
-        localPlayerRecord->colorIndex = 0;
+    if (hresult == kClassCannotBeCreated) {
+        zError::ReportOld(
+            0x400,
+            g_zNetwork_SourceFile_ZnetDplayCpp,
+            0x396,
+            g_zNetwork_ClassCannotBeCreatedMsg
+        );
     }
 
-    return localPlayerRecord->playerKey;
+    if (hresult == kCoCreateNotInitialized) {
+        zError::ReportOld(
+            0x400,
+            g_zNetwork_SourceFile_ZnetDplayCpp,
+            0x398,
+            g_zNetwork_CoCreateNotInitializedMsg
+        );
+        return hresult;
+    }
+
+    zNetwork_DPlay_ReportError(
+        hresult,
+        g_zNetwork_SourceFile_ZnetDplayCpp,
+        0x39a
+    );
+    return hresult;
 }
 
 /**
- * Reimplements 0x48a410: zNetwork_DPlay::CreateSessionFromStatusFields.
- * Purpose: create a DirectPlay host session from the recovered status-field
- * record and cache the opened session descriptor.
+ * Reimplements 0x48b7f0: zNetwork_DPlay::CloseReleaseAndCoUninitialize.
+ * Purpose: close and release an optional DirectPlay interface before
+ * uninitializing COM.
  */
-int __fastcall CreateSessionFromStatusFields(
-    zNetworkSessionDescStatusFields *statusFields
+int __fastcall CloseReleaseAndCoUninitialize(
+    zNetwork_DPlay4 *directPlay4
 ) {
-    memcpy(
-        g_zNetwork_SessionNameCache,
-        statusFields->sessionNameBuf,
-        strlen(statusFields->sessionNameBuf) + 1
-    );
-
-    zNetworkDPlaySessionDescCache *const cache =
-        (zNetworkDPlaySessionDescCache *)(malloc(sizeof(zNetworkDPlaySessionDescCache)));
-    memset(
-        cache,
-        0,
-        sizeof(zNetworkDPlaySessionDescCache)
-    );
-    cache->desc.dwFlags = 0x44;
-    cache->desc.dwSize = sizeof(zNetworkDPlaySessionDesc);
-    cache->desc.guidApplication = *g_zNetwork_AppGuid;
-    cache->desc.dwMaxPlayers = statusFields->maxPlayers;
-    cache->desc.dwUser1 = statusFields->eventCode;
-    cache->desc.dwUser2 = statusFields->statusFlags;
-    cache->desc.dwUser3 = statusFields->valueOrTime;
-    cache->desc.dwUser4 = statusFields->auxParam;
-    cache->desc.lpszSessionNameA = _strdup(g_zNetwork_SessionNameCache);
-
-    zNetwork_DPlay4 *const directPlay = g_zNetwork_pDirectPlay4;
-    const int hresult = directPlay->Open(
-        (LPDPSESSIONDESC2)&cache->desc,
-        2
-    );
-    if (hresult == (int)(0x88770118)) {
-        return 0;
+    int releaseRefCount = 0;
+    if (directPlay4 != 0) {
+        directPlay4->Close();
+        releaseRefCount = directPlay4->Release();
     }
 
-    if (hresult < 0) {
-        return zNetwork_DPlay_ReportError(
-            hresult,
-            g_zNetwork_SourceFile_ZnetDplayCpp,
-            0x11e
-        );
-    }
-
-    if (zNetworkDPlay::QueryCapsAndConfigureSendMode() == 0) {
-        directPlay->Close();
-        return 0;
-    }
-
-    zNetworkDPlaySessionDescCache *const oldCache = g_zNetwork_CurrentSessionDescCache;
-    if (oldCache != 0) {
-        free(oldCache);
-    }
-    g_zNetwork_CurrentSessionDescCache = cache;
-    return 1;
+    CoUninitialize();
+    return releaseRefCount;
 }
 } // namespace zNetwork_DPlay
-
-namespace zNetworkDPlay {
-/**
- * Reimplements 0x48a520: zNetworkDPlay::OpenSelectedSessionAndReadStatusFields.
- * Original source path: D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp.
- * Purpose: open an enumerated DirectPlay session and copy its status fields.
- */
-int __fastcall OpenSelectedSessionAndReadStatusFields(
-    zNetworkSessionDescStatusFields *statusFields
-) {
-    zNetworkDPlaySessionDescCache *const sessionCache = (zNetworkDPlaySessionDescCache *)
-        zArchiveList_GetAt(
-            g_zNetwork_EnumeratedSessionList,
-            statusFields->selectedSessionIndex
-        );
-    g_zNetwork_CurrentSessionDescCache = sessionCache;
-    if (sessionCache == 0) {
-        return 0;
-    }
-
-    sessionCache->openMode = 1;
-    sessionCache->desc.dwSize = sizeof(zNetworkDPlaySessionDesc);
-
-    zNetwork_DPlay4 *const directPlay = g_zNetwork_pDirectPlay4;
-    const int openResult = directPlay->Open(
-        (LPDPSESSIONDESC2)&sessionCache->desc,
-        1
-    );
-    if (openResult < 0) {
-        return ReportDPlayOpenFailure(openResult);
-    }
-
-    if (QueryCapsAndConfigureSendMode() == 0) {
-        directPlay->Close();
-        return 0;
-    }
-
-    statusFields->eventCode = sessionCache->desc.dwUser1;
-    statusFields->statusFlags = sessionCache->desc.dwUser2;
-    statusFields->valueOrTime = sessionCache->desc.dwUser3;
-    statusFields->auxParam = sessionCache->desc.dwUser4;
-    statusFields->maxPlayers = sessionCache->desc.dwMaxPlayers;
-    memcpy(
-        statusFields->sessionNameBuf,
-        sessionCache->desc.lpszSessionNameA,
-        strlen(sessionCache->desc.lpszSessionNameA) + 1
-    );
-    return 1;
-}
-} // namespace zNetworkDPlay
-
-namespace zNetwork {
-/**
- * Reimplements 0x48bf40: zNetwork::DeleteAllDispatchHandlers.
- * Original source path: D:\Proj\GameZRecoil\zNetwork\zNetwork.cpp.
- * Purpose: remove all packet-dispatch handler list nodes.
- */
-void DeleteAllDispatchHandlers() {
-    zNetworkDispatchHandlerList *const list = &g_zNetwork_DispatchHandlerList;
-    zNetworkDispatchHandlerListNode *const sentinel = list->sentinel;
-    zNetworkDispatchHandlerListNode *node = sentinel->next;
-    int hasNode = (unsigned char)(-(int)(node == sentinel)) == 0;
-    if (hasNode != 0) {
-        do {
-            zNetworkDispatchHandlerListNode *const deleteNode = node;
-            node = node->next;
-            deleteNode->prev->next = deleteNode->next;
-            deleteNode->next->prev = deleteNode->prev;
-            ::operator delete(deleteNode);
-            --list->count;
-            hasNode = (unsigned char)(-(int)(node == sentinel)) == 0;
-        } while (hasNode != 0);
-    }
-}
-} // namespace zNetwork
 
 namespace zNetworkDPlay {
 /**
@@ -2762,6 +2070,31 @@ int EnumSessionsForCurrentApp() {
 }
 } // namespace zNetworkDPlay
 
+namespace zNetwork {
+/**
+ * Reimplements 0x48bf40: zNetwork::DeleteAllDispatchHandlers.
+ * Original source path: D:\Proj\GameZRecoil\zNetwork\zNetwork.cpp.
+ * Purpose: remove all packet-dispatch handler list nodes.
+ */
+void DeleteAllDispatchHandlers() {
+    zNetworkDispatchHandlerList *const list = &g_zNetwork_DispatchHandlerList;
+    zNetworkDispatchHandlerListNode *const sentinel = list->sentinel;
+    zNetworkDispatchHandlerListNode *node = sentinel->next;
+    int hasNode = (unsigned char)(-(int)(node == sentinel)) == 0;
+    if (hasNode != 0) {
+        do {
+            zNetworkDispatchHandlerListNode *const deleteNode = node;
+            node = node->next;
+            deleteNode->prev->next = deleteNode->next;
+            deleteNode->next->prev = deleteNode->prev;
+            ::operator delete(deleteNode);
+            --list->count;
+            hasNode = (unsigned char)(-(int)(node == sentinel)) == 0;
+        } while (hasNode != 0);
+    }
+}
+} // namespace zNetwork
+
 /**
  * Reimplements 0x48bff0: zNetwork_DestroyDispatchHandlerList.
  * Purpose: delete the packet-dispatch handler sentinel and all list nodes.
@@ -2848,84 +2181,6 @@ extern "C" int __fastcall zNetwork_ApplyPkt01_PlayerColorAssignments(
 
     return assignmentCount;
 }
-
-namespace zNetwork_DPlay {
-/**
- * Reimplements 0x48b730: zNetwork_DPlay::CreateInterfaceAndCoInitialize.
- * Purpose: initialize COM and create the DirectPlay4A interface.
- */
-int __fastcall CreateInterfaceAndCoInitialize(
-    zNetwork_DPlay4 **outDirectPlay4
-) {
-    const int kClassNotRegistered = (int)(0x80040154);
-    const int kClassCannotBeCreated = (int)(0x80040110);
-    const int kCoCreateNotInitialized = (int)(0x800401f0);
-
-    zNetwork_DPlay4 *directPlay4 = 0;
-    CoInitialize(0);
-    const int hresult = CoCreateInstance(
-        CLSID_DirectPlay,
-        0,
-        CLSCTX_INPROC_SERVER,
-        IID_IDirectPlay4A,
-        (void **)&directPlay4
-    );
-    *outDirectPlay4 = directPlay4;
-
-    if (hresult == kClassNotRegistered) {
-        zError::ReportOld(
-            0x400,
-            g_zNetwork_SourceFile_ZnetDplayCpp,
-            0x394,
-            g_zNetwork_ClassNotRegisteredMsg
-        );
-    }
-
-    if (hresult == kClassCannotBeCreated) {
-        zError::ReportOld(
-            0x400,
-            g_zNetwork_SourceFile_ZnetDplayCpp,
-            0x396,
-            g_zNetwork_ClassCannotBeCreatedMsg
-        );
-    }
-
-    if (hresult == kCoCreateNotInitialized) {
-        zError::ReportOld(
-            0x400,
-            g_zNetwork_SourceFile_ZnetDplayCpp,
-            0x398,
-            g_zNetwork_CoCreateNotInitializedMsg
-        );
-        return hresult;
-    }
-
-    zNetwork_DPlay_ReportError(
-        hresult,
-        g_zNetwork_SourceFile_ZnetDplayCpp,
-        0x39a
-    );
-    return hresult;
-}
-
-/**
- * Reimplements 0x48b7f0: zNetwork_DPlay::CloseReleaseAndCoUninitialize.
- * Purpose: close and release an optional DirectPlay interface before
- * uninitializing COM.
- */
-int __fastcall CloseReleaseAndCoUninitialize(
-    zNetwork_DPlay4 *directPlay4
-) {
-    int releaseRefCount = 0;
-    if (directPlay4 != 0) {
-        directPlay4->Close();
-        releaseRefCount = directPlay4->Release();
-    }
-
-    CoUninitialize();
-    return releaseRefCount;
-}
-} // namespace zNetwork_DPlay
 
 namespace zNetworkDPlay {
 /**
@@ -3092,6 +2347,201 @@ void __fastcall DispatchPacketToHandlers(
     }
 }
 } // namespace zNetwork_DPlay
+
+/**
+ * Reimplements 0x48c250: zNetwork_DPlay_ReportError.
+ * Purpose: report a DirectPlay HRESULT with the original inline error-name
+ * comparisons and message format.
+ */
+extern "C" RECOIL_NO_GS int __fastcall zNetwork_DPlay_ReportError(
+    int hresult,
+    const char *sourceFile,
+    int sourceLine
+) {
+    char errorNameBuffer[0x100];
+    switch (hresult) {
+    case (int)(0x8000000a) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_Pending);
+        break;
+    case (int)(0x80004001) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_Unsupported);
+        break;
+    case (int)(0x80004005) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_Generic);
+        break;
+    case (int)(0x8007000e) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_OutOfMemory);
+        break;
+    case (int)(0x80070057) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_InvalidParams);
+        break;
+    case (int)(0x88770005) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_AlreadyInitialized);
+        break;
+    case (int)(0x8877000a) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_AccessDenied);
+        break;
+    case (int)(0x88770014) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_ActivePlayers);
+        break;
+    case (int)(0x8877001e) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_BufferTooSmall);
+        break;
+    case (int)(0x88770028) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_CantAddPlayer);
+        break;
+    case (int)(0x88770032) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_CantCreateGroup);
+        break;
+    case (int)(0x8877003c) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_CantCreatePlayer);
+        break;
+    case (int)(0x88770046) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_CantCreateSession);
+        break;
+    case (int)(0x88770050) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_CapsNotAvailableYet);
+        break;
+    case (int)(0x8877005a) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_Exception);
+        break;
+    case (int)(0x88770078) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_InvalidFlags);
+        break;
+    case (int)(0x88770082) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_InvalidObject);
+        break;
+    case (int)(0x88770096) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_InvalidPlayer);
+        break;
+    case (int)(0x8877009b) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_InvalidGroup);
+        break;
+    case (int)(0x887700a0) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_NoCaps);
+        break;
+    case (int)(0x887700aa) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_NoConnection);
+        break;
+    case (int)(0x887700be) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_NoMessages);
+        break;
+    case (int)(0x887700c8) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_NoNameServerFound);
+        break;
+    case (int)(0x887700d2) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_NoPlayers);
+        break;
+    case (int)(0x887700dc) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_NoSessions);
+        break;
+    case (int)(0x887700e6) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_SendTooBig);
+        break;
+    case (int)(0x887700f0) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_Timeout);
+        break;
+    case (int)(0x887700fa) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_Unavailable);
+        break;
+    case (int)(0x8877010e) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_Busy);
+        break;
+    case (int)(0x88770118) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_UserCancel);
+        break;
+    case (int)(0x88770122) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_CannotCreateServer);
+        break;
+    case (int)(0x8877012c) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_PlayerLost);
+        break;
+    case (int)(0x88770136) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_SessionLost);
+        break;
+    case (int)(0x88770140) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_Uninitialized);
+        break;
+    case (int)(0x8877014a) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_NoNewPlayers);
+        break;
+    case (int)(0x8877015e) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_Connecting);
+        break;
+    case (int)(0x88770168) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_ConnectionLost);
+        break;
+    case (int)(0x88770172) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_UnknownMessage);
+        break;
+    case (int)(0x8877017c) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_CancelFailed);
+        break;
+    case (int)(0x88770186) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_InvalidPriority);
+        break;
+    case (int)(0x887703e8) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_BufferTooLarge);
+        break;
+    case (int)(0x887703f2) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_CantCreateProcess);
+        break;
+    case (int)(0x887703fc) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_AppNotStarted);
+        break;
+    case (int)(0x88770406) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_InvalidInterface);
+        break;
+    case (int)(0x8877041a) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_UnknownApplication);
+        break;
+    case (int)(0x8877042e) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_NotLobbied);
+        break;
+    case (int)(0x887707d0) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_AuthenticationFailed);
+        break;
+    case (int)(0x887707da) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_CantLoadSspi);
+        break;
+    case (int)(0x887707e4) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_EncryptionFailed);
+        break;
+    case (int)(0x887707ee) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_SignFailed);
+        break;
+    case (int)(0x887707f8) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_CantLoadSecurityPackage);
+        break;
+    case (int)(0x88770802) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_EncryptionNotSupported);
+        break;
+    case (int)(0x8877080c) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_CantLoadCapi);
+        break;
+    case (int)(0x88770816) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_NotLoggedIn);
+        break;
+    case (int)(0x88770820) :
+        sprintf(errorNameBuffer, g_zNetwork_DpErrorName_LogonDenied);
+        break;
+    case 0:
+        return 1;
+    default:
+        sprintf(errorNameBuffer, g_Player_MasterTypeName_Unknown);
+        break;
+    }
+
+    zError::ReportOld(
+        0x400,
+        sourceFile,
+        sourceLine,
+        g_zNetwork_DirectPlayErrorFmt,
+        hresult,
+        errorNameBuffer
+    );
+    return 0;
+}
 
 namespace zNetwork {
 /**
