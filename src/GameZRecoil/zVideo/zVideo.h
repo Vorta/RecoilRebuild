@@ -260,7 +260,9 @@ struct zVideo_SurfaceLockVerifyArgs {
 
 struct zVideo_SurfaceLockVerifier;
 struct zVideoFxPass3Config;
-extern zVideoFxPass3Config g_zVideo_FxPass3ConfigLocal;
+extern zVideo_SurfaceStatePartial g_zVideo_SurfaceStateSwapScratch;
+extern unsigned long g_zVideo_FxPass3ConfigLocal[0x1f0 / sizeof(unsigned long)];
+#define g_zVideo_FxPass3ConfigLocal (*(zVideoFxPass3Config *)(void *)g_zVideo_FxPass3ConfigLocal)
 
 struct zVidTexturePackRecord {
     char name[0x20];
@@ -446,8 +448,8 @@ extern float g_zVideo_InverseZTolerancePending;
 extern int g_zVideo_D3DAppendFanCloseVertexPending;
 extern int g_zVideo_PendingWireframeState;
 extern int g_zVideo_D3DSceneDepth;
-extern int g_zVid_AcceptedHardwareRendererCount;
 extern int g_zVideo_NumAcceptedDirectDrawDevices;
+extern int g_zVid_AcceptedHardwareRendererCount;
 extern int g_zVideo_DirectDrawEnumOrdinal;
 extern int g_zVid_TexturePackLoadState;
 extern int g_zVid_BuiltinTexturePackCount;
@@ -461,12 +463,15 @@ extern int *ZOPT_VIDEO_ACCELERATION;
 extern int *ZOPT_HW_API;
 extern DDCAPS g_zVideo_DDrawCapsHal;
 extern DDCAPS g_zVideo_DDrawCapsHel;
-extern zVideo_TextureRecordPartial *g_zVideo_DefaultTextureRecord;
 extern zVideo_TextureRecordPartial *g_zImage_DefaultTextureRecord;
 extern char g_zVideo_PalettePathBuffer[0x100];
 extern int g_zVideo_PaletteBrightnessLevel;
 extern PALETTEENTRY g_zVideo_PaletteFileEntries[0x100];
 extern PALETTEENTRY g_zVideo_SystemPaletteEntries[0x100];
+extern int g_zVideo_SortedPolyQueueCount;
+extern int g_zVideo_SortedPolyDrawOrder[256];
+extern int g_zVideo_OverwriteQueueCount;
+extern zVideo_TextureRecordPartial *g_zVideo_DefaultTextureRecord;
 extern zVideo_StatusProc g_zVideo_pfnOpenVideoMode;
 extern zVideo_ShutdownVideoSystemProc g_zVideo_pfnShutdownVideoSystem;
 extern zVideo_PaletteSetEntriesProc g_zVideo_pfnPaletteSetEntries;
@@ -511,11 +516,8 @@ extern D3DMATERIALHANDLE g_zVideo_D3DMaterialHandle;
 extern int g_zVideo_QuadBatchCount;
 extern zVideo_QuadBatchItemPartial g_zVideo_QuadBatchItemsBase[16];
 extern D3DTLVERTEX g_zVideo_D3DSubmitTempVertices[64];
-extern int g_zVideo_SortedPolyDrawOrder[256];
 extern zVideo_SortedPolyQueueEntry g_zVideo_SortedPolyQueueBase[256];
 extern zVideo_OverwriteQueueEntry g_zVideo_OverwriteQueueBase[0x180];
-extern int g_zVideo_SortedPolyQueueCount;
-extern int g_zVideo_OverwriteQueueCount;
 extern zVideo_D3DRenderStateCacheLive g_zVideo_D3DRenderStateCache;
 extern IDirect3DMaterial2 *g_zVideo_pD3DMaterial2;
 extern IDirect3DViewport2 *g_zVideo_pD3DViewport2;
@@ -532,7 +534,6 @@ extern unsigned char g_zVideo_SurfaceLockVerifyFlags;
 extern zVideo_SurfaceStatePartial g_zVideo_SwSurfaceState;
 extern zVideo_SurfaceStatePartial g_zVideo_PrimarySurfaceState;
 extern zVideo_SurfaceStatePartial g_zVideo_DisplayModeSurfaceState;
-extern zVideo_SurfaceStatePartial g_zVideo_SurfaceStateSwapScratch;
 extern zVidRect32 g_zVideo_PrimarySurfaceRectScratch;
 extern int g_zVideo_DisplayModeBpp;
 extern int g_zVid_NoiseByteTableSize;

@@ -50,6 +50,36 @@
       "actual": "Commands such as plan set-meta 0x4b36f0/0x429f80/0x46e4e0 reported 'updated ... source metadata', but subsequent plan show and plan next still displayed old blocker strings and mismatch counts.",
       "repro": "Run python tools/recoil.py plan set-meta 0x4b36f0 --group engine.zsys --model source-faithful --blocker 'tier S blocked: VC5SP3 zsys_cpu now fails only 0x4b36f0 with 155 unmasked mismatches ...'; then run python tools/recoil.py plan show 0x4b36f0 and observe the old 157-mismatch blocker remains.",
       "resolution": "Resolved. The original set-meta parser/persistence defects were fixed and validated on real 0x429F80/0x42A070 row shapes. The later zClass anomaly was parent-induced by running multiple plan set-meta mutations in parallel against the same plan file; rerunning the affected 0x438020 and 0x438180 updates sequentially persisted and plan show displayed the requested blockers. Validation: issue audit passes; plan show verified 0x438020, 0x438180, 0x4381D0 after sequential updates. Process note: do not parallelize plan mutations against the same ledger."
+    },
+    {
+      "id": "WSI-20260628-001",
+      "status": "resolved",
+      "kind": "tool-error",
+      "severity": "medium",
+      "created": "2026-06-28T09:11:33Z",
+      "updated": "2026-06-28T09:18:19Z",
+      "summary": "audit final-repro custom manifest reports baseline nested final-data candidate",
+      "area": "tools/recoil.py audit final-repro",
+      "impact": "Custom final-build provenance experiments can mix the requested candidate summary with baseline final-data blocker metadata, making section/data diagnostics ambiguous.",
+      "next_action": "Make nested final-data work-unit metadata honor the supplied final-build manifest/build_dir or explicitly label it as baseline-only.",
+      "commands": [],
+      "files": [],
+      "tags": [],
+      "history": [
+        {
+          "at": "2026-06-28T09:11:33Z",
+          "action": "created",
+          "note": "Issue recorded for future agent tooling/process repair."
+        },
+        {
+          "at": "2026-06-28T09:18:19Z",
+          "action": "resolved",
+          "note": "Fixed. audit final-repro now passes custom final-build manifest/build_dir paths into the embedded final-data work-unit for non-default manifests. Nested final_data_work_unit.candidate, audit/audit_strict commands, strict JSON output paths, and verify_final_build command now point at the supplied custom manifest/build root instead of baseline build/vc5-final. Parent validation passed: python -m unittest tests.tools.recoil_final_repro_tests; python -m unittest tests.tools.recoil_final_data_diff_tests; python tools/recoil.py audit final-repro --manifest build\\\\vc5-final-noref\\\\manifest_noref.json --json; python tools/recoil.py issue audit --strict."
+        }
+      ],
+      "actual": "audit final-repro --manifest build\\\\vc5-final-noref\\\\manifest_noref.json reports top-level candidate build\\\\vc5-final-noref\\\\Recoil.exe but nested final_data_work_unit.candidate remains build/vc5-final/Recoil.exe with default commands.",
+      "repro": "python tools/recoil.py audit final-repro --manifest build\\\\vc5-final-noref\\\\manifest_noref.json --json",
+      "resolution": "Fixed. audit final-repro now passes custom final-build manifest/build_dir paths into the embedded final-data work-unit for non-default manifests. Nested final_data_work_unit.candidate, audit/audit_strict commands, strict JSON output paths, and verify_final_build command now point at the supplied custom manifest/build root instead of baseline build/vc5-final. Parent validation passed: python -m unittest tests.tools.recoil_final_repro_tests; python -m unittest tests.tools.recoil_final_data_diff_tests; python tools/recoil.py audit final-repro --manifest build\\\\vc5-final-noref\\\\manifest_noref.json --json; python tools/recoil.py issue audit --strict."
     }
   ]
 }

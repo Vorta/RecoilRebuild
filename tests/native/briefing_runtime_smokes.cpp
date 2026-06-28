@@ -256,8 +256,8 @@ void PrepareConstructorGlobals(
     state.lastVoiceStopMarkerIndex = g_zSndLastVoiceStopMarkerIndex;
     state.fadeActiveCount = g_zSndFadeActiveListCount;
     state.frameDeltaTimeSec = g_FrameDeltaTimeSec;
-    state.timeCurrentSec = g_Time_CurrentTimeSec;
-    state.timeNewSec = g_Time_NewTimeSec;
+    state.timeCurrentSec = g_Time_RuntimeConfig.currentTimeSec;
+    state.timeNewSec = g_Time_RuntimeConfig.newTimeSec;
     state.timeAccumulatedSec = g_Time_AccumulatedTimeSec;
     state.timeUnscaledDeltaSec = g_Time_UnscaledDeltaTimeSec;
     state.timeUnscaledAccumulatedSec = g_Time_UnscaledAccumulatedTimeSec;
@@ -309,8 +309,8 @@ void RestoreConstructorGlobals(
     g_zSndLastVoiceStopMarkerIndex = state.lastVoiceStopMarkerIndex;
     g_zSndFadeActiveListCount = state.fadeActiveCount;
     g_FrameDeltaTimeSec = state.frameDeltaTimeSec;
-    g_Time_CurrentTimeSec = state.timeCurrentSec;
-    g_Time_NewTimeSec = state.timeNewSec;
+    g_Time_RuntimeConfig.currentTimeSec = state.timeCurrentSec;
+    g_Time_RuntimeConfig.newTimeSec = state.timeNewSec;
     g_Time_AccumulatedTimeSec = state.timeAccumulatedSec;
     g_Time_UnscaledDeltaTimeSec = state.timeUnscaledDeltaSec;
     g_Time_UnscaledAccumulatedTimeSec = state.timeUnscaledAccumulatedSec;

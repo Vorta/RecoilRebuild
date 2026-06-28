@@ -85,10 +85,18 @@ int __fastcall FindGlobalStringPrefixIndex(
         }
 
         const int nextChar = text[prefixLength];
-        if (nextChar != '\0' && _isctype(
-            nextChar,
-            _SPACE
-        ) == 0) {
+        /* Original zrdr_global.c used the VC5 C ctype macro shape; the C++
+           header would call imported isspace instead of touching these CRT
+           globals. */
+        if (
+            nextChar != '\0'
+            && (MB_CUR_MAX > 1
+                    ? _isctype(
+                          nextChar,
+                          _SPACE
+                      )
+                    : (_pctype[nextChar] & _SPACE)) == 0
+        ) {
             continue;
         }
 

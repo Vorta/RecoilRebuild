@@ -23,7 +23,6 @@ struct CZGameFrame : CFrameWnd {
     CZGameFrame(const char *appId);
     ~CZGameFrame();
     static CRuntimeClass *__stdcall GetBaseRuntimeClass();
-    static const AFX_MSGMAP *__stdcall GetBaseMessageMapForMfc();
     static CZGameFrame *CreateObject();
     static CRuntimeClass *__stdcall GetRuntimeClassStatic();
     virtual CRuntimeClass *GetRuntimeClass() const;

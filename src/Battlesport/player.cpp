@@ -460,83 +460,6 @@ int g_Player_NextOrdinal = 0;
  */
 int g_Player_AiMode2State1Finalized = 0;
 /**
- * Reimplements data 0x4da0c0: g_Player_AiMode2_PathFollowPitchInputScale.
- * BN types this as an initialized .data float used by the Mode2 AI
- * path-follow pitch steering input.
- * Purpose: Scales path-follow vertical steering error into pitch input.
- */
-float g_Player_AiMode2_PathFollowPitchInputScale = 0.0174499992f;
-/**
- * Reimplements data 0x4da0c4: g_Player_AiMode2_PathFollowPitchTurnGain.
- * BN types this as an initialized .data float paired with the Mode2 AI
- * path-follow pitch input scale.
- * Purpose: Scales path-follow pitch input into turn correction.
- */
-float g_Player_AiMode2_PathFollowPitchTurnGain = 5.69999981f;
-/**
- * Reimplements data 0x4da0c8: g_Player_AiMode2_SteeringPitchInputScale.
- * BN types this as an initialized .data float used by the Mode2 AI steering
- * substates.
- * Purpose: Scales steering vertical distance into pitch input.
- */
-float g_Player_AiMode2_SteeringPitchInputScale = 0.800000012f;
-/**
- * Reimplements data 0x4da0cc: g_Player_AiMode2_SteeringPitchTurnGain.
- * BN types this as an initialized .data float paired with the Mode2 AI
- * steering pitch input scale.
- * Purpose: Scales steering pitch input into turn correction.
- */
-float g_Player_AiMode2_SteeringPitchTurnGain = 5.69999981f;
-/**
- * Reimplements data 0x4da0d0: g_Player_AiMode2_SteeringVerticalErrorScale.
- * BN types this as an initialized .data float read by the Mode2 AI steering
- * substates.
- * Purpose: Scales steering vertical error before pitch correction.
- */
-float g_Player_AiMode2_SteeringVerticalErrorScale = 0.100000001f;
-/**
- * Reimplements data 0x4da0d4: g_Player_AiMode2_TuningScalar55A.
- * BN types this as an initialized .data float in the contiguous Mode2 AI
- * tuning scalar range.
- * Purpose: Stores the first Mode2 AI 55.0 tuning scalar.
- */
-float g_Player_AiMode2_TuningScalar55A = 55.0f;
-/**
- * Reimplements data 0x4da0d8: g_Player_AiMode2_TuningScalar55B.
- * BN types this as an initialized .data float in the contiguous Mode2 AI
- * tuning scalar range.
- * Purpose: Stores the second Mode2 AI 55.0 tuning scalar.
- */
-float g_Player_AiMode2_TuningScalar55B = 55.0f;
-/**
- * Reimplements data 0x4da0dc: g_Player_AiMode2_TuningScalar5.
- * BN types this as an initialized .data float in the contiguous Mode2 AI
- * tuning scalar range.
- * Purpose: Stores the Mode2 AI 5.0 tuning scalar.
- */
-float g_Player_AiMode2_TuningScalar5 = 5.0f;
-/**
- * Reimplements data 0x4da0e0: g_Player_AiMode2_TuningScalar10.
- * BN types this as an initialized .data float in the contiguous Mode2 AI
- * tuning scalar range.
- * Purpose: Stores the Mode2 AI 10.0 tuning scalar.
- */
-float g_Player_AiMode2_TuningScalar10 = 10.0f;
-/**
- * Reimplements data 0x4da0e4: g_Player_AiMode2_OffsetTargetRotateCos15Deg.
- * BN types this as an initialized .data float used by the Mode2 AI offset
- * target steering rotation.
- * Purpose: Stores the retail cosine scalar for offset-target rotation.
- */
-float g_Player_AiMode2_OffsetTargetRotateCos15Deg = 0.965900004f;
-/**
- * Reimplements data 0x4da0e8: g_Player_AiMode2_OffsetTargetRotateSin15Deg.
- * BN types this as an initialized .data float used by the Mode2 AI offset
- * target steering rotation.
- * Purpose: Stores the retail sine scalar for offset-target rotation.
- */
-float g_Player_AiMode2_OffsetTargetRotateSin15Deg = 0.25879999995f;
-/**
  * Reimplements data 0x4db5ec: g_Player_HealthySubNodeName.
  * Purpose: Names the shared healthy child node used by player, pickup, and
  * turret paths.
@@ -1412,24 +1335,24 @@ char g_Player_ConfigValue_MasterTypeTrack[6] = "track";
  */
 char g_Player_ConfigNode_Mode[5] = "mode";
 /**
- * Reimplements data 0x4f37b0: g_Player_TopMsgPanel1.
- * Data owner 0x4f37b0..0x4f3a57 and 0x4f33a8..0x4f364f: zero-initialized top-message HUD panel
- * singletons constructed at startup and destroyed by their CRT exit callbacks.
- * Purpose: stores the plan-tracked g_Player_TopMsgPanel1 gameplay data symbol.
- */
-HudUiPanel g_Player_TopMsgPanel1;
-/**
- * Reimplements data 0x4f33a8: g_Player_TopMsgPanel2.
- * Purpose: stores the plan-tracked g_Player_TopMsgPanel2 gameplay data symbol.
- */
-HudUiPanel g_Player_TopMsgPanel2;
-/**
  * Reimplements data 0x4e5b50: g_Player_AivParentDir.
  * BN types this as a zero-filled .data char[0x104] buffer written by
  * zReader::BuildResolvedParentDir after aiv.zrd is loaded.
  * Purpose: Stores the resolved parent directory for AIV-relative player data.
  */
 char g_Player_AivParentDir[0x104] = {0};
+/**
+ * Reimplements data 0x4f33a8: g_Player_TopMsgPanel2.
+ * Data owner 0x4f33a8..0x4f364f and 0x4f37b0..0x4f3a57: zero-initialized top-message HUD panel
+ * singletons constructed at startup and destroyed by their CRT exit callbacks.
+ * Purpose: stores the plan-tracked g_Player_TopMsgPanel2 gameplay data symbol.
+ */
+HudUiPanel g_Player_TopMsgPanel2;
+/**
+ * Reimplements data 0x4f37b0: g_Player_TopMsgPanel1.
+ * Purpose: stores the plan-tracked g_Player_TopMsgPanel1 gameplay data symbol.
+ */
+HudUiPanel g_Player_TopMsgPanel1;
 }
 
 namespace {

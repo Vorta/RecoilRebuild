@@ -2,6 +2,7 @@ add_library(recoil_native STATIC
     ../Battlesport/RecoilApp.cpp
     ../Battlesport/RecoilApp_PlayState_TickAndRenderFrame.cpp
     ../Battlesport/Recoil.cpp
+    ../Battlesport/HudUiMessageBoxDialog.cpp
     ../Battlesport/RecoilVersion.cpp
     ../Battlesport/WinMain.cpp
     ../Battlesport/Briefing.cpp
@@ -24,6 +25,7 @@ add_library(recoil_native STATIC
     ../Battlesport/WestwoodOnlineUpgradeDialog.cpp
     ../Battlesport/WestwoodOnlineUpgradeProgressDialog.cpp
     ../Battlesport/WestwoodOnlineUpgradeConfigDialog.cpp
+    ../Battlesport/player_ai_mode2_tuning_globals.cpp
     ../Battlesport/player.cpp
     ../Battlesport/pickup.cpp
     ../Battlesport/CZGameFrame.cpp
@@ -48,6 +50,7 @@ add_library(recoil_native STATIC
     ../GameZRecoil/zSound/zsnd_sample_set.cpp
     ../GameZRecoil/zSound/zsnd_system.cpp
     ../GameZRecoil/Time/Time.cpp
+    ../Battlesport/RecoilApp_InitStdLogFilesLiterals.cpp
     ../GameZRecoil/zEffect/zEffect.cpp
     ../GameZRecoil/zFMV/fmv_script.cpp
     ../GameZRecoil/zGame/zGame.cpp

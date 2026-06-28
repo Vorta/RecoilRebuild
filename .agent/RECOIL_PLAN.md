@@ -3671,7 +3671,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x438430:
   - [✅] Reconstructed (Name: zUtil_SaveGameState::FreeOwnedResources)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: pending; Parent: pending; State: audit-pending)
+  - [❌] Source owner (Kind: struct; Parent: core_util_archive.zutil_save_game_state_record; State: parent-pending)
   - [❎] Data reimplemented
   - [✅] Reimplemented [C]
     - Name: zUtil_SaveGameState::FreeOwnedResources;
@@ -3679,7 +3679,7 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
     - Target: zutil_save_game_state_free_owned_resources;
     - Group: engine.zutil;
     - Model: pending;
-    - Blocker: source-owner primary link ambiguity pending owner audit
+    - Blocker: source-owner repair pending: zUtil_SaveGameState struct/method-cluster boundary must be recovered before tier B/S; 0x438430 is not standalone
 
 - 0x4384e0:
   - [✅] Reconstructed (Name: zUtil_SaveGameStateList::AllocAppend)
@@ -6573,28 +6573,28 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x454330:
   - [✅] Reconstructed (Name: zClass_Lod::SetComputeOwnDistance)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: pending; Parent: pending; State: audit-pending)
+  - [✅] Source owner (Kind: struct; Parent: engine.zclass.lod_classdata_methods; State: implemented)
   - [❎] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [B]
     - Name: zClass_Lod::SetComputeOwnDistance;
     - File: src/GameZRecoil/zClass/Lod.c;
     - Target: zclass_lod_set_compute_own_distance;
     - Group: engine.zclass.core;
-    - Model: pending;
-    - Blocker: source-owner primary link ambiguity pending owner audit
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x454340:
   - [✅] Reconstructed (Name: zClass_Lod::SetTargetNodeAndRange)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: pending; Parent: pending; State: audit-pending)
+  - [✅] Source owner (Kind: struct; Parent: engine.zclass.lod_classdata_methods; State: implemented)
   - [❎] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [B]
     - Name: zClass_Lod::SetTargetNodeAndRange;
     - File: src/GameZRecoil/zClass/Lod.c;
     - Target: zclass_lod_set_target_node_and_range;
     - Group: engine.zclass.core;
-    - Model: pending;
-    - Blocker: source-owner primary link ambiguity pending owner audit
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x4b25a0:
   - [✅] Reconstructed (Name: zClass_Node::SetDamageHitCallback)
@@ -8679,119 +8679,119 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x451bd0:
   - [✅] Reconstructed (Name: zClass_cls_util::CopyNodeBaseData)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: pending; Parent: pending; State: audit-pending)
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zclass.copy_node_clone_options; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [B]
     - Name: zClass_cls_util::CopyNodeBaseData;
     - File: src/GameZRecoil/zClass/cls_util.c;
     - Target: zclass_copy_node_base_data;
     - Group: engine.zclass.core;
-    - Model: pending;
-    - Blocker: source-owner primary link ambiguity pending owner audit
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x451f70:
   - [✅] Reconstructed (Name: zClass_cls_util::CopyCameraNode)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: pending; Parent: pending; State: audit-pending)
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zclass.copy_node_clone_options; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [B]
     - Name: zClass_cls_util::CopyCameraNode;
     - File: src/GameZRecoil/zClass/cls_util.c;
     - Target: zclass_copy_camera_node;
     - Group: engine.zclass.core;
-    - Model: pending;
-    - Blocker: source-owner primary link ambiguity pending owner audit
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x4520c0:
   - [✅] Reconstructed (Name: zClass_cls_util::CopyLightNode_Unimplemented)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: pending; Parent: pending; State: audit-pending)
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zclass.copy_node_clone_options; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [B]
     - Name: zClass_cls_util::CopyLightNode_Unimplemented;
     - File: src/GameZRecoil/zClass/cls_util.c;
     - Target: zclass_copy_light_node_unimplemented;
     - Group: engine.zclass.core;
-    - Model: pending;
-    - Blocker: source-owner primary link ambiguity pending owner audit
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x4520e0:
   - [✅] Reconstructed (Name: zClass_cls_util::CopySoundNode_Unimplemented)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: pending; Parent: pending; State: audit-pending)
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zclass.copy_node_clone_options; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [B]
     - Name: zClass_cls_util::CopySoundNode_Unimplemented;
     - File: src/GameZRecoil/zClass/cls_util.c;
     - Target: zclass_copy_sound_node_unimplemented;
     - Group: engine.zclass.core;
-    - Model: pending;
-    - Blocker: source-owner primary link ambiguity pending owner audit
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x452100:
   - [✅] Reconstructed (Name: zClass_cls_util::CopyObject3DNode)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: pending; Parent: pending; State: audit-pending)
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zclass.copy_node_clone_options; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [B]
     - Name: zClass_cls_util::CopyObject3DNode;
     - File: src/GameZRecoil/zClass/cls_util.c;
     - Target: zclass_copy_object3d_node;
     - Group: engine.zclass.core;
-    - Model: pending;
-    - Blocker: source-owner primary link ambiguity pending owner audit
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x452230:
   - [✅] Reconstructed (Name: zClass_cls_util::CopyAnimateNode_Unimplemented)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: pending; Parent: pending; State: audit-pending)
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zclass.copy_node_clone_options; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [B]
     - Name: zClass_cls_util::CopyAnimateNode_Unimplemented;
     - File: src/GameZRecoil/zClass/cls_util.c;
     - Target: zclass_copy_animate_node_unimplemented;
     - Group: engine.zclass.core;
-    - Model: pending;
-    - Blocker: source-owner primary link ambiguity pending owner audit
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x452250:
   - [☑️] Reconstructed (Name: zClass_cls_util::CopyLodNode)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: pending; Parent: pending; State: audit-pending)
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zclass.copy_node_clone_options; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [B]
     - Name: zClass_cls_util::CopyLodNode;
     - File: src/GameZRecoil/zClass/cls_util.c;
     - Target: zclass_copy_lod_node;
     - Group: engine.zclass.core;
-    - Model: pending;
-    - Blocker: source-owner primary link ambiguity pending owner audit
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x4523c0:
   - [✅] Reconstructed (Name: zClass_cls_util::CopySequenceNode_Unimplemented)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: pending; Parent: pending; State: audit-pending)
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zclass.copy_node_clone_options; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [B]
     - Name: zClass_cls_util::CopySequenceNode_Unimplemented;
     - File: src/GameZRecoil/zClass/cls_util.c;
     - Target: zclass_copy_sequence_node_unimplemented;
     - Group: engine.zclass.core;
-    - Model: pending;
-    - Blocker: source-owner primary link ambiguity pending owner audit
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x4523e0:
   - [✅] Reconstructed (Name: zClass_cls_util::CopySwitchNode_Unimplemented)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: pending; Parent: pending; State: audit-pending)
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zclass.copy_node_clone_options; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [B]
     - Name: zClass_cls_util::CopySwitchNode_Stub;
     - File: src/GameZRecoil/zClass/cls_util.c;
     - Target: zclass_copy_switch_node_stub;
     - Group: engine.zclass.core;
-    - Model: pending;
-    - Blocker: source-owner primary link ambiguity pending owner audit
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x452400:
   - [✅] Reconstructed (Name: zClass_cls_util::CopyNodeDispatch)
@@ -13244,20 +13244,20 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x471860:
   - [☑️] Reconstructed (Name: zInput::PushBindMapContextOverlay)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: pending; Parent: pending; State: audit-pending)
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zinput.bindmap_overlay_context_stack; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [B]
     - Name: zInput::BindMapContext_Push;
     - File: src/GameZRecoil/zInput/zInput.cpp;
     - Target: zinput_bindmap_context_push;
     - Group: engine.zinput;
-    - Model: pending;
-    - Blocker: source-owner primary link ambiguity pending owner audit
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x471950:
   - [☑️] Reconstructed (Name: zInput::PopBindMapContextOverlay)
   - [✅] Source dependencies satisfied
-  - [✅] Source owner (Kind: subsystem; Parent: legacy.input_script_config.namespace_zinput; State: implemented)
+  - [✅] Source owner (Kind: subsystem; Parent: engine.zinput.bindmap_overlay_context_stack; State: implemented)
   - [✅] Data reimplemented
   - [✅] Reimplemented [B]
     - Name: zInput::BindMapContext_Pop;
@@ -18254,15 +18254,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4633c0:
   - [✅] Reconstructed (Name: zFMV_ActionFade::Constructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: pending; Parent: pending; State: audit-pending)
+  - [✅] Source owner (Kind: class; Parent: audio_fmv.class_zfmv_action_fade; State: implemented)
   - [❎] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [B]
     - Name: zFMV_ActionFade::Constructor;
     - File: src/GameZRecoil/zFMV/fmv_script.cpp;
     - Target: zfmv_action_fade_constructor;
     - Group: engine.zfmv;
-    - Model: pending;
-    - Blocker: source-owner primary link ambiguity pending owner audit
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x463410:
   - [✅] Reconstructed (Name: zFMV_ActionFade::Begin)
@@ -18306,15 +18306,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x463570:
   - [✅] Reconstructed (Name: zFMV_ActionPlayAvi::Constructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: pending; Parent: pending; State: audit-pending)
+  - [✅] Source owner (Kind: class; Parent: audio_fmv.class_zfmv_action_play_avi; State: implemented)
   - [❎] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [B]
     - Name: zFMV_ActionPlayAvi::Constructor;
     - File: src/GameZRecoil/zFMV/fmv_script.cpp;
     - Target: zfmv_action_play_avi_constructor;
     - Group: engine.zfmv;
-    - Model: pending;
-    - Blocker: source-owner primary link ambiguity pending owner audit
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x463650:
   - [✅] Reconstructed (Name: zFMV_ActionPlayAvi_ScalarDeletingDtor)
@@ -19543,15 +19543,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4086b0:
   - [✅] Reconstructed (Name: zVid::GetVideoModeIndexFromOptions)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: pending; Parent: pending; State: audit-pending)
+  - [✅] Source owner (Kind: subsystem; Parent: render_video.zvid_video_mode_index_accessor; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [B]
     - Name: zVid::GetVideoModeIndexFromOptions;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvid_get_video_mode_index_from_options;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-owner primary link ambiguity pending owner audit
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x408720:
   - [✅] Reconstructed (Name: zVid::SetVideoModeIndex)
@@ -19855,28 +19855,28 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x48ff60:
   - [✅] Reconstructed (Name: zVid::ShutdownFrameScratchBuffers)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: pending; Parent: pending; State: audit-pending)
+  - [✅] Source owner (Kind: source-file; Parent: render_video.zvid_noise_frame_scratch_lifecycle; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [B]
     - Name: zVid::ShutdownFrameScratchBuffers;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvid_shutdown_frame_scratch_buffers;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-owner primary link ambiguity pending owner audit
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x48ff70:
   - [✅] Reconstructed (Name: zVid::InitFrameScratchBuffers)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: pending; Parent: pending; State: audit-pending)
+  - [✅] Source owner (Kind: source-file; Parent: render_video.zvid_noise_frame_scratch_lifecycle; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [B]
     - Name: zVid::InitFrameScratchBuffers;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_init_frame_scratch_buffers;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-owner primary link ambiguity pending owner audit
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x4a59a0:
   - [✅] Reconstructed (Name: zVid::SetCachedClientRectUpdateMask)
@@ -20102,15 +20102,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4a75f0:
   - [☑️] Reconstructed (Name: zVideo::InitVideoSystem)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: pending; Parent: pending; State: audit-pending)
+  - [✅] Source owner (Kind: source-file; Parent: render_video.zvideo_init_video_system; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [B]
     - Name: zVideo::InitVideoSystem;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_init_video_system;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-owner primary link ambiguity pending owner audit
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x4a7700:
   - [✅] Reconstructed (Name: zVideo::UpdateCachedClientRectScreenCoords)
@@ -20999,28 +20999,28 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4a8100:
   - [✅] Reconstructed (Name: zVideo_dd::LockSurface_WaitRestore)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: pending; Parent: pending; State: audit-pending)
+  - [✅] Source owner (Kind: subsystem; Parent: render_video.zvideo_dd_surface_lock_helpers; State: implemented)
   - [❎] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [B]
     - Name: zVideo_dd::LockSurface_WaitRestore;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd_lock_surface_wait_restore;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-owner primary link ambiguity pending owner audit
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x4a8160:
   - [✅] Reconstructed (Name: zVideo_dd::UnlockSurface_WaitRestore)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: pending; Parent: pending; State: audit-pending)
+  - [✅] Source owner (Kind: subsystem; Parent: render_video.zvideo_dd_surface_lock_helpers; State: implemented)
   - [❎] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [B]
     - Name: zVideo_dd::UnlockSurface_WaitRestore;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_dd_unlock_surface_wait_restore;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-owner primary link ambiguity pending owner audit
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x4a81a0:
   - [✅] Reconstructed (Name: zVideo_dd::ZBuffer_DepthFillRect)
@@ -21766,41 +21766,41 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x48d340:
   - [✅] Reconstructed (Name: zVid::Noise_InitBuffers)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: pending; Parent: pending; State: audit-pending)
+  - [✅] Source owner (Kind: source-file; Parent: render_video.zvid_noise_frame_scratch_lifecycle; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [B]
     - Name: zVid::Noise_InitBuffers;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_noise_init_buffers;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-owner primary link ambiguity pending owner audit
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x48d3e0:
   - [✅] Reconstructed (Name: zVid::Noise_ShutdownBuffers)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: pending; Parent: pending; State: audit-pending)
+  - [✅] Source owner (Kind: source-file; Parent: render_video.zvid_noise_frame_scratch_lifecycle; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [B]
     - Name: zVid::Noise_ShutdownBuffers;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvid_noise_shutdown_buffers;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-owner primary link ambiguity pending owner audit
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x48d910:
   - [☑️] Reconstructed (Name: zVid::DrawNoiseRect)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: pending; Parent: pending; State: audit-pending)
+  - [✅] Source owner (Kind: source-file; Parent: render_video.zvid_noise_frame_scratch_lifecycle; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [B]
     - Name: zVid::DrawNoiseRect;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_draw_noise_rect;
     - Group: engine.zvideo;
-    - Model: pending;
-    - Blocker: source-owner primary link ambiguity pending owner audit
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x48da60:
   - [✅] Reconstructed (Name: zVideo::FxPass3_CopySurfacePixelToScratchClipped)
@@ -22372,15 +22372,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x490520:
   - [✅] Reconstructed (Name: zRndr::SpanOcclusionInit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: pending; Parent: pending; State: audit-pending)
+  - [✅] Source owner (Kind: source-file; Parent: render_video.zrndr_span_occlusion_core; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [B]
     - Name: zRndr::SpanOcclusionInit;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_span_occlusion_init;
     - Group: engine.zrndr;
-    - Model: pending;
-    - Blocker: source-owner primary link ambiguity pending owner audit
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x490590:
   - [✅] Reconstructed (Name: zRndr::SpanOcclusionBuildColumnHeadTable)
@@ -22411,41 +22411,41 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x490610:
   - [✅] Reconstructed (Name: zRndr::SpanOcclusionSubmitOccluderRect)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: pending; Parent: pending; State: audit-pending)
+  - [✅] Source owner (Kind: source-file; Parent: render_video.zrndr_span_occlusion_core; State: implemented)
   - [❎] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [B]
     - Name: zRndr::SpanOcclusionSubmitOccluderRect;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_span_occlusion_submit_occluder_rect;
     - Group: engine.zrndr;
-    - Model: pending;
-    - Blocker: source-owner primary link ambiguity pending owner audit
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x490780:
   - [✅] Reconstructed (Name: zRndr::SpanOcclusionShutdown)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: pending; Parent: pending; State: audit-pending)
+  - [✅] Source owner (Kind: source-file; Parent: render_video.zrndr_span_occlusion_core; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [B]
     - Name: zRndr::SpanOcclusionShutdown;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_span_occlusion_shutdown;
     - Group: engine.zrndr;
-    - Model: pending;
-    - Blocker: source-owner primary link ambiguity pending owner audit
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x4907c0:
   - [☑️] Reconstructed (Name: zRndr_SpanOcclusion::TestSpanDepthOrderPair)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: pending; Parent: pending; State: audit-pending)
+  - [✅] Source owner (Kind: source-file; Parent: render_video.zrndr_span_occlusion_core; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [B]
     - Name: zRndr_SpanOcclusion_TestSpanDepthOrderPair;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_span_occlusion_test_span_depth_order_pair;
     - Group: engine.zrndr;
-    - Model: pending;
-    - Blocker: source-owner primary link ambiguity pending owner audit
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x490ae0:
   - [☑️] Reconstructed (Name: zRndr_SpanOcclusion::InsertSpanNodeIntoColumn)
@@ -22489,15 +22489,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x491da0:
   - [✅] Reconstructed (Name: zRndr_SpanOcclusion::BuildSpanListFast)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: pending; Parent: pending; State: audit-pending)
+  - [✅] Source owner (Kind: source-file; Parent: render_video.zrndr_span_occlusion_core; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [B]
     - Name: zRndr_SpanOcclusion_BuildSpanListFast;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_span_occlusion_build_span_list_fast;
     - Group: engine.zrndr;
-    - Model: pending;
-    - Blocker: source-owner primary link ambiguity pending owner audit
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x491dd0:
   - [☑️] Reconstructed (Name: zRndr_SpanOcclusion::TestColumnVisibility)
@@ -22528,15 +22528,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4927d0:
   - [☑️] Reconstructed (Name: zRndr::SpanOcclusionRasterizeOccluderPoly)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: pending; Parent: pending; State: audit-pending)
+  - [✅] Source owner (Kind: source-file; Parent: render_video.zrndr_span_occlusion_core; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [B]
     - Name: zRndr::SpanOcclusionRasterizeOccluderPoly;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_span_occlusion_rasterize;
     - Group: engine.zrndr;
-    - Model: pending;
-    - Blocker: source-owner primary link ambiguity pending owner audit
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x492f00:
   - [☑️] Reconstructed (Name: zRndr::DrawFlatImmediate)
@@ -22697,28 +22697,28 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x498fb0:
   - [✅] Reconstructed (Name: zRndr::DrawCircleOutline16Framebuffer)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: pending; Parent: pending; State: audit-pending)
+  - [✅] Source owner (Kind: source-file; Parent: render_video.zrndr_circle_framebuffer_helpers; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [B]
     - Name: zRndr_DrawCircleOutline16_Framebuffer;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_draw_circle_outline16_framebuffer;
     - Group: engine.zrndr;
-    - Model: pending;
-    - Blocker: source-owner primary link ambiguity pending owner audit
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x499020:
   - [✅] Reconstructed (Name: zRndr::DrawCircleOctants16Framebuffer)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: pending; Parent: pending; State: audit-pending)
+  - [✅] Source owner (Kind: source-file; Parent: render_video.zrndr_circle_framebuffer_helpers; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [B]
     - Name: zRndr_DrawCircleOctants16_Framebuffer;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_draw_circle_octants16_framebuffer;
     - Group: engine.zrndr;
-    - Model: pending;
-    - Blocker: source-owner primary link ambiguity pending owner audit
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x499130:
   - [☑️] Reconstructed (Name: zRndr_TextureMip::SelectVariantImage)
@@ -23074,15 +23074,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x49b4c0:
   - [☑️] Reconstructed (Name: zRndr::CommitDirectFogParamsIfChanged)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: pending; Parent: pending; State: audit-pending)
+  - [✅] Source owner (Kind: source-file; Parent: render_video.zrndr_fog_commit_blend_slice; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [B]
     - Name: zRndr::CommitDirectFogParamsIfChanged;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_commit_direct_fog_params_if_changed;
     - Group: engine.zrndr;
-    - Model: pending;
-    - Blocker: source-owner primary link ambiguity pending owner audit
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x49b530:
   - [☑️] Reconstructed (Name: zRndr::CommitFogColorParamsIfChanged)
@@ -23607,15 +23607,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x490710:
   - [☑️] Reconstructed (Name: zRndr::SpanOcclusionAddPolygon)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: pending; Parent: pending; State: audit-pending)
+  - [✅] Source owner (Kind: source-file; Parent: render_video.zrndr_span_occlusion_core; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [B]
     - Name: zRndr::SpanOcclusionAddPolygon;
     - File: src/GameZRecoil/zRndr/zRndr.cpp;
     - Target: zrndr_span_occlusion_add_polygon;
     - Group: engine.zrndr;
-    - Model: pending;
-    - Blocker: source-owner primary link ambiguity pending owner audit
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x49a8c0:
   - [✅] Reconstructed (Name: zRndr::LensFlare_DrawQueuedSamplesScaled16_ClippedFramebuffer)
@@ -27570,15 +27570,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4b1180:
   - [✅] Reconstructed (Name: OptCatalog::Shutdown)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: pending; Parent: pending; State: audit-pending)
+  - [✅] Source owner (Kind: source-file; Parent: effects_weapons.zweapon_optcatalog_load_shutdown; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [B]
     - Name: OptCatalog::Shutdown;
     - File: src/GameZRecoil/zWeapon/OptCatalog.c;
     - Target: optcatalog_shutdown;
     - Group: engine.zweapon;
-    - Model: pending;
-    - Blocker: source-owner primary link ambiguity pending owner audit
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x4b1190:
   - [☑️] Reconstructed (Name: zWeapon::LoadOptCatalogFromPath)
@@ -28920,80 +28920,80 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4389c0:
   - [✅] Reconstructed (Name: PickupAirdropSpawnRef::SpawnPickupTypeAndRelay)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: pending; Parent: pending; State: audit-pending)
+  - [✅] Source owner (Kind: struct; Parent: battlesport_gameplay.pickup_airdrop_spawn_ref_methods; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [B]
     - Name: PickupAirdropSpawnRef::SpawnPickupTypeAndRelay;
     - File: src/Battlesport/pickup.cpp;
     - Target: pickup_airdrop_spawn_ref_spawn_pickup_type_and_relay;
     - Group: battlesport.pickup;
-    - Model: pending;
-    - Blocker: source-owner primary link ambiguity pending owner audit
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x438a20:
   - [☑️] Reconstructed (Name: PickupAirdropSpawnRef::CanSpawnWithClearance)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: pending; Parent: pending; State: audit-pending)
+  - [✅] Source owner (Kind: struct; Parent: battlesport_gameplay.pickup_airdrop_spawn_ref_methods; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [B]
     - Name: PickupAirdropSpawnRef::CanSpawnWithClearance;
     - File: src/Battlesport/pickup.cpp;
     - Target: pickup_airdrop_spawn_ref_can_spawn_with_clearance;
     - Group: battlesport.pickup;
-    - Model: pending;
-    - Blocker: source-owner primary link ambiguity pending owner audit
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x438a70:
   - [✅] Reconstructed (Name: PickupAirdropSpawnRef::GetWorldPos)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: pending; Parent: pending; State: audit-pending)
+  - [✅] Source owner (Kind: struct; Parent: battlesport_gameplay.pickup_airdrop_spawn_ref_methods; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [B]
     - Name: PickupAirdropSpawnRef::GetWorldPos;
     - File: src/Battlesport/pickup.cpp;
     - Target: pickup_airdrop_spawn_ref_get_world_pos;
     - Group: battlesport.pickup;
-    - Model: pending;
-    - Blocker: source-owner primary link ambiguity pending owner audit
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x438a90:
   - [☑️] Reconstructed (Name: PickupAirdropSpawnRef::InitGlobalFromCarrierNodeName)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: pending; Parent: pending; State: audit-pending)
+  - [✅] Source owner (Kind: struct; Parent: battlesport_gameplay.pickup_airdrop_spawn_ref_methods; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [B]
     - Name: PickupAirdropSpawnRef::InitGlobalFromCarrierNodeName;
     - File: src/Battlesport/pickup.cpp;
     - Target: pickup_airdrop_spawn_ref_init_global_from_carrier_node_name;
     - Group: battlesport.pickup;
-    - Model: pending;
-    - Blocker: source-owner primary link ambiguity pending owner audit
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x438b10:
   - [✅] Reconstructed (Name: PickupAirdropSpawnRef::ShutdownGlobal)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: pending; Parent: pending; State: audit-pending)
+  - [✅] Source owner (Kind: struct; Parent: battlesport_gameplay.pickup_airdrop_spawn_ref_methods; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [B]
     - Name: PickupAirdropSpawnRef::ShutdownGlobal;
     - File: src/Battlesport/pickup.cpp;
     - Target: pickup_airdrop_spawn_ref_shutdown_global;
     - Group: battlesport.pickup;
-    - Model: pending;
-    - Blocker: source-owner primary link ambiguity pending owner audit
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x438b30:
   - [✅] Reconstructed (Name: PickupAirdropSpawnRef::TrySpawnRandomPickupFromGlobal)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: pending; Parent: pending; State: audit-pending)
+  - [✅] Source owner (Kind: struct; Parent: battlesport_gameplay.pickup_airdrop_spawn_ref_methods; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [B]
     - Name: PickupAirdropSpawnRef::TrySpawnRandomPickupFromGlobal;
     - File: src/Battlesport/pickup.cpp;
     - Target: pickup_airdrop_spawn_ref_try_spawn_random_pickup_from_global;
     - Group: battlesport.pickup;
-    - Model: pending;
-    - Blocker: source-owner primary link ambiguity pending owner audit
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x41de30:
   - [☑️] Reconstructed (Name: Net::IsOptEntryActiveInAnySlot)
@@ -30540,15 +30540,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x42be00:
   - [✅] Reconstructed (Name: Player::SetWorldPoseAndRestartAnchor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: pending; Parent: pending; State: audit-pending)
+  - [✅] Source owner (Kind: subsystem; Parent: battlesport_gameplay.player_local_pose_restart_helpers; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [B]
     - Name: Player::SetWorldPoseAndRestartAnchor;
     - File: src/Battlesport/player.cpp;
     - Target: player_set_world_pose_and_restart_anchor;
     - Group: battlesport.player;
-    - Model: pending;
-    - Blocker: source-owner primary link ambiguity pending owner audit
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x42be70:
   - [✅] Reconstructed (Name: Player::CaptureCurrentObjectPoseAsRestartAnchor)
@@ -38033,15 +38033,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4b8450:
   - [✅] Reconstructed (Name: HudUiFillBitmap::Constructor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: pending; Parent: pending; State: audit-pending)
+  - [✅] Source owner (Kind: class; Parent: legacy.hud_ui.class_huduifillbitmap; State: implemented)
   - [❎] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [B]
     - Name: HudUiFillBitmap::HudUiFillBitmap;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_fill_bitmap_constructor;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-owner primary link ambiguity pending owner audit
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x40cf50:
   - [✅] Reconstructed (Name: HudUiFillBitmap::DestructorCoreThunk)
@@ -38111,15 +38111,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4b8650:
   - [✅] Reconstructed (Name: HudUiFillBitmap::UpdateNormalizedFromCursor)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: pending; Parent: pending; State: audit-pending)
+  - [✅] Source owner (Kind: class; Parent: legacy.hud_ui.class_huduifillbitmap; State: implemented)
   - [❎] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [B]
     - Name: HudUiFillBitmap::UpdateNormalizedFromCursor;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_fill_bitmap_update_normalized_from_cursor;
     - Group: ui.zhud;
-    - Model: pending;
-    - Blocker: source-owner primary link ambiguity pending owner audit
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x4b86b0:
   - [✅] Reconstructed (Name: HudUiFillBitmap::SetNormalizedValueAndRebuild)
@@ -45095,15 +45095,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x4099a0:
   - [✅] Reconstructed (Name: RecoilStateDialogHost::OnWndActivate)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: pending; Parent: pending; State: audit-pending)
+  - [✅] Source owner (Kind: class; Parent: legacy.app_shell.class_recoilstatedialoghost; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [B]
     - Name: RecoilStateDialogHost::OnWndActivate;
     - File: src/GameZRecoil/RecoilApp/RecoilStateDialogHost.cpp;
     - Target: recoil_state_dialog_host_on_wnd_activate;
     - Group: app.recoil_state_base;
-    - Model: pending;
-    - Blocker: source-owner primary link ambiguity pending owner audit
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x409a60:
   - [☑️] Reconstructed (Name: RecoilStateCredits::OnTryBecomeCurrent)
@@ -45121,15 +45121,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x409ad0:
   - [✅] Reconstructed (Name: RecoilStateDialogHost::OnDeactivate)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: pending; Parent: pending; State: audit-pending)
+  - [✅] Source owner (Kind: class; Parent: legacy.app_shell.class_recoilstatedialoghost; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [B]
     - Name: RecoilStateDialogHost::OnDeactivate;
     - File: src/GameZRecoil/RecoilApp/RecoilStateDialogHost.cpp;
     - Target: recoil_state_dialog_host_on_deactivate;
     - Group: app.recoil_state_base;
-    - Model: pending;
-    - Blocker: source-owner primary link ambiguity pending owner audit
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x409b00:
   - [✅] Reconstructed (Name: RecoilStateCredits::QueuePush)
@@ -45539,15 +45539,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x415110:
   - [✅] Reconstructed (Name: RecoilStateMainMenuTransition::StaticInit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: pending; Parent: pending; State: audit-pending)
+  - [✅] Source owner (Kind: source-file; Parent: app.main_menu_transition.static_init_thunks; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [C]
+  - [✅] Reimplemented [B]
     - Name: RecoilStateMainMenuTransition::StaticInit;
     - File: src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.cpp;
     - Target: recoil_state_main_menu_transition_static_init_thunks;
     - Group: app.main_menu_transition;
-    - Model: pending;
-    - Blocker: source-owner primary link ambiguity pending owner audit
+    - Model: source-faithful;
+    - Blocker: tier S deferred while global owner/data blockers remain
 
 - 0x415120:
   - [✅] Reconstructed (Name: RecoilStateMainMenuTransition::RegisterAtExit)
@@ -46855,15 +46855,15 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 - 0x435e80:
   - [✅] Reconstructed (Name: RecoilStateSaveLoadTransition::OnUpdateShouldQuit)
   - [✅] Source dependencies satisfied
-  - [❌] Source owner (Kind: pending; Parent: pending; State: audit-pending)
+  - [✅] Source owner (Kind: source-file; Parent: app_shell.folded_dialog_update_should_quit; State: implemented)
   - [✅] Data reimplemented
-  - [✅] Reimplemented [C]
-    - Name: RecoilStateMainMenuTransition::OnUpdateShouldQuit;
-    - File: src/GameZRecoil/RecoilApp/RecoilStateMainMenuTransition_OnUpdateShouldQuit.cpp;
-    - Target: recoil_state_main_menu_transition_on_update_should_quit;
+  - [✅] Reimplemented [B]
+    - Name: RecoilStateSaveLoadTransition::OnUpdateShouldQuit;
+    - File: src/Battlesport/RecoilApp_Late.cpp;
+    - Target: recoil_state_save_load_transition_on_update_should_quit;
     - Group: app.recoil_app.core;
-    - Model: pending;
-    - Blocker: source-owner primary link ambiguity pending owner audit
+    - Model: source-faithful;
+    - Blocker: none
 
 - 0x435f50:
   - [✅] Reconstructed (Name: RecoilStateSaveLoadTransition::QueueOpenSaveDialog)
@@ -62593,14 +62593,14 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x56bd58:
   - [✅] Reconstructed (Kind: data; Name: g_zVideoFxPass3ConfigLocal; Section: .data; Size: 496; Type: struct zVideoFxPass3Config)
-  - [❌] Source owner (Kind: pending; Parent: pending; State: audit-pending)
-  - [✅] Reimplemented [F]
+  - [✅] Source owner (Kind: class; Parent: render_video.zvideo_fxpass3_ui_local_config; State: implemented)
+  - [✅] Reimplemented [B]
     - Name: g_zVideoFxPass3ConfigLocal;
     - File: src/GameZRecoil/zVideo/zVideo.cpp;
     - Target: zvideo_fxpass3_local_config_data;
     - Group: data.render_video;
-    - Model: pending;
-    - Blocker: source-owner primary link ambiguity pending owner audit
+    - Model: source-faithful;
+    - Blocker: final-data layout blocks tier S byte gate
 
 - 0x576214:
   - [✅] Reconstructed (Kind: data; Name: g_zVideo_pActiveProjectionViewContext; Section: .data; Size: 4; Type: struct zVideo_ViewContext*)
@@ -71090,14 +71090,14 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x4f3650:
   - [✅] Reconstructed (Kind: data; Name: g_Player_State7FxPass3Ui; Section: .data; Size: 56; Type: struct PlayerScreenFxPass3Ui)
-  - [❌] Source owner (Kind: pending; Parent: pending; State: audit-pending)
-  - [✅] Reimplemented [F]
+  - [✅] Source owner (Kind: global-data; Parent: battlesport_gameplay.player_camera_state_globals; State: implemented)
+  - [✅] Reimplemented [B]
     - Name: g_Player_State7FxPass3Ui;
     - File: src/Battlesport/player.cpp;
     - Target: player_camera_state_globals;
     - Group: data.battlesport_gameplay;
-    - Model: pending;
-    - Blocker: source-owner primary link ambiguity pending owner audit
+    - Model: source-faithful;
+    - Blocker: final linked .data layout drift blocks data byte gate
 
 - 0x4f3688:
   - [✅] Reconstructed (Kind: data; Name: g_PlayerMasterModalDataListAux; Section: .data; Size: 4; Type: int32_t)
@@ -72627,1059 +72627,1059 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x4e1860:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_SourceFile_ZnetDplayCpp; Section: .data; Size: 44; Type: char[0x2c])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_SourceFile_ZnetDplayCpp;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e188c:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_UsingTcpIpFmt; Section: .data; Size: 25; Type: char[0x19])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_UsingTcpIpFmt;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e18a8:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_SyncModeName; Section: .data; Size: 6; Type: char[0x6])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_SyncModeName;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e18b0:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_AsyncModeName; Section: .data; Size: 7; Type: char[0x7])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_AsyncModeName;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e18b8:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_GuaranteedTcpIpNotSupportedMsg; Section: .data; Size: 34; Type: char[0x22])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_GuaranteedTcpIpNotSupportedMsg;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e18dc:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_GetCapabilitiesFailedMsg; Section: .data; Size: 36; Type: char[0x24])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_GetCapabilitiesFailedMsg;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1900:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorText_SignatureFailure; Section: .data; Size: 18; Type: char[0x12])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorText_SignatureFailure;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1914:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorText_LogonDenied; Section: .data; Size: 13; Type: char[0xd])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorText_LogonDenied;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1924:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorText_EncryptionNotSupported; Section: .data; Size: 25; Type: char[0x19])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorText_EncryptionNotSupported;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1940:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorText_EncryptionFailed; Section: .data; Size: 18; Type: char[0x12])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorText_EncryptionFailed;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1954:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorText_SecuritySupportProviderError; Section: .data; Size: 32; Type: char[0x20])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorText_SecuritySupportProviderError;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1974:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorText_CannotLoadSecurityPackage; Section: .data; Size: 29; Type: char[0x1d])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorText_CannotLoadSecurityPackage;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1994:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorText_CryptographyServicesError; Section: .data; Size: 28; Type: char[0x1c])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorText_CryptographyServicesError;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e19b0:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorText_AuthenticationFailed; Section: .data; Size: 22; Type: char[0x16])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorText_AuthenticationFailed;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e19c8:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorText_ConnectionLost; Section: .data; Size: 16; Type: char[0x10])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorText_ConnectionLost;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e19d8:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorText_ErrorConnecting; Section: .data; Size: 17; Type: char[0x11])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorText_ErrorConnecting;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e19ec:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorText_InvalidPassword; Section: .data; Size: 17; Type: char[0x11])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorText_InvalidPassword;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1a00:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorText_NoNewPlayersAllowed; Section: .data; Size: 23; Type: char[0x17])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorText_NoNewPlayersAllowed;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1a18:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorText_InitializationError; Section: .data; Size: 21; Type: char[0x15])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorText_InitializationError;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1a30:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorText_CannotCreateServer; Section: .data; Size: 21; Type: char[0x15])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorText_CannotCreateServer;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1a48:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorText_TimeoutError; Section: .data; Size: 14; Type: char[0xe])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorText_TimeoutError;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1a58:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorText_NoExistingSessions; Section: .data; Size: 21; Type: char[0x15])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorText_NoExistingSessions;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1a70:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorText_NoConnection; Section: .data; Size: 14; Type: char[0xe])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorText_NoConnection;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1a80:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorText_InvalidFlags; Section: .data; Size: 21; Type: char[0x15])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorText_InvalidFlags;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1a98:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorText_AccessDenied; Section: .data; Size: 14; Type: char[0xe])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorText_AccessDenied;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1aa8:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorText_AlreadyInitialized; Section: .data; Size: 20; Type: char[0x14])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorText_AlreadyInitialized;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1abc:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorText_InvalidParameters; Section: .data; Size: 26; Type: char[0x1a])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorText_InvalidParameters;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1ad8:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_RecoilNetworkErrorMsg; Section: .data; Size: 21; Type: char[0x15])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_RecoilNetworkErrorMsg;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1af0:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_NoNetworkConnectionMsg; Section: .data; Size: 22; Type: char[0x16])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_NoNetworkConnectionMsg;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1b08:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_NetworkConnectionLostMsg; Section: .data; Size: 38; Type: char[0x26])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_NetworkConnectionLostMsg;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1b30:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_InvalidPlayerParametersMsg; Section: .data; Size: 33; Type: char[0x21])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_InvalidPlayerParametersMsg;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1b54:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_CannotCreateAnotherPlayerMsg; Section: .data; Size: 29; Type: char[0x1d])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_CannotCreateAnotherPlayerMsg;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1b74:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_CannotAddAnotherPlayerMsg; Section: .data; Size: 26; Type: char[0x1a])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_CannotAddAnotherPlayerMsg;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1b90:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DefaultPlayerName; Section: .data; Size: 7; Type: char[0x7])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DefaultPlayerName;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1b98:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_ReceiveBufferIncreasedFmt; Section: .data; Size: 46; Type: char[0x2e])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_ReceiveBufferIncreasedFmt;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1bc8:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_UnhandledDirectPlaySystemMessageMsg; Section: .data; Size: 36; Type: char[0x24])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_UnhandledDirectPlaySystemMessageMsg;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1bec:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_CoCreateNotInitializedMsg; Section: .data; Size: 25; Type: char[0x19])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_CoCreateNotInitializedMsg;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1c08:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_ClassCannotBeCreatedMsg; Section: .data; Size: 24; Type: char[0x18])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_ClassCannotBeCreatedMsg;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1c20:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_ClassNotRegisteredMsg; Section: .data; Size: 21; Type: char[0x15])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_ClassNotRegisteredMsg;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1c38:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_ForcedTcpIpModeName; Section: .data; Size: 14; Type: char[0xe])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_ForcedTcpIpModeName;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1c48:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DirectPlayErrorFmt; Section: .data; Size: 30; Type: char[0x1e])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DirectPlayErrorFmt;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1c68:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_LogonDenied; Section: .data; Size: 19; Type: char[0x13])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_LogonDenied;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1c7c:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_NotLoggedIn; Section: .data; Size: 18; Type: char[0x12])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_NotLoggedIn;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1c90:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_CantLoadCapi; Section: .data; Size: 19; Type: char[0x13])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_CantLoadCapi;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1ca4:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_EncryptionNotSupported; Section: .data; Size: 29; Type: char[0x1d])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_EncryptionNotSupported;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1cc4:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_CantLoadSecurityPackage; Section: .data; Size: 30; Type: char[0x1e])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_CantLoadSecurityPackage;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1ce4:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_SignFailed; Section: .data; Size: 17; Type: char[0x11])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_SignFailed;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1cf8:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_EncryptionFailed; Section: .data; Size: 23; Type: char[0x17])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_EncryptionFailed;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1d10:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_CantLoadSspi; Section: .data; Size: 19; Type: char[0x13])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_CantLoadSspi;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1d24:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_AuthenticationFailed; Section: .data; Size: 27; Type: char[0x1b])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_AuthenticationFailed;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1d40:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_NotLobbied; Section: .data; Size: 17; Type: char[0x11])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_NotLobbied;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1d54:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_UnknownApplication; Section: .data; Size: 25; Type: char[0x19])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_UnknownApplication;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1d70:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_InvalidInterface; Section: .data; Size: 24; Type: char[0x18])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_InvalidInterface;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1d88:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_AppNotStarted; Section: .data; Size: 20; Type: char[0x14])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_AppNotStarted;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1d9c:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_CantCreateProcess; Section: .data; Size: 24; Type: char[0x18])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_CantCreateProcess;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1db4:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_BufferTooLarge; Section: .data; Size: 21; Type: char[0x15])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_BufferTooLarge;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1dcc:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_InvalidPriority; Section: .data; Size: 22; Type: char[0x16])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_InvalidPriority;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1de4:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_CancelFailed; Section: .data; Size: 19; Type: char[0x13])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_CancelFailed;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1df8:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_UnknownMessage; Section: .data; Size: 21; Type: char[0x15])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_UnknownMessage;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1e10:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_ConnectionLost; Section: .data; Size: 21; Type: char[0x15])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_ConnectionLost;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1e28:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_Connecting; Section: .data; Size: 17; Type: char[0x11])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_Connecting;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1e3c:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_NoNewPlayers; Section: .data; Size: 19; Type: char[0x13])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_NoNewPlayers;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1e50:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_Uninitialized; Section: .data; Size: 21; Type: char[0x15])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_Uninitialized;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1e68:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_SessionLost; Section: .data; Size: 18; Type: char[0x12])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_SessionLost;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1e7c:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_PlayerLost; Section: .data; Size: 18; Type: char[0x12])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_PlayerLost;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1e90:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_CannotCreateServer; Section: .data; Size: 25; Type: char[0x19])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_CannotCreateServer;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1eac:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_UserCancel; Section: .data; Size: 17; Type: char[0x11])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_UserCancel;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1ec0:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_Busy; Section: .data; Size: 11; Type: char[0xb])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_Busy;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1ecc:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_Unavailable; Section: .data; Size: 18; Type: char[0x12])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_Unavailable;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1ee0:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_Timeout; Section: .data; Size: 14; Type: char[0xe])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_Timeout;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1ef0:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_SendTooBig; Section: .data; Size: 17; Type: char[0x11])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_SendTooBig;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1f04:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_NoSessions; Section: .data; Size: 17; Type: char[0x11])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_NoSessions;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1f18:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_NoPlayers; Section: .data; Size: 16; Type: char[0x10])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_NoPlayers;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1f28:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_NoNameServerFound; Section: .data; Size: 24; Type: char[0x18])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_NoNameServerFound;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1f40:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_NoMessages; Section: .data; Size: 18; Type: char[0x12])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_NoMessages;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1f54:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_NoConnection; Section: .data; Size: 19; Type: char[0x13])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_NoConnection;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1f68:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_NoCaps; Section: .data; Size: 13; Type: char[0xd])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_NoCaps;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1f78:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_InvalidGroup; Section: .data; Size: 19; Type: char[0x13])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_InvalidGroup;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1f8c:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_InvalidPlayer; Section: .data; Size: 20; Type: char[0x14])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_InvalidPlayer;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1fa0:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_InvalidObject; Section: .data; Size: 20; Type: char[0x14])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_InvalidObject;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1fb4:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_InvalidFlags; Section: .data; Size: 19; Type: char[0x13])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_InvalidFlags;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1fc8:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_Exception; Section: .data; Size: 16; Type: char[0x10])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_Exception;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1fd8:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_CapsNotAvailableYet; Section: .data; Size: 26; Type: char[0x1a])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_CapsNotAvailableYet;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e1ff4:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_CantCreateSession; Section: .data; Size: 24; Type: char[0x18])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_CantCreateSession;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e200c:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_CantCreatePlayer; Section: .data; Size: 23; Type: char[0x17])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_CantCreatePlayer;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e2024:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_CantCreateGroup; Section: .data; Size: 23; Type: char[0x17])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_CantCreateGroup;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e203c:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_CantAddPlayer; Section: .data; Size: 20; Type: char[0x14])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_CantAddPlayer;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e2050:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_BufferTooSmall; Section: .data; Size: 21; Type: char[0x15])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_BufferTooSmall;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e2068:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_ActivePlayers; Section: .data; Size: 20; Type: char[0x14])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_ActivePlayers;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e207c:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_AccessDenied; Section: .data; Size: 19; Type: char[0x13])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_AccessDenied;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e2090:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_AlreadyInitialized; Section: .data; Size: 25; Type: char[0x19])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_AlreadyInitialized;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e20ac:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_InvalidParams; Section: .data; Size: 20; Type: char[0x14])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_InvalidParams;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e20c0:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_OutOfMemory; Section: .data; Size: 18; Type: char[0x12])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_OutOfMemory;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e20d4:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_Generic; Section: .data; Size: 14; Type: char[0xe])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_Generic;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e20e4:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_Unsupported; Section: .data; Size: 18; Type: char[0x12])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_Unsupported;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4e20f8:
   - [✅] Reconstructed (Kind: data; Name: g_zNetwork_DpErrorName_Pending; Section: .data; Size: 14; Type: char[0xe])
-  - [✅] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: implemented)
-  - [✅] Reimplemented [B]
+  - [❌] Source owner (Kind: global-data; Parent: network_online.znetwork_dplay_literal_pool; State: audit-pending)
+  - [✅] Reimplemented [F]
     - Name: g_zNetwork_DpErrorName_Pending;
     - File: src/GameZRecoil/zNetwork/znet_dplay.cpp;
     - Target: znetwork_dplay_literal_pool_data;
     - Group: data.network_online;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: data-equivalent-only;
+    - Blocker: znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean
 
 - 0x4f3f10:
   - [✅] Reconstructed (Kind: data; Name: g_GameNetPlayerRowList; Section: .data; Size: 16; Type: struct GameNetPlayerRowList)
@@ -75330,14 +75330,14 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x4dad34:
   - [✅] Reconstructed (Kind: data; Name: g_HudCfgKey_Weapon; Section: .data; Size: 7; Type: char[0x7])
-  - [✅] Source owner (Kind: global-data; Parent: hud_ui.hud_ui_mgr_ensure_hud_loaded_literals; State: implemented)
+  - [✅] Source owner (Kind: global-data; Parent: shared.hud_turret_image_config_token_literals_data; State: implemented)
   - [✅] Reimplemented [B]
     - Name: g_HudCfgKey_Weapon;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_mgr_ensure_hud_loaded_literals_data;
     - Group: data.hud_ui;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: final linked .data layout still blocks data byte/S acceptance for shared token owner
 
 - 0x4dad3c:
   - [✅] Reconstructed (Kind: data; Name: g_HudCfgKey_Target; Section: .data; Size: 7; Type: char[0x7])
@@ -75429,14 +75429,14 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x4dad88:
   - [✅] Reconstructed (Kind: data; Name: g_HudCfgKey_Ammo; Section: .data; Size: 5; Type: char[0x5])
-  - [✅] Source owner (Kind: global-data; Parent: hud_ui.hud_ui_mgr_ensure_hud_loaded_literals; State: implemented)
+  - [✅] Source owner (Kind: global-data; Parent: shared.hud_turret_image_config_token_literals_data; State: implemented)
   - [✅] Reimplemented [B]
     - Name: g_HudCfgKey_Ammo;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_mgr_ensure_hud_loaded_literals_data;
     - Group: data.hud_ui;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: final linked .data layout still blocks data byte/S acceptance for shared token owner
 
 - 0x4dad90:
   - [✅] Reconstructed (Kind: data; Name: g_HudCfgKey_Strings; Section: .data; Size: 8; Type: char[0x8])
@@ -75473,14 +75473,14 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x4dadb4:
   - [✅] Reconstructed (Kind: data; Name: g_HudCfgKey_Fonts; Section: .data; Size: 6; Type: char[0x6])
-  - [✅] Source owner (Kind: global-data; Parent: hud_ui.hud_ui_mgr_ensure_hud_loaded_literals; State: implemented)
+  - [✅] Source owner (Kind: global-data; Parent: shared.hud_turret_image_config_token_literals_data; State: implemented)
   - [✅] Reimplemented [B]
     - Name: g_HudCfgKey_Fonts;
     - File: src/GameZRecoil/zHud/zhud_ui.cpp;
     - Target: hud_ui_mgr_ensure_hud_loaded_literals_data;
     - Group: data.hud_ui;
-    - Model: source-faithful;
-    - Blocker: none
+    - Model: pending;
+    - Blocker: final linked .data layout still blocks data byte/S acceptance for shared token owner
 
 - 0x4dadbc:
   - [✅] Reconstructed (Kind: data; Name: g_Hud_ImageSearchPath_Hud; Section: .data; Size: 26; Type: char[0x1a])
@@ -78548,11 +78548,11 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
 
 - 0x4da248:
   - [✅] Reconstructed (Kind: data; Name: g_zApp_LogFileOpenMode; Section: .data; Size: 2; Type: char[0x2])
-  - [✅] Source owner (Kind: global-data; Parent: app_shell.recoil_app_init_std_log_files_literals_data; State: implemented)
+  - [✅] Source owner (Kind: global-data; Parent: app_shell.recoil_app_init_std_log_files_open_mode_data; State: implemented)
   - [✅] Reimplemented [B]
     - Name: g_zApp_LogFileOpenMode;
     - File: src/Battlesport/RecoilApp.cpp;
-    - Target: recoil_app_init_std_log_files_literals_data;
+    - Target: recoil_app_init_std_log_files_open_mode_data;
     - Group: data.misc_unresolved;
     - Model: source-faithful;
     - Blocker: none
@@ -79706,9 +79706,9 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source owner (Kind: global-data; Parent: app_shell.recoil_app_init_std_log_files_literals_data; State: implemented)
   - [✅] Reimplemented [B]
     - Name: g_zApp_DefaultStdoutLogName;
-    - File: src/Battlesport/RecoilApp.cpp;
+    - File: src/Battlesport/RecoilApp_InitStdLogFilesLiterals.cpp;
     - Target: recoil_app_init_std_log_files_literals_data;
-    - Group: data.misc_unresolved;
+    - Group: data.app_shell;
     - Model: source-faithful;
     - Blocker: none
 
@@ -79717,9 +79717,9 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source owner (Kind: global-data; Parent: app_shell.recoil_app_init_std_log_files_literals_data; State: implemented)
   - [✅] Reimplemented [B]
     - Name: g_zApp_StdoutLogSuffix;
-    - File: src/Battlesport/RecoilApp.cpp;
+    - File: src/Battlesport/RecoilApp_InitStdLogFilesLiterals.cpp;
     - Target: recoil_app_init_std_log_files_literals_data;
-    - Group: data.misc_unresolved;
+    - Group: data.app_shell;
     - Model: source-faithful;
     - Blocker: none
 
@@ -79728,9 +79728,9 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source owner (Kind: global-data; Parent: app_shell.recoil_app_init_std_log_files_literals_data; State: implemented)
   - [✅] Reimplemented [B]
     - Name: g_zApp_LogFileStartBanner;
-    - File: src/Battlesport/RecoilApp.cpp;
+    - File: src/Battlesport/RecoilApp_InitStdLogFilesLiterals.cpp;
     - Target: recoil_app_init_std_log_files_literals_data;
-    - Group: data.misc_unresolved;
+    - Group: data.app_shell;
     - Model: source-faithful;
     - Blocker: none
 
@@ -79739,9 +79739,9 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source owner (Kind: global-data; Parent: app_shell.recoil_app_init_std_log_files_literals_data; State: implemented)
   - [✅] Reimplemented [B]
     - Name: g_zApp_DefaultStderrLogName;
-    - File: src/Battlesport/RecoilApp.cpp;
+    - File: src/Battlesport/RecoilApp_InitStdLogFilesLiterals.cpp;
     - Target: recoil_app_init_std_log_files_literals_data;
-    - Group: data.misc_unresolved;
+    - Group: data.app_shell;
     - Model: source-faithful;
     - Blocker: none
 
@@ -79750,9 +79750,9 @@ Groups are dependency ordered. Provider/import groups come first, then engine fo
   - [✅] Source owner (Kind: global-data; Parent: app_shell.recoil_app_init_std_log_files_literals_data; State: implemented)
   - [✅] Reimplemented [B]
     - Name: g_zApp_StderrLogSuffix;
-    - File: src/Battlesport/RecoilApp.cpp;
+    - File: src/Battlesport/RecoilApp_InitStdLogFilesLiterals.cpp;
     - Target: recoil_app_init_std_log_files_literals_data;
-    - Group: data.misc_unresolved;
+    - Group: data.app_shell;
     - Model: source-faithful;
     - Blocker: none
 

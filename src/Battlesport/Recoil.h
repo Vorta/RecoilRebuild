@@ -11,7 +11,12 @@
  */
 class CAboutDlg : public CDialog {
   public:
+    static const AFX_MSGMAP messageMap;
+    static const AFX_MSGMAP_ENTRY messageEntries[];
+
+    static const AFX_MSGMAP *__stdcall GetBaseMessageMapForMfc();
     CAboutDlg(CWnd *parentWnd = 0);
+    virtual const AFX_MSGMAP * GetMessageMap() const;
 };
 
 #if defined(_M_IX86) || defined(__i386__)

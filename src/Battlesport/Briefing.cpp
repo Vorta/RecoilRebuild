@@ -217,23 +217,6 @@ inline HudUiBriefingLocatorPanel *BriefingLocatorPanel(
 
 } // namespace
 
-/**
- * Reimplements data 0x4e5cb4: g_Briefing_Runtime.
- * Purpose: hold the active briefing UI runtime while the mission briefing thread is alive.
- */
-HudUiBriefingRuntime *g_Briefing_Runtime = 0;
-
-/**
- * Reimplements data 0x4e5cb0: g_Briefing_CurrentSndHandle.
- * Purpose: retain the currently playing briefing voice sample so later actions can stop it.
- */
-zSndPlayHandle *g_Briefing_CurrentSndHandle = 0;
-
-/**
- * Reimplements data 0x4e5c70: g_Briefing_SndSetName.
- * Purpose: store the mission briefing sample-set name for thread startup and shutdown.
- */
-char g_Briefing_SndSetName[0x40] = {0};
 extern "C" {
 
 /**
@@ -253,6 +236,27 @@ int g_Briefing_ThreadExitedFlag = 0;
  * Purpose: expose whether the queued briefing sequence is still active.
  */
 int g_Briefing_SequenceActiveFlag = 0;
+}
+
+/**
+ * Reimplements data 0x4e5c70: g_Briefing_SndSetName.
+ * Purpose: store the mission briefing sample-set name for thread startup and shutdown.
+ */
+char g_Briefing_SndSetName[0x40] = {0};
+
+/**
+ * Reimplements data 0x4e5cb0: g_Briefing_CurrentSndHandle.
+ * Purpose: retain the currently playing briefing voice sample so later actions can stop it.
+ */
+zSndPlayHandle *g_Briefing_CurrentSndHandle = 0;
+
+/**
+ * Reimplements data 0x4e5cb4: g_Briefing_Runtime.
+ * Purpose: hold the active briefing UI runtime while the mission briefing thread is alive.
+ */
+HudUiBriefingRuntime *g_Briefing_Runtime = 0;
+
+extern "C" {
 
 /**
  * Reimplements data 0x4e5cb8: g_Briefing_AllowAdvanceFlag.

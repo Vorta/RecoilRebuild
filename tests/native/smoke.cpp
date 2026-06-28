@@ -1103,6 +1103,7 @@ extern "C" int zhud_play_powerup_sfx_smoke(void);
 extern "C" int zhud_background_constructor_smoke(void);
 extern "C" int zhud_background_update_input_focus_smoke(void);
 extern "C" int zhud_background_set_enabled_smoke(void);
+extern "C" int zhud_background_load_zrd_and_section_null_root_smoke(void);
 extern "C" int zhud_text_label_constructor_and_extents_smoke(void);
 extern "C" int zhud_text_label_on_draw_smoke(void);
 extern "C" int zhud_text_label_hit_test_smoke(void);
@@ -28080,6 +28081,8 @@ int main(int argc, char **argv) {
         {"zhud_background_update_input_focus_smoke",
          zhud_background_update_input_focus_smoke},
         {"zhud_background_set_enabled_smoke", zhud_background_set_enabled_smoke},
+        {"zhud_background_load_zrd_and_section_null_root_smoke",
+         zhud_background_load_zrd_and_section_null_root_smoke},
         {"zhud_text_label_constructor_and_extents_smoke",
          zhud_text_label_constructor_and_extents_smoke},
         {"zhud_text_label_on_draw_smoke", zhud_text_label_on_draw_smoke},

@@ -25,6 +25,20 @@
 #include "GameZRecoil/zUtil/zSaveGame.h"
 #include "GameZRecoil/zVideo/zVideo.h"
 
+#if defined(_MSC_VER) && _MSC_VER < 1300 && !defined(_DEBUG)
+/*
+ * Original-source inline provider-boundary restore from MFC42 AFXCMN.INL:
+ * _AFXCMN_INLINE CSpinButtonCtrl::CSpinButtonCtrl() { }.
+ * No standalone Recoil-authored retail function exists; this source restores
+ * the VC5/MFC42 common-control inline suppressed by Mfc42Abi.h so the config
+ * dialog emits the retail local spin-control vftable reference.
+ * Purpose: Construct embedded MFC42 spin-button controls with provider inline
+ * behavior for NetSessionConfigDialog.
+ */
+inline CSpinButtonCtrl::CSpinButtonCtrl() {
+}
+#endif
+
 #include <shellapi.h>
 
 #include <stdio.h>

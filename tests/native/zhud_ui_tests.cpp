@@ -78,6 +78,10 @@ bool HudFloatNear(float actual, float expected) {
     return delta > -0.0001f && delta < 0.0001f;
 }
 
+int __fastcall TestHudBackgroundNullRootSurfaceNoOp(zVideo_SurfaceStatePartial *) {
+    return 0;
+}
+
 int g_HudTestLine5Count = 0;
 void *g_HudTestLineFrameBuffer = nullptr;
 const void *g_HudTestLineClipRect = nullptr;
@@ -5252,6 +5256,38 @@ extern "C" int zhud_flash_panel_compute_blend_color_smoke(void) {
         HudUiFlashPanel::ComputeFlashBlendColor(0x00000000, 0x00020406, 0.5f) == 0x00010203;
 
     return clamps && blends ? 0 : 1;
+}
+
+extern "C" int zhud_background_load_zrd_and_section_null_root_smoke(void) {
+    std::uint16_t pixels[4] = {};
+    const int savedRendererType = g_zVideo_RendererType;
+    const int savedHalfResBackbuffer = g_zVideo_UseHalfResBackbuffer;
+    const zVideo_SurfaceStatePartial savedPrimarySurface = g_zVideo_PrimarySurfaceState;
+    zVideo_SurfaceStateProc const savedLockSurfaceState = g_zVideo_pfnLockSurfaceState;
+    zVideo_SurfaceStateProc const savedUnlockSurfaceState = g_zVideo_pfnUnlockSurfaceState;
+
+    g_zVideo_RendererType = 0;
+    g_zVideo_UseHalfResBackbuffer = 0;
+    g_zVideo_pfnLockSurfaceState = TestHudBackgroundNullRootSurfaceNoOp;
+    g_zVideo_pfnUnlockSurfaceState = TestHudBackgroundNullRootSurfaceNoOp;
+    g_zVideo_PrimarySurfaceState = {};
+    g_zVideo_PrimarySurfaceState.pixels = pixels;
+    g_zVideo_PrimarySurfaceState.width = 2;
+    g_zVideo_PrimarySurfaceState.height = 2;
+    g_zVideo_PrimarySurfaceState.pitch = sizeof(std::uint16_t) * 2;
+
+    HudUiBackground background{};
+    background.cfgRoot = reinterpret_cast<zReader::Node *>(0x11111111);
+    zReader::Node *const result = background.LoadZrdAndSection(nullptr, "MISSING", 1);
+    const bool ok = result == nullptr && background.cfgRoot == nullptr;
+
+    g_zVideo_RendererType = savedRendererType;
+    g_zVideo_UseHalfResBackbuffer = savedHalfResBackbuffer;
+    g_zVideo_PrimarySurfaceState = savedPrimarySurface;
+    g_zVideo_pfnLockSurfaceState = savedLockSurfaceState;
+    g_zVideo_pfnUnlockSurfaceState = savedUnlockSurfaceState;
+
+    return ok ? 0 : 1;
 }
 
 #else
@@ -31507,6 +31543,7 @@ extern "C" int zhud_sensor_track_list_add_smoke(void) {
     g_HudUiMgrSensor_TrackList = {};
     return first && second ? 0 : 1;
 }
+
 #endif
 
 extern "C" int zhud_layout_shutdown_stub_smoke(void) {

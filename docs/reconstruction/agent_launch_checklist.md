@@ -1,33 +1,27 @@
 # Agent Launch Checklist
 
-Compact launch reminder for address-led reconstruction. It does not replace
-`AGENTS.md`; Binary Ninja and `.agent/RECOIL_PLAN.md` remain authoritative for
-function evidence and plan state.
+Compact launch reminder for Recoil reconstruction agents. It does not replace
+root `AGENTS.md`; root instructions remain the full workflow authority for
+evidence gates, marker criteria, subagent boundaries, issue-ledger scope, and
+the ban on git commands.
 
-`AGENTS.md` and `.agent/AGENTS.md` are local instruction surfaces.
-`tools/` and `tests/tools/` are required local verification infrastructure.
-Agents must not run git commands or report version-control state; private
-inputs and generated state remain local workspace details.
-Durable owner scopes live in `.agent/SOURCE_OWNERS.json` and must be inspected
-or updated through `python tools/recoil.py owner ...`, not by hand.
+`.agent/AGENTS.md` is a compatibility pointer only. Durable source-owner scopes
+live in `.agent/SOURCE_OWNERS.json` and must be inspected or updated through
+`python tools/recoil.py owner ...`, not by hand.
 
 ## Preflight
 
-From the workspace root:
+For normal reconstruction with Binary Ninja evidence expected:
 
 ```powershell
 python tools/recoil.py doctor --quick --binja
 ```
 
-Use plain `--quick` only when Binary Ninja is intentionally unavailable or
-irrelevant. For documentation or tooling cleanup, inspect target files and run
-targeted checks instead of selecting an address. For active implementation or
-verification handoff, also run the address-specific doctor command from
-`AGENTS.md`.
-The quick doctor includes temporary group WIP hygiene and avoids any
-version-control state checks.
+Use plain `--quick` only when Binary Ninja is intentionally irrelevant. For
+documentation, tooling, skill, role, or instruction cleanup, inspect the target
+files and run targeted checks instead of selecting an address.
 
-For agent-facing command, doc, skill, or role drift:
+Agent-facing command, doc, skill, or role drift:
 
 ```powershell
 python tools/recoil.py audit agent-surface --strict
@@ -37,63 +31,21 @@ Agent-surface evolution is a governed tool-maintenance change. Allowed
 agent-surface evolution write paths are `.codex/skills/recoil-*`,
 `.codex/agents/*.toml`, `tools/recoil.py`, `tools/_recoil`, `tests/tools`, and
 focused docs. Nontrivial updates need a direct user request or reproducible
-process/tooling need, and the parent uses `recoil_tool_maintainer` by default
-for implementation while keeping scheduler/integrator authority. Agent-surface
-evolution must not introduce new marker criteria, must not weaken evidence or
+process/tooling need, and the parent uses `recoil_tool_maintainer` by default.
+They must not introduce new marker criteria, must not weaken evidence or
 provider boundaries, must not edit production source, must not change Binary
-Ninja state, and must not mutate `.agent` ledgers unless separately authorized
-by the existing workflow. Do not create broad/general reconstruction roles, fake
-provider models, or overlapping subagent ownership.
+Ninja state, and must not mutate `.agent` ledgers unless the existing workflow
+separately authorizes that exact mutation.
 
-For generated public status and local artifact inventory:
-
-```powershell
-python tools/recoil.py docs readme-progress --check
-```
-
-Run without `--check` only when intentionally refreshing the visitor-facing
-`README.md` generated progress tables from the current Recoil.exe and
-`messages.dll` plans.
-
-For generated local artifact inventory and cleanup planning:
-
-```powershell
-python tools/recoil.py audit artifacts
-```
-
-`audit artifacts` is dry-run by default. Review the selected stale roots before
-rerunning with `--delete`.
-
-If a tool, instruction, environment, workspace setup, workspace rule, or
-validation path blocks work or forces a workaround, use the `AGENTS.md` issue
-commands and boundary rules. Do not file normal reconstruction backlog, stale
-tests/code/manifests/markers, missing or unregistered smokes, owner/data
-blockers, tier debt, or missing evidence as workspace issues. Do file or return
-an issue candidate when the workspace rule itself blocks source-faithful code or
-would force weaker evidence, marker criteria, source faithfulness, or provider
-boundaries. The report must name the blocking rule surface, explain the
-source-faithfulness impact, cite the BN/source evidence, describe why safe
-alternatives do not work, and suggest the corrected rule wording or behavior
-for user review. When a workspace issue is reported or a local tool upgrade is
-requested, inspect the focused issue/tool surface, then spawn
-`recoil_tool_maintainer` by default for the repair. Parent tool edits are
-limited to small integration fixes after worker return, or cases where
-delegation is impossible; record the exception before editing or in the final
-report.
-
-Address-led launch packet for a known anchor:
-
-```powershell
-python tools/recoil.py packet --address 0xNNNNNN
-```
-
-Use `--no-binja` only when intentional. Do not use address-led packets for
-docs/tooling cleanup or other non-address work; inspect the relevant files and
-run targeted checks instead.
+Workspace issues are only for agent tooling, workspace setup, instruction,
+environment, or validation-path defects. Normal reconstruction backlog remains
+in the owner/plan/verification workflow. When a workspace issue or local tool
+upgrade is assigned, inspect the focused surface, then spawn
+`recoil_tool_maintainer` by default for the repair.
 
 ## Task Selection
 
-Resume active WIP before starting new work:
+Resume active WIP across both binary targets before starting new work:
 
 ```powershell
 python tools/recoil.py audit groups --summary --wip-limit 4
@@ -105,20 +57,16 @@ python tools/recoil.py audit sections --strict
 python tools/recoil.py audit sections --pressure
 ```
 
-If active groups exist, choose the first actionable group in
-`.agent/IMPLEMENTATION_GROUPS.md` or `.agent/IMPLEMENTATION_GROUPS_MESSAGES.md`,
-then follow its anchor or next action with target-qualified status/frontier
-checks. Compare the Recoil.exe and `messages.dll` queues instead of assuming the
-default executable queue is the only open work. Skip a group only when current
-BN, plan, or source evidence proves it stale, contradicted, completed, or
-explicitly lower priority than another active group.
+Choose the first actionable global work unit, source-owner work unit, or active
+group in `.agent/IMPLEMENTATION_GROUPS.md` or
+`.agent/IMPLEMENTATION_GROUPS_MESSAGES.md`. Skip a unit only when current BN,
+plan, or source evidence proves it stale, contradicted, completed, or
+explicitly lower priority than another active unit.
 
-Use current owner and plan state, not stale notes. The source owner is the
-default binary-lane work unit; the address plan is the acceptance ledger and
-address rows are evidence anchors. Run `plan next --lane binary` only as an
-address-led fallback or inspection command when no active group/source-owner
-unit exists for that target, active groups have been refreshed/pruned or proven
-unactionable, or the user explicitly directs new work:
+The source owner is the default binary-lane work unit; address rows are
+evidence anchors. Use address-led plan fallback only after active
+groups/source-owner units have been refreshed or proven unactionable, or when
+the user explicitly directs address-led work:
 
 ```powershell
 python tools/recoil.py plan next --lane binary
@@ -128,219 +76,115 @@ python tools/recoil.py plan batch --lane binary --spawnable-only
 python tools/recoil.py plan batch --binary messages --lane binary --spawnable-only
 python tools/recoil.py plan batch --lane binary --json
 python tools/recoil.py plan batch --lane binary --handoff-template
-python tools/recoil.py section show ui.zhud
-python tools/recoil.py plan group app.recoil_app --lane binary
 python tools/recoil.py owner show 0xNNNNNN
 python tools/recoil.py status 0xNNNNNN
 ```
 
-`owner next --lane binary` prints global final executable work units first when
-present, then source-owner work units, including accepted owners that are still
-byte-blocked for tier `S`. `work_unit=final-repro` is the final executable
-reproducibility lane; `work_unit=final-data-layout` is its nested Recoil.exe
-linked `.data` layout blocker. Neither is a SOURCE_OWNERS record. `plan next
---lane binary` and `plan next --binary messages --lane binary` print
-target-qualified `primary`, `secondary`, and `tertiary` ranked owner/work
-scopes for address-led inspection. If a plan row lacks a concrete owner link,
-the scheduler reports `source-owner-discovery`; the parent must map or refresh
-the owner before spawning source-worker implementation. `audit sections
---pressure` summarizes scheduling risk and spawnable capacity. `plan batch
---lane binary` and
-`plan batch --binary messages --lane binary --spawnable-only` print
-section-isolated worker candidates for parallel scheduling; add
-`--spawnable-only` for live handoffs that exclude pathless or parent-narrowing
-blocks, and add `--json` or `--handoff-template` for machine-readable output or
-a parent batch card.
-The scheduler must not split a non-standalone source-owner work unit into
-source-file slices. If a source owner spans too many files or sections, the
-parent must verify/remap the owner boundary with evidence or schedule the
-complete owner.
-The parent may schedule Recoil.exe and `messages.dll` workers in the same batch
-only when BN database targets, sections, source paths, ledgers, and generated
-outputs do not overlap.
-If evidence shows a plan group is in the wrong scheduling section, inspect with
-`section show`, then the parent validates `section move <plan-group>
-<section-id> --reason "..." --dry-run` before applying the same command without
-`--dry-run`. Workers should recommend section moves only; they must not edit the
-section catalog.
+`owner next --lane binary` can print global non-ledger work units:
+`work_unit=final-repro` for final executable reproducibility and
+`work_unit=final-data-layout` for linked `.data` layout drift. Neither is a
+SOURCE_OWNERS record.
 
-Use `plan reclassify` for existing authored/provider entries. Use
-`python tools/recoil.py plan add-provider-boundary ... --dry-run` only when BN
-proves a provider/compiler/import boundary is absent from the plan. Do not
-hand-edit provider marker blocks.
+`plan next --lane binary` and
+`plan next --binary messages --lane binary` print target-qualified primary,
+secondary, and tertiary scopes. `plan batch --binary messages --lane binary
+--spawnable-only` selects companion-DLL worker candidates.
+
+Do not split a non-standalone source-owner work unit into source-file slices.
+Schedule Recoil.exe and `messages.dll` workers together only when BN database
+targets, sections, source paths, ledgers, and generated outputs do not overlap.
+If evidence shows a plan group belongs in another scheduling section, inspect
+with `section show`, dry-run `section move`, validate, then apply through the
+section command. `messages.dll` `Reconstructed` blockers should normally be
+assigned to `recoil_bn_reconstructor` with target binary `messages`.
+
+Known address launch packet:
+
+```powershell
+python tools/recoil.py packet --address 0xNNNNNN
+```
+
+Use `--no-binja` only when intentional. Do not use address-led packets for
+docs/tooling cleanup.
 
 ## Parent Orchestration Loop
 
-The parent agent is an orchestrator, not the default implementer. After
-selecting active WIP or binary-lane work, partition non-overlapping owner/source
-scopes and spawn `recoil_source_worker` agents for source/test edits.
+The parent schedules, integrates, validates, owns BN scope assignment, plan
+markers, workspace issues, and final claims. Parent must not perform production
+source implementation by default; after focused context gathering, spawn
+`recoil_source_worker` agents for non-overlapping source/test edits. Parent
+source edits are limited to small integration/conflict fixes after worker
+return, or cases where delegation is impossible; record the exception before
+editing.
 
-Use the role pipeline deliberately: the parent schedules and integrates;
-workspace/BN fact/owner/provider/scaffold roles return evidence packets only;
-`recoil_bn_reconstructor` performs one assigned BN-state slice; source workers
-edit one assigned slice; tool maintainers fix one assigned workspace/tool
-issue; verifier agents run targeted checks after the parent fixes the
-validation scope.
+Use roles as a pipeline:
 
-Create a short parent batch card before any implementation or verification
-handoff. It should record the task kind, active group or address, evidence
-packets required and received, worker allocation, validation scope, and exit
-criteria.
+- Evidence roles return narrow packets only.
+- `recoil_bn_reconstructor` performs one assigned BN-state slice.
+- `recoil_source_worker` edits one assigned source/test slice.
+- `recoil_source_owner_scrutinizer` challenges proposed positive owner/data,
+  tier-B+, or `Model: source-faithful` acceptance.
+- `recoil_tool_maintainer` fixes one assigned workspace/tool/docs/skill/role
+  issue.
+- `recoil_verifier` runs targeted checks after the parent fixes the scope.
 
-Source-worker handoffs must name the complete source-owner work unit, selected
-section, address or group anchor, allowed and forbidden paths, evidence inputs,
-expected source model, and narrow validation commands. For tier `S`, the work
-unit is the whole linked owner; isolated function byte work is valid only for a
-true standalone owner proven by current owner evidence. Do not assign overlapping
-production source files, verification manifests, generated outputs, BN database
-state, or `.agent` ledgers.
+Minimum handoff fields:
 
-Minimum source-worker handoff fields:
+- Source worker: complete source-owner work unit, section, anchors or group,
+  allowed and forbidden paths, evidence inputs, expected source model, exact
+  validation commands, and return packet fields.
+- Verifier: validation scope, section, anchors or group, exact commands,
+  evidence inputs, forbidden paths, and return packet fields.
+- Minimum tool-maintainer handoff fields: workspace issue id or requested tool
+  upgrade, area/current
+  behavior, expected behavior, allowed and forbidden paths, exact validation
+  commands, and return packet fields.
+- BN reconstructor: already-open binary target, non-overlapping BN scope,
+  allowed BN changes, forbidden BN actions, evidence inputs, reanalysis/save
+  expectations, and return packet fields.
 
-- Complete source-owner work unit.
-- Section.
-- Anchor addresses or group.
-- Allowed write paths and forbidden paths.
-- Evidence packet inputs.
-- Expected source model.
-- Exact validation commands.
-- Return packet fields: changed files, evidence used, checks run, blockers,
-  overlap warnings, and non-authoritative marker recommendations.
-
-Minimum verifier handoff fields:
-
-- Validation scope.
-- Section.
-- Anchor addresses or group.
-- Exact commands.
-- Evidence packet inputs.
-- Forbidden paths.
-- Return packet fields: exact command lines, pass/fail results, key output
-  lines, failure category, and next narrow verification command.
-
-Minimum tool-maintainer handoff fields:
-
-- Workspace issue id or requested tool upgrade.
-- Area and current behavior.
-- Expected behavior.
-- Allowed write paths and forbidden paths.
-- Exact validation commands.
-- Return packet fields: changed files, command results, validation gaps,
-  blockers, and issue-resolution candidate text.
-
-Minimum BN reconstructor handoff fields:
-
-- Already-open binary target.
-- Non-overlapping address/function, dependency cycle, owner-sized BN cluster, or
-  type/global/table packet.
-- Exact allowed BN state changes and forbidden BN actions.
-- Evidence packet inputs.
-- Reanalysis and save expectations.
-- Return packet fields: inspected addresses/types/globals, exact BN changes,
-  evidence used, propagation checked, reanalysis/save status, and blockers.
-
-For `messages.dll`, unresolved `Reconstructed` blockers should normally be
-assigned to `recoil_bn_reconstructor` with target binary `messages`.
-
-Before launching live markdown handoff blocks, run:
+Before launching live markdown handoff blocks:
 
 ```powershell
 python tools/recoil.py audit handoff --path .agent/IMPLEMENTATION_GROUPS.md --strict
 ```
 
-Workers may inspect BN and edit only assigned source/test files. Tool
-maintainers may edit only assigned tool/docs/skill/role/test files. Only
-`recoil_bn_reconstructor` may change BN names/types/comments or save BN, and
-only inside its parent-assigned non-overlapping BN scope. Subagents must not
-update plan markers, file workspace issues, run git commands, or select
-follow-up work. They return changed paths, evidence or command results, checks,
-blockers, and non-authoritative recommendations. The parent reviews changed
-files, reruns checks, assigns and accepts BN/plan/issue work, and owns final
-claims.
-
-Parent source edits are limited to small integration/conflict fixes after worker
-return, or cases where delegation is impossible; record the exception before
-editing.
+Tool maintainers may edit only assigned tool/docs/skill/role/test files.
+Subagents must not update plan markers, file workspace issues, run git
+commands, or select follow-up work.
 
 Quiet mode: do not send routine progress reports. Message the user only for
-required user input, true blockers, worker handoff decisions, validation
-failures, or final results. Any unavoidable interim update must be one short
-sentence with no evidence dump or command output unless requested.
+required input, true blockers, worker handoff decisions, validation failures, or
+final results. Any unavoidable interim update must be one short sentence with
+no evidence dump or command output unless requested.
 
-Normal binary-lane selection is source-owner-first after
-reconstruction/dependency readiness: resolve owner structure and touched data
-before isolated behavior or pure code/function tier `S` work. Tier `S` source
-passes must validate and reshape the complete linked owner: class/interface,
-source-file cluster, subsystem, callback/data owner, initialized-global data
-set, or true standalone leaf. Data-entry `S` work follows the data entry's
-local owner/data/byte gates. For the detailed owner/data gates, use
-`owner_led_workflow.md` and `data_owner_audit.md`; this checklist only names
-the launch commands.
+## Owner And Marker Gates
 
-When working on final executable identity, start with:
+Treat an address as an evidence anchor. Expand to the proven owner boundary:
+class/interface, table-shaped dispatch owner, provider boundary, source-file
+cluster, initialized-global data set, subsystem, dependency group, or true
+standalone leaf.
+
+Before accepting positive owner/data/tier-B+ markers or
+`Model: source-faithful`, inspect the owner ledger and run scrutiny:
 
 ```powershell
-python tools/recoil.py audit final-repro --json
+python tools/recoil.py owner relationships <owner-id-or-address> --json
+python tools/recoil.py owner audit-acceptance <owner-id-or-address> --strict --json
+python tools/recoil.py owner audit-membership <owner-id-or-address> --strict
 ```
 
-When the final candidate `Recoil.exe` exists and PE comparison reports `.data`
-section/layout drift, check final linked data before preserving or accepting
-data-entry `S`:
+Use `owner audit-membership` when current BN evidence is relevant. A mechanical
+pass is not enough: disprove shortcut ownership such as address slices,
+anchor-only links, arbitrary source-file slices, folded/shared bodies, split
+lifecycle pairs, and test/ABI/byte-only evidence.
 
-```powershell
-python tools/recoil.py audit final-data --include-plan --strict --json-out build/vc5-final/final_data_diff.json --plan-actions-json build/vc5-final/final_data_plan_actions.json
-```
+For detailed rules, use:
 
-Treat a strict nonzero result from `.data` section deltas as a final byte
-identity blocker. Review generated action batches, then dry-run/apply only
-through governed `owner` and `plan` commands; do not hand-edit `.agent` files.
-
-Treat the address as an evidence anchor, not necessarily the implementation
-unit. Expand to the proven owner boundary: class/interface, table-shaped
-dispatch owner, provider boundary, source-file cluster, or dependency group.
-Identify every affected address before editing source, BN state, plan markers,
-VC manifests, or group notes.
-Create or update the matching source-owner record before accepting owner/data
-markers. The plan CLI rejects positive owner/data/tier-B+ updates unless the
-linked owner gates prove the higher-order source/data scope.
-
-If BN proves an authored class/interface/method cluster, restore that owner
-before any `Reimplemented` tier or `Model: source-faithful`. Flattened functions
-and production `VTable`/`FTable` scaffolds are not accepted reimplementations.
-
-Before ending a multi-step reconstruction session:
-
-```powershell
-python tools/recoil.py handoff 0xNNNNNN --include-artifacts
-```
-
-## Local Groups
-
-`.agent/IMPLEMENTATION_GROUPS.md` is temporary. If stale or contradicted by BN,
-`.agent/RECOIL_PLAN.md`, or `recoil.py status`, refresh or prune it after
-moving durable facts elsewhere. Active groups are the default no-address
-startup queue; do not start unrelated new work while actionable WIP remains.
-
-## Native Build Shell
-
-Native builds/tests need an x86 MSVC environment. Prefer Visual Studio MCP for
-already-open or safely generated `build/vs-x86/RecoilRebuildNative.slnx` work.
-
-From normal PowerShell, use the wrapper:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File cmake\recoil_native_x86_build.ps1 -Preset ninja-x86-debug
-```
-
-The wrapper loads `vcvarsall x86` and runs
-`python tools/recoil.py env --native-x86`. A missing `kernel32.lib` is an
-environment problem, not source evidence.
-
-Use `python tools/recoil.py build msvc-x86 -- ...` for `ctest`, native smokes, and other
-x86 MSVC commands. Do not call Visual Studio batch files under `Program Files`
-directly. If `cl.exe`, `INCLUDE`, `LIB`, the x86 target, Windows SDK,
-`support/sdk`, or `support/Recoil.exe` is missing, switch environments or ask
-for the missing private input.
+- `owner_led_workflow.md` for source-owner ledger mechanics.
+- `data_owner_audit.md` for full data-owner acceptance.
+- `final_executable_repro.md` for final executable and final linked-data gates.
+- `original_classes.md` for class/table/source-shape boundaries.
 
 ## Source Placement
 
@@ -351,45 +195,44 @@ python tools/recoil.py audit source-map --check docs/reconstruction/source_file_
 ```
 
 Use `source_file_map.md` plus current BN source comments and call-site evidence.
-If `--check` reports stale, regenerate only when current source movement,
-provenance docblocks, or legacy source comments explain the drift.
-Regenerate explicitly:
+Regenerate only when current source movement, provenance docblocks, or legacy
+source comments explain the drift:
 
 ```powershell
 python tools/recoil.py audit source-map --update --output docs/reconstruction/source_file_map.md
 ```
 
-For docblock checks, audit touched source files before marker work:
+For touched source files before marker work:
 
 ```powershell
 python tools/recoil.py audit docblocks --path src/path/to/touched_file.cpp --summary --max 50
 ```
 
-A broad `python tools/recoil.py audit docblocks --path src --summary --max 20`
-run currently reports legacy backlog and should be treated as status debt, not
-as a reason to block unrelated non-address workspace cleanup.
+Broad `audit docblocks --path src` output is legacy backlog unless the task
+assigns a source-docblock cleanup.
 
-Check:
+## Native Build Shell
 
-- `docs/reconstruction/verified_patterns.md` before destructor, thunk, vtable,
-  provider, or small-accessor idioms.
-- `docs/reconstruction/inlined_helpers.md` before duplicating repeated inlined
-  caller bodies.
-- `docs/reconstruction/original_classes.md` before class, inheritance, vtable,
-  ftable, record, provider, namespace, or subsystem boundary edits.
+Native builds/tests need an x86 MSVC environment. From normal PowerShell, use:
 
-For table dispatch, model the owner first. Do not use copied ftable/vtable
-arrays, production `VTable`/`FTable` structs/globals, or raw slots as authored
-source substitutes.
+```powershell
+powershell -ExecutionPolicy Bypass -File cmake\recoil_native_x86_build.ps1 -Preset ninja-x86-debug
+python tools/recoil.py build msvc-x86 -- ctest --preset ninja-x86-debug
+```
 
-## Literals And Handoff Hygiene
+The wrapper loads `vcvarsall x86` and runs
+`python tools/recoil.py env --native-x86`. A missing `kernel32.lib` is an
+environment problem, not source evidence. Do not call Visual Studio batch files
+under `Program Files` directly.
 
-Use decimal literals by default for ordinary counts, sizes, dimensions, enum
-values, loop bounds, return codes, allocation sizes, tests, and gameplay/config
-constants. Use hex only where hex grouping is evidence: addresses, bitmasks,
-byte patterns, PE/RVA/file offsets, serialized wire values, or equivalent
-contracts.
+## Handoff Hygiene
 
-Before handoff, move durable facts into source comments or
-`docs/reconstruction/`, prune completed group notes, and state the documentation
-decision.
+Before ending multi-step reconstruction work:
+
+```powershell
+python tools/recoil.py handoff 0xNNNNNN --include-artifacts
+```
+
+Move durable facts into source comments or `docs/reconstruction/`, prune
+completed temporary group notes only after durable facts are moved, and state
+the documentation decision.

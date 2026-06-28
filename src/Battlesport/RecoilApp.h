@@ -22,7 +22,7 @@ extern const char g_RecoilApp_LoadingCommonSoundsMsg[0x15];
 }
 
 /**
- * App-owned state transition request queued by RecoilApp::Run.
+ * App-owned state transition request queued by RecoilApp_MfcOleModule::Run.
  */
 enum RecoilApp_StateQueueKind {
     RecoilApp_StateQueueKind_ExitCurrent = 1,
@@ -106,7 +106,7 @@ RECOIL_STATIC_ASSERT(
 /**
  * VC5 deque-shaped app-state queue recovered from the queueing functions.
  * Retail stores 0x1000-byte chunks and a centered chunk-base list; queued
- * items themselves are consumed and deleted by RecoilApp::Run.
+ * items themselves are consumed and deleted by RecoilApp_MfcOleModule::Run.
  */
 struct RecoilApp_StateQueueBlock {
     RecoilApp_StateQueueItem **m_chunkBegin;
@@ -322,6 +322,8 @@ struct tagMSG;
  */
 class RecoilApp_MfcOleModule : public CWinApp {
   public:
+    static const AFX_MSGMAP messageMap;
+    static const AFX_MSGMAP_ENTRY messageEntries[];
 #if !defined(_AFXDLL)
     int m_recoilPad;
 #endif
@@ -336,6 +338,10 @@ class RecoilApp_MfcOleModule : public CWinApp {
 
     RecoilApp_MfcOleModule();
     virtual ~RecoilApp_MfcOleModule();
+    virtual int InitInstance();
+    virtual int Run();
+    static const AFX_MSGMAP *__stdcall GetBaseMessageMapForMfc();
+    virtual const AFX_MSGMAP * GetMessageMap() const;
 };
 
 /**
@@ -359,8 +365,7 @@ class RecoilApp : public RecoilApp_MfcOleModule {
     RECOIL_NO_GS static void __fastcall InitStdLogFiles(const char *exePath);
     RECOIL_NO_GS static void __fastcall FatalErrorAndExit(int errorCode);
 
-    RECOIL_NO_GS int InitInstance();
-    int Run();
+    RECOIL_NO_GS virtual int InitInstance();
     int ExitInstance();
     virtual void OnAppActivate();
     virtual void OnAppDeactivate();
@@ -371,7 +376,6 @@ class RecoilApp : public RecoilApp_MfcOleModule {
         unsigned int lParam
     );
     virtual CZRecoilFrame * CreateMainWnd();
-    int InitMainWindow();
     int EngineInit(HWND hwnd);
     static int __fastcall InitializeDisplay(HWND hwnd);
     int ActivateExistingInstance();
