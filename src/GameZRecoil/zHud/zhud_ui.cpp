@@ -157,6 +157,25 @@ zVidImagePartial *g_HudUiWidget_ExclusiveDrawImage = 0;
  */
 int g_HudUiMgrSensor_RoundRobinTrackIndex = -1;
 HudUiRect g_HudUiMgrSensor_FxRectScratch = {0};
+
+#undef g_HudUiNetGameSetupOverlayOwner
+#undef g_HudUiMgr
+#undef g_HudLayoutHW
+#undef g_HudLayoutSW
+#undef g_HudCmdDialogState
+
+union HudUiSensorWindowStorage {
+    unsigned long align;
+    unsigned char bytes[sizeof(CWnd)];
+};
+RECOIL_STATIC_ASSERT(sizeof(HudUiSensorWindowStorage) == sizeof(CWnd));
+
+union HudUiTripletWndClassNameStorage {
+    unsigned long align;
+    unsigned char bytes[sizeof(CString)];
+};
+RECOIL_STATIC_ASSERT(sizeof(HudUiTripletWndClassNameStorage) == 0x04);
+
 /**
  * Reimplements data 0x4f32a0: g_HudUiNetGameSetupOverlayOwner.
  * Source model: zero-initialized global object storage for the
@@ -164,7 +183,7 @@ HudUiRect g_HudUiMgrSensor_FxRectScratch = {0};
  * Purpose: hold the multiplayer setup overlay owner singleton constructed by
  * the static initializer and destroyed through the at-exit thunk.
  */
-HudUiNetGameSetupOverlayOwner g_HudUiNetGameSetupOverlayOwner;
+HudUiNetGameSetupOverlayOwnerStorage g_HudUiNetGameSetupOverlayOwner = {0};
 
 /*
  * Retail HUD UI storage and CRT initialization are not the same sequence.
@@ -175,33 +194,50 @@ HudUiNetGameSetupOverlayOwner g_HudUiNetGameSetupOverlayOwner;
  */
 /**
  * Reimplements data 0x4e5e90: g_HudUiSensorWindow.
+ * Source model: zero-initialized provider CWnd storage; the explicit HUD CRT
+ * row constructs it and registers the provider destructor.
  * Purpose: preserve the recovered HUD global storage for g_HudUiSensorWindow.
  */
-CWnd g_HudUiSensorWindow;
+HudUiSensorWindowStorage g_HudUiSensorWindow = {0};
 /**
  * Reimplements data 0x4e5ed0: g_HudUiMgr.
+ * Source model: zero-initialized HudUiMgrData storage; HudUiMgr::StaticInit
+ * constructs the typed manager through the explicit CRT row.
  * Purpose: preserve the recovered HUD global storage for g_HudUiMgr.
  */
-HudUiMgrData g_HudUiMgr;
+HudUiMgrDataStorage g_HudUiMgr = {0};
 /**
  * Reimplements data 0x4ed714: g_HudUiTripletWndClassName.
- * MFC CString provider glue constructs/destructs the object through the
- * compiler-generated static init and at-exit thunks.
+ * Source model: zero-initialized provider CString storage; the explicit HUD
+ * triplet CRT row constructs/destructs the object.
  * Purpose: store the registered window class name used by HUD triplet panels.
  */
-CString g_HudUiTripletWndClassName("");
+HudUiTripletWndClassNameStorage g_HudUiTripletWndClassName = {0};
 /**
  * Reimplements data 0x4ed718: g_HudLayoutHW.
  * Owner data: 844-byte zero-initialized singleton.
  * Purpose: store the global hardware HUD layout instance.
  */
-HudLayoutHW g_HudLayoutHW;
+HudLayoutHWStorage g_HudLayoutHW = {0};
 /**
  * Reimplements data 0x4eda68: g_HudLayoutSW.
  * Owner data: 236-byte zero-initialized singleton.
  * Purpose: store the global software HUD layout instance.
  */
-HudLayoutSW g_HudLayoutSW;
+HudLayoutSWStorage g_HudLayoutSW = {0};
+
+#define g_HudUiNetGameSetupOverlayOwner \
+    (*(HudUiNetGameSetupOverlayOwner *)&g_HudUiNetGameSetupOverlayOwner)
+#define g_HudUiSensorWindow \
+    (*(CWnd *)&g_HudUiSensorWindow)
+#define g_HudUiMgr \
+    (*(HudUiMgrData *)&g_HudUiMgr)
+#define g_HudUiTripletWndClassName \
+    (*(CString *)&g_HudUiTripletWndClassName)
+#define g_HudLayoutHW \
+    (*(HudLayoutHW *)&g_HudLayoutHW)
+#define g_HudLayoutSW \
+    (*(HudLayoutSW *)&g_HudLayoutSW)
 
 HudUiRect g_HudUiMgrSensorFxRect = {0};
 int g_HudUiMgrSensorFxViewportWidth = 0;
@@ -236,7 +272,10 @@ int g_HudUi_AuxOverlayEnabled = 0;
  * 0x40bc20/0x40bc30/0x40bc40/0x40bc50 static init and at-exit thunks from this global object.
  * Purpose: preserve the recovered HUD global storage for g_HudCmdDialogState.
  */
-HudCmdDialogState g_HudCmdDialogState;
+HudCmdDialogStateStorage g_HudCmdDialogState = {0};
+
+#define g_HudCmdDialogState \
+    (*(HudCmdDialogState *)&g_HudCmdDialogState)
 
 /**
  * Reimplements data 0x4dac00: g_HudUiOptionsPanel_ResolutionCycleNodeName.
@@ -760,6 +799,56 @@ void HudLayoutBase::Shutdown_Stub() {
 }
 
 /**
+ * Reimplements 0x40d1e0: HudUiTriplet::StaticInitWndClassNameAndRegisterAtExit.
+ * Original source path: D:\Proj\Battlesport\HudUiTriplet.cpp.
+ * Purpose: construct the HUD triplet window-class CString and register its
+ * static destructor during CRT startup.
+ */
+void HudUiTriplet::StaticInitWndClassNameAndRegisterAtExit() {
+    ConstructWndClassName();
+    RegisterWndClassNameDtorAtExit();
+}
+
+/**
+ * Reimplements 0x40d1f0: HudUiTriplet::ConstructWndClassName.
+ * Original source path: D:\Proj\Battlesport\HudUiTriplet.cpp.
+ * Purpose: default-construct the HUD triplet window-class CString in its
+ * global storage.
+ */
+CString *HudUiTriplet::ConstructWndClassName() {
+    return new (&g_HudUiTripletWndClassName) CString;
+}
+
+/**
+ * Reimplements 0x40d200: HudUiTriplet::RegisterWndClassNameDtorAtExit.
+ * Original source path: D:\Proj\Battlesport\HudUiTriplet.cpp.
+ * Purpose: register the HUD triplet window-class CString destructor with the
+ * CRT at-exit list.
+ */
+void HudUiTriplet::RegisterWndClassNameDtorAtExit() {
+    atexit(DestroyWndClassName);
+}
+
+/**
+ * Reimplements 0x40d210: HudUiTriplet::DestroyWndClassName.
+ * Original source path: D:\Proj\Battlesport\HudUiTriplet.cpp.
+ * Purpose: destroy the HUD triplet window-class CString during CRT shutdown.
+ */
+void HudUiTriplet::DestroyWndClassName() {
+    g_HudUiTripletWndClassName.~CString();
+}
+
+/**
+ * Original-source helper; no standalone retail function exists. Evidence:
+ * accepted HudLayout vtable data at 0x4ce988 is compiler-owned C++ class data
+ * emitted from this source cluster when the class has an out-of-line
+ * constructor definition.
+ * Purpose: preserve the HudLayoutBase C++ class identity and vtable data owner.
+ */
+HudLayoutBase::HudLayoutBase() {
+}
+
+/**
  * Reimplements 0x40d3b0: HudLayoutBase::Destructor.
  * Purpose: destroy the base layout widget and container subobjects in recovered order.
  */
@@ -776,6 +865,17 @@ int HudLayoutBase::SetActive(
     int
 ) {
     return 1;
+}
+
+/**
+ * Original-source helper; no standalone retail function exists. Evidence:
+ * accepted HudLayout vtable data at 0x4ce968 is compiler-owned C++ class data
+ * emitted from this source cluster when the class has an out-of-line
+ * constructor definition. The address-backed GlobalInit path still calls
+ * Constructor() below over explicit singleton storage.
+ * Purpose: preserve the HudLayoutSW C++ class identity and vtable data owner.
+ */
+HudLayoutSW::HudLayoutSW() {
 }
 
 /**
@@ -823,6 +923,17 @@ void HudLayoutSW::AtExitDestructor() {
 void HudLayoutSW::GlobalDestructor() {
     ((HudUiWidget *)(&widget0))->DestructorCore();
     DestructorCore();
+}
+
+/**
+ * Original-source helper; no standalone retail function exists. Evidence:
+ * accepted HudLayout vtable data at 0x4ce9a8 is compiler-owned C++ class data
+ * emitted from this source cluster when the class has an out-of-line
+ * constructor definition. The address-backed GlobalInit path still calls
+ * Constructor() below over explicit singleton storage.
+ * Purpose: preserve the HudLayoutHW C++ class identity and vtable data owner.
+ */
+HudLayoutHW::HudLayoutHW() {
 }
 
 /**
@@ -894,6 +1005,74 @@ void HudLayoutHW::CrtInitGlobalSingleton() {
     GlobalInit();
     RegisterAtExit();
 }
+
+namespace HudUiSensorWindow {
+CWnd *StaticInit();
+int RegisterAtExit();
+void AtExitDestructor();
+
+/**
+ * Reimplements 0x4136f0: HudUiSensorWindow::StaticInitAndRegisterAtExit.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: construct the global HUD sensor CWnd and register its static
+ * destructor during CRT startup.
+ */
+void StaticInitAndRegisterAtExit() {
+    StaticInit();
+    RegisterAtExit();
+}
+
+/**
+ * Reimplements 0x413700: HudUiSensorWindow::StaticInit.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: default-construct the global HUD sensor CWnd in its static storage.
+ */
+CWnd *StaticInit() {
+    return new (&g_HudUiSensorWindow) CWnd;
+}
+
+/**
+ * Reimplements 0x413710: HudUiSensorWindow::RegisterAtExit.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: register the global HUD sensor CWnd destructor with the CRT
+ * at-exit list.
+ */
+int RegisterAtExit() {
+    return atexit(AtExitDestructor);
+}
+
+/**
+ * Reimplements 0x413720: HudUiSensorWindow::AtExitDestructor.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: destroy the global HUD sensor CWnd during CRT shutdown.
+ */
+void AtExitDestructor() {
+    g_HudUiSensorWindow.~CWnd();
+}
+} // namespace HudUiSensorWindow
+
+#if defined(_MSC_VER) && defined(_M_IX86)
+typedef void (__cdecl *HudUiTripletWndClassNameCrtInitializerFn)();
+typedef void (__cdecl *HudLayoutCrtInitializerFn)();
+typedef void (__cdecl *HudUiMgrCrtInitializerFn)();
+typedef void (__cdecl *HudUiSensorWindowCrtInitializerFn)();
+#pragma data_seg(".CRT$XCU")
+/* VC5 emits this HUD triplet CString startup callback as a direct .CRT$XCU row. */
+HudUiTripletWndClassNameCrtInitializerFn s_HudUiTripletWndClassNameCrtInit =
+    HudUiTriplet::StaticInitWndClassNameAndRegisterAtExit;
+/* VC5 emits these HUD layout startup callbacks as direct .CRT$XCU rows. */
+HudLayoutCrtInitializerFn s_HudLayoutCrtInit_SW =
+    (HudLayoutCrtInitializerFn)HudLayoutSW::GlobalInit;
+HudLayoutCrtInitializerFn s_HudLayoutCrtInit_HW =
+    HudLayoutHW::CrtInitGlobalSingleton;
+/* VC5 emits this HUD manager startup callback as a direct .CRT$XCU row. */
+HudUiMgrCrtInitializerFn s_HudUiCrtInit_HudUiMgr =
+    HudUiMgr::StaticInitAndRegisterAtExit;
+/* VC5 emits this HUD sensor window startup callback as a direct .CRT$XCU row. */
+HudUiSensorWindowCrtInitializerFn s_HudUiSensorWindowCrtInit =
+    HudUiSensorWindow::StaticInitAndRegisterAtExit;
+#pragma data_seg()
+#endif
 
 /**
  * Reimplements 0x412be0: HudLayoutBase::UpdateAll.
@@ -3340,7 +3519,7 @@ void __fastcall UpdateMarkersAndProgressFromVariantTag(
             point.y += 3.0f;
 
             const int visible =
-                Player::TestScenePathBetweenCameraTargetAndPoint(
+                AINet::HasLineOfSightFromCameraTarget(
                     playerState->rootNode,
                     &point,
                     1
@@ -3352,7 +3531,7 @@ void __fastcall UpdateMarkersAndProgressFromVariantTag(
             }
         } else if (selectedTrackNode->trackKind == HUD_SENSOR_TRACK_KIND_TURRET) {
             zTurret_Runtime *const turretRuntime = (zTurret_Runtime *)(selectedTrackNode->payload);
-            turretRuntime->scenePathVisible = Player::TestScenePathBetweenCameraTargetAndPoint(
+            turretRuntime->scenePathVisible = AINet::HasLineOfSightFromCameraTarget(
                 turretRuntime->turretNode,
                 &turretRuntime->firePos,
                 2
@@ -13702,8 +13881,17 @@ void HudCmdDialogState::RegisterAtExit() {
  * Purpose: Destroy the global command-dialog state during CRT at-exit cleanup.
  */
 void HudCmdDialogState::AtExitDestructor() {
-    g_HudCmdDialogState.~HudCmdDialogState();
+    g_HudCmdDialogState.HudCmdDialogState::~HudCmdDialogState();
 }
+
+#if defined(_MSC_VER) && defined(_M_IX86)
+typedef void (__cdecl *HudCmdDialogStateCrtInitializerFn)();
+/* VC5 emits this command-dialog startup callback as a direct .CRT$XCU row. */
+#pragma data_seg(".CRT$XCU")
+HudCmdDialogStateCrtInitializerFn s_HudCmdDialogStateCrtInit =
+    HudCmdDialogState::StaticInitAndRegisterAtExit;
+#pragma data_seg()
+#endif
 
 /**
  * Reimplements 0x40bda0: HudCmdDialogState::QueueEnter.
@@ -16948,6 +17136,15 @@ void HudUiNetGameSetupOverlayOwner::RegisterAtExit() {
 void HudUiNetGameSetupOverlayOwner::AtExitDestructor() {
     g_HudUiNetGameSetupOverlayOwner.~HudUiNetGameSetupOverlayOwner();
 }
+
+#if defined(_MSC_VER) && defined(_M_IX86)
+typedef void (__cdecl *HudUiNetGameSetupOverlayOwnerCrtInitializerFn)();
+/* VC5 emits this setup-overlay-owner startup callback as a direct .CRT$XCU row. */
+#pragma data_seg(".CRT$XCU")
+HudUiNetGameSetupOverlayOwnerCrtInitializerFn s_HudUiNetGameSetupOverlayOwnerCrtInit =
+    HudUiNetGameSetupOverlayOwner::StaticInitAndRegisterAtExit;
+#pragma data_seg()
+#endif
 
 /**
  * Reimplements 0x41aba0: HudUiNetGameSetupOverlayOwner::HudUiNetGameSetupOverlayOwner.

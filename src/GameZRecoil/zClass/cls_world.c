@@ -66,7 +66,7 @@ char g_zClass_LineErrorDeleteSoundNotFoundInWorldListFmt[0x64] =
 }
 
 namespace {
-    const char *kWorldSourceFile = "D:\\Proj\\GameZRecoil\\zClass\\cls_world.c";
+    const char kWorldSourceFile[] = "D:\\Proj\\GameZRecoil\\zClass\\cls_world.c";
 
     /**
      * Original static helper observed in zClass_World grid-coordinate callers
@@ -115,45 +115,6 @@ namespace {
     ) {
         *outGridCol = -1;
         *outGridRow = -1;
-    }
-
-    /**
-     * Recovered original static helper in D:\Proj\GameZRecoil\zClass\cls_world.c.
-     * No standalone retail function; observed caller includes
-     * 0x450f60 zClass_World::AddChildToGridCell.
-     * Evidence: add-path source-cluster callers share the append-and-count pattern.
-     * Purpose: append a node reference to a dynamically resized node-reference list.
-     */
-    void AppendNodeRef(
-        zClass_NodePartial * **list,
-        int *count,
-        zClass_NodePartial *node
-    ) {
-        zClass_NodePartial **resized =
-            (zClass_NodePartial **)(realloc(
-                *list,
-                (*count + 1) * sizeof(zClass_NodePartial *)
-            ));
-        *list = resized;
-        resized[*count] = node;
-        ++*count;
-    }
-
-    /**
-     * Recovered original static helper in D:\Proj\GameZRecoil\zClass\cls_world.c.
-     * No standalone retail function; observed caller includes
-     * 0x451240 zClass_World::RemoveChildAtGrid.
-     * Purpose: compact a node-reference array after removal and decrement the count.
-     */
-    void CompactNodeRefList(
-        zClass_NodePartial * *list,
-        int *count,
-        int removedIndex
-    ) {
-        for (int i = removedIndex; i < *count - 1; ++i) {
-            list[i] = list[i + 1];
-        }
-        --*count;
     }
 
     /**
@@ -797,25 +758,35 @@ namespace zClass_World {
         }
 
         {
-            for (int row = 0; row < data->areaGridRowCount; ++row) {
-                zWorldAreaPartial *areas = data->areaGridRows[row];
-                {
-                    for (int col = 0; col < data->areaGridColCount; ++col) {
-                        if (areas[col].childList != 0) {
-                            free(areas[col].childList);
-                            areas[col].childList = 0;
-                        }
+            int row = 0;
+            zWorldAreaPartial **rowCursor = data->areaGridRows;
+            if (data->areaGridRowCount > 0) {
+                do {
+                    zWorldAreaPartial *area = *rowCursor;
+                    int col = 0;
+                    if (data->areaGridColCount > 0) {
+                        do {
+                            if (area->childList != 0) {
+                                free(area->childList);
+                                area->childList = 0;
+                            }
+                            ++area;
+                            ++col;
+                        } while (col < data->areaGridColCount);
                     }
-                }
 
-                if (data->areaGridExternalOwnership == 0) {
-                    free(areas);
-                }
+                    if (data->areaGridExternalOwnership == 0) {
+                        free(*rowCursor);
+                    }
+                    ++rowCursor;
+                    ++row;
+                } while (row < data->areaGridRowCount);
             }
         }
 
         if (data->areaGridExternalOwnership == 0) {
             free(data->areaGridRows);
+            data->areaGridRows = 0;
         }
 
         data->areaGridRows = 0;
@@ -1371,75 +1342,84 @@ namespace zClass_World {
         int gridCol,
         int gridRow
     ) {
-        zClass_WorldDataPartial *data = (zClass_WorldDataPartial *)(world->classData);
+        int result;
+        zClass_WorldDataPartial *data;
 
-        if (gridCol >= 0 && gridRow >= 0 && AreaAt(
-            data,
-            gridCol,
-            gridRow
-        )->childCount >= 0x7fff) {
-            gridCol = -1;
-            gridRow = -1;
+        data = (zClass_WorldDataPartial *)(world->classData);
+        result = 0;
+
+        if (gridCol >= 0 && gridRow >= 0) {
+            if (data->areaGridRows[gridRow][gridCol].childCount >= 0x7fff) {
+                gridRow = -1;
+                gridCol = -1;
+            }
         }
 
         if (gridCol < 0 || gridRow < 0) {
-            AppendNodeRef(
-                &world->listB,
-                &world->listCountB,
-                child
-            );
+            int listCount = world->listCountB + 1;
+            int listBytes = listCount * sizeof(zClass_NodePartial *);
+            world->listB = (zClass_NodePartial **)(realloc(
+                world->listB,
+                listBytes
+            ));
+            world->listB[listCount - 1] = child;
+            ++world->listCountB;
             child->gridCol = -1;
             child->gridRow = -1;
-            AppendNodeRef(
-                &child->listA,
-                &child->listCountA,
-                world
-            );
+            int parentCount = child->listCountA + 1;
+            int parentBytes = parentCount * sizeof(zClass_NodePartial *);
+            child->listA = (zClass_NodePartial **)(realloc(
+                child->listA,
+                parentBytes
+            ));
+            child->listA[parentCount - 1] = world;
+            ++child->listCountA;
             if (child->listCountA > 1) {
                 zClass_Class::SetSingleParentFlagRecursive(
                     child,
                     0
                 );
             }
-            return 0;
+        } else {
+            zWorldAreaPartial *area = &data->areaGridRows[gridRow][gridCol];
+            int areaCount = (int)(area->childCount) + 1;
+            int areaBytes = areaCount * sizeof(zClass_NodePartial *);
+            area->childList = (zClass_NodePartial **)(realloc(
+                area->childList,
+                areaBytes
+            ));
+            area->childList[areaCount - 1] = child;
+            ++area->childCount;
+
+            child->gridCol = gridCol;
+            child->gridRow = gridRow;
+            int parentCount = child->listCountA + 1;
+            int parentBytes = parentCount * sizeof(zClass_NodePartial *);
+            child->listA = (zClass_NodePartial **)(realloc(
+                child->listA,
+                parentBytes
+            ));
+            child->listA[parentCount - 1] = world;
+            ++child->listCountA;
+            if (child->listCountA > 1) {
+                zClass_Class::SetSingleParentFlagRecursive(
+                    child,
+                    0
+                );
+            }
+
+            if ((area->areaFlags & 0x01) == 0) {
+                result = QueueAreaUpdate(
+                    world,
+                    data,
+                    area
+                );
+            } else {
+                result = 0;
+            }
         }
 
-        zWorldAreaPartial *area = AreaAt(
-            data,
-            gridCol,
-            gridRow
-        );
-        zClass_NodePartial **resized = (zClass_NodePartial **)(realloc(
-            area->childList,
-            ((int)(area->childCount) + 1) * sizeof(zClass_NodePartial *)
-        ));
-        area->childList = resized;
-        resized[area->childCount] = child;
-        ++area->childCount;
-
-        child->gridCol = gridCol;
-        child->gridRow = gridRow;
-        AppendNodeRef(
-            &child->listA,
-            &child->listCountA,
-            world
-        );
-        if (child->listCountA > 1) {
-            zClass_Class::SetSingleParentFlagRecursive(
-                child,
-                0
-            );
-        }
-
-        if ((area->areaFlags & 0x01) == 0) {
-            return QueueAreaUpdate(
-                world,
-                data,
-                area
-            );
-        }
-
-        return 0;
+        return result;
     }
 
     /**
@@ -1463,11 +1443,7 @@ namespace zClass_World {
             );
         }
 
-        zWorldAreaPartial *area = AreaAt(
-            data,
-            gridCol,
-            gridRow
-        );
+        zWorldAreaPartial *area = &data->areaGridRows[gridRow][gridCol];
         int childIndex = -1;
         for (int i = 0; i < area->childCount; ++i) {
             if (area->childList[i] == child) {
@@ -1488,13 +1464,10 @@ namespace zClass_World {
             return 1;
         }
 
-        int areaChildCount = area->childCount;
-        CompactNodeRefList(
-            area->childList,
-            &areaChildCount,
-            childIndex
-        );
-        area->childCount = (short)(areaChildCount);
+        for (int areaIndex = childIndex; areaIndex < area->childCount - 1; ++areaIndex) {
+            area->childList[areaIndex] = area->childList[areaIndex + 1];
+        }
+        --area->childCount;
 
         child->gridCol = -1;
         child->gridRow = -1;
@@ -1507,11 +1480,10 @@ namespace zClass_World {
             }
         }
         if (parentIndex >= 0) {
-            CompactNodeRefList(
-                child->listA,
-                &child->listCountA,
-                parentIndex
-            );
+            for (int listIndex = parentIndex; listIndex < child->listCountA - 1; ++listIndex) {
+                child->listA[listIndex] = child->listA[listIndex + 1];
+            }
+            --child->listCountA;
         }
 
         if ((area->areaFlags & 0x01) == 0) {

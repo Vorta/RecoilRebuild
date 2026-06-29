@@ -14,7 +14,7 @@
 
 namespace {
     const int kZClassNodeLight = 9;
-    const char *kLightSourceFile = "D:\\Proj\\GameZRecoil\\zClass\\Light.c";
+    const char kLightSourceFile[] = "D:\\Proj\\GameZRecoil\\zClass\\Light.c";
     /**
      * Reimplements data 0x4e4658: g_zWeapon_ThermalGlowLabel.
      * Purpose: stores the fixed node name assigned to pooled thermal glow

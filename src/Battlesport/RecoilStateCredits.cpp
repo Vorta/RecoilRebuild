@@ -12,10 +12,15 @@
  *
  * Source owner: RecoilStateCredits is the credits-state slice of the
  * RecoilStateBase app-state cluster. BN shows the retail static-lifetime chain
- * as a compiler global-constructor thunk plus CRT atexit callback around this
- * source-file global.
+ * as an explicit CRT row and a compiler global-constructor thunk. The source
+ * keeps explicit aligned storage so VC5 does not emit a second automatic
+ * compiler startup row; StaticInitAndRegisterAtExit constructs the typed
+ * singleton in place and RegisterAtExit destroys that same object.
  */
-RecoilStateCredits g_RecoilStateCredits;
+#undef g_RecoilStateCredits
+RecoilStateCreditsStorage g_RecoilStateCredits = {0};
+#define g_RecoilStateCredits \
+    (*(RecoilStateCredits *)&g_RecoilStateCredits)
 
 /**
  * Reimplements 0x409990: RecoilStateCredits::RecoilStateCredits.
@@ -41,6 +46,15 @@ void RecoilStateCredits::StaticInitAndRegisterAtExit() {
     new (&g_RecoilStateCredits) RecoilStateCredits;
     StaticInit();
 }
+
+#if defined(_MSC_VER) && defined(_M_IX86)
+typedef void (__cdecl *RecoilStateCreditsCrtInitializerFn)();
+/* VC5 emits this credits-state startup callback as a direct .CRT$XCU row. */
+#pragma data_seg(".CRT$XCU")
+RecoilStateCreditsCrtInitializerFn s_RecoilStateCreditsCrtInit =
+    RecoilStateCredits::StaticInitAndRegisterAtExit;
+#pragma data_seg()
+#endif
 
 /**
  * Reimplements 0x409970: RecoilStateCredits::StaticInit.

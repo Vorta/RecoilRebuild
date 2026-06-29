@@ -49,47 +49,49 @@ testing, or review practical without changing the recovered engine contract.
 ## Status
 
 <!-- RECOIL_PROGRESS:START -->
-Generated from `.agent/RECOIL_PLAN.md` and `.agent/RECOIL_MESSAGES_PLAN.md`.
+Generated from `.agent/SOURCE_OWNERS.json` (schema version 3).
 
-### Recoil.exe Plan
+### Source-Owner Overview
 
-| Plan marker | Scope | ✅ | ☑️ | ❎ | ❌ | ❓ | Total |
-| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| Reconstructed | all entries | 6004 | 1117 | 0 | 0 | 0 | 7121 |
-| Source dependencies satisfied | authored entries | 3512 | 0 | 0 | 0 | 3023 | 6535 |
-| Source owner | authored entries | 6535 | 0 | 0 | 0 | 0 | 6535 |
-| Data reimplemented | authored entries | 2700 | 0 | 812 | 0 | 3023 | 6535 |
-| Reimplemented | authored entries | 6535 | 0 | 0 | 0 | 0 | 6535 |
-| Provider-boundary | provider entries | 585 | 1 | 0 | 0 | 0 | 586 |
+| Binary | Owners | Authored owners | Provider boundaries |
+| --- | ---: | ---: | ---: |
+| recoil | 1213 | 1202 | 11 |
+| messages | 1 | 1 | 0 |
+| Total | 1214 | 1203 | 11 |
 
-| Reimplementation tier | Count | Percent of authored |
+### Source-Owner Gates
+
+| Gate | accepted | blocked | deferred | none | pending | Total |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| boundary | 1213 | 0 | 0 | 1 | 0 | 1214 |
+| source | 1212 | 1 | 0 | 1 | 0 | 1214 |
+| data | 961 | 1 | 0 | 202 | 50 | 1214 |
+| functional | 812 | 0 | 0 | 297 | 105 | 1214 |
+| linkage | 940 | 233 | 0 | 41 | 0 | 1214 |
+| byte | 22 | 468 | 704 | 0 | 20 | 1214 |
+
+### Owner Reimplementation Tiers
+
+| Tier | Count | Percent of authored owners |
 | --- | ---: | ---: |
-| X | 0 | 0.0% |
-| F | 0 | 0.0% |
-| C | 0 | 0.0% |
-| B | 6332 | 96.9% |
-| A | 164 | 2.5% |
-| S | 39 | 0.6% |
+| X | 119 | 9.9% |
+| C | 212 | 17.6% |
+| B | 858 | 71.3% |
+| A | 1 | 0.1% |
+| S | 13 | 1.1% |
 
-### messages.dll Plan
+### Owner Kinds
 
-| Plan marker | Scope | ✅ | ☑️ | ❎ | ❌ | ❓ | Total |
-| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| Reconstructed | all entries | 152 | 0 | 0 | 0 | 0 | 152 |
-| Source dependencies satisfied | authored entries | 1 | 0 | 0 | 0 | 1 | 2 |
-| Source owner | authored entries | 2 | 0 | 0 | 0 | 0 | 2 |
-| Data reimplemented | authored entries | 1 | 0 | 0 | 0 | 1 | 2 |
-| Reimplemented | authored entries | 2 | 0 | 0 | 0 | 0 | 2 |
-| Provider-boundary | provider entries | 150 | 0 | 0 | 0 | 0 | 150 |
-
-| Reimplementation tier | Count | Percent of authored |
+| Kind | Count | Percent of owners |
 | --- | ---: | ---: |
-| X | 0 | 0.0% |
-| F | 0 | 0.0% |
-| C | 0 | 0.0% |
-| B | 0 | 0.0% |
-| A | 0 | 0.0% |
-| S | 2 | 100.0% |
+| callback-table | 1 | 0.1% |
+| class | 165 | 13.6% |
+| data-owner | 429 | 35.3% |
+| provider-boundary | 11 | 0.9% |
+| record | 42 | 3.5% |
+| source-file | 167 | 13.8% |
+| standalone | 57 | 4.7% |
+| subsystem | 342 | 28.2% |
 <!-- RECOIL_PROGRESS:END -->
 
 Reconstruction is ongoing. Some subsystems have source-level implementations

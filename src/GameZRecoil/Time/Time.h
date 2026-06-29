@@ -1,10 +1,15 @@
+#ifndef GAMEZRECOIL_TIME_TIME_H
+#define GAMEZRECOIL_TIME_TIME_H
+
 #pragma once
 
 #include "recoil/recoil_callconv.h"
 
 #include "recoil/recoil_types.h"
 
-// Retail 0x4e2fa8..0x4e2fb8 is one initialized Time runtime/config record.
+/**
+ * Retail 0x4e2fa8..0x4e2fb8 is one initialized Time runtime/config record.
+ */
 struct TimeRuntimeConfig {
     float maximumDeltaTimeSec;
     int deltaTimeClampEnabled;
@@ -32,3 +37,5 @@ extern float g_Time_AccumulatedTimeSec;
 extern float g_Time_UnscaledDeltaTimeSec;
 extern float g_Time_UnscaledAccumulatedTimeSec;
 }
+
+#endif

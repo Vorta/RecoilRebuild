@@ -23,28 +23,58 @@
 
 extern "C" {
 /**
- * Reimplements data 0x778968: g_OptCatalog_CaptureHitSnapshotEnabled.
- * Purpose: Stores g OptCatalog CaptureHitSnapshotEnabled data used by effects_weapons.optcatalog_damage_feedback_data.
+ * Reimplements data 0x56bc9c: g_OptCatalog_AllocRuntimeGateCallback.
+ * BN xrefs: GameNet::RegisterGameplayHandlersAndOptCatalogCallbacks installs
+ * the callback; OptCatalog::AllocRuntimeInstance calls it when network gate
+ * processing is enabled.
+ * Purpose: optional allocation gate for networked OptCatalog runtime
+ * instances.
  */
-int g_OptCatalog_CaptureHitSnapshotEnabled = 0;
+OptCatalogAllocRuntimeGateCallback g_OptCatalog_AllocRuntimeGateCallback = 0;
 /**
- * Reimplements data 0x778964: g_OptCatalog_FallbackImpactProbeEnabled.
- * BN xrefs: OptCatalog::ProcessRuntimeInstance, ProcessRuntimeInstances,
- * zWeapon::Init, and OptCatalog::ShutdownCore.
- * Purpose: enables deferred fallback impact probes for runtime projectile
- * processing.
+ * Reimplements data 0x56bca0: g_OptCatalog_AltGunDispatchNoOpCallback.
+ * BN xrefs: GameNet::RegisterGameplayHandlersAndOptCatalogCallbacks installs
+ * the alternate-gun no-op dispatch callback.
+ * Purpose: callback slot paired with the runtime allocation gate for
+ * alternate-gun dispatch processing.
  */
-int g_OptCatalog_FallbackImpactProbeEnabled = 0;
+OptCatalogAllocRuntimeGateCallback g_OptCatalog_AltGunDispatchNoOpCallback = 0;
 /**
- * Reimplements data 0x778940: g_OptCatalog_CapturedDamageSourcePos.
- * Purpose: Stores g OptCatalog CapturedDamageSourcePos data used by effects_weapons.optcatalog_damage_feedback_data.
+ * Reimplements data 0x56bca4: g_OptCatalog_RemoveRuntimeRelayCallback.
+ * BN xrefs: GameNet::RegisterGameplayHandlersAndOptCatalogCallbacks installs
+ * the callback; OptCatalog::RemoveRuntimeInstance invokes it after removal.
+ * Purpose: optional network relay hook for removed OptCatalog runtime
+ * instances.
  */
-zVec3 g_OptCatalog_CapturedDamageSourcePos = {0};
+OptCatalogRemoveRuntimeRelayCallback g_OptCatalog_RemoveRuntimeRelayCallback = 0;
 /**
- * Reimplements data 0x77894c: g_OptCatalog_CapturedDamageHitPos.
- * Purpose: Stores g OptCatalog CapturedDamageHitPos data used by effects_weapons.optcatalog_damage_feedback_data.
+ * Reimplements data 0x56bca8: g_OptCatalogRuntimeDeltaTime.
+ * Purpose: current unscaled frame delta consumed by OptCatalog projectile and
+ * trail runtime processing.
  */
-zVec3 g_OptCatalog_CapturedDamageHitPos = {0};
+float g_OptCatalogRuntimeDeltaTime = 0.0f;
+/**
+ * Reimplements data 0x56bcac: g_OptCatalogRuntimeNowSec.
+ * Purpose: current unscaled time used by OptCatalog runtime updates and
+ * warning-sound gates.
+ */
+float g_OptCatalogRuntimeNowSec = 0.0f;
+/**
+ * Reimplements data 0x56bcb0: g_OptCatalog_MineIteratorCursor.
+ * BN xrefs: OptCatalog_MineIterator::Begin and
+ * OptCatalog_MineIterator::Next.
+ * Purpose: cursor for MineIterator_Begin/Next traversal of an entry's active
+ * runtime-instance list.
+ */
+OptCatalogRuntimeInstanceStorage *g_OptCatalog_MineIteratorCursor = 0;
+/**
+ * Reimplements data 0x778920: g_OptCatalogRuntimeWorld.
+ * BN xrefs include runtime allocation/recycling, projectile raycasts, trail
+ * impact probes, zWeapon load/init/shutdown, and thermal glow light attach.
+ * Purpose: active world node used by OptCatalog runtime projectiles, trail
+ * probes, and glow-light attachment.
+ */
+zClass_NodePartial *g_OptCatalogRuntimeWorld = 0;
 /**
  * Reimplements data 0x778924: g_OptCatalog_EntryCount.
  * BN xrefs include OptCatalog lookup helpers, ProcessRuntimeInstances,
@@ -79,13 +109,34 @@ void *g_OptCatalogRuntimeInstancePool = 0;
  */
 OptCatalogRuntimeInstanceStorage *g_OptCatalogFreeRuntimeInstanceList = 0;
 /**
- * Reimplements data 0x778920: g_OptCatalogRuntimeWorld.
- * BN xrefs include runtime allocation/recycling, projectile raycasts, trail
- * impact probes, zWeapon load/init/shutdown, and thermal glow light attach.
- * Purpose: active world node used by OptCatalog runtime projectiles, trail
- * probes, and glow-light attachment.
+ * Reimplements data 0x778938: g_OptCatalogThermalGlowFreeList.
+ * Purpose: stores the head of the pooled thermal glow light free list shared
+ * by OptCatalog runtime effects and the Light lifecycle functions.
  */
-zClass_NodePartial *g_OptCatalogRuntimeWorld = 0;
+zClass_NodePartial *g_OptCatalogThermalGlowFreeList = 0;
+/**
+ * Reimplements data 0x77893c: g_OptCatalogNetworkOptionState.
+ * BN xrefs: zWeapon::LoadOptCatalogFromPath initializes the state;
+ * OptCatalog::AllocRuntimeInstance and ProcessRuntimeInstances read it for
+ * network-runtime behavior.
+ * Purpose: active OptCatalog network option state loaded with the catalog.
+ */
+int g_OptCatalogNetworkOptionState = 0;
+/**
+ * Reimplements data 0x778940: g_OptCatalog_CapturedDamageSourcePos.
+ * Purpose: Stores g OptCatalog CapturedDamageSourcePos data used by effects_weapons.optcatalog_damage_feedback_data.
+ */
+zVec3 g_OptCatalog_CapturedDamageSourcePos = {0};
+/**
+ * Reimplements data 0x77894c: g_OptCatalog_CapturedDamageHitPos.
+ * Purpose: Stores g OptCatalog CapturedDamageHitPos data used by effects_weapons.optcatalog_damage_feedback_data.
+ */
+zVec3 g_OptCatalog_CapturedDamageHitPos = {0};
+/**
+ * Reimplements data 0x778958: g_OptCatalog_CurrentDamageOwnerOrCtx.
+ * Purpose: Stores g OptCatalog CurrentDamageOwnerOrCtx data used by effects_weapons.optcatalog_damage_feedback_data.
+ */
+void *g_OptCatalog_CurrentDamageOwnerOrCtx = 0;
 /**
  * Reimplements data 0x77895c: g_OptCatalogPendingSpawnTargetCountPtr.
  * Purpose: transient pointer to the pending target count consumed by
@@ -99,36 +150,65 @@ int *g_OptCatalogPendingSpawnTargetCountPtr = 0;
  */
 PlayerProgressTargetSlotRuntime *g_OptCatalogPendingSpawnTargetListPtr = 0;
 /**
- * Reimplements data 0x779a7c: g_OptCatalogMaxCraterRadius.
- * Purpose: clamps crater and quicksand terrain-deformation event radii.
+ * Reimplements data 0x778964: g_OptCatalog_FallbackImpactProbeEnabled.
+ * BN xrefs: OptCatalog::ProcessRuntimeInstance, ProcessRuntimeInstances,
+ * zWeapon::Init, and OptCatalog::ShutdownCore.
+ * Purpose: enables deferred fallback impact probes for runtime projectile
+ * processing.
  */
-float g_OptCatalogMaxCraterRadius = 0.0f;
+int g_OptCatalog_FallbackImpactProbeEnabled = 0;
+/**
+ * Reimplements data 0x778968: g_OptCatalog_CaptureHitSnapshotEnabled.
+ * Purpose: Stores g OptCatalog CaptureHitSnapshotEnabled data used by effects_weapons.optcatalog_damage_feedback_data.
+ */
+int g_OptCatalog_CaptureHitSnapshotEnabled = 0;
 /**
  * Reimplements data 0x77896c: g_OptCatalogQueuedImpactCount.
  * Purpose: counts deferred OptCatalog impact records drained by
  * ProcessRuntimeInstances.
  */
 int g_OptCatalogQueuedImpactCount = 0;
+}
+
+namespace {
+    struct OptCatalogQueuedImpactRecord {
+        OptCatalogEntryDef *entry;
+        zClass_NodePartial *ownerNode;
+        zVec3 sourcePos;
+        OptCatalogRaycastHitEntry hit;
+        float damageAmount;
+        unsigned char unknown_40[4];
+    };
+
+    RECOIL_STATIC_ASSERT(sizeof(OptCatalogQueuedImpactRecord) == 68);
+
+    /**
+     * Reimplements data 0x778970: g_OptCatalogQueuedImpactRecords.
+     * BN data shape: OptCatalogQueuedImpactRecord[64], 4352 bytes, zero-filled
+     * BSS. Paired with g_OptCatalogQueuedImpactCount at 0x77896c.
+     * Purpose: deferred impact callback queue drained by
+     * OptCatalog::ProcessRuntimeInstances.
+     */
+    OptCatalogQueuedImpactRecord g_OptCatalogQueuedImpacts[64] = {0};
+}
+
+extern "C" {
 /**
- * Reimplements data 0x779a80: g_OptCatalog_DamageContextKind.
- * Purpose: Stores g OptCatalog DamageContextKind data used by effects_weapons.optcatalog_damage_feedback_data.
+ * Reimplements data 0x779a70: g_OptCatalogLoadedTreeRoot.
+ * BN xrefs: zWeapon::LoadOptCatalogFromPath stores the loaded root;
+ * OptCatalog::ShutdownCore frees it through zReader::FreeLoadedTree and
+ * clears the pointer.
+ * Purpose: owning pointer for the currently loaded OptCatalog zReader tree.
  */
-int g_OptCatalog_DamageContextKind = 0;
+zReader::Node *g_OptCatalogLoadedTreeRoot = 0;
 /**
- * Reimplements data 0x779a88: g_OptCatalog_DamageContextHitEvent.
- * Purpose: Stores g OptCatalog DamageContextHitEvent data used by effects_weapons.optcatalog_damage_feedback_data.
+ * Reimplements data 0x779a74: g_OptCatalogSndLockOnWarning.
+ * BN xrefs: OptCatalog::ProcessRuntimeInstances and
+ * zWeapon::LoadOptCatalogFromPath. BN currently types the data symbol as
+ * int32_t, but all use sites consume it as a zSndSample pointer.
+ * Purpose: lock-on warning sample played by the runtime tick gate.
  */
-void *g_OptCatalog_DamageContextHitEvent = 0;
-/**
- * Reimplements data 0x778958: g_OptCatalog_CurrentDamageOwnerOrCtx.
- * Purpose: Stores g OptCatalog CurrentDamageOwnerOrCtx data used by effects_weapons.optcatalog_damage_feedback_data.
- */
-void *g_OptCatalog_CurrentDamageOwnerOrCtx = 0;
-/**
- * Reimplements data 0x779a9c: g_OptCatalogDamageFeedbackCallback.
- * Purpose: Stores g OptCatalogDamageFeedbackCallback data used by effects_weapons.optcatalog_damage_feedback_data.
- */
-void *g_OptCatalogDamageFeedbackCallback = 0;
+zSndSample *g_OptCatalogSndLockOnWarning = 0;
 /**
  * Reimplements data 0x779a78: g_OptCatalogLockOnWarningGateTimeSec.
  * BN xrefs: OptCatalog::ProcessRuntimeInstances, zWeapon::Init, and
@@ -137,15 +217,15 @@ void *g_OptCatalogDamageFeedbackCallback = 0;
  */
 float g_OptCatalogLockOnWarningGateTimeSec = 0.0f;
 /**
- * Reimplements data 0x779aa0: g_OptCatalog_DamageFeedbackHitCount.
- * Purpose: Stores g OptCatalog DamageFeedbackHitCount data used by effects_weapons.optcatalog_damage_feedback_data.
+ * Reimplements data 0x779a7c: g_OptCatalogMaxCraterRadius.
+ * Purpose: clamps crater and quicksand terrain-deformation event radii.
  */
-int g_OptCatalog_DamageFeedbackHitCount = 0;
+float g_OptCatalogMaxCraterRadius = 0.0f;
 /**
- * Reimplements data 0x779aa4: g_OptCatalogDamageFeedbackTrackedNode.
- * Purpose: Stores g OptCatalogDamageFeedbackTrackedNode data used by effects_weapons.optcatalog_damage_feedback_data.
+ * Reimplements data 0x779a80: g_OptCatalog_DamageContextKind.
+ * Purpose: Stores g OptCatalog DamageContextKind data used by effects_weapons.optcatalog_damage_feedback_data.
  */
-zClass_NodePartial *g_OptCatalogDamageFeedbackTrackedNode = 0;
+int g_OptCatalog_DamageContextKind = 0;
 /**
  * Reimplements data 0x779a84: g_OptCatalog_DamageFeedbackScale.
  * BN xrefs: DamageFeedback::SetIntensityScalar stores this scalar and
@@ -156,45 +236,10 @@ zClass_NodePartial *g_OptCatalogDamageFeedbackTrackedNode = 0;
  */
 float g_OptCatalogDamageFeedbackIntensityScalar = 0.0f;
 /**
- * Reimplements data 0x779aac: g_OptCatalogNextSpawnScale.
- * Purpose: one-shot spawn scale transferred into projectile or trail runtime
- * state, then reset to 1.0f.
+ * Reimplements data 0x779a88: g_OptCatalog_DamageContextHitEvent.
+ * Purpose: Stores g OptCatalog DamageContextHitEvent data used by effects_weapons.optcatalog_damage_feedback_data.
  */
-float g_OptCatalogNextSpawnScale = 0.0f;
-/**
- * Reimplements data 0x56bca8: g_OptCatalogRuntimeDeltaTime.
- * Purpose: current unscaled frame delta consumed by OptCatalog projectile and
- * trail runtime processing.
- */
-float g_OptCatalogRuntimeDeltaTime = 0.0f;
-/**
- * Reimplements data 0x56bcac: g_OptCatalogRuntimeNowSec.
- * Purpose: current unscaled time used by OptCatalog runtime updates and
- * warning-sound gates.
- */
-float g_OptCatalogRuntimeNowSec = 0.0f;
-/**
- * Reimplements data 0x778938: g_OptCatalogThermalGlowFreeList.
- * Purpose: stores the head of the pooled thermal glow light free list shared
- * by OptCatalog runtime effects and the Light lifecycle functions.
- */
-zClass_NodePartial *g_OptCatalogThermalGlowFreeList = 0;
-/**
- * Reimplements data 0x56bcb0: g_OptCatalog_MineIteratorCursor.
- * BN xrefs: OptCatalog_MineIterator::Begin and
- * OptCatalog_MineIterator::Next.
- * Purpose: cursor for MineIterator_Begin/Next traversal of an entry's active
- * runtime-instance list.
- */
-OptCatalogRuntimeInstanceStorage *g_OptCatalog_MineIteratorCursor = 0;
-/**
- * Reimplements data 0x779a70: g_OptCatalogLoadedTreeRoot.
- * BN xrefs: zWeapon::LoadOptCatalogFromPath stores the loaded root;
- * OptCatalog::ShutdownCore frees it through zReader::FreeLoadedTree and
- * clears the pointer.
- * Purpose: owning pointer for the currently loaded OptCatalog zReader tree.
- */
-zReader::Node *g_OptCatalogLoadedTreeRoot = 0;
+void *g_OptCatalog_DamageContextHitEvent = 0;
 /**
  * Reimplements data 0x779a8c: g_OptCatalogSndTriggerInactive.
  * BN xrefs: OptCatalog::PlayTriggerInactiveWarning and
@@ -217,46 +262,26 @@ zSndSample *g_OptCatalogSndWeaponInactive = 0;
  */
 zSndSample *g_OptCatalogSndNoAmmoWarning = 0;
 /**
- * Reimplements data 0x779a74: g_OptCatalogSndLockOnWarning.
- * BN xrefs: OptCatalog::ProcessRuntimeInstances and
- * zWeapon::LoadOptCatalogFromPath. BN currently types the data symbol as
- * int32_t, but all use sites consume it as a zSndSample pointer.
- * Purpose: lock-on warning sample played by the runtime tick gate.
+ * Reimplements data 0x779a9c: g_OptCatalogDamageFeedbackCallback.
+ * Purpose: Stores g OptCatalogDamageFeedbackCallback data used by effects_weapons.optcatalog_damage_feedback_data.
  */
-zSndSample *g_OptCatalogSndLockOnWarning = 0;
+void *g_OptCatalogDamageFeedbackCallback = 0;
 /**
- * Reimplements data 0x56bca4: g_OptCatalog_RemoveRuntimeRelayCallback.
- * BN xrefs: GameNet::RegisterGameplayHandlersAndOptCatalogCallbacks installs
- * the callback; OptCatalog::RemoveRuntimeInstance invokes it after removal.
- * Purpose: optional network relay hook for removed OptCatalog runtime
- * instances.
+ * Reimplements data 0x779aa0: g_OptCatalog_DamageFeedbackHitCount.
+ * Purpose: Stores g OptCatalog DamageFeedbackHitCount data used by effects_weapons.optcatalog_damage_feedback_data.
  */
-OptCatalogRemoveRuntimeRelayCallback g_OptCatalog_RemoveRuntimeRelayCallback = 0;
+int g_OptCatalog_DamageFeedbackHitCount = 0;
 /**
- * Reimplements data 0x77893c: g_OptCatalogNetworkOptionState.
- * BN xrefs: zWeapon::LoadOptCatalogFromPath initializes the state;
- * OptCatalog::AllocRuntimeInstance and ProcessRuntimeInstances read it for
- * network-runtime behavior.
- * Purpose: active OptCatalog network option state loaded with the catalog.
+ * Reimplements data 0x779aa4: g_OptCatalogDamageFeedbackTrackedNode.
+ * Purpose: Stores g OptCatalogDamageFeedbackTrackedNode data used by effects_weapons.optcatalog_damage_feedback_data.
  */
-int g_OptCatalogNetworkOptionState = 0;
+zClass_NodePartial *g_OptCatalogDamageFeedbackTrackedNode = 0;
 /**
- * Reimplements data 0x56bc9c: g_OptCatalog_AllocRuntimeGateCallback.
- * BN xrefs: GameNet::RegisterGameplayHandlersAndOptCatalogCallbacks installs
- * the callback; OptCatalog::AllocRuntimeInstance calls it when network gate
- * processing is enabled.
- * Purpose: optional allocation gate for networked OptCatalog runtime
- * instances.
+ * Reimplements data 0x779aac: g_OptCatalogNextSpawnScale.
+ * Purpose: one-shot spawn scale transferred into projectile or trail runtime
+ * state, then reset to 1.0f.
  */
-OptCatalogAllocRuntimeGateCallback g_OptCatalog_AllocRuntimeGateCallback = 0;
-/**
- * Reimplements data 0x56bca0: g_OptCatalog_AltGunDispatchNoOpCallback.
- * BN xrefs: GameNet::RegisterGameplayHandlersAndOptCatalogCallbacks installs
- * the alternate-gun no-op dispatch callback.
- * Purpose: callback slot paired with the runtime allocation gate for
- * alternate-gun dispatch processing.
- */
-OptCatalogAllocRuntimeGateCallback g_OptCatalog_AltGunDispatchNoOpCallback = 0;
+float g_OptCatalogNextSpawnScale = 0.0f;
 /**
  * Reimplements data 0x4dcf7c: g_OptCatalogProcessRuntimeRelayEnabled.
  * BN initial bytes are 01 00 00 00. BN xrefs:
@@ -328,6 +353,11 @@ namespace {
     const unsigned int kOptCatalogFastSqrtBias = 0x1fc00000;
     const int kOptCatalogRequiredVersion = 2;
     const int kMaxQueuedImpacts = 64;
+    /**
+     * Reimplements data 0x4d33ec: kOptCatalogAimPitchRangeScale.
+     * Purpose: scales OptCatalog aim pitch range values loaded from weapon
+     * catalog data.
+     */
     const float kOptCatalogAimPitchRangeScale = -0.239999995f;
     const float kOptCatalogTrailDamageBlendLimit = 0.25f;
     const double kOptCatalogPi = 3.14159265358979323846;
@@ -340,26 +370,6 @@ namespace {
      * for OptCatalog trail runtime state.
      */
     const char g_zWeapon_BeamReflectNameFmt[15] = "BeamReflect_%d";
-
-    struct OptCatalogQueuedImpactRecord {
-        OptCatalogEntryDef *entry;
-        zClass_NodePartial *ownerNode;
-        zVec3 sourcePos;
-        OptCatalogRaycastHitEntry hit;
-        float damageAmount;
-        unsigned char unknown_40[4];
-    };
-
-    RECOIL_STATIC_ASSERT(sizeof(OptCatalogQueuedImpactRecord) == 68);
-
-    /**
-     * Reimplements data 0x778970: g_OptCatalogQueuedImpactRecords.
-     * BN data shape: OptCatalogQueuedImpactRecord[64], 4352 bytes, zero-filled
-     * BSS. Paired with g_OptCatalogQueuedImpactCount at 0x77896c.
-     * Purpose: deferred impact callback queue drained by
-     * OptCatalog::ProcessRuntimeInstances.
-     */
-    OptCatalogQueuedImpactRecord g_OptCatalogQueuedImpacts[kMaxQueuedImpacts] = {0};
 
     typedef void( * OptCatalogRuntimeUpdateCallback)(
         OptCatalogRuntimeInstanceStorage * runtimeInstance

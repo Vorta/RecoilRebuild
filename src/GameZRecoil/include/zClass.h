@@ -72,12 +72,6 @@ struct OptCatalogDamageHandlerPartial {
     void *timerContext;
 };
 
-struct zVec3 {
-    float x;
-    float y;
-    float z;
-};
-
 /**
  * Original inline helper; no standalone retail function exists. Observed
  * zClass vector-field initialization callers include 0x452fd0, 0x453560, and

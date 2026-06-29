@@ -1392,12 +1392,12 @@ int __fastcall ClipPolyNearZ(
     zClipRectPartial *clipRect,
     int *vertexCount
 ) {
-    const int count = *vertexCount;
     const int flags = clipRect->flags;
+    int i;
 
     if ((flags & 0x20) != 0) {
         int allBeyondFar = 1;
-        for (int i = 0; i < count && allBeyondFar != 0; ++i) {
+        for (i = 0; i < *vertexCount && allBeyondFar != 0; ++i) {
             if (g_Clip_PolyVertsScratch[i].z < clipRect->zMax) {
                 allBeyondFar = 0;
             }
@@ -1413,68 +1413,74 @@ int __fastcall ClipPolyNearZ(
     }
 
     int allInsideNear = 1;
-    for (int i = 0; i < count && allInsideNear != 0; ++i) {
+    for (i = 0; i < *vertexCount && allInsideNear != 0; ++i) {
         if (g_Clip_PolyVertsScratch[i].z < clipRect->zMin) {
             allInsideNear = 0;
         }
     }
 
-    int result = 0;
     if (allInsideNear != 0) {
-        result = count >= 3;
-        return result;
+        return *vertexCount >= 3 ? 1 : 0;
     }
 
-    zClipVert clippedVerts[kClipBufferCapacity] = {0};
-    zClipUV clippedUvs[kClipBufferCapacity] = {0};
+    zClipVert clippedVerts[kClipBufferCapacity];
+    zClipUV clippedUvs[kClipBufferCapacity];
+    zClipVert *outVert = clippedVerts;
+    zClipUV *outUv = clippedUvs;
     int outputCount = 0;
+    int prevIndex = *vertexCount - 1;
 
-    if (count > 0) {
-        zClipVert prevVert = g_Clip_PolyVertsScratch[count - 1];
-        zClipUV prevUv = g_Clip_PolyUvs[count - 1];
-        bool prevInside = IsInsideNear(
-            prevVert,
-            clipRect->zMin
-        );
+    for (i = 0; i < *vertexCount; ++i) {
+        zClipVert *prevVert = &g_Clip_PolyVertsScratch[prevIndex];
+        zClipVert *currVert = &g_Clip_PolyVertsScratch[i];
+        zClipUV *prevUv = &g_Clip_PolyUvs[prevIndex];
+        zClipUV *currUv = &g_Clip_PolyUvs[i];
 
-        for (int i = 0; i < count; ++i) {
-            const zClipVert currVert = g_Clip_PolyVertsScratch[i];
-            const zClipUV currUv = g_Clip_PolyUvs[i];
-            const bool currInside = IsInsideNear(
-                currVert,
-                clipRect->zMin
-            );
+        if (
+            prevVert->z >= clipRect->zMin
+            && currVert->z >= clipRect->zMin
+        ) {
+            *outVert = *currVert;
+            *outUv = *currUv;
+            ++outVert;
+            ++outUv;
+            ++outputCount;
+        } else if (
+            prevVert->z >= clipRect->zMin
+            && currVert->z < clipRect->zMin
+        ) {
+            const float t =
+                (clipRect->zMin - prevVert->z) /
+                (currVert->z - prevVert->z);
+            outVert->x = prevVert->x + (currVert->x - prevVert->x) * t;
+            outVert->y = prevVert->y + (currVert->y - prevVert->y) * t;
+            outVert->z = clipRect->zMin;
+            outUv->u = prevUv->u + (currUv->u - prevUv->u) * t;
+            outUv->v = prevUv->v + (currUv->v - prevUv->v) * t;
+            ++outVert;
+            ++outUv;
+            ++outputCount;
+        } else if (currVert->z >= clipRect->zMin) {
+            const float t =
+                (clipRect->zMin - prevVert->z) /
+                (currVert->z - prevVert->z);
+            outVert->x = prevVert->x + (currVert->x - prevVert->x) * t;
+            outVert->y = prevVert->y + (currVert->y - prevVert->y) * t;
+            outVert->z = clipRect->zMin;
+            outUv->u = prevUv->u + (currUv->u - prevUv->u) * t;
+            outUv->v = prevUv->v + (currUv->v - prevUv->v) * t;
+            ++outVert;
+            ++outUv;
+            ++outputCount;
 
-            if (prevInside != currInside) {
-                const float t = (clipRect->zMin - prevVert.z) / (currVert.z - prevVert.z);
-                AppendClipped(
-                    clippedVerts,
-                    clippedUvs,
-                    outputCount,
-                    InterpolateVert(
-                        prevVert,
-                        currVert,
-                        t,
-                        clipRect->zMin
-                    ),
-                    InterpolateUv(prevUv, currUv, t)
-                );
-            }
-
-            if (currInside) {
-                AppendClipped(
-                    clippedVerts,
-                    clippedUvs,
-                    outputCount,
-                    currVert,
-                    currUv
-                );
-            }
-
-            prevVert = currVert;
-            prevUv = currUv;
-            prevInside = currInside;
+            *outVert = *currVert;
+            *outUv = *currUv;
+            ++outVert;
+            ++outUv;
+            ++outputCount;
         }
+
+        prevIndex = i;
     }
 
     *vertexCount = outputCount;
@@ -2036,91 +2042,2095 @@ int __fastcall ClipPolyZRange_WithAttr012(
 /**
  * Reimplements 0x47b540: zClipRect::ClipPoly_NoUV_Alt
  * Source: D:\Proj\Battlesport\zClip.cpp
- * Purpose: Dispatch alternate no-UV XY clipping to the shared zClipRect polygon core.
+ * Purpose: Clip the active polygon vertex stream against enabled XY bounds without UVs.
  */
 int __fastcall ClipPoly_NoUV_Alt(
     zClipRectPartial *clipRect,
     int *vertexCount
 ) {
-    return ClipPolyNoUvCore(
-        clipRect,
-        vertexCount
-    );
+    zClipVert scratchVerts[kClipBufferCapacity];
+    int outputCount = 0;
+    int parity = 0;
+
+    if ((clipRect->flags & 0x01) != 0) {
+        outputCount = 0;
+        const int count = *vertexCount;
+        if (count > 0) {
+            int prevIndex = count - 1;
+            for (int i = 0; i < count; ++i) {
+                zClipVert *prevVert = &g_Clip_PolyVerts[prevIndex];
+                zClipVert *currVert = &g_Clip_PolyVerts[i];
+
+                if (
+                    prevVert->x >= clipRect->xMin
+                    && currVert->x >= clipRect->xMin
+                ) {
+                    scratchVerts[outputCount] = *currVert;
+                    ++outputCount;
+                } else if (
+                    prevVert->x >= clipRect->xMin
+                    && currVert->x < clipRect->xMin
+                ) {
+                    const float t =
+                        (clipRect->xMin - prevVert->x) /
+                        (currVert->x - prevVert->x);
+                    scratchVerts[outputCount].x = clipRect->xMin;
+                    scratchVerts[outputCount].y =
+                        prevVert->y + (currVert->y - prevVert->y) * t;
+                    scratchVerts[outputCount].z =
+                        prevVert->z + (currVert->z - prevVert->z) * t;
+                    ++outputCount;
+                } else if (currVert->x >= clipRect->xMin) {
+                    const float t =
+                        (clipRect->xMin - prevVert->x) /
+                        (currVert->x - prevVert->x);
+                    scratchVerts[outputCount].x = clipRect->xMin;
+                    scratchVerts[outputCount].y =
+                        prevVert->y + (currVert->y - prevVert->y) * t;
+                    scratchVerts[outputCount].z =
+                        prevVert->z + (currVert->z - prevVert->z) * t;
+                    ++outputCount;
+
+                    scratchVerts[outputCount] = *currVert;
+                    ++outputCount;
+                }
+
+                prevIndex = i;
+            }
+        }
+
+        *vertexCount = outputCount;
+        parity = 1;
+    }
+
+    if ((clipRect->flags & 0x02) != 0) {
+        zClipVert *sourceVerts;
+        zClipVert *destVerts;
+        if (parity != 0) {
+            sourceVerts = scratchVerts;
+            destVerts = g_Clip_PolyVerts;
+        } else {
+            sourceVerts = g_Clip_PolyVerts;
+            destVerts = scratchVerts;
+        }
+
+        outputCount = 0;
+        const int count = *vertexCount;
+        if (count > 0) {
+            int prevIndex = count - 1;
+            for (int i = 0; i < count; ++i) {
+                zClipVert *prevVert = &sourceVerts[prevIndex];
+                zClipVert *currVert = &sourceVerts[i];
+
+                if (
+                    prevVert->x < clipRect->xMaxAlt
+                    && currVert->x < clipRect->xMaxAlt
+                ) {
+                    destVerts[outputCount] = *currVert;
+                    ++outputCount;
+                } else if (
+                    prevVert->x < clipRect->xMaxAlt
+                    && currVert->x >= clipRect->xMaxAlt
+                ) {
+                    const float t =
+                        (clipRect->xMaxAlt - prevVert->x) /
+                        (currVert->x - prevVert->x);
+                    destVerts[outputCount].x = clipRect->xMaxAlt;
+                    destVerts[outputCount].y =
+                        prevVert->y + (currVert->y - prevVert->y) * t;
+                    destVerts[outputCount].z =
+                        prevVert->z + (currVert->z - prevVert->z) * t;
+                    ++outputCount;
+                } else if (currVert->x < clipRect->xMaxAlt) {
+                    const float t =
+                        (clipRect->xMaxAlt - prevVert->x) /
+                        (currVert->x - prevVert->x);
+                    destVerts[outputCount].x = clipRect->xMaxAlt;
+                    destVerts[outputCount].y =
+                        prevVert->y + (currVert->y - prevVert->y) * t;
+                    destVerts[outputCount].z =
+                        prevVert->z + (currVert->z - prevVert->z) * t;
+                    ++outputCount;
+
+                    destVerts[outputCount] = *currVert;
+                    ++outputCount;
+                }
+
+                prevIndex = i;
+            }
+        }
+
+        *vertexCount = outputCount;
+        parity = (parity + 1) % 2;
+    }
+
+    if ((clipRect->flags & 0x04) != 0) {
+        zClipVert *sourceVerts;
+        zClipVert *destVerts;
+        if (parity != 0) {
+            sourceVerts = scratchVerts;
+            destVerts = g_Clip_PolyVerts;
+        } else {
+            sourceVerts = g_Clip_PolyVerts;
+            destVerts = scratchVerts;
+        }
+
+        outputCount = 0;
+        const int count = *vertexCount;
+        if (count > 0) {
+            int prevIndex = count - 1;
+            for (int i = 0; i < count; ++i) {
+                zClipVert *prevVert = &sourceVerts[prevIndex];
+                zClipVert *currVert = &sourceVerts[i];
+
+                if (
+                    prevVert->y >= clipRect->yMin
+                    && currVert->y >= clipRect->yMin
+                ) {
+                    destVerts[outputCount] = *currVert;
+                    ++outputCount;
+                } else if (
+                    prevVert->y >= clipRect->yMin
+                    && currVert->y < clipRect->yMin
+                ) {
+                    const float t =
+                        (clipRect->yMin - prevVert->y) /
+                        (currVert->y - prevVert->y);
+                    destVerts[outputCount].x =
+                        prevVert->x + (currVert->x - prevVert->x) * t;
+                    destVerts[outputCount].y = clipRect->yMin;
+                    destVerts[outputCount].z =
+                        prevVert->z + (currVert->z - prevVert->z) * t;
+                    ++outputCount;
+                } else if (currVert->y >= clipRect->yMin) {
+                    const float t =
+                        (clipRect->yMin - prevVert->y) /
+                        (currVert->y - prevVert->y);
+                    destVerts[outputCount].x =
+                        prevVert->x + (currVert->x - prevVert->x) * t;
+                    destVerts[outputCount].y = clipRect->yMin;
+                    destVerts[outputCount].z =
+                        prevVert->z + (currVert->z - prevVert->z) * t;
+                    ++outputCount;
+
+                    destVerts[outputCount] = *currVert;
+                    ++outputCount;
+                }
+
+                prevIndex = i;
+            }
+        }
+
+        *vertexCount = outputCount;
+        parity = (parity + 1) % 2;
+    }
+
+    if ((clipRect->flags & 0x08) != 0) {
+        zClipVert *sourceVerts;
+        zClipVert *destVerts;
+        if (parity != 0) {
+            sourceVerts = scratchVerts;
+            destVerts = g_Clip_PolyVerts;
+        } else {
+            sourceVerts = g_Clip_PolyVerts;
+            destVerts = scratchVerts;
+        }
+
+        outputCount = 0;
+        const int count = *vertexCount;
+        if (count > 0) {
+            int prevIndex = count - 1;
+            for (int i = 0; i < count; ++i) {
+                zClipVert *prevVert = &sourceVerts[prevIndex];
+                zClipVert *currVert = &sourceVerts[i];
+
+                if (
+                    prevVert->y < clipRect->yMaxAlt
+                    && currVert->y < clipRect->yMaxAlt
+                ) {
+                    destVerts[outputCount] = *currVert;
+                    ++outputCount;
+                } else if (
+                    prevVert->y < clipRect->yMaxAlt
+                    && currVert->y >= clipRect->yMaxAlt
+                ) {
+                    const float t =
+                        (clipRect->yMaxAlt - prevVert->y) /
+                        (currVert->y - prevVert->y);
+                    destVerts[outputCount].x =
+                        prevVert->x + (currVert->x - prevVert->x) * t;
+                    destVerts[outputCount].y = clipRect->yMaxAlt;
+                    destVerts[outputCount].z =
+                        prevVert->z + (currVert->z - prevVert->z) * t;
+                    ++outputCount;
+                } else if (currVert->y < clipRect->yMaxAlt) {
+                    const float t =
+                        (clipRect->yMaxAlt - prevVert->y) /
+                        (currVert->y - prevVert->y);
+                    destVerts[outputCount].x =
+                        prevVert->x + (currVert->x - prevVert->x) * t;
+                    destVerts[outputCount].y = clipRect->yMaxAlt;
+                    destVerts[outputCount].z =
+                        prevVert->z + (currVert->z - prevVert->z) * t;
+                    ++outputCount;
+
+                    destVerts[outputCount] = *currVert;
+                    ++outputCount;
+                }
+
+                prevIndex = i;
+            }
+        }
+
+        parity = (parity + 1) % 2;
+    }
+
+    *vertexCount = outputCount;
+    if (outputCount < 3) {
+        return 0;
+    }
+
+    if (parity == 1) {
+        memcpy(
+            g_Clip_PolyVerts,
+            scratchVerts,
+            (size_t)(outputCount) * sizeof(zClipVert)
+        );
+    }
+    return 1;
 }
 
 /**
  * Reimplements 0x47cdc0: zClipRect::ClipPoly_NoUV
  * Source: D:\Proj\Battlesport\zClip.cpp
- * Purpose: Dispatch primary no-UV XY clipping to the shared zClipRect polygon core.
+ * Purpose: Clip the primary polygon vertex stream against enabled XY bounds without UVs.
  */
 int __fastcall ClipPoly_NoUV(
     zClipRectPartial *clipRect,
     int *vertexCount
 ) {
-    return ClipPolyNoUvCore(
-        clipRect,
-        vertexCount
-    );
+    zClipVert scratchVerts[kClipBufferCapacity];
+    int outputCount = 0;
+    int parity = 0;
+
+    if ((clipRect->flags & 0x01) != 0) {
+        outputCount = 0;
+        const int count = *vertexCount;
+        if (count > 0) {
+            int prevIndex = count - 1;
+            for (int i = 0; i < count; ++i) {
+                zClipVert *prevVert = &g_Clip_PolyVerts[prevIndex];
+                zClipVert *currVert = &g_Clip_PolyVerts[i];
+
+                if (
+                    prevVert->x >= clipRect->xMin
+                    && currVert->x >= clipRect->xMin
+                ) {
+                    scratchVerts[outputCount].x = currVert->x;
+                    scratchVerts[outputCount].y = currVert->y;
+                    ++outputCount;
+                } else if (
+                    prevVert->x >= clipRect->xMin
+                    && currVert->x < clipRect->xMin
+                ) {
+                    const float t =
+                        (clipRect->xMin - prevVert->x) /
+                        (currVert->x - prevVert->x);
+                    scratchVerts[outputCount].x = clipRect->xMin;
+                    scratchVerts[outputCount].y =
+                        prevVert->y + (currVert->y - prevVert->y) * t;
+                    ++outputCount;
+                } else if (currVert->x >= clipRect->xMin) {
+                    const float t =
+                        (clipRect->xMin - prevVert->x) /
+                        (currVert->x - prevVert->x);
+                    scratchVerts[outputCount].x = clipRect->xMin;
+                    scratchVerts[outputCount].y =
+                        prevVert->y + (currVert->y - prevVert->y) * t;
+                    ++outputCount;
+
+                    scratchVerts[outputCount].x = currVert->x;
+                    scratchVerts[outputCount].y = currVert->y;
+                    ++outputCount;
+                }
+
+                prevIndex = i;
+            }
+        }
+
+        *vertexCount = outputCount;
+        parity = 1;
+    }
+
+    if ((clipRect->flags & 0x02) != 0) {
+        zClipVert *sourceVerts;
+        zClipVert *destVerts;
+        if (parity != 0) {
+            sourceVerts = scratchVerts;
+            destVerts = g_Clip_PolyVerts;
+        } else {
+            sourceVerts = g_Clip_PolyVerts;
+            destVerts = scratchVerts;
+        }
+
+        outputCount = 0;
+        const int count = *vertexCount;
+        if (count > 0) {
+            int prevIndex = count - 1;
+            for (int i = 0; i < count; ++i) {
+                zClipVert *prevVert = &sourceVerts[prevIndex];
+                zClipVert *currVert = &sourceVerts[i];
+
+                if (
+                    prevVert->x < clipRect->xMaxAlt
+                    && currVert->x < clipRect->xMaxAlt
+                ) {
+                    destVerts[outputCount].x = currVert->x;
+                    destVerts[outputCount].y = currVert->y;
+                    ++outputCount;
+                } else if (
+                    prevVert->x < clipRect->xMaxAlt
+                    && currVert->x >= clipRect->xMaxAlt
+                ) {
+                    const float t =
+                        (clipRect->xMaxAlt - prevVert->x) /
+                        (currVert->x - prevVert->x);
+                    destVerts[outputCount].x = clipRect->xMaxAlt;
+                    destVerts[outputCount].y =
+                        prevVert->y + (currVert->y - prevVert->y) * t;
+                    ++outputCount;
+                } else if (currVert->x < clipRect->xMaxAlt) {
+                    const float t =
+                        (clipRect->xMaxAlt - prevVert->x) /
+                        (currVert->x - prevVert->x);
+                    destVerts[outputCount].x = clipRect->xMaxAlt;
+                    destVerts[outputCount].y =
+                        prevVert->y + (currVert->y - prevVert->y) * t;
+                    ++outputCount;
+
+                    destVerts[outputCount].x = currVert->x;
+                    destVerts[outputCount].y = currVert->y;
+                    ++outputCount;
+                }
+
+                prevIndex = i;
+            }
+        }
+
+        *vertexCount = outputCount;
+        parity = (parity + 1) % 2;
+    }
+
+    if ((clipRect->flags & 0x04) != 0) {
+        zClipVert *sourceVerts;
+        zClipVert *destVerts;
+        if (parity != 0) {
+            sourceVerts = scratchVerts;
+            destVerts = g_Clip_PolyVerts;
+        } else {
+            sourceVerts = g_Clip_PolyVerts;
+            destVerts = scratchVerts;
+        }
+
+        outputCount = 0;
+        const int count = *vertexCount;
+        if (count > 0) {
+            int prevIndex = count - 1;
+            for (int i = 0; i < count; ++i) {
+                zClipVert *prevVert = &sourceVerts[prevIndex];
+                zClipVert *currVert = &sourceVerts[i];
+
+                if (
+                    prevVert->y >= clipRect->yMin
+                    && currVert->y >= clipRect->yMin
+                ) {
+                    destVerts[outputCount].x = currVert->x;
+                    destVerts[outputCount].y = currVert->y;
+                    ++outputCount;
+                } else if (
+                    prevVert->y >= clipRect->yMin
+                    && currVert->y < clipRect->yMin
+                ) {
+                    const float t =
+                        (clipRect->yMin - prevVert->y) /
+                        (currVert->y - prevVert->y);
+                    destVerts[outputCount].x =
+                        prevVert->x + (currVert->x - prevVert->x) * t;
+                    destVerts[outputCount].y = clipRect->yMin;
+                    ++outputCount;
+                } else if (currVert->y >= clipRect->yMin) {
+                    const float t =
+                        (clipRect->yMin - prevVert->y) /
+                        (currVert->y - prevVert->y);
+                    destVerts[outputCount].x =
+                        prevVert->x + (currVert->x - prevVert->x) * t;
+                    destVerts[outputCount].y = clipRect->yMin;
+                    ++outputCount;
+
+                    destVerts[outputCount].x = currVert->x;
+                    destVerts[outputCount].y = currVert->y;
+                    ++outputCount;
+                }
+
+                prevIndex = i;
+            }
+        }
+
+        *vertexCount = outputCount;
+        parity = (parity + 1) % 2;
+    }
+
+    if ((clipRect->flags & 0x08) != 0) {
+        zClipVert *sourceVerts;
+        zClipVert *destVerts;
+        if (parity != 0) {
+            sourceVerts = scratchVerts;
+            destVerts = g_Clip_PolyVerts;
+        } else {
+            sourceVerts = g_Clip_PolyVerts;
+            destVerts = scratchVerts;
+        }
+
+        outputCount = 0;
+        const int count = *vertexCount;
+        if (count > 0) {
+            int prevIndex = count - 1;
+            for (int i = 0; i < count; ++i) {
+                zClipVert *prevVert = &sourceVerts[prevIndex];
+                zClipVert *currVert = &sourceVerts[i];
+
+                if (
+                    prevVert->y < clipRect->yMaxAlt
+                    && currVert->y < clipRect->yMaxAlt
+                ) {
+                    destVerts[outputCount].x = currVert->x;
+                    destVerts[outputCount].y = currVert->y;
+                    ++outputCount;
+                } else if (
+                    prevVert->y < clipRect->yMaxAlt
+                    && currVert->y >= clipRect->yMaxAlt
+                ) {
+                    const float t =
+                        (clipRect->yMaxAlt - prevVert->y) /
+                        (currVert->y - prevVert->y);
+                    destVerts[outputCount].x =
+                        prevVert->x + (currVert->x - prevVert->x) * t;
+                    destVerts[outputCount].y = clipRect->yMaxAlt;
+                    ++outputCount;
+                } else if (currVert->y < clipRect->yMaxAlt) {
+                    const float t =
+                        (clipRect->yMaxAlt - prevVert->y) /
+                        (currVert->y - prevVert->y);
+                    destVerts[outputCount].x =
+                        prevVert->x + (currVert->x - prevVert->x) * t;
+                    destVerts[outputCount].y = clipRect->yMaxAlt;
+                    ++outputCount;
+
+                    destVerts[outputCount].x = currVert->x;
+                    destVerts[outputCount].y = currVert->y;
+                    ++outputCount;
+                }
+
+                prevIndex = i;
+            }
+        }
+
+        parity = (parity + 1) % 2;
+    }
+
+    *vertexCount = outputCount;
+    if (outputCount < 3) {
+        return 0;
+    }
+
+    if (parity == 1) {
+        memcpy(
+            g_Clip_PolyVerts,
+            scratchVerts,
+            (size_t)(outputCount) * sizeof(zClipVert)
+        );
+    }
+    return 1;
 }
 
 /**
  * Reimplements 0x47d3f0: zClipRect::ClipPoly
  * Source: D:\Proj\Battlesport\zClip.cpp
- * Purpose: Dispatch primary UV-preserving XY clipping to the shared zClipRect polygon core.
+ * Purpose: Clip active polygon vertex and UV streams against enabled XY bounds.
  */
 int __fastcall ClipPoly(
     zClipRectPartial *clipRect,
     int *vertexCount
 ) {
-    return ClipPolyUvCore(
-        clipRect,
-        vertexCount
-    );
+    zClipVert scratchVerts[kClipBufferCapacity];
+    zClipUV scratchUvs[kClipBufferCapacity];
+    int outputCount = 0;
+    int parity = 0;
+
+    if ((clipRect->flags & 0x01) != 0) {
+        outputCount = 0;
+        const int count = *vertexCount;
+        if (count > 0) {
+            int prevIndex = count - 1;
+            for (int i = 0; i < count; ++i) {
+                zClipVert *prevVert = &g_Clip_PolyVerts[prevIndex];
+                zClipVert *currVert = &g_Clip_PolyVerts[i];
+                zClipUV *prevUv = &g_Clip_PolyUvs[prevIndex];
+                zClipUV *currUv = &g_Clip_PolyUvs[i];
+
+                if (
+                    prevVert->x >= clipRect->xMin
+                    && currVert->x >= clipRect->xMin
+                ) {
+                    scratchVerts[outputCount] = *currVert;
+                    scratchUvs[outputCount] = *currUv;
+                    ++outputCount;
+                } else if (
+                    prevVert->x >= clipRect->xMin
+                    && currVert->x < clipRect->xMin
+                ) {
+                    const float t =
+                        (clipRect->xMin - prevVert->x) /
+                        (currVert->x - prevVert->x);
+                    scratchVerts[outputCount].x = clipRect->xMin;
+                    scratchVerts[outputCount].y =
+                        prevVert->y + (currVert->y - prevVert->y) * t;
+                    scratchVerts[outputCount].z =
+                        prevVert->z + (currVert->z - prevVert->z) * t;
+                    scratchUvs[outputCount].u =
+                        prevUv->u + (currUv->u - prevUv->u) * t;
+                    scratchUvs[outputCount].v =
+                        prevUv->v + (currUv->v - prevUv->v) * t;
+                    ++outputCount;
+                } else if (currVert->x >= clipRect->xMin) {
+                    const float t =
+                        (clipRect->xMin - prevVert->x) /
+                        (currVert->x - prevVert->x);
+                    scratchVerts[outputCount].x = clipRect->xMin;
+                    scratchVerts[outputCount].y =
+                        prevVert->y + (currVert->y - prevVert->y) * t;
+                    scratchVerts[outputCount].z =
+                        prevVert->z + (currVert->z - prevVert->z) * t;
+                    scratchUvs[outputCount].u =
+                        prevUv->u + (currUv->u - prevUv->u) * t;
+                    scratchUvs[outputCount].v =
+                        prevUv->v + (currUv->v - prevUv->v) * t;
+                    ++outputCount;
+
+                    scratchVerts[outputCount] = *currVert;
+                    scratchUvs[outputCount] = *currUv;
+                    ++outputCount;
+                }
+
+                prevIndex = i;
+            }
+        }
+
+        *vertexCount = outputCount;
+        parity = 1;
+    }
+
+    if ((clipRect->flags & 0x02) != 0) {
+        zClipVert *sourceVerts;
+        zClipVert *destVerts;
+        zClipUV *sourceUvs;
+        zClipUV *destUvs;
+        if (parity != 0) {
+            sourceVerts = scratchVerts;
+            sourceUvs = scratchUvs;
+            destVerts = g_Clip_PolyVerts;
+            destUvs = g_Clip_PolyUvs;
+        } else {
+            sourceVerts = g_Clip_PolyVerts;
+            sourceUvs = g_Clip_PolyUvs;
+            destVerts = scratchVerts;
+            destUvs = scratchUvs;
+        }
+
+        outputCount = 0;
+        const int count = *vertexCount;
+        if (count > 0) {
+            int prevIndex = count - 1;
+            for (int i = 0; i < count; ++i) {
+                zClipVert *prevVert = &sourceVerts[prevIndex];
+                zClipVert *currVert = &sourceVerts[i];
+                zClipUV *prevUv = &sourceUvs[prevIndex];
+                zClipUV *currUv = &sourceUvs[i];
+
+                if (
+                    prevVert->x < clipRect->xMaxAlt
+                    && currVert->x < clipRect->xMaxAlt
+                ) {
+                    destVerts[outputCount] = *currVert;
+                    destUvs[outputCount] = *currUv;
+                    ++outputCount;
+                } else if (
+                    prevVert->x < clipRect->xMaxAlt
+                    && currVert->x >= clipRect->xMaxAlt
+                ) {
+                    const float t =
+                        (clipRect->xMaxAlt - prevVert->x) /
+                        (currVert->x - prevVert->x);
+                    destVerts[outputCount].x = clipRect->xMaxAlt;
+                    destVerts[outputCount].y =
+                        prevVert->y + (currVert->y - prevVert->y) * t;
+                    destVerts[outputCount].z =
+                        prevVert->z + (currVert->z - prevVert->z) * t;
+                    destUvs[outputCount].u =
+                        prevUv->u + (currUv->u - prevUv->u) * t;
+                    destUvs[outputCount].v =
+                        prevUv->v + (currUv->v - prevUv->v) * t;
+                    ++outputCount;
+                } else if (currVert->x < clipRect->xMaxAlt) {
+                    const float t =
+                        (clipRect->xMaxAlt - prevVert->x) /
+                        (currVert->x - prevVert->x);
+                    destVerts[outputCount].x = clipRect->xMaxAlt;
+                    destVerts[outputCount].y =
+                        prevVert->y + (currVert->y - prevVert->y) * t;
+                    destVerts[outputCount].z =
+                        prevVert->z + (currVert->z - prevVert->z) * t;
+                    destUvs[outputCount].u =
+                        prevUv->u + (currUv->u - prevUv->u) * t;
+                    destUvs[outputCount].v =
+                        prevUv->v + (currUv->v - prevUv->v) * t;
+                    ++outputCount;
+
+                    destVerts[outputCount] = *currVert;
+                    destUvs[outputCount] = *currUv;
+                    ++outputCount;
+                }
+
+                prevIndex = i;
+            }
+        }
+
+        *vertexCount = outputCount;
+        parity = (parity + 1) % 2;
+    }
+
+    if ((clipRect->flags & 0x04) != 0) {
+        zClipVert *sourceVerts;
+        zClipVert *destVerts;
+        zClipUV *sourceUvs;
+        zClipUV *destUvs;
+        if (parity != 0) {
+            sourceVerts = scratchVerts;
+            sourceUvs = scratchUvs;
+            destVerts = g_Clip_PolyVerts;
+            destUvs = g_Clip_PolyUvs;
+        } else {
+            sourceVerts = g_Clip_PolyVerts;
+            sourceUvs = g_Clip_PolyUvs;
+            destVerts = scratchVerts;
+            destUvs = scratchUvs;
+        }
+
+        outputCount = 0;
+        const int count = *vertexCount;
+        if (count > 0) {
+            int prevIndex = count - 1;
+            for (int i = 0; i < count; ++i) {
+                zClipVert *prevVert = &sourceVerts[prevIndex];
+                zClipVert *currVert = &sourceVerts[i];
+                zClipUV *prevUv = &sourceUvs[prevIndex];
+                zClipUV *currUv = &sourceUvs[i];
+
+                if (
+                    prevVert->y >= clipRect->yMin
+                    && currVert->y >= clipRect->yMin
+                ) {
+                    destVerts[outputCount] = *currVert;
+                    destUvs[outputCount] = *currUv;
+                    ++outputCount;
+                } else if (
+                    prevVert->y >= clipRect->yMin
+                    && currVert->y < clipRect->yMin
+                ) {
+                    const float t =
+                        (clipRect->yMin - prevVert->y) /
+                        (currVert->y - prevVert->y);
+                    destVerts[outputCount].x =
+                        prevVert->x + (currVert->x - prevVert->x) * t;
+                    destVerts[outputCount].y = clipRect->yMin;
+                    destVerts[outputCount].z =
+                        prevVert->z + (currVert->z - prevVert->z) * t;
+                    destUvs[outputCount].u =
+                        prevUv->u + (currUv->u - prevUv->u) * t;
+                    destUvs[outputCount].v =
+                        prevUv->v + (currUv->v - prevUv->v) * t;
+                    ++outputCount;
+                } else if (currVert->y >= clipRect->yMin) {
+                    const float t =
+                        (clipRect->yMin - prevVert->y) /
+                        (currVert->y - prevVert->y);
+                    destVerts[outputCount].x =
+                        prevVert->x + (currVert->x - prevVert->x) * t;
+                    destVerts[outputCount].y = clipRect->yMin;
+                    destVerts[outputCount].z =
+                        prevVert->z + (currVert->z - prevVert->z) * t;
+                    destUvs[outputCount].u =
+                        prevUv->u + (currUv->u - prevUv->u) * t;
+                    destUvs[outputCount].v =
+                        prevUv->v + (currUv->v - prevUv->v) * t;
+                    ++outputCount;
+
+                    destVerts[outputCount] = *currVert;
+                    destUvs[outputCount] = *currUv;
+                    ++outputCount;
+                }
+
+                prevIndex = i;
+            }
+        }
+
+        *vertexCount = outputCount;
+        parity = (parity + 1) % 2;
+    }
+
+    if ((clipRect->flags & 0x08) != 0) {
+        zClipVert *sourceVerts;
+        zClipVert *destVerts;
+        zClipUV *sourceUvs;
+        zClipUV *destUvs;
+        if (parity != 0) {
+            sourceVerts = scratchVerts;
+            sourceUvs = scratchUvs;
+            destVerts = g_Clip_PolyVerts;
+            destUvs = g_Clip_PolyUvs;
+        } else {
+            sourceVerts = g_Clip_PolyVerts;
+            sourceUvs = g_Clip_PolyUvs;
+            destVerts = scratchVerts;
+            destUvs = scratchUvs;
+        }
+
+        outputCount = 0;
+        const int count = *vertexCount;
+        if (count > 0) {
+            int prevIndex = count - 1;
+            for (int i = 0; i < count; ++i) {
+                zClipVert *prevVert = &sourceVerts[prevIndex];
+                zClipVert *currVert = &sourceVerts[i];
+                zClipUV *prevUv = &sourceUvs[prevIndex];
+                zClipUV *currUv = &sourceUvs[i];
+
+                if (
+                    prevVert->y < clipRect->yMaxAlt
+                    && currVert->y < clipRect->yMaxAlt
+                ) {
+                    destVerts[outputCount] = *currVert;
+                    destUvs[outputCount] = *currUv;
+                    ++outputCount;
+                } else if (
+                    prevVert->y < clipRect->yMaxAlt
+                    && currVert->y >= clipRect->yMaxAlt
+                ) {
+                    const float t =
+                        (clipRect->yMaxAlt - prevVert->y) /
+                        (currVert->y - prevVert->y);
+                    destVerts[outputCount].x =
+                        prevVert->x + (currVert->x - prevVert->x) * t;
+                    destVerts[outputCount].y = clipRect->yMaxAlt;
+                    destVerts[outputCount].z =
+                        prevVert->z + (currVert->z - prevVert->z) * t;
+                    destUvs[outputCount].u =
+                        prevUv->u + (currUv->u - prevUv->u) * t;
+                    destUvs[outputCount].v =
+                        prevUv->v + (currUv->v - prevUv->v) * t;
+                    ++outputCount;
+                } else if (currVert->y < clipRect->yMaxAlt) {
+                    const float t =
+                        (clipRect->yMaxAlt - prevVert->y) /
+                        (currVert->y - prevVert->y);
+                    destVerts[outputCount].x =
+                        prevVert->x + (currVert->x - prevVert->x) * t;
+                    destVerts[outputCount].y = clipRect->yMaxAlt;
+                    destVerts[outputCount].z =
+                        prevVert->z + (currVert->z - prevVert->z) * t;
+                    destUvs[outputCount].u =
+                        prevUv->u + (currUv->u - prevUv->u) * t;
+                    destUvs[outputCount].v =
+                        prevUv->v + (currUv->v - prevUv->v) * t;
+                    ++outputCount;
+
+                    destVerts[outputCount] = *currVert;
+                    destUvs[outputCount] = *currUv;
+                    ++outputCount;
+                }
+
+                prevIndex = i;
+            }
+        }
+
+        parity = (parity + 1) % 2;
+    }
+
+    *vertexCount = outputCount;
+    if (outputCount < 3) {
+        return 0;
+    }
+
+    if (parity == 1) {
+        memcpy(
+            g_Clip_PolyVerts,
+            scratchVerts,
+            (size_t)(outputCount) * sizeof(zClipVert)
+        );
+        memcpy(
+            g_Clip_PolyUvs,
+            scratchUvs,
+            (size_t)(outputCount) * sizeof(zClipUV)
+        );
+    }
+    return 1;
 }
 
 /**
  * Reimplements 0x47efd0: zClipRect::ClipPoly_WithAttr012
  * Source: D:\Proj\Battlesport\zClip.cpp
- * Purpose: Dispatch UV and three-attribute XY clipping to the shared zClipRect polygon core.
+ * Purpose: Clip active polygon vertex, UV, and three-attribute streams against enabled XY bounds.
  */
 int __fastcall ClipPoly_WithAttr012(
     zClipRectPartial *clipRect,
     int *vertexCount
 ) {
-    return ClipPolyAttr012UvCore(
-        clipRect,
-        vertexCount
-    );
+    zClipVert scratchVerts[kClipBufferCapacity];
+    zClipUV scratchUvs[kClipBufferCapacity];
+    float scratchAttr0[kClipBufferCapacity];
+    float scratchAttr1[kClipBufferCapacity];
+    float scratchAttr2[kClipBufferCapacity];
+    int outputCount = 0;
+    int parity = 0;
+
+    if ((clipRect->flags & 0x01) != 0) {
+        outputCount = 0;
+        const int count = *vertexCount;
+        if (count > 0) {
+            int prevIndex = count - 1;
+            for (int i = 0; i < count; ++i) {
+                zClipVert *prevVert = &g_Clip_PolyVerts[prevIndex];
+                zClipVert *currVert = &g_Clip_PolyVerts[i];
+                zClipUV *prevUv = &g_Clip_PolyUvs[prevIndex];
+                zClipUV *currUv = &g_Clip_PolyUvs[i];
+                float prevAttr0 = g_Clip_PolyAttr0[prevIndex];
+                float prevAttr1 = g_Clip_PolyAttr1[prevIndex];
+                float prevAttr2 = g_Clip_PolyAttr2[prevIndex];
+                float currAttr0 = g_Clip_PolyAttr0[i];
+                float currAttr1 = g_Clip_PolyAttr1[i];
+                float currAttr2 = g_Clip_PolyAttr2[i];
+
+                if (
+                    prevVert->x >= clipRect->xMin
+                    && currVert->x >= clipRect->xMin
+                ) {
+                    scratchVerts[outputCount] = *currVert;
+                    scratchUvs[outputCount] = *currUv;
+                    scratchAttr0[outputCount] = currAttr0;
+                    scratchAttr1[outputCount] = currAttr1;
+                    scratchAttr2[outputCount] = currAttr2;
+                    ++outputCount;
+                } else if (
+                    prevVert->x >= clipRect->xMin
+                    && currVert->x < clipRect->xMin
+                ) {
+                    const float t =
+                        (clipRect->xMin - prevVert->x) /
+                        (currVert->x - prevVert->x);
+                    scratchVerts[outputCount].x = clipRect->xMin;
+                    scratchVerts[outputCount].y =
+                        prevVert->y + (currVert->y - prevVert->y) * t;
+                    scratchVerts[outputCount].z =
+                        prevVert->z + (currVert->z - prevVert->z) * t;
+                    scratchUvs[outputCount].u =
+                        prevUv->u + (currUv->u - prevUv->u) * t;
+                    scratchUvs[outputCount].v =
+                        prevUv->v + (currUv->v - prevUv->v) * t;
+                    scratchAttr0[outputCount] =
+                        prevAttr0 + (currAttr0 - prevAttr0) * t;
+                    scratchAttr1[outputCount] =
+                        prevAttr1 + (currAttr1 - prevAttr1) * t;
+                    scratchAttr2[outputCount] =
+                        prevAttr2 + (currAttr2 - prevAttr2) * t;
+                    ++outputCount;
+                } else if (currVert->x >= clipRect->xMin) {
+                    const float t =
+                        (clipRect->xMin - prevVert->x) /
+                        (currVert->x - prevVert->x);
+                    scratchVerts[outputCount].x = clipRect->xMin;
+                    scratchVerts[outputCount].y =
+                        prevVert->y + (currVert->y - prevVert->y) * t;
+                    scratchVerts[outputCount].z =
+                        prevVert->z + (currVert->z - prevVert->z) * t;
+                    scratchUvs[outputCount].u =
+                        prevUv->u + (currUv->u - prevUv->u) * t;
+                    scratchUvs[outputCount].v =
+                        prevUv->v + (currUv->v - prevUv->v) * t;
+                    scratchAttr0[outputCount] =
+                        prevAttr0 + (currAttr0 - prevAttr0) * t;
+                    scratchAttr1[outputCount] =
+                        prevAttr1 + (currAttr1 - prevAttr1) * t;
+                    scratchAttr2[outputCount] =
+                        prevAttr2 + (currAttr2 - prevAttr2) * t;
+                    ++outputCount;
+
+                    scratchVerts[outputCount] = *currVert;
+                    scratchUvs[outputCount] = *currUv;
+                    scratchAttr0[outputCount] = currAttr0;
+                    scratchAttr1[outputCount] = currAttr1;
+                    scratchAttr2[outputCount] = currAttr2;
+                    ++outputCount;
+                }
+
+                prevIndex = i;
+            }
+        }
+
+        *vertexCount = outputCount;
+        parity = 1;
+    }
+
+    if ((clipRect->flags & 0x02) != 0) {
+        zClipVert *sourceVerts;
+        zClipVert *destVerts;
+        zClipUV *sourceUvs;
+        zClipUV *destUvs;
+        float *sourceAttr0;
+        float *sourceAttr1;
+        float *sourceAttr2;
+        float *destAttr0;
+        float *destAttr1;
+        float *destAttr2;
+        if (parity != 0) {
+            sourceVerts = scratchVerts;
+            sourceUvs = scratchUvs;
+            sourceAttr0 = scratchAttr0;
+            sourceAttr1 = scratchAttr1;
+            sourceAttr2 = scratchAttr2;
+            destVerts = g_Clip_PolyVerts;
+            destUvs = g_Clip_PolyUvs;
+            destAttr0 = g_Clip_PolyAttr0;
+            destAttr1 = g_Clip_PolyAttr1;
+            destAttr2 = g_Clip_PolyAttr2;
+        } else {
+            sourceVerts = g_Clip_PolyVerts;
+            sourceUvs = g_Clip_PolyUvs;
+            sourceAttr0 = g_Clip_PolyAttr0;
+            sourceAttr1 = g_Clip_PolyAttr1;
+            sourceAttr2 = g_Clip_PolyAttr2;
+            destVerts = scratchVerts;
+            destUvs = scratchUvs;
+            destAttr0 = scratchAttr0;
+            destAttr1 = scratchAttr1;
+            destAttr2 = scratchAttr2;
+        }
+
+        outputCount = 0;
+        const int count = *vertexCount;
+        if (count > 0) {
+            int prevIndex = count - 1;
+            for (int i = 0; i < count; ++i) {
+                zClipVert *prevVert = &sourceVerts[prevIndex];
+                zClipVert *currVert = &sourceVerts[i];
+                zClipUV *prevUv = &sourceUvs[prevIndex];
+                zClipUV *currUv = &sourceUvs[i];
+                float prevAttr0 = sourceAttr0[prevIndex];
+                float prevAttr1 = sourceAttr1[prevIndex];
+                float prevAttr2 = sourceAttr2[prevIndex];
+                float currAttr0 = sourceAttr0[i];
+                float currAttr1 = sourceAttr1[i];
+                float currAttr2 = sourceAttr2[i];
+
+                if (
+                    prevVert->x < clipRect->xMaxAlt
+                    && currVert->x < clipRect->xMaxAlt
+                ) {
+                    destVerts[outputCount] = *currVert;
+                    destUvs[outputCount] = *currUv;
+                    destAttr0[outputCount] = currAttr0;
+                    destAttr1[outputCount] = currAttr1;
+                    destAttr2[outputCount] = currAttr2;
+                    ++outputCount;
+                } else if (
+                    prevVert->x < clipRect->xMaxAlt
+                    && currVert->x >= clipRect->xMaxAlt
+                ) {
+                    const float t =
+                        (clipRect->xMaxAlt - prevVert->x) /
+                        (currVert->x - prevVert->x);
+                    destVerts[outputCount].x = clipRect->xMaxAlt;
+                    destVerts[outputCount].y =
+                        prevVert->y + (currVert->y - prevVert->y) * t;
+                    destVerts[outputCount].z =
+                        prevVert->z + (currVert->z - prevVert->z) * t;
+                    destUvs[outputCount].u =
+                        prevUv->u + (currUv->u - prevUv->u) * t;
+                    destUvs[outputCount].v =
+                        prevUv->v + (currUv->v - prevUv->v) * t;
+                    destAttr0[outputCount] =
+                        prevAttr0 + (currAttr0 - prevAttr0) * t;
+                    destAttr1[outputCount] =
+                        prevAttr1 + (currAttr1 - prevAttr1) * t;
+                    destAttr2[outputCount] =
+                        prevAttr2 + (currAttr2 - prevAttr2) * t;
+                    ++outputCount;
+                } else if (currVert->x < clipRect->xMaxAlt) {
+                    const float t =
+                        (clipRect->xMaxAlt - prevVert->x) /
+                        (currVert->x - prevVert->x);
+                    destVerts[outputCount].x = clipRect->xMaxAlt;
+                    destVerts[outputCount].y =
+                        prevVert->y + (currVert->y - prevVert->y) * t;
+                    destVerts[outputCount].z =
+                        prevVert->z + (currVert->z - prevVert->z) * t;
+                    destUvs[outputCount].u =
+                        prevUv->u + (currUv->u - prevUv->u) * t;
+                    destUvs[outputCount].v =
+                        prevUv->v + (currUv->v - prevUv->v) * t;
+                    destAttr0[outputCount] =
+                        prevAttr0 + (currAttr0 - prevAttr0) * t;
+                    destAttr1[outputCount] =
+                        prevAttr1 + (currAttr1 - prevAttr1) * t;
+                    destAttr2[outputCount] =
+                        prevAttr2 + (currAttr2 - prevAttr2) * t;
+                    ++outputCount;
+
+                    destVerts[outputCount] = *currVert;
+                    destUvs[outputCount] = *currUv;
+                    destAttr0[outputCount] = currAttr0;
+                    destAttr1[outputCount] = currAttr1;
+                    destAttr2[outputCount] = currAttr2;
+                    ++outputCount;
+                }
+
+                prevIndex = i;
+            }
+        }
+
+        *vertexCount = outputCount;
+        parity = (parity + 1) % 2;
+    }
+
+    if ((clipRect->flags & 0x04) != 0) {
+        zClipVert *sourceVerts;
+        zClipVert *destVerts;
+        zClipUV *sourceUvs;
+        zClipUV *destUvs;
+        float *sourceAttr0;
+        float *sourceAttr1;
+        float *sourceAttr2;
+        float *destAttr0;
+        float *destAttr1;
+        float *destAttr2;
+        if (parity != 0) {
+            sourceVerts = scratchVerts;
+            sourceUvs = scratchUvs;
+            sourceAttr0 = scratchAttr0;
+            sourceAttr1 = scratchAttr1;
+            sourceAttr2 = scratchAttr2;
+            destVerts = g_Clip_PolyVerts;
+            destUvs = g_Clip_PolyUvs;
+            destAttr0 = g_Clip_PolyAttr0;
+            destAttr1 = g_Clip_PolyAttr1;
+            destAttr2 = g_Clip_PolyAttr2;
+        } else {
+            sourceVerts = g_Clip_PolyVerts;
+            sourceUvs = g_Clip_PolyUvs;
+            sourceAttr0 = g_Clip_PolyAttr0;
+            sourceAttr1 = g_Clip_PolyAttr1;
+            sourceAttr2 = g_Clip_PolyAttr2;
+            destVerts = scratchVerts;
+            destUvs = scratchUvs;
+            destAttr0 = scratchAttr0;
+            destAttr1 = scratchAttr1;
+            destAttr2 = scratchAttr2;
+        }
+
+        outputCount = 0;
+        const int count = *vertexCount;
+        if (count > 0) {
+            int prevIndex = count - 1;
+            for (int i = 0; i < count; ++i) {
+                zClipVert *prevVert = &sourceVerts[prevIndex];
+                zClipVert *currVert = &sourceVerts[i];
+                zClipUV *prevUv = &sourceUvs[prevIndex];
+                zClipUV *currUv = &sourceUvs[i];
+                float prevAttr0 = sourceAttr0[prevIndex];
+                float prevAttr1 = sourceAttr1[prevIndex];
+                float prevAttr2 = sourceAttr2[prevIndex];
+                float currAttr0 = sourceAttr0[i];
+                float currAttr1 = sourceAttr1[i];
+                float currAttr2 = sourceAttr2[i];
+
+                if (
+                    prevVert->y >= clipRect->yMin
+                    && currVert->y >= clipRect->yMin
+                ) {
+                    destVerts[outputCount] = *currVert;
+                    destUvs[outputCount] = *currUv;
+                    destAttr0[outputCount] = currAttr0;
+                    destAttr1[outputCount] = currAttr1;
+                    destAttr2[outputCount] = currAttr2;
+                    ++outputCount;
+                } else if (
+                    prevVert->y >= clipRect->yMin
+                    && currVert->y < clipRect->yMin
+                ) {
+                    const float t =
+                        (clipRect->yMin - prevVert->y) /
+                        (currVert->y - prevVert->y);
+                    destVerts[outputCount].x =
+                        prevVert->x + (currVert->x - prevVert->x) * t;
+                    destVerts[outputCount].y = clipRect->yMin;
+                    destVerts[outputCount].z =
+                        prevVert->z + (currVert->z - prevVert->z) * t;
+                    destUvs[outputCount].u =
+                        prevUv->u + (currUv->u - prevUv->u) * t;
+                    destUvs[outputCount].v =
+                        prevUv->v + (currUv->v - prevUv->v) * t;
+                    destAttr0[outputCount] =
+                        prevAttr0 + (currAttr0 - prevAttr0) * t;
+                    destAttr1[outputCount] =
+                        prevAttr1 + (currAttr1 - prevAttr1) * t;
+                    destAttr2[outputCount] =
+                        prevAttr2 + (currAttr2 - prevAttr2) * t;
+                    ++outputCount;
+                } else if (currVert->y >= clipRect->yMin) {
+                    const float t =
+                        (clipRect->yMin - prevVert->y) /
+                        (currVert->y - prevVert->y);
+                    destVerts[outputCount].x =
+                        prevVert->x + (currVert->x - prevVert->x) * t;
+                    destVerts[outputCount].y = clipRect->yMin;
+                    destVerts[outputCount].z =
+                        prevVert->z + (currVert->z - prevVert->z) * t;
+                    destUvs[outputCount].u =
+                        prevUv->u + (currUv->u - prevUv->u) * t;
+                    destUvs[outputCount].v =
+                        prevUv->v + (currUv->v - prevUv->v) * t;
+                    destAttr0[outputCount] =
+                        prevAttr0 + (currAttr0 - prevAttr0) * t;
+                    destAttr1[outputCount] =
+                        prevAttr1 + (currAttr1 - prevAttr1) * t;
+                    destAttr2[outputCount] =
+                        prevAttr2 + (currAttr2 - prevAttr2) * t;
+                    ++outputCount;
+
+                    destVerts[outputCount] = *currVert;
+                    destUvs[outputCount] = *currUv;
+                    destAttr0[outputCount] = currAttr0;
+                    destAttr1[outputCount] = currAttr1;
+                    destAttr2[outputCount] = currAttr2;
+                    ++outputCount;
+                }
+
+                prevIndex = i;
+            }
+        }
+
+        *vertexCount = outputCount;
+        parity = (parity + 1) % 2;
+    }
+
+    if ((clipRect->flags & 0x08) != 0) {
+        zClipVert *sourceVerts;
+        zClipVert *destVerts;
+        zClipUV *sourceUvs;
+        zClipUV *destUvs;
+        float *sourceAttr0;
+        float *sourceAttr1;
+        float *sourceAttr2;
+        float *destAttr0;
+        float *destAttr1;
+        float *destAttr2;
+        if (parity != 0) {
+            sourceVerts = scratchVerts;
+            sourceUvs = scratchUvs;
+            sourceAttr0 = scratchAttr0;
+            sourceAttr1 = scratchAttr1;
+            sourceAttr2 = scratchAttr2;
+            destVerts = g_Clip_PolyVerts;
+            destUvs = g_Clip_PolyUvs;
+            destAttr0 = g_Clip_PolyAttr0;
+            destAttr1 = g_Clip_PolyAttr1;
+            destAttr2 = g_Clip_PolyAttr2;
+        } else {
+            sourceVerts = g_Clip_PolyVerts;
+            sourceUvs = g_Clip_PolyUvs;
+            sourceAttr0 = g_Clip_PolyAttr0;
+            sourceAttr1 = g_Clip_PolyAttr1;
+            sourceAttr2 = g_Clip_PolyAttr2;
+            destVerts = scratchVerts;
+            destUvs = scratchUvs;
+            destAttr0 = scratchAttr0;
+            destAttr1 = scratchAttr1;
+            destAttr2 = scratchAttr2;
+        }
+
+        outputCount = 0;
+        const int count = *vertexCount;
+        if (count > 0) {
+            int prevIndex = count - 1;
+            for (int i = 0; i < count; ++i) {
+                zClipVert *prevVert = &sourceVerts[prevIndex];
+                zClipVert *currVert = &sourceVerts[i];
+                zClipUV *prevUv = &sourceUvs[prevIndex];
+                zClipUV *currUv = &sourceUvs[i];
+                float prevAttr0 = sourceAttr0[prevIndex];
+                float prevAttr1 = sourceAttr1[prevIndex];
+                float prevAttr2 = sourceAttr2[prevIndex];
+                float currAttr0 = sourceAttr0[i];
+                float currAttr1 = sourceAttr1[i];
+                float currAttr2 = sourceAttr2[i];
+
+                if (
+                    prevVert->y < clipRect->yMaxAlt
+                    && currVert->y < clipRect->yMaxAlt
+                ) {
+                    destVerts[outputCount] = *currVert;
+                    destUvs[outputCount] = *currUv;
+                    destAttr0[outputCount] = currAttr0;
+                    destAttr1[outputCount] = currAttr1;
+                    destAttr2[outputCount] = currAttr2;
+                    ++outputCount;
+                } else if (
+                    prevVert->y < clipRect->yMaxAlt
+                    && currVert->y >= clipRect->yMaxAlt
+                ) {
+                    const float t =
+                        (clipRect->yMaxAlt - prevVert->y) /
+                        (currVert->y - prevVert->y);
+                    destVerts[outputCount].x =
+                        prevVert->x + (currVert->x - prevVert->x) * t;
+                    destVerts[outputCount].y = clipRect->yMaxAlt;
+                    destVerts[outputCount].z =
+                        prevVert->z + (currVert->z - prevVert->z) * t;
+                    destUvs[outputCount].u =
+                        prevUv->u + (currUv->u - prevUv->u) * t;
+                    destUvs[outputCount].v =
+                        prevUv->v + (currUv->v - prevUv->v) * t;
+                    destAttr0[outputCount] =
+                        prevAttr0 + (currAttr0 - prevAttr0) * t;
+                    destAttr1[outputCount] =
+                        prevAttr1 + (currAttr1 - prevAttr1) * t;
+                    destAttr2[outputCount] =
+                        prevAttr2 + (currAttr2 - prevAttr2) * t;
+                    ++outputCount;
+                } else if (currVert->y < clipRect->yMaxAlt) {
+                    const float t =
+                        (clipRect->yMaxAlt - prevVert->y) /
+                        (currVert->y - prevVert->y);
+                    destVerts[outputCount].x =
+                        prevVert->x + (currVert->x - prevVert->x) * t;
+                    destVerts[outputCount].y = clipRect->yMaxAlt;
+                    destVerts[outputCount].z =
+                        prevVert->z + (currVert->z - prevVert->z) * t;
+                    destUvs[outputCount].u =
+                        prevUv->u + (currUv->u - prevUv->u) * t;
+                    destUvs[outputCount].v =
+                        prevUv->v + (currUv->v - prevUv->v) * t;
+                    destAttr0[outputCount] =
+                        prevAttr0 + (currAttr0 - prevAttr0) * t;
+                    destAttr1[outputCount] =
+                        prevAttr1 + (currAttr1 - prevAttr1) * t;
+                    destAttr2[outputCount] =
+                        prevAttr2 + (currAttr2 - prevAttr2) * t;
+                    ++outputCount;
+
+                    destVerts[outputCount] = *currVert;
+                    destUvs[outputCount] = *currUv;
+                    destAttr0[outputCount] = currAttr0;
+                    destAttr1[outputCount] = currAttr1;
+                    destAttr2[outputCount] = currAttr2;
+                    ++outputCount;
+                }
+
+                prevIndex = i;
+            }
+        }
+
+        parity = (parity + 1) % 2;
+    }
+
+    *vertexCount = outputCount;
+    if (outputCount < 3) {
+        return 0;
+    }
+
+    if (parity == 1) {
+        memcpy(
+            g_Clip_PolyVerts,
+            scratchVerts,
+            (size_t)(outputCount) * sizeof(zClipVert)
+        );
+        memcpy(
+            g_Clip_PolyUvs,
+            scratchUvs,
+            (size_t)(outputCount) * sizeof(zClipUV)
+        );
+        memcpy(
+            g_Clip_PolyAttr0,
+            scratchAttr0,
+            (size_t)(outputCount) * sizeof(float)
+        );
+        memcpy(
+            g_Clip_PolyAttr2,
+            scratchAttr2,
+            (size_t)(outputCount) * sizeof(float)
+        );
+        memcpy(
+            g_Clip_PolyAttr1,
+            scratchAttr1,
+            (size_t)(outputCount) * sizeof(float)
+        );
+    }
+    return 1;
 }
 
 /**
  * Reimplements 0x47dfb0: zClipRect::ClipPoly_NoUV_WithAttr0_Alt
  * Source: D:\Proj\Battlesport\zClip.cpp
- * Purpose: Dispatch alternate no-UV first-attribute XY clipping to the shared core.
+ * Purpose: Clip the active polygon vertex and first-attribute streams against enabled XY bounds.
  */
 int __fastcall ClipPoly_NoUV_WithAttr0_Alt(
     zClipRectPartial *clipRect,
     int *vertexCount
 ) {
-    return ClipPolyAttr0NoUvCore(
-        clipRect,
-        vertexCount
-    );
+    zClipVert scratchVerts[kClipBufferCapacity];
+    float scratchAttrs[kClipBufferCapacity];
+    int outputCount = 0;
+    int parity = 0;
+
+    if ((clipRect->flags & 0x01) != 0) {
+        outputCount = 0;
+        const int count = *vertexCount;
+        if (count > 0) {
+            int prevIndex = count - 1;
+            for (int i = 0; i < count; ++i) {
+                zClipVert *prevVert = &g_Clip_PolyVerts[prevIndex];
+                zClipVert *currVert = &g_Clip_PolyVerts[i];
+                float prevAttr = g_Clip_PolyAttr0[prevIndex];
+                float currAttr = g_Clip_PolyAttr0[i];
+
+                if (
+                    prevVert->x >= clipRect->xMin
+                    && currVert->x >= clipRect->xMin
+                ) {
+                    scratchVerts[outputCount] = *currVert;
+                    scratchAttrs[outputCount] = currAttr;
+                    ++outputCount;
+                } else if (
+                    prevVert->x >= clipRect->xMin
+                    && currVert->x < clipRect->xMin
+                ) {
+                    const float t =
+                        (clipRect->xMin - prevVert->x) /
+                        (currVert->x - prevVert->x);
+                    scratchVerts[outputCount].x = clipRect->xMin;
+                    scratchVerts[outputCount].y =
+                        prevVert->y + (currVert->y - prevVert->y) * t;
+                    scratchVerts[outputCount].z =
+                        prevVert->z + (currVert->z - prevVert->z) * t;
+                    scratchAttrs[outputCount] =
+                        prevAttr + (currAttr - prevAttr) * t;
+                    ++outputCount;
+                } else if (currVert->x >= clipRect->xMin) {
+                    const float t =
+                        (clipRect->xMin - prevVert->x) /
+                        (currVert->x - prevVert->x);
+                    scratchVerts[outputCount].x = clipRect->xMin;
+                    scratchVerts[outputCount].y =
+                        prevVert->y + (currVert->y - prevVert->y) * t;
+                    scratchVerts[outputCount].z =
+                        prevVert->z + (currVert->z - prevVert->z) * t;
+                    scratchAttrs[outputCount] =
+                        prevAttr + (currAttr - prevAttr) * t;
+                    ++outputCount;
+
+                    scratchVerts[outputCount] = *currVert;
+                    scratchAttrs[outputCount] = currAttr;
+                    ++outputCount;
+                }
+
+                prevIndex = i;
+            }
+        }
+
+        *vertexCount = outputCount;
+        parity = 1;
+    }
+
+    if ((clipRect->flags & 0x02) != 0) {
+        zClipVert *sourceVerts;
+        zClipVert *destVerts;
+        float *sourceAttrs;
+        float *destAttrs;
+        if (parity != 0) {
+            sourceVerts = scratchVerts;
+            sourceAttrs = scratchAttrs;
+            destVerts = g_Clip_PolyVerts;
+            destAttrs = g_Clip_PolyAttr0;
+        } else {
+            sourceVerts = g_Clip_PolyVerts;
+            sourceAttrs = g_Clip_PolyAttr0;
+            destVerts = scratchVerts;
+            destAttrs = scratchAttrs;
+        }
+
+        outputCount = 0;
+        const int count = *vertexCount;
+        if (count > 0) {
+            int prevIndex = count - 1;
+            for (int i = 0; i < count; ++i) {
+                zClipVert *prevVert = &sourceVerts[prevIndex];
+                zClipVert *currVert = &sourceVerts[i];
+                float prevAttr = sourceAttrs[prevIndex];
+                float currAttr = sourceAttrs[i];
+
+                if (
+                    prevVert->x < clipRect->xMaxAlt
+                    && currVert->x < clipRect->xMaxAlt
+                ) {
+                    destVerts[outputCount] = *currVert;
+                    destAttrs[outputCount] = currAttr;
+                    ++outputCount;
+                } else if (
+                    prevVert->x < clipRect->xMaxAlt
+                    && currVert->x >= clipRect->xMaxAlt
+                ) {
+                    const float t =
+                        (clipRect->xMaxAlt - prevVert->x) /
+                        (currVert->x - prevVert->x);
+                    destVerts[outputCount].x = clipRect->xMaxAlt;
+                    destVerts[outputCount].y =
+                        prevVert->y + (currVert->y - prevVert->y) * t;
+                    destVerts[outputCount].z =
+                        prevVert->z + (currVert->z - prevVert->z) * t;
+                    destAttrs[outputCount] =
+                        prevAttr + (currAttr - prevAttr) * t;
+                    ++outputCount;
+                } else if (currVert->x < clipRect->xMaxAlt) {
+                    const float t =
+                        (clipRect->xMaxAlt - prevVert->x) /
+                        (currVert->x - prevVert->x);
+                    destVerts[outputCount].x = clipRect->xMaxAlt;
+                    destVerts[outputCount].y =
+                        prevVert->y + (currVert->y - prevVert->y) * t;
+                    destVerts[outputCount].z =
+                        prevVert->z + (currVert->z - prevVert->z) * t;
+                    destAttrs[outputCount] =
+                        prevAttr + (currAttr - prevAttr) * t;
+                    ++outputCount;
+
+                    destVerts[outputCount] = *currVert;
+                    destAttrs[outputCount] = currAttr;
+                    ++outputCount;
+                }
+
+                prevIndex = i;
+            }
+        }
+
+        *vertexCount = outputCount;
+        parity = (parity + 1) % 2;
+    }
+
+    if ((clipRect->flags & 0x04) != 0) {
+        zClipVert *sourceVerts;
+        zClipVert *destVerts;
+        float *sourceAttrs;
+        float *destAttrs;
+        if (parity != 0) {
+            sourceVerts = scratchVerts;
+            sourceAttrs = scratchAttrs;
+            destVerts = g_Clip_PolyVerts;
+            destAttrs = g_Clip_PolyAttr0;
+        } else {
+            sourceVerts = g_Clip_PolyVerts;
+            sourceAttrs = g_Clip_PolyAttr0;
+            destVerts = scratchVerts;
+            destAttrs = scratchAttrs;
+        }
+
+        outputCount = 0;
+        const int count = *vertexCount;
+        if (count > 0) {
+            int prevIndex = count - 1;
+            for (int i = 0; i < count; ++i) {
+                zClipVert *prevVert = &sourceVerts[prevIndex];
+                zClipVert *currVert = &sourceVerts[i];
+                float prevAttr = sourceAttrs[prevIndex];
+                float currAttr = sourceAttrs[i];
+
+                if (
+                    prevVert->y >= clipRect->yMin
+                    && currVert->y >= clipRect->yMin
+                ) {
+                    destVerts[outputCount] = *currVert;
+                    destAttrs[outputCount] = currAttr;
+                    ++outputCount;
+                } else if (
+                    prevVert->y >= clipRect->yMin
+                    && currVert->y < clipRect->yMin
+                ) {
+                    const float t =
+                        (clipRect->yMin - prevVert->y) /
+                        (currVert->y - prevVert->y);
+                    destVerts[outputCount].x =
+                        prevVert->x + (currVert->x - prevVert->x) * t;
+                    destVerts[outputCount].y = clipRect->yMin;
+                    destVerts[outputCount].z =
+                        prevVert->z + (currVert->z - prevVert->z) * t;
+                    destAttrs[outputCount] =
+                        prevAttr + (currAttr - prevAttr) * t;
+                    ++outputCount;
+                } else if (currVert->y >= clipRect->yMin) {
+                    const float t =
+                        (clipRect->yMin - prevVert->y) /
+                        (currVert->y - prevVert->y);
+                    destVerts[outputCount].x =
+                        prevVert->x + (currVert->x - prevVert->x) * t;
+                    destVerts[outputCount].y = clipRect->yMin;
+                    destVerts[outputCount].z =
+                        prevVert->z + (currVert->z - prevVert->z) * t;
+                    destAttrs[outputCount] =
+                        prevAttr + (currAttr - prevAttr) * t;
+                    ++outputCount;
+
+                    destVerts[outputCount] = *currVert;
+                    destAttrs[outputCount] = currAttr;
+                    ++outputCount;
+                }
+
+                prevIndex = i;
+            }
+        }
+
+        *vertexCount = outputCount;
+        parity = (parity + 1) % 2;
+    }
+
+    if ((clipRect->flags & 0x08) != 0) {
+        zClipVert *sourceVerts;
+        zClipVert *destVerts;
+        float *sourceAttrs;
+        float *destAttrs;
+        if (parity != 0) {
+            sourceVerts = scratchVerts;
+            sourceAttrs = scratchAttrs;
+            destVerts = g_Clip_PolyVerts;
+            destAttrs = g_Clip_PolyAttr0;
+        } else {
+            sourceVerts = g_Clip_PolyVerts;
+            sourceAttrs = g_Clip_PolyAttr0;
+            destVerts = scratchVerts;
+            destAttrs = scratchAttrs;
+        }
+
+        outputCount = 0;
+        const int count = *vertexCount;
+        if (count > 0) {
+            int prevIndex = count - 1;
+            for (int i = 0; i < count; ++i) {
+                zClipVert *prevVert = &sourceVerts[prevIndex];
+                zClipVert *currVert = &sourceVerts[i];
+                float prevAttr = sourceAttrs[prevIndex];
+                float currAttr = sourceAttrs[i];
+
+                if (
+                    prevVert->y < clipRect->yMaxAlt
+                    && currVert->y < clipRect->yMaxAlt
+                ) {
+                    destVerts[outputCount] = *currVert;
+                    destAttrs[outputCount] = currAttr;
+                    ++outputCount;
+                } else if (
+                    prevVert->y < clipRect->yMaxAlt
+                    && currVert->y >= clipRect->yMaxAlt
+                ) {
+                    const float t =
+                        (clipRect->yMaxAlt - prevVert->y) /
+                        (currVert->y - prevVert->y);
+                    destVerts[outputCount].x =
+                        prevVert->x + (currVert->x - prevVert->x) * t;
+                    destVerts[outputCount].y = clipRect->yMaxAlt;
+                    destVerts[outputCount].z =
+                        prevVert->z + (currVert->z - prevVert->z) * t;
+                    destAttrs[outputCount] =
+                        prevAttr + (currAttr - prevAttr) * t;
+                    ++outputCount;
+                } else if (currVert->y < clipRect->yMaxAlt) {
+                    const float t =
+                        (clipRect->yMaxAlt - prevVert->y) /
+                        (currVert->y - prevVert->y);
+                    destVerts[outputCount].x =
+                        prevVert->x + (currVert->x - prevVert->x) * t;
+                    destVerts[outputCount].y = clipRect->yMaxAlt;
+                    destVerts[outputCount].z =
+                        prevVert->z + (currVert->z - prevVert->z) * t;
+                    destAttrs[outputCount] =
+                        prevAttr + (currAttr - prevAttr) * t;
+                    ++outputCount;
+
+                    destVerts[outputCount] = *currVert;
+                    destAttrs[outputCount] = currAttr;
+                    ++outputCount;
+                }
+
+                prevIndex = i;
+            }
+        }
+
+        parity = (parity + 1) % 2;
+    }
+
+    *vertexCount = outputCount;
+    if (outputCount < 3) {
+        return 0;
+    }
+
+    if (parity == 1) {
+        memcpy(
+            g_Clip_PolyVerts,
+            scratchVerts,
+            (size_t)(outputCount) * sizeof(zClipVert)
+        );
+        memcpy(
+            g_Clip_PolyAttr0,
+            scratchAttrs,
+            (size_t)(outputCount) * sizeof(float)
+        );
+    }
+    return 1;
 }
 
 /**
  * Reimplements 0x47bd30: zClipRect::ClipPoly_NoUV_WithAttr012_Alt
  * Source: D:\Proj\Battlesport\zClip.cpp
- * Purpose: Dispatch alternate no-UV three-attribute XY clipping to the shared core.
+ * Purpose: Clip active polygon vertex and three-attribute streams against enabled XY bounds.
  */
 int __fastcall ClipPoly_NoUV_WithAttr012_Alt(
     zClipRectPartial *clipRect,
     int *vertexCount
 ) {
-    return ClipPolyAttr012NoUvCore(
-        clipRect,
-        vertexCount
-    );
+    zClipVert scratchVerts[kClipBufferCapacity];
+    float scratchAttr0[kClipBufferCapacity];
+    float scratchAttr1[kClipBufferCapacity];
+    float scratchAttr2[kClipBufferCapacity];
+    int outputCount = 0;
+    int parity = 0;
+
+    if ((clipRect->flags & 0x01) != 0) {
+        outputCount = 0;
+        const int count = *vertexCount;
+        if (count > 0) {
+            int prevIndex = count - 1;
+            for (int i = 0; i < count; ++i) {
+                zClipVert *prevVert = &g_Clip_PolyVerts[prevIndex];
+                zClipVert *currVert = &g_Clip_PolyVerts[i];
+                float prevAttr0 = g_Clip_PolyAttr0[prevIndex];
+                float prevAttr1 = g_Clip_PolyAttr1[prevIndex];
+                float prevAttr2 = g_Clip_PolyAttr2[prevIndex];
+                float currAttr0 = g_Clip_PolyAttr0[i];
+                float currAttr1 = g_Clip_PolyAttr1[i];
+                float currAttr2 = g_Clip_PolyAttr2[i];
+
+                if (
+                    prevVert->x >= clipRect->xMin
+                    && currVert->x >= clipRect->xMin
+                ) {
+                    scratchVerts[outputCount] = *currVert;
+                    scratchAttr0[outputCount] = currAttr0;
+                    scratchAttr1[outputCount] = currAttr1;
+                    scratchAttr2[outputCount] = currAttr2;
+                    ++outputCount;
+                } else if (
+                    prevVert->x >= clipRect->xMin
+                    && currVert->x < clipRect->xMin
+                ) {
+                    const float t =
+                        (clipRect->xMin - prevVert->x) /
+                        (currVert->x - prevVert->x);
+                    scratchVerts[outputCount].x = clipRect->xMin;
+                    scratchVerts[outputCount].y =
+                        prevVert->y + (currVert->y - prevVert->y) * t;
+                    scratchVerts[outputCount].z =
+                        prevVert->z + (currVert->z - prevVert->z) * t;
+                    scratchAttr0[outputCount] =
+                        prevAttr0 + (currAttr0 - prevAttr0) * t;
+                    scratchAttr1[outputCount] =
+                        prevAttr1 + (currAttr1 - prevAttr1) * t;
+                    scratchAttr2[outputCount] =
+                        prevAttr2 + (currAttr2 - prevAttr2) * t;
+                    ++outputCount;
+                } else if (currVert->x >= clipRect->xMin) {
+                    const float t =
+                        (clipRect->xMin - prevVert->x) /
+                        (currVert->x - prevVert->x);
+                    scratchVerts[outputCount].x = clipRect->xMin;
+                    scratchVerts[outputCount].y =
+                        prevVert->y + (currVert->y - prevVert->y) * t;
+                    scratchVerts[outputCount].z =
+                        prevVert->z + (currVert->z - prevVert->z) * t;
+                    scratchAttr0[outputCount] =
+                        prevAttr0 + (currAttr0 - prevAttr0) * t;
+                    scratchAttr1[outputCount] =
+                        prevAttr1 + (currAttr1 - prevAttr1) * t;
+                    scratchAttr2[outputCount] =
+                        prevAttr2 + (currAttr2 - prevAttr2) * t;
+                    ++outputCount;
+
+                    scratchVerts[outputCount] = *currVert;
+                    scratchAttr0[outputCount] = currAttr0;
+                    scratchAttr1[outputCount] = currAttr1;
+                    scratchAttr2[outputCount] = currAttr2;
+                    ++outputCount;
+                }
+
+                prevIndex = i;
+            }
+        }
+
+        *vertexCount = outputCount;
+        parity = 1;
+    }
+
+    if ((clipRect->flags & 0x02) != 0) {
+        zClipVert *sourceVerts;
+        zClipVert *destVerts;
+        float *sourceAttr0;
+        float *sourceAttr1;
+        float *sourceAttr2;
+        float *destAttr0;
+        float *destAttr1;
+        float *destAttr2;
+        if (parity != 0) {
+            sourceVerts = scratchVerts;
+            sourceAttr0 = scratchAttr0;
+            sourceAttr1 = scratchAttr1;
+            sourceAttr2 = scratchAttr2;
+            destVerts = g_Clip_PolyVerts;
+            destAttr0 = g_Clip_PolyAttr0;
+            destAttr1 = g_Clip_PolyAttr1;
+            destAttr2 = g_Clip_PolyAttr2;
+        } else {
+            sourceVerts = g_Clip_PolyVerts;
+            sourceAttr0 = g_Clip_PolyAttr0;
+            sourceAttr1 = g_Clip_PolyAttr1;
+            sourceAttr2 = g_Clip_PolyAttr2;
+            destVerts = scratchVerts;
+            destAttr0 = scratchAttr0;
+            destAttr1 = scratchAttr1;
+            destAttr2 = scratchAttr2;
+        }
+
+        outputCount = 0;
+        const int count = *vertexCount;
+        if (count > 0) {
+            int prevIndex = count - 1;
+            for (int i = 0; i < count; ++i) {
+                zClipVert *prevVert = &sourceVerts[prevIndex];
+                zClipVert *currVert = &sourceVerts[i];
+                float prevAttr0 = sourceAttr0[prevIndex];
+                float prevAttr1 = sourceAttr1[prevIndex];
+                float prevAttr2 = sourceAttr2[prevIndex];
+                float currAttr0 = sourceAttr0[i];
+                float currAttr1 = sourceAttr1[i];
+                float currAttr2 = sourceAttr2[i];
+
+                if (
+                    prevVert->x < clipRect->xMaxAlt
+                    && currVert->x < clipRect->xMaxAlt
+                ) {
+                    destVerts[outputCount] = *currVert;
+                    destAttr0[outputCount] = currAttr0;
+                    destAttr1[outputCount] = currAttr1;
+                    destAttr2[outputCount] = currAttr2;
+                    ++outputCount;
+                } else if (
+                    prevVert->x < clipRect->xMaxAlt
+                    && currVert->x >= clipRect->xMaxAlt
+                ) {
+                    const float t =
+                        (clipRect->xMaxAlt - prevVert->x) /
+                        (currVert->x - prevVert->x);
+                    destVerts[outputCount].x = clipRect->xMaxAlt;
+                    destVerts[outputCount].y =
+                        prevVert->y + (currVert->y - prevVert->y) * t;
+                    destVerts[outputCount].z =
+                        prevVert->z + (currVert->z - prevVert->z) * t;
+                    destAttr0[outputCount] =
+                        prevAttr0 + (currAttr0 - prevAttr0) * t;
+                    destAttr1[outputCount] =
+                        prevAttr1 + (currAttr1 - prevAttr1) * t;
+                    destAttr2[outputCount] =
+                        prevAttr2 + (currAttr2 - prevAttr2) * t;
+                    ++outputCount;
+                } else if (currVert->x < clipRect->xMaxAlt) {
+                    const float t =
+                        (clipRect->xMaxAlt - prevVert->x) /
+                        (currVert->x - prevVert->x);
+                    destVerts[outputCount].x = clipRect->xMaxAlt;
+                    destVerts[outputCount].y =
+                        prevVert->y + (currVert->y - prevVert->y) * t;
+                    destVerts[outputCount].z =
+                        prevVert->z + (currVert->z - prevVert->z) * t;
+                    destAttr0[outputCount] =
+                        prevAttr0 + (currAttr0 - prevAttr0) * t;
+                    destAttr1[outputCount] =
+                        prevAttr1 + (currAttr1 - prevAttr1) * t;
+                    destAttr2[outputCount] =
+                        prevAttr2 + (currAttr2 - prevAttr2) * t;
+                    ++outputCount;
+
+                    destVerts[outputCount] = *currVert;
+                    destAttr0[outputCount] = currAttr0;
+                    destAttr1[outputCount] = currAttr1;
+                    destAttr2[outputCount] = currAttr2;
+                    ++outputCount;
+                }
+
+                prevIndex = i;
+            }
+        }
+
+        *vertexCount = outputCount;
+        parity = (parity + 1) % 2;
+    }
+
+    if ((clipRect->flags & 0x04) != 0) {
+        zClipVert *sourceVerts;
+        zClipVert *destVerts;
+        float *sourceAttr0;
+        float *sourceAttr1;
+        float *sourceAttr2;
+        float *destAttr0;
+        float *destAttr1;
+        float *destAttr2;
+        if (parity != 0) {
+            sourceVerts = scratchVerts;
+            sourceAttr0 = scratchAttr0;
+            sourceAttr1 = scratchAttr1;
+            sourceAttr2 = scratchAttr2;
+            destVerts = g_Clip_PolyVerts;
+            destAttr0 = g_Clip_PolyAttr0;
+            destAttr1 = g_Clip_PolyAttr1;
+            destAttr2 = g_Clip_PolyAttr2;
+        } else {
+            sourceVerts = g_Clip_PolyVerts;
+            sourceAttr0 = g_Clip_PolyAttr0;
+            sourceAttr1 = g_Clip_PolyAttr1;
+            sourceAttr2 = g_Clip_PolyAttr2;
+            destVerts = scratchVerts;
+            destAttr0 = scratchAttr0;
+            destAttr1 = scratchAttr1;
+            destAttr2 = scratchAttr2;
+        }
+
+        outputCount = 0;
+        const int count = *vertexCount;
+        if (count > 0) {
+            int prevIndex = count - 1;
+            for (int i = 0; i < count; ++i) {
+                zClipVert *prevVert = &sourceVerts[prevIndex];
+                zClipVert *currVert = &sourceVerts[i];
+                float prevAttr0 = sourceAttr0[prevIndex];
+                float prevAttr1 = sourceAttr1[prevIndex];
+                float prevAttr2 = sourceAttr2[prevIndex];
+                float currAttr0 = sourceAttr0[i];
+                float currAttr1 = sourceAttr1[i];
+                float currAttr2 = sourceAttr2[i];
+
+                if (
+                    prevVert->y >= clipRect->yMin
+                    && currVert->y >= clipRect->yMin
+                ) {
+                    destVerts[outputCount] = *currVert;
+                    destAttr0[outputCount] = currAttr0;
+                    destAttr1[outputCount] = currAttr1;
+                    destAttr2[outputCount] = currAttr2;
+                    ++outputCount;
+                } else if (
+                    prevVert->y >= clipRect->yMin
+                    && currVert->y < clipRect->yMin
+                ) {
+                    const float t =
+                        (clipRect->yMin - prevVert->y) /
+                        (currVert->y - prevVert->y);
+                    destVerts[outputCount].x =
+                        prevVert->x + (currVert->x - prevVert->x) * t;
+                    destVerts[outputCount].y = clipRect->yMin;
+                    destVerts[outputCount].z =
+                        prevVert->z + (currVert->z - prevVert->z) * t;
+                    destAttr0[outputCount] =
+                        prevAttr0 + (currAttr0 - prevAttr0) * t;
+                    destAttr1[outputCount] =
+                        prevAttr1 + (currAttr1 - prevAttr1) * t;
+                    destAttr2[outputCount] =
+                        prevAttr2 + (currAttr2 - prevAttr2) * t;
+                    ++outputCount;
+                } else if (currVert->y >= clipRect->yMin) {
+                    const float t =
+                        (clipRect->yMin - prevVert->y) /
+                        (currVert->y - prevVert->y);
+                    destVerts[outputCount].x =
+                        prevVert->x + (currVert->x - prevVert->x) * t;
+                    destVerts[outputCount].y = clipRect->yMin;
+                    destVerts[outputCount].z =
+                        prevVert->z + (currVert->z - prevVert->z) * t;
+                    destAttr0[outputCount] =
+                        prevAttr0 + (currAttr0 - prevAttr0) * t;
+                    destAttr1[outputCount] =
+                        prevAttr1 + (currAttr1 - prevAttr1) * t;
+                    destAttr2[outputCount] =
+                        prevAttr2 + (currAttr2 - prevAttr2) * t;
+                    ++outputCount;
+
+                    destVerts[outputCount] = *currVert;
+                    destAttr0[outputCount] = currAttr0;
+                    destAttr1[outputCount] = currAttr1;
+                    destAttr2[outputCount] = currAttr2;
+                    ++outputCount;
+                }
+
+                prevIndex = i;
+            }
+        }
+
+        *vertexCount = outputCount;
+        parity = (parity + 1) % 2;
+    }
+
+    if ((clipRect->flags & 0x08) != 0) {
+        zClipVert *sourceVerts;
+        zClipVert *destVerts;
+        float *sourceAttr0;
+        float *sourceAttr1;
+        float *sourceAttr2;
+        float *destAttr0;
+        float *destAttr1;
+        float *destAttr2;
+        if (parity != 0) {
+            sourceVerts = scratchVerts;
+            sourceAttr0 = scratchAttr0;
+            sourceAttr1 = scratchAttr1;
+            sourceAttr2 = scratchAttr2;
+            destVerts = g_Clip_PolyVerts;
+            destAttr0 = g_Clip_PolyAttr0;
+            destAttr1 = g_Clip_PolyAttr1;
+            destAttr2 = g_Clip_PolyAttr2;
+        } else {
+            sourceVerts = g_Clip_PolyVerts;
+            sourceAttr0 = g_Clip_PolyAttr0;
+            sourceAttr1 = g_Clip_PolyAttr1;
+            sourceAttr2 = g_Clip_PolyAttr2;
+            destVerts = scratchVerts;
+            destAttr0 = scratchAttr0;
+            destAttr1 = scratchAttr1;
+            destAttr2 = scratchAttr2;
+        }
+
+        outputCount = 0;
+        const int count = *vertexCount;
+        if (count > 0) {
+            int prevIndex = count - 1;
+            for (int i = 0; i < count; ++i) {
+                zClipVert *prevVert = &sourceVerts[prevIndex];
+                zClipVert *currVert = &sourceVerts[i];
+                float prevAttr0 = sourceAttr0[prevIndex];
+                float prevAttr1 = sourceAttr1[prevIndex];
+                float prevAttr2 = sourceAttr2[prevIndex];
+                float currAttr0 = sourceAttr0[i];
+                float currAttr1 = sourceAttr1[i];
+                float currAttr2 = sourceAttr2[i];
+
+                if (
+                    prevVert->y < clipRect->yMaxAlt
+                    && currVert->y < clipRect->yMaxAlt
+                ) {
+                    destVerts[outputCount] = *currVert;
+                    destAttr0[outputCount] = currAttr0;
+                    destAttr1[outputCount] = currAttr1;
+                    destAttr2[outputCount] = currAttr2;
+                    ++outputCount;
+                } else if (
+                    prevVert->y < clipRect->yMaxAlt
+                    && currVert->y >= clipRect->yMaxAlt
+                ) {
+                    const float t =
+                        (clipRect->yMaxAlt - prevVert->y) /
+                        (currVert->y - prevVert->y);
+                    destVerts[outputCount].x =
+                        prevVert->x + (currVert->x - prevVert->x) * t;
+                    destVerts[outputCount].y = clipRect->yMaxAlt;
+                    destVerts[outputCount].z =
+                        prevVert->z + (currVert->z - prevVert->z) * t;
+                    destAttr0[outputCount] =
+                        prevAttr0 + (currAttr0 - prevAttr0) * t;
+                    destAttr1[outputCount] =
+                        prevAttr1 + (currAttr1 - prevAttr1) * t;
+                    destAttr2[outputCount] =
+                        prevAttr2 + (currAttr2 - prevAttr2) * t;
+                    ++outputCount;
+                } else if (currVert->y < clipRect->yMaxAlt) {
+                    const float t =
+                        (clipRect->yMaxAlt - prevVert->y) /
+                        (currVert->y - prevVert->y);
+                    destVerts[outputCount].x =
+                        prevVert->x + (currVert->x - prevVert->x) * t;
+                    destVerts[outputCount].y = clipRect->yMaxAlt;
+                    destVerts[outputCount].z =
+                        prevVert->z + (currVert->z - prevVert->z) * t;
+                    destAttr0[outputCount] =
+                        prevAttr0 + (currAttr0 - prevAttr0) * t;
+                    destAttr1[outputCount] =
+                        prevAttr1 + (currAttr1 - prevAttr1) * t;
+                    destAttr2[outputCount] =
+                        prevAttr2 + (currAttr2 - prevAttr2) * t;
+                    ++outputCount;
+
+                    destVerts[outputCount] = *currVert;
+                    destAttr0[outputCount] = currAttr0;
+                    destAttr1[outputCount] = currAttr1;
+                    destAttr2[outputCount] = currAttr2;
+                    ++outputCount;
+                }
+
+                prevIndex = i;
+            }
+        }
+
+        parity = (parity + 1) % 2;
+    }
+
+    *vertexCount = outputCount;
+    if (outputCount < 3) {
+        return 0;
+    }
+
+    if (parity == 1) {
+        memcpy(
+            g_Clip_PolyVerts,
+            scratchVerts,
+            (size_t)(outputCount) * sizeof(zClipVert)
+        );
+        memcpy(
+            g_Clip_PolyAttr0,
+            scratchAttr0,
+            (size_t)(outputCount) * sizeof(float)
+        );
+        memcpy(
+            g_Clip_PolyAttr1,
+            scratchAttr1,
+            (size_t)(outputCount) * sizeof(float)
+        );
+        memcpy(
+            g_Clip_PolyAttr2,
+            scratchAttr2,
+            (size_t)(outputCount) * sizeof(float)
+        );
+    }
+    return 1;
 }
 
 /**

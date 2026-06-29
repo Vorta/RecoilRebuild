@@ -1254,7 +1254,7 @@ void zTurret_Runtime::Tick(
         }
 
         const int losDirection = enableLosCheck == 1 ? 2 : 1;
-        if (Player::HasLineOfSightFromLocalPlayerFxOffset(healthyNode, &firePos, losDirection) !=
+        if (AINet::HasLineOfSightFromLocalPlayerFxOffset(healthyNode, &firePos, losDirection) !=
             0) {
             isFiring = 1;
             runtimeAimPending = 1;

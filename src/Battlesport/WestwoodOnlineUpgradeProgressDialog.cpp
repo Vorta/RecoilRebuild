@@ -246,37 +246,37 @@ int __fastcall WestwoodOnlineUpgradeDialog::ShowDownloadReadyList(
     int totalEntryCount = 0;
     int entryOrdinal = 0;
 
-    if (currentEntry == 0) {
-        return 1;
+    if (currentEntry != 0) {
+        do {
+            countCursor = countCursor->m_next;
+            ++totalEntryCount;
+        } while (countCursor != 0);
     }
 
-    do {
-        countCursor = countCursor->m_next;
-        ++totalEntryCount;
-    } while (countCursor != 0);
+    if (currentEntry != 0) {
+        while (currentEntry != 0) {
+            ++entryOrdinal;
+            g_pWestwoodOnlineUpgradeDownloadReadyList = currentEntry;
+            zLoc::FormatMessage(
+                g_WestwoodOnlineUpgradeDownloadReadyPromptText,
+                kDownloadPromptBufferSize,
+                kDownloadPromptMessageId,
+                entryOrdinal,
+                totalEntryCount
+            );
+            if (DialogBoxParamA(
+                    g_RecoilApp_hInstance,
+                    (LPCSTR)kDownloadDialogResourceId,
+                    g_RecoilApp_hWndMain,
+                    WestwoodOnlineUpgradeProgressDialog::DlgProc,
+                    0
+                ) == -1) {
+                return 0;
+            }
 
-    do {
-        ++entryOrdinal;
-        g_pWestwoodOnlineUpgradeDownloadReadyList = currentEntry;
-        zLoc::FormatMessage(
-            g_WestwoodOnlineUpgradeDownloadReadyPromptText,
-            kDownloadPromptBufferSize,
-            kDownloadPromptMessageId,
-            entryOrdinal,
-            totalEntryCount
-        );
-        if (DialogBoxParamA(
-                g_RecoilApp_hInstance,
-                (LPCSTR)kDownloadDialogResourceId,
-                g_RecoilApp_hWndMain,
-                WestwoodOnlineUpgradeProgressDialog::DlgProc,
-                0
-            ) == -1) {
-            return 0;
+            currentEntry = currentEntry->m_next;
         }
-
-        currentEntry = currentEntry->m_next;
-    } while (currentEntry != 0);
+    }
 
     return 1;
 }

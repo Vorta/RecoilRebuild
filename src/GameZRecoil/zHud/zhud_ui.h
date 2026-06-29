@@ -53,8 +53,10 @@ struct zFMV_Stream;
 extern int g_HudCmdMouseDebounceFrames;
 struct HudUiWidget;
 struct HudUiMgrData;
+union HudUiMgrDataStorage;
 struct PlayerProgressTargetSlotRuntime;
 struct HudUiNetGameSetupOverlayOwner;
+union HudUiNetGameSetupOverlayOwnerStorage;
 
 struct HudUiMgrSensorTrackNode {
     int trackKind;
@@ -76,7 +78,7 @@ extern HudUiMgrSensorTrackList g_HudUiMgrSensor_TrackList;
 }
 
 extern zVidImagePartial *g_HudUiWidget_ExclusiveDrawImage;
-extern HudUiMgrData g_HudUiMgr;
+extern HudUiMgrDataStorage g_HudUiMgr;
 extern HudUiTimerPanel *g_HudUiMgrTimerPanel;
 extern HudUiTimerPanelFloat *g_HudUiMgrTimerPanelFloat;
 extern HudUiStringMenu *g_HudUiMgrStringMenu;
@@ -92,7 +94,7 @@ extern int g_HudUiMgrSensor_RoundRobinTrackIndex;
 extern int g_HudUiMgrActiveModeCounterIndex;
 extern int g_HudUiMgrSensorTargetMarkerCount;
 extern int g_HudUiMgrWeaponState;
-extern HudUiNetGameSetupOverlayOwner g_HudUiNetGameSetupOverlayOwner;
+extern HudUiNetGameSetupOverlayOwnerStorage g_HudUiNetGameSetupOverlayOwner;
 
 struct HudUiRect {
     int left;
@@ -322,6 +324,7 @@ struct HudLayoutBase : HudUiContainer {
     HudUiRect activeRect;
     HudUiWidget widget0;
 
+    HudLayoutBase();
     static void Shutdown_Stub();
     void Destructor();
     virtual int SetActive(int active);
@@ -334,6 +337,7 @@ struct HudLayoutBase : HudUiContainer {
 };
 
 struct HudLayoutSW : HudLayoutBase {
+    HudLayoutSW();
     static HudLayoutSW *GlobalInit();
     static void RegisterAtExit();
     static void AtExitDestructor();
@@ -341,6 +345,7 @@ struct HudLayoutSW : HudLayoutBase {
     void GlobalDestructor();
     virtual int SetActive(int active);
 };
+union HudLayoutSWStorage;
 
 struct HudLayoutHW : HudLayoutBase {
     HudUiWidget widget1;
@@ -356,6 +361,7 @@ struct HudLayoutHW : HudLayoutBase {
     unsigned char reticleClipInitFlags;
     unsigned char unknown_349[0x03];
 
+    HudLayoutHW();
     static void CrtInitGlobalSingleton();
     static HudLayoutHW *GlobalInit();
     static void RegisterAtExit();
@@ -371,9 +377,10 @@ struct HudLayoutHW : HudLayoutBase {
     virtual void Enable();
     virtual void Disable();
 };
+union HudLayoutHWStorage;
 
-extern HudLayoutHW g_HudLayoutHW;
-extern HudLayoutSW g_HudLayoutSW;
+extern HudLayoutHWStorage g_HudLayoutHW;
+extern HudLayoutSWStorage g_HudLayoutSW;
 
 extern HudUiTextStack4 *g_HudUiChatMessageStack;
 extern HudUiTextStack4 *g_HudUiTopMessageStack;
@@ -1856,6 +1863,15 @@ RECOIL_STATIC_ASSERT(
     ) == 0x08
 );
 
+union HudUiNetGameSetupOverlayOwnerStorage {
+    unsigned long align;
+    unsigned char bytes[sizeof(HudUiNetGameSetupOverlayOwner)];
+};
+RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupOverlayOwnerStorage) == 0x0c);
+
+#define g_HudUiNetGameSetupOverlayOwner \
+    (*(HudUiNetGameSetupOverlayOwner *)&g_HudUiNetGameSetupOverlayOwner)
+
 struct HudUiClampedIntTextInput : HudUiNumericTextInput {
     int minValue;
     int maxValue;
@@ -2696,7 +2712,15 @@ RECOIL_STATIC_ASSERT(
     ) == 0x04
 );
 
-extern HudCmdDialogState g_HudCmdDialogState;
+union HudCmdDialogStateStorage {
+    unsigned long align;
+    unsigned char bytes[sizeof(HudCmdDialogState)];
+};
+RECOIL_STATIC_ASSERT(sizeof(HudCmdDialogStateStorage) == 0x08);
+
+extern HudCmdDialogStateStorage g_HudCmdDialogState;
+#define g_HudCmdDialogState \
+    (*(HudCmdDialogState *)&g_HudCmdDialogState)
 
 struct HudUiMessageBoxDialog : HudUiBackground {
     zVidRect32 blitRect;
@@ -2990,6 +3014,10 @@ struct HudUiTriplet : HudUiContainer {
     int fontWeightStart;
     int fontWeightEnd;
 
+    static void StaticInitWndClassNameAndRegisterAtExit();
+    static CString *ConstructWndClassName();
+    static void RegisterWndClassNameDtorAtExit();
+    static void DestroyWndClassName();
     HudUiTriplet * Constructor();
     void DestructorCore();
     void InterpolateLayout(float t);
@@ -3248,6 +3276,23 @@ RECOIL_STATIC_ASSERT(
     ) == 0x348
 );
 RECOIL_STATIC_ASSERT(sizeof(HudLayoutHW) == 0x34c);
+
+union HudLayoutSWStorage {
+    unsigned long align;
+    unsigned char bytes[sizeof(HudLayoutSW)];
+};
+RECOIL_STATIC_ASSERT(sizeof(HudLayoutSWStorage) == 0xec);
+
+union HudLayoutHWStorage {
+    unsigned long align;
+    unsigned char bytes[sizeof(HudLayoutHW)];
+};
+RECOIL_STATIC_ASSERT(sizeof(HudLayoutHWStorage) == 0x34c);
+
+#define g_HudLayoutSW \
+    (*(HudLayoutSW *)&g_HudLayoutSW)
+#define g_HudLayoutHW \
+    (*(HudLayoutHW *)&g_HudLayoutHW)
 RECOIL_STATIC_ASSERT(
     offsetof(
         HudUiMgrSensorBlock,
@@ -5184,6 +5229,16 @@ RECOIL_STATIC_ASSERT(
 );
 RECOIL_STATIC_ASSERT(sizeof(HudUiMgrMessageSelectionState) == 0x8);
 RECOIL_STATIC_ASSERT(sizeof(HudUiMgrData) == 0x7844);
+
+union HudUiMgrDataStorage {
+    unsigned long align;
+    unsigned char bytes[sizeof(HudUiMgrData)];
+};
+RECOIL_STATIC_ASSERT(sizeof(HudUiMgrDataStorage) == 0x7844);
+
+#define g_HudUiMgr \
+    (*(HudUiMgrData *)&g_HudUiMgr)
+
 RECOIL_STATIC_ASSERT(
     offsetof(
         HudUiPanel,

@@ -12,7 +12,7 @@ namespace {
      * BN diagnostic string data used by Display.c validation paths at
      * 0x44fdd0, 0x44fe50, 0x44fe90, 0x44ff10, and 0x44ff90.
      */
-    const char *kDisplaySourceFile = "D:\\Proj\\GameZRecoil\\zClass\\Display.c";
+    const char kDisplaySourceFile[] = "D:\\Proj\\GameZRecoil\\zClass\\Display.c";
 
     /**
      * Original static helper observed in callers 0x44fe90 and 0x44ff10

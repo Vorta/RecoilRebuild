@@ -180,16 +180,61 @@ inline int SaveLoadEntryCount(
  * Reimplements data 0x4f3ca8: g_RecoilApp.
  *
  * Purpose: stores the process-wide Recoil application object and embedded states.
+ * The explicit aligned storage preserves the original global symbol while the
+ * CRT row below constructs and destroys the typed app object without VC5
+ * emitting automatic global-constructor thunks for this definition.
  */
-RecoilApp g_RecoilApp;
+#undef g_RecoilApp
+RecoilAppStorage g_RecoilApp = {0};
+#define g_RecoilApp \
+    (*(RecoilApp *)&g_RecoilApp)
 /**
  * Reimplements data 0x4f3fb0: g_RecoilStateSaveLoadTransition.
  *
  * Purpose: stores the zero-initialized singleton save/load app-state
  * transition object; retail evidence models this as the complete 0x1c-byte
- * owner data object for RecoilStateSaveLoadTransition.
+ * owner data object for RecoilStateSaveLoadTransition. Explicit storage keeps
+ * the original symbol and leaves construction to the recovered lifecycle
+ * helpers instead of compiler-generated automatic startup thunks.
  */
-RecoilStateSaveLoadTransition g_RecoilStateSaveLoadTransition;
+#undef g_RecoilStateSaveLoadTransition
+RecoilStateSaveLoadTransitionStorage g_RecoilStateSaveLoadTransition = {0};
+#define g_RecoilStateSaveLoadTransition \
+    (*(RecoilStateSaveLoadTransition *)&g_RecoilStateSaveLoadTransition)
+
+namespace {
+
+/**
+ * Original static-lifetime helper with no standalone authored retail symbol.
+ * Purpose: destroy the explicitly stored process-wide Recoil application object
+ * from the CRT at-exit list.
+ */
+void RecoilApp_AtExitDestructor() {
+    g_RecoilApp.~RecoilApp();
+}
+
+/**
+ * Original static-lifetime helper with no standalone authored retail symbol.
+ * Purpose: construct the explicitly stored process-wide Recoil application
+ * object and register its at-exit destructor without typed global storage.
+ */
+void RecoilApp_StaticInitAndRegisterAtExit() {
+    new (&g_RecoilApp) RecoilApp;
+    atexit(RecoilApp_AtExitDestructor);
+}
+
+#if defined(_MSC_VER) && defined(_M_IX86)
+typedef void (__cdecl *RecoilAppCrtInitializerFn)();
+typedef void (__cdecl *RecoilStateSaveLoadTransitionCrtInitializerFn)();
+#pragma data_seg(".CRT$XCU")
+RecoilAppCrtInitializerFn s_RecoilAppCrtInit =
+    RecoilApp_StaticInitAndRegisterAtExit;
+RecoilStateSaveLoadTransitionCrtInitializerFn s_RecoilStateSaveLoadTransitionCrtInit =
+    RecoilStateSaveLoadTransition::StaticInitAndRegisterAtExit;
+#pragma data_seg()
+#endif
+
+} // namespace
 
 /**
  * Reimplements data 0x4dcad4: g_RecoilApp_SoundsZrdName.

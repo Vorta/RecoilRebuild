@@ -459,20 +459,26 @@ namespace zClass_Util {
             return 1;
         }
 
-        while (node->listCountB > 0) {
-            zClass_NodePartial *child = node->listB[0];
-            const int removeResult = zClass_Class::RemoveChild(
-                node,
-                child
-            );
-            if (removeResult != 0) {
-                return removeResult;
-            }
+        if (node->listCountB > 0) {
+            for (;;) {
+                zClass_NodePartial *child = node->listB[0];
+                const int removeResult = zClass_Class::RemoveChild(
+                    node,
+                    child
+                );
+                if (removeResult != 0) {
+                    return removeResult;
+                }
 
-            if (child->listCountA == 0) {
-                const int destroyResult = DestroyNodeRecursive(child);
-                if (destroyResult != 0) {
-                    return destroyResult;
+                if (child->listCountA == 0) {
+                    const int destroyResult = DestroyNodeRecursive(child);
+                    if (destroyResult != 0) {
+                        return destroyResult;
+                    }
+                }
+
+                if (node->listCountB <= 0) {
+                    break;
                 }
             }
         }

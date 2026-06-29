@@ -149,7 +149,7 @@ namespace {
      * The generic diagnostic text/format strings are pooled across zClass
      * callers, so their owner is shared rather than Camera.c-only.
      */
-    const char *kCameraSourceFile = "D:\\Proj\\GameZRecoil\\zClass\\Camera.c";
+    const char kCameraSourceFile[] = "D:\\Proj\\GameZRecoil\\zClass\\Camera.c";
 
     /**
      * Original static helper observed in camera validation callers
@@ -522,14 +522,18 @@ namespace zClass_Camera {
         zClass_NodePartial * child
     ) {
         if (parent == 0) {
-            ReportCameraError(
+            zError::ReportOld(
+                0x400,
+                kCameraSourceFile,
                 0x251,
                 "Null node pointer."
             );
             return 5;
         }
         if (child == 0) {
-            ReportCameraError(
+            zError::ReportOld(
+                0x400,
+                kCameraSourceFile,
                 0x252,
                 "Null node pointer."
             );

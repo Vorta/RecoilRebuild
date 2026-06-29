@@ -482,6 +482,14 @@ RECOIL_STATIC_ASSERT(
 );
 #endif
 
-extern RecoilApp g_RecoilApp;
+union RecoilAppStorage {
+    unsigned long align;
+    unsigned char bytes[sizeof(RecoilApp)];
+};
+RECOIL_STATIC_ASSERT(sizeof(RecoilAppStorage) == 0x228);
+
+extern RecoilAppStorage g_RecoilApp;
+#define g_RecoilApp \
+    (*(RecoilApp *)&g_RecoilApp)
 extern const AFX_MSGMAP_ENTRY g_RecoilApp_MessageEntries[1];
 extern const AFX_MSGMAP g_RecoilApp_MessageMap;

@@ -80,30 +80,29 @@ struct WestwoodOnlineUpgradeDialog : CDialog {
     static const AFX_MSGMAP_ENTRY messageEntries[];
 
     static const AFX_MSGMAP *__stdcall GetBaseMessageMapForMfc();
-    const AFX_MSGMAP * GetMessageMap() const;
-    int OnInitDialogBootstrap();
+    WestwoodOnlineUpgradeDialog(CWnd *parentWnd);
+    virtual const AFX_MSGMAP * GetMessageMap() const;
+    virtual BOOL OnInitDialog();
     WestwoodOnlineUpgradeDialog * Constructor(CWnd *parentWnd);
     void Destructor();
     WestwoodOnlineUpgradeDialog * ScalarDeletingDestructor(
         unsigned int flags
     );
-    void DoDataExchange(CDataExchange *dataExchange);
+    virtual void DoDataExchange(CDataExchange *dataExchange);
     int AppendStatusTextFmt(
         const char *format,
         ...
     );
     void SetSelectedProfilePlayerName(CString playerName);
     void SetSelectedProfileConnectString(CString connectString);
-    CString * GetSelectedProfilePlayerName(CString *outName);
-    CString * GetSelectedProfileConnectString(
-        CString *outConnectString
-    );
+    CString GetSelectedProfilePlayerName();
+    CString GetSelectedProfileConnectString();
     void OnRefreshListTimer(UINT_PTR timerId);
     void BeginDisconnectAndShowProgress();
     void BeginConnect();
     int CheckAndApplyUpgrade();
     int QueryStatus();
-    void UpdateSessionListQueryFromControls();
+    static void UpdateSessionListQueryFromControls();
     void RequestActiveListMode();
     void RequestListMode0();
     void RequestListMode11();

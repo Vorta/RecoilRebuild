@@ -314,8 +314,7 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnBootstrapServerList(
     }
 
     {
-        CString playerName;
-        g_pWestwoodOnlineUpgradeDialog->GetSelectedProfilePlayerName(&playerName);
+        CString playerName = g_pWestwoodOnlineUpgradeDialog->GetSelectedProfilePlayerName();
         strcpy(
             g_WestwoodOnlineUpgradeSelectedBootstrapServer.m_playerName,
             (const char *)playerName
@@ -323,8 +322,7 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnBootstrapServerList(
     }
 
     {
-        CString connectString;
-        g_pWestwoodOnlineUpgradeDialog->GetSelectedProfileConnectString(&connectString);
+        CString connectString = g_pWestwoodOnlineUpgradeDialog->GetSelectedProfileConnectString();
         strcpy(
             g_WestwoodOnlineUpgradeSelectedBootstrapServer.m_connectString,
             (const char *)connectString
@@ -680,7 +678,7 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordAndSessio
         );
         if (browseRecord->m_recordFlags != 0 &&
             g_WestwoodOnlineUpgradeCreateSessionFromQueryFlag == 1) {
-            g_pWestwoodOnlineUpgradeDialog->UpdateSessionListQueryFromControls();
+            WestwoodOnlineUpgradeDialog::UpdateSessionListQueryFromControls();
         }
 
         ((CWnd *)g_pWestwoodOnlineUpgradeDialog)
@@ -1023,8 +1021,8 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::LaunchSelectedSession(
 
             if (zNetwork_DPlay::CreateSessionFromStatusFields(&statusFields) != 0) {
                 zOpt::SetNetworkEnabled(1);
-                CString selectedPlayerName;
-                g_pWestwoodOnlineUpgradeDialog->GetSelectedProfilePlayerName(&selectedPlayerName);
+                CString selectedPlayerName =
+                    g_pWestwoodOnlineUpgradeDialog->GetSelectedProfilePlayerName();
                 zNetwork_DPlay::CreateLocalPlayerRecordAndRegister(
                     (char *)(const char *)selectedPlayerName
                 );
@@ -1037,20 +1035,16 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::LaunchSelectedSession(
             } else {
                 zOpt::SetNetworkEnabled(1);
                 {
-                    CString selectedPlayerName;
-                    g_pWestwoodOnlineUpgradeDialog->GetSelectedProfilePlayerName(
-                        &selectedPlayerName
-                    );
+                    CString selectedPlayerName =
+                        g_pWestwoodOnlineUpgradeDialog->GetSelectedProfilePlayerName();
                     zNetwork_DPlay::CreateLocalPlayerRecordAndRegister(
                         (char *)(const char *)selectedPlayerName
                     );
                 }
 
                 {
-                    CString selectedPlayerName;
-                    g_pWestwoodOnlineUpgradeDialog->GetSelectedProfilePlayerName(
-                        &selectedPlayerName
-                    );
+                    CString selectedPlayerName =
+                        g_pWestwoodOnlineUpgradeDialog->GetSelectedProfilePlayerName();
                     zOpt::SetPlayerName((const char *)selectedPlayerName);
                 }
                 launched = 1;

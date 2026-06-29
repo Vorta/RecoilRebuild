@@ -80,7 +80,15 @@ RECOIL_STATIC_ASSERT(
     ) == 0x14
 );
 
-extern RecoilStateMainMenuTransition g_RecoilState_MainMenuTransition;
+union RecoilStateMainMenuTransitionStorage {
+    unsigned long align;
+    unsigned char bytes[sizeof(RecoilStateMainMenuTransition)];
+};
+RECOIL_STATIC_ASSERT(sizeof(RecoilStateMainMenuTransitionStorage) == 0x18);
+
+extern RecoilStateMainMenuTransitionStorage g_RecoilState_MainMenuTransition;
+#define g_RecoilState_MainMenuTransition \
+    (*(RecoilStateMainMenuTransition *)&g_RecoilState_MainMenuTransition)
 
 struct HudUiMainMenuDialogBackground : HudUiBackground {
     HudUiMainMenuDialogBackground();

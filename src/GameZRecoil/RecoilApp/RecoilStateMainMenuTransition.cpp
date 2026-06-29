@@ -7,15 +7,19 @@
  * Reimplements data 0x4edc58: g_RecoilState_MainMenuTransition.
  *
  * Data owner: legacy.app_shell.class_recoilstatemainmenutransition. BN exposes
- * a 0x18-byte zero-initialized .data object of type
- * RecoilStateMainMenuTransition at 0x4edc58. StaticInit constructs it in place;
+ * a 0x18-byte zero-initialized .data object at 0x4edc58. The source keeps
+ * explicit aligned storage so VC5 does not emit an automatic compiler startup
+ * row; StaticInit constructs the typed singleton in place, and
  * AtExitDestructor destroys that same object. BN base-object xrefs are
  * StaticInit, AtExitDestructor, and QueueEnter.
  *
  * Purpose: own the global app-state singleton used while transitioning into
  * the main menu.
  */
-RecoilStateMainMenuTransition g_RecoilState_MainMenuTransition;
+#undef g_RecoilState_MainMenuTransition
+RecoilStateMainMenuTransitionStorage g_RecoilState_MainMenuTransition = {0};
+#define g_RecoilState_MainMenuTransition \
+    (*(RecoilStateMainMenuTransition *)&g_RecoilState_MainMenuTransition)
 
 /**
  * Reimplements 0x415170: RecoilStateMainMenuTransition::RecoilStateMainMenuTransition.
@@ -70,6 +74,15 @@ void RecoilStateMainMenuTransition::RegisterAtExit() {
 void RecoilStateMainMenuTransition::AtExitDestructor() {
     g_RecoilState_MainMenuTransition.~RecoilStateMainMenuTransition();
 }
+
+#if defined(_MSC_VER) && defined(_M_IX86)
+typedef void (__cdecl *MainMenuTransitionCrtInitializerFn)();
+/* VC5 emits this main-menu transition startup callback as a direct .CRT$XCU row. */
+#pragma data_seg(".CRT$XCU")
+MainMenuTransitionCrtInitializerFn s_MainMenuTransitionCrtInit =
+    RecoilStateMainMenuTransition::StaticInitAndRegisterAtExit;
+#pragma data_seg()
+#endif
 
 /**
  * Reimplements 0x4151b0: RecoilStateMainMenuTransition::~RecoilStateMainMenuTransition.

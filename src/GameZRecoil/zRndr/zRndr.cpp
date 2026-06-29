@@ -148,6 +148,11 @@ float gRndr_PerspTexScaledVOverZ2 = 0.0f;
  * Purpose: queued-texture scaled U/Z plane base.
  */
 float gRndr_PerspTexScaledUOverZBase = 0.0f;
+/**
+ * Reimplements data 0x56b20c: gRndr_PerspScratchReserved0.
+ * Purpose: preserves the authored zero dword between queued-texture
+ * perspective scratch fields.
+ */
 int gRndr_PerspScratchReserved0 = 0;
 /**
  * Reimplements data 0x56b210: gRndr_PerspPlaneOriginX.
@@ -184,6 +189,11 @@ float gRndr_PerspTexScaledUOverZStepY = 0.0f;
  * Purpose: queued-texture inverse-depth plane base.
  */
 float gRndr_PerspInvDepthBase = 0.0f;
+/**
+ * Reimplements data 0x56b224: gRndr_PerspScratchReserved1.
+ * Purpose: preserves the authored zero dword between queued-texture
+ * perspective scratch fields.
+ */
 int gRndr_PerspScratchReserved1 = 0;
 /**
  * Reimplements data 0x56b228: gRndr_PerspInvDepthStepX.

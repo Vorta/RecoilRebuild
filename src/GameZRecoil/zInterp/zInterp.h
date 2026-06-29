@@ -218,7 +218,17 @@ struct zInterp_GlobalContext : zInterp_Context {
     zInterp_Context * Constructor();
 };
 
-extern zInterp_GlobalContext g_zInterp_GlobalContext;
+RECOIL_STATIC_ASSERT(sizeof(zInterp_GlobalContext) == 0xcc);
+
+union zInterp_GlobalContextStorage {
+    unsigned long align;
+    unsigned char bytes[sizeof(zInterp_GlobalContext)];
+};
+RECOIL_STATIC_ASSERT(sizeof(zInterp_GlobalContextStorage) == 0xcc);
+
+extern zInterp_GlobalContextStorage g_zInterp_GlobalContext;
+#define g_zInterp_GlobalContext \
+    (*(zInterp_GlobalContext *)&g_zInterp_GlobalContext)
 
 namespace zInterp_Object3D {
 int __fastcall DefaultRenderAction(zClass_NodePartial *node);
