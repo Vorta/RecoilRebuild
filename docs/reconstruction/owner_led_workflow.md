@@ -29,7 +29,8 @@ PE/resource comparison commands, and embedded final-data blockers.
 section/raw/virtual/zero-fill or map placement still contradicts retail. Both
 are first-class binary-lane targets, but neither is a source owner. Resolve
 them by fixing the final-build or ranked object/source-file layout blockers,
-not by adding synthetic owner records.
+not by adding synthetic owner records. They block final executable acceptance
+and directly affected owner/data byte gates only.
 
 Owner links have a normalized relationship model. Schema version 1 ledgers are
 derived from `anchors`, `member_addresses`, `data_addresses`, and
@@ -54,7 +55,7 @@ Owner gate meanings:
 - `source`: source-faithful owner model is implemented, not an address slice or scaffold.
 - `data`: all touched authored `.data`, `.rdata`, and BSS owner facts are reconstructed.
 - `functional`: current behavior evidence exists at the owner or accepted target level.
-- `byte`: tier `S` owner-level byte/provider ABI evidence. For function/code owners this may be `deferred` while global owner/data blockers remain; when tier `S` is in scope, `python tools/recoil.py verify vc5 --owner <owner-id-or-address> --auto-chunk` is the default verification command. For data-owner entries it is accepted when the data-symbol byte and relocation identity evidence is accepted.
+- `byte`: tier `S` owner-level byte/provider ABI evidence. For function/code owners this may be `deferred` until the complete linked owner plus primary-owned, referenced, touched, and dependency data are ready for that owner's byte gate; when tier `S` is in scope, `python tools/recoil.py verify vc5 --owner <owner-id-or-address> --auto-chunk` is the default verification command. Unrelated owner/data debt and orphan data such as `0x4e5954` do not block unrelated source-owner `S`. For data-owner entries it is accepted when the data-symbol byte and relocation identity evidence is accepted.
 
 `plan set` now gates positive markers through this ledger. `Source owner ✅`
 requires a linked owner whose `boundary` and `source` gates are accepted, unless
@@ -62,6 +63,15 @@ the linked owner kind is `standalone`. `Data reimplemented ✅` requires the
 linked owner `data` gate to be accepted. `Data reimplemented ❎` requires owner
 `data=none` or a `standalone` owner. Tier `B`, `A`, and `S` promotions require
 accepted source ownership and accepted/no-data ownership.
+
+The only approved orphan initialized-data exception is the one row
+`0x4e5954..0x4e5a50` (`g_zInterp_UnresolvedFloatDefaults`). It remains authored
+initialized data, not provider, filler, or padding, and its accepted model is
+`data-equivalent-only`, never `source-faithful`. Accept it only with exact BN
+range/type/byte evidence, no base or interior xrefs, provider rejection,
+adjacent-owner exclusion, emitted production data, and VC5 data-symbol byte
+evidence. This exception is address-specific and cannot be reused for another
+row without separate user approval.
 
 Plan-tracked data globals use a separate data entry shape for canonical `.data`
 owner ranges only. Do not add `.rdata` plan entries or member rows inside a

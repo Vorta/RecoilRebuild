@@ -204,7 +204,7 @@ struct WestwoodOnlineUpgradeApiInitState {
     HINSTANCE moduleHandleSecondary;
     HINSTANCE moduleHandleTertiary;
     HANDLE bootstrapServerListEvent;
-    HANDLE statusTextEvent;
+    LONG eventSinkLiveCount;
     HANDLE failureEvent;
     CRITICAL_SECTION criticalSection0;
     CRITICAL_SECTION criticalSection1;
@@ -419,7 +419,7 @@ RECOIL_STATIC_ASSERT(
 RECOIL_STATIC_ASSERT(
     offsetof(
         WestwoodOnlineUpgradeApiInitState,
-        statusTextEvent
+        eventSinkLiveCount
     ) == 0x14
 );
 RECOIL_STATIC_ASSERT(

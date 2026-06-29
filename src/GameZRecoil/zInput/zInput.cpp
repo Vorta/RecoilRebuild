@@ -46,6 +46,28 @@ zInput_GlobalState g_zInput_GlobalStateStorage = {0};
  */
 int g_zInput_MouseActive = 0;
 /**
+ * Reimplements data 0x4e08cc: g_zInput_SourceFile_ZinKbdCpp.
+ * BN types this writable char[0x27] as the zin_kbd.cpp source-path literal
+ * passed to DI_ReportError by keyboard DirectInput failure paths.
+ * Purpose: Supplies the original keyboard source-file path for diagnostics.
+ */
+char g_zInput_SourceFile_ZinKbdCpp[0x27] =
+    "D:\\Proj\\GameZRecoil\\zInput\\zin_kbd.cpp";
+/**
+ * Reimplements data 0x4e08f4: g_zInput_MouseSensitivityX.
+ * BN stores this initialized float as 1.3 and Mouse_ApplyAccumulatedDelta uses
+ * it to scale horizontal mouse movement.
+ * Purpose: Stores the horizontal mouse sensitivity multiplier.
+ */
+float g_zInput_MouseSensitivityX = 1.3f;
+/**
+ * Reimplements data 0x4e08f8: g_zInput_MouseSensitivityY.
+ * BN stores this initialized float as 1.3 and Mouse_ApplyAccumulatedDelta uses
+ * it to scale vertical mouse movement.
+ * Purpose: Stores the vertical mouse sensitivity multiplier.
+ */
+float g_zInput_MouseSensitivityY = 1.3f;
+/**
  * Reimplements data 0x4e08fc: g_zInput_MouseCoopLevelFlags.
  * BN types this as the initialized DirectInput cooperative-level flags word
  * passed to the mouse device and updated by Mouse_SetCooperativeLevelFlags.
@@ -771,28 +793,6 @@ float g_zInput_MouseInvClientCenterX = 0.0f;
  * Purpose: Converts client-space vertical mouse deltas and positions.
  */
 float g_zInput_MouseInvClientCenterY = 0.0f;
-/**
- * Reimplements data 0x4e08cc: g_zInput_SourceFile_ZinKbdCpp.
- * BN types this writable char[0x27] as the zin_kbd.cpp source-path literal
- * passed to DI_ReportError by keyboard DirectInput failure paths.
- * Purpose: Supplies the original keyboard source-file path for diagnostics.
- */
-char g_zInput_SourceFile_ZinKbdCpp[0x27] =
-    "D:\\Proj\\GameZRecoil\\zInput\\zin_kbd.cpp";
-/**
- * Reimplements data 0x4e08f4: g_zInput_MouseSensitivityX.
- * BN stores this initialized float as 1.3 and Mouse_ApplyAccumulatedDelta uses
- * it to scale horizontal mouse movement.
- * Purpose: Stores the horizontal mouse sensitivity multiplier.
- */
-float g_zInput_MouseSensitivityX = 1.3f;
-/**
- * Reimplements data 0x4e08f8: g_zInput_MouseSensitivityY.
- * BN stores this initialized float as 1.3 and Mouse_ApplyAccumulatedDelta uses
- * it to scale vertical mouse movement.
- * Purpose: Stores the vertical mouse sensitivity multiplier.
- */
-float g_zInput_MouseSensitivityY = 1.3f;
 /**
  * Reimplements data 0x561cac: g_zInput_MouseWrapModeFlag.
  * Purpose: stores whether mouse motion wraps around the client area instead
@@ -3697,6 +3697,17 @@ int GlobalStateStaticInitAndRegisterAtExit() {
     GlobalStateStaticInit();
     return GlobalStateRegisterAtExit();
 }
+
+#if defined(_MSC_VER) && defined(_M_IX86)
+typedef void (__cdecl *ZInputCrtInitializerFn)();
+/* VC5 emits these zInput startup callbacks as direct .CRT$XCU rows. */
+#pragma data_seg(".CRT$XCU")
+ZInputCrtInitializerFn s_zInputCrtInit_BindGroupList =
+    (ZInputCrtInitializerFn)BindGroupList_StaticInitAndRegisterAtExit;
+ZInputCrtInitializerFn s_zInputCrtInit_GlobalState =
+    (ZInputCrtInitializerFn)GlobalStateStaticInitAndRegisterAtExit;
+#pragma data_seg()
+#endif
 
 /**
  * Reimplements 0x471b50: zInput::Init.

@@ -78,7 +78,6 @@ struct WestwoodOnlineUpgradeDownloadEventSink : IUnknown {
 extern "C" IWestwoodOnlineUpgradeDownload *g_pWestwoodOnlineUpgradeDownload;
 extern "C" WestwoodOnlineUpgradeDownloadEventSink *g_pWestwoodOnlineUpgradeDownloadEventSink;
 extern "C" DWORD g_WestwoodOnlineUpgradeDownloadAdviseCookie;
-extern "C" LONG g_WestwoodOnlineUpgradeEventSinkLiveCount;
 extern "C" WestwoodOnlineUpgradeDownloadReadyEntry *g_pWestwoodOnlineUpgradeDownloadReadyList;
 extern "C" char g_WestwoodOnlineUpgradeDownloadReadyPromptText[0x80];
 extern "C" char g_WestwoodOnlineUpgradeDownloadRestoreCwd[0x100];

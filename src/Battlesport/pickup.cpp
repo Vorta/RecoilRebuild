@@ -1011,6 +1011,19 @@ void PickupRespawnQueue::Init() {
     g_PickupRespawnQueue.count = 0;
 }
 
+#if defined(_MSC_VER) && defined(_M_IX86)
+typedef void (__cdecl *PickupCrtInitializerFn)();
+/* VC5 emits these pickup.cpp startup callbacks as direct .CRT$XCU rows. */
+#pragma data_seg(".CRT$XCU")
+PickupCrtInitializerFn s_PickupCrtInit_PrimarySpawnList =
+    PickupSpawnList::Primary_Init;
+PickupCrtInitializerFn s_PickupCrtInit_NetworkCopySpawnList =
+    PickupSpawnList::NetCopy_Init;
+PickupCrtInitializerFn s_PickupCrtInit_RespawnQueue =
+    PickupRespawnQueue::Init;
+#pragma data_seg()
+#endif
+
 /**
  * Reimplements 0x41d8a0: PickupSpawnList::RemoveAndFreeNode (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: unlink a pickup spawn from a spawn list and release its node.

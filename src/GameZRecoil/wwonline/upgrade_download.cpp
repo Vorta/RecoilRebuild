@@ -1,6 +1,7 @@
 #include "Battlesport/Mfc42Abi.h"
 #include "GameZRecoil/wwonline/upgrade_download.h"
 
+#include "Battlesport/WestwoodOnlineUpgradeApi.h"
 #include "Battlesport/WestwoodOnlineUpgradeDialog.h"
 #include "GameZRecoil/zCom/zCom.h"
 
@@ -207,7 +208,7 @@ HRESULT STDMETHODCALLTYPE WestwoodOnlineUpgradeDownloadEventSink::QueryInterface
  */
 WestwoodOnlineUpgradeDownloadEventSink::~WestwoodOnlineUpgradeDownloadEventSink() {
     m_refCountAndLock.refCount = 1;
-    InterlockedDecrement(&g_WestwoodOnlineUpgradeEventSinkLiveCount);
+    InterlockedDecrement(&g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount);
     DeleteCriticalSection(&m_refCountAndLock.lock);
 }
 
@@ -224,7 +225,7 @@ HRESULT __stdcall WestwoodOnlineUpgradeDownloadEventSink::CreateInstance(
 
     if (eventSink != 0) {
         eventSink->m_refCountAndLock.Init();
-        InterlockedIncrement(&g_WestwoodOnlineUpgradeEventSinkLiveCount);
+        InterlockedIncrement(&g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount);
         result = S_OK;
     }
 

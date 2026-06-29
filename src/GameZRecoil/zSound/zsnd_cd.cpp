@@ -127,6 +127,15 @@ void StaticInit() {
 }
 } // namespace zSndCdTrackList
 
+#if defined(_MSC_VER) && defined(_M_IX86)
+typedef void (__cdecl *ZSndCdCrtInitializerFn)();
+/* VC5 emits the zsnd_cd.cpp CD track-list startup callback as a direct .CRT$XCU row. */
+#pragma data_seg(".CRT$XCU")
+ZSndCdCrtInitializerFn s_ZSndCdCrtInit_TrackList =
+    zSndCdTrackList::StaticInit;
+#pragma data_seg()
+#endif
+
 namespace zSnd {
 /**
  * Reimplements 0x4a1290: zSnd::SetActiveBackendPreInit.

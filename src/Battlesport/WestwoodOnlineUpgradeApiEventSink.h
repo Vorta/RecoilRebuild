@@ -336,8 +336,6 @@ struct WestwoodOnlineUpgradeApiEventSink : IUnknown {
     );
 };
 
-extern "C" LONG g_WestwoodOnlineUpgradeEventSinkLiveCount;
-
 RECOIL_STATIC_ASSERT(sizeof(WestwoodOnlineUpgradeApiEventSink) == 0x20);
 RECOIL_STATIC_ASSERT(
     offsetof(

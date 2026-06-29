@@ -4085,3 +4085,16 @@ GameNetPlayerRow *__fastcall AppendNewRow(
     return row;
 }
 } // namespace GameNetPlayerRowList
+
+#if defined(_MSC_VER) && defined(_M_IX86)
+typedef void (__cdecl *GameNetCrtInitializerFn)();
+/* VC5 emits these GameNet.cpp startup callbacks as direct .CRT$XCU rows. */
+#pragma data_seg(".CRT$XCU")
+GameNetCrtInitializerFn s_GameNetCrtInit_RegisterMultiplayerMaps =
+    Mission::RegisterMultiplayerMaps;
+GameNetCrtInitializerFn s_GameNetCrtInit_SpawnPointListInitGlobals =
+    GameNetSpawnPointList::InitGlobals;
+GameNetCrtInitializerFn s_GameNetCrtInit_PlayerRowListReset =
+    GameNetPlayerRowList::Reset;
+#pragma data_seg()
+#endif

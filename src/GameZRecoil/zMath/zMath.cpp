@@ -232,6 +232,17 @@ int zMath::CrtMatherrHandler(
     return 0;
 }
 
+/**
+ * Provider-boundary CRT hook: user-supplied _matherr installed by VC5 CRTEXE startup.
+ * Purpose: exposes the zMath math exception handler to the CRT without pulling
+ * the default MSVCRT merr.obj handler.
+ */
+extern "C" int __cdecl _matherr(
+    _exception *except
+) {
+    return zMath::CrtMatherrHandler(except);
+}
+
 namespace {
 int g_matrixIdentityFlagSlots[32] = {0};
 float *g_matrixSlots[32] = {0};

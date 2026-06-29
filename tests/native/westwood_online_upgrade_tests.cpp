@@ -4531,12 +4531,12 @@ extern "C" int westwood_online_upgrade_config_show_modal_apply_smoke(void)
 #if !defined(RECOIL_NATIVE_WESTWOOD_ONLINE_UPGRADE_CONFIG_SMOKES_ONLY)
 extern "C" int westwood_online_upgrade_download_callback_no_op_smoke(void)
 {
-    const LONG oldLiveCount = g_WestwoodOnlineUpgradeEventSinkLiveCount;
+    const LONG oldLiveCount = g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount;
     WestwoodOnlineUpgradeDownloadEventSink *sink = 0;
     HRESULT createResult = WestwoodOnlineUpgradeDownloadEventSink::CreateInstance(&sink);
     if (createResult != S_OK || sink == 0)
     {
-        g_WestwoodOnlineUpgradeEventSinkLiveCount = oldLiveCount;
+        g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount = oldLiveCount;
         return 2;
     }
 
@@ -4551,13 +4551,13 @@ extern "C" int westwood_online_upgrade_download_callback_no_op_smoke(void)
             : 1;
     sink->~WestwoodOnlineUpgradeDownloadEventSink();
     ::operator delete(sink);
-    g_WestwoodOnlineUpgradeEventSinkLiveCount = oldLiveCount;
+    g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount = oldLiveCount;
     return failure;
 }
 
 extern "C" int westwood_online_upgrade_download_event_sink_create_instance_smoke(void)
 {
-    const LONG oldLiveCount = g_WestwoodOnlineUpgradeEventSinkLiveCount;
+    const LONG oldLiveCount = g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount;
     WestwoodOnlineUpgradeDownloadEventSink *eventSink = 0;
 
     HRESULT result = WestwoodOnlineUpgradeDownloadEventSink::CreateInstance(&eventSink);
@@ -4571,7 +4571,7 @@ extern "C" int westwood_online_upgrade_download_event_sink_create_instance_smoke
         failure = 2;
     }
     else if (eventSink->m_refCountAndLock.refCount != 0 ||
-             g_WestwoodOnlineUpgradeEventSinkLiveCount != oldLiveCount + 1)
+             g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount != oldLiveCount + 1)
     {
         failure = 3;
     }
@@ -4589,13 +4589,13 @@ extern "C" int westwood_online_upgrade_download_event_sink_create_instance_smoke
         DeleteCriticalSection(&eventSink->m_refCountAndLock.lock);
         ::operator delete(eventSink);
     }
-    g_WestwoodOnlineUpgradeEventSinkLiveCount = oldLiveCount;
+    g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount = oldLiveCount;
     return failure;
 }
 
 extern "C" int westwood_online_upgrade_download_event_sink_query_interface_smoke(void)
 {
-    const LONG oldLiveCount = g_WestwoodOnlineUpgradeEventSinkLiveCount;
+    const LONG oldLiveCount = g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount;
     WestwoodOnlineUpgradeDownloadEventSink *sink = 0;
     GUID otherIid = g_WestwoodOnlineUpgradeDownloadEventSink_IID;
     void *outInterface;
@@ -4604,7 +4604,7 @@ extern "C" int westwood_online_upgrade_download_event_sink_query_interface_smoke
     result = WestwoodOnlineUpgradeDownloadEventSink::CreateInstance(&sink);
     if (result != S_OK || sink == 0)
     {
-        g_WestwoodOnlineUpgradeEventSinkLiveCount = oldLiveCount;
+        g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount = oldLiveCount;
         return 5;
     }
     sink->m_refCountAndLock.refCount = 0;
@@ -4619,7 +4619,7 @@ extern "C" int westwood_online_upgrade_download_event_sink_query_interface_smoke
     {
         sink->~WestwoodOnlineUpgradeDownloadEventSink();
         ::operator delete(sink);
-        g_WestwoodOnlineUpgradeEventSinkLiveCount = oldLiveCount;
+        g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount = oldLiveCount;
         return 1;
     }
 
@@ -4634,7 +4634,7 @@ extern "C" int westwood_online_upgrade_download_event_sink_query_interface_smoke
     {
         sink->~WestwoodOnlineUpgradeDownloadEventSink();
         ::operator delete(sink);
-        g_WestwoodOnlineUpgradeEventSinkLiveCount = oldLiveCount;
+        g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount = oldLiveCount;
         return 2;
     }
 
@@ -4650,7 +4650,7 @@ extern "C" int westwood_online_upgrade_download_event_sink_query_interface_smoke
     {
         sink->~WestwoodOnlineUpgradeDownloadEventSink();
         ::operator delete(sink);
-        g_WestwoodOnlineUpgradeEventSinkLiveCount = oldLiveCount;
+        g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount = oldLiveCount;
         return 3;
     }
 
@@ -4661,13 +4661,13 @@ extern "C" int westwood_online_upgrade_download_event_sink_query_interface_smoke
     const int failure = result == E_POINTER ? 0 : 4;
     sink->~WestwoodOnlineUpgradeDownloadEventSink();
     ::operator delete(sink);
-    g_WestwoodOnlineUpgradeEventSinkLiveCount = oldLiveCount;
+    g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount = oldLiveCount;
     return failure;
 }
 
 extern "C" int westwood_online_upgrade_api_event_sink_create_instance_smoke(void)
 {
-    const LONG oldLiveCount = g_WestwoodOnlineUpgradeEventSinkLiveCount;
+    const LONG oldLiveCount = g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount;
     WestwoodOnlineUpgradeApiEventSink *eventSink = 0;
 
     HRESULT result = WestwoodOnlineUpgradeApiEventSink::CreateInstance(&eventSink);
@@ -4681,7 +4681,7 @@ extern "C" int westwood_online_upgrade_api_event_sink_create_instance_smoke(void
         failure = 2;
     }
     else if (eventSink->m_refCountAndLock.refCount != 0 ||
-             g_WestwoodOnlineUpgradeEventSinkLiveCount != oldLiveCount + 1)
+             g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount != oldLiveCount + 1)
     {
         failure = 3;
     }
@@ -4699,7 +4699,7 @@ extern "C" int westwood_online_upgrade_api_event_sink_create_instance_smoke(void
         DeleteCriticalSection(&eventSink->m_refCountAndLock.lock);
         ::operator delete(eventSink);
     }
-    g_WestwoodOnlineUpgradeEventSinkLiveCount = oldLiveCount;
+    g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount = oldLiveCount;
     return failure;
 }
 
@@ -4768,7 +4768,7 @@ extern "C" int westwood_online_upgrade_api_event_sink_query_interface_smoke(void
 
 extern "C" int westwood_online_upgrade_api_event_sink_lifetime_smoke(void)
 {
-    const LONG oldLiveCount = g_WestwoodOnlineUpgradeEventSinkLiveCount;
+    const LONG oldLiveCount = g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount;
     WestwoodOnlineUpgradeApiEventSinkVtable otherVtable = {};
     int failure = 0;
 
@@ -4776,11 +4776,11 @@ extern "C" int westwood_online_upgrade_api_event_sink_lifetime_smoke(void)
     stackSink.m_refCountAndLock.Init();
     stackSink.m_vftable = &otherVtable;
     stackSink.m_refCountAndLock.refCount = 5;
-    g_WestwoodOnlineUpgradeEventSinkLiveCount = 10;
+    g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount = 10;
     stackSink.Destructor();
     if (stackSink.m_vftable != &g_WestwoodOnlineUpgradeApiEventSink_Vtbl ||
         stackSink.m_refCountAndLock.refCount != 1 ||
-        g_WestwoodOnlineUpgradeEventSinkLiveCount != 9)
+        g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount != 9)
     {
         failure = 1;
     }
@@ -4791,13 +4791,13 @@ extern "C" int westwood_online_upgrade_api_event_sink_lifetime_smoke(void)
     eventSink->m_refCountAndLock.Init();
     eventSink->m_vftable = &otherVtable;
     eventSink->m_refCountAndLock.refCount = 2;
-    g_WestwoodOnlineUpgradeEventSinkLiveCount = 20;
+    g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount = 20;
     ULONG refCount = WestwoodOnlineUpgradeApiEventSink::Release(eventSink);
     if (failure == 0 &&
         (refCount != 1 ||
          eventSink->m_refCountAndLock.refCount != 1 ||
          eventSink->m_vftable != &otherVtable ||
-         g_WestwoodOnlineUpgradeEventSinkLiveCount != 20))
+         g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount != 20))
     {
         failure = 2;
     }
@@ -4809,16 +4809,16 @@ extern "C" int westwood_online_upgrade_api_event_sink_lifetime_smoke(void)
     eventSink->m_refCountAndLock.Init();
     eventSink->m_vftable = &otherVtable;
     eventSink->m_refCountAndLock.refCount = 1;
-    g_WestwoodOnlineUpgradeEventSinkLiveCount = 20;
+    g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount = 20;
     refCount = WestwoodOnlineUpgradeApiEventSink::Release(eventSink);
     if (failure == 0 &&
         (refCount != 0 ||
-         g_WestwoodOnlineUpgradeEventSinkLiveCount != 19))
+         g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount != 19))
     {
         failure = 3;
     }
 
-    g_WestwoodOnlineUpgradeEventSinkLiveCount = oldLiveCount;
+    g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount = oldLiveCount;
     return failure;
 }
 
@@ -4829,7 +4829,7 @@ extern "C" int westwood_online_upgrade_download_create_instance_advise_smoke(voi
     const DWORD oldCookie = g_WestwoodOnlineUpgradeDownloadAdviseCookie;
     const int oldSinkOffset =
         g_WestwoodOnlineUpgradeDownloadEventSinkConnectionOffset;
-    const LONG oldLiveCount = g_WestwoodOnlineUpgradeEventSinkLiveCount;
+    const LONG oldLiveCount = g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount;
     ImportFunctionPatch import = {};
 
     g_shutdownUnknown.vftable = &g_shutdownUnknownVtable;
@@ -4869,7 +4869,7 @@ extern "C" int westwood_online_upgrade_download_create_instance_advise_smoke(voi
         else if (g_pWestwoodOnlineUpgradeDownload !=
                      (IUnknown *)&g_shutdownUnknown ||
                  g_pWestwoodOnlineUpgradeDownloadEventSink == 0 ||
-                 g_WestwoodOnlineUpgradeEventSinkLiveCount != oldLiveCount + 1)
+                 g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount != oldLiveCount + 1)
         {
             failure = 2;
         }
@@ -4901,7 +4901,7 @@ extern "C" int westwood_online_upgrade_download_create_instance_advise_smoke(voi
     g_pWestwoodOnlineUpgradeDownloadEventSink = oldSink;
     g_WestwoodOnlineUpgradeDownloadAdviseCookie = oldCookie;
     g_WestwoodOnlineUpgradeDownloadEventSinkConnectionOffset = oldSinkOffset;
-    g_WestwoodOnlineUpgradeEventSinkLiveCount = oldLiveCount;
+    g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount = oldLiveCount;
     RestoreImportPatch(import);
     return failure;
 }
@@ -5266,38 +5266,38 @@ extern "C" int westwood_online_upgrade_shared_com_add_ref_smoke(void)
 
 extern "C" int westwood_online_upgrade_download_event_sink_destructor_smoke(void)
 {
-    LONG const oldLiveCount = g_WestwoodOnlineUpgradeEventSinkLiveCount;
+    LONG const oldLiveCount = g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount;
     WestwoodOnlineUpgradeDownloadEventSink *sink = new WestwoodOnlineUpgradeDownloadEventSink;
 
     sink->m_refCountAndLock.Init();
     sink->m_refCountAndLock.refCount = 9;
-    g_WestwoodOnlineUpgradeEventSinkLiveCount = 5;
+    g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount = 5;
 
     sink->~WestwoodOnlineUpgradeDownloadEventSink();
 
     const int failure =
         sink->m_refCountAndLock.refCount == 1 &&
-                g_WestwoodOnlineUpgradeEventSinkLiveCount == 4
+                g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount == 4
             ? 0
             : 1;
 
     ::operator delete(sink);
-    g_WestwoodOnlineUpgradeEventSinkLiveCount = oldLiveCount;
+    g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount = oldLiveCount;
     return failure;
 }
 
 extern "C" int westwood_online_upgrade_download_event_sink_release_smoke(void)
 {
-    LONG const oldLiveCount = g_WestwoodOnlineUpgradeEventSinkLiveCount;
+    LONG const oldLiveCount = g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount;
     WestwoodOnlineUpgradeDownloadEventSink *stackSink = new WestwoodOnlineUpgradeDownloadEventSink;
     stackSink->m_refCountAndLock.Init();
     stackSink->m_refCountAndLock.refCount = 2;
-    g_WestwoodOnlineUpgradeEventSinkLiveCount = 7;
+    g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount = 7;
 
     ULONG refCount = stackSink->Release();
     int failure = refCount == 1 &&
                           stackSink->m_refCountAndLock.refCount == 1 &&
-                          g_WestwoodOnlineUpgradeEventSinkLiveCount == 7
+                          g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount == 7
                       ? 0
                       : 1;
     stackSink->~WestwoodOnlineUpgradeDownloadEventSink();
@@ -5309,16 +5309,16 @@ extern "C" int westwood_online_upgrade_download_event_sink_release_smoke(void)
             new WestwoodOnlineUpgradeDownloadEventSink;
         heapSink->m_refCountAndLock.Init();
         heapSink->m_refCountAndLock.refCount = 1;
-        g_WestwoodOnlineUpgradeEventSinkLiveCount = 3;
+        g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount = 3;
 
         refCount = heapSink->Release();
-        if (refCount != 0 || g_WestwoodOnlineUpgradeEventSinkLiveCount != 2)
+        if (refCount != 0 || g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount != 2)
         {
             failure = 2;
         }
     }
 
-    g_WestwoodOnlineUpgradeEventSinkLiveCount = oldLiveCount;
+    g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount = oldLiveCount;
     return failure;
 }
 
@@ -5367,7 +5367,7 @@ extern "C" int westwood_online_upgrade_progress_dialog_dlg_proc_smoke(void)
     WestwoodOnlineUpgradeDownloadReadyEntry *const oldReadyList =
         g_pWestwoodOnlineUpgradeDownloadReadyList;
     const DWORD oldCookie = g_WestwoodOnlineUpgradeDownloadAdviseCookie;
-    const LONG oldLiveCount = g_WestwoodOnlineUpgradeEventSinkLiveCount;
+    const LONG oldLiveCount = g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount;
     const int oldDialogResult = g_WestwoodOnlineUpgradeDownloadDialogResult;
     HWND const oldProgressHwnd = g_hWestwoodOnlineUpgradeProgressDialog;
     char oldPrompt[sizeof(g_WestwoodOnlineUpgradeDownloadReadyPromptText)];
@@ -5462,7 +5462,7 @@ extern "C" int westwood_online_upgrade_progress_dialog_dlg_proc_smoke(void)
     g_pWestwoodOnlineUpgradeDownloadEventSink = 0;
     g_pWestwoodOnlineUpgradeDownloadReadyList = &entry;
     g_WestwoodOnlineUpgradeDownloadAdviseCookie = 0;
-    g_WestwoodOnlineUpgradeEventSinkLiveCount = oldLiveCount;
+    g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount = oldLiveCount;
     g_WestwoodOnlineUpgradeDownloadDialogResult = 99;
     g_hWestwoodOnlineUpgradeProgressDialog = 0;
 
@@ -5476,7 +5476,7 @@ extern "C" int westwood_online_upgrade_progress_dialog_dlg_proc_smoke(void)
             g_pWestwoodOnlineUpgradeDownload !=
                 (IUnknown *)&g_downloadDlgFakeObject ||
             g_pWestwoodOnlineUpgradeDownloadEventSink == 0 ||
-            g_WestwoodOnlineUpgradeEventSinkLiveCount != oldLiveCount + 1 ||
+            g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount != oldLiveCount + 1 ||
             g_shutdownAdviseCalls != 1)
         {
             failure = 1;
@@ -5642,7 +5642,7 @@ extern "C" int westwood_online_upgrade_progress_dialog_dlg_proc_smoke(void)
     g_pWestwoodOnlineUpgradeDownloadEventSink = oldSink;
     g_pWestwoodOnlineUpgradeDownloadReadyList = oldReadyList;
     g_WestwoodOnlineUpgradeDownloadAdviseCookie = oldCookie;
-    g_WestwoodOnlineUpgradeEventSinkLiveCount = oldLiveCount;
+    g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount = oldLiveCount;
     g_WestwoodOnlineUpgradeDownloadDialogResult = oldDialogResult;
     g_hWestwoodOnlineUpgradeProgressDialog = oldProgressHwnd;
     memcpy(g_WestwoodOnlineUpgradeDownloadReadyPromptText,

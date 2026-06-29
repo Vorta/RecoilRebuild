@@ -83,7 +83,8 @@ python tools/recoil.py status 0xNNNNNN
 `owner next --lane binary` can print global non-ledger work units:
 `work_unit=final-repro` for final executable reproducibility and
 `work_unit=final-data-layout` for linked `.data` layout drift. Neither is a
-SOURCE_OWNERS record.
+SOURCE_OWNERS record. They block final executable acceptance and directly
+affected owner/data byte gates only, not unrelated source-owner tier `S` work.
 
 `plan next --lane binary` and
 `plan next --binary messages --lane binary` print target-qualified primary,
@@ -91,6 +92,10 @@ secondary, and tertiary scopes. `plan batch --binary messages --lane binary
 --spawnable-only` selects companion-DLL worker candidates.
 
 Do not split a non-standalone source-owner work unit into source-file slices.
+Tier `S` is owner-scoped: schedule or verify the complete linked source owner
+only when that owner plus its primary-owned, referenced, touched, and dependency
+data are ready for the byte gate. Unrelated owner/data debt, including orphan
+data such as `0x4e5954`, does not block unrelated owner-scoped tier `S`.
 Schedule Recoil.exe and `messages.dll` workers together only when BN database
 targets, sections, source paths, ledgers, and generated outputs do not overlap.
 If evidence shows a plan group belongs in another scheduling section, inspect

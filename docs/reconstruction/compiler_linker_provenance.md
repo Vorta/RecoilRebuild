@@ -14,7 +14,7 @@ This ledger records the current compiler/linker assumptions used for source-fait
 The final candidate executable driver is `tools/_recoil/config/vc5_final_build.json`.
 
 - Compiler environment: `D:\Recoil Project\Compiler\VC5SP3\vc5sp3-env.cmd`
-- Compiler flags: `/nologo /TP /W3 /G5 /O2 /Ob0 /MD /GX /GR /Zp4`
+- Compiler flags: `/nologo /TP /W3 /G5 /O2 /Ob0 /MD /GX /Zp4`
 - Resource flags: `/r`
 - Link flags: `/nologo /MACHINE:IX86 /SUBSYSTEM:WINDOWS /INCREMENTAL:NO /FIXED /BASE:0x400000`
 - Runtime and provider inputs: VC5SP3 CRT/MFC import libraries, repo-local MFC42, repo-local DirectX 6 libraries, and the original PE facts in `.agent/REFERENCE_EXECUTABLE.json`.

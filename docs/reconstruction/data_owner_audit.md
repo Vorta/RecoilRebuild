@@ -44,7 +44,8 @@ deltas or plan-correlated layout contradictions remain,
 `work_unit=final-repro` is the whole final executable lane;
 `work_unit=final-data-layout` is the nested linked-data blocker. Neither is a
 SOURCE_OWNERS record and neither should be accepted by editing
-`.agent/SOURCE_OWNERS.json`.
+`.agent/SOURCE_OWNERS.json`. They block final executable acceptance and
+directly affected data rows or owner byte gates only.
 
 `--strict` returns nonzero when section deltas are present. For this audit that
 is evidence that final data byte identity is blocked, not necessarily a tool
@@ -59,7 +60,8 @@ address drift or missing candidate map symbols. The remaining 69 were expanded
 through affected owner byte gates. This was not a global blanket downgrade, but
 it also was not byte-for-byte proof that every affected initializer's contents
 mismatch. It was a conservative owner-byte-gate block caused by final executable
-`.data` raw/virtual layout drift.
+`.data` raw/virtual layout drift, not a block on unrelated source-owner tier
+`S` work whose owner/data byte gates are ready.
 
 ## Acceptance Packet
 

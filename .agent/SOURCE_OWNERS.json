@@ -295,7 +295,7 @@
         "src/Battlesport/CZRecoilFrame.h"
       ],
       "dependencies": [
-        "audio_fmv"
+        "engine.zsound.backend_option_accessors"
       ],
       "gates": {
         "boundary": "accepted",
@@ -312,7 +312,8 @@
         "0x431900 and 0x431920 handler bodies touch no authored globals directly; CD-audio state is accessed only through accepted zSnd option helper dependencies, and inbound CZRecoilFrame message-map data is covered by the accepted app-shell message-map data owner.",
         "Functional verification passed for czrecoil_frame_toggle_cd_audio at 0x431900 and czrecoil_frame_update_cd_audio_cmd_ui at 0x431920 using czrecoil_frame_menu_toggle_smoke.",
         "No focused VC5 byte target covers 0x431900 or 0x431920 yet; tier S remains deferred while global authored owner/data blockers remain.",
-        "Boundary/source/data/functional gates are accepted for the CD-audio menu handler slice; only deferred byte evidence remains."
+        "Boundary/source/data/functional gates are accepted for the CD-audio menu handler slice; only deferred byte evidence remains.",
+        "Canonicalized stale broad audio_fmv dependency to exact zSound CD-audio option accessor owner from frontier 0x431900/0x431920."
       ]
     },
     {
@@ -387,8 +388,7 @@
         "src/Battlesport/CZGameFrame.cpp"
       ],
       "dependencies": [
-        "app_shell.czrecoil_frame_mfc_runtime_message_maps",
-        "app_shell.czgame_frame_mfc_runtime_message_maps"
+        "app_shell.czrecoil_frame_mfc_runtime_message_maps"
       ],
       "gates": {
         "boundary": "accepted",
@@ -416,7 +416,8 @@
         "BN/source evidence confirms 0x4317a0/0x4317b0/0x4317c0 forward to typed EnsureHwApiInitialized selectors and 0x4317d0 uses typed CZRecoilFrame/zVid/menu APIs; no production source-shape changes required.",
         "Current session verified newly linked CZRecoilFrame::OnUpdateHwApi0CmdUI 0x431870; existing typed class source already matched BN.",
         "BN/source evidence confirms OnUpdateHwApi1/2/3CmdUI forward selectors to accepted UpdateHwApiMenuItem and OnUpdateFullscreenCmdUI removes the fullscreen menu command through typed MFC menu APIs.",
-        "Current session verified CZRecoilFrame command UI handlers 0x4318b0, 0x4318c0, 0x4318d0, and 0x4318e0; existing typed source matched BN."
+        "Current session verified CZRecoilFrame command UI handlers 0x4318b0, 0x4318c0, 0x4318d0, and 0x4318e0; existing typed source matched BN.",
+        "Removed stale CZGameFrame-only message-map label; existing app_shell.czrecoil_frame_mfc_runtime_message_maps covers CZRecoilFrame and CZGameFrame runtime/message maps."
       ]
     },
     {
@@ -1846,9 +1847,15 @@
         "src/GameZRecoil/zFMV/fmv_script.cpp"
       ],
       "dependencies": [
-        "legacy.audio_fmv.playback_core",
-        "engine.render_video_blit_and_view_context",
-        "legacy.audio_fmv.class_zfmv_action_script"
+        "legacy.audio_fmv.class_zfmv_playback",
+        "audio_fmv.zfmv_action_play_mci_dest_rect_runtime",
+        "legacy.render_video.namespace_zrndr",
+        "render_video.zvideo_surface_state_dispatch_helpers",
+        "render_video.zvideo_buff_capture_surface_to_image",
+        "render_video.zvideo_primary_postprocess_surface",
+        "render_video.zvideo_primary_active_blit",
+        "render_video.zvideo_adjust_surfaces_if_enabled",
+        "engine.zimage.zvid_image_release_helpers"
       ],
       "gates": {
         "boundary": "accepted",
@@ -1863,7 +1870,8 @@
         "zFMV_ActionPlayMci owner boundary/source accepted from BN/source-owner mapper; data remains blocked on playback/render-video dependencies and functional smoke registration is pending.",
         "Same-session native smoke repair and functional verification passed PlayMci constructor/destructor/update/begin/end targets; data gate remains blocked on render/video helper data-marker chain for End.",
         "Same-session PlayMci data blocker resolved: constructor dest-rect data accepted, destructor/update touch no unresolved authored globals, Begin depends on accepted zFMV_Playback data, and End render/video helper data-marker chain was routed to accepted narrow render owners. PlayMci native functional smokes passed for constructor/destructor/update/begin/end.",
-        "Owner/plan consistency cleanup: primary owner links normalized so each accepted plan row has one canonical SOURCE_OWNERS primary link; former consumer/touched-data relationships preserved as owner dependencies."
+        "Owner/plan consistency cleanup: primary owner links normalized so each accepted plan row has one canonical SOURCE_OWNERS primary link; former consumer/touched-data relationships preserved as owner dependencies.",
+        "Audio source-owner scrutiny packet 019f1268 allowed replacing invalid/stale PlayMci dependency edges with canonical playback, dest-rect data, zRndr, and direct render/video helper owners from current frontier/owner facts"
       ]
     },
     {
@@ -2728,12 +2736,7 @@
       "member_addresses": [
         "0x41d220"
       ],
-      "data_addresses": [
-        {
-          "address": "0x4d05bc",
-          "name": "kStatusPickupFullThreshold"
-        }
-      ],
+      "data_addresses": [],
       "source_paths": [],
       "dependencies": [
         "battlesport_gameplay.pickup_runtime_rdata_literals",
@@ -3664,7 +3667,7 @@
         "src/Battlesport/pickup.cpp"
       ],
       "dependencies": [
-        "battlesport_gameplay.pickup_type_table",
+        "legacy.battlesport_gameplay.subsystem_pickup",
         "battlesport_gameplay.pickup_shutdown",
         "battlesport_gameplay.pickup_spawn_list_clear",
         "battlesport_gameplay.pickup_spawn_list_network_copy_init"
@@ -3684,7 +3687,8 @@
         "Complete owner data scope is linked: 0x4f3318 g_PickupSpawnList_Primary, 0x4f32f8 g_PickupSpawnList_NetworkCopy, 0x4dcf20 g_PickupPkt11Flag2Delta, and 0x4dcf30 g_PickupPkt11Flag8Delta; VC5 data-symbol target pickup_spawn_sync_globals passed with zero unmasked mismatches for all four 16-byte globals.",
         "Parent reran functional targets successfully: pickup_spawn_list_contains_pickup_id, pickup_send_pkt11_flag2_delta, pickup_send_pkt11_flag8_delta, pickup_send_pkt11_create_delta, and pickup_reconcile_primary_and_network_copy_spawn_lists.",
         "Tier S byte verification is deferred by current global owner/data policy; this pass establishes tier B source, functional, and data evidence for the Pickup spawn-list pkt11 owner.",
-        "Owner/plan consistency cleanup: primary owner links normalized so each accepted plan row has one canonical SOURCE_OWNERS primary link; former consumer/touched-data relationships preserved as owner dependencies."
+        "Owner/plan consistency cleanup: primary owner links normalized so each accepted plan row has one canonical SOURCE_OWNERS primary link; former consumer/touched-data relationships preserved as owner dependencies.",
+        "Canonicalized broad pickup_type_table dependency to direct Pickup subsystem callee owner; g_PickupTypes data owner is not added because this edge models the direct callee dependency."
       ]
     },
     {
@@ -7006,7 +7010,9 @@
         "Data bytes are accepted, but coherent function byte verification for 0x41fe90 remains deferred to a Player mission-bootstrap source-cluster pass.",
         "Remaining byte work is not a data/source gate blocker.",
         "Expanded Player mission-runtime bootstrap owner with authored missing-AIV diagnostic literal 0x4dc368; function source/behavior remains accepted, but complete data gate is blocked until the literal has canonical named source data and VC5 data-symbol evidence.",
-        "Source worker added named g_Player_AivArchiveMissingMsg and extended player_mission_runtime_bootstrap_globals; functional 0x41fe90 passed and VC5 data-symbol verification for 0x4dc368 passed with zero unmasked mismatches. Function byte gate remains deferred to coherent Player mission-bootstrap source-cluster pass."
+        "Source worker added named g_Player_AivArchiveMissingMsg and extended player_mission_runtime_bootstrap_globals; functional 0x41fe90 passed and VC5 data-symbol verification for 0x4dc368 passed with zero unmasked mismatches. Function byte gate remains deferred to coherent Player mission-bootstrap source-cluster pass.",
+        "Final-data scrutiny found primary data 0x4e5b50 g_Player_AivParentDir is retail .data char[0x104] at 0x4e5b50, but current VC5 final candidate emits _g_Player_AivParentDir in .bss around 0x519878; owner data gate remains blocked until source emits the symbol in the retail raw-backed .data layout without a layout hack.",
+        "Restored after refined final-data scrutiny: g_Player_AivParentDir is authored zero-fill/BSS source data; retail range 0x4e5b50..0x4e5c54 crosses the PE raw boundary, so current VC5 .bss object evidence does not contradict source/data acceptance. Remaining mismatch is final linked data/BSS boundary and object ordering, blocking byte/final-layout S evidence only."
       ]
     },
     {
@@ -8137,16 +8143,7 @@
         "0x43cc70",
         "0x43cdf0"
       ],
-      "data_addresses": [
-        {
-          "address": "0x4d1790",
-          "name": "g_PlayerWeaponBankNoGunSentinel"
-        },
-        {
-          "address": "0x4d1794",
-          "name": "g_Float_Zero"
-        }
-      ],
+      "data_addresses": [],
       "source_paths": [
         "src/Battlesport/player.cpp",
         "src/Battlesport/player.h"
@@ -8652,7 +8649,7 @@
       ],
       "dependencies": [
         "engine.time_runtime_globals",
-        "audio_fmv.zsnd_play_handle_runtime"
+        "legacy.audio_fmv.class_zsndplayhandle"
       ],
       "gates": {
         "boundary": "accepted",
@@ -8670,7 +8667,8 @@
         "Pure byte verification deferred; owner/source cleanup remains pending.",
         "BN/source-owner mapper bounded the cluster to zUtil_SaveGameState modal-state and modal/master loop SFX methods; first six methods touch no authored globals, 0x4386c0 reads accepted g_FrameDeltaTimeSec, and source gate still waits on helper provenance/docblocks for PlayerClamp01/PlayerFloatFromBits plus zSound 0x4a11d0 owner debt review.",
         "zUtil modal loop SFX source worker added accepted helper/docblock provenance for PlayerClamp01 and PlayerFloatFromBits plus immediate docblocks for the assigned methods; source-shape/original-symbol guards passed and assigned docblock findings cleared. The external zSound 0x4a11d0 blocker is now B with accepted source/data owner gates. Functional rerun for some targets is blocked by WSI-20260622-005 unregistered native smokes, but the owner functional gate remains accepted from existing tier C target evidence.",
-        "zUtil modal loop SFX source worker added accepted helper/docblock provenance for PlayerClamp01 and PlayerFloatFromBits plus immediate docblocks for the assigned methods; source-shape/original-symbol guards passed and assigned docblock findings cleared. The external zSound 0x4a11d0 blocker is now B with accepted source/data owner gates. Functional rerun for some targets is blocked by WSI-20260622-005 unregistered native smokes, but the owner functional gate remains accepted from existing tier C target evidence."
+        "zUtil modal loop SFX source worker added accepted helper/docblock provenance for PlayerClamp01 and PlayerFloatFromBits plus immediate docblocks for the assigned methods; source-shape/original-symbol guards passed and assigned docblock findings cleared. The external zSound 0x4a11d0 blocker is now B with accepted source/data owner gates. Functional rerun for some targets is blocked by WSI-20260622-005 unregistered native smokes, but the owner functional gate remains accepted from existing tier C target evidence.",
+        "Owner dependency audit refreshed stale zSndPlayHandle dependency: modal-loop SFX methods depend on accepted legacy.audio_fmv.class_zsndplayhandle rather than missing audio_fmv.zsnd_play_handle_runtime; preserved accepted engine.time_runtime_globals dependency."
       ]
     },
     {
@@ -9344,16 +9342,18 @@
         "legacy.core_util_archive.namespace_zutil"
       ],
       "gates": {
-        "boundary": "pending",
-        "source": "pending",
+        "boundary": "accepted",
+        "source": "accepted",
         "data": "none",
         "functional": "accepted",
         "byte": "pending"
       },
-      "blocker": "source-owner repair: FreeOwnedResources is a zUtil_SaveGameState receiver method, not a standalone leaf; full record/method-cluster boundary remains pending",
+      "blocker": "none",
       "evidence": [
         "Owner repair after permissive audit: 0x438430 mutates zUtil_SaveGameState receiver fields in zSaveGame.cpp/zSaveGame.h, so standalone ownership is invalid for tier S planning.",
-        "Owner repair: 0x438430 touches no authored globals directly and current functional evidence exists, but record boundary/source remain pending."
+        "Owner repair: 0x438430 touches no authored globals directly and current functional evidence exists, but record boundary/source remain pending.",
+        "Source-owner scrutiny ALLOW for 0x438430: typed zUtil_SaveGameState cleanup method, accepted zUtil list dependency and modal/SFX sibling owner excluded with evidence, no primary data addresses or direct authored globals.",
+        "Source-owner scrutiny allowed owner boundary/source/data-none acceptance for 0x438430; adjacent zUtil list helpers and modal/SFX methods are accounted for by accepted dependency/sibling owners."
       ]
     },
     {
@@ -10730,7 +10730,7 @@
         "src/GameZRecoil/zWeapon/OptCatalog.c"
       ],
       "dependencies": [
-        "zClass_Class::gwNodeSetHasHitCallback 0x4482b0"
+        "engine.zclass.hit_callback_flag_setter"
       ],
       "gates": {
         "boundary": "accepted",
@@ -10748,7 +10748,8 @@
         "The owner reads/writes heap/caller-owned OptCatalogDamageHandlerPartial records and zClass_NodeFreeListSlot::damageHandler fields only, calls CRT calloc/free, and touches no authored globals or initialized data.",
         "Tier S byte evidence is deferred for the coherent OptCatalog damage-handler owner; the post-migration VC5 manifest is source-policy clean but no S promotion is claimed.",
         "VC5SP3 target zclass_node_damage_handler_callbacks compiled src/GameZRecoil/zWeapon/OptCatalog.c with profile vc5_o2_ob0_md_facs; owner members 0x4b25a0,0x4b25f0,0x4b2630,0x4b2670,0x4b26b0 matched BN bytes with zero unmasked mismatches after COFF relocation masking and trailing NOP trim.",
-        "VC5SP3 target zclass_node_damage_handler_callbacks passed for all five owner members and byte gate is accepted; no remaining owner-level blocker for the assigned OptCatalog damage-handler callback cluster."
+        "VC5SP3 target zclass_node_damage_handler_callbacks passed for all five owner members and byte gate is accepted; no remaining owner-level blocker for the assigned OptCatalog damage-handler callback cluster.",
+        "Replaced invalid zClass_Class::gwNodeSetHasHitCallback 0x4482b0 label with canonical standalone owner engine.zclass.hit_callback_flag_setter."
       ]
     },
     {
@@ -12031,7 +12032,7 @@
         "src/GameZRecoil/zClass/cls_world.c"
       ],
       "dependencies": [
-        "zError::EmitDebugBuffer/g_zError_DebugMsgBuffer accepted at 0x4622f0",
+        "engine.zerror.debug_buffer_emit",
         "engine.zclass.switch_source_file_string"
       ],
       "gates": {
@@ -12050,7 +12051,8 @@
         "Functional targets zclass_class_add_child, zclass_camera_add_child, and zclass_lod_add_child passed in this session after routing stale manifest smokes to registered native smoke coverage; existing child handlers already carry B-level functional evidence.",
         "Tier S function-byte verification is deferred for the coherent zClass child-link subsystem; no S promotion is claimed in this owner pass.",
         "final-data audit: candidate Recoil.exe .data mismatches retail section/layout evidence; raw_size +0x1a00, virtual_size -0x1ca8, zero_fill_tail -0x36a8, so final data tier S byte identity is not accepted",
-        "Owner/plan consistency cleanup: primary owner links normalized so each accepted plan row has one canonical SOURCE_OWNERS primary link; former consumer/touched-data relationships preserved as owner dependencies."
+        "Owner/plan consistency cleanup: primary owner links normalized so each accepted plan row has one canonical SOURCE_OWNERS primary link; former consumer/touched-data relationships preserved as owner dependencies.",
+        "Source-owner scrutiny packet 019f125f allowed replacing stale free-text zError dependency with canonical engine.zerror.debug_buffer_emit while preserving switch string dependency"
       ]
     },
     {
@@ -15064,8 +15066,8 @@
         "src/GameZRecoil/zClass/Class.c"
       ],
       "dependencies": [
-        "provider.imports.strncpy",
-        "provider.imports.sprintf"
+        "provider.crt.strncpy_import",
+        "provider.crt.sprintf_import"
       ],
       "gates": {
         "boundary": "accepted",
@@ -15081,7 +15083,8 @@
         "Owner scope is the Class.c zClass node name accessor pair 0x447dc0/0x447e30 plus CRT provider imports.",
         "BN assembly for 0x447dc0/0x447e30 touches caller-owned zClass_NodePartial fields and provider CRT imports only; no authored global data xrefs are present.",
         "Functional targets zclass_node_set_name and zclass_node_get_name passed in this session.",
-        "VC5 function byte verification for 0x447dc0 remains a known tier-S mismatch; no byte promotion is claimed."
+        "VC5 function byte verification for 0x447dc0 remains a known tier-S mismatch; no byte promotion is claimed.",
+        "Canonicalized CRT provider dependencies to accepted SOURCE_OWNERS provider-boundary records for strncpy and sprintf import/IAT rows."
       ]
     },
     {
@@ -15774,7 +15777,8 @@
         "src/GameZRecoil/include/zClass.h"
       ],
       "dependencies": [
-        "engine.zclass.switch_source_file_string"
+        "engine.zclass.switch_source_file_string",
+        "engine.zclass.light_record_source"
       ],
       "gates": {
         "boundary": "accepted",
@@ -15797,7 +15801,8 @@
         "final-data audit: candidate Recoil.exe .data mismatches retail section/layout evidence; raw_size +0x1a00, virtual_size -0x1ca8, zero_fill_tail -0x36a8, so final data tier S byte identity is not accepted",
         "Current-session zClass worker and parent validation: zclass_remove_child_delete_dispatch reports zero unmasked mismatches for 0x448570/0x448660/0x452970 and 112 unmasked mismatches for 0x447980; no isolated S promotion accepted while owner byte gate remains blocked.",
         "owner byte gate blocked: current zclass_remove_child_delete_dispatch validation reports 0x447980 still failing with 111 unmasked mismatches after 86 relocation bytes and 4 trimmed VC5 NOPs, while 0x448570/0x448660/0x452970 are byte-clean; no isolated S promotion accepted while the remove-child/delete-dispatch owner remains blocked.",
-        "Owner/plan consistency cleanup: primary owner links normalized so each accepted plan row has one canonical SOURCE_OWNERS primary link; former consumer/touched-data relationships preserved as owner dependencies."
+        "Owner/plan consistency cleanup: primary owner links normalized so each accepted plan row has one canonical SOURCE_OWNERS primary link; former consumer/touched-data relationships preserved as owner dependencies.",
+        "Source-owner scrutiny packet 019f125f found Light delete/remove split plausible but under-recorded; 0x453110 uses Light.c diagnostic data 0x4ded3c owned by engine.zclass.light_record_source"
       ]
     },
     {
@@ -17268,7 +17273,6 @@
         "src/GameZRecoil/zEffect/zEffect.cpp"
       ],
       "dependencies": [
-        "engine.zeffect",
         "engine.zeffect.anim_entry_name_lookup"
       ],
       "gates": {
@@ -17299,7 +17303,8 @@
         "zEffect animation persistence data refreshed: 0x4df820 g_zEffectAnim_ActivationPrereqNodeNotFoundFmt is source-defined as exact char[0x4e] in zEffect.cpp, single BN xref from zEffect_Anim::LoadZbd, and verify vc5 zeffect_anim_activation_prereq_node_not_found_fmt_data passed with zero unmasked mismatches.",
         "Owner engine.zeffect.anim_load_shutdown_and_runtime_persistence has accepted boundary/source/data gates and includes 0x4df820.",
         "Added 0x575a40 g_zEffect_RuntimeManager to the accepted zEffect animation load/shutdown/runtime persistence owner: BN bounds it as a zero-initialized 0x28-byte zEffect_RuntimeManager at 0x575a40..0x575a67, next object starts at 0x575a68, and source defines g_zEffect_RuntimeManager = {0} with size/layout asserts in zEffect.cpp/zEffect.h.",
-        "Owner/plan consistency cleanup: primary owner links normalized so each accepted plan row has one canonical SOURCE_OWNERS primary link; former consumer/touched-data relationships preserved as owner dependencies."
+        "Owner/plan consistency cleanup: primary owner links normalized so each accepted plan row has one canonical SOURCE_OWNERS primary link; former consumer/touched-data relationships preserved as owner dependencies.",
+        "Removed stale broad self-style engine.zeffect dependency; retained concrete accepted anim entry name lookup dependency only."
       ]
     },
     {
@@ -20395,7 +20400,7 @@
         "engine.zgeometry.clip_polygon_process_node_polygon_set_xy",
         "engine.zgeometry.clip_polygon_snap_near_node_model",
         "engine.zgeometry.weiler_init_contour_source",
-        "engine.zdeclient.camera_globals"
+        "engine.zeffect.zdeclient_camera_globals"
       ],
       "gates": {
         "boundary": "accepted",
@@ -20412,7 +20417,8 @@
         "2026-06-18: BN assembly/decompilation show provider allocation/free plus caller/output/model state mutations; no direct authored globals are touched by this source slice.",
         "2026-06-18: functional target zgeometry_model_clip_patch passed.",
         "2026-06-18: tier S verification is deferred to the coherent zGeometry model/clip-patch source-cluster pass and global tier-S gate remains closed.",
-        "2026-06-18: boundary/source/no-data/functional accepted; byte gate remains deferred."
+        "2026-06-18: boundary/source/no-data/functional accepted; byte gate remains deferred.",
+        "Canonicalized stale zdeclient camera globals label to accepted engine.zeffect.zdeclient_camera_globals data owner."
       ]
     },
     {
@@ -20621,7 +20627,7 @@
         "engine.zmodel.dipool_runtime_globals",
         "engine.zutil.store_int32_leaf",
         "engine.zgeometry.triangulate_hole_source_cluster",
-        "provider.__builtin_memset"
+        "provider.compiler.builtin_memset"
       ],
       "gates": {
         "boundary": "accepted",
@@ -20638,7 +20644,8 @@
         "2026-06-18: BN assembly/decompilation show 0x46b6d0 mutates caller/model/heap-owned state and calls accepted dependency owners; no direct authored globals are touched by this source slice.",
         "2026-06-18: functional target zgeometry_model_process_clip_patch_node passed after active smoke registration.",
         "2026-06-18: tier S verification is deferred to the coherent zGeometry model/clip-patch source-cluster pass and global tier-S gate remains closed.",
-        "2026-06-18: boundary/source/no-data/functional accepted; byte gate remains deferred."
+        "2026-06-18: boundary/source/no-data/functional accepted; byte gate remains deferred.",
+        "Canonicalized __builtin_memset dependency to accepted compiler intrinsic provider owner while preserving authored dependencies."
       ]
     },
     {
@@ -20864,7 +20871,7 @@
         "src/GameZRecoil/zGeometry/zgeo_convexify.cpp"
       ],
       "dependencies": [
-        "provider.__builtin_memcpy",
+        "provider.compiler.builtin_memcpy",
         "engine.zgeometry.triangulate_hole_globals_data"
       ],
       "gates": {
@@ -20884,7 +20891,8 @@
         "2026-06-18: pure tier S byte verification remains globally deferred; current pass promotes through owner/data-gated tier B only.",
         "2026-06-18: boundary/source/functional/data gates accepted; only byte gate remains deferred by global policy.",
         "final-data audit: candidate Recoil.exe .data mismatches retail section/layout evidence; raw_size +0x1a00, virtual_size -0x1ca8, zero_fill_tail -0x36a8, so final data tier S byte identity is not accepted",
-        "Owner/plan consistency cleanup: primary owner links normalized so each accepted plan row has one canonical SOURCE_OWNERS primary link; former consumer/touched-data relationships preserved as owner dependencies."
+        "Owner/plan consistency cleanup: primary owner links normalized so each accepted plan row has one canonical SOURCE_OWNERS primary link; former consumer/touched-data relationships preserved as owner dependencies.",
+        "Canonicalized __builtin_memcpy dependency to accepted compiler intrinsic provider owner while preserving triangulate-hole global data dependency."
       ]
     },
     {
@@ -22562,15 +22570,15 @@
       "data_addresses": [
         {
           "address": "0x4e0718",
-          "name": "g_zImage_DefaultImagePtr"
+          "name": "g_zImage_DefaultTexDirEntry"
         },
         {
           "address": "0x4e071c",
-          "name": "g_zImage_DefaultTextureRecord"
+          "name": "g_zImage_DefaultTexDirEntry.texture"
         },
         {
           "address": "0x4e0720",
-          "name": "g_zImage_DefaultTextureName"
+          "name": "g_zImage_DefaultTexDirEntry.baseName"
         },
         {
           "address": "0x53d788",
@@ -22608,7 +22616,13 @@
         "Focused zImage texture-directory data owner: source docblocks cover the full data set and zimage_texture_directory_state_data VC5 data-symbol verification passed for all listed data symbols.",
         "Focused data-owner only; no behavior gate applies beyond the accepted owning zImage texture-directory subsystem.",
         "final-data audit: candidate Recoil.exe .data mismatches retail section/layout evidence; raw_size +0x1a00, virtual_size -0x1ca8, zero_fill_tail -0x36a8, so final data tier S byte identity is not accepted",
-        "Owner/plan consistency cleanup: primary owner links normalized so each accepted plan row has one canonical SOURCE_OWNERS primary link; former consumer/touched-data relationships preserved as owner dependencies."
+        "Owner/plan consistency cleanup: primary owner links normalized so each accepted plan row has one canonical SOURCE_OWNERS primary link; former consumer/touched-data relationships preserved as owner dependencies.",
+        "Current classifier evidence shows 0x4e0718..0x4e073b is one authored zImage_TexDirEntryPartial initialized record; current source/owner model splits it into separate pointer/name globals, so source gate is blocked until the canonical record model is restored.",
+        "Data owner is blocked with the same zImage default-entry evidence: retail stores 0x4e0718..0x4e073b as one initialized record, while current source emits separate storage and leaves the texture record in BSS.",
+        "Current classifier packet identified the initialized record extent and source split.",
+        "Scrutiny ALLOW: zImage texture-directory data owner now models 0x4e0718..0x4e073b as one typed g_zImage_DefaultTexDirEntry record with field layout/initializers matching BN; split globals removed and VC5 data-symbol coverage passes.",
+        "Scrutiny ALLOW: complete owner data set is source-modeled and zimage_texture_directory_state_data VC5SP3 data-symbol verification passed for g_zImage_DefaultTexDirEntry plus the linked fallback/count/table globals.",
+        "Source/data gates reaccepted after scrutiny; byte gate remains blocked by global final-data layout drift."
       ]
     },
     {
@@ -24465,20 +24479,26 @@
         "engine.zinput.bindmap_command_map_option_key_data",
         "engine.zinput.bindmap_key_name_literals",
         "engine.zinput.bindmap_button_name_literals",
-        "engine.zinput.directinput_diagnostic_literals"
+        "engine.zinput.directinput_diagnostic_literals",
+        "engine.zinput.mouse_active_global",
+        "misc_unresolved.shared_zinput_hud_align_literals_data"
       ],
       "gates": {
         "boundary": "accepted",
-        "source": "blocked",
-        "data": "blocked",
+        "source": "none",
+        "data": "none",
         "functional": "none",
-        "byte": "blocked"
+        "byte": "none"
       },
-      "blocker": "final-data audit blocks byte gate: zInput initialized storage order in candidate map does not match retail .data order",
+      "blocker": "retired dependency-only source-order bookkeeping scope: no primary member/data rows; canonical primary owner for 0x4e08cc is input_script_config.zinput_zin_kbd_source_file_literal; local zInput data owner is tier B and remaining byte blocker is global final-data layout drift",
       "evidence": [
         "Retail BN/plan addresses order zInput initialized data as 0x4e08cc, 0x4e08f4, 0x4e08f8, 0x4e08fc, 0x4e0900, 0x4e0904, key/button/diagnostic literal bands; current zInput.cpp/candidate map places 0x4e08cc and 0x4e08f4/0x4e08f8 after the diagnostic band. Dependency-only source-order owner; existing data owners remain primary.",
         "Final-data layout source-order scope established from BN/provider/source-owner packets: zInput initialized storage order spans existing primary data owners from 0x4e08cc through 0x4e0e34; source/data/byte remain blocked until zInput.cpp order and duplicate compiler-literal emissions are repaired and final-data evidence improves.",
-        "Source-owner scrutiny blocked extern/named-global repair for pooled literals at 0x4da95c, 0x4dd100, 0x4e0960/0x4e0968, and 0x4dcaac: accepted primary owners model these as VC5-pooled anonymous literals, not linkable production globals. zInput source-order repair must preserve anonymous literal pooling/source-order evidence; source/data/byte remain blocked."
+        "Source-owner scrutiny blocked extern/named-global repair for pooled literals at 0x4da95c, 0x4dd100, 0x4e0960/0x4e0968, and 0x4dcaac: accepted primary owners model these as VC5-pooled anonymous literals, not linkable production globals. zInput source-order repair must preserve anonymous literal pooling/source-order evidence; source/data/byte remain blocked.",
+        "final-data layout triage: owner audit-acceptance reports not-canonical-primary/anchor-only for 0x4e08cc; verify vc5 --owner engine.zinput.initialized_storage_source_order and zinput_directinput_diagnostic_literals_data pass; Recoil.map places zInput low initialized rows in expected local order",
+        "zInput initialized storage source-order audit: current source/map/VC5 evidence shows the source-order scope depends on the adjacent mouse-active scalar and shared pooled RIGHT/LEFT zInput/HUD literals, while primary ownership remains with their accepted data owners",
+        "Source-owner relationship cleanup: engine.zinput.initialized_storage_source_order has no primary member/data rows; relationships show only anchor 0x4e08cc plus dependency edges. Canonical primary data owner for 0x4e08cc is input_script_config.zinput_zin_kbd_source_file_literal, whose boundary/source/data gates are accepted and whose plan row is already Reimplemented [B]. Remaining byte blocker is global final-data layout drift, not local zInput source-order work.",
+        "Source-owner relationship cleanup confirmed anchor-only/dependency-only relationships and canonical primary-data ownership for 0x4e08cc"
       ]
     },
     {
@@ -35339,9 +35359,10 @@
         "src/Battlesport/hud.h"
       ],
       "dependencies": [
-        "hud_ui.hud_ui_background",
-        "hud_ui.hud_ui_zrd_widget",
-        "hud_ui.hud_ui_element"
+        "hud_ui.background_constructor",
+        "legacy.hud_ui.class_huduibackground",
+        "legacy.hud_ui.class_huduizrdwidget",
+        "hud_ui.hud_ui_element_base"
       ],
       "gates": {
         "boundary": "accepted",
@@ -35366,7 +35387,8 @@
         "HUD data classifier proved app globals already have accepted owners and remaining constructor literals are now covered by hud_ui.shared_dialog_zrd_path_string and hud_ui.confirm_quit_dialog_literal_strings data owners; no provider boundary involved.",
         "Parent added accepted data owners for shared dialog.zrd and confirm-quit local string literals after classifier evidence; app globals were already accepted.",
         "Source-owner mapper proved the previous HudUiBackground/HudUiElement source blocker is stale: direct constructor dependencies and broader HudUiBackground/HudUiElement/HudUiZrdWidget owners are accepted; ConfirmQuit class slice source model in hud.cpp/hud.h remains bounded and data/functional gates are accepted.",
-        "After mapper review, source/data/functional gates are accepted; remaining limits are VC5 byte drift/deferred S evidence, not owner source shape."
+        "After mapper review, source/data/functional gates are accepted; remaining limits are VC5 byte drift/deferred S evidence, not owner source shape.",
+        "Canonicalized broad HUD background/widget/element dependencies to concrete accepted class/base owners for ConfirmQuit context."
       ]
     },
     {
@@ -35532,6 +35554,54 @@
         "HudUiCheckToggleWidget ZRD key literal source and VC5 data-symbol pass is complete; no owner blocker remains.",
         "Source worker implemented the complete HudUiCheckToggleWidget ZRD key literal pool in zhud_ui.cpp and added VC5 target hud_ui_check_toggle_zrd_key_literals_data; source-data/source-shape/vc5-manifest guards passed, adjacent cycle-selector target still passed, and all three assigned address checks passed with zero unmasked byte mismatches.",
         "final-data audit: candidate Recoil.exe .data mismatches retail section/layout evidence; raw_size +0x1a00, virtual_size -0x1ca8, zero_fill_tail -0x36a8, so final data tier S byte identity is not accepted"
+      ]
+    },
+    {
+      "id": "hud_ui.hud_ui_circle_class",
+      "kind": "class",
+      "name": "HudUiCircle",
+      "section": "hud_ui",
+      "state": "active",
+      "anchors": [
+        "0x4bc480"
+      ],
+      "member_addresses": [
+        "0x4bc480",
+        "0x4bc4c0",
+        "0x4bc4e0",
+        "0x403c80",
+        "0x404e60"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x4d3bd8",
+          "name": "g_HudUiCircle_FTable"
+        }
+      ],
+      "source_paths": [
+        "src/GameZRecoil/zHud/zhud_ui.h",
+        "src/GameZRecoil/zHud/zhud_ui.cpp"
+      ],
+      "dependencies": [
+        "hud_ui.hud_ui_element_base",
+        "render_video.zrndr_circle_framebuffer_helpers"
+      ],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "accepted",
+        "byte": "deferred"
+      },
+      "blocker": "none",
+      "evidence": [
+        "Canonical HudUiCircle class proposal: source declares HudUiCircle : HudUiElement with five address-backed methods; BN/source-map evidence proves the complete class method set; data classifier identifies g_HudUiCircle_FTable as authored class data.",
+        "Source-owner scrutiny ALLOW: HudUiCircle boundary is the complete class owner with constructor anchor 0x4bc480, five primary methods, and authored FTable data 0x4d3bd8.",
+        "Source-owner scrutiny ALLOW: zhud_ui.h declares HudUiCircle : HudUiElement with size/field assertions and zhud_ui.cpp implements all five address-backed methods in the recovered class model.",
+        "HudUiCircle owner byte gate deferred; no owner-level tier-S or FTable data-symbol byte evidence accepted in this reconciliation pass.",
+        "Provider/data classifier and scrutiny ALLOW: 0x4d3bd8 g_HudUiCircle_FTable is authored class .rdata installed by HudUiCircle::HudUiCircle and linked as primary data; locator-panel table/literals remain excluded.",
+        "Source-owner scrutiny ALLOW: existing HudUiCircle tier-B rows retain accepted functional targets for constructor, draw, dirty-forwarder, HitTest, and HitTestCore.",
+        "Source-owner scrutiny ALLOW cleared the HudUiCircle owner blocker after boundary/source/data/functional gates were accepted; byte gate remains deferred."
       ]
     },
     {
@@ -36856,7 +36926,10 @@
       "section": "hud_ui",
       "state": "blocked",
       "anchors": [
-        "0x4ba740"
+        "0x4ba740",
+        "0x409ef0",
+        "0x40f9e0",
+        "0x40a590"
       ],
       "member_addresses": [
         "0x4ba740",
@@ -36867,14 +36940,36 @@
         "0x4bb2a0",
         "0x4bb3d0",
         "0x4bb740",
-        "0x4bcd40"
+        "0x4bcd40",
+        "0x40f9e0",
+        "0x4ba850",
+        "0x4bb440",
+        "0x4bb460",
+        "0x4bb540",
+        "0x4bb5e0",
+        "0x4bb680",
+        "0x4bb710",
+        "0x4ba9e0",
+        "0x4babb0",
+        "0x40a590",
+        "0x40be90",
+        "0x40bea0",
+        "0x40beb0",
+        "0x40bec0",
+        "0x40bef0",
+        "0x40e010",
+        "0x40e040",
+        "0x4ba400",
+        "0x409ef0"
       ],
       "data_addresses": [],
       "source_paths": [
         "src/GameZRecoil/zHud/zhud_ui.cpp",
         "src/GameZRecoil/zHud/zhud_ui.h"
       ],
-      "dependencies": [],
+      "dependencies": [
+        "render_video.zvideo_renderer_dispatch"
+      ],
       "gates": {
         "boundary": "accepted",
         "source": "accepted",
@@ -36894,7 +36989,12 @@
         "Functional/source gates now accepted; provider/data classifier still pending data/static dispatch classification.",
         "Provider/data classifier found only compiler-emitted g_HudUiPanel_FTable class identity evidence and EH metadata; no authored data belongs to the HudUiPanel class owner.",
         "HudUiPanel source/functional accepted and data=none after provider/data classification; byte remains deferred.",
-        "Expanded HudUiPanel owner to dirty-text/text-bounds methods 0x4bb1c0/0x4bac10/0x4bb2a0/0x4bb3d0/0x4bb740. Same-session BN/data packets show 0x4bac10 reads only accepted renderer callback globals g_zVideo_pfnImageUploadPixelsToSurface 0x56bc38 and g_zVideo_pfnImageReleaseSurface 0x56bc3c under render_video.zvideo_renderer_dispatch; sibling text-bounds methods use object state plus provider imports and touch no authored globals."
+        "Expanded HudUiPanel owner to dirty-text/text-bounds methods 0x4bb1c0/0x4bac10/0x4bb2a0/0x4bb3d0/0x4bb740. Same-session BN/data packets show 0x4bac10 reads only accepted renderer callback globals g_zVideo_pfnImageUploadPixelsToSurface 0x56bc38 and g_zVideo_pfnImageReleaseSurface 0x56bc3c under render_video.zvideo_renderer_dispatch; sibling text-bounds methods use object state plus provider imports and touch no authored globals.",
+        "Canonical HudUiPanel owner reconciliation: source declarations/docblocks/source map prove these addresses are base HudUiPanel methods",
+        "HudUiPanel::RebuildTextRect 0x4bac10 reads renderer dispatch callback globals 0x56bc38 and 0x56bc3c owned by render_video.zvideo_renderer_dispatch",
+        "Source declares 0x409ef0 as static HudUiPanel::DestructorCallback, not standalone",
+        "Canonical HudUiPanel owner reconciliation moves legacy class anchor into hud_ui.hud_ui_panel_class",
+        "Canonical HudUiPanel owner reconciliation moves HudUiPanel deleting destructor anchor from broad cluster into hud_ui.hud_ui_panel_class"
       ]
     },
     {
@@ -37202,8 +37302,7 @@
         "hud_ui.hud_ui_element_base",
         "hud_ui.hud_ui_mgr_data",
         "hud_ui.hud_font_name_arial_data",
-        "engine.time_runtime_globals",
-        "hud_ui.hud_ui_timer_panel_global_accessors"
+        "engine.time_runtime_globals"
       ],
       "gates": {
         "boundary": "accepted",
@@ -37219,7 +37318,8 @@
         "Boundary is the mapped coherent HudUiTimerPanel class owner; existing functional targets cover the timer panel member set; byte verification remains globally deferred.",
         "HudUiTimerPanel class source provenance docblocks were repaired for all ten member addresses; focused functional batch for all ten timer-panel targets passed; linked g_HudUiMgrTimerPanel and HudUiTimerPanel literal data owners are accepted, including VC5SP3 data-symbol evidence for the literals. Tier S remains deferred to coherent HUD timer panel byte verification.",
         "HudUiTimerPanel source/data/functional gates are accepted; only deferred tier S byte work remains.",
-        "Owner/plan consistency cleanup: primary owner links normalized so each accepted plan row has one canonical SOURCE_OWNERS primary link; former consumer/touched-data relationships preserved as owner dependencies."
+        "Owner/plan consistency cleanup: primary owner links normalized so each accepted plan row has one canonical SOURCE_OWNERS primary link; former consumer/touched-data relationships preserved as owner dependencies.",
+        "HudUiTimerPanel full class owner supersedes old global accessor slice; primary functions and g_HudUiMgrTimerPanel storage remain on hud_ui.hud_ui_timer_panel_class"
       ]
     },
     {
@@ -37309,12 +37409,7 @@
         "0x40eca0"
       ],
       "member_addresses": [],
-      "data_addresses": [
-        {
-          "address": "0x4ea654",
-          "name": "g_HudUiMgrTimerPanel"
-        }
-      ],
+      "data_addresses": [],
       "source_paths": [
         "src/GameZRecoil/zHud/zhud_ui.cpp"
       ],
@@ -37524,18 +37619,14 @@
         "0x4143b0",
         "0x4143c0"
       ],
-      "data_addresses": [
-        {
-          "address": "0x4ed4e0",
-          "name": "g_HudUiMgrStatsList"
-        }
-      ],
+      "data_addresses": [],
       "source_paths": [
         "src/GameZRecoil/zHud/zhud_ui.cpp"
       ],
       "dependencies": [
         "hud_ui.hud_ui_triplet_entry_vector",
-        "engine.zloc.message_lookup_runtime"
+        "engine.zloc.message_lookup_runtime",
+        "hud_ui.hud_ui_mgr_data"
       ],
       "gates": {
         "boundary": "accepted",
@@ -37554,7 +37645,8 @@
         "Tier S remains deferred to a coherent HudUiTriplet/HUD source-cluster pass after global owner/data blockers clear.",
         "0x4143c0 HudUi::RemoveScoreboardEntryRow is the remove-side sibling of accepted 0x4143b0, forwarding through g_HudUiMgrStatsList->triplet to accepted HudUiTriplet::RemoveEntry with an immediate docblock.",
         "Owner already links accepted g_HudUiMgrStatsList data at 0x4ed4e0; 0x4143c0 touches that same pointer and no new authored global storage.",
-        "python tools/recoil.py verify functional 0x4143c0 passed via zhud_triplet_scoreboard_entry_update_smoke."
+        "python tools/recoil.py verify functional 0x4143c0 passed via zhud_triplet_scoreboard_entry_update_smoke.",
+        "HudUI source-owner scrutiny packet 019f1265 allowed replacing primary-data field 0x4ed4e0 with dependency on canonical g_HudUiMgr owner 0x4e5ed0"
       ]
     },
     {
@@ -37603,9 +37695,7 @@
       "anchors": [
         "0x4b3ce0"
       ],
-      "member_addresses": [
-        "0x4b3ce0"
-      ],
+      "member_addresses": [],
       "data_addresses": [],
       "source_paths": [
         "src/GameZRecoil/zHud/zhud_ui.cpp"
@@ -37674,13 +37764,7 @@
       "anchors": [
         "0x4b3d00"
       ],
-      "member_addresses": [
-        "0x4b3d00",
-        "0x404e10",
-        "0x4b3dd0",
-        "0x4b4030",
-        "0x4b3e90"
-      ],
+      "member_addresses": [],
       "data_addresses": [],
       "source_paths": [
         "src/GameZRecoil/zHud/zhud_ui.cpp"
@@ -38725,10 +38809,7 @@
       "anchors": [
         "0x4b3da0"
       ],
-      "member_addresses": [
-        "0x4b3da0",
-        "0x4b3e30"
-      ],
+      "member_addresses": [],
       "data_addresses": [],
       "source_paths": [
         "src/GameZRecoil/zHud/zhud_ui.cpp"
@@ -39031,6 +39112,43 @@
         "VC5 data-symbol target zinput_keyboard_source_literals_data passes for 0x4e08cc with zero unmasked data-byte mismatches.",
         "final-data audit: candidate Recoil.exe .data mismatches retail section/layout evidence; raw_size +0x1a00, virtual_size -0x1ca8, zero_fill_tail -0x36a8, so final data tier S byte identity is not accepted",
         "source_paths updated from [] to ['src/GameZRecoil/zInput/zInput.cpp']; supersedes prior source_paths/evidence where contradicted by current owner/source evidence: Owner acceptance repair during final-data layout work: BN/source evidence defines g_zInput_SourceFile_ZinKbdCpp as a writable char[0x27] source-file literal in zInput.cpp; gates were already accepted, only durable source_paths were missing."
+      ]
+    },
+    {
+      "id": "input_script_config.zinterp_anonymous_numeric_cluster_data",
+      "kind": "data-owner",
+      "name": "zInterp anonymous initialized numeric cluster",
+      "section": "input_script_config",
+      "state": "active",
+      "anchors": [
+        "0x4e5954"
+      ],
+      "member_addresses": [],
+      "data_addresses": [
+        {
+          "address": "0x4e5954",
+          "name": "pending"
+        }
+      ],
+      "source_paths": [
+        "src/GameZRecoil/zInterp/zinterp_parse.cpp"
+      ],
+      "dependencies": [],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "none",
+        "byte": "deferred"
+      },
+      "blocker": "Unresolved initialized .data range 0x4e5954..0x4e5a4f is a raw-backed 0xfc aggregate (63 floats / candidate zVec3[21]) near zInterp literals, but no source name, xref/copy-site, relocation, object-local ownership proof, or source-faithful declaration/model has been recovered; do not merge into accepted zInterp parser data or reroute to Player/camera without new BN/source linkage.",
+      "evidence": [
+        "BN fact packet: retail .data 0x4e5954..0x4e5a4f is 63 separate 4-byte data items with no xrefs, visible pointers/relocations, aggregate type, source comment, or recovered source name; adjacent strings 0x4e5948, 0x4e5a50, 0x4e5a8c, 0x4e5ac8, and 0x4e5af8 are zinterp_parse.cpp neighbors and are excluded.",
+        "Source-owner scrutiny allowed only blocked routing ownership: 0x4e5954..0x4e5a4f is real unowned initialized .data, but BN has no aggregate/xrefs/source name and adjacent zInterp strings are excluded; no owner/data acceptance or plan promotion.",
+        "Final-data BN/provider classification: 0x4e5954..0x4e5a4f is not padding or provider data; BN now models it as float[0x3f], decoded as 21 zVec3-sized triples with nonzero values including (0,2.2,0.2), (2,-2.2,0.2), (-2,-2.2,-0.2), (2,2.2,-0.2), (-2,0,5), sparse unit/5/-5 vectors; no matching zinterp_parse.cpp object, keyword-default table, xrefs, or accepted source owner found, so gates remain blocked.",
+        "Source-owner mapper: exact values confirmed from support/Recoil.exe; no direct 0x4e5954 address occurrence found; zinterp_parse.cpp uses inline command parsing with no matching descriptor/default/vector table; Player modal/probe and zClass camera hypotheses remain semantic only with no BN/source relationship; adjacent zInterp strings excluded; gates remain boundary/source/data/byte blocked.",
+        "2026-06-29 refreshed parent/subagent pass: BN confirms 0x4e5954..0x4e5a50 is .data float[0x3f] with no base/interior xrefs or consuming zInterp assembly site; provider classifier rejects padding/RTTI/provider ownership for the float block while excluding neighboring RTTI/filler rows; verifier confirms current zinterp_parse.obj emits no 0xfc .data subsection after AddChild and no VC manifest covers the row. Gates remain blocked; no source-worker table insertion is justified.",
+        "User-approved one-row orphan initialized-data exception for 0x4e5954..0x4e5a50: BN exact .data float[0x3f], no base/interior xrefs, provider/filler rejected, adjacent zInterp ownership excluded, source emits data-equivalent-only preservation, and VC5 data-symbol target zinterp_unresolved_float_defaults_data has zero unmasked data-byte mismatches; not source-faithful and byte gate deferred."
       ]
     },
     {
@@ -39444,6 +39562,154 @@
         {
           "address": "0x4dd1c4",
           "name": "g_Str_Newline"
+        },
+        {
+          "address": "0x4e55dc",
+          "name": "g_zInterp_Cmd_CycleTextureSetSpeed"
+        },
+        {
+          "address": "0x4e55f4",
+          "name": "g_zInterp_Err_CycleTextureNoGraphicsForNode"
+        },
+        {
+          "address": "0x4e5628",
+          "name": "g_zInterp_Err_CycleTextureNoGfxData"
+        },
+        {
+          "address": "0x4e5654",
+          "name": "g_zInterp_SourcePath_ZinterpParse"
+        },
+        {
+          "address": "0x4e5684",
+          "name": "g_zInterp_Err_CycleTextureNoCurrentNode"
+        },
+        {
+          "address": "0x4e56d8",
+          "name": "g_zInterp_Cmd_CycleTextureSetOn"
+        },
+        {
+          "address": "0x4e56ec",
+          "name": "g_zInterp_Cmd_CycleTextureSetMap"
+        },
+        {
+          "address": "0x4e5700",
+          "name": "g_zInterp_Cmd_CycleTextureSetLooping"
+        },
+        {
+          "address": "0x4e5718",
+          "name": "g_zInterp_FormatUsedNodeCount"
+        },
+        {
+          "address": "0x4e5738",
+          "name": "g_zInterp_Cmd_CountUsedNodes"
+        },
+        {
+          "address": "0x4e5748",
+          "name": "g_zInterp_FormatCameraNodeCount"
+        },
+        {
+          "address": "0x4e5768",
+          "name": "g_zInterp_Cmd_CountCameraNodes"
+        },
+        {
+          "address": "0x4e577c",
+          "name": "g_zInterp_Cmd_CameraTranslate"
+        },
+        {
+          "address": "0x4e578c",
+          "name": "g_zInterp_Cmd_CameraSetWorld"
+        },
+        {
+          "address": "0x4e579c",
+          "name": "g_zInterp_Cmd_CameraSetWindow"
+        },
+        {
+          "address": "0x4e57ac",
+          "name": "g_zInterp_Cmd_CameraSetObjectHSETest"
+        },
+        {
+          "address": "0x4e57c4",
+          "name": "g_zInterp_Cmd_CameraSetFarClip"
+        },
+        {
+          "address": "0x4e57d8",
+          "name": "g_zInterp_Cmd_CameraSetNearClip"
+        },
+        {
+          "address": "0x4e57ec",
+          "name": "g_zInterp_Cmd_CameraSetNearFarClip"
+        },
+        {
+          "address": "0x4e5804",
+          "name": "g_zInterp_Cmd_CameraSetLODMultiplier"
+        },
+        {
+          "address": "0x4e581c",
+          "name": "g_zInterp_Cmd_CameraSetHorizon"
+        },
+        {
+          "address": "0x4e5830",
+          "name": "g_zInterp_Cmd_CameraSetHorizonXZ"
+        },
+        {
+          "address": "0x4e5844",
+          "name": "g_zInterp_Cmd_CameraSetFOV"
+        },
+        {
+          "address": "0x4e5854",
+          "name": "g_zInterp_Cmd_CameraSetDynamicLOD"
+        },
+        {
+          "address": "0x4e5868",
+          "name": "g_zInterp_Cmd_CameraSetActive"
+        },
+        {
+          "address": "0x4e5878",
+          "name": "g_zInterp_FormatCameraTranslate"
+        },
+        {
+          "address": "0x4e5894",
+          "name": "g_zInterp_Cmd_CameraGetTranslate"
+        },
+        {
+          "address": "0x4e58a8",
+          "name": "g_zInterp_Cmd_CameraRotate"
+        },
+        {
+          "address": "0x4e58b8",
+          "name": "g_zInterp_Cmd_AnimSetDebugFrame"
+        },
+        {
+          "address": "0x4e58cc",
+          "name": "g_zInterp_Cmd_AnimSetZBDFile"
+        },
+        {
+          "address": "0x4e58dc",
+          "name": "g_zInterp_Cmd_AddEnhancerImage"
+        },
+        {
+          "address": "0x4e58f0",
+          "name": "g_zInterp_FormatCommandNodeNotFound"
+        },
+        {
+          "address": "0x4e591c",
+          "name": "g_zInterp_FormatCommandCurrentNodeNull"
+        },
+        {
+          "address": "0x4e5948",
+          "name": "g_zInterp_Cmd_AddChild"
+        },
+        {
+          "address": "0x4e5a50",
+          "name": "g_zInterp_FormatKeywordArgCount"
+        },
+        {
+          "address": "0x4e5a8c",
+          "name": "g_zInterp_FormatKeywordNodeClassMismatch"
+        },
+        {
+          "address": "0x4e5ac8",
+          "name": "g_zInterp_FormatKeywordNullNode"
         }
       ],
       "source_paths": [
@@ -39464,7 +39730,8 @@
         "No blocker remains for the split zInterp parser/runtime data owner after same-session source/data/byte evidence; broad source-file code byte gate remains separate and deferred.",
         "Accepted split zInterp parser/runtime data owner with same-session source/data/byte evidence.",
         "Added 0x4dd1c4 g_Str_Newline to zInterp parser/runtime data owner; source remains the original printf newline literal in zinterp_parse.cpp and python tools/recoil.py verify vc5 zinterp_parser_runtime_data plus verify vc5 0x4dd1c4 passed with zero unmasked data-byte mismatches.",
-        "final-data audit: candidate Recoil.exe .data mismatches retail section/layout evidence; raw_size +0x1a00, virtual_size -0x1ca8, zero_fill_tail -0x36a8, so final data tier S byte identity is not accepted"
+        "final-data audit: candidate Recoil.exe .data mismatches retail section/layout evidence; raw_size +0x1a00, virtual_size -0x1ca8, zero_fill_tail -0x36a8, so final data tier S byte identity is not accepted",
+        "zInterp parser/runtime data owner reconciled to all 78 VC5 manifest data symbols; owner membership and acceptance audits pass; owner-scoped VC5SP3 verification selected all 78 rows with zero unmasked mismatches; byte gate remains blocked only by final executable data layout drift."
       ]
     },
     {
@@ -42486,7 +42753,8 @@
         "0x40bf20"
       ],
       "member_addresses": [
-        "0x40bf20"
+        "0x40bf20",
+        "0x40be60"
       ],
       "data_addresses": [],
       "source_paths": [
@@ -42496,13 +42764,15 @@
       "gates": {
         "boundary": "accepted",
         "source": "accepted",
-        "data": "pending",
+        "data": "none",
         "functional": "pending",
         "byte": "deferred"
       },
       "blocker": "none",
       "evidence": [
-        "Owner-ledger reconciliation for legacy accepted Source owner markers: the address plan already carried accepted owner metadata before strict SOURCE_OWNERS link enforcement; this record links that accepted owner scope without adding data, functional, or byte evidence."
+        "Owner-ledger reconciliation for legacy accepted Source owner markers: the address plan already carried accepted owner metadata before strict SOURCE_OWNERS link enforcement; this record links that accepted owner scope without adding data, functional, or byte evidence.",
+        "Source-owner scrutiny ALLOW: HudCmdBindingEntry::CopyRange belongs to the complete no-data HudCmdBindingEntry owner.",
+        "Source-owner scrutiny ALLOW: complete HudCmdBindingEntry owner touches no authored static data; primary rows stay Data reimplemented not-applicable."
       ]
     },
     {
@@ -42883,7 +43153,8 @@
         "0x4ba4c0"
       ],
       "member_addresses": [
-        "0x4ba4c0"
+        "0x4ba4c0",
+        "0x4ba4a0"
       ],
       "data_addresses": [],
       "source_paths": [
@@ -42893,13 +43164,15 @@
       "gates": {
         "boundary": "accepted",
         "source": "accepted",
-        "data": "pending",
+        "data": "none",
         "functional": "pending",
         "byte": "deferred"
       },
       "blocker": "none",
       "evidence": [
-        "Owner-ledger reconciliation for legacy accepted Source owner markers: the address plan already carried accepted owner metadata before strict SOURCE_OWNERS link enforcement; this record links that accepted owner scope without adding data, functional, or byte evidence."
+        "Owner-ledger reconciliation for legacy accepted Source owner markers: the address plan already carried accepted owner metadata before strict SOURCE_OWNERS link enforcement; this record links that accepted owner scope without adding data, functional, or byte evidence.",
+        "Source-owner scrutiny ALLOW: HudFontStyle constructor belongs with the complete no-data HudFontStyle owner.",
+        "Source-owner scrutiny ALLOW: complete HudFontStyle constructor/destructor owner mutates instance fields only and has no authored static data."
       ]
     },
     {
@@ -42964,13 +43237,15 @@
       "gates": {
         "boundary": "accepted",
         "source": "accepted",
-        "data": "pending",
-        "functional": "pending",
+        "data": "none",
+        "functional": "accepted",
         "byte": "deferred"
       },
       "blocker": "none",
       "evidence": [
-        "Owner-ledger reconciliation for legacy accepted Source owner markers: the address plan already carried accepted owner metadata before strict SOURCE_OWNERS link enforcement; this record links that accepted owner scope without adding data, functional, or byte evidence."
+        "Owner-ledger reconciliation for legacy accepted Source owner markers: the address plan already carried accepted owner metadata before strict SOURCE_OWNERS link enforcement; this record links that accepted owner scope without adding data, functional, or byte evidence.",
+        "Source-owner scrutiny ALLOW: HudUiBackgroundContainer owner has six primary functions, zero primary data relationships, all six plan rows already have Data reimplemented no-authored-globals and tier B; no authored .data/.rdata/BSS ownership found.",
+        "Source-owner scrutiny ALLOW: all six HudUiBackgroundContainer plan rows are tier B with registered functional targets; accepting functional gate only to reconcile existing owner-ledger state, byte remains deferred."
       ]
     },
     {
@@ -43082,7 +43357,9 @@
       "source_paths": [
         "src/Battlesport/Briefing.cpp"
       ],
-      "dependencies": [],
+      "dependencies": [
+        "hud_ui.hud_ui_circle_class"
+      ],
       "gates": {
         "boundary": "accepted",
         "source": "accepted",
@@ -43093,7 +43370,8 @@
       "blocker": "none",
       "evidence": [
         "Owner-ledger reconciliation for legacy accepted Source owner markers: the address plan already carried accepted owner metadata before strict SOURCE_OWNERS link enforcement; this record links that accepted owner scope without adding data, functional, or byte evidence.",
-        "Same-session provider/data classifier: locator-panel authored data consists of class table 0x4cc998 and Update scalar literals 0x4cc868/0x4cc870/0x4cc878; provider/compiler dependencies are accepted; functional tier C/B targets already cover the class methods, byte remains deferred."
+        "Same-session provider/data classifier: locator-panel authored data consists of class table 0x4cc998 and Update scalar literals 0x4cc868/0x4cc870/0x4cc878; provider/compiler dependencies are accepted; functional tier C/B targets already cover the class methods, byte remains deferred.",
+        "HudUiBriefingLocatorPanel constructs the HudUiCircle base and its FTable reuses HudUiCircle DrawDirtyForwarder and HitTest slots; keep locator-panel data primary under the derived owner while depending on the canonical circle class."
       ]
     },
     {
@@ -43169,17 +43447,21 @@
       "source_paths": [
         "src/GameZRecoil/zHud/zhud_ui.cpp"
       ],
-      "dependencies": [],
+      "dependencies": [
+        "hud_ui.hud_font_name_arial_data"
+      ],
       "gates": {
         "boundary": "accepted",
         "source": "accepted",
-        "data": "pending",
+        "data": "accepted",
         "functional": "pending",
         "byte": "deferred"
       },
       "blocker": "none",
       "evidence": [
-        "Owner-ledger reconciliation for legacy accepted Source owner markers: the address plan already carried accepted owner metadata before strict SOURCE_OWNERS link enforcement; this record links that accepted owner scope without adding data, functional, or byte evidence."
+        "Owner-ledger reconciliation for legacy accepted Source owner markers: the address plan already carried accepted owner metadata before strict SOURCE_OWNERS link enforcement; this record links that accepted owner scope without adding data, functional, or byte evidence.",
+        "HudUI source-owner scrutiny packet 019f1265 allowed dependency on g_HudFontName_Arial for chat message stack constructor font setup",
+        "HudUI source-owner scrutiny packet 019f1265 allowed data=accepted after adding dependency on hud_ui.hud_font_name_arial_data; constructors touch accepted g_HudFontName_Arial data"
       ]
     },
     {
@@ -43262,24 +43544,44 @@
         "0x4b70b0",
         "0x4b70c0",
         "0x4b7210",
-        "0x4b7250"
+        "0x4b7250",
+        "0x4b6fc0",
+        "0x4b7020",
+        "0x4b7290",
+        "0x4b7340"
       ],
-      "data_addresses": [],
+      "data_addresses": [
+        {
+          "address": "0x4d36b8",
+          "name": "g_HudUiCheckToggleWidget_FTable"
+        }
+      ],
       "source_paths": [
         "src/GameZRecoil/zHud/zhud_ui.cpp"
       ],
-      "dependencies": [],
+      "dependencies": [
+        "hud_ui.hud_ui_check_toggle_zrd_key_literals",
+        "hud_ui.cycle_selector_shared_zrd_key_literals",
+        "hud_ui.hud_ui_zrd_widget_base_zrd_key_literals",
+        "legacy.hud_ui.class_huduitransitiontextpanel"
+      ],
       "gates": {
         "boundary": "accepted",
         "source": "accepted",
-        "data": "none",
+        "data": "accepted",
         "functional": "pending",
         "byte": "deferred"
       },
       "blocker": "none",
       "evidence": [
         "Owner-ledger reconciliation for legacy accepted Source owner markers: the address plan already carried accepted owner metadata before strict SOURCE_OWNERS link enforcement; this record links that accepted owner scope without adding data, functional, or byte evidence.",
-        "HudUiCheckToggleWidget OnActivateThunk/OnActivate uses object fields only; source-owner mapper found no plan-tracked authored globals for this class owner; existing accepted member entries use Data reimplemented none."
+        "HudUiCheckToggleWidget OnActivateThunk/OnActivate uses object fields only; source-owner mapper found no plan-tracked authored globals for this class owner; existing accepted member entries use Data reimplemented none.",
+        "Source-owner scrutiny ALLOW: HudUiCheckToggleWidget constructor/destructor/action/load methods belong to the complete class owner.",
+        "Source-owner scrutiny ALLOW: BN constructor/destructor xrefs prove authored class FTable data 0x4d36b8 and accepted literal/dependency owners cover LoadFromZrd data.",
+        "Source-owner scrutiny ALLOW: HudUiCheckToggleWidget::LoadFromZrd references accepted check-toggle ZRD key literal owner.",
+        "Source-owner scrutiny ALLOW: HudUiCheckToggleWidget::LoadFromZrd references accepted shared cycle-selector ZRD key literal owner.",
+        "Source-owner scrutiny ALLOW: HudUiCheckToggleWidget::LoadFromZrd references accepted base ZRD label literal owner.",
+        "Source-owner scrutiny ALLOW: HudUiCheckToggleWidget::LoadFromZrd constructs transition text panels and depends on the accepted TransitionTextPanel owner."
       ]
     },
     {
@@ -43411,9 +43713,15 @@
         "0x4bc8d0",
         "0x4bc900",
         "0x4bc7b0",
-        "0x4ba3a0"
+        "0x4ba3a0",
+        "0x4bc7c0"
       ],
-      "data_addresses": [],
+      "data_addresses": [
+        {
+          "address": "0x4d3c58",
+          "name": "g_HudUiContainer_FTable"
+        }
+      ],
       "source_paths": [
         "src/GameZRecoil/zHud/zhud_ui.cpp"
       ],
@@ -43421,7 +43729,7 @@
       "gates": {
         "boundary": "accepted",
         "source": "accepted",
-        "data": "none",
+        "data": "accepted",
         "functional": "accepted",
         "byte": "deferred"
       },
@@ -43429,7 +43737,9 @@
       "evidence": [
         "Owner-ledger reconciliation for legacy accepted Source owner markers: the address plan already carried accepted owner metadata before strict SOURCE_OWNERS link enforcement; this record links that accepted owner scope without adding data, functional, or byte evidence.",
         "BN shows HudUiContainer constructor/destructor only install/restore compiler-generated vtable 0x4d3c58 and mutate this fields; no authored globals touched.",
-        "HudUiContainer functional coverage accepted after DestructorCore source repair: 0x4bc7b0 smoke passes and existing class member coverage remains accepted."
+        "HudUiContainer functional coverage accepted after DestructorCore source repair: 0x4bc7b0 smoke passes and existing class member coverage remains accepted.",
+        "Source-owner scrutiny ALLOW: HudUiContainer::AddChild belongs to the complete HudUiContainer owner.",
+        "Source-owner scrutiny ALLOW: BN constructor/destructor xrefs prove authored class FTable data 0x4d3c58 for HudUiContainer."
       ]
     },
     {
@@ -43580,9 +43890,19 @@
         "0x4b7dc0",
         "0x4b7e60",
         "0x4b8200",
-        "0x4b82e0"
+        "0x4b82e0",
+        "0x4b7d60",
+        "0x4b7de0",
+        "0x4b7ee0",
+        "0x4b7f20",
+        "0x4b7f80"
       ],
-      "data_addresses": [],
+      "data_addresses": [
+        {
+          "address": "0x4d3740",
+          "name": "g_HudUiCycleSelectorWidget_FTable"
+        }
+      ],
       "source_paths": [
         "src/GameZRecoil/zHud/zhud_ui.cpp"
       ],
@@ -43600,7 +43920,9 @@
         "Functional target hud_ui_cycle_selector_widget_scalar_deleting_destructor passed for 0x4b7dc0, but full HudUiCycleSelectorWidget owner still has adjacent methods/data pending.",
         "Cycle selector ZRD-key strings are routed to a separate shared literal owner, not directly to the class; class data gate remains pending until that owner is accepted and LoadFromZrd dependencies are reconciled.",
         "Shared HUD ZRD-key literal dependency hud_ui.cycle_selector_shared_zrd_key_literals is accepted with boundary/source/data/byte gates for 0x4e4708,0x4e4738,0x4e4748,0x4e4750,0x4e475c; HudUiCycleSelectorWidget::Update and AddBitmapEntry touch no authored globals, and LoadFromZrd's authored global references are exactly those accepted shared literals.",
-        "Class data blocker cleared by accepted shared HUD ZRD-key literal owner; remaining byte gate is deferred."
+        "Class data blocker cleared by accepted shared HUD ZRD-key literal owner; remaining byte gate is deferred.",
+        "Source-owner scrutiny ALLOW: HudUiCycleSelectorWidget lifecycle/index/range/activation methods belong to the complete class owner.",
+        "Source-owner scrutiny ALLOW: BN constructor/destructor xrefs prove authored class FTable data 0x4d3740 for HudUiCycleSelectorWidget."
       ]
     },
     {
@@ -44185,37 +44507,27 @@
       "name": "HudUiPanel",
       "section": "hud_ui",
       "state": "accepted",
-      "anchors": [
-        "0x40f9e0"
-      ],
-      "member_addresses": [
-        "0x40f9e0",
-        "0x4ba850",
-        "0x4bb440",
-        "0x4bb460",
-        "0x4bb540",
-        "0x4bb5e0",
-        "0x4bb680",
-        "0x4bb710",
-        "0x4ba9e0",
-        "0x4babb0"
-      ],
+      "anchors": [],
+      "member_addresses": [],
       "data_addresses": [],
       "source_paths": [
         "src/GameZRecoil/zHud/zhud_ui.cpp"
       ],
       "dependencies": [],
       "gates": {
-        "boundary": "accepted",
-        "source": "accepted",
+        "boundary": "blocked",
+        "source": "blocked",
         "data": "none",
-        "functional": "pending",
+        "functional": "blocked",
         "byte": "deferred"
       },
-      "blocker": "none",
+      "blocker": "superseded by canonical hud_ui.hud_ui_panel_class",
       "evidence": [
         "Owner-ledger reconciliation for legacy accepted Source owner markers: the address plan already carried accepted owner metadata before strict SOURCE_OWNERS link enforcement; this record links that accepted owner scope without adding data, functional, or byte evidence.",
-        "HudUiPanel copy/text/font methods touch object fields plus provider imports; generated HudUiPanel table/EH data is compiler-emitted class identity, and no authored HudUiPanel-owned data addresses are linked."
+        "HudUiPanel copy/text/font methods touch object fields plus provider imports; generated HudUiPanel table/EH data is compiler-emitted class identity, and no authored HudUiPanel-owned data addresses are linked.",
+        "Canonical HudUiPanel owner reconciliation moves legacy class anchor into hud_ui.hud_ui_panel_class",
+        "Superseded by canonical base class owner hud_ui.hud_ui_panel_class; all primary HudUiPanel members moved there",
+        "Superseded owner kept only as stale legacy record after canonical HudUiPanel reconciliation"
       ]
     },
     {
@@ -44542,17 +44854,21 @@
       "source_paths": [
         "src/GameZRecoil/zHud/zhud_ui.cpp"
       ],
-      "dependencies": [],
+      "dependencies": [
+        "hud_ui.hud_font_name_arial_data"
+      ],
       "gates": {
         "boundary": "accepted",
         "source": "accepted",
-        "data": "pending",
+        "data": "accepted",
         "functional": "pending",
         "byte": "deferred"
       },
       "blocker": "none",
       "evidence": [
-        "Owner-ledger reconciliation for legacy accepted Source owner markers: the address plan already carried accepted owner metadata before strict SOURCE_OWNERS link enforcement; this record links that accepted owner scope without adding data, functional, or byte evidence."
+        "Owner-ledger reconciliation for legacy accepted Source owner markers: the address plan already carried accepted owner metadata before strict SOURCE_OWNERS link enforcement; this record links that accepted owner scope without adding data, functional, or byte evidence.",
+        "HudUI source-owner scrutiny packet 019f1265 allowed dependency on g_HudFontName_Arial for top message stack constructor font setup",
+        "HudUI source-owner scrutiny packet 019f1265 allowed data=accepted after adding dependency on hud_ui.hud_font_name_arial_data; constructors touch accepted g_HudFontName_Arial data"
       ]
     },
     {
@@ -44635,13 +44951,34 @@
       "member_addresses": [
         "0x4b3d50",
         "0x4b3e70",
-        "0x4b3fb0"
+        "0x4b3fb0",
+        "0x404d90",
+        "0x404dd0",
+        "0x4b3d00",
+        "0x404e10",
+        "0x4b3dd0",
+        "0x4b4030",
+        "0x4b3e90",
+        "0x4b3da0",
+        "0x4b3e30",
+        "0x4b3ce0"
       ],
-      "data_addresses": [],
+      "data_addresses": [
+        {
+          "address": "0x4d3428",
+          "name": "g_HudUiWidget_FTable"
+        }
+      ],
       "source_paths": [
         "src/GameZRecoil/zHud/zhud_ui.cpp"
       ],
-      "dependencies": [],
+      "dependencies": [
+        "hud_ui.hud_ui_element_base",
+        "hud_ui.invalidate_mask_global",
+        "engine.zimage.texdir_find_or_create",
+        "engine.zimage.zvid_image_release_helpers",
+        "hud_ui.hud_ui_widget_exclusive_draw_image_global"
+      ],
       "gates": {
         "boundary": "accepted",
         "source": "accepted",
@@ -44652,7 +44989,13 @@
       "blocker": "none",
       "evidence": [
         "Owner-ledger reconciliation for legacy accepted Source owner markers: the address plan already carried accepted owner metadata before strict SOURCE_OWNERS link enforcement; this record links that accepted owner scope without adding data, functional, or byte evidence.",
-        "HudUiWidget class has accepted source boundary; destructor and SetImageBorrowedAndInvalidate are already S/no-data, and Draw's only authored data blocker is g_HudUiWidget_ExclusiveDrawImage now linked to accepted data owner hud_ui.hud_ui_widget_exclusive_draw_image_global. Existing hud_ui_widget_draw functional target supports functional gate acceptance."
+        "HudUiWidget class has accepted source boundary; destructor and SetImageBorrowedAndInvalidate are already S/no-data, and Draw's only authored data blocker is g_HudUiWidget_ExclusiveDrawImage now linked to accepted data owner hud_ui.hud_ui_widget_exclusive_draw_image_global. Existing hud_ui_widget_draw functional target supports functional gate acceptance.",
+        "Source-owner scrutiny ALLOW: complete HudUiWidget class owner consolidates center, geometry, image-helper, and scalar-deleting-destructor member methods.",
+        "Source-owner scrutiny ALLOW: complete HudUiWidget derives from and calls HudUiElement base behavior.",
+        "Source-owner scrutiny ALLOW: HudUiWidget::InvalidateRect uses accepted invalidate-mask global owner.",
+        "Source-owner scrutiny ALLOW: HudUiWidget image path helper depends on zImage texture lookup owner.",
+        "Source-owner scrutiny ALLOW: HudUiWidget owned-image cleanup depends on zVid image release helper owner.",
+        "Source-owner scrutiny ALLOW: HudUiWidget::Draw reads accepted exclusive draw image global owner."
       ]
     },
     {
@@ -44673,9 +45016,15 @@
         "0x4b5900",
         "0x4b59f0",
         "0x4b5350",
-        "0x4b5630"
+        "0x4b5630",
+        "0x4b52f0"
       ],
-      "data_addresses": [],
+      "data_addresses": [
+        {
+          "address": "0x4d3630",
+          "name": "g_HudUiZrdWidget_FTable"
+        }
+      ],
       "source_paths": [
         "src/GameZRecoil/zHud/zhud_ui.cpp"
       ],
@@ -44683,14 +45032,16 @@
       "gates": {
         "boundary": "accepted",
         "source": "accepted",
-        "data": "none",
+        "data": "accepted",
         "functional": "pending",
         "byte": "deferred"
       },
       "blocker": "none",
       "evidence": [
         "Owner-ledger reconciliation for legacy accepted Source owner markers: the address plan already carried accepted owner metadata before strict SOURCE_OWNERS link enforcement; this record links that accepted owner scope without adding data, functional, or byte evidence.",
-        "HudUiZrdWidget GetBoundsRectOrNull packet and sibling accepted entries show no authored globals touched; dependencies are class/table and accepted HudUiPanel dispatch, not data owners"
+        "HudUiZrdWidget GetBoundsRectOrNull packet and sibling accepted entries show no authored globals touched; dependencies are class/table and accepted HudUiPanel dispatch, not data owners",
+        "Source-owner scrutiny ALLOW: HudUiZrdWidget::DeleteChildIfPresent belongs to the complete HudUiZrdWidget class owner.",
+        "Source-owner scrutiny ALLOW: BN constructor/destructor xrefs prove authored class FTable data 0x4d3630 for HudUiZrdWidget."
       ]
     },
     {
@@ -44772,14 +45123,8 @@
       "name": "HudUi",
       "section": "hud_ui",
       "state": "accepted",
-      "anchors": [
-        "0x40a590"
-      ],
+      "anchors": [],
       "member_addresses": [
-        "0x40a590",
-        "0x40be60",
-        "0x40e010",
-        "0x40e040",
         "0x414b60",
         "0x414b90",
         "0x414f40",
@@ -44791,33 +45136,7 @@
         "0x415000",
         "0x415040",
         "0x415140",
-        "0x4b52f0",
-        "0x4b6fc0",
-        "0x4b7020",
-        "0x4b7290",
-        "0x4b7340",
-        "0x4b7d60",
-        "0x4b7de0",
-        "0x4b7ee0",
-        "0x4b7f20",
-        "0x4b7f80",
-        "0x404d90",
-        "0x404dd0",
-        "0x403c80",
-        "0x404e60",
-        "0x40be90",
-        "0x40bea0",
-        "0x40beb0",
-        "0x40bec0",
-        "0x40bef0",
-        "0x4ba400",
-        "0x4ba4a0",
-        "0x4bc480",
-        "0x4bc4c0",
-        "0x4bc4e0",
-        "0x4bc7c0",
-        "0x4143a0",
-        "0x40bdf0"
+        "0x4143a0"
       ],
       "data_addresses": [],
       "source_paths": [
@@ -44842,7 +45161,8 @@
         "HudUi cluster data packet shows remaining data-pending members touch only accepted game-state table, RecoilApp, main-menu-transition data owners or no authored globals.",
         "HudUi data packet accounts for the 16 remaining cluster data-pending members: four route to accepted data owners and twelve touch no authored globals; existing tier C functional evidence remains accepted.",
         "Owner/plan consistency cleanup: primary owner links normalized so each accepted plan row has one canonical SOURCE_OWNERS primary link; former consumer/touched-data relationships preserved as owner dependencies.",
-        "Plan-consistency repair after HudUiFillBitmap promotion: keep the accepted class owner as canonical primary link and preserve wider HudUi cluster as dependency context."
+        "Plan-consistency repair after HudUiFillBitmap promotion: keep the accepted class owner as canonical primary link and preserve wider HudUi cluster as dependency context.",
+        "Canonical HudUiPanel owner reconciliation moves HudUiPanel deleting destructor anchor from broad cluster into hud_ui.hud_ui_panel_class"
       ]
     },
     {
@@ -44986,27 +45306,26 @@
       "name": "standalone 0x409ef0",
       "section": "hud_ui",
       "state": "accepted",
-      "anchors": [
-        "0x409ef0"
-      ],
-      "member_addresses": [
-        "0x409ef0"
-      ],
+      "anchors": [],
+      "member_addresses": [],
       "data_addresses": [],
       "source_paths": [
         "src/GameZRecoil/zHud/zhud_ui.cpp"
       ],
       "dependencies": [],
       "gates": {
-        "boundary": "accepted",
-        "source": "accepted",
+        "boundary": "blocked",
+        "source": "blocked",
         "data": "none",
-        "functional": "pending",
+        "functional": "blocked",
         "byte": "deferred"
       },
-      "blocker": "none",
+      "blocker": "superseded by canonical hud_ui.hud_ui_panel_class",
       "evidence": [
-        "Owner-ledger reconciliation for legacy accepted Source owner markers: the address plan already carried accepted owner metadata before strict SOURCE_OWNERS link enforcement; this record links that accepted owner scope without adding data, functional, or byte evidence."
+        "Owner-ledger reconciliation for legacy accepted Source owner markers: the address plan already carried accepted owner metadata before strict SOURCE_OWNERS link enforcement; this record links that accepted owner scope without adding data, functional, or byte evidence.",
+        "Source declares 0x409ef0 as static HudUiPanel::DestructorCallback, not standalone",
+        "Superseded by canonical base class owner hud_ui.hud_ui_panel_class; 0x409ef0 is static HudUiPanel::DestructorCallback",
+        "Superseded owner kept only as stale legacy record after canonical HudUiPanel reconciliation"
       ]
     },
     {
@@ -45229,7 +45548,8 @@
       ],
       "member_addresses": [
         "0x40bdc0",
-        "0x4ba470"
+        "0x4ba470",
+        "0x40bdf0"
       ],
       "data_addresses": [],
       "source_paths": [
@@ -45239,13 +45559,15 @@
       "gates": {
         "boundary": "accepted",
         "source": "accepted",
-        "data": "pending",
+        "data": "none",
         "functional": "pending",
         "byte": "deferred"
       },
       "blocker": "none",
       "evidence": [
-        "Owner-ledger reconciliation for legacy accepted Source owner markers: the address plan already carried accepted owner metadata before strict SOURCE_OWNERS link enforcement; this record links that accepted owner scope without adding data, functional, or byte evidence."
+        "Owner-ledger reconciliation for legacy accepted Source owner markers: the address plan already carried accepted owner metadata before strict SOURCE_OWNERS link enforcement; this record links that accepted owner scope without adding data, functional, or byte evidence.",
+        "Source-owner scrutiny ALLOW: StdPtrVector::ClearNoOpDestroy belongs to the complete no-data StdPtrVector owner.",
+        "Source-owner scrutiny ALLOW: complete StdPtrVector helper owner touches no authored static data; primary rows stay Data reimplemented not-applicable."
       ]
     },
     {
@@ -47058,7 +47380,8 @@
         "Complete owner data 0x4ccb18 messageMap, 0x4ccb20 messageEntries including sentinel, 0x4ccbf8 +0.25f, and 0x4ccbfc -0.25f is modeled in source; verify vc5 mfc_three_float_dialog_owner matched all four data symbols with zero unmasked mismatches.",
         "Functional verification passed same-session for all eight owner methods: 0x406890, 0x4068c0, 0x4068f0, 0x406920, 0x406960, 0x4069a0, 0x4069e0, and 0x4069f0.",
         "verify vc5 mfc_three_float_dialog_owner matched all eight functions and four data symbols, but authored function Reimplemented [S] promotion remains globally deferred; retain B-level plan promotion now.",
-        "Source/data/functional blockers are resolved; pure function S marker promotion remains deferred by global authored owner/data policy."
+        "Source/data/functional blockers are resolved; pure function S marker promotion remains deferred by global authored owner/data policy.",
+        "Canonicalized MFC42 provider dependency to accepted aggregate provider-boundary owner; authored dialog class/data remains separate."
       ]
     },
     {
@@ -47157,7 +47480,7 @@
       ],
       "dependencies": [
         "hud_ui.hud_ui_mgr_objective_show",
-        "engine.zinput.keyboard_callback_registry"
+        "engine.zinput.zin_kbd_keyboard_state_cluster"
       ],
       "gates": {
         "boundary": "accepted",
@@ -47177,7 +47500,8 @@
         "Data remains blocked by external HUD literal g_HudUiMessage_SeparatorColon 0x4dae48, which is a pending data.hud_ui entry with no linked source owner or VC manifest.",
         "Final external data blocker g_HudUiMessage_SeparatorColon 0x4dae48 is now accepted under hud_ui.message_separator_colon_data with passing VC5 data-symbol evidence; no GameNet-owned data remains.",
         "Chat-compose boundary/source/data/functional gates are accepted; byte evidence remains pending and tier S remains globally deferred.",
-        "Owner source/data/functional gates are accepted; pure tier S remains globally deferred while authored owner/data blockers remain."
+        "Owner source/data/functional gates are accepted; pure tier S remains globally deferred while authored owner/data blockers remain.",
+        "Canonicalized keyboard callback registry dependency to accepted zInput keyboard state/callback owner."
       ]
     },
     {
@@ -48156,8 +48480,11 @@
         "src/Battlesport/GameNet.cpp"
       ],
       "dependencies": [
-        "engine.zeffect",
-        "engine.znetwork"
+        "engine.zeffect.anim_activation_record_queue",
+        "engine.zeffect.anim_load_shutdown_and_runtime_persistence",
+        "engine.znetwork.player_record_accessors",
+        "engine.znetwork.reliable_send_dispatch",
+        "engine.znetwork.host_flag_accessor"
       ],
       "gates": {
         "boundary": "accepted",
@@ -48173,7 +48500,8 @@
         "Source implements the packet trio in GameNet.cpp with typed zEffectAnimActivationRecord and zNetworkPacketHeader usage, AGENTS-compliant docblocks on all three functions, no raw runtime-state offsets, and no unsupported packet/helper scaffold.",
         "Functional verification passed for 0x434370 gamenet_send_pkt13_effect_anim_activation_record, 0x4343f0 gamenet_handle_pkt13_effect_anim_activation_record, and 0x434430 gamenet_send_all_pkt13_effect_anim_activation_records after wiring the native smokes.",
         "BN data at 0x4f3fa8 is a 4-byte zero-initialized int replay guard (BN name g_GameNet_Pkt13ReplayGuard, source name g_GameNetSuppressPkt13ActivationEcho); VC5 data-symbol target gamenet_pkt13_globals passed with zero unmasked mismatches.",
-        "Tier S remains deferred to the coherent GameNet/zEffect network packet source-cluster pass while global authored owner/data blockers remain open."
+        "Tier S remains deferred to the coherent GameNet/zEffect network packet source-cluster pass while global authored owner/data blockers remain open.",
+        "Canonicalized broad zEffect/zNetwork labels to concrete accepted direct callee owners from pkt13 frontier."
       ]
     },
     {
@@ -48537,8 +48865,8 @@
       "dependencies": [
         "network_online.gamenet_status_bits",
         "battlesport_gameplay.player_local_fx_los_probe",
-        "engine.zmath.project_point_clip",
-        "engine.zgame.zopt_replicate_mode"
+        "engine.zmath.project_point_screen_clip",
+        "engine.zgame.zopt_view_rect_camera_sections"
       ],
       "gates": {
         "boundary": "accepted",
@@ -48554,7 +48882,8 @@
         "python tools/recoil.py verify functional 0x432d60 passed target gamenet_update_remote_player_hud_widget_screen_pos in-session after registering the native smoke in the active harness.",
         "0x432d60 directly consumes caller-owned save-state/player-row state and accepted callee-owned data; it does not directly read or write an authored global in the function body. g_GameNetStatus_NameTags is read through accepted callee 0x433740.",
         "src/Battlesport/GameNet.cpp implements 0x432d60 with typed save-state/player/HudUiPanel/zMath/zOpt calls and immediate provenance docblock; GameNet.cpp docblock audit has zero findings and no production scaffold is introduced.",
-        "Pure code/function tier S remains deferred while authored owner/data blockers remain open globally; no VC5 byte target covers 0x432d60."
+        "Pure code/function tier S remains deferred while authored owner/data blockers remain open globally; no VC5 byte target covers 0x432d60.",
+        "Canonicalized zMath/zOpt broad labels to concrete accepted projection and zOpt replicate-mode owner records."
       ]
     },
     {
@@ -48878,8 +49207,7 @@
         "0x41b660",
         "0x41b680",
         "0x41b6a0",
-        "0x41b780",
-        "0x41b8ac"
+        "0x41b780"
       ],
       "data_addresses": [
         {
@@ -48893,6 +49221,10 @@
         {
           "address": "0x4cfc68",
           "name": "g_NetSessionBrowserDialog_Vtbl"
+        },
+        {
+          "address": "0x41b8ac",
+          "name": "NetSessionBrowserDialog::kHelpDocsFindExecutableErrorClassTable"
         }
       ],
       "source_paths": [
@@ -49186,7 +49518,8 @@
         "src/Battlesport/WestwoodOnlineUpgradeApiEventSink.h"
       ],
       "dependencies": [
-        "legacy.network_online.subsystem_westwoodonline"
+        "legacy.network_online.subsystem_westwoodonline",
+        "network_online.westwood_online_upgrade_api_source_file"
       ],
       "gates": {
         "boundary": "accepted",
@@ -49212,7 +49545,8 @@
         "Same-session source worker recovered WestwoodOnlineUpgradeApiEventSink as a typed 32-slot COM virtual owner; VC5SP3 data target westwood_online_upgrade_api_event_sink_data passes for 0x4d1ba0, 0x4d1c90, and 0x4f53e4 with zero unmasked mismatches, including compiler-emitted ??_7WestwoodOnlineUpgradeApiEventSink@@6B@ at 0x4d1c90 and full relocation identity for all 32 vtable slots; source-shape, docblock, original-symbol, and vc5-manifest guards pass for the touched slice.",
         "Same-session source worker recovered WestwoodOnlineUpgradeApiEventSink as a typed 32-slot COM virtual owner; VC5SP3 data target westwood_online_upgrade_api_event_sink_data passes for 0x4d1ba0, 0x4d1c90, and 0x4f53e4 with zero unmasked mismatches, including compiler-emitted ??_7WestwoodOnlineUpgradeApiEventSink@@6B@ at 0x4d1c90 and full relocation identity for all 32 vtable slots; source-shape, docblock, original-symbol, and vc5-manifest guards pass for the touched slice.",
         "Data/source model blocker resolved: source now emits typed 32-slot COM virtual owner and VC5SP3 westwood_online_upgrade_api_event_sink_data passes for 0x4d1ba0, 0x4d1c90, and 0x4f53e4 with zero unmasked mismatches.",
-        "Owner/plan consistency cleanup: owner byte gate deferred because one or more primary plan rows are below tier S; owner-level tier S must be re-verified before byte acceptance."
+        "Owner/plan consistency cleanup: owner byte gate deferred because one or more primary plan rows are below tier S; owner-level tier S must be re-verified before byte acceptance.",
+        "API event-sink lifecycle functions consume eventSinkLiveCount at 0x4f53e4 as a field inside g_WestwoodOnlineUpgradeApiInitState; storage is owned by the API source-file owner."
       ]
     },
     {
@@ -49352,7 +49686,7 @@
         "functional": "accepted",
         "byte": "deferred"
       },
-      "blocker": "source/data/functional gates accepted for API source-file owner; pure byte verification remains deferred by global authored owner/data policy",
+      "blocker": "Source/data gates accepted after 0x4f53e4 retirement into 0x4f53d0 init-state storage; byte gate deferred pending function byte mismatches at 0x42dda0, 0x43d130, and 0x43d2e0 plus final-data layout/owner byte review.",
       "evidence": [
         "Westwood API worker aligned runtime globals, recovered CLSID/IID payloads, added VC5 data-symbol evidence for zero-initialized runtime globals, and reported functional manifests blocked by unknown/unlinked smokes.",
         "Focused worker bounded this source-file owner to API anchors 0x42dda0/0x43d130/0x43d280/0x43d2e0 in WestwoodOnlineUpgradeApi.cpp/h.",
@@ -49365,7 +49699,14 @@
         "Linked 17 classifier-approved API-owned data symbols; BN sizes repaired for 0x4f52c8 char[260] and 0x4f53d0 char[100]; VC5 data targets westwood_online_upgrade_api_data and westwood_online_upgrade_api_extra_data passed with zero mismatches for GUIDs, strings, vtable/runtime globals, and 0x538570 advise cookie.",
         "WestwoodOnlineUpgradeApi.cpp/h source-file owner is bounded to anchors 0x42dda0/0x43d130/0x43d280/0x43d2e0; docblock audit passed with zero findings; functional smokes are linked and passed for all four anchors; source model separates API-owned globals from session-browser/dialog runtime data.",
         "Westwood Online upgrade API source-file data owner remains accepted after link-name refresh; same-session VC5 data-symbol checks passed for API callback, event-sink, async-error, advise-cookie, and API pointer globals.",
-        "Selected bootstrap server data extent repaired to BN 248-byte struct and same-session VC5 data-symbol checks passed for 0x4f52c8 with no strict overlap conflicts."
+        "Selected bootstrap server data extent repaired to BN 248-byte struct and same-session VC5 data-symbol checks passed for 0x4f52c8 with no strict overlap conflicts.",
+        "Current classifier evidence shows g_WestwoodOnlineUpgradeApiInitState at 0x4f53d0 owns the 0x4f53e4 live-count field; current source leaves that field as separate event-sink storage, so the API source-file source model is incomplete.",
+        "API source-file data gate is blocked because the accepted 0x4f53d0 struct model omits/outsources the retail interior live-count field at 0x4f53e4.",
+        "Current classifier packet identified the API init-state/live-count overlap.",
+        "Source-owner scrutiny BLOCK for network_online.westwood_online_upgrade_api_source_file after live-count repair.",
+        "Source models 0x4f53e4 as WestwoodOnlineUpgradeApiInitState::eventSinkLiveCount inside 0x4f53d0; plan GUID rows are absent and AGENTS plan-tracked data entries are canonical .data globals only.",
+        "Source-owner scrutinizer ALLOW after stale 0x4f53e4 interior-field row retirement: owner relationships and membership audit are clean for four API functions and 16 primary data addresses; 0x4f53e4 is modeled inside 0x4f53d0 init-state storage; GUIDs are ledger-only immutable .rdata primary data and VC5 data/GUID rows byte-match. Byte/S remains deferred.",
+        "Source-owner scrutinizer allowed source/data gate repair only; tier S, byte gate, isolated function S, and final-data layout acceptance remain unapproved."
       ]
     },
     {
@@ -49714,7 +50055,9 @@
         "src/GameZRecoil/wwonline/upgrade_download.cpp",
         "src/GameZRecoil/wwonline/upgrade_download.h"
       ],
-      "dependencies": [],
+      "dependencies": [
+        "network_online.westwood_online_upgrade_api_source_file"
+      ],
       "gates": {
         "boundary": "accepted",
         "source": "accepted",
@@ -49737,7 +50080,8 @@
         "Same-session VC5 data-symbol checks westwood_online_upgrade_download_data and westwood_online_upgrade_download_runtime_globals_data passed for event-sink runtime globals, GUIDs, interface map, and vftable; provider classifier confirmed non-plan GUID/interface-map/vftable data are owner-linked but do not require plan rows.",
         "Same-session VC5 data-symbol checks cover all linked event-sink data symbols, including runtime globals 0x53929c/0x5392a0/0x5392ac plus GUID/interface-map/vftable owner data with zero unmasked mismatches after relocation masking.",
         "Source/data/functional/byte gates are now accepted from same-session WOL functional and VC5 data-symbol evidence.",
-        "final-data audit: candidate Recoil.exe .data mismatches retail section/layout evidence; raw_size +0x1a00, virtual_size -0x1ca8, zero_fill_tail -0x36a8, so final data tier S byte identity is not accepted"
+        "final-data audit: candidate Recoil.exe .data mismatches retail section/layout evidence; raw_size +0x1a00, virtual_size -0x1ca8, zero_fill_tail -0x36a8, so final data tier S byte identity is not accepted",
+        "Download event-sink lifecycle functions consume eventSinkLiveCount at 0x4f53e4 as a field inside g_WestwoodOnlineUpgradeApiInitState; storage is owned by the API source-file owner."
       ]
     },
     {
@@ -49809,12 +50153,7 @@
         "0x4f53e4"
       ],
       "member_addresses": [],
-      "data_addresses": [
-        {
-          "address": "0x4f53e4",
-          "name": "pending"
-        }
-      ],
+      "data_addresses": [],
       "source_paths": [
         "src/Battlesport/WestwoodOnlineUpgradeApiEventSink.cpp",
         "src/Battlesport/WestwoodOnlineUpgradeApiEventSink.h",
@@ -49823,12 +50162,12 @@
       "dependencies": [],
       "gates": {
         "boundary": "accepted",
-        "source": "accepted",
-        "data": "accepted",
+        "source": "blocked",
+        "data": "blocked",
         "functional": "none",
         "byte": "blocked"
       },
-      "blocker": "final-data audit blocks byte gate: candidate Recoil.exe .data section/raw/virtual layout differs from retail",
+      "blocker": "Stale anchor-only owner after remap: 0x4f53e4 is eventSinkLiveCount inside g_WestwoodOnlineUpgradeApiInitState at 0x4f53d0, not standalone storage; do not use this owner for positive source/data acceptance.",
       "evidence": [
         "Provider/data classifier and source-owner mapper classified 0x4f53e4 as authored shared LONG live-count used by API and download COM event-sink create/destructor paths.",
         "Provider/data classifier and source-owner mapper classified 0x4f53e4 as authored shared WOL event-sink live-count data, not provider state.",
@@ -49839,7 +50178,11 @@
         "Same-session verify vc5 0x4f53e4 passed via westwood_online_upgrade_api_event_sink_data; binja data-overlap strict reported no interior-root data variables for the live-count address.",
         "VC5 data-symbol target westwood_online_upgrade_api_event_sink_data passed for 0x4f53e4 with zero unmasked mismatches.",
         "VC5 data-symbol coverage passed for 0x4f53e4 and binja data-overlap strict reported no current overlap blocker.",
-        "final-data audit: candidate Recoil.exe .data mismatches retail section/layout evidence; raw_size +0x1a00, virtual_size -0x1ca8, zero_fill_tail -0x36a8, so final data tier S byte identity is not accepted"
+        "final-data audit: candidate Recoil.exe .data mismatches retail section/layout evidence; raw_size +0x1a00, virtual_size -0x1ca8, zero_fill_tail -0x36a8, so final data tier S byte identity is not accepted",
+        "Current classifier evidence shows 0x4f53e4 is an interior field within g_WestwoodOnlineUpgradeApiInitState at 0x4f53d0, not standalone event-sink storage; source gate is blocked until the lifecycle model uses the API init-state field.",
+        "Current classifier evidence contradicts the standalone data model for 0x4f53e4: the retail live-count bytes are inside the 0x4f53d0 API init-state block, while current source emits a separate WestwoodOnlineUpgradeApiEventSink.cpp global.",
+        "Current classifier packet identified the interior-field overlap and current source contradiction.",
+        "Parent removed the primary-data link for 0x4f53e4 and scrutiny BLOCK confirmed the owner is anchor-only/stale."
       ]
     },
     {
@@ -50658,12 +51001,12 @@
       "dependencies": [],
       "gates": {
         "boundary": "accepted",
-        "source": "blocked",
-        "data": "blocked",
+        "source": "accepted",
+        "data": "accepted",
         "functional": "none",
         "byte": "blocked"
       },
-      "blocker": "znet_dplay literal source order repaired and VC5 data target passes; final linked .data strict audit still fails globally (.data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4), so owner source/data/byte gates remain blocked until final-data-layout is clean",
+      "blocker": "source/data gates accepted for znet_dplay.cpp literal-pool data owner; byte/S remains blocked until final-data-layout is clean (current final-data deltas: rva -0x13000, raw_size -0x600, virtual_size -0x3db8, zero_fill_tail -0x37b8).",
       "evidence": [
         "BN bounds the znet_dplay.cpp initialized literal pool from 0x4e1860 g_zNetwork_SourceFile_ZnetDplayCpp through 0x4e20f8 g_zNetwork_DpErrorName_Pending, ending before unrelated zReader bool token data at 0x4e2108; surrounding xrefs are zNetwork DirectPlay source/reporting callsites.",
         "BN bounds the complete owner to 0x4e1860..0x4e2107: starts at g_zNetwork_SourceFile_ZnetDplayCpp and ends after g_zNetwork_DpErrorName_Pending, with next unrelated zReader bool token at 0x4e2108.",
@@ -50676,7 +51019,10 @@
         "source-owner scrutinizer BLOCK after final-data audit and znet source-worker packet",
         "znet_dplay literal-pool source model remapped to VC5 compiler string literals; vc5 data target passes all 96 rows; final-data audit still shows linked .data order/layout drift requiring broader znet_dplay function-order recovery",
         "znet_dplay.cpp source-order repair restored compiler-emitted literal sequence to BN/retail owner order and verify vc5 znetwork_dplay_literal_pool_data passes all 96 rows; verify final-build still fails at pe_compare and strict final-data audit still fails globally with .data raw_size +0x1a00, virtual_size -0x1ca4, zero_fill_tail -0x36a4",
-        "source_paths updated from [] to ['src/GameZRecoil/zNetwork/znet_dplay.cpp']; supersedes prior source_paths/evidence where contradicted by current owner/source evidence: znet_dplay final-data blocker: BN/VC5 evidence identifies 0x4e1860..0x4e2107 as compiler-emitted znet_dplay.cpp string literals; source worker is assigned to recover translation-unit source order"
+        "source_paths updated from [] to ['src/GameZRecoil/zNetwork/znet_dplay.cpp']; supersedes prior source_paths/evidence where contradicted by current owner/source evidence: znet_dplay final-data blocker: BN/VC5 evidence identifies 0x4e1860..0x4e2107 as compiler-emitted znet_dplay.cpp string literals; source worker is assigned to recover translation-unit source order",
+        "Source-owner scrutiny ALLOW: complete znet_dplay.cpp compiler literal-pool data owner 0x4e1860..0x4e2107 with 96 primary data rows; source path present; membership and acceptance audits pass; adjacent 0x4e2108 excluded.",
+        "Source-owner scrutiny ALLOW plus owner-scoped VC5 data-symbol verification passed for all 96 rows in znetwork_dplay_literal_pool_data; final linked .data layout drift remains only a byte-gate/S blocker.",
+        "Verifier noted stale owner blocker prose after source/data acceptance; current owner next final-data work unit reports byte-only section/layout blocker."
       ]
     },
     {
@@ -50728,6 +51074,205 @@
       ]
     },
     {
+      "id": "provider.compiler.builtin_memcpy",
+      "kind": "provider-boundary",
+      "name": "VC5 compiler builtin memcpy intrinsic",
+      "section": "provider_platform",
+      "state": "accepted",
+      "anchors": [
+        "0x7c8ed0"
+      ],
+      "member_addresses": [
+        "0x7c8ed0"
+      ],
+      "data_addresses": [],
+      "source_paths": [],
+      "dependencies": [],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "none",
+        "functional": "none",
+        "byte": "deferred"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "Plan 0x7c8ed0 is a compiler intrinsic Provider-boundary for __builtin_memcpy: BN symbolic function for inline rep movsd/movsb copies; no authored Recoil body.",
+        "Compiler intrinsic provider boundary for plan row 0x7c8ed0 __builtin_memcpy; no authored Recoil body.",
+        "Compiler intrinsic provider boundary; source is compiler-generated inline copy behavior.",
+        "Compiler intrinsic has no authored storage or provider data owner requirement.",
+        "Compiler intrinsic provider dependency has no authored functional gate.",
+        "Provider intrinsic byte equivalence is outside authored source-owner tier S scheduling."
+      ]
+    },
+    {
+      "id": "provider.compiler.builtin_memset",
+      "kind": "provider-boundary",
+      "name": "VC5 compiler builtin memset intrinsic",
+      "section": "provider_platform",
+      "state": "accepted",
+      "anchors": [
+        "0x7c8ed4"
+      ],
+      "member_addresses": [
+        "0x7c8ed4"
+      ],
+      "data_addresses": [],
+      "source_paths": [],
+      "dependencies": [],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "none",
+        "functional": "none",
+        "byte": "deferred"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "Plan 0x7c8ed4 is a compiler intrinsic Provider-boundary for __builtin_memset: BN symbolic function for inline rep stos zero/fill; no authored Recoil body.",
+        "Compiler intrinsic provider boundary for plan row 0x7c8ed4 __builtin_memset; no authored Recoil body.",
+        "Compiler intrinsic provider boundary; source is compiler-generated inline fill behavior.",
+        "Compiler intrinsic has no authored storage or provider data owner requirement.",
+        "Compiler intrinsic provider dependency has no authored functional gate.",
+        "Provider intrinsic byte equivalence is outside authored source-owner tier S scheduling."
+      ]
+    },
+    {
+      "id": "provider.crt.sprintf_import",
+      "kind": "provider-boundary",
+      "name": "VC5 CRT sprintf import provider",
+      "section": "provider_platform",
+      "state": "accepted",
+      "anchors": [
+        "0x4cc5c4"
+      ],
+      "member_addresses": [
+        "0x4cc5c4"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x4cc5c4",
+          "name": "pending"
+        }
+      ],
+      "source_paths": [],
+      "dependencies": [],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "none",
+        "byte": "deferred"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "Plan 0x4cc5c4 is a CRT Provider-boundary for sprintf: VC5 CRT import/IAT provider, File external, Group provider.imports; provider import is not authored Recoil source.",
+        "CRT import/IAT provider boundary for plan row 0x4cc5c4 sprintf; external provider, not authored Recoil source.",
+        "CRT import/IAT provider boundary; source is external provider ABI.",
+        "CRT import/IAT pointer data is provider-owned import data, not authored Recoil storage.",
+        "Provider import dependency has no authored functional gate.",
+        "Provider byte equivalence is outside authored source-owner tier S scheduling."
+      ]
+    },
+    {
+      "id": "provider.crt.strncpy_import",
+      "kind": "provider-boundary",
+      "name": "VC5 CRT strncpy import provider",
+      "section": "provider_platform",
+      "state": "accepted",
+      "anchors": [
+        "0x4cc5a0"
+      ],
+      "member_addresses": [
+        "0x4cc5a0"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x4cc5a0",
+          "name": "pending"
+        }
+      ],
+      "source_paths": [],
+      "dependencies": [],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "none",
+        "byte": "deferred"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "Plan 0x4cc5a0 is a CRT Provider-boundary for strncpy: VC5 CRT import/IAT provider, File external, Group provider.imports; provider import is not authored Recoil source.",
+        "CRT import/IAT provider boundary for plan row 0x4cc5a0 strncpy; external provider, not authored Recoil source.",
+        "CRT import/IAT provider boundary; source is external provider ABI.",
+        "CRT import/IAT pointer data is provider-owned import data, not authored Recoil storage.",
+        "Provider import dependency has no authored functional gate.",
+        "Provider byte equivalence is outside authored source-owner tier S scheduling."
+      ]
+    },
+    {
+      "id": "provider.directx6.direct3d",
+      "kind": "provider-boundary",
+      "name": "DirectX 6 Direct3D Immediate Mode provider ABI",
+      "section": "provider_platform",
+      "state": "accepted",
+      "anchors": [],
+      "member_addresses": [],
+      "data_addresses": [],
+      "source_paths": [],
+      "dependencies": [],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "none",
+        "functional": "none",
+        "byte": "deferred"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "Direct3D provider source of truth is support/sdk/DirectX6/include/d3d.h: IDirect3D2, IDirect3DDevice2, IDirect3DViewport2, IDirect3DMaterial2, GUIDs, and COM method macros; zVideo callers use provider COM interfaces through authored global pointers.",
+        "DirectX 6 Direct3D Immediate Mode COM ABI is provider-owned per support/sdk/DirectX6/include/d3d.h.",
+        "Direct3D COM interfaces and GUIDs are external provider ABI; zVideo callers own authored behavior.",
+        "Direct3D aggregate provider dependency owns no authored Recoil data; authored pointer globals remain render_video data owners.",
+        "Direct3D provider ABI dependency has no authored functional gate.",
+        "Provider COM ABI byte equivalence is outside authored source-owner tier S scheduling."
+      ]
+    },
+    {
+      "id": "provider.directx6.directdraw",
+      "kind": "provider-boundary",
+      "name": "DirectX 6 DirectDraw provider ABI",
+      "section": "provider_platform",
+      "state": "accepted",
+      "anchors": [
+        "0x4c63de"
+      ],
+      "member_addresses": [
+        "0x4c63de",
+        "0x4c63e4"
+      ],
+      "data_addresses": [],
+      "source_paths": [],
+      "dependencies": [],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "none",
+        "functional": "none",
+        "byte": "deferred"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "Plan entries 0x4c63de DirectDrawCreate and 0x4c63e4 DirectDrawEnumerateA are Provider-boundary import/runtime wrappers; DirectDraw COM surface ABI source of truth is support/sdk/DirectX6/include/ddraw.h including IDirectDrawSurface3 methods.",
+        "DirectX 6 DirectDraw import/COM ABI is provider-owned; plan rows 0x4c63de/0x4c63e4 are provider boundaries.",
+        "DirectDraw COM interfaces are external provider ABI from support/sdk/DirectX6/include/ddraw.h.",
+        "DirectDraw aggregate provider dependency owns no authored Recoil data; surface-state globals remain render_video data owners.",
+        "DirectDraw provider ABI dependency has no authored functional gate.",
+        "Provider COM/import ABI byte equivalence is outside authored source-owner tier S scheduling."
+      ]
+    },
+    {
       "id": "provider.directx6.directinput",
       "kind": "provider-boundary",
       "name": "DirectX 6 DirectInput provider ABI",
@@ -50746,9 +51291,7 @@
         }
       ],
       "source_paths": [],
-      "dependencies": [
-        "provider.imports"
-      ],
+      "dependencies": [],
       "gates": {
         "boundary": "accepted",
         "source": "accepted",
@@ -50763,7 +51306,36 @@
         "DirectInputCreateA, IDirectInputDevice2A, IDirectInputEffect, GUID_ConstantForce, and GUID_Sine are DirectX 6 SDK/provider ABI, not authored Recoil source.",
         "0x4cc04c is the DirectInputCreateA IAT provider pointer; GUID/provider constants come from DirectX 6 dxguid/dinput provider libraries, not authored data.",
         "Existing provider functional target directinput_create_import_provider covers the DirectInputCreateA import provider boundary.",
-        "Provider ABI boundary accepted; authored VC5 byte scheduling is not applicable to DirectX provider implementation."
+        "Provider ABI boundary accepted; authored VC5 byte scheduling is not applicable to DirectX provider implementation.",
+        "Removed nonexistent generic provider.imports dependency; provider.directx6.directinput is itself the DirectInputCreateA import/DirectInput COM provider ABI boundary at 0x4c7498 with IAT data 0x4cc04c."
+      ]
+    },
+    {
+      "id": "provider.mfc42",
+      "kind": "provider-boundary",
+      "name": "MFC42 framework provider ABI",
+      "section": "provider_platform",
+      "state": "accepted",
+      "anchors": [],
+      "member_addresses": [],
+      "data_addresses": [],
+      "source_paths": [],
+      "dependencies": [],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "none",
+        "functional": "none",
+        "byte": "deferred"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "MFC42 provider evidence comes from support/sdk/MFC42 headers/source and existing Provider-boundary plan entries for MFC imports, message-map helpers, CString/CWnd/CDialog/CObject behavior, and MFC provider vtables; authored Recoil MFC-derived classes and message maps remain separate owners.",
+        "MFC42 is external framework/provider ABI; authored Recoil MFC-derived classes and message maps remain separate owners.",
+        "MFC42 source/behavior is provider evidence from support/sdk/MFC42, not production Recoil source.",
+        "MFC42 aggregate provider dependency owns no authored Recoil data in SOURCE_OWNERS; authored message-map records stay with authored owners.",
+        "MFC42 aggregate provider dependency has no authored functional gate.",
+        "Provider ABI byte equivalence is outside authored source-owner tier S scheduling."
       ]
     },
     {
@@ -50963,7 +51535,9 @@
           "name": "gRndr_ActiveRegionRect"
         }
       ],
-      "source_paths": [],
+      "source_paths": [
+        "src/GameZRecoil/zRndr/zRndr.cpp"
+      ],
       "dependencies": [
         "render_video.zrndr_perspective_texture_state_globals"
       ],
@@ -50984,7 +51558,8 @@
         "Pure tier S remains globally deferred while authored owner/data blockers remain; this data-owner gate is accepted for tier B dependency progress only.",
         "Owner render_video.zrndr_active_region_state_globals has accepted boundary/source/data/functional gates; same-session VC5 data-symbol verification target zrndr_active_region_state_globals passed for the full active region global tuple 0x632050-0x63206c with relocation-masked bytes matching retail.",
         "final-data audit: candidate Recoil.exe .data mismatches retail section/layout evidence; raw_size +0x1a00, virtual_size -0x1ca8, zero_fill_tail -0x36a8, so final data tier S byte identity is not accepted",
-        "Owner/plan consistency cleanup: primary owner links normalized so each accepted plan row has one canonical SOURCE_OWNERS primary link; former consumer/touched-data relationships preserved as owner dependencies."
+        "Owner/plan consistency cleanup: primary owner links normalized so each accepted plan row has one canonical SOURCE_OWNERS primary link; former consumer/touched-data relationships preserved as owner dependencies.",
+        "source_paths updated from [] to ['src/GameZRecoil/zRndr/zRndr.cpp']; supersedes prior source_paths/evidence where contradicted by current owner/source evidence: same-session zRndr active-region tuple source-order fix confirmed source owner implementation path in src/GameZRecoil/zRndr/zRndr.cpp; exact VC5 data-symbol target zrndr_active_region_state_globals passes, final data layout remains byte blocker"
       ]
     },
     {
@@ -54525,7 +55100,7 @@
         "src/GameZRecoil/zVideo/zVideo.cpp"
       ],
       "dependencies": [
-        "provider.direct3d",
+        "provider.directx6.direct3d",
         "render_video.zvideo_fog_color_globals",
         "render_video.zvideo_d3d_device_globals"
       ],
@@ -54546,7 +55121,8 @@
         "Pure tier S/byte verification remains globally deferred; no coherent zVideo Direct3D fog-state byte pass attempted for this owner.",
         "Fog/cache globals accepted through zvideo_d3d_fog_cache plus accepted render_video.zvideo_fog_color_globals; g_zVideo_pD3DDevice dependency covered by accepted render_video.zvideo_d3d_device_globals. Functional smokes passed for all fog callback members.",
         "Broader fog/color scalar and Direct3D device global data owners are now accepted; current fog callback data gate is clear.",
-        "Owner/plan consistency cleanup: primary owner links normalized so each accepted plan row has one canonical SOURCE_OWNERS primary link; former consumer/touched-data relationships preserved as owner dependencies."
+        "Owner/plan consistency cleanup: primary owner links normalized so each accepted plan row has one canonical SOURCE_OWNERS primary link; former consumer/touched-data relationships preserved as owner dependencies.",
+        "Canonicalized Direct3D provider dependency to DirectX 6 Direct3D provider ABI owner while preserving authored fog/device data owners."
       ]
     },
     {
@@ -54617,7 +55193,7 @@
         "src/GameZRecoil/zVideo/zVideo.cpp"
       ],
       "dependencies": [
-        "provider.direct3d",
+        "provider.directx6.direct3d",
         "render_video.zvideo_dd3d_submit_queue_storage",
         "render_video.zvideo_pixel_pack_state",
         "render_video.zvideo_d3d_device_globals"
@@ -54639,7 +55215,8 @@
         "Tier S/byte verification is deferred to a coherent zVideo Direct3D submit/queue/render-state source-file pass after shared data owners are accepted.",
         "Submit queue storage owner render_video.zvideo_dd3d_submit_queue_storage is accepted for temp vertices, sorted/overwrite queue arrays, queue counts, and render-state cache; pixel-pack state owner render_video.zvideo_pixel_pack_state is accepted for g_zVideo_PixelPack; Direct3D device pointer is covered by accepted render_video.zvideo_d3d_device_globals. All new VC5SP3 data-symbol manifests passed with zero unmasked data-byte mismatches.",
         "Pure tier S remains globally deferred while authored owner/data blockers remain.",
-        "Owner/plan consistency cleanup: primary owner links normalized so each accepted plan row has one canonical SOURCE_OWNERS primary link; former consumer/touched-data relationships preserved as owner dependencies."
+        "Owner/plan consistency cleanup: primary owner links normalized so each accepted plan row has one canonical SOURCE_OWNERS primary link; former consumer/touched-data relationships preserved as owner dependencies.",
+        "Canonicalized Direct3D provider dependency to DirectX 6 Direct3D provider ABI owner while preserving submit queue, pixel-pack, and device data owners."
       ]
     },
     {
@@ -55029,7 +55606,7 @@
         "src/GameZRecoil/zVideo/zVideo.cpp"
       ],
       "dependencies": [
-        "provider.directdraw",
+        "provider.directx6.directdraw",
         "render_video.zvideo_dd_surface_state_globals",
         "render_video.zvideo_selected_hw_api_device_record"
       ],
@@ -55051,7 +55628,8 @@
         "Surface-state owner render_video.zvideo_dd_surface_state_globals is accepted for the four 32-byte DirectDraw surface-state globals, and selected-device pointer owner render_video.zvideo_selected_hw_api_device_record is accepted for g_zVideo_pSelectedHwApiDeviceRecord; both have same-session BN/source/VC5SP3 data-symbol evidence. The accepted hardware API table owner covers the selected pointer target storage.",
         "DirectDraw surface-state and selected-device data owners are now accepted; the former covers g_zVideo_SwSurfaceState and g_zVideo_PrimarySurfaceState, and the latter covers g_zVideo_pSelectedHwApiDeviceRecord.",
         "final-data audit: candidate Recoil.exe .data mismatches retail section/layout evidence; raw_size +0x1a00, virtual_size -0x1ca8, zero_fill_tail -0x36a8, so final data tier S byte identity is not accepted",
-        "Owner/plan consistency cleanup: primary owner links normalized so each accepted plan row has one canonical SOURCE_OWNERS primary link; former consumer/touched-data relationships preserved as owner dependencies."
+        "Owner/plan consistency cleanup: primary owner links normalized so each accepted plan row has one canonical SOURCE_OWNERS primary link; former consumer/touched-data relationships preserved as owner dependencies.",
+        "Canonicalized DirectDraw provider dependency to DirectX 6 DirectDraw provider ABI owner while preserving authored surface-state and selected-device data owners."
       ]
     },
     {
@@ -57807,10 +58385,11 @@
         "functional": "accepted",
         "byte": "pending"
       },
-      "blocker": "Scrutinizer allowed split/reparent only; boundary/source/data/functional/byte gates remain unaccepted pending full shared token owner audit.",
+      "blocker": "final linked .data layout still blocks data byte/S acceptance for shared token owner",
       "evidence": [
         "Scrutinizer ALLOW for split/reparent only: create shared owner for primary data rows 0x4dad34, 0x4dad88, 0x4dadb4; remove those primary data links from hud_ui.hud_ui_mgr_ensure_hud_loaded_literals; no positive plan marker or gate acceptance.",
-        "source-owner scrutiny ALLOW: exact three primary .data rows 0x4dad34/0x4dad88/0x4dadb4; BN/source/VC5 data-symbol evidence proves writable token arrays; byte gate remains blocked by final linked .data layout"
+        "source-owner scrutiny ALLOW: exact three primary .data rows 0x4dad34/0x4dad88/0x4dadb4; BN/source/VC5 data-symbol evidence proves writable token arrays; byte gate remains blocked by final linked .data layout",
+        "Structured owner gates are boundary/source/data/functional accepted and byte pending; plan rows 0x4dad34/0x4dad88/0x4dadb4 remain tier B with source-faithful data model."
       ]
     },
     {
@@ -57972,12 +58551,14 @@
         "source": "accepted",
         "data": "accepted",
         "functional": "none",
-        "byte": "deferred"
+        "byte": "blocked"
       },
-      "blocker": "VC5 data-symbol coverage missing for pooled diagnostic literal at 0x4dcaac",
+      "blocker": "VC5 data-symbol coverage passes for pooled diagnostic literal at 0x4dcaac via target shared_unknown_error_text_literal_data; final linked .data raw/virtual/zero-fill layout drift still blocks byte/S acceptance.",
       "evidence": [
         "BN Recoil.bndb has char[0xe] g_Error_UnknownErrorText at 0x4dcaac referenced only by zInput::DI_ReportError 0x47260f and zVideo_dd::ReportError 0x4ae156; source has matching Unknown Error fallback literals in those two functions; adjacent zInput, zVideo, and RecoilApp diagnostic pools are separate accepted owners.",
-        "Complete one-symbol pooled diagnostic literal owner: BN char[0xe] g_Error_UnknownErrorText at 0x4dcaac is referenced only by zInput::DI_ReportError and zVideo_dd::ReportError; source has matching Unknown Error fallback literals in zInput.cpp and zVideo.cpp; adjacent diagnostic/app-shell data owners are separate; VC5 data-symbol coverage is missing so byte remains deferred."
+        "Complete one-symbol pooled diagnostic literal owner: BN char[0xe] g_Error_UnknownErrorText at 0x4dcaac is referenced only by zInput::DI_ReportError and zVideo_dd::ReportError; source has matching Unknown Error fallback literals in zInput.cpp and zVideo.cpp; adjacent diagnostic/app-shell data owners are separate; VC5 data-symbol coverage is missing so byte remains deferred.",
+        "VC5SP3 data-symbol verification target shared_unknown_error_text_literal_data now covers 0x4dcaac with zero unmasked byte mismatches and relocation identity artifact; audit final-data --include-plan --strict still reports global .data raw/virtual/zero-fill layout drift, so final linked data byte gate remains blocked.",
+        "Replacing stale missing-coverage blocker after verify vc5 shared_unknown_error_text_literal_data and owner-scoped verify vc5 --owner shared.unknown_error_text_literal_data --auto-chunk passed; final-data strict still fails with .data section deltas."
       ]
     },
     {
@@ -58007,8 +58588,11 @@
         "src/Battlesport/HudUiNetExitPanel.cpp"
       ],
       "dependencies": [
-        "hud_ui.background",
-        "hud_ui.zrd_widget",
+        "hud_ui.background_constructor",
+        "legacy.hud_ui.class_huduibackground",
+        "legacy.hud_ui.class_huduibackgroundcontainer",
+        "legacy.hud_ui.class_huduicontainer",
+        "legacy.hud_ui.class_huduizrdwidget",
         "ui.zhud.hud_ui_net_exit_panel_data"
       ],
       "gates": {
@@ -58033,7 +58617,8 @@
         "VC5 data-symbol target hud_ui_net_exit_panel_globals passed for 0x4db5f4, 0x4db5fc, 0x4f32bc, and 0x4f32c0 with zero unmasked byte mismatches; source docblocks link both authored globals and literals to the HudUiNetExitPanel owner.",
         "Boundary/source/data/functional gates are accepted; only byte verification remains deferred globally.",
         "final-data audit: candidate Recoil.exe .data mismatches retail section/layout evidence; raw_size +0x1a00, virtual_size -0x1ca8, zero_fill_tail -0x36a8, so final data tier S byte identity is not accepted",
-        "Owner/plan consistency cleanup: primary owner links normalized so each accepted plan row has one canonical SOURCE_OWNERS primary link; former consumer/touched-data relationships preserved as owner dependencies."
+        "Owner/plan consistency cleanup: primary owner links normalized so each accepted plan row has one canonical SOURCE_OWNERS primary link; former consumer/touched-data relationships preserved as owner dependencies.",
+        "Canonicalized broad HUD background/zrd_widget labels to concrete background/container/widget owner dependencies for HudUiNetExitPanel context."
       ]
     },
     {

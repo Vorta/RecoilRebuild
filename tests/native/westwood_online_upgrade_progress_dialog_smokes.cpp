@@ -732,7 +732,7 @@ extern "C" int westwood_online_upgrade_progress_dialog_dlg_proc_smoke(void) {
     WestwoodOnlineUpgradeDownloadReadyEntry *const oldReadyList =
         g_pWestwoodOnlineUpgradeDownloadReadyList;
     const DWORD oldCookie = g_WestwoodOnlineUpgradeDownloadAdviseCookie;
-    const LONG oldLiveCount = g_WestwoodOnlineUpgradeEventSinkLiveCount;
+    const LONG oldLiveCount = g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount;
     const int oldDialogResult = g_WestwoodOnlineUpgradeDownloadDialogResult;
     HWND const oldProgressHwnd = g_hWestwoodOnlineUpgradeProgressDialog;
     char oldPrompt[sizeof(g_WestwoodOnlineUpgradeDownloadReadyPromptText)];
@@ -823,7 +823,7 @@ extern "C" int westwood_online_upgrade_progress_dialog_dlg_proc_smoke(void) {
     g_pWestwoodOnlineUpgradeDownloadEventSink = 0;
     g_pWestwoodOnlineUpgradeDownloadReadyList = &entry;
     g_WestwoodOnlineUpgradeDownloadAdviseCookie = 0;
-    g_WestwoodOnlineUpgradeEventSinkLiveCount = oldLiveCount;
+    g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount = oldLiveCount;
     g_WestwoodOnlineUpgradeDownloadDialogResult = 99;
     g_hWestwoodOnlineUpgradeProgressDialog = 0;
 
@@ -840,7 +840,7 @@ extern "C" int westwood_online_upgrade_progress_dialog_dlg_proc_smoke(void) {
             !g_coCreateArgsOk ||
             g_pWestwoodOnlineUpgradeDownload != &g_fakeDownload ||
             g_pWestwoodOnlineUpgradeDownloadEventSink == 0 ||
-            g_WestwoodOnlineUpgradeEventSinkLiveCount != oldLiveCount + 1 ||
+            g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount != oldLiveCount + 1 ||
             g_findConnectionPointCalls != 1 ||
             !g_connectionPointIidOk ||
             g_adviseCalls != 1 ||
@@ -998,7 +998,7 @@ extern "C" int westwood_online_upgrade_progress_dialog_dlg_proc_smoke(void) {
     g_pWestwoodOnlineUpgradeDownloadEventSink = oldSink;
     g_pWestwoodOnlineUpgradeDownloadReadyList = oldReadyList;
     g_WestwoodOnlineUpgradeDownloadAdviseCookie = oldCookie;
-    g_WestwoodOnlineUpgradeEventSinkLiveCount = oldLiveCount;
+    g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount = oldLiveCount;
     g_WestwoodOnlineUpgradeDownloadDialogResult = oldDialogResult;
     g_hWestwoodOnlineUpgradeProgressDialog = oldProgressHwnd;
     memcpy(
