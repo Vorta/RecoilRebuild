@@ -257,11 +257,11 @@ namespace zRndr {
 void *g_frameBuffer = 0;
 int g_activeRegionWidth = 0;
 int g_activeRegionHeight = 0;
-ActiveRegionRectPartial g_activeRegionRect = {0};
 int g_pitchBytes = 0;
 int g_bytesPerPixel = 0;
 int g_videoStrideMirror0 = 0;
 int g_videoStrideMirror1 = 0;
+ActiveRegionRectPartial g_activeRegionRect = {0};
 /**
  * Reimplements data 0x57dac8: g_scanConvertMode.
  * Purpose: Store the active zRndr scan-conversion mode consumed by queued raster paths.

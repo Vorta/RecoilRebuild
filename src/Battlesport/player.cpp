@@ -3827,6 +3827,29 @@ void RegisterTopMsgPanel2Cleanup() {
     atexit(Player_TopMsgPanel2::Destructor);
 }
 
+#if defined(_MSC_VER) && defined(_M_IX86)
+typedef void (__cdecl *PlayerCrtInitializerFn)();
+/* VC5 emits these player.cpp startup callbacks as direct .CRT$XCU rows. */
+#pragma data_seg(".CRT$XCU")
+PlayerCrtInitializerFn s_PlayerCrtInit_InitMasterCommonDataList =
+    InitMasterCommonDataList;
+PlayerCrtInitializerFn s_PlayerCrtInit_InitMasterModalDataList =
+    InitMasterModalDataList;
+PlayerCrtInitializerFn s_PlayerCrtInit_InitAndRegisterUnderwaterFxPass3UiSingleton =
+    InitAndRegisterUnderwaterFxPass3UiSingleton;
+PlayerCrtInitializerFn s_PlayerCrtInit_InitAndRegisterProjectileCameraFxPass3UiSingleton =
+    InitAndRegisterProjectileCameraFxPass3UiSingleton;
+PlayerCrtInitializerFn s_PlayerCrtInit_InitSaveStateList =
+    InitSaveStateList;
+PlayerCrtInitializerFn s_PlayerCrtInit_InitAndRegisterTopMsgPanel1 =
+    InitAndRegisterTopMsgPanel1;
+PlayerCrtInitializerFn s_PlayerCrtInit_InitAndRegisterTopMsgPanel2 =
+    InitAndRegisterTopMsgPanel2;
+PlayerCrtInitializerFn s_PlayerCrtInit_PlayerNodeFlagRestoreInitGlobals =
+    PlayerNodeFlagRestore::InitGlobals;
+#pragma data_seg()
+#endif
+
 /**
  * Reimplements 0x41fe40: Player::GetAivZrdPath.
  * Source: D:\Proj\Battlesport\player.cpp.

@@ -2320,6 +2320,15 @@ void InitFeatureSystem() {
     RegisterFeatureSystemCleanupAtExit();
 }
 
+#if defined(_MSC_VER) && defined(_M_IX86)
+typedef void (__cdecl *zDEClientCrtInitializerFn)();
+/* VC5 emits this zdec_init.cpp startup callback as a direct .CRT$XCU row. */
+#pragma data_seg(".CRT$XCU")
+zDEClientCrtInitializerFn s_zDEClientCrtInit_InitFeatureSystem =
+    InitFeatureSystem;
+#pragma data_seg()
+#endif
+
 /**
  * Reimplements 0x457660: zDEClient::InitFeatureEntryListAndMapTree.
  * (D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp).

@@ -217,6 +217,38 @@ char g_zInterp_PreparedIndexFileNameStr[] = "interp.zbd";
  */
 extern "C" char g_zEffectAnim_FileModeRead[] = "r";
 
+/**
+ * Reimplements data 0x4e5954: g_zInterp_UnresolvedFloatDefaults.
+ * Data owner: address-specific orphan initialized-data exception.
+ * BN evidence: .data float[0x3f], 0xfc bytes, no base/interior xrefs.
+ * State: data-equivalent-only preservation, not source-faithful owner proof.
+ *
+ * Purpose: preserve the unresolved initialized float defaults byte pattern.
+ */
+extern "C" float g_zInterp_UnresolvedFloatDefaults[63] = {
+    0.0f, 2.2f, 0.2f,
+    2.0f, -2.2f, 0.2f,
+    -2.0f, -2.2f, -0.2f,
+    2.0f, 2.2f, -0.2f,
+    -2.0f, 0.0f, 5.0f,
+    0.0f, 0.0f, 0.0f,
+    0.0f, 0.0f, 0.0f,
+    0.0f, 0.0f, 0.0f,
+    0.0f, 1.0f, 0.0f,
+    0.0f, 0.0f, 5.0f,
+    0.0f, 0.0f, 0.0f,
+    0.0f, 0.0f, 0.0f,
+    0.0f, 0.0f, 0.0f,
+    0.0f, 5.0f, 0.0f,
+    0.0f, 0.0f, 0.0f,
+    0.0f, 0.0f, 0.0f,
+    0.0f, 0.0f, 0.0f,
+    -5.0f, 0.0f, 0.0f,
+    0.0f, 0.0f, 0.0f,
+    0.0f, 0.0f, 0.0f,
+    0.0f, 0.0f, 0.0f
+};
+
 namespace {
 /**
  * Original inline helper evidence: no standalone retail function observed;

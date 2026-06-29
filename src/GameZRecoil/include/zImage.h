@@ -57,8 +57,7 @@ extern int g_zImage_TextureMemoryDefault;
 extern int *g_zImage_TextureMemoryOption;
 extern int g_zImage_FontTransparentColor;
 extern int g_zImage_NextFontSlotIndex;
-extern zVidImagePartial *g_zImage_DefaultImagePtr;
-extern zVideo_TextureRecordPartial *g_zImage_DefaultTextureRecord;
+extern zImage_TexDirEntryPartial g_zImage_DefaultTexDirEntry;
 extern zImage_CreateFallbackImageProc g_zImage_pfnCreateFallbackImage;
 }
 
@@ -105,7 +104,6 @@ int Init();
 }
 
 extern "C" {
-extern char g_zImage_DefaultTextureName[0x10];
 int __fastcall zImage_InitMissionResources(const char *pathText);
 int __fastcall zImage_Init(const char *fontsPath);
 }

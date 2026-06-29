@@ -2997,6 +2997,15 @@ void TrackList_Reset() {
     );
 }
 
+#if defined(_MSC_VER) && defined(_M_IX86)
+typedef void (__cdecl *HudUiCrtInitializerFn)();
+/* VC5 emits this HUD UI startup callback as a direct .CRT$XCU row. */
+#pragma data_seg(".CRT$XCU")
+HudUiCrtInitializerFn s_HudUiCrtInit_HudUiMgrSensorTrackListReset =
+    TrackList_Reset;
+#pragma data_seg()
+#endif
+
 /**
  * Reimplements 0x438920: HudUiMgrSensor::TrackList_Add.
  * Original source path: D:\Proj\Battlesport\HudUiMgrSensor.cpp.

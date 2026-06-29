@@ -34,7 +34,7 @@ int g_zImage_NextFontSlotIndex = 0;
 zArchiveList *g_zImage_MissionSearchPathList = 0;
 /**
  * Reimplements data 0x53d798: g_zImage_TexDirEntryCount.
- * Data owner: engine.zimage.texture_directory_state.
+ * Data owner: engine.zimage.texture_directory_state_data.
  * Purpose: track the active prefix of the fixed texture-directory table.
  *
  * Retail 0x53d798: active count for the fixed texture-directory table at
@@ -45,7 +45,7 @@ zArchiveList *g_zImage_MissionSearchPathList = 0;
 int g_zImage_TexDirEntryCount = 0;
 /**
  * Reimplements data 0x53d79c: g_zImage_TexDirEntries.
- * Data owner: engine.zimage.texture_directory_state.
+ * Data owner: engine.zimage.texture_directory_state_data.
  * Purpose: store the fixed texture-directory records used by image loading,
  * serialization, and mip/variant chaining.
  *
@@ -96,33 +96,8 @@ int *g_zImage_TextureMemoryOption = 0;
  */
 int g_zImage_FontTransparentColor = 0;
 /**
- * Reimplements data 0x4e0718: g_zImage_DefaultImagePtr.
- * Data owner: engine.zimage.texture_directory_state.
- * Purpose: hold the default zVid image pointer in the legacy entry-reference
- * storage shape.
- *
- * Retail 0x4e0718: initialized default image pointer. BN initializes it to
- * zVid_Image::g_zImage_DefaultImage at 0x4e06e0; GetDefaultImageRefPtr exposes
- * this storage address as the default texture-directory entry reference shape
- * expected by legacy material callers.
- */
-zVidImagePartial *g_zImage_DefaultImagePtr = &zVid_Image::g_zImage_DefaultImage;
-/**
- * Reimplements data 0x4e071c: g_zImage_DefaultTextureRecord.
- * Data owner: engine.zimage.texture_directory_state.
- * Purpose: remember the default hardware texture record created for the
- * zImage texture directory.
- *
- * Retail 0x4e071c: initialized null texture-record pointer adjacent to the
- * zImage default image pointer and default texture name. InitTextureDirectory
- * is the zImage writer for this texture-directory storage. The similarly
- * named video-runtime pointer at 0x6333a8 is a separate zVideo owner and is
- * intentionally not folded into this zImage data symbol.
- */
-zVideo_TextureRecordPartial *g_zImage_DefaultTextureRecord = 0;
-/**
  * Reimplements data 0x53d788: g_zImage_pfnCreateFallbackImage.
- * Data owner: engine.zimage.texture_directory_state.
+ * Data owner: engine.zimage.texture_directory_state_data.
  * Purpose: optionally create fallback images when a pending texture-directory
  * load cannot resolve an image pack entry.
  *
@@ -131,19 +106,26 @@ zVideo_TextureRecordPartial *g_zImage_DefaultTextureRecord = 0;
  */
 zImage_CreateFallbackImageProc g_zImage_pfnCreateFallbackImage = 0;
 /**
- * Reimplements data 0x4e0720: g_zImage_DefaultTextureName.
- * Data owner: engine.zimage.texture_directory_state.
- * Purpose: name the hardware default texture record created during texture
- * directory initialization.
+ * Reimplements data 0x4e0718: g_zImage_DefaultTexDirEntry.
+ * Data owner: engine.zimage.texture_directory_state_data.
+ * Purpose: hold the initialized default texture-directory entry shared by
+ * legacy material callers and default texture-record creation.
  *
- * Retail 0x4e0720: 16-byte initialized default texture name. BN shows the
- * exact bytes "DEFAULT_TEXTURE\0" and InitTextureDirectory passes this storage
- * to the hardware texture-record creation callback.
+ * Retail 0x4e0718..0x4e073b is one 0x24-byte zImage_TexDirEntryPartial record:
+ * image points at zVid_Image::g_zImage_DefaultImage, texture is null,
+ * baseName is "DEFAULT_TEXTURE", loadState is loaded, and nextVariant is null.
+ * 0x4e073c starts the separate zVid texture-pack load-state row.
  */
-char g_zImage_DefaultTextureName[0x10] = "DEFAULT_TEXTURE";
+zImage_TexDirEntryPartial g_zImage_DefaultTexDirEntry = {
+    &zVid_Image::g_zImage_DefaultImage,
+    0,
+    "DEFAULT_TEXTURE",
+    1,
+    0
+};
 /**
  * Reimplements data 0x4e0850: g_zImage_FontVariantSuffix.
- * Data owner: engine.zimage.texture_directory_state.
+ * Data owner: engine.zimage.texture_directory_state_data.
  * Purpose: provide the writable mip-chain suffix seed used to identify base
  * texture variants.
  *
@@ -205,11 +187,11 @@ namespace zImage {
  * Purpose: expose the default image pointer through the texture-directory
  * entry reference shape expected by legacy callers.
  *
- * Evidence: BN returns the address of g_zImage_DefaultImagePtr retyped as a
- * texture-directory entry pointer without touching additional state.
+ * Evidence: BN returns the address of the initialized default texture-directory
+ * record without touching additional state.
  */
 zImage_TexDirEntryPartial *GetDefaultImageRefPtr() {
-    return (zImage_TexDirEntryPartial *)(&g_zImage_DefaultImagePtr);
+    return &g_zImage_DefaultTexDirEntry;
 }
 
 /**
@@ -222,8 +204,8 @@ zImage_TexDirEntryPartial *GetDefaultImageRefPtr() {
  *
  * Original helper evidence: source-faithful helper recovered from BN caller
  * body 0x46d550, which routes the DEFAULT_TEXTURE/default-image contract
- * through g_zVideo_pfnCreateTextureRecord and stores the result in
- * g_zImage_DefaultTextureRecord. BN 0x4a75f0 uses a direct null-name
+ * through g_zVideo_pfnCreateTextureRecord and stores the result in the default
+ * texture-directory record. BN 0x4a75f0 uses a direct null-name
  * default-image call instead.
  */
 zVideo_TextureRecordPartial *CreateDefaultTextureRecord() {
@@ -231,7 +213,7 @@ zVideo_TextureRecordPartial *CreateDefaultTextureRecord() {
     int releaseImage = 0;
     if (g_zImage_pfnCreateFallbackImage != 0) {
         zVidImagePartial *fallbackImage = g_zImage_pfnCreateFallbackImage(
-            g_zImage_DefaultTextureName
+            g_zImage_DefaultTexDirEntry.baseName
         );
         if (fallbackImage != 0) {
             image = fallbackImage;
@@ -239,8 +221,8 @@ zVideo_TextureRecordPartial *CreateDefaultTextureRecord() {
         }
     }
 
-    g_zImage_DefaultTextureRecord = g_zVideo_pfnCreateTextureRecord(
-        g_zImage_DefaultTextureName,
+    g_zImage_DefaultTexDirEntry.texture = g_zVideo_pfnCreateTextureRecord(
+        g_zImage_DefaultTexDirEntry.baseName,
         image,
         image->formatFlagsPacked & 2,
         image->textureAddressFlagsPacked & 1,
@@ -249,7 +231,7 @@ zVideo_TextureRecordPartial *CreateDefaultTextureRecord() {
     if (releaseImage != 0) {
         zVid_Image::Destroy(image);
     }
-    return g_zImage_DefaultTextureRecord;
+    return g_zImage_DefaultTexDirEntry.texture;
 }
 
 /**

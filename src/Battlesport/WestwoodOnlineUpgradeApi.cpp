@@ -9,16 +9,6 @@
 
 #include <string.h>
 
-// WestwoodOnline owns the WOL ActiveX API startup globals. Current BN evidence
-// shows these as independent zero-initialized or immutable data symbols used by
-// the API startup anchors; dialog/session-browser globals defined in this
-// translation unit are tracked as a separate data-owner blocker.
-extern "C" WestwoodOnlineUpgradeApiInitState g_WestwoodOnlineUpgradeApiInitState = {0};
-extern "C" IUnknown *g_pWestwoodOnlineUpgradeApi = 0;
-extern "C" void *g_pWestwoodOnlineUpgradeApiEventSink = 0;
-extern "C" DWORD g_WestwoodOnlineUpgradeApiAdviseCookie = 0;
-extern "C" int g_WestwoodOnlineUpgradeApiShutdownState = 0;
-extern "C" int g_WestwoodOnlineUpgradeApiAsyncErrorFlag = 0;
 /**
  * Reimplements data 0x4dd24c: g_WestwoodOnlineUpgradeAbortFlag.
  * Purpose: carries the upgrade dialog/provider disconnect abort state, starting
@@ -26,34 +16,46 @@ extern "C" int g_WestwoodOnlineUpgradeApiAsyncErrorFlag = 0;
  */
 extern "C" int g_WestwoodOnlineUpgradeAbortFlag = 1;
 
+// WestwoodOnline owns the WOL ActiveX API startup globals. Current BN evidence
+// shows these as independent zero-initialized or immutable data symbols used by
+// the API startup anchors; dialog/session-browser globals defined in this
+// translation unit are tracked as a separate data-owner blocker.
+// API startup wait/event state.
+extern "C" HANDLE g_WestwoodOnlineUpgradeInitWaitEvents[3] = {0};
+extern "C" HANDLE g_WestwoodOnlineUpgradeFailureEvent = 0;
+extern "C" WestwoodOnlineUpgradeBootstrapServerRecord
+    g_WestwoodOnlineUpgradeSelectedBootstrapServer = {0};
+
 // Session-browser/dialog state: defined here by the recovered source file, but
 // not part of the API startup data owner.
 extern "C" int g_WestwoodOnlineUpgradeActiveListMode = 0;
-extern "C" int g_WestwoodOnlineUpgradeCreateSessionFromQueryFlag = 0;
-extern "C" int g_WestwoodOnlineUpgradePendingSessionResultCount = 0;
-extern "C" int g_WestwoodOnlineUpgradeVisibleSessionResultCount = 0;
 
 // API callback pump state.
 extern "C" int g_WestwoodOnlineUpgradeProcessCallbacksFlag = 0;
 
-// More session-browser/dialog state.
-extern "C" float g_WestwoodOnlineUpgradeNextAutoRefreshTime = 0.0f;
-extern "C" int g_WestwoodOnlineUpgradeDisconnectInFlightFlag = 0;
-
-// API startup wait/event state.
-extern "C" HANDLE g_WestwoodOnlineUpgradeInitWaitEvents[3] = {0};
-extern "C" HANDLE g_WestwoodOnlineUpgradeBootstrapServerListEvent = 0;
+extern "C" WestwoodOnlineUpgradeApiInitState g_WestwoodOnlineUpgradeApiInitState = {0};
+extern "C" int g_WestwoodOnlineUpgradeApiShutdownState = 0;
 extern "C" HANDLE g_WestwoodOnlineUpgradeStatusTextEvent = 0;
-extern "C" HANDLE g_WestwoodOnlineUpgradeFailureEvent = 0;
-extern "C" WestwoodOnlineUpgradeBootstrapServerRecord
-    g_WestwoodOnlineUpgradeSelectedBootstrapServer = {0};
+extern "C" HANDLE g_WestwoodOnlineUpgradeBootstrapServerListEvent = 0;
 
 // Session-browser cache state. 0x43d2e0 clears the current record at startup,
 // but the broader browse/cache owner remains the dialog/event-sink slice.
 extern "C" WestwoodOnlineUpgradeBrowseRecord g_WestwoodOnlineUpgradeCachedBrowseRecord = {0};
 extern "C" WestwoodOnlineUpgradeBrowseRecord g_WestwoodOnlineUpgradeCachedBrowseRecordList[1024] = {
     {0}};
+
+extern "C" int g_WestwoodOnlineUpgradeDisconnectInFlightFlag = 0;
+extern "C" void *g_pWestwoodOnlineUpgradeApiEventSink = 0;
+extern "C" int g_WestwoodOnlineUpgradeApiAsyncErrorFlag = 0;
+extern "C" DWORD g_WestwoodOnlineUpgradeApiAdviseCookie = 0;
+extern "C" IUnknown *g_pWestwoodOnlineUpgradeApi = 0;
+
+// More session-browser/dialog state.
+extern "C" int g_WestwoodOnlineUpgradePendingSessionResultCount = 0;
 extern "C" int g_WestwoodOnlineUpgradeCachedBrowseRecordListCount = 0;
+extern "C" int g_WestwoodOnlineUpgradeVisibleSessionResultCount = 0;
+extern "C" int g_WestwoodOnlineUpgradeCreateSessionFromQueryFlag = 0;
+extern "C" float g_WestwoodOnlineUpgradeNextAutoRefreshTime = 0.0f;
 
 // BN observes the same COM identity bytes as g_CLSID_WestwoodOnlineUpgradeApi,
 // g_IID_WestwoodOnlineUpgradeApi, and IID_WestwoodOnlineUpgradeApiEventSink.
@@ -235,7 +237,7 @@ DWORD PumpBootstrapCallbacksUntilEvent() {
  * (D:\Proj\Battlesport\WestwoodOnlineUpgradeApi.cpp).
  *
  * Purpose: validate and initialize the transient WOL bootstrap-state block,
- * module handles, events, and critical sections.
+ * module handles, event-sink live count, and critical sections.
  */
 HRESULT __stdcall WestwoodOnlineUpgradeApiInitState::Init(
     WestwoodOnlineUpgradeApiInitState *self,
@@ -250,7 +252,7 @@ HRESULT __stdcall WestwoodOnlineUpgradeApiInitState::Init(
         return E_INVALIDARG;
     }
 
-    self->statusTextEvent = 0;
+    self->eventSinkLiveCount = 0;
     self->failureEvent = 0;
     self->bootstrapServerListEvent = bootstrapServerListEvent;
     self->moduleHandleSecondary = moduleHandle;

@@ -148,12 +148,6 @@ IWestwoodOnlineUpgradeProviderApiCallbacks *GetCallbackApiComObject() {
 } // namespace
 
 /**
- * Reimplements data 0x4f53e4: g_WestwoodOnlineUpgradeEventSinkLiveCount.
- * Purpose: Tracks live Westwood Online upgrade event-sink instances.
- */
-extern "C" LONG g_WestwoodOnlineUpgradeEventSinkLiveCount = 0;
-
-/**
  * Reimplements data 0x4d1ba0: g_WestwoodOnlineUpgradeApiEventSink_InterfaceMap.
  * Purpose: Describes the single direct COM interface exposed by the API event sink.
  */
@@ -174,7 +168,7 @@ HRESULT __stdcall WestwoodOnlineUpgradeApiEventSink::CreateInstance(
 
     if (eventSink != 0) {
         eventSink->m_refCountAndLock.Init();
-        InterlockedIncrement(&g_WestwoodOnlineUpgradeEventSinkLiveCount);
+        InterlockedIncrement(&g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount);
         result = S_OK;
     }
 
@@ -260,7 +254,7 @@ ULONG __stdcall WestwoodOnlineUpgradeApiEventSink::Release(
  */
 void WestwoodOnlineUpgradeApiEventSink::Destructor() {
     m_refCountAndLock.refCount = 1;
-    InterlockedDecrement(&g_WestwoodOnlineUpgradeEventSinkLiveCount);
+    InterlockedDecrement(&g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount);
     DeleteCriticalSection(&m_refCountAndLock.lock);
 }
 
