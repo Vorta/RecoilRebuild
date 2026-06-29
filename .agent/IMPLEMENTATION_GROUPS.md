@@ -7,7 +7,7 @@ groups currently being coordinated. Pure tier `S` verification groups are active
 `tier_s_priority_ready=true` or explicit user direction. Active groups are the
 default no-address startup queue: new agents should resume actionable WIP here
 before selecting new work with
-`python tools/recoil.py plan next --lane binary`. Keep the header and template
+`python tools/recoil.py owner next --lane binary`. Keep the header and template
 available even when no groups are active.
 
 ## Rules
@@ -15,30 +15,30 @@ available even when no groups are active.
 - Create or update a group before editing when a task touches more than one
   function or a shared type/global/vtable.
 - Create or update the matching source-owner record with `python tools/recoil.py
-  owner ...` before accepting `Source owner`, `Data reimplemented`, or tier
-  `B`/`A`/`S` plan markers. This file is not source-owner evidence.
+  owner ...` before accepting owner source/data gates or tier `B`/`A`/`S`
+  owner status. This file is not source-owner evidence.
 - When launching without a user-specified address or source group, inspect
   active groups first and resume the first actionable one. Start unrelated new
   work only when active groups are absent, stale, contradicted, completed, or
   explicitly deprioritized by the user.
 - Keep groups scoped. Prefer one class, one source file cluster, one recursive
   cycle, or one call-chain frontier.
-- Do not mark plan entries done from this file alone. Plan markers still
-  require current source/build/Binary Ninja evidence.
+- Do not claim address or owner completion from this file alone. SOURCE_OWNERS
+  gates and tiers still require current source/build/Binary Ninja evidence.
 - Keep notes concise and temporary. Move durable facts into source comments,
   Binary Ninja comments, tests, `docs/reconstruction/`, or narrow subsystem
   docs before pruning.
 - Verification-only queues that no longer carry source, owner, or data blockers
   should not live in this active working file while global owner/data blockers
-  remain. Use `.agent/RECOIL_PLAN.md`, `python tools/recoil.py status
+  remain. Use `.agent/SOURCE_OWNERS.json`, `python tools/recoil.py status
   0xNNNNNN`, VC verification manifests, and `python tools/recoil.py audit
   backlog --lane binary --include-deferred-verify` for deferred verification
   state.
 - Normal binary-lane planning prioritizes owner structure blockers before
   isolated implementation/behavior work and prioritizes global owner/data
   blockers before verify-only tier `S` work. Active verify-only groups should
-  condense or move out of this file while any authored `Source owner ❌` or
-  `Data reimplemented ❌` marker remains.
+  condense or move out of this file while any authored owner source/data gate
+  remains blocked or pending.
 - Recompute verification scope with `python tools/recoil.py status 0xNNNNNN`
   or `python tools/recoil.py frontier 0xNNNNNN --depth 1` after source blockers
   clear.
@@ -97,7 +97,7 @@ available even when no groups are active.
   - evidence used and caveats
   - commands run with pass/fail
   - blockers and overlap warnings
-  - non-authoritative marker recommendations only
+  - non-authoritative owner gate/tier recommendations only
 ```
 
 ## Verifier Handoff Template

@@ -20,7 +20,7 @@ namespace {
     const int kSingleParentFlag = 0x00080000;
     const int kNodeTransformDirtyPropagatedFlag = 0x02000000;
 
-    const char *kObject3DSourceFile = "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c";
+    const char kObject3DSourceFile[] = "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c";
 
     /**
      * Original static helper observed in callers 0x438020 and 0x44dc30

@@ -1,8 +1,17 @@
 # Final Executable Reproducibility
 
 This note tracks the final linked binary lane. It complements per-owner VC5
-verification and data-owner evidence; it does not replace tier gates in
+verification and data-packet evidence; it does not replace tier gates in
 `AGENTS.md`.
+
+Final executable layout is no longer the first workspace scheduling priority
+when source-file block evidence is incomplete. `owner next --lane binary`
+surfaces `work_unit=source-file-block-map` ahead of `final-repro`/`final-data-layout`
+so agents first recover VC5 translation-unit contribution boundaries,
+header/COMDAT/provider exceptions, and source-owner remaps top-down from the
+proven `ai_net.cpp` block. Use this final-lane note after those block-order
+facts expose direct object/data layout evidence, or for final executable
+validation after source/object order milestones.
 
 ## Work Units
 
@@ -16,7 +25,8 @@ check. It reports:
   still differs from retail.
 
 `work_unit=final-repro` is a global binary-lane target. It is not a
-SOURCE_OWNERS record. Do not add a synthetic owner for it.
+SOURCE_OWNERS record. Do not add a synthetic owner for it. Human queue output
+labels it `work_unit_scope=global-final-lane`.
 
 `work_unit=final-data-layout` is the nested Recoil.exe linked `.data`
 section/raw/virtual/zero-fill/map layout target. It is also not a SOURCE_OWNERS
@@ -24,7 +34,8 @@ record. Resolve it by fixing the ranked object/source-file data layout causes,
 then rerun final-build/final-data checks before accepting affected owner byte
 gates. It blocks final executable acceptance and directly affected owner/data
 byte gates only; unrelated owner-scoped tier `S` work remains governed by that
-owner's own source/data/byte readiness.
+owner's own source/data/byte readiness. This final-lane work is not a
+whole-program phase gate before all owner-local byte verification.
 
 ## Commands
 
@@ -47,7 +58,7 @@ python tools/recoil.py verify final-build
 For linked Recoil.exe `.data` drift:
 
 ```powershell
-python tools/recoil.py audit final-data --include-plan --strict --json-out build/vc5-final/final_data_diff.json --plan-actions-json build/vc5-final/final_data_plan_actions.json
+python tools/recoil.py audit final-data --include-owners --strict --json-out build/vc5-final/final_data_diff.json --owner-actions-json build/vc5-final/final_data_owner_actions.json
 ```
 
 `audit final-repro --strict` returns nonzero while final executable
@@ -77,10 +88,16 @@ Final executable acceptance requires:
   byte gates being accepted as tier `S`.
 
 Owner-scoped tier `S` remains separate from final executable acceptance. A
-complete linked source owner can be scheduled or verified when that owner plus
-its primary-owned, referenced, touched, and dependency data are ready for the
-owner byte gate. Unrelated owner/data debt and the address-specific orphan data
-row `0x4e5954..0x4e5a50` do not block unrelated source-owner `S`.
+complete linked primary source-shaped owner can be scheduled or verified when
+that owner plus its primary-owned, referenced, touched, linked, and dependency
+data packets are ready for the owner byte gate. Auxiliary data packets are
+evidence/prerequisite scopes, not primary source-owner targets, unless current
+evidence proves the original source had that exact authored data construct.
+Accepted data-packet bytes mean that data dependency is byte-ready; final
+source-owner `S` still targets the primary source-shaped owner plus all
+referenced/touched/linked data packets. Unrelated owner/data debt and the
+address-specific orphan data row `0x4e5954..0x4e5a50` do not block unrelated
+source-owner `S`.
 
 ## Final Data Tail Evidence
 
@@ -103,8 +120,8 @@ The current focused deltas are:
 
 These facts block final linked layout identity and affected owner byte gates,
 but they do not by themselves disprove the accepted source-owner or data-owner
-gates for the tail rows. The same audit produced no direct plan-action owners
-or addresses; it only emitted diagnostic owners and plan rows.
+gates for the tail rows. The same audit produced no direct owner-action owners
+or addresses; it only emitted diagnostic owner/address correlation rows.
 
 Relink-only order probes under `build/vc5-final-order-probes/` tested the
 remembered tail-order hypotheses without changing the canonical final-build
@@ -222,7 +239,7 @@ covers the eight zero bytes `0x4e5b08..0x4e5b0f` as
 `rdata_tail_filler_after_zVideo_PaletteOpenFailedFormat`, and `0x4e5b10`
 keeps its provider `type_info_RttiTypeDescriptor` identity with a VC5/MSVCRT RTTI
 comment. These BN changes are reconstruction hygiene only; they do not alter
-plan acceptance or the unresolved `0x4e5954` data-owner blocker.
+owner acceptance or the unresolved `0x4e5954` data-owner blocker.
 
 `audit final-data` now emits `reference_tail_source_summary` for the raw and
 virtual tails. The parent artifact
@@ -253,7 +270,7 @@ strict blocker (`rva=-0x13000`, `raw_size=-0x600`, `virtual_size=-0x3db8`,
 `zero_fill_tail=-0x37b8`) and records that candidate `.data` still ends at map
 offset `0xb4e0`, BSS starts at `0xb4e0`, and PE raw alignment extends to
 `0xb600`. This confirms the missing retail raw tail is still backed by BSS in
-the candidate rather than by a directly actionable owner/plan command.
+the candidate rather than by a directly actionable owner command.
 
 `audit final-data` emits `candidate_initialized_data_thresholds` for the same
 candidate-side layout question. The field records the current initialized
@@ -297,7 +314,7 @@ increase initialized `.data` length or reduce the raw-size blocker.
 
 A 2026-06-29 read-only object/subsection attribution pass over
 `build/vc5-final/final_data_diff_coverage_parent.json`,
-`build/vc5-final/final_data_plan_actions_coverage_parent.json`,
+`build/vc5-final/final_data_owner_actions_coverage_parent.json`,
 `build/vc5-final/Recoil.map`, `build/vc5-final/rsp/link.rsp`, and the
 generated final-build objects confirms the current raw-alignment thresholds.
 The candidate initialized `.data` end and BSS start still coincide at section
@@ -400,10 +417,10 @@ source-faithful owner.
 
 Follow-up final-data-layout packets on 2026-06-29 refreshed the canonical
 artifacts `build/vc5-final/final_data_diff.json` and
-`build/vc5-final/final_data_plan_actions.json` with
+`build/vc5-final/final_data_owner_actions.json` with
 `candidate_initialized_data_thresholds`. The strict deltas remained unchanged:
 `rva=-0x13000`, `raw_size=-0x600`, `virtual_size=-0x3db8`, and
-`zero_fill_tail=-0x37b8`, with no direct tier-S owner, plan-address, or
+`zero_fill_tail=-0x37b8`, with no direct tier-S owner, owner-address, or
 affected-owner issue. Candidate initialized `.data` still ends at offset
 `0xb4e0`, candidate raw end is `0xb600`, retail raw end is `0xbc00`, and the
 next raw-aligned thresholds require `0x121`, `0x321`, and `0x521` more
@@ -430,7 +447,7 @@ ledger/model cleanup rather than final-data layout work. The stale standalone
 `WestwoodOnlineUpgradeApiInitState::eventSinkLiveCount` inside the canonical
 `0x4f53d0` init-state aggregate. The three API GUIDs at `0x4d1838`,
 `0x4d1848`, and `0x4d18d8` remain valid SOURCE_OWNERS `.rdata` primary-data
-links without plan rows, and owner-scoped VC5 verification selected and
+links without legacy markdown rows, and owner-scoped VC5 verification selected and
 byte-matched the Westwood data/GUID rows. The owner source/data gates and
 `0x4f53d0` tier-B data row are now accepted, but the owner byte gate remains
 deferred because functions `0x42dda0`, `0x43d130`, and `0x43d2e0` still have
@@ -486,7 +503,7 @@ implementation targets. The `MSVCRT:ti_inst.obj`
 RTTI/type_info data covered by the original-address provider row `0x4e5b10`;
 the `HudUiMessageBoxDialog.obj` empty string literal at `0xb548` is a
 compiler-generated literal from existing authored `SetTextFmt("")` call sites.
-Neither justifies new plan rows, owner-ledger changes, or an authored source
+Neither justifies new owner rows, owner-ledger changes, or an authored source
 handoff. The next evidence-producing work is therefore zInterp source-owner
 recovery plus COFF subsection/linker placement comparison for
 `zinterp_parser_runtime_data`, not provider reclassification or boundary-owner
@@ -601,8 +618,8 @@ float block's source model. The raw-tail RTTI/filler rows after the zInterp
 strings were reclassified as non-authored context for scheduling purposes:
 `0x4e5b10..0x4e5b28` is already an accepted VC5/MSVCRT `type_info`
 provider-boundary row, while `0x4e5b08..0x4e5b10` and `0x4e5b4c..0x4e5b50` are
-zero alignment/filler diagnostics with no xrefs or plan actions. The improved
-`final_data_plan_actions.json` sample now exposes row-level diagnostic drift,
+zero alignment/filler diagnostics with no xrefs or owner actions. The improved
+`final_data_owner_actions.json` sample now exposes row-level diagnostic drift,
 but its command batches remain empty (`direct_s_tier_issues=0`) and the sample
 does not create an unblocked source-owner task. User-approved policy now allows
 only `0x4e5954..0x4e5a50` to proceed as the one non-reusable
@@ -610,3 +627,262 @@ address-specific orphan initialized-data exception, with `data-equivalent-only`
 modeling and the evidence requirements in `AGENTS.md` and
 `owner_led_workflow.md`. This does not authorize a general source-worker
 implementation pattern or any future orphan data row.
+
+The 2026-06-30 CRT-initializer recovery pass added source-backed VC5 `.CRT$XCU`
+rows for the current authored/static-lifecycle owners already proven by BN:
+`RecoilStateCredits`, `RecoilStateCheatCode`,
+`HudUiNewGamePanelOverlayOwner`, `HudUiNetGameSetupOverlayOwner`, `HudUiMgr`,
+`Mission::InitObjectives`, `HudUiTriplet`'s
+`g_HudUiTripletWndClassName` CString lifecycle, and the
+`HudUiSensorWindow` CWnd lifecycle. It also classified
+`0x4c8214` / `0x4da004` as the provider-owned MFC static MBCP initializer
+boundary, not authored Recoil source. After that pass, strict owner audit and
+source guards were clean, and final-build still compiled, linked, and
+resource-compared; PE comparison remains blocked by final reproducibility.
+
+The refreshed final-data audit after those rows reports `.data`
+`rva=-0xe000`, `raw_size=-0x600`, `virtual_size=-0x3dc8`, and
+`zero_fill_tail=-0x37c8`, with candidate map `.CRT$XCU` size `0xe4` and
+candidate data end/BSS start at offset `0xb4d0`. The added rows improved the
+virtual/zero-fill deltas by `0x30` relative to the pre-pass baseline, but the
+candidate constructor order is still not retail-shaped: current link order puts
+`GameNet.obj` rows first, then `hud.obj`, `RecoilStateCredits.obj`, pickup,
+player, main-menu, zSound, `mission.obj`, and finally `zhud_ui.obj` rows.
+Retail order begins with the provider MFC row and early app/HUD/zInterp
+startup rows before the GameNet/Pickup block. Treat the remaining blocker as
+linked object/subsection order and provider-row reproduction evidence, not as
+permission to add copied CRT tables, manual padding, or source rows without BN
+owner evidence.
+
+A focused 2026-06-30 follow-up removed the duplicate VC5 automatic initializer
+row for `RecoilStateMainMenuTransition.obj` by changing
+`g_RecoilState_MainMenuTransition` from a typed global object into an explicit
+0x18-byte storage union with typed access at source use sites. The explicit
+`s_MainMenuTransitionCrtInit` `.CRT$XCU` row remains, the
+`recoil_state_main_menu_transition_global_data` VC5 data target now verifies the
+storage symbol with zero mismatches, and the static-init functional smoke still
+passes. This is retained as source-faithful local evidence for removing one
+duplicate constructor row, but it did not resolve final layout: refreshed
+`audit final-data --include-owners` reports `.data` `rva=-0xe000`,
+`raw_size=-0x600`, `virtual_size=-0x3dd8`, and
+`zero_fill_tail=-0x37d8`, with candidate data end/BSS start now at offset
+`0xb4c0`. The `0x10` virtual/zero-fill regression confirms that remaining
+work is still broader `.CRT$XCU`/object/BSS ordering evidence rather than a
+local main-menu data-byte problem.
+
+A second focused 2026-06-30 follow-up applied the same evidence pattern to
+`RecoilStateCredits`: `g_RecoilStateCredits` now emits as an explicit
+8-byte `RecoilStateCreditsStorage` object with typed source access, while the
+explicit `s_RecoilStateCreditsCrtInit` `.CRT$XCU` row remains. The final map no
+longer shows `RecoilStateCredits.obj` automatic `_$E` startup rows; it retains
+the class methods, scalar-deleting destructor alias, vtable, explicit CRT row,
+and storage symbol. The refreshed `recoil_state_credits_global_data` VC5 target
+verifies the storage symbol with zero byte mismatches, and the static-init,
+static-register, and register-at-exit functional targets still pass. The
+current final-data audit reports `.data` `rva=-0xe000`, `raw_size=-0x600`,
+`virtual_size=-0x3dd0`, and `zero_fill_tail=-0x37d0`, so removing the credits
+duplicate row recovered `0x8` of virtual/zero-fill size relative to the
+post-main-menu state but did not move the raw-size blocker or the
+`0xb4c0` data/BSS boundary. Continue treating the remaining blocker as global
+constructor/object ordering and BSS extent evidence.
+
+The next 2026-06-30 HUD static-lifetime storage pass converted the five
+`hud.cpp` typed singleton globals with explicit CRT rows into explicit storage:
+`g_HudUiNewGamePanelOverlayOwner`, `g_HudUiOptionsPanelOverlayOwner`,
+`g_RecoilState_ConfirmQuit`, `g_RecoilStateControls`, and
+`g_RecoilStateCheatCode`. The candidate map no longer has automatic `_$E`
+rows from `hud.obj`, and the explicit `s_BattlesportHudCrtInit_*` rows remain.
+Updated VC5 data targets for new-game owner, options owner, confirm-quit state,
+and cheat-code state pass with zero unmasked data-byte mismatches; controls
+lifecycle functional coverage also still passes. This removes a source-backed
+set of duplicate HUD constructor rows but does not resolve final layout:
+refreshed final-data audit reports `.data` `rva=-0xe000`,
+`raw_size=-0x600`, `virtual_size=-0x3dd8`, and
+`zero_fill_tail=-0x37d8`, with candidate data end/BSS start at offset
+`0xb4b0`. The result confirms the remaining blocker has moved to other
+objects' automatic rows and global link/BSS ordering, not the repaired HUD
+singleton storage itself.
+
+A focused zInterp follow-up on 2026-06-30 removed the `zinterp_parse.obj`
+automatic `_$E1`/`_$E2` rows for the process-wide interpreter object by
+changing `g_zInterp_GlobalContext` from a typed automatic global into explicit
+`zInterp_GlobalContextStorage` under the original symbol, with typed macro
+access for source uses. `zInterp_GlobalContext::StaticInit` placement-constructs
+the object in that storage before calling the recovered constructor, and the
+explicit `s_zInterpCrtInit_GlobalContext` `.CRT$XCU` row remains the startup
+entry. The final map now has no `zinterp_parse.obj` `_$E`/`??__E`/`??__F` rows,
+retains `?s_zInterpCrtInit_GlobalContext@@3P6AXXZA`, and emits
+`?g_zInterp_GlobalContext@@3TzInterp_GlobalContextStorage@@A`. The updated
+`zinterp_context_family_data` VC5 target verifies all eight data rows with zero
+unmasked mismatches, and the `zinterp_global_context_static_init` and
+`zinterp_global_context_hooks` functional targets still pass. Final-build still
+fails only at the whole-PE comparison stage, and refreshed final-data audit
+remains blocked with `.data` `rva=-0xe000`, `raw_size=-0x600`,
+`virtual_size=-0x3dd8`, and `zero_fill_tail=-0x37d8`, with candidate data
+end/BSS start at offset `0xb4b0`. Remaining automatic startup rows are now
+concentrated in `zhud_ui.obj`, `player.obj`, `RecoilApp_Late.obj`,
+`CZRecoilFrame.obj`, and one `WestwoodOnlineUpgradeDialog.obj` row.
+
+A subsequent 2026-06-30 `zhud_ui.obj` storage pass converted the explicit
+HUD static-lifecycle globals from typed automatic objects into zero-initialized
+storage wrappers while preserving typed source access and the explicit
+`.CRT$XCU` rows. The repaired globals are `g_HudUiMgr`,
+`g_HudLayoutHW`, `g_HudLayoutSW`, `g_HudCmdDialogState`,
+`g_HudUiNetGameSetupOverlayOwner`, `g_HudUiTripletWndClassName`, and
+`g_HudUiSensorWindow`. The final map now has no `zhud_ui.obj` `_$E`/`_$X`/
+`??__E`/`??__F` rows; the explicit HUD CRT rows remain. The updated VC5 data
+targets verify the HUD manager, layout vtables/singletons/strings, net-game
+setup owner, and triplet window-class storage with zero unmasked data-byte
+mismatches. `hud_cmd_dialog_state_lifecycle` now verifies all entries except
+`0x40bc30 HudCmdDialogState::StaticInit`: explicit storage requires
+source-faithful placement construction, which VC5 emits as a placement-new
+null-check/call/return sequence instead of the retail compiler-generated
+automatic global-constructor tail jump. Do not force that byte shape with raw
+assembly, copied compiler thunks, or fake wrappers.
+
+The focused HUD lifecycle functional targets still pass, source-shape and
+original-symbol guards report zero findings, and final-build still compiles,
+links, and passes resource comparison before the expected whole-PE comparison
+failure. The refreshed final-data audit remains blocked with `.data`
+`rva=-0xe000`, `raw_size=-0x600`, `virtual_size=-0x3e00`, and
+`zero_fill_tail=-0x3800`, with candidate data end/BSS start at offset
+`0xb490`. Remaining automatic startup rows are now concentrated in
+`player.obj`, `RecoilApp_Late.obj`, `CZRecoilFrame.obj`, and one
+`WestwoodOnlineUpgradeDialog.obj` row.
+
+A follow-up 2026-06-30 `player.obj` storage pass converted the remaining typed
+player static-lifecycle globals into explicit zero-initialized storage wrappers
+under their original symbols while preserving typed source access and the
+source-authored `.CRT$XCU` rows. The repaired globals are
+`g_Player_UnderwaterFxPass3Ui`, `g_Player_State7FxPass3Ui`,
+`g_Player_TopMsgPanel1`, and `g_Player_TopMsgPanel2`. A narrow integration
+fix also added a conventional include guard to `src/GameZRecoil/Time/Time.h`
+after the focused player VC5 verification wrappers exposed a
+`TimeRuntimeConfig` redefinition through their include shape; final-build
+already compiled that header path, so this was validation-path hygiene rather
+than new reconstruction evidence.
+
+The final map now has no `player.obj` `_$E`/`_$X`/`??__E`/`??__F` rows; the
+explicit Player CRT initializer rows remain. `player_underwater_fx_pass3_ui_global`,
+`player_camera_state_globals`, and `player_bootstrap_globals` all pass VC5
+data-symbol verification with zero unmasked mismatches after the guard fix.
+Focused player lifecycle functional targets pass except for two validation
+registry entries whose smoke functions existed in `tests/native/player_tests.cpp`
+but were not yet exposed by `tests/native/smoke.cpp`; those are tracked as a
+native-smoke registry repair, not as production source failures. Source-shape,
+original-symbol, and docblock audits for `src/Battlesport/player.cpp` report
+zero findings.
+
+Final-build still compiles, links, and passes resource comparison before the
+expected whole-PE comparison failure. The refreshed final-data audit remains
+blocked with `.data` `rva=-0xf000`, `raw_size=-0x600`,
+`virtual_size=-0x3e10`, and `zero_fill_tail=-0x3810`, with candidate data
+end/BSS start at offset `0xb480`. Remaining automatic startup rows are now
+concentrated in `RecoilApp_Late.obj`, `CZRecoilFrame.obj`, and one
+`WestwoodOnlineUpgradeDialog.obj` row.
+
+A later 2026-06-30 `RecoilApp_Late.obj` storage pass converted the two
+remaining typed process globals in that object into explicit zero-initialized
+storage while preserving typed source access. `g_RecoilApp` now uses
+`RecoilAppStorage` with an explicit `s_RecoilAppCrtInit` row that
+placement-constructs the application object and registers its destructor.
+`g_RecoilStateSaveLoadTransition` now uses
+`RecoilStateSaveLoadTransitionStorage`, and the explicit
+`s_RecoilStateSaveLoadTransitionCrtInit` row points to
+`RecoilStateSaveLoadTransition::StaticInitAndRegisterAtExit`. The final map no
+longer has any `RecoilApp_Late.obj` `_$E`/`_$X`/`??__E`/`??__F` rows.
+
+After parent manifest integration, `recoil_app_register_at_exit_late` verifies
+the RecoilApp destructor, play-state constructor, RecoilApp constructor, and
+the complete `g_RecoilApp` data symbol with zero unmasked mismatches.
+`recoil_state_save_load_transition_singleton_data` verifies the complete
+`g_RecoilStateSaveLoadTransition` storage with zero unmasked mismatches.
+`recoil_state_save_load_transition_lifecycle` still passes the static-init,
+register-at-exit, and at-exit helper bodies but fails the local constructor and
+destructor byte checks (`0x435c80` has 16 unmasked mismatches and `0x435cc0`
+has 67). Do not force those constructor/destructor bodies with raw assembly or
+fake startup thunks; they remain a local byte-shape blocker.
+
+Final-build still compiles, links, and passes resource comparison before the
+expected whole-PE comparison failure. The refreshed final-data audit remains
+blocked with `.data` `rva=-0xf000`, `raw_size=-0x600`,
+`virtual_size=-0x3e10`, and `zero_fill_tail=-0x3810`, with candidate data
+end/BSS start at offset `0xb480`. Remaining automatic startup rows are now
+concentrated in `CZRecoilFrame.obj` and one `WestwoodOnlineUpgradeDialog.obj`
+row.
+
+A later 2026-06-30 cleanup removed the remaining automatic startup/helper rows
+from the final map. `g_HudSensorTracker` now uses explicit zero-initialized
+storage in `CZRecoilFrame.cpp` with typed source access through
+`HudSensorTrackerStorage`; `czrecoilframe_hud_sensor_tracker_global` and
+`czframe_mfc_metadata` both verify with zero unmasked VC5 data-symbol
+mismatches, and the former `CZRecoilFrame.obj` automatic rows were proven to
+belong to the HudSensorTracker global rather than to MFC metadata. The
+function-local `pendingStatusText` CString in
+`WestwoodOnlineUpgradeDialog::SubmitVisibleSessionRequestsAndStatusText` now
+uses explicit guard/storage symbols and an explicit atexit destructor helper;
+`westwood_online_upgrade_dialog_runtime_data` verifies all seven linked data
+rows with zero unmasked mismatches. A final-map scan for `??__E`, `??__F`,
+`_$E`, and `_$X` now returns no rows.
+
+Final-build still compiles, links, and passes resource comparison before the
+expected whole-PE comparison failure. The remaining blocker is no longer
+automatic startup/helper emission; it is the final `.data` section
+raw/virtual/BSS layout. The current final-data audit remains blocked with
+`.data` `rva=-0xf000`, `raw_size=-0x600`, `virtual_size=-0x3e0c`, and
+`zero_fill_tail=-0x380c`, with candidate data end/BSS start at offset
+`0xb480`. The missing raw-backed tail maps into the zInterp parser data,
+unresolved float defaults, zVideo palette format, provider RTTI, and
+`g_Player_AivParentDir` window. The generated
+`recoil_state_save_load_transition_lifecycle` native smoke now builds, and the
+functional verifier reports VC byte evidence for all six lifecycle functions,
+but the generated runtime smoke still fails/crashes; treat that as
+validation-path drift, not as a final-data source blocker.
+
+The refreshed strict final-data audit for the same candidate wrote
+`build/vc5-final/final_data_diff.json` and confirms that `data_end` and
+`bss_start` are both at segment offset `0xb480`, while the candidate raw end is
+`0xb600` and the retail raw end is `0xbc00`. The active thresholds require the
+initialized data end to advance past `0xb600`, `0xb800`, and finally `0xbc00`;
+the matching-reference threshold is `0x581` bytes beyond current `data_end`
+(`0x780` bytes to fill the target raw end). The boundary occupants after
+`0xb480` are BSS-side objects (`ainet.obj`, `Briefing.obj`,
+`HudUiMessageBoxDialog.obj`, `RecoilApp_Late.obj`, `GameNet.obj`, `hud.obj`,
+and then `WestwoodOnlineUpgradeApi.obj`). `westwood_online_upgrade_session_browser_data`
+still byte-verifies its large browse-record list and related counters with zero
+unmasked mismatches; those globals are original BSS in retail and are not a
+license to force initialized source data. The next source change needs new
+owner/source evidence for an initialized contribution or a linker/layout fix
+that genuinely moves `data_end`, not another zero-initialized storage tweak.
+
+The refreshed `build/vc5-final/final_data_diff.json` selected COFF symbol
+attribution gives the next durable placement facts without changing source
+ownership. Selected matched COFF rows are:
+
+- `_g_zInterp_UnresolvedFloatDefaults`: `zinterp_parse.obj` `.data` section
+  order `2`.
+- `_g_zVideo_PaletteOpenFailedFormat`: `zVideo.obj` `.data` section order `2`.
+- `_g_zVideo_OverwriteQueueBase`: `zVideo.obj` `.bss` section order `1`.
+- `_g_Player_LocalFxOffsetWorldPtr` and `_g_Player_AivParentDir`:
+  `player.obj` `.bss` section order `3`.
+
+Treat these rows as candidate map/COFF object-subsection placement evidence from
+`audit final-data`, not as source-owner, provider-classification, or gate
+acceptance evidence. They do not reopen the rejected broad zInterp tail,
+source-order, `link_inputs`, or tail-order probe paths. The next final-data work
+still needs a source-owner/provider fact or linker/layout fact that explains the
+linked `.data`/`.bss` boundary shift source-faithfully.
+
+A focused provider pass classified the remaining unmatched raw/virtual tail rows.
+The real provider rows are now tracked as accepted provider boundaries:
+
+- `provider.vc5_msvcrt_type_info_rtti_descriptor`: `0x4e5b10..0x4e5b28`,
+  the VC5/MSVCRT `type_info` RTTI TypeDescriptor (`MSVCRT:ti_inst.obj`,
+  `??_R0?AVtype_info@@@8`).
+- `provider.vc5_crt_startup_common_tail_globals`: `0x779ab0..0x779ac0`,
+  the VC5 CRT startup/common globals `__fdiv_adjust_snapshot`,
+  `__matherr_installed`, `__onexitend`, and `__onexitbegin`.
+
+The adjacent zero rows `0x4e5b08..0x4e5b10` and `0x4e5b4c..0x4e5b50` remain
+filler/alignment diagnostics only. They are not authored data owners,
+provider-boundary owners, or source-worker targets.

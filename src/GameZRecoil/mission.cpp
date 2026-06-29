@@ -14,3 +14,12 @@ void InitObjectives() {
     HudSensorTracker::RegisterGlobalOnExit();
 }
 } // namespace Mission
+
+#if defined(_MSC_VER) && defined(_M_IX86)
+typedef void (__cdecl *MissionCrtInitializerFn)();
+/* VC5 emits this mission-objectives startup callback as a direct .CRT$XCU row. */
+#pragma data_seg(".CRT$XCU")
+MissionCrtInitializerFn s_MissionCrtInit_Objectives =
+    Mission::InitObjectives;
+#pragma data_seg()
+#endif

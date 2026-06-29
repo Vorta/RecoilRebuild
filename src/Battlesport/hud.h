@@ -609,7 +609,15 @@ RECOIL_STATIC_ASSERT(
     ) == 0x18
 );
 
-extern RecoilStateSaveLoadTransition g_RecoilStateSaveLoadTransition;
+union RecoilStateSaveLoadTransitionStorage {
+    unsigned long align;
+    unsigned char bytes[sizeof(RecoilStateSaveLoadTransition)];
+};
+RECOIL_STATIC_ASSERT(sizeof(RecoilStateSaveLoadTransitionStorage) == 0x1c);
+
+extern RecoilStateSaveLoadTransitionStorage g_RecoilStateSaveLoadTransition;
+#define g_RecoilStateSaveLoadTransition \
+    (*(RecoilStateSaveLoadTransition *)&g_RecoilStateSaveLoadTransition)
 
 struct HudUiNewGamePanel_StartButton : HudUiZrdWidget {
     void OnActivate();
@@ -688,6 +696,16 @@ struct HudUiNewGamePanelOverlayOwner : RecoilStateDialogHost {
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNewGamePanelOverlayOwner) == 0x08);
 
+union HudUiNewGamePanelOverlayOwnerStorage {
+    unsigned long align;
+    unsigned char bytes[sizeof(HudUiNewGamePanelOverlayOwner)];
+};
+RECOIL_STATIC_ASSERT(sizeof(HudUiNewGamePanelOverlayOwnerStorage) == 0x08);
+
+extern HudUiNewGamePanelOverlayOwnerStorage g_HudUiNewGamePanelOverlayOwner;
+#define g_HudUiNewGamePanelOverlayOwner \
+    (*(HudUiNewGamePanelOverlayOwner *)&g_HudUiNewGamePanelOverlayOwner)
+
 struct HudUiOptionsPanelOverlayOwner : RecoilStateDialogHost {
     HudUiOptionsPanelOverlayOwner();
     static void StaticInitAndRegisterAtExit();
@@ -699,6 +717,16 @@ struct HudUiOptionsPanelOverlayOwner : RecoilStateDialogHost {
     static void QueueEnter();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiOptionsPanelOverlayOwner) == 0x08);
+
+union HudUiOptionsPanelOverlayOwnerStorage {
+    unsigned long align;
+    unsigned char bytes[sizeof(HudUiOptionsPanelOverlayOwner)];
+};
+RECOIL_STATIC_ASSERT(sizeof(HudUiOptionsPanelOverlayOwnerStorage) == 0x08);
+
+extern HudUiOptionsPanelOverlayOwnerStorage g_HudUiOptionsPanelOverlayOwner;
+#define g_HudUiOptionsPanelOverlayOwner \
+    (*(HudUiOptionsPanelOverlayOwner *)&g_HudUiOptionsPanelOverlayOwner)
 
 struct RecoilStateConfirmQuit : RecoilStateDialogHost {
     RecoilStateConfirmQuit();
@@ -713,6 +741,16 @@ struct RecoilStateConfirmQuit : RecoilStateDialogHost {
 };
 RECOIL_STATIC_ASSERT(sizeof(RecoilStateConfirmQuit) == 0x08);
 
+union RecoilStateConfirmQuitStorage {
+    unsigned long align;
+    unsigned char bytes[sizeof(RecoilStateConfirmQuit)];
+};
+RECOIL_STATIC_ASSERT(sizeof(RecoilStateConfirmQuitStorage) == 0x08);
+
+extern RecoilStateConfirmQuitStorage g_RecoilState_ConfirmQuit;
+#define g_RecoilState_ConfirmQuit \
+    (*(RecoilStateConfirmQuit *)&g_RecoilState_ConfirmQuit)
+
 struct RecoilStateControls : RecoilStateDialogHost {
     RecoilStateControls();
     static void StaticInitAndRegisterAtExit();
@@ -726,6 +764,16 @@ struct RecoilStateControls : RecoilStateDialogHost {
     static void QueueEnter();
 };
 RECOIL_STATIC_ASSERT(sizeof(RecoilStateControls) == 0x08);
+
+union RecoilStateControlsStorage {
+    unsigned long align;
+    unsigned char bytes[sizeof(RecoilStateControls)];
+};
+RECOIL_STATIC_ASSERT(sizeof(RecoilStateControlsStorage) == 0x08);
+
+extern RecoilStateControlsStorage g_RecoilStateControls;
+#define g_RecoilStateControls \
+    (*(RecoilStateControls *)&g_RecoilStateControls)
 
 struct HudUiControlsDialog_ResumeWidget : HudUiZrdWidget {};
 RECOIL_STATIC_ASSERT(sizeof(HudUiControlsDialog_ResumeWidget) == 0x14c);
@@ -867,12 +915,17 @@ RECOIL_STATIC_ASSERT(
     ) == 0x0c
 );
 
-extern HudUiNewGamePanelOverlayOwner g_HudUiNewGamePanelOverlayOwner;
-extern HudUiOptionsPanelOverlayOwner g_HudUiOptionsPanelOverlayOwner;
-extern RecoilStateConfirmQuit g_RecoilState_ConfirmQuit;
+union RecoilStateCheatCodeStorage {
+    unsigned long align;
+    unsigned char bytes[sizeof(RecoilStateCheatCode)];
+};
+RECOIL_STATIC_ASSERT(sizeof(RecoilStateCheatCodeStorage) == 0x10);
+
+extern RecoilStateCheatCodeStorage g_RecoilStateCheatCode;
+#define g_RecoilStateCheatCode \
+    (*(RecoilStateCheatCode *)&g_RecoilStateCheatCode)
+
 extern "C" int g_RecoilState_MainMenuSkipExitDelay;
-extern RecoilStateControls g_RecoilStateControls;
-extern RecoilStateCheatCode g_RecoilStateCheatCode;
 extern zSndSample *g_Hud_LowMeterBeepSample;
 extern zSndSample *g_Hud_LowMeterLoopSample;
 extern int g_Hud_LowMeterLoopActive;

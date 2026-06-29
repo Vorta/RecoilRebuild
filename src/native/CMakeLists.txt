@@ -25,7 +25,6 @@ add_library(recoil_native STATIC
     ../Battlesport/WestwoodOnlineUpgradeDialog.cpp
     ../Battlesport/WestwoodOnlineUpgradeProgressDialog.cpp
     ../Battlesport/WestwoodOnlineUpgradeConfigDialog.cpp
-    ../Battlesport/player_ai_mode2_tuning_globals.cpp
     ../Battlesport/player.cpp
     ../Battlesport/pickup.cpp
     ../Battlesport/CZGameFrame.cpp

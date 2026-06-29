@@ -238,7 +238,16 @@ zNetwork_DPlay4Vtable MakeCraterNetRelayDPlayVtable() {
     return vtable;
 }
 
-const zNetwork_DPlay4Vtable kCraterNetRelayDPlayVtable = MakeCraterNetRelayDPlayVtable();
+zNetwork_DPlay4Vtable g_craterNetRelayDPlayVtable;
+bool g_craterNetRelayDPlayVtableInitialized;
+
+const zNetwork_DPlay4Vtable &CraterNetRelayDPlayVtable() {
+    if (!g_craterNetRelayDPlayVtableInitialized) {
+        g_craterNetRelayDPlayVtable = MakeCraterNetRelayDPlayVtable();
+        g_craterNetRelayDPlayVtableInitialized = true;
+    }
+    return g_craterNetRelayDPlayVtable;
+}
 } // namespace
 
 extern "C" int zdeclient_set_camera_node_smoke(void) {
@@ -1924,7 +1933,7 @@ extern "C" int zdeclient_crater_net_relay_callback_smoke(void) {
     g_zDEClient_CraterEventTemplateDefaults.pointCount = 4;
     g_zDEClient_CraterEventTemplateDefaults.depth = 1.0f;
 
-    zNetwork_DPlay4 dplay = {&kCraterNetRelayDPlayVtable};
+    zNetwork_DPlay4 dplay = {&CraterNetRelayDPlayVtable()};
     zNetwork_PlayerRecord localPlayer = {};
     localPlayer.playerKey = 0x34567890;
     g_zNetwork_pDirectPlay4 = &dplay;
@@ -2010,7 +2019,7 @@ extern "C" int zdeclient_crater_execute_smoke(void) {
     g_zModel_MatlPoolCapacity = 4;
     g_zModel_MatlPoolInUseCount = 4;
 
-    zNetwork_DPlay4 dplay = {&kCraterNetRelayDPlayVtable};
+    zNetwork_DPlay4 dplay = {&CraterNetRelayDPlayVtable()};
     zNetwork_PlayerRecord localPlayer = {};
     localPlayer.playerKey = 0x24681357;
     g_zNetwork_pDirectPlay4 = &dplay;
@@ -2118,7 +2127,7 @@ extern "C" int zdeclient_qsand_net_relay_callback_smoke(void) {
     g_zDEClient_QuickSandEventTemplateDefaults.pointCount = 4;
     g_zDEClient_QuickSandEventTemplateDefaults.depth = 1.0f;
 
-    zNetwork_DPlay4 dplay = {&kCraterNetRelayDPlayVtable};
+    zNetwork_DPlay4 dplay = {&CraterNetRelayDPlayVtable()};
     zNetwork_PlayerRecord localPlayer = {};
     localPlayer.playerKey = 0x45678901;
     g_zNetwork_pDirectPlay4 = &dplay;

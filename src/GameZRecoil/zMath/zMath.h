@@ -6,7 +6,13 @@
 #include <math.h>
 #include <stddef.h>
 
-struct zVec3;
+struct zVec3 {
+    float x;
+    float y;
+    float z;
+};
+
+RECOIL_STATIC_ASSERT(sizeof(zVec3) == 0x0c);
 
 struct zVec2 {
     float x;
@@ -282,7 +288,11 @@ void MatStackPopPtr();
 void MatLoadCameraScratchB();
 void MatLoadCameraScratchA();
 void MatLoadIdentity();
-float __fastcall Vec3Normalize(zVec3 *vec);
+/* zMath::Vec3Normalize is declared here and defined from the address-backed
+ * zMath_vec3_normalize.inl include at the retail ai_net.cpp contribution point. */
+inline float __fastcall Vec3Normalize(
+    zVec3 *vec
+);
 void __fastcall Vec3NormalizeXZ(
     zVec3 *vec,
     zVec3 *out

@@ -61,9 +61,13 @@ const float g_zMath_Vec3UnitFloat = 1.0f;
  * Purpose: supplies the zero-dot reflection negation multiplier.
  */
 const float g_zMath_Vec3NegUnitFloat = -1.0f;
-const float g_zMath_MatrixUnitFloat = 1.0f; // Reimplements data 0x4d297c: shared zMath matrix/projection unit scalar.
 /**
- * Reimplements data 0x4d2960: shared zMath double zero scalar.
+ * Reimplements data 0x4d297c: g_zMath_MatrixUnitFloat.
+ * Purpose: supplies the shared zMath matrix/projection unit scalar.
+ */
+const float g_zMath_MatrixUnitFloat = 1.0f;
+/**
+ * Reimplements data 0x4d2920: g_zMath_DoubleZero.
  * Purpose: supplies the x87 zero comparisons used by zMath vector,
  * projection, and line/sphere intersection helpers.
  */
@@ -92,7 +96,11 @@ const float g_zMath_DirectionToPiFloat = 3.14159274f;
  * vectors.
  */
 const double g_zMath_Vec3DirectionDotPosThreshold = 0.95;
-const float g_zMath_ElevationPiFloat = 3.14159274f; // Reimplements data 0x4d2998: Euler roll adjustment pi scalar.
+/**
+ * Reimplements data 0x4d2998: g_zMath_ElevationPiFloat.
+ * Purpose: supplies the Euler roll adjustment pi scalar.
+ */
+const float g_zMath_ElevationPiFloat = 3.14159274f;
 /**
  * Reimplements data 0x566918: g_zMath_ScreenWidthPx.
  * Reimplements data 0x56691c: g_zMath_ScreenHeightPx.
@@ -741,27 +749,6 @@ void MatLoadIdentity() {
     *matrix = 0.0f;
     *g_currentMatrixIdentityFlagSlot = 1;
 }
-
-#pragma optimize("y", off)
-/**
- * Reimplements 0x402f60: zMath::Vec3Normalize.
- * Purpose: Normalizes a nonzero vector in place and returns the original 3D length.
- */
-float __fastcall Vec3Normalize(
-    zVec3 *vec
-) {
-    zVec3 *inOut = vec;
-    float length = sqrt(inOut->x * inOut->x + inOut->y * inOut->y + inOut->z * inOut->z);
-    const unsigned int *lengthBits = (const unsigned int *)&length;
-    if ((*lengthBits & 0x7fffffffu) != 0) {
-        const float reciprocalLength = 1.0f / length;
-        inOut->x *= reciprocalLength;
-        inOut->y *= reciprocalLength;
-        inOut->z *= reciprocalLength;
-    }
-    return length;
-}
-#pragma optimize("", on)
 
 /**
  * Reimplements 0x4727f0: zMath::Vec3NormalizeXZ (GameZRecoil/zMath/zmath_vec3.cpp).

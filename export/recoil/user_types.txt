@@ -586,6 +586,7 @@ struct RecoilStateSaveLoadTransition;
 struct RectF32;
 struct SaveGameFindDataA;
 struct StdPtrVector;
+struct TimeRuntimeConfig;
 struct UnusedExport_OptCatalogRuntimeListNode;
 struct UnusedExport_PlayerCurrentSaveStateBindingState;
 struct UnusedExport_Rich_Header;
@@ -823,6 +824,7 @@ struct zGuid;
 struct zImage_Font;
 struct zImage_TexDirEntry;
 struct zImage_TexDirEntryNextVariantFieldCursor;
+struct zImage_TexDirEntryPartial;
 struct zIndexArchive;
 struct zInput_BindGroupCommandIdVec;
 struct zInput_BindGroupInfo;
@@ -10641,6 +10643,16 @@ struct StdPtrVector
 	void** cap;
 };
 
+// "TimeRuntimeConfig"
+struct TimeRuntimeConfig
+{
+	float maximumDeltaTimeSec;
+	int32_t deltaTimeClampEnabled;
+	float currentTimeSec;
+	float newTimeSec;
+	float timeScaleFactor;
+};
+
 // "UnusedExport_OptCatalogRuntimeListNode"
 struct UnusedExport_OptCatalogRuntimeListNode
 {
@@ -10809,7 +10821,7 @@ struct WestwoodOnlineUpgradeApiInitState
 	uint8_t moduleHandleSecondary[0x4];
 	uint8_t moduleHandleTertiary[0x4];
 	HANDLE bootstrapServerListEvent;
-	HANDLE statusTextEvent;
+	uint8_t eventSinkLiveCount[0x4];
 	HANDLE failureEvent;
 	uint8_t criticalSection0[0x18];
 	uint8_t criticalSection1[0x18];
@@ -14173,6 +14185,16 @@ struct zImage_TexDirEntryNextVariantFieldCursor
 {
 	struct zImage_TexDirEntry* nextVariant;
 	char _padding_04[0x20];
+};
+
+// "zImage_TexDirEntryPartial"
+struct zImage_TexDirEntryPartial
+{
+	struct zVid_Image* image;
+	struct zVideo_TextureRecord* texture;
+	char baseName[0x14];
+	int32_t loadState;
+	struct zImage_TexDirEntryPartial* nextVariant;
 };
 
 // "zIndexArchive"

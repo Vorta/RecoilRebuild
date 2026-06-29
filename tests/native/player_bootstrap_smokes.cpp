@@ -2035,7 +2035,7 @@ extern "C" int player_ai_discard_negative_branch_nodes_smoke(void) {
     playerState.aiCurrentPathNode = negativeA;
     saveState.playerState = &playerState;
 
-    Player::AiDiscardNegativeBranchPathNodes(&saveState);
+    AINet::AiDiscardNegativeBranchPathNodes(&saveState);
     return playerState.aiCurrentPathNode == &positive ? 0 : 1;
 }
 
@@ -4745,7 +4745,7 @@ extern "C" int player_ai_restore_saved_top_level_state_smoke(void) {
     playerState.aiTopLevelState = 1;
     playerState.aiSavedTopLevelState = 7;
 
-    Player::AiRestoreSavedTopLevelState(&saveState);
+    AINet::AiRestoreSavedTopLevelState(&saveState);
 
     return playerState.aiTopLevelState == 7 &&
                    playerState.aiSavedTopLevelState == 7
@@ -4782,7 +4782,7 @@ extern "C" int player_ai_finalize_mode2_state1_for_all_players_smoke(void) {
 
     g_PlayerSaveStateListHead = &matchingSaveState;
     g_Player_AiMode2State1Finalized = 0;
-    Player::AiFinalizeMode2State1ForAllPlayers();
+    AINet::AiFinalizeMode2State1ForAllPlayers();
 
     const bool populatedOk =
         matchingState.aiTopLevelState == 4 &&
@@ -4792,7 +4792,7 @@ extern "C" int player_ai_finalize_mode2_state1_for_all_players_smoke(void) {
 
     g_PlayerSaveStateListHead = 0;
     g_Player_AiMode2State1Finalized = 0;
-    Player::AiFinalizeMode2State1ForAllPlayers();
+    AINet::AiFinalizeMode2State1ForAllPlayers();
     const bool emptyOk = g_Player_AiMode2State1Finalized == 1;
 
     g_PlayerSaveStateListHead = oldHead;
@@ -4819,7 +4819,7 @@ extern "C" int player_ai_steer_toward_path_node_forward_smoke(void) {
 
     playerState.worldPos = {0.0f, 0.0f, 0.0f};
     forwardNode.position = {3.0f, 10.0f, 0.0f};
-    Player::AiSteerTowardPathNodeForward(&saveState);
+    AINet::AiSteerTowardPathNodeForward(&saveState);
     const bool advanceOk =
         playerState.aiCurrentPathNode == &forwardNode &&
         playerState.throttleInput == 0.0f && playerState.throttleInputCopy == 0.0f &&
@@ -4829,7 +4829,7 @@ extern "C" int player_ai_steer_toward_path_node_forward_smoke(void) {
     playerState.aiCurrentPathNode = &currentNode;
     playerState.worldPos = {0.0f, 0.0f, 0.0f};
     forwardNode.position = {10.0f, 0.0f, 10.0f};
-    Player::AiSteerTowardPathNodeForward(&saveState);
+    AINet::AiSteerTowardPathNodeForward(&saveState);
     const float diagonal = static_cast<float>(std::sqrt(0.5f));
     const bool forwardOk =
         FloatNear(playerState.throttleInput, 1.0f - diagonal) &&
@@ -4839,7 +4839,7 @@ extern "C" int player_ai_steer_toward_path_node_forward_smoke(void) {
 
     playerState.aiCurrentPathNode = &currentNode;
     forwardNode.position = {-10.0f, 0.0f, 10.0f};
-    Player::AiSteerTowardPathNodeForward(&saveState);
+    AINet::AiSteerTowardPathNodeForward(&saveState);
     const bool behindOk =
         playerState.throttleInput == 0.0f && playerState.throttleInputCopy == 0.0f &&
         playerState.steeringInput == -1.0f && playerState.steeringInputCopy == -1.0f;
@@ -4870,7 +4870,7 @@ extern "C" int player_ai_steer_toward_path_node_reverse_smoke(void) {
 
     playerState.worldPos = {0.0f, 0.0f, 0.0f};
     forwardNode.position = {3.0f, 10.0f, 0.0f};
-    Player::AiSteerTowardPathNodeReverse(&saveState);
+    AINet::AiSteerTowardPathNodeReverse(&saveState);
     const bool advanceOk =
         playerState.aiCurrentPathNode == &forwardNode &&
         playerState.throttleInput == 0.0f && playerState.throttleInputCopy == 0.0f &&
@@ -4880,7 +4880,7 @@ extern "C" int player_ai_steer_toward_path_node_reverse_smoke(void) {
     playerState.aiCurrentPathNode = &currentNode;
     playerState.worldPos = {0.0f, 0.0f, 0.0f};
     forwardNode.position = {-10.0f, 0.0f, 10.0f};
-    Player::AiSteerTowardPathNodeReverse(&saveState);
+    AINet::AiSteerTowardPathNodeReverse(&saveState);
     const float diagonal = static_cast<float>(std::sqrt(0.5f));
     const bool reverseForwardOk =
         FloatNear(playerState.throttleInput, -(1.0f - diagonal)) &&
@@ -4890,7 +4890,7 @@ extern "C" int player_ai_steer_toward_path_node_reverse_smoke(void) {
 
     playerState.aiCurrentPathNode = &currentNode;
     forwardNode.position = {10.0f, 0.0f, 10.0f};
-    Player::AiSteerTowardPathNodeReverse(&saveState);
+    AINet::AiSteerTowardPathNodeReverse(&saveState);
     const bool behindOk =
         playerState.throttleInput == 0.0f && playerState.throttleInputCopy == 0.0f &&
         playerState.steeringInput == 1.0f && playerState.steeringInputCopy == 1.0f;
@@ -5031,7 +5031,7 @@ extern "C" int player_los_from_fx_offset_smoke(void) {
     g_cls_di_StopAfterFirstHit = 99;
 
     const int forwardResult =
-        Player::HasLineOfSightFromLocalPlayerFxOffset(&excludedNode, &targetPoint, 1);
+        AINet::HasLineOfSightFromLocalPlayerFxOffset(&excludedNode, &targetPoint, 1);
     const bool forwardOk =
         forwardResult == 1 && FloatNear(g_DiPickQueryPoint.x, 1.0f) &&
         FloatNear(g_DiPickQueryPoint.y, 2.0f) && FloatNear(g_DiPickQueryPoint.z, 3.0f) &&
@@ -5045,7 +5045,7 @@ extern "C" int player_los_from_fx_offset_smoke(void) {
     excludedNode.flags = 0x10;
     rootNode.flags = 0x10;
     const int reverseResult =
-        Player::HasLineOfSightFromLocalPlayerFxOffset(&excludedNode, &targetPoint, 0);
+        AINet::HasLineOfSightFromLocalPlayerFxOffset(&excludedNode, &targetPoint, 0);
     const bool reverseOk =
         reverseResult == 1 && FloatNear(g_DiPickQueryPoint.x, 10.0f) &&
         FloatNear(g_DiPickQueryPoint.y, 20.0f) && FloatNear(g_DiPickQueryPoint.z, 30.0f) &&
@@ -5056,7 +5056,7 @@ extern "C" int player_los_from_fx_offset_smoke(void) {
     excludedNode.flags = 0x10;
     rootNode.flags = 0x10;
     const int cameraForwardResult =
-        Player::TestScenePathBetweenCameraTargetAndPoint(&excludedNode, &targetPoint, 1);
+        AINet::HasLineOfSightFromCameraTarget(&excludedNode, &targetPoint, 1);
     const bool cameraForwardOk =
         cameraForwardResult == 1 && FloatNear(g_DiPickQueryPoint.x, 4.0f) &&
         FloatNear(g_DiPickQueryPoint.y, 5.0f) && FloatNear(g_DiPickQueryPoint.z, 6.0f) &&
@@ -5069,7 +5069,7 @@ extern "C" int player_los_from_fx_offset_smoke(void) {
     excludedNode.flags = 0x10;
     rootNode.flags = 0x10;
     const int cameraReverseResult =
-        Player::TestScenePathBetweenCameraTargetAndPoint(&excludedNode, &targetPoint, 0);
+        AINet::HasLineOfSightFromCameraTarget(&excludedNode, &targetPoint, 0);
     const bool cameraReverseOk =
         cameraReverseResult == 1 && FloatNear(g_DiPickQueryPoint.x, 10.0f) &&
         FloatNear(g_DiPickQueryPoint.y, 20.0f) && FloatNear(g_DiPickQueryPoint.z, 30.0f) &&

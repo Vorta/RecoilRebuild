@@ -1073,7 +1073,8 @@ extern "C" int zimage_init_option_fallback_smoke(void) {
 extern "C" int zimage_init_texture_directory_smoke(void) {
     const int oldRendererPath = g_zVideo_ActiveRendererPath;
     zVideo_CreateTextureRecordProc const oldCreateTextureRecord = g_zVideo_pfnCreateTextureRecord;
-    zVideo_TextureRecordPartial *const oldDefaultTextureRecord = g_zImage_DefaultTextureRecord;
+    zVideo_TextureRecordPartial *const oldDefaultTextureRecord =
+        g_zImage_DefaultTexDirEntry.texture;
 
     g_zImage_TexDirEntryCount = 3;
     std::memset(g_zImage_TexDirEntries, 0x5a, sizeof(g_zImage_TexDirEntries));
@@ -1092,7 +1093,7 @@ extern "C" int zimage_init_texture_directory_smoke(void) {
     g_zImage_TexDirEntryCount = 2;
     std::memset(g_zImage_TexDirEntries, 0x7b, sizeof(g_zImage_TexDirEntries));
     g_zVideo_ActiveRendererPath = 1;
-    g_zImage_DefaultTextureRecord = nullptr;
+    g_zImage_DefaultTexDirEntry.texture = nullptr;
     g_textureCreateCount = 0;
     g_lastCreatedTextureName = nullptr;
     g_lastCreatedImage = nullptr;
@@ -1101,13 +1102,14 @@ extern "C" int zimage_init_texture_directory_smoke(void) {
     const bool hardwareOk =
         hardwareResult == 1 && g_zImage_TexDirEntryCount == 0 &&
         g_zImage_TexDirEntries[0].image == nullptr && g_zImage_TexDirEntries[0].loadState == 0 &&
-        g_textureCreateCount == 1 && g_lastCreatedTextureName == g_zImage_DefaultTextureName &&
+        g_textureCreateCount == 1 &&
+        g_lastCreatedTextureName == g_zImage_DefaultTexDirEntry.baseName &&
         g_lastCreatedImage == &zVid_Image::g_zImage_DefaultImage &&
-        g_zImage_DefaultTextureRecord == &g_createdTextureRecord;
+        g_zImage_DefaultTexDirEntry.texture == &g_createdTextureRecord;
 
     g_zVideo_ActiveRendererPath = oldRendererPath;
     g_zVideo_pfnCreateTextureRecord = oldCreateTextureRecord;
-    g_zImage_DefaultTextureRecord = oldDefaultTextureRecord;
+    g_zImage_DefaultTexDirEntry.texture = oldDefaultTextureRecord;
     g_zImage_TexDirEntryCount = 0;
     std::memset(g_zImage_TexDirEntries, 0, sizeof(g_zImage_TexDirEntries));
     return softwareOk && hardwareOk ? 0 : 1;
@@ -1116,13 +1118,14 @@ extern "C" int zimage_init_texture_directory_smoke(void) {
 extern "C" int zimg_init_smoke(void) {
     const int oldRendererPath = g_zVideo_ActiveRendererPath;
     zVideo_CreateTextureRecordProc const oldCreateTextureRecord = g_zVideo_pfnCreateTextureRecord;
-    zVideo_TextureRecordPartial *const oldDefaultTextureRecord = g_zImage_DefaultTextureRecord;
+    zVideo_TextureRecordPartial *const oldDefaultTextureRecord =
+        g_zImage_DefaultTexDirEntry.texture;
 
     g_zImage_TexDirEntryCount = 1;
     std::memset(g_zImage_TexDirEntries, 0x33, sizeof(g_zImage_TexDirEntries));
     g_zVideo_ActiveRendererPath = 1;
     g_zVideo_pfnCreateTextureRecord = CreateTextureRecordStub;
-    g_zImage_DefaultTextureRecord = nullptr;
+    g_zImage_DefaultTexDirEntry.texture = nullptr;
     g_textureCreateCount = 0;
     g_lastCreatedTextureName = nullptr;
     g_lastCreatedImage = nullptr;
@@ -1130,13 +1133,13 @@ extern "C" int zimg_init_smoke(void) {
     const int result = zImg::Init();
     const bool ok = result == 1 && g_zImage_TexDirEntryCount == 0 &&
                     g_zImage_TexDirEntries[0].image == nullptr && g_textureCreateCount == 1 &&
-                    g_lastCreatedTextureName == g_zImage_DefaultTextureName &&
+                    g_lastCreatedTextureName == g_zImage_DefaultTexDirEntry.baseName &&
                     g_lastCreatedImage == &zVid_Image::g_zImage_DefaultImage &&
-                    g_zImage_DefaultTextureRecord == &g_createdTextureRecord;
+                    g_zImage_DefaultTexDirEntry.texture == &g_createdTextureRecord;
 
     g_zVideo_ActiveRendererPath = oldRendererPath;
     g_zVideo_pfnCreateTextureRecord = oldCreateTextureRecord;
-    g_zImage_DefaultTextureRecord = oldDefaultTextureRecord;
+    g_zImage_DefaultTexDirEntry.texture = oldDefaultTextureRecord;
     g_zImage_TexDirEntryCount = 0;
     std::memset(g_zImage_TexDirEntries, 0, sizeof(g_zImage_TexDirEntries));
     return ok ? 0 : 1;

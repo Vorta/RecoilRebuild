@@ -1,6 +1,6 @@
 # Original Class And Table Boundary Guide
 
-Compact class/table boundary policy. Binary Ninja and `.agent/RECOIL_PLAN.md`
+Compact class/table boundary policy. Binary Ninja and `.agent/SOURCE_OWNERS.json`
 remain authoritative for identity, layout, xrefs, source readiness, and markers.
 
 Use before introducing, reshaping, or reimplementing a class, vtable, ftable,
@@ -20,6 +20,16 @@ If the class model does not fit, model the proven `struct`/record, provider
 boundary, callback/data system, namespace/source-file owner, global-data set, or
 subsystem. Use table layout only as ABI evidence.
 
+For source-owner scheduling and tier `S`, distinguish the primary
+source-shaped owner from auxiliary data packets. Primary owners are original
+source constructs: classes/interfaces, source-file clusters, subsystems,
+authored callback/record/table/global objects/static class-member groups,
+provider boundaries, or true standalone leaves. Global/literal/constant
+groupings are auxiliary data packets unless evidence proves the original source
+had that exact authored data construct. Link ordinary packets upward to the
+primary owner and use their byte evidence as data dependency readiness, not as
+parent/source-owner tier `S` completion.
+
 A proven authored class/interface/method cluster must be recreated before any
 `Reimplemented` tier. Flattened functions, copied table arrays, hand-authored
 `VTable`/`FTable`, and raw slot/offset scaffolds are not accepted
@@ -38,8 +48,8 @@ classification and real provider headers. Incomplete evidence blocks source;
 improve BN instead of adding production scaffolds.
 
 Temporary ABI/source-shape scaffolds are scratch only, outside production source
-and durable evidence. Remove them before handoff. Never cite them in plan
-markers or use them for `Model: source-faithful`.
+and durable evidence. Remove them before handoff. Never cite them for owner
+gate/tier acceptance or use them for `Model: source-faithful`.
 
 ## Class-Promotion Gate
 
@@ -158,4 +168,4 @@ Update only durable boundary facts that save future work:
 - state evidence source: BN xrefs/types/table writes, source comments, tests, or
   VC/provider verification
 - separate recovered facts from open limits
-- avoid inventories, long member tables, duplicated plan rows, and progress logs
+- avoid inventories, long member tables, duplicated address rows, and progress logs

@@ -26,7 +26,7 @@
 #include "GameZRecoil/zVideo/zVideo.h"
 
 #if defined(_MSC_VER) && _MSC_VER < 1300 && !defined(_DEBUG)
-/*
+/**
  * Original-source inline provider-boundary restore from MFC42 AFXCMN.INL:
  * _AFXCMN_INLINE CSpinButtonCtrl::CSpinButtonCtrl() { }.
  * No standalone Recoil-authored retail function exists; this source restores
@@ -3153,7 +3153,7 @@ int __fastcall UpdateRemotePlayerHudWidgetScreenPos(
     zVec3 labelWorldPos = playerState->worldPos;
     labelWorldPos.y += 3.0f;
 
-    if (Player::HasLineOfSightFromLocalPlayerFxOffset(playerState->rootNode, &labelWorldPos, 1) ==
+    if (AINet::HasLineOfSightFromLocalPlayerFxOffset(playerState->rootNode, &labelWorldPos, 1) ==
         0) {
         GameNetSetRemoteHudVisible(
             hudWidget,

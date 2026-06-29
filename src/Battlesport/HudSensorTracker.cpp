@@ -26,6 +26,7 @@
 #include "GameZRecoil/zWeapon/zWeapon.h"
 
 #include <math.h>
+#include <new>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -1500,9 +1501,9 @@ HudSensorTracker * HudSensorTracker::InitNoBounds() {
  */
 HudSensorTracker * HudSensorTracker::Constructor() {
     InitNoBounds();
-    missionDataPath.Empty();
-    zbdPath.Empty();
-    missionGsPath.Empty();
+    new (&missionDataPath) CString;
+    new (&zbdPath) CString;
+    new (&missionGsPath) CString;
     fxPass3Obj = 0;
     hudScale = 1.0f;
     raceCheckpointMode = 0;
@@ -4160,7 +4161,7 @@ int HudSensorTracker::UpdateObjectiveFlow() {
 
                 if (finalMissionFlag != 0 && completedObjectiveCount == 5) {
                     g_HudSensorTracker_ObjectiveCommandLocked = 1;
-                    Player::AiFinalizeMode2State1ForAllPlayers();
+                    AINet::AiFinalizeMode2State1ForAllPlayers();
                     zTurret_System::DisableTickCallback();
                     HudUiMgrObjective::SetVisibleAndResetMeterFill(0);
                     SetObjectivePanelVisible(1);

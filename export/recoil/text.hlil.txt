@@ -30,8 +30,10 @@
     return EnableWindow(self->m_hWnd, 1)
 }
 
-// Original file: src/Battlesport/player.cpp. Top-level AI mode2 dispatcher. It snapshots the local player's fxOffsetWorld into storedTargetPos, dispatches the active top-level state, restores the saved state after auto-turn clears, and when AiTryEnterMode2State1 succeeds rebuilds the path toward currentPathNode->nextNodes[pathIndex]. BN still renders that indexed next-node argument with redundant *& operators.
-0x401060 void __fastcall Player::TickAiMode2TopLevel(struct zUtil_SaveGameState* saveState)
+// Probable original file contribution: D:\Proj\Battlesport\ai_net.cpp. Source-file literal/xref order places this early AI block before Briefing.cpp at 0x4038a0 and long before confirmed player.cpp at 0x41f1d0.
+//
+// Top-level AI mode2 dispatcher. It snapshots the local player's fxOffsetWorld into storedTargetPos, dispatches the active top-level state, restores the saved state after auto-turn clears, and when AiTryEnterMode2State1 succeeds rebuilds the path toward currentPathNode->nextNodes[pathIndex]. BN still renders that indexed next-node argument with redundant *& operators.
+0x401060 void __fastcall AINet::TickAiMode2TopLevel(struct zUtil_SaveGameState* saveState)
 {
     struct PlayerAiMode2HandlerState* playerState = saveState->playerState
     struct zVec3* ecx_1 = &g_GameStateOrMapTable->playerState->fxOffsetWorld
@@ -41,26 +43,26 @@
 
     switch (playerState->topLevelState)
         case PLAYER_AI_MODE2_TOP_PATH_FOLLOW
-            Player::TickAiMode2PathFollow(saveState)
+            AINet::TickAiMode2PathFollow(saveState)
         label_4010cd:
 
-            if (Player::AiTryEnterMode2AttackPursuitIfLineOfSight(saveState) != 0)
-                Player::AiRebuildSyntheticPathToNodeIfFar(saveState, *&(*&playerState->currentPathNode->neighborRefs)[playerState->pathIndex])
+            if (AINet::AiTryEnterMode2AttackPursuitIfLineOfSight(saveState) != 0)
+                AINet::AiRebuildSyntheticPathToNodeIfFar(saveState, *&(*&playerState->currentPathNode->neighborRefs)[playerState->pathIndex])
         case PLAYER_AI_MODE2_TOP_STEERING
-            Player::TickAiMode2SteeringSubstate(saveState)
+            AINet::TickAiMode2SteeringSubstate(saveState)
         case PLAYER_AI_MODE2_TOP_TURN_TOWARD_TARGET
-            Player::UpdateAiMode2TurnTowardPlayerNoThrottle(saveState)
+            AINet::UpdateAiMode2TurnTowardPlayerNoThrottle(saveState)
 
-            if (Player::AiTryEnterMode2AttackPursuitIfLineOfSight(saveState) != 0)
-                Player::AiRebuildSyntheticPathToNodeIfFar(saveState, *&(*&playerState->currentPathNode->neighborRefs)[playerState->pathIndex])
+            if (AINet::AiTryEnterMode2AttackPursuitIfLineOfSight(saveState) != 0)
+                AINet::AiRebuildSyntheticPathToNodeIfFar(saveState, *&(*&playerState->currentPathNode->neighborRefs)[playerState->pathIndex])
         case PLAYER_AI_MODE2_TOP_TURN_ONLY_TOWARD_TARGET
-            Player::UpdateAiMode2TurnInPlaceTowardPlayer(saveState)
-            Player::AiTryEnterMode2AttackPursuitIfLineOfSight(saveState)
+            AINet::UpdateAiMode2TurnInPlaceTowardPlayer(saveState)
+            AINet::AiTryEnterMode2AttackPursuitIfLineOfSight(saveState)
         case PLAYER_AI_MODE2_TOP_PATH_STEERING
-            Player::TickAiMode2TimedPathSteering(saveState)
+            AINet::TickAiMode2TimedPathSteering(saveState)
 
-            if (Player::AiTryEnterMode2AttackPursuitIfLineOfSight(saveState) != 0)
-                Player::AiRebuildSyntheticPathToNodeIfFar(saveState, *&(*&playerState->currentPathNode->neighborRefs)[playerState->pathIndex])
+            if (AINet::AiTryEnterMode2AttackPursuitIfLineOfSight(saveState) != 0)
+                AINet::AiRebuildSyntheticPathToNodeIfFar(saveState, *&(*&playerState->currentPathNode->neighborRefs)[playerState->pathIndex])
         case PLAYER_AI_MODE2_TOP_AUTO_TURN
             int32_t autoTurnActive = playerState->autoTurnActive
             playerState->autoTurnSign = 0f
@@ -72,7 +74,7 @@
 }
 
 // Original file: src/Battlesport/player.cpp. Path-follow state uses PlayerAiPathNode.nextNodes / probeFans and raises pathCursorAdvanceRequested once the steering basis is aligned enough to advance the cursor. Entering auto-turn saves the current top-level state and switches to PLAYER_AI_MODE2_TOP_AUTO_TURN. BN limitation: repeated zVec3 stack aliases and x87 status-word comparisons render as var_14/var_18 pointer temporaries and long-double compare scaffolding; the recursive self-call is the path-cursor retry branch after AiAdvancePathCursorAndComputeTargetVec.
-0x401180 void __fastcall Player::TickAiMode2PathFollow(struct zUtil_SaveGameState* saveState)
+0x401180 void __fastcall AINet::TickAiMode2PathFollow(struct zUtil_SaveGameState* saveState)
 {
     struct PlayerAiMode2PathFollowState* playerState = saveState->playerState
     struct PlayerMasterModalData* masterModalData = saveState->primaryModalState->masterModalData
@@ -82,8 +84,8 @@
     struct AINetNode* targetPathNode = currentPathNode->neighborRefs[playerState->pathIndex].node
     struct zVec3 targetDelta
 
-    if (Player::AiMode2ForwardProbeRequiresAutoTurn(saveState) != 0)
-        Player::AiAdvancePathCursorAndComputeTargetVec(saveState, &currentNodeInOut, &outEdgePayload, &targetDelta)
+    if (AINet::AiMode2ForwardProbeRequiresAutoTurn(saveState) != 0)
+        AINet::AiAdvancePathCursorAndComputeTargetVec(saveState, &currentNodeInOut, &outEdgePayload, &targetDelta)
         struct AINetNode* autoTurnPathNode = currentNodeInOut->neighborRefs[playerState->pathIndex].node
         playerState->returnTopLevelState = playerState->topLevelState
         playerState->topLevelState = PLAYER_AI_MODE2_TOP_AUTO_TURN
@@ -138,9 +140,9 @@
         playerState->autoTurnSign = steerCrossXZ
     else
         if (playerState->pathCursorAdvanceRequested != 0)
-            Player::AiAdvancePathCursorAndComputeTargetVec(saveState, &currentNodeInOut, &outEdgePayload, &targetDelta)
+            AINet::AiAdvancePathCursorAndComputeTargetVec(saveState, &currentNodeInOut, &outEdgePayload, &targetDelta)
             playerState->pathCursorAdvanceRequested = 0
-            Player::TickAiMode2PathFollow(saveState)
+            AINet::TickAiMode2PathFollow(saveState)
             return
 
         long double x87_r7_14 = steerCrossXZ
@@ -170,12 +172,12 @@
     eax_7.w = (x87_r7_25 < temp4 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_25, temp4) ? 1 : 0) << 0xa | (x87_r7_25 == temp4 ? 1 : 0) << 0xe
 
     if ((eax_7:1.b & 1) != 0)
-        Player::AiAdvancePathCursorAndComputeTargetVec(saveState, &currentNodeInOut, &outEdgePayload, &targetDelta)
+        AINet::AiAdvancePathCursorAndComputeTargetVec(saveState, &currentNodeInOut, &outEdgePayload, &targetDelta)
         playerState->pathCursorAdvanceRequested = 0
 }
 
 // Original file: src/Battlesport/player.cpp. Returns true when the forward collision probe already resolved against player/preferred contact queues or when pending-contact collection finds blocking contacts. The early-resolved branch increments aiMode2SteeringRetryCount_0ffc. BN limitation: x87 length-threshold comparisons and the reused segmentPairs[1] pointer setup render as status-word temporaries and duplicate zVec3* read/write cursors.
-0x401420 int32_t __fastcall Player::AiMode2ForwardProbeRequiresAutoTurn(struct zUtil_SaveGameState* saveState)
+0x401420 int32_t __fastcall AINet::AiMode2ForwardProbeRequiresAutoTurn(struct zUtil_SaveGameState* saveState)
 {
     struct PlayerPendingContactProbeState* playerState = saveState->playerState
     struct PlayerMasterModalData* masterModalData = saveState->primaryModalState->masterModalData
@@ -232,7 +234,7 @@
 
 // Original file: GameZRecoil/Player.cpp
 // BN limitation: AINetNeighborSlot is typed as node/payload union data, but the reverse-exclusion scan may still render one neighbor lookup as raw pointer arithmetic. Assembly and callers indicate AINetNode path traversal with an output AINetPathProbeFan* payload.
-0x401580 void __fastcall Player::AiAdvancePathCursorAndComputeTargetVec(struct zUtil_SaveGameState* saveState, struct AINetNode** currentNodeInOut, struct AINetPathProbeFan** outEdgePayload, struct zVec3* outTargetVec)
+0x401580 void __fastcall AINet::AiAdvancePathCursorAndComputeTargetVec(struct zUtil_SaveGameState* saveState, struct AINetNode** currentNodeInOut, struct AINetPathProbeFan** outEdgePayload, struct zVec3* outTargetVec)
 {
     struct PlayerAiMode2HandlerState* playerState = saveState->playerState
     struct AINetNode* nextNode = (*currentNodeInOut)->neighborRefs[playerState->pathIndex].node
@@ -263,7 +265,7 @@
                 excludedBranchIndex = 4
                 break
 
-        Player::AiChooseNextPathBranchIndex(saveState, currentNodeInOut, &outBranchIndex, excludedBranchIndex)
+        AINet::AiChooseNextPathBranchIndex(saveState, currentNodeInOut, &outBranchIndex, excludedBranchIndex)
         playerState->pathIndex = outBranchIndex
     else
         AINetNode::Free(node)
@@ -271,7 +273,7 @@
         *currentNodeInOut = currentPathNode
 
         if (currentPathNode->nodeIndex s>= 0)
-            Player::AiChooseNextPathBranchIndex(saveState, currentNodeInOut, &outBranchIndex, 0xffffffff)
+            AINet::AiChooseNextPathBranchIndex(saveState, currentNodeInOut, &outBranchIndex, 0xffffffff)
             struct AINet* aiNet = playerState->aiNet
             playerState->pathIndex = outBranchIndex
 
@@ -294,7 +296,7 @@
 
 // Original file: src/Battlesport/player.cpp
 // Counts non-null nextNodes_0c entries, chooses a random branch when more than two are present, and skips the excluded branch index when provided.
-0x4016a0 void __fastcall Player::AiChooseNextPathBranchIndex(struct zUtil_SaveGameState* saveState, struct AINetNode** currentNodeInOut, int32_t* outBranchIndex, int32_t excludedBranchIndex)
+0x4016a0 void __fastcall AINet::AiChooseNextPathBranchIndex(struct zUtil_SaveGameState* saveState, struct AINetNode** currentNodeInOut, int32_t* outBranchIndex, int32_t excludedBranchIndex)
 {
     int32_t branchCount = 0
     union AINetNeighborSlot* eax = &(*currentNodeInOut)->neighborRefs
@@ -331,7 +333,7 @@
 }
 
 // Original file: src/Battlesport/player.cpp. Updates the AI mode2 steering substate: refreshes the target snapshot from the local player, rebuilds the path when due, computes flat target direction/distance, dispatches the active steering helper, applies sub pitch/vertical inputs, runs alt-gun attack checks, and restores the prior top-level state when the restore-distance gate fails. BN still renders the x87 compares and float arithmetic as fconvert/fnstsw temporaries; direct callees and field propagation are accepted.
-0x401710 void __fastcall Player::TickAiMode2SteeringSubstate(struct zUtil_SaveGameState* saveState)
+0x401710 void __fastcall AINet::TickAiMode2SteeringSubstate(struct zUtil_SaveGameState* saveState)
 {
     long double x87_r7 = g_Player_TotalTimeSecScaled
     struct PlayerState* playerState = saveState->playerState
@@ -347,7 +349,7 @@
     eax_2.w = (x87_r7 < temp1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7, temp1) ? 1 : 0) << 0xa | (x87_r7 == temp1 ? 1 : 0) << 0xe
 
     if ((eax_2:1.b & 1) == 0 && playerState->aiSteeringSubstate != 3)
-        Player::AiRebuildSyntheticPathToNodeIfFar(saveState, playerState->aiCurrentPathNode)
+        AINet::AiRebuildSyntheticPathToNodeIfFar(saveState, playerState->aiCurrentPathNode)
 
     struct zVec3 targetDelta
     struct zVec3* targetDeltaPtr = &targetDelta
@@ -380,18 +382,18 @@
 
     switch (playerState->aiSteeringSubstate)
         case 0
-            Player::UpdateAiMode2MoveAndTurnTowardTarget(saveState, forwardDot, lateralDot, targetDistance)
+            AINet::UpdateAiMode2MoveAndTurnTowardTarget(saveState, forwardDot, lateralDot, targetDistance)
         case 1
-            Player::TickAiMode2OffsetTargetSteering(saveState, forwardDot, lateralDot, targetDistance)
+            AINet::TickAiMode2OffsetTargetSteering(saveState, forwardDot, lateralDot, targetDistance)
             forwardDot = 1f
         case 2
-            Player::TickAiMode2DynamicOffsetTargetSteering(saveState, forwardDot, lateralDot, targetDistance)
+            AINet::TickAiMode2DynamicOffsetTargetSteering(saveState, forwardDot, lateralDot, targetDistance)
             forwardDot = 1f
         case 3
-            Player::TickAiMode2PathFollow(saveState)
+            AINet::TickAiMode2PathFollow(saveState)
             forwardDot = 1f
         case 5
-            Player::UpdateAiMode2TurnInPlaceTowardPlayer(saveState)
+            AINet::UpdateAiMode2TurnInPlaceTowardPlayer(saveState)
             forwardDot = 1f
         case 6
             if (playerState->autoTurnActive == 0)
@@ -407,7 +409,7 @@
         playerState->subVerticalInput = x87_r7_19
         playerState->subVerticalInputCopy = x87_r7_19
 
-    Player::TickAiMode2AltGunAttackWindow(saveState, targetDistance, forwardDot)
+    AINet::TickAiMode2AltGunAttackWindow(saveState, targetDistance, forwardDot)
     struct PlayerState* eax_12
 
     if (g_GameStateOrMapTable->playerState->lifecycle.state != PLAYER_LIFECYCLE_INACTIVE)
@@ -417,17 +419,17 @@
         eax_12.w = (st0_4 < temp3_1 ? 1 : 0) << 8 | (is_unordered.t(st0_4, temp3_1) ? 1 : 0) << 0xa | (st0_4 == temp3_1 ? 1 : 0) << 0xe
 
     if (g_GameStateOrMapTable->playerState->lifecycle.state == PLAYER_LIFECYCLE_INACTIVE || (eax_12:1.b & 0x41) == 0)
-        Player::AiRestoreSavedTopLevelState(saveState)
+        AINet::AiRestoreSavedTopLevelState(saveState)
         playerState->aiActivationTime = playerState->aiNotPursuitDwell + g_Player_TotalTimeSecScaled
 }
 
-0x401964 void __fastcall Player::UpdateAiMode2MoveAndTurnTowardTargetForwarder(struct zUtil_SaveGameState* saveState, float forwardDot, float lateralDot, float targetDistance)
+0x401964 void __fastcall AINet::UpdateAiMode2MoveAndTurnTowardTargetForwarder(struct zUtil_SaveGameState* saveState, float forwardDot, float lateralDot, float targetDistance)
 {
-    return Player::UpdateAiMode2MoveAndTurnTowardTarget(saveState, forwardDot, lateralDot, targetDistance) __tailcall
+    return AINet::UpdateAiMode2MoveAndTurnTowardTarget(saveState, forwardDot, lateralDot, targetDistance) __tailcall
 }
 
 // Most likely original source: src/Battlesport/player.cpp. Updates steering/throttle input for direct mode-2 target pursuit from forward/lateral target alignment and distance hysteresis. BN limitation: the backward/zero-forward branch reuses the lateralDot argument slot as an integer turnDirection for fild, so HLIL shows -nanf/1.40129846e-45f float constants instead of -1/+1 turnDirection; x87 comparisons also render as status-word scaffolding.
-0x401970 void __fastcall Player::UpdateAiMode2MoveAndTurnTowardTarget(struct zUtil_SaveGameState* saveState, float forwardDot, float lateralDot, float targetDistance)
+0x401970 void __fastcall AINet::UpdateAiMode2MoveAndTurnTowardTarget(struct zUtil_SaveGameState* saveState, float forwardDot, float lateralDot, float targetDistance)
 {
     long double x87_r7 = forwardDot
     long double temp1 = 0f
@@ -488,12 +490,12 @@
 
 // Original file: src/Battlesport/player.cpp
 // Collision-aware offset-target steering helper: when the forward probe requests auto-turn it zeroes current turn inputs, caches the current steering substate, and enters the auto-turn substate.
-0x401a40 void __fastcall Player::TickAiMode2OffsetTargetSteering(struct zUtil_SaveGameState* saveState, float forwardDot, float lateralDot, float targetDistance)
+0x401a40 void __fastcall AINet::TickAiMode2OffsetTargetSteering(struct zUtil_SaveGameState* saveState, float forwardDot, float lateralDot, float targetDistance)
 {
     struct PlayerAiMode2HandlerState* playerState = saveState->playerState
 
-    if (Player::AiMode2ForwardProbeRequiresAutoTurn(saveState) == 0)
-        Player::UpdateAiMode2MoveAndTurnTowardOffsetTarget(saveState, g_GameStateOrMapTable)
+    if (AINet::AiMode2ForwardProbeRequiresAutoTurn(saveState) == 0)
+        AINet::UpdateAiMode2MoveAndTurnTowardOffsetTarget(saveState, g_GameStateOrMapTable)
         return
 
     Player::SetAutoTurnTargetDirFromWorldPoint(saveState, &g_GameStateOrMapTable->playerState->worldPos)
@@ -508,12 +510,12 @@
 
 // Original file: src/Battlesport/player.cpp
 // Collision-aware dynamic-offset steering helper: when the forward probe requests auto-turn it zeroes current turn inputs, caches the current steering substate, and enters the auto-turn substate.
-0x401ab0 void __fastcall Player::TickAiMode2DynamicOffsetTargetSteering(struct zUtil_SaveGameState* saveState, float forwardDot, float lateralDot, float targetDistance)
+0x401ab0 void __fastcall AINet::TickAiMode2DynamicOffsetTargetSteering(struct zUtil_SaveGameState* saveState, float forwardDot, float lateralDot, float targetDistance)
 {
     struct PlayerAiMode2HandlerState* playerState = saveState->playerState
 
-    if (Player::AiMode2ForwardProbeRequiresAutoTurn(saveState) == 0)
-        Player::UpdateAiMode2MoveAndTurnTowardDynamicOffsetTarget(saveState, g_GameStateOrMapTable, targetDistance)
+    if (AINet::AiMode2ForwardProbeRequiresAutoTurn(saveState) == 0)
+        AINet::UpdateAiMode2MoveAndTurnTowardDynamicOffsetTarget(saveState, g_GameStateOrMapTable, targetDistance)
         return
 
     Player::SetAutoTurnTargetDirFromWorldPoint(saveState, &g_GameStateOrMapTable->playerState->worldPos)
@@ -527,7 +529,7 @@
 }
 
 // Original file: src/Battlesport/player.cpp. Rate-limited State1 entry gate. Requires the target fxOffsetWorld to be within attackRadiusSq, checks line of sight from rootNode to a slightly raised target point, resets steeringRetryCount on success, and propagates alert state to linked buddies when attackBuddyNetId is present. BN limitation: the time/range x87 comparisons render as long-double status-word scaffolding.
-0x401b20 int32_t __fastcall Player::AiTryEnterMode2AttackPursuitIfLineOfSight(struct zUtil_SaveGameState* saveState)
+0x401b20 int32_t __fastcall AINet::AiTryEnterMode2AttackPursuitIfLineOfSight(struct zUtil_SaveGameState* saveState)
 {
     struct PlayerAiMode2AttackPursuitTransitionState* aiState = saveState->playerState
 
@@ -554,13 +556,13 @@
                 point.z = aiState->fxOffsetWorld.z
                 point.y = point.y - -1.5f
 
-                if (Player::HasLineOfSightFromLocalPlayerFxOffset(aiState->rootNode, &point, 1) != 0)
-                    Player::AiEnterMode2SteeringPursuit(saveState)
+                if (AINet::HasLineOfSightFromLocalPlayerFxOffset(aiState->rootNode, &point, 1) != 0)
+                    AINet::AiEnterMode2SteeringPursuit(saveState)
                     struct AINet* aiNet = aiState->aiNet
                     aiState->targetLineOfSightClear = 1
 
                     if (aiNet->attackBuddyNetId != 0)
-                        Player::AiAlertAttackBuddies(saveState)
+                        AINet::AiAlertAttackBuddies(saveState)
 
                     aiState->steeringRetryCount = 0
                     return 1
@@ -574,7 +576,7 @@
 // Walks the aiPeerRingNext buddy ring, forcing each linked player into the steering top-level state when needed and latching recentHitFlag/recentHitExpireTime for 10 seconds.
 //
 // BN limitation: recentHitExpireTime renders as g_Time_AccumulatedTimeSec - (-10.0f), matching the original add-10.0 constant sequence in assembly.
-0x401c00 void __fastcall Player::AiAlertAttackBuddies(struct zUtil_SaveGameState* saveState)
+0x401c00 void __fastcall AINet::AiAlertAttackBuddies(struct zUtil_SaveGameState* saveState)
 {
     struct zUtil_SaveGameState* aiPeerRingNext = saveState->aiPeerRingNext
 
@@ -583,7 +585,7 @@
 
     do
         if (aiPeerRingNext->playerState->aiTopLevelState != PLAYER_AI_MODE2_TOP_STEERING)
-            Player::AiEnterMode2SteeringPursuit(aiPeerRingNext)
+            AINet::AiEnterMode2SteeringPursuit(aiPeerRingNext)
             aiPeerRingNext->playerState->recentHitFlag = 1
             aiPeerRingNext->playerState->recentHitExpireTime = g_Time_AccumulatedTimeSec - -10f
 
@@ -599,7 +601,7 @@
 // Saves the previous top-level state, enters the steering top-level state, snapshots restoreTarget from the active branch node, and seeds dynamicOffsetDir when the current steering mode is dynamic-offset pursuit.
 //
 // BN limitation: stateEndTime is rendered through x87 temporaries, and the dynamic-offset gate still displays as a mixed enum/raw-2 comparison even though PlayerAiMode2SteeringSubstate defines PLAYER_AI_MODE2_STEER_DYNAMIC_OFFSET_TARGET = 2.
-0x401c60 void __fastcall Player::AiEnterMode2SteeringPursuit(void* arg1)
+0x401c60 void __fastcall AINet::AiEnterMode2SteeringPursuit(void* arg1)
 {
     struct PlayerAiMode2AttackPursuitTransitionState* aiState = *(arg1 + 4)
     struct PlayerState* playerState = g_GameStateOrMapTable->playerState
@@ -639,7 +641,7 @@
 
 // Original file: src/Battlesport/player.cpp
 // Temporarily hides the supplied node and the local player's root node, raycasts between fxOffsetWorld and the supplied point, restores raycastability, and returns whether the path is clear.
-0x401d50 int32_t __fastcall Player::HasLineOfSightFromLocalPlayerFxOffset(struct zClass_Node* excludedNode, struct zVec3* point, int32_t reverseDirection)
+0x401d50 int32_t __fastcall AINet::HasLineOfSightFromLocalPlayerFxOffset(struct zClass_Node* excludedNode, struct zVec3* point, int32_t reverseDirection)
 {
     struct PlayerState* playerState = g_GameStateOrMapTable->playerState
     g_Variant_CurrentTag.count.d = playerState->variantTag.count.d
@@ -683,7 +685,7 @@
 }
 
 // Likely original file: GameZRecoil/Player.cpp
-0x401e50 int32_t __fastcall Player::HasLineOfSightFromCameraTarget(struct zUtil_SaveGameState* saveState, struct zVec3* point, int32_t directionMode)
+0x401e50 int32_t __fastcall AINet::HasLineOfSightFromCameraTarget(struct zUtil_SaveGameState* saveState, struct zVec3* point, int32_t directionMode)
 {
     struct PlayerState* playerState = g_GameStateOrMapTable->playerState
     float outX
@@ -731,7 +733,7 @@
 
 // Original file: GameZRecoil/Player.cpp
 // BN limitation: AINetPathProbeFan::InitFromSegment takes two zVec3 values by value plus a width float, but this call site may still render the aggregate arguments as scalar .x fields after reanalysis. Assembly stack setup confirms full zVec3 value arguments.
-0x401f60 void __fastcall Player::AiRebuildSyntheticPathToNodeIfFar(struct zUtil_SaveGameState* saveState, struct AINetNode* targetNode)
+0x401f60 void __fastcall AINet::AiRebuildSyntheticPathToNodeIfFar(struct zUtil_SaveGameState* saveState, struct AINetNode* targetNode)
 {
     struct PlayerAiMode2HandlerState* ebx = saveState->playerState
     struct zVec3 a
@@ -778,16 +780,17 @@
     ebx->nextPathRebuildTime = g_Player_TotalTimeSecScaled - -1f
 }
 
-// Original file: src/Battlesport/player.cpp
+// Physical source block: D:\Proj\Battlesport\ai_net.cpp; reconstructed source path: src/Battlesport/ainet.cpp.
 // Restores the saved AI top-level state for a player save-state node.
-0x402080 void __thiscall Player::AiRestoreSavedTopLevelState(struct zUtil_SaveGameState* saveState)
+// This comment reconciles stale player.cpp metadata with current source-path literal/block evidence only; it is not owner gate or tier evidence.
+0x402080 void __thiscall AINet::AiRestoreSavedTopLevelState(struct zUtil_SaveGameState* saveState)
 {
     struct PlayerState* playerState = saveState->playerState
     playerState->aiTopLevelState = playerState->aiSavedTopLevelState
 }
 
 // Original file: src/Battlesport/player.cpp. Turns an AI mode2 vehicle toward the local player's current world position: builds and normalizes the flat target vector, computes forward/lateral dot products against the steering basis, drives steering toward the target when it is not in front, and clears throttle while copying the steering input. BN still renders the x87 compare/sign selection as fconvert/fnstsw temporaries.
-0x402090 void __fastcall Player::UpdateAiMode2TurnTowardPlayerNoThrottle(struct zUtil_SaveGameState* saveState)
+0x402090 void __fastcall AINet::UpdateAiMode2TurnTowardPlayerNoThrottle(struct zUtil_SaveGameState* saveState)
 {
     struct PlayerState* playerState = saveState->playerState
     struct zVec3 targetDirFlat
@@ -829,7 +832,7 @@
 }
 
 // Most likely original source: src/Battlesport/player.cpp. Turns in place toward the current target position: normalize XZ delta, steer by cross product while target is ahead, otherwise steer at full sign toward the target. BN limitation: x87 dot/cross comparisons render as long-double status-word scaffolding, and temporary zVec3 pointer locals remain around the targetDelta construction.
-0x402170 void __fastcall Player::UpdateAiMode2TurnInPlaceTowardPlayer(struct zUtil_SaveGameState* saveState)
+0x402170 void __fastcall AINet::UpdateAiMode2TurnInPlaceTowardPlayer(struct zUtil_SaveGameState* saveState)
 {
     struct PlayerState* playerState = saveState->playerState
     struct zVec3* targetWorldPos = &g_GameStateOrMapTable->playerState->worldPos
@@ -871,8 +874,11 @@
     playerState->throttleInputCopy = 0f
 }
 
-// Most likely original source: src/Battlesport/player.cpp. Updates AI mode 2 alternate-gun dispatch windows, range/facing gates, lock-on target refs, and fallback intercept target. OPT_ENTRY_LOCK_ON is tested as ah bit 0x40 (0x4000), distinct from low-byte OPT_ENTRY_EXPIRES (0x40). BN limitation: x87 time/range/status comparisons render as long-double status-word scaffolding.
-0x402250 void __fastcall Player::TickAiMode2AltGunAttackWindow(struct zUtil_SaveGameState* saveState, float targetDistance, float forwardDot)
+// Physical source block: D:\Proj\Battlesport\ai_net.cpp; reconstructed source path: src/Battlesport/ainet.cpp.
+// Updates AI mode 2 alternate-gun dispatch windows, range/facing gates, lock-on target refs, and fallback intercept target. OPT_ENTRY_LOCK_ON is tested as AH bit 0x40 (0x4000), distinct from low-byte OPT_ENTRY_EXPIRES (0x40).
+// BN limitation: x87 time/range/status comparisons render as long-double status-word scaffolding.
+// This comment reconciles stale player.cpp metadata with current source-path literal/block evidence only; it is not owner gate or tier evidence.
+0x402250 void __fastcall AINet::TickAiMode2AltGunAttackWindow(struct zUtil_SaveGameState* saveState, float targetDistance, float forwardDot)
 {
     long double x87_r7 = g_Player_TotalTimeSecScaled
     struct PlayerAiMode2AltGunAttackState* playerState = saveState->playerState
@@ -941,7 +947,7 @@
                     x87_r7_8 - temp8_1
                     eax_2.w = (x87_r7_8 < temp8_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_8, temp8_1) ? 1 : 0) << 0xa | (x87_r7_8 == temp8_1 ? 1 : 0) << 0xe
 
-                    if ((eax_2:1.b & 0x41) == 0 && Player::HasLineOfSightFromLocalPlayerFxOffset(playerState->rootNode, &playerState->fxOffsetWorld, 1) != 0 && g_GameStateOrMapTable->playerState->lifecycle.state != PLAYER_LIFECYCLE_INACTIVE)
+                    if ((eax_2:1.b & 0x41) == 0 && AINet::HasLineOfSightFromLocalPlayerFxOffset(playerState->rootNode, &playerState->fxOffsetWorld, 1) != 0 && g_GameStateOrMapTable->playerState->lifecycle.state != PLAYER_LIFECYCLE_INACTIVE)
                         long double x87_r7_9 = playerState->statusMeterScaled
                         long double temp9 = 0.5f
                         x87_r7_9 - temp9
@@ -970,7 +976,7 @@
                             playerState->attackTargetRefCount = 0
                             playerState->attackTargetPosRef = nullptr
                             playerState->attackTargetVelRef = nullptr
-                            Player::SolveAltGunLeadTargetPoint(saveState, g_GameStateOrMapTable, &playerState->storedTargetPos)
+                            AINet::SolveAltGunLeadTargetPoint(saveState, g_GameStateOrMapTable, &playerState->storedTargetPos)
                             return
 
                         playerState->attackTargetRefCount = 1
@@ -979,9 +985,11 @@
                         HudUi::ShowTopMessageLine(zLoc::GetMessageString(0x908), 5f)
 }
 
-// src/Battlesport/player.cpp: Solves a simple intercept using target-relative position and velocity scaled by the active alt-gun projectile speed. Falls back to the target world position if the quadratic has no positive solution, otherwise aims around the target fx offset with a small vertical jitter.
+// Physical source block: D:\Proj\Battlesport\ai_net.cpp; reconstructed source path: src/Battlesport/ainet.cpp.
+// Solves a simple intercept using target-relative position and velocity scaled by the active alt-gun projectile speed. Falls back to the target world position if the quadratic has no positive solution, otherwise aims around the target fx offset with a small vertical jitter.
 // BN limitation: x87 comparisons and the square-root estimate still render as explicit fconvert/status-word/bit-hack expressions, and BN may show nested zVec3 member accesses as x:4.d/x:8.d aliases.
-0x4024a0 void __fastcall Player::SolveAltGunLeadTargetPoint(struct zUtil_SaveGameState* saveState, struct GameStateOrMap* target, struct zVec3* outTargetPos)
+// This comment reconciles stale player.cpp metadata with current source-path literal/block evidence only; it is not owner gate or tier evidence.
+0x4024a0 void __fastcall AINet::SolveAltGunLeadTargetPoint(struct zUtil_SaveGameState* saveState, struct GameStateOrMap* target, struct zVec3* outTargetPos)
 {
     struct PlayerAiMode2AltGunAttackState* attackerState = saveState->playerState
     struct PlayerAiMode2AltGunAttackState* targetState = target->playerState
@@ -1041,7 +1049,7 @@
 }
 
 // Original file: src/Battlesport/player.cpp. Builds an offset pursuit target by rotating the target-to-player flat direction 15 degrees and scaling it by aiNet->pursuitParam0, then steers toward that offset target using forward-dot/cross tests; if the target is behind, motionInput is cleared and autoTurnSign is forced to +/-1, otherwise motionInput is clamped to at least 0.25 and copied to bankInput/yawInputSign. BN limitation: reused vector-pointer stack slots reappear as var_* aliases after analysis, and x87 comparisons render as status-word scaffolding.
-0x4026d0 void __fastcall Player::UpdateAiMode2MoveAndTurnTowardOffsetTarget(struct zUtil_SaveGameState* saveState, struct zUtil_SaveGameState* targetState)
+0x4026d0 void __fastcall AINet::UpdateAiMode2MoveAndTurnTowardOffsetTarget(struct zUtil_SaveGameState* saveState, struct zUtil_SaveGameState* targetState)
 {
     struct PlayerAiMode2HandlerState* playerState = saveState->playerState
     struct zVec3* targetWorldPos = &targetState->playerState->worldPos
@@ -1117,7 +1125,7 @@
 }
 
 // Original file: src/Battlesport/player.cpp. Dynamic-offset pursuit steering: builds a target point from targetState world position plus dynamicOffsetDir * pursuitParam0, clamps (2*pursuitParam0 - targetDistance)/pursuitParam0 to 0..1, optionally reverses the side offset while moving forward inside the pursuit radius, normalizes the final steer target, and writes motion/bank/yaw inputs. BN limitation: repeated zVec3 stack aliases and the by-stack targetDistance scratch reuse render as var_*/arg_4 pointer temporaries, and the x87 clamp/behind-target tests render as status-word scaffolding.
-0x4028c0 void __fastcall Player::UpdateAiMode2MoveAndTurnTowardDynamicOffsetTarget(struct zUtil_SaveGameState* saveState, struct GameStateOrMap* targetState, float targetDistance)
+0x4028c0 void __fastcall AINet::UpdateAiMode2MoveAndTurnTowardDynamicOffsetTarget(struct zUtil_SaveGameState* saveState, struct GameStateOrMap* targetState, float targetDistance)
 {
     struct PlayerAiMode2HandlerState* playerState = saveState->playerState
     struct zVec3* edx_1 = &targetState->playerState->worldPos
@@ -1257,7 +1265,7 @@
 }
 
 // Original file: src/Battlesport/player.cpp. State4 path-steering helper. While pathSteeringUntilTime is active, it steers forward when currentPathNode is the anchor, steers reverse when the anchor is the first next node and the current node has a valid index, otherwise falls back to normal path follow; all exits latch alertFlag. BN still renders the x87 deadline compare as fconvert/fnstsw temporaries.
-0x402b70 void __fastcall Player::TickAiMode2TimedPathSteering(struct zUtil_SaveGameState* saveState)
+0x402b70 void __fastcall AINet::TickAiMode2TimedPathSteering(struct zUtil_SaveGameState* saveState)
 {
     long double x87_r7 = g_Player_TotalTimeSecScaled
     struct PlayerAiMode2HandlerState* playerState = saveState->playerState
@@ -1269,22 +1277,25 @@
         struct AINetNode* pathAnchorNode = playerState->pathAnchorNode
 
         if (currentPathNode == pathAnchorNode)
-            Player::AiSteerTowardPathNodeForward(saveState)
+            AINet::AiSteerTowardPathNodeForward(saveState)
             playerState->alertFlag = 1
             return
 
         if (currentPathNode->neighborRefs[0].node == pathAnchorNode && currentPathNode->nodeIndex != 0xffffffff)
-            Player::AiSteerTowardPathNodeReverse(saveState)
+            AINet::AiSteerTowardPathNodeReverse(saveState)
             playerState->alertFlag = 1
             return
 
-        Player::TickAiMode2PathFollow(saveState)
+        AINet::TickAiMode2PathFollow(saveState)
 
     playerState->alertFlag = 1
 }
 
-// Original file: src/Battlesport/player.cpp. Steers forward along currentPathNode->nextNodes[0]: advances to the next node when within 5 units, otherwise uses flat target direction versus steerBasis to choose steering and throttle; when the target is behind, throttle is cleared and steering is forced to +/-1. BN limitation: reused stack slots for targetDirFlat pointer, lateralDot, and steeringSign reappear as var_8/var_8_1/var_10_1 after analysis, and x87 comparisons render as status-word scaffolding.
-0x402be0 void __fastcall Player::AiSteerTowardPathNodeForward(struct zUtil_SaveGameState* saveState)
+// Physical source block: D:\Proj\Battlesport\ai_net.cpp; reconstructed source path: src/Battlesport/ainet.cpp.
+// Steers forward along currentPathNode->nextNodes[0]: advances to the next node when within 5 units, otherwise uses flat target direction versus steerBasis to choose steering and throttle; when the target is behind, throttle is cleared and steering is forced to +/-1.
+// BN limitation: reused stack slots for targetDirFlat pointer, lateralDot, and steeringSign reappear as var_8/var_8_1/var_10_1 after analysis, and x87 comparisons render as status-word scaffolding.
+// This comment reconciles stale player.cpp metadata with current source-path literal/block evidence only; it is not owner gate or tier evidence.
+0x402be0 void __fastcall AINet::AiSteerTowardPathNodeForward(struct zUtil_SaveGameState* saveState)
 {
     struct PlayerAiPathSteeringState* playerState = saveState->playerState
     int32_t* ecx = *(playerState->__offset(0xf78).d + 0xc)
@@ -1355,10 +1366,11 @@
     playerState->__offset(0x6c).d = x87_r7_14
 }
 
-// Source: src/Battlesport/ainet.cpp
+// Physical source block: D:\Proj\Battlesport\ai_net.cpp; reconstructed source path: src/Battlesport/ainet.cpp.
 // Steers the AI player backward toward the next path node; advances to the next node once inside the path-node advance radius.
 // BN limitation: HLIL retains x87 compare flag temporaries and an overlapping float-cross / integer-sign stack slot; assembly shows reverse XZ path steering and signed steering output.
-0x402d60 void __fastcall Player::AiSteerTowardPathNodeReverse(struct zUtil_SaveGameState* saveState)
+// This comment records current source-path literal/block evidence only; it is not owner gate or tier evidence.
+0x402d60 void __fastcall AINet::AiSteerTowardPathNodeReverse(struct zUtil_SaveGameState* saveState)
 {
     struct PlayerAiPathSteeringState* playerState = saveState->playerState
     int32_t* ecx = *(playerState->__offset(0xf78).d + 0xc)
@@ -1434,9 +1446,10 @@
     playerState->__offset(0x6c).d = x87_r7_18
 }
 
-// Original file: src/Battlesport/player.cpp
-// Final cleanup for AI Mode2 State1. Restores the saved top-level state for AI-controlled players still left in the steering top-level state, then marks the global finalized flag.
-0x402f10 void Player::AiFinalizeMode2State1ForAllPlayers()
+// Physical source block: D:\Proj\Battlesport\ai_net.cpp; reconstructed source path: src/Battlesport/ainet.cpp.
+// Final cleanup for AI Mode2 State1: restores the saved top-level state for AI-controlled players still left in the steering top-level state, then marks the global finalized flag.
+// This comment reconciles stale player.cpp metadata with current source-path literal/block evidence only; it is not owner gate or tier evidence.
+0x402f10 void AINet::AiFinalizeMode2State1ForAllPlayers()
 {
     struct zUtil_SaveGameState* saveState = g_PlayerSaveStateListHead
 
@@ -1444,7 +1457,7 @@
         struct PlayerState* playerState_1 = saveState->playerState
 
         if (playerState_1->lifecycle.state == PLAYER_LIFECYCLE_AI && playerState_1->aiTopLevelState == PLAYER_AI_MODE2_TOP_STEERING)
-            Player::AiRestoreSavedTopLevelState(saveState)
+            AINet::AiRestoreSavedTopLevelState(saveState)
 
         if (saveState == 0)
             saveState = nullptr
@@ -1454,9 +1467,11 @@
     g_Player_AiMode2State1Finalized = 1
 }
 
-// Original file: GameZRecoil/zMath/zmath.cpp
+// Semantic owner/name preserved: zMath::Vec3Normalize.
+// Physical source placement: authored zMath inline/helper COMDAT emitted inside the D:\Proj\Battlesport\ai_net.cpp contribution block between AINet::AiFinalizeMode2State1ForAllPlayers (0x402f10) and AINet::LoadAllFromZrd (0x402fd0); do not rename or retype from this physical placement alone.
 // Normalizes vec in place when its length is nonzero and returns the original vector length in st0.
 // BN limitation: HLIL loses the preexisting length on the x87 stack at fdivrp and renders the reciprocal scale as 1/1, though assembly computes 1/length and returns the saved length in st0.
+// This comment records physical COMDAT placement only; it is not owner gate or tier evidence.
 0x402f60 float __fastcall zMath::Vec3Normalize(struct zVec3* vec)
 {
     long double x87_r7 = vec->x
@@ -1860,7 +1875,7 @@
 }
 
 // Source: D:\Proj\Battlesport\player.cpp. Builds circular AI peer rings among active player save states that share the same aiNetId. BN limitation: null-safe list-advance patterns are preserved inside loops, so HLIL shows redundant saveState/candidate null checks that are unreachable at those points.
-0x403750 void Player::BuildAiPeerRingsByAiNetId()
+0x403750 void AINet::BuildAiPeerRingsByAiNetId()
 {
     struct zUtil_SaveGameState* saveState = g_PlayerSaveStateListHead
 
@@ -1934,7 +1949,7 @@
 
 // Source: src/Battlesport/ainet.cpp
 // Discards temporary negative-branch AI path nodes from the saved player state.
-0x403830 void __fastcall Player::AiDiscardNegativeBranchPathNodes(struct zUtil_SaveGameState* saveState)
+0x403830 void __fastcall AINet::AiDiscardNegativeBranchPathNodes(struct zUtil_SaveGameState* saveState)
 {
     struct PlayerState* playerState = saveState->playerState
     struct AINetNode* aiCurrentPathNode = playerState->aiCurrentPathNode
@@ -1951,6 +1966,8 @@
 }
 
 // Source: src/Battlesport/ainet.cpp
+// Probable final function in the ai_net.cpp contribution block; the next function at 0x4038a0 starts the Briefing.cpp block.
+//
 // Frees every AINet in the global list.
 0x403870 void AINet::FreeAll()
 {
@@ -19964,7 +19981,7 @@
 
                         if (self->finalMissionFlag != 0 && self->completedObjectiveCount == 5)
                             g_HudSensorTracker_ObjectiveCommandLocked = 1
-                            Player::AiFinalizeMode2State1ForAllPlayers()
+                            AINet::AiFinalizeMode2State1ForAllPlayers()
                             zTurret_System::DisableTickCallback()
                             HudUiMgrObjective::SetVisibleAndResetMeterFill(0)
                             HudSensorTracker::SetObjectivePanelVisible(self, 1)
@@ -25288,7 +25305,7 @@
     if (saveState != g_GameStateOrMapTable)
         Player::TickMasterTypeAndForceFeedback(saveState)
 
-    Player::AiDiscardNegativeBranchPathNodes(saveState)
+    AINet::AiDiscardNegativeBranchPathNodes(saveState)
     int32_t ecx_23 = playerState->__offset(0xf7c).d
     playerState->__offset(0xf80).d = 0
     playerState->__offset(0xf78).d = ecx_23
@@ -26041,7 +26058,7 @@
     ebx_4->restartYawRad = (edx_51 - 0x3bc)->restartYawRad
     ebx_4->rollAngleRad = (edx_51 - 0x3bc)->rollAngleRad
     zClass_Object3D::gwObject3DSetRotation(ebx_4->rootNode, ebx_4->pitchAngleRad, ebx_4->restartYawRad, ebx_4->rollAngleRad)
-    Player::BuildAiPeerRingsByAiNetId()
+    AINet::BuildAiPeerRingsByAiNetId()
     zInput::BindMapCurrent_SetCommandCallback(0xf, Player::HandlePrimaryWeaponVariantToggleInput)
     zInput::BindMapCurrent_SetCommandCallback(0x10, Player::HandleAltWeaponBankSelectInput)
     zInput::BindMapCurrent_SetCommandCallback(0x11, Player::HandleAltWeaponBankSelectInput)
@@ -28689,7 +28706,7 @@
     Player::PreparePendingWorldCollisionResponse(saveState, playerState->worldCollisionQueue.head)
 
     if (playerState->lifecycle.state == PLAYER_LIFECYCLE_LOCAL)
-        Player::StartModalLoopSfxHandle(saveState, 4, 1f)
+        zUtil_SaveGameState::StartModalLoopSfxHandle(saveState, 4, 1f)
 
     Player::ResolvePendingCollisionContact(saveState, playerState->worldCollisionQueue.head)
 }
@@ -28980,7 +28997,7 @@
 
     var_94_1 = (eax_11:1.b & 1) == 0 ? x87_r7_92 : 1f
 
-    Player::StartModalLoopSfxHandle(saveState_1, 4, var_94_1)
+    zUtil_SaveGameState::StartModalLoopSfxHandle(saveState_1, 4, var_94_1)
     g_zInputFfEffectSet
 
     if (zInputDI::IsForceFeedbackEnabled() != 0)
@@ -30165,14 +30182,14 @@
                 label_426649:
                     playerState->aiActive = 1
                     activeMode2Count += 1
-                    Player::TickAiMode2TopLevel(saveState)
+                    AINet::TickAiMode2TopLevel(saveState)
                     goto label_42645a
 
             if (playerState->auxRuntimeFlag != 0)
                 Player::TickActiveCameraState(saveState)
 
             if (zSnd::GetAudioApiOption() == zSndBackend_A3D)
-                Player::UpdateModalLoopSfx(saveState, 0)
+                zUtil_SaveGameState::UpdateModalLoopSfx(saveState, 0)
 
             int32_t altGunFireHeldFlag = playerState->altGunFireHeldFlag
             playerState->aiActive = 0
@@ -30237,7 +30254,7 @@
                 Player::TickActiveCameraState(saveState)
 
             if (zSnd::GetAudioApiOption() == zSndBackend_A3D)
-                Player::UpdateModalLoopSfx(saveState, 1)
+                zUtil_SaveGameState::UpdateModalLoopSfx(saveState, 1)
 
         if (saveState == 0)
             saveState = nullptr
@@ -30248,7 +30265,7 @@
         struct zUtil_SaveGameState* GameStateOrMapTable_1 = g_GameStateOrMapTable
 
         if (GameStateOrMapTable_1->playerState->lifecycle.state != PLAYER_LIFECYCLE_INACTIVE)
-            Player::UpdateModalLoopSfx(GameStateOrMapTable_1, 1)
+            zUtil_SaveGameState::UpdateModalLoopSfx(GameStateOrMapTable_1, 1)
 
     if (zOpt::GetNetworkEnabled() != ZOPT_NETWORK_OPTION_DISABLED)
         GameNet::TickLocalPlayerPkt06ReplicationAndHudTimer(g_GameStateOrMapTable)
@@ -32588,7 +32605,7 @@
 0x429ed0 void __fastcall Player::StartSlipSfx(struct zUtil_SaveGameState* saveState)
 {
     saveState->playerState->slipSfxActive = 1
-    Player::StartModalLoopSfxHandle(saveState, 3, 1f)
+    zUtil_SaveGameState::StartModalLoopSfxHandle(saveState, 3, 1f)
 }
 
 // Likely source: src/Battlesport/player.cpp
@@ -32596,7 +32613,7 @@
 0x429ef0 void __fastcall Player::StopSlipSfx(struct zUtil_SaveGameState* saveState)
 {
     saveState->playerState->slipSfxActive = 0
-    Player::StopModalLoopSfxHandle(saveState, 3)
+    zUtil_SaveGameState::StopModalLoopSfxHandle(saveState, 3)
 }
 
 // Source: D:\Proj\GameZRecoil\zInput\zin_init.cpp
@@ -33206,7 +33223,7 @@
     // Raw vtable call maps to g_Player_UnderwaterFxPass3Ui->SetVisible(false) while leaving SUB cleanup.
         g_Player_UnderwaterFxPass3Ui.base.ftable->SetVisible(&g_Player_UnderwaterFxPass3Ui, 0)
         g_Player_HorizonNodeFollowCameraEnabled = 1
-        Player::StopMasterTypeLoopSfxHandle(saveState_1, 3)
+        zUtil_SaveGameState::StopMasterTypeLoopSfxHandle(saveState_1, 3)
         Player::ReactivateCopterSndNodesIfHealthy()
         struct zClass_Node* nodeCaustic1 = primaryModalState->nodeCaustic1
 
@@ -33254,7 +33271,7 @@
         saveState_1 = saveState_2
 
     playerState_004->currentMasterType = masterModalData->masterType
-    Player::SelectModalStateByMasterType(saveState_1, PLAYER_MASTER_TYPE_TRACK)
+    zUtil_SaveGameState::SelectModalStateByMasterType(saveState_1, 3)
     struct zClass_Node* modeVariantNode = playerState_004->modeVariantNode
     playerState_004->masterTypeTransitionCooldownUntilTime = g_Time_AccumulatedTimeSec - -1f
     zClass_Class::gwNodeSetActive(modeVariantNode, 1)
@@ -33303,7 +33320,7 @@
     // Raw vtable call maps to g_Player_UnderwaterFxPass3Ui->SetVisible(false) while leaving SUB cleanup.
         g_Player_UnderwaterFxPass3Ui.base.ftable->SetVisible(&g_Player_UnderwaterFxPass3Ui, 0)
         g_Player_HorizonNodeFollowCameraEnabled = 1
-        Player::StopMasterTypeLoopSfxHandle(gameState, 3)
+        zUtil_SaveGameState::StopMasterTypeLoopSfxHandle(gameState, 3)
         Player::ReactivateCopterSndNodesIfHealthy()
         struct zClass_Node* nodeCaustic1 = primaryModalState->nodeCaustic1
 
@@ -33371,7 +33388,7 @@
         while (i_2 != 1)
 
     playerState->currentMasterType = masterModalData->masterType
-    Player::SelectModalStateByMasterType(gameState, PLAYER_MASTER_TYPE_AMPHIB)
+    zUtil_SaveGameState::SelectModalStateByMasterType(gameState, 5)
     playerState->masterTypeTransitionCooldownUntilTime = g_Time_AccumulatedTimeSec - -1f
 
     if (gameState == g_GameStateOrMapTable)
@@ -33422,7 +33439,7 @@
     // Raw vtable call maps to g_Player_UnderwaterFxPass3Ui->SetVisible(false) while leaving SUB cleanup.
         g_Player_UnderwaterFxPass3Ui.base.ftable->SetVisible(&g_Player_UnderwaterFxPass3Ui, 0)
         g_Player_HorizonNodeFollowCameraEnabled = 1
-        Player::StopMasterTypeLoopSfxHandle(saveState_1, 3)
+        zUtil_SaveGameState::StopMasterTypeLoopSfxHandle(saveState_1, 3)
         Player::ReactivateCopterSndNodesIfHealthy()
         struct zClass_Node* nodeCaustic1 = primaryModalState->nodeCaustic1
 
@@ -33474,7 +33491,7 @@
         saveState_1 = saveState_2
 
     playerState->currentMasterType = masterModalData->masterType
-    Player::SelectModalStateByMasterType(saveState_1, PLAYER_MASTER_TYPE_HOVER)
+    zUtil_SaveGameState::SelectModalStateByMasterType(saveState_1, 4)
     playerState->masterTypeTransitionCooldownUntilTime = g_Time_AccumulatedTimeSec - -1f
 
     if (saveState_1 == g_GameStateOrMapTable)
@@ -33510,10 +33527,10 @@
 
     if (masterType == PLAYER_MASTER_TYPE_SUB)
         if (flags != 0)
-            Player::StopMasterTypeLoopSfxHandle(saveState, 3)
+            zUtil_SaveGameState::StopMasterTypeLoopSfxHandle(saveState, 3)
         label_42b3c8:
             playerState_004->currentMasterType = masterModalData->masterType
-            Player::SelectModalStateByMasterType(saveState, PLAYER_MASTER_TYPE_SUB)
+            zUtil_SaveGameState::SelectModalStateByMasterType(saveState, 2)
 
             if (Player::IsAltWeaponAllowedInCurrentMasterMode(saveState, playerState_004->activeAltGunController->optCatalogEntry) == 0)
                 Player::AutoSwitchToNextUsableAltWeapon(saveState)
@@ -33523,7 +33540,7 @@
             if (saveState == g_GameStateOrMapTable)
                 HudUi::ShowTopMessageLine(zLoc::GetMessageString(0x23b), 5f)
                 HudUiMgr::SetModeCounterState(3, 2)
-                Player::EnsureMasterTypeLoopSfxHandle(saveState, 3, 0.5f)
+                zUtil_SaveGameState::EnsureMasterTypeLoopSfxHandle(saveState, 3, 0.5f)
                 Player::CacheDisableCopterSndNodesAndStopSample()
 
             struct zEffectAnimEntry* toTrackLightHandle = playerState_004->masterTypeTransitionFx.toTrackLightHandle
@@ -33613,7 +33630,7 @@
         playerState->damageVisualFlag = 1
 
     playerState->currentMasterType = masterModalData->masterType
-    Player::SelectModalStateByMasterType(saveState, PLAYER_MASTER_TYPE_FLY)
+    zUtil_SaveGameState::SelectModalStateByMasterType(saveState, 1)
     playerState->masterTypeTransitionCooldownUntilTime = g_Time_AccumulatedTimeSec - -5f
     return 1
 }
@@ -33950,7 +33967,7 @@
 
         if (eventCode == 0xb && zOpt::GetNetworkEnabled() == ZOPT_NETWORK_OPTION_DISABLED)
             g_GameStateOrMapTable->playerState->lifecycle.state = PLAYER_LIFECYCLE_STATE6
-            Player::UpdateModalLoopSfx(g_GameStateOrMapTable, 0)
+            zUtil_SaveGameState::UpdateModalLoopSfx(g_GameStateOrMapTable, 0)
     else if (eventCode s<= 0x63)
         if (eventCode == 0x63)
             HudSensorTracker::SaveAndQueueMissionState(&g_HudSensorTracker)
@@ -34563,7 +34580,7 @@
     compareStatusBits.w = (x87_r7_3 < temp0_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_3, temp0_1) ? 1 : 0) << 0xa | (x87_r7_3 == temp0_1 ? 1 : 0) << 0xe
 
     if ((compareStatusBits:1.b & 0x41) == 0)
-        Player::StartModalLoopSfxHandle(saveState, 5, 1f)
+        zUtil_SaveGameState::StartModalLoopSfxHandle(saveState, 5, 1f)
         return
 
     long double x87_r7_4 = sfxVolume
@@ -34573,7 +34590,7 @@
     if ((((x87_r7_4 < temp1_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_4, temp1_1) ? 1 : 0) << 0xa | (x87_r7_4 == temp1_1 ? 1 : 0) << 0xe):1.b & 1) != 0)
         sfxVolume = 0f
 
-    Player::StartModalLoopSfxHandle(saveState, 5, sfxVolume)
+    zUtil_SaveGameState::StartModalLoopSfxHandle(saveState, 5, sfxVolume)
 }
 
 // Likely source: src/Battlesport/player.cpp
@@ -35356,7 +35373,7 @@
     if (self->structSize u< 0x64)
         return 0x80070057
 
-    self->statusTextEvent = nullptr
+    self->eventSinkLiveCount = 0
     self->failureEvent = nullptr
     self->bootstrapServerListEvent = bootstrapServerListEvent
     self->moduleHandleSecondary = moduleHandle
@@ -39225,7 +39242,7 @@
     labelWorldPos.y = playerState->worldPos.y
     labelWorldPos.z = playerState->worldPos.z
     labelWorldPos.y = labelWorldPos.y - -3f
-    int32_t visible = Player::HasLineOfSightFromLocalPlayerFxOffset(playerState->rootNode, &labelWorldPos, 1)
+    int32_t visible = AINet::HasLineOfSightFromLocalPlayerFxOffset(playerState->rootNode, &labelWorldPos, 1)
 
     if (visible == 0)
         hudWidget->vtbl->SetVisible(hudWidget, visible)
@@ -42565,7 +42582,7 @@
             else
                 reverseDirection_1 = 2
 
-            if (Player::HasLineOfSightFromLocalPlayerFxOffset(self->m_healthyNode, &self->m_firePos, reverseDirection_1) == 0)
+            if (AINet::HasLineOfSightFromLocalPlayerFxOffset(self->m_healthyNode, &self->m_firePos, reverseDirection_1) == 0)
                 long double x87_r7_35 = self->m_fireDwellTime
                 long double temp15_1 = 0f
                 x87_r7_35 - temp15_1
@@ -42752,7 +42769,7 @@
 
             int32_t eax_10
 
-            if (Player::HasLineOfSightFromLocalPlayerFxOffset(self->m_healthyNode, &self->m_firePos, reverseDirection) == 0)
+            if (AINet::HasLineOfSightFromLocalPlayerFxOffset(self->m_healthyNode, &self->m_firePos, reverseDirection) == 0)
                 long double x87_r7_17 = self->m_fireDwellTime
                 long double temp11_1 = 0f
                 x87_r7_17 - temp11_1
@@ -43356,15 +43373,22 @@
     zOpt::SetHudTypeForCurrentHwMode(value)
 }
 
-// Source: D:\Proj\GameZRecoil\zClass\Object3d.c
-// Clears the global model-reference lerp queue state without freeing queued tasks; the full reset/freeing path is zClass_Object3D_ModelRefLerpQueue::Reset.
-0x437fe4 void zClass_Object3D_ModelRefLerpQueue::ClearGlobalState()
+// Pre-entry NOP padding before the CRT init thunk at 0x437ff0; no xrefs observed to 0x437fe4..0x437fef. Authored ClearGlobalState body is 0x438000.
+0x437fe4 void zClass_Object3D_ModelRefLerpQueue::ClearGlobalState_PreEntryPadding()
+{
+    return zClass_Object3D_ModelRefLerpQueue::ClearGlobalState_CrtInitThunk() __tailcall
+}
+
+// CRT init-array thunk target from 0x4da090; jumps to zClass_Object3D_ModelRefLerpQueue::ClearGlobalState body at 0x438000.
+0x437ff0 void zClass_Object3D_ModelRefLerpQueue::ClearGlobalState_CrtInitThunk()
+{
+    return zClass_Object3D_ModelRefLerpQueue::ClearGlobalState() __tailcall
+}
+
+// Authored ClearGlobalState body: zeroes g_ModelRefLerpQueueState fields at 0x4f41f0, 0x4f41f8, 0x4f41f4, and 0x4f41fc, then returns.
+0x438000 void zClass_Object3D_ModelRefLerpQueue::ClearGlobalState()
 {
     __builtin_memset(&g_ModelRefLerpQueueState, 0, 0x10)
-
-    // [comments not attached to rendered lines]
-    // [comment @ 0x437ff0]
-    // CRT init-array thunk target: jumps to zClass_Object3D_ModelRefLerpQueue::ClearGlobalState body at 0x438000.
 }
 
 // Original file: GameZRecoil/zClass/Object3d.c. BN limitation: x87 clamp/delta math includes an fsub flag-generation failure at 0x4380f8, so HLIL exposes status-word temporaries and an unimplemented c1 flag despite typed queue/task fields.
@@ -43624,11 +43648,12 @@
     return self
 }
 
-// D:\Proj\GameZRecoil\zUtil\zUtil.cpp
+// Source: D:\Proj\GameZRecoil\zUtil\zUtil.cpp -- zUtil_SaveGameState::FreeOwnedResources
+// Frees PlayerModalState nodes and playerState storage, clears primary modal/net-player back-references, and discards negative AI path nodes before release.
 0x438430 void __fastcall zUtil_SaveGameState::FreeOwnedResources(struct zUtil_SaveGameState* self)
 {
     if (self->playerState->lifecycle.state == PLAYER_LIFECYCLE_AI)
-        Player::AiDiscardNegativeBranchPathNodes(self)
+        AINet::AiDiscardNegativeBranchPathNodes(self)
 
     struct GameNetPlayerRow* netPlayerRow = self->netPlayerRow
 
@@ -43713,20 +43738,21 @@
     return saveState
 }
 
-// Source: D:\Proj\Battlesport\player.cpp -- Player::SelectModalStateByMasterType. Finds the modal state matching the requested master type, stops existing modal loop SFX handles, and makes it primary.
-0x438540 int32_t __thiscall Player::SelectModalStateByMasterType(struct zUtil_SaveGameState* saveState, enum PlayerMasterType masterType)
+// Source: src/Battlesport/player.cpp -- zUtil_SaveGameState::SelectModalStateByMasterType
+// Finds the modal state for a master type, stops existing modal loop handles, and makes it primary.
+0x438540 int32_t __thiscall zUtil_SaveGameState::SelectModalStateByMasterType(struct zUtil_SaveGameState* self, int32_t masterType)
 {
-    struct PlayerModalState* i = saveState->modalStateListHead
+    struct PlayerModalState* i = self->modalStateListHead
 
     if (i == 0)
         return 0
 
     do
         if (i->masterModalData->masterType == masterType)
-            Player::StopModalLoopSfxHandle(saveState, 2)
-            Player::StopModalLoopSfxHandle(saveState, 0)
-            Player::StopModalLoopSfxHandle(saveState, 1)
-            saveState->primaryModalState = i
+            zUtil_SaveGameState::StopModalLoopSfxHandle(self, 2)
+            zUtil_SaveGameState::StopModalLoopSfxHandle(self, 0)
+            zUtil_SaveGameState::StopModalLoopSfxHandle(self, 1)
+            self->primaryModalState = i
             return 1
 
         if (i == 0)
@@ -43738,122 +43764,127 @@
     return 0
 }
 
-// Source: D:\Proj\Battlesport\player.cpp -- Player::StartMasterTypeLoopSfxHandle. Starts the master-common weapon-up loop sample for a player mode and stores the returned play handle in modeLoopSfxHandle.
-0x4385a0 struct zSndPlayHandle* __thiscall Player::StartMasterTypeLoopSfxHandle(struct GameStateOrMap* saveState, int32_t modeIndex, float sfxVolume)
+// Source: src/Battlesport/player.cpp -- zUtil_SaveGameState::StartMasterTypeLoopSfxHandle
+// Starts the master-common weapon-up loop sample for a mode and stores the zSndPlayHandle in playerState->modeLoopSfxHandle.
+0x4385a0 struct zSndPlayHandle* __thiscall zUtil_SaveGameState::StartMasterTypeLoopSfxHandle(struct zUtil_SaveGameState* self, int32_t modeIndex, float sfxVolume)
 {
     struct zVec3* worldPos
 
     if (modeIndex != 3)
-        worldPos = &saveState->playerState->worldPos
+        worldPos = &self->playerState->worldPos
     else
         worldPos = nullptr
 
-    struct zSndPlayHandle* result = zSndSample::PlayA3D((&saveState->playerState->masterCommonData->sfxWeaponUp)[modeIndex], worldPos, sfxVolume, nullptr)
-    saveState->playerState->modeLoopSfxHandle[modeIndex] = result
+    struct zSndPlayHandle* result = zSndSample::PlayA3D((&self->playerState->masterCommonData->sfxWeaponUp)[modeIndex], worldPos, sfxVolume, nullptr)
+    self->playerState->modeLoopSfxHandle[modeIndex] = result
     return result
 }
 
-// src/Battlesport/player.cpp: Starts the modal loop sound at modalSfxIndex from masterModalData->sfxEngine/modal SFX slots at the player's world position and stores the returned zSndPlayHandle in primaryModalState->modalSfxHandle[modalSfxIndex].
-0x4385f0 void __thiscall Player::StartModalLoopSfxHandle(struct zUtil_SaveGameState* saveState, int32_t modalSfxIndex, float sfxVolume)
+// Source: src/Battlesport/player.cpp -- zUtil_SaveGameState::StartModalLoopSfxHandle
+// Starts the modal loop sample at modalSfxIndex and stores the zSndPlayHandle in primaryModalState->modalSfxHandle.
+0x4385f0 void __thiscall zUtil_SaveGameState::StartModalLoopSfxHandle(struct zUtil_SaveGameState* self, int32_t modalSfxIndex, float sfxVolume)
 {
-    saveState->primaryModalState->modalSfxHandle[modalSfxIndex] = zSndSample::PlayA3D((&saveState->primaryModalState->masterModalData->sfxEngine)[modalSfxIndex], &saveState->playerState->worldPos, sfxVolume, nullptr)
+    self->primaryModalState->modalSfxHandle[modalSfxIndex] = zSndSample::PlayA3D((&self->primaryModalState->masterModalData->sfxEngine)[modalSfxIndex], &self->playerState->worldPos, sfxVolume, nullptr)
 }
 
-// Source: D:\Proj\Battlesport\player.cpp -- Player::EnsureMasterTypeLoopSfxHandle. Starts the requested master-type loop SFX only when no handle is active and the master common data has a configured sample.
-0x438630 void __thiscall Player::EnsureMasterTypeLoopSfxHandle(struct zUtil_SaveGameState* saveState, int32_t masterType, float sfxVolume)
+// Source: src/Battlesport/player.cpp -- zUtil_SaveGameState::EnsureMasterTypeLoopSfxHandle
+// Starts the requested master-type loop SFX only when no handle is active and the master common data has a configured sample.
+0x438630 void __thiscall zUtil_SaveGameState::EnsureMasterTypeLoopSfxHandle(struct zUtil_SaveGameState* self, int32_t masterType, float sfxVolume)
 {
-    struct PlayerState* playerState = saveState->playerState
+    struct PlayerState* playerState = self->playerState
 
     if (playerState->modeLoopSfxHandle[masterType] == 0 && (&playerState->masterCommonData->sfxWeaponUp)[masterType] != 0)
-        Player::StartMasterTypeLoopSfxHandle(saveState, masterType, sfxVolume)
+        zUtil_SaveGameState::StartMasterTypeLoopSfxHandle(self, masterType, sfxVolume)
 }
 
-// Source: D:\Proj\Battlesport\player.cpp -- Player::StopMasterTypeLoopSfxHandle. Stops and clears the requested master-type loop SFX handle if one is active.
-0x438660 void __thiscall Player::StopMasterTypeLoopSfxHandle(struct zUtil_SaveGameState* saveState, int32_t modeIndex)
+// Source: src/Battlesport/player.cpp -- zUtil_SaveGameState::StopMasterTypeLoopSfxHandle
+// Stops and clears the requested master-type loop SFX handle if one is active.
+0x438660 void __thiscall zUtil_SaveGameState::StopMasterTypeLoopSfxHandle(struct zUtil_SaveGameState* self, int32_t modeIndex)
 {
-    struct zSndPlayHandle* ecx_1 = saveState->playerState->modeLoopSfxHandle[modeIndex]
+    struct zSndPlayHandle* ecx_1 = self->playerState->modeLoopSfxHandle[modeIndex]
 
     if (ecx_1 != 0)
         zSndPlayHandle::StopIfActive(ecx_1)
-        saveState->playerState->modeLoopSfxHandle[modeIndex] = 0
+        self->playerState->modeLoopSfxHandle[modeIndex] = 0
 }
 
-// Source: D:\Proj\Battlesport\player.cpp -- Player::StopModalLoopSfxHandle. Stops and clears the requested modal loop sound handle on the active modal state.
-0x438690 void __thiscall Player::StopModalLoopSfxHandle(struct zUtil_SaveGameState* saveState, int32_t modalSfxIndex)
+// Source: src/Battlesport/player.cpp -- zUtil_SaveGameState::StopModalLoopSfxHandle
+// Stops and clears the requested modal loop sound handle on the active modal state.
+0x438690 void __thiscall zUtil_SaveGameState::StopModalLoopSfxHandle(struct zUtil_SaveGameState* self, int32_t modalSfxIndex)
 {
-    struct zSndPlayHandle* ecx_1 = saveState->primaryModalState->modalSfxHandle[modalSfxIndex]
+    struct zSndPlayHandle* ecx_1 = self->primaryModalState->modalSfxHandle[modalSfxIndex]
 
     if (ecx_1 != 0)
         zSndPlayHandle::StopIfActive(ecx_1)
-        saveState->primaryModalState->modalSfxHandle[modalSfxIndex] = 0
+        self->primaryModalState->modalSfxHandle[modalSfxIndex] = 0
 }
 
-// Likely source: src/Battlesport/player.cpp
-// Starts, stops, and updates the player's modal engine/external/idle loop SFX handles, blending pitch and enable scales from speed, throttle, and damage state. BN still renders the clamp and blend math through x87 status-word temporaries.
-0x4386c0 void __thiscall Player::UpdateModalLoopSfx(struct zUtil_SaveGameState* saveState, int32_t enabled)
+// Source: src/Battlesport/player.cpp -- zUtil_SaveGameState::UpdateModalLoopSfx
+// Starts, stops, and updates modal engine/external/idle loop SFX handles. The [ebp+8] slot is the enabled argument at entry and later reused as float scratch/idleLoopEnableLevel; BN still renders the x87 clamp/blend math through status-word temporaries.
+0x4386c0 void __thiscall zUtil_SaveGameState::UpdateModalLoopSfx(struct zUtil_SaveGameState* self, int32_t enabled)
 {
-    struct zUtil_SaveGameState* saveState_1 = saveState
+    struct zUtil_SaveGameState* self_1 = self
 
     if (enabled == 0)
-        Player::StopModalLoopSfxHandle(saveState, 2)
-        Player::StopModalLoopSfxHandle(saveState, 0)
-        Player::StopModalLoopSfxHandle(saveState, 1)
-        Player::StopMasterTypeLoopSfxHandle(saveState, 3)
+        zUtil_SaveGameState::StopModalLoopSfxHandle(self, 2)
+        zUtil_SaveGameState::StopModalLoopSfxHandle(self, 0)
+        zUtil_SaveGameState::StopModalLoopSfxHandle(self, 1)
+        zUtil_SaveGameState::StopMasterTypeLoopSfxHandle(self, 3)
         return
 
-    struct PlayerModalState* primaryModalState_1 = saveState->primaryModalState
+    struct PlayerModalState* primaryModalState_1 = self->primaryModalState
 
     if (primaryModalState_1->modalSfxHandle[0] == 0)
         if (primaryModalState_1->masterModalData->sfxEngine != 0)
-            Player::StartModalLoopSfxHandle(saveState, 0, 0f)
+            zUtil_SaveGameState::StartModalLoopSfxHandle(self, 0, 0f)
 
-        if (saveState->primaryModalState->masterModalData->sfxExternal != 0)
-            Player::StartModalLoopSfxHandle(saveState, 1, 0f)
+        if (self->primaryModalState->masterModalData->sfxExternal != 0)
+            zUtil_SaveGameState::StartModalLoopSfxHandle(self, 1, 0f)
 
-        if (saveState->primaryModalState->masterModalData->sfxIdle != 0)
-            Player::StartModalLoopSfxHandle(saveState, 2, 0f)
+        if (self->primaryModalState->masterModalData->sfxIdle != 0)
+            zUtil_SaveGameState::StartModalLoopSfxHandle(self, 2, 0f)
 
         return
 
-    struct PlayerState* playerState = saveState->playerState
+    struct PlayerState* playerState = self->playerState
     long double x87_r7_3
 
     if (playerState->slipSfxActive != 0 || playerState->airborneFlag != 0 || playerState->damageProtectionActive != 0)
         float eax_8 = _ftol_import_thunk((g_FrameDeltaTimeSec * -2.5f * 12102200f).q) + 0x3f800000
-        x87_r7_3 = fabs(saveState->playerState->throttleInputCopy) * (1f - eax_8) + eax_8 * saveState->modeLoopBlend
+        x87_r7_3 = fabs(self->playerState->throttleInputCopy) * (1f - eax_8) + eax_8 * self->modeLoopBlend
     else
         x87_r7_3 = fabs(playerState->localVel.z) / primaryModalState_1->masterModalData->maxSpeed
 
     // BN x87 limitation: this stores the clamped modeLoopBlend blended from speed and throttle/damage state.
-    saveState->modeLoopBlend = x87_r7_3
-    long double x87_r7_10 = saveState->modeLoopBlend
+    self->modeLoopBlend = x87_r7_3
+    long double x87_r7_10 = self->modeLoopBlend
     long double temp1_1 = 1f
     x87_r7_10 - temp1_1
     playerState.w = (x87_r7_10 < temp1_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_10, temp1_1) ? 1 : 0) << 0xa | (x87_r7_10 == temp1_1 ? 1 : 0) << 0xe
 
     if ((playerState:1.b & 0x41) != 0)
-        long double x87_r7_11 = saveState->modeLoopBlend
+        long double x87_r7_11 = self->modeLoopBlend
         long double temp2_1 = 0f
         x87_r7_11 - temp2_1
         playerState.w = (x87_r7_11 < temp2_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_11, temp2_1) ? 1 : 0) << 0xa | (x87_r7_11 == temp2_1 ? 1 : 0) << 0xe
 
         if ((playerState:1.b & 1) != 0)
-            saveState->modeLoopBlend = 0f
+            self->modeLoopBlend = 0f
     else
-        saveState->modeLoopBlend = 1f
+        self->modeLoopBlend = 1f
 
-    struct PlayerModalState* primaryModalState = saveState->primaryModalState
+    struct PlayerModalState* primaryModalState = self->primaryModalState
     struct zSndPlayHandle* ecx_9 = primaryModalState->modalSfxHandle[2]
 
     if (ecx_9 != 0)
         struct zSndPlayHandle* var_10_1 = ecx_9
-        int32_t var_10_3 = zSndPlayHandle::SetFreqScaled(ecx_9, primaryModalState->masterModalData->sfxPitchScale * saveState->modeLoopBlend)
-        zSndPlayHandle::SetEnableScale(saveState->primaryModalState->modalSfxHandle[2], 1f - saveState->modeLoopBlend)
-        zSndPlayHandle::Update3DDispatch(saveState->primaryModalState->modalSfxHandle[2], &saveState->playerState->worldPos, nullptr, 0)
+        int32_t var_10_3 = zSndPlayHandle::SetFreqScaled(ecx_9, primaryModalState->masterModalData->sfxPitchScale * self->modeLoopBlend)
+        zSndPlayHandle::SetEnableScale(self->primaryModalState->modalSfxHandle[2], 1f - self->modeLoopBlend)
+        zSndPlayHandle::Update3DDispatch(self->primaryModalState->modalSfxHandle[2], &self->playerState->worldPos, nullptr, 0)
 
-    struct PlayerModalState* primaryModalState_2 = saveState->primaryModalState
+    struct PlayerModalState* primaryModalState_2 = self->primaryModalState
     struct PlayerMasterModalData* masterModalData = primaryModalState_2->masterModalData
-    long double x87_r7_18 = masterModalData->sfxVolumeScale * saveState->modeLoopBlend - -0.699999988f
+    long double x87_r7_18 = masterModalData->sfxVolumeScale * self->modeLoopBlend - -0.699999988f
     long double temp3_1 = 1f
     x87_r7_18 - temp3_1
     primaryModalState.w = (x87_r7_18 < temp3_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_18, temp3_1) ? 1 : 0) << 0xa | (x87_r7_18 == temp3_1 ? 1 : 0) << 0xe
@@ -43870,14 +43901,14 @@
         float idleLoopEnableLevel = 1f
 
     struct PlayerModalState* primaryModalState_3 = primaryModalState_2
-    zSndPlayHandle::SetFreqScaled(primaryModalState_2->modalSfxHandle[0], masterModalData->sfxPitchScale * saveState->modeLoopBlend)
-    zSndPlayHandle::SetEnableScale(saveState->primaryModalState->modalSfxHandle[0], enabled)
-    zSndPlayHandle::Update3DDispatch(saveState->primaryModalState->modalSfxHandle[0], &saveState->playerState->worldPos, nullptr, 0)
-    struct zSndPlayHandle* ecx_18 = saveState->primaryModalState->modalSfxHandle[1]
+    zSndPlayHandle::SetFreqScaled(primaryModalState_2->modalSfxHandle[0], masterModalData->sfxPitchScale * self->modeLoopBlend)
+    zSndPlayHandle::SetEnableScale(self->primaryModalState->modalSfxHandle[0], enabled)
+    zSndPlayHandle::Update3DDispatch(self->primaryModalState->modalSfxHandle[0], &self->playerState->worldPos, nullptr, 0)
+    struct zSndPlayHandle* ecx_18 = self->primaryModalState->modalSfxHandle[1]
 
     if (ecx_18 != 0)
-        zSndPlayHandle::SetEnableScale(ecx_18, saveState->modeLoopBlend)
-        zSndPlayHandle::Update3DDispatch(saveState->primaryModalState->modalSfxHandle[1], &saveState->playerState->worldPos, nullptr, 0)
+        zSndPlayHandle::SetEnableScale(ecx_18, self->modeLoopBlend)
+        zSndPlayHandle::Update3DDispatch(self->primaryModalState->modalSfxHandle[1], &self->playerState->worldPos, nullptr, 0)
 
     // [comments not attached to rendered lines]
     // [comment @ 0x438898]
@@ -44528,7 +44559,7 @@
             HudUi::ShowTopMessageLine(zLoc::GetMessageString(0x917), 5f)
             return
 
-    Player::StartMasterTypeLoopSfxHandle(saveState, 2, 1f)
+    zUtil_SaveGameState::StartMasterTypeLoopSfxHandle(saveState, 2, 1f)
     Player::ApplyPrimaryWeaponSwitch(saveState, oldController, newController)
     HudUi::ShowTopMessageLine(newController->optCatalogEntry->description, 5f)
     struct PlayerGunFireController* activePrimaryGunController = g_GameStateOrMapTable->playerState->activePrimaryGunController
@@ -44552,7 +44583,7 @@
         playerState->altGunTransitionController = newController
     else
         if (saveState == g_GameStateOrMapTable)
-            Player::StartMasterTypeLoopSfxHandle(saveState, 0, 1f)
+            zUtil_SaveGameState::StartMasterTypeLoopSfxHandle(saveState, 0, 1f)
 
         playerState->altGunTransitionState = 4
         playerState->altGunTransitionController = previousController
@@ -44682,7 +44713,7 @@
             point.y = esi->fxOffsetWorld.y
             point.z = esi->fxOffsetWorld.z
             point.y = point.y - -3f
-            int32_t eax_15 = Player::HasLineOfSightFromCameraTarget(esi->rootNode, &point, 1)
+            int32_t eax_15 = AINet::HasLineOfSightFromCameraTarget(esi->rootNode, &point, 1)
             esi->spawnStateInitialized = eax_15
 
             if (eax_15 != 0 && esi->recentHitMarkerHandle != 0)
@@ -44690,7 +44721,7 @@
                 esi->recentHitExpireTime = g_Time_AccumulatedTimeSec - -3f
         else if (trackKind_1 == HUD_SENSOR_TRACK_KIND_TURRET)
             void* payload_1 = eax_12->payload
-            *(payload_1 + 4) = Player::HasLineOfSightFromCameraTarget(*(payload_1 + 8), payload_1 + 0x1c, 2)
+            *(payload_1 + 4) = AINet::HasLineOfSightFromCameraTarget(*(payload_1 + 8), payload_1 + 0x1c, 2)
 
         if (i_2 s> 0)
             struct HudUiMgrSensor_TrackNode* (* edi)[0x64] = &candidateTrackNodes
@@ -44957,7 +44988,7 @@
                     if ((eax:1.b & 0x41) == 0)
                         playerState->altGunTransitionTimerA = 0f
                         playerState->altGunTransitionState = 4
-                        Player::StartMasterTypeLoopSfxHandle(saveState, 0, 1f)
+                        zUtil_SaveGameState::StartMasterTypeLoopSfxHandle(saveState, 0, 1f)
                 case 1
                     long double x87_r7_4 = g_FrameDeltaTimeSec + playerState->altGunTransitionTimerA
                     long double x87_r5_2 = x87_r7_4 * 4f
@@ -45035,9 +45066,9 @@
                         zClass_Object3D::gwObject3DSetPosition(activeAltGunController->attachNodePrimary, activeAltGunController->attachPosX, activeAltGunController->attachPosY - 0.400000006f, activeAltGunController->attachPosZ)
                         zClass_Object3D::gwObject3DSetScale(activeAltGunController->attachNodePrimary, 1f, 0.600000024f, 0.600000024f)
                         playerState->altGunTransitionState = 0x20
-                        Player::StartMasterTypeLoopSfxHandle(saveState, 0, 1f)
+                        zUtil_SaveGameState::StartMasterTypeLoopSfxHandle(saveState, 0, 1f)
                     else
-                        Player::StartMasterTypeLoopSfxHandle(saveState, 2, 1f)
+                        zUtil_SaveGameState::StartMasterTypeLoopSfxHandle(saveState, 2, 1f)
                         int32_t ecx_15
                         ecx_15.b = activeAltGunController->weaponSideIndex == 0
                         int32_t edx_8 = ecx_15 * 0x15
@@ -45986,11 +46017,11 @@
         DamageFeedback::SetIntensityScalar(masterCommonData->invMaxHealth * playerState->statusMeterValue)
 
         if (playerState->lifecycle.state == PLAYER_LIFECYCLE_AI && playerState->topLevelState != PLAYER_AI_MODE2_TOP_STEERING)
-            Player::AiEnterMode2SteeringPursuit(saveState)
+            AINet::AiEnterMode2SteeringPursuit(saveState)
             struct AINet* aiNet = playerState->aiNet
 
             if (aiNet != 0 && aiNet->attackBuddyNetId != 0)
-                Player::AiAlertAttackBuddies(saveState)
+                AINet::AiAlertAttackBuddies(saveState)
 
             saveState->playerState->recentHitFlag = 1
             saveState->playerState->recentHitExpireTime = g_Time_AccumulatedTimeSec - -5f
@@ -46024,9 +46055,9 @@
     playerState->statusMeterValue = 0f
 
     if (zSnd::GetAudioApiOption() == zSndBackend_A3D)
-        Player::UpdateModalLoopSfx(saveState, 0)
+        zUtil_SaveGameState::UpdateModalLoopSfx(saveState, 0)
 
-    Player::AiDiscardNegativeBranchPathNodes(saveState)
+    AINet::AiDiscardNegativeBranchPathNodes(saveState)
     Player::StartDestroyedStateVehicleEffect(saveState, Player::ClearDestroyedRespawnEffectHandleCallback)
     Player::ResetAltGunRuntimeState(saveState)
 
@@ -46196,7 +46227,7 @@
     if (saveState != g_GameStateOrMapTable)
         return
 
-    Player::UpdateModalLoopSfx(saveState, 0)
+    zUtil_SaveGameState::UpdateModalLoopSfx(saveState, 0)
 
     if (playerState->cameraState == PLAYER_CAMERA_STATE_PROJECTILE_ATTACHED)
         Player::ApplyCameraState(PLAYER_CAMERA_STATE_RESTORE_PREVIOUS)
@@ -47508,7 +47539,7 @@
 0x43d130 int32_t __fastcall WestwoodOnlineUpgradeApi::CreateInstanceAndLoadConfig(HINSTANCE moduleHandle)
 {
     CoInitialize(nullptr)
-    __builtin_memcpy(&g_WestwoodOnlineUpgradeApiInitState, "\x64\x00\x00\x00", 4)
+    g_WestwoodOnlineUpgradeApiInitState.structSize = 0x64
     g_WestwoodOnlineUpgradeApiInitReservedZero = 0
     WestwoodOnlineUpgradeApiInitState::Init(&g_WestwoodOnlineUpgradeApiInitState, nullptr, moduleHandle)
     AfxEnableControlContainer(nullptr)
@@ -48279,7 +48310,7 @@
     CWnd::EnableWindow(&self->m_querySessionsByNameButton, 0)
     CWnd::EnableWindow(&self->m_queueVisibleSessionRequestsButton, 0)
     struct WestwoodOnlineUpgradeApi* pWestwoodOnlineUpgradeApi_2 = g_pWestwoodOnlineUpgradeApi
-    return pWestwoodOnlineUpgradeApi_2->m_vftable->RequestListMode(pWestwoodOnlineUpgradeApi_2, g_WestwoodOnlineUpgradeActiveListMode[0].d, 1)
+    return pWestwoodOnlineUpgradeApi_2->m_vftable->RequestListMode(pWestwoodOnlineUpgradeApi_2, g_WestwoodOnlineUpgradeActiveListMode, 1)
 }
 
 // Original file: D:\Proj\Battlesport\WestwoodOnlineUpgradeDialog.cpp
@@ -48399,7 +48430,7 @@
 0x43e680 int32_t __thiscall WestwoodOnlineUpgradeDialog::RequestActiveListMode(struct WestwoodOnlineUpgradeDialog* self)
 {
     struct WestwoodOnlineUpgradeApi* pWestwoodOnlineUpgradeApi_1 = g_pWestwoodOnlineUpgradeApi
-    return pWestwoodOnlineUpgradeApi_1->m_vftable->RequestListMode(pWestwoodOnlineUpgradeApi_1, g_WestwoodOnlineUpgradeActiveListMode[0].d, 1)
+    return pWestwoodOnlineUpgradeApi_1->m_vftable->RequestListMode(pWestwoodOnlineUpgradeApi_1, g_WestwoodOnlineUpgradeActiveListMode, 1)
 }
 
 // Original file: D:\Proj\Battlesport\WestwoodOnlineUpgradeDialog.cpp. BN keeps the MSVC SEH frame and inline strcpy/strlen sequences used for validation MessageBox strings.
@@ -48455,7 +48486,7 @@
 
                 WestwoodOnlineUpgradeDialog::AppendStatusTextFmt(pWestwoodOnlineUpgradeDialog_1, format)
 
-            g_WestwoodOnlineUpgradeActiveListMode[0].d = 0
+            g_WestwoodOnlineUpgradeActiveListMode = 0
         else
             char* edi_7 = zLoc::GetMessageString(0x3003)
             int32_t i = 0xffffffff
@@ -48592,7 +48623,7 @@
             CString::operator=(&self->m_sessionName, &sessionNameText)
             CWnd::UpdateData(self, 0)
             WestwoodOnlineUpgradeDialog::ClearStatusList(self)
-            g_WestwoodOnlineUpgradeActiveListMode[0].d = 0x11
+            g_WestwoodOnlineUpgradeActiveListMode = 0x11
             CWnd::EnableWindow(&self->m_querySessionsByNameButton, 1)
             CWnd::EnableWindow(&self->m_queueVisibleSessionRequestsButton, 1)
         else
@@ -48782,7 +48813,7 @@
 0x43ee40 int32_t WestwoodOnlineUpgradeDialog::RequestListMode0()
 {
     struct WestwoodOnlineUpgradeApi* pWestwoodOnlineUpgradeApi_1 = g_pWestwoodOnlineUpgradeApi
-    g_WestwoodOnlineUpgradeActiveListMode[0].d = 0
+    g_WestwoodOnlineUpgradeActiveListMode = 0
     return pWestwoodOnlineUpgradeApi_1->m_vftable->RequestListMode(pWestwoodOnlineUpgradeApi_1, 0, 0)
 }
 
@@ -48790,7 +48821,7 @@
 0x43ee60 int32_t WestwoodOnlineUpgradeDialog::RequestListMode11()
 {
     struct WestwoodOnlineUpgradeApi* pWestwoodOnlineUpgradeApi_1 = g_pWestwoodOnlineUpgradeApi
-    g_WestwoodOnlineUpgradeActiveListMode[0].d = 0x11
+    g_WestwoodOnlineUpgradeActiveListMode = 0x11
     return pWestwoodOnlineUpgradeApi_1->m_vftable->RequestListMode(pWestwoodOnlineUpgradeApi_1, 0x11, 1)
 }
 
@@ -48884,13 +48915,14 @@
     var_4.b = 1
     g_pWestwoodOnlineUpgradeDialog = &var_4d8
     CZRecoilFrame::SetMenuBarVisibility(RecoilApp::GetMainWnd(&g_RecoilApp), 0)
-    g_WestwoodOnlineUpgradeSelectedMissionIndex[0].d = 0xffffffff
+    struct WestwoodOnlineUpgradeDialog* pWestwoodOnlineUpgradeDialog_1 = g_pWestwoodOnlineUpgradeDialog
+    g_WestwoodOnlineUpgradeSelectedMissionIndex = 0xffffffff
     struct CDialog* entry_esi
-    g_pWestwoodOnlineUpgradeDialog->vtable->DoModal(entry_esi)
+    pWestwoodOnlineUpgradeDialog_1->vtable->DoModal(entry_esi)
     CZRecoilFrame::SetMenuBarVisibility(RecoilApp::GetMainWnd(&g_RecoilApp), 1)
-    int32_t eax_5 = g_WestwoodOnlineUpgradeSelectedMissionIndex[0].d
+    int32_t WestwoodOnlineUpgradeSelectedMissionIndex_1 = g_WestwoodOnlineUpgradeSelectedMissionIndex
 
-    if (eax_5 == 0xffffffff)
+    if (WestwoodOnlineUpgradeSelectedMissionIndex_1 == 0xffffffff)
         var_4.b = 0
         CDialog::~CDialog(&var_538)
         int32_t var_4_3 = 0x29
@@ -48938,7 +48970,7 @@
         fsbase->NtTib.ExceptionList = ExceptionList
         return 0
 
-    *selectedMissionIndexOut = eax_5
+    *selectedMissionIndexOut = WestwoodOnlineUpgradeSelectedMissionIndex_1
     var_4.b = 0
     CDialog::~CDialog(&var_538)
     int32_t var_4_1 = 0x15
@@ -49118,7 +49150,7 @@
         WestwoodOnlineUpgradeRefCountAndLock::Init(&eventSink->m_refCount)
         var_8_1.b = 2
         eventSink->m_vftable = &g_WestwoodOnlineUpgradeApiEventSink_Vtbl
-        InterlockedIncrement(&g_WestwoodOnlineUpgradeEventSinkLiveCount)
+        InterlockedIncrement(&g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount)
 
     if (eventSink != 0)
         result = 0
@@ -49230,7 +49262,7 @@
     int32_t ecx_5 = not.d(i)
     int32_t esi_4
     int32_t edi_2
-    edi_2, esi_4 = __builtin_memcpy(&g_WestwoodOnlineUpgradeSelectedBootstrapServer[0xe4], m_pchData - ecx_5, ecx_5 & 0xfffffffc)
+    edi_2, esi_4 = __builtin_memcpy(&g_WestwoodOnlineUpgradeSelectedBootstrapServer.m_playerName, m_pchData - ecx_5, ecx_5 & 0xfffffffc)
     __builtin_memcpy(edi_2, esi_4, ecx_5 & 3)
     CString::~CString(&__return_addr)
     char* m_pchData_1 = WestwoodOnlineUpgradeDialog::GetSelectedProfileConnectString(g_pWestwoodOnlineUpgradeDialog, &__return_addr)->m_pchData
@@ -49247,7 +49279,7 @@
     int32_t ecx_11 = not.d(i_1)
     int32_t esi_6
     int32_t edi_4
-    edi_4, esi_6 = __builtin_memcpy(&g_WestwoodOnlineUpgradeSelectedBootstrapServer[0xee], m_pchData_1 - ecx_11, ecx_11 & 0xfffffffc)
+    edi_4, esi_6 = __builtin_memcpy(&g_WestwoodOnlineUpgradeSelectedBootstrapServer.m_connectString, m_pchData_1 - ecx_11, ecx_11 & 0xfffffffc)
     __builtin_memcpy(edi_4, esi_6, ecx_11 & 3)
     CString::~CString(&__return_addr)
     SetEvent(g_WestwoodOnlineUpgradeInitWaitEvents[0])
@@ -49395,7 +49427,7 @@
             struct WestwoodOnlineUpgradeApi* pWestwoodOnlineUpgradeApi_1 = g_pWestwoodOnlineUpgradeApi
             pWestwoodOnlineUpgradeApi_1->m_vftable->SetQueryMode(pWestwoodOnlineUpgradeApi_1, 0x11)
             struct WestwoodOnlineUpgradeApi* pWestwoodOnlineUpgradeApi_2 = g_pWestwoodOnlineUpgradeApi
-            g_WestwoodOnlineUpgradeActiveListMode[0].d = 0x11
+            g_WestwoodOnlineUpgradeActiveListMode = 0x11
             int32_t outCount
             pWestwoodOnlineUpgradeApi_2->m_vftable->GetQueryResultCount(pWestwoodOnlineUpgradeApi_2, &outCount)
             int32_t outCount_1 = outCount
@@ -49589,8 +49621,9 @@
         g_WestwoodOnlineUpgradeCreateSessionFromQueryFlag = 0
         WestwoodOnlineUpgradeDialog::EnableQueryControls(dialog, 0)
         struct WestwoodOnlineUpgradeApi* api = g_pWestwoodOnlineUpgradeApi
+        int32_t activeListMode = g_WestwoodOnlineUpgradeActiveListMode
         g_WestwoodOnlineUpgradeCachedBrowseRecord.m_sessionName[0] = 0
-        api->m_vftable->RequestListMode(api, g_WestwoodOnlineUpgradeActiveListMode[0].d, 1)
+        api->m_vftable->RequestListMode(api, activeListMode, 1)
         return 0
 
     char statusTextBuffer[0x80]
@@ -49621,7 +49654,7 @@
 
         if ((sessionRequest->m_rowFlags.b & 1) == 0)
             struct WestwoodOnlineUpgradeApi* pWestwoodOnlineUpgradeApi_2 = g_pWestwoodOnlineUpgradeApi
-            pWestwoodOnlineUpgradeApi_2->m_vftable->RequestListMode(pWestwoodOnlineUpgradeApi_2, g_WestwoodOnlineUpgradeActiveListMode[0].d, 1)
+            pWestwoodOnlineUpgradeApi_2->m_vftable->RequestListMode(pWestwoodOnlineUpgradeApi_2, g_WestwoodOnlineUpgradeActiveListMode, 1)
 
             if (browseRecord->m_recordFlags != 0 && g_WestwoodOnlineUpgradeCreateSessionFromQueryFlag == 1)
                 WestwoodOnlineUpgradeDialog::UpdateSessionListQueryFromControls()
@@ -49734,9 +49767,10 @@
         __builtin_memcpy(edi_13, esi_6, ecx_10 & 3)
         WestwoodOnlineUpgradeDialog::AppendStatusTextFmt(g_pWestwoodOnlineUpgradeDialog, &statusTextBuffer)
     struct WestwoodOnlineUpgradeApi* pWestwoodOnlineUpgradeApi_1 = g_pWestwoodOnlineUpgradeApi
+    int32_t activeListMode = g_WestwoodOnlineUpgradeActiveListMode
     g_WestwoodOnlineUpgradeCreateSessionFromQueryFlag = 0
     g_WestwoodOnlineUpgradeCachedBrowseRecord.m_sessionName[0] = 0
-    pWestwoodOnlineUpgradeApi_1->m_vftable->RequestListMode(pWestwoodOnlineUpgradeApi_1, g_WestwoodOnlineUpgradeActiveListMode[0].d, 1)
+    pWestwoodOnlineUpgradeApi_1->m_vftable->RequestListMode(pWestwoodOnlineUpgradeApi_1, activeListMode, 1)
     return 0
 }
 
@@ -49765,7 +49799,7 @@
         WestwoodOnlineUpgradeDialog::AppendConnectStatusAndRefreshList(g_pWestwoodOnlineUpgradeDialog, &browseRecord->m_sessionName)
 
     struct WestwoodOnlineUpgradeApi* apiForFailureCancel = g_pWestwoodOnlineUpgradeApi
-    apiForFailureCancel->m_vftable->RequestListMode(apiForFailureCancel, g_WestwoodOnlineUpgradeActiveListMode[0].d, 1)
+    apiForFailureCancel->m_vftable->RequestListMode(apiForFailureCancel, g_WestwoodOnlineUpgradeActiveListMode, 1)
     return 0
 }
 
@@ -50005,7 +50039,7 @@
             int32_t var_19c_1 = 0
             int32_t timerGoalValue_1 = timerGoalValue
             HudSensorTracker::SetRuntimeTimerSecAndGoalValue(&g_HudSensorTracker, selectedPlayerName.m_pchData.q * 60f, timerGoalValue)
-            g_WestwoodOnlineUpgradeSelectedMissionIndex[0].d = statusFields.eventCode
+            g_WestwoodOnlineUpgradeSelectedMissionIndex = statusFields.eventCode
 
         if (showConnectionFailureMessage != 0)
             char* edi_3 = zLoc::GetMessageString(0x3003)
@@ -50551,9 +50585,10 @@
     zLoc::FormatMessage(&statusMessageText, 0x80, 0x302d, &browseRecord->m_sessionName, &sessionRequest->m_sessionName)
     WestwoodOnlineUpgradeDialog::AppendStatusTextFmt(g_pWestwoodOnlineUpgradeDialog, &statusMessageText)
     struct WestwoodOnlineUpgradeApi* pWestwoodOnlineUpgradeApi_2 = g_pWestwoodOnlineUpgradeApi
+    int32_t WestwoodOnlineUpgradeActiveListMode_1 = g_WestwoodOnlineUpgradeActiveListMode
     g_WestwoodOnlineUpgradePendingSessionResultCount = 0
     g_WestwoodOnlineUpgradeCachedBrowseRecord.m_sessionName[0] = 0
-    pWestwoodOnlineUpgradeApi_2->m_vftable->RequestListMode(pWestwoodOnlineUpgradeApi_2, g_WestwoodOnlineUpgradeActiveListMode[0].d, 1)
+    pWestwoodOnlineUpgradeApi_2->m_vftable->RequestListMode(pWestwoodOnlineUpgradeApi_2, WestwoodOnlineUpgradeActiveListMode_1, 1)
     CWnd::SendDlgItemMessageA(g_pWestwoodOnlineUpgradeDialog, 0x471, 0x184, 0, 0)
     struct WestwoodOnlineUpgradeDialog* pWestwoodOnlineUpgradeDialog_1 = g_pWestwoodOnlineUpgradeDialog
     g_WestwoodOnlineUpgradeCreateSessionFromQueryFlag = 0
@@ -50601,7 +50636,7 @@
     self->m_vftable = &g_WestwoodOnlineUpgradeApiEventSink_Vtbl
     int32_t var_4 = 0
     self->m_refCount = 1
-    InterlockedDecrement(&g_WestwoodOnlineUpgradeEventSinkLiveCount)
+    InterlockedDecrement(&g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount)
     int32_t esi_1 = neg.d(self)
     int32_t var_4_1 = 0xffffffff
     DeleteCriticalSection((sbb.d(esi_1, esi_1, self != 0) & &self->m_refCount) + 4)
@@ -51250,7 +51285,7 @@
         WestwoodOnlineUpgradeRefCountAndLock::Init(&eventSink->m_refCount)
         var_8_1.b = 2
         eventSink->m_vftable = &g_WestwoodOnlineUpgradeDownloadEventSink_Vtbl
-        InterlockedIncrement(&g_WestwoodOnlineUpgradeEventSinkLiveCount)
+        InterlockedIncrement(&g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount)
 
     if (eventSink != 0)
         result = 0
@@ -51370,7 +51405,7 @@
     self->m_vftable = &g_WestwoodOnlineUpgradeDownloadEventSink_Vtbl
     int32_t var_4 = 0
     self->m_refCount = 1
-    InterlockedDecrement(&g_WestwoodOnlineUpgradeEventSinkLiveCount)
+    InterlockedDecrement(&g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount)
     int32_t esi_1 = neg.d(self)
     int32_t var_4_1 = 0xffffffff
     DeleteCriticalSection((sbb.d(esi_1, esi_1, self != 0) & &self->m_refCount) + 4)
@@ -61669,7 +61704,7 @@
 }
 
 // Original file: GameZRecoil/zClass/Object3d.c
-0x44db00 void __fastcall zClass_Object3D::DeleteNode(struct zClass_Node* self)
+0x44db00 int32_t __fastcall zClass_Object3D::DeleteNode(struct zClass_Node* self)
 {
     return zClass_Class::TryFreeNode(self) __tailcall
 }
@@ -63298,7 +63333,7 @@
                         return zClass_Light::DeleteNode(self)
                 case ZCLASS_NODE_SOUND
                     while (self->listCountB s> 0)
-                        result = zClass_Sound::RemoveChild(self, *self->listB)
+                        result = zClass_Sound::RemoveChild(self, self->listB->ptr)
 
                         if (result != 0)
                             return result
@@ -90155,7 +90190,7 @@
 // Original file: GameZRecoil/zImage/zimg_texture.cpp
 0x46d4c0 struct zVid_Image** __fastcall zImage::GetDefaultImageRefPtr() __pure
 {
-    return &g_zImage_DefaultImagePtr
+    return &g_zImage_DefaultTexDirEntry
 }
 
 // Original file: Battlesport/zimage.cpp
@@ -90225,7 +90260,7 @@
     __builtin_memset(&g_zImage_TexDirEntries, 0, 0x24000)
 
     if (g_zVideo_ActiveRendererPath != ZVID_RENDERER_BACKEND_SOFTWARE)
-        g_zImage_DefaultTextureRecord = g_zVideo_pfnCreateTextureRecord("DEFAULT_TEXTURE", &g_zImage_DefaultImage, 0, 0, 0)
+        g_zImage_DefaultTexDirEntry.texture = g_zVideo_pfnCreateTextureRecord(&g_zImage_DefaultTexDirEntry.baseName, &g_zImage_DefaultImage, 0, 0, 0)
 
     return 1
 }
@@ -98410,8 +98445,8 @@
                 zMath::MatTransformPointBatchInPlace(gTransformedVerts, di->vertCount)
 
             int32_t vertIndex = 0
-            uint32_t edi_2
-            edi_2.w = di->entries->materialRef->packedColor
+            int32_t packedColor
+            packedColor.w = di->entries->materialRef->packedColor
 
             if (di->vertCount s> 0)
                 int32_t var_c = 0
@@ -98457,10 +98492,10 @@
 
                                     if ((((x87_r7_12 < temp19_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_12, temp19_1) ? 1 : 0) << 0xa | (x87_r7_12 == temp19_1 ? 1 : 0) << 0xe):1.b & 0x41) != 0)
                                         if (zVideo_ActiveRendererPath_1 == ZVID_RENDERER_BACKEND_SOFTWARE)
-                                            zRndr_LensFlare::QueueProjectedSample(&var_3c, edi_2, nullptr)
+                                            zRndr_LensFlare::QueueProjectedSample(&var_3c, packedColor, nullptr)
                                         else
     // Indirect fastcall: ECX=&projectedPoint, EDX=packedColor16, stack pointCount=1; DD3D callee ignores pointCount.
-                                            g_zVideo_pfnDrawPointColor16(&var_3c, edi_2, 1)
+                                            g_zVideo_pfnDrawPointColor16(1)
 
                     int32_t vertIndex = &di_1->mode + 1
                     int32_t var_c_1 = gTransformedVerts_1 + 0xc
@@ -98515,11 +98550,11 @@
                     while (i_1 != 1)
                     di = di_1
                 else
-                    int32_t ecx_20 = vertCount_1 * 0xc
+                    int32_t ecx_19 = vertCount_1 * 0xc
                     int32_t esi_2
-                    int32_t edi_3
-                    edi_3, esi_2 = __builtin_memcpy(gTransformedVerts_4, verts_1, ecx_20 & 0xfffffffc)
-                    __builtin_memcpy(edi_3, esi_2, ecx_20 & 3)
+                    int32_t edi_2
+                    edi_2, esi_2 = __builtin_memcpy(gTransformedVerts_4, verts_1, ecx_19 & 0xfffffffc)
+                    __builtin_memcpy(edi_2, esi_2, ecx_19 & 3)
         else
             long double x87_r7_13 = di->blendScale
             gTransformedVerts_1 = x87_r7_13
@@ -98619,13 +98654,13 @@
                 int32_t eax_32 = *vertexIndices
                 vertexIndices = &vertexIndices[1]
                 int32_t eax_34 = gTransformedVerts_1 + eax_32 * 0xc
-                struct zClipVert* edi_7 = edx_24
+                struct zClipVert* edi_6 = edx_24
                 edx_24 = &edx_24[1]
                 i_2 = i_13
                 i_13 -= 1
-                edi_7->x = *eax_34
-                edi_7->y = *(eax_34 + 4)
-                edi_7->z = *(eax_34 + 8)
+                edi_6->x = *eax_34
+                edi_6->y = *(eax_34 + 4)
+                edi_6->z = *(eax_34 + 8)
             while (i_2 != 1)
             long double x87_r7_28 = g_Clip_PolyVertsScratch[2].x - g_Clip_PolyVertsScratch[1].x
             long double x87_r6_14 = g_Clip_PolyVertsScratch[2].y - g_Clip_PolyVertsScratch[1].y
@@ -98663,11 +98698,11 @@
                 struct zClipVert triClipVerts[0x3]
 
                 if ((outActiveLightState_1:1.b & 1) == 0)
-                    int32_t ecx_58
-                    ecx_58.w = materialRef->packedColor
+                    int32_t ecx_57
+                    ecx_57.w = materialRef->packedColor
                     int32_t esi_13 = 0
                     float outFade = 0f
-                    int32_t var_c_2 = ecx_58
+                    int32_t var_c_2 = ecx_57
 
                     if (outDepthFade != 0)
                         int32_t eax_78
@@ -98703,13 +98738,13 @@
                         struct zClipVert* eax_83 = &g_Clip_PolyVerts
                         long double x87_r7_80 = 0f
                         int32_t i_20 = i_23
-                        float* ecx_64 = &g_Clip_PolyVertsScratch[0x3f + i_23]
+                        float* ecx_63 = &g_Clip_PolyVertsScratch[0x3f + i_23]
                         int32_t i_3
 
                         do
-                            long double x87_r6_26 = eax_83->y * *ecx_64
-                            long double x87_r5_36 = ecx_64[1] * eax_83->x
-                            ecx_64 = eax_83
+                            long double x87_r6_26 = eax_83->y * *ecx_63
+                            long double x87_r5_36 = ecx_63[1] * eax_83->x
+                            ecx_63 = eax_83
                             eax_83 = &eax_83[1]
                             i_3 = i_20
                             i_20 -= 1
@@ -98815,15 +98850,15 @@
                         if (vertexCount_2 s> 0)
     // Attribute clear loop zeros g_Clip_PolyAttr0[i] and the adjacent g_Clip_PolyAttr1[i] array in one stride.
                             float* eax_38 = &g_Clip_PolyAttr0
-                            uint32_t ecx_33 = vertexCount_2
+                            uint32_t ecx_32 = vertexCount_2
                             uint32_t i_6
 
                             do
                                 eax_38[0x40] = 0
                                 *eax_38 = 0f
                                 eax_38 = &eax_38[1]
-                                i_6 = ecx_33
-                                ecx_33 -= 1
+                                i_6 = ecx_32
+                                ecx_32 -= 1
                             while (i_6 != 1)
 
                         int32_t outDepthFade_1 = outDepthFade
@@ -98858,12 +98893,12 @@
                             zRndr::CommitFogColorParamsIfChanged()
                             vertexCount_2 = var_8
 
-                    uint32_t ecx_40 = vertexCount_2 << 3
+                    uint32_t ecx_39 = vertexCount_2 << 3
                     materialRef.b = clipMask.b
                     int32_t esi_9
-                    int32_t edi_9
-                    edi_9, esi_9 = __builtin_memcpy(g_Clip_PolyUvs, entries_1->uvPairs, ecx_40 & 0xfffffffc)
-                    __builtin_memcpy(edi_9, esi_9, ecx_40 & 3)
+                    int32_t edi_8
+                    edi_8, esi_9 = __builtin_memcpy(g_Clip_PolyUvs, entries_1->uvPairs, ecx_39 & 0xfffffffc)
+                    __builtin_memcpy(edi_8, esi_9, ecx_39 & 3)
 
                     if (lightFlags == 0)
                         int32_t eax_65
@@ -98880,13 +98915,13 @@
                             struct zClipVert* eax_67 = &g_Clip_PolyVerts
                             long double x87_r7_60 = 0f
                             int32_t esi_11 = vertexCount
-                            float* ecx_51 = &g_Clip_PolyVertsScratch[0x3f + vertexCount]
+                            float* ecx_50 = &g_Clip_PolyVertsScratch[0x3f + vertexCount]
                             int32_t i_7
 
                             do
-                                long double x87_r6_23 = eax_67->y * *ecx_51
-                                long double x87_r5_34 = ecx_51[1] * eax_67->x
-                                ecx_51 = eax_67
+                                long double x87_r6_23 = eax_67->y * *ecx_50
+                                long double x87_r5_34 = ecx_50[1] * eax_67->x
+                                ecx_50 = eax_67
                                 eax_67 = &eax_67[1]
                                 i_7 = esi_11
                                 esi_11 -= 1
@@ -98936,14 +98971,14 @@
                                         if (vertexCount_1 s> 0)
     // Alt-clip remap loop walks zClipVert triplets as float x/y pairs; pointer arithmetic is the compiler's tight-loop form.
                                             float* eax_74 = &g_Clip_PolyVerts[0].y
-                                            int32_t ecx_54 = vertexCount_1
+                                            int32_t ecx_53 = vertexCount_1
                                             int32_t i_9
 
                                             do
                                                 long double x87_r7_72 = g_zClipAlt_RemapScaleX * eax_74[-1]
                                                 eax_74 = &eax_74[3]
-                                                i_9 = ecx_54
-                                                ecx_54 -= 1
+                                                i_9 = ecx_53
+                                                ecx_53 -= 1
                                                 eax_74[-4] = x87_r7_72 + g_zClipAlt_RemapBiasX
                                                 eax_74[-3] = g_zClipAlt_RemapScaleY * eax_74[-3] + g_zClipAlt_RemapBiasY
                                             while (i_9 != 1)
@@ -98968,13 +99003,13 @@
                             struct zClipVert* eax_50 = &g_Clip_PolyVerts
                             long double x87_r7_43 = 0f
                             int32_t i_19 = i_22
-                            float* ecx_46 = &g_Clip_PolyVertsScratch[0x3f + i_22]
+                            float* ecx_45 = &g_Clip_PolyVertsScratch[0x3f + i_22]
                             int32_t i_10
 
                             do
-                                long double x87_r6_20 = eax_50->y * *ecx_46
-                                long double x87_r5_32 = ecx_46[1] * eax_50->x
-                                ecx_46 = eax_50
+                                long double x87_r6_20 = eax_50->y * *ecx_45
+                                long double x87_r5_32 = ecx_45[1] * eax_50->x
+                                ecx_45 = eax_50
                                 eax_50 = &eax_50[1]
                                 i_10 = i_19
                                 i_19 -= 1
@@ -99151,8 +99186,8 @@
                 zMath::MatTransformPointBatchInPlace(gTransformedVerts, index->vertCount)
 
             int32_t var_38_2 = 0
-            uint32_t edi_2
-            edi_2.w = index->entries->materialRef->packedColor
+            int32_t packedColor
+            packedColor.w = index->entries->materialRef->packedColor
 
             if (index->vertCount s> 0)
                 int32_t var_3c = 0
@@ -99200,11 +99235,11 @@
                                     if ((((x87_r7_12 < temp22_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_12, temp22_1) ? 1 : 0) << 0xa | (x87_r7_12 == temp22_1 ? 1 : 0) << 0xe):1.b & 0x41) != 0)
                                         if (zVideo_ActiveRendererPath_1 == ZVID_RENDERER_BACKEND_SOFTWARE)
                                             gModel_RenderVertexAlphaEnabled_1 = nullptr
-                                            zRndr_LensFlare::QueueProjectedSample(&var_34, edi_2, gModel_RenderVertexAlphaEnabled_1)
+                                            zRndr_LensFlare::QueueProjectedSample(&var_34, packedColor, gModel_RenderVertexAlphaEnabled_1)
                                         else
                                             gModel_RenderVertexAlphaEnabled_1 = 1
     // Indirect fastcall: ECX=&projectedPoint, EDX=packedColor16, stack pointCount=1; DD3D callee ignores pointCount.
-                                            g_zVideo_pfnDrawPointColor16(&var_34, edi_2, gModel_RenderVertexAlphaEnabled_1)
+                                            g_zVideo_pfnDrawPointColor16(gModel_RenderVertexAlphaEnabled_1)
 
                     cond:5_1 = var_38_2 + 1 s< index->vertCount
                     var_38_2 += 1
@@ -99224,7 +99259,7 @@
         zMath::MatLoadView()
         gRndr_PerspectiveTextureEnabled = 0
 
-    float* var_28
+    void* var_28
     int32_t i_32
     int32_t pointEntryByteOffset
 
@@ -99262,11 +99297,11 @@
                     while (i_1 != 1)
                     index = index_1
                 else
-                    int32_t ecx_18 = vertCount_1 * 0xc
+                    int32_t ecx_17 = vertCount_1 * 0xc
                     int32_t esi_2
-                    int32_t edi_3
-                    edi_3, esi_2 = __builtin_memcpy(gTransformedVerts_6, verts_2, ecx_18 & 0xfffffffc)
-                    __builtin_memcpy(edi_3, esi_2, ecx_18 & 3)
+                    int32_t edi_2
+                    edi_2, esi_2 = __builtin_memcpy(gTransformedVerts_6, verts_2, ecx_17 & 0xfffffffc)
+                    __builtin_memcpy(edi_2, esi_2, ecx_17 & 3)
         else
             long double x87_r7_13 = index->blendScale
             long double temp4_1 = 0.0
@@ -99319,11 +99354,11 @@
                     while (i_2 != 1)
                     index = index_1
                 else
-                    int32_t ecx_23 = normalCount * 0xc
+                    int32_t ecx_22 = normalCount * 0xc
                     int32_t esi_3
-                    int32_t edi_4
-                    edi_4, esi_3 = __builtin_memcpy(gTransformedNormals_3, normals, ecx_23 & 0xfffffffc)
-                    __builtin_memcpy(edi_4, esi_3, ecx_23 & 3)
+                    int32_t edi_3
+                    edi_3, esi_3 = __builtin_memcpy(gTransformedNormals_3, normals, ecx_22 & 0xfffffffc)
+                    __builtin_memcpy(edi_3, esi_3, ecx_22 & 3)
 
                 zMath::MatTransformPointBatchInPlace(&var_34, 1)
                 struct zVec3* gTransformedNormals_2 = gTransformedNormals
@@ -99404,14 +99439,14 @@
     gClipRect_Primary.flags = arg2
     struct zDiEntry* entries = index->entries
     struct zDiEntry* __saved_edi = entries
-    struct zDiEntry* ecx_33 = &entries[index->entryCount]
+    struct zDiEntry* ecx_32 = &entries[index->entryCount]
 
-    if (entries u< ecx_33)
+    if (entries u< ecx_32)
         while (true)
             int32_t* vertexIndices = entries->vertexIndices
             struct zVec3* gTransformedVerts_1 = gTransformedVerts
             uint32_t i_27 = (entries->packedFlags).b
-            struct zClipVert* ecx_34 = &g_Clip_PolyVertsScratch
+            struct zClipVert* ecx_33 = &g_Clip_PolyVertsScratch
             uint32_t i_4
 
             do
@@ -99419,13 +99454,13 @@
                 vertexIndices = &vertexIndices[1]
     // Raw zVec3 copy loop: copies indexed gTransformedVerts entries into g_Clip_PolyVertsScratch as zClipVert xyz triples.
                 int32_t* eax_41 = &gTransformedVerts_1[eax_39]
-                struct zClipVert* edi_8 = ecx_34
-                ecx_34 = &ecx_34[1]
+                struct zClipVert* edi_7 = ecx_33
+                ecx_33 = &ecx_33[1]
                 i_4 = i_27
                 i_27 -= 1
-                edi_8->x = *eax_41
-                edi_8->y = eax_41[1]
-                edi_8->z = eax_41[2]
+                edi_7->x = *eax_41
+                edi_7->y = eax_41[1]
+                edi_7->z = eax_41[2]
             while (i_4 != 1)
             long double x87_r7_38 = g_Clip_PolyVertsScratch[2].x - g_Clip_PolyVertsScratch[1].x
             long double x87_r5_35 = g_Clip_PolyVertsScratch[2].z - g_Clip_PolyVertsScratch[1].z
@@ -99465,7 +99500,7 @@
                         g_zModel_CurrentPolyNormals = nullptr
                     else
                         struct zVec3* gTransformedNormals_1 = gTransformedNormals
-                        struct zVec3* ecx_36 = &g_zModel_CurrentPolyNormalsStorage
+                        struct zVec3* ecx_35 = &g_zModel_CurrentPolyNormalsStorage
                         g_zModel_CurrentPolyNormals = &g_zModel_CurrentPolyNormalsStorage
                         int32_t* normalIndices = __saved_edi->normalIndices
                         uint32_t i_28 = (__saved_edi->packedFlags).b
@@ -99477,13 +99512,13 @@
                             normalIndices = &normalIndices[1]
     // Raw zVec3 copy loop: copies indexed gTransformedNormals entries into g_zModel_CurrentPolyNormalsStorage.
                             int32_t* eax_46 = &gTransformedNormals_5[eax_44]
-                            struct zVec3* edi_11 = ecx_36
-                            ecx_36 = &ecx_36[1]
+                            struct zVec3* edi_10 = ecx_35
+                            ecx_35 = &ecx_35[1]
                             i_5 = i_28
                             i_28 -= 1
-                            edi_11->x = *eax_46
-                            edi_11->y = eax_46[1]
-                            edi_11->z = eax_46[2]
+                            edi_10->x = *eax_46
+                            edi_10->y = eax_46[1]
+                            edi_10->z = eax_46[2]
                         while (i_5 != 1)
 
                     struct zDiEntry* __saved_edi_1 = __saved_edi
@@ -99532,7 +99567,7 @@
 
                             vertexCount = var_8
 
-                        int32_t alpha
+                        int32_t var_20_5
                         int32_t vertexCount_4
 
                         if (gModel_RenderVertexAlphaEnabled_1 == 0)
@@ -99553,16 +99588,16 @@
                                     __saved_edi_1 = __saved_edi
                                 label_478b0f:
                                     int32_t drawFlags_4 = __saved_edi_1->drawFlags
-                                    int32_t ecx_68 = var_8
-                                    vertexCount_4 = ecx_68
+                                    int32_t ecx_73 = var_8
+                                    vertexCount_4 = ecx_73
 
                                     if (drawFlags_4 != 0)
                                         float var_c_7 = drawFlags_4 * g_zRndr_InverseZTolerance - -1f
 
-                                        if (ecx_68 s> 0)
+                                        if (ecx_73 s> 0)
     // Depth-bias loop: scales g_Clip_PolyVerts[i].z by the entry inverse-z bias before flat no-UV submission.
                                             float* eax_105 = &g_Clip_PolyVerts[0].z
-                                            int32_t i_24 = ecx_68
+                                            int32_t i_24 = ecx_73
                                             int32_t i_7
 
                                             do
@@ -99576,12 +99611,12 @@
                                     int32_t drawFlags_5 = __saved_edi_1->drawFlags
                                     gModel_RenderVertexAlphaEnabled_1 = gModel_RenderVertexAlphaEnabled
                                     var_18 = drawFlags_5
-                                    pointEntryByteOffset = ecx_68
-                                    ecx_68.b = materialRef->flags.b
-                                    alpha = _ftol_import_thunk((ecx_68 & 0xff * gModel_RenderAlphaScaleCurrent).q)
-                                    int32_t packedColor16_1
-                                    packedColor16_1.w = materialRef->packedColor
-                                    g_zVideo_pfnSubmitPolyFlatColor16(&g_Clip_PolyVerts, packedColor16_1, alpha, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
+                                    pointEntryByteOffset = ecx_73
+                                    ecx_73.b = materialRef->flags.b
+                                    var_20_5 = _ftol_import_thunk((ecx_73 & 0xff * gModel_RenderAlphaScaleCurrent).q)
+                                    int32_t edx_64
+                                    edx_64.w = materialRef->packedColor
+                                    g_zVideo_pfnSubmitPolyFlatColor16(var_20_5, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
                                 label_478b83:
                                     int32_t gAltClipPassEnabled_1 = gAltClipPassEnabled
                                     var_8 = vertexCount_4
@@ -99605,14 +99640,14 @@
                                             while (i_8 != 1)
 
                                         gModel_RenderVertexAlphaEnabled_1 = gModel_RenderVertexAlphaEnabled
-                                        struct zDiEntry* ecx_70
-                                        ecx_70.b = *alpha
+                                        struct zDiEntry* ecx_76
+                                        ecx_76.b = *var_20_5
                                         var_18 = __saved_edi->drawFlags
                                         pointEntryByteOffset = pointEntryByteOffset_1
-                                        int32_t alpha_1 = _ftol_import_thunk((ecx_70 & 0xff * gModel_RenderAlphaScaleCurrent).q)
-                                        int32_t packedColor16_2
-                                        packedColor16_2.w = *(alpha + 2)
-                                        g_zVideo_pfnSubmitPolyFlatColor16(&g_Clip_PolyVerts, packedColor16_2, alpha_1, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
+                                        int32_t vertices = _ftol_import_thunk((ecx_76 & 0xff * gModel_RenderAlphaScaleCurrent).q)
+                                        int32_t edx_67
+                                        edx_67.w = *(var_20_5 + 2)
+                                        g_zVideo_pfnSubmitPolyFlatColor16(vertices, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
                         else
                             if ((ebx_8.b & 0x30) == 0)
                                 goto label_4789f4
@@ -99631,16 +99666,16 @@
                                     __saved_edi_1 = __saved_edi
                                 label_478a21:
                                     int32_t drawFlags_2 = __saved_edi_1->drawFlags
-                                    int32_t ecx_66 = var_8
-                                    vertexCount_4 = ecx_66
+                                    int32_t ecx_70 = var_8
+                                    vertexCount_4 = ecx_70
 
                                     if (drawFlags_2 != 0)
                                         float var_c_5 = drawFlags_2 * g_zRndr_InverseZTolerance - -1f
 
-                                        if (ecx_66 s> 0)
+                                        if (ecx_70 s> 0)
     // Depth-bias loop: scales g_Clip_PolyVerts[i].z by the entry inverse-z bias before no-UV color submission.
                                             float* eax_98 = &g_Clip_PolyVerts[0].z
-                                            int32_t i_23 = ecx_66
+                                            int32_t i_23 = ecx_70
                                             int32_t i_9
 
                                             do
@@ -99654,22 +99689,22 @@
                                     int32_t drawFlags_3 = __saved_edi_1->drawFlags
                                     gModel_RenderVertexAlphaEnabled_1 = gModel_RenderVertexAlphaEnabled
                                     var_18 = drawFlags_3
-                                    pointEntryByteOffset = ecx_66
-                                    ecx_66.b = materialRef->flags.b
-                                    alpha = _ftol_import_thunk((ecx_66 & 0xff * gModel_RenderAlphaScaleCurrent).q)
+                                    pointEntryByteOffset = ecx_70
+                                    ecx_70.b = materialRef->flags.b
+                                    var_20_5 = _ftol_import_thunk((ecx_70 & 0xff * gModel_RenderAlphaScaleCurrent).q)
                                     int32_t* gModel_RenderVertexAlphaEnabled_5 = gModel_RenderVertexAlphaEnabled_1
-                                    int32_t* edx_62
-                                    edx_62.b = gModel_RenderVertexAlphaEnabled_5.b & 1
-                                    char temp23_1 = edx_62.b
-                                    edx_62.b = neg.b(edx_62.b)
+                                    int32_t* edx_57
+                                    edx_57.b = gModel_RenderVertexAlphaEnabled_5.b & 1
+                                    char temp23_1 = edx_57.b
+                                    edx_57.b = neg.b(edx_57.b)
                                     gModel_RenderVertexAlphaEnabled_5.b &= 4
                                     char temp24_1 = gModel_RenderVertexAlphaEnabled_5.b
                                     gModel_RenderVertexAlphaEnabled_5.b = neg.b(gModel_RenderVertexAlphaEnabled_5.b)
-                                    i_32 = sbb.d(edx_62, edx_62, temp23_1 != 0) & &g_Clip_PolyAttr2
-                                    int32_t packedColor16
-                                    packedColor16.w = materialRef->packedColor
+                                    i_32 = sbb.d(edx_57, edx_57, temp23_1 != 0) & &g_Clip_PolyAttr2
+                                    int32_t edx_60
+                                    edx_60.w = materialRef->packedColor
                                     var_28 = sbb.d(gModel_RenderVertexAlphaEnabled_5, gModel_RenderVertexAlphaEnabled_5, temp24_1 != 0) & &g_Clip_PolyAttr0
-                                    g_zVideo_pfnSubmitPolyColorAttr(&g_Clip_PolyVerts, packedColor16, &materialRef->colorRgb, &g_Clip_PolyAttr1, var_28, i_32, alpha, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
+                                    g_zVideo_pfnSubmitPolyColorAttr(&materialRef->colorRgb, &g_Clip_PolyAttr1, var_28, i_32, var_20_5, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
                                     goto label_478b83
                     else
                         if ((eax_43:1.b & 4) != 0)
@@ -99691,9 +99726,9 @@
                             pointEntryByteOffset = &gModel_RenderVertexAlphaEnabled_1
 
                             if (zModel_Light::SetActiveLights(&var_34, vertexCount, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1) != 0)
-                                int32_t ecx_41 = var_18 | pointEntryByteOffset
+                                int32_t ecx_40 = var_18 | pointEntryByteOffset
                                 gModel_RenderVertexAlphaEnabled_1 |= 2
-                                var_18 = ecx_41
+                                var_18 = ecx_40
 
                             vertexCount = var_8
 
@@ -99711,11 +99746,11 @@
                                 edx_27 -= 1
                             while (i_10 != 1)
 
-                        uint32_t ecx_42 = vertexCount << 3
+                        uint32_t ecx_41 = vertexCount << 3
                         int32_t esi_13
-                        int32_t edi_13
-                        edi_13, esi_13 = __builtin_memcpy(g_Clip_PolyUvs, __saved_edi_1->uvPairs, ecx_42 & 0xfffffffc)
-                        __builtin_memcpy(edi_13, esi_13, ecx_42 & 3)
+                        int32_t edi_12
+                        edi_12, esi_13 = __builtin_memcpy(g_Clip_PolyUvs, __saved_edi_1->uvPairs, ecx_41 & 0xfffffffc)
+                        __builtin_memcpy(edi_12, esi_13, ecx_41 & 3)
                         struct zClipUV perspectiveUvs[0x400]
                         struct zModel_Material* materialForAltTexture
                         int32_t __saved_ebp
@@ -99734,16 +99769,16 @@
                                 int32_t eax_81 = 0
 
                                 if (i_31 s> 0)
-                                    float* ecx_54 = &g_Clip_PolyVerts[0].z
+                                    float* ecx_56 = &g_Clip_PolyVerts[0].z
 
                                     do
                                         struct zClipUV* Clip_PolyUvs_5 = g_Clip_PolyUvs
                                         eax_81 += 1
-                                        long double x87_r7_67 = *ecx_54 * Clip_PolyUvs_5[eax_81 - 1].u
-                                        ecx_54 = &ecx_54[3]
+                                        long double x87_r7_67 = *ecx_56 * Clip_PolyUvs_5[eax_81 - 1].u
+                                        ecx_56 = &ecx_56[3]
                                         Clip_PolyUvs_5[eax_81 - 1].u = x87_r7_67
                                         struct zClipUV* Clip_PolyUvs_6 = g_Clip_PolyUvs
-                                        *(&Clip_PolyUvs_6[eax_81] - 4) = ecx_54[-3] * *(&Clip_PolyUvs_6[eax_81] - 4)
+                                        *(&Clip_PolyUvs_6[eax_81] - 4) = ecx_56[-3] * *(&Clip_PolyUvs_6[eax_81] - 4)
                                         i_31 = var_8
                                     while (eax_81 s< i_31)
 
@@ -99756,19 +99791,19 @@
 
                                     if (i_31 s> 0)
                                         struct zClipUV* Clip_PolyUvs_2 = g_Clip_PolyUvs
-                                        int32_t edx_49 = &perspectiveUvs - Clip_PolyUvs_2
-                                        float* ecx_55 = &g_Clip_PolyVerts[0].z
+                                        int32_t edx_46 = &perspectiveUvs - Clip_PolyUvs_2
+                                        float* ecx_57 = &g_Clip_PolyVerts[0].z
                                         int32_t esi_27 = &perspectiveUvs[0].v - Clip_PolyUvs_2
                                         int32_t i_26 = i_31
                                         int32_t i_11
 
                                         do
-                                            long double x87_r7_71 = 1f / *ecx_55
-                                            ecx_55 = &ecx_55[3]
+                                            long double x87_r7_71 = 1f / *ecx_57
+                                            ecx_57 = &ecx_57[3]
                                             Clip_PolyUvs_2 = &Clip_PolyUvs_2[1]
                                             i_11 = i_26
                                             i_26 -= 1
-                                            *(Clip_PolyUvs_2 + edx_49 - 8) = x87_r7_71 * Clip_PolyUvs_2->__offset(0xfffffffffffffff8).d
+                                            *(Clip_PolyUvs_2 + edx_46 - 8) = x87_r7_71 * Clip_PolyUvs_2->__offset(0xfffffffffffffff8).d
                                             *(Clip_PolyUvs_2 + esi_27 - 8) = Clip_PolyUvs_2->__offset(0xfffffffffffffffc).d * x87_r7_71
                                         while (i_11 != 1)
 
@@ -99804,27 +99839,27 @@
                                     pointEntryByteOffset = drawFlags_8
                                     materialForAltTexture = texture_2
                                     i_32 = i_31
-                                    g_zVideo_pfnSubmitPolyRenderClass(&g_Clip_PolyVerts, &perspectiveUvs, i_32, materialForAltTexture, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
+                                    g_zVideo_pfnSubmitPolyRenderClass(i_32, materialForAltTexture, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
 
                                     if (gAltClipPassEnabled != 0 && zClipRect::TrivialRejectPolyXY(&gClipRect_Alt, var_8) != 0 && zClipRect::ClipPoly(&gClipRect_Alt, &var_8) != 0)
                                         i_34 = var_8
-                                        int32_t ecx_59 = 0
+                                        int32_t ecx_62 = 0
 
                                         if (i_34 s> 0)
                                             float* eax_87 = &g_Clip_PolyVerts[0].y
 
                                             do
                                                 long double x87_r7_78 = 1f / eax_87[1]
-                                                float* edx_54 = &(&__saved_ebp)[ecx_59 * 2 - 0x81f]
-                                                ecx_59 += 1
+                                                float* edx_50 = &(&__saved_ebp)[ecx_62 * 2 - 0x81f]
+                                                ecx_62 += 1
                                                 eax_87 = &eax_87[3]
                                                 eax_87[-4] = g_zClipAlt_RemapScaleX * eax_87[-4] + g_zClipAlt_RemapBiasX
                                                 eax_87[-3] = g_zClipAlt_RemapScaleY * eax_87[-3] + g_zClipAlt_RemapBiasY
                                                 eax_87[-2] = eax_87[-2] - -1f / gClipRect_Primary.zMin
                                                 struct zClipUV* Clip_PolyUvs_8 = g_Clip_PolyUvs
-                                                edx_54[-1] = x87_r7_78 * Clip_PolyUvs_8[ecx_59 - 1].u
-                                                *edx_54 = *(&Clip_PolyUvs_8[ecx_59] - 4) * x87_r7_78
-                                            while (ecx_59 s< i_34)
+                                                edx_50[-1] = x87_r7_78 * Clip_PolyUvs_8[ecx_62 - 1].u
+                                                *edx_50 = *(&Clip_PolyUvs_8[ecx_62] - 4) * x87_r7_78
+                                            while (ecx_62 s< i_34)
 
                                         goto label_478937
                         else
@@ -99841,16 +99876,16 @@
 
                                 if (i_30 s> 0)
     // Perspective setup loop: premultiplies g_Clip_PolyUvs u/v by projected g_Clip_PolyVerts z before clipping.
-                                    float* ecx_47 = &g_Clip_PolyVerts[0].z
+                                    float* ecx_46 = &g_Clip_PolyVerts[0].z
 
                                     do
                                         struct zClipUV* Clip_PolyUvs_3 = g_Clip_PolyUvs
                                         eax_58 += 1
-                                        long double x87_r7_54 = *ecx_47 * Clip_PolyUvs_3[eax_58 - 1].u
-                                        ecx_47 = &ecx_47[3]
+                                        long double x87_r7_54 = *ecx_46 * Clip_PolyUvs_3[eax_58 - 1].u
+                                        ecx_46 = &ecx_46[3]
                                         Clip_PolyUvs_3[eax_58 - 1].u = x87_r7_54
                                         struct zClipUV* Clip_PolyUvs_4 = g_Clip_PolyUvs
-                                        *(&Clip_PolyUvs_4[eax_58] - 4) = ecx_47[-3] * *(&Clip_PolyUvs_4[eax_58] - 4)
+                                        *(&Clip_PolyUvs_4[eax_58] - 4) = ecx_46[-3] * *(&Clip_PolyUvs_4[eax_58] - 4)
                                         i_30 = var_8
                                     while (eax_58 s< i_30)
 
@@ -99860,20 +99895,20 @@
                                     if (i_30 s> 0)
                                         struct zClipUV* Clip_PolyUvs_1 = g_Clip_PolyUvs
                                         int32_t esi_21 = &perspectiveUvs - Clip_PolyUvs_1
-                                        int32_t edi_14 = &perspectiveUvs[0].v - Clip_PolyUvs_1
-                                        float* ecx_49 = &g_Clip_PolyVerts[0].z
+                                        int32_t edi_13 = &perspectiveUvs[0].v - Clip_PolyUvs_1
+                                        float* ecx_48 = &g_Clip_PolyVerts[0].z
                                         int32_t i_25 = i_30
                                         int32_t i_13
 
                                         do
     // Perspective UV loop: writes perspectiveUvs[i].u/v = g_Clip_PolyUvs[i].u/v / g_Clip_PolyVerts[i].z.
-                                            long double x87_r7_58 = 1f / *ecx_49
-                                            ecx_49 = &ecx_49[3]
+                                            long double x87_r7_58 = 1f / *ecx_48
+                                            ecx_48 = &ecx_48[3]
                                             Clip_PolyUvs_1 = &Clip_PolyUvs_1[1]
                                             i_13 = i_25
                                             i_25 -= 1
                                             *(esi_21 + Clip_PolyUvs_1 - 8) = x87_r7_58 * Clip_PolyUvs_1->__offset(0xfffffffffffffff8).d
-                                            *(edi_14 + Clip_PolyUvs_1 - 8) = Clip_PolyUvs_1->__offset(0xfffffffffffffffc).d * x87_r7_58
+                                            *(edi_13 + Clip_PolyUvs_1 - 8) = Clip_PolyUvs_1->__offset(0xfffffffffffffffc).d * x87_r7_58
                                         while (i_13 != 1)
 
                                     int32_t drawFlags = __saved_edi->drawFlags
@@ -99911,15 +99946,15 @@
                                         materialForAltTexture = texture_1
                                         int32_t* gModel_RenderVertexAlphaEnabled_3 = gModel_RenderVertexAlphaEnabled_1
                                         i_32 = i_30
-                                        int32_t* edx_33
-                                        edx_33.b = gModel_RenderVertexAlphaEnabled_3.b & 1
-                                        char temp34_1 = edx_33.b
-                                        edx_33.b = neg.b(edx_33.b)
+                                        int32_t* edx_32
+                                        edx_32.b = gModel_RenderVertexAlphaEnabled_3.b & 1
+                                        char temp34_1 = edx_32.b
+                                        edx_32.b = neg.b(edx_32.b)
                                         gModel_RenderVertexAlphaEnabled_3.b &= 4
                                         char temp35_1 = gModel_RenderVertexAlphaEnabled_3.b
                                         gModel_RenderVertexAlphaEnabled_3.b = neg.b(gModel_RenderVertexAlphaEnabled_3.b)
-                                        var_28 = sbb.d(edx_33, edx_33, temp34_1 != 0) & &g_Clip_PolyAttr2
-                                        g_zVideo_pfnSubmitPolygon(&g_Clip_PolyVerts, &perspectiveUvs, &g_Clip_PolyAttr1, sbb.d(gModel_RenderVertexAlphaEnabled_3, gModel_RenderVertexAlphaEnabled_3, temp35_1 != 0) & &g_Clip_PolyAttr0, var_28, i_32, materialForAltTexture, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
+                                        var_28 = sbb.d(edx_32, edx_32, temp34_1 != 0) & &g_Clip_PolyAttr2
+                                        g_zVideo_pfnSubmitPolygon(&g_Clip_PolyAttr1, sbb.d(gModel_RenderVertexAlphaEnabled_3, gModel_RenderVertexAlphaEnabled_3, temp35_1 != 0) & &g_Clip_PolyAttr0, var_28, i_32, materialForAltTexture, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
                                     else
                                         struct zVideo_TextureRecord* texture
 
@@ -99943,7 +99978,7 @@
                                         char temp37_1 = gModel_RenderVertexAlphaEnabled_2.b
                                         gModel_RenderVertexAlphaEnabled_2.b = neg.b(gModel_RenderVertexAlphaEnabled_2.b)
                                         var_28 = sbb.d(edx_29, edx_29, temp36_1 != 0) & &g_Clip_PolyAttr2
-                                        g_zVideo_pfnSubmitPolygonLit(&g_Clip_PolyVerts, &perspectiveUvs, &g_Clip_PolyAttr1, sbb.d(gModel_RenderVertexAlphaEnabled_2, gModel_RenderVertexAlphaEnabled_2, temp37_1 != 0) & &g_Clip_PolyAttr0, var_28, i_32, materialForAltTexture, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
+                                        g_zVideo_pfnSubmitPolygonLit(&g_Clip_PolyAttr1, sbb.d(gModel_RenderVertexAlphaEnabled_2, gModel_RenderVertexAlphaEnabled_2, temp37_1 != 0) & &g_Clip_PolyAttr0, var_28, i_32, materialForAltTexture, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
 
                                     if (gAltClipPassEnabled != 0 && zClipRect::TrivialRejectPolyXY(&gClipRect_Alt, var_8) != 0)
                                         int32_t esi_26 = var_8
@@ -99972,7 +100007,7 @@
                                                     i_20 -= 1
                                                 while (i_15 != 1)
 
-                                            int32_t ecx_52 = 0
+                                            int32_t ecx_53 = 0
 
                                             if (i_34 s> 0)
     // Alternate textured pass remaps g_Clip_PolyVerts xyz and writes perspective UVs using 1 / remapped z.
@@ -99980,16 +100015,16 @@
 
                                                 do
                                                     long double x87_r7_65 = 1f / eax_76[1]
-                                                    float* edx_41 = &(&__saved_ebp)[ecx_52 * 2 - 0x81f]
-                                                    ecx_52 += 1
+                                                    float* edx_39 = &(&__saved_ebp)[ecx_53 * 2 - 0x81f]
+                                                    ecx_53 += 1
                                                     eax_76 = &eax_76[3]
                                                     eax_76[-4] = g_zClipAlt_RemapScaleX * eax_76[-4] + g_zClipAlt_RemapBiasX
                                                     eax_76[-3] = g_zClipAlt_RemapScaleY * eax_76[-3] + g_zClipAlt_RemapBiasY
                                                     eax_76[-2] = eax_76[-2] - -1f / gClipRect_Primary.zMin
                                                     struct zClipUV* Clip_PolyUvs_7 = g_Clip_PolyUvs
-                                                    edx_41[-1] = x87_r7_65 * Clip_PolyUvs_7[ecx_52 - 1].u
-                                                    *edx_41 = *(&Clip_PolyUvs_7[ecx_52] - 4) * x87_r7_65
-                                                while (ecx_52 s< i_34)
+                                                    edx_39[-1] = x87_r7_65 * Clip_PolyUvs_7[ecx_53 - 1].u
+                                                    *edx_39 = *(&Clip_PolyUvs_7[ecx_53] - 4) * x87_r7_65
+                                                while (ecx_53 s< i_34)
 
                                             int32_t* gModel_RenderVertexAlphaEnabled_4 = gModel_RenderVertexAlphaEnabled_1
 
@@ -100008,7 +100043,7 @@
                                                 var_18 = gModel_RenderAlphaScaleCurrent_1
                                                 pointEntryByteOffset = __saved_edi->drawFlags
                                                 i_32 = i_34
-                                                g_zVideo_pfnSubmitPolyRenderClass(&g_Clip_PolyVerts, &perspectiveUvs, i_32, texture_3, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
+                                                g_zVideo_pfnSubmitPolyRenderClass(i_32, texture_3, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
                                             else
                                                 struct zImage_TexDirEntry* currentTextureDirectoryEntry_3 = materialForAltTexture->currentTextureDirectoryEntry
                                                 struct zVideo_TextureRecord* texture_4
@@ -100024,10 +100059,9 @@
                                                 char temp40_1 = gModel_RenderVertexAlphaEnabled_4.b
                                                 gModel_RenderVertexAlphaEnabled_4.b = neg.b(gModel_RenderVertexAlphaEnabled_4.b)
                                                 pointEntryByteOffset = __saved_edi->drawFlags
-                                                struct zVideo_RenderClass* renderClass = texture_4
                                                 i_32 = i_34
                                                 var_28 = nullptr
-                                                g_zVideo_pfnSubmitPolygon(&g_Clip_PolyVerts, &perspectiveUvs, &g_Clip_PolyAttr1, sbb.d(gModel_RenderVertexAlphaEnabled_4, gModel_RenderVertexAlphaEnabled_4, temp40_1 != 0) & &g_Clip_PolyAttr0, var_28, i_32, renderClass, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
+                                                g_zVideo_pfnSubmitPolygon(&g_Clip_PolyAttr1, sbb.d(gModel_RenderVertexAlphaEnabled_4, gModel_RenderVertexAlphaEnabled_4, temp40_1 != 0) & &g_Clip_PolyAttr0, var_28, i_32, texture_4, pointEntryByteOffset, var_18, gModel_RenderVertexAlphaEnabled_1)
                                 else
                                     int32_t i_33 = i_30
                                     int32_t* vertexCount_2 = &var_8
@@ -100090,7 +100124,7 @@
 
             __saved_edi = &__saved_edi[1]
 
-            if (&__saved_edi[1] u>= ecx_33)
+            if (&__saved_edi[1] u>= ecx_32)
                 break
 
             entries = __saved_edi
@@ -107219,7 +107253,7 @@
     if (textureCount s> 0)
         do
             edi += 1
-            material->cycle->frameTable[edi - 1] = &g_zImage_DefaultImagePtr
+            material->cycle->frameTable[edi - 1] = &g_zImage_DefaultTexDirEntry
         while (edi s< textureCount)
 
     return 1
@@ -138394,7 +138428,7 @@
 // Original file: Time.cpp. Clears frame/current-time accumulators and captures the current GetTickCount baseline in seconds. BN leaves the compiler DWORD-to-qword fild scratch as split tickCountMillis64 dword stores; assembly writes GetTickCount to the low dword and zero to the high dword before fild.
 0x4a5670 void Time::Reset()
 {
-    g_Time_NewTimeSec = 0f
+    g_Time_RuntimeConfig.newTimeSec = 0f
     g_Time_UnscaledAccumulatedTimeSec = 0f
     g_Time_UnscaledDeltaTimeSec = 0f
     g_Time_AccumulatedTimeSec = 0f
@@ -138402,7 +138436,7 @@
     uint64_t tickCountMillis64
     tickCountMillis64.d = KERNEL32_GetTickCount_ImportThunk()
     tickCountMillis64:4.d = 0
-    g_Time_CurrentTimeSec = tickCountMillis64 * 0.00100000005f
+    g_Time_RuntimeConfig.currentTimeSec = tickCountMillis64 * 0.00100000005f
 }
 
 // Original file: Time.cpp. Advances frame timing from GetTickCount milliseconds: updates unscaled/current/accumulated time, applies one-frame timeScale, optionally clamps frame delta, then resets timeScale to 1.0. BN 5.2 keeps the zero-extended tick-count qword as split dword stores and aliases the fnstsw ax clamp comparison at 0x4a574f onto deltaTimeClampEnabled; assembly shows the ax write is only the x87 status word test.
@@ -138412,27 +138446,27 @@
     tickCountMs64.d = KERNEL32_GetTickCount_ImportThunk()
     tickCountMs64:4.d = 0
     long double x87_r6 = g_Time_UnscaledAccumulatedTimeSec
-    long double x87_r5 = g_Time_TimeScaleFactor
+    long double x87_r5 = g_Time_RuntimeConfig.timeScaleFactor
     long double x87_r5_2 = tickCountMs64 * 0.00100000005f
-    int32_t deltaTimeClampEnabled = g_Time_DeltaTimeClampEnabled
-    g_Time_TimeScaleFactor = 1f
-    g_Time_NewTimeSec = x87_r5_2
-    g_Time_UnscaledDeltaTimeSec = x87_r5_2 - g_Time_CurrentTimeSec
+    int32_t deltaTimeClampEnabled = g_Time_RuntimeConfig.deltaTimeClampEnabled
+    g_Time_RuntimeConfig.timeScaleFactor = 1f
+    g_Time_RuntimeConfig.newTimeSec = x87_r5_2
+    g_Time_UnscaledDeltaTimeSec = x87_r5_2 - g_Time_RuntimeConfig.currentTimeSec
     long double x87_r5_6 = x87_r5 * g_Time_UnscaledDeltaTimeSec
     g_Time_UnscaledAccumulatedTimeSec = x87_r6 + g_Time_UnscaledDeltaTimeSec
     g_FrameDeltaTimeSec = x87_r5_6
 
     if (deltaTimeClampEnabled != 0)
         long double x87_r6_3 = g_FrameDeltaTimeSec
-        long double temp1_1 = g_Time_MaximumDeltaTimeSec
+        long double temp1_1 = g_Time_RuntimeConfig.maximumDeltaTimeSec
         x87_r6_3 - temp1_1
         deltaTimeClampEnabled.w = (x87_r6_3 < temp1_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r6_3, temp1_1) ? 1 : 0) << 0xa | (x87_r6_3 == temp1_1 ? 1 : 0) << 0xe | 0x3800
 
         if ((deltaTimeClampEnabled:1.b & 0x41) == 0)
-            g_FrameDeltaTimeSec = g_Time_MaximumDeltaTimeSec
+            g_FrameDeltaTimeSec = g_Time_RuntimeConfig.maximumDeltaTimeSec
 
     long double x87_r6_5 = g_Time_AccumulatedTimeSec + g_FrameDeltaTimeSec
-    g_Time_CurrentTimeSec = x87_r5_2
+    g_Time_RuntimeConfig.currentTimeSec = x87_r5_2
     g_Time_AccumulatedTimeSec = x87_r6_5
 }
 
@@ -152977,7 +153011,7 @@
     struct HudUiZrdDialog* owner_30 = arg3
     struct HudUiWidget_FTable* ftable = self->base.ftable
     self->owner = owner_30
-    ftable->SetVisible(1)
+    ftable->SetVisible(self, 1)
     HudUiContainer::AddChild(owner_30, self)
     self->originX = owner_30->originX
     self->originY = owner_30->originY
@@ -153004,19 +153038,19 @@
             originX += u32_15->x.i32
             originY_8 += u32_15->y.i32
 
-    self->base.ftable->SetPos(originX, originY_8)
+    self->base.ftable->SetPos(self, originX, originY_8)
     struct zVideo_BltSourceHead* clipSource = arg3->clipSource
 
     if (clipSource != 0)
-        int32_t* eax_10 = self->base.ftable->GetBoundsRectOrNull()
+        struct HudUiRect* eax_10 = self->base.ftable->GetBoundsRectOrNull(self)
 
         if (eax_10 != 0)
-            int32_t edx_5 = eax_10[1]
-            int32_t bltSourceOrNull = *eax_10
-            int32_t var_14_1 = eax_10[2]
-            int32_t var_18_1 = edx_5
-            int32_t var_10_1 = eax_10[3]
-            self->base.ftable->SetClip(clipSource, &bltSourceOrNull)
+            int32_t top = eax_10->top
+            int32_t left = eax_10->left
+            int32_t right = eax_10->right
+            int32_t top_1 = top
+            int32_t bottom = eax_10->bottom
+            self->base.ftable->SetClip(self, clipSource, &left)
 
     struct zReader_Node* parentNode = zReader::GetNamedNode(zrdSection, "ROLLOVER")
 
@@ -153065,20 +153099,23 @@
                     owner_29->base.flash.flashDirectionSign = 1
 
                 struct HudUiTransitionTextPanel* owner_16 = owner_29
-                int32_t edx_15
-                edx_15.b = owner_29->base.elementFlags.b
+                int32_t edx_14
+                edx_14.b = owner_29->base.elementFlags.b
                 int32_t var_4_4 = 0xffffffff
-                owner_29->base.elementFlags = (edx_15 & 0x10) | 2
+                owner_29->base.elementFlags = (edx_14 & 0x10) | 2
                 struct HudUiTransitionTextPanel_FTable* vptr_1 = arg3->base.vptr
                 char* fmt_1 = zLoc::ResolveMessageKeyOrFallback(eax_17->list->items[0].payload)
                 vptr_1->SetTextFmt(arg3, fmt_1)
                 struct zReader_NodeArray_HudTextLabelSpec* u32_2 = eax_17->list
-                arg3->base.vptr->PrimaryAction(u32_2->x.i32 + originX_2, u32_2->y.i32 + originY_1)
+                struct HudUiZrdDialog* ecx_42 = arg3
+                int32_t var_44_9 = u32_2->y.i32 + originY_1
+                int32_t var_48_5 = u32_2->x.i32 + originX_2
+                ecx_42->base.vptr->PrimaryAction(ecx_42)
                 struct HudUiZrdDialog* owner_1 = self->owner
-                int32_t edx_20 = eax_17->list->__offset(0x24).d * 9
-                int32_t esi_10 = *(&owner_1->fontStyles + (edx_20 << 2))
+                int32_t edx_19 = eax_17->list->__offset(0x24).d * 9
+                int32_t esi_10 = *(&owner_1->fontStyles + (edx_19 << 2))
                 int32_t esi_11 = neg.d(esi_10)
-                struct HudFontStyle* esi_13 = sbb.d(esi_11, esi_11, esi_10 != 0) & (&owner_1->fontStyles + (edx_20 << 2))
+                struct HudFontStyle* esi_13 = sbb.d(esi_11, esi_11, esi_10 != 0) & (&owner_1->fontStyles + (edx_19 << 2))
 
                 if (esi_13 != 0)
                     struct HudUiZrdDialog* ecx_44 = arg3
@@ -153169,12 +153206,15 @@
                         char* fmt = zLoc::ResolveMessageKeyOrFallback(*((&eax_17->list->count)[var_30_1 * 2] + 0xc))
                         vptr->SetTextFmt(arg3, fmt)
                         struct zReader_NodeArray_HudTextLabelSpec* eax_25 = (&eax_17->list->count)[var_30_1 * 2]
-                        arg3->base.vptr->PrimaryAction(eax_25->x.i32 + originX_1, eax_25->y.i32 + originY_7)
+                        struct HudUiZrdDialog* ecx_28 = arg3
+                        int32_t var_44_5 = eax_25->y.i32 + originY_7
+                        int32_t var_48_3 = eax_25->x.i32 + originX_1
+                        ecx_28->base.vptr->PrimaryAction(ecx_28)
                         struct HudUiZrdDialog* owner = self->owner
-                        int32_t edx_13 = *((&eax_17->list->count)[var_30_1 * 2] + 0x24) * 9
-                        int32_t esi_4 = *(&owner->fontStyles + (edx_13 << 2))
+                        int32_t edx_12 = *((&eax_17->list->count)[var_30_1 * 2] + 0x24) * 9
+                        int32_t esi_4 = *(&owner->fontStyles + (edx_12 << 2))
                         int32_t esi_5 = neg.d(esi_4)
-                        struct HudFontStyle* esi_7 = sbb.d(esi_5, esi_5, esi_4 != 0) & (&owner->fontStyles + (edx_13 << 2))
+                        struct HudFontStyle* esi_7 = sbb.d(esi_5, esi_5, esi_4 != 0) & (&owner->fontStyles + (edx_12 << 2))
 
                         if (esi_7 != 0)
                             struct HudUiZrdDialog* ecx_30 = arg3
@@ -153312,20 +153352,23 @@
                     owner_33->base.flash.flashDirectionSign = 1
 
                 struct HudUiTransitionTextPanel* owner_18 = owner_33
-                int32_t edx_35
-                edx_35.b = owner_33->base.elementFlags.b
+                int32_t edx_34
+                edx_34.b = owner_33->base.elementFlags.b
                 int32_t var_4_8 = 0xffffffff
-                owner_33->base.elementFlags = (edx_35 & 0x10) | 2
+                owner_33->base.elementFlags = (edx_34 & 0x10) | 2
                 struct HudUiTransitionTextPanel_FTable* vptr_3 = arg3->base.vptr
                 char* fmt_3 = zLoc::ResolveMessageKeyOrFallback(eax_63->list->items[0].payload)
                 vptr_3->SetTextFmt(arg3, fmt_3)
                 struct zReader_NodeArray_HudTextLabelSpec* list_04_1 = eax_63->list
-                arg3->base.vptr->PrimaryAction(list_04_1->x.i32 + originX_4, list_04_1->y.i32 + originY_3)
+                struct HudUiZrdDialog* ecx_82 = arg3
+                int32_t var_44_18 = list_04_1->y.i32 + originY_3
+                int32_t var_48_10 = list_04_1->x.i32 + originX_4
+                ecx_82->base.vptr->PrimaryAction(ecx_82)
                 struct HudUiZrdDialog* owner_3 = self->owner
-                int32_t edx_40 = eax_63->list->__offset(0x24).d * 9
-                int32_t esi_24 = *(&owner_3->fontStyles + (edx_40 << 2))
+                int32_t edx_39 = eax_63->list->__offset(0x24).d * 9
+                int32_t esi_24 = *(&owner_3->fontStyles + (edx_39 << 2))
                 int32_t esi_25 = neg.d(esi_24)
-                struct HudFontStyle* esi_27 = sbb.d(esi_25, esi_25, esi_24 != 0) & (&owner_3->fontStyles + (edx_40 << 2))
+                struct HudFontStyle* esi_27 = sbb.d(esi_25, esi_25, esi_24 != 0) & (&owner_3->fontStyles + (edx_39 << 2))
 
                 if (esi_27 != 0)
                     struct HudUiZrdDialog* ecx_84 = arg3
@@ -153405,20 +153448,23 @@
                             owner_31->base.flash.flashDirectionSign = 1
 
                         struct HudUiTransitionTextPanel* owner_17 = owner_31
-                        int32_t edx_26
-                        edx_26.b = owner_31->base.elementFlags.b
+                        int32_t edx_25
+                        edx_25.b = owner_31->base.elementFlags.b
                         int32_t var_4_6 = 0xffffffff
-                        owner_31->base.elementFlags = (edx_26 & 0x10) | 2
+                        owner_31->base.elementFlags = (edx_25 & 0x10) | 2
                         struct HudUiTransitionTextPanel_FTable* vptr_2 = arg3->base.vptr
                         char* fmt_2 = zLoc::ResolveMessageKeyOrFallback(*((&eax_63->list->count)[var_30_2 * 2] + 0xc))
                         vptr_2->SetTextFmt(arg3, fmt_2)
+                        struct HudUiZrdDialog* ecx_68 = arg3
                         struct zReader_NodeArray_HudTextLabelSpec* eax_70 = (&eax_63->list->count)[var_30_2 * 2]
-                        arg3->base.vptr->PrimaryAction(eax_70->x.i32 + originX_3, eax_70->y.i32 + originY_2)
+                        int32_t var_44_14 = eax_70->y.i32 + originY_2
+                        int32_t var_48_8 = eax_70->x.i32 + originX_3
+                        ecx_68->base.vptr->PrimaryAction(ecx_68)
                         struct HudUiZrdDialog* owner_2 = self->owner
-                        int32_t edx_33 = *((&eax_63->list->count)[var_30_2 * 2] + 0x24) * 9
-                        int32_t esi_18 = *(&owner_2->fontStyles + (edx_33 << 2))
+                        int32_t edx_32 = *((&eax_63->list->count)[var_30_2 * 2] + 0x24) * 9
+                        int32_t esi_18 = *(&owner_2->fontStyles + (edx_32 << 2))
                         int32_t esi_19 = neg.d(esi_18)
-                        struct HudFontStyle* esi_21 = sbb.d(esi_19, esi_19, esi_18 != 0) & (&owner_2->fontStyles + (edx_33 << 2))
+                        struct HudFontStyle* esi_21 = sbb.d(esi_19, esi_19, esi_18 != 0) & (&owner_2->fontStyles + (edx_32 << 2))
 
                         if (esi_21 != 0)
                             struct HudUiZrdDialog* ecx_70 = arg3
@@ -153556,20 +153602,23 @@
                     owner_39->base.flash.flashDirectionSign = 1
 
                 struct HudUiTransitionTextPanel* owner_20 = owner_39
-                int32_t edx_55
-                edx_55.b = owner_39->base.elementFlags.b
+                int32_t edx_54
+                edx_54.b = owner_39->base.elementFlags.b
                 int32_t var_4_12 = 0xffffffff
-                owner_39->base.elementFlags = (edx_55 & 0x10) | 2
+                owner_39->base.elementFlags = (edx_54 & 0x10) | 2
                 struct HudUiTransitionTextPanel_FTable* vptr_5 = arg3->base.vptr
                 char* fmt_5 = zLoc::ResolveMessageKeyOrFallback(eax_110->list->items[0].payload)
                 vptr_5->SetTextFmt(arg3, fmt_5)
                 struct zReader_NodeArray_HudTextLabelSpec* u32_7 = eax_110->list
-                arg3->base.vptr->PrimaryAction(u32_7->x.i32 + originX_6, u32_7->y.i32 + originY_5)
+                struct HudUiZrdDialog* ecx_122 = arg3
+                int32_t var_44_27 = u32_7->y.i32 + originY_5
+                int32_t var_48_15 = u32_7->x.i32 + originX_6
+                ecx_122->base.vptr->PrimaryAction(ecx_122)
                 struct HudUiZrdDialog* owner_5 = self->owner
-                int32_t edx_60 = eax_110->list->__offset(0x24).d * 9
-                int32_t esi_38 = *(&owner_5->fontStyles + (edx_60 << 2))
+                int32_t edx_59 = eax_110->list->__offset(0x24).d * 9
+                int32_t esi_38 = *(&owner_5->fontStyles + (edx_59 << 2))
                 int32_t esi_39 = neg.d(esi_38)
-                struct HudFontStyle* esi_41 = sbb.d(esi_39, esi_39, esi_38 != 0) & (&owner_5->fontStyles + (edx_60 << 2))
+                struct HudFontStyle* esi_41 = sbb.d(esi_39, esi_39, esi_38 != 0) & (&owner_5->fontStyles + (edx_59 << 2))
 
                 if (esi_41 != 0)
                     struct HudUiZrdDialog* ecx_124 = arg3
@@ -153649,20 +153698,23 @@
                             owner_35->base.flash.flashDirectionSign = 1
 
                         struct HudUiTransitionTextPanel* owner_19 = owner_35
-                        int32_t edx_46
-                        edx_46.b = owner_35->base.elementFlags.b
+                        int32_t edx_45
+                        edx_45.b = owner_35->base.elementFlags.b
                         int32_t var_4_10 = 0xffffffff
-                        owner_35->base.elementFlags = (edx_46 & 0x10) | 2
+                        owner_35->base.elementFlags = (edx_45 & 0x10) | 2
                         struct HudUiTransitionTextPanel_FTable* vptr_4 = arg3->base.vptr
                         char* fmt_4 = zLoc::ResolveMessageKeyOrFallback(*((&eax_110->list->count)[var_30_3 * 2] + 0xc))
                         vptr_4->SetTextFmt(arg3, fmt_4)
+                        struct HudUiZrdDialog* ecx_108 = arg3
                         struct zReader_NodeArray_HudTextLabelSpec* eax_117 = (&eax_110->list->count)[var_30_3 * 2]
-                        arg3->base.vptr->PrimaryAction(eax_117->x.i32 + originX_5, eax_117->y.i32 + originY_4)
+                        int32_t var_44_23 = eax_117->y.i32 + originY_4
+                        int32_t var_48_13 = eax_117->x.i32 + originX_5
+                        ecx_108->base.vptr->PrimaryAction(ecx_108)
                         struct HudUiZrdDialog* owner_4 = self->owner
-                        int32_t edx_53 = *((&eax_110->list->count)[var_30_3 * 2] + 0x24) * 9
-                        int32_t esi_32 = *(&owner_4->fontStyles + (edx_53 << 2))
+                        int32_t edx_52 = *((&eax_110->list->count)[var_30_3 * 2] + 0x24) * 9
+                        int32_t esi_32 = *(&owner_4->fontStyles + (edx_52 << 2))
                         int32_t esi_33 = neg.d(esi_32)
-                        struct HudFontStyle* esi_35 = sbb.d(esi_33, esi_33, esi_32 != 0) & (&owner_4->fontStyles + (edx_53 << 2))
+                        struct HudFontStyle* esi_35 = sbb.d(esi_33, esi_33, esi_32 != 0) & (&owner_4->fontStyles + (edx_52 << 2))
 
                         if (esi_35 != 0)
                             struct HudUiZrdDialog* ecx_110 = arg3
@@ -153779,20 +153831,23 @@
                 owner_41->base.flash.flashDirectionSign = 1
 
             struct HudUiTransitionTextPanel* owner_22 = owner_41
-            int32_t edx_71
-            edx_71.b = owner_41->base.elementFlags.b
+            int32_t edx_70
+            edx_70.b = owner_41->base.elementFlags.b
             int32_t var_4_16 = 0xffffffff
-            owner_41->base.elementFlags = (edx_71 & 0x10) | 2
+            owner_41->base.elementFlags = (edx_70 & 0x10) | 2
             struct HudUiTransitionTextPanel_FTable* vptr_7 = arg3->base.vptr
             char* fmt_7 = zLoc::ResolveMessageKeyOrFallback(eax_142->list->items[0].payload)
             vptr_7->SetTextFmt(arg3, fmt_7)
             struct zReader_NodeArray_HudTextLabelSpec* u32_9 = eax_142->list
-            arg3->base.vptr->PrimaryAction(u32_9->x.i32 + originX_8, u32_9->y.i32 + originY_6)
+            struct HudUiZrdDialog* ecx_161 = arg3
+            int32_t var_44_36 = u32_9->y.i32 + originY_6
+            int32_t var_48_20 = u32_9->x.i32 + originX_8
+            ecx_161->base.vptr->PrimaryAction(ecx_161)
             struct HudUiZrdDialog* owner_7 = self->owner
-            int32_t edx_76 = eax_142->list->__offset(0x24).d * 9
-            int32_t esi_51 = *(&owner_7->fontStyles + (edx_76 << 2))
+            int32_t edx_75 = eax_142->list->__offset(0x24).d * 9
+            int32_t esi_51 = *(&owner_7->fontStyles + (edx_75 << 2))
             int32_t esi_52 = neg.d(esi_51)
-            struct HudFontStyle* esi_54 = sbb.d(esi_52, esi_52, esi_51 != 0) & (&owner_7->fontStyles + (edx_76 << 2))
+            struct HudFontStyle* esi_54 = sbb.d(esi_52, esi_52, esi_51 != 0) & (&owner_7->fontStyles + (edx_75 << 2))
 
             if (esi_54 != 0)
                 struct HudUiZrdDialog* ecx_163 = arg3
@@ -153862,10 +153917,10 @@
 
                     if (i != eax_192)
                         do
-                            struct HudUiFlashPanel* edx_91 = *(eax_192 - 4)
+                            struct HudUiFlashPanel* edx_90 = *(eax_192 - 4)
                             eax_192 -= 4
                             end_1 -= 4
-                            *end_1 = edx_91
+                            *end_1 = edx_90
                         while (eax_192 != i)
 
                     for (; i != &i[1]; i = &i[1])
@@ -154003,12 +154058,15 @@
                     char* fmt_6 = zLoc::ResolveMessageKeyOrFallback(*((&eax_142->list->count)[var_30_4 * 2] + 0xc))
                     vptr_6->SetTextFmt(arg3, fmt_6)
                     struct zReader_NodeArray_HudTextLabelSpec* eax_148 = (&eax_142->list->count)[var_30_4 * 2]
-                    arg3->base.vptr->PrimaryAction(eax_148->x.i32 + originX_7, eax_148->y.i32 + originY)
+                    struct HudUiZrdDialog* ecx_147 = arg3
+                    int32_t var_44_32 = eax_148->y.i32 + originY
+                    int32_t var_48_18 = eax_148->x.i32 + originX_7
+                    ecx_147->base.vptr->PrimaryAction(ecx_147)
                     struct HudUiZrdDialog* owner_6 = self->owner
-                    int32_t edx_69 = *((&eax_142->list->count)[var_30_4 * 2] + 0x24) * 9
-                    int32_t esi_45 = *(&owner_6->fontStyles + (edx_69 << 2))
+                    int32_t edx_68 = *((&eax_142->list->count)[var_30_4 * 2] + 0x24) * 9
+                    int32_t esi_45 = *(&owner_6->fontStyles + (edx_68 << 2))
                     int32_t esi_46 = neg.d(esi_45)
-                    struct HudFontStyle* esi_48 = sbb.d(esi_46, esi_46, esi_45 != 0) & (&owner_6->fontStyles + (edx_69 << 2))
+                    struct HudFontStyle* esi_48 = sbb.d(esi_46, esi_46, esi_45 != 0) & (&owner_6->fontStyles + (edx_68 << 2))
 
                     if (esi_48 != 0)
                         struct HudUiZrdDialog* ecx_149 = arg3
@@ -165706,7 +165764,7 @@
                 int32_t colorMode = zInterp_Context::ParseIntToken(self)
                 zClass_Class::gwNodeGetUserData(self->currentNode, &g_zInterp_NodeUserDataScratch)
                 struct zDi* zInterp_NodeUserDataScratch_4 = g_zInterp_NodeUserDataScratch
-                data_56c780 = zInterp_NodeUserDataScratch_4
+                g_zInterp_Object3DCommandIntScratch = zInterp_NodeUserDataScratch_4
                 zDi::SetObject3DColorModeForMaterials(zInterp_NodeUserDataScratch_4, colorMode)
                 return 1
 
@@ -165772,9 +165830,9 @@
 
             if (strncmp(_Str1_85, "Object3DSetPriority", 0x13) == 0)
                 zClass_Class::gwNodeGetUserData(self->currentNode, &g_zInterp_NodeUserDataScratch)
-                data_56c780 = g_zInterp_NodeUserDataScratch
+                g_zInterp_Object3DCommandIntScratch = g_zInterp_NodeUserDataScratch
                 int32_t entryValue = zInterp_Context::ParseIntToken(self)
-                zDi::SetEntryValueForAllEntries(data_56c780, entryValue)
+                zDi::SetEntryValueForAllEntries(g_zInterp_Object3DCommandIntScratch, entryValue)
                 return 1
 
             char* _Str1_86
@@ -165842,9 +165900,9 @@
 
             if (strncmp(_Str1_88, "Object3DSetShowBackFace", 0x17) == 0)
                 zClass_Class::gwNodeGetUserData(self->currentNode, &g_zInterp_NodeUserDataScratch)
-                data_56c780 = g_zInterp_NodeUserDataScratch
+                g_zInterp_Object3DCommandIntScratch = g_zInterp_NodeUserDataScratch
                 int32_t enabled = zInterp_Context::ParseBoolToken(self)
-                zDi::SetShowBackFaceForAllEntries(data_56c780, enabled)
+                zDi::SetShowBackFaceForAllEntries(g_zInterp_Object3DCommandIntScratch, enabled)
                 return 1
 
             char* _Str1_89
@@ -174213,6 +174271,8 @@
 // Jump table for CZRecoilFrame::OnMenuOpenHelpDocs: remapped FindExecutableA result -> one of four localized MessageBox cases or the ShellExecuteA success path.
 // [comment @ 0x430c04]
 // Inline help-doc dispatch data: FindExecutableA failure codes <= 0x1f index this 0x20-byte remap table, then dispatch through g_CZRecoilFrame_HelpDocsErrorJumpTable at 0x430bf0.
+// [comment @ 0x438017]
+// NOP padding between ClearGlobalState body end at 0x438016 and zClass_Object3D_ModelRefLerpQueue::Add at 0x438020.
 // [comment @ 0x4c62a2]
 // MSVC _except_handler3 filter landing pad for _start scope table g_CRT_StartupSEHScopeTable. Not a standalone function: _except_handler3 enters it with _start's establisher frame; it saves the exception code and returns the _XcptFilter result.
 // [comment @ 0x4c62b7]

@@ -4,18 +4,18 @@ Use this tracked file for temporary dependency-group notes during companion
 `messages.dll` reconstruction. `.agent/SOURCE_OWNERS.json` is the durable
 owner-scope ledger; this file lists only active multi-function,
 source-readiness, owner, or data groups currently being coordinated for
-`.agent/RECOIL_MESSAGES_PLAN.md`.
+`messages.dll`.
 
 ## Rules
 
-- Use `python tools/recoil.py plan <subcommand> --binary messages ...`,
+- Use `python tools/recoil.py owner <subcommand> --binary messages ...`,
   `python tools/recoil.py status --binary messages ...`, and
   `python tools/recoil.py frontier --binary messages ...` for companion work.
 - Create or update a group before editing when a task touches more than one
   function, the generated lookup table, the message-table resource, or a shared
   data owner.
-- Do not mark plan entries done from this file alone. Plan markers still
-  require current source/build/Binary Ninja evidence.
+- Do not mark owner entries done from this file alone. Owner gates and tiers
+  still require current source/build/Binary Ninja evidence.
 - Keep notes concise and temporary. Move durable facts into source comments,
   Binary Ninja comments, tests, or `docs/reconstruction/messages_dll.md` before
   pruning.

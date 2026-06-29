@@ -8,7 +8,7 @@
 #include "zDi.h"
 
 namespace {
-    const char *kAnimateSourceFile = "D:\\Proj\\GameZRecoil\\zClass\\Animate.c";
+    const char kAnimateSourceFile[] = "D:\\Proj\\GameZRecoil\\zClass\\Animate.c";
     const short kAnimateStateStopped = 2;
     const short kAnimateAdvanceActive = 1;
     const short kAnimateLoopDisabled = -1;

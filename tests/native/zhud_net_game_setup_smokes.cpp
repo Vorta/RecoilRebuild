@@ -13,9 +13,6 @@
 #include <cstring>
 #include <new>
 
-extern RecoilApp g_RecoilApp;
-extern HudSensorTracker g_HudSensorTracker;
-
 namespace {
 struct CodeFunctionPatch {
     unsigned char *address;

@@ -13213,8 +13213,11 @@
 0x4d6b3c void* data_4d6b3c = sub_4caa8d
 0x4d6b40 07 00 00 00                                                                                      ....
 0x4d6b44 void* data_4d6b44 = sub_4caaa5
+// MSVC C++ EH FuncInfo for 0x4cab55; compiler metadata, not authored znet data.
 0x4d6b48 struct MsvcEhFuncInfoVc6 g_MsvcEh_FuncInfo_4cab55 =
 0x4d6b48 {
+    // MSVC C++ EH FuncInfo for 0x4cab55; compiler metadata, not authored znet
+    // data.
 0x4d6b48     int32_t magicNumber = 0x19930520
 0x4d6b4c     int32_t maxState = 0x8
 0x4d6b50     struct MsvcEhUnwindMapEntry* pUnwindMap = g_MsvcEh_UnwindMap_4cab55
@@ -13224,27 +13227,54 @@
 0x4d6b60     void* pIPToStateMap = 0x0
 0x4d6b64     void* pESTypeList = 0x0
 0x4d6b68 }
-0x4d6b68 struct MsvcEhUnwindMapEntry g_MsvcEh_UnwindMap_4cab55 =
+0x4d6b68 struct MsvcEhUnwindMapEntry g_MsvcEh_UnwindMap_4cab55[0x8] =
 0x4d6b68 {
-0x4d6b68     int32_t toState = -0x1
-0x4d6b6c     void (* action)() = sub_4caad0
-0x4d6b70 }
-0x4d6b70                                                 00 00 00 00                                                      ....
-0x4d6b74 void* data_4d6b74 = sub_4caad8
-0x4d6b78                                                                         01 00 00 00                                      ....
-0x4d6b7c void* data_4d6b7c = sub_4caae3
-0x4d6b80 02 00 00 00                                                                                      ....
-0x4d6b84 void* data_4d6b84 = MsvcEh_CxxFrameHandlerThunk_4d6ae0
-0x4d6b88                         03 00 00 00                                                                      ....
-0x4d6b8c void* data_4d6b8c = sub_4caaff
-0x4d6b90                                                 04 00 00 00                                                      ....
-0x4d6b94 void* data_4d6b94 = sub_4cab0d
-0x4d6b98                                                                         05 00 00 00                                      ....
-0x4d6b9c void* data_4d6b9c = sub_4cab25
-0x4d6ba0 06 00 00 00                                                                                      ....
-0x4d6ba4 void* data_4d6ba4 = sub_4cab3d
+0x4d6b68     [0x0] =
+0x4d6b68     {
+0x4d6b68         int32_t toState = -0x1
+0x4d6b6c         void (* action)() = sub_4caad0
+0x4d6b70     }
+0x4d6b70     [0x1] =
+0x4d6b70     {
+0x4d6b70         int32_t toState = 0x0
+0x4d6b74         void (* action)() = sub_4caad8
+0x4d6b78     }
+0x4d6b78     [0x2] =
+0x4d6b78     {
+0x4d6b78         int32_t toState = 0x1
+0x4d6b7c         void (* action)() = sub_4caae3
+0x4d6b80     }
+0x4d6b80     [0x3] =
+0x4d6b80     {
+0x4d6b80         int32_t toState = 0x2
+0x4d6b84         void (* action)() = MsvcEh_CxxFrameHandlerThunk_4d6ae0
+0x4d6b88     }
+0x4d6b88     [0x4] =
+0x4d6b88     {
+0x4d6b88         int32_t toState = 0x3
+0x4d6b8c         void (* action)() = sub_4caaff
+0x4d6b90     }
+0x4d6b90     [0x5] =
+0x4d6b90     {
+0x4d6b90         int32_t toState = 0x4
+0x4d6b94         void (* action)() = sub_4cab0d
+0x4d6b98     }
+0x4d6b98     [0x6] =
+0x4d6b98     {
+0x4d6b98         int32_t toState = 0x5
+0x4d6b9c         void (* action)() = sub_4cab25
+0x4d6ba0     }
+0x4d6ba0     [0x7] =
+0x4d6ba0     {
+0x4d6ba0         int32_t toState = 0x6
+0x4d6ba4         void (* action)() = sub_4cab3d
+// MSVC C++ EH FuncInfo for 0x4cac3f; compiler metadata, not authored znet data.
+0x4d6ba8     }
+0x4d6ba8 }
 0x4d6ba8 struct MsvcEhFuncInfoVc6 g_MsvcEh_FuncInfo_4cac3f =
 0x4d6ba8 {
+    // MSVC C++ EH FuncInfo for 0x4cac3f; compiler metadata, not authored znet
+    // data.
 0x4d6ba8     int32_t magicNumber = 0x19930520
 0x4d6bac     int32_t maxState = 0x11
 0x4d6bb0     struct MsvcEhUnwindMapEntry* pUnwindMap = g_MsvcEh_UnwindMap_4cac3f
@@ -13254,45 +13284,99 @@
 0x4d6bc0     void* pIPToStateMap = 0x0
 0x4d6bc4     void* pESTypeList = 0x0
 0x4d6bc8 }
-0x4d6bc8 struct MsvcEhUnwindMapEntry g_MsvcEh_UnwindMap_4cac3f =
+0x4d6bc8 struct MsvcEhUnwindMapEntry g_MsvcEh_UnwindMap_4cac3f[0x11] =
 0x4d6bc8 {
-0x4d6bc8     int32_t toState = -0x1
-0x4d6bcc     void (* action)() = sub_4cab60
-0x4d6bd0 }
-0x4d6bd0                                                 ff ff ff ff                                                      ....
-0x4d6bd4 void* data_4d6bd4 = sub_4cab6b
-0x4d6bd8                                                                         01 00 00 00                                      ....
-0x4d6bdc void* data_4d6bdc = sub_4cab76
-0x4d6be0 02 00 00 00                                                                                      ....
-0x4d6be4 void* data_4d6be4 = MsvcEh_CxxFrameHandlerThunk_4d6b48
-0x4d6be8                         03 00 00 00                                                                      ....
-0x4d6bec void* data_4d6bec = sub_4cab8c
-0x4d6bf0                                                 04 00 00 00                                                      ....
-0x4d6bf4 void* data_4d6bf4 = sub_4cab94
-0x4d6bf8                                                                         05 00 00 00                                      ....
-0x4d6bfc void* data_4d6bfc = sub_4cab9c
-0x4d6c00 06 00 00 00                                                                                      ....
-0x4d6c04 void* data_4d6c04 = sub_4cabaf
-0x4d6c08                         07 00 00 00                                                                      ....
-0x4d6c0c void* data_4d6c0c = sub_4cabc2
-0x4d6c10                                                 ff ff ff ff                                                      ....
-0x4d6c14 void* data_4d6c14 = sub_4cabd5
-0x4d6c18                                                                         09 00 00 00                                      ....
-0x4d6c1c void* data_4d6c1c = sub_4cabe0
-0x4d6c20 0a 00 00 00                                                                                      ....
-0x4d6c24 void* data_4d6c24 = sub_4cabeb
-0x4d6c28                         0b 00 00 00                                                                      ....
-0x4d6c2c void* data_4d6c2c = sub_4cabf6
-0x4d6c30                                                 0c 00 00 00                                                      ....
-0x4d6c34 void* data_4d6c34 = sub_4cabfe
-0x4d6c38                                                                         0d 00 00 00                                      ....
-0x4d6c3c void* data_4d6c3c = sub_4cac06
-0x4d6c40 0e 00 00 00                                                                                      ....
-0x4d6c44 void* data_4d6c44 = sub_4cac19
-0x4d6c48                         0f 00 00 00                                                                      ....
-0x4d6c4c void* data_4d6c4c = sub_4cac2c
+0x4d6bc8     [0x00] =
+0x4d6bc8     {
+0x4d6bc8         int32_t toState = -0x1
+0x4d6bcc         void (* action)() = sub_4cab60
+0x4d6bd0     }
+0x4d6bd0     [0x01] =
+0x4d6bd0     {
+0x4d6bd0         int32_t toState = -0x1
+0x4d6bd4         void (* action)() = sub_4cab6b
+0x4d6bd8     }
+0x4d6bd8     [0x02] =
+0x4d6bd8     {
+0x4d6bd8         int32_t toState = 0x1
+0x4d6bdc         void (* action)() = sub_4cab76
+0x4d6be0     }
+0x4d6be0     [0x03] =
+0x4d6be0     {
+0x4d6be0         int32_t toState = 0x2
+0x4d6be4         void (* action)() = MsvcEh_CxxFrameHandlerThunk_4d6b48
+0x4d6be8     }
+0x4d6be8     [0x04] =
+0x4d6be8     {
+0x4d6be8         int32_t toState = 0x3
+0x4d6bec         void (* action)() = sub_4cab8c
+0x4d6bf0     }
+0x4d6bf0     [0x05] =
+0x4d6bf0     {
+0x4d6bf0         int32_t toState = 0x4
+0x4d6bf4         void (* action)() = sub_4cab94
+0x4d6bf8     }
+0x4d6bf8     [0x06] =
+0x4d6bf8     {
+0x4d6bf8         int32_t toState = 0x5
+0x4d6bfc         void (* action)() = sub_4cab9c
+0x4d6c00     }
+0x4d6c00     [0x07] =
+0x4d6c00     {
+0x4d6c00         int32_t toState = 0x6
+0x4d6c04         void (* action)() = sub_4cabaf
+0x4d6c08     }
+0x4d6c08     [0x08] =
+0x4d6c08     {
+0x4d6c08         int32_t toState = 0x7
+0x4d6c0c         void (* action)() = sub_4cabc2
+0x4d6c10     }
+0x4d6c10     [0x09] =
+0x4d6c10     {
+0x4d6c10         int32_t toState = -0x1
+0x4d6c14         void (* action)() = sub_4cabd5
+0x4d6c18     }
+0x4d6c18     [0x0a] =
+0x4d6c18     {
+0x4d6c18         int32_t toState = 0x9
+0x4d6c1c         void (* action)() = sub_4cabe0
+0x4d6c20     }
+0x4d6c20     [0x0b] =
+0x4d6c20     {
+0x4d6c20         int32_t toState = 0xa
+0x4d6c24         void (* action)() = sub_4cabeb
+0x4d6c28     }
+0x4d6c28     [0x0c] =
+0x4d6c28     {
+0x4d6c28         int32_t toState = 0xb
+0x4d6c2c         void (* action)() = sub_4cabf6
+0x4d6c30     }
+0x4d6c30     [0x0d] =
+0x4d6c30     {
+0x4d6c30         int32_t toState = 0xc
+0x4d6c34         void (* action)() = sub_4cabfe
+0x4d6c38     }
+0x4d6c38     [0x0e] =
+0x4d6c38     {
+0x4d6c38         int32_t toState = 0xd
+0x4d6c3c         void (* action)() = sub_4cac06
+0x4d6c40     }
+0x4d6c40     [0x0f] =
+0x4d6c40     {
+0x4d6c40         int32_t toState = 0xe
+0x4d6c44         void (* action)() = sub_4cac19
+0x4d6c48     }
+0x4d6c48     [0x10] =
+0x4d6c48     {
+0x4d6c48         int32_t toState = 0xf
+0x4d6c4c         void (* action)() = sub_4cac2c
+// MSVC C++ EH FuncInfo for 0x4cac58; compiler metadata, not authored znet data.
+0x4d6c50     }
+0x4d6c50 }
 0x4d6c50 struct MsvcEhFuncInfoVc6 g_MsvcEh_FuncInfo_4cac58 =
 0x4d6c50 {
+    // MSVC C++ EH FuncInfo for 0x4cac58; compiler metadata, not authored znet
+    // data.
 0x4d6c50     int32_t magicNumber = 0x19930520
 0x4d6c54     int32_t maxState = 0x1
 0x4d6c58     struct MsvcEhUnwindMapEntry* pUnwindMap = g_MsvcEh_UnwindMap_4cac58
@@ -13302,10 +13386,13 @@
 0x4d6c68     void* pIPToStateMap = 0x0
 0x4d6c6c     void* pESTypeList = 0x0
 0x4d6c70 }
-0x4d6c70 struct MsvcEhUnwindMapEntry g_MsvcEh_UnwindMap_4cac58 =
+0x4d6c70 struct MsvcEhUnwindMapEntry g_MsvcEh_UnwindMap_4cac58[0x1] =
 0x4d6c70 {
-0x4d6c70     int32_t toState = -0x1
-0x4d6c74     void (* action)() = sub_4cac50
+0x4d6c70     [0x0] =
+0x4d6c70     {
+0x4d6c70         int32_t toState = -0x1
+0x4d6c74         void (* action)() = sub_4cac50
+0x4d6c78     }
 0x4d6c78 }
 0x4d6c78 struct MsvcEhFuncInfoVc6 g_MsvcEh_FuncInfo_4cac78 =
 0x4d6c78 {

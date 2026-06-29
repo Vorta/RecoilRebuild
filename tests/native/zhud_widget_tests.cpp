@@ -24,7 +24,6 @@
 extern "C" unsigned int g_HudUi_InvalidateMask;
 extern "C" int g_RecoilApp_QuitAfterCredits;
 extern "C" HWND g_RecoilApp_hWndMain;
-extern RecoilApp g_RecoilApp;
 
 namespace zOpt {
 int GetNetworkModemEnabled();

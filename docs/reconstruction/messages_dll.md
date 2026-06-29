@@ -21,13 +21,13 @@ The bridge supports target-qualified requests, so agents should pass
 
 ## Plan Ledger
 
-The companion address ledger is `.agent/RECOIL_MESSAGES_PLAN.md`. Use the same
+The companion address ledger is `.agent/SOURCE_OWNERS.json`. Use the same
 plan/status/frontier tools as the main executable, but pass `--binary messages`
 so the tools resolve the messages plan path:
 
 ```powershell
-python tools/recoil.py plan find --binary messages ZLocGetID
-python tools/recoil.py plan show --binary messages 0x10001010
+python tools/recoil.py owner find ZLocGetID
+python tools/recoil.py owner show --binary messages 0x10001010
 python tools/recoil.py status --binary messages 0x10001010 --lane binary
 python tools/recoil.py frontier --binary messages 0x10001010 --depth 1 --lane binary
 ```
@@ -45,8 +45,6 @@ Seed or refresh the companion ledger from the already-open `messages.bndb`
 through the target-qualified bridge:
 
 ```powershell
-python tools/recoil.py plan seed-binary --binary messages --dry-run
-python tools/recoil.py plan seed-binary --binary messages --apply
 ```
 
 The seed command inventories every current BN function whose start falls inside
@@ -76,7 +74,7 @@ python tools/recoil.py build resource --reference support/messages.dll --manifes
 Run focused source-surface checks for the companion source with:
 
 ```powershell
-python tools/recoil.py guard original-symbol --root src/Messages --plan .agent/RECOIL_MESSAGES_PLAN.md --max 20
+python tools/recoil.py guard original-symbol --root src/Messages --max 20
 python tools/recoil.py audit docblocks --path src/Messages --summary --max 20
 python tools/recoil.py doctor --binary messages --quick
 ```

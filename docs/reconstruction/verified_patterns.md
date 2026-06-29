@@ -1,7 +1,7 @@
 # Verified Patterns
 
 This ledger captures reusable source and verification shapes that have current
-tier `S` evidence. Binary Ninja, `.agent/RECOIL_PLAN.md`, and per-target VC
+tier `S` evidence. Binary Ninja, `.agent/SOURCE_OWNERS.json`, and per-target VC
 artifacts remain authoritative for individual functions.
 
 ## Current Patterns
@@ -24,7 +24,7 @@ artifacts remain authoritative for individual functions.
   hand-authored production `ScalarDeletingDestructor` method.
 - Tiny vtable/no-op helpers: verified examples include `0x407130`,
   `0x407140`, `0x407150`, and `0x407160`. Keep these as simple authored C/C++
-  bodies or provider-marked glue according to the plan entry; do not replace
+  bodies or provider-marked glue according to the owner-projection entry; do not replace
   them with raw assembly.
 - HUD/UI leaf accessors and setters: verified examples include
   `HudUiElement::GetX` and nearby small HUD helpers. Prefer named fields and

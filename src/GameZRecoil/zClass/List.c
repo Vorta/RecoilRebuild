@@ -157,7 +157,7 @@ zClass_TypeListLink **g_zClass_TypeList_TailSlotPtrs[16] = {
  */
 zClass_TypeListLink *g_zClass_FilterIterCursor = 0;
 /**
- * Reimplements anonymous data 0x539b9c in the filtered iterator dword block.
+ * Reimplements data 0x539b9c: g_zClass_FilterIterUnknownDword0.
  * Purpose: authored zero dword reserved by the List.c filtered iterator data
  * owner between the cursor and filter text pointer.
  */
@@ -168,7 +168,7 @@ unsigned int g_zClass_FilterIterUnknownDword0 = 0;
  */
 const char *g_zClass_FilterIterText = 0;
 /**
- * Reimplements anonymous data 0x539ba4 in the filtered iterator dword block.
+ * Reimplements data 0x539ba4: g_zClass_FilterIterUnknownDword1.
  * Purpose: authored zero dword reserved by the List.c filtered iterator data
  * owner between the filter text pointer and prefix length.
  */
@@ -184,51 +184,8 @@ namespace {
     const int kQueuedTreeBucket = 7;
     const int kZClassNodeWorld = 2;
     const int kTypeListInsertedFlag = 0x01;
-    const char *kListSourceFile = "D:\\Proj\\GameZRecoil\\zClass\\List.c";
+    const char kListSourceFile[] = "D:\\Proj\\GameZRecoil\\zClass\\List.c";
 
-    typedef int(__fastcall * RemoveChildProc)(
-        zClass_NodePartial *,
-        zClass_NodePartial *
-    );
-
-    /**
-     * Original helper evidence: no standalone retail function; recovered from
-     * address-backed caller 0x44f1d0 by factoring its repeated child-removal
-     * loop pattern.
-     * Purpose: remove all secondary children from a node through the supplied
-     * child-removal routine.
-     */
-    int RemoveAllChildren(
-        zClass_NodePartial * node,
-        RemoveChildProc removeChild
-    ) {
-        while (node->listCountB > 0) {
-            const int result = removeChild(
-                node,
-                node->listB[0]
-            );
-            if (result != 0) {
-                return result;
-            }
-        }
-
-        return 0;
-    }
-
-    /**
-     * Original helper evidence: no standalone retail function; recovered from
-     * address-backed caller 0x44f1d0 by factoring its repeated
-     * detached-object deletion pattern.
-     * Purpose: delete a 3D object node only after it has no remaining primary
-     * parents.
-     */
-    int DeleteObject3DWhenDetached(zClass_NodePartial * node) {
-        if (node->listCountA != 0) {
-            return 1;
-        }
-
-        return zClass_Object3D::DeleteNode(node);
-    }
 }
 
 namespace zClass_List {
@@ -357,7 +314,7 @@ namespace zClass_List {
      * ownership, and object-data cleanup rules.
      */
     int __fastcall gwListDeleteANode(zClass_NodePartial * node) {
-        unsigned int displayInstanceWord = 0;
+        unsigned int displayInstanceWord;
         int result = zClass_Class::gwNodeGetUserData(
             node,
             &displayInstanceWord
@@ -367,50 +324,176 @@ namespace zClass_List {
         }
 
         if (displayInstanceWord != 0) {
-            zDiPartial *displayInstance = (zDiPartial *)(unsigned int)displayInstanceWord;
             zClass_Class::gwNodeSetDisplayInstance(
                 node,
                 0
             );
-            if (zDi::GetRefCount(displayInstance) == 0) {
-                result = zModel_DiPool::FreeIfUnreferenced(displayInstance);
+            if (zDi::GetRefCount((zDiPartial *)(unsigned int)displayInstanceWord) == 0) {
+                result = zModel_DiPool::FreeIfUnreferenced(
+                    (zDiPartial *)(unsigned int)displayInstanceWord
+                );
                 if (result != 0) {
                     return result;
                 }
             }
         }
 
-        // Jump table at 0x44f600 uses the constructor class-id order:
-        // camera, world, window, display, object3D, lod, sequence, animate, light, sound, switch.
+        // BN emits the switch bodies in object3D/animate/lod/sequence/camera/window/display/switch/light/sound/world order.
         switch (node->classId) {
-        case 1:
-            result = RemoveAllChildren(
-                node,
-                zClass_Camera::gwCameraRemoveChild
-            );
-            if (result != 0) {
-                return result;
-            }
-            return DeleteObject3DWhenDetached(node);
-
-        case 2: {
-            zClass_WorldDataPartial *worldData = (zClass_WorldDataPartial *)(node->classData);
-
-            while (worldData->lightCount > 0) {
-                result = zClass_World::RemoveLight(
-                    node,
-                    worldData->lightNodes[0]
-                );
+        case 5:
+            while (node->listCountB > 0) {
+                result = zClass_Object3D::RemoveChild(node, node->listB[0]);
                 if (result != 0) {
                     return result;
                 }
             }
-            if (worldData->lightNodes != 0) {
-                free(worldData->lightNodes);
-                worldData->lightNodes = 0;
-                free(worldData->lightDataList);
-                worldData->lightDataList = 0;
+            if (node->listCountA == 0) {
+                return zClass_Object3D::DeleteNode(node);
             }
+            return 1;
+
+        case 8:
+            while (node->listCountB > 0) {
+                result = zClass_Animate::RemoveChild(node, node->listB[0]);
+                if (result != 0) {
+                    return result;
+                }
+            }
+            if (node->listCountA == 0) {
+                return zClass_Animate::DeleteNode(node);
+            }
+            return 1;
+
+        case 6:
+            while (node->listCountB > 0) {
+                result = zClass_Lod::RemoveChild(node, node->listB[0]);
+                if (result != 0) {
+                    return result;
+                }
+            }
+            if (node->listCountA == 0) {
+                return zClass_Object3D::DeleteNode(node);
+            }
+            return 1;
+
+        case 7:
+            while (node->listCountB > 0) {
+                result = zClass_Sequence::RemoveChild(node, node->listB[0]);
+                if (result != 0) {
+                    return result;
+                }
+            }
+            if (node->listCountA == 0) {
+                return zClass_Object3D::DeleteNode(node);
+            }
+            return 1;
+
+        case 1:
+            while (node->listCountB > 0) {
+                result = zClass_Camera::gwCameraRemoveChild(node, node->listB[0]);
+                if (result != 0) {
+                    return result;
+                }
+            }
+            if (node->listCountA == 0) {
+                return zClass_Object3D::DeleteNode(node);
+            }
+            return 1;
+
+        case 3:
+            while (node->listCountB > 0) {
+                result = zClass::RemoveChildChecked(node, node->listB[0]);
+                if (result != 0) {
+                    return result;
+                }
+            }
+            if (node->listCountA == 0) {
+                return zClass_Object3D::DeleteNode(node);
+            }
+            return 1;
+
+        case 4:
+            while (node->listCountB > 0) {
+                result = zClass_Display::RemoveChild(node, node->listB[0]);
+                if (result != 0) {
+                    return result;
+                }
+            }
+            if (node->listCountA == 0) {
+                return zClass_Object3D::DeleteNode(node);
+            }
+            return 1;
+
+        case 11:
+            while (node->listCountB > 0) {
+                result = zClass_Class::RemoveChildValidated(node, node->listB[0]);
+                if (result != 0) {
+                    return result;
+                }
+            }
+            if (node->listCountA == 0) {
+                return zClass_Object3D::DeleteNode(node);
+            }
+            return 1;
+
+        case 9: {
+            while (node->listCountB > 0) {
+                result = zClass_Light::RemoveChild(node, node->listB[0]);
+                if (result != 0) {
+                    return result;
+                }
+            }
+            zClass_LightDataPartial *lightData = (zClass_LightDataPartial *)(node->classData);
+            if (lightData->attachedWorldCount > 0) {
+                return 1;
+            }
+            if (node->listCountA == 0) {
+                return zClass_Light::DeleteNode(node);
+            }
+            return 1;
+        }
+
+        case 10: {
+            while (node->listCountB > 0) {
+                result = zClass_Sound::RemoveChild(node, node->listB[0]);
+                if (result != 0) {
+                    return result;
+                }
+            }
+            zClass_SoundDataPartial *soundData = (zClass_SoundDataPartial *)(node->classData);
+            if (soundData->attachedWorldCount > 0) {
+                return 1;
+            }
+            if (node->listCountA == 0) {
+                return zClass_Sound::DeleteNode(node);
+            }
+            return 1;
+        }
+
+        case 2: {
+            {
+                zClass_WorldDataPartial *worldData =
+                    (zClass_WorldDataPartial *)(node->classData);
+
+                while (worldData->lightCount > 0) {
+                    result = zClass_World::RemoveLight(
+                        node,
+                        worldData->lightNodes[0]
+                    );
+                    if (result != 0) {
+                        return result;
+                    }
+                }
+                if (worldData->lightNodes != 0) {
+                    free(worldData->lightNodes);
+                    worldData->lightNodes = 0;
+                    free(worldData->lightDataList);
+                    worldData->lightDataList = 0;
+                }
+            }
+
+            zClass_WorldDataPartial *worldData =
+                (zClass_WorldDataPartial *)(node->classData);
 
             while (worldData->soundCount > 0) {
                 result = zClass_World::RemoveSound(
@@ -428,142 +511,47 @@ namespace zClass_List {
                 worldData->soundDataList = 0;
             }
 
-            result = RemoveAllChildren(
-                node,
-                zClass_World::RemoveChildAtGrid
-            );
-            if (result != 0) {
-                return result;
-            }
-
-            {
-                for (int row = 0; row < worldData->areaGridRowCount; ++row) {
-                    zWorldAreaPartial *area = worldData->areaGridRows[row];
-                    {
-                        for (int col = 0; col < worldData->areaGridColCount; ++col) {
-                            while (area[col].childCount > 0) {
-                                result =
-                                    zClass_World::RemoveChildAtGrid(
-                                        node,
-                                        area[col].childList[0]
-                                    );
-                                if (result != 0) {
-                                    return result;
-                                }
-                            }
-                        }
-                    }
+            while (node->listCountB > 0) {
+                result = zClass_World::RemoveChildAtGrid(node, node->listB[0]);
+                if (result != 0) {
+                    return result;
                 }
             }
 
-            if (node->listCountA != 0) {
-                return 1;
+            {
+                int row = 0;
+                zWorldAreaPartial **rowCursor = worldData->areaGridRows;
+                if (worldData->areaGridRowCount > 0) {
+                    do {
+                        zWorldAreaPartial *area = *rowCursor;
+                        int col = 0;
+                        if (worldData->areaGridColCount > 0) {
+                            do {
+                                while (area->childCount > 0) {
+                                    result =
+                                        zClass_World::RemoveChildAtGrid(
+                                            node,
+                                            area->childList[0]
+                                        );
+                                    if (result != 0) {
+                                        return result;
+                                    }
+                                }
+                                ++area;
+                                ++col;
+                            } while (col < worldData->areaGridColCount);
+                        }
+                        ++rowCursor;
+                        ++row;
+                    } while (row < worldData->areaGridRowCount);
+                }
             }
-            return zClass_World::DeleteNode(node);
+
+            if (node->listCountA == 0) {
+                return zClass_World::DeleteNode(node);
+            }
+            return 1;
         }
-
-        case 3:
-            result = RemoveAllChildren(
-                node,
-                zClass::RemoveChildChecked
-            );
-            if (result != 0) {
-                return result;
-            }
-            return DeleteObject3DWhenDetached(node);
-
-        case 4:
-            result = RemoveAllChildren(
-                node,
-                zClass_Display::RemoveChild
-            );
-            if (result != 0) {
-                return result;
-            }
-            return DeleteObject3DWhenDetached(node);
-
-        case 5:
-            result = RemoveAllChildren(
-                node,
-                zClass_Object3D::RemoveChild
-            );
-            if (result != 0) {
-                return result;
-            }
-            return DeleteObject3DWhenDetached(node);
-
-        case 6:
-            result = RemoveAllChildren(
-                node,
-                zClass_Lod::RemoveChild
-            );
-            if (result != 0) {
-                return result;
-            }
-            return DeleteObject3DWhenDetached(node);
-
-        case 7:
-            result = RemoveAllChildren(
-                node,
-                zClass_Sequence::RemoveChild
-            );
-            if (result != 0) {
-                return result;
-            }
-            return DeleteObject3DWhenDetached(node);
-
-        case 8:
-            result = RemoveAllChildren(
-                node,
-                zClass_Animate::RemoveChild
-            );
-            if (result != 0) {
-                return result;
-            }
-            if (node->listCountA != 0) {
-                return 1;
-            }
-            return zClass_Animate::DeleteNode(node);
-
-        case 9: {
-            result = RemoveAllChildren(
-                node,
-                zClass_Light::RemoveChild
-            );
-            if (result != 0) {
-                return result;
-            }
-            zClass_LightDataPartial *lightData = (zClass_LightDataPartial *)(node->classData);
-            if (lightData->attachedWorldCount > 0 || node->listCountA != 0) {
-                return 1;
-            }
-            return zClass_Light::DeleteNode(node);
-        }
-
-        case 10: {
-            result = RemoveAllChildren(
-                node,
-                zClass_Sound::RemoveChild
-            );
-            if (result != 0) {
-                return result;
-            }
-            zClass_SoundDataPartial *soundData = (zClass_SoundDataPartial *)(node->classData);
-            if (soundData->attachedWorldCount > 0 || node->listCountA != 0) {
-                return 1;
-            }
-            return zClass_Sound::DeleteNode(node);
-        }
-
-        case 11:
-            result = RemoveAllChildren(
-                node,
-                zClass_Class::RemoveChildValidated
-            );
-            if (result != 0) {
-                return result;
-            }
-            return DeleteObject3DWhenDetached(node);
 
         default:
             zError::ReportOld(

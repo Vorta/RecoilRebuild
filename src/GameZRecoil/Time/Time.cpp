@@ -37,7 +37,11 @@ float g_Time_UnscaledAccumulatedTimeSec = 0.0f;
 }
 
 namespace Time {
-// BN .rdata 0x4d2f50 is referenced only by Time::Reset and Time::Tick.
+/**
+ * Reimplements data 0x4d2f50: g_Time_MillisecondsToSecondsScale.
+ * Purpose: converts GetTickCount millisecond values to seconds for Time reset
+ * and tick accumulation.
+ */
 static const float g_Time_MillisecondsToSecondsScale = 0.00100000005f;
 
 /**

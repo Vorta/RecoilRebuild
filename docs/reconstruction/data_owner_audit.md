@@ -2,25 +2,39 @@
 
 `Data reimplemented` is a whole-owner gate. A function or source group can keep
 `Data reimplemented ✅` only when every touched authored `.data`, `.rdata`, and
-BSS owner has complete source data-owner evidence. Field-level recovery inside a
+BSS packet has complete source data evidence. Field-level recovery inside a
 larger global, source macros, static offset asserts, and functional smokes are
 not enough.
+
+Distinguish primary source-shaped owners from auxiliary data packets. A primary
+source-shaped owner is the original source construct being reconstructed:
+class/interface, source-file cluster, subsystem, authored callback table,
+authored record/table/global object/static class-member group, provider
+boundary, or true standalone leaf. An auxiliary data packet merely groups
+globals, literals, constants, or storage ranges to prove data prerequisites and
+byte-readiness for a primary owner. Treat a data packet as a primary
+source-owner target only when BN/source evidence proves the original source had
+that exact authored data construct; otherwise link it upward to the primary
+source-shaped owner and keep orphan packets as parent-reconciliation blockers.
 
 The plan's data-entry progress rows are narrower: they track canonical `.data`
 owner-range globals only. Do not add `.rdata` entries, BSS-only entries, or
 member/field rows inside a larger global. For example, `0x4f0cc0
-g_HudSensorTracker` is one data plan entry for the owner range, not one row per
+g_HudSensorTracker` is one data owner-projection entry for the owner range, not one row per
 BN-labeled member. `.rdata` and BSS facts still belong in the source-owner data
 gate evidence when a function's `Data reimplemented` marker depends on them.
 
 Data entries use `Reimplemented [X/F/C/B/A/S]`: `X` means no accepted
 source-level data implementation, `F` means the canonical source definition or
 declaration builds and matches basic BN symbol facts, `C` means the complete
-source data-owner model is accepted, `B` means the linked owner data gate is
+source data-packet model is accepted, `B` means the linked data gate is
 accepted, `A` means reviewed relocation-masked data-symbol evidence is
 near-byte-equivalent, and `S` means accepted data-symbol bytes plus relocation
-identity, linked owner byte gate acceptance, and no current final executable
-`.data` section/layout contradiction for that data row or owner byte gate.
+identity, linked data-packet byte gate acceptance, and no current final
+executable `.data` section/layout contradiction for that data row or owner byte
+gate. Data-entry `S` means the packet is byte-ready as a dependency; it does
+not complete the parent/source-owner tier `S` gate unless the packet is itself
+proven to be the primary original authored construct.
 
 ## Final Executable Data Audit
 
@@ -33,7 +47,7 @@ section drift, audit the final linked data layout before preserving or accepting
 data `Reimplemented [S]`:
 
 ```powershell
-python tools/recoil.py audit final-data --include-plan --strict --json-out build/vc5-final/final_data_diff.json --plan-actions-json build/vc5-final/final_data_plan_actions.json
+python tools/recoil.py audit final-data --include-owners --strict --json-out build/vc5-final/final_data_diff.json --owner-actions-json build/vc5-final/final_data_owner_actions.json
 ```
 
 Final executable reproducibility is tracked separately in
@@ -45,14 +59,16 @@ deltas or plan-correlated layout contradictions remain,
 `work_unit=final-data-layout` is the nested linked-data blocker. Neither is a
 SOURCE_OWNERS record and neither should be accepted by editing
 `.agent/SOURCE_OWNERS.json`. They block final executable acceptance and
-directly affected data rows or owner byte gates only.
+directly affected data rows or owner byte gates only. Human queue output labels
+them `work_unit_scope=global-final-lane`; owner-local byte candidates remain
+per-owner `S` work and are not blocked by unrelated final-lane or data debt.
 
 `--strict` returns nonzero when section deltas are present. For this audit that
 is evidence that final data byte identity is blocked, not necessarily a tool
-failure. `--include-plan` correlates final-data issues with current data `S`
-rows, and `--plan-actions-json` writes governed owner/plan command batches for
-review, dry-run, and application through `python tools/recoil.py owner ...` and
-`python tools/recoil.py plan ...`; do not hand-edit `.agent` ledgers.
+failure. `--include-owners` correlates final-data issues with current data `S`
+rows, and `--owner-actions-json` writes governed owner command batches for
+review, dry-run, and application through `python tools/recoil.py owner ...`;
+do not hand-edit `.agent` ledgers.
 
 The 2026-06-26 final-data audit downgraded 2,239 data rows from `S` to `B`.
 Of those, 2,170 had direct final-data audit issues while at tier `S`: candidate
@@ -65,7 +81,7 @@ mismatch. It was a conservative owner-byte-gate block caused by final executable
 
 ## Acceptance Packet
 
-For each accepted data owner, record:
+For each accepted data packet, record:
 
 - owner symbol, BN address/range, section, size, alignment, and source symbol;
 - full storage extent, including adjacent fields that BN labels separately;
@@ -74,9 +90,11 @@ For each accepted data owner, record:
   pointer/symbol identity, and nullness;
 - VC5 `data_symbols` output when available, including relocation identity
   review for pointers;
-- caller/function entries whose `Data reimplemented ✅` depends on this owner.
+- caller/function entries whose `Data reimplemented ✅` depends on this packet.
+- primary source-shaped parent owner when known, or an explicit
+  parent-reconciliation blocker when the packet is orphaned.
 
-For each plan-tracked `.data` global definition in source, put an immediately
+For each owner-tracked `.data` global definition in source, put an immediately
 preceding docblock:
 
 ```cpp
@@ -92,13 +110,13 @@ If current BN/source evidence proves no authored globals are touched, use
 
 ## Current Audit Baseline
 
-The 2026-06-17 data-gate hardening pass found 751 plan entries marked
+The 2026-06-17 data-gate hardening pass found 751 owner-projection entries marked
 `Data reimplemented ✅`. Existing VC manifests contain 415 `data_symbols`
 entries across 103 manifests, so most green data markers cannot be justified by
 data-symbol evidence alone.
 
 The same pass downgraded 718 stale `Data reimplemented ✅` markers to `❌`
-through `python tools/recoil.py plan set ... data ❌`. The dry run succeeded
+through `python tools/recoil.py owner set-tier ... X`. The dry run succeeded
 for the 717 entries that lacked any `data_symbols` target coverage, then the
 same updates were applied. A later verification pass found that
 `0x4bab40 HudUiPanel::~HudUiPanel` did not emit an accepted data-symbol evidence
@@ -157,7 +175,7 @@ The correct state is data-blocked until the full HUD manager data owner is
 recovered and verified.
 
 Future data-owner acceptances should append compact entries here rather than
-relying only on per-function plan markers.
+relying only on address-local verification notes.
 
 ## 2026-06-24 Accepted Data Owners
 
@@ -181,7 +199,7 @@ relying only on per-function plan markers.
   `vc5_o2_ob0_md_zrndr_esp_pivot_raw_asm_facs`; the report includes the COFF
   relocation mask, relocation identity, byte diff, triage, object, and listing
   artifacts under `build/vc5-verify/zrndr_span_esp_pivot_saved_esp_slot/`.
-- Dependent plan entries: supports the data gate for the ESP-pivot span leaves
+- Dependent owner-projection entries: supports the data gate for the ESP-pivot span leaves
   `0x49b7e0`, `0x49bbf0`, `0x49e6c0`, `0x49edc0`, and `0x49f180`, plus the
   standalone data row `0x57da38`.
 
@@ -212,9 +230,9 @@ relying only on per-function plan markers.
 - VC5 evidence candidate: `python tools/recoil.py verify vc5
   zfmv_action_tag_strings_data` passed with zero unmasked data-byte mismatches
   for the complete 112-byte owner range using `vc5_o2_ob1_md_gx_facs`.
-- Parent-owned gate status: no owner or plan marker was updated by this
+- Parent-owned gate status: no owner gate or tier was updated by this
   evidence candidate; parent still owns source-owner/data/byte acceptance for
-  the twelve plan-tracked data entries.
+  the twelve owner-tracked data entries.
 
 ### network_online.westwood_online_upgrade_api_source_file
 
@@ -280,7 +298,7 @@ relying only on per-function plan markers.
   `g_WestwoodOnlineUpgradeCreateSessionFromQueryFlag` at 0x538584. Those two
   symbols were removed from `westwood_online_upgrade_api_extra_data` so this
   API-owner evidence does not link the session-browser data owner.
-- Dependent plan entries: 0x42dda0, 0x43d130, 0x43d280, and 0x43d2e0.
+- Dependent owner-projection entries: 0x42dda0, 0x43d130, 0x43d280, and 0x43d2e0.
 
 ## 2026-06-21 Data Evidence Candidates
 
@@ -337,7 +355,7 @@ relying only on per-function plan markers.
   mismatches for all five HUD symbols using
   `vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs`. Parent review still owns
   acceptance of the source-owner/data/byte gates.
-- Dependent plan entries: 0x439b20 and 0x439b70 for direct loop-sound control;
+- Dependent owner-projection entries: 0x439b20 and 0x439b70 for direct loop-sound control;
   this evidence may also support the narrow low-meter portion of
   `Player::InitMissionRuntimeFromWorldAndCamera` without broadening the HUD
   data owner over 0x4f3754.
@@ -386,7 +404,7 @@ relying only on per-function plan markers.
   remaining data-symbol comparison. A compile-only rerun with
   `--skip-bn-compare` covered the full manifest, but parent review still needs
   complete BN-backed data-symbol evidence before any byte-tier claim.
-- Dependent plan entry: 0x41fe90
+- Dependent owner-projection entry: 0x41fe90
   `Player::InitMissionRuntimeFromWorldAndCamera`, specifically the
   `battlesport_gameplay.player_mission_runtime_bootstrap` data gate.
 
@@ -416,7 +434,7 @@ relying only on per-function plan markers.
   `g_Player_CameraZone` and `g_Player_CameraZoneInvRange` symbols for local
   compile/data comparison; those two remain under the accepted Player ZRD
   tuning owner rather than this bootstrap owner.
-- Dependent plan entry: 0x41fe90
+- Dependent owner-projection entry: 0x41fe90
   `Player::InitMissionRuntimeFromWorldAndCamera`.
 
 ### hud_ui.hud_layout_classes
@@ -456,7 +474,7 @@ relying only on per-function plan markers.
   `zRndr::g_pfnTexturedQueuedFinalize`, and
   `gRndr_pfnTexturedQueuedFinalizeAlt` at 0x632108 maps to
   `zRndr::g_pfnTexturedQueuedFinalizeAlt`.
-- Extent/section/nullness: two adjacent 4-byte plan-tracked `.data`
+- Extent/section/nullness: two adjacent 4-byte owner-tracked `.data`
   function-pointer globals, both zero-initialized; the VC5 object emits them
   into `.bss#2`. The owner excludes the ESP-pivot scratch global at 0x57da38
   and excludes the broader SelectSpanRoutines callback bank.
@@ -469,7 +487,7 @@ relying only on per-function plan markers.
   zrndr_textured_finalize_dispatch_data` passed with zero unmasked data-byte
   mismatches for both 4-byte data symbols using `vc5_o2_ob0_md_facs`; both
   zero-initialized symbols reported zero relocation bytes.
-- Parent-owned gate status: no owner or plan marker was updated by this
+- Parent-owned gate status: no owner gate or tier was updated by this
   evidence candidate; parent still owns source-owner gate and data-entry
   promotion for 0x632104 and 0x632108.
 
@@ -498,7 +516,7 @@ relying only on per-function plan markers.
   zrndr_overlay_rect_staging_globals` passed with zero unmasked data-byte
   mismatches for all seven non-padding data symbols using
   `vc5_o2_ob0_md_facs`.
-- Dependent plan entries: none promoted in this pass; shared overlay
+- Dependent owner-projection entries: none promoted in this pass; shared overlay
   row/submit/flush entries remain owner/source-blocked.
 
 ### network_online.gamenet_net_zrd_path_literal
@@ -514,7 +532,7 @@ relying only on per-function plan markers.
   gamenet_net_zrd_path_literal` passed with zero unmasked data-byte mismatches
   for the generated VC5 string symbol using
   `vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs`.
-- Dependent plan entries: data entry 0x4dcfb4 was accepted; 0x431dd0 remains
+- Dependent owner-projection entries: data entry 0x4dcfb4 was accepted; 0x431dd0 remains
   blocked on broader GameNet owner/data routing.
 
 ### network_online.gamenet_pkt06_local_replication_data
@@ -533,7 +551,7 @@ relying only on per-function plan markers.
   gamenet_pkt06_local_replication_data` passed with zero unmasked data-byte
   mismatches for all three data symbols using
   `vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs`.
-- Dependent plan entries: data entries 0x4dcdb0, 0x4f3f6c, and 0x4f3f70 were
+- Dependent owner-projection entries: data entries 0x4dcdb0, 0x4f3f6c, and 0x4f3f70 were
   accepted; 0x432300 remains below promotion because its function
   reconstruction/source-owner routing is broader than this data owner.
 
@@ -549,7 +567,7 @@ relying only on per-function plan markers.
 - VC5 evidence: `python tools/recoil.py verify vc5
   gamenet_startgate_effect_literal` passed with zero unmasked data-byte
   mismatches using `vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs`.
-- Dependent plan entries: data entry 0x4dcfbc was accepted; 0x432300 remains
+- Dependent owner-projection entries: data entry 0x4dcfbc was accepted; 0x432300 remains
   separately source-owner/reconstruction gated.
 
 ### shared.fatal_shutdown_printf_literal
@@ -567,7 +585,7 @@ relying only on per-function plan markers.
   shared_fatal_shutdown_printf_literal` passed with zero unmasked data-byte
   mismatches from the GameNet translation unit using
   `vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs`.
-- Dependent plan entries: data entry 0x4db4ac was accepted; function-level
+- Dependent owner-projection entries: data entry 0x4db4ac was accepted; function-level
   promotions remain controlled by their respective source-owner gates.
 
 ### core_util_archive.shared_path_join_format_literal_data
@@ -583,9 +601,40 @@ relying only on per-function plan markers.
   join format remains a distinct literal.
 - VC5 evidence: no accepted data-symbol byte target yet covers this pooled
   literal; byte evidence remains deferred.
-- Dependent plan entries: data entry 0x4dc6c8 was accepted to tier B through
+- Dependent owner-projection entries: data entry 0x4dc6c8 was accepted to tier B through
   owner/source/data gates only; caller function promotions remain controlled by
   their respective source-owner gates.
+
+### app_shell.recoil_app_mfc_message_maps
+
+- Owner symbol/scope: RecoilApp and RecoilApp_MfcOleModule static MFC
+  message-map metadata under the `legacy.app_shell.class_recoilapp` class owner.
+  `src/Battlesport/RecoilApp_Late.cpp` is the local included shard in the
+  `src/Battlesport/RecoilApp.cpp` translation-unit path, not an original
+  source-file owner boundary.
+- BN/source data: `g_RecoilApp_MessageMap` at 0x4d0990,
+  `g_RecoilApp_MessageEntries` at 0x4d0998,
+  `g_RecoilApp_MfcOleModule_MessageMap` at 0x4d2000, and
+  `g_RecoilApp_MfcOleModule_MessageEntries` at 0x4d2008.
+- Extent/section/nullness: the two message maps are 8-byte `.rdata`
+  `AFX_MSGMAP` records. The two message-entry arrays are 24-byte
+  sentinel-only `AFX_MSGMAP_ENTRY` arrays containing all zero bytes.
+  BN shows 0x4d2000 as bytes `90 28 44 00 08 20 4d 00`, pointing to the
+  MFC42 base getter at 0x442890 and entries at 0x4d2008.
+- Provider exclusions: 0x4428a0 is the provider-boundary MFC generated getter
+  that returns 0x4d2000; it is not authored RecoilApp behavior and owns no
+  data. The returned 0x4d2000/0x4d2008 metadata remains authored class static
+  data under `legacy.app_shell.class_recoilapp`.
+- VC5 evidence: `python tools/recoil.py verify vc5 recoil_app_get_message_map
+  --auto-chunk` passed for 0x42de10, 0x4d0990, 0x4d0998, 0x4d2000, and
+  0x4d2008 with zero unmasked mismatches using
+  `vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs`. The narrow
+  `python tools/recoil.py verify vc5 0x4d2000 0x4d2008 --auto-chunk` check
+  also passed; 0x4d2000 has eight relocation-masked bytes and 0x4d2008 has no
+  relocations.
+- Gate limit: this data evidence supports the RecoilApp owner data gate. It
+  does not accept the owner byte gate, owner tier `S`, or final executable
+  reproducibility while the linked final `.data` layout lane remains blocked.
 
 ### app_shell.czrecoil_frame_mfc_runtime_message_maps
 
@@ -615,7 +664,7 @@ relying only on per-function plan markers.
   `python tools/recoil.py verify vc5 czgame_frame_mfc_metadata` passed with
   zero unmasked data-byte mismatches for all eight linked metadata/string data
   symbols using `vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs`.
-- Dependent plan entries: 0x4301e0, 0x443730, 0x430240, 0x4306e0, 0x443790,
+- Dependent owner-projection entries: 0x4301e0, 0x443730, 0x430240, 0x4306e0, 0x443790,
   0x4437a0, 0x4437b0, and 0x4437c0. Standalone string data entries
   0x4dccf0 and 0x4dd8dc have accepted source ownership and data-equivalent
   metadata, but their `Reimplemented [S]` marker remains blocked while the
@@ -635,7 +684,7 @@ relying only on per-function plan markers.
   zweapon_tether_config_data` passed with zero unmasked data-byte mismatches
   for the generated `_g_zWeapon_MaxTetherAltitude` symbol using
   `vc5_o2_ob0_md_facs`.
-- Dependent plan entries: supports the accepted data gate for 0x4b1090
+- Dependent owner-projection entries: supports the accepted data gate for 0x4b1090
   `zWepInit`; broader zWeapon/OptCatalog source-cluster tier S remains
   deferred.
 
@@ -659,7 +708,7 @@ relying only on per-function plan markers.
 - VC5 evidence: `python tools/recoil.py verify vc5
   optcatalog_warning_config_data` passed with zero unmasked data-byte
   mismatches for all nine data symbols using `vc5_o2_ob0_md_facs`.
-- Dependent plan entries: 0x4b0600, 0x4b0620, and 0x4b0640 are promoted to
+- Dependent owner-projection entries: 0x4b0600, 0x4b0620, and 0x4b0640 are promoted to
   tier B from this owner plus `effects_weapons.optcatalog_warning_sample_playback`.
 
 ### effects_weapons.zweapon_zar_section_data
@@ -678,7 +727,7 @@ relying only on per-function plan markers.
 - VC5 evidence: `python tools/recoil.py verify vc5
   zweapon_zar_warning_data` passed with zero unmasked data-byte mismatches for
   all three data symbols using `vc5_o2_ob0_md_facs`.
-- Dependent plan entries: no broad zWeapon init/load entry is promoted from
+- Dependent owner-projection entries: no broad zWeapon init/load entry is promoted from
   this narrow data-owner acceptance in this pass.
 
 ### effects_weapons.optcatalog_runtime_tick_data
@@ -701,7 +750,7 @@ relying only on per-function plan markers.
   0x56bca8, 0x56bcac, 0x779a74, and 0x779a78 through
   `optcatalog_runtime_callback_globals` using `vc5_o2_ob0_md_facs`, with zero
   unmasked data-byte mismatches.
-- Dependent plan entries: 0x4af060 and 0x4b0e20.
+- Dependent owner-projection entries: 0x4af060 and 0x4b0e20.
 
 ### engine.zmath.vec3_scalar_rdata_constants
 
@@ -723,7 +772,7 @@ relying only on per-function plan markers.
 - VC5 evidence: `python tools/recoil.py verify vc5
   zmath_vec3_scalar_rdata_constants` passed with zero unmasked data-byte
   mismatches for all five authored constants using `vc5_o2_ob0_md_facs`.
-- Dependent plan entries: 0x472cc0 and 0x472a10.
+- Dependent owner-projection entries: 0x472cc0 and 0x472a10.
 
 ### network_online.gamenet_mission_pkt06_timer_globals
 
@@ -743,7 +792,7 @@ relying only on per-function plan markers.
   gamenet_mission_pkt06_timer_globals` passed with zero unmasked data-byte
   mismatches for all four data symbols using
   `vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs`.
-- Dependent plan entries: 0x431dd0 and 0x432300 still need complete
+- Dependent owner-projection entries: 0x431dd0 and 0x432300 still need complete
   source-owner/data routing before promotion, including the `net.zrd` path
   literal and shared fatal printf literal for 0x431dd0.
 
@@ -780,7 +829,7 @@ relying only on per-function plan markers.
   `??_7NetSessionConfigDialog@@6B@`; the earlier placement-CDialog
   pseudo-constructor shape did not emit the derived vftable and was not
   accepted.
-- Dependent plan entries: 0x41c6e0, 0x41c7f0, 0x41c880, 0x41c970,
+- Dependent owner-projection entries: 0x41c6e0, 0x41c7f0, 0x41c880, 0x41c970,
   0x41c990, 0x41ca00, 0x41ca10, 0x41ca30, 0x41cb50, and 0x41cb90.
   The standalone 0x4f32d8 data row records data-equivalent evidence but keeps
   `Reimplemented [S]` blocked while the class byte gate remains deferred.
@@ -807,7 +856,7 @@ relying only on per-function plan markers.
   zopt_network_option_globals` passed with zero unmasked data-byte mismatches
   for 0x4e5d74, 0x4e5d78, and 0x4e5d90 using
   `vc5_o2_ob0_md_facs`.
-- Dependent plan entries: 0x408230, 0x408240, 0x408250, 0x408260, and
+- Dependent owner-projection entries: 0x408230, 0x408240, 0x408250, 0x408260, and
   0x408270.
 
 ### engine.zclass.typelist_find_by_type_and_name
@@ -828,7 +877,7 @@ relying only on per-function plan markers.
 - VC5 evidence: `python tools/recoil.py verify vc5
   zclass_find_by_type_and_name_data` passed with zero unmasked data-byte
   mismatches for 0x4ddef8 and 0x539bac using `vc5_o2_ob0_md_facs`.
-- Dependent plan entries: 0x44ecf0.
+- Dependent owner-projection entries: 0x44ecf0.
 
 ### engine.zclass.copy_node_clone_options
 
@@ -851,7 +900,7 @@ relying only on per-function plan markers.
 - VC5 evidence: `python tools/recoil.py verify vc5 zclass_copy_node_globals`
   passed with zero unmasked data-byte mismatches for 0x4de4cc, 0x539c9c, and
   0x539ca0 using `vc5_o2_ob0_md_facs`.
-- Dependent plan entries: 0x451b20, 0x452400, 0x452500, and 0x452560.
+- Dependent owner-projection entries: 0x451b20, 0x452400, 0x452500, and 0x452560.
 
 ### battlesport_gameplay.player_create_from_names_bootstrap
 
@@ -874,7 +923,7 @@ relying only on per-function plan markers.
   `player_shared_aim_origin_rdata`, and
   `zclass_player_runtime_di_scene_global` passed with zero unmasked data-byte
   mismatches for their data symbols using `vc5_o2_ob0_md_facs`.
-- Dependent plan entries: 0x420d10, 0x421a40, 0x421470, 0x421790, 0x421830,
+- Dependent owner-projection entries: 0x420d10, 0x421a40, 0x421470, 0x421790, 0x421830,
   0x421ab0, 0x421ea0, 0x421ed0, 0x4220f0, and 0x42aa40.
 
 ### engine.zsound.option_runtime_globals
@@ -898,7 +947,7 @@ relying only on per-function plan markers.
   `0x56b3b8`, `0x56b3bc`, `0x56b3c0`, and `0x56b3c4` resolved to
   `zsnd_preinitialize_runtime_state` and passed with zero unmasked data-byte
   mismatches under `vc5_o2_ob1_md_gx_facs`.
-- Dependent plan entries: 0x4a0300, 0x49fff0, 0x4a0590, 0x4a0670, and
+- Dependent owner-projection entries: 0x4a0300, 0x49fff0, 0x4a0590, 0x4a0670, and
   0x4a07a0.
 
 ### engine.zsound.zsnd_play_rdata_literals
@@ -921,4 +970,4 @@ relying only on per-function plan markers.
   `0x4d2ebc`, `0x4d2ec0`, and `0x4d2ec8` resolved to
   `zsnd_play_with_delta_backend_dispatch` and passed with zero unmasked
   data-byte mismatches under `vc5_o2_ob1_md_gx_facs`.
-- Dependent plan entries: 0x4a0380, 0x4a0400, 0x4a0490, and 0x4a0590.
+- Dependent owner-projection entries: 0x4a0380, 0x4a0400, 0x4a0490, and 0x4a0590.

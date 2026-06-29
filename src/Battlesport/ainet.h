@@ -6,6 +6,9 @@
 #include "GameZRecoil/include/zClass.h"
 #include "recoil/recoil_callconv.h"
 
+struct zClass_NodePartial;
+struct zUtil_SaveGameState;
+
 struct AINetPathProbeFan {
     zVec3 delta;
     float clampedTravel;
@@ -87,6 +90,107 @@ struct AINet {
     static void __fastcall ResolveNeighborLinksAndBuildProbeFans(
         AINetNode *nodeListHead,
         float pathWidth
+    );
+    static void __fastcall TickAiMode2TopLevel(zUtil_SaveGameState *saveState);
+    static void __fastcall TickAiMode2PathFollow(zUtil_SaveGameState *saveState);
+    static int __fastcall AiMode2ForwardProbeRequiresAutoTurn(
+        zUtil_SaveGameState *saveState
+    );
+    static void __fastcall AiAdvancePathCursorAndComputeTargetVec(
+        zUtil_SaveGameState *saveState,
+        AINetNode **currentNodeInOut,
+        AINetPathProbeFan **outProbeFan,
+        zVec3 *outTargetVec
+    );
+    static int __fastcall AiChooseNextPathBranchIndex(
+        zUtil_SaveGameState *saveState,
+        AINetNode **currentNodeInOut,
+        int *outBranchIndex,
+        int excludedBranchIndex
+    );
+    static void __fastcall TickAiMode2SteeringSubstate(
+        zUtil_SaveGameState *saveState
+    );
+    static void __fastcall UpdateAiMode2MoveAndTurnTowardTarget(
+        zUtil_SaveGameState *saveState,
+        float forwardDot,
+        float lateralDot,
+        float targetDistance
+    );
+    static void __fastcall TickAiMode2OffsetTargetSteering(
+        zUtil_SaveGameState *saveState,
+        float unusedForwardDot,
+        float unusedLateralDot,
+        float unusedTargetDistance
+    );
+    static void __fastcall TickAiMode2DynamicOffsetTargetSteering(
+        zUtil_SaveGameState *saveState,
+        float unusedForwardDot,
+        float unusedLateralDot,
+        float targetDistance
+    );
+    static int __fastcall AiTryEnterMode2AttackPursuitIfLineOfSight(
+        zUtil_SaveGameState *saveState
+    );
+    static void __fastcall AiAlertAttackBuddies(zUtil_SaveGameState *saveState);
+    static void __fastcall AiEnterMode2SteeringPursuit(
+        zUtil_SaveGameState *saveState
+    );
+    static int __fastcall HasLineOfSightFromLocalPlayerFxOffset(
+        zClass_NodePartial *node,
+        const zVec3 *point,
+        int directionMode
+    );
+    static int __fastcall HasLineOfSightFromCameraTarget(
+        zClass_NodePartial *node,
+        const zVec3 *point,
+        int directionMode
+    );
+    static void __fastcall AiRebuildSyntheticPathToNodeIfFar(
+        zUtil_SaveGameState *saveState,
+        AINetNode *targetNode
+    );
+    static void __fastcall AiRestoreSavedTopLevelState(
+        zUtil_SaveGameState *saveState
+    );
+    static void __fastcall UpdateAiMode2TurnTowardPlayerNoThrottle(
+        zUtil_SaveGameState *saveState
+    );
+    static void __fastcall UpdateAiMode2TurnInPlaceTowardPlayer(
+        zUtil_SaveGameState *saveState
+    );
+    static void __fastcall TickAiMode2AltGunAttackWindow(
+        zUtil_SaveGameState *saveState,
+        float targetDistance,
+        float forwardDot
+    );
+    static void __fastcall SolveAltGunLeadTargetPoint(
+        zUtil_SaveGameState *saveState,
+        zUtil_SaveGameState *targetSaveState,
+        zVec3 *outTargetPos
+    );
+    static void __fastcall UpdateAiMode2MoveAndTurnTowardOffsetTarget(
+        zUtil_SaveGameState *saveState,
+        zUtil_SaveGameState *targetState
+    );
+    static void __fastcall UpdateAiMode2MoveAndTurnTowardDynamicOffsetTarget(
+        zUtil_SaveGameState *saveState,
+        zUtil_SaveGameState *targetState,
+        float targetDistance
+    );
+    static void __fastcall TickAiMode2TimedPathSteering(
+        zUtil_SaveGameState *saveState
+    );
+    static void __fastcall AiSteerTowardPathNodeForward(
+        zUtil_SaveGameState *saveState
+    );
+    static void __fastcall AiSteerTowardPathNodeReverse(
+        zUtil_SaveGameState *saveState
+    );
+    static void AiFinalizeMode2State1ForAllPlayers();
+    static void BuildAiPeerRingsByAiNetId();
+    static void __fastcall AiDiscardNegativeBranchPathNodes(
+        zUtil_SaveGameState *saveState
     );
     void Free();
     static void FreeAll();

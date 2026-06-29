@@ -320,10 +320,8 @@ int WestwoodOnlineUpgradeApi::Init() {
             zLoc::GetMessageString(kWolApiInitConnectingMessageId)
         );
 
-    CString connectString;
-    CString playerName;
-    g_pWestwoodOnlineUpgradeDialog->GetSelectedProfileConnectString(&connectString);
-    g_pWestwoodOnlineUpgradeDialog->GetSelectedProfilePlayerName(&playerName);
+    CString connectString = g_pWestwoodOnlineUpgradeDialog->GetSelectedProfileConnectString();
+    CString playerName = g_pWestwoodOnlineUpgradeDialog->GetSelectedProfilePlayerName();
 
     IWestwoodOnlineUpgradeProviderApi *apiCom = GetApiComObject();
     apiCom->BeginConnect(

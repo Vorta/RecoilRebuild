@@ -23,37 +23,53 @@
 
 /**
  * Reimplements data 0x4f32c8: g_HudUiNewGamePanelOverlayOwner.
- * Purpose: preserve the recovered HUD global storage for g_HudUiNewGamePanelOverlayOwner.
+ *
+ * Purpose: own the zero-initialized new-game panel overlay singleton storage.
  */
-HudUiNewGamePanelOverlayOwner g_HudUiNewGamePanelOverlayOwner;
+#undef g_HudUiNewGamePanelOverlayOwner
+HudUiNewGamePanelOverlayOwnerStorage g_HudUiNewGamePanelOverlayOwner = {0};
 /**
  * Reimplements data 0x4e5e08: g_HudUiOptionsPanelOverlayOwner.
+ *
  * Source owner: legacy.hud_ui.class_huduioptionspaneloverlayowner.
- * Purpose: Holds the zero-initialized global options-panel overlay app-state
- * owner constructed by the CRT static initializer.
+ * Purpose: own the zero-initialized options-panel overlay singleton storage.
  */
-HudUiOptionsPanelOverlayOwner g_HudUiOptionsPanelOverlayOwner;
+#undef g_HudUiOptionsPanelOverlayOwner
+HudUiOptionsPanelOverlayOwnerStorage g_HudUiOptionsPanelOverlayOwner = {0};
 /**
  * Reimplements data 0x4edc48: g_RecoilState_ConfirmQuit.
- * Purpose: preserve the recovered HUD global storage for g_RecoilState_ConfirmQuit.
+ *
+ * Purpose: own the zero-initialized confirm-quit app-state singleton storage.
  */
-RecoilStateConfirmQuit g_RecoilState_ConfirmQuit;
+#undef g_RecoilState_ConfirmQuit
+RecoilStateConfirmQuitStorage g_RecoilState_ConfirmQuit = {0};
 extern "C" int g_RecoilState_MainMenuSkipExitDelay = 0;
 /**
  * Reimplements data 0x4e5dd0: g_RecoilStateControls.
+ *
  * Source owner: legacy.app_shell.class_recoilstatecontrols.
- * Purpose: Holds the zero-initialized global controls app-state singleton
- * constructed by the CRT static initializer.
+ * Purpose: own the zero-initialized controls app-state singleton storage.
  */
-RecoilStateControls g_RecoilStateControls;
+#undef g_RecoilStateControls
+RecoilStateControlsStorage g_RecoilStateControls = {0};
 /**
  * Reimplements data 0x4e5ce8: g_RecoilStateCheatCode.
+ *
  * Source owner: legacy.app_shell.class_recoilstatecheatcode.
- * Data owner gate remains pending until the global lifecycle plan link for
- * 0x406ea0 is accepted.
- * Purpose: Holds the zero-initialized global cheat-code app state singleton.
+ * Purpose: own the zero-initialized cheat-code app-state singleton storage.
  */
-RecoilStateCheatCode g_RecoilStateCheatCode;
+#undef g_RecoilStateCheatCode
+RecoilStateCheatCodeStorage g_RecoilStateCheatCode = {0};
+#define g_HudUiNewGamePanelOverlayOwner \
+    (*(HudUiNewGamePanelOverlayOwner *)&g_HudUiNewGamePanelOverlayOwner)
+#define g_HudUiOptionsPanelOverlayOwner \
+    (*(HudUiOptionsPanelOverlayOwner *)&g_HudUiOptionsPanelOverlayOwner)
+#define g_RecoilState_ConfirmQuit \
+    (*(RecoilStateConfirmQuit *)&g_RecoilState_ConfirmQuit)
+#define g_RecoilStateControls \
+    (*(RecoilStateControls *)&g_RecoilStateControls)
+#define g_RecoilStateCheatCode \
+    (*(RecoilStateCheatCode *)&g_RecoilStateCheatCode)
 /**
  * Reimplements data 0x4f3748: g_Hud_LowMeterBeepSample.
  * Source owner: hud_ui.hud_low_meter_loop_sound_globals.
@@ -1680,6 +1696,47 @@ void RecoilStateControls::StaticInitAndRegisterAtExit() {
     StaticInit();
     RegisterAtExit();
 }
+
+#if defined(_MSC_VER) && defined(_M_IX86)
+typedef void (__cdecl *BattlesportHudCrtInitializerFn)();
+/* VC5 emits this controls-state startup callback as a direct .CRT$XCU row. */
+#pragma data_seg(".CRT$XCU")
+BattlesportHudCrtInitializerFn s_BattlesportHudCrtInit_RecoilStateControls =
+    RecoilStateControls::StaticInitAndRegisterAtExit;
+#pragma data_seg()
+#endif
+
+#if defined(_MSC_VER) && defined(_M_IX86)
+/* VC5 emits this confirm-quit-state startup callback as a direct .CRT$XCU row. */
+#pragma data_seg(".CRT$XCU")
+BattlesportHudCrtInitializerFn s_BattlesportHudCrtInit_RecoilStateConfirmQuit =
+    RecoilStateConfirmQuit::StaticInitAndRegisterAtExit;
+#pragma data_seg()
+#endif
+
+#if defined(_MSC_VER) && defined(_M_IX86)
+/* VC5 emits this new-game-panel owner startup callback as a direct .CRT$XCU row. */
+#pragma data_seg(".CRT$XCU")
+BattlesportHudCrtInitializerFn s_BattlesportHudCrtInit_HudUiNewGamePanelOverlayOwner =
+    HudUiNewGamePanelOverlayOwner::StaticInitAndRegisterAtExit;
+#pragma data_seg()
+#endif
+
+#if defined(_MSC_VER) && defined(_M_IX86)
+/* VC5 emits this options-panel owner startup callback as a direct .CRT$XCU row. */
+#pragma data_seg(".CRT$XCU")
+BattlesportHudCrtInitializerFn s_BattlesportHudCrtInit_HudUiOptionsPanelOverlayOwner =
+    HudUiOptionsPanelOverlayOwner::StaticInitAndRegisterAtExit;
+#pragma data_seg()
+#endif
+
+#if defined(_MSC_VER) && defined(_M_IX86)
+/* VC5 emits this cheat-code-state startup callback as a direct .CRT$XCU row. */
+#pragma data_seg(".CRT$XCU")
+BattlesportHudCrtInitializerFn s_BattlesportHudCrtInit_RecoilStateCheatCode =
+    RecoilStateCheatCode::StaticInitAndRegisterAtExit;
+#pragma data_seg()
+#endif
 
 /**
  * Reimplements 0x408d30: RecoilStateControls::StaticInit.

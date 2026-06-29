@@ -418,7 +418,24 @@ RecoilApp_IState_Vtbl MakePkt14StateVtable() {
     return vtable;
 }
 
-RecoilApp_IState_Vtbl g_pkt14StateVtable = MakePkt14StateVtable();
+union Pkt14StateVtableStorage {
+    void *align;
+    unsigned char bytes[sizeof(RecoilApp_IState_Vtbl)];
+};
+
+Pkt14StateVtableStorage g_pkt14StateVtableStorage;
+bool g_pkt14StateVtableInitialized;
+
+RecoilApp_IState_Vtbl &Pkt14StateVtable() {
+    auto *const vtable =
+        reinterpret_cast<RecoilApp_IState_Vtbl *>(g_pkt14StateVtableStorage.bytes);
+    if (!g_pkt14StateVtableInitialized) {
+        const RecoilApp_IState_Vtbl value = MakePkt14StateVtable();
+        std::memcpy(vtable, &value, sizeof(value));
+        g_pkt14StateVtableInitialized = true;
+    }
+    return *vtable;
+}
 
 void CleanupSingleQueuedItem(RecoilApp_StateQueue &queue) {
     const RecoilPtr32 slotValue = queue.m_writeBlock.m_cursor - 4;
@@ -3874,7 +3891,24 @@ zNetwork_DPlay4Vtable MakeDPlayVtable() {
     return vtable;
 }
 
-const zNetwork_DPlay4Vtable kDPlayVtable = MakeDPlayVtable();
+union DPlayVtableStorage {
+    void *align;
+    unsigned char bytes[sizeof(zNetwork_DPlay4Vtable)];
+};
+
+DPlayVtableStorage g_dPlayVtableStorage;
+bool g_dPlayVtableInitialized;
+
+const zNetwork_DPlay4Vtable &DPlayVtable() {
+    auto *const vtable =
+        reinterpret_cast<zNetwork_DPlay4Vtable *>(g_dPlayVtableStorage.bytes);
+    if (!g_dPlayVtableInitialized) {
+        const zNetwork_DPlay4Vtable value = MakeDPlayVtable();
+        std::memcpy(vtable, &value, sizeof(value));
+        g_dPlayVtableInitialized = true;
+    }
+    return *vtable;
+}
 
 void ClearDispatchHandlerListForTest(zNetworkDispatchHandlerListNode &sentinel) {
     zNetworkDispatchHandlerListNode *node = sentinel.next;
@@ -4208,7 +4242,7 @@ extern "C" int gamenet_end_chat_compose_and_send_smoke(void) {
     const int oldChatComposeActive = g_HudUiMgrObjectiveChatComposeActive;
     const int oldOverlayDepth = g_zInput_BindMapOverlayDepth;
 
-    zNetwork_DPlay4 dplay{&kDPlayVtable};
+    zNetwork_DPlay4 dplay{&DPlayVtable()};
     zNetwork_PlayerRecord localPlayer{};
     localPlayer.playerKey = 0x10203040;
     g_zNetwork_pDirectPlay4 = &dplay;
@@ -5086,7 +5120,7 @@ extern "C" int net_format_ipv4_address_smoke(void) {
 }
 
 extern "C" int gamenet_host_update_session_status_fields_smoke(void) {
-    zNetwork_DPlay4 dplay{&kDPlayVtable};
+    zNetwork_DPlay4 dplay{&DPlayVtable()};
     zNetworkDPlaySessionDescCache session{};
     char sessionName[0x5c] = "mission";
     session.desc.lpszSessionNameA = sessionName;
@@ -5128,7 +5162,7 @@ extern "C" int gamenet_host_update_session_status_fields_smoke(void) {
 }
 
 extern "C" int gamenet_timer_status_packet_smoke(void) {
-    zNetwork_DPlay4 dplay{&kDPlayVtable};
+    zNetwork_DPlay4 dplay{&DPlayVtable()};
     zNetwork_PlayerRecord localPlayer{};
     localPlayer.playerKey = 0x1234;
     g_zNetwork_pDirectPlay4 = &dplay;
@@ -5194,7 +5228,7 @@ extern "C" int gamenet_timer_panel_state_packet_smoke(void) {
     const std::int32_t oldIsHost = g_zNetwork_IsHostFlag;
     const HudTimerPanelNetState oldTimerState = g_HudTimerPanelNetState;
 
-    zNetwork_DPlay4 dplay{&kDPlayVtable};
+    zNetwork_DPlay4 dplay{&DPlayVtable()};
     zNetwork_PlayerRecord localPlayer{};
     localPlayer.playerKey = 0x4321;
     g_zNetwork_pDirectPlay4 = &dplay;
@@ -5264,7 +5298,7 @@ extern "C" int gamenet_send_pkt14_hud_timer_and_flags_sync_smoke(void) {
     const std::int32_t oldLocalPlayerKey = g_zNetwork_LocalPlayerKey;
     const NetPkt14_HudTimerAndFlagsSync oldPacket = g_NetPkt14_HudTimerAndFlagsSyncBuf;
 
-    zNetwork_DPlay4 dplay{&kDPlayVtable};
+    zNetwork_DPlay4 dplay{&DPlayVtable()};
     zNetwork_PlayerRecord localPlayer{};
     localPlayer.playerKey = 0x11223344;
     g_zNetwork_pDirectPlay4 = &dplay;
@@ -5323,7 +5357,7 @@ extern "C" int gamenet_tick_local_player_pkt06_and_timer_smoke(void) {
 
     int networkEnabled = 1;
     ZOPT_NETWORK_ENABLED = &networkEnabled;
-    zNetwork_DPlay4 dplay{&kDPlayVtable};
+    zNetwork_DPlay4 dplay{&DPlayVtable()};
     zNetwork_PlayerRecord localPlayer{};
     localPlayer.playerKey = 0x11223344;
     g_zNetwork_pDirectPlay4 = &dplay;
@@ -5516,7 +5550,7 @@ extern "C" int gamenet_scoreboard_snapshot_packet_smoke(void) {
                          triplet.entries.begin[0].playerKey == bravo.playerKey &&
                          triplet.entries.begin[1].playerKey == alpha.playerKey;
 
-    zNetwork_DPlay4 dplay{&kDPlayVtable};
+    zNetwork_DPlay4 dplay{&DPlayVtable()};
     zNetwork_PlayerRecord localPlayer{};
     localPlayer.playerKey = 0x4444;
     g_zNetwork_pDirectPlay4 = &dplay;
@@ -5580,7 +5614,7 @@ extern "C" int gamenet_lap_progress_packet_smoke(void) {
     const std::int32_t oldIsHost = g_zNetwork_IsHostFlag;
     const std::int32_t oldTcpIpAsync = g_zNetwork_TcpIpAsyncSendEnabled;
 
-    zNetwork_DPlay4 dplay{&kDPlayVtable};
+    zNetwork_DPlay4 dplay{&DPlayVtable()};
     zNetwork_PlayerRecord localPlayer{};
     localPlayer.playerKey = 0x1111;
     g_zNetwork_pDirectPlay4 = &dplay;
@@ -5685,7 +5719,7 @@ extern "C" int gamenet_chat_message_packet_smoke(void) {
     const bool clamped = std::strlen(text) == sizeof(longPacket.message) &&
                          std::memcmp(text, longPacket.message, sizeof(longPacket.message)) == 0;
 
-    zNetwork_DPlay4 dplay{&kDPlayVtable};
+    zNetwork_DPlay4 dplay{&DPlayVtable()};
     zNetwork_PlayerRecord localPlayer{};
     localPlayer.playerKey = 0x10203040;
     g_zNetwork_pDirectPlay4 = &dplay;
@@ -5848,7 +5882,7 @@ extern "C" int gamenet_player_kill_event_packet_smoke(void) {
     packet.targetPlayerKey = 0x7777;
     const bool missingRow = GameNet::HandlePkt08_PlayerKillEvent(killer.playerKey, &packet) == 0;
 
-    zNetwork_DPlay4 dplay{&kDPlayVtable};
+    zNetwork_DPlay4 dplay{&DPlayVtable()};
     zNetwork_PlayerRecord localPlayer{};
     localPlayer.playerKey = 0x4444;
     g_zNetwork_pDirectPlay4 = &dplay;
@@ -6380,7 +6414,7 @@ extern "C" int gamenet_send_pkt07_alt_gun_dispatch_smoke(void) {
     saveState.playerState = &playerState;
     g_GameStateOrMapTable = (zInput_GameStateOrMapTablePartial *)&saveState;
 
-    zNetwork_DPlay4 dplay{&kDPlayVtable};
+    zNetwork_DPlay4 dplay{&DPlayVtable()};
     zNetwork_PlayerRecord localPlayer{};
     localPlayer.playerKey = 0x1234;
     g_zNetwork_pDirectPlay4 = &dplay;
@@ -6458,7 +6492,7 @@ extern "C" int optcatalog_alt_gun_dispatch_alloc_runtime_gate_smoke(void) {
     localSaveState.playerState = &localPlayerState;
     g_GameStateOrMapTable = (zInput_GameStateOrMapTablePartial *)&localSaveState;
 
-    zNetwork_DPlay4 dplay{&kDPlayVtable};
+    zNetwork_DPlay4 dplay{&DPlayVtable()};
     zNetwork_PlayerRecord localPlayer{};
     localPlayer.playerKey = 0x2468;
     g_zNetwork_pDirectPlay4 = &dplay;
@@ -6595,7 +6629,7 @@ extern "C" int optcatalog_send_pkt0a_remove_runtime_relay_smoke(void) {
     OptCatalog::SendPkt0A_RemoveRuntimeRelay(&entry, nullptr, nullptr);
     const bool disabledOk = g_sendCalls == 0;
 
-    zNetwork_DPlay4 dplay{&kDPlayVtable};
+    zNetwork_DPlay4 dplay{&DPlayVtable()};
     zNetwork_PlayerRecord localPlayer{};
     localPlayer.playerKey = 0x1111;
     g_zNetwork_pDirectPlay4 = &dplay;
@@ -6694,7 +6728,7 @@ extern "C" int gamenet_host_send_pkt10_qsand_feature_smoke(void) {
     const int nonHostResult = GameNet::HostSendPkt10_QSandFeature(&eventTemplate);
     const bool nonHostOk = nonHostResult == 0 && g_sendCalls == 0;
 
-    zNetwork_DPlay4 dplay{&kDPlayVtable};
+    zNetwork_DPlay4 dplay{&DPlayVtable()};
     zNetwork_PlayerRecord localPlayer{};
     localPlayer.playerKey = 0x5555;
     g_zNetwork_pDirectPlay4 = &dplay;
@@ -6755,7 +6789,7 @@ extern "C" int gamenet_send_pkt10_qsand_event_smoke(void) {
     saveState.playerState = &playerState;
     g_GameStateOrMapTable = (zInput_GameStateOrMapTablePartial *)&saveState;
 
-    zNetwork_DPlay4 dplay{&kDPlayVtable};
+    zNetwork_DPlay4 dplay{&DPlayVtable()};
     zNetwork_PlayerRecord localPlayer{};
     localPlayer.playerKey = 0x13572468;
     g_zNetwork_pDirectPlay4 = &dplay;
@@ -6876,7 +6910,7 @@ extern "C" int gamenet_host_send_pkt0f_crater_feature_smoke(void) {
     const int nonHostResult = GameNet::HostSendPkt0F_CraterFeature(&eventTemplate);
     const bool nonHostOk = nonHostResult == 0 && g_sendCalls == 0;
 
-    zNetwork_DPlay4 dplay{&kDPlayVtable};
+    zNetwork_DPlay4 dplay{&DPlayVtable()};
     zNetwork_PlayerRecord localPlayer{};
     localPlayer.playerKey = 0x7777;
     g_zNetwork_pDirectPlay4 = &dplay;
@@ -6922,7 +6956,7 @@ extern "C" int gamenet_host_send_pkt0f_crater_feature_smoke(void) {
 }
 
 extern "C" int gamenet_send_pkt13_effect_anim_activation_record_smoke(void) {
-    zNetwork_DPlay4 dplay{&kDPlayVtable};
+    zNetwork_DPlay4 dplay{&DPlayVtable()};
     zNetwork_DPlay4 *const oldDPlay = g_zNetwork_pDirectPlay4;
     zNetwork_PlayerRecord *const oldLocalPlayer = g_zNetwork_LocalPlayerRecord;
     const int oldLocalPlayerKey = g_zNetwork_LocalPlayerKey;
@@ -7007,7 +7041,7 @@ extern "C" int gamenet_handle_pkt13_effect_anim_activation_record_smoke(void) {
 }
 
 extern "C" int gamenet_send_all_pkt13_effect_anim_activation_records_smoke(void) {
-    zNetwork_DPlay4 dplay{&kDPlayVtable};
+    zNetwork_DPlay4 dplay{&DPlayVtable()};
     zNetwork_DPlay4 *const oldDPlay = g_zNetwork_pDirectPlay4;
     zNetwork_PlayerRecord *const oldLocalPlayer = g_zNetwork_LocalPlayerRecord;
     const int oldLocalPlayerKey = g_zNetwork_LocalPlayerKey;
@@ -7170,7 +7204,7 @@ extern "C" int gamenet_handle_pkt14_hud_timer_and_flags_sync_smoke(void) {
     g_RecoilApp.m_pMainWnd = static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&mainWnd));
     g_RecoilApp.m_currentStateIndex = -1;
     g_RecoilApp.m_introFmvState.base.vftable =
-        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_pkt14StateVtable));
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&Pkt14StateVtable()));
     g_RecoilApp.m_missionFmvState.m_missionId = 99;
 
     g_HudSensorTracker.runtimeGoalValue = 0;
@@ -7188,7 +7222,7 @@ extern "C" int gamenet_handle_pkt14_hud_timer_and_flags_sync_smoke(void) {
     g_zNetwork_DispatchHandlerListSentinel = &sentinel;
     g_zNetwork_DispatchHandlerListCount = 0;
 
-    zNetwork_DPlay4 dplay{&kDPlayVtable};
+    zNetwork_DPlay4 dplay{&DPlayVtable()};
     zNetworkDPlaySessionDescCache session{};
     char sessionName[0x5c] = "pkt14";
     session.desc.lpszSessionNameA = sessionName;

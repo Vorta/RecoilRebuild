@@ -1,7 +1,7 @@
 # Reconstruction Knowledge Index
 
 This is the landing page for durable reconstruction facts that are broader than
-one source comment. Binary Ninja and `.agent/RECOIL_PLAN.md` remain authoritative
+one source comment. Binary Ninja and `.agent/SOURCE_OWNERS.json` remain authoritative
 for function identity, types, markers, and acceptance state.
 
 ## Current Ledgers
@@ -31,6 +31,10 @@ for function identity, types, markers, and acceptance state.
 - `source_file_map.md` - generated original-source placement map from
   address-backed `Reimplements` provenance docblocks in `src/`, plus legacy
   line comments until touched source is converted.
+- `source_file_layout_audit.md` - durable source-file placement constraints
+  from BN source-path literal xrefs, including compiler-emitted source-file
+  block order and the early Battlesport `ai_net.cpp`/`Briefing.cpp`/
+  `player.cpp` owner repair notes.
 - `visual_studio_mcp_workflow.md` - preferred Visual Studio MCP development
   workflow for generated `vs-x86` solution projects.
 - `verified_patterns.md` - compact ledger of currently verified reusable source
@@ -72,8 +76,12 @@ progress notes or duplicated plan state.
 ## Agent Use
 
 - For new implementation placement, check `source_file_map.md` first, then
-  confirm current Binary Ninja source comments and call-site evidence. New or
-  touched functions need immediate provenance/Purpose docblocks.
+  confirm current Binary Ninja source comments, source-path literal xrefs,
+  physical source-file block order, and call-site evidence. New or touched
+  functions need immediate provenance/Purpose docblocks. When a source-file
+  block is known, the rebuilt VC5 COFF function order must match the retail BN
+  address order; model header/COMDAT helpers through the original-style header
+  or `.inl` path instead of moving semantic helpers into the wrong `.cpp`.
 - For new agent handoff, start with `agent_launch_checklist.md`, then use
   `AGENTS.md` for the full workflow rules.
 - For owner/data promotion, inspect `.agent/SOURCE_OWNERS.json` through

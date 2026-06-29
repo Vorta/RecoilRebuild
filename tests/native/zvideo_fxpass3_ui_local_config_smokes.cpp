@@ -5,6 +5,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <new>
 
 extern "C" unsigned int g_HudUi_InvalidateMask;
 
@@ -23,7 +24,7 @@ struct zVideoFxPass3Slot : zVideoFxPass3Element {
     float sinFreq;
     float sinPhase;
 
-    zVideoFxPass3Slot * Constructor();
+    zVideoFxPass3Slot();
     void SetRectAndPayload(
         int rectLeftPixels,
         int rectTopPixels,
@@ -46,10 +47,8 @@ struct zVideoFxPass3Config : HudUiContainer {
     zVideoFxPass3Slot slots[5];
     int slotWriteIndex;
 
-    zVideoFxPass3Config * Constructor();
-    void Destructor();
-    static zVideoFxPass3Config *ConstructGlobalSingleton();
-    static void DestroyGlobalSingleton();
+    zVideoFxPass3Config();
+    ~zVideoFxPass3Config();
 };
 
 namespace {
@@ -163,7 +162,7 @@ void *HudUiElementBaseVtable() {
 
 void ConstructGlobalFxPass3Config() {
     std::memset(&g_zVideo_FxPass3ConfigLocal, 0, sizeof(g_zVideo_FxPass3ConfigLocal));
-    g_zVideo_FxPass3ConfigLocal.Constructor();
+    new (&g_zVideo_FxPass3ConfigLocal) zVideoFxPass3Config;
 }
 } // namespace
 
@@ -350,10 +349,16 @@ extern "C" int zvideo_fxpass3_element_draw_smoke(void) {
 }
 
 extern "C" int zvideo_fxpass3_config_constructor_destructor_smoke(void) {
-    zVideoFxPass3Config config;
-    std::memset(&config, 0xcc, sizeof(config));
+    union ConfigStorage {
+        void *alignPtr;
+        double alignDouble;
+        unsigned char bytes[sizeof(zVideoFxPass3Config)];
+    } configStorage;
 
-    zVideoFxPass3Config *const constructed = config.Constructor();
+    std::memset(configStorage.bytes, 0xcc, sizeof(configStorage.bytes));
+    zVideoFxPass3Config *const constructed =
+        new (configStorage.bytes) zVideoFxPass3Config;
+    zVideoFxPass3Config &config = *constructed;
     bool childChainOk =
         config.childHead == &config.rootElement && config.rootElement.parent == &config &&
         config.rootElement.next == &config.slots[0] && config.childTail == &config.slots[4];
@@ -377,7 +382,7 @@ extern "C" int zvideo_fxpass3_config_constructor_destructor_smoke(void) {
         ReadVtable(&config.slots[0]) != baseVtable &&
         (config.rootElement.flags & 0x10u) != 0 && (config.slots[0].flags & 0x10u) != 0;
 
-    config.Destructor();
+    config.~zVideoFxPass3Config();
     bool destructorOk = ReadVtable(&config.rootElement) == baseVtable;
     for (int i = 0; i < 5; ++i) {
         destructorOk = destructorOk && ReadVtable(&config.slots[i]) == baseVtable;
@@ -387,11 +392,11 @@ extern "C" int zvideo_fxpass3_config_constructor_destructor_smoke(void) {
     std::memcpy(savedConfig, FxPass3ConfigBytes(), sizeof(savedConfig));
     std::memset(&g_zVideo_FxPass3ConfigLocal, 0xcc, sizeof(g_zVideo_FxPass3ConfigLocal));
     zVideoFxPass3Config *const globalConstructed =
-        zVideoFxPass3Config::ConstructGlobalSingleton();
+        new (&g_zVideo_FxPass3ConfigLocal) zVideoFxPass3Config;
     const bool globalConstructOk =
         globalConstructed == &g_zVideo_FxPass3ConfigLocal &&
         g_zVideo_FxPass3ConfigLocal.enabled == 1;
-    zVideoFxPass3Config::DestroyGlobalSingleton();
+    g_zVideo_FxPass3ConfigLocal.~zVideoFxPass3Config();
     const bool globalDestroyOk =
         ReadVtable(&g_zVideo_FxPass3ConfigLocal.rootElement) == baseVtable;
     std::memcpy(FxPass3ConfigBytes(), savedConfig, sizeof(savedConfig));

@@ -60,7 +60,9 @@ extern int g_zMath_FogTableDirty;              /* 0x4E0E8C: rebuild flag */
  * ================================================================== */
 
 /**
- * Reimplements 0x402f60: zMath_Vec3_Normalize.
+ * Legacy original-source helper note for address 0x402f60: the active source
+ * owner now maps to the physically emitted ai_net.cpp zMath::Vec3Normalize
+ * helper.
  * Purpose: normalizes a nonzero vector in place and returns its original
  * three-dimensional length.
  */

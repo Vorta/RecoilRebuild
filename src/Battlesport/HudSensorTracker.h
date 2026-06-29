@@ -602,8 +602,16 @@ RECOIL_STATIC_ASSERT(
 );
 RECOIL_STATIC_ASSERT(sizeof(HudSensorTracker) == 0x25d0);
 
+union HudSensorTrackerStorage {
+    unsigned long align;
+    unsigned char bytes[sizeof(HudSensorTracker)];
+};
+RECOIL_STATIC_ASSERT(sizeof(HudSensorTrackerStorage) == 0x25d0);
+
 extern "C" {
-extern HudSensorTracker g_HudSensorTracker;
+extern HudSensorTrackerStorage g_HudSensorTracker;
+#define g_HudSensorTracker \
+    (*(HudSensorTracker *)&g_HudSensorTracker)
 extern char g_HudSensor_MissionSoundSetName[0x20];
 
 extern "C" {

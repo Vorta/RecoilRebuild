@@ -1145,6 +1145,10 @@ RECT g_zVideo_CachedClientRectScreen = {0};
  */
 int g_zVideo_SortedPolyQueueCount = 0;
 int g_zVideo_SortedPolyDrawOrder[256] = {0};
+/**
+ * Reimplements data 0x6333a4: g_zVideo_OverwriteQueueCount.
+ * Purpose: tracks the active overwrite polygon queue count.
+ */
 int g_zVideo_OverwriteQueueCount = 0;
 
 /**
@@ -1395,7 +1399,7 @@ struct zVideoFxPass3Slot : zVideoFxPass3Element {
     float sinFreq;
     float sinPhase;
 
-    zVideoFxPass3Slot * Constructor();
+    zVideoFxPass3Slot();
     void SetRectAndPayload(
         int rectLeftPixels,
         int rectTopPixels,
@@ -1418,12 +1422,8 @@ struct zVideoFxPass3Config : HudUiContainer {
     zVideoFxPass3Slot slots[5];
     int slotWriteIndex;
 
-    zVideoFxPass3Config * Constructor();
-    void Destructor();
-    static void CrtInitGlobalSingleton();
-    static zVideoFxPass3Config *ConstructGlobalSingleton();
-    static void RegisterDestroyAtExit();
-    static void DestroyGlobalSingleton();
+    zVideoFxPass3Config();
+    ~zVideoFxPass3Config();
     void SetInputRectByIndex(
         int index,
         HudUiRect *rectOrNull
@@ -1639,13 +1639,21 @@ int g_zVideo_FxSurfacePitchBytes;
  * Purpose: retain the active FX surface row pitch in 16-bpp pixels.
  */
 int g_zVideo_FxSurfacePitchPixels16;
+/**
+ * Reimplements data 0x56bbc8: g_zVideo_PrimarySurfaceRectScratch.
+ * Purpose: stores the primary surface rectangle scratch used by zVideo
+ * software-present adjustment code.
+ */
 zVidRect32 g_zVideo_PrimarySurfaceRectScratch;
-/*
+/**
+ * Reimplements data 0x56bc78: g_zVideo_SurfaceStateSwapScratch.
  * BN models this as a zero-initialized 0x20-byte zVideo_SurfaceState record:
  * the swap scratch record is the same shape as the software, primary, and
  * display-mode globals but retail stores it earlier at 0x56bc78, before the
  * pass-3 config singleton at 0x56bd58. It is used only by the software
  * present adjustment path.
+ * Purpose: stores the surface-state swap scratch record used by zVideo
+ * software-present adjustment code.
  */
 zVideo_SurfaceStatePartial g_zVideo_SurfaceStateSwapScratch;
 /**
@@ -1656,10 +1664,14 @@ zVideo_SurfaceStatePartial g_zVideo_SurfaceStateSwapScratch;
  * Purpose: store the local pass-3 UI config used by the zVideo namespace
  * wrapper functions.
  */
-#undef g_zVideo_FxPass3ConfigLocal
-unsigned long g_zVideo_FxPass3ConfigLocal[0x1f0 / sizeof(unsigned long)];
+zVideoFxPass3Config g_zVideo_FxPass3ConfigLocal;
 RECOIL_STATIC_ASSERT(sizeof(g_zVideo_FxPass3ConfigLocal) == 0x1f0);
-#define g_zVideo_FxPass3ConfigLocal (*(zVideoFxPass3Config *)(void *)g_zVideo_FxPass3ConfigLocal)
+
+
+
+
+
+
 
 /**
  * Reimplements 0x4a6cf0: zVid_PackColorRGB.
@@ -3185,19 +3197,19 @@ void zVideoFxPass3RootElement::ApplyPass3() {
 
 /**
  * Reimplements 0x4bdbe0: zVideoFxPass3Slot::Constructor.
- * Installs the pass-3 slot table after the HudUiElement base constructor and clears the input
- * clip consumed by zVideoFxPass3Element::Draw.
- * Purpose: provide the recovered zVideoFxPass3Slot::Constructor behavior.
+ * Constructs the pass-3 slot element and clears the input clip consumed by
+ * zVideoFxPass3Element::Draw.
+ * Purpose: provide the recovered zVideoFxPass3Slot constructor behavior.
  */
-zVideoFxPass3Slot * zVideoFxPass3Slot::Constructor() {
-    HudUiElement::Constructor(
-        0,
-        0
-    );
-    clipRectOrNull = 0;
-    new (this) zVideoFxPass3Slot;
-    return this;
+zVideoFxPass3Slot::zVideoFxPass3Slot() : zVideoFxPass3Element(
+    0,
+    0
+) {
 }
+
+
+
+
 
 /**
  * Reimplements 0x4bdc00: zVideoFxPass3Slot::SetRectAndPayload.
@@ -3246,14 +3258,13 @@ void zVideoFxPass3Slot::ApplyPass3() {
 
 /**
  * Reimplements 0x4bef90: zVideoFxPass3Config::Constructor.
- * Constructs the pass-3 singleton as a HudUiContainer, installs the config and element tables,
- * links the root plus five slot children, hides them, and enables the container. The retail
- * constructor leaves surfacePitchBytes untouched.
- * Purpose: provide the recovered zVideoFxPass3Config::Constructor behavior.
+ * Constructs the pass-3 singleton as a HudUiContainer, installs the config and
+ * element tables, links the root plus five slot children, hides them, and
+ * enables the container. The retail constructor leaves surfacePitchBytes
+ * untouched.
+ * Purpose: provide the recovered zVideoFxPass3Config constructor behavior.
  */
-zVideoFxPass3Config * zVideoFxPass3Config::Constructor() {
-    new ((HudUiContainer *)this) HudUiContainer;
-
+zVideoFxPass3Config::zVideoFxPass3Config() {
     rootElement.HudUiElement::Constructor(
         0,
         0
@@ -3262,10 +3273,6 @@ zVideoFxPass3Config * zVideoFxPass3Config::Constructor() {
     new (&rootElement) zVideoFxPass3RootElement;
 
     int slotIndex;
-    for (slotIndex = 0; slotIndex < 5; ++slotIndex) {
-        slots[slotIndex].Constructor();
-    }
-
     inputRectsOrNull[0] = 0;
     inputRectsOrNull[1] = 0;
     surfacePixels = 0;
@@ -3282,55 +3289,60 @@ zVideoFxPass3Config * zVideoFxPass3Config::Constructor() {
 
     slotWriteIndex = 0;
     HudUiContainer::SetEnabled(1);
-    return this;
 }
+
+
+
+
+
+
 
 /**
  * Reimplements 0x4bee80: zVideoFxPass3Config::Destructor.
- * Destruction mirrors the MSVC array-destructor path, then tears down the container.
- * Purpose: provide the recovered zVideoFxPass3Config::Destructor behavior.
+ * Destruction is compiler-owned: VC5 emits the reverse member/base destructor
+ * path for the five embedded slots, root element, and HudUiContainer base.
+ * Purpose: provide the recovered zVideoFxPass3Config destructor behavior.
  */
-void zVideoFxPass3Config::Destructor() {
-    int slotIndex;
-    for (slotIndex = 4; slotIndex >= 0; --slotIndex) {
-        slots[slotIndex].~zVideoFxPass3Slot();
-    }
-    rootElement.~zVideoFxPass3RootElement();
-    HudUiContainer::DestructorCore();
+zVideoFxPass3Config::~zVideoFxPass3Config() {
 }
+
+/*
+ * The following retail entries are VC5-generated thunks for the typed
+ * g_zVideo_FxPass3ConfigLocal global object, not authored source methods.
+ */
 
 /**
  * Reimplements 0x4bee50: zVideoFxPass3Config::ConstructGlobalSingleton.
- * Purpose: construct and return the local pass-3 config singleton.
+ * VC5 helper emitted from typed global construction.
+ * Purpose: construct the local pass-3 config singleton during CRT startup.
  */
-zVideoFxPass3Config *zVideoFxPass3Config::ConstructGlobalSingleton() {
-    return g_zVideo_FxPass3ConfigLocal.Constructor();
-}
+
+
 
 /**
  * Reimplements 0x4bee70: zVideoFxPass3Config::DestroyGlobalSingleton.
- * Purpose: provide the recovered zVideoFxPass3Config::DestroyGlobalSingleton behavior.
+ * VC5 helper emitted from typed global destruction.
+ * Purpose: destroy the local pass-3 config singleton during CRT shutdown.
  */
-void zVideoFxPass3Config::DestroyGlobalSingleton() {
-    g_zVideo_FxPass3ConfigLocal.Destructor();
-}
+
+
 
 /**
  * Reimplements 0x4bee60: zVideoFxPass3Config::RegisterDestroyAtExit.
- * Purpose: provide the recovered zVideoFxPass3Config::RegisterDestroyAtExit behavior.
+ * VC5 helper emitted from typed global construction.
+ * Purpose: register the local pass-3 config singleton destructor at exit.
  */
-void zVideoFxPass3Config::RegisterDestroyAtExit() {
-    atexit(DestroyGlobalSingleton);
-}
+
+
 
 /**
  * Reimplements 0x4bee40: zVideoFxPass3Config::CrtInitGlobalSingleton.
- * Purpose: provide the recovered zVideoFxPass3Config::CrtInitGlobalSingleton behavior.
+ * VC5 CRT startup thunk emitted for g_zVideo_FxPass3ConfigLocal.
+ * Purpose: initialize the local pass-3 config singleton and its exit cleanup.
  */
-void zVideoFxPass3Config::CrtInitGlobalSingleton() {
-    ConstructGlobalSingleton();
-    RegisterDestroyAtExit();
-}
+
+
+
 
 /**
  * Reimplements 0x4bee00: zVideoFxPass3Config::SetInputRectByIndex.
@@ -11745,16 +11757,16 @@ int RunDirectDrawDeviceEnumeration() {
         EnumDirectDrawDeviceCallback,
         0
     );
-    if (hresult == DD_OK) {
-        return 1;
+    if (hresult != DD_OK) {
+        ReportError(
+            (int)(hresult),
+            g_zVideo_SourceFile_ZvidDdC,
+            0x6ad
+        );
+        return 0;
     }
 
-    ReportError(
-        (int)(hresult),
-        g_zVideo_SourceFile_ZvidDdC,
-        0x6ad
-    );
-    return 0;
+    return 1;
 }
 
 /**

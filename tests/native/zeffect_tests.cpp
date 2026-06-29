@@ -25,7 +25,7 @@ extern "C" unsigned int g_HudUi_InvalidateMask;
 extern "C" int g_Hud_MapOverlayRefCount;
 
 struct zVideoFxPass3Config {
-    static zVideoFxPass3Config *ConstructGlobalSingleton();
+    zVideoFxPass3Config();
 };
 
 namespace {
@@ -258,7 +258,7 @@ template <typename T> T &EffectFxPass3FieldAt(std::size_t offset) {
 
 void ResetEffectFxPass3Config() {
     std::memset(EffectFxPass3ConfigBytes(), 0, kEffectFxPass3ConfigSize);
-    zVideoFxPass3Config::ConstructGlobalSingleton();
+    new (&g_zVideo_FxPass3ConfigLocal) zVideoFxPass3Config;
 }
 
 HudUiPanel *EffectTextStackLineAt(HudUiTextStack4 *stack, int index) {

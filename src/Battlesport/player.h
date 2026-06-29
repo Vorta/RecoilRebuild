@@ -74,10 +74,6 @@ extern float g_Player_QuicksandSinkRate;
 extern float g_Player_LavaSinkRate;
 extern float g_Player_MaxSlope;
 extern float g_Player_CollisionContactResolveScale;
-extern Player_UnderwaterFxPass3Ui g_Player_UnderwaterFxPass3Ui;
-extern Player_ProjectileCameraFxPass3Ui g_Player_State7FxPass3Ui;
-extern HudUiPanel g_Player_TopMsgPanel1;
-extern HudUiPanel g_Player_TopMsgPanel2;
 extern OptCatalogEntryDef *g_Player_MakeHotOptEntry;
 extern OptCatalogEntryDef *g_Player_MakeColdOptEntry;
 extern zEffectAnimEntry *g_Player_BftSplashAnimEntry;
@@ -119,6 +115,39 @@ struct Player_ProjectileCameraFxPass3Ui : zVideoFxPass3Element {
     void ApplyPass3();
 };
 RECOIL_STATIC_ASSERT(sizeof(Player_ProjectileCameraFxPass3Ui) == 0x38);
+
+union Player_UnderwaterFxPass3UiStorage {
+    unsigned long align;
+    unsigned char bytes[sizeof(Player_UnderwaterFxPass3Ui)];
+};
+RECOIL_STATIC_ASSERT(sizeof(Player_UnderwaterFxPass3UiStorage) == 0x38);
+
+union Player_ProjectileCameraFxPass3UiStorage {
+    unsigned long align;
+    unsigned char bytes[sizeof(Player_ProjectileCameraFxPass3Ui)];
+};
+RECOIL_STATIC_ASSERT(sizeof(Player_ProjectileCameraFxPass3UiStorage) == 0x38);
+
+union PlayerTopMsgPanelStorage {
+    unsigned long align;
+    unsigned char bytes[sizeof(HudUiPanel)];
+};
+RECOIL_STATIC_ASSERT(sizeof(PlayerTopMsgPanelStorage) == sizeof(HudUiPanel));
+
+extern "C" {
+extern Player_UnderwaterFxPass3UiStorage g_Player_UnderwaterFxPass3Ui;
+extern Player_ProjectileCameraFxPass3UiStorage g_Player_State7FxPass3Ui;
+extern PlayerTopMsgPanelStorage g_Player_TopMsgPanel1;
+extern PlayerTopMsgPanelStorage g_Player_TopMsgPanel2;
+}
+#define g_Player_UnderwaterFxPass3Ui \
+    (*(Player_UnderwaterFxPass3Ui *)&g_Player_UnderwaterFxPass3Ui)
+#define g_Player_State7FxPass3Ui \
+    (*(Player_ProjectileCameraFxPass3Ui *)&g_Player_State7FxPass3Ui)
+#define g_Player_TopMsgPanel1 \
+    (*(HudUiPanel *)&g_Player_TopMsgPanel1)
+#define g_Player_TopMsgPanel2 \
+    (*(HudUiPanel *)&g_Player_TopMsgPanel2)
 
 struct PlayerMasterWeaponSpec {
     PlayerMasterWeaponSpec *next;
@@ -468,89 +497,10 @@ void __fastcall InitStateFromNameAndMasterCommonData(
     const char *objectName,
     const char *masterCommonDataName
 );
-void BuildAiPeerRingsByAiNetId();
 void __fastcall AddScaledHudCounterValue(float value);
 void __fastcall UpdateGunDispatchRequestsFromTriggerLatches(
     zUtil_SaveGameState *saveState
 );
-void __fastcall AiDiscardNegativeBranchPathNodes(
-    zUtil_SaveGameState *saveState
-);
-int __fastcall AiMode2ForwardProbeRequiresAutoTurn(
-    zUtil_SaveGameState *saveState
-);
-int __fastcall AiChooseNextPathBranchIndex(
-    zUtil_SaveGameState *saveState,
-    AINetNode **currentNodeInOut,
-    int *outBranchIndex,
-    int excludedBranchIndex
-);
-void __fastcall AiAdvancePathCursorAndComputeTargetVec(
-    zUtil_SaveGameState *saveState,
-    AINetNode **currentNodeInOut,
-    AINetPathProbeFan **outProbeFan,
-    zVec3 *outTargetVec
-);
-void __fastcall TickAiMode2TopLevel(zUtil_SaveGameState *saveState);
-void __fastcall TickAiMode2PathFollow(zUtil_SaveGameState *saveState);
-void __fastcall AiEnterMode2SteeringPursuit(zUtil_SaveGameState *saveState);
-void __fastcall AiAlertAttackBuddies(zUtil_SaveGameState *saveState);
-int __fastcall AiTryEnterMode2AttackPursuitIfLineOfSight(
-    zUtil_SaveGameState *saveState
-);
-void __fastcall AiRebuildSyntheticPathToNodeIfFar(
-    zUtil_SaveGameState *saveState,
-    AINetNode *targetNode
-);
-void __fastcall TickAiMode2SteeringSubstate(zUtil_SaveGameState *saveState);
-void __fastcall UpdateAiMode2MoveAndTurnTowardTarget(
-    zUtil_SaveGameState *saveState,
-    float forwardDot,
-    float lateralDot,
-    float targetDistance
-);
-void __fastcall UpdateAiMode2TurnTowardPlayerNoThrottle(
-    zUtil_SaveGameState *saveState
-);
-void __fastcall UpdateAiMode2TurnInPlaceTowardPlayer(
-    zUtil_SaveGameState *saveState
-);
-void __fastcall TickAiMode2AltGunAttackWindow(
-    zUtil_SaveGameState *saveState,
-    float targetDistance,
-    float forwardDot
-);
-void __fastcall SolveAltGunLeadTargetPoint(
-    zUtil_SaveGameState *saveState,
-    zUtil_SaveGameState *targetSaveState,
-    zVec3 *outTargetPos
-);
-void __fastcall UpdateAiMode2MoveAndTurnTowardOffsetTarget(
-    zUtil_SaveGameState *saveState,
-    zUtil_SaveGameState *targetState
-);
-void __fastcall UpdateAiMode2MoveAndTurnTowardDynamicOffsetTarget(
-    zUtil_SaveGameState *saveState,
-    zUtil_SaveGameState *targetState,
-    float targetDistance
-);
-void __fastcall TickAiMode2OffsetTargetSteering(
-    zUtil_SaveGameState *saveState,
-    float unusedForwardDot,
-    float unusedLateralDot,
-    float unusedTargetDistance
-);
-void __fastcall TickAiMode2DynamicOffsetTargetSteering(
-    zUtil_SaveGameState *saveState,
-    float unusedForwardDot,
-    float unusedLateralDot,
-    float targetDistance
-);
-void __fastcall AiRestoreSavedTopLevelState(zUtil_SaveGameState *saveState);
-void __fastcall AiSteerTowardPathNodeForward(zUtil_SaveGameState *saveState);
-void __fastcall AiSteerTowardPathNodeReverse(zUtil_SaveGameState *saveState);
-void __fastcall TickAiMode2TimedPathSteering(zUtil_SaveGameState *saveState);
-void AiFinalizeMode2State1ForAllPlayers();
 void __fastcall SetWorldPoseAndRestartAnchor(
     zUtil_SaveGameState *saveState,
     const zVec3 *position,
@@ -905,16 +855,6 @@ int __fastcall IsAltWeaponAllowedInCurrentMasterMode(
 );
 void __fastcall AutoSwitchToNextUsableAltWeapon(
     zUtil_SaveGameState *saveState
-);
-int __fastcall TestScenePathBetweenCameraTargetAndPoint(
-    zClass_NodePartial *node,
-    const zVec3 *point,
-    int directionMode
-);
-int __fastcall HasLineOfSightFromLocalPlayerFxOffset(
-    zClass_NodePartial *node,
-    const zVec3 *point,
-    int directionMode
 );
 void __fastcall UpdateAltGunAimDirection(zUtil_SaveGameState *saveState);
 void __fastcall UpdateGunAndTurretAimNodes(

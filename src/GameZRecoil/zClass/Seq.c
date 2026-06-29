@@ -9,7 +9,7 @@
 #include <stdlib.h>
 
 namespace {
-    const char *kSequenceSourceFile = "D:\\Proj\\GameZRecoil\\zClass\\Seq.c";
+    const char kSequenceSourceFile[] = "D:\\Proj\\GameZRecoil\\zClass\\Seq.c";
 
     /**
      * Original-source helper evidence: no standalone retail function exists.

@@ -12,7 +12,7 @@
 #include <string.h>
 
 namespace {
-    const char *kSoundSourceFile = "D:\\Proj\\GameZRecoil\\zClass\\Sound.c";
+    const char kSoundSourceFile[] = "D:\\Proj\\GameZRecoil\\zClass\\Sound.c";
 
     /**
      * Original-source helper evidence: no standalone retail function exists.

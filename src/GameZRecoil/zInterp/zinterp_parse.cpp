@@ -17,6 +17,7 @@
 #include <ctype.h>
 #include <direct.h>
 #include <errno.h>
+#include <new>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
@@ -182,11 +183,17 @@ unsigned int g_zInterp_NodeUserDataScratch = 0;
 
 /**
  * Reimplements data 0x4edb78: g_zInterp_GlobalContext.
- * Data owner: zInterp_GlobalContext initialized instance.
+ * Data owner: zInterp_GlobalContext initialized instance. Explicit aligned
+ * storage prevents VC5 from emitting automatic static initializer/destructor
+ * thunks; s_zInterpCrtInit_GlobalContext owns the startup row that constructs
+ * and registers teardown for this same storage.
  *
  * Purpose: process-wide script interpreter context constructed at startup.
  */
-zInterp_GlobalContext g_zInterp_GlobalContext;
+#undef g_zInterp_GlobalContext
+zInterp_GlobalContextStorage g_zInterp_GlobalContext = {0};
+#define g_zInterp_GlobalContext \
+    (*(zInterp_GlobalContext *)&g_zInterp_GlobalContext)
 
 /**
  * Reimplements data 0x4e48f4: g_zInterp_PreparedIndexFileName.
@@ -715,7 +722,9 @@ zInterp_Context * zInterp_GlobalContext::Constructor() {
  * Purpose: static initializer wrapper for the process-wide interpreter.
  */
 zInterp_Context *zInterp_GlobalContext::StaticInit() {
-    return ((zInterp_GlobalContext *)(&g_zInterp_GlobalContext))->Constructor();
+    zInterp_GlobalContext *const context =
+        new (&g_zInterp_GlobalContext) zInterp_GlobalContext;
+    return context->Constructor();
 }
 
 /**
@@ -749,6 +758,15 @@ int zInterp_GlobalContext::StaticInitAndRegisterAtExit() {
     StaticInit();
     return RegisterAtExit();
 }
+
+#if defined(_MSC_VER) && defined(_M_IX86)
+typedef void (__cdecl *ZInterpCrtInitializerFn)();
+/* VC5 emits this zInterp startup callback as a direct .CRT$XCU row. */
+#pragma data_seg(".CRT$XCU")
+ZInterpCrtInitializerFn s_zInterpCrtInit_GlobalContext =
+    (ZInterpCrtInitializerFn)zInterp_GlobalContext::StaticInitAndRegisterAtExit;
+#pragma data_seg()
+#endif
 
 /**
  * Reimplements 0x4c0f70: zInterp_Context::Destroy.

@@ -616,6 +616,8 @@ namespace {
 }
 
 namespace zClass_Class {
+    int __fastcall TryFreeNode(zClass_NodePartial * node);
+
     /**
      * Reimplements 0x4478c0: zClass_Class::AllocNodeFromFreeList.
      * Purpose: pop a node from the global free list, clear it, and install
@@ -669,6 +671,137 @@ namespace zClass_Class {
     }
 
     /**
+     * Reimplements 0x447980: zClass_Class::DeleteNodeByType.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\Class.c.
+     * Purpose: validate node ownership and dispatch deletion by classId.
+    */
+    int __fastcall DeleteNodeByType(zClass_NodePartial * node) {
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                kClassSourceFile,
+                0x231,
+                "Null node pointer."
+            );
+            return 5;
+        }
+
+        if (node->listCountA > 0) {
+            return 1;
+        }
+
+        switch (node->classId) {
+        case 5:
+            return zClass_Object3D::DeleteNode(node);
+        case 1:
+            return zClass_Object3D::DeleteNode(node);
+        case 2:
+            return zClass_World::DeleteNode(node);
+        case 3:
+            return zClass_Object3D::DeleteNode(node);
+        case 4:
+            return zClass_Object3D::DeleteNode(node);
+        case 6:
+            return zClass_Object3D::DeleteNode(node);
+        case 7:
+            return zClass_Object3D::DeleteNode(node);
+        case 8:
+            return zClass_Animate::DeleteNode(node);
+        case 9:
+            return zClass_Light::DeleteNode(node);
+        case 10:
+            return zClass_Sound::DeleteNode(node);
+        case 11:
+            return zClass_Object3D::DeleteNode(node);
+        case 0:
+            TryFreeNode(node);
+            return (int)((unsigned int)(node));
+        default:
+            zError::ReportOld(
+                0x400,
+                kClassSourceFile,
+                0x272,
+                "ERROR: Unrecognized node class type for node: %s\n",
+                node->name
+            );
+            return 1;
+        }
+    }
+
+    /**
+     * Reimplements 0x447a70: zClass_Class::FreeNodeToFreeList.
+     * Purpose: release owned node lists/data and return the node slot to the
+     * global zClass free-list while preserving the slot free-tag flags.
+     */
+    int __fastcall FreeNodeToFreeList(zClass_NodePartial * node) {
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                kClassSourceFile,
+                0x28e,
+                "Null node pointer."
+            );
+            return 5;
+        }
+        if (node->listCountB > 0) {
+            return 1;
+        }
+        if (node->listCountA > 0) {
+            return 1;
+        }
+        if (node->userDataOrDiRef != 0) {
+            return 1;
+        }
+
+        if (node->listB != 0) {
+            free(node->listB);
+            node->listB = 0;
+        }
+        if (node->listA != 0) {
+            free(node->listA);
+            node->listA = 0;
+        }
+        if (node->classData != 0) {
+            free(node->classData);
+            node->classData = 0;
+            node->classId = 0;
+        }
+
+        const ptrdiff_t index = (zClass_NodeFreeListSlot *)(node)-g_zClass_NodeArray;
+        zClass_NodeFreeListSlot &slot = g_zClass_NodeArray[index];
+        slot.freeTag =
+            (slot.freeTag & 0xff000000) | ((unsigned int)(g_zClass_NodeFreeHeadIndex) & 0x00ffffff);
+        --g_zClass_ActiveNodeCount;
+        g_zClass_NodeFreeHeadIndex = (int)(index);
+
+        return 0;
+    }
+
+    /**
+     * Reimplements 0x447b60: zClass_Class::TryFreeNode.
+     * Purpose: remove a node from active lists, then either free it
+     * immediately or enqueue it for deferred freeing.
+     */
+    int __fastcall TryFreeNode(zClass_NodePartial * node) {
+        if (ReportNullNode(
+            0x2f0,
+            node
+        )) {
+            return 5;
+        }
+
+        node->flags &= ~kTransformQueuedFlag;
+        zClass_List::DeleteNodeFromLists(node);
+        if (zClass::ProcessDeferredWork() != 0) {
+            zClass_NodeList::Insert(node);
+        } else {
+            FreeNodeToFreeList(node);
+        }
+
+        return 0;
+    }
+
+    /**
      * Reimplements 0x448cc0: zClass_Class::gwNodeUpdate.
      * Source: D:\Proj\GameZRecoil\zClass\Class.c
      * Purpose: process pending transform and bounds work for one scene node
@@ -688,6 +821,8 @@ namespace zClass_Class {
             needsBBoxRecalc = true;
         }
         node->boundsFlags &= 0x04;
+
+        zClass_NodePartial *nodeValue = node;
 
         switch (node->classId) {
         case 1: {
@@ -2425,139 +2560,6 @@ namespace zClass_Class {
         return 0;
     }
 
-    /**
-     * Reimplements 0x447a70: zClass_Class::FreeNodeToFreeList.
-     * Purpose: release owned node lists/data and return the node slot to the
-     * global zClass free-list while preserving the slot free-tag flags.
-     */
-    int __fastcall FreeNodeToFreeList(zClass_NodePartial * node) {
-        if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kClassSourceFile,
-                0x28e,
-                "Null node pointer."
-            );
-            return 5;
-        }
-        if (node->listCountB > 0) {
-            return 1;
-        }
-        if (node->listCountA > 0) {
-            return 1;
-        }
-        if (node->userDataOrDiRef != 0) {
-            return 1;
-        }
-
-        if (node->listB != 0) {
-            free(node->listB);
-            node->listB = 0;
-        }
-        if (node->listA != 0) {
-            free(node->listA);
-            node->listA = 0;
-        }
-        if (node->classData != 0) {
-            free(node->classData);
-            node->classData = 0;
-            node->classId = 0;
-        }
-
-        const ptrdiff_t index = (zClass_NodeFreeListSlot *)(node)-g_zClass_NodeArray;
-        zClass_NodeFreeListSlot &slot = g_zClass_NodeArray[index];
-        slot.freeTag =
-            (slot.freeTag & 0xff000000) | ((unsigned int)(g_zClass_NodeFreeHeadIndex) & 0x00ffffff);
-        --g_zClass_ActiveNodeCount;
-        g_zClass_NodeFreeHeadIndex = (int)(index);
-
-        return 0;
-    }
-
-    /**
-     * Reimplements 0x447b60: zClass_Class::TryFreeNode.
-     * Purpose: remove a node from active lists, then either free it
-     * immediately or enqueue it for deferred freeing.
-     */
-    int __fastcall TryFreeNode(zClass_NodePartial * node) {
-        if (ReportNullNode(
-            0x2f0,
-            node
-        )) {
-            return 5;
-        }
-
-        node->flags &= ~kTransformQueuedFlag;
-        zClass_List::DeleteNodeFromLists(node);
-        if (zClass::ProcessDeferredWork() != 0) {
-            zClass_NodeList::Insert(node);
-        } else {
-            FreeNodeToFreeList(node);
-        }
-
-        return 0;
-    }
-}
-
-namespace zClass_Class {
-    /**
-     * Reimplements 0x447980: zClass_Class::DeleteNodeByType.
-     * BN source path evidence: D:\Proj\GameZRecoil\zClass\Class.c.
-     * Purpose: validate node ownership and dispatch deletion by classId.
-     */
-    int __fastcall DeleteNodeByType(zClass_NodePartial * node) {
-        zClass_NodePartial * nodeValue = node;
-        if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                kClassSourceFile,
-                0x231,
-                "Null node pointer."
-            );
-            return 5;
-        }
-
-        if (node->listCountA > 0) {
-            return 1;
-        }
-
-        switch (node->classId) {
-        case 5:
-            return zClass_Object3D::DeleteNode(node);
-        case 1:
-            return zClass_Object3D::DeleteNode(node);
-        case 2:
-            return zClass_World::DeleteNode(node);
-        case 3:
-            return zClass_Object3D::DeleteNode(node);
-        case 4:
-            return zClass_Object3D::DeleteNode(node);
-        case 6:
-            return zClass_Object3D::DeleteNode(node);
-        case 7:
-            return zClass_Object3D::DeleteNode(node);
-        case 8:
-            return zClass_Animate::DeleteNode(node);
-        case 9:
-            return zClass_Light::DeleteNode(node);
-        case 10:
-            return zClass_Sound::DeleteNode(node);
-        case 11:
-            return zClass_Object3D::DeleteNode(node);
-        case 0:
-            TryFreeNode(node);
-            return (int)((unsigned int)(nodeValue));
-        default:
-            zError::ReportOld(
-                0x400,
-                kClassSourceFile,
-                0x272,
-                "ERROR: Unrecognized node class type for node: %s\n",
-                node->name
-            );
-            return 1;
-        }
-    }
 }
 
 namespace gwNode {

@@ -1,8 +1,8 @@
 # zSnd Snapshot Verification Notes
 
 These notes track address-local verification facts for active snapshot
-blockers. They do not replace Binary Ninja, plan markers, or VC verification
-output.
+blockers. They do not replace Binary Ninja, SOURCE_OWNERS owner gates, or VC
+verification output.
 
 ## 0x4a0500 StopAllIfPlaying
 

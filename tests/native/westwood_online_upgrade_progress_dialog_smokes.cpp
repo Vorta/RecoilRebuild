@@ -1,4 +1,5 @@
 #include "Battlesport/WestwoodOnlineUpgradeDialog.h"
+#include "Battlesport/WestwoodOnlineUpgradeApi.h"
 #include "GameZRecoil/wwonline/upgrade_download.h"
 
 #include <ocidl.h>

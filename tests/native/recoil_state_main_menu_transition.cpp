@@ -70,7 +70,24 @@ RecoilApp_IState_Vtbl MakeQueueEnterVtable() {
     return vtable;
 }
 
-RecoilApp_IState_Vtbl g_queueEnterVtable = MakeQueueEnterVtable();
+union QueueEnterVtableStorage {
+    void *align;
+    unsigned char bytes[sizeof(RecoilApp_IState_Vtbl)];
+};
+
+QueueEnterVtableStorage g_queueEnterVtableStorage;
+bool g_queueEnterVtableInitialized;
+
+RecoilApp_IState_Vtbl &QueueEnterVtable() {
+    auto *const vtable =
+        reinterpret_cast<RecoilApp_IState_Vtbl *>(g_queueEnterVtableStorage.bytes);
+    if (!g_queueEnterVtableInitialized) {
+        const RecoilApp_IState_Vtbl value = MakeQueueEnterVtable();
+        std::memcpy(vtable, &value, sizeof(value));
+        g_queueEnterVtableInitialized = true;
+    }
+    return *vtable;
+}
 
 void __fastcall TestMainMenuLayoutOnActivated(HudLayoutBase *) {
     ++g_mainMenuLayoutActivatedCount;
@@ -264,7 +281,7 @@ extern "C" int recoil_state_main_menu_transition_queue_enter_smoke(void) {
     g_RecoilApp.m_currentStateIndex = -1;
     g_RecoilState_MainMenuTransition.m_entryRoute = RECOIL_MAINMENU_ROUTE_FRONTEND;
     g_RecoilState_MainMenuTransition.vftable =
-        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_queueEnterVtable));
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&QueueEnterVtable()));
 
     RecoilStateMainMenuTransition::QueueEnter(static_cast<RecoilMainMenuEntryRoute>(7));
 
@@ -472,7 +489,7 @@ extern "C" int hud_ui_main_menu_credits_button_on_activate_smoke(void) {
 
     TestQueueEnterState oldState{};
     oldState.vftable =
-        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_queueEnterVtable));
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&QueueEnterVtable()));
     g_RecoilStateCredits.vftable = oldState.vftable;
     g_queueEnterOnEnterCalls = 0;
 
@@ -554,12 +571,12 @@ extern "C" int hud_ui_main_menu_save_button_on_activate_smoke(void) {
 
     g_RecoilStateSaveLoadTransition = RecoilStateSaveLoadTransition{};
     g_RecoilStateSaveLoadTransition.vftable =
-        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_queueEnterVtable));
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&QueueEnterVtable()));
     g_queueEnterOnEnterCalls = 0;
 
     TestQueueEnterState oldState{};
     oldState.vftable =
-        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_queueEnterVtable));
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&QueueEnterVtable()));
     g_RecoilApp = {};
     g_RecoilApp.m_currentStateIndex = 0;
     g_RecoilApp.m_stateStack[0] =
@@ -643,7 +660,7 @@ extern "C" int hud_ui_main_menu_load_button_on_activate_smoke(void) {
 
     TestQueueEnterState oldState{};
     oldState.vftable =
-        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_queueEnterVtable));
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&QueueEnterVtable()));
 
     void *const dialogStorage = ::operator new(sizeof(HudUiMainMenuDialog));
     HudUiMainMenuDialog &dialog =
@@ -654,7 +671,7 @@ extern "C" int hud_ui_main_menu_load_button_on_activate_smoke(void) {
 
     g_RecoilStateSaveLoadTransition = RecoilStateSaveLoadTransition{};
     g_RecoilStateSaveLoadTransition.vftable =
-        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_queueEnterVtable));
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&QueueEnterVtable()));
     g_queueEnterOnEnterCalls = 0;
     g_RecoilApp = {};
     g_RecoilApp.m_currentStateIndex = 0;
@@ -688,7 +705,7 @@ extern "C" int hud_ui_main_menu_load_button_on_activate_smoke(void) {
 
     g_RecoilStateSaveLoadTransition = RecoilStateSaveLoadTransition{};
     g_RecoilStateSaveLoadTransition.vftable =
-        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_queueEnterVtable));
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&QueueEnterVtable()));
     g_queueEnterOnEnterCalls = 0;
     g_RecoilApp = {};
     g_RecoilApp.m_currentStateIndex = 0;
@@ -761,12 +778,12 @@ extern "C" int hud_ui_main_menu_new_game_button_on_activate_smoke(void) {
 
     g_HudUiNewGamePanelOverlayOwner = HudUiNewGamePanelOverlayOwner{};
     g_HudUiNewGamePanelOverlayOwner.vftable =
-        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_queueEnterVtable));
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&QueueEnterVtable()));
     g_queueEnterOnEnterCalls = 0;
 
     TestQueueEnterState oldState{};
     oldState.vftable =
-        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_queueEnterVtable));
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&QueueEnterVtable()));
     g_RecoilApp = {};
     g_RecoilApp.m_currentStateIndex = 0;
     g_RecoilApp.m_stateStack[0] =
@@ -841,7 +858,7 @@ extern "C" int hud_ui_menu_back_button_on_activate_smoke(void) {
 
     TestQueueEnterState oldState{};
     oldState.vftable =
-        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_queueEnterVtable));
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&QueueEnterVtable()));
     g_queueEnterOnEnterCalls = 0;
     g_queueEnterOnExitCalls = 0;
     g_RecoilApp = {};
@@ -923,12 +940,12 @@ extern "C" int hud_ui_main_menu_options_button_on_activate_smoke(void) {
 
     g_HudUiOptionsPanelOverlayOwner = HudUiOptionsPanelOverlayOwner{};
     g_HudUiOptionsPanelOverlayOwner.vftable =
-        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_queueEnterVtable));
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&QueueEnterVtable()));
     g_queueEnterOnEnterCalls = 0;
 
     TestQueueEnterState oldState{};
     oldState.vftable =
-        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_queueEnterVtable));
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&QueueEnterVtable()));
     g_RecoilApp = {};
     g_RecoilApp.m_currentStateIndex = 0;
     g_RecoilApp.m_stateStack[0] =
@@ -1003,12 +1020,12 @@ extern "C" int hud_ui_main_menu_quit_button_on_activate_smoke(void) {
 
     g_RecoilState_ConfirmQuit = RecoilStateConfirmQuit{};
     g_RecoilState_ConfirmQuit.vftable =
-        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_queueEnterVtable));
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&QueueEnterVtable()));
     g_queueEnterOnEnterCalls = 0;
 
     TestQueueEnterState oldState{};
     oldState.vftable =
-        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_queueEnterVtable));
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&QueueEnterVtable()));
     g_RecoilApp = {};
     g_RecoilApp.m_currentStateIndex = 0;
     g_RecoilApp.m_stateStack[0] =
@@ -1083,12 +1100,12 @@ extern "C" int hud_ui_main_menu_controls_button_on_activate_smoke(void) {
 
     g_RecoilStateControls = RecoilStateControls{};
     g_RecoilStateControls.vftable =
-        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_queueEnterVtable));
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&QueueEnterVtable()));
     g_queueEnterOnEnterCalls = 0;
 
     TestQueueEnterState oldState{};
     oldState.vftable =
-        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&g_queueEnterVtable));
+        static_cast<RecoilPtr32>(reinterpret_cast<std::uintptr_t>(&QueueEnterVtable()));
     g_RecoilApp = {};
     g_RecoilApp.m_currentStateIndex = 0;
     g_RecoilApp.m_stateStack[0] =

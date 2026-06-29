@@ -1051,7 +1051,7 @@ extern "C" int player_solve_alt_gun_lead_target_point_smoke(void) {
     targetPlayerState.worldPos = {3.0f, 4.0f, 5.0f};
     targetPlayerState.fxOffsetWorld = {100.0f, 101.0f, 102.0f};
     targetPlayerState.projectileSpawnVel = {20.0f, 0.0f, 0.0f};
-    Player::SolveAltGunLeadTargetPoint(&saveState, &targetState, &outTargetPos);
+    AINet::SolveAltGunLeadTargetPoint(&saveState, &targetState, &outTargetPos);
     const bool fallbackOk = Vec3Equals(outTargetPos, targetPlayerState.worldPos);
 
     playerState.worldPos = {0.0f, 0.0f, 0.0f};
@@ -1063,7 +1063,7 @@ extern "C" int player_solve_alt_gun_lead_target_point_smoke(void) {
     std::srand(12345);
     const int expectedRand = std::rand();
     std::srand(12345);
-    Player::SolveAltGunLeadTargetPoint(&saveState, &targetState, &outTargetPos);
+    AINet::SolveAltGunLeadTargetPoint(&saveState, &targetState, &outTargetPos);
 
     const float leadScale = (PlayerFastSqrtEstimateForAltGunTest(9.0f) + 0.3f) / 0.99f;
     const float expectedY =
@@ -1130,7 +1130,7 @@ extern "C" int player_tick_ai_mode2_alt_gun_attack_window_smoke(void) {
     playerState.aiNotPursuitDwell = 2.0f;
     playerState.aiMode2AttackDwell = 3.0f;
     activeAltGunController.nextDispatchTime = 20.0f;
-    Player::TickAiMode2AltGunAttackWindow(&saveState, 10.0f, 1.0f);
+    AINet::TickAiMode2AltGunAttackWindow(&saveState, 10.0f, 1.0f);
     const bool refreshOk =
         FloatNear(playerState.aiStateStartTime, 12.0f) &&
         FloatNear(playerState.aiStateEndTime, 15.0f) &&
@@ -1146,7 +1146,7 @@ extern "C" int player_tick_ai_mode2_alt_gun_attack_window_smoke(void) {
     playerState.progressTargetSlots[0].targetVelocity = &playerState.projectileSpawnVel;
     activeAltGunController.nextDispatchTime = 1.0f;
     optCatalogEntry.flags = 0;
-    Player::TickAiMode2AltGunAttackWindow(&saveState, 10.0f, 0.8f);
+    AINet::TickAiMode2AltGunAttackWindow(&saveState, 10.0f, 0.8f);
     const bool dispatchOk =
         playerState.altGunDispatchRequested == 1 &&
         FloatNear(activeAltGunController.nextDispatchTime, 28.0f) &&
@@ -1158,13 +1158,13 @@ extern "C" int player_tick_ai_mode2_alt_gun_attack_window_smoke(void) {
     playerState.altGunFireHeldFlag = 1;
     playerState.altGunDispatchRequested = 5;
     activeAltGunController.nextDispatchTime = 30.0f;
-    Player::TickAiMode2AltGunAttackWindow(&saveState, 50.0f, 0.75f);
+    AINet::TickAiMode2AltGunAttackWindow(&saveState, 50.0f, 0.75f);
     const bool heldCopyOk =
         playerState.altGunDispatchRequested == 5 &&
         Vec3Equals(playerState.storedTargetPos, targetPlayerState.fxOffsetWorld);
 
     targetPlayerState.lifecycleState = 4;
-    Player::TickAiMode2AltGunAttackWindow(&saveState, 10.0f, 1.0f);
+    AINet::TickAiMode2AltGunAttackWindow(&saveState, 10.0f, 1.0f);
     const bool heldClearOk =
         playerState.altGunDispatchRequested == 0 &&
         FloatNear(activeAltGunController.nextDispatchTime, 24.0f);

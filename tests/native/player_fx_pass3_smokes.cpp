@@ -135,6 +135,67 @@ extern "C" int player_init_underwater_fx_pass3_ui_singleton_smoke(void) {
     return ok ? 0 : 1;
 }
 
+extern "C" int player_register_underwater_fx_pass3_ui_on_exit_smoke(void) {
+    unsigned char oldUnderwaterFxPass3Ui[sizeof(g_Player_UnderwaterFxPass3Ui)];
+    memcpy(
+        oldUnderwaterFxPass3Ui,
+        &g_Player_UnderwaterFxPass3Ui,
+        sizeof(g_Player_UnderwaterFxPass3Ui)
+    );
+
+    Player::InitUnderwaterFxPass3UiSingleton();
+    Player_UnderwaterFxPass3Ui probe;
+    probe.Constructor();
+    void *const derivedTable = ReadObjectVtable(&probe);
+
+    Player::RegisterUnderwaterFxPass3UiOnExit();
+
+    const bool ok = ReadObjectVtable(&g_Player_UnderwaterFxPass3Ui) == derivedTable;
+
+    memcpy(
+        &g_Player_UnderwaterFxPass3Ui,
+        oldUnderwaterFxPass3Ui,
+        sizeof(g_Player_UnderwaterFxPass3Ui)
+    );
+    return ok ? 0 : 1;
+}
+
+extern "C" int player_init_and_register_underwater_fx_pass3_ui_singleton_smoke(void) {
+    unsigned char oldUnderwaterFxPass3Ui[sizeof(g_Player_UnderwaterFxPass3Ui)];
+    memcpy(
+        oldUnderwaterFxPass3Ui,
+        &g_Player_UnderwaterFxPass3Ui,
+        sizeof(g_Player_UnderwaterFxPass3Ui)
+    );
+
+    memset(
+        &g_Player_UnderwaterFxPass3Ui,
+        0xff,
+        sizeof(g_Player_UnderwaterFxPass3Ui)
+    );
+    Player::InitAndRegisterUnderwaterFxPass3UiSingleton();
+
+    Player_UnderwaterFxPass3Ui probe;
+    probe.Constructor();
+    const bool ok =
+        ReadObjectVtable(&g_Player_UnderwaterFxPass3Ui) == ReadObjectVtable(&probe) &&
+        g_Player_UnderwaterFxPass3Ui.next == 0 &&
+        g_Player_UnderwaterFxPass3Ui.parent == 0 &&
+        g_Player_UnderwaterFxPass3Ui.flags == 0 &&
+        g_Player_UnderwaterFxPass3Ui.timer == 0.0f &&
+        g_Player_UnderwaterFxPass3Ui.x == 0 &&
+        g_Player_UnderwaterFxPass3Ui.y == 0 &&
+        g_Player_UnderwaterFxPass3Ui.state == 0 &&
+        g_Player_UnderwaterFxPass3Ui.clipRectOrNull == 0;
+
+    memcpy(
+        &g_Player_UnderwaterFxPass3Ui,
+        oldUnderwaterFxPass3Ui,
+        sizeof(g_Player_UnderwaterFxPass3Ui)
+    );
+    return ok ? 0 : 1;
+}
+
 extern "C" int player_reset_underwater_fx_pass3_ui_singleton_smoke(void) {
     unsigned char oldUnderwaterFxPass3Ui[sizeof(g_Player_UnderwaterFxPass3Ui)];
     memcpy(

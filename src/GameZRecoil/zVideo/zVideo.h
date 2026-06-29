@@ -261,8 +261,7 @@ struct zVideo_SurfaceLockVerifyArgs {
 struct zVideo_SurfaceLockVerifier;
 struct zVideoFxPass3Config;
 extern zVideo_SurfaceStatePartial g_zVideo_SurfaceStateSwapScratch;
-extern unsigned long g_zVideo_FxPass3ConfigLocal[0x1f0 / sizeof(unsigned long)];
-#define g_zVideo_FxPass3ConfigLocal (*(zVideoFxPass3Config *)(void *)g_zVideo_FxPass3ConfigLocal)
+extern zVideoFxPass3Config g_zVideo_FxPass3ConfigLocal;
 
 struct zVidTexturePackRecord {
     char name[0x20];

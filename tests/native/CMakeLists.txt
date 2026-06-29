@@ -310,6 +310,89 @@ def extract_queue_dialogs_smoke():
     return source
 
 
+def extract_lifecycle_smoke():
+    return r"""extern "C" int recoil_state_save_load_transition_lifecycle_smoke(void) {
+    unsigned char oldTransition[sizeof(g_RecoilStateSaveLoadTransition)] = {};
+    std::memcpy(oldTransition, &g_RecoilStateSaveLoadTransition,
+                sizeof(g_RecoilStateSaveLoadTransition));
+
+    alignas(RecoilStateSaveLoadTransition) unsigned char constructedStorage[
+        sizeof(RecoilStateSaveLoadTransition)] = {};
+    RecoilStateSaveLoadTransition *const constructed =
+        new (constructedStorage) RecoilStateSaveLoadTransition{};
+    constructed->m_dialog = 0x22222222;
+    constructed->m_dialogKind = RECOIL_SAVELOAD_DIALOG_LOAD;
+    RecoilStateSaveLoadTransition *const constructedReturned = constructed->Constructor();
+    if (constructedReturned != constructed || constructed->m_dialog != 0 ||
+        constructed->m_dialogKind != RECOIL_SAVELOAD_DIALOG_SAVE) {
+        return 1;
+    }
+
+    alignas(RecoilStateSaveLoadTransition) unsigned char nullDialogStorage[
+        sizeof(RecoilStateSaveLoadTransition)] = {};
+    RecoilStateSaveLoadTransition *const nullDialogState =
+        new (nullDialogStorage) RecoilStateSaveLoadTransition{};
+    nullDialogState->m_dialog = 0;
+    nullDialogState->Destructor();
+    if (nullDialogState->m_dialog != 0) {
+        return 2;
+    }
+
+    alignas(RecoilStateSaveLoadTransition) unsigned char scalarStateStorage[
+        sizeof(RecoilStateSaveLoadTransition)] = {};
+    RecoilStateSaveLoadTransition *const scalarState =
+        new (scalarStateStorage) RecoilStateSaveLoadTransition{};
+    RecoilStateSaveLoadTransition *const scalarReturned =
+        CallStateScalarDeletingDestructor(scalarState, 0);
+    if (scalarReturned != scalarState) {
+        return 3;
+    }
+
+    RecoilStateSaveLoadTransition *const deletingState =
+        new RecoilStateSaveLoadTransition{};
+    RecoilStateSaveLoadTransition *const deletingReturned =
+        CallStateScalarDeletingDestructor(deletingState, 1);
+    if (deletingReturned != deletingState) {
+        return 4;
+    }
+
+    std::memset(&g_RecoilStateSaveLoadTransition, 0,
+                sizeof(g_RecoilStateSaveLoadTransition));
+    RecoilStateSaveLoadTransition *const staticInitReturned =
+        RecoilStateSaveLoadTransition::StaticInit();
+    if (staticInitReturned != &g_RecoilStateSaveLoadTransition ||
+        ReadStateVtable(g_RecoilStateSaveLoadTransition) != nullptr ||
+        g_RecoilStateSaveLoadTransition.m_dialog != 0 ||
+        g_RecoilStateSaveLoadTransition.m_dialogKind != RECOIL_SAVELOAD_DIALOG_SAVE) {
+        std::memcpy(&g_RecoilStateSaveLoadTransition, oldTransition,
+                    sizeof(g_RecoilStateSaveLoadTransition));
+        return 5;
+    }
+
+    RecoilStateSaveLoadTransition::AtExitDestructor();
+    if (ReadStateVtable(g_RecoilStateSaveLoadTransition) != nullptr ||
+        g_RecoilStateSaveLoadTransition.m_dialog != 0) {
+        std::memcpy(&g_RecoilStateSaveLoadTransition, oldTransition,
+                    sizeof(g_RecoilStateSaveLoadTransition));
+        return 6;
+    }
+
+    std::memset(&g_RecoilStateSaveLoadTransition, 0,
+                sizeof(g_RecoilStateSaveLoadTransition));
+    RecoilStateSaveLoadTransition::StaticInitAndRegisterAtExit();
+    const bool staticRegisterOk =
+        ReadStateVtable(g_RecoilStateSaveLoadTransition) == nullptr &&
+        g_RecoilStateSaveLoadTransition.m_dialog == 0 &&
+        g_RecoilStateSaveLoadTransition.m_dialogKind == RECOIL_SAVELOAD_DIALOG_SAVE;
+
+    std::memcpy(&g_RecoilStateSaveLoadTransition, oldTransition,
+                sizeof(g_RecoilStateSaveLoadTransition));
+    g_RecoilStateSaveLoadTransition.m_dialog = 0;
+    g_saveLoadInitExpectedSectionName = nullptr;
+    return staticRegisterOk ? 0 : 7;
+}"""
+
+
 def extract_on_update_should_quit_smoke():
     source = extract_function("recoil_state_save_load_transition_on_update_should_quit_smoke")
     replacements = [
@@ -560,6 +643,29 @@ struct TestAppState : RecoilApp_IState {
     }
 };
 
+void *ReadStateVtable(const RecoilApp_IState &state) {
+    return *reinterpret_cast<void *const *>(
+        const_cast<RecoilApp_IState *>(&state));
+}
+
+void WriteStateVtable(RecoilApp_IState &state, std::uintptr_t value) {
+    *reinterpret_cast<std::uintptr_t *>(&state) = value;
+}
+
+void *RecoilAppIStateVtable() {
+    RecoilApp_IState state{};
+    return ReadStateVtable(state);
+}
+
+RecoilStateSaveLoadTransition *CallStateScalarDeletingDestructor(
+    RecoilStateSaveLoadTransition *state, unsigned int flags) {
+    using ScalarDeletingDestructor =
+        RecoilStateSaveLoadTransition *(__thiscall *)(RecoilStateSaveLoadTransition *,
+                                                      unsigned int);
+    void **const vtable = *reinterpret_cast<void ***>(state);
+    return reinterpret_cast<ScalarDeletingDestructor>(vtable[0])(state, flags);
+}
+
 struct FakeSaveGameInitLoadThunk {
     zReader::Node * LoadFromZrd(const char *zrdPath, const char *sectionName,
                                 int capturePrimary);
@@ -743,6 +849,8 @@ output.append("")
 output.append(extract_on_update_should_quit_smoke().rstrip())
 output.append("")
 output.append(extract_function("recoil_state_save_load_transition_on_deactivate_smoke").rstrip())
+output.append("")
+output.append(extract_lifecycle_smoke().rstrip())
 output.append("")
 output.append(extract_queue_dialogs_smoke().rstrip())
 output.append("")
@@ -1214,8 +1322,6 @@ struct TestAppState : RecoilApp_IState {
     }
 };
 
-TestAppState g_testAppStatePrototype;
-
 struct AppSnapshot {
     unsigned char bytes[sizeof(RecoilApp)];
 };
@@ -1225,8 +1331,9 @@ struct TransitionSnapshot {
 };
 
 void UseTestStateVtable(RecoilApp_IState &state) {
+    TestAppState prototype;
     *reinterpret_cast<void **>(&state) =
-        *reinterpret_cast<void **>(&g_testAppStatePrototype);
+        *reinterpret_cast<void **>(&prototype);
 }
 
 void SaveApp(AppSnapshot &snapshot) {
@@ -3522,7 +3629,6 @@ output.append("""extern "C" int zfmv_script_run_blocking_empty_smoke(void) {
     }
     return actionOk ? 0 : 2;
 }""")
-output.append("")
 output.append(extract_function("zfmv_action_blur_begin_end_smoke").rstrip())
 output.append("")
 output.append("""extern "C" int zfmv_action_play_mci_update_smoke(void) {
@@ -3784,7 +3890,8 @@ add_test(
         guard
         raw-offset
         --root src
-        --plan .agent/RECOIL_PLAN.md
+        --owners .agent/SOURCE_OWNERS.json
+        --binary recoil
         --allowlist .agent/RAW_OFFSET_ALLOWLIST.txt
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 )

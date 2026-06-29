@@ -3,6 +3,35 @@ extern "C" int recoil_legacy_directx_header_smoke(void);
 extern "C" int recoil_mfc42_provider_smoke(void);
 extern "C" int mfc_cstring_default_ctor_provider_smoke(void);
 extern "C" int mfc_three_float_dialog_handlers_smoke(void);
+extern "C" int czrecoil_frame_init_fallback_mode_smoke(void);
+extern "C" int zeffect_handle_light_anim_event_smoke(void);
+extern "C" int zeffect_handle_fog_event_smoke(void);
+extern "C" int zeffect_handle_camera_params_event_smoke(void);
+extern "C" int zeffect_animate_camera_params_over_time_smoke(void);
+extern "C" int zeffect_handle_rotation_event_smoke(void);
+extern "C" int zeffect_handle_node_scale_event_smoke(void);
+extern "C" int zeffect_handle_position_event_smoke(void);
+extern "C" int zeffect_handle_activate_event_smoke(void);
+extern "C" int zeffect_handle_node_anim_event_smoke(void);
+extern "C" int zeffect_animate_node_over_time_smoke(void);
+extern "C" int zeffect_anim_keyframe_sample_smoke(void);
+extern "C" int zeffect_surface_control_events_smoke(void);
+extern "C" int zeffect_handle_emitter_stop_event_smoke(void);
+extern "C" int zeffect_handle_emitter_loop_event_smoke(void);
+extern "C" int zeffect_handle_conditional_chain_event_smoke(void);
+extern "C" int zeffect_trace_upward_hit_smoke(void);
+extern "C" int zeffect_skip_conditional_chain_smoke(void);
+extern "C" int zeffect_marker_and_callback_event_smoke(void);
+extern "C" int zeffect_anim_load_zbd_minimal_smoke(void);
+extern "C" int zfmv_action_play_avi_constructor_existing_file_smoke(void);
+extern "C" int zfmv_action_play_avi_constructor_drive_fallback_smoke(void);
+extern "C" int zutil_zbd_section_handler_compare_sort_order_smoke(void);
+extern "C" int zutil_zbd_section_handler_list_front_smoke(void);
+extern "C" int zutil_zbd_section_handler_list_constructor_smoke(void);
+extern "C" int zutil_zbd_section_handler_list_swap_smoke(void);
+extern "C" int zutil_zbd_section_handler_list_merge_smoke(void);
+extern "C" int zutil_zbd_section_handler_list_splice_three_nodes_smoke(void);
+extern "C" int light_init_thermal_glow_pool_smoke(void);
 extern "C" int zstr_contains_case_insensitive_smoke(void);
 extern "C" int recoil_version_get_string_smoke(void);
 extern "C" int ai_property_dialog_on_destroy_smoke(void);
@@ -684,6 +713,8 @@ extern "C" int hud_ui_save_load_entry_is_newer_than_smoke(void);
 extern "C" int player_underwater_fx_pass3_ui_constructor_smoke(void);
 extern "C" int player_init_underwater_fx_pass3_ui_singleton_smoke(void);
 extern "C" int player_reset_underwater_fx_pass3_ui_singleton_smoke(void);
+extern "C" int player_register_underwater_fx_pass3_ui_on_exit_smoke(void);
+extern "C" int player_init_and_register_underwater_fx_pass3_ui_singleton_smoke(void);
 extern "C" int player_projectile_camera_fx_pass3_ui_constructor_smoke(void);
 extern "C" int player_top_msg_panel1_constructor_safe_smoke(void);
 extern "C" int player_top_msg_panel1_destructor_safe_smoke(void);
@@ -860,6 +891,7 @@ extern "C" int hud_ui_main_menu_dialog_save_load_checks_smoke(void);
 extern "C" int recoil_state_save_load_transition_on_try_become_current_smoke(void);
 extern "C" int recoil_state_save_load_transition_on_update_should_quit_smoke(void);
 extern "C" int recoil_state_save_load_transition_on_deactivate_smoke(void);
+extern "C" int recoil_state_save_load_transition_lifecycle_smoke(void);
 extern "C" int recoil_state_save_load_transition_queue_dialogs_smoke(void);
 extern "C" int zarchive_list_get_at_smoke(void);
 extern "C" int zarchive_list_get_count_smoke(void);
@@ -9758,7 +9790,6 @@ extern "C" int westwood_online_upgrade_api_init_state_smoke(void)
     const HINSTANCE moduleHandle = (HINSTANCE)0x24681357;
     WestwoodOnlineUpgradeApiInitState state = {};
     state.structSize = sizeof(state);
-    state.statusTextEvent = (HANDLE)0x11111111;
     state.failureEvent = (HANDLE)0x22222222;
 
     if (WestwoodOnlineUpgradeApiInitState::Init(0, bootstrapEvent, moduleHandle) !=
@@ -9787,7 +9818,6 @@ extern "C" int westwood_online_upgrade_api_init_state_smoke(void)
         state.moduleHandleSecondary != moduleHandle ||
         state.moduleHandleTertiary != moduleHandle ||
         state.bootstrapServerListEvent != bootstrapEvent ||
-        state.statusTextEvent != 0 ||
         state.failureEvent != 0)
     {
         failure = 4;
@@ -12856,6 +12886,10 @@ void SmokePlayerInitObjectPositionNode(
     data->localMatrix[11] = z;
 }
 
+int recoil_legacy_directx_header_smoke_wrapper(void) {
+    return recoil_legacy_directx_header_smoke() > 0 ? 0 : 1;
+}
+
 int RunSmokeTests(const SmokeTest *tests, int count, const char *onlyName) {
     int failures = 0;
     bool ran = false;
@@ -12867,12 +12901,14 @@ int RunSmokeTests(const SmokeTest *tests, int count, const char *onlyName) {
         ran = true;
         const int result = tests[i].run();
         if (result != 0) {
-            std::printf("%s failed: %d\n", tests[i].name, result);
+            std::fprintf(stderr, "%s failed: %d\n", tests[i].name, result);
+            std::fflush(stderr);
             failures += result;
         }
     }
     if (onlyName != nullptr && !ran) {
-        std::printf("%s not found\n", onlyName);
+        std::fprintf(stderr, "%s not found\n", onlyName);
+        std::fflush(stderr);
         return 1;
     }
     return failures;
@@ -26136,9 +26172,67 @@ extern "C" int zclass_camera_global_setters_smoke() {
     return result;
 }
 
-int main(int argc, char **argv) {
-    const SmokeTest tests[] = {
+namespace {
+const SmokeTest kSmokeTests[] = {
         {"recoil_native_build_anchor", recoil_native_build_anchor},
+        // Existing functional-manifest smokes registered during evidence audit cleanup.
+        {"czrecoil_frame_init_fallback_mode_smoke",
+         czrecoil_frame_init_fallback_mode_smoke},
+        {"zeffect_handle_light_anim_event_smoke",
+         zeffect_handle_light_anim_event_smoke},
+        {"zeffect_handle_fog_event_smoke", zeffect_handle_fog_event_smoke},
+        {"zeffect_handle_camera_params_event_smoke",
+         zeffect_handle_camera_params_event_smoke},
+        {"zeffect_animate_camera_params_over_time_smoke",
+         zeffect_animate_camera_params_over_time_smoke},
+        {"zeffect_handle_rotation_event_smoke",
+         zeffect_handle_rotation_event_smoke},
+        {"zeffect_handle_node_scale_event_smoke",
+         zeffect_handle_node_scale_event_smoke},
+        {"zeffect_handle_position_event_smoke",
+         zeffect_handle_position_event_smoke},
+        {"zeffect_handle_activate_event_smoke",
+         zeffect_handle_activate_event_smoke},
+        {"zeffect_handle_node_anim_event_smoke",
+         zeffect_handle_node_anim_event_smoke},
+        {"zeffect_animate_node_over_time_smoke",
+         zeffect_animate_node_over_time_smoke},
+        {"zeffect_anim_keyframe_sample_smoke",
+         zeffect_anim_keyframe_sample_smoke},
+        {"zeffect_surface_control_events_smoke",
+         zeffect_surface_control_events_smoke},
+        {"zeffect_handle_emitter_stop_event_smoke",
+         zeffect_handle_emitter_stop_event_smoke},
+        {"zeffect_handle_emitter_loop_event_smoke",
+         zeffect_handle_emitter_loop_event_smoke},
+        {"zeffect_handle_conditional_chain_event_smoke",
+         zeffect_handle_conditional_chain_event_smoke},
+        {"zeffect_trace_upward_hit_smoke", zeffect_trace_upward_hit_smoke},
+        {"zeffect_skip_conditional_chain_smoke",
+         zeffect_skip_conditional_chain_smoke},
+        {"zeffect_marker_and_callback_event_smoke",
+         zeffect_marker_and_callback_event_smoke},
+        {"zeffect_anim_load_zbd_minimal_smoke",
+         zeffect_anim_load_zbd_minimal_smoke},
+        {"zfmv_action_play_avi_constructor_existing_file_smoke",
+         zfmv_action_play_avi_constructor_existing_file_smoke},
+        {"zfmv_action_play_avi_constructor_drive_fallback_smoke",
+         zfmv_action_play_avi_constructor_drive_fallback_smoke},
+        {"zutil_zbd_section_handler_compare_sort_order_smoke",
+         zutil_zbd_section_handler_compare_sort_order_smoke},
+        {"zutil_zbd_section_handler_list_front_smoke",
+         zutil_zbd_section_handler_list_front_smoke},
+        {"zutil_zbd_section_handler_list_constructor_smoke",
+         zutil_zbd_section_handler_list_constructor_smoke},
+        {"zutil_zbd_section_handler_list_swap_smoke",
+         zutil_zbd_section_handler_list_swap_smoke},
+        {"zutil_zbd_section_handler_list_merge_smoke",
+         zutil_zbd_section_handler_list_merge_smoke},
+        {"zutil_zbd_section_handler_list_splice_three_nodes_smoke",
+         zutil_zbd_section_handler_list_splice_three_nodes_smoke},
+        {"light_init_thermal_glow_pool_smoke",
+         light_init_thermal_glow_pool_smoke},
+        {"recoil_legacy_directx_header_smoke", recoil_legacy_directx_header_smoke_wrapper},
         {"recoil_mfc42_provider_smoke", recoil_mfc42_provider_smoke},
         {"mfc_cstring_default_ctor_provider_smoke",
          mfc_cstring_default_ctor_provider_smoke},
@@ -27335,6 +27429,10 @@ int main(int argc, char **argv) {
          player_init_underwater_fx_pass3_ui_singleton_smoke},
         {"player_reset_underwater_fx_pass3_ui_singleton_smoke",
          player_reset_underwater_fx_pass3_ui_singleton_smoke},
+        {"player_register_underwater_fx_pass3_ui_on_exit_smoke",
+         player_register_underwater_fx_pass3_ui_on_exit_smoke},
+        {"player_init_and_register_underwater_fx_pass3_ui_singleton_smoke",
+         player_init_and_register_underwater_fx_pass3_ui_singleton_smoke},
         {"player_projectile_camera_fx_pass3_ui_constructor_smoke",
          player_projectile_camera_fx_pass3_ui_constructor_smoke},
         {"player_top_msg_panel1_constructor_safe_smoke",
@@ -27671,6 +27769,8 @@ int main(int argc, char **argv) {
          recoil_state_save_load_transition_on_update_should_quit_smoke},
         {"recoil_state_save_load_transition_on_deactivate_smoke",
          recoil_state_save_load_transition_on_deactivate_smoke},
+        {"recoil_state_save_load_transition_lifecycle_smoke",
+         recoil_state_save_load_transition_lifecycle_smoke},
         {"recoil_state_save_load_transition_queue_dialogs_smoke",
          recoil_state_save_load_transition_queue_dialogs_smoke},
         {"zarchive_list_get_at_smoke", zarchive_list_get_at_smoke},
@@ -29485,13 +29585,11 @@ int main(int argc, char **argv) {
          zcom_connection_point_container_unadvise_smoke},
         {"time_reset_smoke", time_reset_smoke},
         {"time_tick_smoke", time_tick_smoke},
-    };
+};
+} // namespace
 
-    const int directxResult = recoil_legacy_directx_header_smoke() > 0 ? 0 : 1;
-    if (directxResult != 0) {
-        std::printf("recoil_legacy_directx_header_smoke failed: %d\n", directxResult);
-    }
-
-    return directxResult + RunSmokeTests(tests, static_cast<int>(sizeof(tests) / sizeof(tests[0])),
-                                         argc > 1 ? argv[1] : nullptr);
+int main(int argc, char **argv) {
+    return RunSmokeTests(kSmokeTests,
+                         static_cast<int>(sizeof(kSmokeTests) / sizeof(kSmokeTests[0])),
+                         argc > 1 ? argv[1] : nullptr);
 }

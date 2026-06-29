@@ -82,7 +82,7 @@ zUtil_SaveGameState *__fastcall zUtil_SaveGameStateList_AllocAppend(
  */
 void zUtil_SaveGameState::FreeOwnedResources() {
     if (playerState->lifecycleState == 2) {
-        Player::AiDiscardNegativeBranchPathNodes(this);
+        AINet::AiDiscardNegativeBranchPathNodes(this);
     }
 
     if (netPlayerRow != 0) {

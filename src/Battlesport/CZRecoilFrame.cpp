@@ -110,10 +110,16 @@ int g_CZRecoilFrame_HasWolApi = 0;
 int g_CZRecoilFrame_WestwoodOnlineWinsockChecked = 0;
 /**
  * Reimplements data 0x4f0cc0: g_HudSensorTracker Symbol.
+ * Source model: zero-initialized explicit storage for the CZRecoilFrame-owned
+ * global instance. HudSensorTracker::ConstructGlobal and ShutdownGlobal own
+ * the typed lifetime for this storage.
  * Purpose: Owns the global HUD sensor tracker state used by mission flow,
  * map/objective rendering, network timer sync, and frame-level HUD updates.
  */
-HudSensorTracker g_HudSensorTracker;
+#undef g_HudSensorTracker
+HudSensorTrackerStorage g_HudSensorTracker = {0};
+#define g_HudSensorTracker \
+    (*(HudSensorTracker *)&g_HudSensorTracker)
 }
 
 namespace {

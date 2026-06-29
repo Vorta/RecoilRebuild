@@ -577,7 +577,24 @@ zNetwork_DPlay4Vtable MakeDPlayVtable() {
     return vtable;
 }
 
-const zNetwork_DPlay4Vtable kDPlayVtable = MakeDPlayVtable();
+union DPlayVtableStorage {
+    void *align;
+    unsigned char bytes[sizeof(zNetwork_DPlay4Vtable)];
+};
+
+DPlayVtableStorage g_dPlayVtableStorage;
+bool g_dPlayVtableInitialized;
+
+const zNetwork_DPlay4Vtable &DPlayVtable() {
+    auto *const vtable =
+        reinterpret_cast<zNetwork_DPlay4Vtable *>(g_dPlayVtableStorage.bytes);
+    if (!g_dPlayVtableInitialized) {
+        const zNetwork_DPlay4Vtable value = MakeDPlayVtable();
+        std::memcpy(vtable, &value, sizeof(value));
+        g_dPlayVtableInitialized = true;
+    }
+    return *vtable;
+}
 
 void ResetNetwork() {
     g_destroyPlayerCalls = 0;
@@ -731,7 +748,7 @@ extern "C" int znetwork_destroy_cached_local_player_smoke() {
         return 1;
     }
 
-    zNetwork_DPlay4 dplay{&kDPlayVtable};
+    zNetwork_DPlay4 dplay{&DPlayVtable()};
     zNetwork_PlayerRecord player{0x12345678};
     g_zNetwork_pDirectPlay4 = &dplay;
     g_zNetwork_LocalPlayerRecord = &player;
@@ -758,7 +775,7 @@ extern "C" int znetwork_dplay_report_error_smoke() {
 
 extern "C" int znetwork_dplay_initialize_connection_from_provider_info_smoke() {
     ResetNetwork();
-    zNetwork_DPlay4 dplay{&kDPlayVtable};
+    zNetwork_DPlay4 dplay{&DPlayVtable()};
     char connectionData[8] = {};
     zNetworkDPlayServiceProviderInfo provider = {};
     provider.connectionData = connectionData;
@@ -843,7 +860,7 @@ extern "C" int znetwork_dplay_service_provider_refresh_smoke() {
     list.cap = nullptr;
 
     zNetwork_DPlay4 directPlay = {};
-    directPlay.vtbl_00 = &kDPlayVtable;
+    directPlay.vtbl_00 = &DPlayVtable();
     GUID appGuid = {};
     g_zNetwork_pDirectPlay4 = &directPlay;
     g_zNetwork_AppGuid = &appGuid;
@@ -1219,7 +1236,7 @@ extern "C" int znetwork_apply_pkt01_player_color_assignments_smoke() {
 extern "C" int znetwork_host_send_player_color_assignments_packet_smoke() {
     ResetNetwork();
 
-    zNetwork_DPlay4 dplay{&kDPlayVtable};
+    zNetwork_DPlay4 dplay{&DPlayVtable()};
     zNetwork_PlayerRecord localPlayer{};
     localPlayer.playerKey = 0xaaaabbbb;
     g_zNetwork_pDirectPlay4 = &dplay;
@@ -1423,7 +1440,7 @@ extern "C" int znetwork_dplay_receive_pending_messages_smoke() {
     ResetNetwork();
     zNetwork_InitMessageHandlers();
 
-    zNetwork_DPlay4 dplay{&kDPlayVtable};
+    zNetwork_DPlay4 dplay{&DPlayVtable()};
     g_zNetwork_pDirectPlay4 = &dplay;
     g_zNetwork_SessionRuntimeInitialized = 0;
     if (zNetworkDPlay::ReceivePendingMessages(1) != 0 || g_receiveCalls != 0) {
@@ -1495,7 +1512,7 @@ extern "C" int znetwork_dplay_enum_players_smoke() {
     playerList->count = 0;
     g_zNetwork_PlayerRecordList = playerList;
 
-    zNetwork_DPlay4 dplay{&kDPlayVtable};
+    zNetwork_DPlay4 dplay{&DPlayVtable()};
     g_zNetwork_pDirectPlay4 = &dplay;
 
     const int count = zNetwork_DPlay::EnumPlayers();
@@ -1517,7 +1534,7 @@ extern "C" int znetwork_dplay_enum_players_smoke() {
 
 extern "C" int znetwork_dplay_query_caps_configure_send_mode_smoke() {
     ResetNetwork();
-    zNetwork_DPlay4 dplay{&kDPlayVtable};
+    zNetwork_DPlay4 dplay{&DPlayVtable()};
     g_zNetwork_pDirectPlay4 = &dplay;
 
     if (zNetworkDPlay::QueryCapsAndConfigureSendMode() != 1 || g_getCapsCalls != 1 ||
@@ -1561,7 +1578,7 @@ extern "C" int znetwork_dplay_query_caps_configure_send_mode_smoke() {
 
 extern "C" int znetwork_dplay_create_local_player_record_smoke() {
     ResetNetwork();
-    zNetwork_DPlay4 dplay{&kDPlayVtable};
+    zNetwork_DPlay4 dplay{&DPlayVtable()};
     g_zNetwork_pDirectPlay4 = &dplay;
 
     auto *playerList = AllocObject<zNetworkPlayerRecordList>();
@@ -1634,7 +1651,7 @@ extern "C" int znetwork_dplay_create_local_player_record_smoke() {
 
 extern "C" int znetwork_dplay_create_session_from_status_fields_smoke() {
     ResetNetwork();
-    zNetwork_DPlay4 dplay{&kDPlayVtable};
+    zNetwork_DPlay4 dplay{&DPlayVtable()};
     g_zNetwork_pDirectPlay4 = &dplay;
 
     GUID appGuid = {
@@ -1721,7 +1738,7 @@ extern "C" int znetwork_dplay_create_session_from_status_fields_smoke() {
 extern "C" int znetwork_packet_send_wrappers_smoke() {
     ResetNetwork();
 
-    zNetwork_DPlay4 dplay{&kDPlayVtable};
+    zNetwork_DPlay4 dplay{&DPlayVtable()};
     zNetwork_PlayerRecord localPlayer{};
     localPlayer.playerKey = 0x10203040;
     g_zNetwork_pDirectPlay4 = &dplay;
@@ -1779,7 +1796,7 @@ extern "C" int pickup_send_pkt11_delta_smoke() {
     };
 
     ResetNetwork();
-    zNetwork_DPlay4 dplay{&kDPlayVtable};
+    zNetwork_DPlay4 dplay{&DPlayVtable()};
     zNetwork_PlayerRecord localPlayer{};
     localPlayer.playerKey = 0x10203040;
     g_zNetwork_pDirectPlay4 = &dplay;
@@ -1834,7 +1851,7 @@ extern "C" int pickup_send_pkt11_create_delta_smoke() {
     static_assert(sizeof(PickupCreatePacket) == 0x34);
 
     ResetNetwork();
-    zNetwork_DPlay4 dplay{&kDPlayVtable};
+    zNetwork_DPlay4 dplay{&DPlayVtable()};
     zNetwork_PlayerRecord localPlayer{};
     localPlayer.playerKey = 0x10203040;
     g_zNetwork_pDirectPlay4 = &dplay;
@@ -1900,7 +1917,7 @@ extern "C" int pickup_reconcile_spawn_lists_smoke() {
     };
 
     ResetNetwork();
-    zNetwork_DPlay4 dplay{&kDPlayVtable};
+    zNetwork_DPlay4 dplay{&DPlayVtable()};
     zNetwork_PlayerRecord localPlayer{};
     localPlayer.playerKey = 0x10203040;
     g_zNetwork_pDirectPlay4 = &dplay;
@@ -1977,7 +1994,7 @@ extern "C" int pickup_send_pkt12_airdrop_spawn_chute_relay_smoke() {
     static_assert(sizeof(PickupAirdropRelayPacket) == 0x1c);
 
     ResetNetwork();
-    zNetwork_DPlay4 dplay{&kDPlayVtable};
+    zNetwork_DPlay4 dplay{&DPlayVtable()};
     zNetwork_PlayerRecord localPlayer{};
     localPlayer.playerKey = 0x10203040;
     g_zNetwork_pDirectPlay4 = &dplay;
@@ -2005,7 +2022,7 @@ extern "C" int pickup_send_pkt12_airdrop_spawn_chute_relay_smoke() {
 extern "C" int znetwork_session_status_fields_smoke() {
     ResetNetwork();
 
-    zNetwork_DPlay4 dplay{&kDPlayVtable};
+    zNetwork_DPlay4 dplay{&DPlayVtable()};
     zNetworkDPlaySessionDescCache session{};
     char sessionName[0x5c] = "original";
     session.desc.dwMaxPlayers = 8;
@@ -2192,7 +2209,7 @@ extern "C" int znetwork_dplay_enum_sessions_smoke() {
 
     zArchiveList list{};
     g_zNetwork_EnumeratedSessionList = &list;
-    zNetwork_DPlay4 directPlay{&kDPlayVtable};
+    zNetwork_DPlay4 directPlay{&DPlayVtable()};
 
     if (zNetwork_DPlay::EnumSessions() != 0 || g_enumSessionsCalls != 0) {
         return 1;
@@ -2308,7 +2325,7 @@ extern "C" int znetwork_dplay_enum_sessions_for_current_app_smoke() {
     GUID appGuid = {};
     FillGuidBytes(appGuid, 0x70);
 
-    zNetwork_DPlay4 directPlay{&kDPlayVtable};
+    zNetwork_DPlay4 directPlay{&DPlayVtable()};
     g_zNetwork_EnumeratedSessionList = zArchiveList_CreateEmpty();
     g_zNetwork_pDirectPlay4 = &directPlay;
     g_zNetwork_AppGuid = &appGuid;
@@ -2353,7 +2370,7 @@ extern "C" int znetwork_dplay_select_tcp_ip_provider_and_enum_sessions_smoke() {
     }
 
     int failure = 0;
-    zNetwork_DPlay4 directPlay{&kDPlayVtable};
+    zNetwork_DPlay4 directPlay{&DPlayVtable()};
     char addressString[] = "127.0.0.1";
     GUID appGuid = {};
 
@@ -2421,7 +2438,7 @@ extern "C" int znetwork_dplay_select_tcp_ip_provider_and_enum_sessions_smoke() {
 extern "C" int znetwork_dplay_open_selected_session_and_read_status_fields_smoke() {
     ResetNetwork();
 
-    zNetwork_DPlay4 directPlay{&kDPlayVtable};
+    zNetwork_DPlay4 directPlay{&DPlayVtable()};
     char sessionName[] = "selected";
     zNetworkDPlaySessionDescCache session{};
     session.desc.lpszSessionNameA = sessionName;

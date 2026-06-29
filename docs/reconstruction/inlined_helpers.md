@@ -133,7 +133,7 @@ Verification notes:
 
 Open limits:
 - `0x46d550` remains source-owner/data pending. `0x4a75f0` is tracked on its own
-  plan entry because BN shows a direct null-name call to the default image
+  owner-projection entry because BN shows a direct null-name call to the default image
   texture record callback.
 
 ## SaveLoadEntryCount
