@@ -2,7 +2,7 @@
 #include "player.h"
 
 #include "Battlesport/GameNet.h"
-#include "Battlesport/ainet.h"
+#include "Battlesport/ai_net.h"
 #include "Battlesport/pickup.h"
 #include "GameZRecoil/Time/Time.h"
 #include "GameZRecoil/include/zClass.h"

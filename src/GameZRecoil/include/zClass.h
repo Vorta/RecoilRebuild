@@ -7,7 +7,7 @@
 #include <stddef.h>
 #include <stdio.h>
 
-#include "GameZRecoil/zMath/zMath.h"
+#include "GameZRecoil/zMath/zMathDecls.h"
 #include "recoil/recoil_callconv.h"
 
 struct zBBoxCorners;

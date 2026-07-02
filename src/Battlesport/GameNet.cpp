@@ -20,7 +20,7 @@
 #include "GameZRecoil/zNetwork/zNetwork.h"
 #include "GameZRecoil/zReader/zReader.h"
 #include "GameZRecoil/zSound/zSound.h"
-#include "GameZRecoil/zSys/zSys.h"
+#include "GameZRecoil/zSys/zsys.h"
 #include "GameZRecoil/zTurret/zTurret.h"
 #include "GameZRecoil/zUtil/zSaveGame.h"
 #include "GameZRecoil/zVideo/zVideo.h"

@@ -8,7 +8,7 @@
 #include "GameZRecoil/zNetwork/zNetwork.h"
 #include "GameZRecoil/zRndr/zRndr.h"
 #include "GameZRecoil/zSound/zSound.h"
-#include "GameZRecoil/zSys/zSys.h"
+#include "GameZRecoil/zSys/zsys.h"
 
 #include <new>
 #include <stdio.h>

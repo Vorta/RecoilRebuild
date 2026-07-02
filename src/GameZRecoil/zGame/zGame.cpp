@@ -7,7 +7,7 @@
 #include "GameZRecoil/zInput/zInput.h"
 #include "GameZRecoil/zReader/zReader.h"
 #include "GameZRecoil/zSound/zSound.h"
-#include "GameZRecoil/zSys/zSys.h"
+#include "GameZRecoil/zSys/zsys.h"
 #include "GameZRecoil/zVideo/zVideo.h"
 #include "zClass.h"
 

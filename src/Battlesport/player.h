@@ -5,7 +5,7 @@
 
 #include "recoil/recoil_types.h"
 
-#include "Battlesport/ainet.h"
+#include "Battlesport/ai_net.h"
 #include "GameZRecoil/zHud/zhud_ui.h"
 #include "GameZRecoil/zUtil/zSaveGame.h"
 #include "GameZRecoil/zVideo/zVideoFxPass3.h"
