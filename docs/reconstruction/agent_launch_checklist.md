@@ -90,6 +90,14 @@ translation-unit boundaries and header/COMDAT/provider exceptions are still
 being recovered. It uses `docs/reconstruction/source_file_layout_audit.md` and
 `tools/_recoil/config/source_file_blocks.json` to continue top-down from the
 proven `ai_net.cpp` block before final-data layout or owner-local byte work.
+For source-file-block work, use `agent_source_path` as the placement file to
+edit or create. For literal-backed blocks, `source_path`,
+`original_source_path`, and `agent_source_path` should all use the recovered
+original filename. The literal AINet block routes agents to
+`src/Battlesport/ai_net.cpp`, not `src/Battlesport/ainet.cpp`. The active block
+catalog must cover the declared `.text` retail range without active gaps; use
+explicit provider, padding, or no-literal authored blocks when there is no file
+literal. If changing the block config, run the strict source-block audit command.
 
 `owner next --lane binary` can also print global final-lane work units:
 `work_unit=final-repro` for final executable reproducibility and
@@ -121,7 +129,17 @@ while unrelated owners or global final-lane work units remain open.
 The source-file block map is different: when current BN source-path literal
 evidence proves incomplete physical block boundaries in the same executable
 range, recover those boundaries and exceptions before using semantic owner names
-or final-data layout as the scheduling driver.
+or final-data layout as the scheduling driver. If the block work unit carries
+`source_shape_inputs`, those known/order-relevant header contributors are
+mandatory source-shape inputs for reconstruction, not separate `.text` blocks
+and not owner-gate evidence by themselves.
+If `python tools/recoil.py audit source-blocks --list` shows
+`partial-header` rows, treat them as emitted header placement rows in the
+flattened address order: place the reconstructed body in the row `source_path`
+header and compile it through `included_in`/`physical_owner_path`. These rows
+do not prove full header extent or accepted owner gates/tiers. Headers that are
+declaration-only or type-only inputs remain `source_shape_inputs` unless an
+emitted address range is known.
 Schedule Recoil.exe and `messages.dll` workers together only when BN database
 targets, sections, source paths, ledgers, and generated outputs do not overlap.
 If evidence shows an owner or group belongs in another scheduling section,
@@ -240,10 +258,25 @@ exception inside the physical block, but the exception must be proven with
 current BN evidence. The byte-matching goal includes matching generated VC5 COFF
 function order to the retail Binary Ninja address order inside the source-file
 block, so source workers must shape declarations, static/helper placement, and
-header or `.inl` inclusion order accordingly. Do not relocate semantic helpers
-into the wrong `.cpp` to force placement; model proven header/COMDAT helpers as
-original-style includes. Treat generated map entries as stale when current BN
+header layering/include timing accordingly. Production reconstruction must not
+add `.inl` files; existing `.inl` files are legacy/provisional source-shape
+debt unless independently proven original. Prefer recovered `.h`/`.cpp`
+ownership, declaration-only/type-only/full-body header layering, and include
+timing to repair VC5 COFF order. Known/order-relevant header contributors from
+`source_shape_inputs` must be consumed as reconstruction inputs attached to the
+physical `.cpp` block; do not schedule them as independent source-file blocks
+or cite them alone as owner-gate evidence. Do not relocate semantic helpers into the
+wrong `.cpp` to force placement; model proven header/COMDAT helpers through
+original-style headers and original-style includes. If a VC5 function-order
+check differs from retail BN order in a known Recoil.exe block, stop and repair
+the source/header/include shape before treating byte diffs as function-body
+problems. Do not use pragma/linker/order tricks or artificial order matching as
+owner/tier evidence. Treat generated map entries as stale when current BN
 file-literal evidence contradicts the recorded source path.
+When the source-block list contains `partial-header` rows, the emitted code is
+still reconstructed in the header named by `source_path` and included by the
+listed `.cpp`; the row is placement evidence, not full-header or owner-gate
+acceptance evidence.
 Regenerate only when current source movement, provenance docblocks, or legacy
 source comments explain the drift:
 

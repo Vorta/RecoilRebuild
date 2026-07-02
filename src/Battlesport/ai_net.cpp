@@ -1,4 +1,4 @@
-#include "Battlesport/ainet.h"
+#include "Battlesport/ai_net.h"
 
 #include "Battlesport/GameNet.h"
 #include "Battlesport/player.h"
@@ -6,7 +6,7 @@
 #include "GameZRecoil/include/OptCatalog.h"
 #include "GameZRecoil/zError/zError.h"
 #include "GameZRecoil/zLoc/zLoc.h"
-#include "GameZRecoil/zMath/zMath.h"
+#include "GameZRecoil/zMath/zMathDecls.h"
 #include "GameZRecoil/zModel/zModel.h"
 #include "GameZRecoil/zReader/zReader.h"
 
@@ -1652,7 +1652,7 @@ void AINet::AiFinalizeMode2State1ForAllPlayers() {
     g_Player_AiMode2State1Finalized = 1;
 }
 
-#include "GameZRecoil/zMath/zMath_vec3_normalize.inl"
+#include "GameZRecoil/zMath/zMath.h"
 
 /**
  * Reimplements 0x402fd0: AINet::LoadAllFromZrd (Battlesport/ai_net.cpp).
@@ -2096,7 +2096,7 @@ void AINetPathProbeFan::InitFromSegment(
 }
 
 /**
- * Reimplements 0x4036f0: AINet::FindNearestNode (Battlesport/ainet.cpp).
+ * Reimplements 0x4036f0: AINet::FindNearestNode (Battlesport/ai_net.cpp).
  * Purpose: Scans an AI node list and returns the node nearest to the query position.
  */
 AINetNode *__fastcall AINet::FindNearestNode(
@@ -2152,7 +2152,7 @@ void AINet::BuildAiPeerRingsByAiNetId() {
 }
 
 /**
- * Reimplements 0x4037c0: AINetNode::Free (Battlesport/ainet.cpp).
+ * Reimplements 0x4037c0: AINetNode::Free (Battlesport/ai_net.cpp).
  * Purpose: Frees a path node and any probe-fan records allocated for its neighbor links.
  */
 void AINetNode::Free() {
@@ -2173,7 +2173,7 @@ void AINetNode::Free() {
 }
 
 /**
- * Reimplements 0x403800: AINet::Free (Battlesport/ainet.cpp).
+ * Reimplements 0x403800: AINet::Free (Battlesport/ai_net.cpp).
  * Purpose: Frees every node owned by this AI network and then releases the network record.
  */
 void AINet::Free() {
@@ -2193,7 +2193,7 @@ void AINet::Free() {
 
 /**
  * Reimplements 0x403830: AINet::AiDiscardNegativeBranchPathNodes
- * (Battlesport/ainet.cpp).
+ * (Battlesport/ai_net.cpp).
  *
  * Purpose: discard temporary negative-index AI path nodes before the saved
  * player state releases or resumes its current path cursor.
@@ -2215,7 +2215,7 @@ void __fastcall AINet::AiDiscardNegativeBranchPathNodes(
 }
 
 /**
- * Reimplements 0x403870: AINet::FreeAll (Battlesport/ainet.cpp).
+ * Reimplements 0x403870: AINet::FreeAll (Battlesport/ai_net.cpp).
  * Purpose: Walks the global AI network list and frees every loaded network.
  */
 void AINet::FreeAll() {

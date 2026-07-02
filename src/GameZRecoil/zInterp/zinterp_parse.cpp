@@ -662,7 +662,7 @@ zInterp_Context * zInterp_Context::Constructor(
     memset(
         runtimeBlob,
         0,
-        0x1d8
+        sizeof(*runtimeBlob)
     );
 
     currentNode = 0;

@@ -633,7 +633,7 @@ namespace zClass_Class {
             memset(
                 node,
                 0,
-                0xc0
+                offsetof(zClass_NodeFreeListSlot, freeTag)
             );
             /**
              * Reimplements data 0x539c98: g_zClass_ActiveNodeCount.

@@ -1,6 +1,6 @@
 #include "Battlesport/HudSensorTracker.h"
 #include "Battlesport/GameNet.h"
-#include "Battlesport/ainet.h"
+#include "Battlesport/ai_net.h"
 #include "Battlesport/player.h"
 #include "GameZRecoil/Time/Time.h"
 #include "GameZRecoil/include/OptCatalog.h"

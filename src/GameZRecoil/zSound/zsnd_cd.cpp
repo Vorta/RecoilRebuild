@@ -201,7 +201,7 @@ int GetCDAudioOption() {
 
 /**
  * Reimplements 0x4a07f0: zSnd::SetUseArchiveBanksFlag.
- * Original source: D:\Proj\GameZRecoil\zSound\zSound.cpp.
+ * Original source: D:\Proj\GameZRecoil\zSound\zsnd.cpp.
  * Purpose: Store the archive-bank selector global for sound-bank loading.
  */
 void __fastcall SetUseArchiveBanksFlag(

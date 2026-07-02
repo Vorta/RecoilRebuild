@@ -1049,6 +1049,12 @@ namespace zClass_Node {
 }
 
 namespace zWeapon_OptCatalog {
+    enum {
+        kOptCatalogKillVerbStringBytes = 20,
+        kOptCatalogKillVerbStringCopyLimit =
+            kOptCatalogKillVerbStringBytes - 1
+    };
+
     /**
      * Reimplements 0x43ca20: zWeapon_OptCatalog::LoadKillVerbString
      * Source: D:\Proj\GameZRecoil\zWeapon\zwep_init.c.
@@ -1061,7 +1067,7 @@ namespace zWeapon_OptCatalog {
     ) {
         char *const killVerbString = (char *)(calloc(
             1,
-            20
+            kOptCatalogKillVerbStringBytes
         ));
         entry->killVerbString = killVerbString;
 
@@ -1082,7 +1088,7 @@ namespace zWeapon_OptCatalog {
         strncpy(
             killVerbString,
             sourceText,
-            19
+            kOptCatalogKillVerbStringCopyLimit
         );
     }
 }

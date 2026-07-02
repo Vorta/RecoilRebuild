@@ -246,7 +246,7 @@ zSndSample * zSndSampleSet::GetSampleAt(
 
 /**
  * Reimplements 0x4a0ec0: zSndSampleSet::FindSampleByName.
- * Original file: GameZRecoil/zSound/zSound.cpp.
+ * Original file: GameZRecoil/zSound/zsnd.cpp.
  * Purpose: find a loaded sample in this sample set by source sample id for the active backend.
  */
 zSndSample * zSndSampleSet::FindSampleByName(
@@ -476,7 +476,7 @@ extern "C" void zSndSampleSetRegistry_DestroyAll() {
 
 /**
  * Reimplements 0x4a0990: zSnd::FindSampleByName.
- * Original file: GameZRecoil/zSound/zSound.cpp.
+ * Original file: GameZRecoil/zSound/zsnd.cpp.
  * Purpose: find a loaded sample by name across registered sample sets and pending stream groups.
  */
 zSndSample *__fastcall zSnd::FindSampleByName(

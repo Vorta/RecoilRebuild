@@ -191,6 +191,10 @@ RECOIL_STATIC_ASSERT(sizeof(g_HudUiBackgroundConfirmQuit_SectionName) == 0xd);
 
 namespace {
 const int kHudWeatherFxRainSlantDelta = 1;
+const int kHudWeatherFxSnowTextureWidth = 16;
+const int kHudWeatherFxSnowTextureHeight = 8;
+const int kHudWeatherFxSnowTextureTexels =
+    kHudWeatherFxSnowTextureWidth * kHudWeatherFxSnowTextureHeight;
 
 /**
  * Original inline helper; no standalone retail function exists.
@@ -327,8 +331,10 @@ HudWeatherFx * HudWeatherFx::Constructor(
             softwareImage,
             0x0b
         );
-        char *const alphaMap = (char *)(malloc(0x80));
-        void *const surfacePixels = malloc(0x100);
+        char *const alphaMap =
+            (char *)(malloc(kHudWeatherFxSnowTextureTexels));
+        void *const surfacePixels =
+            malloc(kHudWeatherFxSnowTextureTexels * sizeof(unsigned short));
         zVid_Image_SetPixels(
             softwareImage,
             surfacePixels,
@@ -337,8 +343,8 @@ HudWeatherFx * HudWeatherFx::Constructor(
         softwareImage->formatFlagsPacked |= 0x20;
         zVid_Image::SetSize(
             softwareImage,
-            16,
-            8
+            kHudWeatherFxSnowTextureWidth,
+            kHudWeatherFxSnowTextureHeight
         );
         textureRecord = g_zVideo_pfnCreateTextureRecord(
             textureName,

@@ -79,9 +79,19 @@ progress notes or duplicated plan state.
   confirm current Binary Ninja source comments, source-path literal xrefs,
   physical source-file block order, and call-site evidence. New or touched
   functions need immediate provenance/Purpose docblocks. When a source-file
-  block is known, the rebuilt VC5 COFF function order must match the retail BN
-  address order; model header/COMDAT helpers through the original-style header
-  or `.inl` path instead of moving semantic helpers into the wrong `.cpp`.
+  block is known, the rebuilt VC5 COFF function order must naturally match the
+  retail BN address order before byte readiness. A generated order mismatch is
+  a source-shape/include-shape blocker until proven otherwise. Model
+  header/COMDAT helpers through recovered `.h`/`.cpp` ownership, header
+  layering, and include timing instead of moving semantic helpers into the
+  wrong `.cpp`. Known/order-relevant `source_shape_inputs` are mandatory
+  reconstruction inputs once known, but remain attached to the physical `.cpp`
+  block and are not owner-gate evidence by themselves. Emitted header
+  contributors with known address ranges appear as `partial-header` rows in
+  `python tools/recoil.py audit source-blocks --list`; reconstruct those bodies
+  in the header `source_path` and compile them through `included_in`, without
+  treating the row as full-header or owner-gate/tier proof. Do not add `.inl` files for production reconstruction;
+  existing `.inl` files need independent original-source proof.
 - For new agent handoff, start with `agent_launch_checklist.md`, then use
   `AGENTS.md` for the full workflow rules.
 - For owner/data promotion, inspect `.agent/SOURCE_OWNERS.json` through

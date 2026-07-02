@@ -959,6 +959,8 @@ void __fastcall BindMapOverlay_DeleteNodeList(
     }
 }
 
+const int kZInputCommandLabelBytes = 0x50;
+
 } // namespace
 
 /**
@@ -1013,12 +1015,12 @@ zInput_BindMapContext * zInput_BindMapContext::InitFromTemplate(
         for (int i = 0; i < m_commandCount; ++i) {
             m_commandLabels[i] = (char *)(calloc(
                 1,
-                0x50
+                kZInputCommandLabelBytes
             ));
             strncpy(
                 m_commandLabels[i],
                 tmpl->m_commandLabels[i],
-                0x50
+                kZInputCommandLabelBytes
             );
         }
 
@@ -1124,7 +1126,7 @@ void zInput_BindMapContext::InitCommandMap(
     for (int i = 0; i < commandCount; ++i) {
         m_commandLabels[i] = (char *)(calloc(
             1,
-            0x50
+            kZInputCommandLabelBytes
         ));
     }
 
@@ -2225,6 +2227,7 @@ const int kDiFalse = 1;
 const int kDiInputLost = (int)(0x8007001e);
 const unsigned char kSuspendFlag = 2;
 const unsigned int kDirectInputVersion = 0x500;
+const unsigned int kZInputKeyboardEventBufferCount = 0x80;
 
 struct DipropDwordInit {
     unsigned int dwSize;
@@ -4082,7 +4085,8 @@ int Mouse_InitDevice() {
  * Acquire, reporting zin_kbd.cpp line numbers on each provider failure.
  */
 int Keyboard_InitDevice() {
-    DipropDwordInit bufferSizeProp = {0x14, 0x10, 0, 0, 0x80};
+    DipropDwordInit bufferSizeProp =
+        {0x14, 0x10, 0, 0, kZInputKeyboardEventBufferCount};
     g_zInput_KbdSystemReady = 0;
     g_zInput_KbdDevice = 0;
     g_zInput_KbdEventBuffer = 0;
@@ -4154,8 +4158,8 @@ int Keyboard_InitDevice() {
     }
 
     g_zInput_KbdEventBuffer = (DIDeviceObjectData *)(calloc(
-        1,
-        0x800
+        kZInputKeyboardEventBufferCount,
+        sizeof(DIDeviceObjectData)
     ));
     g_zInput_KbdSystemReady = 1;
     Keyboard_ResetTransitionState();
@@ -4425,7 +4429,7 @@ int Keyboard_AddRef() {
 void __fastcall Keyboard_PollState(
     unsigned char dispatchCallbacks
 ) {
-    DWORD inOutCount = 0x80;
+    DWORD inOutCount = kZInputKeyboardEventBufferCount;
     const int hresult = g_zInput_KbdDevice->GetDeviceData(
         sizeof(DIDeviceObjectData),
         g_zInput_KbdEventBuffer,
@@ -5423,7 +5427,7 @@ void Keyboard_ResetTransitionState() {
         return;
     }
 
-    DWORD inOutCount = 128;
+    DWORD inOutCount = kZInputKeyboardEventBufferCount;
     const int hresult = g_zInput_KbdDevice->GetDeviceData(
         sizeof(DIDeviceObjectData),
         g_zInput_KbdEventBuffer,

@@ -3,7 +3,7 @@
 #include "recoil/recoil_types.h"
 #include <stddef.h>
 
-#include "GameZRecoil/zMath/zMath.h"
+#include "GameZRecoil/zMath/zMathDecls.h"
 #include "recoil/recoil_callconv.h"
 #include "zClass.h"
 

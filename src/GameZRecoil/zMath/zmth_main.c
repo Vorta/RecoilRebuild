@@ -529,7 +529,7 @@ void __cdecl zMath_Mat_LoadIdentity(
     memset(
         g_zMath_CurrentMatrixPtr,
         0,
-        0x30
+        sizeof(Mat4x3)
     );
     g_zMath_CurrentMatrixPtr[0] = 1.0f;
     g_zMath_CurrentMatrixPtr[5] = 1.0f;

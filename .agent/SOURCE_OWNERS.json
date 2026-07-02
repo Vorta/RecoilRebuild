@@ -6335,7 +6335,9 @@
         "0x403510"
       ],
       "data_addresses": [],
-      "source_paths": [],
+      "source_paths": [
+        "src/Battlesport/ai_net.cpp"
+      ],
       "dependencies": [],
       "gates": {
         "boundary": "accepted",
@@ -6362,7 +6364,9 @@
         "linkage gate migration: linkage=none: Controlled linkage update after scrutinized audio_fmv parent-owned data-dependency reconciliation; no gate/tier promotion beyond linkage classification",
         "linkage gate migration: linkage=none: Controlled linkage update after scrutinized core_util_archive/shared data-dependency reconciliation safe subset; rows with incomplete parentage or metadata blockers intentionally left blocked",
         "linkage gate migration: linkage=none: Controlled linkage update after scrutinized render_video data-dependency reconciliation; render_video.zrndr_global_string_table_data intentionally left blocked pending owner-shape remap",
-        "linkage gate migration: linkage=none: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked"
+        "linkage gate migration: linkage=none: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked",
+        "source_paths updated from [] to ['src/Battlesport/ai_net.cpp']; supersedes prior source_paths/evidence where contradicted by current owner/source evidence: Original filename migration: literal-backed ai_net.cpp block and inferred paired header rename supersede legacy ainet.cpp/ainet.h source metadata; no gate or tier promotion.",
+        "address metadata updated for 0x403510: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion."
       ],
       "binary": "recoil",
       "relationships": [
@@ -6378,7 +6382,7 @@
       "address_metadata": {
         "0x403510": {
           "name": "AINet::FindByNetId",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "ainet_find_by_net_id",
           "group": "battlesport.ai"
         }
@@ -6409,7 +6413,7 @@
         }
       ],
       "source_paths": [
-        "src/Battlesport/ainet.cpp"
+        "src/Battlesport/ai_net.cpp"
       ],
       "dependencies": [],
       "gates": {
@@ -6444,7 +6448,10 @@
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized audio_fmv parent-owned data-dependency reconciliation; no gate/tier promotion beyond linkage classification",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized core_util_archive/shared data-dependency reconciliation safe subset; rows with incomplete parentage or metadata blockers intentionally left blocked",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized render_video data-dependency reconciliation; render_video.zrndr_global_string_table_data intentionally left blocked pending owner-shape remap",
-        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked"
+        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked",
+        "source_paths updated from ['src/Battlesport/ainet.cpp'] to ['src/Battlesport/ai_net.cpp']; supersedes prior source_paths/evidence where contradicted by current owner/source evidence: Original filename migration: literal-backed ai_net.cpp block and inferred paired header rename supersede legacy ainet.cpp/ainet.h source metadata; no gate or tier promotion.",
+        "address metadata updated for 0x4e5c58: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x4e5c5c: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion."
       ],
       "binary": "recoil",
       "relationships": [
@@ -6466,13 +6473,13 @@
       "address_metadata": {
         "0x4e5c58": {
           "name": "g_AINetListHead",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "ainet_node_free",
           "group": "data.battlesport_gameplay"
         },
         "0x4e5c5c": {
           "name": "g_AINetListTail",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "ainet_node_free",
           "group": "data.battlesport_gameplay"
         }
@@ -6496,8 +6503,8 @@
       ],
       "data_addresses": [],
       "source_paths": [
-        "src/Battlesport/ainet.cpp",
-        "src/Battlesport/ainet.h"
+        "src/Battlesport/ai_net.cpp",
+        "src/Battlesport/ai_net.h"
       ],
       "dependencies": [
         "battlesport_gameplay.player_create_from_names_bootstrap"
@@ -6510,7 +6517,7 @@
         "linkage": "pending",
         "byte": "pending"
       },
-      "blocker": "Source body lives in src/Battlesport/ainet.cpp; remaining blocker is source-boundary scrutiny and current 0x403750 byte drift inside the failing 40-function ai_net block.",
+      "blocker": "Source body lives in src/Battlesport/ai_net.cpp; remaining blocker is source-boundary scrutiny and current 0x403750 byte drift inside the failing 40-function ai_net block.",
       "evidence": [
         "BN source-file literal order confirms ai_net.cpp at AINet::LoadFromZrd 0x403040/0x4030c5, Briefing.cpp at 0x404180/0x404242, and first confirmed player.cpp at Player::ApplyMissionSaveData 0x41f1d0/0x41f20b. 0x403750 sits inside the AINet neighborhood between AINet::FindNearestNode and AINetNode::Free, so it is split from the later Player bootstrap owner pending source-body remap and owner audit.",
         "address metadata updated for 0x403750: Address metadata remapped after BN source-file literal placement audit; function name remains semantic BN name until a dedicated source-model pass proves a better original name.",
@@ -6518,7 +6525,10 @@
         "address metadata updated for 0x403750: Source implementation remapped early 0x401060..0x403870 ai_net.cpp block into src/Battlesport/ainet.cpp after BN file-order evidence; native build, 39-target functional batch, and VC5 ainet_text_block_order symbol-order check passed.",
         "2026-06-30 ai_net.cpp file-block update: ReportOldNoOp/file-literal xrefs and neighboring function order support a physical ai_net.cpp contribution block at 0x401060..0x403870, followed by Briefing.cpp at 0x4038a0. Latest VC5 ainet_text_block_order fails overall with 12/39 functions OK; 0x4016a0 and 0x403830 byte-match, 0x401a40 and 0x401ab0 each have 7 register-allocation mismatches, and 0x403750 still has 79 mismatches. This records current state only; no owner gate or tier promotion is justified.",
         "2026-06-30 ai_net.cpp 40-function block update: zMath::Vec3Normalize at 0x402f60 now emits from src/Battlesport/ainet.cpp between 0x402f10 and 0x402fd0. Latest VC5 ainet_text_block_order fails overall with 12/40 functions OK; 0x4016a0 and 0x403830 byte-match, 0x401a40 and 0x401ab0 each have 7 register-allocation mismatches, 0x402f60 has 89 mismatches, and 0x403750 has 79 mismatches. This records current state only; no owner gate or tier promotion is justified.",
-        "0x403750 is physically in the ai_net.cpp block but uses g_PlayerSaveStateListHead, primary data of battlesport_gameplay.player_create_from_names_bootstrap; edge records Player save-state data dependency only, not player.cpp source ownership."
+        "0x403750 is physically in the ai_net.cpp block but uses g_PlayerSaveStateListHead, primary data of battlesport_gameplay.player_create_from_names_bootstrap; edge records Player save-state data dependency only, not player.cpp source ownership.",
+        "source_paths updated from ['src/Battlesport/ainet.cpp', 'src/Battlesport/ainet.h'] to ['src/Battlesport/ai_net.cpp', 'src/Battlesport/ai_net.h']; supersedes prior source_paths/evidence where contradicted by current owner/source evidence: Original filename migration: literal-backed ai_net.cpp block and inferred paired header rename supersede legacy ainet.cpp/ainet.h source metadata; no gate or tier promotion.",
+        "address metadata updated for 0x403750: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "Original filename migration refreshed blocker text from legacy ainet.cpp to ai_net.cpp; no gate or tier promotion."
       ],
       "binary": "recoil",
       "reimplementation": {
@@ -6543,7 +6553,7 @@
       "address_metadata": {
         "0x403750": {
           "name": "AINet::BuildAiPeerRingsByAiNetId",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "player_build_ai_peer_rings_by_ai_net_id",
           "group": "battlesport.ai"
         }
@@ -6682,7 +6692,7 @@
         }
       ],
       "source_paths": [
-        "src/Battlesport/ainet.cpp"
+        "src/Battlesport/ai_net.cpp"
       ],
       "dependencies": [],
       "gates": {
@@ -6709,7 +6719,38 @@
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized audio_fmv parent-owned data-dependency reconciliation; no gate/tier promotion beyond linkage classification",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized core_util_archive/shared data-dependency reconciliation safe subset; rows with incomplete parentage or metadata blockers intentionally left blocked",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized render_video data-dependency reconciliation; render_video.zrndr_global_string_table_data intentionally left blocked pending owner-shape remap",
-        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked"
+        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked",
+        "source_paths updated from ['src/Battlesport/ainet.cpp'] to ['src/Battlesport/ai_net.cpp']; supersedes prior source_paths/evidence where contradicted by current owner/source evidence: Original filename migration: literal-backed ai_net.cpp block and inferred paired header rename supersede legacy ainet.cpp/ainet.h source metadata; no gate or tier promotion.",
+        "address metadata updated for 0x4da0ec: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x4da0f8: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x4da0fc: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x4da100: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x4da104: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x4da108: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x4da10c: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x4da110: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x4da120: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x4da130: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x4da140: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x4da14c: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x4da15c: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x4da170: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x4da180: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x4da190: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x4da1a0: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x4da1ac: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x4da1bc: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x4da1c8: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x4da1cc: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x4da1d0: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x4da1d4: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x4da1d8: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x4da1e0: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x4da1e8: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x4da208: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x4da22c: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x4da234: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x4da23c: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion."
       ],
       "binary": "recoil",
       "relationships": [
@@ -6871,181 +6912,181 @@
       "address_metadata": {
         "0x4da0ec": {
           "name": "g_AINet_NodeNameFormat",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "ainet_zrd_string_token_block_data",
           "group": "data.battlesport_gameplay"
         },
         "0x4da0f8": {
           "name": "g_AINet_AttackStrategyTokenSit",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "ainet_zrd_string_token_block_data",
           "group": "data.battlesport_gameplay"
         },
         "0x4da0fc": {
           "name": "g_AINet_AttackStrategyTokenZig",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "ainet_zrd_string_token_block_data",
           "group": "data.battlesport_gameplay"
         },
         "0x4da100": {
           "name": "g_AINet_AttackStrategyTokenBack",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "ainet_zrd_string_token_block_data",
           "group": "data.battlesport_gameplay"
         },
         "0x4da104": {
           "name": "g_AINet_AttackStrategyTokenHeadOn",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "ainet_zrd_string_token_block_data",
           "group": "data.battlesport_gameplay"
         },
         "0x4da108": {
           "name": "g_AINet_AttackStrategyTokenCircle",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "ainet_zrd_string_token_block_data",
           "group": "data.battlesport_gameplay"
         },
         "0x4da10c": {
           "name": "g_AINet_AttackStrategyTokenFollow",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "ainet_zrd_string_token_block_data",
           "group": "data.battlesport_gameplay"
         },
         "0x4da110": {
           "name": "g_AINet_AttackStrategyFieldName",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "ainet_zrd_string_token_block_data",
           "group": "data.battlesport_gameplay"
         },
         "0x4da120": {
           "name": "g_AINet_ActivateBuddyFieldName",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "ainet_zrd_string_token_block_data",
           "group": "data.battlesport_gameplay"
         },
         "0x4da130": {
           "name": "g_AINet_AttackBuddyFieldName",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "ainet_zrd_string_token_block_data",
           "group": "data.battlesport_gameplay"
         },
         "0x4da140": {
           "name": "g_AINet_HideTimesFieldName",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "ainet_zrd_string_token_block_data",
           "group": "data.battlesport_gameplay"
         },
         "0x4da14c": {
           "name": "g_AINet_ReturnRangeFieldName",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "ainet_zrd_string_token_block_data",
           "group": "data.battlesport_gameplay"
         },
         "0x4da15c": {
           "name": "g_AINet_NotPursuitDwellFieldName",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "ainet_zrd_string_token_block_data",
           "group": "data.battlesport_gameplay"
         },
         "0x4da170": {
           "name": "g_AINet_PursuitRangeFieldName",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "ainet_zrd_string_token_block_data",
           "group": "data.battlesport_gameplay"
         },
         "0x4da180": {
           "name": "g_AINet_PursuitParamsFieldName",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "ainet_zrd_string_token_block_data",
           "group": "data.battlesport_gameplay"
         },
         "0x4da190": {
           "name": "g_AINet_AttackDwellFieldName",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "ainet_zrd_string_token_block_data",
           "group": "data.battlesport_gameplay"
         },
         "0x4da1a0": {
           "name": "g_AINet_AttackRadiusFieldName",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "ainet_zrd_string_token_block_data",
           "group": "data.battlesport_gameplay"
         },
         "0x4da1ac": {
           "name": "g_AINet_ActivateRadiusFieldName",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "ainet_zrd_string_token_block_data",
           "group": "data.battlesport_gameplay"
         },
         "0x4da1bc": {
           "name": "g_AINet_PathWidthFieldName",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "ainet_zrd_string_token_block_data",
           "group": "data.battlesport_gameplay"
         },
         "0x4da1c8": {
           "name": "g_AINet_TypeTokenDe",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "ainet_zrd_string_token_block_data",
           "group": "data.battlesport_gameplay"
         },
         "0x4da1cc": {
           "name": "g_AINet_TypeTokenFi",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "ainet_zrd_string_token_block_data",
           "group": "data.battlesport_gameplay"
         },
         "0x4da1d0": {
           "name": "g_AINet_TypeTokenHi",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "ainet_zrd_string_token_block_data",
           "group": "data.battlesport_gameplay"
         },
         "0x4da1d4": {
           "name": "g_AINet_TypeTokenSt",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "ainet_zrd_string_token_block_data",
           "group": "data.battlesport_gameplay"
         },
         "0x4da1d8": {
           "name": "g_AINet_TypeFieldName",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "ainet_zrd_string_token_block_data",
           "group": "data.battlesport_gameplay"
         },
         "0x4da1e0": {
           "name": "g_AINet_NameFieldName",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "ainet_zrd_string_token_block_data",
           "group": "data.battlesport_gameplay"
         },
         "0x4da1e8": {
           "name": "g_AINet_SourceFilePath",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "ainet_zrd_string_token_block_data",
           "group": "data.battlesport_gameplay"
         },
         "0x4da208": {
           "name": "g_AINet_WrongVersionMessage",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "ainet_zrd_string_token_block_data",
           "group": "data.battlesport_gameplay"
         },
         "0x4da22c": {
           "name": "g_AINet_VersionFieldName",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "ainet_zrd_string_token_block_data",
           "group": "data.battlesport_gameplay"
         },
         "0x4da234": {
           "name": "g_AINet_ZrdNameFormat",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "ainet_zrd_string_token_block_data",
           "group": "data.battlesport_gameplay"
         },
         "0x4da23c": {
           "name": "g_AINet_NetNameFormat",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "ainet_zrd_string_token_block_data",
           "group": "data.battlesport_gameplay"
         }
@@ -11327,8 +11368,8 @@
         }
       ],
       "source_paths": [
-        "src/Battlesport/ainet.cpp",
-        "src/Battlesport/ainet.h"
+        "src/Battlesport/ai_net.cpp",
+        "src/Battlesport/ai_net.h"
       ],
       "dependencies": [
         "battlesport_gameplay.player_ai_mode2_tuning_globals",
@@ -11349,7 +11390,7 @@
         "byte": "blocked",
         "linkage": "blocked"
       },
-      "blocker": "Blocked by corrected ai_net.cpp physical file-block ownership: implementation is in src/Battlesport/ainet.cpp, but boundary/source/linkage acceptance and full block byte evidence remain unresolved; latest ainet_text_block_order is 12/40 OK with 0x402f60 now emitted in-block but still mismatching.",
+      "blocker": "Blocked by corrected ai_net.cpp physical file-block ownership: implementation is in src/Battlesport/ai_net.cpp, but boundary/source/linkage acceptance and full block byte evidence remain unresolved; latest ainet_text_block_order is 12/40 OK with 0x402f60 now emitted in-block but still mismatching.",
       "evidence": [
         "Source-owner mapper bounded 0x401060 AI mode-2 steering to a Player namespace/source-file subsystem over player.cpp/player.h, not a true C++ class; accepted tuning/global dependencies are linked as separate owners.",
         "Source-owner mapper bounded these AI mode-2 top-level steering functions to one Player source-file subsystem; accepted sibling owners remain dependencies.",
@@ -11395,7 +11436,27 @@
         "2026-06-30 ai_net.cpp 40-function block update: zMath::Vec3Normalize at 0x402f60 now emits from src/Battlesport/ainet.cpp between 0x402f10 and 0x402fd0. Latest VC5 ainet_text_block_order fails overall with 12/40 functions OK; 0x4016a0 and 0x403830 byte-match, 0x401a40 and 0x401ab0 each have 7 register-allocation mismatches, 0x402f60 has 89 mismatches, and 0x403750 has 79 mismatches. This records current state only; no owner gate or tier promotion is justified.",
         "ai_net.cpp mode-2 owner remap: BN/source evidence places early AI mode-2 code in the 0x401060..0x403870 ai_net.cpp block; child LOS/state1/alt-gun/path-node functions are coupled AINet mode-2 helpers; 0x402f60 remains separate zMath inline/COMDAT dependency; no gate or tier promotion.",
         "ai_net.cpp mode-2 owner remap: BN/source evidence places early AI mode-2 code in the 0x401060..0x403870 ai_net.cpp block; child LOS/state1/alt-gun/path-node functions are coupled AINet mode-2 helpers; 0x402f60 remains separate zMath inline/COMDAT dependency; no gate or tier promotion.",
-        "ai_net.cpp mode-2 owner remap: BN/source evidence places early AI mode-2 code in the 0x401060..0x403870 ai_net.cpp block; child LOS/state1/alt-gun/path-node functions are coupled AINet mode-2 helpers; 0x402f60 remains separate zMath inline/COMDAT dependency; no gate or tier promotion."
+        "ai_net.cpp mode-2 owner remap: BN/source evidence places early AI mode-2 code in the 0x401060..0x403870 ai_net.cpp block; child LOS/state1/alt-gun/path-node functions are coupled AINet mode-2 helpers; 0x402f60 remains separate zMath inline/COMDAT dependency; no gate or tier promotion.",
+        "source_paths updated from ['src/Battlesport/ainet.cpp', 'src/Battlesport/ainet.h'] to ['src/Battlesport/ai_net.cpp', 'src/Battlesport/ai_net.h']; supersedes prior source_paths/evidence where contradicted by current owner/source evidence: Original filename migration: literal-backed ai_net.cpp block and inferred paired header rename supersede legacy ainet.cpp/ainet.h source_paths; no gate or tier promotion.",
+        "address metadata updated for 0x401060: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x401180: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x401420: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x401580: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x4016a0: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x401710: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x401970: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x401a40: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x401ab0: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x401b20: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x401c00: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x401c60: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x401f60: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x402090: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x402170: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x4026d0: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x4028c0: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x402b70: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "Original filename migration refreshed blocker text from legacy ainet.cpp to ai_net.cpp; no gate or tier promotion."
       ],
       "binary": "recoil",
       "relationships": [
@@ -11561,109 +11622,109 @@
       "address_metadata": {
         "0x401060": {
           "name": "AINet::TickAiMode2TopLevel",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "player_tick_ai_mode2_top_level",
           "group": "battlesport.ai"
         },
         "0x401180": {
           "name": "AINet::TickAiMode2PathFollow",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "player_tick_ai_mode2_path_follow",
           "group": "battlesport.ai"
         },
         "0x401420": {
           "name": "AINet::AiMode2ForwardProbeRequiresAutoTurn",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "player_ai_mode2_forward_probe_requires_auto_turn",
           "group": "battlesport.ai"
         },
         "0x401580": {
           "name": "AINet::AiAdvancePathCursorAndComputeTargetVec",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "player_ai_advance_path_cursor_and_compute_target_vec",
           "group": "battlesport.ai"
         },
         "0x4016a0": {
           "name": "AINet::AiChooseNextPathBranchIndex",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "player_ai_choose_next_path_branch_index",
           "group": "battlesport.ai"
         },
         "0x401710": {
           "name": "AINet::TickAiMode2SteeringSubstate",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "player_tick_ai_mode2_steering_substate",
           "group": "battlesport.ai"
         },
         "0x401970": {
           "name": "AINet::UpdateAiMode2MoveAndTurnTowardTarget",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "player_update_ai_mode2_move_and_turn_toward_target",
           "group": "battlesport.ai"
         },
         "0x401a40": {
           "name": "AINet::TickAiMode2OffsetTargetSteering",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "player_tick_ai_mode2_offset_target_steering",
           "group": "battlesport.ai"
         },
         "0x401ab0": {
           "name": "AINet::TickAiMode2DynamicOffsetTargetSteering",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "player_tick_ai_mode2_dynamic_offset_target_steering",
           "group": "battlesport.ai"
         },
         "0x401b20": {
           "name": "AINet::AiTryEnterMode2AttackPursuitIfLineOfSight",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "player_ai_try_enter_mode2_attack_pursuit_los",
           "group": "battlesport.ai"
         },
         "0x401c00": {
           "name": "AINet::AiAlertAttackBuddies",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "player_ai_alert_attack_buddies",
           "group": "battlesport.ai"
         },
         "0x401c60": {
           "name": "AINet::AiEnterMode2SteeringPursuit",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "player_ai_enter_mode2_steering_pursuit",
           "group": "battlesport.ai"
         },
         "0x401f60": {
           "name": "AINet::AiRebuildSyntheticPathToNodeIfFar",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "player_ai_rebuild_synthetic_path_to_node_if_far",
           "group": "battlesport.ai"
         },
         "0x402090": {
           "name": "AINet::UpdateAiMode2TurnTowardPlayerNoThrottle",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "player_update_ai_mode2_turn_toward_player_no_throttle",
           "group": "battlesport.ai"
         },
         "0x402170": {
           "name": "AINet::UpdateAiMode2TurnInPlaceTowardPlayer",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "player_update_ai_mode2_turn_in_place_toward_player",
           "group": "battlesport.ai"
         },
         "0x4026d0": {
           "name": "AINet::UpdateAiMode2MoveAndTurnTowardOffsetTarget",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "player_update_ai_mode2_move_and_turn_toward_offset_target",
           "group": "battlesport.ai"
         },
         "0x4028c0": {
           "name": "AINet::UpdateAiMode2MoveAndTurnTowardDynamicOffsetTarget",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "player_update_ai_mode2_move_and_turn_toward_dynamic_offset_target",
           "group": "battlesport.ai"
         },
         "0x402b70": {
           "name": "AINet::TickAiMode2TimedPathSteering",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "player_tick_ai_mode2_timed_path_steering",
           "group": "battlesport.ai"
         }
@@ -11730,8 +11791,8 @@
         }
       ],
       "source_paths": [
-        "src/Battlesport/ainet.cpp",
-        "src/Battlesport/ainet.h"
+        "src/Battlesport/ai_net.cpp",
+        "src/Battlesport/ai_net.h"
       ],
       "dependencies": [
         "battlesport_gameplay.player_ai_mode2_top_level_steering"
@@ -11782,7 +11843,19 @@
         "address metadata updated for 0x4da0e8: Source implementation remapped early 0x401060..0x403870 ai_net.cpp block into src/Battlesport/ainet.cpp after BN file-order evidence; native build, 39-target functional batch, and VC5 ainet_text_block_order symbol-order check passed.",
         "2026-06-30 ai_net.cpp file-block update: ReportOldNoOp/file-literal xrefs and neighboring function order support a physical ai_net.cpp contribution block at 0x401060..0x403870, followed by Briefing.cpp at 0x4038a0. Latest VC5 ainet_text_block_order fails overall with 12/39 functions OK; 0x4016a0 and 0x403830 byte-match, 0x401a40 and 0x401ab0 each have 7 register-allocation mismatches, and 0x403750 still has 79 mismatches. This records current state only; no owner gate or tier promotion is justified.",
         "2026-06-30 ai_net.cpp 40-function block update: zMath::Vec3Normalize at 0x402f60 now emits from src/Battlesport/ainet.cpp between 0x402f10 and 0x402fd0. Latest VC5 ainet_text_block_order fails overall with 12/40 functions OK; 0x4016a0 and 0x403830 byte-match, 0x401a40 and 0x401ab0 each have 7 register-allocation mismatches, 0x402f60 has 89 mismatches, and 0x403750 has 79 mismatches. This records current state only; no owner gate or tier promotion is justified.",
-        "0x4da0c0..0x4da0e8 is a contiguous initialized tuning data packet immediately before the AINet token block, and current BN evidence says direct code xrefs are inside the ai_net.cpp mode-2 owner; edge records auxiliary data parentage only and does not accept source/linkage/byte gates."
+        "0x4da0c0..0x4da0e8 is a contiguous initialized tuning data packet immediately before the AINet token block, and current BN evidence says direct code xrefs are inside the ai_net.cpp mode-2 owner; edge records auxiliary data parentage only and does not accept source/linkage/byte gates.",
+        "source_paths updated from ['src/Battlesport/ainet.cpp', 'src/Battlesport/ainet.h'] to ['src/Battlesport/ai_net.cpp', 'src/Battlesport/ai_net.h']; supersedes prior source_paths/evidence where contradicted by current owner/source evidence: Original filename migration: literal-backed ai_net.cpp block and inferred paired header rename supersede legacy ainet.cpp/ainet.h source metadata; no gate or tier promotion.",
+        "address metadata updated for 0x4da0c0: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x4da0c4: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x4da0c8: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x4da0cc: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x4da0d0: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x4da0d4: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x4da0d8: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x4da0dc: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x4da0e0: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x4da0e4: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x4da0e8: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion."
       ],
       "binary": "recoil",
       "relationships": [
@@ -11854,67 +11927,67 @@
       "address_metadata": {
         "0x4da0c0": {
           "name": "g_Player_AiMode2_PathFollowPitchInputScale",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "player_ai_mode2_tuning_globals_data",
           "group": "data.battlesport_ai"
         },
         "0x4da0c4": {
           "name": "g_Player_AiMode2_PathFollowPitchTurnGain",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "player_ai_mode2_tuning_globals_data",
           "group": "data.battlesport_ai"
         },
         "0x4da0c8": {
           "name": "g_Player_AiMode2_SteeringPitchInputScale",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "player_ai_mode2_tuning_globals_data",
           "group": "data.battlesport_ai"
         },
         "0x4da0cc": {
           "name": "g_Player_AiMode2_SteeringPitchTurnGain",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "player_ai_mode2_tuning_globals_data",
           "group": "data.battlesport_ai"
         },
         "0x4da0d0": {
           "name": "g_Player_AiMode2_SteeringVerticalErrorScale",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "player_ai_mode2_tuning_globals_data",
           "group": "data.battlesport_ai"
         },
         "0x4da0d4": {
           "name": "g_Player_AiMode2_TuningScalar55A",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "player_ai_mode2_tuning_globals_data",
           "group": "data.battlesport_ai"
         },
         "0x4da0d8": {
           "name": "g_Player_AiMode2_TuningScalar55B",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "player_ai_mode2_tuning_globals_data",
           "group": "data.battlesport_ai"
         },
         "0x4da0dc": {
           "name": "g_Player_AiMode2_TuningScalar5",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "player_ai_mode2_tuning_globals_data",
           "group": "data.battlesport_ai"
         },
         "0x4da0e0": {
           "name": "g_Player_AiMode2_TuningScalar10",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "player_ai_mode2_tuning_globals_data",
           "group": "data.battlesport_ai"
         },
         "0x4da0e4": {
           "name": "g_Player_AiMode2_OffsetTargetRotateCos15Deg",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "player_ai_mode2_tuning_globals_data",
           "group": "data.battlesport_ai"
         },
         "0x4da0e8": {
           "name": "g_Player_AiMode2_OffsetTargetRotateSin15Deg",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "player_ai_mode2_tuning_globals_data",
           "group": "data.battlesport_ai"
         }
@@ -70308,7 +70381,7 @@
       ],
       "data_addresses": [],
       "source_paths": [
-        "src/GameZRecoil/zMath/zMath_vec3_normalize.inl"
+        "src/GameZRecoil/zMath/zMath.h"
       ],
       "dependencies": [],
       "gates": {
@@ -70319,7 +70392,7 @@
         "linkage": "blocked",
         "byte": "blocked"
       },
-      "blocker": "COMDAT placement restored through zMath_vec3_normalize.inl included from ai_net.cpp; source/linkage gates remain blocked pending scrutiny, and byte remains blocked by current 95-mismatch VC5 diagnostic.",
+      "blocker": "Option A zMath header layering restored source-faithful placement without .inl files: early ai_net.cpp and shared headers see zMath declarations/types only, while delayed full zMath.h emits zMath::Vec3Normalize between 0x402f10 and 0x402fd0. Functional target passes and ainet_text_block_order reports section_order_matches_manifest=True, but byte remains blocked: 0x402f60 has 95 unmasked mismatches after 4 relocation bytes and 5 trailing VC5 NOPs. Source/linkage gates remain blocked pending source-owner scrutiny.",
       "evidence": [
         "2026-06-30 source-shape repair: 0x402f60 is modeled as an address-backed zMath.h inline helper whose COMDAT is physically emitted from the ai_net.cpp contribution between 0x402f10 and 0x402fd0.",
         "address metadata updated for 0x402f60: 2026-06-30 metadata repair: active source is zMath.h inline helper; COMDAT is emitted from ai_net.cpp.",
@@ -70331,12 +70404,18 @@
         "address metadata updated for 0x402f60: 2026-06-30 source placement repair: address-backed inline body now lives in zMath_vec3_normalize.inl, included from ai_net.cpp at the retail COMDAT emission point.",
         "2026-06-30 VC5 source-placement refresh: zMath_vec3_normalize.inl is included after AINet::AiFinalizeMode2State1ForAllPlayers, and dumpbin section order now matches retail manifest order with 0x402f60 between 0x402f10 and 0x402fd0. Byte gate remains blocked: ainet_text_block_order reports 95 unmasked mismatches after 4 relocation bytes and 5 trailing VC5 NOPs, BN size 98, VC5 size 112.",
         "2026-06-30 placement repair validated by ainet_text_block_order dumpbin section order; no B/A/S promotion.",
-        "owner reimplementation tier set to C: Conservative tier C remains based on zmath_vec3_normalize functional verify passing and data=none. COMDAT placement is now restored through zMath_vec3_normalize.inl included from ai_net.cpp, but source/linkage gates remain blocked and byte remains blocked by the current 95-mismatch VC5 diagnostic. No B/A/S promotion is claimed.; blocked/limited tier update findings: engine.zmath.vec3_normalize_header_helper: tier C requires boundary/source and accepted/no-data owner data gates"
+        "owner reimplementation tier set to C: Conservative tier C remains based on zmath_vec3_normalize functional verify passing and data=none. COMDAT placement is now restored through zMath_vec3_normalize.inl included from ai_net.cpp, but source/linkage gates remain blocked and byte remains blocked by the current 95-mismatch VC5 diagnostic. No B/A/S promotion is claimed.; blocked/limited tier update findings: engine.zmath.vec3_normalize_header_helper: tier C requires boundary/source and accepted/no-data owner data gates",
+        "source_paths updated from ['src/GameZRecoil/zMath/zMath_vec3_normalize.inl'] to ['src/GameZRecoil/zMath/zMath.h']; supersedes prior source_paths/evidence where contradicted by current owner/source evidence: 2026-07-01 source-faithful header restore: zMath::Vec3Normalize inline body moved back into zMath.h and reconstruction-only zMath_vec3_normalize.inl was removed; ai_net.cpp no longer forces placement with a late include.",
+        "address metadata updated for 0x402f60: 2026-07-01 metadata refresh: 0x402f60 remains zMath::Vec3Normalize; current semantic source path is zMath.h after deleting the reconstruction-only zMath_vec3_normalize.inl.",
+        "2026-07-01 blocker refresh after zMath.h inline restore; no owner gate or tier promotion claimed.",
+        "2026-07-01 VC5 refresh after zMath.h restore: zmath_vec3_normalize fails with 99 unmasked mismatches, and ainet_text_block_order shows the header COMDAT emits as SECT09 before the retail slot. No owner gate or tier promotion claimed.",
+        "2026-07-01 Option A header-layering refresh: zMathTypes.h/zMathDecls.h split keeps Vec3Normalize body in zMath.h; VC5 order now emits 0x402f60 as SECT3B between 0x402f10 SECT39 and 0x402fd0 SECT3D. No owner gate or tier promotion claimed.",
+        "owner reimplementation tier set to C: Conservative tier C remains based on zmath_vec3_normalize functional verification passing and data=none. Option A restored source-faithful placement without .inl files: zMathTypes.h/zMathDecls.h expose types/declarations early, the inline Vec3Normalize body remains in zMath.h, and ai_net.cpp includes full zMath.h at the retail COMDAT emission point. ainet_text_block_order reports section_order_matches_manifest=True with 0x402f60 as SECT3B between 0x402f10 SECT39 and 0x402fd0 SECT3D. Source/linkage gates remain blocked pending scrutiny; byte remains blocked by 95 unmasked mismatches after 4 relocation bytes and 5 trailing VC5 NOPs. No B/A/S promotion is claimed.; blocked/limited tier update findings: engine.zmath.vec3_normalize_header_helper: tier C requires boundary/source and accepted/no-data owner data gates"
       ],
       "binary": "recoil",
       "reimplementation": {
         "tier": "C",
-        "evidence": "Conservative tier C remains based on zmath_vec3_normalize functional verify passing and data=none. COMDAT placement is now restored through zMath_vec3_normalize.inl included from ai_net.cpp, but source/linkage gates remain blocked and byte remains blocked by the current 95-mismatch VC5 diagnostic. No B/A/S promotion is claimed.; blocked/limited tier update findings: engine.zmath.vec3_normalize_header_helper: tier C requires boundary/source and accepted/no-data owner data gates"
+        "evidence": "Conservative tier C remains based on zmath_vec3_normalize functional verification passing and data=none. Option A restored source-faithful placement without .inl files: zMathTypes.h/zMathDecls.h expose types/declarations early, the inline Vec3Normalize body remains in zMath.h, and ai_net.cpp includes full zMath.h at the retail COMDAT emission point. ainet_text_block_order reports section_order_matches_manifest=True with 0x402f60 as SECT3B between 0x402f10 SECT39 and 0x402fd0 SECT3D. Source/linkage gates remain blocked pending scrutiny; byte remains blocked by 95 unmasked mismatches after 4 relocation bytes and 5 trailing VC5 NOPs. No B/A/S promotion is claimed.; blocked/limited tier update findings: engine.zmath.vec3_normalize_header_helper: tier C requires boundary/source and accepted/no-data owner data gates"
       },
       "relationships": [
         {
@@ -70351,7 +70430,7 @@
       "address_metadata": {
         "0x402f60": {
           "name": "zMath::Vec3Normalize",
-          "source_path": "src/GameZRecoil/zMath/zMath_vec3_normalize.inl",
+          "source_path": "src/GameZRecoil/zMath/zMath.h",
           "target": "zmath_vec3_normalize",
           "group": "engine.zmath"
         }
@@ -114408,7 +114487,7 @@
         }
       ],
       "source_paths": [
-        "src/Battlesport/ainet.cpp",
+        "src/Battlesport/ai_net.cpp",
         "src/Battlesport/AiPropertyDlg.cpp"
       ],
       "dependencies": [
@@ -114423,7 +114502,7 @@
         "byte": "deferred",
         "linkage": "blocked"
       },
-      "blocker": "0x403830 lives in ainet.cpp and byte-matches, but full source/linkage gates remain blocked until complete 40-function ai_net block scrutiny and byte evidence are accepted.",
+      "blocker": "0x403830 lives in ai_net.cpp and byte-matches, but full source/linkage gates remain blocked until complete 40-function ai_net block scrutiny and byte evidence are accepted.",
       "evidence": [
         "Owner-ledger reconciliation for legacy accepted Source owner markers: the address owner projection already carried accepted owner metadata before strict SOURCE_OWNERS link enforcement; this record links that accepted owner scope without adding data, functional, or byte evidence.",
         "Source-owner mapper routed 0x403830 to the accepted AINet subsystem/source-file boundary based on BN source comment src/Battlesport/ainet.cpp, current docblock, AINetNode::Free dependency, and existing AI owner membership for neighboring AINet functions.",
@@ -114445,7 +114524,20 @@
         "BN source-file placement audit repaired 0x403830 metadata into the AINet neighborhood, but the production body/docblock is still in player.cpp; accepted source/linkage for the AI subsystem must remain blocked until that member and any adjacent early AI functions are remapped consistently.",
         "address metadata updated for 0x403830: Source implementation remapped early 0x401060..0x403870 ai_net.cpp block into src/Battlesport/ainet.cpp after BN file-order evidence; native build, 39-target functional batch, and VC5 ainet_text_block_order symbol-order check passed.",
         "2026-06-30 ai_net.cpp file-block update: ReportOldNoOp/file-literal xrefs and neighboring function order support a physical ai_net.cpp contribution block at 0x401060..0x403870, followed by Briefing.cpp at 0x4038a0. Latest VC5 ainet_text_block_order fails overall with 12/39 functions OK; 0x4016a0 and 0x403830 byte-match, 0x401a40 and 0x401ab0 each have 7 register-allocation mismatches, and 0x403750 still has 79 mismatches. This records current state only; no owner gate or tier promotion is justified.",
-        "2026-06-30 ai_net.cpp 40-function block update: zMath::Vec3Normalize at 0x402f60 now emits from src/Battlesport/ainet.cpp between 0x402f10 and 0x402fd0. Latest VC5 ainet_text_block_order fails overall with 12/40 functions OK; 0x4016a0 and 0x403830 byte-match, 0x401a40 and 0x401ab0 each have 7 register-allocation mismatches, 0x402f60 has 89 mismatches, and 0x403750 has 79 mismatches. This records current state only; no owner gate or tier promotion is justified."
+        "2026-06-30 ai_net.cpp 40-function block update: zMath::Vec3Normalize at 0x402f60 now emits from src/Battlesport/ainet.cpp between 0x402f10 and 0x402fd0. Latest VC5 ainet_text_block_order fails overall with 12/40 functions OK; 0x4016a0 and 0x403830 byte-match, 0x401a40 and 0x401ab0 each have 7 register-allocation mismatches, 0x402f60 has 89 mismatches, and 0x403750 has 79 mismatches. This records current state only; no owner gate or tier promotion is justified.",
+        "source_paths updated from ['src/Battlesport/ainet.cpp', 'src/Battlesport/AiPropertyDlg.cpp'] to ['src/Battlesport/ai_net.cpp', 'src/Battlesport/AiPropertyDlg.cpp']; supersedes prior source_paths/evidence where contradicted by current owner/source evidence: Original filename migration: literal-backed ai_net.cpp block supersedes legacy ainet.cpp source_path while preserving AiPropertyDlg membership; no gate or tier promotion.",
+        "address metadata updated for 0x402fd0: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x402ff0: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x403040: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x403530: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x403550: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x403620: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x4036f0: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x4037c0: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x403800: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x403830: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "address metadata updated for 0x403870: Original filename migration: address metadata source_path now follows literal-backed ai_net.cpp file rename; no gate or tier promotion.",
+        "Original filename migration refreshed blocker text from legacy ainet.cpp to ai_net.cpp; no gate or tier promotion."
       ],
       "binary": "recoil",
       "relationships": [
@@ -114528,67 +114620,67 @@
       "address_metadata": {
         "0x402fd0": {
           "name": "AINet::LoadAllFromZrd",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "ainet_load_all_from_zrd",
           "group": "battlesport.ai"
         },
         "0x402ff0": {
           "name": "AINet::Alloc",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "ainet_alloc",
           "group": "battlesport.ai"
         },
         "0x403040": {
           "name": "AINet::LoadFromZrd",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "ainet_load_from_zrd",
           "group": "battlesport.ai"
         },
         "0x403530": {
           "name": "AINet::FindNodeByIndex",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "ainet_find_node_by_index",
           "group": "battlesport.ai"
         },
         "0x403550": {
           "name": "AINet::ResolveNeighborLinksAndBuildProbeFans",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "ainet_resolve_neighbor_links_and_build_probe_fans",
           "group": "battlesport.ai"
         },
         "0x403620": {
           "name": "AINetPathProbeFan::InitFromSegment",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "ainet_path_probe_fan_init_from_segment",
           "group": "battlesport.ai"
         },
         "0x4036f0": {
           "name": "AINet::FindNearestNode",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "ainet_find_nearest_node",
           "group": "battlesport.ai"
         },
         "0x4037c0": {
           "name": "AINetNode::Free",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "ainet_node_free",
           "group": "battlesport.ai"
         },
         "0x403800": {
           "name": "AINet::Free",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "ainet_free",
           "group": "battlesport.ai"
         },
         "0x403830": {
           "name": "AINet::AiDiscardNegativeBranchPathNodes",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "player_ai_discard_negative_branch_path_nodes",
           "group": "battlesport.ai"
         },
         "0x403870": {
           "name": "AINet::FreeAll",
-          "source_path": "src/Battlesport/ainet.cpp",
+          "source_path": "src/Battlesport/ai_net.cpp",
           "target": "ainet_free_all",
           "group": "battlesport.ai"
         },
@@ -131112,7 +131204,7 @@
       ],
       "data_addresses": [],
       "source_paths": [
-        "src/Battlesport/WinMain.cpp"
+        "src/WinMain.cpp"
       ],
       "dependencies": [],
       "gates": {
@@ -131140,7 +131232,9 @@
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized audio_fmv parent-owned data-dependency reconciliation; no gate/tier promotion beyond linkage classification",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized core_util_archive/shared data-dependency reconciliation safe subset; rows with incomplete parentage or metadata blockers intentionally left blocked",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized render_video data-dependency reconciliation; render_video.zrndr_global_string_table_data intentionally left blocked pending owner-shape remap",
-        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked"
+        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked",
+        "source_paths updated from ['src/Battlesport/WinMain.cpp'] to ['src/WinMain.cpp']; supersedes prior source_paths/evidence where contradicted by current owner/source evidence: Source-block audit maps WinMain physical row 0x4c81c0..0x4c81d8 to root src/WinMain.cpp; prior Battlesport path conflicted with block order and file placement.",
+        "address metadata updated for 0x4c81c0: Source-block audit maps WinMain physical row 0x4c81c0..0x4c81d8 to root src/WinMain.cpp; update navigation metadata only, no gate or tier change."
       ],
       "binary": "recoil",
       "relationships": [
@@ -131156,7 +131250,7 @@
       "address_metadata": {
         "0x4c81c0": {
           "name": "WinMain",
-          "source_path": "src/Battlesport/WinMain.cpp",
+          "source_path": "src/WinMain.cpp",
           "target": "winmain",
           "group": "misc.authored_stubs"
         }

@@ -108,6 +108,13 @@ RECOIL_STATIC_ASSERT(
  * Retail stores 0x1000-byte chunks and a centered chunk-base list; queued
  * items themselves are consumed and deleted by RecoilApp_MfcOleModule::Run.
  */
+enum {
+    kRecoilAppStateQueueChunkSlotCount = 1024,
+    kRecoilAppStateQueueInitialCursorOffset =
+        kRecoilAppStateQueueChunkSlotCount / 2,
+    kRecoilAppStateQueueInitialChunkBaseCapacity = 2
+};
+
 struct RecoilApp_StateQueueBlock {
     RecoilApp_StateQueueItem **m_chunkBegin;
     RecoilApp_StateQueueItem **m_chunkEnd;

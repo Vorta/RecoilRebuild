@@ -1291,7 +1291,7 @@ int zSndSample::StopActiveVoicesIfPlaying() {
 
 /**
  * Reimplements 0x4a3620: zSndSample::GetPlayCursorBytes.
- * Source: D:\Proj\GameZRecoil\zSound\zSound.cpp.
+ * Source: D:\Proj\GameZRecoil\zSound\zsnd.cpp.
  * Purpose: return the active backend play cursor in bytes, or zero on failure.
  */
 unsigned int zSndSample::GetPlayCursorBytes() {

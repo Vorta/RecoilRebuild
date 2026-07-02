@@ -21,7 +21,7 @@
 #include "GameZRecoil/zReader/zReader.h"
 #include "GameZRecoil/zRndr/zRndr.h"
 #include "GameZRecoil/zSound/zSound.h"
-#include "GameZRecoil/zSys/zSys.h"
+#include "GameZRecoil/zSys/zsys.h"
 #include "GameZRecoil/zTurret/zTurret.h"
 #include "GameZRecoil/zUtil/zSaveGame.h"
 #include "GameZRecoil/zUtil/zZbd.h"
@@ -2685,7 +2685,7 @@ RecoilApp_StateQueueBlock * RecoilApp_StateQueueBlock::InitFromCursor(
     RecoilApp_StateQueueItem ***chunkBaseSlot
 ) {
     m_chunkBegin = *chunkBaseSlot;
-    m_chunkEnd = *chunkBaseSlot + 1024;
+    m_chunkEnd = *chunkBaseSlot + kRecoilAppStateQueueChunkSlotCount;
     m_cursor = cursor;
     m_chunkBaseSlot = chunkBaseSlot;
     return this;
@@ -2768,19 +2768,24 @@ inline void RecoilApp_StateQueue::PushBack(
 ) {
     if (Empty() || m_writeBlock.m_cursor == m_writeBlock.m_chunkEnd) {
         RecoilApp_StateQueueItem **chunk =
-            (RecoilApp_StateQueueItem **)::operator new(4096);
+            (RecoilApp_StateQueueItem **)::operator new(
+                kRecoilAppStateQueueChunkSlotCount * sizeof(RecoilApp_StateQueueItem *)
+            );
 
         if (Empty()) {
-            m_chunkBaseCapacity = 2;
+            m_chunkBaseCapacity = kRecoilAppStateQueueInitialChunkBaseCapacity;
             m_chunkBaseList = (RecoilApp_StateQueueItem ***)::operator new(
-                2 * (int)(sizeof(RecoilApp_StateQueueItem **))
+                kRecoilAppStateQueueInitialChunkBaseCapacity *
+                    (int)(sizeof(RecoilApp_StateQueueItem **))
             );
-            m_chunkBaseList[1] = chunk;
+            m_chunkBaseList[kRecoilAppStateQueueInitialChunkBaseCapacity - 1] = chunk;
 
-            RecoilApp_StateQueueItem ***const chunkBaseSlot = m_chunkBaseList + 1;
-            chunk += 512;
+            RecoilApp_StateQueueItem ***const chunkBaseSlot =
+                m_chunkBaseList + kRecoilAppStateQueueInitialChunkBaseCapacity - 1;
+            chunk += kRecoilAppStateQueueInitialCursorOffset;
             m_readBlock.m_chunkBegin = *chunkBaseSlot;
-            m_readBlock.m_chunkEnd = m_readBlock.m_chunkBegin + 1024;
+            m_readBlock.m_chunkEnd =
+                m_readBlock.m_chunkBegin + kRecoilAppStateQueueChunkSlotCount;
             m_readBlock.m_cursor = chunk;
             m_readBlock.m_chunkBaseSlot = chunkBaseSlot;
             m_writeBlock.m_chunkBegin = m_readBlock.m_chunkBegin;
@@ -2792,7 +2797,8 @@ inline void RecoilApp_StateQueue::PushBack(
             ++m_writeBlock.m_chunkBaseSlot;
             *m_writeBlock.m_chunkBaseSlot = chunk;
             m_writeBlock.m_chunkBegin = *m_writeBlock.m_chunkBaseSlot;
-            m_writeBlock.m_chunkEnd = m_writeBlock.m_chunkBegin + 1024;
+            m_writeBlock.m_chunkEnd =
+                m_writeBlock.m_chunkBegin + kRecoilAppStateQueueChunkSlotCount;
             m_writeBlock.m_cursor = chunk;
         } else {
             const int activeChunkCount =
@@ -2804,7 +2810,8 @@ inline void RecoilApp_StateQueue::PushBack(
                 centeredSlot + activeChunkCount;
             *newWriteSlot = chunk;
             m_readBlock.m_chunkBegin = *centeredSlot;
-            m_readBlock.m_chunkEnd = m_readBlock.m_chunkBegin + 1024;
+            m_readBlock.m_chunkEnd =
+                m_readBlock.m_chunkBegin + kRecoilAppStateQueueChunkSlotCount;
             m_readBlock.m_cursor = oldReadCursor;
             m_readBlock.m_chunkBaseSlot = centeredSlot;
             RecoilApp_StateQueueBlock writeBlock;

@@ -24,7 +24,7 @@
 #include "GameZRecoil/zModel/zModel.h"
 #include "GameZRecoil/zRndr/zRndr.h"
 #include "GameZRecoil/zSound/zSound.h"
-#include "GameZRecoil/zSys/zSys.h"
+#include "GameZRecoil/zSys/zsys.h"
 #include "GameZRecoil/zTurret/zTurret.h"
 #include "GameZRecoil/zUtil/zZbd.h"
 
@@ -1754,8 +1754,9 @@ HudUiPanel *NewSimplePanel(
     int fontSize,
     int fontWeight
 ) {
-    HudUiPanel *const panel = (HudUiPanel *)(::operator new(0x2a4));
-    ((HudUiPanelSimple *)(panel))->Constructor(
+    HudUiPanelSimple *const panel =
+        (HudUiPanelSimple *)(::operator new(sizeof(HudUiPanelSimple)));
+    panel->Constructor(
         0,
         0,
         0
@@ -1770,7 +1771,7 @@ HudUiPanel *NewSimplePanel(
         2
     );
     ((HudUiElement *)(panel))->SetVisible(0);
-    return panel;
+    return (HudUiPanel *)(panel);
 }
 
 /**
@@ -16150,7 +16151,7 @@ HudUiMessage * HudUiMessage::Constructor() {
     memset(
         variantImages,
         0,
-        0x24
+        sizeof(variantImages) + sizeof(activeSideImages) + sizeof(sideImageSwaps)
     );
     panel.activeSideIndex = 0;
     return this;
@@ -18002,7 +18003,7 @@ void HudUiPanel::SetTextFmtV(
         memset(
             textBuffer,
             0,
-            0x100
+            sizeof(textBuffer)
         );
         textDirty = 1;
         return;
@@ -18049,7 +18050,7 @@ void HudUiPanel::SetText(
         memset(
             textBuffer,
             0,
-            0x100
+            sizeof(textBuffer)
         );
         textDirty = 1;
         return;

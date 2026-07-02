@@ -4,12 +4,12 @@ add_library(recoil_native STATIC
     ../Battlesport/Recoil.cpp
     ../Battlesport/HudUiMessageBoxDialog.cpp
     ../Battlesport/RecoilVersion.cpp
-    ../Battlesport/WinMain.cpp
+    ../WinMain.cpp
     ../Battlesport/Briefing.cpp
     ../Battlesport/AiPropertyDlg.cpp
     ../Battlesport/MfcThreeFloatDialog.cpp
     ../Battlesport/zStr.cpp
-    ../Battlesport/ainet.cpp
+    ../Battlesport/ai_net.cpp
     ../Battlesport/GameNet.cpp
     ../Battlesport/NetUi.cpp
     ../Battlesport/hud.cpp

@@ -1,7 +1,7 @@
 #include "Battlesport/GameNet.h"
 #include "Battlesport/Briefing.h"
 #include "Battlesport/HudSensorTracker.h"
-#include "Battlesport/ainet.h"
+#include "Battlesport/ai_net.h"
 #include "Battlesport/hud.h"
 #include "Battlesport/pickup.h"
 #include "Battlesport/player.h"

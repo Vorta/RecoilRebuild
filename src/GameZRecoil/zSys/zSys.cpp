@@ -3,7 +3,7 @@
 #define _CRT_SECURE_CPP_OVERLOAD_SECURE_NAMES 0
 #endif
 
-#include "GameZRecoil/zSys/zSys.h"
+#include "GameZRecoil/zSys/zsys.h"
 
 #include "GameZRecoil/zGame/zGame.h"
 
