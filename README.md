@@ -55,28 +55,28 @@ Generated from `.agent/SOURCE_OWNERS.json` (schema version 3).
 
 | Binary | Owners | Authored owners | Provider boundaries |
 | --- | ---: | ---: | ---: |
-| recoil | 1219 | 1201 | 18 |
+| recoil | 1222 | 1201 | 21 |
 | messages | 1 | 1 | 0 |
-| Total | 1220 | 1202 | 18 |
+| Total | 1223 | 1202 | 21 |
 
 ### Source-Owner Gates
 
 | Gate | accepted | blocked | deferred | none | pending | Total |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| boundary | 1212 | 3 | 0 | 1 | 4 | 1220 |
-| source | 1209 | 6 | 0 | 1 | 4 | 1220 |
-| data | 958 | 2 | 0 | 206 | 54 | 1220 |
-| functional | 807 | 0 | 0 | 304 | 109 | 1220 |
-| linkage | 1025 | 145 | 0 | 48 | 2 | 1220 |
-| byte | 22 | 468 | 707 | 0 | 23 | 1220 |
+| boundary | 1214 | 4 | 0 | 1 | 4 | 1223 |
+| source | 1211 | 7 | 0 | 1 | 4 | 1223 |
+| data | 958 | 2 | 0 | 209 | 54 | 1223 |
+| functional | 807 | 0 | 0 | 307 | 109 | 1223 |
+| linkage | 1025 | 146 | 0 | 50 | 2 | 1223 |
+| byte | 22 | 468 | 710 | 0 | 23 | 1223 |
 
 ### Owner Reimplementation Tiers
 
 | Tier | Count | Percent of authored owners |
 | --- | ---: | ---: |
-| X | 120 | 10.0% |
+| X | 121 | 10.1% |
 | C | 223 | 18.6% |
-| B | 845 | 70.3% |
+| B | 844 | 70.2% |
 | A | 1 | 0.1% |
 | S | 13 | 1.1% |
 
@@ -87,11 +87,11 @@ Generated from `.agent/SOURCE_OWNERS.json` (schema version 3).
 | callback-table | 1 | 0.1% |
 | class | 165 | 13.5% |
 | data-owner | 430 | 35.2% |
-| provider-boundary | 18 | 1.5% |
+| provider-boundary | 21 | 1.7% |
 | record | 42 | 3.4% |
 | source-file | 167 | 13.7% |
-| standalone | 58 | 4.8% |
-| subsystem | 339 | 27.8% |
+| standalone | 58 | 4.7% |
+| subsystem | 339 | 27.7% |
 <!-- RECOIL_PROGRESS:END -->
 
 <!-- RECOIL_SOURCE_BLOCKS:START -->
@@ -101,7 +101,7 @@ Ranges are half-open retail `.text` ranges. `partial` rows are header contributo
 
 | Range | Source path | Status / detail |
 | --- | --- | --- |
-| `0x401000..0x401020` | `src/Battlesport/Recoil.cpp` | mapped-no-literal-comment-backed |
+| `0x401000..0x401020` | `semantic:CAboutDlg-constructor-prelude` | semantic source unresolved; CAboutDlg constructor prelude physically emitted at the start of .text before adjacent MFC provider rows; exact original source/header and physical host unresolved; candidates: `src/Battlesport/about.cpp`, `src/Battlesport/AboutDlg.cpp`, `src/Battlesport/AboutDlg.h`, `src/Battlesport/RecoilApp.h` |
 | `0x401020..0x401030` | `provider:mfc/no-op-virtual-onearg` | provider, provider-boundary |
 | `0x401030..0x401040` | `provider:mfc42-import-address-getter` | provider, provider-boundary |
 | `0x401040..0x401060` | `provider:mfc/cwnd-enablewindow-wrappers` | provider, provider-boundary |
@@ -122,8 +122,8 @@ Ranges are half-open retail `.text` ranges. `partial` rows are header contributo
 | `0x43ce80..0x43cf90` | `src/Battlesport/WinSock.cpp` | mapped-no-literal-mixed; 6 semantic subranges |
 | `0x43cf90..0x442890` | `src/Battlesport/WOL.cpp` | mapped-no-literal-mixed; 13 semantic subranges |
 | `0x442890..0x4428b0` | `provider:mfc/message-map-getters` | provider, provider-boundary |
-| `0x4428b0..0x443730` | `src/CZGameFrame/AppFrame.cpp` | mapped-no-literal-mixed; 6 semantic subranges |
-| `0x443730..0x443b70` | `src/CZGameFrame/CZGameFrame.cpp` | mapped-no-literal-mixed; 8 semantic subranges |
+| `0x4428b0..0x443730` | `semantic:late-recoilapp-appframe-cluster` | semantic source unresolved; Late RecoilApp/app-frame runtime and state-queue authored cluster physically emitted before the CZGameFrame class block; exact original source/header and physical host unresolved.; candidates: `src/CZGameFrame/AppFrame.cpp`, `src/CZGameFrame/AppFrame.h`, `src/Battlesport/RecoilApp.h` |
+| `0x443730..0x443b70` | `src/CZGameFrame/CZGameFrame.cpp` | mapped-no-literal-czgameframe-cluster; 8 semantic subranges |
 | `0x443b70..0x443c50` | `provider:mfc/gdi-bitmap-destructors` | provider, provider-boundary |
 | `0x443c50..0x4478c0` | `src/GameZRecoil/zClass/cls_di.c` | mapped; 6 semantic subranges |
 | `0x4478c0..0x449ba0` | `src/GameZRecoil/zClass/Class.c` | mapped-refined; 24 semantic subranges |
@@ -152,31 +152,31 @@ Ranges are half-open retail `.text` ranges. `partial` rows are header contributo
 | `0x4625e0..0x463d50` | `src/GameZRecoil/zFMV/fmv_script.cpp` | mapped; 8 semantic subranges |
 | `0x463d50..0x464670` | `src/GameZRecoil/zFMV/fmv_stream.cpp` | mapped; 5 semantic subranges |
 | `0x464670..0x46a690` | `src/GameZRecoil/zGeometry/zgeo_weiler.cpp` | mapped-with-semantic-conflicts; 5 semantic subranges |
-| `0x46a690..0x46bd50` | `src/GameZRecoil/zGeometry/zgeo_model.cpp` | mapped-with-semantic-conflicts; 6 semantic subranges |
+| `0x46a690..0x46bd50` | `src/GameZRecoil/zGeometry/zgeo_model.cpp` | mapped-with-semantic-conflicts; 7 semantic subranges |
 | `0x46bd50..0x46d310` | `src/GameZRecoil/zGeometry/zgeo_convexify.cpp` | mapped-with-semantic-exceptions; 4 semantic subranges |
 | `0x46d310..0x46efc0` | `src/GameZRecoil/zImage/zimg_texture.cpp` | mapped-with-semantic-conflicts; 5 semantic subranges |
 | `0x46efc0..0x46f300` | `src/GameZRecoil/zImage/zimg_fonts.cpp` | mapped; 5 semantic subranges |
 | `0x46f300..0x470020` | `src/GameZRecoil/zInput/zin_kbd.cpp` | mapped; 4 semantic subranges |
-| `0x470020..0x4706c0` | `src/GameZRecoil/zInput/zin_mouse.cpp` | mapped-no-literal-bracketed; 9 semantic subranges |
-| `0x4706c0..0x4719e0` | `src/GameZRecoil/zInput/zinput.cpp` | mapped-no-literal-bracketed; 15 semantic subranges |
+| `0x470020..0x4706c0` | `src/GameZRecoil/zInput/zin_mouse.cpp` | mapped-no-literal-bracketed; 19 semantic subranges |
+| `0x4706c0..0x4719e0` | `src/GameZRecoil/zInput/zinput.cpp` | mapped-no-literal-bracketed; 58 semantic subranges |
 | `0x4719e0..0x471e40` | `src/GameZRecoil/zInput/zin_init.cpp` | mapped-refined; 7 semantic subranges |
 | `0x471e40..0x472670` | `src/GameZRecoil/zInput/zin_joystick.cpp` | mapped-no-literal-bracketed-with-semantic-exceptions; 5 semantic subranges |
-| `0x472670..0x475c40` | `src/GameZRecoil/zMath/zmth_main.c` | mapped-refined-source-path-conflict; 10 semantic subranges |
+| `0x472670..0x475c40` | `src/GameZRecoil/zMath/zmth_main.c` | mapped-refined-literal-backed; 10 semantic subranges |
 | `0x475c40..0x4805b0` | `src/GameZRecoil/zModel/gmod_init.c` | mapped-with-semantic-conflicts; 22 semantic subranges |
 | `0x4805b0..0x481530` | `src/GameZRecoil/zModel/gmod_matl.c` | mapped-with-semantic-conflicts; 9 semantic subranges |
 | `0x481530..0x487a30` | `src/GameZRecoil/zModel/gmod_const.c` | mapped-with-semantic-conflicts; 19 semantic subranges |
 | `0x487a30..0x489d00` | `src/GameZRecoil/zModel/gmod_light.c` | mapped; 2 semantic subranges |
 | `0x489d00..0x48c7d0` | `src/GameZRecoil/zNetwork/znet_dplay.cpp` | mapped; 11 semantic subranges |
 | `0x48c7d0..0x48d340` | `src/GameZRecoil/zReader/zreader.cpp` | mapped; 5 semantic subranges |
-| `0x48d340..0x49f614` | `src/GameZRecoil/zRender/zrndr_draw.c` | mapped-with-semantic-conflicts; 14 semantic subranges |
+| `0x48d340..0x49f614` | `src/GameZRecoil/zRender/zrndr_draw.c` | mapped-with-semantic-conflicts; 15 semantic subranges |
 | `0x49f614..0x4a10e0` | `src/GameZRecoil/zSound/zsnd_play.cpp` | mapped-with-semantic-slices; 7 semantic subranges |
 | `0x4a10e0..0x4a12c0` | `src/GameZRecoil/zSound/zsnd_parm.cpp` | mapped; 3 semantic subranges |
 | `0x4a12c0..0x4a2010` | `src/GameZRecoil/zSound/zsnd_init.cpp` | mapped; 3 semantic subranges |
 | `0x4a2010..0x4a2950` | `src/GameZRecoil/zSound/zsnd_cd.cpp` | mapped; 2 semantic subranges |
 | `0x4a2950..0x4a2ea0` | `src/GameZRecoil/zSound/zsnd_3d.cpp` | mapped-effective-literal; 3 semantic subranges |
 | `0x4a2ea0..0x4a3930` | `src/GameZRecoil/zSound/zsnd_create.cpp` | mapped; 3 semantic subranges |
-| `0x4a3930..0x4a3ea0` | `src/GameZRecoil/zSound/zsnd_fade.cpp` | mapped-no-literal-bracketed; 4 semantic subranges |
-| `0x4a3ea0..0x4a44c0` | `src/GameZRecoil/zSound/zsnd_error.cpp` | mapped-no-literal-reporter-shelf; 5 semantic subranges |
+| `0x4a3930..0x4a3ea0` | `src/GameZRecoil/zSound/zsnd_fade.cpp` | mapped-no-literal-bracketed; 10 semantic subranges |
+| `0x4a3ea0..0x4a44c0` | `src/GameZRecoil/zSound/zsnd_error.cpp` | mapped-no-literal-reporter-shelf; 8 semantic subranges |
 | `0x4a44c0..0x4a53f0` | `src/GameZRecoil/zSound/zsnd_grp.cpp` | mapped; 5 semantic subranges |
 | `0x4a53f0..0x4a5670` | `src/GameZRecoil/zSound/zsnd.cpp` | mapped-no-literal-bracketed; 3 semantic subranges |
 | `0x4a5670..0x4a59d0` | `src/GameZRecoil/zSys/zsys.cpp` | mapped-no-literal-candidate; 4 semantic subranges |
@@ -206,9 +206,9 @@ Ranges are half-open retail `.text` ranges. `partial` rows are header contributo
 | `0x4c7498..0x4c74a0` | `provider:directinput-import-thunk` | provider, provider-boundary |
 | `0x4c74a0..0x4c7ef8` | `provider:directinput-c_dfDIJoystick-data` | provider, provider-data |
 | `0x4c7ef8..0x4c7f00` | `padding:linker-before-tail-authored-island` | padding, padding |
-| `0x4c7f00..0x4c7fd0` | `src/GameZRecoil/zImage/zimg_fonts.h` | partial, included in `src/WinMain.cpp` |
-| `0x4c7fd0..0x4c81c0` | `src/GameZRecoil/zVideo/zvid.h` | partial, included in `src/WinMain.cpp` |
-| `0x4c81c0..0x4c81d8` | `src/WinMain.cpp` | mapped-no-literal |
+| `0x4c7f00..0x4c7fd0` | `semantic:late-zimage-font-blit-before-winmain` | semantic source unresolved; zImage font blit authored body physically emitted immediately before WinMain tail; exact original source/header and physical host unresolved; candidates: `src/GameZRecoil/zImage/zimg_fonts.cpp`, `src/GameZRecoil/zImage/zimg_fonts.h` |
+| `0x4c7fd0..0x4c81c0` | `semantic:late-zvideo-palette-before-winmain` | semantic source unresolved; zVideo palette authored bodies physically emitted immediately before WinMain; exact original source/header and physical host unresolved; candidates: `src/GameZRecoil/zVideo/zVideo.cpp`, `src/GameZRecoil/zVideo/zvid.h` |
+| `0x4c81c0..0x4c81d8` | `src/WinMain.cpp` | mapped-no-literal-entry-thunk-candidate |
 | `0x4c81d8..0x4c8230` | `provider:mfc42-crt-module-state-tail` | provider, provider-boundary |
 | `0x4c8230..0x4cb9e8` | `provider:msvc-cxx-eh-funclet-tail` | provider, provider-boundary |
 <!-- RECOIL_SOURCE_BLOCKS:END -->
