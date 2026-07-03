@@ -1,3 +1,5 @@
+#include "GameZRecoil/zSys/zsys_time_impl.h"
+
 #define DIRECTINPUT_VERSION 0x0500
 #if defined(_MSC_VER)
 #define _CRT_SECURE_CPP_OVERLOAD_SECURE_NAMES 0
@@ -5,7 +7,7 @@
 
 #include "GameZRecoil/zSys/zsys.h"
 
-#include "GameZRecoil/zGame/zGame.h"
+#include "GameZRecoil/zGame/zgame.h"
 
 #include <intrin.h>
 #include <limits>
@@ -157,7 +159,7 @@ struct CpuBenchmarkResolver {
  */
 extern "C" unsigned int g_zSys_CpuVendorNonIntelMarker = 0;
 
-#include "GameZRecoil/zSys/zSys_probe_platform.inl"
+#include "GameZRecoil/zSys/zsys_probe_platform.inl"
 
 /**
  * Reimplements 0x4a59e0: zSys::FindFileOnDriveType.
@@ -413,7 +415,7 @@ void __fastcall zSys::Sub64(
 #endif
 
 #if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZSYS_CPU_RAW_ASM)
-#include "GameZRecoil/zSys/zSys_cpu_asm.inl"
+#include "GameZRecoil/zSys/zsys_cpu_asm.inl"
 #else
 namespace zSys {
 /**
@@ -450,10 +452,10 @@ int DetectIs80386ByAcFlag() {
 } // namespace zSys
 #endif
 
-#include "GameZRecoil/zSys/zSys_cpu_detect.inl"
+#include "GameZRecoil/zSys/zsys_cpu_detect.inl"
 
 #if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZSYS_CPU_RAW_ASM)
-/*
+/**
  * The VC5 raw-assembly profile keeps this timing probe as assembly because the
  * BSF busy-loop opcode placement and thiscall-shaped ECX input are part of the
  * recovered retail source contract. The portable branch below is the native
@@ -647,7 +649,7 @@ zSys::CpuBenchmarkResult * CpuBenchmarkResolver::MeasureMhzViaBsfLoop_Qpc(
 #endif
 
 #if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZSYS_CPU_RAW_ASM)
-/*
+/**
  * The VC5 raw-assembly profile keeps this timing probe as assembly because the
  * RDTSC/QPC sampling loop, thread-priority calls, and convergence arithmetic
  * are byte-verified in their original register and stack shape. The portable
@@ -1031,7 +1033,7 @@ zSys::CpuBenchmarkResult * CpuBenchmarkResolver::MeasureCpuMhz_RdtscQpc(
 #endif
 
 #if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZSYS_CPU_RAW_ASM)
-/*
+/**
  * The VC5 raw-assembly profile keeps the CMOS/RTC timing fallback in assembly
  * because the second-rollover loops, ReadTsc64/Sub64 call shape, and fixed-point
  * scaling sequence are byte-verified with the rest of the zSys CPU resolver.
@@ -1338,7 +1340,7 @@ int zCpu::HasMmxSupport() {
 }
 #endif
 
-#include "GameZRecoil/zSys/zSys_cpu_get_class.inl"
+#include "GameZRecoil/zSys/zsys_cpu_get_class.inl"
 
 /**
  * Reimplements 0x4b31c0: zSys::GetCpuMhz.
@@ -1389,3 +1391,5 @@ void __fastcall zSys::ExitProcessWithCleanup(
     __assume(0);
 #endif
 }
+
+#include "GameZRecoil/zSys/zsys_zloc_impl.h"

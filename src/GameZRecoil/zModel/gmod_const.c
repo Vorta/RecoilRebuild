@@ -1,7 +1,7 @@
-#include "GameZRecoil/zModel/zModel.h"
+#include "GameZRecoil/zModel/gmod.h"
 
-#include "GameZRecoil/zError/zError.h"
-#include "GameZRecoil/zVideo/zVideo.h"
+#include "GameZRecoil/zError/zerr.h"
+#include "GameZRecoil/zVideo/zvid.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -204,6 +204,9 @@ namespace {
         );
     }
 }
+
+#include "GameZRecoil/zModel/gdi_impl_body.h"
+#include "GameZRecoil/zModel/zutil_impl_body.h"
 
 /**
  * Reimplements data 0x4e1398: g_zModel_ConstVertexMergeEpsilon.

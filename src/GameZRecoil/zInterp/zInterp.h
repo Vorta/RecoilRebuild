@@ -1,7 +1,7 @@
 #pragma once
 
-#include "GameZRecoil/include/zClipRect.h"
-#include "GameZRecoil/include/zDi.h"
+#include "GameZRecoil/include/zclip_rect.h"
+#include "GameZRecoil/include/zdi.h"
 #include "recoil/recoil_callconv.h"
 #include "recoil/recoil_types.h"
 

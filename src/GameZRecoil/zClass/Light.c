@@ -1,12 +1,12 @@
-#include "zClass.h"
+#include "zclass.h"
 
-#include "GameZRecoil/include/OptCatalog.h"
-#include "GameZRecoil/zError/zError.h"
-#include "GameZRecoil/zMath/zMath.h"
-#include "GameZRecoil/zModel/zModel.h"
-#include "GameZRecoil/zRndr/zRndr.h"
-#include "GameZRecoil/zVideo/zVideo.h"
-#include "zDi.h"
+#include "GameZRecoil/include/opt_catalog.h"
+#include "GameZRecoil/zError/zerr.h"
+#include "GameZRecoil/zMath/zmth.h"
+#include "GameZRecoil/zModel/gmod.h"
+#include "GameZRecoil/zRndr/zrndr.h"
+#include "GameZRecoil/zVideo/zvid.h"
+#include "zdi.h"
 
 #include <stdio.h>
 #include <stdlib.h>

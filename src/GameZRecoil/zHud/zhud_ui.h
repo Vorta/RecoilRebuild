@@ -6,13 +6,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "Battlesport/RecoilApp.h"
-#include "GameZRecoil/RecoilApp/RecoilStateDialogHost.h"
-#include "GameZRecoil/zReader/zReader.h"
-#include "GameZRecoil/zVideo/zVideo.h"
-#include "GameZRecoil/zInput/zInput.h"
+#include "Battlesport/recoil_app.h"
+#include "GameZRecoil/RecoilApp/recoil_state_dialog_host.h"
+#include "GameZRecoil/zReader/zreader.h"
+#include "GameZRecoil/zVideo/zvid.h"
+#include "GameZRecoil/zInput/zinput.h"
 #include "recoil/recoil_callconv.h"
-#include "zClipAlt.h"
+#include "zclip_alt.h"
 
 #include <windows.h>
 
@@ -721,8 +721,8 @@ struct HudUiBackgroundCursorWidget : HudUiWidget {
         int captureEnabled
     );
     ~HudUiBackgroundCursorWidget();
-    void SetImageByPathOwnedAndRefresh(const char *imagePath);
-    void SetImageBorrowedAndRefreshIfChanged(zVidImagePartial *image);
+    virtual void SetImageBorrowedAndRefreshIfChanged(zVidImagePartial *image);
+    virtual void SetImageByPathOwnedAndRefresh(const char *imagePath);
     void SetImageOwnedAndRefresh(int captureEnabled);
     void SetImageBorrowedAndRefresh();
     void SetPos(
@@ -751,16 +751,18 @@ struct HudUiBackgroundVideoWidget : HudUiElement {
     void Update(float deltaSeconds);
     void Draw();
     void DrawBase();
-    void RebuildBltRect();
+    virtual void RebuildBltRect();
 };
 
 struct HudUiBackgroundMemberCursorWidget : HudUiBackgroundCursorWidget {
     /**
- * Original-source helper; no standalone retail function exists.
- * Evidence: recovered in the HUD source cluster near address-backed 0x4bc480 HudUiCircle::HudUiCircle callers.
- * Purpose: preserve the recovered HUD behavior for HudUiBackgroundMemberCursorWidget.
- */
-HudUiBackgroundMemberCursorWidget(
+     * Original-source helper; no standalone retail function exists.
+     * Evidence: observed in HudUiBackground construction at 0x4b9540 for the
+     * cursorWidget member at offset 0x44.
+     * Purpose: construct the background cursor member through the recovered base
+     * cursor-widget constructor.
+     */
+    HudUiBackgroundMemberCursorWidget(
         const char *imagePath,
         int captureEnabled
     ) : HudUiBackgroundCursorWidget(
@@ -1048,7 +1050,7 @@ struct HudUiFillBitmap : HudUiZrdWidget {
     );
     void UpdateNormalizedFromCursor();
     void SetNormalizedValue(float value);
-    void SetNormalizedValueAndRebuild(float value);
+    virtual void SetNormalizedValueAndRebuild(float value);
 };
 
 struct HudUiZrdWidgetEx17C_Item : HudUiZrdWidget {
@@ -2242,7 +2244,6 @@ struct HudUiCompositePanel : HudUiPanel {
      * constructor instead of a default construction plus later body call.
      */
     HudUiCompositePanel(int entryCount);
-    HudUiCompositePanel * ConstructorWithEntryCount(int entryCount);
     virtual void SetPos(
         int x,
         int y
@@ -2336,12 +2337,12 @@ struct HudUiBackground : HudUiBackgroundContainer {
     virtual void SetEnabled(int enabled);
     unsigned char __fastcall BindButtonsNodeToWidgetByName(
         zReader::Node *parentNode,
-        HudUiZrdWidget *widget,
+        HudUiWidget *widget,
         const char *name
     );
     int BindWidgetByName(
         zReader::Node *loadedSectionNode,
-        HudUiZrdWidget *widget,
+        HudUiWidget *widget,
         const char *name
     );
     int BindPrimitiveNodeToElement(
@@ -2351,7 +2352,6 @@ struct HudUiBackground : HudUiBackgroundContainer {
     );
     void FreeLoadedTreeRoots(int unused);
     virtual HudUiBackground * ScalarDeletingDestructor(unsigned int flags);
-    void Update(float deltaSeconds);
 };
 
 struct HudCmdSimpleWidget : HudUiZrdWidget {

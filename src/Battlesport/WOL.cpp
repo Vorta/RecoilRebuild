@@ -1,0 +1,46 @@
+#define kWestwoodOnlineUpgradeProgressDialogResourceId \
+    kWestwoodOnlineUpgradeApi_ProgressDialogResourceId
+#define kWestwoodOnlineUpgradeProgressStatusControlId \
+    kWestwoodOnlineUpgradeApi_ProgressStatusControlId
+#include "Battlesport/wol_api_body.h"
+#undef kWestwoodOnlineUpgradeProgressDialogResourceId
+#undef kWestwoodOnlineUpgradeProgressStatusControlId
+
+#define kWestwoodOnlineUpgradeBrowseRecordListId \
+    kWestwoodOnlineUpgradeApiEventSink_BrowseRecordListId
+#define kWestwoodOnlineUpgradeSessionResultsListId \
+    kWestwoodOnlineUpgradeApiEventSink_SessionResultsListId
+#include "Battlesport/wol_api_event_sink_body.h"
+#undef kWestwoodOnlineUpgradeBrowseRecordListId
+#undef kWestwoodOnlineUpgradeSessionResultsListId
+
+#include "Battlesport/wol_ref_count_and_lock_body.h"
+
+#define kMfcMessageMapSigVoid \
+    kWestwoodOnlineUpgradeConfigDialog_MfcMessageMapSigVoid
+#include "Battlesport/wol_config_dialog_body.h"
+#undef kMfcMessageMapSigVoid
+
+#define kMfcMessageMapSigVoid \
+    kWestwoodOnlineUpgradeDialog_MfcMessageMapSigVoid
+#define kWestwoodOnlineUpgradeBrowseRecordListId \
+    kWestwoodOnlineUpgradeDialog_BrowseRecordListId
+#define kWestwoodOnlineUpgradeProgressDialogResourceId \
+    kWestwoodOnlineUpgradeDialog_ProgressDialogResourceId
+#define kWestwoodOnlineUpgradeProgressStatusControlId \
+    kWestwoodOnlineUpgradeDialog_ProgressStatusControlId
+#define kWestwoodOnlineUpgradeSessionResultsListId \
+    kWestwoodOnlineUpgradeDialog_SessionResultsListId
+#include "Battlesport/wol_dialog_body.h"
+#undef kMfcMessageMapSigVoid
+#undef kWestwoodOnlineUpgradeBrowseRecordListId
+#undef kWestwoodOnlineUpgradeProgressDialogResourceId
+#undef kWestwoodOnlineUpgradeProgressStatusControlId
+#undef kWestwoodOnlineUpgradeSessionResultsListId
+
+#define kWestwoodOnlineUpgradeProgressDialogResourceId \
+    kWestwoodOnlineUpgradeProgressDialog_ResourceId
+#include "Battlesport/wol_progress_dialog_body.h"
+#undef kWestwoodOnlineUpgradeProgressDialogResourceId
+
+#include "Battlesport/wol_download_body.h"

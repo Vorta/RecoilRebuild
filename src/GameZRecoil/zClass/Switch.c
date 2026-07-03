@@ -1,6 +1,6 @@
-#include "GameZRecoil/include/zClass.h"
-#include "GameZRecoil/zMath/zMath.h"
-#include "GameZRecoil/zVideo/zVideo.h"
+#include "GameZRecoil/include/zclass.h"
+#include "GameZRecoil/zMath/zmth.h"
+#include "GameZRecoil/zVideo/zvid.h"
 
 extern "C" {
 /**

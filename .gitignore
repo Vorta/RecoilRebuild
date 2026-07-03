@@ -20,6 +20,7 @@ resources/raw/
 *.7z
 *.zip
 *.zbd
+.devspace/
 
 # Build output and generated verification artifacts
 build/

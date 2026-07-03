@@ -1,14 +1,14 @@
-#include "Battlesport/Briefing.h"
+#include "Battlesport/briefing.h"
 
-#include "Battlesport/HudSensorTracker.h"
-#include "GameZRecoil/Time/Time.h"
-#include "GameZRecoil/zError/zError.h"
-#include "GameZRecoil/zGame/zGame.h"
+#include "Battlesport/hud_sensor_tracker.h"
+#include "GameZRecoil/Time/time.h"
+#include "GameZRecoil/zError/zerr.h"
+#include "GameZRecoil/zGame/zgame.h"
 #include "GameZRecoil/zHud/zhud_ui.h"
-#include "GameZRecoil/zInput/zInput.h"
-#include "GameZRecoil/zLoc/zLoc.h"
-#include "GameZRecoil/zSound/zSound.h"
-#include "GameZRecoil/zVideo/zVideo.h"
+#include "GameZRecoil/zInput/zinput.h"
+#include "GameZRecoil/zLoc/zloc.h"
+#include "GameZRecoil/zSound/zsnd.h"
+#include "GameZRecoil/zVideo/zvid.h"
 
 #include <windows.h>
 
@@ -32,15 +32,43 @@ struct BriefingActionElementTarget : BriefingAction {
 };
 
 struct BriefingActionHideElement : BriefingActionElementTarget {
+    /**
+     * Original inline constructor; no standalone retail function exists.
+     * Observed in caller 0x4045b0 as the hide-element action allocation path.
+     * Purpose: bind a hide action to the queued briefing UI element.
+     */
+    BriefingActionHideElement(HudUiElement *element) {
+        target = element;
+    }
+
     int Tick(float deltaSec);
 };
 
 struct BriefingActionShowElement : BriefingActionElementTarget {
+    /**
+     * Original inline constructor; no standalone retail function exists.
+     * Observed in caller 0x404640 as the show-element action allocation path.
+     * Purpose: bind a show action to the queued briefing UI element.
+     */
+    BriefingActionShowElement(HudUiElement *element) {
+        target = element;
+    }
+
     int Tick(float deltaSec);
 };
 
 struct BriefingActionFadeInElement : BriefingActionElementTarget {
     float alpha;
+
+    /**
+     * Original inline constructor; no standalone retail function exists.
+     * Observed in caller 0x4046d0 as the fade-in action allocation path.
+     * Purpose: bind a fade action to the target element and start alpha at zero.
+     */
+    BriefingActionFadeInElement(HudUiElement *element)
+        : alpha(0.0f) {
+        target = element;
+    }
 
     int Tick(float deltaSec);
 };
@@ -49,6 +77,24 @@ struct BriefingActionSetPanelText : BriefingAction {
     char text[0x100];
     HudUiPanel *target;
 
+    /**
+     * Original inline constructor; no standalone retail function exists.
+     * Observed in caller 0x404780 as the panel-text action allocation path.
+     * Purpose: copy the queued text, bind the target panel, and hide it until Tick.
+     */
+    BriefingActionSetPanelText(
+        const char *textValue,
+        HudUiPanel *panel
+    ) {
+        strncpy(
+            text,
+            textValue,
+            sizeof(text)
+        );
+        target = panel;
+        panel->SetVisible(0);
+    }
+
     int Tick(float deltaSec);
 };
 
@@ -56,6 +102,21 @@ struct BriefingActionSetWidgetImageTimed : BriefingAction {
     zVidImagePartial *imageRef;
     HudUiWidget *target;
     float timer;
+
+    /**
+     * Original inline constructor; no standalone retail function exists.
+     * Observed in caller 0x4048a0 as the timed-image action allocation path.
+     * Purpose: bind the image/widget action, hide the widget, and seed its timer.
+     */
+    BriefingActionSetWidgetImageTimed(
+        zVidImagePartial *imageRefValue,
+        HudUiWidget *widget
+    ) {
+        imageRef = imageRefValue;
+        target = widget;
+        widget->SetVisible(0);
+        timer = 1.0f;
+    }
 
     int Tick(float deltaSec);
 };
@@ -66,11 +127,41 @@ struct BriefingActionPlaySample : BriefingAction {
     int useVariant;
     int variantIndex;
 
+    /**
+     * Original inline constructor; no standalone retail function exists.
+     * Observed in caller 0x4049d0 as the sample-play action allocation path.
+     * Purpose: copy the queued sample request and playback variant state.
+     */
+    BriefingActionPlaySample(
+        const char *sampleNameValue,
+        float gainValue,
+        int useVariantValue,
+        int progressId
+    ) {
+        strncpy(
+            sampleName,
+            sampleNameValue,
+            sizeof(sampleName)
+        );
+        gain = gainValue;
+        useVariant = useVariantValue;
+        variantIndex = progressId;
+    }
+
     int Tick(float deltaSec);
 };
 
 struct BriefingActionDelayUntilProgress : BriefingAction {
     float requiredProgress;
+
+    /**
+     * Original inline constructor; no standalone retail function exists.
+     * Observed in caller 0x404b40 as the progress-delay action allocation path.
+     * Purpose: convert the required progress event id into the queued threshold.
+     */
+    BriefingActionDelayUntilProgress(int progressId)
+        : requiredProgress((float)(progressId)) {
+    }
 
     int Tick(float deltaSec);
 };
@@ -138,7 +229,7 @@ RECOIL_STATIC_ASSERT(sizeof(BriefingActionDelayUntilProgress) == 0x08);
  */
 inline Briefing_ActionQueue *BriefingActionQueue(
     HudUiBriefingRuntime *runtime
-) {
+    ) {
     return &runtime->actionQueue;
 }
 
@@ -287,8 +378,8 @@ inline Briefing_ActionQueue::Briefing_ActionQueue(
 ) {
     missionId = (unsigned char)(missionIdValue);
     BriefingActionNode *const sentinel = new BriefingActionNode;
-    sentinel->prev = sentinel;
     sentinel->next = sentinel;
+    sentinel->prev = sentinel;
     headSentinel = sentinel;
     nodeCount = 0;
     sequenceActive = 0;
@@ -307,9 +398,9 @@ inline Briefing_ActionQueue::~Briefing_ActionQueue() {
     }
 
     while (nodeCount > 0) {
-        BriefingActionNode *const previous = node->prev;
-        delete previous->action;
-        delete previous;
+        BriefingActionNode *const next = node->next;
+        delete next->action;
+        delete next;
         --nodeCount;
     }
 
@@ -337,6 +428,33 @@ inline HudUiBriefingObjectivePicture::HudUiBriefingObjectivePicture()
     : HudUiWidget(0) {
     noiseAlpha = 0.0f;
     Invalidate();
+}
+
+/**
+ * Reimplements 0x4038a0: HudUiBriefingObjectivePicture::DrawWithNoiseOverlay.
+ * BN names this slot target DrawWithNoiseOverlay; the vtable slot is the
+ * HudUiWidget::Draw override for the briefing objective picture.
+ * Purpose: draw the objective picture and overlay transition noise while active.
+ */
+void HudUiBriefingObjectivePicture::Draw() {
+    HudUiWidget::Draw();
+    if (noiseAlpha <= 0.0) {
+        return;
+    }
+
+    zVidRect32 rect;
+    rect.left = GetCenterX();
+    rect.top = GetCenterY();
+    const zVidImagePartial *image = this->image;
+    const int imageWidth = image != 0 ? image->width : 0;
+    rect.right = GetCenterX() + imageWidth;
+    image = this->image;
+    const int imageHeight = image != 0 ? image->height : 0;
+    rect.bottom = GetCenterY() + imageHeight;
+    zVid::DrawNoiseRect(
+        &rect,
+        noiseAlpha
+    );
 }
 
 /**
@@ -481,68 +599,6 @@ HudUiBriefingRuntime * HudUiBriefingRuntime::Constructor(
 }
 
 /**
- * Reimplements 0x403ed0: HudUiBriefingRuntime::Destructor.
- * Original source path: D:\Proj\Battlesport\Briefing.cpp.
- * Purpose: tear down briefing UI children, queued actions, and the background base.
- */
-void HudUiBriefingRuntime::Destructor() {
-    SetEnabled(0);
-    for (int index = 5; index >= 0; --index) {
-        locatorPanels[index].~HudUiBriefingLocatorPanel();
-    }
-
-    messagesPanel.entryVector.Clear();
-
-    ((HudUiPanel *)(&messagesPanel))->~HudUiPanel();
-    transmissionHalted.~HudUiPanel();
-    objectivePicture.DestructorCore();
-    objectiveDesc.~HudUiPanel();
-    objectiveSummary.~HudUiPanel();
-    missionName.~HudUiPanel();
-    transportProgress.DestructorCore();
-
-    BriefingActionNode *const head = actionQueue.headSentinel;
-    BriefingActionNode *node = head->prev;
-    while (node != head) {
-        BriefingActionNode *const prev = node->prev;
-        node->next->prev = node->prev;
-        node->prev->next = node->next;
-        ::operator delete(node);
-        --actionQueue.nodeCount;
-        node = prev;
-    }
-    ::operator delete(head);
-
-    actionQueue.headSentinel = 0;
-    actionQueue.nodeCount = 0;
-    this->HudUiBackground::~HudUiBackground();
-}
-
-/**
- * Reimplements 0x4038a0: HudUiBriefingObjectivePicture::DrawWithNoiseOverlay.
- * BN names this slot target DrawWithNoiseOverlay; the vtable slot is the
- * HudUiWidget::Draw override for the briefing objective picture.
- * Purpose: draw the objective picture and overlay transition noise while active.
- */
-void HudUiBriefingObjectivePicture::Draw() {
-    HudUiWidget::Draw();
-    if (noiseAlpha <= 0.0) {
-        return;
-    }
-
-    zVidRect32 rect;
-    rect.left = GetCenterX();
-    rect.top = GetCenterY();
-    const zVidImagePartial *const image = this->image;
-    rect.right = rect.left + (image != 0 ? image->width : 0);
-    rect.bottom = rect.top + (image != 0 ? image->height : 0);
-    zVid::DrawNoiseRect(
-        &rect,
-        noiseAlpha
-    );
-}
-
-/**
  * Reimplements 0x403c10: HudUiBriefingLocatorPanel::HudUiBriefingLocatorPanel.
  * Original file: D:\Proj\Battlesport\Briefing.cpp.
  * Purpose: construct a briefing locator circle with the original red marker style.
@@ -557,8 +613,18 @@ HudUiBriefingLocatorPanel::HudUiBriefingLocatorPanel()
             0,
             0
         ))
-    ) {
-    SetVisible(0);
+) {
+    HudUiBriefingLocatorPanel *const locatorPanel = this;
+    locatorPanel->SetVisible(0);
+}
+
+/**
+ * Reimplements 0x403c80: HudUiCircle::DrawDirtyForwarder.
+ * Original file: D:\Proj\Battlesport\Briefing.cpp.
+ * Purpose: route the briefing table dispatch slot to HudUiCircle::Draw.
+ */
+void HudUiCircle::DrawDirtyForwarder() {
+    HudUiCircle::Draw();
 }
 
 /**
@@ -595,22 +661,28 @@ void HudUiBriefingLocatorPanel::DrawBase() {
 void HudUiBriefingLocatorPanel::Update(
     float deltaSec
 ) {
-    if ((flags & 0x10) == 0) {
+    unsigned int currentFlags = flags;
+    if ((~currentFlags & 0x10) == 0) {
         return;
     }
 
-    clipRect.left = GetCenterX() - radius;
-    clipRect.top = GetCenterY() - radius;
-    clipRect.right = GetCenterX() + radius + 1;
-    clipRect.bottom = GetCenterY() + radius + 1;
+    int currentRadius = radius;
+    clipRect.left = GetCenterX() - currentRadius;
+    currentRadius = radius;
+    clipRect.top = GetCenterY() - currentRadius;
+    currentRadius = radius;
+    clipRect.right = GetCenterX() + currentRadius + 1;
+    currentRadius = radius;
+    clipRect.bottom = GetCenterY() + currentRadius + 1;
 
-    if (radius > 3) {
+    currentRadius = radius;
+    if (currentRadius > 3) {
         float radiusStep = deltaSec * 20.0;
         if (radiusStep < 1.0) {
             radiusStep = 1.0f;
         }
 
-        const int newRadius = radius - (int)(radiusStep);
+        const int newRadius = currentRadius - (int)(radiusStep);
         radius = newRadius;
         radiusSquared = newRadius * newRadius;
     }
@@ -625,294 +697,139 @@ void HudUiBriefingLocatorPanel::Update(
 }
 
 /**
- * Original inline helper; no standalone retail function exists.
- * Observed in callers 0x4045b0, 0x404640, 0x4046d0, 0x404780,
- * 0x4048a0, 0x4049d0, and 0x404b40.
- * Evidence: BN shows each Add* helper allocating an action record, then
- * linking one 0x0c-byte queue node at the action-queue sentinel.
- * Purpose: insert one action at the tail sentinel and return the updated queue count.
+ * Reimplements 0x403d90: HudUiBriefingRuntime::ScalarDeletingDestructor.
+ * Original source path: D:\Proj\Battlesport\Briefing.cpp.
+ * Purpose: run briefing runtime destruction and optionally free the object storage.
  */
-inline int Briefing_ActionQueue::InsertAction(
-    BriefingAction *action
+HudUiBackground * HudUiBriefingRuntime::ScalarDeletingDestructor(
+    unsigned int flags
 ) {
-    BriefingActionNode *const head = headSentinel;
-    BriefingActionNode *const next = head->next;
-    BriefingActionNode *const node = new BriefingActionNode;
-    node->prev = head;
-    node->next = next;
-    head->next = node;
-    node->next->prev = node;
-    node->action = action;
-
-    ++nodeCount;
-    return nodeCount;
-}
-
-/**
- * Reimplements 0x404620: BriefingAction_HideElement::Tick.
- * Purpose: hide a queued briefing UI element and complete the action.
- */
-int BriefingActionHideElement::Tick(
-    float
-) {
-    target->SetVisible(0);
-    return 1;
-}
-
-/**
- * Reimplements 0x4046b0: BriefingAction_ShowElement::Tick.
- * Purpose: show and invalidate a queued briefing UI element.
- */
-int BriefingActionShowElement::Tick(
-    float
-) {
-    target->SetVisible(1);
-    target->Invalidate();
-    return 1;
-}
-
-/**
- * Reimplements 0x404740: BriefingAction_FadeInElement::Tick.
- * Purpose: advance the objective picture fade/noise effect until it completes.
- */
-int BriefingActionFadeInElement::Tick(
-    float
-) {
-    alpha += 0.5f;
-
-    HudUiBriefingObjectivePicture *const widget = (HudUiBriefingObjectivePicture *)(target);
-    widget->noiseAlpha = alpha;
-    widget->Invalidate();
-
-    return alpha >= 1.0f ? 1 : 0;
-}
-
-/**
- * Reimplements 0x404850: BriefingAction_SetPanelText::Tick.
- * Purpose: apply queued text to a briefing panel and make it visible.
- */
-int BriefingActionSetPanelText::Tick(
-    float
-) {
-    target->SetTextFmt(text);
-    target->UpdateTextBoundsFromContent();
-    target->SetVisible(1);
-    target->Invalidate();
-    return 1;
-}
-
-/**
- * Reimplements 0x404960: BriefingAction_SetWidgetImageTimed::Tick.
- * Purpose: install an objective image and advance its timed noise transition.
- */
-int BriefingActionSetWidgetImageTimed::Tick(
-    float
-) {
-    target->DrawBase();
-    target->SetImageBorrowedAndInvalidate(imageRef);
-    target->RebuildBltRectFromImage();
-    target->SetVisible(1);
-    ((HudUiBriefingObjectivePicture *)(target))->noiseAlpha = timer;
-    target->Invalidate();
-
-    timer -= 0.5f;
-    return timer < 0.0f ? 1 : 0;
-}
-
-/**
- * Reimplements 0x404aa0: BriefingAction_PlaySample::Tick.
- * Purpose: stop any current briefing voice sample and start the queued sample.
- */
-int BriefingActionPlaySample::Tick(
-    float
-) {
-    if (g_Briefing_CurrentSndHandle != 0) {
-        g_Briefing_CurrentSndHandle->StopIfActive();
+    Destructor();
+    if ((flags & 1u) != 0) {
+        ::operator delete(this);
     }
 
-    zSndSample *const sample = zSnd::FindSampleByName(sampleName);
-    if (sample == 0) {
-        if (useVariant != 0) {
-            g_Briefing_ProgressEventCode = 0x3e7;
+    return this;
+}
+
+/**
+ * Reimplements 0x403e20: HudUiCompositePanel::Destructor.
+ * Physical source block: D:\Proj\Battlesport\Briefing.cpp.
+ * Purpose: destroy composite-panel entries, free vector storage, and tear down
+ * the inherited panel state.
+ */
+void HudUiCompositePanel::Destructor() {
+    for (HudUiCompositePanelEntry *entry = entryVector.begin; entry != entryVector.end; ++entry) {
+        entry->panel.ScalarDeletingDestructor(0);
+    }
+
+    ::operator delete(entryVector.begin);
+    entryVector.begin = 0;
+    entryVector.end = 0;
+    entryVector.capacityEnd = 0;
+
+    HudUiPanel::~HudUiPanel();
+}
+
+/**
+ * Reimplements 0x403ed0: HudUiBriefingRuntime::Destructor.
+ * Original source path: D:\Proj\Battlesport\Briefing.cpp.
+ * Purpose: tear down briefing UI children, queued actions, and the background base.
+ */
+void HudUiBriefingRuntime::Destructor() {
+    SetEnabled(0);
+    for (int index = 5; index >= 0; --index) {
+        locatorPanels[index].~HudUiBriefingLocatorPanel();
+    }
+
+    messagesPanel.entryVector.Clear();
+
+    ((HudUiPanel *)(&messagesPanel))->~HudUiPanel();
+    transmissionHalted.~HudUiPanel();
+    objectivePicture.DestructorCore();
+    objectiveDesc.~HudUiPanel();
+    objectiveSummary.~HudUiPanel();
+    missionName.~HudUiPanel();
+    transportProgress.DestructorCore();
+
+    BriefingActionNode *const head = actionQueue.headSentinel;
+    BriefingActionNode *node = head->next;
+    while (node != head) {
+        BriefingActionNode *const next = node->next;
+        node->prev->next = node->next;
+        node->next->prev = node->prev;
+        ::operator delete(node);
+        --actionQueue.nodeCount;
+        node = next;
+    }
+    ::operator delete(head);
+
+    actionQueue.headSentinel = 0;
+    actionQueue.nodeCount = 0;
+    this->HudUiBackground::~HudUiBackground();
+}
+
+/**
+ * Reimplements 0x404070: HudUiBriefingRuntime::Update.
+ * Original source path: D:\Proj\Battlesport\Briefing.cpp.
+ * Purpose: tick queued briefing actions, invalidate briefing panels, and update the background UI.
+ */
+void HudUiBriefingRuntime::Update(
+    float deltaSec
+) {
+    Briefing_ActionQueue *const actionQueue = BriefingActionQueue(this);
+    if (actionQueue->sequenceActive != 0) {
+        BriefingActionNode *const currentNode = actionQueue->currentNode;
+        BriefingActionNode *const headSentinel = actionQueue->headSentinel;
+        bool sequenceComplete = (currentNode == headSentinel);
+        if (!sequenceComplete) {
+            if (currentNode->action->Tick(deltaSec) != 0) {
+                actionQueue->currentNode = actionQueue->currentNode->next;
+            }
         }
 
-        return 1;
+        if (sequenceComplete) {
+            g_Briefing_AllowAdvanceFlag = 0;
+        }
     }
 
-    if (useVariant == 0) {
-        g_Briefing_CurrentSndHandle = sample->PlayA3DSimple(gain);
-        return 1;
-    }
-
-    sample->SetPlaybackEventHandler(Briefing::SampleEventCallback);
-    g_Briefing_CurrentSndHandle = sample->PlayDirectSound(
-        variantIndex,
-        gain,
-        0x3e7
-    );
-    return 1;
+    BriefingObjectivePicture(this)->Invalidate();
+    BriefingTransmissionHaltedPanel(this)->Invalidate();
+    BriefingMissionNamePanel(this)->Invalidate();
+    transportProgress.Invalidate();
+    BriefingObjectiveSummaryPanel(this)->Invalidate();
+    BriefingObjectiveDescPanel(this)->Invalidate();
+    HudUiBackgroundContainer::UpdateAll(deltaSec);
 }
 
 /**
- * Reimplements 0x404bb0: BriefingAction_DelayUntilProgress::Tick.
- * Purpose: wait until sample progress reaches the queued briefing progress id.
+ * Reimplements 0x404140: zInput_WaitForAnyKeyPressWithTimeoutMs.
+ * Original source path: D:\Proj\Battlesport\Briefing.cpp.
+ * Purpose: poll keyboard input in 100 ms Sleep slices until a key arrives or
+ * the caller's timeout budget expires.
  */
-int BriefingActionDelayUntilProgress::Tick(
-    float
+extern "C" int __fastcall zInput_WaitForAnyKeyPressWithTimeoutMs(
+    int timeoutMs
 ) {
-    return (float)(g_Briefing_ProgressEventCode) >= requiredProgress ? 1 : 0;
-}
+    int result = 0;
+    int remainingMs = timeoutMs;
+    if (timeoutMs > 0) {
+        void (WINAPI *const sleepProc)(DWORD) = Sleep;
+        while (remainingMs > 0) {
+            if (zInput::Keyboard_WaitForAnyKeyPress(0) != 0) {
+                result = 1;
+                break;
+            }
 
-/**
- * Reimplements 0x4045b0: Briefing_ActionQueue::AddHideElement.
- * Purpose: enqueue an action that hides one briefing UI element.
- */
-int Briefing_ActionQueue::AddHideElement(
-    HudUiElement *element
-) {
-    BriefingActionHideElement *const action = new BriefingActionHideElement;
-    if (action != 0) {
-        action->target = element;
+            sleepProc(100);
+            remainingMs -= 100;
+        }
     }
 
-    return InsertAction(action);
-}
-
-/**
- * Reimplements 0x404640: Briefing_ActionQueue::AddShowElement.
- * Purpose: enqueue an action that shows one briefing UI element.
- */
-int Briefing_ActionQueue::AddShowElement(
-    HudUiElement *element
-) {
-    BriefingActionShowElement *const action = new BriefingActionShowElement;
-    if (action != 0) {
-        action->target = element;
-    }
-
-    return InsertAction(action);
-}
-
-/**
- * Reimplements 0x4046d0: Briefing_ActionQueue::AddFadeInElement.
- * Purpose: enqueue an objective picture fade-in action.
- */
-int Briefing_ActionQueue::AddFadeInElement(
-    HudUiElement *element
-) {
-    BriefingActionFadeInElement *const action = new BriefingActionFadeInElement;
-    if (action != 0) {
-        action->target = element;
-        action->alpha = 0.0f;
-    }
-
-    return InsertAction(action);
-}
-
-/**
- * Reimplements 0x404780: Briefing_ActionQueue::AddSetPanelText.
- * Purpose: enqueue text replacement for a briefing panel.
- */
-int Briefing_ActionQueue::AddSetPanelText(
-    const char *text,
-    HudUiPanel *panel
-) {
-    BriefingActionSetPanelText *const action = new BriefingActionSetPanelText;
-    if (action != 0) {
-        strncpy(
-            action->text,
-            text,
-            sizeof(action->text)
-        );
-        action->target = panel;
-        panel->SetVisible(0);
-    }
-
-    return InsertAction(action);
-}
-
-/**
- * Reimplements 0x4048a0: Briefing_ActionQueue::AddSetWidgetImageTimed.
- * Purpose: enqueue image replacement for a briefing widget with a timed transition.
- */
-int Briefing_ActionQueue::AddSetWidgetImageTimed(
-    zVidImagePartial *imageRef,
-    HudUiWidget *widget
-) {
-    BriefingActionSetWidgetImageTimed *const action = new BriefingActionSetWidgetImageTimed;
-    if (action != 0) {
-        action->imageRef = imageRef;
-        action->target = widget;
-        widget->SetVisible(0);
-        action->timer = 1.0f;
-    }
-
-    return InsertAction(action);
-}
-
-/**
- * Reimplements 0x4049d0: Briefing_ActionQueue::AddPlaySampleByName.
- * Purpose: enqueue a briefing sample playback request.
- */
-int Briefing_ActionQueue::AddPlaySampleByName(
-    const char *sampleName,
-    float gain,
-    int useVariant,
-    int progressId
-) {
-    BriefingActionPlaySample *const action = new BriefingActionPlaySample;
-    if (action != 0) {
-        strncpy(
-            action->sampleName,
-            sampleName,
-            sizeof(action->sampleName)
-        );
-        action->gain = gain;
-        action->useVariant = useVariant;
-        action->variantIndex = progressId;
-    }
-
-    return InsertAction(action);
-}
-
-/**
- * Reimplements 0x404b40: Briefing_ActionQueue::AddDelayUntilProgress.
- * Purpose: enqueue a wait action tied to the briefing sample progress event.
- */
-int Briefing_ActionQueue::AddDelayUntilProgress(
-    int progressId
-) {
-    BriefingActionDelayUntilProgress *const action = new BriefingActionDelayUntilProgress;
-    if (action != 0) {
-        action->requiredProgress = (float)(progressId);
-    }
-
-    return InsertAction(action);
+    return result;
 }
 
 namespace Briefing {
-/**
- * Reimplements 0x404b30: Briefing::SampleEventCallback.
- * Purpose: record the latest briefing sample progress event code.
- */
-void __fastcall SampleEventCallback(
-    int progressEventCode
-) {
-    g_Briefing_ProgressEventCode = progressEventCode;
-}
-
-/**
- * Reimplements 0x404c80: Briefing::BuildObjectiveActionsGlobal.
- * Purpose: forward the global briefing action-build callback to the active runtime.
- */
-void __fastcall BuildObjectiveActionsGlobal(
-    int objectiveIndex
-) {
-    if (g_Briefing_Runtime != 0) {
-        g_Briefing_Runtime->BuildObjectiveActionsFromIndex(objectiveIndex);
-    }
-}
-
 /**
  * Reimplements 0x404180: Briefing::StartForMission.
  * Original source path: D:\Proj\Battlesport\Briefing.cpp.
@@ -1022,100 +939,7 @@ void ThreadMain(
     g_Briefing_ThreadExitedFlag = 1;
 }
 
-/**
- * Reimplements 0x404bd0: Briefing::StopAndShutdownThread.
- * Original source path: D:\Proj\Battlesport\Briefing.cpp.
- * Purpose: stop the briefing thread and destroy the active briefing runtime.
- */
-void __fastcall StopAndShutdownThread(
-    int waitForInput
-) {
-    if (waitForInput != 0 && g_Briefing_SequenceActiveFlag != 0) {
-        do {
-            if (zInput_WaitForAnyKeyPressWithTimeoutMs(100) != 0) {
-                break;
-            }
-
-            if (g_Briefing_AllowAdvanceFlag == 0) {
-                break;
-            }
-        } while (g_Briefing_SequenceActiveFlag != 0);
-    }
-
-    /**
-     * Reimplements data 0x4e5c64: g_Briefing_ThreadExitedFlag.
-     * Purpose: preserve the pre-stop thread-exit state before clearing the run flag.
-     */
-    const int threadExited = g_Briefing_ThreadExitedFlag;
-    g_Briefing_ThreadRunFlag = 0;
-    if (threadExited == 0) {
-        do {
-            Sleep(100);
-        } while (g_Briefing_ThreadExitedFlag == 0);
-    }
-
-    /**
-     * Reimplements data 0x4e5cb4: g_Briefing_Runtime.
-     * Purpose: destroy and clear the active runtime after the briefing thread has stopped.
-     */
-    HudUiBriefingRuntime *const runtime = g_Briefing_Runtime;
-    if (runtime != 0) {
-        runtime->Destructor();
-        ::operator delete(runtime);
-        g_Briefing_Runtime = 0;
-    }
-
-    g_Briefing_SystemActiveFlag = 0;
-}
-
-/**
- * Reimplements 0x404c50: Briefing::SetProgressAndSleep.
- * Purpose: update the transport progress widget and sleep between progress frames.
- */
-void __stdcall SetProgressAndSleep(
-    float progressValue
-) {
-    if (g_Briefing_Runtime != 0) {
-        HudUiBriefingTransportProgress *const transportProgress =
-            &g_Briefing_Runtime->transportProgress;
-        transportProgress->SetNormalizedValueAndRebuild(progressValue);
-    }
-
-    Sleep(100);
-}
 } // namespace Briefing
-
-/**
- * Reimplements 0x404070: HudUiBriefingRuntime::Update.
- * Original source path: D:\Proj\Battlesport\Briefing.cpp.
- * Purpose: tick queued briefing actions, invalidate briefing panels, and update the background UI.
- */
-void HudUiBriefingRuntime::Update(
-    float deltaSec
-) {
-    Briefing_ActionQueue *const actionQueue = BriefingActionQueue(this);
-    if (actionQueue->sequenceActive != 0) {
-        BriefingActionNode *const currentNode = actionQueue->currentNode;
-        int sequenceComplete = 0;
-        if (currentNode == actionQueue->headSentinel) {
-            sequenceComplete = 1;
-        } else if (currentNode->action->Tick(deltaSec) != 0) {
-            actionQueue->currentNode = actionQueue->currentNode->prev;
-        }
-
-        if (sequenceComplete != 0) {
-            g_Briefing_AllowAdvanceFlag = 0;
-        }
-    }
-
-    BriefingObjectivePicture(this)->Invalidate();
-    BriefingTransmissionHaltedPanel(this)->Invalidate();
-    BriefingMissionNamePanel(this)->Invalidate();
-    transportProgress.Invalidate();
-    BriefingObjectiveSummaryPanel(this)->Invalidate();
-    BriefingObjectiveDescPanel(this)->Invalidate();
-    HudUiBackground::Update(deltaSec);
-}
 
 /**
  * Reimplements 0x404400: Briefing::BuildObjectiveActionsFromIndex.
@@ -1205,6 +1029,324 @@ int HudUiBriefingRuntime::BuildObjectiveActionsFromIndex(
 
     actionQueue->sequenceActive = 1;
     g_Briefing_SequenceActiveFlag = 1;
-    actionQueue->currentNode = actionQueue->headSentinel->prev;
+    actionQueue->currentNode = actionQueue->headSentinel->next;
     return 1;
 }
+
+/**
+ * Original inline helper; no standalone retail function exists.
+ * Observed in callers 0x4045b0, 0x404640, 0x4046d0, 0x404780,
+ * 0x4048a0, 0x4049d0, and 0x404b40.
+ * Evidence: BN shows each Add* helper allocating an action record, then
+ * linking one 0x0c-byte queue node at the action-queue sentinel.
+ * Purpose: insert one action at the tail sentinel and return the updated queue count.
+ */
+inline int Briefing_ActionQueue::InsertAction(
+    BriefingAction *action
+) {
+    BriefingActionNode *const head = headSentinel;
+    BriefingActionNode *const prev = head->prev;
+    BriefingActionNode *const node = new BriefingActionNode;
+    node->next = head != 0 ? head : node;
+    node->prev = prev != 0 ? prev : node;
+    head->prev = node;
+    node->prev->next = node;
+    new (&node->action) BriefingAction *(action);
+
+    ++nodeCount;
+    return nodeCount;
+}
+
+/**
+ * Reimplements 0x4045b0: Briefing_ActionQueue::AddHideElement.
+ * Purpose: enqueue an action that hides one briefing UI element.
+ */
+int Briefing_ActionQueue::AddHideElement(
+    HudUiElement *element
+) {
+    BriefingActionHideElement *const action = new BriefingActionHideElement(element);
+    return InsertAction(action);
+}
+
+/**
+ * Reimplements 0x404620: BriefingAction_HideElement::Tick.
+ * Purpose: hide a queued briefing UI element and complete the action.
+ */
+int BriefingActionHideElement::Tick(
+    float
+) {
+    target->SetVisible(0);
+    return 1;
+}
+
+/**
+ * Reimplements 0x404640: Briefing_ActionQueue::AddShowElement.
+ * Purpose: enqueue an action that shows one briefing UI element.
+ */
+int Briefing_ActionQueue::AddShowElement(
+    HudUiElement *element
+) {
+    BriefingActionShowElement *const action = new BriefingActionShowElement(element);
+    return InsertAction(action);
+}
+
+/**
+ * Reimplements 0x4046b0: BriefingAction_ShowElement::Tick.
+ * Purpose: show and invalidate a queued briefing UI element.
+ */
+int BriefingActionShowElement::Tick(
+    float
+) {
+    target->SetVisible(1);
+    target->Invalidate();
+    return 1;
+}
+
+/**
+ * Reimplements 0x4046d0: Briefing_ActionQueue::AddFadeInElement.
+ * Purpose: enqueue an objective picture fade-in action.
+ */
+int Briefing_ActionQueue::AddFadeInElement(
+    HudUiElement *element
+) {
+    BriefingActionFadeInElement *const action = new BriefingActionFadeInElement(element);
+    return InsertAction(action);
+}
+
+/**
+ * Reimplements 0x404740: BriefingAction_FadeInElement::Tick.
+ * Purpose: advance the objective picture fade/noise effect until it completes.
+ */
+int BriefingActionFadeInElement::Tick(
+    float
+) {
+    HudUiBriefingObjectivePicture *const widget = (HudUiBriefingObjectivePicture *)(target);
+    widget->SetNoiseAlpha(alpha = alpha + 0.5f);
+    widget->Invalidate();
+
+    return alpha >= 1.0 ? 1 : 0;
+}
+
+/**
+ * Reimplements 0x404780: Briefing_ActionQueue::AddSetPanelText.
+ * Purpose: enqueue text replacement for a briefing panel.
+ */
+int Briefing_ActionQueue::AddSetPanelText(
+    const char *text,
+    HudUiPanel *panel
+) {
+    BriefingActionSetPanelText *const action =
+        new BriefingActionSetPanelText(text, panel);
+    return InsertAction(action);
+}
+
+/**
+ * Reimplements 0x404850: BriefingAction_SetPanelText::Tick.
+ * Purpose: apply queued text to a briefing panel and make it visible.
+ */
+int BriefingActionSetPanelText::Tick(
+    float
+) {
+    target->SetTextFmt(text);
+    target->UpdateTextBoundsFromContent();
+    target->SetVisible(1);
+    target->Invalidate();
+    return 1;
+}
+
+/**
+ * Reimplements 0x4048a0: Briefing_ActionQueue::AddSetWidgetImageTimed.
+ * Purpose: enqueue image replacement for a briefing widget with a timed transition.
+ */
+int Briefing_ActionQueue::AddSetWidgetImageTimed(
+    zVidImagePartial *imageRef,
+    HudUiWidget *widget
+) {
+    BriefingActionSetWidgetImageTimed *const action =
+        new BriefingActionSetWidgetImageTimed(imageRef, widget);
+    return InsertAction(action);
+}
+
+/**
+ * Reimplements 0x404960: BriefingAction_SetWidgetImageTimed::Tick.
+ * Purpose: install an objective image and advance its timed noise transition.
+ */
+int BriefingActionSetWidgetImageTimed::Tick(
+    float
+) {
+    target->DrawBase();
+    target->SetImageBorrowedAndInvalidate(imageRef);
+    target->RebuildBltRectFromImage();
+    target->SetVisible(1);
+    HudUiBriefingObjectivePicture *const widget = (HudUiBriefingObjectivePicture *)(target);
+    widget->SetNoiseAlpha(timer);
+    widget->Invalidate();
+
+    timer -= 0.5f;
+    return timer < 0.0 ? 1 : 0;
+}
+
+/**
+ * Reimplements 0x4049d0: Briefing_ActionQueue::AddPlaySampleByName.
+ * Purpose: enqueue a briefing sample playback request.
+ */
+int Briefing_ActionQueue::AddPlaySampleByName(
+    const char *sampleName,
+    float gain,
+    int useVariant,
+    int progressId
+) {
+    BriefingActionPlaySample *const action =
+        new BriefingActionPlaySample(
+            sampleName,
+            gain,
+            useVariant,
+            progressId
+        );
+    return InsertAction(action);
+}
+
+/**
+ * Reimplements 0x404aa0: BriefingAction_PlaySample::Tick.
+ * Purpose: stop any current briefing voice sample and start the queued sample.
+ */
+int BriefingActionPlaySample::Tick(
+    float
+) {
+    if (g_Briefing_CurrentSndHandle != 0) {
+        g_Briefing_CurrentSndHandle->StopIfActive();
+    }
+
+    zSndSample *const sample = zSnd::FindSampleByName(sampleName);
+    if (sample == 0) {
+        if (useVariant != 0) {
+            g_Briefing_ProgressEventCode = 0x3e7;
+        }
+
+        return 1;
+    }
+
+    if (useVariant == 0) {
+        g_Briefing_CurrentSndHandle = sample->PlayA3DSimple(gain);
+        return 1;
+    }
+
+    sample->SetPlaybackEventHandler(Briefing::SampleEventCallback);
+    g_Briefing_CurrentSndHandle = sample->PlayDirectSound(
+        variantIndex,
+        gain,
+        0x3e7
+    );
+    return 1;
+}
+
+namespace Briefing {
+/**
+ * Reimplements 0x404b30: Briefing::SampleEventCallback.
+ * Purpose: record the latest briefing sample progress event code.
+ */
+void __fastcall SampleEventCallback(
+    int progressEventCode
+) {
+    g_Briefing_ProgressEventCode = progressEventCode;
+}
+
+} // namespace Briefing
+
+/**
+ * Reimplements 0x404b40: Briefing_ActionQueue::AddDelayUntilProgress.
+ * Purpose: enqueue a wait action tied to the briefing sample progress event.
+ */
+int Briefing_ActionQueue::AddDelayUntilProgress(
+    int progressId
+) {
+    BriefingActionDelayUntilProgress *const action =
+        new BriefingActionDelayUntilProgress(progressId);
+    return InsertAction(action);
+}
+
+/**
+ * Reimplements 0x404bb0: BriefingAction_DelayUntilProgress::Tick.
+ * Purpose: wait until sample progress reaches the queued briefing progress id.
+ */
+int BriefingActionDelayUntilProgress::Tick(
+    float
+) {
+    return (float)(g_Briefing_ProgressEventCode) >= requiredProgress ? 1 : 0;
+}
+
+namespace Briefing {
+/**
+ * Reimplements 0x404bd0: Briefing::StopAndShutdownThread.
+ * Original source path: D:\Proj\Battlesport\Briefing.cpp.
+ * Purpose: stop the briefing thread and destroy the active briefing runtime.
+ */
+void __fastcall StopAndShutdownThread(
+    int waitForInput
+) {
+    if (waitForInput != 0 && g_Briefing_SequenceActiveFlag != 0) {
+        do {
+            if (zInput_WaitForAnyKeyPressWithTimeoutMs(100) != 0) {
+                break;
+            }
+
+            if (g_Briefing_AllowAdvanceFlag == 0) {
+                break;
+            }
+        } while (g_Briefing_SequenceActiveFlag != 0);
+    }
+
+    /**
+     * Reimplements data 0x4e5c64: g_Briefing_ThreadExitedFlag.
+     * Purpose: preserve the pre-stop thread-exit state before clearing the run flag.
+     */
+    const int threadExited = g_Briefing_ThreadExitedFlag;
+    g_Briefing_ThreadRunFlag = 0;
+    if (threadExited == 0) {
+        do {
+            Sleep(100);
+        } while (g_Briefing_ThreadExitedFlag == 0);
+    }
+
+    /**
+     * Reimplements data 0x4e5cb4: g_Briefing_Runtime.
+     * Purpose: destroy and clear the active runtime after the briefing thread has stopped.
+     */
+    HudUiBriefingRuntime *const runtime = g_Briefing_Runtime;
+    if (runtime != 0) {
+        runtime->Destructor();
+        ::operator delete(runtime);
+        g_Briefing_Runtime = 0;
+    }
+
+    g_Briefing_SystemActiveFlag = 0;
+}
+
+/**
+ * Reimplements 0x404c50: Briefing::SetProgressAndSleep.
+ * Purpose: update the transport progress widget and sleep between progress frames.
+ */
+void __stdcall SetProgressAndSleep(
+    float progressValue
+) {
+    if (g_Briefing_Runtime != 0) {
+        HudUiBriefingTransportProgress *const transportProgress =
+            &g_Briefing_Runtime->transportProgress;
+        transportProgress->SetNormalizedValueAndRebuild(progressValue);
+    }
+
+    Sleep(100);
+}
+/**
+ * Reimplements 0x404c80: Briefing::BuildObjectiveActionsGlobal.
+ * Purpose: forward the global briefing action-build callback to the active runtime.
+ */
+void __fastcall BuildObjectiveActionsGlobal(
+    int objectiveIndex
+) {
+    if (g_Briefing_Runtime != 0) {
+        g_Briefing_Runtime->BuildObjectiveActionsFromIndex(objectiveIndex);
+    }
+}
+
+} // namespace Briefing

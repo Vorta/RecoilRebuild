@@ -19,8 +19,8 @@ struct BriefingAction {
  * thread them through the runtime-owned circular action list.
  */
 struct BriefingActionNode {
-    BriefingActionNode *prev;
     BriefingActionNode *next;
+    BriefingActionNode *prev;
     BriefingAction *action;
 };
 
@@ -89,6 +89,16 @@ struct HudUiBriefingObjectivePicture : HudUiWidget {
 
     HudUiBriefingObjectivePicture();
     void Draw();
+
+    /**
+     * Original inline member helper; no standalone retail function exists.
+     * Observed in caller 0x404960, where VC5 emits an x87 load/store for the
+     * timer-to-noiseAlpha update before the typed virtual Invalidate call.
+     * Purpose: update the briefing picture noise fade value.
+     */
+    void SetNoiseAlpha(float alphaValue) {
+        noiseAlpha = alphaValue;
+    }
 };
 RECOIL_STATIC_ASSERT(offsetof(HudUiBriefingObjectivePicture, noiseAlpha) == 0xbc);
 
@@ -118,6 +128,7 @@ struct HudUiBriefingRuntime : HudUiBackground {
     HudUiBriefingRuntime(int missionId);
     HudUiBriefingRuntime * Constructor(int missionId);
     void Destructor();
+    HudUiBackground * ScalarDeletingDestructor(unsigned int flags);
     int BuildObjectiveActionsFromIndex(int objectiveIndex);
     void Update(float deltaSec);
 };

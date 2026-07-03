@@ -1,9 +1,9 @@
-#include "zSound.h"
+#include "zsnd.h"
 
-#include "GameZRecoil/zError/zError.h"
-#include "GameZRecoil/zGame/zGame.h"
-#include "GameZRecoil/zReader/zReader.h"
-#include "GameZRecoil/zSound/zA3dProvider.h"
+#include "GameZRecoil/zError/zerr.h"
+#include "GameZRecoil/zGame/zgame.h"
+#include "GameZRecoil/zReader/zreader.h"
+#include "GameZRecoil/zSound/zsnd_a3d_provider.h"
 #include "GameZRecoil/zSys/zsys.h"
 
 #include "recoil/recoil_types.h"

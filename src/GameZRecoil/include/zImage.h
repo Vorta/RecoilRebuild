@@ -6,7 +6,7 @@
 #include "recoil/recoil_types.h"
 #include <stddef.h>
 
-#include "GameZRecoil/zVideo/zVideo.h"
+#include "GameZRecoil/zVideo/zvid.h"
 #include "recoil/recoil_callconv.h"
 
 struct zArchiveList;

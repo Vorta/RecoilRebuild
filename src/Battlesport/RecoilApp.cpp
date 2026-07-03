@@ -1,7 +1,9 @@
-#include "Battlesport/RecoilApp.h"
+#include "Battlesport/recoil_app.h"
 
 #include <stdio.h>
 #include <string.h>
+
+#include "Battlesport/recoil_app_std_log_file_literals_body.h"
 
 extern "C" {
 extern HWND g_RecoilApp_hWndMain;
@@ -108,5 +110,9 @@ RECOIL_NO_GS void __fastcall RecoilApp::InitStdLogFiles(
 }
 
 #if !defined(RECOILAPP_LINK_SPLIT_EARLY_SHARD)
-#include "Battlesport/RecoilApp_Late.cpp"
+#include "Battlesport/cz_recoil_frame_body.h"
+#include "Battlesport/game_net_body.h"
+#include "Battlesport/recoil_app_play_state_tick_and_render_frame_body.h"
+#include "Battlesport/recoil_state_main_menu_transition_on_update_should_quit_body.h"
+#include "Battlesport/recoil_app_late_body.h"
 #endif

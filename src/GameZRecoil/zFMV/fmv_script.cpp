@@ -1,14 +1,14 @@
-#include "Battlesport/RecoilApp.h"
-#include "GameZRecoil/include/zImage.h"
-#include "GameZRecoil/zError/zError.h"
+#include "Battlesport/recoil_app.h"
+#include "GameZRecoil/include/zimage.h"
+#include "GameZRecoil/zError/zerr.h"
 #include "GameZRecoil/zFMV/fmv.h"
 #include "GameZRecoil/zHud/zhud_ui.h"
-#include "GameZRecoil/zInput/zInput.h"
-#include "GameZRecoil/zReader/zReader.h"
-#include "GameZRecoil/zRndr/zRndr.h"
-#include "GameZRecoil/zSound/zSound.h"
+#include "GameZRecoil/zInput/zinput.h"
+#include "GameZRecoil/zReader/zreader.h"
+#include "GameZRecoil/zRndr/zrndr.h"
+#include "GameZRecoil/zSound/zsnd.h"
 #include "GameZRecoil/zSys/zsys.h"
-#include "GameZRecoil/zVideo/zVideo.h"
+#include "GameZRecoil/zVideo/zvid.h"
 
 #include <mmsystem.h>
 #include <digitalv.h>
@@ -356,971 +356,10 @@ const char *StringArg(
 
 } // namespace
 
-/**
- * Reimplements 0x415aa0: zFMV_Action::~zFMV_Action.
- * Purpose: provide the shared virtual action destructor.
+/* Source-file block layout: the current native build still compiles this compatibility container.
+ * The included fragment files below hold the ledger physical source rows.
  */
-zFMV_Action::~zFMV_Action() {}
-
-/**
- * Reimplements 0x4159d0: zFMV_Action::Update.
- * Purpose: report immediate completion for action types without update behavior.
- */
-int zFMV_Action::Update(
-    double
-) {
-    return 0;
-}
-
-/**
- * Original inline helper; no standalone retail function exists.
- * Observed in the zFMV_Action virtual slot contract.
- * Purpose: provide the default no-op action start hook.
- */
-void zFMV_Action::Begin(double) {}
-
-/**
- * Original inline helper; no standalone retail function exists.
- * Observed in the zFMV_Action virtual slot contract.
- * Purpose: provide the default no-op action finish hook.
- */
-void zFMV_Action::End() {}
-
-/**
- * Original inline helper; no standalone retail function exists.
- * Observed in the zFMV_Action virtual slot contract.
- * Purpose: dispatch the default timed blocking action runner.
- */
-void zFMV_Action::RunBlocking() {
-    RunBlockingTimed();
-}
-
-/**
- * Reimplements 0x462f00: zFMV_Action::FlipSurfaces.
- * Purpose: restore adjusted video surfaces after an FMV action completes.
- */
-void zFMV_Action::FlipSurfaces() {
-    zVideo::AdjustSurfacesIfEnabled(
-        0,
-        0,
-        1,
-        1
-    );
-}
-
-/**
- * Reimplements 0x462e30: zFMV_Action::RunBlockingImmediate.
- * Purpose: run an action to completion without advancing elapsed time.
- */
-void zFMV_Action::RunBlockingImmediate() {
-    Begin(0.0);
-    while (Update(0.0) != 0) {
-    }
-    End();
-}
-
-/**
- * Reimplements 0x4159e0: zFMV_Action::RunBlockingTimed.
- * Purpose: run an action to completion using elapsed milliseconds from GetTickCount.
- */
-void zFMV_Action::RunBlockingTimed() {
-    const double startSec = (double)(GetTickCount()) * 0.00100000005;
-    Begin(0.0);
-    while (true) {
-        const double currentSec = ((double)(GetTickCount()) * 0.00100000005) - startSec;
-        if (Update(currentSec) == 0) {
-            break;
-        }
-    }
-    End();
-}
-
-/**
- * Reimplements 0x462ed0: zFMV_ActionWait::Begin.
- * Purpose: capture the wait action start time.
- */
-void zFMV_ActionWait::Begin(
-    double timeSec
-) {
-    startSec = (float)(timeSec);
-}
-
-/**
- * Reimplements 0x462ee0: zFMV_ActionWait::Update.
- * Purpose: keep the wait action active until its duration has elapsed.
- */
-int zFMV_ActionWait::Update(
-    double timeSec
-) {
-    return timeSec < (double)(startSec + durationSec) ? 1 : 0;
-}
-
-/**
- * Original inline helper; no standalone retail function exists.
- * Observed in the zFMV_ActionWait virtual slot contract.
- * Purpose: restore FMV surfaces when a wait action completes.
- */
-void zFMV_ActionWait::End() {
-    FlipSurfaces();
-}
-
-/**
- * Reimplements 0x462e90: zFMV_ActionPlaySound::Begin.
- * Purpose: find and play the named FMV sound sample.
- */
-void zFMV_ActionPlaySound::Begin(
-    double
-) {
-    sample = zSnd::FindSampleByName(sampleName);
-    if (voice != 0) {
-        voice->StopIfActive();
-    }
-    if (sample != 0) {
-        voice = sample->PlayA3DSimple(1.0f);
-    }
-}
-
-/**
- * Reimplements 0x463c90: zFMV_ActionPlayMci::Update.
- * Purpose: report immediate completion for MCI playback update polling.
- */
-int zFMV_ActionPlayMci::Update(
-    double
-) {
-    return 0;
-}
-
-/**
- * Reimplements 0x463ca0: zFMV_ActionPlayMci::Begin.
- * Purpose: start the configured MCI playback if a playback object exists.
- */
-void zFMV_ActionPlayMci::Begin(
-    double
-) {
-    if (playback != 0) {
-        playback->OpenAndPlay(
-            0,
-            -1,
-            0
-        );
-    }
-}
-
-/**
- * Reimplements 0x463cc0: zFMV_ActionPlayMci::End.
- * Purpose: stop MCI playback while preserving and restoring the active video surface.
- */
-void zFMV_ActionPlayMci::End() {
-    zVideo::Dispatch_LockDisplayModeSurfaceState();
-    zVidImagePartial *capturedImage = zVideo_buff_CaptureSurfaceToImage(2);
-    zVideo::Dispatch_UnlockDisplayModeSurfaceState();
-
-    if (capturedImage != 0) {
-        zVideo::RunPostprocessOnPrimaryBuffer();
-        zVid_Image::BlitToActiveTarget(
-            capturedImage,
-            0,
-            0,
-            0,
-            0
-        );
-        zVideo::Dispatch_UnlockPrimarySurfaceState();
-        zVideo::AdjustSurfacesIfEnabled(
-            0,
-            0,
-            0,
-            1
-        );
-    }
-
-    if (playback != 0) {
-        playback->StopAndClose();
-    }
-
-    if (capturedImage != 0) {
-        zVideo::RunPostprocessOnPrimaryBuffer();
-        zVid_Image::BlitToActiveTarget(
-            capturedImage,
-            0,
-            0,
-            0,
-            0
-        );
-        zVideo::Dispatch_UnlockPrimarySurfaceState();
-        zVideo::AdjustSurfacesIfEnabled(
-            0,
-            0,
-            0,
-            1
-        );
-        zVid_Image::ReleaseIfNotDefault(capturedImage);
-    }
-}
-
-/**
- * Reimplements 0x462330: zFMV_Playback::Constructor.
- * Purpose: initialize an MCI playback object with a duplicated media path and window handle.
- */
-zFMV_Playback::zFMV_Playback(
-    const char *mediaPath,
-    HWND hwnd
-) {
-    mediaPathDup = DuplicateCString(mediaPath);
-    notifyHwnd = hwnd;
-    mciPutFlags = 0;
-}
-
-/**
- * Reimplements 0x462360: zFMV_Playback::Destructor.
- * Purpose: release the duplicated MCI media path.
- */
-void zFMV_Playback::Destructor() {
-    free(mediaPathDup);
-}
-
-/**
- * Reimplements 0x462570: zFMV_Playback::ReportMciError.
- * Purpose: translate an MCI error code and report it through the old zError path.
- */
-int zFMV_Playback::ReportMciError(
-    unsigned int mciError
-) {
-    char errorText[0x80];
-    if (mciGetErrorStringA(
-        mciError,
-        errorText,
-        sizeof(errorText)
-    ) == 0) {
-        strcpy(
-            errorText,
-            g_zFMV_UnknownErrorIdMsg
-        );
-    }
-
-    zError::ReportOld(
-        0x200,
-        g_zFMV_SourceFile_FmvMainCpp,
-        0xc4,
-        errorText
-    );
-    return 0;
-}
-
-/**
- * Reimplements 0x462370: zFMV_Playback::OpenAndPlay.
- * Purpose: open an MCI MPEG device, configure its window/rect/time format, and start playback.
- */
-void zFMV_Playback::OpenAndPlay(
-    unsigned int startMs,
-    int endMs,
-    int notifyFlag
-) {
-    zVideo_dd::FlipToGDIIfAttached();
-
-    // Retail writes only the MCI fields consumed by each command.
-    zFMV_MciPlayParams playParams;
-    zFMV_MciSetParams setParams;
-    zFMV_MciWindowParams windowParams;
-    zFMV_MciRectParams rectParams;
-    MCI_DGV_OPEN_PARMSA openParams;
-
-    openParams.lpstrDeviceType = (LPSTR)(g_zFMV_MpegVideoString);
-    openParams.lpstrElementName = mediaPathDup;
-    DWORD mciError = mciSendCommandA(
-        0,
-        0x803,
-        0x2202,
-        (DWORD_PTR)(&openParams)
-    );
-    if (mciError != 0) {
-        ReportMciError(mciError);
-    }
-
-    mciDeviceId = (unsigned short)(openParams.wDeviceID);
-
-    windowParams.hwnd = notifyHwnd;
-    mciError = mciSendCommandA(
-        mciDeviceId,
-        0x841,
-        0x10002,
-        (DWORD_PTR)(&windowParams)
-    );
-    if (mciError != 0) {
-        ReportMciError(mciError);
-        return;
-    }
-
-    if ((mciPutFlags & 0x40000) != 0) {
-        rectParams.left = destinationRect.left;
-        rectParams.width = destinationRect.right - destinationRect.left;
-        rectParams.top = destinationRect.top;
-        rectParams.height = destinationRect.bottom - destinationRect.top;
-        mciError = mciSendCommandA(
-            mciDeviceId,
-            0x842,
-            0x50002,
-            (DWORD_PTR)(&rectParams)
-        );
-        if (mciError != 0) {
-            ReportMciError(mciError);
-            return;
-        }
-    }
-
-    if ((mciPutFlags & 0x20000) != 0) {
-        rectParams.left = sourceRect.left;
-        rectParams.width = sourceRect.right - sourceRect.left;
-        rectParams.top = sourceRect.top;
-        rectParams.height = sourceRect.bottom - sourceRect.top;
-        mciError = mciSendCommandA(
-            mciDeviceId,
-            0x842,
-            0x30002,
-            (DWORD_PTR)(&rectParams)
-        );
-        if (mciError != 0) {
-            ReportMciError(mciError);
-            return;
-        }
-    }
-
-    setParams.timeFormat = 0x1b;
-    setParams.audio = (DWORD)((unsigned int)(notifyHwnd));
-    mciError = mciSendCommandA(
-        mciDeviceId,
-        0x811,
-        0x302,
-        (DWORD_PTR)(&setParams)
-    );
-    if (mciError != 0) {
-        ReportMciError(mciError);
-        return;
-    }
-
-    DWORD playFlags = 0x6;
-    playParams.callback = (DWORD_PTR)(notifyHwnd);
-    playParams.from = startMs;
-    if (endMs >= 0) {
-        playParams.to = (DWORD)(endMs);
-        playFlags = 0xe;
-    }
-    if (notifyFlag == 1) {
-        playFlags |= 0x10000;
-    }
-
-    mciError = mciSendCommandA(
-        mciDeviceId,
-        0x806,
-        playFlags,
-        (DWORD_PTR)(&playParams)
-    );
-    if (mciError != 0) {
-        ReportMciError(mciError);
-    }
-}
-
-/**
- * Reimplements 0x4624f0: zFMV_Playback::StopAndClose.
- * Purpose: stop and close the active MCI device, reporting any failure.
- */
-void zFMV_Playback::StopAndClose() {
-    DWORD mciError = mciSendCommandA(
-        mciDeviceId,
-        0x808,
-        0x2,
-        0
-    );
-    if (mciError == 0) {
-        MCI_GENERIC_PARMS closeParams;
-        mciError = mciSendCommandA(
-            mciDeviceId,
-            0x804,
-            0x2,
-            (DWORD_PTR)(&closeParams)
-        );
-    }
-
-    if (mciError != 0) {
-        ReportMciError(mciError);
-    }
-}
-
-/**
- * Reimplements 0x462540: zFMV_Playback::SetDestRect.
- * Purpose: copy the destination rectangle and mark it for the next MCI put command.
- */
-int zFMV_Playback::SetDestRect(
-    const zFMV_Rect *rect
-) {
-    destinationRect = *rect;
-    const int result = mciPutFlags | 0x40000;
-    mciPutFlags = result;
-    return result;
-}
-
-/**
- * Reimplements 0x463ef0: zFMV_Stream::Constructor.
- * Purpose: open the AVI video stream, configure decompression, and initialize the image surface state.
- */
-void zFMV_Stream::Constructor() {
-    currentFrameIndex = 0;
-
-    const HRESULT openResult = AVIStreamOpenFromFileA(
-        &videoStream,
-        mediaPath,
-        streamtypeVIDEO,
-        0,
-        0x10,
-        0
-    );
-    if (openResult != 0) {
-        zError::ReportOld(
-            0x400,
-            g_zFMV_SourceFile_FmvStreamCpp,
-            0x60,
-            g_zFMV_CannotOpenAviFileMsg
-        );
-        AVIFileExit();
-        return;
-    }
-
-    LONG formatBytes = 0;
-    if (AVIStreamReadFormat(
-        videoStream,
-        0,
-        0,
-        &formatBytes
-    ) != 0) {
-        zError::ReportOld(
-            0x400,
-            g_zFMV_SourceFile_FmvStreamCpp,
-            0x67,
-            g_zFMV_CannotReadAviFormatSizeMsg
-        );
-        AVIFileExit();
-        return;
-    }
-
-    srcFormat = calloc(
-        formatBytes,
-        1
-    );
-    const LONG dstFormatBytes =
-        formatBytes > (LONG)(sizeof(BITMAPV4HEADER)) ? formatBytes : (LONG)(sizeof(BITMAPV4HEADER));
-    dstFormat = calloc(
-        dstFormatBytes,
-        1
-    );
-
-    if (AVIStreamReadFormat(
-        videoStream,
-        0,
-        srcFormat,
-        &formatBytes
-    ) != 0) {
-        zError::ReportOld(
-            0x400,
-            g_zFMV_SourceFile_FmvStreamCpp,
-            0x71,
-            g_zFMV_CannotReadAviFormatMsg
-        );
-        AVIFileExit();
-        return;
-    }
-
-    videoFrameCount = AVIStreamLength(videoStream);
-    if (AVIStreamInfoA(
-            videoStream,
-            &videoStreamInfo,
-            sizeof(videoStreamInfo)
-        ) != 0) {
-        zError::ReportOld(
-            0x400,
-            g_zFMV_SourceFile_FmvStreamCpp,
-            0x79,
-            g_zFMV_CannotReadAviStreamInfoMsg
-        );
-        AVIFileExit();
-        return;
-    }
-
-    memcpy(
-        dstFormat,
-        srcFormat,
-        formatBytes
-    );
-    BITMAPINFOHEADER *const srcHeader = (BITMAPINFOHEADER *)(srcFormat);
-    BITMAPV4HEADER *const dstHeader = (BITMAPV4HEADER *)(dstFormat);
-    dstHeader->bV4Size = (DWORD)(dstFormatBytes);
-    dstHeader->bV4BitCount = (WORD)(zVideo::GetDisplayModeBpp());
-    dstHeader->bV4V4Compression = BI_BITFIELDS;
-    if (dstHeader->bV4BitCount == 24) {
-        dstHeader->bV4V4Compression = BI_RGB;
-    }
-    dstHeader->bV4ClrUsed = 0;
-    zVideo::PixelPack_GetRgbMasks(
-        (unsigned int *)(&dstHeader->bV4RedMask),
-        (unsigned int *)(&dstHeader->bV4GreenMask),
-        (unsigned int *)(&dstHeader->bV4BlueMask)
-    );
-    dstHeader->bV4AlphaMask = 0;
-
-    const int alignedWidth = (dstHeader->bV4Width + 3) & ~3;
-    dstHeader->bV4SizeImage = dstHeader->bV4Height * alignedWidth * (dstHeader->bV4BitCount >> 3);
-
-    int compressedFrameBytes =
-        (srcHeader->biBitCount >> 3) * srcHeader->biWidth * srcHeader->biHeight;
-    const int suggestedBufferSize = (int)(videoStreamInfo.dwSuggestedBufferSize);
-    if (suggestedBufferSize != 0) {
-        compressedFrameBytes = suggestedBufferSize;
-    }
-    compressedFrameBufferBytes = compressedFrameBytes;
-
-    videoDecompressor = ICLocate(
-        ICTYPE_VIDEO,
-        videoStreamInfo.fccHandler,
-        (LPBITMAPINFOHEADER)(srcFormat),
-        (LPBITMAPINFOHEADER)(dstFormat),
-        ICMODE_DECOMPRESS
-    );
-    compressedFrameBuffer = calloc(
-        compressedFrameBytes,
-        1
-    );
-
-    decodedFrameStrideBytes = (dstHeader->bV4BitCount >> 3) * dstHeader->bV4Width;
-    ICSendMessage(
-        videoDecompressor,
-        ICM_DECOMPRESS_BEGIN,
-        (DWORD_PTR)(srcFormat),
-        (DWORD_PTR)(dstFormat)
-    );
-
-    const unsigned int rate = videoStreamInfo.dwRate;
-    const unsigned int scale = videoStreamInfo.dwScale;
-    videoFramesPerSecond = rate / scale;
-    reservedF4 = 0;
-    reservedF8 = 0;
-    msPerFrame = ((rate >> 1) + (scale * 1000)) / rate;
-
-    frameWidth = dstHeader->bV4Width;
-    frameHeight = dstHeader->bV4Height;
-
-    pixels = calloc(
-        dstHeader->bV4SizeImage,
-        1
-    );
-    pixelCount = (int)(dstHeader->bV4SizeImage);
-    width = (short)(dstHeader->bV4Width);
-    height = (short)(dstHeader->bV4Height);
-    headerFlagsByte = 0;
-    formatFlagsPacked = 0;
-    uPow2Shift = 0;
-    vPow2Shift = 0;
-    alphaMap = 0;
-    widthScale = 0.0f;
-    queuedAlphaMap = 0;
-    uShiftFrom20 = 0;
-    uMask = 0;
-    vMaskFixed20 = 0;
-    surface = 0;
-    palette = 0;
-    pitchWords = (short)(dstHeader->bV4Width);
-
-    dstHeader->bV4Height = -dstHeader->bV4Height;
-    hasVideoStream = 1;
-}
-
-/**
- * Reimplements 0x4641a0: zFMV_Stream::OpenAudio.
- * Purpose: open AVI audio, load or queue sample data, and create the FMV sound sample.
- */
-void zFMV_Stream::OpenAudio() {
-    audioStream = 0;
-    if (AVIStreamOpenFromFileA(
-            &audioStream,
-            mediaPath,
-            streamtypeAUDIO,
-            0,
-            0,
-            0
-        ) != 0) {
-        return;
-    }
-
-    LONG audioFormatBytes = 0;
-    if (AVIStreamReadFormat(
-        audioStream,
-        0,
-        0,
-        &audioFormatBytes
-    ) != 0) {
-        zError::ReportOld(
-            0x400,
-            g_zFMV_SourceFile_FmvStreamCpp,
-            0xcb,
-            g_zFMV_CannotReadAviSoundFormatSizeMsg
-        );
-        return;
-    }
-
-    audioFormat = calloc(
-        audioFormatBytes,
-        1
-    );
-    if (AVIStreamReadFormat(
-        audioStream,
-        0,
-        audioFormat,
-        &audioFormatBytes
-    ) != 0) {
-        zError::ReportOld(
-            0x400,
-            g_zFMV_SourceFile_FmvStreamCpp,
-            0xd2,
-            g_zFMV_CannotReadAviSoundFormatMsg
-        );
-        return;
-    }
-
-    if (AVIStreamInfoA(
-            audioStream,
-            &audioStreamInfo,
-            sizeof(audioStreamInfo)
-        ) != 0) {
-        zError::ReportOld(
-            0x400,
-            g_zFMV_SourceFile_FmvStreamCpp,
-            0xd8,
-            g_zFMV_CannotReadAviSoundStreamInfoMsg
-        );
-        return;
-    }
-
-    const unsigned int sampleSize = audioStreamInfo.dwSampleSize;
-    if (modeFlags != 0) {
-        const unsigned int segmentBytes = audioStreamInfo.dwSuggestedBufferSize;
-        audioSegmentBytes = segmentBytes;
-        audioBuffer = calloc(
-            segmentBytes * 2,
-            1
-        );
-
-        if (AVIStreamRead(
-                audioStream,
-                0,
-                segmentBytes / sampleSize,
-                audioBuffer,
-                segmentBytes,
-                0,
-                0
-            ) != 0) {
-            zError::ReportOld(
-                0x400,
-                g_zFMV_SourceFile_FmvStreamCpp,
-                0xe2,
-                g_zFMV_CannotReadAviSoundStreamMsg
-            );
-            return;
-        }
-
-        audioSample = zSndSample_CreateQueuedStreamingSample(
-            (WAVEFORMATEX *)(audioFormat),
-            audioBuffer,
-            segmentBytes * 2
-        );
-        audioRefillSecondHalfNext = 1;
-        hasAudioStream = 1;
-        audioReadSampleIndex = segmentBytes / sampleSize;
-        return;
-    }
-
-    const unsigned int audioBytes = AVIStreamLength(audioStream) * sampleSize;
-    audioSegmentBytes = audioBytes;
-    audioBuffer = calloc(
-        audioBytes,
-        1
-    );
-
-    if (AVIStreamRead(
-            audioStream,
-            0,
-            audioStreamInfo.dwLength,
-            audioBuffer,
-            audioBytes,
-            0,
-            0
-        ) != 0) {
-        zError::ReportOld(
-            0x400,
-            g_zFMV_SourceFile_FmvStreamCpp,
-            0xf0,
-            g_zFMV_CannotReadAviSoundStreamMsg
-        );
-        return;
-    }
-
-    audioSample = zSndSample_CreateQueuedStreamingSample(
-        (WAVEFORMATEX *)(audioFormat),
-        audioBuffer,
-        audioBytes
-    );
-    hasAudioStream = 1;
-}
-
-/**
- * Reimplements 0x4643a0: zFMV_Stream::ReadAndDecodeFrame
- * (D:\Proj\GameZRecoil\zFMV\fmv_stream.cpp).
- * Purpose: read and decompress one video frame and refill streaming audio when needed.
- */
-int zFMV_Stream::ReadAndDecodeFrame(
-    unsigned int frameIndex
-) {
-    if (frameIndex != 0xffffffffu) {
-        currentFrameIndex = frameIndex;
-    }
-
-    const unsigned int frameCount = videoFrameCount;
-    if ((int)(currentFrameIndex) < (int)(frameCount)) {
-        if (AVIStreamRead(
-                videoStream,
-                currentFrameIndex,
-                1,
-                compressedFrameBuffer,
-                compressedFrameBufferBytes,
-                0,
-                0
-            ) != 0) {
-            zError::ReportOld(
-                0x400,
-                g_zFMV_SourceFile_FmvStreamCpp,
-                0x105,
-                g_zFMV_CannotReadAviVideoStreamMsg
-            );
-            return 0;
-        }
-
-        EnterCriticalSection(&criticalSection);
-        if (ICDecompress(
-                videoDecompressor,
-                0,
-                (LPBITMAPINFOHEADER)(srcFormat),
-                compressedFrameBuffer,
-                (LPBITMAPINFOHEADER)(dstFormat),
-                pixels
-            ) != 0) {
-            zError::ReportOld(
-                0x400,
-                g_zFMV_SourceFile_FmvStreamCpp,
-                0x10c,
-                g_zFMV_CannotDecompressAviVideoStreamMsg
-            );
-            return 0;
-        }
-        LeaveCriticalSection(&criticalSection);
-    }
-
-    ++currentFrameIndex;
-    if ((int)(currentFrameIndex) >= (int)(frameCount)) {
-        currentFrameIndex = 0;
-    }
-
-    if (hasAudioStream != 0) {
-        if (readStreamingAudio != 0) {
-            readStreamingAudio = 0;
-            audioSample->PlayA3DSimple(1.0f);
-            return currentFrameIndex;
-        }
-
-        if (modeFlags != 0) {
-            const unsigned int segmentBytes = audioSegmentBytes;
-            const unsigned int playCursor = audioSample->GetPlayCursorBytes();
-
-            if (audioRefillSecondHalfNext != 0) {
-                if (playCursor > 0 && playCursor < segmentBytes) {
-                    FillAudioBuffer(
-                        segmentBytes,
-                        segmentBytes
-                    );
-                    audioRefillSecondHalfNext = 0;
-                    return currentFrameIndex;
-                }
-            } else if (playCursor > segmentBytes) {
-                FillAudioBuffer(
-                    0,
-                    segmentBytes
-                );
-                audioRefillSecondHalfNext = 1;
-            }
-        }
-    }
-
-    return currentFrameIndex;
-}
-
-/**
- * Reimplements 0x464540: zFMV_Stream::FillAudioBuffer
- * (D:\Proj\GameZRecoil\zFMV\fmv_stream.cpp).
- * Purpose: lock the DirectSound backing buffers and refill them from the AVI audio stream.
- */
-int zFMV_Stream::FillAudioBuffer(
-    unsigned int offset,
-    unsigned int bytes
-) {
-    void *buffer1Data = 0;
-    void *buffer2Data = 0;
-    int buffer1Bytes = 0;
-    int buffer2Bytes = 0;
-
-    const int result = audioSample->LockBackendBuffers(
-        offset,
-        bytes,
-        &buffer1Data,
-        &buffer1Bytes,
-        &buffer2Data,
-        &buffer2Bytes
-    );
-    if (result == 0) {
-        return result;
-    }
-
-    const unsigned int sampleSize = audioStreamInfo.dwSampleSize;
-    unsigned int &readSampleIndex = audioReadSampleIndex;
-
-    if (buffer1Bytes != 0) {
-        if (AVIStreamRead(
-                audioStream,
-                readSampleIndex,
-                (LONG)((unsigned int)(buffer1Bytes) / sampleSize),
-                buffer1Data,
-                buffer1Bytes,
-                0,
-                0
-            ) != 0) {
-            zError::ReportOld(
-                0x400,
-                g_zFMV_SourceFile_FmvStreamCpp,
-                0x13d,
-                g_zFMV_CannotReadAviSoundStreamMsg
-            );
-        }
-        readSampleIndex += (unsigned int)(buffer1Bytes) / sampleSize;
-    }
-
-    if (buffer2Bytes != 0) {
-        if (AVIStreamRead(
-                audioStream,
-                readSampleIndex,
-                (LONG)((unsigned int)(buffer2Bytes) / sampleSize),
-                buffer2Data,
-                buffer2Bytes,
-                0,
-                0
-            ) != 0) {
-            zError::ReportOld(
-                0x400,
-                g_zFMV_SourceFile_FmvStreamCpp,
-                0x144,
-                g_zFMV_CannotReadAviSoundStreamMsg
-            );
-        }
-
-        // The original advances by the first locked span again after the wrapped read.
-        readSampleIndex += (unsigned int)(buffer1Bytes) / sampleSize;
-    }
-
-    return audioSample->UnlockBackendBuffers(
-        buffer1Data,
-        buffer1Bytes,
-        buffer2Data,
-        buffer2Bytes
-    );
-}
-
-/**
- * Reimplements 0x463d50: zFMV_Stream::Init.
- * Purpose: initialize an FMV stream object, audio/video state, and critical section.
- */
-zFMV_Stream * zFMV_Stream::Init(
-    const char *mediaPath,
-    int modeFlags
-) {
-    this->mediaPath = DuplicateCString(mediaPath);
-    srcFormat = 0;
-    dstFormat = 0;
-    compressedFrameBuffer = 0;
-    surface = 0;
-    pixels = 0;
-    alphaMap = 0;
-    palette = 0;
-    audioSample = 0;
-    audioFormat = 0;
-    hasAudioStream = 0;
-    hasVideoStream = 0;
-    readStreamingAudio = 1;
-    this->modeFlags = modeFlags;
-
-    InitializeCriticalSection(&criticalSection);
-    AVIFileInit();
-    OpenAudio();
-    Constructor();
-    return this;
-}
-
-/**
- * Reimplements 0x463dd0: zFMV_Stream::Destructor.
- * Purpose: release audio/video streams, decompressor state, image buffers, and critical section.
- */
-void zFMV_Stream::Destructor() {
-    if (hasAudioStream != 0) {
-        if (audioBuffer != 0) {
-            free(audioBuffer);
-            audioBuffer = 0;
-        }
-
-        if (audioSample != 0) {
-            audioSample->Destroy();
-        }
-
-        if (audioFormat != 0) {
-            free(audioFormat);
-            audioFormat = 0;
-        }
-
-        AVIStreamRelease(audioStream);
-    }
-
-    if (hasVideoStream != 0) {
-        if (videoDecompressor != 0) {
-            ICSendMessage(
-                videoDecompressor,
-                ICM_DECOMPRESS_END,
-                0,
-                0
-            );
-            ICClose(videoDecompressor);
-        }
-
-        free(srcFormat);
-        free(dstFormat);
-        free(compressedFrameBuffer);
-
-        if (surface != 0) {
-            g_zVideo_pfnImageEnsureSurfaceForCurrentDevice((zVidImagePartial *)(this));
-        }
-
-        free(pixels);
-        free(alphaMap);
-        free(palette);
-
-        AVIStreamRelease(videoStream);
-        AVIFileExit();
-    }
-
-    DeleteCriticalSection(&criticalSection);
-    free(mediaPath);
-}
-
+#include "fmv_main.cpp"
 /**
  * Reimplements 0x4625e0: zFMV_Script::Init.
  * Purpose: initialize an FMV script object and optionally load its action sequence.
@@ -1568,6 +607,75 @@ int zFMV_Script::LoadActionsFromZrd(
 }
 
 /**
+ * Reimplements 0x462e30: zFMV_Action::RunBlockingImmediate.
+ * Purpose: run an action to completion without advancing elapsed time.
+ */
+void zFMV_Action::RunBlockingImmediate() {
+    Begin(0.0);
+    while (Update(0.0) != 0) {
+    }
+    End();
+}
+
+/**
+ * Reimplements 0x462e90: zFMV_ActionPlaySound::Begin.
+ * Purpose: find and play the named FMV sound sample.
+ */
+void zFMV_ActionPlaySound::Begin(
+    double
+) {
+    sample = zSnd::FindSampleByName(sampleName);
+    if (voice != 0) {
+        voice->StopIfActive();
+    }
+    if (sample != 0) {
+        voice = sample->PlayA3DSimple(1.0f);
+    }
+}
+
+/**
+ * Reimplements 0x462ed0: zFMV_ActionWait::Begin.
+ * Purpose: capture the wait action start time.
+ */
+void zFMV_ActionWait::Begin(
+    double timeSec
+) {
+    startSec = (float)(timeSec);
+}
+
+/**
+ * Reimplements 0x462ee0: zFMV_ActionWait::Update.
+ * Purpose: keep the wait action active until its duration has elapsed.
+ */
+int zFMV_ActionWait::Update(
+    double timeSec
+) {
+    return timeSec < (double)(startSec + durationSec) ? 1 : 0;
+}
+
+/**
+ * Original inline helper; no standalone retail function exists.
+ * Observed in the zFMV_ActionWait virtual slot contract.
+ * Purpose: restore FMV surfaces when a wait action completes.
+ */
+void zFMV_ActionWait::End() {
+    FlipSurfaces();
+}
+
+/**
+ * Reimplements 0x462f00: zFMV_Action::FlipSurfaces.
+ * Purpose: restore adjusted video surfaces after an FMV action completes.
+ */
+void zFMV_Action::FlipSurfaces() {
+    zVideo::AdjustSurfacesIfEnabled(
+        0,
+        0,
+        1,
+        1
+    );
+}
+
+/**
  * Reimplements 0x462f10: zFMV_Script::AppendAction.
  * Purpose: append an action to the script's singly linked action list.
  */
@@ -1588,6 +696,24 @@ int zFMV_Script::AppendAction(
 
     m_tail->next = action;
     m_tail = action;
+    return 1;
+}
+
+/**
+ * Reimplements 0x462f50: zFMV_Script::RunBlocking.
+ * Purpose: run the loaded action sequence synchronously until completion.
+ */
+int zFMV_Script::RunBlocking(
+    int abortOnKey
+) {
+    m_abortOnKey = abortOnKey;
+    BeginAtTime();
+    if (UpdateAtTime() != 0) {
+        do {
+        } while (UpdateAtTime() != 0);
+    }
+
+    BeginNow(0);
     return 1;
 }
 
@@ -1613,14 +739,6 @@ int zFMV_Script::BeginCurrentAction(
     m_startTimeSec = startTimeSec;
     m_cur->Begin(0.0);
     return 1;
-}
-
-/**
- * Reimplements 0x4630a0: zFMV_Script::BeginAtTime.
- * Purpose: begin the current action using the current multimedia timer time.
- */
-int zFMV_Script::BeginAtTime() {
-    return BeginCurrentAction((double)(timeGetTime()) * g_zFMV_ScriptTimeGetTimeToSecondsScale);
 }
 
 /**
@@ -1659,29 +777,19 @@ int zFMV_Script::Update(
 }
 
 /**
+ * Reimplements 0x4630a0: zFMV_Script::BeginAtTime.
+ * Purpose: begin the current action using the current multimedia timer time.
+ */
+int zFMV_Script::BeginAtTime() {
+    return BeginCurrentAction((double)(timeGetTime()) * g_zFMV_ScriptTimeGetTimeToSecondsScale);
+}
+
+/**
  * Reimplements 0x4630e0: zFMV_Script::UpdateAtTime.
  * Purpose: update the script using the current multimedia timer time.
  */
 int zFMV_Script::UpdateAtTime() {
     return Update((double)(timeGetTime()) * g_zFMV_ScriptTimeGetTimeToSecondsScale);
-}
-
-/**
- * Reimplements 0x462f50: zFMV_Script::RunBlocking.
- * Purpose: run the loaded action sequence synchronously until completion.
- */
-int zFMV_Script::RunBlocking(
-    int abortOnKey
-) {
-    m_abortOnKey = abortOnKey;
-    BeginAtTime();
-    if (UpdateAtTime() != 0) {
-        do {
-        } while (UpdateAtTime() != 0);
-    }
-
-    BeginNow(0);
-    return 1;
 }
 
 /**
@@ -1748,6 +856,18 @@ zFMV_ActionImage::zFMV_ActionImage(
 }
 
 /**
+ * Reimplements 0x4632a0: zFMV_ActionImage::~zFMV_ActionImage.
+ * Purpose: end image playback and free the image path.
+ */
+zFMV_ActionImage::~zFMV_ActionImage() {
+    End();
+    if (imagePath != 0) {
+        free(imagePath);
+        imagePath = 0;
+    }
+}
+
+/**
  * Reimplements 0x463300: zFMV_ActionImage::Begin.
  * Purpose: resolve the image resource used by this FMV image action.
  */
@@ -1808,18 +928,6 @@ void zFMV_ActionImage::End() {
     if (image != 0) {
         zVid_Image::ReleaseIfNotDefault((zVidImagePartial *)(image));
         image = 0;
-    }
-}
-
-/**
- * Reimplements 0x4632a0: zFMV_ActionImage::~zFMV_ActionImage.
- * Purpose: end image playback and free the image path.
- */
-zFMV_ActionImage::~zFMV_ActionImage() {
-    End();
-    if (imagePath != 0) {
-        free(imagePath);
-        imagePath = 0;
     }
 }
 
@@ -2086,62 +1194,6 @@ void zFMV_ActionPlayAvi::End() {
 }
 
 /**
- * Reimplements 0x463b00: zFMV_ActionPlayMci::Constructor.
- * Purpose: build the MCI media path, create playback state, and set its destination rect.
- */
-zFMV_ActionPlayMci::zFMV_ActionPlayMci(
-    HWND hwnd,
-    const char *mediaRootPath,
-    const char *playbackTitle
-) {
-    mediaPath = (char *)(calloc(
-        strlen(mediaRootPath) + strlen(playbackTitle) + 0x1b,
-        1
-    ));
-    sprintf(
-        mediaPath,
-        "%s\\%s",
-        mediaRootPath,
-        playbackTitle
-    );
-
-    zFMV_Playback *const playbackObject = new zFMV_Playback(
-        mediaPath,
-        hwnd
-    );
-    playback = playbackObject;
-
-    g_zFMV_ActionPlayMci_DestRect.top = 0;
-    g_zFMV_ActionPlayMci_DestRect.left = 0;
-    int discard;
-    zRndr::GetActiveRegionState(
-        &g_zFMV_ActionPlayMci_DestRect.right,
-        &g_zFMV_ActionPlayMci_DestRect.bottom,
-        &discard,
-        &discard
-    );
-    playback->SetDestRect(&g_zFMV_ActionPlayMci_DestRect);
-}
-
-/**
- * Reimplements 0x463c10: zFMV_ActionPlayMci::~zFMV_ActionPlayMci.
- * Purpose: free MCI media/playback state.
- */
-zFMV_ActionPlayMci::~zFMV_ActionPlayMci() {
-    if (mediaPath != 0) {
-        free(mediaPath);
-        mediaPath = 0;
-    }
-
-    zFMV_Playback *const playbackObject = playback;
-    if (playbackObject != 0) {
-        playbackObject->Destructor();
-        ::operator delete(playbackObject);
-        playback = 0;
-    }
-}
-
-/**
  * Reimplements 0x463850: zFMV_ActionBlur::Constructor.
  * Purpose: initialize a blur action's frame count and pass count.
  */
@@ -2368,3 +1420,196 @@ int zFMV_ActionBlurV::Update(
     );
     return framesRemaining != 0;
 }
+/**
+ * Reimplements 0x463b00: zFMV_ActionPlayMci::Constructor.
+ * Purpose: build the MCI media path, create playback state, and set its destination rect.
+ */
+zFMV_ActionPlayMci::zFMV_ActionPlayMci(
+    HWND hwnd,
+    const char *mediaRootPath,
+    const char *playbackTitle
+) {
+    mediaPath = (char *)(calloc(
+        strlen(mediaRootPath) + strlen(playbackTitle) + 0x1b,
+        1
+    ));
+    sprintf(
+        mediaPath,
+        "%s\\%s",
+        mediaRootPath,
+        playbackTitle
+    );
+
+    zFMV_Playback *const playbackObject = new zFMV_Playback(
+        mediaPath,
+        hwnd
+    );
+    playback = playbackObject;
+
+    g_zFMV_ActionPlayMci_DestRect.top = 0;
+    g_zFMV_ActionPlayMci_DestRect.left = 0;
+    int discard;
+    zRndr::GetActiveRegionState(
+        &g_zFMV_ActionPlayMci_DestRect.right,
+        &g_zFMV_ActionPlayMci_DestRect.bottom,
+        &discard,
+        &discard
+    );
+    playback->SetDestRect(&g_zFMV_ActionPlayMci_DestRect);
+}
+
+/**
+ * Reimplements 0x463c10: zFMV_ActionPlayMci::~zFMV_ActionPlayMci.
+ * Purpose: free MCI media/playback state.
+ */
+zFMV_ActionPlayMci::~zFMV_ActionPlayMci() {
+    if (mediaPath != 0) {
+        free(mediaPath);
+        mediaPath = 0;
+    }
+
+    zFMV_Playback *const playbackObject = playback;
+    if (playbackObject != 0) {
+        playbackObject->Destructor();
+        ::operator delete(playbackObject);
+        playback = 0;
+    }
+}
+
+/**
+ * Reimplements 0x463c90: zFMV_ActionPlayMci::Update.
+ * Purpose: report immediate completion for MCI playback update polling.
+ */
+int zFMV_ActionPlayMci::Update(
+    double
+) {
+    return 0;
+}
+
+/**
+ * Reimplements 0x463ca0: zFMV_ActionPlayMci::Begin.
+ * Purpose: start the configured MCI playback if a playback object exists.
+ */
+void zFMV_ActionPlayMci::Begin(
+    double
+) {
+    if (playback != 0) {
+        playback->OpenAndPlay(
+            0,
+            -1,
+            0
+        );
+    }
+}
+
+/**
+ * Reimplements 0x463cc0: zFMV_ActionPlayMci::End.
+ * Purpose: stop MCI playback while preserving and restoring the active video surface.
+ */
+void zFMV_ActionPlayMci::End() {
+    zVideo::Dispatch_LockDisplayModeSurfaceState();
+    zVidImagePartial *capturedImage = zVideo_buff_CaptureSurfaceToImage(2);
+    zVideo::Dispatch_UnlockDisplayModeSurfaceState();
+
+    if (capturedImage != 0) {
+        zVideo::RunPostprocessOnPrimaryBuffer();
+        zVid_Image::BlitToActiveTarget(
+            capturedImage,
+            0,
+            0,
+            0,
+            0
+        );
+        zVideo::Dispatch_UnlockPrimarySurfaceState();
+        zVideo::AdjustSurfacesIfEnabled(
+            0,
+            0,
+            0,
+            1
+        );
+    }
+
+    if (playback != 0) {
+        playback->StopAndClose();
+    }
+
+    if (capturedImage != 0) {
+        zVideo::RunPostprocessOnPrimaryBuffer();
+        zVid_Image::BlitToActiveTarget(
+            capturedImage,
+            0,
+            0,
+            0,
+            0
+        );
+        zVideo::Dispatch_UnlockPrimarySurfaceState();
+        zVideo::AdjustSurfacesIfEnabled(
+            0,
+            0,
+            0,
+            1
+        );
+        zVid_Image::ReleaseIfNotDefault(capturedImage);
+    }
+}
+
+#include "fmv_stream.cpp"
+
+/* Source-layout blocker: address-backed bodies below do not belong to the assigned contiguous ledger rows.
+ * They are preserved here because their proven physical owner is outside this worker scope or still unresolved.
+ */
+/**
+ * Reimplements 0x4159d0: zFMV_Action::Update.
+ * Purpose: report immediate completion for action types without update behavior.
+ */
+int zFMV_Action::Update(
+    double
+) {
+    return 0;
+}
+
+/**
+ * Original inline helper; no standalone retail function exists.
+ * Observed in the zFMV_Action virtual slot contract.
+ * Purpose: provide the default no-op action start hook.
+ */
+void zFMV_Action::Begin(double) {}
+
+/**
+ * Original inline helper; no standalone retail function exists.
+ * Observed in the zFMV_Action virtual slot contract.
+ * Purpose: provide the default no-op action finish hook.
+ */
+void zFMV_Action::End() {}
+
+/**
+ * Original inline helper; no standalone retail function exists.
+ * Observed in the zFMV_Action virtual slot contract.
+ * Purpose: dispatch the default timed blocking action runner.
+ */
+void zFMV_Action::RunBlocking() {
+    RunBlockingTimed();
+}
+
+/**
+ * Reimplements 0x4159e0: zFMV_Action::RunBlockingTimed.
+ * Purpose: run an action to completion using elapsed milliseconds from GetTickCount.
+ */
+void zFMV_Action::RunBlockingTimed() {
+    const double startSec = (double)(GetTickCount()) * 0.00100000005;
+    Begin(0.0);
+    while (true) {
+        const double currentSec = ((double)(GetTickCount()) * 0.00100000005) - startSec;
+        if (Update(currentSec) == 0) {
+            break;
+        }
+    }
+    End();
+}
+
+/**
+ * Reimplements 0x415aa0: zFMV_Action::~zFMV_Action.
+ * Purpose: provide the shared virtual action destructor.
+ */
+zFMV_Action::~zFMV_Action() {}
+

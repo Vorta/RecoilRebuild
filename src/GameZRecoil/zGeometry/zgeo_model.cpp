@@ -1,10 +1,10 @@
-#include "zGeometry.h"
+#include "zgeo.h"
 
 #include "GameZRecoil/zUtil/zutil.h"
 
 #include "GameZRecoil/zDEClient/zdec.h"
-#include "GameZRecoil/zError/zError.h"
-#include "GameZRecoil/zModel/zModel.h"
+#include "GameZRecoil/zError/zerr.h"
+#include "GameZRecoil/zModel/gmod.h"
 
 #include <math.h>
 #include <stdlib.h>

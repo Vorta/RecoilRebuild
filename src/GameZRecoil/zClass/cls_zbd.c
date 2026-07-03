@@ -1,8 +1,8 @@
-#include "zClass.h"
+#include "zclass.h"
 
-#include "GameZRecoil/zError/zError.h"
-#include "GameZRecoil/zModel/zModel.h"
-#include "zDi.h"
+#include "GameZRecoil/zError/zerr.h"
+#include "GameZRecoil/zModel/gmod.h"
+#include "zdi.h"
 
 #include <stdio.h>
 #include <stdlib.h>

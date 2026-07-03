@@ -1,4 +1,4 @@
-#include "GameZRecoil/zError/zError.h"
+#include "GameZRecoil/zError/zerr.h"
 
 extern "C" HWND g_RecoilError_OutputHWnd = 0;
 extern "C" int g_RecoilError_OutputMaxBytes = 0;
@@ -20,18 +20,6 @@ namespace zError {
         g_RecoilError_OutputHWnd = hWnd;
         return 0;
     }
-
-    /**
-     * Reimplements 0x404e80: zError::ReportOldNoOp.
-     * Purpose: Preserves the stripped retail legacy-report call ABI without producing output.
-     */
-    void ReportOld(
-        int,
-        const char *,
-        int,
-        const char *,
-        ...
-    ) {}
 
     /**
      * Reimplements 0x4622f0: zError::EmitDebugBuffer.

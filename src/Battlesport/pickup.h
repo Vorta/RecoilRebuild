@@ -3,9 +3,9 @@
 #include "recoil/recoil_types.h"
 #include <stddef.h>
 
-#include "GameZRecoil/include/zClass.h"
-#include "GameZRecoil/zNetwork/zNetwork.h"
-#include "GameZRecoil/zVideo/zVideo.h"
+#include "GameZRecoil/include/zclass.h"
+#include "GameZRecoil/zNetwork/znet.h"
+#include "GameZRecoil/zVideo/zvid.h"
 #include "recoil/recoil_callconv.h"
 
 struct OptCatalogEntryDef;

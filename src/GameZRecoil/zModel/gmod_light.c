@@ -1,10 +1,10 @@
-#include "GameZRecoil/zModel/zModel.h"
+#include "GameZRecoil/zModel/gmod.h"
 
-#include "GameZRecoil/include/zClipRect.h"
-#include "GameZRecoil/zError/zError.h"
-#include "GameZRecoil/zMath/zMath.h"
-#include "GameZRecoil/zRndr/zRndr.h"
-#include "GameZRecoil/zVideo/zVideo.h"
+#include "GameZRecoil/include/zclip_rect.h"
+#include "GameZRecoil/zError/zerr.h"
+#include "GameZRecoil/zMath/zmth.h"
+#include "GameZRecoil/zRndr/zrndr.h"
+#include "GameZRecoil/zVideo/zvid.h"
 
 #include <math.h>
 #include <string.h>

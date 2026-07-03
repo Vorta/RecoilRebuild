@@ -55,30 +55,30 @@ Generated from `.agent/SOURCE_OWNERS.json` (schema version 3).
 
 | Binary | Owners | Authored owners | Provider boundaries |
 | --- | ---: | ---: | ---: |
-| recoil | 1222 | 1201 | 21 |
+| recoil | 1225 | 1201 | 24 |
 | messages | 1 | 1 | 0 |
-| Total | 1223 | 1202 | 21 |
+| Total | 1226 | 1202 | 24 |
 
 ### Source-Owner Gates
 
 | Gate | accepted | blocked | deferred | none | pending | Total |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| boundary | 1214 | 4 | 0 | 1 | 4 | 1223 |
-| source | 1211 | 7 | 0 | 1 | 4 | 1223 |
-| data | 958 | 2 | 0 | 209 | 54 | 1223 |
-| functional | 807 | 0 | 0 | 307 | 109 | 1223 |
-| linkage | 1025 | 146 | 0 | 50 | 2 | 1223 |
-| byte | 22 | 468 | 710 | 0 | 23 | 1223 |
+| boundary | 1218 | 3 | 0 | 1 | 4 | 1226 |
+| source | 1215 | 6 | 0 | 1 | 4 | 1226 |
+| data | 958 | 2 | 0 | 212 | 54 | 1226 |
+| functional | 807 | 0 | 0 | 310 | 109 | 1226 |
+| linkage | 1026 | 145 | 0 | 53 | 2 | 1226 |
+| byte | 23 | 467 | 713 | 0 | 23 | 1226 |
 
 ### Owner Reimplementation Tiers
 
 | Tier | Count | Percent of authored owners |
 | --- | ---: | ---: |
 | X | 121 | 10.1% |
-| C | 223 | 18.6% |
+| C | 222 | 18.5% |
 | B | 844 | 70.2% |
 | A | 1 | 0.1% |
-| S | 13 | 1.1% |
+| S | 14 | 1.2% |
 
 ### Owner Kinds
 
@@ -86,10 +86,10 @@ Generated from `.agent/SOURCE_OWNERS.json` (schema version 3).
 | --- | ---: | ---: |
 | callback-table | 1 | 0.1% |
 | class | 165 | 13.5% |
-| data-owner | 430 | 35.2% |
-| provider-boundary | 21 | 1.7% |
+| data-owner | 430 | 35.1% |
+| provider-boundary | 24 | 2.0% |
 | record | 42 | 3.4% |
-| source-file | 167 | 13.7% |
+| source-file | 167 | 13.6% |
 | standalone | 58 | 4.7% |
 | subsystem | 339 | 27.7% |
 <!-- RECOIL_PROGRESS:END -->
@@ -101,12 +101,9 @@ Ranges are half-open retail `.text` ranges. `partial` rows are header contributo
 
 | Range | Source path | Status / detail |
 | --- | --- | --- |
-| `0x401000..0x401020` | `semantic:CAboutDlg-constructor-prelude` | semantic source unresolved; CAboutDlg constructor prelude physically emitted at the start of .text before adjacent MFC provider rows; exact original source/header and physical host unresolved; candidates: `src/Battlesport/about.cpp`, `src/Battlesport/AboutDlg.cpp`, `src/Battlesport/AboutDlg.h`, `src/Battlesport/RecoilApp.h` |
-| `0x401020..0x401030` | `provider:mfc/no-op-virtual-onearg` | provider, provider-boundary |
-| `0x401030..0x401040` | `provider:mfc42-import-address-getter` | provider, provider-boundary |
-| `0x401040..0x401060` | `provider:mfc/cwnd-enablewindow-wrappers` | provider, provider-boundary |
+| `0x401000..0x401060` | `src/Battlesport/about.cpp` | mapped-no-literal-about-prelude-order-confirmed-contiguous; 4 semantic subranges |
 | `0x401060..0x402f60` | `src/Battlesport/ai_net.h` | partial, included in `src/Battlesport/ai_net.cpp` |
-| `0x402f60..0x402fd0` | `src/GameZRecoil/zMath/zMath.h` | partial, included in `src/Battlesport/ai_net.cpp` |
+| `0x402f60..0x402fd0` | `src/GameZRecoil/zMath/zmth.h` | partial, included in `src/Battlesport/ai_net.cpp` |
 | `0x402fd0..0x4038a0` | `src/Battlesport/ai_net.cpp` | mapped; 6 semantic subranges |
 | `0x4038a0..0x404ca0` | `src/Battlesport/Briefing.cpp` | mapped; 11 semantic subranges |
 | `0x404ca0..0x415ab0` | `src/Battlesport/hud.cpp` | mapped-refined; 22 semantic subranges |
