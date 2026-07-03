@@ -1,12 +1,12 @@
-#include "Battlesport/HudSensorTracker.h"
-#include "Battlesport/GameNet.h"
+#include "Battlesport/hud_sensor_tracker.h"
+#include "Battlesport/game_net.h"
 #include "Battlesport/player.h"
-#include "GameZRecoil/Time/Time.h"
-#include "GameZRecoil/include/OptCatalog.h"
-#include "GameZRecoil/include/zClass.h"
-#include "GameZRecoil/zInput/zInput.h"
-#include "GameZRecoil/zModel/zModel.h"
-#include "GameZRecoil/zSound/zSound.h"
+#include "GameZRecoil/Time/time.h"
+#include "GameZRecoil/include/opt_catalog.h"
+#include "GameZRecoil/include/zclass.h"
+#include "GameZRecoil/zInput/zinput.h"
+#include "GameZRecoil/zModel/gmod.h"
+#include "GameZRecoil/zSound/zsnd.h"
 
 #include <cstdint>
 #include <cstdlib>

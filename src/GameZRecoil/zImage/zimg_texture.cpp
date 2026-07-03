@@ -1,10 +1,10 @@
-#include "GameZRecoil/include/zImage.h"
+#include "GameZRecoil/include/zimage.h"
 
-#include "GameZRecoil/zError/zError.h"
-#include "GameZRecoil/zGame/zGame.h"
-#include "GameZRecoil/zModel/zModel.h"
-#include "GameZRecoil/zReader/zReader.h"
-#include "GameZRecoil/zRndr/zRndr.h"
+#include "GameZRecoil/zError/zerr.h"
+#include "GameZRecoil/zGame/zgame.h"
+#include "GameZRecoil/zModel/gmod.h"
+#include "GameZRecoil/zReader/zreader.h"
+#include "GameZRecoil/zRndr/zrndr.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -180,331 +180,9 @@ char g_zImage_TextureArraySizeExceededMsg[] =
 }
 
 namespace zImage {
-/**
- * Reimplements 0x46d4c0: zImage::GetDefaultImageRefPtr.
- * Original file: GameZRecoil/zImage/zimg_texture.cpp.
- * Source owner: engine.zimage.texture_directory_state.
- * Purpose: expose the default image pointer through the texture-directory
- * entry reference shape expected by legacy callers.
- *
- * Evidence: BN returns the address of the initialized default texture-directory
- * record without touching additional state.
+/* Source-file block layout: the current native build still compiles this compatibility container.
+ * The included fragment files below hold the ledger physical source rows.
  */
-zImage_TexDirEntryPartial *GetDefaultImageRefPtr() {
-    return &g_zImage_DefaultTexDirEntry;
-}
-
-/**
- * Recovered helper: zImage::CreateDefaultTextureRecord.
- * Original shape: no standalone retail function is currently identified in the
- * inspected BN/plan evidence.
- * Source owner: engine.zimage.texture_directory_state.
- * Purpose: create and remember the default texture record through the active
- * zVideo texture creation callback.
- *
- * Original helper evidence: source-faithful helper recovered from BN caller
- * body 0x46d550, which routes the DEFAULT_TEXTURE/default-image contract
- * through g_zVideo_pfnCreateTextureRecord and stores the result in the default
- * texture-directory record. BN 0x4a75f0 uses a direct null-name
- * default-image call instead.
- */
-zVideo_TextureRecordPartial *CreateDefaultTextureRecord() {
-    zVidImagePartial *image = &zVid_Image::g_zImage_DefaultImage;
-    int releaseImage = 0;
-    if (g_zImage_pfnCreateFallbackImage != 0) {
-        zVidImagePartial *fallbackImage = g_zImage_pfnCreateFallbackImage(
-            g_zImage_DefaultTexDirEntry.baseName
-        );
-        if (fallbackImage != 0) {
-            image = fallbackImage;
-            releaseImage = 1;
-        }
-    }
-
-    g_zImage_DefaultTexDirEntry.texture = g_zVideo_pfnCreateTextureRecord(
-        g_zImage_DefaultTexDirEntry.baseName,
-        image,
-        image->formatFlagsPacked & 2,
-        image->textureAddressFlagsPacked & 1,
-        (image->textureAddressFlagsPacked >> 1) & 1
-    );
-    if (releaseImage != 0) {
-        zVid_Image::Destroy(image);
-    }
-    return g_zImage_DefaultTexDirEntry.texture;
-}
-
-/**
- * Reimplements 0x46d550: zImage::InitTextureDirectory.
- * Original file: GameZRecoil/zImage/zimg_texture.cpp.
- * Source owner: engine.zimage.texture_directory_state.
- * Purpose: reset the texture-directory table and create the hardware default
- * texture record when a non-software renderer is active.
- *
- * Evidence: BN clears the texture-directory count/table, tests
- * g_zVideo_ActiveRendererPath, and on the hardware path creates the default
- * texture record before returning success.
- */
-int InitTextureDirectory() {
-    g_zImage_TexDirEntryCount = 0;
-    memset(
-        g_zImage_TexDirEntries,
-        0,
-        sizeof(g_zImage_TexDirEntries)
-    );
-
-    if (g_zVideo_ActiveRendererPath != 0) {
-        CreateDefaultTextureRecord();
-    }
-
-    return 1;
-}
-} // namespace zImage
-
-namespace zImg {
-/**
- * Reimplements 0x46eba0: zImg::Init.
- * Original file: GameZRecoil/zImage/zimg_texture.cpp.
- * Purpose: initialize the zImage texture-directory runtime and report success.
- *
- * Evidence: BN assembly is a single call to zImage::InitTextureDirectory
- * followed by return value 1; this is a namespace-level wrapper, not a class
- * method or table-dispatch shape.
- */
-int Init() {
-    zImage::InitTextureDirectory();
-    return 1;
-}
-} // namespace zImg
-
-/**
- * Reimplements 0x46e290: zImage_TexDirEntryPartial::GetVariantImageAtIndex.
- * Original file: GameZRecoil/zImage/zimg_texture.cpp.
- * Source owner: engine.zimage.texture_directory_state.
- * Purpose: return the requested image from a texture-directory variant chain.
- *
- * Evidence: BN treats this as a zImage_TexDirEntry member leaf: null self
- * returns g_zImage_DefaultImage, non-positive indexes return this->image,
- * and positive indexes walk nextVariant at offset 0x20 until the index or
- * chain tail is reached.
- */
-zVidImagePartial *__fastcall zImage_TexDirEntryPartial::GetVariantImageAtIndex(
-    int variantIndex
-) {
-    zImage_TexDirEntryPartial *entry = this;
-    if (entry == 0) {
-        return &zVid_Image::g_zImage_DefaultImage;
-    }
-
-    for (int i = 0; i < variantIndex; ++i) {
-        if (entry->nextVariant == 0) {
-            break;
-        }
-        entry = entry->nextVariant;
-    }
-
-    return entry->image;
-}
-
-/**
- * Reimplements 0x46e3e0: zImage_TexDirEntry::BuildMipChain.
- * Original file: GameZRecoil/zImage/zimg_texture.cpp.
- * Source owner: engine.zimage.texture_directory_state.
- * Purpose: link numbered mip texture-directory variants and assign each
- * variant image width scale from the base image width.
- *
- * Evidence: BN assembly copies baseName into a 0x40-byte local path, accepts
- * only names ending in "_1", increments that suffix digit in place, looks up
- * or loads each numbered variant, appends missing records through
- * g_zImage_TexDirEntries/g_zImage_TexDirEntryCount, calls
- * zVid_Image::CalcPow2ScratchFields for newly loaded variants, links
- * nextVariant, and stores the integer width quotient as a float. RECOIL_NO_GS
- * is retained as a host-build annotation for the local buffer; VC5 has no /GS
- * cookie for this retail-era member.
- */
-RECOIL_NO_GS void __fastcall zImage_TexDirEntryPartial::BuildMipChain() {
-    char variantPath[0x40];
-    strcpy(
-        variantPath,
-        baseName
-    );
-
-    zImage_TexDirEntryPartial *const baseEntry = this;
-    char *const suffix = strstr(
-        variantPath,
-        g_zImage_FontVariantSuffix
-    );
-    if (suffix == 0 || suffix[2] != '\0') {
-        return;
-    }
-
-    zImage_TexDirEntryPartial *currentEntry = this;
-    char *const digit = suffix + 1;
-    for (;;) {
-        ++*digit;
-
-        zImage_TexDirEntryPartial *variantEntry = zImage::FindTexDirEntryByName(variantPath);
-        zVidImagePartial *variantImage = variantEntry != 0 ? variantEntry->image : 0;
-        if (variantEntry == 0 || variantEntry->loadState == 2) {
-            variantImage = zImage::TexDir_FindOrCreateByPath(variantPath);
-            if (variantImage == 0) {
-                break;
-            }
-
-            if (variantEntry == 0) {
-                const int entryIndex = g_zImage_TexDirEntryCount++;
-                variantEntry = &g_zImage_TexDirEntries[entryIndex];
-                zImage::TexDirSetBaseNameFromPath(
-                    variantPath,
-                    variantEntry->baseName
-                );
-            }
-
-            variantEntry->loadState = 1;
-            variantEntry->image = variantImage;
-            zVid_Image::CalcPow2ScratchFields(variantImage);
-        }
-
-        currentEntry->nextVariant = variantEntry;
-        currentEntry = variantEntry;
-        variantImage->widthScale = (float)(baseEntry->image->width / variantImage->width);
-        variantEntry->nextVariant = 0;
-    }
-}
-
-namespace zImage {
-/**
- * Reimplements 0x46de50: zImage::TexDir_LoadPendingEntries.
- * Original file: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
- * Source owner: engine.zimage.texture_directory_state.
- * Purpose: resolve pending texture-directory entries, create renderer texture
- * records when needed, and retire transient texture-pack runtime state.
- *
- * Evidence: BN iterates g_zImage_TexDirEntries up to
- * g_zImage_TexDirEntryCount, handles only load states 2 and 3, loads images by
- * basename with the optional fallback callback, falls back to
- * zVid_Image::g_zImage_DefaultImage, builds mip chains, then either updates
- * image scratch fields or creates/finalizes texture records before setting
- * loadState to 1 and calling ShutdownTextureDirectoryRuntime.
- */
-int TexDir_LoadPendingEntries() {
-    zVid_TexturePack_EnsureBuiltinTexturePacksLoaded();
-
-    for (int i = 0; i < g_zImage_TexDirEntryCount; ++i) {
-        zImage_TexDirEntryPartial *const entry = &g_zImage_TexDirEntries[i];
-        if (entry->loadState != 2 && entry->loadState != 3) {
-            continue;
-        }
-
-        zVidImagePartial *image = TexDir_FindOrCreateByPath(entry->baseName);
-        entry->nextVariant = 0;
-        entry->image = image;
-        if (image == 0 && g_zImage_pfnCreateFallbackImage != 0) {
-            image = g_zImage_pfnCreateFallbackImage(entry->baseName);
-            entry->image = image;
-        }
-        if (entry->image == 0) {
-            entry->image = &zVid_Image::g_zImage_DefaultImage;
-        }
-
-        entry->BuildMipChain();
-
-        if (g_zVideo_ActiveRendererPath == 0 ||
-            OptCatalog_IsDamageMaskSlotPtrRegistered(entry) != 0) {
-            zVid_Image::CalcPow2ScratchFields(entry->image);
-        } else if (entry->loadState == 3) {
-            zVideo_TextureRecordFinalizeUploadProc finalizeUpload =
-                g_zVideo_pfnTextureRecordFinalizeUpload;
-            finalizeUpload(
-                entry->texture,
-                0,
-                entry->image
-            );
-        } else if (entry->texture == 0) {
-            image = entry->image;
-            const unsigned short textureAddressFlags =
-                (unsigned short)(image->textureAddressFlagsPacked);
-            entry->texture = g_zVideo_pfnCreateTextureRecord(
-                entry->baseName,
-                image,
-                image->formatFlagsPacked & 2,
-                textureAddressFlags & 1,
-                (textureAddressFlags >> 1) & 1
-            );
-            if (g_zVideo_ActiveRendererPath != 2) {
-                zVid_Image::ReleaseOwnedBuffers(image);
-            }
-        }
-
-        entry->loadState = 1;
-    }
-
-    ShutdownTextureDirectoryRuntime();
-    return 0;
-}
-} // namespace zImage
-
-/**
- * Reimplements 0x46ebd0: zImage_InitMissionResources.
- * Original file: GameZRecoil/zImage/zimg_texture.cpp.
- * Purpose: create the mission resource search-path list on first use and
- * append later paths to the existing list.
- *
- * Evidence: BN loads g_zImage_MissionSearchPathList, creates a new list when
- * it is null, otherwise passes the existing list and incoming path to
- * zUtil::ZRDR_AddSearchPaths, then returns 0.
- */
-extern "C" int __fastcall zImage_InitMissionResources(
-    const char *pathText
-) {
-    if (g_zImage_MissionSearchPathList == 0) {
-        g_zImage_MissionSearchPathList = zUtil_ZRDR_CreateSearchPathList(pathText);
-        return 0;
-    }
-
-    zUtil::ZRDR_AddSearchPaths(
-        g_zImage_MissionSearchPathList,
-        pathText
-    );
-    return 0;
-}
-
-/**
- * Reimplements 0x46eb20: zImage_Init.
- * Original file: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
- * Purpose: reset font-table state, optionally load fonts, and bind the
- * texture-memory option value used by image loading.
- *
- * Evidence: BN stores 2 to g_zImage_NextFontSlotIndex at 0x53d790, stores 0
- * to g_zImage_FontTransparentColor at 0x5617f4, clears the 20-entry font
- * table, optionally loads fonts, and binds the texture-memory option pointer
- * to the active renderer's option or the local default.
- */
-extern "C" int __fastcall zImage_Init(
-    const char *fontsPath
-) {
-    g_zImage_NextFontSlotIndex = 2;
-    g_zImage_FontTransparentColor = 0;
-    memset(
-        g_zImage_FontTable,
-        0,
-        sizeof(g_zImage_FontTable)
-    );
-
-    if (fontsPath != 0) {
-        zImage::FontsLoadFromPath(fontsPath);
-    }
-
-    g_zImage_TextureMemoryDefault = 0;
-    const char *optionName =
-        g_zVideo_ActiveRendererPath != 0 ? "TextureMemory_HW" : "TextureMemory_SW";
-    zOptionEntryPartial *option = zGame::Options_FindOption(optionName);
-    g_zImage_TextureMemoryOption =
-        option != 0 ? &option->payloadOrBuffer : &g_zImage_TextureMemoryDefault;
-    return 0;
-}
-
-namespace zImage {
 /**
  * Reimplements 0x46d310: zImage::TexDirEntryToIndex.
  * Original file: D:\Proj\GameZRecoil\zImage\zimg_texture.cpp.
@@ -543,74 +221,6 @@ zImage_TexDirEntryPartial *__fastcall TexIndexToDirEntry(
     }
 
     return &g_zImage_TexDirEntries[index];
-}
-
-/**
- * Reimplements 0x46d4d0: zImage::FindTexDirEntryByName.
- * Original file: D:\Proj\Battlesport\zimage.cpp.
- * Source owner: engine.zimage.texture_directory_state.
- * Purpose: find an active texture-directory entry by base texture name.
- *
- * Evidence: BN scans the active g_zImage_TexDirEntries prefix, skips entries
- * with loadState zero, compares baseName with strcmp, and returns null when no
- * matching active entry exists.
- */
-zImage_TexDirEntryPartial *__fastcall FindTexDirEntryByName(
-    const char *baseName
-) {
-    for (int i = 0; i < g_zImage_TexDirEntryCount; ++i) {
-        zImage_TexDirEntryPartial *const entry = &g_zImage_TexDirEntries[i];
-        if (entry->loadState != 0 && strcmp(
-            entry->baseName,
-            baseName
-        ) == 0) {
-            return entry;
-        }
-    }
-
-    return 0;
-}
-
-/**
- * Reimplements 0x46d810: zImage::TexDir_FindOrAppendByPath.
- * Original file: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
- * Source owner: engine.zimage.texture_directory_state.
- * Purpose: find a texture-directory entry for a path or append a pending
- * record for later loading.
- *
- * Evidence: BN temporarily strips the extension for lookup, restores the path
- * text before returning, and appends a new g_zImage_TexDirEntries record with
- * loadState 2 when no existing basename entry is present.
- */
-zImage_TexDirEntryPartial *__fastcall TexDir_FindOrAppendByPath(
-    char *path
-) {
-    char *const extension = strrchr(
-        path,
-        '.'
-    );
-    if (extension != 0) {
-        *extension = '\0';
-    }
-
-    zImage_TexDirEntryPartial *entry = FindTexDirEntryByName(path);
-    if (extension != 0) {
-        *extension = '.';
-    }
-
-    if (entry != 0) {
-        return entry;
-    }
-
-    const int entryIndex = g_zImage_TexDirEntryCount;
-    ++g_zImage_TexDirEntryCount;
-    entry = &g_zImage_TexDirEntries[entryIndex];
-    TexDirSetBaseNameFromPath(
-        path,
-        entry->baseName
-    );
-    entry->loadState = 2;
-    return entry;
 }
 
 /**
@@ -724,6 +334,302 @@ int __fastcall ReadTextureDirectory(
 }
 
 /**
+ * Reimplements 0x46d4c0: zImage::GetDefaultImageRefPtr.
+ * Original file: GameZRecoil/zImage/zimg_texture.cpp.
+ * Source owner: engine.zimage.texture_directory_state.
+ * Purpose: expose the default image pointer through the texture-directory
+ * entry reference shape expected by legacy callers.
+ *
+ * Evidence: BN returns the address of the initialized default texture-directory
+ * record without touching additional state.
+ */
+zImage_TexDirEntryPartial *GetDefaultImageRefPtr() {
+    return &g_zImage_DefaultTexDirEntry;
+}
+
+/**
+ * Recovered helper: zImage::CreateDefaultTextureRecord.
+ * Original shape: no standalone retail function is currently identified in the
+ * inspected BN/plan evidence.
+ * Source owner: engine.zimage.texture_directory_state.
+ * Purpose: create and remember the default texture record through the active
+ * zVideo texture creation callback.
+ *
+ * Original helper evidence: source-faithful helper recovered from BN caller
+ * body 0x46d550, which routes the DEFAULT_TEXTURE/default-image contract
+ * through g_zVideo_pfnCreateTextureRecord and stores the result in the default
+ * texture-directory record. BN 0x4a75f0 uses a direct null-name
+ * default-image call instead.
+ */
+zVideo_TextureRecordPartial *CreateDefaultTextureRecord() {
+    zVidImagePartial *image = &zVid_Image::g_zImage_DefaultImage;
+    int releaseImage = 0;
+    if (g_zImage_pfnCreateFallbackImage != 0) {
+        zVidImagePartial *fallbackImage = g_zImage_pfnCreateFallbackImage(
+            g_zImage_DefaultTexDirEntry.baseName
+        );
+        if (fallbackImage != 0) {
+            image = fallbackImage;
+            releaseImage = 1;
+        }
+    }
+
+    g_zImage_DefaultTexDirEntry.texture = g_zVideo_pfnCreateTextureRecord(
+        g_zImage_DefaultTexDirEntry.baseName,
+        image,
+        image->formatFlagsPacked & 2,
+        image->textureAddressFlagsPacked & 1,
+        (image->textureAddressFlagsPacked >> 1) & 1
+    );
+    if (releaseImage != 0) {
+        zVid_Image::Destroy(image);
+    }
+    return g_zImage_DefaultTexDirEntry.texture;
+}
+
+/**
+ * Reimplements 0x46d4d0: zImage::FindTexDirEntryByName.
+ * Original file: D:\Proj\Battlesport\zimage.cpp.
+ * Source owner: engine.zimage.texture_directory_state.
+ * Purpose: find an active texture-directory entry by base texture name.
+ *
+ * Evidence: BN scans the active g_zImage_TexDirEntries prefix, skips entries
+ * with loadState zero, compares baseName with strcmp, and returns null when no
+ * matching active entry exists.
+ */
+zImage_TexDirEntryPartial *__fastcall FindTexDirEntryByName(
+    const char *baseName
+) {
+    for (int i = 0; i < g_zImage_TexDirEntryCount; ++i) {
+        zImage_TexDirEntryPartial *const entry = &g_zImage_TexDirEntries[i];
+        if (entry->loadState != 0 && strcmp(
+            entry->baseName,
+            baseName
+        ) == 0) {
+            return entry;
+        }
+    }
+
+    return 0;
+}
+
+/**
+ * Reimplements 0x46d550: zImage::InitTextureDirectory.
+ * Original file: GameZRecoil/zImage/zimg_texture.cpp.
+ * Source owner: engine.zimage.texture_directory_state.
+ * Purpose: reset the texture-directory table and create the hardware default
+ * texture record when a non-software renderer is active.
+ *
+ * Evidence: BN clears the texture-directory count/table, tests
+ * g_zVideo_ActiveRendererPath, and on the hardware path creates the default
+ * texture record before returning success.
+ */
+int InitTextureDirectory() {
+    g_zImage_TexDirEntryCount = 0;
+    memset(
+        g_zImage_TexDirEntries,
+        0,
+        sizeof(g_zImage_TexDirEntries)
+    );
+
+    if (g_zVideo_ActiveRendererPath != 0) {
+        CreateDefaultTextureRecord();
+    }
+
+    return 1;
+}
+} // namespace zImage
+
+namespace zImage {
+/**
+ * Reimplements 0x46d810: zImage::TexDir_FindOrAppendByPath.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
+ * Source owner: engine.zimage.texture_directory_state.
+ * Purpose: find a texture-directory entry for a path or append a pending
+ * record for later loading.
+ *
+ * Evidence: BN temporarily strips the extension for lookup, restores the path
+ * text before returning, and appends a new g_zImage_TexDirEntries record with
+ * loadState 2 when no existing basename entry is present.
+ */
+zImage_TexDirEntryPartial *__fastcall TexDir_FindOrAppendByPath(
+    char *path
+) {
+    char *const extension = strrchr(
+        path,
+        '.'
+    );
+    if (extension != 0) {
+        *extension = '\0';
+    }
+
+    zImage_TexDirEntryPartial *entry = FindTexDirEntryByName(path);
+    if (extension != 0) {
+        *extension = '.';
+    }
+
+    if (entry != 0) {
+        return entry;
+    }
+
+    const int entryIndex = g_zImage_TexDirEntryCount;
+    ++g_zImage_TexDirEntryCount;
+    entry = &g_zImage_TexDirEntries[entryIndex];
+    TexDirSetBaseNameFromPath(
+        path,
+        entry->baseName
+    );
+    entry->loadState = 2;
+    return entry;
+}
+
+/**
+ * Reimplements 0x46d900: zImage::TexDir_FindOrCreateByPath.
+ * Purpose: load or reuse the texture-directory image for a path.
+ * Evidence: BN calls the dynamic texture-pack lookup first, then the builtin
+ * lookup, and clears zero-alpha pixels on a loaded image before returning it.
+ */
+zVidImagePartial *__fastcall TexDir_FindOrCreateByPath(
+    const char *path
+) {
+    zVidImagePartial *image = zVid_TexturePack_LoadBuiltinImageByName(path);
+    if (image == 0) {
+        image = zVid_TexturePack_LoadImageByName(path);
+    }
+
+    if (image != 0 && (image->formatFlagsPacked & 0x02) != 0 && image->alphaMap != 0) {
+        zVid_Image::ClearZeroAlphaPixelsInPlace(image);
+    }
+
+    return image;
+}
+
+/**
+ * Reimplements 0x46de50: zImage::TexDir_LoadPendingEntries.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
+ * Source owner: engine.zimage.texture_directory_state.
+ * Purpose: resolve pending texture-directory entries, create renderer texture
+ * records when needed, and retire transient texture-pack runtime state.
+ *
+ * Evidence: BN iterates g_zImage_TexDirEntries up to
+ * g_zImage_TexDirEntryCount, handles only load states 2 and 3, loads images by
+ * basename with the optional fallback callback, falls back to
+ * zVid_Image::g_zImage_DefaultImage, builds mip chains, then either updates
+ * image scratch fields or creates/finalizes texture records before setting
+ * loadState to 1 and calling ShutdownTextureDirectoryRuntime.
+ */
+int TexDir_LoadPendingEntries() {
+    zVid_TexturePack_EnsureBuiltinTexturePacksLoaded();
+
+    for (int i = 0; i < g_zImage_TexDirEntryCount; ++i) {
+        zImage_TexDirEntryPartial *const entry = &g_zImage_TexDirEntries[i];
+        if (entry->loadState != 2 && entry->loadState != 3) {
+            continue;
+        }
+
+        zVidImagePartial *image = TexDir_FindOrCreateByPath(entry->baseName);
+        entry->nextVariant = 0;
+        entry->image = image;
+        if (image == 0 && g_zImage_pfnCreateFallbackImage != 0) {
+            image = g_zImage_pfnCreateFallbackImage(entry->baseName);
+            entry->image = image;
+        }
+        if (entry->image == 0) {
+            entry->image = &zVid_Image::g_zImage_DefaultImage;
+        }
+
+        entry->BuildMipChain();
+
+        if (g_zVideo_ActiveRendererPath == 0 ||
+            OptCatalog_IsDamageMaskSlotPtrRegistered(entry) != 0) {
+            zVid_Image::CalcPow2ScratchFields(entry->image);
+        } else if (entry->loadState == 3) {
+            zVideo_TextureRecordFinalizeUploadProc finalizeUpload =
+                g_zVideo_pfnTextureRecordFinalizeUpload;
+            finalizeUpload(
+                entry->texture,
+                0,
+                entry->image
+            );
+        } else if (entry->texture == 0) {
+            image = entry->image;
+            const unsigned short textureAddressFlags =
+                (unsigned short)(image->textureAddressFlagsPacked);
+            entry->texture = g_zVideo_pfnCreateTextureRecord(
+                entry->baseName,
+                image,
+                image->formatFlagsPacked & 2,
+                textureAddressFlags & 1,
+                (textureAddressFlags >> 1) & 1
+            );
+            if (g_zVideo_ActiveRendererPath != 2) {
+                zVid_Image::ReleaseOwnedBuffers(image);
+            }
+        }
+
+        entry->loadState = 1;
+    }
+
+    ShutdownTextureDirectoryRuntime();
+    return 0;
+}
+} // namespace zImage
+
+namespace zImage {
+/**
+ * Reimplements 0x46e250: zImage::InvalidateLoadedVariantChain.
+ * Original file: GameZRecoil/zImage/zimg_texture.cpp.
+ * Source owner: engine.zimage.texture_directory_state.
+ * Purpose: mark a loaded texture-directory variant chain for reload.
+ *
+ * Evidence: BN walks nextVariant while entries are loaded, releases each
+ * non-default image through zVid_Image::ReleaseIfNotDefault, clears image, sets
+ * loadState to 3, and stops at the first null or non-loaded chain entry.
+ */
+void __fastcall InvalidateLoadedVariantChain(
+    zImage_TexDirEntryPartial *texDirHead
+) {
+    zImage_TexDirEntryPartial *entry = texDirHead;
+    while (entry != 0 && entry->loadState == 1) {
+        zVid_Image::ReleaseIfNotDefault(entry->image);
+        entry->image = 0;
+        entry->loadState = 3;
+        entry = entry->nextVariant;
+    }
+}
+} // namespace zImage
+
+/**
+ * Reimplements 0x46e290: zImage_TexDirEntryPartial::GetVariantImageAtIndex.
+ * Original file: GameZRecoil/zImage/zimg_texture.cpp.
+ * Source owner: engine.zimage.texture_directory_state.
+ * Purpose: return the requested image from a texture-directory variant chain.
+ *
+ * Evidence: BN treats this as a zImage_TexDirEntry member leaf: null self
+ * returns g_zImage_DefaultImage, non-positive indexes return this->image,
+ * and positive indexes walk nextVariant at offset 0x20 until the index or
+ * chain tail is reached.
+ */
+zVidImagePartial *__fastcall zImage_TexDirEntryPartial::GetVariantImageAtIndex(
+    int variantIndex
+) {
+    zImage_TexDirEntryPartial *entry = this;
+    if (entry == 0) {
+        return &zVid_Image::g_zImage_DefaultImage;
+    }
+
+    for (int i = 0; i < variantIndex; ++i) {
+        if (entry->nextVariant == 0) {
+            break;
+        }
+        entry = entry->nextVariant;
+    }
+
+    return entry->image;
+}
+
+namespace zImage {
+/**
  * Reimplements 0x46e2c0: zImage::SetPathExtension.
  * Original file: GameZRecoil/zImage/zimg_texture.cpp.
  * Source owner: engine.zimage.texture_directory_state.
@@ -821,125 +727,142 @@ void __fastcall TexDirSetBaseNameFromPath(
         0
     );
 }
+} // namespace zImage
 
 /**
- * Reimplements 0x46efe0: zImage::FontsLoadFromPath.
- * Original file: D:\Proj\GameZRecoil\zImage\zimg_fonts.cpp.
- * Purpose: load the FONTS node, create font records, load each font image,
- * and build glyph rectangles for the font table.
+ * Reimplements 0x46e3e0: zImage_TexDirEntry::BuildMipChain.
+ * Original file: GameZRecoil/zImage/zimg_texture.cpp.
+ * Source owner: engine.zimage.texture_directory_state.
+ * Purpose: link numbered mip texture-directory variants and assign each
+ * variant image width scale from the base image width.
  *
- * Evidence: BN reports the same error paths, mission resource initialization,
- * FONTS node lookup, per-font image load, alpha flag update, glyph build call,
- * and loaded-tree release.
+ * Evidence: BN assembly copies baseName into a 0x40-byte local path, accepts
+ * only names ending in "_1", increments that suffix digit in place, looks up
+ * or loads each numbered variant, appends missing records through
+ * g_zImage_TexDirEntries/g_zImage_TexDirEntryCount, calls
+ * zVid_Image::CalcPow2ScratchFields for newly loaded variants, links
+ * nextVariant, and stores the integer width quotient as a float. RECOIL_NO_GS
+ * is retained as a host-build annotation for the local buffer; VC5 has no /GS
+ * cookie for this retail-era member.
  */
-int __fastcall FontsLoadFromPath(
-    const char *path
-) {
-    zReader::Node *tree = zReader::LoadNodeFromPath(
-        path,
-        0,
-        0
+RECOIL_NO_GS void __fastcall zImage_TexDirEntryPartial::BuildMipChain() {
+    char variantPath[0x40];
+    strcpy(
+        variantPath,
+        baseName
     );
-    if (tree == 0) {
-        zError::ReportOld(
-            0x200,
-            "D:\\Proj\\GameZRecoil\\zImage\\zimg_fonts.cpp",
-            0x48,
-            g_HudSensorTracker_ReadFileFailedFmt,
-            path
-        );
-        return -1;
+
+    zImage_TexDirEntryPartial *const baseEntry = this;
+    char *const suffix = strstr(
+        variantPath,
+        g_zImage_FontVariantSuffix
+    );
+    if (suffix == 0 || suffix[2] != '\0') {
+        return;
     }
 
-    zImage_InitMissionResources("..\\data\\common\\fonts");
-    zReader::Node *fontsNode = zReader_GetNamedNode(
-        tree,
-        g_HudCfgKey_Fonts
-    );
-    if (fontsNode == 0) {
-        zError::ReportOld(
-            0x800,
-            "D:\\Proj\\GameZRecoil\\zImage\\zimg_fonts.cpp",
-            0x52,
-            "%s file empty",
-            path
-        );
-        return -1;
-    }
+    zImage_TexDirEntryPartial *currentEntry = this;
+    char *const digit = suffix + 1;
+    for (;;) {
+        ++*digit;
 
-    zReader::Node *fontArray = fontsNode->value.nodes;
-    const int count = fontArray[0].value.i32;
-    zImage_Font *font = (zImage_Font *)(malloc((size_t)(count - 1) * sizeof(zImage_Font)));
+        zImage_TexDirEntryPartial *variantEntry = zImage::FindTexDirEntryByName(variantPath);
+        zVidImagePartial *variantImage = variantEntry != 0 ? variantEntry->image : 0;
+        if (variantEntry == 0 || variantEntry->loadState == 2) {
+            variantImage = zImage::TexDir_FindOrCreateByPath(variantPath);
+            if (variantImage == 0) {
+                break;
+            }
 
-    for (int i = 1; i < count; ++i) {
-        zImage_Font **slot = &g_zImage_FontTable[i - 1];
-        *slot = font;
-        const char *fontImagePath = fontArray[i].value.str;
-        font->image = TexDir_FindOrCreateByPath(fontImagePath);
-        if (font->image != 0) {
-            font->image->formatFlagsPacked |= 0x02;
-            const int glyphCount = font->BuildGlyphRects();
-            if (glyphCount != 0x5f) {
-                zError::ReportOld(
-                    0x200,
-                    "D:\\Proj\\GameZRecoil\\zImage\\zimg_fonts.cpp",
-                    0x68,
-                    "Only found %d characters in font %s",
-                    glyphCount,
-                    path
+            if (variantEntry == 0) {
+                const int entryIndex = g_zImage_TexDirEntryCount++;
+                variantEntry = &g_zImage_TexDirEntries[entryIndex];
+                zImage::TexDirSetBaseNameFromPath(
+                    variantPath,
+                    variantEntry->baseName
                 );
             }
-            ++font;
+
+            variantEntry->loadState = 1;
+            variantEntry->image = variantImage;
+            zVid_Image::CalcPow2ScratchFields(variantImage);
         }
+
+        currentEntry->nextVariant = variantEntry;
+        currentEntry = variantEntry;
+        variantImage->widthScale = (float)(baseEntry->image->width / variantImage->width);
+        variantEntry->nextVariant = 0;
+    }
+}
+
+/**
+ * Reimplements 0x46eb20: zImage_Init.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
+ * Purpose: reset font-table state, optionally load fonts, and bind the
+ * texture-memory option value used by image loading.
+ *
+ * Evidence: BN stores 2 to g_zImage_NextFontSlotIndex at 0x53d790, stores 0
+ * to g_zImage_FontTransparentColor at 0x5617f4, clears the 20-entry font
+ * table, optionally loads fonts, and binds the texture-memory option pointer
+ * to the active renderer's option or the local default.
+ */
+extern "C" int __fastcall zImage_Init(
+    const char *fontsPath
+) {
+    g_zImage_NextFontSlotIndex = 2;
+    g_zImage_FontTransparentColor = 0;
+    memset(
+        g_zImage_FontTable,
+        0,
+        sizeof(g_zImage_FontTable)
+    );
+
+    if (fontsPath != 0) {
+        zImage::FontsLoadFromPath(fontsPath);
     }
 
-    zReader::FreeLoadedTree(tree);
+    g_zImage_TextureMemoryDefault = 0;
+    const char *optionName =
+        g_zVideo_ActiveRendererPath != 0 ? "TextureMemory_HW" : "TextureMemory_SW";
+    zOptionEntryPartial *option = zGame::Options_FindOption(optionName);
+    g_zImage_TextureMemoryOption =
+        option != 0 ? &option->payloadOrBuffer : &g_zImage_TextureMemoryDefault;
     return 0;
 }
 
+namespace zImage {
 /**
- * Reimplements 0x46d900: zImage::TexDir_FindOrCreateByPath.
- * Purpose: load or reuse the texture-directory image for a path.
- * Evidence: BN calls the dynamic texture-pack lookup first, then the builtin
- * lookup, and clears zero-alpha pixels on a loaded image before returning it.
- */
-zVidImagePartial *__fastcall TexDir_FindOrCreateByPath(
-    const char *path
-) {
-    zVidImagePartial *image = zVid_TexturePack_LoadBuiltinImageByName(path);
-    if (image == 0) {
-        image = zVid_TexturePack_LoadImageByName(path);
-    }
-
-    if (image != 0 && (image->formatFlagsPacked & 0x02) != 0 && image->alphaMap != 0) {
-        zVid_Image::ClearZeroAlphaPixelsInPlace(image);
-    }
-
-    return image;
-}
-
-/**
- * Reimplements 0x46e250: zImage::InvalidateLoadedVariantChain.
+ * Reimplements 0x46eb90: zImage::ShutdownSubsystem.
  * Original file: GameZRecoil/zImage/zimg_texture.cpp.
- * Source owner: engine.zimage.texture_directory_state.
- * Purpose: mark a loaded texture-directory variant chain for reload.
+ * Purpose: provide the subsystem shutdown entry point that delegates to
+ * zImage::Shutdown and reports success.
  *
- * Evidence: BN walks nextVariant while entries are loaded, releases each
- * non-default image through zVid_Image::ReleaseIfNotDefault, clears image, sets
- * loadState to 3, and stops at the first null or non-loaded chain entry.
+ * Evidence: BN assembly contains only the zImage::Shutdown call followed by
+ * zero return value setup.
  */
-void __fastcall InvalidateLoadedVariantChain(
-    zImage_TexDirEntryPartial *texDirHead
-) {
-    zImage_TexDirEntryPartial *entry = texDirHead;
-    while (entry != 0 && entry->loadState == 1) {
-        zVid_Image::ReleaseIfNotDefault(entry->image);
-        entry->image = 0;
-        entry->loadState = 3;
-        entry = entry->nextVariant;
-    }
+int ShutdownSubsystem() {
+    Shutdown();
+    return 0;
 }
+} // namespace zImage
 
+namespace zImg {
+/**
+ * Reimplements 0x46eba0: zImg::Init.
+ * Original file: GameZRecoil/zImage/zimg_texture.cpp.
+ * Purpose: initialize the zImage texture-directory runtime and report success.
+ *
+ * Evidence: BN assembly is a single call to zImage::InitTextureDirectory
+ * followed by return value 1; this is a namespace-level wrapper, not a class
+ * method or table-dispatch shape.
+ */
+int Init() {
+    zImage::InitTextureDirectory();
+    return 1;
+}
+} // namespace zImg
+
+namespace zImage {
 /**
  * Reimplements 0x46ebb0: zImage::Shutdown.
  * Original file: GameZRecoil/zImage/zimg_texture.cpp.
@@ -956,98 +879,38 @@ int Shutdown() {
     g_zImage_MissionSearchPathList = 0;
     return 1;
 }
-
-/**
- * Reimplements 0x46eb90: zImage::ShutdownSubsystem.
- * Original file: GameZRecoil/zImage/zimg_texture.cpp.
- * Purpose: provide the subsystem shutdown entry point that delegates to
- * zImage::Shutdown and reports success.
- *
- * Evidence: BN assembly contains only the zImage::Shutdown call followed by
- * zero return value setup.
- */
-int ShutdownSubsystem() {
-    Shutdown();
-    return 0;
-}
 } // namespace zImage
 
 /**
- * Reimplements 0x46efc0: zImage_Font::GetByIndexOrDefault.
- * Original file: D:\Proj\GameZRecoil\zImage\zimg_fonts.cpp.
- * Purpose: return a requested font table slot, falling back to slot 0 when
- * the requested slot is empty.
+ * Reimplements 0x46ebd0: zImage_InitMissionResources.
+ * Original file: GameZRecoil/zImage/zimg_texture.cpp.
+ * Purpose: create the mission resource search-path list on first use and
+ * append later paths to the existing list.
  *
- * Evidence: BN performs one g_zImage_FontTable indexed load, tests it, and
- * loads g_zImage_FontTable[0] only on the null-slot path.
+ * Evidence: BN loads g_zImage_MissionSearchPathList, creates a new list when
+ * it is null, otherwise passes the existing list and incoming path to
+ * zUtil::ZRDR_AddSearchPaths, then returns 0.
  */
-zImage_Font *__fastcall zImage_Font::GetByIndexOrDefault(
-    int fontIndex
+extern "C" int __fastcall zImage_InitMissionResources(
+    const char *pathText
 ) {
-    zImage_Font *const font = g_zImage_FontTable[fontIndex];
-    if (font != 0) {
-        return font;
+    if (g_zImage_MissionSearchPathList == 0) {
+        g_zImage_MissionSearchPathList = zUtil_ZRDR_CreateSearchPathList(pathText);
+        return 0;
     }
 
-    return g_zImage_FontTable[0];
+    zUtil::ZRDR_AddSearchPaths(
+        g_zImage_MissionSearchPathList,
+        pathText
+    );
+    return 0;
 }
 
-/**
- * Reimplements 0x46f260: zImage_Font::MeasureString.
- * Original file: D:\Proj\GameZRecoil\zImage\zimg_fonts.cpp.
- * Purpose: measure wrapped font text width and total line advance.
- *
- * Evidence: BN gets the requested font with fallback, uses image height as
- * line advance, treats space, carriage return, and newline specially, clamps
- * printable glyph indexes to the 95-glyph table, and writes both outputs.
+#include "zimg_fonts.cpp"
+
+/* Source-layout blocker: address-backed bodies below do not belong to the assigned contiguous ledger rows.
+ * They are preserved here because their proven physical owner is outside this worker scope or still unresolved.
  */
-void __fastcall zImage_Font::MeasureString(
-    const char *text,
-    int fontIndex,
-    int *outWidthPx,
-    int *outLineAdvance
-) {
-    zImage_Font *const font = GetByIndexOrDefault(fontIndex);
-    if (font == 0) {
-        return;
-    }
-
-    const int lineAdvance = font->image->height;
-    int currentLineWidth = 0;
-    int maxLineWidth = 0;
-    int totalLineAdvance = lineAdvance;
-
-    for (const char *cursor = text; *cursor != '\0'; ++cursor) {
-        const signed char ch = *cursor;
-        if (ch == ' ') {
-            currentLineWidth += font->spaceWidth;
-        } else if (ch == '\r') {
-        } else if (ch == '\n') {
-            if (currentLineWidth > maxLineWidth) {
-                maxLineWidth = currentLineWidth;
-            }
-
-            currentLineWidth = 0;
-            totalLineAdvance += lineAdvance;
-        } else {
-            int glyphIndex = (int)(ch)-0x21;
-            if (glyphIndex < 0 || glyphIndex >= 0x5f) {
-                glyphIndex = 0;
-            }
-
-            const RECT &glyph = font->glyphRects[glyphIndex];
-            currentLineWidth += glyph.right - glyph.left;
-        }
-
-        if (currentLineWidth > maxLineWidth) {
-            maxLineWidth = currentLineWidth;
-        }
-    }
-
-    *outWidthPx = maxLineWidth;
-    *outLineAdvance = totalLineAdvance;
-}
-
 /**
  * Reimplements 0x4c7f00: zImage_Font::BlitStringToActiveTarget.
  * Original file: D:\Proj\GameZRecoil\zImage\zimg_fonts.cpp.
@@ -1106,105 +969,3 @@ void __fastcall zImage_Font::BlitStringToActiveTarget(
     }
 }
 
-/**
- * Reimplements 0x46f210: zImage_Font::IsImageColumnTransparent.
- * Original file: D:\Proj\GameZRecoil\zImage\zimg_fonts.cpp.
- * Purpose: test whether a vertical image column contains only the configured
- * transparent font color.
- *
- * Evidence: BN rejects columns beyond image width, treats non-positive height
- * as transparent, then walks one 16-bit pixel per row using image width as the
- * row stride.
- */
-int __fastcall zImage_Font::IsImageColumnTransparent(
-    zVidImagePartial *image,
-    int columnX
-) {
-    const int width = image->width;
-    unsigned short *column = (unsigned short *)(image->pixels) + columnX;
-    if (columnX >= width) {
-        return 0;
-    }
-
-    const int height = image->height;
-    if (height <= 0) {
-        return 1;
-    }
-
-    for (int y = 0; y < height; ++y) {
-        if (*column != (unsigned short)(g_zImage_FontTransparentColor)) {
-            return 0;
-        }
-        column += width;
-    }
-
-    return 1;
-}
-
-/**
- * Reimplements 0x46f130: zImage_Font::BuildGlyphRects.
- * Original file: D:\Proj\GameZRecoil\zImage\zimg_fonts.cpp.
- * Purpose: scan the font image into glyph rectangles and compute the space
- * width used by font text layout.
- *
- * Evidence: BN initializes space width from image width divided by 95 minus
- * one, scans transparent and non-transparent column runs through
- * IsImageColumnTransparent, fills glyph RECT bounds, and returns the glyph
- * count.
- */
-int zImage_Font::BuildGlyphRects() {
-    zVidImagePartial *image = this->image;
-    int x = 0;
-    int result = 1;
-    this->spaceWidth = image->width / 95 - 1;
-
-    while (x < image->width) {
-        RECT *glyph = &this->glyphRects[result - 1];
-        glyph->top = 0;
-        glyph->bottom = image->height - 1;
-
-        if (IsImageColumnTransparent(
-            image,
-            x
-        ) != 0) {
-            do {
-                ++x;
-            } while (IsImageColumnTransparent(
-                image,
-                x
-            ) != 0);
-        }
-
-        const int left = x;
-        while (IsImageColumnTransparent(
-            image,
-            x
-        ) == 0) {
-            ++x;
-        }
-
-        const int right = x;
-        if (IsImageColumnTransparent(
-            image,
-            x
-        ) != 0) {
-            do {
-                ++x;
-            } while (IsImageColumnTransparent(
-                image,
-                x
-            ) != 0);
-        }
-
-        x -= (x - right) / 2;
-        glyph->left = left;
-        glyph->right = right + 1;
-
-        ++result;
-        if (result >= 95) {
-            break;
-        }
-    }
-
-    return result;
-}

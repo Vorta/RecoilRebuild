@@ -1,13 +1,13 @@
-#include "GameZRecoil/zInterp/zInterp.h"
+#include "GameZRecoil/zInterp/zinterp.h"
 
-#include "GameZRecoil/include/zClass.h"
-#include "GameZRecoil/include/zDi.h"
-#include "GameZRecoil/include/zImage.h"
-#include "GameZRecoil/zReader/zReader.h"
-#include "GameZRecoil/zModel/zModel.h"
-#include "GameZRecoil/zRndr/zRndr.h"
-#include "GameZRecoil/zVideo/zVideo.h"
-#include "GameZRecoil/zWeapon/zWeapon.h"
+#include "GameZRecoil/include/zclass.h"
+#include "GameZRecoil/include/zdi.h"
+#include "GameZRecoil/include/zimage.h"
+#include "GameZRecoil/zReader/zreader.h"
+#include "GameZRecoil/zModel/gmod.h"
+#include "GameZRecoil/zRndr/zrndr.h"
+#include "GameZRecoil/zVideo/zvid.h"
+#include "GameZRecoil/zWeapon/zwep.h"
 
 #include <cstdint>
 #include <cstdio>

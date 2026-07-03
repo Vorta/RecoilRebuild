@@ -1,15 +1,15 @@
 #include "Battlesport/hud.h"
 
-#include "Battlesport/GameNet.h"
+#include "Battlesport/game_net.h"
 #include "Battlesport/Mfc42Abi.h"
 #include "Battlesport/pickup.h"
 #include "Battlesport/player.h"
-#include "GameZRecoil/Time/Time.h"
-#include "GameZRecoil/zEffect/zEffect.h"
-#include "GameZRecoil/zGame/zGame.h"
-#include "GameZRecoil/zInput/zInput.h"
-#include "GameZRecoil/zLoc/zLoc.h"
-#include "GameZRecoil/zVideo/zVideo.h"
+#include "GameZRecoil/Time/time.h"
+#include "GameZRecoil/zEffect/zeff.h"
+#include "GameZRecoil/zGame/zgame.h"
+#include "GameZRecoil/zInput/zinput.h"
+#include "GameZRecoil/zLoc/zloc.h"
+#include "GameZRecoil/zVideo/zvid.h"
 
 #include <cstring>
 #include <windows.h>

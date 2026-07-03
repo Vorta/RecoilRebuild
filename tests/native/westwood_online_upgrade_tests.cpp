@@ -1,6 +1,6 @@
 #if defined(RECOIL_NATIVE_WESTWOOD_ONLINE_UPGRADE_UNADVISE_SMOKE_ONLY)
 
-#include "GameZRecoil/wwonline/upgrade_download.h"
+#include "GameZRecoil/wwonline/wol_download.h"
 
 #include <ocidl.h>
 
@@ -170,20 +170,20 @@ extern "C" int westwood_online_upgrade_download_unadvise_release_smoke(void) {
 
 #else
 
-#include "Battlesport/WestwoodOnlineUpgradeConfigDialog.h"
-#include "Battlesport/CZRecoilFrame.h"
-#include "Battlesport/GameNet.h"
-#include "Battlesport/HudSensorTracker.h"
-#include "Battlesport/RecoilApp.h"
-#include "Battlesport/WestwoodOnlineUpgradeApi.h"
-#include "Battlesport/WestwoodOnlineUpgradeApiEventSink.h"
-#include "Battlesport/WestwoodOnlineUpgradeDialog.h"
-#include "Battlesport/WestwoodOnlineUpgradeRefCountAndLock.h"
-#include "GameZRecoil/Time/Time.h"
-#include "GameZRecoil/wwonline/upgrade_download.h"
-#include "GameZRecoil/zGame/zGame.h"
-#include "GameZRecoil/zLoc/zLoc.h"
-#include "GameZRecoil/zNetwork/zNetwork.h"
+#include "Battlesport/wol_config_dialog.h"
+#include "Battlesport/cz_recoil_frame.h"
+#include "Battlesport/game_net.h"
+#include "Battlesport/hud_sensor_tracker.h"
+#include "Battlesport/recoil_app.h"
+#include "Battlesport/wol_api.h"
+#include "Battlesport/wol_api_event_sink.h"
+#include "Battlesport/wol_dialog.h"
+#include "Battlesport/wol_ref_count_and_lock.h"
+#include "GameZRecoil/Time/time.h"
+#include "GameZRecoil/wwonline/wol_download.h"
+#include "GameZRecoil/zGame/zgame.h"
+#include "GameZRecoil/zLoc/zloc.h"
+#include "GameZRecoil/zNetwork/znet.h"
 #include "GameZRecoil/zCom/zCom.h"
 
 #include <ocidl.h>

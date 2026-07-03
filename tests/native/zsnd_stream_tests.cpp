@@ -1,5 +1,5 @@
-#include "GameZRecoil/zReader/zReader.h"
-#include "GameZRecoil/zSound/zSound.h"
+#include "GameZRecoil/zReader/zreader.h"
+#include "GameZRecoil/zSound/zsnd.h"
 
 #include <cstdint>
 #include <cstdlib>

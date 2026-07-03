@@ -1,7 +1,7 @@
-#include "zSound.h"
+#include "zsnd.h"
 
-#include "GameZRecoil/Time/Time.h"
-#include "GameZRecoil/zSound/zA3dProvider.h"
+#include "GameZRecoil/Time/time.h"
+#include "GameZRecoil/zSound/zsnd_a3d_provider.h"
 
 #include "recoil/recoil_types.h"
 #include <math.h>
@@ -689,6 +689,8 @@ int __fastcall zSnd::ApplyMuteStateToActiveVoices(
 
     return previousMuted;
 }
+
+#include "zsnd_sample_set_impl.h"
 
 /**
  * Reimplements 0x49fa00: zSndSample_PlaySimple.

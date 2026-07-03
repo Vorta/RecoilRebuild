@@ -3,9 +3,9 @@
 #include "recoil/recoil_types.h"
 #include <stddef.h>
 
-#include "GameZRecoil/zGeometry/zGeometry.h"
+#include "GameZRecoil/zGeometry/zgeo.h"
 #include "recoil/recoil_callconv.h"
-#include "zClass.h"
+#include "zclass.h"
 
 struct zDEClient_MapTreeNode;
 struct zModel_MaterialPartial;

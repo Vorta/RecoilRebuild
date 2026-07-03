@@ -1,7 +1,7 @@
-#include "GameZRecoil/zMath/zMath.h"
-#include "GameZRecoil/zVideo/zVideo.h"
-#include "GameZRecoil/include/zClipRect.h"
-#include "zClass.h"
+#include "GameZRecoil/zMath/zmth.h"
+#include "GameZRecoil/zVideo/zvid.h"
+#include "GameZRecoil/include/zclip_rect.h"
+#include "zclass.h"
 
 #include <cmath>
 

@@ -1,7 +1,7 @@
-#include "zClass.h"
+#include "zclass.h"
 
-#include "GameZRecoil/zError/zError.h"
-#include "GameZRecoil/zVideo/zVideo.h"
+#include "GameZRecoil/zError/zerr.h"
+#include "GameZRecoil/zVideo/zvid.h"
 
 #include <stdlib.h>
 

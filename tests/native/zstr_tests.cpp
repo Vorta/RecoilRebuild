@@ -1,4 +1,4 @@
-#include "Battlesport/zStr.h"
+#include "Battlesport/zstr.h"
 
 extern "C" int zstr_contains_case_insensitive_smoke(void)
 {

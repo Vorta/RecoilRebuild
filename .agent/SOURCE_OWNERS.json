@@ -67845,15 +67845,14 @@
       "section": "input_script_config",
       "state": "active",
       "anchors": [
-        "0x404140"
+        "0x46fa10"
       ],
       "member_addresses": [
-        "0x404140",
         "0x46fa10"
       ],
       "data_addresses": [],
       "source_paths": [
-        "src/GameZRecoil/zInput/zInput.cpp"
+        "src/GameZRecoil/zInput/zin_kbd.cpp"
       ],
       "dependencies": [
         "engine.zinput.global_state_static_lifetime"
@@ -67882,18 +67881,14 @@
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized audio_fmv parent-owned data-dependency reconciliation; no gate/tier promotion beyond linkage classification",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized core_util_archive/shared data-dependency reconciliation safe subset; rows with incomplete parentage or metadata blockers intentionally left blocked",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized render_video data-dependency reconciliation; render_video.zrndr_global_string_table_data intentionally left blocked pending owner-shape remap",
-        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked"
+        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked",
+        "Scrutinized 0x404140 source-owner remap restores 0x46fa10 as the zInput keyboard source-file anchor before removing stale Briefing helper anchor 0x404140.",
+        "Source-owner scrutinizer allowed remapping 0x404140 to the physical Briefing.cpp subsystem; 0x46fa10 remains the zInput keyboard owner anchor.",
+        "address metadata updated for 0x46fa10: After scrutinized 0x404140 remap, 0x46fa10 remains the zInput keyboard wait function in the zin_kbd.cpp source-file owner.",
+        "source_paths updated from ['src/GameZRecoil/zInput/zInput.cpp'] to ['src/GameZRecoil/zInput/zin_kbd.cpp']; supersedes prior source_paths/evidence where contradicted by current owner/source evidence: Source-owner scrutinizer confirmed 0x46fa10 remains in the literal-backed zInput keyboard block; 0x404140 moved to physical Briefing.cpp."
       ],
       "binary": "recoil",
       "relationships": [
-        {
-          "kind": "anchor-address",
-          "address": "0x404140"
-        },
-        {
-          "kind": "primary-function",
-          "address": "0x404140"
-        },
         {
           "kind": "primary-function",
           "address": "0x46fa10"
@@ -67902,18 +67897,16 @@
           "kind": "depends-on-owner",
           "target_owner_id": "engine.zinput.global_state_static_lifetime",
           "reason": "legacy-owner-dependency"
+        },
+        {
+          "kind": "anchor-address",
+          "address": "0x46fa10"
         }
       ],
       "address_metadata": {
-        "0x404140": {
-          "name": "zInput_WaitForAnyKeyPressWithTimeoutMs",
-          "source_path": "src/GameZRecoil/zInput/zInput.cpp",
-          "target": "zinput_wait_for_any_key_press_with_timeout",
-          "group": "engine.zinput"
-        },
         "0x46fa10": {
           "name": "zInput::Keyboard_WaitForAnyKeyPress",
-          "source_path": "src/GameZRecoil/zInput/zInput.cpp",
+          "source_path": "src/GameZRecoil/zInput/zin_kbd.cpp",
           "target": "zinput_keyboard_wait_for_any_key_press",
           "group": "engine.zinput"
         }
@@ -70381,18 +70374,18 @@
       ],
       "data_addresses": [],
       "source_paths": [
-        "src/GameZRecoil/zMath/zMath.h"
+        "src/GameZRecoil/zMath/zmth.h"
       ],
       "dependencies": [],
       "gates": {
-        "boundary": "blocked",
-        "source": "blocked",
+        "boundary": "accepted",
+        "source": "accepted",
         "data": "none",
         "functional": "accepted",
-        "linkage": "blocked",
-        "byte": "blocked"
+        "linkage": "accepted",
+        "byte": "accepted"
       },
-      "blocker": "Option A zMath header layering restored source-faithful placement without .inl files: early ai_net.cpp and shared headers see zMath declarations/types only, while delayed full zMath.h emits zMath::Vec3Normalize between 0x402f10 and 0x402fd0. Functional target passes and ainet_text_block_order reports section_order_matches_manifest=True, but byte remains blocked: 0x402f60 has 95 unmasked mismatches after 4 relocation bytes and 5 trailing VC5 NOPs. Source/linkage gates remain blocked pending source-owner scrutiny.",
+      "blocker": "none",
       "evidence": [
         "2026-06-30 source-shape repair: 0x402f60 is modeled as an address-backed zMath.h inline helper whose COMDAT is physically emitted from the ai_net.cpp contribution between 0x402f10 and 0x402fd0.",
         "address metadata updated for 0x402f60: 2026-06-30 metadata repair: active source is zMath.h inline helper; COMDAT is emitted from ai_net.cpp.",
@@ -70410,12 +70403,17 @@
         "2026-07-01 blocker refresh after zMath.h inline restore; no owner gate or tier promotion claimed.",
         "2026-07-01 VC5 refresh after zMath.h restore: zmath_vec3_normalize fails with 99 unmasked mismatches, and ainet_text_block_order shows the header COMDAT emits as SECT09 before the retail slot. No owner gate or tier promotion claimed.",
         "2026-07-01 Option A header-layering refresh: zMathTypes.h/zMathDecls.h split keeps Vec3Normalize body in zMath.h; VC5 order now emits 0x402f60 as SECT3B between 0x402f10 SECT39 and 0x402fd0 SECT3D. No owner gate or tier promotion claimed.",
-        "owner reimplementation tier set to C: Conservative tier C remains based on zmath_vec3_normalize functional verification passing and data=none. Option A restored source-faithful placement without .inl files: zMathTypes.h/zMathDecls.h expose types/declarations early, the inline Vec3Normalize body remains in zMath.h, and ai_net.cpp includes full zMath.h at the retail COMDAT emission point. ainet_text_block_order reports section_order_matches_manifest=True with 0x402f60 as SECT3B between 0x402f10 SECT39 and 0x402fd0 SECT3D. Source/linkage gates remain blocked pending scrutiny; byte remains blocked by 95 unmasked mismatches after 4 relocation bytes and 5 trailing VC5 NOPs. No B/A/S promotion is claimed.; blocked/limited tier update findings: engine.zmath.vec3_normalize_header_helper: tier C requires boundary/source and accepted/no-data owner data gates"
+        "owner reimplementation tier set to C: Conservative tier C remains based on zmath_vec3_normalize functional verification passing and data=none. Option A restored source-faithful placement without .inl files: zMathTypes.h/zMathDecls.h expose types/declarations early, the inline Vec3Normalize body remains in zMath.h, and ai_net.cpp includes full zMath.h at the retail COMDAT emission point. ainet_text_block_order reports section_order_matches_manifest=True with 0x402f60 as SECT3B between 0x402f10 SECT39 and 0x402fd0 SECT3D. Source/linkage gates remain blocked pending scrutiny; byte remains blocked by 95 unmasked mismatches after 4 relocation bytes and 5 trailing VC5 NOPs. No B/A/S promotion is claimed.; blocked/limited tier update findings: engine.zmath.vec3_normalize_header_helper: tier C requires boundary/source and accepted/no-data owner data gates",
+        "source_paths updated from ['src/GameZRecoil/zMath/zMath.h'] to ['src/GameZRecoil/zMath/zmth.h']; supersedes prior source_paths/evidence where contradicted by current owner/source evidence: 2026-07-05 source-owner scrutiny ALLOW: 0x402f60 is the address-backed zmth.h inline helper physically emitted from the ai_net.cpp contribution at the retail slot; zMath.h metadata was stale.",
+        "address metadata updated for 0x402f60: 2026-07-05 metadata correction after scrutiny: current source body is src/GameZRecoil/zMath/zmth.h; stale zMath.h metadata rejected by source-block and source-map evidence.",
+        "2026-07-05 source-owner scrutiny ALLOW: unique primary-function 0x402f60, no data/deps/callees, source-block audit OK for [0x402f60,0x402fd0) zmth.h partial-header row, and VC5 zmath_vec3_normalize plus ainet_text_block_order 0x402f60 row are byte-clean.",
+        "2026-07-05 blocker cleared after scrutiny and current VC5 evidence: stale 95-mismatch blocker is contradicted by byte-clean zmath_vec3_normalize and ainet_text_block_order 0x402f60 artifacts.",
+        "owner reimplementation tier set to S: 2026-07-05 Reimplemented [S]: source-owner scrutiny ALLOW; zmath_vec3_normalize verifies ?Vec3Normalize@zMath@@YIMPAUzVec3@@@Z at 0x402f60 with 0 unmasked mismatches, 0 reloc bytes, 0 trim NOPs, BN size 98 and VC5 size 98 under vc5_o2_ob0_md_facs; ainet_text_block_order also has the 0x402f60 row byte-clean and natural order between 0x402f10 and 0x402fd0."
       ],
       "binary": "recoil",
       "reimplementation": {
-        "tier": "C",
-        "evidence": "Conservative tier C remains based on zmath_vec3_normalize functional verification passing and data=none. Option A restored source-faithful placement without .inl files: zMathTypes.h/zMathDecls.h expose types/declarations early, the inline Vec3Normalize body remains in zMath.h, and ai_net.cpp includes full zMath.h at the retail COMDAT emission point. ainet_text_block_order reports section_order_matches_manifest=True with 0x402f60 as SECT3B between 0x402f10 SECT39 and 0x402fd0 SECT3D. Source/linkage gates remain blocked pending scrutiny; byte remains blocked by 95 unmasked mismatches after 4 relocation bytes and 5 trailing VC5 NOPs. No B/A/S promotion is claimed.; blocked/limited tier update findings: engine.zmath.vec3_normalize_header_helper: tier C requires boundary/source and accepted/no-data owner data gates"
+        "tier": "S",
+        "evidence": "2026-07-05 Reimplemented [S]: source-owner scrutiny ALLOW; zmath_vec3_normalize verifies ?Vec3Normalize@zMath@@YIMPAUzVec3@@@Z at 0x402f60 with 0 unmasked mismatches, 0 reloc bytes, 0 trim NOPs, BN size 98 and VC5 size 98 under vc5_o2_ob0_md_facs; ainet_text_block_order also has the 0x402f60 row byte-clean and natural order between 0x402f10 and 0x402fd0."
       },
       "relationships": [
         {
@@ -70430,7 +70428,7 @@
       "address_metadata": {
         "0x402f60": {
           "name": "zMath::Vec3Normalize",
-          "source_path": "src/GameZRecoil/zMath/zMath.h",
+          "source_path": "src/GameZRecoil/zMath/zmth.h",
           "target": "zmath_vec3_normalize",
           "group": "engine.zmath"
         }
@@ -88552,199 +88550,6 @@
       }
     },
     {
-      "id": "hud_ui.background_constructor",
-      "kind": "class",
-      "name": "HudUiBackground constructor",
-      "section": "hud_ui",
-      "state": "accepted",
-      "anchors": [
-        "0x4b9540"
-      ],
-      "member_addresses": [
-        "0x4b9540"
-      ],
-      "data_addresses": [],
-      "source_paths": [
-        "src/GameZRecoil/zHud/zhud_ui.cpp"
-      ],
-      "dependencies": [
-        "hud_ui.background_cursor_widget_capture"
-      ],
-      "gates": {
-        "boundary": "accepted",
-        "source": "accepted",
-        "data": "none",
-        "functional": "accepted",
-        "byte": "deferred",
-        "linkage": "accepted"
-      },
-      "blocker": "none",
-      "evidence": [
-        "BN/source model HudUiBackground::Constructor as typed class construction over accepted container/cursor/text/font/widget dependencies and zGame option lookup; functional target hud_ui_background_constructor passed in this session with VC5 evidence, and direct data access is behind accepted callees.",
-        "Boundary is HudUiBackground::Constructor at 0x4b9540 with accepted constructor/member dependencies and provider EH array-constructor glue.",
-        "Source zhud_ui.cpp models HudUiBackground construction with typed class members and an immediate Reimplements docblock; functional/VC5 evidence confirms the current source contract.",
-        "HudUiBackground::Constructor touches no authored globals directly; option and cursor/widget data dependencies are behind accepted callee owners.",
-        "Functional verification passed in this session for 0x4b9540.",
-        "VC5 byte evidence exists through hud_ui_background_constructor, but pure tier S remains globally deferred while authored owner/data blockers remain.",
-        "Controlled migration: SOURCE_OWNERS schema v3 is authoritative for owner gates and Reimplemented tiers",
-        "linkage gate migration: linkage=accepted: Controlled migration: add source-owner linkage gate; reserve fully_linked for whole-executable link status",
-        "linkage gate migration: linkage=accepted: Controlled linkage update after parent-owned zClass data-dependency reconciliation; downgrade stale accepted ordinary data-owner rows still lacking source-shaped parent dependencies",
-        "linkage gate migration: linkage=accepted: Controlled linkage update after parent-owned battlesport gameplay data-dependency reconciliation; no gate/tier promotion beyond linkage classification",
-        "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized app-shell and network-online parent-owned data-dependency reconciliation; no gate/tier promotion beyond linkage classification",
-        "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized audio_fmv parent-owned data-dependency reconciliation; no gate/tier promotion beyond linkage classification",
-        "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized core_util_archive/shared data-dependency reconciliation safe subset; rows with incomplete parentage or metadata blockers intentionally left blocked",
-        "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized render_video data-dependency reconciliation; render_video.zrndr_global_string_table_data intentionally left blocked pending owner-shape remap",
-        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked"
-      ],
-      "binary": "recoil",
-      "relationships": [
-        {
-          "kind": "anchor-address",
-          "address": "0x4b9540"
-        },
-        {
-          "kind": "primary-function",
-          "address": "0x4b9540"
-        },
-        {
-          "kind": "depends-on-owner",
-          "target_owner_id": "hud_ui.background_cursor_widget_capture",
-          "reason": "legacy-owner-dependency"
-        }
-      ],
-      "address_metadata": {
-        "0x4b9540": {
-          "name": "HudUiBackground::HudUiBackground",
-          "source_path": "src/GameZRecoil/zHud/zhud_ui.cpp",
-          "target": "hud_ui_background_constructor",
-          "group": "ui.zhud"
-        }
-      },
-      "reimplementation": {
-        "tier": "B",
-        "evidence": "Controlled migration: SOURCE_OWNERS schema v3 is authoritative for owner gates and Reimplemented tiers"
-      }
-    },
-    {
-      "id": "hud_ui.background_cursor_widget_capture",
-      "kind": "class",
-      "name": "HudUiBackgroundCursorWidget capture refresh helpers",
-      "section": "hud_ui",
-      "state": "accepted",
-      "anchors": [
-        "0x4bf980"
-      ],
-      "member_addresses": [
-        "0x4bf980",
-        "0x4bfa50",
-        "0x4bfae0",
-        "0x4bfba0"
-      ],
-      "data_addresses": [],
-      "source_paths": [
-        "src/GameZRecoil/zHud/zhud_ui.cpp"
-      ],
-      "dependencies": [
-        "hud_ui.widget_owned_image_helpers",
-        "render_video.zvideo_buff_copy_surface_rect",
-        "engine.zimage.zvid_image_release_helpers"
-      ],
-      "gates": {
-        "boundary": "accepted",
-        "source": "accepted",
-        "data": "none",
-        "functional": "accepted",
-        "byte": "deferred",
-        "linkage": "accepted"
-      },
-      "blocker": "none",
-      "evidence": [
-        "BN/source model the HudUiBackgroundCursorWidget constructor, owned-image refresh, borrowed-image refresh, and capture-image rebuild as a class slice using typed widget fields; functional targets for all four addresses passed in this session, with data dependencies routed through accepted HudUiWidget image, zVideo surface-copy, and zVid image owners.",
-        "Boundary covers HudUiBackgroundCursorWidget constructor/refresh/capture helpers 0x4bf980, 0x4bfa50, 0x4bfae0, and 0x4bfba0; direct dependencies are accepted HudUiWidget image, zVideo surface-copy, and zVid image helper owners.",
-        "Source zhud_ui.cpp implements the slice with typed HudUiBackgroundCursorWidget fields and immediate Reimplements docblocks for the four member helpers.",
-        "The cursor-widget helpers touch no authored globals directly; image release, texture lookup, and surface-copy global state is behind accepted callee owners.",
-        "Functional verification passed in this session for 0x4bf980, 0x4bfa50, 0x4bfae0, and 0x4bfba0.",
-        "Pure tier S remains globally deferred while authored owner/data blockers remain; 0x4bf980 and 0x4bfa50 have exact VC5 evidence, while 0x4bfae0 and 0x4bfba0 remain functional-only in this owner slice.",
-        "Controlled migration: SOURCE_OWNERS schema v3 is authoritative for owner gates and Reimplemented tiers",
-        "linkage gate migration: linkage=accepted: Controlled migration: add source-owner linkage gate; reserve fully_linked for whole-executable link status",
-        "linkage gate migration: linkage=accepted: Controlled linkage update after parent-owned zClass data-dependency reconciliation; downgrade stale accepted ordinary data-owner rows still lacking source-shaped parent dependencies",
-        "linkage gate migration: linkage=accepted: Controlled linkage update after parent-owned battlesport gameplay data-dependency reconciliation; no gate/tier promotion beyond linkage classification",
-        "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized app-shell and network-online parent-owned data-dependency reconciliation; no gate/tier promotion beyond linkage classification",
-        "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized audio_fmv parent-owned data-dependency reconciliation; no gate/tier promotion beyond linkage classification",
-        "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized core_util_archive/shared data-dependency reconciliation safe subset; rows with incomplete parentage or metadata blockers intentionally left blocked",
-        "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized render_video data-dependency reconciliation; render_video.zrndr_global_string_table_data intentionally left blocked pending owner-shape remap",
-        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked"
-      ],
-      "binary": "recoil",
-      "relationships": [
-        {
-          "kind": "anchor-address",
-          "address": "0x4bf980"
-        },
-        {
-          "kind": "primary-function",
-          "address": "0x4bf980"
-        },
-        {
-          "kind": "primary-function",
-          "address": "0x4bfa50"
-        },
-        {
-          "kind": "primary-function",
-          "address": "0x4bfae0"
-        },
-        {
-          "kind": "primary-function",
-          "address": "0x4bfba0"
-        },
-        {
-          "kind": "depends-on-owner",
-          "target_owner_id": "hud_ui.widget_owned_image_helpers",
-          "reason": "legacy-owner-dependency"
-        },
-        {
-          "kind": "depends-on-owner",
-          "target_owner_id": "render_video.zvideo_buff_copy_surface_rect",
-          "reason": "legacy-owner-dependency"
-        },
-        {
-          "kind": "depends-on-owner",
-          "target_owner_id": "engine.zimage.zvid_image_release_helpers",
-          "reason": "legacy-owner-dependency"
-        }
-      ],
-      "address_metadata": {
-        "0x4bf980": {
-          "name": "HudUiBackgroundCursorWidget::HudUiBackgroundCursorWidget",
-          "source_path": "src/GameZRecoil/zHud/zhud_ui.cpp",
-          "target": "hud_ui_background_cursor_widget_member_constructor_local",
-          "group": "ui.zhud"
-        },
-        "0x4bfa50": {
-          "name": "HudUiBackgroundCursorWidget::SetImageByPathOwnedAndRefresh",
-          "source_path": "src/GameZRecoil/zHud/zhud_ui.cpp",
-          "target": "hud_ui_background_cursor_widget_set_image_by_path_owned_and_refresh",
-          "group": "ui.zhud"
-        },
-        "0x4bfae0": {
-          "name": "HudUiBackgroundCursorWidget::SetImageBorrowedAndRefresh",
-          "source_path": "src/GameZRecoil/zHud/zhud_ui.cpp",
-          "target": "hud_ui_background_cursor_set_image_borrowed_refresh",
-          "group": "ui.zhud"
-        },
-        "0x4bfba0": {
-          "name": "HudUiBackgroundCursorWidget::RebuildCapturedImage",
-          "source_path": "src/GameZRecoil/zHud/zhud_ui.cpp",
-          "target": "hud_ui_background_cursor_rebuild_captured_image",
-          "group": "ui.zhud"
-        }
-      },
-      "reimplementation": {
-        "tier": "B",
-        "evidence": "Controlled migration: SOURCE_OWNERS schema v3 is authoritative for owner gates and Reimplemented tiers"
-      }
-    },
-    {
       "id": "hud_ui.background_primitive_zrd_key_literals",
       "kind": "data-owner",
       "name": "HudUiBackground primitive ZRD key literals",
@@ -88790,9 +88595,9 @@
         "data": "accepted",
         "functional": "none",
         "byte": "deferred",
-        "linkage": "blocked"
+        "linkage": "accepted"
       },
-      "blocker": "linkage blocked: ordinary data-owner lacks a source-shaped parent dependency",
+      "blocker": "none",
       "evidence": [
         "BN 0x4ba0e0 directly references PRIMITIVES, POSITION, WORDWRAP, COLOR, ENDP_REL, and ENDP_ABS initialized ZRD token strings for primitive binding; source now exposes matching globals and docblocks in zhud_ui.cpp.",
         "Same-session BN classifier and source-worker repair: primitive ZRD token strings have bounded BN declarations/xrefs and source-level globals in zhud_ui.cpp; data byte verification remains deferred.",
@@ -88805,7 +88610,9 @@
         "linkage gate migration: linkage=blocked: Controlled linkage update after scrutinized audio_fmv parent-owned data-dependency reconciliation; no gate/tier promotion beyond linkage classification; findings: ordinary data-owner lacks a source-shaped parent dependency",
         "linkage gate migration: linkage=blocked: Controlled linkage update after scrutinized core_util_archive/shared data-dependency reconciliation safe subset; rows with incomplete parentage or metadata blockers intentionally left blocked; findings: ordinary data-owner lacks a source-shaped parent dependency",
         "linkage gate migration: linkage=blocked: Controlled linkage update after scrutinized render_video data-dependency reconciliation; render_video.zrndr_global_string_table_data intentionally left blocked pending owner-shape remap; findings: ordinary data-owner lacks a source-shaped parent dependency",
-        "linkage gate migration: linkage=blocked: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked; findings: ordinary data-owner lacks a source-shaped parent dependency"
+        "linkage gate migration: linkage=blocked: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked; findings: ordinary data-owner lacks a source-shaped parent dependency",
+        "Source-owner scrutinizer ALLOW after parent linked this auxiliary primitive ZRD literal packet to legacy.hud_ui.class_huduibackground as a data-dependency; clears only the stale parent-linkage blocker, no byte/tier/source/data promotion.",
+        "Clear stale linkage blocker only after scrutinized parent data-dependency link to legacy.hud_ui.class_huduibackground; packet remains auxiliary data with byte deferred and no tier promotion."
       ],
       "binary": "recoil",
       "relationships": [
@@ -88921,9 +88728,9 @@
         "data": "accepted",
         "functional": "none",
         "byte": "deferred",
-        "linkage": "blocked"
+        "linkage": "accepted"
       },
-      "blocker": "byte gate open; linkage blocked: ordinary data-owner lacks a source-shaped parent dependency",
+      "blocker": "byte gate deferred; linked auxiliary class-table data packet under source-shaped Briefing runtime/objective-picture parent owners; no A/S or parent byte claim",
       "evidence": [
         "Same-session provider/data classifier identified 0x4cc888 HudUiBriefingRuntime vtable, 0x4cc898 HudUiBriefingObjectivePicture vtable, and 0x4cc910 HudUiBriefingTransportProgress vtable as authored compiler-emitted class table data used by Briefing.cpp constructors/destructors; they are not provider boundaries.",
         "BN xrefs and source model bound the three class tables to Briefing.cpp UI classes; function data gates can accept them as authored table data while byte verification remains deferred.",
@@ -88935,7 +88742,10 @@
         "linkage gate migration: linkage=blocked: Controlled linkage update after scrutinized audio_fmv parent-owned data-dependency reconciliation; no gate/tier promotion beyond linkage classification; findings: ordinary data-owner lacks a source-shaped parent dependency",
         "linkage gate migration: linkage=blocked: Controlled linkage update after scrutinized core_util_archive/shared data-dependency reconciliation safe subset; rows with incomplete parentage or metadata blockers intentionally left blocked; findings: ordinary data-owner lacks a source-shaped parent dependency",
         "linkage gate migration: linkage=blocked: Controlled linkage update after scrutinized render_video data-dependency reconciliation; render_video.zrndr_global_string_table_data intentionally left blocked pending owner-shape remap; findings: ordinary data-owner lacks a source-shaped parent dependency",
-        "linkage gate migration: linkage=blocked: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked; findings: ordinary data-owner lacks a source-shaped parent dependency"
+        "linkage gate migration: linkage=blocked: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked; findings: ordinary data-owner lacks a source-shaped parent dependency",
+        "Source-owner scrutiny ALLOW: class-table data packet now has source-shaped parent dependencies from HudUiBriefingRuntime and HudUiBriefingObjectivePicture; primary data 0x4cc888/0x4cc898/0x4cc910 remain auxiliary authored class-table data; no byte/S claim.",
+        "Clear stale linkage blocker after source-shaped parent dependency reconciliation; byte remains deferred.",
+        "owner reimplementation tier set to B: Tier-ledger reconciliation after source-owner scrutiny ALLOW: boundary/source/data/linkage accepted for auxiliary authored class-table data 0x4cc888/0x4cc898/0x4cc910, functional none because data-only owner, source-shaped parent dependencies from HudUiBriefingRuntime and HudUiBriefingObjectivePicture; byte remains deferred and no A/S or parent byte claim."
       ],
       "binary": "recoil",
       "relationships": [
@@ -88960,8 +88770,8 @@
         }
       ],
       "reimplementation": {
-        "tier": "X",
-        "evidence": "Controlled migration: SOURCE_OWNERS schema v3 is authoritative for owner gates and Reimplemented tiers"
+        "tier": "B",
+        "evidence": "Tier-ledger reconciliation after source-owner scrutiny ALLOW: boundary/source/data/linkage accepted for auxiliary authored class-table data 0x4cc888/0x4cc898/0x4cc910, functional none because data-only owner, source-shaped parent dependencies from HudUiBriefingRuntime and HudUiBriefingObjectivePicture; byte remains deferred and no A/S or parent byte claim."
       }
     },
     {
@@ -89044,9 +88854,9 @@
         "data": "accepted",
         "functional": "none",
         "byte": "deferred",
-        "linkage": "blocked"
+        "linkage": "accepted"
       },
-      "blocker": "VC5 data-symbol manifest pending; linkage blocked: ordinary data-owner lacks a source-shaped parent dependency",
+      "blocker": "none",
       "evidence": [
         "Read-only classifier bounded 0x4da250 to authored HudUiBriefingRuntime constructor ZRD-binding literals in src/Battlesport/Briefing.cpp; excludes mutable progress event 0x4da24c and source-file diagnostic 0x4da32c; 0x4da2ac MESSAGES has an extra HudUiMgr xref and requires parent extent choice.",
         "Parent accepted 14-row HudUiBriefingRuntime constructor ZRD-binding literal owner excluding 0x4da2ac MESSAGES due extra HudUiMgr xref; source literals in src/Battlesport/Briefing.cpp emit matching VC5 data symbols and verify vc5 briefing_runtime_zrd_binding_literals passed with zero unmasked mismatches for all linked rows. Byte gate remains deferred under global tier-S deferral.",
@@ -89058,7 +88868,10 @@
         "linkage gate migration: linkage=blocked: Controlled linkage update after scrutinized audio_fmv parent-owned data-dependency reconciliation; no gate/tier promotion beyond linkage classification; findings: ordinary data-owner lacks a source-shaped parent dependency",
         "linkage gate migration: linkage=blocked: Controlled linkage update after scrutinized core_util_archive/shared data-dependency reconciliation safe subset; rows with incomplete parentage or metadata blockers intentionally left blocked; findings: ordinary data-owner lacks a source-shaped parent dependency",
         "linkage gate migration: linkage=blocked: Controlled linkage update after scrutinized render_video data-dependency reconciliation; render_video.zrndr_global_string_table_data intentionally left blocked pending owner-shape remap; findings: ordinary data-owner lacks a source-shaped parent dependency",
-        "linkage gate migration: linkage=blocked: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked; findings: ordinary data-owner lacks a source-shaped parent dependency"
+        "linkage gate migration: linkage=blocked: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked; findings: ordinary data-owner lacks a source-shaped parent dependency",
+        "Current-session linkage reconciliation: 14 ZRD binding literal rows are constructor data for legacy.battlesport_gameplay.class_huduibriefingruntime; shared 0x4da2ac remains excluded; source-owner scrutiny allowed treating the existing parent relationship as a source-shaped data dependency.",
+        "Current-session linkage reconciliation: data-owner has primary data rows for 14 HudUiBriefingRuntime constructor ZRD literals and a source-shaped parent dependency on legacy.battlesport_gameplay.class_huduibriefingruntime; owner audit-acceptance strict reported no findings; source-owner scrutiny allowed linkage acceptance. Byte remains deferred; shared 0x4da2ac MESSAGES remains separate.",
+        "Current-session linkage reconciliation accepted the runtime parent data-dependency for the 14-row ZRD literal packet; byte remains deferred and shared 0x4da2ac MESSAGES remains separate."
       ],
       "binary": "recoil",
       "relationships": [
@@ -89139,7 +88952,7 @@
         {
           "kind": "depends-on-owner",
           "target_owner_id": "legacy.battlesport_gameplay.class_huduibriefingruntime",
-          "reason": "legacy-owner-dependency"
+          "reason": "data-dependency"
         }
       ],
       "address_metadata": {
@@ -96103,7 +95916,6 @@
         "src/Battlesport/hud.h"
       ],
       "dependencies": [
-        "hud_ui.background_constructor",
         "legacy.hud_ui.class_huduibackground",
         "legacy.hud_ui.class_huduizrdwidget",
         "hud_ui.hud_ui_element_base"
@@ -96142,7 +95954,8 @@
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized audio_fmv parent-owned data-dependency reconciliation; no gate/tier promotion beyond linkage classification",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized core_util_archive/shared data-dependency reconciliation safe subset; rows with incomplete parentage or metadata blockers intentionally left blocked",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized render_video data-dependency reconciliation; render_video.zrndr_global_string_table_data intentionally left blocked pending owner-shape remap",
-        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked"
+        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked",
+        "Corrective HudUiBackground remap: hud_ui.background_constructor was superseded by complete class owner legacy.hud_ui.class_huduibackground after 0x4b9540 moved to the class owner."
       ],
       "binary": "recoil",
       "relationships": [
@@ -96165,11 +95978,6 @@
         {
           "kind": "primary-function",
           "address": "0x415740"
-        },
-        {
-          "kind": "depends-on-owner",
-          "target_owner_id": "hud_ui.background_constructor",
-          "reason": "legacy-owner-dependency"
         },
         {
           "kind": "depends-on-owner",
@@ -96629,7 +96437,9 @@
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized audio_fmv parent-owned data-dependency reconciliation; no gate/tier promotion beyond linkage classification",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized core_util_archive/shared data-dependency reconciliation safe subset; rows with incomplete parentage or metadata blockers intentionally left blocked",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized render_video data-dependency reconciliation; render_video.zrndr_global_string_table_data intentionally left blocked pending owner-shape remap",
-        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked"
+        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked",
+        "address metadata updated for 0x403c80: BN assembly proves 0x403c80 is a pure jmp to HudUiCircle::Draw and data-referenced from 0x4cc99c; source worker recovered the ordinary DrawDirtyForwarder definition into the physical Briefing.cpp block between 0x403c10 and 0x403c90; verify vc5 0x403c80 passes with zero unmasked mismatches and functional hud_ui_circle_draw_dirty_forwarder passes.",
+        "owner reimplementation tier set to B: Tier-ledger reconciliation after source-owner scrutiny ALLOW: boundary/source/data/functional/linkage gates accepted, membership and acceptance audits clean for HudUiCircle primary functions and class table data; no byte/S claim."
       ],
       "binary": "recoil",
       "relationships": [
@@ -96676,7 +96486,7 @@
       "address_metadata": {
         "0x403c80": {
           "name": "HudUiCircle::DrawDirtyForwarder",
-          "source_path": "src/GameZRecoil/zHud/zhud_ui.cpp",
+          "source_path": "src/Battlesport/Briefing.cpp",
           "target": "hud_ui_circle_draw_dirty_forwarder",
           "group": "ui.zhud"
         },
@@ -96706,8 +96516,8 @@
         }
       },
       "reimplementation": {
-        "tier": "X",
-        "evidence": "Controlled migration: SOURCE_OWNERS schema v3 is authoritative for owner gates and Reimplemented tiers"
+        "tier": "B",
+        "evidence": "Tier-ledger reconciliation after source-owner scrutiny ALLOW: boundary/source/data/functional/linkage gates accepted, membership and acceptance audits clean for HudUiCircle primary functions and class table data; no byte/S claim."
       }
     },
     {
@@ -97114,7 +96924,8 @@
         "src/GameZRecoil/zHud/zhud_ui.cpp"
       ],
       "dependencies": [
-        "hud_ui.invalidate_mask_global"
+        "hud_ui.invalidate_mask_global",
+        "provider.compiler.vc5_hudui_element_scalar_deleting_destructor"
       ],
       "gates": {
         "boundary": "accepted",
@@ -97142,7 +96953,8 @@
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized audio_fmv parent-owned data-dependency reconciliation; no gate/tier promotion beyond linkage classification",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized core_util_archive/shared data-dependency reconciliation safe subset; rows with incomplete parentage or metadata blockers intentionally left blocked",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized render_video data-dependency reconciliation; render_video.zrndr_global_string_table_data intentionally left blocked pending owner-shape remap",
-        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked"
+        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked",
+        "HudUiElement source owner excludes 0x404d70 as primary authored code; BN proves 0x404d70 is VC5 scalar-deleting destructor glue tied to HudUiElement table/destruction ABI and provider operator delete."
       ],
       "binary": "recoil",
       "relationships": [
@@ -97230,6 +97042,11 @@
           "kind": "depends-on-owner",
           "target_owner_id": "hud_ui.invalidate_mask_global",
           "reason": "legacy-owner-dependency"
+        },
+        {
+          "kind": "depends-on-owner",
+          "target_owner_id": "provider.compiler.vc5_hudui_element_scalar_deleting_destructor",
+          "reason": "provider-boundary"
         }
       ],
       "address_metadata": {
@@ -97755,8 +97572,8 @@
         "src/GameZRecoil/zHud/zhud_ui.cpp"
       ],
       "dependencies": [
-        "hud_ui.hud_ui_widget_geometry_invalidation",
-        "hud_ui.hud_ui_slot_class"
+        "hud_ui.hud_ui_slot_class",
+        "legacy.hud_ui.class_huduiwidget"
       ],
       "gates": {
         "boundary": "accepted",
@@ -97787,7 +97604,9 @@
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized audio_fmv parent-owned data-dependency reconciliation; no gate/tier promotion beyond linkage classification",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized core_util_archive/shared data-dependency reconciliation safe subset; rows with incomplete parentage or metadata blockers intentionally left blocked",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized render_video data-dependency reconciliation; render_video.zrndr_global_string_table_data intentionally left blocked pending owner-shape remap",
-        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked"
+        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked",
+        "Dependency reconciliation: stale HudUiWidget geometry/invalidation slice is superseded by canonical primary class owner legacy.hud_ui.class_huduiwidget; downstream HudUiMessage depends on the canonical complete HudUiWidget class, not anchor-only stale slice. No gate or tier promotion.",
+        "Dependency reconciliation: remove stale anchor-only HudUiWidget geometry/invalidation slice dependency after adding canonical legacy.hud_ui.class_huduiwidget. No gate or tier promotion."
       ],
       "binary": "recoil",
       "relationships": [
@@ -97845,13 +97664,13 @@
         },
         {
           "kind": "depends-on-owner",
-          "target_owner_id": "hud_ui.hud_ui_widget_geometry_invalidation",
+          "target_owner_id": "hud_ui.hud_ui_slot_class",
           "reason": "legacy-owner-dependency"
         },
         {
           "kind": "depends-on-owner",
-          "target_owner_id": "hud_ui.hud_ui_slot_class",
-          "reason": "legacy-owner-dependency"
+          "target_owner_id": "legacy.hud_ui.class_huduiwidget",
+          "reason": "source-dependency"
         }
       ],
       "address_metadata": {
@@ -101175,7 +100994,7 @@
       ],
       "dependencies": [
         "hud_ui.hud_ui_element_base",
-        "hud_ui.hud_ui_widget_geometry_invalidation"
+        "legacy.hud_ui.class_huduiwidget"
       ],
       "gates": {
         "boundary": "accepted",
@@ -101204,7 +101023,9 @@
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized audio_fmv parent-owned data-dependency reconciliation; no gate/tier promotion beyond linkage classification",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized core_util_archive/shared data-dependency reconciliation safe subset; rows with incomplete parentage or metadata blockers intentionally left blocked",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized render_video data-dependency reconciliation; render_video.zrndr_global_string_table_data intentionally left blocked pending owner-shape remap",
-        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked"
+        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked",
+        "Dependency reconciliation: stale HudUiWidget geometry/invalidation slice is superseded by canonical primary class owner legacy.hud_ui.class_huduiwidget; downstream HudUiSlot depends on the canonical complete HudUiWidget class, not anchor-only stale slice. No gate or tier promotion.",
+        "Dependency reconciliation: remove stale anchor-only HudUiWidget geometry/invalidation slice dependency after adding canonical legacy.hud_ui.class_huduiwidget. No gate or tier promotion."
       ],
       "binary": "recoil",
       "relationships": [
@@ -101235,8 +101056,8 @@
         },
         {
           "kind": "depends-on-owner",
-          "target_owner_id": "hud_ui.hud_ui_widget_geometry_invalidation",
-          "reason": "legacy-owner-dependency"
+          "target_owner_id": "legacy.hud_ui.class_huduiwidget",
+          "reason": "source-dependency"
         }
       ],
       "address_metadata": {
@@ -102204,7 +102025,9 @@
       ],
       "data_addresses": [],
       "source_paths": [],
-      "dependencies": [],
+      "dependencies": [
+        "legacy.hud_ui.class_huduiwidget"
+      ],
       "gates": {
         "boundary": "accepted",
         "source": "accepted",
@@ -102232,7 +102055,8 @@
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized audio_fmv parent-owned data-dependency reconciliation; no gate/tier promotion beyond linkage classification",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized core_util_archive/shared data-dependency reconciliation safe subset; rows with incomplete parentage or metadata blockers intentionally left blocked",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized render_video data-dependency reconciliation; render_video.zrndr_global_string_table_data intentionally left blocked pending owner-shape remap",
-        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked"
+        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked",
+        "frontier 0x40f200 shows HudUiTripletPanel::Constructor uses MSVC_EH_ArrayConstructor with 0x40f2d0 HudUiWidget::CtorDefaultThunk and 0x4b3d50 HudUiWidget::DestructorCore; both are HudUiWidget owner members after membership reconciliation."
       ],
       "binary": "recoil",
       "relationships": [
@@ -102267,6 +102091,11 @@
         {
           "kind": "primary-function",
           "address": "0x40f460"
+        },
+        {
+          "kind": "depends-on-owner",
+          "target_owner_id": "legacy.hud_ui.class_huduiwidget",
+          "reason": "source-dependency"
         }
       ],
       "address_metadata": {
@@ -102548,7 +102377,7 @@
         "src/GameZRecoil/zHud/zhud_ui.cpp"
       ],
       "dependencies": [
-        "hud_ui.hud_ui_widget_geometry_invalidation"
+        "legacy.hud_ui.class_huduiwidget"
       ],
       "gates": {
         "boundary": "accepted",
@@ -102575,7 +102404,9 @@
         "linkage gate migration: linkage=blocked: Controlled linkage update after scrutinized audio_fmv parent-owned data-dependency reconciliation; no gate/tier promotion beyond linkage classification; findings: accepted or B+ non-standalone owner has no primary function/data children",
         "linkage gate migration: linkage=blocked: Controlled linkage update after scrutinized core_util_archive/shared data-dependency reconciliation safe subset; rows with incomplete parentage or metadata blockers intentionally left blocked; findings: accepted or B+ non-standalone owner has no primary function/data children",
         "linkage gate migration: linkage=blocked: Controlled linkage update after scrutinized render_video data-dependency reconciliation; render_video.zrndr_global_string_table_data intentionally left blocked pending owner-shape remap; findings: accepted or B+ non-standalone owner has no primary function/data children",
-        "linkage gate migration: linkage=blocked: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked; findings: accepted or B+ non-standalone owner has no primary function/data children"
+        "linkage gate migration: linkage=blocked: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked; findings: accepted or B+ non-standalone owner has no primary function/data children",
+        "Dependency reconciliation: stale HudUiWidget geometry/invalidation slice is superseded by canonical primary class owner legacy.hud_ui.class_huduiwidget; destructor wrapper depends on the canonical complete HudUiWidget class, not anchor-only stale slice. No gate or tier promotion.",
+        "Dependency reconciliation: remove stale anchor-only HudUiWidget geometry/invalidation slice dependency after adding canonical legacy.hud_ui.class_huduiwidget. No gate or tier promotion."
       ],
       "binary": "recoil",
       "relationships": [
@@ -102585,8 +102416,8 @@
         },
         {
           "kind": "depends-on-owner",
-          "target_owner_id": "hud_ui.hud_ui_widget_geometry_invalidation",
-          "reason": "legacy-owner-dependency"
+          "target_owner_id": "legacy.hud_ui.class_huduiwidget",
+          "reason": "source-dependency"
         }
       ],
       "reimplementation": {
@@ -102659,75 +102490,6 @@
       },
       "reimplementation": {
         "tier": "B",
-        "evidence": "Controlled migration: SOURCE_OWNERS schema v3 is authoritative for owner gates and Reimplemented tiers"
-      }
-    },
-    {
-      "id": "hud_ui.hud_ui_widget_geometry_invalidation",
-      "kind": "class",
-      "name": "HudUiWidget geometry and invalidation methods",
-      "section": "hud_ui",
-      "state": "accepted",
-      "anchors": [
-        "0x4b3d00"
-      ],
-      "member_addresses": [],
-      "data_addresses": [],
-      "source_paths": [
-        "src/GameZRecoil/zHud/zhud_ui.cpp"
-      ],
-      "dependencies": [
-        "hud_ui.hud_ui_element_base",
-        "hud_ui.invalidate_mask_global"
-      ],
-      "gates": {
-        "boundary": "accepted",
-        "source": "accepted",
-        "data": "accepted",
-        "functional": "accepted",
-        "byte": "blocked",
-        "linkage": "blocked"
-      },
-      "blocker": "final-data audit blocks byte gate: candidate Recoil.exe .data section/raw/virtual layout differs from retail; linkage blocked: accepted or B+ non-standalone owner has no primary function/data children",
-      "evidence": [
-        "BN and source bound this HudUiWidget class slice to constructor, RebuildBltRectFromImage, SetPos, HitTest, and InvalidateRect. These methods use typed HudUiWidget/HudUiElement fields and virtual dispatch slots, not FTable scaffolds; direct authored data is absent except the inherited invalidate path and InvalidateRect read of g_HudUi_InvalidateMask, already accepted under hud_ui.invalidate_mask_global.",
-        "Owner boundary is the HudUiWidget geometry/invalidation slice covering 0x4b3d00, 0x404e10, 0x4b3dd0, 0x4b4030, and 0x4b3e90. The scalar deleting destructor, image-load/ownership helpers, and draw path are intentionally excluded because their tests/data gates remain separate.",
-        "Current BN IL/assembly was reviewed for the slice: constructor installs the HudUiWidget table and initializes typed fields; RebuildBltRectFromImage, SetPos, HitTest, and InvalidateRect match typed HudUiWidget/HudUiElement source in src/GameZRecoil/zHud/zhud_ui.cpp without VTable/FTable scaffolds or raw-offset runtime access.",
-        "BN review found no direct authored data for the constructor, RebuildBltRectFromImage, SetPos, or HitTest. The only authored data used by this slice is the inherited Invalidate/InvalidateRect path through g_HudUi_InvalidateMask, already accepted under hud_ui.invalidate_mask_global with VC5 data-symbol evidence; hud_ui.hud_ui_element_base is an accepted dependency.",
-        "Current-session functional verification passed for 0x4b3d00 (zhud_widget_constructor_smoke), hud_ui_widget_rebuild_blt_rect_from_image, hud_ui_widget_set_pos, hud_ui_widget_hit_test, and the existing 0x4b3e90 InvalidateRect target.",
-        "Tier S remains globally deferred while authored owner/data gates remain open. Current byte evidence is mixed: 0x4b3d00 has a zero-mismatch VC5 pass, 0x404e10 has a known nine-byte drift, and 0x4b3dd0/0x4b4030/0x4b3e90 do not have accepted owner-level byte targets.",
-        "HudUiWidget geometry/invalidation owner gates are accepted; remaining HudUiWidget destructor/image/draw work is intentionally outside this owner slice.",
-        "final-data audit: candidate Recoil.exe .data mismatches retail section/layout evidence; raw_size +0x1a00, virtual_size -0x1ca8, zero_fill_tail -0x36a8, so final data tier S byte identity is not accepted",
-        "Owner/source-owner consistency cleanup: primary owner links normalized so each accepted owner-projection row has one canonical SOURCE_OWNERS primary link; former consumer/touched-data relationships preserved as owner dependencies.",
-        "Controlled migration: SOURCE_OWNERS schema v3 is authoritative for owner gates and Reimplemented tiers",
-        "linkage gate migration: linkage=blocked: Controlled migration: add source-owner linkage gate; reserve fully_linked for whole-executable link status; findings: accepted or B+ non-standalone owner has no primary function/data children",
-        "linkage gate migration: linkage=blocked: Controlled linkage update after parent-owned zClass data-dependency reconciliation; downgrade stale accepted ordinary data-owner rows still lacking source-shaped parent dependencies; findings: accepted or B+ non-standalone owner has no primary function/data children",
-        "linkage gate migration: linkage=blocked: Controlled linkage update after parent-owned battlesport gameplay data-dependency reconciliation; no gate/tier promotion beyond linkage classification; findings: accepted or B+ non-standalone owner has no primary function/data children",
-        "linkage gate migration: linkage=blocked: Controlled linkage update after scrutinized app-shell and network-online parent-owned data-dependency reconciliation; no gate/tier promotion beyond linkage classification; findings: accepted or B+ non-standalone owner has no primary function/data children",
-        "linkage gate migration: linkage=blocked: Controlled linkage update after scrutinized audio_fmv parent-owned data-dependency reconciliation; no gate/tier promotion beyond linkage classification; findings: accepted or B+ non-standalone owner has no primary function/data children",
-        "linkage gate migration: linkage=blocked: Controlled linkage update after scrutinized core_util_archive/shared data-dependency reconciliation safe subset; rows with incomplete parentage or metadata blockers intentionally left blocked; findings: accepted or B+ non-standalone owner has no primary function/data children",
-        "linkage gate migration: linkage=blocked: Controlled linkage update after scrutinized render_video data-dependency reconciliation; render_video.zrndr_global_string_table_data intentionally left blocked pending owner-shape remap; findings: accepted or B+ non-standalone owner has no primary function/data children",
-        "linkage gate migration: linkage=blocked: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked; findings: accepted or B+ non-standalone owner has no primary function/data children"
-      ],
-      "binary": "recoil",
-      "relationships": [
-        {
-          "kind": "anchor-address",
-          "address": "0x4b3d00"
-        },
-        {
-          "kind": "depends-on-owner",
-          "target_owner_id": "hud_ui.hud_ui_element_base",
-          "reason": "legacy-owner-dependency"
-        },
-        {
-          "kind": "depends-on-owner",
-          "target_owner_id": "hud_ui.invalidate_mask_global",
-          "reason": "legacy-owner-dependency"
-        }
-      ],
-      "reimplementation": {
-        "tier": "X",
         "evidence": "Controlled migration: SOURCE_OWNERS schema v3 is authoritative for owner gates and Reimplemented tiers"
       }
     },
@@ -114173,13 +113935,16 @@
         "0x403930",
         "0x403ed0",
         "0x404400",
-        "0x404070"
+        "0x404070",
+        "0x403d90"
       ],
       "data_addresses": [],
       "source_paths": [
         "src/Battlesport/Briefing.cpp"
       ],
-      "dependencies": [],
+      "dependencies": [
+        "hud_ui.briefing_runtime_class_tables"
+      ],
       "gates": {
         "boundary": "accepted",
         "source": "accepted",
@@ -114188,7 +113953,7 @@
         "byte": "blocked",
         "linkage": "accepted"
       },
-      "blocker": "none",
+      "blocker": "Owner byte gate blocked after Briefing source-file-block update pass. The stale no-standalone HudUiBackground::Update call in HudUiBriefingRuntime::Update was repaired to the existing HudUiBackgroundContainer::UpdateAll path, and a source-shaped bool/head-sentinel variant was kept for the action-queue completion test. The physical Briefing block order target briefing_text_block_order_current_shape passes with section_order_matches_manifest True, and Briefing.cpp docblocks/source-shape guard/source-block audit/source-map are clean after refreshing the generated source map. 0x404070 HudUiBriefingRuntime::Update now fails briefing_runtime_update with 146 unmasked mismatches, 8 relocation bytes, 4 trimmed VC5 NOPs, BN size 202, VC5 size 192; this improves the prior 159-mismatch branch-based shape but still misses the retail ECX boolean normalization sequence setz/neg/sbb/inc/test, while current VC5 materializes the bool in BL. 0x403930 HudUiBriefingRuntime::Constructor remains blocked under briefing_runtime_constructor with 153 unmasked mismatches, 236 relocation bytes, 1 trimmed VC5 NOP, BN size 736, VC5 size 736. No owner boundary/source/data/linkage/byte gate or tier promotion is implied; remaining work is source-shape/codegen recovery for 0x404070 and the existing 0x403930 constructor drift.",
       "evidence": [
         "Owner-ledger reconciliation for legacy accepted Source owner markers: the address owner projection already carried accepted owner metadata before strict SOURCE_OWNERS link enforcement; this record links that accepted owner scope without adding data, functional, or byte evidence.",
         "HudUiBriefingRuntime::Update is part of the same HudUiBriefingRuntime class/source-file owner as constructor/destructor/build methods; consolidating duplicate legacy owner split.",
@@ -114203,7 +113968,11 @@
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized audio_fmv parent-owned data-dependency reconciliation; no gate/tier promotion beyond linkage classification",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized core_util_archive/shared data-dependency reconciliation safe subset; rows with incomplete parentage or metadata blockers intentionally left blocked",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized render_video data-dependency reconciliation; render_video.zrndr_global_string_table_data intentionally left blocked pending owner-shape remap",
-        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked"
+        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked",
+        "address metadata updated for 0x403d90: BN vtable g_HudUiBriefingRuntime_Vtbl references 0x403d90 as class-coupled scalar deleting destructor glue in the Briefing physical block.",
+        "address metadata updated for 0x403d90: BN g_HudUiBriefingRuntime_Vtbl slot 2 points to 0x403d90 in the physical Briefing.cpp block; source now declares and emits the derived HudUiBriefingRuntime::ScalarDeletingDestructor override naturally between 0x403cb0 and 0x403e20; verify vc5 0x403d90 passes with zero unmasked mismatches.",
+        "Data classifier: HudUiBriefingRuntime installs/uses class table 0x4cc888 and embedded HudUiBriefingTransportProgress table 0x4cc910 in Briefing.cpp; auxiliary authored class-table data packet, not provider-owned.",
+        "Update blocker after Briefing source-file-block worker passes and parent validation; no positive gate/tier acceptance for HudUiBriefingRuntime."
       ],
       "binary": "recoil",
       "relationships": [
@@ -114226,6 +113995,15 @@
         {
           "kind": "primary-function",
           "address": "0x404070"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x403d90"
+        },
+        {
+          "kind": "depends-on-owner",
+          "target_owner_id": "hud_ui.briefing_runtime_class_tables",
+          "reason": "data-dependency"
         }
       ],
       "address_metadata": {
@@ -114251,6 +114029,12 @@
           "name": "HudUiBriefingRuntime::BuildObjectiveActionsFromIndex",
           "source_path": "src/Battlesport/Briefing.cpp",
           "target": "briefing_runtime_build_objective_actions_from_index",
+          "group": "battlesport.briefing"
+        },
+        "0x403d90": {
+          "name": "HudUiBriefingRuntime::ScalarDeletingDestructor",
+          "source_path": "src/Battlesport/Briefing.cpp",
+          "target": "briefing_runtime_scalar_deleting_destructor",
           "group": "battlesport.briefing"
         }
       },
@@ -114737,7 +114521,8 @@
         "0x404bb0",
         "0x404bd0",
         "0x404c50",
-        "0x404c80"
+        "0x404c80",
+        "0x404140"
       ],
       "data_addresses": [
         {
@@ -114796,7 +114581,9 @@
       "source_paths": [
         "src/Battlesport/Briefing.cpp"
       ],
-      "dependencies": [],
+      "dependencies": [
+        "engine.zinput.zin_kbd_wait_event_cluster"
+      ],
       "gates": {
         "boundary": "accepted",
         "source": "accepted",
@@ -114822,7 +114609,10 @@
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized audio_fmv parent-owned data-dependency reconciliation; no gate/tier promotion beyond linkage classification",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized core_util_archive/shared data-dependency reconciliation safe subset; rows with incomplete parentage or metadata blockers intentionally left blocked",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized render_video data-dependency reconciliation; render_video.zrndr_global_string_table_data intentionally left blocked pending owner-shape remap",
-        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked"
+        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked",
+        "Source-owner scrutinizer allowed Briefing to depend on the zInput keyboard owner because 0x404140 calls 0x46fa10.",
+        "address metadata updated for 0x404140: Source-owner scrutinizer remapped 0x404140 to the physical Briefing.cpp subsystem; update navigation metadata only.",
+        "address metadata updated for 0x404140: Focused VC5 verification for 0x404140 now passes under briefing_text_block_order_current_shape with symbol @zInput_WaitForAnyKeyPressWithTimeoutMs@4; functional target zinput_wait_for_any_key_press_with_timeout also passes. No owner gate or tier promotion is implied."
       ],
       "binary": "recoil",
       "relationships": [
@@ -114974,6 +114764,15 @@
           "kind": "primary-data",
           "address": "0x4da32c",
           "name": "g_HudUiBriefing_SourceFile_BriefingCpp"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x404140"
+        },
+        {
+          "kind": "depends-on-owner",
+          "target_owner_id": "engine.zinput.zin_kbd_wait_event_cluster",
+          "reason": "source-dependency"
         }
       ],
       "address_metadata": {
@@ -115174,6 +114973,12 @@
           "source_path": "src/Battlesport/Briefing.cpp",
           "target": "briefing_runtime_mutable_globals",
           "group": "data.battlesport_gameplay"
+        },
+        "0x404140": {
+          "name": "zInput_WaitForAnyKeyPressWithTimeoutMs",
+          "source_path": "src/Battlesport/Briefing.cpp",
+          "target": "zinput_wait_for_any_key_press_with_timeout",
+          "group": "battlesport.briefing"
         }
       },
       "reimplementation": {
@@ -119264,25 +119069,37 @@
         "0x4ba0c0",
         "0x4ba0e0",
         "0x4ba350",
-        "0x4ba070"
+        "0x4ba070",
+        "0x4b9540"
       ],
-      "data_addresses": [],
+      "data_addresses": [
+        {
+          "address": "0x4d39f8",
+          "name": "g_HudUiBackground_Vtbl"
+        }
+      ],
       "source_paths": [
-        "src/GameZRecoil/zHud/zhud_ui.cpp"
+        "src/GameZRecoil/zUI/zui.cpp"
       ],
       "dependencies": [
         "hud_ui.zhud_background_config_zrd_key_literals",
-        "hud_ui.hud_ui_background_buttons_zrd_key_literal"
+        "hud_ui.hud_ui_background_buttons_zrd_key_literal",
+        "legacy.hud_ui.class_huduibackgroundmembercursorwidget",
+        "provider.compiler.vc5_huduibackground_scalar_deleting_destructor",
+        "legacy.hud_ui.class_huduibackgroundcursorwidget",
+        "legacy.hud_ui.class_huduibackgroundvideowidget",
+        "hud_ui.background_primitive_zrd_key_literals",
+        "legacy.hud_ui.class_huduiprimitivebindtarget"
       ],
       "gates": {
-        "boundary": "accepted",
-        "source": "accepted",
-        "data": "accepted",
+        "boundary": "blocked",
+        "source": "blocked",
+        "data": "blocked",
         "functional": "accepted",
         "byte": "deferred",
         "linkage": "accepted"
       },
-      "blocker": "none",
+      "blocker": "Complete-owner source/byte blocked: latest pass removed stale source-shape scaffolds and repaired local source order without changing owner gates. HudUiTransitionTextPanel::HudUiTransitionTextPanel remains out-of-class inline but is now emitted immediately after HudUiBackground::LoadZrdAndSection and before HudUiBackground::BindButtonsNodeToWidgetByName, matching the retail local order around 0x4ba020; VC5 target hud_ui_background_member_helpers keeps 0x4ba020 byte-clean (0 mismatches, 8 reloc bytes, 11 trim nops, BN size 69, VC5 size 80), with 0x4bfcd0 and 0x4ba4c0 still clean. Dead unsupported helper HudUiReadPackedColor was removed. No-standalone compatibility helper HudUiBackground::Update(float) was removed from zhud_ui.h/zui.cpp, and its two callers now call HudUiBackgroundContainer::UpdateAll directly. Source map was refreshed/current; source-shape guard, zui.cpp/zhud_ui.h docblock audits, owner audit, and issue audit pass. Preserved byte-clean HudUiBackground anchors include 0x4b9540 constructor plus data 0x4d39f8/0x4d3a08, 0x4b9850 SetEnabled, 0x4b98d0 LoadFromZrd, 0x4ba070/0x4ba0c0 bind wrappers, and 0x4ba350 FreeLoadedTreeRoots. Routing metadata remains provisional src/GameZRecoil/zUI/zui.cpp for this no-literal shelf, not original-TU acceptance. 0x4b9900 LoadZrdAndSection still fails VC5 byte compare (1462 mismatches, 184 reloc bytes, 1 trim nop, BN size 1816, VC5 size 1696); residual facts remain first-drift frame/register lifetime, retail sub esp,0xc and ebp=this versus current sub esp,0x8 and ebx=this. 0x4ba0e0 BindPrimitiveNodeToElement still fails (466 mismatches, 88 reloc bytes, 11 trim nops, BN size 620, VC5 size 624); residual facts remain early PRIMITIVES lookup lifetime drift, retail saves esi/ebx and materializes first result into ebx before null testing while current VC5 delays esi and compares eax. No data literal, prototype, type, provider, source guard, docblock, owner-ledger, issue-ledger, or BN-state blocker beyond residual source-shape byte drift. Next progress likely needs broader owner/source-shape recovery for declaration/scoping/header/include evidence in this no-literal shelf, not gate/tier promotion.",
       "evidence": [
         "Owner-ledger reconciliation for legacy accepted Source owner markers: the address owner projection already carried accepted owner metadata before strict SOURCE_OWNERS link enforcement; this record links that accepted owner scope without adding data, functional, or byte evidence.",
         "HudUiBackground direct primitive-binding ZRD token data dependencies are covered by accepted hud_ui.background_primitive_zrd_key_literals plus accepted BITMAP/FONT owner; transitive HudUiPrimitiveBindTarget endpoint setter has no authored globals and is tier B/no-data; functional target 0x4ba0e0 passed in this session.",
@@ -119296,7 +119113,39 @@
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized render_video data-dependency reconciliation; render_video.zrndr_global_string_table_data intentionally left blocked pending owner-shape remap",
         "HudUiBackground::LoadZrdAndSection config literals; partial HUD scrutiny allowed linkage-only migration.",
         "HudUiBackground button ZRD key literal; partial HUD scrutiny allowed linkage-only migration.",
-        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked"
+        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked",
+        "HudUiBackground embeds HudUiBackgroundMemberCursorWidget cursorWidget at offset 0x44; BN constructor writes 0x4d3a08 after constructing the subobject and destructor tears it down via cursor-widget destructor core.",
+        "address metadata updated for 0x4b9540: Preserve constructor metadata while moving 0x4b9540 into the complete HudUiBackground class owner.",
+        "HudUiBackground vtable data 0x4d39f8 slot +0x8 targets provider/compiler scalar deleting destructor glue 0x4b9740.",
+        "Corrective HudUiBackground remap: BN constructor/destructor write class vptr 0x4d39f8, the class vtable data was missing, and full class data/source boundary requires re-audit; no positive boundary/source/data/byte acceptance in this pass.",
+        "Source-owner scrutiny allowed only corrective remap and stale-claim downgrade, not positive gate acceptance.",
+        "owner reimplementation tier set to X: Stale tier B contradicted by missing class-owned vtable data 0x4d39f8 and incomplete complete-owner source/data audit after constructor remap; data/boundary/source are blocked pending re-audit, while 0x4b9740 is separately classified as provider compiler glue.",
+        "HudUiBackground constructs cursorWidget through HudUiBackgroundCursorWidget::MemberConstructorLocal and depends on base cursor-widget vtable data 0x4d41c8; keep the base cursor-widget class in the parent owner frontier.",
+        "HudUiBackground owns backgroundVideoWidgets[10], constructor/destructor run HudUiBackgroundVideoWidget array lifecycle, and parent byte/data readiness depends on video-widget vtable data 0x4d4248.",
+        "Source-owner/provider-data packets for 0x4b9540 linked direct cursor/video widget dependencies and found dependent vtable data gates still pending; keep HudUiBackground owner blocked until complete class/data frontier is accepted.",
+        "HudUiBackground coverage pass resolved missing 0x4b9850/0x4d39f8 manifests but found SetEnabled byte drift and dependent vtable section-size blockers; source-worker probe showed simple virtual destructor changes ??1HudUiBackground@@QAE@XZ and emits vector deleting destructor, so scalar-delete source-shape cleanup remains unresolved.",
+        "Owner-scoped VC5 after coverage repair selected 7 targets/10 items with no missing coverage; 0x4b9540, 0x4b9760, 0x4b98d0, 0x4ba350, and data 0x4d39f8 were byte-clean, while SetEnabled/LoadZrdAndSection/BindPrimitiveNodeToElement and bind-wrapper symbol emission failed.",
+        "Update stale blocker after source-worker vtable repair, independent VC5 verification, and source-owner scrutiny results; no positive boundary/source/byte/tier acceptance for HudUiBackground.",
+        "Update blocker after latest source-worker fixes and independent verifier packet; no positive boundary/source/byte/tier acceptance for HudUiBackground.",
+        "Update blocker after accepted member cursor embedded-class gates and prior independent verifier packet; no positive boundary/source/byte/tier acceptance for HudUiBackground.",
+        "Update blocker after source-worker order repair and independent verifier packet; no positive boundary/source/byte/tier acceptance for HudUiBackground.",
+        "BN 0x4ba0e0 BindPrimitiveNodeToElement references PRIMITIVES/POSITION/WORDWRAP/COLOR/ENDP_REL/ENDP_ABS ZRD key literals; link auxiliary data packet to HudUiBackground for parent-owned primitive binding data dependency only, no gate/tier promotion.",
+        "Update blocker after source-worker pass, parent VC5 verification, and parent-owned primitive ZRD data dependency link; no positive boundary/source/data/byte/tier acceptance for HudUiBackground.",
+        "BN 0x4ba0e0 BindPrimitiveNodeToElement calls HudUiPrimitiveBindTarget::SetSegmentEndpoints at 0x4bffb0 for ENDP_REL/ENDP_ABS primitive binding; link authored helper owner as a callee/source dependency only, no gate/tier promotion.",
+        "Update blocker after residual source-worker pass and parent verification; primitive ZRD linkage accepted separately, but HudUiBackground boundary/source/data/byte remain blocked and tier stays X.",
+        "Update blocker after source-worker direct fontSpec color/mutable primitiveNode pass, independent verifier packet, and BN residual fact packet; no positive boundary/source/data/byte/tier acceptance for HudUiBackground.",
+        "source_paths updated from ['src/GameZRecoil/zHud/zhud_ui.cpp'] to ['src/GameZRecoil/zUI/zui.cpp']; supersedes prior source_paths/evidence where contradicted by current owner/source evidence: Focused source-owner mapper packet: HudUiBackground anchors/data sit inside no-literal late shelf [0x4b3ce0,0x4bffe0) mapped-no-literal-mixed with provisional source path src/GameZRecoil/zUI/zui.cpp; src/GameZRecoil/zHud/zhud_ui.cpp does not exist. Routing metadata only; no original-TU/source-file/gate/tier acceptance.",
+        "address metadata updated for 0x4b9540: Focused source-owner mapper packet: HudUiBackground anchors/data sit inside no-literal late shelf [0x4b3ce0,0x4bffe0) mapped-no-literal-mixed with provisional source path src/GameZRecoil/zUI/zui.cpp; src/GameZRecoil/zHud/zhud_ui.cpp does not exist. Routing metadata only; no original-TU/source-file/gate/tier acceptance.",
+        "address metadata updated for 0x4b9760: Focused source-owner mapper packet: HudUiBackground anchors/data sit inside no-literal late shelf [0x4b3ce0,0x4bffe0) mapped-no-literal-mixed with provisional source path src/GameZRecoil/zUI/zui.cpp; src/GameZRecoil/zHud/zhud_ui.cpp does not exist. Routing metadata only; no original-TU/source-file/gate/tier acceptance.",
+        "address metadata updated for 0x4b9850: Focused source-owner mapper packet: HudUiBackground anchors/data sit inside no-literal late shelf [0x4b3ce0,0x4bffe0) mapped-no-literal-mixed with provisional source path src/GameZRecoil/zUI/zui.cpp; src/GameZRecoil/zHud/zhud_ui.cpp does not exist. Routing metadata only; no original-TU/source-file/gate/tier acceptance.",
+        "address metadata updated for 0x4b98d0: Focused source-owner mapper packet: HudUiBackground anchors/data sit inside no-literal late shelf [0x4b3ce0,0x4bffe0) mapped-no-literal-mixed with provisional source path src/GameZRecoil/zUI/zui.cpp; src/GameZRecoil/zHud/zhud_ui.cpp does not exist. Routing metadata only; no original-TU/source-file/gate/tier acceptance.",
+        "address metadata updated for 0x4b9900: Focused source-owner mapper packet: HudUiBackground anchors/data sit inside no-literal late shelf [0x4b3ce0,0x4bffe0) mapped-no-literal-mixed with provisional source path src/GameZRecoil/zUI/zui.cpp; src/GameZRecoil/zHud/zhud_ui.cpp does not exist. Routing metadata only; no original-TU/source-file/gate/tier acceptance.",
+        "address metadata updated for 0x4ba070: Focused source-owner mapper packet: HudUiBackground anchors/data sit inside no-literal late shelf [0x4b3ce0,0x4bffe0) mapped-no-literal-mixed with provisional source path src/GameZRecoil/zUI/zui.cpp; src/GameZRecoil/zHud/zhud_ui.cpp does not exist. Routing metadata only; no original-TU/source-file/gate/tier acceptance.",
+        "address metadata updated for 0x4ba0c0: Focused source-owner mapper packet: HudUiBackground anchors/data sit inside no-literal late shelf [0x4b3ce0,0x4bffe0) mapped-no-literal-mixed with provisional source path src/GameZRecoil/zUI/zui.cpp; src/GameZRecoil/zHud/zhud_ui.cpp does not exist. Routing metadata only; no original-TU/source-file/gate/tier acceptance.",
+        "address metadata updated for 0x4ba0e0: Focused source-owner mapper packet: HudUiBackground anchors/data sit inside no-literal late shelf [0x4b3ce0,0x4bffe0) mapped-no-literal-mixed with provisional source path src/GameZRecoil/zUI/zui.cpp; src/GameZRecoil/zHud/zhud_ui.cpp does not exist. Routing metadata only; no original-TU/source-file/gate/tier acceptance.",
+        "address metadata updated for 0x4ba350: Focused source-owner mapper packet: HudUiBackground anchors/data sit inside no-literal late shelf [0x4b3ce0,0x4bffe0) mapped-no-literal-mixed with provisional source path src/GameZRecoil/zUI/zui.cpp; src/GameZRecoil/zHud/zhud_ui.cpp does not exist. Routing metadata only; no original-TU/source-file/gate/tier acceptance.",
+        "Update blocker after second source-worker probe pass and source-path routing correction; no kept source edits in second pass and no positive boundary/source/data/byte/tier acceptance for HudUiBackground.",
+        "Update blocker after source-worker local-order/scaffold cleanup and parent verification; no positive boundary/source/data/byte/tier acceptance for HudUiBackground."
       ],
       "binary": "recoil",
       "relationships": [
@@ -119337,6 +119186,15 @@
           "address": "0x4ba070"
         },
         {
+          "kind": "primary-function",
+          "address": "0x4b9540"
+        },
+        {
+          "kind": "primary-data",
+          "address": "0x4d39f8",
+          "name": "g_HudUiBackground_Vtbl"
+        },
+        {
           "kind": "depends-on-owner",
           "target_owner_id": "hud_ui.zhud_background_config_zrd_key_literals",
           "reason": "data-dependency"
@@ -119345,61 +119203,97 @@
           "kind": "depends-on-owner",
           "target_owner_id": "hud_ui.hud_ui_background_buttons_zrd_key_literal",
           "reason": "data-dependency"
+        },
+        {
+          "kind": "depends-on-owner",
+          "target_owner_id": "legacy.hud_ui.class_huduibackgroundmembercursorwidget",
+          "reason": "layout-contract"
+        },
+        {
+          "kind": "depends-on-owner",
+          "target_owner_id": "provider.compiler.vc5_huduibackground_scalar_deleting_destructor",
+          "reason": "provider-boundary"
+        },
+        {
+          "kind": "depends-on-owner",
+          "target_owner_id": "legacy.hud_ui.class_huduibackgroundcursorwidget",
+          "reason": "layout-contract"
+        },
+        {
+          "kind": "depends-on-owner",
+          "target_owner_id": "legacy.hud_ui.class_huduibackgroundvideowidget",
+          "reason": "layout-contract"
+        },
+        {
+          "kind": "depends-on-owner",
+          "target_owner_id": "hud_ui.background_primitive_zrd_key_literals",
+          "reason": "data-dependency"
+        },
+        {
+          "kind": "depends-on-owner",
+          "target_owner_id": "legacy.hud_ui.class_huduiprimitivebindtarget",
+          "reason": "source-dependency"
         }
       ],
       "address_metadata": {
         "0x4b9760": {
           "name": "HudUiBackground::Destructor",
-          "source_path": "src/GameZRecoil/zHud/zhud_ui.cpp",
+          "source_path": "src/GameZRecoil/zUI/zui.cpp",
           "target": "hud_ui_background_destructor",
           "group": "ui.zhud"
         },
         "0x4b9850": {
           "name": "HudUiBackground::SetEnabled",
-          "source_path": "src/GameZRecoil/zHud/zhud_ui.cpp",
+          "source_path": "src/GameZRecoil/zUI/zui.cpp",
           "target": "hud_ui_background_set_enabled",
           "group": "ui.zhud"
         },
         "0x4b98d0": {
           "name": "HudUiBackground::LoadFromZrd",
-          "source_path": "src/GameZRecoil/zHud/zhud_ui.cpp",
+          "source_path": "src/GameZRecoil/zUI/zui.cpp",
           "target": "hud_ui_background_load_zrd",
           "group": "ui.zhud"
         },
         "0x4b9900": {
           "name": "HudUiBackground::LoadZrdAndSection",
-          "source_path": "src/GameZRecoil/zHud/zhud_ui.cpp",
+          "source_path": "src/GameZRecoil/zUI/zui.cpp",
           "target": "hud_ui_background_load_zrd_and_section",
           "group": "ui.zhud"
         },
         "0x4ba070": {
           "name": "HudUiBackground::BindButtonsNodeToWidgetByName",
-          "source_path": "src/GameZRecoil/zHud/zhud_ui.cpp",
+          "source_path": "src/GameZRecoil/zUI/zui.cpp",
           "target": "hud_ui_background_bind_buttons_node_to_widget_by_name",
           "group": "ui.zhud"
         },
         "0x4ba0c0": {
           "name": "HudUiBackground::BindWidgetByName",
-          "source_path": "src/GameZRecoil/zHud/zhud_ui.cpp",
+          "source_path": "src/GameZRecoil/zUI/zui.cpp",
           "target": "hud_ui_background_bind_widget_by_name",
           "group": "ui.zhud"
         },
         "0x4ba0e0": {
           "name": "HudUiBackground::BindPrimitiveNodeToElement",
-          "source_path": "src/GameZRecoil/zHud/zhud_ui.cpp",
+          "source_path": "src/GameZRecoil/zUI/zui.cpp",
           "target": "hud_ui_background_bind_primitive_node_to_element",
           "group": "ui.zhud"
         },
         "0x4ba350": {
           "name": "HudUiBackground::FreeLoadedTreeRoots",
-          "source_path": "src/GameZRecoil/zHud/zhud_ui.cpp",
+          "source_path": "src/GameZRecoil/zUI/zui.cpp",
           "target": "hud_ui_background_free_loaded_tree_roots",
+          "group": "ui.zhud"
+        },
+        "0x4b9540": {
+          "name": "HudUiBackground::HudUiBackground",
+          "source_path": "src/GameZRecoil/zUI/zui.cpp",
+          "target": "hud_ui_background_constructor",
           "group": "ui.zhud"
         }
       },
       "reimplementation": {
-        "tier": "B",
-        "evidence": "Controlled migration: SOURCE_OWNERS schema v3 is authoritative for owner gates and Reimplemented tiers"
+        "tier": "X",
+        "evidence": "Stale tier B contradicted by missing class-owned vtable data 0x4d39f8 and incomplete complete-owner source/data audit after constructor remap; data/boundary/source are blocked pending re-audit, while 0x4b9740 is separately classified as provider compiler glue."
       }
     },
     {
@@ -119536,17 +119430,32 @@
         "0x4bfa70",
         "0x4bfb70",
         "0x4bfc50",
-        "0x4bfc60"
+        "0x4bfc60",
+        "0x4bf980",
+        "0x4bfa50",
+        "0x4bfae0",
+        "0x4bfba0"
       ],
-      "data_addresses": [],
+      "data_addresses": [
+        {
+          "address": "0x4d41c8",
+          "name": "g_HudUiBackgroundCursorWidget_Vtbl"
+        }
+      ],
       "source_paths": [
         "src/GameZRecoil/zHud/zhud_ui.cpp"
       ],
-      "dependencies": [],
+      "dependencies": [
+        "legacy.hud_ui.class_huduiwidget",
+        "legacy.geometry_model_assets.struct_zvidimagepartial",
+        "render_video.zvideo_buff_copy_surface_rect",
+        "engine.zimage.zvid_image_release_helpers",
+        "provider.compiler.vc5_huduibackgroundcursorwidget_scalar_deleting_destructor"
+      ],
       "gates": {
         "boundary": "accepted",
         "source": "accepted",
-        "data": "none",
+        "data": "accepted",
         "functional": "accepted",
         "byte": "deferred",
         "linkage": "accepted"
@@ -119565,7 +119474,16 @@
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized audio_fmv parent-owned data-dependency reconciliation; no gate/tier promotion beyond linkage classification",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized core_util_archive/shared data-dependency reconciliation safe subset; rows with incomplete parentage or metadata blockers intentionally left blocked",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized render_video data-dependency reconciliation; render_video.zrndr_global_string_table_data intentionally left blocked pending owner-shape remap",
-        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked"
+        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked",
+        "BN data 0x4d41c8 is class-owned HudUiBackgroundCursorWidget vtable data, size 0x80, with cursor-widget slot targets; prior data=none is contradicted, while data acceptance waits for full vtable/data evidence.",
+        "owner reimplementation tier set to X: Scrutiny found class-owned vtable data at 0x4d41c8 and an unresolved split method owner; data is pending and owner set-tier rejects C until data is accepted/no-data, so downgrade stale B to X rather than overclaim B+.",
+        "Scrutinized merge: arbitrary HudUiBackgroundCursorWidget method split moved into complete class owner; provider scalar deleting destructor remains excluded.",
+        "Scrutinized merge: direct BN frontier/callee ownership supports HudUiWidget, zVidImagePartial, zVideo surface-copy, and zVid image release dependencies; stale widget-owned helper and unsupported primary-active blit dependency excluded.",
+        "BN 0x4d41c8 cursor-widget vtable slot 0 targets VC5 scalar deleting destructor glue 0x4bfa00.",
+        "VC5 data-symbol coverage now resolves 0x4d41c8, but current source emits ??_7HudUiBackgroundCursorWidget@@6B@ as 0x78 bytes while retail BN data is 0x80; data gate remains blocked pending source/model repair.",
+        "VC5 manifest coverage for 0x4d41c8 found ??_7HudUiBackgroundCursorWidget@@6B@, but verification fails because generated section is shorter than the retail BN table length.",
+        "Scrutiny allowed data acceptance for 0x4d41c8 only: BN/VC5 prove compiler-emitted cursor-widget vtable size 0x80 with tail slots +0x78 SetImageBorrowedAndRefreshIfChanged and +0x7c SetImageByPathOwnedAndRefresh after source-faithful virtual declaration repair; no tier or byte promotion.",
+        "Data blocker cleared by scrutinized VC5/BN vtable evidence for 0x4d41c8; byte remains deferred and tier remains X pending separate tier review."
       ],
       "binary": "recoil",
       "relationships": [
@@ -119596,6 +119514,52 @@
         {
           "kind": "primary-function",
           "address": "0x4bfc60"
+        },
+        {
+          "kind": "primary-data",
+          "address": "0x4d41c8",
+          "name": "g_HudUiBackgroundCursorWidget_Vtbl"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x4bf980"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x4bfa50"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x4bfae0"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x4bfba0"
+        },
+        {
+          "kind": "depends-on-owner",
+          "target_owner_id": "legacy.hud_ui.class_huduiwidget",
+          "reason": "source-dependency"
+        },
+        {
+          "kind": "depends-on-owner",
+          "target_owner_id": "legacy.geometry_model_assets.struct_zvidimagepartial",
+          "reason": "source-dependency"
+        },
+        {
+          "kind": "depends-on-owner",
+          "target_owner_id": "render_video.zvideo_buff_copy_surface_rect",
+          "reason": "source-dependency"
+        },
+        {
+          "kind": "depends-on-owner",
+          "target_owner_id": "engine.zimage.zvid_image_release_helpers",
+          "reason": "source-dependency"
+        },
+        {
+          "kind": "depends-on-owner",
+          "target_owner_id": "provider.compiler.vc5_huduibackgroundcursorwidget_scalar_deleting_destructor",
+          "reason": "provider-boundary"
         }
       ],
       "address_metadata": {
@@ -119637,9 +119601,76 @@
         }
       },
       "reimplementation": {
-        "tier": "B",
-        "evidence": "Controlled migration: SOURCE_OWNERS schema v3 is authoritative for owner gates and Reimplemented tiers"
+        "tier": "X",
+        "evidence": "Scrutiny found class-owned vtable data at 0x4d41c8 and an unresolved split method owner; data is pending and owner set-tier rejects C until data is accepted/no-data, so downgrade stale B to X rather than overclaim B+."
       }
+    },
+    {
+      "id": "legacy.hud_ui.class_huduibackgroundmembercursorwidget",
+      "kind": "class",
+      "name": "HudUiBackgroundMemberCursorWidget",
+      "section": "hud_ui",
+      "state": "mapped",
+      "anchors": [
+        "0x4d3a08"
+      ],
+      "member_addresses": [],
+      "data_addresses": [
+        {
+          "address": "0x4d3a08",
+          "name": "g_HudUiBackgroundCursorWidget_MemberVtbl"
+        }
+      ],
+      "source_paths": [],
+      "dependencies": [
+        "legacy.hud_ui.class_huduibackgroundcursorwidget",
+        "provider.compiler.vc5_huduibackgroundmembercursorwidget_scalar_deleting_destructor"
+      ],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "none",
+        "linkage": "accepted",
+        "byte": "pending"
+      },
+      "blocker": "none",
+      "evidence": [
+        "BN HudUiBackground constructor builds cursorWidget at this+0x44 then writes member vtable 0x4d3a08; secondary source declares HudUiBackgroundMemberCursorWidget derived from HudUiBackgroundCursorWidget with inline constructor and no standalone authored retail function.",
+        "BN 0x4d3a08 member cursor-widget vtable slot 0 targets VC5 scalar deleting destructor glue 0x4b9710.",
+        "HudUiBackground embeds HudUiBackgroundMemberCursorWidget; ledger has primary-data 0x4d3a08 plus provider scalar-delete dependency, but no accepted class/data gates.",
+        "VC5 data-symbol coverage now resolves 0x4d3a08, but current source emits ??_7HudUiBackgroundMemberCursorWidget@@6B@ as 0x78 bytes while retail BN data is 0x80; data gate remains blocked pending source/model repair.",
+        "VC5 manifest coverage for 0x4d3a08 found ??_7HudUiBackgroundMemberCursorWidget@@6B@, but verification fails because generated section is shorter than the retail BN table length.",
+        "Scrutiny blocked data=accepted for 0x4d3a08 until the member cursor owner boundary/source/linkage are accepted or the data is remapped under a complete accepted primary owner.",
+        "Source-owner scrutiny allowed embedded zero-primary-function class model: 0x4d3a08 is complete compiler-emitted member cursor vtable data for HudUiBackgroundMemberCursorWidget, source is inline/member-derived class shape, provider slot 0 remains excluded as scalar-delete glue, and dependencies cover base cursor-widget plus provider owner. No byte or tier promotion.",
+        "Scrutinized embedded zero-primary-function class model accepted; 0x4d3a08 data accepted as complete compiler-emitted member cursor vtable with provider scalar-delete slot excluded. No byte or tier promotion."
+      ],
+      "binary": "recoil",
+      "reimplementation": {
+        "tier": "X",
+        "evidence": "pending"
+      },
+      "relationships": [
+        {
+          "kind": "anchor-address",
+          "address": "0x4d3a08"
+        },
+        {
+          "kind": "primary-data",
+          "address": "0x4d3a08",
+          "name": "g_HudUiBackgroundCursorWidget_MemberVtbl"
+        },
+        {
+          "kind": "depends-on-owner",
+          "target_owner_id": "legacy.hud_ui.class_huduibackgroundcursorwidget",
+          "reason": "legacy-owner-dependency"
+        },
+        {
+          "kind": "depends-on-owner",
+          "target_owner_id": "provider.compiler.vc5_huduibackgroundmembercursorwidget_scalar_deleting_destructor",
+          "reason": "provider-boundary"
+        }
+      ]
     },
     {
       "id": "legacy.hud_ui.class_huduibackgroundvideowidget",
@@ -119660,20 +119691,27 @@
         "0x4bfec0",
         "0x4bff00"
       ],
-      "data_addresses": [],
+      "data_addresses": [
+        {
+          "address": "0x4d4248",
+          "name": "g_HudUiBackgroundVideoWidget_FTable"
+        }
+      ],
       "source_paths": [
         "src/GameZRecoil/zHud/zhud_ui.cpp"
       ],
-      "dependencies": [],
+      "dependencies": [
+        "provider.compiler.vc5_huduibackgroundvideowidget_scalar_deleting_destructor"
+      ],
       "gates": {
         "boundary": "accepted",
         "source": "accepted",
-        "data": "none",
+        "data": "accepted",
         "functional": "pending",
         "byte": "deferred",
         "linkage": "accepted"
       },
-      "blocker": "none",
+      "blocker": "Functional gate remains pending and byte remains deferred; data blocker for 0x4d4248 was cleared by scrutinized VC5/BN vtable evidence, with no tier promotion.",
       "evidence": [
         "Owner-ledger reconciliation for legacy accepted Source owner markers: the address owner projection already carried accepted owner metadata before strict SOURCE_OWNERS link enforcement; this record links that accepted owner scope without adding data, functional, or byte evidence.",
         "0x4d4248 is .rdata compiler-generated VC5 class vtable data for typed HudUiBackgroundVideoWidget source, with BN xrefs only from constructor/destructor class-identity stores; production source has no authored g_HudUiBackgroundVideoWidget_FTable table/factory, and plan data entries are canonical .data owner-range globals only.",
@@ -119685,7 +119723,14 @@
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized audio_fmv parent-owned data-dependency reconciliation; no gate/tier promotion beyond linkage classification",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized core_util_archive/shared data-dependency reconciliation safe subset; rows with incomplete parentage or metadata blockers intentionally left blocked",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized render_video data-dependency reconciliation; render_video.zrndr_global_string_table_data intentionally left blocked pending owner-shape remap",
-        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked"
+        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked",
+        "BN constructor/destructor write class vtable 0x4d4248; previous data=none is contradicted until vtable data-symbol coverage is accepted.",
+        "owner reimplementation tier set to X: BN constructor/destructor xrefs prove 0x4d4248 is HudUiBackgroundVideoWidget class vtable data; current data=none and tier B are stale.",
+        "BN 0x4d4248 class vtable slot 0 targets VC5 scalar deleting destructor glue 0x4bfcb0; keep glue as provider-boundary dependency, not authored class source.",
+        "VC5 data-symbol coverage now resolves 0x4d4248, but current source emits ??_7HudUiBackgroundVideoWidget@@6B@ as 0x74 bytes while retail BN data is 0x78; data gate remains blocked pending source/model repair.",
+        "VC5 manifest coverage for 0x4d4248 found ??_7HudUiBackgroundVideoWidget@@6B@, but verification fails because generated section is shorter than the retail BN table length.",
+        "Scrutiny allowed data acceptance for 0x4d4248 only: BN/VC5 prove compiler-emitted video-widget vtable/FTable size 0x78 with +0x74 RebuildBltRect after source-faithful virtual declaration repair; functional remains pending and no tier or byte promotion.",
+        "Scrutiny allowed only data=accepted for 0x4d4248; functional/byte/tier unchanged."
       ],
       "binary": "recoil",
       "relationships": [
@@ -119724,6 +119769,16 @@
         {
           "kind": "primary-function",
           "address": "0x4bff00"
+        },
+        {
+          "kind": "primary-data",
+          "address": "0x4d4248",
+          "name": "g_HudUiBackgroundVideoWidget_FTable"
+        },
+        {
+          "kind": "depends-on-owner",
+          "target_owner_id": "provider.compiler.vc5_huduibackgroundvideowidget_scalar_deleting_destructor",
+          "reason": "provider-boundary"
         }
       ],
       "address_metadata": {
@@ -119777,8 +119832,8 @@
         }
       },
       "reimplementation": {
-        "tier": "B",
-        "evidence": "Controlled migration: SOURCE_OWNERS schema v3 is authoritative for owner gates and Reimplemented tiers"
+        "tier": "X",
+        "evidence": "BN constructor/destructor xrefs prove 0x4d4248 is HudUiBackgroundVideoWidget class vtable data; current data=none and tier B are stale."
       }
     },
     {
@@ -119840,7 +119895,8 @@
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized audio_fmv parent-owned data-dependency reconciliation; no gate/tier promotion beyond linkage classification",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized core_util_archive/shared data-dependency reconciliation safe subset; rows with incomplete parentage or metadata blockers intentionally left blocked",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized render_video data-dependency reconciliation; render_video.zrndr_global_string_table_data intentionally left blocked pending owner-shape remap",
-        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked"
+        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked",
+        "owner reimplementation tier set to B: Tier-ledger reconciliation after source-owner scrutiny ALLOW: boundary/source/data/functional/linkage gates accepted, membership and acceptance audits clean, three primary methods and four primary data rows linked; no byte/S claim."
       ],
       "binary": "recoil",
       "relationships": [
@@ -119907,8 +119963,8 @@
         }
       },
       "reimplementation": {
-        "tier": "X",
-        "evidence": "Controlled migration: SOURCE_OWNERS schema v3 is authoritative for owner gates and Reimplemented tiers"
+        "tier": "B",
+        "evidence": "Tier-ledger reconciliation after source-owner scrutiny ALLOW: boundary/source/data/functional/linkage gates accepted, membership and acceptance audits clean, three primary methods and four primary data rows linked; no byte/S claim."
       }
     },
     {
@@ -119927,12 +119983,14 @@
       "source_paths": [
         "src/Battlesport/Briefing.cpp"
       ],
-      "dependencies": [],
+      "dependencies": [
+        "hud_ui.briefing_runtime_class_tables"
+      ],
       "gates": {
         "boundary": "accepted",
         "source": "accepted",
         "data": "pending",
-        "functional": "pending",
+        "functional": "accepted",
         "byte": "deferred",
         "linkage": "accepted"
       },
@@ -119947,7 +120005,9 @@
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized audio_fmv parent-owned data-dependency reconciliation; no gate/tier promotion beyond linkage classification",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized core_util_archive/shared data-dependency reconciliation safe subset; rows with incomplete parentage or metadata blockers intentionally left blocked",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized render_video data-dependency reconciliation; render_video.zrndr_global_string_table_data intentionally left blocked pending owner-shape remap",
-        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked"
+        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked",
+        "functional target briefing_objective_picture_draw_noise_overlay passed after source-faithful center-call expression repair in src/Battlesport/Briefing.cpp; focused original-symbol, docblock, and source-shape guards passed",
+        "Data classifier: HudUiBriefingObjectivePicture owns compiler-emitted class table 0x4cc898; table slot points to DrawWithNoiseOverlay 0x4038a0 and runtime constructor installs it; auxiliary authored class-table data packet."
       ],
       "binary": "recoil",
       "relationships": [
@@ -119958,6 +120018,11 @@
         {
           "kind": "primary-function",
           "address": "0x4038a0"
+        },
+        {
+          "kind": "depends-on-owner",
+          "target_owner_id": "hud_ui.briefing_runtime_class_tables",
+          "reason": "data-dependency"
         }
       ],
       "address_metadata": {
@@ -120620,7 +120685,6 @@
       ],
       "member_addresses": [
         "0x4bb790",
-        "0x4bb960",
         "0x4bb980",
         "0x4bb9f0",
         "0x4bbaa0",
@@ -120639,14 +120703,22 @@
         }
       ],
       "source_paths": [
-        "src/GameZRecoil/zHud/zhud_ui.cpp"
+        "src/GameZRecoil/zUI/zui.cpp",
+        "src/Battlesport/Briefing.cpp"
       ],
-      "dependencies": [],
+      "dependencies": [
+        "provider.compiler.vc5_huduicompositepanel_scalar_deleting_destructor",
+        "legacy.hud_ui.struct_huduicompositepanelvector",
+        "legacy.hud_ui.struct_huduicompositepanelentry",
+        "hud_ui.hud_ui_panel_class",
+        "legacy.hud_ui.class_huduitransitiontextpanel",
+        "provider.compiler.vc5_huduicompositepanel_resize_relayout_eh_packet"
+      ],
       "gates": {
         "boundary": "accepted",
         "source": "accepted",
         "data": "accepted",
-        "functional": "pending",
+        "functional": "accepted",
         "byte": "deferred",
         "linkage": "accepted"
       },
@@ -120662,7 +120734,19 @@
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized audio_fmv parent-owned data-dependency reconciliation; no gate/tier promotion beyond linkage classification",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized core_util_archive/shared data-dependency reconciliation safe subset; rows with incomplete parentage or metadata blockers intentionally left blocked",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized render_video data-dependency reconciliation; render_video.zrndr_global_string_table_data intentionally left blocked pending owner-shape remap",
-        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked"
+        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked",
+        "address metadata updated for 0x403e20: BN/source-block evidence places the 0x403e20 composite-panel destructor body physically inside the Briefing.cpp [0x4038a0,0x404ca0) block; current source now declares a real C++ destructor and emits ??1HudUiCompositePanel@@QAE@XZ from src/Battlesport/Briefing.cpp while preserving the HudUiCompositePanel class owner.",
+        "address metadata updated for 0x403e20: BN 0x403e20 lacks the vtable reset produced by a C++ destructor spelling; source now emits the ordinary HudUiCompositePanel::Destructor body from the physical Briefing.cpp block while preserving the HudUiCompositePanel class owner.",
+        "BN g_HudUiCompositePanel_FTable at 0x4d3b40 is class-owned authored data and slot 0 points to compiler-generated scalar deleting destructor glue at 0x4bb960.",
+        "Metadata-only dependency: HudUiCompositePanel constructor 0x4bb790 owns entryVector and reaches HudUiCompositePanelVector resize/InsertCopies/Clear behavior; vector owner is a separate accepted record with data=none. No gate/tier/byte promotion.",
+        "Metadata-only dependency: HudUiCompositePanel constructor 0x4bb790 directly reaches HudUiCompositePanelEntry::ConstructorCopyRange 0x4bc320 and uses stack/default template entry shape; entry remains a separate record owner. No gate/tier/byte promotion.",
+        "Metadata-only dependency: HudUiCompositePanel derives from HudUiPanel and directly calls HudUiPanel ConstructorDefault/Destructor/SetTextFmt/base methods in 0x4bb790 and 0x403e20 frontiers. No gate/tier/byte promotion.",
+        "Metadata-only dependency: HudUiCompositePanel constructor/template-entry construction touches HudUiTransitionTextPanel table identity 0x4cd388, which is primary-owned by legacy.hud_ui.class_huduitransitiontextpanel; do not make 0x4cd388 primary data of the composite owner. No gate/tier/byte promotion.",
+        "source_paths updated from ['src/GameZRecoil/zHud/zhud_ui.cpp'] to ['src/GameZRecoil/zUI/zui.cpp', 'src/Battlesport/Briefing.cpp']; supersedes prior source_paths/evidence where contradicted by current owner/source evidence: Metadata-only routing supersedes stale zhud_ui.cpp owner source_paths: main HudUiCompositePanel/vector/entry cluster is currently routed through provisional no-literal zUI/zui.cpp shelf [0x4b3ce0,0x4bd470), while 0x403e20 is a literal-backed physical Briefing.cpp exception in [0x403e20,0x403ed0). This is not source gate, tier, or byte acceptance.",
+        "Current-session functional review: complete HudUiCompositePanel owner functional targets passed after source-shape cleanup. Covered primary functions 0x4bb790, 0x4bb980, 0x4bb9f0, 0x4bbaa0, 0x4bbac0, 0x4bbb20, 0x4bbbe0, 0x4bbca0, 0x4bbe90, 0x4bbed0, and 0x403e20; ConstructorWithEntryCount wrapper was removed from production source and tests now cover HudUiCompositePanel::HudUiCompositePanel(int); pointer-to-member relayout scaffolding was replaced by ordinary SetPos(GetCenterX(), GetCenterY()) source shape; source-owner scrutiny allowed functional acceptance. Byte remains deferred and no tier S claim is made.",
+        "owner reimplementation tier set to C: Current-session tier review: complete HudUiCompositePanel owner has functional behavior coverage accepted after all primary functional targets passed and source-shape cleanup was verified; source-owner scrutiny allowed functional acceptance and identified tier C as highest safe state. Tier B remains blocked pending provider-boundary/dependency reconciliation for 0x4cb68b; byte remains deferred and no tier S claim is made.",
+        "HudUiCompositePanel::ResizeEntryVectorAndRelayout 0x4bbca0 pushes provider/compiler EH handler 0x4cb68b in its SEH prologue; handler and funclet are modeled as a separate VC5 provider-boundary EH packet.",
+        "owner reimplementation tier set to B: Source-owner scrutiny ALLOW for authoritative tier B: HudUiCompositePanel remains the complete primary class owner for primary functions 0x4bb790, 0x4bb980, 0x4bb9f0, 0x4bbaa0, 0x4bbac0, 0x4bbb20, 0x4bbbe0, 0x4bbca0, 0x4bbe90, 0x4bbed0, 0x403e20 and class-owned data 0x4d3b40 g_HudUiCompositePanel_FTable. Relationships distinguish the class primary ownership from provider/compiler dependencies: scalar deleting destructor glue 0x4bb960 remains owned by provider.compiler.vc5_huduicompositepanel_scalar_deleting_destructor via table-dispatch evidence, and the ResizeEntryVectorAndRelayout EH packet 0x4cb68b/0x4cb680 plus data 0x4d7870/0x4d7890 remains owned by provider.compiler.vc5_huduicompositepanel_resize_relayout_eh_packet. owner audit-acceptance reports no findings; the only HudUiCompositePanel membership caveat is the known scalar-deleting-destructor table-dispatch dependency lacking direct scoped call support, accepted here because the class-owned table slot evidence links 0x4d3b40 slot 0 to provider glue 0x4bb960 and the provider owner itself passes membership/acceptance. Frontier for 0x4bbca0 now resolves 0x4cb68b as provider-boundary with no visible source blockers. Byte remains deferred; no tier S claim."
       ],
       "binary": "recoil",
       "relationships": [
@@ -120673,10 +120757,6 @@
         {
           "kind": "primary-function",
           "address": "0x4bb790"
-        },
-        {
-          "kind": "primary-function",
-          "address": "0x4bb960"
         },
         {
           "kind": "primary-function",
@@ -120722,12 +120802,42 @@
           "kind": "primary-data",
           "address": "0x4d3b40",
           "name": "g_HudUiCompositePanel_FTable"
+        },
+        {
+          "kind": "depends-on-owner",
+          "target_owner_id": "provider.compiler.vc5_huduicompositepanel_scalar_deleting_destructor",
+          "reason": "table-dispatch"
+        },
+        {
+          "kind": "depends-on-owner",
+          "target_owner_id": "legacy.hud_ui.struct_huduicompositepanelvector",
+          "reason": "source-dependency"
+        },
+        {
+          "kind": "depends-on-owner",
+          "target_owner_id": "legacy.hud_ui.struct_huduicompositepanelentry",
+          "reason": "source-dependency"
+        },
+        {
+          "kind": "depends-on-owner",
+          "target_owner_id": "hud_ui.hud_ui_panel_class",
+          "reason": "source-dependency"
+        },
+        {
+          "kind": "depends-on-owner",
+          "target_owner_id": "legacy.hud_ui.class_huduitransitiontextpanel",
+          "reason": "data-dependency"
+        },
+        {
+          "kind": "depends-on-owner",
+          "target_owner_id": "provider.compiler.vc5_huduicompositepanel_resize_relayout_eh_packet",
+          "reason": "provider-boundary"
         }
       ],
       "address_metadata": {
         "0x403e20": {
           "name": "HudUiCompositePanel::Destructor",
-          "source_path": "src/GameZRecoil/zHud/zhud_ui.cpp",
+          "source_path": "src/Battlesport/Briefing.cpp",
           "target": "hud_ui_composite_panel_destructor",
           "group": "ui.zhud"
         },
@@ -120735,12 +120845,6 @@
           "name": "HudUiCompositePanel::ConstructorWithEntryCount",
           "source_path": "src/GameZRecoil/zHud/zhud_ui.cpp",
           "target": "hud_ui_composite_panel_constructor_with_entry_count",
-          "group": "ui.zhud"
-        },
-        "0x4bb960": {
-          "name": "HudUiCompositePanel::ScalarDeletingDestructor",
-          "source_path": "src/GameZRecoil/zHud/zhud_ui.cpp",
-          "target": "hud_ui_composite_panel_scalar_deleting_destructor",
           "group": "ui.zhud"
         },
         "0x4bb980": {
@@ -120799,8 +120903,8 @@
         }
       },
       "reimplementation": {
-        "tier": "X",
-        "evidence": "Controlled migration: SOURCE_OWNERS schema v3 is authoritative for owner gates and Reimplemented tiers"
+        "tier": "B",
+        "evidence": "Source-owner scrutiny ALLOW for authoritative tier B: HudUiCompositePanel remains the complete primary class owner for primary functions 0x4bb790, 0x4bb980, 0x4bb9f0, 0x4bbaa0, 0x4bbac0, 0x4bbb20, 0x4bbbe0, 0x4bbca0, 0x4bbe90, 0x4bbed0, 0x403e20 and class-owned data 0x4d3b40 g_HudUiCompositePanel_FTable. Relationships distinguish the class primary ownership from provider/compiler dependencies: scalar deleting destructor glue 0x4bb960 remains owned by provider.compiler.vc5_huduicompositepanel_scalar_deleting_destructor via table-dispatch evidence, and the ResizeEntryVectorAndRelayout EH packet 0x4cb68b/0x4cb680 plus data 0x4d7870/0x4d7890 remains owned by provider.compiler.vc5_huduicompositepanel_resize_relayout_eh_packet. owner audit-acceptance reports no findings; the only HudUiCompositePanel membership caveat is the known scalar-deleting-destructor table-dispatch dependency lacking direct scoped call support, accepted here because the class-owned table slot evidence links 0x4d3b40 slot 0 to provider glue 0x4bb960 and the provider owner itself passes membership/acceptance. Frontier for 0x4bbca0 now resolves 0x4cb68b as provider-boundary with no visible source blockers. Byte remains deferred; no tier S claim."
       }
     },
     {
@@ -120856,7 +120960,8 @@
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized audio_fmv parent-owned data-dependency reconciliation; no gate/tier promotion beyond linkage classification",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized core_util_archive/shared data-dependency reconciliation safe subset; rows with incomplete parentage or metadata blockers intentionally left blocked",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized render_video data-dependency reconciliation; render_video.zrndr_global_string_table_data intentionally left blocked pending owner-shape remap",
-        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked"
+        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked",
+        "owner reimplementation tier set to B: Source-owner scrutiny ALLOW: HudUiContainer has accepted boundary/source/data/functional/linkage gates, strict membership and acceptance audits pass, primary class functions/data are linked, and byte remains deferred for complete-owner S review."
       ],
       "binary": "recoil",
       "relationships": [
@@ -120963,8 +121068,8 @@
         }
       },
       "reimplementation": {
-        "tier": "X",
-        "evidence": "Controlled migration: SOURCE_OWNERS schema v3 is authoritative for owner gates and Reimplemented tiers"
+        "tier": "B",
+        "evidence": "Source-owner scrutiny ALLOW: HudUiContainer has accepted boundary/source/data/functional/linkage gates, strict membership and acceptance audits pass, primary class functions/data are linked, and byte remains deferred for complete-owner S review."
       }
     },
     {
@@ -124300,7 +124405,12 @@
         "0x4bc980",
         "0x4bc9b0"
       ],
-      "data_addresses": [],
+      "data_addresses": [
+        {
+          "address": "0x4cd388",
+          "name": "g_HudUiTransitionTextPanel_FTable"
+        }
+      ],
       "source_paths": [
         "src/GameZRecoil/zHud/zhud_ui.cpp"
       ],
@@ -124352,6 +124462,11 @@
         {
           "kind": "primary-function",
           "address": "0x4bc9b0"
+        },
+        {
+          "kind": "primary-data",
+          "address": "0x4cd388",
+          "name": "g_HudUiTransitionTextPanel_FTable"
         }
       ],
       "address_metadata": {
@@ -124510,7 +124625,9 @@
         "0x4b3e90",
         "0x4b3da0",
         "0x4b3e30",
-        "0x4b3ce0"
+        "0x4b3ce0",
+        "0x40f2d0",
+        "0x40d5f0"
       ],
       "data_addresses": [
         {
@@ -124554,7 +124671,11 @@
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized audio_fmv parent-owned data-dependency reconciliation; no gate/tier promotion beyond linkage classification",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized core_util_archive/shared data-dependency reconciliation safe subset; rows with incomplete parentage or metadata blockers intentionally left blocked",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized render_video data-dependency reconciliation; render_video.zrndr_global_string_table_data intentionally left blocked pending owner-shape remap",
-        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked"
+        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked",
+        "Boundary reconciliation only: BN assembly/HLIL show 0x40f2d0 HudUiWidget::CtorDefaultThunk pushes 0 and forwards to 0x4b3d00 HudUiWidget::Constructor; xrefs from HudUiTripletPanel::Constructor and HudUiBackground::Constructor pass it as the HudUiWidget-specific constructor callback to provider-owned MSVC_EH_ArrayConstructor with HudUiWidget::DestructorCore. Provider/data/source-owner review found no provider, standalone, or alternate-owner exclusion. This links class membership only and is not a gate or tier promotion.",
+        "address metadata updated for 0x40f2d0: Boundary reconciliation only: 0x40f2d0 is the HudUiWidget type-specific MSVC array-construction helper. frontier 0x40f2d0 shows it pushes 0 and calls 0x4b3d00 HudUiWidget::Constructor; frontier 0x40f200 shows HudUiTripletPanel::Constructor references it through MSVC_EH_ArrayConstructor. Source-file block evidence places the emitted helper in physical hud.cpp [0x404ca0,0x415ab0), layer [0x40d3b0,0x410160), as a HUD block/header/compiler-helper exception. This reconciles membership only and is not a gate or tier promotion.",
+        "owner reimplementation tier set to B: Current-session tier review after membership reconciliation: 0x40f2d0 HudUiWidget::CtorDefaultThunk is now linked as a HudUiWidget primary function; owner has 14 primary functions and primary data 0x4d3428. Strict owner audit-membership found no errors, warnings, or incomplete checks; audit-acceptance reported no findings; owner audit strict passed. Source-owner scrutiny ALLOWed tier B only. Byte gate remains deferred; no tier S or byte-readiness claim.",
+        "address metadata updated for 0x40d5f0: Boundary reconciliation only: BN assembly shows 0x40d5f0 HudUiWidget::DestructorCoreEhThunk is a pure jmp thunk to primary HudUiWidget destructor core 0x4b3d50. BN comments and hud.cpp source-path literal xrefs at 0x4101a3 and 0x4141bb place the emitted helper in physical src/Battlesport/hud.cpp block [0x404ca0,0x415ab0). frontier 0x403d70 shows accepted provider/compiler scalar-deleting destructor glue calls 0x40d5f0 before operator delete; status 0x4b3d50 shows the target destructor core is source-faithful under legacy.hud_ui.class_huduiwidget. Existing analogous 0x40f2d0 HudUiWidget::CtorDefaultThunk is already linked as this class owner's primary function. This adds class membership/address metadata only and does not accept or change boundary/source/data/functional/linkage/byte gates or owner tier."
       ],
       "binary": "recoil",
       "relationships": [
@@ -124643,6 +124764,14 @@
           "kind": "depends-on-owner",
           "target_owner_id": "hud_ui.hud_ui_widget_exclusive_draw_image_global",
           "reason": "legacy-owner-dependency"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x40f2d0"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x40d5f0"
         }
       ],
       "address_metadata": {
@@ -124723,11 +124852,23 @@
           "source_path": "src/GameZRecoil/zHud/zhud_ui.cpp",
           "target": "hud_ui_widget_hit_test",
           "group": "ui.zhud"
+        },
+        "0x40f2d0": {
+          "name": "HudUiWidget::CtorDefaultThunk",
+          "source_path": "src/Battlesport/hud.cpp",
+          "target": "hud_ui_widget_ctor_default_thunk",
+          "group": "ui.zhud"
+        },
+        "0x40d5f0": {
+          "name": "HudUiWidget::DestructorCoreEhThunk",
+          "source_path": "src/Battlesport/hud.cpp",
+          "target": "hud_ui_widget_destructor_core_eh_thunk",
+          "group": "ui.zhud"
         }
       },
       "reimplementation": {
-        "tier": "X",
-        "evidence": "Controlled migration: SOURCE_OWNERS schema v3 is authoritative for owner gates and Reimplemented tiers"
+        "tier": "B",
+        "evidence": "Current-session tier review after membership reconciliation: 0x40f2d0 HudUiWidget::CtorDefaultThunk is now linked as a HudUiWidget primary function; owner has 14 primary functions and primary data 0x4d3428. Strict owner audit-membership found no errors, warnings, or incomplete checks; audit-acceptance reported no findings; owner audit strict passed. Source-owner scrutiny ALLOWed tier B only. Byte gate remains deferred; no tier S or byte-readiness claim."
       }
     },
     {
@@ -125792,7 +125933,9 @@
       "source_paths": [
         "src/GameZRecoil/zHud/zhud_ui.cpp"
       ],
-      "dependencies": [],
+      "dependencies": [
+        "legacy.hud_ui.class_huduitransitiontextpanel"
+      ],
       "gates": {
         "boundary": "accepted",
         "source": "accepted",
@@ -125813,7 +125956,8 @@
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized audio_fmv parent-owned data-dependency reconciliation; no gate/tier promotion beyond linkage classification",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized core_util_archive/shared data-dependency reconciliation safe subset; rows with incomplete parentage or metadata blockers intentionally left blocked",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized render_video data-dependency reconciliation; render_video.zrndr_global_string_table_data intentionally left blocked pending owner-shape remap",
-        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked"
+        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked",
+        "HudUiCompositePanelEntry copy construction/copy assignment uses HudUiTransitionTextPanel table identity at 0x4cd388, which is primary-owned by legacy.hud_ui.class_huduitransitiontextpanel; record this as a dependency/use fact, not primary data for the entry record."
       ],
       "binary": "recoil",
       "relationships": [
@@ -125832,6 +125976,11 @@
         {
           "kind": "primary-function",
           "address": "0x4bc410"
+        },
+        {
+          "kind": "depends-on-owner",
+          "target_owner_id": "legacy.hud_ui.class_huduitransitiontextpanel",
+          "reason": "data-dependency"
         }
       ],
       "address_metadata": {
@@ -125876,12 +126025,14 @@
       "source_paths": [
         "src/GameZRecoil/zHud/zhud_ui.cpp"
       ],
-      "dependencies": [],
+      "dependencies": [
+        "legacy.hud_ui.struct_huduicompositepanelentry"
+      ],
       "gates": {
         "boundary": "accepted",
         "source": "accepted",
-        "data": "pending",
-        "functional": "pending",
+        "data": "none",
+        "functional": "accepted",
         "byte": "deferred",
         "linkage": "accepted"
       },
@@ -125896,7 +126047,11 @@
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized audio_fmv parent-owned data-dependency reconciliation; no gate/tier promotion beyond linkage classification",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized core_util_archive/shared data-dependency reconciliation safe subset; rows with incomplete parentage or metadata blockers intentionally left blocked",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized render_video data-dependency reconciliation; render_video.zrndr_global_string_table_data intentionally left blocked pending owner-shape remap",
-        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked"
+        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked",
+        "HudUiCompositePanelVector owns only entry-vector instance-field/provider new-delete and copy-helper behavior; current relationships have no primary-data rows, and the transition text panel table at 0x4cd388 is primary-owned by legacy.hud_ui.class_huduitransitiontextpanel rather than this record.",
+        "HudUiCompositePanelVector::InsertCopies directly constructs/assigns HudUiCompositePanelEntry instances through 0x4bc410 and 0x4bc3a0; record the vector record's structural source dependency on the entry record without adding global data.",
+        "Current-session functional review: HudUiCompositePanelVector owner has accepted boundary/source/data=none/linkage gates; strict owner audit-membership and audit-acceptance reported no findings; functional targets for 0x4bbfa0 and 0x4bbff0 passed via zhud_composite_panel_vector_clear_smoke and zhud_composite_panel_vector_insert_copies_smoke. Source-owner scrutiny allowed functional acceptance. Byte remains deferred; VC5 byte comparison for 0x4bbff0 still fails and no tier S claim is made.",
+        "owner reimplementation tier set to B: Current-session tier review: HudUiCompositePanelVector owner has boundary/source/data=none/functional/linkage accepted; functional targets for 0x4bbfa0 and 0x4bbff0 passed; source-owner scrutiny allowed tier B for the complete vector record owner. Byte remains deferred; VC5 byte comparison for 0x4bbff0 still fails and no tier S or byte-readiness claim is made."
       ],
       "binary": "recoil",
       "relationships": [
@@ -125911,6 +126066,11 @@
         {
           "kind": "primary-function",
           "address": "0x4bbff0"
+        },
+        {
+          "kind": "depends-on-owner",
+          "target_owner_id": "legacy.hud_ui.struct_huduicompositepanelentry",
+          "reason": "source-dependency"
         }
       ],
       "address_metadata": {
@@ -125928,8 +126088,8 @@
         }
       },
       "reimplementation": {
-        "tier": "X",
-        "evidence": "Controlled migration: SOURCE_OWNERS schema v3 is authoritative for owner gates and Reimplemented tiers"
+        "tier": "B",
+        "evidence": "Current-session tier review: HudUiCompositePanelVector owner has boundary/source/data=none/functional/linkage accepted; functional targets for 0x4bbfa0 and 0x4bbff0 passed; source-owner scrutiny allowed tier B for the complete vector record owner. Byte remains deferred; VC5 byte comparison for 0x4bbff0 still fails and no tier S or byte-readiness claim is made."
       }
     },
     {
@@ -131405,8 +131565,8 @@
       ],
       "data_addresses": [],
       "source_paths": [
-        "src/Battlesport/Recoil.h",
-        "src/Battlesport/Recoil.cpp"
+        "src/Battlesport/about.h",
+        "src/Battlesport/about.cpp"
       ],
       "dependencies": [],
       "gates": {
@@ -131417,7 +131577,7 @@
         "byte": "deferred",
         "linkage": "accepted"
       },
-      "blocker": "pending",
+      "blocker": "Source-block [0x401000,0x401060) is now tracked as the confirmed src/Battlesport/about.cpp plus src/Battlesport/about.h opening CAbout/provider prelude. The constructor byte target matches 0x401000, and the about-before-ai_net diagnostic passes. Byte/tier S remains deferred because current about.h/about.cpp still emits CAboutDlg::GetMessageMap after the CWnd modal-state provider rows, while retail places GetMessageMap between CWnd::DoDataExchange and the modal-state wrappers. Next blocker: recover the include/source shape that naturally emits the provider-interleaved retail order.",
       "evidence": [
         "BN 0x401000 constructs authored MFC-derived CAboutDlg with resource 0x67 over provider CDialog; no added fields.",
         "Only constructor-owned CAboutDlg class boundary visible for 0x401000; provider base is MFC CDialog.",
@@ -131433,7 +131593,12 @@
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized audio_fmv parent-owned data-dependency reconciliation; no gate/tier promotion beyond linkage classification",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized core_util_archive/shared data-dependency reconciliation safe subset; rows with incomplete parentage or metadata blockers intentionally left blocked",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized render_video data-dependency reconciliation; render_video.zrndr_global_string_table_data intentionally left blocked pending owner-shape remap",
-        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked"
+        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked",
+        "2026-07-03 parent pass: BN fact mapper found no AboutDlg/Recoil/CAbout source-path literal and classified physical host unresolved; recoil_bn_reconstructor repaired/saved BN prototypes/comments; python tools/recoil.py verify vc5 cabout_dlg_constructor passed with 0 unmasked mismatches; source_file_layout_audit records function byte evidence separate from physical-host provenance.",
+        "source_paths updated from ['src/Battlesport/Recoil.h', 'src/Battlesport/Recoil.cpp'] to ['src/Battlesport/about.h', 'src/Battlesport/about.cpp']; supersedes prior source_paths/evidence where contradicted by current owner/source evidence: Production source-shape cleanup renamed stale CAboutDlg-only Recoil.h to src/Battlesport/about.h and keeps implementation in src/Battlesport/about.cpp; exact original header filename remains unresolved by BN/source-path evidence.",
+        "address metadata updated for 0x401000: Production source-shape cleanup moved CAboutDlg declaration from stale Recoil.h to about.h; constructor implementation remains in about.cpp.",
+        "Production source-shape cleanup replaced stale Recoil.h/Recoil.cpp owner blocker wording with about.h/about.cpp while preserving the unresolved original-host and prelude-order blocker.",
+        "2026-07-03 source-block catalog update: Recoil.h was renamed to about.h, the opening [0x401000,0x401060) window is confirmed as about.cpp/about.h with provider rows inside the prelude, and the remaining issue is natural VC5 function order likely affected by include/declaration/MFC macro timing."
       ],
       "binary": "recoil",
       "relationships": [
@@ -131449,7 +131614,7 @@
       "address_metadata": {
         "0x401000": {
           "name": "CAboutDlg::CAboutDlg",
-          "source_path": "src/Battlesport/Recoil.cpp",
+          "source_path": "src/Battlesport/about.cpp",
           "target": "cabout_dlg_constructor",
           "group": "misc.authored_stubs"
         }
@@ -142281,6 +142446,99 @@
       ]
     },
     {
+      "id": "provider.compiler.msvc_eh_array_helpers",
+      "kind": "provider-boundary",
+      "name": "MSVC EH array constructor/destructor helpers",
+      "section": "provider.compiler",
+      "state": "accepted",
+      "anchors": [
+        "0x4c6000"
+      ],
+      "member_addresses": [
+        "0x4c6000",
+        "0x4c606f",
+        "0x4c6078",
+        "0x4c5ec0",
+        "0x4c5f39",
+        "0x4c5f70"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x4d4338",
+          "name": "pending"
+        },
+        {
+          "address": "0x4d4318",
+          "name": "pending"
+        },
+        {
+          "address": "0x4d4328",
+          "name": "pending"
+        }
+      ],
+      "source_paths": [],
+      "dependencies": [],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "none",
+        "linkage": "none",
+        "byte": "deferred"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "BN identifies 0x4c6000/0x4c5ec0 and their cleanup/check labels as generic MSVC EH array constructor/destructor helpers using ctor/dtor function pointers and compiler EH scope metadata, not authored game source.",
+        "Generic MSVC EH array helper provider packet: helper bodies at 0x4c6000/0x4c5ec0 and cleanup/check labels use compiler runtime array construction/destruction ABI and scope data 0x4d4338/0x4d4318/0x4d4328."
+      ],
+      "binary": "recoil",
+      "relationships": [
+        {
+          "kind": "anchor-address",
+          "address": "0x4c6000"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x4c6000"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x4c606f"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x4c6078"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x4c5ec0"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x4c5f39"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x4c5f70"
+        },
+        {
+          "kind": "primary-data",
+          "address": "0x4d4338",
+          "name": "pending"
+        },
+        {
+          "kind": "primary-data",
+          "address": "0x4d4318",
+          "name": "pending"
+        },
+        {
+          "kind": "primary-data",
+          "address": "0x4d4328",
+          "name": "pending"
+        }
+      ]
+    },
+    {
       "id": "provider.compiler.recoil_state_credits_static_construct_global",
       "kind": "provider-boundary",
       "name": "VC5 global constructor thunk for g_RecoilStateCredits",
@@ -142333,6 +142591,181 @@
       ]
     },
     {
+      "id": "provider.compiler.vc5_briefing_fillbitmap_shared_scalar_deleting_destructor",
+      "kind": "provider-boundary",
+      "name": "VC5 shared HudUiFillBitmap-derived scalar deleting destructor in Briefing block",
+      "section": "provider.compiler",
+      "state": "accepted",
+      "anchors": [
+        "0x403eb0"
+      ],
+      "member_addresses": [
+        "0x403eb0"
+      ],
+      "data_addresses": [],
+      "source_paths": [
+        "provider:vc5-scalar-deleting-destructor"
+      ],
+      "dependencies": [],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "none",
+        "functional": "none",
+        "linkage": "none",
+        "byte": "deferred"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "BN 0x403eb0 is compiler-generated scalar-deleting destructor glue physically emitted inside Briefing.cpp; it calls HudUiFillBitmap::DestructorCoreThunk plus optional operator delete and is referenced from g_HudUiBriefingTransportProgress_Vtbl and other HudUiFillBitmap-derived tables, proving shared compiler glue rather than one authored Briefing body.",
+        "Provider-boundary classification: VC5 generated shared HudUiFillBitmap-derived scalar-deleting destructor glue at 0x403eb0 is referenced by multiple class tables and has no authored Recoil body."
+      ],
+      "binary": "recoil",
+      "relationships": [
+        {
+          "kind": "anchor-address",
+          "address": "0x403eb0"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x403eb0"
+        }
+      ]
+    },
+    {
+      "id": "provider.compiler.vc5_briefing_shared_scalar_deleting_destructor",
+      "kind": "provider-boundary",
+      "name": "VC5 shared HudUi-derived scalar deleting destructor in Briefing block",
+      "section": "provider.compiler",
+      "state": "accepted",
+      "anchors": [
+        "0x403d70"
+      ],
+      "member_addresses": [
+        "0x403d70"
+      ],
+      "data_addresses": [],
+      "source_paths": [
+        "provider:vc5-scalar-deleting-destructor"
+      ],
+      "dependencies": [],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "none",
+        "functional": "none",
+        "linkage": "none",
+        "byte": "deferred"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "BN 0x403d70 is compiler-generated scalar-deleting destructor glue physically emitted inside Briefing.cpp; it calls HudUiWidget::DestructorCoreEhThunk plus optional operator delete and is referenced from g_HudUiBriefingObjectivePicture_Vtbl and g_HudUiCounter_FTable, proving shared compiler glue rather than one authored Briefing body.",
+        "Provider-boundary classification: VC5 generated shared scalar-deleting destructor glue at 0x403d70 is referenced by multiple class tables and has no authored Recoil body."
+      ],
+      "binary": "recoil",
+      "relationships": [
+        {
+          "kind": "anchor-address",
+          "address": "0x403d70"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x403d70"
+        }
+      ]
+    },
+    {
+      "id": "provider.compiler.vc5_briefing_xlist_list_destructor_comdat",
+      "kind": "provider-boundary",
+      "name": "VC5 STL xlist list destructor COMDAT in Briefing block",
+      "section": "provider.compiler",
+      "state": "accepted",
+      "anchors": [
+        "0x403db0"
+      ],
+      "member_addresses": [
+        "0x403db0"
+      ],
+      "data_addresses": [],
+      "source_paths": [
+        "provider:msvc5-stl-xlist"
+      ],
+      "dependencies": [],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "none",
+        "functional": "none",
+        "linkage": "none",
+        "byte": "deferred"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "BN 0x403db0 is a provider/compiler-header VC5 STL <xlist> list destructor COMDAT physically emitted inside Briefing.cpp; xrefs come from zZbdManager::SortSectionHandlers, Briefing constructor EH cleanup, and provider/EH stubs, so this is not authored Briefing or zZbd source ownership.",
+        "Provider-boundary classification: VC5 STL <xlist> list destructor COMDAT at 0x403db0 is compiler-header/provider code called by authored zZbd and Briefing EH paths, not authored game source."
+      ],
+      "binary": "recoil",
+      "relationships": [
+        {
+          "kind": "anchor-address",
+          "address": "0x403db0"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x403db0"
+        }
+      ]
+    },
+    {
+      "id": "provider.compiler.vc5_hudui_element_scalar_deleting_destructor",
+      "kind": "provider-boundary",
+      "name": "VC5 scalar deleting destructor glue for HudUiElement",
+      "section": "provider.compiler",
+      "state": "accepted",
+      "anchors": [
+        "0x404d70"
+      ],
+      "member_addresses": [
+        "0x404d70"
+      ],
+      "data_addresses": [],
+      "source_paths": [
+        "provider:vc5-scalar-deleting-destructor"
+      ],
+      "dependencies": [
+        "provider.import.operator_delete"
+      ],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "none",
+        "functional": "none",
+        "linkage": "none",
+        "byte": "deferred"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "BN 0x404d70 is VC5 scalar-deleting destructor glue for HudUiElement: ECX this, stack delete flags byte, writes [this]=g_HudUiCommon_FTable, tests flags bit 0, optionally calls imported operator delete 0x4c5b6a, returns original this, and ret 0x4. No authored Recoil body is present beyond compiler-emitted destructor wrapper semantics.",
+        "Provider-boundary classification for VC5 scalar-deleting destructor glue at 0x404d70; wrapper has no authored Recoil data or functional owner gate and depends on CRT operator delete."
+      ],
+      "binary": "recoil",
+      "relationships": [
+        {
+          "kind": "anchor-address",
+          "address": "0x404d70"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x404d70"
+        },
+        {
+          "kind": "depends-on-owner",
+          "target_owner_id": "provider.import.operator_delete",
+          "reason": "legacy-owner-dependency"
+        }
+      ]
+    },
+    {
       "id": "provider.compiler.vc5_hudui_saveload_vector_insert",
       "kind": "provider-boundary",
       "name": "VC5 std::vector<HudUiSaveLoadEntry>::insert COMDAT",
@@ -142369,6 +142802,720 @@
         {
           "kind": "primary-function",
           "address": "0x435fd0"
+        }
+      ]
+    },
+    {
+      "id": "provider.compiler.vc5_huduibackground_scalar_deleting_destructor",
+      "kind": "provider-boundary",
+      "name": "VC5 scalar deleting destructor glue for HudUiBackground",
+      "section": "provider.compiler",
+      "state": "accepted",
+      "anchors": [
+        "0x4b9740"
+      ],
+      "member_addresses": [
+        "0x4b9740"
+      ],
+      "data_addresses": [],
+      "source_paths": [
+        "provider:vc5-scalar-deleting-destructor"
+      ],
+      "dependencies": [
+        "provider.import.operator_delete"
+      ],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "none",
+        "functional": "none",
+        "linkage": "none",
+        "byte": "deferred"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "BN 0x4b9740 is VC5 scalar deleting destructor glue: calls HudUiBackground::Destructor, tests flags bit 0, optionally calls imported operator delete, returns self, and is referenced only by g_HudUiBackground_Vtbl slot +0x8; exclude from authored HudUiBackground primary functions.",
+        "Provider-boundary cleanup: scalar deleting destructor glue has no authored data or functional target; provider ABI byte evidence remains deferred."
+      ],
+      "binary": "recoil",
+      "relationships": [
+        {
+          "kind": "anchor-address",
+          "address": "0x4b9740"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x4b9740"
+        },
+        {
+          "kind": "depends-on-owner",
+          "target_owner_id": "provider.import.operator_delete",
+          "reason": "legacy-owner-dependency"
+        }
+      ]
+    },
+    {
+      "id": "provider.compiler.vc5_huduibackgroundcursorwidget_scalar_deleting_destructor",
+      "kind": "provider-boundary",
+      "name": "VC5 scalar deleting destructor glue for HudUiBackgroundCursorWidget",
+      "section": "provider.compiler",
+      "state": "accepted",
+      "anchors": [
+        "0x4bfa00"
+      ],
+      "member_addresses": [
+        "0x4bfa00"
+      ],
+      "data_addresses": [],
+      "source_paths": [
+        "provider:vc5-scalar-deleting-destructor"
+      ],
+      "dependencies": [
+        "provider.import.operator_delete"
+      ],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "none",
+        "functional": "none",
+        "linkage": "none",
+        "byte": "deferred"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "BN 0x4bfa00 is VC5 scalar deleting destructor glue: calls HudUiBackgroundCursorWidget destructor core, optionally calls provider.import.operator_delete, and is referenced only by g_HudUiBackgroundCursorWidget_Vtbl slot 0; not an authored class primary function.",
+        "Provider-boundary cleanup: scalar deleting destructor glue has no authored data or functional target; provider ABI byte evidence remains deferred."
+      ],
+      "binary": "recoil",
+      "relationships": [
+        {
+          "kind": "anchor-address",
+          "address": "0x4bfa00"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x4bfa00"
+        },
+        {
+          "kind": "depends-on-owner",
+          "target_owner_id": "provider.import.operator_delete",
+          "reason": "legacy-owner-dependency"
+        }
+      ]
+    },
+    {
+      "id": "provider.compiler.vc5_huduibackgroundmembercursorwidget_scalar_deleting_destructor",
+      "kind": "provider-boundary",
+      "name": "VC5 scalar deleting destructor glue for HudUiBackgroundMemberCursorWidget",
+      "section": "provider.compiler",
+      "state": "accepted",
+      "anchors": [
+        "0x4b9710"
+      ],
+      "member_addresses": [
+        "0x4b9710"
+      ],
+      "data_addresses": [],
+      "source_paths": [
+        "provider:vc5-scalar-deleting-destructor"
+      ],
+      "dependencies": [
+        "provider.import.operator_delete"
+      ],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "none",
+        "functional": "none",
+        "linkage": "none",
+        "byte": "deferred"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "BN 0x4b9710 is VC5 scalar deleting destructor glue for the member-subobject cursor-widget table: calls cursor-widget destructor core thunk, optionally calls provider.import.operator_delete, and is referenced only by g_HudUiBackgroundCursorWidget_MemberVtbl slot 0; not an authored base class primary function.",
+        "Provider-boundary cleanup: scalar deleting destructor glue has no authored data or functional target; provider ABI byte evidence remains deferred."
+      ],
+      "binary": "recoil",
+      "relationships": [
+        {
+          "kind": "anchor-address",
+          "address": "0x4b9710"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x4b9710"
+        },
+        {
+          "kind": "depends-on-owner",
+          "target_owner_id": "provider.import.operator_delete",
+          "reason": "legacy-owner-dependency"
+        }
+      ]
+    },
+    {
+      "id": "provider.compiler.vc5_huduibackgroundvideowidget_scalar_deleting_destructor",
+      "kind": "provider-boundary",
+      "name": "VC5 scalar deleting destructor glue for HudUiBackgroundVideoWidget",
+      "section": "provider.compiler",
+      "state": "accepted",
+      "anchors": [
+        "0x4bfcb0"
+      ],
+      "member_addresses": [
+        "0x4bfcb0"
+      ],
+      "data_addresses": [],
+      "source_paths": [
+        "provider:vc5-scalar-deleting-destructor"
+      ],
+      "dependencies": [
+        "provider.import.operator_delete"
+      ],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "none",
+        "functional": "none",
+        "linkage": "none",
+        "byte": "deferred"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "BN 0x4bfcb0 calls HudUiBackgroundVideoWidget::Destructor, tests flags bit 0, optionally calls imported operator delete, returns self, and is referenced only by g_HudUiBackgroundVideoWidget_FTable slot 0.",
+        "VC5 scalar deleting destructor provider/compiler boundary: slot-only glue calls authored HudUiBackgroundVideoWidget destructor, conditionally calls provider.import.operator_delete, and has no authored source/data/functional body."
+      ],
+      "binary": "recoil",
+      "relationships": [
+        {
+          "kind": "anchor-address",
+          "address": "0x4bfcb0"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x4bfcb0"
+        },
+        {
+          "kind": "depends-on-owner",
+          "target_owner_id": "provider.import.operator_delete",
+          "reason": "legacy-owner-dependency"
+        }
+      ]
+    },
+    {
+      "id": "provider.compiler.vc5_huduibriefingruntime_constructor_eh_packet",
+      "kind": "provider-boundary",
+      "name": "VC5 HudUiBriefingRuntime constructor EH packet",
+      "section": "provider.compiler",
+      "state": "accepted",
+      "anchors": [
+        "0x4c82c8"
+      ],
+      "member_addresses": [
+        "0x4c82c8",
+        "0x4c8230",
+        "0x4c8238",
+        "0x4c8246",
+        "0x4c8254",
+        "0x4c8262",
+        "0x4c8270",
+        "0x4c827e",
+        "0x4c8286",
+        "0x4c8294",
+        "0x4c82a2",
+        "0x4c82b0"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x4d4410",
+          "name": "pending"
+        },
+        {
+          "address": "0x4d4430",
+          "name": "pending"
+        }
+      ],
+      "source_paths": [],
+      "dependencies": [
+        "provider.compiler.msvc_cxx_frame_handler_import_thunk"
+      ],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "none",
+        "linkage": "none",
+        "byte": "deferred"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "BN identifies 0x4c82c8 as the VC5 EH dispatcher thunk for HudUiBriefingRuntime::Constructor; FuncInfo 0x4d4410 and unwind map 0x4d4430 drive compiler cleanup funclets 0x4c8230..0x4c82b0.",
+        "VC5 compiler EH packet: 0x4c82c8 dispatches through FuncInfo 0x4d4410 and unwind map 0x4d4430 to compiler cleanup funclets for HudUiBriefingRuntime::Constructor; authored constructor behavior remains at 0x403930."
+      ],
+      "binary": "recoil",
+      "relationships": [
+        {
+          "kind": "anchor-address",
+          "address": "0x4c82c8"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x4c82c8"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x4c8230"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x4c8238"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x4c8246"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x4c8254"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x4c8262"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x4c8270"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x4c827e"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x4c8286"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x4c8294"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x4c82a2"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x4c82b0"
+        },
+        {
+          "kind": "primary-data",
+          "address": "0x4d4410",
+          "name": "pending"
+        },
+        {
+          "kind": "primary-data",
+          "address": "0x4d4430",
+          "name": "pending"
+        },
+        {
+          "kind": "depends-on-owner",
+          "target_owner_id": "provider.compiler.msvc_cxx_frame_handler_import_thunk",
+          "reason": "legacy-owner-dependency"
+        }
+      ]
+    },
+    {
+      "id": "provider.compiler.vc5_huduibriefingruntime_destructor_eh_packet",
+      "kind": "provider-boundary",
+      "name": "VC5 EH packet for HudUiBriefingRuntime destructor",
+      "section": "provider.compiler",
+      "state": "discovered",
+      "anchors": [
+        "0x4c83b8"
+      ],
+      "member_addresses": [
+        "0x4c83b8",
+        "0x4c8320",
+        "0x4c8328",
+        "0x4c8336",
+        "0x4c8344",
+        "0x4c8352",
+        "0x4c8360",
+        "0x4c836e",
+        "0x4c837c",
+        "0x4c838a",
+        "0x4c8398",
+        "0x4c83b0"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x4d44d8",
+          "name": "pending"
+        },
+        {
+          "address": "0x4d44f8",
+          "name": "pending"
+        }
+      ],
+      "source_paths": [],
+      "dependencies": [
+        "provider.compiler.msvc_cxx_frame_handler_import_thunk"
+      ],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "none",
+        "linkage": "none",
+        "byte": "deferred"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "BN 0x4c83b8 loads FuncInfo 0x4d44d8 and tail-jumps to __CxxFrameHandler thunk 0x4c60a0. FuncInfo 0x4d44d8 has unwind count 0xb and unwind map 0x4d44f8; the map includes funclet 0x4c838a, whose instruction 0x4c8393 tail-jumps to authored HudUiCompositePanel::Destructor at 0x403e20 after computing this+0xb638.",
+        "VC5 compiler EH packet: 0x4c83b8 dispatches through FuncInfo 0x4d44d8 and unwind map 0x4d44f8 to compiler cleanup funclets for HudUiBriefingRuntime destructor cleanup; authored runtime destructor behavior remains source-owned separately."
+      ],
+      "binary": "recoil",
+      "relationships": [
+        {
+          "kind": "anchor-address",
+          "address": "0x4c83b8"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x4c83b8"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x4c8320"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x4c8328"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x4c8336"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x4c8344"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x4c8352"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x4c8360"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x4c836e"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x4c837c"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x4c838a"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x4c8398"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x4c83b0"
+        },
+        {
+          "kind": "primary-data",
+          "address": "0x4d44d8",
+          "name": "pending"
+        },
+        {
+          "kind": "primary-data",
+          "address": "0x4d44f8",
+          "name": "pending"
+        },
+        {
+          "kind": "depends-on-owner",
+          "target_owner_id": "provider.compiler.msvc_cxx_frame_handler_import_thunk",
+          "reason": "legacy-owner-dependency"
+        }
+      ]
+    },
+    {
+      "id": "provider.compiler.vc5_huduicompositepanel_constructor_eh_packet",
+      "kind": "provider-boundary",
+      "name": "VC5 EH packet for HudUiCompositePanel::ConstructorWithEntryCount",
+      "section": "provider.compiler",
+      "state": "discovered",
+      "anchors": [
+        "0x4cb667"
+      ],
+      "member_addresses": [
+        "0x4cb667",
+        "0x4cb640",
+        "0x4cb64b",
+        "0x4cb65c"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x4d7838",
+          "name": "pending"
+        },
+        {
+          "address": "0x4d7858",
+          "name": "pending"
+        }
+      ],
+      "source_paths": [],
+      "dependencies": [
+        "provider.compiler.msvc_cxx_frame_handler_import_thunk"
+      ],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "none",
+        "linkage": "none",
+        "byte": "deferred"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "BN 0x4cb667 loads FuncInfo 0x4d7838 and tail-jumps to __CxxFrameHandler thunk 0x4c60a0; constructor 0x4bb790 pushes 0x4cb667 in the SEH prologue. FuncInfo 0x4d7838 has unwind count 3 and unwind map 0x4d7858, whose entries target compiler cleanup funclets 0x4cb640, 0x4cb64b, and 0x4cb65c.",
+        "VC5 compiler EH packet: 0x4cb667 dispatches through FuncInfo 0x4d7838 and unwind map 0x4d7858 to compiler cleanup funclets for HudUiCompositePanel::ConstructorWithEntryCount; authored constructor behavior remains at 0x4bb790."
+      ],
+      "binary": "recoil",
+      "relationships": [
+        {
+          "kind": "anchor-address",
+          "address": "0x4cb667"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x4cb667"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x4cb640"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x4cb64b"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x4cb65c"
+        },
+        {
+          "kind": "primary-data",
+          "address": "0x4d7838",
+          "name": "pending"
+        },
+        {
+          "kind": "primary-data",
+          "address": "0x4d7858",
+          "name": "pending"
+        },
+        {
+          "kind": "depends-on-owner",
+          "target_owner_id": "provider.compiler.msvc_cxx_frame_handler_import_thunk",
+          "reason": "legacy-owner-dependency"
+        }
+      ]
+    },
+    {
+      "id": "provider.compiler.vc5_huduicompositepanel_destructor_eh_packet",
+      "kind": "provider-boundary",
+      "name": "VC5 EH packet for HudUiCompositePanel::Destructor",
+      "section": "provider.compiler",
+      "state": "accepted",
+      "anchors": [
+        "0x4c8308"
+      ],
+      "member_addresses": [
+        "0x4c8308",
+        "0x4c8300"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x4d44b0",
+          "name": "pending"
+        },
+        {
+          "address": "0x4d44d0",
+          "name": "pending"
+        }
+      ],
+      "source_paths": [],
+      "dependencies": [
+        "provider.compiler.msvc_cxx_frame_handler_import_thunk"
+      ],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "none",
+        "linkage": "none",
+        "byte": "deferred"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "BN 0x4c8308 loads g_MsvcEh_FuncInfo_4c8308 at 0x4d44b0 and tail-jumps to existing __CxxFrameHandler_iat_thunk 0x4c60a0; unwind map 0x4d44d0 references compiler funclet 0x4c8300, which tail-jumps to authored HudUiPanel::Destructor.",
+        "Provider-boundary classification: 0x4c8308 is a VC5 EH dispatcher thunk for HudUiCompositePanel::Destructor, loading FuncInfo 0x4d44b0 and tail-jumping to existing __CxxFrameHandler import thunk 0x4c60a0; 0x4c8300 is its compiler unwind funclet.",
+        "Provider source is VC5/MSVC C++ EH compiler/runtime ABI; no authored Recoil body exists for 0x4c8308 or 0x4c8300.",
+        "Compiler EH metadata packet is complete for this handler: FuncInfo 0x4d44b0 points to unwind map 0x4d44d0, whose single action is compiler funclet 0x4c8300.",
+        "Compiler/provider EH packet has no authored functional behavior target; authored destructor behavior remains 0x403e20.",
+        "Provider-boundary owner; dependency on existing provider.compiler.msvc_cxx_frame_handler_import_thunk records provider ABI reachability, with no authored source-owner linkage gate.",
+        "Provider/compiler EH packet byte acceptance is deferred to provider ABI/final byte evidence, not authored source-owner tier S scheduling."
+      ],
+      "binary": "recoil",
+      "relationships": [
+        {
+          "kind": "anchor-address",
+          "address": "0x4c8308"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x4c8308"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x4c8300"
+        },
+        {
+          "kind": "primary-data",
+          "address": "0x4d44b0",
+          "name": "pending"
+        },
+        {
+          "kind": "primary-data",
+          "address": "0x4d44d0",
+          "name": "pending"
+        },
+        {
+          "kind": "depends-on-owner",
+          "target_owner_id": "provider.compiler.msvc_cxx_frame_handler_import_thunk",
+          "reason": "legacy-owner-dependency"
+        }
+      ]
+    },
+    {
+      "id": "provider.compiler.vc5_huduicompositepanel_resize_relayout_eh_packet",
+      "kind": "provider-boundary",
+      "name": "VC5 EH packet for HudUiCompositePanel::ResizeEntryVectorAndRelayout",
+      "section": "provider.compiler",
+      "state": "accepted",
+      "anchors": [
+        "0x4cb68b"
+      ],
+      "member_addresses": [
+        "0x4cb68b",
+        "0x4cb680"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x4d7870",
+          "name": "g_MsvcEh_FuncInfo_4cb68b"
+        },
+        {
+          "address": "0x4d7890",
+          "name": "g_MsvcEh_UnwindMap_4cb68b"
+        }
+      ],
+      "source_paths": [],
+      "dependencies": [
+        "provider.compiler.msvc_cxx_frame_handler_import_thunk"
+      ],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "none",
+        "linkage": "none",
+        "byte": "deferred"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "BN 0x4cb68b loads FuncInfo 0x4d7870 and tail-jumps to __CxxFrameHandler thunk 0x4c60a0; FuncInfo unwind count is 1 and unwind map 0x4d7890 references compiler cleanup funclet 0x4cb680 for HudUiCompositePanel::ResizeEntryVectorAndRelayout.",
+        "VC5 EH dispatcher 0x4cb68b tail-jumps to the accepted MSVC __CxxFrameHandler import thunk 0x4c60a0.",
+        "Provider/compiler EH packet: 0x4cb68b dispatches through FuncInfo 0x4d7870 and unwind map 0x4d7890 to compiler cleanup funclet 0x4cb680; authored method behavior remains at 0x4bbca0. Byte acceptance is deferred to provider ABI/final byte evidence."
+      ],
+      "binary": "recoil",
+      "relationships": [
+        {
+          "kind": "anchor-address",
+          "address": "0x4cb68b"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x4cb68b"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x4cb680"
+        },
+        {
+          "kind": "primary-data",
+          "address": "0x4d7870",
+          "name": "g_MsvcEh_FuncInfo_4cb68b"
+        },
+        {
+          "kind": "primary-data",
+          "address": "0x4d7890",
+          "name": "g_MsvcEh_UnwindMap_4cb68b"
+        },
+        {
+          "kind": "depends-on-owner",
+          "target_owner_id": "provider.compiler.msvc_cxx_frame_handler_import_thunk",
+          "reason": "legacy-owner-dependency"
+        }
+      ]
+    },
+    {
+      "id": "provider.compiler.vc5_huduicompositepanel_scalar_deleting_destructor",
+      "kind": "provider-boundary",
+      "name": "VC5 scalar deleting destructor glue for HudUiCompositePanel",
+      "section": "provider.compiler",
+      "state": "discovered",
+      "anchors": [
+        "0x4bb960"
+      ],
+      "member_addresses": [
+        "0x4bb960"
+      ],
+      "data_addresses": [],
+      "source_paths": [],
+      "dependencies": [
+        "provider.import.operator_delete"
+      ],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "none",
+        "functional": "none",
+        "linkage": "none",
+        "byte": "deferred"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "BN 0x4bb960 is standard VC5 scalar deleting destructor glue: calls authored HudUiCompositePanel::Destructor at 0x403e20, tests flags bit 0, optionally calls provider.import.operator_delete at 0x4c5b6a, returns this; sole xref is g_HudUiCompositePanel_FTable slot 0 at 0x4d3b40.",
+        "Source-owner scrutiny allowed reclassifying 0x4bb960 as VC5 scalar deleting destructor glue: no provider-owned data row, wrapper calls authored 0x403e20 and optional provider.import.operator_delete."
+      ],
+      "binary": "recoil",
+      "relationships": [
+        {
+          "kind": "anchor-address",
+          "address": "0x4bb960"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x4bb960"
+        },
+        {
+          "kind": "depends-on-owner",
+          "target_owner_id": "provider.import.operator_delete",
+          "reason": "legacy-owner-dependency"
         }
       ]
     },
@@ -142784,6 +143931,111 @@
           "group": "provider.imports"
         }
       }
+    },
+    {
+      "id": "provider.import.operator_delete",
+      "kind": "provider-boundary",
+      "name": "Imported operator delete(void*) thunk",
+      "section": "provider_platform",
+      "state": "accepted",
+      "anchors": [
+        "0x4c5b6a"
+      ],
+      "member_addresses": [
+        "0x4c5b6a"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x4cc2b8",
+          "name": "pending"
+        }
+      ],
+      "source_paths": [],
+      "dependencies": [],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "none",
+        "linkage": "none",
+        "byte": "deferred"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "BN marks 0x4c5b6a as ImportedFunctionSymbol operator delete(void*), implemented as jmp dword [0x4cc2b8]; 0x4cc2b8 is the provider IAT slot, not authored Recoil data.",
+        "Provider-boundary classification: 0x4c5b6a is imported operator delete(void*) thunk, implemented as jmp dword [0x4cc2b8].",
+        "Provider source is external VC5/MFC/MSVC runtime import ABI for operator delete(void*), not authored Recoil source.",
+        "0x4cc2b8 is the provider IAT slot for imported operator delete(void*), not authored Recoil data.",
+        "Imported provider thunk has no authored functional target.",
+        "Provider-boundary import owner; no authored source-owner linkage gate applies.",
+        "Provider import byte acceptance is deferred to provider ABI/final import evidence, not authored source-owner tier S scheduling."
+      ],
+      "binary": "recoil",
+      "relationships": [
+        {
+          "kind": "anchor-address",
+          "address": "0x4c5b6a"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x4c5b6a"
+        },
+        {
+          "kind": "primary-data",
+          "address": "0x4cc2b8",
+          "name": "pending"
+        }
+      ]
+    },
+    {
+      "id": "provider.import.operator_new",
+      "kind": "provider-boundary",
+      "name": "Imported operator new(uint32_t) thunk",
+      "section": "provider_platform",
+      "state": "accepted",
+      "anchors": [
+        "0x4c5b76"
+      ],
+      "member_addresses": [
+        "0x4c5b76"
+      ],
+      "data_addresses": [
+        {
+          "address": "0x4cc2ac",
+          "name": "pending"
+        }
+      ],
+      "source_paths": [],
+      "dependencies": [],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "accepted",
+        "functional": "none",
+        "linkage": "none",
+        "byte": "deferred"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "BN marks 0x4c5b76 as ImportedFunctionSymbol operator new(uint32_t), implemented as jmp dword [0x4cc2ac]; 0x4cc2ac is the provider IAT slot, not authored Recoil data.",
+        "Imported operator new(uint32_t) provider-boundary: 0x4c5b76 is an import thunk through IAT slot 0x4cc2ac, not authored Recoil source or data."
+      ],
+      "binary": "recoil",
+      "relationships": [
+        {
+          "kind": "anchor-address",
+          "address": "0x4c5b76"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x4c5b76"
+        },
+        {
+          "kind": "primary-data",
+          "address": "0x4cc2ac",
+          "name": "pending"
+        }
+      ]
     },
     {
       "id": "provider.kernel32.gettickcount_import_thunk",
@@ -162455,7 +163707,6 @@
         "src/Battlesport/HudUiNetExitPanel.cpp"
       ],
       "dependencies": [
-        "hud_ui.background_constructor",
         "legacy.hud_ui.class_huduibackground",
         "legacy.hud_ui.class_huduibackgroundcontainer",
         "legacy.hud_ui.class_huduicontainer",
@@ -162495,7 +163746,8 @@
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized audio_fmv parent-owned data-dependency reconciliation; no gate/tier promotion beyond linkage classification",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized core_util_archive/shared data-dependency reconciliation safe subset; rows with incomplete parentage or metadata blockers intentionally left blocked",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized render_video data-dependency reconciliation; render_video.zrndr_global_string_table_data intentionally left blocked pending owner-shape remap",
-        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked"
+        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked",
+        "Corrective HudUiBackground remap: hud_ui.background_constructor was superseded by complete class owner legacy.hud_ui.class_huduibackground after 0x4b9540 moved to the class owner."
       ],
       "binary": "recoil",
       "relationships": [
@@ -162542,11 +163794,6 @@
         {
           "kind": "primary-function",
           "address": "0x41c0a0"
-        },
-        {
-          "kind": "depends-on-owner",
-          "target_owner_id": "hud_ui.background_constructor",
-          "reason": "legacy-owner-dependency"
         },
         {
           "kind": "depends-on-owner",
@@ -163607,6 +164854,43 @@
         "src/Battlesport/ainet.h"
       ],
       "evidence": "ai_net.cpp mode-2 owner cleanup: 0x401d50/0x401e50 and sibling AI mode-2 helpers are now primary functions of battlesport_gameplay.player_ai_mode2_top_level_steering; this normalizes stale dependency edges and removes empty superseded owner placeholders after the remap; no gate or tier promotion."
+    },
+    {
+      "id": "hud_ui.background_cursor_widget_capture",
+      "kind": "class",
+      "name": "HudUiBackgroundCursorWidget capture refresh helpers",
+      "section": "hud_ui",
+      "anchors": [
+        "0x4bf980"
+      ],
+      "source_paths": [
+        "src/GameZRecoil/zHud/zhud_ui.cpp"
+      ],
+      "evidence": "Scrutinized merge: arbitrary cursor-widget method split emptied after functions and dependents moved to complete HudUiBackgroundCursorWidget class owner."
+    },
+    {
+      "id": "hud_ui.background_constructor",
+      "kind": "class",
+      "name": "HudUiBackground constructor",
+      "section": "hud_ui",
+      "anchors": [],
+      "source_paths": [
+        "src/GameZRecoil/zHud/zhud_ui.cpp"
+      ],
+      "evidence": "Superseded by complete class owner legacy.hud_ui.class_huduibackground after 0x4b9540 was moved; constructor-only class owner was not source-shaped."
+    },
+    {
+      "id": "hud_ui.hud_ui_widget_geometry_invalidation",
+      "kind": "class",
+      "name": "HudUiWidget geometry and invalidation methods",
+      "section": "hud_ui",
+      "anchors": [
+        "0x4b3d00"
+      ],
+      "source_paths": [
+        "src/GameZRecoil/zHud/zhud_ui.cpp"
+      ],
+      "evidence": "Stale anchor-only HudUiWidget geometry/invalidation slice superseded by canonical primary class owner legacy.hud_ui.class_huduiwidget; old slice functions 0x4b3d00, 0x404e10, 0x4b3dd0, 0x4b4030, and 0x4b3e90 are canonical HudUiWidget primary functions; audit-acceptance reports no-primary-links, not-canonical-primary, and anchor-only-acceptance. Dependent owners were rewired to legacy.hud_ui.class_huduiwidget. No gate or tier promotion."
     }
   ]
 }

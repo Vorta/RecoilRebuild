@@ -1,8 +1,8 @@
-#include "Battlesport/CZGameFrame.h"
-#include "Battlesport/CZRecoilFrame.h"
-#include "Battlesport/RecoilApp.h"
-#include "GameZRecoil/zSound/zSound.h"
-#include "GameZRecoil/zVideo/zVideo.h"
+#include "Battlesport/cz_game_frame.h"
+#include "Battlesport/cz_recoil_frame.h"
+#include "Battlesport/recoil_app.h"
+#include "GameZRecoil/zSound/zsnd.h"
+#include "GameZRecoil/zVideo/zvid.h"
 
 #include <cstring>
 #include <new>

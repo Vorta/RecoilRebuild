@@ -1,4 +1,4 @@
-#include "Battlesport/AiPropertyDlg.h"
+#include "Battlesport/ai_property_dlg.h"
 
 #include <cstring>
 

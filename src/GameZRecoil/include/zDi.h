@@ -5,10 +5,10 @@
 #include "recoil/recoil_types.h"
 #include <stddef.h>
 
-#include "GameZRecoil/zMath/zMathDecls.h"
+#include "GameZRecoil/zMath/zmth_decls.h"
 #include "recoil/recoil_callconv.h"
-#include "zClass.h"
-#include "zImage.h"
+#include "zclass.h"
+#include "zimage.h"
 
 struct OptCatalogSurfaceMaterialRef;
 

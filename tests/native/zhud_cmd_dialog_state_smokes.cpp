@@ -1,6 +1,6 @@
 #include "GameZRecoil/zHud/zhud_ui.h"
-#include "GameZRecoil/zInput/zInput.h"
-#include "GameZRecoil/zRndr/zRndr.h"
+#include "GameZRecoil/zInput/zinput.h"
+#include "GameZRecoil/zRndr/zrndr.h"
 
 #include <cstddef>
 #include <cstdint>

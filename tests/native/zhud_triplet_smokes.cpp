@@ -1,7 +1,7 @@
-#include "Battlesport/GameNet.h"
-#include "Battlesport/HudSensorTracker.h"
+#include "Battlesport/game_net.h"
+#include "Battlesport/hud_sensor_tracker.h"
 #include "GameZRecoil/zHud/zhud_ui.h"
-#include "GameZRecoil/zNetwork/zNetwork.h"
+#include "GameZRecoil/zNetwork/znet.h"
 
 #include <stdio.h>
 #include <stdlib.h>

@@ -1,9 +1,9 @@
-#include "GameZRecoil/include/zImage.h"
-#include "GameZRecoil/zGame/zGame.h"
-#include "GameZRecoil/zModel/zModel.h"
-#include "GameZRecoil/zReader/zReader.h"
-#include "GameZRecoil/zRndr/zRndr.h"
-#include "GameZRecoil/zVideo/zVideo.h"
+#include "GameZRecoil/include/zimage.h"
+#include "GameZRecoil/zGame/zgame.h"
+#include "GameZRecoil/zModel/gmod.h"
+#include "GameZRecoil/zReader/zreader.h"
+#include "GameZRecoil/zRndr/zrndr.h"
+#include "GameZRecoil/zVideo/zvid.h"
 
 #include <cstdint>
 #include <cstdio>

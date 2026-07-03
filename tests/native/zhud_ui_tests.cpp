@@ -1,26 +1,26 @@
 #ifdef RECOIL_NATIVE_ZHUD_UI_LIFECYCLE_ONLY
 
-#include "Battlesport/RecoilApp.h"
-#include "Battlesport/GameNet.h"
-#include "Battlesport/HudSensorTracker.h"
+#include "Battlesport/recoil_app.h"
+#include "Battlesport/game_net.h"
+#include "Battlesport/hud_sensor_tracker.h"
 #include "Battlesport/hud.h"
 #include "Battlesport/player.h"
-#include "GameZRecoil/include/OptCatalog.h"
-#include "GameZRecoil/include/zClass.h"
-#include "GameZRecoil/include/zClipAlt.h"
-#include "GameZRecoil/include/zClipRect.h"
-#include "GameZRecoil/Time/Time.h"
-#include "GameZRecoil/zGame/zGame.h"
+#include "GameZRecoil/include/opt_catalog.h"
+#include "GameZRecoil/include/zclass.h"
+#include "GameZRecoil/include/zclip_alt.h"
+#include "GameZRecoil/include/zclip_rect.h"
+#include "GameZRecoil/Time/time.h"
+#include "GameZRecoil/zGame/zgame.h"
 #include "GameZRecoil/zFMV/fmv.h"
 #include "GameZRecoil/zHud/zhud_ui.h"
-#include "GameZRecoil/zInput/zInput.h"
-#include "GameZRecoil/zMath/zMath.h"
-#include "GameZRecoil/zModel/zModel.h"
-#include "GameZRecoil/zRndr/zRndr.h"
-#include "GameZRecoil/zSound/zSound.h"
-#include "GameZRecoil/zTurret/zTurret.h"
-#include "GameZRecoil/zUtil/zSaveGame.h"
-#include "GameZRecoil/zVideo/zVideo.h"
+#include "GameZRecoil/zInput/zinput.h"
+#include "GameZRecoil/zMath/zmth.h"
+#include "GameZRecoil/zModel/gmod.h"
+#include "GameZRecoil/zRndr/zrndr.h"
+#include "GameZRecoil/zSound/zsnd.h"
+#include "GameZRecoil/zTurret/zturret.h"
+#include "GameZRecoil/zUtil/zsave_game.h"
+#include "GameZRecoil/zVideo/zvid.h"
 
 #include <cstdarg>
 #include <cstddef>
@@ -5292,42 +5292,42 @@ extern "C" int zhud_background_load_zrd_and_section_null_root_smoke(void) {
 
 #else
 
-#include "Battlesport/GameNet.h"
-#include "Battlesport/Briefing.h"
-#include "Battlesport/CZRecoilFrame.h"
-#include "Battlesport/HudSensorTracker.h"
-#include "Battlesport/HudUiMpExitDialog.h"
-#include "Battlesport/HudUiNetGameSetup.h"
-#include "Battlesport/HudUiNetExitPanel.h"
+#include "Battlesport/game_net.h"
+#include "Battlesport/briefing.h"
+#include "Battlesport/cz_recoil_frame.h"
+#include "Battlesport/hud_sensor_tracker.h"
+#include "Battlesport/hud_ui_mp_exit_dialog.h"
+#include "Battlesport/hud_ui_net_game_setup.h"
+#include "Battlesport/hud_ui_net_exit_panel.h"
 #include "Battlesport/hud.h"
 #include "Battlesport/pickup.h"
-#include "GameZRecoil/Time/Time.h"
+#include "GameZRecoil/Time/time.h"
 #include "GameZRecoil/mission.h"
-#include "GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.h"
-#include "GameZRecoil/include/OptCatalog.h"
-#include "GameZRecoil/include/zClass.h"
-#include "GameZRecoil/include/zClipRect.h"
-#include "GameZRecoil/include/zDi.h"
-#include "GameZRecoil/zEffect/zEffect.h"
+#include "GameZRecoil/RecoilApp/recoil_state_main_menu_transition.h"
+#include "GameZRecoil/include/opt_catalog.h"
+#include "GameZRecoil/include/zclass.h"
+#include "GameZRecoil/include/zclip_rect.h"
+#include "GameZRecoil/include/zdi.h"
+#include "GameZRecoil/zEffect/zeff.h"
 #include "GameZRecoil/zFMV/fmv.h"
 #include "GameZRecoil/zClass/cls_stubs.h"
-#include "GameZRecoil/zError/zError.h"
-#include "GameZRecoil/include/zClipAlt.h"
-#include "GameZRecoil/include/zImage.h"
-#include "GameZRecoil/zGame/zGame.h"
+#include "GameZRecoil/zError/zerr.h"
+#include "GameZRecoil/include/zclip_alt.h"
+#include "GameZRecoil/include/zimage.h"
+#include "GameZRecoil/zGame/zgame.h"
 #include "GameZRecoil/zHud/zhud_ui.h"
-#include "GameZRecoil/zInput/zInput.h"
-#include "GameZRecoil/zLoc/zLoc.h"
-#include "GameZRecoil/zMath/zMath.h"
-#include "GameZRecoil/zModel/zModel.h"
-#include "GameZRecoil/zNetwork/zNetwork.h"
-#include "GameZRecoil/zRndr/zRndr.h"
-#include "GameZRecoil/zSound/zSound.h"
-#include "GameZRecoil/zSys/zSys.h"
-#include "GameZRecoil/zTurret/zTurret.h"
-#include "GameZRecoil/zUtil/zSaveGame.h"
-#include "GameZRecoil/zUtil/zZbd.h"
-#include "GameZRecoil/zVideo/zVideo.h"
+#include "GameZRecoil/zInput/zinput.h"
+#include "GameZRecoil/zLoc/zloc.h"
+#include "GameZRecoil/zMath/zmth.h"
+#include "GameZRecoil/zModel/gmod.h"
+#include "GameZRecoil/zNetwork/znet.h"
+#include "GameZRecoil/zRndr/zrndr.h"
+#include "GameZRecoil/zSound/zsnd.h"
+#include "GameZRecoil/zSys/zsys.h"
+#include "GameZRecoil/zTurret/zturret.h"
+#include "GameZRecoil/zUtil/zsave_game.h"
+#include "GameZRecoil/zUtil/zbd.h"
+#include "GameZRecoil/zVideo/zvid.h"
 
 #include <cstddef>
 #include <cstdio>
@@ -12671,8 +12671,8 @@ extern "C" int zhud_composite_panel_vector_insert_copies_smoke(void) {
 extern "C" int zhud_composite_panel_constructor_with_entry_count_smoke(void) {
     g_HudUi_InvalidateMask = 1;
 
-    HudUiCompositePanel panel{};
-    HudUiCompositePanel *const result = panel.ConstructorWithEntryCount(2);
+    HudUiCompositePanel panel(2);
+    HudUiCompositePanel *const result = &panel;
     auto *const panelAsPanel = reinterpret_cast<HudUiPanel *>(&panel);
 
     const bool panelInitialized =
@@ -28488,9 +28488,9 @@ extern "C" int hud_sensor_tracker_constructor_smoke(void) {
 }
 
 extern "C" int hud_sensor_tracker_construct_global_smoke(void) {
-    g_HudSensorTracker.hudScale = 0.125f;
+    g_hud_sensor_tracker.hudScale = 0.125f;
     g_HudSensorTracker.fxPass3Obj = reinterpret_cast<HudUiElement *>(0x24681357);
-    g_HudSensorTracker.hasPendingPlayerSave = 1;
+    g_hud_sensor_tracker.hasPendingPlayerSave = 1;
     g_HudSensorTracker.pendingPlayerSave.skipTimerResetOnStart = 1;
 
     HudSensorTracker *const returned = HudSensorTracker::ConstructGlobal();
@@ -28498,8 +28498,8 @@ extern "C" int hud_sensor_tracker_construct_global_smoke(void) {
     const bool globalOk =
         returned == &g_HudSensorTracker && g_HudSensorTracker.mapFileVersion == 5 &&
         g_HudSensorTracker.fxPass3Obj == nullptr &&
-        HudFloatNear(g_HudSensorTracker.hudScale, 1.0f) &&
-        g_HudSensorTracker.hasPendingPlayerSave == 0 &&
+        HudFloatNear(g_hud_sensor_tracker.hudScale, 1.0f) &&
+        g_hud_sensor_tracker.hasPendingPlayerSave == 0 &&
         g_HudSensorTracker.pendingPlayerSave.skipTimerResetOnStart == 0 &&
         g_HudSensorTracker.missionLoaded == 0 && g_HudSensorTracker.missionFlags == 1;
 
@@ -28561,23 +28561,23 @@ extern "C" int hud_sensor_tracker_register_global_on_exit_smoke(void) {
     HudSensorTracker::ConstructGlobal();
     HudSensorTracker::RegisterGlobalOnExit();
     return g_HudSensorTracker.mapFileVersion == 5 &&
-                   HudFloatNear(g_HudSensorTracker.hudScale, 1.0f)
+                   HudFloatNear(g_hud_sensor_tracker.hudScale, 1.0f)
                ? 0
                : 1;
 }
 
 extern "C" int mission_init_objectives_smoke(void) {
-    g_HudSensorTracker.hudScale = 0.25f;
+    g_hud_sensor_tracker.hudScale = 0.25f;
     g_HudSensorTracker.fxPass3Obj = reinterpret_cast<HudUiElement *>(0x12345678);
-    g_HudSensorTracker.hasPendingPlayerSave = 1;
+    g_hud_sensor_tracker.hasPendingPlayerSave = 1;
 
     Mission::InitObjectives();
 
     const bool initialized =
         g_HudSensorTracker.mapFileVersion == 5 &&
         g_HudSensorTracker.fxPass3Obj == nullptr &&
-        HudFloatNear(g_HudSensorTracker.hudScale, 1.0f) &&
-        g_HudSensorTracker.hasPendingPlayerSave == 0 &&
+        HudFloatNear(g_hud_sensor_tracker.hudScale, 1.0f) &&
+        g_hud_sensor_tracker.hasPendingPlayerSave == 0 &&
         g_HudSensorTracker.missionLoaded == 0 && g_HudSensorTracker.missionFlags == 1;
 
     g_HudSensorTracker.Shutdown();
@@ -29543,7 +29543,7 @@ extern "C" int hud_sensor_tracker_objective_panel_visible_smoke(void) {
     const int oldSndInitialized = g_zSnd_IsInitialized;
     const int oldSndPreInitialized = g_zSnd_PreInitialized;
     const int oldActiveBackend = g_zSnd_ActiveBackend;
-    const float oldHudScale = g_HudSensorTracker.hudScale;
+    const float oldHudScale = g_hud_sensor_tracker.hudScale;
     const float oldUnscaledTime = g_Time_UnscaledAccumulatedTimeSec;
     HudSensorTracker const oldGlobalTracker = g_HudSensorTracker;
     const int oldObjectiveCommandLocked = g_HudSensorTracker_ObjectiveCommandLocked;
@@ -29675,7 +29675,7 @@ extern "C" int hud_sensor_tracker_objective_panel_visible_smoke(void) {
         g_OptCatalog_DamageFeedbackHitCount = oldHitCount;
         g_zSnd_GlobalVolumeScalePtr = oldVolumeScalePtr;
         g_zSnd_Flag10PlaybackEnabled = oldFlag10;
-        g_HudSensorTracker.hudScale = oldHudScale;
+        g_hud_sensor_tracker.hudScale = oldHudScale;
         FreeLibrary(messagesDll);
         DeleteObject(summary->hFont);
         DeleteObject(desc->hFont);
@@ -29694,7 +29694,7 @@ extern "C" int hud_sensor_tracker_objective_panel_visible_smoke(void) {
     float globalScale = 0.2f;
     g_zSnd_GlobalVolumeScalePtr = &globalScale;
     g_zSnd_Flag10PlaybackEnabled = 0;
-    g_HudSensorTracker.hudScale = 0.625f;
+    g_hud_sensor_tracker.hudScale = 0.625f;
     g_HudUiMgrObjectivePhase = 1;
     tracker.SetObjectiveReviewVisible(0);
     const bool reviewHideOk = tracker.objectiveUiMode == 0 &&
@@ -29712,7 +29712,7 @@ extern "C" int hud_sensor_tracker_objective_panel_visible_smoke(void) {
     g_zSnd_IsInitialized = 1;
     g_zSnd_PreInitialized = 1;
     g_zSnd_ActiveBackend = 2;
-    g_HudSensorTracker.hudScale = 0.75f;
+    g_hud_sensor_tracker.hudScale = 0.75f;
 
     tracker.objectiveUiMode = 0;
     tracker.objectiveFlowState = 0;
@@ -29826,7 +29826,7 @@ extern "C" int hud_sensor_tracker_objective_panel_visible_smoke(void) {
     const bool commandZoomOk = g_HudSensorTracker.mapZoom > 9.89f &&
                                g_HudSensorTracker.mapZoom < 9.91f;
 
-    g_HudSensorTracker.hudScale = 0.875f;
+    g_hud_sensor_tracker.hudScale = 0.875f;
     g_HudSensorTracker.firstIncompleteObjectiveIndex = 2;
     g_HudSensorTracker.objectiveUiMode = 0;
     g_HudSensorTracker.objectiveFlowState = 0;
@@ -29956,7 +29956,7 @@ extern "C" int hud_sensor_tracker_objective_panel_visible_smoke(void) {
     g_zSnd_ActiveBackend = oldActiveBackend;
     g_zSnd_PreInitialized = oldSndPreInitialized;
     g_zSnd_IsInitialized = oldSndInitialized;
-    g_HudSensorTracker.hudScale = oldHudScale;
+    g_hud_sensor_tracker.hudScale = oldHudScale;
     g_Time_UnscaledAccumulatedTimeSec = oldUnscaledTime;
     g_HudSensorTracker = oldGlobalTracker;
     g_HudSensorTracker_ObjectiveCommandLocked = oldObjectiveCommandLocked;

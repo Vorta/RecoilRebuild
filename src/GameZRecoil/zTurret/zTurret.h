@@ -3,10 +3,10 @@
 #include "recoil/recoil_types.h"
 #include <stddef.h>
 
-#include "GameZRecoil/zReader/zReader.h"
-#include "GameZRecoil/zUtil/zSaveGame.h"
+#include "GameZRecoil/zReader/zreader.h"
+#include "GameZRecoil/zUtil/zsave_game.h"
 #include "recoil/recoil_callconv.h"
-#include "zClass.h"
+#include "zclass.h"
 
 struct OptCatalogEntryDef;
 struct OptCatalogHitEventPartial;

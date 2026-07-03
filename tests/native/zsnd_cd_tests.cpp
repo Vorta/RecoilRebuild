@@ -1,7 +1,7 @@
-#include "GameZRecoil/Time/Time.h"
-#include "GameZRecoil/zGame/zGame.h"
-#include "GameZRecoil/zReader/zReader.h"
-#include "GameZRecoil/zSound/zSound.h"
+#include "GameZRecoil/Time/time.h"
+#include "GameZRecoil/zGame/zgame.h"
+#include "GameZRecoil/zReader/zreader.h"
+#include "GameZRecoil/zSound/zsnd.h"
 #include "recoil/recoil_callconv.h"
 
 #include <cstdint>

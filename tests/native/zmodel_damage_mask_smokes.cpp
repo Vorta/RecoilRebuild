@@ -1,7 +1,7 @@
-#include "GameZRecoil/include/OptCatalog.h"
-#include "GameZRecoil/zModel/zModel.h"
-#include "GameZRecoil/zRndr/zRndr.h"
-#include "GameZRecoil/zVideo/zVideo.h"
+#include "GameZRecoil/include/opt_catalog.h"
+#include "GameZRecoil/zModel/gmod.h"
+#include "GameZRecoil/zRndr/zrndr.h"
+#include "GameZRecoil/zVideo/zvid.h"
 
 namespace {
 int g_damageMaskUploadLockCount = 0;

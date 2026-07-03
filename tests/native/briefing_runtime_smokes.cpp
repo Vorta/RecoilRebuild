@@ -1,14 +1,14 @@
-#include "Battlesport/Briefing.h"
-#include "Battlesport/HudSensorTracker.h"
-#include "GameZRecoil/Time/Time.h"
-#include "GameZRecoil/zGame/zGame.h"
+#include "Battlesport/briefing.h"
+#include "Battlesport/hud_sensor_tracker.h"
+#include "GameZRecoil/Time/time.h"
+#include "GameZRecoil/zGame/zgame.h"
 #include "GameZRecoil/zHud/zhud_ui.h"
-#include "GameZRecoil/zInput/zInput.h"
-#include "GameZRecoil/zLoc/zLoc.h"
-#include "GameZRecoil/zReader/zReader.h"
-#include "GameZRecoil/zRndr/zRndr.h"
-#include "GameZRecoil/zSound/zSound.h"
-#include "GameZRecoil/zVideo/zVideo.h"
+#include "GameZRecoil/zInput/zinput.h"
+#include "GameZRecoil/zLoc/zloc.h"
+#include "GameZRecoil/zReader/zreader.h"
+#include "GameZRecoil/zRndr/zrndr.h"
+#include "GameZRecoil/zSound/zsnd.h"
+#include "GameZRecoil/zVideo/zvid.h"
 
 #include <cstdint>
 #include <cstdlib>
@@ -31,18 +31,6 @@ struct CodeFunctionPatch {
     unsigned char *address;
     unsigned char original[5];
 };
-
-template <typename Method> void *MethodAddress(
-    Method method
-) {
-    std::uintptr_t address = 0;
-    std::memcpy(
-        &address,
-        &method,
-        sizeof(method)
-    );
-    return reinterpret_cast<void *>(address);
-}
 
 bool PatchFunctionJump(
     void *target,
@@ -147,26 +135,6 @@ void WriteTestU32(
         0
     );
 }
-
-struct TestCompositePanelConstructor {
-    HudUiCompositePanel *ConstructorWithEntryCount(int) {
-        HudUiCompositePanel *const panel =
-            reinterpret_cast<HudUiCompositePanel *>(this);
-        panel->HudUiPanel::ConstructorDefault(
-            0,
-            0,
-            0
-        );
-        panel->activeEntryCount = 0;
-        panel->entryVector.allocatorProxy.value = 0;
-        panel->entryVector.begin = 0;
-        panel->entryVector.end = 0;
-        panel->entryVector.capacityEnd = 0;
-        panel->SetTextFmt("");
-        panel->SetVisible(1);
-        return panel;
-    }
-};
 
 int __fastcall TestVideoSurfaceDispatch(
     zVideo_SurfaceStatePartial *
@@ -376,19 +344,12 @@ extern "C" int briefing_runtime_constructor_smoke(void) {
     ConstructorGlobalState state = {};
     PrepareConstructorGlobals(state);
     CodeFunctionPatch postprocessPatch = {};
-    CodeFunctionPatch compositeConstructorPatch = {};
     if (!PatchFunctionJump(
             reinterpret_cast<void *>(&zVideo::RunPostprocessOnPrimaryBuffer),
             reinterpret_cast<void *>(&TestRunPostprocessOnPrimaryBuffer),
             postprocessPatch
-        ) ||
-        !PatchFunctionJump(
-            MethodAddress(&HudUiCompositePanel::ConstructorWithEntryCount),
-            MethodAddress(&TestCompositePanelConstructor::ConstructorWithEntryCount),
-            compositeConstructorPatch
         )) {
         RestoreFunctionPatch(postprocessPatch);
-        RestoreFunctionPatch(compositeConstructorPatch);
         RestoreConstructorGlobals(state);
         return 9;
     }
@@ -429,7 +390,7 @@ extern "C" int briefing_runtime_constructor_smoke(void) {
         ::operator delete(sentinel);
         runtime->actionQueue.headSentinel = 0;
     }
-    RestoreFunctionPatch(compositeConstructorPatch);
+    runtime->messagesPanel.Destructor();
     RestoreFunctionPatch(postprocessPatch);
     RestoreConstructorGlobals(state);
     return failure;
@@ -502,7 +463,7 @@ extern "C" int briefing_locator_panel_update_smoke(void) {
 
     HudUiBriefingLocatorPanel locator;
 
-    locator.flags = 0;
+    locator.flags = 0x10;
     locator.clipRect.left = 1;
     locator.clipRect.top = 2;
     locator.clipRect.right = 3;
@@ -511,8 +472,8 @@ extern "C" int briefing_locator_panel_update_smoke(void) {
     locator.radiusSquared = 144;
     g_HudUi_InvalidateMask = 0x80;
     locator.Update(1.0f);
-    const bool visibleSkipped =
-        locator.flags == 0 &&
+    const bool hiddenSkipped =
+        locator.flags == 0x10 &&
         locator.clipRect.left == 1 &&
         locator.clipRect.top == 2 &&
         locator.clipRect.right == 3 &&
@@ -520,7 +481,7 @@ extern "C" int briefing_locator_panel_update_smoke(void) {
         locator.radius == 12 &&
         locator.radiusSquared == 144;
 
-    locator.flags = 0x10 | 0x02 | 0x08;
+    locator.flags = 0x02 | 0x08;
     locator.x = 100;
     locator.y = 110;
     locator.radius = 12;
@@ -536,7 +497,7 @@ extern "C" int briefing_locator_panel_update_smoke(void) {
         (locator.flags & 0x08u) == 0 &&
         (locator.flags & 0x80u) != 0;
 
-    locator.flags = 0x10;
+    locator.flags = 0;
     locator.radius = 4;
     locator.radiusSquared = 16;
     locator.Update(0.01f);
@@ -545,7 +506,7 @@ extern "C" int briefing_locator_panel_update_smoke(void) {
         locator.radiusSquared == 9 &&
         (locator.flags & 0x80u) != 0;
 
-    locator.flags = 0x10;
+    locator.flags = 0;
     locator.radius = 2;
     locator.radiusSquared = 4;
     locator.Update(0.01f);
@@ -555,7 +516,7 @@ extern "C" int briefing_locator_panel_update_smoke(void) {
         (locator.flags & 0x80u) != 0;
 
     g_HudUi_InvalidateMask = oldInvalidateMask;
-    if (!visibleSkipped) {
+    if (!hiddenSkipped) {
         return 2;
     }
     if (!shrunk) {
@@ -564,14 +525,8 @@ extern "C" int briefing_locator_panel_update_smoke(void) {
     if (!minStep) {
         return 4;
     }
-    if (locator.radius != 3) {
+    if (!minClamp) {
         return 5;
-    }
-    if (locator.radiusSquared != 9) {
-        return 6;
-    }
-    if ((locator.flags & 0x80u) == 0) {
-        return 7;
     }
     return 0;
 }
@@ -695,7 +650,7 @@ extern "C" int briefing_runtime_destructor_smoke(void) {
     new (&runtime->objectiveDesc) HudUiPanel;
     new (&runtime->objectivePicture) HudUiBriefingObjectivePicture;
     new (&runtime->transmissionHalted) HudUiPanel;
-    runtime->messagesPanel.ConstructorWithEntryCount(2);
+    new (&runtime->messagesPanel) HudUiCompositePanel(2);
 
     void *locatorInitialVptr[6] = {};
     for (std::size_t index = 0; index < 6; ++index) {

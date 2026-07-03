@@ -1,7 +1,7 @@
 #include "GameZRecoil/zFMV/fmv.h"
-#include "GameZRecoil/zInput/zInput.h"
-#include "GameZRecoil/zSound/zSound.h"
-#include "GameZRecoil/zVideo/zVideo.h"
+#include "GameZRecoil/zInput/zinput.h"
+#include "GameZRecoil/zSound/zsnd.h"
+#include "GameZRecoil/zVideo/zvid.h"
 
 #include <cstdlib>
 

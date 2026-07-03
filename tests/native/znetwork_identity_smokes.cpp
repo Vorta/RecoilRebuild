@@ -1,6 +1,6 @@
 #include "Battlesport/pickup.h"
-#include "GameZRecoil/zNetwork/zNetwork.h"
-#include "GameZRecoil/zReader/zReader.h"
+#include "GameZRecoil/zNetwork/znet.h"
+#include "GameZRecoil/zReader/zreader.h"
 
 #include <dplobby.h>
 

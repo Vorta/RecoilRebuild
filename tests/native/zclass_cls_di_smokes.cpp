@@ -1,8 +1,8 @@
-#include "zClass.h"
-#include "zDi.h"
-#include "GameZRecoil/zEffect/zEffect.h"
-#include "GameZRecoil/zMath/zMath.h"
-#include "GameZRecoil/zModel/zModel.h"
+#include "zclass.h"
+#include "zdi.h"
+#include "GameZRecoil/zEffect/zeff.h"
+#include "GameZRecoil/zMath/zmth.h"
+#include "GameZRecoil/zModel/gmod.h"
 
 #include <cmath>
 #include <cstdint>

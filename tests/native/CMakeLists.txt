@@ -205,7 +205,7 @@ source_path = Path(sys.argv[1])
 output_path = Path(sys.argv[2])
 text = source_path.read_text()
 
-branch_start = text.index('\n#else\n\n#include "Battlesport/RecoilApp.h"') + len('\n#else\n\n')
+branch_start = text.index('\n#else\n\n#include "Battlesport/recoil_app.h"') + len('\n#else\n\n')
 prefix_end = text.index('\nnamespace {', branch_start)
 prefix = text[branch_start:prefix_end]
 
@@ -893,7 +893,7 @@ source_path = Path(sys.argv[1])
 output_path = Path(sys.argv[2])
 text = source_path.read_text()
 
-branch_start = text.index('\n#else\n\n#include "Battlesport/RecoilApp.h"') + len('\n#else\n\n')
+branch_start = text.index('\n#else\n\n#include "Battlesport/recoil_app.h"') + len('\n#else\n\n')
 prefix_end = text.index('\nnamespace {', branch_start)
 prefix = text[branch_start:prefix_end]
 
@@ -988,7 +988,7 @@ source_path = Path(sys.argv[1])
 output_path = Path(sys.argv[2])
 text = source_path.read_text()
 
-branch_start = text.index('\n#else\n\n#include "Battlesport/RecoilApp.h"') + len('\n#else\n\n')
+branch_start = text.index('\n#else\n\n#include "Battlesport/recoil_app.h"') + len('\n#else\n\n')
 namespace_start = text.index('\nnamespace {', branch_start)
 prefix = text[branch_start:namespace_start]
 
@@ -1415,7 +1415,7 @@ output_path = Path(sys.argv[2])
 text = source_path.read_text()
 LEGACY_PANEL_FIELD = "m_" + "panel"
 
-include_start = text.index('#include "Battlesport/RecoilApp.h"')
+include_start = text.index('#include "Battlesport/recoil_app.h"')
 prefix_end = text.index('\nnamespace {', include_start)
 prefix = text[include_start:prefix_end]
 
@@ -1826,7 +1826,7 @@ source_path = Path(sys.argv[1])
 output_path = Path(sys.argv[2])
 text = source_path.read_text()
 
-else_marker = '\n#else\n\n#include "Battlesport/GameNet.h"'
+else_marker = '\n#else\n\n#include "Battlesport/game_net.h"'
 else_start = text.index(else_marker) + len("\n#else\n\n")
 prefix_end = text.index("namespace {", else_start)
 
@@ -1898,7 +1898,7 @@ source_path = Path(sys.argv[1])
 output_path = Path(sys.argv[2])
 text = source_path.read_text()
 
-else_marker = '\n#else\n\n#include "Battlesport/GameNet.h"'
+else_marker = '\n#else\n\n#include "Battlesport/game_net.h"'
 else_start = text.index(else_marker) + len("\n#else\n\n")
 prefix_end = text.index("namespace {", else_start)
 
@@ -2134,7 +2134,7 @@ source_path = Path(sys.argv[1])
 output_path = Path(sys.argv[2])
 text = source_path.read_text()
 
-else_marker = '\n#else\n\n#include "Battlesport/GameNet.h"'
+else_marker = '\n#else\n\n#include "Battlesport/game_net.h"'
 else_start = text.index(else_marker) + len("\n#else\n\n")
 prefix_end = text.index("namespace {", else_start)
 
@@ -3246,7 +3246,7 @@ source_path = Path(sys.argv[1])
 output_path = Path(sys.argv[2])
 text = source_path.read_text()
 
-branch_start = text.index('\n#else\n\n#include "Battlesport/GameNet.h"') + len('\n#else\n\n')
+branch_start = text.index('\n#else\n\n#include "Battlesport/game_net.h"') + len('\n#else\n\n')
 prefix_end = text.index('\nnamespace {', branch_start)
 prefix = text[branch_start:prefix_end]
 
@@ -3803,7 +3803,7 @@ set(ZDECLIENT_NATIVE_SMOKE_PREFIX
 )
 file(WRITE "${ZDECLIENT_NATIVE_SMOKE_PREFIX}" [=[
 #include "Battlesport/Mfc42Abi.h"
-#include "GameZRecoil/zNetwork/zNetwork.h"
+#include "GameZRecoil/zNetwork/znet.h"
 #include <cstdint>
 
 struct zNetwork_DPlay4SmokeVtable;

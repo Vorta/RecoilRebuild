@@ -1,5 +1,5 @@
-#include "GameZRecoil/zError/zError.h"
-#include "GameZRecoil/zSys/zSys.h"
+#include "GameZRecoil/zError/zerr.h"
+#include "GameZRecoil/zSys/zsys.h"
 
 #include <windows.h>
 

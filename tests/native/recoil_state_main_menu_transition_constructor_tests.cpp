@@ -1,10 +1,10 @@
 #include "Battlesport/hud.h"
-#include "GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.h"
-#include "GameZRecoil/zGame/zGame.h"
-#include "GameZRecoil/zSound/zSound.h"
-#include "GameZRecoil/zInput/zInput.h"
-#include "GameZRecoil/zUtil/zSaveGame.h"
-#include "GameZRecoil/zVideo/zVideo.h"
+#include "GameZRecoil/RecoilApp/recoil_state_main_menu_transition.h"
+#include "GameZRecoil/zGame/zgame.h"
+#include "GameZRecoil/zSound/zsnd.h"
+#include "GameZRecoil/zInput/zinput.h"
+#include "GameZRecoil/zUtil/zsave_game.h"
+#include "GameZRecoil/zVideo/zvid.h"
 
 #include <new>
 #include <string.h>

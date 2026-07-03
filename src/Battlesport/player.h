@@ -7,8 +7,8 @@
 
 #include "Battlesport/ai_net.h"
 #include "GameZRecoil/zHud/zhud_ui.h"
-#include "GameZRecoil/zUtil/zSaveGame.h"
-#include "GameZRecoil/zVideo/zVideoFxPass3.h"
+#include "GameZRecoil/zUtil/zsave_game.h"
+#include "GameZRecoil/zVideo/zvid_fx_pass3.h"
 #include "recoil/recoil_callconv.h"
 
 struct zInput_GameStateOrMapTablePartial;

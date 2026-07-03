@@ -184,8 +184,9 @@ add the exact frontier/window and non-overlapping worker scopes:
 Recover Recoil.exe source shape top-down so VC5 naturally emits the retail BN
 function order. Use `python tools/recoil.py audit source-blocks --list` as the
 frontier queue, starting at the earliest unresolved or not-order-proven
-authored row. Current active frontier: [0x401000,0x4038a0). Treat current
-production source filenames and stale comments as diagnostic context only.
+authored row. Current active frontier: [0x4038a0,0x404ca0) for the
+literal-backed Briefing.cpp block. Treat current production source filenames
+and stale comments as diagnostic context only.
 Spawn read-only BN fact mappers for the assigned window, source workers for one
 explicit `.h`/`.cpp` source-shape hypothesis, and verifier agents for exact
 VC5 function-order checks. If generated order mismatches retail, reject the
@@ -296,6 +297,13 @@ owner/tier evidence. Do not rely on declared object order as source-shape
 provenance. Passing smokes, byte checks, or ABI call-shape checks are evidence
 candidates, not source-shape proof. Treat generated map entries as stale when
 current BN file-literal evidence contradicts the recorded source path.
+Do not reject a proven physical `.cpp` block because current production source
+emits a different body or order; the implementation may be wrong. Also do not
+classify provider-looking empty/no-op bodies as provider-owned until authored
+override evidence is excluded. The opening About prelude is the canonical
+example: `0x401020` byte-matches an MFC no-op, but generated symbol,
+declaration, message-map placement, and VC5 order/byte evidence prove an empty
+`CAboutDlg::DoDataExchange` override inside continuous `about.cpp`.
 When the source-block list contains `partial-header` rows, the emitted code is
 still reconstructed in the header named by `source_path` and included by the
 listed `.cpp`; the row is placement evidence, not full-header or owner-gate
@@ -304,10 +312,23 @@ acceptance evidence.
 For source-file block-map work, operate top-down from the earliest unresolved
 or not-order-proven authored row in
 `python tools/recoil.py audit source-blocks --list`. The current active
-frontier starts at `[0x401000,0x4038a0)`: classify the
-`semantic:CAboutDlg-constructor-prelude` and adjacent provider rows, then
-preserve the confirmed `ai_net.h -> zMath.h -> ai_net.cpp` checkpoint before
-advancing. For each window, gather BN facts, form one `.h`/`.cpp` source-shape
+frontier starts at `[0x4038a0,0x404ca0)` for the literal-backed
+`Briefing.cpp` block. The opening `[0x401000,0x401060)` About prelude is
+closed for source-block/order purposes, and the
+`ai_net.h -> zmth.h -> ai_net.cpp` checkpoint is order-confirmed. Use
+`python tools/recoil.py verify vc5 briefing_text_block_order_current_shape --skip-bn-compare`
+as the current Briefing order diagnostic. It resolves the current
+`Briefing.cpp` symbols plus `0x403c80`
+`HudUiCircle::DrawDirtyForwarder`, `0x403d90`
+`HudUiBriefingRuntime::ScalarDeletingDestructor`, and `0x403e20`
+`HudUiCompositePanel::Destructor`, and now passes selected-symbol
+function order after the current source definitions were reordered to the
+retail sequence. The active Briefing frontier remains open because the
+remaining HUD/zInput/provider exception rows inside `[0x4038a0,0x404ca0)` are
+classified, but still need natural VC5 source/header/provider emission coverage
+in the retail order before the block can advance. For each window, gather BN
+facts, form one
+`.h`/`.cpp` source-shape
 hypothesis, assign non-overlapping workers, and run a VC5
 `check_function_order` target or equivalent emitted-order check. If generated
 order differs from retail BN order, treat it as a source-shape/include-shape

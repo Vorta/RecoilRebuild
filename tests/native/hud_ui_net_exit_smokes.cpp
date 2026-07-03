@@ -1,8 +1,8 @@
-#include "Battlesport/HudUiNetExitPanel.h"
-#include "GameZRecoil/Time/Time.h"
-#include "GameZRecoil/zGame/zGame.h"
-#include "GameZRecoil/zInput/zInput.h"
-#include "GameZRecoil/zVideo/zVideo.h"
+#include "Battlesport/hud_ui_net_exit_panel.h"
+#include "GameZRecoil/Time/time.h"
+#include "GameZRecoil/zGame/zgame.h"
+#include "GameZRecoil/zInput/zinput.h"
+#include "GameZRecoil/zVideo/zvid.h"
 
 #include <cstdint>
 #include <cstring>

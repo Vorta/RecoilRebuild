@@ -1,11 +1,11 @@
-#include "zClass.h"
+#include "zclass.h"
 
-#include "GameZRecoil/Time/Time.h"
-#include "GameZRecoil/zError/zError.h"
-#include "GameZRecoil/zMath/zMath.h"
-#include "GameZRecoil/zModel/zModel.h"
-#include "GameZRecoil/zVideo/zVideo.h"
-#include "zDi.h"
+#include "GameZRecoil/Time/time.h"
+#include "GameZRecoil/zError/zerr.h"
+#include "GameZRecoil/zMath/zmth.h"
+#include "GameZRecoil/zModel/gmod.h"
+#include "GameZRecoil/zVideo/zvid.h"
+#include "zdi.h"
 
 namespace {
     const char kAnimateSourceFile[] = "D:\\Proj\\GameZRecoil\\zClass\\Animate.c";

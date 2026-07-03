@@ -1,12 +1,12 @@
-#include "GameZRecoil/zGame/zGame.h"
+#include "GameZRecoil/zGame/zgame.h"
 #include "GameZRecoil/zHud/zhud_ui.h"
-#include "GameZRecoil/zRndr/zRndr.h"
-#include "GameZRecoil/Time/Time.h"
-#include "GameZRecoil/zModel/zModel.h"
-#include "GameZRecoil/include/zClipRect.h"
-#include "GameZRecoil/zMath/zMath.h"
-#include "GameZRecoil/zVideo/zVideo.h"
-#include "zClass.h"
+#include "GameZRecoil/zRndr/zrndr.h"
+#include "GameZRecoil/Time/time.h"
+#include "GameZRecoil/zModel/gmod.h"
+#include "GameZRecoil/include/zclip_rect.h"
+#include "GameZRecoil/zMath/zmth.h"
+#include "GameZRecoil/zVideo/zvid.h"
+#include "zclass.h"
 
 #include <cstdint>
 #include <cstdio>

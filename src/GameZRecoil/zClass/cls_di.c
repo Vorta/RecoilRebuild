@@ -1,10 +1,10 @@
 #include "Battlesport/Mfc42Abi.h"
-#include "zDi.h"
+#include "zdi.h"
 
 #include "Battlesport/player.h"
-#include "GameZRecoil/zError/zError.h"
-#include "GameZRecoil/zMath/zMath.h"
-#include "GameZRecoil/zModel/zModel.h"
+#include "GameZRecoil/zError/zerr.h"
+#include "GameZRecoil/zMath/zmth.h"
+#include "GameZRecoil/zModel/gmod.h"
 
 #include <malloc.h>
 #include <math.h>

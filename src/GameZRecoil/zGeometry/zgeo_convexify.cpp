@@ -1,6 +1,6 @@
-#include "zGeometry.h"
+#include "zgeo.h"
 
-#include "GameZRecoil/zError/zError.h"
+#include "GameZRecoil/zError/zerr.h"
 
 #include <stdio.h>
 #include <stdlib.h>

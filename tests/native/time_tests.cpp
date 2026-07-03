@@ -1,4 +1,4 @@
-#include "GameZRecoil/Time/Time.h"
+#include "GameZRecoil/Time/time.h"
 
 #include <windows.h>
 

@@ -1,9 +1,9 @@
 #include "GameZRecoil/zHud/zhud_ui.h"
-#include "GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.h"
-#include "GameZRecoil/zGame/zGame.h"
-#include "GameZRecoil/zEffect/zEffect.h"
-#include "GameZRecoil/zRndr/zRndr.h"
-#include "GameZRecoil/zSound/zSound.h"
+#include "GameZRecoil/RecoilApp/recoil_state_main_menu_transition.h"
+#include "GameZRecoil/zGame/zgame.h"
+#include "GameZRecoil/zEffect/zeff.h"
+#include "GameZRecoil/zRndr/zrndr.h"
+#include "GameZRecoil/zSound/zsnd.h"
 #include <string.h>
 
 extern "C" unsigned int g_HudUi_InvalidateMask;

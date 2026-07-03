@@ -1,16 +1,16 @@
-#include "GameZRecoil/zTurret/zTurret.h"
+#include "GameZRecoil/zTurret/zturret.h"
 
-#include "Battlesport/HudSensorTracker.h"
-#include "Battlesport/GameNet.h"
-#include "GameZRecoil/Time/Time.h"
+#include "Battlesport/hud_sensor_tracker.h"
+#include "Battlesport/game_net.h"
+#include "GameZRecoil/Time/time.h"
 #include "Battlesport/player.h"
-#include "GameZRecoil/include/OptCatalog.h"
-#include "GameZRecoil/zEffect/zEffect.h"
-#include "GameZRecoil/zGame/zGame.h"
-#include "GameZRecoil/zInput/zInput.h"
-#include "GameZRecoil/zModel/zModel.h"
-#include "GameZRecoil/zSound/zSound.h"
-#include "GameZRecoil/zMath/zMath.h"
+#include "GameZRecoil/include/opt_catalog.h"
+#include "GameZRecoil/zEffect/zeff.h"
+#include "GameZRecoil/zGame/zgame.h"
+#include "GameZRecoil/zInput/zinput.h"
+#include "GameZRecoil/zModel/gmod.h"
+#include "GameZRecoil/zSound/zsnd.h"
+#include "GameZRecoil/zMath/zmth.h"
 
 #include <windows.h>
 

@@ -1,14 +1,14 @@
 #include "Battlesport/player.h"
-#include "Battlesport/GameNet.h"
-#include "GameZRecoil/Time/Time.h"
-#include "GameZRecoil/include/OptCatalog.h"
-#include "GameZRecoil/include/zClass.h"
-#include "GameZRecoil/include/zImage.h"
+#include "Battlesport/game_net.h"
+#include "GameZRecoil/Time/time.h"
+#include "GameZRecoil/include/opt_catalog.h"
+#include "GameZRecoil/include/zclass.h"
+#include "GameZRecoil/include/zimage.h"
 #include "GameZRecoil/zHud/zhud_ui.h"
-#include "GameZRecoil/zInput/zInput.h"
-#include "GameZRecoil/zModel/zModel.h"
-#include "GameZRecoil/zUtil/zZbd.h"
-#include "GameZRecoil/zVideo/zVideo.h"
+#include "GameZRecoil/zInput/zinput.h"
+#include "GameZRecoil/zModel/gmod.h"
+#include "GameZRecoil/zUtil/zbd.h"
+#include "GameZRecoil/zVideo/zvid.h"
 
 #include <windows.h>
 

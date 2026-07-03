@@ -26,6 +26,54 @@ artifacts remain authoritative for individual functions.
   `0x407140`, `0x407150`, and `0x407160`. Keep these as simple authored C/C++
   bodies or provider-marked glue according to the owner-projection entry; do not replace
   them with raw assembly.
+- MFC empty overrides with provider-like bytes: `0x401020`
+  (`CAboutDlg::DoDataExchange`) is an authored empty derived-class override even
+  though its body byte-matches the inherited MFC no-op. Generated symbol,
+  `about.h` declaration, placement between the constructor and message map, and
+  the `cabout_prelude_provider_order_current_shape` plus
+  `cabout_prelude_functions` VC5 targets prove the override inside the
+  continuous `about.cpp` block. Do not classify similar no-op bodies as provider
+  solely from byte shape; check class/message-map/vtable and function-order
+  evidence first. See `source_file_layout_audit.md` for the full About prelude
+  proof.
+- VC5 tail-merged duplicated source tails: `0x401060`
+  (`AINet::TickAiMode2TopLevel`) byte-matches only when the path-follow and
+  auto-turn switch cases contain duplicated attack/rebuild source tails. VC5
+  `/O2 /Ob0` then tail-merges those duplicate source occurrences into the
+  shared retail runtime block at `0x4010cb`. A hand-written source-level
+  `goto` common tail preserved the visible CFG, body size, switch table size,
+  and function order, but rotated register allocation and left 19 unmasked byte
+  mismatches. When retail shows an earlier case jumping into a later shared
+  suffix, a later case falling through into that suffix, and small register-use
+  rotations across repeated call/argument-load sites, test duplicated original
+  source tails before adding locals, helpers, raw offsets, or compiler-flag
+  theories. Do not "clean up" duplicated source into a common label unless the
+  VC5 byte target still matches. See `source_file_layout_audit.md` for the
+  ai_net-specific proof and `python tools/recoil.py verify vc5 0x401060` for
+  the current verifier evidence.
+- Evidence-gated raw assembly: default to source-faithful C/C++ and use raw
+  assembly only when valid VC5SP3 C/C++ variants cannot produce the observed
+  retail bytes or `chatgpt-pro-line` confirms raw assembly is required. Keep the
+  asm minimal, inline inside the recovered C/C++ function/helper/macro, and
+  document the block with the address, what it does, why C/C++ was not
+  sufficient, and the byte/BN/chatgpt-pro-line evidence. Add an
+  address-scoped `.agent/RAW_ASSEMBLY_ALLOWLIST.txt` row with the
+  `source-faithful-inline-asm` tag or a narrower existing tag. This pattern
+  does not permit provider shims, whole-function assembly, raw byte emission,
+  `.asm` files, naked functions, linker/order tricks, or assembly where C/C++
+  remains source-faithful and byte-capable.
+- AINet path-vector helper asm: `0x401180`
+  (`AINet::TickAiMode2PathFollow`) is a user-approved raw-assembly exception
+  for the recovered `AINET_PATH_*` vector helper macros in
+  `src/Battlesport/ai_net.h`. Current VC5 `/O2 /Ob0` evidence byte-matches
+  this function only when those helpers act as the observed x87 optimizer
+  barrier; ordinary C, aggregate scratch temporaries, independent pointer locals,
+  and volatile-lvalue barriers all failed to preserve the retail byte shape.
+  This permits inline `__asm` only in the recovered path-vector helper macros,
+  scoped to the `0x401180` byte-match evidence. It does not permit
+  `__declspec(naked)`, `_emit`, `.asm` files, raw EBP offsets, provider shims,
+  linker/order dependence, whole-function raw assembly, or unrelated AINet raw
+  assembly.
 - HUD/UI leaf accessors and setters: verified examples include
   `HudUiElement::GetX` and nearby small HUD helpers. Prefer named fields and
   static layout checks over offset math once Binary Ninja types are stable.
@@ -34,14 +82,14 @@ artifacts remain authoritative for individual functions.
   profile evidence.
 - zSys CPU probes: the CPU feature-detection group is a documented raw-assembly
   exception through `vc5_zsys_cpu_raw_asm`; do not generalize that exception to
-  new production functions without explicit approval.
+  new production functions without the evidence-gated raw assembly checklist.
 - zRndr overlay MMX rows: `0x48d510` and `0x48d5f0` are a user-approved
   address-scoped raw-assembly exception through
   `vc5_o2_ob0_md_zrndr_mmx_raw_asm_facs`, because VC5SP3 exposes no usable MMX
   intrinsic surface and retail uses authored qword MMX row loops. This permits
   narrow inline `__asm` loops inside ordinary C++ functions only; it does not
   permit `__declspec(naked)`, `_emit`, `.asm`, raw byte emission, other zRndr
-  span/MMX families, provider shims, or future raw assembly.
+  span/MMX families, provider shims, or unrelated raw assembly.
 - zRndr span MMX blocks: `0x49ea80`, `0x49ec20`, `0x49e400`, `0x49e560`,
   `0x49cbb0`, `0x49cea0`, `0x49da80`, and `0x49ddb0` are a user-approved
   MMX-block-only raw-assembly exception through
@@ -63,7 +111,8 @@ artifacts remain authoritative for individual functions.
 ## Use
 
 - Check this file before creating a new source idiom for destructors, thunks,
-  vtable stubs, small accessors, zSound helpers, or provider glue.
+  vtable stubs, small accessors, zSound helpers, provider glue, or
+  byte-sensitive control-flow cleanup.
 - Add only patterns backed by current verification output or a durable provider
   ABI note. Keep address examples compact.
 - Keep failed-byte functional lanes in their subsystem notes unless they become

@@ -1,7 +1,7 @@
-#include "GameZRecoil/zNetwork/zNetwork.h"
+#include "GameZRecoil/zNetwork/znet.h"
 
-#include "GameZRecoil/zError/zError.h"
-#include "GameZRecoil/zReader/zReader.h"
+#include "GameZRecoil/zError/zerr.h"
+#include "GameZRecoil/zReader/zreader.h"
 
 #include <dplay.h>
 #include <dplobby.h>

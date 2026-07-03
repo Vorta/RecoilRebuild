@@ -1,10 +1,10 @@
-#include "GameZRecoil/include/zClass.h"
-#include "GameZRecoil/include/zDi.h"
-#include "GameZRecoil/include/zImage.h"
-#include "GameZRecoil/zReader/zReader.h"
-#include "GameZRecoil/zModel/zModel.h"
-#include "GameZRecoil/zMath/zMath.h"
-#include "GameZRecoil/zVideo/zVideo.h"
+#include "GameZRecoil/include/zclass.h"
+#include "GameZRecoil/include/zdi.h"
+#include "GameZRecoil/include/zimage.h"
+#include "GameZRecoil/zReader/zreader.h"
+#include "GameZRecoil/zModel/gmod.h"
+#include "GameZRecoil/zMath/zmth.h"
+#include "GameZRecoil/zVideo/zvid.h"
 
 #include <windows.h>
 #include <dbghelp.h>

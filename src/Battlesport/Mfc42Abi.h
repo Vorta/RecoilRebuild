@@ -36,7 +36,7 @@ struct tm {
 #undef _DEBUG
 #endif
 #include <afx.h>
-#if !defined(_MSC_VER) || _MSC_VER >= 1300
+#if !defined(_MSC_VER) || _MSC_VER >= 1300 || defined(RECOIL_MFC42_DELAY_AFXWIN_INLINES)
 #undef _AFX_ENABLE_INLINES
 #endif
 #include <afxwin.h>

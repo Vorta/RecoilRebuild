@@ -1,8 +1,8 @@
-#include "GameZRecoil/include/zClass.h"
+#include "GameZRecoil/include/zclass.h"
 #include "Battlesport/player.h"
-#include "GameZRecoil/zGame/zGame.h"
-#include "GameZRecoil/zInput/zInput.h"
-#include "GameZRecoil/zLoc/zLoc.h"
+#include "GameZRecoil/zGame/zgame.h"
+#include "GameZRecoil/zInput/zinput.h"
+#include "GameZRecoil/zLoc/zloc.h"
 
 #include <cstdio>
 #include <cstdlib>

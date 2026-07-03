@@ -1,7 +1,7 @@
-#include "GameZRecoil/zModel/zModel.h"
-#include "GameZRecoil/zGeometry/zGeometry.h"
-#include "GameZRecoil/zVideo/zVideo.h"
-#include "zDi.h"
+#include "GameZRecoil/zModel/gmod.h"
+#include "GameZRecoil/zGeometry/zgeo.h"
+#include "GameZRecoil/zVideo/zvid.h"
+#include "zdi.h"
 
 #include <cmath>
 #include <cstdint>

@@ -1,8 +1,8 @@
-#include "GameZRecoil/zReader/zReader.h"
-#include "Battlesport/HudSensorTracker.h"
-#include "GameZRecoil/include/zImage.h"
-#include "GameZRecoil/zRndr/zRndr.h"
-#include "zClass.h"
+#include "GameZRecoil/zReader/zreader.h"
+#include "Battlesport/hud_sensor_tracker.h"
+#include "GameZRecoil/include/zimage.h"
+#include "GameZRecoil/zRndr/zrndr.h"
+#include "zclass.h"
 
 #include <windows.h>
 

@@ -4,7 +4,7 @@
 #include <stddef.h>
 #include <string.h>
 
-#include "GameZRecoil/zVideo/zVideo.h"
+#include "GameZRecoil/zVideo/zvid.h"
 #include "recoil/recoil_callconv.h"
 
 #include <vfw.h>

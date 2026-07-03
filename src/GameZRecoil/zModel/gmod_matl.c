@@ -1,8 +1,8 @@
-#include "GameZRecoil/zModel/zModel.h"
+#include "GameZRecoil/zModel/gmod.h"
 
-#include "GameZRecoil/include/zImage.h"
-#include "GameZRecoil/zError/zError.h"
-#include "GameZRecoil/zVideo/zVideo.h"
+#include "GameZRecoil/include/zimage.h"
+#include "GameZRecoil/zError/zerr.h"
+#include "GameZRecoil/zVideo/zvid.h"
 
 #include <stdio.h>
 #include <stdlib.h>

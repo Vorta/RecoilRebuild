@@ -1438,7 +1438,7 @@
     g_Player_AiMode2State1Finalized = 1
 }
 
-// Physical source-block row: src/GameZRecoil/zMath/zMath.h emitted as a header contributor in src/Battlesport/ai_net.cpp, range [0x402f60, 0x402fd0). Semantic helper name zMath::Vec3Normalize is preserved. This is source-block/navigation evidence only, not an owner/tier gate.
+// Physical source-block row: src/GameZRecoil/zMath/zmth.h emitted as a header contributor in src/Battlesport/ai_net.cpp, range [0x402f60, 0x402fd0). Semantic helper name zMath::Vec3Normalize is preserved. This is source-block/navigation evidence only, not an owner/tier gate.
 0x402f60 float __fastcall zMath::Vec3Normalize(struct zVec3* vec)
 {
     long double x87_r7 = vec->x

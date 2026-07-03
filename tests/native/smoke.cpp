@@ -1135,7 +1135,10 @@ extern "C" int zhud_play_powerup_sfx_smoke(void);
 extern "C" int zhud_background_constructor_smoke(void);
 extern "C" int zhud_background_update_input_focus_smoke(void);
 extern "C" int zhud_background_set_enabled_smoke(void);
+extern "C" int zhud_background_free_loaded_tree_roots_smoke(void);
+extern "C" int zhud_background_bind_widget_by_name_smoke(void);
 extern "C" int zhud_background_load_zrd_and_section_null_root_smoke(void);
+extern "C" int zhud_background_load_from_zrd_missing_path_smoke(void);
 extern "C" int zhud_text_label_constructor_and_extents_smoke(void);
 extern "C" int zhud_text_label_on_draw_smoke(void);
 extern "C" int zhud_text_label_hit_test_smoke(void);
@@ -1973,31 +1976,31 @@ extern "C" int time_reset_smoke(void);
 extern "C" int time_tick_smoke(void);
 
 #include "Battlesport/hud.h"
-#include "Battlesport/GameNet.h"
-#include "Battlesport/CZRecoilFrame.h"
-#include "Battlesport/WestwoodOnlineUpgradeApi.h"
-#include "Battlesport/WestwoodOnlineUpgradeApiEventSink.h"
-#include "Battlesport/WestwoodOnlineUpgradeConfigDialog.h"
-#include "Battlesport/WestwoodOnlineUpgradeDialog.h"
+#include "Battlesport/game_net.h"
+#include "Battlesport/cz_recoil_frame.h"
+#include "Battlesport/wol_api.h"
+#include "Battlesport/wol_api_event_sink.h"
+#include "Battlesport/wol_config_dialog.h"
+#include "Battlesport/wol_dialog.h"
 #include "Battlesport/pickup.h"
 #include "Battlesport/player.h"
-#include "GameZRecoil/zGame/zGame.h"
-#include "GameZRecoil/include/zDi.h"
-#include "GameZRecoil/include/OptCatalog.h"
-#include "GameZRecoil/include/zClass.h"
-#include "GameZRecoil/zEffect/zEffect.h"
-#include "GameZRecoil/zError/zError.h"
+#include "GameZRecoil/zGame/zgame.h"
+#include "GameZRecoil/include/zdi.h"
+#include "GameZRecoil/include/opt_catalog.h"
+#include "GameZRecoil/include/zclass.h"
+#include "GameZRecoil/zEffect/zeff.h"
+#include "GameZRecoil/zError/zerr.h"
 #include "GameZRecoil/zHud/zhud_ui.h"
-#include "GameZRecoil/zInput/zInput.h"
-#include "GameZRecoil/zInterp/zInterp.h"
-#include "GameZRecoil/zLoc/zLoc.h"
-#include "GameZRecoil/zMath/zMath.h"
-#include "GameZRecoil/zModel/zModel.h"
-#include "GameZRecoil/zNetwork/zNetwork.h"
-#include "GameZRecoil/zReader/zReader.h"
-#include "GameZRecoil/zSound/zSound.h"
-#include "GameZRecoil/Time/Time.h"
-#include "GameZRecoil/zVideo/zVideo.h"
+#include "GameZRecoil/zInput/zinput.h"
+#include "GameZRecoil/zInterp/zinterp.h"
+#include "GameZRecoil/zLoc/zloc.h"
+#include "GameZRecoil/zMath/zmth.h"
+#include "GameZRecoil/zModel/gmod.h"
+#include "GameZRecoil/zNetwork/znet.h"
+#include "GameZRecoil/zReader/zreader.h"
+#include "GameZRecoil/zSound/zsnd.h"
+#include "GameZRecoil/Time/time.h"
+#include "GameZRecoil/zVideo/zvid.h"
 
 #include <ocidl.h>
 #include <cmath>
@@ -28181,8 +28184,14 @@ const SmokeTest kSmokeTests[] = {
         {"zhud_background_update_input_focus_smoke",
          zhud_background_update_input_focus_smoke},
         {"zhud_background_set_enabled_smoke", zhud_background_set_enabled_smoke},
+        {"zhud_background_free_loaded_tree_roots_smoke",
+         zhud_background_free_loaded_tree_roots_smoke},
+        {"zhud_background_bind_widget_by_name_smoke",
+         zhud_background_bind_widget_by_name_smoke},
         {"zhud_background_load_zrd_and_section_null_root_smoke",
          zhud_background_load_zrd_and_section_null_root_smoke},
+        {"zhud_background_load_from_zrd_missing_path_smoke",
+         zhud_background_load_from_zrd_missing_path_smoke},
         {"zhud_text_label_constructor_and_extents_smoke",
          zhud_text_label_constructor_and_extents_smoke},
         {"zhud_text_label_on_draw_smoke", zhud_text_label_on_draw_smoke},

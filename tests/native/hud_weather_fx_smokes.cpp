@@ -1,7 +1,7 @@
 #include "Battlesport/hud.h"
 #include "GameZRecoil/zClass/cls_stubs.h"
-#include "GameZRecoil/zRndr/zRndr.h"
-#include "GameZRecoil/zVideo/zVideo.h"
+#include "GameZRecoil/zRndr/zrndr.h"
+#include "GameZRecoil/zVideo/zvid.h"
 
 #include <cstdint>
 #include <cstdlib>

@@ -119,7 +119,7 @@ HudUiCompositePanel * AllocateCompositePanel(
 ) {
     HudUiCompositePanel *const panel =
         (HudUiCompositePanel *)(::operator new(sizeof(HudUiCompositePanel)));
-    panel->ConstructorWithEntryCount(entryCount);
+    new (panel) HudUiCompositePanel(entryCount);
     return panel;
 }
 

@@ -42,6 +42,51 @@ Adding a new compiler environment or flag tuple requires updating this ledger
 and `tools/_recoil/config/compiler_linker_profiles.json` with the reason and expected compiler
 version. Do not silently add one-off flags to a VC manifest.
 
+## Profile Sentinel Guards
+
+Already byte-matched functions are compiler-profile sentinels. If a candidate
+profile does not preserve those confirmed bytes for the same source block, that
+profile is disqualified for the block; do not keep using it merely because a
+later, still-unmatched function has a lower mismatch count. When a manifest has
+`profile_guard.accepted_profiles`, that list is the enforced remaining valid
+profile set for the manifest. `python tools/recoil.py verify vc5` rejects
+explicit `--compiler-profile` use of profiles outside the accepted set or inside
+`profile_guard.disqualified_profiles`, and skips them in `--profile-sweep` by
+default. `--allow-disqualified-profile` is only for an explicit provenance
+re-open with new sentinel evidence.
+
+When a newly byte-matched function rules out another profile, update the same
+manifest guard immediately: remove that profile from
+`profile_guard.accepted_profiles`, add it to
+`profile_guard.disqualified_profiles`, and record the sentinel address plus the
+mismatch or compile-failure evidence. This keeps future byte-matching sweeps
+restricted to the current viable profile set.
+
+Current confirmed guards:
+
+- `src/Battlesport/about.cpp`: the five-function
+  `cabout_prelude_functions` sentinel (`0x401000`, `0x401020`,
+  `0x401030`, `0x401040`, `0x401050`) byte-matches with
+  `vc5_o2_ob0_md_facs`. The current accepted profile set is
+  `vc5_o2_ob0_md_facs`, `vc5_o2_ob0_md_gx_gr_facs`,
+  `vc5_o2_ob1_md_gx_facs`, `vc5_o2_ob1_md_facs`,
+  `vc5_o2_ob2_md_facs`, `vc5_o2_ob2_md_gx_facs`, and
+  `vc5_o2_oy_ob0_md_facs`. The 2026-07-04 sweep disqualified the non-`/MD`
+  MFC-incompatible profiles, the explicit `/Oy-` profiles, and the `/O1`
+  diagnostic profile for the About block.
+- `src/Battlesport/ai_net.cpp`: `0x401060`
+  `AINet::TickAiMode2TopLevel` is a byte-matched sentinel. The 2026-07-04
+  sweep disqualified the non-`/MD` MFC-incompatible profiles, the `/Ob2`
+  `/MD` profiles, and the `/O1` diagnostic profile for the ai_net block. The
+  current accepted profile set is `vc5_o2_ob0_md_facs`,
+  `vc5_o2_ob0_md_gx_gr_facs`, `vc5_o2_ob1_md_gx_facs`,
+  `vc5_o2_ob1_md_facs`, `vc5_o2_oy_ob0_md_facs`,
+  `vc5_o2_oyminus_ob0_md_zi_facs`, `vc5_o2_oyminus_ob0_md_z7_facs`,
+  `vc5_o2_oyminus_ob0_md_gx_facs`, `vc5_o2_oyminus_ob0_md_facs`,
+  `vc5_o2_oyminus_ob1_md_facs`, and
+  `vc5_o2_oyminus_ob0_md_nog5_facs`. Prefer the manifest default and repair
+  source/header/include shape unless new sentinels prove a different profile.
+
 VC verification manifests may contain `functions`, `data_symbols`, or both.
 `data_symbols` entries compare a BN data address and byte length against a VC5
 COFF symbol with relocation masking, and write a relocation identity report for

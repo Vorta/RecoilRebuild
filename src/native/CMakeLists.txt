@@ -1,85 +1,23 @@
 add_library(recoil_native STATIC
-    ../Battlesport/RecoilApp.cpp
-    ../Battlesport/RecoilApp_PlayState_TickAndRenderFrame.cpp
-    ../Battlesport/Recoil.cpp
-    ../Battlesport/HudUiMessageBoxDialog.cpp
-    ../Battlesport/RecoilVersion.cpp
-    ../WinMain.cpp
-    ../Battlesport/Briefing.cpp
-    ../Battlesport/AiPropertyDlg.cpp
-    ../Battlesport/MfcThreeFloatDialog.cpp
-    ../Battlesport/zStr.cpp
+    ../Battlesport/about.cpp
     ../Battlesport/ai_net.cpp
-    ../Battlesport/GameNet.cpp
-    ../Battlesport/NetUi.cpp
+    ../Battlesport/Briefing.cpp
     ../Battlesport/hud.cpp
-    ../Battlesport/HudUiMainMenuDialog.cpp
-    ../Battlesport/HudUiMpExitDialog.cpp
-    ../Battlesport/HudUiNetGameSetup.cpp
-    ../Battlesport/RecoilStateCredits.cpp
-    ../Battlesport/HudUiNetExitPanel.cpp
-    ../Battlesport/HudSensorTracker.cpp
-    ../Battlesport/WestwoodOnlineUpgradeApi.cpp
-    ../Battlesport/WestwoodOnlineUpgradeApiEventSink.cpp
-    ../Battlesport/WestwoodOnlineUpgradeRefCountAndLock.cpp
-    ../Battlesport/WestwoodOnlineUpgradeDialog.cpp
-    ../Battlesport/WestwoodOnlineUpgradeProgressDialog.cpp
-    ../Battlesport/WestwoodOnlineUpgradeConfigDialog.cpp
-    ../Battlesport/player.cpp
+    ../Battlesport/map.cpp
+    ../Battlesport/mission.cpp
     ../Battlesport/pickup.cpp
-    ../Battlesport/CZGameFrame.cpp
-    ../Battlesport/CZRecoilFrame.cpp
-    ../GameZRecoil/mission.cpp
-    ../GameZRecoil/RecoilApp/RecoilStateDialogHost.cpp
-    ../GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.cpp
-    ../GameZRecoil/RecoilApp/RecoilStateMainMenuTransition_OnTryBecomeCurrent.cpp
-    ../GameZRecoil/RecoilApp/RecoilStateMainMenuTransition_OnUpdateShouldQuit.cpp
-    ../GameZRecoil/RecoilApp/RecoilStateMainMenuTransition_OnResume.cpp
-    ../GameZRecoil/RecoilApp/RecoilStateMainMenuTransition_OnDeactivate.cpp
-    ../GameZRecoil/RecoilApp/RecoilStateMainMenuTransition_ClearPausedAudioSnapshot.cpp
-    ../GameZRecoil/RecoilApp/RecoilStateMainMenuTransition_QueueEnter.cpp
-    ../GameZRecoil/RecoilApp/RecoilStateMainMenuTransition_SetDeferredVideoModeIndex.cpp
-    ../GameZRecoil/zSound/zsnd_cd.cpp
-    ../GameZRecoil/zSound/zsnd_create.cpp
-    ../GameZRecoil/zSound/zsnd_group.cpp
-    ../GameZRecoil/zSound/zsnd_init.cpp
-    ../GameZRecoil/zSound/zsnd_parm.cpp
-    ../GameZRecoil/zSound/zsnd_play.cpp
-    ../GameZRecoil/zSound/zsnd_snapshot_stop_all.cpp
-    ../GameZRecoil/zSound/zsnd_sample_set.cpp
-    ../GameZRecoil/zSound/zsnd_system.cpp
-    ../GameZRecoil/Time/Time.cpp
-    ../Battlesport/RecoilApp_InitStdLogFilesLiterals.cpp
-    ../GameZRecoil/zEffect/zEffect.cpp
-    ../GameZRecoil/zFMV/fmv_script.cpp
-    ../GameZRecoil/zGame/zGame.cpp
-    ../GameZRecoil/zGeometry/zClipAlt.cpp
-    ../GameZRecoil/zGeometry/zClipRect.cpp
-    ../GameZRecoil/zGeometry/zgeo_convexify.cpp
-    ../GameZRecoil/zGeometry/zgeo_model.cpp
-    ../GameZRecoil/zGeometry/zgeo_weiler.cpp
-    ../GameZRecoil/zHud/zhud_ui.cpp
-    ../GameZRecoil/zImage/zimg_texture.cpp
-    ../GameZRecoil/zInterp/zinterp_parse.cpp
-    ../GameZRecoil/wwonline/upgrade_download.cpp
-    ../GameZRecoil/zLoc/zLoc.cpp
-    ../GameZRecoil/zMath/zMath.cpp
-    ../GameZRecoil/zDEClient/zdec_init.cpp
-    ../GameZRecoil/zReader/zreader_load.cpp
-    ../GameZRecoil/zReader/zreader_lookup.cpp
-    ../GameZRecoil/zModel/gdi.c
-    ../GameZRecoil/zModel/gmod_scene.c
-    ../GameZRecoil/zModel/zModel.cpp
-    ../GameZRecoil/zModel/zModel_Display.cpp
-    ../GameZRecoil/zModel/gmod_const.c
-    ../GameZRecoil/zModel/gmod_light.c
-    ../GameZRecoil/zModel/gmod_matl.c
-    ../GameZRecoil/zWeapon/OptCatalog.c
-    ../GameZRecoil/zWeapon/zWeapon.cpp
-    ../GameZRecoil/zClass/Class.c
-    ../GameZRecoil/zClass/cls_stubs.cpp
+    ../Battlesport/player.cpp
+    ../Battlesport/RecoilApp.cpp
+    ../Battlesport/turret.cpp
+    ../Battlesport/util.cpp
+    ../Battlesport/version.cpp
+    ../Battlesport/weapon.cpp
+    ../Battlesport/WinSock.cpp
+    ../Battlesport/WOL.cpp
+    ../CZGameFrame/CZGameFrame.cpp
     ../GameZRecoil/zClass/Animate.c
     ../GameZRecoil/zClass/Camera.c
+    ../GameZRecoil/zClass/Class.c
     ../GameZRecoil/zClass/cls_di.c
     ../GameZRecoil/zClass/cls_util.c
     ../GameZRecoil/zClass/cls_world.c
@@ -87,38 +25,59 @@ add_library(recoil_native STATIC
     ../GameZRecoil/zClass/Display.c
     ../GameZRecoil/zClass/Light.c
     ../GameZRecoil/zClass/List.c
-    ../GameZRecoil/zClass/List_RenderActiveCameras.cpp
-    ../GameZRecoil/zClass/Lod.c
     ../GameZRecoil/zClass/Object3d.c
     ../GameZRecoil/zClass/Seq.c
     ../GameZRecoil/zClass/Sound.c
     ../GameZRecoil/zClass/Switch.c
     ../GameZRecoil/zClass/Window.c
-    ../GameZRecoil/zInput/zInput.cpp
-    ../GameZRecoil/zNetwork/znet_dplay.cpp
+    ../GameZRecoil/zDEClient/zdec_init.cpp
+    ../GameZRecoil/zEffect/zeff_anim_run.c
     ../GameZRecoil/zError/zerr_old.c
-    ../GameZRecoil/zRndr/zRndr.cpp
-    ../GameZRecoil/zTurret/zTurret.cpp
-    ../GameZRecoil/zUtil/zZbd.cpp
-    ../GameZRecoil/zUtil/zSaveGame.cpp
-    ../GameZRecoil/zUtil/zutil.cpp
-    ../GameZRecoil/zVideo/zVideo.cpp
-    ../GameZRecoil/zCom/zCom.cpp
-    ../GameZRecoil/zSys/zSys.cpp
+    ../GameZRecoil/zFMV/fmv_script.cpp
+    ../GameZRecoil/zGame/zgame_opt.c
+    ../GameZRecoil/zGeometry/zgeo_convexify.cpp
+    ../GameZRecoil/zGeometry/zgeo_model.cpp
+    ../GameZRecoil/zGeometry/zgeo_weiler.cpp
+    ../GameZRecoil/zImage/zimg_texture.cpp
+    ../GameZRecoil/zInput/zInput.cpp
+    ../GameZRecoil/zInterp/zinterp_parse.cpp
+    ../GameZRecoil/zMath/zmth_main.c
+    ../GameZRecoil/zModel/gmod_const.c
+    ../GameZRecoil/zModel/gmod_init.c
+    ../GameZRecoil/zModel/gmod_light.c
+    ../GameZRecoil/zModel/gmod_matl.c
+    ../GameZRecoil/zNetwork/znet_dplay.cpp
+    ../GameZRecoil/zReader/zreader.cpp
+    ../GameZRecoil/zRender/zrndr_draw.c
+    ../GameZRecoil/zSound/zsnd_3d.cpp
+    ../GameZRecoil/zSound/zsnd_cd.cpp
+    ../GameZRecoil/zSound/zsnd_create.cpp
+    ../GameZRecoil/zSound/zsnd_error.cpp
+    ../GameZRecoil/zSound/zsnd_fade.cpp
+    ../GameZRecoil/zSound/zsnd_grp.cpp
+    ../GameZRecoil/zSound/zsnd_init.cpp
+    ../GameZRecoil/zSound/zsnd_parm.cpp
+    ../GameZRecoil/zSound/zsnd_play.cpp
+    ../GameZRecoil/zSound/zsnd.cpp
+    ../GameZRecoil/zSys/zsys_cpu.cpp
+    ../GameZRecoil/zSys/zsys.cpp
+    ../GameZRecoil/zUI/zui.cpp
+    ../GameZRecoil/zUtil/zutl_zar.cpp
+    ../GameZRecoil/zUtil/zutl_zbd.cpp
+    ../GameZRecoil/zVideo/zvid_buff.c
+    ../GameZRecoil/zVideo/zvid_dd.c
+    ../GameZRecoil/zVideo/zvid_ddd3d.c
+    ../GameZRecoil/zVideo/zvid_init.c
+    ../GameZRecoil/zVideo/zvid_main.c
+    ../GameZRecoil/zWeapon/zwep_init.c
+    ../WinMain.cpp
     recoil_build_anchor.cpp
 )
 
 set_source_files_properties(
-    ../GameZRecoil/zModel/gdi.c
-    ../GameZRecoil/zModel/gmod_scene.c
-    ../GameZRecoil/zModel/gmod_const.c
-    ../GameZRecoil/zModel/gmod_light.c
-    ../GameZRecoil/zModel/gmod_matl.c
-    ../GameZRecoil/zWeapon/OptCatalog.c
-    ../GameZRecoil/zError/zerr_old.c
     ../GameZRecoil/zClass/Animate.c
-    ../GameZRecoil/zClass/Class.c
     ../GameZRecoil/zClass/Camera.c
+    ../GameZRecoil/zClass/Class.c
     ../GameZRecoil/zClass/cls_di.c
     ../GameZRecoil/zClass/cls_util.c
     ../GameZRecoil/zClass/cls_world.c
@@ -126,19 +85,33 @@ set_source_files_properties(
     ../GameZRecoil/zClass/Display.c
     ../GameZRecoil/zClass/Light.c
     ../GameZRecoil/zClass/List.c
-    ../GameZRecoil/zClass/Lod.c
     ../GameZRecoil/zClass/Object3d.c
     ../GameZRecoil/zClass/Seq.c
     ../GameZRecoil/zClass/Sound.c
     ../GameZRecoil/zClass/Switch.c
     ../GameZRecoil/zClass/Window.c
+    ../GameZRecoil/zEffect/zeff_anim_run.c
+    ../GameZRecoil/zError/zerr_old.c
+    ../GameZRecoil/zGame/zgame_opt.c
+    ../GameZRecoil/zMath/zmth_main.c
+    ../GameZRecoil/zModel/gmod_const.c
+    ../GameZRecoil/zModel/gmod_init.c
+    ../GameZRecoil/zModel/gmod_light.c
+    ../GameZRecoil/zModel/gmod_matl.c
+    ../GameZRecoil/zRender/zrndr_draw.c
+    ../GameZRecoil/zVideo/zvid_buff.c
+    ../GameZRecoil/zVideo/zvid_dd.c
+    ../GameZRecoil/zVideo/zvid_ddd3d.c
+    ../GameZRecoil/zVideo/zvid_init.c
+    ../GameZRecoil/zVideo/zvid_main.c
+    ../GameZRecoil/zWeapon/zwep_init.c
     PROPERTIES LANGUAGE CXX
 )
 
 if(MSVC)
     set_source_files_properties(
-        ../Battlesport/HudUiMainMenuDialog.cpp
-        ../GameZRecoil/zHud/zhud_ui.cpp
+        ../Battlesport/hud.cpp
+        ../GameZRecoil/zUI/zui.cpp
         PROPERTIES COMPILE_OPTIONS /Zc:preprocessor
     )
     set_source_files_properties(

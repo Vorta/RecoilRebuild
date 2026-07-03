@@ -1,4 +1,4 @@
-#include "Battlesport/RecoilVersion.h"
+#include "Battlesport/recoil_version.h"
 
 #include <cstring>
 

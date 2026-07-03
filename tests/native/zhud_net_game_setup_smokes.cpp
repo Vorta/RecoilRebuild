@@ -1,13 +1,13 @@
-#include "Battlesport/CZRecoilFrame.h"
-#include "Battlesport/GameNet.h"
-#include "Battlesport/HudSensorTracker.h"
-#include "Battlesport/HudUiNetGameSetup.h"
-#include "Battlesport/RecoilApp.h"
-#include "GameZRecoil/zGame/zGame.h"
-#include "GameZRecoil/zNetwork/zNetwork.h"
-#include "GameZRecoil/zRndr/zRndr.h"
-#include "GameZRecoil/zSound/zSound.h"
-#include "GameZRecoil/zVideo/zVideo.h"
+#include "Battlesport/cz_recoil_frame.h"
+#include "Battlesport/game_net.h"
+#include "Battlesport/hud_sensor_tracker.h"
+#include "Battlesport/hud_ui_net_game_setup.h"
+#include "Battlesport/recoil_app.h"
+#include "GameZRecoil/zGame/zgame.h"
+#include "GameZRecoil/zNetwork/znet.h"
+#include "GameZRecoil/zRndr/zrndr.h"
+#include "GameZRecoil/zSound/zsnd.h"
+#include "GameZRecoil/zVideo/zvid.h"
 
 #include <cstdint>
 #include <cstring>

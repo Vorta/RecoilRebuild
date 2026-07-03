@@ -49,7 +49,7 @@ Evidence:
   by `zInput_BindMapContext::InitFromTemplate`; `0x471860` has VC5 EH
   allocation state around construction and the constructor body is recovered as
   the template initializer call.
-- Likely original owner/source file: `GameZRecoil/zInput/zInput.h` with call
+- Likely original owner/source file: `GameZRecoil/zInput/zinput.h` with call
   sites in `GameZRecoil/zInput/zInput.cpp`.
 - Why no standalone retail function is expected: BN has no separate retail
   constructor body for these context allocations; the observed construction

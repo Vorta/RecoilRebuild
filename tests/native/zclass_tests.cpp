@@ -1,13 +1,13 @@
-#include "zClass.h"
-#include "zDi.h"
-#include "GameZRecoil/zError/zError.h"
-#include "GameZRecoil/include/zImage.h"
-#include "GameZRecoil/zMath/zMath.h"
-#include "GameZRecoil/zModel/zModel.h"
-#include "GameZRecoil/zRndr/zRndr.h"
-#include "GameZRecoil/zSound/zSound.h"
-#include "GameZRecoil/Time/Time.h"
-#include "GameZRecoil/zVideo/zVideo.h"
+#include "zclass.h"
+#include "zdi.h"
+#include "GameZRecoil/zError/zerr.h"
+#include "GameZRecoil/include/zimage.h"
+#include "GameZRecoil/zMath/zmth.h"
+#include "GameZRecoil/zModel/gmod.h"
+#include "GameZRecoil/zRndr/zrndr.h"
+#include "GameZRecoil/zSound/zsnd.h"
+#include "GameZRecoil/Time/time.h"
+#include "GameZRecoil/zVideo/zvid.h"
 
 #include <cmath>
 #include <cstdint>

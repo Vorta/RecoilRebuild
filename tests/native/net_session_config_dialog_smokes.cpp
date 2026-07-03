@@ -1,7 +1,7 @@
-#include "Battlesport/GameNet.h"
+#include "Battlesport/game_net.h"
 #include "GameZRecoil/mission.h"
-#include "GameZRecoil/zGame/zGame.h"
-#include "GameZRecoil/zLoc/zLoc.h"
+#include "GameZRecoil/zGame/zgame.h"
+#include "GameZRecoil/zLoc/zloc.h"
 
 #include <cstring>
 

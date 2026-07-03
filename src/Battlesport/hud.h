@@ -4,13 +4,13 @@
 #include <stddef.h>
 #include <windows.h>
 
-#include "Battlesport/RecoilApp.h"
-#include "GameZRecoil/RecoilApp/RecoilStateDialogHost.h"
-#include "GameZRecoil/RecoilApp/RecoilStateMainMenuTransition.h"
-#include "GameZRecoil/include/zClass.h"
+#include "Battlesport/recoil_app.h"
+#include "GameZRecoil/RecoilApp/recoil_state_dialog_host.h"
+#include "GameZRecoil/RecoilApp/recoil_state_main_menu_transition.h"
+#include "GameZRecoil/include/zclass.h"
 #include "GameZRecoil/zHud/zhud_ui.h"
-#include "GameZRecoil/zVideo/zVideo.h"
-#include "GameZRecoil/zVideo/zVideoFxPass3.h"
+#include "GameZRecoil/zVideo/zvid.h"
+#include "GameZRecoil/zVideo/zvid_fx_pass3.h"
 #include "recoil/recoil_callconv.h"
 
 enum RecoilSaveLoadDialogKind {

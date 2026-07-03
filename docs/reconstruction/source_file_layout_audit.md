@@ -13,6 +13,54 @@ facts remain unreconciled with source owners. Final linked `.data` layout remain
 a final validation lane unless block-order work exposes a direct data/object
 ordering cause.
 
+## 2026-07-03 Source Tree Alignment Pass
+
+The production source tree under `src` has been reshaped to match the current
+source-file block catalog's physical `.c`/`.cpp` file set. The new
+`python tools/recoil.py audit source-layout --strict` command compares current
+production `.c`/`.cpp` paths against block `agent_source_path` resolution and
+currently reports `84 ledger/current .c/.cpp file(s)`. `src/Messages` and
+`src/native` are intentionally outside this Recoil.exe layout check.
+
+This pass is file-structure alignment only. It does not claim that every moved
+body is now source-faithful, standalone, order-proven, or byte-ready. Several
+legacy implementation chunks were preserved in private `_body.h` or
+`*_impl.h` files and included from the nearest current compile host so no
+reimplemented bodies were deleted while the original include/source split is
+still unknown. Those preservation headers are source-shape debt, not original
+source proof. The affected areas include Battlesport HUD/RecoilApp shards,
+zClass render-list/Lod preservation, zModel/zReader/zSys/zWeapon compatibility
+headers, and zSound sample/snapshot preservation.
+
+Twelve recovered source-block files are still compiled through compatibility
+hosts instead of as standalone translation units:
+`zdec_qsand.cpp`, `zdec_crater.cpp`, `zeff_anim_init.c`, `zeff_init.c`,
+`zeff_anim_save.c`, `fmv_main.cpp`, `fmv_stream.cpp`, `zimg_fonts.cpp`,
+`zin_kbd.cpp`, `zin_mouse.cpp`, `zin_init.cpp`, and `zin_joystick.cpp`.
+`tools/_recoil/config/vc5_final_build.json` records explicit
+`source_file_map_exclusions` for those files so the final-build source guard
+does not silently treat them as missing. The VC5 manifest source guard now
+follows explicit quoted project `.c`/`.cpp` includes in addition to headers
+when checking provenance comments, because these compatibility hosts are the
+current production compile inputs.
+
+Placeholder ledger hosts were created where the catalog requires a physical
+file but no standalone authored body has been reconstructed yet, including
+`weapon.cpp`, `zsnd_3d.cpp`, `zsnd_error.cpp`, several zVideo split files,
+`zsys_cpu.cpp`, and `zutl_zar.cpp`. Their existence satisfies current file-set
+alignment only. Future source-shape work must either fill them with recovered
+original-style bodies or update the source-block catalog if BN/object-map
+evidence proves a different physical file model.
+
+The current native build still exposes unresolved compatibility-host blockers
+in included-fragment areas such as zDEClient, zEffect, zInput, and HUD
+main-menu shards. Treat those as source-shape/include-shape debt caused by the
+temporary preservation strategy, not as evidence that a `.cpp` can be split
+into multiple physical blocks. The next reconstruction steps should retire the
+compatibility includes by recovering the original declarations, namespace
+scope, helper ordering, and standalone translation-unit dependencies for the
+affected files.
+
 ## `zError::ReportOldNoOp` Source-File Literals
 
 Retail `zError::ReportOldNoOp` call sites pass compiler-emitted source-file
@@ -119,7 +167,7 @@ every unresolved provenance range remains listed as having no source-path
 literal counterpart. The same strict audit also checks
 `provenance_status_summary`: current `.text` coverage is complete at 110
 mapped rows with 753 nested semantic subranges, 64 literal-backed file blocks,
-2 accepted emitted `partial-header` rows (`ai_net.h` and `zMath.h`), and 11
+2 accepted emitted `partial-header` rows (`ai_net.h` and `zmth.h`), and 11
 remaining physical source/header provenance ranges that still need current BN
 evidence, original build artifacts, or VC5SP3 natural-order reproduction before
 their provisional names can be accepted.
@@ -208,19 +256,19 @@ Important candidate classes:
   as `[0x443a40,0x443a50)`, `[0x472450,0x472670)`,
   `[0x4a3e50,0x4a3ea0)`, `[0x4a59a0,0x4a59d0)`, and
   `[0x4a66e0,0x4a69c0)` remain candidate authored header/source-shape inputs
-  only. Current BN proves no emitted `zvid.h`, `zVideo.h`, `zinput.h`,
-  `zin_joystick.h`, `zSound.h`, or `zsnd_fade.h` body row for these ranges.
+  only. Current BN proves no emitted `zvid.h`, `zinput.h`, `zsnd.h`,
+  `zin_joystick.h`, or `zsnd_fade.h` body row for these ranges.
 - zUI shelf provider/compiler bodies at `[0x4ba470,0x4ba740)` and the probable
   MSVC5 `<xlist>` tail at `[0x4c0b60,0x4c0d20)` are provider/compiler-header
   evidence, not authored header rows.
 - The late zImage/zVideo islands `[0x4c7f00,0x4c7fd0)` and
   `[0x4c7fd0,0x4c81c0)` are candidate late header or out-of-band source
   contributions, but current BN proves no `zimg_fonts.h`, `zvid.h`,
-  `zVideo.h`, or `WinMain.cpp` include-host relationship. Current source files
+  or `WinMain.cpp` include-host relationship. Current source files
   coalesce separated retail shelves and are not provenance.
 
 Accepted emitted-header rows remain limited to the literal/order-proven
-`ai_net.h` and `zMath.h` rows until stronger evidence proves another authored
+`ai_net.h` and `zmth.h` rows until stronger evidence proves another authored
 header contribution.
 
 ### Special No-Literal Late Shelf `[0x4b2960,0x4c0d20)`
@@ -397,7 +445,7 @@ Current block evidence:
 - The following `Briefing.cpp` contribution starts at `0x4038a0` and contains
   the later confirmed `Briefing::StartForMission` file-literal call at
   `0x404242`.
-- `zMath::Vec3Normalize` at `0x402f60` is a semantic `zMath.h` inline helper;
+- `zMath::Vec3Normalize` at `0x402f60` is a semantic `zmth.h` inline helper;
   its COMDAT is physically emitted inside the probable `ai_net.cpp` block
   between `AINet::AiFinalizeMode2State1ForAllPlayers` at `0x402f10` and
   `AINet::LoadAllFromZrd` at `0x402fd0`. Such header/helper placement is an
@@ -427,43 +475,47 @@ The first durable repair is conservative:
   `0x403830` now route through `src/Battlesport/ai_net.cpp`; the broader owner
   gates remain blocked until the adjacent early AI/player placement audit is
   finished and positive gates are re-scrutinized.
-- Latest VC5 `ainet_text_block_order` evidence after the 2026-07-01 Option A
-  header-layering experiment shows the helper emits from the `ai_net.cpp`
-  object at the intended retail slot: `AINet::AiFinalizeMode2State1ForAllPlayers`
-  is `SECT39`, `zMath::Vec3Normalize` is `SECT3B`, and
-  `AINet::LoadAllFromZrd` is `SECT3D`; `section_order_matches_manifest` is
-  `True`. Source shape stays `zMath.h`: early headers now include
-  `zMathTypes.h`/`zMathDecls.h`, while `ai_net.cpp` includes full `zMath.h`
-  after `0x402f10`. The full block still fails byte verification; `0x402f60`
-  has 95 mismatches after 4 relocation bytes and 5 trailing VC5 NOPs, BN size
-  98 and VC5 size 112.
+- Latest VC5 `ainet_text_block_order` evidence on 2026-07-05 shows the helper
+  emits from the `ai_net.cpp` object at the intended retail slot:
+  `AINet::AiFinalizeMode2State1ForAllPlayers` is `SECT31`,
+  `zMath::Vec3Normalize` is `SECT33`, and `AINet::LoadAllFromZrd` is `SECT34`;
+  `section_order_matches_manifest` is `True`. Source shape stays `zmth.h`:
+  early headers now include `zmth_types.h`/`zmth_decls.h`, while `ai_net.cpp`
+  includes full `zmth.h` after `0x402f10`. The full ai_net block still fails
+  byte verification because sibling AINet functions drift, but the `0x402f60`
+  row is now byte-clean in both `zmath_vec3_normalize` and
+  `ainet_text_block_order`: zero unmasked mismatches, zero relocation bytes,
+  zero trailing NOP trims, BN size 98, and VC5 size 98.
 - This `0x402f60` repair is the model for header/COMDAT placement: keep the
-  semantic helper in `src/GameZRecoil/zMath/zMath.h`, expose only early
-  declarations/types through `zMathTypes.h`/`zMathDecls.h`, and include the full
+  semantic helper in `src/GameZRecoil/zMath/zmth.h`, expose only early
+  declarations/types through `zmth_types.h`/`zmth_decls.h`, and include the full
   header at the retail emission point so VC5 naturally emits the retail order.
   Do not move semantic helpers into the wrong `.cpp` solely to force placement.
 - The active source-block catalog now records address-emitting `ai_net.cpp`
   header contributors explicitly in the flattened block list:
   `src/Battlesport/ai_net.h` emits `[0x401060,0x402f60)`, included by
-  `src/Battlesport/ai_net.cpp`; `src/GameZRecoil/zMath/zMath.h` emits
+  `src/Battlesport/ai_net.cpp`; `src/GameZRecoil/zMath/zmth.h` emits
   `[0x402f60,0x402fd0)`, including `0x402f60`; and the `ai_net.cpp` body row
-  resumes at `[0x402fd0,0x4038a0)`. Early `zMathTypes.h` and `zMathDecls.h`
+  resumes at `[0x402fd0,0x4038a0)`. Early `zmth_types.h` and `zmth_decls.h`
   remain `source_shape_inputs` because they are declaration/type inputs, not
   known address-emitting rows.
 - New `.inl` production reconstruction files are banned. Existing `.inl` files
   are legacy/provisional source-shape debt unless independently proven
-  original: `src/GameZRecoil/zSys/zSys_probe_platform.inl`,
-  `src/GameZRecoil/zSys/zSys_cpu_asm.inl`,
-  `src/GameZRecoil/zSys/zSys_cpu_detect.inl`, and
-  `src/GameZRecoil/zSys/zSys_cpu_get_class.inl`.
+  original: `src/GameZRecoil/zSys/zsys_probe_platform.inl`,
+  `src/GameZRecoil/zSys/zsys_cpu_asm.inl`,
+  `src/GameZRecoil/zSys/zsys_cpu_detect.inl`, and
+  `src/GameZRecoil/zSys/zsys_cpu_get_class.inl`.
 
 Current top-down Battlesport source-path literal queue:
 
 - `ai_net.cpp`: literal `0x4da1e8`, referenced at `0x4030bb`; proven block
   `[0x401060,0x4038a0)`.
-- `Briefing.cpp`: literal `0x4da32c`, referenced at `0x404238`; mapped block
-  `[0x4038a0,0x404ca0)`, with HUD/zZbd/zInput semantic exceptions still
-  requiring owner scrutiny before acceptance.
+- `Briefing.cpp`: literal `0x4da32c`, referenced at `0x404238`; source-block
+  checkpoint `[0x4038a0,0x404ca0)` is closed for physical order by
+  `briefing_text_block_order_current_shape` plus accepted provider-boundary
+  coverage for `0x403d70`, `0x403db0`, and `0x403eb0`. Remaining `0x403930`
+  constructor drift and `0x403e20` EH/base-destructor drift are owner-local byte
+  blockers, not the active source-block frontier.
 - `hud.cpp`: literal `0x4dadd8`, referenced at `0x4101a3` and `0x4141bb`;
   mapped block `[0x404ca0,0x415ab0)`, with semantic-owner exceptions.
 - `map.cpp`: literal `0x4daf04`, referenced at `0x416922`; mapped block
@@ -524,9 +576,8 @@ and do not update `SOURCE_OWNERS`.
 
 | Source path | Physical range | Literal evidence | First / last BN function | Status |
 | --- | --- | --- | --- | --- |
-| `semantic:CAboutDlg-constructor-prelude` | `[0x401000,0x401020)` | no literal; authored MFC-derived dialog constructor semantics, but no `AboutDlg.cpp`, `Recoil.cpp`, or `CAbout` source-path literal; exact source/header host unresolved | `CAboutDlg::Constructor` / `CAboutDlg::Constructor` | semantic source unresolved |
-| MFC provider prelude | `[0x401020,0x401060)` | no literal; provider wrappers | `MFC::NoOpVirtualOneArg` / `CWnd::EnableWindow` | provider boundary |
-| `src/Battlesport/ai_net.cpp` | `[0x401060,0x4038a0)` | `0x4da1e8`, xref `0x4030bb` | `AINet::TickAiMode2TopLevel` / `AINet::FreeAll` | mapped with `ai_net.h`/`zMath.h` partial-header rows and 6 body subranges |
+| `src/Battlesport/about.cpp` + `src/Battlesport/about.h` | `[0x401000,0x401060)` | no literal; confirmed continuous About-dialog source/header block with internal CAboutDlg and MFC provider subranges; natural function order and bytes reproduced | `CAboutDlg::Constructor` / `CWnd::EndModalState` | mapped no-literal, 4 semantic/provider subranges, order confirmed |
+| `src/Battlesport/ai_net.cpp` | `[0x401060,0x4038a0)` | `0x4da1e8`, xref `0x4030bb` | `AINet::TickAiMode2TopLevel` / `AINet::FreeAll` | mapped with `ai_net.h`/`zmth.h` partial-header rows and 6 body subranges |
 | `src/Battlesport/Briefing.cpp` | `[0x4038a0,0x404ca0)` | `0x4da32c`, xref `0x404238` | `HudUiBriefingObjectivePicture::DrawWithNoiseOverlay` / `Briefing::BuildObjectiveActionsForRuntime` | mapped, 11 semantic subranges |
 | `src/Battlesport/hud.cpp` | `[0x404ca0,0x415ab0)` | `0x4dadd8`, xrefs `0x4101a3`, `0x4141bb` | `HudUiElement::Draw` / `zFMV_ActionBase::Destructor` | mapped refined |
 | `src/Battlesport/map.cpp` | `[0x415ab0,0x417350)` | `0x4daf04`, xref `0x416922` | `HudSensorMapNode::Init` / `HudSensorTracker::SetObjectiveMarkerColorBlink` | mapped refined, 8 semantic subranges |
@@ -542,14 +593,23 @@ mapping: `hud.cpp` ends at `0x415ab0`, `map.cpp` covers
 non-overlap block-order evidence, not owner-gate acceptance; semantic
 exceptions in these blocks still require owner scrutiny before byte work.
 
-The provider prelude after the root `CAboutDlg` constructor has exact
-function/padding slices: `MFC::NoOpVirtualOneArg` code
+The opening `about.cpp`/`about.h` prelude has exact function/padding slices:
+`CAboutDlg::Constructor` code `[0x401000,0x40101b)` plus padding to
+`0x401020`, empty `CAboutDlg::DoDataExchange` override code
 `[0x401020,0x401023)` plus padding to `0x401030`,
-`MFC42::GetProcByOrdinal4234GetterAddr` code `[0x401030,0x401036)` plus
-padding to `0x401040`, `CWnd::DisableWindow` code `[0x401040,0x40104d)` plus
-padding to `0x401050`, and `CWnd::EnableWindow` code `[0x401050,0x40105d)`
-plus padding to `0x401060`. These wrappers are provider-boundary rows and do
-not prove a surrounding authored source file.
+`CAboutDlg::GetMessageMap` code `[0x401030,0x401036)` plus padding to
+`0x401040`, `CWnd::BeginModalState` code `[0x401040,0x40104d)` plus padding to
+`0x401050`, and `CWnd::EndModalState` code `[0x401050,0x40105d)` plus padding
+to `0x401060`. The `0x401020` body is byte-identical to the inherited MFC
+no-op, but the recovered source shape proves it is the About dialog override:
+the override is declared in `about.h` and defined between the constructor and
+message map in `about.cpp`. The CWnd modal-state wrappers are
+provider-boundary rows emitted inside the confirmed opening About prelude after
+the message map, not a separate `.cpp` block. The current production
+`about.cpp`/`about.h` shape delays the MFC `afxwin2.inl` modal-state provider
+emission until after `BEGIN_MESSAGE_MAP`, and VC5 now naturally emits the
+retail order `0x401000 -> 0x401020 -> 0x401030 -> 0x401040 -> 0x401050` with
+zero unmasked byte mismatches in `cabout_prelude_functions`.
 
 ### GameZRecoil Blocks Through zClass/zFMV
 
@@ -654,7 +714,7 @@ hypotheses unless a later packet promotes the evidence.
 | `[0x471e40,0x472670)` | likely `zInput/zin_joystick.cpp` | `zInput::DI_InitJoystickDevice` / `zInput::DI_ReportError` | `0x472450` and `0x472480` physically sit in the joystick tail but semantically route to force-feedback as candidate `zin_ff.cpp` code only. `0x472490` is a shared DirectInput diagnostic helper with unresolved defining source path; direct callers pass `zin_kbd.cpp` and `zin_init.cpp` literals. |
 | `[0x4a3930,0x4a3ea0)` | zSnd fade lists | `zSndFadeLists::Init` / `zSndFadeList::PopFrontCursor` | Bracketed no-literal `zsnd_fade.cpp` placement with 10 function-level subranges recorded in the catalog. The small list helpers at `0x4a3e50` and `0x4a3e90` are helper candidates only; no header/COMDAT provenance is proven. |
 | `[0x4a3ea0,0x4a3ef0)` | zSnd MCI report helper | `zSnd::ReportMciError` / same | Strong semantic `zsnd_cd.cpp` exception physically inside the report shelf; all direct caller file literals are `zsnd_cd.cpp`, but that proves caller diagnostics rather than whole-shelf definition placement. |
-| `[0x4a3ef0,0x4a44c0)` | zSnd A3D/DirectSound report helpers | `zSnd::ReportA3DError` / `zSnd::ReportDirectSoundError` | Proven address-backed helpers, but source provenance is unresolved. Caller literals span `zsnd_play.cpp`, `zsnd_init.cpp`, `zsnd_create.cpp`, `zsnd_parm.cpp`, `zsnd_3d.cpp`, and others, proving call-site diagnostics rather than definition placement. The exact auxiliary split is A3D body `[0x4a3ef0,0x4a4245)`, alignment `[0x4a4245,0x4a4248)`, A3D switch output `[0x4a4248,0x4a432c)`, padding `[0x4a432c,0x4a4330)`, then DirectSound body `[0x4a4330,0x4a44bf)` plus padding to `0x4a44c0`. The catalog records the full reporter shelf as an unproven `zSound.h`/`zsnd_error.h`/`zsnd_report.h` header-or-shared-helper candidate, not an accepted header row. |
+| `[0x4a3ef0,0x4a44c0)` | zSnd A3D/DirectSound report helpers | `zSnd::ReportA3DError` / `zSnd::ReportDirectSoundError` | Proven address-backed helpers, but source provenance is unresolved. Caller literals span `zsnd_play.cpp`, `zsnd_init.cpp`, `zsnd_create.cpp`, `zsnd_parm.cpp`, `zsnd_3d.cpp`, and others, proving call-site diagnostics rather than definition placement. The exact auxiliary split is A3D body `[0x4a3ef0,0x4a4245)`, alignment `[0x4a4245,0x4a4248)`, A3D switch output `[0x4a4248,0x4a432c)`, padding `[0x4a432c,0x4a4330)`, then DirectSound body `[0x4a4330,0x4a44bf)` plus padding to `0x4a44c0`. The catalog records the full reporter shelf as an unproven `zsnd.h`/`zsnd_error.h`/`zsnd_report.h` header-or-shared-helper candidate, not an accepted header row. |
 | `[0x4a44c0,0x4a53f0)` | zSnd group/stream cluster | `zSndPendingList::FindByName` / `zSndGroup::QueueStreamRequestWithWorldPos` | Contiguous pending/group/stream request cluster. The parser core `[0x4a4590,0x4a4c40)` is directly literal-backed by `D:\Proj\GameZRecoil\zSound\zsnd_grp.cpp` at `0x4e2df8` through xrefs in `zSndGroup::LoadFromConfigNode` and `zSndGroup::LoadConfigBlock`; adjacent pending and stream-manager tails share the same zSnd globals/state-machine flow but are not independently literal-proven. |
 | `[0x4a53f0,0x4a5670)` | zSndWaveData class island | `zSndWaveData::zSndWaveData` / `zSndWaveData::LoadAndParseFromIndexArchiveIfNeeded` | Strong semantic zSound class owner, but physical placement is not literal-backed and occurs after `zsnd_grp.cpp`; current provisional physical candidate is `zsnd.cpp`, not the invented `zsnd_wave.cpp`. BN comments conflict between `zSound.cpp` and `zsnd.cpp`, with no literal resolving either spelling. Refined subranges are lifecycle, WAVE parse, and lazy load/reset/archive wrapper phases. |
 | `[0x4a5670,0x4a59d0)` | provisional `src/GameZRecoil/zSys/zsys.cpp` | `Time::Reset` / `zVid::QueryCachedClientRectUpdateMaskIf3dfx` | Collapsed mixed shelf before provider thunk. Current BN supports semantic slices `[0x4a5670,0x4a5780)` Time, `[0x4a5780,0x4a5980)` RecoilApp std log init, `[0x4a5980,0x4a59a0)` zSys exit cleanup, and `[0x4a59a0,0x4a59d0)` zVid cached-client-rect helpers. No `zsys.cpp`, `zsys.h`, `Time.cpp`, `zLoc.*`, or `zVideo.cpp` source-path literal proves a physical split, so the collapsed row remains a provisional placement label only. |
@@ -700,7 +760,7 @@ uses complete owner units.
 | `zeff_anim_save.c [0x4603d0,0x4622f0)` | Activation-record save/load `[0x4603d0,0x461970)`, activation queue commands `[0x461970,0x461eb0)`, `0x461eb0 zEffect_Anim::SetActivationDispatchContext`, and zEffect runtime/template helpers `[0x461ec0,0x4622f0)` are physically in the save block. | Runtime/template bodies currently described as `zEffect.cpp`/`eff_runtime.c` are semantic islands in physical `zeff_anim_save.c` unless later evidence proves a header/COMDAT path; the latest BN pass found no separate `Effect.c` or emitted header row. |
 | `zerr_old.c [0x4622f0,0x462330)` | Old error/debug bridge split as `0x4622f0 zError::EmitDebugBuffer` and `0x462310 RecoilError::InitOutputContext`. The `zerr_old.c` literal xref is in `EmitDebugBuffer`; the context initializer is included by neighbor order before the `fmv_main.cpp` boundary. | Preserve the physical `zerr_old.c` row while routing namespace-level ownership carefully; the `RecoilError::` semantic name does not prove a separate file. |
 | `fmv_main.cpp [0x462330,0x4625e0)`, `fmv_script.cpp [0x4625e0,0x463d50)`, `fmv_stream.cpp [0x463d50,0x464670)` | BN literals split FMV into playback/MCI class bodies in `fmv_main.cpp`, script/action hierarchy in `fmv_script.cpp`, and stream decode/audio bodies in `fmv_stream.cpp`. `fmv_main.cpp` now has three recorded layers: playback constructor/destructor `[0x462330,0x462370)`, MCI open/play `[0x462370,0x4624f0)`, and stop/dest/error tail `[0x4624f0,0x4625e0)`. Current source comments often route playback and stream through `fmv_script.cpp`/`fmv.h`. `fmv_script.cpp` also contains class-owned scalar deleting destructors, while zFMV action base virtuals/destructor/update/run-timed appear earlier in the HUD physical block `[0x4159d0,0x415ab0)`. | Preserve the three physical FMV source blocks and route class hierarchy work across the out-of-range HUD zFMV action-base island. Do not treat class-owned deleting destructors as standalone authored owners or provider-primary work, and do not split out `fmv_action.cpp`/`fmv.h` without new physical evidence. |
-| `ai_net.cpp [0x401060,0x4038a0)` | Physical AINet block has proven address-emitting `ai_net.h [0x401060,0x402f60)`, `zMath.h [0x402f60,0x402fd0)`, and 6 recorded `ai_net.cpp` body layers from ZRD load through teardown. `0x403750` is player-save-state-coupled but still physically in `ai_net.cpp`. | Preserve the detailed `ai_net.cpp` source-shape order. Do not move `0x403750` to `player.cpp`, do not create a new emitted `.h` row for `0x403620`, and do not reintroduce `.inl` source shape for `0x402f60`. |
+| `ai_net.cpp [0x401060,0x4038a0)` | Physical AINet block has proven address-emitting `ai_net.h [0x401060,0x402f60)`, `zmth.h [0x402f60,0x402fd0)`, and 6 recorded `ai_net.cpp` body layers from ZRD load through teardown. `0x403750` is player-save-state-coupled but still physically in `ai_net.cpp`. | Preserve the detailed `ai_net.cpp` source-shape order. Do not move `0x403750` to `player.cpp`, do not create a new emitted `.h` row for `0x403620`, and do not reintroduce `.inl` source shape for `0x402f60`. |
 | `hud.cpp [0x404ca0,0x415ab0)` | Physical HUD block with 21 recorded source-shape layers. The first source-path literal is inside `0x410160`, and another appears at `0x414180`; the earlier layers are inferred from BN assembly/order, not comments. | Do not treat physical `hud.cpp` as one semantic owner. Use the detailed `hud.cpp` source-shape layer table below and preserve physical HUD block order while routing semantic owners separately. |
 | `map.cpp [0x415ab0,0x417350)` | Physical map block now has 8 recorded source-shape layers: HudSensorMapNode methods, HudRectI/HudGeom2D clipping helper island, projected-path drawing, tracker init/list maintenance, map file load, overlay/zoom/ref-count, projection/save-state marker drawing, and mission-map SFX/objective marker controls. | Use the detailed `map.cpp` source-shape layer table below. Do not move HudRectI/HudGeom2D helpers to `hud.cpp` or a new header row solely from semantic names/comments. |
 | `pickup.cpp [0x41cc10,0x41ea90)` | Physical pickup block now has 10 recorded source-shape layers: subsystem bootstrap, init/resource registration, pickup-specific zClass_Node flag recursion, collection/effects/player grants, spawn-list lifecycle, pickup type lookup/Net-style slot predicate, ZRD spawn loading, respawn queue maintenance, ZAR callbacks, and network/drop helper tail. | Use the detailed `pickup.cpp` source-shape layer table below. Do not split zClass/Net-like helpers into separate `.h` or source rows without VC5 source-shape evidence. |
@@ -732,7 +792,7 @@ These layer names are reconstruction routing labels stored in
 comments were used only as navigation labels; placement evidence is the proven
 `ai_net.cpp` source-path literal xref at `0x4030bb`, neighboring function
 order, current BN assembly/xrefs, and the existing address-emitting
-partial-header rows. Preserve the natural order `ai_net.h`, then `zMath.h`,
+partial-header rows. Preserve the natural order `ai_net.h`, then `zmth.h`,
 then `ai_net.cpp` body.
 
 | Range | Layer label | Classification | Reconstruction consequence |
@@ -746,14 +806,22 @@ then `ai_net.cpp` body.
 | `[0x402250,0x4026d0)` | `ai_net.h: altgun_window_lead_layer` | proven own-header contributor | Alternate-gun attack window, target acquisition, and lead-target solve. |
 | `[0x4026d0,0x402b70)` | `ai_net.h: offset_dynamic_pursuit_layer` | proven own-header contributor | Offset and dynamic-offset pursuit target movement and steering. |
 | `[0x402b70,0x402f10)` | `ai_net.h: timed_path_steering_layer` | proven own-header contributor | Timed path steering plus forward/reverse steer toward path nodes. |
-| `[0x402f10,0x402f60)` | `ai_net.h: mode2_state_finalize_layer` | proven own-header contributor | Global finalize/reset of mode-2 state-1 AI players immediately before `zMath.h` `Vec3Normalize`. |
-| `[0x402f60,0x402fd0)` | `src/GameZRecoil/zMath/zMath.h` | proven partial-header/header-COMDAT contributor | `0x402f60 zMath::Vec3Normalize` belongs to `zMath.h`; do not use `.inl` or move it into `ai_net.cpp`. |
+| `[0x402f10,0x402f60)` | `ai_net.h: mode2_state_finalize_layer` | proven own-header contributor | Global finalize/reset of mode-2 state-1 AI players immediately before `zmth.h` `Vec3Normalize`. |
+| `[0x402f60,0x402fd0)` | `src/GameZRecoil/zMath/zmth.h` | proven partial-header/header-COMDAT contributor | `0x402f60 zMath::Vec3Normalize` belongs to `zmth.h`; do not use `.inl` or move it into `ai_net.cpp`. |
 | `[0x402fd0,0x403510)` | `ainet_zrd_load_parse_allocate_layer` | confirmed literal-bearing `ai_net.cpp` body | ZRD load/parse/allocation layer; contains the `ai_net.cpp` source-path literal xref at `0x4030bb`. |
 | `[0x403510,0x403550)` | `ainet_lookup_helper_layer` | `ai_net.cpp` body/helper layer | Lookup helpers for AINet and node lists; exact static/member spelling remains source-shape work. |
 | `[0x403550,0x4036f0)` | `ainet_neighbor_link_probe_fan_layer` | `ai_net.cpp` body with record/method helper semantics | Neighbor-link resolution and probe-fan construction; `AINetPathProbeFan::InitFromSegment` does not prove a new emitted header row. |
 | `[0x4036f0,0x403750)` | `ainet_nearest_node_spatial_query_layer` | `ai_net.cpp` helper layer | Nearest-node query has external Player caller evidence, but that does not move ownership to `player.cpp`. |
 | `[0x403750,0x4037c0)` | `ainet_player_peer_ring_helper_layer` | player-facing semantic tension inside physical `ai_net.cpp` | Walks player save-state data and is called by Player setup, but current physical block evidence keeps it in `ai_net.cpp` unless stronger source evidence appears. |
 | `[0x4037c0,0x4038a0)` | `ainet_teardown_cleanup_layer` | `ai_net.cpp` body tail | AINet/node cleanup and global list teardown before `Briefing.cpp`. |
+
+`0x401060 AINet::TickAiMode2TopLevel` is byte/order matched only when the
+path-follow and auto-turn cases contain duplicated attack/rebuild source tails.
+VC5 `/O2 /Ob0` tail-merges those duplicated source occurrences into the shared
+retail runtime block at `0x4010cb`; a hand-written shared `goto` tail preserves
+the behavior and size but rotates allocator choices and leaves 19 unmasked byte
+mismatches. Do not simplify this function back to a source-level common tail
+without rerunning `python tools/recoil.py verify vc5 0x401060`.
 
 #### `Briefing.cpp` Source-Shape Layer Detail
 
@@ -765,19 +833,247 @@ inspection for the STL/MFC-style glue. Do not promote these ranges to separate
 `.h` rows or accepted source owners until VC5 source-shape experiments prove a
 specific original header/source placement.
 
+Routing rule for this block: keep authored briefing behavior in `Briefing.cpp`.
+If later BN/VC5 evidence shows non-briefing dependency code emitted before the
+literal-bearing briefing bodies, model it first as a dependency header/COMDAT
+row included by `Briefing.cpp`, not as unrelated `Briefing.cpp` body logic, and
+require the same physical-order and byte evidence before accepting that row.
+
 | Range | Layer label | Classification | Reconstruction consequence |
 | --- | --- | --- | --- |
-| `[0x4038a0,0x403c80)` | `briefing_objective_picture_runtime_ctor_layer` | probable Briefing/HUD briefing body | HUD briefing objective-picture and runtime constructors precede the literal-bearing body; keep physical Briefing placement. |
-| `[0x403c80,0x403d70)` | `briefing_locator_hud_widget_layer` | HUD widget/locator semantic layer | HUD widget helpers are inside physical Briefing; do not reassign solely from HUD labels. |
-| `[0x403d70,0x403db0)` | `briefing_shared_scalar_dtor_layer` | class-coupled scalar destructor glue | Treat as class-coupled glue, not standalone authored owners. |
+| `[0x4038a0,0x403c80)` | `briefing_objective_picture_runtime_ctor_layer` | probable Briefing/HUD briefing body | HUD briefing objective-picture and runtime constructors precede the literal-bearing body; `0x4038a0` and `0x403c10` have focused zero-mismatch VC5 coverage, while `0x403930` remains byte-blocked. Keep physical Briefing placement. |
+| `[0x403c80,0x403d70)` | `briefing_locator_hud_widget_layer` | HUD widget/locator semantic layer | `0x403c80` now emits as ordinary `HudUiCircle::DrawDirtyForwarder` from physical `Briefing.cpp` between the locator constructor and `BlitDirtyRect`; `0x403cb0` now byte-verifies after recovering the hidden early-return gate and radius reload shape. Keep remaining HUD widget helpers in physical Briefing until VC5 placement proves otherwise. |
+| `[0x403d70,0x403db0)` | `briefing_shared_scalar_dtor_layer` | mixed provider/shared and class-coupled scalar destructor glue | `0x403d70` is accepted provider/compiler shared scalar-deleting destructor glue reused by `HudUiBriefingObjectivePicture` and `HudUiCounter` table slots; do not add a fake derived override. `0x403d90` now emits as `HudUiBriefingRuntime::ScalarDeletingDestructor` from physical `Briefing.cpp` and byte-verifies against the BN vtable slot. |
 | `[0x403db0,0x403e20)` | `briefing_list_destructor_comdat_layer` | provider/compiler-header COMDAT | `0x403db0` is VC5 STL `<xlist>` destructor COMDAT selected into Briefing. |
-| `[0x403e20,0x403ed0)` | `briefing_hud_composite_destructor_layer` | HUD composite/fill-bitmap destructor layer | Preserve physical placement while routing complete HUD class owners separately. |
+| `[0x403e20,0x403ed0)` | `briefing_hud_composite_destructor_layer` | HUD composite destructor plus fill-bitmap provider glue | `0x403e20` now emits as ordinary `HudUiCompositePanel::Destructor` from physical `Briefing.cpp`; `0x403eb0` is accepted provider/compiler shared scalar-deleting destructor glue. |
 | `[0x403ed0,0x404140)` | `briefing_runtime_destructor_update_layer` | Briefing runtime destructor/update layer | Likely core briefing runtime layer before the zInput helper. |
-| `[0x404140,0x404180)` | `briefing_zinput_wait_key_layer` | zInput semantic exception inside physical Briefing | Assembly polls keyboard and `Sleep`; source placement still requires source-shape proof before moving. |
+| `[0x404140,0x404180)` | `briefing_zinput_wait_key_layer` | Briefing-owned wait-key helper source-placed in physical Briefing | `0x404140` now emits as `zInput_WaitForAnyKeyPressWithTimeoutMs` from physical `Briefing.cpp` between runtime update and `StartForMission`; focused VC5 order coverage passes and `python tools/recoil.py verify vc5 0x404140` is byte-clean after COFF relocation masking. |
 | `[0x404180,0x404400)` | `briefing_thread_loop_layer` | confirmed literal-bearing Briefing thread/loop layer | Contains source-path literal xref `0x404238`; anchor for confirmed Briefing body. |
 | `[0x404400,0x4045b0)` | `briefing_objective_action_index_builder_layer` | objective action builder layer | Keep with Briefing action-building source-shape work. |
-| `[0x4045b0,0x404bd0)` | `briefing_action_queue_layer` | action queue/action tick layer | Action queue helpers and action tick bodies need owner-scoped routing. |
-| `[0x404bd0,0x404ca0)` | `briefing_shutdown_transport_tail_layer` | shutdown/progress/build tail layer | Physical tail before `hud.cpp`; do not extend Briefing beyond `0x404ca0`. |
+| `[0x4045b0,0x404bd0)` | `briefing_action_queue_layer` | action queue/action tick layer | Action queue helpers and action tick bodies need owner-scoped routing. All seven Add* helpers (`0x4045b0`, `0x404640`, `0x4046d0`, `0x404780`, `0x4048a0`, `0x4049d0`, `0x404b40`) now byte-verify after recovering inline action constructors, the BN-proven node direction (`+0` next, `+4` prev), and VC5 `<xlist>`-style tail insertion. `0x404740` and `0x404960` also byte-verify after recovering `HudUiBriefingObjectivePicture::SetNoiseAlpha(float)` as an inline member dependency and using assignment-expression source shape for the fade alpha store. |
+| `[0x404bd0,0x404ca0)` | `briefing_shutdown_transport_tail_layer` | shutdown/progress/build tail layer | Physical tail before `hud.cpp`; do not extend Briefing beyond `0x404ca0`. `0x404c50` now byte-verifies after recovering `HudUiFillBitmap::SetNormalizedValueAndRebuild(float)` as the slot-`0x84` virtual dependency used by the transport-progress member. |
+
+2026-07-06 checkpoint:
+`python tools/recoil.py verify vc5 briefing_text_block_order_current_shape --skip-bn-compare`
+compiles current `src/Battlesport/Briefing.cpp` and resolves selected
+Briefing-owned function symbols, including anonymous action `Tick` bodies via
+`symbol_regex`, plus the recovered physical exception rows `0x403c80`
+`HudUiCircle::DrawDirtyForwarder`, `0x403d90`
+`HudUiBriefingRuntime::ScalarDeletingDestructor`, and `0x403e20`
+`HudUiCompositePanel::Destructor`. After reordering the current
+`Briefing.cpp` definitions and moving those exception bodies into the physical
+block, the target reports
+`section_order_matches_manifest True`. This is selected-symbol order evidence
+for the current Briefing-owned source bodies, the `0x4038a0` objective-picture
+draw override, the `0x403c80` HUD forwarder
+exception, the `0x403d90` runtime scalar-deleting destructor exception, and
+the `0x403e20` HUD destructor exception. `python tools/recoil.py verify vc5
+briefing_objective_picture_draw_noise_overlay`, `python tools/recoil.py verify
+vc5 briefing_locator_panel_constructor`, `python tools/recoil.py verify vc5
+0x403c80`, `python tools/recoil.py verify vc5 0x403cb0`, and `python
+tools/recoil.py verify vc5 0x403d90` now pass with zero unmasked mismatches,
+proving those rows only. The provider rows `0x403d70`, `0x403db0`, and
+`0x403eb0` are not authored Briefing bodies: current BN assembly/xrefs and
+accepted provider-boundary owners classify them as VC5 scalar-deleting
+destructor glue or VC5 STL `<xlist>` COMDAT code physically selected into the
+Briefing block. This closes `[0x4038a0,0x404ca0)` for source-block/order
+frontier purposes only; it does not accept Briefing owner byte readiness. The
+`0x4038a0` byte-clean shape
+requires reloading `this->image` and calling `GetCenterX()`/`GetCenterY()` again
+for `rect.right`/`rect.bottom`; reusing cached `rect.left`/`rect.top` emits the
+wrong shorter VC5 body. The `0x403c10` locator constructor byte-clean shape
+requires calling `SetVisible(0)` through an exact derived
+`HudUiBriefingLocatorPanel *` expression after installing the derived table, so
+VC5 emits `g_HudUiBriefingLocatorPanel_FTable + 0x60`; the ordinary implicit
+constructor call emits a direct base call. `0x403930`
+`HudUiBriefingRuntime::Constructor` remains byte-blocked at 153 unmasked
+mismatches. Current BN assembly keeps `transportProgress` in `ebx` and
+`missionName` in `ebp` across construction, ZRD binding, and visibility calls;
+current VC5 source still inverts those registers. A rejected objective-picture
+constructor probe using a `HudUiElement *` call emitted the desired static
+table-slot invalidate call form (`g_HudUiBriefingObjectivePicture_Vtbl + 0x20`,
+retail `[0x4cc8b8]`) but regressed bytes while the earlier register inversion
+remained. Retest that virtual-call spelling only after the
+transport/missionName register-shape blocker is solved. Additional rejected
+0x403930 register-shape probes that left the same 153-mismatch result include:
+reordering the initializer-list spelling of `missionName(...)` and
+`transportProgress()` while preserving declaration order, adding stable typed
+body locals for `missionName`/`transportProgress` through ZRD binding and
+`SetVisible(0)`, moving the empty `HudUiBriefingTransportProgress` constructor
+body into `briefing.h`, relying on its implicit default constructor, spelling
+`actionQueue((unsigned char)(missionId))`, and adding a local
+`missionNamePanel` immediately before post-ZRD visibility. These forms did not
+change the constructor-time VC5 register allocation, so do not retry them
+without new BN/VC5 evidence. A later source-worker pass also rejected removing
+the ZRD binding C-style casts for the first two or all element-like binds,
+post-load `transportProgressPanel`/`missionNamePanel` aliases, binding-block
+`transport`/`name` references, `if (loadedRoot)` spelling, constructor-local
+`NULL` panel text arguments, and `HudUiWidget *`/`HudUiElement *` locals for the
+objective-picture constructor invalidate call. Those ZRD and null-spelling
+forms still left the same 153-mismatch result and inverted register allocation;
+the objective-picture local-pointer forms emitted a vtable-symbol virtual call
+but regressed to 308 mismatches and still did not produce the retail absolute
+slot call `[0x4cc8b8]`.
+
+Another focused `0x403930` constructor pass kept the baseline source after
+rejecting four more call-site/register-pressure probes. Top-of-body
+`transportProgress`/`missionName` pointer locals placed immediately after the
+constructor body open, before `campaignSection` and before `LoadFromZrd`, still
+emitted the same 153-mismatch EBX/EBP inversion. Constructor-only inline
+accessors for those two member addresses also repeated the 153-mismatch
+baseline without emitting a useful source-shape change. Base-cast visibility
+calls for `missionName` or `messagesPanel` did not change the mismatch profile;
+base-qualified `missionName.HudUiElement::SetVisible(0)` regressed to 400
+mismatches. Base-qualified `messagesPanel.HudUiElement::SetVisible(1)` reduced
+the raw count to 149 mismatches, but worsened classified drift to 10
+register-allocation mismatches, 5 LCS drift blocks, and 38 instruction-level
+mismatches, while leaving the early `transportProgress`/`missionName` register
+roles inverted; it was reverted as a misleading diagnostic improvement, not
+source-shape evidence. Explicit `(const char *)0` panel text member initializer
+spelling for `missionName`, `objectiveSummary`, `objectiveDesc`, and
+`transmissionHalted` likewise repeated the 153-mismatch baseline.
+Transient `HudUiPanel` header-visibility probes also did not affect the
+constructor caller codegen: declaring the empty `HudUiPanel()` out-of-line,
+removing the default constructor declaration, removing or privatizing
+`ConstructorDefault`/`ConstructorDefaultThunk` declarations, and replacing the
+empty default constructor with default arguments on
+`HudUiPanel(const char *, int, int)` all repeated the same 153 unmasked
+mismatches and the same `transportProgress`/`missionName` EBX/EBP inversion.
+Do not model this blocker with `HudUiPanelCore`, ABI wrappers, or `HudUiPanel`
+header-visibility tricks without new BN/VC5 evidence.
+
+A subsequent Briefing-local inline-context pass also kept no source changes:
+swapping the local `HudUiBriefingTransportProgress` and
+`HudUiBriefingObjectivePicture` constructor definition order, moving either
+constructor after `HudUiBriefingObjectivePicture::Draw`, moving the
+`Briefing_ActionQueue` constructor/destructor definitions after the
+transport/objective inline constructors, placing the transport constructor
+before the action-queue definitions, changing the empty transport constructor
+body spelling, changing the objective-picture `noiseAlpha` initializer from
+`0.0f` to `0.0`, and moving all three local inline constructor clusters
+immediately before `HudUiBriefingRuntime::HudUiBriefingRuntime` all repeated
+the same 153 unmasked mismatches and first drift at `0x403993`. Simple
+definition-order and cosmetic spelling around those three local inline
+definitions are therefore inert for the constructor register allocation unless
+new BN/VC5 evidence changes the source-shape question.
+
+Do not add explicit `HudUiBriefingTransportProgress` or
+`HudUiBriefingObjectivePicture` destructor declarations/definitions as a
+production fix for `0x403930`. Current BN/source evidence supports real
+derived vtables/constructors for those members, but runtime destruction and
+constructor unwind evidence route cleanup through the base HUD destructor-core
+paths, while `0x403d70` and `0x403eb0` remain provider/compiler
+scalar-deleting destructor glue. Current VC5 already emits implicit derived
+destructor COMDATs for those classes, and the first byte drift is still the
+live `transportProgress`/`missionName` register-role inversion before cleanup
+labels execute. Treat destructor-visibility changes as scaffold-risk unless a
+separate source-owner scrutiny packet proves original authored destructors.
+
+Retail constructor unwind state 2 directly jumps from the transport cleanup
+funclet at `0x4c8246` to `0x40cf50
+HudUiFillBitmap::DestructorCoreThunk`, which is an authored HUD
+`legacy.hud_ui.class_huduifillbitmap` dependency, not provider-owned glue. The
+`0x403d70` provider scalar-deleting destructor row calls `0x40d5f0
+HudUiWidget::DestructorCoreEhThunk`; current BN shows `0x40d5f0` is a pure
+jump to `0x4b3d50 HudUiWidget::DestructorCore`, and SOURCE_OWNERS now records
+it as a primary function of `legacy.hud_ui.class_huduiwidget` with physical
+`hud.cpp` placement metadata. The provider rows remain `0x403d70`, `0x403db0`,
+and `0x403eb0`; the `0x40cf50` and `0x40d5f0` thunks need HUD-owner VC5 byte
+coverage before they can support owner byte readiness, but that dependency
+evidence does not by itself solve the earlier `0x403993` EBX/EBP constructor
+blocker.
+
+Header/declaration and narrow include-context probes likewise kept no source
+changes. Reordering the `HudUiBriefingTransportProgress` class declaration
+before `HudUiBriefingObjectivePicture` in `briefing.h`, spelling both derived
+constructor declarations with `(void)`, moving the
+`HudUiBriefingObjectivePicture` constructor declaration after `Draw()` inside
+the class, removing the redundant local `zhud_ui.h` or `recoil_types.h`
+includes from `Briefing.cpp`, and swapping the `briefing.h` include order of
+`recoil_types.h` and `zhud_ui.h` all repeated the same 153 unmasked mismatches
+and first drift at `0x403993`. The class-declaration reorder changed only the
+PUBLIC/COMDAT listing order for generated derived destructor symbols; the
+constructor cleanup still targeted generated derived destructor COMDATs and the
+live `transportProgress`/`missionName` register roles stayed inverted. Current
+evidence therefore does not support a simple `briefing.h` declaration-order or
+include-order fix for the constructor.
+
+Current source-owner/provider review supports treating non-Briefing semantic
+rows inside this physical block as dependency/header or provider exceptions
+before treating them as authored Briefing logic. `0x403c80`
+`HudUiCircle::DrawDirtyForwarder` and `0x403e20`
+`HudUiCompositePanel::Destructor` are HUD-owner rows physically emitted in the
+Briefing block; `zhud_ui.h` or the canonical HUD implementation are plausible
+source homes, but no new Briefing-block `partial-header` row is proven yet.
+`0x403d70`, `0x403db0`, and `0x403eb0` remain provider/compiler or
+compiler-header COMDAT rows, and `0x404140` remains source-placed in physical
+Briefing with a zInput dependency. The `0x403d70` callee `0x40d5f0` is now
+planned under `legacy.hud_ui.class_huduiwidget`, so the Briefing-block issue is
+HUD-owner byte/source-shape readiness rather than an unowned authored helper.
+Do not move dependency-looking rows out of `Briefing.cpp` as a `0x403930` fix
+unless VC5 natural-order evidence proves the header/source placement and the
+changed constructor-visible declarations or inline bodies actually improve the
+constructor bytes. The `0x403cb0` locator update
+byte-clean shape returns while hidden (`flags & 0x10`) and uses a complemented
+flag spelling plus radius reloads before each center call and shrink test; the
+previous visible-return model was stale. A
+rejected C++ destructor probe (`??1HudUiCompositePanel@@QAE@XZ`)
+emitted the right local order but failed bytes because VC5 inserted a vtable
+reset absent from BN 0x403e20; keep this row as ordinary `Destructor` source
+shape unless new BN/VC5 evidence proves otherwise. `python tools/recoil.py
+verify vc5 0x403e20` now selects this target and fails byte comparison with 119
+unmasked mismatches: the current source has the virtual scalar-dtor entry loop
+but still lacks BN's EH prologue/control-flow shape and emits a shorter VC5
+body. Rejected EH-forcing probes for `0x403e20` include a local RAII guard,
+`try`/`catch (...)`, and `__try`/`__finally`: those forms can make VC5 emit an
+EH frame, but they add synthetic cleanup helper/catch/SEH code and still fail
+byte comparison. The retail unwind funclet at `0x4c8300` directly jumps to
+`HudUiPanel::Destructor`, so do not keep synthetic guard locals solely to force
+EH shape. `0x404140` now also selects this target, emits in the correct retail
+order from physical `Briefing.cpp`, and passes byte comparison with zero
+unmasked mismatches after COFF relocation masking. The remaining provider
+exception rows at `0x403d70`, `0x403db0`, and `0x403eb0` stay
+provider-classified; do not synthesize authored bodies for them without new
+BN/VC5 evidence.
+
+`0x404c50` `Briefing::SetProgressAndSleep` now passes focused VC5 byte
+comparison with zero unmasked mismatches. The source body stayed ordinary
+`transportProgress->SetNormalizedValueAndRebuild(progressValue)`; the required
+source-shape repair was in the HUD dependency declaration:
+`HudUiFillBitmap::SetNormalizedValueAndRebuild(float)` must be virtual so VC5
+emits the retail `g_HudUiBriefingTransportProgress_Vtbl + 0x84` dispatch.
+Adding `SetNormalizedValue(float)` as a preceding virtual was rejected because
+it shifted this call to slot `0x88`; keep that broader HudUiFillBitmap table
+question for a complete HUD owner pass.
+
+All seven action Add* helpers (`0x4045b0`, `0x404640`, `0x4046d0`,
+`0x404780`, `0x4048a0`, `0x4049d0`, and `0x404b40`) now pass focused VC5
+byte comparison with zero unmasked mismatches in
+`briefing_action_queue_add_methods`; `0x404780` and `0x4049d0` also pass both
+covering VC5 targets through `--all-covering`. Current BN assembly proves
+`BriefingActionNode` offset `+0` is the forward/next link and offset `+4` is
+the backward/previous link; the older source names were reversed. The kept
+source shape uses inline action constructors for each Add* allocation path and
+the VC5 `<xlist>`-style tail
+insert sequence (`newNode->next = head`, `newNode->prev = oldTail`,
+`head->prev = newNode`, `oldTail->next = newNode`, payload at `+8`). The
+nearby `0x403db0` `<xlist>` destructor COMDAT and constructor unwind funclet
+prove list-like compiler/header dependency shape, but do not by themselves
+prove an exact original `std::list<BriefingAction *>` spelling over the
+recovered authored wrapper. `0x404960`
+`BriefingActionSetWidgetImageTimed::Tick` now passes focused VC5 byte
+comparison after recovering `HudUiBriefingObjectivePicture::SetNoiseAlpha(float)`
+as an inline member helper with no standalone retail function; this source
+spelling emits the required x87 timer-to-`noiseAlpha` store before the typed
+virtual `Invalidate()` call, without raw vtable access, volatile storage, or
+assembly. `0x404740` `BriefingActionFadeInElement::Tick` now passes focused
+VC5 byte comparison after using the same inline dependency in
+`widget->SetNoiseAlpha(alpha = alpha + 0.5f)`: VC5 naturally stores the
+computed alpha first to the action field, stores the same x87 value second to
+`HudUiBriefingObjectivePicture::noiseAlpha`, calls typed virtual
+`Invalidate()`, then reloads `alpha` for the double-constant `1.0` comparison.
+`0x403930` remains a same-owner constructor byte blocker; do not promote the
+Briefing owner byte gate from this partial action-layer evidence.
 
 #### `hud.cpp` Source-Shape Layer Detail
 
@@ -790,8 +1086,8 @@ source-shape experiments prove a specific original header/source placement.
 
 | Range | Layer label | Classification | Reconstruction consequence |
 | --- | --- | --- | --- |
-| `[0x404ca0,0x404e80)` | `hud_ui_primitive_class_layer` | possible class-body/header-shaped layer | HUD UI primitive methods are table-visible, but exact header ownership is not proven. |
-| `[0x404e80,0x406890)` | `hud_player_camera_helper_layer` | semantic exception inside physical `hud.cpp` | Camera/player helpers must preserve HUD-block placement until source-shape tests prove included-helper ownership. |
+| `[0x404ca0,0x404e80)` | `hud_ui_primitive_class_layer` | function-order-confirmed physical `hud.cpp` layer | HUD UI primitive methods are table-visible, but exact header ownership is not proven. The diagnostic `hud_ui_primitive_class_layer_order_current_shape` now compiles `src/Battlesport/hud.cpp` and naturally emits retail order for `0x404ca0` through `0x404e60`. Keep `0x404d70` as provider/compiler scalar-deleting-destructor physical emission only, not authored `HudUiElement` owner evidence. |
+| `[0x404e80,0x406890)` | `hud_player_camera_helper_layer` | function-order-confirmed semantic exception inside physical `hud.cpp` | The diagnostic `hud_player_camera_helper_layer_order_current_shape` compiles `src/Battlesport/hud.cpp` and naturally emits the exact retail layer order `0x404e80`, `0x404e90`, `0x405040`, `0x405650`, `0x4057d0`, `0x405870`, `0x4059a0`, `0x405c90`, `0x405ec0`, `0x405ee0`, `0x406110`, `0x4063f0`, `0x406430`, `0x406450`, `0x406470`, `0x406510`, `0x406610`, `0x406730`, `0x4067a0`. Keep camera/player helpers physically in `hud.cpp` until separate source/header ownership is proven; the next function `0x406890` starts `MfcThreeFloatDialog::OnKillFocusValue0` and belongs to the following dialog layer. |
 | `[0x406890,0x406a00)` | `hud_mfc_three_float_dialog_layer` | dialog helper layer | Route as UI/dialog support, not provider-primary work. |
 | `[0x406a00,0x407130)` | `hud_cheat_dialog_and_string_helper_layer` | UI/helper layer | String helper plus cheat/dialog state need same physical-order scrutiny as surrounding HUD code. |
 | `[0x407130,0x407190)` | `hud_small_stub_layer` | low-confidence helper/provider-adjacent layer | Recheck provider/source-shape before claiming authored HUD ownership. |
@@ -1035,11 +1331,11 @@ Full BN membership sweep status, 2026-07-01:
 
 Known exception classes from this pass:
 
-- `0x402f60` `zMath::Vec3Normalize` is an address-backed `zMath.h` header
+- `0x402f60` `zMath::Vec3Normalize` is an address-backed `zmth.h` header
   COMDAT physically emitted in the `ai_net.cpp` block; semantic source is
-  `src/GameZRecoil/zMath/zMath.h`.
+  `src/GameZRecoil/zMath/zmth.h`.
 - `ai_net.cpp` now has a dedicated body-layer table after the proven
-  `ai_net.h` and `zMath.h` partial-header rows. The player-facing
+  `ai_net.h` and `zmth.h` partial-header rows. The player-facing
   `0x403750` peer-ring helper is still physically in `ai_net.cpp`; current BN
   evidence does not justify moving it to `player.cpp` or creating another
   emitted header row.
@@ -1067,8 +1363,11 @@ Known exception classes from this pass:
 - `Briefing.cpp` physically contains 11 recorded source-shape layers,
   including HUD widget/locator helpers, class-coupled scalar destructors,
   `0x403db0` `MSVC_STL::ListDestructor_COMDAT`, and `0x404140`
-  `zInput::WaitForAnyKeyPressWithTimeoutMs`. Use the dedicated Briefing layer
-  table above before accepting source-owner placement.
+  `zInput_WaitForAnyKeyPressWithTimeoutMs`. `0x404140` is now source-placed in
+  physical `Briefing.cpp`, owner-remapped to the Briefing subsystem, and
+  byte-clean under focused VC5 verification, while `0x46fa10` remains in the
+  zInput keyboard owner. Use the dedicated Briefing layer table above before
+  accepting further source-owner placement.
 - `mission.cpp` physically contains 14 recorded source-shape layers, including
   HudSensorTracker lifecycle/objective runtime, multiple HUD/MFC network dialog
   layers, MFC provider destructor islands, Player remote/destroyed callbacks,
@@ -1183,7 +1482,7 @@ Known exception classes from this pass:
   The prior `zInput::DI_ReportError` body ends at `0x472665` with NOP padding
   to `0x472670`, the next `zModel_Display::Init` starts at `0x475c40`, and all
   internal gaps are NOP alignment. BN finds the `zmth_main.c` source literal at
-  `0x4e0ed4` xrefed by `0x472d5c`; it finds no `zMath.cpp` or `zMath.h`
+  `0x4e0ed4` xrefed by `0x472d5c`; it finds no `zMath.cpp` or `zmth.h`
   source-path literal and no provider/import/header/COMDAT-style function row
   inside this range. Stale `zMath.cpp`, `zmath_vec*`, `zmath_matrix`, and
   similar labels are source-map/owner cleanup debt, not physical block evidence.
@@ -1499,16 +1798,16 @@ and every non-provider authored/semantic row has `semantic_subranges` where
 applicable. The remaining open work is owner/source-shape provenance and
 inline-helper scrutiny inside already mapped ranges. The machine-readable
 unresolved-provenance list now includes every no-literal provisional physical
-filename that still lacks source-path/object/map or VC5
-natural-order proof: `[0x401000,0x401020)`,
-`[0x437e60,0x443c50)`,
+filename or confirmed source-shape window that still lacks source-path/object/map
+or VC5 natural-order proof: `[0x437e60,0x443c50)`,
 `[0x470020,0x4719e0)`, `[0x471e40,0x472670)`,
 `[0x4a3930,0x4a3ea0)`, `[0x4a3ea0,0x4a44c0)`,
 `[0x4a53f0,0x4a5c20)`, `[0x4a66e0,0x4a69c0)`,
 `[0x4b2960,0x4c0d20)`, `[0x4c7f00,0x4c81c0)`, and
 `[0x4c81c0,0x4c81d8)`. These ranges are mapped and have semantic
-subranges where applicable, but their exact original physical source/header
-provenance remains unresolved.
+subranges where applicable. The opening About range is now closed for
+source-block/order purposes by the recovered `about.cpp`/`about.h` shape and
+VC5 byte/order evidence.
 Literal-backed but source-metadata-conflicted blocks
 also remain open for owner/source reconciliation, especially
 zDEClient `zdec_qsand.cpp`/`zdec_crater.cpp`
@@ -1531,28 +1830,27 @@ matching structured `retail_start`/`retail_end_exclusive` pair, carry a
 closure rule, state the authored `.h` contributor status, and require natural
 VC5 order in every `vc5_resolution_tests` row.
 
-- `[0x401000,0x401020)` is now recorded as
-  `semantic:CAboutDlg-constructor-prelude`, not as a proven `AboutDlg.cpp`
-  physical file. Current BN evidence proves an authored CAboutDlg constructor
-  body before the MFC/provider thunk rows and the `ai_net.h`/`ai_net.cpp`
-  contribution: the body calls `CDialog::CDialog`, writes the derived
-  CAboutDlg vtable, and is called only by
-  `0x430c4e CZRecoilFrame::OnMenuAbout`. Current BN also has a source comment
-  naming `D:\Proj\Battlesport\Recoil.cpp`, but no source-path literal. Do not
-  route this row to `Recoil.cpp`: the compiler would not split one TU into this
-  isolated first function and unrelated later physical blocks. A 2026-07-03 BN
-  refresh found no `AboutDlg.cpp`, `Recoil.cpp`, or `CAbout` strings, confirmed
-  `0x401020` begins the following MFC provider row, and confirmed `0x401060`
-  begins the `ai_net.h` partial-header row.
-  The follow-up compile-only target
-  `recoil_cabout_ainet_translation_unit_order_current_shape` compiles current
-  `Recoil.cpp` and `ai_net.cpp` separately and reports `0x401000` before
-  `0x401060` when the manifest declares that object order. This supports the
-  local CAboutDlg-before-ai_net order can be tested, but it is not independent
-  original linker/source-order evidence and does not close the exact
-  source/header-host provenance question. Treat `about.cpp`, `AboutDlg.cpp`,
-  `AboutDlg.h`, and nearby MFC app headers as hypotheses only until a recovered
-  shape naturally emits the retail order.
+- Closed 2026-07-03: `[0x401000,0x401060)` is the confirmed
+  `src/Battlesport/about.cpp` / `src/Battlesport/about.h` opening
+  CAbout/provider prelude. Current BN and VC5 evidence prove the constructor
+  body at `0x401000`, the empty `CAboutDlg::DoDataExchange` override at
+  `0x401020`, the CAboutDlg message-map accessor at `0x401030`, and the CWnd
+  modal-state provider wrappers at `0x401040`/`0x401050`, followed by the
+  `ai_net.h` partial-header row at `0x401060`. The old BN comment naming
+  `D:\Proj\Battlesport\Recoil.cpp` remains navigation evidence only and is
+  rejected as a physical source label because a compiled `.cpp` cannot be split
+  into this isolated first block and unrelated later blocks. A 2026-07-03 BN
+  refresh still found no `about.cpp`, `about.h`, `AboutDlg.cpp`,
+  `Recoil.cpp`, or `CAbout` source-path literal, but the VC5
+  `cabout_prelude_provider_order_current_shape` target now naturally emits
+  retail order from current production source:
+  `0x401000 -> 0x401020 -> 0x401030 -> 0x401040 -> 0x401050`. The paired
+  `cabout_prelude_functions` byte target matches all five functions with zero
+  unmasked mismatches after relocation masking. The successful source shape is
+  an empty authored DDX override in `about.cpp`, with `about.h` delaying MFC
+  afxwin inline emission and `about.cpp` including the needed provider inline
+  bodies after `BEGIN_MESSAGE_MAP`. This closes the About source-block/order
+  gap without splitting `about.cpp` or copying provider bodies.
 - `[0x437e60,0x443c50)` must reproduce the current
   Battlesport/CZGameFrame transition order naturally, including the MFC
   provider islands at `[0x442890,0x4428b0)` and `[0x443b70,0x443c50)`.
@@ -1645,7 +1943,7 @@ stronger original build/source evidence.
 
 ### Full BN Coverage Revalidation
 
-A 2026-07-03 read-only BN fact-mapper pass covered all 11
+A 2026-07-03 read-only BN fact-mapper pass covered the then-open 11
 `provenance_unresolved_ranges`. It found no new source-path literal, object/map
 evidence, VC5 natural-order proof, or emitted authored header evidence that
 closes any unresolved range. The `.text` coverage and semantic subranges remain
@@ -1655,25 +1953,35 @@ listed no-literal placement labels.
 A follow-up workspace/BN pass on the same date rechecked the durable notes,
 VC5 target/cache evidence, early/late islands, zInput shelves, zSound/zVideo
 no-literal shelves, and the `[0x4b2960,0x4c0d20)` no-literal shelf. It did not
-reduce the 11 unresolved provenance ranges. The stronger result is negative:
-existing comments, source-map rows, per-function byte matches, caller
-source-path literals, and local pair-order checks still do not prove exact
-original filenames or emitted authored `.h` rows for those ranges. Treat the
-current no-literal `.cpp` paths as placement labels until source-path/object
-map evidence or natural VC5 order reproduction closes them.
+reduce those ranges by itself. A later same-day VC5 source-shape pass closed the
+opening About range, reducing the unresolved-provenance list to 10. Existing
+comments, source-map rows, per-function byte matches outside a source-shape
+order target, caller source-path literals, and local pair-order checks still do
+not prove exact original filenames or emitted authored `.h` rows for the
+remaining ranges. Treat the current no-literal `.cpp` paths as placement labels
+until source-path/object map evidence or natural VC5 order reproduction closes
+them.
 
 High-confidence refinements from that pass:
 
-- `[0x401000,0x401020)` is exactly `CAboutDlg` constructor body
-  `[0x401000,0x40101b)` plus NOP padding before the adjacent MFC provider
-  no-op row. No `AboutDlg.cpp`, `Recoil.cpp`, or `CAbout` source-path literal
-  exists. The block is now a semantic unresolved opening prelude rather than a
-  provisional `AboutDlg.cpp` physical row; `Recoil.cpp` is rejected as a
-  split-TU placement label.
-  `recoil_cabout_ainet_translation_unit_order_current_shape` now verifies that
-  VC5 can emit current `Recoil.cpp`'s constructor before current `ai_net.cpp`'s
-  `0x401060` when that TU order is declared, but this remains compile-only
-  diagnostic evidence and does not remove the provenance-unresolved row.
+- `[0x401000,0x401060)` is now closed as the confirmed `about.cpp`/`about.h`
+  opening CAbout/provider prelude. `0x401000` is exactly the
+  `CAboutDlg` constructor body `[0x401000,0x40101b)` plus NOP padding;
+  `0x401020` is an empty `CAboutDlg::DoDataExchange` override whose body is
+  byte-identical to the inherited MFC no-op; `0x401030` is the CAboutDlg
+  message-map accessor; and `0x401040`/`0x401050` are CWnd modal-state provider
+  wrappers emitted inside the same physical block. No `about.cpp`, `about.h`,
+  `AboutDlg.cpp`, `Recoil.cpp`, or `CAbout` source-path literal exists, but the
+  source-block host is now tracked as `about.cpp` with `about.h` as the
+  own-header input. `Recoil.cpp` is rejected as a split-TU placement label.
+  The positive `cabout_prelude_provider_order_current_shape` target naturally
+  emits `0x401000 -> 0x401020 -> 0x401030 -> 0x401040 -> 0x401050` from current
+  production source. The paired `cabout_prelude_functions` byte target matches
+  all five functions with zero unmasked mismatches after relocation masking.
+  The source-shape mechanism is an empty authored DDX override between the
+  constructor and message map, plus delayed MFC `afxwin2.inl` provider inline
+  emission after `BEGIN_MESSAGE_MAP`; this keeps the block continuous and does
+  not copy provider bodies into authored source.
 - `[0x437e60,0x443c50)` remains bracketed by `turret.cpp` before the band and
   `cls_di.c` after it. The current util/version/weapon/WinSock/WOL/late
   RecoilApp/CZGameFrame rows are placement labels; MFC/COM/runtime-class data
@@ -1905,10 +2213,37 @@ implementation state, not original-source authority. Passing smokes, byte
 checks, or ABI call-shape checks are evidence candidates, not source-shape
 proof.
 
-The active frontier starts at `[0x401000,0x4038a0)`: resolve the
-`semantic:CAboutDlg-constructor-prelude` and adjacent provider rows, then
-preserve the confirmed `ai_net.h -> zMath.h -> ai_net.cpp` order checkpoint
-before advancing to `Briefing.cpp`.
+The active early-block frontier now starts at `[0x404ca0,0x415ab0)` for the
+literal-backed `hud.cpp` physical block. The opening `[0x401000,0x401060)`
+About prelude is closed for source-block/order purposes by the recovered
+`about.cpp`/`about.h` shape and VC5 byte/order evidence. The
+`ai_net.h -> zmth.h -> ai_net.cpp` checkpoint is order-confirmed by
+`ainet_text_block_order`, with the `0x402f60` `zmth.h` helper byte-clean as of
+2026-07-05. The `Briefing.cpp [0x4038a0,0x404ca0)` checkpoint is closed for
+source-block/order purposes by `briefing_text_block_order_current_shape` for
+the selected authored/HUD/zInput rows plus accepted provider-boundary coverage
+for `0x403d70`, `0x403db0`, and `0x403eb0`. Remaining Briefing byte drift, such
+as `0x403930` constructor register allocation and `0x403e20`
+EH/base-destructor cleanup shape, is owner-local/body drift, not the active
+source-block frontier. The current active frontier is `hud.cpp`: preserve the
+corrected no-overlap `[0x404ca0,0x415ab0)` boundary, the source-path literal
+evidence at `0x4dadd8` with xrefs `0x4101a3` and `0x4141bb`, and the recorded
+semantic layer table before accepting source owners, source paths, linkage
+  gates, or tier-S scopes. The first-layer diagnostic target
+  `hud_ui_primitive_class_layer_order_current_shape` now compiles
+  `src/Battlesport/hud.cpp` and passes retail function order for
+  `[0x404ca0,0x404e80)`, after rejecting the earlier `zui.cpp` placement that
+  emitted `0x404d20` before `0x404d10`, `0x404d70` before `0x404d60`, and
+  `0x404e60` before `0x404e10`. Keep `0x404d70` routed to the
+  provider/compiler scalar-deleting-destructor boundary as physical emission
+  only. The next diagnostic target
+  `hud_player_camera_helper_layer_order_current_shape` compiles
+  `src/Battlesport/hud.cpp` and passes retail function order for the exact
+  `[0x404e80,0x406890)` layer list through
+  `0x4067a0 Player::AdjustSubCameraFocusForObstruction`; the next function
+  `0x406890` is `MfcThreeFloatDialog::OnKillFocusValue0`. Continue in physical
+  retail order with the `[0x406890,0x406a00)` dialog layer before claiming
+  broader hud order coverage.
 
 For each frontier window:
 

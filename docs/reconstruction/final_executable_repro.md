@@ -756,7 +756,7 @@ under their original symbols while preserving typed source access and the
 source-authored `.CRT$XCU` rows. The repaired globals are
 `g_Player_UnderwaterFxPass3Ui`, `g_Player_State7FxPass3Ui`,
 `g_Player_TopMsgPanel1`, and `g_Player_TopMsgPanel2`. A narrow integration
-fix also added a conventional include guard to `src/GameZRecoil/Time/Time.h`
+fix also added a conventional include guard to `src/GameZRecoil/Time/time.h`
 after the focused player VC5 verification wrappers exposed a
 `TimeRuntimeConfig` redefinition through their include shape; final-build
 already compiled that header path, so this was validation-path hygiene rather

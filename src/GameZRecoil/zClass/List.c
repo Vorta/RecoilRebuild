@@ -1,6 +1,6 @@
-#include "zClass.h"
+#include "zclass.h"
 
-#include "GameZRecoil/zError/zError.h"
+#include "GameZRecoil/zError/zerr.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -620,6 +620,8 @@ namespace zClass_List {
         return 0;
     }
 }
+
+#include "render_active_cameras_impl.h"
 
 namespace zClass_TypeList {
     /**

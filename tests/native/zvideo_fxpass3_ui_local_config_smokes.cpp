@@ -1,6 +1,6 @@
 #include "GameZRecoil/zHud/zhud_ui.h"
-#include "GameZRecoil/zVideo/zVideo.h"
-#include "GameZRecoil/zVideo/zVideoFxPass3.h"
+#include "GameZRecoil/zVideo/zvid.h"
+#include "GameZRecoil/zVideo/zvid_fx_pass3.h"
 
 #include <cstddef>
 #include <cstdint>

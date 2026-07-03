@@ -8,6 +8,14 @@
 #endif
 
 /**
+ * zSys CPU raw-assembly helper group.
+ * Raw assembly: preserves CPUID, FLAGS, CMOS, RDTSC, and split 64-bit helper
+ * opcode/register shapes that VC5-era C/C++ cannot express source-faithfully
+ * while preserving the retail byte contract.
+ * Purpose: Hosts the documented CPU capability and timing probe snippets.
+ */
+
+/**
  * Reimplements 0x4b3020: zCpu::HasMmxSupport.
  * Purpose: Probes MMX support with the documented zSys CPU raw-assembly CPUID exception.
  */

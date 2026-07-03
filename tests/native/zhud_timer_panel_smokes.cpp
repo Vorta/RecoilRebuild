@@ -1,7 +1,7 @@
-#include "GameZRecoil/Time/Time.h"
-#include "GameZRecoil/zGame/zGame.h"
+#include "GameZRecoil/Time/time.h"
+#include "GameZRecoil/zGame/zgame.h"
 #include "GameZRecoil/zHud/zhud_ui.h"
-#include "GameZRecoil/zUtil/zZbd.h"
+#include "GameZRecoil/zUtil/zbd.h"
 
 #include <cstddef>
 #include <cstdint>

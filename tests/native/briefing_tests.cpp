@@ -1,12 +1,12 @@
-#include "Battlesport/Briefing.h"
-#include "Battlesport/HudSensorTracker.h"
-#include "GameZRecoil/Time/Time.h"
-#include "GameZRecoil/zGame/zGame.h"
-#include "GameZRecoil/zLoc/zLoc.h"
+#include "Battlesport/briefing.h"
+#include "Battlesport/hud_sensor_tracker.h"
+#include "GameZRecoil/Time/time.h"
+#include "GameZRecoil/zGame/zgame.h"
+#include "GameZRecoil/zLoc/zloc.h"
 #include "GameZRecoil/zHud/zhud_ui.h"
-#include "GameZRecoil/zRndr/zRndr.h"
-#include "GameZRecoil/zSound/zSound.h"
-#include "GameZRecoil/zVideo/zVideo.h"
+#include "GameZRecoil/zRndr/zrndr.h"
+#include "GameZRecoil/zSound/zsnd.h"
+#include "GameZRecoil/zVideo/zvid.h"
 
 #include <cstdint>
 #include <cstdio>
@@ -821,7 +821,7 @@ extern "C" int briefing_locator_panel_update_smoke(void) {
 
     const unsigned int oldInvalidateMask = g_HudUi_InvalidateMask;
 
-    locator->flags = 0;
+    locator->flags = 0x10;
     locator->clipRect.left = 1;
     locator->clipRect.top = 2;
     locator->clipRect.right = 3;
@@ -830,13 +830,13 @@ extern "C" int briefing_locator_panel_update_smoke(void) {
     locator->radiusSquared = 144;
     g_HudUi_InvalidateMask = 0x80;
     update(locator, 1.0f);
-    const bool visibleSkipped =
-        locator->flags == 0 && locator->clipRect.left == 1 &&
+    const bool hiddenSkipped =
+        locator->flags == 0x10 && locator->clipRect.left == 1 &&
         locator->clipRect.top == 2 && locator->clipRect.right == 3 &&
         locator->clipRect.bottom == 4 && locator->radius == 12 &&
         locator->radiusSquared == 144;
 
-    locator->flags = 0x10 | 0x02 | 0x08;
+    locator->flags = 0x02 | 0x08;
     locator->x = 100;
     locator->y = 110;
     locator->bltSource = nullptr;
@@ -850,7 +850,7 @@ extern "C" int briefing_locator_panel_update_smoke(void) {
     const bool baseUpdateAndInvalidate =
         (locator->flags & 0x08) == 0 && (locator->flags & 0x80) != 0;
 
-    locator->flags = 0x10;
+    locator->flags = 0;
     locator->x = 20;
     locator->y = 25;
     locator->radius = 10;
@@ -862,7 +862,7 @@ extern "C" int briefing_locator_panel_update_smoke(void) {
         locator->clipRect.right == 31 && locator->clipRect.bottom == 36 &&
         locator->radius == 9 && locator->radiusSquared == 81;
 
-    locator->flags = 0x10;
+    locator->flags = 0;
     locator->radius = 4;
     locator->radiusSquared = 16;
     update(locator, 1.0f);
@@ -870,7 +870,7 @@ extern "C" int briefing_locator_panel_update_smoke(void) {
 
     g_HudUi_InvalidateMask = oldInvalidateMask;
     RestoreConstructorGlobals(state);
-    return visibleSkipped && clipAndShrink && baseUpdateAndInvalidate && minimumStep &&
+    return hiddenSkipped && clipAndShrink && baseUpdateAndInvalidate && minimumStep &&
                    clamped
                ? 0
                : 1;

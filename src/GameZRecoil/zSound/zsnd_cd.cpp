@@ -1,6 +1,6 @@
-#include "zSound.h"
+#include "zsnd.h"
 
-#include "GameZRecoil/zReader/zReader.h"
+#include "GameZRecoil/zReader/zreader.h"
 
 #include <mmsystem.h>
 #include <windows.h>

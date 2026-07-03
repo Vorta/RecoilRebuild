@@ -1,13 +1,13 @@
-#include "Battlesport/GameNet.h"
+#include "Battlesport/game_net.h"
 #include "GameZRecoil/zDEClient/zdec.h"
 #include "Battlesport/player.h"
-#include "GameZRecoil/zEffect/zEffect.h"
-#include "GameZRecoil/zModel/zModel.h"
-#include "GameZRecoil/zNetwork/zNetwork.h"
-#include "GameZRecoil/zReader/zReader.h"
-#include "GameZRecoil/zUtil/zZbd.h"
-#include "GameZRecoil/zVideo/zVideo.h"
-#include "zDi.h"
+#include "GameZRecoil/zEffect/zeff.h"
+#include "GameZRecoil/zModel/gmod.h"
+#include "GameZRecoil/zNetwork/znet.h"
+#include "GameZRecoil/zReader/zreader.h"
+#include "GameZRecoil/zUtil/zbd.h"
+#include "GameZRecoil/zVideo/zvid.h"
+#include "zdi.h"
 
 #include <cmath>
 #include <cstdint>

@@ -1,4 +1,4 @@
-#include "Battlesport/GameNet.h"
+#include "Battlesport/game_net.h"
 
 #include <cstring>
 

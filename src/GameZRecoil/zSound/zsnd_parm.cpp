@@ -1,6 +1,6 @@
-#include "zSound.h"
+#include "zsnd.h"
 
-#include "GameZRecoil/zSound/zA3dProvider.h"
+#include "GameZRecoil/zSound/zsnd_a3d_provider.h"
 
 #include <string.h>
 

@@ -1,5 +1,5 @@
-#include "Battlesport/GameNet.h"
-#include "GameZRecoil/zUtil/zSaveGame.h"
+#include "Battlesport/game_net.h"
+#include "GameZRecoil/zUtil/zsave_game.h"
 
 #include <cstdint>
 #include <cstdlib>
