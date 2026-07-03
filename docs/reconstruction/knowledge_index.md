@@ -78,7 +78,11 @@ progress notes or duplicated plan state.
 - For new implementation placement, check `source_file_map.md` first, then
   confirm current Binary Ninja source comments, source-path literal xrefs,
   physical source-file block order, and call-site evidence. New or touched
-  functions need immediate provenance/Purpose docblocks. When a source-file
+  functions need immediate provenance/Purpose docblocks. BN function names and
+  comments are provisional navigation labels; current assembly, xrefs,
+  source-path literals, function order, and provider/import evidence decide
+  placement. The current production `src` tree is implementation state, not
+  original-source authority. When a source-file
   block is known, the rebuilt VC5 COFF function order must naturally match the
   retail BN address order before byte readiness. A generated order mismatch is
   a source-shape/include-shape blocker until proven otherwise. Model
@@ -91,7 +95,12 @@ progress notes or duplicated plan state.
   `python tools/recoil.py audit source-blocks --list`; reconstruct those bodies
   in the header `source_path` and compile them through `included_in`, without
   treating the row as full-header or owner-gate/tier proof. Do not add `.inl` files for production reconstruction;
-  existing `.inl` files need independent original-source proof.
+  existing `.inl` files need independent original-source proof. For block-map
+  reconstruction, use the top-down loop in `source_file_layout_audit.md`: start
+  at the earliest unresolved/not-order-proven authored row, currently
+  `[0x401000,0x4038a0)`, and advance only after VC5 naturally emits the retail
+  function order for the window. Passing smokes, byte checks, or ABI call-shape
+  checks are evidence candidates, not source-shape proof.
 - For new agent handoff, start with `agent_launch_checklist.md`, then use
   `AGENTS.md` for the full workflow rules.
 - For owner/data promotion, inspect `.agent/SOURCE_OWNERS.json` through

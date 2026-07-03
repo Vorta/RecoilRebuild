@@ -127056,14 +127056,14 @@
       ],
       "dependencies": [],
       "gates": {
-        "boundary": "accepted",
-        "source": "accepted",
+        "boundary": "blocked",
+        "source": "blocked",
         "data": "none",
         "functional": "pending",
         "byte": "deferred",
-        "linkage": "none"
+        "linkage": "blocked"
       },
-      "blocker": "none",
+      "blocker": "Current BN source-block evidence contradicts true standalone ownership: 0x472490 is a shared zInput DirectInput diagnostic helper physically in the no-literal joystick tail, with keyboard/init caller source-path literals and unresolved defining source/header provenance. Remap to a source-shaped zInput diagnostic/helper owner before any source/byte gate acceptance.",
       "evidence": [
         "Owner-ledger reconciliation for legacy accepted Source owner markers: the address owner projection already carried accepted owner metadata before strict SOURCE_OWNERS link enforcement; this record links that accepted owner scope without adding data, functional, or byte evidence.",
         "Controlled migration: SOURCE_OWNERS schema v3 is authoritative for owner gates and Reimplemented tiers",
@@ -127074,7 +127074,10 @@
         "linkage gate migration: linkage=none: Controlled linkage update after scrutinized audio_fmv parent-owned data-dependency reconciliation; no gate/tier promotion beyond linkage classification",
         "linkage gate migration: linkage=none: Controlled linkage update after scrutinized core_util_archive/shared data-dependency reconciliation safe subset; rows with incomplete parentage or metadata blockers intentionally left blocked",
         "linkage gate migration: linkage=none: Controlled linkage update after scrutinized render_video data-dependency reconciliation; render_video.zrndr_global_string_table_data intentionally left blocked pending owner-shape remap",
-        "linkage gate migration: linkage=none: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked"
+        "linkage gate migration: linkage=none: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked",
+        "BN source-block provenance pass over [0x471e40,0x472670): 0x472490 is a shared authored DirectInput diagnostic helper physically emitted in the no-literal joystick tail; direct callers are keyboard/init diagnostic sites that pass zin_kbd.cpp/zin_init.cpp source-path literals, no zinput.cpp/zinput.h/zin_joystick.cpp/zin_ff.cpp source-path literal or COMDAT/header proof exists, and current evidence does not prove a true standalone original source owner. Block stale accepted standalone/source/linkage gates pending remap to a source-shaped zInput diagnostic helper owner.",
+        "2026-07-03 source-block provenance pass over [0x470020,0x472670) found no zinput.cpp/zinput.h/zin_joystick.cpp/zin_ff.cpp literal or header/COMDAT proof for 0x472490; direct callers are keyboard/init diagnostic sites, not local joystick-tail callers.",
+        "owner reimplementation tier set to X: Downgrade stale legacy tier after BN source-block provenance pass: current evidence does not prove 0x472490 is a true standalone original source owner; boundary/source/linkage gates are blocked pending remap to a source-shaped shared zInput DirectInput diagnostic helper owner."
       ],
       "binary": "recoil",
       "relationships": [
@@ -127096,8 +127099,8 @@
         }
       },
       "reimplementation": {
-        "tier": "B",
-        "evidence": "Controlled migration: SOURCE_OWNERS schema v3 is authoritative for owner gates and Reimplemented tiers"
+        "tier": "X",
+        "evidence": "Downgrade stale legacy tier after BN source-block provenance pass: current evidence does not prove 0x472490 is a true standalone original source owner; boundary/source/linkage gates are blocked pending remap to a source-shaped shared zInput DirectInput diagnostic helper owner."
       }
     },
     {
@@ -142783,6 +142786,47 @@
       }
     },
     {
+      "id": "provider.kernel32.gettickcount_import_thunk",
+      "kind": "provider-boundary",
+      "name": "KERNEL32 GetTickCount import thunk",
+      "section": "provider_platform",
+      "state": "accepted",
+      "anchors": [
+        "0x4a59d0"
+      ],
+      "member_addresses": [
+        "0x4a59d0"
+      ],
+      "data_addresses": [],
+      "source_paths": [],
+      "dependencies": [],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "none",
+        "functional": "none",
+        "linkage": "none",
+        "byte": "deferred"
+      },
+      "blocker": "none",
+      "evidence": [
+        "BN source-block provenance pass: 0x4a59d0 is bytes ff 25 40 c1 4c 00, a jmp through IAT entry 0x4cc140 to imported KERNEL32 GetTickCount, with NOP padding to 0x4a59e0; provider boundary between provisional zsys.cpp shelves, not authored Recoil source or an emitted header contributor.",
+        "Provider-boundary gate audit: BN shows 0x4a59d0 is a single KERNEL32 GetTickCount import thunk (jmp dword [0x4cc140]) with no authored Recoil body, data owner, functional target, or linkage dependency; byte equivalence is provider ABI/import-boundary evidence, not authored VC5 source.",
+        "Provider import thunk is classified; no authored-source blocker applies. Physical source-block provenance for surrounding zsys.cpp shelves remains unresolved in source_file_blocks, not on this provider-boundary owner."
+      ],
+      "binary": "recoil",
+      "relationships": [
+        {
+          "kind": "anchor-address",
+          "address": "0x4a59d0"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x4a59d0"
+        }
+      ]
+    },
+    {
       "id": "provider.mfc.crt_static_mbcp_initializer",
       "kind": "provider-boundary",
       "name": "MFC CRT static MBCP initializer",
@@ -142847,6 +142891,66 @@
           "group": "provider.mfc"
         }
       }
+    },
+    {
+      "id": "provider.mfc.gdi_object_bitmap_destructor_glue",
+      "kind": "provider-boundary",
+      "name": "MFC CGdiObject/CBitmap destructor glue",
+      "section": "provider.mfc",
+      "state": "accepted",
+      "anchors": [
+        "0x443b70"
+      ],
+      "member_addresses": [
+        "0x443b70",
+        "0x443b90",
+        "0x443be0",
+        "0x443c00"
+      ],
+      "data_addresses": [],
+      "source_paths": [],
+      "dependencies": [],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "none",
+        "functional": "none",
+        "linkage": "none",
+        "byte": "deferred"
+      },
+      "blocker": "none",
+      "evidence": [
+        "BN shows [0x443b70,0x443c50) is MFC/CGdiObject/CBitmap destructor glue: scalar deleting destructors at 0x443b70 and 0x443be0 are data-referenced from provider/MFC vtable metadata 0x4d22fc and 0x4d22e4, call the corresponding MFC destructors at 0x443b90 and 0x443c00, and optionally call operator delete. The destructors install provider vtables 0x4d22f8/0x4d1268 and call CGdiObject::DeleteObject. This is provider/framework code after the provisional CZGameFrame row, not authored Recoil source or an emitted authored header contributor.",
+        "BN/provider evidence proves [0x443b70,0x443c50) is MFC CGdiObject/CBitmap scalar-deleting destructor and destructor glue, referenced by provider vtable metadata and containing no authored Recoil behavior.",
+        "Provider-boundary owns no authored Recoil data; vtable/message-map metadata references remain external/provider or with authored class metadata owners as appropriate.",
+        "MFC destructor glue has no authored Recoil functional behavior.",
+        "Provider-boundary source classification: CGdiObject/CBitmap destructors and scalar-deleting wrappers are MFC/framework code, not authored Recoil source/header bodies.",
+        "Provider-boundary owner is dependency-ready without authored source-owner linkage.",
+        "Provider ABI/framework byte equivalence is deferred; no authored VC5 source byte gate applies."
+      ],
+      "binary": "recoil",
+      "relationships": [
+        {
+          "kind": "anchor-address",
+          "address": "0x443b70"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x443b70"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x443b90"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x443be0"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x443c00"
+        }
+      ]
     },
     {
       "id": "provider.mfc.recoil_app_mfc_ole_module_message_map_getter",
@@ -142927,6 +143031,51 @@
       ],
       "binary": "recoil",
       "relationships": []
+    },
+    {
+      "id": "provider.mfc42.ordinal4274_import_pointer_getter",
+      "kind": "provider-boundary",
+      "name": "MFC42 ordinal 4274 import pointer getter",
+      "section": "provider.mfc",
+      "state": "accepted",
+      "anchors": [
+        "0x442890"
+      ],
+      "member_addresses": [
+        "0x442890"
+      ],
+      "data_addresses": [],
+      "source_paths": [],
+      "dependencies": [],
+      "gates": {
+        "boundary": "accepted",
+        "source": "accepted",
+        "data": "none",
+        "functional": "none",
+        "linkage": "none",
+        "byte": "deferred"
+      },
+      "blocker": "none",
+      "evidence": [
+        "BN shows 0x442890 MFC42::GetOrdinal4274Getter is only mov eax, dword [0x4cc248]; retn, with no code callers and a data xref from MFC/OLE message-map metadata at 0x4d2000. It is provider import/message-map getter glue in source-block row [0x442890,0x4428b0), not authored Recoil source or an emitted header contributor.",
+        "BN/provider evidence proves 0x442890 is an MFC42 ordinal import pointer getter: mov eax, dword [0x4cc248]; retn, data-referenced by MFC/OLE message-map metadata, no authored Recoil behavior.",
+        "Provider-boundary source classification: 0x442890 is MFC42 framework getter glue and owns no authored Recoil source/header body.",
+        "Provider-boundary owns no authored Recoil data; referenced message-map metadata remains with authored/MFC metadata owners.",
+        "Provider import/message-map getter has no authored Recoil functional behavior.",
+        "Provider-boundary owner is dependency-ready without authored source-owner linkage.",
+        "Provider ABI/import-boundary byte equivalence is deferred; no authored VC5 source byte gate applies."
+      ],
+      "binary": "recoil",
+      "relationships": [
+        {
+          "kind": "anchor-address",
+          "address": "0x442890"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x442890"
+        }
+      ]
     },
     {
       "id": "provider.vc5_crt_initializer_tables",

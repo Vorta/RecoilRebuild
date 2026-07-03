@@ -177,6 +177,24 @@ Use roles as a pipeline:
   issue.
 - `recoil_verifier` runs targeted checks after the parent fixes the scope.
 
+For a source-block ordering orchestrator, use this parent prompt shape and then
+add the exact frontier/window and non-overlapping worker scopes:
+
+```text
+Recover Recoil.exe source shape top-down so VC5 naturally emits the retail BN
+function order. Use `python tools/recoil.py audit source-blocks --list` as the
+frontier queue, starting at the earliest unresolved or not-order-proven
+authored row. Current active frontier: [0x401000,0x4038a0). Treat current
+production source filenames and stale comments as diagnostic context only.
+Spawn read-only BN fact mappers for the assigned window, source workers for one
+explicit `.h`/`.cpp` source-shape hypothesis, and verifier agents for exact
+VC5 function-order checks. If generated order mismatches retail, reject the
+hypothesis or correct the source-block catalog before advancing. Do not use
+`.inl` files, forced placement, pragma/linker ordering, or declared object
+order as independent provenance. Return the window, expected retail order,
+generated order result, changed files, checks run, and next frontier.
+```
+
 Minimum handoff fields:
 
 - Source worker: complete source-owner work unit, section, anchors or group,
@@ -253,9 +271,12 @@ xrefs, neighboring function order, and call-site evidence. When
 `zError::ReportOldNoOp` file-path literals or similar source-path xrefs show
 that VC5 emitted whole translation-unit contribution blocks in source-file
 order, use that physical block evidence before trusting stale source paths or
-semantic function names. A function can still be a header/helper/provider
-exception inside the physical block, but the exception must be proven with
-current BN evidence. The byte-matching goal includes matching generated VC5 COFF
+semantic function names. BN function names and comments are provisional
+navigation labels; assembly, xrefs, source-path literals, function order, and
+provider/import evidence decide placement. A function can still be a
+header/helper/provider exception inside the physical block, but the exception
+must be proven with current BN evidence. The byte-matching goal includes
+matching generated VC5 COFF
 function order to the retail Binary Ninja address order inside the source-file
 block, so source workers must shape declarations, static/helper placement, and
 header layering/include timing accordingly. Production reconstruction must not
@@ -271,12 +292,35 @@ original-style headers and original-style includes. If a VC5 function-order
 check differs from retail BN order in a known Recoil.exe block, stop and repair
 the source/header/include shape before treating byte diffs as function-body
 problems. Do not use pragma/linker/order tricks or artificial order matching as
-owner/tier evidence. Treat generated map entries as stale when current BN
-file-literal evidence contradicts the recorded source path.
+owner/tier evidence. Do not rely on declared object order as source-shape
+provenance. Passing smokes, byte checks, or ABI call-shape checks are evidence
+candidates, not source-shape proof. Treat generated map entries as stale when
+current BN file-literal evidence contradicts the recorded source path.
 When the source-block list contains `partial-header` rows, the emitted code is
 still reconstructed in the header named by `source_path` and included by the
 listed `.cpp`; the row is placement evidence, not full-header or owner-gate
 acceptance evidence.
+
+For source-file block-map work, operate top-down from the earliest unresolved
+or not-order-proven authored row in
+`python tools/recoil.py audit source-blocks --list`. The current active
+frontier starts at `[0x401000,0x4038a0)`: classify the
+`semantic:CAboutDlg-constructor-prelude` and adjacent provider rows, then
+preserve the confirmed `ai_net.h -> zMath.h -> ai_net.cpp` checkpoint before
+advancing. For each window, gather BN facts, form one `.h`/`.cpp` source-shape
+hypothesis, assign non-overlapping workers, and run a VC5
+`check_function_order` target or equivalent emitted-order check. If generated
+order differs from retail BN order, treat it as a source-shape/include-shape
+blocker and revise the hypothesis or source-block catalog before continuing.
+Do not use `.inl` files, forced placement, pragma/linker ordering, or declared
+object order as independent provenance.
+
+The current production `src` tree is implementation state, not
+original-source authority. If current BN/source-block evidence or generated
+VC5 function order contradicts it, reshape files and headers inside the
+assigned scope and update the source-block catalog plus durable layout audit
+before implementing against the corrected model.
+
 Regenerate only when current source movement, provenance docblocks, or legacy
 source comments explain the drift:
 
