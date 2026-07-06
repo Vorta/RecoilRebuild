@@ -3,24 +3,15 @@
 #include "GameZRecoil/zHud/zhud_ui.h"
 
 #include <new>
-#include <stdlib.h>
 
 /**
  * Reimplements data 0x4e5de0: g_RecoilStateCredits.
  *
  * Purpose: store the static credits app-state object.
  *
- * Source owner: RecoilStateCredits is the credits-state slice of the
- * RecoilStateBase app-state cluster. BN shows the retail static-lifetime chain
- * as an explicit CRT row and a compiler global-constructor thunk. The source
- * keeps explicit aligned storage so VC5 does not emit a second automatic
- * compiler startup row; StaticInitAndRegisterAtExit constructs the typed
- * singleton in place and RegisterAtExit destroys that same object.
+ * Source model note: RecoilStateCredits is a credits app-state singleton.
  */
-#undef g_RecoilStateCredits
-RecoilStateCreditsStorage g_RecoilStateCredits = {0};
-#define g_RecoilStateCredits \
-    (*(RecoilStateCredits *)&g_RecoilStateCredits)
+RecoilStateCredits g_RecoilStateCredits;
 
 /**
  * Reimplements 0x409990: RecoilStateCredits::RecoilStateCredits.
@@ -30,55 +21,6 @@ RecoilStateCreditsStorage g_RecoilStateCredits = {0};
  */
 RecoilStateCredits::RecoilStateCredits() {
     m_dialog = 0;
-}
-
-/**
- * Reimplements 0x409950: RecoilStateCredits::StaticInitAndRegisterAtExit.
- *
- * Purpose: construct the static credits state and register its at-exit
- * destructor callback.
- *
- * BN shape: retail calls compiler-generated StaticConstructGlobal at 0x409960
- * before tail-calling StaticInit. The authored source keeps that thunk as
- * compiler glue and expresses the source-level static object construction.
- */
-void RecoilStateCredits::StaticInitAndRegisterAtExit() {
-    new (&g_RecoilStateCredits) RecoilStateCredits;
-    StaticInit();
-}
-
-#if defined(_MSC_VER) && defined(_M_IX86)
-typedef void (__cdecl *RecoilStateCreditsCrtInitializerFn)();
-/* VC5 emits this credits-state startup callback as a direct .CRT$XCU row. */
-#pragma data_seg(".CRT$XCU")
-RecoilStateCreditsCrtInitializerFn s_RecoilStateCreditsCrtInit =
-    RecoilStateCredits::StaticInitAndRegisterAtExit;
-#pragma data_seg()
-#endif
-
-/**
- * Reimplements 0x409970: RecoilStateCredits::StaticInit.
- *
- * Purpose: register the static credits state's destruction callback with the
- * CRT at-exit list.
- *
- * BN shape: retail pushes RegisterAtExit and calls the CRT atexit provider.
- */
-void RecoilStateCredits::StaticInit() {
-    atexit(RegisterAtExit);
-}
-
-/**
- * Reimplements 0x409980: RecoilStateCredits::RegisterAtExit.
- *
- * Purpose: destroy the global credits state from the registered at-exit
- * callback.
- *
- * BN shape: retail sets this to g_RecoilStateCredits and tail-calls the
- * virtual destructor body.
- */
-void RecoilStateCredits::RegisterAtExit() {
-    g_RecoilStateCredits.~RecoilStateCredits();
 }
 
 /**

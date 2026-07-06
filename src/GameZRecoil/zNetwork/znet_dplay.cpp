@@ -111,6 +111,17 @@ GUID g_zNetwork_RecoilAppGuid = {
     {0xa7, 0x7c, 0x00, 0x60, 0x08, 0x98, 0x77, 0x43}
 };
 /**
+ * Reimplements data 0x4ccd88: Symbol.
+ * Data owner: engine.znetwork.directplay_runtime_globals.
+ * Purpose: hold the Westwood Online DirectPlay application GUID.
+ */
+GUID g_zNetwork_WestwoodOnlineAppGuid = {
+    0xc94ebca2,
+    0x95b7,
+    0x11d2,
+    {0xa7, 0x7c, 0x00, 0x60, 0x08, 0x98, 0x77, 0x43}
+};
+/**
  * Reimplements data 0x56ab00: Symbol.
  * Data owner: engine.znetwork.session_runtime_lifecycle.
  * Purpose: track the last asynchronous DirectPlay SendEx handle.

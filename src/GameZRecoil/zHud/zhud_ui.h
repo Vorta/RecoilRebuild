@@ -1316,12 +1316,7 @@ HudCmdBindingEntry(
  * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
  * Purpose: run the recovered ~HudCmdBindingEntry teardown path.
  */
-~HudCmdBindingEntry() {
-        if (displayText != 0) {
-            free(displayText);
-            displayText = 0;
-        }
-    }
+~HudCmdBindingEntry();
     static HudCmdBindingEntry *__stdcall DeleteAndReturnNull(HudCmdBindingEntry *entry);
     static HudCmdBindingEntry **__fastcall CopyRange(
         HudCmdBindingEntry **sourceBegin,
@@ -1429,6 +1424,7 @@ struct HudCmdBindButtonBase : HudUiCheckToggleWidget {
      */
     virtual void OnSelectionChangedRefresh(int selectedIndex);
     void ClearBindingEntries();
+    HudUiElement * ScalarDeletingDestructor(unsigned int flags);
     void DestructorCore();
     int LoadFromZrd(
         zReader::Node *zrdSection,

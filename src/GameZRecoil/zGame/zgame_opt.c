@@ -673,6 +673,270 @@ RECOIL_NO_GS int zGame_OptionsRuntimeConfig::InitFromSystem() {
     return 0;
 }
 
+namespace zOpt {
+namespace {
+struct zOpt_NameInt32Pair {
+    const char *name;
+    int value;
+};
+
+const zOpt_NameInt32Pair g_zOpt_NamedScalarValues[] = {
+    {"TRUE", 1},
+    {"FALSE", 0},
+    {"HIGH", 0},
+    {"MEDIUM", 1},
+    {"LOW", 2},
+    {"CPU_CLASS_8086", 0},
+    {"CPU_CLASS_80286", 2},
+    {"CPU_CLASS_80386", 3},
+    {"CPU_CLASS_80486", 4},
+    {"CPU_CLASS_PENTIUM", 5},
+    {"CPU_CLASS_PENTIUM_PRO", 6},
+    {"CPU_CLASS_PENTIUM_NEWER", 7},
+    {"TEXMEM_MAX", 0},
+    {"TEXMEM_8MB", 1},
+    {"TEXMEM_6MB", 2},
+    {"TEXMEM_4MB", 3},
+    {"TEXMEM_2MB", 4},
+    {"ZVID_320x200x16", 2},
+    {"ZVID_320x240x16", 3},
+    {"ZVID_640x400x16", 4},
+    {"ZVID_640x480x16", 5},
+    {"ZVID_800x600x16", 6},
+    {"ZVID_1024x768x16", 7},
+    {"HUD_TYPEI", 1},
+    {"HUD_TYPEII", 2},
+    {"SOUND_API_DSOUND", 0},
+    {"SOUND_API_A3D", 1},
+};
+
+const double ZOPT_COMPARE_TOLERANCE_PCT = 0.02;
+
+/**
+ * Original inline/static helper; no standalone retail function exists. Observed in caller
+ * 0x407220.
+ * Evidence basis: the branchless signed absolute-difference idiom is embedded in the
+ * "~=" comparison path of zOpt::EvalIntCompareOp, with no assigned address-backed retail
+ * helper for this source-file owner.
+ * Purpose: compute the absolute difference used by the profile metric tolerance compare.
+ */
+int WrappedAbsDifference(
+    int lhs,
+    int rhs
+) {
+    const unsigned int diff = (unsigned int)(lhs) - (unsigned int)(rhs);
+    const unsigned int signMask = 0u - (diff >> 31);
+    return (int)((diff ^ signMask) - signMask);
+}
+
+} // namespace
+
+/**
+ * Reimplements 0x407190: zOpt::LookupNamedValueAsInt.
+ * Original source path: D:\Proj\GameZRecoil\zGame\zopt.c.
+ * Purpose: map profile scalar names to their integer option values.
+ */
+int __fastcall LookupNamedValueAsInt(
+    const char *key
+) {
+    unsigned int pairIndex;
+    for (pairIndex = 0;
+        pairIndex < sizeof(g_zOpt_NamedScalarValues) / sizeof(g_zOpt_NamedScalarValues[0]);
+        ++pairIndex) {
+        if (strcmp(
+            g_zOpt_NamedScalarValues[pairIndex].name,
+            key
+        ) == 0) {
+            return g_zOpt_NamedScalarValues[pairIndex].value;
+        }
+    }
+
+    return 0;
+}
+
+/**
+ * Reimplements 0x4071f0: zOpt::ReadScalarValueAsInt.
+ * Original source path: D:\Proj\GameZRecoil\zGame\zopt.c.
+ * Purpose: coerce an integer, float, or named string scalar node into an integer value.
+ */
+int __fastcall ReadScalarValueAsInt(
+    zReader::Node *scalarValueNode
+) {
+    if (scalarValueNode->type == zReader::ZRDR_NODE_INT) {
+        return scalarValueNode->value.i32;
+    }
+    if (scalarValueNode->type == zReader::ZRDR_NODE_FLOAT) {
+        return (int)(scalarValueNode->value.f32);
+    }
+    if (scalarValueNode->type == zReader::ZRDR_NODE_STRING) {
+        return LookupNamedValueAsInt(scalarValueNode->value.str);
+    }
+
+    return 0;
+}
+
+/**
+ * Reimplements 0x407220: zOpt::EvalIntCompareOp.
+ * Original source path: D:\Proj\GameZRecoil\zGame\zopt.c.
+ * Purpose: apply an integer comparison operator used by profile metric rules.
+ */
+int __fastcall EvalIntCompareOp(
+    const char *opString,
+    int lhs,
+    int rhs
+) {
+    if (strcmp(
+        opString,
+        g_zOpt_OpStr_Eq
+    ) == 0) {
+        return lhs == rhs;
+    }
+    if (strcmp(
+        opString,
+        g_zOpt_OpStr_Lt
+    ) == 0) {
+        return lhs < rhs;
+    }
+    if (strcmp(
+        opString,
+        g_zOpt_OpStr_Gt
+    ) == 0) {
+        return lhs > rhs;
+    }
+    if (strcmp(
+        opString,
+        g_zOpt_OpStr_Le
+    ) == 0) {
+        return lhs <= rhs;
+    }
+    if (strcmp(
+        opString,
+        g_zOpt_OpStr_Ge
+    ) == 0) {
+        return lhs >= rhs;
+    }
+    if (strcmp(
+        opString,
+        g_zOpt_OpStr_Ne
+    ) == 0) {
+        return lhs != rhs;
+    }
+    if (strcmp(
+        opString,
+        g_zOpt_OpStr_TolEq
+    ) == 0) {
+        return (double)(WrappedAbsDifference(
+            lhs,
+            rhs
+        )) < (double)(lhs)*ZOPT_COMPARE_TOLERANCE_PCT;
+    }
+
+    return 0;
+}
+
+/**
+ * Reimplements 0x407470: zOpt::EvaluateProfileMetricCondition.
+ * Original source path: D:\Proj\GameZRecoil\zGame\zopt.c.
+ * Purpose: evaluate one profile-selection condition against the current runtime metrics.
+ */
+int __fastcall EvaluateProfileMetricCondition(
+    zReader::Node *metricConditionNode
+) {
+    if (metricConditionNode->type == zReader::ZRDR_NODE_STRING) {
+        return strcmp(
+            metricConditionNode->value.str,
+            k_zOpt_ProfileMetricDefault
+        ) == 0;
+    }
+
+    if (metricConditionNode->type != zReader::ZRDR_NODE_ARRAY) {
+        return 0;
+    }
+
+    zReader::Node *const conditionArray = metricConditionNode->value.nodes;
+    if (conditionArray[0].value.i32 != 4) {
+        return 0;
+    }
+
+    const char *const metricKey = conditionArray[1].value.str;
+    const char *const opString = conditionArray[2].value.str;
+    const int rhs = ReadScalarValueAsInt(&conditionArray[3]);
+    int currentMetricValue = 0;
+
+    if (strcmp(
+        metricKey,
+        k_zOpt_ProfileMetricCpuClass
+    ) == 0) {
+        currentMetricValue = g_zGame_Options_RuntimeConfig.cpuClass;
+    } else if (strcmp(
+        metricKey,
+        k_zOpt_ProfileMetricCpuMhz
+    ) == 0) {
+        currentMetricValue = g_zGame_Options_RuntimeConfig.cpuMhz;
+    } else if (strcmp(
+        metricKey,
+        k_zOpt_ProfileMetricVideoKb
+    ) == 0) {
+        currentMetricValue = (int)(g_zGame_Options_RuntimeConfig.soundHardwareMemKb);
+    } else if (strcmp(
+        metricKey,
+        k_zOpt_ProfileMetricRamKb
+    ) == 0) {
+        currentMetricValue = (int)(g_zGame_Options_RuntimeConfig.systemRamKb);
+    } else if (strcmp(
+        metricKey,
+        k_zOpt_ProfileMetricHwAccel
+    ) == 0) {
+        currentMetricValue = (int)((g_zGame_Options_RuntimeConfig.defaultFlags >> 6) & 1u);
+    } else {
+        return 0;
+    }
+
+    return EvalIntCompareOp(
+        opString,
+        currentMetricValue,
+        rhs
+    );
+}
+
+/**
+ * Reimplements 0x407680: zOpt::SelectProfileValueForSystem.
+ * Original source path: D:\Proj\GameZRecoil\zGame\zopt.c.
+ * Purpose: choose the first matching profile rule value for the current system metrics.
+ */
+int __fastcall SelectProfileValueForSystem(
+    zReader::Node *parentNode,
+    const char *profileName,
+    int defaultValue
+) {
+    if (parentNode == 0) {
+        return defaultValue;
+    }
+
+    zReader::Node *const profileRuleListNode = zReader_GetNamedNode(
+        parentNode,
+        profileName
+    );
+    if (profileRuleListNode == 0) {
+        return defaultValue;
+    }
+
+    zReader::Node *const ruleList = profileRuleListNode->value.nodes;
+    const int count = ruleList[0].value.i32;
+    {
+        for (int ruleIndex = 1; ruleIndex < count; ++ruleIndex) {
+            zReader::Node *const ruleCells = ruleList[ruleIndex].value.nodes;
+            if (EvaluateProfileMetricCondition(&ruleCells[1]) != 0) {
+                return ReadScalarValueAsInt(&ruleCells[2]);
+            }
+        }
+    }
+
+    return defaultValue;
+}
+
+} // namespace zOpt
+
 namespace zGame {
 namespace {
 const int ZGAME_OPTION_INLINE_DWORD = 0;
@@ -1124,65 +1388,6 @@ RECOIL_NO_GS int Options_SaveToRegistry() {
 }
 
 /**
- * Reimplements 0x407e00: zGame::Options_SaveGameOptions.
- * Purpose: clear transient input/network state before saving the option registry.
- */
-int Options_SaveGameOptions() {
-    zInput::BindGroupList_Clear();
-    zOpt::SetNetworkEnabled(0);
-    zOpt::SetNetworkModemEnabled(0);
-    return Options_SaveToRegistry();
-}
-
-/**
- * Reimplements 0x4b32c0: zGame::Options_ShutdownRegistryContext.
- * Purpose: free the option-entry list and registry-key context globals.
- */
-void Options_ShutdownRegistryContext() {
-    if (g_zGame_Options_RegContextInitialized == 0) {
-        return;
-    }
-
-    zOptionEntryPartial *entry = g_zGame_Options_OptionListHead;
-    while (entry != 0) {
-        zOptionEntryPartial *const next = entry->next;
-        if (entry->name != 0) {
-            free(entry->name);
-            entry->name = 0;
-        }
-
-        if (entry->storageType != ZGAME_OPTION_INLINE_DWORD &&
-            entry->storageType > ZGAME_OPTION_INLINE_BINARY8 &&
-            entry->storageType <= ZGAME_OPTION_STORAGE_MAX) {
-            void *const payload = (void *)((unsigned int)(entry->payloadOrBuffer));
-            if (payload != 0) {
-                free(payload);
-                entry->payloadOrBuffer = 0;
-            }
-        }
-
-        free(entry);
-        entry = next;
-    }
-
-    g_zGame_Options_OptionListHead = 0;
-    if (g_zGame_Options_RegKeyGame != 0) {
-        free(g_zGame_Options_RegKeyGame);
-        g_zGame_Options_RegKeyGame = 0;
-    }
-    if (g_zGame_Options_RegKeyCurrentUser != 0) {
-        free(g_zGame_Options_RegKeyCurrentUser);
-        g_zGame_Options_RegKeyCurrentUser = 0;
-    }
-    if (g_zGame_Options_RegKeyRoot != 0) {
-        free(g_zGame_Options_RegKeyRoot);
-        g_zGame_Options_RegKeyRoot = 0;
-    }
-
-    g_zGame_Options_RegContextInitialized = 0;
-}
-
-/**
  * Reimplements 0x407700: zGame::Options_LoadGameOptions.
  * Purpose: load detail.zrd and register the game option globals.
  */
@@ -1615,273 +1820,74 @@ RECOIL_NO_GS int Options_LoadGameOptions() {
     zSnd::SetAudioApiOption(zSnd::GetAudioApiOption());
     return 1;
 }
+
+/**
+ * Reimplements 0x407e00: zGame::Options_SaveGameOptions.
+ * Purpose: clear transient input/network state before saving the option registry.
+ */
+int Options_SaveGameOptions() {
+    zInput::BindGroupList_Clear();
+    zOpt::SetNetworkEnabled(0);
+    zOpt::SetNetworkModemEnabled(0);
+    return Options_SaveToRegistry();
+}
+
+/**
+ * Reimplements 0x4b32c0: zGame::Options_ShutdownRegistryContext.
+ * Purpose: free the option-entry list and registry-key context globals.
+ */
+void Options_ShutdownRegistryContext() {
+    if (g_zGame_Options_RegContextInitialized == 0) {
+        return;
+    }
+
+    zOptionEntryPartial *entry = g_zGame_Options_OptionListHead;
+    while (entry != 0) {
+        zOptionEntryPartial *const next = entry->next;
+        if (entry->name != 0) {
+            free(entry->name);
+            entry->name = 0;
+        }
+
+        if (entry->storageType != ZGAME_OPTION_INLINE_DWORD &&
+            entry->storageType > ZGAME_OPTION_INLINE_BINARY8 &&
+            entry->storageType <= ZGAME_OPTION_STORAGE_MAX) {
+            void *const payload = (void *)((unsigned int)(entry->payloadOrBuffer));
+            if (payload != 0) {
+                free(payload);
+                entry->payloadOrBuffer = 0;
+            }
+        }
+
+        free(entry);
+        entry = next;
+    }
+
+    g_zGame_Options_OptionListHead = 0;
+    if (g_zGame_Options_RegKeyGame != 0) {
+        free(g_zGame_Options_RegKeyGame);
+        g_zGame_Options_RegKeyGame = 0;
+    }
+    if (g_zGame_Options_RegKeyCurrentUser != 0) {
+        free(g_zGame_Options_RegKeyCurrentUser);
+        g_zGame_Options_RegKeyCurrentUser = 0;
+    }
+    if (g_zGame_Options_RegKeyRoot != 0) {
+        free(g_zGame_Options_RegKeyRoot);
+        g_zGame_Options_RegKeyRoot = 0;
+    }
+
+    g_zGame_Options_RegContextInitialized = 0;
+}
+
 } // namespace zGame
 
 namespace zOpt {
-namespace {
-struct zOpt_NameInt32Pair {
-    const char *name;
-    int value;
-};
-
-const zOpt_NameInt32Pair g_zOpt_NamedScalarValues[] = {
-    {"TRUE", 1},
-    {"FALSE", 0},
-    {"HIGH", 0},
-    {"MEDIUM", 1},
-    {"LOW", 2},
-    {"CPU_CLASS_8086", 0},
-    {"CPU_CLASS_80286", 2},
-    {"CPU_CLASS_80386", 3},
-    {"CPU_CLASS_80486", 4},
-    {"CPU_CLASS_PENTIUM", 5},
-    {"CPU_CLASS_PENTIUM_PRO", 6},
-    {"CPU_CLASS_PENTIUM_NEWER", 7},
-    {"TEXMEM_MAX", 0},
-    {"TEXMEM_8MB", 1},
-    {"TEXMEM_6MB", 2},
-    {"TEXMEM_4MB", 3},
-    {"TEXMEM_2MB", 4},
-    {"ZVID_320x200x16", 2},
-    {"ZVID_320x240x16", 3},
-    {"ZVID_640x400x16", 4},
-    {"ZVID_640x480x16", 5},
-    {"ZVID_800x600x16", 6},
-    {"ZVID_1024x768x16", 7},
-    {"HUD_TYPEI", 1},
-    {"HUD_TYPEII", 2},
-    {"SOUND_API_DSOUND", 0},
-    {"SOUND_API_A3D", 1},
-};
 
 const zOptGameControlFlags ZOPT_GAME_CONTROL_THROTTLE = 0x01;
 const zOptGameControlFlags ZOPT_GAME_CONTROL_STEERING = 0x02;
 const zOptGameControlFlags ZOPT_GAME_CONTROL_CURSOR = 0x04;
 const zOptGameControlFlags ZOPT_GAME_CONTROL_CAMERA_THIRD_PERSON = 0x08;
-const double ZOPT_COMPARE_TOLERANCE_PCT = 0.02;
-
-/**
- * Original inline/static helper; no standalone retail function exists. Observed in caller
- * 0x407220.
- * Evidence basis: the branchless signed absolute-difference idiom is embedded in the
- * "~=" comparison path of zOpt::EvalIntCompareOp, with no assigned address-backed retail
- * helper for this source-file owner.
- * Purpose: compute the absolute difference used by the profile metric tolerance compare.
- */
-int WrappedAbsDifference(
-    int lhs,
-    int rhs
-) {
-    const unsigned int diff = (unsigned int)(lhs) - (unsigned int)(rhs);
-    const unsigned int signMask = 0u - (diff >> 31);
-    return (int)((diff ^ signMask) - signMask);
-}
-
-} // namespace
-
-/**
- * Reimplements 0x407190: zOpt::LookupNamedValueAsInt.
- * Original source path: D:\Proj\GameZRecoil\zGame\zopt.c.
- * Purpose: map profile scalar names to their integer option values.
- */
-int __fastcall LookupNamedValueAsInt(
-    const char *key
-) {
-    unsigned int pairIndex;
-    for (pairIndex = 0;
-        pairIndex < sizeof(g_zOpt_NamedScalarValues) / sizeof(g_zOpt_NamedScalarValues[0]);
-        ++pairIndex) {
-        if (strcmp(
-            g_zOpt_NamedScalarValues[pairIndex].name,
-            key
-        ) == 0) {
-            return g_zOpt_NamedScalarValues[pairIndex].value;
-        }
-    }
-
-    return 0;
-}
-
-/**
- * Reimplements 0x4071f0: zOpt::ReadScalarValueAsInt.
- * Original source path: D:\Proj\GameZRecoil\zGame\zopt.c.
- * Purpose: coerce an integer, float, or named string scalar node into an integer value.
- */
-int __fastcall ReadScalarValueAsInt(
-    zReader::Node *scalarValueNode
-) {
-    if (scalarValueNode->type == zReader::ZRDR_NODE_INT) {
-        return scalarValueNode->value.i32;
-    }
-    if (scalarValueNode->type == zReader::ZRDR_NODE_FLOAT) {
-        return (int)(scalarValueNode->value.f32);
-    }
-    if (scalarValueNode->type == zReader::ZRDR_NODE_STRING) {
-        return LookupNamedValueAsInt(scalarValueNode->value.str);
-    }
-
-    return 0;
-}
-
-/**
- * Reimplements 0x407470: zOpt::EvaluateProfileMetricCondition.
- * Original source path: D:\Proj\GameZRecoil\zGame\zopt.c.
- * Purpose: evaluate one profile-selection condition against the current runtime metrics.
- */
-int __fastcall EvaluateProfileMetricCondition(
-    zReader::Node *metricConditionNode
-) {
-    if (metricConditionNode->type == zReader::ZRDR_NODE_STRING) {
-        return strcmp(
-            metricConditionNode->value.str,
-            k_zOpt_ProfileMetricDefault
-        ) == 0;
-    }
-
-    if (metricConditionNode->type != zReader::ZRDR_NODE_ARRAY) {
-        return 0;
-    }
-
-    zReader::Node *const conditionArray = metricConditionNode->value.nodes;
-    if (conditionArray[0].value.i32 != 4) {
-        return 0;
-    }
-
-    const char *const metricKey = conditionArray[1].value.str;
-    const char *const opString = conditionArray[2].value.str;
-    const int rhs = ReadScalarValueAsInt(&conditionArray[3]);
-    int currentMetricValue = 0;
-
-    if (strcmp(
-        metricKey,
-        k_zOpt_ProfileMetricCpuClass
-    ) == 0) {
-        currentMetricValue = g_zGame_Options_RuntimeConfig.cpuClass;
-    } else if (strcmp(
-        metricKey,
-        k_zOpt_ProfileMetricCpuMhz
-    ) == 0) {
-        currentMetricValue = g_zGame_Options_RuntimeConfig.cpuMhz;
-    } else if (strcmp(
-        metricKey,
-        k_zOpt_ProfileMetricVideoKb
-    ) == 0) {
-        currentMetricValue = (int)(g_zGame_Options_RuntimeConfig.soundHardwareMemKb);
-    } else if (strcmp(
-        metricKey,
-        k_zOpt_ProfileMetricRamKb
-    ) == 0) {
-        currentMetricValue = (int)(g_zGame_Options_RuntimeConfig.systemRamKb);
-    } else if (strcmp(
-        metricKey,
-        k_zOpt_ProfileMetricHwAccel
-    ) == 0) {
-        currentMetricValue = (int)((g_zGame_Options_RuntimeConfig.defaultFlags >> 6) & 1u);
-    } else {
-        return 0;
-    }
-
-    return EvalIntCompareOp(
-        opString,
-        currentMetricValue,
-        rhs
-    );
-}
-
-/**
- * Reimplements 0x407680: zOpt::SelectProfileValueForSystem.
- * Original source path: D:\Proj\GameZRecoil\zGame\zopt.c.
- * Purpose: choose the first matching profile rule value for the current system metrics.
- */
-int __fastcall SelectProfileValueForSystem(
-    zReader::Node *parentNode,
-    const char *profileName,
-    int defaultValue
-) {
-    if (parentNode == 0) {
-        return defaultValue;
-    }
-
-    zReader::Node *const profileRuleListNode = zReader_GetNamedNode(
-        parentNode,
-        profileName
-    );
-    if (profileRuleListNode == 0) {
-        return defaultValue;
-    }
-
-    zReader::Node *const ruleList = profileRuleListNode->value.nodes;
-    const int count = ruleList[0].value.i32;
-    {
-        for (int ruleIndex = 1; ruleIndex < count; ++ruleIndex) {
-            zReader::Node *const ruleCells = ruleList[ruleIndex].value.nodes;
-            if (EvaluateProfileMetricCondition(&ruleCells[1]) != 0) {
-                return ReadScalarValueAsInt(&ruleCells[2]);
-            }
-        }
-    }
-
-    return defaultValue;
-}
-
-/**
- * Reimplements 0x407220: zOpt::EvalIntCompareOp.
- * Original source path: D:\Proj\GameZRecoil\zGame\zopt.c.
- * Purpose: apply an integer comparison operator used by profile metric rules.
- */
-int __fastcall EvalIntCompareOp(
-    const char *opString,
-    int lhs,
-    int rhs
-) {
-    if (strcmp(
-        opString,
-        g_zOpt_OpStr_Eq
-    ) == 0) {
-        return lhs == rhs;
-    }
-    if (strcmp(
-        opString,
-        g_zOpt_OpStr_Lt
-    ) == 0) {
-        return lhs < rhs;
-    }
-    if (strcmp(
-        opString,
-        g_zOpt_OpStr_Gt
-    ) == 0) {
-        return lhs > rhs;
-    }
-    if (strcmp(
-        opString,
-        g_zOpt_OpStr_Le
-    ) == 0) {
-        return lhs <= rhs;
-    }
-    if (strcmp(
-        opString,
-        g_zOpt_OpStr_Ge
-    ) == 0) {
-        return lhs >= rhs;
-    }
-    if (strcmp(
-        opString,
-        g_zOpt_OpStr_Ne
-    ) == 0) {
-        return lhs != rhs;
-    }
-    if (strcmp(
-        opString,
-        g_zOpt_OpStr_TolEq
-    ) == 0) {
-        return (double)(WrappedAbsDifference(
-            lhs,
-            rhs
-        )) < (double)(lhs)*ZOPT_COMPARE_TOLERANCE_PCT;
-    }
-
-    return 0;
-}
 
 /**
  * Reimplements 0x407e20: zOpt::SetGameControlOptions.
@@ -2074,14 +2080,6 @@ int GetObjectLODForCurrentHwMode() {
 }
 
 /**
- * Reimplements 0x408060: zOpt::GetMuteSoundOption.
- * Purpose: return the current mute-sound option value.
- */
-int GetMuteSoundOption() {
-    return *ZOPT_MUTE_SOUND;
-}
-
-/**
  * Reimplements 0x408050: zOpt::SetMuteSoundOption.
  * Purpose: store the mute-sound option and apply it to active sound voices.
  */
@@ -2090,6 +2088,14 @@ void __fastcall SetMuteSoundOption(
 ) {
     *ZOPT_MUTE_SOUND = value;
     zSnd::ApplyMuteStateToActiveVoices(value);
+}
+
+/**
+ * Reimplements 0x408060: zOpt::GetMuteSoundOption.
+ * Purpose: return the current mute-sound option value.
+ */
+int GetMuteSoundOption() {
+    return *ZOPT_MUTE_SOUND;
 }
 
 /**
@@ -2175,14 +2181,18 @@ void __fastcall SetPlayerName(
     }
 }
 
+} // namespace zOpt
+
 /**
- * Reimplements 0x4081f0: zOpt::GetGraphicsFlagsForCurrentHwMode.
- * Original source path: D:\Proj\GameZRecoil\zGame\zGame_Options.cpp.
- * Purpose: return the graphics option bitmask for the active hardware mode.
+ * Reimplements 0x408190: zOpt::GetPlayerName.
+ * Original source path: D:\Proj\GameZRecoil\zOptions\zopt.cpp.
+ * Purpose: return the configured player-name option buffer.
  */
-int GetGraphicsFlagsForCurrentHwMode() {
-    return *(g_zOpt_HwMode != 0 ? ZOPT_GFX_FLAGS_HW : ZOPT_GFX_FLAGS_SW);
+char *zOpt_GetPlayerName() {
+    return (char *)(ZOPT_PLAYER_NAME->payloadOrBuffer);
 }
+
+namespace zOpt {
 
 /**
  * Reimplements 0x4081a0: zOpt::SetGraphicsFlagsForCurrentHwMode.
@@ -2208,21 +2218,12 @@ void __fastcall SetGraphicsFlagsForCurrentHwMode(
 }
 
 /**
- * Reimplements 0x4082d0: zOpt::SetHudTypeForCurrentHwMode.
- * Purpose: apply the requested HUD layout mode and store it for the active hardware mode.
+ * Reimplements 0x4081f0: zOpt::GetGraphicsFlagsForCurrentHwMode.
+ * Original source path: D:\Proj\GameZRecoil\zGame\zGame_Options.cpp.
+ * Purpose: return the graphics option bitmask for the active hardware mode.
  */
-int __fastcall SetHudTypeForCurrentHwMode(
-    int hudType
-) {
-    const int previous = HudUiMgr::ApplyHudModeSwitch(hudType);
-
-    if (g_zOpt_HwMode != 0) {
-        *ZOPT_HUD_TYPE_HW = hudType;
-        return previous;
-    }
-
-    *ZOPT_HUD_TYPE_SW = hudType;
-    return previous;
+int GetGraphicsFlagsForCurrentHwMode() {
+    return *(g_zOpt_HwMode != 0 ? ZOPT_GFX_FLAGS_HW : ZOPT_GFX_FLAGS_SW);
 }
 
 /**
@@ -2259,67 +2260,21 @@ void __fastcall SetNetworkListenEnabled(
 }
 
 /**
+ * Reimplements 0x408260: zOpt::GetNetworkEnabled.
+ * Original source path: D:\Proj\Battlesport\zOpt.cpp.
+ * Purpose: return the network-enabled option value through its option pointer.
+ */
+int GetNetworkEnabled() {
+    return *ZOPT_NETWORK_ENABLED;
+}
+
+/**
  * Reimplements 0x408270: zOpt::GetNetworkModemEnabled.
  * Original source path: D:\Proj\Battlesport\zOpt.cpp.
  * Purpose: return the network-modem option value through its option pointer.
  */
 int GetNetworkModemEnabled() {
     return *g_zOpt_NetworkModemOption;
-}
-
-/**
- * Reimplements 0x408a10: zOpt::SetWolPasswordFlag.
- * Purpose: store the WOL password flag option value through its option pointer.
- */
-void __fastcall SetWolPasswordFlag(
-    int value
-) {
-    *g_zOpt_WolPasswordFlagOption = value;
-}
-
-/**
- * Reimplements 0x408650: zOpt::GetDisplaySection.
- * Original source path: D:\Proj\GameZRecoil\zOptions\zopt.cpp.
- * Purpose: return the active display view-rect option record.
- */
-zOpt_ViewRectSection *GetDisplaySection() {
-    return *g_zOpt_DisplaySectionOption;
-}
-
-/**
- * Reimplements 0x408690: zOpt::GetDisplaySectionBitsPerPixel.
- * Original source path: D:\Proj\GameZRecoil\zOptions\zopt.cpp.
- * Purpose: return the active display section bit depth.
- */
-int GetDisplaySectionBitsPerPixel() {
-    return (*g_zOpt_DisplaySectionOption)->bitsPerPixel;
-}
-
-/**
- * Reimplements 0x4086a0: zOpt::GetVideoStrideValue.
- * Original source path: D:\Proj\GameZRecoil\zOptions\zopt.cpp.
- * Purpose: return the configured video stride option value.
- */
-int GetVideoStrideValue() {
-    return *ZOPT_VIDEO_STRIDE;
-}
-
-/**
- * Reimplements 0x4086c0: zOpt::GetWindowSection.
- * Original source path: D:\Proj\GameZRecoil\zOptions\zopt.cpp.
- * Purpose: return the active window view-rect option record.
- */
-zOpt_ViewRectSection *GetWindowSection() {
-    return *g_zOpt_WindowSectionOption;
-}
-
-/**
- * Reimplements 0x4086d0: zOpt::GetWindowSectionHeight.
- * Original source path: D:\Proj\GameZRecoil\zOptions\zopt.cpp.
- * Purpose: return the active window section height.
- */
-int GetWindowSectionHeight() {
-    return (*g_zOpt_WindowSectionOption)->height;
 }
 
 /**
@@ -2334,15 +2289,6 @@ void __fastcall SetFullscreenOption(
 }
 
 /**
- * Reimplements 0x408330: zOpt::GetFullscreenOption.
- * Original source path: D:\Proj\GameZRecoil\zOptions\zopt.cpp.
- * Purpose: return the persisted fullscreen/windowed option value.
- */
-int GetFullscreenOption() {
-    return *ZOPT_VIDEO_FULLSCREEN;
-}
-
-/**
  * Reimplements 0x4082b0: zOpt::SetHudVisibilityOption.
  * Purpose: store the HUD visibility option for the active hardware mode.
  */
@@ -2350,6 +2296,48 @@ void __fastcall SetHudVisibilityOption(
     int hudVisibility
 ) {
     *(g_zOpt_HwMode != 0 ? ZOPT_HUD_HW : ZOPT_HUD_SW) = hudVisibility;
+}
+
+/**
+ * Reimplements 0x4082d0: zOpt::SetHudTypeForCurrentHwMode.
+ * Purpose: apply the requested HUD layout mode and store it for the active hardware mode.
+ */
+int __fastcall SetHudTypeForCurrentHwMode(
+    int hudType
+) {
+    const int previous = HudUiMgr::ApplyHudModeSwitch(hudType);
+
+    if (g_zOpt_HwMode != 0) {
+        *ZOPT_HUD_TYPE_HW = hudType;
+        return previous;
+    }
+
+    *ZOPT_HUD_TYPE_SW = hudType;
+    return previous;
+}
+
+/**
+ * Reimplements 0x408300: zOpt::SetReplicateMode.
+ * Original file: D:\Proj\GameZRecoil\zGame\zGame.cpp.
+ * Purpose: store the active video replicate-mode option.
+ *
+ * Evidence: BN writes ecx through ZOPT_REPLICATE and returns; the shared
+ * zopt_video_section_setters VC5SP3 target byte-matches after relocation
+ * masking.
+ */
+void __fastcall SetReplicateMode(
+    int replicateMode
+) {
+    *ZOPT_REPLICATE = replicateMode;
+}
+
+/**
+ * Reimplements 0x408330: zOpt::GetFullscreenOption.
+ * Original source path: D:\Proj\GameZRecoil\zOptions\zopt.cpp.
+ * Purpose: return the persisted fullscreen/windowed option value.
+ */
+int GetFullscreenOption() {
+    return *ZOPT_VIDEO_FULLSCREEN;
 }
 
 /**
@@ -2370,34 +2358,11 @@ int GetHudTypeForCurrentHwMode() {
 }
 
 /**
- * Reimplements 0x408300: zOpt::SetReplicateMode.
- * Original file: D:\Proj\GameZRecoil\zGame\zGame.cpp.
- * Purpose: store the active video replicate-mode option.
- *
- * Evidence: BN writes ecx through ZOPT_REPLICATE and returns; the shared
- * zopt_video_section_setters VC5SP3 target byte-matches after relocation
- * masking.
- */
-void __fastcall SetReplicateMode(
-    int replicateMode
-) {
-    *ZOPT_REPLICATE = replicateMode;
-}
-
-/**
  * Reimplements 0x408380: zOpt::GetReplicateMode
  * Purpose: return the active video replicate-mode option.
  */
 int GetReplicateMode() {
     return *ZOPT_REPLICATE;
-}
-/**
- * Reimplements 0x408260: zOpt::GetNetworkEnabled.
- * Original source path: D:\Proj\Battlesport\zOpt.cpp.
- * Purpose: return the network-enabled option value through its option pointer.
- */
-int GetNetworkEnabled() {
-    return *ZOPT_NETWORK_ENABLED;
 }
 
 /**
@@ -2416,6 +2381,7 @@ void __fastcall ViewRectSection_SetPosition(
     section->maxXInclusive = section->rightExclusive - 1;
     section->maxYInclusive = section->bottomExclusive - 1;
 }
+
 /**
  * Reimplements 0x408400: zOpt_ViewRectSection::SetSize
  * Purpose: store size and recompute bounds from origin.
@@ -2432,6 +2398,7 @@ void __fastcall ViewRectSection_SetSize(
     section->maxXInclusive = section->rightExclusive - 1;
     section->maxYInclusive = section->bottomExclusive - 1;
 }
+
 /**
  * Reimplements 0x408430: zOpt::ViewRectSection_ClampPointToInclusiveBounds
  * Purpose: clamp a point to inclusive bounds.
@@ -2452,6 +2419,84 @@ void __fastcall ViewRectSection_ClampPointToInclusiveBounds(
         pointXY[1] = (float)(section->maxYInclusive);
     }
 }
+
+/**
+ * Reimplements 0x408480: zOpt::CameraSection_SetActiveCamera
+ * Purpose: store camera, recompute FOV, and reapply LOD.
+ */
+void __fastcall CameraSection_SetActiveCamera(
+    zClass_NodePartial *camera
+) {
+    zOpt_CameraSection *const cameraSection = *g_zOpt_CameraSectionOption;
+    cameraSection->m_pCamera = camera;
+    if (camera == 0) {
+        return;
+    }
+
+    zOpt_ViewRectSection *const renderSection = *g_zOpt_RenderSectionOption;
+    float fovX = 0.0f;
+    float fovY = 0.0f;
+    zClass_Camera::gwCameraGetFOV(
+        camera,
+        &fovX,
+        &fovY
+    );
+
+    fovX = (float)(renderSection->width) * fovY / (float)(renderSection->height);
+    zClass_Camera::gwCameraSetFOV(
+        cameraSection->m_pCamera,
+        fovX,
+        fovY
+    );
+    zOpt::SetObjectLODForCurrentHwMode(zOpt::GetObjectLODForCurrentHwMode());
+}
+
+} // namespace zOpt
+
+/**
+ * Reimplements 0x4084e0: zOpt_CameraSection_GetActiveCamera
+ * Purpose: return active camera or null when unavailable.
+ */
+zClass_NodePartial *zOpt_CameraSection_GetActiveCamera() {
+    if (g_zOpt_CameraSectionOption == 0 || *g_zOpt_CameraSectionOption == 0) {
+        return 0;
+    }
+
+    return (*g_zOpt_CameraSectionOption)->m_pCamera;
+}
+
+namespace zOpt {
+
+/**
+ * Reimplements 0x408500: zOpt::RenderSection_SetSize.
+ * Original file: D:\Proj\GameZRecoil\zGame\zGame.cpp.
+ * Purpose: set the render-section dimensions and push the new resolution to
+ * the attached window target.
+ *
+ * Evidence: BN forwards g_zOpt_RenderSectionOption->value to
+ * zOpt_ViewRectSection::SetSize, then calls gwWindowSetResolution when the
+ * section target is non-null; the shared zopt_video_section_setters VC5SP3
+ * target byte-matches after relocation masking.
+ */
+void __fastcall RenderSection_SetSize(
+    int width,
+    int height
+) {
+    zOpt_ViewRectSection *section = *g_zOpt_RenderSectionOption;
+    ViewRectSection_SetSize(
+        section,
+        width,
+        height
+    );
+    if (section->target != 0) {
+        zClass_Window::gwWindowSetResolution(
+            (zClass_NodePartial *)(section->target),
+            section->width,
+            section->height
+        );
+    }
+}
+
 /**
  * Reimplements 0x408530: zOpt::RenderSection_SetPosition.
  * Original file: D:\Proj\GameZRecoil\zGame\zGame.cpp.
@@ -2489,36 +2534,6 @@ void __fastcall RenderSection_SetPosition(
 }
 
 /**
- * Reimplements 0x408500: zOpt::RenderSection_SetSize.
- * Original file: D:\Proj\GameZRecoil\zGame\zGame.cpp.
- * Purpose: set the render-section dimensions and push the new resolution to
- * the attached window target.
- *
- * Evidence: BN forwards g_zOpt_RenderSectionOption->value to
- * zOpt_ViewRectSection::SetSize, then calls gwWindowSetResolution when the
- * section target is non-null; the shared zopt_video_section_setters VC5SP3
- * target byte-matches after relocation masking.
- */
-void __fastcall RenderSection_SetSize(
-    int width,
-    int height
-) {
-    zOpt_ViewRectSection *section = *g_zOpt_RenderSectionOption;
-    ViewRectSection_SetSize(
-        section,
-        width,
-        height
-    );
-    if (section->target != 0) {
-        zClass_Window::gwWindowSetResolution(
-            (zClass_NodePartial *)(section->target),
-            section->width,
-            section->height
-        );
-    }
-}
-
-/**
  * Reimplements 0x408570: zOpt::RenderSection_SetTargetWindow
  * Purpose: attach target window and apply render rectangle.
  */
@@ -2540,6 +2555,7 @@ void __fastcall RenderSection_SetTargetWindow(
         );
     }
 }
+
 /**
  * Reimplements 0x4085a0: zOpt::GetRenderSection
  * Purpose: return the active render section pointer.
@@ -2547,6 +2563,30 @@ void __fastcall RenderSection_SetTargetWindow(
 zOpt_ViewRectSection *GetRenderSection() {
     return *g_zOpt_RenderSectionOption;
 }
+
+/**
+ * Reimplements 0x4085b0: zOpt::DisplaySection_SetTargetDisplay
+ * Purpose: attach target display and apply display rectangle.
+ */
+void __fastcall DisplaySection_SetTargetDisplay(
+    zClass_NodePartial *displayNode
+) {
+    zOpt_ViewRectSection *section = *g_zOpt_DisplaySectionOption;
+    section->target = displayNode;
+    if (displayNode != 0) {
+        zClass_Display::gwDisplaySetSize(
+            displayNode,
+            section->width,
+            section->height
+        );
+        zClass_Display::gwDisplaySetPosition(
+            (zClass_NodePartial *)(section->target),
+            section->x,
+            section->y
+        );
+    }
+}
+
 /**
  * Reimplements 0x4085e0: zOpt::DisplaySection_SetPosition.
  * Original file: D:\Proj\GameZRecoil\zGame\zGame.cpp.
@@ -2614,27 +2654,34 @@ void __fastcall DisplaySection_SetSize(
 }
 
 /**
- * Reimplements 0x4085b0: zOpt::DisplaySection_SetTargetDisplay
- * Purpose: attach target display and apply display rectangle.
+ * Reimplements 0x408650: zOpt::GetDisplaySection.
+ * Original source path: D:\Proj\GameZRecoil\zOptions\zopt.cpp.
+ * Purpose: return the active display view-rect option record.
  */
-void __fastcall DisplaySection_SetTargetDisplay(
-    zClass_NodePartial *displayNode
-) {
-    zOpt_ViewRectSection *section = *g_zOpt_DisplaySectionOption;
-    section->target = displayNode;
-    if (displayNode != 0) {
-        zClass_Display::gwDisplaySetSize(
-            displayNode,
-            section->width,
-            section->height
-        );
-        zClass_Display::gwDisplaySetPosition(
-            (zClass_NodePartial *)(section->target),
-            section->x,
-            section->y
-        );
-    }
+zOpt_ViewRectSection *GetDisplaySection() {
+    return *g_zOpt_DisplaySectionOption;
 }
+
+} // namespace zOpt
+
+/**
+ * Reimplements 0x408660: zOpt_DisplaySection_GetWidth.
+ * Purpose: return the active display section width.
+ */
+int zOpt_DisplaySection_GetWidth() {
+    return (*g_zOpt_DisplaySectionOption)->width;
+}
+
+/**
+ * Reimplements 0x408670: zOpt_DisplaySection_GetHeight.
+ * Purpose: return the active display section height.
+ */
+int zOpt_DisplaySection_GetHeight() {
+    return (*g_zOpt_DisplaySectionOption)->height;
+}
+
+namespace zOpt {
+
 /**
  * Reimplements 0x408680: zOpt::DisplaySection_SetBitsPerPixel.
  * Original file: D:\Proj\GameZRecoil\zGame\zGame.cpp.
@@ -2651,23 +2698,39 @@ void __fastcall DisplaySection_SetBitsPerPixel(
 }
 
 /**
- * Reimplements 0x408700: zOpt::WindowSection_SetPosition.
- * Original file: D:\Proj\GameZRecoil\zGame\zGame.cpp.
- * Purpose: set the window-section origin.
- *
- * Evidence: BN forwards g_zOpt_WindowSectionOption->value to
- * zOpt_ViewRectSection::SetPosition; the shared zopt_video_section_setters
- * VC5SP3 target byte-matches after relocation masking.
+ * Reimplements 0x408690: zOpt::GetDisplaySectionBitsPerPixel.
+ * Original source path: D:\Proj\GameZRecoil\zOptions\zopt.cpp.
+ * Purpose: return the active display section bit depth.
  */
-void __fastcall WindowSection_SetPosition(
-    int x,
-    int y
-) {
-    ViewRectSection_SetPosition(
-        *g_zOpt_WindowSectionOption,
-        x,
-        y
-    );
+int GetDisplaySectionBitsPerPixel() {
+    return (*g_zOpt_DisplaySectionOption)->bitsPerPixel;
+}
+
+/**
+ * Reimplements 0x4086a0: zOpt::GetVideoStrideValue.
+ * Original source path: D:\Proj\GameZRecoil\zOptions\zopt.cpp.
+ * Purpose: return the configured video stride option value.
+ */
+int GetVideoStrideValue() {
+    return *ZOPT_VIDEO_STRIDE;
+}
+
+/**
+ * Reimplements 0x4086c0: zOpt::GetWindowSection.
+ * Original source path: D:\Proj\GameZRecoil\zOptions\zopt.cpp.
+ * Purpose: return the active window view-rect option record.
+ */
+zOpt_ViewRectSection *GetWindowSection() {
+    return *g_zOpt_WindowSectionOption;
+}
+
+/**
+ * Reimplements 0x4086d0: zOpt::GetWindowSectionHeight.
+ * Original source path: D:\Proj\GameZRecoil\zOptions\zopt.cpp.
+ * Purpose: return the active window section height.
+ */
+int GetWindowSectionHeight() {
+    return (*g_zOpt_WindowSectionOption)->height;
 }
 
 /**
@@ -2691,55 +2754,36 @@ void __fastcall WindowSection_SetSize(
 }
 
 /**
- * Reimplements 0x408480: zOpt::CameraSection_SetActiveCamera
- * Purpose: store camera, recompute FOV, and reapply LOD.
+ * Reimplements 0x408700: zOpt::WindowSection_SetPosition.
+ * Original file: D:\Proj\GameZRecoil\zGame\zGame.cpp.
+ * Purpose: set the window-section origin.
+ *
+ * Evidence: BN forwards g_zOpt_WindowSectionOption->value to
+ * zOpt_ViewRectSection::SetPosition; the shared zopt_video_section_setters
+ * VC5SP3 target byte-matches after relocation masking.
  */
-void __fastcall CameraSection_SetActiveCamera(
-    zClass_NodePartial *camera
+void __fastcall WindowSection_SetPosition(
+    int x,
+    int y
 ) {
-    zOpt_CameraSection *const cameraSection = *g_zOpt_CameraSectionOption;
-    cameraSection->m_pCamera = camera;
-    if (camera == 0) {
-        return;
-    }
-
-    zOpt_ViewRectSection *const renderSection = *g_zOpt_RenderSectionOption;
-    float fovX = 0.0f;
-    float fovY = 0.0f;
-    zClass_Camera::gwCameraGetFOV(
-        camera,
-        &fovX,
-        &fovY
+    ViewRectSection_SetPosition(
+        *g_zOpt_WindowSectionOption,
+        x,
+        y
     );
-
-    fovX = (float)(renderSection->width) * fovY / (float)(renderSection->height);
-    zClass_Camera::gwCameraSetFOV(
-        cameraSection->m_pCamera,
-        fovX,
-        fovY
-    );
-    zOpt::SetObjectLODForCurrentHwMode(zOpt::GetObjectLODForCurrentHwMode());
 }
+
+/**
+ * Reimplements 0x408a10: zOpt::SetWolPasswordFlag.
+ * Purpose: store the WOL password flag option value through its option pointer.
+ */
+void __fastcall SetWolPasswordFlag(
+    int value
+) {
+    *g_zOpt_WolPasswordFlagOption = value;
+}
+
 } // namespace zOpt
-/**
- * Reimplements 0x4084e0: zOpt_CameraSection_GetActiveCamera
- * Purpose: return active camera or null when unavailable.
- */
-zClass_NodePartial *zOpt_CameraSection_GetActiveCamera() {
-    if (g_zOpt_CameraSectionOption == 0 || *g_zOpt_CameraSectionOption == 0) {
-        return 0;
-    }
-
-    return (*g_zOpt_CameraSectionOption)->m_pCamera;
-}
-/**
- * Reimplements 0x408190: zOpt::GetPlayerName.
- * Original source path: D:\Proj\GameZRecoil\zOptions\zopt.cpp.
- * Purpose: return the configured player-name option buffer.
- */
-char *zOpt_GetPlayerName() {
-    return (char *)(ZOPT_PLAYER_NAME->payloadOrBuffer);
-}
 
 /**
  * Reimplements 0x408a20: zOpt_GetWolPasswordFlagValue.
@@ -2747,20 +2791,4 @@ char *zOpt_GetPlayerName() {
  */
 int zOpt_GetWolPasswordFlagValue() {
     return *g_zOpt_WolPasswordFlagOption;
-}
-
-/**
- * Reimplements 0x408660: zOpt_DisplaySection_GetWidth.
- * Purpose: return the active display section width.
- */
-int zOpt_DisplaySection_GetWidth() {
-    return (*g_zOpt_DisplaySectionOption)->width;
-}
-
-/**
- * Reimplements 0x408670: zOpt_DisplaySection_GetHeight.
- * Purpose: return the active display section height.
- */
-int zOpt_DisplaySection_GetHeight() {
-    return (*g_zOpt_DisplaySectionOption)->height;
 }

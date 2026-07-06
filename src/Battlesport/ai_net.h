@@ -417,6 +417,8 @@ const int kPlayerLifecycleInactive = 4;
 const float kPlayerAiPathFollowMinThrottle = 0.25f;
 const float kPlayerAiPathFollowAdvanceDistance = 10.0f;
 const float kPlayerAiForwardPathAdvanceDistance = 5.0f;
+const float kPlayerAiForwardProbeMinLength = 1.0f;
+const float kPlayerAiForwardProbeLengthHalfScale = 0.5f;
 const float kPlayerAiSyntheticPathRebuildDistanceSq = 400.0f;
 const float kPlayerAiSyntheticPathWidth = 10.0f;
 const float kPlayerAiSyntheticPathRebuildDelaySec = 1.0f;
@@ -424,6 +426,8 @@ const float kPlayerAiAttackLosTargetYOffset = -1.5f;
 const float kPlayerAiDynamicOffsetBackUpDistance = 10.0f;
 const unsigned int kOptCatalogFlagLockOnTargetRef = 0x4000;
 const unsigned int kOptCatalogFlagCreateTrail = 0x02;
+
+#define AINET_MAX(a, b) (((a) < (b)) ? (b) : (a))
 
 #define AINET_VEC3_SUB_WORLD_DST_V0_WORLD_V1(dst, srcVec, world) \
     do {                                                 \
@@ -462,6 +466,34 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
 #define AINET_TURN_DIRECTION_SLOT(cross) (*(int *)&(cross))
 
 #if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+/**
+ * Raw assembly for 0x401420: emits the likely original VC5 x87 vector-add
+ * helper body after C++ has bound destination/source pointer temps. ChatGPT Pro
+ * source-shape review classified the surrounding normalize, scale, contact,
+ * and return logic as C++ compiler output; only this fixed-register add body is
+ * treated as the original inline-asm island.
+ * Purpose: Add the player's world position into the forward probe endpoint.
+ */
+#define AINET_FORWARD_PROBE_ADD_WORLD_ASM(dstArg, worldArg, endArg) \
+    do {                                                           \
+        zVec3 *zaddDst = (dstArg);                                 \
+        zVec3 *zaddWorld = (worldArg);                             \
+        zVec3 *zaddEnd = (endArg);                                 \
+        __asm mov ebx, zaddEnd                                     \
+        __asm mov ecx, zaddWorld                                   \
+        __asm mov edx, zaddDst                                     \
+        __asm fld dword ptr [ebx+0]                                \
+        __asm fadd dword ptr [ecx+0]                               \
+        __asm fld dword ptr [ebx+4]                                \
+        __asm fadd dword ptr [ecx+4]                               \
+        __asm fld dword ptr [ebx+8]                                \
+        __asm fadd dword ptr [ecx+8]                               \
+        __asm fxch ST(2)                                           \
+        __asm fstp dword ptr [edx+0]                               \
+        __asm fstp dword ptr [edx+4]                               \
+        __asm fstp dword ptr [edx+8]                               \
+    } while (0)
+
 /**
  * Raw assembly for 0x401180 and 0x403620: emits the shared VC5 x87
  * vector-subtract/store sequence after the wrapper has bound source, world,
@@ -681,6 +713,12 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
         __asm fstp dword ptr [out]             \
     } while (0)
 #else
+#define AINET_FORWARD_PROBE_ADD_WORLD_ASM(dstArg, worldArg, endArg) \
+    do {                                                           \
+        (dstArg)->x = (endArg)->x + (worldArg)->x;                  \
+        (dstArg)->y = (endArg)->y + (worldArg)->y;                  \
+        (dstArg)->z = (endArg)->z + (worldArg)->z;                  \
+    } while (0)
 #define AINET_PATH_COMPUTE_AUTO_TURN_DELTA(dst, srcVec, world) AINET_VEC3_SUB_WORLD_DST_V0_WORLD_V1(dst, srcVec, world)
 #define AINET_PATH_COMPUTE_PATH_TARGET_DELTA(dst, srcVec, world) AINET_VEC3_SUB_WORLD_DST_V1_WORLD_V0(dst, srcVec, world)
 #define AINET_PATH_COMPUTE_LOCAL_PLAYER_DELTA(dst, srcVec, world) AINET_VEC3_SUB_WORLD_DST_V0_WORLD_V1(dst, srcVec, world)
@@ -941,33 +979,37 @@ int __fastcall AINet::AiMode2ForwardProbeRequiresAutoTurn(
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
     PlayerMasterModalData *masterModalData =
         saveState->primaryModalState->masterModalData;
+    int segmentTags[2];
+    zVec3 forwardDir;
+    zClass_DiSegmentEndpoints segmentPairs[1];
 
     if (playerState->playerCollisionResolved != 0 || playerState->preferredCollisionResolved != 0) {
         ++playerState->aiMode2SteeringRetryCount;
         return 1;
     }
 
-    zClass_DiSegmentEndpoints segmentPairs[1];
     segmentPairs[0].start = playerState->worldPos;
     segmentPairs[0].start.y += masterModalData->probePoints[1].y;
 
-    zVec3 forwardDir = playerState->projectileSpawnVel;
-    float forwardProbeLength = zMath::Vec3Normalize(&forwardDir);
-    if (forwardProbeLength < 1.0f) {
-        forwardProbeLength = 1.0f;
-    } else {
-        forwardProbeLength = zMath::Vec3Normalize(&forwardDir);
-    }
+    forwardDir = playerState->projectileSpawnVel;
 
-    const float forwardProbeOffset = forwardProbeLength * 0.5f - masterModalData->probePoints[1].z;
+    const float forwardProbeOffset =
+        AINET_MAX(
+            zMath::Vec3Normalize(&forwardDir),
+            kPlayerAiForwardProbeMinLength
+        ) * kPlayerAiForwardProbeLengthHalfScale -
+        masterModalData->probePoints[1].z;
     segmentPairs[0].end.x = forwardProbeOffset * forwardDir.x;
     segmentPairs[0].end.y = forwardProbeOffset * forwardDir.y;
     segmentPairs[0].end.z = forwardProbeOffset * forwardDir.z;
-    segmentPairs[0].end.x += playerState->worldPos.x;
-    segmentPairs[0].end.y += playerState->worldPos.y;
-    segmentPairs[0].end.z += playerState->worldPos.z;
+    AINET_FORWARD_PROBE_ADD_WORLD_ASM(
+        &segmentPairs[0].end,
+        &playerState->worldPos,
+        &segmentPairs[0].end
+    );
 
-    int segmentTags[2] = {-1, -1};
+    segmentTags[0] = -1;
+    segmentTags[1] = -1;
     Player::CollectPendingContactsForSegments(
         saveState,
         segmentPairs,
@@ -975,13 +1017,15 @@ int __fastcall AINet::AiMode2ForwardProbeRequiresAutoTurn(
         segmentTags
     );
 
-    int hasBlockingContacts = 0;
+    int result;
     if (playerState->preferredCollisionQueue.count != 0 ||
         playerState->playerCollisionQueue.count != 0) {
-        hasBlockingContacts = 1;
+        result = 1;
+    } else {
+        result = 0;
     }
     Player::ClearPendingContactQueues(saveState);
-    return hasBlockingContacts;
+    return result;
 }
 
 /**
