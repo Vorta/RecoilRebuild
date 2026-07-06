@@ -1,5 +1,6 @@
 # path address token reason
 src/Battlesport/ai_net.h 0x401180 __asm ainet-vector user-approved AINet path-vector helper exception; 0x401180 byte-matches only with recovered VC5 inline asm vector macros; minimal source-faithful helper snippets after C++ variants failed; no raw EBP offsets, naked code, _emit, .asm files, provider shims, linker/order dependence, or unrelated AINet functions.
+src/Battlesport/ai_net.h 0x401420 __asm source-faithful-inline-asm ChatGPT-Pro-confirmed AINet forward-probe final vector-add helper; normal C++ emits surrounding normalize/scale/contact/tail code and VC5 byte evidence requires only this fixed-register x87 add macro.
 src/Battlesport/ai_net.cpp 0x403620 __asm source-faithful-inline-asm AINet path probe final pathWidth store; minimal VC5 inline asm after C++ assignment variants failed to byte-match the retail register/store order.
 src/GameZRecoil/zMath/zmth.h 0x402f60 __asm source-faithful-inline-asm zMath Vec3Normalize x87 helper; minimal VC5 inline asm after C++ variants failed to preserve retail FPU stack and byte shape.
 src/GameZRecoil/zGame/zgame_opt.c 0x4b3160 __asm cpu-probe CPUID vendor string read; documented CPU opcode probing exception.

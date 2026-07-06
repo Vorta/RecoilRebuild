@@ -3865,9 +3865,9 @@ int RecoilApp_MissionFmvState::OnUpdateShouldQuit() {
 
 /**
  * Original helper: default state hook with no standalone retail function address.
- * Source model note: Reimplements 0x42df90: RecoilApp_IState::~RecoilApp_IState is
- * header-visible in recoil_app.h so VC5 can inline base vptr restoration into
- * derived app-state destructors outside this translation unit.
+ * Source model note: default hooks stay out-of-line; the inline interface
+ * destructor in recoil_app.h is current implementation state, not ownership
+ * evidence for the unresolved HUD 0x407170/0x4ccd50 table packet.
  * Purpose: accepts window-activation notifications for states that do not override them.
  */
 void RecoilApp_IState::OnWndActivate(

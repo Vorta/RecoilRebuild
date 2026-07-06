@@ -889,6 +889,7 @@ int g_zInput_CurrentBindGroupIndex = 0;
  * Purpose: Stores g zInput CommandLocIdTable data used by engine.zinput.bindgroup_default_globals.
  */
 int g_zInput_CommandLocIdTable[0x30] = {0};
+} // extern "C"
 
 /* Source-file block layout: the current native build still compiles this compatibility container.
  * The included fragment files below hold the ledger physical source rows.
@@ -896,6 +897,7 @@ int g_zInput_CommandLocIdTable[0x30] = {0};
 /* Source-layout blocker: address-backed bodies below do not belong to the assigned contiguous ledger rows.
  * They are preserved here because their proven physical owner is outside this worker scope or still unresolved.
  */
+namespace zInp {
 /**
  * Reimplements 0x408390: zInp::SetJoystickOption.
  * Original source path: D:\Proj\GameZRecoil\zInput\zin_opt.cpp.
@@ -941,7 +943,11 @@ int GetJoystickOption() {
 }
 } // namespace zInp
 
-extern "C" {
+namespace zInput {
+#if defined(_MSC_VER) && _MSC_VER < 1200
+typedef std::vector<zInput_BindGroupInfo *> zInput_BindGroupInfoStdVector;
+#endif
+
 /**
  * Reimplements 0x429f10: zInput::BindGroupList_StaticInitAndRegisterAtExit.
  * Original source path: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
@@ -953,9 +959,7 @@ int BindGroupList_StaticInitAndRegisterAtExit() {
     BindGroupListStaticInit();
     return BindGroupListRegisterAtExit();
 }
-} // namespace zInput
 
-namespace zInp {
 /**
  * Reimplements 0x429f20: zInput::BindGroupListStaticInit.
  * Original source path: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
@@ -1055,6 +1059,8 @@ void BindGroupList_Clear() {
     g_zInput_BindGroupInfoList.end = result;
 #endif
 }
+
+} // namespace zInput
 
 /**
  * Reimplements 0x42a000: zInput_BindGroupInfo::Destroy.
@@ -1355,6 +1361,8 @@ int BindMap_InitDefaultBindings() {
     return 1;
 }
 
+} // namespace zInput
+
 /**
  * Reimplements 0x42a9d0: zInput_BindGroupInfoVec::Count.
  * Original source path: D:\Proj\GameZRecoil\zInput\zin_cmd.cpp.
@@ -1370,6 +1378,25 @@ int zInput_BindGroupInfoVec::Count() {
 
     return (int)(end - begin);
 }
+
+namespace zInput {
+
+static float ClampForceFeedbackGain(float gain);
+static float ClampForceFeedbackGainRange(
+    float gain,
+    float low,
+    float high
+);
+static int ForceFeedbackDirectionFromImpact(
+    const zVec3 *worldPosXZ,
+    bool invert
+);
+static void SetAndStartDirectionalForceFeedbackEffect(
+    zInput_DiEffect *effect,
+    int direction,
+    float gain
+);
+static float FastPitchLowpassFactor(float deltaTime);
 
 /**
  * Reimplements 0x42e170: zInput::DI_SetJoystickEnabled.
@@ -1407,6 +1434,7 @@ int __fastcall DI_SetJoystickEnabled(
     }
     return 0;
 }
+} // namespace zInput
 
 /**
  * Reimplements 0x42f9f0: zInput_DI_InitForceFeedbackEffectSet.
@@ -1529,16 +1557,16 @@ void zInput_FFEffectSet::PlayCollisionImpactEffect(
     }
 
     effect->Stop();
-    const int direction = ForceFeedbackDirectionFromImpact(
+    const int direction = zInput::ForceFeedbackDirectionFromImpact(
         impactWorldPosXZ,
         false
     );
-    gain = ClampForceFeedbackGainRange(
+    gain = zInput::ClampForceFeedbackGainRange(
         gain,
         0.2f,
         1.0f
     );
-    SetAndStartDirectionalForceFeedbackEffect(
+    zInput::SetAndStartDirectionalForceFeedbackEffect(
         effect,
         direction,
         gain
@@ -1561,16 +1589,16 @@ void zInput_FFEffectSet::PlayDamageHitEffect(
     }
 
     effect->Stop();
-    const int direction = ForceFeedbackDirectionFromImpact(
+    const int direction = zInput::ForceFeedbackDirectionFromImpact(
         damageSourceWorldPosXZ,
         true
     );
-    gain = ClampForceFeedbackGainRange(
+    gain = zInput::ClampForceFeedbackGainRange(
         gain,
         0.25f,
         1.0f
     );
-    SetAndStartDirectionalForceFeedbackEffect(
+    zInput::SetAndStartDirectionalForceFeedbackEffect(
         effect,
         direction,
         gain
@@ -1630,12 +1658,12 @@ void __fastcall zInput_DI_UpdateSteerAndPitchForceEffects(
             magnitude = -magnitude;
         }
 
-        magnitude = ClampForceFeedbackGainRange(
+        magnitude = zInput::ClampForceFeedbackGainRange(
             magnitude,
             0.0f,
             0.75f
         );
-        SetAndStartDirectionalForceFeedbackEffect(
+        zInput::SetAndStartDirectionalForceFeedbackEffect(
             steerEffect,
             direction,
             magnitude
@@ -1647,7 +1675,7 @@ void __fastcall zInput_DI_UpdateSteerAndPitchForceEffects(
         return;
     }
 
-    const float lowpassFactor = FastPitchLowpassFactor(g_Player_DeltaTime);
+    const float lowpassFactor = zInput::FastPitchLowpassFactor(g_Player_DeltaTime);
     g_zInput_DiPitchAngleLowpassRad = (g_zInput_DiPitchAngleLowpassRad * lowpassFactor) +
                                       ((1.0f - lowpassFactor) * playerState->pitchAngleRad);
 
@@ -1658,21 +1686,28 @@ void __fastcall zInput_DI_UpdateSteerAndPitchForceEffects(
         residual = -residual;
     }
 
-    residual = ClampForceFeedbackGainRange(
+    residual = zInput::ClampForceFeedbackGainRange(
         residual,
         0.0f,
         0.75f
     );
-    SetAndStartDirectionalForceFeedbackEffect(
+    zInput::SetAndStartDirectionalForceFeedbackEffect(
         pitchEffect,
         direction,
         residual
     );
 }
-}
 
 namespace zInput {
-namespace {
+extern char k_EmptyString[];
+extern const int kZInputCommandLabelBytes;
+zInput_BindMapOverlayStackNode *__fastcall BindMapOverlay_DetachHead(
+    zInput_BindMapOverlayStackNode **head
+);
+void __fastcall BindMapOverlay_DeleteNodeList(
+    zInput_BindMapOverlayStackNode **head
+);
+
 const int kDiOk = 0;
 const int kDiFalse = 1;
 const int kDiInputLost = (int)(0x8007001e);
@@ -1816,7 +1851,7 @@ inline int KeyboardEventDispatchIndex(
 
     return dispatchIndex;
 }
-} // namespace
+} // namespace zInput
 
 /**
  * Reimplements 0x42ffa0: zInput_DI_CreateConstantForceEffectScaled.
@@ -1833,7 +1868,7 @@ zInput_DiEffect *__stdcall zInput_DI_CreateConstantForceEffectScaled(
     effect.dwSize = sizeof(effect);
     effect.dwFlags = 0x22;
     effect.dwDuration = 100000;
-    effect.dwGain = (DWORD)(ClampForceFeedbackGain(gain) * 10000.0f);
+    effect.dwGain = (DWORD)(zInput::ClampForceFeedbackGain(gain) * 10000.0f);
     effect.dwTriggerButton = (DWORD)(-1);
     effect.cAxes = 2;
     effect.rgdwAxes = axes;
@@ -1884,7 +1919,7 @@ zInput_DiEffect *__stdcall zInput_DI_CreateSineEffectScaled(
     DWORD axes[2] = {0, 4};
     LONG direction[2] = {0, 0};
     DIPERIODIC periodic = {0};
-    periodic.dwMagnitude = (DWORD)(ClampForceFeedbackGain(gain) * 10000.0f);
+    periodic.dwMagnitude = (DWORD)(zInput::ClampForceFeedbackGain(gain) * 10000.0f);
     periodic.dwPeriod = 20000;
 
     DIEFFECT effect = {0};
@@ -1905,8 +1940,12 @@ zInput_DiEffect *__stdcall zInput_DI_CreateSineEffectScaled(
 }
 
 
+namespace zInput {
+
 #include "zin_kbd.cpp"
 #include "zin_mouse.cpp"
+
+} // namespace zInput
 /**
  * Reimplements 0x4706c0: zInput_BindMapContext::InitFromTemplate.
  * Purpose: deep-copy an optional bind-map template and rebuild reverse lookup tables.
@@ -1945,12 +1984,12 @@ zInput_BindMapContext * zInput_BindMapContext::InitFromTemplate(
         for (int i = 0; i < m_commandCount; ++i) {
             m_commandLabels[i] = (char *)(calloc(
                 1,
-                kZInputCommandLabelBytes
+                zInput::kZInputCommandLabelBytes
             ));
             strncpy(
                 m_commandLabels[i],
                 tmpl->m_commandLabels[i],
-                kZInputCommandLabelBytes
+                zInput::kZInputCommandLabelBytes
             );
         }
 
@@ -2056,7 +2095,7 @@ void zInput_BindMapContext::InitCommandMap(
     for (int i = 0; i < commandCount; ++i) {
         m_commandLabels[i] = (char *)(calloc(
             1,
-            kZInputCommandLabelBytes
+            zInput::kZInputCommandLabelBytes
         ));
     }
 
@@ -2499,6 +2538,8 @@ char * zInput_BindMapContext::CopyCommandLabel(
         maxBytes
     );
 }
+
+namespace zInput {
 
 /**
  * Reimplements 0x470f80: zInput::BindMap_FormatKeyComboName.
@@ -3201,3 +3242,5 @@ void BindMapContext_Pop() {
 
 #include "zin_init.cpp"
 #include "zin_joystick.cpp"
+
+} // namespace zInput

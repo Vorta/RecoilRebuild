@@ -282,6 +282,7 @@ extern int g_zNetwork_ActiveProviderIsTcpIp;
 extern zNetworkDPlayCaps g_zNetwork_DPlayCaps;
 extern GUID *g_zNetwork_AppGuid;
 extern GUID g_zNetwork_RecoilAppGuid;
+extern GUID g_zNetwork_WestwoodOnlineAppGuid;
 extern unsigned int g_zNetwork_LastSendExHandle;
 extern int g_zNetwork_LastSendExCompleted;
 extern int g_zNetwork_SessionRuntimeInitialized;

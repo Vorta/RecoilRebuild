@@ -189,20 +189,30 @@ literal-backed Briefing.cpp block. Treat current production source filenames
 and stale comments as diagnostic context only.
 Spawn read-only BN fact mappers for the assigned window, source workers for one
 explicit `.h`/`.cpp` source-shape hypothesis, and verifier agents for exact
-VC5 function-order checks. If generated order mismatches retail, reject the
+VC5 function-order checks. Run a source-discovery ChatGPT Pro reasoning pass
+through `chatgpt-pro-line` before returning a new, changed, disputed, or
+acceptance-relevant source-owner/source-block/function-order determination,
+source-block catalog correction, header/provider/COMDAT exception, emitted
+function-order chain, or order-break conclusion. Include ChatGPT Pro
+receipt/transcript evidence or a specific exemption for mechanical lookup of
+already-accepted durable facts, or for raw BN facts that do not recommend
+ownership or placement. If generated order mismatches retail, reject the
 hypothesis or correct the source-block catalog before advancing. Do not use
-`.inl` files, forced placement, pragma/linker ordering, or declared object
-order as independent provenance. Return the window, expected retail order,
-generated order result, changed files, checks run, and next frontier.
+`.inl` files, forced placement,
+pragma/linker ordering, or declared object order as independent provenance.
+Return the window, expected retail order, generated order result, changed
+files, checks run, and next frontier.
 ```
 
 Minimum handoff fields:
 
 - Source worker: complete source-owner work unit, section, anchors or group,
   allowed and forbidden paths, evidence inputs, expected source model, exact
-  validation commands, and return packet fields.
+  validation commands, hard-byte-match and raw-assembly escalation status when
+  byte work is in scope, and return packet fields.
 - Verifier: validation scope, section, anchors or group, exact commands,
-  evidence inputs, forbidden paths, and return packet fields.
+  evidence inputs, forbidden paths, hard-byte-match status when relevant, and
+  return packet fields.
 - Minimum tool-maintainer handoff fields: workspace issue id or requested tool
   upgrade, area/current
   behavior, expected behavior, allowed and forbidden paths, exact validation
@@ -258,6 +268,84 @@ For detailed rules, use:
 - `data_owner_audit.md` for full data-owner acceptance.
 - `final_executable_repro.md` for final executable and final linked-data gates.
 - `original_classes.md` for class/table/source-shape boundaries.
+
+## Source Discovery ChatGPT Pro
+
+source-discovery ChatGPT Pro policy: before returning a new or changed
+source-owner/source-block/function-order determination, or any disputed or
+acceptance-relevant source-owner/source-block/function-order determination, run
+a ChatGPT Pro reasoning pass through `chatgpt-pro-line`. "Trying to
+determine" means making a new, changed, disputed, or acceptance-relevant
+source-owner, source-file block,
+source-block catalog correction, header/provider/COMDAT exception, emitted
+function-order chain, or order-break conclusion; it does not include mechanical
+lookup of already-accepted durable facts from AGENTS/docs,
+`source_file_layout_audit.md`, the source-block catalog, `owner show`, or other
+accepted ledgers.
+
+Run the pass before source-owner scrutiny returns `ALLOW` or `BLOCK` when the
+decision depends on owner boundary, source-block placement, or function order.
+Workspace librarians can report existing durable facts without Pro, but need
+the pass before turning docs/catalog evidence into a new placement/order
+recommendation. Raw BN fact packets are exempt when they do not recommend
+ownership or placement and only list source-path literals, neighboring
+functions, xrefs, assembly/call/data facts, and caveats; BN fact mappers should
+gather Pro-ready evidence and route interpretation back to the parent/mapper.
+Provider/data/scaffold classification is exempt unless it also decides source
+owner, source block, or function order.
+
+The prompt must be self-contained: address/range, binary target, current
+owner/block/order hypothesis, source-path literal xrefs, neighboring BN
+function order, assembly/xrefs/calls/data facts, current catalog/docs rows,
+proposed included/excluded functions/data, alternative hypotheses,
+contradictions, stale-evidence risk, and requested answer shape. Ask Pro to
+challenge the conclusion, identify missing evidence, and return ranked
+hypotheses or an ALLOW/BLOCK-style critique. Retain ChatGPT Pro
+receipt/transcript evidence in the packet or state the exemption reason.
+ChatGPT Pro output is advisory evidence only; it does not prove source
+ownership, source-block catalog changes, owner gates, `Model: source-faithful`,
+or tier `S`. Existing hard byte-match rules remain separate.
+source-discovery ChatGPT Pro policy summary: a new or changed source-owner/source-block/function-order determination, and any disputed or acceptance-relevant source-owner/source-block/function-order determination, requires a ChatGPT Pro reasoning pass through chatgpt-pro-line; mechanical lookup of already-accepted durable facts is exempt, and raw BN fact packets are exempt when they do not recommend ownership or placement; retain ChatGPT Pro receipt/transcript evidence or a specific exemption reason; ChatGPT Pro output is advisory evidence only and does not prove source ownership, source-block catalog changes, owner gates, Model: source-faithful, or tier S.
+
+## Hard Byte-Match Escalation
+
+Hard byte-match work requires a `chatgpt-pro-line` reasoning pass before
+continuing repeated byte probes or using raw assembly. Treat the work as hard
+when the BN body is larger than 128 bytes or has more than 6 basic blocks; the
+body includes loops, x87, MMX, unusual CPU opcodes, EH, ctor/dtor/static-init
+glue, manual stack handling, `rep` operations, source-file order coupling, or
+multi-function owner coupling; expected-correct source fails VC5 with unmasked
+mismatches, size drift, order drift, or profile/sentinel conflict; or two
+plausible source-faithful C/C++ variants fail or only improve mismatch counts
+without source-shape evidence. Small/simple leaves that byte-match directly,
+and clear manifest, environment, or routing failures, do not need ChatGPT Pro.
+
+The prompt must be self-contained: owner/scope, address, source paths, BN facts
+and disassembly caveats, source snippet, VC5 command/profile, mismatch counts,
+sizes, relocation and order output, failed variants, and constraints. Ask for
+source-faithful VC5 C/C++ alternatives first; raw inline assembly or an
+assembly macro is acceptable only if ChatGPT Pro says that is required.
+
+ChatGPT-Pro-confirmed raw inline assembly or an assembly macro counts as
+approval for a minimal address-scoped raw-assembly exception. It does not prove
+owner/source gates, `Model: source-faithful`, or tier `S`. The code still needs
+BN/VC5 evidence for exact register, FPU, and opcode role, a local docblock, and
+an address-scoped `.agent/RAW_ASSEMBLY_ALLOWLIST.txt` row using
+`source-faithful-inline-asm` or a narrower existing tag. Source workers may add
+that row only when the parent explicitly includes the allowlist in their
+allowed write paths. Naked functions, `_emit`, `.asm` files, whole-function
+assembly, raw stack shells, provider shims, and order tricks remain forbidden
+except for pre-existing documented CPU-probe style exception classes.
+
+Agent-surface hard byte-match summary: use a ChatGPT Pro reasoning pass through
+`chatgpt-pro-line`, request source-faithful C/C++ alternatives first, retain
+ChatGPT Pro receipt/transcript evidence, and treat the result narrowly. A raw
+inline assembly or assembly macro counts as approval only for minimal
+address-scoped raw-assembly exception using `source-faithful-inline-asm`; it
+does not prove owner gates, Model: source-faithful, or tier S. A source-worker
+may edit .agent/RAW_ASSEMBLY_ALLOWLIST.txt only when parent allowed write paths
+include it. The verifier/scaffold auditor report missing ChatGPT
+Pro/raw-assembly evidence as a blocker/debt.
 
 ## Source Placement
 

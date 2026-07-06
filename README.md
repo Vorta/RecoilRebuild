@@ -55,28 +55,28 @@ Generated from `.agent/SOURCE_OWNERS.json` (schema version 3).
 
 | Binary | Owners | Authored owners | Provider boundaries |
 | --- | ---: | ---: | ---: |
-| recoil | 1225 | 1201 | 24 |
+| recoil | 1237 | 1199 | 38 |
 | messages | 1 | 1 | 0 |
-| Total | 1226 | 1202 | 24 |
+| Total | 1238 | 1200 | 38 |
 
 ### Source-Owner Gates
 
 | Gate | accepted | blocked | deferred | none | pending | Total |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| boundary | 1218 | 3 | 0 | 1 | 4 | 1226 |
-| source | 1215 | 6 | 0 | 1 | 4 | 1226 |
-| data | 958 | 2 | 0 | 212 | 54 | 1226 |
-| functional | 807 | 0 | 0 | 310 | 109 | 1226 |
-| linkage | 1026 | 145 | 0 | 53 | 2 | 1226 |
-| byte | 23 | 467 | 713 | 0 | 23 | 1226 |
+| boundary | 1229 | 4 | 0 | 1 | 4 | 1238 |
+| source | 1226 | 7 | 0 | 1 | 4 | 1238 |
+| data | 967 | 3 | 0 | 215 | 53 | 1238 |
+| functional | 807 | 0 | 0 | 325 | 106 | 1238 |
+| linkage | 1028 | 141 | 0 | 67 | 2 | 1238 |
+| byte | 23 | 466 | 725 | 0 | 24 | 1238 |
 
 ### Owner Reimplementation Tiers
 
 | Tier | Count | Percent of authored owners |
 | --- | ---: | ---: |
-| X | 121 | 10.1% |
+| X | 117 | 9.8% |
 | C | 222 | 18.5% |
-| B | 844 | 70.2% |
+| B | 846 | 70.5% |
 | A | 1 | 0.1% |
 | S | 14 | 1.2% |
 
@@ -85,13 +85,13 @@ Generated from `.agent/SOURCE_OWNERS.json` (schema version 3).
 | Kind | Count | Percent of owners |
 | --- | ---: | ---: |
 | callback-table | 1 | 0.1% |
-| class | 165 | 13.5% |
-| data-owner | 430 | 35.1% |
-| provider-boundary | 24 | 2.0% |
+| class | 163 | 13.2% |
+| data-owner | 430 | 34.7% |
+| provider-boundary | 38 | 3.1% |
 | record | 42 | 3.4% |
-| source-file | 167 | 13.6% |
+| source-file | 167 | 13.5% |
 | standalone | 58 | 4.7% |
-| subsystem | 339 | 27.7% |
+| subsystem | 339 | 27.4% |
 <!-- RECOIL_PROGRESS:END -->
 
 <!-- RECOIL_SOURCE_BLOCKS:START -->
@@ -119,7 +119,7 @@ Ranges are half-open retail `.text` ranges. `partial` rows are header contributo
 | `0x43ce80..0x43cf90` | `src/Battlesport/WinSock.cpp` | mapped-no-literal-mixed; 6 semantic subranges |
 | `0x43cf90..0x442890` | `src/Battlesport/WOL.cpp` | mapped-no-literal-mixed; 13 semantic subranges |
 | `0x442890..0x4428b0` | `provider:mfc/message-map-getters` | provider, provider-boundary |
-| `0x4428b0..0x443730` | `semantic:late-recoilapp-appframe-cluster` | semantic source unresolved; Late RecoilApp/app-frame runtime and state-queue authored cluster physically emitted before the CZGameFrame class block; exact original source/header and physical host unresolved.; candidates: `src/CZGameFrame/AppFrame.cpp`, `src/CZGameFrame/AppFrame.h`, `src/Battlesport/RecoilApp.h` |
+| `0x4428b0..0x443730` | `semantic:late-recoilapp-appframe-cluster` | semantic source unresolved; Late RecoilApp/app-frame runtime and state-queue authored cluster physically emitted before the CZGameFrame class block; exact original source/header and physical host unresolved.; candidates: `src/CZGameFrame/AppFrame.cpp`, `src/CZGameFrame/AppFrame.h`, `src/Battlesport/recoil_app.h` |
 | `0x443730..0x443b70` | `src/CZGameFrame/CZGameFrame.cpp` | mapped-no-literal-czgameframe-cluster; 8 semantic subranges |
 | `0x443b70..0x443c50` | `provider:mfc/gdi-bitmap-destructors` | provider, provider-boundary |
 | `0x443c50..0x4478c0` | `src/GameZRecoil/zClass/cls_di.c` | mapped; 6 semantic subranges |

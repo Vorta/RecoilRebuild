@@ -1,4 +1,4 @@
-// CAboutDlg constructor. Calls CDialog::CDialog with resource ID 0x67 (IDD_ABOUTBOX=103), sets derived vtable. Source: D:\Proj\Battlesport\Recoil.cpp
+// Authored CAboutDlg constructor: __thiscall self in ecx, stack parent CWnd*, callee ret 4. Calls CDialog::CDialog(resource 0x67, parent), stores g_CAboutDlg_Vtbl at offset 0, and returns self. Called from CZRecoilFrame::OnMenuAbout at 0x430c4e. Physical source host is unresolved: no AboutDlg.cpp/Recoil.cpp/CAbout source-path literal has been observed for this function.
 0x401000 struct CAboutDlg* __thiscall CAboutDlg::Constructor(struct CAboutDlg* self, struct CWnd* parent)
 {
     CDialog::CDialog(self, 0x67, parent)
@@ -6,26 +6,26 @@
     return self
 }
 
-// Non-authored: shared MFC no-op virtual/message-map target; callee pops one 4-byte stack argument.
-0x401020 void __thiscall MFC::NoOpVirtualOneArg(void* self, int32_t unused) __pure
+// Provider-boundary MFC CWnd::DoDataExchange no-op virtual target. Body is only ret 4; self in ecx is unused and one 4-byte stack argument is callee-popped.
+0x401020 void __thiscall CWnd::DoDataExchange(void* self, int32_t unused) __pure
 {
     return
 }
 
-// Non-authored: runtime import-address getter stub; returns the address of g_Mfc42_GetProcByOrdinal4234Getter.
-0x401030 void* MFC42::GetProcByOrdinal4234GetterAddr() __pure
+// MFC-generated CAboutDlg::GetMessageMap accessor; returns &g_CAboutDlg_MessageMap at 0x4cc718. Data xref is the CAboutDlg vtable slot at 0x4cc768.
+0x401030 void* CAboutDlg::GetMessageMap() __pure
 {
-    return &g_Mfc42_GetProcByOrdinal4234Getter
+    return &g_CAboutDlg_MessageMap
 }
 
-// Non-authored: linked MFC CWnd wrapper; calls EnableWindow(self->m_hWnd, FALSE).
-0x401040 BOOL __thiscall CWnd::DisableWindow(struct CWnd* self)
+// Provider-boundary MFC CWnd::BeginModalState inline body. self in ecx; loads self->m_hWnd at offset 0x20 and calls EnableWindow(hwnd, FALSE).
+0x401040 BOOL __thiscall CWnd::BeginModalState(struct CWnd* self)
 {
     return EnableWindow(self->m_hWnd, 0)
 }
 
-// Non-authored: linked MFC CWnd wrapper; calls EnableWindow(self->m_hWnd, TRUE).
-0x401050 BOOL __thiscall CWnd::EnableWindow(struct CWnd* self)
+// Provider-boundary MFC CWnd::EndModalState inline body. self in ecx; loads self->m_hWnd at offset 0x20 and calls EnableWindow(hwnd, TRUE).
+0x401050 BOOL __thiscall CWnd::EndModalState(struct CWnd* self)
 {
     return EnableWindow(self->m_hWnd, 1)
 }
@@ -174,7 +174,7 @@
         playerState->pathCursorAdvanceRequested = 0
 }
 
-// Physical source-block row: src/Battlesport/ai_net.h emitted in src/Battlesport/ai_net.cpp, range [0x401060, 0x402f60). This is source-block/navigation evidence only, not an owner/tier gate.
+// byte-probe assembly caveat: EBP stack map is authoritative despite BN stack-var display shifted by -4; CollectPendingContactsForSegments return is ignored, second Vec3Normalize call is real, and 0x401538/0x40154a have duplicated ESI clear/return tails.
 0x401420 int32_t __fastcall AINet::AiMode2ForwardProbeRequiresAutoTurn(struct zUtil_SaveGameState* saveState)
 {
     struct PlayerPendingContactProbeState* playerState = saveState->playerState
@@ -189,11 +189,11 @@
     segmentPairs[0].y = playerState->worldPos.y
     segmentPairs[0].z = playerState->worldPos.z
     segmentPairs[0].y = masterModalData->probePoints[1].y + segmentPairs[0].y
-    struct zVec3 vec
-    vec.x = playerState->projectileSpawnVel.x
-    vec.y = playerState->projectileSpawnVel.y
-    vec.z = playerState->projectileSpawnVel.z
-    long double st0 = zMath::Vec3Normalize(&vec)
+    struct zVec3 forwardDir
+    forwardDir.x = playerState->projectileSpawnVel.x
+    forwardDir.y = playerState->projectileSpawnVel.y
+    forwardDir.z = playerState->projectileSpawnVel.z
+    long double st0 = zMath::Vec3Normalize(&forwardDir)
     // BN x87 artifact: assembly compares Vec3Normalize length against 1.0; values below 1.0 use 1.0 before building segmentPairs[1].
     long double temp1 = 1f
     st0 - temp1
@@ -202,25 +202,25 @@
     long double x87_r7_3
 
     if ((eax_1:1.b & 1) == 0)
-        x87_r7_3 = zMath::Vec3Normalize(&vec)
+        x87_r7_3 = zMath::Vec3Normalize(&forwardDir)
     else
         x87_r7_3 = 1f
 
-    struct zVec3* probeOffsetWrite = &segmentPairs[1]
+    struct zVec3* modalDataThenSegmentEndWritePtrTmp = &segmentPairs[1]
     long double x87_r7_5 = x87_r7_3 * 0.5f - masterModalData->probePoints[1].z
-    struct zVec3* probeOffsetRead = &segmentPairs[1]
-    segmentPairs[1].x = x87_r7_5 * vec.x
-    segmentPairs[1].y = x87_r7_5 * vec.y
-    segmentPairs[1].z = x87_r7_5 * vec.z
-    long double x87_r6_5 = probeOffsetRead->y + playerState->worldPos.y
-    long double x87_r5_1 = probeOffsetRead->z + playerState->worldPos.z
-    probeOffsetWrite->x = probeOffsetRead->x + playerState->worldPos.x
-    probeOffsetWrite->y = x87_r6_5
-    probeOffsetWrite->z = x87_r5_1
-    int32_t segmentTagTable[0x2]
-    segmentTagTable[0] = 0xffffffff
-    segmentTagTable[1] = 0xffffffff
-    Player::CollectPendingContactsForSegments(saveState, &segmentPairs, 2, &segmentTagTable)
+    struct zVec3* segmentEndReadPtrTmp = &segmentPairs[1]
+    segmentPairs[1].x = x87_r7_5 * forwardDir.x
+    segmentPairs[1].y = x87_r7_5 * forwardDir.y
+    segmentPairs[1].z = x87_r7_5 * forwardDir.z
+    long double x87_r6_5 = segmentEndReadPtrTmp->y + playerState->worldPos.y
+    long double x87_r5_1 = segmentEndReadPtrTmp->z + playerState->worldPos.z
+    modalDataThenSegmentEndWritePtrTmp->x = segmentEndReadPtrTmp->x + playerState->worldPos.x
+    modalDataThenSegmentEndWritePtrTmp->y = x87_r6_5
+    modalDataThenSegmentEndWritePtrTmp->z = x87_r5_1
+    int32_t segmentTags[0x2]
+    segmentTags[0] = 0xffffffff
+    segmentTags[1] = 0xffffffff
+    Player::CollectPendingContactsForSegments(saveState, &segmentPairs, 2, &segmentTags)
 
     if (playerState->preferredCollisionQueue.count == 0 && playerState->playerCollisionQueue.count == 0)
         Player::ClearPendingContactQueues(saveState)
@@ -1438,7 +1438,7 @@
     g_Player_AiMode2State1Finalized = 1
 }
 
-// Physical source-block row: src/GameZRecoil/zMath/zmth.h emitted as a header contributor in src/Battlesport/ai_net.cpp, range [0x402f60, 0x402fd0). Semantic helper name zMath::Vec3Normalize is preserved. This is source-block/navigation evidence only, not an owner/tier gate.
+// Physical source-block row: src/GameZRecoil/zMath/zMath.h emitted as a header contributor in src/Battlesport/ai_net.cpp, range [0x402f60, 0x402fd0). Semantic helper name zMath::Vec3Normalize is preserved. This is source-block/navigation evidence only, not an owner/tier gate.
 0x402f60 float __fastcall zMath::Vec3Normalize(struct zVec3* vec)
 {
     long double x87_r7 = vec->x
@@ -4933,8 +4933,8 @@
     return 1
 }
 
-// Physical source-file block: src/Battlesport/hud.cpp [0x407130, 0x407190), layer hud_small_stub_layer. Low-confidence helper/provider-adjacent stubs physically emitted in hud.cpp; recheck provider/source-shape before claiming authored HUD ownership or moving to zClass/RecoilStateBase source files.
-0x407170 void* __thiscall RecoilStateBase::ScalarDeletingDestructor(struct RecoilApp_IState* self, uint32_t flags)
+// Unresolved app-state base/interface scalar-deleting-destructor-shaped stub. Writes candidate base vtable 0x4ccd50 to [ecx], optionally calls operator delete when flags&1, returns this; no code refs, only known direct data use is vtable slot0. Evidence couples this to a RecoilApp_IState-like base/interface used by derived state vptr resets, but SOURCE_OWNERS/tier/source-shape is NOT accepted: current VC5 source model emits this before HUD zStub helpers, while retail order reaches only through zStub helpers at 0x407130..0x407160 and this remains the first blocker. Do not mark provider/data/tier-S accepted from ABI shape or semantic name alone.
+0x407170 struct RecoilStateBase* __thiscall RecoilStateBase::ScalarDeletingDestructor(struct RecoilStateBase* self, uint32_t flags)
 {
     self->vftable = &g_RecoilStateBase_Vtbl
 
@@ -6747,7 +6747,7 @@
     HudUiZrdWidget::OnActivate(self)
 }
 
-// Physical source block: D:\Proj\Battlesport\hud.cpp (src/Battlesport/hud.cpp); layer hud_controls_dialog_layer [0x408a30,0x409020). Semantic controls dialog/state code emitted in hud.cpp. Stale split-file comments such as hud_ui_dialogs.cpp, recoil_state.cpp, RecoilStateDialogHost.cpp, or HudUiZrdWidgetEx17C.cpp are not source-owner evidence without a proven header/COMDAT exception.
+// Physical source block: D:\Proj\Battlesport\hud.cpp (src/Battlesport/hud.cpp); layer hud_controls_dialog_layer [0x408a30,0x409040). Semantic controls dialog/state code emitted in hud.cpp. Stale split-file comments such as hud_ui_dialogs.cpp, recoil_state.cpp, RecoilStateDialogHost.cpp, or HudUiZrdWidgetEx17C.cpp are not source-owner evidence without a proven header/COMDAT/provider exception.
 0x408c40 struct HudUiControlsDialog* __thiscall HudUiControlsDialog::ScalarDeletingDestructor(struct HudUiControlsDialog* self, int32_t flags)
 {
     HudUiControlsDialog::Destructor(self)
@@ -6758,13 +6758,13 @@
     return self
 }
 
-// Physical source block: D:\Proj\Battlesport\hud.cpp (src/Battlesport/hud.cpp); layer hud_controls_dialog_layer [0x408a30,0x409020). Semantic controls dialog/state code emitted in hud.cpp. Stale split-file comments such as hud_ui_dialogs.cpp, recoil_state.cpp, RecoilStateDialogHost.cpp, or HudUiZrdWidgetEx17C.cpp are not source-owner evidence without a proven header/COMDAT exception.
+// Physical hud_controls_dialog_layer [0x408a30,0x409040) order entry. Single-jump compiler/linker-emitted noncovering helper to HudUiOptionSelectorWidget::DestructorCore (0x4b8b60); exact mechanism and primary authored owner unresolved. Not owner/gate/tier proof; stale split-file names/comments are not source-owner evidence without a proven header/COMDAT/provider exception.
 0x408c60 void __thiscall HudUiOptionSelectorWidget::DestructorCoreThunk(struct HudUiOptionSelectorWidget* self)
 {
     return HudUiOptionSelectorWidget::DestructorCore(self) __tailcall
 }
 
-// Physical source block: D:\Proj\Battlesport\hud.cpp (src/Battlesport/hud.cpp); layer hud_controls_dialog_layer [0x408a30,0x409020). Semantic controls dialog/state code emitted in hud.cpp. Stale split-file comments such as hud_ui_dialogs.cpp, recoil_state.cpp, RecoilStateDialogHost.cpp, or HudUiZrdWidgetEx17C.cpp are not source-owner evidence without a proven header/COMDAT exception.
+// Physical source block: D:\Proj\Battlesport\hud.cpp (src/Battlesport/hud.cpp); layer hud_controls_dialog_layer [0x408a30,0x409040). Semantic controls dialog/state code emitted in hud.cpp. Stale split-file comments such as hud_ui_dialogs.cpp, recoil_state.cpp, RecoilStateDialogHost.cpp, or HudUiZrdWidgetEx17C.cpp are not source-owner evidence without a proven header/COMDAT/provider exception.
 0x408c70 void __fastcall HudUiControlsDialog::Destructor(struct HudUiControlsDialog* self)
 {
     int32_t var_4_2 = 0xffffffff
@@ -6825,7 +6825,7 @@
     self->m_dialog = nullptr
 }
 
-// Physical source block: D:\Proj\Battlesport\hud.cpp (src/Battlesport/hud.cpp); layer hud_controls_dialog_layer [0x408a30,0x409020). Semantic controls dialog/state code emitted in hud.cpp. Stale split-file comments such as hud_ui_dialogs.cpp, recoil_state.cpp, RecoilStateDialogHost.cpp, or HudUiZrdWidgetEx17C.cpp are not source-owner evidence without a proven header/COMDAT exception.
+// Physical hud_controls_dialog_layer [0x408a30,0x409040) order entry. VC5 scalar deleting destructor noncovering glue associated with RecoilStateControls; compiler-emitted, not authored source. Exact emission mechanism unresolved. Not owner/gate/tier proof; stale split-file names/comments are not source-owner evidence without a proven header/COMDAT/provider exception.
 0x408d70 struct RecoilStateControls* __thiscall RecoilStateControls::ScalarDeletingDestructor(struct RecoilStateControls* self, int32_t flags)
 {
     RecoilStateControls::Destructor(self)
@@ -6899,7 +6899,7 @@
     return 1
 }
 
-// Physical source block: D:\Proj\Battlesport\hud.cpp (src/Battlesport/hud.cpp); layer hud_controls_dialog_layer [0x408a30,0x409020). Semantic controls dialog/state code emitted in hud.cpp. Stale split-file comments such as hud_ui_dialogs.cpp, recoil_state.cpp, RecoilStateDialogHost.cpp, or HudUiZrdWidgetEx17C.cpp are not source-owner evidence without a proven header/COMDAT exception.
+// Physical source block: D:\Proj\Battlesport\hud.cpp (src/Battlesport/hud.cpp); layer hud_controls_dialog_layer [0x408a30,0x409040). Semantic controls dialog/state code emitted in hud.cpp. Stale split-file comments such as hud_ui_dialogs.cpp, recoil_state.cpp, RecoilStateDialogHost.cpp, or HudUiZrdWidgetEx17C.cpp are not source-owner evidence without a proven header/COMDAT/provider exception.
 0x408ec0 void __fastcall RecoilStateControls::OnDeactivate(struct RecoilStateControls* self)
 {
     struct HudUiControlsDialog* m_dialog_2 = self->m_dialog
@@ -6930,8 +6930,8 @@
     self->m_dialog = nullptr
 }
 
-// Physical source block: D:\Proj\Battlesport\hud.cpp (src/Battlesport/hud.cpp); layer hud_controls_dialog_layer [0x408a30,0x409020). Semantic controls dialog/state code emitted in hud.cpp. Stale split-file comments such as hud_ui_dialogs.cpp, recoil_state.cpp, RecoilStateDialogHost.cpp, or HudUiZrdWidgetEx17C.cpp are not source-owner evidence without a proven header/COMDAT exception.
-0x408f50 void __thiscall RecoilStateDialogHost::OnWndActivate(struct RecoilStateDialogHost* self, int32_t activateCode)
+// Physical hud_controls_dialog_layer [0x408a30,0x409040) order entry. Authored RecoilStateDialogHost shared hook; behavior/source evidence identifies OnSuspend, not OnWndActivate. Physically emitted in HUD layer, not RecoilStateControls-owned; exact include/COMDAT mechanism unresolved. Not owner/gate/tier proof.
+0x408f50 void __thiscall RecoilStateDialogHost::OnSuspend(struct RecoilStateDialogHost* self, int32_t unusedArg)
 {
     if (self->dialog == 0)
         return
@@ -6945,7 +6945,7 @@
     zVideo::PresentOrAdjustSurfacesIfEnabled(zOpt::GetWindowSection(), dstRect, 1, 1)
 }
 
-// Physical source block: D:\Proj\Battlesport\hud.cpp (src/Battlesport/hud.cpp); layer hud_controls_dialog_layer [0x408a30,0x409020). Semantic controls dialog/state code emitted in hud.cpp. Stale split-file comments such as hud_ui_dialogs.cpp, recoil_state.cpp, RecoilStateDialogHost.cpp, or HudUiZrdWidgetEx17C.cpp are not source-owner evidence without a proven header/COMDAT exception.
+// Physical source block: D:\Proj\Battlesport\hud.cpp (src/Battlesport/hud.cpp); layer hud_controls_dialog_layer [0x408a30,0x409040). Semantic controls dialog/state code emitted in hud.cpp. Stale split-file comments such as hud_ui_dialogs.cpp, recoil_state.cpp, RecoilStateDialogHost.cpp, or HudUiZrdWidgetEx17C.cpp are not source-owner evidence without a proven header/COMDAT/provider exception.
 0x408fa0 void __thiscall RecoilStateControls::OnResume(struct RecoilStateControls* self, int32_t param)
 {
     if (self->m_dialog == 0)
@@ -6962,13 +6962,13 @@
     zVideo::PresentOrAdjustSurfacesIfEnabled(zOpt::GetWindowSection(), dstRect, 1, 1)
 }
 
-// Physical source block: D:\Proj\Battlesport\hud.cpp (src/Battlesport/hud.cpp); layer hud_controls_dialog_layer [0x408a30,0x409020). Semantic controls dialog/state code emitted in hud.cpp. Stale split-file comments such as hud_ui_dialogs.cpp, recoil_state.cpp, RecoilStateDialogHost.cpp, or HudUiZrdWidgetEx17C.cpp are not source-owner evidence without a proven header/COMDAT exception.
+// Physical source block: D:\Proj\Battlesport\hud.cpp (src/Battlesport/hud.cpp); layer hud_controls_dialog_layer [0x408a30,0x409040). Semantic controls dialog/state code emitted in hud.cpp. Stale split-file comments such as hud_ui_dialogs.cpp, recoil_state.cpp, RecoilStateDialogHost.cpp, or HudUiZrdWidgetEx17C.cpp are not source-owner evidence without a proven header/COMDAT/provider exception.
 0x408ff0 void RecoilStateControls::QueueEnter()
 {
     RecoilApp::QueuePushState(&g_RecoilApp, &g_RecoilStateControls, 0)
 }
 
-// Physical source block: D:\Proj\Battlesport\hud.cpp (src/Battlesport/hud.cpp); layer hud_controls_dialog_layer [0x408a30,0x409020). Semantic controls dialog/state code emitted in hud.cpp. Stale split-file comments such as hud_ui_dialogs.cpp, recoil_state.cpp, RecoilStateDialogHost.cpp, or HudUiZrdWidgetEx17C.cpp are not source-owner evidence without a proven header/COMDAT exception.
+// Adjacent zUI terminal sentinel at the end of hud_controls_dialog_layer [0x408a30,0x409040). Do not rename into hud.cpp or use this BN semantic name/comment as source-owner evidence without future proof.
 0x409010 void __thiscall HudUiOptionSelectorWidget::EnableChildAtIndex(struct HudUiOptionSelectorWidget* self, int32_t childIndex)
 {
     if (childIndex s>= self->base.optionCount)
@@ -28934,14 +28934,14 @@
     TEB* fsbase
     struct _EXCEPTION_REGISTRATION_RECORD* ExceptionList = fsbase->NtTib.ExceptionList
     fsbase->NtTib.ExceptionList = &ExceptionList
-    struct CString __saved_esi
-    struct CString* esp = &__saved_esi
+    int32_t __saved_esi
+    int32_t* esp = &__saved_esi
 
     if ((node->flags & 0x200000) != 0)
-        struct CString callbackContext = node->callbackContext
+        char* callbackContext = node->callbackContext
 
-        if ((*(callbackContext + 0x28) & 2) != 0)
-            struct CString callbackContext_1 = callbackContext
+        if ((callbackContext[0x28] & 2) != 0)
+            char* callbackContext_1 = callbackContext
             struct CString _String_1
             CString::CString(&_String_1, callbackContext_1)
             int32_t var_4_1 = 0
@@ -28971,8 +28971,8 @@
             int32_t var_8_1 = 0xffffffff
             CString::~CString(&__saved_esi)
 
-    fsbase->NtTib.ExceptionList = esp->__offset(0xc).d
-    esp->m_pchData
+    fsbase->NtTib.ExceptionList = esp[3]
+    *esp
     return 0
 
     // [comments not attached to rendered lines]
@@ -35060,7 +35060,7 @@
     fsbase->NtTib.ExceptionList = ExceptionList
 }
 
-// Physical source-file block: src/Battlesport/RecoilApp.cpp [0x42de10,0x436630), layer recoilapp_mfc_app_static_startup_layer [0x42de10,0x42e170). RecoilApp_IState base destructor restores the state base vtable; physical placement is the RecoilApp.cpp block.
+// RecoilApp_IState base destructor evidence: writes g_RecoilStateBase_Vtbl @ 0x4ccd50 to self and returns; 0x42e0f0 calls this before optional delete. Physical block caveat: emitted in RecoilApp.cpp [0x42de10,0x436630), not in the hud.cpp block containing 0x407170.
 0x42df90 void __thiscall RecoilApp_IState::Destructor(struct RecoilApp_IState* self)
 {
     self->vftable = &g_RecoilStateBase_Vtbl
@@ -35134,8 +35134,8 @@
     return self
 }
 
-// Physical source-file block: src/Battlesport/RecoilApp.cpp [0x42de10,0x436630), layer recoilapp_mfc_app_static_startup_layer [0x42de10,0x42e170). VC++ scalar deleting destructor for RecoilApp_IState; operator delete is provider/runtime dependency.
-0x42e0f0 struct RecoilApp_IState* __thiscall RecoilApp_IState::ScalarDeletingDestructor(struct RecoilApp_IState* self, int32_t flags)
+// VC++ scalar deleting destructor evidence: calls 0x42df90, conditionally calls operator delete when flags&1, returns self, ret 4. App-state vtables in 0x4d0aa0..0x4d0b90 use this or derived scalar deleting destructors. Physical block caveat: emitted in RecoilApp.cpp, separate from 0x407170's hud.cpp helper layer.
+0x42e0f0 struct RecoilApp_IState* __thiscall RecoilApp_IState::ScalarDeletingDestructor(struct RecoilApp_IState* self, uint32_t flags)
 {
     RecoilApp_IState::Destructor(self)
 
@@ -36782,7 +36782,7 @@
     return zInputDI::CreateForceFeedbackEffect(&g_GUID_Sine, &effectDesc)
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). MFC RUNTIME_CLASS factory for CZRecoilFrame: allocates 0x230 bytes, constructs the frame object if allocation succeeds, and returns the constructed object pointer or null. BN limitation: HLIL exposes MSVC SEH registration and allocation-unwind state around the constructor call.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x4301e0 struct CZRecoilFrame* CZRecoilFrame::CreateObject()
 {
     int32_t var_4_1 = 0xffffffff
@@ -36806,13 +36806,13 @@
     return result
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). MFC RUNTIME_CLASS accessor; returns &g_CZRecoilFrame_RuntimeClass.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x430240 struct zMfcRuntimeClass24* __thiscall CZRecoilFrame::GetRuntimeClass(struct CZRecoilFrame* self) __pure
 {
     return &g_CZRecoilFrame_RuntimeClass
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). Constructs the main Recoil frame, menu member, window title, command-line flags, menu handles, and startup video/audio menu state. BN still shows local EH state variables and the inlined MFC CMenu null-this guard; propagated contracts are stable.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x430250 struct CZRecoilFrame* __thiscall CZRecoilFrame::Constructor(struct CZRecoilFrame* self)
 {
     int32_t var_4_1 = 0xffffffff
@@ -36926,7 +36926,7 @@
     return self
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). Non-authored compiler-generated scalar-deleting destructor glue for CZRecoilFrame; calls CZRecoilFrame::Destructor and optionally operator delete. This is class-coupled compiler glue inside the RecoilApp.cpp block, not a separate authored source split.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class scalar-deleting destructor; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x4305f0 struct CZRecoilFrame* __thiscall CZRecoilFrame::ScalarDeletingDestructor(struct CZRecoilFrame* self, uint32_t flags)
 {
     CZRecoilFrame::Destructor(self)
@@ -36937,7 +36937,7 @@
     return self
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). Destroys the Recoil frame: restores the CZRecoilFrame vtable during teardown, destroys the main menu member, resets that member to the CObject vtable, then calls CZGameFrame::Destructor. BN limitation: HLIL exposes MSVC SEH registration and unwind-state locals around member destruction.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x430610 void __thiscall CZRecoilFrame::Destructor(struct CZRecoilFrame* self)
 {
     int32_t var_4_2 = 0xffffffff
@@ -36957,7 +36957,7 @@
     fsbase->NtTib.ExceptionList = ExceptionList
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). Shows or hides the frame menu bar. The visible path ORs in the standard frame/window style mask 0x82ca0000 and attaches m_mainMenu_1D0; the hidden path clears WS_SYSMENU (0x00080000) and passes a null menu handle to SetMenu.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x430680 void __thiscall CZRecoilFrame::SetMenuBarVisibility(struct CZRecoilFrame* self, int32_t visible)
 {
     int32_t eax_1 = GetWindowLongA(self->m_hWnd, 0xfffffff0)
@@ -36980,13 +36980,13 @@
     SetMenu(self->m_hWnd, hMenu)
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). MFC message-map accessor; returns &g_CZRecoilFrame_MessageMap.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x4306e0 struct MfcMsgMap* __thiscall CZRecoilFrame::GetMessageMap(struct CZRecoilFrame* self) __pure
 {
     return &g_CZRecoilFrame_MessageMap
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). Builds the frame window title CString; returns "RECOIL (3Dfx)" if the 3Dfx renderer is active, otherwise "RECOIL".
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x4306f0 struct CString* __thiscall CZRecoilFrame::BuildWindowTitle(struct CZRecoilFrame* self, struct CString* outTitle)
 {
     struct CZRecoilFrame* self_1 = self
@@ -36999,7 +36999,7 @@
     return outTitle
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). Menu command handler for starting single-player: disables skipping of intro and mission FMVs, then starts the engine through RecoilApp::LoadZbdAndStartEngine. BN limitation: the void MFC command handler ends with a direct jump into the startup helper, so HLIL renders the final jump as a tailcall return.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x430740 void __thiscall CZRecoilFrame::OnMenuStartSinglePlayer(struct CZRecoilFrame* self)
 {
     g_RecoilApp.m_skipIntroFmv = RECOILAPP_INTRO_FMV_SKIP_DISABLED
@@ -37007,14 +37007,14 @@
     return RecoilApp::LoadZbdAndStartEngine(&g_RecoilApp) __tailcall
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). Menu command handler for opening a campaign file: enables intro-FMV skipping, then jumps to CZRecoilFrame::OnOpenFileDialog. BN limitation: the void MFC command handler ends with a direct jump into the file-dialog helper, so HLIL renders the final jump as a tailcall return.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x430760 void __thiscall CZRecoilFrame::OnMenuOpenCampaign(struct CZRecoilFrame* self)
 {
     g_RecoilApp.m_skipIntroFmv = RECOILAPP_INTRO_FMV_SKIP_ENABLED
     return CZRecoilFrame::OnOpenFileDialog(self) __tailcall
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). Builds the OPENFILENAMEA data for opening a campaign file: loads resource 0xC8 as the filter string, replaces separator characters with NULs, opens GetOpenFileNameA using m_openZbdFilePath_CC and default extension "gs", then copies the selected path and starts mission setup through RecoilApp::LoadZbdAndSetupSensorTracker. BN limitation: the filter-string separator loop and inline strlen/strcpy render as byte temporaries and builtin_memcpy, but assembly matches resource-filter conversion and path copy.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x430770 void __thiscall CZRecoilFrame::OnOpenFileDialog(struct CZRecoilFrame* self)
 {
     struct HINSTANCE__* RecoilApp_hInstance_1 = g_RecoilApp_hInstance
@@ -37084,13 +37084,13 @@
     InvalidateRect(self->m_hWnd, nullptr, 1)
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). Menu command handler for exiting the game.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x4308a0 void __thiscall CZRecoilFrame::OnMenuExitGame(struct CZRecoilFrame* self)
 {
     PostMessageA(self->m_hWnd, 0x10, 0, 0)
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). Refreshes CZRecoilFrame video-mode command UI state from the current video-mode option and persisted software/hardware acceleration setting. Software mode exposes low software resolutions directly; hardware mode keeps low modes as disabled placeholders, preserves 640x400/640x480 selection state, gates 800x600 on cached free video memory > 0x2BF200, and gates 1024x768 on cached free video memory > 0x480000.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x4308c0 void __thiscall CZRecoilFrame::ConfigureModeFeatureFlags(struct CZRecoilFrame* self)
 {
     enum zVidModeIndex eax = zVid::GetVideoModeIndexFromOptions()
@@ -37144,49 +37144,49 @@
     // 1024x768 is only available in hardware mode when cached free video memory exceeds 0x480000 bytes (4.5 MiB).
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). Menu handler: set video mode index 2, then reconfigure mode feature flags.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x4309b0 void __thiscall CZRecoilFrame::OnMenuSetVideoMode2(void* self)
 {
     zVid::SetVideoModeIndex(ZVID_MODE_320X200_TO_640X400)
     CZRecoilFrame::ConfigureModeFeatureFlags(self)
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). Menu handler: set video mode to 320x240 letterboxed/scaled to 640x480, then reconfigure mode feature flags.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x4309d0 void __thiscall CZRecoilFrame::OnMenuSetVideoMode3(void* self)
 {
     zVid::SetVideoModeIndex(ZVID_MODE_320X240_TO_640X480)
     CZRecoilFrame::ConfigureModeFeatureFlags(self)
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). Menu handler: set video mode to 640x400, then reconfigure mode feature flags.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x4309f0 void __thiscall CZRecoilFrame::OnMenuSetVideoMode4(void* self)
 {
     zVid::SetVideoModeIndex(ZVID_MODE_640X400)
     CZRecoilFrame::ConfigureModeFeatureFlags(self)
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). Menu handler: set video mode to 640x480, then reconfigure mode feature flags.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x430a10 void __thiscall CZRecoilFrame::OnMenuSetVideoMode5(struct CZRecoilFrame* self)
 {
     zVid::SetVideoModeIndex(ZVID_MODE_640X480)
     CZRecoilFrame::ConfigureModeFeatureFlags(self)
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). Menu handler: set video mode to 800x600, then reconfigure mode feature flags.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x430a30 void __thiscall CZRecoilFrame::OnMenuSetVideoMode6(void* self)
 {
     zVid::SetVideoModeIndex(ZVID_MODE_800X600)
     CZRecoilFrame::ConfigureModeFeatureFlags(self)
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). Menu handler: set video mode to 1024x768, then reconfigure mode feature flags.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x430a50 void __thiscall CZRecoilFrame::OnMenuSetVideoMode7(void* self)
 {
     zVid::SetVideoModeIndex(ZVID_MODE_1024X768)
     CZRecoilFrame::ConfigureModeFeatureFlags(self)
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). Menu command handler: toggles HUD visibility option.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x430a70 void __thiscall CZRecoilFrame::OnMenuToggleHud(void* self)
 {
     enum zOptHudVisibilityOptionState eax_1 = zOpt::GetHudVisibilityOption()
@@ -37194,7 +37194,7 @@
     return zOpt::SetHudVisibilityOption(sbb.d(ecx_1, ecx_1, eax_1 != ZOPT_HUD_VISIBILITY_DISABLED) + 1) __tailcall
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). MFC update handler for HUD menu command UI.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x430a90 void __thiscall CZRecoilFrame::OnUpdateHudCmdUI(struct CZRecoilFrame* self, struct MfcCmdUI* pCmdUI)
 {
     // pCmdUI->Enable(TRUE)
@@ -37203,7 +37203,7 @@
     pCmdUI->vftable->SetChecked(pCmdUI, zOpt::GetHudVisibilityOption())
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). Menu command handler: toggles fullscreen option.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x430ab0 void __thiscall CZRecoilFrame::OnMenuToggleFullscreen(void* self)
 {
     if (zOpt::GetFullscreenOption() == ZOPT_FULLSCREEN_OPTION_DISABLED)
@@ -37212,7 +37212,7 @@
     return zOpt::SetFullscreenOption(ZOPT_FULLSCREEN_OPTION_DISABLED) __tailcall
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). Menu command handler for opening Recoil help/documentation.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x430ad0 void __thiscall CZRecoilFrame::OnMenuOpenHelpDocs(struct CZRecoilFrame* self)
 {
     char associatedExecutablePath[0x100]
@@ -37258,7 +37258,7 @@
     ShellExecuteA(g_RecoilApp_hWndMain, "open", "Docs\Index.html", nullptr, nullptr, SW_HIDE)
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). Menu command handler for the About dialog: constructs a stack CAboutDlg, runs it modally, then destroys the CDialog base during unwind. BN limitation: HLIL exposes MSVC SEH registration and unwind-state locals around the stack dialog lifetime.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x430c30 void __thiscall CZRecoilFrame::OnMenuAbout(struct CZRecoilFrame* self)
 {
     int32_t var_4_2 = 0xffffffff
@@ -37275,7 +37275,7 @@
     fsbase->NtTib.ExceptionList = ExceptionList
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). RecoilApp fatal-error callback used by the frame/network menu flow.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block within the CZRecoilFrame menu-flow layer. Semantic owner: RecoilApp fatal-error callback; preserve the RecoilApp:: name. BN evidence: CZRecoilFrame::OnMenuOpenMultiplayerSessionBrowser passes this callback to zNetwork::SetFatalDisconnectCallback. This is not evidence for a separate CZRecoilFrame.cpp physical block.
 0x430c90 void __fastcall RecoilApp::FatalErrorAndExit(int32_t errorCode)
 {
     if (errorCode != 0xffffffff)
@@ -37327,7 +37327,7 @@
     zSys::ExitProcessWithCleanup(0)
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). Menu command handler for multiplayer session browsing: constructs browser/config dialogs, initializes network session runtime, joins or creates the selected session, and starts the appropriate multiplayer flow. BN limitation: MSVC/MFC constructor-destructor unwind state for the two stack dialogs renders as explicit SEH registration and repeated cleanup paths.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x430d80 void __fastcall CZRecoilFrame::OnMenuOpenMultiplayerSessionBrowser(void* arg1)
 {
     int32_t var_4 = 0xffffffff
@@ -37464,43 +37464,43 @@
     fsbase->NtTib.ExceptionList = ExceptionList
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). Menu command handler for starting multiplayer.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x431270 void __thiscall CZRecoilFrame::OnMenuStartMultiplayer(struct CZRecoilFrame* self)
 {
     RecoilApp::LoadZbdAndSetupSensorTracker(&g_RecoilApp, 1, nullptr, 1, self->m_useArchiveBanks)
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). Menu command handler for campaign mode slot 1.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x431290 void __thiscall CZRecoilFrame::OnMenuStartCampaignMode(struct CZRecoilFrame* self)
 {
     RecoilApp::LoadZbdAndSetupSensorTracker(&g_RecoilApp, 2, nullptr, 1, self->m_useArchiveBanks)
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). Menu command handler for campaign mode slot 2.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x4312b0 void __thiscall CZRecoilFrame::OnMenuStartCampaignMode2(struct CZRecoilFrame* self)
 {
     RecoilApp::LoadZbdAndSetupSensorTracker(&g_RecoilApp, 3, nullptr, 1, self->m_useArchiveBanks)
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). Menu command handler for campaign mode slot 3.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x4312d0 void __thiscall CZRecoilFrame::OnMenuStartCampaignMode3(struct CZRecoilFrame* self)
 {
     RecoilApp::LoadZbdAndSetupSensorTracker(&g_RecoilApp, 4, nullptr, 1, self->m_useArchiveBanks)
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). Menu command handler for campaign mode slot 4.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x4312f0 void __thiscall CZRecoilFrame::OnMenuStartCampaignMode4(struct CZRecoilFrame* self)
 {
     RecoilApp::LoadZbdAndSetupSensorTracker(&g_RecoilApp, 5, nullptr, 1, self->m_useArchiveBanks)
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). Menu command handler for campaign mode slot 5.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x431310 void __thiscall CZRecoilFrame::OnMenuStartCampaignMode5(struct CZRecoilFrame* self)
 {
     RecoilApp::LoadZbdAndSetupSensorTracker(&g_RecoilApp, 6, nullptr, 1, self->m_useArchiveBanks)
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). Menu command handler: toggles archive-bank audio loading.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x431330 void __thiscall CZRecoilFrame::OnMenuToggleArchiveBanks(struct CZRecoilFrame* self)
 {
     int32_t eax
@@ -37512,7 +37512,7 @@
     zSnd::SetUseArchiveBanksFlag(self->m_useArchiveBanks)
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). Menu command handler: toggles texture-pack loading.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x431380 void __thiscall CZRecoilFrame::OnMenuToggleTexturePacks(struct CZRecoilFrame* self)
 {
     if (zVid::GetTexturePackLoadState() == ZVID_TEXTURE_PACK_LOAD_DISABLED)
@@ -37524,7 +37524,7 @@
     CheckMenuItem(self->m_mainMenu.m_hMenu, 0x9c7b, 0)
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). MFC update handler for video mode 2 command UI.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x4313d0 void __thiscall CZRecoilFrame::OnUpdateVideoMode2CmdUI(struct CZRecoilFrame* self, struct MfcCmdUI* pCmdUI)
 {
     struct MfcCmdUI_Vtbl* vftable = pCmdUI->vftable
@@ -37547,7 +37547,7 @@
     pCmdUI->vftable->SetChecked(pCmdUI, 1)
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). MFC update handler for video mode 3 command UI.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x431430 void __thiscall CZRecoilFrame::OnUpdateVideoMode3CmdUI(struct CZRecoilFrame* self, struct MfcCmdUI* pCmdUI)
 {
     struct MfcCmdUI_Vtbl* vftable = pCmdUI->vftable
@@ -37566,7 +37566,7 @@
     pCmdUI->vftable->SetChecked(pCmdUI, 1)
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). MFC update handler for video mode 4 command UI.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x431490 void __thiscall CZRecoilFrame::OnUpdateVideoMode4CmdUI(struct CZRecoilFrame* self, struct MfcCmdUI* pCmdUI)
 {
     struct MfcCmdUI_Vtbl* vftable = pCmdUI->vftable
@@ -37585,7 +37585,7 @@
     pCmdUI->vftable->SetChecked(pCmdUI, 1)
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). MFC update handler for video mode 5 command UI.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x4314f0 void __thiscall CZRecoilFrame::OnUpdateVideoMode5CmdUI(struct CZRecoilFrame* self, struct MfcCmdUI* pCmdUI)
 {
     struct MfcCmdUI_Vtbl* vftable = pCmdUI->vftable
@@ -37604,7 +37604,7 @@
     pCmdUI->vftable->SetChecked(pCmdUI, 1)
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). MFC update handler for video mode 6 command UI.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x431550 void __thiscall CZRecoilFrame::OnUpdateVideoMode6CmdUI(struct CZRecoilFrame* self, struct MfcCmdUI* pCmdUI)
 {
     struct MfcCmdUI_Vtbl* vftable = pCmdUI->vftable
@@ -37623,7 +37623,7 @@
     pCmdUI->vftable->SetChecked(pCmdUI, 1)
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). MFC update handler for video mode 7 command UI.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x4315b0 void __thiscall CZRecoilFrame::OnUpdateVideoMode7CmdUI(struct CZRecoilFrame* self, struct MfcCmdUI* pCmdUI)
 {
     struct MfcCmdUI_Vtbl* vftable = pCmdUI->vftable
@@ -37642,7 +37642,7 @@
     pCmdUI->vftable->SetChecked(pCmdUI, 1)
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). Hardware startup path for CZRecoilFrame: selects and persists the hardware API/backend, queries total/free device video memory, forces fullscreen and hardware acceleration, caches the current video-mode option, then applies the 640x480 menu-mode path.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x431610 void __thiscall CZRecoilFrame::SetHwApiAndInitMode(struct CZRecoilFrame* self, int32_t hwApiIndex0Based)
 {
     zVid::SetHwApiOption(zVideo::SelectHwApiDeviceOrFallback(hwApiIndex0Based))
@@ -37654,7 +37654,7 @@
     CZRecoilFrame::OnMenuSetVideoMode5(self)
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). Software fallback startup path for CZRecoilFrame: persists the software renderer backend, clears hardware acceleration, restores the cached fullscreen option and video-mode index, then refreshes the video-mode command UI.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x431680 void __thiscall CZRecoilFrame::InitFallbackMode(struct CZRecoilFrame* self)
 {
     zVid::SetHwApiOption(zVideo::SelectHwApiDeviceOrFallback(0xffffffff))
@@ -37664,7 +37664,7 @@
     CZRecoilFrame::ConfigureModeFeatureFlags(self)
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). Ensures the selected hardware API menu slot has been initialized: software selector 0 enters fallback mode, hardware selectors 1..3 initialize the corresponding accepted device index, then all other hardware API menu slots are cleared.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x4316c0 void __thiscall CZRecoilFrame::EnsureHwApiInitialized(struct CZRecoilFrame* self, int32_t hwApiSelector)
 {
     if (self->m_hwApiCmdUiState[hwApiSelector] != 0)
@@ -37690,7 +37690,7 @@
     while (i s< 4)
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). Initializes CZRecoilFrame hardware API command state from persisted options: use the accepted DirectDraw device count as the checked hardware selector when hardware startup is available, otherwise seed and enter the software fallback path.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x431730 void __thiscall CZRecoilFrame::InitStartupHwApiFromOptions(struct CZRecoilFrame* self)
 {
     if (zVid::GetHwApiOption() != ZVID_RENDERER_BACKEND_SOFTWARE)
@@ -37708,31 +37708,31 @@
     CZRecoilFrame::InitFallbackMode(self)
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). Menu command handler: select hardware API slot 0.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x431790 void __thiscall CZRecoilFrame::OnMenuSelectHwApi0(struct CZRecoilFrame* self)
 {
     CZRecoilFrame::EnsureHwApiInitialized(self, 0)
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). Menu command handler: select hardware API slot 1.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x4317a0 void __thiscall CZRecoilFrame::OnMenuSelectHwApi1(struct CZRecoilFrame* self)
 {
     CZRecoilFrame::EnsureHwApiInitialized(self, 1)
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). Menu command handler: select hardware API slot 2.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x4317b0 void __thiscall CZRecoilFrame::OnMenuSelectHwApi2(struct CZRecoilFrame* self)
 {
     CZRecoilFrame::EnsureHwApiInitialized(self, 2)
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). Menu command handler: select hardware API slot 3.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x4317c0 void __thiscall CZRecoilFrame::OnMenuSelectHwApi3(struct CZRecoilFrame* self)
 {
     CZRecoilFrame::EnsureHwApiInitialized(self, 3)
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). Shared CmdUI helper for hardware API menu items. Removes unavailable slots beyond m_acceptedD3DDeviceCount; otherwise rewrites the menu text as "Accelerator - <description> (<driver>)" and sets the check state from m_hwApiCmdUiState[apiIndex].
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x4317d0 void __thiscall CZRecoilFrame::UpdateHwApiMenuItem(struct CZRecoilFrame* self, struct MfcCmdUI* pCmdUI, int32_t apiIndex)
 {
     if (self->m_acceptedD3DDeviceCount s< apiIndex)
@@ -37753,7 +37753,7 @@
     pCmdUI->vftable->SetText(pCmdUI, &menuLabelText)
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). MFC update handler for hardware API slot 0 command UI.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x431870 void __thiscall CZRecoilFrame::OnUpdateHwApi0CmdUI(struct CZRecoilFrame* self, struct MfcCmdUI* pCmdUI)
 {
     // pCmdUI->Enable(TRUE)
@@ -37768,31 +37768,31 @@
     pCmdUI->vftable->SetChecked(pCmdUI, 1)
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). MFC update handler for hardware API slot 1 command UI.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x4318b0 void __thiscall CZRecoilFrame::OnUpdateHwApi1CmdUI(struct CZRecoilFrame* self, struct MfcCmdUI* pCmdUI)
 {
     CZRecoilFrame::UpdateHwApiMenuItem(self, pCmdUI, 1)
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). MFC update handler for hardware API slot 2 command UI.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x4318c0 void __thiscall CZRecoilFrame::OnUpdateHwApi2CmdUI(struct CZRecoilFrame* self, struct MfcCmdUI* pCmdUI)
 {
     CZRecoilFrame::UpdateHwApiMenuItem(self, pCmdUI, 2)
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). MFC update handler for hardware API slot 3 command UI.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x4318d0 void __thiscall CZRecoilFrame::OnUpdateHwApi3CmdUI(struct CZRecoilFrame* self, struct MfcCmdUI* pCmdUI)
 {
     CZRecoilFrame::UpdateHwApiMenuItem(self, pCmdUI, 3)
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). MFC update handler for fullscreen command UI.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x4318e0 void __thiscall CZRecoilFrame::OnUpdateFullscreenCmdUI(struct CZRecoilFrame* self, struct MfcCmdUI* pCmdUI)
 {
     RemoveMenu(pCmdUI->m_menu->m_hMenu, 0x9c4e, MF_BYCOMMAND)
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). Menu command handler: toggles CD audio option.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x431900 void __thiscall CZRecoilFrame::OnMenuToggleCDAudio(struct CZRecoilFrame* self)
 {
     enum zSndCDAudioOptionState eax_1 = zSnd::GetCDAudioOption()
@@ -37800,7 +37800,7 @@
     return zSnd::SetCDAudioOption(sbb.d(ecx_1, ecx_1, eax_1 != ZSND_CDAUDIO_DISABLED) + 1) __tailcall
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). MFC update handler for CD audio command UI.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x431920 void __thiscall CZRecoilFrame::OnUpdateCDAudioCmdUI(struct CZRecoilFrame* self, struct MfcCmdUI* pCmdUI)
 {
     // pCmdUI->Enable(TRUE)
@@ -37812,7 +37812,7 @@
     vftable->SetChecked(pCmdUI, neg.d(sbb.d(eax_2, eax_2, eax_1 != ZSND_CDAUDIO_DISABLED)))
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). Menu command handler: toggles joystick input option.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x431950 void __thiscall CZRecoilFrame::OnMenuToggleJoystick(struct CZRecoilFrame* self)
 {
     int32_t eax_1 = zInp::GetJoystickOption()
@@ -37820,7 +37820,7 @@
     return zInp::SetJoystickOption(sbb.d(ecx_1, ecx_1, eax_1 != 0) + 1) __tailcall
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). MFC update handler for joystick command UI.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x431970 void __thiscall CZRecoilFrame::OnUpdateJoystickCmdUI(struct CZRecoilFrame* self, struct MfcCmdUI* pCmdUI)
 {
     // pCmdUI->Enable(TRUE)
@@ -37832,7 +37832,7 @@
     vftable->SetChecked(pCmdUI, neg.d(sbb.d(eax_2, eax_2, eax_1 != 0)))
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). Menu command handler for Westwood Online upgrade flow.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x4319a0 void __thiscall CZRecoilFrame::OnMenuWestwoodOnlineUpgrade(struct CZRecoilFrame* self)
 {
     int32_t ebx = 1
@@ -37888,19 +37888,19 @@
         RecoilApp::LoadZbdAndSetupSensorTracker(&g_RecoilApp, selectedMissionIndex + 6, nullptr, 1, g_HudSensorTracker.missionFlags)
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). MFC command-update helper: calls the CCmdUI vtable Enable slot with TRUE and returns stdcall-style with one stack argument. Provider/MFC-shaped helper inside the RecoilApp.cpp block, not an authored source split.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, adjacent to the CZRecoilFrame message-map layer. Semantic/provider owner: MFC command-update helper, not a CZRecoilFrame authored method. BN evidence: message-map entries reference this helper to enable CCmdUI entries unconditionally. This is not evidence for a separate CZRecoilFrame.cpp physical block.
 0x431a80 void __stdcall MfcCmdUI::EnableAlways(struct MfcCmdUI* pCmdUI)
 {
     pCmdUI->vftable->SetEnabled(pCmdUI, 1)
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). Menu command handler: selects the DirectSound backend.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x431a90 void __thiscall CZRecoilFrame::OnMenuSelectDirectSound(struct CZRecoilFrame* self)
 {
     return zSnd::SetAudioApiOption(zSndBackend_DirectSound) __tailcall
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). MFC update handler for DirectSound command UI. BN limitation: the final SetChecked argument is the branchless form of (zSnd::GetAudioApiOption() == zSndBackend_DirectSound), but HLIL renders the neg/sbb/inc idiom instead of the boolean comparison.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x431aa0 void __thiscall CZRecoilFrame::OnUpdateDirectSoundCmdUI(struct CZRecoilFrame* self, struct MfcCmdUI* pCmdUI)
 {
     // pCmdUI->Enable(TRUE)
@@ -37912,13 +37912,13 @@
     vftable->SetChecked(pCmdUI, sbb.d(eax_2, eax_2, eax_1 != zSndBackend_DirectSound) + 1)
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). Menu command handler: selects the A3D backend.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x431ad0 void __thiscall CZRecoilFrame::OnMenuSelectA3D(struct CZRecoilFrame* self)
 {
     return zSnd::SetAudioApiOption(zSndBackend_A3D) __tailcall
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). MFC update handler for A3D command UI. BN limitation: the final SetChecked argument is the branchless form of (zSnd::GetActiveBackend() == zSndBackend_A3D), but HLIL renders the dec/neg/sbb/inc idiom instead of the boolean comparison.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x431ae0 void __thiscall CZRecoilFrame::OnUpdateA3DCmdUI(struct CZRecoilFrame* self, struct MfcCmdUI* pCmdUI)
 {
     // pCmdUI->Enable(TRUE)
@@ -37930,7 +37930,7 @@
     vftable->SetChecked(pCmdUI, sbb.d(eax_3, eax_3, eax_2 != 0) + 1)
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_czrecoilframe_mfc_frame_layer). MFC frame size handler.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_czrecoilframe_mfc_frame_layer. Semantic owner: CZRecoilFrame class; preserve the CZRecoilFrame::* name. BN evidence: g_CZRecoilFrame_RuntimeClass, g_CZRecoilFrame_VTable, and g_CZRecoilFrame_MessageMap bind this function to CZRecoilFrame. No CZRecoilFrame.cpp or CZRecoilFrame.h source-path literal is currently observed, so this is not a separately proven physical source-file block.
 0x431b10 void __thiscall CZRecoilFrame::OnSize(struct CZRecoilFrame* self, uint32_t nType, int32_t cx, int32_t cy)
 {
     CZGameFrame::OnSize(self, nType, cx, cy)
@@ -37940,7 +37940,7 @@
         m_app->vftable->OnAppDeactivate(m_app)
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_mfc_provider_destructor_glue_layer). Non-authored compiler-generated MFC scalar-deleting destructor glue for CObject; resets g_CObject_VTable and optionally operator delete. Provider/compiler glue in this physical block, not authored RecoilApp/CZRecoilFrame source.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_mfc_provider_destructor_glue_layer. Semantic/provider owner: non-authored MFC/compiler scalar-deleting destructor glue for CObject. This is provider/compiler glue in the RecoilApp.cpp physical block, not authored RecoilApp/CZRecoilFrame source and not evidence for a separate CZRecoilFrame.cpp block.
 0x431b50 struct CObject* __thiscall CObject::ScalarDeletingDestructor(struct CObject* self, uint32_t flags)
 {
     self->vftable = &g_CObject_VTable
@@ -37951,13 +37951,13 @@
     return self
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_mfc_provider_destructor_glue_layer). Non-authored MFC provider helper: CObject destructor resets the vtable to g_CObject_VTable. Provider glue in this physical block, not authored RecoilApp/CZRecoilFrame source.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_mfc_provider_destructor_glue_layer. Semantic/provider owner: non-authored MFC CObject destructor glue. This is provider/compiler glue in the RecoilApp.cpp physical block, not authored RecoilApp/CZRecoilFrame source and not evidence for a separate CZRecoilFrame.cpp block.
 0x431b70 void __thiscall CObject::Destructor(struct CObject* self)
 {
     self->vftable = &g_CObject_VTable
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_mfc_provider_destructor_glue_layer). Non-authored compiler-generated MFC scalar-deleting destructor glue for CMenu; calls CMenu::Destructor and optionally operator delete. Provider/compiler glue in this physical block, not authored RecoilApp/CZRecoilFrame source.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_mfc_provider_destructor_glue_layer. Semantic/provider owner: non-authored MFC/compiler scalar-deleting destructor glue for CMenu. This is provider/compiler glue in the RecoilApp.cpp physical block, not authored RecoilApp/CZRecoilFrame source and not evidence for a separate CZRecoilFrame.cpp block.
 0x431b80 struct CMenu* __thiscall CMenu::ScalarDeletingDestructor(struct CMenu* self, uint32_t flags)
 {
     CMenu::Destructor(self)
@@ -37968,7 +37968,7 @@
     return self
 }
 
-// Physical file: D:\Proj\Battlesport\RecoilApp.cpp (source-block layer recoilapp_mfc_provider_destructor_glue_layer). Non-authored linked MFC CMenu destructor; installs EH frame, destroys HMENU, then resets to g_CObject_VTable. Provider glue in this physical block, not authored RecoilApp/CZRecoilFrame source.
+// Physical placement: emitted inside the literal-backed D:\Proj\Battlesport\RecoilApp.cpp block, source-block layer recoilapp_mfc_provider_destructor_glue_layer. Semantic/provider owner: non-authored MFC CMenu destructor glue. This is provider/compiler glue in the RecoilApp.cpp physical block, not authored RecoilApp/CZRecoilFrame source and not evidence for a separate CZRecoilFrame.cpp block.
 0x431ba0 void __thiscall CMenu::Destructor(struct CMenu* self)
 {
     int32_t var_4_1 = 0xffffffff
@@ -49218,7 +49218,7 @@
         struct zNetworkSessionDescStatusFields statusFields
 
         if (selectedSessionNode != 0)
-            zNetwork::InitSessionRuntime(&g_zNetwork_RecoilAppGuid)
+            zNetwork::InitSessionRuntime(&g_zNetwork_WestwoodOnlineAppGuid)
             char hostAddressText[0x14]
             Net::FormatIpv4Address(&hostAddressText, selectedSessionNode->m_hostIpv4Packed)
 
@@ -97682,8 +97682,8 @@
                 zMath::MatTransformPointBatchInPlace(gTransformedVerts, di->vertCount)
 
             int32_t vertIndex = 0
-            int32_t packedColor
-            packedColor.w = di->entries->materialRef->packedColor
+            uint32_t edi_2
+            edi_2.w = di->entries->materialRef->packedColor
 
             if (di->vertCount s> 0)
                 int32_t var_c = 0
@@ -97729,10 +97729,10 @@
 
                                     if ((((x87_r7_12 < temp19_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_12, temp19_1) ? 1 : 0) << 0xa | (x87_r7_12 == temp19_1 ? 1 : 0) << 0xe):1.b & 0x41) != 0)
                                         if (zVideo_ActiveRendererPath_1 == ZVID_RENDERER_BACKEND_SOFTWARE)
-                                            zRndr_LensFlare::QueueProjectedSample(&var_3c, packedColor, nullptr)
+                                            zRndr_LensFlare::QueueProjectedSample(&var_3c, edi_2, nullptr)
                                         else
     // Indirect fastcall: ECX=&projectedPoint, EDX=packedColor16, stack pointCount=1; DD3D callee ignores pointCount.
-                                            g_zVideo_pfnDrawPointColor16(1)
+                                            g_zVideo_pfnDrawPointColor16(&var_3c, edi_2, 1)
 
                     int32_t vertIndex = &di_1->mode + 1
                     int32_t var_c_1 = gTransformedVerts_1 + 0xc
@@ -97787,11 +97787,11 @@
                     while (i_1 != 1)
                     di = di_1
                 else
-                    int32_t ecx_19 = vertCount_1 * 0xc
+                    int32_t ecx_20 = vertCount_1 * 0xc
                     int32_t esi_2
-                    int32_t edi_2
-                    edi_2, esi_2 = __builtin_memcpy(gTransformedVerts_4, verts_1, ecx_19 & 0xfffffffc)
-                    __builtin_memcpy(edi_2, esi_2, ecx_19 & 3)
+                    int32_t edi_3
+                    edi_3, esi_2 = __builtin_memcpy(gTransformedVerts_4, verts_1, ecx_20 & 0xfffffffc)
+                    __builtin_memcpy(edi_3, esi_2, ecx_20 & 3)
         else
             long double x87_r7_13 = di->blendScale
             gTransformedVerts_1 = x87_r7_13
@@ -97891,13 +97891,13 @@
                 int32_t eax_32 = *vertexIndices
                 vertexIndices = &vertexIndices[1]
                 int32_t eax_34 = gTransformedVerts_1 + eax_32 * 0xc
-                struct zClipVert* edi_6 = edx_24
+                struct zClipVert* edi_7 = edx_24
                 edx_24 = &edx_24[1]
                 i_2 = i_13
                 i_13 -= 1
-                edi_6->x = *eax_34
-                edi_6->y = *(eax_34 + 4)
-                edi_6->z = *(eax_34 + 8)
+                edi_7->x = *eax_34
+                edi_7->y = *(eax_34 + 4)
+                edi_7->z = *(eax_34 + 8)
             while (i_2 != 1)
             long double x87_r7_28 = g_Clip_PolyVertsScratch[2].x - g_Clip_PolyVertsScratch[1].x
             long double x87_r6_14 = g_Clip_PolyVertsScratch[2].y - g_Clip_PolyVertsScratch[1].y
@@ -97935,11 +97935,11 @@
                 struct zClipVert triClipVerts[0x3]
 
                 if ((outActiveLightState_1:1.b & 1) == 0)
-                    int32_t ecx_57
-                    ecx_57.w = materialRef->packedColor
+                    int32_t ecx_58
+                    ecx_58.w = materialRef->packedColor
                     int32_t esi_13 = 0
                     float outFade = 0f
-                    int32_t var_c_2 = ecx_57
+                    int32_t var_c_2 = ecx_58
 
                     if (outDepthFade != 0)
                         int32_t eax_78
@@ -97975,13 +97975,13 @@
                         struct zClipVert* eax_83 = &g_Clip_PolyVerts
                         long double x87_r7_80 = 0f
                         int32_t i_20 = i_23
-                        float* ecx_63 = &g_Clip_PolyVertsScratch[0x3f + i_23]
+                        float* ecx_64 = &g_Clip_PolyVertsScratch[0x3f + i_23]
                         int32_t i_3
 
                         do
-                            long double x87_r6_26 = eax_83->y * *ecx_63
-                            long double x87_r5_36 = ecx_63[1] * eax_83->x
-                            ecx_63 = eax_83
+                            long double x87_r6_26 = eax_83->y * *ecx_64
+                            long double x87_r5_36 = ecx_64[1] * eax_83->x
+                            ecx_64 = eax_83
                             eax_83 = &eax_83[1]
                             i_3 = i_20
                             i_20 -= 1
@@ -98087,15 +98087,15 @@
                         if (vertexCount_2 s> 0)
     // Attribute clear loop zeros g_Clip_PolyAttr0[i] and the adjacent g_Clip_PolyAttr1[i] array in one stride.
                             float* eax_38 = &g_Clip_PolyAttr0
-                            uint32_t ecx_32 = vertexCount_2
+                            uint32_t ecx_33 = vertexCount_2
                             uint32_t i_6
 
                             do
                                 eax_38[0x40] = 0
                                 *eax_38 = 0f
                                 eax_38 = &eax_38[1]
-                                i_6 = ecx_32
-                                ecx_32 -= 1
+                                i_6 = ecx_33
+                                ecx_33 -= 1
                             while (i_6 != 1)
 
                         int32_t outDepthFade_1 = outDepthFade
@@ -98130,12 +98130,12 @@
                             zRndr::CommitFogColorParamsIfChanged()
                             vertexCount_2 = var_8
 
-                    uint32_t ecx_39 = vertexCount_2 << 3
+                    uint32_t ecx_40 = vertexCount_2 << 3
                     materialRef.b = clipMask.b
                     int32_t esi_9
-                    int32_t edi_8
-                    edi_8, esi_9 = __builtin_memcpy(g_Clip_PolyUvs, entries_1->uvPairs, ecx_39 & 0xfffffffc)
-                    __builtin_memcpy(edi_8, esi_9, ecx_39 & 3)
+                    int32_t edi_9
+                    edi_9, esi_9 = __builtin_memcpy(g_Clip_PolyUvs, entries_1->uvPairs, ecx_40 & 0xfffffffc)
+                    __builtin_memcpy(edi_9, esi_9, ecx_40 & 3)
 
                     if (lightFlags == 0)
                         int32_t eax_65
@@ -98152,13 +98152,13 @@
                             struct zClipVert* eax_67 = &g_Clip_PolyVerts
                             long double x87_r7_60 = 0f
                             int32_t esi_11 = vertexCount
-                            float* ecx_50 = &g_Clip_PolyVertsScratch[0x3f + vertexCount]
+                            float* ecx_51 = &g_Clip_PolyVertsScratch[0x3f + vertexCount]
                             int32_t i_7
 
                             do
-                                long double x87_r6_23 = eax_67->y * *ecx_50
-                                long double x87_r5_34 = ecx_50[1] * eax_67->x
-                                ecx_50 = eax_67
+                                long double x87_r6_23 = eax_67->y * *ecx_51
+                                long double x87_r5_34 = ecx_51[1] * eax_67->x
+                                ecx_51 = eax_67
                                 eax_67 = &eax_67[1]
                                 i_7 = esi_11
                                 esi_11 -= 1
@@ -98208,14 +98208,14 @@
                                         if (vertexCount_1 s> 0)
     // Alt-clip remap loop walks zClipVert triplets as float x/y pairs; pointer arithmetic is the compiler's tight-loop form.
                                             float* eax_74 = &g_Clip_PolyVerts[0].y
-                                            int32_t ecx_53 = vertexCount_1
+                                            int32_t ecx_54 = vertexCount_1
                                             int32_t i_9
 
                                             do
                                                 long double x87_r7_72 = g_zClipAlt_RemapScaleX * eax_74[-1]
                                                 eax_74 = &eax_74[3]
-                                                i_9 = ecx_53
-                                                ecx_53 -= 1
+                                                i_9 = ecx_54
+                                                ecx_54 -= 1
                                                 eax_74[-4] = x87_r7_72 + g_zClipAlt_RemapBiasX
                                                 eax_74[-3] = g_zClipAlt_RemapScaleY * eax_74[-3] + g_zClipAlt_RemapBiasY
                                             while (i_9 != 1)
@@ -98240,13 +98240,13 @@
                             struct zClipVert* eax_50 = &g_Clip_PolyVerts
                             long double x87_r7_43 = 0f
                             int32_t i_19 = i_22
-                            float* ecx_45 = &g_Clip_PolyVertsScratch[0x3f + i_22]
+                            float* ecx_46 = &g_Clip_PolyVertsScratch[0x3f + i_22]
                             int32_t i_10
 
                             do
-                                long double x87_r6_20 = eax_50->y * *ecx_45
-                                long double x87_r5_32 = ecx_45[1] * eax_50->x
-                                ecx_45 = eax_50
+                                long double x87_r6_20 = eax_50->y * *ecx_46
+                                long double x87_r5_32 = ecx_46[1] * eax_50->x
+                                ecx_46 = eax_50
                                 eax_50 = &eax_50[1]
                                 i_10 = i_19
                                 i_19 -= 1
@@ -155280,12 +155280,12 @@
     return self
 }
 
-// Non-authored: MSVC scalar deleting destructor for HudUiBackgroundCursorWidget member vtable.
-0x4b9710 struct HudUiBackgroundCursorWidget* __thiscall HudUiBackgroundCursorWidget::MemberScalarDeletingDestructor(struct HudUiBackgroundCursorWidget* self, uint32_t flags)
+// Non-authored MSVC scalar deleting destructor glue for the cursor member vtable; __thiscall self in ecx, deleteFlag stack arg, returns self, retn 4.
+0x4b9710 struct HudUiBackgroundCursorWidget* __thiscall HudUiBackgroundCursorWidget::MemberScalarDeletingDestructor(struct HudUiBackgroundCursorWidget* self, uint32_t deleteFlag)
 {
     HudUiBackgroundCursorWidget::DestructorCoreThunk(self)
 
-    if ((flags.b & 1) != 0)
+    if ((deleteFlag.b & 1) != 0)
         operator delete(self)
 
     return self
@@ -155497,13 +155497,13 @@
 
                         if (spec_4->count s>= 8)
                             str = spec_4->align.str
-                            char* edi_1 = "LEFT"
+                            char* edi = "LEFT"
                             char* str_1 = str
 
                             while (true)
                                 ebx_2.b = *str_1
                                 spec_1.b = ebx_2.b
-                                char temp2_1 = *edi_1
+                                char temp2_1 = *edi
                                 bool c_1 = ebx_2.b u< temp2_1
 
                                 if (ebx_2.b == temp2_1)
@@ -155513,12 +155513,12 @@
 
                                     ebx_2.b = str_1[1]
                                     spec_1.b = ebx_2.b
-                                    char temp5_1 = edi_1[1]
+                                    char temp5_1 = edi[1]
                                     c_1 = ebx_2.b u< temp5_1
 
                                     if (ebx_2.b == temp5_1)
                                         str_1 = &str_1[2]
-                                        edi_1 = &edi_1[2]
+                                        edi = &edi[2]
 
                                         if (spec_1.b != 0)
                                             continue
@@ -155534,14 +155534,14 @@
                         if (spec_4->count s< 8 || eax_24 == 0)
                             fontStyle->__offset(0x1d0c).d = 0
                         else
-                            char* edi_2 = "RIGHT"
+                            char* edi_1 = "RIGHT"
                             char* str_2 = str
                             int32_t eax_26
 
                             while (true)
                                 ebx_2.b = *str_2
                                 eax_24.b = ebx_2.b
-                                char temp6_1 = *edi_2
+                                char temp6_1 = *edi_1
                                 bool c_3 = ebx_2.b u< temp6_1
 
                                 if (ebx_2.b == temp6_1)
@@ -155551,12 +155551,12 @@
 
                                     ebx_2.b = str_2[1]
                                     eax_24.b = ebx_2.b
-                                    char temp9_1 = edi_2[1]
+                                    char temp9_1 = edi_1[1]
                                     c_3 = ebx_2.b u< temp9_1
 
                                     if (ebx_2.b == temp9_1)
                                         str_2 = &str_2[2]
-                                        edi_2 = &edi_2[2]
+                                        edi_1 = &edi_1[2]
 
                                         if (eax_24.b != 0)
                                             continue
@@ -155570,13 +155570,13 @@
                                 break
 
                             if (eax_26 != 0)
-                                char* edi_3 = "CENTER"
+                                char* edi_2 = "CENTER"
                                 char* str_3 = str
                                 int32_t eax_28
 
                                 while (true)
                                     str.b = *str_3
-                                    ebx_2.b = *edi_3
+                                    ebx_2.b = *edi_2
                                     eax_26.b = str.b
                                     bool c_5 = str.b u< ebx_2.b
 
@@ -155586,13 +155586,13 @@
                                             break
 
                                         str.b = str_3[1]
-                                        ebx_2.b = edi_3[1]
+                                        ebx_2.b = edi_2[1]
                                         eax_26.b = str.b
                                         c_5 = str.b u< ebx_2.b
 
                                         if (str.b == ebx_2.b)
                                             str_3 = &str_3[2]
-                                            edi_3 = &edi_3[2]
+                                            edi_2 = &edi_2[2]
 
                                             if (eax_26.b != 0)
                                                 continue
@@ -155697,6 +155697,7 @@
 
             struct zReader_Node_Arr_HudTextSpecList* loadedRootNode_1 = zReader::GetNamedNode(self->cfgRoot, "BACKGROUND_TEXT")
             loadedRootNode = loadedRootNode_1
+            char* entry_imagePath
 
             if (loadedRootNode_1 != 0)
                 int32_t count_3 = loadedRootNode_1->list->count
@@ -155714,15 +155715,15 @@
                     while (true)
                         struct zReader_NodeArray_HudTextSpecList* u32_3 = loadedRootNode_1->list
                         struct zReader_Node_Arr_HudTextSpec* textEntry = u32_3 + (sectionName_1 << 3)
-                        child_2->base.vtbl->SetTextFmt(child_2, zLoc::ResolveMessageKeyOrFallback(*((&u32_3->count)[sectionName_1 * 2] + 0xc)))
+                        child_2->base.vtbl->SetTextFmt(child_2, zLoc::ResolveMessageKeyOrFallback(*((&u32_3->count)[sectionName_1 * 2] + 0xc)), entry_imagePath)
                         struct zReader_NodeArray_HudTextSpec* spec_3 = textEntry->spec
     // BN artifact: actual call is SetPos(self=esi_5, x=config_x+uiOriginX, y=config_y+uiOriginY); stack cleanup from prior SetTextFmt confuses arg rendering
                         child_2->base.vtbl->SetPos(child_2, spec_3->x.i32 + self->uiOriginX, spec_3->y.i32 + self->uiOriginY)
                         int32_t edx_20 = textEntry->spec->fontStyleIndex.i32 * 9
                         int32_t fontStyleValid = *(&self->fontStyles + (edx_20 << 2))
-                        int32_t edi_6 = neg.d(fontStyleValid)
+                        int32_t edi_5 = neg.d(fontStyleValid)
     // Branchless: edi_14 = fontStyles[fontIndex].valid ? &self->fontStyles[fontIndex] : NULL. edx_16 is fontIndex*9; (edx_16<<2) == fontIndex*sizeof(HudFontStyle).
-                        struct HudFontStyle* fontStyleForText = sbb.d(edi_6, edi_6, fontStyleValid != 0) & (&self->fontStyles + (edx_20 << 2))
+                        struct HudFontStyle* fontStyleForText = sbb.d(edi_5, edi_5, fontStyleValid != 0) & (&self->fontStyles + (edx_20 << 2))
 
                         if (fontStyleForText != 0)
                             child_2->base.alignMode = fontStyleForText->alignMode
@@ -155763,7 +155764,7 @@
                 struct zReader_Node_Arr_1_Str* eax_66 = zReader::GetNamedNode(parentNode_1, "BITMAP")
 
                 if (eax_66 != 0)
-                    self->cursorWidget.ftable->SetImageByPathOwnedAndRefresh(&self->cursorWidget, eax_66->arr->str)
+                    self->cursorWidget.ftable->SetImageByPathOwnedAndRefresh(eax_66->arr->str, entry_imagePath)
                     HudUiBackgroundContainer::SetInputFocus(self, &self->cursorWidget)
 
                 struct zReader_Node_Arr_1_Str* eax_68 = zReader::GetNamedNode(parentNode_1, "CENTER")
@@ -160636,13 +160637,12 @@
     return self
 }
 
-// Compiler-generated VC6 scalar deleting destructor for HudUiBackgroundCursorWidget. Source ownership: HudUiBackground.cpp.
-// Calls HudUiBackgroundCursorWidget::DestructorCore(self), frees self with operator delete when (flags & 1) is set, and returns self in eax.
-0x4bfa00 struct HudUiBackgroundCursorWidget* __thiscall HudUiBackgroundCursorWidget::ScalarDeletingDestructor(struct HudUiBackgroundCursorWidget* self, uint32_t flags)
+// Non-authored MSVC scalar deleting destructor glue for HudUiBackgroundCursorWidget; __thiscall self in ecx, deleteFlag stack arg, returns self, retn 4.
+0x4bfa00 struct HudUiBackgroundCursorWidget* __thiscall HudUiBackgroundCursorWidget::ScalarDeletingDestructor(struct HudUiBackgroundCursorWidget* self, uint32_t deleteFlag)
 {
     HudUiBackgroundCursorWidget::DestructorCore(self)
 
-    if ((flags.b & 1) != 0)
+    if ((deleteFlag.b & 1) != 0)
         operator delete(self)
 
     return self
@@ -160668,7 +160668,7 @@
 }
 
 // Source: D:\Proj\Battlesport\hudui_background.cpp -- HudUiBackgroundCursorWidget::SetImageBorrowedAndRefreshIfChanged. Delegates borrowed-image assignment to HudUiWidget::SetImageBorrowedAndInvalidate and rebuilds the captured cursor background only when the image pointer changed.
-0x4bfa70 void __thiscall HudUiBackgroundCursorWidget::SetImageBorrowedAndRefreshIfChanged(struct HudUiBackgroundCursorWidget* self, struct zVid_Image* image)
+0x4bfa70 void __thiscall HudUiBackgroundCursorWidget::SetImageBorrowedAndRefreshIfChanged(struct HudUiBackgroundCursorWidget* self, zVidImagePartial* image)
 {
     if (HudUiWidget::SetImageBorrowedAndInvalidate(self, image) != 0)
         HudUiBackgroundCursorWidget::RebuildCapturedImageForCurrentImage(self)
@@ -160686,7 +160686,8 @@
             zVid_Image::Destroy(capturedImage)
             struct HudUiBackgroundCursorWidget_FTable* ftable = self->ftable
             self->capturedImage = nullptr
-            ftable->SetClip(self, nullptr, nullptr)
+            struct HudUiRect* entry_rectOrNull
+            ftable->SetClip(nullptr, nullptr, entry_rectOrNull)
             return
 
     if (self->capturedImage == 0)
@@ -160726,8 +160727,8 @@
     ecx_2.b = capturedImage->formatFlagsPacked
     ecx_2.b |= 0x20
     capturedImage->formatFlagsPacked = ecx_2.b
-    int32_t y = self->ftable->GetCenterY(self)
-    HudUiBackgroundCursorWidget::CaptureBackgroundUnderCursorImage(self, self->ftable->GetCenterX(self), y)
+    struct HudUiBackgroundCursorWidget* entry_edi
+    HudUiBackgroundCursorWidget::CaptureBackgroundUnderCursorImage(self, self->ftable->GetCenterX(self->ftable->GetCenterY(entry_edi)))
 }
 
 // SOURCE: HudUiBackgroundCursorWidget.cpp
@@ -160771,6 +160772,7 @@
     rect.x = x
     rect.h = image->height + y
     rect.w = image->width + x
+    struct HudUiRect* entry_rectOrNull
 
     if (zVideo_buff::CopySurfaceRectToImage(self->captureSourceSelector, &rect, capturedImage) != 0)
     // Clip rect is stored relative to the requested cursor image origin after primary-surface capture clamps the source rect.
@@ -160779,10 +160781,10 @@
         clipRect.left = rect.x - x
         clipRect.right = rect.w - x
         clipRect.bottom = rect.h - y
-        self->ftable->SetClip(self, self->capturedImage, &clipRect)
+        self->ftable->SetClip(self->capturedImage, &clipRect, entry_rectOrNull)
         return
 
-    self->ftable->SetClip(self, nullptr, nullptr)
+    self->ftable->SetClip(nullptr, nullptr, entry_rectOrNull)
 }
 
 // Source: D:\Proj\Battlesport\hudui_background.cpp -- HudUiBackgroundCursorWidget::Draw. Vtable slot 1; this override is a single unconditional tail jump to HudUiWidget::Draw, inheriting the parent widget draw path unchanged.
@@ -160815,9 +160817,7 @@
     return self
 }
 
-// Source ownership: D:\Proj\Battlesport\hudui_background.cpp. Compiler-generated MSVC scalar deleting destructor for HudUiBackgroundVideoWidget.
-//
-// ABI: __thiscall, ecx=self, stack arg deleteFlag, returns self in eax, retn 4. Calls HudUiBackgroundVideoWidget::Destructor, then calls operator delete(self) when deleteFlag & 1 is set. Vtable slot 0 of g_HudUiBackgroundVideoWidget_FTable.
+// Non-authored MSVC scalar deleting destructor glue for HudUiBackgroundVideoWidget; __thiscall self in ecx, deleteFlag stack arg, returns self, retn 4.
 0x4bfcb0 struct HudUiBackgroundVideoWidget* __thiscall HudUiBackgroundVideoWidget::ScalarDeletingDestructor(struct HudUiBackgroundVideoWidget* self, uint32_t deleteFlag)
 {
     HudUiBackgroundVideoWidget::Destructor(self)

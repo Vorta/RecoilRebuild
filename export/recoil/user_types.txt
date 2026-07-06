@@ -3015,19 +3015,19 @@ struct HudUiBackgroundCursorWidget
 // "HudUiBackgroundCursorWidget_FTable"
 struct HudUiBackgroundCursorWidget_FTable
 {
-	struct HudUiBackgroundCursorWidget* (__thiscall* dtor)(struct HudUiBackgroundCursorWidget* self, uint32_t flags);
-	void (__thiscall* Draw)(struct HudUiBackgroundCursorWidget* self);
-	void (__thiscall* DrawBase)(struct HudUiBackgroundCursorWidget* self);
-	void (__thiscall* SetPos)(struct HudUiBackgroundCursorWidget* self, int32_t x, int32_t y);
-	void (__thiscall* SetX)(struct HudUiBackgroundCursorWidget* self, int32_t x);
-	void (__thiscall* SetY)(struct HudUiBackgroundCursorWidget* self, int32_t y);
-	void (__thiscall* SetClip)(struct HudUiBackgroundCursorWidget* self, struct zVideo_BltSourceHead* bltSourceOrNull, struct HudUiRect const* rectOrNull);
-	void (__thiscall* SetClipRect)(struct HudUiBackgroundCursorWidget* self, struct HudUiRect const* rectOrNull);
-	void (__thiscall* Invalidate)(struct HudUiBackgroundCursorWidget* self);
-	void (__thiscall* Update)(struct HudUiBackgroundCursorWidget* self, float dt);
+	struct HudUiBackgroundCursorWidget* (* dtor)(struct HudUiBackgroundCursorWidget* self, uint32_t flags);
+	void (* Draw)(struct HudUiBackgroundCursorWidget* self);
+	void (* DrawBase)(struct HudUiBackgroundCursorWidget* self);
+	void (* SetPos)(struct HudUiBackgroundCursorWidget* self, int32_t x, int32_t y);
+	void (* SetX)(struct HudUiBackgroundCursorWidget* self, int32_t x);
+	void (* SetY)(struct HudUiBackgroundCursorWidget* self, int32_t y);
+	void (* SetClip)(struct HudUiBackgroundCursorWidget* self, struct zVideo_BltSourceHead* bltSourceOrNull, struct HudUiRect const* rectOrNull);
+	void (* SetClipRect)(struct HudUiBackgroundCursorWidget* self, struct HudUiRect const* rectOrNull);
+	void (* Invalidate)(struct HudUiBackgroundCursorWidget* self);
+	void (* Update)(struct HudUiBackgroundCursorWidget* self, float dt);
 	void* function_28;
-	struct HudUiRect* (__thiscall* GetBoundsRectOrNull)(struct HudUiBackgroundCursorWidget* self);
-	void (__thiscall* OnActivate)(struct HudUiBackgroundCursorWidget* self);
+	struct HudUiRect* (* GetBoundsRectOrNull)(struct HudUiBackgroundCursorWidget* self);
+	void (* OnActivate)(struct HudUiBackgroundCursorWidget* self);
 	void* function_34;
 	void* function_38;
 	void* function_3c;
@@ -3038,15 +3038,15 @@ struct HudUiBackgroundCursorWidget_FTable
 	void* function_50;
 	void* function_54;
 	void* function_58;
-	int32_t (__thiscall* HitTest)(struct HudUiBackgroundCursorWidget* self, int32_t px, int32_t py);
-	void (__thiscall* SetVisible)(struct HudUiBackgroundCursorWidget* self, int32_t visible);
-	int32_t (__thiscall* GetCenterX)(struct HudUiBackgroundCursorWidget* self);
-	int32_t (__thiscall* GetCenterY)(struct HudUiBackgroundCursorWidget* self);
+	int32_t (* HitTest)(struct HudUiBackgroundCursorWidget* self, int32_t px, int32_t py);
+	void (* SetVisible)(struct HudUiBackgroundCursorWidget* self, int32_t visible);
+	int32_t (* GetCenterX)(struct HudUiBackgroundCursorWidget* self);
+	int32_t (* GetCenterY)(struct HudUiBackgroundCursorWidget* self);
 	void* function_6c;
-	int32_t (__thiscall* GetRect)(struct HudUiBackgroundCursorWidget* self, struct HudUiRect* outRect);
-	void* function_74;
-	void (__thiscall* SetImageBorrowedAndRefreshIfChanged)(struct HudUiBackgroundCursorWidget* self, struct zVid_Image* image);
-	void (__thiscall* SetImageByPathOwnedAndRefresh)(struct HudUiBackgroundCursorWidget* self, char const* imagePath);
+	int32_t (* GetRect)(struct HudUiBackgroundCursorWidget* self, struct HudUiRect* outRect);
+	void (* RebuildBltRectFromImage)(struct HudUiBackgroundCursorWidget* self);
+	void (* SetImageBorrowedAndRefreshIfChanged)(struct HudUiBackgroundCursorWidget* self, zVidImagePartial* image);
+	void (* SetImageByPathOwnedAndRefresh)(struct HudUiBackgroundCursorWidget* self, char const* imagePath);
 };
 
 // "HudUiBackgroundPanel_FTableHeader"
@@ -10477,16 +10477,16 @@ struct RecoilStateBase
 // "RecoilStateBase_Vtbl"
 struct RecoilStateBase_Vtbl
 {
-	struct RecoilApp_IState* (* ScalarDeletingDtor)(struct RecoilApp_IState* self, int32_t flags);
-	void (* OnWndActivate)(struct RecoilApp_IState* self, enum RecoilWndActivateState nState);
-	void (* OnEnter)(struct RecoilApp_IState* self);
-	int32_t (* OnTryBecomeCurrent)(struct RecoilApp_IState* self);
-	int32_t (* OnUpdateShouldQuit)(struct RecoilApp_IState* self);
-	void (* OnExit)(struct RecoilApp_IState* self);
-	void (* OnDeactivate)(struct RecoilApp_IState* self);
-	void (* OnSuspend)(struct RecoilApp_IState* self, int32_t param);
-	void (* OnResume)(struct RecoilApp_IState* self, int32_t param);
-	int32_t (* OnIdleOrDispatch)(struct RecoilApp_IState* self, int32_t wParam, int32_t lParam);
+	struct RecoilStateBase* (* ScalarDeletingDtor)(struct RecoilStateBase* self, int32_t flags);
+	void (* OnWndActivate)(struct RecoilStateBase* self, enum RecoilWndActivateState nState);
+	void (* OnEnter)(struct RecoilStateBase* self);
+	int32_t (* OnTryBecomeCurrent)(struct RecoilStateBase* self);
+	int32_t (* OnUpdateShouldQuit)(struct RecoilStateBase* self);
+	void (* OnExit)(struct RecoilStateBase* self);
+	void (* OnDeactivate)(struct RecoilStateBase* self);
+	void (* OnSuspend)(struct RecoilStateBase* self, int32_t param);
+	void (* OnResume)(struct RecoilStateBase* self, int32_t param);
+	int32_t (* OnIdleOrDispatch)(struct RecoilStateBase* self, int32_t wParam, int32_t lParam);
 };
 
 // "RecoilStateCheatCode"
@@ -17267,6 +17267,9 @@ enum zVidHwApiMenuSelector : uint32_t
 	ZVID_HWAPI_SELECTOR_ACCELERATOR_2 = 0x2,
 	ZVID_HWAPI_SELECTOR_ACCELERATOR_3 = 0x3
 };
+
+// "zVidImagePartial"
+typedef struct zVid_Image zVidImagePartial;
 
 // "zVidModeIndex"
 enum zVidModeIndex : uint32_t

@@ -850,7 +850,9 @@ struct HudUiCheatCodeTitleWidget : HudUiZrdWidget {
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiCheatCodeTitleWidget) == 0x14c);
 
-struct HudUiCheatTextInputWidget : HudUiNumericTextInput {};
+struct HudUiCheatTextInputWidget : HudUiNumericTextInput {
+    HudUiCheatTextInputWidget();
+};
 RECOIL_STATIC_ASSERT(sizeof(HudUiCheatTextInputWidget) == 0x374);
 
 struct HudUiCheatCodeDialog : HudUiBackground {
@@ -858,7 +860,6 @@ struct HudUiCheatCodeDialog : HudUiBackground {
     HudUiCheatTextInputWidget cheatInputWidget;
 
     HudUiCheatCodeDialog();
-    void Destructor();
     HudUiBackground * ScalarDeletingDestructor(
         unsigned int flags
     );

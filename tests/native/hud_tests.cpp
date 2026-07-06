@@ -400,7 +400,7 @@ extern "C" int hud_ui_cheat_code_dialog_constructor_smoke(void)
     failure |= dialog->primaryClipImage != 0 ? 0 : 64;
     failure |= dialog->cfgRoot == 0 ? 0 : 128;
 
-    dialog->Destructor();
+    dialog->~HudUiCheatCodeDialog();
     ::operator delete(storage);
 
     return failure;
@@ -412,7 +412,7 @@ extern "C" int hud_ui_cheat_code_dialog_destructor_smoke(void)
 
     void *const storage = ::operator new(sizeof(HudUiCheatCodeDialog));
     HudUiCheatCodeDialog *const dialog = new (storage) HudUiCheatCodeDialog;
-    dialog->Destructor();
+    dialog->~HudUiCheatCodeDialog();
 
     const bool destructed =
         dialog->primaryClipImage == 0 &&

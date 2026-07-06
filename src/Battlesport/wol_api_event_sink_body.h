@@ -983,7 +983,7 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::LaunchSelectedSession(
     }
 
     if (selectedSessionNode != 0) {
-        zNetwork::InitSessionRuntime(&g_zNetwork_RecoilAppGuid);
+        zNetwork::InitSessionRuntime(&g_zNetwork_WestwoodOnlineAppGuid);
         Net::FormatIpv4Address(
             hostAddressText,
             selectedSessionNode->m_hostIpv4Packed

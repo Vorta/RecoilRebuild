@@ -27,6 +27,7 @@
 #include <math.h>
 #include <new>
 #include <stdlib.h>
+#include <ctype.h>
 #include <string.h>
 
 /**
@@ -1788,6 +1789,461 @@ int __fastcall AdjustSubCameraFocusForObstruction(
 
 } // namespace Player
 
+#include "Battlesport/mfc_three_float_dialog_body.h"
+
+namespace zStr {
+
+/**
+ * Reimplements 0x406a00: zStr::ContainsCaseInsensitive
+ * (D:\Proj\Battlesport\zStr.cpp).
+ *
+ * Purpose: compare uppercase bounded copies of two strings and report whether
+ * the needle appears in the haystack.
+ */
+int __fastcall ContainsCaseInsensitive(
+    const char *haystack,
+    const char *needle
+) {
+    char uppercaseHaystack[0x80];
+    char uppercaseNeedle[0x80];
+    int i;
+
+    for (i = 0; i < strlen(haystack); ++i) {
+        if (i >= 0x80) {
+            break;
+        }
+        uppercaseHaystack[i] = (char)toupper(haystack[i]);
+    }
+    uppercaseHaystack[i] = '\0';
+
+    for (i = 0; i < strlen(needle); ++i) {
+        if (i >= 0x80) {
+            break;
+        }
+        uppercaseNeedle[i] = (char)toupper(needle[i]);
+    }
+    uppercaseNeedle[i] = '\0';
+
+    return strstr(
+        uppercaseHaystack,
+        uppercaseNeedle
+    ) != 0 ? 1 : 0;
+}
+
+} // namespace zStr
+
+namespace HudCheat {
+
+const int kNanitePanelCheatSentinel = 123456789; // 0x075bcd15
+const unsigned int kHudCheatPickup901MessageId = 4096;
+const unsigned int kHudCheatRespawnMessageId = 4097;
+const unsigned int kHudCheatPickup903MessageId = 4098;
+const unsigned int kHudCheatBindCommand36MessageId = 4100;
+const unsigned int kHudCheatBindCommand31MessageId = 4101;
+const int kHudCheatPickup901TypeId = 901;
+const int kHudCheatRespawnPickupTypeId = 902;
+const int kHudCheatPickup903TypeId = 903;
+const int kHudCheatBindCommand31 = 31;
+const int kHudCheatBindCommand36 = 36;
+const int kHudCheatLifecycleLocal = 1;
+const int kHudCheatLifecycleInactive = 4;
+const int kHudCheatMasterTypeSub = 2;
+const int kHudCheatMasterTypeHover = 4;
+const int kHudCheatMasterTypeAmphib = 5;
+const int kHudCheatAltGunTransitionReset = 16;
+
+/**
+ * Reimplements 0x406af0: HudCheat::ExecuteCommandString.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: Match localized cheat commands, apply pickup effects, restore respawn state, and bind HUD hotkeys.
+ */
+int __fastcall ExecuteCommandString(
+    CString *commandString
+) {
+    if (commandString->IsEmpty()) {
+        return 0;
+    }
+
+    char *command = commandString->GetBuffer(1);
+
+    if (zStr::ContainsCaseInsensitive(
+            command,
+            zLoc::GetMessageString(kHudCheatPickup901MessageId)
+        ) != 0) {
+        return Pickup::ApplyEffect(
+            kHudCheatPickup901TypeId,
+            0,
+            (zUtil_SaveGameState *)g_GameStateOrMapTable
+        );
+    }
+
+    if (zStr::ContainsCaseInsensitive(command, zLoc::GetMessageString(kHudCheatRespawnMessageId)) !=
+        0) {
+        zUtil_PlayerStateStorage *playerState =
+            ((zUtil_SaveGameState *)g_GameStateOrMapTable)->playerState;
+        if (playerState->recentHitValid != 0) {
+            zEffectAnim::Stop(playerState->recentHitLightHandle);
+            playerState->recentHitLightHandle = 0;
+            playerState->recentHitValid = 0;
+        }
+
+        if (playerState->lifecycleState == kHudCheatLifecycleInactive) {
+            playerState->lifecycleState = kHudCheatLifecycleLocal;
+            zOpt::SetSteeringMode(g_PlayerPrevSteeringMode);
+            Player::ApplyCameraState(g_PlayerPrevCameraState);
+            Player::ResetMouseControlStateAndRecenterCursor(
+                (zUtil_SaveGameState *)g_GameStateOrMapTable
+            );
+            zEffect_Anim::NodeActionCallback(
+                ((zUtil_SaveGameState *)g_GameStateOrMapTable)->playerState->destroyedRespawnFxEntry,
+                playerState->rootNode
+            );
+            Player::ResetDamageStateAndTimedHitStatus(
+                (zUtil_SaveGameState *)g_GameStateOrMapTable
+            );
+
+            int masterType =
+                ((zUtil_SaveGameState *)g_GameStateOrMapTable)
+                    ->primaryModalState
+                    ->masterModalData
+                    ->masterType;
+            playerState->aiMode = 0;
+            playerState->nextModeSwitchAllowedTime = 0.0f;
+            playerState->autoTurnSign = 0;
+            playerState->motionInput = 0;
+            Player::TransitionToMasterTypeTrack(
+                (zUtil_SaveGameState *)g_GameStateOrMapTable,
+                1
+            );
+            playerState->primaryGunGateUntilTime = g_Time_AccumulatedTimeSec;
+
+            switch (masterType) {
+            case kHudCheatMasterTypeAmphib:
+                Player::TransitionToMasterTypeAmphib(
+                    (zUtil_SaveGameState *)g_GameStateOrMapTable,
+                    0,
+                    0
+                );
+                break;
+
+            case kHudCheatMasterTypeHover:
+                Player::TransitionToMasterTypeHover(
+                    (zUtil_SaveGameState *)g_GameStateOrMapTable,
+                    0
+                );
+                break;
+
+            case kHudCheatMasterTypeSub:
+                Player::TransitionToMasterTypeAmphib(
+                    (zUtil_SaveGameState *)g_GameStateOrMapTable,
+                    0,
+                    1
+                );
+                playerState->primaryGunGateUntilTime = g_Time_AccumulatedTimeSec;
+                Player::TransitionToMasterTypeSub(
+                    (zUtil_SaveGameState *)g_GameStateOrMapTable,
+                    0
+                );
+                break;
+            }
+        }
+
+        playerState->altGunTransitionState = kHudCheatAltGunTransitionReset;
+        return Pickup::ApplyEffect(
+            kHudCheatRespawnPickupTypeId,
+            0,
+            (zUtil_SaveGameState *)g_GameStateOrMapTable
+        );
+    }
+
+    if (zStr::ContainsCaseInsensitive(
+            command,
+            zLoc::GetMessageString(kHudCheatPickup903MessageId)
+        ) != 0) {
+        return Pickup::ApplyEffect(
+            kHudCheatPickup903TypeId,
+            0,
+            (zUtil_SaveGameState *)g_GameStateOrMapTable
+        );
+    }
+
+    if (zStr::ContainsCaseInsensitive(
+            command,
+            zLoc::GetMessageString(kHudCheatBindCommand31MessageId)
+        ) != 0) {
+        zInput::BindMap_Current_SetCommandCallback(
+            kHudCheatBindCommand31,
+            (zInputCommandCallbackFn)(HudUi::HandleHotkeyCommand)
+        );
+    }
+
+    if (zStr::ContainsCaseInsensitive(
+            command,
+            zLoc::GetMessageString(kHudCheatBindCommand36MessageId)
+        ) != 0) {
+        zInput::BindMap_Current_SetCommandCallback(
+            kHudCheatBindCommand36,
+            (zInputCommandCallbackFn)(HudUi::HandleHotkeyCommand)
+        );
+    }
+
+    return 0;
+}
+
+/**
+ * Reimplements 0x406cf0: HudCheat::ClearNanitePanelCheatSentinel.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: Clear the local player's nanite-panel cheat sentinel after it has been consumed.
+ */
+void ClearNanitePanelCheatSentinel() {
+    if (g_GameStateOrMapTable == 0) {
+        return;
+    }
+
+    zUtil_PlayerStateStorage *const playerState =
+        (zUtil_PlayerStateStorage *)(g_GameStateOrMapTable->playerState);
+    if (playerState->nanitePanelLevel == kNanitePanelCheatSentinel) {
+        playerState->nanitePanelLevel = 0;
+    }
+}
+
+} // namespace HudCheat
+
+/**
+ * Original-source inline helper for the cheat-code dialog constructor.
+ * Original source path: D:\Proj\Battlesport\HudUiCheatCode.cpp.
+ * Purpose: configure the cheat-code text input subobject before the dialog binds it.
+ */
+inline HudUiCheatTextInputWidget::HudUiCheatTextInputWidget()
+    : HudUiNumericTextInput() {
+    textInput.AllocTextBuffer(80);
+    Update("");
+    SetInputActive(1);
+    SetRawKeyboardCapture(1);
+}
+
+/**
+ * Reimplements 0x406d20: HudUiCheatCodeDialog::HudUiCheatCodeDialog.
+ * Original source path: D:\Proj\Battlesport\HudUiCheatCode.cpp.
+ * Purpose: Construct the cheat-code dialog, configure the input widget, and bind the ZRD widgets.
+ */
+HudUiCheatCodeDialog::HudUiCheatCodeDialog()
+    : HudUiBackground() {
+    zReader::Node *const dialogRoot =
+        HudUiBackground::LoadFromZrd(
+            "dialog.zrd",
+            "CHEAT_CODE_DIALOG",
+            0
+        );
+    if (dialogRoot != 0) {
+        HudUiBackground::BindWidgetByName(
+            dialogRoot,
+            &titleWidget,
+            "GO"
+        );
+        HudUiBackground::BindWidgetByName(
+            dialogRoot,
+            &cheatInputWidget,
+            "CHEATCODE"
+        );
+        HudUiBackground::FreeLoadedTreeRoots((int)dialogRoot);
+    }
+}
+
+/**
+ * Reimplements 0x406e10: HudUiCheatCodeDialog::ScalarDeletingDestructor.
+ * Original source path: D:\Proj\Battlesport\HudUiCheatCode.cpp.
+ * Purpose: Run cheat-code dialog cleanup and optionally free the object for VC5 scalar delete.
+ */
+HudUiBackground * HudUiCheatCodeDialog::ScalarDeletingDestructor(
+    unsigned int flags
+) {
+    this->~HudUiCheatCodeDialog();
+
+    if ((flags & 1u) != 0) {
+        ::operator delete(this);
+    }
+
+    return this;
+}
+
+/**
+ * Reimplements 0x406e30: HudUiCheatCodeDialog::~HudUiCheatCodeDialog
+ * (compiler-emitted implicit destructor).
+ * Original source path: D:\Proj\Battlesport\HudUiCheatCode.cpp.
+ * Purpose: destroy the cheat-code input and title widgets before background cleanup.
+ */
+
+/**
+ * Reimplements 0x406e90: RecoilStateCheatCode::StaticInitAndRegisterAtExit.
+ * Original source path: D:\Proj\Battlesport\HudUiCheatCode.cpp.
+ * Purpose: construct the global cheat-code state and register its atexit teardown.
+ */
+void RecoilStateCheatCode::StaticInitAndRegisterAtExit() {
+    ConstructGlobal();
+    StaticInit();
+}
+
+/**
+ * Reimplements 0x406ea0: RecoilStateCheatCode::ConstructGlobal.
+ * Original source path: D:\Proj\Battlesport\HudUiCheatCode.cpp.
+ * Purpose: run explicit construction for the global cheat-code app-state object.
+ */
+RecoilStateCheatCode *RecoilStateCheatCode::ConstructGlobal() {
+    return &((&g_RecoilStateCheatCode)->RecoilStateCheatCode::RecoilStateCheatCode());
+}
+
+/**
+ * Reimplements 0x406eb0: RecoilStateCheatCode::StaticInit.
+ * Original source path: D:\Proj\Battlesport\HudUiCheatCode.cpp.
+ * Purpose: register the global cheat-code app-state destructor with atexit.
+ */
+void RecoilStateCheatCode::StaticInit() {
+    atexit(AtExitDestructor);
+}
+
+/**
+ * Reimplements 0x406ec0: RecoilStateCheatCode::AtExitDestructor.
+ * Original source path: D:\Proj\Battlesport\HudUiCheatCode.cpp.
+ * Purpose: destroy the global cheat-code app-state object during CRT shutdown.
+ */
+void RecoilStateCheatCode::AtExitDestructor() {
+    (&g_RecoilStateCheatCode)->RecoilStateCheatCode::~RecoilStateCheatCode();
+}
+
+/**
+ * Reimplements 0x406ed0: RecoilStateCheatCode::RecoilStateCheatCode.
+ * Original source path: D:\Proj\Battlesport\HudUiCheatCode.cpp.
+ * Purpose: initialize the cheat-code app state and clear its dialog pointer.
+ */
+RecoilStateCheatCode::RecoilStateCheatCode() {
+    m_dialog = 0;
+}
+
+/**
+ * Reimplements 0x406f00: RecoilStateCheatCode::Destructor.
+ * Reimplements 0x406ee0: RecoilStateCheatCode::ScalarDeletingDestructor (compiler-emitted).
+ * Original source path: D:\Proj\Battlesport\HudUiCheatCode.cpp.
+ * Purpose: release any active cheat-code dialog and clear the app-state dialog pointer.
+ */
+RecoilStateCheatCode::~RecoilStateCheatCode() {
+    HudUiCheatCodeDialog *dialog = (HudUiCheatCodeDialog *)m_dialog;
+    if (dialog != 0) {
+        dialog->ScalarDeletingDestructor(1);
+        m_dialog = 0;
+    }
+}
+
+
+/**
+ * Reimplements 0x406f60: RecoilStateCheatCode::OnTryBecomeCurrent.
+ * Original source path: D:\Proj\Battlesport\RecoilStateCheatCode.cpp.
+ * Purpose: enter the cheat-code dialog state after capturing video and audio presentation state.
+ */
+int RecoilStateCheatCode::OnTryBecomeCurrent() {
+    if (g_zVideo_ActiveRendererPath != ZVID_RENDERER_BACKEND_SOFTWARE) {
+        g_zVideo_pfnBltSwToPrimaryRectDirect(
+            0,
+            0
+        );
+    }
+
+    m_prevHalfResAdjustMode =
+        (zVideoHalfResAdjustMode)zVideo::SetHalfResAdjustMode(ZVIDEO_HALFRES_ADJUST_DISABLED);
+    HudUi::SetInvalidateMode(0);
+
+    zSndPlayHandleSnapshot *const audioSnapshot = zSndPlayHandleSnapshot::CreateFromActiveSamples();
+    m_audioSnapshot = (RecoilPtr32)(unsigned int)audioSnapshot;
+    audioSnapshot->StopAllIfPlaying();
+
+    zSndSampleSet_InitByName(g_HudUiDialogSampleSetName);
+
+    HudUiCheatCodeDialog *const dialog = new HudUiCheatCodeDialog;
+    m_dialog = dialog;
+
+    dialog->SetEnabled(1);
+    return 1;
+}
+
+/**
+ * Reimplements 0x407010: RecoilStateCheatCode::OnDeactivate.
+ * Original source path: D:\Proj\Battlesport\RecoilStateCheatCode.cpp.
+ * Purpose: leave the cheat-code dialog state, restore presentation state, and execute the entered command.
+ */
+void RecoilStateCheatCode::OnDeactivate() {
+    CString commandString;
+
+    if (m_dialog != 0) {
+        commandString =
+            ((HudUiCheatCodeDialog *)m_dialog)->cheatInputWidget.GetBuffer();
+
+        zVideo::RunPostprocessOnPrimaryBuffer();
+
+        ((HudUiCheatCodeDialog *)m_dialog)->SetEnabled(0);
+
+        ((HudUiDialogController *)m_dialog)->BlitOwnedSurfaceToPrimary();
+        zVideo::Dispatch_UnlockPrimarySurfaceState();
+
+        if (m_dialog != 0) {
+            ((HudUiCheatCodeDialog *)m_dialog)->ScalarDeletingDestructor(1);
+        }
+
+        m_dialog = 0;
+    }
+
+    zSndSampleSet_DestroyByName(g_HudUiDialogSampleSetName);
+
+    zSndPlayHandleSnapshot *const audioSnapshot =
+        (zSndPlayHandleSnapshot *)(unsigned int)m_audioSnapshot;
+    if (audioSnapshot != 0) {
+        audioSnapshot->RestoreAllWithGlobalVolumeDelta();
+    }
+
+    zVideo::SetHalfResAdjustMode(m_prevHalfResAdjustMode);
+    HudUi::SetInvalidateMode(m_prevHalfResAdjustMode);
+    HudUiMgr::TriggerCurrentLayoutOnActivated();
+    HudCheat::ExecuteCommandString(&commandString);
+}
+
+
+/**
+ * Reimplements 0x4070e0: HudUiCheatCodeTitleWidget::OnActivate.
+ * Original source path: D:\Proj\Battlesport\HudUiCheatCode.cpp.
+ * Purpose: Queue the cheat-code state exit when the GO widget is activated.
+ */
+void HudUiCheatCodeTitleWidget::OnActivate() {
+    g_RecoilApp.QueueExitCurrentState(0);
+    HudUiZrdWidget::OnActivate();
+}
+
+/**
+ * Reimplements 0x407100: HudUiCallback::QueueExitCurrentState.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: Queue an immediate exit from the current Recoil application state.
+ */
+void HudUiCallback::QueueExitCurrentState() {
+    g_RecoilApp.QueueExitCurrentState(0);
+}
+
+/**
+ * Reimplements 0x407110: HudUiCallback::QueueCheatCodeState.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: Queue the cheat-code state and report successful callback handling.
+ */
+int HudUiCallback::QueueCheatCodeState() {
+    g_RecoilApp.QueuePushState(
+        &g_RecoilStateCheatCode,
+        0
+    );
+    return 1;
+}
+
+// Source model note: 0x407170 is unresolved app-state base/default-table
+// scalar-deleting-destructor glue. Current RecoilApp_IState header shape still
+// emits this HUD-layer glue before the zStub helper prefix, so this is a
+// source-shape blocker rather than accepted owner evidence.
+#include "Battlesport/cls_stubs_body.h"
+
 /**
  * Reimplements 0x4bdc70: HudWeatherFx::Constructor.
  * Original source path: D:\Proj\Battlesport\hud.cpp.
@@ -2940,208 +3396,6 @@ HudUiBackground * HudUiBackgroundConfirmQuit::ScalarDeletingDestructor(
 }
 
 /**
- * Reimplements 0x4070e0: HudUiCheatCodeTitleWidget::OnActivate.
- * Original source path: D:\Proj\Battlesport\HudUiCheatCode.cpp.
- * Purpose: Queue the cheat-code state exit when the GO widget is activated.
- */
-void HudUiCheatCodeTitleWidget::OnActivate() {
-    g_RecoilApp.QueueExitCurrentState(0);
-    HudUiZrdWidget::OnActivate();
-}
-
-/**
- * Reimplements 0x406d20: HudUiCheatCodeDialog::HudUiCheatCodeDialog.
- * Original source path: D:\Proj\Battlesport\HudUiCheatCode.cpp.
- * Purpose: Construct the cheat-code dialog, configure the input widget, and bind the ZRD widgets.
- */
-HudUiCheatCodeDialog::HudUiCheatCodeDialog()
-    : HudUiBackground() {
-    cheatInputWidget.textInput.AllocTextBuffer(80);
-    cheatInputWidget.Update("");
-    cheatInputWidget.SetInputActive(1);
-    cheatInputWidget.SetRawKeyboardCapture(1);
-
-    zReader::Node *const dialogRoot =
-        HudUiBackground::LoadFromZrd(
-            "dialog.zrd",
-            "CHEAT_CODE_DIALOG",
-            0
-        );
-    if (dialogRoot != 0) {
-        HudUiBackground::BindWidgetByName(
-            dialogRoot,
-            &titleWidget,
-            "GO"
-        );
-        HudUiBackground::BindWidgetByName(
-            dialogRoot,
-            &cheatInputWidget,
-            "CHEATCODE"
-        );
-        HudUiBackground::FreeLoadedTreeRoots((int)dialogRoot);
-    }
-}
-
-/**
- * Reimplements 0x406e30: HudUiCheatCodeDialog::Destructor.
- * Original source path: D:\Proj\Battlesport\HudUiCheatCode.cpp.
- * Purpose: Destroy the cheat-code input and title widgets before background cleanup.
- */
-void HudUiCheatCodeDialog::Destructor() {
-    cheatInputWidget.Destructor();
-    titleWidget.DestructorCore();
-    this->HudUiBackground::~HudUiBackground();
-}
-
-/**
- * Reimplements 0x406e10: HudUiCheatCodeDialog::ScalarDeletingDestructor.
- * Original source path: D:\Proj\Battlesport\HudUiCheatCode.cpp.
- * Purpose: Run cheat-code dialog cleanup and optionally free the object for VC5 scalar delete.
- */
-HudUiBackground * HudUiCheatCodeDialog::ScalarDeletingDestructor(
-    unsigned int flags
-) {
-    Destructor();
-
-    if ((flags & 1u) != 0) {
-        ::operator delete(this);
-    }
-
-    return this;
-}
-
-/**
- * Reimplements 0x406e90: RecoilStateCheatCode::StaticInitAndRegisterAtExit.
- * Original source path: D:\Proj\Battlesport\HudUiCheatCode.cpp.
- * Purpose: construct the global cheat-code state and register its atexit teardown.
- */
-void RecoilStateCheatCode::StaticInitAndRegisterAtExit() {
-    ConstructGlobal();
-    StaticInit();
-}
-
-/**
- * Reimplements 0x406ea0: RecoilStateCheatCode::ConstructGlobal.
- * Original source path: D:\Proj\Battlesport\HudUiCheatCode.cpp.
- * Purpose: run placement construction for the global cheat-code app-state object.
- */
-RecoilStateCheatCode *RecoilStateCheatCode::ConstructGlobal() {
-    return new (&g_RecoilStateCheatCode) RecoilStateCheatCode;
-}
-
-/**
- * Reimplements 0x406eb0: RecoilStateCheatCode::StaticInit.
- * Original source path: D:\Proj\Battlesport\HudUiCheatCode.cpp.
- * Purpose: register the global cheat-code app-state destructor with atexit.
- */
-void RecoilStateCheatCode::StaticInit() {
-    atexit(AtExitDestructor);
-}
-
-/**
- * Reimplements 0x406ec0: RecoilStateCheatCode::AtExitDestructor.
- * Original source path: D:\Proj\Battlesport\HudUiCheatCode.cpp.
- * Purpose: destroy the global cheat-code app-state object during CRT shutdown.
- */
-void RecoilStateCheatCode::AtExitDestructor() {
-    g_RecoilStateCheatCode.~RecoilStateCheatCode();
-}
-
-/**
- * Reimplements 0x406ed0: RecoilStateCheatCode::RecoilStateCheatCode.
- * Original source path: D:\Proj\Battlesport\HudUiCheatCode.cpp.
- * Purpose: initialize the cheat-code app state and clear its dialog pointer.
- */
-RecoilStateCheatCode::RecoilStateCheatCode() {
-    m_dialog = 0;
-}
-
-/**
- * Reimplements 0x406f60: RecoilStateCheatCode::OnTryBecomeCurrent.
- * Original source path: D:\Proj\Battlesport\RecoilStateCheatCode.cpp.
- * Purpose: enter the cheat-code dialog state after capturing video and audio presentation state.
- */
-int RecoilStateCheatCode::OnTryBecomeCurrent() {
-    if (g_zVideo_ActiveRendererPath != ZVID_RENDERER_BACKEND_SOFTWARE) {
-        g_zVideo_pfnBltSwToPrimaryRectDirect(
-            0,
-            0
-        );
-    }
-
-    m_prevHalfResAdjustMode =
-        (zVideoHalfResAdjustMode)zVideo::SetHalfResAdjustMode(ZVIDEO_HALFRES_ADJUST_DISABLED);
-    HudUi::SetInvalidateMode(0);
-
-    zSndPlayHandleSnapshot *const audioSnapshot = zSndPlayHandleSnapshot::CreateFromActiveSamples();
-    m_audioSnapshot = (RecoilPtr32)(unsigned int)audioSnapshot;
-    audioSnapshot->StopAllIfPlaying();
-
-    zSndSampleSet_InitByName(g_HudUiDialogSampleSetName);
-
-    HudUiCheatCodeDialog *const dialog = new HudUiCheatCodeDialog;
-    m_dialog = dialog;
-
-    dialog->SetEnabled(1);
-    return 1;
-}
-
-/**
- * Reimplements 0x407010: RecoilStateCheatCode::OnDeactivate.
- * Original source path: D:\Proj\Battlesport\RecoilStateCheatCode.cpp.
- * Purpose: leave the cheat-code dialog state, restore presentation state, and execute the entered command.
- */
-void RecoilStateCheatCode::OnDeactivate() {
-    CString commandString;
-
-    HudUiCheatCodeDialog *dialog = (HudUiCheatCodeDialog *)m_dialog;
-    if (dialog != 0) {
-        commandString = dialog->cheatInputWidget.GetBuffer();
-
-        zVideo::RunPostprocessOnPrimaryBuffer();
-
-        dialog->SetEnabled(0);
-
-        ((HudUiDialogController *)m_dialog)->BlitOwnedSurfaceToPrimary();
-        zVideo::Dispatch_UnlockPrimarySurfaceState();
-
-        dialog = (HudUiCheatCodeDialog *)m_dialog;
-        if (dialog != 0) {
-            dialog->ScalarDeletingDestructor(1);
-        }
-
-        m_dialog = 0;
-    }
-
-    zSndSampleSet_DestroyByName(g_HudUiDialogSampleSetName);
-
-    zSndPlayHandleSnapshot *const audioSnapshot =
-        (zSndPlayHandleSnapshot *)(unsigned int)m_audioSnapshot;
-    if (audioSnapshot != 0) {
-        audioSnapshot->RestoreAllWithGlobalVolumeDelta();
-    }
-
-    zVideo::SetHalfResAdjustMode(m_prevHalfResAdjustMode);
-    HudUi::SetInvalidateMode(m_prevHalfResAdjustMode);
-    HudUiMgr::TriggerCurrentLayoutOnActivated();
-    HudCheat::ExecuteCommandString(&commandString);
-}
-
-/**
- * Reimplements 0x406f00: RecoilStateCheatCode::Destructor.
- * Original source path: D:\Proj\Battlesport\HudUiCheatCode.cpp.
- * Purpose: release any active cheat-code dialog and clear the app-state dialog pointer.
- */
-RecoilStateCheatCode::~RecoilStateCheatCode() {
-    HudUiCheatCodeDialog *dialog = (HudUiCheatCodeDialog *)m_dialog;
-    if (dialog != 0) {
-        dialog->ScalarDeletingDestructor(1);
-    }
-
-    m_dialog = 0;
-}
-
-/**
  * Reimplements 0x415850: RecoilStateConfirmQuit::RecoilStateConfirmQuit.
  * Original source path: D:\Proj\Battlesport\HudConfirmQuitDialog.cpp.
  * Purpose: initialize the confirm-quit app state and clear its dialog pointer.
@@ -3212,6 +3466,123 @@ RecoilStateConfirmQuit::~RecoilStateConfirmQuit() {
 
         m_dialog = 0;
     }
+}
+
+/**
+ * Reimplements 0x408a30: HudUiControlsDialog::Constructor.
+ * Original source path: D:\Proj\Battlesport\hud_ui_dialogs.cpp.
+ * Purpose: Construct the controls dialog, bind its ZRD widgets, and seed option selectors from current input/options.
+ * Evidence: BN/source slice builds HudUiBackground, resume/commands widgets, five option selectors, loads
+ * dialog.zrd/CONTROLS_DIALOG, binds named controls, then seeds zInp/zOpt selector indices.
+ */
+HudUiControlsDialog * HudUiControlsDialog::Constructor() {
+    new ((HudUiBackground *)this) HudUiBackground;
+
+    resumeWidget.Constructor();
+    commandsWidget.Constructor();
+    mouseOrJoystickSelector.Constructor();
+    throttleModeSelector.Constructor();
+    steeringModeSelector.Constructor();
+    cursorModeSelector.Constructor();
+    cameraModeSelector.Constructor();
+
+    zReader::Node *const dialogRoot = HudUiBackground::LoadFromZrd(
+        "dialog.zrd",
+        g_HudUiControlsDialogSectionName,
+        0
+    );
+    if (dialogRoot != 0) {
+        HudUiBackground::BindWidgetByName(
+            dialogRoot,
+            &resumeWidget,
+            g_HudUiResumeButtonNodeName
+        );
+        HudUiBackground::BindWidgetByName(
+            dialogRoot,
+            &commandsWidget,
+            g_HudUiControlsDialog_CommandsButtonNodeName
+        );
+        HudUiBackground::BindWidgetByName(
+            dialogRoot,
+            &mouseOrJoystickSelector,
+            g_HudUiControlsDialog_MouseOrJoystickSelectorNodeName
+        );
+        HudUiBackground::BindWidgetByName(
+            dialogRoot,
+            &throttleModeSelector,
+            g_HudUiControlsDialog_ThrottleModeSelectorNodeName
+        );
+        HudUiBackground::BindWidgetByName(
+            dialogRoot,
+            &steeringModeSelector,
+            g_HudUiControlsDialog_SteeringModeSelectorNodeName
+        );
+        HudUiBackground::BindWidgetByName(
+            dialogRoot,
+            &cursorModeSelector,
+            g_HudUiControlsDialog_CursorModeSelectorNodeName
+        );
+        HudUiBackground::BindWidgetByName(
+            dialogRoot,
+            &cameraModeSelector,
+            g_HudUiControlsDialog_CameraModeSelectorNodeName
+        );
+        HudUiBackground::FreeLoadedTreeRoots((int)(unsigned int)dialogRoot);
+    }
+
+    mouseOrJoystickSelector.SetSelectedIndex(zInp::GetJoystickOption());
+    throttleModeSelector.SetSelectedIndex(zOpt::GetThrottleMode());
+    steeringModeSelector.SetSelectedIndex(zOpt::GetSteeringMode());
+    cursorModeSelector.SetSelectedIndex(zOpt::GetCursorMode());
+    cameraModeSelector.SetSelectedIndex(zOpt::GetCameraModePlayerState() == 1 ? 1 : 0);
+    return this;
+}
+
+/**
+ * Reimplements 0x408c20: HudUiControlsDialog_CommandsWidget::OnActivate.
+ * Original source path: D:\Proj\Battlesport\hud_ui_dialogs.cpp.
+ * Purpose: Queue the command-dialog state from the controls dialog Commands widget before running inherited ZRD activation.
+ * Evidence: BN/source slice calls HudCmdDialogState::QueueEnter, then chains HudUiZrdWidget::OnActivate.
+ */
+void HudUiControlsDialog_CommandsWidget::OnActivate() {
+    HudCmdDialogState::QueueEnter();
+    HudUiZrdWidget::OnActivate();
+}
+
+/**
+ * Reimplements 0x408c40: HudUiControlsDialog::ScalarDeletingDestructor.
+ * Original source path: D:\Proj\Battlesport\hud_ui_dialogs.cpp.
+ * Purpose: Run controls dialog destruction and optionally release heap storage for VC5 scalar delete.
+ * Evidence: BN/source slice calls the recovered destructor, tests delete flag bit 0, conditionally
+ * calls operator delete, and returns this as the HudUiBackground base pointer.
+ */
+HudUiBackground * HudUiControlsDialog::ScalarDeletingDestructor(
+    unsigned int flags
+) {
+    Destructor();
+    if ((flags & 1u) != 0) {
+        ::operator delete(this);
+    }
+
+    return this;
+}
+
+/**
+ * Reimplements 0x408c70: HudUiControlsDialog::Destructor.
+ * Original source path: D:\Proj\Battlesport\hud_ui_dialogs.cpp.
+ * Purpose: Destroy the controls dialog child widgets in reverse construction order before background cleanup.
+ * Evidence: BN/source slice tears down camera, cursor, steering, throttle, mouse/joystick selectors,
+ * commands/resume widgets, then the HudUiBackground base.
+ */
+void HudUiControlsDialog::Destructor() {
+    cameraModeSelector.DestructorCore();
+    cursorModeSelector.DestructorCore();
+    steeringModeSelector.DestructorCore();
+    throttleModeSelector.DestructorCore();
+    mouseOrJoystickSelector.DestructorCore();
+    commandsWidget.DestructorCore();
+    resumeWidget.DestructorCore();
+    this->HudUiBackground::~HudUiBackground();
 }
 
 /**
@@ -3380,6 +3751,8 @@ void RecoilStateControls::OnDeactivate() {
     m_dialog = 0;
 }
 
+#include "Battlesport/recoil_state_dialog_host_on_suspend_body.h"
+
 /**
  * Reimplements 0x408fa0: RecoilStateControls::OnResume.
  * Original source path: D:\Proj\Battlesport\recoil_state.cpp.
@@ -3423,308 +3796,6 @@ void RecoilStateControls::QueueEnter() {
         0
     );
 }
-
-/**
- * Reimplements 0x408c20: HudUiControlsDialog_CommandsWidget::OnActivate.
- * Original source path: D:\Proj\Battlesport\hud_ui_dialogs.cpp.
- * Purpose: Queue the command-dialog state from the controls dialog Commands widget before running inherited ZRD activation.
- * Evidence: BN/source slice calls HudCmdDialogState::QueueEnter, then chains HudUiZrdWidget::OnActivate.
- */
-void HudUiControlsDialog_CommandsWidget::OnActivate() {
-    HudCmdDialogState::QueueEnter();
-    HudUiZrdWidget::OnActivate();
-}
-
-/**
- * Reimplements 0x408a30: HudUiControlsDialog::Constructor.
- * Original source path: D:\Proj\Battlesport\hud_ui_dialogs.cpp.
- * Purpose: Construct the controls dialog, bind its ZRD widgets, and seed option selectors from current input/options.
- * Evidence: BN/source slice builds HudUiBackground, resume/commands widgets, five option selectors, loads
- * dialog.zrd/CONTROLS_DIALOG, binds named controls, then seeds zInp/zOpt selector indices.
- */
-HudUiControlsDialog * HudUiControlsDialog::Constructor() {
-    new ((HudUiBackground *)this) HudUiBackground;
-
-    resumeWidget.Constructor();
-    commandsWidget.Constructor();
-    mouseOrJoystickSelector.Constructor();
-    throttleModeSelector.Constructor();
-    steeringModeSelector.Constructor();
-    cursorModeSelector.Constructor();
-    cameraModeSelector.Constructor();
-
-    zReader::Node *const dialogRoot = HudUiBackground::LoadFromZrd(
-        "dialog.zrd",
-        g_HudUiControlsDialogSectionName,
-        0
-    );
-    if (dialogRoot != 0) {
-        HudUiBackground::BindWidgetByName(
-            dialogRoot,
-            &resumeWidget,
-            g_HudUiResumeButtonNodeName
-        );
-        HudUiBackground::BindWidgetByName(
-            dialogRoot,
-            &commandsWidget,
-            g_HudUiControlsDialog_CommandsButtonNodeName
-        );
-        HudUiBackground::BindWidgetByName(
-            dialogRoot,
-            &mouseOrJoystickSelector,
-            g_HudUiControlsDialog_MouseOrJoystickSelectorNodeName
-        );
-        HudUiBackground::BindWidgetByName(
-            dialogRoot,
-            &throttleModeSelector,
-            g_HudUiControlsDialog_ThrottleModeSelectorNodeName
-        );
-        HudUiBackground::BindWidgetByName(
-            dialogRoot,
-            &steeringModeSelector,
-            g_HudUiControlsDialog_SteeringModeSelectorNodeName
-        );
-        HudUiBackground::BindWidgetByName(
-            dialogRoot,
-            &cursorModeSelector,
-            g_HudUiControlsDialog_CursorModeSelectorNodeName
-        );
-        HudUiBackground::BindWidgetByName(
-            dialogRoot,
-            &cameraModeSelector,
-            g_HudUiControlsDialog_CameraModeSelectorNodeName
-        );
-        HudUiBackground::FreeLoadedTreeRoots((int)(unsigned int)dialogRoot);
-    }
-
-    mouseOrJoystickSelector.SetSelectedIndex(zInp::GetJoystickOption());
-    throttleModeSelector.SetSelectedIndex(zOpt::GetThrottleMode());
-    steeringModeSelector.SetSelectedIndex(zOpt::GetSteeringMode());
-    cursorModeSelector.SetSelectedIndex(zOpt::GetCursorMode());
-    cameraModeSelector.SetSelectedIndex(zOpt::GetCameraModePlayerState() == 1 ? 1 : 0);
-    return this;
-}
-
-/**
- * Reimplements 0x408c70: HudUiControlsDialog::Destructor.
- * Original source path: D:\Proj\Battlesport\hud_ui_dialogs.cpp.
- * Purpose: Destroy the controls dialog child widgets in reverse construction order before background cleanup.
- * Evidence: BN/source slice tears down camera, cursor, steering, throttle, mouse/joystick selectors,
- * commands/resume widgets, then the HudUiBackground base.
- */
-void HudUiControlsDialog::Destructor() {
-    cameraModeSelector.DestructorCore();
-    cursorModeSelector.DestructorCore();
-    steeringModeSelector.DestructorCore();
-    throttleModeSelector.DestructorCore();
-    mouseOrJoystickSelector.DestructorCore();
-    commandsWidget.DestructorCore();
-    resumeWidget.DestructorCore();
-    this->HudUiBackground::~HudUiBackground();
-}
-
-/**
- * Reimplements 0x408c40: HudUiControlsDialog::ScalarDeletingDestructor.
- * Original source path: D:\Proj\Battlesport\hud_ui_dialogs.cpp.
- * Purpose: Run controls dialog destruction and optionally release heap storage for VC5 scalar delete.
- * Evidence: BN/source slice calls the recovered destructor, tests delete flag bit 0, conditionally
- * calls operator delete, and returns this as the HudUiBackground base pointer.
- */
-HudUiBackground * HudUiControlsDialog::ScalarDeletingDestructor(
-    unsigned int flags
-) {
-    Destructor();
-    if ((flags & 1u) != 0) {
-        ::operator delete(this);
-    }
-
-    return this;
-}
-
-/**
- * Reimplements 0x407100: HudUiCallback::QueueExitCurrentState.
- * Original source path: D:\Proj\Battlesport\hud.cpp.
- * Purpose: Queue an immediate exit from the current Recoil application state.
- */
-void HudUiCallback::QueueExitCurrentState() {
-    g_RecoilApp.QueueExitCurrentState(0);
-}
-
-/**
- * Reimplements 0x407110: HudUiCallback::QueueCheatCodeState.
- * Original source path: D:\Proj\Battlesport\hud.cpp.
- * Purpose: Queue the cheat-code state and report successful callback handling.
- */
-int HudUiCallback::QueueCheatCodeState() {
-    g_RecoilApp.QueuePushState(
-        &g_RecoilStateCheatCode,
-        0
-    );
-    return 1;
-}
-
-namespace HudCheat {
-
-const int kNanitePanelCheatSentinel = 123456789; // 0x075bcd15
-const unsigned int kHudCheatPickup901MessageId = 4096;
-const unsigned int kHudCheatRespawnMessageId = 4097;
-const unsigned int kHudCheatPickup903MessageId = 4098;
-const unsigned int kHudCheatBindCommand36MessageId = 4100;
-const unsigned int kHudCheatBindCommand31MessageId = 4101;
-const int kHudCheatPickup901TypeId = 901;
-const int kHudCheatRespawnPickupTypeId = 902;
-const int kHudCheatPickup903TypeId = 903;
-const int kHudCheatBindCommand31 = 31;
-const int kHudCheatBindCommand36 = 36;
-const int kHudCheatLifecycleLocal = 1;
-const int kHudCheatLifecycleInactive = 4;
-const int kHudCheatMasterTypeSub = 2;
-const int kHudCheatMasterTypeHover = 4;
-const int kHudCheatMasterTypeAmphib = 5;
-const int kHudCheatAltGunTransitionReset = 16;
-
-/**
- * Reimplements 0x406af0: HudCheat::ExecuteCommandString.
- * Original source path: D:\Proj\Battlesport\hud.cpp.
- * Purpose: Match localized cheat commands, apply pickup effects, restore respawn state, and bind HUD hotkeys.
- */
-int __fastcall ExecuteCommandString(
-    CString *commandString
-) {
-    if (commandString->IsEmpty()) {
-        return 0;
-    }
-
-    char *const command = commandString->GetBuffer(1);
-    zUtil_SaveGameState *const saveState = (zUtil_SaveGameState *)g_GameStateOrMapTable;
-
-    if (zStr::ContainsCaseInsensitive(
-            command,
-            zLoc::GetMessageString(kHudCheatPickup901MessageId)
-        ) != 0) {
-        return Pickup::ApplyEffect(
-            kHudCheatPickup901TypeId,
-            0,
-            saveState
-        );
-    }
-
-    if (zStr::ContainsCaseInsensitive(command, zLoc::GetMessageString(kHudCheatRespawnMessageId)) !=
-        0) {
-        zUtil_PlayerStateStorage *const playerState = saveState->playerState;
-        if (playerState->recentHitValid != 0) {
-            zEffectAnim::Stop(playerState->recentHitLightHandle);
-            playerState->recentHitLightHandle = 0;
-            playerState->recentHitValid = 0;
-        }
-
-        if (playerState->lifecycleState == kHudCheatLifecycleInactive) {
-            playerState->lifecycleState = kHudCheatLifecycleLocal;
-            zOpt::SetSteeringMode(g_PlayerPrevSteeringMode);
-            Player::ApplyCameraState(g_PlayerPrevCameraState);
-            Player::ResetMouseControlStateAndRecenterCursor(saveState);
-            zEffect_Anim::NodeActionCallback(
-                playerState->destroyedRespawnFxEntry,
-                playerState->rootNode
-            );
-            Player::ResetDamageStateAndTimedHitStatus(saveState);
-
-            const int masterType = saveState->primaryModalState->masterModalData->masterType;
-            playerState->aiMode = 0;
-            playerState->nextModeSwitchAllowedTime = 0.0f;
-            playerState->autoTurnSign = 0;
-            playerState->motionInput = 0;
-            Player::TransitionToMasterTypeTrack(
-                saveState,
-                1
-            );
-            playerState->primaryGunGateUntilTime = g_Time_AccumulatedTimeSec;
-
-            if (masterType == kHudCheatMasterTypeSub) {
-                Player::TransitionToMasterTypeAmphib(
-                    saveState,
-                    0,
-                    1
-                );
-                playerState->primaryGunGateUntilTime = g_Time_AccumulatedTimeSec;
-                Player::TransitionToMasterTypeSub(
-                    saveState,
-                    0
-                );
-            } else if (masterType == kHudCheatMasterTypeHover) {
-                Player::TransitionToMasterTypeHover(
-                    saveState,
-                    0
-                );
-            } else if (masterType == kHudCheatMasterTypeAmphib) {
-                Player::TransitionToMasterTypeAmphib(
-                    saveState,
-                    0,
-                    0
-                );
-            }
-        }
-
-        playerState->altGunTransitionState = kHudCheatAltGunTransitionReset;
-        return Pickup::ApplyEffect(
-            kHudCheatRespawnPickupTypeId,
-            0,
-            saveState
-        );
-    }
-
-    if (zStr::ContainsCaseInsensitive(
-            command,
-            zLoc::GetMessageString(kHudCheatPickup903MessageId)
-        ) != 0) {
-        return Pickup::ApplyEffect(
-            kHudCheatPickup903TypeId,
-            0,
-            saveState
-        );
-    }
-
-    if (zStr::ContainsCaseInsensitive(
-            command,
-            zLoc::GetMessageString(kHudCheatBindCommand31MessageId)
-        ) != 0) {
-        zInput::BindMap_Current_SetCommandCallback(
-            kHudCheatBindCommand31,
-            (zInputCommandCallbackFn)(HudUi::HandleHotkeyCommand)
-        );
-    }
-
-    if (zStr::ContainsCaseInsensitive(
-            command,
-            zLoc::GetMessageString(kHudCheatBindCommand36MessageId)
-        ) != 0) {
-        zInput::BindMap_Current_SetCommandCallback(
-            kHudCheatBindCommand36,
-            (zInputCommandCallbackFn)(HudUi::HandleHotkeyCommand)
-        );
-    }
-
-    return 0;
-}
-
-/**
- * Reimplements 0x406cf0: HudCheat::ClearNanitePanelCheatSentinel.
- * Original source path: D:\Proj\Battlesport\hud.cpp.
- * Purpose: Clear the local player's nanite-panel cheat sentinel after it has been consumed.
- */
-void ClearNanitePanelCheatSentinel() {
-    if (g_GameStateOrMapTable == 0) {
-        return;
-    }
-
-    zUtil_PlayerStateStorage *const playerState =
-        (zUtil_PlayerStateStorage *)(g_GameStateOrMapTable->playerState);
-    if (playerState->nanitePanelLevel == kNanitePanelCheatSentinel) {
-        playerState->nanitePanelLevel = 0;
-    }
-}
-
-} // namespace HudCheat
 
 namespace zOpt {
 
@@ -3784,8 +3855,6 @@ void Disable() {
 
 } // namespace HudLowMeterLoopSound
 
-#include "Battlesport/zstr_body.h"
-#include "Battlesport/mfc_three_float_dialog_body.h"
 #include "Battlesport/recoil_state_credits_body.h"
 #include "Battlesport/hud_ui_main_menu_dialog_body.h"
 #include "Battlesport/recoil_state_dialog_host_body.h"
@@ -3796,4 +3865,3 @@ void Disable() {
 #include "Battlesport/recoil_state_main_menu_transition_on_try_become_current_body.h"
 #include "Battlesport/recoil_state_main_menu_transition_queue_enter_body.h"
 #include "Battlesport/recoil_state_main_menu_transition_set_deferred_video_mode_index_body.h"
-#include "Battlesport/cls_stubs_body.h"

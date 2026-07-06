@@ -7,8 +7,7 @@ artifacts remain authoritative for individual functions.
 ## Current Patterns
 
 - Scalar deleting destructor wrappers: current Binary Ninja evidence classifies
-  wrappers such as `0x407170` (`RecoilStateBase::ScalarDeletingDestructor`),
-  `0x434980` (`HudUiSaveGameDialog::ScalarDeletingDestructor`), and `0x434dd0`
+  wrappers such as `0x434980` (`HudUiSaveGameDialog::ScalarDeletingDestructor`), and `0x434dd0`
   (`HudUiLoadGameDialog::ScalarDeletingDestructor`), and `0x435ca0`
   (`RecoilStateSaveLoadTransition::ScalarDeletingDestructor`), and `0x4429b0`
   (`RecoilApp_MfcOleModule::ScalarDeletingDestructor`) as compiler-generated
@@ -16,6 +15,10 @@ artifacts remain authoritative for individual functions.
   delete flag, optionally calls `operator delete`, and returns `this`. Do not
   author these wrappers manually in production source; model the owning C++
   class/interface and record the wrapper as a provider boundary.
+  Active caveat: `0x407170` has the direct-write scalar-deleting-wrapper byte
+  shape, but its `0x4ccd50` state-base/interface table boundary and owner are
+  still unresolved in the `hud.cpp` block audit. Do not cite this pattern as an
+  accepted owner/provider claim for `0x407170` or `0x4ccd50`.
 - Scalar deleting destructor wrappers with an inlined small destructor body
   follow the same source-shape rule. For example, `0x40bf50`
   (`HudCmdBindingEntry::ScalarDeletingDestructor`) is compiler glue that
@@ -74,6 +77,19 @@ artifacts remain authoritative for individual functions.
   `__declspec(naked)`, `_emit`, `.asm` files, raw EBP offsets, provider shims,
   linker/order dependence, whole-function raw assembly, or unrelated AINet raw
   assembly.
+- AINet forward-probe final add asm: `0x401420`
+  (`AINet::AiMode2ForwardProbeRequiresAutoTurn`) keeps normal C++ for the
+  early checks, double-evaluating normalize clamp, endpoint scale, contact
+  collection, queue checks, and returns. ChatGPT Pro source-shape review and
+  VC5 evidence isolate the original raw-assembly footprint to the final
+  fixed-register x87 vector-add body in
+  `AINET_FORWARD_PROBE_ADD_WORLD_ASM`; `python tools/recoil.py verify vc5
+  0x401420` passes with zero unmasked mismatches under `vc5_o2_ob0_md_facs`.
+  The endpoint add source is the original `playerState->worldPos` pointer, not
+  the raised local start point, and the normalize clamp must not be rewritten as
+  a cached single-evaluation local.
+  This does not permit naked/whole-function asm, `_emit`, raw EBP offsets, or
+  unrelated AINet raw assembly.
 - HUD/UI leaf accessors and setters: verified examples include
   `HudUiElement::GetX` and nearby small HUD helpers. Prefer named fields and
   static layout checks over offset math once Binary Ninja types are stable.

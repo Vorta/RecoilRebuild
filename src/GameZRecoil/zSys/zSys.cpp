@@ -15,8 +15,15 @@
 #include <string.h>
 #include <sys/stat.h>
 
+/* VC5 sees zsys_time_impl.h's GetTickCount import before winbase.h. */
+#if defined(_MSC_VER) && _MSC_VER <= 1100
+#define GetTickCount zSys_IgnoredWinbaseGetTickCountPrototype
+#endif
 #include <ddraw.h>
 #include <windows.h>
+#if defined(_MSC_VER) && _MSC_VER <= 1100
+#undef GetTickCount
+#endif
 
 #include <stdio.h>
 

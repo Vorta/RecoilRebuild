@@ -126,7 +126,6 @@ void OnAppDeactivate() {
     g_zInput_MouseActive = 0;
     Mouse_UpdateAcquireState();
 }
-} // namespace zInput
 /**
  * Reimplements 0x471b20: zInput::OnAppActivate.
  * Original source path: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
@@ -274,12 +273,6 @@ int Keyboard_IsUnsuspended() {
 int zInput_Keyboard_IsUnsuspended() {
     return (~g_zInput_DeviceRegistry & 2U) >> 1;
 }
-}
-
-namespace {
-#if defined(_MSC_VER) && _MSC_VER < 1200
-typedef std::vector<zInput_BindGroupInfo *> zInput_BindGroupInfoStdVector;
-#endif
 
 /**
  * Reimplements data 0x4e5ce0: k_EmptyString.
@@ -333,8 +326,6 @@ void __fastcall BindMapOverlay_DeleteNodeList(
 }
 
 const int kZInputCommandLabelBytes = 0x50;
-
-} // namespace
 
 /**
  * Reimplements 0x471c90: zInput::Mouse_ResumeFromSuspend.
@@ -509,4 +500,3 @@ void __fastcall PollActiveDevices(
         Keyboard_PollState(savedDispatchCallbacks);
     }
 }
-

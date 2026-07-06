@@ -18383,7 +18383,7 @@ extern "C" int zhud_message_box_constructor_fallback_smoke(void) {
         (reinterpret_cast<HudUiElement *>(&dialog->titlePanel)->flags & 0x10u) == 0 &&
         (dialog->okButton.flags & 0x10u) != 0;
 
-    dialog->Destructor();
+    dialog->~HudUiCheatCodeDialog();
 
     g_zVideo_PrimarySurfaceState = savedPrimaryState;
     g_zVideo_PrimarySurfaceRectScratch = savedPrimaryRectScratch;
@@ -18506,7 +18506,7 @@ extern "C" int zhud_message_box_run_modal_smoke(void) {
         zRndr::g_pitchBytes == 777 && zRndr::g_bytesPerPixel == 3 &&
         g_zVideo_UseHalfResBackbuffer == 0;
 
-    dialog->Destructor();
+    dialog->~HudUiCheatCodeDialog();
 
     g_zVideo_ActiveRendererPath = savedRendererPath;
     g_zVideo_RendererType = savedRendererType;
@@ -18558,7 +18558,7 @@ extern "C" int zhud_message_box_destructor_smoke(void) {
         dialog->backgroundImage != nullptr && dialog->okButtonNormalImage != nullptr &&
         dialog->okButtonPressedImage != nullptr;
 
-    dialog->Destructor();
+    dialog->~HudUiCheatCodeDialog();
 
     const bool destructed =
         hadImages && dialog->backgroundImage == nullptr &&
@@ -19759,7 +19759,7 @@ extern "C" int hud_ui_cheat_code_dialog_constructor_smoke(void) {
         dialog->cheatInputWidget.sliderBorder.sliderVisibleWhenInputActive == 1 &&
         dialog->primaryClipImage != nullptr && dialog->cfgRoot == nullptr;
 
-    dialog->Destructor();
+    dialog->~HudUiCheatCodeDialog();
     ::operator delete(storage);
 
     g_zGame_Options_OptionListHead = savedOptionsHead;
@@ -19799,7 +19799,7 @@ extern "C" int hud_ui_cheat_code_dialog_destructor_smoke(void) {
 
     void *const storage = ::operator new(sizeof(HudUiCheatCodeDialog));
     HudUiCheatCodeDialog *const dialog = new (storage) HudUiCheatCodeDialog;
-    dialog->Destructor();
+    dialog->~HudUiCheatCodeDialog();
 
     const bool destructed =
         dialog->base.base.vptr == &g_HudUiContainer_FTable &&

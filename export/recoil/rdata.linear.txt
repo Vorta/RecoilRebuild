@@ -455,15 +455,31 @@
 0x4cc70c HRESULT (__stdcall* const ole32:CoInitialize)(void* pvReserved) = CoInitialize
 0x4cc710 void (__stdcall* const ole32:CoUninitialize)() = CoUninitialize
 0x4cc714 void* data_4cc714 = 0x0
-0x4cc718 void* (* g_Mfc42_GetProcByOrdinal4234Getter)() = Mfc42::GetBaseMessageMapThunk
-0x4cc71c void* data_4cc71c = data_4cc720
-0x4cc720 void* data_4cc720 = 0x0
-0x4cc724 void* data_4cc724 = 0x0
-0x4cc728 void* data_4cc728 = 0x0
-0x4cc72c void* data_4cc72c = 0x0
-0x4cc730 void* data_4cc730 = 0x0
-0x4cc734 void* data_4cc734 = 0x0
+// CAboutDlg::messageMap generated MFC AFX_MSGMAP: base getter 0x441a00 returns the imported base message-map pointer; entries begin at 0x4cc720 and contain only the zero terminator before g_CAboutDlg_Vtbl at 0x4cc738.
+0x4cc718 struct MfcMsgMap g_CAboutDlg_MessageMap =
+0x4cc718 {
+    // CAboutDlg::messageMap generated MFC AFX_MSGMAP: base getter 0x441a00
+    // returns the imported base message-map pointer; entries begin at 0x4cc720
+    // and contain only the zero terminator before g_CAboutDlg_Vtbl at 0x4cc738.
+0x4cc718     void* getBaseMap = Mfc42::GetBaseMessageMapThunk
+0x4cc71c     struct zMfcMsgMapEntry* entries = g_CAboutDlg_MessageEntries
+// CAboutDlg message-map entries: one zero AFX_MSGMAP_ENTRY terminator (24 bytes) before g_CAboutDlg_Vtbl at 0x4cc738.
+0x4cc720 }
+0x4cc720 struct zMfcMsgMapEntry g_CAboutDlg_MessageEntries[0x1] =
+0x4cc720 {
+0x4cc720     [0x0] =
+0x4cc720     {
+        // CAboutDlg message-map entries: one zero AFX_MSGMAP_ENTRY terminator (24
+        // bytes) before g_CAboutDlg_Vtbl at 0x4cc738.
+0x4cc720         int32_t nMessage = 0x0
+0x4cc724         int32_t nCode = 0x0
+0x4cc728         int32_t nID = 0x0
+0x4cc72c         int32_t nLastID = 0x0
+0x4cc730         int32_t nSig = 0x0
+0x4cc734         void* pfn = 0x0
 // Export-backed CDialogVTable packet begins here.
+0x4cc738     }
+0x4cc738 }
 0x4cc738 struct CDialogVTable g_CAboutDlg_Vtbl =
 0x4cc738 {
     // Export-backed CDialogVTable packet begins here.
@@ -479,7 +495,7 @@
 0x4cc75c     void* Ordinal_MFC42_3825 = MFC42:Ordinal_MFC42_3825
 0x4cc760     void* Ordinal_MFC42_3831 = MFC42:Ordinal_MFC42_3831
 0x4cc764     void* GetTypeLib = MFC42:CCmdTarget::GetTypeLib(CCmdTarget* this, unsigned long, struct ITypeLib**)
-0x4cc768     void* field_30 = MFC42::GetProcByOrdinal4234GetterAddr
+0x4cc768     void* field_30 = CAboutDlg::GetMessageMap
 0x4cc76c     void* GetCommandMap = MFC42:CCmdTarget::GetCommandMap(CCmdTarget* this) const
 0x4cc770     void* _GetBaseDispatchMap = MFC42:COleControlContainer::_GetBaseDispatchMap()
 0x4cc774     void* _GetBaseConnectionMap = MFC42:COleControl::_GetBaseConnectionMap()
@@ -502,9 +518,9 @@
 0x4cc7b8     void* OnCommand = MFC42:CWnd::OnCommand(CWnd* this, uint32_t, long)
 0x4cc7bc     void* OnNotify = MFC42:CWnd::OnNotify(CWnd* this, uint32_t, long, long*)
 0x4cc7c0     void* GetSuperWndProcAddr = MFC42:CWnd::GetSuperWndProcAddr(CWnd* this))(struct HWND__*, uint32_t, uint32_t, long)
-0x4cc7c4     void* field_8c = MFC::NoOpVirtualOneArg
-0x4cc7c8     void* field_90 = CWnd::DisableWindow
-0x4cc7cc     void* field_94 = CWnd::EnableWindow
+0x4cc7c4     void* field_8c = CWnd::DoDataExchange
+0x4cc7c8     void* field_90 = CWnd::BeginModalState
+0x4cc7cc     void* field_94 = CWnd::EndModalState
 0x4cc7d0     void* PreTranslateMessage = MFC42:CDialog::PreTranslateMessage(CDialog* this, struct tagMSG*)
 0x4cc7d4     void* OnAmbientProperty = MFC42:CWnd::OnAmbientProperty(CWnd* this, class COleControlSite*, long, struct tagVARIANT*)
 0x4cc7d8     void* WindowProc = MFC42:CWnd::WindowProc(CWnd* this, uint32_t, uint32_t, long)
@@ -927,13 +943,17 @@
 0x4ccd14     HudUiWidget_VT_Noarg RebuildBltRectFromImage = HudUiWidget::RebuildBltRectFromImage
 0x4ccd18     HudUiWidget_VT_Noarg RefreshState = HudUiZrdWidget::RefreshState
 0x4ccd1c     HudUiWidget_VT_LoadFromZrd LoadFromZrd = HudUiZrdWidget::LoadFromZrd
+// Tail of g_HudUiCheatCodeTitleWidget_FTable (0x4ccca0..0x4ccd28); next data object starts at 0x4ccd28.
+    // Tail of g_HudUiCheatCodeTitleWidget_FTable (0x4ccca0..0x4ccd28); next
+    // data object starts at 0x4ccd28.
 0x4ccd20     HudUiWidget_VT_Noarg PostLoadFromZrd = zError::ReportOldNoOp
 0x4ccd24     HudUiWidget_VT_SetNormalizedValue SetNormalizedValue = 0x0
-// Recoil cheat-code/default state vtables and network GUID packet.
+// 40-byte g_RecoilStateCheatCode_Vtbl (0x4ccd28..0x4ccd50); constructor/destructor write this vtable address.
 0x4ccd28 }
 0x4ccd28 struct RecoilStateDialogHost_Vtbl g_RecoilStateCheatCode_Vtbl =
 0x4ccd28 {
-    // Recoil cheat-code/default state vtables and network GUID packet.
+    // 40-byte g_RecoilStateCheatCode_Vtbl (0x4ccd28..0x4ccd50);
+    // constructor/destructor write this vtable address.
 0x4ccd28     struct RecoilStateDialogHost* (* ScalarDeletingDtor)(struct RecoilStateDialogHost* self, int32_t flags) = RecoilStateCheatCode::ScalarDeletingDestructor
 0x4ccd2c     void (* OnWndActivate)(struct RecoilStateDialogHost* self, enum RecoilWndActivateState nState) = RecoilStateCredits::OnWndActivate
 0x4ccd30     void (* OnEnter)(struct RecoilStateDialogHost* self) = zError::ReportOldNoOp
@@ -944,23 +964,35 @@
 0x4ccd44     void (* OnSuspend)(struct RecoilStateDialogHost* self, int32_t param) = zStub::NoOp1Arg
 0x4ccd48     void (* OnResume)(struct RecoilStateDialogHost* self, int32_t param) = zStub::NoOp1Arg
 0x4ccd4c     int32_t (* OnIdleOrDispatch)(struct RecoilStateDialogHost* self, int32_t wParam, int32_t lParam) = zStub::ReturnOne2Args
+// Unresolved app-state base/interface vtable candidate, 10 slots. Slot0=0x407170; remaining slots include zStub/default hook implementations. Referenced by derived state destructor resets and RecoilApp embedded-state teardown/construct-overwrite patterns. Treat as auxiliary class/interface vtable evidence only, not a standalone SOURCE_OWNERS data/provider owner. Exact original owner, class/interface name, and source-order cause remain unresolved.
 0x4ccd50 }
 0x4ccd50 struct RecoilStateBase_Vtbl g_RecoilStateBase_Vtbl =
 0x4ccd50 {
-0x4ccd50     struct RecoilApp_IState* (* ScalarDeletingDtor)(struct RecoilApp_IState* self, int32_t flags) = RecoilStateBase::ScalarDeletingDestructor
-0x4ccd54     void (* OnWndActivate)(struct RecoilApp_IState* self, enum RecoilWndActivateState nState) = zStub::NoOp1Arg
-0x4ccd58     void (* OnEnter)(struct RecoilApp_IState* self) = zError::ReportOldNoOp
-0x4ccd5c     int32_t (* OnTryBecomeCurrent)(struct RecoilApp_IState* self) = zStub::ReturnOneNoArgs
-0x4ccd60     int32_t (* OnUpdateShouldQuit)(struct RecoilApp_IState* self) = zStub::ReturnZeroNoArgs
-0x4ccd64     void (* OnExit)(struct RecoilApp_IState* self) = zError::ReportOldNoOp
-0x4ccd68     void (* OnDeactivate)(struct RecoilApp_IState* self) = zError::ReportOldNoOp
-0x4ccd6c     void (* OnSuspend)(struct RecoilApp_IState* self, int32_t param) = zStub::NoOp1Arg
-0x4ccd70     void (* OnResume)(struct RecoilApp_IState* self, int32_t param) = zStub::NoOp1Arg
-0x4ccd74     int32_t (* OnIdleOrDispatch)(struct RecoilApp_IState* self, int32_t wParam, int32_t lParam) = zStub::ReturnOne2Args
+    // Unresolved app-state base/interface vtable candidate, 10 slots.
+    // Slot0=0x407170; remaining slots include zStub/default hook
+    // implementations. Referenced by derived state destructor resets and
+    // RecoilApp embedded-state teardown/construct-overwrite patterns. Treat as
+    // auxiliary class/interface vtable evidence only, not a standalone
+    // SOURCE_OWNERS data/provider owner. Exact original owner, class/interface
+    // name, and source-order cause remain unresolved.
+0x4ccd50     struct RecoilStateBase* (* ScalarDeletingDtor)(struct RecoilStateBase* self, int32_t flags) = RecoilStateBase::ScalarDeletingDestructor
+0x4ccd54     void (* OnWndActivate)(struct RecoilStateBase* self, enum RecoilWndActivateState nState) = zStub::NoOp1Arg
+0x4ccd58     void (* OnEnter)(struct RecoilStateBase* self) = zError::ReportOldNoOp
+0x4ccd5c     int32_t (* OnTryBecomeCurrent)(struct RecoilStateBase* self) = zStub::ReturnOneNoArgs
+0x4ccd60     int32_t (* OnUpdateShouldQuit)(struct RecoilStateBase* self) = zStub::ReturnZeroNoArgs
+0x4ccd64     void (* OnExit)(struct RecoilStateBase* self) = zError::ReportOldNoOp
+0x4ccd68     void (* OnDeactivate)(struct RecoilStateBase* self) = zError::ReportOldNoOp
+0x4ccd6c     void (* OnSuspend)(struct RecoilStateBase* self, int32_t param) = zStub::NoOp1Arg
+0x4ccd70     void (* OnResume)(struct RecoilStateBase* self, int32_t param) = zStub::NoOp1Arg
+0x4ccd74     int32_t (* OnIdleOrDispatch)(struct RecoilStateBase* self, int32_t wParam, int32_t lParam) = zStub::ReturnOne2Args
+// GUID object g_zNetwork_RecoilAppGuid (0x4ccd78..0x4ccd88).
 0x4ccd78 }
 0x4ccd78 GUID g_zNetwork_RecoilAppGuid =
+// GUID object g_zNetwork_RecoilAppGuid (0x4ccd78..0x4ccd88).
 0x4ccd78   [Guid("c94ebca1-95b7-11d2-a77c-006008987743")]
-0x4ccd88 GUID g_zNetwork_RecoilAppGuid =
+// GUID object g_zNetwork_WestwoodOnlineAppGuid (0x4ccd88..0x4ccd98).
+0x4ccd88 GUID g_zNetwork_WestwoodOnlineAppGuid =
+// GUID object g_zNetwork_WestwoodOnlineAppGuid (0x4ccd88..0x4ccd98).
 0x4ccd88   [Guid("c94ebca2-95b7-11d2-a77c-006008987743")]
 0x4ccd98 double g_zOpt_CompareTolerancePct = 0.02
 0x4ccda0 void* data_4ccda0 = 0x3f800000
@@ -1250,7 +1282,7 @@
 0x4cd188     int32_t (* OnUpdateShouldQuit)(struct RecoilStateDialogHost* self) = RecoilStateSaveLoadTransition::OnUpdateShouldQuit
 0x4cd18c     void (* OnExit)(struct RecoilStateDialogHost* self) = zError::ReportOldNoOp
 0x4cd190     void (* OnDeactivate)(struct RecoilStateDialogHost* self) = RecoilStateControls::OnDeactivate
-0x4cd194     void (* OnSuspend)(struct RecoilStateDialogHost* self, int32_t param) = RecoilStateDialogHost::OnWndActivate
+0x4cd194     void (* OnSuspend)(struct RecoilStateDialogHost* self, int32_t param) = RecoilStateDialogHost::OnSuspend
 0x4cd198     void (* OnResume)(struct RecoilStateDialogHost* self, int32_t param) = RecoilStateControls::OnResume
 0x4cd19c     int32_t (* OnIdleOrDispatch)(struct RecoilStateDialogHost* self, int32_t wParam, int32_t lParam) = zStub::ReturnOne2Args
 // Credits-panel header followed by scrolling-text widget vtable.
@@ -2497,7 +2529,7 @@
     // meter/message/counter/slot, panels, list/timer, layouts, and main-menu
     // dialog controls
 0x4ce2f8     void (__thiscall* InsertChar)(struct HudUiTextInput* self, int32_t key) = HudUiTextInput::InsertCharAtCursor
-0x4ce2fc     void (__thiscall* IgnoreKey)(struct HudUiTextInput* self, int32_t key) = MFC::NoOpVirtualOneArg
+0x4ce2fc     void (__thiscall* IgnoreKey)(struct HudUiTextInput* self, int32_t key) = CWnd::DoDataExchange
 0x4ce300     void (__thiscall* OnAccept)(struct HudUiTextInput* self) = GameNet::EndChatComposeAndSendThunk
 0x4ce304     void (__thiscall* OnCancel)(struct HudUiTextInput* self) = zGame::ReturnOnlyStub
 0x4ce308     void (__thiscall* Backspace)(struct HudUiTextInput* self) = HudUiTextInput::BackspaceDeleteChar
@@ -3320,7 +3352,7 @@
 0x4cee38     int32_t (__thiscall* OnUpdateShouldQuit)(struct RecoilStateMainMenuTransition* self) = RecoilStateSaveLoadTransition::OnUpdateShouldQuit
 0x4cee3c     void (__thiscall* OnExit)(struct RecoilStateMainMenuTransition* self) = zError::ReportOldNoOp
 0x4cee40     void (__thiscall* OnDeactivate)(struct RecoilStateMainMenuTransition* self) = RecoilStateMainMenuTransition::OnDeactivate
-0x4cee44     void (__thiscall* OnSuspend)(struct RecoilStateMainMenuTransition* self, int32_t param) = RecoilStateDialogHost::OnWndActivate
+0x4cee44     void (__thiscall* OnSuspend)(struct RecoilStateMainMenuTransition* self, int32_t param) = RecoilStateDialogHost::OnSuspend
 0x4cee48     void (__thiscall* OnResume)(struct RecoilStateMainMenuTransition* self, int32_t param) = RecoilStateMainMenuTransition::OnResume
 0x4cee4c     int32_t (__thiscall* OnIdleOrDispatch)(struct RecoilStateMainMenuTransition* self, int32_t wParam, int32_t lParam) = zStub::ReturnOne2Args
 0x4cee50 }
@@ -4394,8 +4426,8 @@
 0x4cfcec     void* OnNotify = MFC42:CWnd::OnNotify(CWnd* this, uint32_t, long, long*)
 0x4cfcf0     void* GetSuperWndProcAddr = MFC42:CWnd::GetSuperWndProcAddr(CWnd* this))(struct HWND__*, uint32_t, uint32_t, long)
 0x4cfcf4     void* field_8c = NetSessionBrowserDialog::DoDataExchange
-0x4cfcf8     void* field_90 = CWnd::DisableWindow
-0x4cfcfc     void* field_94 = CWnd::EnableWindow
+0x4cfcf8     void* field_90 = CWnd::BeginModalState
+0x4cfcfc     void* field_94 = CWnd::EndModalState
 0x4cfd00     void* PreTranslateMessage = MFC42:CDialog::PreTranslateMessage(CDialog* this, struct tagMSG*)
 0x4cfd04     void* OnAmbientProperty = MFC42:CWnd::OnAmbientProperty(CWnd* this, class COleControlSite*, long, struct tagVARIANT*)
 0x4cfd08     void* WindowProc = MFC42:CWnd::WindowProc(CWnd* this, uint32_t, uint32_t, long)
@@ -4451,8 +4483,8 @@
 0x4cfdc4     void* OnNotify = MFC42:CWnd::OnNotify(CWnd* this, uint32_t, long, long*)
 0x4cfdc8     void* GetSuperWndProcAddr = MFC42:CWnd::GetSuperWndProcAddr(CWnd* this))(struct HWND__*, uint32_t, uint32_t, long)
 0x4cfdcc     void* field_8c = zStub::NoOp1Arg
-0x4cfdd0     void* field_90 = CWnd::DisableWindow
-0x4cfdd4     void* field_94 = CWnd::EnableWindow
+0x4cfdd0     void* field_90 = CWnd::BeginModalState
+0x4cfdd4     void* field_94 = CWnd::EndModalState
 0x4cfdd8     void* PreTranslateMessage = MFC42:CWnd::PreTranslateMessage(CWnd* this, struct tagMSG*)
 0x4cfddc     void* OnAmbientProperty = MFC42:CWnd::OnAmbientProperty(CWnd* this, class COleControlSite*, long, struct tagVARIANT*)
 0x4cfde0     void* WindowProc = MFC42:CWnd::WindowProc(CWnd* this, uint32_t, uint32_t, long)
@@ -4506,8 +4538,8 @@
 0x4cfe94     void* OnNotify = MFC42:CWnd::OnNotify(CWnd* this, uint32_t, long, long*)
 0x4cfe98     void* GetSuperWndProcAddr = MFC42:CWnd::GetSuperWndProcAddr(CWnd* this))(struct HWND__*, uint32_t, uint32_t, long)
 0x4cfe9c     void* field_8c = zStub::NoOp1Arg
-0x4cfea0     void* field_90 = CWnd::DisableWindow
-0x4cfea4     void* field_94 = CWnd::EnableWindow
+0x4cfea0     void* field_90 = CWnd::BeginModalState
+0x4cfea4     void* field_94 = CWnd::EndModalState
 0x4cfea8     void* PreTranslateMessage = MFC42:CWnd::PreTranslateMessage(CWnd* this, struct tagMSG*)
 0x4cfeac     void* OnAmbientProperty = MFC42:CWnd::OnAmbientProperty(CWnd* this, class COleControlSite*, long, struct tagVARIANT*)
 0x4cfeb0     void* WindowProc = MFC42:CWnd::WindowProc(CWnd* this, uint32_t, uint32_t, long)
@@ -4563,8 +4595,8 @@
 0x4cff6c     void* OnNotify = MFC42:CWnd::OnNotify(CWnd* this, uint32_t, long, long*)
 0x4cff70     void* GetSuperWndProcAddr = MFC42:CWnd::GetSuperWndProcAddr(CWnd* this))(struct HWND__*, uint32_t, uint32_t, long)
 0x4cff74     void* field_8c = zStub::NoOp1Arg
-0x4cff78     void* field_90 = CWnd::DisableWindow
-0x4cff7c     void* field_94 = CWnd::EnableWindow
+0x4cff78     void* field_90 = CWnd::BeginModalState
+0x4cff7c     void* field_94 = CWnd::EndModalState
 0x4cff80     void* PreTranslateMessage = MFC42:CWnd::PreTranslateMessage(CWnd* this, struct tagMSG*)
 0x4cff84     void* OnAmbientProperty = MFC42:CWnd::OnAmbientProperty(CWnd* this, class COleControlSite*, long, struct tagVARIANT*)
 0x4cff88     void* WindowProc = MFC42:CWnd::WindowProc(CWnd* this, uint32_t, uint32_t, long)
@@ -4616,8 +4648,8 @@
 0x4d0034     void* OnNotify = MFC42:CWnd::OnNotify(CWnd* this, uint32_t, long, long*)
 0x4d0038     void* GetSuperWndProcAddr = MFC42:CWnd::GetSuperWndProcAddr(CWnd* this))(struct HWND__*, uint32_t, uint32_t, long)
 0x4d003c     void* field_8c = zStub::NoOp1Arg
-0x4d0040     void* field_90 = CWnd::DisableWindow
-0x4d0044     void* field_94 = CWnd::EnableWindow
+0x4d0040     void* field_90 = CWnd::BeginModalState
+0x4d0044     void* field_94 = CWnd::EndModalState
 0x4d0048     void* PreTranslateMessage = MFC42:CWnd::PreTranslateMessage(CWnd* this, struct tagMSG*)
 0x4d004c     void* OnAmbientProperty = MFC42:CWnd::OnAmbientProperty(CWnd* this, class COleControlSite*, long, struct tagVARIANT*)
 0x4d0050     void* WindowProc = MFC42:CWnd::WindowProc(CWnd* this, uint32_t, uint32_t, long)
@@ -4967,8 +4999,8 @@
 0x4d04a4     void* OnNotify = MFC42:CWnd::OnNotify(CWnd* this, uint32_t, long, long*)
 0x4d04a8     void* GetSuperWndProcAddr = MFC42:CWnd::GetSuperWndProcAddr(CWnd* this))(struct HWND__*, uint32_t, uint32_t, long)
 0x4d04ac     void* field_8c = NetSessionConfigDialog::DoDataExchange
-0x4d04b0     void* field_90 = CWnd::DisableWindow
-0x4d04b4     void* field_94 = CWnd::EnableWindow
+0x4d04b0     void* field_90 = CWnd::BeginModalState
+0x4d04b4     void* field_94 = CWnd::EndModalState
 0x4d04b8     void* PreTranslateMessage = MFC42:CDialog::PreTranslateMessage(CDialog* this, struct tagMSG*)
 0x4d04bc     void* OnAmbientProperty = MFC42:CWnd::OnAmbientProperty(CWnd* this, class COleControlSite*, long, struct tagVARIANT*)
 0x4d04c0     void* WindowProc = MFC42:CWnd::WindowProc(CWnd* this, uint32_t, uint32_t, long)
@@ -5028,8 +5060,8 @@
 0x4d057c         [0x1f] = MFC42:CWnd::OnNotify(CWnd* this, uint32_t, long, long*)
 0x4d0580         [0x20] = MFC42:CWnd::GetSuperWndProcAddr(CWnd* this))(struct HWND__*, uint32_t, uint32_t, long)
 0x4d0584         [0x21] = zStub::NoOp1Arg
-0x4d0588         [0x22] = CWnd::DisableWindow
-0x4d058c         [0x23] = CWnd::EnableWindow
+0x4d0588         [0x22] = CWnd::BeginModalState
+0x4d058c         [0x23] = CWnd::EndModalState
 0x4d0590         [0x24] = MFC42:CWnd::PreTranslateMessage(CWnd* this, struct tagMSG*)
 0x4d0594         [0x25] = MFC42:CWnd::OnAmbientProperty(CWnd* this, class COleControlSite*, long, struct tagVARIANT*)
 0x4d0598         [0x26] = MFC42:CWnd::WindowProc(CWnd* this, uint32_t, uint32_t, long)
@@ -5967,7 +5999,7 @@
 0x4d1068         int32_t nID = 0x9c7e
 0x4d106c         int32_t nLastID = 0x9c7e
 0x4d1070         int32_t nSig = 0x2c
-0x4d1074         void* pfn = MFC::NoOpVirtualOneArg
+0x4d1074         void* pfn = CWnd::DoDataExchange
 0x4d1078     }
 0x4d1078     [0x2f] =
 0x4d1078     {
@@ -6021,7 +6053,7 @@
 0x4d10f8         int32_t nID = 0x9c53
 0x4d10fc         int32_t nLastID = 0x9c53
 0x4d1100         int32_t nSig = 0x2c
-0x4d1104         void* pfn = MFC::NoOpVirtualOneArg
+0x4d1104         void* pfn = CWnd::DoDataExchange
 0x4d1108     }
 0x4d1108     [0x35] =
 0x4d1108     {
@@ -6915,8 +6947,8 @@
 0x4d1c3c     void* OnNotify = MFC42:CWnd::OnNotify(CWnd* this, uint32_t, long, long*)
 0x4d1c40     void* GetSuperWndProcAddr = MFC42:CWnd::GetSuperWndProcAddr(CWnd* this))(struct HWND__*, uint32_t, uint32_t, long)
 0x4d1c44     void* field_8c = WestwoodOnlineUpgradeDialog::DoDataExchange
-0x4d1c48     void* field_90 = CWnd::DisableWindow
-0x4d1c4c     void* field_94 = CWnd::EnableWindow
+0x4d1c48     void* field_90 = CWnd::BeginModalState
+0x4d1c4c     void* field_94 = CWnd::EndModalState
 0x4d1c50     void* PreTranslateMessage = MFC42:CDialog::PreTranslateMessage(CDialog* this, struct tagMSG*)
 0x4d1c54     void* OnAmbientProperty = MFC42:CWnd::OnAmbientProperty(CWnd* this, class COleControlSite*, long, struct tagVARIANT*)
 0x4d1c58     void* WindowProc = MFC42:CWnd::WindowProc(CWnd* this, uint32_t, uint32_t, long)
@@ -7099,8 +7131,8 @@
 0x4d1e5c     void* OnNotify = MFC42:CWnd::OnNotify(CWnd* this, uint32_t, long, long*)
 0x4d1e60     void* GetSuperWndProcAddr = MFC42:CWnd::GetSuperWndProcAddr(CWnd* this))(struct HWND__*, uint32_t, uint32_t, long)
 0x4d1e64     void* field_8c = WestwoodOnlineUpgradeConfigDialog::DoDataExchange
-0x4d1e68     void* field_90 = CWnd::DisableWindow
-0x4d1e6c     void* field_94 = CWnd::EnableWindow
+0x4d1e68     void* field_90 = CWnd::BeginModalState
+0x4d1e6c     void* field_94 = CWnd::EndModalState
 0x4d1e70     void* PreTranslateMessage = MFC42:CDialog::PreTranslateMessage(CDialog* this, struct tagMSG*)
 0x4d1e74     void* OnAmbientProperty = MFC42:CWnd::OnAmbientProperty(CWnd* this, class COleControlSite*, long, struct tagVARIANT*)
 0x4d1e78     void* WindowProc = MFC42:CWnd::WindowProc(CWnd* this, uint32_t, uint32_t, long)
@@ -7172,9 +7204,9 @@
 0x4d1f50     void* OnCommand = MFC42:CWnd::OnCommand(CWnd* this, uint32_t, long)
 0x4d1f54     void* OnNotify = MFC42:CWnd::OnNotify(CWnd* this, uint32_t, long, long*)
 0x4d1f58     void* GetSuperWndProcAddr = MFC42:CWnd::GetSuperWndProcAddr(CWnd* this))(struct HWND__*, uint32_t, uint32_t, long)
-0x4d1f5c     void* field_8c = MFC::NoOpVirtualOneArg
-0x4d1f60     void* field_90 = CWnd::DisableWindow
-0x4d1f64     void* field_94 = CWnd::EnableWindow
+0x4d1f5c     void* field_8c = CWnd::DoDataExchange
+0x4d1f60     void* field_90 = CWnd::BeginModalState
+0x4d1f64     void* field_94 = CWnd::EndModalState
 0x4d1f68     void* PreTranslateMessage = MFC42:CDialog::PreTranslateMessage(CDialog* this, struct tagMSG*)
 0x4d1f6c     void* OnAmbientProperty = MFC42:CWnd::OnAmbientProperty(CWnd* this, class COleControlSite*, long, struct tagVARIANT*)
 0x4d1f70     void* WindowProc = MFC42:CWnd::WindowProc(CWnd* this, uint32_t, uint32_t, long)
@@ -8501,7 +8533,7 @@
 0x4d34d8 struct HudUiTextInput_FTable g_HudUiTextInput_FTable =
 0x4d34d8 {
 0x4d34d8     void (__thiscall* InsertChar)(struct HudUiTextInput* self, int32_t key) = HudUiTextInput::InsertCharAtCursor
-0x4d34dc     void (__thiscall* IgnoreKey)(struct HudUiTextInput* self, int32_t key) = MFC::NoOpVirtualOneArg
+0x4d34dc     void (__thiscall* IgnoreKey)(struct HudUiTextInput* self, int32_t key) = CWnd::DoDataExchange
 0x4d34e0     void (__thiscall* OnAccept)(struct HudUiTextInput* self) = zGame::ReturnOnlyStub
 0x4d34e4     void (__thiscall* OnCancel)(struct HudUiTextInput* self) = zGame::ReturnOnlyStub
 0x4d34e8     void (__thiscall* Backspace)(struct HudUiTextInput* self) = HudUiTextInput::BackspaceDeleteChar
@@ -8593,7 +8625,7 @@
 0x4d3608 struct HudUiTextInput_FTable g_HudUiNumericTextInput_TextInputFTable =
 0x4d3608 {
 0x4d3608     void (__thiscall* InsertChar)(struct HudUiTextInput* self, int32_t key) = HudUiTextInput::InsertCharAtCursor
-0x4d360c     void (__thiscall* IgnoreKey)(struct HudUiTextInput* self, int32_t key) = MFC::NoOpVirtualOneArg
+0x4d360c     void (__thiscall* IgnoreKey)(struct HudUiTextInput* self, int32_t key) = CWnd::DoDataExchange
 0x4d3610     void (__thiscall* OnAccept)(struct HudUiTextInput* self) = HudUiOwnedTextInput::OnAccept
 0x4d3614     void (__thiscall* OnCancel)(struct HudUiTextInput* self) = zGame::ReturnOnlyStub
 0x4d3618     void (__thiscall* Backspace)(struct HudUiTextInput* self) = HudUiTextInput::BackspaceDeleteChar
@@ -8886,25 +8918,25 @@
 0x4d3a00     struct HudUiBackground* (* ScalarDeletingDtor)(struct HudUiBackground* self, uint32_t flags) = HudUiBackground::ScalarDeletingDestructor
 0x4d3a04 }
 0x4d3a04 int32_t data_4d3a04 = 0x0
-// Member-only background cursor widget ftable used inside HudUiBackground; this is distinct from the standalone background-cursor widget table later in .rdata.
+// Cursor member vtable: 0x80 bytes. Tail slots are inherited RebuildBltRectFromImage at +0x74, SetImageBorrowedAndRefreshIfChanged at +0x78, SetImageByPathOwnedAndRefresh at +0x7c.
 0x4d3a08 struct HudUiBackgroundCursorWidget_FTable g_HudUiBackgroundCursorWidget_MemberVtbl =
 0x4d3a08 {
-    // Member-only background cursor widget ftable used inside HudUiBackground;
-    // this is distinct from the standalone background-cursor widget table later
-    // in .rdata.
-0x4d3a08     struct HudUiBackgroundCursorWidget* (__thiscall* dtor)(struct HudUiBackgroundCursorWidget* self, uint32_t flags) = HudUiBackgroundCursorWidget::MemberScalarDeletingDestructor
-0x4d3a0c     void (__thiscall* Draw)(struct HudUiBackgroundCursorWidget* self) = HudUiBackgroundCursorWidget::Draw
-0x4d3a10     void (__thiscall* DrawBase)(struct HudUiBackgroundCursorWidget* self) = HudUiBackgroundCursorWidget::DrawBase
-0x4d3a14     void (__thiscall* SetPos)(struct HudUiBackgroundCursorWidget* self, int32_t x, int32_t y) = HudUiBackgroundCursorWidget::SetPos
-0x4d3a18     void (__thiscall* SetX)(struct HudUiBackgroundCursorWidget* self, int32_t x) = HudUiElement::SetX
-0x4d3a1c     void (__thiscall* SetY)(struct HudUiBackgroundCursorWidget* self, int32_t y) = HudUiElement::SetY
-0x4d3a20     void (__thiscall* SetClip)(struct HudUiBackgroundCursorWidget* self, struct zVideo_BltSourceHead* bltSourceOrNull, struct HudUiRect const* rectOrNull) = HudUiElement::SetBltSourceAndClipRect
-0x4d3a24     void (__thiscall* SetClipRect)(struct HudUiBackgroundCursorWidget* self, struct HudUiRect const* rectOrNull) = HudUiElement::SetClipRect
-0x4d3a28     void (__thiscall* Invalidate)(struct HudUiBackgroundCursorWidget* self) = HudUiElement::Invalidate
-0x4d3a2c     void (__thiscall* Update)(struct HudUiBackgroundCursorWidget* self, float dt) = HudUiElement::Update
+    // Cursor member vtable: 0x80 bytes. Tail slots are inherited
+    // RebuildBltRectFromImage at +0x74, SetImageBorrowedAndRefreshIfChanged at
+    // +0x78, SetImageByPathOwnedAndRefresh at +0x7c.
+0x4d3a08     struct HudUiBackgroundCursorWidget* (* dtor)(struct HudUiBackgroundCursorWidget* self, uint32_t flags) = HudUiBackgroundCursorWidget::MemberScalarDeletingDestructor
+0x4d3a0c     void (* Draw)(struct HudUiBackgroundCursorWidget* self) = HudUiBackgroundCursorWidget::Draw
+0x4d3a10     void (* DrawBase)(struct HudUiBackgroundCursorWidget* self) = HudUiBackgroundCursorWidget::DrawBase
+0x4d3a14     void (* SetPos)(struct HudUiBackgroundCursorWidget* self, int32_t x, int32_t y) = HudUiBackgroundCursorWidget::SetPos
+0x4d3a18     void (* SetX)(struct HudUiBackgroundCursorWidget* self, int32_t x) = HudUiElement::SetX
+0x4d3a1c     void (* SetY)(struct HudUiBackgroundCursorWidget* self, int32_t y) = HudUiElement::SetY
+0x4d3a20     void (* SetClip)(struct HudUiBackgroundCursorWidget* self, struct zVideo_BltSourceHead* bltSourceOrNull, struct HudUiRect const* rectOrNull) = HudUiElement::SetBltSourceAndClipRect
+0x4d3a24     void (* SetClipRect)(struct HudUiBackgroundCursorWidget* self, struct HudUiRect const* rectOrNull) = HudUiElement::SetClipRect
+0x4d3a28     void (* Invalidate)(struct HudUiBackgroundCursorWidget* self) = HudUiElement::Invalidate
+0x4d3a2c     void (* Update)(struct HudUiBackgroundCursorWidget* self, float dt) = HudUiElement::Update
 0x4d3a30     void* function_28 = zStub::NoOp1Arg
-0x4d3a34     struct HudUiRect* (__thiscall* GetBoundsRectOrNull)(struct HudUiBackgroundCursorWidget* self) = zStub::ReturnZeroNoArgs
-0x4d3a38     void (__thiscall* OnActivate)(struct HudUiBackgroundCursorWidget* self) = zError::ReportOldNoOp
+0x4d3a34     struct HudUiRect* (* GetBoundsRectOrNull)(struct HudUiBackgroundCursorWidget* self) = zStub::ReturnZeroNoArgs
+0x4d3a38     void (* OnActivate)(struct HudUiBackgroundCursorWidget* self) = zError::ReportOldNoOp
 0x4d3a3c     void* function_34 = zError::ReportOldNoOp
 0x4d3a40     void* function_38 = zError::ReportOldNoOp
 0x4d3a44     void* function_3c = zError::ReportOldNoOp
@@ -8915,15 +8947,15 @@
 0x4d3a58     void* function_50 = zError::ReportOldNoOp
 0x4d3a5c     void* function_54 = HudUiElement::HitTestTrue
 0x4d3a60     void* function_58 = MSVC_STL::PtrVector_NoOpDestroyRange_COMDAT
-0x4d3a64     int32_t (__thiscall* HitTest)(struct HudUiBackgroundCursorWidget* self, int32_t px, int32_t py) = HudUiWidget::HitTest
-0x4d3a68     void (__thiscall* SetVisible)(struct HudUiBackgroundCursorWidget* self, int32_t visible) = HudUiElement::SetVisible
-0x4d3a6c     int32_t (__thiscall* GetCenterX)(struct HudUiBackgroundCursorWidget* self) = HudUiWidget::GetCenterX
-0x4d3a70     int32_t (__thiscall* GetCenterY)(struct HudUiBackgroundCursorWidget* self) = HudUiWidget::GetCenterY
+0x4d3a64     int32_t (* HitTest)(struct HudUiBackgroundCursorWidget* self, int32_t px, int32_t py) = HudUiWidget::HitTest
+0x4d3a68     void (* SetVisible)(struct HudUiBackgroundCursorWidget* self, int32_t visible) = HudUiElement::SetVisible
+0x4d3a6c     int32_t (* GetCenterX)(struct HudUiBackgroundCursorWidget* self) = HudUiWidget::GetCenterX
+0x4d3a70     int32_t (* GetCenterY)(struct HudUiBackgroundCursorWidget* self) = HudUiWidget::GetCenterY
 0x4d3a74     void* function_6c = zStub::NoOp1Arg
-0x4d3a78     int32_t (__thiscall* GetRect)(struct HudUiBackgroundCursorWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
-0x4d3a7c     void* function_74 = HudUiWidget::RebuildBltRectFromImage
-0x4d3a80     void (__thiscall* SetImageBorrowedAndRefreshIfChanged)(struct HudUiBackgroundCursorWidget* self, struct zVid_Image* image) = HudUiBackgroundCursorWidget::SetImageBorrowedAndRefreshIfChanged
-0x4d3a84     void (__thiscall* SetImageByPathOwnedAndRefresh)(struct HudUiBackgroundCursorWidget* self, char const* imagePath) = HudUiBackgroundCursorWidget::SetImageByPathOwnedAndRefresh
+0x4d3a78     int32_t (* GetRect)(struct HudUiBackgroundCursorWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
+0x4d3a7c     void (* RebuildBltRectFromImage)(struct HudUiBackgroundCursorWidget* self) = HudUiWidget::RebuildBltRectFromImage
+0x4d3a80     void (* SetImageBorrowedAndRefreshIfChanged)(struct HudUiBackgroundCursorWidget* self, zVidImagePartial* image) = HudUiBackgroundCursorWidget::SetImageBorrowedAndRefreshIfChanged
+0x4d3a84     void (* SetImageByPathOwnedAndRefresh)(struct HudUiBackgroundCursorWidget* self, char const* imagePath) = HudUiBackgroundCursorWidget::SetImageByPathOwnedAndRefresh
 // Real base HudUiPanel ftable installed by HudUiPanel_Ctor; the following scalar bridge and composite-panel/circle/container tables are split after this anchor.
 0x4d3a88 }
 0x4d3a88 struct HudUiPanel_FTable g_HudUiPanel_FTable =
@@ -9492,24 +9524,25 @@
 0x4d41c0     HudUiElement_VT_GetRect GetRect = HudUiElement::GetTextRect
 0x4d41c4 }
 0x4d41c4 int32_t data_4d41c4 = 0x0
-// Standalone background cursor widget vtable with the cursor-image refresh tail at +0x78/+0x7c.
+// Cursor widget vtable: 0x80 bytes. Same slots as member table except scalar deleting destructor at +0; tail slots at +0x74/+0x78/+0x7c are compiler-emitted vtable entries.
 0x4d41c8 struct HudUiBackgroundCursorWidget_FTable g_HudUiBackgroundCursorWidget_Vtbl =
 0x4d41c8 {
-    // Standalone background cursor widget vtable with the cursor-image refresh
-    // tail at +0x78/+0x7c.
-0x4d41c8     struct HudUiBackgroundCursorWidget* (__thiscall* dtor)(struct HudUiBackgroundCursorWidget* self, uint32_t flags) = HudUiBackgroundCursorWidget::ScalarDeletingDestructor
-0x4d41cc     void (__thiscall* Draw)(struct HudUiBackgroundCursorWidget* self) = HudUiBackgroundCursorWidget::Draw
-0x4d41d0     void (__thiscall* DrawBase)(struct HudUiBackgroundCursorWidget* self) = HudUiBackgroundCursorWidget::DrawBase
-0x4d41d4     void (__thiscall* SetPos)(struct HudUiBackgroundCursorWidget* self, int32_t x, int32_t y) = HudUiBackgroundCursorWidget::SetPos
-0x4d41d8     void (__thiscall* SetX)(struct HudUiBackgroundCursorWidget* self, int32_t x) = HudUiElement::SetX
-0x4d41dc     void (__thiscall* SetY)(struct HudUiBackgroundCursorWidget* self, int32_t y) = HudUiElement::SetY
-0x4d41e0     void (__thiscall* SetClip)(struct HudUiBackgroundCursorWidget* self, struct zVideo_BltSourceHead* bltSourceOrNull, struct HudUiRect const* rectOrNull) = HudUiElement::SetBltSourceAndClipRect
-0x4d41e4     void (__thiscall* SetClipRect)(struct HudUiBackgroundCursorWidget* self, struct HudUiRect const* rectOrNull) = HudUiElement::SetClipRect
-0x4d41e8     void (__thiscall* Invalidate)(struct HudUiBackgroundCursorWidget* self) = HudUiElement::Invalidate
-0x4d41ec     void (__thiscall* Update)(struct HudUiBackgroundCursorWidget* self, float dt) = HudUiElement::Update
+    // Cursor widget vtable: 0x80 bytes. Same slots as member table except
+    // scalar deleting destructor at +0; tail slots at +0x74/+0x78/+0x7c are
+    // compiler-emitted vtable entries.
+0x4d41c8     struct HudUiBackgroundCursorWidget* (* dtor)(struct HudUiBackgroundCursorWidget* self, uint32_t flags) = HudUiBackgroundCursorWidget::ScalarDeletingDestructor
+0x4d41cc     void (* Draw)(struct HudUiBackgroundCursorWidget* self) = HudUiBackgroundCursorWidget::Draw
+0x4d41d0     void (* DrawBase)(struct HudUiBackgroundCursorWidget* self) = HudUiBackgroundCursorWidget::DrawBase
+0x4d41d4     void (* SetPos)(struct HudUiBackgroundCursorWidget* self, int32_t x, int32_t y) = HudUiBackgroundCursorWidget::SetPos
+0x4d41d8     void (* SetX)(struct HudUiBackgroundCursorWidget* self, int32_t x) = HudUiElement::SetX
+0x4d41dc     void (* SetY)(struct HudUiBackgroundCursorWidget* self, int32_t y) = HudUiElement::SetY
+0x4d41e0     void (* SetClip)(struct HudUiBackgroundCursorWidget* self, struct zVideo_BltSourceHead* bltSourceOrNull, struct HudUiRect const* rectOrNull) = HudUiElement::SetBltSourceAndClipRect
+0x4d41e4     void (* SetClipRect)(struct HudUiBackgroundCursorWidget* self, struct HudUiRect const* rectOrNull) = HudUiElement::SetClipRect
+0x4d41e8     void (* Invalidate)(struct HudUiBackgroundCursorWidget* self) = HudUiElement::Invalidate
+0x4d41ec     void (* Update)(struct HudUiBackgroundCursorWidget* self, float dt) = HudUiElement::Update
 0x4d41f0     void* function_28 = zStub::NoOp1Arg
-0x4d41f4     struct HudUiRect* (__thiscall* GetBoundsRectOrNull)(struct HudUiBackgroundCursorWidget* self) = zStub::ReturnZeroNoArgs
-0x4d41f8     void (__thiscall* OnActivate)(struct HudUiBackgroundCursorWidget* self) = zError::ReportOldNoOp
+0x4d41f4     struct HudUiRect* (* GetBoundsRectOrNull)(struct HudUiBackgroundCursorWidget* self) = zStub::ReturnZeroNoArgs
+0x4d41f8     void (* OnActivate)(struct HudUiBackgroundCursorWidget* self) = zError::ReportOldNoOp
 0x4d41fc     void* function_34 = zError::ReportOldNoOp
 0x4d4200     void* function_38 = zError::ReportOldNoOp
 0x4d4204     void* function_3c = zError::ReportOldNoOp
@@ -9520,21 +9553,22 @@
 0x4d4218     void* function_50 = zError::ReportOldNoOp
 0x4d421c     void* function_54 = HudUiElement::HitTestTrue
 0x4d4220     void* function_58 = MSVC_STL::PtrVector_NoOpDestroyRange_COMDAT
-0x4d4224     int32_t (__thiscall* HitTest)(struct HudUiBackgroundCursorWidget* self, int32_t px, int32_t py) = HudUiWidget::HitTest
-0x4d4228     void (__thiscall* SetVisible)(struct HudUiBackgroundCursorWidget* self, int32_t visible) = HudUiElement::SetVisible
-0x4d422c     int32_t (__thiscall* GetCenterX)(struct HudUiBackgroundCursorWidget* self) = HudUiWidget::GetCenterX
-0x4d4230     int32_t (__thiscall* GetCenterY)(struct HudUiBackgroundCursorWidget* self) = HudUiWidget::GetCenterY
+0x4d4224     int32_t (* HitTest)(struct HudUiBackgroundCursorWidget* self, int32_t px, int32_t py) = HudUiWidget::HitTest
+0x4d4228     void (* SetVisible)(struct HudUiBackgroundCursorWidget* self, int32_t visible) = HudUiElement::SetVisible
+0x4d422c     int32_t (* GetCenterX)(struct HudUiBackgroundCursorWidget* self) = HudUiWidget::GetCenterX
+0x4d4230     int32_t (* GetCenterY)(struct HudUiBackgroundCursorWidget* self) = HudUiWidget::GetCenterY
 0x4d4234     void* function_6c = zStub::NoOp1Arg
-0x4d4238     int32_t (__thiscall* GetRect)(struct HudUiBackgroundCursorWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
-0x4d423c     void* function_74 = HudUiWidget::RebuildBltRectFromImage
-0x4d4240     void (__thiscall* SetImageBorrowedAndRefreshIfChanged)(struct HudUiBackgroundCursorWidget* self, struct zVid_Image* image) = HudUiBackgroundCursorWidget::SetImageBorrowedAndRefreshIfChanged
-0x4d4244     void (__thiscall* SetImageByPathOwnedAndRefresh)(struct HudUiBackgroundCursorWidget* self, char const* imagePath) = HudUiBackgroundCursorWidget::SetImageByPathOwnedAndRefresh
-// Background-video widget vtable. This family keeps raw GetX/GetY at +0x64/+0x68.
+0x4d4238     int32_t (* GetRect)(struct HudUiBackgroundCursorWidget* self, struct HudUiRect* outRect) = HudUiElement::GetTextRect
+0x4d423c     void (* RebuildBltRectFromImage)(struct HudUiBackgroundCursorWidget* self) = HudUiWidget::RebuildBltRectFromImage
+0x4d4240     void (* SetImageBorrowedAndRefreshIfChanged)(struct HudUiBackgroundCursorWidget* self, zVidImagePartial* image) = HudUiBackgroundCursorWidget::SetImageBorrowedAndRefreshIfChanged
+0x4d4244     void (* SetImageByPathOwnedAndRefresh)(struct HudUiBackgroundCursorWidget* self, char const* imagePath) = HudUiBackgroundCursorWidget::SetImageByPathOwnedAndRefresh
+// Video widget vtable/FTable: 0x78 bytes; tail slot +0x74 is HudUiBackgroundVideoWidget::RebuildBltRect and is reached by virtual dispatch from SetMediaPathOwnedAndRefresh.
 0x4d4248 }
 0x4d4248 struct HudUiBackgroundVideoWidget_FTable g_HudUiBackgroundVideoWidget_FTable =
 0x4d4248 {
-    // Background-video widget vtable. This family keeps raw GetX/GetY at
-    // +0x64/+0x68.
+    // Video widget vtable/FTable: 0x78 bytes; tail slot +0x74 is
+    // HudUiBackgroundVideoWidget::RebuildBltRect and is reached by virtual
+    // dispatch from SetMediaPathOwnedAndRefresh.
 0x4d4248     struct HudUiBackgroundVideoWidget* (__thiscall* dtor)(struct HudUiBackgroundVideoWidget* self, uint32_t flags) = HudUiBackgroundVideoWidget::ScalarDeletingDestructor
 0x4d424c     void (__thiscall* Draw)(struct HudUiBackgroundVideoWidget* self) = HudUiBackgroundVideoWidget::Draw
 0x4d4250     void (__thiscall* DrawBase)(struct HudUiBackgroundVideoWidget* self) = HudUiBackgroundVideoWidget::DrawBase

@@ -5152,7 +5152,7 @@ westwood_online_upgrade_api_event_sink_launch_selected_session_smoke(void)
         g_threeFloatUpdateDataCount != 1 ||
         g_threeFloatUpdateDataSaveValue[0] != 1 ||
         g_launchInitSessionCalls != 1 ||
-        g_launchInitSessionGuid != &g_zNetwork_RecoilAppGuid ||
+        g_launchInitSessionGuid != &g_zNetwork_WestwoodOnlineAppGuid ||
         g_launchFormatIpv4Calls != 1 ||
         g_launchFormatIpv4Packed != 0x01020304 ||
         g_launchSelectTcpCalls != 1 ||
@@ -6671,5 +6671,4 @@ westwood_online_upgrade_api_event_sink_on_browse_record_list_received_smoke(
     RestoreFunctionPatch(formatPatch);
     return failure;
 }
-
 

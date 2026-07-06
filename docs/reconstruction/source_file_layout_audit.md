@@ -491,6 +491,32 @@ The first durable repair is conservative:
   declarations/types through `zmth_types.h`/`zmth_decls.h`, and include the full
   header at the retail emission point so VC5 naturally emits the retail order.
   Do not move semantic helpers into the wrong `.cpp` solely to force placement.
+- `0x401420 AINet::AiMode2ForwardProbeRequiresAutoTurn` is byte-clean as an
+  owner-local implementation case, not a source-block order blocker. The
+  successful source shape keeps the function in the address-emitting
+  `ai_net.h` contributor compiled through `ai_net.cpp`, preserves the
+  accepted 24-byte `zClass_DiSegmentEndpoints` layout and non-const
+  `CollectPendingContactsForSegments` API, and lets ordinary VC5 C++ emit the
+  early resolved checks, start/end setup, double-evaluating normalize clamp,
+  endpoint scale, contact collection, queue checks, cleanup, and returns.
+  `python tools/recoil.py verify vc5 0x401420` passes under
+  `vc5_o2_ob0_md_facs` with zero unmasked mismatches, 32 relocation bytes
+  masked, BN size 344, VC5 size 352, and eight trailing NOP bytes trimmed.
+  The source-shape discovery was that the only likely original raw-assembly
+  footprint is the final fixed-register x87 add body in
+  `AINET_FORWARD_PROBE_ADD_WORLD_ASM`, after C++ binds three macro-local
+  pointer temps: endpoint read at `[ebp-0x0c]`, original
+  `playerState->worldPos` at `[ebp-0x08]`, and endpoint write at reused
+  `[ebp-0x04]`. The final add source is the original world-position pointer,
+  not the raised local start endpoint. The normalize clamp must remain
+  double-evaluating, `AINET_MAX(zMath::Vec3Normalize(&forwardDir), 1.0f)`
+  style, because retail compares the first x87 return and calls
+  `Vec3Normalize` again on the non-clamped arm. Earlier pure-C++ endpoint
+  scale/add, pointer-alias, value-temp, queue-pressure, tag-lifetime,
+  split-tail, zMath helper, and volatile variants are superseded negative
+  evidence; do not reintroduce `__declspec(naked)`, whole-function assembly,
+  `_emit`, raw EBP/ESP offset shells, endpoint layout changes, volatile pointer
+  hacks, provider shims, or more blind local spelling probes for this address.
 - The active source-block catalog now records address-emitting `ai_net.cpp`
   header contributors explicitly in the flattened block list:
   `src/Battlesport/ai_net.h` emits `[0x401060,0x402f60)`, included by
@@ -579,7 +605,7 @@ and do not update `SOURCE_OWNERS`.
 | `src/Battlesport/about.cpp` + `src/Battlesport/about.h` | `[0x401000,0x401060)` | no literal; confirmed continuous About-dialog source/header block with internal CAboutDlg and MFC provider subranges; natural function order and bytes reproduced | `CAboutDlg::Constructor` / `CWnd::EndModalState` | mapped no-literal, 4 semantic/provider subranges, order confirmed |
 | `src/Battlesport/ai_net.cpp` | `[0x401060,0x4038a0)` | `0x4da1e8`, xref `0x4030bb` | `AINet::TickAiMode2TopLevel` / `AINet::FreeAll` | mapped with `ai_net.h`/`zmth.h` partial-header rows and 6 body subranges |
 | `src/Battlesport/Briefing.cpp` | `[0x4038a0,0x404ca0)` | `0x4da32c`, xref `0x404238` | `HudUiBriefingObjectivePicture::DrawWithNoiseOverlay` / `Briefing::BuildObjectiveActionsForRuntime` | mapped, 11 semantic subranges |
-| `src/Battlesport/hud.cpp` | `[0x404ca0,0x415ab0)` | `0x4dadd8`, xrefs `0x4101a3`, `0x4141bb` | `HudUiElement::Draw` / `zFMV_ActionBase::Destructor` | mapped refined |
+| `src/Battlesport/hud.cpp` | `[0x404ca0,0x415ab0)` | `0x4dadd8`, xrefs `0x4101a3`, `0x4141bb` | `HudUiElement::Draw` / `zFMV_ActionBase::Destructor` | mapped refined; post-`0x407190` continuation recorded; `0x407170`/`0x4ccd50` non-covering blocker |
 | `src/Battlesport/map.cpp` | `[0x415ab0,0x417350)` | `0x4daf04`, xref `0x416922` | `HudSensorMapNode::Init` / `HudSensorTracker::SetObjectiveMarkerColorBlink` | mapped refined, 8 semantic subranges |
 | `src/Battlesport/mission.cpp` | `[0x417350,0x41cc10)` | `0x4db230`, xrefs `0x417fc2`, `0x4181b6`, `0x418209`, `0x4182ff`, `0x418395`, `0x419091`, `0x419304` | `Mission::InitObjectives` / `CSpinButtonCtrl::ScalarDeletingDestructor` | mapped refined, 14 semantic subranges |
 | `src/Battlesport/pickup.cpp` | `[0x41cc10,0x41ea90)` | `0x4dc190`, xrefs `0x41cd93`, `0x41d523`, `0x41db80` | `PickupSpawnList::Primary_Init` / `Pickup::SpawnAtCarrierNodeByName` | mapped |
@@ -822,6 +848,37 @@ retail runtime block at `0x4010cb`; a hand-written shared `goto` tail preserves
 the behavior and size but rotates allocator choices and leaves 19 unmasked byte
 mismatches. Do not simplify this function back to a source-level common tail
 without rerunning `python tools/recoil.py verify vc5 0x401060`.
+
+`0x401420 AINet::AiMode2ForwardProbeRequiresAutoTurn` is byte matched in the
+focused VC5 target and remains in the proven address-emitting `ai_net.h` header
+contributor compiled through the `ai_net.cpp` block. It is not a standalone
+owner, provider/helper boundary, `zMath` owner, or normal later `.cpp` body; no
+owner, source, linkage, data, or tier claim follows from the local byte result.
+
+The practical source-shape lesson is to keep the function as ordinary VC5 C++
+with one narrow final-add inline-assembly macro. The C++ portion owns the
+resolved-state early return, the 24-byte `zClass_DiSegmentEndpoints` local,
+`forwardDir`, delayed `segmentTags`, the ignored
+`CollectPendingContactsForSegments` return, explicit preferred/player queue
+checks, duplicated cleanup/return paths, and the early retry-counter increment
+that returns without clearing queues. The normalize clamp is intentionally
+double-evaluating: retail compares the first
+`zMath::Vec3Normalize(&forwardDir)` x87 return to `1.0f`, then either loads
+`1.0f` or calls `Vec3Normalize(&forwardDir)` again. Do not rewrite it as a
+single-evaluation local clamp.
+
+The raw-assembly footprint is only the final fixed-register x87 vector add
+body in `AINET_FORWARD_PROBE_ADD_WORLD_ASM`. VC5 emits the retail stack-band
+when C++ binds macro-local pointer temps for endpoint read
+`[ebp-0x0c]`, original `playerState->worldPos` source `[ebp-0x08]`, and reused
+endpoint write `[ebp-0x04]`; the world source is not the raised local start
+endpoint. Earlier C++-only endpoint scale/add helpers, local aliases, reference
+forms, value temporaries, queue/contact pressure, tag-lifetime variants,
+split-tail rewrites, direct zMath helper attempts, and volatile pointer hacks
+are superseded negative evidence. See `verified_patterns.md` for the scoped
+raw-assembly allowance; do not generalize it into naked/whole-function asm,
+raw EBP shells, `_emit`, endpoint layout changes, provider shims, or further
+blind local spelling probes.
 
 #### `Briefing.cpp` Source-Shape Layer Detail
 
@@ -1088,11 +1145,11 @@ source-shape experiments prove a specific original header/source placement.
 | --- | --- | --- | --- |
 | `[0x404ca0,0x404e80)` | `hud_ui_primitive_class_layer` | function-order-confirmed physical `hud.cpp` layer | HUD UI primitive methods are table-visible, but exact header ownership is not proven. The diagnostic `hud_ui_primitive_class_layer_order_current_shape` now compiles `src/Battlesport/hud.cpp` and naturally emits retail order for `0x404ca0` through `0x404e60`. Keep `0x404d70` as provider/compiler scalar-deleting-destructor physical emission only, not authored `HudUiElement` owner evidence. |
 | `[0x404e80,0x406890)` | `hud_player_camera_helper_layer` | function-order-confirmed semantic exception inside physical `hud.cpp` | The diagnostic `hud_player_camera_helper_layer_order_current_shape` compiles `src/Battlesport/hud.cpp` and naturally emits the exact retail layer order `0x404e80`, `0x404e90`, `0x405040`, `0x405650`, `0x4057d0`, `0x405870`, `0x4059a0`, `0x405c90`, `0x405ec0`, `0x405ee0`, `0x406110`, `0x4063f0`, `0x406430`, `0x406450`, `0x406470`, `0x406510`, `0x406610`, `0x406730`, `0x4067a0`. Keep camera/player helpers physically in `hud.cpp` until separate source/header ownership is proven; the next function `0x406890` starts `MfcThreeFloatDialog::OnKillFocusValue0` and belongs to the following dialog layer. |
-| `[0x406890,0x406a00)` | `hud_mfc_three_float_dialog_layer` | dialog helper layer | Route as UI/dialog support, not provider-primary work. |
-| `[0x406a00,0x407130)` | `hud_cheat_dialog_and_string_helper_layer` | UI/helper layer | String helper plus cheat/dialog state need same physical-order scrutiny as surrounding HUD code. |
-| `[0x407130,0x407190)` | `hud_small_stub_layer` | low-confidence helper/provider-adjacent layer | Recheck provider/source-shape before claiming authored HUD ownership. |
-| `[0x407190,0x408a30)` | `hud_options_config_layer` | semantic exception / included-options candidate | Options/config/video/audio/input helpers are physically in `hud.cpp`; do not reassign solely from namespace-like labels. |
-| `[0x408a30,0x409040)` | `hud_controls_dialog_layer` | UI dialog layer | Controls dialog/state layer ending with `0x409010 HudUiOptionSelectorWidget::EnableChildAtIndex`; BN showed the previous `0x409020` cut split that function. |
+| `[0x406890,0x406a00)` | `hud_mfc_three_float_dialog_layer` | function-order-confirmed dialog helper layer | The diagnostic `hud_mfc_three_float_dialog_layer_order_current_shape` compiles `src/Battlesport/hud.cpp` and naturally emits the exact retail layer order `0x406890`, `0x4068c0`, `0x4068f0`, `0x406920`, `0x406960`, `0x4069a0`, `0x4069e0`, `0x4069f0`, with `0x406a00 zStr::ContainsCaseInsensitive` as the next sentinel. Current production bodies live in `src/Battlesport/mfc_three_float_dialog_body.h` included by `hud.cpp`; this confirms physical HUD-block emission only, not standalone owner/tier acceptance. |
+| `[0x406a00,0x407130)` | `hud_cheat_dialog_and_string_helper_layer` | function-order-confirmed UI/helper layer | The diagnostic `hud_cheat_dialog_and_string_helper_layer_order_current_shape` compiles `src/Battlesport/hud.cpp` and naturally emits the exact retail layer order `0x406a00`, `0x406af0`, `0x406cf0`, `0x406d20`, `0x406e10`, `0x406e30`, `0x406e90`, `0x406ea0`, `0x406eb0`, `0x406ec0`, `0x406ed0`, `0x406ee0`, `0x406f00`, `0x406f60`, `0x407010`, `0x4070e0`, `0x407100`, `0x407110`, with `0x407130 zStub::ReturnOneNoArgs` as the next sentinel. This confirms physical HUD-block emission only; semantic owners and class-associated compiler emissions still need their own owner/data/provider gates before tier acceptance. |
+| `[0x407130,0x407190)` | `hud_small_stub_layer` | source-shape blocked helper/compiler-glue layer | BN/provider packets classify `0x407130`-`0x407160` as authored generic `zStub` table-target helpers and `0x407170` as VC5 compiler scalar-deleting-destructor glue for `g_RecoilStateBase_Vtbl @ 0x4ccd50`. Current BN table facts show `0x4ccd50..0x4ccd78` is a 40-byte `.rdata` table whose slot 0 points to `0x407170`; `0x407170` writes `0x4ccd50`, optionally calls `operator delete`, returns `self`, and does not call `0x42df90` or another base destructor. BN reports 26 reset/write refs to `0x4ccd50` across HUD/mission/RecoilApp derived state destructors/constructors, but no exposed indirect slot callsites; adjacent data must remain split as `0x4ccd28..0x4ccd50` accepted `g_RecoilStateCheatCode_Vtbl`, `0x4ccd50..0x4ccd78` unresolved base/interface table candidate, `0x4ccd78..0x4ccd88` accepted `g_zNetwork_RecoilAppGuid`, and `0x4ccd88..0x4ccd98` accepted `g_zNetwork_WestwoodOnlineAppGuid`. Comparison against the later app-state destructors shows a shared base/default reset chain, not the same vtable slot: `0x42df90` directly stores `0x4ccd50`, while `0x42e0f0` is a distinct scalar-deleting wrapper in separate `RecoilApp_IState`-style tables and reaches `0x4ccd50` only by calling `0x42df90`. The active `hud_small_stub_layer_order_current_shape` hypothesis is blocked: current `RecoilApp_IState` header shape emits scalar-deleting-destructor glue before the zStub helpers; distinct `RecoilStateBase` probes either emit the correct inline scalar wrapper too early or insert a regular destructor before a wrapper that calls it; simple polymorphic `zStub`-base probes place a regular `zStub` destructor between the helpers and scalar wrapper, and the wrapper calls it. Final-link duplicate-COMDAT probes select the first scalar-wrapper contribution, not a later duplicate after the helpers. Later anchor/destructor-placement probes also failed: non-destructor virtual anchors can emit after the zStub helpers without moving the scalar wrapper, pure/protected/destructor-body-after-zStub shapes still emit the wrapper before the helpers, and diagnostic `__declspec(novtable)` variants suppress the needed wrapper entirely. The `hud_small_stub_icf_vtable_probe` also rejects the ordinary-helper-to-virtual-callback ICF explanation: `/OPT:REF,ICF` kept `zStub` helper sections separate from byte-identical virtual callback COMDATs, leaving callback bodies between the helpers and scalar wrapper; the explicit inline destructor variant only proves VC5 can emit a later direct-write/no-call scalar wrapper when intervening callback bodies remain. Treat this as source/include-shape debt before claiming the chain reaches `0x407190` or assigning `0x407170`/`0x4ccd50` to an owner. |
+| `[0x407190,0x408a30)` | `hud_options_config_layer` | semantic exception / included-options candidate | Options/config/video/audio/input helpers are physically in `hud.cpp`; do not reassign solely from namespace-like labels. The 2026-07-07 Pro-approved `hud_options_config_layer_order_current_shape` diagnostic manifest records retail order through `0x408a20`, excluding `0x407170` and `0x408a30`. After zInput compile-container cleanup and local `zgame_opt.c` body/source-fragment order repair, both `zgame_opt_hud_local_order_current_shape` and the full `hud_options_config_layer_order_current_shape` diagnostic pass `translation_unit_order_matches_manifest True`. This is order-only source-shape/provenance evidence; no byte, owner, source-block, provider, or tier claim follows from either diagnostic. |
+| `[0x408a30,0x409040)` | `hud_controls_dialog_layer` | selected-subsequence order diagnostic | The diagnostic `hud_controls_dialog_layer_order_current_shape` compiles `src/Battlesport/hud.cpp` plus `src/GameZRecoil/zUI/zui.cpp` and naturally emits the selected current-source subsequence `0x408a30`, `0x408c20`, `0x408c40`, `0x408c70`, `0x408d20`, `0x408d30`, `0x408d40`, `0x408d50`, `0x408d60`, `0x408d70` as `compiler-emitted-noncovering`, `0x408d90`, `0x408df0`, `0x408ec0`, `0x408f50 RecoilStateDialogHost::OnSuspend` through the current narrow body-header split, `0x408fa0`, `0x408ff0`, and terminal zUI source_from sentinel `0x409010 HudUiZrdWidgetEx17C::EnableChildAtIndex`. This is order-only source-shape evidence for the selected subsequence, not proof of the full uninterrupted retail chain `[0x408a30,0x409040)`: retail slot `0x408c60` remains absent from the current passing target and is tracked separately as `provider.vc5_huduizrdwidgetex17c_destructor_core_thunk_408c60`, a VC5 compiler/linker destructor cleanup tail-jump thunk to authored `0x4b8b60` with provider-boundary classification accepted on 2026-07-07 from BN/EH cleanup xrefs and no independent authored body/data refs. The accepted provider-boundary classification does not prove the exact emitted mechanism, source/data/linkage/byte gates, or a full-chain controls-layer order target. `0x408d70` is likewise class-associated VC5 scalar-deleting-destructor glue, not authored source. Do not move `0x409010` into `hud.cpp` or use this diagnostic for byte evidence, source-owner acceptance, linkage, gate, or tier claims. Pro receipts: `.devspace/runs/2026-07-07T06-49-46-560Z-chatgpt-call/receipt.json`, `.devspace/runs/2026-07-07T07-25-43-218Z-chatgpt-call/receipt.json`. |
 | `[0x409040,0x40a590)` | `hud_credits_panel_layer` | UI panel layer | Credits/panel layout layer. |
 | `[0x40a590,0x40a5b0)` | `hud_panel_scalar_deleting_destructor_tail_layer` | UI panel destructor tail layer | Generic `HudUiPanel::ScalarDeletingDestructor` tail between credits panel and command dialog layers. |
 | `[0x40a5b0,0x40c370)` | `hud_command_binding_layer` | UI dialog/container layer | Contains vector-like helper activity; `0x40c190..0x40c1f0` remains VC5 STL/xutility COMDAT candidate. |
@@ -1227,7 +1284,7 @@ include-emission boundary.
 
 | Range | Layer label | Classification | Reconstruction consequence |
 | --- | --- | --- | --- |
-| `[0x42de10,0x42e170)` | `recoilapp_mfc_app_static_startup_layer` | MFC app/static startup layer | Application object, MFC message map/runtime class startup, and static initialization start the block. |
+| `[0x42de10,0x42e170)` | `recoilapp_mfc_app_static_startup_layer` | MFC app/static startup layer plus RecoilApp IState family boundary pressure | Application object, MFC message map/runtime class startup, and static initialization start the block. Current BN/source-owner evidence supports a pending child/adapter owner direction for the RecoilApp-owned IState table family, not an accepted remap: `0x42df90` is the plain reset destructor body, `0x42e0f0`/`0x42e0d0`/`0x42ebd0`/`0x42ed90` are owner-coupled scalar-deleting destructor glue, and the seven contiguous 40-byte vtables at `0x4d0aa0`, `0x4d0ac8`, `0x4d0af0`, `0x4d0b18`, `0x4d0b40`, `0x4d0b68`, and `0x4d0b90` are implicit class/interface vtable data. Do not leave this family permanently hidden inside the broad `legacy.app_shell.class_recoilapp` model if later scrutiny accepts the child owner, but also do not remap or accept gates yet. The complete owner-sized work unit is the full IState family: all seven vtables, all slot targets, constructor/destructor vptr writes, the base/default reset dependency on pending `app_shell.recoil_state_base_interface`, and the RecoilApp aggregate lifecycle that initializes/resets embedded state subobjects. |
 | `[0x42e170,0x42e220)` | `recoilapp_zinput_joystick_enable_exception_layer` | zInput semantic exception | Joystick enable helper is physically emitted in RecoilApp.cpp; do not move it from labels alone. |
 | `[0x42e220,0x42f9f0)` | `recoilapp_engine_startup_state_machine_layer` | confirmed app startup/state-machine layer | Contains the `RecoilApp.cpp` literal xref at `0x42e620`; includes ordered zUtil, HUD, and EH helper exceptions. |
 | `[0x42f9f0,0x4301e0)` | `recoilapp_zinput_force_feedback_exception_layer` | zInput DirectInput force-feedback semantic exception | Force-feedback helpers are physically in RecoilApp.cpp pending source-shape proof. |
@@ -1236,6 +1293,26 @@ include-emission boundary.
 | `[0x431bf0,0x434660)` | `recoilapp_gamenet_packet_relay_layer` | GameNet packet and gameplay relay layer | zDEClient, Pickup, OptCatalog, and effect relay semantics are dependencies/semantic exceptions inside the physical block. |
 | `[0x434660,0x435a30)` | `recoilapp_saveload_dialog_file_list_layer` | save/load dialog and file-list layer | Save/load UI, file records, and file-list behavior remain in the RecoilApp physical order. |
 | `[0x435a30,0x436630)` | `recoilapp_saveload_transition_sort_tail_layer` | save/load transition and sort/vector tail | Transition state and VC5 vector/sort helper activity close the block before `turret.cpp`. |
+
+The RecoilApp IState-family membership packet keeps the seven-table child-owner
+direction fact-based but still pending. The exact data span is
+`0x4d0aa0..0x4d0bb8`: seven contiguous 40-byte `RecoilApp_IState_Vtbl`
+objects, bounded before by `g_RecoilApp_Vtbl @ 0x4d09e0` plus a zero dword at
+`0x4d0a9c`, and after by `g_zInput_DiForceScaleMax01 @ 0x4d0bb8`. Constructor
+vptr writes install them into `g_RecoilApp` embedded members at offsets
+`+0x160` attract FMV, `+0x1a0` intro FMV, `+0x1c8` main-menu prep, `+0x1d0`
+leave-network, `+0x1d8` mission FMV, `+0x208` play, and `+0x220` MP exit
+dialog. The slot schema is ten entries:
+scalar-deleting destructor, `OnWndActivate`, `OnEnter`, `OnTryBecomeCurrent`,
+`OnUpdateShouldQuit`, `OnExit`, `OnDeactivate`, `OnSuspend`, `OnResume`, and
+`OnIdleOrDispatch`. Slot targets mix owner-coupled scalar-deleting wrappers
+(`0x42e0f0`, `0x42e0d0`, `0x42ebd0`, `0x42ed90`), derived state virtuals, and
+shared default hooks (`0x407150`, `0x407160`, `0x407130`, `0x404e80`,
+`0x4076f0`, `0x42eb00`). Indirect dispatch in the late RecoilApp/AppFrame code
+uses the same slot ABI, but BN cannot bind those runtime calls to a specific
+static table. These facts support pending `app_shell.recoilapp_istate_family`
+membership review and do not by themselves justify accepted gates, tier work,
+or SOURCE_OWNERS remapping out of `legacy.app_shell.class_recoilapp`.
 
 #### Late RecoilApp/AppFrame / CZGameFrame Source-Shape Layer Detail
 
@@ -2236,14 +2313,598 @@ semantic layer table before accepting source owners, source paths, linkage
   emitted `0x404d20` before `0x404d10`, `0x404d70` before `0x404d60`, and
   `0x404e60` before `0x404e10`. Keep `0x404d70` routed to the
   provider/compiler scalar-deleting-destructor boundary as physical emission
-  only. The next diagnostic target
-  `hud_player_camera_helper_layer_order_current_shape` compiles
+  only. The diagnostic target
+  `hud_mfc_three_float_dialog_layer_order_current_shape` compiles
   `src/Battlesport/hud.cpp` and passes retail function order for the exact
-  `[0x404e80,0x406890)` layer list through
-  `0x4067a0 Player::AdjustSubCameraFocusForObstruction`; the next function
-  `0x406890` is `MfcThreeFloatDialog::OnKillFocusValue0`. Continue in physical
-  retail order with the `[0x406890,0x406a00)` dialog layer before claiming
-  broader hud order coverage.
+  `[0x406890,0x406a00)` layer list through
+  `0x4069f0 MfcThreeFloatDialog::OnCreate`; the next function `0x406a00` is
+  `zStr::ContainsCaseInsensitive`. The next diagnostic target
+  `hud_cheat_dialog_and_string_helper_layer_order_current_shape` compiles
+  `src/Battlesport/hud.cpp` and passes retail function order for the exact
+  `[0x406a00,0x407130)` layer list through
+  `0x407110 HudUiCallback::QueueCheatCodeState`, with
+  `0x407130 zStub::ReturnOneNoArgs` as the next sentinel. Continue in physical
+  retail order with the `[0x407130,0x407190)` small-stub/compiler-glue layer
+  before claiming broader hud order coverage. An initial
+  `hud_small_stub_layer_order_current_shape` target keeps the zStub prefix in
+  place but fails at `0x407170`: current BN reconstruction now types this as
+  `RecoilStateBase::ScalarDeletingDestructor`, slot 0 of
+  `g_RecoilStateBase_Vtbl @ 0x4ccd50`, while the current production
+  `RecoilApp_IState` header shape emits the scalar wrapper before the zStub
+  helpers. A final-link duplicate-COMDAT probe did not prove a harmless
+  selection exception: VC5/link selected the first scalar-wrapper contribution,
+  so a later duplicate object cannot explain the retail helper-to-scalar chain.
+  Distinct `RecoilStateBase` probes also failed: inline base has the right
+  no-call wrapper body but emits it before the zStubs, while late out-of-line
+  base places a regular destructor between the zStubs and a wrapper that calls
+  it. Simple polymorphic `zStub`-base probes put the helpers first only by
+  inserting `??1zStub` before `??_GzStub`, and the scalar wrapper calls that
+  regular destructor, unlike retail `0x407170`. Follow-up anchor/destructor
+  placement probes also failed: a non-destructor virtual anchor can emit after
+  the zStubs but does not drag the scalar wrapper with it; pure/protected and
+  destructor-body-after-zStub spellings still emit the no-call wrapper before
+  the helpers; diagnostic `__declspec(novtable)` variants put helpers first
+  only by suppressing the needed local scalar-wrapper contribution. Include
+  timing probes then isolated the likely ODR trigger: full app-state
+  declarations can be visible before the zStubs without emitting the base
+  scalar wrapper, and delaying the first constructor/destructor/global ODR-use
+  until after the zStub bodies can produce helper-first followed by a no-call
+  direct-write scalar wrapper. However, a pre-zStub `RecoilStateCheatCode`
+  destructor body for the same inline app-state base is enough for VC5 to emit
+  the base scalar wrapper before the helpers. That remains a
+  source-shape/include-shape blocker, not owner or tier evidence.
+  Alternate-base split probes did not find a clean escape hatch: embedded
+  interface members and secondary-base forms still pull the candidate scalar
+  before the zStubs, pointer-delete/local-object forms omit the local base
+  scalar, and late-derived/interface ODR-use adds an intervening regular
+  destructor or authored function. The only probes that placed a direct-write
+  candidate base scalar after the zStub helpers used a concrete global base
+  object, which also emitted `.bss`, `.CRT$XCU`, and static-init/atexit thunks.
+  Do not use that global-object shape unless BN/source evidence proves a real
+  original post-zStub static object or equivalent ODR-use.
+  Current BN facts strengthen the blocker rather than resolving it:
+  `g_RecoilStateBase_Vtbl @ 0x4ccd50` is a plausible 40-byte `.rdata` table
+  bounded by `g_RecoilStateCheatCode_Vtbl @ 0x4ccd28` before it and
+  `g_zNetwork_RecoilAppGuid @ 0x4ccd78` after it. Its ten dword slots are
+  `0x407170`, `0x407150`, `0x404e80`, `0x407130`, `0x407140`, `0x404e80`,
+  `0x404e80`, `0x407150`, `0x407150`, and `0x407160`. `0x407170` only resets
+  the vptr to `0x4ccd50`, conditionally calls `operator delete`, returns
+  `self`, and does not call the simple `0x42df90` base destructor. BN finds
+  26 easy code xrefs to `0x4ccd50`, all vptr writes/resets or base-init writes
+  across HUD, mission, and RecoilApp state classes; it finds no data refs to
+  `0x4ccd50`, no direct code callers for `0x407170`, and no exposed indirect
+  slot callsites proving a different table extent. Do not use these facts as an
+  owner claim until the state base/interface boundary and data extent are
+  recovered. The current owner ledger has no owner for `0x407170` or
+  `0x4ccd50`; the old `legacy.app_shell.cluster_recoilstatebase` row does not
+  cover them and is not enough for acceptance. Treat `0x4ccd50` as an
+  auxiliary table/data candidate for a recovered app-state base/interface
+  owner, not a standalone primary data-owner target, unless future evidence
+  proves an authored standalone table construct. Follow-up BN inspection found
+  no support for the only source probe family that placed a direct-write base
+  scalar wrapper after the stubs: no `.CRT`/`__xc_a` entry to `0x407170`, no
+  `atexit(0x407170)`, no data refs to `0x4ccd50` as an initialized global
+  object value, no ordinary `RecoilStateBase` static-init/constructor/at-exit
+  functions, and no code callers for `0x407170`. The nearby CRT entry at
+  `0x4da008` is `RecoilStateCheatCode` static initialization for
+  `g_RecoilStateCheatCode @ 0x4e5ce8`; its destructor resets that derived
+  object to `0x4ccd50`, but does not prove a standalone base/static object.
+  Related RecoilApp code resets embedded state/base subobjects to `0x4ccd50` in
+  the later `RecoilApp.cpp` block, not in this post-zStub HUD slot. A
+  discriminator pass compared the suspected app-state destructors directly:
+  `0x407170` is the slot-0 wrapper for the `0x4ccd50` base/default table and
+  writes that table itself, while `0x42e0f0` is slot 0 in separate
+  `RecoilApp_IState`-style tables at `0x4d0aa0`, `0x4d0ac8`, `0x4d0af0`, and
+  `0x4d0b90`, calls `0x42df90`, and does not directly write a vptr.
+  `0x42df90` is the plain destructor/reset body that writes `0x4ccd50`.
+  Treat this as a shared app-state/base reset-table relationship, not proof
+  that `0x407170` and `0x42e0f0` are the same class table entry or the same
+  generated wrapper. A source-artifact audit found
+  that current production and test surfaces still contain stale/scaffolded
+  `RecoilStateBase` clues: `RecoilApp_IState` is the only production common
+  state root under `src/`, the `hud.cpp` note before `cls_stubs_body.h`
+  describes the known bad pre-zStub scalar-wrapper order, and the native
+  `recoil_state_base` smoke/test-generation strings mention
+  `g_RecoilStateBase_Vtbl` without a matching production header. Treat those as
+  diagnostic implementation debt, not source-owner or data-boundary evidence.
+  A final declaration/ODR split probe set rejected the remaining non-global
+  include-shape escape hatches: declaration-only-before-zStub plus full inline
+  key after zStub emitted no candidate scalar; full candidate declaration with
+  destructor body after zStub inserted a regular destructor and did not produce
+  the direct-write/no-call body; two-level old-root/late-candidate and delayed
+  full-header virtual-call variants emitted no candidate scalar; and a delayed
+  local automatic object trigger inserted an authored function plus regular
+  destructor before the direct-write scalar. The only known probe family that
+  produced an immediate post-zStub direct-write wrapper remains the concrete
+  global/static base-object shape, which current BN evidence rejects here.
+  A BN-backed minimal include-timing probe confirmed the same result after the
+  40-byte table extent and no-static-object BN facts were rechecked: inline
+  candidate-base context before zStub emits the right direct-write wrapper too
+  early; declaring the destructor and defining it after zStub inserts a regular
+  destructor and makes the scalar wrapper call it; pure declared destructor
+  shapes omit the wrapper; delayed non-destructor virtual bodies still leave
+  the scalar before zStub; and late local-object ODR use emits an authored touch
+  function plus regular destructor before the direct-write wrapper. The only
+  immediate zStub-helper-to-direct-scalar order still requires a concrete
+  global/static base object with constructor/destructor section artifacts, so
+  current BN evidence rejects it.
+  Source-owner remapping evidence now ranks a recovered app-state
+  base/interface owner as the strongest pending boundary for `0x407170` and
+  `0x4ccd50..0x4ccd78`, with `0x407170` as class-coupled scalar-deleting
+  destructor glue and `0x4ccd50` as auxiliary vtable data once the boundary is
+  proven. Do not reuse `legacy.app_shell.cluster_recoilstatebase` as-is: it
+  covers the credits-state cluster around `0x409950..0x409b00`, has no
+  `0x407170` or `0x4ccd50` relationship, and cannot accept this blocker by
+  inheritance from its old gates. The unresolved fork is whether the real owner
+  is distinct from the current production `RecoilApp_IState` shape; the
+  `0x407170`/`0x42df90`/`0x42e0f0` comparison now proves only a shared
+  base/default reset chain with distinct scalar-wrapper table slots, so any
+  owner row still needs source-shape evidence for the recovered base/interface
+  boundary before adding or remapping ledger relationships. A read-only
+  source-owner mapping pass permits a future pending row such as
+  `app_shell.recoil_state_base_interface` with anchor `0x407170`, primary-data
+  candidate `0x4ccd50`, and dependencies on the zStub/no-op helper owners, but
+  blocks all accepted gates, isolated tier-S work for `0x407170`, standalone
+  data-owner treatment for `0x4ccd50`, and expansion of
+  `legacy.app_shell.class_recoilapp` to absorb this HUD-emitted table packet.
+  A follow-up BN packet collected the full `0x4ccd50` write/reset/init xref
+  packet and the contiguous `0x4d0aa0..0x4d0bb8` RecoilApp IState-style table
+  family: seven 40-byte vtables bounded by `g_RecoilApp_Vtbl`/a zero dword
+  before and `g_zInput_DiForceScaleMax01` after, with constructor vptr writes
+  as their direct code refs and no independent static/atexit lifecycle outside
+  `g_RecoilApp`. Provider/data classification keeps `0x407170` and `0x42e0f0`
+  as compiler-generated, owner-coupled scalar-deleting destructor glue;
+  `0x42df90` as an owner-coupled reset destructor body; `0x4ccd50..0x4ccd78`
+  as implicit class/interface vtable data; and `0x4d0aa0..0x4d0bb8` as
+  RecoilApp/IState owner-coupled vtable-family data. Do not create
+  provider-boundary owners, standalone data owners, callback-table owners, or
+  hand-authored table models from these facts. Parent has not updated the owner
+  ledger.
+  A later BN scalar-wrapper comparison strengthens that split: the nearby HUD
+  and RecoilApp wrappers at `0x406ee0`, `0x408d70`, `0x4099d0`, `0x40bc70`,
+  `0x42e0b0`, `0x42e0d0`, `0x42ebd0`, and `0x42ed90` all call regular
+  destructors before optional `operator delete`, while `0x407170` directly
+  writes `0x4ccd50` in the wrapper and has no destructor call. Even the tiny
+  reset body `0x42df90` is reached through a scalar wrapper call at `0x42e0f0`,
+  so do not assume VC5 inlines tiny/empty state destructors into scalar
+  deleting destructors here.
+  The immediate data neighborhood
+  must stay split: `0x4ccd20..0x4ccd28` is the tail of the
+  `g_HudUiCheatCodeTitleWidget_FTable` container evidence, `0x4ccd28..0x4ccd50`
+  is the accepted `g_RecoilStateCheatCode_Vtbl`, `0x4ccd50..0x4ccd78` is the
+  unresolved base/interface vtable candidate, and `0x4ccd78..0x4ccd88` is the
+  accepted `g_zNetwork_RecoilAppGuid`; later BN/source reconciliation also
+  proves `0x4ccd88..0x4ccd98` as the distinct
+  `g_zNetwork_WestwoodOnlineAppGuid`. Do not group `0x4ccd20..0x4ccd98` as one
+  data owner.
+  A parent-assigned BN reconstruction pass then added boundary comments and
+  saved `Recoil.bndb` for this same range. It did not need to rename or retype
+  the direct objects: current BN evidence shows `g_HudUiCheatCodeTitleWidget_FTable`
+  ends exactly at `0x4ccd28`, `g_RecoilStateCheatCode_Vtbl` spans
+  `0x4ccd28..0x4ccd50`, `g_RecoilStateBase_Vtbl` spans
+  `0x4ccd50..0x4ccd78`, `g_zNetwork_RecoilAppGuid` spans
+  `0x4ccd78..0x4ccd88`, and `g_zNetwork_WestwoodOnlineAppGuid` spans
+  `0x4ccd88..0x4ccd98`; `0x4ccd98` begins the next
+  `g_zOpt_CompareTolerancePct` object. The previous `get_data_decl 0x4ccd20`
+  ambiguity is therefore a containing-tail display for the preceding HUD ftable,
+  not proof that the state vtable or GUIDs overlap one larger data owner.
+  A 2026-07-06 parent/source-worker rerun of
+  `hud_small_stub_layer_order_current_shape` reproduced the exact active order
+  blocker: the current direct-write/no-call scalar wrapper symbol
+  `??_GRecoilApp_IState@@UAEPAXI@Z` emits in `SECT8B`, before the four zStub
+  helper sections `SECT9D`, `SECT9F`, `SECTA1`, and `SECTA3`, while retail
+  order requires `0x407130`, `0x407140`, `0x407150`, `0x407160`, then
+  `0x407170`. The generated wrapper body shape is mechanically close but too
+  early: flags from `[esp+4]`, `ecx` copied to `esi`, direct vptr store,
+  optional `operator delete`, return `esi`, and `ret 4`. A probe-only follow-up
+  under `build/probes/hud_small_stub_recoilstatebase_order_followup/` added no
+  new source variants because prior roots already cover the plausible non-global
+  include/ODR-use shapes. The only known family that places zStub helpers
+  immediately before a direct-write/no-call scalar wrapper remains the rejected
+  concrete global/static base-object shape with static-lifecycle artifacts.
+  A focused `build/probes/hud_small_stub_icf_vtable_probe/` run then rejected
+  the specific ICF/folded-virtual explanation for the missing intervening
+  callback bodies. VC5SP3 `/OPT:REF,ICF` was active enough to fold compatible
+  inline virtual COMDATs with each other, but did not fold retained ordinary
+  `zStub` helper sections into byte-identical virtual callback COMDATs; the
+  map still kept callback bodies between the helpers and scalar wrapper. The
+  explicit-inline destructor variant did produce a later direct-write/no-call
+  scalar wrapper with no static lifecycle artifacts, but only after separate
+  callback bodies, so it does not explain the retail helper-to-scalar sequence.
+  A follow-up inheritance/header matrix under
+  `build/probes/hud_small_stub_inheritance_probe/` kept production source
+  untouched and tested base-helper, protected/nonvirtual destructor, pure
+  destructor, multiple-inheritance helper-base, same-class inline destructor,
+  and delete-only ODR-use spellings. It rejects the simple inheritance escape
+  hatches: base-without-virtual-destructor variants place the deleting
+  destructor after helper slots, protected/private and pure destructor forms
+  insert a regular destructor body/call, VC5 rejects the no-forwarding
+  multiple-inheritance alias shape as abstract, and delete-through-pointer
+  alone does not emit the local scalar wrapper or vtable. The useful narrowed
+  signal is `06_primary_inline_dtor_helpers_same_class`: a primary class with
+  an inline virtual destructor can naturally emit a slot-0 deleting-destructor
+  reloc, helper slot relocs, and a direct-write/no-call scalar wrapper without
+  static lifecycle artifacts, but the scalar still appears only after extra
+  callback/allocator-style bodies rather than immediately after the four helper
+  sections. Treat this as negative source-shape evidence plus a narrowed
+  mechanism to probe, not an owner/gate/tier acceptance.
+  The narrowed split-header/key-function probe under
+  `build/probes/hud_small_stub_split_key_probe/` then rejected the obvious
+  non-constructor trigger route: pointer-to-virtual-member anchors, global
+  member-pointer data anchors, out-of-line key virtual definitions after the
+  helpers, key-virtual plus member anchors, header-inline delete wrappers, pure
+  destructor plus key-virtual spellings, and plain virtual-call wrappers all
+  preserved the four helper bodies first but emitted no local vftable or scalar
+  deleting destructor at all. This weakens the theory that a non-constructor
+  post-helper ODR-use can produce the retail helper-to-scalar sequence. Unless
+  new BN/source evidence identifies a specific different trigger, the remaining
+  source-shape search should focus on a construction-bearing or inclusion-shape
+  mechanism that avoids a separate allocator/factory/regular-destructor body
+  between `ReturnOne2Args` and the scalar wrapper.
+  Current BN/source inspection keeps the `status 0x407130` projection caveat
+  open: SOURCE_OWNERS projects the helper under the semantic zClass source
+  surface even though physical block evidence keeps the emitted row in hud.cpp.
+  The adjacent GUID name caveat is resolved: BN now has distinct complete GUID
+  objects at `0x4ccd78 g_zNetwork_RecoilAppGuid` and
+  `0x4ccd88 g_zNetwork_WestwoodOnlineAppGuid`; source, tests, the
+  `znetwork_directplay_runtime_globals` manifest, and SOURCE_OWNERS now link
+  `0x4ccd88` into the zNetwork DirectPlay runtime globals data owner with no
+  gate or tier promotion.
+  A 2026-07-07 BN fact refresh and ChatGPT Pro source-discovery pass
+  reconfirmed the unresolved owner/order split without changing production
+  source. BN still reports `0x407170` as a 0x20-byte direct-write scalar
+  deleting destructor with no code callers and only the `0x4ccd50` data xref;
+  `0x4ccd50..0x4ccd78` remains a 40-byte vtable-shaped object bounded by the
+  accepted `g_RecoilStateCheatCode_Vtbl` before it and the two zNetwork GUIDs
+  after it. Provider/data classification keeps `0x407170` as compiler-generated
+  class-coupled glue and `0x4ccd50..0x4ccd78` as auxiliary C++ vtable data for
+  an unresolved authored base/interface, not a provider-boundary owner,
+  standalone data owner, callback table, or hand-authored table. ChatGPT Pro
+  ranked a distinct/delayed app-state base/interface owner as the strongest
+  remaining source-shape hypothesis, but blocked accepted owner, accepted data,
+  provider-boundary, standalone data, and isolated tier-S claims. A pending
+  navigation row such as `app_shell.recoil_state_base_interface` is reasonable
+  only if it is explicitly non-covering and source-shape-blocked; otherwise
+  keep the facts in this audit instead of mutating SOURCE_OWNERS. The 2026-07-07
+  source-worker probe artifacts under
+  `build/vc5-verify-worker/recoil_state_cheat_rank1/` kept
+  `0x406f00 RecoilStateCheatCode::~RecoilStateCheatCode` byte-clean for that
+  specific source variant, but later artifact sweeps show mixed `0x406f00`
+  status: the rank1/after-rank probes have `status OK` with zero mismatches,
+  while the current-control and `hud_layer_full` artifacts have `status FAIL`
+  with 12 mismatches. Treat `0x406f00` byte-clean evidence as variant-specific,
+  not a global current-source fact. In all checked variants, the generated
+  `??_GRecoilApp_IState@@UAEPAXI@Z` section still precedes the four zStub
+  helper sections, so reshaping only the cheat-state destructor body does not
+  fix the frontier. ChatGPT Pro receipts for the source-order and owner
+  scrutiny passes are
+  `.devspace/runs/2026-07-07T01-22-47-042Z-chatgpt-call/receipt.json` and
+  `.devspace/runs/2026-07-07T01-22-53-217Z-chatgpt-call/receipt.json`; later
+  follow-up prompts in
+  `build/vc5-verify-worker/hud_small_stub_probe/chatgpt_pro_followup_bn_facts.md`
+  add the same fresh BN facts and should be treated as advisory evidence until
+  their receipt/transcript files exist.
+  A same-day follow-up BN/source-worker/source-owner pass narrowed the blocker
+  further without changing production source or SOURCE_OWNERS. Current BN shows
+  `0x4ccd50..0x4ccd78` as a separate 40-byte table between
+  `g_RecoilStateCheatCode_Vtbl @ 0x4ccd28` and
+  `g_zNetwork_RecoilAppGuid @ 0x4ccd78`; adjacent starts at `0x4ccd28`,
+  `0x4ccd50`, `0x4ccd78`, `0x4ccd88`, and `0x4ccd98` have separate current
+  BN containers and xrefs, so there is no current evidence to merge the base
+  table candidate with the cheat-code table, GUIDs, or zOpt double. BN reports
+  26 exact code refs to `0x4ccd50` and no data refs: they are vptr writes,
+  base-table resets, temporary constructor base writes, or RecoilApp destructor
+  reset setup. Exact xrefs to the nonzero slot addresses
+  `0x4ccd54..0x4ccd74` remain empty, so no current static slot read proves the
+  original interface identity or table extent beyond the typed 10-slot table.
+  The later `0x4d0aa0..0x4d0bb8` RecoilApp state-table family reinforces that
+  distinction: `0x42e0f0` is a scalar-deleting wrapper used by several later
+  RecoilApp state vtables, but it calls `0x42df90`, and `0x42df90` performs
+  the bare reset write to `0x4ccd50`; `0x407170` is different because it is a
+  self-contained scalar-deleting wrapper that directly writes `0x4ccd50` and
+  does not call `0x42df90`. These facts prove shared app-state/base reset use,
+  not that the current production `RecoilApp_IState` source shape owns the
+  `0x4ccd50` data object.
+  The fresh hard-order ChatGPT Pro pass for
+  `build/probes/hud_small_stub_followup_20260707/` blocked further bounded
+  source-shape probes: the previous opaque-early-API/late-full-state-definition
+  path is contradicted by the pre-stub `RecoilStateCheatCode` destructor reset
+  at `0x406f44`, and the only known helper-first/no-call/direct-write scalar
+  mechanism still requires the rejected static/global base-object family with
+  `.bss`, `.CRT$XCU`, static-init, or `atexit` artifacts absent from BN.
+  Receipt and transcript copies are
+  `build/probes/hud_small_stub_followup_20260707/chatgpt_pro_receipt.json` and
+  `build/probes/hud_small_stub_followup_20260707/chatgpt_pro_transcript.md`.
+  The source-owner mapper's separate Pro pass
+  `.devspace/runs/2026-07-07T01-57-38-975Z-chatgpt-call/receipt.json` allows
+  only a narrowly pending, non-covering navigation concept such as
+  `app_shell.recoil_state_base_interface`; it still blocks accepted boundary,
+  source, data, linkage, byte, provider, standalone-data, and isolated tier-S
+  claims. A parent dry-run of `owner add` for that candidate showed the current
+  tooling would create anchor/data relationships with pending gates, not a
+  clearly non-projecting candidate note, so the ledger was left unchanged and
+  these facts stay in this audit. The next evidence should classify the
+  `0x406f44` reset precisely and identify the first true compiler event that
+  emits the `0x407170` direct-write scalar wrapper before another source-shape
+  lab is scheduled.
+  A second same-day BN/verifier fact pass classifies that `0x406f44` reset as a
+  normal destructor-body vptr/table reset, not a separate base-object lifecycle
+  event. `0x406ee0` calls `0x406f00` and has no table writes. In `0x406f00`,
+  BN assembly writes `[esi] = 0x4ccd28` at `0x406f1d`, optionally calls the
+  child/dialog object's slot `+0x8` with argument `1`, clears `[esi+4]` only on
+  that path, then joins at `0x406f40` and writes `[esi] = 0x4ccd50` at
+  `0x406f44` immediately before SEH unlink. The store is at object offset zero
+  from the derived cheat-code table to the base-table candidate after
+  derived-local cleanup; it is not constructor init, not the scalar-deleting
+  wrapper body, not an EH handler body, and contains no offset evidence for a
+  secondary-base subobject. The nearby static lifecycle is only for
+  `g_RecoilStateCheatCode @ 0x4e5ce8`: `0x406e90` calls construction then
+  registers `atexit(0x406ec0)`, and `0x406ec0` jumps to `0x406f00`. No matching
+  static-init or `atexit` registration directly references `0x407170` or
+  `0x4ccd50`.
+  The verifier rerun under
+  `build/vc5-verify-verifier/hud_small_stub_emission_trigger/` confirms the
+  current source-shape order failure with VC5SP3 provenance intact. The listing
+  first reserves `??_GRecoilApp_IState@@UAEPAXI@Z`, then visibly emits the
+  `RecoilApp_IState` vftable and scalar-wrapper cluster during the
+  `RecoilStateCheatCode::~RecoilStateCheatCode` area: the destructor stores the
+  `RecoilApp_IState` vftable, the scalar wrapper follows, and the zStub helper
+  bodies are listed later. This is strong adjacency evidence for why the current
+  source shape emits the wrapper before the helper prefix, but it is still
+  listing evidence rather than proof of the compiler's internal trigger or a
+  source-owner acceptance claim. The current unbroken retail order chain from
+  the zStub prefix therefore still reaches only through `0x407160`; `0x407170`
+  remains the first non-matching function/order event.
+  A refreshed full-xref BN pass then expanded the `0x4ccd50` evidence without
+  changing that acceptance state. BN still reports no data refs to
+  `0x4ccd50` and no exact slot-address xrefs to `0x4ccd54..0x4ccd74`, but its
+  26 exact code refs now group into clear app-state-base evidence: derived
+  HUD/app-state destructor resets at `0x406f44`, `0x408dd4`, `0x409a42`,
+  `0x40bcd4`, `0x40d132`, `0x415202`, `0x4158d2`, `0x41ac32`, `0x41c682`, and
+  `0x435d04`; `RecoilApp` embedded-state teardown writes at offsets `0x220`,
+  `0x208`, `0x1d8`, `0x1d0`, `0x1c8`, `0x1a0`, and `0x160`; temporary
+  constructor base writes that are later overwritten by derived tables at
+  `0x42dfe2`, `0x42eb8d`, and `0x42ed4d`; FMV-state destructor resets at
+  `0x42df3c`, `0x42df7c`, and `0x42e09c`; and the bare `0x42df90`
+  `RecoilApp_IState` destructor write. These facts strengthen the app-state
+  base/interface hypothesis but still do not prove the original source shape or
+  the retail emission trigger for `0x407170`.
+  The 2026-07-07 ChatGPT Pro source-owner pass at
+  `.devspace/runs/2026-07-07T02-39-07-411Z-chatgpt-call/receipt.json` blocked
+  SOURCE_OWNERS linkage to the current `RecoilApp_IState` source model, blocked
+  a pending owner candidate if the tooling can only encode it as real
+  anchor/data ownership, and blocked production source edits that merely try to
+  move the scalar wrapper after the zStub helpers. It allowed only comments-only
+  BN clarification and the existing frontier statement: the correct-order chain
+  reaches through `0x407160`, while `0x407170` remains the first unresolved
+  nonmatching function/order event before the `0x407190` sentinel. Treat
+  `0x4ccd50..0x4ccd78` as auxiliary class/interface vtable evidence under an
+  unresolved app-state base/interface parent, not as a standalone data/provider
+  owner or tier-S target.
+  The 2026-07-07 continuation reconfirmed the blocker without changing owner
+  state. A fact-only verifier run under
+  `build/vc5-verify-verifier/hud_small_stub_current_20260707_cont/` still
+  reports `??_GRecoilApp_IState@@UAEPAXI@Z` in `SECT8D`, before the four zStub
+  helper sections `SECT9F`, `SECTA1`, `SECTA3`, and `SECTA5`; byte comparison
+  is not reached. A fresh BN/provider/data pass reconfirmed `0x407170` as
+  class-coupled VC5 scalar-deleting-destructor glue with no code callers and
+  only slot-0 data use from `0x4ccd50`, and reconfirmed `0x4ccd50..0x4ccd78`
+  as auxiliary 40-byte vtable-shaped data rather than provider or standalone
+  primary data ownership. The hard byte-match worker ran ChatGPT Pro at
+  `build/probes/hud_407170_byte_probe_20260707_worker/chatgpt_pro_receipt.json`
+  and the response blocked further bounded source-faithful C/C++ probes under
+  current facts: routes that preserve the direct-write/no-call wrapper emit it
+  too early, while routes that delay it add regular destructor calls,
+  intervening callback/lifecycle bodies, or rejected static/global artifacts.
+  Do not retry source-shape probes for this window unless new BN/source evidence
+  changes one of the recorded premises, such as the `0x406f44` reset
+  classification, `0x4ccd50` parent identity, slot xrefs, or static-lifecycle
+  evidence.
+  A final same-day raw BN fact pass sharpened those premises without changing
+  the acceptance state. `0x406f00` still has the ordinary destructor-body shape:
+  no scalar-delete flag read, no `operator delete`, no `ret 4`, and no
+  `atexit` registration inside the function; the `0x406f44` store to
+  `0x4ccd50` is on the normal control-flow path after dialog cleanup and before
+  SEH unlink. The separate EH unwind metadata can reach `0x4c84b0 -> 0x42df90`,
+  which also writes `0x4ccd50`, but that is not the in-body `0x406f44` store.
+  A same-layout table scan found current BN has exactly one
+  `RecoilStateBase_Vtbl` data instance and the exact 10-dword sequence
+  `[0x407170, 0x407150, 0x404e80, 0x407130, 0x407140, 0x404e80, 0x404e80,
+  0x407150, 0x407150, 0x407160]` only at `0x4ccd50`. Sibling 10-slot
+  `RecoilStateDialogHost_Vtbl` and `RecoilApp_IState_Vtbl` tables share the
+  default `zStub`/`zError` slots, but their slot-0 and state-specific callback
+  entries differ. This strengthens the auxiliary base/interface vtable evidence
+  for `0x4ccd50..0x4ccd78`; it still does not prove the original source owner,
+  source placement, provider boundary, data-owner status, tier, or retail
+  emission trigger for `0x407170`.
+  The 2026-07-07 source-owner ChatGPT Pro pass at
+  `.devspace/runs/2026-07-07T03-41-12-518Z-chatgpt-call/receipt.json` found no
+  changed premise and reaffirmed the blocker. Keep `0x407170` and
+  `0x4ccd50` ownerless in SOURCE_OWNERS; do not attach them to the current
+  `RecoilApp_IState` model, `legacy.app_shell.class_recoilapp`, or the old
+  `legacy.app_shell.cluster_recoilstatebase`, and do not add a pending
+  `app_shell.recoil_state_base_interface` row unless the tooling can encode a
+  truly non-covering investigation note without projecting ownership or accepted
+  gates. The phrase "app-state base/interface" remains only a plausible
+  navigation concept, not an accepted type name. Lack of exact slot-address
+  xrefs to `0x4ccd54..0x4ccd74` does not prove those virtual slots are unused;
+  dynamic vptr dispatch may leave no exact slot-address xrefs. The relevant
+  next evidence is read-only BN/source-shape recovery: classify every code ref
+  to `0x4ccd50` by constructor/destructor/EH/temp-construction role and `this`
+  offset, recover virtual dispatch slot usage through objects that can hold
+  `0x4ccd50`, recheck raw relocation/immediate coverage for the table slots and
+  `0x407170`, recheck static lifecycle artifacts globally, and look for
+  contribution/COMDAT selection evidence. Do not run more bounded C/C++ or byte
+  probes for this window until one of those premises changes.
+  A follow-up read-only evidence batch then filled that Pro-requested frontier
+  without changing the conclusion. Current BN still reports exactly 26 code
+  refs and no data refs to `0x4ccd50`: derived destructor resets write
+  `[this] = 0x4ccd50`, constructor/base-init paths write it before derived
+  table overwrite, `RecoilApp::Destructor` loads it once and stores it into
+  embedded state offsets `0x220`, `0x208`, `0x1d8`, `0x1d0`, `0x1c8`,
+  `0x1a0`, and `0x160`, and `0x407170` is the only scalar-wrapper self-reset
+  in the set. Focused state-machine dispatch recovery found the 10-slot schema
+  used through `RecoilApp::Run`, queue helpers, idle dispatch, and
+  `CZGameFrame::OnActivate` for slots `+4`, `+8`, `+0xc`, `+0x10`, `+0x14`,
+  `+0x18`, `+0x1c`, `+0x20`, and `+0x24`; no high-confidence `call [vptr+0]`
+  was observed in that focused scope, which is a search-limit fact rather than
+  proof the destructor slot is unused. The static-lifecycle recheck again found
+  only `g_RecoilStateCheatCode` at `.CRT$XCU` row `0x4da008 -> 0x406e90`,
+  with `atexit(0x406ec0)` leading to `0x406f00`; no independent lifecycle
+  exists for `0x407170` or `0x4ccd50`. Existing COFF artifacts show current
+  `??_GRecoilApp_IState@@UAEPAXI@Z` as a pick-any COMDAT in `SECT8D` before
+  the zStub helpers, while the zStub helper sections are pick-no-duplicates;
+  older duplicate-COMDAT probe maps show selected scalar-wrapper contribution
+  changes with link object order but include no explicit discarded-duplicate
+  listing, and ICF probe artifacts report no folding between zStub helpers and
+  virtual default helpers.
+  A 2026-07-07 parent ChatGPT Pro scheduling pass at
+  `.devspace/runs/2026-07-07T04-27-44-664Z-chatgpt-call/receipt.json`
+  concluded that the top source-file-block lane should stay on HUD, but not by
+  trying to own or byte-patch `0x407170`/`0x4ccd50`. The governed continuation
+  is an evidence-only physical source-file block packet anchored at `0x407190`
+  and ending at the `0x415ab0` `map.cpp` boundary; lower-priority final-data or
+  owner-local byte work should wait until that continuation route is exhausted
+  or formally parked. The same pass explicitly kept raw assembly unapproved and
+  classified `0x407170`/`0x4ccd50` as a negative-evidence fence: valid only for
+  boundary/navigation evidence, invalid for owner, provider, tier-S,
+  final-data-layout, app-state/interface naming, or raw-assembly workarounds.
+  A focused VC5 verifier/tool repair then added the diagnostic manifest
+  provenance marker `compiler-emitted-noncovering`, limited to
+  `translation_unit_function_order` rows. The marker lets the
+  `hud_small_stub_layer_order_current_shape` target include compiler-emitted
+  `0x407170` in order diagnostics without requiring a false
+  `Reimplements 0x407170:` source docblock; top-level production byte/function
+  rows still reject provenance markers and still require normal source
+  provenance. The repaired target now compiles and reports the intended current
+  order blocker: top-level zStub order through `0x407160` is correct, but the
+  TU-order diagnostic still places `??_GRecoilApp_IState@@UAEPAXI@Z` in
+  `SECT8D` before zStub helper sections `SECT9F`, `SECTA1`, `SECTA3`, and
+  `SECTA5`.
+  The 2026-07-07 post-sentinel mapper ChatGPT Pro pass at
+  `.devspace/runs/2026-07-07T04-36-44-093Z-chatgpt-call/receipt.json` then
+  allowed the physical HUD continuation `[0x407190,0x415ab0)` with explicit
+  non-covering blockers. Treat `0x407190 zOpt::LookupNamedValueAsInt` as a
+  valid continuation anchor only after excluding unresolved `0x407170`; the
+  early `[0x407190,0x410160)` region is supported by catalog continuity, BN
+  function order, lack of a stronger intervening source boundary, and later
+  HUD literal xrefs rather than by a local literal at `0x407190`. The mapper
+  layers the continuation as: `hud_options_config_layer [0x407190,0x408a30)`,
+  `hud_controls_dialog_layer [0x408a30,0x409040)`,
+  `hud_credits_panel_layer [0x409040,0x40a590)`,
+  `hud_panel_scalar_deleting_destructor_tail_layer [0x40a590,0x40a5b0)`,
+  `hud_command_binding_layer [0x40a5b0,0x40c370)` with
+  `0x40c190..0x40c1f0` as VC5 STL/xutility provider-COMDAT candidates,
+  `hud_video_capability_probe_layer [0x40c370,0x40c6e0)`,
+  `hud_options_dialog_layer [0x40c6e0,0x40d1e0)`,
+  `hud_static_init_layer [0x40d1e0,0x40d3b0)`,
+  `hud_core_manager_prelude_layer [0x40d3b0,0x410160)`,
+  `hud_confirmed_layout_runtime_layer [0x410160,0x4136f0)` containing the
+  `0x4101a3` hud.cpp literal xref, `hud_sensor_layout_parser_layer
+  [0x4136f0,0x414180)`, `hud_loading_checkpoint_layer [0x414180,0x414300)`
+  containing the `0x4141bb` hud.cpp literal xref,
+  `hud_gamenet_chat_score_layer [0x414300,0x414670)`,
+  `hud_triplet_menu_container_layer [0x414670,0x414a60)`,
+  `hud_static_interp_wol_tail_layer [0x414a60,0x414b60)`,
+  `hud_main_menu_dialog_layer [0x414b60,0x4159d0)`, and
+  `hud_fmv_action_tail_layer [0x4159d0,0x415ab0)`. These are physical placement
+  layers and semantic/header/provider exceptions only, not owner-gate or tier
+  evidence. `0x415ab0 HudSensorMapNode::Init` starts the `map.cpp` block despite
+  HUD semantic naming; the `0x4daf04` `map.cpp` literal xref at `0x416922`
+  supports the boundary. The next safe implementation/validation slice from
+  this evidence is order-only source-shape validation of
+  `hud_options_config_layer [0x407190,0x408a30)` as physical hud.cpp
+  continuation while keeping semantic owner `engine.zgame.zopt_profile_selection`
+  separate and not expanding backward to `0x407170`.
+  A follow-up 2026-07-07 source-owner mapper ChatGPT Pro pass at
+  `.devspace/runs/2026-07-07T04-50-45-380Z-chatgpt-call/receipt.json`
+  explicitly allowed the order-only diagnostic first and blocked immediate
+  production reshaping through `hud.cpp` or included body/header mechanisms.
+  The new `hud_options_config_layer_order_current_shape` manifest records the
+  retail function order from `0x407190` through `0x408a20` and keeps `0x407170`
+  and `0x408a30` excluded. Its manifest source-policy guard passes. The first
+  full VC5 run did not reach the translation-unit order comparison because
+  current `src/GameZRecoil/zInput/zInput.cpp` failed to compile under the
+  existing `zinput_joystick_axis_helpers` target as well, starting with missing
+  `BindGroupListStaticInit`/`BindGroupListRegisterAtExit` declarations and
+  namespace-shape errors. A follow-up source-worker repair corrected the zInput
+  compatibility-container namespace/linkage bracketing, after which
+  `zinput_joystick_axis_helpers` passed and the full HUD diagnostic reached the
+  order checker. A 2026-07-07 ChatGPT Pro triage pass at
+  `.devspace/runs/2026-07-07T05-26-33-132Z-chatgpt-call/receipt.json`
+  classified the reported adjacent breaks as most strongly indicating local
+  `zgame_opt.c` body/source-fragment order drift rather than cross-file include
+  timing or zInput placement. The narrowed
+  `zgame_opt_hud_local_order_current_shape` diagnostic preserves only the
+  zGame/zOpt retail-order islands from the full HUD target and reproduced the
+  same intra-`zgame_opt.c` order breaks. A source-worker repair then reordered
+  complete existing zGame/zOpt function/docblock blocks in
+  `src/GameZRecoil/zGame/zgame_opt.c`; the only non-body shape adjustment was
+  preserving global helper linkage with namespace close/reopen points around
+  `zOpt_GetPlayerName`, `zOpt_CameraSection_GetActiveCamera`, display width and
+  height helpers, and the WOL password flag getter. Parent reruns now report
+  `translation_unit_order_matches_manifest True` for both
+  `zgame_opt_hud_local_order_current_shape` and
+  `hud_options_config_layer_order_current_shape`. Treat this as diagnostic
+  order evidence only, not byte, owner, source-block, provider, or tier
+  evidence.
+
+  A 2026-07-07 parent review then returned to the first non-matched function,
+  `0x407170`, after the options/config continuation order was repaired. The
+  parent ChatGPT Pro pass at
+  `.devspace/runs/2026-07-07T06-01-21-387Z-chatgpt-call/receipt.json`, the
+  provider/data Pro pass at
+  `.devspace/runs/2026-07-07T06-00-47-345Z-chatgpt-call/receipt.json`, and the
+  source-owner mapper Pro pass at
+  `.devspace/runs/2026-07-07T06-01-52-863Z-chatgpt-call/receipt.json`
+  converged on the same acceptance boundary: the unbroken correct-order chain
+  remains confirmed only through `0x407160 zStub::ReturnOne2Args`, and
+  `0x407170` remains the first unresolved address. Live BN still shows
+  `0x407170` as scalar-deleting-destructor-shaped VC5 class-coupled glue that
+  writes `0x4ccd50`, optionally calls imported `operator delete`, returns
+  `self`, has no code refs, and is referenced as a function only by slot 0 of
+  the distinct 40-byte `0x4ccd50..0x4ccd78` vtable-shaped data object. Exact
+  slot-address xrefs for `0x4ccd54..0x4ccd74` remain absent, and the 26 xrefs
+  to `0x4ccd50` remain constructor/destructor/reset-style vptr writes rather
+  than source-owner proof. Do not add `app_shell.recoil_state_base_interface`,
+  do not attach `0x407170`/`0x4ccd50` to current `RecoilApp_IState`,
+  `legacy.app_shell.class_recoilapp`, `legacy.app_shell.cluster_recoilstatebase`,
+  or the accepted zStub owner, and do not schedule another source/header
+  implementation probe under current evidence. Treat `0x4ccd50..0x4ccd78` as
+  unresolved auxiliary class/interface vtable evidence until a primary
+  source-shaped owner and natural VC5 emission trigger are proven; it is not a
+  provider boundary, standalone compiler artifact, primary authored data owner,
+  byte target, or bridge allowing the global order chain to skip to `0x407190`.
+  A fresh parent ChatGPT Pro pass at
+  `.devspace/runs/2026-07-07T09-04-59-366Z-chatgpt-call/receipt.json` and the
+  source-owner scrutinizer pass at
+  `.devspace/runs/2026-07-07T09-06-17-812Z-chatgpt-call/receipt.json`
+  reaffirmed the same stop condition after another current-source VC5 rerun:
+  no source-faithful VC5 C++ spelling remains worth testing under the recorded
+  facts. The only known helper-first/direct-write scalar-wrapper mechanism is
+  the rejected concrete static/global base-object family, which would require
+  `.bss`, `.CRT$XCU`, static-init, or `atexit` evidence absent from BN.
+  Therefore freeze production source edits for `0x407170` until a stale-if fact
+  changes. Do not add `app_shell.recoil_state_base_interface` as a normal
+  `SOURCE_OWNERS` row: even a pending/blocked anchor/data row would project
+  ownership for an unresolved address/table unless the tooling gains a truly
+  non-covering investigation-note type. The only safe current record is this
+  source-layout blocker plus raw BN comments/facts; no owner, provider, data,
+  linkage, byte, model, or tier claim is accepted.
+  A final 2026-07-07 parent ChatGPT Pro review at
+  `.devspace/runs/2026-07-07T10-57-58-398Z-chatgpt-call/receipt.json`
+  challenged whether the following semantic block could affect this placement
+  and kept the same boundary: `0x407170` is best described only as an
+  unresolved HUD-emitted base/default-interface scalar-deleting destructor
+  associated with `0x4ccd50`, not as proven `RecoilApp_IState`,
+  `RecoilStateBase`, zStub, zOpt, provider, or standalone data ownership. The
+  current `RecoilApp_IState` header/source shape likely emits a plausible
+  wrapper too early, but that is source-shape debt rather than evidence that an
+  accepted owner is wrong. Treat `[0x407190,0x408a30)` and later HUD semantic
+  blocks as non-covering order-continuation work that may proceed with
+  `0x407170` explicitly excluded; reopen active `0x407170` source work only if
+  new BN xrefs, COFF/OBJ/map provenance, a natural helper-first VC5
+  reproduction, or static-lifecycle evidence changes the recorded premises.
 
 For each frontier window:
 

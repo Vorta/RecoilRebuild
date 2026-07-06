@@ -77540,6 +77540,10 @@
         {
           "address": "0x4ccd78",
           "name": "g_zNetwork_RecoilAppGuid"
+        },
+        {
+          "address": "0x4ccd88",
+          "name": "g_zNetwork_WestwoodOnlineAppGuid"
         }
       ],
       "source_paths": [
@@ -77577,7 +77581,8 @@
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized audio_fmv parent-owned data-dependency reconciliation; no gate/tier promotion beyond linkage classification",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized core_util_archive/shared data-dependency reconciliation safe subset; rows with incomplete parentage or metadata blockers intentionally left blocked",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized render_video data-dependency reconciliation; render_video.zrndr_global_string_table_data intentionally left blocked pending owner-shape remap",
-        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked"
+        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked",
+        "address metadata updated for 0x4ccd88: BN distinguishes second DirectPlay application GUID at 0x4ccd88 used by WestwoodOnlineUpgradeApiEventSink::LaunchSelectedSession"
       ],
       "binary": "recoil",
       "relationships": [
@@ -77624,6 +77629,11 @@
           "kind": "primary-data",
           "address": "0x4ccd78",
           "name": "g_zNetwork_RecoilAppGuid"
+        },
+        {
+          "kind": "primary-data",
+          "address": "0x4ccd88",
+          "name": "g_zNetwork_WestwoodOnlineAppGuid"
         }
       ],
       "address_metadata": {
@@ -77665,6 +77675,12 @@
         },
         "0x56ab08": {
           "name": "g_zNetwork_DPlayCaps",
+          "source_path": "src/GameZRecoil/zNetwork/znet_dplay.cpp",
+          "target": "znetwork_directplay_runtime_globals",
+          "group": "data.network_online"
+        },
+        "0x4ccd88": {
+          "name": "g_zNetwork_WestwoodOnlineAppGuid",
           "source_path": "src/GameZRecoil/zNetwork/znet_dplay.cpp",
           "target": "znetwork_directplay_runtime_globals",
           "group": "data.network_online"
@@ -144445,6 +144461,46 @@
       ]
     },
     {
+      "id": "provider.vc5_huduizrdwidgetex17c_destructor_core_thunk_408c60",
+      "kind": "provider-boundary",
+      "name": "VC5 compiler-emitted HudUiZrdWidgetEx17C destructor-core thunk",
+      "section": "provider",
+      "state": "accepted",
+      "anchors": [
+        "0x408c60"
+      ],
+      "member_addresses": [
+        "0x408c60"
+      ],
+      "data_addresses": [],
+      "source_paths": [],
+      "dependencies": [],
+      "gates": {
+        "boundary": "accepted",
+        "source": "pending",
+        "data": "pending",
+        "functional": "pending",
+        "linkage": "pending",
+        "byte": "pending"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "Provider-boundary classification: 0x408c60 is a single noncovering jmp to authored 0x4b8b60; xrefs are scalar/EH cleanup helpers; no independent authored body or data refs. Retain as physical-order compiler/linker thunk/helper inside hud_controls_dialog_layer; exact emission mechanism remains unresolved and no source/data/linkage/tier claim is made.",
+        "2026-07-07 provider/data classifier: 0x408c60 is a non-authored VC5 compiler/linker destructor cleanup tail-jump thunk to 0x4b8b60, with EH cleanup xrefs and no independent authored body/data refs; this accepts provider-boundary classification only, not source/data/linkage/byte/tier evidence."
+      ],
+      "binary": "recoil",
+      "relationships": [
+        {
+          "kind": "anchor-address",
+          "address": "0x408c60"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x408c60"
+        }
+      ]
+    },
+    {
       "id": "provider.vc5_msvcrt_type_info_rtti_descriptor",
       "kind": "provider-boundary",
       "name": "VC5/MSVCRT type_info RTTI TypeDescriptor",
@@ -144485,6 +144541,45 @@
           "kind": "primary-data",
           "address": "0x4e5b10",
           "name": "pending"
+        }
+      ]
+    },
+    {
+      "id": "provider.vc5_recoilstatecontrols_scalar_deleting_destructor_408d70",
+      "kind": "provider-boundary",
+      "name": "VC5 scalar deleting destructor for RecoilStateControls",
+      "section": "provider",
+      "state": "accepted",
+      "anchors": [
+        "0x408d70"
+      ],
+      "member_addresses": [
+        "0x408d70"
+      ],
+      "data_addresses": [],
+      "source_paths": [],
+      "dependencies": [],
+      "gates": {
+        "boundary": "pending",
+        "source": "pending",
+        "data": "pending",
+        "functional": "pending",
+        "linkage": "pending",
+        "byte": "pending"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "Provider-boundary classification: 0x408d70 is canonical VC5 scalar deleting destructor ABI glue for RecoilStateControls, calling authored 0x408d90 and optionally operator delete; only known data ref is the class vtable slot at 0x4cd178. Exclude from RecoilStateControls primary authored member gates; no source/data/linkage/tier claim is made."
+      ],
+      "binary": "recoil",
+      "relationships": [
+        {
+          "kind": "anchor-address",
+          "address": "0x408d70"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x408d70"
         }
       ]
     },
