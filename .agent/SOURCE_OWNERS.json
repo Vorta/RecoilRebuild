@@ -110914,9 +110914,7 @@
       "source_paths": [
         "src/GameZRecoil/RecoilApp/RecoilStateDialogHost.cpp"
       ],
-      "dependencies": [
-        "legacy.app_shell.cluster_recoilstatebase"
-      ],
+      "dependencies": [],
       "gates": {
         "boundary": "accepted",
         "source": "accepted",
@@ -110941,7 +110939,8 @@
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized audio_fmv parent-owned data-dependency reconciliation; no gate/tier promotion beyond linkage classification",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized core_util_archive/shared data-dependency reconciliation safe subset; rows with incomplete parentage or metadata blockers intentionally left blocked",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized render_video data-dependency reconciliation; render_video.zrndr_global_string_table_data intentionally left blocked pending owner-shape remap",
-        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked"
+        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked",
+        "Dependency cleanup after 2026-07-08 hud_small_stub_layer source-shape repair: RecoilStateDialogHost is modeled as standalone RECOIL_NOVTABLE dialog host, not real RecoilStateBase inheritance; scoped membership audit found no direct BN support for DialogHost -> legacy.app_shell.cluster_recoilstatebase, and cluster_recoilstatebase owns RecoilStateCredits functions rather than 0x407170/0x4ccd50. ChatGPT Pro receipt .devspace/runs/2026-07-08T12-36-58-435Z-chatgpt-call/receipt.json and recoil_source_owner_scrutinizer ALLOW."
       ],
       "binary": "recoil",
       "relationships": [
@@ -110960,11 +110959,6 @@
         {
           "kind": "primary-function",
           "address": "0x409ad0"
-        },
-        {
-          "kind": "depends-on-owner",
-          "target_owner_id": "legacy.app_shell.cluster_recoilstatebase",
-          "reason": "legacy-owner-dependency"
         }
       ],
       "address_metadata": {
@@ -121729,11 +121723,8 @@
       "name": "HudUiFillBitmap",
       "section": "hud_ui",
       "state": "accepted",
-      "anchors": [
-        "0x40cf50"
-      ],
+      "anchors": [],
       "member_addresses": [
-        "0x40cf50",
         "0x4b84b0",
         "0x4b84d0",
         "0x4b8450",
@@ -121774,18 +121765,11 @@
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized core_util_archive/shared data-dependency reconciliation safe subset; rows with incomplete parentage or metadata blockers intentionally left blocked",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized render_video data-dependency reconciliation; render_video.zrndr_global_string_table_data intentionally left blocked pending owner-shape remap",
         "HudUiFillBitmap class-local ZRD key literal; partial HUD scrutiny allowed linkage-only migration.",
-        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked"
+        "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked",
+        "2026-07-08 BN/provider-classifier reconciliation: 0x40cf50 is a one-instruction VC5 compiler/EH cleanup forwarding thunk to authored HudUiFillBitmap::DestructorCore at 0x4b84d0, not the authored class anchor; Pro receipt .devspace/runs/2026-07-08T21-33-37-842Z-chatgpt-call/receipt.json."
       ],
       "binary": "recoil",
       "relationships": [
-        {
-          "kind": "anchor-address",
-          "address": "0x40cf50"
-        },
-        {
-          "kind": "primary-function",
-          "address": "0x40cf50"
-        },
         {
           "kind": "primary-function",
           "address": "0x4b84b0"
@@ -121830,12 +121814,6 @@
         }
       ],
       "address_metadata": {
-        "0x40cf50": {
-          "name": "HudUiFillBitmap::DestructorCoreThunk",
-          "source_path": "src/GameZRecoil/zHud/zhud_ui.cpp",
-          "target": "hud_ui_fill_bitmap_destructor_core_thunk",
-          "group": "ui.zhud"
-        },
         "0x4b8450": {
           "name": "HudUiFillBitmap::HudUiFillBitmap",
           "source_path": "src/GameZRecoil/zHud/zhud_ui.cpp",
@@ -143536,6 +143514,52 @@
       ]
     },
     {
+      "id": "provider.compiler.vc5_recoilstatecredits_scalar_deleting_destructor_4099d0",
+      "kind": "provider-boundary",
+      "name": "VC5 scalar deleting destructor glue for RecoilStateCredits",
+      "section": "provider.compiler",
+      "state": "discovered",
+      "anchors": [
+        "0x4099d0"
+      ],
+      "member_addresses": [
+        "0x4099d0"
+      ],
+      "data_addresses": [],
+      "source_paths": [],
+      "dependencies": [
+        "provider.import.operator_delete"
+      ],
+      "gates": {
+        "boundary": "pending",
+        "source": "pending",
+        "data": "pending",
+        "functional": "pending",
+        "linkage": "pending",
+        "byte": "pending"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "0x4099d0 is VC5 scalar deleting destructor glue for RecoilStateCredits: ??_G symbol, ecx self plus stack flags and ret 4, calls authored ordinary destructor 0x4099f0, tests flags bit 0, conditionally calls imported operator delete, returns original self, and has only g_RecoilStateCredits_Vtbl+0x0 data ref. Exclude from authored primary member gates; this does not relax source order without a separate accepted source-discovery/provider exception."
+      ],
+      "binary": "recoil",
+      "relationships": [
+        {
+          "kind": "anchor-address",
+          "address": "0x4099d0"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x4099d0"
+        },
+        {
+          "kind": "depends-on-owner",
+          "target_owner_id": "provider.import.operator_delete",
+          "reason": "legacy-owner-dependency"
+        }
+      ]
+    },
+    {
       "id": "provider.compiler.westwood_online_upgrade_dialog_eh_frame_thunks",
       "kind": "provider-boundary",
       "name": "VC5 C++ EH frame-handler thunks for selected WestwoodOnlineUpgradeDialog EH packets",
@@ -144457,6 +144481,194 @@
           "kind": "primary-data",
           "address": "0x779abc",
           "name": "pending"
+        }
+      ]
+    },
+    {
+      "id": "provider.vc5_huduichecktogglewidget_destructor_core_thunk_40cf30",
+      "kind": "provider-boundary",
+      "name": "VC5 compiler cleanup forwarding thunk to HudUiCheckToggleWidget::DestructorCore",
+      "section": "provider",
+      "state": "accepted",
+      "anchors": [
+        "0x40cf30"
+      ],
+      "member_addresses": [
+        "0x40cf30"
+      ],
+      "data_addresses": [],
+      "source_paths": [],
+      "dependencies": [
+        "legacy.hud_ui.class_huduichecktogglewidget"
+      ],
+      "gates": {
+        "boundary": "accepted",
+        "source": "pending",
+        "data": "pending",
+        "functional": "pending",
+        "linkage": "pending",
+        "byte": "pending"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "BN row is one direct jmp to 0x4b7020 HudUiCheckToggleWidget::DestructorCore with padding outside the function; reached by scalar-deleting destructor and EH cleanup refs; 2026-07-08 provider classifier with ChatGPT Pro receipt .devspace/runs/2026-07-08T21-33-37-842Z-chatgpt-call/receipt.json classifies it as a non-authored VC5 compiler/EH cleanup forwarding thunk.",
+        "Boundary accepted only: 2026-07-08 BN facts and provider-classifier/ChatGPT Pro receipt classify 0x40cf30 as a VC5 compiler/EH cleanup forwarding thunk to authored HudUiCheckToggleWidget::DestructorCore; no source/data/functional/linkage/byte gate acceptance follows."
+      ],
+      "binary": "recoil",
+      "relationships": [
+        {
+          "kind": "anchor-address",
+          "address": "0x40cf30"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x40cf30"
+        },
+        {
+          "kind": "depends-on-owner",
+          "target_owner_id": "legacy.hud_ui.class_huduichecktogglewidget",
+          "reason": "legacy-owner-dependency"
+        }
+      ]
+    },
+    {
+      "id": "provider.vc5_huduicycleselectorwidget_destructor_core_thunk_40cf40",
+      "kind": "provider-boundary",
+      "name": "VC5 compiler cleanup forwarding thunk to HudUiCycleSelectorWidget::DestructorCore",
+      "section": "provider",
+      "state": "accepted",
+      "anchors": [
+        "0x40cf40"
+      ],
+      "member_addresses": [
+        "0x40cf40"
+      ],
+      "data_addresses": [],
+      "source_paths": [],
+      "dependencies": [
+        "legacy.hud_ui.class_huduicycleselectorwidget"
+      ],
+      "gates": {
+        "boundary": "accepted",
+        "source": "pending",
+        "data": "pending",
+        "functional": "pending",
+        "linkage": "pending",
+        "byte": "pending"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "BN row is one direct jmp to 0x4b7de0 HudUiCycleSelectorWidget::DestructorCore with padding outside the function; reached by scalar-deleting destructor and EH cleanup refs; 2026-07-08 provider classifier with ChatGPT Pro receipt .devspace/runs/2026-07-08T21-33-37-842Z-chatgpt-call/receipt.json classifies it as a non-authored VC5 compiler/EH cleanup forwarding thunk.",
+        "Boundary accepted only: 2026-07-08 BN facts and provider-classifier/ChatGPT Pro receipt classify 0x40cf40 as a VC5 compiler/EH cleanup forwarding thunk to authored HudUiCycleSelectorWidget::DestructorCore; no source/data/functional/linkage/byte gate acceptance follows."
+      ],
+      "binary": "recoil",
+      "relationships": [
+        {
+          "kind": "anchor-address",
+          "address": "0x40cf40"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x40cf40"
+        },
+        {
+          "kind": "depends-on-owner",
+          "target_owner_id": "legacy.hud_ui.class_huduicycleselectorwidget",
+          "reason": "legacy-owner-dependency"
+        }
+      ]
+    },
+    {
+      "id": "provider.vc5_huduifillbitmap_destructor_core_thunk_40cf50",
+      "kind": "provider-boundary",
+      "name": "VC5 compiler cleanup forwarding thunk to HudUiFillBitmap::DestructorCore",
+      "section": "provider",
+      "state": "accepted",
+      "anchors": [
+        "0x40cf50"
+      ],
+      "member_addresses": [
+        "0x40cf50"
+      ],
+      "data_addresses": [],
+      "source_paths": [],
+      "dependencies": [
+        "legacy.hud_ui.class_huduifillbitmap"
+      ],
+      "gates": {
+        "boundary": "accepted",
+        "source": "pending",
+        "data": "pending",
+        "functional": "pending",
+        "linkage": "pending",
+        "byte": "pending"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "BN row is one direct jmp to 0x4b84d0 HudUiFillBitmap::DestructorCore with padding outside the function; reached by scalar-deleting destructor and EH cleanup refs including Briefing transport-progress cleanup; 2026-07-08 provider classifier with ChatGPT Pro receipt .devspace/runs/2026-07-08T21-33-37-842Z-chatgpt-call/receipt.json classifies it as a non-authored VC5 compiler/EH cleanup forwarding thunk, replacing the stale authored-primary link.",
+        "Boundary accepted only: 2026-07-08 BN facts and provider-classifier/ChatGPT Pro receipt classify 0x40cf50 as a VC5 compiler/EH cleanup forwarding thunk to authored HudUiFillBitmap::DestructorCore; no source/data/functional/linkage/byte gate acceptance follows."
+      ],
+      "binary": "recoil",
+      "relationships": [
+        {
+          "kind": "anchor-address",
+          "address": "0x40cf50"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x40cf50"
+        },
+        {
+          "kind": "depends-on-owner",
+          "target_owner_id": "legacy.hud_ui.class_huduifillbitmap",
+          "reason": "legacy-owner-dependency"
+        }
+      ]
+    },
+    {
+      "id": "provider.vc5_huduizrdwidget_destructor_core_thunk_40cf20",
+      "kind": "provider-boundary",
+      "name": "VC5 compiler cleanup forwarding thunk to HudUiZrdWidget::DestructorCore",
+      "section": "provider",
+      "state": "accepted",
+      "anchors": [
+        "0x40cf20"
+      ],
+      "member_addresses": [
+        "0x40cf20"
+      ],
+      "data_addresses": [],
+      "source_paths": [],
+      "dependencies": [
+        "legacy.hud_ui.class_huduizrdwidget"
+      ],
+      "gates": {
+        "boundary": "accepted",
+        "source": "pending",
+        "data": "pending",
+        "functional": "pending",
+        "linkage": "pending",
+        "byte": "pending"
+      },
+      "blocker": "pending",
+      "evidence": [
+        "BN row is one direct jmp to 0x4b50c0 HudUiZrdWidget::DestructorCore with padding outside the function; reached by scalar-deleting destructor and EH cleanup refs; 2026-07-08 provider classifier with ChatGPT Pro receipt .devspace/runs/2026-07-08T21-33-37-842Z-chatgpt-call/receipt.json classifies it as a non-authored VC5 compiler/EH cleanup forwarding thunk.",
+        "Boundary accepted only: 2026-07-08 BN facts and provider-classifier/ChatGPT Pro receipt classify 0x40cf20 as a VC5 compiler/EH cleanup forwarding thunk to authored HudUiZrdWidget::DestructorCore; no source/data/functional/linkage/byte gate acceptance follows."
+      ],
+      "binary": "recoil",
+      "relationships": [
+        {
+          "kind": "anchor-address",
+          "address": "0x40cf20"
+        },
+        {
+          "kind": "primary-function",
+          "address": "0x40cf20"
+        },
+        {
+          "kind": "depends-on-owner",
+          "target_owner_id": "legacy.hud_ui.class_huduizrdwidget",
+          "reason": "legacy-owner-dependency"
         }
       ]
     },

@@ -68,17 +68,6 @@ RECOIL_STATIC_ASSERT(
 );
 
 /**
- * Reimplements 0x414b50: shared.authored_ret4_noop_414b50
- * (standalone; not a Westwood download event-sink owner member).
- * Purpose: Handles an unused download event callback slot with a zero result.
- */
-int STDMETHODCALLTYPE WestwoodOnlineUpgradeDownloadEventSink::CallbackNoOp(
-    void *
-) {
-    return 0;
-}
-
-/**
  * Reimplements 0x442660: WestwoodOnlineUpgradeDownloadEventSink::OnDownloadFinished.
  * Purpose: Marks the upgrade download dialog as finished and reports success to COM.
  */

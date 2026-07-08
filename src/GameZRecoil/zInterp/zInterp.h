@@ -209,13 +209,13 @@ struct zInterp_Context {
 };
 
 struct zInterp_GlobalContext : zInterp_Context {
+    zInterp_GlobalContext();
     virtual int DispatchHook(char *commandToken);
 
     static int StaticInitAndRegisterAtExit();
     static zInterp_Context *StaticInit();
     static int RegisterAtExit();
     static void AtExitDestructor();
-    zInterp_Context * Constructor();
 };
 
 RECOIL_STATIC_ASSERT(sizeof(zInterp_GlobalContext) == 0xcc);

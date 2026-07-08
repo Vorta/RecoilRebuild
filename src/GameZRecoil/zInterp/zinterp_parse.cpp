@@ -614,30 +614,6 @@ void zInterp_Context::ClearVarTable() {
 }
 
 /**
- * Reimplements 0x414ad0: zInterp_GlobalContext::DispatchHook.
- * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
- *
- * Purpose: handle global WeaponSetMaxTetherAltitude commands before the
- * generic context dispatch path reports them as unhandled.
- */
-int zInterp_GlobalContext::DispatchHook(
-    char *commandToken
-) {
-    zInterp_Context *const context = this;
-    if (commandToken[0] != 'W' ||
-        context->tokenCount == 0 ||
-        strcmp(
-            context->tokenList[0],
-            kCommandNameWeaponSetMaxTetherAltitude
-        ) != 0) {
-        return 1;
-    }
-
-    zWeapon::SetMaxTetherAltitude(context->ParseFloatToken());
-    return 0;
-}
-
-/**
  * Reimplements 0x4c0d20: zInterp_Context::Constructor.
  * Source path: D:\Proj\GameZRecoil\zInterp\interp_context.c.
  *
@@ -698,75 +674,6 @@ zInterp_Context * zInterp_Context::Constructor(
 
     return this;
 }
-
-/**
- * Reimplements 0x414ab0: zInterp_GlobalContext::Constructor.
- * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
- *
- * Purpose: construct the process-wide interpreter with the retail search path
- * and prepared script index filename.
- */
-zInterp_Context * zInterp_GlobalContext::Constructor() {
-    zInterp_Context *const context = (zInterp_Context *)(this);
-    context->Constructor(
-        kGlobalContextSearchPath,
-        g_zInterp_PreparedIndexFileName
-    );
-    return context;
-}
-
-/**
- * Reimplements 0x414a70: zInterp_GlobalContext::StaticInit.
- * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
- *
- * Purpose: static initializer wrapper for the process-wide interpreter.
- */
-zInterp_Context *zInterp_GlobalContext::StaticInit() {
-    zInterp_GlobalContext *const context =
-        new (&g_zInterp_GlobalContext) zInterp_GlobalContext;
-    return context->Constructor();
-}
-
-/**
- * Reimplements 0x414a80: zInterp_GlobalContext::RegisterAtExit.
- * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
- *
- * Purpose: register the global interpreter destructor with the CRT atexit list.
- */
-int zInterp_GlobalContext::RegisterAtExit() {
-    return atexit(AtExitDestructor);
-}
-
-/**
- * Reimplements 0x414a90: zInterp_GlobalContext::AtExitDestructor.
- * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
- *
- * Purpose: tear down the process-wide interpreter during CRT shutdown.
- */
-void zInterp_GlobalContext::AtExitDestructor() {
-    g_zInterp_GlobalContext.Destructor();
-}
-
-/**
- * Reimplements 0x414a60: zInterp_GlobalContext::StaticInitAndRegisterAtExit.
- * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
- *
- * Purpose: construct the process-wide interpreter and register its shutdown
- * callback during static initialization.
- */
-int zInterp_GlobalContext::StaticInitAndRegisterAtExit() {
-    StaticInit();
-    return RegisterAtExit();
-}
-
-#if defined(_MSC_VER) && defined(_M_IX86)
-typedef void (__cdecl *ZInterpCrtInitializerFn)();
-/* VC5 emits this zInterp startup callback as a direct .CRT$XCU row. */
-#pragma data_seg(".CRT$XCU")
-ZInterpCrtInitializerFn s_zInterpCrtInit_GlobalContext =
-    (ZInterpCrtInitializerFn)zInterp_GlobalContext::StaticInitAndRegisterAtExit;
-#pragma data_seg()
-#endif
 
 /**
  * Reimplements 0x4c0f70: zInterp_Context::Destroy.

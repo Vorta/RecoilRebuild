@@ -174,6 +174,7 @@ class HudUiMainMenuDialog : public HudUiMainMenuDialogBackground {
     HudUiMainMenuDialog_ControlsButton controlsButton;
 
     HudUiMainMenuDialog(RecoilMainMenuEntryRoute route);
+    virtual HudUiBackground * ScalarDeletingDestructor(unsigned int flags);
     ~HudUiMainMenuDialog();
 
     static int CanLoadGame();

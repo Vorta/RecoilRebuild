@@ -1555,19 +1555,6 @@ void zFMV_ActionPlayMci::End() {
 
 #include "fmv_stream.cpp"
 
-/* Source-layout blocker: address-backed bodies below do not belong to the assigned contiguous ledger rows.
- * They are preserved here because their proven physical owner is outside this worker scope or still unresolved.
- */
-/**
- * Reimplements 0x4159d0: zFMV_Action::Update.
- * Purpose: report immediate completion for action types without update behavior.
- */
-int zFMV_Action::Update(
-    double
-) {
-    return 0;
-}
-
 /**
  * Original inline helper; no standalone retail function exists.
  * Observed in the zFMV_Action virtual slot contract.
@@ -1590,26 +1577,3 @@ void zFMV_Action::End() {}
 void zFMV_Action::RunBlocking() {
     RunBlockingTimed();
 }
-
-/**
- * Reimplements 0x4159e0: zFMV_Action::RunBlockingTimed.
- * Purpose: run an action to completion using elapsed milliseconds from GetTickCount.
- */
-void zFMV_Action::RunBlockingTimed() {
-    const double startSec = (double)(GetTickCount()) * 0.00100000005;
-    Begin(0.0);
-    while (true) {
-        const double currentSec = ((double)(GetTickCount()) * 0.00100000005) - startSec;
-        if (Update(currentSec) == 0) {
-            break;
-        }
-    }
-    End();
-}
-
-/**
- * Reimplements 0x415aa0: zFMV_Action::~zFMV_Action.
- * Purpose: provide the shared virtual action destructor.
- */
-zFMV_Action::~zFMV_Action() {}
-

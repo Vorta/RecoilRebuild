@@ -7,27 +7,6 @@
 #include "GameZRecoil/zVideo/zvid.h"
 
 /**
- * Reimplements 0x4099a0: RecoilStateDialogHost::OnWndActivate.
- *
- * Purpose: refresh the hosted HUD dialog surfaces when the application is
- * reactivated.
- */
-void RecoilStateDialogHost::OnWndActivate(
-    int activateCode
-) {
-    if (activateCode == 0) {
-        return;
-    }
-
-    if (m_dialog == 0) {
-        return;
-    }
-
-    ((HudUiDialogController *)m_dialog)->BlitOwnedSurfaceToPrimary();
-    m_dialog->InvalidateChildren();
-}
-
-/**
  * Reimplements 0x435e80: RecoilStateSaveLoadTransition::OnUpdateShouldQuit
  * (BN canonical folded body).
  *
@@ -59,24 +38,4 @@ int RecoilStateDialogHost::OnUpdateShouldQuit() {
         1
     );
     return 0;
-}
-
-/**
- * Reimplements 0x409ad0: RecoilStateDialogHost::OnDeactivate.
- *
- * Purpose: disable, repaint, destroy, and clear the active hosted HUD dialog.
- */
-void RecoilStateDialogHost::OnDeactivate() {
-    if (m_dialog == 0) {
-        return;
-    }
-
-    m_dialog->SetEnabled(0);
-    ((HudUiDialogController *)m_dialog)->BlitOwnedSurfaceToPrimary();
-
-    if (m_dialog != 0) {
-        ((HudUiBackground *)m_dialog)->ScalarDeletingDestructor(1);
-    }
-
-    m_dialog = 0;
 }

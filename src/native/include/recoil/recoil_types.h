@@ -6,6 +6,12 @@
 #include <new>
 #endif
 
+#if defined(_MSC_VER)
+#define RECOIL_NOVTABLE __declspec(novtable)
+#else
+#define RECOIL_NOVTABLE
+#endif
+
 namespace recoil {
 typedef unsigned int Ptr32;
 typedef unsigned int Fn32;

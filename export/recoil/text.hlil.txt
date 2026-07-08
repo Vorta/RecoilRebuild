@@ -97682,8 +97682,8 @@
                 zMath::MatTransformPointBatchInPlace(gTransformedVerts, di->vertCount)
 
             int32_t vertIndex = 0
-            uint32_t edi_2
-            edi_2.w = di->entries->materialRef->packedColor
+            int32_t packedColor
+            packedColor.w = di->entries->materialRef->packedColor
 
             if (di->vertCount s> 0)
                 int32_t var_c = 0
@@ -97729,10 +97729,10 @@
 
                                     if ((((x87_r7_12 < temp19_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_12, temp19_1) ? 1 : 0) << 0xa | (x87_r7_12 == temp19_1 ? 1 : 0) << 0xe):1.b & 0x41) != 0)
                                         if (zVideo_ActiveRendererPath_1 == ZVID_RENDERER_BACKEND_SOFTWARE)
-                                            zRndr_LensFlare::QueueProjectedSample(&var_3c, edi_2, nullptr)
+                                            zRndr_LensFlare::QueueProjectedSample(&var_3c, packedColor, nullptr)
                                         else
     // Indirect fastcall: ECX=&projectedPoint, EDX=packedColor16, stack pointCount=1; DD3D callee ignores pointCount.
-                                            g_zVideo_pfnDrawPointColor16(&var_3c, edi_2, 1)
+                                            g_zVideo_pfnDrawPointColor16(1)
 
                     int32_t vertIndex = &di_1->mode + 1
                     int32_t var_c_1 = gTransformedVerts_1 + 0xc
@@ -97787,11 +97787,11 @@
                     while (i_1 != 1)
                     di = di_1
                 else
-                    int32_t ecx_20 = vertCount_1 * 0xc
+                    int32_t ecx_19 = vertCount_1 * 0xc
                     int32_t esi_2
-                    int32_t edi_3
-                    edi_3, esi_2 = __builtin_memcpy(gTransformedVerts_4, verts_1, ecx_20 & 0xfffffffc)
-                    __builtin_memcpy(edi_3, esi_2, ecx_20 & 3)
+                    int32_t edi_2
+                    edi_2, esi_2 = __builtin_memcpy(gTransformedVerts_4, verts_1, ecx_19 & 0xfffffffc)
+                    __builtin_memcpy(edi_2, esi_2, ecx_19 & 3)
         else
             long double x87_r7_13 = di->blendScale
             gTransformedVerts_1 = x87_r7_13
@@ -97891,13 +97891,13 @@
                 int32_t eax_32 = *vertexIndices
                 vertexIndices = &vertexIndices[1]
                 int32_t eax_34 = gTransformedVerts_1 + eax_32 * 0xc
-                struct zClipVert* edi_7 = edx_24
+                struct zClipVert* edi_6 = edx_24
                 edx_24 = &edx_24[1]
                 i_2 = i_13
                 i_13 -= 1
-                edi_7->x = *eax_34
-                edi_7->y = *(eax_34 + 4)
-                edi_7->z = *(eax_34 + 8)
+                edi_6->x = *eax_34
+                edi_6->y = *(eax_34 + 4)
+                edi_6->z = *(eax_34 + 8)
             while (i_2 != 1)
             long double x87_r7_28 = g_Clip_PolyVertsScratch[2].x - g_Clip_PolyVertsScratch[1].x
             long double x87_r6_14 = g_Clip_PolyVertsScratch[2].y - g_Clip_PolyVertsScratch[1].y
@@ -97935,11 +97935,11 @@
                 struct zClipVert triClipVerts[0x3]
 
                 if ((outActiveLightState_1:1.b & 1) == 0)
-                    int32_t ecx_58
-                    ecx_58.w = materialRef->packedColor
+                    int32_t ecx_57
+                    ecx_57.w = materialRef->packedColor
                     int32_t esi_13 = 0
                     float outFade = 0f
-                    int32_t var_c_2 = ecx_58
+                    int32_t var_c_2 = ecx_57
 
                     if (outDepthFade != 0)
                         int32_t eax_78
@@ -97975,13 +97975,13 @@
                         struct zClipVert* eax_83 = &g_Clip_PolyVerts
                         long double x87_r7_80 = 0f
                         int32_t i_20 = i_23
-                        float* ecx_64 = &g_Clip_PolyVertsScratch[0x3f + i_23]
+                        float* ecx_63 = &g_Clip_PolyVertsScratch[0x3f + i_23]
                         int32_t i_3
 
                         do
-                            long double x87_r6_26 = eax_83->y * *ecx_64
-                            long double x87_r5_36 = ecx_64[1] * eax_83->x
-                            ecx_64 = eax_83
+                            long double x87_r6_26 = eax_83->y * *ecx_63
+                            long double x87_r5_36 = ecx_63[1] * eax_83->x
+                            ecx_63 = eax_83
                             eax_83 = &eax_83[1]
                             i_3 = i_20
                             i_20 -= 1
@@ -98087,15 +98087,15 @@
                         if (vertexCount_2 s> 0)
     // Attribute clear loop zeros g_Clip_PolyAttr0[i] and the adjacent g_Clip_PolyAttr1[i] array in one stride.
                             float* eax_38 = &g_Clip_PolyAttr0
-                            uint32_t ecx_33 = vertexCount_2
+                            uint32_t ecx_32 = vertexCount_2
                             uint32_t i_6
 
                             do
                                 eax_38[0x40] = 0
                                 *eax_38 = 0f
                                 eax_38 = &eax_38[1]
-                                i_6 = ecx_33
-                                ecx_33 -= 1
+                                i_6 = ecx_32
+                                ecx_32 -= 1
                             while (i_6 != 1)
 
                         int32_t outDepthFade_1 = outDepthFade
@@ -98130,12 +98130,12 @@
                             zRndr::CommitFogColorParamsIfChanged()
                             vertexCount_2 = var_8
 
-                    uint32_t ecx_40 = vertexCount_2 << 3
+                    uint32_t ecx_39 = vertexCount_2 << 3
                     materialRef.b = clipMask.b
                     int32_t esi_9
-                    int32_t edi_9
-                    edi_9, esi_9 = __builtin_memcpy(g_Clip_PolyUvs, entries_1->uvPairs, ecx_40 & 0xfffffffc)
-                    __builtin_memcpy(edi_9, esi_9, ecx_40 & 3)
+                    int32_t edi_8
+                    edi_8, esi_9 = __builtin_memcpy(g_Clip_PolyUvs, entries_1->uvPairs, ecx_39 & 0xfffffffc)
+                    __builtin_memcpy(edi_8, esi_9, ecx_39 & 3)
 
                     if (lightFlags == 0)
                         int32_t eax_65
@@ -98152,13 +98152,13 @@
                             struct zClipVert* eax_67 = &g_Clip_PolyVerts
                             long double x87_r7_60 = 0f
                             int32_t esi_11 = vertexCount
-                            float* ecx_51 = &g_Clip_PolyVertsScratch[0x3f + vertexCount]
+                            float* ecx_50 = &g_Clip_PolyVertsScratch[0x3f + vertexCount]
                             int32_t i_7
 
                             do
-                                long double x87_r6_23 = eax_67->y * *ecx_51
-                                long double x87_r5_34 = ecx_51[1] * eax_67->x
-                                ecx_51 = eax_67
+                                long double x87_r6_23 = eax_67->y * *ecx_50
+                                long double x87_r5_34 = ecx_50[1] * eax_67->x
+                                ecx_50 = eax_67
                                 eax_67 = &eax_67[1]
                                 i_7 = esi_11
                                 esi_11 -= 1
@@ -98208,14 +98208,14 @@
                                         if (vertexCount_1 s> 0)
     // Alt-clip remap loop walks zClipVert triplets as float x/y pairs; pointer arithmetic is the compiler's tight-loop form.
                                             float* eax_74 = &g_Clip_PolyVerts[0].y
-                                            int32_t ecx_54 = vertexCount_1
+                                            int32_t ecx_53 = vertexCount_1
                                             int32_t i_9
 
                                             do
                                                 long double x87_r7_72 = g_zClipAlt_RemapScaleX * eax_74[-1]
                                                 eax_74 = &eax_74[3]
-                                                i_9 = ecx_54
-                                                ecx_54 -= 1
+                                                i_9 = ecx_53
+                                                ecx_53 -= 1
                                                 eax_74[-4] = x87_r7_72 + g_zClipAlt_RemapBiasX
                                                 eax_74[-3] = g_zClipAlt_RemapScaleY * eax_74[-3] + g_zClipAlt_RemapBiasY
                                             while (i_9 != 1)
@@ -98240,13 +98240,13 @@
                             struct zClipVert* eax_50 = &g_Clip_PolyVerts
                             long double x87_r7_43 = 0f
                             int32_t i_19 = i_22
-                            float* ecx_46 = &g_Clip_PolyVertsScratch[0x3f + i_22]
+                            float* ecx_45 = &g_Clip_PolyVertsScratch[0x3f + i_22]
                             int32_t i_10
 
                             do
-                                long double x87_r6_20 = eax_50->y * *ecx_46
-                                long double x87_r5_32 = ecx_46[1] * eax_50->x
-                                ecx_46 = eax_50
+                                long double x87_r6_20 = eax_50->y * *ecx_45
+                                long double x87_r5_32 = ecx_45[1] * eax_50->x
+                                ecx_45 = eax_50
                                 eax_50 = &eax_50[1]
                                 i_10 = i_19
                                 i_19 -= 1

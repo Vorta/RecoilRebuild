@@ -1,6 +1,7 @@
 #include "Battlesport/Mfc42Abi.h"
 #include "Battlesport/hud.h"
 
+#include "Battlesport/briefing.h"
 #include "Battlesport/game_net.h"
 #include "Battlesport/hud_sensor_tracker.h"
 #include "Battlesport/recoil_state_credits.h"
@@ -21,11 +22,19 @@
 #include "GameZRecoil/zModel/gmod.h"
 #include "GameZRecoil/zRndr/zrndr.h"
 #include "GameZRecoil/zSound/zsnd.h"
+#include "GameZRecoil/zFMV/fmv.h"
+#include "GameZRecoil/zInterp/zInterp.h"
 #include "GameZRecoil/zUtil/zsave_game.h"
+#include "GameZRecoil/zTurret/zTurret.h"
 #include "GameZRecoil/zVideo/zvid.h"
+#include "GameZRecoil/zWeapon/zwep.h"
+#include "GameZRecoil/wwonline/wol_download.h"
 
 #include <math.h>
 #include <new>
+#if defined(_MSC_VER) && _MSC_VER < 1200
+#include <vector>
+#endif
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
@@ -197,6 +206,12 @@ RECOIL_STATIC_ASSERT(sizeof(g_HudUiBackgroundConfirmQuit_OkButtonNodeName) == 0x
  */
 char g_HudUiBackgroundConfirmQuit_SectionName[0xd] = "CONFIRM_QUIT";
 RECOIL_STATIC_ASSERT(sizeof(g_HudUiBackgroundConfirmQuit_SectionName) == 0xd);
+
+const int ZOPT_GRAPHICS_PERSPECTIVE = 8;
+const int ZOPT_GRAPHICS_GLOBAL_LIGHT = 0x10;
+const int ZVID_HW_MODE_SOFTWARE = 0;
+const float ZSND_CD_VOLUME_TO_NORMALIZED = 1.52590219e-05f;
+const float ZSND_CD_NORMALIZED_TO_VOLUME = 65535.0f;
 
 namespace {
 const int kHudWeatherFxRainSlantDelta = 1;
@@ -2232,17 +2247,64 @@ void HudUiCallback::QueueExitCurrentState() {
  */
 int HudUiCallback::QueueCheatCodeState() {
     g_RecoilApp.QueuePushState(
-        &g_RecoilStateCheatCode,
+        (RecoilStateBase *)&g_RecoilStateCheatCode,
         0
     );
     return 1;
 }
 
-// Source model note: 0x407170 is unresolved app-state base/default-table
-// scalar-deleting-destructor glue. Current RecoilApp_IState header shape still
-// emits this HUD-layer glue before the zStub helper prefix, so this is a
-// source-shape blocker rather than accepted owner evidence.
 #include "Battlesport/cls_stubs_body.h"
+// Compiler-emitted 0x407170: VC5 scalar-deleting destructor glue for the
+// byte-matched 0x4ccd50 default/base table; not an authored source-map row.
+#include "Battlesport/recoil_state_base_body.h"
+
+/**
+ * Original helper evidence: no standalone retail function exists; concrete
+ * dialog-host state vtable slot 2 folds to the zero-argument no-op body at
+ * 0x404e80.
+ * Purpose: Provide an empty enter callback for hosted dialog app states.
+ */
+void RecoilStateDialogHost::OnEnter() {}
+
+/**
+ * Original helper evidence: no standalone retail function exists; concrete
+ * dialog-host state vtable slot 3 folds to the return-one body at 0x407130.
+ * Purpose: Allow default hosted dialog state transitions to become current.
+ */
+int RecoilStateDialogHost::OnTryBecomeCurrent() {
+    return 1;
+}
+
+/**
+ * Original helper evidence: no standalone retail function exists; concrete
+ * dialog-host state vtable slot 5 folds to the zero-argument no-op body at
+ * 0x404e80.
+ * Purpose: Provide an empty exit callback for hosted dialog app states.
+ */
+void RecoilStateDialogHost::OnExit() {}
+
+/**
+ * Original helper evidence: no standalone retail function exists; concrete
+ * dialog-host state vtable slot 8 folds to the one-argument no-op body at
+ * 0x407150.
+ * Purpose: Accept resume notifications for default hosted dialog app states.
+ */
+void RecoilStateDialogHost::OnResume(
+    int
+) {}
+
+/**
+ * Original helper evidence: no standalone retail function exists; concrete
+ * dialog-host state vtable slot 9 folds to the two-argument return-one body at
+ * 0x407160.
+ * Purpose: Keep the default hosted dialog idle/dispatch loop active.
+ */
+int RecoilStateDialogHost::OnIdleOrDispatch(
+    unsigned int,
+    unsigned int
+) {
+    return 1;
+}
 
 /**
  * Reimplements 0x4bdc70: HudWeatherFx::Constructor.
@@ -2949,7 +3011,7 @@ void HudWeatherFxRain::Update(
  */
 void HudUiNewGamePanelOverlayOwner::QueueEnter() {
     g_RecoilApp.QueuePushState(
-        &g_HudUiNewGamePanelOverlayOwner,
+        (RecoilStateBase *)&g_HudUiNewGamePanelOverlayOwner,
         0
     );
 }
@@ -3157,17 +3219,683 @@ void HudUiNewGamePanel_StartButton::OnActivate() {
     HudUiZrdWidget::OnActivate();
 }
 
+#include "Battlesport/hud_command_binding_layer_body.h"
+
 /**
- * Reimplements 0x40d1c0: HudUiOptionsPanelOverlayOwner::QueueEnter.
- * Original source path: D:\Proj\Battlesport\HudOptionsDialog.cpp.
- * Purpose: Queue the global options-panel overlay owner as the next app state.
+ * HudOptionsDialog owner evidence: BN constructor 0x40c720 builds the
+ * HudUiBackground base, constructs the typed options-panel child widgets,
+ * installs their derived dispatch identities, binds the dialog.zrd node names,
+ * and destructor 0x40cf60 destroys the same members in reverse order. The
+ * retail HudUiOptionsPanel_* dispatch data is compiler-emitted class evidence,
+ * not production-source permission for FTable records or table factories.
  */
-void HudUiOptionsPanelOverlayOwner::QueueEnter() {
-    g_RecoilApp.QueuePushState(
-        &g_HudUiOptionsPanelOverlayOwner,
+
+/**
+ * Reimplements 0x40c6e0: HudUiOptionsPanelBackButton::OnActivate.
+ * Original source path: D:\Proj\Battlesport\HudOptionsDialog.cpp.
+ * Purpose: store the selected HUD type and leave the options panel.
+ */
+void HudUiOptionsPanelBackButton::OnActivate() {
+    HudOptionsDialog *const ownerDialog = (HudOptionsDialog *)(owner);
+    const int hudType = ownerDialog->fullHudToggle.checked != 0 ? ZOPT_HUD_TYPE_PERSPECTIVE
+                                                                : ZOPT_HUD_TYPE_STANDARD;
+    zOpt::SetHudTypeForCurrentHwMode(hudType);
+
+    g_RecoilApp.QueueExitCurrentState(0);
+    HudUiZrdWidget::OnActivate();
+}
+
+/**
+ * Reimplements 0x40c720: HudOptionsDialog::HudOptionsDialog.
+ * Original source path: D:\Proj\Battlesport\HudOptionsDialog.cpp.
+ * Purpose: construct the options dialog widget tree and bind each ZRD panel control.
+ */
+HudOptionsDialog::HudOptionsDialog() : HudUiBackground() {
+    zReader::Node *const loadedSection = LoadFromZrd(
+        "dialog.zrd",
+        g_HudUiOptionsPanel_SectionName,
         0
     );
+    if (loadedSection != 0) {
+        BindWidgetByName(
+            loadedSection,
+            &backButton,
+            "BACK"
+        );
+        BindWidgetByName(
+            loadedSection,
+            &lightingToggle,
+            g_HudUiOptionsPanel_LightingToggleNodeName
+        );
+        BindWidgetByName(
+            loadedSection,
+            &perspectiveToggle,
+            g_HudUiOptionsPanel_PerspectiveToggleNodeName
+        );
+        BindWidgetByName(
+            loadedSection,
+            &fullHudToggle,
+            g_HudUiOptionsPanel_FullHudToggleNodeName
+        );
+        BindWidgetByName(
+            loadedSection,
+            &objectDetailSelector,
+            g_HudUiOptionsPanel_ObjectDetailSelectorNodeName
+        );
+        BindWidgetByName(
+            loadedSection,
+            &textureMemorySelector,
+            g_HudUiOptionsPanel_TextureMemorySelectorNodeName
+        );
+        BindWidgetByName(
+            loadedSection,
+            &effectsSelector,
+            g_EffectsZrdNodeName
+        );
+        BindWidgetByName(
+            loadedSection,
+            &soundActiveToggle,
+            g_HudUiOptionsPanel_SoundActiveToggleNodeName
+        );
+        BindWidgetByName(
+            loadedSection,
+            &soundQualitySelector,
+            g_HudUiOptionsPanel_SoundQualitySelectorNodeName
+        );
+        BindWidgetByName(
+            loadedSection,
+            &soundVolumeWidget,
+            g_HudUiOptionsPanel_SoundVolumeWidgetNodeName
+        );
+        BindWidgetByName(
+            loadedSection,
+            &musicEnableToggle,
+            g_HudUiOptionsPanel_MusicEnableToggleNodeName
+        );
+        BindWidgetByName(
+            loadedSection,
+            &musicVolumeWidget,
+            g_HudUiOptionsPanel_MusicVolumeWidgetNodeName
+        );
+        BindWidgetByName(
+            loadedSection,
+            &resolutionSelector,
+            g_HudUiOptionsPanel_ResolutionCycleNodeName
+        );
+        FreeLoadedTreeRoots((int)(unsigned int)loadedSection);
+    }
 }
+
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Recovered compatibility wrapper for HudUiOptionsPanel_Lighting::SyncFromOptions.
+ * No standalone retail function is assigned to this wrapper; 0x40c9e0 is the
+ * address-backed option-sync body in this owner cluster.
+ * Purpose: toggle the global lighting graphics flag from the lighting checkbox.
+ */
+void HudUiOptionsPanel_Lighting::OnActivate() {
+    HudUiOptionsPanel_Lighting::SyncFromOptions();
+}
+
+/**
+ * Reimplements 0x40c9c0: HudUiOptionsPanel_Lighting::InitFromOptions.
+ * Source-faithful helper: no standalone retail function is assigned; 0x40c9c0
+ * is the address-backed option-init body in this HudOptionsDialog owner cluster.
+ * The wrapper preserves the recovered virtual PostLoadFromZrd call shape.
+ * Purpose: synchronize the lighting toggle from the active hardware-mode graphics flags.
+ */
+void HudUiOptionsPanel_Lighting::PostLoadFromZrd() {
+    HudUiOptionsPanel_Lighting::InitFromOptions();
+}
+
+/**
+ * Reimplements 0x40c9c0: HudUiOptionsPanel_Lighting::InitFromOptions.
+ * Purpose: synchronize the lighting toggle from the active hardware-mode graphics flags.
+ */
+void HudUiOptionsPanel_Lighting::InitFromOptions() {
+    SetChecked(zOpt::GetGraphicsFlagsForCurrentHwMode() & ZOPT_GRAPHICS_GLOBAL_LIGHT);
+}
+
+/**
+ * Reimplements 0x40c9e0: HudUiOptionsPanel_Lighting::SyncFromOptions.
+ * Purpose: toggle the global lighting graphics flag from the lighting checkbox.
+ */
+void HudUiOptionsPanel_Lighting::SyncFromOptions() {
+    const int flags = zOpt::GetGraphicsFlagsForCurrentHwMode();
+    HudUiCheckToggleWidget::OnActivate();
+    zOpt::SetGraphicsFlagsForCurrentHwMode(
+        checked != 0 ? (flags | ZOPT_GRAPHICS_GLOBAL_LIGHT) : (flags & ~ZOPT_GRAPHICS_GLOBAL_LIGHT)
+    );
+}
+
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Recovered compatibility wrapper for HudUiOptionsPanel_Perspective::SyncFromOptions.
+ * No standalone retail function is assigned to this wrapper; 0x40ca40 is the
+ * address-backed option-sync body in this owner cluster.
+ * Purpose: route activation through the recovered perspective option sync.
+ */
+void HudUiOptionsPanel_Perspective::OnActivate() {
+    HudUiOptionsPanel_Perspective::SyncFromOptions();
+}
+
+/**
+ * Reimplements 0x40ca20: HudUiOptionsPanel_Perspective::InitFromOptions.
+ * Source-faithful helper: no standalone retail function is assigned; 0x40ca20
+ * is the address-backed option-init body in this HudOptionsDialog owner cluster.
+ * The wrapper preserves the recovered virtual PostLoadFromZrd call shape.
+ * Purpose: synchronize the perspective toggle from the active hardware-mode graphics flags.
+ */
+void HudUiOptionsPanel_Perspective::PostLoadFromZrd() {
+    HudUiOptionsPanel_Perspective::InitFromOptions();
+}
+
+/**
+ * Reimplements 0x40ca20: HudUiOptionsPanel_Perspective::InitFromOptions.
+ * Purpose: synchronize the perspective toggle from the active hardware-mode graphics flags.
+ */
+void HudUiOptionsPanel_Perspective::InitFromOptions() {
+    SetChecked(zOpt::GetGraphicsFlagsForCurrentHwMode() & ZOPT_GRAPHICS_PERSPECTIVE);
+}
+
+/**
+ * Reimplements 0x40ca40: HudUiOptionsPanel_Perspective::SyncFromOptions.
+ * Purpose: toggle the perspective graphics flag and refresh span routine selection.
+ */
+void HudUiOptionsPanel_Perspective::SyncFromOptions() {
+    const int flags = zOpt::GetGraphicsFlagsForCurrentHwMode();
+    HudUiCheckToggleWidget::OnActivate();
+    zOpt::SetGraphicsFlagsForCurrentHwMode(
+        checked != 0 ? (flags | ZOPT_GRAPHICS_PERSPECTIVE) : (flags & ~ZOPT_GRAPHICS_PERSPECTIVE)
+    );
+    zRndr::SelectSpanRoutines();
+}
+
+/**
+ * Reimplements 0x40ca80: HudUiOptionsPanel_FullHud::InitFromOptions.
+ * Source-faithful helper: no standalone retail function is assigned; 0x40ca80
+ * is the address-backed option-init body in this HudOptionsDialog owner cluster.
+ * The wrapper preserves the recovered virtual PostLoadFromZrd call shape.
+ * Purpose: synchronize the full-HUD toggle from the active hardware-mode HUD type.
+ */
+void HudUiOptionsPanel_FullHud::PostLoadFromZrd() {
+    HudUiOptionsPanel_FullHud::InitFromOptions();
+}
+
+/**
+ * Reimplements 0x40ca80: HudUiOptionsPanel_FullHud::InitFromOptions.
+ * Purpose: synchronize the full-HUD toggle from the active hardware-mode HUD type.
+ */
+void HudUiOptionsPanel_FullHud::InitFromOptions() {
+    SetChecked(zOpt::GetHudTypeForCurrentHwMode() == ZOPT_HUD_TYPE_PERSPECTIVE);
+}
+
+/**
+ * Reimplements 0x40caa0: HudUiOptionsPanel_FullHud::OnActivate.
+ * Purpose: run inherited toggle activation for the full-HUD option.
+ */
+void HudUiOptionsPanel_FullHud::OnActivate() {
+    HudUiCheckToggleWidget::OnActivate();
+}
+
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Recovered compatibility wrapper for HudUiOptionsPanel_ObjectDetail::SyncFromOptions.
+ * No standalone retail function is assigned to this wrapper; 0x40cad0 is the
+ * address-backed option-sync body in this owner cluster.
+ * Purpose: route activation through the recovered object-detail option sync.
+ */
+void HudUiOptionsPanel_ObjectDetail::OnActivate() {
+    HudUiOptionsPanel_ObjectDetail::SyncFromOptions();
+}
+
+/**
+ * Reimplements 0x40cab0: HudUiOptionsPanel_ObjectDetail::InitFromOptions.
+ * Source-faithful helper: no standalone retail function is assigned; 0x40cab0
+ * is the address-backed option-init body in this HudOptionsDialog owner cluster.
+ * The wrapper preserves the recovered virtual PostLoadFromZrd call shape.
+ * Purpose: synchronize the object detail selector from the active hardware-mode object LOD.
+ */
+void HudUiOptionsPanel_ObjectDetail::PostLoadFromZrd() {
+    HudUiOptionsPanel_ObjectDetail::InitFromOptions();
+}
+
+/**
+ * Reimplements 0x40cab0: HudUiOptionsPanel_ObjectDetail::InitFromOptions.
+ * Purpose: synchronize the object detail selector from the active hardware-mode object LOD.
+ */
+void HudUiOptionsPanel_ObjectDetail::InitFromOptions() {
+    SetIndexClamped(zOpt::GetObjectLODForCurrentHwMode());
+}
+
+/**
+ * Reimplements 0x40cad0: HudUiOptionsPanel_ObjectDetail::SyncFromOptions.
+ * Purpose: advance the object detail selector and store its object LOD option.
+ */
+void HudUiOptionsPanel_ObjectDetail::SyncFromOptions() {
+    AdvanceSelectionAndActivate();
+    zOpt::SetObjectLODForCurrentHwMode(selectedIndex);
+}
+
+/**
+ * Reimplements 0x40cad0: HudUiOptionsPanel_ObjectDetail::SyncFromOptions.
+ * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_ObjectDetail::SyncFromOptions.
+ */
+void HudUiOptionsPanel_TextureMemory::OnActivate() {
+    SyncFromOptions();
+}
+
+/**
+ * Reimplements 0x40caf0: HudUiOptionsPanel_TextureMemory::InitFromOptions.
+ * Source model note: Source-faithful helper recovered from address-backed callers in this
+ * source file.
+ * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_TextureMemory::InitFromOptions.
+ */
+void HudUiOptionsPanel_TextureMemory::PostLoadFromZrd() {
+    InitFromOptions();
+}
+
+/**
+ * Reimplements 0x40caf0: HudUiOptionsPanel_TextureMemory::InitFromOptions.
+ * Purpose: synchronize the texture memory selector from the active hardware-mode option.
+ */
+void HudUiOptionsPanel_TextureMemory::InitFromOptions() {
+    SetIndexClamped(zOpt::GetTextureMemoryForCurrentHwMode());
+}
+
+/**
+ * Reimplements 0x40cb10: HudUiOptionsPanel_TextureMemory::SyncFromOptions.
+ * Purpose: advance the texture memory selector and store its option.
+ */
+void HudUiOptionsPanel_TextureMemory::SyncFromOptions() {
+    AdvanceSelectionAndActivate();
+    zOpt::SetTextureMemoryForCurrentHwMode(selectedIndex);
+}
+
+/**
+ * Reimplements 0x40cb10: HudUiOptionsPanel_TextureMemory::SyncFromOptions.
+ * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_TextureMemory::SyncFromOptions.
+ */
+void HudUiOptionsPanel_Effects::OnActivate() {
+    SyncFromOptions();
+}
+
+/**
+ * Reimplements 0x40cb30: HudUiOptionsPanel_Effects::InitFromOptions.
+ * Source model note: Source-faithful helper recovered from address-backed callers in this
+ * source file.
+ * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_Effects::InitFromOptions.
+ */
+void HudUiOptionsPanel_Effects::PostLoadFromZrd() {
+    InitFromOptions();
+}
+
+/**
+ * Reimplements 0x40cb30: HudUiOptionsPanel_Effects::InitFromOptions.
+ * Purpose: synchronize the effects selector and constrain software-renderer choices.
+ */
+void HudUiOptionsPanel_Effects::InitFromOptions() {
+    int level = zOpt::GetEffectsLevelForCurrentHwMode();
+    if (zVid::GetAccelerationOption() == ZVID_HW_MODE_SOFTWARE) {
+        if (level == 0) {
+            level = 1;
+        }
+        SetVisibleRange(
+            1,
+            3
+        );
+    }
+
+    SetIndexClamped(level);
+}
+
+/**
+ * Reimplements 0x40cb70: HudUiOptionsPanel_Effects::SyncFromOptions.
+ * Purpose: advance the effects selector and store its effects-level option.
+ */
+void HudUiOptionsPanel_Effects::SyncFromOptions() {
+    AdvanceSelectionAndActivate();
+    zOpt::SetEffectsLevelForCurrentHwMode(selectedIndex);
+}
+
+/**
+ * Reimplements 0x40cb70: HudUiOptionsPanel_Effects::SyncFromOptions.
+ * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_Effects::SyncFromOptions.
+ */
+void HudUiOptionsPanel_SoundActive::OnActivate() {
+    SyncFromOptions();
+}
+
+/**
+ * Reimplements 0x40cb90: HudUiOptionsPanel_SoundActive::InitFromOptions.
+ * Source model note: Source-faithful helper recovered from address-backed callers in this
+ * source file.
+ * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_SoundActive::InitFromOptions.
+ */
+void HudUiOptionsPanel_SoundActive::PostLoadFromZrd() {
+    InitFromOptions();
+}
+
+/**
+ * Reimplements 0x40cb90: HudUiOptionsPanel_SoundActive::InitFromOptions.
+ * Purpose: synchronize the sound-active toggle from the mute-sound option.
+ */
+void HudUiOptionsPanel_SoundActive::InitFromOptions() {
+    SetChecked(zOpt::GetMuteSoundOption() == 0);
+}
+
+/**
+ * Reimplements 0x40cbb0: HudUiOptionsPanel_SoundActive::SyncFromOptions.
+ * Purpose: toggle sound activity and store the inverse mute-sound option.
+ */
+void HudUiOptionsPanel_SoundActive::SyncFromOptions() {
+    HudUiCheckToggleWidget::OnActivate();
+    zOpt::SetMuteSoundOption(checked == 0);
+}
+
+/**
+ * Reimplements 0x40cbb0: HudUiOptionsPanel_SoundActive::SyncFromOptions.
+ * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_SoundActive::SyncFromOptions.
+ */
+void HudUiOptionsPanel_SoundQuality::OnActivate() {
+    SyncFromOptions();
+}
+
+/**
+ * Reimplements 0x40cbd0: HudUiOptionsPanel_SoundQuality::InitFromOptions.
+ * Source model note: Source-faithful helper recovered from address-backed callers in this
+ * source file.
+ * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_SoundQuality::InitFromOptions.
+ */
+void HudUiOptionsPanel_SoundQuality::PostLoadFromZrd() {
+    InitFromOptions();
+}
+
+/**
+ * Reimplements 0x40cbd0: HudUiOptionsPanel_SoundQuality::InitFromOptions.
+ * Purpose: synchronize the sound quality selector from the sound LOD option.
+ */
+void HudUiOptionsPanel_SoundQuality::InitFromOptions() {
+    SetIndexClamped(zOpt::GetSoundLODOption());
+}
+
+/**
+ * Reimplements 0x40cbf0: HudUiOptionsPanel_SoundQuality::SyncFromOptions.
+ * Purpose: advance the sound quality selector and store its sound LOD option.
+ */
+void HudUiOptionsPanel_SoundQuality::SyncFromOptions() {
+    AdvanceSelectionAndActivate();
+    zOpt::SetSoundLODOption(selectedIndex);
+}
+
+/**
+ * Reimplements 0x40cc10: HudUiOptionsPanel_SoundVolume::SyncFromOptions.
+ * Source model note: Source-faithful helper recovered from address-backed callers in this
+ * source file.
+ * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_SoundVolume::SyncFromOptions.
+ */
+void HudUiOptionsPanel_SoundVolume::PostLoadFromZrd() {
+    SyncFromOptions();
+}
+
+/**
+ * Reimplements 0x40cc10: HudUiOptionsPanel_SoundVolume::SyncFromOptions.
+ * Purpose: synchronize the sound volume fill widget from the stored sound volume option.
+ */
+void HudUiOptionsPanel_SoundVolume::SyncFromOptions() {
+    SetNormalizedValue(zOpt::GetSoundVolumeOption());
+}
+
+/**
+ * Reimplements 0x40cc30: HudUiOptionsPanel_SoundVolume::OnActivate.
+ * Purpose: update and store sound volume from the fill-widget cursor position.
+ */
+void HudUiOptionsPanel_SoundVolume::OnActivate() {
+    UpdateNormalizedFromCursor();
+    zOpt::SetSoundVolumeOption(normalizedValue);
+    SetNormalizedValue(zOpt::GetSoundVolumeOption());
+}
+
+/**
+ * Reimplements 0x40cc60: HudUiOptionsPanel_MusicEnable::SyncFromOptions.
+ * Source model note: Source-faithful helper recovered from address-backed callers in this
+ * source file.
+ * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_MusicEnable::SyncFromOptions.
+ */
+void HudUiOptionsPanel_MusicEnable::PostLoadFromZrd() {
+    SyncFromOptions();
+}
+
+/**
+ * Reimplements 0x40cc60: HudUiOptionsPanel_MusicEnable::SyncFromOptions.
+ * Purpose: synchronize the CD-audio toggle from the stored music-enable option.
+ */
+void HudUiOptionsPanel_MusicEnable::SyncFromOptions() {
+    SetChecked(zSnd::GetCDAudioOption());
+}
+
+/**
+ * Reimplements 0x40cc80: HudUiOptionsPanel_MusicEnable::OnActivate.
+ * Purpose: toggle CD audio playback and store the music-enable option.
+ */
+void HudUiOptionsPanel_MusicEnable::OnActivate() {
+    HudUiCheckToggleWidget::OnActivate();
+    if (checked == 0) {
+        zSnd::SetCDAudioOption(0);
+        zSndCd::Stop();
+    } else {
+        zSnd::SetCDAudioOption(1);
+        zSndCd::PlayTrackWithMode(
+            2,
+            5
+        );
+    }
+}
+
+/**
+ * Reimplements 0x40ccc0: HudUiOptionsPanel_MusicVolume::SyncFromOptions.
+ * Source model note: Source-faithful helper recovered from address-backed callers in this
+ * source file.
+ * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_MusicVolume::SyncFromOptions.
+ */
+void HudUiOptionsPanel_MusicVolume::PostLoadFromZrd() {
+    SyncFromOptions();
+}
+
+/**
+ * Reimplements 0x40ccc0: HudUiOptionsPanel_MusicVolume::SyncFromOptions.
+ * Purpose: synchronize the music volume fill widget from the current CD volume.
+ */
+void HudUiOptionsPanel_MusicVolume::SyncFromOptions() {
+    unsigned short primaryVolume = 0;
+    unsigned short secondaryVolume = 0;
+    zSndCd::GetVolume(
+        &primaryVolume,
+        &secondaryVolume
+    );
+    SetNormalizedValue((float)(primaryVolume)*ZSND_CD_VOLUME_TO_NORMALIZED);
+}
+
+/**
+ * Reimplements 0x40cd00: HudUiOptionsPanel_MusicVolume::OnActivate.
+ * Purpose: update and store CD volume from the fill-widget cursor position.
+ */
+void HudUiOptionsPanel_MusicVolume::OnActivate() {
+    UpdateNormalizedFromCursor();
+    const unsigned short volume = (unsigned short)(normalizedValue * ZSND_CD_NORMALIZED_TO_VOLUME);
+    zSndCd::SetVolume(
+        volume,
+        volume
+    );
+}
+
+/**
+ * Reimplements 0x40cd30: HudUiOptionsPanel_Resolution::SyncFromOptions.
+ * Source model note: Source-faithful helper recovered from address-backed callers in this
+ * source file.
+ * Purpose: preserve the recovered HUD behavior for HudUiOptionsPanel_Resolution::SyncFromOptions.
+ */
+void HudUiOptionsPanel_Resolution::PostLoadFromZrd() {
+    SyncFromOptions();
+}
+
+/**
+ * Reimplements 0x40cd30: HudUiOptionsPanel_Resolution::SyncFromOptions.
+ * Purpose: synchronize and constrain the resolution selector for the active renderer.
+ */
+void HudUiOptionsPanel_Resolution::SyncFromOptions() {
+    const int accelerationOption = zVid::GetAccelerationOption();
+    const int modeCase = zVid::GetVideoModeIndexFromOptions() - 2;
+    if ((unsigned int)(modeCase) > 5u) {
+        return;
+    }
+
+    if (accelerationOption == ZVID_HW_MODE_SOFTWARE) {
+        switch (modeCase) {
+        case 0:
+            SetIndexClamped(3);
+            SetVisibleRange(
+                2,
+                4
+            );
+            return;
+        case 1:
+            SetIndexClamped(1);
+            SetVisibleRange(
+                0,
+                2
+            );
+            return;
+        case 2:
+            SetIndexClamped(2);
+            SetVisibleRange(
+                2,
+                4
+            );
+            return;
+        case 3:
+            SetIndexClamped(0);
+            SetVisibleRange(
+                0,
+                2
+            );
+            return;
+        case 4:
+            SetIndexClamped(4);
+            SetVisibleRange(
+                4,
+                5
+            );
+            return;
+        case 5:
+            SetIndexClamped(5);
+            SetVisibleRange(
+                5,
+                6
+            );
+            return;
+        }
+    }
+
+    switch (modeCase) {
+    case 0:
+        SetIndexClamped(3);
+        SetVisibleRange(
+            3,
+            4
+        );
+        return;
+    case 1:
+        SetIndexClamped(1);
+        SetVisibleRange(
+            1,
+            2
+        );
+        return;
+    case 2:
+        SetIndexClamped(2);
+        SetVisibleRange(
+            2,
+            3
+        );
+        return;
+    case 3:
+        SetIndexClamped(0);
+        SetVisibleRange(
+            0,
+            1
+        );
+        return;
+    case 4:
+        SetIndexClamped(4);
+        SetVisibleRange(
+            4,
+            5
+        );
+        return;
+    case 5:
+        SetIndexClamped(5);
+        SetVisibleRange(
+            5,
+            6
+        );
+        return;
+    }
+}
+
+/**
+ * Reimplements 0x40ce80: HudUiOptionsPanel_Resolution::OnActivate.
+ * Purpose: advance the resolution selector and queue the corresponding video mode.
+ */
+void HudUiOptionsPanel_Resolution::OnActivate() {
+    AdvanceSelectionAndActivate();
+    switch (selectedIndex) {
+    case 0:
+        RecoilStateMainMenuTransition::SetDeferredVideoModeIndex(ZVID_MODE_640X480);
+        return;
+    case 1:
+        RecoilStateMainMenuTransition::SetDeferredVideoModeIndex(ZVID_MODE_320X240_TO_640X480);
+        return;
+    case 2:
+        RecoilStateMainMenuTransition::SetDeferredVideoModeIndex(ZVID_MODE_640X400);
+        return;
+    case 3:
+        RecoilStateMainMenuTransition::SetDeferredVideoModeIndex(ZVID_MODE_320X200_TO_640X400);
+        return;
+    case 4:
+        RecoilStateMainMenuTransition::SetDeferredVideoModeIndex(ZVID_MODE_800X600);
+        return;
+    case 5:
+        RecoilStateMainMenuTransition::SetDeferredVideoModeIndex(ZVID_MODE_1024X768);
+        return;
+    }
+}
+
+/**
+ * Provider-boundary compatibility entry for the HudOptionsDialog scalar
+ * deleting destructor. The plan classifies 0x40cf00 as compiler-generated VC++
+ * glue, not authored HudOptionsDialog source.
+ * Purpose: run options dialog teardown and optionally free the dialog storage.
+ */
+HudUiBackground * HudOptionsDialog::ScalarDeletingDestructor(
+    unsigned int flags
+) {
+    this->HudOptionsDialog::~HudOptionsDialog();
+    if ((flags & 1u) != 0) {
+        ::operator delete(this);
+    }
+
+    return this;
+}
+
+/**
+ * Reimplements 0x40cf60: HudOptionsDialog::~HudOptionsDialog.
+ * Original source path: D:\Proj\Battlesport\HudOptionsDialog.cpp.
+ * Purpose: let VC5 emit the options dialog member/base teardown state machine.
+ */
+HudOptionsDialog::~HudOptionsDialog() {
+}
+
 
 /**
  * Reimplements 0x40d070: HudUiOptionsPanelOverlayOwner::StaticInitAndRegisterAtExit.
@@ -3247,13 +3975,13 @@ int HudUiOptionsPanelOverlayOwner::OnTryBecomeCurrent() {
 }
 
 /**
- * Reimplements 0x4159b0: RecoilStateConfirmQuit::QueueEnter.
- * Original source path: D:\Proj\Battlesport\HudConfirmQuitDialog.cpp.
- * Purpose: queue the recovered HUD application-state transition for RecoilStateConfirmQuit::QueueEnter.
+ * Reimplements 0x40d1c0: HudUiOptionsPanelOverlayOwner::QueueEnter.
+ * Original source path: D:\Proj\Battlesport\HudOptionsDialog.cpp.
+ * Purpose: Queue the global options-panel overlay owner as the next app state.
  */
-void RecoilStateConfirmQuit::QueueEnter() {
+void HudUiOptionsPanelOverlayOwner::QueueEnter() {
     g_RecoilApp.QueuePushState(
-        &g_RecoilState_ConfirmQuit,
+        (RecoilStateBase *)&g_HudUiOptionsPanelOverlayOwner,
         0
     );
 }
@@ -3279,193 +4007,6 @@ void HudUiCreditsQuitButton::OnActivate() {
         0
     );
     HudUiZrdWidget::OnActivate();
-}
-
-/**
- * Reimplements 0x415810: RecoilStateConfirmQuit::StaticInitAndRegisterAtExit.
- * Original source path: D:\Proj\Battlesport\HudConfirmQuitDialog.cpp.
- * Purpose: preserve the recovered HUD behavior for RecoilStateConfirmQuit::StaticInitAndRegisterAtExit.
- */
-void RecoilStateConfirmQuit::StaticInitAndRegisterAtExit() {
-    StaticInit();
-    RegisterAtExit();
-}
-
-/**
- * Reimplements 0x415820: RecoilStateConfirmQuit::StaticInit.
- * Original source path: D:\Proj\Battlesport\HudConfirmQuitDialog.cpp.
- * Purpose: preserve the recovered HUD behavior for RecoilStateConfirmQuit::StaticInit.
- */
-RecoilStateConfirmQuit *RecoilStateConfirmQuit::StaticInit() {
-    return new (&g_RecoilState_ConfirmQuit) RecoilStateConfirmQuit;
-}
-
-/**
- * Reimplements 0x415830: RecoilStateConfirmQuit::RegisterAtExit.
- * Original source path: D:\Proj\Battlesport\HudConfirmQuitDialog.cpp.
- * Purpose: preserve the recovered HUD behavior for RecoilStateConfirmQuit::RegisterAtExit.
- */
-void RecoilStateConfirmQuit::RegisterAtExit() {
-    atexit(AtExitDestructor);
-}
-
-/**
- * Reimplements 0x415840: RecoilStateConfirmQuit::AtExitDestructor.
- * Original source path: D:\Proj\Battlesport\HudConfirmQuitDialog.cpp.
- * Purpose: run the recovered RecoilStateConfirmQuit::AtExitDestructor teardown path.
- */
-void RecoilStateConfirmQuit::AtExitDestructor() {
-    g_RecoilState_ConfirmQuit.~RecoilStateConfirmQuit();
-}
-
-/**
- * Reimplements 0x415740: HudUiConfirmQuitOkButton::OnActivate.
- * Original source path: D:\Proj\Battlesport\HudConfirmQuitDialog.cpp.
- * Purpose: Queue the confirm-quit transition path and run inherited activation behavior.
- */
-void HudUiConfirmQuitOkButton::OnActivate() {
-    g_RecoilState_MainMenuSkipExitDelay = 1;
-    g_RecoilApp.QueueExitCurrentState(1);
-    g_RecoilApp.QueueExitCurrentState(0);
-    g_RecoilApp.m_missionShutdownMode = RECOILAPP_MISSION_SHUTDOWN_SKIP_GAMEPLAY;
-    g_RecoilApp.QueueSwitchCurrentState(
-        &g_RecoilApp.m_leaveNetworkState,
-        0
-    );
-    HudUiZrdWidget::OnActivate();
-}
-
-/**
- * Reimplements 0x415680: HudUiBackgroundConfirmQuit::Constructor.
- * Original source path: D:\Proj\Battlesport\HudUiBackgroundConfirmQuit.cpp.
- * Purpose: Construct the confirm-quit dialog, bind its OK/cancel buttons, and load its ZRD layout.
- */
-HudUiBackgroundConfirmQuit * HudUiBackgroundConfirmQuit::Constructor() {
-    new ((HudUiBackground *)this) HudUiBackground;
-    new (&okButton) HudUiConfirmQuitOkButton;
-    new (&cancelButton) HudUiConfirmQuitCancelButton;
-
-    zReader::Node *const dialogRoot = HudUiBackground::LoadFromZrd(
-        "dialog.zrd",
-        g_HudUiBackgroundConfirmQuit_SectionName,
-        0
-    );
-    if (dialogRoot != 0) {
-        HudUiBackground::BindWidgetByName(
-            dialogRoot,
-            &okButton,
-            g_HudUiBackgroundConfirmQuit_OkButtonNodeName
-        );
-        HudUiBackground::BindWidgetByName(
-            dialogRoot,
-            &cancelButton,
-            g_HudUiBackgroundConfirmQuit_CancelButtonNodeName
-        );
-        HudUiBackground::FreeLoadedTreeRoots((int)dialogRoot);
-    }
-
-    return this;
-}
-
-/**
- * Reimplements 0x4157b0: HudUiBackgroundConfirmQuit::Destructor.
- * Original source path: D:\Proj\Battlesport\HudUiBackgroundConfirmQuit.cpp.
- * Purpose: Destroy the confirm-quit child widgets before the inherited background cleanup.
- */
-void HudUiBackgroundConfirmQuit::Destructor() {
-    cancelButton.~HudUiConfirmQuitCancelButton();
-    okButton.~HudUiConfirmQuitOkButton();
-    this->HudUiBackground::~HudUiBackground();
-}
-
-/**
- * Reimplements 0x415790: HudUiBackgroundConfirmQuit::ScalarDeletingDestructor.
- * Original source path: D:\Proj\Battlesport\HudUiBackgroundConfirmQuit.cpp.
- * Purpose: Run confirm-quit dialog cleanup and optionally free the object for VC5 scalar delete.
- */
-HudUiBackground * HudUiBackgroundConfirmQuit::ScalarDeletingDestructor(
-    unsigned int flags
-) {
-    Destructor();
-
-    if ((flags & 1u) != 0) {
-        ::operator delete(this);
-    }
-
-    return this;
-}
-
-/**
- * Reimplements 0x415850: RecoilStateConfirmQuit::RecoilStateConfirmQuit.
- * Original source path: D:\Proj\Battlesport\HudConfirmQuitDialog.cpp.
- * Purpose: initialize the confirm-quit app state and clear its dialog pointer.
- */
-RecoilStateConfirmQuit::RecoilStateConfirmQuit() {
-    m_dialog = 0;
-}
-
-/**
- * Reimplements 0x4158f0: RecoilStateConfirmQuit::OnTryBecomeCurrent.
- * Original source path: D:\Proj\Battlesport\HudConfirmQuitDialog.cpp.
- * Purpose: handle the recovered HUD event path for RecoilStateConfirmQuit::OnTryBecomeCurrent.
- */
-int RecoilStateConfirmQuit::OnTryBecomeCurrent() {
-    HudUiBackgroundConfirmQuit *dialog =
-        (HudUiBackgroundConfirmQuit *) ::operator new(sizeof(HudUiBackgroundConfirmQuit));
-    if (dialog != 0) {
-        dialog = dialog->Constructor();
-    }
-    m_dialog = dialog;
-
-    dialog->SetEnabled(1);
-
-    return 1;
-}
-
-/**
- * Reimplements 0x415960: RecoilStateConfirmQuit::OnDeactivate.
- * Original source path: D:\Proj\Battlesport\HudConfirmQuitDialog.cpp.
- * Purpose: handle the recovered HUD event path for RecoilStateConfirmQuit::OnDeactivate.
- */
-void RecoilStateConfirmQuit::OnDeactivate() {
-    if (m_dialog == 0) {
-        return;
-    }
-
-    zVideo::RunPostprocessOnPrimaryBuffer();
-
-    HudUiBackgroundConfirmQuit *dialog = (HudUiBackgroundConfirmQuit *)m_dialog;
-    dialog->SetEnabled(0);
-
-    ((HudUiDialogController *)m_dialog)->BlitOwnedSurfaceToPrimary();
-    zVideo::Dispatch_UnlockPrimarySurfaceState();
-
-    dialog = (HudUiBackgroundConfirmQuit *)m_dialog;
-    if (dialog != 0) {
-        dialog->ScalarDeletingDestructor(1);
-    }
-
-    m_dialog = 0;
-    Sleep(1000);
-}
-
-/**
- * Reimplements 0x415880: RecoilStateConfirmQuit::~RecoilStateConfirmQuit.
- * Original source path: D:\Proj\Battlesport\RecoilStateConfirmQuit.cpp.
- * Purpose: run the recovered RecoilStateConfirmQuit::~RecoilStateConfirmQuit teardown path.
- */
-RecoilStateConfirmQuit::~RecoilStateConfirmQuit() {
-    HudUiBackgroundConfirmQuit *dialog = (HudUiBackgroundConfirmQuit *)m_dialog;
-    if (dialog != 0) {
-        dialog->SetEnabled(0);
-
-        dialog = (HudUiBackgroundConfirmQuit *)m_dialog;
-        if (dialog != 0) {
-            dialog->ScalarDeletingDestructor(1);
-        }
-
-        m_dialog = 0;
-    }
 }
 
 /**
@@ -3792,30 +4333,12 @@ void RecoilStateControls::OnResume(
  */
 void RecoilStateControls::QueueEnter() {
     g_RecoilApp.QueuePushState(
-        &g_RecoilStateControls,
+        (RecoilStateBase *)&g_RecoilStateControls,
         0
     );
 }
 
-namespace zOpt {
-
-/**
- * Reimplements 0x413600: zOpt::ToggleHudTypeForCurrentHwMode.
- * Original source path: D:\Proj\Battlesport\hud.cpp.
- * Purpose: Toggle the HUD type between standard and perspective for the current hardware mode.
- */
-int ToggleHudTypeForCurrentHwMode() {
-    const int currentHudType = GetHudTypeForCurrentHwMode();
-    if (currentHudType == ZOPT_HUD_TYPE_STANDARD) {
-        return SetHudTypeForCurrentHwMode(ZOPT_HUD_TYPE_PERSPECTIVE);
-    }
-    if (currentHudType == ZOPT_HUD_TYPE_PERSPECTIVE) {
-        return SetHudTypeForCurrentHwMode(ZOPT_HUD_TYPE_STANDARD);
-    }
-    return GetHudTypeForCurrentHwMode();
-}
-
-} // namespace zOpt
+#include "Battlesport/hud_runtime_layer_body.h"
 
 namespace HudLowMeterLoopSound {
 
@@ -3856,12 +4379,347 @@ void Disable() {
 } // namespace HudLowMeterLoopSound
 
 #include "Battlesport/recoil_state_credits_body.h"
+
+namespace {
+const char kHudTailGlobalContextSearchPath[] = ".;zbd";
+const char kHudTailCommandNameWeaponSetMaxTetherAltitude[] =
+    "WeaponSetMaxTetherAltitude";
+} // namespace
+
+/**
+ * Reimplements 0x414a60: zInterp_GlobalContext::StaticInitAndRegisterAtExit.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: construct the process-wide interpreter and register its shutdown
+ * callback during static initialization.
+ */
+int zInterp_GlobalContext::StaticInitAndRegisterAtExit() {
+    StaticInit();
+    return RegisterAtExit();
+}
+
+/**
+ * Reimplements 0x414a70: zInterp_GlobalContext::StaticInit.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: static initializer wrapper for the process-wide interpreter.
+ */
+zInterp_Context *zInterp_GlobalContext::StaticInit() {
+    return new (&g_zInterp_GlobalContext) zInterp_GlobalContext;
+}
+
+/**
+ * Reimplements 0x414a80: zInterp_GlobalContext::RegisterAtExit.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: register the global interpreter destructor with the CRT atexit list.
+ */
+int zInterp_GlobalContext::RegisterAtExit() {
+    return atexit(AtExitDestructor);
+}
+
+/**
+ * Reimplements 0x414a90: zInterp_GlobalContext::AtExitDestructor.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: tear down the process-wide interpreter during CRT shutdown.
+ */
+void zInterp_GlobalContext::AtExitDestructor() {
+    g_zInterp_GlobalContext.Destructor();
+}
+
+/**
+ * Reimplements 0x414ab0: zInterp_GlobalContext::zInterp_GlobalContext.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: construct the process-wide interpreter with the retail search path
+ * and prepared script index filename.
+ */
+zInterp_GlobalContext::zInterp_GlobalContext() {
+    zInterp_Context::Constructor(
+        kHudTailGlobalContextSearchPath,
+        g_zInterp_PreparedIndexFileName
+    );
+}
+
+/**
+ * Reimplements 0x414ad0: zInterp_GlobalContext::DispatchHook.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: handle global WeaponSetMaxTetherAltitude commands before the
+ * generic context dispatch path reports them as unhandled.
+ */
+int zInterp_GlobalContext::DispatchHook(
+    char *commandToken
+) {
+    zInterp_Context *const context = this;
+    if (commandToken[0] != 'W' ||
+        context->tokenCount == 0 ||
+        strcmp(
+            context->tokenList[0],
+            kHudTailCommandNameWeaponSetMaxTetherAltitude
+        ) != 0) {
+        return 1;
+    }
+
+    zWeapon::SetMaxTetherAltitude(context->ParseFloatToken());
+    return 0;
+}
+
+/**
+ * Reimplements 0x414b50: shared.authored_ret4_noop_414b50
+ * (standalone; not a Westwood download event-sink owner member).
+ * Purpose: Handles an unused download event callback slot with a zero result.
+ */
+int STDMETHODCALLTYPE WestwoodOnlineUpgradeDownloadEventSink::CallbackNoOp(
+    void *
+) {
+    return 0;
+}
+
 #include "Battlesport/hud_ui_main_menu_dialog_body.h"
 #include "Battlesport/recoil_state_dialog_host_body.h"
 #include "Battlesport/recoil_state_main_menu_transition_body.h"
-#include "Battlesport/recoil_state_main_menu_transition_clear_paused_audio_snapshot_body.h"
-#include "Battlesport/recoil_state_main_menu_transition_on_deactivate_body.h"
-#include "Battlesport/recoil_state_main_menu_transition_on_resume_body.h"
+#define HUD_UI_MAIN_MENU_DIALOG_BODY_LOAD_BUTTON_ONLY
+#include "Battlesport/hud_ui_main_menu_dialog_body.h"
+#undef HUD_UI_MAIN_MENU_DIALOG_BODY_LOAD_BUTTON_ONLY
+#define RECOIL_STATE_MAIN_MENU_TRANSITION_BODY_CTOR_DTOR_ONLY
+#include "Battlesport/recoil_state_main_menu_transition_body.h"
+#undef RECOIL_STATE_MAIN_MENU_TRANSITION_BODY_CTOR_DTOR_ONLY
 #include "Battlesport/recoil_state_main_menu_transition_on_try_become_current_body.h"
+#include "Battlesport/recoil_state_main_menu_transition_on_resume_body.h"
+#include "Battlesport/recoil_state_main_menu_transition_on_deactivate_body.h"
+#include "Battlesport/recoil_state_main_menu_transition_clear_paused_audio_snapshot_body.h"
 #include "Battlesport/recoil_state_main_menu_transition_queue_enter_body.h"
 #include "Battlesport/recoil_state_main_menu_transition_set_deferred_video_mode_index_body.h"
+
+/**
+ * Reimplements 0x415680: HudUiBackgroundConfirmQuit::Constructor.
+ * Original source path: D:\Proj\Battlesport\HudUiBackgroundConfirmQuit.cpp.
+ * Purpose: Construct the confirm-quit dialog, bind its OK/cancel buttons, and load its ZRD layout.
+ */
+HudUiBackgroundConfirmQuit * HudUiBackgroundConfirmQuit::Constructor() {
+    new ((HudUiBackground *)this) HudUiBackground;
+    new (&okButton) HudUiConfirmQuitOkButton;
+    new (&cancelButton) HudUiConfirmQuitCancelButton;
+
+    zReader::Node *const dialogRoot = HudUiBackground::LoadFromZrd(
+        "dialog.zrd",
+        g_HudUiBackgroundConfirmQuit_SectionName,
+        0
+    );
+    if (dialogRoot != 0) {
+        HudUiBackground::BindWidgetByName(
+            dialogRoot,
+            &okButton,
+            g_HudUiBackgroundConfirmQuit_OkButtonNodeName
+        );
+        HudUiBackground::BindWidgetByName(
+            dialogRoot,
+            &cancelButton,
+            g_HudUiBackgroundConfirmQuit_CancelButtonNodeName
+        );
+        HudUiBackground::FreeLoadedTreeRoots((int)dialogRoot);
+    }
+
+    return this;
+}
+
+/**
+ * Reimplements 0x415740: HudUiConfirmQuitOkButton::OnActivate.
+ * Original source path: D:\Proj\Battlesport\HudConfirmQuitDialog.cpp.
+ * Purpose: Queue the confirm-quit transition path and run inherited activation behavior.
+ */
+void HudUiConfirmQuitOkButton::OnActivate() {
+    g_RecoilState_MainMenuSkipExitDelay = 1;
+    g_RecoilApp.QueueExitCurrentState(1);
+    g_RecoilApp.QueueExitCurrentState(0);
+    g_RecoilApp.m_missionShutdownMode = RECOILAPP_MISSION_SHUTDOWN_SKIP_GAMEPLAY;
+    g_RecoilApp.QueueSwitchCurrentState(
+        &g_RecoilApp.m_leaveNetworkState,
+        0
+    );
+    HudUiZrdWidget::OnActivate();
+}
+
+/**
+ * Reimplements 0x415790: HudUiBackgroundConfirmQuit::ScalarDeletingDestructor.
+ * Original source path: D:\Proj\Battlesport\HudUiBackgroundConfirmQuit.cpp.
+ * Purpose: Run confirm-quit dialog cleanup and optionally free the object for VC5 scalar delete.
+ */
+HudUiBackground * HudUiBackgroundConfirmQuit::ScalarDeletingDestructor(
+    unsigned int flags
+) {
+    Destructor();
+
+    if ((flags & 1u) != 0) {
+        ::operator delete(this);
+    }
+
+    return this;
+}
+
+/**
+ * Reimplements 0x4157b0: HudUiBackgroundConfirmQuit::Destructor.
+ * Original source path: D:\Proj\Battlesport\HudUiBackgroundConfirmQuit.cpp.
+ * Purpose: Destroy the confirm-quit child widgets before the inherited background cleanup.
+ */
+void HudUiBackgroundConfirmQuit::Destructor() {
+    cancelButton.~HudUiConfirmQuitCancelButton();
+    okButton.~HudUiConfirmQuitOkButton();
+    this->HudUiBackground::~HudUiBackground();
+}
+
+/**
+ * Reimplements 0x415810: RecoilStateConfirmQuit::StaticInitAndRegisterAtExit.
+ * Original source path: D:\Proj\Battlesport\HudConfirmQuitDialog.cpp.
+ * Purpose: preserve the recovered HUD behavior for RecoilStateConfirmQuit::StaticInitAndRegisterAtExit.
+ */
+void RecoilStateConfirmQuit::StaticInitAndRegisterAtExit() {
+    StaticInit();
+    RegisterAtExit();
+}
+
+/**
+ * Reimplements 0x415820: RecoilStateConfirmQuit::StaticInit.
+ * Original source path: D:\Proj\Battlesport\HudConfirmQuitDialog.cpp.
+ * Purpose: preserve the recovered HUD behavior for RecoilStateConfirmQuit::StaticInit.
+ */
+RecoilStateConfirmQuit *RecoilStateConfirmQuit::StaticInit() {
+    return new (&g_RecoilState_ConfirmQuit) RecoilStateConfirmQuit;
+}
+
+/**
+ * Reimplements 0x415830: RecoilStateConfirmQuit::RegisterAtExit.
+ * Original source path: D:\Proj\Battlesport\HudConfirmQuitDialog.cpp.
+ * Purpose: preserve the recovered HUD behavior for RecoilStateConfirmQuit::RegisterAtExit.
+ */
+void RecoilStateConfirmQuit::RegisterAtExit() {
+    atexit(AtExitDestructor);
+}
+
+/**
+ * Reimplements 0x415840: RecoilStateConfirmQuit::AtExitDestructor.
+ * Original source path: D:\Proj\Battlesport\HudConfirmQuitDialog.cpp.
+ * Purpose: run the recovered RecoilStateConfirmQuit::AtExitDestructor teardown path.
+ */
+void RecoilStateConfirmQuit::AtExitDestructor() {
+    g_RecoilState_ConfirmQuit.~RecoilStateConfirmQuit();
+}
+
+/**
+ * Reimplements 0x415850: RecoilStateConfirmQuit::RecoilStateConfirmQuit.
+ * Original source path: D:\Proj\Battlesport\HudConfirmQuitDialog.cpp.
+ * Purpose: initialize the confirm-quit app state and clear its dialog pointer.
+ */
+RecoilStateConfirmQuit::RecoilStateConfirmQuit() {
+    m_dialog = 0;
+}
+
+/**
+ * Reimplements 0x415880: RecoilStateConfirmQuit::~RecoilStateConfirmQuit.
+ * Original source path: D:\Proj\Battlesport\RecoilStateConfirmQuit.cpp.
+ * Purpose: run the recovered RecoilStateConfirmQuit::~RecoilStateConfirmQuit teardown path.
+ */
+RecoilStateConfirmQuit::~RecoilStateConfirmQuit() {
+    HudUiBackgroundConfirmQuit *dialog = (HudUiBackgroundConfirmQuit *)m_dialog;
+    if (dialog != 0) {
+        dialog->SetEnabled(0);
+
+        dialog = (HudUiBackgroundConfirmQuit *)m_dialog;
+        if (dialog != 0) {
+            dialog->ScalarDeletingDestructor(1);
+        }
+
+        m_dialog = 0;
+    }
+}
+
+/**
+ * Reimplements 0x4158f0: RecoilStateConfirmQuit::OnTryBecomeCurrent.
+ * Original source path: D:\Proj\Battlesport\HudConfirmQuitDialog.cpp.
+ * Purpose: handle the recovered HUD event path for RecoilStateConfirmQuit::OnTryBecomeCurrent.
+ */
+int RecoilStateConfirmQuit::OnTryBecomeCurrent() {
+    HudUiBackgroundConfirmQuit *dialog =
+        (HudUiBackgroundConfirmQuit *) ::operator new(sizeof(HudUiBackgroundConfirmQuit));
+    if (dialog != 0) {
+        dialog = dialog->Constructor();
+    }
+    m_dialog = dialog;
+
+    dialog->SetEnabled(1);
+
+    return 1;
+}
+
+/**
+ * Reimplements 0x415960: RecoilStateConfirmQuit::OnDeactivate.
+ * Original source path: D:\Proj\Battlesport\HudConfirmQuitDialog.cpp.
+ * Purpose: handle the recovered HUD event path for RecoilStateConfirmQuit::OnDeactivate.
+ */
+void RecoilStateConfirmQuit::OnDeactivate() {
+    if (m_dialog == 0) {
+        return;
+    }
+
+    zVideo::RunPostprocessOnPrimaryBuffer();
+
+    HudUiBackgroundConfirmQuit *dialog = (HudUiBackgroundConfirmQuit *)m_dialog;
+    dialog->SetEnabled(0);
+
+    ((HudUiDialogController *)m_dialog)->BlitOwnedSurfaceToPrimary();
+    zVideo::Dispatch_UnlockPrimarySurfaceState();
+
+    dialog = (HudUiBackgroundConfirmQuit *)m_dialog;
+    if (dialog != 0) {
+        dialog->ScalarDeletingDestructor(1);
+    }
+
+    m_dialog = 0;
+    Sleep(1000);
+}
+
+/**
+ * Reimplements 0x4159b0: RecoilStateConfirmQuit::QueueEnter.
+ * Original source path: D:\Proj\Battlesport\HudConfirmQuitDialog.cpp.
+ * Purpose: queue the recovered HUD application-state transition for RecoilStateConfirmQuit::QueueEnter.
+ */
+void RecoilStateConfirmQuit::QueueEnter() {
+    g_RecoilApp.QueuePushState(
+        (RecoilStateBase *)&g_RecoilState_ConfirmQuit,
+        0
+    );
+}
+
+/**
+ * Reimplements 0x4159d0: zFMV_Action::Update.
+ * Purpose: report immediate completion for action types without update behavior.
+ */
+int zFMV_Action::Update(
+    double
+) {
+    return 0;
+}
+
+/**
+ * Reimplements 0x4159e0: zFMV_Action::RunBlockingTimed.
+ * Purpose: run an action to completion using elapsed milliseconds from GetTickCount.
+ */
+void zFMV_Action::RunBlockingTimed() {
+    const double startSec = (double)(GetTickCount()) * 0.00100000005;
+    Begin(0.0);
+    while (true) {
+        const double currentSec = ((double)(GetTickCount()) * 0.00100000005) - startSec;
+        if (Update(currentSec) == 0) {
+            break;
+        }
+    }
+    End();
+}
+
+/**
+ * Reimplements 0x415aa0: zFMV_Action::~zFMV_Action.
+ * Purpose: provide the shared virtual action destructor.
+ */
+zFMV_Action::~zFMV_Action() {}
