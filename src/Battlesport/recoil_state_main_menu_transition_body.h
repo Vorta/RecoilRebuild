@@ -3,6 +3,41 @@
 #include <new>
 #include <stdlib.h>
 
+#if defined(RECOIL_STATE_MAIN_MENU_TRANSITION_BODY_CTOR_DTOR_ONLY)
+/**
+ * Reimplements 0x415170: RecoilStateMainMenuTransition::RecoilStateMainMenuTransition.
+ *
+ * Purpose: initialize the static main-menu transition app state and clear its
+ * dialog/audio ownership fields.
+ */
+RecoilStateMainMenuTransition::RecoilStateMainMenuTransition()
+    : m_mainMenuDialog(0),
+      m_savedHalfResAdjustMode(0),
+      m_entryRoute(RECOIL_MAINMENU_ROUTE_FRONTEND),
+      m_deferredVideoModeIndex(ZVID_MODE_INVALID_COMPLEMENT),
+      m_pausedAudioSnapshot(0) {}
+
+/**
+ * Reimplements 0x4151b0: RecoilStateMainMenuTransition::~RecoilStateMainMenuTransition.
+ *
+ * Purpose: disable and destroy the owned main-menu dialog during transition
+ * state teardown.
+ */
+RECOIL_NO_GS RecoilStateMainMenuTransition::~RecoilStateMainMenuTransition() {
+    HudUiMainMenuDialog *dialog = m_mainMenuDialog;
+    if (dialog != 0) {
+        dialog->SetEnabled(0);
+
+        dialog = m_mainMenuDialog;
+        if (dialog != 0) {
+            delete dialog;
+        }
+
+        m_mainMenuDialog = 0;
+    }
+}
+
+#else
 /**
  * Reimplements data 0x4edc58: g_RecoilState_MainMenuTransition.
  *
@@ -20,19 +55,6 @@
 RecoilStateMainMenuTransitionStorage g_RecoilState_MainMenuTransition = {0};
 #define g_RecoilState_MainMenuTransition \
     (*(RecoilStateMainMenuTransition *)&g_RecoilState_MainMenuTransition)
-
-/**
- * Reimplements 0x415170: RecoilStateMainMenuTransition::RecoilStateMainMenuTransition.
- *
- * Purpose: initialize the static main-menu transition app state and clear its
- * dialog/audio ownership fields.
- */
-RecoilStateMainMenuTransition::RecoilStateMainMenuTransition()
-    : m_mainMenuDialog(0),
-      m_savedHalfResAdjustMode(0),
-      m_entryRoute(RECOIL_MAINMENU_ROUTE_FRONTEND),
-      m_deferredVideoModeIndex(ZVID_MODE_INVALID_COMPLEMENT),
-      m_pausedAudioSnapshot(0) {}
 
 /**
  * Reimplements 0x415100: RecoilStateMainMenuTransition::StaticInitAndRegisterAtExit.
@@ -83,23 +105,4 @@ MainMenuTransitionCrtInitializerFn s_MainMenuTransitionCrtInit =
     RecoilStateMainMenuTransition::StaticInitAndRegisterAtExit;
 #pragma data_seg()
 #endif
-
-/**
- * Reimplements 0x4151b0: RecoilStateMainMenuTransition::~RecoilStateMainMenuTransition.
- *
- * Purpose: disable and destroy the owned main-menu dialog during transition
- * state teardown.
- */
-RECOIL_NO_GS RecoilStateMainMenuTransition::~RecoilStateMainMenuTransition() {
-    HudUiMainMenuDialog *dialog = m_mainMenuDialog;
-    if (dialog != 0) {
-        dialog->SetEnabled(0);
-
-        dialog = m_mainMenuDialog;
-        if (dialog != 0) {
-            delete dialog;
-        }
-
-        m_mainMenuDialog = 0;
-    }
-}
+#endif

@@ -7,39 +7,7 @@
 
 #include <new>
 
-/**
- * Reimplements 0x414f40: HudUiMainMenuDialog_CreditsButton::OnActivate.
- * Original source path: D:\Proj\Battlesport\HudUiMainMenuDialog.cpp.
- * Purpose: Queue the credits state and complete the standard ZRD widget activation.
- */
-void HudUiMainMenuDialog_CreditsButton::OnActivate() {
-    RecoilStateCredits::QueuePush();
-    HudUiZrdWidget::OnActivate();
-}
-
-/**
- * Reimplements 0x414fa0: HudUiMenuBackButton::OnActivate.
- * Original source path: D:\Proj\Battlesport\HudUiMainMenuDialog.cpp.
- * Purpose: Exit the current state and refresh the active HUD layout.
- */
-void HudUiMenuBackButton::OnActivate() {
-    g_RecoilApp.QueueExitCurrentState(0);
-    HudUiZrdWidget::OnActivate();
-    HudUiMgr::TriggerCurrentLayoutOnActivated();
-}
-
-/**
- * Reimplements 0x414f60: HudUiMainMenuDialog_SaveButton::OnActivate.
- * Original source path: D:\Proj\Battlesport\HudUiMainMenuDialog.cpp.
- * Purpose: Open the save dialog and complete the standard ZRD widget activation.
- */
-void HudUiMainMenuDialog_SaveButton::OnActivate() {
-    RecoilStateSaveLoadTransition::QueueOpenSaveDialog(
-        RECOIL_SAVELOAD_CAPTURE_PRESENTATION_DISABLED
-    );
-    HudUiZrdWidget::OnActivate();
-}
-
+#if defined(HUD_UI_MAIN_MENU_DIALOG_BODY_LOAD_BUTTON_ONLY)
 /**
  * Reimplements 0x415140: HudUiMainMenuDialog_LoadButton::OnActivate.
  * Original source path: D:\Proj\Battlesport\HudUiMainMenuDialog.cpp.
@@ -56,46 +24,7 @@ void HudUiMainMenuDialog_LoadButton::OnActivate() {
     HudUiZrdWidget::OnActivate();
 }
 
-/**
- * Reimplements 0x414f80: HudUiMainMenuDialog_NewGameButton::OnActivate.
- * Original source path: D:\Proj\Battlesport\HudUiMainMenuDialog.cpp.
- * Purpose: Enter the new-game overlay and complete the standard ZRD widget activation.
- */
-void HudUiMainMenuDialog_NewGameButton::OnActivate() {
-    HudUiNewGamePanelOverlayOwner::QueueEnter();
-    HudUiZrdWidget::OnActivate();
-}
-
-/**
- * Reimplements 0x414fc0: HudUiMainMenuDialog_OptionsButton::OnActivate.
- * Original source path: D:\Proj\Battlesport\HudUiMainMenuDialog.cpp.
- * Purpose: Enter the options overlay and complete the standard ZRD widget activation.
- */
-void HudUiMainMenuDialog_OptionsButton::OnActivate() {
-    HudUiOptionsPanelOverlayOwner::QueueEnter();
-    HudUiZrdWidget::OnActivate();
-}
-
-/**
- * Reimplements 0x414fe0: HudUiMainMenuDialog_QuitButton::OnActivate.
- * Original source path: D:\Proj\Battlesport\HudUiMainMenuDialog.cpp.
- * Purpose: Enter the quit confirmation state and complete the standard ZRD widget activation.
- */
-void HudUiMainMenuDialog_QuitButton::OnActivate() {
-    RecoilStateConfirmQuit::QueueEnter();
-    HudUiZrdWidget::OnActivate();
-}
-
-/**
- * Reimplements 0x415000: HudUiMainMenuDialog_ControlsButton::OnActivate.
- * Original source path: D:\Proj\Battlesport\HudUiMainMenuDialog.cpp.
- * Purpose: Enter the controls state and complete the standard ZRD widget activation.
- */
-void HudUiMainMenuDialog_ControlsButton::OnActivate() {
-    RecoilStateControls::QueueEnter();
-    HudUiZrdWidget::OnActivate();
-}
-
+#else
 namespace {
 /**
  * Recovered original inline source helper: no standalone retail function.
@@ -498,8 +427,95 @@ HudUiMainMenuDialog::HudUiMainMenuDialog(
 }
 
 /**
+ * Reimplements 0x414f40: HudUiMainMenuDialog_CreditsButton::OnActivate.
+ * Original source path: D:\Proj\Battlesport\HudUiMainMenuDialog.cpp.
+ * Purpose: Queue the credits state and complete the standard ZRD widget activation.
+ */
+void HudUiMainMenuDialog_CreditsButton::OnActivate() {
+    RecoilStateCredits::QueuePush();
+    HudUiZrdWidget::OnActivate();
+}
+
+/**
+ * Reimplements 0x414f60: HudUiMainMenuDialog_SaveButton::OnActivate.
+ * Original source path: D:\Proj\Battlesport\HudUiMainMenuDialog.cpp.
+ * Purpose: Open the save dialog and complete the standard ZRD widget activation.
+ */
+void HudUiMainMenuDialog_SaveButton::OnActivate() {
+    RecoilStateSaveLoadTransition::QueueOpenSaveDialog(
+        RECOIL_SAVELOAD_CAPTURE_PRESENTATION_DISABLED
+    );
+    HudUiZrdWidget::OnActivate();
+}
+
+/**
+ * Reimplements 0x414f80: HudUiMainMenuDialog_NewGameButton::OnActivate.
+ * Original source path: D:\Proj\Battlesport\HudUiMainMenuDialog.cpp.
+ * Purpose: Enter the new-game overlay and complete the standard ZRD widget activation.
+ */
+void HudUiMainMenuDialog_NewGameButton::OnActivate() {
+    HudUiNewGamePanelOverlayOwner::QueueEnter();
+    HudUiZrdWidget::OnActivate();
+}
+
+/**
+ * Reimplements 0x414fa0: HudUiMenuBackButton::OnActivate.
+ * Original source path: D:\Proj\Battlesport\HudUiMainMenuDialog.cpp.
+ * Purpose: Exit the current state and refresh the active HUD layout.
+ */
+void HudUiMenuBackButton::OnActivate() {
+    g_RecoilApp.QueueExitCurrentState(0);
+    HudUiZrdWidget::OnActivate();
+    HudUiMgr::TriggerCurrentLayoutOnActivated();
+}
+
+/**
+ * Reimplements 0x414fc0: HudUiMainMenuDialog_OptionsButton::OnActivate.
+ * Original source path: D:\Proj\Battlesport\HudUiMainMenuDialog.cpp.
+ * Purpose: Enter the options overlay and complete the standard ZRD widget activation.
+ */
+void HudUiMainMenuDialog_OptionsButton::OnActivate() {
+    HudUiOptionsPanelOverlayOwner::QueueEnter();
+    HudUiZrdWidget::OnActivate();
+}
+
+/**
+ * Reimplements 0x414fe0: HudUiMainMenuDialog_QuitButton::OnActivate.
+ * Original source path: D:\Proj\Battlesport\HudUiMainMenuDialog.cpp.
+ * Purpose: Enter the quit confirmation state and complete the standard ZRD widget activation.
+ */
+void HudUiMainMenuDialog_QuitButton::OnActivate() {
+    RecoilStateConfirmQuit::QueueEnter();
+    HudUiZrdWidget::OnActivate();
+}
+
+/**
+ * Reimplements 0x415000: HudUiMainMenuDialog_ControlsButton::OnActivate.
+ * Original source path: D:\Proj\Battlesport\HudUiMainMenuDialog.cpp.
+ * Purpose: Enter the controls state and complete the standard ZRD widget activation.
+ */
+void HudUiMainMenuDialog_ControlsButton::OnActivate() {
+    RecoilStateControls::QueueEnter();
+    HudUiZrdWidget::OnActivate();
+}
+
+/**
+ * Reimplements 0x415020: HudUiMainMenuDialog::ScalarDeletingDestructor.
+ * Original source path: D:\Proj\Battlesport\HudUiMainMenuDialog.cpp.
+ * Purpose: Provide the explicit scalar-delete override used by the background vtable slot.
+ */
+HudUiBackground * HudUiMainMenuDialog::ScalarDeletingDestructor(unsigned int flags) {
+    this->HudUiMainMenuDialog::~HudUiMainMenuDialog();
+    if ((flags & 1) != 0) {
+        ::operator delete(this);
+    }
+    return this;
+}
+
+/**
  * Reimplements 0x415040: HudUiMainMenuDialog::~HudUiMainMenuDialog.
  * Original source path: D:\Proj\Battlesport\HudUiMainMenuDialog.cpp.
  * Purpose: Provide the owner-level destructor body for member teardown.
  */
 HudUiMainMenuDialog::~HudUiMainMenuDialog() {}
+#endif

@@ -338,6 +338,7 @@ struct HudLayoutBase : HudUiContainer {
 
 struct HudLayoutSW : HudLayoutBase {
     HudLayoutSW();
+    static void CrtInitGlobalSingleton();
     static HudLayoutSW *GlobalInit();
     static void RegisterAtExit();
     static void AtExitDestructor();
@@ -474,6 +475,10 @@ int __fastcall InitHudLayouts(
 );
 void ShutdownResources();
 } // namespace HudUiMgr
+
+namespace HudUiSensorWindow {
+void StaticInitAndRegisterAtExit();
+} // namespace HudUiSensorWindow
 
 namespace HudUiAuxOverlay {
 void __fastcall UpdateTextLine(
@@ -938,6 +943,14 @@ struct HudUiZrdWidget : HudUiWidget {
     HudUiElement * ScalarDeletingDestructor(unsigned int flags);
     HudUiZrdWidget * ScalarDeletingDestructorThunk(unsigned int flags);
     void DestructorCore();
+    /**
+     * Provider-boundary 0x40cf20: HudUiZrdWidget complete-destructor tail thunk.
+     * Purpose: preserve compatibility callers without claiming authored source ownership
+     * for the compiler-emitted jump target excluded from hud.cpp order manifests.
+     */
+    void DestructorCoreThunk() {
+        this->HudUiZrdWidget::~HudUiZrdWidget();
+    }
     void Invalidate();
     HudUiRect * GetBoundsRectOrNull();
     void ShowPreview();
@@ -966,7 +979,15 @@ struct HudUiCheckToggleWidget : HudUiZrdWidget {
     HudUiElement * ScalarDeletingDestructor(unsigned int flags);
     HudUiCheckToggleWidget * ScalarDeletingDestructorThunk(unsigned int flags);
     void DestructorCore();
-    void DestructorCoreThunk();
+    /**
+     * Provider-boundary 0x40cf30: HudUiCheckToggleWidget complete-destructor tail thunk.
+     * Purpose: preserve scalar-deleting helper call shape without claiming authored
+     * source ownership for the compiler-emitted jump target excluded from hud.cpp
+     * order manifests.
+     */
+    void DestructorCoreThunk() {
+        this->HudUiCheckToggleWidget::~HudUiCheckToggleWidget();
+    }
     HudUiRect * GetBoundsRectOrNull();
     void RefreshState();
     void ShowPreview();
@@ -997,7 +1018,15 @@ struct HudUiCycleSelectorWidget : HudUiZrdWidget {
     HudUiElement * ScalarDeletingDestructor(unsigned int flags);
     HudUiCycleSelectorWidget * ScalarDeletingDestructorThunk(unsigned int flags);
     void DestructorCore();
-    void DestructorCoreThunk();
+    /**
+     * Provider-boundary 0x40cf40: HudUiCycleSelectorWidget complete-destructor tail thunk.
+     * Purpose: preserve scalar-deleting helper call shape without claiming authored
+     * source ownership for the compiler-emitted jump target excluded from hud.cpp
+     * order manifests.
+     */
+    void DestructorCoreThunk() {
+        this->HudUiCycleSelectorWidget::~HudUiCycleSelectorWidget();
+    }
     void AdvanceSelectionAndActivate();
     int SetIndexClamped(int index);
     void SetVisibleRange(
@@ -1042,7 +1071,14 @@ struct HudUiFillBitmap : HudUiZrdWidget {
     ~HudUiFillBitmap();
     HudUiElement * ScalarDeletingDestructor(unsigned int flags);
     void DestructorCore();
-    void DestructorCoreThunk();
+    /**
+     * Provider-boundary 0x40cf50: HudUiFillBitmap complete-destructor tail thunk.
+     * Purpose: preserve compatibility callers without claiming authored source ownership
+     * for the compiler-emitted jump target excluded from hud.cpp order manifests.
+     */
+    void DestructorCoreThunk() {
+        this->HudUiFillBitmap::~HudUiFillBitmap();
+    }
     void Draw();
     int LoadFromZrd(
         zReader::Node *zrdSection,
@@ -1314,9 +1350,14 @@ HudCmdBindingEntry(
     /**
  * Original-source helper; no standalone retail function exists.
  * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
- * Purpose: run the recovered ~HudCmdBindingEntry teardown path.
- */
-~HudCmdBindingEntry();
+     * Purpose: run the recovered ~HudCmdBindingEntry teardown path.
+     */
+    ~HudCmdBindingEntry() {
+        if (displayText != 0) {
+            free(displayText);
+            displayText = 0;
+        }
+    }
     static HudCmdBindingEntry *__stdcall DeleteAndReturnNull(HudCmdBindingEntry *entry);
     static HudCmdBindingEntry **__fastcall CopyRange(
         HudCmdBindingEntry **sourceBegin,
@@ -1572,7 +1613,16 @@ struct HudUiMessage : HudUiWidget {
     HudUiPanelFull panel;
     HudUiWidget widget;
 
-    void Destructor();
+    HudUiMessage();
+    ~HudUiMessage();
+    /**
+     * Reimplements 0x40d590: HudUiMessage::Destructor.
+     * Purpose: preserve compatibility callers while routing through the true
+     * C++ destructor used by HudUiMgrData member arrays.
+     */
+    void Destructor() {
+        this->~HudUiMessage();
+    }
     HudUiElement * ScalarDeletingDestructor(unsigned int flags);
     HudUiMessage * Constructor();
     void Draw();
@@ -1724,7 +1774,15 @@ struct HudUiMgrSensorBlock {
     zVidImagePartial *targetMarkerImages[5];
     int targetMarkerCount;
 
-    void Destructor();
+    ~HudUiMgrSensorBlock();
+    /**
+     * Reimplements 0x40d6e0: HudUiMgrSensorBlock::Destructor.
+     * Purpose: preserve compatibility callers while routing through the true
+     * C++ destructor used by HudUiMgrData.
+     */
+    void Destructor() {
+        this->~HudUiMgrSensorBlock();
+    }
 };
 
 struct HudUiTextInput {
@@ -1899,8 +1957,17 @@ struct HudUiSlot : HudUiElement {
     HudUiWidget slotWidget;
     HudUiWidget trackMarkerWidget;
 
+    HudUiSlot();
+    ~HudUiSlot();
     HudUiSlot * Constructor();
-    void Destructor();
+    /**
+     * Reimplements 0x40d780: HudUiSlot::Destructor.
+     * Purpose: preserve compatibility callers while routing through the true
+     * C++ destructor used by HudUiMgrData weaponSlots.
+     */
+    void Destructor() {
+        this->~HudUiSlot();
+    }
     void Draw();
     HudUiElement * ScalarDeletingDestructor(unsigned int flags);
 };
@@ -1980,7 +2047,7 @@ struct HudLoadingCheckpointTable {
  * recovered owner covers the typed object through tailBar at 0x7844. The
  * four-byte zero gap before g_HudLayoutHW is not part of the typed object.
  */
-struct HudUiMgrData : HudUiContainer {
+struct HudUiMgrDataPrefix : HudUiContainer {
     int hudLayoutsInitialized;
     unsigned int hudLoaded;
     HudLayoutBase *currentLayout;
@@ -2017,6 +2084,12 @@ struct HudUiMgrData : HudUiContainer {
     unsigned int activeModeCounterIndex;
     HudUiCounter modeCounters[4];
     HudUiMgrMessageSelectionState activeMessageSelection;
+
+    HudUiMgrDataPrefix();
+    ~HudUiMgrDataPrefix();
+};
+
+struct HudUiMgrData : HudUiMgrDataPrefix {
     HudUiMessage messages[10];
     HudUiStatsListElement *statsList;
     unsigned int statsListState1;
@@ -2026,6 +2099,9 @@ struct HudUiMgrData : HudUiContainer {
     unsigned int statsListState5;
     HudLoadingCheckpointTable loadingCheckpointTable;
     HudUiBar tailBar;
+
+    HudUiMgrData();
+    ~HudUiMgrData();
 };
 
 #define g_HudUiMgrHudLayoutsInitialized (g_HudUiMgr.hudLayoutsInitialized)
@@ -2483,6 +2559,20 @@ struct HudCmdDialog : HudUiBackground {
 
 struct HudOptionsDialog;
 
+extern char g_HudUiOptionsPanel_ResolutionCycleNodeName[];
+extern char g_HudUiOptionsPanel_MusicVolumeWidgetNodeName[];
+extern char g_HudUiOptionsPanel_MusicEnableToggleNodeName[];
+extern char g_HudUiOptionsPanel_SoundVolumeWidgetNodeName[];
+extern char g_HudUiOptionsPanel_SoundQualitySelectorNodeName[];
+extern char g_HudUiOptionsPanel_SoundActiveToggleNodeName[];
+extern char g_EffectsZrdNodeName[8];
+extern char g_HudUiOptionsPanel_TextureMemorySelectorNodeName[];
+extern char g_HudUiOptionsPanel_ObjectDetailSelectorNodeName[];
+extern char g_HudUiOptionsPanel_FullHudToggleNodeName[];
+extern char g_HudUiOptionsPanel_PerspectiveToggleNodeName[];
+extern char g_HudUiOptionsPanel_LightingToggleNodeName[];
+extern char g_HudUiOptionsPanel_SectionName[];
+
 struct HudUiOptionsPanelBackButton : HudUiZrdWidget {
     /**
  * Original-source helper; no standalone retail function exists.
@@ -2534,6 +2624,7 @@ struct HudUiOptionsPanel_FullHud : HudUiCheckToggleWidget {
 HudUiOptionsPanel_FullHud() {
     }
 
+    void OnActivate();
     void PostLoadFromZrd();
     void InitFromOptions();
 };
@@ -2685,7 +2776,7 @@ struct HudOptionsDialog : HudUiBackground {
     HudUiOptionsPanel_Resolution resolutionSelector;
 
     HudOptionsDialog();
-    void DestructorCore();
+    ~HudOptionsDialog();
     HudUiBackground * ScalarDeletingDestructor(unsigned int flags);
 };
 

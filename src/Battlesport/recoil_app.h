@@ -13,6 +13,8 @@
 
 typedef recoil::Ptr32 RecoilPtr32;
 
+struct RecoilStateBase;
+
 extern "C" {
 extern const char g_HudSensorTracker_StartAnimsZrdPath[0x0e];
 extern const char g_RecoilApp_LoadGameStartAnimStateName[0x10];
@@ -398,10 +400,28 @@ class RecoilApp : public RecoilApp_MfcOleModule {
         RecoilApp_IState *state,
         int suspendParam
     );
+    RecoilApp_IState * QueuePushState(
+        RecoilStateBase *state,
+        int suspendParam
+    ) {
+        return QueuePushState(
+            (RecoilApp_IState *)state,
+            suspendParam
+        );
+    }
     RecoilApp_IState * QueueSwitchCurrentState(
         RecoilApp_IState *state,
         int stateParam
     );
+    RecoilApp_IState * QueueSwitchCurrentState(
+        RecoilStateBase *state,
+        int stateParam
+    ) {
+        return QueueSwitchCurrentState(
+            (RecoilApp_IState *)state,
+            stateParam
+        );
+    }
     RecoilApp_IState * QueueExitCurrentState(int stateParam);
     int StartEngineAndQueueStartupState();
     int PreTranslateMessage(tagMSG *msg);

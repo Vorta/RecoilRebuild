@@ -384,17 +384,6 @@ const unsigned int kGameNetPkt06ProgressTargetsFlag = 0x40000u;
 const unsigned int kGameNetRemoteAltGunDispatchFlag = 0x2000000u;
 const unsigned int kGameNetRemoteCloneNodeFlag = 0x400000u;
 const float kGameNetRemoteUnlimitedAmmo = 123456792.0f;
-const int kGameNetChatComposeTextCapacity = 0x20;
-const int kGameNetChatComposeShiftModifierMask = 0x400;
-const int kGameNetChatComposeDigitFirstDik = 0x02;
-const int kGameNetChatComposeDigitLastDik = 0x0e;
-const int kGameNetChatComposeLetterRowFirstDik = 0x10;
-const int kGameNetChatComposeLetterRowLastDik = 0x2b;
-const int kGameNetChatComposeHomeRowFirstDik = 0x1e;
-const int kGameNetChatComposeHomeRowLastDik = 0x28;
-const int kGameNetChatComposeBottomRowFirstDik = 0x2c;
-const int kGameNetChatComposeBottomRowLastDik = 0x35;
-const int kGameNetChatComposeSpaceDik = 0x39;
 const UINT kNetSessionBrowserDialogResourceId = 136;
 const int kNetSessionBrowserPlayerNameEditId = 1048;
 const int kNetSessionBrowserOkButtonId = 1;
@@ -504,41 +493,6 @@ void SetEmbeddedHudPanelColor(
     row->hudWidget.textColor0 = color;
     row->hudWidget.textColor1 = color;
     row->hudWidget.textDirty = 1;
-}
-
-/**
- * Source: D:\Proj\Battlesport\ai_net.cpp
- * Original helper evidence: no standalone retail function; caller 0x4143d0
- * repeats this unregister/register pair across the chat-compose key ranges and
- * the standalone space-bar binding.
- * Purpose: Register one chat-compose keyboard callback binding.
- */
-inline void RegisterChatComposeKey(
-    int comboIdx
-) {
-    zInput::Keyboard_UnregisterKeyCallback(comboIdx);
-    zInput::Keyboard_RegisterKeyCallback(
-        comboIdx,
-        (void *)(&GameNet::ChatComposeKeyCallback),
-        ""
-    );
-}
-
-/**
- * Source: D:\Proj\Battlesport\ai_net.cpp
- * Original helper evidence: no standalone retail function; caller 0x4143d0
- * repeats contiguous chat-compose key registration for unmodified and modified
- * DIK ranges.
- * Purpose: Register a contiguous range of chat-compose keyboard bindings.
- */
-inline void RegisterChatComposeKeyRange(
-    int firstComboIdx,
-    int lastComboIdx
-) {
-    for (int comboIdx = firstComboIdx; comboIdx <= lastComboIdx; ++comboIdx) {
-        RegisterChatComposeKey(comboIdx);
-        RegisterChatComposeKey(comboIdx | kGameNetChatComposeShiftModifierMask);
-    }
 }
 
 /**
@@ -1927,117 +1881,6 @@ void NetSessionConfigDialog::CleanupMapNameStringsOnExit() {
 
 namespace GameNet {
 /**
- * Reimplements 0x414550: GameNet::ChatComposeKeyCallback
- * Source: D:\Proj\Battlesport\ai_net.cpp
- * Purpose: Append a translated key to active chat-compose text and mirror the
- * buffer into the objective description panel.
- */
-void __fastcall ChatComposeKeyCallback(
-    int dikCodeWithMods
-) {
-    const int key = zInput::Keyboard_TranslateDikToAscii(dikCodeWithMods);
-    if (key == 0) {
-        return;
-    }
-
-    g_HudUiMgrObjectiveChatComposeTextInput.DispatchKeyAction(key);
-
-    g_HudUiMgrObjectiveDescTextPanel->SetTextFmt(
-        g_HudUiMgrObjectiveChatComposeTextInput.GetBuffer()
-    );
-}
-
-/**
- * Reimplements 0x4143d0: GameNet::BeginChatCompose
- * Source: D:\Proj\Battlesport\ai_net.cpp
- * Purpose: Open chat-compose mode and bind text-entry keys.
- */
-void BeginChatCompose() {
-    if (zOpt::GetNetworkEnabled() == 0) {
-        return;
-    }
-
-    HudUiMgrObjective::Show(
-        0,
-        g_HudUiMessage_NodeName,
-        "",
-        0.0f
-    );
-    g_HudUiMgrObjectiveChatComposeActive = 1;
-    g_HudUiMgrObjectiveChatComposeTextInput.AllocTextBuffer(kGameNetChatComposeTextCapacity);
-    g_HudUiMgrObjectiveChatComposeTextInput.SetContents("");
-    zInput::BindMapContext_Push(0);
-
-    RegisterChatComposeKeyRange(
-        kGameNetChatComposeDigitFirstDik,
-        kGameNetChatComposeDigitLastDik
-    );
-    RegisterChatComposeKeyRange(
-        kGameNetChatComposeLetterRowFirstDik,
-        kGameNetChatComposeLetterRowLastDik
-    );
-    RegisterChatComposeKeyRange(
-        kGameNetChatComposeHomeRowFirstDik,
-        kGameNetChatComposeHomeRowLastDik
-    );
-    RegisterChatComposeKeyRange(
-        kGameNetChatComposeBottomRowFirstDik,
-        kGameNetChatComposeBottomRowLastDik
-    );
-    RegisterChatComposeKey(kGameNetChatComposeSpaceDik);
-}
-
-/**
- * Reimplements 0x414590: GameNet::EndChatComposeAndSend
- * Source: D:\Proj\Battlesport\ai_net.cpp
- * Purpose: Close chat compose, show the local chat line, and send packet 0x0b.
- */
-void EndChatComposeAndSend() {
-    zUtil_SaveGameState *const saveState = (zUtil_SaveGameState *)(g_GameStateOrMapTable);
-    GameNetPlayerRow *const playerRow = saveState->netPlayerRow;
-    char chatLine[0x51];
-    chatLine[0x50] = '\0';
-
-    g_HudUiMgrObjectiveChatComposeActive = 0;
-    zInput::BindMapContext_Pop();
-    HudUiMgrObjective::Begin();
-
-    if (strlen(g_HudUiMgrObjectiveChatComposeTextInput.GetBuffer()) == 0) {
-        return;
-    }
-
-    strncpy(
-        chatLine,
-        playerRow->displayName,
-        0x50
-    );
-    strncat(
-        chatLine,
-        g_HudUiMessage_SeparatorColon,
-        0x50 - strlen(chatLine)
-    );
-    strncat(
-        chatLine,
-        g_HudUiMgrObjectiveChatComposeTextInput.GetBuffer(),
-        0x50 - strlen(chatLine)
-    );
-    HudUi::ShowChatLine(
-        chatLine,
-        5.0f
-    );
-    SendPkt0B_ChatMessage(chatLine);
-}
-
-/**
- * Reimplements 0x414660: GameNet::EndChatComposeAndSendThunk
- * Source: D:\Proj\Battlesport\ai_net.cpp
- * Purpose: Forward the chat-compose dispatch callback to EndChatComposeAndSend.
- */
-void EndChatComposeAndSendThunk() {
-    EndChatComposeAndSend();
-}
-
-/**
  * Reimplements 0x432830: GameNet::FindPlayerRowByKey
  * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
  * Purpose: Find the active GameNet remote-player row for a network player key.
@@ -3200,37 +3043,6 @@ int __fastcall UpdateRemotePlayerHudWidgetScreenPos(
 }
 
 /**
- * Reimplements 0x414330: GameNet::ShowPlayerKillMessage
- * Source: D:\Proj\Battlesport\HudUi.cpp
- * Purpose: Format and display a multiplayer kill-feed message.
- */
-void __fastcall ShowPlayerKillMessage(
-    GameNetPlayerRow *victimRow,
-    OptCatalogEntryDef *killEntry,
-    GameNetPlayerRow *killerRow
-) {
-    const char *killVerb = "";
-    if (killEntry == 0) {
-        killVerb = zLoc::GetMessageString(0x253);
-    } else if (killEntry->killVerbString != 0) {
-        killVerb = killEntry->killVerbString;
-    }
-
-    char message[0x50];
-    sprintf(
-        message,
-        g_Hud_TripleStringFmt,
-        victimRow->displayName,
-        killVerb,
-        killerRow->displayName
-    );
-    HudUi::ShowTopMessageLine(
-        message,
-        2.0f
-    );
-}
-
-/**
  * Reimplements 0x432e70: GameNet::ReassignPlayerColorsAndRefreshRows
  * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
  * Purpose: Refresh player-row colors after network color assignment changes.
@@ -3333,18 +3145,6 @@ int __fastcall HandlePkt03_RemoveRemotePlayer(
     row->DestroyEmbeddedPanel();
     ::operator delete(row);
     return 0;
-}
-
-/**
- * Reimplements 0x414390: GameNet::RefreshPlayerListMenu
- * Source: D:\Proj\Battlesport\ai_net.cpp
- * Purpose: Forward a player row to the HUD stats list triplet for scoreboard
- * entry insertion.
- */
-void __fastcall RefreshPlayerListMenu(
-    GameNetPlayerRow *playerRow
-) {
-    g_HudUiMgrStatsList->triplet->AddEntry(playerRow);
 }
 
 /**
@@ -4098,3 +3898,16 @@ GameNetCrtInitializerFn s_GameNetCrtInit_PlayerRowListReset =
     GameNetPlayerRowList::Reset;
 #pragma data_seg()
 #endif
+
+/*
+ * Physical hud.cpp runtime-layer relocation notes. These address-backed
+ * bodies now live in src/Battlesport/hud_runtime_layer_body.h, included by
+ * src/Battlesport/hud.cpp, so VC5 emits the hud.cpp layer in retail order while
+ * older narrow manifests can still find their provenance markers:
+ * Reimplements 0x414330: GameNet::ShowPlayerKillMessage
+ * Reimplements 0x414390: GameNet::RefreshPlayerListMenu
+ * Reimplements 0x4143d0: GameNet::BeginChatCompose
+ * Reimplements 0x414550: GameNet::ChatComposeKeyCallback
+ * Reimplements 0x414590: GameNet::EndChatComposeAndSend
+ * Reimplements 0x414660: GameNet::EndChatComposeAndSendThunk
+ */
