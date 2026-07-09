@@ -120,7 +120,7 @@ Ranges are half-open retail `.text` ranges. `partial` rows are header contributo
 | `0x402fd0..0x4038a0` | `src/Battlesport/ai_net.cpp` | mapped; 6 semantic subranges |
 | `0x4038a0..0x404ca0` | `src/Battlesport/Briefing.cpp` | mapped; 11 semantic subranges |
 | `0x404ca0..0x415ab0` | `src/Battlesport/hud.cpp` | mapped-refined-order-diagnostic-clean; 22 semantic subranges |
-| `0x415ab0..0x417350` | `src/Battlesport/map.cpp` | mapped-refined; 8 semantic subranges |
+| `0x415ab0..0x417350` | `src/Battlesport/map.cpp` | mapped-refined-order-diagnostic-clean; 8 semantic subranges |
 | `0x417350..0x41cc10` | `src/Battlesport/mission.cpp` | mapped-refined; 14 semantic subranges |
 | `0x41cc10..0x41ea90` | `src/Battlesport/pickup.cpp` | mapped; 10 semantic subranges |
 | `0x41ea90..0x42de10` | `src/Battlesport/player.cpp` | mapped; 19 semantic subranges |
