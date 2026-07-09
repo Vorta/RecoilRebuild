@@ -783,7 +783,9 @@ struct HudUiControlsDialog_CommandsWidget : HudUiZrdWidget {
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiControlsDialog_CommandsWidget) == 0x14c);
 
-struct HudUiControlsDialog_OptionSelector : HudUiZrdWidgetEx17C {};
+struct HudUiControlsDialog_OptionSelector : HudUiZrdWidgetEx17C {
+    void DestructorCoreThunk();
+};
 RECOIL_STATIC_ASSERT(sizeof(HudUiControlsDialog_OptionSelector) == 0x17c);
 
 struct HudUiControlsDialog : HudUiBackground {

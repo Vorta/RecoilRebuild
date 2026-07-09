@@ -126,6 +126,25 @@ available even when no groups are active.
 
 Active queue sections:
 
+- ### Group: Briefing.cpp byte cleanup
+
+  - Anchor: 0x403930 HudUiBriefingRuntime::Constructor
+  - Owner id: legacy.battlesport_gameplay.class_huduibriefingruntime
+  - Section: battlesport_gameplay
+  - Queue: active WIP under explicit user direction
+  - Reason: physical `Briefing.cpp` byte cleanup after source-block/order diagnostics passed
+  - Source blockers:
+    - 0x403930 HudUiBriefingRuntime::Constructor byte drift
+    - 0x403ed0 HudUiBriefingRuntime::~HudUiBriefingRuntime byte drift
+    - 0x404070 HudUiBriefingRuntime::Update byte drift
+    - 0x403e20 HudUiCompositePanel::Destructor physical Briefing exception byte drift
+  - Verified clean rows:
+    - 0x404400 HudUiBriefingRuntime::BuildObjectiveActionsFromIndex
+    - 0x404aa0 BriefingActionPlaySample::Tick
+    - 0x404bd0 Briefing::StopAndShutdownThread
+  - Next action:
+    - Continue with focused `recoil_source_worker` handoffs on `0x403930`, `0x403e20`, `0x403ed0`, and `0x404070`; each hard byte-match pass must retain ChatGPT Pro receipt/transcript evidence before repeated probes or any raw assembly exception.
+
 - No active owner/data implementation group is currently reserved in this
   ledger. The former zVideo renderer dispatch/global owner audit has been
   pruned because `audit groups --summary --wip-limit 4` classified it as

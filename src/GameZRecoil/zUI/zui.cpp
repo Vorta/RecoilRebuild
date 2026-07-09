@@ -9984,20 +9984,11 @@ HudUiZrdWidgetEx17C::HudUiZrdWidgetEx17C() : HudUiZrdWidget() {
 }
 
 /**
- * Reimplements 0x4b8b60: HudUiZrdWidgetEx17C::DestructorCore.
- * Purpose: run the recovered HudUiZrdWidgetEx17C::DestructorCore teardown path.
- */
-HudUiZrdWidgetEx17C * HudUiZrdWidgetEx17C::Constructor() {
-    new (this) HudUiZrdWidgetEx17C;
-    return this;
-}
-
-/**
- * Reimplements 0x4b8b60: HudUiZrdWidgetEx17C::DestructorCore
+ * Reimplements 0x4b8b60: HudUiZrdWidgetEx17C::~HudUiZrdWidgetEx17C
  * Source file evidence: BN labels the source as HudUiZrdWidgetEx17C.cpp.
- * Purpose: Delete owned option-selector items, clear their slots, and destroy the base ZRD widget.
+ * Purpose: Delete owned option-selector items and clear their slots before compiler-generated base cleanup.
  */
-void HudUiZrdWidgetEx17C::DestructorCore() {
+HudUiZrdWidgetEx17C::~HudUiZrdWidgetEx17C() {
 
     {
         int optionIndex;
@@ -10009,8 +10000,26 @@ void HudUiZrdWidgetEx17C::DestructorCore() {
             }
         }
     }
+}
 
-    HudUiZrdWidget::DestructorCore();
+/**
+ * Reimplements 0x4b8b60: HudUiZrdWidgetEx17C::DestructorCore.
+ * Purpose: run the recovered HudUiZrdWidgetEx17C destructor through the compatibility name.
+ */
+HudUiZrdWidgetEx17C * HudUiZrdWidgetEx17C::Constructor() {
+    new (this) HudUiZrdWidgetEx17C;
+    return this;
+}
+
+/**
+ * Reimplements 0x4b8b60: HudUiZrdWidgetEx17C::DestructorCore compatibility wrapper.
+ * No standalone retail function; source compatibility wrapper for recovered
+ * callers that historically named the destructor body DestructorCore in this
+ * reconstruction.
+ * Purpose: Run the option-selector destructor body.
+ */
+void HudUiZrdWidgetEx17C::DestructorCore() {
+    this->HudUiZrdWidgetEx17C::~HudUiZrdWidgetEx17C();
 }
 
 /**
@@ -13650,4 +13659,3 @@ HudUiChatMessageStack * HudUiChatMessageStack::Constructor() {
 
     return this;
 }
-

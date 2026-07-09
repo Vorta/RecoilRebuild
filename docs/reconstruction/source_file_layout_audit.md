@@ -605,7 +605,7 @@ and do not update `SOURCE_OWNERS`.
 | `src/Battlesport/about.cpp` + `src/Battlesport/about.h` | `[0x401000,0x401060)` | no literal; confirmed continuous About-dialog source/header block with internal CAboutDlg and MFC provider subranges; natural function order and bytes reproduced | `CAboutDlg::Constructor` / `CWnd::EndModalState` | mapped no-literal, 4 semantic/provider subranges, order confirmed |
 | `src/Battlesport/ai_net.cpp` | `[0x401060,0x4038a0)` | `0x4da1e8`, xref `0x4030bb` | `AINet::TickAiMode2TopLevel` / `AINet::FreeAll` | mapped with `ai_net.h`/`zmth.h` partial-header rows and 6 body subranges |
 | `src/Battlesport/Briefing.cpp` | `[0x4038a0,0x404ca0)` | `0x4da32c`, xref `0x404238` | `HudUiBriefingObjectivePicture::DrawWithNoiseOverlay` / `Briefing::BuildObjectiveActionsForRuntime` | mapped, 11 semantic subranges |
-| `src/Battlesport/hud.cpp` | `[0x404ca0,0x415ab0)` | `0x4dadd8`, xrefs `0x4101a3`, `0x4141bb` | `HudUiElement::Draw` / `zFMV_ActionBase::Destructor` | mapped refined; small-stub/compiler-glue layer now order-confirmed through `0x407170`; `0x407170`/`0x4ccd50` remain owner-pending auxiliary compiler-glue/default-table evidence |
+| `src/Battlesport/hud.cpp` | `[0x404ca0,0x415ab0)` | `0x4dadd8`, xrefs `0x4101a3`, `0x4141bb` | `HudUiElement::Draw` / `zFMV_ActionBase::Destructor` | mapped refined; documented HUD order diagnostics now cover the worked physical block through `0x415ab0`; semantic/provider/header exceptions remain order-only evidence, not owner/tier acceptance |
 | `src/Battlesport/map.cpp` | `[0x415ab0,0x417350)` | `0x4daf04`, xref `0x416922` | `HudSensorMapNode::Init` / `HudSensorTracker::SetObjectiveMarkerColorBlink` | mapped refined, 8 semantic subranges |
 | `src/Battlesport/mission.cpp` | `[0x417350,0x41cc10)` | `0x4db230`, xrefs `0x417fc2`, `0x4181b6`, `0x418209`, `0x4182ff`, `0x418395`, `0x419091`, `0x419304` | `Mission::InitObjectives` / `CSpinButtonCtrl::ScalarDeletingDestructor` | mapped refined, 14 semantic subranges |
 | `src/Battlesport/pickup.cpp` | `[0x41cc10,0x41ea90)` | `0x4dc190`, xrefs `0x41cd93`, `0x41d523`, `0x41db80` | `PickupSpawnList::Primary_Init` / `Pickup::SpawnAtCarrierNodeByName` | mapped |
@@ -787,7 +787,7 @@ uses complete owner units.
 | `zerr_old.c [0x4622f0,0x462330)` | Old error/debug bridge split as `0x4622f0 zError::EmitDebugBuffer` and `0x462310 RecoilError::InitOutputContext`. The `zerr_old.c` literal xref is in `EmitDebugBuffer`; the context initializer is included by neighbor order before the `fmv_main.cpp` boundary. | Preserve the physical `zerr_old.c` row while routing namespace-level ownership carefully; the `RecoilError::` semantic name does not prove a separate file. |
 | `fmv_main.cpp [0x462330,0x4625e0)`, `fmv_script.cpp [0x4625e0,0x463d50)`, `fmv_stream.cpp [0x463d50,0x464670)` | BN literals split FMV into playback/MCI class bodies in `fmv_main.cpp`, script/action hierarchy in `fmv_script.cpp`, and stream decode/audio bodies in `fmv_stream.cpp`. `fmv_main.cpp` now has three recorded layers: playback constructor/destructor `[0x462330,0x462370)`, MCI open/play `[0x462370,0x4624f0)`, and stop/dest/error tail `[0x4624f0,0x4625e0)`. Current source comments often route playback and stream through `fmv_script.cpp`/`fmv.h`. `fmv_script.cpp` also contains class-owned scalar deleting destructors, while zFMV action base virtuals/destructor/update/run-timed appear earlier in the HUD physical block `[0x4159d0,0x415ab0)`. | Preserve the three physical FMV source blocks and route class hierarchy work across the out-of-range HUD zFMV action-base island. Do not treat class-owned deleting destructors as standalone authored owners or provider-primary work, and do not split out `fmv_action.cpp`/`fmv.h` without new physical evidence. |
 | `ai_net.cpp [0x401060,0x4038a0)` | Physical AINet block has proven address-emitting `ai_net.h [0x401060,0x402f60)`, `zmth.h [0x402f60,0x402fd0)`, and 6 recorded `ai_net.cpp` body layers from ZRD load through teardown. `0x403750` is player-save-state-coupled but still physically in `ai_net.cpp`. | Preserve the detailed `ai_net.cpp` source-shape order. Do not move `0x403750` to `player.cpp`, do not create a new emitted `.h` row for `0x403620`, and do not reintroduce `.inl` source shape for `0x402f60`. |
-| `hud.cpp [0x404ca0,0x415ab0)` | Physical HUD block with 21 recorded source-shape layers. The first source-path literal is inside `0x410160`, and another appears at `0x414180`; the earlier layers are inferred from BN assembly/order, not comments. | Do not treat physical `hud.cpp` as one semantic owner. Use the detailed `hud.cpp` source-shape layer table below and preserve physical HUD block order while routing semantic owners separately. |
+| `hud.cpp [0x404ca0,0x415ab0)` | Physical HUD block with 22 recorded source-shape layers. The first source-path literal is inside `0x410160`, and another appears at `0x414180`; the earlier layers are inferred from BN assembly/order, not comments. | Do not treat physical `hud.cpp` as one semantic owner. Use the detailed `hud.cpp` source-shape layer table below and preserve physical HUD block order while routing semantic owners separately. |
 | `map.cpp [0x415ab0,0x417350)` | Physical map block now has 8 recorded source-shape layers: HudSensorMapNode methods, HudRectI/HudGeom2D clipping helper island, projected-path drawing, tracker init/list maintenance, map file load, overlay/zoom/ref-count, projection/save-state marker drawing, and mission-map SFX/objective marker controls. | Use the detailed `map.cpp` source-shape layer table below. Do not move HudRectI/HudGeom2D helpers to `hud.cpp` or a new header row solely from semantic names/comments. |
 | `pickup.cpp [0x41cc10,0x41ea90)` | Physical pickup block now has 10 recorded source-shape layers: subsystem bootstrap, init/resource registration, pickup-specific zClass_Node flag recursion, collection/effects/player grants, spawn-list lifecycle, pickup type lookup/Net-style slot predicate, ZRD spawn loading, respawn queue maintenance, ZAR callbacks, and network/drop helper tail. | Use the detailed `pickup.cpp` source-shape layer table below. Do not split zClass/Net-like helpers into separate `.h` or source rows without VC5 source-shape evidence. |
 | `player.cpp [0x41ea90,0x42de10)` | Physical player block now has 19 recorded source-shape layers. Semantic/provider islands include HUD scalar/reset glue, zReader/checkpoint helpers, zClass recursive flags, zInput bind maps, cls_di/HUD helper activity, zMath midpoint, zCom, WOL API init, and provider SafeVtableRelease tail. | Use the detailed `player.cpp` source-shape layer table below. Player-owned work must preserve physical order while routing complete semantic owners separately when evidence supports them. |
@@ -1132,6 +1132,88 @@ computed alpha first to the action field, stores the same x87 value second to
 `0x403930` remains a same-owner constructor byte blocker; do not promote the
 Briefing owner byte gate from this partial action-layer evidence.
 
+2026-07-09 Briefing runtime byte-cleanup slice: `0x404400`
+`HudUiBriefingRuntime::BuildObjectiveActionsFromIndex` now passes focused VC5
+byte comparison with zero unmasked mismatches in
+`briefing_runtime_build_objective_actions_from_index`. The retained source
+shape keeps `this` in a pre-network-check runtime local, computes
+`objectiveIndex + objectiveIndex` before the network gate, delays
+`BriefingActionQueue(runtime)` until after sample-name formatting, uses an
+unsigned objective loop, caches the panel/objective-picture pointers once
+outside the loop, leaves the three output locals uninitialized, advances the
+locator panel as a pointer induction variable, increments the objective index
+before `zLoc::FormatMessage`, and uses `progressId++` as the two delay-action
+arguments. Rejected `0x404070` update probes from the same slice: splitting a
+separate bool plus int not-head value regressed to 157 unmasked mismatches, and
+assigning then negating an int equality value regressed to 159 mismatches. The
+kept `1 - (currentNode == headSentinel)` spelling reduces `0x404070` from the
+146-mismatch baseline to 23 unmasked mismatches but still differs from retail:
+VC5 emits `mov edx,1; sete cl; sub edx,ecx`, keeps `deltaSec` in `ebx`, and
+uses `edi` for the complete flag, while retail uses `neg cl; sbb ecx,ecx; inc
+ecx`, keeps `deltaSec` in `edi`, and uses `ebx` for the complete flag.
+`0x403930` remained at the known 153-mismatch constructor register-allocation
+blocker; `0x403ed0` remained at 350 mismatches with the missing real destructor
+EH frame. ChatGPT Pro hard-byte-match receipt for this slice:
+`.devspace/runs/2026-07-09T12-30-40-083Z-chatgpt-call/receipt.json`.
+
+2026-07-09 Briefing tail/action byte-cleanup slice: `0x404aa0` and
+`0x404bd0` now pass focused VC5 byte comparison with zero unmasked mismatches
+in `briefing_action_play_sample_tick` and `briefing_stop_and_shutdown_thread`.
+The retained `BriefingActionPlaySample::Tick` spelling keeps the current sound
+handle in a local, keeps the found sample live, emits the variant playback
+branch before the non-variant branch, and leaves the unused tick delta as a
+callee-cleaned stack argument. The retained `Briefing::StopAndShutdownThread`
+spelling uses the BN-observed register argument, a top-tested sequence-active
+wait loop, a scoped `Sleep` function pointer cached only for thread polling,
+and `runtime->ScalarDeletingDestructor(1)` for the vtable slot `+0x8` shutdown
+call. Rejected local probes: a single-epilogue play-sample fallthrough improved
+to 35 mismatches but ordered non-variant playback before variant playback, and
+the first shutdown spelling with the original `do`/`while` loop plus scoped
+`Sleep` improved to 67 mismatches but duplicated/rotated the wait call. Hard
+byte-match ChatGPT Pro receipt:
+`.devspace/runs/2026-07-09T12-59-20-720Z-chatgpt-call/receipt.json`.
+
+2026-07-09 Briefing runtime destructor source-shape slice: the non-retail
+production `HudUiBriefingRuntime::Constructor(int)` storage-construction
+wrapper was removed, and native tests were moved to placement-new construction
+so the production TU no longer carries that extra out-of-line member helper.
+`0x403ed0` is now routed to the real C++ destructor symbol
+`??1HudUiBriefingRuntime@@QAE@XZ` in the focused runtime-destructor manifest and
+the Briefing block-order manifest. The real-destructor source direction
+improved `0x403ed0` from 350 to 284 unmasked mismatches and restores VC5
+destructor/EH/member-teardown family evidence, but it is not byte-ready.
+`HudUiCompositePanel::Destructor` remains a manual physical Briefing exception:
+probing a real C++ `HudUiCompositePanel` destructor improved only to 114
+mismatches and emitted a composite vtable reset absent from retail `0x403e20`.
+`0x404070` remains at the 23-mismatch best-known boolean/register-shape blocker,
+and `0x403930` remains at the 153-mismatch constructor register-allocation
+blocker. The clean rows `0x404400`, `0x404aa0`, `0x404bd0`, the action-queue
+Add* helpers, and `0x404c50` were rechecked after the destructor source-shape
+changes. Hard byte-match ChatGPT Pro receipt:
+`.devspace/runs/2026-07-09T13-27-22-609Z-chatgpt-call/receipt.json`.
+
+2026-07-09 follow-up hard-byte passes retained no source changes. A focused
+`0x403930` constructor pass tried local pointer declaration/order/constness
+variants for `transportProgress` and `missionName`, removing the `progress`
+alias, reference/register locals, and an objective-picture invalidate through a
+`HudUiElement *`; all useful register-lifetime probes stayed at the 153
+unmasked mismatch baseline, while the objective-picture virtual-call probe
+regressed to 308 mismatches. Retail still keeps `transportProgress` in `ebx`
+and `missionName` in `ebp`; current VC5 still inverts those registers. ChatGPT
+Pro hard-byte receipt:
+`.devspace/runs/2026-07-09T14-07-45-465Z-chatgpt-call/receipt.json`. A focused
+`0x404070` update pass tried `register int sequenceComplete`, direct
+`currentNode != headSentinel`, `!(currentNode == headSentinel)`, unary
+minus/increment boolean spellings, explicit delta locals/register parameter
+spellings, broader completion-flag lifetime, and profile sweep diagnostics;
+none improved on the current 23 unmasked mismatches. Retail still wants
+`edi = deltaSec`, `ebx = sequenceComplete`, and `sete/neg/sbb/inc/test`, while
+current VC5 emits `ebx = deltaSec`, `edi = sequenceComplete`, and
+`mov edx,1; sete cl; sub edx,ecx`. ChatGPT Pro hard-byte receipt:
+`.devspace/runs/2026-07-09T14-28-34-404Z-chatgpt-call/receipt.json`. ChatGPT
+Pro judged raw inline assembly premature in both passes; no raw assembly or
+allowlist row was added.
+
 #### `hud.cpp` Source-Shape Layer Detail
 
 These layer names are reconstruction routing labels stored in
@@ -1149,14 +1231,14 @@ source-shape experiments prove a specific original header/source placement.
 | `[0x406a00,0x407130)` | `hud_cheat_dialog_and_string_helper_layer` | function-order-confirmed UI/helper layer | The diagnostic `hud_cheat_dialog_and_string_helper_layer_order_current_shape` compiles `src/Battlesport/hud.cpp` and naturally emits the exact retail layer order `0x406a00`, `0x406af0`, `0x406cf0`, `0x406d20`, `0x406e10`, `0x406e30`, `0x406e90`, `0x406ea0`, `0x406eb0`, `0x406ec0`, `0x406ed0`, `0x406ee0`, `0x406f00`, `0x406f60`, `0x407010`, `0x4070e0`, `0x407100`, `0x407110`, with `0x407130 zStub::ReturnOneNoArgs` as the next sentinel. This confirms physical HUD-block emission only; semantic owners and class-associated compiler emissions still need their own owner/data/provider gates before tier acceptance. |
 | `[0x407130,0x407190)` | `hud_small_stub_layer` | function-order-confirmed helper/compiler-glue layer | The 2026-07-08 `hud_small_stub_layer_order_current_shape` rerun now naturally emits `0x407130`, `0x407140`, `0x407150`, `0x407160`, then `0x407170`, with `0x407190` as the next sentinel. `recoil_state_base_default_table` byte-matches the `0x407170` scalar-deleting-destructor body and `g_RecoilStateBase_Vtbl @ 0x4ccd50`; `zstub_vtable_stubs` byte-matches the four folded/default helper bodies. The superseded blocker was real early `RecoilStateDialogHost : RecoilStateBase` materialization, which pulled the scalar wrapper before the helpers; current source keeps `RecoilStateDialogHost` standalone/`RECOIL_NOVTABLE`, uses explicit ABI queue casts, and materializes `RecoilStateBase` after `cls_stubs_body.h`. This confirms physical HUD-block order and bytes only. `0x407170` remains compiler-generated class-coupled scalar deleting destructor glue associated with the byte-matched 40-byte default/base table at `0x4ccd50`, not accepted primary ownership evidence. Keep hard data boundaries split as `0x4ccd28..0x4ccd50` accepted `g_RecoilStateCheatCode_Vtbl`, `0x4ccd50..0x4ccd78` owner-pending base/default vtable evidence, `0x4ccd78..0x4ccd88` accepted `g_zNetwork_RecoilAppGuid`, and `0x4ccd88..0x4ccd98` accepted `g_zNetwork_WestwoodOnlineAppGuid`. Do not attach `0x407170`/`0x4ccd50` to `legacy.app_shell.cluster_recoilstatebase`, `RecoilStateDialogHost`, zStub, provider, standalone data, or tier-S claims without separate source-owner scrutiny. Pro receipt: `.devspace/runs/2026-07-08T12-36-58-435Z-chatgpt-call/receipt.json`. |
 | `[0x407190,0x408a30)` | `hud_options_config_layer` | semantic exception / included-options candidate | Options/config/video/audio/input helpers are physically in `hud.cpp`; do not reassign solely from namespace-like labels. The 2026-07-07 Pro-approved `hud_options_config_layer_order_current_shape` diagnostic manifest records retail order through `0x408a20`, excluding `0x407170` and `0x408a30`. After zInput compile-container cleanup and local `zgame_opt.c` body/source-fragment order repair, both `zgame_opt_hud_local_order_current_shape` and the full `hud_options_config_layer_order_current_shape` diagnostic pass `translation_unit_order_matches_manifest True`. This is order-only source-shape/provenance evidence; no byte, owner, source-block, provider, or tier claim follows from either diagnostic. |
-| `[0x408a30,0x409040)` | `hud_controls_dialog_layer` | selected-subsequence order diagnostic | The diagnostic `hud_controls_dialog_layer_order_current_shape` compiles `src/Battlesport/hud.cpp` plus `src/GameZRecoil/zUI/zui.cpp` and naturally emits the selected current-source subsequence `0x408a30`, `0x408c20`, `0x408c40`, `0x408c70`, `0x408d20`, `0x408d30`, `0x408d40`, `0x408d50`, `0x408d60`, `0x408d70` as `compiler-emitted-noncovering`, `0x408d90`, `0x408df0`, `0x408ec0`, `0x408f50 RecoilStateDialogHost::OnSuspend` through the current narrow body-header split, `0x408fa0`, `0x408ff0`, and terminal zUI source_from sentinel `0x409010 HudUiZrdWidgetEx17C::EnableChildAtIndex`. This is order-only source-shape evidence for the selected subsequence, not proof of the full uninterrupted retail chain `[0x408a30,0x409040)`: retail slot `0x408c60` remains absent from the current passing target and is tracked separately as `provider.vc5_huduizrdwidgetex17c_destructor_core_thunk_408c60`, a VC5 compiler/linker destructor cleanup tail-jump thunk to authored `0x4b8b60` with provider-boundary classification accepted on 2026-07-07 from BN/EH cleanup xrefs and no independent authored body/data refs. The accepted provider-boundary classification does not prove the exact emitted mechanism, source/data/linkage/byte gates, or a full-chain controls-layer order target. `0x408d70` is likewise class-associated VC5 scalar-deleting-destructor glue, not authored source. Do not move `0x409010` into `hud.cpp` or use this diagnostic for byte evidence, source-owner acceptance, linkage, gate, or tier claims. Pro receipts: `.devspace/runs/2026-07-07T06-49-46-560Z-chatgpt-call/receipt.json`, `.devspace/runs/2026-07-07T07-25-43-218Z-chatgpt-call/receipt.json`. |
+| `[0x408a30,0x409040)` | `hud_controls_dialog_layer` | selected-subsequence order diagnostic | The diagnostic `hud_controls_dialog_layer_order_current_shape` compiles `src/Battlesport/hud.cpp` plus `src/GameZRecoil/zUI/zui.cpp` and naturally emits the selected current-source subsequence `0x408a30`, `0x408c20`, `0x408c40`, `0x408c60 HudUiControlsDialog_OptionSelector::DestructorCoreThunk` as `compiler-emitted-noncovering`, `0x408c70`, `0x408d20`, `0x408d30`, `0x408d40`, `0x408d50`, `0x408d60`, `0x408d70` as `compiler-emitted-noncovering`, `0x408d90`, `0x408df0`, `0x408ec0`, `0x408f50 RecoilStateDialogHost::OnSuspend` through the current narrow body-header split, `0x408fa0`, `0x408ff0`, and terminal zUI source_from sentinel `0x409010 HudUiZrdWidgetEx17C::EnableChildAtIndex`. This is order-only source-shape evidence for the selected subsequence, not byte evidence, source-owner acceptance, linkage, gate, tier, or full uninterrupted retail-chain proof for `[0x408a30,0x409040)`: `0x408c60` remains tracked separately as `provider.vc5_huduizrdwidgetex17c_destructor_core_thunk_408c60`, a VC5 compiler/linker destructor cleanup tail-jump thunk to authored `0x4b8b60` with provider-boundary classification accepted on 2026-07-07 from BN/EH cleanup xrefs and no independent authored body/data refs. The current VC5 listing emits it as a five-byte `jmp ??1HudUiZrdWidgetEx17C@@QAE@XZ` from the controls-dialog option-selector cleanup thunk. The accepted provider-boundary classification and order row do not prove source/data/linkage/byte gates. `0x408d70` is likewise class-associated VC5 scalar-deleting-destructor glue, not authored source. Do not move `0x409010` into `hud.cpp` or use this diagnostic for byte evidence, source-owner acceptance, linkage, gate, or tier claims. Pro receipts: `.devspace/runs/2026-07-07T06-49-46-560Z-chatgpt-call/receipt.json`, `.devspace/runs/2026-07-07T07-25-43-218Z-chatgpt-call/receipt.json`, `.devspace/runs/2026-07-09T09-51-15-465Z-chatgpt-call/receipt.json`. |
 | `[0x409040,0x40a590)` | `hud_credits_panel_layer` | UI panel layer with accepted row-local compiler-glue exceptions | Credits/panel layout layer. Retail order for the narrow credits window remains `0x409950`, `0x409960`, `0x409970`, `0x409980`, `0x409990`, `0x4099a0`, `0x4099d0`, `0x4099f0`, `0x409a60`, `0x409ad0`, `0x409b00`. Local probes tested destructor declaration order, explicit/inline destructor shapes, `OnWndActivate` placement/inline variants, host declaration order, host destructor declaration-only shape, and `/Ob0`/`/Ob1` profiles without producing retail `ctor -> OnWndActivate -> scalar-deleting destructor -> destructor` order while preserving constraints. Source-owner scrutiny on 2026-07-08 accepted exactly `0x4099d0` as a row-local VC5 scalar-deleting-destructor source-order exception and exactly `0x409960` as a row-local static-constructor-helper exception. After replacing the typed global with explicit zero-initialized `RecoilStateCreditsStorage`, placement-construction, explicit `RegisterAtExit`/`AtExitDestructor`, and a direct `.CRT$XCU` callback, VC5 naturally emits the gated helper order as `StaticInitAndRegisterAtExit`, `StaticInit`, `RegisterAtExit`, `AtExitDestructor`, then the ordinary constructor. Keep only `0x409960` and `0x4099d0` in manifests with `source_order_gate:false`; do not generalize either exception, do not treat these rows as standalone primary owners, and do not claim owner gate/tier, source-faithful model, byte-readiness, or provider-boundary acceptance from this order diagnostic. The ordinary destructor `0x4099f0`, shared host bodies `0x4099a0`/`0x409ad0`, constructor/queue/panel rows, and the broader credits layer remain independently gated. Pro receipts: `.devspace/runs/2026-07-08T13-13-59-086Z-chatgpt-call/receipt.json`, `.devspace/runs/2026-07-08T13-35-07-535Z-chatgpt-call/receipt.json`, `.devspace/runs/2026-07-08T13-47-02-742Z-chatgpt-call/receipt.json`, `.devspace/runs/2026-07-08T20-01-01-096Z-chatgpt-call/receipt.json`, `.devspace/runs/2026-07-08T20-15-23-446Z-chatgpt-call/receipt.json`, `.devspace/runs/2026-07-08T20-46-28-928Z-chatgpt-call/receipt.json`. |
 | `[0x40a590,0x40a5b0)` | `hud_panel_scalar_deleting_destructor_tail_layer` | UI panel destructor tail layer | Generic `HudUiPanel::ScalarDeletingDestructor` tail between credits panel and command dialog layers. |
-| `[0x40a5b0,0x40c370)` | `hud_command_binding_layer` | UI dialog/container layer with accepted row-local compiler/STL exceptions | Command-binding authored bodies now compile through `src/Battlesport/hud.cpp` via `hud_command_binding_layer_body.h`; the stale `zui.cpp` diagnostic placement was rehomed after Pro-backed mapping. Source-owner scrutiny on 2026-07-08 accepted exactly three retained non-gating helper rows: `0x40bf50` nonvirtual VC5 scalar-deleting-destructor-like glue for `delete binding` cleanup, plus `0x40c190`/`0x40c1c0` VC5 STL/xutility dword fill/construct COMDAT helpers selected into the HUD physical block. Keep those rows present in manifests with `source_order_gate:false`; do not treat them as authored HUD source, do not add fake wrappers/provider shims/raw assembly/order pragmas/template anchors, and do not generalize the exception to neighboring authored rows. The authored command-binding rows, byte equivalence, provider ABI acceptance, owner gates/tiers, and source-faithful model claims remain independently gated. Pro receipts: `.devspace/runs/2026-07-08T14-27-02-426Z-chatgpt-call/receipt.json`, `.devspace/runs/2026-07-08T19-30-10-786Z-chatgpt-call/receipt.json`, `.devspace/runs/2026-07-08T20-14-52-224Z-chatgpt-call/receipt.json`. |
+| `[0x40a5b0,0x40c370)` | `hud_command_binding_layer` | UI dialog/container layer with accepted row-local compiler/STL exceptions | Command-binding authored bodies now compile through `src/Battlesport/hud.cpp` via `hud_command_binding_layer_body.h`; the stale `zui.cpp` diagnostic placement was rehomed after Pro-backed mapping. Source-owner scrutiny on 2026-07-08 accepted exactly three retained non-gating helper rows: `0x40bf50` nonvirtual VC5 scalar-deleting-destructor-like glue for `delete binding` cleanup, plus `0x40c190`/`0x40c1c0` VC5 STL/xutility dword fill/construct COMDAT helpers selected into the HUD physical block. The 2026-07-09 diagnostic uses a narrow source-authored `HudCmdBindingEntry::ScalarDeletingDestructor` stand-in for the 0x40bf50 cleanup/flags/delete/return-this shape because VC5 open-coded the first four `delete binding` callers when only the inline destructor was visible; keep the 0x40bf50 manifest row `source_order_gate:false` and do not treat the stand-in as source-owner, source-faithful model, tier, byte-readiness, provider-boundary, or original-source evidence. Keep those rows present in manifests with `source_order_gate:false`; do not treat them as authored HUD source, do not add fake wrappers/provider shims/raw assembly/order pragmas/template anchors, and do not generalize the exception to neighboring authored rows. The authored command-binding rows, byte equivalence, provider ABI acceptance, owner gates/tiers, and source-faithful model claims remain independently gated. Pro receipts: `.devspace/runs/2026-07-08T14-27-02-426Z-chatgpt-call/receipt.json`, `.devspace/runs/2026-07-08T19-30-10-786Z-chatgpt-call/receipt.json`, `.devspace/runs/2026-07-08T20-14-52-224Z-chatgpt-call/receipt.json`, `.devspace/runs/2026-07-09T11-06-42-467Z-chatgpt-call/receipt.json`. |
 | `[0x40c370,0x40c6e0)` | `hud_video_capability_probe_layer` | platform/video helper layer | Video capability probe layer, not enough to prove an engine source file. |
-| `[0x40c6e0,0x40d1e0)` | `hud_options_dialog_layer` | selected UI dialog order diagnostics with classified-but-unemitted gap rows | The selected/current-shape and authored options-dialog VC5 order diagnostics pass, but they are not full uninterrupted retail-chain coverage. Retail rows `0x40cf20`, `0x40cf30`, `0x40cf40`, and `0x40cf50` are now SOURCE_OWNERS-classified as boundary-only VC5 compiler/EH cleanup forwarding thunks to the authored widget destructor cores, and `0x40cf50` was removed from stale authored `HudUiFillBitmap` primary ownership. The current generated options target still does not naturally emit those physical thunk rows, so keep them excluded from selected-current-shape manifests until source-shape recovery produces them without wrappers, raw assembly, pragmas, or order tricks. This is order/classification evidence only, not byte, source-owner gate, linkage, or tier evidence. Pro receipts: `.devspace/runs/2026-07-08T21-17-33-807Z-chatgpt-call/receipt.json`, `.devspace/runs/2026-07-08T21-33-37-842Z-chatgpt-call/receipt.json`. |
+| `[0x40c6e0,0x40d1e0)` | `hud_options_dialog_layer` | selected UI dialog order diagnostics with cleanup thunk rows | The selected/current-shape options-dialog VC5 order diagnostic now includes retail rows `0x40cf20`, `0x40cf30`, `0x40cf40`, and `0x40cf50` as naturally emitted out-of-line destructor cleanup forwarding thunks between `HudOptionsDialog::ScalarDeletingDestructor` and `HudOptionsDialog::~HudOptionsDialog`; the authored-order diagnostic still excludes compiler-emitted/noncovering rows. These rows remain boundary-only VC5 compiler/EH cleanup forwarding thunks to the authored widget destructor cores, and `0x40cf50` was removed from stale authored `HudUiFillBitmap` primary ownership. This is order/classification evidence only, not byte, source-owner gate, linkage, source-block acceptance, or tier evidence. Pro receipts: `.devspace/runs/2026-07-08T21-17-33-807Z-chatgpt-call/receipt.json`, `.devspace/runs/2026-07-08T21-33-37-842Z-chatgpt-call/receipt.json`, `.devspace/runs/2026-07-09T10-28-28-752Z-chatgpt-call/receipt.json`. |
 | `[0x40d1e0,0x40d3b0)` | `hud_static_init_layer` | static-init/source-shape layer | Static singleton/window-class initialization and cleanup layer. |
-| `[0x40d3b0,0x410160)` | `hud_core_manager_prelude_layer` | function-order-confirmed probable `hud.cpp` body | Core HUD manager/layout/message prelude before the first local literal. BN and scratch VC5 evidence on 2026-07-08 identified `0x40d740`, `0x40d760`, and `0x40db00` as VC5 EH array-destructor cleanup helpers coupled to real `HudUiMgr` member arrays, not authored standalone functions. After zUI/zhud relayering and the `HudUiMgrDataPrefix` split, `hud_core_manager_prelude_layer_order_current_shape` naturally resolves those helper rows as `$L83841`, `$L83842`, and `$L84007` and passes `translation_unit_order_matches_manifest True` through the full prelude diagnostic. This remains order-only evidence, not byte, owner, source-block acceptance, provider, gate, or tier evidence. Pro receipts: `.devspace/runs/2026-07-08T14-59-11-294Z-chatgpt-call/receipt.json`, `.devspace/runs/2026-07-08T20-40-30-499Z-chatgpt-call/receipt.json`, `.devspace/runs/2026-07-08T21-04-33-969Z-chatgpt-call/receipt.json`. |
+| `[0x40d3b0,0x410160)` | `hud_core_manager_prelude_layer` | function-order-confirmed probable `hud.cpp` body | Core HUD manager/layout/message prelude before the first local literal. BN and scratch VC5 evidence identified `0x40d740`, `0x40d760`, and `0x40db00` as VC5 EH array-destructor cleanup helpers coupled to real `HudUiMgr` member arrays, not authored standalone functions. After zUI/zhud relayering and the `HudUiMgrDataPrefix` split, the current settled 2026-07-09 listing labels for those helper rows are body-aware mappings: `0x40d740` to `$L83830` for `HudUiSlot weaponSlots[32]`, `0x40d760` to `$L83831` for `HudUiCounter modeCounters[4]`, and `0x40db00` to `$L83996` for `HudUiMessage messages[10]`; stale scalar member cleanup labels such as `$L83839` must not be used as the weapon-slot row merely because they resolve. `hud_core_manager_prelude_layer_order_current_shape` is order-only evidence, not byte, owner, source-block acceptance, provider, gate, or tier evidence. Pro receipts: `.devspace/runs/2026-07-08T14-59-11-294Z-chatgpt-call/receipt.json`, `.devspace/runs/2026-07-08T20-40-30-499Z-chatgpt-call/receipt.json`, `.devspace/runs/2026-07-08T21-04-33-969Z-chatgpt-call/receipt.json`, `.devspace/runs/2026-07-09T11-29-19-968Z-chatgpt-call/receipt.json`. |
 | `[0x410160,0x4136f0)` | `hud_confirmed_layout_runtime_layer` | confirmed `hud.cpp` body | Contains source-path literal xref `0x4101a3`; anchor for confirmed HUD layout/runtime body. |
 | `[0x4136f0,0x414180)` | `hud_sensor_layout_parser_layer` | HUD helper/parser layer | Sensor, top/chat, layout-node parser, and message-layout helpers. |
 | `[0x414180,0x414300)` | `hud_loading_checkpoint_layer` | confirmed/literal-bearing helper layer | Contains source-path literal xref `0x4141bb`. |
@@ -2290,10 +2372,10 @@ implementation state, not original-source authority. Passing smokes, byte
 checks, or ABI call-shape checks are evidence candidates, not source-shape
 proof.
 
-The active early-block frontier now starts at `[0x404ca0,0x415ab0)` for the
-literal-backed `hud.cpp` physical block. The opening `[0x401000,0x401060)`
-About prelude is closed for source-block/order purposes by the recovered
-`about.cpp`/`about.h` shape and VC5 byte/order evidence. The
+The active early-block frontier has advanced past the literal-backed
+`hud.cpp [0x404ca0,0x415ab0)` physical block. The opening
+`[0x401000,0x401060)` About prelude is closed for source-block/order purposes
+by the recovered `about.cpp`/`about.h` shape and VC5 byte/order evidence. The
 `ai_net.h -> zmth.h -> ai_net.cpp` checkpoint is order-confirmed by
 `ainet_text_block_order`, with the `0x402f60` `zmth.h` helper byte-clean as of
 2026-07-05. The `Briefing.cpp [0x4038a0,0x404ca0)` checkpoint is closed for
@@ -2302,108 +2384,49 @@ the selected authored/HUD/zInput rows plus accepted provider-boundary coverage
 for `0x403d70`, `0x403db0`, and `0x403eb0`. Remaining Briefing byte drift, such
 as `0x403930` constructor register allocation and `0x403e20`
 EH/base-destructor cleanup shape, is owner-local/body drift, not the active
-source-block frontier. The current active frontier is `hud.cpp`: preserve the
+source-block frontier.
+
+The documented HUD order diagnostics now cover the worked
+`hud.cpp [0x404ca0,0x415ab0)` physical block through the map boundary at
+`0x415ab0`. The passing order targets include the primitive, player/camera,
+MFC three-float dialog, cheat/dialog/string, small-stub, options/config,
+controls, credits, command-binding, video-capability, options-dialog,
+static-init, core-manager prelude, confirmed layout/runtime, sensor/loading,
+GameNet/chat/score/triplet/menu, and final tail mixed layers, with auxiliary
+probes for the layout-base sentinel, command-binding `0x40bf50` skip probe,
+credits probe, and `zgame_opt_hud_local_order_current_shape`. Preserve the
 corrected no-overlap `[0x404ca0,0x415ab0)` boundary, the source-path literal
 evidence at `0x4dadd8` with xrefs `0x4101a3` and `0x4141bb`, and the recorded
-semantic layer table before accepting source owners, source paths, linkage
-  gates, or tier-S scopes. The first-layer diagnostic target
-  `hud_ui_primitive_class_layer_order_current_shape` now compiles
-  `src/Battlesport/hud.cpp` and passes retail function order for
-  `[0x404ca0,0x404e80)`, after rejecting the earlier `zui.cpp` placement that
-  emitted `0x404d20` before `0x404d10`, `0x404d70` before `0x404d60`, and
-  `0x404e60` before `0x404e10`. Keep `0x404d70` routed to the
-  provider/compiler scalar-deleting-destructor boundary as physical emission
-  only. The diagnostic target
-  `hud_mfc_three_float_dialog_layer_order_current_shape` compiles
-  `src/Battlesport/hud.cpp` and passes retail function order for the exact
-  `[0x406890,0x406a00)` layer list through
-  `0x4069f0 MfcThreeFloatDialog::OnCreate`; the next function `0x406a00` is
-  `zStr::ContainsCaseInsensitive`. The next diagnostic target
-  `hud_cheat_dialog_and_string_helper_layer_order_current_shape` compiles
-  `src/Battlesport/hud.cpp` and passes retail function order for the exact
-  `[0x406a00,0x407130)` layer list through
-  `0x407110 HudUiCallback::QueueCheatCodeState`, with
-  `0x407130 zStub::ReturnOneNoArgs` as the next sentinel. The
-  `[0x407130,0x407190)` small-stub/compiler-glue layer is now
-  order-confirmed: the 2026-07-08 `hud_small_stub_layer_order_current_shape`
-  rerun emits `0x407130`, `0x407140`, `0x407150`, `0x407160`, then `0x407170`,
-  with `0x407190` as the sentinel. `zstub_vtable_stubs` byte-matches the four
-  folded/default helper bodies, and `recoil_state_base_default_table`
-  byte-matches both the `0x407170` VC5 scalar-deleting-destructor glue and the
-  40-byte default/base table at `0x4ccd50`. These are physical HUD order and
-  byte facts only: `0x407170` is not an authored source-map row, and
-  `0x407170`/`0x4ccd50` still have no accepted owner/source/data/linkage/byte
-  gate or tier claim. The old `RecoilApp_IState` and early
-  `RecoilStateDialogHost : RecoilStateBase` probe notes are rejected
-  source-shape history, not active blockers on the HUD function-order chain.
-  The 2026-07-07 post-sentinel mapper ChatGPT Pro pass at
-  `.devspace/runs/2026-07-07T04-36-44-093Z-chatgpt-call/receipt.json` then
-  allowed the physical HUD continuation `[0x407190,0x415ab0)` with explicit
-  non-covering blockers. Treat `0x407190 zOpt::LookupNamedValueAsInt` as a
-  valid continuation anchor after the now-order-confirmed
-  `[0x407130,0x407190)` layer; the early `[0x407190,0x410160)` region is
-  supported by catalog continuity, BN
-  function order, lack of a stronger intervening source boundary, and later
-  HUD literal xrefs rather than by a local literal at `0x407190`. The mapper
-  layers the continuation as: `hud_options_config_layer [0x407190,0x408a30)`,
-  `hud_controls_dialog_layer [0x408a30,0x409040)`,
-  `hud_credits_panel_layer [0x409040,0x40a590)`,
-  `hud_panel_scalar_deleting_destructor_tail_layer [0x40a590,0x40a5b0)`,
-  `hud_command_binding_layer [0x40a5b0,0x40c370)` with
-  `0x40c190..0x40c1f0` as VC5 STL/xutility provider-COMDAT candidates,
-  `hud_video_capability_probe_layer [0x40c370,0x40c6e0)`,
-  `hud_options_dialog_layer [0x40c6e0,0x40d1e0)`,
-  `hud_static_init_layer [0x40d1e0,0x40d3b0)`,
-  `hud_core_manager_prelude_layer [0x40d3b0,0x410160)`,
-  `hud_confirmed_layout_runtime_layer [0x410160,0x4136f0)` containing the
-  `0x4101a3` hud.cpp literal xref, `hud_sensor_layout_parser_layer
-  [0x4136f0,0x414180)`, `hud_loading_checkpoint_layer [0x414180,0x414300)`
-  containing the `0x4141bb` hud.cpp literal xref,
-  `hud_gamenet_chat_score_layer [0x414300,0x414670)`,
-  `hud_triplet_menu_container_layer [0x414670,0x414a60)`,
-  `hud_static_interp_wol_tail_layer [0x414a60,0x414b60)`,
-  `hud_main_menu_dialog_layer [0x414b60,0x4159d0)`, and
-  `hud_fmv_action_tail_layer [0x4159d0,0x415ab0)`. These are physical placement
-  layers and semantic/header/provider exceptions only, not owner-gate or tier
-  evidence. `0x415ab0 HudSensorMapNode::Init` starts the `map.cpp` block despite
-  HUD semantic naming; the `0x4daf04` `map.cpp` literal xref at `0x416922`
-  supports the boundary. The next safe implementation/validation slice from
-  this evidence is order-only source-shape validation of
-  `hud_options_config_layer [0x407190,0x408a30)` as physical hud.cpp
-  continuation while keeping semantic owner `engine.zgame.zopt_profile_selection`
-  separate and not expanding backward to `0x407170`.
-  A follow-up 2026-07-07 source-owner mapper ChatGPT Pro pass at
-  `.devspace/runs/2026-07-07T04-50-45-380Z-chatgpt-call/receipt.json`
-  explicitly allowed the order-only diagnostic first and blocked immediate
-  production reshaping through `hud.cpp` or included body/header mechanisms.
-  The new `hud_options_config_layer_order_current_shape` manifest records the
-  retail function order from `0x407190` through `0x408a20` and keeps `0x407170`
-  and `0x408a30` excluded. Its manifest source-policy guard passes. The first
-  full VC5 run did not reach the translation-unit order comparison because
-  current `src/GameZRecoil/zInput/zInput.cpp` failed to compile under the
-  existing `zinput_joystick_axis_helpers` target as well, starting with missing
-  `BindGroupListStaticInit`/`BindGroupListRegisterAtExit` declarations and
-  namespace-shape errors. A follow-up source-worker repair corrected the zInput
-  compatibility-container namespace/linkage bracketing, after which
-  `zinput_joystick_axis_helpers` passed and the full HUD diagnostic reached the
-  order checker. A 2026-07-07 ChatGPT Pro triage pass at
-  `.devspace/runs/2026-07-07T05-26-33-132Z-chatgpt-call/receipt.json`
-  classified the reported adjacent breaks as most strongly indicating local
-  `zgame_opt.c` body/source-fragment order drift rather than cross-file include
-  timing or zInput placement. The narrowed
-  `zgame_opt_hud_local_order_current_shape` diagnostic preserves only the
-  zGame/zOpt retail-order islands from the full HUD target and reproduced the
-  same intra-`zgame_opt.c` order breaks. A source-worker repair then reordered
-  complete existing zGame/zOpt function/docblock blocks in
-  `src/GameZRecoil/zGame/zgame_opt.c`; the only non-body shape adjustment was
-  preserving global helper linkage with namespace close/reopen points around
-  `zOpt_GetPlayerName`, `zOpt_CameraSection_GetActiveCamera`, display width and
-  height helpers, and the WOL password flag getter. Parent reruns now report
-  `translation_unit_order_matches_manifest True` for both
-  `zgame_opt_hud_local_order_current_shape` and
-  `hud_options_config_layer_order_current_shape`. Treat this as diagnostic
-  order evidence only, not byte, owner, source-block, provider, or tier
-  evidence.
+semantic/provider/header exception table. This is source-block/function-order
+diagnostic evidence only: it does not prove whole-block byte readiness,
+source-owner gates, linkage, provider-boundary acceptance, source-faithful model
+metadata, or tier status for semantic owners inside the HUD physical block.
+
+Key HUD caveats remain active. `0x407170` and the `0x4ccd50` default/base table
+are physical HUD order/byte facts only and still have no accepted
+owner/source/data/linkage/byte gate or tier claim. `0x40bf50` is currently
+represented by a narrow source-authored `HudCmdBindingEntry::ScalarDeletingDestructor`
+diagnostic stand-in to occupy the retail cleanup/flags/delete/return-this order
+slot; it is not original-source, source-owner, source-faithful model,
+provider-boundary, byte-readiness, or tier evidence. `0x40d740`, `0x40d760`,
+and `0x40db00` are body-aware mappings to VC5 EH array-destructor cleanup
+helpers for `HudUiMgr` member arrays, not authored standalone functions; after
+the settled 2026-07-09 listing, use `$L83830`, `$L83831`, and `$L83996`
+respectively, and do not reuse stale scalar cleanup labels as row identities.
+The relevant 2026-07-09 ChatGPT Pro receipts are
+`.devspace/runs/2026-07-09T11-06-42-467Z-chatgpt-call/receipt.json` for the
+command-binding fallback,
+`.devspace/runs/2026-07-09T11-29-19-968Z-chatgpt-call/receipt.json` for the
+core-manager helper mapping, and
+`.devspace/runs/2026-07-09T11-47-26-930Z-chatgpt-call/receipt.json` for the
+frontier/docs update critique. Pro output is advisory evidence only.
+
+The next safe order-validation frontier is the existing durable
+`map.cpp [0x415ab0,0x417350)` row. `0x415ab0 HudSensorMapNode::Init` starts the
+`map.cpp` block despite HUD semantic naming, and the `0x4daf04` `map.cpp`
+literal xref at `0x416922` supports the boundary. Do not move
+HudSensorMapNode, HudRectI, or HudGeom2D helpers out of `map.cpp` or create a
+new emitted header row solely from semantic names.
 
 For each frontier window:
 

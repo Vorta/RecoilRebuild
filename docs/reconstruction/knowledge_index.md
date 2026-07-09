@@ -33,8 +33,8 @@ for function identity, types, markers, and acceptance state.
   line comments until touched source is converted.
 - `source_file_layout_audit.md` - durable source-file placement constraints
   from BN source-path literal xrefs, including compiler-emitted source-file
-  block order and the early Battlesport `ai_net.cpp`/`Briefing.cpp`/
-  `player.cpp` owner repair notes.
+  block order and the early Battlesport `ai_net.cpp`/`Briefing.cpp`/`hud.cpp`
+  frontier notes plus later owner repair notes.
 - `visual_studio_mcp_workflow.md` - preferred Visual Studio MCP development
   workflow for generated `vs-x86` solution projects.
 - `verified_patterns.md` - compact ledger of currently verified reusable source
@@ -97,20 +97,14 @@ progress notes or duplicated plan state.
   treating the row as full-header or owner-gate/tier proof. Do not add `.inl` files for production reconstruction;
   existing `.inl` files need independent original-source proof. For block-map
   reconstruction, use the top-down loop in `source_file_layout_audit.md`: start
-  at the earliest unresolved/not-order-proven authored row. As of 2026-07-05
-  the active frontier is the literal-backed `Briefing.cpp`
-  `[0x4038a0,0x404ca0)` block, after the About prelude and
-  `ai_net.h -> zmth.h -> ai_net.cpp` checkpoint were order-confirmed. The
-  `briefing_text_block_order_current_shape` target now confirms selected
-  current `Briefing.cpp` symbol order plus `0x403c80`
-  `HudUiCircle::DrawDirtyForwarder`, `0x403d90`
-  `HudUiBriefingRuntime::ScalarDeletingDestructor`, and `0x403e20`
-  `HudUiCompositePanel::Destructor`, but the frontier stays on
-  Briefing until the remaining HUD/zInput/provider exception rows in
-  `[0x4038a0,0x404ca0)` are
-  naturally emitted or otherwise proven covered by VC5 source/header/provider
-  placement in the retail order. Advance only after VC5 naturally emits the
-  retail function order for the complete worked window. The
+  at the earliest unresolved/not-order-proven authored row. The About prelude,
+  `ai_net.h -> zmth.h -> ai_net.cpp`, `Briefing.cpp [0x4038a0,0x404ca0)`, and
+  the documented `hud.cpp [0x404ca0,0x415ab0)` order-diagnostic window are
+  closed for source-block/order frontier purposes. The next frontier follows
+  the existing durable `map.cpp [0x415ab0,0x417350)` row unless current BN/VC5
+  evidence contradicts it. Keep the usual caveat: passing smokes, byte checks,
+  ABI call-shape checks, or order diagnostics are evidence candidates, not
+  owner-gate or tier proof. The
   closed About prelude shows the reusable caution: do not reject a physical
   `.cpp` block because current production source is wrong, and do not classify
   provider-looking empty/no-op bodies as provider-owned before checking authored

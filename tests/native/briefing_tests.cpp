@@ -683,7 +683,8 @@ extern "C" int briefing_runtime_constructor_smoke(void) {
     alignas(4) static unsigned char storage[kRuntimeSize];
     std::memset(storage, 0, sizeof(storage));
     HudUiBriefingRuntime *const runtime = reinterpret_cast<HudUiBriefingRuntime *>(storage);
-    HudUiBriefingRuntime *const result = runtime->Constructor(kMissionId);
+    HudUiBriefingRuntime *const result =
+        new (runtime) HudUiBriefingRuntime(kMissionId);
 
     int failure = 0;
     const ActionNode *const sentinel =
@@ -733,7 +734,7 @@ extern "C" int briefing_locator_panel_constructor_smoke(void) {
     alignas(4) static unsigned char storage[kRuntimeSize];
     std::memset(storage, 0, sizeof(storage));
     HudUiBriefingRuntime *const runtime = reinterpret_cast<HudUiBriefingRuntime *>(storage);
-    runtime->Constructor(2);
+    new (runtime) HudUiBriefingRuntime(2);
 
     const unsigned int expectedColor =
         static_cast<unsigned short>(zVid_PackColorRGB(0xff, 0, 0));
@@ -769,7 +770,7 @@ extern "C" int briefing_locator_panel_blit_dirty_rect_smoke(void) {
     alignas(4) static unsigned char storage[kRuntimeSize];
     std::memset(storage, 0, sizeof(storage));
     HudUiBriefingRuntime *const runtime = reinterpret_cast<HudUiBriefingRuntime *>(storage);
-    runtime->Constructor(3);
+    new (runtime) HudUiBriefingRuntime(3);
 
     auto *const locator = reinterpret_cast<HudUiCircle *>(storage + kLocatorPanelsOffset);
     typedef void ( *DrawBaseFn)(HudUiCircle * self);
@@ -813,7 +814,7 @@ extern "C" int briefing_locator_panel_update_smoke(void) {
     alignas(4) static unsigned char storage[kRuntimeSize];
     std::memset(storage, 0, sizeof(storage));
     HudUiBriefingRuntime *const runtime = reinterpret_cast<HudUiBriefingRuntime *>(storage);
-    runtime->Constructor(3);
+    new (runtime) HudUiBriefingRuntime(3);
 
     auto *const locator = reinterpret_cast<HudUiCircle *>(storage + kLocatorPanelsOffset);
     typedef void ( *UpdateFn)(HudUiCircle * self, float deltaSec);
@@ -937,7 +938,7 @@ extern "C" int briefing_runtime_destructor_smoke(void) {
     std::memset(g_briefingMessageEntryDtorFlags, 0xff,
                 sizeof(g_briefingMessageEntryDtorFlags));
 
-    runtime->Destructor();
+    runtime->~HudUiBriefingRuntime();
 
     bool locatorsReset = true;
     for (std::size_t index = 0; index < 6; ++index) {
@@ -1049,7 +1050,7 @@ extern "C" int briefing_objective_picture_draw_noise_overlay_smoke(void) {
     alignas(4) static unsigned char storage[kRuntimeSize];
     std::memset(storage, 0, sizeof(storage));
     HudUiBriefingRuntime *const runtime = reinterpret_cast<HudUiBriefingRuntime *>(storage);
-    runtime->Constructor(1);
+    new (runtime) HudUiBriefingRuntime(1);
 
     HudUiWidget *const picture =
         reinterpret_cast<HudUiWidget *>(storage + kObjectivePictureOffset);

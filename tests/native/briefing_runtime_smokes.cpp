@@ -358,7 +358,8 @@ extern "C" int briefing_runtime_constructor_smoke(void) {
     std::memset(storage, 0, sizeof(storage));
     HudUiBriefingRuntime *const runtime =
         reinterpret_cast<HudUiBriefingRuntime *>(storage);
-    HudUiBriefingRuntime *const result = runtime->Constructor(kMissionId);
+    HudUiBriefingRuntime *const result =
+        new (runtime) HudUiBriefingRuntime(kMissionId);
 
     int failure = 0;
     BriefingActionNode *const sentinel = runtime->actionQueue.headSentinel;
@@ -677,7 +678,7 @@ extern "C" int briefing_runtime_destructor_smoke(void) {
     runtime->actionQueue.headSentinel = sentinel;
     runtime->actionQueue.nodeCount = 2;
 
-    runtime->Destructor();
+    runtime->~HudUiBriefingRuntime();
 
     bool locatorsReset = true;
     for (std::size_t index = 0; index < 6; ++index) {

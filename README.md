@@ -49,26 +49,26 @@ testing, or review practical without changing the recovered engine contract.
 ## Status
 
 <!-- RECOIL_PROGRESS:START -->
-Generated from `.agent/SOURCE_OWNERS.json` (schema version 3).
+Generated from `.agent/SOURCE_OWNERS.json` (schema version 3) and source-owner projection rows.
 
 ### Source-Owner Overview
 
 | Binary | Owners | Authored owners | Provider boundaries |
 | --- | ---: | ---: | ---: |
-| recoil | 1237 | 1199 | 38 |
+| recoil | 1244 | 1199 | 45 |
 | messages | 1 | 1 | 0 |
-| Total | 1238 | 1200 | 38 |
+| Total | 1245 | 1200 | 45 |
 
 ### Source-Owner Gates
 
 | Gate | accepted | blocked | deferred | none | pending | Total |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| boundary | 1229 | 4 | 0 | 1 | 4 | 1238 |
-| source | 1226 | 7 | 0 | 1 | 4 | 1238 |
-| data | 967 | 3 | 0 | 215 | 53 | 1238 |
-| functional | 807 | 0 | 0 | 325 | 106 | 1238 |
-| linkage | 1028 | 141 | 0 | 67 | 2 | 1238 |
-| byte | 23 | 466 | 725 | 0 | 24 | 1238 |
+| boundary | 1234 | 4 | 0 | 1 | 6 | 1245 |
+| source | 1226 | 7 | 0 | 1 | 11 | 1245 |
+| data | 967 | 3 | 0 | 215 | 60 | 1245 |
+| functional | 807 | 0 | 0 | 325 | 113 | 1245 |
+| linkage | 1028 | 141 | 0 | 67 | 9 | 1245 |
+| byte | 23 | 466 | 725 | 0 | 31 | 1245 |
 
 ### Owner Reimplementation Tiers
 
@@ -80,18 +80,31 @@ Generated from `.agent/SOURCE_OWNERS.json` (schema version 3).
 | A | 1 | 0.1% |
 | S | 14 | 1.2% |
 
+### Authored Entry Matching Tiers
+
+Counts source-owner projection rows for authored function/data entries. This is byte-matching progress per entry, not source-owner scope tier acceptance.
+
+| Tier | recoil | messages | Total | Percent of authored entries |
+| --- | ---: | ---: | ---: | ---: |
+| X | 833 | 0 | 833 | 12.2% |
+| F | 0 | 0 | 0 | 0.0% |
+| C | 1653 | 0 | 1653 | 24.3% |
+| B | 4277 | 0 | 4277 | 62.8% |
+| A | 4 | 0 | 4 | 0.1% |
+| S | 39 | 2 | 41 | 0.6% |
+
 ### Owner Kinds
 
 | Kind | Count | Percent of owners |
 | --- | ---: | ---: |
 | callback-table | 1 | 0.1% |
-| class | 163 | 13.2% |
-| data-owner | 430 | 34.7% |
-| provider-boundary | 38 | 3.1% |
+| class | 163 | 13.1% |
+| data-owner | 430 | 34.5% |
+| provider-boundary | 45 | 3.6% |
 | record | 42 | 3.4% |
-| source-file | 167 | 13.5% |
+| source-file | 167 | 13.4% |
 | standalone | 58 | 4.7% |
-| subsystem | 339 | 27.4% |
+| subsystem | 339 | 27.2% |
 <!-- RECOIL_PROGRESS:END -->
 
 <!-- RECOIL_SOURCE_BLOCKS:START -->
@@ -106,7 +119,7 @@ Ranges are half-open retail `.text` ranges. `partial` rows are header contributo
 | `0x402f60..0x402fd0` | `src/GameZRecoil/zMath/zmth.h` | partial, included in `src/Battlesport/ai_net.cpp` |
 | `0x402fd0..0x4038a0` | `src/Battlesport/ai_net.cpp` | mapped; 6 semantic subranges |
 | `0x4038a0..0x404ca0` | `src/Battlesport/Briefing.cpp` | mapped; 11 semantic subranges |
-| `0x404ca0..0x415ab0` | `src/Battlesport/hud.cpp` | mapped-refined; 22 semantic subranges |
+| `0x404ca0..0x415ab0` | `src/Battlesport/hud.cpp` | mapped-refined-order-diagnostic-clean; 22 semantic subranges |
 | `0x415ab0..0x417350` | `src/Battlesport/map.cpp` | mapped-refined; 8 semantic subranges |
 | `0x417350..0x41cc10` | `src/Battlesport/mission.cpp` | mapped-refined; 14 semantic subranges |
 | `0x41cc10..0x41ea90` | `src/Battlesport/pickup.cpp` | mapped; 10 semantic subranges |

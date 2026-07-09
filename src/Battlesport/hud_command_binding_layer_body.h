@@ -802,7 +802,7 @@ void HudCmdDialog::RebuildCommandBindingListsForGroup(
     while (entry != end) {
         HudCmdBindingEntry *const binding = *entry;
         if (binding != 0) {
-            delete binding;
+            binding->ScalarDeletingDestructor(1);
         }
         *write = 0;
         ++entry;
@@ -820,7 +820,7 @@ void HudCmdDialog::RebuildCommandBindingListsForGroup(
     while (entry != end) {
         HudCmdBindingEntry *const binding = *entry;
         if (binding != 0) {
-            delete binding;
+            binding->ScalarDeletingDestructor(1);
         }
         *write = 0;
         ++entry;
@@ -838,7 +838,7 @@ void HudCmdDialog::RebuildCommandBindingListsForGroup(
     while (entry != end) {
         HudCmdBindingEntry *const binding = *entry;
         if (binding != 0) {
-            delete binding;
+            binding->ScalarDeletingDestructor(1);
         }
         *write = 0;
         ++entry;
@@ -856,7 +856,7 @@ void HudCmdDialog::RebuildCommandBindingListsForGroup(
     while (entry != end) {
         HudCmdBindingEntry *const binding = *entry;
         if (binding != 0) {
-            delete binding;
+            binding->ScalarDeletingDestructor(1);
         }
         *write = 0;
         ++entry;
@@ -1422,10 +1422,53 @@ HudCmdBindingEntry *__stdcall HudCmdBindingEntry::DeleteAndReturnNull(
     HudCmdBindingEntry *entry
 ) {
     if (entry != 0) {
-        delete entry;
+        if (entry->displayText != 0) {
+            free(entry->displayText);
+            entry->displayText = 0;
+        }
+
+        ::operator delete(entry);
     }
 
     return 0;
+}
+
+/**
+ * Reimplements 0x40bf50: HudCmdBindingEntry scalar-deleting-destructor diagnostic stand-in.
+ * Binary Ninja shows the retail row as nonvirtual VC5 destructor glue used by
+ * the first four HudCmdDialog::RebuildCommandBindingListsForGroup vector
+ * cleanup paths; this source-authored member is a non-gating natural-order
+ * stand-in and is not source-owner, source-faithful model, tier, or byte
+ * acceptance evidence.
+ * Purpose: preserve the direct cleanup/conditional delete shape for VC5 order diagnostics.
+ */
+HudCmdBindingEntry * HudCmdBindingEntry::ScalarDeletingDestructor(
+    unsigned int flags
+) {
+    if (displayText != 0) {
+        free(displayText);
+        displayText = 0;
+    }
+
+    if ((flags & 1) != 0) {
+        ::operator delete(this);
+    }
+
+    return this;
+}
+
+/**
+ * Original-source helper; no standalone retail destructor row exists.
+ * Evidence: the diagnostic 0x40bf50 row above carries the direct retail
+ * scalar-deleting-destructor shape; this ordinary destructor body remains the
+ * owned-string cleanup source helper for non-diagnostic consumers.
+ * Purpose: release the owned command-binding display string.
+ */
+inline HudCmdBindingEntry::~HudCmdBindingEntry() {
+    if (displayText != 0) {
+        free(displayText);
+        displayText = 0;
+    }
 }
 
 /**
@@ -1539,4 +1582,3 @@ void HudCmdBindButtonBase::DestructorCore() {
     ((HudUiPanel *)(&bindPanel))->~HudUiPanel();
     HudUiCheckToggleWidget::DestructorCore();
 }
-

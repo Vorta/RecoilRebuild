@@ -943,14 +943,7 @@ struct HudUiZrdWidget : HudUiWidget {
     HudUiElement * ScalarDeletingDestructor(unsigned int flags);
     HudUiZrdWidget * ScalarDeletingDestructorThunk(unsigned int flags);
     void DestructorCore();
-    /**
-     * Provider-boundary 0x40cf20: HudUiZrdWidget complete-destructor tail thunk.
-     * Purpose: preserve compatibility callers without claiming authored source ownership
-     * for the compiler-emitted jump target excluded from hud.cpp order manifests.
-     */
-    void DestructorCoreThunk() {
-        this->HudUiZrdWidget::~HudUiZrdWidget();
-    }
+    void DestructorCoreThunk();
     void Invalidate();
     HudUiRect * GetBoundsRectOrNull();
     void ShowPreview();
@@ -979,15 +972,7 @@ struct HudUiCheckToggleWidget : HudUiZrdWidget {
     HudUiElement * ScalarDeletingDestructor(unsigned int flags);
     HudUiCheckToggleWidget * ScalarDeletingDestructorThunk(unsigned int flags);
     void DestructorCore();
-    /**
-     * Provider-boundary 0x40cf30: HudUiCheckToggleWidget complete-destructor tail thunk.
-     * Purpose: preserve scalar-deleting helper call shape without claiming authored
-     * source ownership for the compiler-emitted jump target excluded from hud.cpp
-     * order manifests.
-     */
-    void DestructorCoreThunk() {
-        this->HudUiCheckToggleWidget::~HudUiCheckToggleWidget();
-    }
+    void DestructorCoreThunk();
     HudUiRect * GetBoundsRectOrNull();
     void RefreshState();
     void ShowPreview();
@@ -1018,15 +1003,7 @@ struct HudUiCycleSelectorWidget : HudUiZrdWidget {
     HudUiElement * ScalarDeletingDestructor(unsigned int flags);
     HudUiCycleSelectorWidget * ScalarDeletingDestructorThunk(unsigned int flags);
     void DestructorCore();
-    /**
-     * Provider-boundary 0x40cf40: HudUiCycleSelectorWidget complete-destructor tail thunk.
-     * Purpose: preserve scalar-deleting helper call shape without claiming authored
-     * source ownership for the compiler-emitted jump target excluded from hud.cpp
-     * order manifests.
-     */
-    void DestructorCoreThunk() {
-        this->HudUiCycleSelectorWidget::~HudUiCycleSelectorWidget();
-    }
+    void DestructorCoreThunk();
     void AdvanceSelectionAndActivate();
     int SetIndexClamped(int index);
     void SetVisibleRange(
@@ -1071,14 +1048,7 @@ struct HudUiFillBitmap : HudUiZrdWidget {
     ~HudUiFillBitmap();
     HudUiElement * ScalarDeletingDestructor(unsigned int flags);
     void DestructorCore();
-    /**
-     * Provider-boundary 0x40cf50: HudUiFillBitmap complete-destructor tail thunk.
-     * Purpose: preserve compatibility callers without claiming authored source ownership
-     * for the compiler-emitted jump target excluded from hud.cpp order manifests.
-     */
-    void DestructorCoreThunk() {
-        this->HudUiFillBitmap::~HudUiFillBitmap();
-    }
+    void DestructorCoreThunk();
     void Draw();
     int LoadFromZrd(
         zReader::Node *zrdSection,
@@ -1124,6 +1094,7 @@ struct HudUiZrdWidgetEx17C : HudUiZrdWidget {
     int selectedIndex;
 
     HudUiZrdWidgetEx17C();
+    ~HudUiZrdWidgetEx17C();
     HudUiZrdWidgetEx17C * Constructor();
     HudUiElement * ScalarDeletingDestructor(unsigned int flags);
     HudUiZrdWidgetEx17C * ScalarDeletingDestructorThunk(unsigned int flags);
@@ -1352,12 +1323,8 @@ HudCmdBindingEntry(
  * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
      * Purpose: run the recovered ~HudCmdBindingEntry teardown path.
      */
-    ~HudCmdBindingEntry() {
-        if (displayText != 0) {
-            free(displayText);
-            displayText = 0;
-        }
-    }
+    ~HudCmdBindingEntry();
+    HudCmdBindingEntry * ScalarDeletingDestructor(unsigned int flags);
     static HudCmdBindingEntry *__stdcall DeleteAndReturnNull(HudCmdBindingEntry *entry);
     static HudCmdBindingEntry **__fastcall CopyRange(
         HudCmdBindingEntry **sourceBegin,
@@ -2248,6 +2215,16 @@ struct HudUiCompositePanelVector {
           begin(0),
           end(0),
           capacityEnd(0) {
+    }
+    ~HudUiCompositePanelVector() {
+        for (HudUiCompositePanelEntry *entry = begin; entry != end; ++entry) {
+            entry->panel.ScalarDeletingDestructor(0);
+        }
+
+        ::operator delete(begin);
+        begin = 0;
+        end = 0;
+        capacityEnd = 0;
     }
 
     void Clear();
