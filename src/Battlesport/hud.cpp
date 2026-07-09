@@ -3889,6 +3889,38 @@ HudUiBackground * HudOptionsDialog::ScalarDeletingDestructor(
 }
 
 /**
+ * Provider boundary 0x40cf20: VC5 compiler/EH cleanup forwarding thunk.
+ * Purpose: emit the complete destructor cleanup thunk for HudUiZrdWidget in the options-dialog layer.
+ */
+void HudUiZrdWidget::DestructorCoreThunk() {
+    this->HudUiZrdWidget::~HudUiZrdWidget();
+}
+
+/**
+ * Provider boundary 0x40cf30: VC5 compiler/EH cleanup forwarding thunk.
+ * Purpose: emit the complete destructor cleanup thunk for HudUiCheckToggleWidget in the options-dialog layer.
+ */
+void HudUiCheckToggleWidget::DestructorCoreThunk() {
+    this->HudUiCheckToggleWidget::~HudUiCheckToggleWidget();
+}
+
+/**
+ * Provider boundary 0x40cf40: VC5 compiler/EH cleanup forwarding thunk.
+ * Purpose: emit the complete destructor cleanup thunk for HudUiCycleSelectorWidget in the options-dialog layer.
+ */
+void HudUiCycleSelectorWidget::DestructorCoreThunk() {
+    this->HudUiCycleSelectorWidget::~HudUiCycleSelectorWidget();
+}
+
+/**
+ * Provider boundary 0x40cf50: VC5 compiler/EH cleanup forwarding thunk.
+ * Purpose: emit the complete destructor cleanup thunk for HudUiFillBitmap in the options-dialog layer.
+ */
+void HudUiFillBitmap::DestructorCoreThunk() {
+    this->HudUiFillBitmap::~HudUiFillBitmap();
+}
+
+/**
  * Reimplements 0x40cf60: HudOptionsDialog::~HudOptionsDialog.
  * Original source path: D:\Proj\Battlesport\HudOptionsDialog.cpp.
  * Purpose: let VC5 emit the options dialog member/base teardown state machine.
@@ -4106,6 +4138,14 @@ HudUiBackground * HudUiControlsDialog::ScalarDeletingDestructor(
     }
 
     return this;
+}
+
+/**
+ * Provider boundary 0x408c60: VC5 compiler/EH cleanup forwarding thunk.
+ * Purpose: emit the complete destructor cleanup thunk for the zero-data controls-dialog option selector subtype.
+ */
+void HudUiControlsDialog_OptionSelector::DestructorCoreThunk() {
+    this->HudUiZrdWidgetEx17C::~HudUiZrdWidgetEx17C();
 }
 
 /**

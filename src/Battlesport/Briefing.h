@@ -126,8 +126,7 @@ struct HudUiBriefingRuntime : HudUiBackground {
     HudUiBriefingLocatorPanel locatorPanels[6];
 
     HudUiBriefingRuntime(int missionId);
-    HudUiBriefingRuntime * Constructor(int missionId);
-    void Destructor();
+    ~HudUiBriefingRuntime();
     HudUiBackground * ScalarDeletingDestructor(unsigned int flags);
     int BuildObjectiveActionsFromIndex(int objectiveIndex);
     void Update(float deltaSec);
