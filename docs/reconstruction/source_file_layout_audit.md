@@ -606,7 +606,7 @@ and do not update `SOURCE_OWNERS`.
 | `src/Battlesport/ai_net.cpp` | `[0x401060,0x4038a0)` | `0x4da1e8`, xref `0x4030bb` | `AINet::TickAiMode2TopLevel` / `AINet::FreeAll` | mapped with `ai_net.h`/`zmth.h` partial-header rows and 6 body subranges |
 | `src/Battlesport/Briefing.cpp` | `[0x4038a0,0x404ca0)` | `0x4da32c`, xref `0x404238` | `HudUiBriefingObjectivePicture::DrawWithNoiseOverlay` / `Briefing::BuildObjectiveActionsForRuntime` | mapped, 11 semantic subranges |
 | `src/Battlesport/hud.cpp` | `[0x404ca0,0x415ab0)` | `0x4dadd8`, xrefs `0x4101a3`, `0x4141bb` | `HudUiElement::Draw` / `zFMV_ActionBase::Destructor` | mapped refined; documented HUD order diagnostics now cover the worked physical block through `0x415ab0`; semantic/provider/header exceptions remain order-only evidence, not owner/tier acceptance |
-| `src/Battlesport/map.cpp` | `[0x415ab0,0x417350)` | `0x4daf04`, xref `0x416922` | `HudSensorMapNode::Init` / `HudSensorTracker::SetObjectiveMarkerColorBlink` | mapped refined, 8 semantic subranges |
+| `src/Battlesport/map.cpp` | `[0x415ab0,0x417350)` | `0x4daf04`, xref `0x416922` | `HudSensorMapNode::Init` / `HudSensorTracker::SetObjectiveMarkerColorBlink` | mapped refined; `map_text_block_order_current_shape` now confirms the full 42-row VC5 function order; order-only evidence, not byte/owner/tier acceptance |
 | `src/Battlesport/mission.cpp` | `[0x417350,0x41cc10)` | `0x4db230`, xrefs `0x417fc2`, `0x4181b6`, `0x418209`, `0x4182ff`, `0x418395`, `0x419091`, `0x419304` | `Mission::InitObjectives` / `CSpinButtonCtrl::ScalarDeletingDestructor` | mapped refined, 14 semantic subranges |
 | `src/Battlesport/pickup.cpp` | `[0x41cc10,0x41ea90)` | `0x4dc190`, xrefs `0x41cd93`, `0x41d523`, `0x41db80` | `PickupSpawnList::Primary_Init` / `Pickup::SpawnAtCarrierNodeByName` | mapped |
 | `src/Battlesport/player.cpp` | `[0x41ea90,0x42de10)` | `0x4dc26c`, xrefs `0x41f20b`, `0x41f870`, `0x42087a`, `0x420dc7`, `0x42155b`, `0x421722`, `0x42176f` | `Player::InitMasterCommonDataList` / `CRT::SafeVtableRelease` | mapped physical, tail scrutiny |
@@ -788,7 +788,7 @@ uses complete owner units.
 | `fmv_main.cpp [0x462330,0x4625e0)`, `fmv_script.cpp [0x4625e0,0x463d50)`, `fmv_stream.cpp [0x463d50,0x464670)` | BN literals split FMV into playback/MCI class bodies in `fmv_main.cpp`, script/action hierarchy in `fmv_script.cpp`, and stream decode/audio bodies in `fmv_stream.cpp`. `fmv_main.cpp` now has three recorded layers: playback constructor/destructor `[0x462330,0x462370)`, MCI open/play `[0x462370,0x4624f0)`, and stop/dest/error tail `[0x4624f0,0x4625e0)`. Current source comments often route playback and stream through `fmv_script.cpp`/`fmv.h`. `fmv_script.cpp` also contains class-owned scalar deleting destructors, while zFMV action base virtuals/destructor/update/run-timed appear earlier in the HUD physical block `[0x4159d0,0x415ab0)`. | Preserve the three physical FMV source blocks and route class hierarchy work across the out-of-range HUD zFMV action-base island. Do not treat class-owned deleting destructors as standalone authored owners or provider-primary work, and do not split out `fmv_action.cpp`/`fmv.h` without new physical evidence. |
 | `ai_net.cpp [0x401060,0x4038a0)` | Physical AINet block has proven address-emitting `ai_net.h [0x401060,0x402f60)`, `zmth.h [0x402f60,0x402fd0)`, and 6 recorded `ai_net.cpp` body layers from ZRD load through teardown. `0x403750` is player-save-state-coupled but still physically in `ai_net.cpp`. | Preserve the detailed `ai_net.cpp` source-shape order. Do not move `0x403750` to `player.cpp`, do not create a new emitted `.h` row for `0x403620`, and do not reintroduce `.inl` source shape for `0x402f60`. |
 | `hud.cpp [0x404ca0,0x415ab0)` | Physical HUD block with 22 recorded source-shape layers. The first source-path literal is inside `0x410160`, and another appears at `0x414180`; the earlier layers are inferred from BN assembly/order, not comments. | Do not treat physical `hud.cpp` as one semantic owner. Use the detailed `hud.cpp` source-shape layer table below and preserve physical HUD block order while routing semantic owners separately. |
-| `map.cpp [0x415ab0,0x417350)` | Physical map block now has 8 recorded source-shape layers: HudSensorMapNode methods, HudRectI/HudGeom2D clipping helper island, projected-path drawing, tracker init/list maintenance, map file load, overlay/zoom/ref-count, projection/save-state marker drawing, and mission-map SFX/objective marker controls. | Use the detailed `map.cpp` source-shape layer table below. Do not move HudRectI/HudGeom2D helpers to `hud.cpp` or a new header row solely from semantic names/comments. |
+| `map.cpp [0x415ab0,0x417350)` | Physical map block now has 8 recorded source-shape layers: HudSensorMapNode methods, HudRectI/HudGeom2D clipping helper island, projected-path drawing, tracker init/list maintenance, map file load, overlay/zoom/ref-count, projection/save-state marker drawing, and mission-map SFX/objective marker controls. The 2026-07-09 `map_text_block_order_current_shape` target naturally emits all 42 known in-range functions in retail order. | Use the detailed `map.cpp` source-shape layer table below. Do not move HudRectI/HudGeom2D helpers to `hud.cpp` or a new header row solely from semantic names/comments. The order target is diagnostic only and does not prove byte readiness, source-owner acceptance, provider classification, linkage, source-faithful modeling, or tier status. |
 | `pickup.cpp [0x41cc10,0x41ea90)` | Physical pickup block now has 10 recorded source-shape layers: subsystem bootstrap, init/resource registration, pickup-specific zClass_Node flag recursion, collection/effects/player grants, spawn-list lifecycle, pickup type lookup/Net-style slot predicate, ZRD spawn loading, respawn queue maintenance, ZAR callbacks, and network/drop helper tail. | Use the detailed `pickup.cpp` source-shape layer table below. Do not split zClass/Net-like helpers into separate `.h` or source rows without VC5 source-shape evidence. |
 | `player.cpp [0x41ea90,0x42de10)` | Physical player block now has 19 recorded source-shape layers. Semantic/provider islands include HUD scalar/reset glue, zReader/checkpoint helpers, zClass recursive flags, zInput bind maps, cls_di/HUD helper activity, zMath midpoint, zCom, WOL API init, and provider SafeVtableRelease tail. | Use the detailed `player.cpp` source-shape layer table below. Player-owned work must preserve physical order while routing complete semantic owners separately when evidence supports them. |
 | `RecoilApp.cpp [0x42de10,0x436630)` | Physical RecoilApp block now has 9 recorded source-shape layers: MFC app/static startup, zInput joystick/force-feedback exceptions, engine startup/shutdown, CZRecoilFrame MFC frame/menu/message-map layer, MFC/provider destructor glue, GameNet packet relay, save/load dialog file list, and save/load transition/sort/vector tail. This pass did not support a zWeapon split. | Use the detailed `RecoilApp.cpp` source-shape layer table below. Owner work must not collapse this block into one app-shell class or invent zWeapon/header ownership without stronger evidence. |
@@ -1254,7 +1254,16 @@ These layer names are reconstruction routing labels stored in
 `tools/_recoil/config/source_file_blocks.json`. Current BN function names and
 comments were used only as navigation labels; placement evidence is physical
 order, assembly/callee shape, and the `map.cpp` literal xref at `0x416922`.
-This pass did not prove new emitted `.h` rows.
+The 2026-07-09 `map_text_block_order_current_shape` diagnostic confirms the
+current `src/Battlesport/map.cpp` translation unit emits all 42 known in-range
+retail functions in manifest order from `0x415ab0` through `0x417300`, with
+`0x417350` as the next sentinel. This is order-only source-block evidence. It
+does not prove byte readiness, source-owner acceptance, provider
+classification, linkage acceptance, source-faithful modeling, tier promotion,
+or original use of the current reconstruction body header. This pass did not
+prove new emitted `.h` rows. ChatGPT Pro critique allowed the order-only status
+and frontier advance with those caveats; receipt:
+`.devspace/runs/2026-07-09T15-50-49-361Z-chatgpt-call/receipt.json`.
 
 | Range | Layer label | Classification | Reconstruction consequence |
 | --- | --- | --- | --- |
@@ -2421,12 +2430,25 @@ core-manager helper mapping, and
 `.devspace/runs/2026-07-09T11-47-26-930Z-chatgpt-call/receipt.json` for the
 frontier/docs update critique. Pro output is advisory evidence only.
 
-The next safe order-validation frontier is the existing durable
-`map.cpp [0x415ab0,0x417350)` row. `0x415ab0 HudSensorMapNode::Init` starts the
+The `map.cpp [0x415ab0,0x417350)` top-down order pass is now clean for
+source-block/function-order purposes. `map_text_block_order_current_shape`
+reports `translation_unit_order_matches_manifest True` for all 42 known
+in-range functions from `HudSensorMapNode::Init` at `0x415ab0` through
+`HudSensorTracker::SetObjectiveMarkerColorBlink` at `0x417300`, with
+`0x417350 Mission::InitObjectives` as the next sentinel. `0x415ab0` starts the
 `map.cpp` block despite HUD semantic naming, and the `0x4daf04` `map.cpp`
 literal xref at `0x416922` supports the boundary. Do not move
 HudSensorMapNode, HudRectI, or HudGeom2D helpers out of `map.cpp` or create a
-new emitted header row solely from semantic names.
+new emitted header row solely from semantic names. The map diagnostic is
+order-only evidence and does not prove byte readiness, source-owner acceptance,
+provider classification, linkage acceptance, source-faithful modeling, or tier
+status for semantic owners inside the physical block.
+
+The next safe top-down order-validation frontier is the existing durable
+`mission.cpp [0x417350,0x41cc10)` row. This is a source-layout scheduling claim
+only; `map.cpp` remains open for owner-local body/byte work. ChatGPT Pro
+allowed both the map order-only status and the frontier advance with those
+caveats in `.devspace/runs/2026-07-09T15-50-49-361Z-chatgpt-call/receipt.json`.
 
 For each frontier window:
 

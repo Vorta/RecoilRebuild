@@ -181,11 +181,11 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x414710` `HudUiListMenuEntry::SortRange` -> `src/Battlesport/hud_runtime_layer_body.h:1965`
 - `0x414930` `HudUiListMenuEntry::InsertPivotIntoSortedPrefix` -> `src/Battlesport/hud_runtime_layer_body.h:2028`
 - `0x414980` `HudUiListMenuEntry::InsertionSortRange` -> `src/Battlesport/hud_runtime_layer_body.h:2051`
-- `0x4184e0` `HudSensorTracker::AdvanceObjectiveState` -> `src/Battlesport/hud_sensor_tracker_body.h:3717`
-- `0x418620` `HudSensorTracker::SetObjectiveReviewVisible` -> `src/Battlesport/hud_sensor_tracker_body.h:3658`
-- `0x418760` `HudSensorTracker::SetObjectivePanelVisible` -> `src/Battlesport/hud_sensor_tracker_body.h:3881`
-- `0x418c30` `HudSensorTracker::FindAndHighlightFirstIncompleteObjective` -> `src/Battlesport/hud_sensor_tracker_body.h:3622`
-- `0x419380` `HudSensorTracker::OnObjectiveReadSoundEvent` -> `src/Battlesport/hud_sensor_tracker_body.h:3698`
+- `0x4184e0` `HudSensorTracker::AdvanceObjectiveState` -> `src/Battlesport/hud_sensor_tracker_body.h:3759`
+- `0x418620` `HudSensorTracker::SetObjectiveReviewVisible` -> `src/Battlesport/hud_sensor_tracker_body.h:3700`
+- `0x418760` `HudSensorTracker::SetObjectivePanelVisible` -> `src/Battlesport/hud_sensor_tracker_body.h:3923`
+- `0x418c30` `HudSensorTracker::FindAndHighlightFirstIncompleteObjective` -> `src/Battlesport/hud_sensor_tracker_body.h:3664`
+- `0x419380` `HudSensorTracker::OnObjectiveReadSoundEvent` -> `src/Battlesport/hud_sensor_tracker_body.h:3740`
 - `0x42bf40` `HudUi::PlayPowerupSfx` -> `src/GameZRecoil/zUI/zui.cpp:13475`
 - `0x4348b0` `HudUiSaveLoadGameNameInput::OnActivate` -> `src/Battlesport/recoil_app_late_body.h:855`
 - `0x4348f0` `HudUiSaveLoadGameNameInput::OnRawKeyboardEvent` -> `src/Battlesport/recoil_app_late_body.h:866`
@@ -529,24 +529,24 @@ These original-source labels differ only by case on Windows; confirm placement a
 
 ## Battlesport/map.cpp
 
-- `0x4176f0` `HudSensorTracker::ResetMissionState` -> `src/Battlesport/hud_sensor_tracker_body.h:2449`
-- `0x417810` `HudSensorTracker::LoadMissionCoreResources` -> `src/Battlesport/hud_sensor_tracker_body.h:2711`
-- `0x417a00` `HudSensorTracker::InitMissionGameplaySystems` -> `src/Battlesport/hud_sensor_tracker_body.h:2791`
-- `0x417ca0` `HudSensorTracker::OnObjectiveCommand` -> `src/Battlesport/hud_sensor_tracker_body.h:3768`
-- `0x417d40` `HudSensorTracker::ShutdownMissionGameplaySystems` -> `src/Battlesport/hud_sensor_tracker_body.h:2916`
-- `0x418730` `HudSensorTracker::Command_ToggleObjectivePanel` -> `src/Battlesport/hud_sensor_tracker_body.h:3870`
-- `0x4188f0` `HudSensorTracker::Command_ShowObjectivePickupInfo` -> `src/Battlesport/hud_sensor_tracker_body.h:3969`
-- `0x418940` `HudSensorTracker::ShowObjectivePickupInfo` -> `src/Battlesport/hud_sensor_tracker_body.h:3988`
-- `0x418d40` `HudSensorTracker::UpdateObjectiveFlow` -> `src/Battlesport/hud_sensor_tracker_body.h:4104`
-- `0x418fb0` `HudSensorTracker::SaveAndQueueMissionState` -> `src/Battlesport/hud_sensor_tracker_body.h:3539`
-- `0x419050` `HudSensorTracker::LoadMissionWeatherFx` -> `src/Battlesport/hud_sensor_tracker_body.h:3005`
-- `0x4193c0` `HudSensorTracker::LoadRaceCheckpointMeta` -> `src/Battlesport/hud_sensor_tracker_body.h:3423`
+- `0x4176f0` `HudSensorTracker::ResetMissionState` -> `src/Battlesport/hud_sensor_tracker_body.h:2536`
+- `0x417810` `HudSensorTracker::LoadMissionCoreResources` -> `src/Battlesport/hud_sensor_tracker_body.h:2798`
+- `0x417a00` `HudSensorTracker::InitMissionGameplaySystems` -> `src/Battlesport/hud_sensor_tracker_body.h:2878`
+- `0x417ca0` `HudSensorTracker::OnObjectiveCommand` -> `src/Battlesport/hud_sensor_tracker_body.h:3810`
+- `0x417d40` `HudSensorTracker::ShutdownMissionGameplaySystems` -> `src/Battlesport/hud_sensor_tracker_body.h:3003`
+- `0x418730` `HudSensorTracker::Command_ToggleObjectivePanel` -> `src/Battlesport/hud_sensor_tracker_body.h:3912`
+- `0x4188f0` `HudSensorTracker::Command_ShowObjectivePickupInfo` -> `src/Battlesport/hud_sensor_tracker_body.h:4011`
+- `0x418940` `HudSensorTracker::ShowObjectivePickupInfo` -> `src/Battlesport/hud_sensor_tracker_body.h:4030`
+- `0x418d40` `HudSensorTracker::UpdateObjectiveFlow` -> `src/Battlesport/hud_sensor_tracker_body.h:4146`
+- `0x418fb0` `HudSensorTracker::SaveAndQueueMissionState` -> `src/Battlesport/hud_sensor_tracker_body.h:3626`
+- `0x419050` `HudSensorTracker::LoadMissionWeatherFx` -> `src/Battlesport/hud_sensor_tracker_body.h:3092`
+- `0x4193c0` `HudSensorTracker::LoadRaceCheckpointMeta` -> `src/Battlesport/hud_sensor_tracker_body.h:3510`
 
 ## Battlesport/mission.cpp
 
-- `0x417ee0` `HudSensorTracker::UnloadObjectives` -> `src/Battlesport/hud_sensor_tracker_body.h:3133`
-- `0x417f90` `HudSensorTracker::LoadObjectivesFromPath` -> `src/Battlesport/hud_sensor_tracker_body.h:3160`
-- `0x418230` `HudSensorTracker::LoadObjectivesFromZrd` -> `src/Battlesport/hud_sensor_tracker_body.h:3315`
+- `0x417ee0` `HudSensorTracker::UnloadObjectives` -> `src/Battlesport/hud_sensor_tracker_body.h:3220`
+- `0x417f90` `HudSensorTracker::LoadObjectivesFromPath` -> `src/Battlesport/hud_sensor_tracker_body.h:3247`
+- `0x418230` `HudSensorTracker::LoadObjectivesFromZrd` -> `src/Battlesport/hud_sensor_tracker_body.h:3402`
 
 ## Battlesport/pickup.cpp
 
@@ -796,8 +796,8 @@ These original-source labels differ only by case on Windows; confirm placement a
 
 ## GameZRecoil/HudSensorTracker.cpp
 
-- `0x417770` `HudSensorTracker::InitMissionIdAndFlags` -> `src/Battlesport/hud_sensor_tracker_body.h:2651`
-- `0x4177d0` `HudSensorTracker::SetZbdPath` -> `src/Battlesport/hud_sensor_tracker_body.h:2670`
+- `0x417770` `HudSensorTracker::InitMissionIdAndFlags` -> `src/Battlesport/hud_sensor_tracker_body.h:2738`
+- `0x4177d0` `HudSensorTracker::SetZbdPath` -> `src/Battlesport/hud_sensor_tracker_body.h:2757`
 
 ## GameZRecoil/mission.cpp
 
@@ -836,7 +836,7 @@ These original-source labels differ only by case on Windows; confirm placement a
 
 ## GameZRecoil/recoilapp.cpp
 
-- `0x419010` `HudSensorTracker::QueueMissionFmvStateForMissionId` -> `src/Battlesport/hud_sensor_tracker_body.h:3522`
+- `0x419010` `HudSensorTracker::QueueMissionFmvStateForMissionId` -> `src/Battlesport/hud_sensor_tracker_body.h:3609`
 - `0x42edb0` `RecoilApp_MissionFmvState::OnTryBecomeCurrent` -> `src/Battlesport/recoil_app_late_body.h:3799`
 - `0x42ee50` `RecoilApp_MissionFmvState::OnDeactivate` -> `src/Battlesport/recoil_app_late_body.h:3838`
 - `0x42ee70` `RecoilApp_MissionFmvState::OnUpdateShouldQuit` -> `src/Battlesport/recoil_app_late_body.h:3851`
@@ -1937,67 +1937,67 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x4159d0` `zFMV_Action::Update` -> `src/Battlesport/hud.cpp:4736`
 - `0x4159e0` `zFMV_Action::RunBlockingTimed` -> `src/Battlesport/hud.cpp:4746`
 - `0x415aa0` `zFMV_Action::~zFMV_Action` -> `src/Battlesport/hud.cpp:4762`
-- `0x415ab0` `HudSensorMapNode::Init` -> `src/Battlesport/hud_sensor_tracker_body.h:1247`
-- `0x415ac0` `HudSensorMapNode::FreePointArray` -> `src/Battlesport/hud_sensor_tracker_body.h:1257`
-- `0x415ae0` `HudSensorMapNode::SetEnabled` -> `src/Battlesport/hud_sensor_tracker_body.h:1268`
-- `0x415b10` `HudSensorMapNode::SelectPoint` -> `src/Battlesport/hud_sensor_tracker_body.h:1286`
-- `0x415b40` `HudSensorMapNode::InitDefaults` -> `src/Battlesport/hud_sensor_tracker_body.h:1303`
-- `0x415b70` `HudSensorMapNode::SetColorRgb` -> `src/Battlesport/hud_sensor_tracker_body.h:1323`
-- `0x415bd0` `HudSensorMapNode::LoadFromStream` -> `src/Battlesport/hud_sensor_tracker_body.h:1354`
-- `0x415c90` `HudSensorMapNode::UpdateCachedBounds` -> `src/Battlesport/hud_sensor_tracker_body.h:1406`
-- `0x415d30` `HudSensorMapNode::DrawOnTracker` -> `src/Battlesport/hud_sensor_tracker_body.h:1951`
-- `0x415f40` `HudSensorTracker::DrawDiamondMarker` -> `src/Battlesport/hud_sensor_tracker_body.h:1841`
-- `0x415fb0` `HudRectI::ClipOrSplitSegment` -> `src/Battlesport/hud_sensor_tracker_body.h:1076`
-- `0x416240` `HudRectI::CalcOutcode` -> `src/Battlesport/hud_sensor_tracker_body.h:967`
-- `0x416290` `HudRectI::IsCornerOutcode` -> `src/Battlesport/hud_sensor_tracker_body.h:991`
-- `0x4162b0` `HudRectI::SegmentIntersectsEdge` -> `src/Battlesport/hud_sensor_tracker_body.h:1002`
-- `0x416390` `HudGeom2D::ClassifyPointAgainstSegment` -> `src/Battlesport/hud_sensor_tracker_body.h:746`
-- `0x416480` `HudSensorMapNode::DrawProjectedPath` -> `src/Battlesport/hud_sensor_tracker_body.h:1875`
-- `0x416650` `HudSensorTracker::InitNoBounds` -> `src/Battlesport/hud_sensor_tracker_body.h:1484`
-- `0x416660` `HudSensorTracker::Init` -> `src/Battlesport/hud_sensor_tracker_body.h:1450`
-- `0x4166e0` `HudSensorTracker::SetBounds` -> `src/Battlesport/hud_sensor_tracker_body.h:1553`
-- `0x416790` `HudSensorTracker::MapShutdownAndResetThunk` -> `src/Battlesport/hud_sensor_tracker_body.h:2404`
-- `0x4167a0` `HudSensorTracker::MapShutdownAndReset` -> `src/Battlesport/hud_sensor_tracker_body.h:2413`
-- `0x4167e0` `HudSensorTracker::MapRemoveNode` -> `src/Battlesport/hud_sensor_tracker_body.h:2223`
-- `0x416840` `HudSensorTracker::MapInsertNodeAndGrowBounds` -> `src/Battlesport/hud_sensor_tracker_body.h:2261`
-- `0x4168d0` `HudSensorTracker::LoadMapFromStream` -> `src/Battlesport/hud_sensor_tracker_body.h:2295`
-- `0x4169d0` `HudSensorTracker::LoadMapFromPath` -> `src/Battlesport/hud_sensor_tracker_body.h:2356`
-- `0x416a30` `HudSensorTracker::MapOverlayBeginShow` -> `src/Battlesport/hud_sensor_tracker_body.h:1644`
-- `0x416ad0` `HudSensorTracker::MapOverlayEndShow` -> `src/Battlesport/hud_sensor_tracker_body.h:1620`
-- `0x416b30` `HudSensorTracker::MapOverlayRefToggle` -> `src/Battlesport/hud_sensor_tracker_body.h:1673`
-- `0x416b80` `HudSensorTracker::MapZoomIn` -> `src/Battlesport/hud_sensor_tracker_body.h:1697`
-- `0x416bb0` `HudSensorTracker::MapZoomOut` -> `src/Battlesport/hud_sensor_tracker_body.h:1709`
-- `0x416be0` `HudSensorTracker::UpdateMapScaleLerp` -> `src/Battlesport/hud_sensor_tracker_body.h:1721`
-- `0x416c90` `HudSensorTracker::ProjectWorldPointsToOverlay` -> `src/Battlesport/hud_sensor_tracker_body.h:1743`
-- `0x416d50` `HudSensorTracker::DrawTrackedSaveStateMarker` -> `src/Battlesport/hud_sensor_tracker_body.h:2046`
-- `0x416dd0` `HudSensorTracker::DrawMarkerCross` -> `src/Battlesport/hud_sensor_tracker_body.h:1802`
-- `0x416e50` `HudSensorTracker::GetSaveStateRelativeVectorLen` -> `src/Battlesport/hud_sensor_tracker_body.h:1774`
-- `0x416ef0` `HudSensorTracker::SetSaveStateMarkerMaxDistance` -> `src/Battlesport/hud_sensor_tracker_body.h:1584`
-- `0x416f10` `HudSensorTracker::DrawSaveStateMarker` -> `src/Battlesport/hud_sensor_tracker_body.h:2082`
-- `0x417130` `HudSensorTracker::Update` -> `src/Battlesport/hud_sensor_tracker_body.h:2175`
-- `0x417220` `HudSensorTracker::SetTrackedSaveState` -> `src/Battlesport/hud_sensor_tracker_body.h:1596`
-- `0x417260` `HudSensorTracker::LoadMissionMapAndSfx` -> `src/Battlesport/hud_sensor_tracker_body.h:2382`
-- `0x4172c0` `HudSensorTracker::SetObjectiveMarkerEnabledAndColor` -> `src/Battlesport/hud_sensor_tracker_body.h:3575`
-- `0x417300` `HudSensorTracker::SetObjectiveMarkerColorBlink` -> `src/Battlesport/hud_sensor_tracker_body.h:3598`
-- `0x417360` `HudSensorTracker::ConstructGlobal` -> `src/Battlesport/hud_sensor_tracker_body.h:1517`
-- `0x417370` `HudSensorTracker::RegisterGlobalOnExit` -> `src/Battlesport/hud_sensor_tracker_body.h:1530`
-- `0x417380` `HudSensorTracker::ShutdownGlobal` -> `src/Battlesport/hud_sensor_tracker_body.h:1541`
-- `0x417390` `HudSensorTracker::Constructor` -> `src/Battlesport/hud_sensor_tracker_body.h:1494`
-- `0x417430` `HudSensorTracker::WriteMissionDataSection` -> `src/Battlesport/hud_sensor_tracker_body.h:2507`
-- `0x4174f0` `HudSensorTracker::ApplyMissionDataAndReload` -> `src/Battlesport/hud_sensor_tracker_body.h:2547`
-- `0x417640` `HudSensorTracker::RegisterMissionSectionHandlers` -> `src/Battlesport/hud_sensor_tracker_body.h:2626`
-- `0x417680` `HudSensorTracker::ZarMission_SaveCallback` -> `src/Battlesport/hud_sensor_tracker_body.h:4219`
-- `0x417690` `HudSensorTracker::ZarMission_RestoreCallback` -> `src/Battlesport/hud_sensor_tracker_body.h:4233`
-- `0x4176b0` `HudSensorTracker::ZarMissionLate_SaveCallback` -> `src/Battlesport/hud_sensor_tracker_body.h:4256`
-- `0x4176d0` `HudSensorTracker::ZarMissionLate_RestoreCallback` -> `src/Battlesport/hud_sensor_tracker_body.h:4276`
-- `0x4177a0` `HudSensorTracker::SetMissionId` -> `src/Battlesport/hud_sensor_tracker_body.h:2687`
-- `0x417800` `HudSensorTracker::GetMissionId` -> `src/Battlesport/hud_sensor_tracker_body.h:2702`
-- `0x417f60` `HudSensorObjectiveSlot::Reset` -> `src/Battlesport/hud_sensor_tracker_body.h:2485`
-- `0x4186f0` `HudSensorTracker::GetObjectiveBriefingStringsAndImageRef` -> `src/Battlesport/hud_sensor_tracker_body.h:3557`
-- `0x418c70` `HudSensorTracker::ResetHudForMissionStart` -> `src/Battlesport/hud_sensor_tracker_body.h:3817`
-- `0x4192d0` `HudSensorTracker::RunStartAnimsFromZrd` -> `src/Battlesport/hud_sensor_tracker_body.h:3459`
-- `0x419470` `HudSensorTracker::SetRuntimeTimerSecAndGoalValue` -> `src/Battlesport/hud_sensor_tracker_body.h:3645`
-- `0x419490` `HudSensorTracker::Shutdown` -> `src/Battlesport/hud_sensor_tracker_body.h:2432`
+- `0x415ab0` `HudSensorMapNode::Init` -> `src/Battlesport/hud_sensor_tracker_body.h:746`
+- `0x415ac0` `HudSensorMapNode::FreePointArray` -> `src/Battlesport/hud_sensor_tracker_body.h:756`
+- `0x415ae0` `HudSensorMapNode::SetEnabled` -> `src/Battlesport/hud_sensor_tracker_body.h:767`
+- `0x415b10` `HudSensorMapNode::SelectPoint` -> `src/Battlesport/hud_sensor_tracker_body.h:785`
+- `0x415b40` `HudSensorMapNode::InitDefaults` -> `src/Battlesport/hud_sensor_tracker_body.h:802`
+- `0x415b70` `HudSensorMapNode::SetColorRgb` -> `src/Battlesport/hud_sensor_tracker_body.h:822`
+- `0x415bd0` `HudSensorMapNode::LoadFromStream` -> `src/Battlesport/hud_sensor_tracker_body.h:853`
+- `0x415c90` `HudSensorMapNode::UpdateCachedBounds` -> `src/Battlesport/hud_sensor_tracker_body.h:905`
+- `0x415d30` `HudSensorMapNode::DrawOnTracker` -> `src/Battlesport/hud_sensor_tracker_body.h:949`
+- `0x415f40` `HudSensorTracker::DrawDiamondMarker` -> `src/Battlesport/hud_sensor_tracker_body.h:1044`
+- `0x415fb0` `HudRectI::ClipOrSplitSegment` -> `src/Battlesport/hud_sensor_tracker_body.h:1078`
+- `0x416240` `HudRectI::CalcOutcode` -> `src/Battlesport/hud_sensor_tracker_body.h:1249`
+- `0x416290` `HudRectI::IsCornerOutcode` -> `src/Battlesport/hud_sensor_tracker_body.h:1273`
+- `0x4162b0` `HudRectI::SegmentIntersectsEdge` -> `src/Battlesport/hud_sensor_tracker_body.h:1284`
+- `0x416390` `HudGeom2D::ClassifyPointAgainstSegment` -> `src/Battlesport/hud_sensor_tracker_body.h:1358`
+- `0x416480` `HudSensorMapNode::DrawProjectedPath` -> `src/Battlesport/hud_sensor_tracker_body.h:1392`
+- `0x416650` `HudSensorTracker::InitNoBounds` -> `src/Battlesport/hud_sensor_tracker_body.h:1468`
+- `0x416660` `HudSensorTracker::Init` -> `src/Battlesport/hud_sensor_tracker_body.h:1478`
+- `0x4166e0` `HudSensorTracker::SetBounds` -> `src/Battlesport/hud_sensor_tracker_body.h:1512`
+- `0x416790` `HudSensorTracker::MapShutdownAndResetThunk` -> `src/Battlesport/hud_sensor_tracker_body.h:1543`
+- `0x4167a0` `HudSensorTracker::MapShutdownAndReset` -> `src/Battlesport/hud_sensor_tracker_body.h:1552`
+- `0x4167e0` `HudSensorTracker::MapRemoveNode` -> `src/Battlesport/hud_sensor_tracker_body.h:1571`
+- `0x416840` `HudSensorTracker::MapInsertNodeAndGrowBounds` -> `src/Battlesport/hud_sensor_tracker_body.h:1609`
+- `0x4168d0` `HudSensorTracker::LoadMapFromStream` -> `src/Battlesport/hud_sensor_tracker_body.h:1643`
+- `0x4169d0` `HudSensorTracker::LoadMapFromPath` -> `src/Battlesport/hud_sensor_tracker_body.h:1704`
+- `0x416a30` `HudSensorTracker::MapOverlayBeginShow` -> `src/Battlesport/hud_sensor_tracker_body.h:1730`
+- `0x416ad0` `HudSensorTracker::MapOverlayEndShow` -> `src/Battlesport/hud_sensor_tracker_body.h:1759`
+- `0x416b30` `HudSensorTracker::MapOverlayRefToggle` -> `src/Battlesport/hud_sensor_tracker_body.h:1783`
+- `0x416b80` `HudSensorTracker::MapZoomIn` -> `src/Battlesport/hud_sensor_tracker_body.h:1807`
+- `0x416bb0` `HudSensorTracker::MapZoomOut` -> `src/Battlesport/hud_sensor_tracker_body.h:1819`
+- `0x416be0` `HudSensorTracker::UpdateMapScaleLerp` -> `src/Battlesport/hud_sensor_tracker_body.h:1831`
+- `0x416c90` `HudSensorTracker::ProjectWorldPointsToOverlay` -> `src/Battlesport/hud_sensor_tracker_body.h:1853`
+- `0x416d50` `HudSensorTracker::DrawTrackedSaveStateMarker` -> `src/Battlesport/hud_sensor_tracker_body.h:1884`
+- `0x416dd0` `HudSensorTracker::DrawMarkerCross` -> `src/Battlesport/hud_sensor_tracker_body.h:1920`
+- `0x416e50` `HudSensorTracker::GetSaveStateRelativeVectorLen` -> `src/Battlesport/hud_sensor_tracker_body.h:1959`
+- `0x416ef0` `HudSensorTracker::SetSaveStateMarkerMaxDistance` -> `src/Battlesport/hud_sensor_tracker_body.h:1987`
+- `0x416f10` `HudSensorTracker::DrawSaveStateMarker` -> `src/Battlesport/hud_sensor_tracker_body.h:1999`
+- `0x417130` `HudSensorTracker::Update` -> `src/Battlesport/hud_sensor_tracker_body.h:2092`
+- `0x417220` `HudSensorTracker::SetTrackedSaveState` -> `src/Battlesport/hud_sensor_tracker_body.h:2140`
+- `0x417260` `HudSensorTracker::LoadMissionMapAndSfx` -> `src/Battlesport/hud_sensor_tracker_body.h:2164`
+- `0x4172c0` `HudSensorTracker::SetObjectiveMarkerEnabledAndColor` -> `src/Battlesport/hud_sensor_tracker_body.h:2186`
+- `0x417300` `HudSensorTracker::SetObjectiveMarkerColorBlink` -> `src/Battlesport/hud_sensor_tracker_body.h:2209`
+- `0x417360` `HudSensorTracker::ConstructGlobal` -> `src/Battlesport/hud_sensor_tracker_body.h:2458`
+- `0x417370` `HudSensorTracker::RegisterGlobalOnExit` -> `src/Battlesport/hud_sensor_tracker_body.h:2471`
+- `0x417380` `HudSensorTracker::ShutdownGlobal` -> `src/Battlesport/hud_sensor_tracker_body.h:2482`
+- `0x417390` `HudSensorTracker::Constructor` -> `src/Battlesport/hud_sensor_tracker_body.h:2435`
+- `0x417430` `HudSensorTracker::WriteMissionDataSection` -> `src/Battlesport/hud_sensor_tracker_body.h:2594`
+- `0x4174f0` `HudSensorTracker::ApplyMissionDataAndReload` -> `src/Battlesport/hud_sensor_tracker_body.h:2634`
+- `0x417640` `HudSensorTracker::RegisterMissionSectionHandlers` -> `src/Battlesport/hud_sensor_tracker_body.h:2713`
+- `0x417680` `HudSensorTracker::ZarMission_SaveCallback` -> `src/Battlesport/hud_sensor_tracker_body.h:4261`
+- `0x417690` `HudSensorTracker::ZarMission_RestoreCallback` -> `src/Battlesport/hud_sensor_tracker_body.h:4275`
+- `0x4176b0` `HudSensorTracker::ZarMissionLate_SaveCallback` -> `src/Battlesport/hud_sensor_tracker_body.h:4298`
+- `0x4176d0` `HudSensorTracker::ZarMissionLate_RestoreCallback` -> `src/Battlesport/hud_sensor_tracker_body.h:4318`
+- `0x4177a0` `HudSensorTracker::SetMissionId` -> `src/Battlesport/hud_sensor_tracker_body.h:2774`
+- `0x417800` `HudSensorTracker::GetMissionId` -> `src/Battlesport/hud_sensor_tracker_body.h:2789`
+- `0x417f60` `HudSensorObjectiveSlot::Reset` -> `src/Battlesport/hud_sensor_tracker_body.h:2572`
+- `0x4186f0` `HudSensorTracker::GetObjectiveBriefingStringsAndImageRef` -> `src/Battlesport/hud_sensor_tracker_body.h:3644`
+- `0x418c70` `HudSensorTracker::ResetHudForMissionStart` -> `src/Battlesport/hud_sensor_tracker_body.h:3859`
+- `0x4192d0` `HudSensorTracker::RunStartAnimsFromZrd` -> `src/Battlesport/hud_sensor_tracker_body.h:3546`
+- `0x419470` `HudSensorTracker::SetRuntimeTimerSecAndGoalValue` -> `src/Battlesport/hud_sensor_tracker_body.h:3687`
+- `0x419490` `HudSensorTracker::Shutdown` -> `src/Battlesport/hud_sensor_tracker_body.h:2519`
 - `0x419aa0` `HudUiNetGameSetupPanel::Constructor` -> `src/Battlesport/hud_ui_net_game_setup_body.h:272`
 - `0x41a160` `HudUiNetGameSetupPanel_CancelButton::OnActivate` -> `src/Battlesport/hud_ui_net_game_setup_body.h:576`
 - `0x41a190` `HudUiNumericTextInput::Constructor` -> `src/GameZRecoil/zUI/zui.cpp:11467`
@@ -3999,14 +3999,14 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x4bd470` `zTimedTask::RemoveFromActiveList` -> `src/GameZRecoil/zUI/zui.cpp:13187`
 - `0x4bd4d0` `zTimedTask::RunImmediateAction` -> `src/GameZRecoil/zUI/zui.cpp:13220`
 - `0x4bd660` `zTimedTask::TickActiveList` -> `src/GameZRecoil/zUI/zui.cpp:13331`
-- `0x4bd6f0` `HudLineClip::SetCurrentBoundsFromRectI` -> `src/Battlesport/hud_sensor_tracker_body.h:810`
+- `0x4bd6f0` `HudLineClip::SetCurrentBoundsFromRectI` -> `src/Battlesport/hud_sensor_tracker_body.h:2264`
 - `0x4bd720` `zMath::ClipLineSegmentToZRange` -> `src/GameZRecoil/zMath/zmth_main.c:1629`
 - `0x4bd800` `zMath::ClipLineSegmentPointToZ` -> `src/GameZRecoil/zMath/zmth_main.c:1610`
-- `0x4bd840` `HudLineClip::ClipSegmentToCurrentBounds` -> `src/Battlesport/hud_sensor_tracker_body.h:938`
-- `0x4bd880` `HudLineClip::ClipSegmentToCurrentXBounds` -> `src/Battlesport/hud_sensor_tracker_body.h:824`
-- `0x4bd9c0` `HudLineClip::ClipEndpointToX` -> `src/Battlesport/hud_sensor_tracker_body.h:780`
-- `0x4bd9f0` `HudLineClip::ClipSegmentToCurrentYBounds` -> `src/Battlesport/hud_sensor_tracker_body.h:881`
-- `0x4bdb30` `HudLineClip::ClipEndpointToY` -> `src/Battlesport/hud_sensor_tracker_body.h:795`
+- `0x4bd840` `HudLineClip::ClipSegmentToCurrentBounds` -> `src/Battlesport/hud_sensor_tracker_body.h:2392`
+- `0x4bd880` `HudLineClip::ClipSegmentToCurrentXBounds` -> `src/Battlesport/hud_sensor_tracker_body.h:2278`
+- `0x4bd9c0` `HudLineClip::ClipEndpointToX` -> `src/Battlesport/hud_sensor_tracker_body.h:2234`
+- `0x4bd9f0` `HudLineClip::ClipSegmentToCurrentYBounds` -> `src/Battlesport/hud_sensor_tracker_body.h:2335`
+- `0x4bdb30` `HudLineClip::ClipEndpointToY` -> `src/Battlesport/hud_sensor_tracker_body.h:2249`
 - `0x4bdb60` `zVideoFxPass3Element::Draw` -> `src/GameZRecoil/zVideo/zvid_main.c:3138`
 - `0x4bdbc0` `zVideoFxPass3RootElement::ApplyPass3` -> `src/GameZRecoil/zVideo/zvid_main.c:3185`
 - `0x4bdbe0` `zVideoFxPass3Slot::Constructor` -> `src/GameZRecoil/zVideo/zvid_main.c:3199`
