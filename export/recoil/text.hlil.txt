@@ -236,8 +236,8 @@
     struct PlayerAiMode2HandlerState* playerState = saveState->playerState
     struct AINetNode* nextNode = (*currentNodeInOut)->neighborRefs[playerState->pathIndex].node
     playerState->currentPathNode = nextNode
-    struct AINetNode* node = *currentNodeInOut
-    int32_t nodeIndex = node->nodeIndex
+    struct AINetNode* ecx_1 = *currentNodeInOut
+    int32_t nodeIndex = ecx_1->nodeIndex
     int32_t outBranchIndex
 
     if (nodeIndex s>= 0)
@@ -249,9 +249,9 @@
         int32_t excludedBranchIndex
 
         while (true)
-            void* ecx_3 = *(neighborByteOffset + nextNode)
+            void* ecx_4 = *(neighborByteOffset + nextNode)
 
-            if (ecx_3 != 0 && *(ecx_3 + 0x28) == nodeIndex)
+            if (ecx_4 != 0 && *(ecx_4 + 0x28) == nodeIndex)
                 excludedBranchIndex = candidateBranchIndex
                 break
 
@@ -265,7 +265,7 @@
         AINet::AiChooseNextPathBranchIndex(saveState, currentNodeInOut, &outBranchIndex, excludedBranchIndex)
         playerState->pathIndex = outBranchIndex
     else
-        AINetNode::Free(node)
+        AINetNode::Free(ecx_1)
         struct AINetNode* currentPathNode = playerState->currentPathNode
         *currentNodeInOut = currentPathNode
 
@@ -292,7 +292,7 @@
 }
 
 // Physical source-block row: src/Battlesport/ai_net.h emitted in src/Battlesport/ai_net.cpp, range [0x401060, 0x402f60). This is source-block/navigation evidence only, not an owner/tier gate.
-0x4016a0 void __fastcall AINet::AiChooseNextPathBranchIndex(struct zUtil_SaveGameState* saveState, struct AINetNode** currentNodeInOut, int32_t* outBranchIndex, int32_t excludedBranchIndex)
+0x4016a0 int32_t __fastcall AINet::AiChooseNextPathBranchIndex(struct zUtil_SaveGameState* saveState, struct AINetNode** currentNodeInOut, int32_t* outBranchIndex, int32_t excludedBranchIndex)
 {
     int32_t branchCount = 0
     union AINetNeighborSlot* eax = &(*currentNodeInOut)->neighborRefs
@@ -310,7 +310,7 @@
 
     if (branchCount == 1)
         *outBranchIndex = 0
-        return
+        return branchCount
 
     int32_t* selectedIndexOut
 
@@ -326,6 +326,8 @@
 
     if (eax_6 == excludedBranchIndex)
         *selectedIndexOut = mods.dp.d(eax_6 + 1, branchCount)
+
+    return 1
 }
 
 // Physical source-block row: src/Battlesport/ai_net.h emitted in src/Battlesport/ai_net.cpp, range [0x401060, 0x402f60). This is source-block/navigation evidence only, not an owner/tier gate.
@@ -419,8 +421,8 @@
         playerState->aiActivationTime = playerState->aiNotPursuitDwell + g_Player_TotalTimeSecScaled
 }
 
-// Physical source-block row: src/Battlesport/ai_net.h emitted in src/Battlesport/ai_net.cpp, range [0x401060, 0x402f60). This is source-block/navigation evidence only, not an owner/tier gate.
-0x401964 void __fastcall AINet::UpdateAiMode2MoveAndTurnTowardTargetForwarder(struct zUtil_SaveGameState* saveState, float forwardDot, float lateralDot, float targetDistance)
+// BN artifact; not a retail function. Bytes 0x401964..0x401970 are twelve 0x90 alignment NOPs between AINet::TickAiMode2SteeringSubstate's uint32_t[7] switch table at 0x401948 and the real function at 0x401970. Table targets are 0x401845, 0x401857, 0x401869, 0x40189c, 0x4018aa, 0x401893, and 0x40187b; none targets this interval. Current range xref audit found no code or data reference to 0x401964..0x401970. The apparent HLIL tailcall is analysis fallthrough from the final NOP into 0x401970 and is not source/function evidence. The bridge exposes no function-undefine tool, so this false function remains only as an explicitly marked database artifact. Within the accepted ai_net.h emission row; source-block/navigation fact only, not an owner/tier gate. Advisory review receipts: 2026-07-09T20-07-58-964Z and 2026-07-09T20-21-29-478Z.
+0x401964 void __fastcall PaddingBeforeAINetUpdateAiMode2MoveAndTurnTowardTarget(struct zUtil_SaveGameState* saveState, float forwardDot, float lateralDot, float targetDistance)
 {
     return AINet::UpdateAiMode2MoveAndTurnTowardTarget(saveState, forwardDot, lateralDot, targetDistance) __tailcall
 }
@@ -590,9 +592,9 @@
 }
 
 // Physical source-block row: src/Battlesport/ai_net.h emitted in src/Battlesport/ai_net.cpp, range [0x401060, 0x402f60). This is source-block/navigation evidence only, not an owner/tier gate.
-0x401c60 void __fastcall AINet::AiEnterMode2SteeringPursuit(void* arg1)
+0x401c60 void __fastcall AINet::AiEnterMode2SteeringPursuit(struct zUtil_SaveGameState* saveState)
 {
-    struct PlayerAiMode2AttackPursuitTransitionState* aiState = *(arg1 + 4)
+    struct PlayerAiMode2AttackPursuitTransitionState* aiState = saveState->playerState
     struct PlayerState* playerState = g_GameStateOrMapTable->playerState
 
     if (g_Player_AiMode2State1Finalized != 0)
@@ -673,7 +675,7 @@
 }
 
 // Physical source-block row: src/Battlesport/ai_net.h emitted in src/Battlesport/ai_net.cpp, range [0x401060, 0x402f60). This is source-block/navigation evidence only, not an owner/tier gate.
-0x401e50 int32_t __fastcall AINet::HasLineOfSightFromCameraTarget(struct zUtil_SaveGameState* saveState, struct zVec3* point, int32_t directionMode)
+0x401e50 int32_t __fastcall AINet::HasLineOfSightFromCameraTarget(struct zClass_Node* excludedNode, struct zVec3 const* point, int32_t directionMode)
 {
     struct PlayerState* playerState = g_GameStateOrMapTable->playerState
     float outX
@@ -681,7 +683,7 @@
     float outZ
     zClass_Camera::gwCameraGetTarget(g_MainCamera, &outX, &outY, &outZ)
     g_Variant_CurrentTag.count.d = playerState->variantTag.count.d
-    zClass_Class::gwNodeSetRaycastable(saveState, 0)
+    zClass_Class::gwNodeSetRaycastable(excludedNode, 0)
     zClass_Class::gwNodeSetRaycastable(playerState->rootNode, 0)
     zClass_cls_di::SetBreakOnFirstCandidate(1)
     zClass_cls_di::SetStopAfterFirstHit(0x40000)
@@ -711,7 +713,7 @@
     int32_t eax_7 = zClass_cls_di::RaycastFindClosest(g_Player_RuntimeDiScene, &rayData, startX, startY, startZ, endX, endY, endZ)
     zClass_cls_di::SetBreakOnFirstCandidate(0)
     zClass_Class::gwNodeSetRaycastable(playerState->rootNode, 1)
-    zClass_Class::gwNodeSetRaycastable(saveState, 1)
+    zClass_Class::gwNodeSetRaycastable(excludedNode, 1)
 
     if (eax_7 == 0 && rayData.candidateCount != 0)
         return 0
@@ -768,7 +770,7 @@
 }
 
 // Physical source-block row: src/Battlesport/ai_net.h emitted in src/Battlesport/ai_net.cpp, range [0x401060, 0x402f60). This is source-block/navigation evidence only, not an owner/tier gate.
-0x402080 void __thiscall AINet::AiRestoreSavedTopLevelState(struct zUtil_SaveGameState* saveState)
+0x402080 void __fastcall AINet::AiRestoreSavedTopLevelState(struct zUtil_SaveGameState* saveState)
 {
     struct PlayerState* playerState = saveState->playerState
     playerState->aiTopLevelState = playerState->aiSavedTopLevelState
@@ -1728,7 +1730,7 @@
 }
 
 // Physical source-block row: src/Battlesport/ai_net.cpp body, range [0x402fd0, 0x4038a0), one of 6 recorded source-shape layers. Literal evidence: D:\Proj\Battlesport\ai_net.cpp @ 0x4da1e8, xref 0x4030bb. This is source-block/navigation evidence only, not an owner/tier gate.
-0x403550 void __thiscall AINet::ResolveNeighborLinksAndBuildProbeFans(struct AINetNode* nodeListHead, float pathWidth)
+0x403550 void __fastcall AINet::ResolveNeighborLinksAndBuildProbeFans(struct AINetNode* nodeListHead, float pathWidth)
 {
     struct AINetNode* nodeListHead_1 = nodeListHead
     struct AINetNode* nodeListHead_2 = nodeListHead_1
@@ -1867,12 +1869,12 @@
 }
 
 // Physical source-block row: src/Battlesport/ai_net.cpp body, range [0x402fd0, 0x4038a0), one of 6 recorded source-shape layers. Literal evidence: D:\Proj\Battlesport\ai_net.cpp @ 0x4da1e8, xref 0x4030bb. This is source-block/navigation evidence only, not an owner/tier gate.
-0x4037c0 void __fastcall AINetNode::Free(struct AINetNode* node)
+0x4037c0 void __thiscall AINetNode::Free(struct AINetNode* self)
 {
-    if (node == 0)
+    if (self == 0)
         return
 
-    struct AINetPathProbeFan** edgePayloadSlot = &node->probeFans
+    struct AINetPathProbeFan** edgePayloadSlot = &self->probeFans
     int32_t remainingSlots = 3
     int32_t remainingBeforeDec
 
@@ -1886,23 +1888,23 @@
         remainingBeforeDec = remainingSlots
         remainingSlots -= 1
     while (remainingBeforeDec != 1)
-    free(node)
+    free(self)
 }
 
 // Physical source-block row: src/Battlesport/ai_net.cpp body, range [0x402fd0, 0x4038a0), one of 6 recorded source-shape layers. Literal evidence: D:\Proj\Battlesport\ai_net.cpp @ 0x4da1e8, xref 0x4030bb. This is source-block/navigation evidence only, not an owner/tier gate.
-0x403800 void __fastcall AINet::Free(struct AINet* aiNet)
+0x403800 void __thiscall AINet::Free(struct AINet* self)
 {
-    if (aiNet == 0)
+    if (self == 0)
         return
 
-    struct AINetNode* i = aiNet->nodeListHead
+    struct AINetNode* i = self->nodeListHead
 
     while (i != 0)
-        struct AINetNode* node = i
+        struct AINetNode* i_1 = i
         i = i->next
-        AINetNode::Free(node)
+        AINetNode::Free(i_1)
 
-    free(aiNet)
+    free(self)
 }
 
 // Physical source-block row: src/Battlesport/ai_net.cpp body, range [0x402fd0, 0x4038a0), one of 6 recorded source-shape layers. Literal evidence: D:\Proj\Battlesport\ai_net.cpp @ 0x4da1e8, xref 0x4030bb. This is source-block/navigation evidence only, not an owner/tier gate.
@@ -28934,14 +28936,14 @@
     TEB* fsbase
     struct _EXCEPTION_REGISTRATION_RECORD* ExceptionList = fsbase->NtTib.ExceptionList
     fsbase->NtTib.ExceptionList = &ExceptionList
-    int32_t __saved_esi
-    int32_t* esp = &__saved_esi
+    struct CString __saved_esi
+    struct CString* esp = &__saved_esi
 
     if ((node->flags & 0x200000) != 0)
-        char* callbackContext = node->callbackContext
+        struct CString callbackContext = node->callbackContext
 
-        if ((callbackContext[0x28] & 2) != 0)
-            char* callbackContext_1 = callbackContext
+        if ((*(callbackContext + 0x28) & 2) != 0)
+            struct CString callbackContext_1 = callbackContext
             struct CString _String_1
             CString::CString(&_String_1, callbackContext_1)
             int32_t var_4_1 = 0
@@ -28971,8 +28973,8 @@
             int32_t var_8_1 = 0xffffffff
             CString::~CString(&__saved_esi)
 
-    fsbase->NtTib.ExceptionList = esp[3]
-    *esp
+    fsbase->NtTib.ExceptionList = esp->__offset(0xc).d
+    esp->m_pchData
     return 0
 
     // [comments not attached to rendered lines]
@@ -49366,7 +49368,7 @@
     // BN stack merge: the &self/atoi(self) display is the local queryFieldText CString at stack -0x20, not the event-sink receiver.
     CString::operator=(&self, CString::Mid(&encodedQuery, &var_10, 0))
     var_8.b = 1
-    int32_t __saved_esi
+    struct CString __saved_esi
     CString::~CString(&__saved_esi)
     int32_t wParam = atoi(self)
     SendMessageA(g_pWestwoodOnlineUpgradeDialog->m_sessionModeCombo.base.m_hWnd, 0x14e, wParam, 0)
@@ -49433,7 +49435,7 @@
     // BN stack merge: the &self/atoi(self) display is the local queryFieldText CString at stack -0x20, not the event-sink receiver.
     CString::operator=(&self, CString::Mid(&encodedQuery, &var_10, 0))
     var_8.b = 1
-    int32_t __saved_esi
+    struct CString __saved_esi
     CString::~CString(&__saved_esi)
     int32_t wParam = atoi(self)
     SendMessageA(g_pWestwoodOnlineUpgradeDialog->m_sessionModeCombo.base.m_hWnd, 0x14e, wParam, 0)
@@ -50162,7 +50164,7 @@
     TEB* fsbase
     struct _EXCEPTION_REGISTRATION_RECORD* ExceptionList = fsbase->NtTib.ExceptionList
     fsbase->NtTib.ExceptionList = &ExceptionList
-    struct CWnd* var_13c = nullptr
+    struct CString var_13c = 0
     struct WestwoodOnlineUpgradeConfigDialog configDialog
     WestwoodOnlineUpgradeConfigDialog::Constructor(&configDialog, var_13c)
     int32_t var_4 = 0
@@ -50198,17 +50200,17 @@
     // GetSelectedProfileValues returns void and fills outPlayerName/outConnectString/selectedProfileConnectStringMode by pointer. HLIL's ecx_3 return capture is a stack-temp artifact.
     char* outPlayerName
     char* outConnectString
-    struct CWnd* ecx_3 = WestwoodOnlineUpgradeConfigDialog::GetSelectedProfileValues(&configDialog, &outPlayerName, &outConnectString, var_13c)
+    struct CString ecx_3 = WestwoodOnlineUpgradeConfigDialog::GetSelectedProfileValues(&configDialog, &outPlayerName, &outConnectString, var_13c)
     char* outPlayerName_1 = outPlayerName
     // BN models the stack CString temporary slot as var_13c/ecx_*; assembly is reserving and constructing CString temporaries for the two selected-profile setter calls.
     var_13c = ecx_3
-    struct CWnd** var_130 = &var_13c
+    struct CString* var_130 = &var_13c
     // Constructs a temporary CString from outPlayerName for SetSelectedProfilePlayerName; this is not a CWnd* var_13c semantic local.
     CString::CString(&var_13c, outPlayerName_1)
-    struct CWnd* ecx_6 = WestwoodOnlineUpgradeDialog::SetSelectedProfilePlayerName(g_pWestwoodOnlineUpgradeDialog, var_13c)
+    struct CString ecx_6 = WestwoodOnlineUpgradeDialog::SetSelectedProfilePlayerName(g_pWestwoodOnlineUpgradeDialog, var_13c)
     char* outConnectString_1 = outConnectString
     var_13c = ecx_6
-    struct CWnd** var_130_1 = &var_13c
+    struct CString* var_130_1 = &var_13c
     // Constructs a temporary CString from outConnectString for SetSelectedProfileConnectString; this reuses the caller's transient stack argument slot.
     CString::CString(&var_13c, outConnectString_1)
     WestwoodOnlineUpgradeDialog::SetSelectedProfileConnectString(g_pWestwoodOnlineUpgradeDialog, var_13c)

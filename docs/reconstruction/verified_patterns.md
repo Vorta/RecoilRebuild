@@ -1,8 +1,10 @@
 # Verified Patterns
 
-This ledger captures reusable source and verification shapes that have current
-tier `S` evidence. Binary Ninja, `.agent/SOURCE_OWNERS.json`, and per-target VC
-artifacts remain authoritative for individual functions.
+This ledger captures reusable source and verification shapes backed by current
+evidence. It is not a tier ledger: individual entries state whether their
+evidence is address-local, owner-scoped, or provider-scoped. Binary Ninja,
+`.agent/SOURCE_OWNERS.json`, and per-target VC artifacts remain authoritative
+for individual functions and owner tiers.
 
 ## Current Patterns
 
@@ -90,6 +92,45 @@ artifacts remain authoritative for individual functions.
   a cached single-evaluation local.
   This does not permit naked/whole-function asm, `_emit`, raw EBP offsets, or
   unrelated AINet raw assembly.
+- AINet path-cursor loop ordering: `0x401580`
+  (`AINet::AiAdvancePathCursorAndComputeTargetVec`) is ordinary C++ through the
+  reverse-edge scan and merge; only the final recurring grouped-x87 vector
+  subtraction remains an inline-assembly macro. Under VC5SP3 11.00.7022 with
+  `/nologo /TP /W3 /MD /G5 /O2 /Ob0 /Zp4 /FAcs` and the local frame-pointer
+  region, both the `do/while` and `for (;;)` plus positive-`continue` forms
+  produced 109 unmasked mismatches, a 285-byte body, three NOPs, and the second
+  helper relocation at `+0xc5`. The pre-tested
+  `while (branchOffset < 0x18)` produced zero mismatches, a 283-byte body in a
+  288-byte extent, five NOPs, a `0x10` frame, the retail `+0xc3` relocation,
+  and the direct retail `jl` loop latch. The supported cause is VC5 front-end
+  CFG/basic-block ordering: it folds the statically true initial test but
+  retains the pre-tested source form's block order. The exact original lexical
+  tokens remain unprovable.
+- AINet path-helper linkage caveat: TU-static and class-static forms of
+  `0x4016a0` (`AiChooseNextPathBranchIndex`) produced byte-equivalent caller and
+  callee code, so linkage was not the cause of the `0x401580` loop-layout
+  difference. The class-static form remains for semantic and functional-test
+  API consistency.
+- Hard-byte differential prompt case study (`0x401580`): ask ChatGPT Pro a
+  causal side-by-side code-generation question instead of asking it to validate
+  an assumed source form. The earlier review prompt prematurely assumed a
+  bottom-tested loop and explicitly excluded a pre-tested `while`; the later
+  self-contained differential inquiry isolated the remaining
+  109-mismatch/two-byte CFG delta and asked Pro to challenge that premise.
+  Attach
+  complete retail assembly, complete candidate assembly, complete candidate
+  C++, and the exact VC5 profile, plus frame/register/stack-slot/relocation/body
+  size/function-order facts, failed one-axis probes, recurring macro evidence,
+  and the full relevant HLIL and user-type exports. Ask Pro to compare exact
+  `for`/`while`/`do-while`/`break`/`continue` forms, predict the critical
+  assembly, separate linkage from body codegen, rank bounded one-axis probes
+  with hard stops, and state contradictions or missing evidence. Pro's
+  first-ranked explicit-`continue` probe failed unchanged; its second-ranked
+  pre-tested `while` matched. The reusable value was the bounded hypothesis
+  ladder, not treating Pro as an oracle. Reproduce with
+  `python tools/recoil.py verify vc5 0x401580`. This is narrow address/block
+  evidence, not source-owner acceptance, `Model: source-faithful`, or tier `S`
+  evidence.
 - HUD/UI leaf accessors and setters: verified examples include
   `HudUiElement::GetX` and nearby small HUD helpers. Prefer named fields and
   static layout checks over offset math once Binary Ninja types are stable.

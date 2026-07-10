@@ -2,34 +2,34 @@
   "version": 1,
   "issues": [
     {
-      "id": "WSI-20260706-001",
+      "id": "WSI-20260710-001",
       "status": "resolved",
-      "kind": "tool-error",
+      "kind": "improvement",
       "severity": "medium",
-      "created": "2026-07-06T04:25:45Z",
-      "updated": "2026-07-06T04:30:32Z",
-      "summary": "verify vc5 --target <name> fails with --targets-json invalid JSON while positional target invocation works",
-      "area": "tools/recoil.py verify vc5",
-      "impact": "Source-worker handoffs and agent validation can fail when using the stale --target selector shape even though the same VC5 manifest runs successfully as a positional selector; this slows validation but has a safe positional workaround.",
-      "next_action": "Inspect tools/recoil.py and tools/_recoil/commands/vc5_verify.py command routing. Either support --target <name> as an alias for the positional target selector or update agent-facing docs/handoffs so they never use the unsupported selector.",
+      "created": "2026-07-10T14:43:51Z",
+      "updated": "2026-07-10T14:52:47Z",
+      "summary": "Owner CLI cannot rewrite stale temporary evidence entries",
+      "area": "tools/_recoil/commands/owner_cli.py",
+      "impact": "SOURCE_OWNERS is CLI-only, but six owner evidence entries contain paths into an ignored temporary artifact directory that must be cleared; current commands can only append evidence, so cleanup would otherwise require a forbidden hand edit.",
+      "next_action": "Delegate to recoil_tool_maintainer; add CLI/library tests, validate agent-surface registration, then let the parent run dry-run and apply mutations followed by owner audit --strict.",
       "commands": [],
       "files": [],
       "tags": [],
       "history": [
         {
-          "at": "2026-07-06T04:25:45Z",
+          "at": "2026-07-10T14:43:51Z",
           "action": "created",
           "note": "Issue recorded for future agent tooling/process repair."
         },
         {
-          "at": "2026-07-06T04:30:32Z",
+          "at": "2026-07-10T14:52:47Z",
           "action": "resolved",
-          "note": "Resolved the VC5 selector parsing defect by adding an explicit repeatable verify-vc5 --target selector alias. The previous behavior came from argparse treating --target as an abbreviation for --targets-json, causing plain target names to be parsed as invalid JSON. The alias now routes through the same explicit selector path as positional target names and preserves --targets-json behavior. Parent validation passed: python tools/recoil.py verify vc5 --target hud_ui_background_load_zrd --skip-bn-compare; python -m unittest tests.tools.recoil_vc5_verify_tests; python tools/recoil.py issue audit --strict. Tool-maintainer validation also passed recoil_cli_tests and agent-surface audit."
+          "note": "Added governed owner replace-evidence with strict unique-match and one-occurrence validation, whole-item replacement, empty/unchanged rejection, field preservation, SHA-256 supersession audit evidence without stale text, dry-run support, and saved/hash reporting. Added focused owner CLI and command registry tests plus the tools README command-index row. Parent reran both focused test suites, agent-surface audit, and issue audit successfully, then applied six governed owner evidence replacements and confirmed owner audit has zero findings."
         }
       ],
-      "actual": "python tools/recoil.py verify vc5 --target hud_ui_background_load_zrd fails with --targets-json: invalid JSON; python tools/recoil.py verify vc5 hud_ui_background_load_zrd runs the expected VC5 verification target.",
-      "repro": "From repository root, run: python tools/recoil.py verify vc5 --target hud_ui_background_load_zrd. Compare with: python tools/recoil.py verify vc5 hud_ui_background_load_zrd.",
-      "resolution": "Resolved the VC5 selector parsing defect by adding an explicit repeatable verify-vc5 --target selector alias. The previous behavior came from argparse treating --target as an abbreviation for --targets-json, causing plain target names to be parsed as invalid JSON. The alias now routes through the same explicit selector path as positional target names and preserves --targets-json behavior. Parent validation passed: python tools/recoil.py verify vc5 --target hud_ui_background_load_zrd --skip-bn-compare; python -m unittest tests.tools.recoil_vc5_verify_tests; python tools/recoil.py issue audit --strict. Tool-maintainer validation also passed recoil_cli_tests and agent-surface audit."
+      "requested_change": "Add owner replace-evidence OWNER_ID --match TEXT --replacement TEXT --evidence TEXT --dry-run. Require exactly one matching evidence item and one occurrence, replace the whole matched item, preserve every non-evidence owner field, and append an audit entry containing the caller rationale and SHA-256 of the superseded evidence text.",
+      "benefit": "Allows governed replacement of ephemeral paths with inlined durable facts while retaining an auditable evidence history.",
+      "resolution": "Added governed owner replace-evidence with strict unique-match and one-occurrence validation, whole-item replacement, empty/unchanged rejection, field preservation, SHA-256 supersession audit evidence without stale text, dry-run support, and saved/hash reporting. Added focused owner CLI and command registry tests plus the tools README command-index row. Parent reran both focused test suites, agent-surface audit, and issue audit successfully, then applied six governed owner evidence replacements and confirmed owner audit has zero findings."
     }
   ]
 }

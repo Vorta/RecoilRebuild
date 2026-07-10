@@ -6,7 +6,7 @@ Binary Ninja remains authoritative; this map is an agent navigation aid.
 It contains address-backed provenance docblocks, plus legacy line comments until touched source is converted.
 It excludes helpers fully inlined by the retail compiler.
 
-Entries: 3711
+Entries: 3713
 
 ## Case-insensitive source path collisions
 
@@ -18,43 +18,45 @@ These original-source labels differ only by case on Windows; confirm placement a
 
 ## Battlesport/ai_net.cpp
 
-- `0x402fd0` `AINet::LoadAllFromZrd` -> `src/Battlesport/ai_net.cpp:269`
-- `0x402ff0` `AINet::Alloc` -> `src/Battlesport/ai_net.cpp:279`
-- `0x403040` `AINet::LoadFromZrd` -> `src/Battlesport/ai_net.cpp:302`
-- `0x403510` `AINet::FindByNetId` -> `src/Battlesport/ai_net.cpp:600`
-- `0x403530` `AINet::FindNodeByIndex` -> `src/Battlesport/ai_net.cpp:618`
-- `0x403550` `AINet::ResolveNeighborLinksAndBuildProbeFans` -> `src/Battlesport/ai_net.cpp:637`
-- `0x403620` `AINetPathProbeFan::InitFromSegment` -> `src/Battlesport/ai_net.cpp:680`
-- `0x4036f0` `AINet::FindNearestNode` -> `src/Battlesport/ai_net.cpp:761`
-- `0x4037c0` `AINetNode::Free` -> `src/Battlesport/ai_net.cpp:816`
-- `0x403800` `AINet::Free` -> `src/Battlesport/ai_net.cpp:837`
-- `0x403870` `AINet::FreeAll` -> `src/Battlesport/ai_net.cpp:879`
+- `0x402fd0` `AINet::LoadAllFromZrd` -> `src/Battlesport/ai_net.cpp:273`
+- `0x402ff0` `AINet::Alloc` -> `src/Battlesport/ai_net.cpp:283`
+- `0x403040` `AINet::LoadFromZrd` -> `src/Battlesport/ai_net.cpp:306`
+- `0x403510` `AINet::FindByNetId` -> `src/Battlesport/ai_net.cpp:604`
+- `0x403530` `AINet::FindNodeByIndex` -> `src/Battlesport/ai_net.cpp:622`
+- `0x403550` `AINet::ResolveNeighborLinksAndBuildProbeFans` -> `src/Battlesport/ai_net.cpp:641`
+- `0x403620` `AINetPathProbeFan::InitFromSegment` -> `src/Battlesport/ai_net.cpp:684`
+- `0x4036f0` `AINet::FindNearestNode` -> `src/Battlesport/ai_net.cpp:765`
+- `0x4037c0` `AINetNodeFree_4037C0_VC5Diagnostic` -> `src/Battlesport/ai_net.cpp:821`
+- `0x4037c0` `AINetNode::Free` -> `src/Battlesport/ai_net.cpp:842`
+- `0x403800` `AINet::Free` -> `src/Battlesport/ai_net.cpp:864`
+- `0x403870` `AINet::FreeAll` -> `src/Battlesport/ai_net.cpp:914`
 - `0x4340c0` `OptCatalog::AltGunDispatchAllocRuntimeGateCallback` -> `src/GameZRecoil/zWeapon/zwep_init.c:1865`
 
 ## Battlesport/ai_net.h
 
-- `0x401060` `AINet::TickAiMode2TopLevel` -> `src/Battlesport/ai_net.h:763`
-- `0x401180` `AINet::TickAiMode2PathFollow` -> `src/Battlesport/ai_net.h:844`
-- `0x401420` `AINet::AiMode2ForwardProbeRequiresAutoTurn` -> `src/Battlesport/ai_net.h:973`
-- `0x401580` `AINet::AiAdvancePathCursorAndComputeTargetVec` -> `src/Battlesport/ai_net.h:1032`
-- `0x4016a0` `AINet::AiChooseNextPathBranchIndex` -> `src/Battlesport/ai_net.h:1112`
-- `0x401710` `AINet::TickAiMode2SteeringSubstate` -> `src/Battlesport/ai_net.h:1151`
-- `0x401970` `AINet::UpdateAiMode2MoveAndTurnTowardTarget` -> `src/Battlesport/ai_net.h:1268`
-- `0x401a40` `AINet::TickAiMode2OffsetTargetSteering` -> `src/Battlesport/ai_net.h:1311`
-- `0x401ab0` `AINet::TickAiMode2DynamicOffsetTargetSteering` -> `src/Battlesport/ai_net.h:1348`
-- `0x401b20` `AINet::AiTryEnterMode2AttackPursuitIfLineOfSight` -> `src/Battlesport/ai_net.h:1385`
-- `0x401c00` `AINet::AiAlertAttackBuddies` -> `src/Battlesport/ai_net.h:1426`
-- `0x401c60` `AINet::AiEnterMode2SteeringPursuit` -> `src/Battlesport/ai_net.h:1449`
-- `0x401f60` `AINet::AiRebuildSyntheticPathToNodeIfFar` -> `src/Battlesport/ai_net.h:1637`
-- `0x402090` `AINet::UpdateAiMode2TurnTowardPlayerNoThrottle` -> `src/Battlesport/ai_net.h:1695`
-- `0x402170` `AINet::UpdateAiMode2TurnInPlaceTowardPlayer` -> `src/Battlesport/ai_net.h:1741`
-- `0x402250` `AINet::TickAiMode2AltGunAttackWindow` -> `src/Battlesport/ai_net.h:1787`
-- `0x4024a0` `AINet::SolveAltGunLeadTargetPoint` -> `src/Battlesport/ai_net.h:1895`
-- `0x4026d0` `AINet::UpdateAiMode2MoveAndTurnTowardOffsetTarget` -> `src/Battlesport/ai_net.h:1954`
-- `0x4028c0` `AINet::UpdateAiMode2MoveAndTurnTowardDynamicOffsetTarget` -> `src/Battlesport/ai_net.h:2018`
-- `0x402b70` `AINet::TickAiMode2TimedPathSteering` -> `src/Battlesport/ai_net.h:2109`
-- `0x402be0` `AINet::AiSteerTowardPathNodeForward` -> `src/Battlesport/ai_net.h:2135`
-- `0x402d60` `AINet::AiSteerTowardPathNodeReverse` -> `src/Battlesport/ai_net.h:2207`
+- `0x401060` `AINet::TickAiMode2TopLevel` -> `src/Battlesport/ai_net.h:888`
+- `0x401180` `AINet::TickAiMode2PathFollow` -> `src/Battlesport/ai_net.h:969`
+- `0x401420` `AINet::AiMode2ForwardProbeRequiresAutoTurn` -> `src/Battlesport/ai_net.h:1098`
+- `0x401580` `AINet::AiAdvancePathCursorAndComputeTargetVec` -> `src/Battlesport/ai_net.h:1157`
+- `0x4016a0` `AiChooseNextPathBranchIndex_4016A0_VC5Diagnostic` -> `src/Battlesport/ai_net.h:1267`
+- `0x4016a0` `AINet::AiChooseNextPathBranchIndex` -> `src/Battlesport/ai_net.h:1273`
+- `0x401710` `AINet::TickAiMode2SteeringSubstate` -> `src/Battlesport/ai_net.h:1313`
+- `0x401970` `AINet::UpdateAiMode2MoveAndTurnTowardTarget` -> `src/Battlesport/ai_net.h:1430`
+- `0x401a40` `AINet::TickAiMode2OffsetTargetSteering` -> `src/Battlesport/ai_net.h:1473`
+- `0x401ab0` `AINet::TickAiMode2DynamicOffsetTargetSteering` -> `src/Battlesport/ai_net.h:1510`
+- `0x401b20` `AINet::AiTryEnterMode2AttackPursuitIfLineOfSight` -> `src/Battlesport/ai_net.h:1547`
+- `0x401c00` `AINet::AiAlertAttackBuddies` -> `src/Battlesport/ai_net.h:1588`
+- `0x401c60` `AINet::AiEnterMode2SteeringPursuit` -> `src/Battlesport/ai_net.h:1611`
+- `0x401f60` `AINet::AiRebuildSyntheticPathToNodeIfFar` -> `src/Battlesport/ai_net.h:1799`
+- `0x402090` `AINet::UpdateAiMode2TurnTowardPlayerNoThrottle` -> `src/Battlesport/ai_net.h:1857`
+- `0x402170` `AINet::UpdateAiMode2TurnInPlaceTowardPlayer` -> `src/Battlesport/ai_net.h:1903`
+- `0x402250` `AINet::TickAiMode2AltGunAttackWindow` -> `src/Battlesport/ai_net.h:1949`
+- `0x4024a0` `AINet::SolveAltGunLeadTargetPoint` -> `src/Battlesport/ai_net.h:2057`
+- `0x4026d0` `AINet::UpdateAiMode2MoveAndTurnTowardOffsetTarget` -> `src/Battlesport/ai_net.h:2116`
+- `0x4028c0` `AINet::UpdateAiMode2MoveAndTurnTowardDynamicOffsetTarget` -> `src/Battlesport/ai_net.h:2180`
+- `0x402b70` `AINet::TickAiMode2TimedPathSteering` -> `src/Battlesport/ai_net.h:2271`
+- `0x402be0` `AINet::AiSteerTowardPathNodeForward` -> `src/Battlesport/ai_net.h:2297`
+- `0x402d60` `AINet::AiSteerTowardPathNodeReverse` -> `src/Battlesport/ai_net.h:2369`
 
 ## Battlesport/AiPropertyDlg.cpp
 
@@ -1642,14 +1644,14 @@ These original-source labels differ only by case on Windows; confirm placement a
 - `0x401030` `CAboutDlg::GetMessageMap` -> `src/Battlesport/about.cpp:29`
 - `0x401040` `CWnd::BeginModalState` -> `src/Battlesport/about.cpp:34`
 - `0x401050` `CWnd::EndModalState` -> `src/Battlesport/about.cpp:35`
-- `0x401d50` `AINet::HasLineOfSightFromLocalPlayerFxOffset` -> `src/Battlesport/ai_net.h:1497`
-- `0x401e50` `AINet::HasLineOfSightFromCameraTarget` -> `src/Battlesport/ai_net.h:1563`
-- `0x402080` `AINet::AiRestoreSavedTopLevelState` -> `src/Battlesport/ai_net.h:1682`
-- `0x402f10` `AINet::AiFinalizeMode2State1ForAllPlayers` -> `src/Battlesport/ai_net.h:2283`
+- `0x401d50` `AINet::HasLineOfSightFromLocalPlayerFxOffset` -> `src/Battlesport/ai_net.h:1659`
+- `0x401e50` `AINet::HasLineOfSightFromCameraTarget` -> `src/Battlesport/ai_net.h:1725`
+- `0x402080` `AINet::AiRestoreSavedTopLevelState` -> `src/Battlesport/ai_net.h:1844`
+- `0x402f10` `AINet::AiFinalizeMode2State1ForAllPlayers` -> `src/Battlesport/ai_net.h:2445`
 - `0x402f60` `zMath::Vec3Normalize` -> `src/GameZRecoil/zMath/zmth.h:11`
-- `0x403620` `AINetPathProbeFan::InitFromSegment path-width store` -> `src/Battlesport/ai_net.cpp:747`
-- `0x403750` `AINet::BuildAiPeerRingsByAiNetId` -> `src/Battlesport/ai_net.cpp:787`
-- `0x403830` `AINet::AiDiscardNegativeBranchPathNodes` -> `src/Battlesport/ai_net.cpp:856`
+- `0x403620` `AINetPathProbeFan::InitFromSegment path-width store` -> `src/Battlesport/ai_net.cpp:751`
+- `0x403750` `AINet::BuildAiPeerRingsByAiNetId` -> `src/Battlesport/ai_net.cpp:791`
+- `0x403830` `AINet::AiDiscardNegativeBranchPathNodes` -> `src/Battlesport/ai_net.cpp:887`
 - `0x4038a0` `HudUiBriefingObjectivePicture::DrawWithNoiseOverlay` -> `src/Battlesport/Briefing.cpp:432`
 - `0x403e20` `HudUiCompositePanel::Destructor` -> `src/Battlesport/Briefing.cpp:704`
 - `0x404400` `Briefing::BuildObjectiveActionsFromIndex` -> `src/Battlesport/Briefing.cpp:908`

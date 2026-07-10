@@ -110940,7 +110940,8 @@
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized core_util_archive/shared data-dependency reconciliation safe subset; rows with incomplete parentage or metadata blockers intentionally left blocked",
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized render_video data-dependency reconciliation; render_video.zrndr_global_string_table_data intentionally left blocked pending owner-shape remap",
         "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked",
-        "Dependency cleanup after 2026-07-08 hud_small_stub_layer source-shape repair: RecoilStateDialogHost is modeled as standalone RECOIL_NOVTABLE dialog host, not real RecoilStateBase inheritance; scoped membership audit found no direct BN support for DialogHost -> legacy.app_shell.cluster_recoilstatebase, and cluster_recoilstatebase owns RecoilStateCredits functions rather than 0x407170/0x4ccd50. ChatGPT Pro receipt .devspace/runs/2026-07-08T12-36-58-435Z-chatgpt-call/receipt.json and recoil_source_owner_scrutinizer ALLOW."
+        "Dependency cleanup after the 2026-07-08 hud_small_stub_layer source-shape repair: RecoilStateDialogHost is modeled as a standalone RECOIL_NOVTABLE dialog host, not real RecoilStateBase inheritance. A scoped membership audit found no direct BN support for DialogHost -> legacy.app_shell.cluster_recoilstatebase; that cluster owns RecoilStateCredits functions rather than 0x407170/0x4ccd50. A 2026-07-08 ChatGPT Pro advisory review, transcript-content SHA-256 A83D77E8D88B9D544138ADAC716E467DCB6C52262796E584BAA93174689262D2, conditionally allowed removing the stale edge only after that local audit; recoil_source_owner_scrutinizer then returned ALLOW. The review separately blocked assigning 0x407170/0x4ccd50 to this owner or automatically to the stale cluster.",
+        "evidence item replaced; superseded_sha256=8df081b5012de81ff631d8f42808deb55501e5611fe9b64a57f3f634356e02e2; replacement_sha256=532422f6a4ecad6e6edfd0904b8753b98650e84e82bc39fcac7ca7baebc9fa77; rationale=Temporary evidence-path cleanup: inline the durable advisory conclusion and identify the superseded evidence item by SHA-256."
       ],
       "binary": "recoil",
       "relationships": [
@@ -121767,7 +121768,8 @@
         "linkage gate migration: linkage=accepted: Controlled linkage update after scrutinized render_video data-dependency reconciliation; render_video.zrndr_global_string_table_data intentionally left blocked pending owner-shape remap",
         "HudUiFillBitmap class-local ZRD key literal; partial HUD scrutiny allowed linkage-only migration.",
         "linkage gate migration: linkage=accepted: Controlled linkage update after partial HUD source-owner scrutiny allowed six low-risk data-dependency rows; blocked and unreviewed HUD rows intentionally left blocked",
-        "2026-07-08 BN/provider-classifier reconciliation: 0x40cf50 is a one-instruction VC5 compiler/EH cleanup forwarding thunk to authored HudUiFillBitmap::DestructorCore at 0x4b84d0, not the authored class anchor; Pro receipt .devspace/runs/2026-07-08T21-33-37-842Z-chatgpt-call/receipt.json."
+        "2026-07-08 BN/provider-classifier reconciliation: 0x40cf50 is one direct jump to 0x4b84d0 HudUiFillBitmap::DestructorCore, with padding outside the function, and is reached by scalar-deleting-destructor and EH-cleanup references. A ChatGPT Pro advisory review of 0x40cf20..0x40cf50, transcript-content SHA-256 3AED554DF688E0518078676CE7518F30888EA681AF4865C58C44E8525CFB907B, classified all four rows as non-authored VC5 compiler/EH cleanup forwarding thunks and specifically blocked retaining 0x40cf50 as the authored class anchor. The row remains related to the authored HudUiFillBitmap owner only as compiler-boundary dependency evidence.",
+        "evidence item replaced; superseded_sha256=c0f8d4d132fa79c6d481fe5ac4f4ce320d68d7547398f70b46dc2175b39179cf; replacement_sha256=c5078fdfe7d482f691ab0e553bb1b434e03c26c8cf8ed8de318943fc2e97da50; rationale=Temporary evidence-path cleanup: inline the durable advisory conclusion and identify the superseded evidence item by SHA-256."
       ],
       "binary": "recoil",
       "relationships": [
@@ -144512,8 +144514,9 @@
       },
       "blocker": "pending",
       "evidence": [
-        "BN row is one direct jmp to 0x4b7020 HudUiCheckToggleWidget::DestructorCore with padding outside the function; reached by scalar-deleting destructor and EH cleanup refs; 2026-07-08 provider classifier with ChatGPT Pro receipt .devspace/runs/2026-07-08T21-33-37-842Z-chatgpt-call/receipt.json classifies it as a non-authored VC5 compiler/EH cleanup forwarding thunk.",
-        "Boundary accepted only: 2026-07-08 BN facts and provider-classifier/ChatGPT Pro receipt classify 0x40cf30 as a VC5 compiler/EH cleanup forwarding thunk to authored HudUiCheckToggleWidget::DestructorCore; no source/data/functional/linkage/byte gate acceptance follows."
+        "BN row is one direct jump to 0x4b7020 HudUiCheckToggleWidget::DestructorCore, with padding outside the function, and is reached by scalar-deleting-destructor and EH-cleanup references. The 2026-07-08 provider classifier and ChatGPT Pro advisory review of the uninterrupted 0x40cf00..0x40cf60 order range, transcript-content SHA-256 3AED554DF688E0518078676CE7518F30888EA681AF4865C58C44E8525CFB907B, classified 0x40cf30 as a non-authored VC5 compiler/EH cleanup forwarding thunk. This classification permits a non-primary compiler-boundary dependency relation but is not authored-primary, source-order, byte-readiness, source-owner-tier, or SDK-provider evidence.",
+        "Boundary accepted only: 2026-07-08 BN facts and provider-classifier/ChatGPT Pro receipt classify 0x40cf30 as a VC5 compiler/EH cleanup forwarding thunk to authored HudUiCheckToggleWidget::DestructorCore; no source/data/functional/linkage/byte gate acceptance follows.",
+        "evidence item replaced; superseded_sha256=38573581d0a1c81db7dbc94337fc74b0ae3e14cd77987ec7f36d09943ddc5927; replacement_sha256=89c04e023cd50dbc97177468d21e49309cb1f0ea8a24d9029c2d36bdfc2f785c; rationale=Temporary evidence-path cleanup: inline the durable advisory conclusion and identify the superseded evidence item by SHA-256."
       ],
       "binary": "recoil",
       "relationships": [
@@ -144559,8 +144562,9 @@
       },
       "blocker": "pending",
       "evidence": [
-        "BN row is one direct jmp to 0x4b7de0 HudUiCycleSelectorWidget::DestructorCore with padding outside the function; reached by scalar-deleting destructor and EH cleanup refs; 2026-07-08 provider classifier with ChatGPT Pro receipt .devspace/runs/2026-07-08T21-33-37-842Z-chatgpt-call/receipt.json classifies it as a non-authored VC5 compiler/EH cleanup forwarding thunk.",
-        "Boundary accepted only: 2026-07-08 BN facts and provider-classifier/ChatGPT Pro receipt classify 0x40cf40 as a VC5 compiler/EH cleanup forwarding thunk to authored HudUiCycleSelectorWidget::DestructorCore; no source/data/functional/linkage/byte gate acceptance follows."
+        "BN row is one direct jump to 0x4b7de0 HudUiCycleSelectorWidget::DestructorCore, with padding outside the function, and is reached by scalar-deleting-destructor and EH-cleanup references. The 2026-07-08 provider classifier and ChatGPT Pro advisory review of the uninterrupted 0x40cf00..0x40cf60 order range, transcript-content SHA-256 3AED554DF688E0518078676CE7518F30888EA681AF4865C58C44E8525CFB907B, classified 0x40cf40 as a non-authored VC5 compiler/EH cleanup forwarding thunk. This classification permits a non-primary compiler-boundary dependency relation but is not authored-primary, source-order, byte-readiness, source-owner-tier, or SDK-provider evidence.",
+        "Boundary accepted only: 2026-07-08 BN facts and provider-classifier/ChatGPT Pro receipt classify 0x40cf40 as a VC5 compiler/EH cleanup forwarding thunk to authored HudUiCycleSelectorWidget::DestructorCore; no source/data/functional/linkage/byte gate acceptance follows.",
+        "evidence item replaced; superseded_sha256=c85272a0be9fa852b22397aedd7f16cf2d5347afddd2d5497c8acc4830f718a3; replacement_sha256=b012f6c768be1733ce80ba78ce6e69378a0afea5d6a10c4f98a8d310a43dfd7e; rationale=Temporary evidence-path cleanup: inline the durable advisory conclusion and identify the superseded evidence item by SHA-256."
       ],
       "binary": "recoil",
       "relationships": [
@@ -144606,8 +144610,9 @@
       },
       "blocker": "pending",
       "evidence": [
-        "BN row is one direct jmp to 0x4b84d0 HudUiFillBitmap::DestructorCore with padding outside the function; reached by scalar-deleting destructor and EH cleanup refs including Briefing transport-progress cleanup; 2026-07-08 provider classifier with ChatGPT Pro receipt .devspace/runs/2026-07-08T21-33-37-842Z-chatgpt-call/receipt.json classifies it as a non-authored VC5 compiler/EH cleanup forwarding thunk, replacing the stale authored-primary link.",
-        "Boundary accepted only: 2026-07-08 BN facts and provider-classifier/ChatGPT Pro receipt classify 0x40cf50 as a VC5 compiler/EH cleanup forwarding thunk to authored HudUiFillBitmap::DestructorCore; no source/data/functional/linkage/byte gate acceptance follows."
+        "BN row is one direct jump to 0x4b84d0 HudUiFillBitmap::DestructorCore, with padding outside the function, and is reached by scalar-deleting-destructor and EH-cleanup references including Briefing transport-progress cleanup. The 2026-07-08 provider classifier and ChatGPT Pro advisory review of the uninterrupted 0x40cf00..0x40cf60 order range, transcript-content SHA-256 3AED554DF688E0518078676CE7518F30888EA681AF4865C58C44E8525CFB907B, classified 0x40cf50 as a non-authored VC5 compiler/EH cleanup forwarding thunk, replacing the stale authored-primary link. This classification permits a non-primary compiler-boundary dependency relation but is not authored-primary, source-order, byte-readiness, source-owner-tier, or SDK-provider evidence.",
+        "Boundary accepted only: 2026-07-08 BN facts and provider-classifier/ChatGPT Pro receipt classify 0x40cf50 as a VC5 compiler/EH cleanup forwarding thunk to authored HudUiFillBitmap::DestructorCore; no source/data/functional/linkage/byte gate acceptance follows.",
+        "evidence item replaced; superseded_sha256=cb4f2be95c4c213e859dba2426fc10577a32f98b8258a7ac6612e825dc62c7da; replacement_sha256=f34d5898e74ac0398c1e93a39bed02117480802ac5bbfcc11a736980d3273fa6; rationale=Temporary evidence-path cleanup: inline the durable advisory conclusion and identify the superseded evidence item by SHA-256."
       ],
       "binary": "recoil",
       "relationships": [
@@ -144653,8 +144658,9 @@
       },
       "blocker": "pending",
       "evidence": [
-        "BN row is one direct jmp to 0x4b50c0 HudUiZrdWidget::DestructorCore with padding outside the function; reached by scalar-deleting destructor and EH cleanup refs; 2026-07-08 provider classifier with ChatGPT Pro receipt .devspace/runs/2026-07-08T21-33-37-842Z-chatgpt-call/receipt.json classifies it as a non-authored VC5 compiler/EH cleanup forwarding thunk.",
-        "Boundary accepted only: 2026-07-08 BN facts and provider-classifier/ChatGPT Pro receipt classify 0x40cf20 as a VC5 compiler/EH cleanup forwarding thunk to authored HudUiZrdWidget::DestructorCore; no source/data/functional/linkage/byte gate acceptance follows."
+        "BN row is one direct jump to 0x4b50c0 HudUiZrdWidget::DestructorCore, with padding outside the function, and is reached by scalar-deleting-destructor and EH-cleanup references. The 2026-07-08 provider classifier and ChatGPT Pro advisory review of the uninterrupted 0x40cf00..0x40cf60 order range, transcript-content SHA-256 3AED554DF688E0518078676CE7518F30888EA681AF4865C58C44E8525CFB907B, classified 0x40cf20 as a non-authored VC5 compiler/EH cleanup forwarding thunk. This classification permits a non-primary compiler-boundary dependency relation but is not authored-primary, source-order, byte-readiness, source-owner-tier, or SDK-provider evidence.",
+        "Boundary accepted only: 2026-07-08 BN facts and provider-classifier/ChatGPT Pro receipt classify 0x40cf20 as a VC5 compiler/EH cleanup forwarding thunk to authored HudUiZrdWidget::DestructorCore; no source/data/functional/linkage/byte gate acceptance follows.",
+        "evidence item replaced; superseded_sha256=ba038e3a88f2bfa1112a8c37de5960ee336dab11ebd41d2710897deadb806b68; replacement_sha256=ee7792d171cc3e894898d7010132009eeb50225ab49f1b677a6834103abe6019; rationale=Temporary evidence-path cleanup: inline the durable advisory conclusion and identify the superseded evidence item by SHA-256."
       ],
       "binary": "recoil",
       "relationships": [

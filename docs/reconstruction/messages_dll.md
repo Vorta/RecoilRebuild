@@ -19,15 +19,16 @@ The bridge supports target-qualified requests, so agents should pass
 `--binary messages` instead of switching Binary Ninja tabs. Do not call
 `select_binary` directly from an agent.
 
-## Plan Ledger
+## Owner Ledger
 
-The companion address ledger is `.agent/SOURCE_OWNERS.json`. Use the same
-plan/status/frontier tools as the main executable, but pass `--binary messages`
-so the tools resolve the messages plan path:
+The schema-v3, target-qualified companion owner ledger is
+`.agent/SOURCE_OWNERS.json`. Owner lookup already resolves an owner/address's
+binary; use `--binary messages` only on commands that expose that option:
 
 ```powershell
 python tools/recoil.py owner find ZLocGetID
-python tools/recoil.py owner show --binary messages 0x10001010
+python tools/recoil.py owner show 0x10001010
+python tools/recoil.py owner plan --binary messages --limit 20
 python tools/recoil.py status --binary messages 0x10001010 --lane binary
 python tools/recoil.py frontier --binary messages 0x10001010 --depth 1 --lane binary
 ```
@@ -40,19 +41,6 @@ active, and validate it with:
 ```powershell
 python tools/recoil.py audit groups --binary messages --summary --wip-limit 4
 ```
-
-Seed or refresh the companion ledger from the already-open `messages.bndb`
-through the target-qualified bridge:
-
-```powershell
-```
-
-The seed command inventories every current BN function whose start falls inside
-`.text` and every current BN data variable whose root falls inside `.data`.
-Function entries start as authored not-done rows unless they match only a
-provider/runtime hint; data entries record the current `.data` shape but keep
-source-owner and reimplementation markers unresolved. Provider hints are seed
-hints only, not accepted provider-boundary evidence.
 
 ## Current Source Shape
 
@@ -119,7 +107,14 @@ Build and compare resources while intentionally skipping PE byte comparison:
 python tools/recoil.py verify final-build --manifest tools/_recoil/config/vc5_messages_build.json --no-pe-compare
 ```
 
-As of this note, the resource payload matches retail, the DLL links, and full PE
-comparison still reports expected non-accepted differences: export RVA, section
-placement/size, timestamp/hash, and import order. Those are active
-reconstruction/byte-equivalence work, not accepted tier `S` evidence.
+Obtain live companion status from current commands rather than this note:
+
+```powershell
+python tools/recoil.py doctor --binary messages --quick
+python tools/recoil.py owner next --binary messages --lane binary --json
+python tools/recoil.py verify final-build --manifest tools/_recoil/config/vc5_messages_build.json --dry-run
+```
+
+For acceptance evidence, run the non-dry-run build and resource comparison
+above. Any reported PE/export/import/code difference remains active
+reconstruction debt and cannot justify authored tier `S`.

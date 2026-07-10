@@ -1,8 +1,12 @@
 # Reconstruction Knowledge Index
 
 This is the landing page for durable reconstruction facts that are broader than
-one source comment. Binary Ninja and `.agent/SOURCE_OWNERS.json` remain authoritative
-for function identity, types, markers, and acceptance state.
+one source comment. The current already-open Binary Ninja database is
+authoritative for binary behavior, ABI, layouts, globals, imports, tables,
+xrefs, function boundaries/order, and assembly; BN function names and comments
+are provisional navigation labels. Schema-v3 `.agent/SOURCE_OWNERS.json` is
+authoritative for durable owner relationships, gates, and reimplementation
+tiers and must be accessed through `python tools/recoil.py owner ...`.
 
 ## Current Ledgers
 
@@ -12,9 +16,14 @@ for function identity, types, markers, and acceptance state.
   assumptions guarded by `python tools/recoil.py audit provenance --strict`.
 - `data_owner_audit.md` - complete data-owner acceptance rules and the current
   compact data-gate ledger.
-- `final_executable_repro.md` - final VC5SP3 executable/DLL reproducibility
-  lane, including `final-repro`, final-build, PE/resource comparison, and
-  linked `.data` layout blockers.
+- [`final_executable_repro.md`](final_executable_repro.md) - live VC5SP3
+  executable/DLL reproducibility runbook, including `final-repro`, final-build,
+  PE/resource comparison, live status commands, and the linked `.data` layout
+  blocker.
+- [`final_executable_repro_history.md`](final_executable_repro_history.md) -
+  archived dated final-data experiments, rejected hypotheses, numeric
+  snapshots, and provenance; use the live runbook and audit output for current
+  state.
 - `inlined_helpers.md` - compact ledger for likely original helpers and methods
   that were fully inlined by the retail compiler, with caller evidence and
   verification limits.
@@ -32,9 +41,8 @@ for function identity, types, markers, and acceptance state.
   address-backed `Reimplements` provenance docblocks in `src/`, plus legacy
   line comments until touched source is converted.
 - `source_file_layout_audit.md` - durable source-file placement constraints
-  from BN source-path literal xrefs, including compiler-emitted source-file
-  block order and the early Battlesport `ai_net.cpp`/`Briefing.cpp`/`hud.cpp`
-  frontier notes plus later owner repair notes.
+  from BN source-path literal xrefs, compiler-emitted physical source-file
+  block order, header/provider/COMDAT exceptions, and later owner repair notes.
 - `visual_studio_mcp_workflow.md` - preferred Visual Studio MCP development
   workflow for generated `vs-x86` solution projects.
 - `verified_patterns.md` - compact ledger of currently verified reusable source
@@ -96,19 +104,14 @@ progress notes or duplicated plan state.
   in the header `source_path` and compile them through `included_in`, without
   treating the row as full-header or owner-gate/tier proof. Do not add `.inl` files for production reconstruction;
   existing `.inl` files need independent original-source proof. For block-map
-  reconstruction, use the top-down loop in `source_file_layout_audit.md`: start
-  at the earliest unresolved/not-order-proven authored row. The About prelude,
-  `ai_net.h -> zmth.h -> ai_net.cpp`, `Briefing.cpp [0x4038a0,0x404ca0)`, and
-  the documented `hud.cpp [0x404ca0,0x415ab0)` order-diagnostic window are
-  closed for source-block/order frontier purposes. The next frontier follows
-  the existing durable `map.cpp [0x415ab0,0x417350)` row unless current BN/VC5
-  evidence contradicts it. Keep the usual caveat: passing smokes, byte checks,
-  ABI call-shape checks, or order diagnostics are evidence candidates, not
-  owner-gate or tier proof. The
-  closed About prelude shows the reusable caution: do not reject a physical
-  `.cpp` block because current production source is wrong, and do not classify
-  provider-looking empty/no-op bodies as provider-owned before checking authored
-  override evidence. Before simplifying
+  reconstruction, use the top-down loop in `source_file_layout_audit.md` and
+  obtain the live queue from `python tools/recoil.py audit source-blocks --list`;
+  start at the earliest unresolved or not-order-proven authored row reported by
+  current catalog output. Passing smokes, byte checks, ABI call-shape checks,
+  or order diagnostics are evidence candidates, not owner-gate or tier proof.
+  Do not reject a physical `.cpp` block because current production source is
+  wrong, and do not classify provider-looking empty/no-op bodies as
+  provider-owned before checking authored override evidence. Before simplifying
   repeated branch bodies into a shared source-level `goto` or common label,
   check `verified_patterns.md` for the VC5 duplicated-tail/tail-merge pattern;
   the retail CFG can be a compiler tail merge of duplicated original source,

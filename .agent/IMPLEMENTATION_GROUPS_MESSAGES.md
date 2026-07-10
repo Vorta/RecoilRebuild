@@ -41,6 +41,14 @@ source-readiness, owner, or data groups currently being coordinated for
   - python tools/recoil.py status --binary messages 0xNNNNNN --lane binary
 ```
 
+For explicit user-directed verify-only work, add both canonical lines below;
+omit both for ordinary groups:
+
+```text
+- Scheduling exception: explicit-user-direction
+- Scheduling exception evidence: YYYY-MM-DD user-direction summary
+```
+
 ## Active Groups
 
 No active companion implementation groups.

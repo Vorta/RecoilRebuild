@@ -12591,29 +12591,86 @@ extern "C" int player_ai_advance_path_cursor_and_compute_target_vec_smoke(void) 
     saveState.playerState = &playerState;
     playerState.worldPos = {10.0f, 20.0f, 30.0f};
 
-    AINetNode previousNode = {};
-    AINetNode nextNode = {};
-    AINetNode forwardNode = {};
-    AINetPathProbeFan nextFan = {};
-    previousNode.nodeIndex = 10;
-    nextNode.nodeIndex = 20;
-    forwardNode.nodeIndex = 30;
-    previousNode.neighborNodes[1] = &nextNode;
-    nextNode.neighborNodes[0] = &previousNode;
-    nextNode.neighborNodes[1] = &forwardNode;
-    nextNode.probeFans[1] = &nextFan;
-    nextNode.position = {1.0f, 2.0f, 3.0f};
-    AINetNode *currentNode = &previousNode;
-    playerState.aiCurrentPathNeighborIndex = 1;
-    AINetPathProbeFan *outFan = nullptr;
-    zVec3 targetVec = {};
+    auto runPositiveCase = [&](int caseIndex) {
+        AINetNode previousNode = {};
+        AINetNode nextNode = {};
+        AINetNode branch0 = {};
+        AINetNode branch1 = {};
+        AINetPathProbeFan probeFans[3] = {};
+        previousNode.nodeIndex = 10;
+        nextNode.nodeIndex = 20;
+        branch0.nodeIndex = 30;
+        branch1.nodeIndex = 31;
+        previousNode.neighborNodes[1] = &nextNode;
+        nextNode.position = {
+            1.0f + (float)caseIndex,
+            2.0f + (float)caseIndex,
+            3.0f + (float)caseIndex
+        };
+        nextNode.probeFans[0] = &probeFans[0];
+        nextNode.probeFans[1] = &probeFans[1];
+        nextNode.probeFans[2] = &probeFans[2];
 
-    AINet::AiAdvancePathCursorAndComputeTargetVec(&saveState, &currentNode, &outFan,
-                                                   &targetVec);
-    const bool normalOk =
-        currentNode == &nextNode && playerState.aiCurrentPathNode == &nextNode &&
-        playerState.aiCurrentPathNeighborIndex == 1 && outFan == &nextFan &&
-        Vec3Equals(targetVec, {9.0f, 18.0f, 27.0f});
+        int expectedBranchIndex;
+        switch (caseIndex) {
+        case 0:
+            nextNode.neighborNodes[0] = &previousNode;
+            nextNode.neighborNodes[1] = &branch0;
+            expectedBranchIndex = 1;
+            break;
+        case 1:
+            nextNode.neighborNodes[0] = &branch0;
+            nextNode.neighborNodes[1] = &previousNode;
+            expectedBranchIndex = 0;
+            break;
+        case 2:
+            nextNode.neighborNodes[0] = &branch0;
+            nextNode.neighborNodes[2] = &previousNode;
+            expectedBranchIndex = 0;
+            break;
+        case 3:
+            nextNode.neighborNodes[0] = nullptr;
+            nextNode.neighborNodes[1] = &previousNode;
+            nextNode.neighborNodes[2] = &branch0;
+            expectedBranchIndex = 0;
+            break;
+        default:
+            nextNode.neighborNodes[0] = &branch0;
+            nextNode.neighborNodes[1] = &branch1;
+            expectedBranchIndex = 0;
+            break;
+        }
+
+        AINetNode *currentNode = &previousNode;
+        playerState.aiCurrentPathNode = nullptr;
+        playerState.aiCurrentPathNeighborIndex = 1;
+        AINetPathProbeFan *outFan = nullptr;
+        zVec3 targetVec = {};
+
+        AINet::AiAdvancePathCursorAndComputeTargetVec(
+            &saveState,
+            &currentNode,
+            &outFan,
+            &targetVec
+        );
+
+        const zVec3 expectedTarget = {
+            playerState.worldPos.x - nextNode.position.x,
+            playerState.worldPos.y - nextNode.position.y,
+            playerState.worldPos.z - nextNode.position.z
+        };
+        return currentNode == &nextNode &&
+               playerState.aiCurrentPathNode == &nextNode &&
+               playerState.aiCurrentPathNeighborIndex == expectedBranchIndex &&
+               outFan == &probeFans[expectedBranchIndex] &&
+               Vec3Equals(targetVec, expectedTarget);
+    };
+
+    for (int caseIndex = 0; caseIndex < 5; ++caseIndex) {
+        if (!runPositiveCase(caseIndex)) {
+            return 1 + caseIndex;
+        }
+    }
 
     AINetNode *negativeNode = AllocZeroedMalloc<AINetNode>();
     AINetNode positiveNode = {};
@@ -12628,12 +12685,12 @@ extern "C" int player_ai_advance_path_cursor_and_compute_target_vec_smoke(void) 
     positiveNode.neighborNodes[0] = &positiveForward;
     positiveNode.probeFans[0] = &positiveFan;
     positiveNode.position = {4.0f, 6.0f, 8.0f};
-    currentNode = negativeNode;
     playerState.aiNet = &aiNet;
     playerState.aiTopLevelState = 0;
     playerState.aiCurrentPathNeighborIndex = 0;
-    outFan = nullptr;
-    targetVec = {};
+    AINetNode *currentNode = negativeNode;
+    AINetPathProbeFan *outFan = nullptr;
+    zVec3 targetVec = {};
 
     AINet::AiAdvancePathCursorAndComputeTargetVec(&saveState, &currentNode, &outFan,
                                                    &targetVec);
@@ -12643,10 +12700,41 @@ extern "C" int player_ai_advance_path_cursor_and_compute_target_vec_smoke(void) 
         playerState.aiTopLevelState == 2 && outFan == &positiveFan &&
         Vec3Equals(targetVec, {6.0f, 14.0f, 22.0f});
 
-    if (!normalOk) {
-        return 1;
+    if (!negativeOk) {
+        return 6;
     }
-    return negativeOk ? 0 : 2;
+
+    AINetNode *negativeCurrent = AllocZeroedMalloc<AINetNode>();
+    AINetNode negativeReplacement = {};
+    AINetPathProbeFan negativeReplacementFan = {};
+    negativeCurrent->nodeIndex = -10;
+    negativeCurrent->neighborNodes[0] = &negativeReplacement;
+    negativeReplacement.nodeIndex = -11;
+    negativeReplacement.probeFans[0] = &negativeReplacementFan;
+    negativeReplacement.position = {7.0f, 8.0f, 9.0f};
+    currentNode = negativeCurrent;
+    playerState.aiCurrentPathNode = negativeCurrent;
+    playerState.aiCurrentPathNeighborIndex = 0;
+    playerState.aiTopLevelState = 7;
+    outFan = nullptr;
+    targetVec = {};
+
+    AINet::AiAdvancePathCursorAndComputeTargetVec(
+        &saveState,
+        &currentNode,
+        &outFan,
+        &targetVec
+    );
+    const bool negativeReplacementOk =
+        currentNode == &negativeReplacement &&
+        playerState.aiCurrentPathNode == &negativeReplacement &&
+        playerState.aiCurrentPathNeighborIndex == 0 &&
+        playerState.aiTopLevelState == 7 &&
+        negativeReplacement.nodeIndex == -11 &&
+        outFan == &negativeReplacementFan &&
+        Vec3Equals(targetVec, {3.0f, 12.0f, 21.0f});
+
+    return negativeReplacementOk ? 0 : 7;
 }
 
 extern "C" int player_tick_ai_mode2_path_follow_smoke(void) {

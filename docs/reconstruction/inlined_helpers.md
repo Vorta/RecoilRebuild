@@ -40,6 +40,48 @@ Open limits:
 
 ## Current Entries
 
+## AINET_VECTOR_SUBTRACT
+
+Evidence:
+- Caller addresses: `0x401180`, `0x401580`, `0x401c60`, `0x402090`,
+  `0x402170`, `0x402be0`, `0x402d60`, and `0x403620` in the literal-backed
+  `ai_net.cpp` contribution block.
+- Repeated instruction/source pattern: each caller binds source, subtractor,
+  and destination pointers to `EBX`, `ECX`, and `EDX`, performs three grouped
+  x87 loads/subtractions, uses `fxch ST(2)`, and stores the three results in
+  order. The former `AINET_PATH_SUB_WORLD_X87_BODY` and address-specific
+  `AINET_VECTOR_SUBTRACT` definitions were instruction-for-instruction
+  duplicates with only argument order and inline-assembly surface syntax
+  differing.
+- Likely original owner/source file: `Battlesport/ai_net.h`, emitted through
+  the accepted `ai_net.cpp` physical block.
+- Why no standalone retail function is expected: BN shows the complete x87
+  sequence inlined at every observed caller with no call target or separate
+  executable body.
+
+Restored source form:
+- One VC5-era `AINET_VECTOR_SUBTRACT(destination, source, subtractor)` macro
+  owns the fixed-register x87 body. Address-local wrappers retain their proven
+  pointer-local declaration and assignment order before invoking it.
+- `0x401580` passes a typed pointer to the offset-zero
+  `AINetNode::position` member rather than relying on the node pointer's raw
+  layout.
+
+Verification notes:
+- `ainet_text_block_order` under `vc5_o2_ob0_md_facs` retains natural retail
+  function order. Generated VC5 bytes are identical before and after
+  consolidation for all eight callers.
+- Existing retail mismatch counts remain zero at `0x401180`, `0x401580`,
+  `0x401c60`, `0x402be0`, and `0x402d60`; 30 at `0x402090` and `0x402170`;
+  and 20 at `0x403620`.
+- The shared macro remains the same narrowly allowlisted raw-assembly island;
+  this source-helper recovery does not establish owner gates, tier `S`, or
+  byte readiness for the unfinished callers.
+
+Open limits:
+- The stripped binary proves repeated shared source shape but cannot recover
+  the exact historical macro identifier spelling.
+
 ## zInput_BindMapContext constructors
 
 Evidence:
