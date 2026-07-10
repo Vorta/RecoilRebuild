@@ -12081,7 +12081,7 @@ void HudUiNetGameSetupOverlayOwner::QueueEnterWithReconfigureFlag(
 ) {
     g_HudUiNetGameSetupOverlayOwner.m_reconfigureExistingSession = reconfigureExistingSession;
     g_RecoilApp.QueuePushState(
-        (RecoilStateBase *)&g_HudUiNetGameSetupOverlayOwner,
+        (RecoilApp_IState *)&g_HudUiNetGameSetupOverlayOwner,
         0
     );
 }

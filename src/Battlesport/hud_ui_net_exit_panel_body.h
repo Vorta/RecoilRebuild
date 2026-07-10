@@ -78,17 +78,6 @@ void HudUiNetExitPanel::Destructor() {
 /**
  * Original helper evidence: no standalone retail function; recovered from address-backed callers in this source file.
  * Original source path: D:\Proj\Battlesport\HudUi_NetExit.cpp.
- * Purpose: forward panel updates through the HudUiBackground base implementation.
- */
-void HudUiNetExitPanel::Update(
-    float deltaSeconds
-) {
-    HudUiBackground::Update(deltaSeconds);
-}
-
-/**
- * Original helper evidence: no standalone retail function; recovered from address-backed callers in this source file.
- * Original source path: D:\Proj\Battlesport\HudUi_NetExit.cpp.
  * Purpose: forward panel enabled-state changes through the HudUiBackground base implementation.
  */
 void HudUiNetExitPanel::SetEnabled(
@@ -213,7 +202,7 @@ void HudUiNetExitPanel::Show() {
  * Purpose: tick the process-global network exit panel with the frame delta.
  */
 int HudUiNetExitPanel::Tick() {
-    g_HudUiNetExitPanel->Update(g_FrameDeltaTimeSec);
+    g_HudUiNetExitPanel->UpdateAll(g_FrameDeltaTimeSec);
     return 0;
 }
 

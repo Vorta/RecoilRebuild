@@ -1877,7 +1877,7 @@ int RecoilStateSaveLoadTransition::OnUpdateShouldQuit() {
         Time::Tick();
         zVideo::RunPostprocessOnPrimaryBuffer();
 
-        ((HudUiSaveLoadDialog *)((unsigned int)m_dialog))->Update(g_FrameDeltaTimeSec);
+        ((HudUiSaveLoadDialog *)((unsigned int)m_dialog))->UpdateAll(g_FrameDeltaTimeSec);
 
         zVideo::Dispatch_UnlockPrimarySurfaceState();
     }

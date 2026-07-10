@@ -552,7 +552,7 @@ inline char *zReaderArrayString(
 }
 } // namespace
 
-namespace zDEClient_Crater {
+namespace zDEClient {
 /* Source-file block layout: the current native build still compiles this compatibility container.
  * The included fragment files below hold the ledger physical source rows.
  */
@@ -911,7 +911,7 @@ int ShutdownGlobals() {
 } // namespace zDEClient
 #include "zdec_qsand.cpp"
 #include "zdec_crater.cpp"
-
+namespace zDEClient_Crater {
 /* Source-layout blocker: address-backed bodies below do not belong to the assigned contiguous ledger rows.
  * They are preserved here because their proven physical owner is outside this worker scope or still unresolved.
  */
@@ -988,7 +988,7 @@ int __fastcall NetRelayCallback(
 
     return 1;
 }
-
+} /* namespace zDEClient_Crater */ namespace zDEClient_QSand {
 /**
  * Reimplements 0x433d40: zDEClient_QSand::NetRelayCallback
  * (D:\Proj\GameZRecoil\RecoilApp\zDEClient_QSand.cpp).
@@ -1022,7 +1022,7 @@ int __fastcall NetRelayCallback(
 
     return 1;
 }
-
+} /* namespace zDEClient_QSand */ namespace zGeometry_ClipPatchOutput {
 /**
  * Reimplements 0x46ae40: zGeometry_ClipPatchOutput::ApplyNodeDiPairs
  * (D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp).
@@ -1068,9 +1068,9 @@ int __fastcall ApplyNodeDiPairs(
 
     return 0;
 }
-} // namespace zGeometry_ClipPatchOutput
 
-namespace zDEClient {
+
+
 /**
  * Reimplements 0x46af00: zGeometry_ClipPatchOutput::Create
  * (D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp).
@@ -1104,7 +1104,7 @@ void __fastcall Destroy(
 
     free(self);
 }
-
+} /* namespace zGeometry_ClipPatchOutput */ namespace zDEClient {
 /**
  * Reimplements 0x46af40:
  * zDEClient::CreateFeatureNodeAndDiFromClipPatchPartition
@@ -1186,4 +1186,3 @@ zDiPartial *__fastcall CreateFeatureNodeAndDiFromClipPatchPartition(
     return displayInstance;
 }
 } // namespace zDEClient
-

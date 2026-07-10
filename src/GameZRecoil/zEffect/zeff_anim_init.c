@@ -2,6 +2,8 @@
  * Parent build/manifests must compile this path directly after retiring the container include.
  */
 
+namespace zEffect_Anim {
+
 /**
  * Reimplements 0x45e100: zEffect_Anim::Init.
  * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_anim_init.c.
@@ -78,6 +80,10 @@ void __fastcall SetWorldNode(
     g_zEffect_World = worldNode;
 }
 
+} // namespace zEffect
+
+namespace zEffect_Anim {
+
 /**
  * Reimplements 0x45e210: zEffect_Anim::SetZbdFilename.
  * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_anim_init.c.
@@ -104,6 +110,10 @@ void __fastcall SetZbdFilename(
     );
 }
 
+} // namespace zEffect_Anim
+
+namespace zEffect {
+
 /**
  * Reimplements 0x45e270: zEffect::SetResourceNode.
  * Original source path: D:\Proj\GameZRecoil\zEffect\zeff.c.
@@ -115,6 +125,10 @@ void __fastcall SetResourceNode(
 ) {
     g_zEffect_ResourceNode = resourceNode;
 }
+
+} // namespace zEffect
+
+namespace zEffectAnim {
 
 /**
  * Reimplements 0x45e280: zEffectAnim::FindSoundRefIndexByName (zeff_anim.c)
@@ -840,6 +854,10 @@ zEffectAnimEntry *__fastcall RebindEntryToNode(
     return self;
 }
 
+} // namespace zEffectAnim
+
+namespace zEffect_Anim {
+
 /**
  * Reimplements 0x45efb0: zEffect_Anim::LoadZbd.
  * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_anim_init.c.
@@ -1366,6 +1384,10 @@ int LoadAndInstantiate() {
     return 0;
 }
 
+} // namespace zEffect_Anim
+
+namespace zEffectAnim {
+
 /**
  * Reimplements 0x45fd10: zEffectAnim::ShutdownEntry.
  * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_anim_init.c.
@@ -1414,6 +1436,10 @@ int __fastcall ShutdownEntry(
     return 0;
 }
 
+} // namespace zEffectAnim
+
+namespace zEffect_Anim {
+
 /**
  * Reimplements 0x45fe50: zEffect_Anim::Shutdown.
  * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_anim_init.c.
@@ -1461,6 +1487,10 @@ int ShutdownIfLoaded() {
 
     return 0;
 }
+
+} // namespace zEffect_Anim
+
+namespace zEffectAnim {
 
 /**
  * Reimplements 0x45ff10: zEffectAnim::FindEntryByName (zeff_anim.c)
@@ -1523,5 +1553,3 @@ zClass_NodePartial *__fastcall GetRootNodeOrNull(
     return self->boundNode;
 }
 } // namespace zEffectAnim
-
-namespace zEffect_Anim {

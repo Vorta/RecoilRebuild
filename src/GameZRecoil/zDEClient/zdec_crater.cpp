@@ -1,7 +1,7 @@
 /* This source-layout fragment is included by the current compatibility container.
  * Parent build/manifests must compile this path directly after retiring the container include.
  */
-
+namespace zDEClient_Crater {
 /**
  * Reimplements 0x456ad0: zDEClient_Crater::DestroyFeature
  * (D:\Proj\GameZRecoil\zDEClient\zdec_crater.c).
@@ -144,7 +144,7 @@ int __fastcall InstanceEventMaybeRelay(
 }
 } // namespace zDEClient_Crater
 
-namespace zDEClient_QSand {
+namespace zDEClient_Crater {
 /**
  * Reimplements 0x456c80: zDEClient_Crater::InitFeatureFromEventTemplate
  * (D:\Proj\GameZRecoil\zDEClient\zdec_crater.c).
@@ -526,7 +526,7 @@ int __fastcall CreateFeature(
     );
     return 0;
 }
-
+} /* namespace zDEClient_Crater */ namespace zDEClient {
 /**
  * Reimplements 0x4575f0: zDEClient::SubmitFeatureGeometry
  * (D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp).
@@ -615,7 +615,7 @@ void ShutdownFeatureSystem() {
 
     g_zDEClient_FeatureMapTree.Destroy();
 }
-
+} // namespace zDEClient
 /**
  * Reimplements 0x4576e0: zDEClient_MapTreeState::Destroy.
  * (D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp).
@@ -928,7 +928,7 @@ void __fastcall DispatchFeatureEventTemplates(
         }
     }
 }
-
+} // namespace zDEClient
 /**
  * Reimplements 0x457cc0: zDEClient_MapTreeState::InitState.
  * (D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp).
@@ -1326,7 +1326,7 @@ void zDEClient_MapTreeState::IterPrevNodeRef(
 
     *nodeRef = parent;
 }
-
+namespace zDEClient {
 /**
  * Reimplements 0x458a30: zDEClient::CopyFeatureEntriesForward.
  * Original source path: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp.
@@ -1412,4 +1412,4 @@ zDEClient_FeatureGridCell *__fastcall GetFeatureGridCell(
 zClass_NodePartial *GetCameraNode() {
     return g_zDEClient_CameraNode;
 }
-
+} // namespace zDEClient

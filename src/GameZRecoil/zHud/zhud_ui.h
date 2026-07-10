@@ -2216,6 +2216,15 @@ struct HudUiCompositePanelVector {
           end(0),
           capacityEnd(0) {
     }
+    /**
+     * Original inline helper provenance; this is the repository category, not
+     * proof of literal inline spelling. No standalone retail body is present
+     * in the recovered function inventory. Observed in 0x403e20 as the
+     * 0x2c0-stride entry destruction loop, backing-buffer delete, and
+     * begin/end/capacity clear sequence.
+     * Purpose: tear down composite-panel vector storage using the recovered
+     * VC5 vector member-destruction shape.
+     */
     ~HudUiCompositePanelVector() {
         for (HudUiCompositePanelEntry *entry = begin; entry != end; ++entry) {
             entry->panel.ScalarDeletingDestructor(0);

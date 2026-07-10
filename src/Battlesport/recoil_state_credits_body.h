@@ -166,7 +166,7 @@ void RecoilStateDialogHost::OnDeactivate() {
  */
 void RecoilStateCredits::QueuePush() {
     g_RecoilApp.QueuePushState(
-        (RecoilStateBase *)&g_RecoilStateCredits,
+        (RecoilApp_IState *)&g_RecoilStateCredits,
         0
     );
 }

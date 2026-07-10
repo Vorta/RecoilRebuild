@@ -2,6 +2,8 @@
  * Parent build/manifests must compile this path directly after retiring the container include.
  */
 
+namespace zEffect_Anim {
+
 /**
  * Reimplements 0x4603d0: zEffect_Anim::ClearActivationRecords.
  * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_anim_save.c.
@@ -1192,6 +1194,10 @@ zEffectAnimEntry *__fastcall ProcessActivationRecord(
     }
 }
 
+} // namespace zEffect_Anim
+
+namespace zEffectAnim {
+
 /**
  * Reimplements 0x461970: zEffectAnim::QueueCmdType1TransformRotVelocity.
  * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_anim_activation.c.
@@ -1267,6 +1273,10 @@ zEffectAnimActivationRecord *__fastcall QueueCmdType1TransformRotVelocity(
     return result;
 }
 
+} // namespace zEffectAnim
+
+namespace zEffect_Anim {
+
 /**
  * Reimplements 0x461a90: zEffect_Anim::DiscardLastActivationRecord.
  * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_anim_save.c.
@@ -1275,6 +1285,10 @@ zEffectAnimActivationRecord *__fastcall QueueCmdType1TransformRotVelocity(
 void DiscardLastActivationRecord() {
     --g_zEffectAnim_ActivationRecordCount;
 }
+
+} // namespace zEffect_Anim
+
+namespace zEffectAnim {
 
 /**
  * Reimplements 0x461aa0: zEffectAnim::QueueCmdType2Velocity.
@@ -1503,6 +1517,10 @@ zEffectAnimActivationRecord *__fastcall QueueCmdType4TransformRefs(
     return result;
 }
 
+} // namespace zEffectAnim
+
+namespace zEffect_Anim {
+
 /**
  * Reimplements 0x461eb0: zEffect_Anim::SetActivationDispatchContext.
  * Original source path: D:\Proj\GameZRecoil\zEffect\zEffect.cpp.
@@ -1515,6 +1533,10 @@ void __fastcall SetActivationDispatchContext(
     g_zEffectAnim_ActivationDispatchCallback = callback;
     g_zEffectAnim_ActivationDispatchTagHigh = (unsigned int)(context) << 24;
 }
+
+} // namespace zEffect_Anim
+
+namespace zEffect {
 
 /**
  * Reimplements 0x461ec0: zEffect::FindNodeUserDataRecursive.
@@ -1814,3 +1836,4 @@ int __fastcall FindTemplateIndexByName(
     return -1;
 }
 
+} // namespace zEffect

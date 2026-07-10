@@ -497,8 +497,8 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
 
 /**
  * Original-source helper evidence: no standalone retail function exists.
- * The repeated callers at 0x401180, 0x401580, 0x401c60, 0x402090, 0x402170,
- * 0x402be0, 0x402d60, and 0x403620 share the same fixed-register EBX/ECX/EDX
+ * The repeated callers at 0x401180, 0x401580, 0x401710, 0x401c60, 0x402090,
+ * 0x402170, 0x402be0, 0x402d60, and 0x403620 share the same fixed-register EBX/ECX/EDX
  * grouped-x87 subtraction, `fxch`, and ordered-store sequence. C/C++ forms
  * failed to preserve that retail VC5 shape; the exact historical identifier
  * spelling remains unproven.
@@ -1168,10 +1168,13 @@ void __fastcall AINet::TickAiMode2SteeringSubstate(
     zUtil_SaveGameState *saveState
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
+    float forwardDot;
+    float verticalDistanceScale;
+    float targetDistance;
+    float lateralDot;
     PlayerMasterModalData *const masterModalData = saveState->primaryModalState->masterModalData;
-    zUtil_SaveGameState *const targetSaveState = (zUtil_SaveGameState *)g_GameStateOrMapTable;
-    zUtil_PlayerStateStorage *const targetPlayerState = targetSaveState->playerState;
-    const zVec3 targetWorldSnapshot = targetPlayerState->worldPos;
+    const zVec3 targetWorldSnapshot =
+        ((zUtil_PlayerStateStorage *)g_GameStateOrMapTable->playerState)->worldPos;
 
     if (g_Player_TotalTimeSecScaled >= playerState->aiNextPathRebuildTime &&
         playerState->aiCurrentSteeringSubstate != kPlayerAiMode2SteerPathFollow) {
@@ -1181,21 +1184,27 @@ void __fastcall AINet::TickAiMode2SteeringSubstate(
         );
     }
 
-    zVec3 targetDelta = {
-        targetWorldSnapshot.x - playerState->worldPos.x,
-        targetWorldSnapshot.y - playerState->worldPos.y,
-        targetWorldSnapshot.z - playerState->worldPos.z,
-    };
-    const float targetVerticalDelta = targetDelta.y;
+    zVec3 targetDelta;
+    {
+        zVec3 *v0;
+        zVec3 *v1;
+        const zVec3 *v2;
+        v0 = &targetDelta;
+        v1 = &playerState->worldPos;
+        v2 = &targetWorldSnapshot;
+        AINET_VECTOR_SUBTRACT(v0, v2, v1);
+    }
+    verticalDistanceScale = targetDelta.y;
     targetDelta.y = 0.0f;
-    const float targetDistance = zMath::Vec3Normalize(&targetDelta);
-    const float verticalDistanceScale =
-        targetDistance != 0.0f ? targetVerticalDelta / targetDistance : 0.0f;
+    targetDistance = zMath::Vec3Normalize(&targetDelta);
+    verticalDistanceScale =
+        targetDistance != 0.0f ? verticalDistanceScale / targetDistance : 0.0f;
 
-    const float lateralDot = playerState->steerBasisNorm.z * targetDelta.x -
-                             playerState->steerBasisNorm.x * targetDelta.z;
-    float forwardDot = playerState->steerBasisNorm.x * targetDelta.x +
-                       playerState->steerBasisNorm.z * targetDelta.z;
+    const zVec3 steerBasisNorm = playerState->steerBasisNorm;
+    lateralDot = steerBasisNorm.z * targetDelta.x -
+                 steerBasisNorm.x * targetDelta.z;
+    forwardDot = steerBasisNorm.x * targetDelta.x +
+                 steerBasisNorm.z * targetDelta.z;
 
     if (playerState->aiMode2SteeringRetryCount > 6) {
         playerState->aiCurrentSteeringSubstate = kPlayerAiMode2SteerTurnInPlace;
@@ -1228,18 +1237,18 @@ void __fastcall AINet::TickAiMode2SteeringSubstate(
         );
         forwardDot = 1.0f;
         break;
-    case kPlayerAiMode2SteerPathFollow:
-        TickAiMode2PathFollow(saveState);
+    case kPlayerAiMode2SteerAutoTurn:
+        if (playerState->autoTurnActive == 0) {
+            playerState->aiCurrentSteeringSubstate = playerState->aiReturnSteeringSubstate;
+        }
         forwardDot = 1.0f;
         break;
     case kPlayerAiMode2SteerTurnInPlace:
         UpdateAiMode2TurnInPlaceTowardPlayer(saveState);
         forwardDot = 1.0f;
         break;
-    case kPlayerAiMode2SteerAutoTurn:
-        if (playerState->autoTurnActive == 0) {
-            playerState->aiCurrentSteeringSubstate = playerState->aiReturnSteeringSubstate;
-        }
+    case kPlayerAiMode2SteerPathFollow:
+        TickAiMode2PathFollow(saveState);
         forwardDot = 1.0f;
         break;
     default:
@@ -1265,6 +1274,8 @@ void __fastcall AINet::TickAiMode2SteeringSubstate(
         forwardDot
     );
 
+    zUtil_PlayerStateStorage *targetPlayerState =
+        (zUtil_PlayerStateStorage *)g_GameStateOrMapTable->playerState;
     if (targetPlayerState->lifecycleState == kPlayerLifecycleInactive ||
         zMath::Vec3DeltaLengthSq(
             &playerState->worldPos,

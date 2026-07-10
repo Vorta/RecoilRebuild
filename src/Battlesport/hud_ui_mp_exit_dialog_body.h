@@ -63,7 +63,7 @@ void HudUiMpExitDialog::Update(
         0,
         0
     );
-    HudUiBackground::Update(deltaSeconds);
+    HudUiBackgroundContainer::UpdateAll(deltaSeconds);
 
     if (m_mpNewGameButtonMode >= 0) {
         HudScoreboard::DispatchSetScale(deltaSeconds);

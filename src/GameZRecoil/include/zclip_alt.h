@@ -1,3 +1,6 @@
+#ifndef GAMEZRECOIL_INCLUDE_ZCLIP_ALT_H
+#define GAMEZRECOIL_INCLUDE_ZCLIP_ALT_H
+
 #pragma once
 
 #include "recoil/recoil_types.h"
@@ -45,3 +48,5 @@ void __fastcall SetTargetRect(
 );
 int __fastcall RemapPointXYInPlace(float *point);
 } // namespace zClipAlt
+
+#endif // GAMEZRECOIL_INCLUDE_ZCLIP_ALT_H

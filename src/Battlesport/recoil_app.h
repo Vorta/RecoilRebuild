@@ -400,28 +400,10 @@ class RecoilApp : public RecoilApp_MfcOleModule {
         RecoilApp_IState *state,
         int suspendParam
     );
-    RecoilApp_IState * QueuePushState(
-        RecoilStateBase *state,
-        int suspendParam
-    ) {
-        return QueuePushState(
-            (RecoilApp_IState *)state,
-            suspendParam
-        );
-    }
     RecoilApp_IState * QueueSwitchCurrentState(
         RecoilApp_IState *state,
         int stateParam
     );
-    RecoilApp_IState * QueueSwitchCurrentState(
-        RecoilStateBase *state,
-        int stateParam
-    ) {
-        return QueueSwitchCurrentState(
-            (RecoilApp_IState *)state,
-            stateParam
-        );
-    }
     RecoilApp_IState * QueueExitCurrentState(int stateParam);
     int StartEngineAndQueueStartupState();
     int PreTranslateMessage(tagMSG *msg);
