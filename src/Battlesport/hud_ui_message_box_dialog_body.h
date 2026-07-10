@@ -388,7 +388,7 @@ int HudUiMessageBoxDialog::RunModal(
         zInput::PollActiveDevices(0);
         Time::Tick();
         zVideo::RunPostprocessOnPrimaryBuffer();
-        Update(g_FrameDeltaTimeSec);
+        UpdateAll(g_FrameDeltaTimeSec);
         zVideo::Dispatch_UnlockPrimarySurfaceState();
         zVideo::AdjustSurfacesIfEnabled(
             &blitRect,

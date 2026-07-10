@@ -94,7 +94,7 @@ pointer/symbol review. Passing data-symbol bytes can support initialized-data
 evidence only after the normal source-owner and complete data-gate criteria are
 met. The compared symbol must cover the complete touched authored data owner or
 the complete initialized-global data set being accepted; a passing field-sized
-slice inside a larger authored global is not enough for `Data reimplemented ✅`.
+slice inside a larger authored global is not enough for an accepted owner data gate.
 
 ## Required Checks
 

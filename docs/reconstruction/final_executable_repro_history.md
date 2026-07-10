@@ -127,11 +127,11 @@ rows more tightly. `type_info_RttiTypeDescriptor` at `0x4e5b10..0x4e5b28` is
 the existing VC5/MSVCRT `type_info` TypeDescriptor provider row
 (`??_R0?AVtype_info@@@8` / `MSVCRT:ti_inst.obj` in the candidate map), with
 BN xrefs through the `type_info` RTTI graph and vftable/destructor context. The
-zero dwords at `0x4e5b08`, `0x4e5b0c`, and `0x4e5b4c` have no xrefs, plan
+zero dwords at `0x4e5b08`, `0x4e5b0c`, and `0x4e5b4c` have no xrefs, owner-ledger
 rows, relocations, or provider symbols; treat them as alignment/filler or
 unresolved anonymous raw zero rows, not authored storage and not provider-boundary
 candidates. The four virtual-tail rows at `0x779ab0..0x779ac0` are already
-accepted VC5 CRT common provider data in the plan. After this classification,
+accepted VC5 CRT common provider data in the owner ledger. After this classification,
 the remaining substantive authored raw-tail blocker is still only
 `g_zInterp_UnresolvedFloatDefaults` at `0x4e5954..0x4e5a50`; it has no BN
 xrefs, copy site, relocation, recovered source name, or source-faithful
@@ -352,7 +352,7 @@ ledger/model cleanup rather than final-data layout work. The stale standalone
 `0x4f53e4` data row was retired because current BN/source evidence models it as
 `WestwoodOnlineUpgradeApiInitState::eventSinkLiveCount` inside the canonical
 `0x4f53d0` init-state aggregate. The three API GUIDs at `0x4d1838`,
-`0x4d1848`, and `0x4d18d8` remain valid SOURCE_OWNERS `.rdata` primary-data
+`0x4d1848`, and `0x4d18d8` remain valid the unified tracker `.rdata` primary-data
 links without legacy markdown rows, and owner-scoped VC5 verification selected and
 byte-matched the Westwood data/GUID rows. The owner source/data gates and
 `0x4f53d0` tier-B data row are now accepted, but the owner byte gate remains

@@ -2,6 +2,8 @@
  * Parent build/manifests must compile this path directly after retiring the container include.
  */
 
+namespace zEffect {
+
 /**
  * Reimplements 0x460020: zEffect::Init.
  * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_init.c.
@@ -31,7 +33,6 @@ int ShutdownAll() {
     Reset();
     return zEffect_Anim::ShutdownIfLoaded();
 }
-} // namespace zEffect
 /**
  * Reimplements 0x460070: zEffect::InitFromPath.
  * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_init.c.
@@ -236,3 +237,4 @@ int Reset() {
     return 0;
 }
 
+} // namespace zEffect

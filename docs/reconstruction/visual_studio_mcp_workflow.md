@@ -74,8 +74,7 @@ installed MSVC toolchain.
   `python tools/recoil.py verify functional` for smoke runs that need explicit
   arguments.
 - `debugger_set_variable` is for temporary diagnosis only. Do not use modified
-  debugger state as tier `B`, tier `S`, or plan-marker
-  evidence.
+  debugger state as tier `B`, tier `S`, owner-gate, or entry-tier evidence.
 - Stop the debugger with `debugger_stop` before ending a session if the launched
   process is still running.
 

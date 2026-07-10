@@ -262,6 +262,7 @@ int Keyboard_IsUnsuspended() {
     return zInput_Keyboard_IsUnsuspended();
 }
 
+}
 /**
  * Reimplements 0x471c80: zInput_Keyboard_IsUnsuspended.
  * Original source path: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
@@ -273,6 +274,7 @@ int Keyboard_IsUnsuspended() {
 int zInput_Keyboard_IsUnsuspended() {
     return (~g_zInput_DeviceRegistry & 2U) >> 1;
 }
+namespace zInput {
 
 /**
  * Reimplements data 0x4e5ce0: k_EmptyString.

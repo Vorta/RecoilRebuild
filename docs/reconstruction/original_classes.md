@@ -1,6 +1,6 @@
 # Original Class And Table Boundary Guide
 
-Compact class/table boundary policy. Binary Ninja and `.agent/SOURCE_OWNERS.json`
+Compact class/table boundary policy. Binary Ninja and the unified reconstruction tracker
 remain authoritative for identity, layout, xrefs, source readiness, and markers.
 
 Use before introducing, reshaping, or reimplementing a class, vtable, ftable,
@@ -64,7 +64,7 @@ reset, classify ownership from current BN evidence:
 - identify slot order, target functions, calling conventions, and cleanup shape
 - classify as compiler C++, COM/provider, MFC/runtime metadata, data callbacks,
   or unresolved
-- update `.agent/IMPLEMENTATION_GROUPS.md` before multi-function
+- create or update a structured tracker work item before multi-function
   class/table/layout/provider/source-file edits
 
 Do not mark `Source dependencies satisfied` until every table dispatch used by

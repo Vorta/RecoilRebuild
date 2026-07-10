@@ -1,3 +1,6 @@
+#ifndef GAMEZRECOIL_INCLUDE_OPT_CATALOG_H
+#define GAMEZRECOIL_INCLUDE_OPT_CATALOG_H
+
 #pragma once
 
 #include "recoil/recoil_types.h"
@@ -1071,3 +1074,5 @@ RECOIL_STATIC_ASSERT(
     ) == 0x160
 );
 RECOIL_STATIC_ASSERT(sizeof(OptCatalogEntryDef) == 0x164);
+
+#endif // GAMEZRECOIL_INCLUDE_OPT_CATALOG_H

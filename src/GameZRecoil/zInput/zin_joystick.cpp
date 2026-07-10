@@ -468,6 +468,7 @@ void DI_ResetTransitionState() {
     }
 }
 
+}
 /**
  * Reimplements 0x472450: zInput_DI_CreateForceFeedbackEffect.
  * Original source path: D:\Proj\GameZRecoil\zInput\zin_ff.cpp.
@@ -490,6 +491,7 @@ zInput_DiEffect *__fastcall zInput_DI_CreateForceFeedbackEffect(
     );
     return result < 0 ? 0 : outEffect;
 }
+namespace zInput {
 
 /**
  * Original-source helper evidence: ClampForceFeedbackGain.
@@ -643,6 +645,7 @@ static float FastPitchLowpassFactor(
     return factor;
 }
 
+}
 /**
  * Reimplements 0x472480: zInput_DI_HasForceFeedback.
  * Original source path: D:\Proj\GameZRecoil\zInput\zin_ff.cpp.
@@ -651,6 +654,7 @@ static float FastPitchLowpassFactor(
 int zInput_DI_HasForceFeedback() {
     return g_zInput_JoystickCaps_ForceFeedback;
 }
+namespace zInput {
 
 /**
  * Reimplements 0x472490: zInput::DI_ReportError.
@@ -855,4 +859,3 @@ reportError:
     );
     return 0;
 }
-

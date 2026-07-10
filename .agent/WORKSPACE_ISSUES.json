@@ -1,35 +1,4 @@
 {
   "version": 1,
-  "issues": [
-    {
-      "id": "WSI-20260710-001",
-      "status": "resolved",
-      "kind": "improvement",
-      "severity": "medium",
-      "created": "2026-07-10T14:43:51Z",
-      "updated": "2026-07-10T14:52:47Z",
-      "summary": "Owner CLI cannot rewrite stale temporary evidence entries",
-      "area": "tools/_recoil/commands/owner_cli.py",
-      "impact": "SOURCE_OWNERS is CLI-only, but six owner evidence entries contain paths into an ignored temporary artifact directory that must be cleared; current commands can only append evidence, so cleanup would otherwise require a forbidden hand edit.",
-      "next_action": "Delegate to recoil_tool_maintainer; add CLI/library tests, validate agent-surface registration, then let the parent run dry-run and apply mutations followed by owner audit --strict.",
-      "commands": [],
-      "files": [],
-      "tags": [],
-      "history": [
-        {
-          "at": "2026-07-10T14:43:51Z",
-          "action": "created",
-          "note": "Issue recorded for future agent tooling/process repair."
-        },
-        {
-          "at": "2026-07-10T14:52:47Z",
-          "action": "resolved",
-          "note": "Added governed owner replace-evidence with strict unique-match and one-occurrence validation, whole-item replacement, empty/unchanged rejection, field preservation, SHA-256 supersession audit evidence without stale text, dry-run support, and saved/hash reporting. Added focused owner CLI and command registry tests plus the tools README command-index row. Parent reran both focused test suites, agent-surface audit, and issue audit successfully, then applied six governed owner evidence replacements and confirmed owner audit has zero findings."
-        }
-      ],
-      "requested_change": "Add owner replace-evidence OWNER_ID --match TEXT --replacement TEXT --evidence TEXT --dry-run. Require exactly one matching evidence item and one occurrence, replace the whole matched item, preserve every non-evidence owner field, and append an audit entry containing the caller rationale and SHA-256 of the superseded evidence text.",
-      "benefit": "Allows governed replacement of ephemeral paths with inlined durable facts while retaining an auditable evidence history.",
-      "resolution": "Added governed owner replace-evidence with strict unique-match and one-occurrence validation, whole-item replacement, empty/unchanged rejection, field preservation, SHA-256 supersession audit evidence without stale text, dry-run support, and saved/hash reporting. Added focused owner CLI and command registry tests plus the tools README command-index row. Parent reran both focused test suites, agent-surface audit, and issue audit successfully, then applied six governed owner evidence replacements and confirmed owner audit has zero findings."
-    }
-  ]
+  "issues": []
 }

@@ -1,8 +1,8 @@
 # Data Owner Audit
 
-`Data reimplemented` is a whole-owner gate. A function or source group can keep
-`Data reimplemented ✅` only when every touched authored `.data`, `.rdata`, and
-BSS packet has complete source data evidence. Field-level recovery inside a
+The owner `data` gate is whole-owner acceptance. A source owner can keep
+`data=accepted` only when every touched authored `.data`, `.rdata`, and BSS
+packet has complete source data evidence. Field-level recovery inside a
 larger global, source macros, static offset asserts, and functional smokes are
 not enough.
 
@@ -17,17 +17,16 @@ source-owner target only when BN/source evidence proves the original source had
 that exact authored data construct; otherwise link it upward to the primary
 source-shaped owner and keep orphan packets as parent-reconciliation blockers.
 
-The plan's data-entry progress rows are narrower: they track canonical `.data`
+Primary-data tracker entries are narrower: they track canonical `.data`
 owner-range globals only. Do not add `.rdata` entries, BSS-only entries, or
 member/field rows inside a larger global. For example, `0x4f0cc0
-g_HudSensorTracker` is one data owner-projection entry for the owner range, not one row per
+g_HudSensorTracker` is one data entry for the owner range, not one row per
 BN-labeled member. `.rdata` and BSS facts still belong in the source-owner data
-gate evidence when a function's `Data reimplemented` marker depends on them.
+gate evidence when owner acceptance depends on them.
 
-Data entries use `Reimplemented [X/F/C/B/A/S]`: `X` means no accepted
-source-level data implementation, `F` means the canonical source definition or
-declaration builds and matches basic BN symbol facts, `C` means the complete
-source data-packet model is accepted, `B` means the linked data gate is
+Data entries use `Reimplemented [X/C/B/A/S]`: `X` means no accepted
+source-level data implementation, `C` means the complete source data-packet
+model is accepted, `B` means the linked data and linkage gates are
 accepted, `A` means reviewed relocation-masked data-symbol evidence is
 near-byte-equivalent, and `S` means accepted data-symbol bytes plus relocation
 identity, linked data-packet byte gate acceptance, and no current final
@@ -47,28 +46,30 @@ section drift, audit the final linked data layout before preserving or accepting
 data `Reimplemented [S]`:
 
 ```powershell
-python tools/recoil.py audit final-data --include-owners --strict --json-out build/vc5-final/final_data_diff.json --owner-actions-json build/vc5-final/final_data_owner_actions.json
+python tools/recoil.py audit final-data --include-owners --strict --json-out build/vc5-final/final_data_diff.json
+python tools/recoil.py progress evidence import-final-data --report build/vc5-final/final_data_diff.json --expected-revision <revision> --dry-run
+python tools/recoil.py progress output-section show recoil:section:.data
 ```
 
-Final executable reproducibility is tracked separately in
-`final_executable_repro.md`. When final-build artifacts exist and section
-deltas or plan-correlated layout contradictions remain,
-`python tools/recoil.py owner next --lane binary` and
-`python tools/recoil.py audit backlog --lane binary` report global work units.
-`work_unit=final-repro` is the whole final executable lane;
-`work_unit=final-data-layout` is the nested linked-data blocker. Neither is a
-SOURCE_OWNERS record and neither should be accepted by editing
-`.agent/SOURCE_OWNERS.json`. They block final executable acceptance and
-directly affected data rows or owner byte gates only. Human queue output labels
-them `work_unit_scope=global-final-lane`; owner-local byte candidates remain
-per-owner `S` work and are not blocked by unrelated final-lane or data debt.
+Final executable reproducibility is Phase 3 and is documented in
+`final_executable_repro.md`. Final-data and final-repro are tracker-bound
+diagnostic evidence producers, not work units, queues, or peer schedulers.
+Inspect them only when selected by `progress next`, explicitly requested, or
+required by the current cursor. Their reports/imports accept nothing and never
+mutate owner gates or tiers.
 
 `--strict` returns nonzero when section deltas are present. For this audit that
 is evidence that final data byte identity is blocked, not necessarily a tool
 failure. `--include-owners` correlates final-data issues with current data `S`
-rows, and `--owner-actions-json` writes governed owner command batches for
-review, dry-run, and application through `python tools/recoil.py owner ...`;
-do not hand-edit `.agent` ledgers.
+rows for navigation only; it emits no owner-action batch. Import the receipt as
+observed evidence, inspect `progress storage show`, and use explicit dry-run-first
+`progress accept storage` or `progress accept section` only after their own
+evidence gates pass.
+
+Data symbols, source-owner data gates, physical `storage_contributions`, PE
+`output_sections`, and final-image acceptance are distinct. A symbol address
+does not prove its physical storage extent. When extent evidence is absent,
+record `extent_state=unknown` and omit size/end; never invent a one-byte range.
 
 The 2026-06-26 final-data audit downgraded 2,239 data rows from `S` to `B`.
 Of those, 2,170 had direct final-data audit issues while at tier `S`: candidate
@@ -90,7 +91,7 @@ For each accepted data packet, record:
   pointer/symbol identity, and nullness;
 - VC5 `data_symbols` output when available, including relocation identity
   review for pointers;
-- caller/function entries whose `Data reimplemented ✅` depends on this packet.
+- caller/function owners whose accepted data gate depends on this packet.
 - primary source-shaped parent owner when known, or an explicit
   parent-reconciliation blocker when the packet is orphaned.
 
@@ -104,25 +105,25 @@ preceding docblock:
  */
 ```
 
-If any item is missing, dependent functions must use `Data reimplemented ❌`.
+If any item is missing, the dependent owner data gate stays pending or blocked.
 If current BN/source evidence proves no authored globals are touched, use
-`Data reimplemented ❎`.
+`data=none`.
 
 ## Current Audit Baseline
 
-The 2026-06-17 data-gate hardening pass found 751 owner-projection entries marked
-`Data reimplemented ✅`. Existing VC manifests contain 415 `data_symbols`
-entries across 103 manifests, so most green data markers cannot be justified by
+The 2026-06-17 data-gate hardening pass found 751 owner-ledger entries carrying
+accepted data claims. Existing VC manifests contain 415 `data_symbols` entries
+across 103 manifests, so most of those claims could not be justified by
 data-symbol evidence alone.
 
-The same pass downgraded 718 stale `Data reimplemented ✅` markers to `❌`
-through `python tools/recoil.py owner set-tier ... X`. The dry run succeeded
-for the 717 entries that lacked any `data_symbols` target coverage, then the
-same updates were applied. A later verification pass found that
+The same pass downgraded 718 stale accepted-data claims by setting the affected
+primary entries to `X` through controlled owner-ledger
+updates. The dry run succeeded for the 717 entries that lacked any
+`data_symbols` target coverage, then the same updates were applied. A later verification pass found that
 `0x4bab40 HudUiPanel::~HudUiPanel` did not emit an accepted data-symbol evidence
 block for its target, so it was also downgraded.
 
-The remaining `Data reimplemented ✅` entries are limited to entries whose VC5
+The remaining accepted data entries are limited to entries whose VC5
 verification target emitted data-symbol evidence with zero unmasked data-byte
 mismatches during this audit. Several of those full target commands still
 returned nonzero because unrelated function byte comparisons in the same
@@ -167,7 +168,7 @@ manifest drifted; that does not by itself preserve tier `S` evidence.
 Known false/stale pattern:
 
 - `0x4132b0 HudLayoutHW::UpdateObjectiveDirtyRect` touches `g_HudUiMgr`
-  objective and nanite fields. The plan had `Data reimplemented ✅` and tier
+  objective and nanite fields. The owner ledger had an accepted data claim and tier
   `B`, but the complete `g_HudUiMgr`/`HudUiMgrData` owner is not accepted:
   `HudUiMgr::Constructor` and `HudUiMgr::SetNanitePanelCount` remain
   owner/data-blocked, and no VC data-symbol manifest covers the complete owner.
@@ -199,7 +200,7 @@ relying only on address-local verification notes.
   `vc5_o2_ob0_md_zrndr_esp_pivot_raw_asm_facs`; the report includes the COFF
   relocation mask, relocation identity, byte diff, triage, object, and listing
   artifacts under `build/vc5-verify/zrndr_span_esp_pivot_saved_esp_slot/`.
-- Dependent owner-projection entries: supports the data gate for the ESP-pivot span leaves
+- Dependent owner-ledger entries: supports the data gate for the ESP-pivot span leaves
   `0x49b7e0`, `0x49bbf0`, `0x49e6c0`, `0x49edc0`, and `0x49f180`, plus the
   standalone data row `0x57da38`.
 
@@ -263,7 +264,7 @@ relying only on address-local verification notes.
   independent 4-byte or typed aggregate symbols except the API init-state
   aggregate (100 bytes from source/0x42dda0 behavior), the selected bootstrap
   server record (260 bytes from source/VC5), the abort flag's initialized 1
-  value, and the three immutable 16-byte GUIDs in `.rdata`. Parent BN/plan
+  value, and the three immutable 16-byte GUIDs in `.rdata`. Parent BN/owner-ledger
   repair is still needed where current metadata lags the 260-byte 0x4f52c8
   record and 100-byte 0x4f53d0 init-state record. BN renders
   `g_WestwoodOnlineUpgradeCachedBrowseRecord` as a full 0x10c-byte
@@ -298,7 +299,7 @@ relying only on address-local verification notes.
   `g_WestwoodOnlineUpgradeCreateSessionFromQueryFlag` at 0x538584. Those two
   symbols were removed from `westwood_online_upgrade_api_extra_data` so this
   API-owner evidence does not link the session-browser data owner.
-- Dependent owner-projection entries: 0x42dda0, 0x43d130, 0x43d280, and 0x43d2e0.
+- Dependent owner-ledger entries: 0x42dda0, 0x43d130, 0x43d280, and 0x43d2e0.
 
 ## 2026-06-21 Data Evidence Candidates
 
@@ -325,7 +326,7 @@ relying only on address-local verification notes.
   existing smoke surface instead of the real owner-wide virtual class shape.
   Parent should keep the owner data gate pending until that vtable is recovered
   or explicitly accepted as a bounded blocker.
-- Parent-owned gate status: no plan/source-owner marker was updated by this
+- Parent-owned gate status: no owner gate or primary-entry tier was updated by this
   evidence candidate.
 
 ### hud_ui.hud_low_meter_loop_sound_globals
@@ -355,7 +356,7 @@ relying only on address-local verification notes.
   mismatches for all five HUD symbols using
   `vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs`. Parent review still owns
   acceptance of the source-owner/data/byte gates.
-- Dependent owner-projection entries: 0x439b20 and 0x439b70 for direct loop-sound control;
+- Dependent owner-ledger entries: 0x439b20 and 0x439b70 for direct loop-sound control;
   this evidence may also support the narrow low-meter portion of
   `Player::InitMissionRuntimeFromWorldAndCamera` without broadening the HUD
   data owner over 0x4f3754.
@@ -404,7 +405,7 @@ relying only on address-local verification notes.
   remaining data-symbol comparison. A compile-only rerun with
   `--skip-bn-compare` covered the full manifest, but parent review still needs
   complete BN-backed data-symbol evidence before any byte-tier claim.
-- Dependent owner-projection entry: 0x41fe90
+- Dependent owner-ledger entry: 0x41fe90
   `Player::InitMissionRuntimeFromWorldAndCamera`, specifically the
   `battlesport_gameplay.player_mission_runtime_bootstrap` data gate.
 
@@ -434,7 +435,7 @@ relying only on address-local verification notes.
   `g_Player_CameraZone` and `g_Player_CameraZoneInvRange` symbols for local
   compile/data comparison; those two remain under the accepted Player ZRD
   tuning owner rather than this bootstrap owner.
-- Dependent owner-projection entry: 0x41fe90
+- Dependent owner-ledger entry: 0x41fe90
   `Player::InitMissionRuntimeFromWorldAndCamera`.
 
 ### hud_ui.hud_layout_classes
@@ -460,7 +461,7 @@ relying only on address-local verification notes.
 - VC5 evidence candidate: `python tools/recoil.py verify vc5
   hud_layout_class_data` passed with zero unmasked data-byte mismatches for all
   seven data symbols using `vc5_o2_ob0_md_facs`.
-- Parent-owned gate status: no plan/source-owner marker was updated by this
+- Parent-owned gate status: no owner gate or primary-entry tier was updated by this
   evidence candidate; broader HudLayout source/functional/data gate acceptance
   remains parent-owned.
 
@@ -516,7 +517,7 @@ relying only on address-local verification notes.
   zrndr_overlay_rect_staging_globals` passed with zero unmasked data-byte
   mismatches for all seven non-padding data symbols using
   `vc5_o2_ob0_md_facs`.
-- Dependent owner-projection entries: none promoted in this pass; shared overlay
+- Dependent owner-ledger entries: none promoted in this pass; shared overlay
   row/submit/flush entries remain owner/source-blocked.
 
 ### network_online.gamenet_net_zrd_path_literal
@@ -532,7 +533,7 @@ relying only on address-local verification notes.
   gamenet_net_zrd_path_literal` passed with zero unmasked data-byte mismatches
   for the generated VC5 string symbol using
   `vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs`.
-- Dependent owner-projection entries: data entry 0x4dcfb4 was accepted; 0x431dd0 remains
+- Dependent owner-ledger entries: data entry 0x4dcfb4 was accepted; 0x431dd0 remains
   blocked on broader GameNet owner/data routing.
 
 ### network_online.gamenet_pkt06_local_replication_data
@@ -551,7 +552,7 @@ relying only on address-local verification notes.
   gamenet_pkt06_local_replication_data` passed with zero unmasked data-byte
   mismatches for all three data symbols using
   `vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs`.
-- Dependent owner-projection entries: data entries 0x4dcdb0, 0x4f3f6c, and 0x4f3f70 were
+- Dependent owner-ledger entries: data entries 0x4dcdb0, 0x4f3f6c, and 0x4f3f70 were
   accepted; 0x432300 remains below promotion because its function
   reconstruction/source-owner routing is broader than this data owner.
 
@@ -567,7 +568,7 @@ relying only on address-local verification notes.
 - VC5 evidence: `python tools/recoil.py verify vc5
   gamenet_startgate_effect_literal` passed with zero unmasked data-byte
   mismatches using `vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs`.
-- Dependent owner-projection entries: data entry 0x4dcfbc was accepted; 0x432300 remains
+- Dependent owner-ledger entries: data entry 0x4dcfbc was accepted; 0x432300 remains
   separately source-owner/reconstruction gated.
 
 ### shared.fatal_shutdown_printf_literal
@@ -585,7 +586,7 @@ relying only on address-local verification notes.
   shared_fatal_shutdown_printf_literal` passed with zero unmasked data-byte
   mismatches from the GameNet translation unit using
   `vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs`.
-- Dependent owner-projection entries: data entry 0x4db4ac was accepted; function-level
+- Dependent owner-ledger entries: data entry 0x4db4ac was accepted; function-level
   promotions remain controlled by their respective source-owner gates.
 
 ### core_util_archive.shared_path_join_format_literal_data
@@ -601,7 +602,7 @@ relying only on address-local verification notes.
   join format remains a distinct literal.
 - VC5 evidence: no accepted data-symbol byte target yet covers this pooled
   literal; byte evidence remains deferred.
-- Dependent owner-projection entries: data entry 0x4dc6c8 was accepted to tier B through
+- Dependent owner-ledger entries: data entry 0x4dc6c8 was accepted to tier B through
   owner/source/data gates only; caller function promotions remain controlled by
   their respective source-owner gates.
 
@@ -664,7 +665,7 @@ relying only on address-local verification notes.
   `python tools/recoil.py verify vc5 czgame_frame_mfc_metadata` passed with
   zero unmasked data-byte mismatches for all eight linked metadata/string data
   symbols using `vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs`.
-- Dependent owner-projection entries: 0x4301e0, 0x443730, 0x430240, 0x4306e0, 0x443790,
+- Dependent owner-ledger entries: 0x4301e0, 0x443730, 0x430240, 0x4306e0, 0x443790,
   0x4437a0, 0x4437b0, and 0x4437c0. Standalone string data entries
   0x4dccf0 and 0x4dd8dc have accepted source ownership and data-equivalent
   metadata, but their `Reimplemented [S]` marker remains blocked while the
@@ -684,7 +685,7 @@ relying only on address-local verification notes.
   zweapon_tether_config_data` passed with zero unmasked data-byte mismatches
   for the generated `_g_zWeapon_MaxTetherAltitude` symbol using
   `vc5_o2_ob0_md_facs`.
-- Dependent owner-projection entries: supports the accepted data gate for 0x4b1090
+- Dependent owner-ledger entries: supports the accepted data gate for 0x4b1090
   `zWepInit`; broader zWeapon/OptCatalog source-cluster tier S remains
   deferred.
 
@@ -708,7 +709,7 @@ relying only on address-local verification notes.
 - VC5 evidence: `python tools/recoil.py verify vc5
   optcatalog_warning_config_data` passed with zero unmasked data-byte
   mismatches for all nine data symbols using `vc5_o2_ob0_md_facs`.
-- Dependent owner-projection entries: 0x4b0600, 0x4b0620, and 0x4b0640 are promoted to
+- Dependent owner-ledger entries: 0x4b0600, 0x4b0620, and 0x4b0640 are promoted to
   tier B from this owner plus `effects_weapons.optcatalog_warning_sample_playback`.
 
 ### effects_weapons.zweapon_zar_section_data
@@ -727,7 +728,7 @@ relying only on address-local verification notes.
 - VC5 evidence: `python tools/recoil.py verify vc5
   zweapon_zar_warning_data` passed with zero unmasked data-byte mismatches for
   all three data symbols using `vc5_o2_ob0_md_facs`.
-- Dependent owner-projection entries: no broad zWeapon init/load entry is promoted from
+- Dependent owner-ledger entries: no broad zWeapon init/load entry is promoted from
   this narrow data-owner acceptance in this pass.
 
 ### effects_weapons.optcatalog_runtime_tick_data
@@ -750,7 +751,7 @@ relying only on address-local verification notes.
   0x56bca8, 0x56bcac, 0x779a74, and 0x779a78 through
   `optcatalog_runtime_callback_globals` using `vc5_o2_ob0_md_facs`, with zero
   unmasked data-byte mismatches.
-- Dependent owner-projection entries: 0x4af060 and 0x4b0e20.
+- Dependent owner-ledger entries: 0x4af060 and 0x4b0e20.
 
 ### engine.zmath.vec3_scalar_rdata_constants
 
@@ -772,7 +773,7 @@ relying only on address-local verification notes.
 - VC5 evidence: `python tools/recoil.py verify vc5
   zmath_vec3_scalar_rdata_constants` passed with zero unmasked data-byte
   mismatches for all five authored constants using `vc5_o2_ob0_md_facs`.
-- Dependent owner-projection entries: 0x472cc0 and 0x472a10.
+- Dependent owner-ledger entries: 0x472cc0 and 0x472a10.
 
 ### network_online.gamenet_mission_pkt06_timer_globals
 
@@ -792,7 +793,7 @@ relying only on address-local verification notes.
   gamenet_mission_pkt06_timer_globals` passed with zero unmasked data-byte
   mismatches for all four data symbols using
   `vc5_o2_ob1_md_gx_afx_uintptr_win32ie_facs`.
-- Dependent owner-projection entries: 0x431dd0 and 0x432300 still need complete
+- Dependent owner-ledger entries: 0x431dd0 and 0x432300 still need complete
   source-owner/data routing before promotion, including the `net.zrd` path
   literal and shared fatal printf literal for 0x431dd0.
 
@@ -829,7 +830,7 @@ relying only on address-local verification notes.
   `??_7NetSessionConfigDialog@@6B@`; the earlier placement-CDialog
   pseudo-constructor shape did not emit the derived vftable and was not
   accepted.
-- Dependent owner-projection entries: 0x41c6e0, 0x41c7f0, 0x41c880, 0x41c970,
+- Dependent owner-ledger entries: 0x41c6e0, 0x41c7f0, 0x41c880, 0x41c970,
   0x41c990, 0x41ca00, 0x41ca10, 0x41ca30, 0x41cb50, and 0x41cb90.
   The standalone 0x4f32d8 data row records data-equivalent evidence but keeps
   `Reimplemented [S]` blocked while the class byte gate remains deferred.
@@ -856,7 +857,7 @@ relying only on address-local verification notes.
   zopt_network_option_globals` passed with zero unmasked data-byte mismatches
   for 0x4e5d74, 0x4e5d78, and 0x4e5d90 using
   `vc5_o2_ob0_md_facs`.
-- Dependent owner-projection entries: 0x408230, 0x408240, 0x408250, 0x408260, and
+- Dependent owner-ledger entries: 0x408230, 0x408240, 0x408250, 0x408260, and
   0x408270.
 
 ### engine.zclass.typelist_find_by_type_and_name
@@ -877,7 +878,7 @@ relying only on address-local verification notes.
 - VC5 evidence: `python tools/recoil.py verify vc5
   zclass_find_by_type_and_name_data` passed with zero unmasked data-byte
   mismatches for 0x4ddef8 and 0x539bac using `vc5_o2_ob0_md_facs`.
-- Dependent owner-projection entries: 0x44ecf0.
+- Dependent owner-ledger entries: 0x44ecf0.
 
 ### engine.zclass.copy_node_clone_options
 
@@ -900,7 +901,7 @@ relying only on address-local verification notes.
 - VC5 evidence: `python tools/recoil.py verify vc5 zclass_copy_node_globals`
   passed with zero unmasked data-byte mismatches for 0x4de4cc, 0x539c9c, and
   0x539ca0 using `vc5_o2_ob0_md_facs`.
-- Dependent owner-projection entries: 0x451b20, 0x452400, 0x452500, and 0x452560.
+- Dependent owner-ledger entries: 0x451b20, 0x452400, 0x452500, and 0x452560.
 
 ### battlesport_gameplay.player_create_from_names_bootstrap
 
@@ -923,7 +924,7 @@ relying only on address-local verification notes.
   `player_shared_aim_origin_rdata`, and
   `zclass_player_runtime_di_scene_global` passed with zero unmasked data-byte
   mismatches for their data symbols using `vc5_o2_ob0_md_facs`.
-- Dependent owner-projection entries: 0x420d10, 0x421a40, 0x421470, 0x421790, 0x421830,
+- Dependent owner-ledger entries: 0x420d10, 0x421a40, 0x421470, 0x421790, 0x421830,
   0x421ab0, 0x421ea0, 0x421ed0, 0x4220f0, and 0x42aa40.
 
 ### engine.zsound.option_runtime_globals
@@ -947,7 +948,7 @@ relying only on address-local verification notes.
   `0x56b3b8`, `0x56b3bc`, `0x56b3c0`, and `0x56b3c4` resolved to
   `zsnd_preinitialize_runtime_state` and passed with zero unmasked data-byte
   mismatches under `vc5_o2_ob1_md_gx_facs`.
-- Dependent owner-projection entries: 0x4a0300, 0x49fff0, 0x4a0590, 0x4a0670, and
+- Dependent owner-ledger entries: 0x4a0300, 0x49fff0, 0x4a0590, 0x4a0670, and
   0x4a07a0.
 
 ### engine.zsound.zsnd_play_rdata_literals
@@ -970,4 +971,4 @@ relying only on address-local verification notes.
   `0x4d2ebc`, `0x4d2ec0`, and `0x4d2ec8` resolved to
   `zsnd_play_with_delta_backend_dispatch` and passed with zero unmasked
   data-byte mismatches under `vc5_o2_ob1_md_gx_facs`.
-- Dependent owner-projection entries: 0x4a0380, 0x4a0400, 0x4a0490, and 0x4a0590.
+- Dependent owner-ledger entries: 0x4a0380, 0x4a0400, 0x4a0490, and 0x4a0590.

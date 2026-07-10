@@ -1,7 +1,7 @@
 /* This source-layout fragment is included by the current compatibility container.
  * Parent build/manifests must compile this path directly after retiring the container include.
  */
-
+namespace zDEClient_QSand {
 /**
  * Reimplements 0x455ea0: zDEClient_QSand::DestroyFeature
  * (D:\Proj\GameZRecoil\zDEClient\zdec_init.c).
@@ -26,7 +26,7 @@ void __fastcall DestroyFeature(
 
     free(featureInstance);
 }
-
+} /* namespace zDEClient_QSand */ namespace zDEClient {
 /**
  * Reimplements 0x455ed0: zDEClient::CopyQSandEventTemplateDefaults
  * (D:\Proj\GameZRecoil\zDEClient\zdec_init.c).
@@ -43,7 +43,7 @@ void __fastcall CopyQSandEventTemplateDefaults(
         sizeof(zDEClient_QSandEventTemplate)
     );
 }
-
+} /* namespace zDEClient */ namespace zDEClient_QSand {
 /**
  * Reimplements 0x455ef0: zDEClient_QSand::InstanceEventMaybeRelay
  * (D:\Proj\GameZRecoil\zDEClient\zdec_qsand.c).
@@ -114,7 +114,7 @@ int __fastcall InstanceEventMaybeRelay(
 }
 } // namespace zDEClient_QSand
 
-namespace zGeometry_ClipPatchOutput {
+namespace zDEClient_QSand {
 /**
  * Reimplements 0x456010:
  * zDEClient_QSand::InitFeatureFromEventTemplate
@@ -546,4 +546,4 @@ int __fastcall CreateFeature(
 
     return 0;
 }
-
+} // namespace zDEClient_QSand

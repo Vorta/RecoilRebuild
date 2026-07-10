@@ -1267,7 +1267,7 @@ void HudCmdDialogState::OnDeactivate() {
  */
 void HudCmdDialogState::QueueEnter() {
     g_RecoilApp.QueuePushState(
-        (RecoilStateBase *)&g_HudCmdDialogState,
+        (RecoilApp_IState *)&g_HudCmdDialogState,
         0
     );
 }

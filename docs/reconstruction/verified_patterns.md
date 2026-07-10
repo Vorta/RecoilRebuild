@@ -3,7 +3,7 @@
 This ledger captures reusable source and verification shapes backed by current
 evidence. It is not a tier ledger: individual entries state whether their
 evidence is address-local, owner-scoped, or provider-scoped. Binary Ninja,
-`.agent/SOURCE_OWNERS.json`, and per-target VC artifacts remain authoritative
+the unified reconstruction tracker and per-target VC artifacts remain authoritative
 for individual functions and owner tiers.
 
 ## Current Patterns
@@ -29,7 +29,7 @@ for individual functions and owner tiers.
   hand-authored production `ScalarDeletingDestructor` method.
 - Tiny vtable/no-op helpers: verified examples include `0x407130`,
   `0x407140`, `0x407150`, and `0x407160`. Keep these as simple authored C/C++
-  bodies or provider-marked glue according to the owner-projection entry; do not replace
+  bodies or provider-marked glue according to the owner-ledger entry; do not replace
   them with raw assembly.
 - MFC empty overrides with provider-like bytes: `0x401020`
   (`CAboutDlg::DoDataExchange`) is an authored empty derived-class override even
@@ -56,17 +56,11 @@ for individual functions and owner tiers.
   VC5 byte target still matches. See `source_file_layout_audit.md` for the
   ai_net-specific proof and `python tools/recoil.py verify vc5 0x401060` for
   the current verifier evidence.
-- Evidence-gated raw assembly: default to source-faithful C/C++ and use raw
-  assembly only when valid VC5SP3 C/C++ variants cannot produce the observed
-  retail bytes or `chatgpt-pro-line` confirms raw assembly is required. Keep the
-  asm minimal, inline inside the recovered C/C++ function/helper/macro, and
-  document the block with the address, what it does, why C/C++ was not
-  sufficient, and the byte/BN/chatgpt-pro-line evidence. Add an
-  address-scoped `.agent/RAW_ASSEMBLY_ALLOWLIST.txt` row with the
-  `source-faithful-inline-asm` tag or a narrower existing tag. This pattern
-  does not permit provider shims, whole-function assembly, raw byte emission,
-  `.asm` files, naked functions, linker/order tricks, or assembly where C/C++
-  remains source-faithful and byte-capable.
+- Evidence-gated raw assembly: the complete acceptance rule lives only in
+  `.codex/skills/recoil-tier-verification/SKILL.md`. Historical examples below
+  do not relax its failed-source-faithful-variants **and** applicable-Pro-pass
+  requirement, synchronized evidence, minimal inline scope, docblock,
+  allowlist, or forbidden-form rules.
 - AINet path-vector helper asm: `0x401180`
   (`AINet::TickAiMode2PathFollow`) is a user-approved raw-assembly exception
   for the recovered `AINET_PATH_*` vector helper macros in
@@ -111,15 +105,17 @@ for individual functions and owner tiers.
   callee code, so linkage was not the cause of the `0x401580` loop-layout
   difference. The class-static form remains for semantic and functional-test
   API consistency.
+- Hard-byte prompt mechanics are not a reusable pattern in this document. Use
+  `recoil-tier-verification`; production/upload belongs to
+  `recoil_source_worker`, retail assembly to `recoil_bn_fact_mapper`, and
+  validation to `recoil_verifier`.
 - Hard-byte differential prompt case study (`0x401580`): ask ChatGPT Pro a
   causal side-by-side code-generation question instead of asking it to validate
   an assumed source form. The earlier review prompt prematurely assumed a
   bottom-tested loop and explicitly excluded a pre-tested `while`; the later
   self-contained differential inquiry isolated the remaining
   109-mismatch/two-byte CFG delta and asked Pro to challenge that premise.
-  Attach
-  complete retail assembly, complete candidate assembly, complete candidate
-  C++, and the exact VC5 profile, plus frame/register/stack-slot/relocation/body
+  Follow the current canonical hard-byte evidence rule, then add frame/register/stack-slot/relocation/body
   size/function-order facts, failed one-axis probes, recurring macro evidence,
   and the full relevant HLIL and user-type exports. Ask Pro to compare exact
   `for`/`while`/`do-while`/`break`/`continue` forms, predict the critical
@@ -131,6 +127,24 @@ for individual functions and owner tiers.
   `python tools/recoil.py verify vc5 0x401580`. This is narrow address/block
   evidence, not source-owner acceptance, `Model: source-faithful`, or tier `S`
   evidence.
+- AINet steering dispatcher source shape (`0x401710`): an exact VC5 result
+  required recovering several interacting source constructs rather than
+  transcribing the function. Bind three short-lived vector pointers around the
+  existing generic `AINET_VECTOR_SUBTRACT`, snapshot `steerBasisNorm`, keep the
+  cross/dot expressions as ordinary scalar C++, avoid retaining the target
+  player pointer across the attack call, and order the switch bodies lexically
+  as direct, offset, dynamic, auto-turn, turn-in-place, then path-follow. The
+  final scalar declaration order lets VC5 reuse the subtraction pointer slots
+  for `lateralDot`, `targetDistance`, and the vertical scale, naturally producing
+  the retail `0x38` frame. The resulting contribution is exact across the
+  565-byte executable body, three-byte pre-table alignment, seven-entry switch
+  table, and twelve trailing NOPs, for 608 bytes through the next function at
+  `0x401970`. Use `bn_byte_length: 608` for this compiler-owned contribution;
+  do not create fake functions or data owners at `0x401948` or `0x401964`.
+  ChatGPT Pro correctly rejected reuse of the address-sensitive XZ assembly
+  helpers here because retail uses direct EBP-relative operands, and no new raw
+  assembly was required. Differential-review transcript content SHA-256:
+  `ac74aed14598fa6b049203544cc2e40c66f7f3ec53f7f01966329c1835d16fd0`.
 - HUD/UI leaf accessors and setters: verified examples include
   `HudUiElement::GetX` and nearby small HUD helpers. Prefer named fields and
   static layout checks over offset math once Binary Ninja types are stable.

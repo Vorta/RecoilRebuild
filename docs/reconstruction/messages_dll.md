@@ -19,28 +19,23 @@ The bridge supports target-qualified requests, so agents should pass
 `--binary messages` instead of switching Binary Ninja tabs. Do not call
 `select_binary` directly from an agent.
 
-## Owner Ledger
+## Unified Progress State
 
-The schema-v3, target-qualified companion owner ledger is
-`.agent/SOURCE_OWNERS.json`. Owner lookup already resolves an owner/address's
-binary; use `--binary messages` only on commands that expose that option:
-
-```powershell
-python tools/recoil.py owner find ZLocGetID
-python tools/recoil.py owner show 0x10001010
-python tools/recoil.py owner plan --binary messages --limit 20
-python tools/recoil.py status --binary messages 0x10001010 --lane binary
-python tools/recoil.py frontier --binary messages 0x10001010 --depth 1 --lane binary
-```
-
-Temporary multi-entry or owner-sized WIP belongs in
-`.agent/IMPLEMENTATION_GROUPS_MESSAGES.md`, not in the main executable
-implementation-groups file. Keep it empty when no companion DLL group is
-active, and validate it with:
+Companion owners, symbols, verification targets, work items, blockers, and
+hashed evidence are binary-qualified entities in
+`.agent/RECONSTRUCTION_PROGRESS.json`. Inspect them with joined selectors:
 
 ```powershell
-python tools/recoil.py audit groups --binary messages --summary --wip-limit 4
+python tools/recoil.py progress find ZLocGetID
+python tools/recoil.py progress show messages:0x10001010
+python tools/recoil.py progress owner relationships messages:0x10001010
+python tools/recoil.py progress audit --scope all --strict
 ```
+
+Companion work items remain structured, binary-qualified state in the same
+tracker. They never create a second no-target scheduler: ordinary `messages.dll`
+work remains deferred unless explicitly requested or required by the active
+Recoil.exe cursor.
 
 ## Current Source Shape
 
@@ -111,7 +106,7 @@ Obtain live companion status from current commands rather than this note:
 
 ```powershell
 python tools/recoil.py doctor --binary messages --quick
-python tools/recoil.py owner next --binary messages --lane binary --json
+python tools/recoil.py progress show messages:0x10001010
 python tools/recoil.py verify final-build --manifest tools/_recoil/config/vc5_messages_build.json --dry-run
 ```
 

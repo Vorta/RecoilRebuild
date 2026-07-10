@@ -4,22 +4,26 @@ This is the landing page for durable reconstruction facts that are broader than
 one source comment. The current already-open Binary Ninja database is
 authoritative for binary behavior, ABI, layouts, globals, imports, tables,
 xrefs, function boundaries/order, and assembly; BN function names and comments
-are provisional navigation labels. Schema-v3 `.agent/SOURCE_OWNERS.json` is
-authoritative for durable owner relationships, gates, and reimplementation
-tiers and must be accessed through `python tools/recoil.py owner ...`.
+are provisional navigation labels. `.agent/RECONSTRUCTION_PROGRESS.json` is the
+only reconstruction-progress authority and must be accessed through `python
+tools/recoil.py progress ...`.
 
-## Current Ledgers
+## Current Authorities
 
+- [`retail_executable_reproduction.md`](retail_executable_reproduction.md) -
+  canonical global `function-order` -> `linked-byte-match` ->
+  `final-validation` pipeline, `progress next` scheduling, exact retail SHA-256
+  goal, evidence gates, and debt-free closeout contract.
 - `agent_launch_checklist.md` - compact preflight and task-selection checklist
   for reconstruction agents.
 - `compiler_linker_provenance.md` - compiler, linker, and verification-profile
   assumptions guarded by `python tools/recoil.py audit provenance --strict`.
-- `data_owner_audit.md` - complete data-owner acceptance rules and the current
-  compact data-gate ledger.
-- [`final_executable_repro.md`](final_executable_repro.md) - live VC5SP3
-  executable/DLL reproducibility runbook, including `final-repro`, final-build,
-  PE/resource comparison, live status commands, and the linked `.data` layout
-  blocker.
+- `data_owner_audit.md` - data-owner acceptance and the boundary between source
+  data symbols/gates, physical storage contributions, PE output sections, and
+  final-image evidence.
+- [`final_executable_repro.md`](final_executable_repro.md) - Phase-3 VC5SP3
+  Recoil.exe mechanics; linked-data and companion-DLL paths are diagnostics or
+  independent validation, never peer schedulers.
 - [`final_executable_repro_history.md`](final_executable_repro_history.md) -
   archived dated final-data experiments, rejected hypotheses, numeric
   snapshots, and provenance; use the live runbook and audit output for current
@@ -31,18 +35,16 @@ tiers and must be accessed through `python tools/recoil.py owner ...`.
   message-table source, lookup-table source, and validation commands.
 - `original_classes.md` - compact policy and ledger for class, record,
   vtable/function-table, provider, and namespace-style subsystem boundaries.
-- `owner_led_workflow.md` - durable source-owner ledger commands and promotion
-  gate routing.
+- `owner_led_workflow.md` - unified-tracker owner operations, entry-tier
+  acceptance, and derived-owner gate routing.
 - `provider_abi_notes.md` - repo-local provider assumptions for VC5SP3, MFC42,
   legacy DirectX, imports, and runtime verification.
 - `recoil_app_destructor_tier_s.md` - RecoilApp constructor/destructor EH and
   tier S verification notes for the app owner cleanup cluster.
-- `source_file_map.md` - generated original-source placement map from
-  address-backed `Reimplements` provenance docblocks in `src/`, plus legacy
-  line comments until touched source is converted.
 - `source_file_layout_audit.md` - durable source-file placement constraints
   from BN source-path literal xrefs, compiler-emitted physical source-file
-  block order, header/provider/COMDAT exceptions, and later owner repair notes.
+  block order, header/provider/COMDAT exceptions, and dated historical repair
+  notes. It deliberately contains no live cursor.
 - `visual_studio_mcp_workflow.md` - preferred Visual Studio MCP development
   workflow for generated `vs-x86` solution projects.
 - `verified_patterns.md` - compact ledger of currently verified reusable source
@@ -79,11 +81,15 @@ compiler/provider contracts, shared class layouts, repeated inlined helpers,
 file formats, repeated Binary Ninja/toolchain limits, or source-file placement
 evidence. Keep entries compact: name addresses and symbols when known, state
 the evidence source, separate recovered facts from open limits, and avoid broad
-progress notes or duplicated plan state.
+progress notes or duplicated live tracker state.
 
 ## Agent Use
 
-- For new implementation placement, check `source_file_map.md` first, then
+- With no explicit assignment, run `python tools/recoil.py progress next` before
+  consulting any owner, block, semantic, work, final, or companion-binary view.
+  Expand only that selected cursor into its physical block, semantic span, and
+  complete source-shaped owner. For implementation placement, inspect the joined
+  `progress show` view and `source_file_layout_audit.md`, then
   confirm current Binary Ninja source comments, source-path literal xrefs,
   physical source-file block order, and call-site evidence. New or touched
   functions need immediate provenance/Purpose docblocks. BN function names and
@@ -99,15 +105,14 @@ progress notes or duplicated plan state.
   wrong `.cpp`. Known/order-relevant `source_shape_inputs` are mandatory
   reconstruction inputs once known, but remain attached to the physical `.cpp`
   block and are not owner-gate evidence by themselves. Emitted header
-  contributors with known address ranges appear as `partial-header` rows in
-  `python tools/recoil.py audit source-blocks --list`; reconstruct those bodies
-  in the header `source_path` and compile them through `included_in`, without
+  contributors with known address ranges appear as partial-header physical-block
+  records in the unified tracker; reconstruct those bodies in the header
+  `source_path` and compile them through `included_in`, without
   treating the row as full-header or owner-gate/tier proof. Do not add `.inl` files for production reconstruction;
-  existing `.inl` files need independent original-source proof. For block-map
-  reconstruction, use the top-down loop in `source_file_layout_audit.md` and
-  obtain the live queue from `python tools/recoil.py audit source-blocks --list`;
-  start at the earliest unresolved or not-order-proven authored row reported by
-  current catalog output. Passing smokes, byte checks, ABI call-shape checks,
+  existing `.inl` files need independent original-source proof. Use `progress
+  show` only to expand the block selected by `progress next`; it is a joined
+  entity view, not a second queue. Passing
+  smokes, byte checks, ABI call-shape checks,
   or order diagnostics are evidence candidates, not owner-gate or tier proof.
   Do not reject a physical `.cpp` block because current production source is
   wrong, and do not classify provider-looking empty/no-op bodies as
@@ -120,9 +125,15 @@ progress notes or duplicated plan state.
   candidates, not source-shape proof.
 - For new agent handoff, start with `agent_launch_checklist.md`, then use
   `AGENTS.md` for the full workflow rules.
-- For owner/data promotion, inspect `.agent/SOURCE_OWNERS.json` through
-  `python tools/recoil.py owner show/find/audit`; do not treat one address as
-  the accepted unit when BN proves a larger owner.
+- For owner/data promotion, use `progress show`, `progress find`, and
+  `progress audit`; do not treat one
+  address as the accepted unit when BN proves a larger owner.
+- For physical data/layout evidence, use `progress output-section show` and
+  `progress storage show`. Unknown extents omit size/end; final-data/final-repro
+  receipts and their imports are observed evidence only. They create no work
+  unit, peer scheduler, or owner-action batch. Storage/section acceptance is an
+  explicit dry-run-first operation, and final acceptance additionally requires
+  every mandatory whole section and an exact final-repro receipt.
 - For compiler or provider questions, check `provider_abi_notes.md` and
   `compiler_linker_provenance.md` before adding one-off flags or stand-ins.
 - Before introducing or reshaping class, vtable, function-table, record, or
@@ -131,5 +142,5 @@ progress notes or duplicated plan state.
 - Before duplicating a small repeated decompiled body across callers, check
   `inlined_helpers.md` and consider restoring a likely original inline helper or
   method with caller-based verification evidence.
-- For temporary dependency closures, use `.agent/IMPLEMENTATION_GROUPS.md`; move
+- For temporary dependency closures, use a structured tracker work item; move
   durable facts here only when they save future reconstruction time.

@@ -2148,7 +2148,7 @@ void zInput_BindMapContext::ResetAllBindings() {
  * Reimplements 0x470a10: zInput::BindMap_PackBindingCode.
  * Purpose: pack keyboard, joystick, and mouse binding slots into the bind-map record format.
  */
-int __fastcall BindMap_PackBindingCode(
+int __fastcall zInput::BindMap_PackBindingCode(
     int primary,
     int secondary,
     int joy,

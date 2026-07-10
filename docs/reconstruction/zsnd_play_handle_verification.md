@@ -26,7 +26,7 @@ VC verifier artifacts remain authoritative.
   fall-through instruction order: retail clears the candidate register before
   reloading `duplicateVoiceCount`, while VC5SP3 emits the reload first. A
   source-level `while` spelling was neutral at the same 9-mismatch profile, so
-  both owner-projection entries remain tier `B`.
+  both owner-ledger entries remain tier `B`.
 - Rewriting the DirectSound duplicate scan as explicit source labels and gotos
   was also neutral at the same 9-mismatch profile, so the cleaner `for` loop
   spelling remains.

@@ -3,6 +3,8 @@
  */
 #include "GameZRecoil/zEffect/zeff_compat_impl_body.h"
 
+namespace zEffect {
+
 /**
  * Reimplements 0x458af0: zEffect::SetConditionalRefPos.
  * Original source path: D:\Proj\GameZRecoil\zEffect\zeffect.cpp.
@@ -1893,6 +1895,10 @@ int __fastcall AnimateNodeOverTime(
     return 2;
 }
 
+} // namespace zEffect
+
+namespace zEffect_Anim {
+
 /**
  * Reimplements 0x45ae30: zEffect_Anim::AdvanceKeyframeSample.
  * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
@@ -2250,6 +2256,10 @@ int __fastcall RunKeyframes(
     );
     return 2;
 }
+
+} // namespace zEffect_Anim
+
+namespace zEffect {
 
 /**
  * Reimplements 0x45b3b0: zEffect::HandleAddChildEvent.
@@ -2875,6 +2885,10 @@ int __fastcall CleanupSoundRefs(
     return 0;
 }
 
+} // namespace zEffect
+
+namespace zEffectAnim {
+
 /**
  * Reimplements 0x45c040: zEffectAnim::Stop.
  * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
@@ -2917,6 +2931,10 @@ int __fastcall Stop(
 
     return 0;
 }
+
+} // namespace zEffectAnim
+
+namespace zEffect {
 
 /**
  * Reimplements 0x45c100: zEffect::HandleNamedAnimStopEvent.
@@ -3459,6 +3477,10 @@ int __fastcall HandleTopMessageEvent(
     return 2;
 }
 
+} // namespace zEffect
+
+namespace zEffect_Anim {
+
 /**
  * Reimplements 0x45cc00: zEffect_Anim::RunSequenceEvents.
  * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
@@ -3555,6 +3577,10 @@ int __fastcall RunSequenceEvents(
     }
 }
 
+} // namespace zEffect_Anim
+
+namespace zEffect {
+
 /**
  * Reimplements 0x45d000: zEffect::SetAnimDebugFrameTag.
  * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
@@ -3565,6 +3591,10 @@ int SetAnimDebugFrameTag() {
     g_zEffect_Anim_DebugFrameTag = tag;
     return tag;
 }
+
+} // namespace zEffect
+
+namespace zEffect_Anim {
 
 /**
  * Reimplements 0x45d010: zEffect_Anim::RunSequence.
@@ -3797,6 +3827,10 @@ int __fastcall RestoreNodeStates(
     return 0;
 }
 
+} // namespace zEffect_Anim
+
+namespace zEffectAnim {
+
 /**
  * Reimplements 0x45d3d0: zEffectAnim::FinalizeStop.
  * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
@@ -3986,6 +4020,10 @@ int __fastcall StopAndCleanup(
     return 0;
 }
 
+} // namespace zEffectAnim
+
+namespace zEffect_Anim {
+
 /**
  * Reimplements 0x45d6b0: zEffect_Anim::NodeActionCallback.
  * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
@@ -4002,6 +4040,10 @@ int __fastcall NodeActionCallback(
         1
     );
 }
+
+} // namespace zEffect_Anim
+
+namespace zEffectAnim {
 
 /**
  * Reimplements 0x45d6c0: zEffectAnim::ResetForNode.
@@ -4643,6 +4685,8 @@ zEffectAnimEntry *__fastcall SetTransformRefs_Thunk(
     );
 }
 
+} // namespace zEffectAnim
+
 /**
  * Reimplements 0x45e0d0: zEffectAnimEntry::SetOnStateDoneCallback (zeff_anim.c)
  * Purpose: Store the animation state-done callback and user context when an entry is available.
@@ -4658,7 +4702,7 @@ void __fastcall zEffectAnimEntry::SetOnStateDoneCallback(
     }
 }
 
-namespace zEffectAnim {
+namespace zEffect {
 /**
  * Reimplements 0x45e0f0: zEffect::SetConditionalEffectLevel.
  * Original source path: D:\Proj\GameZRecoil\zEffect\zeffect.cpp.
@@ -4671,7 +4715,8 @@ void __fastcall SetConditionalEffectLevel(
     g_zEffect_ConditionalEffectLevel = level;
 }
 
+} // namespace zEffect
+
 #include "GameZRecoil/zEffect/zeff_anim_init.c"
 #include "GameZRecoil/zEffect/zeff_init.c"
 #include "GameZRecoil/zEffect/zeff_anim_save.c"
-

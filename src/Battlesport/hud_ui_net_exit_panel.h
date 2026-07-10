@@ -42,7 +42,6 @@ struct HudUiNetExitPanel : HudUiBackground {
 
     HudUiNetExitPanel * Constructor();
     void Destructor();
-    void Update(float deltaSeconds);
     virtual void SetEnabled(int enabled);
     static HudUiNetExitPanel *CreateGlobal();
     static void Show();

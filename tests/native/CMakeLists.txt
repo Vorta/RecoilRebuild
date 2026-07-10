@@ -3890,7 +3890,7 @@ add_test(
         guard
         raw-offset
         --root src
-        --owners .agent/SOURCE_OWNERS.json
+        --progress .agent/RECONSTRUCTION_PROGRESS.json
         --binary recoil
         --allowlist .agent/RAW_OFFSET_ALLOWLIST.txt
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
@@ -3962,7 +3962,7 @@ add_test(
         ${PROJECT_SOURCE_DIR}/tools/recoil.py
         guard
         source-data
-        --manifest .agent/SOURCE_DATA_INITIALIZERS.json
+        --progress .agent/RECONSTRUCTION_PROGRESS.json
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 )
 
@@ -3982,16 +3982,6 @@ add_test(
         ${PROJECT_SOURCE_DIR}/tools/recoil.py
         guard
         vc5-manifest
-    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-)
-
-add_test(
-    NAME recoil_source_file_map_current
-    COMMAND ${Python3_EXECUTABLE}
-        ${PROJECT_SOURCE_DIR}/tools/recoil.py
-        audit
-        source-map
-        --check docs/reconstruction/source_file_map.md
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 )
 

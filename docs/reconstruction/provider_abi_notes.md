@@ -2,7 +2,7 @@
 
 These notes summarize workspace-level provider assumptions for source-faithful
 Recoil reconstruction. They do not override Binary Ninja,
-`.agent/SOURCE_OWNERS.json`, or per-target VC verification evidence.
+the unified reconstruction tracker, or per-target VC verification evidence.
 
 ## Evidence
 
@@ -47,14 +47,15 @@ Recoil reconstruction. They do not override Binary Ninja,
   providers, not fake production stand-ins or local ABI shims. Use repo-local
   provider headers where available; otherwise leave the provider detail as a
   blocker.
-- Use `python tools/recoil.py owner show`, `owner find`, and
-  `owner relationships` for focused owner lookup. Add a missing BN-visible
+- Use `python tools/recoil.py progress show`, `python tools/recoil.py progress
+  find`, and `python tools/recoil.py progress owner relationships` for focused
+  owner lookup. Add a missing BN-visible
   provider boundary only when current BN/provider evidence proves no authored
   body exists, using
-  `python tools/recoil.py owner add --kind provider-boundary ... --dry-run`
-  before applying. Correct stale owner/provider classification through the
-  focused owner link, remove, gate, and tier commands rather than retired
-  owner-projection commands.
+  `python tools/recoil.py progress owner add --id <owner-id> --kind provider-boundary --name <name> --evidence-id sha256:<evidence-hash> --expected-revision <revision> --dry-run`
+  before repeating the reviewed command with `--apply` against the same
+  revision. Correct stale owner/provider classification through the
+  focused owner link, remove, gate, and entry-tier commands.
 - Production source must preserve 32-bit pointer, alignment, calling convention,
   message-map, vtable, import, and cleanup behavior when those affect generated
   code or ABI.

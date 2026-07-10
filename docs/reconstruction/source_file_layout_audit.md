@@ -1,23 +1,21 @@
 # Source File Layout Audit Notes
 
-Binary Ninja remains authoritative for function bodies, calls, data, and
-assembly. The generated `source_file_map.md` is only a navigation aid built from
-current source docblocks and legacy comments; it can preserve stale source-path
-claims when the implementation has been placed in the wrong file.
+> This is a durable physical-placement evidence and dated experiment history,
+> not a scheduler, progress ledger, or source/order acceptance surface. Obtain
+> the only live Recoil.exe phase and cursor from `python tools/recoil.py progress next`. Historical About, AINet, Briefing, HUD, map, and mission selected-order
+> or byte diagnostics below are profile-scoped evidence only and do not advance
+> the global exact-set/order or linked-byte prefixes.
 
-This audit is now the first Recoil.exe binary-lane scheduling surface for
-physical source-file order. `owner next --lane binary` and
-`audit backlog --lane binary` surface `work_unit=source-file-block-map` before
-`final-repro`/`final-data-layout` while block-order or provisional physical-file
-facts remain unreconciled with source owners. Final linked `.data` layout remains
-a final validation lane unless block-order work exposes a direct data/object
-ordering cause.
+Binary Ninja remains authoritative for function bodies, calls, data, and
+assembly. The unified tracker provides joined physical-block and semantic-span
+context for the cursor selected by `progress next`. Block order, owner views,
+work-item views, and this history never select the next work themselves.
 
 ## 2026-07-03 Source Tree Alignment Pass
 
 The production source tree under `src` has been reshaped to match the current
 source-file block catalog's physical `.c`/`.cpp` file set. The new
-`python tools/recoil.py audit source-layout --strict` command compares current
+`python tools/recoil.py progress audit --scope blocks --strict` command compares current
 production `.c`/`.cpp` paths against block `agent_source_path` resolution and
 currently reports `84 ledger/current .c/.cpp file(s)`. `src/Messages` and
 `src/native` are intentionally outside this Recoil.exe layout check.
@@ -49,7 +47,7 @@ file but no standalone authored body has been reconstructed yet, including
 `weapon.cpp`, `zsnd_3d.cpp`, `zsnd_error.cpp`, several zVideo split files,
 `zsys_cpu.cpp`, and `zutl_zar.cpp`. Their existence satisfies current file-set
 alignment only. Future source-shape work must either fill them with recovered
-original-style bodies or update the source-block catalog if BN/object-map
+original-style bodies or update the physical-block tracker if BN/object-map
 evidence proves a different physical file model.
 
 The current native build still exposes unresolved compatibility-host blockers
@@ -93,7 +91,7 @@ different original source construct.
 ## Provisional No-Literal Physical File Names
 
 No-literal authored ranges now carry `provisional_original_path` in
-`tools/_recoil/config/source_file_blocks.json`. Agents should use these names as
+the unified tracker's physical-block records. Agents should use these names as
 compile-order placement labels for reconstruction and VC5 function-order work.
 They are not literal-backed source-path gates, do not accept owner gates or
 tiers, and do not override complete source-owner, header/COMDAT,
@@ -108,8 +106,8 @@ The AINet reference block is literal-backed by
 `D:\Proj\Battlesport\ai_net.cpp`; agents should place that block in
 `src/Battlesport/ai_net.cpp`, not legacy `src/Battlesport/ainet.cpp`. Validate
 continuity and placement metadata with
-`python tools/recoil.py audit source-blocks --strict` after block-map edits.
-Use `python tools/recoil.py audit source-blocks --list` to inspect the
+`python tools/recoil.py progress audit --scope blocks --strict` after block-map edits.
+Use `python tools/recoil.py progress show <block-or-address>` to inspect the
 flattened address-ordered rows, including provider rows, padding rows, `.cpp`
 rows, and address-emitting `partial-header` rows. A `partial-header` row is
 source-shape placement evidence only: reconstruct the emitted code in the row
@@ -161,7 +159,7 @@ no original Recoil map/project/make/listing/COD/object/library/PDB/browser or
 linker-order artifact. The name hits were generated exports, README/docs/source
 maps, current source/config, or Binary Ninja-derived comments/labels, so they
 remain non-authoritative for physical source/header provenance.
-`python tools/recoil.py audit source-blocks --strict` now checks the
+`python tools/recoil.py progress audit --scope blocks --strict` now checks the
 machine-readable `bn_source_path_literal_inventory` count and verifies that
 every unresolved provenance range remains listed as having no source-path
 literal counterpart. The same strict audit also checks
@@ -177,7 +175,7 @@ map, project, response, object, PDB, browser, or linker-order artifacts that
 could close the remaining provenance gaps. The only matching non-generated
 files under `support/`, `tools/`, and `docs/` were provider SDK libraries and
 the MFC sample makefile; generated exports, README/source-map rows,
-`SOURCE_OWNERS` metadata, current source comments, and BN comments are not
+`the unified tracker` metadata, current source comments, and BN comments are not
 accepted as original build-order evidence. Keep using the unresolved-provenance
 rows below until current BN, original build artifacts, or VC5SP3 natural-order
 reproduction proves a tighter source/header shape.
@@ -232,10 +230,10 @@ in project/compiler order, not ASCII or case-insensitive lexical order:
 
 The machine-readable catalog records these as `vc5_project_order_observations`
 with explicit literal-backed `source_path`, address range, and `file_literal`;
-`python tools/recoil.py audit source-blocks --strict` checks that each cited
+`python tools/recoil.py progress audit --scope blocks --strict` checks that each cited
 literal row still matches a mapped block and that observations rejecting simple
 alphabetical order actually contain a non-lexical retail literal sequence.
-rows. `python tools/recoil.py audit source-blocks --strict` validates those
+rows. `python tools/recoil.py progress audit --scope blocks --strict` validates those
 observed rows against `mapped_blocks`, so future source-block edits must either
 preserve this project-order evidence or update it with stronger BN/object/map
 evidence.
@@ -308,7 +306,7 @@ source owners and local emitted function order inside this shelf. Do not force
 semantic owners into globally alphabetical files, add `.inl` files, or use
 linker/pragma ordering tricks to explain the placement. If current BN/VC5
 evidence proves a different physical split or original path, update the
-machine-readable source-block catalog and this audit before implementing
+machine-readable physical-block tracker and this audit before implementing
 against the corrected model.
 
 The active block catalog now covers the full BN `.text` retail range
@@ -457,7 +455,7 @@ Current block evidence:
   continuous coverage, but remain source-shape placement evidence rather than
   owner-gate/tier evidence.
 
-## Current Repair State
+## Dated Repair Evidence (2026-07-03 Through 2026-07-11)
 
 The first durable repair is conservative:
 
@@ -517,7 +515,7 @@ The first durable repair is conservative:
   evidence; do not reintroduce `__declspec(naked)`, whole-function assembly,
   `_emit`, raw EBP/ESP offset shells, endpoint layout changes, volatile pointer
   hacks, provider shims, or more blind local spelling probes for this address.
-- The active source-block catalog now records address-emitting `ai_net.cpp`
+- The active physical-block tracker now records address-emitting `ai_net.cpp`
   header contributors explicitly in the flattened block list:
   `src/Battlesport/ai_net.h` emits `[0x401060,0x402f60)`, included by
   `src/Battlesport/ai_net.cpp`; `src/GameZRecoil/zMath/zmth.h` emits
@@ -532,7 +530,8 @@ The first durable repair is conservative:
   `src/GameZRecoil/zSys/zsys_cpu_detect.inl`, and
   `src/GameZRecoil/zSys/zsys_cpu_get_class.inl`.
 
-Current top-down Battlesport source-path literal queue:
+Historical Battlesport source-path literal sequence recorded during the dated
+alignment passes (not a current queue):
 
 - `ai_net.cpp`: literal `0x4da1e8`, referenced at `0x4030bb`; proven block
   `[0x401060,0x4038a0)`.
@@ -541,7 +540,7 @@ Current top-down Battlesport source-path literal queue:
   `briefing_text_block_order_current_shape` plus accepted provider-boundary
   coverage for `0x403d70`, `0x403db0`, and `0x403eb0`. Remaining `0x403930`
   constructor drift and `0x403e20` EH/base-destructor drift are owner-local byte
-  blockers, not the active source-block frontier.
+  blockers; that historical diagnostic did not establish global advancement.
 - `hud.cpp`: literal `0x4dadd8`, referenced at `0x4101a3` and `0x4141bb`;
   mapped block `[0x404ca0,0x415ab0)`, with semantic-owner exceptions.
 - `map.cpp`: literal `0x4daf04`, referenced at `0x416922`; mapped block
@@ -583,7 +582,7 @@ source-owner blocker and audit signal, then confirm each function or owner with
 current BN xrefs, callees, data, source comments, and source model evidence
 before promoting gates.
 
-## Current Top-Down Recoil.exe Physical Block Map
+## Durable Recoil.exe Physical Block Evidence Map
 
 The following map consolidates the July 2026 BN source-path literal pass. Ranges
 are half-open function-start ranges inferred from current `Recoil.bndb`
@@ -594,9 +593,9 @@ helper emissions, but those exceptions must be proven before moving the
 function into another source-file owner.
 
 Durable machine-readable scheduling metadata lives in
-`tools/_recoil/config/source_file_blocks.json`. The BN comment pass was assigned
+the unified tracker's physical-block records. The BN comment pass was assigned
 to write comment anchors in `Recoil.bndb`; comments are navigation evidence only
-and do not update `SOURCE_OWNERS`.
+and do not update `the unified tracker`.
 
 ### Battlesport Blocks
 
@@ -606,7 +605,7 @@ and do not update `SOURCE_OWNERS`.
 | `src/Battlesport/ai_net.cpp` | `[0x401060,0x4038a0)` | `0x4da1e8`, xref `0x4030bb` | `AINet::TickAiMode2TopLevel` / `AINet::FreeAll` | mapped with `ai_net.h`/`zmth.h` partial-header rows and 6 body subranges |
 | `src/Battlesport/Briefing.cpp` | `[0x4038a0,0x404ca0)` | `0x4da32c`, xref `0x404238` | `HudUiBriefingObjectivePicture::DrawWithNoiseOverlay` / `Briefing::BuildObjectiveActionsForRuntime` | mapped, 11 semantic subranges |
 | `src/Battlesport/hud.cpp` | `[0x404ca0,0x415ab0)` | `0x4dadd8`, xrefs `0x4101a3`, `0x4141bb` | `HudUiElement::Draw` / `zFMV_ActionBase::Destructor` | mapped refined; documented HUD order diagnostics now cover the worked physical block through `0x415ab0`; semantic/provider/header exceptions remain order-only evidence, not owner/tier acceptance |
-| `src/Battlesport/map.cpp` | `[0x415ab0,0x417350)` | `0x4daf04`, xref `0x416922` | `HudSensorMapNode::Init` / `HudSensorTracker::SetObjectiveMarkerColorBlink` | mapped refined; `map_text_block_order_current_shape` now confirms the full 42-row VC5 function order; order-only evidence, not byte/owner/tier acceptance |
+| `src/Battlesport/map.cpp` | `[0x415ab0,0x417350)` | `0x4daf04`, xref `0x416922` | `HudSensorMapNode::Init` / `HudSensorTracker::SetObjectiveMarkerColorBlink` | mapped refined; the opt-in exact `map_text_block_order_current_shape` receipt rejects the 42-row manifest against 95 defined code contributions and classifies all 53 extras. Historical zDEClient link-blocker wording is resolved; current final-link diagnostics stop earlier at `zeff_anim_run.c` and `gmod_init.c`. This remains legacy order-only evidence behind the reset `0x401000` cursor, not byte/owner/tier acceptance. |
 | `src/Battlesport/mission.cpp` | `[0x417350,0x41cc10)` | `0x4db230`, xrefs `0x417fc2`, `0x4181b6`, `0x418209`, `0x4182ff`, `0x418395`, `0x419091`, `0x419304` | `Mission::InitObjectives` / `CSpinButtonCtrl::ScalarDeletingDestructor` | mapped refined, 14 semantic subranges |
 | `src/Battlesport/pickup.cpp` | `[0x41cc10,0x41ea90)` | `0x4dc190`, xrefs `0x41cd93`, `0x41d523`, `0x41db80` | `PickupSpawnList::Primary_Init` / `Pickup::SpawnAtCarrierNodeByName` | mapped |
 | `src/Battlesport/player.cpp` | `[0x41ea90,0x42de10)` | `0x4dc26c`, xrefs `0x41f20b`, `0x41f870`, `0x42087a`, `0x420dc7`, `0x42155b`, `0x421722`, `0x42176f` | `Player::InitMasterCommonDataList` / `CRT::SafeVtableRelease` | mapped physical, tail scrutiny |
@@ -714,9 +713,9 @@ hypotheses unless a later packet promotes the evidence.
 
 | Physical range | Current classification | First / last BN function | Notes |
 | --- | --- | --- | --- |
-| `[0x437e60,0x438980)` | `src/Battlesport/util.cpp` provisional physical block | `zClass_Node::SetContextRecursive` / `HudUiMgrSensor::TrackList_Add` | Mixed utility shelf with 7 semantic subranges. No functions in this block have callers after `0x43ce80`; semantic ownership is retained in `tools/_recoil/config/source_file_blocks.json`. |
+| `[0x437e60,0x438980)` | `src/Battlesport/util.cpp` provisional physical block | `zClass_Node::SetContextRecursive` / `HudUiMgrSensor::TrackList_Add` | Mixed utility shelf with 7 semantic subranges. No functions in this block have callers after `0x43ce80`; semantic ownership is retained in the unified tracker's physical-block records. |
 | `[0x438980,0x438990)` | `src/Battlesport/version.cpp` provisional physical block | `RecoilVersion::GetString` / same | App-shell version accessor between `util.cpp` and `weapon.cpp`. |
-| `[0x438990,0x43ce80)` | `src/Battlesport/weapon.cpp` provisional physical block | `PickupAirdropSpawnRef::InitNodesFromCarrierNodeName` / `Player::Mines_ZAR_ReadEntryOrReset` | Weapon/combat shelf with 11 semantic subranges. No functions in this block have callers after `0x43ce80`; semantic ownership is retained in `tools/_recoil/config/source_file_blocks.json`. |
+| `[0x438990,0x43ce80)` | `src/Battlesport/weapon.cpp` provisional physical block | `PickupAirdropSpawnRef::InitNodesFromCarrierNodeName` / `Player::Mines_ZAR_ReadEntryOrReset` | Weapon/combat shelf with 11 semantic subranges. No functions in this block have callers after `0x43ce80`; semantic ownership is retained in the unified tracker's physical-block records. |
 | `[0x43ce80,0x43cf90)` | `src/Battlesport/WinSock.cpp` provisional physical block | `NetUi::VerifyWinsock2OrPromptContinue` / `Net::FormatIpv4Address` | Six recorded subranges: NetUi Winsock prompt helper, padding, `0x43cf20` zStr CRT init-table stub, padding, Net IPv4 formatter, and padding before WOL. No WinSock/NetUi/Net source-path literal was found. |
 | `[0x43cf90,0x43d130)` | WOL dialog head | `WestwoodOnlineUpgradeDialog::UpdateSessionListQueryFromControls` / `WestwoodOnlineUpgradeDialog::AppendStatusTextFmt` | Merge with discontiguous WOL dialog members for owner work. |
 | `[0x43d130,0x43d650)` | WOL API | `WestwoodOnlineUpgradeApi::CreateInstanceAndLoadConfig` / `WestwoodOnlineUpgradeApi::Init` | Owner gates/tier state need parent scrutiny before acceptance claims. |
@@ -731,10 +730,10 @@ hypotheses unless a later packet promotes the evidence.
 | `[0x4422a0,0x442320)` | WOL download wrappers | `WestwoodOnlineUpgradeDownload::CreateInstanceAndAdvise` / `WestwoodOnlineUpgradeDownload::UnadviseAndRelease` | Authored COM integration wrappers, not provider. |
 | `[0x442320,0x4425c0)` | WOL progress/dialog mixed | `WestwoodOnlineUpgradeProgressDialog::DlgProc` / `WestwoodOnlineUpgradeDialog::ShowDownloadReadyList` | Mixed progress dialog plus WOL dialog owner; `ShowDownloadReadyList` routes to dialog owner. |
 | `[0x4425c0,0x442890)` | WOL download event sink | `WestwoodOnlineUpgradeDownloadEventSink::CreateInstance` / `MsvcEh::FuncletCleanup_4427F0` | `0x442632`, `0x442638`, and `0x442860` are compiler EH artifacts. |
-| `[0x442890,0x4428b0)` | MFC provider getters | `MFC42::GetOrdinal4274Getter` / `COleControlModule::GetBaseMessageMap` | Provider boundary split into ordinal-import-pointer and COleControlModule message-map getter subranges. SOURCE_OWNERS rows: `provider.mfc42.ordinal4274_import_pointer_getter` for `0x442890`; `provider.mfc.recoil_app_mfc_ole_module_message_map_getter` for `0x4428a0`. |
+| `[0x442890,0x4428b0)` | MFC provider getters | `MFC42::GetOrdinal4274Getter` / `COleControlModule::GetBaseMessageMap` | Provider boundary split into ordinal-import-pointer and COleControlModule message-map getter subranges. the unified tracker rows: `provider.mfc42.ordinal4274_import_pointer_getter` for `0x442890`; `provider.mfc.recoil_app_mfc_ole_module_message_map_getter` for `0x4428a0`. |
 | `[0x4428b0,0x443730)` | AppFrame/RecoilApp late | `RecoilApp_MfcOleModule::Destructor` / `RecoilApp_StateQueueBlock::InitFromCursor` | Six recorded semantic subranges cover app-shell destruction, main-window/engine startup, module construction, Run/EH funclets, state-transition queue API, and queue storage helpers. |
 | `[0x443730,0x443b70)` | CZGameFrame plus runtime/message-map | `CZGameFrame::CreateObject` / `CZGameFrame::OnAppIdleDispatchMessage` | Eight recorded semantic subranges; `0x443a40` is a zVideo cached-client-rect helper island, not a proven emitted header row; `0x443810` is class-coupled scalar deleting destructor glue. |
-| `[0x443b70,0x443c50)` | MFC/GDI provider destructors | `CGdiObject::ScalarDeletingDestructor` / `CBitmap::Destructor` | Provider boundary split into CGdiObject and CBitmap destructor glue before `cls_di.c`. SOURCE_OWNERS row: `provider.mfc.gdi_object_bitmap_destructor_glue` for `0x443b70`, `0x443b90`, `0x443be0`, and `0x443c00`. |
+| `[0x443b70,0x443c50)` | MFC/GDI provider destructors | `CGdiObject::ScalarDeletingDestructor` / `CBitmap::Destructor` | Provider boundary split into CGdiObject and CBitmap destructor glue before `cls_di.c`. the unified tracker row: `provider.mfc.gdi_object_bitmap_destructor_glue` for `0x443b70`, `0x443b90`, `0x443be0`, and `0x443c00`. |
 | `[0x470020,0x4706c0)` | likely `zInput/zin_mouse.cpp` | `zInput::Mouse_ApplyClientCursorPosToOS` / `zInput::Mouse_WaitForButtonPress` | Comment/order-backed; no local literal. Function-level mouse subranges are recorded in the catalog. |
 | `[0x4706c0,0x4719e0)` | likely `zInput/zinput.cpp` | `zInput_BindMapContext::InitFromTemplate` / `zInput::PopBindMapContextOverlay` | Bind-map/context/current/overlay block. Function-level bind-map/current-wrapper/overlay subranges are recorded in the catalog. |
 | `[0x471e40,0x472670)` | likely `zInput/zin_joystick.cpp` | `zInput::DI_InitJoystickDevice` / `zInput::DI_ReportError` | `0x472450` and `0x472480` physically sit in the joystick tail but semantically route to force-feedback as candidate `zin_ff.cpp` code only. `0x472490` is a shared DirectInput diagnostic helper with unresolved defining source path; direct callers pass `zin_kbd.cpp` and `zin_init.cpp` literals. |
@@ -765,6 +764,12 @@ hypotheses unless a later packet promotes the evidence.
 
 ### Literal-Backed Blocks With Internal Owner Slices
 
+Legacy table labels such as `function-order-confirmed`, `closed`, or
+`naturally emits` describe only the dated diagnostic scope recorded in that row
+(often a selected subsequence or selected body set). They are not global
+exact-defined-set, linked-seam, or text-prefix acceptance and must not be used
+as live scheduling state.
+
 These blocks have source-path literal evidence for the physical source-file
 range, but internal semantic owners still differ from the physical `.cpp` or
 `.c` file. Rebuild order must preserve the physical block while source work
@@ -788,7 +793,7 @@ uses complete owner units.
 | `fmv_main.cpp [0x462330,0x4625e0)`, `fmv_script.cpp [0x4625e0,0x463d50)`, `fmv_stream.cpp [0x463d50,0x464670)` | BN literals split FMV into playback/MCI class bodies in `fmv_main.cpp`, script/action hierarchy in `fmv_script.cpp`, and stream decode/audio bodies in `fmv_stream.cpp`. `fmv_main.cpp` now has three recorded layers: playback constructor/destructor `[0x462330,0x462370)`, MCI open/play `[0x462370,0x4624f0)`, and stop/dest/error tail `[0x4624f0,0x4625e0)`. Current source comments often route playback and stream through `fmv_script.cpp`/`fmv.h`. `fmv_script.cpp` also contains class-owned scalar deleting destructors, while zFMV action base virtuals/destructor/update/run-timed appear earlier in the HUD physical block `[0x4159d0,0x415ab0)`. | Preserve the three physical FMV source blocks and route class hierarchy work across the out-of-range HUD zFMV action-base island. Do not treat class-owned deleting destructors as standalone authored owners or provider-primary work, and do not split out `fmv_action.cpp`/`fmv.h` without new physical evidence. |
 | `ai_net.cpp [0x401060,0x4038a0)` | Physical AINet block has proven address-emitting `ai_net.h [0x401060,0x402f60)`, `zmth.h [0x402f60,0x402fd0)`, and 6 recorded `ai_net.cpp` body layers from ZRD load through teardown. `0x403750` is player-save-state-coupled but still physically in `ai_net.cpp`. | Preserve the detailed `ai_net.cpp` source-shape order. Do not move `0x403750` to `player.cpp`, do not create a new emitted `.h` row for `0x403620`, and do not reintroduce `.inl` source shape for `0x402f60`. |
 | `hud.cpp [0x404ca0,0x415ab0)` | Physical HUD block with 22 recorded source-shape layers. The first source-path literal is inside `0x410160`, and another appears at `0x414180`; the earlier layers are inferred from BN assembly/order, not comments. | Do not treat physical `hud.cpp` as one semantic owner. Use the detailed `hud.cpp` source-shape layer table below and preserve physical HUD block order while routing semantic owners separately. |
-| `map.cpp [0x415ab0,0x417350)` | Physical map block now has 8 recorded source-shape layers: HudSensorMapNode methods, HudRectI/HudGeom2D clipping helper island, projected-path drawing, tracker init/list maintenance, map file load, overlay/zoom/ref-count, projection/save-state marker drawing, and mission-map SFX/objective marker controls. The 2026-07-09 `map_text_block_order_current_shape` target naturally emits all 42 known in-range functions in retail order. | Use the detailed `map.cpp` source-shape layer table below. Do not move HudRectI/HudGeom2D helpers to `hud.cpp` or a new header row solely from semantic names/comments. The order target is diagnostic only and does not prove byte readiness, source-owner acceptance, provider classification, linkage, source-faithful modeling, or tier status. |
+| `map.cpp [0x415ab0,0x417350)` | Physical map block now has 8 recorded source-shape layers: HudSensorMapNode methods, HudRectI/HudGeom2D clipping helper island, projected-path drawing, tracker init/list maintenance, map file load, overlay/zoom/ref-count, projection/save-state marker drawing, and mission-map SFX/objective marker controls. The opt-in exact 2026-07-11 `map_text_block_order_current_shape` receipt records 95 defined contributions and correctly rejects the 42-row list because 53 definitions are unlisted: five helpers before the retail rows, six late-shelf HudLineClip definitions, and 42 mission-range tracker definitions. | Keep the detailed `map.cpp` source-shape layer table as physical interval guidance. Do not move HudRectI/HudGeom2D helpers solely from semantic names/comments. Raw-object classification is now instrumented, but selected-provider and linked-interval closure remain pending; the target does not prove byte readiness, source-owner acceptance, provider classification, linkage, source-faithful modeling, or tier status. |
 | `pickup.cpp [0x41cc10,0x41ea90)` | Physical pickup block now has 10 recorded source-shape layers: subsystem bootstrap, init/resource registration, pickup-specific zClass_Node flag recursion, collection/effects/player grants, spawn-list lifecycle, pickup type lookup/Net-style slot predicate, ZRD spawn loading, respawn queue maintenance, ZAR callbacks, and network/drop helper tail. | Use the detailed `pickup.cpp` source-shape layer table below. Do not split zClass/Net-like helpers into separate `.h` or source rows without VC5 source-shape evidence. |
 | `player.cpp [0x41ea90,0x42de10)` | Physical player block now has 19 recorded source-shape layers. Semantic/provider islands include HUD scalar/reset glue, zReader/checkpoint helpers, zClass recursive flags, zInput bind maps, cls_di/HUD helper activity, zMath midpoint, zCom, WOL API init, and provider SafeVtableRelease tail. | Use the detailed `player.cpp` source-shape layer table below. Player-owned work must preserve physical order while routing complete semantic owners separately when evidence supports them. |
 | `RecoilApp.cpp [0x42de10,0x436630)` | Physical RecoilApp block now has 9 recorded source-shape layers: MFC app/static startup, zInput joystick/force-feedback exceptions, engine startup/shutdown, CZRecoilFrame MFC frame/menu/message-map layer, MFC/provider destructor glue, GameNet packet relay, save/load dialog file list, and save/load transition/sort/vector tail. This pass did not support a zWeapon split. | Use the detailed `RecoilApp.cpp` source-shape layer table below. Owner work must not collapse this block into one app-shell class or invent zWeapon/header ownership without stronger evidence. |
@@ -811,10 +816,71 @@ uses complete owner units.
 | `zvid_ddd3d.c [0x4a9ac0,0x4ae380)` | Core DD3D code runs through `0x4ad680`; `0x4ad680` is address-backed `zVideo_dd3d::FloorPowerOfTwo`; `0x4ad6a0` is `zVideo_dd::ReportError`, a `zvid_dd.c` diagnostic helper physically emitted in this block tail. `[0x4ae1ec,0x4ae380)` is VC5 compiler-emitted switch machinery for `ReportError`: jump table `[0x4ae1ec,0x4ae274)`, byte lookup table `[0x4ae274,0x4ae2b1)`, 3-byte alignment `[0x4ae2b1,0x4ae2b4)`, jump tables `[0x4ae2b4,0x4ae348)` and `[0x4ae348,0x4ae380)`. | Rebuild `zVideo_dd::ReportError` as the `zvid_dd.c` diagnostic helper but preserve its physical tail placement and generated `.text` switch output. Do not model the table tail as authored arrays, provider data, callback tables, or primary data owners. |
 | `zwep_init.c [0x4ae380,0x4b2960)` | BN evidence supports this as a real broad physical contribution block. Internal islands include OptCatalog runtime/process core `[0x4ae380,0x4b0530)` with `0x4af060 ProcessRuntimeInstances` as an internal anchor, impact/aim/warning behavior `[0x4b0530,0x4b1090)`, zWeapon init/load `[0x4b1090,0x4b1d90)`, OptCatalog shutdown/trail/fx load `[0x4b1d90,0x4b2160)`, Light thermal pool plus PlayerTimedHit/HitSource `[0x4b2160,0x4b25a0)`, zClass damage callbacks `[0x4b25a0,0x4b26f0)`, and DamageFeedback/HitContext/MineIterator tail `[0x4b26f0,0x4b2960)`. The source literal `0x4e45d8` (`D:\Proj\GameZRecoil\zWeapon\zwep_init.c`) is xrefed only from `zWeapon::LoadOptCatalogFromPath`, and `[0x4b2951,0x4b2960)` is NOP alignment before the no-literal late shelf. | Do not collapse `zwep_init.c` into one semantic owner. Use the physical block as VC5 order evidence while scheduling complete linked OptCatalog/zWeapon/Light/player-hit/zClass/DamageFeedback/HitContext/MineIterator owners. Comments naming `zWeapon.cpp`, `Light.c`, or `OptCatalog.c` are semantic hints only; no separate header/provider/source split is proven. |
 
+#### zEffect Compatibility-Host Quarantine (2026-07-11)
+
+A source-discovery ChatGPT Pro critique conditionally allowed a bounded repair
+of the current single-object zEffect compatibility host solely to unblock the
+VC5 final-build pipeline. The verified transcript SHA-256 is
+`603f08cc30741f7279e21fc5bc738ee9f343e9380f9e6a1640c9b3434a15a0a9`;
+the received-answer SHA-256 is
+`c296c21f798a95ac1b88adf85c6bf9cfc5888063e1d228c89ee44abb04e4f4ac`.
+The allowance covers only individually evidenced named-namespace or
+qualification corrections while `zeff_anim_run.c` remains the one compiled
+host that textually includes the other three fragments in retail block order.
+
+This compatibility repair is excluded from source-owner, source-block,
+original-namespace, natural COFF order, linkage, byte, model, and tier
+evidence. It must preserve the 129-definition lexical sequence, all data and
+anonymous-namespace linkage, the three compiler-generated switch tables, the
+fragment include order, and the one zEffect object between `zdec_init.obj` and
+`zerr_old.obj`. Any ambiguous binding, unreviewed effective-scope movement,
+new declaration/helper/data/symbol/dependency, or changed switch/object/link
+shape blocks the repair. The later source-shape reconstruction still requires
+a code-free shared declaration/type layer, a tail-first peel in the order
+save, init, anim-init, run, and positive per-object defined-set review. Never
+use temporary compatibility braces or qualifiers as evidence for that peel.
+
+#### zInput One-Object Compatibility Quarantine (2026-07-11)
+
+A second source-discovery ChatGPT Pro critique allowed exactly fourteen
+inserted preprocessing tokens to repair four declaration/symbol-scope
+mismatches in the current single-object zInput compatibility host. The
+verified transcript SHA-256 is
+`cce015e23afee49c04e5da9872128e892541d91674eb1340eea090f7ef19d0cc`;
+the received-answer SHA-256 is
+`fc1e8508ce9d397c072d1f8422025a5e0c859e071099b2ed7a4192983bb50fc4`.
+The allowed sites are `0x470a10`, `0x471c80`, `0x472450`, and `0x472480`:
+qualify the first definition with its already-declared `zInput::` owner, and
+close/reopen the inherited `zInput` namespace around each of the other three
+already-globally-declared definitions separately.
+
+VC5 ONE-OBJECT COMPATIBILITY REPAIR — NON-ACCEPTANCE. These four
+definition-scope corrections may make the temporary `zInput.obj` conform to
+pre-existing current-candidate declarations and caller decorations. They can
+establish only that the present one-TU compatibility host compiles and links
+the four identified references. They are not evidence of retail namespace
+membership, original language-linkage declarations, header or source
+ownership, TU or source-block boundaries, natural function order, linkage
+acceptance, executable bytes, `Model:`, or tier. Existing physical/address/ABI
+evidence retains its prior status, and the zInput source-shape/order debt is
+unchanged. Retain the repair only if clean VC5 COFF review shows the exact four
+old-to-required symbol transitions, identical normalized function positions,
+bodies, sections, and non-family relocations, no fifth symbol/dependency
+change, and a clean link resolving all four from the rebuilt `zInput.obj`.
+The verified comment-placement follow-up transcript SHA-256 is
+`ff351c2ad5284eb9302925627e193dd41ac9f09b7c4035a24a934edd0393da2d`
+(received answer
+`296e8c1bdc7ace66c7d546b2b545e7284197c64985baef078121809fb0f96f22`).
+It allows only moving each of the three existing affected function docblocks,
+byte-for-byte, from before its inserted namespace close to immediately after
+that close and immediately before the same definition. The preprocessing-token
+delta must remain the same fourteen inserts; rewriting, duplicating, or
+reassigning comments, or weakening the docblock audit, is blocked.
+
 #### `ai_net.cpp` Source-Shape Layer Detail
 
 These layer names are reconstruction routing labels stored in
-`tools/_recoil/config/source_file_blocks.json`. Current BN function names and
+the unified tracker's physical-block records. Current BN function names and
 comments were used only as navigation labels; placement evidence is the proven
 `ai_net.cpp` source-path literal xref at `0x4030bb`, neighboring function
 order, current BN assembly/xrefs, and the existing address-emitting
@@ -900,7 +966,7 @@ blind local spelling probes.
 #### `Briefing.cpp` Source-Shape Layer Detail
 
 These layer names are reconstruction routing labels stored in
-`tools/_recoil/config/source_file_blocks.json`. Current BN function names were
+the unified tracker's physical-block records. Current BN function names were
 used only as navigation labels; placement evidence is physical order, assembly
 shape, the `Briefing.cpp` literal xref at `0x404238`, and provider-shape
 inspection for the STL/MFC-style glue. Do not promote these ranges to separate
@@ -1049,7 +1115,7 @@ cleanup forwarding thunk to the authored `HudUiFillBitmap` destructor core.
 It carries no owner/source/data/linkage/byte/tier claim. The `0x403d70`
 provider scalar-deleting destructor row calls `0x40d5f0
 HudUiWidget::DestructorCoreEhThunk`; current BN shows `0x40d5f0` is a pure
-jump to `0x4b3d50 HudUiWidget::DestructorCore`, and SOURCE_OWNERS now records
+jump to `0x4b3d50 HudUiWidget::DestructorCore`, and the unified tracker now records
 it as a primary function of `legacy.hud_ui.class_huduiwidget` with physical
 `hud.cpp` placement metadata. The provider rows remain `0x403d70`, `0x403db0`,
 `0x403eb0`, and `0x40cf50`; the `0x40d5f0` thunk still needs HUD-owner VC5
@@ -1240,7 +1306,7 @@ was added.
 #### `hud.cpp` Source-Shape Layer Detail
 
 These layer names are reconstruction routing labels stored in
-`tools/_recoil/config/source_file_blocks.json`. Current BN function names were
+the unified tracker's physical-block records. Current BN function names were
 used only as navigation labels; the placement evidence is physical order,
 assembly shape, data/xref shape, and the two `hud.cpp` literal xrefs. Do not
 promote these ranges to separate `.h` rows or accepted source owners until VC5
@@ -1274,13 +1340,19 @@ source-shape experiments prove a specific original header/source placement.
 #### `map.cpp` Source-Shape Layer Detail
 
 These layer names are reconstruction routing labels stored in
-`tools/_recoil/config/source_file_blocks.json`. Current BN function names and
+the unified tracker's physical-block records. Current BN function names and
 comments were used only as navigation labels; placement evidence is physical
 order, assembly/callee shape, and the `map.cpp` literal xref at `0x416922`.
-The 2026-07-09 `map_text_block_order_current_shape` diagnostic confirms the
-current `src/Battlesport/map.cpp` translation unit emits all 42 known in-range
-retail functions in manifest order from `0x415ab0` through `0x417300`, with
-`0x417350` as the next sentinel. This is order-only source-block evidence. It
+The 2026-07-11 opt-in exact `map_text_block_order_current_shape` diagnostic
+confirms the current `src/Battlesport/map.cpp` translation unit emits the 42
+listed in-range retail functions in manifest order from `0x415ab0` through
+`0x417300`, but correctly returns
+`translation_unit_order_matches_manifest False`: its structured receipt lists
+all 95 defined code contributions and identifies 53 unlisted definitions (five
+helpers before the retail rows, six late-shelf HudLineClip definitions, and 42
+mission-range tracker definitions after them). The raw receipt is
+`build/vc5-verify/map_text_block_order_current_shape/map_text_block_order_current_shape.translation_unit_function_order.json`.
+It does not yet prove the `0x417350` linked seam. This is order-only evidence. It
 does not prove byte readiness, source-owner acceptance, provider
 classification, linkage acceptance, source-faithful modeling, tier promotion,
 or original use of the current reconstruction body header. This pass did not
@@ -1302,7 +1374,7 @@ limitations.
 #### `mission.cpp` Source-Shape Layer Detail
 
 These layer names are reconstruction routing labels stored in
-`tools/_recoil/config/source_file_blocks.json`. Current BN function names were
+the unified tracker's physical-block records. Current BN function names were
 used only as navigation labels; placement evidence is physical order, the seven
 `mission.cpp` literal xrefs in the objective runtime layer, and sampled
 assembly showing provider shape for the MFC scalar-deleting destructor islands.
@@ -1330,7 +1402,7 @@ placement.
 #### `pickup.cpp` Source-Shape Layer Detail
 
 These layer names are reconstruction routing labels stored in
-`tools/_recoil/config/source_file_blocks.json`. Current BN function names and
+the unified tracker's physical-block records. Current BN function names and
 comments were used only as navigation labels; placement evidence is physical
 order, assembly/callee shape, and the `pickup.cpp` literal xrefs at `0x41cd93`,
 `0x41d523`, and `0x41db80`. This pass did not prove new emitted `.h` rows.
@@ -1351,7 +1423,7 @@ order, assembly/callee shape, and the `pickup.cpp` literal xrefs at `0x41cd93`,
 #### `player.cpp` Source-Shape Layer Detail
 
 These layer names are reconstruction routing labels stored in
-`tools/_recoil/config/source_file_blocks.json`. Current BN function names and
+the unified tracker's physical-block records. Current BN function names and
 comments were used only as navigation labels; placement evidence is physical
 order, assembly/callee/provider shape, and the `player.cpp` literal xrefs at
 `0x41f20b`, `0x41f870`, `0x42087a`, `0x420dc7`, `0x42155b`, `0x421722`, and
@@ -1382,7 +1454,7 @@ order, assembly/callee/provider shape, and the `player.cpp` literal xrefs at
 #### `RecoilApp.cpp` Source-Shape Layer Detail
 
 These layer names are reconstruction routing labels stored in
-`tools/_recoil/config/source_file_blocks.json`. Current BN function names and
+the unified tracker's physical-block records. Current BN function names and
 comments were used only as navigation labels; placement evidence is physical
 order, assembly/callee/provider shape, and the `RecoilApp.cpp` literal xref at
 `0x42e620`. This pass did not prove new emitted `.h` rows and did not support a
@@ -1426,12 +1498,12 @@ shared default hooks (`0x407150`, `0x407160`, `0x407130`, `0x404e80`,
 uses the same slot ABI, but BN cannot bind those runtime calls to a specific
 static table. These facts support pending `app_shell.recoilapp_istate_family`
 membership review and do not by themselves justify accepted gates, tier work,
-or SOURCE_OWNERS remapping out of `legacy.app_shell.class_recoilapp`.
+or the unified tracker remapping out of `legacy.app_shell.class_recoilapp`.
 
 #### Late RecoilApp/AppFrame / CZGameFrame Source-Shape Layer Detail
 
 These layer names are reconstruction routing labels stored in
-`tools/_recoil/config/source_file_blocks.json`. Current BN function names and
+the unified tracker's physical-block records. Current BN function names and
 comments were used only as navigation labels; placement evidence is the
 current BN function order, assembly/xrefs/data records, and the provider
 boundaries around `[0x442890,0x443c50)`. No local source-path literal was found
@@ -1452,8 +1524,8 @@ evidence proves emitted header bodies.
 
 | Range | Layer label | Classification | Reconstruction consequence |
 | --- | --- | --- | --- |
-| `[0x442890,0x4428a0)` | `provider:mfc/ordinal-import-pointer-getter` | MFC provider getter | Returns the MFC42 ordinal 4274 import pointer. Keep as provider boundary; SOURCE_OWNERS row `provider.mfc42.ordinal4274_import_pointer_getter`. |
-| `[0x4428a0,0x4428b0)` | `provider:mfc/ole-control-module-message-map-getter` | MFC provider getter | Linked `COleControlModule` base message-map getter. Keep as provider boundary; SOURCE_OWNERS row `provider.mfc.recoil_app_mfc_ole_module_message_map_getter`. |
+| `[0x442890,0x4428a0)` | `provider:mfc/ordinal-import-pointer-getter` | MFC provider getter | Returns the MFC42 ordinal 4274 import pointer. Keep as provider boundary; the unified tracker row `provider.mfc42.ordinal4274_import_pointer_getter`. |
+| `[0x4428a0,0x4428b0)` | `provider:mfc/ole-control-module-message-map-getter` | MFC provider getter | Linked `COleControlModule` base message-map getter. Keep as provider boundary; the unified tracker row `provider.mfc.recoil_app_mfc_ole_module_message_map_getter`. |
 | `[0x4428b0,0x4429d0)` | `late-recoilapp-mfc-ole-app-shell-dtor` | app-shell destructor layer | `RecoilApp_MfcOleModule` destructor/scalar deleting destructor; destroys deque-like state-queue storage and chains to MFC. |
 | `[0x4429d0,0x442c70)` | `late-recoilapp-main-window-engine-startup-shutdown` | app/frame startup and shutdown layer | Main-window setup, skip-wait flags, engine init/shutdown, startup-state queueing. |
 | `[0x442c70,0x442d00)` | `late-recoilapp-mfc-ole-module-constructor` | app-shell constructor layer | CWinApp base construction and RecoilApp state-queue storage initialization. |
@@ -1468,13 +1540,13 @@ evidence proves emitted header bodies.
 | `[0x443a40,0x443a50)` | `zVideo-cached-client-rect-helper-island` | zVideo semantic exception inside the CZGameFrame semantic cluster | Called only by `CZGameFrame::OnSize` and `CZGameFrame::OnMove`; calls `zVid::QueryCachedClientRectUpdateMaskIf3dfx` and tail-jumps to `zVideo::UpdateCachedClientRectScreenCoords`. Do not promote to a separate `.h`/`.cpp` block without source-shape order proof. |
 | `[0x443a50,0x443ae0)` | `CZGameFrame-move-create-destroy-handlers` | CZGameFrame window lifecycle handlers | Move/create/destroy handlers with bitmap, input, network, video, and sound dependencies. |
 | `[0x443ae0,0x443b70)` | `CZGameFrame-activate-and-idle-forwarding` | CZGameFrame activation/idle forwarding layer | Activation/deactivation calls through `RecoilApp` and input/video dependencies; message-map idle forwarding calls `RecoilApp::OnIdleOrDispatch`. |
-| `[0x443b70,0x443be0)` | `provider:mfc/gdi-object-destructor-glue` | MFC/GDI provider destructor glue | `CGdiObject` scalar deleting destructor/destructor glue; SOURCE_OWNERS row `provider.mfc.gdi_object_bitmap_destructor_glue`. |
-| `[0x443be0,0x443c50)` | `provider:mfc/bitmap-destructor-glue` | MFC/GDI provider destructor glue | `CBitmap` scalar deleting destructor/destructor glue before `cls_di.c`; SOURCE_OWNERS row `provider.mfc.gdi_object_bitmap_destructor_glue`. |
+| `[0x443b70,0x443be0)` | `provider:mfc/gdi-object-destructor-glue` | MFC/GDI provider destructor glue | `CGdiObject` scalar deleting destructor/destructor glue; the unified tracker row `provider.mfc.gdi_object_bitmap_destructor_glue`. |
+| `[0x443be0,0x443c50)` | `provider:mfc/bitmap-destructor-glue` | MFC/GDI provider destructor glue | `CBitmap` scalar deleting destructor/destructor glue before `cls_di.c`; the unified tracker row `provider.mfc.gdi_object_bitmap_destructor_glue`. |
 
 #### `turret.cpp` Source-Shape Layer Detail
 
 These layer names are reconstruction routing labels stored in
-`tools/_recoil/config/source_file_blocks.json`. Current BN function names and
+the unified tracker's physical-block records. Current BN function names and
 comments were used only as navigation labels; placement evidence is physical
 order, assembly/callee/global shape, and the `turret.cpp` literal xref at
 `0x437b25`. This pass did not prove an emitted `turret.h` row.
@@ -1492,7 +1564,7 @@ order, assembly/callee/global shape, and the `turret.cpp` literal xref at
 #### `WinSock.cpp` Source-Shape Layer Detail
 
 These layer names are reconstruction routing labels stored in
-`tools/_recoil/config/source_file_blocks.json`. This is a provisional no-literal
+the unified tracker's physical-block records. This is a provisional no-literal
 physical block: no current BN source-path literal was found for `WinSock.cpp`,
 `NetUi.cpp`, or `Net.cpp`. Current BN comments are navigation labels only, and
 `0x43cf90` is the next WOL physical block boundary.
@@ -1996,9 +2068,10 @@ or VC5 natural-order proof: `[0x437e60,0x443c50)`,
 `[0x4a53f0,0x4a5c20)`, `[0x4a66e0,0x4a69c0)`,
 `[0x4b2960,0x4c0d20)`, `[0x4c7f00,0x4c81c0)`, and
 `[0x4c81c0,0x4c81d8)`. These ranges are mapped and have semantic
-subranges where applicable. The opening About range is now closed for
-source-block/order purposes by the recovered `about.cpp`/`about.h` shape and
-VC5 byte/order evidence.
+subranges where applicable. The opening About range retains the physical
+`about.cpp`/`about.h` mapping hypothesis and historical selected-five
+relative-order/selected-body byte diagnostics; those diagnostics do not close
+the exact defined-function-set or linked-interval gates.
 Literal-backed but source-metadata-conflicted blocks
 also remain open for owner/source reconciliation, especially
 zDEClient `zdec_qsand.cpp`/`zdec_crater.cpp`
@@ -2010,20 +2083,22 @@ provenance is proven.
 ### VC5 Closure Tests For Remaining Provenance Gaps
 
 The `provenance_unresolved_ranges` entries in
-`tools/_recoil/config/source_file_blocks.json` now carry a
+the unified tracker's physical-block records now carry a
 `vc5_resolution_tests` list. Those tests are not accepted evidence by
 themselves; they define what future reconstruction agents must prove before
 removing a range from the unresolved list or promoting a provisional
 `provisional_original_path` into an accepted original source path.
-`python tools/recoil.py audit source-blocks --strict` also validates these
+`python tools/recoil.py progress audit --scope blocks --strict` also validates these
 unresolved entries: each range must align to mapped block boundaries, carry a
 matching structured `retail_start`/`retail_end_exclusive` pair, carry a
 closure rule, state the authored `.h` contributor status, and require natural
 VC5 order in every `vc5_resolution_tests` row.
 
-- Closed 2026-07-03: `[0x401000,0x401060)` is the confirmed
+- Historical diagnostic, first recorded 2026-07-03 and status-corrected
+  2026-07-11: `[0x401000,0x401060)` retains the physical
   `src/Battlesport/about.cpp` / `src/Battlesport/about.h` opening
-  CAbout/provider prelude. Current BN and VC5 evidence prove the constructor
+  CAbout/provider-prelude mapping hypothesis. BN and selected-target VC5
+  evidence identify the constructor
   body at `0x401000`, the empty `CAboutDlg::DoDataExchange` override at
   `0x401020`, the CAboutDlg message-map accessor at `0x401030`, and the CWnd
   modal-state provider wrappers at `0x401040`/`0x401050`, followed by the
@@ -2033,15 +2108,34 @@ VC5 order in every `vc5_resolution_tests` row.
   into this isolated first block and unrelated later blocks. A 2026-07-03 BN
   refresh still found no `about.cpp`, `about.h`, `AboutDlg.cpp`,
   `Recoil.cpp`, or `CAbout` source-path literal, but the VC5
-  `cabout_prelude_provider_order_current_shape` target now naturally emits
-  retail order from current production source:
+  `cabout_prelude_provider_order_current_shape` target historically emitted the
+  expected five rows in relative order from then-current production source:
   `0x401000 -> 0x401020 -> 0x401030 -> 0x401040 -> 0x401050`. The paired
-  `cabout_prelude_functions` byte target matches all five functions with zero
-  unmasked mismatches after relocation masking. The successful source shape is
+  `cabout_prelude_functions` byte target matched the selected five function
+  bodies with zero unmasked mismatches after relocation masking. The historical
+  source-shape hypothesis is
   an empty authored DDX override in `about.cpp`, with `about.h` delaying MFC
   afxwin inline emission and `about.cpp` including the needed provider inline
-  bodies after `BEGIN_MESSAGE_MAP`. This closes the About source-block/order
-  gap without splitting `about.cpp` or copying provider bodies.
+  bodies after `BEGIN_MESSAGE_MAP`. This does not establish the exact object
+  definition population or a linked interval/seam.
+
+  The registered exact-defined-function-set check on 2026-07-11 fails as
+  defined: 12 actual definitions versus 5 expected, with 7 additional
+  definitions and no missing expected rows. The meaning and linked retention of
+  the extras remain unresolved. Exact linked interval/seam and global order are
+  pending; the accepted prefix and phase cursor remain at `0x401000`. The
+  durable blocker is `current-divergence` scoped to this current translation-
+  unit object-defined-set diagnostic, not to the linked interval. No adjacency,
+  harmless-COMDAT, placement, provider, owner, or whole-file conclusion follows.
+  The 2026-07-11 source-discovery Pro review ALLOWed only this narrow status
+  correction and noted that raw object-set equality still needs expected-
+  population and linked-retention evidence before it can be treated as an
+  independently proven ultimate invariant. Advisory evidence: receipt
+  `build/agent-evidence/about-order-status-2026-07-11/receipt.json`, SHA-256
+  `ce9755d19ef33c2a1096ebd8b95d02e0d0dd626ed00b0f316c045b024fa26299`;
+  transcript `build/agent-evidence/about-order-status-2026-07-11/transcript.md`,
+  SHA-256
+  `8358628651536311106e331747dd4c797258da4780844aaf9aaa59bf87a7addd`.
 - `[0x437e60,0x443c50)` must reproduce the current
   Battlesport/CZGameFrame transition order naturally, including the MFC
   provider islands at `[0x442890,0x4428b0)` and `[0x443b70,0x443c50)`.
@@ -2144,8 +2238,10 @@ listed no-literal placement labels.
 A follow-up workspace/BN pass on the same date rechecked the durable notes,
 VC5 target/cache evidence, early/late islands, zInput shelves, zSound/zVideo
 no-literal shelves, and the `[0x4b2960,0x4c0d20)` no-literal shelf. It did not
-reduce those ranges by itself. A later same-day VC5 source-shape pass closed the
-opening About range, reducing the unresolved-provenance list to 10. Existing
+reduce those ranges by itself. A later same-day VC5 source-shape pass removed
+the opening About range from that historical provenance list based on the
+selected-five diagnostic; the 2026-07-11 correction below leaves exact-set and
+linked-interval acceptance pending. Existing
 comments, source-map rows, per-function byte matches outside a source-shape
 order target, caller source-path literals, and local pair-order checks still do
 not prove exact original filenames or emitted authored `.h` rows for the
@@ -2155,8 +2251,8 @@ them.
 
 High-confidence refinements from that pass:
 
-- `[0x401000,0x401060)` is now closed as the confirmed `about.cpp`/`about.h`
-  opening CAbout/provider prelude. `0x401000` is exactly the
+- `[0x401000,0x401060)` retains the `about.cpp`/`about.h` physical mapping
+  hypothesis and historical selected-five diagnostic. `0x401000` is the
   `CAboutDlg` constructor body `[0x401000,0x40101b)` plus NOP padding;
   `0x401020` is an empty `CAboutDlg::DoDataExchange` override whose body is
   byte-identical to the inherited MFC no-op; `0x401030` is the CAboutDlg
@@ -2165,10 +2261,13 @@ High-confidence refinements from that pass:
   `AboutDlg.cpp`, `Recoil.cpp`, or `CAbout` source-path literal exists, but the
   source-block host is now tracked as `about.cpp` with `about.h` as the
   own-header input. `Recoil.cpp` is rejected as a split-TU placement label.
-  The positive `cabout_prelude_provider_order_current_shape` target naturally
-  emits `0x401000 -> 0x401020 -> 0x401030 -> 0x401040 -> 0x401050` from current
-  production source. The paired `cabout_prelude_functions` byte target matches
-  all five functions with zero unmasked mismatches after relocation masking.
+  The historical `cabout_prelude_provider_order_current_shape` result emitted
+  `0x401000 -> 0x401020 -> 0x401030 -> 0x401040 -> 0x401050` as a selected
+  relative-order sequence. The paired `cabout_prelude_functions` diagnostic
+  matched those selected bodies with zero unmasked mismatches after relocation
+  masking. The current registered exact-set diagnostic instead fails with 12
+  actual definitions versus 5 expected and 7 unresolved extras; see the dated
+  2026-07-11 correction above.
   The source-shape mechanism is an empty authored DDX override between the
   constructor and message map, plus delayed MFC `afxwin2.inl` provider inline
   emission after `BEGIN_MESSAGE_MAP`; this keeps the block continuous and does
@@ -2215,7 +2314,7 @@ High-confidence refinements from that pass:
   `GetTickCount` thunk, and `zvid_buff.c` still starts only after the prelude
   (`0x4a6b26` is the first source-path literal xref inside the later blit
   function).
-  The provider thunk is now linked in `SOURCE_OWNERS` as
+  The provider thunk is now linked in `the unified tracker` as
   `provider.kernel32.gettickcount_import_thunk`; this records the provider
   boundary only and does not close the surrounding `zsys.cpp` physical
   provenance gap.
@@ -2392,10 +2491,12 @@ option globals/literals at `0x56bcd0..0x56bce4` and
 ZBD manager data at `0x56bf70`, format string `0x4e48e8`, CRT init
 `0x4da0b0 -> 0x4bee40`, and EH handlers `0x4cb768..0x4cb9a1`.
 
-## Top-Down Function-Order Implementation Loop
+## Dated Selected-Subsequence And Placement History
 
-Use the source-block catalog as a top-down frontier, not as a one-time note.
-The source-block catalog is a durable working model, not a source-owner gate or
+The following dated narrative preserves hypotheses, diagnostics, and rejected
+probes from the earlier top-down campaign. It is non-advancing history, not a
+live frontier or instruction to select map, mission, or any later block. The
+physical-block tracker is a durable working model, not a source-owner gate or
 proof that stale implementation files are original. BN function names and
 comments are provisional navigation labels; current assembly, xrefs,
 source-path literals, provider/import evidence, and function order decide the
@@ -2404,10 +2505,12 @@ implementation state, not original-source authority. Passing smokes, byte
 checks, or ABI call-shape checks are evidence candidates, not source-shape
 proof.
 
-The active early-block frontier has advanced past the literal-backed
+At the time of this historical pass, work had advanced past the literal-backed
 `hud.cpp [0x404ca0,0x415ab0)` physical block. The opening
-`[0x401000,0x401060)` About prelude is closed for source-block/order purposes
-by the recovered `about.cpp`/`about.h` shape and VC5 byte/order evidence. The
+`[0x401000,0x401060)` About prelude was treated as closed by the then-available
+selected-five diagnostics. The 2026-07-11 exact-set correction supersedes that
+acceptance wording: 12 definitions are emitted versus 5 expected, so exact-set
+and linked-interval acceptance remain pending. The
 `ai_net.h -> zmth.h -> ai_net.cpp` checkpoint is order-confirmed by
 `ainet_text_block_order`, with the `0x402f60` `zmth.h` helper byte-clean as of
 2026-07-05. The `Briefing.cpp [0x4038a0,0x404ca0)` checkpoint is closed for
@@ -2451,12 +2554,16 @@ cleanup-label remapping, and one ALLOWed the HUD frontier/docs update only as
 function-order evidence. These conclusions remain advisory and do not establish
 source ownership, byte equivalence, or tier status.
 
-The `map.cpp [0x415ab0,0x417350)` top-down order pass is now clean for
-source-block/function-order purposes. `map_text_block_order_current_shape`
-reports `translation_unit_order_matches_manifest True` for all 42 known
-in-range functions from `HudSensorMapNode::Init` at `0x415ab0` through
-`HudSensorTracker::SetObjectiveMarkerColorBlink` at `0x417300`, with
-`0x417350 Mission::InitObjectives` as the next sentinel. `0x415ab0` starts the
+The `map.cpp [0x415ab0,0x417350)` top-down order pass now has exact raw-object
+instrumentation and remains reopened for selected-provider and linked-interval
+closure. `map_text_block_order_current_shape` reports
+`translation_unit_order_matches_manifest False` while retaining the 42 listed
+in-range functions in order from `HudSensorMapNode::Init` at `0x415ab0` through
+`HudSensorTracker::SetObjectiveMarkerColorBlink` at `0x417300`: the exact
+receipt records five preceding helpers and 48 later definitions instead of
+silently accepting them as a subsequence. Therefore
+`0x417350 Mission::InitObjectives` is a retail interval sentinel, not yet a
+verified object/link seam. `0x415ab0` starts the
 `map.cpp` block despite HUD semantic naming, and the `0x4daf04` `map.cpp`
 literal xref at `0x416922` supports the boundary. Do not move
 HudSensorMapNode, HudRectI, or HudGeom2D helpers out of `map.cpp` or create a
@@ -2465,19 +2572,36 @@ order-only evidence and does not prove byte readiness, source-owner acceptance,
 provider classification, linkage acceptance, source-faithful modeling, or tier
 status for semantic owners inside the physical block.
 
-The next safe top-down order-validation frontier is the existing durable
-`mission.cpp [0x417350,0x41cc10)` row. This is a source-layout scheduling claim
-only; `map.cpp` remains open for owner-local body/byte work. ChatGPT Pro
-ALLOWed both the map order-only status and the mission frontier advance strictly
-as scheduling/layout claims; `map.cpp` remains open for owner-local body,
-semantic, and byte work.
+The historical order-validation focus then moved to the durable
+`mission.cpp [0x417350,0x41cc10)` row together with its reopened seam from
+`map.cpp`. This was diagnostic history only and is not a scheduling claim. The 2026-07-11
+source-discovery ChatGPT Pro critique blocked treating one object or the old
+subsequence target as the placement oracle and required exact raw/link
+classification before source reshaping. Advisory receipt result: `ok=true`;
+transcript SHA-256
+`a293e00c75416142b1f3e12978e07e89f3c94abebf84afab440cc172098336f8`;
+sent-message SHA-256
+`f00cb639a7f2cd1b3f608dd51c4985306113af7a100a0ec001fec9c08fcaa21e`;
+received-message SHA-256
+`250c8dfcb7faaad87e50668463d00153a3eb98ff7f4bffdc2979495ad141f37b`.
+Exact linked targets now cover the 42-function map interval, the first
+four-function mission prefix, the 43-function mission/tracker core, and both
+late HudLineClip intervals. A fresh final-link run compiled all Battlesport
+sources but stopped before link on unrelated pre-existing namespace/container
+debt: `zdec_qsand.cpp` closes an unopened `zDEClient_QSand` namespace at line
+115 after `zdec_init.cpp` has already closed its active namespace, then opens a
+cross-file `zGeometry_ClipPatchOutput` scope that continues into
+`zdec_crater.cpp`. The resulting VC5 parse cascade is not map/mission evidence.
+Do not substitute the stale 2026-07-01 `Recoil.map` or its old zDEClient object;
+source reshaping remains blocked until one current-source final link produces
+the selected-provider receipts.
 
-For each frontier window:
+When `progress next` selects a physical block, use this evidence procedure for that
+selected window only:
 
-1. Run `python tools/recoil.py audit source-blocks --list` and select the
-   earliest unresolved or not-order-proven authored row. Expand only to the
-   next stable checkpoint, usually a literal-backed block or already
-   order-confirmed block.
+1. Run `python tools/recoil.py progress show <block-or-address>` and locate the row
+   containing the already-selected global cursor. Do not choose another row
+   from catalog order.
 2. Gather current BN facts for that window: assembly, xrefs, source-path
    literals, imports/provider boundaries, vtable/global writes, and neighboring
    function order. Ignore stale comments and stale current-source filenames
@@ -2494,13 +2618,13 @@ For each frontier window:
    check is still required before byte diffs are treated as ordinary
    function-body, data, or provider drift.
 6. If generated order differs from retail BN order, reject the hypothesis as a
-   source-shape/include-shape blocker or correct the source-block catalog first.
+   source-shape/include-shape blocker or correct the physical-block tracker first.
    Do not add `.inl` files, move semantic helpers into the wrong `.cpp`, use
    pragma/linker ordering, or accept declared object order as independent
    provenance.
-7. Record accepted and rejected source-shape facts here and in
-   `tools/_recoil/config/source_file_blocks.json` when durable. Regenerate the
-   README block table after catalog changes.
+7. Record durable accepted and rejected source-shape facts here, then route
+   structured block/span/evidence changes through dry-run-first tracker
+   operations. Do not maintain a generated shadow source-block report.
 
 ## Audit Procedure
 
@@ -2513,11 +2637,11 @@ known source-file block:
 2. Classify every semantic exception inside the block: headers, inline helpers,
    provider/compiler COMDATs, static helpers, compiler artifacts, padding, and
    source-owner islands.
-   `python tools/recoil.py audit source-blocks --strict` requires every
+   `python tools/recoil.py progress audit --scope blocks --strict` requires every
    `semantic_subranges` list to be gapless and ordered from the parent block
    start through the parent block end.
 3. Load any block `source_shape_inputs` and inspect any neighboring
-   `partial-header` rows with `python tools/recoil.py audit source-blocks --list`.
+   `partial-header` rows with `python tools/recoil.py progress show <block-or-address>`.
    Declaration-only/type-only header contributors are required source-shape
    inputs for the block; emitted header contributors are address-ordered
    placement rows whose code belongs in the header `source_path` and compiles
@@ -2525,8 +2649,8 @@ known source-file block:
    The strict source-block audit also requires provider/compiler-header COMDAT
    semantic subranges to use `provider:<slug>` source labels and to state why
    they are not authored physical source-file splits.
-4. Check `python tools/recoil.py owner show <address-or-owner>` and
-   `python tools/recoil.py owner relationships <address-or-owner> --json`.
+4. Check `python tools/recoil.py progress show <address-or-owner>` and
+   `python tools/recoil.py progress show <address-or-owner> --json`.
 5. Recreate the likely original `.h`/`.cpp` include and declaration layering:
    declaration-only/type-only/full-body headers, static/member/helper placement,
    and include timing that naturally causes VC5 to emit the retail order.

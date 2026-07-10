@@ -43,8 +43,8 @@ Open limits:
 ## AINET_VECTOR_SUBTRACT
 
 Evidence:
-- Caller addresses: `0x401180`, `0x401580`, `0x401c60`, `0x402090`,
-  `0x402170`, `0x402be0`, `0x402d60`, and `0x403620` in the literal-backed
+- Caller addresses: `0x401180`, `0x401580`, `0x401710`, `0x401c60`,
+  `0x402090`, `0x402170`, `0x402be0`, `0x402d60`, and `0x403620` in the literal-backed
   `ai_net.cpp` contribution block.
 - Repeated instruction/source pattern: each caller binds source, subtractor,
   and destination pointers to `EBX`, `ECX`, and `EDX`, performs three grouped
@@ -70,10 +70,11 @@ Restored source form:
 Verification notes:
 - `ainet_text_block_order` under `vc5_o2_ob0_md_facs` retains natural retail
   function order. Generated VC5 bytes are identical before and after
-  consolidation for all eight callers.
+  consolidation for the original eight callers, and `0x401710` now uses the
+  same body without changing any earlier caller.
 - Existing retail mismatch counts remain zero at `0x401180`, `0x401580`,
-  `0x401c60`, `0x402be0`, and `0x402d60`; 30 at `0x402090` and `0x402170`;
-  and 20 at `0x403620`.
+  `0x401710`, `0x401c60`, `0x402be0`, and `0x402d60`; 30 at `0x402090` and
+  `0x402170`; and 20 at `0x403620`.
 - The shared macro remains the same narrowly allowlisted raw-assembly island;
   this source-helper recovery does not establish owner gates, tier `S`, or
   byte readiness for the unfinished callers.
@@ -111,7 +112,7 @@ Verification notes:
   the remaining overlay-stack branch and constructor inlining drift is resolved.
 
 Open limits:
-- `0x471860` remains tier `B`; the plan blocker records the current byte drift.
+- `0x471860` remains tier `B`; the owner blocker records the current byte drift.
 
 ## zRndrSpanDepthAtXByPartsLocal
 
@@ -154,7 +155,7 @@ Evidence:
   `g_zVideo_pfnCreateTextureRecord` and stores the returned texture record in
   `g_zImage_DefaultTextureRecord`.
 - Likely original owner/source file: `GameZRecoil/zImage/zimg_texture.cpp`.
-- No standalone retail function is expected: no standalone plan/BN function was
+- No standalone retail function is expected: no standalone owner-ledger/BN function was
   identified for this helper in the inspected evidence; the behavior appears as
   caller-local setup around the zImage default texture globals and active
   zVideo texture callback.
@@ -175,7 +176,7 @@ Verification notes:
 
 Open limits:
 - `0x46d550` remains source-owner/data pending. `0x4a75f0` is tracked on its own
-  owner-projection entry because BN shows a direct null-name call to the default image
+  owner-ledger entry because BN shows a direct null-name call to the default image
   texture record callback.
 
 ## SaveLoadEntryCount

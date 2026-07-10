@@ -2247,7 +2247,7 @@ void HudUiCallback::QueueExitCurrentState() {
  */
 int HudUiCallback::QueueCheatCodeState() {
     g_RecoilApp.QueuePushState(
-        (RecoilStateBase *)&g_RecoilStateCheatCode,
+        (RecoilApp_IState *)&g_RecoilStateCheatCode,
         0
     );
     return 1;
@@ -3011,7 +3011,7 @@ void HudWeatherFxRain::Update(
  */
 void HudUiNewGamePanelOverlayOwner::QueueEnter() {
     g_RecoilApp.QueuePushState(
-        (RecoilStateBase *)&g_HudUiNewGamePanelOverlayOwner,
+        (RecoilApp_IState *)&g_HudUiNewGamePanelOverlayOwner,
         0
     );
 }
@@ -4013,7 +4013,7 @@ int HudUiOptionsPanelOverlayOwner::OnTryBecomeCurrent() {
  */
 void HudUiOptionsPanelOverlayOwner::QueueEnter() {
     g_RecoilApp.QueuePushState(
-        (RecoilStateBase *)&g_HudUiOptionsPanelOverlayOwner,
+        (RecoilApp_IState *)&g_HudUiOptionsPanelOverlayOwner,
         0
     );
 }
@@ -4373,7 +4373,7 @@ void RecoilStateControls::OnResume(
  */
 void RecoilStateControls::QueueEnter() {
     g_RecoilApp.QueuePushState(
-        (RecoilStateBase *)&g_RecoilStateControls,
+        (RecoilApp_IState *)&g_RecoilStateControls,
         0
     );
 }
@@ -4727,7 +4727,7 @@ void RecoilStateConfirmQuit::OnDeactivate() {
  */
 void RecoilStateConfirmQuit::QueueEnter() {
     g_RecoilApp.QueuePushState(
-        (RecoilStateBase *)&g_RecoilState_ConfirmQuit,
+        (RecoilApp_IState *)&g_RecoilState_ConfirmQuit,
         0
     );
 }
