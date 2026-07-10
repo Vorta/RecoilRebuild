@@ -398,6 +398,7 @@ RECOIL_STATIC_ASSERT(sizeof(AINet) == 0x58);
 
 #include <math.h>
 #include <string.h>
+
 const int kPlayerAiMode2TopSteering = 1;
 const int kPlayerAiMode2SteerDirectTarget = 0;
 const int kPlayerAiMode2SteerOffsetTarget = 1;
@@ -495,18 +496,19 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
     } while (0)
 
 /**
- * Raw assembly for 0x401180 and 0x403620: emits the shared VC5 x87
- * vector-subtract/store sequence after the wrapper has bound source, world,
- * and destination pointers in the required local order. C/C++ forms failed to
- * preserve the retail FPU stack and register shape; see the ainet-vector
- * allowlist row and verified_patterns.md.
- * Purpose: Provide the minimal shared x87 body for byte-sensitive AINet path
- * vector subtraction macros.
+ * Original-source helper evidence: no standalone retail function exists.
+ * The repeated callers at 0x401180, 0x401580, 0x401c60, 0x402090, 0x402170,
+ * 0x402be0, 0x402d60, and 0x403620 share the same fixed-register EBX/ECX/EDX
+ * grouped-x87 subtraction, `fxch`, and ordered-store sequence. C/C++ forms
+ * failed to preserve that retail VC5 shape; the exact historical identifier
+ * spelling remains unproven.
+ * Purpose: Provide the recovered shared inlined AINet vector subtraction.
  */
-#define AINET_PATH_SUB_WORLD_X87_BODY(srcPtr, worldPtr, dstPtr) \
-        __asm mov ebx, srcPtr                                  \
-        __asm mov ecx, worldPtr                                \
-        __asm mov edx, dstPtr                                  \
+#define AINET_VECTOR_SUBTRACT(destination, source, subtractor) \
+    __asm {                                                     \
+        __asm mov ebx, source                                  \
+        __asm mov ecx, subtractor                              \
+        __asm mov edx, destination                             \
         __asm fld dword ptr [ebx+0]                            \
         __asm fsub dword ptr [ecx+0]                           \
         __asm fld dword ptr [ebx+4]                            \
@@ -516,7 +518,8 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
         __asm fxch ST(2)                                       \
         __asm fstp dword ptr [edx+0]                           \
         __asm fstp dword ptr [edx+4]                           \
-        __asm fstp dword ptr [edx+8]
+        __asm fstp dword ptr [edx+8]                           \
+    }
 
 /**
  * Raw assembly wrapper for 0x401180: computes the auto-turn target delta while
@@ -530,7 +533,7 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
         zVec3 *v1;                                       \
         v0 = &(dst);                                     \
         v1 = &(world);                                   \
-        AINET_PATH_SUB_WORLD_X87_BODY(srcVec, v1, v0)    \
+        AINET_VECTOR_SUBTRACT(v0, srcVec, v1)            \
     } while (0)
 
 /**
@@ -545,7 +548,7 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
         zVec3 *v1;                                       \
         v1 = &(dst);                                     \
         v0 = &(world);                                   \
-        AINET_PATH_SUB_WORLD_X87_BODY(srcVec, v0, v1)    \
+        AINET_VECTOR_SUBTRACT(v1, srcVec, v0)            \
     } while (0)
 
 /**
@@ -562,7 +565,7 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
         v1 = &(world);                                      \
         v2 = &(dst);                                        \
         v0 = &(srcVec);                                     \
-        AINET_PATH_SUB_WORLD_X87_BODY(v0, v1, v2)           \
+        AINET_VECTOR_SUBTRACT(v2, v0, v1)                   \
     } while (0)
 
 /**
@@ -579,7 +582,7 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
         v2 = &(dst);                                        \
         v1 = &(world);                                      \
         v0 = &(srcVec);                                     \
-        AINET_PATH_SUB_WORLD_X87_BODY(v0, v1, v2)           \
+        AINET_VECTOR_SUBTRACT(v2, v0, v1)                   \
     } while (0)
 
 /**
@@ -594,7 +597,7 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
         dstPtr = &(dst);                                                     \
         v1 = &(world);                                                       \
         v0 = &(srcVec);                                                      \
-        AINET_PATH_SUB_WORLD_X87_BODY(v0, v1, dstPtr)                        \
+        AINET_VECTOR_SUBTRACT(dstPtr, v0, v1)                                \
     } while (0)
 
 /**
@@ -650,7 +653,7 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
         v1 = &(dst);                                             \
         v2 = &(world);                                           \
         v0 = &(srcVec);                                          \
-        AINET_PATH_SUB_WORLD_X87_BODY(v0, v2, v1)                \
+        AINET_VECTOR_SUBTRACT(v1, v0, v2)                        \
     } while (0)
 
 /**
@@ -665,7 +668,7 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
         zVec3 *v1;                                                \
         v0 = &(dst);                                              \
         v1 = &(world);                                            \
-        AINET_PATH_SUB_WORLD_X87_BODY(srcVec, v1, v0)             \
+        AINET_VECTOR_SUBTRACT(v0, srcVec, v1)                     \
     } while (0)
 
 /**
@@ -713,6 +716,12 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
         __asm fstp dword ptr [out]             \
     } while (0)
 #else
+#define AINET_VECTOR_SUBTRACT(destination, source, subtractor) \
+    do {                                                        \
+        (destination)->x = (source)->x - (subtractor)->x;       \
+        (destination)->y = (source)->y - (subtractor)->y;       \
+        (destination)->z = (source)->z - (subtractor)->z;       \
+    } while (0)
 #define AINET_FORWARD_PROBE_ADD_WORLD_ASM(dstArg, worldArg, endArg) \
     do {                                                           \
         (dstArg)->x = (endArg)->x + (worldArg)->x;                  \
@@ -1031,6 +1040,11 @@ int __fastcall AINet::AiMode2ForwardProbeRequiresAutoTurn(
 /**
  * Reimplements 0x401580: AINet::AiAdvancePathCursorAndComputeTargetVec (Battlesport/ai_net.h).
  * Purpose: Advances the AI path cursor and returns the target vector and probe fan. Source model: AINet source-file contribution over save-state/playerState, not a Player class.
+ * Preserve the pre-tested `while (branchOffset < 0x18)` for VC5 byte shape:
+ * VC5 folds its initially true entry test and emits the retail direct `jl`
+ * latch, while equivalent `do/while` and indefinite-loop/positive-`continue`
+ * forms add a two-byte backedge trampoline. The exact original lexical tokens
+ * remain unproven.
  */
 void __fastcall AINet::AiAdvancePathCursorAndComputeTargetVec(
     zUtil_SaveGameState *saveState,
@@ -1038,70 +1052,69 @@ void __fastcall AINet::AiAdvancePathCursorAndComputeTargetVec(
     AINetPathProbeFan **outProbeFan,
     zVec3 *outTargetVec
 ) {
-    zUtil_PlayerStateStorage *const playerState = saveState->playerState;
-    int nextBranchIndex = 0;
-    int excludedBranchIndex;
-    int branchIndex;
-    AINetNode *const previousNode = *currentNodeInOut;
-    AINetNode *const nextNode =
-        previousNode->neighborNodes[playerState->aiCurrentPathNeighborIndex];
+    zUtil_PlayerStateStorage *playerState = saveState->playerState;
+    AINetNode **nodeInOut = currentNodeInOut;
+    int chosenBranchIndex;
+
+    int pathNeighborIndex = playerState->aiCurrentPathNeighborIndex;
+    AINetNode *nextNode = (*nodeInOut)->neighborNodes[pathNeighborIndex];
     playerState->aiCurrentPathNode = nextNode;
 
-    const int previousNodeIndex = previousNode->nodeIndex;
+    int previousNodeIndex = (*nodeInOut)->nodeIndex;
     if (previousNodeIndex < 0) {
-        previousNode->Free();
-        *currentNodeInOut = playerState->aiCurrentPathNode;
+        (*nodeInOut)->Free();
+        *nodeInOut = playerState->aiCurrentPathNode;
 
-        if ((*currentNodeInOut)->nodeIndex < 0) {
+        if ((*nodeInOut)->nodeIndex < 0) {
             playerState->aiCurrentPathNeighborIndex = 0;
         } else {
-            AiChooseNextPathBranchIndex(
+            AINet::AiChooseNextPathBranchIndex(
                 saveState,
-                currentNodeInOut,
-                &nextBranchIndex,
+                nodeInOut,
+                &chosenBranchIndex,
                 -1
             );
-            playerState->aiCurrentPathNeighborIndex = nextBranchIndex;
+            playerState->aiCurrentPathNeighborIndex = chosenBranchIndex;
             if (playerState->aiNet->aiType == AINET_TYPE_HI) {
                 playerState->aiTopLevelState = kPlayerAiTopTurnTowardTarget;
             }
         }
     } else {
-        *currentNodeInOut = nextNode;
+        *nodeInOut = nextNode;
 
-        excludedBranchIndex = 4;
-        for (branchIndex = 0; branchIndex < 3; ++branchIndex) {
-            AINetNode *const reverseNode = nextNode->neighborNodes[branchIndex];
-            if (reverseNode != 0 && reverseNode->nodeIndex == previousNodeIndex) {
+        int excludedBranchIndex = 4;
+        int candidateBranchIndex = 0;
+        int branchOffset = 0x0c;
+        while (branchOffset < 0x18) {
+            AINetNode *reverseNode =
+                *(AINetNode **)((char *)nextNode + branchOffset);
+            if (reverseNode != 0 &&
+                reverseNode->nodeIndex == previousNodeIndex) {
+                excludedBranchIndex = candidateBranchIndex;
                 break;
             }
-        }
-        if (branchIndex == 3) {
-            branchIndex = excludedBranchIndex;
-        } else {
-            excludedBranchIndex = branchIndex;
+
+            branchOffset += 4;
+            ++candidateBranchIndex;
         }
 
-        nextBranchIndex = 0;
-        AiChooseNextPathBranchIndex(
+        AINet::AiChooseNextPathBranchIndex(
             saveState,
-            currentNodeInOut,
-            &nextBranchIndex,
+            nodeInOut,
+            &chosenBranchIndex,
             excludedBranchIndex
         );
-        playerState->aiCurrentPathNeighborIndex = nextBranchIndex;
+        playerState->aiCurrentPathNeighborIndex = chosenBranchIndex;
     }
 
-    AINetNode *const selectedNode = *currentNodeInOut;
-    *outProbeFan = selectedNode->probeFans[playerState->aiCurrentPathNeighborIndex];
-    {
-        const float x = playerState->worldPos.x - selectedNode->position.x;
-        const float y = playerState->worldPos.y - selectedNode->position.y;
-        const float z = playerState->worldPos.z - selectedNode->position.z;
-        outTargetVec->x = x;
-        outTargetVec->y = y;
-        outTargetVec->z = z;
-    }
+    int index = playerState->aiCurrentPathNeighborIndex;
+    *outProbeFan = (*nodeInOut)->probeFans[index];
+
+    zVec3 *worldPosition;
+    zVec3 *selectedPosition;
+    worldPosition = &playerState->worldPos;
+    selectedPosition = &(*nodeInOut)->position;
+    AINET_VECTOR_SUBTRACT(outTargetVec, worldPosition, selectedPosition);
 }
 
 #if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
@@ -1110,7 +1123,7 @@ void __fastcall AINet::AiAdvancePathCursorAndComputeTargetVec(
 
 /**
  * Reimplements 0x4016a0: AINet::AiChooseNextPathBranchIndex (Battlesport/ai_net.h).
- * Purpose: Selects the next non-excluded AI path branch for mode-2 steering. Source model: AINet source-file contribution over save-state/playerState, not a Player class.
+ * Purpose: Selects the next non-excluded AI path branch for mode-2 steering.
  */
 int __fastcall AINet::AiChooseNextPathBranchIndex(
     zUtil_SaveGameState *saveState,
