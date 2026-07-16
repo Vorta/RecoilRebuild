@@ -500,19 +500,6 @@ void HudUiMainMenuDialog_ControlsButton::OnActivate() {
 }
 
 /**
- * Reimplements 0x415020: HudUiMainMenuDialog::ScalarDeletingDestructor.
- * Original source path: D:\Proj\Battlesport\HudUiMainMenuDialog.cpp.
- * Purpose: Provide the explicit scalar-delete override used by the background vtable slot.
- */
-HudUiBackground * HudUiMainMenuDialog::ScalarDeletingDestructor(unsigned int flags) {
-    this->HudUiMainMenuDialog::~HudUiMainMenuDialog();
-    if ((flags & 1) != 0) {
-        ::operator delete(this);
-    }
-    return this;
-}
-
-/**
  * Reimplements 0x415040: HudUiMainMenuDialog::~HudUiMainMenuDialog.
  * Original source path: D:\Proj\Battlesport\HudUiMainMenuDialog.cpp.
  * Purpose: Provide the owner-level destructor body for member teardown.

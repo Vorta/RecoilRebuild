@@ -44,9 +44,6 @@ struct NetSessionBrowserDialog : CDialog {
     virtual const AFX_MSGMAP * GetMessageMap() const;
     virtual BOOL OnInitDialog();
     NetSessionBrowserDialog * Constructor(CWnd *parentWnd);
-    NetSessionBrowserDialog * ScalarDeletingDestructor(
-        unsigned int flags
-    );
     void Destructor();
     virtual void DoDataExchange(CDataExchange *dataExchange);
     int RefreshSessionList();
@@ -153,7 +150,7 @@ struct NetSessionConfigDialog : CDialog {
     void OnMapChanged();
     static void InitMapNameStrings();
     static void RegisterMapNameCleanup();
-    static void CleanupMapNameStringsOnExit();
+    static void __cdecl CleanupMapNameStringsOnExit();
 };
 RECOIL_STATIC_ASSERT(sizeof(NetSessionConfigDialog) == 0x17c);
 RECOIL_STATIC_ASSERT(
@@ -665,11 +662,11 @@ void __fastcall FormatIpv4Address(
 } // namespace Net
 
 namespace GameNetSpawnPointList {
-void InitGlobals();
+void __cdecl InitGlobals();
 }
 
 namespace GameNetPlayerRowList {
-void Reset();
+void __cdecl Reset();
 GameNetPlayerRow *__fastcall AppendNewRow(
     GameNetPlayerRowListState *self,
     int zeroInitializeRow

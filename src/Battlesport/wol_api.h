@@ -3,6 +3,7 @@
 #include <stddef.h>
 
 #include "Battlesport/Mfc42Abi.h"
+#include <afxdisp.h>
 #include "recoil/recoil_callconv.h"
 #include "recoil/recoil_types.h"
 
@@ -224,8 +225,6 @@ struct WestwoodOnlineUpgradeApi {
     );
     static void Shutdown();
 };
-
-void AfxEnableControlContainer(COccManager *manager);
 
 extern "C" WestwoodOnlineUpgradeApiInitState g_WestwoodOnlineUpgradeApiInitState;
 extern "C" IUnknown *g_pWestwoodOnlineUpgradeApi;

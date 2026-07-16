@@ -72,7 +72,6 @@ struct HudUiMpExitDialog : HudUiBackground {
     void UnloadLayout();
     void Update(float deltaSeconds);
     void LoadLayout();
-    virtual HudUiBackground * ScalarDeletingDestructor(unsigned int flags);
     void Destructor();
 };
 

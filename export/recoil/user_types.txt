@@ -193,6 +193,7 @@ struct HudUiCounterLayoutPayload;
 struct HudUiCounterTextPanel;
 struct HudUiCounter_FTable;
 struct HudUiCreditsPanel;
+struct HudUiCreditsPanel_VTable;
 struct HudUiCycleSelectorWidget;
 struct HudUiCycleSelectorWidget_FTable;
 struct HudUiDialogController;
@@ -1566,7 +1567,7 @@ struct CDialogVTable
 	void* Ordinal_MFC42_3825;
 	void* Ordinal_MFC42_3831;
 	void* GetTypeLib;
-	void* field_30;
+	void* GetMessageMap;
 	void* GetCommandMap;
 	void* _GetBaseDispatchMap;
 	void* _GetBaseConnectionMap;
@@ -1589,9 +1590,9 @@ struct CDialogVTable
 	void* OnCommand;
 	void* OnNotify;
 	void* GetSuperWndProcAddr;
-	void* field_8c;
-	void* field_90;
-	void* field_94;
+	void* DoDataExchange;
+	void* BeginModalState;
+	void* EndModalState;
 	void* PreTranslateMessage;
 	void* OnAmbientProperty;
 	void* WindowProc;
@@ -3177,7 +3178,7 @@ struct HudUiBriefingActionNode
 // "HudUiBriefingActionQueueCtx"
 struct HudUiBriefingActionQueueCtx
 {
-	int32_t missionId;
+	int32_t listAllocatorStorage;
 	struct HudUiBriefingActionNode* headSentinel;
 	int32_t nodeCount;
 	struct HudUiBriefingActionNode* currentNode;
@@ -3757,6 +3758,23 @@ struct HudUiCreditsPanel
 	struct HudUiZrdWidget quitButton;
 	struct HudUiZrdScrollingText creditsScreen;
 	float fadeProgress;
+};
+
+// "HudUiCreditsPanel_VT_ScalarDeletingDestructor"
+typedef struct HudUiCreditsPanel* (__thiscall* HudUiCreditsPanel_VT_ScalarDeletingDestructor)(struct HudUiCreditsPanel* self, uint32_t flags);
+
+// "HudUiCreditsPanel_VT_SetEnabled"
+typedef void (__thiscall* HudUiCreditsPanel_VT_SetEnabled)(struct HudUiCreditsPanel* self, int32_t enabled);
+
+// "HudUiCreditsPanel_VT_UpdateAll"
+typedef void (__thiscall* HudUiCreditsPanel_VT_UpdateAll)(struct HudUiCreditsPanel* self, float dt);
+
+// "HudUiCreditsPanel_VTable"
+struct HudUiCreditsPanel_VTable
+{
+	HudUiCreditsPanel_VT_UpdateAll UpdateAll;
+	HudUiCreditsPanel_VT_SetEnabled SetEnabled;
+	HudUiCreditsPanel_VT_ScalarDeletingDestructor scalarDeletingDestructor;
 };
 
 // "HudUiCycleSelectorWidget"
@@ -7047,9 +7065,12 @@ struct MfcCmdUI_Vtbl
 // "MfcMsgMap"
 struct MfcMsgMap
 {
-	void* getBaseMap;
-	struct zMfcMsgMapEntry* entries;
+	MfcMsgMapBaseAccessor getBaseMap;
+	struct zMfcMsgMapEntry const* entries;
 };
+
+// "MfcMsgMapBaseAccessor"
+typedef struct MfcMsgMap const* (__stdcall* MfcMsgMapBaseAccessor)();
 
 // "MfcThreeFloatDialog"
 struct MfcThreeFloatDialog

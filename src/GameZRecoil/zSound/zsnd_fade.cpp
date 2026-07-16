@@ -103,7 +103,7 @@ void InitGlobals() {
  * Purpose: release active and dispatch fade-list nodes during sound-system
  * shutdown.
  */
-void ShutdownAtExit() {
+void __cdecl ShutdownAtExit() {
     /**
      * Reimplements data 0x56b404: g_zSndFadeDispatchListSentinel.
      * Data: g_zSndFadeDispatchListSentinel.

@@ -31,16 +31,15 @@ for individual functions and owner tiers.
   `0x407140`, `0x407150`, and `0x407160`. Keep these as simple authored C/C++
   bodies or provider-marked glue according to the owner-ledger entry; do not replace
   them with raw assembly.
-- MFC empty overrides with provider-like bytes: `0x401020`
-  (`CAboutDlg::DoDataExchange`) is an authored empty derived-class override even
-  though its body byte-matches the inherited MFC no-op. Generated symbol,
-  `about.h` declaration, placement between the constructor and message map, and
-  the `cabout_prelude_provider_order_current_shape` plus
-  `cabout_prelude_functions` VC5 targets prove the override inside the
-  continuous `about.cpp` block. Do not classify similar no-op bodies as provider
-  solely from byte shape; check class/message-map/vtable and function-order
-  evidence first. See `source_file_layout_audit.md` for the full About prelude
-  proof.
+- MFC shared no-op address groups: `0x401020` is a linked `ret 4` group. The
+  `CAboutDlg` vtable DDX slot points there, but the same body shape and its
+  heterogeneous xrefs do not prove a unique authored `CAboutDlg::DoDataExchange`
+  override, provider identity, or source host. The current About source model is
+  a conventional dynamic-MFC `CAboutDlg` with inherited DDX and a provisional
+  `about.cpp`/`about.h` host. Treat tiny MFC bodies as shared linked groups until
+  class/message-map/vtable, generated-symbol, object-order, and link evidence
+  establish a more specific identity. See `source_file_layout_audit.md` for the
+  current About prelude limits.
 - VC5 tail-merged duplicated source tails: `0x401060`
   (`AINet::TickAiMode2TopLevel`) byte-matches only when the path-follow and
   auto-turn switch cases contain duplicated attack/rebuild source tails. VC5

@@ -111,7 +111,7 @@ extern "C" void __fastcall zSnd_SetUseArchiveBanks(
  * Reimplements 0x4a0840: zSndSampleSetRegistry_Shutdown.
  * Purpose: Releases the sample-set registry storage and clears its pointer range.
  */
-extern "C" void zSndSampleSetRegistry_Shutdown() {
+extern "C" void __cdecl zSndSampleSetRegistry_Shutdown() {
     ::operator delete(g_zSnd_SampleSetRegistry.begin);
     g_zSnd_SampleSetRegistry.begin = 0;
     g_zSnd_SampleSetRegistry.end = 0;

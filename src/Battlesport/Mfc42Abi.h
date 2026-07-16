@@ -24,8 +24,8 @@ struct tm {
 #endif
 #endif
 
-// Provider boundary for MFC42. These declarations come from the vendored MFC42
-// SDK and are not Recoil-authored class reimplementations.
+// Provider boundary for MFC42. These declarations come from the canonical
+// VC5SP3 MFC42 headers and are not Recoil-authored class reimplementations.
 // The retail game links against release MFC42.DLL; keep the provider headers in
 // that shape even when the modern smoke target is a debug build.
 #ifndef _AFXDLL
@@ -43,7 +43,7 @@ struct tm {
 #undef _AFX_ENABLE_INLINES
 
 // VC5SP3's common-control headers predate several declarations consumed by
-// the vendored MFC42 afxcmn.h. Supply only the missing SDK shapes for local
+// MFC42 afxcmn.h. Supply only the missing SDK shapes for local
 // object-byte verification; modern builds already get these from Windows SDKs.
 #if defined(_MSC_VER) && _MSC_VER <= 1200
 #ifndef LVBKIF_SOURCE_NONE

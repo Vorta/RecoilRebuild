@@ -61,9 +61,13 @@ means that dependency is byte-ready, not that its parent owner is complete.
 
 Owner gates are local acceptance properties. They do not authorize out-of-phase
 scheduling, later-owner work ahead of `progress next`, or byte work outside the
-accepted-prefix fallback. Verification receipts are hash-bound evidence inputs;
+accepted-prefix fallback. Verification receipts are machine-bound evidence inputs;
 they never mutate state or prove source shape. All positive boundary/source/
 data/tier-B-or-better claims require the scrutiny workflow in root `AGENTS.md`.
+
+Tools and receipts calculate and validate SHA-256 integrity metadata. Agents
+cite the receipt/evidence path or imported evidence id and copy a digest only
+when diagnosing an actual integrity mismatch.
 
 The address-specific `0x4e5954..0x4e5a50` orphan-data exception described in
 root `AGENTS.md` remains non-reusable.

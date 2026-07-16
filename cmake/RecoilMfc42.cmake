@@ -1,23 +1,33 @@
-set(RECOIL_MFC42_ROOT
-    "${PROJECT_SOURCE_DIR}/support/sdk/MFC42"
-    CACHE PATH "Vendored Visual C++ 6.0 MFC42 SDK subset used for legacy MFC ABI work."
+set(RECOIL_VC5SP3_ROOT
+    "${PROJECT_SOURCE_DIR}/../Compiler/VC5SP3"
+    CACHE PATH "Portable Visual C++ 5.0 SP3 toolchain root."
 )
 
-set(RECOIL_MFC42_INCLUDE_DIR "${RECOIL_MFC42_ROOT}/Include")
-set(RECOIL_MFC42_LIB_X86_DIR "${RECOIL_MFC42_ROOT}/Lib/x86")
-set(RECOIL_MFC42_SRC_DIR "${RECOIL_MFC42_ROOT}/Src")
+set(RECOIL_MFC42_ROOT "${RECOIL_VC5SP3_ROOT}/VC/MFC")
+
+set(RECOIL_MFC42_INCLUDE_DIR "${RECOIL_MFC42_ROOT}/INCLUDE")
+set(RECOIL_MFC42_LIB_X86_DIR "${RECOIL_MFC42_ROOT}/LIB")
+set(RECOIL_MFC42_SRC_DIR "${RECOIL_MFC42_ROOT}/SRC")
 set(RECOIL_MFC42_RUNTIME_DLL "${PROJECT_SOURCE_DIR}/support/mfc42.dll")
 
 if(NOT EXISTS "${RECOIL_MFC42_INCLUDE_DIR}/AFXWIN.H")
-    message(FATAL_ERROR "Missing vendored MFC42 headers at ${RECOIL_MFC42_INCLUDE_DIR}")
+    message(FATAL_ERROR "Missing VC5SP3 MFC42 headers at ${RECOIL_MFC42_INCLUDE_DIR}")
 endif()
 
 if(NOT EXISTS "${RECOIL_MFC42_LIB_X86_DIR}/MFC42.LIB")
-    message(FATAL_ERROR "Missing vendored MFC42 x86 import library at ${RECOIL_MFC42_LIB_X86_DIR}")
+    message(FATAL_ERROR "Missing VC5SP3 MFC42 x86 import library at ${RECOIL_MFC42_LIB_X86_DIR}")
 endif()
 
 if(NOT EXISTS "${RECOIL_MFC42_SRC_DIR}/APPCORE.CPP")
-    message(FATAL_ERROR "Missing vendored MFC42 source evidence at ${RECOIL_MFC42_SRC_DIR}")
+    message(FATAL_ERROR "Missing VC5 MFC42 source evidence at ${RECOIL_MFC42_SRC_DIR}")
+endif()
+
+file(SHA256 "${RECOIL_MFC42_INCLUDE_DIR}/AFXWIN.H" RECOIL_MFC42_AFXWIN_SHA256)
+if(NOT RECOIL_MFC42_AFXWIN_SHA256 STREQUAL "87603d834fcaa1d21b94ebc241f26164ab7698898b00ea774f249196540a7087")
+    message(FATAL_ERROR
+        "Unexpected AFXWIN.H provider at ${RECOIL_MFC42_INCLUDE_DIR}; "
+        "the Recoil project requires the canonical VC5 header."
+    )
 endif()
 
 if(NOT EXISTS "${RECOIL_MFC42_RUNTIME_DLL}")

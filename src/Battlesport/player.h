@@ -428,36 +428,36 @@ const char *__fastcall SelectZrdByDifficulty(const char *extraSearchPath);
 
 namespace Player_TopMsgPanel1 {
 void Constructor();
-void Destructor();
+void __cdecl Destructor();
 } // namespace Player_TopMsgPanel1
 
 namespace Player_TopMsgPanel2 {
 void Constructor();
-void Destructor();
+void __cdecl Destructor();
 } // namespace Player_TopMsgPanel2
 
 namespace PlayerNodeFlagRestore {
-void InitGlobals();
+void __cdecl InitGlobals();
 void InitInstance();
 void RegisterAtExit();
-void ShutdownInstance();
+void __cdecl ShutdownInstance();
 } // namespace PlayerNodeFlagRestore
 
 namespace Player {
-void InitMasterCommonDataList();
-void InitMasterModalDataList();
-void InitAndRegisterUnderwaterFxPass3UiSingleton();
+void __cdecl InitMasterCommonDataList();
+void __cdecl InitMasterModalDataList();
+void __cdecl InitAndRegisterUnderwaterFxPass3UiSingleton();
 void InitUnderwaterFxPass3UiSingleton();
 void RegisterUnderwaterFxPass3UiOnExit();
-void ResetUnderwaterFxPass3UiSingleton();
-void InitAndRegisterProjectileCameraFxPass3UiSingleton();
+void __cdecl ResetUnderwaterFxPass3UiSingleton();
+void __cdecl InitAndRegisterProjectileCameraFxPass3UiSingleton();
 void InitProjectileCameraFxPass3UiSingleton();
 void RegisterProjectileCameraFxPass3UiCleanup();
-void ResetProjectileCameraFxPass3UiSingleton();
-void InitSaveStateList();
-void InitAndRegisterTopMsgPanel1();
+void __cdecl ResetProjectileCameraFxPass3UiSingleton();
+void __cdecl InitSaveStateList();
+void __cdecl InitAndRegisterTopMsgPanel1();
 void RegisterTopMsgPanel1OnExit();
-void InitAndRegisterTopMsgPanel2();
+void __cdecl InitAndRegisterTopMsgPanel2();
 void RegisterTopMsgPanel2Cleanup();
 const char *GetAivZrdPath();
 void __fastcall ExtractVehicleNameFromAivName(

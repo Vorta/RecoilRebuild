@@ -1,15 +1,14 @@
-#include "GameZRecoil/RecoilApp/recoil_state_dialog_host.h"
-
 #include "GameZRecoil/zHud/zhud_ui.h"
 #include "GameZRecoil/zVideo/zvid.h"
 
 /**
- * Reimplements 0x408f50: RecoilStateDialogHost::OnSuspend.
+ * Reimplements logical authored override folded at 0x408f50:
+ * RecoilStateControls::OnSuspend.
  *
  * Purpose: disable, blit, unlock, and present the hosted HUD dialog when
  * another app state is pushed on top of it.
  */
-void RecoilStateDialogHost::OnSuspend(
+void RecoilStateControls::OnSuspend(
     int suspendParam
 ) {
     (void)suspendParam;

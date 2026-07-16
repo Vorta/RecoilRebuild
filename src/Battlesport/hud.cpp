@@ -23,6 +23,32 @@
 #include "GameZRecoil/zRndr/zrndr.h"
 #include "GameZRecoil/zSound/zsnd.h"
 #include "GameZRecoil/zFMV/fmv.h"
+
+/*
+ * Ordinary virtual-destructor provenance retained for compiler-generated
+ * lifecycle rows after removal of the synthetic named-slot ABI.
+ * Reimplements 0x404d70: HudUiElement lifecycle contribution.
+ * Reimplements 0x406e10: HudUiCheatCodeDialog lifecycle contribution.
+ * Reimplements 0x408c40: HudUiControlsDialog lifecycle contribution.
+ * Reimplements 0x408d70: RecoilStateControls lifecycle contribution.
+ * Reimplements 0x4099d0: RecoilStateCredits lifecycle contribution.
+ * Reimplements 0x40a920: HudCmdDialog lifecycle contribution.
+ * Reimplements 0x40b0a0: HudCmdCommandList lifecycle contribution.
+ * Reimplements 0x40b0c0: HudCmdKeyAButton lifecycle contribution.
+ * Reimplements 0x40b0e0: HudCmdKeyBButton lifecycle contribution.
+ * Reimplements 0x40b100: HudCmdJoyButton lifecycle contribution.
+ * Reimplements 0x40b120: HudCmdMouseButton lifecycle contribution.
+ * Reimplements 0x40bc70: HudCmdDialogState lifecycle contribution.
+ * Reimplements 0x40bf50: HudCmdBindingEntry lifecycle contribution.
+ * Reimplements 0x40c260: HudCmdBindButtonBase lifecycle contribution.
+ * Reimplements 0x40cf00: HudOptionsDialog lifecycle contribution.
+ * Reimplements 0x40d0c0: HudUiOptionsPanelOverlayOwner lifecycle contribution.
+ * Reimplements 0x415020: HudUiMainMenuDialog lifecycle contribution.
+ * Reimplements 0x415190: RecoilStateMainMenuTransition lifecycle contribution.
+ * Reimplements 0x415790: HudUiBackgroundConfirmQuit lifecycle contribution.
+ * Reimplements 0x415860: RecoilStateConfirmQuit lifecycle contribution.
+ * Reimplements 0x415a80: zFMV_Action lifecycle contribution.
+ */
 #include "GameZRecoil/zInterp/zInterp.h"
 #include "GameZRecoil/zUtil/zsave_game.h"
 #include "GameZRecoil/zTurret/zTurret.h"
@@ -39,13 +65,6 @@
 #include <ctype.h>
 #include <string.h>
 
-/**
- * Reimplements data 0x4f32c8: g_HudUiNewGamePanelOverlayOwner.
- *
- * Purpose: own the zero-initialized new-game panel overlay singleton storage.
- */
-#undef g_HudUiNewGamePanelOverlayOwner
-HudUiNewGamePanelOverlayOwnerStorage g_HudUiNewGamePanelOverlayOwner = {0};
 /**
  * Reimplements data 0x4e5e08: g_HudUiOptionsPanelOverlayOwner.
  *
@@ -78,8 +97,6 @@ RecoilStateControlsStorage g_RecoilStateControls = {0};
  */
 #undef g_RecoilStateCheatCode
 RecoilStateCheatCodeStorage g_RecoilStateCheatCode = {0};
-#define g_HudUiNewGamePanelOverlayOwner \
-    (*(HudUiNewGamePanelOverlayOwner *)&g_HudUiNewGamePanelOverlayOwner)
 #define g_HudUiOptionsPanelOverlayOwner \
     (*(HudUiOptionsPanelOverlayOwner *)&g_HudUiOptionsPanelOverlayOwner)
 #define g_RecoilState_ConfirmQuit \
@@ -88,37 +105,6 @@ RecoilStateCheatCodeStorage g_RecoilStateCheatCode = {0};
     (*(RecoilStateControls *)&g_RecoilStateControls)
 #define g_RecoilStateCheatCode \
     (*(RecoilStateCheatCode *)&g_RecoilStateCheatCode)
-/**
- * Reimplements data 0x4f3748: g_Hud_LowMeterBeepSample.
- * Source owner: hud_ui.hud_low_meter_loop_sound_globals.
- * Purpose: Holds the one-shot low-meter warning sample loaded from player.zrd.
- */
-zSndSample *g_Hud_LowMeterBeepSample = 0;
-/**
- * Reimplements data 0x4f374c: g_Hud_LowMeterLoopSample.
- * Source owner: hud_ui.hud_low_meter_loop_sound_globals.
- * Purpose: Holds the looped low-meter warning sample loaded from player.zrd.
- */
-zSndSample *g_Hud_LowMeterLoopSample = 0;
-/**
- * Reimplements data 0x4f3750: g_Hud_LowMeterLoopActive.
- * Source owner: hud_ui.hud_low_meter_loop_sound_globals.
- * Purpose: Tracks whether the low-meter loop sample has been started.
- */
-int g_Hud_LowMeterLoopActive = 0;
-/**
- * Reimplements data 0x4f3758: g_Hud_LowMeterBeepInterval.
- * Source owner: hud_ui.hud_low_meter_loop_sound_globals.
- * Purpose: Stores the low-meter one-shot beep interval from player.zrd.
- */
-float g_Hud_LowMeterBeepInterval = 0.0f;
-/**
- * Reimplements data 0x4f375c: g_Hud_LowMeterNextBeepTime.
- * Source owner: hud_ui.hud_low_meter_loop_sound_globals.
- * Purpose: Stores the next absolute mission time for a low-meter one-shot beep.
- */
-float g_Hud_LowMeterNextBeepTime = 0.0f;
-
 /**
  * Reimplements data 0x4da3d8: g_HudUiDialogSampleSetName.
  * Source owner: hud_ui.shared_dialog_sample_set_name.
@@ -214,83 +200,10 @@ const float ZSND_CD_VOLUME_TO_NORMALIZED = 1.52590219e-05f;
 const float ZSND_CD_NORMALIZED_TO_VOLUME = 65535.0f;
 
 namespace {
-const int kHudWeatherFxRainSlantDelta = 1;
-const int kHudWeatherFxSnowTextureWidth = 16;
-const int kHudWeatherFxSnowTextureHeight = 8;
-const int kHudWeatherFxSnowTextureTexels =
-    kHudWeatherFxSnowTextureWidth * kHudWeatherFxSnowTextureHeight;
-
-/**
- * Original inline helper; no standalone retail function exists.
- * Observed callers: 0x4be2f0 HudWeatherFxSnow::Update and 0x4be880 HudWeatherFxRain::Update.
- * Purpose: Compute a weather particle velocity vector's squared length before normalization.
- */
-inline float HudWeatherFxVec3LengthSq(
-    const zVec3 *value
-) {
-    return value->x * value->x + value->y * value->y + value->z * value->z;
-}
-
-/**
- * Original inline helper; no standalone retail function exists.
- * Observed callers: 0x4be2f0 HudWeatherFxSnow::Update.
- * Purpose: Decide whether a snow particle left the visible weather cone and must respawn.
- */
-inline int HudWeatherFxSnowNeedsReset(
-    const zVec3 *position
-) {
-    const float absZ = (float)(fabs(position->z));
-    if ((float)(fabs(position->y)) > absZ) {
-        return 1;
-    }
-    if ((float)(fabs(position->x)) > absZ) {
-        return 1;
-    }
-    if (position->z > 1.0) {
-        return 1;
-    }
-    if (position->z < 0.5) {
-        return 1;
-    }
-    return 0;
-}
-
 enum zVideoRendererBackend {
     ZVID_RENDERER_BACKEND_SOFTWARE = 0,
 };
-
 } // namespace
-
-/**
- * Reimplements data 0x56bf48: g_HudWeatherFxSnow_LastCameraTarget.
- * Purpose: Retain the previous snow camera target coordinates for frame-to-frame drift.
- */
-HudWeatherFxCameraTargetHistory g_HudWeatherFxSnow_LastCameraTarget = {
-    0.0f,
-    0.0f,
-    0.0f,
-    0.0f
-};
-/**
- * Reimplements data 0x56bf58: g_HudWeatherFxRain_LastCameraTarget.
- * Purpose: Retain the previous rain camera target coordinates for frame-to-frame drift.
- */
-HudWeatherFxCameraTargetHistory g_HudWeatherFxRain_LastCameraTarget = {
-    0.0f,
-    0.0f,
-    0.0f,
-    0.0f
-};
-/**
- * Reimplements data 0x56bf68: g_HudWeatherFxSnow_TimeAccumulator.
- * Purpose: Accumulate elapsed snow update time.
- */
-float g_HudWeatherFxSnow_TimeAccumulator = 0.0f;
-/**
- * Reimplements data 0x56bf6c: g_HudWeatherFxRain_TimeAccumulator.
- * Purpose: Accumulate elapsed rain update time.
- */
-float g_HudWeatherFxRain_TimeAccumulator = 0.0f;
 
 /**
  * Reimplements 0x404ca0: HudUiElement::Draw.
@@ -406,25 +319,6 @@ int HudUiElement::GetCenterY() {
 }
 
 /**
- * Reimplements 0x404d70: HudUiElement::ScalarDeletingDestructor.
- * Provider-boundary: VC5 scalar-deleting destructor physical emission; this is
- * not authored HudUiElement owner evidence.
- * Original file: D:\Proj\Battlesport\hud.cpp.
- * Purpose: preserve the emitted scalar-deleting-destructor thunk shape in the
- * hud.cpp physical order target.
- */
-HudUiElement * HudUiElement::ScalarDeletingDestructor(
-    unsigned int flags
-) {
-    this->~HudUiElement();
-    if ((flags & 1u) != 0) {
-        ::operator delete(this);
-    }
-
-    return this;
-}
-
-/**
  * Reimplements 0x404d90: HudUiWidget::GetCenterX.
  * Original file: D:\Proj\Battlesport\hud.cpp.
  * Purpose: return x directly or the aligned image center x when widget alignment is active.
@@ -493,7 +387,7 @@ namespace zError {
  * Reimplements 0x404e80: zError::ReportOldNoOp.
  * Purpose: Preserves the stripped retail legacy-report call ABI without producing output.
  */
-void ReportOld(
+void __cdecl ReportOld(
     int,
     const char *,
     int,
@@ -2066,23 +1960,8 @@ HudUiCheatCodeDialog::HudUiCheatCodeDialog()
 }
 
 /**
- * Reimplements 0x406e10: HudUiCheatCodeDialog::ScalarDeletingDestructor.
- * Original source path: D:\Proj\Battlesport\HudUiCheatCode.cpp.
- * Purpose: Run cheat-code dialog cleanup and optionally free the object for VC5 scalar delete.
- */
-HudUiBackground * HudUiCheatCodeDialog::ScalarDeletingDestructor(
-    unsigned int flags
-) {
-    this->~HudUiCheatCodeDialog();
-
-    if ((flags & 1u) != 0) {
-        ::operator delete(this);
-    }
-
-    return this;
-}
-
-/**
+ * Reimplements 0x406e10: VC5 class-specific deleting-destructor contribution
+ * for the ordinary virtual HudUiCheatCodeDialog lifetime.
  * Reimplements 0x406e30: HudUiCheatCodeDialog::~HudUiCheatCodeDialog
  * (compiler-emitted implicit destructor).
  * Original source path: D:\Proj\Battlesport\HudUiCheatCode.cpp.
@@ -2137,14 +2016,14 @@ RecoilStateCheatCode::RecoilStateCheatCode() {
 
 /**
  * Reimplements 0x406f00: RecoilStateCheatCode::Destructor.
- * Reimplements 0x406ee0: RecoilStateCheatCode::ScalarDeletingDestructor (compiler-emitted).
+ * Reimplements 0x406ee0: RecoilStateCheatCode::compiler deleting destructor (compiler-emitted).
  * Original source path: D:\Proj\Battlesport\HudUiCheatCode.cpp.
  * Purpose: release any active cheat-code dialog and clear the app-state dialog pointer.
  */
 RecoilStateCheatCode::~RecoilStateCheatCode() {
     HudUiCheatCodeDialog *dialog = (HudUiCheatCodeDialog *)m_dialog;
     if (dialog != 0) {
-        dialog->ScalarDeletingDestructor(1);
+        delete dialog;
         m_dialog = 0;
     }
 }
@@ -2200,7 +2079,7 @@ void RecoilStateCheatCode::OnDeactivate() {
         zVideo::Dispatch_UnlockPrimarySurfaceState();
 
         if (m_dialog != 0) {
-            ((HudUiCheatCodeDialog *)m_dialog)->ScalarDeletingDestructor(1);
+            delete ((HudUiCheatCodeDialog *)m_dialog);
         }
 
         m_dialog = 0;
@@ -2220,16 +2099,16 @@ void RecoilStateCheatCode::OnDeactivate() {
     HudCheat::ExecuteCommandString(&commandString);
 }
 
-
 /**
  * Reimplements 0x4070e0: HudUiCheatCodeTitleWidget::OnActivate.
  * Original source path: D:\Proj\Battlesport\HudUiCheatCode.cpp.
- * Purpose: Queue the cheat-code state exit when the GO widget is activated.
+ * Purpose: queue the cheat-code state exit when the GO widget is activated.
  */
-void HudUiCheatCodeTitleWidget::OnActivate() {
+inline void HudUiCheatCodeTitleWidget::OnActivate() {
     g_RecoilApp.QueueExitCurrentState(0);
     HudUiZrdWidget::OnActivate();
 }
+
 
 /**
  * Reimplements 0x407100: HudUiCallback::QueueExitCurrentState.
@@ -2239,6 +2118,8 @@ void HudUiCheatCodeTitleWidget::OnActivate() {
 void HudUiCallback::QueueExitCurrentState() {
     g_RecoilApp.QueueExitCurrentState(0);
 }
+
+extern void (*const g_HudUiQueueExitCurrentStateCallback)() = HudUiCallback::QueueExitCurrentState;
 
 /**
  * Reimplements 0x407110: HudUiCallback::QueueCheatCodeState.
@@ -2257,6 +2138,2470 @@ int HudUiCallback::QueueCheatCodeState() {
 // Compiler-emitted 0x407170: VC5 scalar-deleting destructor glue for the
 // byte-matched 0x4ccd50 default/base table; not an authored source-map row.
 #include "Battlesport/recoil_state_base_body.h"
+extern "C" {
+/**
+ * Reimplements data 0x4da63c..0x4da8b4: zOpt profile and option literal pool.
+ * Purpose: preserve the writable VC5-era char globals used by profile selection
+ * and option registration.
+ */
+/**
+ * Reimplements data 0x4da63c: g_zOpt_OpStr_TolEq.
+ * Purpose: Stores the writable profile comparison token for approximate equality.
+ */
+char g_zOpt_OpStr_TolEq[] = "~=";
+/**
+ * Reimplements data 0x4da640: g_zOpt_OpStr_Ne.
+ * Purpose: Stores the writable profile comparison token for inequality.
+ */
+char g_zOpt_OpStr_Ne[] = "!=";
+/**
+ * Reimplements data 0x4da644: g_zOpt_OpStr_Ge.
+ * Purpose: Stores the writable profile comparison token for greater-or-equal tests.
+ */
+char g_zOpt_OpStr_Ge[] = ">=";
+/**
+ * Reimplements data 0x4da648: g_zOpt_OpStr_Le.
+ * Purpose: Stores the writable profile comparison token for less-or-equal tests.
+ */
+char g_zOpt_OpStr_Le[] = "<=";
+/**
+ * Reimplements data 0x4da64c: g_zOpt_OpStr_Gt.
+ * Purpose: Stores the writable profile comparison token for greater-than tests.
+ */
+char g_zOpt_OpStr_Gt[] = ">";
+/**
+ * Reimplements data 0x4da650: g_zOpt_OpStr_Lt.
+ * Purpose: Stores the writable profile comparison token for less-than tests.
+ */
+char g_zOpt_OpStr_Lt[] = "<";
+/**
+ * Reimplements data 0x4da654: g_zOpt_OpStr_Eq.
+ * Purpose: Stores the writable profile comparison token for equality tests.
+ */
+char g_zOpt_OpStr_Eq[] = "==";
+/**
+ * Reimplements data 0x4da658: k_zOpt_ProfileMetricDefault.
+ * Purpose: Stores the writable DEFAULT profile metric key.
+ */
+char k_zOpt_ProfileMetricDefault[] = "DEFAULT";
+/**
+ * Reimplements data 0x4da660: k_zOpt_ProfileMetricHwAccel.
+ * Purpose: Stores the writable HW_ACCEL profile metric key.
+ */
+char k_zOpt_ProfileMetricHwAccel[] = "HW_ACCEL";
+/**
+ * Reimplements data 0x4da66c: k_zOpt_ProfileMetricRamKb.
+ * Purpose: Stores the writable RAM_KB profile metric key.
+ */
+char k_zOpt_ProfileMetricRamKb[] = "RAM_KB";
+/**
+ * Reimplements data 0x4da674: k_zOpt_ProfileMetricVideoKb.
+ * Purpose: Stores the writable VIDEO_KB profile metric key.
+ */
+char k_zOpt_ProfileMetricVideoKb[] = "VIDEO_KB";
+/**
+ * Reimplements data 0x4da680: k_zOpt_ProfileMetricCpuMhz.
+ * Purpose: Stores the writable CPU_MHZ profile metric key.
+ */
+char k_zOpt_ProfileMetricCpuMhz[] = "CPU_MHZ";
+/**
+ * Reimplements data 0x4da688: k_zOpt_ProfileMetricCpuClass.
+ * Purpose: Stores the writable CPU_CLASS profile metric key.
+ */
+char k_zOpt_ProfileMetricCpuClass[] = "CPU_CLASS";
+/**
+ * Reimplements data 0x4da694: g_zOpt_OptionName_VStride.
+ * Purpose: Stores the writable option name used to register VStride.
+ */
+char g_zOpt_OptionName_VStride[] = "VStride";
+/**
+ * Reimplements data 0x4da69c: g_zOpt_OptionName_VMode.
+ * Purpose: Stores the writable option name used to register VMode.
+ */
+char g_zOpt_OptionName_VMode[] = "VMode";
+/**
+ * Reimplements data 0x4da6a4: g_zOpt_OptionName_Replicate.
+ * Purpose: Stores the writable option name used to register Replicate.
+ */
+char g_zOpt_OptionName_Replicate[] = "Replicate";
+/**
+ * Reimplements data 0x4da6b0: g_zOpt_OptionName_Window.
+ * Purpose: Stores the writable option name used to register Window.
+ */
+char g_zOpt_OptionName_Window[] = "Window";
+/**
+ * Reimplements data 0x4da6b8: g_zOpt_OptionName_Display.
+ * Purpose: Stores the writable option name used to register Display.
+ */
+char g_zOpt_OptionName_Display[] = "Display";
+/**
+ * Reimplements data 0x4da6c0: g_zOpt_OptionName_Render.
+ * Purpose: Stores the writable option name used to register Render.
+ */
+char g_zOpt_OptionName_Render[] = "Render";
+/**
+ * Reimplements data 0x4da6c8: g_zOpt_OptionName_Camera.
+ * Purpose: Stores the writable option name used to register Camera.
+ */
+char g_zOpt_OptionName_Camera[] = "Camera";
+/**
+ * Reimplements data 0x4da6d0: g_zOpt_OptionName_NetListen.
+ * Purpose: Stores the writable option name used to register NetListen.
+ */
+char g_zOpt_OptionName_NetListen[] = "NetListen";
+/**
+ * Reimplements data 0x4da6dc: g_zOpt_OptionName_NetworkModem.
+ * Purpose: Stores the writable option name used to register NetworkModem.
+ */
+char g_zOpt_OptionName_NetworkModem[] = "NetworkModem";
+/**
+ * Reimplements data 0x4da6ec: g_zOpt_OptionName_Network.
+ * Purpose: Stores the writable option name used to register Network.
+ */
+char g_zOpt_OptionName_Network[] = "Network";
+/**
+ * Reimplements data 0x4da6f4: g_zOpt_OptionName_JoystickNumButtons.
+ * Purpose: Stores the writable option name used to register JoystickNumButtons.
+ */
+char g_zOpt_OptionName_JoystickNumButtons[] = "JoystickNumButtons";
+/**
+ * Reimplements data 0x4da708: g_zOpt_OptionName_JoystickNumAxes.
+ * Purpose: Stores the writable option name used to register JoystickNumAxes.
+ */
+char g_zOpt_OptionName_JoystickNumAxes[] = "JoystickNumAxes";
+/**
+ * Reimplements data 0x4da718: g_zOpt_OptionName_WOLPasswordFlag.
+ * Purpose: Stores the writable option name used to register WOLPasswordFlag.
+ */
+char g_zOpt_OptionName_WOLPasswordFlag[] = "WOLPasswordFlag";
+/**
+ * Reimplements data 0x4da728: g_zOpt_OptionName_Joystick.
+ * Purpose: Stores the writable option name used to register Joystick.
+ */
+char g_zOpt_OptionName_Joystick[] = "Joystick";
+/**
+ * Reimplements data 0x4da734: g_zOpt_OptionName_HwApi.
+ * Purpose: Stores the writable option name used to register HWAPI.
+ */
+char g_zOpt_OptionName_HwApi[] = "HWAPI";
+/**
+ * Reimplements data 0x4da73c: g_zOpt_OptionName_HudTypeHw.
+ * Purpose: Stores the writable option name used to register HUDType_HW.
+ */
+char g_zOpt_OptionName_HudTypeHw[] = "HUDType_HW";
+/**
+ * Reimplements data 0x4da748: g_zOpt_OptionName_HudTypeSw.
+ * Purpose: Stores the writable option name used to register HUDType_SW.
+ */
+char g_zOpt_OptionName_HudTypeSw[] = "HUDType_SW";
+/**
+ * Reimplements data 0x4da754: g_zOpt_OptionName_HudFlagHw.
+ * Purpose: Stores the writable option name used to register HUDFlag_HW.
+ */
+char g_zOpt_OptionName_HudFlagHw[] = "HUDFlag_HW";
+/**
+ * Reimplements data 0x4da760: g_zOpt_OptionName_HudFlagSw.
+ * Purpose: Stores the writable option name used to register HUDFlag_SW.
+ */
+char g_zOpt_OptionName_HudFlagSw[] = "HUDFlag_SW";
+/**
+ * Reimplements data 0x4da76c: g_zOpt_OptionName_FullScreen.
+ * Purpose: Stores the writable option name used to register FullScreen.
+ */
+char g_zOpt_OptionName_FullScreen[] = "FullScreen";
+/**
+ * Reimplements data 0x4da778: g_zOpt_OptionName_CDAudio.
+ * Purpose: Stores the writable option name used to register CDAudio.
+ */
+char g_zOpt_OptionName_CDAudio[] = "CDAudio";
+/**
+ * Reimplements data 0x4da780: g_zOpt_OptionName_PlayerName.
+ * Purpose: Stores the writable option name used to register PlayerName.
+ */
+char g_zOpt_OptionName_PlayerName[] = "PlayerName";
+/**
+ * Reimplements data 0x4da78c: g_zOpt_OptionName_SoundApi.
+ * Purpose: Stores the writable option name used to register SoundAPI.
+ */
+char g_zOpt_OptionName_SoundApi[] = "SoundAPI";
+/**
+ * Reimplements data 0x4da798: g_zOpt_OptionName_SoundLOD.
+ * Purpose: Stores the writable option name used to register SoundLOD.
+ */
+char g_zOpt_OptionName_SoundLOD[] = "SoundLOD";
+/**
+ * Reimplements data 0x4da7a4: g_zOpt_OptionName_SoundVolume.
+ * Purpose: Stores the writable option name used to register SoundVolume.
+ */
+char g_zOpt_OptionName_SoundVolume[] = "SoundVolume";
+/**
+ * Reimplements data 0x4da7b0: g_zOpt_OptionName_MuteSound.
+ * Purpose: Stores the writable option name used to register MuteSound.
+ */
+char g_zOpt_OptionName_MuteSound[] = "MuteSound";
+/**
+ * Reimplements data 0x4da7bc: g_zOpt_OptionName_GameIntensity.
+ * Purpose: Stores the writable option name used to register GameIntensity.
+ */
+char g_zOpt_OptionName_GameIntensity[] = "GameIntensity";
+/**
+ * Reimplements data 0x4da7cc: g_zOpt_OptionName_GameCtlOptions.
+ * Purpose: Stores the writable option name used to register GameCtlOptions.
+ */
+char g_zOpt_OptionName_GameCtlOptions[] = "GameCtlOptions";
+/**
+ * Reimplements data 0x4da7dc: g_zOpt_OptionName_TextureMemoryHw.
+ * Purpose: Stores the writable option name used to register TextureMemory_HW.
+ */
+char g_zOpt_OptionName_TextureMemoryHw[] = "TextureMemory_HW";
+/**
+ * Reimplements data 0x4da7f0: g_zOpt_OptionName_TextureMemorySw.
+ * Purpose: Stores the writable option name used to register TextureMemory_SW.
+ */
+char g_zOpt_OptionName_TextureMemorySw[] = "TextureMemory_SW";
+/**
+ * Reimplements data 0x4da804: g_zOpt_OptionName_ObjectLODHw.
+ * Purpose: Stores the writable option name used to register ObjectLOD_HW.
+ */
+char g_zOpt_OptionName_ObjectLODHw[] = "ObjectLOD_HW";
+/**
+ * Reimplements data 0x4da814: g_zOpt_OptionName_ObjectLODSw.
+ * Purpose: Stores the writable option name used to register ObjectLOD_SW.
+ */
+char g_zOpt_OptionName_ObjectLODSw[] = "ObjectLOD_SW";
+/**
+ * Reimplements data 0x4da824: g_zOpt_OptionName_GlobalLightHw.
+ * Purpose: Stores the writable option name used to register GlobalLight_HW.
+ */
+char g_zOpt_OptionName_GlobalLightHw[] = "GlobalLight_HW";
+/**
+ * Reimplements data 0x4da834: g_zOpt_OptionName_GfxFlagsHw.
+ * Purpose: Stores the writable option name used to register GfxFlags_HW.
+ */
+char g_zOpt_OptionName_GfxFlagsHw[] = "GfxFlags_HW";
+/**
+ * Reimplements data 0x4da840: g_zOpt_OptionName_AllVideoBuffer.
+ * Purpose: Stores the writable option name used to register AllVideoBuffer.
+ */
+char g_zOpt_OptionName_AllVideoBuffer[] = "AllVideoBuffer";
+/**
+ * Reimplements data 0x4da850: g_zOpt_OptionName_GlobalLightSw.
+ * Purpose: Stores the writable option name used to register GlobalLight_SW.
+ */
+char g_zOpt_OptionName_GlobalLightSw[] = "GlobalLight_SW";
+/**
+ * Reimplements data 0x4da860: g_zOpt_OptionName_Perspective.
+ * Purpose: Stores the writable option name used to register Perspective.
+ */
+char g_zOpt_OptionName_Perspective[] = "Perspective";
+/**
+ * Reimplements data 0x4da86c: g_zOpt_OptionName_Lighting.
+ * Purpose: Stores the writable option name used to register Lighting.
+ */
+char g_zOpt_OptionName_Lighting[] = "Lighting";
+/**
+ * Reimplements data 0x4da878: g_zOpt_OptionName_Transparency.
+ * Purpose: Stores the writable option name used to register Transparency.
+ */
+char g_zOpt_OptionName_Transparency[] = "Transparency";
+/**
+ * Reimplements data 0x4da888: g_zOpt_OptionName_GfxFlagsSw.
+ * Purpose: Stores the writable option name used to register GfxFlags_SW.
+ */
+char g_zOpt_OptionName_GfxFlagsSw[] = "GfxFlags_SW";
+/**
+ * Reimplements data 0x4da894: g_zOpt_OptionName_EffectsLevelHw.
+ * Purpose: Stores the writable option name used to register EffectsLevel_HW.
+ */
+char g_zOpt_OptionName_EffectsLevelHw[] = "EffectsLevel_HW";
+/**
+ * Reimplements data 0x4da8a4: g_zOpt_OptionName_EffectsLevelSw.
+ * Purpose: Stores the writable option name used to register EffectsLevel_SW.
+ */
+char g_zOpt_OptionName_EffectsLevelSw[] = "EffectsLevel_SW";
+/**
+ * Reimplements data 0x4da8b4: g_zOpt_OptionName_HwCardFlag.
+ * Purpose: Stores the writable option name used to register HWCardFlag.
+ */
+char g_zOpt_OptionName_HwCardFlag[] = "HWCardFlag";
+/**
+ * Reimplements data 0x4da8c0: g_zOpt_DetailArchiveName.
+ * Purpose: Stores the writable detail archive name used by game option loading.
+ */
+char g_zOpt_DetailArchiveName[] = "detail.zrd";
+/**
+ * Reimplements data 0x4da8cc: g_zOpt_DetailOptionName_Sunlight.
+ * Purpose: Stores the writable node name used to apply the sunlight graphics flag.
+ */
+char g_zOpt_DetailOptionName_Sunlight[] = "sunlight";
+}
+
+namespace zOpt {
+namespace {
+struct zOpt_NameInt32Pair {
+    const char *name;
+    int value;
+};
+
+const zOpt_NameInt32Pair g_zOpt_NamedScalarValues[] = {
+    {"TRUE", 1},
+    {"FALSE", 0},
+    {"HIGH", 0},
+    {"MEDIUM", 1},
+    {"LOW", 2},
+    {"CPU_CLASS_8086", 0},
+    {"CPU_CLASS_80286", 2},
+    {"CPU_CLASS_80386", 3},
+    {"CPU_CLASS_80486", 4},
+    {"CPU_CLASS_PENTIUM", 5},
+    {"CPU_CLASS_PENTIUM_PRO", 6},
+    {"CPU_CLASS_PENTIUM_NEWER", 7},
+    {"TEXMEM_MAX", 0},
+    {"TEXMEM_8MB", 1},
+    {"TEXMEM_6MB", 2},
+    {"TEXMEM_4MB", 3},
+    {"TEXMEM_2MB", 4},
+    {"ZVID_320x200x16", 2},
+    {"ZVID_320x240x16", 3},
+    {"ZVID_640x400x16", 4},
+    {"ZVID_640x480x16", 5},
+    {"ZVID_800x600x16", 6},
+    {"ZVID_1024x768x16", 7},
+    {"HUD_TYPEI", 1},
+    {"HUD_TYPEII", 2},
+    {"SOUND_API_DSOUND", 0},
+    {"SOUND_API_A3D", 1},
+};
+
+const double ZOPT_COMPARE_TOLERANCE_PCT = 0.02;
+
+/**
+ * Original inline/static helper; no standalone retail function exists. Observed in caller
+ * 0x407220.
+ * Evidence basis: the branchless signed absolute-difference idiom is embedded in the
+ * "~=" comparison path of zOpt::EvalIntCompareOp, with no assigned address-backed retail
+ * helper for this source-file owner.
+ * Purpose: compute the absolute difference used by the profile metric tolerance compare.
+ */
+int WrappedAbsDifference(
+    int lhs,
+    int rhs
+) {
+    const unsigned int diff = (unsigned int)(lhs) - (unsigned int)(rhs);
+    const unsigned int signMask = 0u - (diff >> 31);
+    return (int)((diff ^ signMask) - signMask);
+}
+
+} // namespace
+
+/**
+ * Reimplements 0x407190: zOpt::LookupNamedValueAsInt.
+ * Original source path: D:\Proj\GameZRecoil\zGame\zopt.c.
+ * Purpose: map profile scalar names to their integer option values.
+ */
+int __fastcall LookupNamedValueAsInt(
+    const char *key
+) {
+    unsigned int pairIndex;
+    for (pairIndex = 0;
+        pairIndex < sizeof(g_zOpt_NamedScalarValues) / sizeof(g_zOpt_NamedScalarValues[0]);
+        ++pairIndex) {
+        if (strcmp(
+            g_zOpt_NamedScalarValues[pairIndex].name,
+            key
+        ) == 0) {
+            return g_zOpt_NamedScalarValues[pairIndex].value;
+        }
+    }
+
+    return 0;
+}
+
+/**
+ * Reimplements 0x4071f0: zOpt::ReadScalarValueAsInt.
+ * Original source path: D:\Proj\GameZRecoil\zGame\zopt.c.
+ * Purpose: coerce an integer, float, or named string scalar node into an integer value.
+ */
+int __fastcall ReadScalarValueAsInt(
+    zReader::Node *scalarValueNode
+) {
+    if (scalarValueNode->type == zReader::ZRDR_NODE_INT) {
+        return scalarValueNode->value.i32;
+    }
+    if (scalarValueNode->type == zReader::ZRDR_NODE_FLOAT) {
+        return (int)(scalarValueNode->value.f32);
+    }
+    if (scalarValueNode->type == zReader::ZRDR_NODE_STRING) {
+        return LookupNamedValueAsInt(scalarValueNode->value.str);
+    }
+
+    return 0;
+}
+
+/**
+ * Reimplements 0x407220: zOpt::EvalIntCompareOp.
+ * Original source path: D:\Proj\GameZRecoil\zGame\zopt.c.
+ * Purpose: apply an integer comparison operator used by profile metric rules.
+ */
+int __fastcall EvalIntCompareOp(
+    const char *opString,
+    int lhs,
+    int rhs
+) {
+    if (strcmp(
+        opString,
+        g_zOpt_OpStr_Eq
+    ) == 0) {
+        return lhs == rhs;
+    }
+    if (strcmp(
+        opString,
+        g_zOpt_OpStr_Lt
+    ) == 0) {
+        return lhs < rhs;
+    }
+    if (strcmp(
+        opString,
+        g_zOpt_OpStr_Gt
+    ) == 0) {
+        return lhs > rhs;
+    }
+    if (strcmp(
+        opString,
+        g_zOpt_OpStr_Le
+    ) == 0) {
+        return lhs <= rhs;
+    }
+    if (strcmp(
+        opString,
+        g_zOpt_OpStr_Ge
+    ) == 0) {
+        return lhs >= rhs;
+    }
+    if (strcmp(
+        opString,
+        g_zOpt_OpStr_Ne
+    ) == 0) {
+        return lhs != rhs;
+    }
+    if (strcmp(
+        opString,
+        g_zOpt_OpStr_TolEq
+    ) == 0) {
+        return (double)(WrappedAbsDifference(
+            lhs,
+            rhs
+        )) < (double)(lhs)*ZOPT_COMPARE_TOLERANCE_PCT;
+    }
+
+    return 0;
+}
+
+/**
+ * Reimplements 0x407470: zOpt::EvaluateProfileMetricCondition.
+ * Original source path: D:\Proj\GameZRecoil\zGame\zopt.c.
+ * Purpose: evaluate one profile-selection condition against the current runtime metrics.
+ */
+int __fastcall EvaluateProfileMetricCondition(
+    zReader::Node *metricConditionNode
+) {
+    if (metricConditionNode->type == zReader::ZRDR_NODE_STRING) {
+        return strcmp(
+            metricConditionNode->value.str,
+            k_zOpt_ProfileMetricDefault
+        ) == 0;
+    }
+
+    if (metricConditionNode->type != zReader::ZRDR_NODE_ARRAY) {
+        return 0;
+    }
+
+    zReader::Node *const conditionArray = metricConditionNode->value.nodes;
+    if (conditionArray[0].value.i32 != 4) {
+        return 0;
+    }
+
+    const char *const metricKey = conditionArray[1].value.str;
+    const char *const opString = conditionArray[2].value.str;
+    const int rhs = ReadScalarValueAsInt(&conditionArray[3]);
+    int currentMetricValue = 0;
+
+    if (strcmp(
+        metricKey,
+        k_zOpt_ProfileMetricCpuClass
+    ) == 0) {
+        currentMetricValue = g_zGame_Options_RuntimeConfig.cpuClass;
+    } else if (strcmp(
+        metricKey,
+        k_zOpt_ProfileMetricCpuMhz
+    ) == 0) {
+        currentMetricValue = g_zGame_Options_RuntimeConfig.cpuMhz;
+    } else if (strcmp(
+        metricKey,
+        k_zOpt_ProfileMetricVideoKb
+    ) == 0) {
+        currentMetricValue = (int)(g_zGame_Options_RuntimeConfig.soundHardwareMemKb);
+    } else if (strcmp(
+        metricKey,
+        k_zOpt_ProfileMetricRamKb
+    ) == 0) {
+        currentMetricValue = (int)(g_zGame_Options_RuntimeConfig.systemRamKb);
+    } else if (strcmp(
+        metricKey,
+        k_zOpt_ProfileMetricHwAccel
+    ) == 0) {
+        currentMetricValue = (int)((g_zGame_Options_RuntimeConfig.defaultFlags >> 6) & 1u);
+    } else {
+        return 0;
+    }
+
+    return EvalIntCompareOp(
+        opString,
+        currentMetricValue,
+        rhs
+    );
+}
+
+/**
+ * Reimplements 0x407680: zOpt::SelectProfileValueForSystem.
+ * Original source path: D:\Proj\GameZRecoil\zGame\zopt.c.
+ * Purpose: choose the first matching profile rule value for the current system metrics.
+ */
+int __fastcall SelectProfileValueForSystem(
+    zReader::Node *parentNode,
+    const char *profileName,
+    int defaultValue
+) {
+    if (parentNode == 0) {
+        return defaultValue;
+    }
+
+    zReader::Node *const profileRuleListNode = zReader_GetNamedNode(
+        parentNode,
+        profileName
+    );
+    if (profileRuleListNode == 0) {
+        return defaultValue;
+    }
+
+    zReader::Node *const ruleList = profileRuleListNode->value.nodes;
+    const int count = ruleList[0].value.i32;
+    {
+        for (int ruleIndex = 1; ruleIndex < count; ++ruleIndex) {
+            zReader::Node *const ruleCells = ruleList[ruleIndex].value.nodes;
+            if (EvaluateProfileMetricCondition(&ruleCells[1]) != 0) {
+                return ReadScalarValueAsInt(&ruleCells[2]);
+            }
+        }
+    }
+
+    return defaultValue;
+}
+
+} // namespace zOpt
+namespace zGame {
+
+namespace {
+const int ZGAME_OPTION_INLINE_DWORD = 0;
+const int ZGAME_OPTION_INLINE_BINARY4 = 1;
+const int ZGAME_OPTION_STRING_BUFFER = 3;
+const int ZGAME_OPTION_HEAP_BUFFER = 5;
+const int ZGAME_OPTION_SCOPE_USER = 1;
+const int ZGAME_OPTION_SCOPE_TRANSIENT = 2;
+const int ZVID_HW_MODE_SOFTWARE = 0;
+const int ZVID_HW_MODE_HARDWARE = 1;
+const zOptGameControlFlags ZOPT_GAME_CONTROL_CAMERA_THIRD_PERSON = 0x08;
+const int ZOPT_GRAPHICS_MMX = 1;
+const int ZOPT_GRAPHICS_TRANSPARENCY = 2;
+const int ZOPT_GRAPHICS_LIGHTING = 4;
+const int ZOPT_GRAPHICS_PERSPECTIVE = 8;
+const int ZOPT_GRAPHICS_GLOBAL_LIGHT = 0x10;
+const int ZOPT_GRAPHICS_ALL_VIDEO_BUFFER = 0x20;
+
+template <typename T>
+/**
+ * Original-source helper evidence: no standalone retail function exists.
+ * Observed in caller 0x407700 from repeated option-entry pointer casts in option loading.
+ * Purpose: return an option entry as the typed option-value pointer stored by zOpt globals.
+ */
+T *OptionValuePointer(
+    zOptionEntryPartial *entry
+) {
+    return (T *)(entry);
+}
+
+/**
+ * Restores likely original static helper; no standalone retail function exists.
+ * Observed in caller 0x407700 from repeated profile metric selection for graphics flags.
+ * Purpose: build the graphics option bitmask selected for the active profile.
+ */
+int BuildGraphicsFlags(
+    zReader::Node *profileRoot,
+    const char *globalLightKey,
+    int globalLightDefault
+) {
+    int flags = 0;
+    if ((g_zGame_Options_RuntimeConfig.defaultFlags & 1u) != 0) {
+        flags |= ZOPT_GRAPHICS_MMX;
+    }
+    if (zOpt::SelectProfileValueForSystem(
+        profileRoot,
+        g_zOpt_OptionName_Transparency,
+        1
+    ) != 0) {
+        flags |= ZOPT_GRAPHICS_TRANSPARENCY;
+    }
+    if (zOpt::SelectProfileValueForSystem(
+        profileRoot,
+        g_zOpt_OptionName_Lighting,
+        1
+    ) != 0) {
+        flags |= ZOPT_GRAPHICS_LIGHTING;
+    }
+    if (zOpt::SelectProfileValueForSystem(
+        profileRoot,
+        g_zOpt_OptionName_Perspective,
+        1
+    ) != 0) {
+        flags |= ZOPT_GRAPHICS_PERSPECTIVE;
+    }
+    if (zOpt::SelectProfileValueForSystem(
+        profileRoot,
+        globalLightKey,
+        globalLightDefault
+    ) != 0) {
+        flags |= ZOPT_GRAPHICS_GLOBAL_LIGHT;
+    }
+    if (zOpt::SelectProfileValueForSystem(
+        profileRoot,
+        g_zOpt_OptionName_AllVideoBuffer,
+        0
+    ) != 0) {
+        flags |= ZOPT_GRAPHICS_ALL_VIDEO_BUFFER;
+    }
+
+    return flags;
+}
+
+/**
+ * Original inline helper; no standalone retail function exists. Observed in caller 0x407700.
+ * Purpose: clear all cached option value pointers before rebuilding the option list.
+ */
+void ResetOptionPointers() {
+    ZOPT_VIDEO_ACCELERATION = 0;
+    ZOPT_VIDEO_MODE = 0;
+    ZOPT_HW_API = 0;
+    ZOPT_VIDEO_FULLSCREEN = 0;
+    ZOPT_VIDEO_STRIDE = 0;
+    ZOPT_HUD_SW = 0;
+    ZOPT_HUD_HW = 0;
+    ZOPT_HUD_TYPE_SW = 0;
+    ZOPT_HUD_TYPE_HW = 0;
+    ZOPT_REPLICATE = 0;
+    ZOPT_NETWORK_ENABLED = 0;
+    g_zOpt_NetworkModemOption = 0;
+    g_zOpt_NetworkListenOption = 0;
+    g_zOpt_GameDifficultyOption = 0;
+    g_zOpt_WolPasswordFlagOption = 0;
+    ZOPT_EFFECTS_LEVEL_SW = 0;
+    ZOPT_EFFECTS_LEVEL_HW = 0;
+    ZOPT_OBJECT_LOD_SW = 0;
+    ZOPT_OBJECT_LOD_HW = 0;
+    ZOPT_MUTE_SOUND = 0;
+    ZOPT_SOUND_VOLUME = 0;
+    ZOPT_SOUND_LOD = 0;
+    ZOPT_TEXTURE_MEMORY_SW = 0;
+    ZOPT_TEXTURE_MEMORY_HW = 0;
+    ZOPT_PLAYER_NAME = 0;
+    ZOPT_GFX_FLAGS_SW = 0;
+    ZOPT_GFX_FLAGS_HW = 0;
+    g_zOpt_RenderSectionOption = 0;
+    g_zOpt_DisplaySectionOption = 0;
+    g_zOpt_WindowSectionOption = 0;
+    g_zOpt_CameraSectionOption = 0;
+    ZOPT_GAME_CONTROL_OPTIONS = 0;
+    ZOPT_INPUT_JOYSTICK = 0;
+    ZOPT_JOYSTICK_NUM_AXES = 0;
+    ZOPT_JOYSTICK_NUM_BUTTONS = 0;
+    ZOPT_AUDIO_API = 0;
+    ZOPT_SOUND_CDAUDIO = 0;
+}
+} // namespace
+
+/**
+ * Reimplements 0x4076f0: zGame::ReturnOnlyStub.
+ * Purpose: preserve the empty zGame stub used by the option/load cluster.
+ */
+void ReturnOnlyStub() {}
+
+/**
+ * Reimplements 0x407700: zGame::Options_LoadGameOptions.
+ * Purpose: load detail.zrd and register the game option globals.
+ */
+RECOIL_NO_GS int Options_LoadGameOptions() {
+    ResetOptionPointers();
+
+    zReader::Node *const detailRoot = zReader::LoadNodeFromPath(
+        g_zOpt_DetailArchiveName,
+        0,
+        0
+    );
+    if (detailRoot == 0) {
+        return 0;
+    }
+
+    g_zGame_Options_RuntimeConfig.CopyDefault();
+
+    ZOPT_VIDEO_ACCELERATION = OptionValuePointer<int>(Options_GetOrCreateOption(
+        g_zOpt_OptionName_HwCardFlag,
+        ZGAME_OPTION_INLINE_DWORD,
+        0,
+        ZGAME_OPTION_SCOPE_USER
+    ));
+    if (ZOPT_VIDEO_ACCELERATION != 0) {
+        zVid::SetAccelerationOption(ZVID_HW_MODE_HARDWARE);
+    }
+
+    ZOPT_EFFECTS_LEVEL_SW = OptionValuePointer<int>(Options_GetOrCreateOption(
+        g_zOpt_OptionName_EffectsLevelSw,
+        ZGAME_OPTION_INLINE_DWORD,
+        0,
+        ZGAME_OPTION_SCOPE_USER
+    ));
+    if (ZOPT_EFFECTS_LEVEL_SW != 0) {
+        g_zOpt_HwMode = ZVID_HW_MODE_SOFTWARE;
+        zOpt::SetEffectsLevelForCurrentHwMode(
+            zOpt::SelectProfileValueForSystem(detailRoot, g_zOpt_OptionName_EffectsLevelSw, 1)
+        );
+    }
+
+    ZOPT_EFFECTS_LEVEL_HW = OptionValuePointer<int>(Options_GetOrCreateOption(
+        g_zOpt_OptionName_EffectsLevelHw,
+        ZGAME_OPTION_INLINE_DWORD,
+        0,
+        ZGAME_OPTION_SCOPE_USER
+    ));
+    if (ZOPT_EFFECTS_LEVEL_HW != 0) {
+        g_zOpt_HwMode = ZVID_HW_MODE_HARDWARE;
+        zOpt::SetEffectsLevelForCurrentHwMode(
+            zOpt::SelectProfileValueForSystem(detailRoot, g_zOpt_OptionName_EffectsLevelHw, 0)
+        );
+    }
+
+    ZOPT_GFX_FLAGS_SW = OptionValuePointer<int>(Options_GetOrCreateOption(
+        g_zOpt_OptionName_GfxFlagsSw,
+        ZGAME_OPTION_INLINE_DWORD,
+        0,
+        ZGAME_OPTION_SCOPE_USER
+    ));
+    if (ZOPT_GFX_FLAGS_SW != 0) {
+        g_zOpt_HwMode = ZVID_HW_MODE_SOFTWARE;
+        zOpt::SetGraphicsFlagsForCurrentHwMode(BuildGraphicsFlags(
+            detailRoot,
+            g_zOpt_OptionName_GlobalLightSw,
+            0
+        ));
+    }
+
+    ZOPT_GFX_FLAGS_HW = OptionValuePointer<int>(Options_GetOrCreateOption(
+        g_zOpt_OptionName_GfxFlagsHw,
+        ZGAME_OPTION_INLINE_DWORD,
+        0,
+        ZGAME_OPTION_SCOPE_USER
+    ));
+    if (ZOPT_GFX_FLAGS_HW != 0) {
+        g_zOpt_HwMode = ZVID_HW_MODE_HARDWARE;
+        zOpt::SetGraphicsFlagsForCurrentHwMode(BuildGraphicsFlags(
+            detailRoot,
+            g_zOpt_OptionName_GlobalLightHw,
+            1
+        ));
+    }
+
+    ZOPT_OBJECT_LOD_SW = OptionValuePointer<int>(Options_GetOrCreateOption(
+        g_zOpt_OptionName_ObjectLODSw,
+        ZGAME_OPTION_INLINE_DWORD,
+        0,
+        ZGAME_OPTION_SCOPE_USER
+    ));
+    if (ZOPT_OBJECT_LOD_SW != 0) {
+        g_zOpt_HwMode = ZVID_HW_MODE_SOFTWARE;
+        zOpt::SetObjectLODForCurrentHwMode(
+            zOpt::SelectProfileValueForSystem(detailRoot, g_zOpt_OptionName_ObjectLODSw, 0)
+        );
+    }
+
+    ZOPT_OBJECT_LOD_HW = OptionValuePointer<int>(Options_GetOrCreateOption(
+        g_zOpt_OptionName_ObjectLODHw,
+        ZGAME_OPTION_INLINE_DWORD,
+        0,
+        ZGAME_OPTION_SCOPE_USER
+    ));
+    if (ZOPT_OBJECT_LOD_HW != 0) {
+        g_zOpt_HwMode = ZVID_HW_MODE_HARDWARE;
+        zOpt::SetObjectLODForCurrentHwMode(
+            zOpt::SelectProfileValueForSystem(detailRoot, g_zOpt_OptionName_ObjectLODHw, 0)
+        );
+    }
+
+    ZOPT_TEXTURE_MEMORY_SW = OptionValuePointer<int>(Options_GetOrCreateOption(
+        g_zOpt_OptionName_TextureMemorySw,
+        ZGAME_OPTION_INLINE_DWORD,
+        0,
+        ZGAME_OPTION_SCOPE_USER
+    ));
+    if (ZOPT_TEXTURE_MEMORY_SW != 0) {
+        g_zOpt_HwMode = ZVID_HW_MODE_SOFTWARE;
+        zOpt::SetTextureMemoryForCurrentHwMode(
+            zOpt::SelectProfileValueForSystem(detailRoot, g_zOpt_OptionName_TextureMemorySw, 0)
+        );
+    }
+
+    ZOPT_TEXTURE_MEMORY_HW = OptionValuePointer<int>(Options_GetOrCreateOption(
+        g_zOpt_OptionName_TextureMemoryHw,
+        ZGAME_OPTION_INLINE_DWORD,
+        0,
+        ZGAME_OPTION_SCOPE_USER
+    ));
+    if (ZOPT_TEXTURE_MEMORY_HW != 0) {
+        g_zOpt_HwMode = ZVID_HW_MODE_HARDWARE;
+        zOpt::SetTextureMemoryForCurrentHwMode(
+            zOpt::SelectProfileValueForSystem(detailRoot, g_zOpt_OptionName_TextureMemoryHw, 0)
+        );
+    }
+
+    ZOPT_GAME_CONTROL_OPTIONS = OptionValuePointer<int>(Options_GetOrCreateOption(
+        g_zOpt_OptionName_GameCtlOptions,
+        ZGAME_OPTION_INLINE_DWORD,
+        0,
+        ZGAME_OPTION_SCOPE_USER
+    ));
+    if (ZOPT_GAME_CONTROL_OPTIONS != 0) {
+        zOpt::SetGameControlOptions(ZOPT_GAME_CONTROL_CAMERA_THIRD_PERSON);
+    }
+
+    g_zOpt_GameDifficultyOption = OptionValuePointer<int>(Options_GetOrCreateOption(
+        g_zOpt_OptionName_GameIntensity,
+        ZGAME_OPTION_INLINE_DWORD,
+        0,
+        ZGAME_OPTION_SCOPE_USER
+    ));
+    if (g_zOpt_GameDifficultyOption != 0) {
+        zOpt::SetGameDifficultyMode(1);
+    }
+
+    ZOPT_MUTE_SOUND = OptionValuePointer<int>(Options_GetOrCreateOption(
+        g_zOpt_OptionName_MuteSound,
+        ZGAME_OPTION_INLINE_DWORD,
+        0,
+        ZGAME_OPTION_SCOPE_USER
+    ));
+    if (ZOPT_MUTE_SOUND != 0) {
+        zOpt::SetMuteSoundOption(0);
+    }
+
+    ZOPT_SOUND_VOLUME = OptionValuePointer<float>(Options_GetOrCreateOption(
+        g_zOpt_OptionName_SoundVolume,
+        ZGAME_OPTION_INLINE_BINARY4,
+        0,
+        ZGAME_OPTION_SCOPE_USER
+    ));
+    if (ZOPT_SOUND_VOLUME != 0) {
+        zOpt::SetSoundVolumeOption(1.0f);
+    }
+
+    ZOPT_SOUND_LOD = OptionValuePointer<int>(
+        Options_GetOrCreateOption(g_zOpt_OptionName_SoundLOD, ZGAME_OPTION_INLINE_DWORD, 0, ZGAME_OPTION_SCOPE_USER)
+    );
+    if (ZOPT_SOUND_LOD != 0) {
+        zOpt::SetSoundLODOption(zOpt::SelectProfileValueForSystem(
+            detailRoot,
+            g_zOpt_OptionName_SoundLOD,
+            0
+        ));
+    }
+
+    ZOPT_AUDIO_API = OptionValuePointer<int>(
+        Options_GetOrCreateOption(g_zOpt_OptionName_SoundApi, ZGAME_OPTION_INLINE_DWORD, 0, ZGAME_OPTION_SCOPE_USER)
+    );
+    if (ZOPT_AUDIO_API != 0) {
+        zSnd::SetAudioApiOption(1);
+    }
+
+    ZOPT_PLAYER_NAME = Options_GetOrCreateOption(
+        g_zOpt_OptionName_PlayerName,
+        ZGAME_OPTION_STRING_BUFFER,
+        0x16,
+        ZGAME_OPTION_SCOPE_USER
+    );
+    if (ZOPT_PLAYER_NAME != 0) {
+        DWORD userNameSize = 0xfe;
+        char userName[0x100];
+        GetUserNameA(
+            userName,
+            &userNameSize
+        );
+        userName[userNameSize] = '\0';
+        zOpt::SetPlayerName(userName);
+    }
+
+    ZOPT_SOUND_CDAUDIO = OptionValuePointer<int>(
+        Options_GetOrCreateOption(g_zOpt_OptionName_CDAudio, ZGAME_OPTION_INLINE_DWORD, 0, ZGAME_OPTION_SCOPE_USER)
+    );
+    if (ZOPT_SOUND_CDAUDIO != 0) {
+        zSnd::SetCDAudioOption(1);
+    }
+
+    ZOPT_VIDEO_FULLSCREEN = OptionValuePointer<int>(Options_GetOrCreateOption(
+        g_zOpt_OptionName_FullScreen,
+        ZGAME_OPTION_INLINE_DWORD,
+        0,
+        ZGAME_OPTION_SCOPE_USER
+    ));
+    if (ZOPT_VIDEO_FULLSCREEN != 0) {
+        zOpt::SetFullscreenOption(1);
+    }
+
+    ZOPT_HUD_SW = OptionValuePointer<int>(Options_GetOrCreateOption(
+        g_zOpt_OptionName_HudFlagSw,
+        ZGAME_OPTION_INLINE_DWORD,
+        0,
+        ZGAME_OPTION_SCOPE_USER
+    ));
+    if (ZOPT_HUD_SW != 0) {
+        g_zOpt_HwMode = ZVID_HW_MODE_SOFTWARE;
+        zOpt::SetHudVisibilityOption(
+            zOpt::SelectProfileValueForSystem(detailRoot, g_zOpt_OptionName_HudFlagSw, 1)
+        );
+    }
+
+    ZOPT_HUD_HW = OptionValuePointer<int>(Options_GetOrCreateOption(
+        g_zOpt_OptionName_HudFlagHw,
+        ZGAME_OPTION_INLINE_DWORD,
+        0,
+        ZGAME_OPTION_SCOPE_USER
+    ));
+    if (ZOPT_HUD_HW != 0) {
+        g_zOpt_HwMode = ZVID_HW_MODE_HARDWARE;
+        zOpt::SetHudVisibilityOption(
+            zOpt::SelectProfileValueForSystem(detailRoot, g_zOpt_OptionName_HudFlagHw, 1)
+        );
+    }
+
+    ZOPT_HUD_TYPE_SW = OptionValuePointer<int>(Options_GetOrCreateOption(
+        g_zOpt_OptionName_HudTypeSw,
+        ZGAME_OPTION_INLINE_DWORD,
+        0,
+        ZGAME_OPTION_SCOPE_USER
+    ));
+    if (ZOPT_HUD_TYPE_SW != 0) {
+        g_zOpt_HwMode = ZVID_HW_MODE_SOFTWARE;
+        zOpt::SetHudTypeForCurrentHwMode(
+            zOpt::SelectProfileValueForSystem(detailRoot, g_zOpt_OptionName_HudTypeSw, 1)
+        );
+    }
+
+    ZOPT_HUD_TYPE_HW = OptionValuePointer<int>(Options_GetOrCreateOption(
+        g_zOpt_OptionName_HudTypeHw,
+        ZGAME_OPTION_INLINE_DWORD,
+        0,
+        ZGAME_OPTION_SCOPE_USER
+    ));
+    if (ZOPT_HUD_TYPE_HW != 0) {
+        g_zOpt_HwMode = ZVID_HW_MODE_HARDWARE;
+        zOpt::SetHudTypeForCurrentHwMode(
+            zOpt::SelectProfileValueForSystem(detailRoot, g_zOpt_OptionName_HudTypeHw, 1)
+        );
+    }
+
+    ZOPT_HW_API = OptionValuePointer<int>(
+        Options_GetOrCreateOption(g_zOpt_OptionName_HwApi, ZGAME_OPTION_INLINE_DWORD, 0, ZGAME_OPTION_SCOPE_USER)
+    );
+    if (ZOPT_HW_API != 0) {
+        zVid::SetHwApiOption(1);
+    }
+
+    ZOPT_INPUT_JOYSTICK = OptionValuePointer<int>(
+        Options_GetOrCreateOption(g_zOpt_OptionName_Joystick, ZGAME_OPTION_INLINE_DWORD, 0, ZGAME_OPTION_SCOPE_USER)
+    );
+    if (ZOPT_INPUT_JOYSTICK != 0) {
+        zInp::SetJoystickOption(0);
+    }
+
+    g_zOpt_WolPasswordFlagOption = OptionValuePointer<int>(Options_GetOrCreateOption(
+        g_zOpt_OptionName_WOLPasswordFlag,
+        ZGAME_OPTION_INLINE_DWORD,
+        0,
+        ZGAME_OPTION_SCOPE_USER
+    ));
+    if (g_zOpt_WolPasswordFlagOption != 0) {
+        zOpt::SetWolPasswordFlag(1);
+    }
+
+    ZOPT_JOYSTICK_NUM_AXES = OptionValuePointer<int>(Options_GetOrCreateOption(
+        g_zOpt_OptionName_JoystickNumAxes,
+        ZGAME_OPTION_INLINE_DWORD,
+        0,
+        ZGAME_OPTION_SCOPE_TRANSIENT
+    ));
+    if (ZOPT_JOYSTICK_NUM_AXES != 0) {
+        zInp::SetJoystickAxesCountOption(0);
+    }
+
+    ZOPT_JOYSTICK_NUM_BUTTONS = OptionValuePointer<int>(Options_GetOrCreateOption(
+        g_zOpt_OptionName_JoystickNumButtons,
+        ZGAME_OPTION_INLINE_DWORD,
+        0,
+        ZGAME_OPTION_SCOPE_TRANSIENT
+    ));
+    if (ZOPT_JOYSTICK_NUM_BUTTONS != 0) {
+        zInp::SetJoystickButtonCountOption(0);
+    }
+
+    ZOPT_NETWORK_ENABLED = OptionValuePointer<int>(Options_GetOrCreateOption(
+        g_zOpt_OptionName_Network,
+        ZGAME_OPTION_INLINE_DWORD,
+        0,
+        ZGAME_OPTION_SCOPE_TRANSIENT
+    ));
+    if (ZOPT_NETWORK_ENABLED != 0) {
+        zOpt::SetNetworkEnabled(0);
+    }
+
+    g_zOpt_NetworkModemOption = OptionValuePointer<int>(Options_GetOrCreateOption(
+        g_zOpt_OptionName_NetworkModem,
+        ZGAME_OPTION_INLINE_DWORD,
+        0,
+        ZGAME_OPTION_SCOPE_TRANSIENT
+    ));
+    if (g_zOpt_NetworkModemOption != 0) {
+        zOpt::SetNetworkModemEnabled(0);
+    }
+
+    g_zOpt_NetworkListenOption = OptionValuePointer<int>(Options_GetOrCreateOption(
+        g_zOpt_OptionName_NetListen,
+        ZGAME_OPTION_INLINE_DWORD,
+        0,
+        ZGAME_OPTION_SCOPE_TRANSIENT
+    ));
+    if (g_zOpt_NetworkListenOption != 0) {
+        zOpt::SetNetworkListenEnabled(0);
+    }
+
+    g_zOpt_CameraSectionOption = OptionValuePointer<zOpt_CameraSection *>(Options_GetOrCreateOption(
+        g_zOpt_OptionName_Camera,
+        ZGAME_OPTION_HEAP_BUFFER,
+        0x0c,
+        ZGAME_OPTION_SCOPE_TRANSIENT
+    ));
+    g_zOpt_RenderSectionOption =
+        OptionValuePointer<zOpt_ViewRectSection *>(Options_GetOrCreateOption(
+            g_zOpt_OptionName_Render,
+            ZGAME_OPTION_HEAP_BUFFER,
+            0x28,
+            ZGAME_OPTION_SCOPE_TRANSIENT
+        ));
+    g_zOpt_DisplaySectionOption =
+        OptionValuePointer<zOpt_ViewRectSection *>(Options_GetOrCreateOption(
+            g_zOpt_OptionName_Display,
+            ZGAME_OPTION_HEAP_BUFFER,
+            0x28,
+            ZGAME_OPTION_SCOPE_TRANSIENT
+        ));
+    g_zOpt_WindowSectionOption =
+        OptionValuePointer<zOpt_ViewRectSection *>(Options_GetOrCreateOption(
+            g_zOpt_OptionName_Window,
+            ZGAME_OPTION_HEAP_BUFFER,
+            0x28,
+            ZGAME_OPTION_SCOPE_TRANSIENT
+        ));
+    ZOPT_REPLICATE = OptionValuePointer<int>(Options_GetOrCreateOption(
+        g_zOpt_OptionName_Replicate,
+        ZGAME_OPTION_INLINE_DWORD,
+        0,
+        ZGAME_OPTION_SCOPE_TRANSIENT
+    ));
+
+    ZOPT_VIDEO_MODE = OptionValuePointer<int>(
+        Options_GetOrCreateOption(g_zOpt_OptionName_VMode, ZGAME_OPTION_INLINE_DWORD, 0, ZGAME_OPTION_SCOPE_USER)
+    );
+    if (ZOPT_VIDEO_MODE != 0) {
+        zVid::SetVideoModeIndex(zOpt::SelectProfileValueForSystem(
+            detailRoot,
+            g_zOpt_OptionName_VMode,
+            5
+        ));
+    }
+
+    ZOPT_VIDEO_STRIDE = OptionValuePointer<int>(Options_GetOrCreateOption(
+        g_zOpt_OptionName_VStride,
+        ZGAME_OPTION_INLINE_DWORD,
+        0,
+        ZGAME_OPTION_SCOPE_TRANSIENT
+    ));
+    if (ZOPT_VIDEO_STRIDE != 0) {
+        *ZOPT_VIDEO_STRIDE = 1;
+    }
+
+    zInput::BindMap_InitDefaultBindings();
+    Options_LoadFromRegistry();
+    zInput::BindMap_Current_RebuildLookupIndices();
+    zOpt::SetNetworkEnabled(0);
+    zOpt::SetNetworkModemEnabled(0);
+
+    if (g_zOpt_CameraSectionOption != 0 && *g_zOpt_CameraSectionOption != 0) {
+        (*g_zOpt_CameraSectionOption)->m_pCamera = 0;
+    }
+    if (g_zOpt_RenderSectionOption != 0 && *g_zOpt_RenderSectionOption != 0) {
+        (*g_zOpt_RenderSectionOption)->target = 0;
+    }
+    if (g_zOpt_DisplaySectionOption != 0 && *g_zOpt_DisplaySectionOption != 0) {
+        (*g_zOpt_DisplaySectionOption)->target = 0;
+    }
+    if (g_zOpt_WindowSectionOption != 0 && *g_zOpt_WindowSectionOption != 0) {
+        (*g_zOpt_WindowSectionOption)->target = 0;
+    }
+
+    zReader::FreeLoadedTree(detailRoot);
+    g_zOpt_HwMode = zVid::GetAccelerationOption();
+    zSnd::SetAudioApiOption(zSnd::GetAudioApiOption());
+    return 1;
+}
+
+/**
+ * Reimplements 0x407e00: zGame::Options_SaveGameOptions.
+ * Purpose: clear transient input/network state before saving the option registry.
+ */
+int Options_SaveGameOptions() {
+    zInput::BindGroupList_Clear();
+    zOpt::SetNetworkEnabled(0);
+    zOpt::SetNetworkModemEnabled(0);
+    return Options_SaveToRegistry();
+}
+
+} // namespace zGame
+namespace zOpt {
+
+const zOptGameControlFlags ZOPT_GAME_CONTROL_THROTTLE = 0x01;
+const zOptGameControlFlags ZOPT_GAME_CONTROL_STEERING = 0x02;
+const zOptGameControlFlags ZOPT_GAME_CONTROL_CURSOR = 0x04;
+const zOptGameControlFlags ZOPT_GAME_CONTROL_CAMERA_THIRD_PERSON = 0x08;
+
+/**
+ * Reimplements 0x407e20: zOpt::SetGameControlOptions.
+ * Original source path: D:\Proj\GameZRecoil\zGame\zGame_Options.cpp.
+ * Purpose: replace the packed game-control option bitmask.
+ */
+void __fastcall SetGameControlOptions(
+    zOptGameControlFlags value
+) {
+    *ZOPT_GAME_CONTROL_OPTIONS = value;
+}
+
+/**
+ * Reimplements 0x407e30: zOpt::SetThrottleMode.
+ * Original source path: D:\Proj\GameZRecoil\zGame\zGame_Options.cpp.
+ * Purpose: set or clear the throttle-control bit in the game-control option mask.
+ */
+void __fastcall SetThrottleMode(
+    int enable
+) {
+    if (enable != 0) {
+        *ZOPT_GAME_CONTROL_OPTIONS |= ZOPT_GAME_CONTROL_THROTTLE;
+    } else {
+        *ZOPT_GAME_CONTROL_OPTIONS &= ~ZOPT_GAME_CONTROL_THROTTLE;
+    }
+}
+
+/**
+ * Reimplements 0x407e50: zOpt::GetThrottleMode.
+ * Original source path: D:\Proj\GameZRecoil\zGame\zGame_Options.cpp.
+ * Purpose: return the throttle-control bit from the game-control option mask.
+ */
+int GetThrottleMode() {
+    return *ZOPT_GAME_CONTROL_OPTIONS & ZOPT_GAME_CONTROL_THROTTLE;
+}
+
+/**
+ * Reimplements 0x407e60: zOpt::SetSteeringMode.
+ * Original source path: D:\Proj\GameZRecoil\zGame\zGame_Options.cpp.
+ * Purpose: set or clear the steering-control bit in the game-control option mask.
+ */
+void __fastcall SetSteeringMode(
+    int enable
+) {
+    if (enable != 0) {
+        *ZOPT_GAME_CONTROL_OPTIONS |= ZOPT_GAME_CONTROL_STEERING;
+    } else {
+        *ZOPT_GAME_CONTROL_OPTIONS &= ~ZOPT_GAME_CONTROL_STEERING;
+    }
+}
+
+/**
+ * Reimplements 0x407e80: zOpt::GetSteeringMode.
+ * Original source path: D:\Proj\GameZRecoil\zGame\zGame_Options.cpp.
+ * Purpose: return the steering-control bit from the game-control option mask.
+ */
+int GetSteeringMode() {
+    return (*ZOPT_GAME_CONTROL_OPTIONS >> 1) & 1;
+}
+
+/**
+ * Reimplements 0x407e90: zOpt::SetCursorMode.
+ * Original source path: D:\Proj\GameZRecoil\zGame\zGame_Options.cpp.
+ * Purpose: set or clear the cursor-control bit in the game-control option mask.
+ */
+void __fastcall SetCursorMode(
+    int enable
+) {
+    if (enable != 0) {
+        *ZOPT_GAME_CONTROL_OPTIONS |= ZOPT_GAME_CONTROL_CURSOR;
+    } else {
+        *ZOPT_GAME_CONTROL_OPTIONS &= ~ZOPT_GAME_CONTROL_CURSOR;
+    }
+}
+
+/**
+ * Reimplements 0x407eb0: zOpt::GetCursorMode.
+ * Original source path: D:\Proj\GameZRecoil\zGame\zGame_Options.cpp.
+ * Purpose: return the cursor-control bit from the game-control option mask.
+ */
+int GetCursorMode() {
+    return (*ZOPT_GAME_CONTROL_OPTIONS >> 2) & 1;
+}
+
+/**
+ * Reimplements 0x407ec0: zOpt::SetCameraMode.
+ * Original source path: D:\Proj\GameZRecoil\zGame\zGame_Options.cpp.
+ * Purpose: store first-person or third-person camera mode and apply the player camera state.
+ */
+void __fastcall SetCameraMode(
+    int enableThirdPerson
+) {
+    if (enableThirdPerson != 0) {
+        *ZOPT_GAME_CONTROL_OPTIONS |= ZOPT_GAME_CONTROL_CAMERA_THIRD_PERSON;
+        Player::ApplyCameraState(1);
+    } else {
+        *ZOPT_GAME_CONTROL_OPTIONS &= ~ZOPT_GAME_CONTROL_CAMERA_THIRD_PERSON;
+        Player::ApplyCameraState(3);
+    }
+}
+
+/**
+ * Reimplements 0x407ef0: zOpt::GetCameraModeAsPlayerCameraState.
+ * Original source path: D:\Proj\GameZRecoil\zGame\zGame_Options.cpp.
+ * Purpose: map the third-person camera option bit to the player camera state value.
+ */
+int GetCameraModePlayerState() {
+    return ((~*ZOPT_GAME_CONTROL_OPTIONS & ZOPT_GAME_CONTROL_CAMERA_THIRD_PERSON) | 4) >> 2;
+}
+
+/**
+ * Reimplements 0x407f10: zOpt::SetGameDifficultyMode.
+ * Original source: D:\Proj\GameZRecoil\zGame\zGame_Options.cpp.
+ * Purpose: Store the current game difficulty option value.
+ */
+void __fastcall SetGameDifficultyMode(
+    int value
+) {
+    *g_zOpt_GameDifficultyOption = value;
+}
+
+/**
+ * Reimplements 0x407f20: zOpt::GetGameDifficultyMode.
+ * Original source: D:\Proj\GameZRecoil\zGame\zGame_Options.cpp.
+ * Purpose: Return the current game difficulty option value.
+ */
+int GetGameDifficultyMode() {
+    return *g_zOpt_GameDifficultyOption;
+}
+
+/**
+ * Reimplements 0x407f30: zOpt::SetEffectsLevelForCurrentHwMode.
+ * Purpose: store the active hardware-mode effects level and apply the matching conditional effect level.
+ */
+void __fastcall SetEffectsLevelForCurrentHwMode(
+    int level
+) {
+    *(g_zOpt_HwMode != 0 ? ZOPT_EFFECTS_LEVEL_HW : ZOPT_EFFECTS_LEVEL_SW) = level;
+
+    if (level == 0) {
+        zEffect::SetConditionalEffectLevel(2);
+    } else if (level == 1) {
+        zEffect::SetConditionalEffectLevel(1);
+    } else if (level == 2) {
+        zEffect::SetConditionalEffectLevel(0);
+    }
+}
+
+/**
+ * Reimplements 0x407f80: zOpt::GetEffectsLevelForCurrentHwMode.
+ * Purpose: return the effects level stored for the active hardware mode.
+ */
+int GetEffectsLevelForCurrentHwMode() {
+    return *(g_zOpt_HwMode != 0 ? ZOPT_EFFECTS_LEVEL_HW : ZOPT_EFFECTS_LEVEL_SW);
+}
+
+/**
+ * Reimplements 0x407fa0: zOpt::SetObjectLODForCurrentHwMode.
+ * Purpose: store the object LOD value for the active hardware mode and apply its camera clip distance.
+ */
+void __fastcall SetObjectLODForCurrentHwMode(
+    int level
+) {
+    zClass_NodePartial *const camera = zOpt_CameraSection_GetActiveCamera();
+    *(g_zOpt_HwMode != 0 ? ZOPT_OBJECT_LOD_HW : ZOPT_OBJECT_LOD_SW) = level;
+
+    if (camera == 0) {
+        return;
+    }
+
+    float clipDistance = 1.0f;
+    if (level == 1) {
+        clipDistance = 0.75f;
+    } else if (level == 2) {
+        clipDistance = 0.5f;
+    }
+
+    zClass_Camera::gwCameraSetClipDistance(
+        camera,
+        clipDistance
+    );
+}
+
+/**
+ * Reimplements 0x408030: zOpt::GetObjectLODForCurrentHwMode.
+ * Purpose: return the object LOD value for the active hardware mode.
+ */
+int GetObjectLODForCurrentHwMode() {
+    return *(g_zOpt_HwMode != 0 ? ZOPT_OBJECT_LOD_HW : ZOPT_OBJECT_LOD_SW);
+}
+
+/**
+ * Reimplements 0x408050: zOpt::SetMuteSoundOption.
+ * Purpose: store the mute-sound option and apply it to active sound voices.
+ */
+void __fastcall SetMuteSoundOption(
+    int value
+) {
+    *ZOPT_MUTE_SOUND = value;
+    zSnd::ApplyMuteStateToActiveVoices(value);
+}
+
+/**
+ * Reimplements 0x408060: zOpt::GetMuteSoundOption.
+ * Purpose: return the current mute-sound option value.
+ */
+int GetMuteSoundOption() {
+    return *ZOPT_MUTE_SOUND;
+}
+
+/**
+ * Reimplements 0x408070: zOpt::SetSoundVolumeOption.
+ * Purpose: store the sound-volume option and apply the global sound scale.
+ */
+void __fastcall SetSoundVolumeOption(
+    float volume
+) {
+    *ZOPT_SOUND_VOLUME = volume;
+    zSnd::SetGlobalVolumeScale(volume);
+}
+
+/**
+ * Reimplements 0x408090: zOpt::GetSoundVolumeOption.
+ * Purpose: return the current sound-volume option value.
+ */
+float GetSoundVolumeOption() {
+    return *ZOPT_SOUND_VOLUME;
+}
+
+} // namespace zOpt
+namespace zSnd {
+
+/**
+ * Reimplements 0x4080a0: zSnd::SetAudioApiOption.
+ * Original source: D:\Proj\GameZRecoil\zSound\zsnd_cd.cpp.
+ * Purpose: Store the selected audio backend option and mirror it into the pre-init backend state.
+ */
+int __fastcall SetAudioApiOption(
+    int apiType
+) {
+    *ZOPT_AUDIO_API = apiType;
+    return SetActiveBackendPreInit(apiType);
+}
+
+/**
+ * Reimplements 0x4080b0: zSnd::GetAudioApiOption.
+ * Original source: D:\Proj\GameZRecoil\zSound\zsnd_cd.cpp.
+ * Purpose: Return the selected audio backend option value.
+ */
+int GetAudioApiOption() {
+    return *ZOPT_AUDIO_API;
+}
+
+} // namespace zSnd
+namespace zOpt {
+
+/**
+ * Reimplements 0x4080c0: zOpt::SetSoundLODOption.
+ * Purpose: store the sound LOD option value.
+ */
+void __fastcall SetSoundLODOption(
+    int value
+) {
+    *ZOPT_SOUND_LOD = value;
+}
+
+/**
+ * Reimplements 0x4080d0: zOpt::GetSoundLODOption.
+ * Purpose: return the current sound LOD option value.
+ */
+int GetSoundLODOption() {
+    return *ZOPT_SOUND_LOD;
+}
+
+/**
+ * Reimplements 0x4080e0: zOpt::SetTextureMemoryForCurrentHwMode.
+ * Purpose: store the texture memory value for the active hardware mode.
+ */
+void __fastcall SetTextureMemoryForCurrentHwMode(
+    int value
+) {
+    *(g_zOpt_HwMode != 0 ? ZOPT_TEXTURE_MEMORY_HW : ZOPT_TEXTURE_MEMORY_SW) = value;
+}
+
+/**
+ * Reimplements 0x408100: zOpt::GetTextureMemoryForCurrentHwMode.
+ * Purpose: return the texture memory value for the active hardware mode.
+ */
+int GetTextureMemoryForCurrentHwMode() {
+    return *(g_zOpt_HwMode != 0 ? ZOPT_TEXTURE_MEMORY_HW : ZOPT_TEXTURE_MEMORY_SW);
+}
+
+/**
+ * Reimplements 0x408120: zOpt::SetPlayerName.
+ * Original source path: D:\Proj\GameZRecoil\zOptions\zopt.cpp.
+ * Purpose: copy the supplied player name into the configured option buffer.
+ */
+void __fastcall SetPlayerName(
+    const char *name
+) {
+    char *const buffer = (char *)(ZOPT_PLAYER_NAME->payloadOrBuffer);
+    const unsigned int dataSize = (unsigned int)(ZOPT_PLAYER_NAME->dataSize);
+    const size_t nameLength = strlen(name);
+
+    if (nameLength < dataSize) {
+        memcpy(
+            buffer,
+            name,
+            nameLength + 1
+        );
+    } else {
+        strncpy(
+            buffer,
+            name,
+            dataSize - 1
+        );
+        buffer[dataSize - 1] = '\0';
+    }
+}
+
+} // namespace zOpt
+/**
+ * Reimplements 0x408190: zOpt::GetPlayerName.
+ * Original source path: D:\Proj\GameZRecoil\zOptions\zopt.cpp.
+ * Purpose: return the configured player-name option buffer.
+ */
+char *zOpt_GetPlayerName() {
+    return (char *)(ZOPT_PLAYER_NAME->payloadOrBuffer);
+}
+namespace zOpt {
+
+/**
+ * Reimplements 0x4081a0: zOpt::SetGraphicsFlagsForCurrentHwMode.
+ * Original source path: D:\Proj\GameZRecoil\zGame\zGame_Options.cpp.
+ * Purpose: store the graphics option bitmask for the active hardware mode and
+ * mirror its lighting bit to the sunlight node.
+ */
+void __fastcall SetGraphicsFlagsForCurrentHwMode(
+    int flags
+) {
+    *(g_zOpt_HwMode != 0 ? ZOPT_GFX_FLAGS_HW : ZOPT_GFX_FLAGS_SW) = flags;
+
+    zClass_NodePartial *const sunlight = zClass::FindByTypeAndName(
+        6,
+        g_zOpt_DetailOptionName_Sunlight
+    );
+    if (sunlight != 0) {
+        zClass_Class::gwNodeSetActive(
+            sunlight,
+            (flags & 0x10) != 0 ? 1 : 0
+        );
+    }
+}
+
+/**
+ * Reimplements 0x4081f0: zOpt::GetGraphicsFlagsForCurrentHwMode.
+ * Original source path: D:\Proj\GameZRecoil\zGame\zGame_Options.cpp.
+ * Purpose: return the graphics option bitmask for the active hardware mode.
+ */
+int GetGraphicsFlagsForCurrentHwMode() {
+    return *(g_zOpt_HwMode != 0 ? ZOPT_GFX_FLAGS_HW : ZOPT_GFX_FLAGS_SW);
+}
+
+} // namespace zOpt
+namespace zSnd {
+
+/**
+ * Reimplements 0x408210: zSnd::SetCDAudioOption
+ * Purpose: store the CD-audio option value used by sound and options code.
+ */
+void __fastcall SetCDAudioOption(
+    int cdAudioOption
+) {
+    *ZOPT_SOUND_CDAUDIO = cdAudioOption;
+}
+
+/**
+ * Reimplements 0x408220: zSnd::GetCDAudioOption
+ * Purpose: return the current CD-audio option value.
+ */
+int GetCDAudioOption() {
+    return *ZOPT_SOUND_CDAUDIO;
+}
+
+} // namespace zSnd
+namespace zOpt {
+
+/**
+ * Reimplements 0x408230: zOpt::SetNetworkEnabled.
+ * Original source path: D:\Proj\Battlesport\zOpt.cpp.
+ * Purpose: store the network-enabled option value through its option pointer.
+ */
+void __fastcall SetNetworkEnabled(
+    int value
+) {
+    *ZOPT_NETWORK_ENABLED = value;
+}
+
+/**
+ * Reimplements 0x408240: zOpt::SetNetworkModemEnabled.
+ * Original source path: D:\Proj\Battlesport\zOpt.cpp.
+ * Purpose: store the network-modem option value through its option pointer.
+ */
+void __fastcall SetNetworkModemEnabled(
+    int value
+) {
+    *g_zOpt_NetworkModemOption = value;
+}
+
+/**
+ * Reimplements 0x408250: zOpt::SetNetworkListenEnabled.
+ * Original source path: D:\Proj\Battlesport\zOpt.cpp.
+ * Purpose: store the network-listen option value through its option pointer.
+ */
+void __fastcall SetNetworkListenEnabled(
+    int value
+) {
+    *g_zOpt_NetworkListenOption = value;
+}
+
+/**
+ * Reimplements 0x408260: zOpt::GetNetworkEnabled.
+ * Original source path: D:\Proj\Battlesport\zOpt.cpp.
+ * Purpose: return the network-enabled option value through its option pointer.
+ */
+int GetNetworkEnabled() {
+    return *ZOPT_NETWORK_ENABLED;
+}
+
+/**
+ * Reimplements 0x408270: zOpt::GetNetworkModemEnabled.
+ * Original source path: D:\Proj\Battlesport\zOpt.cpp.
+ * Purpose: return the network-modem option value through its option pointer.
+ */
+int GetNetworkModemEnabled() {
+    return *g_zOpt_NetworkModemOption;
+}
+
+} // namespace zOpt
+namespace zVid {
+
+/**
+ * Reimplements 0x408280: zVid::SetAccelerationOption.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zVid.cpp.
+ * Purpose: store the selected video acceleration option and mirror the active
+ * hardware-mode option used by zOpt accessors.
+ *
+ * Evidence: BN writes ecx through ZOPT_VIDEO_ACCELERATION, then stores the same
+ * value into g_zOpt_HwMode; VC5SP3 zvid_option_getters byte verification is
+ * exact after relocation masking.
+ */
+void __fastcall SetAccelerationOption(
+    int accelerationOption
+) {
+    *ZOPT_VIDEO_ACCELERATION = accelerationOption;
+    g_zOpt_HwMode = accelerationOption;
+}
+
+/**
+ * Reimplements 0x408290: zVid::SetHwApiOption.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zVid.cpp.
+ * Purpose: store the selected hardware API/backend option.
+ *
+ * Evidence: BN writes ecx through ZOPT_HW_API and returns without touching
+ * other state; VC5SP3 zvid_option_getters byte verification is exact after
+ * relocation masking.
+ */
+void __fastcall SetHwApiOption(
+    int hwApiOption
+) {
+    *ZOPT_HW_API = hwApiOption;
+}
+
+} // namespace zVid
+namespace zOpt {
+
+/**
+ * Reimplements 0x4082a0: zOpt::SetFullscreenOption.
+ * Original source path: D:\Proj\GameZRecoil\zOptions\zopt.cpp.
+ * Purpose: store the persisted fullscreen/windowed option value.
+ */
+void __fastcall SetFullscreenOption(
+    int fullscreenOption
+) {
+    *ZOPT_VIDEO_FULLSCREEN = fullscreenOption;
+}
+
+/**
+ * Reimplements 0x4082b0: zOpt::SetHudVisibilityOption.
+ * Purpose: store the HUD visibility option for the active hardware mode.
+ */
+void __fastcall SetHudVisibilityOption(
+    int hudVisibility
+) {
+    *(g_zOpt_HwMode != 0 ? ZOPT_HUD_HW : ZOPT_HUD_SW) = hudVisibility;
+}
+
+/**
+ * Reimplements 0x4082d0: zOpt::SetHudTypeForCurrentHwMode.
+ * Purpose: apply the requested HUD layout mode and store it for the active hardware mode.
+ */
+int __fastcall SetHudTypeForCurrentHwMode(
+    int hudType
+) {
+    const int previous = HudUiMgr::ApplyHudModeSwitch(hudType);
+
+    if (g_zOpt_HwMode != 0) {
+        *ZOPT_HUD_TYPE_HW = hudType;
+        return previous;
+    }
+
+    *ZOPT_HUD_TYPE_SW = hudType;
+    return previous;
+}
+
+/**
+ * Reimplements 0x408300: zOpt::SetReplicateMode.
+ * Original file: D:\Proj\GameZRecoil\zGame\zGame.cpp.
+ * Purpose: store the active video replicate-mode option.
+ *
+ * Evidence: BN writes ecx through ZOPT_REPLICATE and returns; the shared
+ * zopt_video_section_setters VC5SP3 target byte-matches after relocation
+ * masking.
+ */
+void __fastcall SetReplicateMode(
+    int replicateMode
+) {
+    *ZOPT_REPLICATE = replicateMode;
+}
+
+} // namespace zOpt
+namespace zVid {
+
+/**
+ * Reimplements 0x408310: zVid::GetAccelerationOption.
+ * Purpose: provide the recovered zVid::GetAccelerationOption behavior.
+ */
+int GetAccelerationOption() {
+    return *ZOPT_VIDEO_ACCELERATION;
+}
+
+/**
+ * Reimplements 0x408320: zVid::GetHwApiOption.
+ * Purpose: provide the recovered zVid::GetHwApiOption behavior.
+ */
+int GetHwApiOption() {
+    return *ZOPT_HW_API;
+}
+
+} // namespace zVid
+namespace zOpt {
+
+/**
+ * Reimplements 0x408330: zOpt::GetFullscreenOption.
+ * Original source path: D:\Proj\GameZRecoil\zOptions\zopt.cpp.
+ * Purpose: return the persisted fullscreen/windowed option value.
+ */
+int GetFullscreenOption() {
+    return *ZOPT_VIDEO_FULLSCREEN;
+}
+
+/**
+ * Reimplements 0x408340: zOpt::GetHudVisibilityOption.
+ * Purpose: return the HUD visibility option for the active hardware mode.
+ */
+int GetHudVisibilityOption() {
+    return *(g_zOpt_HwMode != 0 ? ZOPT_HUD_HW : ZOPT_HUD_SW);
+}
+
+/**
+ * Reimplements 0x408360: zOpt::GetHudTypeForCurrentHwMode.
+ * Original source path: D:\Proj\Battlesport\zopt.cpp.
+ * Purpose: return the HUD type option for the active hardware mode.
+ */
+int GetHudTypeForCurrentHwMode() {
+    return *(g_zOpt_HwMode != 0 ? ZOPT_HUD_TYPE_HW : ZOPT_HUD_TYPE_SW);
+}
+
+/**
+ * Reimplements 0x408380: zOpt::GetReplicateMode
+ * Purpose: return the active video replicate-mode option.
+ */
+int GetReplicateMode() {
+    return *ZOPT_REPLICATE;
+}
+
+} // namespace zOpt
+namespace zInp {
+
+/**
+ * Reimplements 0x408390: zInp::SetJoystickOption.
+ * Original source path: D:\Proj\GameZRecoil\zInput\zin_opt.cpp.
+ * Purpose: store the joystick-enabled option when the option slot exists.
+ */
+void __fastcall SetJoystickOption(
+    int enabled
+) {
+    if (ZOPT_INPUT_JOYSTICK != 0) {
+        *ZOPT_INPUT_JOYSTICK = enabled;
+    }
+}
+
+/**
+ * Reimplements 0x4083a0: zInp::SetJoystickAxesCountOption.
+ * Original source path: D:\Proj\GameZRecoil\zInput\zin_opt.cpp.
+ * Purpose: store the detected joystick axis count option value.
+ */
+void __fastcall SetJoystickAxesCountOption(
+    int axisCount
+) {
+    *ZOPT_JOYSTICK_NUM_AXES = axisCount;
+}
+
+/**
+ * Reimplements 0x4083b0: zInp::SetJoystickButtonCountOption.
+ * Original source path: D:\Proj\GameZRecoil\zInput\zin_opt.cpp.
+ * Purpose: store the detected joystick button count option value.
+ */
+void __fastcall SetJoystickButtonCountOption(
+    int buttonCount
+) {
+    *ZOPT_JOYSTICK_NUM_BUTTONS = buttonCount;
+}
+
+/**
+ * Reimplements 0x4083c0: zInp::GetJoystickOption.
+ * Original source path: D:\Proj\GameZRecoil\zInput\zin_opt.cpp.
+ * Purpose: return the joystick-enabled option value.
+ */
+int GetJoystickOption() {
+    return *ZOPT_INPUT_JOYSTICK;
+}
+
+} // namespace zInp
+namespace zOpt {
+
+/**
+ * Reimplements 0x4083d0: zOpt_ViewRectSection::SetPosition
+ * Purpose: store origin and recompute bounds from size.
+ */
+void __fastcall ViewRectSection_SetPosition(
+    zOpt_ViewRectSection *section,
+    int x,
+    int y
+) {
+    section->x = x;
+    section->y = y;
+    section->rightExclusive = x + section->width;
+    section->bottomExclusive = y + section->height;
+    section->maxXInclusive = section->rightExclusive - 1;
+    section->maxYInclusive = section->bottomExclusive - 1;
+}
+
+/**
+ * Reimplements 0x408400: zOpt_ViewRectSection::SetSize
+ * Purpose: store size and recompute bounds from origin.
+ */
+void __fastcall ViewRectSection_SetSize(
+    zOpt_ViewRectSection *section,
+    int width,
+    int height
+) {
+    section->width = width;
+    section->height = height;
+    section->rightExclusive = section->x + width;
+    section->bottomExclusive = section->y + height;
+    section->maxXInclusive = section->rightExclusive - 1;
+    section->maxYInclusive = section->bottomExclusive - 1;
+}
+
+/**
+ * Reimplements 0x408430: zOpt::ViewRectSection_ClampPointToInclusiveBounds
+ * Purpose: clamp a point to inclusive bounds.
+ */
+void __fastcall ViewRectSection_ClampPointToInclusiveBounds(
+    zOpt_ViewRectSection *section,
+    float *pointXY
+) {
+    if (pointXY[0] < (float)(section->x)) {
+        pointXY[0] = (float)(section->x);
+    } else if (!(pointXY[0] <= (float)(section->maxXInclusive))) {
+        pointXY[0] = (float)(section->maxXInclusive);
+    }
+
+    if (pointXY[1] < (float)(section->y)) {
+        pointXY[1] = (float)(section->y);
+    } else if (!(pointXY[1] <= (float)(section->maxYInclusive))) {
+        pointXY[1] = (float)(section->maxYInclusive);
+    }
+}
+
+/**
+ * Reimplements 0x408480: zOpt::CameraSection_SetActiveCamera
+ * Purpose: store camera, recompute FOV, and reapply LOD.
+ */
+void __fastcall CameraSection_SetActiveCamera(
+    zClass_NodePartial *camera
+) {
+    zOpt_CameraSection *const cameraSection = *g_zOpt_CameraSectionOption;
+    cameraSection->m_pCamera = camera;
+    if (camera == 0) {
+        return;
+    }
+
+    zOpt_ViewRectSection *const renderSection = *g_zOpt_RenderSectionOption;
+    float fovX = 0.0f;
+    float fovY = 0.0f;
+    zClass_Camera::gwCameraGetFOV(
+        camera,
+        &fovX,
+        &fovY
+    );
+
+    fovX = (float)(renderSection->width) * fovY / (float)(renderSection->height);
+    zClass_Camera::gwCameraSetFOV(
+        cameraSection->m_pCamera,
+        fovX,
+        fovY
+    );
+    zOpt::SetObjectLODForCurrentHwMode(zOpt::GetObjectLODForCurrentHwMode());
+}
+
+} // namespace zOpt
+/**
+ * Reimplements 0x4084e0: zOpt_CameraSection_GetActiveCamera
+ * Purpose: return active camera or null when unavailable.
+ */
+zClass_NodePartial *zOpt_CameraSection_GetActiveCamera() {
+    if (g_zOpt_CameraSectionOption == 0 || *g_zOpt_CameraSectionOption == 0) {
+        return 0;
+    }
+
+    return (*g_zOpt_CameraSectionOption)->m_pCamera;
+}
+namespace zOpt {
+
+/**
+ * Reimplements 0x408500: zOpt::RenderSection_SetSize.
+ * Original file: D:\Proj\GameZRecoil\zGame\zGame.cpp.
+ * Purpose: set the render-section dimensions and push the new resolution to
+ * the attached window target.
+ *
+ * Evidence: BN forwards g_zOpt_RenderSectionOption->value to
+ * zOpt_ViewRectSection::SetSize, then calls gwWindowSetResolution when the
+ * section target is non-null; the shared zopt_video_section_setters VC5SP3
+ * target byte-matches after relocation masking.
+ */
+void __fastcall RenderSection_SetSize(
+    int width,
+    int height
+) {
+    zOpt_ViewRectSection *section = *g_zOpt_RenderSectionOption;
+    ViewRectSection_SetSize(
+        section,
+        width,
+        height
+    );
+    if (section->target != 0) {
+        zClass_Window::gwWindowSetResolution(
+            (zClass_NodePartial *)(section->target),
+            section->width,
+            section->height
+        );
+    }
+}
+
+/**
+ * Reimplements 0x408530: zOpt::RenderSection_SetPosition.
+ * Original file: D:\Proj\GameZRecoil\zGame\zGame.cpp.
+ * Purpose: set the render-section origin and push the new viewport rectangle
+ * to the attached window target.
+ *
+ * Evidence: BN forwards g_zOpt_RenderSectionOption->value to
+ * zOpt_ViewRectSection::SetPosition, then calls gwWindowSetResolution and
+ * gwWindowSetSize when the section target is non-null; the shared
+ * zopt_video_section_setters VC5SP3 target byte-matches after relocation
+ * masking.
+ */
+void __fastcall RenderSection_SetPosition(
+    int x,
+    int y
+) {
+    zOpt_ViewRectSection *section = *g_zOpt_RenderSectionOption;
+    ViewRectSection_SetPosition(
+        section,
+        x,
+        y
+    );
+    if (section->target != 0) {
+        zClass_Window::gwWindowSetResolution(
+            (zClass_NodePartial *)(section->target),
+            section->width,
+            section->height
+        );
+        zClass_Window::gwWindowSetSize(
+            (zClass_NodePartial *)(section->target),
+            section->x,
+            section->y
+        );
+    }
+}
+
+/**
+ * Reimplements 0x408570: zOpt::RenderSection_SetTargetWindow
+ * Purpose: attach target window and apply render rectangle.
+ */
+void __fastcall RenderSection_SetTargetWindow(
+    zClass_NodePartial *windowNode
+) {
+    zOpt_ViewRectSection *section = *g_zOpt_RenderSectionOption;
+    section->target = windowNode;
+    if (windowNode != 0) {
+        zClass_Window::gwWindowSetResolution(
+            windowNode,
+            section->width,
+            section->height
+        );
+        zClass_Window::gwWindowSetSize(
+            (zClass_NodePartial *)(section->target),
+            section->x,
+            section->y
+        );
+    }
+}
+
+/**
+ * Reimplements 0x4085a0: zOpt::GetRenderSection
+ * Purpose: return the active render section pointer.
+ */
+zOpt_ViewRectSection *GetRenderSection() {
+    return *g_zOpt_RenderSectionOption;
+}
+
+/**
+ * Reimplements 0x4085b0: zOpt::DisplaySection_SetTargetDisplay
+ * Purpose: attach target display and apply display rectangle.
+ */
+void __fastcall DisplaySection_SetTargetDisplay(
+    zClass_NodePartial *displayNode
+) {
+    zOpt_ViewRectSection *section = *g_zOpt_DisplaySectionOption;
+    section->target = displayNode;
+    if (displayNode != 0) {
+        zClass_Display::gwDisplaySetSize(
+            displayNode,
+            section->width,
+            section->height
+        );
+        zClass_Display::gwDisplaySetPosition(
+            (zClass_NodePartial *)(section->target),
+            section->x,
+            section->y
+        );
+    }
+}
+
+/**
+ * Reimplements 0x4085e0: zOpt::DisplaySection_SetPosition.
+ * Original file: D:\Proj\GameZRecoil\zGame\zGame.cpp.
+ * Purpose: set the display-section origin and push the new display rectangle
+ * to the attached display target.
+ *
+ * Evidence: BN forwards g_zOpt_DisplaySectionOption->value to
+ * zOpt_ViewRectSection::SetPosition, then calls gwDisplaySetSize and
+ * gwDisplaySetPosition when the section target is non-null; the shared
+ * zopt_video_section_setters VC5SP3 target byte-matches after relocation
+ * masking.
+ */
+void __fastcall DisplaySection_SetPosition(
+    int x,
+    int y
+) {
+    zOpt_ViewRectSection *section = *g_zOpt_DisplaySectionOption;
+    ViewRectSection_SetPosition(
+        section,
+        x,
+        y
+    );
+    if (section->target != 0) {
+        zClass_Display::gwDisplaySetSize(
+            (zClass_NodePartial *)(section->target),
+            section->width,
+            section->height
+        );
+        zClass_Display::gwDisplaySetPosition(
+            (zClass_NodePartial *)(section->target),
+            section->x,
+            section->y
+        );
+    }
+}
+
+/**
+ * Reimplements 0x408620: zOpt::DisplaySection_SetSize.
+ * Original file: D:\Proj\GameZRecoil\zGame\zGame.cpp.
+ * Purpose: set the display-section dimensions and push the new size to the
+ * attached display target.
+ *
+ * Evidence: BN forwards g_zOpt_DisplaySectionOption->value to
+ * zOpt_ViewRectSection::SetSize, then calls gwDisplaySetSize when the section
+ * target is non-null; the shared zopt_video_section_setters VC5SP3 target
+ * byte-matches after relocation masking.
+ */
+void __fastcall DisplaySection_SetSize(
+    int width,
+    int height
+) {
+    zOpt_ViewRectSection *section = *g_zOpt_DisplaySectionOption;
+    ViewRectSection_SetSize(
+        section,
+        width,
+        height
+    );
+    if (section->target != 0) {
+        zClass_Display::gwDisplaySetSize(
+            (zClass_NodePartial *)(section->target),
+            section->width,
+            section->height
+        );
+    }
+}
+
+/**
+ * Reimplements 0x408650: zOpt::GetDisplaySection.
+ * Original source path: D:\Proj\GameZRecoil\zOptions\zopt.cpp.
+ * Purpose: return the active display view-rect option record.
+ */
+zOpt_ViewRectSection *GetDisplaySection() {
+    return *g_zOpt_DisplaySectionOption;
+}
+
+} // namespace zOpt
+/**
+ * Reimplements 0x408660: zOpt_DisplaySection_GetWidth.
+ * Purpose: return the active display section width.
+ */
+int zOpt_DisplaySection_GetWidth() {
+    return (*g_zOpt_DisplaySectionOption)->width;
+}
+
+/**
+ * Reimplements 0x408670: zOpt_DisplaySection_GetHeight.
+ * Purpose: return the active display section height.
+ */
+int zOpt_DisplaySection_GetHeight() {
+    return (*g_zOpt_DisplaySectionOption)->height;
+}
+namespace zOpt {
+
+/**
+ * Reimplements 0x408680: zOpt::DisplaySection_SetBitsPerPixel.
+ * Original file: D:\Proj\GameZRecoil\zGame\zGame.cpp.
+ * Purpose: store the active display-section bit depth.
+ *
+ * Evidence: BN writes ecx to g_zOpt_DisplaySectionOption->value->bitsPerPixel;
+ * the shared zopt_video_section_setters VC5SP3 target byte-matches after
+ * relocation masking.
+ */
+void __fastcall DisplaySection_SetBitsPerPixel(
+    int bitsPerPixel
+) {
+    (*g_zOpt_DisplaySectionOption)->bitsPerPixel = bitsPerPixel;
+}
+
+/**
+ * Reimplements 0x408690: zOpt::GetDisplaySectionBitsPerPixel.
+ * Original source path: D:\Proj\GameZRecoil\zOptions\zopt.cpp.
+ * Purpose: return the active display section bit depth.
+ */
+int GetDisplaySectionBitsPerPixel() {
+    return (*g_zOpt_DisplaySectionOption)->bitsPerPixel;
+}
+
+/**
+ * Reimplements 0x4086a0: zOpt::GetVideoStrideValue.
+ * Original source path: D:\Proj\GameZRecoil\zOptions\zopt.cpp.
+ * Purpose: return the configured video stride option value.
+ */
+int GetVideoStrideValue() {
+    return *ZOPT_VIDEO_STRIDE;
+}
+
+} // namespace zOpt
+namespace zVid {
+
+/**
+ * Reimplements 0x4086b0: zVid::GetVideoModeIndexFromOptions.
+ * Purpose: provide the recovered zVid::GetVideoModeIndexFromOptions behavior.
+ */
+int GetVideoModeIndexFromOptions() {
+    return *ZOPT_VIDEO_MODE;
+}
+
+} // namespace zVid
+namespace zOpt {
+
+/**
+ * Reimplements 0x4086c0: zOpt::GetWindowSection.
+ * Original source path: D:\Proj\GameZRecoil\zOptions\zopt.cpp.
+ * Purpose: return the active window view-rect option record.
+ */
+zOpt_ViewRectSection *GetWindowSection() {
+    return *g_zOpt_WindowSectionOption;
+}
+
+/**
+ * Reimplements 0x4086d0: zOpt::GetWindowSectionHeight.
+ * Original source path: D:\Proj\GameZRecoil\zOptions\zopt.cpp.
+ * Purpose: return the active window section height.
+ */
+int GetWindowSectionHeight() {
+    return (*g_zOpt_WindowSectionOption)->height;
+}
+
+/**
+ * Reimplements 0x4086e0: zOpt::WindowSection_SetSize.
+ * Original file: D:\Proj\GameZRecoil\zGame\zGame.cpp.
+ * Purpose: set the window-section dimensions.
+ *
+ * Evidence: BN forwards g_zOpt_WindowSectionOption->value to
+ * zOpt_ViewRectSection::SetSize; the shared zopt_video_section_setters VC5SP3
+ * target byte-matches after relocation masking.
+ */
+void __fastcall WindowSection_SetSize(
+    int width,
+    int height
+) {
+    ViewRectSection_SetSize(
+        *g_zOpt_WindowSectionOption,
+        width,
+        height
+    );
+}
+
+/**
+ * Reimplements 0x408700: zOpt::WindowSection_SetPosition.
+ * Original file: D:\Proj\GameZRecoil\zGame\zGame.cpp.
+ * Purpose: set the window-section origin.
+ *
+ * Evidence: BN forwards g_zOpt_WindowSectionOption->value to
+ * zOpt_ViewRectSection::SetPosition; the shared zopt_video_section_setters
+ * VC5SP3 target byte-matches after relocation masking.
+ */
+void __fastcall WindowSection_SetPosition(
+    int x,
+    int y
+) {
+    ViewRectSection_SetPosition(
+        *g_zOpt_WindowSectionOption,
+        x,
+        y
+    );
+}
+
+} // namespace zOpt
+namespace zVid {
+
+/**
+ * Reimplements 0x408720: zVid::SetVideoModeIndex.
+ * Original file: D:\Proj\GameZRecoil\zVideo\zVid.cpp.
+ * Purpose: apply a persisted shell video-mode preset to the render, window,
+ * display, and replicate options.
+ *
+ * Evidence: BN selects modes 2 through 7 through the jump table, writes
+ * ZOPT_VIDEO_MODE, updates the zOpt render/window/display sections, sets
+ * display bits-per-pixel to 16, and tail-calls zOpt::SetReplicateMode for
+ * valid presets; invalid values write ZVID_MODE_INVALID. VC5SP3
+ * zvid_set_video_mode_index byte verification is exact after relocation
+ * masking.
+ */
+void __fastcall SetVideoModeIndex(
+    int modeIndex
+) {
+    switch (modeIndex) {
+    case 2:
+        *ZOPT_VIDEO_MODE = 2;
+        zOpt::RenderSection_SetPosition(
+            0,
+            0
+        );
+        zOpt::RenderSection_SetSize(
+            320,
+            200
+        );
+        zOpt::WindowSection_SetPosition(
+            0,
+            0
+        );
+        zOpt::WindowSection_SetSize(
+            640,
+            400
+        );
+        zOpt::DisplaySection_SetPosition(
+            0,
+            0
+        );
+        zOpt::DisplaySection_SetSize(
+            640,
+            400
+        );
+        zOpt::DisplaySection_SetBitsPerPixel(16);
+        zOpt::SetReplicateMode(1);
+        return;
+
+    case 3:
+        *ZOPT_VIDEO_MODE = 3;
+        zOpt::RenderSection_SetPosition(
+            0,
+            0
+        );
+        zOpt::RenderSection_SetSize(
+            320,
+            240
+        );
+        zOpt::WindowSection_SetPosition(
+            0,
+            0
+        );
+        zOpt::WindowSection_SetSize(
+            640,
+            480
+        );
+        zOpt::DisplaySection_SetPosition(
+            0,
+            0
+        );
+        zOpt::DisplaySection_SetSize(
+            640,
+            480
+        );
+        zOpt::DisplaySection_SetBitsPerPixel(16);
+        zOpt::SetReplicateMode(1);
+        return;
+
+    case 4:
+        *ZOPT_VIDEO_MODE = 4;
+        zOpt::RenderSection_SetPosition(
+            0,
+            0
+        );
+        zOpt::RenderSection_SetSize(
+            640,
+            400
+        );
+        zOpt::WindowSection_SetPosition(
+            0,
+            0
+        );
+        zOpt::WindowSection_SetSize(
+            640,
+            400
+        );
+        zOpt::DisplaySection_SetPosition(
+            0,
+            0
+        );
+        zOpt::DisplaySection_SetSize(
+            640,
+            400
+        );
+        zOpt::DisplaySection_SetBitsPerPixel(16);
+        zOpt::SetReplicateMode(0);
+        return;
+
+    case 5:
+        *ZOPT_VIDEO_MODE = 5;
+        zOpt::RenderSection_SetPosition(
+            0,
+            0
+        );
+        zOpt::RenderSection_SetSize(
+            640,
+            480
+        );
+        zOpt::WindowSection_SetPosition(
+            0,
+            0
+        );
+        zOpt::WindowSection_SetSize(
+            640,
+            480
+        );
+        zOpt::DisplaySection_SetPosition(
+            0,
+            0
+        );
+        zOpt::DisplaySection_SetSize(
+            640,
+            480
+        );
+        zOpt::DisplaySection_SetBitsPerPixel(16);
+        zOpt::SetReplicateMode(0);
+        return;
+
+    case 6:
+        *ZOPT_VIDEO_MODE = 6;
+        zOpt::RenderSection_SetPosition(
+            0,
+            0
+        );
+        zOpt::RenderSection_SetSize(
+            800,
+            600
+        );
+        zOpt::WindowSection_SetPosition(
+            0,
+            0
+        );
+        zOpt::WindowSection_SetSize(
+            800,
+            600
+        );
+        zOpt::DisplaySection_SetPosition(
+            0,
+            0
+        );
+        zOpt::DisplaySection_SetSize(
+            800,
+            600
+        );
+        zOpt::DisplaySection_SetBitsPerPixel(16);
+        zOpt::SetReplicateMode(0);
+        return;
+
+    case 7:
+        *ZOPT_VIDEO_MODE = 7;
+        zOpt::RenderSection_SetPosition(
+            0,
+            0
+        );
+        zOpt::RenderSection_SetSize(
+            1024,
+            768
+        );
+        zOpt::WindowSection_SetPosition(
+            0,
+            0
+        );
+        zOpt::WindowSection_SetSize(
+            1024,
+            768
+        );
+        zOpt::DisplaySection_SetPosition(
+            0,
+            0
+        );
+        zOpt::DisplaySection_SetSize(
+            1024,
+            768
+        );
+        zOpt::DisplaySection_SetBitsPerPixel(16);
+        zOpt::SetReplicateMode(0);
+        return;
+
+    default:
+        *ZOPT_VIDEO_MODE = 0;
+        return;
+    }
+}
+
+} // namespace zVid
+namespace HudUiMgr {
+
+/**
+ * Reimplements 0x4089c0: HudUiMgr::ScreenToWorld.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * BN name: MapReplicatedScreenToRenderPoint.
+ * Purpose: map a replicated display-space HUD point back into render-viewport
+ * coordinates before clamping it to the render section.
+ * Source shape: __fastcall function with a single float *pointXY argument;
+ * callers pass the address of the point's x field, and the function updates
+ * pointXY[0] and pointXY[1] in place.
+ * Data dependencies: zOpt render/display view-rect option globals and
+ * replicate mode are covered by accepted owner
+ * engine.zgame.zopt_video_section_option_globals.
+ * HudUi data: touches no HudUi table, singleton, or manager-owned storage.
+ */
+void __fastcall ScreenToWorld(
+    float *pointXY
+) {
+    zOpt_ViewRectSection *const renderSection = *g_zOpt_RenderSectionOption;
+    zOpt_ViewRectSection *const displaySection = *g_zOpt_DisplaySectionOption;
+
+    if (zOpt::GetReplicateMode() == 0) {
+        return;
+    }
+
+    pointXY[0] *= 0.5f;
+    pointXY[1] = (float)(renderSection->y) + (pointXY[1] - (float)(displaySection->y)) * 0.5f;
+    zOpt::ViewRectSection_ClampPointToInclusiveBounds(
+        renderSection,
+        pointXY
+    );
+}
+
+} // namespace HudUiMgr
+namespace zOpt {
+
+/**
+ * Reimplements 0x408a10: zOpt::SetWolPasswordFlag.
+ * Purpose: store the WOL password flag option value through its option pointer.
+ */
+void __fastcall SetWolPasswordFlag(
+    int value
+) {
+    *g_zOpt_WolPasswordFlagOption = value;
+}
+
+} // namespace zOpt
+/**
+ * Reimplements 0x408a20: zOpt_GetWolPasswordFlagValue.
+ * Purpose: return the WOL password flag option value through its option pointer.
+ */
+int zOpt_GetWolPasswordFlagValue() {
+    return *g_zOpt_WolPasswordFlagOption;
+}
 
 /**
  * Original helper evidence: no standalone retail function exists; concrete
@@ -2294,6 +4639,17 @@ void RecoilStateDialogHost::OnResume(
 ) {}
 
 /**
+ * Reimplements the ordinary empty RecoilStateDialogHost::OnSuspend identity
+ * represented by the one-argument no-op fold group at 0x407150.
+ * Original function address: 0x407150.
+ * Purpose: accept suspend notifications when a derived dialog host does not
+ * require presentation-state work.
+ */
+void RecoilStateDialogHost::OnSuspend(
+    int
+) {}
+
+/**
  * Original helper evidence: no standalone retail function exists; concrete
  * dialog-host state vtable slot 9 folds to the two-argument return-one body at
  * 0x407160.
@@ -2306,919 +4662,549 @@ int RecoilStateDialogHost::OnIdleOrDispatch(
     return 1;
 }
 
+
 /**
- * Reimplements 0x4bdc70: HudWeatherFx::Constructor.
- * Original source path: D:\Proj\Battlesport\hud.cpp.
- * Purpose: Initialize the base weather particle emitter, allocate particle buffers, reset
- * particles, and create the hardware SnowFX texture resources when needed.
+ * Reimplements 0x408a30: HudUiControlsDialog::Constructor.
+ * Original source path: D:\Proj\Battlesport\hud_ui_dialogs.cpp.
+ * Purpose: Construct the controls dialog, bind its ZRD widgets, and seed option selectors from current input/options.
+ * Evidence: BN/source slice builds HudUiBackground, resume/commands widgets, five option selectors, loads
+ * dialog.zrd/CONTROLS_DIALOG, binds named controls, then seeds zInp/zOpt selector indices.
  */
-HudWeatherFx * HudWeatherFx::Constructor(
-    int newParticleCount
-) {
-    HudUiElement::Constructor(
-        0,
+HudUiControlsDialog * HudUiControlsDialog::Constructor() {
+    new ((HudUiBackground *)this) HudUiBackground;
+
+    new (&resumeWidget) HudUiControlsDialog_ResumeWidget;
+    new (&commandsWidget) HudUiControlsDialog_CommandsWidget;
+    mouseOrJoystickSelector.Constructor();
+    throttleModeSelector.Constructor();
+    steeringModeSelector.Constructor();
+    cursorModeSelector.Constructor();
+    cameraModeSelector.Constructor();
+
+    zReader::Node *const dialogRoot = HudUiBackground::LoadFromZrd(
+        "dialog.zrd",
+        g_HudUiControlsDialogSectionName,
         0
     );
-    clipRectOrNull = 0;
-    new (this) HudWeatherFx;
-    maxParticles = newParticleCount;
-    particleCount = newParticleCount;
-    particleQuads = (HudWeatherFxParticleQuad *)(::operator new(
-        sizeof(HudWeatherFxParticleQuad) * newParticleCount
-    ));
-
-    for (int index = 0; index < newParticleCount; ++index) {
-        particleQuads[index].x = -1;
-        particleQuads[index].y = -1;
-        particleQuads[index].width = -1;
-        particleQuads[index].height = -1;
+    if (dialogRoot != 0) {
+        HudUiBackground::BindWidgetByName(
+            dialogRoot,
+            &resumeWidget,
+            g_HudUiResumeButtonNodeName
+        );
+        HudUiBackground::BindWidgetByName(
+            dialogRoot,
+            &commandsWidget,
+            g_HudUiControlsDialog_CommandsButtonNodeName
+        );
+        HudUiBackground::BindWidgetByName(
+            dialogRoot,
+            &mouseOrJoystickSelector,
+            g_HudUiControlsDialog_MouseOrJoystickSelectorNodeName
+        );
+        HudUiBackground::BindWidgetByName(
+            dialogRoot,
+            &throttleModeSelector,
+            g_HudUiControlsDialog_ThrottleModeSelectorNodeName
+        );
+        HudUiBackground::BindWidgetByName(
+            dialogRoot,
+            &steeringModeSelector,
+            g_HudUiControlsDialog_SteeringModeSelectorNodeName
+        );
+        HudUiBackground::BindWidgetByName(
+            dialogRoot,
+            &cursorModeSelector,
+            g_HudUiControlsDialog_CursorModeSelectorNodeName
+        );
+        HudUiBackground::BindWidgetByName(
+            dialogRoot,
+            &cameraModeSelector,
+            g_HudUiControlsDialog_CameraModeSelectorNodeName
+        );
+        HudUiBackground::FreeLoadedTreeRoots((int)(unsigned int)dialogRoot);
     }
 
-    packedColor16 = 0x7fff;
-    alphaStartScale = 1.0f;
-    alphaEndScale = 0.0500000007f;
-    camera = 0;
-    activeParticleCount = 0;
-    sourceBufferIndex = 0;
-    destBufferIndex = 1;
-
-    const unsigned int positionBytes = sizeof(zVec3) * newParticleCount;
-    particlePositions[sourceBufferIndex] = (zVec3 *)(::operator new(positionBytes));
-    particlePositions[destBufferIndex] = (zVec3 *)(::operator new(positionBytes));
-
-    for (int resetIndex = 0; resetIndex < newParticleCount; ++resetIndex) {
-        ResetParticleSlot(
-            resetIndex,
-            1
-        );
-    }
-
-    basisVector.x = 0.0f;
-    basisVector.y = 1.0f;
-    basisVector.z = 0.0f;
-    gravity = 1.0f;
-    windDirection = 0.0f;
-    windVelocity = 1.0f;
-    textureName = 0;
-    softwareImage = 0;
-    textureRecord = 0;
-
-    if (g_zVideo_ActiveRendererPath != 0) {
-        textureName = "SnowFX";
-        softwareImage = zVid_Image::Create();
-        zVid_Image::SetFormatCode(
-            softwareImage,
-            0x0b
-        );
-        char *const alphaMap =
-            (char *)(malloc(kHudWeatherFxSnowTextureTexels));
-        void *const surfacePixels =
-            malloc(kHudWeatherFxSnowTextureTexels * sizeof(unsigned short));
-        zVid_Image_SetPixels(
-            softwareImage,
-            surfacePixels,
-            alphaMap
-        );
-        softwareImage->formatFlagsPacked |= 0x20;
-        zVid_Image::SetSize(
-            softwareImage,
-            kHudWeatherFxSnowTextureWidth,
-            kHudWeatherFxSnowTextureHeight
-        );
-        textureRecord = g_zVideo_pfnCreateTextureRecord(
-            textureName,
-            softwareImage,
-            softwareImage->formatFlagsPacked & 0x02,
-            1,
-            1
-        );
-    }
-
+    mouseOrJoystickSelector.SetSelectedIndex(zInp::GetJoystickOption());
+    throttleModeSelector.SetSelectedIndex(zOpt::GetThrottleMode());
+    steeringModeSelector.SetSelectedIndex(zOpt::GetSteeringMode());
+    cursorModeSelector.SetSelectedIndex(zOpt::GetCursorMode());
+    cameraModeSelector.SetSelectedIndex(zOpt::GetCameraModePlayerState() == 1 ? 1 : 0);
     return this;
 }
 
 /**
- * Reimplements 0x4bde20: HudWeatherFx::ScalarDeletingDestructor.
- * Original source path: D:\Proj\Battlesport\hud.cpp.
- * Purpose: Run shared weather teardown and optionally free the object for scalar delete.
+ * Reimplements 0x408c20: HudUiControlsDialog_CommandsWidget::OnActivate.
+ * Original source path: D:\Proj\Battlesport\hud_ui_dialogs.cpp.
+ * Purpose: Queue the command-dialog state from the controls dialog Commands widget before running inherited ZRD activation.
+ * Evidence: BN/source slice calls HudCmdDialogState::QueueEnter, then chains HudUiZrdWidget::OnActivate.
  */
-HudUiElement * HudWeatherFx::ScalarDeletingDestructor(
-    unsigned int flags
-) {
-    HudWeatherFx *self = this;
-    Destructor();
-    if ((flags & 1) != 0) {
-        ::operator delete(self);
-    }
-    return self;
+void HudUiControlsDialog_CommandsWidget::OnActivate() {
+    HudCmdDialogState::QueueEnter();
+    HudUiZrdWidget::OnActivate();
 }
 
 /**
- * Reimplements 0x4bde40: HudWeatherFx::Destructor.
- * Original source path: D:\Proj\Battlesport\hud.cpp.
- * Purpose: Release particle buffers and renderer-backed weather texture resources.
+ * Provider boundary 0x408c60: VC5 compiler/EH cleanup forwarding thunk.
+ * Purpose: emit the complete destructor cleanup thunk for the zero-data controls-dialog option selector subtype.
  */
-void HudWeatherFx::Destructor() {
-    if (particleQuads != 0) {
-        ::operator delete(particleQuads);
-    }
-    if (particlePositions[0] != 0) {
-        ::operator delete(particlePositions[0]);
-    }
-    if (particlePositions[1] != 0) {
-        ::operator delete(particlePositions[1]);
-    }
-
-    if (g_zVideo_ActiveRendererPath != ZVID_RENDERER_BACKEND_SOFTWARE) {
-        if (textureRecord != 0) {
-            g_zVideo_pfnTextureRecordDestroy(textureRecord);
-        }
-        if (softwareImage != 0) {
-            zVid_Image::ReleaseIfNotDefault(softwareImage);
-            softwareImage = 0;
-        }
-    }
-
+void HudUiControlsDialog_OptionSelector::DestructorCoreThunk() {
+    this->HudUiZrdWidgetEx17C::~HudUiZrdWidgetEx17C();
 }
 
 /**
- * Reimplements 0x4be210: HudWeatherFx::ArePointBatchInsideRect.
- * Original source path: D:\Proj\Battlesport\hud.cpp.
- * Purpose: Accept a projected weather quad only when all points lie inside the viewport.
+ * Reimplements 0x408c70: HudUiControlsDialog::Destructor.
+ * Original source path: D:\Proj\Battlesport\hud_ui_dialogs.cpp.
+ * Purpose: Destroy the controls dialog child widgets in reverse construction order before background cleanup.
+ * Evidence: BN/source slice tears down camera, cursor, steering, throttle, mouse/joystick selectors,
+ * commands/resume widgets, then the HudUiBackground base.
  */
-int HudWeatherFxPointBatch::ArePointBatchInsideRect(
-    int pointCount,
-    const HudUiRect *viewportRect
-) {
-    if (viewportRect == 0 || pointCount <= 0) {
-        return 1;
-    }
-
-    for (int index = 0; index < pointCount; ++index) {
-        if (this[index].x < (float)(viewportRect->left)) {
-            return 0;
-        }
-        if ((float)(viewportRect->right) < this[index].x) {
-            return 0;
-        }
-        if (this[index].y < (float)(viewportRect->top)) {
-            return 0;
-        }
-        if ((float)(viewportRect->bottom) < this[index].y) {
-            return 0;
-        }
-    }
-
-    return 1;
-}
-
-/**
- * Reimplements 0x4bdee0: HudWeatherFx::ResetParticleSlot.
- * Original source path: D:\Proj\Battlesport\hud.cpp.
- * Purpose: Respawn one particle in the weather cone and copy it into the destination buffer.
- */
-void HudWeatherFx::ResetParticleSlot(
-    int particleIndex,
-    int
-) {
-    zVec3 *const sourcePosition = &particlePositions[sourceBufferIndex][particleIndex];
-    zVec3 *const destPosition = &particlePositions[destBufferIndex][particleIndex];
-
-    sourcePosition->z = 0.5f - (float)(rand()) * -0.0000152592547f;
-
-    sourcePosition->x = -1.0f - (float)(rand()) * -0.0000457777642f;
-    if (sourcePosition->x < -sourcePosition->z) {
-        sourcePosition->x -= -1.5f;
-        sourcePosition->z = 1.5f - sourcePosition->z;
-    }
-
-    sourcePosition->y = -1.0f - (float)(rand()) * -0.0000457777642f;
-    if (sourcePosition->y < -sourcePosition->z) {
-        sourcePosition->y -= -1.5f;
-        sourcePosition->z = 1.5f - sourcePosition->z;
-    }
-
-    *destPosition = *sourcePosition;
-}
-
-/**
- * Reimplements 0x4bdfd0: HudWeatherFx::ApplyPass3.
- * Original source path: D:\Proj\Battlesport\hud.cpp.
- * Purpose: Draw software weather lines or submit hardware textured weather quads
- * through the pass-3 HUD element callback.
- */
-void HudWeatherFx::ApplyPass3() {
-    if (g_zVideo_ActiveRendererPath == ZVID_RENDERER_BACKEND_SOFTWARE) {
-        zVideo_FxSurface::DrawColoredLinesBatch(
-            (zVideoFxColoredLineRecord *)(particleQuads),
-            particleCount,
-            (zVidRect32 *)(clipRectOrNull)
-        );
-        return;
-    }
-
-    const int swSurfaceWasLocked = zVideo::GetSwSurfaceLockedFlag();
-    if (swSurfaceWasLocked != 0) {
-        zVideo::Dispatch_UnlockSwSurfaceState();
-    }
-
-    unsigned short *surfacePixels = (unsigned short *)(softwareImage->pixels);
-    if (*surfacePixels != packedColor16) {
-        char *surfaceAlphaMap = softwareImage->alphaMap;
-        int alphaValue = 0;
-        while (alphaValue < 4080) {
-            *surfacePixels = packedColor16;
-            ++surfacePixels;
-            *surfaceAlphaMap = (char)(alphaValue >> 4);
-            ++surfaceAlphaMap;
-            alphaValue += 255;
-        }
-    }
-
-    g_zVideo_pfnTextureRecordFinalizeUpload(
-        textureRecord,
-        0,
-        softwareImage
-    );
-    zVideoD3D::SceneEnter();
-
-    for (int particleIndex = 0; particleIndex < particleCount; ++particleIndex) {
-        HudWeatherFxParticleQuad *particleQuad = &particleQuads[particleIndex];
-        float xSlant = 0.0f;
-        float ySlant = 0.0f;
-        if (particleQuad->width > particleQuad->height) {
-            xSlant = (float)(particleQuad->slantOffset);
-        } else {
-            ySlant = (float)(particleQuad->slantOffset);
-        }
-
-        const float depth = particlePositions[sourceBufferIndex][particleIndex].z;
-        zVideo_XyzVertex clipVerts[4];
-        zVideo_TexCoord texCoords[4];
-        clipVerts[0].x = (float)(particleQuad->x);
-        clipVerts[0].y = (float)(particleQuad->y);
-        clipVerts[0].z = depth;
-        texCoords[0].u = particleQuad->texCoordUStart;
-        texCoords[0].v = 0.0f;
-
-        clipVerts[1].x = (float)(particleQuad->x) + xSlant;
-        clipVerts[1].y = (float)(particleQuad->y) + ySlant;
-        clipVerts[1].z = depth;
-        texCoords[1].u = particleQuad->texCoordUStart;
-        texCoords[1].v = 0.0f;
-
-        clipVerts[2].x = (float)(particleQuad->x + particleQuad->width) + xSlant;
-        clipVerts[2].y = (float)(particleQuad->y + particleQuad->height) + ySlant;
-        clipVerts[2].z = depth;
-        texCoords[2].u = particleQuad->texCoordUEnd;
-        texCoords[2].v = 0.0f;
-
-        clipVerts[3].x = (float)(particleQuad->x + particleQuad->width);
-        clipVerts[3].y = (float)(particleQuad->y + particleQuad->height);
-        clipVerts[3].z = depth;
-        texCoords[3].u = particleQuad->texCoordUEnd;
-        texCoords[3].v = 0.0f;
-
-        if (((HudWeatherFxPointBatch *)(clipVerts))
-                ->ArePointBatchInsideRect(
-                    4,
-                    clipRectOrNull
-                ) != 0) {
-            g_zVideo_pfnSubmitPolyRenderClass(
-                clipVerts,
-                texCoords,
-                4,
-                (zVideo_RenderClass *)(textureRecord),
-                1,
-                1.0f,
-                0
-            );
-        }
-    }
-
-    g_zVideo_pfnFlushSortedPolys();
-    zVideoD3D::SceneLeave();
-    if (swSurfaceWasLocked != 0) {
-        zVideo::RunPostprocessOnSwBuffer();
-    }
-}
-
-/**
- * Reimplements 0x4be280: HudWeatherFxSnow::Constructor.
- * Original source path: D:\Proj\Battlesport\hud.cpp.
- * Purpose: Construct the shared weather emitter and initialize snow emitter defaults.
- */
-HudWeatherFxSnow * HudWeatherFxSnow::Constructor(
-    int particleCount
-) {
-    HudWeatherFx::Constructor(particleCount);
-    new (this) HudWeatherFxSnow;
-    emitEnabled = 1;
-    emitRadius = 20.0f;
-    emitDepth = 400.0f;
-    return this;
-}
-
-/**
- * Reimplements 0x4be2c0: HudWeatherFxSnow::ScalarDeletingDestructor.
- * Original source path: D:\Proj\Battlesport\hud.cpp.
- * Purpose: Run snow weather teardown and optionally free the object for scalar delete.
- */
-HudUiElement * HudWeatherFxSnow::ScalarDeletingDestructor(
-    unsigned int flags
-) {
-    HudWeatherFxSnow *self = this;
-    Destructor();
-    if ((flags & 1) != 0) {
-        ::operator delete(self);
-    }
-    return self;
-}
-
-/**
- * Reimplements 0x4be2e0: HudWeatherFxSnow::Destructor.
- * Original source path: D:\Proj\Battlesport\hud.cpp.
- * Purpose: Delegate snow weather teardown to the shared base weather emitter destructor.
- */
-void HudWeatherFxSnow::Destructor() {
-    HudWeatherFx::Destructor();
-}
-
-/**
- * Reimplements 0x4be2f0: HudWeatherFxSnow::Update.
- * Original source path: D:\Proj\Battlesport\hud.cpp.
- * Purpose: Advance snow particles from camera drift, gravity, and wind, then project quads.
- */
-void HudWeatherFxSnow::Update(
-    float deltaSeconds
-) {
-    if ((flags & 0x10) != 0) {
-        return;
-    }
-
-    g_HudWeatherFxSnow_TimeAccumulator += deltaSeconds;
-    if (camera == 0) {
-        return;
-    }
-
-    int viewportWidth = 0;
-    int viewportHeight = 0;
-    if (clipRectOrNull != 0) {
-        viewportWidth = clipRectOrNull->right - clipRectOrNull->left;
-        viewportHeight = clipRectOrNull->bottom - clipRectOrNull->top;
-    } else {
-        const zVidRect32 *const primaryRect = zVideo::GetPrimarySurfaceRectScratch();
-        viewportWidth = primaryRect->right - primaryRect->left;
-        viewportHeight = primaryRect->bottom - primaryRect->top;
-    }
-    const float viewportWidthF = (float)(viewportWidth);
-    const float viewportHeightF = (float)(viewportHeight);
-
-    zVec3 cameraTarget;
-    zClass_Camera::gwCameraGetTarget(
-        camera,
-        &cameraTarget.x,
-        &cameraTarget.y,
-        &cameraTarget.z
-    );
-
-    zVec3 cameraAngles;
-    zClass_Camera::gwCameraGetPosition(
-        camera,
-        &cameraAngles.x,
-        &cameraAngles.y,
-        &cameraAngles.z
-    );
-
-    zVec3 cameraTargetDrift;
-    cameraTargetDrift.x =
-        (g_HudWeatherFxSnow_LastCameraTarget.x - cameraTarget.x) * -0.100000001f;
-    cameraTargetDrift.y =
-        (g_HudWeatherFxSnow_LastCameraTarget.y - cameraTarget.y) * -0.100000001f;
-    cameraTargetDrift.z =
-        (g_HudWeatherFxSnow_LastCameraTarget.z - cameraTarget.z) * -0.100000001f;
-    g_HudWeatherFxSnow_LastCameraTarget.x = cameraTarget.x;
-    g_HudWeatherFxSnow_LastCameraTarget.y = cameraTarget.y;
-    g_HudWeatherFxSnow_LastCameraTarget.z = cameraTarget.z;
-
-    zMat4x3 slotBuffer;
-    zMath::MatStackPushPtr((float *)(&slotBuffer));
-    zMath::MatLoadIdentity();
-    zMath::MatRotateX(-cameraAngles.x);
-    zMath::MatRotateY(-cameraAngles.y);
-    zMath::MatTransformPointBatchInPlace(
-        &cameraTargetDrift,
-        1
-    );
-    zMath::MatStackPopPtr();
-
-    zMath::MatStackPushPtr((float *)(&slotBuffer));
-    zMath::MatLoadIdentity();
-    zMath::MatRotateZ(cameraAngles.z);
-    zMath::MatRotateY(cameraAngles.y);
-    zMath::MatRotateX(cameraAngles.x);
-
-    zVec3 gravityOffset;
-    const float gravityScale = (float)(gravity * 0.1);
-    gravityOffset.x = basisVector.x * gravityScale;
-    gravityOffset.y = basisVector.y * gravityScale;
-    gravityOffset.z = basisVector.z * gravityScale;
-    zMath::MatTransformPointBatchInPlace(
-        &gravityOffset,
-        1
-    );
-
-    zVec3 windOffset;
-    const float windScale = (float)(windVelocity * 0.1);
-    windOffset.x = (float)(sin(windDirection)) * windScale;
-    windOffset.y = 0.0f;
-    windOffset.z = (float)(cos(windDirection)) * windScale;
-    zMath::MatTransformPointBatchInPlace(
-        &windOffset,
-        1
-    );
-    zMath::MatStackPopPtr();
-
-    zVec3 particleVelocity;
-    particleVelocity.x = cameraTargetDrift.x + gravityOffset.x + windOffset.x;
-    particleVelocity.y = cameraTargetDrift.y + gravityOffset.y + windOffset.y;
-    particleVelocity.z = cameraTargetDrift.z + gravityOffset.z + windOffset.z;
-    if (HudWeatherFxVec3LengthSq(&particleVelocity) >= 1.0) {
-        zMath::Vec3Normalize(&particleVelocity);
-    }
-
-    zVec3 probeVelocity = particleVelocity;
-    if (HudWeatherFxVec3LengthSq(&probeVelocity) >= 0.010000000000000002) {
-        zMath::Vec3Normalize(&probeVelocity);
-        probeVelocity.x *= 0.100000001f;
-        probeVelocity.y *= 0.100000001f;
-        probeVelocity.z *= 0.100000001f;
-    }
-
-    for (int particleIndex = 0; particleIndex < particleCount; ++particleIndex) {
-        const zVec3 *const sourcePosition = &particlePositions[sourceBufferIndex][particleIndex];
-        zVec3 *const destPosition = &particlePositions[destBufferIndex][particleIndex];
-        destPosition->x = sourcePosition->x + particleVelocity.x;
-        destPosition->y = sourcePosition->y + particleVelocity.y;
-        destPosition->z = sourcePosition->z + particleVelocity.z;
-
-        zVec3 probePosition;
-        probePosition.x = sourcePosition->x + probeVelocity.x;
-        probePosition.y = sourcePosition->y + probeVelocity.y;
-        probePosition.z = sourcePosition->z + probeVelocity.z;
-
-        const float sourceDepthFactor = 1.5f - sourcePosition->z;
-        const float probeDepthFactor = 1.5f - probePosition.z;
-        HudWeatherFxParticleQuad *const particleQuad = &particleQuads[particleIndex];
-        particleQuad->x =
-            (int)(((probeDepthFactor * probePosition.x) - -0.5f) *
-                  viewportWidthF);
-        particleQuad->y =
-            (int)(((probeDepthFactor * probePosition.y) - -0.5f) *
-                  viewportHeightF);
-        particleQuad->width =
-            (int)(((sourceDepthFactor * sourcePosition->x) - -0.5f) *
-                  viewportWidthF) -
-            particleQuad->x;
-        particleQuad->height =
-            (int)(((sourceDepthFactor * sourcePosition->y) - -0.5f) *
-                  viewportHeightF) -
-            particleQuad->y;
-        particleQuad->color16 = packedColor16;
-        particleQuad->texCoordUStart = probeDepthFactor * alphaStartScale;
-        particleQuad->texCoordUEnd = sourceDepthFactor * alphaEndScale;
-        particleQuad->slantOffset = (int)(((float)(activeParticleCount + 1)) * sourceDepthFactor *
-                                          3.5);
-
-        if (HudWeatherFxSnowNeedsReset(destPosition) != 0) {
-            ResetParticleSlot(
-                particleIndex,
-                0
-            );
-        }
-    }
-
-    HudUiElement::Update(deltaSeconds);
-
-    const int oldSourceBufferIndex = sourceBufferIndex;
-    sourceBufferIndex = destBufferIndex;
-    destBufferIndex = oldSourceBufferIndex;
-}
-
-/**
- * Reimplements 0x4be810: HudWeatherFxRain::Constructor.
- * Original source path: D:\Proj\Battlesport\hud.cpp.
- * Purpose: Construct the shared weather emitter and initialize rain emitter defaults.
- */
-HudWeatherFxRain * HudWeatherFxRain::Constructor(
-    int particleCount
-) {
-    HudWeatherFx::Constructor(particleCount);
-    new (this) HudWeatherFxRain;
-    emitEnabled = 1;
-    emitRadius = 20.0f;
-    emitDepth = 400.0f;
-    return this;
-}
-
-/**
- * Reimplements 0x4be850: HudWeatherFxRain::ScalarDeletingDestructor.
- * Original source path: D:\Proj\Battlesport\hud.cpp.
- * Purpose: Run rain weather teardown and optionally free the object for scalar delete.
- */
-HudUiElement * HudWeatherFxRain::ScalarDeletingDestructor(
-    unsigned int flags
-) {
-    HudWeatherFxRain *self = this;
-    Destructor();
-    if ((flags & 1) != 0) {
-        ::operator delete(self);
-    }
-    return self;
-}
-
-/**
- * Reimplements 0x4be870: HudWeatherFxRain::Destructor.
- * Original source path: D:\Proj\Battlesport\hud.cpp.
- * Purpose: Delegate rain weather teardown to the shared base weather emitter destructor.
- */
-void HudWeatherFxRain::Destructor() {
-    HudWeatherFx::Destructor();
-}
-
-/**
- * Reimplements 0x4be880: HudWeatherFxRain::Update.
- * Original source path: D:\Proj\Battlesport\hud.cpp.
- * Purpose: Advance rain particles from camera drift, gravity, and wind, then project quads.
- */
-void HudWeatherFxRain::Update(
-    float deltaSeconds
-) {
-    if ((flags & 0x10) != 0) {
-        return;
-    }
-
-    g_HudWeatherFxRain_TimeAccumulator += deltaSeconds;
-    if (camera == 0) {
-        return;
-    }
-
-    int viewportWidth = 0;
-    int viewportHeight = 0;
-    if (clipRectOrNull != 0) {
-        viewportWidth = clipRectOrNull->right - clipRectOrNull->left;
-        viewportHeight = clipRectOrNull->bottom - clipRectOrNull->top;
-    } else {
-        const zVidRect32 *const primaryRect = zVideo::GetPrimarySurfaceRectScratch();
-        viewportWidth = primaryRect->right - primaryRect->left;
-        viewportHeight = primaryRect->bottom - primaryRect->top;
-    }
-    const float viewportWidthF = (float)(viewportWidth);
-    const float viewportHeightF = (float)(viewportHeight);
-
-    zVec3 cameraTarget;
-    zClass_Camera::gwCameraGetTarget(
-        camera,
-        &cameraTarget.x,
-        &cameraTarget.y,
-        &cameraTarget.z
-    );
-
-    zVec3 cameraAngles;
-    zClass_Camera::gwCameraGetPosition(
-        camera,
-        &cameraAngles.x,
-        &cameraAngles.y,
-        &cameraAngles.z
-    );
-
-    zVec3 cameraTargetDrift;
-    cameraTargetDrift.x =
-        (g_HudWeatherFxRain_LastCameraTarget.x - cameraTarget.x) * -0.100000001f;
-    cameraTargetDrift.y =
-        (g_HudWeatherFxRain_LastCameraTarget.y - cameraTarget.y) * -0.100000001f;
-    cameraTargetDrift.z =
-        (g_HudWeatherFxRain_LastCameraTarget.z - cameraTarget.z) * -0.100000001f;
-    g_HudWeatherFxRain_LastCameraTarget.x = cameraTarget.x;
-    g_HudWeatherFxRain_LastCameraTarget.y = cameraTarget.y;
-    g_HudWeatherFxRain_LastCameraTarget.z = cameraTarget.z;
-
-    zMat4x3 slotBuffer;
-    zMath::MatStackPushPtr((float *)(&slotBuffer));
-    zMath::MatLoadIdentity();
-    zMath::MatRotateX(-cameraAngles.x);
-    zMath::MatRotateY(-cameraAngles.y);
-    zMath::MatTransformPointBatchInPlace(
-        &cameraTargetDrift,
-        1
-    );
-    zMath::MatStackPopPtr();
-
-    zMath::MatStackPushPtr((float *)(&slotBuffer));
-    zMath::MatLoadIdentity();
-    zMath::MatRotateZ(cameraAngles.z);
-    zMath::MatRotateY(cameraAngles.y);
-    zMath::MatRotateX(cameraAngles.x);
-
-    zVec3 gravityOffset;
-    const float gravityScale = (float)(gravity * 0.1);
-    gravityOffset.x = basisVector.x * gravityScale;
-    gravityOffset.y = basisVector.y * gravityScale;
-    gravityOffset.z = basisVector.z * gravityScale;
-    zMath::MatTransformPointBatchInPlace(
-        &gravityOffset,
-        1
-    );
-
-    zVec3 windOffset;
-    const float windScale = (float)(windVelocity * 0.1);
-    windOffset.x = (float)(sin(windDirection)) * windScale;
-    windOffset.y = 0.0f;
-    windOffset.z = (float)(cos(windDirection)) * windScale;
-    zMath::MatTransformPointBatchInPlace(
-        &windOffset,
-        1
-    );
-    zMath::MatStackPopPtr();
-
-    zVec3 particleVelocity;
-    particleVelocity.x = cameraTargetDrift.x + gravityOffset.x + windOffset.x;
-    particleVelocity.y = cameraTargetDrift.y + gravityOffset.y + windOffset.y;
-    particleVelocity.z = cameraTargetDrift.z + gravityOffset.z + windOffset.z;
-    if (HudWeatherFxVec3LengthSq(&particleVelocity) >= 1.0) {
-        zMath::Vec3Normalize(&particleVelocity);
-    }
-
-    zVec3 probeVelocity = particleVelocity;
-    if (HudWeatherFxVec3LengthSq(&probeVelocity) >= 0.010000000000000002) {
-        zMath::Vec3Normalize(&probeVelocity);
-        probeVelocity.x *= 0.100000001f;
-        probeVelocity.y *= 0.100000001f;
-        probeVelocity.z *= 0.100000001f;
-    }
-
-    for (int particleIndex = 0; particleIndex < particleCount; ++particleIndex) {
-        const zVec3 *const sourcePosition = &particlePositions[sourceBufferIndex][particleIndex];
-        zVec3 *const destPosition = &particlePositions[destBufferIndex][particleIndex];
-        destPosition->x = sourcePosition->x + particleVelocity.x;
-        destPosition->y = sourcePosition->y + particleVelocity.y;
-        destPosition->z = sourcePosition->z + particleVelocity.z;
-
-        zVec3 probePosition;
-        probePosition.x = sourcePosition->x + probeVelocity.x;
-        probePosition.y = sourcePosition->y + probeVelocity.y;
-        probePosition.z = sourcePosition->z + probeVelocity.z;
-
-        const float sourceDepthFactor = 1.5f - sourcePosition->z;
-        const float probeDepthFactor = 1.5f - probePosition.z;
-        HudWeatherFxParticleQuad *const particleQuad = &particleQuads[particleIndex];
-        particleQuad->x =
-            (int)(((probeDepthFactor * probePosition.x) - -0.5f) *
-                  viewportWidthF);
-        particleQuad->y =
-            (int)(((probeDepthFactor * probePosition.y) - -0.5f) *
-                  viewportHeightF);
-        particleQuad->width =
-            (int)(((sourceDepthFactor * sourcePosition->x) - -0.5f) *
-                  viewportWidthF) -
-            particleQuad->x;
-        particleQuad->height =
-            (int)(((sourceDepthFactor * sourcePosition->y) - -0.5f) *
-                  viewportHeightF) -
-            particleQuad->y;
-        particleQuad->color16 = packedColor16;
-        particleQuad->texCoordUStart = probeDepthFactor * alphaStartScale;
-        particleQuad->texCoordUEnd = sourceDepthFactor * alphaEndScale;
-        particleQuad->slantOffset = kHudWeatherFxRainSlantDelta;
-
-        ResetParticleSlot(
-            particleIndex,
-            0
-        );
-    }
-
-    HudUiElement::Update(deltaSeconds);
-
-    const int oldSourceBufferIndex = sourceBufferIndex;
-    sourceBufferIndex = destBufferIndex;
-    destBufferIndex = oldSourceBufferIndex;
-}
-
-/**
- * Reimplements 0x41c6c0: HudUiNewGamePanelOverlayOwner::QueueEnter.
- * Original source path: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
- * Purpose: Queue the global new-game panel overlay owner as the next app state.
- */
-void HudUiNewGamePanelOverlayOwner::QueueEnter() {
-    g_RecoilApp.QueuePushState(
-        (RecoilApp_IState *)&g_HudUiNewGamePanelOverlayOwner,
-        0
-    );
-}
-
-/**
- * Reimplements 0x41c5e0: HudUiNewGamePanelOverlayOwner::StaticInitAndRegisterAtExit.
- * Original source path: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
- * Purpose: Construct the global new-game panel overlay owner and register its shutdown cleanup.
- */
-void HudUiNewGamePanelOverlayOwner::StaticInitAndRegisterAtExit() {
-    StaticInit();
-    RegisterAtExit();
-}
-
-/**
- * Reimplements 0x41c5f0: HudUiNewGamePanelOverlayOwner::StaticInit.
- * Original source path: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
- * Purpose: Placement-construct the global new-game panel overlay owner.
- */
-HudUiNewGamePanelOverlayOwner *HudUiNewGamePanelOverlayOwner::StaticInit() {
-    return new (&g_HudUiNewGamePanelOverlayOwner) HudUiNewGamePanelOverlayOwner;
-}
-
-/**
- * Reimplements 0x41c6a0: HudUiNewGamePanelOverlayOwner::RegisterAtExit.
- * Original source path: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
- * Purpose: Register the global new-game panel overlay owner destructor with CRT exit cleanup.
- */
-void HudUiNewGamePanelOverlayOwner::RegisterAtExit() {
-    atexit(AtExitDestructor);
-}
-
-/**
- * Reimplements 0x41c6b0: HudUiNewGamePanelOverlayOwner::AtExitDestructor.
- * Original source path: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
- * Purpose: Run global new-game panel overlay owner cleanup during CRT exit.
- */
-void HudUiNewGamePanelOverlayOwner::AtExitDestructor() {
-    g_HudUiNewGamePanelOverlayOwner.~HudUiNewGamePanelOverlayOwner();
-}
-
-/**
- * Original-source inline helper evidence: No standalone retail function is
- * expected; the constructor body is inlined into 0x41c5f0
- * HudUiNewGamePanelOverlayOwner::StaticInit.
- *
- * Purpose: initialize the typed new-game overlay app-state owner.
- */
-HudUiNewGamePanelOverlayOwner::HudUiNewGamePanelOverlayOwner() {
-    m_dialog = 0;
-}
-
-/**
- * Reimplements 0x41c630: HudUiNewGamePanelOverlayOwner::~HudUiNewGamePanelOverlayOwner.
- * Original source path: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
- * Purpose: Disable and destroy the active new-game panel owned by this app state.
- */
-HudUiNewGamePanelOverlayOwner::~HudUiNewGamePanelOverlayOwner() {
-    HudUiNewGamePanel *panel = (HudUiNewGamePanel *)m_dialog;
-    if (panel != 0) {
-        panel->SetEnabled(0);
-
-        panel = (HudUiNewGamePanel *)m_dialog;
-        if (panel != 0) {
-            panel->ScalarDeletingDestructor(1);
-        }
-
-        m_dialog = 0;
-    }
-}
-
-/**
- * Reimplements 0x41c560: HudUiNewGamePanelOverlayOwner::OnTryBecomeCurrent.
- * Original source path: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
- * Purpose: Create, enable, and retain the new-game panel for the overlay state.
- */
-int HudUiNewGamePanelOverlayOwner::OnTryBecomeCurrent() {
-    HudUiNewGamePanel *const panel = new HudUiNewGamePanel;
-    m_dialog = panel;
-    panel->SyncIntensityFromDifficulty();
-    panel->SetEnabled(1);
-    return 1;
-}
-
-/**
- * Reimplements 0x41c290: HudUiNewGamePanel::HudUiNewGamePanel.
- * Original source path: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
- * Purpose: Construct the new-game panel, bind its ZRD widgets, and load the saved player name.
- */
-HudUiNewGamePanel::HudUiNewGamePanel()
-    : HudUiBackground() {
-    zReader::Node *const loadedSection =
-        HudUiBackground::LoadFromZrd(
-            "dialog.zrd",
-            "NEWGAMEPANEL",
-            0
-        );
-    if (loadedSection != 0) {
-        HudUiBackground::BindWidgetByName(
-            loadedSection,
-            &backWidget,
-            "BACK"
-        );
-        HudUiBackground::BindWidgetByName(
-            loadedSection,
-            &startWidget,
-            "START"
-        );
-        HudUiBackground::BindWidgetByName(
-            loadedSection,
-            &nameInput,
-            "NAME"
-        );
-        HudUiBackground::BindWidgetByName(
-            loadedSection,
-            &intensity,
-            "INTENSITY"
-        );
-        HudUiBackground::FreeLoadedTreeRoots((int)(unsigned int)loadedSection);
-    }
-
-    nameInput.Update(zOpt_GetPlayerName());
-}
-
-/**
- * Reimplements 0x41c3b0: HudUiNewGamePanel_NameInput::OnActivate.
- * Original source path: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
- * Purpose: Refresh and activate the player-name input with raw keyboard capture.
- */
-void HudUiNewGamePanel_NameInput::OnActivate() {
-    textInput.AllocTextBuffer(21);
-    HudUiNumericTextInput::Update(zOpt_GetPlayerName());
-    HudUiNumericTextInput::OnActivate();
-    HudUiNumericTextInput::SetRawKeyboardCapture(1);
-}
-
-/**
- * Reimplements 0x41c400: HudUiNewGamePanel::Destructor.
- * Original source path: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
- * Purpose: Destroy the new-game panel child widgets and background base in reverse construction order.
- */
-void HudUiNewGamePanel::Destructor() {
-    intensity.DestructorCore();
-    nameInput.Destructor();
-    startWidget.DestructorCore();
-    backWidget.DestructorCore();
+void HudUiControlsDialog::Destructor() {
+    cameraModeSelector.DestructorCore();
+    cursorModeSelector.DestructorCore();
+    steeringModeSelector.DestructorCore();
+    throttleModeSelector.DestructorCore();
+    mouseOrJoystickSelector.DestructorCore();
+    commandsWidget.DestructorCore();
+    resumeWidget.DestructorCore();
     this->HudUiBackground::~HudUiBackground();
 }
 
 /**
- * Reimplements 0x41c3e0: HudUiNewGamePanel::ScalarDeletingDestructor.
- * Original source path: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
- * Purpose: Run new-game panel destruction and optionally free the panel storage.
+ * Reimplements 0x408d20: RecoilStateControls::StaticInitAndRegisterAtExit.
+ * Original source path: D:\Proj\Battlesport\recoil_state.cpp.
+ * Purpose: construct the global controls app state and register its CRT shutdown destructor.
  */
-HudUiBackground * HudUiNewGamePanel::ScalarDeletingDestructor(
-    unsigned int flags
-) {
-    Destructor();
-    if ((flags & 1u) != 0) {
-        ::operator delete(this);
+void RecoilStateControls::StaticInitAndRegisterAtExit() {
+    StaticInit();
+    RegisterAtExit();
+}
+
+#if defined(_MSC_VER) && defined(_M_IX86)
+typedef void (__cdecl *BattlesportHudCrtInitializerFn)();
+/* VC5 emits this controls-state startup callback as a direct .CRT$XCU row. */
+#pragma data_seg(".CRT$XCU")
+BattlesportHudCrtInitializerFn s_BattlesportHudCrtInit_RecoilStateControls =
+    RecoilStateControls::StaticInitAndRegisterAtExit;
+#pragma data_seg()
+#endif
+
+#if defined(_MSC_VER) && defined(_M_IX86)
+/* VC5 emits this confirm-quit-state startup callback as a direct .CRT$XCU row. */
+#pragma data_seg(".CRT$XCU")
+BattlesportHudCrtInitializerFn s_BattlesportHudCrtInit_RecoilStateConfirmQuit =
+    RecoilStateConfirmQuit::StaticInitAndRegisterAtExit;
+#pragma data_seg()
+#endif
+
+#if defined(_MSC_VER) && defined(_M_IX86)
+/* VC5 emits this options-panel owner startup callback as a direct .CRT$XCU row. */
+#pragma data_seg(".CRT$XCU")
+BattlesportHudCrtInitializerFn s_BattlesportHudCrtInit_HudUiOptionsPanelOverlayOwner =
+    HudUiOptionsPanelOverlayOwner::StaticInitAndRegisterAtExit;
+#pragma data_seg()
+#endif
+
+#if defined(_MSC_VER) && defined(_M_IX86)
+/* VC5 emits this cheat-code-state startup callback as a direct .CRT$XCU row. */
+#pragma data_seg(".CRT$XCU")
+BattlesportHudCrtInitializerFn s_BattlesportHudCrtInit_RecoilStateCheatCode =
+    RecoilStateCheatCode::StaticInitAndRegisterAtExit;
+#pragma data_seg()
+#endif
+
+/**
+ * Reimplements 0x408d30: RecoilStateControls::StaticInit.
+ * Original source path: D:\Proj\Battlesport\recoil_state.cpp.
+ * Purpose: placement-construct the zero-initialized global controls app state singleton.
+ */
+RecoilStateControls *RecoilStateControls::StaticInit() {
+    return new (&g_RecoilStateControls) RecoilStateControls;
+}
+
+/**
+ * Reimplements 0x408d40: RecoilStateControls::RegisterAtExit.
+ * Original source path: D:\Proj\Battlesport\recoil_state.cpp.
+ * Purpose: register the global controls app state destructor with the CRT atexit list.
+ */
+void RecoilStateControls::RegisterAtExit() {
+    atexit(AtExitDestructor);
+}
+
+/**
+ * Reimplements 0x408d50: RecoilStateControls::AtExitDestructor.
+ * Original source path: D:\Proj\Battlesport\recoil_state.cpp.
+ * Purpose: destroy the global controls app state during CRT shutdown.
+ */
+void RecoilStateControls::AtExitDestructor() {
+    g_RecoilStateControls.~RecoilStateControls();
+}
+
+/**
+ * Reimplements 0x408d60: RecoilStateControls::RecoilStateControls.
+ * Original source path: D:\Proj\Battlesport\recoil_state.cpp.
+ * Purpose: initialize the controls app state and clear its dialog pointer.
+ */
+RecoilStateControls::RecoilStateControls() {
+    m_dialog = 0;
+}
+
+/**
+ * Reimplements 0x408d90: RecoilStateControls::Destructor.
+ * Original source path: D:\Proj\Battlesport\recoil_state.cpp.
+ * Purpose: release the owned controls dialog and clear the dialog pointer.
+ */
+RecoilStateControls::~RecoilStateControls() {
+    HudUiControlsDialog *dialog = (HudUiControlsDialog *)m_dialog;
+    if (dialog != 0) {
+        delete dialog;
     }
 
-    return this;
+    m_dialog = 0;
 }
 
 /**
- * Reimplements 0x41c4e0: HudUiNewGamePanel::SyncIntensityFromDifficulty.
- * Original source path: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
- * Purpose: Reflect the saved game difficulty option in the panel intensity selector.
+ * Reimplements 0x408df0: RecoilStateControls::OnTryBecomeCurrent.
+ * Original source path: D:\Proj\Battlesport\recoil_state.cpp.
+ * Purpose: lazily create and enable the controls dialog, then seed option selectors.
  */
-void HudUiNewGamePanel::SyncIntensityFromDifficulty() {
-    intensity.SetSelectedIndex(zOpt::GetGameDifficultyMode());
+int RecoilStateControls::OnTryBecomeCurrent() {
+    if (m_dialog == 0) {
+        HudUiControlsDialog *dialog =
+            (HudUiControlsDialog *) ::operator new(sizeof(HudUiControlsDialog));
+        if (dialog != 0) {
+            dialog = dialog->Constructor();
+        }
+        m_dialog = dialog;
+    }
+
+    HudUiControlsDialog *const dialog = (HudUiControlsDialog *)m_dialog;
+    dialog->SetEnabled(1);
+
+    dialog->mouseOrJoystickSelector.SetSelectedIndex(zInp::GetJoystickOption());
+    dialog->throttleModeSelector.SetSelectedIndex(zOpt::GetThrottleMode());
+    dialog->steeringModeSelector.SetSelectedIndex(zOpt::GetSteeringMode());
+    dialog->cursorModeSelector.SetSelectedIndex(zOpt::GetCursorMode());
+    dialog->cameraModeSelector.SetSelectedIndex(
+        zOpt::GetCameraModePlayerState() == 1 ? 1 : 0
+    );
+
+    return 1;
 }
 
 /**
- * Reimplements 0x41c500: HudUiNewGamePanel::StartGameFromFields.
- * Original source path: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
- * Purpose: Commit new-game options and queue the transition into mission FMV startup.
+ * Reimplements 0x408ec0: RecoilStateControls::OnDeactivate.
+ * Original source path: D:\Proj\Battlesport\recoil_state.cpp.
+ * Purpose: commit controls dialog selections, deactivate and blit the dialog, then delete it.
  */
-void HudUiNewGamePanel::StartGameFromFields() {
-    HudCheat::ClearNanitePanelCheatSentinel();
-    zOpt::SetPlayerName(nameInput.GetBuffer());
-    zOpt::SetGameDifficultyMode(intensity.selectedIndex);
-    ((HudUiBackgroundContainer *)(&g_RecoilApp.m_missionFmvState))
-        ->HudUiBackgroundContainer::SetEnabled(1);
-    g_RecoilApp.QueueExitCurrentState(1);
-    g_RecoilApp.QueueExitCurrentState(1);
-    g_RecoilApp.QueueSwitchCurrentState(
-        &g_RecoilApp.m_missionFmvState,
+void RecoilStateControls::OnDeactivate() {
+    if (m_dialog == 0) {
+        return;
+    }
+
+    HudUiControlsDialog *const dialog = (HudUiControlsDialog *)m_dialog;
+    zInp::SetJoystickOption(
+        zInput::DI_SetJoystickEnabled(dialog->mouseOrJoystickSelector.selectedIndex)
+    );
+    zOpt::SetCursorMode(dialog->cursorModeSelector.selectedIndex);
+    zOpt::SetCameraMode(dialog->cameraModeSelector.selectedIndex);
+    zOpt::SetThrottleMode(dialog->throttleModeSelector.selectedIndex);
+    zOpt::SetSteeringMode(dialog->steeringModeSelector.selectedIndex);
+
+    if (dialog->steeringModeSelector.selectedIndex == 0 && g_GameStateOrMapTable != 0) {
+        Player::ResetMouseControlStateAndRecenterCursor(
+            (zUtil_SaveGameState *)g_GameStateOrMapTable
+        );
+    }
+
+    dialog->SetEnabled(0);
+    ((HudUiDialogController *)m_dialog)->BlitOwnedSurfaceToPrimary();
+
+    HudUiControlsDialog *dialogToDelete = (HudUiControlsDialog *)m_dialog;
+    if (dialogToDelete != 0) {
+        delete dialogToDelete;
+    }
+
+    m_dialog = 0;
+}
+
+#include "Battlesport/recoil_state_dialog_host_on_suspend_body.h"
+
+/**
+ * Reimplements 0x408fa0: RecoilStateControls::OnResume.
+ * Original source path: D:\Proj\Battlesport\recoil_state.cpp.
+ * Purpose: resume the controls dialog after a nested app state returns.
+ */
+void RecoilStateControls::OnResume(
+    int activateCode
+) {
+    (void)activateCode;
+
+    if (m_dialog == 0) {
+        return;
+    }
+
+    zVideo::RunPostprocessOnPrimaryBuffer();
+
+    HudUiControlsDialog *const dialog = (HudUiControlsDialog *)m_dialog;
+    dialog->SetEnabled(1);
+    ((HudUiContainer *)dialog)->InvalidateChildren();
+    ((HudUiContainer *)dialog)->UpdateAll(0.0f);
+    zVideo::Dispatch_UnlockPrimarySurfaceState();
+
+    zOpt_ViewRectSection *const dstRect = zOpt::GetWindowSection();
+    zOpt_ViewRectSection *const srcRect = zOpt::GetWindowSection();
+    zVideo::AdjustSurfacesIfEnabled(
+        (zVidRect32 *)srcRect,
+        (zVidRect32 *)dstRect,
+        1,
+        1
+    );
+}
+
+/**
+ * Reimplements 0x408ff0: RecoilStateControls::QueueEnter.
+ * Original source path: D:\Proj\Battlesport\recoil_state.cpp.
+ * Purpose: queue the global controls app state on the Recoil app state stack.
+ */
+void RecoilStateControls::QueueEnter() {
+    g_RecoilApp.QueuePushState(
+        (RecoilApp_IState *)&g_RecoilStateControls,
         0
     );
 }
 
 /**
- * Reimplements 0x41c270: HudUiNewGamePanel_StartButton::OnActivate.
- * Original source path: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
- * Purpose: Start the new game through the owning panel before running normal widget activation.
+ * Reimplements 0x409010: HudUiZrdWidgetEx17C::EnableChildAtIndex.
+ * Source file evidence: BN labels the source as D:\Proj\Battlesport\hudui_zrdwidget.cpp.
+ * Purpose: enable an in-range option item and refresh its displayed widget state.
  */
-void HudUiNewGamePanel_StartButton::OnActivate() {
-    HudUiNewGamePanel *const panel = (HudUiNewGamePanel *)(owner);
-    if (panel != 0) {
-        panel->StartGameFromFields();
+void HudUiZrdWidgetEx17C::EnableChildAtIndex(
+    int childIndex
+) {
+    if (childIndex >= optionCount) {
+        return;
     }
 
+    HudUiZrdWidgetEx17C_Item *const option = options[childIndex];
+    option->modeOrEnabled = 1;
+    option->RefreshState();
+}
+
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x4091e0 HudUiZrdScrollingText::Destructor callers.
+ * Purpose: preserve the recovered HUD behavior for HudUiZrdScrollingText::HudUiZrdScrollingText.
+ */
+inline HudUiZrdScrollingText::HudUiZrdScrollingText() : HudUiZrdWidget() {
+}
+
+/**
+ * Reimplements 0x409040: HudUiCreditsPanel::HudUiCreditsPanel.
+ * Original source path: D:\Proj\Battlesport\HudUiCreditsPanel.cpp.
+ * Purpose: preserve the recovered HUD behavior for HudUiCreditsPanel::HudUiCreditsPanel.
+ */
+HudUiCreditsPanel::HudUiCreditsPanel() : HudUiBackground() {
+    fadeProgress = 0.0f;
+    fadeStep = 0.05f;
+    HudUiZrdScrollingText *const screen = &creditsScreen;
+
+    zReader::Node *const loadedSection = HudUiBackground::LoadFromZrd(
+        "dialog.zrd",
+        "CREDITSPANEL",
+        0
+    );
+    if (loadedSection != 0) {
+        if (g_RecoilApp_QuitAfterCredits != 0) {
+            HudUiBackground::BindWidgetByName(
+                loadedSection,
+                (HudUiZrdWidget *)(&quitButton),
+                "QUIT"
+            );
+        } else {
+            HudUiBackground::BindWidgetByName(
+                loadedSection,
+                (HudUiZrdWidget *)(&backButton),
+                "BACK"
+            );
+        }
+
+        HudUiBackground::BindWidgetByName(
+            loadedSection,
+            (HudUiZrdWidget *)(screen),
+            "CREDITS_SCREEN"
+        );
+        HudUiBackground::FreeLoadedTreeRoots((int)(unsigned int)loadedSection);
+    }
+
+    unsigned int screenFlags = 0;
+    screenFlags = (unsigned char)(screen->flags);
+    screen->flags = screenFlags & 0x10u;
+}
+
+/**
+ * Reimplements 0x409160: HudUiCreditsBackButton::OnActivate.
+ * Purpose: queue exit from the credits state and run the inherited activation behavior.
+ */
+void HudUiCreditsBackButton::OnActivate() {
+    g_RecoilApp.QueueExitCurrentState(0);
     HudUiZrdWidget::OnActivate();
 }
 
+/**
+ * Reimplements 0x409160: HudUiControlsDialog_ResumeWidget::OnActivate.
+ * Purpose: queue exit from the controls state and run the inherited activation behavior.
+ */
+void HudUiControlsDialog_ResumeWidget::OnActivate() {
+    g_RecoilApp.QueueExitCurrentState(0);
+    HudUiZrdWidget::OnActivate();
+}
+
+/**
+ * Reimplements 0x409160: HudCmdSimpleWidget::OnActivate.
+ * Purpose: queue exit from the command-binding state and run the inherited activation behavior.
+ */
+void HudCmdSimpleWidget::OnActivate() {
+    g_RecoilApp.QueueExitCurrentState(0);
+    HudUiZrdWidget::OnActivate();
+}
+
+/**
+ * Reimplements 0x409160: HudUiConfirmQuitCancelButton::OnActivate.
+ * Purpose: queue exit from the quit-confirmation state and run the inherited activation behavior.
+ */
+void HudUiConfirmQuitCancelButton::OnActivate() {
+    g_RecoilApp.QueueExitCurrentState(0);
+    HudUiZrdWidget::OnActivate();
+}
+
+/**
+ * Reimplements 0x409180: HudUiCreditsQuitButton::OnActivate.
+ * Purpose: Queue the credits-exit shutdown path and run the inherited activation behavior.
+ */
+void HudUiCreditsQuitButton::OnActivate() {
+    g_RecoilApp.QueueExitCurrentState(1);
+    g_RecoilApp.m_missionShutdownMode = RECOILAPP_MISSION_SHUTDOWN_SKIP_GAMEPLAY;
+    g_RecoilApp.QueueSwitchCurrentState(
+        &g_RecoilApp.m_leaveNetworkState,
+        0
+    );
+    HudUiZrdWidget::OnActivate();
+}
+
+/**
+ * Reimplements 0x4091e0: HudUiZrdScrollingText::~HudUiZrdScrollingText.
+ * Original source path: D:\Proj\Battlesport\HudUiCreditsPanel.cpp.
+ * Purpose: invoke ordinary row-vector and inherited-widget teardown for the
+ * scrolling credits member.
+ */
+HudUiZrdScrollingText::~HudUiZrdScrollingText() {
+}
+
+/**
+ * Reimplements 0x4092a0: HudUiCreditsPanel::~HudUiCreditsPanel.
+ * Original source path: D:\Proj\Battlesport\HudUiCreditsPanel.cpp.
+ * Purpose: invoke ordinary reverse member and base teardown for the credits
+ * panel at the end of its lifetime.
+ */
+HudUiCreditsPanel::~HudUiCreditsPanel() {
+}
+
+/**
+ * Reimplements 0x409380: HudUiCreditsPanel::UpdateAll
+ * Source: D:\Proj\Battlesport\HudUiCreditsPanel.cpp
+ * Purpose: advance the credits fade, update the panel, and queue the post-credits transition.
+ */
+void HudUiCreditsPanel::UpdateAll(
+    float deltaSeconds
+) {
+    creditsScreen.UpdateScrollPositions(fadeProgress);
+    fadeProgress += fadeStep * deltaSeconds;
+    HudUiBackgroundContainer::UpdateAll(deltaSeconds);
+
+    if (fadeProgress < 1.0f) {
+        return;
+    }
+
+    if (g_RecoilApp_QuitAfterCredits != 0) {
+        g_RecoilApp.QueueExitCurrentState(1);
+        g_RecoilApp.m_missionShutdownMode = RECOILAPP_MISSION_SHUTDOWN_SKIP_GAMEPLAY;
+        g_RecoilApp.QueueSwitchCurrentState(
+            &g_RecoilApp.m_leaveNetworkState,
+            0
+        );
+        return;
+    }
+
+    g_RecoilApp.QueueExitCurrentState(0);
+}
+
+/**
+ * Reimplements 0x409410: HudUiZrdScrollingText::Update
+ * Source: D:\Proj\Battlesport\HudUiCreditsPanel.cpp
+ * Purpose: update the scrolling credits widget and each row panel.
+ */
+void HudUiZrdScrollingText::Update(
+    float deltaSeconds
+) {
+    HudUiElement::Update(deltaSeconds);
+
+    HudUiPanelSpan *row = rows.begin;
+    while (row != rows.end) {
+        HudUiPanelLayoutEntry *entry = row->begin;
+        while (entry != row->end) {
+            entry->panel.Update(deltaSeconds);
+            ++entry;
+        }
+
+        ++row;
+    }
+}
+
+/**
+ * Reimplements 0x409470: HudUiZrdScrollingText::UpdateScrollPositions
+ * Source: D:\Proj\Battlesport\HudUiCreditsPanel.cpp
+ * Purpose: position scrolling credits row entries and clip their panel visibility to the text rectangle.
+ */
+void HudUiZrdScrollingText::UpdateScrollPositions(
+    float scrollProgress
+) {
+    const int left = rect.left;
+    const int scrollY = (int)((float)(rect.top - totalHeight) * scrollProgress +
+                              (1.0 - scrollProgress) * (float)(rect.bottom));
+
+    HudUiPanelSpan *row = rows.begin;
+    while (row != rows.end) {
+        HudUiPanelLayoutEntry *entry = row->begin;
+        while (entry != row->end) {
+            const int y = entry->layoutY + scrollY;
+            entry->panel.SetPos(
+                entry->layoutX + left,
+                y
+            );
+            if (y > rect.top && y + entry->panel.QueryTextHeight() < rect.bottom) {
+                entry->panel.SetVisible(1);
+            } else {
+                entry->panel.SetVisible(0);
+            }
+
+            ++entry;
+        }
+
+        ++row;
+    }
+}
+
+/**
+ * Reimplements 0x409550: HudUiZrdScrollingText::OnActivateResetOwnerFade
+ * Source: D:\Proj\Battlesport\HudUiCreditsPanel.cpp
+ * Purpose: reset the owning credits panel fade progress when the scrolling credits text activates.
+ */
+void HudUiZrdScrollingText::OnActivateResetOwnerFade() {
+    ((HudUiCreditsPanel *)(owner))->fadeProgress = 0.0f;
+}
+
+#include "Battlesport/recoil_state_credits_body.h"
 #include "Battlesport/hud_command_binding_layer_body.h"
 
 /**
@@ -3872,23 +5858,6 @@ void HudUiOptionsPanel_Resolution::OnActivate() {
 }
 
 /**
- * Provider-boundary compatibility entry for the HudOptionsDialog scalar
- * deleting destructor. The plan classifies 0x40cf00 as compiler-generated VC++
- * glue, not authored HudOptionsDialog source.
- * Purpose: run options dialog teardown and optionally free the dialog storage.
- */
-HudUiBackground * HudOptionsDialog::ScalarDeletingDestructor(
-    unsigned int flags
-) {
-    this->HudOptionsDialog::~HudOptionsDialog();
-    if ((flags & 1u) != 0) {
-        ::operator delete(this);
-    }
-
-    return this;
-}
-
-/**
  * Provider boundary 0x40cf20: VC5 compiler/EH cleanup forwarding thunk.
  * Purpose: emit the complete destructor cleanup thunk for HudUiZrdWidget in the options-dialog layer.
  */
@@ -3987,7 +5956,7 @@ HudUiOptionsPanelOverlayOwner::~HudUiOptionsPanelOverlayOwner() {
 
         panel = (HudOptionsDialog *)m_dialog;
         if (panel != 0) {
-            panel->ScalarDeletingDestructor(1);
+            delete panel;
         }
 
         m_dialog = 0;
@@ -4018,407 +5987,7 @@ void HudUiOptionsPanelOverlayOwner::QueueEnter() {
     );
 }
 
-/**
- * Reimplements 0x409160: HudUiCreditsBackButton::OnActivate.
- * Purpose: Queue exit from the credits state and run the inherited activation behavior.
- */
-void HudUiCreditsBackButton::OnActivate() {
-    g_RecoilApp.QueueExitCurrentState(0);
-    HudUiZrdWidget::OnActivate();
-}
-
-/**
- * Reimplements 0x409180: HudUiCreditsQuitButton::OnActivate.
- * Purpose: Queue the credits-exit shutdown path and run the inherited activation behavior.
- */
-void HudUiCreditsQuitButton::OnActivate() {
-    g_RecoilApp.QueueExitCurrentState(1);
-    g_RecoilApp.m_missionShutdownMode = RECOILAPP_MISSION_SHUTDOWN_SKIP_GAMEPLAY;
-    g_RecoilApp.QueueSwitchCurrentState(
-        &g_RecoilApp.m_leaveNetworkState,
-        0
-    );
-    HudUiZrdWidget::OnActivate();
-}
-
-/**
- * Reimplements 0x408a30: HudUiControlsDialog::Constructor.
- * Original source path: D:\Proj\Battlesport\hud_ui_dialogs.cpp.
- * Purpose: Construct the controls dialog, bind its ZRD widgets, and seed option selectors from current input/options.
- * Evidence: BN/source slice builds HudUiBackground, resume/commands widgets, five option selectors, loads
- * dialog.zrd/CONTROLS_DIALOG, binds named controls, then seeds zInp/zOpt selector indices.
- */
-HudUiControlsDialog * HudUiControlsDialog::Constructor() {
-    new ((HudUiBackground *)this) HudUiBackground;
-
-    resumeWidget.Constructor();
-    commandsWidget.Constructor();
-    mouseOrJoystickSelector.Constructor();
-    throttleModeSelector.Constructor();
-    steeringModeSelector.Constructor();
-    cursorModeSelector.Constructor();
-    cameraModeSelector.Constructor();
-
-    zReader::Node *const dialogRoot = HudUiBackground::LoadFromZrd(
-        "dialog.zrd",
-        g_HudUiControlsDialogSectionName,
-        0
-    );
-    if (dialogRoot != 0) {
-        HudUiBackground::BindWidgetByName(
-            dialogRoot,
-            &resumeWidget,
-            g_HudUiResumeButtonNodeName
-        );
-        HudUiBackground::BindWidgetByName(
-            dialogRoot,
-            &commandsWidget,
-            g_HudUiControlsDialog_CommandsButtonNodeName
-        );
-        HudUiBackground::BindWidgetByName(
-            dialogRoot,
-            &mouseOrJoystickSelector,
-            g_HudUiControlsDialog_MouseOrJoystickSelectorNodeName
-        );
-        HudUiBackground::BindWidgetByName(
-            dialogRoot,
-            &throttleModeSelector,
-            g_HudUiControlsDialog_ThrottleModeSelectorNodeName
-        );
-        HudUiBackground::BindWidgetByName(
-            dialogRoot,
-            &steeringModeSelector,
-            g_HudUiControlsDialog_SteeringModeSelectorNodeName
-        );
-        HudUiBackground::BindWidgetByName(
-            dialogRoot,
-            &cursorModeSelector,
-            g_HudUiControlsDialog_CursorModeSelectorNodeName
-        );
-        HudUiBackground::BindWidgetByName(
-            dialogRoot,
-            &cameraModeSelector,
-            g_HudUiControlsDialog_CameraModeSelectorNodeName
-        );
-        HudUiBackground::FreeLoadedTreeRoots((int)(unsigned int)dialogRoot);
-    }
-
-    mouseOrJoystickSelector.SetSelectedIndex(zInp::GetJoystickOption());
-    throttleModeSelector.SetSelectedIndex(zOpt::GetThrottleMode());
-    steeringModeSelector.SetSelectedIndex(zOpt::GetSteeringMode());
-    cursorModeSelector.SetSelectedIndex(zOpt::GetCursorMode());
-    cameraModeSelector.SetSelectedIndex(zOpt::GetCameraModePlayerState() == 1 ? 1 : 0);
-    return this;
-}
-
-/**
- * Reimplements 0x408c20: HudUiControlsDialog_CommandsWidget::OnActivate.
- * Original source path: D:\Proj\Battlesport\hud_ui_dialogs.cpp.
- * Purpose: Queue the command-dialog state from the controls dialog Commands widget before running inherited ZRD activation.
- * Evidence: BN/source slice calls HudCmdDialogState::QueueEnter, then chains HudUiZrdWidget::OnActivate.
- */
-void HudUiControlsDialog_CommandsWidget::OnActivate() {
-    HudCmdDialogState::QueueEnter();
-    HudUiZrdWidget::OnActivate();
-}
-
-/**
- * Reimplements 0x408c40: HudUiControlsDialog::ScalarDeletingDestructor.
- * Original source path: D:\Proj\Battlesport\hud_ui_dialogs.cpp.
- * Purpose: Run controls dialog destruction and optionally release heap storage for VC5 scalar delete.
- * Evidence: BN/source slice calls the recovered destructor, tests delete flag bit 0, conditionally
- * calls operator delete, and returns this as the HudUiBackground base pointer.
- */
-HudUiBackground * HudUiControlsDialog::ScalarDeletingDestructor(
-    unsigned int flags
-) {
-    Destructor();
-    if ((flags & 1u) != 0) {
-        ::operator delete(this);
-    }
-
-    return this;
-}
-
-/**
- * Provider boundary 0x408c60: VC5 compiler/EH cleanup forwarding thunk.
- * Purpose: emit the complete destructor cleanup thunk for the zero-data controls-dialog option selector subtype.
- */
-void HudUiControlsDialog_OptionSelector::DestructorCoreThunk() {
-    this->HudUiZrdWidgetEx17C::~HudUiZrdWidgetEx17C();
-}
-
-/**
- * Reimplements 0x408c70: HudUiControlsDialog::Destructor.
- * Original source path: D:\Proj\Battlesport\hud_ui_dialogs.cpp.
- * Purpose: Destroy the controls dialog child widgets in reverse construction order before background cleanup.
- * Evidence: BN/source slice tears down camera, cursor, steering, throttle, mouse/joystick selectors,
- * commands/resume widgets, then the HudUiBackground base.
- */
-void HudUiControlsDialog::Destructor() {
-    cameraModeSelector.DestructorCore();
-    cursorModeSelector.DestructorCore();
-    steeringModeSelector.DestructorCore();
-    throttleModeSelector.DestructorCore();
-    mouseOrJoystickSelector.DestructorCore();
-    commandsWidget.DestructorCore();
-    resumeWidget.DestructorCore();
-    this->HudUiBackground::~HudUiBackground();
-}
-
-/**
- * Reimplements 0x408d20: RecoilStateControls::StaticInitAndRegisterAtExit.
- * Original source path: D:\Proj\Battlesport\recoil_state.cpp.
- * Purpose: construct the global controls app state and register its CRT shutdown destructor.
- */
-void RecoilStateControls::StaticInitAndRegisterAtExit() {
-    StaticInit();
-    RegisterAtExit();
-}
-
-#if defined(_MSC_VER) && defined(_M_IX86)
-typedef void (__cdecl *BattlesportHudCrtInitializerFn)();
-/* VC5 emits this controls-state startup callback as a direct .CRT$XCU row. */
-#pragma data_seg(".CRT$XCU")
-BattlesportHudCrtInitializerFn s_BattlesportHudCrtInit_RecoilStateControls =
-    RecoilStateControls::StaticInitAndRegisterAtExit;
-#pragma data_seg()
-#endif
-
-#if defined(_MSC_VER) && defined(_M_IX86)
-/* VC5 emits this confirm-quit-state startup callback as a direct .CRT$XCU row. */
-#pragma data_seg(".CRT$XCU")
-BattlesportHudCrtInitializerFn s_BattlesportHudCrtInit_RecoilStateConfirmQuit =
-    RecoilStateConfirmQuit::StaticInitAndRegisterAtExit;
-#pragma data_seg()
-#endif
-
-#if defined(_MSC_VER) && defined(_M_IX86)
-/* VC5 emits this new-game-panel owner startup callback as a direct .CRT$XCU row. */
-#pragma data_seg(".CRT$XCU")
-BattlesportHudCrtInitializerFn s_BattlesportHudCrtInit_HudUiNewGamePanelOverlayOwner =
-    HudUiNewGamePanelOverlayOwner::StaticInitAndRegisterAtExit;
-#pragma data_seg()
-#endif
-
-#if defined(_MSC_VER) && defined(_M_IX86)
-/* VC5 emits this options-panel owner startup callback as a direct .CRT$XCU row. */
-#pragma data_seg(".CRT$XCU")
-BattlesportHudCrtInitializerFn s_BattlesportHudCrtInit_HudUiOptionsPanelOverlayOwner =
-    HudUiOptionsPanelOverlayOwner::StaticInitAndRegisterAtExit;
-#pragma data_seg()
-#endif
-
-#if defined(_MSC_VER) && defined(_M_IX86)
-/* VC5 emits this cheat-code-state startup callback as a direct .CRT$XCU row. */
-#pragma data_seg(".CRT$XCU")
-BattlesportHudCrtInitializerFn s_BattlesportHudCrtInit_RecoilStateCheatCode =
-    RecoilStateCheatCode::StaticInitAndRegisterAtExit;
-#pragma data_seg()
-#endif
-
-/**
- * Reimplements 0x408d30: RecoilStateControls::StaticInit.
- * Original source path: D:\Proj\Battlesport\recoil_state.cpp.
- * Purpose: placement-construct the zero-initialized global controls app state singleton.
- */
-RecoilStateControls *RecoilStateControls::StaticInit() {
-    return new (&g_RecoilStateControls) RecoilStateControls;
-}
-
-/**
- * Reimplements 0x408d40: RecoilStateControls::RegisterAtExit.
- * Original source path: D:\Proj\Battlesport\recoil_state.cpp.
- * Purpose: register the global controls app state destructor with the CRT atexit list.
- */
-void RecoilStateControls::RegisterAtExit() {
-    atexit(AtExitDestructor);
-}
-
-/**
- * Reimplements 0x408d50: RecoilStateControls::AtExitDestructor.
- * Original source path: D:\Proj\Battlesport\recoil_state.cpp.
- * Purpose: destroy the global controls app state during CRT shutdown.
- */
-void RecoilStateControls::AtExitDestructor() {
-    g_RecoilStateControls.~RecoilStateControls();
-}
-
-/**
- * Reimplements 0x408d60: RecoilStateControls::RecoilStateControls.
- * Original source path: D:\Proj\Battlesport\recoil_state.cpp.
- * Purpose: initialize the controls app state and clear its dialog pointer.
- */
-RecoilStateControls::RecoilStateControls() {
-    m_dialog = 0;
-}
-
-/**
- * Reimplements 0x408d90: RecoilStateControls::Destructor.
- * Original source path: D:\Proj\Battlesport\recoil_state.cpp.
- * Purpose: release the owned controls dialog and clear the dialog pointer.
- */
-RecoilStateControls::~RecoilStateControls() {
-    HudUiControlsDialog *dialog = (HudUiControlsDialog *)m_dialog;
-    if (dialog != 0) {
-        dialog->ScalarDeletingDestructor(1);
-    }
-
-    m_dialog = 0;
-}
-
-/**
- * Reimplements 0x408df0: RecoilStateControls::OnTryBecomeCurrent.
- * Original source path: D:\Proj\Battlesport\recoil_state.cpp.
- * Purpose: lazily create and enable the controls dialog, then seed option selectors.
- */
-int RecoilStateControls::OnTryBecomeCurrent() {
-    if (m_dialog == 0) {
-        HudUiControlsDialog *dialog =
-            (HudUiControlsDialog *) ::operator new(sizeof(HudUiControlsDialog));
-        if (dialog != 0) {
-            dialog = dialog->Constructor();
-        }
-        m_dialog = dialog;
-    }
-
-    HudUiControlsDialog *const dialog = (HudUiControlsDialog *)m_dialog;
-    dialog->SetEnabled(1);
-
-    dialog->mouseOrJoystickSelector.SetSelectedIndex(zInp::GetJoystickOption());
-    dialog->throttleModeSelector.SetSelectedIndex(zOpt::GetThrottleMode());
-    dialog->steeringModeSelector.SetSelectedIndex(zOpt::GetSteeringMode());
-    dialog->cursorModeSelector.SetSelectedIndex(zOpt::GetCursorMode());
-    dialog->cameraModeSelector.SetSelectedIndex(
-        zOpt::GetCameraModePlayerState() == 1 ? 1 : 0
-    );
-
-    return 1;
-}
-
-/**
- * Reimplements 0x408ec0: RecoilStateControls::OnDeactivate.
- * Original source path: D:\Proj\Battlesport\recoil_state.cpp.
- * Purpose: commit controls dialog selections, deactivate and blit the dialog, then delete it.
- */
-void RecoilStateControls::OnDeactivate() {
-    if (m_dialog == 0) {
-        return;
-    }
-
-    HudUiControlsDialog *const dialog = (HudUiControlsDialog *)m_dialog;
-    zInp::SetJoystickOption(
-        zInput::DI_SetJoystickEnabled(dialog->mouseOrJoystickSelector.selectedIndex)
-    );
-    zOpt::SetCursorMode(dialog->cursorModeSelector.selectedIndex);
-    zOpt::SetCameraMode(dialog->cameraModeSelector.selectedIndex);
-    zOpt::SetThrottleMode(dialog->throttleModeSelector.selectedIndex);
-    zOpt::SetSteeringMode(dialog->steeringModeSelector.selectedIndex);
-
-    if (dialog->steeringModeSelector.selectedIndex == 0 && g_GameStateOrMapTable != 0) {
-        Player::ResetMouseControlStateAndRecenterCursor(
-            (zUtil_SaveGameState *)g_GameStateOrMapTable
-        );
-    }
-
-    dialog->SetEnabled(0);
-    ((HudUiDialogController *)m_dialog)->BlitOwnedSurfaceToPrimary();
-
-    HudUiControlsDialog *dialogToDelete = (HudUiControlsDialog *)m_dialog;
-    if (dialogToDelete != 0) {
-        dialogToDelete->ScalarDeletingDestructor(1);
-    }
-
-    m_dialog = 0;
-}
-
-#include "Battlesport/recoil_state_dialog_host_on_suspend_body.h"
-
-/**
- * Reimplements 0x408fa0: RecoilStateControls::OnResume.
- * Original source path: D:\Proj\Battlesport\recoil_state.cpp.
- * Purpose: resume the controls dialog after a nested app state returns.
- */
-void RecoilStateControls::OnResume(
-    int activateCode
-) {
-    (void)activateCode;
-
-    if (m_dialog == 0) {
-        return;
-    }
-
-    zVideo::RunPostprocessOnPrimaryBuffer();
-
-    HudUiControlsDialog *const dialog = (HudUiControlsDialog *)m_dialog;
-    dialog->SetEnabled(1);
-    ((HudUiContainer *)dialog)->InvalidateChildren();
-    ((HudUiContainer *)dialog)->UpdateAll(0.0f);
-    zVideo::Dispatch_UnlockPrimarySurfaceState();
-
-    zOpt_ViewRectSection *const dstRect = zOpt::GetWindowSection();
-    zOpt_ViewRectSection *const srcRect = zOpt::GetWindowSection();
-    zVideo::AdjustSurfacesIfEnabled(
-        (zVidRect32 *)srcRect,
-        (zVidRect32 *)dstRect,
-        1,
-        1
-    );
-}
-
-/**
- * Reimplements 0x408ff0: RecoilStateControls::QueueEnter.
- * Original source path: D:\Proj\Battlesport\recoil_state.cpp.
- * Purpose: queue the global controls app state on the Recoil app state stack.
- */
-void RecoilStateControls::QueueEnter() {
-    g_RecoilApp.QueuePushState(
-        (RecoilApp_IState *)&g_RecoilStateControls,
-        0
-    );
-}
-
 #include "Battlesport/hud_runtime_layer_body.h"
-
-namespace HudLowMeterLoopSound {
-
-/**
- * Reimplements 0x439b20: HudLowMeterLoopSound::SetLoopActive.
- * Original source: D:\Proj\Battlesport\Hud.cpp.
- * Purpose: Starts or stops the low-meter loop sample on active-state changes.
- */
-void __fastcall SetLoopActive(
-    int enabled
-) {
-    const int wasActive = g_Hud_LowMeterLoopActive;
-    if (enabled == 0) {
-        if (wasActive != 0) {
-            g_Hud_LowMeterLoopSample->StopActiveVoicesIfPlaying();
-            g_Hud_LowMeterLoopActive = 0;
-        }
-        return;
-    }
-
-    if (wasActive == 0) {
-        g_Hud_LowMeterLoopSample->PlayA3DSimple(1.0f);
-        g_Hud_LowMeterLoopActive = 1;
-    }
-}
-
-/**
- * Reimplements 0x439b70: HudLowMeterLoopSound::Disable.
- * Original source: D:\Proj\Battlesport\Hud.cpp.
- * Purpose: Stops both low-meter warning samples and clears the loop-active flag.
- */
-void Disable() {
-    g_Hud_LowMeterBeepSample->StopActiveVoicesIfPlaying();
-    g_Hud_LowMeterLoopSample->StopActiveVoicesIfPlaying();
-    g_Hud_LowMeterLoopActive = 0;
-}
-
-} // namespace HudLowMeterLoopSound
-
-#include "Battlesport/recoil_state_credits_body.h"
 
 namespace {
 const char kHudTailGlobalContextSearchPath[] = ".;zbd";
@@ -4583,23 +6152,6 @@ void HudUiConfirmQuitOkButton::OnActivate() {
 }
 
 /**
- * Reimplements 0x415790: HudUiBackgroundConfirmQuit::ScalarDeletingDestructor.
- * Original source path: D:\Proj\Battlesport\HudUiBackgroundConfirmQuit.cpp.
- * Purpose: Run confirm-quit dialog cleanup and optionally free the object for VC5 scalar delete.
- */
-HudUiBackground * HudUiBackgroundConfirmQuit::ScalarDeletingDestructor(
-    unsigned int flags
-) {
-    Destructor();
-
-    if ((flags & 1u) != 0) {
-        ::operator delete(this);
-    }
-
-    return this;
-}
-
-/**
  * Reimplements 0x4157b0: HudUiBackgroundConfirmQuit::Destructor.
  * Original source path: D:\Proj\Battlesport\HudUiBackgroundConfirmQuit.cpp.
  * Purpose: Destroy the confirm-quit child widgets before the inherited background cleanup.
@@ -4668,7 +6220,7 @@ RecoilStateConfirmQuit::~RecoilStateConfirmQuit() {
 
         dialog = (HudUiBackgroundConfirmQuit *)m_dialog;
         if (dialog != 0) {
-            dialog->ScalarDeletingDestructor(1);
+            delete dialog;
         }
 
         m_dialog = 0;
@@ -4713,7 +6265,7 @@ void RecoilStateConfirmQuit::OnDeactivate() {
 
     dialog = (HudUiBackgroundConfirmQuit *)m_dialog;
     if (dialog != 0) {
-        dialog->ScalarDeletingDestructor(1);
+        delete dialog;
     }
 
     m_dialog = 0;

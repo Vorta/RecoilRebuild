@@ -5,6 +5,8 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
+#include <algorithm>
+#include <vector>
 
 #include "Battlesport/recoil_app.h"
 #include "GameZRecoil/RecoilApp/recoil_state_dialog_host.h"
@@ -141,14 +143,13 @@ HudUiElement() {
      * Reimplements 0x4b47a0: HudUiElement::~HudUiElement.
      * Purpose: reset the HudUiElement virtual table during class destruction.
      */
-    ~HudUiElement() {}
+    virtual ~HudUiElement() {}
     HudUiElement * Constructor(
         int x,
         int y
     );
     HudUiElement * CopyConstructor(const HudUiElement *source);
     HudUiElement * CopyFrom(const HudUiElement *source);
-    virtual HudUiElement * ScalarDeletingDestructor(unsigned int flags);
     virtual void Draw();
     virtual void DrawBase();
     virtual void SetPos(
@@ -226,7 +227,6 @@ struct HudUiWidget : HudUiElement {
         int newY
     );
     void InvalidateRect(const HudUiRect *dirtyRect);
-    HudUiElement * ScalarDeletingDestructor(unsigned int flags);
     virtual int GetCenterX();
     virtual int GetCenterY();
     int HitTest(
@@ -234,6 +234,7 @@ struct HudUiWidget : HudUiElement {
         int py
     );
     virtual RECOIL_NO_GS void RebuildBltRectFromImage();
+    void Shutdown();
     void Draw();
 };
 
@@ -338,15 +339,8 @@ struct HudLayoutBase : HudUiContainer {
 
 struct HudLayoutSW : HudLayoutBase {
     HudLayoutSW();
-    static void CrtInitGlobalSingleton();
-    static HudLayoutSW *GlobalInit();
-    static void RegisterAtExit();
-    static void AtExitDestructor();
-    HudLayoutSW * Constructor();
-    void GlobalDestructor();
     virtual int SetActive(int active);
 };
-union HudLayoutSWStorage;
 
 struct HudLayoutHW : HudLayoutBase {
     HudUiWidget widget1;
@@ -363,12 +357,6 @@ struct HudLayoutHW : HudLayoutBase {
     unsigned char unknown_349[0x03];
 
     HudLayoutHW();
-    static void CrtInitGlobalSingleton();
-    static HudLayoutHW *GlobalInit();
-    static void RegisterAtExit();
-    static void AtExitDestructor();
-    HudLayoutHW * Constructor();
-    void GlobalDestructor();
     virtual void UpdateAll(float deltaSeconds);
     int LoadTypeIIFromZarRoot(zReader::Node *parentNode);
     void ReleaseImages();
@@ -378,10 +366,9 @@ struct HudLayoutHW : HudLayoutBase {
     virtual void Enable();
     virtual void Disable();
 };
-union HudLayoutHWStorage;
 
-extern HudLayoutHWStorage g_HudLayoutHW;
-extern HudLayoutSWStorage g_HudLayoutSW;
+extern HudLayoutSW g_HudLayoutSW;
+extern HudLayoutHW g_HudLayoutHW;
 
 extern HudUiTextStack4 *g_HudUiChatMessageStack;
 extern HudUiTextStack4 *g_HudUiTopMessageStack;
@@ -393,7 +380,7 @@ int __fastcall ApplyViewportRect(HudUiRect *activeRect);
 }
 
 namespace HudUiMgrSensor {
-void TrackList_Reset();
+void __cdecl TrackList_Reset();
 HudUiMgrSensorTrackNode *__fastcall TrackList_Add(
     int trackKind,
     void *payload
@@ -421,10 +408,10 @@ void __fastcall GetFxRect(HudUiRect *outRect);
 
 namespace HudUiMgr {
 HudUiContainer *__fastcall Constructor(HudUiContainer *self);
-void StaticInitAndRegisterAtExit();
+void __cdecl StaticInitAndRegisterAtExit();
 HudUiContainer *StaticInit();
 void RegisterAtExit();
-void AtExitDestructor();
+void __cdecl AtExitDestructor();
 void __fastcall StaticDestructor(HudUiContainer *self);
 int __fastcall ProjectPointToNormalizedClamped(
     const zVec3 *srcPoint,
@@ -439,7 +426,7 @@ void __fastcall SetModeCounterState(
     int counterIndex,
     int state
 );
-void ReticleStaticAtexitStub();
+void __cdecl ReticleStaticAtexitStub();
 void __fastcall CopyReticleProjection(float *outProjection);
 void __fastcall SetReticleMode(int mode);
 int __fastcall EnsureHudLoaded(const char *entryPath);
@@ -477,7 +464,7 @@ void ShutdownResources();
 } // namespace HudUiMgr
 
 namespace HudUiSensorWindow {
-void StaticInitAndRegisterAtExit();
+void __cdecl StaticInitAndRegisterAtExit();
 } // namespace HudUiSensorWindow
 
 namespace HudUiAuxOverlay {
@@ -614,7 +601,7 @@ struct HudUiTextLabel : HudUiElement {
     );
     HudUiTextLabel * CopyConstructor(const HudUiTextLabel *source);
     HudUiTextLabel * Constructor(const HudUiTextLabel *source);
-    virtual void SetTextFmt(
+    virtual void __cdecl SetTextFmt(
         const char *format,
         ...
     );
@@ -677,7 +664,6 @@ struct HudUiCircle : HudUiElement {
         unsigned int circleColor565
     );
     virtual void Draw();
-    void DrawDirtyForwarder();
     int HitTest(
         int px,
         int py
@@ -940,8 +926,6 @@ struct HudUiZrdWidget : HudUiWidget {
     HudUiZrdWidget();
     ~HudUiZrdWidget();
     HudUiZrdWidget * Constructor();
-    HudUiElement * ScalarDeletingDestructor(unsigned int flags);
-    HudUiZrdWidget * ScalarDeletingDestructorThunk(unsigned int flags);
     void DestructorCore();
     void DestructorCoreThunk();
     void Invalidate();
@@ -969,8 +953,6 @@ struct HudUiCheckToggleWidget : HudUiZrdWidget {
     HudUiCheckToggleWidget();
     ~HudUiCheckToggleWidget();
     HudUiCheckToggleWidget * Constructor();
-    HudUiElement * ScalarDeletingDestructor(unsigned int flags);
-    HudUiCheckToggleWidget * ScalarDeletingDestructorThunk(unsigned int flags);
     void DestructorCore();
     void DestructorCoreThunk();
     HudUiRect * GetBoundsRectOrNull();
@@ -1000,8 +982,6 @@ struct HudUiCycleSelectorWidget : HudUiZrdWidget {
     HudUiCycleSelectorWidget();
     ~HudUiCycleSelectorWidget();
     HudUiCycleSelectorWidget * Constructor();
-    HudUiElement * ScalarDeletingDestructor(unsigned int flags);
-    HudUiCycleSelectorWidget * ScalarDeletingDestructorThunk(unsigned int flags);
     void DestructorCore();
     void DestructorCoreThunk();
     void AdvanceSelectionAndActivate();
@@ -1046,7 +1026,6 @@ struct HudUiFillBitmap : HudUiZrdWidget {
 
     HudUiFillBitmap();
     ~HudUiFillBitmap();
-    HudUiElement * ScalarDeletingDestructor(unsigned int flags);
     void DestructorCore();
     void DestructorCoreThunk();
     void Draw();
@@ -1072,7 +1051,6 @@ struct HudUiZrdWidgetEx17C_Item : HudUiZrdWidget {
 
     HudUiZrdWidgetEx17C_Item();
     HudUiZrdWidgetEx17C_Item * Constructor();
-    HudUiElement * ScalarDeletingDestructor(unsigned int flags);
     void DestructorCore();
     void ShowPreviewIfNotSelected();
     void HidePreviewIfNotSelected();
@@ -1096,8 +1074,6 @@ struct HudUiZrdWidgetEx17C : HudUiZrdWidget {
     HudUiZrdWidgetEx17C();
     ~HudUiZrdWidgetEx17C();
     HudUiZrdWidgetEx17C * Constructor();
-    HudUiElement * ScalarDeletingDestructor(unsigned int flags);
-    HudUiZrdWidgetEx17C * ScalarDeletingDestructorThunk(unsigned int flags);
     void DestructorCore();
     void SetVisible(int childIndex);
     int LoadFromZrd(
@@ -1108,6 +1084,9 @@ struct HudUiZrdWidgetEx17C : HudUiZrdWidget {
     int SetSelectedIndex(int index);
 };
 
+/**
+ * Emits 0x40a590: VC5 scalar deleting destructor for this virtual-destructor model.
+ */
 struct HudUiPanel : HudUiTextLabel {
     zVidImagePartial *textPick;
     unsigned int textColor0;
@@ -1179,7 +1158,7 @@ HudUiPanel() {
         int charSet,
         int pitchAndFamily
     );
-    void SetTextFmt(
+    void __cdecl SetTextFmt(
         const char *format,
         ...
     );
@@ -1202,7 +1181,6 @@ HudUiPanel() {
     );
     char * GetLastTextPtr();
     void GetTextRect(HudUiRect *outRect);
-    HudUiElement * ScalarDeletingDestructor(unsigned int flags);
 };
 
 struct HudUiListSelectorItem : HudUiPanel {
@@ -1232,23 +1210,17 @@ HudUiListSelectorItem() :
  */
 struct HudCmdBinding {
     char *displayText;
-
-    static HudCmdBinding **__fastcall DestroyRange(
-        HudCmdBinding **first,
-        HudCmdBinding **last,
-        HudCmdBinding **dest,
-        void *unusedAlloc
-    );
 };
 
 struct HudCmdBindingEntry;
 
+#if !defined(_MSC_VER) || _MSC_VER >= 1200
 struct HudCmdBindingVector {
     unsigned char allocator;
     unsigned char padding_01[3];
-    HudCmdBindingEntry **begin;
-    HudCmdBindingEntry **end;
-    HudCmdBindingEntry **capacity;
+    HudCmdBindingEntry **first;
+    HudCmdBindingEntry **last;
+    HudCmdBindingEntry **limit;
 
     /**
  * Original-source helper; no standalone retail function exists.
@@ -1262,18 +1234,52 @@ HudCmdBindingVector() {
         char allocatorValue = 0;
 #endif
         allocator = (unsigned char)(allocatorValue);
-        begin = 0;
-        end = 0;
-        capacity = 0;
+        first = 0;
+        last = 0;
+        limit = 0;
     }
 
-    int Count() const;
-    HudCmdBindingEntry ** EraseRange(
-        HudCmdBindingEntry **first,
-        HudCmdBindingEntry **last
+    /**
+     * Original inline member-lifetime evidence: the complete command-binding
+     * button destructors release the vector allocation after authored entry
+     * cleanup and before the embedded panel and widget base are destroyed.
+     * Purpose: release the command-binding pointer-vector storage.
+     */
+    ~HudCmdBindingVector() {
+        ::operator delete(first);
+        first = 0;
+        last = 0;
+        limit = 0;
+    }
+
+    /**
+     * Original-source helper; no standalone retail function exists.
+     * Purpose: return the first mutable pointer-vector slot.
+     */
+    HudCmdBindingEntry **begin() { return first; }
+    /**
+     * Original-source helper; no standalone retail function exists.
+     * Purpose: return the mutable pointer-vector end iterator.
+     */
+    HudCmdBindingEntry **end() { return last; }
+    /**
+     * Original-source helper; no standalone retail function exists.
+     * Purpose: return the first const pointer-vector slot.
+     */
+    HudCmdBindingEntry *const *begin() const { return first; }
+    /**
+     * Original-source helper; no standalone retail function exists.
+     * Purpose: return the const pointer-vector end iterator.
+     */
+    HudCmdBindingEntry *const *end() const { return last; }
+    unsigned int size() const;
+    HudCmdBindingEntry **erase(
+        HudCmdBindingEntry **eraseFirst,
+        HudCmdBindingEntry **eraseLast
     );
-    void PushBack(HudCmdBindingEntry *entry);
+    void push_back(HudCmdBindingEntry *entry);
 };
+#endif
 
 struct HudCmdBindingEntry : HudCmdBinding {
     int commandId;
@@ -1303,7 +1309,7 @@ HudCmdBindingEntry() {
  * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
  * Purpose: preserve the recovered HUD behavior for HudCmdBindingEntry.
  */
-HudCmdBindingEntry(
+    HudCmdBindingEntry(
         const char *text,
         int id
     )
@@ -1313,24 +1319,32 @@ HudCmdBindingEntry(
     }
 
     /**
-     * No standalone retail function; Binary Ninja shows this destructor body
-     * inlined into the VC scalar-deleting destructor at 0x40bf50 and the
-     * static delete helper at 0x40bf20.
-     * Purpose: release the owned command-binding display string.
-     */
-    /**
- * Original-source helper; no standalone retail function exists.
- * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
-     * Purpose: run the recovered ~HudCmdBindingEntry teardown path.
+     * Reimplements 0x40bf00: HudCmdBindingEntry::~HudCmdBindingEntry.
+     * Binary Ninja shows the body destroying only the offset-zero display
+     * string owned by the binding entry.
+     * Purpose: release the entry-owned display string before scalar delete.
      */
     ~HudCmdBindingEntry();
-    HudCmdBindingEntry * ScalarDeletingDestructor(unsigned int flags);
-    static HudCmdBindingEntry *__stdcall DeleteAndReturnNull(HudCmdBindingEntry *entry);
-    static HudCmdBindingEntry **__fastcall CopyRange(
-        HudCmdBindingEntry **sourceBegin,
-        HudCmdBindingEntry **sourceEnd,
-        HudCmdBindingEntry **dest
-    );
+
+};
+
+/**
+ * Provider boundary 0x40be00: canonical VC5 std::transform specialization.
+ * Reimplements 0x40be00: through that canonical provider instantiation rather
+ * than an authored replacement body.
+ * The empty source functor deletes one entry and returns null, producing the
+ * retail delete-and-null transform body without a hand-authored provider.
+ * Purpose: express command-binding entry cleanup through ordinary STL source.
+ * Reimplements 0x40bf20: legacy verification anchor now represented only by
+ * natural compiler output from this functor/lifetime shape; its exact later
+ * full-order classification remains a parent-owned Binary Ninja decision.
+ */
+struct HudCmdBindingEntryDelete {
+    /**
+     * Reimplements 0x40bf20: HudCmdBindingEntryDelete::operator().
+     * Purpose: declare the deleting functor used by command-binding cleanup.
+     */
+    HudCmdBindingEntry *operator()(HudCmdBindingEntry *entry) const;
 };
 
 /**
@@ -1345,13 +1359,17 @@ HudCmdBindingEntry(
  * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
  * Purpose: preserve the recovered HUD behavior for HudCmdBindingVector::Count.
  */
-inline int HudCmdBindingVector::Count() const {
-    HudCmdBindingEntry **const first = begin;
+#if !defined(_MSC_VER) || _MSC_VER >= 1200
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Purpose: return the compatibility pointer-vector element count.
+ */
+inline unsigned int HudCmdBindingVector::size() const {
     if (first == 0) {
         return 0;
     }
 
-    return (int)(end - first);
+    return (unsigned int)(last - first);
 }
 
 /**
@@ -1366,13 +1384,13 @@ inline int HudCmdBindingVector::Count() const {
  * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
  * Purpose: preserve the recovered HUD behavior for HudCmdBindingVector::PushBack.
  */
-inline void HudCmdBindingVector::PushBack(
+inline void HudCmdBindingVector::push_back(
     HudCmdBindingEntry *entry
 ) {
-    HudCmdBindingEntry **const insertPos = end;
+    HudCmdBindingEntry **const insertPos = last;
     HudCmdBindingEntry *value = entry;
-    if ((unsigned int)(capacity - insertPos) < 1u) {
-        const int currentCount = Count();
+    if ((unsigned int)(limit - insertPos) < 1u) {
+        const int currentCount = (int)size();
         const int growBy = currentCount > 1 ? currentCount : 1;
         const int newCapacityCount = currentCount + growBy;
         HudCmdBindingEntry **const newBegin =
@@ -1380,7 +1398,7 @@ inline void HudCmdBindingVector::PushBack(
                 (unsigned int)newCapacityCount * sizeof(HudCmdBindingEntry *)
             ));
         HudCmdBindingEntry **write = newBegin;
-        HudCmdBindingEntry **read = begin;
+        HudCmdBindingEntry **read = first;
         while (read != insertPos) {
             *write = *read;
             ++read;
@@ -1388,16 +1406,17 @@ inline void HudCmdBindingVector::PushBack(
         }
 
         *write = value;
-        ::operator delete(begin);
-        begin = newBegin;
-        end = newBegin + currentCount + 1;
-        capacity = newBegin + newCapacityCount;
+        ::operator delete(first);
+        first = newBegin;
+        last = newBegin + currentCount + 1;
+        limit = newBegin + newCapacityCount;
         return;
     }
 
     *insertPos = value;
-    end = insertPos + 1;
+    last = insertPos + 1;
 }
+#endif
 
 /**
  * HudCmd bind buttons are authored C++ UI classes: BN table evidence places
@@ -1410,7 +1429,11 @@ struct HudCmdBindButtonBase : HudUiCheckToggleWidget {
     int visibleBindingSlotCount;
     HudUiListSelectorItem bindPanel;
     HudUiListSelectorItem *bindingSlotPanels;
+#if defined(_MSC_VER) && _MSC_VER < 1200
+    std::vector<HudCmdBindingEntry *> bindingVec;
+#else
     HudCmdBindingVector bindingVec;
+#endif
     int bindingSlotSpacing;
     int selectedBindingIndex;
     float visibleListOffsetX;
@@ -1421,6 +1444,12 @@ struct HudCmdBindButtonBase : HudUiCheckToggleWidget {
     int listFontStyleRef;
 
     HudCmdBindButtonBase();
+    /**
+     * Reimplements 0x40c280: HudCmdBindButtonBase::~HudCmdBindButtonBase.
+     * Purpose: run the optimizer-visible entry cleanup before ordinary vector,
+     * panel, and widget-base lifetime teardown.
+     */
+    virtual ~HudCmdBindButtonBase();
     int AddBindingEntry(
         const char *displayText,
         int commandId
@@ -1431,9 +1460,14 @@ struct HudCmdBindButtonBase : HudUiCheckToggleWidget {
      * Final HudCmd bind-button vtable slot at 0x84 in BN.
      */
     virtual void OnSelectionChangedRefresh(int selectedIndex);
+    /**
+     * Reimplements 0x40c1d0: HudCmdBindButtonBase::ClearBindingEntries.
+     * Provider boundary 0x40be60: canonical VC5 std::copy specialization
+     * selected by vector::clear().
+     * Reimplements 0x40be60: through that canonical provider instantiation.
+     * Purpose: delete and null every owned entry, then clear the pointer range.
+     */
     void ClearBindingEntries();
-    HudUiElement * ScalarDeletingDestructor(unsigned int flags);
-    void DestructorCore();
     int LoadFromZrd(
         zReader::Node *zrdSection,
         HudUiBackground *ownerDialog
@@ -1447,27 +1481,43 @@ struct HudCmdBindButtonBase : HudUiCheckToggleWidget {
 struct HudCmdCommandList : HudCmdBindButtonBase {
 
     /**
+     * Reimplements 0x40a940: HudCmdCommandList::~HudCmdCommandList.
+     * Purpose: preserve the natural complete destructor generated for this
+     * concrete command-list member lifetime.
+     */
+    /**
      * Original inline constructor evidence: BN 0x40a5b0 embeds this concrete
      * command-list construction as HudCmdBindButtonBase construction followed
      * by compiler-generated table emission.
      * Purpose: construct the command-list bind-button subobject.
-     */
+    */
     HudCmdCommandList() : HudCmdBindButtonBase() {}
-    void Destructor();
-    HudUiElement * ScalarDeletingDestructor(unsigned int flags);
+    /**
+     * Reimplements 0x40a940: HudCmdCommandList::~HudCmdCommandList.
+     * Purpose: preserve the natural implicit lifecycle while ordinary C++
+     * rules destroy the common bind-button base.
+     */
 };
 
 struct HudCmdKeyAButton : HudCmdBindButtonBase {
 
     /**
+     * Reimplements 0x40aa30: HudCmdKeyAButton::~HudCmdKeyAButton.
+     * Purpose: preserve the natural complete destructor generated for this
+     * concrete primary-key member lifetime.
+     */
+    /**
      * Original inline constructor evidence: BN 0x40a5b0 embeds this concrete
      * key-A button construction as HudCmdBindButtonBase construction followed
      * by compiler-generated table emission.
      * Purpose: construct the primary-key bind-button subobject.
-     */
+    */
     HudCmdKeyAButton() : HudCmdBindButtonBase() {}
-    void Destructor();
-    HudUiElement * ScalarDeletingDestructor(unsigned int flags);
+    /**
+     * Reimplements 0x40aa30: HudCmdKeyAButton::~HudCmdKeyAButton.
+     * Purpose: preserve the natural implicit lifecycle while ordinary C++
+     * rules destroy the common bind-button base.
+     */
     void OnBeginCapture();
     void OnClearBinding();
 };
@@ -1475,14 +1525,22 @@ struct HudCmdKeyAButton : HudCmdBindButtonBase {
 struct HudCmdKeyBButton : HudCmdBindButtonBase {
 
     /**
+     * Reimplements 0x40ab20: HudCmdKeyBButton::~HudCmdKeyBButton.
+     * Purpose: preserve the natural complete destructor generated for this
+     * concrete secondary-key member lifetime.
+     */
+    /**
      * Original inline constructor evidence: BN 0x40a5b0 embeds this concrete
      * key-B button construction as HudCmdBindButtonBase construction followed
      * by compiler-generated table emission.
      * Purpose: construct the secondary-key bind-button subobject.
-     */
+    */
     HudCmdKeyBButton() : HudCmdBindButtonBase() {}
-    void Destructor();
-    HudUiElement * ScalarDeletingDestructor(unsigned int flags);
+    /**
+     * Reimplements 0x40ab20: HudCmdKeyBButton::~HudCmdKeyBButton.
+     * Purpose: preserve the natural implicit lifecycle while ordinary C++
+     * rules destroy the common bind-button base.
+     */
     void OnBeginCapture();
     void OnClearBinding();
 };
@@ -1490,14 +1548,22 @@ struct HudCmdKeyBButton : HudCmdBindButtonBase {
 struct HudCmdJoyButton : HudCmdBindButtonBase {
 
     /**
+     * Reimplements 0x40ac10: HudCmdJoyButton::~HudCmdJoyButton.
+     * Purpose: preserve the natural complete destructor generated for this
+     * concrete joystick member lifetime.
+     */
+    /**
      * Original inline constructor evidence: BN 0x40a5b0 embeds this concrete
      * joystick button construction as HudCmdBindButtonBase construction
      * followed by compiler-generated table emission.
      * Purpose: construct the joystick bind-button subobject.
-     */
+    */
     HudCmdJoyButton() : HudCmdBindButtonBase() {}
-    void Destructor();
-    HudUiElement * ScalarDeletingDestructor(unsigned int flags);
+    /**
+     * Reimplements 0x40ac10: HudCmdJoyButton::~HudCmdJoyButton.
+     * Purpose: preserve the natural implicit lifecycle while ordinary C++
+     * rules destroy the common bind-button base.
+     */
     void OnBeginCapture();
     void OnClearBinding();
 };
@@ -1505,30 +1571,25 @@ struct HudCmdJoyButton : HudCmdBindButtonBase {
 struct HudCmdMouseButton : HudCmdBindButtonBase {
 
     /**
+     * Reimplements 0x40ad00: HudCmdMouseButton::~HudCmdMouseButton.
+     * Purpose: preserve the natural complete destructor generated for this
+     * concrete mouse member lifetime.
+     */
+    /**
      * Original inline constructor evidence: BN 0x40a5b0 embeds this concrete
      * mouse button construction as HudCmdBindButtonBase construction followed
      * by compiler-generated table emission.
      * Purpose: construct the mouse bind-button subobject.
-     */
+    */
     HudCmdMouseButton() : HudCmdBindButtonBase() {}
-    void Destructor();
-    HudUiElement * ScalarDeletingDestructor(unsigned int flags);
+    /**
+     * Reimplements 0x40ad00: HudCmdMouseButton::~HudCmdMouseButton.
+     * Purpose: preserve the natural implicit lifecycle while ordinary C++
+     * rules destroy the common bind-button base.
+     */
     void OnBeginCapture();
     void OnClearBinding();
 };
-
-void **__fastcall zUtil_StdPtrVector_Clear(HudCmdBindingVector *self);
-/**
- * Original inline helper evidence: no standalone retail function exists for
- * this wrapper; existing HudCmdBindingVector callers share the recovered
- * StdPtrVector free-buffer body at 0x4ba470.
- * Purpose: keep command-binding vector cleanup routed through the typed vector owner.
- */
-inline void zUtil_StdPtrVector_FreeBufferAndReset(
-    HudCmdBindingVector *self
-) {
-    ((StdPtrVector *)(self))->FreeBufferAndReset();
-}
 
 struct HudUiMessageBoxDialog;
 
@@ -1548,7 +1609,6 @@ struct HudUiTripletPanel : HudUiElement {
     HudUiWidget items[3];
 
     HudUiTripletPanel * Constructor();
-    HudUiElement * ScalarDeletingDestructor(unsigned int flags);
     void Draw();
     void SetVisibleCount(int count);
     void ShutdownItems_Stub();
@@ -1590,7 +1650,6 @@ struct HudUiMessage : HudUiWidget {
     void Destructor() {
         this->~HudUiMessage();
     }
-    HudUiElement * ScalarDeletingDestructor(unsigned int flags);
     HudUiMessage * Constructor();
     void Draw();
     void ReleaseImages();
@@ -1834,8 +1893,6 @@ struct HudUiNumericTextInput : HudUiZrdWidget {
     ~HudUiNumericTextInput();
     HudUiNumericTextInput * Constructor(unsigned int maxDigits);
     HudUiNumericTextInput * BaseConstructor();
-    HudUiElement * ScalarDeletingDestructor(unsigned int flags);
-    HudUiNumericTextInput * ScalarDeletingDestructorThunk(unsigned int flags);
     void Destructor();
     void DestructorThunk();
     void AllocTextBuffer(unsigned int bufferSize);
@@ -1863,10 +1920,10 @@ struct HudUiNetGameSetupOverlayOwner : RecoilStateDialogHost {
     int m_reconfigureExistingSession;
 
     HudUiNetGameSetupOverlayOwner();
-    static void StaticInitAndRegisterAtExit();
+    static void __cdecl StaticInitAndRegisterAtExit();
     static HudUiNetGameSetupOverlayOwner *StaticInit();
     static void RegisterAtExit();
-    static void AtExitDestructor();
+    static void __cdecl AtExitDestructor();
     ~HudUiNetGameSetupOverlayOwner();
     int OnTryBecomeCurrent();
     void OnDeactivate();
@@ -1936,7 +1993,6 @@ struct HudUiSlot : HudUiElement {
         this->~HudUiSlot();
     }
     void Draw();
-    HudUiElement * ScalarDeletingDestructor(unsigned int flags);
 };
 
 struct HudUiMgrObjectiveBlock {
@@ -1960,12 +2016,6 @@ struct HudUiMgrObjectiveBlock {
     HudUiCounterTextPanel *counterTextPanel;
 
     ~HudUiMgrObjectiveBlock();
-};
-
-struct HudUtil {
-    void *fieldPtr;
-
-    void FreeFieldPtr();
 };
 
 struct HudUiTransitionTextPanel : HudUiPanel {
@@ -2177,105 +2227,7 @@ struct HudUiCompositePanelEntry {
     );
 };
 
-struct HudUiCompositePanelVectorAllocator {
-    unsigned char value;
-
-    /**
-     * Original inline helper; no standalone retail function exists. Observed
-     * in 0x4bb790 as the allocator byte copied into the vector member before
-     * begin/end/capacity are cleared.
-     * Purpose: model the VC5 std::vector allocator subobject without replacing
-     * the authored vector with host STL.
-     */
-    HudUiCompositePanelVectorAllocator() {
-#if !defined(_MSC_VER) || _MSC_VER >= 1200
-        value = 0;
-#endif
-    }
-};
-
-struct HudUiCompositePanelVector {
-    HudUiCompositePanelVectorAllocator allocatorProxy;
-    char padding_01[3];
-    HudUiCompositePanelEntry *begin;
-    HudUiCompositePanelEntry *end;
-    HudUiCompositePanelEntry *capacityEnd;
-
-    /**
-     * Original inline helper; no standalone retail function exists. Observed
-     * in 0x4bb790 before HudUiCompositePanel installs its derived table.
-     * Purpose: preserve the VC5 vector member-construction shape for composite
-     * panel entries.
-     */
-    HudUiCompositePanelVector(
-        const HudUiCompositePanelVectorAllocator &allocatorProxyValue =
-            HudUiCompositePanelVectorAllocator()
-    )
-        : allocatorProxy(allocatorProxyValue),
-          begin(0),
-          end(0),
-          capacityEnd(0) {
-    }
-    /**
-     * Original inline helper provenance; this is the repository category, not
-     * proof of literal inline spelling. No standalone retail body is present
-     * in the recovered function inventory. Observed in 0x403e20 as the
-     * 0x2c0-stride entry destruction loop, backing-buffer delete, and
-     * begin/end/capacity clear sequence.
-     * Purpose: tear down composite-panel vector storage using the recovered
-     * VC5 vector member-destruction shape.
-     */
-    ~HudUiCompositePanelVector() {
-        for (HudUiCompositePanelEntry *entry = begin; entry != end; ++entry) {
-            entry->panel.ScalarDeletingDestructor(0);
-        }
-
-        ::operator delete(begin);
-        begin = 0;
-        end = 0;
-        capacityEnd = 0;
-    }
-
-    void Clear();
-    void InsertCopies(
-        HudUiCompositePanelEntry *insertPos,
-        unsigned int insertCount,
-        const HudUiCompositePanelEntry *templateEntry
-    );
-    /**
-     * Original inline helper; no standalone retail function exists. Observed
-     * in 0x4bb790 as the VC5 inlined vector resize path before the composite
-     * panel applies its placeholder glyph and relayout.
-     * Purpose: resize composite-panel entry storage using the recovered
-     * std::vector-style grow/shrink behavior.
-     */
-    void Resize(
-        unsigned int entryCount,
-        const HudUiCompositePanelEntry *templateEntry
-    ) {
-        const unsigned int oldCount =
-            begin != 0 ? (unsigned int)(end - begin) : 0;
-        if (oldCount < entryCount) {
-            InsertCopies(
-                end,
-                entryCount - oldCount,
-                templateEntry
-            );
-        } else if (entryCount < oldCount) {
-            HudUiCompositePanelEntry *const newEnd = begin + entryCount;
-            HudUiCompositePanelEntry *const destroyBegin =
-                HudUiCompositePanelEntry::ConstructorCopyRange(
-                    end,
-                    end,
-                    newEnd
-                );
-            for (HudUiCompositePanelEntry *entry = destroyBegin; entry != end; ++entry) {
-                entry->panel.ScalarDeletingDestructor(0);
-            }
-            end = destroyBegin;
-        }
-    }
-};
+typedef std::vector<HudUiCompositePanelEntry> HudUiCompositePanelVector;
 
 struct HudUiCompositePanel : HudUiPanel {
     int activeEntryCount;
@@ -2302,6 +2254,7 @@ struct HudUiCompositePanel : HudUiPanel {
      * constructor instead of a default construction plus later body call.
      */
     HudUiCompositePanel(int entryCount);
+    ~HudUiCompositePanel();
     virtual void SetPos(
         int x,
         int y
@@ -2327,7 +2280,7 @@ struct HudUiCompositePanel : HudUiPanel {
         int oldCount,
         int entryCount
     );
-    void SetTextFmt(
+    void __cdecl SetTextFmt(
         const char *format,
         ...
     );
@@ -2346,8 +2299,6 @@ struct HudUiCompositePanel : HudUiPanel {
         int pitchAndFamily
     );
     void Update(float deltaSeconds);
-    void Destructor();
-    HudUiElement * ScalarDeletingDestructor(unsigned int flags);
 };
 
 struct HudFontStyle {
@@ -2381,7 +2332,7 @@ struct HudUiBackground : HudUiBackgroundContainer {
     int uiOriginY;
 
     HudUiBackground();
-    ~HudUiBackground();
+    virtual ~HudUiBackground();
     zReader::Node * LoadFromZrd(
         const char *zrdPath,
         const char *sectionName,
@@ -2409,7 +2360,6 @@ struct HudUiBackground : HudUiBackgroundContainer {
         const char *name
     );
     void FreeLoadedTreeRoots(int unused);
-    virtual HudUiBackground * ScalarDeletingDestructor(unsigned int flags);
 };
 
 struct HudCmdSimpleWidget : HudUiZrdWidget {
@@ -2420,6 +2370,7 @@ struct HudCmdSimpleWidget : HudUiZrdWidget {
      * Purpose: construct a simple command-dialog ZRD widget subobject.
      */
     HudCmdSimpleWidget() : HudUiZrdWidget() {}
+    virtual void OnActivate();
 };
 
 struct HudCmdNextSetButton : HudUiZrdWidget {
@@ -2517,10 +2468,9 @@ struct HudCmdDialog : HudUiBackground {
     HudCmdPromptPanel promptPanel;
     HudCmdDescriptionPanel descriptionPanel;
 
-    HudCmdDialog * Constructor();
-    void Destructor();
-    HudUiBackground * ScalarDeletingDestructor(unsigned int flags);
-    void UpdateCaptureState(float deltaTime);
+    HudCmdDialog();
+    virtual ~HudCmdDialog();
+    virtual void UpdateAll(float deltaTime);
     int SelectGroupRelative(int delta);
     int SelectCommandRelative(int delta);
     void RebuildCommandBindingListsForGroup(int groupIndex);
@@ -2763,15 +2713,14 @@ struct HudOptionsDialog : HudUiBackground {
 
     HudOptionsDialog();
     ~HudOptionsDialog();
-    HudUiBackground * ScalarDeletingDestructor(unsigned int flags);
 };
 
 struct HudCmdDialogState : RecoilStateDialogHost {
     HudCmdDialogState();
-    static void StaticInitAndRegisterAtExit();
+    static void __cdecl StaticInitAndRegisterAtExit();
     static HudCmdDialogState *StaticInit();
     static void RegisterAtExit();
-    static void AtExitDestructor();
+    static void __cdecl AtExitDestructor();
     static void QueueEnter();
     int OnTryBecomeCurrent();
     void OnDeactivate();
@@ -2814,7 +2763,6 @@ struct HudUiMessageBoxDialog : HudUiBackground {
         const char *zrdPath,
         const char *sectionName
     );
-    HudUiBackground * ScalarDeletingDestructor(unsigned int flags);
     void Destructor();
     int RunModal(
         const char *messageText,
@@ -2873,13 +2821,32 @@ struct HudUiPanelSpanVec {
  * Evidence: recovered in the HUD source cluster near address-backed 0x4b92a0 HudUiListSelectorItem::HudUiListSelectorItem callers.
  * Purpose: preserve the recovered HUD behavior for HudUiPanelSpanVec.
  */
-HudUiPanelSpanVec() {
+    HudUiPanelSpanVec() {
 #if defined(_MSC_VER) && _MSC_VER < 1200
         char allocatorProxyValue;
 #else
         char allocatorProxyValue = 0;
 #endif
         allocatorProxy = allocatorProxyValue;
+        begin = 0;
+        end = 0;
+        cap = 0;
+    }
+    /**
+     * Original-source helper; no standalone retail function is required.
+     * Evidence: the complete destructors at 0x4091e0 and 0x4092a0 tear down the
+     * embedded row-span vector before their enclosing widget/base lifetimes.
+     * Purpose: destroy every owned row span, release vector storage, and reset
+     * the vector range.
+     */
+    ~HudUiPanelSpanVec() {
+        HudUiPanelSpan *row = begin;
+        while (row != end) {
+            row->DestroyAndFree();
+            ++row;
+        }
+
+        ::operator delete(begin);
         begin = 0;
         end = 0;
         cap = 0;
@@ -2892,23 +2859,27 @@ HudUiPanelSpanVec() {
 };
 
 struct HudUiCreditsBackButton : HudUiZrdWidget {
-    HudUiCreditsBackButton();
-    ~HudUiCreditsBackButton();
-    void OnActivate();
+    virtual void OnActivate();
 };
 
 struct HudUiCreditsQuitButton : HudUiZrdWidget {
-    HudUiCreditsQuitButton();
-    ~HudUiCreditsQuitButton();
     void OnActivate();
 };
 
+/**
+ * Emits 0x409360: VC5 scalar deleting destructor for this virtual-destructor model.
+ */
 struct HudUiZrdScrollingText : HudUiZrdWidget {
     HudUiPanelSpanVec rows;
     HudUiRect rect;
     int totalHeight;
 
     HudUiZrdScrollingText();
+    /**
+     * Reimplements 0x4091e0: HudUiZrdScrollingText::~HudUiZrdScrollingText.
+     * Purpose: let ordinary C++ lifetime rules release rows and tear down the
+     * inherited ZRD widget.
+     */
     ~HudUiZrdScrollingText();
     void OnActivate();
     void OnActivateResetOwnerFade();
@@ -2918,10 +2889,11 @@ struct HudUiZrdScrollingText : HudUiZrdWidget {
         zReader::Node *zrdSection,
         HudUiBackground *ownerDialog
     );
-    void Destructor();
-    HudUiElement * ScalarDeletingDestructor(unsigned int flags);
 };
 
+/**
+ * Emits 0x4091c0: VC5 scalar deleting destructor for this virtual-destructor model.
+ */
 struct HudUiCreditsPanel : HudUiBackground {
     float fadeStep;
     HudUiCreditsBackButton backButton;
@@ -2930,10 +2902,13 @@ struct HudUiCreditsPanel : HudUiBackground {
     float fadeProgress;
 
     HudUiCreditsPanel();
-    void Update(float deltaSeconds);
-    void UpdateFadeAndExit(float deltaSeconds);
-    void Destructor();
-    HudUiBackground * ScalarDeletingDestructor(unsigned int flags);
+    /**
+     * Reimplements 0x4092a0: HudUiCreditsPanel::~HudUiCreditsPanel.
+     * Purpose: let ordinary C++ lifetime rules tear down the credits widgets
+     * and background base in reverse construction order.
+    */
+    ~HudUiCreditsPanel();
+    virtual void UpdateAll(float deltaSeconds);
 };
 
 struct HudUiPanelSimple : HudUiPanel {
@@ -2995,7 +2970,6 @@ struct HudUiStatsListElement : HudUiElement {
 
     void Update(float deltaSeconds);
     void DestructorCore();
-    HudUiElement * ScalarDeletingDestructor(unsigned int flags);
 };
 
 struct HudUiTimerPanel : HudUiPanel {
@@ -3087,10 +3061,10 @@ struct HudUiTriplet : HudUiContainer {
     int fontWeightStart;
     int fontWeightEnd;
 
-    static void StaticInitWndClassNameAndRegisterAtExit();
+    static void __cdecl StaticInitWndClassNameAndRegisterAtExit();
     static CString *ConstructWndClassName();
     static void RegisterWndClassNameDtorAtExit();
-    static void DestroyWndClassName();
+    static void __cdecl DestroyWndClassName();
     HudUiTriplet * Constructor();
     void DestructorCore();
     void InterpolateLayout(float t);
@@ -3349,23 +3323,6 @@ RECOIL_STATIC_ASSERT(
     ) == 0x348
 );
 RECOIL_STATIC_ASSERT(sizeof(HudLayoutHW) == 0x34c);
-
-union HudLayoutSWStorage {
-    unsigned long align;
-    unsigned char bytes[sizeof(HudLayoutSW)];
-};
-RECOIL_STATIC_ASSERT(sizeof(HudLayoutSWStorage) == 0xec);
-
-union HudLayoutHWStorage {
-    unsigned long align;
-    unsigned char bytes[sizeof(HudLayoutHW)];
-};
-RECOIL_STATIC_ASSERT(sizeof(HudLayoutHWStorage) == 0x34c);
-
-#define g_HudLayoutSW \
-    (*(HudLayoutSW *)&g_HudLayoutSW)
-#define g_HudLayoutHW \
-    (*(HudLayoutHW *)&g_HudLayoutHW)
 RECOIL_STATIC_ASSERT(
     offsetof(
         HudUiMgrSensorBlock,
@@ -4017,25 +3974,27 @@ RECOIL_STATIC_ASSERT(
         owner
     ) == 0x2a8
 );
+#if !defined(_MSC_VER) || _MSC_VER >= 1200
 RECOIL_STATIC_ASSERT(sizeof(HudCmdBindingVector) == 0x10);
 RECOIL_STATIC_ASSERT(
     offsetof(
         HudCmdBindingVector,
-        begin
+        first
     ) == 0x04
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
         HudCmdBindingVector,
-        end
+        last
     ) == 0x08
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
         HudCmdBindingVector,
-        capacity
+        limit
     ) == 0x0c
 );
+#endif
 RECOIL_STATIC_ASSERT(
     offsetof(
         HudCmdBindingEntry,
@@ -4638,24 +4597,6 @@ RECOIL_STATIC_ASSERT(
 );
 RECOIL_STATIC_ASSERT(sizeof(HudUiCompositePanelEntry) == 0x2c0);
 RECOIL_STATIC_ASSERT(sizeof(HudUiCompositePanelVector) == 0x10);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiCompositePanelVector,
-        begin
-    ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiCompositePanelVector,
-        end
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiCompositePanelVector,
-        capacityEnd
-    ) == 0x0c
-);
 RECOIL_STATIC_ASSERT(
     offsetof(
         HudUiCompositePanel,

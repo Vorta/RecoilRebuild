@@ -30,9 +30,6 @@ struct WestwoodOnlineUpgradeProgressDialog : CDialog {
         CWnd *parentWnd
     );
     void Destructor();
-    WestwoodOnlineUpgradeProgressDialog * ScalarDeletingDestructor(
-        unsigned int flags
-    );
     static BOOL CALLBACK DlgProc(
         HWND hWnd,
         UINT uMsg,
@@ -85,9 +82,6 @@ struct WestwoodOnlineUpgradeDialog : CDialog {
     virtual BOOL OnInitDialog();
     WestwoodOnlineUpgradeDialog * Constructor(CWnd *parentWnd);
     void Destructor();
-    WestwoodOnlineUpgradeDialog * ScalarDeletingDestructor(
-        unsigned int flags
-    );
     virtual void DoDataExchange(CDataExchange *dataExchange);
     int AppendStatusTextFmt(
         const char *format,

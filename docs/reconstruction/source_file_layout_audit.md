@@ -4,7 +4,9 @@
 > not a scheduler, progress ledger, or source/order acceptance surface. Obtain
 > the only live Recoil.exe phase and cursor from `python tools/recoil.py progress next`. Historical About, AINet, Briefing, HUD, map, and mission selected-order
 > or byte diagnostics below are profile-scoped evidence only and do not advance
-> the global exact-set/order or linked-byte prefixes.
+> authored-order, authored-byte, full-order, or linked-byte prefixes. The
+> canonical four-way row classification and five-phase semantics live in
+> `retail_executable_reproduction.md` and are not duplicated here.
 
 Binary Ninja remains authoritative for function bodies, calls, data, and
 assembly. The unified tracker provides joined physical-block and semantic-span
@@ -601,11 +603,11 @@ and do not update `the unified tracker`.
 
 | Source path | Physical range | Literal evidence | First / last BN function | Status |
 | --- | --- | --- | --- | --- |
-| `src/Battlesport/about.cpp` + `src/Battlesport/about.h` | `[0x401000,0x401060)` | no literal; confirmed continuous About-dialog source/header block with internal CAboutDlg and MFC provider subranges; natural function order and bytes reproduced | `CAboutDlg::Constructor` / `CWnd::EndModalState` | mapped no-literal, 4 semantic/provider subranges, order confirmed |
+| `src/Battlesport/about.cpp` + `src/Battlesport/about.h` | `[0x401000,0x401060)` | no literal; provisional continuous About-dialog source/header host with CAboutDlg and MFC-generated/provider contributions; expected object identities have natural relative order and five byte sentinels match | `CAboutDlg::Constructor` / `CWnd::EndModalState` | mapped no-literal hypothesis; raw object 12 definitions versus 5 expected with 7 informational extras; selected linked groups/seam still blocked |
 | `src/Battlesport/ai_net.cpp` | `[0x401060,0x4038a0)` | `0x4da1e8`, xref `0x4030bb` | `AINet::TickAiMode2TopLevel` / `AINet::FreeAll` | mapped with `ai_net.h`/`zmth.h` partial-header rows and 6 body subranges |
 | `src/Battlesport/Briefing.cpp` | `[0x4038a0,0x404ca0)` | `0x4da32c`, xref `0x404238` | `HudUiBriefingObjectivePicture::DrawWithNoiseOverlay` / `Briefing::BuildObjectiveActionsForRuntime` | mapped, 11 semantic subranges |
 | `src/Battlesport/hud.cpp` | `[0x404ca0,0x415ab0)` | `0x4dadd8`, xrefs `0x4101a3`, `0x4141bb` | `HudUiElement::Draw` / `zFMV_ActionBase::Destructor` | mapped refined; documented HUD order diagnostics now cover the worked physical block through `0x415ab0`; semantic/provider/header exceptions remain order-only evidence, not owner/tier acceptance |
-| `src/Battlesport/map.cpp` | `[0x415ab0,0x417350)` | `0x4daf04`, xref `0x416922` | `HudSensorMapNode::Init` / `HudSensorTracker::SetObjectiveMarkerColorBlink` | mapped refined; the opt-in exact `map_text_block_order_current_shape` receipt rejects the 42-row manifest against 95 defined code contributions and classifies all 53 extras. Historical zDEClient link-blocker wording is resolved; current final-link diagnostics stop earlier at `zeff_anim_run.c` and `gmod_init.c`. This remains legacy order-only evidence behind the reset `0x401000` cursor, not byte/owner/tier acceptance. |
+| `src/Battlesport/map.cpp` | `[0x415ab0,0x417350)` | `0x4daf04`, xref `0x416922` | `HudSensorMapNode::Init` / `HudSensorTracker::SetObjectiveMarkerColorBlink` | mapped refined; the dated exact-set run inventoried 95 raw definitions against 42 expected and treated 53 extras as a failure under the retired policy. Under the current gate those extras are informational; the expected identities/order and exact selected linked interval/seams still require a fresh current receipt. Historical zDEClient link-blocker wording is resolved; current final-link diagnostics stop earlier at `zeff_anim_run.c` and `gmod_init.c`. This remains legacy order-only evidence behind the reset `0x401000` cursor, not byte/owner/tier acceptance. |
 | `src/Battlesport/mission.cpp` | `[0x417350,0x41cc10)` | `0x4db230`, xrefs `0x417fc2`, `0x4181b6`, `0x418209`, `0x4182ff`, `0x418395`, `0x419091`, `0x419304` | `Mission::InitObjectives` / `CSpinButtonCtrl::ScalarDeletingDestructor` | mapped refined, 14 semantic subranges |
 | `src/Battlesport/pickup.cpp` | `[0x41cc10,0x41ea90)` | `0x4dc190`, xrefs `0x41cd93`, `0x41d523`, `0x41db80` | `PickupSpawnList::Primary_Init` / `Pickup::SpawnAtCarrierNodeByName` | mapped |
 | `src/Battlesport/player.cpp` | `[0x41ea90,0x42de10)` | `0x4dc26c`, xrefs `0x41f20b`, `0x41f870`, `0x42087a`, `0x420dc7`, `0x42155b`, `0x421722`, `0x42176f` | `Player::InitMasterCommonDataList` / `CRT::SafeVtableRelease` | mapped physical, tail scrutiny |
@@ -618,23 +620,26 @@ mapping: `hud.cpp` ends at `0x415ab0`, `map.cpp` covers
 non-overlap block-order evidence, not owner-gate acceptance; semantic
 exceptions in these blocks still require owner scrutiny before byte work.
 
-The opening `about.cpp`/`about.h` prelude has exact function/padding slices:
+The opening `about.cpp`/`about.h` prelude has these retail function/padding slices:
 `CAboutDlg::Constructor` code `[0x401000,0x40101b)` plus padding to
-`0x401020`, empty `CAboutDlg::DoDataExchange` override code
+`0x401020`, a shared linked ret-4 address group
 `[0x401020,0x401023)` plus padding to `0x401030`,
 `CAboutDlg::GetMessageMap` code `[0x401030,0x401036)` plus padding to
 `0x401040`, `CWnd::BeginModalState` code `[0x401040,0x40104d)` plus padding to
 `0x401050`, and `CWnd::EndModalState` code `[0x401050,0x40105d)` plus padding
-to `0x401060`. The `0x401020` body is byte-identical to the inherited MFC
-no-op, but the recovered source shape proves it is the About dialog override:
-the override is declared in `about.h` and defined between the constructor and
-message map in `about.cpp`. The CWnd modal-state wrappers are
+to `0x401060`. The About vtable DDX slot points at `0x401020`, whose `ret 4`
+body is byte-identical to the inherited MFC no-op, but current evidence does not
+prove a unique authored `CAboutDlg::DoDataExchange` definition or unique source
+identity for that shared linked group. The current plausible source model is a
+conventional dynamic-MFC `CAboutDlg` inheriting DDX, with `about.cpp`/`about.h`
+remaining the provisional physical host. The CWnd modal-state wrappers are
 provider-boundary rows emitted inside the confirmed opening About prelude after
 the message map, not a separate `.cpp` block. The current production
 `about.cpp`/`about.h` shape delays the MFC `afxwin2.inl` modal-state provider
-emission until after `BEGIN_MESSAGE_MAP`, and VC5 now naturally emits the
-retail order `0x401000 -> 0x401020 -> 0x401030 -> 0x401040 -> 0x401050` with
-zero unmasked byte mismatches in `cabout_prelude_functions`.
+emission until after `BEGIN_MESSAGE_MAP`. VC5 emits all five expected object
+identities in retail relative order and `cabout_prelude_functions` preserves
+their zero-unmasked-mismatch sentinels; the exact selected linked interval and
+`0x401060` seam remain blocked.
 
 ### GameZRecoil Blocks Through zClass/zFMV
 
@@ -2070,8 +2075,8 @@ or VC5 natural-order proof: `[0x437e60,0x443c50)`,
 `[0x4c81c0,0x4c81d8)`. These ranges are mapped and have semantic
 subranges where applicable. The opening About range retains the physical
 `about.cpp`/`about.h` mapping hypothesis and historical selected-five
-relative-order/selected-body byte diagnostics; those diagnostics do not close
-the exact defined-function-set or linked-interval gates.
+relative-order/selected-body byte diagnostics; those diagnostics do not replace
+a current expected-identity receipt or close the linked-interval/seam gates.
 Literal-backed but source-metadata-conflicted blocks
 also remain open for owner/source reconciliation, especially
 zDEClient `zdec_qsand.cpp`/`zdec_crater.cpp`
@@ -2099,8 +2104,8 @@ VC5 order in every `vc5_resolution_tests` row.
   `src/Battlesport/about.cpp` / `src/Battlesport/about.h` opening
   CAbout/provider-prelude mapping hypothesis. BN and selected-target VC5
   evidence identify the constructor
-  body at `0x401000`, the empty `CAboutDlg::DoDataExchange` override at
-  `0x401020`, the CAboutDlg message-map accessor at `0x401030`, and the CWnd
+  body at `0x401000`, the shared linked ret-4 group at `0x401020`, the
+  CAboutDlg message-map accessor at `0x401030`, and the CWnd
   modal-state provider wrappers at `0x401040`/`0x401050`, followed by the
   `ai_net.h` partial-header row at `0x401060`. The old BN comment naming
   `D:\Proj\Battlesport\Recoil.cpp` remains navigation evidence only and is
@@ -2113,29 +2118,59 @@ VC5 order in every `vc5_resolution_tests` row.
   `0x401000 -> 0x401020 -> 0x401030 -> 0x401040 -> 0x401050`. The paired
   `cabout_prelude_functions` byte target matched the selected five function
   bodies with zero unmasked mismatches after relocation masking. The historical
-  source-shape hypothesis is
-  an empty authored DDX override in `about.cpp`, with `about.h` delaying MFC
-  afxwin inline emission and `about.cpp` including the needed provider inline
-  bodies after `BEGIN_MESSAGE_MAP`. This does not establish the exact object
-  definition population or a linked interval/seam.
+  authored-DDX hypothesis is now rejected: the About vtable DDX slot points at
+  `0x401020`, but the shared linked body and heterogeneous xrefs do not prove a
+  unique authored override or source identity. The current model is a
+  conventional dynamic-MFC `CAboutDlg` with inherited DDX, with `about.cpp` and
+  `about.h` retained as provisional physical hosts and the needed provider
+  inline bodies emitted after `BEGIN_MESSAGE_MAP`. This does not establish a
+  linked interval/seam.
 
-  The registered exact-defined-function-set check on 2026-07-11 fails as
-  defined: 12 actual definitions versus 5 expected, with 7 additional
-  definitions and no missing expected rows. The meaning and linked retention of
-  the extras remain unresolved. Exact linked interval/seam and global order are
-  pending; the accepted prefix and phase cursor remain at `0x401000`. The
-  durable blocker is `current-divergence` scoped to this current translation-
-  unit object-defined-set diagnostic, not to the linked interval. No adjacency,
-  harmless-COMDAT, placement, provider, owner, or whole-file conclusion follows.
+  The registered exact-defined-function-set check on 2026-07-11 is preserved as
+  a historical diagnostic: 12 actual definitions versus 5 expected, with 7
+  additional definitions, no missing expected row, and correct expected
+  relative order. Under the current policy those 7 raw extras are inventoried
+  but mechanically non-blocking. Exact selected linked interval/seam and global
+  order were pending; at the time of this dated diagnostic the accepted prefix
+  and phase cursor remained at `0x401000`.
+  The durable blocker is the selected linked groups and `0x401060` seam, not
+  raw-object population equality. No adjacency, placement, provider, owner,
+  byte-readiness, or whole-file conclusion follows from the object pass.
   The 2026-07-11 source-discovery Pro review ALLOWed only this narrow status
-  correction and noted that raw object-set equality still needs expected-
-  population and linked-retention evidence before it can be treated as an
-  independently proven ultimate invariant. Advisory evidence: receipt
-  `build/agent-evidence/about-order-status-2026-07-11/receipt.json`, SHA-256
-  `ce9755d19ef33c2a1096ebd8b95d02e0d0dd626ed00b0f316c045b024fa26299`;
-  transcript `build/agent-evidence/about-order-status-2026-07-11/transcript.md`,
-  SHA-256
-  `8358628651536311106e331747dd4c797258da4780844aaf9aaa59bf87a7addd`.
+  correction. Its exact-set recommendation is retained only as dated advisory
+  history and is superseded by the current linker-backed gate correction.
+  Advisory evidence: receipt
+  `build/agent-evidence/about-order-status-2026-07-11/receipt.json` and
+  transcript `build/agent-evidence/about-order-status-2026-07-11/transcript.md`.
+
+  General gate correction, 2026-07-12: an authentic VC5SP3 `/Gy` matrix proved
+  `/OPT:REF` can discard an unreferenced raw COMDAT and `/OPT:ICF` can fold two
+  relocation-equivalent raw COMDATs to one linked address. Therefore the object
+  gate requires every expected identity exactly once and in retail relative
+  order while inventorying all unlisted definitions as non-blocking. The
+  authoritative block gate remains the exact selected linked function/address-
+  group sequence and exact seam. Linker removal does not by itself prove a
+  source-faithful owner model. This correction does not accept the current About
+  block: its full production link, exact interval, five byte sentinels, and
+  `0x401060` seam remain separately gated. Canonical MFC include tracing uses
+  VC5SP3 `/E` line directives because `/showIncludes` is unsupported, and the
+  official root is only
+  `D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE/AFXWIN.H`.
+
+  Authored-first policy review, 2026-07-12: advisory review ALLOWed
+  `CAboutDlg::GetMessageMap @ 0x401030` as an authored primary `CAboutDlg`
+  method for authored-order traversal. Any authored-order acceptance remains
+  conditional on a fresh authored-scope receipt; the dated selected-five and
+  object-population diagnostics do not satisfy that gate. `about.cpp` and
+  `about.h` remain provisional physical hosts. The shared ret-4 row at
+  `0x401020` is required non-authored folded-group context, while its unique
+  alias membership remains unresolved. The review accepts no exact full order,
+  retail RVAs, numeric predecessor/successor seam, modal-wrapper placement,
+  authored or linked bytes, owner gate/tier, or final executable result. Durable
+  advisory evidence is
+  `build/agent-evidence/about-authored-order-policy-review-2026-07-12/main/receipt.json`
+  with transcript
+  `build/agent-evidence/about-authored-order-policy-review-2026-07-12/main/transcript.md`.
 - `[0x437e60,0x443c50)` must reproduce the current
   Battlesport/CZGameFrame transition order naturally, including the MFC
   provider islands at `[0x442890,0x4428b0)` and `[0x443b70,0x443c50)`.
@@ -2254,8 +2289,9 @@ High-confidence refinements from that pass:
 - `[0x401000,0x401060)` retains the `about.cpp`/`about.h` physical mapping
   hypothesis and historical selected-five diagnostic. `0x401000` is the
   `CAboutDlg` constructor body `[0x401000,0x40101b)` plus NOP padding;
-  `0x401020` is an empty `CAboutDlg::DoDataExchange` override whose body is
-  byte-identical to the inherited MFC no-op; `0x401030` is the CAboutDlg
+  `0x401020` is a shared linked ret-4 address group whose body is byte-identical
+  to the inherited MFC DDX no-op and whose About vtable slot is one of several
+  xrefs; unique semantic/source identity is unproven. `0x401030` is the CAboutDlg
   message-map accessor; and `0x401040`/`0x401050` are CWnd modal-state provider
   wrappers emitted inside the same physical block. No `about.cpp`, `about.h`,
   `AboutDlg.cpp`, `Recoil.cpp`, or `CAbout` source-path literal exists, but the
@@ -2265,13 +2301,14 @@ High-confidence refinements from that pass:
   `0x401000 -> 0x401020 -> 0x401030 -> 0x401040 -> 0x401050` as a selected
   relative-order sequence. The paired `cabout_prelude_functions` diagnostic
   matched those selected bodies with zero unmasked mismatches after relocation
-  masking. The current registered exact-set diagnostic instead fails with 12
-  actual definitions versus 5 expected and 7 unresolved extras; see the dated
-  2026-07-11 correction above.
-  The source-shape mechanism is an empty authored DDX override between the
-  constructor and message map, plus delayed MFC `afxwin2.inl` provider inline
-  emission after `BEGIN_MESSAGE_MAP`; this keeps the block continuous and does
-  not copy provider bodies into authored source.
+  masking. The dated exact-set diagnostic records 12 actual definitions versus
+  5 expected and 7 extras. Those extras are informational under the current
+  object-order gate; see the 2026-07-12 correction above.
+  The current source-shape mechanism is a conventional dynamic-MFC `CAboutDlg`
+  with inherited DDX, constructor and message map, plus delayed MFC
+  `afxwin2.inl` provider inline emission after `BEGIN_MESSAGE_MAP`. The exact
+  selected linked interval and seam, not raw-extra elimination, are the current
+  blocker.
 - `[0x437e60,0x443c50)` remains bracketed by `turret.cpp` before the band and
   `cls_di.c` after it. The current util/version/weapon/WinSock/WOL/late
   RecoilApp/CZGameFrame rows are placement labels; MFC/COM/runtime-class data
@@ -2554,14 +2591,15 @@ cleanup-label remapping, and one ALLOWed the HUD frontier/docs update only as
 function-order evidence. These conclusions remain advisory and do not establish
 source ownership, byte equivalence, or tier status.
 
-The `map.cpp [0x415ab0,0x417350)` top-down order pass now has exact raw-object
-instrumentation and remains reopened for selected-provider and linked-interval
-closure. `map_text_block_order_current_shape` reports
-`translation_unit_order_matches_manifest False` while retaining the 42 listed
-in-range functions in order from `HudSensorMapNode::Init` at `0x415ab0` through
-`HudSensorTracker::SetObjectiveMarkerColorBlink` at `0x417300`: the exact
-receipt records five preceding helpers and 48 later definitions instead of
-silently accepting them as a subsequence. Therefore
+The `map.cpp [0x415ab0,0x417350)` top-down order pass has complete raw-object
+instrumentation and remains reopened for expected-identity and exact selected-
+link closure. The dated `map_text_block_order_current_shape` exact-set run
+reported `translation_unit_order_matches_manifest False` while retaining the
+42 listed in-range functions in order from `HudSensorMapNode::Init` at
+`0x415ab0` through `HudSensorTracker::SetObjectiveMarkerColorBlink` at
+`0x417300`; it records five preceding helpers and 48 later definitions. Those
+53 extras are now informational, but that historical result is not automatically
+reclassified as a current expected-identity or selected-link pass. Therefore
 `0x417350 Mission::InitObjectives` is a retail interval sentinel, not yet a
 verified object/link seam. `0x415ab0` starts the
 `map.cpp` block despite HUD semantic naming, and the `0x4daf04` `map.cpp`
@@ -2576,8 +2614,10 @@ The historical order-validation focus then moved to the durable
 `mission.cpp [0x417350,0x41cc10)` row together with its reopened seam from
 `map.cpp`. This was diagnostic history only and is not a scheduling claim. The 2026-07-11
 source-discovery ChatGPT Pro critique blocked treating one object or the old
-subsequence target as the placement oracle and required exact raw/link
-classification before source reshaping. Advisory receipt result: `ok=true`;
+subsequence target as the placement oracle. Its exact-raw recommendation is
+retained as dated advisory history; current source reshaping still requires
+expected-identity order plus exact selected-link evidence. Advisory receipt
+result: `ok=true`;
 transcript SHA-256
 `a293e00c75416142b1f3e12978e07e89f3c94abebf84afab440cc172098336f8`;
 sent-message SHA-256
@@ -2613,12 +2653,15 @@ selected window only:
 4. Assign non-overlapping workers. BN fact mappers return read-only facts;
    source workers edit one explicit source-shape window or complete source
    owner; verifier agents run only the requested VC5/order checks.
-5. Verify generated VC5 COFF function order with a `check_function_order`
-   target or equivalent emitted-order check. If bytes are not ready, the order
-   check is still required before byte diffs are treated as ordinary
-   function-body, data, or provider drift.
-6. If generated order differs from retail BN order, reject the hypothesis as a
-   source-shape/include-shape blocker or correct the physical-block tracker first.
+5. During `authored-function-order`, verify the generated VC5 COFF relative
+   order and exactly-once identity gate for rows classified `authored` or
+   `authored-lifecycle`. Unresolved rows remain blocking; proven non-authored
+   positions wait for `full-function-order`.
+6. If generated authored order differs from retail BN order, reject the
+   hypothesis as a source-shape/include-shape blocker or correct the physical-
+   block tracker first. During `full-function-order`, additionally require the
+   exact selected population, retail positions, and linked seams for every row
+   class.
    Do not add `.inl` files, move semantic helpers into the wrong `.cpp`, use
    pragma/linker ordering, or accept declared object order as independent
    provenance.
@@ -2657,10 +2700,13 @@ known source-file block:
 6. Reject forced placement. Do not move a helper into the wrong `.cpp`, add new
    `.inl` production files, use pragma/linker/order tricks, or treat artificial
    order matching as owner/tier evidence.
-7. Verify VC5 function order with emitted function-order checking when
-   available. If order differs, keep it as a source-shape/include-shape blocker.
-8. Only after order matches naturally should remaining mismatches be treated as
-   function-body, source-expression, data, or provider byte-diff problems.
+7. Verify the phase-appropriate authored or full VC5 function-order gate with
+   emitted function-order checking when available. Keep authored-row order
+   differences as source-shape/include-shape blockers; keep full selected-row,
+   address, or seam differences as full-order blockers.
+8. Only after the applicable order gate matches naturally should remaining
+   mismatches be treated under the corresponding authored-byte or resolved
+   linked-byte rules in the canonical runbook.
 9. Block or downgrade stale positive gates before byte verification if the
    current owner depends only on a stale source docblock or semantic BN name.
 10. Move source bodies, headers, functional targets, and VC5 manifests only after

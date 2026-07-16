@@ -558,7 +558,7 @@ void __fastcall SubmitFeatureGeometry(
  * Original source path: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp.
  * Purpose: initialize feature-entry storage and register shutdown cleanup.
  */
-void InitFeatureSystem() {
+void __cdecl InitFeatureSystem() {
     InitFeatureEntryListAndMapTree();
     RegisterFeatureSystemCleanupAtExit();
 }
@@ -607,7 +607,7 @@ void RegisterFeatureSystemCleanupAtExit() {
  * Purpose: release feature-entry vector storage and destroy the feature map
  * tree.
  */
-void ShutdownFeatureSystem() {
+void __cdecl ShutdownFeatureSystem() {
     ::operator delete(g_zDEClient_FeatureListBegin);
     g_zDEClient_FeatureListBegin = 0;
     g_zDEClient_FeatureListEnd = 0;

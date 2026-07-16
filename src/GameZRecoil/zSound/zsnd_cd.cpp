@@ -92,7 +92,7 @@ void StaticConstructor() {
  * Reimplements 0x4a2060: zSndCdTrackList::StaticDestructor.
  * Purpose: Delete every CD track-list node and reset the static list state.
  */
-void StaticDestructor() {
+void __cdecl StaticDestructor() {
     zSndCdTrackNode *const head = g_zSndCd_TrackListHead;
     zSndCdTrackNode *node = head->next;
     while (node != head) {
@@ -121,7 +121,7 @@ void RegisterAtExitDestructor() {
  * Reimplements 0x4a2010: zSndCdTrackList::StaticInit.
  * Purpose: Initialize the CD track-list singleton and its exit cleanup.
  */
-void StaticInit() {
+void __cdecl StaticInit() {
     StaticConstructor();
     RegisterAtExitDestructor();
 }
@@ -160,44 +160,9 @@ int GetActiveBackend() {
     return g_zSnd_ActiveBackend;
 }
 
-/**
- * Reimplements 0x4080a0: zSnd::SetAudioApiOption.
- * Original source: D:\Proj\GameZRecoil\zSound\zsnd_cd.cpp.
- * Purpose: Store the selected audio backend option and mirror it into the pre-init backend state.
- */
-int __fastcall SetAudioApiOption(
-    int apiType
-) {
-    *ZOPT_AUDIO_API = apiType;
-    return SetActiveBackendPreInit(apiType);
-}
 
-/**
- * Reimplements 0x4080b0: zSnd::GetAudioApiOption.
- * Original source: D:\Proj\GameZRecoil\zSound\zsnd_cd.cpp.
- * Purpose: Return the selected audio backend option value.
- */
-int GetAudioApiOption() {
-    return *ZOPT_AUDIO_API;
-}
 
-/**
- * Reimplements 0x408210: zSnd::SetCDAudioOption
- * Purpose: store the CD-audio option value used by sound and options code.
- */
-void __fastcall SetCDAudioOption(
-    int cdAudioOption
-) {
-    *ZOPT_SOUND_CDAUDIO = cdAudioOption;
-}
 
-/**
- * Reimplements 0x408220: zSnd::GetCDAudioOption
- * Purpose: return the current CD-audio option value.
- */
-int GetCDAudioOption() {
-    return *ZOPT_SOUND_CDAUDIO;
-}
 
 /**
  * Reimplements 0x4a07f0: zSnd::SetUseArchiveBanksFlag.

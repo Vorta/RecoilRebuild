@@ -1,19 +1,24 @@
 # Reconstruction Knowledge Index
 
 This is the landing page for durable reconstruction facts that are broader than
-one source comment. The current already-open Binary Ninja database is
-authoritative for binary behavior, ABI, layouts, globals, imports, tables,
-xrefs, function boundaries/order, and assembly; BN function names and comments
-are provisional navigation labels. `.agent/RECONSTRUCTION_PROGRESS.json` is the
+one source comment. The current already-open Binary Ninja database is a
+maintained analysis artifact and is authoritative for binary behavior, ABI,
+layouts, globals, imports, tables, xrefs, function boundaries/order, and
+assembly; BN function names and comments are provisional navigation labels. New
+active-scope evidence may be corrected only by a parent-assigned bounded
+`recoil_bn_reconstructor`; tool/docs maintenance is BN-read-only, and the
+reconstructor may not load/switch/patch or decide owner/block/order/provider/tier
+acceptance. `.agent/RECONSTRUCTION_PROGRESS.json` is the
 only reconstruction-progress authority and must be accessed through `python
 tools/recoil.py progress ...`.
 
 ## Current Authorities
 
 - [`retail_executable_reproduction.md`](retail_executable_reproduction.md) -
-  canonical global `function-order` -> `linked-byte-match` ->
-  `final-validation` pipeline, `progress next` scheduling, exact retail SHA-256
-  goal, evidence gates, and debt-free closeout contract.
+  canonical authored-first five-phase pipeline (`authored-function-order`,
+  `authored-byte-match`, `full-function-order`, `linked-byte-match`, then
+  `final-validation`), row classifications, `progress next` scheduling, exact
+  retail SHA-256 goal, evidence gates, and debt-free closeout contract.
 - `agent_launch_checklist.md` - compact preflight and task-selection checklist
   for reconstruction agents.
 - `compiler_linker_provenance.md` - compiler, linker, and verification-profile
@@ -21,7 +26,7 @@ tools/recoil.py progress ...`.
 - `data_owner_audit.md` - data-owner acceptance and the boundary between source
   data symbols/gates, physical storage contributions, PE output sections, and
   final-image evidence.
-- [`final_executable_repro.md`](final_executable_repro.md) - Phase-3 VC5SP3
+- [`final_executable_repro.md`](final_executable_repro.md) - Phase-5 VC5SP3
   Recoil.exe mechanics; linked-data and companion-DLL paths are diagnostics or
   independent validation, never peer schedulers.
 - [`final_executable_repro_history.md`](final_executable_repro_history.md) -
@@ -97,9 +102,11 @@ progress notes or duplicated live tracker state.
   source-path literals, function order, and provider/import evidence decide
   placement. The current production `src` tree is implementation state, not
   original-source authority. When a source-file
-  block is known, the rebuilt VC5 COFF function order must naturally match the
-  retail BN address order before byte readiness. A generated order mismatch is
-  a source-shape/include-shape blocker until proven otherwise. Model
+  block is known, the rebuilt VC5 COFF authored-body/authored-lifecycle-body rows must
+  naturally retain retail relative order before authored-byte readiness. Exact
+  complete linked population, RVAs, and seams remain the later full-order gate.
+  A generated authored-order mismatch is a source-shape/include-shape blocker
+  until proven otherwise. Model
   header/COMDAT helpers through recovered `.h`/`.cpp` ownership, header
   layering, and include timing instead of moving semantic helpers into the
   wrong `.cpp`. Known/order-relevant `source_shape_inputs` are mandatory

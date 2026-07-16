@@ -2486,7 +2486,7 @@ void HudSensorTracker::RegisterGlobalOnExit() {
  * Touched data: tears down g_HudSensorTracker through its member Shutdown path.
  * Purpose: Run tracker cleanup for the singleton registered with atexit.
  */
-void HudSensorTracker::ShutdownGlobal() {
+void __cdecl HudSensorTracker::ShutdownGlobal() {
     g_HudSensorTracker.Shutdown();
 }
 
@@ -2559,7 +2559,7 @@ int HudSensorTracker::ResetMissionState() {
         ((HudUiContainer *)(&g_zVideo_FxPass3ConfigLocal))->RemoveChild(fxElement);
 
         if (fxPass3Obj != 0) {
-            fxPass3Obj->ScalarDeletingDestructor(1);
+            delete fxPass3Obj;
         }
 
         fxPass3Obj = 0;
@@ -3146,16 +3146,12 @@ void HudSensorTracker::LoadMissionWeatherFx(
                 weatherType,
                 g_HudWeatherFx_TypeValue_Snow
             ) == 0) {
-                HudWeatherFxSnow *const snow =
-                    (HudWeatherFxSnow *)(::operator new(sizeof(HudWeatherFxSnow)));
-                fxPass3Obj = snow != 0 ? snow->Constructor(particleCount) : 0;
+                fxPass3Obj = new HudWeatherFxSnow(particleCount);
             } else if (strcmp(
                 weatherType,
                 g_HudWeatherFx_TypeValue_Rain
             ) == 0) {
-                HudWeatherFxRain *const rain =
-                    (HudWeatherFxRain *)(::operator new(sizeof(HudWeatherFxRain)));
-                fxPass3Obj = rain != 0 ? rain->Constructor(particleCount) : 0;
+                fxPass3Obj = new HudWeatherFxRain(particleCount);
             }
         }
 

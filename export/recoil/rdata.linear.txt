@@ -170,10 +170,11 @@
 0x4cc2a4 long (__thiscall* const MFC42:CWnd::Default(CWnd* this))(struct CWnd* this) = CWnd::Default(CWnd* this)
 0x4cc2a8 int32_t (__thiscall* const MFC42:CWnd::UpdateData(CWnd* this, int32_t))(struct CWnd* this, int32_t arg2) = CWnd::UpdateData(CWnd* this, int32_t)
 0x4cc2ac void* (* const MFC42:operator new(uint32_t))(uint32_t arg1) = operator new(uint32_t)
-// Imported MFC base-message-map getter function pointer returned by the tiny thunk at 0x441a00.
-// Imported MFC base-message-map getter function pointer returned by the tiny
-// thunk at 0x441a00.
-0x4cc2b0 int32_t (* const g_MfcImportedGetBaseMessageMapThunk)() = Ordinal_MFC42_4234
+// Imported provider data pointer to CDialog::messageMap. It is loaded as data by MfcGenerated::SharedCDialogBaseMessageMapAccessor at 0x441a00 and is not callable code.
+// Imported provider data pointer to CDialog::messageMap. It is loaded as data
+// by MfcGenerated::SharedCDialogBaseMessageMapAccessor at 0x441a00 and is not
+// callable code.
+0x4cc2b0 struct MfcMsgMap const* const g_MfcImportedCDialog_MessageMapPtr = Ordinal_MFC42_4234
 0x4cc2b4 void (__thiscall* const MFC42:CDialog::~CDialog(CDialog* this))(struct CDialog* this) = CDialog::~CDialog(CDialog* this)
 0x4cc2b8 void (* const MFC42:operator delete(void*))(void* _Block) = operator delete(void*)
 0x4cc2bc void (__thiscall* const MFC42:CDialog::CDialog(CDialog* this, uint32_t, class CWnd*))(struct CDialog* this, uint32_t arg2, struct CWnd* arg3) = CDialog::CDialog(CDialog* this, uint32_t, class CWnd*)
@@ -455,14 +456,14 @@
 0x4cc70c HRESULT (__stdcall* const ole32:CoInitialize)(void* pvReserved) = CoInitialize
 0x4cc710 void (__stdcall* const ole32:CoUninitialize)() = CoUninitialize
 0x4cc714 void* data_4cc714 = 0x0
-// CAboutDlg::messageMap generated MFC AFX_MSGMAP: base getter 0x441a00 returns the imported base message-map pointer; entries begin at 0x4cc720 and contain only the zero terminator before g_CAboutDlg_Vtbl at 0x4cc738.
+// CAboutDlg::messageMap generated MFC AFX_MSGMAP. getBaseMap is MfcGenerated::SharedCDialogBaseMessageMapAccessor at 0x441a00; entries points to the single zero terminator at 0x4cc720.
 0x4cc718 struct MfcMsgMap g_CAboutDlg_MessageMap =
 0x4cc718 {
-    // CAboutDlg::messageMap generated MFC AFX_MSGMAP: base getter 0x441a00
-    // returns the imported base message-map pointer; entries begin at 0x4cc720
-    // and contain only the zero terminator before g_CAboutDlg_Vtbl at 0x4cc738.
-0x4cc718     void* getBaseMap = Mfc42::GetBaseMessageMapThunk
-0x4cc71c     struct zMfcMsgMapEntry* entries = g_CAboutDlg_MessageEntries
+    // CAboutDlg::messageMap generated MFC AFX_MSGMAP. getBaseMap is
+    // MfcGenerated::SharedCDialogBaseMessageMapAccessor at 0x441a00; entries
+    // points to the single zero terminator at 0x4cc720.
+0x4cc718     MfcMsgMapBaseAccessor getBaseMap = MfcGenerated::SharedCDialogBaseMessageMapAccessor
+0x4cc71c     struct zMfcMsgMapEntry const* entries = g_CAboutDlg_MessageEntries
 // CAboutDlg message-map entries: one zero AFX_MSGMAP_ENTRY terminator (24 bytes) before g_CAboutDlg_Vtbl at 0x4cc738.
 0x4cc720 }
 0x4cc720 struct zMfcMsgMapEntry g_CAboutDlg_MessageEntries[0x1] =
@@ -477,12 +478,15 @@
 0x4cc72c         int32_t nLastID = 0x0
 0x4cc730         int32_t nSig = 0x0
 0x4cc734         void* pfn = 0x0
-// Export-backed CDialogVTable packet begins here.
+// CAboutDlg CDialog-derived vtable. Confirmed slots: +0x30 CAboutDlg::GetMessageMap (0x401030), +0x8c shared ret-4 address group (0x401020) under the DoDataExchange slot contract, +0x90 BeginModalState (0x401040), +0x94 EndModalState (0x401050).
 0x4cc738     }
 0x4cc738 }
 0x4cc738 struct CDialogVTable g_CAboutDlg_Vtbl =
 0x4cc738 {
-    // Export-backed CDialogVTable packet begins here.
+    // CAboutDlg CDialog-derived vtable. Confirmed slots: +0x30
+    // CAboutDlg::GetMessageMap (0x401030), +0x8c shared ret-4 address group
+    // (0x401020) under the DoDataExchange slot contract, +0x90 BeginModalState
+    // (0x401040), +0x94 EndModalState (0x401050).
 0x4cc738     void* _GetBaseClass = MFC42:CColorDialog::_GetBaseClass()
 0x4cc73c     void* field_4 = WestwoodOnlineUpgradeProgressDialog::ScalarDeletingDestructor
 0x4cc740     void* field_8 = zStub::NoOp1Arg
@@ -495,7 +499,7 @@
 0x4cc75c     void* Ordinal_MFC42_3825 = MFC42:Ordinal_MFC42_3825
 0x4cc760     void* Ordinal_MFC42_3831 = MFC42:Ordinal_MFC42_3831
 0x4cc764     void* GetTypeLib = MFC42:CCmdTarget::GetTypeLib(CCmdTarget* this, unsigned long, struct ITypeLib**)
-0x4cc768     void* field_30 = CAboutDlg::GetMessageMap
+0x4cc768     void* GetMessageMap = CAboutDlg::GetMessageMap
 0x4cc76c     void* GetCommandMap = MFC42:CCmdTarget::GetCommandMap(CCmdTarget* this) const
 0x4cc770     void* _GetBaseDispatchMap = MFC42:COleControlContainer::_GetBaseDispatchMap()
 0x4cc774     void* _GetBaseConnectionMap = MFC42:COleControl::_GetBaseConnectionMap()
@@ -518,9 +522,9 @@
 0x4cc7b8     void* OnCommand = MFC42:CWnd::OnCommand(CWnd* this, uint32_t, long)
 0x4cc7bc     void* OnNotify = MFC42:CWnd::OnNotify(CWnd* this, uint32_t, long, long*)
 0x4cc7c0     void* GetSuperWndProcAddr = MFC42:CWnd::GetSuperWndProcAddr(CWnd* this))(struct HWND__*, uint32_t, uint32_t, long)
-0x4cc7c4     void* field_8c = CWnd::DoDataExchange
-0x4cc7c8     void* field_90 = CWnd::BeginModalState
-0x4cc7cc     void* field_94 = CWnd::EndModalState
+0x4cc7c4     void* DoDataExchange = Linker::SharedRet4AddressGroup
+0x4cc7c8     void* BeginModalState = CWnd::BeginModalState
+0x4cc7cc     void* EndModalState = CWnd::EndModalState
 0x4cc7d0     void* PreTranslateMessage = MFC42:CDialog::PreTranslateMessage(CDialog* this, struct tagMSG*)
 0x4cc7d4     void* OnAmbientProperty = MFC42:CWnd::OnAmbientProperty(CWnd* this, class COleControlSite*, long, struct tagVARIANT*)
 0x4cc7d8     void* WindowProc = MFC42:CWnd::WindowProc(CWnd* this, uint32_t, uint32_t, long)
@@ -649,8 +653,14 @@
 0x4cc998 struct HudUiCommon_FTable g_HudUiBriefingLocatorPanel_FTable =
 0x4cc998 {
 0x4cc998     HudUiElement_VT_Dtor dtor = HudUiElement::SharedScalarDeletingDestructorThunk
-0x4cc99c     HudUiElement_VT_Noarg Draw = HudUiCircle::DrawDirtyForwarder
-0x4cc9a0     HudUiElement_VT_Noarg DrawBase = HudUiBriefingLocatorPanel::BlitDirtyRect
+// HudUiBriefingLocatorPanel vtable +0x4: derived virtual Draw slot -> 0x403c80, a five-byte tail jump to HudUiCircle::Draw.
+    // HudUiBriefingLocatorPanel vtable +0x4: derived virtual Draw slot ->
+    // 0x403c80, a five-byte tail jump to HudUiCircle::Draw.
+0x4cc99c     HudUiElement_VT_Noarg Draw = HudUiBriefingLocatorPanel::Draw
+// HudUiBriefingLocatorPanel vtable +0x8: DrawBase -> 0x403c90, which owns the clipped-background blit body.
+    // HudUiBriefingLocatorPanel vtable +0x8: DrawBase -> 0x403c90, which owns
+    // the clipped-background blit body.
+0x4cc9a0     HudUiElement_VT_Noarg DrawBase = HudUiBriefingLocatorPanel::DrawBase
 0x4cc9a4     HudUiElement_VT_SetPos SetPos = HudUiElement::SetPos
 0x4cc9a8     HudUiElement_VT_SetCoord SetX = HudUiElement::SetX
 0x4cc9ac     HudUiElement_VT_SetCoord SetY = HudUiElement::SetY
@@ -775,8 +785,8 @@
 0x4ccb18 {
     // MFC message-map object for the shared three-float dialog helper; earlier
     // WOL labeling here was stale.
-0x4ccb18     void* getBaseMap = Mfc42::GetBaseMessageMapThunk
-0x4ccb1c     struct zMfcMsgMapEntry* entries = g_MfcThreeFloatDialog_MessageEntries
+0x4ccb18     MfcMsgMapBaseAccessor getBaseMap = MfcGenerated::SharedCDialogBaseMessageMapAccessor
+0x4ccb1c     struct zMfcMsgMapEntry const* entries = g_MfcThreeFloatDialog_MessageEntries
 0x4ccb20 }
 0x4ccb20 struct zMfcMsgMapEntry g_MfcThreeFloatDialog_MessageEntries[0x8] =
 0x4ccb20 {
@@ -963,7 +973,7 @@
 0x4ccd40     void (* OnDeactivate)(struct RecoilStateDialogHost* self) = RecoilStateCheatCode::OnDeactivate
 0x4ccd44     void (* OnSuspend)(struct RecoilStateDialogHost* self, int32_t param) = zStub::NoOp1Arg
 0x4ccd48     void (* OnResume)(struct RecoilStateDialogHost* self, int32_t param) = zStub::NoOp1Arg
-0x4ccd4c     int32_t (* OnIdleOrDispatch)(struct RecoilStateDialogHost* self, int32_t wParam, int32_t lParam) = zStub::ReturnOne2Args
+0x4ccd4c     int32_t (* OnIdleOrDispatch)(struct RecoilStateDialogHost* self, int32_t wParam, int32_t lParam) = CompilerICF::ReturnOneRet8Representative_WinnerUnknown
 // Unresolved app-state base/interface vtable candidate, 10 slots. Slot0=0x407170; remaining slots include zStub/default hook implementations. Referenced by derived state destructor resets and RecoilApp embedded-state teardown/construct-overwrite patterns. Treat as auxiliary class/interface vtable evidence only, not a standalone SOURCE_OWNERS data/provider owner. Exact original owner, class/interface name, and source-order cause remain unresolved.
 0x4ccd50 }
 0x4ccd50 struct RecoilStateBase_Vtbl g_RecoilStateBase_Vtbl =
@@ -984,7 +994,7 @@
 0x4ccd68     void (* OnDeactivate)(struct RecoilStateBase* self) = zError::ReportOldNoOp
 0x4ccd6c     void (* OnSuspend)(struct RecoilStateBase* self, int32_t param) = zStub::NoOp1Arg
 0x4ccd70     void (* OnResume)(struct RecoilStateBase* self, int32_t param) = zStub::NoOp1Arg
-0x4ccd74     int32_t (* OnIdleOrDispatch)(struct RecoilStateBase* self, int32_t wParam, int32_t lParam) = zStub::ReturnOne2Args
+0x4ccd74     int32_t (* OnIdleOrDispatch)(struct RecoilStateBase* self, int32_t wParam, int32_t lParam) = CompilerICF::ReturnOneRet8Representative_WinnerUnknown
 // GUID object g_zNetwork_RecoilAppGuid (0x4ccd78..0x4ccd88).
 0x4ccd78 }
 0x4ccd78 GUID g_zNetwork_RecoilAppGuid =
@@ -1282,54 +1292,62 @@
 0x4cd188     int32_t (* OnUpdateShouldQuit)(struct RecoilStateDialogHost* self) = RecoilStateSaveLoadTransition::OnUpdateShouldQuit
 0x4cd18c     void (* OnExit)(struct RecoilStateDialogHost* self) = zError::ReportOldNoOp
 0x4cd190     void (* OnDeactivate)(struct RecoilStateDialogHost* self) = RecoilStateControls::OnDeactivate
-0x4cd194     void (* OnSuspend)(struct RecoilStateDialogHost* self, int32_t param) = RecoilStateDialogHost::OnSuspend
+// g_RecoilStateControls_Vtbl +0x1c: RecoilStateControls::OnSuspend(int) slot; targets shared compiler-generated ICF representative 0x408f50 (selected winner unknown).
+    // g_RecoilStateControls_Vtbl +0x1c: RecoilStateControls::OnSuspend(int)
+    // slot; targets shared compiler-generated ICF representative 0x408f50
+    // (selected winner unknown).
+0x4cd194     void (* OnSuspend)(struct RecoilStateDialogHost* self, int32_t param) = ICF_RecoilStateControls_RecoilStateMainMenuTransition_OnSuspend
 0x4cd198     void (* OnResume)(struct RecoilStateDialogHost* self, int32_t param) = RecoilStateControls::OnResume
-0x4cd19c     int32_t (* OnIdleOrDispatch)(struct RecoilStateDialogHost* self, int32_t wParam, int32_t lParam) = zStub::ReturnOne2Args
-// Credits-panel header followed by scrolling-text widget vtable.
+0x4cd19c     int32_t (* OnIdleOrDispatch)(struct RecoilStateDialogHost* self, int32_t wParam, int32_t lParam) = CompilerICF::ReturnOneRet8Representative_WinnerUnknown
+// HudUiCreditsPanel primary vtable, exactly three pointer entries: UpdateAll, inherited SetEnabled, scalar deleting destructor. The zero dword at 0x4cd1ac is alignment/padding outside this 12-byte payload.
 0x4cd1a0 }
-0x4cd1a0 struct HudUiBackgroundPanel_FTableHeader g_HudUiCreditsPanel_Vtbl =
+0x4cd1a0 struct HudUiCreditsPanel_VTable g_HudUiCreditsPanel_Vtbl =
 0x4cd1a0 {
-0x4cd1a0     struct HudUiContainer_FTable container =
-0x4cd1a0     {
-        // Credits-panel header followed by scrolling-text widget vtable.
-0x4cd1a0         HudUiContainer_VT_UpdateAll UpdateAll = HudUiCreditsPanel::UpdateFadeAndExit
-0x4cd1a4         HudUiContainer_VT_SetEnabled SetEnabled = HudUiBackground::SetEnabled
-0x4cd1a8     }
-0x4cd1a8     HudUiBackgroundPanel_VT_ScalarDeletingDtor scalarDeletingDtor = HudUiCreditsPanel::ScalarDeletingDestructor
-0x4cd1ac     HudUiBackgroundPanel_VT_Action PrimaryAction = 0x0
-0x4cd1b0     HudUiBackgroundPanel_VT_Action SecondaryAction = HudUiZrdScrollingText::ScalarDeletingDestructor
-0x4cd1b4 }
-0x4cd1b4                                                             b0 3f 4b 00 b0 4c 40 00                                  .?K..L@.
-0x4cd1bc                                                                                     d0 3d 4b 00                              .=K.
-0x4cd1c0 f0 4c 40 00                                                                                      .L@.
-0x4cd1c4             00 4d 40 00                                                                              .M@.
-0x4cd1c8                         90 41 4b 00                                                                      .AK.
-0x4cd1cc                                     b0 41 4b 00                                                              .AK.
-0x4cd1d0                                                 10 53 4b 00                                                      .SK.
-0x4cd1d4                                                             10 94 40 00                                              ..@.
-0x4cd1d8                                                                         50 71 40 00                                      Pq@.
-0x4cd1dc                                                                                     50 53 4b 00                              PSK.
-0x4cd1e0 50 95 40 00                                                                                      P.@.
-0x4cd1e4             80 4e 40 00                                                                              .N@.
-0x4cd1e8                         80 4e 40 00                                                                      .N@.
-0x4cd1ec                                     30 56 4b 00                                                              0VK.
-0x4cd1f0                                                 60 58 4b 00                                                      `XK.
-0x4cd1f4                                                             80 4e 40 00                                              .N@.
-0x4cd1f8                                                                         80 4e 40 00                                      .N@.
-0x4cd1fc                                                                                     f0 bd 40 00                              ..@.
-0x4cd200 80 4e 40 00                                                                                      .N@.
-0x4cd204             10 4d 40 00                                                                              .M@.
-0x4cd208                         f0 bd 40 00                                                                      ..@.
-0x4cd20c                                     30 40 4b 00                                                              0@K.
-0x4cd210                                                 20 4d 40 00                                                       M@.
-0x4cd214                                                             90 4d 40 00                                              .M@.
-0x4cd218                                                                         d0 4d 40 00                                      .M@.
-0x4cd21c                                                                                     50 71 40 00                              Pq@.
-0x4cd220 c0 42 4b 00                                                                                      .BK.
-0x4cd224             10 4e 40 00                                                                              .N@.
-0x4cd228                         40 57 4b 00                                                                      @WK.
-0x4cd22c                                     70 95 40 00                                                              p.@.
-0x4cd230                                                 80 4e 40 00 00 00 00 00                                          .N@.....
+    // HudUiCreditsPanel primary vtable, exactly three pointer entries:
+    // UpdateAll, inherited SetEnabled, scalar deleting destructor. The zero
+    // dword at 0x4cd1ac is alignment/padding outside this 12-byte payload.
+0x4cd1a0     HudUiCreditsPanel_VT_UpdateAll UpdateAll = HudUiCreditsPanel::UpdateAll
+0x4cd1a4     HudUiCreditsPanel_VT_SetEnabled SetEnabled = HudUiBackground::SetEnabled
+0x4cd1a8     HudUiCreditsPanel_VT_ScalarDeletingDestructor scalarDeletingDestructor = HudUiCreditsPanel::ScalarDeletingDestructor
+0x4cd1ac }
+0x4cd1ac                                     00 00 00 00                                                              ....
+0x4cd1b0 struct HudUiWidget_FTable g_HudUiZrdScrollingText_Vtbl =
+0x4cd1b0 {
+0x4cd1b0     HudUiWidget_VT_Dtor dtor = HudUiZrdScrollingText::ScalarDeletingDestructor
+0x4cd1b4     HudUiWidget_VT_Noarg Draw = HudUiWidget::Draw
+0x4cd1b8     HudUiElement_VT_Noarg DrawBase = HudUiElement::DrawBase
+0x4cd1bc     HudUiWidget_VT_SetPos SetPos = HudUiWidget::SetPos
+0x4cd1c0     HudUiElement_VT_SetCoord SetX = HudUiElement::SetX
+0x4cd1c4     HudUiElement_VT_SetCoord SetY = HudUiElement::SetY
+0x4cd1c8     HudUiElement_VT_SetClip SetClip = HudUiElement::SetBltSourceAndClipRect
+0x4cd1cc     HudUiElement_VT_SetClipRect SetClipRect = HudUiElement::SetClipRect
+0x4cd1d0     HudUiWidget_VT_Noarg Invalidate = HudUiZrdWidget::Invalidate
+0x4cd1d4     HudUiElement_VT_Update Update = HudUiZrdScrollingText::Update
+0x4cd1d8     void* function_28 = zStub::NoOp1Arg
+0x4cd1dc     HudUiWidget_VT_GetBoundsRectOrNull GetBoundsRectOrNull = HudUiZrdWidget::GetBoundsRectOrNull
+0x4cd1e0     HudUiWidget_VT_Noarg OnActivate = HudUiZrdScrollingText::OnActivateResetOwnerFade
+0x4cd1e4     void* function_34 = zError::ReportOldNoOp
+0x4cd1e8     void* function_38 = zError::ReportOldNoOp
+0x4cd1ec     void* function_3c = HudUiZrdWidget::ShowPreview
+0x4cd1f0     void* function_40 = HudUiZrdWidget::HidePreview
+0x4cd1f4     void* function_44 = zError::ReportOldNoOp
+0x4cd1f8     void* function_48 = zError::ReportOldNoOp
+0x4cd1fc     void* function_4c = MSVC_STL::PtrVector_NoOpDestroyRange_COMDAT
+0x4cd200     void* function_50 = zError::ReportOldNoOp
+0x4cd204     void* function_54 = HudUiElement::HitTestTrue
+0x4cd208     void* function_58 = MSVC_STL::PtrVector_NoOpDestroyRange_COMDAT
+0x4cd20c     HudUiWidget_VT_HitTest HitTest = HudUiWidget::HitTest
+0x4cd210     HudUiElement_VT_SetVisible SetVisible = HudUiElement::SetVisible
+0x4cd214     HudUiWidget_VT_GetCoord GetCenterX = HudUiWidget::GetCenterX
+0x4cd218     HudUiWidget_VT_GetCoord GetCenterY = HudUiWidget::GetCenterY
+0x4cd21c     void* function_6c = zStub::NoOp1Arg
+0x4cd220     HudUiWidget_VT_GetRect GetRect = HudUiElement::GetTextRect
+0x4cd224     HudUiWidget_VT_Noarg RebuildBltRectFromImage = HudUiWidget::RebuildBltRectFromImage
+0x4cd228     HudUiWidget_VT_Noarg RefreshState = HudUiZrdWidget::RefreshState
+0x4cd22c     HudUiWidget_VT_LoadFromZrd LoadFromZrd = HudUiZrdScrollingText::LoadFromZrd
+0x4cd230     HudUiWidget_VT_Noarg PostLoadFromZrd = zError::ReportOldNoOp
+0x4cd234     HudUiWidget_VT_SetNormalizedValue SetNormalizedValue = 0x0
+0x4cd238 }
 0x4cd238 struct HudUiWidget_FTable g_HudUiCreditsButtonQueueExitAndLeaveNetwork_Vtbl =
 0x4cd238 {
 0x4cd238     HudUiWidget_VT_Dtor dtor = HudUiZrdWidget::ScalarDeletingDestructorThunk
@@ -1416,14 +1434,21 @@
 0x4cd368     void (* OnDeactivate)(struct RecoilStateDialogHost* self) = RecoilStateCredits::OnDeactivate
 0x4cd36c     void (* OnSuspend)(struct RecoilStateDialogHost* self, int32_t param) = zStub::NoOp1Arg
 0x4cd370     void (* OnResume)(struct RecoilStateDialogHost* self, int32_t param) = zStub::NoOp1Arg
-0x4cd374     int32_t (* OnIdleOrDispatch)(struct RecoilStateDialogHost* self, int32_t wParam, int32_t lParam) = zStub::ReturnOne2Args
-// HudCmdDialog background-panel header: UpdateCaptureState, HudUiBackground_SetEnabled, HudCmdDialog_ScalarDeletingDtor.
+0x4cd374     int32_t (* OnIdleOrDispatch)(struct RecoilStateDialogHost* self, int32_t wParam, int32_t lParam) = CompilerICF::ReturnOneRet8Representative_WinnerUnknown
+// HudCmdDialog primary vftable installed at object offset 0 by HudCmdDialog::Constructor (0x40a767). Exactly three supported slots are represented: [0] 0x40b140 HudCmdDialog::UpdateAll(float), [1] 0x4b9850 inherited HudUiBackground::SetEnabled, [2] 0x40a920 HudCmdDialog scalar deleting destructor. The zero dword at 0x4cd384 is outside this three-entry table; no null terminator is asserted.
 0x4cd378 }
-// HudCmdDialog background-panel header: UpdateCaptureState,
-// HudUiBackground_SetEnabled, HudCmdDialog_ScalarDeletingDtor.
-0x4cd378 void* g_HudCmdDialog_BackgroundPanelFTableHeader = HudCmdDialog::UpdateCaptureState
-0x4cd37c void* data_4cd37c = HudUiBackground::SetEnabled
-0x4cd380 void* data_4cd380 = HudCmdDialog::ScalarDeletingDestructor
+0x4cd378 void* g_HudCmdDialog_PrimaryVftable[0x3] =
+0x4cd378 {
+    // HudCmdDialog primary vftable installed at object offset 0 by
+    // HudCmdDialog::Constructor (0x40a767). Exactly three supported slots are
+    // represented: [0] 0x40b140 HudCmdDialog::UpdateAll(float), [1] 0x4b9850
+    // inherited HudUiBackground::SetEnabled, [2] 0x40a920 HudCmdDialog scalar
+    // deleting destructor. The zero dword at 0x4cd384 is outside this
+    // three-entry table; no null terminator is asserted.
+0x4cd378     [0x0] = HudCmdDialog::UpdateAll
+0x4cd37c     [0x1] = HudUiBackground::SetEnabled
+0x4cd380     [0x2] = HudCmdDialog::ScalarDeletingDestructor
+0x4cd384 }
 0x4cd384             00 00 00 00                                                                              ....
 0x4cd388 struct HudUiPanel_FTable g_HudUiTransitionTextPanel_FTable =
 0x4cd388 {
@@ -1970,7 +1995,7 @@
 0x4cdb20     void (* OnDeactivate)(struct RecoilStateDialogHost* self) = HudCmdDialogState::OnDeactivate
 0x4cdb24     void (* OnSuspend)(struct RecoilStateDialogHost* self, int32_t param) = zStub::NoOp1Arg
 0x4cdb28     void (* OnResume)(struct RecoilStateDialogHost* self, int32_t param) = zStub::NoOp1Arg
-0x4cdb2c     int32_t (* OnIdleOrDispatch)(struct RecoilStateDialogHost* self, int32_t wParam, int32_t lParam) = zStub::ReturnOne2Args
+0x4cdb2c     int32_t (* OnIdleOrDispatch)(struct RecoilStateDialogHost* self, int32_t wParam, int32_t lParam) = CompilerICF::ReturnOneRet8Representative_WinnerUnknown
 0x4cdb30 }
 0x4cdb30 struct HudUiBackgroundPanel_FTableHeader g_HudUiOptionsPanel_FTableHeader =
 0x4cdb30 {
@@ -2471,9 +2496,9 @@
 0x4ce248     void (* OnDeactivate)(struct RecoilStateDialogHost* self) = RecoilStateCredits::OnDeactivate
 0x4ce24c     void (* OnSuspend)(struct RecoilStateDialogHost* self, int32_t param) = zStub::NoOp1Arg
 0x4ce250     void (* OnResume)(struct RecoilStateDialogHost* self, int32_t param) = zStub::NoOp1Arg
-0x4ce254     int32_t (* OnIdleOrDispatch)(struct RecoilStateDialogHost* self, int32_t wParam, int32_t lParam) = zStub::ReturnOne2Args
+0x4ce254     int32_t (* OnIdleOrDispatch)(struct RecoilStateDialogHost* self, int32_t wParam, int32_t lParam) = CompilerICF::ReturnOneRet8Representative_WinnerUnknown
 0x4ce258 }
-0x4ce258 void* data_4ce258 = Mfc42::GetBaseMessageMapThunk
+0x4ce258 void* data_4ce258 = MfcGenerated::SharedCDialogBaseMessageMapAccessor
 0x4ce25c void* data_4ce25c = data_4ce260
 0x4ce260 void* data_4ce260 = 0x0
 0x4ce264 void* data_4ce264 = 0x0
@@ -2529,14 +2554,14 @@
     // meter/message/counter/slot, panels, list/timer, layouts, and main-menu
     // dialog controls
 0x4ce2f8     void (__thiscall* InsertChar)(struct HudUiTextInput* self, int32_t key) = HudUiTextInput::InsertCharAtCursor
-0x4ce2fc     void (__thiscall* IgnoreKey)(struct HudUiTextInput* self, int32_t key) = CWnd::DoDataExchange
+0x4ce2fc     void (__thiscall* IgnoreKey)(struct HudUiTextInput* self, int32_t key) = Linker::SharedRet4AddressGroup
 0x4ce300     void (__thiscall* OnAccept)(struct HudUiTextInput* self) = GameNet::EndChatComposeAndSendThunk
-0x4ce304     void (__thiscall* OnCancel)(struct HudUiTextInput* self) = zGame::ReturnOnlyStub
+0x4ce304     void (__thiscall* OnCancel)(struct HudUiTextInput* self) = CompilerICF::ReturnOnlyRepresentative_WinnerUnknown
 0x4ce308     void (__thiscall* Backspace)(struct HudUiTextInput* self) = HudUiTextInput::BackspaceDeleteChar
 0x4ce30c     void (__thiscall* DeleteAtCursor)(struct HudUiTextInput* self) = HudUiTextInput::DeleteCharForward
 0x4ce310     void (__thiscall* CursorLeft)(struct HudUiTextInput* self) = HudUiTextInput::MoveCursorLeft
 0x4ce314     void (__thiscall* CursorRight)(struct HudUiTextInput* self) = HudUiTextInput::MoveCursorRight
-0x4ce318     void (__thiscall* OnBufferFull)(struct HudUiTextInput* self) = zGame::ReturnOnlyStub
+0x4ce318     void (__thiscall* OnBufferFull)(struct HudUiTextInput* self) = CompilerICF::ReturnOnlyRepresentative_WinnerUnknown
 0x4ce31c }
 0x4ce31c void* data_4ce31c = 0x0
 0x4ce320 struct HudUiMeter_FTable g_HudUiMeter_FTable =
@@ -3352,9 +3377,13 @@
 0x4cee38     int32_t (__thiscall* OnUpdateShouldQuit)(struct RecoilStateMainMenuTransition* self) = RecoilStateSaveLoadTransition::OnUpdateShouldQuit
 0x4cee3c     void (__thiscall* OnExit)(struct RecoilStateMainMenuTransition* self) = zError::ReportOldNoOp
 0x4cee40     void (__thiscall* OnDeactivate)(struct RecoilStateMainMenuTransition* self) = RecoilStateMainMenuTransition::OnDeactivate
-0x4cee44     void (__thiscall* OnSuspend)(struct RecoilStateMainMenuTransition* self, int32_t param) = RecoilStateDialogHost::OnSuspend
+// g_RecoilStateMainMenuTransition_Vtbl +0x1c: RecoilStateMainMenuTransition::OnSuspend(int) slot; targets shared compiler-generated ICF representative 0x408f50 (selected winner unknown).
+    // g_RecoilStateMainMenuTransition_Vtbl +0x1c:
+    // RecoilStateMainMenuTransition::OnSuspend(int) slot; targets shared
+    // compiler-generated ICF representative 0x408f50 (selected winner unknown).
+0x4cee44     void (__thiscall* OnSuspend)(struct RecoilStateMainMenuTransition* self, int32_t param) = ICF_RecoilStateControls_RecoilStateMainMenuTransition_OnSuspend
 0x4cee48     void (__thiscall* OnResume)(struct RecoilStateMainMenuTransition* self, int32_t param) = RecoilStateMainMenuTransition::OnResume
-0x4cee4c     int32_t (__thiscall* OnIdleOrDispatch)(struct RecoilStateMainMenuTransition* self, int32_t wParam, int32_t lParam) = zStub::ReturnOne2Args
+0x4cee4c     int32_t (__thiscall* OnIdleOrDispatch)(struct RecoilStateMainMenuTransition* self, int32_t wParam, int32_t lParam) = CompilerICF::ReturnOneRet8Representative_WinnerUnknown
 0x4cee50 }
 0x4cee50 struct zFMV_ActionVtable g_zFMV_ActionBase_Vtable =
 0x4cee50 {
@@ -3459,7 +3488,7 @@
 0x4cefa0     void (* OnDeactivate)(struct RecoilStateDialogHost* self) = RecoilStateConfirmQuit::OnDeactivate
 0x4cefa4     void (* OnSuspend)(struct RecoilStateDialogHost* self, int32_t param) = zStub::NoOp1Arg
 0x4cefa8     void (* OnResume)(struct RecoilStateDialogHost* self, int32_t param) = zStub::NoOp1Arg
-0x4cefac     int32_t (* OnIdleOrDispatch)(struct RecoilStateDialogHost* self, int32_t wParam, int32_t lParam) = zStub::ReturnOne2Args
+0x4cefac     int32_t (* OnIdleOrDispatch)(struct RecoilStateDialogHost* self, int32_t wParam, int32_t lParam) = CompilerICF::ReturnOneRet8Representative_WinnerUnknown
 0x4cefb0 }
 0x4cefb0 float g_zFMV_TimeGetTimeToSecondsScale = 0.00100000005
 0x4cefb4 int32_t data_4cefb4 = 0x0
@@ -4316,15 +4345,15 @@
 0x4cfbc0     void (* OnDeactivate)(struct RecoilStateDialogHost* self) = HudUiNetGameSetupOverlayOwner::OnDeactivate
 0x4cfbc4     void (* OnSuspend)(struct RecoilStateDialogHost* self, int32_t param) = zStub::NoOp1Arg
 0x4cfbc8     void (* OnResume)(struct RecoilStateDialogHost* self, int32_t param) = zStub::NoOp1Arg
-0x4cfbcc     int32_t (* OnIdleOrDispatch)(struct RecoilStateDialogHost* self, int32_t wParam, int32_t lParam) = zStub::ReturnOne2Args
+0x4cfbcc     int32_t (* OnIdleOrDispatch)(struct RecoilStateDialogHost* self, int32_t wParam, int32_t lParam) = CompilerICF::ReturnOneRet8Representative_WinnerUnknown
 // MFC message-map object returned by NetSessionBrowserDialog_GetMessageMap().
 0x4cfbd0 }
 0x4cfbd0 struct MfcMsgMap g_NetSessionBrowserDialog_MessageMap =
 0x4cfbd0 {
     // MFC message-map object returned by
     // NetSessionBrowserDialog_GetMessageMap().
-0x4cfbd0     void* getBaseMap = Mfc42::GetBaseMessageMapThunk
-0x4cfbd4     struct zMfcMsgMapEntry* entries = g_NetSessionBrowserDialog_MessageMapEntries
+0x4cfbd0     MfcMsgMapBaseAccessor getBaseMap = MfcGenerated::SharedCDialogBaseMessageMapAccessor
+0x4cfbd4     struct zMfcMsgMapEntry const* entries = g_NetSessionBrowserDialog_MessageMapEntries
 // Backing MFC message-map entry table for NetSessionBrowserDialog_GetMessageMap().
 0x4cfbd8 }
 0x4cfbd8 struct zMfcMsgMapEntry g_NetSessionBrowserDialog_MessageMapEntries[0x6] =
@@ -4402,7 +4431,7 @@
 0x4cfc8c     void* Ordinal_MFC42_3825 = MFC42:Ordinal_MFC42_3825
 0x4cfc90     void* Ordinal_MFC42_3831 = MFC42:Ordinal_MFC42_3831
 0x4cfc94     void* GetTypeLib = MFC42:CCmdTarget::GetTypeLib(CCmdTarget* this, unsigned long, struct ITypeLib**)
-0x4cfc98     void* field_30 = NetSessionBrowserDialog::GetMessageMap
+0x4cfc98     void* GetMessageMap = NetSessionBrowserDialog::GetMessageMap
 0x4cfc9c     void* GetCommandMap = MFC42:CCmdTarget::GetCommandMap(CCmdTarget* this) const
 0x4cfca0     void* _GetBaseDispatchMap = MFC42:COleControlContainer::_GetBaseDispatchMap()
 0x4cfca4     void* _GetBaseConnectionMap = MFC42:COleControl::_GetBaseConnectionMap()
@@ -4425,9 +4454,9 @@
 0x4cfce8     void* OnCommand = MFC42:CWnd::OnCommand(CWnd* this, uint32_t, long)
 0x4cfcec     void* OnNotify = MFC42:CWnd::OnNotify(CWnd* this, uint32_t, long, long*)
 0x4cfcf0     void* GetSuperWndProcAddr = MFC42:CWnd::GetSuperWndProcAddr(CWnd* this))(struct HWND__*, uint32_t, uint32_t, long)
-0x4cfcf4     void* field_8c = NetSessionBrowserDialog::DoDataExchange
-0x4cfcf8     void* field_90 = CWnd::BeginModalState
-0x4cfcfc     void* field_94 = CWnd::EndModalState
+0x4cfcf4     void* DoDataExchange = NetSessionBrowserDialog::DoDataExchange
+0x4cfcf8     void* BeginModalState = CWnd::BeginModalState
+0x4cfcfc     void* EndModalState = CWnd::EndModalState
 0x4cfd00     void* PreTranslateMessage = MFC42:CDialog::PreTranslateMessage(CDialog* this, struct tagMSG*)
 0x4cfd04     void* OnAmbientProperty = MFC42:CWnd::OnAmbientProperty(CWnd* this, class COleControlSite*, long, struct tagVARIANT*)
 0x4cfd08     void* WindowProc = MFC42:CWnd::WindowProc(CWnd* this, uint32_t, uint32_t, long)
@@ -4756,8 +4785,8 @@
 0x4d01a8 struct MfcMsgMap g_AiPropertyDlg_MessageMap =
 0x4d01a8 {
     // Typed MFC message-map for AiPropertyDlg.
-0x4d01a8     void* getBaseMap = Mfc42::GetBaseMessageMapThunk
-0x4d01ac     struct zMfcMsgMapEntry* entries = g_AiPropertyDlg_MessageEntries
+0x4d01a8     MfcMsgMapBaseAccessor getBaseMap = MfcGenerated::SharedCDialogBaseMessageMapAccessor
+0x4d01ac     struct zMfcMsgMapEntry const* entries = g_AiPropertyDlg_MessageEntries
 0x4d01b0 }
 0x4d01b0 struct zMfcMsgMapEntry g_AiPropertyDlg_MessageEntries[0x3] =
 0x4d01b0 {
@@ -4918,15 +4947,15 @@
 0x4d03c0     void (* OnDeactivate)(struct RecoilStateDialogHost* self) = RecoilStateCredits::OnDeactivate
 0x4d03c4     void (* OnSuspend)(struct RecoilStateDialogHost* self, int32_t param) = zStub::NoOp1Arg
 0x4d03c8     void (* OnResume)(struct RecoilStateDialogHost* self, int32_t param) = zStub::NoOp1Arg
-0x4d03cc     int32_t (* OnIdleOrDispatch)(struct RecoilStateDialogHost* self, int32_t wParam, int32_t lParam) = zStub::ReturnOne2Args
+0x4d03cc     int32_t (* OnIdleOrDispatch)(struct RecoilStateDialogHost* self, int32_t wParam, int32_t lParam) = CompilerICF::ReturnOneRet8Representative_WinnerUnknown
 // MFC message-map object returned by NetSessionConfigDialog_GetMessageMap().
 0x4d03d0 }
 0x4d03d0 struct MfcMsgMap g_NetSessionConfigDialog_MessageMap =
 0x4d03d0 {
     // MFC message-map object returned by
     // NetSessionConfigDialog_GetMessageMap().
-0x4d03d0     void* getBaseMap = Mfc42::GetBaseMessageMapThunk
-0x4d03d4     struct zMfcMsgMapEntry* entries = g_NetSessionConfigDialog_MessageMapEntries
+0x4d03d0     MfcMsgMapBaseAccessor getBaseMap = MfcGenerated::SharedCDialogBaseMessageMapAccessor
+0x4d03d4     struct zMfcMsgMapEntry const* entries = g_NetSessionConfigDialog_MessageMapEntries
 // Backing MFC message-map entry table for NetSessionConfigDialog_GetMessageMap().
 0x4d03d8 }
 0x4d03d8 struct zMfcMsgMapEntry g_NetSessionConfigDialog_MessageMapEntries[0x3] =
@@ -4975,7 +5004,7 @@
 0x4d0444     void* Ordinal_MFC42_3825 = MFC42:Ordinal_MFC42_3825
 0x4d0448     void* Ordinal_MFC42_3831 = MFC42:Ordinal_MFC42_3831
 0x4d044c     void* GetTypeLib = MFC42:CCmdTarget::GetTypeLib(CCmdTarget* this, unsigned long, struct ITypeLib**)
-0x4d0450     void* field_30 = NetSessionConfigDialog::GetMessageMap
+0x4d0450     void* GetMessageMap = NetSessionConfigDialog::GetMessageMap
 0x4d0454     void* GetCommandMap = MFC42:CCmdTarget::GetCommandMap(CCmdTarget* this) const
 0x4d0458     void* _GetBaseDispatchMap = MFC42:COleControlContainer::_GetBaseDispatchMap()
 0x4d045c     void* _GetBaseConnectionMap = MFC42:COleControl::_GetBaseConnectionMap()
@@ -4998,9 +5027,9 @@
 0x4d04a0     void* OnCommand = MFC42:CWnd::OnCommand(CWnd* this, uint32_t, long)
 0x4d04a4     void* OnNotify = MFC42:CWnd::OnNotify(CWnd* this, uint32_t, long, long*)
 0x4d04a8     void* GetSuperWndProcAddr = MFC42:CWnd::GetSuperWndProcAddr(CWnd* this))(struct HWND__*, uint32_t, uint32_t, long)
-0x4d04ac     void* field_8c = NetSessionConfigDialog::DoDataExchange
-0x4d04b0     void* field_90 = CWnd::BeginModalState
-0x4d04b4     void* field_94 = CWnd::EndModalState
+0x4d04ac     void* DoDataExchange = NetSessionConfigDialog::DoDataExchange
+0x4d04b0     void* BeginModalState = CWnd::BeginModalState
+0x4d04b4     void* EndModalState = CWnd::EndModalState
 0x4d04b8     void* PreTranslateMessage = MFC42:CDialog::PreTranslateMessage(CDialog* this, struct tagMSG*)
 0x4d04bc     void* OnAmbientProperty = MFC42:CWnd::OnAmbientProperty(CWnd* this, class COleControlSite*, long, struct tagVARIANT*)
 0x4d04c0     void* WindowProc = MFC42:CWnd::WindowProc(CWnd* this, uint32_t, uint32_t, long)
@@ -5348,8 +5377,8 @@
 0x4d0990 {
     // RecoilApp local MFC message map. The local entry array is a zero sentinel
     // only.
-0x4d0990     void* getBaseMap = COleControlModule::GetBaseMessageMap
-0x4d0994     struct zMfcMsgMapEntry* entries = g_RecoilApp_MessageEntries
+0x4d0990     MfcMsgMapBaseAccessor getBaseMap = COleControlModule::GetBaseMessageMap
+0x4d0994     struct zMfcMsgMapEntry const* entries = g_RecoilApp_MessageEntries
 0x4d0998 }
 0x4d0998 struct zMfcMsgMapEntry g_RecoilApp_MessageEntries[0x1] =
 0x4d0998 {
@@ -5455,7 +5484,7 @@
 0x4d0ab8     void (* OnDeactivate)(struct RecoilApp_IState* self) = RecoilApp_MpExitDialogState::OnDeactivate
 0x4d0abc     void (* OnSuspend)(struct RecoilApp_IState* self, int32_t param) = zStub::NoOp1Arg
 0x4d0ac0     void (* OnResume)(struct RecoilApp_IState* self, int32_t param) = zStub::NoOp1Arg
-0x4d0ac4     int32_t (* OnIdleOrDispatch)(struct RecoilApp_IState* self, int32_t wParam, int32_t lParam) = zStub::ReturnOne2Args
+0x4d0ac4     int32_t (* OnIdleOrDispatch)(struct RecoilApp_IState* self, int32_t wParam, int32_t lParam) = CompilerICF::ReturnOneRet8Representative_WinnerUnknown
 // RecoilApp leave-network transition state vtable.
 0x4d0ac8 }
 0x4d0ac8 struct RecoilApp_IState_Vtbl g_RecoilApp_LeaveNetworkState_Vtbl =
@@ -5470,7 +5499,7 @@
 0x4d0ae0     void (* OnDeactivate)(struct RecoilApp_IState* self) = zError::ReportOldNoOp
 0x4d0ae4     void (* OnSuspend)(struct RecoilApp_IState* self, int32_t param) = zStub::NoOp1Arg
 0x4d0ae8     void (* OnResume)(struct RecoilApp_IState* self, int32_t param) = zStub::NoOp1Arg
-0x4d0aec     int32_t (* OnIdleOrDispatch)(struct RecoilApp_IState* self, int32_t wParam, int32_t lParam) = zStub::ReturnOne2Args
+0x4d0aec     int32_t (* OnIdleOrDispatch)(struct RecoilApp_IState* self, int32_t wParam, int32_t lParam) = CompilerICF::ReturnOneRet8Representative_WinnerUnknown
 // RecoilApp main-menu prep state vtable.
 0x4d0af0 }
 0x4d0af0 struct RecoilApp_IState_Vtbl g_RecoilApp_MainMenuPrepState_Vtbl =
@@ -5482,10 +5511,10 @@
 0x4d0afc     int32_t (* OnTryBecomeCurrent)(struct RecoilApp_IState* self) = RecoilApp_MainMenuPrepState::OnTryBecomeCurrent
 0x4d0b00     int32_t (* OnUpdateShouldQuit)(struct RecoilApp_IState* self) = RecoilApp_MainMenuPrepState::OnUpdateShouldQuit
 0x4d0b04     void (* OnExit)(struct RecoilApp_IState* self) = zError::ReportOldNoOp
-0x4d0b08     void (* OnDeactivate)(struct RecoilApp_IState* self) = zGame::ReturnOnlyStub
+0x4d0b08     void (* OnDeactivate)(struct RecoilApp_IState* self) = CompilerICF::ReturnOnlyRepresentative_WinnerUnknown
 0x4d0b0c     void (* OnSuspend)(struct RecoilApp_IState* self, int32_t param) = zStub::NoOp1Arg
 0x4d0b10     void (* OnResume)(struct RecoilApp_IState* self, int32_t param) = zStub::NoOp1Arg
-0x4d0b14     int32_t (* OnIdleOrDispatch)(struct RecoilApp_IState* self, int32_t wParam, int32_t lParam) = zStub::ReturnOne2Args
+0x4d0b14     int32_t (* OnIdleOrDispatch)(struct RecoilApp_IState* self, int32_t wParam, int32_t lParam) = CompilerICF::ReturnOneRet8Representative_WinnerUnknown
 // RecoilApp intro-FMV state vtable.
 0x4d0b18 }
 0x4d0b18 struct RecoilApp_IState_Vtbl g_RecoilApp_IntroFmvState_Vtbl =
@@ -5528,7 +5557,7 @@
 0x4d0b80     void (* OnDeactivate)(struct RecoilApp_IState* self) = RecoilApp_MissionFmvState::OnDeactivate
 0x4d0b84     void (* OnSuspend)(struct RecoilApp_IState* self, int32_t param) = zStub::NoOp1Arg
 0x4d0b88     void (* OnResume)(struct RecoilApp_IState* self, int32_t param) = zStub::NoOp1Arg
-0x4d0b8c     int32_t (* OnIdleOrDispatch)(struct RecoilApp_IState* self, int32_t wParam, int32_t lParam) = zStub::ReturnOne2Args
+0x4d0b8c     int32_t (* OnIdleOrDispatch)(struct RecoilApp_IState* self, int32_t wParam, int32_t lParam) = CompilerICF::ReturnOneRet8Representative_WinnerUnknown
 0x4d0b90 }
 0x4d0b90 struct RecoilApp_IState_Vtbl g_RecoilApp_PlayState_Vtbl =
 0x4d0b90 {
@@ -5541,7 +5570,7 @@
 0x4d0ba8     void (* OnDeactivate)(struct RecoilApp_IState* self) = RecoilApp_PlayState::OnDeactivate
 0x4d0bac     void (* OnSuspend)(struct RecoilApp_IState* self, int32_t param) = zStub::NoOp1Arg
 0x4d0bb0     void (* OnResume)(struct RecoilApp_IState* self, int32_t param) = RecoilApp_PlayState::OnResume
-0x4d0bb4     int32_t (* OnIdleOrDispatch)(struct RecoilApp_IState* self, int32_t wParam, int32_t lParam) = zStub::ReturnOne2Args
+0x4d0bb4     int32_t (* OnIdleOrDispatch)(struct RecoilApp_IState* self, int32_t wParam, int32_t lParam) = CompilerICF::ReturnOneRet8Representative_WinnerUnknown
 0x4d0bb8 }
 0x4d0bb8 float g_zInput_DiForceScaleMax01 = 1
 0x4d0bbc float g_zInput_DiForceScaleMin025 = 0.25
@@ -5573,8 +5602,8 @@
 0x4d0c08 {
     // CZRecoilFrame static MFC message map. Entry array contains the non-WOL
     // shell command/update handlers plus the zero sentinel.
-0x4d0c08     void* getBaseMap = CZGameFrame::GetMessageMap
-0x4d0c0c     struct zMfcMsgMapEntry* entries = g_CZRecoilFrame_MessageEntries
+0x4d0c08     MfcMsgMapBaseAccessor getBaseMap = CZGameFrame::GetMessageMap
+0x4d0c0c     struct zMfcMsgMapEntry const* entries = g_CZRecoilFrame_MessageEntries
 0x4d0c10 }
 0x4d0c10 struct zMfcMsgMapEntry g_CZRecoilFrame_MessageEntries[0x37] =
 0x4d0c10 {
@@ -5999,7 +6028,7 @@
 0x4d1068         int32_t nID = 0x9c7e
 0x4d106c         int32_t nLastID = 0x9c7e
 0x4d1070         int32_t nSig = 0x2c
-0x4d1074         void* pfn = CWnd::DoDataExchange
+0x4d1074         void* pfn = Linker::SharedRet4AddressGroup
 0x4d1078     }
 0x4d1078     [0x2f] =
 0x4d1078     {
@@ -6053,7 +6082,7 @@
 0x4d10f8         int32_t nID = 0x9c53
 0x4d10fc         int32_t nLastID = 0x9c53
 0x4d1100         int32_t nSig = 0x2c
-0x4d1104         void* pfn = CWnd::DoDataExchange
+0x4d1104         void* pfn = Linker::SharedRet4AddressGroup
 0x4d1108     }
 0x4d1108     [0x35] =
 0x4d1108     {
@@ -6513,7 +6542,7 @@
 0x4d1740     void (* OnDeactivate)(struct RecoilStateDialogHost* self) = RecoilStateSaveLoadTransition::OnDeactivate
 0x4d1744     void (* OnSuspend)(struct RecoilStateDialogHost* self, int32_t param) = zStub::NoOp1Arg
 0x4d1748     void (* OnResume)(struct RecoilStateDialogHost* self, int32_t param) = zStub::NoOp1Arg
-0x4d174c     int32_t (* OnIdleOrDispatch)(struct RecoilStateDialogHost* self, int32_t wParam, int32_t lParam) = zStub::ReturnOne2Args
+0x4d174c     int32_t (* OnIdleOrDispatch)(struct RecoilStateDialogHost* self, int32_t wParam, int32_t lParam) = CompilerICF::ReturnOneRet8Representative_WinnerUnknown
 0x4d1750 }
 0x4d1750 float data_4d1750 = -0.5
 0x4d1754 void* data_4d1754 = 0x0
@@ -6623,8 +6652,8 @@
 0x4d1918 {
     // MFC message-map object returned by
     // WestwoodOnlineUpgradeDialog_GetMessageMap().
-0x4d1918     void* getBaseMap = Mfc42::GetBaseMessageMapThunk
-0x4d191c     struct zMfcMsgMapEntry* entries = g_WestwoodOnlineUpgradeDialog_MessageMapEntries
+0x4d1918     MfcMsgMapBaseAccessor getBaseMap = MfcGenerated::SharedCDialogBaseMessageMapAccessor
+0x4d191c     struct zMfcMsgMapEntry const* entries = g_WestwoodOnlineUpgradeDialog_MessageMapEntries
 // Backing MFC message-map entry table for WestwoodOnlineUpgradeDialog_GetMessageMap().
 0x4d1920 }
 0x4d1920 struct zMfcMsgMapEntry g_WestwoodOnlineUpgradeDialog_MessageMapEntries[0x1a] =
@@ -6923,7 +6952,7 @@
     // Main WestwoodOnlineUpgradeDialog vtable. Slots cover the browse dialog
     // core, bootstrap/init path, and the async WOL event callback handlers
     // wired through the dialog instance.
-0x4d1be8     void* field_30 = WestwoodOnlineUpgradeDialog::GetMessageMap
+0x4d1be8     void* GetMessageMap = WestwoodOnlineUpgradeDialog::GetMessageMap
 0x4d1bec     void* GetCommandMap = MFC42:CCmdTarget::GetCommandMap(CCmdTarget* this) const
 0x4d1bf0     void* _GetBaseDispatchMap = MFC42:COleControlContainer::_GetBaseDispatchMap()
 0x4d1bf4     void* _GetBaseConnectionMap = MFC42:COleControl::_GetBaseConnectionMap()
@@ -6946,9 +6975,9 @@
 0x4d1c38     void* OnCommand = MFC42:CWnd::OnCommand(CWnd* this, uint32_t, long)
 0x4d1c3c     void* OnNotify = MFC42:CWnd::OnNotify(CWnd* this, uint32_t, long, long*)
 0x4d1c40     void* GetSuperWndProcAddr = MFC42:CWnd::GetSuperWndProcAddr(CWnd* this))(struct HWND__*, uint32_t, uint32_t, long)
-0x4d1c44     void* field_8c = WestwoodOnlineUpgradeDialog::DoDataExchange
-0x4d1c48     void* field_90 = CWnd::BeginModalState
-0x4d1c4c     void* field_94 = CWnd::EndModalState
+0x4d1c44     void* DoDataExchange = WestwoodOnlineUpgradeDialog::DoDataExchange
+0x4d1c48     void* BeginModalState = CWnd::BeginModalState
+0x4d1c4c     void* EndModalState = CWnd::EndModalState
 0x4d1c50     void* PreTranslateMessage = MFC42:CDialog::PreTranslateMessage(CDialog* this, struct tagMSG*)
 0x4d1c54     void* OnAmbientProperty = MFC42:CWnd::OnAmbientProperty(CWnd* this, class COleControlSite*, long, struct tagVARIANT*)
 0x4d1c58     void* WindowProc = MFC42:CWnd::WindowProc(CWnd* this, uint32_t, uint32_t, long)
@@ -7009,8 +7038,8 @@
 0x4d1d10 {
     // MFC message-map object returned by
     // WestwoodOnlineUpgradeConfigDialog_GetMessageMap().
-0x4d1d10     void* getBaseMap = Mfc42::GetBaseMessageMapThunk
-0x4d1d14     struct zMfcMsgMapEntry* entries = g_WestwoodOnlineUpgradeConfigDialog_MessageMapEntries
+0x4d1d10     MfcMsgMapBaseAccessor getBaseMap = MfcGenerated::SharedCDialogBaseMessageMapAccessor
+0x4d1d14     struct zMfcMsgMapEntry const* entries = g_WestwoodOnlineUpgradeConfigDialog_MessageMapEntries
 // Backing MFC message-map entry table for WestwoodOnlineUpgradeConfigDialog_GetMessageMap().
 0x4d1d18 }
 0x4d1d18 struct zMfcMsgMapEntry g_WestwoodOnlineUpgradeConfigDialog_MessageMapEntries[0x8] =
@@ -7107,7 +7136,7 @@
 0x4d1dfc     void* Ordinal_MFC42_3825 = MFC42:Ordinal_MFC42_3825
 0x4d1e00     void* Ordinal_MFC42_3831 = MFC42:Ordinal_MFC42_3831
 0x4d1e04     void* GetTypeLib = MFC42:CCmdTarget::GetTypeLib(CCmdTarget* this, unsigned long, struct ITypeLib**)
-0x4d1e08     void* field_30 = WestwoodOnlineUpgradeConfigDialog::GetMessageMap
+0x4d1e08     void* GetMessageMap = WestwoodOnlineUpgradeConfigDialog::GetMessageMap
 0x4d1e0c     void* GetCommandMap = MFC42:CCmdTarget::GetCommandMap(CCmdTarget* this) const
 0x4d1e10     void* _GetBaseDispatchMap = MFC42:COleControlContainer::_GetBaseDispatchMap()
 0x4d1e14     void* _GetBaseConnectionMap = MFC42:COleControl::_GetBaseConnectionMap()
@@ -7130,9 +7159,9 @@
 0x4d1e58     void* OnCommand = MFC42:CWnd::OnCommand(CWnd* this, uint32_t, long)
 0x4d1e5c     void* OnNotify = MFC42:CWnd::OnNotify(CWnd* this, uint32_t, long, long*)
 0x4d1e60     void* GetSuperWndProcAddr = MFC42:CWnd::GetSuperWndProcAddr(CWnd* this))(struct HWND__*, uint32_t, uint32_t, long)
-0x4d1e64     void* field_8c = WestwoodOnlineUpgradeConfigDialog::DoDataExchange
-0x4d1e68     void* field_90 = CWnd::BeginModalState
-0x4d1e6c     void* field_94 = CWnd::EndModalState
+0x4d1e64     void* DoDataExchange = WestwoodOnlineUpgradeConfigDialog::DoDataExchange
+0x4d1e68     void* BeginModalState = CWnd::BeginModalState
+0x4d1e6c     void* EndModalState = CWnd::EndModalState
 0x4d1e70     void* PreTranslateMessage = MFC42:CDialog::PreTranslateMessage(CDialog* this, struct tagMSG*)
 0x4d1e74     void* OnAmbientProperty = MFC42:CWnd::OnAmbientProperty(CWnd* this, class COleControlSite*, long, struct tagVARIANT*)
 0x4d1e78     void* WindowProc = MFC42:CWnd::WindowProc(CWnd* this, uint32_t, uint32_t, long)
@@ -7155,8 +7184,8 @@
 0x4d1eb0 {
     // MFC runtime-class object returned by
     // WestwoodOnlineUpgradeProgressDialog_GetRuntimeClass().
-0x4d1eb0     void* getBaseMap = Mfc42::GetBaseMessageMapThunk
-0x4d1eb4     struct zMfcMsgMapEntry* entries = data_4d1eb8
+0x4d1eb0     MfcMsgMapBaseAccessor getBaseMap = MfcGenerated::SharedCDialogBaseMessageMapAccessor
+0x4d1eb4     struct zMfcMsgMapEntry const* entries = data_4d1eb8
 0x4d1eb8 }
 0x4d1eb8 void* data_4d1eb8 = 0x0
 0x4d1ebc void* data_4d1ebc = 0x0
@@ -7181,7 +7210,7 @@
 0x4d1ef4     void* Ordinal_MFC42_3825 = MFC42:Ordinal_MFC42_3825
 0x4d1ef8     void* Ordinal_MFC42_3831 = MFC42:Ordinal_MFC42_3831
 0x4d1efc     void* GetTypeLib = MFC42:CCmdTarget::GetTypeLib(CCmdTarget* this, unsigned long, struct ITypeLib**)
-0x4d1f00     void* field_30 = WestwoodOnlineUpgradeProgressDialog::GetMessageMap
+0x4d1f00     void* GetMessageMap = WestwoodOnlineUpgradeProgressDialog::GetMessageMap
 0x4d1f04     void* GetCommandMap = MFC42:CCmdTarget::GetCommandMap(CCmdTarget* this) const
 0x4d1f08     void* _GetBaseDispatchMap = MFC42:COleControlContainer::_GetBaseDispatchMap()
 0x4d1f0c     void* _GetBaseConnectionMap = MFC42:COleControl::_GetBaseConnectionMap()
@@ -7204,9 +7233,9 @@
 0x4d1f50     void* OnCommand = MFC42:CWnd::OnCommand(CWnd* this, uint32_t, long)
 0x4d1f54     void* OnNotify = MFC42:CWnd::OnNotify(CWnd* this, uint32_t, long, long*)
 0x4d1f58     void* GetSuperWndProcAddr = MFC42:CWnd::GetSuperWndProcAddr(CWnd* this))(struct HWND__*, uint32_t, uint32_t, long)
-0x4d1f5c     void* field_8c = CWnd::DoDataExchange
-0x4d1f60     void* field_90 = CWnd::BeginModalState
-0x4d1f64     void* field_94 = CWnd::EndModalState
+0x4d1f5c     void* DoDataExchange = Linker::SharedRet4AddressGroup
+0x4d1f60     void* BeginModalState = CWnd::BeginModalState
+0x4d1f64     void* EndModalState = CWnd::EndModalState
 0x4d1f68     void* PreTranslateMessage = MFC42:CDialog::PreTranslateMessage(CDialog* this, struct tagMSG*)
 0x4d1f6c     void* OnAmbientProperty = MFC42:CWnd::OnAmbientProperty(CWnd* this, class COleControlSite*, long, struct tagVARIANT*)
 0x4d1f70     void* WindowProc = MFC42:CWnd::WindowProc(CWnd* this, uint32_t, uint32_t, long)
@@ -7227,7 +7256,7 @@
 0x4d1fa0     void* OnCancel = MFC42:CDialog::OnCancel(CDialog* this)
 0x4d1fa4     void* Ordinal_MFC42_5265 = MFC42:Ordinal_MFC42_5265
 0x4d1fa8 }
-0x4d1fa8 void* data_4d1fa8 = Mfc42::GetBaseMessageMapThunk
+0x4d1fa8 void* data_4d1fa8 = MfcGenerated::SharedCDialogBaseMessageMapAccessor
 0x4d1fac void* data_4d1fac = data_4d1fb0
 0x4d1fb0 void* data_4d1fb0 = 0x0
 0x4d1fb4 void* data_4d1fb4 = 0x0
@@ -7277,8 +7306,8 @@
 0x4d2000 {
     // Temporary inherited RecoilApp/CWinApp base message map. Local entry array
     // is a zero sentinel only.
-0x4d2000     void* getBaseMap = MFC42::GetOrdinal4274Getter
-0x4d2004     struct zMfcMsgMapEntry* entries = g_RecoilApp_MfcOleModule_MessageEntries
+0x4d2000     MfcMsgMapBaseAccessor getBaseMap = MFC42::GetOrdinal4274Getter
+0x4d2004     struct zMfcMsgMapEntry const* entries = g_RecoilApp_MfcOleModule_MessageEntries
 0x4d2008 }
 0x4d2008 struct zMfcMsgMapEntry g_RecoilApp_MfcOleModule_MessageEntries[0x1] =
 0x4d2008 {
@@ -8533,14 +8562,14 @@
 0x4d34d8 struct HudUiTextInput_FTable g_HudUiTextInput_FTable =
 0x4d34d8 {
 0x4d34d8     void (__thiscall* InsertChar)(struct HudUiTextInput* self, int32_t key) = HudUiTextInput::InsertCharAtCursor
-0x4d34dc     void (__thiscall* IgnoreKey)(struct HudUiTextInput* self, int32_t key) = CWnd::DoDataExchange
-0x4d34e0     void (__thiscall* OnAccept)(struct HudUiTextInput* self) = zGame::ReturnOnlyStub
-0x4d34e4     void (__thiscall* OnCancel)(struct HudUiTextInput* self) = zGame::ReturnOnlyStub
+0x4d34dc     void (__thiscall* IgnoreKey)(struct HudUiTextInput* self, int32_t key) = Linker::SharedRet4AddressGroup
+0x4d34e0     void (__thiscall* OnAccept)(struct HudUiTextInput* self) = CompilerICF::ReturnOnlyRepresentative_WinnerUnknown
+0x4d34e4     void (__thiscall* OnCancel)(struct HudUiTextInput* self) = CompilerICF::ReturnOnlyRepresentative_WinnerUnknown
 0x4d34e8     void (__thiscall* Backspace)(struct HudUiTextInput* self) = HudUiTextInput::BackspaceDeleteChar
 0x4d34ec     void (__thiscall* DeleteAtCursor)(struct HudUiTextInput* self) = HudUiTextInput::DeleteCharForward
 0x4d34f0     void (__thiscall* CursorLeft)(struct HudUiTextInput* self) = HudUiTextInput::MoveCursorLeft
 0x4d34f4     void (__thiscall* CursorRight)(struct HudUiTextInput* self) = HudUiTextInput::MoveCursorRight
-0x4d34f8     void (__thiscall* OnBufferFull)(struct HudUiTextInput* self) = zGame::ReturnOnlyStub
+0x4d34f8     void (__thiscall* OnBufferFull)(struct HudUiTextInput* self) = CompilerICF::ReturnOnlyRepresentative_WinnerUnknown
 0x4d34fc }
 0x4d34fc int32_t data_4d34fc = 0x0
 // HudUiSliderBorder-only common-table/vtable head restored; next seam begins at 0x4d3574.
@@ -8625,14 +8654,14 @@
 0x4d3608 struct HudUiTextInput_FTable g_HudUiNumericTextInput_TextInputFTable =
 0x4d3608 {
 0x4d3608     void (__thiscall* InsertChar)(struct HudUiTextInput* self, int32_t key) = HudUiTextInput::InsertCharAtCursor
-0x4d360c     void (__thiscall* IgnoreKey)(struct HudUiTextInput* self, int32_t key) = CWnd::DoDataExchange
+0x4d360c     void (__thiscall* IgnoreKey)(struct HudUiTextInput* self, int32_t key) = Linker::SharedRet4AddressGroup
 0x4d3610     void (__thiscall* OnAccept)(struct HudUiTextInput* self) = HudUiOwnedTextInput::OnAccept
-0x4d3614     void (__thiscall* OnCancel)(struct HudUiTextInput* self) = zGame::ReturnOnlyStub
+0x4d3614     void (__thiscall* OnCancel)(struct HudUiTextInput* self) = CompilerICF::ReturnOnlyRepresentative_WinnerUnknown
 0x4d3618     void (__thiscall* Backspace)(struct HudUiTextInput* self) = HudUiTextInput::BackspaceDeleteChar
 0x4d361c     void (__thiscall* DeleteAtCursor)(struct HudUiTextInput* self) = HudUiTextInput::DeleteCharForward
 0x4d3620     void (__thiscall* CursorLeft)(struct HudUiTextInput* self) = HudUiTextInput::MoveCursorLeft
 0x4d3624     void (__thiscall* CursorRight)(struct HudUiTextInput* self) = HudUiTextInput::MoveCursorRight
-0x4d3628     void (__thiscall* OnBufferFull)(struct HudUiTextInput* self) = zGame::ReturnOnlyStub
+0x4d3628     void (__thiscall* OnBufferFull)(struct HudUiTextInput* self) = CompilerICF::ReturnOnlyRepresentative_WinnerUnknown
 0x4d362c }
 0x4d362c int32_t data_4d362c = 0x0
 // HudUiZrdWidget base function-table head restored from live ctor/xref evidence; keep the trailing zero dword at 0x4d362c split out as padding.

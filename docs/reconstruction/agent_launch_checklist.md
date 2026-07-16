@@ -12,10 +12,12 @@ python tools/recoil.py progress audit --scope all --strict
 python tools/recoil.py doctor --quick --binja
 ```
 
-`progress next` is the sole Recoil.exe scheduler: exact natural VC5SP3
-`function-order` from `0x401000`, sequential `linked-byte-match`, then one
-unrestricted whole-file `final-validation`. Expand its cursor into the complete
-physical block, semantic span, and source-shaped owner. Owner/work/section/final
+`progress next` is the sole Recoil.exe scheduler. It follows the canonical
+`authored-function-order` -> `authored-byte-match` -> `full-function-order` ->
+`linked-byte-match` -> `final-validation` sequence. Expand its primary cursor
+into the complete physical block, semantic span, and source-shaped owner. If it
+returns `fallback_authored_byte_cursor`, that authored/lifecycle row is bounded
+fallback work only: it does not move the primary cursor or phase. Owner/work/section/final
 and ordinary `messages.dll` views are deferred context unless the cursor records
 them as required dependencies.
 
@@ -28,8 +30,13 @@ python tools/recoil.py progress owner relationships 0xNNNNNN
 python tools/recoil.py doctor --quick --binja
 ```
 
-Work only in the already-open Binary Ninja target. Never load, switch, or patch
-a binary. Address is traversal evidence; implementation and owner acceptance
+Binary Ninja is a maintained analysis artifact. Work only in the already-open
+target and never load, switch, or patch a binary. New active-scope evidence lets
+the parent assign a bounded `recoil_bn_reconstructor` correction without another
+user approval or tracker mutation. Only that role may edit, reanalyze, and save;
+its read-only filesystem sandbox does not make assigned BN MCP state immutable.
+It may not decide owner/block/order/provider/tier acceptance. Address is
+traversal evidence; implementation and owner acceptance
 use the complete proven source-shaped owner. Keep physical blocks, semantic
 spans, source owners, data symbols, owner data gates, physical storage
 contributions, PE output sections, work items, linked-image state, and evidence

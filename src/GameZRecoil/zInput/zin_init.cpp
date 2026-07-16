@@ -10,9 +10,9 @@
  * Purpose: perform zInput global-state static construction and register its
  * CRT shutdown callback.
  */
-int GlobalStateStaticInitAndRegisterAtExit() {
+void __cdecl GlobalStateStaticInitAndRegisterAtExit() {
     GlobalStateStaticInit();
-    return GlobalStateRegisterAtExit();
+    GlobalStateRegisterAtExit();
 }
 
 #if defined(_MSC_VER) && defined(_M_IX86)
@@ -20,9 +20,9 @@ typedef void (__cdecl *ZInputCrtInitializerFn)();
 /* VC5 emits these zInput startup callbacks as direct .CRT$XCU rows. */
 #pragma data_seg(".CRT$XCU")
 ZInputCrtInitializerFn s_zInputCrtInit_BindGroupList =
-    (ZInputCrtInitializerFn)BindGroupList_StaticInitAndRegisterAtExit;
+    BindGroupList_StaticInitAndRegisterAtExit;
 ZInputCrtInitializerFn s_zInputCrtInit_GlobalState =
-    (ZInputCrtInitializerFn)GlobalStateStaticInitAndRegisterAtExit;
+    GlobalStateStaticInitAndRegisterAtExit;
 #pragma data_seg()
 #endif
 
@@ -55,7 +55,7 @@ int GlobalStateRegisterAtExit() {
  * to zInput_GlobalState::Destructor.
  * Purpose: expose the zInput global-state destructor as a CRT atexit callback.
  */
-void GlobalStateAtExitDestructor() {
+void __cdecl GlobalStateAtExitDestructor() {
     GlobalStateDestructor(&g_zInput_GlobalStateStorage);
 }
 

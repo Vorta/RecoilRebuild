@@ -285,11 +285,12 @@ void RestoreConstructorGlobals(
     g_Briefing_ProgressEventCode = state.progressEventCode;
 }
 
-int CountActionNodes(
-    BriefingActionNode *head
+int CountQueuedActions(
+    const Briefing_ActionQueue &queue
 ) {
     int count = 0;
-    for (BriefingActionNode *node = head->next; node != head; node = node->next) {
+    std::list<BriefingAction *>::const_iterator action = queue.actions.begin();
+    for (; action != queue.actions.end(); ++action) {
         ++count;
         if (count > 128) {
             return -1;
@@ -300,31 +301,30 @@ int CountActionNodes(
 }
 
 void DeleteQueuedActions(
-    BriefingActionNode *head
+    Briefing_ActionQueue &queue
 ) {
-    for (BriefingActionNode *node = head->next; node != head; node = node->next) {
-        ::operator delete(node->action);
-        node->action = 0;
+    std::list<BriefingAction *>::iterator action = queue.actions.begin();
+    for (; action != queue.actions.end(); ++action) {
+        delete *action;
+        *action = 0;
     }
 }
 
-void InitActionQueue(
-    HudUiBriefingRuntime *runtime,
-    BriefingActionNode *sentinel
+void DestroyActionQueue(
+    Briefing_ActionQueue &queue
 ) {
-    sentinel->prev = sentinel;
-    sentinel->next = sentinel;
-    sentinel->action = 0;
-    runtime->actionQueue.headSentinel = sentinel;
-    runtime->actionQueue.nodeCount = 0;
-    runtime->actionQueue.currentNode = sentinel;
-    runtime->actionQueue.sequenceActive = 0;
+    DeleteQueuedActions(queue);
+    queue.actions.clear();
+    queue.current = queue.actions.end();
+    queue.active = 0;
+    queue.~Briefing_ActionQueue();
 }
 
 void ConstructBriefingUpdateMembers(
     HudUiBriefingRuntime *runtime
 ) {
     std::memset(runtime, 0, sizeof(*runtime));
+    new (&runtime->actionQueue) Briefing_ActionQueue;
     new (&runtime->transportProgress) HudUiBriefingTransportProgress;
     new (&runtime->missionName) HudUiPanel;
     new (&runtime->objectiveSummary) HudUiPanel;
@@ -362,14 +362,11 @@ extern "C" int briefing_runtime_constructor_smoke(void) {
         new (runtime) HudUiBriefingRuntime(kMissionId);
 
     int failure = 0;
-    BriefingActionNode *const sentinel = runtime->actionQueue.headSentinel;
     const bool queueOk =
-        runtime->actionQueue.missionId == (kMissionId & 0xff) &&
-        sentinel != 0 &&
-        sentinel->prev == sentinel &&
-        sentinel->next == sentinel &&
-        runtime->actionQueue.nodeCount == 0 &&
-        runtime->actionQueue.sequenceActive == 0;
+        runtime->actionQueue.actions.empty() &&
+        runtime->actionQueue.actions.size() == 0 &&
+        runtime->actionQueue.actions.begin() == runtime->actionQueue.actions.end() &&
+        runtime->actionQueue.active == 0;
     const bool widgetOk =
         runtime->transportProgress.normalizedValue == 0.0f &&
         runtime->objectivePicture.noiseAlpha == 0.0f &&
@@ -387,10 +384,7 @@ extern "C" int briefing_runtime_constructor_smoke(void) {
         failure = 4;
     }
 
-    if (sentinel != 0) {
-        ::operator delete(sentinel);
-        runtime->actionQueue.headSentinel = 0;
-    }
+    DestroyActionQueue(runtime->actionQueue);
     runtime->messagesPanel.Destructor();
     RestoreFunctionPatch(postprocessPatch);
     RestoreConstructorGlobals(state);
@@ -645,6 +639,7 @@ extern "C" int briefing_runtime_destructor_smoke(void) {
         reinterpret_cast<HudUiBriefingRuntime *>(storage);
 
     new ((HudUiBackground *)runtime) HudUiBackground;
+    new (&runtime->actionQueue) Briefing_ActionQueue;
     new (&runtime->transportProgress) HudUiBriefingTransportProgress;
     new (&runtime->missionName) HudUiPanel;
     new (&runtime->objectiveSummary) HudUiPanel;
@@ -660,23 +655,12 @@ extern "C" int briefing_runtime_destructor_smoke(void) {
             *reinterpret_cast<void **>(&runtime->locatorPanels[index]);
     }
 
-    BriefingActionNode *const sentinel =
-        static_cast<BriefingActionNode *>(::operator new(sizeof(BriefingActionNode)));
-    BriefingActionNode *const first =
-        static_cast<BriefingActionNode *>(::operator new(sizeof(BriefingActionNode)));
-    BriefingActionNode *const second =
-        static_cast<BriefingActionNode *>(::operator new(sizeof(BriefingActionNode)));
-    sentinel->prev = second;
-    sentinel->next = first;
-    sentinel->action = 0;
-    first->prev = sentinel;
-    first->next = second;
-    first->action = 0;
-    second->prev = first;
-    second->next = sentinel;
-    second->action = 0;
-    runtime->actionQueue.headSentinel = sentinel;
-    runtime->actionQueue.nodeCount = 2;
+    runtime->actionQueue.AddDelayUntilProgress(1);
+    runtime->actionQueue.AddDelayUntilProgress(2);
+    const bool actionQueuePopulated =
+        runtime->actionQueue.actions.size() == 2 &&
+        runtime->actionQueue.actions.begin() != runtime->actionQueue.actions.end();
+    DeleteQueuedActions(runtime->actionQueue);
 
     runtime->~HudUiBriefingRuntime();
 
@@ -693,9 +677,6 @@ extern "C" int briefing_runtime_destructor_smoke(void) {
         runtime->messagesPanel.entryVector.begin == 0 &&
         runtime->messagesPanel.entryVector.end == 0 &&
         runtime->messagesPanel.entryVector.capacityEnd == 0;
-    const bool actionQueueReset =
-        runtime->actionQueue.headSentinel == 0 &&
-        runtime->actionQueue.nodeCount == 0;
     const bool transportDestructed =
         runtime->transportProgress.image == 0;
     const bool baseDestructed = runtime->enabled == 0;
@@ -706,7 +687,7 @@ extern "C" int briefing_runtime_destructor_smoke(void) {
     if (!messageEntriesDestroyed) {
         return 3;
     }
-    if (!actionQueueReset) {
+    if (!actionQueuePopulated) {
         return 4;
     }
     if (!transportDestructed) {
@@ -724,8 +705,6 @@ extern "C" int briefing_runtime_update_smoke(void) {
         reinterpret_cast<HudUiBriefingRuntime *>(storage);
 
     ConstructBriefingUpdateMembers(runtime);
-    BriefingActionNode sentinel = {};
-    InitActionQueue(runtime, &sentinel);
 
     const unsigned int oldMask = g_HudUi_InvalidateMask;
     g_HudUi_InvalidateMask = 0x80;
@@ -737,8 +716,8 @@ extern "C" int briefing_runtime_update_smoke(void) {
     runtime->objectiveSummary.flags = 0;
     runtime->objectiveDesc.flags = 0;
 
-    runtime->actionQueue.sequenceActive = 1;
-    runtime->actionQueue.currentNode = runtime->actionQueue.headSentinel;
+    runtime->actionQueue.active = 1;
+    runtime->actionQueue.current = runtime->actionQueue.actions.end();
     g_Briefing_AllowAdvanceFlag = 1;
     runtime->HudUiBriefingRuntime::Update(0.125f);
 
@@ -752,15 +731,15 @@ extern "C" int briefing_runtime_update_smoke(void) {
         (runtime->objectiveDesc.flags & 0x80u) != 0;
 
     runtime->actionQueue.AddDelayUntilProgress(3);
-    runtime->actionQueue.sequenceActive = 1;
-    runtime->actionQueue.currentNode = runtime->actionQueue.headSentinel->next;
+    runtime->actionQueue.active = 1;
+    runtime->actionQueue.current = runtime->actionQueue.actions.begin();
     g_Briefing_ProgressEventCode = 3;
     runtime->HudUiBriefingRuntime::Update(0.125f);
     const bool tickAdvanced =
-        runtime->actionQueue.currentNode == runtime->actionQueue.headSentinel;
+        runtime->actionQueue.current == runtime->actionQueue.actions.end();
 
     g_HudUi_InvalidateMask = oldMask;
-    DeleteQueuedActions(runtime->actionQueue.headSentinel);
+    DestroyActionQueue(runtime->actionQueue);
     return sentinelComplete && tickAdvanced ? 0 : 1;
 }
 
@@ -973,29 +952,27 @@ extern "C" int briefing_build_objective_actions_smoke(void) {
     HudUiBriefingRuntime *const runtime =
         reinterpret_cast<HudUiBriefingRuntime *>(storage);
     ConstructBriefingUpdateMembers(runtime);
-    BriefingActionNode sentinel = {};
-    InitActionQueue(runtime, &sentinel);
 
     int failure = 0;
     const int result = runtime->BuildObjectiveActionsFromIndex(1);
-    const int count = CountActionNodes(runtime->actionQueue.headSentinel);
+    const int count = CountQueuedActions(runtime->actionQueue);
     const bool sequenceStarted =
         result == 1 &&
         count == 25 &&
-        runtime->actionQueue.nodeCount == 25 &&
-        runtime->actionQueue.sequenceActive == 1 &&
-        runtime->actionQueue.currentNode == runtime->actionQueue.headSentinel->prev &&
+        runtime->actionQueue.actions.size() == 25 &&
+        runtime->actionQueue.active == 1 &&
+        runtime->actionQueue.current == runtime->actionQueue.actions.begin() &&
         g_Briefing_SequenceActiveFlag == 1;
 
     networkEnabled = 1;
-    const int oldCount = runtime->actionQueue.nodeCount;
+    const std::size_t oldCount = runtime->actionQueue.actions.size();
     const int networkResult = runtime->BuildObjectiveActionsFromIndex(1);
     const bool networkSkipped =
         networkResult == 0 &&
-        runtime->actionQueue.nodeCount == oldCount;
+        runtime->actionQueue.actions.size() == oldCount;
 
     failure = sequenceStarted && networkSkipped ? 0 : 2;
-    DeleteQueuedActions(runtime->actionQueue.headSentinel);
+    DestroyActionQueue(runtime->actionQueue);
 
     ZOPT_NETWORK_ENABLED = oldNetworkEnabled;
     g_HudSensorTracker.missionId = oldMissionId;

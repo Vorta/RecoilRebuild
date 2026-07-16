@@ -837,7 +837,7 @@ int ReturnSuccessStub();
 int ModuleInit();
 int ShutdownVideoSystem();
 int UpdateCachedClientRectScreenCoords();
-void AtExitReleaseAllInterfacesAndSurfaces();
+void __cdecl AtExitReleaseAllInterfacesAndSurfaces();
 } // namespace zVideo
 
 namespace zVid_Image {

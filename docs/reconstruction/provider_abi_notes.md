@@ -11,8 +11,14 @@ the unified reconstruction tracker, or per-target VC verification evidence.
 - `support/sdk/DirectX6` supplies repo-local DirectDraw, Direct3D Immediate
   Mode, DirectSound, DirectInput, DirectPlay, and `dxguid` headers and x86
   libraries from the original-era DirectX 6 SDK.
-- `support/sdk/MFC42` supplies repo-local MFC42 headers, libraries, runtime DLL,
-  and selected source evidence for MFC shell ABI work.
+- Official project/build paths select only
+  `D:/Recoil Project/Compiler/VC5SP3/VC/MFC/INCLUDE/AFXWIN.H`. The
+  `support/sdk/MFC42` and `D:/Recoil Project/Visual C++ 5.0` header trees are
+  evidence only. The support tree still supplies provider ABI/source/library
+  evidence for MFC shell work.
+- A matched `MFC42.LIB`/`MFCS42.LIB` pair from the Visual C++ 5.0 RTM tree may
+  be used only as an explicit diagnostic library profile. It must not mix with
+  the canonical pair, switch the header root, or establish provider acceptance.
 - The A3D backend uses the Aureal A3D 2.0-era COM API, not the A3D 1.2 API:
   `support/Recoil.exe` contains `CLSID_A3dApi`
   `{92FA2C24-253C-11D2-90FB-006008A1F441}`, `IID_IA3d3`,

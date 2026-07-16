@@ -31,6 +31,10 @@
     kWestwoodOnlineUpgradeDialog_ProgressStatusControlId
 #define kWestwoodOnlineUpgradeSessionResultsListId \
     kWestwoodOnlineUpgradeDialog_SessionResultsListId
+/*
+ * Reimplements 0x43d980: compiler-generated ordinary destructor lifecycle
+ * contribution for WestwoodOnlineUpgradeDialog.
+ */
 #include "Battlesport/wol_dialog_body.h"
 #undef kMfcMessageMapSigVoid
 #undef kWestwoodOnlineUpgradeBrowseRecordListId

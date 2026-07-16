@@ -77,7 +77,7 @@ struct AINet {
     AINetNode *nodeListHead;
     AINet *next;
 
-    static void LoadAllFromZrd();
+    static void __cdecl LoadAllFromZrd();
     static AINet *__fastcall LoadFromZrd(int netId);
     static AINet *Alloc();
     static AINet *__fastcall FindByNetId(int netId);
@@ -189,13 +189,13 @@ struct AINet {
     static void __fastcall AiSteerTowardPathNodeReverse(
         zUtil_SaveGameState *saveState
     );
-    static void AiFinalizeMode2State1ForAllPlayers();
-    static void BuildAiPeerRingsByAiNetId();
+    static void __cdecl AiFinalizeMode2State1ForAllPlayers();
+    static void __cdecl BuildAiPeerRingsByAiNetId();
     static void __fastcall AiDiscardNegativeBranchPathNodes(
         zUtil_SaveGameState *saveState
     );
     void Free();
-    static void FreeAll();
+    static void __cdecl FreeAll();
 };
 
 extern "C" {
@@ -743,30 +743,6 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
 #define AINET_PATH_DOT_XZ(out, steer, delta) AINET_VEC3_DOT_XZ(out, steer, delta)
 #define AINET_PATH_CROSS_XZ(out, steer, delta) AINET_VEC3_CROSS_XZ(out, steer, delta)
 #endif
-
-/**
- * Original-source helper evidence: no standalone retail function exists.
- * Observed in address-backed caller 0x4024a0 as the same fast square-root
- * estimate pattern used by later Player source-file helpers.
- * Purpose: provide the recovered ai_net.h-local fast sqrt estimate helper.
- */
-static float PlayerFastSqrtEstimate(
-    float value
-) {
-    int bits = 0;
-    memcpy(
-        &bits,
-        &value,
-        sizeof(bits)
-    );
-    bits = (bits >> 1) + 0x1fc00000;
-    memcpy(
-        &value,
-        &bits,
-        sizeof(value)
-    );
-    return value;
-}
 
 /**
  * Reimplements 0x401060: AINet::TickAiMode2TopLevel (Battlesport/ai_net.h).
@@ -1963,7 +1939,13 @@ void __fastcall AINet::SolveAltGunLeadTargetPoint(
                                    scaledTargetDelta.y * scaledTargetDelta.y +
                                    scaledTargetDelta.z * scaledTargetDelta.z;
     const float discriminant = quadraticA * targetDistanceSq + quadraticB * quadraticB;
-    const float leadScale = (PlayerFastSqrtEstimate(discriminant) + quadraticB) / quadraticA;
+    union {
+        float value;
+        int bits;
+    } fastSqrtEstimate;
+    fastSqrtEstimate.value = discriminant;
+    fastSqrtEstimate.bits = (fastSqrtEstimate.bits >> 1) + 0x1fc00000;
+    const float leadScale = (fastSqrtEstimate.value + quadraticB) / quadraticA;
 
     scaledRelativeVelocity.x = relativeVelocity.x * leadScale;
     scaledRelativeVelocity.y = relativeVelocity.y * leadScale;

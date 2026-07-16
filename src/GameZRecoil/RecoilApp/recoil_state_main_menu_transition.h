@@ -40,10 +40,10 @@ struct RecoilStateMainMenuTransition : RecoilApp_IState {
     void OnResume(int param);
     void OnDeactivate();
 
-    static void StaticInitAndRegisterAtExit();
+    static void __cdecl StaticInitAndRegisterAtExit();
     static RecoilStateMainMenuTransition *StaticInit();
     static void RegisterAtExit();
-    static void AtExitDestructor();
+    static void __cdecl AtExitDestructor();
     static void ClearPausedAudioSnapshot();
     static void __fastcall QueueEnter(RecoilMainMenuEntryRoute entryRoute);
     static void __fastcall SetDeferredVideoModeIndex(zVidModeIndex modeIndex);
@@ -174,7 +174,6 @@ class HudUiMainMenuDialog : public HudUiMainMenuDialogBackground {
     HudUiMainMenuDialog_ControlsButton controlsButton;
 
     HudUiMainMenuDialog(RecoilMainMenuEntryRoute route);
-    virtual HudUiBackground * ScalarDeletingDestructor(unsigned int flags);
     ~HudUiMainMenuDialog();
 
     static int CanLoadGame();

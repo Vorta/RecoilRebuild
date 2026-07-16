@@ -556,23 +556,6 @@ void HudUiNetGameSetupPanel::Destructor() {
 }
 
 /**
- * Original helper evidence: no standalone retail function; observed in
- * the HudUiNetGameSetupOverlayOwner panel delete path.
- * Source: D:\Proj\Battlesport\HudUiNetGameSetup.cpp
- * Purpose: Run the panel destructor and optionally free the panel storage.
- */
-HudUiBackground * HudUiNetGameSetupPanel::ScalarDeletingDestructor(
-    unsigned int flags
-) {
-    Destructor();
-    if ((flags & 1u) != 0) {
-        ::operator delete(this);
-    }
-
-    return this;
-}
-
-/**
  * Reimplements 0x41a160: HudUiNetGameSetupPanel_CancelButton::OnActivate
  * Source: D:\Proj\Battlesport\HudUiNetGameSetup.cpp
  * Purpose: Leave the network setup state when the cancel button is activated.

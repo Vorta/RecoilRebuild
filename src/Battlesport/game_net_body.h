@@ -1056,21 +1056,6 @@ NetSessionBrowserDialog * NetSessionBrowserDialog::Constructor(
 }
 
 /**
- * Reimplements 0x41ae90: NetSessionBrowserDialog::ScalarDeletingDestructor
- * Source: D:\Proj\Battlesport\GameNet.cpp
- * Purpose: Destroy the browser dialog and optionally release its storage.
- */
-NetSessionBrowserDialog * NetSessionBrowserDialog::ScalarDeletingDestructor(
-    unsigned int flags
-) {
-    Destructor();
-    if ((flags & 1u) != 0) {
-        ::operator delete(this);
-    }
-    return this;
-}
-
-/**
  * Original helper evidence: no standalone retail function; the 0x41aeb0
  * Destructor wrapper invokes this owner-shaped C++ destructor so VC5 emits the
  * derived dialog deleting-destructor slot.
@@ -1838,7 +1823,7 @@ namespace Mission {
  * Source: D:\Proj\Battlesport\GameNet.cpp
  * Purpose: Construct and register cleanup for multiplayer map name strings.
  */
-void RegisterMultiplayerMaps() {
+void __cdecl RegisterMultiplayerMaps() {
     NetSessionConfigDialog::InitMapNameStrings();
     NetSessionConfigDialog::RegisterMapNameCleanup();
 }
@@ -1873,7 +1858,7 @@ void NetSessionConfigDialog::RegisterMapNameCleanup() {
  * Source: D:\Proj\Battlesport\GameNet.cpp
  * Purpose: Destroy the static multiplayer map-name CString entries.
  */
-void NetSessionConfigDialog::CleanupMapNameStringsOnExit() {
+void __cdecl NetSessionConfigDialog::CleanupMapNameStringsOnExit() {
     for (int index = kNetSessionConfigMapNameCount - 1; index >= 0; --index) {
         g_NetSessionConfigDialog_MapNameStrings[index].~CString();
     }
@@ -3827,7 +3812,7 @@ namespace GameNetSpawnPointList {
  * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
  * Purpose: Reset the GameNet-owned spawn-point list header to an empty state.
  */
-void InitGlobals() {
+void __cdecl InitGlobals() {
     g_GameNetSpawnPointList.flags = 0;
     g_GameNetSpawnPointTail = 0;
     g_GameNetSpawnPointHead = 0;
@@ -3841,7 +3826,7 @@ namespace GameNetPlayerRowList {
  * Source: D:\Proj\GameZRecoil\RecoilApp\GameNet.cpp
  * Purpose: Reset the GameNet-owned player-row list header to an empty state.
  */
-void Reset() {
+void __cdecl Reset() {
     g_GameNetPlayerRowList.flags = 0;
     g_GameNetPlayerRowTail = 0;
     g_GameNetPlayerRowHead = 0;

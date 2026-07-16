@@ -124,9 +124,6 @@ struct HudUiNetGameSetupPanel : HudUiBackground {
         return new (this) HudUiNetGameSetupPanel(reconfigureExistingSessionValue);
     }
     void Destructor();
-    HudUiBackground * ScalarDeletingDestructor(
-        unsigned int flags
-    );
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel) == 0xcaac);
 RECOIL_STATIC_ASSERT(

@@ -111,7 +111,7 @@ RecoilStateCredits::~RecoilStateCredits() {
 
         creditsPanel = (HudUiCreditsPanel *)m_dialog;
         if (creditsPanel != 0) {
-            creditsPanel->ScalarDeletingDestructor(1);
+            delete creditsPanel;
         }
 
         m_dialog = 0;
@@ -153,7 +153,7 @@ void RecoilStateDialogHost::OnDeactivate() {
     ((HudUiDialogController *)m_dialog)->BlitOwnedSurfaceToPrimary();
 
     if (m_dialog != 0) {
-        ((HudUiBackground *)m_dialog)->ScalarDeletingDestructor(1);
+        delete ((HudUiBackground *)m_dialog);
     }
 
     m_dialog = 0;

@@ -720,10 +720,10 @@ namespace zSndBackend {
 int Shutdown();
 }
 namespace zSndCdTrackList {
-void StaticInit();
+void __cdecl StaticInit();
 void StaticConstructor();
 void RegisterAtExitDestructor();
-void StaticDestructor();
+void __cdecl StaticDestructor();
 }
 namespace zSndStreamMgr {
 int __fastcall UpdateActiveRequestPredicate(
@@ -733,7 +733,7 @@ int __fastcall UpdateActiveRequestPredicate(
 int Shutdown();
 }
 extern "C" void zSndSampleSetRegistry_DestroyAll();
-extern "C" void zSndSampleSetRegistry_Shutdown();
+extern "C" void __cdecl zSndSampleSetRegistry_Shutdown();
 extern "C" void zSndSampleSetRegistry_RegisterAtExit();
 extern "C" void __fastcall zSnd_SetUseArchiveBanks(unsigned char enabled);
 extern "C" void __fastcall zSnd_SetUseArchiveBanksAndRegisterAtExit(
@@ -752,7 +752,7 @@ namespace zSndFadeLists {
 void Init();
 void InitGlobals();
 void RegisterShutdownAtExit();
-void ShutdownAtExit();
+void __cdecl ShutdownAtExit();
 void StopAllAndShutdown();
 } // namespace zSndFadeLists
 namespace zSndFadeDispatchList {

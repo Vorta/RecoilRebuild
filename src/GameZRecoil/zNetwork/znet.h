@@ -309,7 +309,7 @@ int zNetwork_GetLocalPlayerColorIndex();
 void zNetwork_InitMessageHandlers();
 void zNetwork_CreateEmptyDispatchHandlerList();
 void zNetwork_RegisterDispatchHandlerListShutdown();
-void zNetwork_DestroyDispatchHandlerList();
+void __cdecl zNetwork_DestroyDispatchHandlerList();
 int __fastcall zNetwork_DPlay_SendUnreliable(
     zNetworkPacketHeader *packet,
     unsigned int packetSizeBytes

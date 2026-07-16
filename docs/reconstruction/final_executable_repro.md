@@ -1,21 +1,22 @@
 # Final Executable Reproducibility
 
-This document covers only Phase 3, `final-validation`, of
+This document covers only Phase 5, `final-validation`, of
 [`retail_executable_reproduction.md`](retail_executable_reproduction.md). It is
 not an independent queue and never outranks `python tools/recoil.py progress next`.
-Before Phase 3, these commands are diagnostics only when the current text cursor
+Before Phase 5, these commands are diagnostics only when the current text cursor
 requires compile/link evidence.
 
 ## Acceptance
 
 Recoil.exe is accepted only when one unrestricted synchronized VC5SP3 build
-passes every required function-order, linked-byte/address, mandatory whole
+passes every required authored/full function-order, authored/linked-byte and
+linked-address, mandatory whole
 output-section/storage/data, provider/import, resource, PE, candidate-size,
 and whole-file SHA-256 check, with an accepted exact final-repro receipt,
 against `support/Recoil.exe`. Diagnostic skips, normalized comparisons, stale
 maps, post-link patching, or dry-run summaries never qualify.
 
-Run the final phase with:
+Run Phase 5 with:
 
 ```powershell
 python tools/recoil.py audit provenance --strict
@@ -30,7 +31,10 @@ python tools/recoil.py progress audit --scope pipeline --strict
 identical; that is reconstruction evidence, not automatically a tool failure.
 The final-build receipt must bind the canonical build configuration, effective
 required order targets, toolchain/compiler context, source/object/map/resource/
-candidate hashes, per-report hashes, and executed run identity.
+candidate identities, per-report identities, and executed run identity. Those
+identities remain machine-managed SHA-256 metadata inside the receipt; agents
+cite the receipt/evidence path or imported evidence id rather than copying
+digests unless diagnosing an integrity mismatch.
 `audit final-repro` and its import record observed evidence only; neither is a
 work unit, scheduler, or acceptance operation.
 
@@ -44,7 +48,7 @@ report as current merely to populate normalized state.
 
 ## Linked Data Diagnostics
 
-When Phase 3 or the current text cursor explicitly selects linked `.data`
+When Phase 5 or the current text cursor explicitly selects linked `.data`
 layout as a required dependency, use:
 
 ```powershell
