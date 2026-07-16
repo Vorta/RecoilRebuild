@@ -19,8 +19,6 @@ class CAboutDlg : public CDialog {
     CAboutDlg(CWnd *parentWnd = 0);
 
   protected:
-    virtual void DoDataExchange(CDataExchange *dataExchange);
-
     DECLARE_MESSAGE_MAP()
 };
 

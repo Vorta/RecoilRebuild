@@ -221,91 +221,6 @@ RECOIL_STATIC_ASSERT(
 );
 RECOIL_STATIC_ASSERT(sizeof(BriefingActionDelayUntilProgress) == 0x08);
 
-/**
- * Original inline helper; no standalone retail function exists.
- * Observed in callers 0x404070, 0x404180, 0x404280, and 0x404400.
- * Evidence: BN field references select offset 0xa94c from the runtime object.
- * Purpose: select the action queue embedded in the briefing runtime object.
- */
-inline Briefing_ActionQueue *BriefingActionQueue(
-    HudUiBriefingRuntime *runtime
-    ) {
-    return &runtime->actionQueue;
-}
-
-/**
- * Original inline helper; no standalone retail function exists.
- * Observed in callers 0x404070, 0x404280, and 0x404400.
- * Evidence: BN field references select offset 0xaae8 from the runtime object.
- * Purpose: select the mission-name panel embedded in the briefing runtime.
- */
-inline HudUiPanel *BriefingMissionNamePanel(
-    HudUiBriefingRuntime *runtime
-) {
-    return &runtime->missionName;
-}
-
-/**
- * Original inline helper; no standalone retail function exists.
- * Observed in callers 0x404070, 0x404280, and 0x404400.
- * Evidence: BN field references select offset 0xad8c from the runtime object.
- * Purpose: select the objective-summary panel embedded in the briefing runtime.
- */
-inline HudUiPanel *BriefingObjectiveSummaryPanel(
-    HudUiBriefingRuntime *runtime
-) {
-    return &runtime->objectiveSummary;
-}
-
-/**
- * Original inline helper; no standalone retail function exists.
- * Observed in callers 0x404070, 0x404280, and 0x404400.
- * Evidence: BN field references select offset 0xb030 from the runtime object.
- * Purpose: select the objective-description panel embedded in the briefing runtime.
- */
-inline HudUiPanel *BriefingObjectiveDescPanel(
-    HudUiBriefingRuntime *runtime
-) {
-    return &runtime->objectiveDesc;
-}
-
-/**
- * Original inline helper; no standalone retail function exists.
- * Observed in callers 0x404070, 0x404280, and 0x404400.
- * Evidence: BN field references select offset 0xb2d4 from the runtime object.
- * Purpose: select the objective-picture widget embedded in the briefing runtime.
- */
-inline HudUiBriefingObjectivePicture *BriefingObjectivePicture(
-    HudUiBriefingRuntime *runtime
-) {
-    return &runtime->objectivePicture;
-}
-
-/**
- * Original inline helper; no standalone retail function exists.
- * Observed in callers 0x404070 and 0x404280.
- * Evidence: BN field references select offset 0xb394 from the runtime object.
- * Purpose: select the transmission-halted panel embedded in the briefing runtime.
- */
-inline HudUiPanel *BriefingTransmissionHaltedPanel(
-    HudUiBriefingRuntime *runtime
-) {
-    return &runtime->transmissionHalted;
-}
-
-/**
- * Original inline helper; no standalone retail function exists.
- * Observed in caller 0x404400.
- * Evidence: BN indexes the locator panel array at offset 0xb8f0 with 0x40-byte elements.
- * Purpose: select one briefing locator panel by objective index.
- */
-inline HudUiBriefingLocatorPanel *BriefingLocatorPanel(
-    HudUiBriefingRuntime *runtime,
-    int objectiveIndex
-) {
-    return &runtime->locatorPanels[objectiveIndex];
-}
-
 } // namespace
 
 extern "C" {
@@ -371,50 +286,13 @@ int g_Briefing_ProgressEventCode = -1;
 /**
  * Original inline constructor; no standalone retail function exists.
  * Observed in caller 0x403930 as the first runtime member construction state.
- * Purpose: initialize the mission-owned briefing action queue and empty node ring.
+ * The official VC5 std::list constructor supplies the empty sentinel; the
+ * iterator remains default constructed until a sequence starts.
+ * Purpose: initialize the briefing action queue's independent active state.
  */
-inline Briefing_ActionQueue::Briefing_ActionQueue(
-    int missionIdValue
-) {
-    missionId = (unsigned char)(missionIdValue);
-    BriefingActionNode *const sentinel = new BriefingActionNode;
-    sentinel->next = sentinel;
-    sentinel->prev = sentinel;
-    headSentinel = sentinel;
-    nodeCount = 0;
-    sequenceActive = 0;
+inline Briefing_ActionQueue::Briefing_ActionQueue()
+    : active(0) {
     g_Briefing_ProgressEventCode = -1;
-}
-
-/**
- * Original inline destructor; no standalone retail function exists.
- * Observed in 0x403930 constructor unwind state after action-queue construction.
- * Purpose: release the briefing action queue's sentinel and queued action records.
- */
-inline Briefing_ActionQueue::~Briefing_ActionQueue() {
-    BriefingActionNode *const head = headSentinel;
-    BriefingActionNode *node = head->next;
-    while (node != head) {
-        BriefingActionNode *const next = node->next;
-        node->prev->next = node->next;
-        node->next->prev = node->prev;
-        ::operator delete(node);
-        --nodeCount;
-        node = next;
-    }
-
-    ::operator delete(head);
-    headSentinel = 0;
-    nodeCount = 0;
-}
-
-/**
- * Original inline constructor; no standalone retail function exists.
- * Observed in caller 0x403930 as the transport-progress member construction.
- * Purpose: construct the briefing progress bar through its fill-bitmap base.
- */
-inline HudUiBriefingTransportProgress::HudUiBriefingTransportProgress()
-    : HudUiFillBitmap() {
 }
 
 /**
@@ -463,7 +341,7 @@ void HudUiBriefingObjectivePicture::Draw() {
 HudUiBriefingRuntime::HudUiBriefingRuntime(
     int missionId
 ) : HudUiBackground(),
-    actionQueue(missionId),
+    actionQueue(),
     transportProgress(),
     missionName(
         0,
@@ -607,20 +485,20 @@ HudUiBriefingLocatorPanel::HudUiBriefingLocatorPanel()
 }
 
 /**
- * Reimplements 0x403c80: HudUiCircle::DrawDirtyForwarder.
+ * Reimplements 0x403c80: HudUiBriefingLocatorPanel::Draw.
  * Original file: D:\Proj\Battlesport\Briefing.cpp.
- * Purpose: route the briefing table dispatch slot to HudUiCircle::Draw.
+ * Purpose: draw the locator circle through the inherited circle implementation.
  */
-void HudUiCircle::DrawDirtyForwarder() {
+void HudUiBriefingLocatorPanel::Draw() {
     HudUiCircle::Draw();
 }
 
 /**
- * Reimplements 0x403c90: HudUiBriefingLocatorPanel::BlitDirtyRect.
+ * Reimplements 0x403c90: HudUiBriefingLocatorPanel::DrawBase.
  * Original file: D:\Proj\Battlesport\Briefing.cpp.
  * Purpose: redraw the locator panel's clipped background region.
  */
-void HudUiBriefingLocatorPanel::BlitDirtyRect() {
+void HudUiBriefingLocatorPanel::DrawBase() {
     if (bltSource != 0) {
         zVid_Image::BlitToActiveTarget(
             (zVidImagePartial *)(bltSource),
@@ -630,15 +508,6 @@ void HudUiBriefingLocatorPanel::BlitDirtyRect() {
             (zVidRect32 *)(&clipRect)
         );
     }
-}
-
-/**
- * Original inline helper; no standalone retail function exists.
- * Observed as the locator draw-base target reached through briefing UI dispatch.
- * Purpose: share locator draw-base behavior with the address-backed dirty-rect blit.
- */
-void HudUiBriefingLocatorPanel::DrawBase() {
-    BlitDirtyRect();
 }
 
 /**
@@ -685,38 +554,12 @@ void HudUiBriefingLocatorPanel::Update(
 }
 
 /**
- * Reimplements 0x403d90: HudUiBriefingRuntime::ScalarDeletingDestructor.
- * Original source path: D:\Proj\Battlesport\Briefing.cpp.
- * Purpose: run briefing runtime destruction and optionally free the object storage.
- */
-HudUiBackground * HudUiBriefingRuntime::ScalarDeletingDestructor(
-    unsigned int flags
-) {
-    this->HudUiBriefingRuntime::~HudUiBriefingRuntime();
-    if ((flags & 1u) != 0) {
-        ::operator delete(this);
-    }
-
-    return this;
-}
-
-/**
- * Reimplements 0x403e20: HudUiCompositePanel::Destructor.
+ * Reimplements 0x403e20: HudUiCompositePanel::~HudUiCompositePanel.
  * Physical source block: D:\Proj\Battlesport\Briefing.cpp.
  * Purpose: destroy composite-panel entries, free vector storage, and tear down
  * the inherited panel state.
  */
-void HudUiCompositePanel::Destructor() {
-    for (HudUiCompositePanelEntry *entry = entryVector.begin; entry != entryVector.end; ++entry) {
-        entry->panel.ScalarDeletingDestructor(0);
-    }
-
-    ::operator delete(entryVector.begin);
-    entryVector.begin = 0;
-    entryVector.end = 0;
-    entryVector.capacityEnd = 0;
-
-    HudUiPanel::~HudUiPanel();
+HudUiCompositePanel::~HudUiCompositePanel() {
 }
 
 /**
@@ -737,15 +580,12 @@ HudUiBriefingRuntime::~HudUiBriefingRuntime() {
 void HudUiBriefingRuntime::Update(
     float deltaSec
 ) {
-    Briefing_ActionQueue *const actionQueue = BriefingActionQueue(this);
-    if (actionQueue->sequenceActive != 0) {
-        BriefingActionNode *const currentNode = actionQueue->currentNode;
-        BriefingActionNode *const headSentinel = actionQueue->headSentinel;
+    Briefing_ActionQueue *const actionQueue = &this->actionQueue;
+    if (actionQueue->active != 0) {
         int sequenceComplete = 0;
-        int currentNodeNotHead = 1 - (currentNode == headSentinel);
-        if (currentNodeNotHead) {
-            if (currentNode->action->Tick(deltaSec) != 0) {
-                actionQueue->currentNode = actionQueue->currentNode->next;
+        if (actionQueue->current != actionQueue->actions.end()) {
+            if ((*actionQueue->current)->Tick(deltaSec) != 0) {
+                ++actionQueue->current;
             }
         } else {
             sequenceComplete = 1;
@@ -756,12 +596,12 @@ void HudUiBriefingRuntime::Update(
         }
     }
 
-    BriefingObjectivePicture(this)->Invalidate();
-    BriefingTransmissionHaltedPanel(this)->Invalidate();
-    BriefingMissionNamePanel(this)->Invalidate();
+    this->objectivePicture.Invalidate();
+    this->transmissionHalted.Invalidate();
+    this->missionName.Invalidate();
     transportProgress.Invalidate();
-    BriefingObjectiveSummaryPanel(this)->Invalidate();
-    BriefingObjectiveDescPanel(this)->Invalidate();
+    this->objectiveSummary.Invalidate();
+    this->objectiveDesc.Invalidate();
     HudUiBackgroundContainer::UpdateAll(deltaSec);
 }
 
@@ -841,7 +681,7 @@ int __fastcall StartForMission(
  * Original source path: D:\Proj\Battlesport\Briefing.cpp.
  * Purpose: run the briefing input, audio, video, and UI update loop.
  */
-void ThreadMain(
+void __cdecl ThreadMain(
     void *
 ) {
     g_Briefing_ThreadRunFlag = 1;
@@ -861,21 +701,21 @@ void ThreadMain(
                 g_Briefing_CurrentSndHandle->StopIfActive();
             }
 
-            Briefing_ActionQueue *const actionQueue = BriefingActionQueue(runtime);
-            actionQueue->sequenceActive = 0;
+            Briefing_ActionQueue *const actionQueue = &runtime->actionQueue;
+            actionQueue->active = 0;
             g_Briefing_SequenceActiveFlag = 0;
-            actionQueue->currentNode = actionQueue->headSentinel;
+            actionQueue->current = actionQueue->actions.end();
 
-            BriefingMissionNamePanel(runtime)->SetVisible(0);
-            BriefingObjectiveSummaryPanel(runtime)->SetVisible(0);
-            BriefingObjectiveDescPanel(runtime)->SetVisible(0);
+            runtime->missionName.SetVisible(0);
+            runtime->objectiveSummary.SetVisible(0);
+            runtime->objectiveDesc.SetVisible(0);
 
             HudUiBriefingObjectivePicture *const objectivePicture =
-                BriefingObjectivePicture(runtime);
+                &runtime->objectivePicture;
             objectivePicture->noiseAlpha = 1.0f;
             objectivePicture->Invalidate();
 
-            HudUiPanel *const transmissionHalted = BriefingTransmissionHaltedPanel(runtime);
+            HudUiPanel *const transmissionHalted = &runtime->transmissionHalted;
             transmissionHalted->SetTextFmt(zLoc::GetMessageString(0x110));
             transmissionHalted->SetVisible(1);
         }
@@ -924,7 +764,7 @@ int HudUiBriefingRuntime::BuildObjectiveActionsFromIndex(
         g_HudSensorTracker.GetMissionId()
     );
 
-    Briefing_ActionQueue *const actionQueue = BriefingActionQueue(runtime);
+    Briefing_ActionQueue *const actionQueue = &runtime->actionQueue;
     actionQueue->AddPlaySampleByName(
         sampleName,
         1.0f,
@@ -934,15 +774,13 @@ int HudUiBriefingRuntime::BuildObjectiveActionsFromIndex(
 
     unsigned int index = (unsigned int)(objectiveIndex);
     if (index < (unsigned int)(g_HudSensorTracker.objectiveCount)) {
-        HudUiPanel *const missionNamePanel = BriefingMissionNamePanel(runtime);
-        HudUiPanel *const objectiveSummaryPanel = BriefingObjectiveSummaryPanel(runtime);
+        HudUiPanel *const missionNamePanel = &runtime->missionName;
+        HudUiPanel *const objectiveSummaryPanel = &runtime->objectiveSummary;
         HudUiBriefingObjectivePicture *const objectivePicture =
-            BriefingObjectivePicture(runtime);
-        HudUiPanel *const objectiveDescPanel = BriefingObjectiveDescPanel(runtime);
-        HudUiBriefingLocatorPanel *locatorPanel = BriefingLocatorPanel(
-            runtime,
-            (int)(index)
-        );
+            &runtime->objectivePicture;
+        HudUiPanel *const objectiveDescPanel = &runtime->objectiveDesc;
+        HudUiBriefingLocatorPanel *locatorPanel =
+            &runtime->locatorPanels[(int)(index)];
 
         do {
             char *objectiveSummaryText;
@@ -993,34 +831,10 @@ int HudUiBriefingRuntime::BuildObjectiveActionsFromIndex(
         } while (index < (unsigned int)(g_HudSensorTracker.objectiveCount));
     }
 
-    actionQueue->sequenceActive = 1;
+    actionQueue->active = 1;
     g_Briefing_SequenceActiveFlag = 1;
-    actionQueue->currentNode = actionQueue->headSentinel->next;
+    actionQueue->current = actionQueue->actions.begin();
     return 1;
-}
-
-/**
- * Original inline helper; no standalone retail function exists.
- * Observed in callers 0x4045b0, 0x404640, 0x4046d0, 0x404780,
- * 0x4048a0, 0x4049d0, and 0x404b40.
- * Evidence: BN shows each Add* helper allocating an action record, then
- * linking one 0x0c-byte queue node at the action-queue sentinel.
- * Purpose: insert one action at the tail sentinel and return the updated queue count.
- */
-inline int Briefing_ActionQueue::InsertAction(
-    BriefingAction *action
-) {
-    BriefingActionNode *const head = headSentinel;
-    BriefingActionNode *const prev = head->prev;
-    BriefingActionNode *const node = new BriefingActionNode;
-    node->next = head != 0 ? head : node;
-    node->prev = prev != 0 ? prev : node;
-    head->prev = node;
-    node->prev->next = node;
-    new (&node->action) BriefingAction *(action);
-
-    ++nodeCount;
-    return nodeCount;
 }
 
 /**
@@ -1031,7 +845,8 @@ int Briefing_ActionQueue::AddHideElement(
     HudUiElement *element
 ) {
     BriefingActionHideElement *const action = new BriefingActionHideElement(element);
-    return InsertAction(action);
+    actions.push_back(action);
+    return actions.size();
 }
 
 /**
@@ -1053,7 +868,8 @@ int Briefing_ActionQueue::AddShowElement(
     HudUiElement *element
 ) {
     BriefingActionShowElement *const action = new BriefingActionShowElement(element);
-    return InsertAction(action);
+    actions.push_back(action);
+    return actions.size();
 }
 
 /**
@@ -1076,7 +892,8 @@ int Briefing_ActionQueue::AddFadeInElement(
     HudUiElement *element
 ) {
     BriefingActionFadeInElement *const action = new BriefingActionFadeInElement(element);
-    return InsertAction(action);
+    actions.push_back(action);
+    return actions.size();
 }
 
 /**
@@ -1103,7 +920,8 @@ int Briefing_ActionQueue::AddSetPanelText(
 ) {
     BriefingActionSetPanelText *const action =
         new BriefingActionSetPanelText(text, panel);
-    return InsertAction(action);
+    actions.push_back(action);
+    return actions.size();
 }
 
 /**
@@ -1130,7 +948,8 @@ int Briefing_ActionQueue::AddSetWidgetImageTimed(
 ) {
     BriefingActionSetWidgetImageTimed *const action =
         new BriefingActionSetWidgetImageTimed(imageRef, widget);
-    return InsertAction(action);
+    actions.push_back(action);
+    return actions.size();
 }
 
 /**
@@ -1169,7 +988,8 @@ int Briefing_ActionQueue::AddPlaySampleByName(
             useVariant,
             progressId
         );
-    return InsertAction(action);
+    actions.push_back(action);
+    return actions.size();
 }
 
 /**
@@ -1229,7 +1049,8 @@ int Briefing_ActionQueue::AddDelayUntilProgress(
 ) {
     BriefingActionDelayUntilProgress *const action =
         new BriefingActionDelayUntilProgress(progressId);
-    return InsertAction(action);
+    actions.push_back(action);
+    return actions.size();
 }
 
 /**
@@ -1282,7 +1103,7 @@ void __fastcall StopAndShutdownThread(
      */
     HudUiBriefingRuntime *const runtime = g_Briefing_Runtime;
     if (runtime != 0) {
-        runtime->ScalarDeletingDestructor(1);
+        delete runtime;
         g_Briefing_Runtime = 0;
     }
 

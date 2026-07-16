@@ -3623,7 +3623,7 @@ void Constructor() {
  * Reimplements 0x41ec70: Player_TopMsgPanel1::Destructor.
  * Purpose: destroy the first top-message HUD panel singleton during CRT exit.
  */
-void Destructor() {
+void __cdecl Destructor() {
     g_Player_TopMsgPanel1.~HudUiPanel();
 }
 
@@ -3648,7 +3648,7 @@ void Constructor() {
  * Reimplements 0x41ecc0: Player_TopMsgPanel2::Destructor.
  * Purpose: destroy the second top-message HUD panel singleton during CRT exit.
  */
-void Destructor() {
+void __cdecl Destructor() {
     g_Player_TopMsgPanel2.~HudUiPanel();
 }
 
@@ -3662,7 +3662,7 @@ namespace PlayerNodeFlagRestore {
  * Purpose: reimplement PlayerNodeFlagRestore::InitGlobals from the recovered
  * Battlesport gameplay source file.
  */
-void InitGlobals() {
+void __cdecl InitGlobals() {
     InitInstance();
     RegisterAtExit();
 }
@@ -3696,7 +3696,7 @@ void RegisterAtExit() {
  * Purpose: reimplement PlayerNodeFlagRestore::ShutdownInstance from the recovered
  * Battlesport gameplay source file.
  */
-void ShutdownInstance() {
+void __cdecl ShutdownInstance() {
     ::operator delete(g_PlayerNodeFlagRestoreEntriesBegin);
     g_PlayerNodeFlagRestoreEntriesBegin = 0;
     g_PlayerNodeFlagRestoreEntriesEnd = 0;
@@ -3710,7 +3710,7 @@ namespace Player {
  * Reimplements 0x41ea90: Player::InitMasterCommonDataList.
  * Purpose: clear the master common-data intrusive-list bootstrap globals.
  */
-void InitMasterCommonDataList() {
+void __cdecl InitMasterCommonDataList() {
     g_PlayerMasterCommonDataListAux = 0;
     g_PlayerMasterCommonDataTail = 0;
     g_PlayerMasterCommonDataHead = 0;
@@ -3721,7 +3721,7 @@ void InitMasterCommonDataList() {
  * Reimplements 0x41eac0: Player::InitMasterModalDataList.
  * Purpose: clear the master modal-data intrusive-list bootstrap globals.
  */
-void InitMasterModalDataList() {
+void __cdecl InitMasterModalDataList() {
     g_PlayerMasterModalDataListAux = 0;
     g_PlayerMasterModalDataTail = 0;
     g_PlayerMasterModalDataHead = 0;
@@ -3733,7 +3733,7 @@ void InitMasterModalDataList() {
  * Purpose: run the underwater pass-3 HUD singleton constructor and register
  * its atexit reset callback.
  */
-void InitAndRegisterUnderwaterFxPass3UiSingleton() {
+void __cdecl InitAndRegisterUnderwaterFxPass3UiSingleton() {
     InitUnderwaterFxPass3UiSingleton();
     RegisterUnderwaterFxPass3UiOnExit();
 }
@@ -3761,7 +3761,7 @@ void RegisterUnderwaterFxPass3UiOnExit() {
  * Purpose: reset the underwater pass-3 HUD overlay singleton to the common
  * HudUiElement destruction state during CRT exit.
  */
-void ResetUnderwaterFxPass3UiSingleton() {
+void __cdecl ResetUnderwaterFxPass3UiSingleton() {
     g_Player_UnderwaterFxPass3Ui.~Player_UnderwaterFxPass3Ui();
 }
 
@@ -3770,7 +3770,7 @@ void ResetUnderwaterFxPass3UiSingleton() {
  * Purpose: construct the projectile-camera pass-3 HUD singleton and register
  * its CRT exit reset callback.
  */
-void InitAndRegisterProjectileCameraFxPass3UiSingleton() {
+void __cdecl InitAndRegisterProjectileCameraFxPass3UiSingleton() {
     InitProjectileCameraFxPass3UiSingleton();
     RegisterProjectileCameraFxPass3UiCleanup();
 }
@@ -3797,7 +3797,7 @@ void RegisterProjectileCameraFxPass3UiCleanup() {
  * Purpose: reset the projectile-camera pass-3 HUD overlay singleton to the
  * common HudUiElement destruction state during CRT exit.
  */
-void ResetProjectileCameraFxPass3UiSingleton() {
+void __cdecl ResetProjectileCameraFxPass3UiSingleton() {
     g_Player_State7FxPass3Ui.~Player_ProjectileCameraFxPass3Ui();
 }
 
@@ -3808,7 +3808,7 @@ void ResetProjectileCameraFxPass3UiSingleton() {
  * Source owner/evidence: Player save-state/bootstrap record-global subsystem;
  * resets the authored head, tail, count, and auxiliary list globals.
  */
-void InitSaveStateList() {
+void __cdecl InitSaveStateList() {
     g_PlayerSaveStateListAux = 0;
     g_PlayerSaveStateListTail = 0;
     g_PlayerSaveStateListHead = 0;
@@ -3820,7 +3820,7 @@ void InitSaveStateList() {
  * Purpose: construct the first top-message panel singleton and register its
  * CRT exit destructor.
  */
-void InitAndRegisterTopMsgPanel1() {
+void __cdecl InitAndRegisterTopMsgPanel1() {
     Player_TopMsgPanel1::Constructor();
     RegisterTopMsgPanel1OnExit();
 }
@@ -3839,7 +3839,7 @@ void RegisterTopMsgPanel1OnExit() {
  * Purpose: construct the second top-message panel singleton and register its
  * CRT exit destructor.
  */
-void InitAndRegisterTopMsgPanel2() {
+void __cdecl InitAndRegisterTopMsgPanel2() {
     Player_TopMsgPanel2::Constructor();
     RegisterTopMsgPanel2Cleanup();
 }

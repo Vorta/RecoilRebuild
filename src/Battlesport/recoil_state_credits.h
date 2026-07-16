@@ -6,10 +6,10 @@ struct HudUiCreditsPanel;
 
 struct RecoilStateCredits : RecoilStateDialogHost {
     RecoilStateCredits();
-    static void StaticInitAndRegisterAtExit();
+    static void __cdecl StaticInitAndRegisterAtExit();
     static RecoilStateCredits *StaticInit();
     static void RegisterAtExit();
-    static void AtExitDestructor();
+    static void __cdecl AtExitDestructor();
     int OnTryBecomeCurrent();
     ~RecoilStateCredits();
     static void QueuePush();

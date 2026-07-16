@@ -41,13 +41,14 @@ enum RecoilAppMissionShutdownMode {
  * Authored app-state interface. Retail evidence shows constructor-owned state
  * objects with a common vptr at offset zero and lifecycle calls through that
  * table; the source model is a VC-era virtual interface, not copied table data.
+ * Emits 0x42e0f0: VC5 compiler-generated scalar deleting-destructor contribution anchored to this complete type definition; not an authored body.
  */
 struct RecoilApp_IState {
     /**
      * Reimplements 0x42df90: RecoilApp_IState::~RecoilApp_IState.
      * Purpose: Tear down the common app-state interface base.
      */
-    virtual ~RecoilApp_IState() {}
+    virtual ~RecoilApp_IState();
     virtual void OnWndActivate(int activateCode);
     virtual void OnEnter();
     virtual int OnTryBecomeCurrent();
@@ -56,10 +57,16 @@ struct RecoilApp_IState {
     virtual void OnDeactivate();
     virtual void OnSuspend(int suspendParam);
     virtual void OnResume(int resumeParam);
+    /**
+     * Original helper: default state hook with no standalone retail function address.
+     * Purpose: lets default states keep the idle/dispatch loop alive.
+     */
     virtual int OnIdleOrDispatch(
-        unsigned int wParam,
-        unsigned int lParam
-    );
+        unsigned int,
+        unsigned int
+    ) {
+        return 1;
+    }
 };
 RECOIL_STATIC_ASSERT(sizeof(RecoilApp_IState) == 0x04);
 
@@ -272,6 +279,7 @@ struct RecoilApp_MainMenuPrepState : RecoilApp_IState {
 
     int OnTryBecomeCurrent();
     int OnUpdateShouldQuit();
+    void OnDeactivate();
 };
 RECOIL_STATIC_ASSERT(sizeof(RecoilApp_MainMenuPrepState) == 0x08);
 

@@ -113,6 +113,26 @@ RECOIL_NO_GS void __fastcall RecoilApp::InitStdLogFiles(
 #include "Battlesport/cz_recoil_frame_body.h"
 #include "Battlesport/game_net_body.h"
 #include "Battlesport/recoil_app_play_state_tick_and_render_frame_body.h"
-#include "Battlesport/recoil_state_main_menu_transition_on_update_should_quit_body.h"
+
+/**
+ * Reimplements 0x42df90: RecoilApp_IState::~RecoilApp_IState.
+ *
+ * Purpose: tears down the common app-state interface base.
+ */
+RecoilApp_IState::~RecoilApp_IState() {
+}
+
 #include "Battlesport/recoil_app_late_body.h"
+
+/**
+ * Reimplements the ordinary empty RecoilApp_MainMenuPrepState::OnDeactivate
+ * identity represented by the zero-argument no-op fold group at 0x4076f0.
+ * Original function address: 0x4076f0.
+ * Purpose: accept deactivation after the main-menu preparation state has
+ * completed its transition work.
+ */
+void RecoilApp_MainMenuPrepState::OnDeactivate() {
+}
+
+#include "Battlesport/recoil_state_main_menu_transition_on_update_should_quit_body.h"
 #endif

@@ -124,12 +124,12 @@ struct zInterp_Context {
     int conditionalDepth;
     void *currentNode;
 
-    static void Logf(
+    static void __cdecl Logf(
         zInterp_Context *ctx,
         const char *fmt,
         ...
     );
-    static void ReportErrorf(
+    static void __cdecl ReportErrorf(
         zInterp_Context *ctx,
         const char *fmt,
         ...
@@ -215,7 +215,7 @@ struct zInterp_GlobalContext : zInterp_Context {
     static int StaticInitAndRegisterAtExit();
     static zInterp_Context *StaticInit();
     static int RegisterAtExit();
-    static void AtExitDestructor();
+    static void __cdecl AtExitDestructor();
 };
 
 RECOIL_STATIC_ASSERT(sizeof(zInterp_GlobalContext) == 0xcc);

@@ -209,7 +209,7 @@ namespace {
  * Purpose: destroy the explicitly stored process-wide Recoil application object
  * from the CRT at-exit list.
  */
-void RecoilApp_AtExitDestructor() {
+void __cdecl RecoilApp_AtExitDestructor() {
     g_RecoilApp.~RecoilApp();
 }
 
@@ -218,7 +218,7 @@ void RecoilApp_AtExitDestructor() {
  * Purpose: construct the explicitly stored process-wide Recoil application
  * object and register its at-exit destructor without typed global storage.
  */
-void RecoilApp_StaticInitAndRegisterAtExit() {
+void __cdecl RecoilApp_StaticInitAndRegisterAtExit() {
     new (&g_RecoilApp) RecoilApp;
     atexit(RecoilApp_AtExitDestructor);
 }
@@ -678,7 +678,7 @@ int g_RecoilApp_AttractFmvReloadMode = 1;
  * Original source path: D:\Proj\GameZRecoil\RecoilApp\RecoilStateSaveLoadTransition.cpp.
  * Purpose: Initializes the save/load transition singleton and registers its exit cleanup.
  */
-void RecoilStateSaveLoadTransition::StaticInitAndRegisterAtExit() {
+void __cdecl RecoilStateSaveLoadTransition::StaticInitAndRegisterAtExit() {
     StaticInit();
     RegisterAtExit();
 }
@@ -706,7 +706,7 @@ void RecoilStateSaveLoadTransition::RegisterAtExit() {
  * Original source path: D:\Proj\GameZRecoil\RecoilApp\RecoilStateSaveLoadTransition.cpp.
  * Purpose: Tears down the global save/load transition during process exit.
  */
-void RecoilStateSaveLoadTransition::AtExitDestructor() {
+void __cdecl RecoilStateSaveLoadTransition::AtExitDestructor() {
     g_RecoilStateSaveLoadTransition.Destructor();
 }
 
@@ -3923,17 +3923,6 @@ void RecoilApp_IState::OnSuspend(
 void RecoilApp_IState::OnResume(
     int
 ) {}
-
-/**
- * Original helper: default state hook with no standalone retail function address.
- * Purpose: lets default states keep the idle/dispatch loop alive.
- */
-int RecoilApp_IState::OnIdleOrDispatch(
-    unsigned int,
-    unsigned int
-) {
-    return 1;
-}
 
 // Reimplements 0x42df10: RecoilApp_AttractFmvState::~RecoilApp_AttractFmvState.
 // through the implicit VC5 destructor and RecoilApp_FmvScript member cleanup.

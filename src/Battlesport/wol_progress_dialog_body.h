@@ -129,21 +129,6 @@ void WestwoodOnlineUpgradeProgressDialog::Destructor() {
 }
 
 /**
- * Reimplements 0x442240: WestwoodOnlineUpgradeProgressDialog::ScalarDeletingDestructor (D:\Proj\GameZRecoil\westwoodonline\WolapiProgressDialog.cpp).
- * Purpose: runs the destructor and conditionally releases object storage for compiler scalar-delete callers.
- */
-WestwoodOnlineUpgradeProgressDialog * WestwoodOnlineUpgradeProgressDialog::ScalarDeletingDestructor(
-    unsigned int flags
-) {
-    WestwoodOnlineUpgradeProgressDialog *const self = this;
-    Destructor();
-    if ((flags & 1) != 0) {
-        ::operator delete(self);
-    }
-    return self;
-}
-
-/**
  * Reimplements 0x442320: WestwoodOnlineUpgradeProgressDialog::DlgProc (D:\Proj\Battlesport\WestwoodOnlineUpgradeProgressDialog.cpp).
  * Purpose: starts and pumps the WOL download progress dialog, handles cancel, and cleans up on destroy.
  */

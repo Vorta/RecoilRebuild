@@ -220,7 +220,8 @@ struct HudUiConfirmQuitOkButton : HudUiZrdWidget {
     void OnActivate();
 };
 
-struct HudUiConfirmQuitCancelButton : HudUiCreditsBackButton {
+struct HudUiConfirmQuitCancelButton : HudUiZrdWidget {
+    virtual void OnActivate();
 };
 
 struct HudUiBackgroundConfirmQuit : HudUiBackground {
@@ -229,9 +230,6 @@ struct HudUiBackgroundConfirmQuit : HudUiBackground {
 
     HudUiBackgroundConfirmQuit * Constructor();
     void Destructor();
-    HudUiBackground * ScalarDeletingDestructor(
-        unsigned int flags
-    );
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiBackgroundConfirmQuit) == 0xabe4);
 RECOIL_STATIC_ASSERT(sizeof(HudUiConfirmQuitCancelButton) == 0x14c);
@@ -461,6 +459,9 @@ RECOIL_STATIC_ASSERT(
     ) == 0x0c
 );
 
+/**
+ * Emits 0x4bde20: VC5 compiler-generated scalar deleting-destructor contribution anchored to this complete type definition; not an authored body.
+ */
 struct HudWeatherFx : zVideoFxPass3Element {
     HudWeatherFxParticleQuad *particleQuads;
     int maxParticles;
@@ -482,11 +483,8 @@ struct HudWeatherFx : zVideoFxPass3Element {
     zVidImagePartial *softwareImage;
     zVideo_TextureRecordPartial *textureRecord;
 
-    HudWeatherFx * Constructor(int particleCount);
-    HudUiElement * ScalarDeletingDestructor(
-        unsigned int flags
-    );
-    void Destructor();
+    HudWeatherFx(int particleCount);
+    virtual ~HudWeatherFx();
     void ResetParticleSlot(
         int particleIndex,
         int unusedStack
@@ -513,16 +511,16 @@ RECOIL_STATIC_ASSERT(
     ) == 0x88
 );
 
+/**
+ * Emits 0x4be2c0: VC5 compiler-generated scalar deleting-destructor contribution anchored to this complete type definition; not an authored body.
+ */
 struct HudWeatherFxSnow : HudWeatherFx {
     int emitEnabled;
     float emitRadius;
     float emitDepth;
 
-    HudWeatherFxSnow * Constructor(int particleCount);
-    HudUiElement * ScalarDeletingDestructor(
-        unsigned int flags
-    );
-    void Destructor();
+    HudWeatherFxSnow(int particleCount);
+    virtual ~HudWeatherFxSnow();
     void Update(float deltaSeconds);
 };
 RECOIL_STATIC_ASSERT(sizeof(HudWeatherFxSnow) == 0x98);
@@ -533,16 +531,16 @@ RECOIL_STATIC_ASSERT(
     ) == 0x8c
 );
 
+/**
+ * Emits 0x4be850: VC5 compiler-generated scalar deleting-destructor contribution anchored to this complete type definition; not an authored body.
+ */
 struct HudWeatherFxRain : HudWeatherFx {
     int emitEnabled;
     float emitRadius;
     float emitDepth;
 
-    HudWeatherFxRain * Constructor(int particleCount);
-    HudUiElement * ScalarDeletingDestructor(
-        unsigned int flags
-    );
-    void Destructor();
+    HudWeatherFxRain(int particleCount);
+    virtual ~HudWeatherFxRain();
     void Update(float deltaSeconds);
 };
 RECOIL_STATIC_ASSERT(sizeof(HudWeatherFxRain) == 0x98);
@@ -563,10 +561,10 @@ struct RecoilStateSaveLoadTransition : RecoilApp_IState {
     RecoilSaveLoadTransitionMode m_transitionMode;
     RecoilPtr32 m_pausedAudioSnapshot; // zSndPlayHandleSnapshot*
 
-    static void StaticInitAndRegisterAtExit();
+    static void __cdecl StaticInitAndRegisterAtExit();
     static RecoilStateSaveLoadTransition *StaticInit();
     static void RegisterAtExit();
-    static void AtExitDestructor();
+    static void __cdecl AtExitDestructor();
     RecoilStateSaveLoadTransition * Constructor();
     void Destructor();
     int OnTryBecomeCurrent();
@@ -642,8 +640,7 @@ struct HudUiNewGamePanel : HudUiBackground {
     HudUiNewGamePanel_Intensity intensity;
 
     HudUiNewGamePanel();
-    void Destructor();
-    HudUiBackground * ScalarDeletingDestructor(unsigned int flags);
+    virtual ~HudUiNewGamePanel();
     void SyncIntensityFromDifficulty();
     void StartGameFromFields();
 };
@@ -685,33 +682,20 @@ RECOIL_STATIC_ASSERT(
 );
 
 struct HudUiNewGamePanelOverlayOwner : RecoilStateDialogHost {
-    HudUiNewGamePanelOverlayOwner();
-    static void StaticInitAndRegisterAtExit();
-    static HudUiNewGamePanelOverlayOwner *StaticInit();
-    static void RegisterAtExit();
-    static void AtExitDestructor();
-    ~HudUiNewGamePanelOverlayOwner();
+    virtual ~HudUiNewGamePanelOverlayOwner();
     int OnTryBecomeCurrent();
     static void QueueEnter();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNewGamePanelOverlayOwner) == 0x08);
 
-union HudUiNewGamePanelOverlayOwnerStorage {
-    unsigned long align;
-    unsigned char bytes[sizeof(HudUiNewGamePanelOverlayOwner)];
-};
-RECOIL_STATIC_ASSERT(sizeof(HudUiNewGamePanelOverlayOwnerStorage) == 0x08);
-
-extern HudUiNewGamePanelOverlayOwnerStorage g_HudUiNewGamePanelOverlayOwner;
-#define g_HudUiNewGamePanelOverlayOwner \
-    (*(HudUiNewGamePanelOverlayOwner *)&g_HudUiNewGamePanelOverlayOwner)
+extern HudUiNewGamePanelOverlayOwner g_HudUiNewGamePanelOverlayOwner;
 
 struct HudUiOptionsPanelOverlayOwner : RecoilStateDialogHost {
     HudUiOptionsPanelOverlayOwner();
-    static void StaticInitAndRegisterAtExit();
+    static void __cdecl StaticInitAndRegisterAtExit();
     static HudUiOptionsPanelOverlayOwner *StaticInit();
     static void RegisterAtExit();
-    static void AtExitDestructor();
+    static void __cdecl AtExitDestructor();
     ~HudUiOptionsPanelOverlayOwner();
     int OnTryBecomeCurrent();
     static void QueueEnter();
@@ -730,10 +714,10 @@ extern HudUiOptionsPanelOverlayOwnerStorage g_HudUiOptionsPanelOverlayOwner;
 
 struct RecoilStateConfirmQuit : RecoilStateDialogHost {
     RecoilStateConfirmQuit();
-    static void StaticInitAndRegisterAtExit();
+    static void __cdecl StaticInitAndRegisterAtExit();
     static RecoilStateConfirmQuit *StaticInit();
     static void RegisterAtExit();
-    static void AtExitDestructor();
+    static void __cdecl AtExitDestructor();
     int OnTryBecomeCurrent();
     void OnDeactivate();
     ~RecoilStateConfirmQuit();
@@ -753,13 +737,14 @@ extern RecoilStateConfirmQuitStorage g_RecoilState_ConfirmQuit;
 
 struct RecoilStateControls : RecoilStateDialogHost {
     RecoilStateControls();
-    static void StaticInitAndRegisterAtExit();
+    static void __cdecl StaticInitAndRegisterAtExit();
     static RecoilStateControls *StaticInit();
     static void RegisterAtExit();
-    static void AtExitDestructor();
+    static void __cdecl AtExitDestructor();
     ~RecoilStateControls();
     int OnTryBecomeCurrent();
     void OnDeactivate();
+    void OnSuspend(int suspendParam);
     void OnResume(int activateCode);
     static void QueueEnter();
 };
@@ -775,7 +760,16 @@ extern RecoilStateControlsStorage g_RecoilStateControls;
 #define g_RecoilStateControls \
     (*(RecoilStateControls *)&g_RecoilStateControls)
 
-struct HudUiControlsDialog_ResumeWidget : HudUiZrdWidget {};
+struct HudUiControlsDialog_ResumeWidget : HudUiZrdWidget {
+    /**
+     * Original inline constructor evidence: BN 0x408a30 constructs this
+     * concrete resume widget through HudUiZrdWidget and then installs the
+     * HudUiControlsDialog_ResumeWidget vptr.
+     * Purpose: construct the controls-dialog resume widget subobject.
+     */
+    HudUiControlsDialog_ResumeWidget() : HudUiZrdWidget() {}
+    virtual void OnActivate();
+};
 RECOIL_STATIC_ASSERT(sizeof(HudUiControlsDialog_ResumeWidget) == 0x14c);
 
 struct HudUiControlsDialog_CommandsWidget : HudUiZrdWidget {
@@ -799,9 +793,6 @@ struct HudUiControlsDialog : HudUiBackground {
 
     HudUiControlsDialog * Constructor();
     void Destructor();
-    HudUiBackground * ScalarDeletingDestructor(
-        unsigned int flags
-    );
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiControlsDialog) == 0xb350);
 RECOIL_STATIC_ASSERT(
@@ -848,7 +839,12 @@ RECOIL_STATIC_ASSERT(
 );
 
 struct HudUiCheatCodeTitleWidget : HudUiZrdWidget {
-    void OnActivate();
+    /**
+     * Reimplements 0x4070e0: HudUiCheatCodeTitleWidget::OnActivate.
+     * Original source path: D:\Proj\Battlesport\HudUiCheatCode.cpp.
+     * Purpose: Queue the cheat-code state exit when the GO widget is activated.
+     */
+    virtual void OnActivate();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiCheatCodeTitleWidget) == 0x14c);
 
@@ -862,9 +858,6 @@ struct HudUiCheatCodeDialog : HudUiBackground {
     HudUiCheatTextInputWidget cheatInputWidget;
 
     HudUiCheatCodeDialog();
-    HudUiBackground * ScalarDeletingDestructor(
-        unsigned int flags
-    );
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiCheatCodeDialog) == 0xae0c);
 RECOIL_STATIC_ASSERT(
@@ -896,10 +889,10 @@ struct RecoilStateCheatCode : RecoilStateDialogHost {
     RecoilPtr32 m_audioSnapshot; // zSndPlayHandleSnapshot*
 
     RecoilStateCheatCode();
-    static void StaticInitAndRegisterAtExit();
+    static void __cdecl StaticInitAndRegisterAtExit();
     static RecoilStateCheatCode *ConstructGlobal();
     static void StaticInit();
-    static void AtExitDestructor();
+    static void __cdecl AtExitDestructor();
     int OnTryBecomeCurrent();
     void OnDeactivate();
     ~RecoilStateCheatCode();

@@ -65,17 +65,6 @@ HudUiNetExitPanel * HudUiNetExitPanel::Constructor() {
 }
 
 /**
- * Reimplements 0x41beb0: HudUiNetExitPanel::Destructor.
- * Original source path: D:\Proj\Battlesport\HudUi_NetExit.cpp.
- * Purpose: destroy the exit and resume child widgets before tearing down the background base.
- */
-void HudUiNetExitPanel::Destructor() {
-    exitWidget.DestructorCore();
-    resumeWidget.DestructorCore();
-    this->HudUiBackground::~HudUiBackground();
-}
-
-/**
  * Original helper evidence: no standalone retail function; recovered from address-backed callers in this source file.
  * Original source path: D:\Proj\Battlesport\HudUi_NetExit.cpp.
  * Purpose: forward panel enabled-state changes through the HudUiBackground base implementation.
@@ -214,8 +203,7 @@ int HudUiNetExitPanel::Tick() {
 void HudUiNetExitPanel::DestroyGlobal() {
     HudUiNetExitPanel *const panel = g_HudUiNetExitPanel;
     if (panel != 0) {
-        panel->Destructor();
-        ::operator delete(panel);
+        delete panel;
         g_HudUiNetExitPanel = 0;
     }
 }

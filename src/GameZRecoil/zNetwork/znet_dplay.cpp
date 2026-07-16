@@ -2110,7 +2110,7 @@ void DeleteAllDispatchHandlers() {
  * Reimplements 0x48bff0: zNetwork_DestroyDispatchHandlerList.
  * Purpose: delete the packet-dispatch handler sentinel and all list nodes.
  */
-extern "C" void zNetwork_DestroyDispatchHandlerList() {
+extern "C" void __cdecl zNetwork_DestroyDispatchHandlerList() {
     zNetworkDispatchHandlerList *const list = &g_zNetwork_DispatchHandlerList;
     zNetworkDispatchHandlerListNode *sentinel = list->sentinel;
     zNetworkDispatchHandlerListNode *node = sentinel->next;

@@ -627,22 +627,6 @@ void WestwoodOnlineUpgradeDialog::Destructor() {
 }
 
 /**
- * Reimplements 0x43d980: WestwoodOnlineUpgradeDialog::ScalarDeletingDestructor
- * Source: D:\Proj\Battlesport\WestwoodOnlineUpgradeDialog.cpp
- * Purpose: run the dialog destructor and optionally free scalar-delete storage.
- */
-WestwoodOnlineUpgradeDialog * WestwoodOnlineUpgradeDialog::ScalarDeletingDestructor(
-    unsigned int flags
-) {
-    WestwoodOnlineUpgradeDialog *const self = this;
-    Destructor();
-    if ((flags & 1) != 0) {
-        ::operator delete(self);
-    }
-    return self;
-}
-
-/**
  * Reimplements 0x43db20: WestwoodOnlineUpgradeDialog::DoDataExchange
  * Source: D:\Proj\Battlesport\WestwoodOnlineUpgradeDialog.cpp
  * Purpose: bind MFC controls and synchronize query option fields.

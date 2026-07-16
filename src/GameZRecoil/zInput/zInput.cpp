@@ -898,49 +898,9 @@ int g_zInput_CommandLocIdTable[0x30] = {0};
  * They are preserved here because their proven physical owner is outside this worker scope or still unresolved.
  */
 namespace zInp {
-/**
- * Reimplements 0x408390: zInp::SetJoystickOption.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_opt.cpp.
- * Purpose: store the joystick-enabled option when the option slot exists.
- */
-void __fastcall SetJoystickOption(
-    int enabled
-) {
-    if (ZOPT_INPUT_JOYSTICK != 0) {
-        *ZOPT_INPUT_JOYSTICK = enabled;
-    }
-}
 
-/**
- * Reimplements 0x4083a0: zInp::SetJoystickAxesCountOption.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_opt.cpp.
- * Purpose: store the detected joystick axis count option value.
- */
-void __fastcall SetJoystickAxesCountOption(
-    int axisCount
-) {
-    *ZOPT_JOYSTICK_NUM_AXES = axisCount;
-}
 
-/**
- * Reimplements 0x4083b0: zInp::SetJoystickButtonCountOption.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_opt.cpp.
- * Purpose: store the detected joystick button count option value.
- */
-void __fastcall SetJoystickButtonCountOption(
-    int buttonCount
-) {
-    *ZOPT_JOYSTICK_NUM_BUTTONS = buttonCount;
-}
 
-/**
- * Reimplements 0x4083c0: zInp::GetJoystickOption.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_opt.cpp.
- * Purpose: return the joystick-enabled option value.
- */
-int GetJoystickOption() {
-    return *ZOPT_INPUT_JOYSTICK;
-}
 } // namespace zInp
 
 namespace zInput {
@@ -955,9 +915,9 @@ typedef std::vector<zInput_BindGroupInfo *> zInput_BindGroupInfoStdVector;
  * constructor and tail-calls the atexit registration wrapper.
  * Purpose: Initializes the bind-group vector global and registers its cleanup.
  */
-int BindGroupList_StaticInitAndRegisterAtExit() {
+void __cdecl BindGroupList_StaticInitAndRegisterAtExit() {
     BindGroupListStaticInit();
-    return BindGroupListRegisterAtExit();
+    BindGroupListRegisterAtExit();
 }
 
 /**
@@ -998,7 +958,7 @@ int BindGroupListRegisterAtExit() {
  * optimized range still accounts for the saved first-iterator scratch slot.
  * Purpose: Releases the global bind-group pointer vector buffer at process exit.
  */
-void BindGroupListAtExitDestructor() {
+void __cdecl BindGroupListAtExitDestructor() {
     for (
         zInput_BindGroupInfo **first = g_zInput_BindGroupInfoList.begin;
         first != g_zInput_BindGroupInfoList.end;

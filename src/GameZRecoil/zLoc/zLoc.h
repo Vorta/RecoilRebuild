@@ -21,7 +21,7 @@ int __fastcall LoadMessagesDll(const char *dllPath);
 void UnloadMessagesDll();
 unsigned int __fastcall GetMessageId(const char *key);
 char *__fastcall ResolveMessageKeyOrFallback(const char *key);
-unsigned int FormatMessage(
+unsigned int __cdecl FormatMessage(
     char *outBuffer,
     int maxChars,
     unsigned int messageId,

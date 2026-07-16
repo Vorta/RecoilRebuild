@@ -308,7 +308,7 @@ struct HudSensorTracker {
     static void __fastcall OnObjectiveCommand(int commandId);
     static HudSensorTracker *ConstructGlobal();
     static void RegisterGlobalOnExit();
-    static void ShutdownGlobal();
+    static void __cdecl ShutdownGlobal();
     static void __fastcall DrawMarkerCross(
         int centerX,
         int centerY,

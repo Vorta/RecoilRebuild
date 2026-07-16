@@ -982,7 +982,7 @@ int PickupAirdropSpawnRef::TrySpawnRandomPickupFromGlobal() {
  * Reimplements 0x41cc10: PickupSpawnList::Primary_Init (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: clear the primary pickup spawn list global.
  */
-void PickupSpawnList::Primary_Init() {
+void __cdecl PickupSpawnList::Primary_Init() {
     g_PickupSpawnList_Primary.unused = 0;
     g_PickupSpawnList_Primary.tail = 0;
     g_PickupSpawnList_Primary.head = 0;
@@ -993,7 +993,7 @@ void PickupSpawnList::Primary_Init() {
  * Reimplements 0x41cc40: PickupSpawnList::NetCopy_Init (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: clear the network-copy pickup spawn list global.
  */
-void PickupSpawnList::NetCopy_Init() {
+void __cdecl PickupSpawnList::NetCopy_Init() {
     g_PickupSpawnList_NetworkCopy.unused = 0;
     g_PickupSpawnList_NetworkCopy.tail = 0;
     g_PickupSpawnList_NetworkCopy.head = 0;
@@ -1004,7 +1004,7 @@ void PickupSpawnList::NetCopy_Init() {
  * Reimplements 0x41cc70: PickupRespawnQueue::Init (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: clear the pickup respawn queue global.
  */
-void PickupRespawnQueue::Init() {
+void __cdecl PickupRespawnQueue::Init() {
     g_PickupRespawnQueue.unused = 0;
     g_PickupRespawnQueue.tail = 0;
     g_PickupRespawnQueue.head = 0;

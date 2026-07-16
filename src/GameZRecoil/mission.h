@@ -3,6 +3,6 @@
 #include "recoil/recoil_callconv.h"
 
 namespace Mission {
-void InitObjectives();
-void RegisterMultiplayerMaps();
+void __cdecl InitObjectives();
+void __cdecl RegisterMultiplayerMaps();
 } // namespace Mission

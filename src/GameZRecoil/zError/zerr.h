@@ -11,7 +11,7 @@ int __fastcall InitOutputContext(
     int maxBytes,
     const char *logFileName
 );
-void ReportOld(
+void __cdecl ReportOld(
     int flags,
     const char *sourceFile,
     int sourceLine,

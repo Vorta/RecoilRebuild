@@ -348,10 +348,10 @@ typedef int(__fastcall *zDEClient_QSandFeatureDispatch)(
 );
 
 namespace zDEClient {
-void InitFeatureSystem();
+void __cdecl InitFeatureSystem();
 void InitFeatureEntryListAndMapTree();
 void RegisterFeatureSystemCleanupAtExit();
-void ShutdownFeatureSystem();
+void __cdecl ShutdownFeatureSystem();
 int __fastcall LoadConfigResources(zClass_NodePartial *worldNode);
 RECOIL_NO_GS int __fastcall LoadMaterialFromTexturePath_Local(
     zModel_MaterialPartial **outMaterial,

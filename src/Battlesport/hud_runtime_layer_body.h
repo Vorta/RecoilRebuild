@@ -824,1269 +824,6 @@ int __fastcall EnsureHudLoaded(
 
 } // namespace HudUiMgr
 
-namespace HudUiSensorWindow {
-CWnd *StaticInit();
-int RegisterAtExit();
-void AtExitDestructor();
-
-/**
- * Reimplements 0x4136f0: HudUiSensorWindow::StaticInitAndRegisterAtExit.
- * Original source path: D:\Proj\Battlesport\hud.cpp.
- * Purpose: construct the global HUD sensor CWnd and register its static
- * destructor during CRT startup.
- */
-void StaticInitAndRegisterAtExit() {
-    StaticInit();
-    RegisterAtExit();
-}
-
-/**
- * Reimplements 0x413700: HudUiSensorWindow::StaticInit.
- * Original source path: D:\Proj\Battlesport\hud.cpp.
- * Purpose: default-construct the global HUD sensor CWnd in its static storage.
- */
-CWnd *StaticInit() {
-    return new (&g_HudUiSensorWindow) CWnd;
-}
-
-/**
- * Reimplements 0x413710: HudUiSensorWindow::RegisterAtExit.
- * Original source path: D:\Proj\Battlesport\hud.cpp.
- * Purpose: register the global HUD sensor CWnd destructor with the CRT
- * at-exit list.
- */
-int RegisterAtExit() {
-    return atexit(AtExitDestructor);
-}
-
-/**
- * Reimplements 0x413720: HudUiSensorWindow::AtExitDestructor.
- * Original source path: D:\Proj\Battlesport\hud.cpp.
- * Purpose: destroy the global HUD sensor CWnd during CRT shutdown.
- */
-void AtExitDestructor() {
-    ((CWnd *)&g_HudUiSensorWindow)->~CWnd();
-}
-} // namespace HudUiSensorWindow
-
-namespace HudUiMgr {
-/**
- * Reimplements 0x413730: HudUiMgr::DestroySensorWindow.
- * Purpose: preserve the recovered HUD behavior for HudUiMgr::DestroySensorWindow.
- */
-void DestroySensorWindow() {
-    zFMV_Playback *playback = g_HudUiSensorWindowPlayback;
-    if (playback == 0) {
-        return;
-    }
-
-    playback->StopAndClose();
-
-    playback = g_HudUiSensorWindowPlayback;
-    if (playback != 0) {
-        playback->Destructor();
-        ::operator delete(playback);
-    }
-
-    g_HudUiSensorWindowPlayback = 0;
-    ((CWnd *)&g_HudUiSensorWindow)->CWnd::DestroyWindow();
-}
-
-/**
- * Reimplements 0x413770: HudUiMgr::SetFloatTimerVisible.
- * Original source path: D:\Proj\Battlesport\hud.cpp.
- * Purpose: apply the recovered HUD state change handled by HudUiMgr::SetFloatTimerVisible.
- */
-void __fastcall SetFloatTimerVisible(
-    int visible
-) {
-    g_HudUiMgrTimerPanelFloat->SetVisible(visible != 0 ? 1 : 0);
-
-    if (visible == 0) {
-        TriggerCurrentLayoutOnActivated();
-    }
-}
-
-/**
- * Reimplements 0x4137a0: HudUiMgr::SetAuxOverlayVisible.
- * Original source path: D:\Proj\Battlesport\hud.cpp.
- * Purpose: apply the recovered HUD state change handled by HudUiMgr::SetAuxOverlayVisible.
- */
-void __fastcall SetAuxOverlayVisible(
-    int visible
-) {
-    g_HudUiMgrStringMenu->SetEnabled(visible != 0 ? 1 : 0);
-}
-} // namespace HudUiMgr
-
-namespace HudUiAuxOverlay {
-/**
- * Reimplements 0x4137c0: HudUiAuxOverlay::ClearTextLines.
- * Purpose: clear and hide every sensor overlay text line.
- */
-void ClearTextLines() {
-    {
-        for (int index = 0; index < 23; ++index) {
-            UpdateTextLine(
-                2,
-                index,
-                ""
-            );
-            UpdateTextLine(
-                0,
-                index,
-                0
-            );
-        }
-    }
-}
-
-/**
- * Reimplements 0x4137f0: HudUiAuxOverlay::ApplyTextLineOp.
- * Purpose: apply one sensor overlay text-line operation to a string-menu item.
- */
-void __fastcall UpdateTextLine(
-    int op,
-    int index,
-    const char *format
-) {
-    HudUiPanel *const panel = (HudUiPanel *)(&g_HudUiMgrStringMenu->items[index]);
-
-    if (op == 1) {
-        panel->SetTextFmt(format);
-        panel->SetVisible(1);
-        return;
-    }
-
-    if (op == 0) {
-        panel->SetVisible(0);
-        return;
-    }
-
-    if (op == 2) {
-        if (*format != '\0') {
-            panel->SetTextFmt(format);
-            panel->SetVisible(1);
-        } else {
-            panel->SetVisible(0);
-        }
-    }
-}
-} // namespace HudUiAuxOverlay
-
-namespace HudUi {
-/**
- * Reimplements 0x4138d0: HudUi::ShowTopMessageLine.
- * Original source path: D:\Proj\Battlesport\hud.cpp.
- * Purpose: show a top HUD message when the top-message stack is enabled.
- */
-void __fastcall ShowTopMessageLine(
-    const char *message,
-    float duration
-) {
-    HudUiTextStack4 *const topStack = g_HudUiTopMessageStack;
-    if (topStack->enabled != 0) {
-        topStack->PushLine(
-            message,
-            duration
-        );
-    }
-}
-
-/**
- * Reimplements 0x4138f0: HudUi::ShowChatLine.
- * Original source path: D:\Proj\Battlesport\hud.cpp.
- * Purpose: show a chat HUD message when the chat stack is enabled.
- */
-void __fastcall ShowChatLine(
-    const char *message,
-    float duration
-) {
-    HudUiTextStack4 *const chatStack = g_HudUiChatMessageStack;
-    if (chatStack->enabled != 0) {
-        chatStack->PushLine(
-            message,
-            duration
-        );
-    }
-}
-} // namespace HudUi
-
-namespace HudUiMgr {
-/**
- * Reimplements 0x413910: HudUiMgr::EnableTopAndChatStacks.
- * Purpose: clear and enable the global top-message and chat text stacks.
- */
-void EnableTopAndChatStacks() {
-    g_HudUiTopMessageStack->Clear();
-    g_HudUiTopMessageStack->SetEnabled(1);
-    g_HudUiChatMessageStack->Clear();
-    g_HudUiChatMessageStack->SetEnabled(1);
-}
-
-/**
- * Reimplements 0x413950: HudUiMgr::DisableTopAndChatStacks.
- * Purpose: clear and disable the global top-message and chat text stacks.
- */
-void DisableTopAndChatStacks() {
-    g_HudUiTopMessageStack->Clear();
-    g_HudUiTopMessageStack->SetEnabled(0);
-    g_HudUiChatMessageStack->Clear();
-    g_HudUiChatMessageStack->SetEnabled(0);
-}
-} // namespace HudUiMgr
-
-namespace HudUiLayoutNode {
-/**
- * Reimplements 0x413990: HudUiLayoutNode::ApplyTextLabel.
- * Original source path: D:\Proj\Battlesport\hud.cpp.
- * Purpose: apply the recovered HUD layout or option state handled by HudUiLayoutNode::ApplyTextLabel.
- */
-int __fastcall ApplyTextLabel(
-    zReader::Node *layoutNode,
-    HudUiPanel *target,
-    int baseX,
-    int baseY,
-    const int *offsetXY
-) {
-    if (layoutNode->type != zReader::ZRDR_NODE_ARRAY) {
-        return 0;
-    }
-
-    zReader::Node *const payload = layoutNode->value.nodes;
-    const char *const text = payload[1].value.str;
-    int x = payload[2].value.i32 + baseX;
-    int y = payload[3].value.i32 + baseY;
-    if (offsetXY != 0) {
-        x += offsetXY[0];
-        y += offsetXY[1];
-    }
-
-    target->SetPos(
-        x,
-        y
-    );
-    target->SetTextFmt(
-        text != 0 ? text : ""
-    );
-    return 1;
-}
-
-/**
- * Reimplements 0x413a10: HudUiLayoutNode::ReadRectOffsetAndSize.
- * Original source path: D:\Proj\Battlesport\hud.cpp.
- * Purpose: read recovered HUD ZRD/layout data for HudUiLayoutNode::ReadRectOffsetAndSize.
- */
-int __fastcall ReadRectOffsetAndSize(
-    zReader::Node *node,
-    HudUiRect *outRect,
-    const int *offsetXY,
-    int *outWidth,
-    int *outHeight
-) {
-    if (node->type != zReader::ZRDR_NODE_ARRAY) {
-        return 0;
-    }
-
-    zReader::Node *const arrayBase = node->value.nodes;
-    outRect->left = arrayBase[1].value.i32;
-    outRect->top = arrayBase[2].value.i32;
-    outRect->right = arrayBase[3].value.i32;
-    outRect->bottom = arrayBase[4].value.i32;
-
-    if (offsetXY != 0) {
-        outRect->left += offsetXY[0];
-        outRect->top += offsetXY[1];
-        outRect->right += offsetXY[0];
-        outRect->bottom += offsetXY[1];
-    }
-
-    if (outWidth != 0) {
-        *outWidth = outRect->right - outRect->left;
-    }
-
-    if (outHeight != 0) {
-        *outHeight = outRect->bottom - outRect->top;
-    }
-
-    return 1;
-}
-
-/**
- * Reimplements 0x413aa0: HudUiLayoutNode::ReadRect.
- * Original source path: D:\Proj\Battlesport\hud.cpp.
- * Purpose: read recovered HUD ZRD/layout data for HudUiLayoutNode::ReadRect.
- */
-int __fastcall ReadRect(
-    zReader::Node *node,
-    HudUiRect *outRect
-) {
-    if (node->type != zReader::ZRDR_NODE_ARRAY) {
-        return 0;
-    }
-
-    zReader::Node *const arrayBase = node->value.nodes;
-    outRect->left = arrayBase[1].value.i32;
-    outRect->right = arrayBase[2].value.i32;
-    outRect->top = arrayBase[3].value.i32;
-    outRect->bottom = arrayBase[4].value.i32;
-    return 1;
-}
-
-/**
- * Reimplements 0x413ad0: HudUiLayoutNode::ReadInt3.
- * Original source path: D:\Proj\Battlesport\hud.cpp.
- * Purpose: read recovered HUD ZRD/layout data for HudUiLayoutNode::ReadInt3.
- */
-int __fastcall ReadInt3(
-    zReader::Node *node,
-    int *out0,
-    int *out1,
-    int *out2
-) {
-    if (node->type != zReader::ZRDR_NODE_ARRAY) {
-        return 0;
-    }
-
-    zReader::Node *const arrayBase = node->value.nodes;
-    if (out0 != 0) {
-        *out0 = arrayBase[1].value.i32;
-    }
-
-    if (out1 != 0) {
-        *out1 = arrayBase[2].value.i32;
-    }
-
-    if (out2 != 0) {
-        *out2 = arrayBase[3].value.i32;
-    }
-
-    return 1;
-}
-
-/**
- * Reimplements 0x413b10: HudUiLayoutNode::ApplyCornerTextQuad.
- * Original source path: D:\Proj\Battlesport\hud.cpp.
- * Purpose: apply the recovered HUD layout or option state handled by HudUiLayoutNode::ApplyCornerTextQuad.
- */
-int __fastcall ApplyCornerTextQuad(
-    zReader::Node *node,
-    HudUiBar *target,
-    const int *offsetXY,
-    HudUiRect *outRect
-) {
-    if (node->type != zReader::ZRDR_NODE_ARRAY) {
-        return 0;
-    }
-
-    zReader::Node *const arrayBase = node->value.nodes;
-    int left = arrayBase[1].value.i32;
-    int top = arrayBase[2].value.i32;
-    int right = arrayBase[3].value.i32;
-    int bottom = arrayBase[4].value.i32;
-
-    if (offsetXY != 0) {
-        left += offsetXY[0];
-        top += offsetXY[1];
-        right += offsetXY[0];
-        bottom += offsetXY[1];
-    }
-
-    const float leftF = (float)(left);
-    const float topF = (float)(top);
-    const float rightF = (float)(right);
-    const float bottomF = (float)(bottom);
-    target->SetPointXY(
-        0,
-        leftF,
-        topF
-    );
-    target->SetPointXY(
-        1,
-        leftF,
-        bottomF
-    );
-    target->SetPointXY(
-        2,
-        rightF,
-        bottomF
-    );
-    target->SetPointXY(
-        3,
-        rightF,
-        topF
-    );
-
-    if (outRect != 0) {
-        outRect->left = left;
-        outRect->top = top;
-        outRect->right = right;
-        outRect->bottom = bottom;
-    }
-
-    return 1;
-}
-
-/**
- * Reimplements 0x413c10: HudUiLayoutNode::ApplyMeterQuad.
- * Original source path: D:\Proj\Battlesport\hud.cpp.
- * Purpose: apply the recovered HUD layout or option state handled by HudUiLayoutNode::ApplyMeterQuad.
- */
-int __fastcall ApplyMeterQuad(
-    zReader::Node *node,
-    HudUiMeter *target,
-    int xBase,
-    int yBase,
-    const int *offsetXY,
-    HudUiRect *outRect
-) {
-    if (node->type != zReader::ZRDR_NODE_ARRAY) {
-        return 0;
-    }
-
-    zReader::Node *const arrayBase = node->value.nodes;
-    int left = arrayBase[1].value.i32;
-    const int top = arrayBase[2].value.i32;
-    int right = arrayBase[3].value.i32 + 1;
-    const int bottom = arrayBase[4].value.i32 + 1;
-
-    if (outRect != 0) {
-        outRect->left = left;
-        outRect->top = top;
-        outRect->right = right;
-        outRect->bottom = bottom;
-    }
-
-    right += xBase;
-    int topY = top + yBase;
-    int bottomY = bottom + yBase;
-
-    if (offsetXY != 0) {
-        left += offsetXY[0];
-        topY += offsetXY[1];
-        right += offsetXY[0];
-        bottomY += offsetXY[1];
-    }
-
-    const int width = right - left;
-    const int height = bottomY - topY;
-    HudUiBar *const bar = (HudUiBar *)(target);
-    bar->SetPointXY(
-        0,
-        (float)(left),
-        (float)(topY)
-    );
-    bar->SetPointXY(
-        1,
-        (float)(left),
-        (float)(height + topY)
-    );
-    bar->SetPointXY(
-        2,
-        (float)(width + left + 1),
-        (float)(height + topY)
-    );
-    bar->SetPointXY(
-        3,
-        (float)(width + left + 1),
-        (float)(topY)
-    );
-
-    target->fillPixelsMax = height;
-    target->meterFlags = (unsigned int)(width);
-    return 1;
-}
-
-/**
- * Reimplements 0x413d30: HudUiLayoutNode::ApplyImageWidget.
- * Original source path: D:\Proj\Battlesport\hud.cpp.
- * Purpose: apply the recovered HUD layout or option state handled by HudUiLayoutNode::ApplyImageWidget.
- */
-zVidImagePartial *__fastcall ApplyImageWidget(
-    zReader::Node *layoutNode,
-    HudUiWidget *widget,
-    int baseX,
-    int baseY,
-    const int *anchorOrNull,
-    zVidImagePartial *preloadedImageOrNull,
-    HudUiRect *outRectOrNull
-) {
-    if (layoutNode->type != zReader::ZRDR_NODE_ARRAY) {
-        return 0;
-    }
-
-    zReader::Node *const payload = layoutNode->value.nodes;
-    const char *const imagePath = payload[1].value.str;
-    int x = payload[2].value.i32 + baseX;
-    int y = payload[3].value.i32 + baseY;
-
-    if (anchorOrNull != 0) {
-        x += anchorOrNull[0];
-        y += anchorOrNull[1];
-    }
-
-    unsigned short visibleState = 0;
-    int centerImage = 0;
-    if (payload[0].value.i32 == 6) {
-        visibleState = (unsigned short)(strcmp(
-            payload[4].value.str,
-            "TRUE"
-        ) == 0 ? 1 : 0);
-        centerImage = strcmp(
-            payload[5].value.str,
-            "TRUE"
-        ) == 0 ? 1 : 0;
-    }
-
-    zVidImagePartial *image = preloadedImageOrNull;
-    if (image != 0) {
-        widget->SetImageBorrowedAndInvalidate(image);
-    } else {
-        image = widget->SetImageByPathOwned(imagePath);
-    }
-
-    if (image == 0) {
-        return 0;
-    }
-
-    if (centerImage != 0) {
-        x -= (int)(image->width) / 2;
-        y -= (int)(image->height) / 2;
-    }
-
-    widget->SetPos(
-        x,
-        y
-    );
-    widget->imageStateWord = (widget->imageStateWord & 0xffff0000u) | visibleState;
-    widget->Invalidate();
-
-    if (outRectOrNull != 0) {
-        outRectOrNull->left = x;
-        outRectOrNull->top = y;
-        outRectOrNull->right = x + image->width;
-        outRectOrNull->bottom = y + image->height;
-    }
-
-    return image;
-}
-} // namespace HudUiLayoutNode
-
-namespace {
-/**
- * Provider boundary for 0x413eb0: NoOp::MethodStub.
- * Purpose: preserve the compiler-generated no-op method target used by HUD
- * teardown stubs without modeling it as authored HUD source.
- */
-void __fastcall HudUiNoOpMethodStub(
-    void *
-) {}
-} // namespace
-
-/**
- * Reimplements 0x413ec0: HudUiMessage::LoadWeaponLayoutFromNode.
- * Purpose: Load weapon-message images/layout and register the message owner and side widget with the HUD manager.
- */
-int HudUiMessage::LoadWeaponLayoutFromNode(
-    zReader::Node *layoutNode,
-    const HudUiPanelFontParams *fontParams
-) {
-    if (layoutNode->type != zReader::ZRDR_NODE_ARRAY) {
-        return 0;
-    }
-
-    zReader::Node *const payload = layoutNode->value.nodes;
-    variantImages[0] = zImage::TexDir_FindOrCreateByPath(payload[1].value.str);
-    variantImages[1] = zImage::TexDir_FindOrCreateByPath(payload[2].value.str);
-    variantImages[2] = zImage::TexDir_FindOrCreateByPath(payload[3].value.str);
-    variantImages[3] = zImage::TexDir_FindOrCreateByPath(payload[4].value.str);
-    variantImages[4] = zImage::TexDir_FindOrCreateByPath(payload[5].value.str);
-    sideImageSwaps[0] = zImage::TexDir_FindOrCreateByPath(payload[6].value.str);
-    sideImageSwaps[1] = zImage::TexDir_FindOrCreateByPath(payload[7].value.str);
-    panel.layoutX = payload[8].value.i32;
-    panel.layoutY = payload[9].value.i32;
-
-    RebuildWeaponLayout();
-
-    imageStateWord = (imageStateWord & 0xffff0000u) | 1u;
-    Invalidate();
-
-    panel.centerText = 1;
-    panel.textColor0 = 0x0020bf40;
-    panel.textColor1 = 0x0020bf40;
-    panel.textDirty = 1;
-    panel.shadowOffsetX = -1;
-    panel.shadowOffsetY = -1;
-    panel.shadowEnabled = 1;
-
-    panel.SetFont(
-        fontParams->faceName,
-        fontParams->height,
-        fontParams->weight,
-        fontParams->width,
-        0,
-        0,
-        2
-    );
-    panel.SetTextFmt(g_HudUiBlankSpaces3);
-
-    g_HudUiMgr.AddChild(this);
-    g_HudUiMgr.AddChild(&widget);
-    return 1;
-}
-
-/**
- * Reimplements 0x413ff0: HudUiMessage::ReleaseImages.
- * Purpose: Releases all borrowed weapon-message variant and side-image swap references and clears their storage.
- */
-void HudUiMessage::ReleaseImages() {
-    zVid_Image::ReleaseIfNotDefault(variantImages[0]);
-    zVid_Image::ReleaseIfNotDefault(variantImages[1]);
-    zVid_Image::ReleaseIfNotDefault(variantImages[2]);
-    zVid_Image::ReleaseIfNotDefault(variantImages[3]);
-    zVid_Image::ReleaseIfNotDefault(variantImages[4]);
-    zVid_Image::ReleaseIfNotDefault(sideImageSwaps[0]);
-    zVid_Image::ReleaseIfNotDefault(sideImageSwaps[1]);
-
-    sideImageSwaps[1] = 0;
-    sideImageSwaps[0] = 0;
-    variantImages[4] = 0;
-    variantImages[3] = 0;
-    variantImages[2] = 0;
-    variantImages[1] = 0;
-    variantImages[0] = 0;
-}
-
-/**
- * Reimplements 0x414070: HudUiMessage::RebuildWeaponLayout.
- * Original source path: D:\Proj\Battlesport\hud.cpp.
- * Purpose: Rebuilds the message base, text panel, and side widget geometry from the current layout anchor.
- */
-void HudUiMessage::RebuildWeaponLayout() {
-    HudUiWidget *const layoutWidget2 = &g_HudLayoutHW.widget2;
-    const int anchorX = layoutWidget2->GetCenterX();
-    const int anchorY = layoutWidget2->GetCenterY();
-
-    const int clipLeft = panel.layoutX + (g_HudUiMgrHudOriginX / 2);
-    zVidImagePartial *const baseImage = variantImages[0];
-    HudUiRect widgetClipRect;
-    widgetClipRect.left = clipLeft;
-    widgetClipRect.top = panel.layoutY;
-    widgetClipRect.right = clipLeft + baseImage->width;
-    widgetClipRect.bottom = panel.layoutY + baseImage->height;
-
-    SetPos(
-        clipLeft + anchorX,
-        panel.layoutY + anchorY
-    );
-    SetBltSourceAndClipRect(
-        0,
-        &widgetClipRect
-    );
-
-    HudUiRect panelClipRect;
-    panelClipRect.left = clipLeft + 3;
-    panelClipRect.top = widgetClipRect.bottom;
-    panelClipRect.right = widgetClipRect.right - 2;
-    panelClipRect.bottom = widgetClipRect.bottom + 12;
-
-    const int textX =
-        panelClipRect.left + ((panelClipRect.right - panelClipRect.left) / 2) + anchorX;
-    panel.SetPos(
-        textX,
-        widgetClipRect.bottom + anchorY
-    );
-    panel.SetClip(
-        0,
-        &panelClipRect
-    );
-
-    zVidImagePartial *const sideImage = sideImageSwaps[0];
-    widget.SetPos(
-        anchorX - sideImage->width + widgetClipRect.right - 1,
-        anchorY - sideImage->height + widgetClipRect.bottom - 1
-    );
-}
-
-namespace HudUiLoadingCheckpoint {
-/**
- * Reimplements 0x414180: HudUiLoadingCheckpoint::AdvanceAndLog.
- * Purpose: advance the embedded HudUiMgr loading checkpoint table, report
- * overflow, optionally log the supplied message, and update briefing progress.
- */
-void __fastcall AdvanceAndLog(
-    const char *messageOrNull
-) {
-    const unsigned int currentIndex = g_HudUiLoadingCheckpointCurrentIndex;
-    const unsigned int maxIndex = g_HudUiLoadingCheckpointMaxIndex;
-    if (currentIndex > maxIndex) {
-        zError::ReportOld(
-            0x800,
-            "D:\\Proj\\Battlesport\\hud.cpp",
-            0x1184,
-            g_Hud_CheckpointOverflowMsg
-        );
-    } else {
-        g_HudUiLoadingCheckpointCurrentProgress = g_HudUiLoadingCheckpointProgress[currentIndex];
-        const unsigned int nextIndex = currentIndex + 1;
-        g_HudUiLoadingCheckpointCurrentIndex = nextIndex;
-        if (nextIndex > maxIndex) {
-            g_HudUiLoadingCheckpointCurrentIndex = maxIndex;
-        }
-    }
-
-    if (messageOrNull != 0) {
-        puts(messageOrNull);
-        fflush(stdout);
-    }
-
-    zGame::ReturnOnlyStub();
-    Briefing::SetProgressAndSleep(g_HudUiLoadingCheckpointCurrentProgress);
-}
-
-/**
- * Reimplements 0x414210: HudUiLoadingCheckpoint::InitTable.
- * Purpose: seed the embedded HudUiMgr loading checkpoint table and derive
- * normalized briefing progress from the retail checkpoint second values.
- */
-void InitTable() {
-    static const float kRawProgress[] = {
-        0.00100000005f,
-        0.136999995f,
-        0.237000003f,
-        0.340000004f,
-        0.899999976f,
-        9.30000019f,
-        12.3999996f,
-        13.3999996f,
-        20.0f,
-        26.0f,
-        26.2999992f,
-        28.7000008f,
-        31.5f,
-        34.0f,
-        36.2000008f,
-        36.4000015f,
-        53.2999992f,
-        53.5999985f,
-        53.7000008f,
-    };
-
-    g_HudUiLoadingCheckpointMaxIndex = 18;
-    g_HudUiLoadingCheckpointCurrentIndex = 0;
-    {
-        for (unsigned int index = 0; index <= g_HudUiLoadingCheckpointMaxIndex; ++index) {
-            g_HudUiLoadingCheckpointRawProgress[index] = kRawProgress[index];
-            g_HudUiLoadingCheckpointProgress[index] =
-                g_HudUiLoadingCheckpointRawProgress[index] * g_HudUiLoadingCheckpointProgressScale;
-        }
-    }
-}
-} // namespace HudUiLoadingCheckpoint
-
-extern "C" char g_Hud_TripleStringFmt[9];
-
-namespace HudUiListMenuEntry {
-int __fastcall CompareSortKey(
-    const HudUiScoreboardEntry *entryA,
-    const HudUiScoreboardEntry *entryB
-);
-}
-
-namespace {
-const int kGameNetChatComposeTextCapacity = 0x20;
-const int kGameNetChatComposeShiftModifierMask = 0x400;
-const int kGameNetChatComposeDigitFirstDik = 0x02;
-const int kGameNetChatComposeDigitLastDik = 0x0e;
-const int kGameNetChatComposeLetterRowFirstDik = 0x10;
-const int kGameNetChatComposeLetterRowLastDik = 0x2b;
-const int kGameNetChatComposeHomeRowFirstDik = 0x1e;
-const int kGameNetChatComposeHomeRowLastDik = 0x28;
-const int kGameNetChatComposeBottomRowFirstDik = 0x2c;
-const int kGameNetChatComposeBottomRowLastDik = 0x35;
-const int kGameNetChatComposeSpaceDik = 0x39;
-
-/**
- * Source: D:\Proj\Battlesport\hud.cpp
- * Original helper evidence: no standalone retail function; caller 0x4143d0
- * repeats this unregister/register pair across the chat-compose key ranges and
- * the standalone space-bar binding.
- * Purpose: Register one chat-compose keyboard callback binding.
- */
-inline void HudRuntimeRegisterChatComposeKey(
-    int comboIdx
-) {
-    zInput::Keyboard_UnregisterKeyCallback(comboIdx);
-    zInput::Keyboard_RegisterKeyCallback(
-        comboIdx,
-        (void *)(&GameNet::ChatComposeKeyCallback),
-        ""
-    );
-}
-
-/**
- * Source: D:\Proj\Battlesport\hud.cpp
- * Original helper evidence: no standalone retail function; caller 0x4143d0
- * repeats contiguous chat-compose key registration for unmodified and modified
- * DIK ranges.
- * Purpose: Register a contiguous range of chat-compose keyboard bindings.
- */
-inline void HudRuntimeRegisterChatComposeKeyRange(
-    int firstComboIdx,
-    int lastComboIdx
-) {
-    for (int comboIdx = firstComboIdx; comboIdx <= lastComboIdx; ++comboIdx) {
-        HudRuntimeRegisterChatComposeKey(comboIdx);
-        HudRuntimeRegisterChatComposeKey(comboIdx | kGameNetChatComposeShiftModifierMask);
-    }
-}
-
-/**
- * Original helper evidence: no standalone retail function; observed callers
- * 0x414710, 0x414930, and 0x414980 in the hud.cpp list-menu layer.
- * Purpose: expose the recovered comparator as a boolean ordering predicate for
- * local sort helpers.
- */
-inline bool HudRuntimeListMenuEntryComesBefore(
-    const HudUiScoreboardEntry &lhs,
-    const HudUiScoreboardEntry &rhs
-) {
-    return HudUiListMenuEntry::CompareSortKey(
-        &lhs,
-        &rhs
-    ) != 0;
-}
-
-/**
- * Original helper evidence: no standalone retail function; observed caller
- * 0x414710 in the hud.cpp list-menu layer.
- * Purpose: select the median scoreboard entry among first, middle, and last
- * candidates for quicksort partitioning.
- */
-inline HudUiScoreboardEntry *HudRuntimeListMenuMedianOfThree(
-    HudUiScoreboardEntry *first,
-    HudUiScoreboardEntry *middle,
-    HudUiScoreboardEntry *last
-) {
-    if (HudRuntimeListMenuEntryComesBefore(
-        *first,
-        *middle
-    )) {
-        if (HudRuntimeListMenuEntryComesBefore(
-            *middle,
-            *last
-        )) {
-            return middle;
-        }
-
-        return HudRuntimeListMenuEntryComesBefore(
-            *first,
-            *last
-        ) ? last : first;
-    }
-
-    if (HudRuntimeListMenuEntryComesBefore(
-        *first,
-        *last
-    )) {
-        return first;
-    }
-
-    return HudRuntimeListMenuEntryComesBefore(
-        *middle,
-        *last
-    ) ? last : middle;
-}
-} // namespace
-
-namespace HudUiMgrSensor {
-/**
- * Reimplements 0x414300: HudUiMgrSensor::GetFxRect.
- * Original source path: D:\Proj\Battlesport\hud.cpp.
- * Purpose: return the recovered HUD value exposed by HudUiMgrSensor::GetFxRect.
- */
-void __fastcall GetFxRect(
-    HudUiRect *outRect
-) {
-    *outRect = g_HudUiMgrSensorFxRect;
-}
-} // namespace HudUiMgrSensor
-
-namespace GameNet {
-/**
- * Reimplements 0x414330: GameNet::ShowPlayerKillMessage
- * Original source path: D:\Proj\Battlesport\hud.cpp.
- * Purpose: Format and display a multiplayer kill-feed message.
- */
-void __fastcall ShowPlayerKillMessage(
-    GameNetPlayerRow *victimRow,
-    OptCatalogEntryDef *killEntry,
-    GameNetPlayerRow *killerRow
-) {
-    const char *killVerb = "";
-    if (killEntry == 0) {
-        killVerb = zLoc::GetMessageString(0x253);
-    } else if (killEntry->killVerbString != 0) {
-        killVerb = killEntry->killVerbString;
-    }
-
-    char message[0x50];
-    sprintf(
-        message,
-        g_Hud_TripleStringFmt,
-        victimRow->displayName,
-        killVerb,
-        killerRow->displayName
-    );
-    HudUi::ShowTopMessageLine(
-        message,
-        2.0f
-    );
-}
-
-/**
- * Reimplements 0x414390: GameNet::RefreshPlayerListMenu
- * Original source path: D:\Proj\Battlesport\hud.cpp.
- * Purpose: Forward a player row to the HUD stats list triplet for scoreboard
- * entry insertion.
- */
-void __fastcall RefreshPlayerListMenu(
-    GameNetPlayerRow *playerRow
-) {
-    g_HudUiMgrStatsList->triplet->AddEntry(playerRow);
-}
-} // namespace GameNet
-
-namespace HudUiMgr {
-/**
- * Reimplements 0x4143a0: HudUiMgr::IsLocalPlayerFirstInStatsList.
- * Original source path: D:\Proj\Battlesport\hud.cpp.
- * Purpose: preserve the recovered HUD behavior for HudUiMgr::IsLocalPlayerFirstInStatsList.
- */
-int IsLocalPlayerFirstInStatsList() {
-    return g_HudUiMgrStatsList->triplet->IsLocalPlayerFirstEntry();
-}
-} // namespace HudUiMgr
-
-namespace HudUi {
-/**
- * Reimplements 0x4143b0: HudUi::RefreshScoreboardEntryRow.
- * Original source path: D:\Proj\Battlesport\hud.cpp.
- * Purpose: preserve the recovered HUD behavior for HudUi::RefreshScoreboardEntryRow.
- */
-void __fastcall RefreshScoreboardEntryRow(
-    GameNetPlayerRow *entryData
-) {
-    g_HudUiMgrStatsList->triplet->UpdateEntryData(entryData);
-}
-
-/**
- * Reimplements 0x4143c0: HudUi::RemoveScoreboardEntryRow.
- * Original source path: D:\Proj\Battlesport\hud.cpp.
- * Purpose: forward a multiplayer row removal to the active scoreboard triplet.
- */
-void __fastcall RemoveScoreboardEntryRow(
-    GameNetPlayerRow *entryKey
-) {
-    g_HudUiMgrStatsList->triplet->RemoveEntry(entryKey);
-}
-} // namespace HudUi
-
-namespace GameNet {
-/**
- * Reimplements 0x4143d0: GameNet::BeginChatCompose
- * Original source path: D:\Proj\Battlesport\hud.cpp.
- * Purpose: Open chat-compose mode and bind text-entry keys.
- */
-void BeginChatCompose() {
-    if (zOpt::GetNetworkEnabled() == 0) {
-        return;
-    }
-
-    HudUiMgrObjective::Show(
-        0,
-        g_HudUiMessage_NodeName,
-        "",
-        0.0f
-    );
-    g_HudUiMgrObjectiveChatComposeActive = 1;
-    g_HudUiMgrObjectiveChatComposeTextInput.AllocTextBuffer(kGameNetChatComposeTextCapacity);
-    g_HudUiMgrObjectiveChatComposeTextInput.SetContents("");
-    zInput::BindMapContext_Push(0);
-
-    HudRuntimeRegisterChatComposeKeyRange(
-        kGameNetChatComposeDigitFirstDik,
-        kGameNetChatComposeDigitLastDik
-    );
-    HudRuntimeRegisterChatComposeKeyRange(
-        kGameNetChatComposeLetterRowFirstDik,
-        kGameNetChatComposeLetterRowLastDik
-    );
-    HudRuntimeRegisterChatComposeKeyRange(
-        kGameNetChatComposeHomeRowFirstDik,
-        kGameNetChatComposeHomeRowLastDik
-    );
-    HudRuntimeRegisterChatComposeKeyRange(
-        kGameNetChatComposeBottomRowFirstDik,
-        kGameNetChatComposeBottomRowLastDik
-    );
-    HudRuntimeRegisterChatComposeKey(kGameNetChatComposeSpaceDik);
-}
-
-/**
- * Reimplements 0x414550: GameNet::ChatComposeKeyCallback
- * Original source path: D:\Proj\Battlesport\hud.cpp.
- * Purpose: Append a translated key to active chat-compose text and mirror the
- * buffer into the objective description panel.
- */
-void __fastcall ChatComposeKeyCallback(
-    int dikCodeWithMods
-) {
-    const int key = zInput::Keyboard_TranslateDikToAscii(dikCodeWithMods);
-    if (key == 0) {
-        return;
-    }
-
-    g_HudUiMgrObjectiveChatComposeTextInput.DispatchKeyAction(key);
-
-    g_HudUiMgrObjectiveDescTextPanel->SetTextFmt(
-        g_HudUiMgrObjectiveChatComposeTextInput.GetBuffer()
-    );
-}
-
-/**
- * Reimplements 0x414590: GameNet::EndChatComposeAndSend
- * Original source path: D:\Proj\Battlesport\hud.cpp.
- * Purpose: Close chat compose, show the local chat line, and send packet 0x0b.
- */
-void EndChatComposeAndSend() {
-    zUtil_SaveGameState *const saveState = (zUtil_SaveGameState *)(g_GameStateOrMapTable);
-    GameNetPlayerRow *const playerRow = saveState->netPlayerRow;
-    char chatLine[0x51];
-    chatLine[0x50] = '\0';
-
-    g_HudUiMgrObjectiveChatComposeActive = 0;
-    zInput::BindMapContext_Pop();
-    HudUiMgrObjective::Begin();
-
-    if (strlen(g_HudUiMgrObjectiveChatComposeTextInput.GetBuffer()) == 0) {
-        return;
-    }
-
-    strncpy(
-        chatLine,
-        playerRow->displayName,
-        0x50
-    );
-    strncat(
-        chatLine,
-        g_HudUiMessage_SeparatorColon,
-        0x50 - strlen(chatLine)
-    );
-    strncat(
-        chatLine,
-        g_HudUiMgrObjectiveChatComposeTextInput.GetBuffer(),
-        0x50 - strlen(chatLine)
-    );
-    HudUi::ShowChatLine(
-        chatLine,
-        5.0f
-    );
-    SendPkt0B_ChatMessage(chatLine);
-}
-
-/**
- * Reimplements 0x414660: GameNet::EndChatComposeAndSendThunk
- * Original source path: D:\Proj\Battlesport\hud.cpp.
- * Purpose: Forward the chat-compose dispatch callback to EndChatComposeAndSend.
- */
-void EndChatComposeAndSendThunk() {
-    EndChatComposeAndSend();
-}
-} // namespace GameNet
-
-/**
- * Reimplements 0x414670: HudUiTripletEntries::GetCount.
- * Original source path: D:\Proj\Battlesport\hud.cpp.
- * Purpose: return the number of populated entries in the recovered scoreboard vector.
- */
-int HudUiTripletEntries::GetCount() {
-    if (begin == 0) {
-        return 0;
-    }
-
-    return (int)(end - begin);
-}
-
-/**
- * Reimplements 0x4146a0: HudUiTripletEntries::CopyRange.
- * Original source path: D:\Proj\Battlesport\hud.cpp.
- * Purpose: copy a range of scoreboard entries into destination vector storage.
- */
-HudUiScoreboardEntry *__stdcall HudUiTripletEntries::CopyRange(
-    HudUiScoreboardEntry *sourceBegin,
-    HudUiScoreboardEntry *sourceEnd,
-    HudUiScoreboardEntry *dest
-) {
-    HudUiScoreboardEntry *cursor = dest;
-    while (sourceBegin != sourceEnd) {
-        if (cursor != 0) {
-            *cursor = *sourceBegin;
-        }
-        ++sourceBegin;
-        ++cursor;
-    }
-
-    return cursor;
-}
-
-/**
- * Reimplements 0x4146e0: HudUiTripletEntries::FillN.
- * Original source path: D:\Proj\Battlesport\hud.cpp.
- * Purpose: fill consecutive scoreboard vector slots from one source entry.
- */
-void __stdcall HudUiTripletEntries::FillN(
-    HudUiScoreboardEntry *dest,
-    unsigned int count,
-    const HudUiScoreboardEntry *sourceValue
-) {
-    HudUiScoreboardEntry *cursor = dest;
-    while (count != 0) {
-        if (cursor != 0) {
-            *cursor = *sourceValue;
-        }
-        ++cursor;
-        --count;
-    }
-}
-
-namespace HudUiListMenuEntry {
-/**
- * Reimplements 0x414710: HudUiListMenuEntry::SortRange.
- * Original source path: D:\Proj\Battlesport\hud.cpp.
- * Purpose: partition larger scoreboard-entry ranges before the final insertion-sort pass.
- */
-void __fastcall SortRange(
-    HudUiScoreboardEntry *begin,
-    HudUiScoreboardEntry *end,
-    int unusedFlags
-) {
-    while (end - begin > 16) {
-        HudUiScoreboardEntry *left = begin;
-        HudUiScoreboardEntry *right = end - 1;
-        HudUiScoreboardEntry *const middle = begin + ((end - begin) / 2);
-        HudUiScoreboardEntry pivot = *HudRuntimeListMenuMedianOfThree(
-            begin,
-            middle,
-            right
-        );
-
-        for (;;) {
-            while (HudRuntimeListMenuEntryComesBefore(
-                *left,
-                pivot
-            )) {
-                ++left;
-            }
-
-            while (HudRuntimeListMenuEntryComesBefore(
-                pivot,
-                *right
-            )) {
-                --right;
-            }
-
-            if (right <= left) {
-                break;
-            }
-
-            HudUiScoreboardEntry temp = *left;
-            *left = *right;
-            *right = temp;
-            ++left;
-        }
-
-        if (end - left <= left - begin) {
-            SortRange(
-                left,
-                end,
-                unusedFlags
-            );
-            end = left;
-        } else {
-            SortRange(
-                begin,
-                left,
-                unusedFlags
-            );
-            begin = left;
-        }
-    }
-}
-
-/**
- * Reimplements 0x414930: HudUiListMenuEntry::InsertPivotIntoSortedPrefix.
- * Original source path: D:\Proj\Battlesport\hud.cpp.
- * Purpose: shift a sorted prefix forward and store the pivot entry at its sorted position.
- */
-void InsertPivotIntoSortedPrefix(
-    HudUiScoreboardEntry *slot,
-    const HudUiScoreboardEntry &pivot
-) {
-    HudUiScoreboardEntry *insertSlot = slot;
-    HudUiScoreboardEntry *previousEntry = insertSlot - 1;
-    while (HudRuntimeListMenuEntryComesBefore(
-        pivot,
-        *previousEntry
-    )) {
-        *insertSlot = *previousEntry;
-        insertSlot = previousEntry;
-        --previousEntry;
-    }
-
-    *insertSlot = pivot;
-}
-
-/**
- * Reimplements 0x414980: HudUiListMenuEntry::InsertionSortRange.
- * Original source path: D:\Proj\Battlesport\hud.cpp.
- * Purpose: insertion-sort a scoreboard-entry range in place using the recovered list-menu ordering.
- */
-void __fastcall InsertionSortRange(
-    HudUiScoreboardEntry *begin,
-    HudUiScoreboardEntry *end,
-    int
-) {
-    if (begin == end) {
-        return;
-    }
-
-    HudUiScoreboardEntry *current = begin + 1;
-    while (current != end) {
-        HudUiScoreboardEntry candidate = *current;
-        if (HudRuntimeListMenuEntryComesBefore(
-            candidate,
-            *begin
-        )) {
-            HudUiScoreboardEntry *shiftCursor = current;
-            while (shiftCursor != begin) {
-                *shiftCursor = *(shiftCursor - 1);
-                --shiftCursor;
-            }
-
-            *begin = candidate;
-        } else {
-            InsertPivotIntoSortedPrefix(
-                current,
-                candidate
-            );
-        }
-
-        ++current;
-    }
-}
-} // namespace HudUiListMenuEntry
-
 namespace HudUiMgrSensor {
 /**
  * Reimplements 0x410d10: HudUiMgrSensor::SetViewportRect.
@@ -2517,7 +1254,7 @@ int __fastcall UpdateTargetReticleFromCursor(
  * Reimplements 0x411710: HudUiMgr::ReticleStaticAtexitStub.
  * Purpose: preserve the recovered HUD behavior for HudUiMgr::ReticleStaticAtexitStub.
  */
-void ReticleStaticAtexitStub() {}
+void __cdecl ReticleStaticAtexitStub() {}
 
 /**
  * Reimplements 0x411720: HudUiMgr::CopyReticleProjection.
@@ -3415,16 +2152,23 @@ void __fastcall HudUiMessage::UpdateSelectedWeaponDisplay(
 }
 
 /**
- * Reimplements 0x412b60: HudLayoutSW::Constructor.
- * Source file evidence: BN labels this function as a Battlesport hud.cpp helper.
- * Purpose: construct the software HUD layout container and attach its base widget child.
+ * Original inline constructor; no standalone retail function exists. The
+ * 0x412b60 and 0x412ea0 derived constructors both contain the same automatic
+ * HudUiContainer/widget0 construction followed by the Base vftable store and
+ * AddChild call.
+ * Purpose: construct the common layout base and attach its primary widget.
  */
-HudLayoutSW * HudLayoutSW::Constructor() {
-    new ((HudUiContainer *)this) HudUiContainer;
-    HudUiWidget *const childWidget = (HudUiWidget *)(&widget0);
-    childWidget->Constructor(0);
-    AddChild((HudUiElement *)(childWidget));
-    return this;
+inline HudLayoutBase::HudLayoutBase()
+    : widget0(0) {
+    AddChild(&widget0);
+}
+
+/**
+ * Reimplements 0x412b60: HudLayoutSW::HudLayoutSW.
+ * Source file evidence: BN labels this function as a Battlesport hud.cpp helper.
+ * Purpose: construct the software HUD layout through its automatic base lifetime.
+ */
+HudLayoutSW::HudLayoutSW() {
 }
 
 /**
@@ -3449,18 +2193,18 @@ void HudLayoutBase::UpdateAll(
 
 /**
  * Reimplements 0x412bf0: HudLayoutBase::Enable.
- * Purpose: activate this HUD layout through the recovered base SetActive slot.
+ * Purpose: activate this HUD layout through the recovered base SetEnabled slot.
  */
 void HudLayoutBase::Enable() {
-    SetActive(1);
+    SetEnabled(1);
 }
 
 /**
  * Reimplements 0x412c00: HudLayoutBase::Disable.
- * Purpose: deactivate this HUD layout through the recovered base SetActive slot.
+ * Purpose: deactivate this HUD layout through the recovered base SetEnabled slot.
  */
 void HudLayoutBase::Disable() {
-    SetActive(0);
+    SetEnabled(0);
 }
 
 /**
@@ -3635,27 +2379,18 @@ int __fastcall ApplyViewportRect(
 } // namespace HudLayout
 
 /**
- * Reimplements 0x412ea0: HudLayoutHW::Constructor.
+ * Reimplements 0x412ea0: HudLayoutHW::HudLayoutHW.
  * Source file evidence: BN labels this function as a Battlesport hud.cpp helper.
- * Purpose: construct the hardware HUD layout container and attach its three image widgets.
+ * Purpose: construct the hardware HUD layout and attach its image widgets in
+ * the retail child-list order after automatic member construction.
  */
-HudLayoutHW * HudLayoutHW::Constructor() {
-    new ((HudUiContainer *)this) HudUiContainer;
-    HudUiWidget *const baseWidget = (HudUiWidget *)(&widget0);
-    baseWidget->Constructor(0);
-    AddChild((HudUiElement *)(baseWidget));
-
-    HudUiWidget *const widget1Object = (HudUiWidget *)(&widget1);
-    widget1Object->Constructor(0);
-    HudUiWidget *const widget2Object = (HudUiWidget *)(&widget2);
-    widget2Object->Constructor(0);
-    HudUiWidget *const widget3Object = (HudUiWidget *)(&widget3);
-    widget3Object->Constructor(0);
-
-    AddChild((HudUiElement *)(widget1Object));
-    AddChild((HudUiElement *)(widget3Object));
-    AddChild((HudUiElement *)(widget2Object));
-    return this;
+HudLayoutHW::HudLayoutHW()
+    : widget1(0),
+      widget2(0),
+      widget3(0) {
+    AddChild(&widget1);
+    AddChild(&widget3);
+    AddChild(&widget2);
 }
 
 /**
@@ -4108,3 +2843,1262 @@ int __fastcall ApplyHudModeSwitch(
 }
 
 } // namespace HudUiMgr
+namespace HudUiSensorWindow {
+CWnd *StaticInit();
+int RegisterAtExit();
+void __cdecl AtExitDestructor();
+
+/**
+ * Reimplements 0x4136f0: HudUiSensorWindow::StaticInitAndRegisterAtExit.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: construct the global HUD sensor CWnd and register its static
+ * destructor during CRT startup.
+ */
+void __cdecl StaticInitAndRegisterAtExit() {
+    StaticInit();
+    RegisterAtExit();
+}
+
+/**
+ * Reimplements 0x413700: HudUiSensorWindow::StaticInit.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: default-construct the global HUD sensor CWnd in its static storage.
+ */
+CWnd *StaticInit() {
+    return new (&g_HudUiSensorWindow) CWnd;
+}
+
+/**
+ * Reimplements 0x413710: HudUiSensorWindow::RegisterAtExit.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: register the global HUD sensor CWnd destructor with the CRT
+ * at-exit list.
+ */
+int RegisterAtExit() {
+    return atexit(AtExitDestructor);
+}
+
+/**
+ * Reimplements 0x413720: HudUiSensorWindow::AtExitDestructor.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: destroy the global HUD sensor CWnd during CRT shutdown.
+ */
+void __cdecl AtExitDestructor() {
+    ((CWnd *)&g_HudUiSensorWindow)->~CWnd();
+}
+} // namespace HudUiSensorWindow
+
+namespace HudUiMgr {
+/**
+ * Reimplements 0x413730: HudUiMgr::DestroySensorWindow.
+ * Purpose: preserve the recovered HUD behavior for HudUiMgr::DestroySensorWindow.
+ */
+void DestroySensorWindow() {
+    zFMV_Playback *playback = g_HudUiSensorWindowPlayback;
+    if (playback == 0) {
+        return;
+    }
+
+    playback->StopAndClose();
+
+    playback = g_HudUiSensorWindowPlayback;
+    if (playback != 0) {
+        playback->Destructor();
+        ::operator delete(playback);
+    }
+
+    g_HudUiSensorWindowPlayback = 0;
+    ((CWnd *)&g_HudUiSensorWindow)->CWnd::DestroyWindow();
+}
+
+/**
+ * Reimplements 0x413770: HudUiMgr::SetFloatTimerVisible.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: apply the recovered HUD state change handled by HudUiMgr::SetFloatTimerVisible.
+ */
+void __fastcall SetFloatTimerVisible(
+    int visible
+) {
+    g_HudUiMgrTimerPanelFloat->SetVisible(visible != 0 ? 1 : 0);
+
+    if (visible == 0) {
+        TriggerCurrentLayoutOnActivated();
+    }
+}
+
+/**
+ * Reimplements 0x4137a0: HudUiMgr::SetAuxOverlayVisible.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: apply the recovered HUD state change handled by HudUiMgr::SetAuxOverlayVisible.
+ */
+void __fastcall SetAuxOverlayVisible(
+    int visible
+) {
+    g_HudUiMgrStringMenu->SetEnabled(visible != 0 ? 1 : 0);
+}
+} // namespace HudUiMgr
+
+namespace HudUiAuxOverlay {
+/**
+ * Reimplements 0x4137c0: HudUiAuxOverlay::ClearTextLines.
+ * Purpose: clear and hide every sensor overlay text line.
+ */
+void ClearTextLines() {
+    {
+        for (int index = 0; index < 23; ++index) {
+            UpdateTextLine(
+                2,
+                index,
+                ""
+            );
+            UpdateTextLine(
+                0,
+                index,
+                0
+            );
+        }
+    }
+}
+
+/**
+ * Reimplements 0x4137f0: HudUiAuxOverlay::ApplyTextLineOp.
+ * Purpose: apply one sensor overlay text-line operation to a string-menu item.
+ */
+void __fastcall UpdateTextLine(
+    int op,
+    int index,
+    const char *format
+) {
+    HudUiPanel *const panel = (HudUiPanel *)(&g_HudUiMgrStringMenu->items[index]);
+
+    if (op == 1) {
+        panel->SetTextFmt(format);
+        panel->SetVisible(1);
+        return;
+    }
+
+    if (op == 0) {
+        panel->SetVisible(0);
+        return;
+    }
+
+    if (op == 2) {
+        if (*format != '\0') {
+            panel->SetTextFmt(format);
+            panel->SetVisible(1);
+        } else {
+            panel->SetVisible(0);
+        }
+    }
+}
+} // namespace HudUiAuxOverlay
+
+namespace HudUi {
+/**
+ * Reimplements 0x4138d0: HudUi::ShowTopMessageLine.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: show a top HUD message when the top-message stack is enabled.
+ */
+void __fastcall ShowTopMessageLine(
+    const char *message,
+    float duration
+) {
+    HudUiTextStack4 *const topStack = g_HudUiTopMessageStack;
+    if (topStack->enabled != 0) {
+        topStack->PushLine(
+            message,
+            duration
+        );
+    }
+}
+
+/**
+ * Reimplements 0x4138f0: HudUi::ShowChatLine.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: show a chat HUD message when the chat stack is enabled.
+ */
+void __fastcall ShowChatLine(
+    const char *message,
+    float duration
+) {
+    HudUiTextStack4 *const chatStack = g_HudUiChatMessageStack;
+    if (chatStack->enabled != 0) {
+        chatStack->PushLine(
+            message,
+            duration
+        );
+    }
+}
+} // namespace HudUi
+
+namespace HudUiMgr {
+/**
+ * Reimplements 0x413910: HudUiMgr::EnableTopAndChatStacks.
+ * Purpose: clear and enable the global top-message and chat text stacks.
+ */
+void EnableTopAndChatStacks() {
+    g_HudUiTopMessageStack->Clear();
+    g_HudUiTopMessageStack->SetEnabled(1);
+    g_HudUiChatMessageStack->Clear();
+    g_HudUiChatMessageStack->SetEnabled(1);
+}
+
+/**
+ * Reimplements 0x413950: HudUiMgr::DisableTopAndChatStacks.
+ * Purpose: clear and disable the global top-message and chat text stacks.
+ */
+void DisableTopAndChatStacks() {
+    g_HudUiTopMessageStack->Clear();
+    g_HudUiTopMessageStack->SetEnabled(0);
+    g_HudUiChatMessageStack->Clear();
+    g_HudUiChatMessageStack->SetEnabled(0);
+}
+} // namespace HudUiMgr
+
+namespace HudUiLayoutNode {
+/**
+ * Reimplements 0x413990: HudUiLayoutNode::ApplyTextLabel.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: apply the recovered HUD layout or option state handled by HudUiLayoutNode::ApplyTextLabel.
+ */
+int __fastcall ApplyTextLabel(
+    zReader::Node *layoutNode,
+    HudUiPanel *target,
+    int baseX,
+    int baseY,
+    const int *offsetXY
+) {
+    if (layoutNode->type != zReader::ZRDR_NODE_ARRAY) {
+        return 0;
+    }
+
+    zReader::Node *const payload = layoutNode->value.nodes;
+    const char *const text = payload[1].value.str;
+    int x = payload[2].value.i32 + baseX;
+    int y = payload[3].value.i32 + baseY;
+    if (offsetXY != 0) {
+        x += offsetXY[0];
+        y += offsetXY[1];
+    }
+
+    target->SetPos(
+        x,
+        y
+    );
+    target->SetTextFmt(
+        text != 0 ? text : ""
+    );
+    return 1;
+}
+
+/**
+ * Reimplements 0x413a10: HudUiLayoutNode::ReadRectOffsetAndSize.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: read recovered HUD ZRD/layout data for HudUiLayoutNode::ReadRectOffsetAndSize.
+ */
+int __fastcall ReadRectOffsetAndSize(
+    zReader::Node *node,
+    HudUiRect *outRect,
+    const int *offsetXY,
+    int *outWidth,
+    int *outHeight
+) {
+    if (node->type != zReader::ZRDR_NODE_ARRAY) {
+        return 0;
+    }
+
+    zReader::Node *const arrayBase = node->value.nodes;
+    outRect->left = arrayBase[1].value.i32;
+    outRect->top = arrayBase[2].value.i32;
+    outRect->right = arrayBase[3].value.i32;
+    outRect->bottom = arrayBase[4].value.i32;
+
+    if (offsetXY != 0) {
+        outRect->left += offsetXY[0];
+        outRect->top += offsetXY[1];
+        outRect->right += offsetXY[0];
+        outRect->bottom += offsetXY[1];
+    }
+
+    if (outWidth != 0) {
+        *outWidth = outRect->right - outRect->left;
+    }
+
+    if (outHeight != 0) {
+        *outHeight = outRect->bottom - outRect->top;
+    }
+
+    return 1;
+}
+
+/**
+ * Reimplements 0x413aa0: HudUiLayoutNode::ReadRect.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: read recovered HUD ZRD/layout data for HudUiLayoutNode::ReadRect.
+ */
+int __fastcall ReadRect(
+    zReader::Node *node,
+    HudUiRect *outRect
+) {
+    if (node->type != zReader::ZRDR_NODE_ARRAY) {
+        return 0;
+    }
+
+    zReader::Node *const arrayBase = node->value.nodes;
+    outRect->left = arrayBase[1].value.i32;
+    outRect->right = arrayBase[2].value.i32;
+    outRect->top = arrayBase[3].value.i32;
+    outRect->bottom = arrayBase[4].value.i32;
+    return 1;
+}
+
+/**
+ * Reimplements 0x413ad0: HudUiLayoutNode::ReadInt3.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: read recovered HUD ZRD/layout data for HudUiLayoutNode::ReadInt3.
+ */
+int __fastcall ReadInt3(
+    zReader::Node *node,
+    int *out0,
+    int *out1,
+    int *out2
+) {
+    if (node->type != zReader::ZRDR_NODE_ARRAY) {
+        return 0;
+    }
+
+    zReader::Node *const arrayBase = node->value.nodes;
+    if (out0 != 0) {
+        *out0 = arrayBase[1].value.i32;
+    }
+
+    if (out1 != 0) {
+        *out1 = arrayBase[2].value.i32;
+    }
+
+    if (out2 != 0) {
+        *out2 = arrayBase[3].value.i32;
+    }
+
+    return 1;
+}
+
+/**
+ * Reimplements 0x413b10: HudUiLayoutNode::ApplyCornerTextQuad.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: apply the recovered HUD layout or option state handled by HudUiLayoutNode::ApplyCornerTextQuad.
+ */
+int __fastcall ApplyCornerTextQuad(
+    zReader::Node *node,
+    HudUiBar *target,
+    const int *offsetXY,
+    HudUiRect *outRect
+) {
+    if (node->type != zReader::ZRDR_NODE_ARRAY) {
+        return 0;
+    }
+
+    zReader::Node *const arrayBase = node->value.nodes;
+    int left = arrayBase[1].value.i32;
+    int top = arrayBase[2].value.i32;
+    int right = arrayBase[3].value.i32;
+    int bottom = arrayBase[4].value.i32;
+
+    if (offsetXY != 0) {
+        left += offsetXY[0];
+        top += offsetXY[1];
+        right += offsetXY[0];
+        bottom += offsetXY[1];
+    }
+
+    const float leftF = (float)(left);
+    const float topF = (float)(top);
+    const float rightF = (float)(right);
+    const float bottomF = (float)(bottom);
+    target->SetPointXY(
+        0,
+        leftF,
+        topF
+    );
+    target->SetPointXY(
+        1,
+        leftF,
+        bottomF
+    );
+    target->SetPointXY(
+        2,
+        rightF,
+        bottomF
+    );
+    target->SetPointXY(
+        3,
+        rightF,
+        topF
+    );
+
+    if (outRect != 0) {
+        outRect->left = left;
+        outRect->top = top;
+        outRect->right = right;
+        outRect->bottom = bottom;
+    }
+
+    return 1;
+}
+
+/**
+ * Reimplements 0x413c10: HudUiLayoutNode::ApplyMeterQuad.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: apply the recovered HUD layout or option state handled by HudUiLayoutNode::ApplyMeterQuad.
+ */
+int __fastcall ApplyMeterQuad(
+    zReader::Node *node,
+    HudUiMeter *target,
+    int xBase,
+    int yBase,
+    const int *offsetXY,
+    HudUiRect *outRect
+) {
+    if (node->type != zReader::ZRDR_NODE_ARRAY) {
+        return 0;
+    }
+
+    zReader::Node *const arrayBase = node->value.nodes;
+    int left = arrayBase[1].value.i32;
+    const int top = arrayBase[2].value.i32;
+    int right = arrayBase[3].value.i32 + 1;
+    const int bottom = arrayBase[4].value.i32 + 1;
+
+    if (outRect != 0) {
+        outRect->left = left;
+        outRect->top = top;
+        outRect->right = right;
+        outRect->bottom = bottom;
+    }
+
+    right += xBase;
+    int topY = top + yBase;
+    int bottomY = bottom + yBase;
+
+    if (offsetXY != 0) {
+        left += offsetXY[0];
+        topY += offsetXY[1];
+        right += offsetXY[0];
+        bottomY += offsetXY[1];
+    }
+
+    const int width = right - left;
+    const int height = bottomY - topY;
+    HudUiBar *const bar = (HudUiBar *)(target);
+    bar->SetPointXY(
+        0,
+        (float)(left),
+        (float)(topY)
+    );
+    bar->SetPointXY(
+        1,
+        (float)(left),
+        (float)(height + topY)
+    );
+    bar->SetPointXY(
+        2,
+        (float)(width + left + 1),
+        (float)(height + topY)
+    );
+    bar->SetPointXY(
+        3,
+        (float)(width + left + 1),
+        (float)(topY)
+    );
+
+    target->fillPixelsMax = height;
+    target->meterFlags = (unsigned int)(width);
+    return 1;
+}
+
+/**
+ * Reimplements 0x413d30: HudUiLayoutNode::ApplyImageWidget.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: apply the recovered HUD layout or option state handled by HudUiLayoutNode::ApplyImageWidget.
+ */
+zVidImagePartial *__fastcall ApplyImageWidget(
+    zReader::Node *layoutNode,
+    HudUiWidget *widget,
+    int baseX,
+    int baseY,
+    const int *anchorOrNull,
+    zVidImagePartial *preloadedImageOrNull,
+    HudUiRect *outRectOrNull
+) {
+    if (layoutNode->type != zReader::ZRDR_NODE_ARRAY) {
+        return 0;
+    }
+
+    zReader::Node *const payload = layoutNode->value.nodes;
+    const char *const imagePath = payload[1].value.str;
+    int x = payload[2].value.i32 + baseX;
+    int y = payload[3].value.i32 + baseY;
+
+    if (anchorOrNull != 0) {
+        x += anchorOrNull[0];
+        y += anchorOrNull[1];
+    }
+
+    unsigned short visibleState = 0;
+    int centerImage = 0;
+    if (payload[0].value.i32 == 6) {
+        visibleState = (unsigned short)(strcmp(
+            payload[4].value.str,
+            "TRUE"
+        ) == 0 ? 1 : 0);
+        centerImage = strcmp(
+            payload[5].value.str,
+            "TRUE"
+        ) == 0 ? 1 : 0;
+    }
+
+    zVidImagePartial *image = preloadedImageOrNull;
+    if (image != 0) {
+        widget->SetImageBorrowedAndInvalidate(image);
+    } else {
+        image = widget->SetImageByPathOwned(imagePath);
+    }
+
+    if (image == 0) {
+        return 0;
+    }
+
+    if (centerImage != 0) {
+        x -= (int)(image->width) / 2;
+        y -= (int)(image->height) / 2;
+    }
+
+    widget->SetPos(
+        x,
+        y
+    );
+    widget->imageStateWord = (widget->imageStateWord & 0xffff0000u) | visibleState;
+    widget->Invalidate();
+
+    if (outRectOrNull != 0) {
+        outRectOrNull->left = x;
+        outRectOrNull->top = y;
+        outRectOrNull->right = x + image->width;
+        outRectOrNull->bottom = y + image->height;
+    }
+
+    return image;
+}
+} // namespace HudUiLayoutNode
+
+/**
+ * Reimplements 0x413eb0: HudUiWidget::Shutdown.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: provide the shared empty widget shutdown hook used by the HUD
+ * teardown paths.
+ */
+void HudUiWidget::Shutdown() {}
+
+/**
+ * Reimplements 0x413ec0: HudUiMessage::LoadWeaponLayoutFromNode.
+ * Purpose: Load weapon-message images/layout and register the message owner and side widget with the HUD manager.
+ */
+int HudUiMessage::LoadWeaponLayoutFromNode(
+    zReader::Node *layoutNode,
+    const HudUiPanelFontParams *fontParams
+) {
+    if (layoutNode->type != zReader::ZRDR_NODE_ARRAY) {
+        return 0;
+    }
+
+    zReader::Node *const payload = layoutNode->value.nodes;
+    variantImages[0] = zImage::TexDir_FindOrCreateByPath(payload[1].value.str);
+    variantImages[1] = zImage::TexDir_FindOrCreateByPath(payload[2].value.str);
+    variantImages[2] = zImage::TexDir_FindOrCreateByPath(payload[3].value.str);
+    variantImages[3] = zImage::TexDir_FindOrCreateByPath(payload[4].value.str);
+    variantImages[4] = zImage::TexDir_FindOrCreateByPath(payload[5].value.str);
+    sideImageSwaps[0] = zImage::TexDir_FindOrCreateByPath(payload[6].value.str);
+    sideImageSwaps[1] = zImage::TexDir_FindOrCreateByPath(payload[7].value.str);
+    panel.layoutX = payload[8].value.i32;
+    panel.layoutY = payload[9].value.i32;
+
+    RebuildWeaponLayout();
+
+    imageStateWord = (imageStateWord & 0xffff0000u) | 1u;
+    Invalidate();
+
+    panel.centerText = 1;
+    panel.textColor0 = 0x0020bf40;
+    panel.textColor1 = 0x0020bf40;
+    panel.textDirty = 1;
+    panel.shadowOffsetX = -1;
+    panel.shadowOffsetY = -1;
+    panel.shadowEnabled = 1;
+
+    panel.SetFont(
+        fontParams->faceName,
+        fontParams->height,
+        fontParams->weight,
+        fontParams->width,
+        0,
+        0,
+        2
+    );
+    panel.SetTextFmt(g_HudUiBlankSpaces3);
+
+    g_HudUiMgr.AddChild(this);
+    g_HudUiMgr.AddChild(&widget);
+    return 1;
+}
+
+/**
+ * Reimplements 0x413ff0: HudUiMessage::ReleaseImages.
+ * Purpose: Releases all borrowed weapon-message variant and side-image swap references and clears their storage.
+ */
+void HudUiMessage::ReleaseImages() {
+    zVid_Image::ReleaseIfNotDefault(variantImages[0]);
+    zVid_Image::ReleaseIfNotDefault(variantImages[1]);
+    zVid_Image::ReleaseIfNotDefault(variantImages[2]);
+    zVid_Image::ReleaseIfNotDefault(variantImages[3]);
+    zVid_Image::ReleaseIfNotDefault(variantImages[4]);
+    zVid_Image::ReleaseIfNotDefault(sideImageSwaps[0]);
+    zVid_Image::ReleaseIfNotDefault(sideImageSwaps[1]);
+
+    sideImageSwaps[1] = 0;
+    sideImageSwaps[0] = 0;
+    variantImages[4] = 0;
+    variantImages[3] = 0;
+    variantImages[2] = 0;
+    variantImages[1] = 0;
+    variantImages[0] = 0;
+}
+
+/**
+ * Reimplements 0x414070: HudUiMessage::RebuildWeaponLayout.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: Rebuilds the message base, text panel, and side widget geometry from the current layout anchor.
+ */
+void HudUiMessage::RebuildWeaponLayout() {
+    HudUiWidget *const layoutWidget2 = &g_HudLayoutHW.widget2;
+    const int anchorX = layoutWidget2->GetCenterX();
+    const int anchorY = layoutWidget2->GetCenterY();
+
+    const int clipLeft = panel.layoutX + (g_HudUiMgrHudOriginX / 2);
+    zVidImagePartial *const baseImage = variantImages[0];
+    HudUiRect widgetClipRect;
+    widgetClipRect.left = clipLeft;
+    widgetClipRect.top = panel.layoutY;
+    widgetClipRect.right = clipLeft + baseImage->width;
+    widgetClipRect.bottom = panel.layoutY + baseImage->height;
+
+    SetPos(
+        clipLeft + anchorX,
+        panel.layoutY + anchorY
+    );
+    SetBltSourceAndClipRect(
+        0,
+        &widgetClipRect
+    );
+
+    HudUiRect panelClipRect;
+    panelClipRect.left = clipLeft + 3;
+    panelClipRect.top = widgetClipRect.bottom;
+    panelClipRect.right = widgetClipRect.right - 2;
+    panelClipRect.bottom = widgetClipRect.bottom + 12;
+
+    const int textX =
+        panelClipRect.left + ((panelClipRect.right - panelClipRect.left) / 2) + anchorX;
+    panel.SetPos(
+        textX,
+        widgetClipRect.bottom + anchorY
+    );
+    panel.SetClip(
+        0,
+        &panelClipRect
+    );
+
+    zVidImagePartial *const sideImage = sideImageSwaps[0];
+    widget.SetPos(
+        anchorX - sideImage->width + widgetClipRect.right - 1,
+        anchorY - sideImage->height + widgetClipRect.bottom - 1
+    );
+}
+
+namespace HudUiLoadingCheckpoint {
+/**
+ * Reimplements 0x414180: HudUiLoadingCheckpoint::AdvanceAndLog.
+ * Purpose: advance the embedded HudUiMgr loading checkpoint table, report
+ * overflow, optionally log the supplied message, and update briefing progress.
+ */
+void __fastcall AdvanceAndLog(
+    const char *messageOrNull
+) {
+    const unsigned int currentIndex = g_HudUiLoadingCheckpointCurrentIndex;
+    const unsigned int maxIndex = g_HudUiLoadingCheckpointMaxIndex;
+    if (currentIndex > maxIndex) {
+        zError::ReportOld(
+            0x800,
+            "D:\\Proj\\Battlesport\\hud.cpp",
+            0x1184,
+            g_Hud_CheckpointOverflowMsg
+        );
+    } else {
+        g_HudUiLoadingCheckpointCurrentProgress = g_HudUiLoadingCheckpointProgress[currentIndex];
+        const unsigned int nextIndex = currentIndex + 1;
+        g_HudUiLoadingCheckpointCurrentIndex = nextIndex;
+        if (nextIndex > maxIndex) {
+            g_HudUiLoadingCheckpointCurrentIndex = maxIndex;
+        }
+    }
+
+    if (messageOrNull != 0) {
+        puts(messageOrNull);
+        fflush(stdout);
+    }
+
+    zGame::ReturnOnlyStub();
+    Briefing::SetProgressAndSleep(g_HudUiLoadingCheckpointCurrentProgress);
+}
+
+/**
+ * Reimplements 0x414210: HudUiLoadingCheckpoint::InitTable.
+ * Purpose: seed the embedded HudUiMgr loading checkpoint table and derive
+ * normalized briefing progress from the retail checkpoint second values.
+ */
+void InitTable() {
+    static const float kRawProgress[] = {
+        0.00100000005f,
+        0.136999995f,
+        0.237000003f,
+        0.340000004f,
+        0.899999976f,
+        9.30000019f,
+        12.3999996f,
+        13.3999996f,
+        20.0f,
+        26.0f,
+        26.2999992f,
+        28.7000008f,
+        31.5f,
+        34.0f,
+        36.2000008f,
+        36.4000015f,
+        53.2999992f,
+        53.5999985f,
+        53.7000008f,
+    };
+
+    g_HudUiLoadingCheckpointMaxIndex = 18;
+    g_HudUiLoadingCheckpointCurrentIndex = 0;
+    {
+        for (unsigned int index = 0; index <= g_HudUiLoadingCheckpointMaxIndex; ++index) {
+            g_HudUiLoadingCheckpointRawProgress[index] = kRawProgress[index];
+            g_HudUiLoadingCheckpointProgress[index] =
+                g_HudUiLoadingCheckpointRawProgress[index] * g_HudUiLoadingCheckpointProgressScale;
+        }
+    }
+}
+} // namespace HudUiLoadingCheckpoint
+
+extern "C" char g_Hud_TripleStringFmt[9];
+
+namespace HudUiListMenuEntry {
+int __fastcall CompareSortKey(
+    const HudUiScoreboardEntry *entryA,
+    const HudUiScoreboardEntry *entryB
+);
+}
+
+namespace {
+const int kGameNetChatComposeTextCapacity = 0x20;
+const int kGameNetChatComposeShiftModifierMask = 0x400;
+const int kGameNetChatComposeDigitFirstDik = 0x02;
+const int kGameNetChatComposeDigitLastDik = 0x0e;
+const int kGameNetChatComposeLetterRowFirstDik = 0x10;
+const int kGameNetChatComposeLetterRowLastDik = 0x2b;
+const int kGameNetChatComposeHomeRowFirstDik = 0x1e;
+const int kGameNetChatComposeHomeRowLastDik = 0x28;
+const int kGameNetChatComposeBottomRowFirstDik = 0x2c;
+const int kGameNetChatComposeBottomRowLastDik = 0x35;
+const int kGameNetChatComposeSpaceDik = 0x39;
+
+/**
+ * Source: D:\Proj\Battlesport\hud.cpp
+ * Original helper evidence: no standalone retail function; caller 0x4143d0
+ * repeats this unregister/register pair across the chat-compose key ranges and
+ * the standalone space-bar binding.
+ * Purpose: Register one chat-compose keyboard callback binding.
+ */
+inline void HudRuntimeRegisterChatComposeKey(
+    int comboIdx
+) {
+    zInput::Keyboard_UnregisterKeyCallback(comboIdx);
+    zInput::Keyboard_RegisterKeyCallback(
+        comboIdx,
+        (void *)(&GameNet::ChatComposeKeyCallback),
+        ""
+    );
+}
+
+/**
+ * Source: D:\Proj\Battlesport\hud.cpp
+ * Original helper evidence: no standalone retail function; caller 0x4143d0
+ * repeats contiguous chat-compose key registration for unmodified and modified
+ * DIK ranges.
+ * Purpose: Register a contiguous range of chat-compose keyboard bindings.
+ */
+inline void HudRuntimeRegisterChatComposeKeyRange(
+    int firstComboIdx,
+    int lastComboIdx
+) {
+    for (int comboIdx = firstComboIdx; comboIdx <= lastComboIdx; ++comboIdx) {
+        HudRuntimeRegisterChatComposeKey(comboIdx);
+        HudRuntimeRegisterChatComposeKey(comboIdx | kGameNetChatComposeShiftModifierMask);
+    }
+}
+
+/**
+ * Original helper evidence: no standalone retail function; observed callers
+ * 0x414710, 0x414930, and 0x414980 in the hud.cpp list-menu layer.
+ * Purpose: expose the recovered comparator as a boolean ordering predicate for
+ * local sort helpers.
+ */
+inline bool HudRuntimeListMenuEntryComesBefore(
+    const HudUiScoreboardEntry &lhs,
+    const HudUiScoreboardEntry &rhs
+) {
+    return HudUiListMenuEntry::CompareSortKey(
+        &lhs,
+        &rhs
+    ) != 0;
+}
+
+/**
+ * Original helper evidence: no standalone retail function; observed caller
+ * 0x414710 in the hud.cpp list-menu layer.
+ * Purpose: select the median scoreboard entry among first, middle, and last
+ * candidates for quicksort partitioning.
+ */
+inline HudUiScoreboardEntry *HudRuntimeListMenuMedianOfThree(
+    HudUiScoreboardEntry *first,
+    HudUiScoreboardEntry *middle,
+    HudUiScoreboardEntry *last
+) {
+    if (HudRuntimeListMenuEntryComesBefore(
+        *first,
+        *middle
+    )) {
+        if (HudRuntimeListMenuEntryComesBefore(
+            *middle,
+            *last
+        )) {
+            return middle;
+        }
+
+        return HudRuntimeListMenuEntryComesBefore(
+            *first,
+            *last
+        ) ? last : first;
+    }
+
+    if (HudRuntimeListMenuEntryComesBefore(
+        *first,
+        *last
+    )) {
+        return first;
+    }
+
+    return HudRuntimeListMenuEntryComesBefore(
+        *middle,
+        *last
+    ) ? last : middle;
+}
+} // namespace
+
+namespace HudUiMgrSensor {
+/**
+ * Reimplements 0x414300: HudUiMgrSensor::GetFxRect.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: return the recovered HUD value exposed by HudUiMgrSensor::GetFxRect.
+ */
+void __fastcall GetFxRect(
+    HudUiRect *outRect
+) {
+    *outRect = g_HudUiMgrSensorFxRect;
+}
+} // namespace HudUiMgrSensor
+
+namespace GameNet {
+/**
+ * Reimplements 0x414330: GameNet::ShowPlayerKillMessage
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: Format and display a multiplayer kill-feed message.
+ */
+void __fastcall ShowPlayerKillMessage(
+    GameNetPlayerRow *victimRow,
+    OptCatalogEntryDef *killEntry,
+    GameNetPlayerRow *killerRow
+) {
+    const char *killVerb = "";
+    if (killEntry == 0) {
+        killVerb = zLoc::GetMessageString(0x253);
+    } else if (killEntry->killVerbString != 0) {
+        killVerb = killEntry->killVerbString;
+    }
+
+    char message[0x50];
+    sprintf(
+        message,
+        g_Hud_TripleStringFmt,
+        victimRow->displayName,
+        killVerb,
+        killerRow->displayName
+    );
+    HudUi::ShowTopMessageLine(
+        message,
+        2.0f
+    );
+}
+
+/**
+ * Reimplements 0x414390: GameNet::RefreshPlayerListMenu
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: Forward a player row to the HUD stats list triplet for scoreboard
+ * entry insertion.
+ */
+void __fastcall RefreshPlayerListMenu(
+    GameNetPlayerRow *playerRow
+) {
+    g_HudUiMgrStatsList->triplet->AddEntry(playerRow);
+}
+} // namespace GameNet
+
+namespace HudUiMgr {
+/**
+ * Reimplements 0x4143a0: HudUiMgr::IsLocalPlayerFirstInStatsList.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: preserve the recovered HUD behavior for HudUiMgr::IsLocalPlayerFirstInStatsList.
+ */
+int IsLocalPlayerFirstInStatsList() {
+    return g_HudUiMgrStatsList->triplet->IsLocalPlayerFirstEntry();
+}
+} // namespace HudUiMgr
+
+namespace HudUi {
+/**
+ * Reimplements 0x4143b0: HudUi::RefreshScoreboardEntryRow.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: preserve the recovered HUD behavior for HudUi::RefreshScoreboardEntryRow.
+ */
+void __fastcall RefreshScoreboardEntryRow(
+    GameNetPlayerRow *entryData
+) {
+    g_HudUiMgrStatsList->triplet->UpdateEntryData(entryData);
+}
+
+/**
+ * Reimplements 0x4143c0: HudUi::RemoveScoreboardEntryRow.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: forward a multiplayer row removal to the active scoreboard triplet.
+ */
+void __fastcall RemoveScoreboardEntryRow(
+    GameNetPlayerRow *entryKey
+) {
+    g_HudUiMgrStatsList->triplet->RemoveEntry(entryKey);
+}
+} // namespace HudUi
+
+namespace GameNet {
+/**
+ * Reimplements 0x4143d0: GameNet::BeginChatCompose
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: Open chat-compose mode and bind text-entry keys.
+ */
+void BeginChatCompose() {
+    if (zOpt::GetNetworkEnabled() == 0) {
+        return;
+    }
+
+    HudUiMgrObjective::Show(
+        0,
+        g_HudUiMessage_NodeName,
+        "",
+        0.0f
+    );
+    g_HudUiMgrObjectiveChatComposeActive = 1;
+    g_HudUiMgrObjectiveChatComposeTextInput.AllocTextBuffer(kGameNetChatComposeTextCapacity);
+    g_HudUiMgrObjectiveChatComposeTextInput.SetContents("");
+    zInput::BindMapContext_Push(0);
+
+    HudRuntimeRegisterChatComposeKeyRange(
+        kGameNetChatComposeDigitFirstDik,
+        kGameNetChatComposeDigitLastDik
+    );
+    HudRuntimeRegisterChatComposeKeyRange(
+        kGameNetChatComposeLetterRowFirstDik,
+        kGameNetChatComposeLetterRowLastDik
+    );
+    HudRuntimeRegisterChatComposeKeyRange(
+        kGameNetChatComposeHomeRowFirstDik,
+        kGameNetChatComposeHomeRowLastDik
+    );
+    HudRuntimeRegisterChatComposeKeyRange(
+        kGameNetChatComposeBottomRowFirstDik,
+        kGameNetChatComposeBottomRowLastDik
+    );
+    HudRuntimeRegisterChatComposeKey(kGameNetChatComposeSpaceDik);
+}
+
+/**
+ * Reimplements 0x414550: GameNet::ChatComposeKeyCallback
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: Append a translated key to active chat-compose text and mirror the
+ * buffer into the objective description panel.
+ */
+void __fastcall ChatComposeKeyCallback(
+    int dikCodeWithMods
+) {
+    const int key = zInput::Keyboard_TranslateDikToAscii(dikCodeWithMods);
+    if (key == 0) {
+        return;
+    }
+
+    g_HudUiMgrObjectiveChatComposeTextInput.DispatchKeyAction(key);
+
+    g_HudUiMgrObjectiveDescTextPanel->SetTextFmt(
+        g_HudUiMgrObjectiveChatComposeTextInput.GetBuffer()
+    );
+}
+
+/**
+ * Reimplements 0x414590: GameNet::EndChatComposeAndSend
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: Close chat compose, show the local chat line, and send packet 0x0b.
+ */
+void EndChatComposeAndSend() {
+    zUtil_SaveGameState *const saveState = (zUtil_SaveGameState *)(g_GameStateOrMapTable);
+    GameNetPlayerRow *const playerRow = saveState->netPlayerRow;
+    char chatLine[0x51];
+    chatLine[0x50] = '\0';
+
+    g_HudUiMgrObjectiveChatComposeActive = 0;
+    zInput::BindMapContext_Pop();
+    HudUiMgrObjective::Begin();
+
+    if (strlen(g_HudUiMgrObjectiveChatComposeTextInput.GetBuffer()) == 0) {
+        return;
+    }
+
+    strncpy(
+        chatLine,
+        playerRow->displayName,
+        0x50
+    );
+    strncat(
+        chatLine,
+        g_HudUiMessage_SeparatorColon,
+        0x50 - strlen(chatLine)
+    );
+    strncat(
+        chatLine,
+        g_HudUiMgrObjectiveChatComposeTextInput.GetBuffer(),
+        0x50 - strlen(chatLine)
+    );
+    HudUi::ShowChatLine(
+        chatLine,
+        5.0f
+    );
+    SendPkt0B_ChatMessage(chatLine);
+}
+
+/**
+ * Reimplements 0x414660: GameNet::EndChatComposeAndSendThunk
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: Forward the chat-compose dispatch callback to EndChatComposeAndSend.
+ */
+void EndChatComposeAndSendThunk() {
+    EndChatComposeAndSend();
+}
+} // namespace GameNet
+
+/**
+ * Reimplements 0x414670: HudUiTripletEntries::GetCount.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: return the number of populated entries in the recovered scoreboard vector.
+ */
+int HudUiTripletEntries::GetCount() {
+    if (begin == 0) {
+        return 0;
+    }
+
+    return (int)(end - begin);
+}
+
+/**
+ * Reimplements 0x4146a0: HudUiTripletEntries::CopyRange.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: copy a range of scoreboard entries into destination vector storage.
+ */
+HudUiScoreboardEntry *__stdcall HudUiTripletEntries::CopyRange(
+    HudUiScoreboardEntry *sourceBegin,
+    HudUiScoreboardEntry *sourceEnd,
+    HudUiScoreboardEntry *dest
+) {
+    HudUiScoreboardEntry *cursor = dest;
+    while (sourceBegin != sourceEnd) {
+        if (cursor != 0) {
+            *cursor = *sourceBegin;
+        }
+        ++sourceBegin;
+        ++cursor;
+    }
+
+    return cursor;
+}
+
+/**
+ * Reimplements 0x4146e0: HudUiTripletEntries::FillN.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: fill consecutive scoreboard vector slots from one source entry.
+ */
+void __stdcall HudUiTripletEntries::FillN(
+    HudUiScoreboardEntry *dest,
+    unsigned int count,
+    const HudUiScoreboardEntry *sourceValue
+) {
+    HudUiScoreboardEntry *cursor = dest;
+    while (count != 0) {
+        if (cursor != 0) {
+            *cursor = *sourceValue;
+        }
+        ++cursor;
+        --count;
+    }
+}
+
+namespace HudUiListMenuEntry {
+/**
+ * Reimplements 0x414710: HudUiListMenuEntry::SortRange.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: partition larger scoreboard-entry ranges before the final insertion-sort pass.
+ */
+void __fastcall SortRange(
+    HudUiScoreboardEntry *begin,
+    HudUiScoreboardEntry *end,
+    int unusedFlags
+) {
+    while (end - begin > 16) {
+        HudUiScoreboardEntry *left = begin;
+        HudUiScoreboardEntry *right = end - 1;
+        HudUiScoreboardEntry *const middle = begin + ((end - begin) / 2);
+        HudUiScoreboardEntry pivot = *HudRuntimeListMenuMedianOfThree(
+            begin,
+            middle,
+            right
+        );
+
+        for (;;) {
+            while (HudRuntimeListMenuEntryComesBefore(
+                *left,
+                pivot
+            )) {
+                ++left;
+            }
+
+            while (HudRuntimeListMenuEntryComesBefore(
+                pivot,
+                *right
+            )) {
+                --right;
+            }
+
+            if (right <= left) {
+                break;
+            }
+
+            HudUiScoreboardEntry temp = *left;
+            *left = *right;
+            *right = temp;
+            ++left;
+        }
+
+        if (end - left <= left - begin) {
+            SortRange(
+                left,
+                end,
+                unusedFlags
+            );
+            end = left;
+        } else {
+            SortRange(
+                begin,
+                left,
+                unusedFlags
+            );
+            begin = left;
+        }
+    }
+}
+
+/**
+ * Reimplements 0x414930: HudUiListMenuEntry::InsertPivotIntoSortedPrefix.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: shift a sorted prefix forward and store the pivot entry at its sorted position.
+ */
+void InsertPivotIntoSortedPrefix(
+    HudUiScoreboardEntry *slot,
+    HudUiScoreboardEntry pivot
+) {
+    HudUiScoreboardEntry *insertSlot = slot;
+    HudUiScoreboardEntry *previousEntry = insertSlot - 1;
+    while (HudRuntimeListMenuEntryComesBefore(
+        pivot,
+        *previousEntry
+    )) {
+        *insertSlot = *previousEntry;
+        insertSlot = previousEntry;
+        --previousEntry;
+    }
+
+    *insertSlot = pivot;
+}
+
+/**
+ * Reimplements 0x414980: HudUiListMenuEntry::InsertionSortRange.
+ * Original source path: D:\Proj\Battlesport\hud.cpp.
+ * Purpose: insertion-sort a scoreboard-entry range in place using the recovered list-menu ordering.
+ */
+void __fastcall InsertionSortRange(
+    HudUiScoreboardEntry *begin,
+    HudUiScoreboardEntry *end,
+    int
+) {
+    if (begin == end) {
+        return;
+    }
+
+    HudUiScoreboardEntry *current = begin + 1;
+    while (current != end) {
+        HudUiScoreboardEntry candidate = *current;
+        if (HudRuntimeListMenuEntryComesBefore(
+            candidate,
+            *begin
+        )) {
+            HudUiScoreboardEntry *shiftCursor = current;
+            while (shiftCursor != begin) {
+                *shiftCursor = *(shiftCursor - 1);
+                --shiftCursor;
+            }
+
+            *begin = candidate;
+        } else {
+            InsertPivotIntoSortedPrefix(
+                current,
+                candidate
+            );
+        }
+
+        ++current;
+    }
+}
+} // namespace HudUiListMenuEntry

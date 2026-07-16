@@ -1,6 +1,6 @@
 /*
- * Source-file block placeholder for the provisional Battlesport weapon.cpp
- * physical row. Existing weapon-related implementations are preserved in the
- * current player, HUD, and zWeapon bodies until a focused source-shape split
- * can move them without losing shared local context.
+ * Provisional physical carrier for a filename-unresolved mixed later
+ * Player/combat translation unit. This host does not establish original
+ * weapon.cpp ownership or close the surrounding Player function order.
  */
+#include "Battlesport/hud_low_meter_loop_sound_body.h"

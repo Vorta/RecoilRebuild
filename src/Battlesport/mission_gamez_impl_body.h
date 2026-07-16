@@ -9,7 +9,7 @@ namespace Mission {
  * Purpose: initialize the global HUD sensor objective tracker and register its
  * process-exit cleanup hook.
  */
-void InitObjectives() {
+void __cdecl InitObjectives() {
     HudSensorTracker::ConstructGlobal();
     HudSensorTracker::RegisterGlobalOnExit();
 }

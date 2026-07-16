@@ -268,25 +268,6 @@ HudUiMessageBoxDialog * HudUiMessageBoxDialog::Constructor(
 }
 
 /**
- * Reimplements 0x4bf540: HudUiMessageBoxDialog::ScalarDeletingDestructor.
- * BN source path: D:\Proj\Battlesport\HudUiMessageBoxDialog.cpp.
- * Source model: compiler-emitted scalar deleting destructor thunk for the
- * HudUiMessageBoxDialog class owner.
- * Purpose: run the dialog destructor and conditionally free the object storage.
- * Touched data: no authored globals; uses class cleanup only.
- */
-HudUiBackground * HudUiMessageBoxDialog::ScalarDeletingDestructor(
-    unsigned int flags
-) {
-    Destructor();
-    if ((flags & 1u) != 0) {
-        ::operator delete(this);
-    }
-
-    return this;
-}
-
-/**
  * Reimplements 0x4bf560: HudUiMessageBoxDialog::Destructor.
  * BN source path: D:\Proj\Battlesport\HudUiMessageBoxDialog.cpp.
  * Source model: HudUiMessageBoxDialog class destructor; BN shows the dialog

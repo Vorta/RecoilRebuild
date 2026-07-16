@@ -15,17 +15,6 @@ CAboutDlg::CAboutDlg(
       ) {}
 
 /**
- * Reimplements 0x401020: CAboutDlg::DoDataExchange.
- *
- * Purpose: preserves the original empty About dialog DDX override emitted
- * between the constructor and message-map accessor.
- */
-void CAboutDlg::DoDataExchange(
-    CDataExchange *dataExchange
-) {
-}
-
-/**
  * Reimplements 0x401030: CAboutDlg::GetMessageMap.
  *
  * Purpose: returns the authored empty About dialog message-map table used by
@@ -40,6 +29,12 @@ void CAboutDlg::DoDataExchange(
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-#define _AFXWIN_INLINE AFX_INLINE
+/**
+ * Compiler-emitted 0x401020: the current CObject::Serialize COFF candidate
+ * supplies byte evidence for the shared retail ret-4 address group; this is
+ * not proof of exact retail alias membership, unique semantic ownership,
+ * provider acceptance, or authored About ownership.
+ */
+#define _AFXWIN_INLINE inline
 #include <afxwin2.inl>
 #undef _AFXWIN_INLINE

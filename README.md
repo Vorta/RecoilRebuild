@@ -13,12 +13,16 @@ executable do not satisfy that goal.
 
 The work proceeds globally and sequentially:
 
-1. Recover the exact retail `.text` function and contribution set and natural
-   VC5SP3 order, from the first retail function to the last, stopping at the
-   first divergence.
-2. Restart at the first function and match each object contribution,
-   relocation, linked address, reference target, and linked byte sequence.
-3. Validate one unrestricted final build, including sections, data, resources,
+1. Recover the natural VC5SP3 order of source-authored and authored-lifecycle
+   contributions across retail `.text`.
+2. Match those authored contributions at the object, relocation, symbolic
+   target, and relocation-normalized linked-body level.
+3. Restart at the beginning and recover the exact complete linked function and
+   contribution set, retail addresses, order, and seams, including compiler,
+   runtime, framework, and provider rows.
+4. Match every resolved linked address, relocation operand, reference target,
+   and linked byte sequence.
+5. Validate one unrestricted final build, including sections, data, resources,
    imports, provider selections, addresses, and the whole-file SHA-256.
 
 The source remains deliberately compatible with the recovered late-1990s
