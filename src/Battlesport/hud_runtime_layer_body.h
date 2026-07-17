@@ -128,7 +128,6 @@ const char *HudUiZrdStringAt(
 void HudUiEnsureLoaderWidgetsConstructed() {
     g_HudUiMgrSensorPanel.Constructor(0);
     g_HudUiMgrSensorOverlay.Constructor(0);
-    new (&g_HudUiMgrSensorMeter) HudUiMeter;
     g_HudUiMgrObjectiveWidget.Constructor(0);
     g_HudUiMgrObjectiveSensorRect.Constructor(0);
     new ((HudUiBar *)(&g_HudUiMgrObjectiveBar)) HudUiBar;
@@ -1638,7 +1637,7 @@ void __fastcall SetShieldMessageRatio(
     }
 
     HudUiShieldMessageWidget *const shieldMessageWidget = g_HudUiMgrShieldMessageWidget;
-    HudUiMeter *const meter = &shieldMessageWidget->meter;
+    HudUiShieldMeterCandidate *const meter = &shieldMessageWidget->meter;
     const unsigned char green = ratio < 0.25f ? 0 : 255;
     meter->color565 = zVid_PackColorRGB(
         255,
@@ -3253,7 +3252,7 @@ int __fastcall ApplyCornerTextQuad(
  */
 int __fastcall ApplyMeterQuad(
     zReader::Node *node,
-    HudUiMeter *target,
+    HudUiBar *target,
     int xBase,
     int yBase,
     const int *offsetXY,

@@ -2,7 +2,7 @@
 #include "GameZRecoil/zVideo/zvid.h"
 
 /**
- * Reimplements logical authored override folded at 0x408f50:
+ * Reimplements 0x408f50: logical authored override folded at this address,
  * RecoilStateControls::OnSuspend.
  *
  * Purpose: disable, blit, unlock, and present the hosted HUD dialog when

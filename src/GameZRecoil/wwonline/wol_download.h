@@ -59,7 +59,7 @@ struct WestwoodOnlineUpgradeDownloadEventSink : IUnknown {
         int unusedArg4,
         int secondsLeft
     );
-    virtual int STDMETHODCALLTYPE CallbackNoOp(void *arg);
+    virtual int CallbackNoOp(void *arg);
     virtual HRESULT STDMETHODCALLTYPE OnStateChanged(
         WestwoodOnlineUpgradeDownloadState stateCode
     );

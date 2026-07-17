@@ -32,82 +32,9 @@
 #endif
 
 namespace {
-typedef HRESULT(WINAPI *zDirectDrawCreateFn)(
-    GUID *,
-    LPDIRECTDRAW *,
-    IUnknown *
-);
-typedef HMODULE(__stdcall *zLoadLibraryAFn)(const char *);
 using zSys::ReadCmosRtcSecondsBcd;
 using zSys::ReadTsc64;
 using zSys::Sub64;
-
-/**
- * Reimplements data 0x4daaf0: g_zSys_ProbeCreatePrimarySurfaceFailedMsg.
- * Purpose: Reports primary DirectDraw surface creation failure during the platform probe.
- */
-const char g_zSys_ProbeCreatePrimarySurfaceFailedMsg[] = "Couldn't CreateSurface\r\n";
-
-/**
- * Reimplements data 0x4dab0c: g_zSys_ProbeSetCoopLevelFailedMsg.
- * Purpose: Reports DirectDraw cooperative-level setup failure during the platform probe.
- */
-const char g_zSys_ProbeSetCoopLevelFailedMsg[] = "Couldn't Set coop level\r\n";
-
-/**
- * Reimplements data 0x4dab28: g_zSys_ProbeQiDdraw2FailedMsg.
- * Purpose: Reports failure to query the DirectDraw2 interface during the platform probe.
- */
-const char g_zSys_ProbeQiDdraw2FailedMsg[] = "Couldn't QI DDraw2\r\n";
-
-/**
- * Reimplements data 0x4dab40: g_zSys_ProbeCreateDdrawFailedMsg.
- * Purpose: Reports DirectDrawCreate failure during the platform probe.
- */
-const char g_zSys_ProbeCreateDdrawFailedMsg[] = "Couldn't create DDraw\r\n";
-
-/**
- * Reimplements data 0x4dab58: g_zSys_ProbeLoadDdrawFailedMsg.
- * Purpose: Reports missing DirectDraw library support during the platform probe.
- */
-const char g_zSys_ProbeLoadDdrawFailedMsg[] = "Couldn't LoadLibrary DDraw\r\n";
-
-/**
- * Reimplements data 0x4dab78: g_zSys_ProbeDirectDrawCreateExportName.
- * Purpose: Names the DirectDrawCreate export resolved from DDRAW.DLL.
- */
-const char g_zSys_ProbeDirectDrawCreateExportName[] = "DirectDrawCreate";
-
-/**
- * Reimplements data 0x4dab8c: g_zSys_ProbeDdrawDllName.
- * Purpose: Names the DirectDraw provider DLL loaded by the platform probe.
- */
-const char g_zSys_ProbeDdrawDllName[] = "DDRAW.DLL";
-
-/**
- * Reimplements data 0x4dab98: g_zSys_ProbeMissingDirectInputCreateMsg.
- * Purpose: Reports missing DirectInputCreateA export support during the platform probe.
- */
-const char g_zSys_ProbeMissingDirectInputCreateMsg[] =
-    "Couldn't GetProcAddress DInputCreate\r\n";
-
-/**
- * Reimplements data 0x4dabc0: g_zSys_ProbeDirectInputCreateExportName.
- * Purpose: Names the DirectInputCreateA export resolved from DINPUT.DLL.
- */
-const char g_zSys_ProbeDirectInputCreateExportName[] = "DirectInputCreateA";
-
-/**
- * Reimplements data 0x4dabd4: g_zSys_ProbeLoadDinputFailedMsg.
- * Purpose: Reports missing DirectInput library support during the platform probe.
- */
-const char g_zSys_ProbeLoadDinputFailedMsg[] = "Couldn't LoadLibrary DInput\r\n";
-
-/**
- * Reimplements data 0x4dabf4: g_zSys_ProbeDinputDllName.
- * Purpose: Names the DirectInput provider DLL loaded by the platform probe.
- */
-const char g_zSys_ProbeDinputDllName[] = "DINPUT.DLL";
 
 /**
  * Reimplements data 0x4e46a0: g_zSys_CpuBenchmarkDurationTable.
@@ -165,8 +92,6 @@ struct CpuBenchmarkResolver {
  * Purpose: Carries the CPUID vendor mismatch marker folded into DetectCpuClassAndFeatures.
  */
 extern "C" unsigned int g_zSys_CpuVendorNonIntelMarker = 0;
-
-#include "GameZRecoil/zSys/zsys_probe_platform.inl"
 
 /**
  * Reimplements 0x4a59e0: zSys::FindFileOnDriveType.
