@@ -210,6 +210,17 @@ struct zInterp_Context {
 
 struct zInterp_GlobalContext : zInterp_Context {
     zInterp_GlobalContext();
+
+    /**
+     * Original helper evidence: no standalone authored retail function; the
+     * VC5 ordinary-global probe emits this inline destructor only as the
+     * generated CRT teardown call to zInterp_Context::Destructor.
+     * Purpose: release the process-wide interpreter during ordinary C++ shutdown.
+     */
+    ~zInterp_GlobalContext() {
+        zInterp_Context::Destructor();
+    }
+
     virtual int DispatchHook(char *commandToken);
 
     static int StaticInitAndRegisterAtExit();
@@ -220,15 +231,7 @@ struct zInterp_GlobalContext : zInterp_Context {
 
 RECOIL_STATIC_ASSERT(sizeof(zInterp_GlobalContext) == 0xcc);
 
-union zInterp_GlobalContextStorage {
-    unsigned long align;
-    unsigned char bytes[sizeof(zInterp_GlobalContext)];
-};
-RECOIL_STATIC_ASSERT(sizeof(zInterp_GlobalContextStorage) == 0xcc);
-
-extern zInterp_GlobalContextStorage g_zInterp_GlobalContext;
-#define g_zInterp_GlobalContext \
-    (*(zInterp_GlobalContext *)&g_zInterp_GlobalContext)
+extern zInterp_GlobalContext g_zInterp_GlobalContext;
 
 namespace zInterp_Object3D {
 int __fastcall DefaultRenderAction(zClass_NodePartial *node);

@@ -1564,16 +1564,6 @@ void CZRecoilFrame::OnUpdateAlwaysEnabledCmdUI(
 }
 
 /**
- * Original helper evidence: CZRecoilFrame message-map entries for command ids
- * 0x9c7e and 0x9c53 route to the shared MFC no-op one-argument provider.
- * Purpose: Preserve command UI routing entries that intentionally do not alter state.
- */
-void CZRecoilFrame::OnUpdateNoOpCmdUI(
-    CCmdUI *
-) {
-}
-
-/**
  * Reimplements 0x431900: CZRecoilFrame::OnMenuToggleCDAudio.
  *
  * Purpose: toggle the CD audio option from the frame menu.

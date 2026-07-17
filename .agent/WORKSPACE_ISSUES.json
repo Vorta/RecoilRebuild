@@ -1,4 +1,120 @@
 {
   "version": 1,
-  "issues": []
+  "issues": [
+    {
+      "id": "WSI-20260716-001",
+      "status": "open",
+      "kind": "tool-error",
+      "severity": "high",
+      "created": "2026-07-16T23:53:00Z",
+      "updated": "2026-07-16T23:53:00Z",
+      "summary": "Structured source-worker handoff records unsupported audit function-docblocks command",
+      "area": "tools/recoil.py",
+      "impact": "The source worker must stop before guards and linked validation even after the raw authored-order gate passes, because the generated exact validation envelope cannot be executed.",
+      "next_action": "Add a tested compatibility path for the recorded command without weakening docblock auditing, and make agent-surface/audit coverage prevent this validation-vocabulary drift.",
+      "commands": [],
+      "files": [],
+      "tags": [],
+      "history": [
+        {
+          "at": "2026-07-16T23:53:00Z",
+          "action": "created",
+          "note": "Issue recorded for future agent tooling/process repair."
+        }
+      ],
+      "actual": "progress handoff emitted python tools/recoil.py audit function-docblocks --root <path>, while the live vocabulary only exposes audit docblocks --path <path>. The exact recorded command exits 1.",
+      "repro": "python tools/recoil.py audit function-docblocks --root src/Battlesport/hud.cpp"
+    },
+    {
+      "id": "WSI-20260716-002",
+      "status": "open",
+      "kind": "tool-error",
+      "severity": "high",
+      "created": "2026-07-16T23:57:49Z",
+      "updated": "2026-07-16T23:57:49Z",
+      "summary": "Structured handoffs also record unsupported audit guard commands and obsolete raw-assembly allowlist path",
+      "area": "tools/recoil.py",
+      "impact": "After the docblock alias repair, the same source-worker handoff still stops before guards/link because audit modern-cpp, audit source-shape, audit source-placement, and audit raw-assembly are not registered; the raw-assembly command also names a nonexistent tools/raw_assembly_allowlist.json.",
+      "next_action": "Add narrowly tested compatibility routing for the four recorded audit guard spellings, including safe translation of only the exact obsolete raw-assembly allowlist path to the current allowlist, without changing guard semantics or acceptance criteria.",
+      "commands": [],
+      "files": [],
+      "tags": [],
+      "history": [
+        {
+          "at": "2026-07-16T23:57:49Z",
+          "action": "created",
+          "note": "Issue recorded for future agent tooling/process repair."
+        }
+      ],
+      "actual": "The tracker contains four occurrences of each stale audit guard spelling and obsolete allowlist path. Exact repro python tools/recoil.py audit modern-cpp --root src exits 1, while canonical commands are under guard and the live allowlist is .agent/RAW_ASSEMBLY_ALLOWLIST.txt.",
+      "repro": "python tools/recoil.py audit modern-cpp --root src"
+    },
+    {
+      "id": "WSI-20260717-001",
+      "status": "resolved",
+      "kind": "tool-error",
+      "severity": "high",
+      "created": "2026-07-17T02:08:24Z",
+      "updated": "2026-07-17T03:32:06Z",
+      "summary": "VC5 build test hard-codes obsolete 457-row HUD authored-order manifest count",
+      "area": "tests/tools/recoil_vc5_build_tests.py",
+      "impact": "Required doctor --quick --binja fails after the reviewed HUD authored-order manifest legitimately expanded to 462 unique identities, blocking active authored-order validation despite zero reconstruction failures.",
+      "next_action": "Update the focused test invariant so it validates the live canonical manifest population without weakening uniqueness or credits provenance assertions; run the targeted test module and doctor --quick --binja.",
+      "commands": [],
+      "files": [],
+      "tags": [],
+      "history": [
+        {
+          "at": "2026-07-17T02:08:24Z",
+          "action": "created",
+          "note": "Issue recorded for future agent tooling/process repair."
+        },
+        {
+          "at": "2026-07-17T03:32:06Z",
+          "action": "resolved",
+          "note": "Updated the focused VC5 final-build test invariant from the superseded 457-row constant to one local expected count of 462 shared by the exact population and uniqueness assertions. The focused test passed under parent review; the delegated tool maintainer also passed the full 70-test module and doctor --quick --binja with all 17 checks."
+        }
+      ],
+      "actual": "test_credits_update_provenance_follows_current_source_host asserts 457 rows and 457 unique identity tuples; live canonical manifest contains 462 rows and the test otherwise exercises provenance routing.",
+      "repro": "python tools/recoil.py doctor --quick --binja; observe recoil_vc5_build_tests.py line 747 AssertionError: 457 != 462",
+      "resolution": "Updated the focused VC5 final-build test invariant from the superseded 457-row constant to one local expected count of 462 shared by the exact population and uniqueness assertions. The focused test passed under parent review; the delegated tool maintainer also passed the full 70-test module and doctor --quick --binja with all 17 checks."
+    },
+    {
+      "id": "WSI-20260717-002",
+      "status": "resolved",
+      "kind": "tool-error",
+      "severity": "high",
+      "created": "2026-07-17T11:28:31Z",
+      "updated": "2026-07-17T11:48:47Z",
+      "summary": "Accepted authored-order evidence can bind mutable build/vc5-final receipts that later final builds overwrite",
+      "area": "tools/_recoil/commands/progress_cli.py",
+      "impact": "A routine later final-build invalidates content-addressed accepted evidence and makes strict progress audit fail even though an exact immutable snapshot exists.",
+      "next_action": "Make import-authored-order fail closed on mutable build/vc5-final paths or copy/hash them into a unique immutable reconstruction-evidence run path, with tests proving a later final build cannot drift accepted evidence.",
+      "commands": [],
+      "files": [
+        "build/reconstruction-evidence/runs/2026-07-16/ainet_final_build_parent_r116/linked_order_ainet_text_block_order_ainet_header_block_authored.json"
+      ],
+      "tags": [
+        "evidence-immutability"
+      ],
+      "history": [
+        {
+          "at": "2026-07-17T11:28:31Z",
+          "action": "created",
+          "note": "Issue recorded for future agent tooling/process repair."
+        },
+        {
+          "at": "2026-07-17T11:48:47Z",
+          "action": "resolved",
+          "note": "Resolved: progress evidence import-authored-order now snapshots the validated producer receipt into a SHA-256-addressed immutable build/reconstruction-evidence path only after revision/SHA guards pass; dry-run performs no write, destination collisions are non-overwriting failures, and accepted evidence binds the snapshot. Focused/full progress and VC5-build tests, strict progress audit, strict agent-surface audit, and doctor --quick --binja pass."
+        }
+      ],
+      "expected": "Accepted typed evidence must bind an immutable run snapshot, or the importer must atomically snapshot a mutable producer path before recording it.",
+      "workaround": "Parent superseded the stale record with an evidence-equivalent immutable R116 snapshot whose bytes and SHA exactly match the originally accepted receipt.",
+      "actual": "progress evidence import-authored-order accepted build/vc5-final/linked_order_ainet_text_block_order_ainet_header_block_authored.json; a later bounded CAbout final build rewrote it, causing size/hash drift for accepted evidence sha256:1c66d14e...",
+      "repro": "Run progress audit --scope all --strict after any later final-build overwrites an accepted build/vc5-final linked-order receipt; audit reports evidence.artifact.size-drift and hash-drift.",
+      "evidence": "sha256:1c66d14ec16895ae73e5ab7f68e7f2607cd42a9c3367831c4ac578a8294ed4a1",
+      "resolution": "Resolved: progress evidence import-authored-order now snapshots the validated producer receipt into a SHA-256-addressed immutable build/reconstruction-evidence path only after revision/SHA guards pass; dry-run performs no write, destination collisions are non-overwriting failures, and accepted evidence binds the snapshot. Focused/full progress and VC5-build tests, strict progress audit, strict agent-surface audit, and doctor --quick --binja pass."
+    }
+  ]
 }

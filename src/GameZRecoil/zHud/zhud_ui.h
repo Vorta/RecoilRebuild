@@ -45,7 +45,9 @@ struct HudUiCircle;
 struct HudUiBar;
 struct HudUiZrdWidgetEx17C;
 struct HudUiSlot;
-struct HudUiMeter;
+struct HudUiManagerMeterBaseCandidate;
+struct HudUiManagerMeterCandidate;
+struct HudUiShieldMeterCandidate;
 struct GameNetPlayerRow;
 struct zZbdSectionCallbackCtx;
 struct zSndSample;
@@ -282,7 +284,7 @@ int __fastcall ApplyCornerTextQuad(
 );
 int __fastcall ApplyMeterQuad(
     zReader::Node *node,
-    HudUiMeter *target,
+    HudUiBar *target,
     int xBase,
     int yBase,
     const int *offsetXY,
@@ -407,7 +409,6 @@ void __fastcall GetFxRect(HudUiRect *outRect);
 } // namespace HudUiMgrSensor
 
 namespace HudUiMgr {
-HudUiContainer *__fastcall Constructor(HudUiContainer *self);
 void __cdecl StaticInitAndRegisterAtExit();
 HudUiContainer *StaticInit();
 void RegisterAtExit();
@@ -519,7 +520,7 @@ extern int g_HudUiMgrObjectiveChatComposeActive;
 struct HudUiObjectiveBar;
 extern HudUiWidget g_HudUiMgrSensorPanel;
 extern HudUiWidget g_HudUiMgrSensorOverlay;
-extern HudUiMeter g_HudUiMgrSensorMeter;
+extern HudUiManagerMeterCandidate g_HudUiMgrSensorMeter;
 extern int g_HudUi_AuxOverlayEnabled;
 
 namespace HudUiMgrObjective {
@@ -569,6 +570,10 @@ struct HudUiPrimitiveBindTarget : HudUiElement {
     );
 };
 
+/**
+ * Retail table evidence at 0x4d3c70 proves the 29-slot HudUiElement prefix
+ * followed only by HudUiTextLabel::SetTextFmt.
+ */
 struct HudUiTextLabel : HudUiElement {
     char textBuffer[0x100];
     int fontHandle;
@@ -605,24 +610,6 @@ struct HudUiTextLabel : HudUiElement {
         const char *format,
         ...
     );
-    virtual void UpdateTextBoundsFromContent();
-    virtual HGDIOBJ GetFont();
-    virtual void SetFont(
-        const char *faceName,
-        int height,
-        int weight,
-        int width,
-        int italic,
-        int charSet,
-        int pitchAndFamily
-    );
-    virtual void SetFontHandle(HGDIOBJ fontHandle);
-    virtual void SetTextFmtV(
-        const char *format,
-        va_list args
-    );
-    virtual void SetText(const char *text);
-    virtual void RebuildTextRect();
     void RebuildTextBounds();
     int MeasureTextWidth();
     void OnDraw();
@@ -1085,7 +1072,9 @@ struct HudUiZrdWidgetEx17C : HudUiZrdWidget {
 };
 
 /**
- * Emits 0x40a590: VC5 scalar deleting destructor for this virtual-destructor model.
+ * Emits 0x40a590: VC5 scalar deleting destructor for this virtual-destructor
+ * model. Retail table evidence at 0x4d3a88 proves the SetTextFmt override and
+ * the following seven Panel-introduced virtuals in declaration order.
  */
 struct HudUiPanel : HudUiTextLabel {
     zVidImagePartial *textPick;
@@ -1133,8 +1122,28 @@ HudUiPanel() {
         const HudUiRect *rectOrNull
     );
     void Invalidate();
-    HGDIOBJ GetFont();
-    void SetFontHandle(HGDIOBJ fontHandle);
+    virtual void __cdecl SetTextFmt(
+        const char *format,
+        ...
+    );
+    virtual void UpdateTextBoundsFromContent();
+    virtual HGDIOBJ GetFont();
+    virtual void SetFont(
+        const char *faceName,
+        int height,
+        int weight,
+        int width,
+        int italic,
+        int charSet,
+        int pitchAndFamily
+    );
+    virtual void SetFontHandle(HGDIOBJ fontHandle);
+    virtual void SetTextFmtV(
+        const char *format,
+        va_list args
+    );
+    virtual void SetText(const char *text);
+    virtual void RebuildTextRect();
     void EnableWordWrapWithRect(const HudUiRect *rect);
     void Draw();
     void DestructorThunk();
@@ -1149,26 +1158,6 @@ HudUiPanel() {
         int shadowOffsetX,
         int shadowOffsetY
     );
-    void SetFont(
-        const char *faceName,
-        int height,
-        int weight,
-        int width,
-        int italic,
-        int charSet,
-        int pitchAndFamily
-    );
-    void __cdecl SetTextFmt(
-        const char *format,
-        ...
-    );
-    void SetTextFmtV(
-        const char *format,
-        va_list args
-    );
-    void SetText(const char *text);
-    void RebuildTextRect();
-    void UpdateTextBoundsFromContent();
     int MeasureTextPrefixRect(
         int maxChars,
         RECT *outRect
@@ -1774,9 +1763,23 @@ struct HudUiBar : HudUiElement {
     );
 };
 
-struct HudUiMeter : HudUiBar {
-    HudUiMeter();
-    HudUiMeter * ConstructorEx();
+/**
+ * Provisional manager-meter base for retail constructor 0x40d9e0. Retail
+ * manager construction calls this base twice before installing the same
+ * most-derived manager-meter table for its two embedded leaves.
+ */
+struct HudUiManagerMeterBaseCandidate : HudUiBar {
+    HudUiManagerMeterBaseCandidate();
+};
+
+struct HudUiManagerMeterCandidate : HudUiManagerMeterBaseCandidate {};
+
+/**
+ * Provisional shield-meter sibling for retail constructor 0x40fb70. Its
+ * direct HudUiBar construction is distinct from the manager-meter branch.
+ */
+struct HudUiShieldMeterCandidate : HudUiBar {
+    HudUiShieldMeterCandidate();
 };
 
 struct HudUiObjectiveBar : HudUiBar {};
@@ -1794,7 +1797,7 @@ struct HudUiMgrSensorBlock {
     HudUiSlot *trackedProgressSlot;
     HudUiWidget sensorPanel;
     HudUiWidget sensorOverlay;
-    HudUiMeter sensorMeter;
+    HudUiManagerMeterCandidate sensorMeter;
     HudUiShieldMessageWidget *shieldMessageWidget;
     HudUiStringMenu *stringMenu;
     zVidImagePartial *targetMarkerImages[5];
@@ -1813,7 +1816,11 @@ struct HudUiMgrSensorBlock {
 
 struct HudUiTextInput {
     virtual void OnPrintableKey(int key);
-    virtual void OnIgnoredKey(int key);
+    /**
+     * Reimplements 0x401020: HudUiTextInput::OnIgnoredKey.
+     * Purpose: ignore a text-input key action without changing the buffer.
+     */
+    virtual void OnIgnoredKey(int key) {}
     virtual void OnAccept();
     virtual void OnCancel();
     virtual void OnBackspace();
@@ -2007,7 +2014,7 @@ struct HudUiMgrObjectiveBlock {
     HudUiWidget objectiveSensorRect;
     HudUiPanel *objectiveSummaryTextPanel;
     HudUiPanel *objectiveLabelTextPanel;
-    HudUiMeter objectiveMeter;
+    HudUiManagerMeterCandidate objectiveMeter;
     float objectiveMeterFillAnimTimerSec;
     unsigned int objectiveMeterFillAnimEnabled;
     HudUiPanel *objectiveDescTextPanel;
@@ -2064,7 +2071,7 @@ struct HudLoadingCheckpointTable {
  * recovered owner covers the typed object through tailBar at 0x7844. The
  * four-byte zero gap before g_HudLayoutHW is not part of the typed object.
  */
-struct HudUiMgrDataPrefix : HudUiContainer {
+struct HudUiMgrData : HudUiContainer {
     int hudLayoutsInitialized;
     unsigned int hudLoaded;
     HudLayoutBase *currentLayout;
@@ -2101,12 +2108,6 @@ struct HudUiMgrDataPrefix : HudUiContainer {
     unsigned int activeModeCounterIndex;
     HudUiCounter modeCounters[4];
     HudUiMgrMessageSelectionState activeMessageSelection;
-
-    HudUiMgrDataPrefix();
-    ~HudUiMgrDataPrefix();
-};
-
-struct HudUiMgrData : HudUiMgrDataPrefix {
     HudUiMessage messages[10];
     HudUiStatsListElement *statsList;
     unsigned int statsListState1;
@@ -2779,6 +2780,22 @@ struct HudUiPanelLayoutEntry {
     int layoutX;
     int layoutY;
 
+    /**
+     * Original-source helper; no standalone retail function exists.
+     * Evidence: retail 0x409570 directly constructs the embedded panel with
+     * the three-argument HudUiPanel constructor before the nested EH lifetime.
+     * Purpose: construct a temporary layout entry with a live embedded panel.
+     */
+    HudUiPanelLayoutEntry(
+        const char *text,
+        int x,
+        int y
+    ) : panel(
+            text,
+            x,
+            y
+        ) {
+    }
     HudUiPanelLayoutEntry * CopyConstruct(const HudUiPanelLayoutEntry *source);
     HudUiPanelLayoutEntry * CopyAssign(const HudUiPanelLayoutEntry *source);
     static HudUiPanelLayoutEntry *__fastcall CopyAssignRange(
@@ -2798,6 +2815,32 @@ struct HudUiPanelSpan {
     HudUiPanelLayoutEntry *end;
     HudUiPanelLayoutEntry *cap;
 
+    /**
+     * Original-source helper; no standalone retail function exists.
+     * Evidence: retail 0x409570 establishes an outer automatic span lifetime
+     * before entering the row and label loops.
+     * Purpose: initialize an empty temporary panel-entry span.
+     */
+    HudUiPanelSpan()
+        : allocatorProxy(0),
+          begin(0),
+          end(0),
+          cap(0) {
+    }
+    /**
+     * Original-source helper; no standalone retail function exists.
+     * Evidence: retail 0x409570 lowers its outer EH state before a direct
+     * 0x2ac-stride panel-destruction loop and one operator delete call.
+     * Purpose: destroy the temporary span entries and release their storage.
+     */
+    ~HudUiPanelSpan() {
+        HudUiPanelLayoutEntry *entry = begin;
+        while (entry != end) {
+            entry->panel.HudUiPanel::~HudUiPanel();
+            ++entry;
+        }
+        ::operator delete(begin);
+    }
     void Clear();
     HudUiPanelSpan * CopyInit(const HudUiPanelSpan *source);
     HudUiPanelSpan * CopyFrom(const HudUiPanelSpan *source);
@@ -2927,7 +2970,7 @@ struct HudUiShieldMessageWidget {
     HudUiRect screenRect;
     HudUiWidget widget;
     HudUiPanelSimple percentTextPanel;
-    HudUiMeter meter;
+    HudUiShieldMeterCandidate meter;
     unsigned char unknown_4bc[0x08];
 
     static int __stdcall ApplyLayout(zReader::Node *layoutRoot);
@@ -2965,11 +3008,23 @@ struct HudUiStringMenu : HudUiContainer {
     void DestructorCore();
 };
 
+/**
+ * HudUiStatsListElement owner evidence: BN InitHudLayouts 0x40f4c0 installs
+ * the derived table while constructing this element, with scalar deleting
+ * destructor slot zero and Update 0x40fa10 at slot +0x24.
+ */
 struct HudUiStatsListElement : HudUiElement {
-    HudUiTriplet *triplet;
-
+    /**
+     * Original-source helper; no standalone retail constructor exists.
+     * Evidence: InitHudLayouts 0x40f4c0 inlines the HudUiElement base
+     * construction, installs the stats-list table, and clears triplet.
+     * Purpose: establish the stats-list dynamic type before its triplet is allocated.
+     */
+    HudUiStatsListElement() : HudUiElement(0, 0), triplet(0) {}
+    virtual ~HudUiStatsListElement();
     void Update(float deltaSeconds);
-    void DestructorCore();
+
+    HudUiTriplet *triplet;
 };
 
 struct HudUiTimerPanel : HudUiPanel {
@@ -2977,6 +3032,7 @@ struct HudUiTimerPanel : HudUiPanel {
     int stopped;
     int secondsStep;
 
+    HudUiTimerPanel();
     static void __fastcall SetRunning(int running);
     static void __stdcall SetElapsedSeconds(float seconds);
     static void __stdcall SetSeconds(
@@ -2993,7 +3049,6 @@ struct HudUiTimerPanel : HudUiPanel {
         int byteCount,
         HudUiTimerPanel *userData
     );
-    HudUiTimerPanel * ConstructorDefault();
     void Update(float deltaSeconds);
     void UpdateHMSFromSeconds(float seconds);
     void SetTimeSeconds(
@@ -3065,8 +3120,8 @@ struct HudUiTriplet : HudUiContainer {
     static CString *ConstructWndClassName();
     static void RegisterWndClassNameDtorAtExit();
     static void __cdecl DestroyWndClassName();
-    HudUiTriplet * Constructor();
-    void DestructorCore();
+    HudUiTriplet();
+    ~HudUiTriplet();
     void InterpolateLayout(float t);
     void RebuildDisplay();
     void AddEntry(GameNetPlayerRow *entryData);
@@ -4878,37 +4933,39 @@ RECOIL_STATIC_ASSERT(
         quadLeftX
     ) == 0x13c
 );
-RECOIL_STATIC_ASSERT(sizeof(HudUiMeter) == 0x140);
+RECOIL_STATIC_ASSERT(sizeof(HudUiManagerMeterBaseCandidate) == 0x140);
 RECOIL_STATIC_ASSERT(
     offsetof(
-        HudUiMeter,
+        HudUiManagerMeterBaseCandidate,
         points
     ) == 0x34
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        HudUiMeter,
+        HudUiManagerMeterBaseCandidate,
         drawVertexCount
     ) == 0x130
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        HudUiMeter,
+        HudUiManagerMeterBaseCandidate,
         color565
     ) == 0x134
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        HudUiMeter,
+        HudUiManagerMeterBaseCandidate,
         fillPixelsMax
     ) == 0x138
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        HudUiMeter,
+        HudUiManagerMeterBaseCandidate,
         meterFlags
     ) == 0x13c
 );
+RECOIL_STATIC_ASSERT(sizeof(HudUiManagerMeterCandidate) == 0x140);
+RECOIL_STATIC_ASSERT(sizeof(HudUiShieldMeterCandidate) == 0x140);
 RECOIL_STATIC_ASSERT(sizeof(HudUiObjectiveBar) == 0x140);
 RECOIL_STATIC_ASSERT(
     offsetof(

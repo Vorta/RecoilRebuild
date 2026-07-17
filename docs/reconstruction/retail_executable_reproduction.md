@@ -26,6 +26,14 @@ storage, PE sections, and final-image acceptance never imply one another.
 Unknown extents retain their start address and `extent_state=unknown` but omit
 size and end; a fabricated one-byte extent is forbidden.
 
+The sole scheduler exposes two independent monotonic lanes. The primary order
+lane runs `authored-function-order` and then `full-function-order`. The
+authored-byte lane independently follows retail physical address groups and may
+be exposed as `parallel_authored_byte_cursor` while either order phase is
+primary. It pauses, without skipping ahead, when its next row shares the active
+order block. `fallback_authored_byte_cursor` is a deprecated compatibility
+alias for that same parallel cursor, not an accepted-prefix prerequisite.
+
 ### 1. `authored-function-order`
 
 Start at `0x401000` and advance monotonically through retail `.text` ending at
@@ -121,14 +129,13 @@ helpers, fake wrappers, or duplicate bodies. New or disputed owner/block/order
 or lifecycle-classification conclusions continue to require the root ChatGPT
 Pro policy.
 
-Stop at the first divergence. Work elsewhere is allowed only when recorded as
-the required compile/link dependency of that cursor. Only while this phase is
-blocked or incomplete, and only when its accepted authored-order prefix contains
-an authored-order gating row that lacks authored-byte acceptance,
-`progress next` may expose `fallback_authored_byte_cursor` for the earliest such
-row. The fallback skips `non-authored` rows and explicit compiler-generated
-lifecycle roles, does not move the primary
-authored-order cursor, and never promotes the phase.
+Stop order work at the first order divergence. Independently, `progress next`
+scans retail address groups for the earliest unaccepted authored byte gate. It
+stops fail-closed at unresolved classification, skips proven `non-authored` and
+explicit compiler-generated roles, and exposes
+`parallel_authored_byte_cursor` only when that row's physical block differs
+from the active order block. Byte acceptance never advances order state, and
+order acceptance never advances byte state.
 
 For a bounded whole-link COMDAT attribution problem, census existing diagnostic
 builds before rebuilding:
@@ -162,17 +169,29 @@ diagnostic control and never replaces the production `/OPT:ICF` linked gate.
 
 ### 2. `authored-byte-match`
 
-After the complete authored-order prefix reaches `0x4cb9e8`, restart at the
-first `authored-body` or `authored-lifecycle-body` retail row and skip proven
-`non-authored` rows plus explicit compiler-generated lifecycle roles. Traverse
-in retail order while editing and accepting the
-complete source-shaped owner. Each row needs one synchronized receipt proving
+Independently scan from the first retail function/address group for the first
+unaccepted `authored-body` or `authored-lifecycle-body`, stopping at unresolved
+classification and skipping proven `non-authored` rows plus explicit
+compiler-generated roles. A physical ICF/address group is one traversal step;
+logical aliases do not create duplicate byte steps. Traverse in retail order
+while editing and accepting the complete source-shaped owner. Each row needs
+one synchronized version-3 receipt proving
 exact extent and object bytes outside relocations, relocation types and
 symbol/provider identities/addends, linked presence, symbolic call/reference
 target identity, and exact relocation-normalized linked body bytes at the
 candidate address. Exact retail RVA and fully resolved relocation operands are
 diagnostic here: they are not authored-byte failures and become blocking in the
 full-order and resolved linked-byte phases.
+
+Version-3 receipts bind target-local compile, object, and linked projections:
+the source and resolved include dependency set, VC5SP3 profile/toolchain,
+object body and relocations, linked presence, symbolic target identities, and
+relocation-normalized linked body. A successful compile/link and current
+candidate/MAP are required, but a linked-order failure, whole-candidate hash
+change, candidate RVA, ICF representative placement, manifest hash, and
+resolved operand equality are not authored-byte gates. Whole-build paths and
+hashes remain observation provenance. Version-2 receipts remain valid under
+their legacy accepted-order bindings; accepted history is not rewritten.
 
 Accept only the current authored/lifecycle row or a contiguous authored bundle
 beginning there after filtering out intervening proven non-authored rows. Owner
@@ -182,7 +201,8 @@ acceptance, or later full/link prefix acceptance.
 
 ### 3. `full-function-order`
 
-After authored-byte traversal is complete, restart at `0x401000`. This phase
+After authored function order is complete, restart at `0x401000` without
+waiting for authored-byte traversal. This phase
 covers every selected linked contribution class, including authored,
 authored-lifecycle, compiler, runtime, import, framework, SDK, provider,
 padding, and data rows inside `.text`. Require the exact selected linked address groups in the
@@ -201,7 +221,8 @@ missing/misplaced non-authored row, address drift, or seam drift.
 
 ### 4. `linked-byte-match`
 
-After every full-order row is accepted, restart at `0x401000`. Traverse every
+After every full-order row and every authored-byte gating address group are
+accepted, restart at `0x401000`. Traverse every
 linked row by retail address. Require exact linked RVA/address, exact resolved
 relocation operands, exact symbolic call/reference targets, and exact linked-
 image bytes. Earlier authored-byte receipts remain useful input, but their
@@ -256,8 +277,8 @@ Only the parent mutates the unified tracker, dry-run first and against the
 reviewed revision, through narrow `progress accept`, `progress blocker`,
 `progress owner`, `progress block`, `progress semantic`, `progress work`, or
 `progress evidence` operations.
-Receipts must bind the retail reference, VC5SP3 profile, source/manifest/object/
-map/candidate identities, exact gates, command, scope, and conclusion; never
+Receipts must bind the retail reference, VC5SP3 profile, applicable target-local
+inputs/projections, exact gates, command, scope, and conclusion; never
 store a concrete `.devspace` dependency. SHA-256 is machine-managed integrity
 metadata: tools and receipts calculate and validate it, while agents cite the
 receipt/evidence path or imported evidence id instead of copying digests unless
@@ -266,7 +287,7 @@ owner gates, tiers, provider classification, global prefixes, or `Model:`
 metadata.
 
 A source-worker/verifier handoff names the global phase and its primary cursor
-(plus `fallback_authored_byte_cursor` only when the scheduler returns it),
+(plus `parallel_authored_byte_cursor` when the scheduler returns it),
 physical block, complete owner, allowed files, first divergence, exact command,
 required receipt, and exit gate. Reports include expected/actual definition counts,
 informational raw extras, blocking missing/duplicate/reordered expected

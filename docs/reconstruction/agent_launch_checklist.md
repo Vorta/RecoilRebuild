@@ -13,11 +13,16 @@ python tools/recoil.py doctor --quick --binja
 ```
 
 `progress next` is the sole Recoil.exe scheduler. It follows the canonical
-`authored-function-order` -> `authored-byte-match` -> `full-function-order` ->
-`linked-byte-match` -> `final-validation` sequence. Expand its primary cursor
-into the complete physical block, semantic span, and source-shaped owner. If it
-returns `fallback_authored_byte_cursor`, that authored/lifecycle row is bounded
-fallback work only: it does not move the primary cursor or phase. Owner/work/section/final
+order-primary sequence `authored-function-order` -> `full-function-order`, with
+an independent retail-monotonic authored-byte lane. `linked-byte-match` starts
+only after full order and authored bytes are both complete, followed by
+`final-validation`. Expand the primary cursor into the complete physical block,
+semantic span, and source-shaped owner. If it returns
+`parallel_authored_byte_cursor`, that row is bounded secondary-lane work only:
+it does not move the primary cursor or phase, and it must not overlap the active
+order block, owner, writable paths, or mutable build step. Use `progress handoff
+--authored-byte --json`; the old fallback cursor/flag are deprecated aliases.
+Owner/work/section/final
 and ordinary `messages.dll` views are deferred context unless the cursor records
 them as required dependencies.
 

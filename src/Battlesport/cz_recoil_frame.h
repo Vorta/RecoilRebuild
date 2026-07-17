@@ -92,7 +92,13 @@ struct CZRecoilFrame : CZGameFrame {
     void OnUpdateHwApi3CmdUI(CCmdUI *cmdUi);
     void OnUpdateFullscreenCmdUI(CCmdUI *cmdUi);
     void OnUpdateAlwaysEnabledCmdUI(CCmdUI *cmdUi);
-    void OnUpdateNoOpCmdUI(CCmdUI *cmdUi);
+    /**
+     * Reimplements 0x401020: CZRecoilFrame::OnUpdateNoOpCmdUI.
+     * The address is a heterogeneous shared physical alias and does not imply
+     * sole ownership of the group.
+     * Purpose: leave the two mapped command-update states unchanged.
+     */
+    afx_msg void OnUpdateNoOpCmdUI(CCmdUI *) {}
     void OnMenuToggleCDAudio();
     void OnUpdateCDAudioCmdUI(CCmdUI *cmdUi);
     void OnMenuToggleJoystick();

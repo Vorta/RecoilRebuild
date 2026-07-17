@@ -15,9 +15,11 @@ tools/recoil.py progress ...`.
 ## Current Authorities
 
 - [`retail_executable_reproduction.md`](retail_executable_reproduction.md) -
-  canonical authored-first five-phase pipeline (`authored-function-order`,
-  `authored-byte-match`, `full-function-order`, `linked-byte-match`, then
-  `final-validation`), row classifications, `progress next` scheduling, exact
+  canonical order-primary pipeline (`authored-function-order`, then
+  `full-function-order`) plus the independent retail-monotonic
+  `authored-byte-match` lane; `linked-byte-match` waits for both lanes and is
+  followed by `final-validation`. It defines row classifications, sole
+  `progress next` scheduling, exact
   retail SHA-256 goal, evidence gates, and debt-free closeout contract.
 - `agent_launch_checklist.md` - compact preflight and task-selection checklist
   for reconstruction agents.

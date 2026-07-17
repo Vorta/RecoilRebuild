@@ -183,17 +183,13 @@ unsigned int g_zInterp_NodeUserDataScratch = 0;
 
 /**
  * Reimplements data 0x4edb78: g_zInterp_GlobalContext.
- * Data owner: zInterp_GlobalContext initialized instance. Explicit aligned
- * storage prevents VC5 from emitting automatic static initializer/destructor
- * thunks; s_zInterpCrtInit_GlobalContext owns the startup row that constructs
- * and registers teardown for this same storage.
+ * Data owner: zInterp_GlobalContext initialized instance. The ordinary
+ * file-scope object lets VC5 emit its natural CRT construction and teardown
+ * roots, which retain the derived constructor and virtual dispatch table.
  *
  * Purpose: process-wide script interpreter context constructed at startup.
  */
-#undef g_zInterp_GlobalContext
-zInterp_GlobalContextStorage g_zInterp_GlobalContext = {0};
-#define g_zInterp_GlobalContext \
-    (*(zInterp_GlobalContext *)&g_zInterp_GlobalContext)
+zInterp_GlobalContext g_zInterp_GlobalContext;
 
 /**
  * Reimplements data 0x4e48f4: g_zInterp_PreparedIndexFileName.
