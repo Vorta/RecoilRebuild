@@ -558,6 +558,89 @@ alignment passes (not a current queue):
 - `RecoilApp.cpp`: literal `0x4dcb9c`, referenced at `0x42e620`.
 - `turret.cpp`: literal `0x4dd19c`, referenced at `0x437b25`.
 
+## 2026-07-18 `HudUiElement` Opening-Layer Source Discovery
+
+The current authored-order cursor is `0x404ca0`, but the focused evidence does
+not justify treating either the complete `[0x404ca0,0x415ab0)` HUD envelope or
+the current `hud_ui.hud_ui_element_base` owner as one settled original
+translation unit. Current BN proves that `0x404ca0 HudUiElement::Draw` is the
+five-byte virtual tail jump `8b 01 ff 60 08`, that the narrow opening sequence
+through `0x404d60` contains the first authored primitive-layer identities, and
+that `0x404d70` is compiler-generated lifecycle glue. The surviving
+`D:\Proj\Battlesport\hud.cpp` literal is referenced only later, at `0x4101a3`
+and `0x4141bb`; it supports a provisional physical envelope but does not prove
+that all 551 BN functions in that envelope came from one original source file.
+
+The mandatory source-discovery ChatGPT Pro consultation therefore reached the
+following advisory disposition, which the parent accepts only as a routing
+constraint:
+
+- **ALLOW, narrow/provisional:** retain `src/Battlesport/hud.cpp` as the current
+  placement host for the opening `[0x404ca0,0x404e80)` primitive layer.
+- **BLOCK owner closure:** do not reduce the complete owner to `zhud_ui.h` plus
+  `hud.cpp`. Keep it unresolved and multi-contributor: declarations/source-shape
+  input in `src/GameZRecoil/zHud/zhud_ui.h`, current early bodies in
+  `src/Battlesport/hud.cpp`, current later bodies in
+  `src/GameZRecoil/zUI/zui.cpp`, plus compiler/header contributions and the
+  unresolved original-path candidates `hud.cpp`, `hudui_element.cpp`, and
+  `zhud_ui.cpp`.
+- **BLOCK physical-block acceptance:** `[0x404ca0,0x415ab0)` remains a
+  provisional physical/order envelope pending complete row attribution and
+  exact selected-link population/order/seam evidence.
+- **BLOCK source-worker launch:** do not prepare a complete-owner source packet
+  or change owner/block/order/tier/byte acceptance from this consultation.
+
+The subsequent complete read-only BN closure checked every function in
+`[0x404c80,0x404e90)`, all nine late base methods at
+`0x4b4070..0x4b42c0`, the `0x4b47a0` teardown leaf, direct common/stats table
+writes, base-constructor/derived-table pairs, and the default/shared slot
+population. It adds these constraints without closing the owner model:
+
+- `0x404ca0..0x404d60` and `0x4b4070..0x4b42c0` are the address-backed base
+  behavior clusters. Adjacent `0x404d90..0x404e10` bodies use widget fields,
+  `0x404e60` is circle-specific, and shared one-byte `0x404e80` has 430 code
+  refs plus 70 table refs under the current `zError::ReportOld` identity.
+- `0x404d70` is the base scalar-deleting variant. `0x4b47a0` is the seven-byte
+  `mov [ecx],0x4cca10; ret` common-table reset leaf used by 40 direct teardown/
+  unwind call sites; it is not, by that body alone, proof of a complete authored
+  destructor source body. Coupled shared helpers include `0x41ebb0`, the stats
+  chain `0x40fa20 -> 0x40fa40`, and the widget teardown chains through
+  `0x403d70`, `0x40d5f0`, `0x4b3ce0`, and `0x4b3d50`.
+- Direct base-method/default-helper xrefs resolve to 1,570 pointer cells across
+  131 raw BN anchors and 129 unique containing declarations. Six declarations
+  overlap or begin inside another current BN declaration. Shared physical bodies
+  such as `0x404e80`, `0x404d10`, `0x41ebb0`, and `0x403d70` therefore require
+  final-profile decorated COFF/COMDAT/ICF and selected-link evidence; table reuse
+  alone does not prove one original owner, explicit override population, or
+  provider/compiler classification.
+
+This closure was a raw, non-recommending BN fact packet, so it used the
+source-discovery Pro exemption. It changed no BN state and proves no source
+owner, block, order, role classification, source model, tier, or byte gate.
+
+The completed BN closure satisfies the first requested evidence packet. The
+remaining next evidence is an isolated VC5 link-backed artifact named
+`hud_ui_element_complete_owner_source_shape_matrix` comparing the standalone
+`hudui_element.cpp`, standalone `zhud_ui.cpp`, and current
+`hud.cpp`+`zui.cpp`+header-destructor source shapes under the final `/Ob1`,
+`/OPT:REF`, and `/OPT:ICF` profile. That matrix must retain `/E` include traces,
+decorated COFF definition order, COMDAT/ICF groups, vftable/RTTI/destructor
+object attribution, exact selected linked groups and seams, and a separate raw
+extras inventory.
+
+The verified consultation run id was
+`2026-07-18T10-36-40-990Z-chatgpt-call`. Its promoted tracker evidence id is
+`sha256:c4901b2e82dd31d274023b0f322577683364df5e620e4244cb35b616ae2c6ab1`.
+Before session-artifact cleanup, the receipt/transcript integrity was recorded
+as transcript SHA-256
+`3b9ccb067dd4a215ad1caa884de968525e56dc2982676503fb65fa2bfbd382cb`, sent
+payload SHA-256
+`e76428db0ecec7d617933e4af54d7ed5ee5c0214a8e6c64a65a7e02aba22c36b`, and
+received payload SHA-256
+`8c70f32dbbcbb54a1ded6df2db2c396dc57733312219e7017d032a4886ae8758`.
+The consultation is advisory and proves no source owner, physical block,
+function order, tier, provider boundary, or byte acceptance.
+
 ## `Class.c` zClass Node Allocation/Delete Local Block
 
 BN source-path comments and xrefs to `0x4dd9e8`

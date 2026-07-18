@@ -22,6 +22,12 @@ semantic span, and source-shaped owner. If it returns
 it does not move the primary cursor or phase, and it must not overlap the active
 order block, owner, writable paths, or mutable build step. Use `progress handoff
 --authored-byte --json`; the old fallback cursor/flag are deprecated aliases.
+If `parallel_authored_object_byte_cursor` is returned, use `progress handoff
+--authored-object-byte --json`. That packet prepares only one exact object body
+inside the accepted authored-order prefix, uses a packet-unique
+`build/vc5-authored-object-byte/...` root, and never runs a whole-project/final
+build. Version 1 advances address-at-a-time; owner-bundle production and
+`--through` acceptance are intentionally deferred.
 Owner/work/section/final
 and ordinary `messages.dll` views are deferred context unless the cursor records
 them as required dependencies.
@@ -40,7 +46,10 @@ target and never load, switch, or patch a binary. New active-scope evidence lets
 the parent assign a bounded `recoil_bn_reconstructor` correction without another
 user approval or tracker mutation. Only that role may edit, reanalyze, and save;
 its read-only filesystem sandbox does not make assigned BN MCP state immutable.
-It may not decide owner/block/order/provider/tier acceptance. Address is
+It requires one parent-assigned exclusive writer lease for that live database,
+held through reanalysis and save; no reader or second writer may use the same
+database until the lease is released. It may not decide owner/block/order/
+provider/tier acceptance. Address is
 traversal evidence; implementation and owner acceptance
 use the complete proven source-shaped owner. Keep physical blocks, semantic
 spans, source owners, data symbols, owner data gates, physical storage
@@ -70,7 +79,10 @@ commands, non-overlap statement, evidence, and required return fields. It fails
 closed when any required envelope field is missing, broad, overlapping, or
 mutation-bearing. Source workers own hard-byte artifact production/upload;
 verifiers validate the supplied synchronized triplet and call order mismatches
-`order-gate failure`.
+`order-gate failure`. A source-owner mapper that needs ChatGPT Pro returns a
+complete `needs_pro` bundle and releases its worker slot. The parent broker
+obtains one receipt for the scoped request and supplies it when the mapper
+resumes; workers do not wait on or compete for the global browser lock.
 
 Only the parent mutates the unified tracker, always dry-run first and with the
 reviewed revision on apply. Agents never run git commands or report

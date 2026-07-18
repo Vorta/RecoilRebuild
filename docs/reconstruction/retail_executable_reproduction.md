@@ -34,6 +34,32 @@ primary. It pauses, without skipping ahead, when its next row shares the active
 order block. `fallback_authored_byte_cursor` is a deprecated compatibility
 alias for that same parallel cursor, not an accepted-prefix prerequisite.
 
+While an order phase is primary, `progress next` may additionally expose the
+subordinate `parallel_authored_object_byte_cursor`. It scans only complete
+physical blocks inside the current contiguous, current-hash-bound accepted
+authored-order prefix and selects the first gating address group whose
+`object_byte` dimension is not current-hash-bound accepted. Version 1 is
+address-at-a-time: there
+is no `--through` or owner-bundle producer. Run `verify
+authored-object-byte 0xADDR`, import its typed receipt, and accept that exact
+cursor before advancing. A direct failure expands the subsequent source repair
+handoff to the complete owner; that is not batch acceptance.
+
+The version-1 receipt binds canonical `support/Recoil.exe`, production source,
+normalized VC5 `/E` dependencies, the current manifest/profile/toolchain, a
+packet-isolated root below `build/vc5-authored-object-byte/`, exact COFF extent,
+body bytes, mask, and structurally observed relocation rows. It accepts only
+`binary_state.object_byte` and explicitly claims no relocation identity,
+linked state, order, owner/model, tier, or final result. A current launchable
+overlapping full authored-byte packet has priority over new object preparation.
+Object preparation may run only when the full-byte lane is unavailable or
+blocked, no matching full-byte packet exists, compatible full-byte work is
+active on proven non-overlapping surfaces, or the object packet is an explicit
+exact-row prerequisite. Stale packets fail closed, active work is never
+preempted, generated outputs cannot overlap, and whole-project builds remain
+parent-serialized. Recompute the scheduler after every object-only packet
+instead of automatically preparing another row.
+
 ### 1. `authored-function-order`
 
 Start at `0x401000` and advance monotonically through retail `.text` ending at
@@ -230,6 +256,23 @@ relocation-normalized candidate-address comparison cannot substitute for this
 resolved retail-address gate. Accept only the current address or a contiguous
 bundle beginning there.
 
+Linked-byte tracker acceptance requires one typed version-4-or-newer receipt:
+
+```powershell
+python tools/recoil.py progress evidence import-linked-byte --receipt <receipt.json> --expected-revision <revision> --expected-sha256 <sha256> --dry-run
+python tools/recoil.py progress accept byte <symbol-id> --evidence-id <sha256:id> --expected-revision <revision> --expected-sha256 <sha256> --dry-run
+```
+
+The import snapshots the receipt immutably and validates the current physical
+row/catalog, retail reference, typed linked-full-order selected source object,
+and bound artifacts. Acceptance reopens the snapshot and advances only the
+exact `linked_address`, `linked_targets`, and `linked_byte` triplet. It does not
+backfill object, authored relocation, owner, provider, model, or tier state.
+Generic evidence and legacy receipts are rejected. The current legacy
+`verify linked-byte` producer remains diagnostic-only; provider-library,
+compiler-runtime, and non-authored rows fail closed until governed archive-
+member and symbolic-target-catalog evidence exists.
+
 ### 5. `final-validation`
 
 Run one unrestricted synchronized build:
@@ -255,6 +298,51 @@ exact final-repro receipt, and candidate size/SHA-256 matching retail. `--no-pe-
 `--no-resource-compare`, skipped required order checks, normalized comparison,
 or a stale map/candidate makes the run diagnostic-only.
 
+An early `verify final-determinism` pair is diagnostic dependency evidence, not
+final acceptance. Receipt version 2 must preserve raw executable diff counts
+and ranges and distinguish `source_toolchain_inputs_equal`,
+`raw_linker_inputs_equal`, and `object_artifacts_raw_equal`. The only permitted
+secondary final-image projection is the structurally parsed complete I386 PE32
+COFF TimeDateStamp range `[e_lfanew+8,e_lfanew+12)`; it may set
+`equal_except_declared_volatile_fields` but cannot change the raw result or exit
+status. Strict MAP/object timestamp projections remain artifact diagnostics and
+cannot substitute for relocation-aware object or linked-image gates.
+
+The governed clock provider is `process-local-msvcrt-time-iat-v1`. Build its
+native x86 launcher with `build vc5-clock-provider`; its v2 profile binds
+`LINK.EXE` and the exact `MSDIS100.DLL`/`MSPDB50.DLL`/`MSVCP50.DLL` loader
+closure. Then seal one exact v2 ordered link bundle without exposing
+`support/Recoil.exe`. The bundle must inventory those DLLs exactly once as
+non-argv `runtime-dependency` members and use only the profiled VC `BIN`,
+`SHAREDIDE\BIN`, and VC `REDIST` directories in that PATH order. Under a live
+conflict-free clock/whole-project/output reservation, `verify
+final-clock-qualification` runs the exact bundle once at `916964810` and once
+at `916964930`. It requires the candidates to differ only within the parsed
+four-byte PE timestamp, the MAPs to differ only in the uniquely bound UTC
+timestamp header, every stable provider output to match, and all input catalogs
+to remain unchanged. Its v2 receipt is diagnostic-only and grants no source,
+order, byte, owner-tier, provider-final, final-executable, or retail-identity
+acceptance.
+
+The launcher starts the exact hashed VC5 `LINK.EXE` once with
+`DEBUG_ONLY_THIS_PROCESS`, stops before entry, verifies one
+`MSVCRT.dll!time` import/export/pointer identity, and patches only that one
+in-memory IAT pointer to a verified x86 fixed-epoch stub. It does not change the
+host clock, linker/candidate files, code bodies, other imports, `ctime`,
+`_tzset`, or OS APIs. Before invocation, the runtime DLL member paths, hashes,
+roles, uniqueness, and exact clean PATH resolution must match the profile. The
+VC5 resource-link path permits exactly one child: the sealed absolute
+`CVTRES.EXE`; a missing, additional, or differently resolved runtime DLL or
+child fails closed, as do reordered/duplicate PATH entries, ambiguity, early
+entry, unexpected debug state, timeout, retry, or output selection.
+
+Normal final-build linking remains the default. The qualified path is opt-in
+only with the exact successful receipt/profile/bundle plus retail epoch; it
+substitutes only link-process invocation and keeps the ordinary raw resource,
+PE, and whole-file SHA-256 comparisons authoritative. Qualification proves only
+the named provider/bundle contract. Two independently clean raw-identical
+retail-timestamp builds and the unrestricted final gate remain required.
+
 To census ordinary compiler failures without linking while required order
 targets are active, run `python tools/recoil.py verify final-build --
 --compile-only --keep-going --compile-only-skip-linked-order`. This explicit
@@ -268,8 +356,8 @@ The unrestricted final-validation command above never uses this option.
 Use:
 
 ```powershell
-python tools/recoil.py progress status
 python tools/recoil.py progress next --json
+python tools/recoil.py progress status
 python tools/recoil.py progress audit --scope all --strict
 ```
 

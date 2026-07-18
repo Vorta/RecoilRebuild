@@ -3,11 +3,11 @@
   "issues": [
     {
       "id": "WSI-20260716-001",
-      "status": "open",
+      "status": "resolved",
       "kind": "tool-error",
       "severity": "high",
       "created": "2026-07-16T23:53:00Z",
-      "updated": "2026-07-16T23:53:00Z",
+      "updated": "2026-07-17T20:41:33Z",
       "summary": "Structured source-worker handoff records unsupported audit function-docblocks command",
       "area": "tools/recoil.py",
       "impact": "The source worker must stop before guards and linked validation even after the raw authored-order gate passes, because the generated exact validation envelope cannot be executed.",
@@ -20,18 +20,24 @@
           "at": "2026-07-16T23:53:00Z",
           "action": "created",
           "note": "Issue recorded for future agent tooling/process repair."
+        },
+        {
+          "at": "2026-07-17T20:41:33Z",
+          "action": "resolved",
+          "note": "Added a narrowly scoped gateway compatibility translation for the structured legacy command audit function-docblocks --root <path>. It now invokes the canonical docblock backend with --path without changing canonical commands or weakening the audit. Added CLI translation/narrowness coverage and agent-surface recognition coverage. The exact reproduction passes, 122 focused tests pass, and strict agent-surface audit passes."
         }
       ],
       "actual": "progress handoff emitted python tools/recoil.py audit function-docblocks --root <path>, while the live vocabulary only exposes audit docblocks --path <path>. The exact recorded command exits 1.",
-      "repro": "python tools/recoil.py audit function-docblocks --root src/Battlesport/hud.cpp"
+      "repro": "python tools/recoil.py audit function-docblocks --root src/Battlesport/hud.cpp",
+      "resolution": "Added a narrowly scoped gateway compatibility translation for the structured legacy command audit function-docblocks --root <path>. It now invokes the canonical docblock backend with --path without changing canonical commands or weakening the audit. Added CLI translation/narrowness coverage and agent-surface recognition coverage. The exact reproduction passes, 122 focused tests pass, and strict agent-surface audit passes."
     },
     {
       "id": "WSI-20260716-002",
-      "status": "open",
+      "status": "resolved",
       "kind": "tool-error",
       "severity": "high",
       "created": "2026-07-16T23:57:49Z",
-      "updated": "2026-07-16T23:57:49Z",
+      "updated": "2026-07-17T20:44:02Z",
       "summary": "Structured handoffs also record unsupported audit guard commands and obsolete raw-assembly allowlist path",
       "area": "tools/recoil.py",
       "impact": "After the docblock alias repair, the same source-worker handoff still stops before guards/link because audit modern-cpp, audit source-shape, audit source-placement, and audit raw-assembly are not registered; the raw-assembly command also names a nonexistent tools/raw_assembly_allowlist.json.",
@@ -44,10 +50,16 @@
           "at": "2026-07-16T23:57:49Z",
           "action": "created",
           "note": "Issue recorded for future agent tooling/process repair."
+        },
+        {
+          "at": "2026-07-17T20:44:02Z",
+          "action": "resolved",
+          "note": "Confirmed and regression-protected narrow compatibility routing for all four recorded structured guard spellings: audit modern-cpp, audit source-shape, audit source-placement, and audit raw-assembly. Only the exact legacy raw-assembly alias translates tools/raw_assembly_allowlist.json to .agent/RAW_ASSEMBLY_ALLOWLIST.txt; canonical guard invocations and alternate paths remain unchanged. Added agent-surface coverage for all four aliases. All four reproductions pass, 123 focused tests pass, and strict agent-surface audit passes."
         }
       ],
       "actual": "The tracker contains four occurrences of each stale audit guard spelling and obsolete allowlist path. Exact repro python tools/recoil.py audit modern-cpp --root src exits 1, while canonical commands are under guard and the live allowlist is .agent/RAW_ASSEMBLY_ALLOWLIST.txt.",
-      "repro": "python tools/recoil.py audit modern-cpp --root src"
+      "repro": "python tools/recoil.py audit modern-cpp --root src",
+      "resolution": "Confirmed and regression-protected narrow compatibility routing for all four recorded structured guard spellings: audit modern-cpp, audit source-shape, audit source-placement, and audit raw-assembly. Only the exact legacy raw-assembly alias translates tools/raw_assembly_allowlist.json to .agent/RAW_ASSEMBLY_ALLOWLIST.txt; canonical guard invocations and alternate paths remain unchanged. Added agent-surface coverage for all four aliases. All four reproductions pass, 123 focused tests pass, and strict agent-surface audit passes."
     },
     {
       "id": "WSI-20260717-001",
@@ -115,6 +127,3206 @@
       "repro": "Run progress audit --scope all --strict after any later final-build overwrites an accepted build/vc5-final linked-order receipt; audit reports evidence.artifact.size-drift and hash-drift.",
       "evidence": "sha256:1c66d14ec16895ae73e5ab7f68e7f2607cd42a9c3367831c4ac578a8294ed4a1",
       "resolution": "Resolved: progress evidence import-authored-order now snapshots the validated producer receipt into a SHA-256-addressed immutable build/reconstruction-evidence path only after revision/SHA guards pass; dry-run performs no write, destination collisions are non-overwriting failures, and accepted evidence binds the snapshot. Focused/full progress and VC5-build tests, strict progress audit, strict agent-surface audit, and doctor --quick --binja pass."
+    },
+    {
+      "id": "WSI-20260717-003",
+      "status": "resolved",
+      "kind": "tool-error",
+      "severity": "high",
+      "created": "2026-07-17T14:27:21Z",
+      "updated": "2026-07-17T14:32:23Z",
+      "summary": "HUD linked-order validation uses four /Ob1 profiles that final-build compiles as manifest-default /Ob0",
+      "area": "tools/_recoil/config/vc5_final_build.json",
+      "impact": "Current cursor R238/R239 cannot evaluate the governed NOICF or ICF linked-order gate after its raw source gate passes; the final-build provenance guard stops before linked-order evaluation.",
+      "next_action": "Add the four evidence-backed vc5_o2_ob1_md_gx_facs source_compile_profiles to vc5_final_build.json, add focused tests that bind linked-order contract profiles to final-build effective profiles, run provenance/unit/agent-surface/infrastructure checks, then retry the exact R239 handoff from its first command.",
+      "commands": [],
+      "files": [],
+      "tags": [],
+      "history": [
+        {
+          "at": "2026-07-17T14:27:21Z",
+          "action": "created",
+          "note": "Issue recorded for future agent tooling/process repair."
+        },
+        {
+          "at": "2026-07-17T14:32:23Z",
+          "action": "resolved",
+          "note": "Canonical final-build now assigns vc5_o2_ob1_md_gx_facs to hud.cpp, RecoilApp.cpp, zui.cpp, and fmv_script.cpp; focused tests prove exact HUD linked-order provenance and reject /Ob0 drift. Parent independently passed 70 VC5 build tests, strict provenance, strict agent-surface, and infrastructure doctor."
+        }
+      ],
+      "actual": "hud_404ca0_415ab0_authored_order declares vc5_o2_ob1_md_gx_facs for hud.cpp, RecoilApp.cpp, zui.cpp, and fmv_script.cpp, but vc5_final_build.json configures none of those source profiles, so all four compile as manifest-default /O2 /Ob0 and the immutable R239 NOICF receipt fails provenance.",
+      "repro": "python tools/recoil.py verify final-build -- --no-pe-compare --link-profile vc5sp3_ref_noicf --order-target hud_404ca0_415ab0_linked_authored_order --order-receipt-dir build/reconstruction-evidence/runs/2026-07-17/order_435e80_dialoghost_physical_host_source_worker_r239/noicf",
+      "resolution": "Canonical final-build now assigns vc5_o2_ob1_md_gx_facs to hud.cpp, RecoilApp.cpp, zui.cpp, and fmv_script.cpp; focused tests prove exact HUD linked-order provenance and reject /Ob0 drift. Parent independently passed 70 VC5 build tests, strict provenance, strict agent-surface, and infrastructure doctor."
+    },
+    {
+      "id": "WSI-20260717-004",
+      "status": "resolved",
+      "kind": "tool-error",
+      "severity": "high",
+      "created": "2026-07-17T15:38:29Z",
+      "updated": "2026-07-17T16:07:43Z",
+      "summary": "NOICF HUD diagnostic incorrectly gates post-ICF block precedence",
+      "area": "tools/vc5_verify_targets/hud_404ca0_415ab0_linked_authored_order.json and linked-order verification mode",
+      "impact": "The exact DialogHost RecoilApp host experiment cannot reach its required ordinary ICF test: a complete REF+NOICF link passes controlled presence, distinctness, RecoilApp object provenance, and relative order, but the shared post-ICF HUD boundary predicate fails on 26 deliberately unfolded fold-family participants and stops command 9.",
+      "next_action": "Add a focused, explicitly diagnostic NOICF target/mode that keeps source/raw/profile guards and blocks on complete link, exact controlled presence, distinct candidate addresses, RecoilApp.obj selected contributions, no hud.obj controlled contribution, and MainMenuTransition-before-DialogHost; report ICF-dependent boundary offenders non-blockingly. Keep the existing ordinary REF+ICF target unchanged and blocking. Add focused regression tests and rerun the exact experiment.",
+      "commands": [],
+      "files": [],
+      "tags": [],
+      "history": [
+        {
+          "at": "2026-07-17T15:38:29Z",
+          "action": "created",
+          "note": "Issue recorded for future agent tooling/process repair."
+        },
+        {
+          "at": "2026-07-17T16:07:43Z",
+          "action": "resolved",
+          "note": "Added the fail-closed diagnostic REF+NOICF HUD overlay hud_dialoghost_pair_ref_noicf_diagnostic with structured causal boundary-offender proof. The controlled identities remain blocking for exact presence, uniqueness, RecoilApp.obj selected contribution, hud.obj exclusion, distinctness, and relative order. Boundary/fold geometry is nonblocking only when every proven crossing is an explicit non-full-order ICF fold member; unique, full-order-gating, non-folded, unresolved, unclassified, mixed, or incomplete proof remains blocking. The ordinary ICF target is hash-unchanged. Parent independently verified 228 unit tests, strict provenance for 33 profiles/1415 manifests, strict agent-surface, and all 9 infrastructure checks."
+        }
+      ],
+      "actual": "R243 command 8 validly selected MainMenuTransition at 0x4373d0 and DialogHost at 0x437420 from RecoilApp.obj in order, yet returned block_precedence_passed=false/boundary_sentinels_passed=false because the target manifest describes an after-/OPT:REF,ICF physical quotient while the invocation used /OPT:NOICF. Pro R244 independently ALLOWs a narrow diagnostic NOICF mode followed by the unchanged blocking ICF target.",
+      "repro": "Apply only the R227 include-host move; run the R243 commands 1-7; then run python tools/recoil.py verify final-build -- --no-pe-compare --link-profile vc5sp3_ref_noicf --order-target hud_404ca0_415ab0_linked_authored_order --order-receipt-dir build/reconstruction-evidence/runs/2026-07-17/order_435e80_dialoghost_physical_host_source_worker_r243/noicf. See R243 result_report.md and the linked-order receipt.",
+      "resolution": "Added the fail-closed diagnostic REF+NOICF HUD overlay hud_dialoghost_pair_ref_noicf_diagnostic with structured causal boundary-offender proof. The controlled identities remain blocking for exact presence, uniqueness, RecoilApp.obj selected contribution, hud.obj exclusion, distinctness, and relative order. Boundary/fold geometry is nonblocking only when every proven crossing is an explicit non-full-order ICF fold member; unique, full-order-gating, non-folded, unresolved, unclassified, mixed, or incomplete proof remains blocking. The ordinary ICF target is hash-unchanged. Parent independently verified 228 unit tests, strict provenance for 33 profiles/1415 manifests, strict agent-surface, and all 9 infrastructure checks."
+    },
+    {
+      "id": "WSI-20260717-005",
+      "status": "resolved",
+      "kind": "tool-error",
+      "severity": "high",
+      "created": "2026-07-17T16:42:36Z",
+      "updated": "2026-07-17T18:30:26Z",
+      "summary": "Diagnostic NOICF target is invalidated by unrelated mandatory post-ICF targets",
+      "area": "tools/_recoil/commands/vc5_build.py final-build required-order routing and receipts",
+      "impact": "The manifest-authorized HUD REF+NOICF diagnostic passes completely, but final-build still exits 1 because it automatically evaluates ordinary mandatory CAbout/AINet post-ICF targets on the intentionally unfolded NOICF image. This makes the required hash-bound ICF follow-up unreachable without bypassing fail-closed command semantics.",
+      "next_action": "Implement manifest-authorized diagnostic-target isolation before target evaluation. Require diagnostic_only, authored scope, recognized homogeneous diagnostic kind, exact profile/flags, and no ordinary explicit target. Evaluate only selected diagnostic targets; inventory every mandatory target as not_evaluated_in_diagnostic_link_mode with null pass state and no receipt. Emit distinct acceptance-ineligible diagnostic summary fields. Under subsequent vc5sp3_ref_icf reuse-compile, disable isolation, prove compile/source/object binding, restore every mandatory target plus unchanged ordinary HUD target, and block normally. Add all R246 fail-open negatives; do not add a generic skip flag.",
+      "commands": [],
+      "files": [],
+      "tags": [],
+      "history": [
+        {
+          "at": "2026-07-17T16:42:36Z",
+          "action": "created",
+          "note": "Issue recorded for future agent tooling/process repair."
+        },
+        {
+          "at": "2026-07-17T18:30:26Z",
+          "action": "resolved",
+          "note": "Added fail-closed, manifest-authorized diagnostic NOICF target isolation. Only recognized authored REF+NOICF diagnostic targets are evaluated; mandatory targets remain inventoried and explicitly unevaluated, all acceptance eligibility is false, and ordinary REF+ICF restores and enforces the mandatory target ledger. Parent independently passed 233 VC5 build/verify tests, strict provenance, strict agent-surface audit, and infrastructure doctor 9/9."
+        }
+      ],
+      "actual": "R245 selected target hud_dialoghost_pair_ref_noicf_diagnostic passed with exact controlled providers/order and complete 26-offender fold proof. The wrapper also evaluated mandatory cabout_retail_interval_linked_order under NOICF; presence/order passed but boundary failed, so required_order_targets_passed=false and command exit 1. Fresh Pro R246 ALLOWs manifest-authorized closed-world isolation only for recognized diagnostic targets, inventories ordinary mandatory targets as not evaluated, marks diagnostic results acceptance-ineligible, and requires the next ICF reuse link to restore the complete mandatory ledger.",
+      "repro": "Apply the exact R227 DialogHost include-host move and run the R245 command 8: python tools/recoil.py verify final-build -- --no-pe-compare --link-profile vc5sp3_ref_noicf --order-target hud_dialoghost_pair_ref_noicf_diagnostic --order-receipt-dir build/reconstruction-evidence/runs/2026-07-17/order_435e80_dialoghost_physical_host_source_worker_r245/noicf. The selected HUD receipt passes, but final_build_summary.json fails due ordinary mandatory CAbout under NOICF.",
+      "resolution": "Added fail-closed, manifest-authorized diagnostic NOICF target isolation. Only recognized authored REF+NOICF diagnostic targets are evaluated; mandatory targets remain inventoried and explicitly unevaluated, all acceptance eligibility is false, and ordinary REF+ICF restores and enforces the mandatory target ledger. Parent independently passed 233 VC5 build/verify tests, strict provenance, strict agent-surface audit, and infrastructure doctor 9/9."
+    },
+    {
+      "id": "WSI-20260717-006",
+      "status": "resolved",
+      "kind": "tool-error",
+      "severity": "high",
+      "created": "2026-07-17T18:32:23Z",
+      "updated": "2026-07-17T18:54:08Z",
+      "summary": "Diagnostic linked-order overlay is rejected as inline source",
+      "area": "tools/_recoil/commands/vc5_manifest_source_guard.py",
+      "impact": "doctor --quick --binja fails and blocks the current R247 authored-order source experiment even though the manifest is a linked-order-only overlay that inherits an existing production-source-backed base target",
+      "next_action": "Teach the VC manifest source guard to recognize only a validated linked-order diagnostic overlay with a resolvable production-source-backed base target as linked-only, add positive and fail-closed negative tests, then rerun focused tests, strict provenance, strict agent-surface, infrastructure doctor, and doctor --quick --binja",
+      "commands": [],
+      "files": [],
+      "tags": [],
+      "history": [
+        {
+          "at": "2026-07-17T18:32:23Z",
+          "action": "created",
+          "note": "Issue recorded for future agent tooling/process repair."
+        },
+        {
+          "at": "2026-07-17T18:54:08Z",
+          "action": "resolved",
+          "note": "VC manifest source guard now recognizes only parsed, closed-world linked-order diagnostic overlays with a valid non-overlay linked-interval base and matching binary/profile, while rejecting compile/mixed/unknown payload and header shadows. Parent independently passed 258 focused/integration tests, manifest guard, strict provenance, strict agent-surface, infrastructure doctor, and quick Binary Ninja doctor."
+        }
+      ],
+      "actual": "tools/vc5_verify_targets/hud_dialoghost_pair_ref_noicf_diagnostic.json has no compile source by design; it contains linked_order_base_target plus a fail-closed diagnostic overlay, but manifest_policy_debt treats every non-interval manifest without source_from as inline source debt",
+      "repro": "python tools/recoil.py doctor --quick --binja; first check fails with inline-manifest-source: tools/vc5_verify_targets/hud_dialoghost_pair_ref_noicf_diagnostic.json",
+      "resolution": "VC manifest source guard now recognizes only parsed, closed-world linked-order diagnostic overlays with a valid non-overlay linked-interval base and matching binary/profile, while rejecting compile/mixed/unknown payload and header shadows. Parent independently passed 258 focused/integration tests, manifest guard, strict provenance, strict agent-surface, infrastructure doctor, and quick Binary Ninja doctor."
+    },
+    {
+      "id": "WSI-20260717-007",
+      "status": "resolved",
+      "kind": "tool-error",
+      "severity": "high",
+      "created": "2026-07-17T18:40:03Z",
+      "updated": "2026-07-17T18:54:08Z",
+      "summary": "Object-byte verifier handoff is rejected by legacy order-verifier audit",
+      "area": "tools/_recoil/lib/progress.py",
+      "impact": "The scheduler exposes parallel_authored_object_byte_cursor 0x401180 and the structured work item passes strict progress audit, but progress handoff --authored-object-byte cannot generate the required verifier packet, blocking the new subordinate evidence-preparation lane",
+      "next_action": "Exclude parallel-authored-object-byte from the legacy authored-order verifier audit, retain the specialized authored-object-byte audit, add end-to-end handoff generation and fail-closed tests, and rerun focused progress/object-byte tests plus strict audits and doctor",
+      "commands": [],
+      "files": [],
+      "tags": [],
+      "history": [
+        {
+          "at": "2026-07-17T18:40:03Z",
+          "action": "created",
+          "note": "Issue recorded for future agent tooling/process repair."
+        },
+        {
+          "at": "2026-07-17T18:54:08Z",
+          "action": "resolved",
+          "note": "Legacy authored-order verifier audit now excludes only parallel-authored-object-byte packets; the specialized object-byte audit remains fail-closed. Parent independently passed 97 progress/object-byte tests, strict progress audit, live authored-object-byte handoff generation, strict agent-surface, infrastructure doctor, and quick Binary Ninja doctor."
+        }
+      ],
+      "actual": "audit_authored_order_verifier excludes accepted-prefix-fallback and parallel-authored-byte but not parallel-authored-object-byte, so it incorrectly requires verify vc5 object-order and verify final-build authored-link commands on an object-only packet whose specialized audit requires verify authored-object-byte and forbids whole-project final builds",
+      "repro": "python tools/recoil.py progress handoff --authored-object-byte --json returns work.handoff.authored-object-command and work.handoff.authored-linked-command for recoil:work:authored_object_byte_401180_direct_r1",
+      "resolution": "Legacy authored-order verifier audit now excludes only parallel-authored-object-byte packets; the specialized object-byte audit remains fail-closed. Parent independently passed 97 progress/object-byte tests, strict progress audit, live authored-object-byte handoff generation, strict agent-surface, infrastructure doctor, and quick Binary Ninja doctor."
+    },
+    {
+      "id": "WSI-20260717-008",
+      "status": "resolved",
+      "kind": "tool-error",
+      "severity": "high",
+      "created": "2026-07-17T20:04:59Z",
+      "updated": "2026-07-17T20:51:07Z",
+      "summary": "Agent-surface audit accepts retired text-next and obsolete globally sequential pipeline guidance",
+      "area": "tools/_recoil/commands/agent_surface_audit.py",
+      "impact": "Fresh agents can select the wrong scheduler entrypoint, serialize independent authored order and byte work, or suppress safe byte-lane parallelism, slowing source-faithful exact-executable reconstruction and risking incorrect task priority.",
+      "next_action": "Surgically correct the normative preambles/remediation text, register those surfaces in the strict audit, and add negative fixtures for text next and the obsolete sequential model while preserving valid lane-local sequential wording.",
+      "commands": [],
+      "files": [
+        "README.md",
+        ".codex/skills/recoil-binary-ninja-reconstruction/SKILL.md",
+        ".codex/skills/recoil-source-model-recovery/SKILL.md",
+        "tools/_recoil/commands/agent_surface_audit.py"
+      ],
+      "tags": [
+        "agent-surface",
+        "scheduler"
+      ],
+      "history": [
+        {
+          "at": "2026-07-17T20:04:59Z",
+          "action": "created",
+          "note": "Issue recorded for future agent tooling/process repair."
+        },
+        {
+          "at": "2026-07-17T20:51:07Z",
+          "action": "resolved",
+          "note": "Corrected the false-green agent-surface audit and all named normative surfaces. README and the Binary Ninja/source-model skills now describe the canonical five-stage scheduler with independent authored-order/authored-byte lanes, full-order restart, linked-byte join, and final validation. Removed normative text next guidance while preserving lane-local sequential and callee-first wording. Strict scanning now includes these surfaces, with negative and positive fixtures. 127 focused tests, strict audit, infrastructure doctor, skill validation, and role TOML parsing pass."
+        }
+      ],
+      "expected": "Strict agent-surface auditing must reject nonexistent text next and any normative description that omits the independent authored-byte lane, full-order restart, or linked-byte join.",
+      "workaround": "Use root AGENTS.md, the retail reproduction runbook, and progress next; this is safe because it does not weaken any evidence, source-shape, provider, owner, order, byte, or tier gate.",
+      "actual": "README.md, recoil-binary-ninja-reconstruction, recoil-source-model-recovery, and audit remediation strings contain retired text next or obsolete globally sequential pipeline wording, while focused strict agent-surface audits return success.",
+      "repro": "python tools/recoil.py text next --help fails; python tools/recoil.py audit agent-surface --path README.md --strict and focused skill audits do not report the stale guidance.",
+      "evidence": "sha256:194acd247a635b93cd6a34a1f8121101d74232de54886d8f9b97f966aaf8dd0b",
+      "resolution": "Corrected the false-green agent-surface audit and all named normative surfaces. README and the Binary Ninja/source-model skills now describe the canonical five-stage scheduler with independent authored-order/authored-byte lanes, full-order restart, linked-byte join, and final validation. Removed normative text next guidance while preserving lane-local sequential and callee-first wording. Strict scanning now includes these surfaces, with negative and positive fixtures. 127 focused tests, strict audit, infrastructure doctor, skill validation, and role TOML parsing pass."
+    },
+    {
+      "id": "WSI-20260717-009",
+      "status": "resolved",
+      "kind": "tool-error",
+      "severity": "high",
+      "created": "2026-07-17T20:37:10Z",
+      "updated": "2026-07-17T21:04:19Z",
+      "summary": "Cross-link-profile final-build reuse resolves a stale compile receipt",
+      "area": "tools/_recoil/commands/vc5_build.py",
+      "impact": "The required identical-object-set REF+NOICF diagnostic followed by ordinary REF+ICF validation cannot reach the ICF link, so the current authored-order dependency remains untestable despite a valid diagnostic compile bundle.",
+      "next_action": "Add explicit cross-link-profile compile-bundle selection with fail-closed identity checks and a regression that compiles once under NOICF, reuses that exact bundle under ICF without TU recompilation, and proves only the link profile changed.",
+      "commands": [],
+      "files": [
+        "tools/_recoil/commands/vc5_build.py",
+        "tests/tools"
+      ],
+      "tags": [
+        "final-build",
+        "compile-bundle",
+        "authored-order"
+      ],
+      "history": [
+        {
+          "at": "2026-07-17T20:37:10Z",
+          "action": "created",
+          "note": "Issue recorded for future agent tooling/process repair."
+        },
+        {
+          "at": "2026-07-17T21:04:19Z",
+          "action": "resolved",
+          "note": "Added explicit --compile-bundle-dir support for diagnostic final-build pairs, restricted to named children under build/vc5-probes/full-link/compile-bundles. Version-2 receipts bind source/header state, compile profiles, toolchain, object/resource outputs, libraries, and non-profile link context. Only the explicit vc5sp3_ref_noicf to vc5sp3_ref_icf delta is allowed; missing, stale, changed, implicit, legacy, and unauthorized bundles fail closed. Regression coverage proves compile/resource run once and the consumer only links. 212 focused tests, syntax, parser help, strict audit, and infrastructure doctor pass."
+        }
+      ],
+      "expected": "An explicit immutable compile/object/resource bundle produced once must be reusable across authorized NOICF-to-ICF link-profile changes while preserving source, dependency, compiler profile, toolchain, object, and resource identity checks; only the link profile may differ.",
+      "workaround": "None that preserves the one-shot packet and identical-object-set gate. Source was restored and R247 was closed; no retry or alternate source experiment was attempted.",
+      "actual": "R247 NOICF completed and wrote a current compile receipt under the profile-specific source-map-canonical-vc5sp3_ref_noicf root. The mandated ICF command with --reuse-compile resolved the separate older source-map-canonical-vc5sp3_ref_icf receipt and failed before link with stale compile context/source/header/profile state.",
+      "repro": "Run the recorded R247 NOICF command, then run its ICF --reuse-compile follow-up. The second command exits before linking because compile_bundle_dir is unset and compile_bundle_receipt_path falls back to the link-profile-specific build root.",
+      "evidence": "sha256:2f281c58e9be9418b8df7fb350aab9aedd6bc7d4f174be10a1bd776a9d929469",
+      "resolution": "Added explicit --compile-bundle-dir support for diagnostic final-build pairs, restricted to named children under build/vc5-probes/full-link/compile-bundles. Version-2 receipts bind source/header state, compile profiles, toolchain, object/resource outputs, libraries, and non-profile link context. Only the explicit vc5sp3_ref_noicf to vc5sp3_ref_icf delta is allowed; missing, stale, changed, implicit, legacy, and unauthorized bundles fail closed. Regression coverage proves compile/resource run once and the consumer only links. 212 focused tests, syntax, parser help, strict audit, and infrastructure doctor pass."
+    },
+    {
+      "id": "WSI-20260717-010",
+      "status": "resolved",
+      "kind": "tool-error",
+      "severity": "high",
+      "created": "2026-07-17T21:59:38Z",
+      "updated": "2026-07-18T09:47:42Z",
+      "summary": "Final VC5 build cannot yet control retail PE timestamp without post-link mutation",
+      "area": "tools/_recoil/commands/vc5_build.py",
+      "impact": "Whole-file deterministic and retail-identical final acceptance is impossible until the original VC5 LINK.EXE directly emits the retail TimeDateStamp under a controlled, evidenced clock.",
+      "next_action": "Add parser-bound diagnostic equal-except-PE-TimeDateStamp reporting without weakening raw failure; design and qualify a hermetic VM guest-clock or narrowly audited process-local wall-clock provider so the exact hashed VC5 LINK.EXE directly emits the retail timestamp; prove two raw-identical clean builds and retain final raw memcmp/SHA acceptance only.",
+      "commands": [],
+      "files": [],
+      "tags": [],
+      "history": [
+        {
+          "at": "2026-07-17T21:59:38Z",
+          "action": "created",
+          "note": "Issue recorded for future agent tooling/process repair."
+        },
+        {
+          "at": "2026-07-18T09:47:42Z",
+          "action": "resolved",
+          "note": "Superseded by WSI-20260718-003. The parser-bound PE/COFF/MAP timestamp diagnostic and immutable receipt version 2 are implemented, so the original tool-error next action is complete. New r2 evidence disproves the historical timestamp-only candidate-pair premise and the remaining unqualified guest/provider environment is tracked separately without weakening raw memcmp/SHA authority."
+        }
+      ],
+      "actual": "Two clean unrestricted builds from equal source/toolchain inputs linked successfully and differed in exactly one executable byte at 0xC8, inside PE COFF TimeDateStamp [0xC8,0xCC); raw object and MAP artifacts also varied. Neither candidate matched retail. Evidence id sha256:34bae396a991b2ad761a0fc3d48dd93404e23b2682be42995bbdc7177c4014dc.",
+      "repro": "python tools/recoil.py verify final-determinism --build-a build/vc5-determinism/2026-07-17-parent-a --build-b build/vc5-determinism/2026-07-17-parent-b --receipt-out build/reconstruction-evidence/runs/2026-07-17/final_determinism_parent_r1/receipt.json --clean",
+      "resolution": "Superseded by WSI-20260718-003. The parser-bound PE/COFF/MAP timestamp diagnostic and immutable receipt version 2 are implemented, so the original tool-error next action is complete. New r2 evidence disproves the historical timestamp-only candidate-pair premise and the remaining unqualified guest/provider environment is tracked separately without weakening raw memcmp/SHA authority."
+    },
+    {
+      "id": "WSI-20260718-001",
+      "status": "resolved",
+      "kind": "tool-error",
+      "severity": "high",
+      "created": "2026-07-18T09:25:04Z",
+      "updated": "2026-07-18T13:13:10Z",
+      "summary": "Scheduler launchability is contradictory and omits symmetric resource leases",
+      "area": "tools/_recoil/lib/progress.py and scheduler work-packet commands",
+      "impact": "A verifier can consume source, headers, MAP, candidate, or canonical-build inputs while another packet writes part of that evidence closure; active parallel work can also overlap a newly launchable primary packet.",
+      "next_action": "Use one parent-assigned recoil_tool_maintainer to implement the approved packet-state, resource-claim, repair/reservation, snapshot, freshness, and regression-test changes without altering evidence gates.",
+      "commands": [],
+      "files": [],
+      "tags": [
+        "scheduler",
+        "concurrency",
+        "evidence-safety"
+      ],
+      "history": [
+        {
+          "at": "2026-07-18T09:25:04Z",
+          "action": "created",
+          "note": "Issue recorded for future agent tooling/process repair."
+        },
+        {
+          "at": "2026-07-18T13:01:02Z",
+          "action": "resolved",
+          "note": "Implemented packet contract v2 with deterministic launch plans, normalized symmetric leases, sealed scope and agent-surface digests, non-expiring reservations, repair/close lifecycle, snapshot and freshness gates, transitive execution-input closure, hierarchy-aware path conflicts, stale full-byte fail-closed arbitration, and regression tests. Exercised cleanly at rev 632-636: reserved recoil:work:authored_object_byte_401580_direct_r2 with 136 traced dependencies and toolchain/reference/profile claims; one isolated VC5SP3 verifier run produced receipt sha256:2367b8436b7212d0aea1fec4f5ef8830aa9710777654e60ef7db2e264c6d9a9c; imported evidence sha256:60d9117ecbccd5f34a3b3e4cff951bccad35dcfdcdb431c5e5e577c1ef146ad6; accepted only object_byte; closed/released packet; progress next advanced subordinate object cursor to 0x4016a0 with no active conflict. The earlier lease-violating r1 result remains abandoned and unaccepted."
+        },
+        {
+          "at": "2026-07-18T13:06:39Z",
+          "action": "reopened",
+          "note": "Full infrastructure validation after the initial resolution exposed three scheduler regressions: complete-pipeline launchability reads uninitialized primary_work, and active full-authored-byte non-preemption is masked by generic read-write-conflict in two arbitration tests. WSI-20260718-001 remains open until these paths are repaired and all 1,040 tool tests plus doctor --infrastructure-only pass."
+        },
+        {
+          "at": "2026-07-18T13:13:10Z",
+          "action": "resolved",
+          "note": "Completed packet contract v2 and scheduler safety repair: deterministic launch plans; normalized symmetric hierarchy-aware leases; sealed scope/agent-surface digests; non-expiring reservations; repair/close lifecycle; snapshot/freshness gates; transitive execution-input closure; stale full-byte fail-closed arbitration; completed-pipeline initialization; and active-peer-specific nonpreemption precedence while retaining conflict diagnostics. Clean live exercise at tracker rev 632-636 reserved recoil:work:authored_object_byte_401580_direct_r2 with 136 dependencies, produced receipt sha256:2367b8436b7212d0aea1fec4f5ef8830aa9710777654e60ef7db2e264c6d9a9c, imported evidence sha256:60d9117ecbccd5f34a3b3e4cff951bccad35dcfdcdb431c5e5e577c1ef146ad6, accepted only object_byte, closed/released the packet, and advanced the subordinate cursor to 0x4016a0. The lease-violating r1 result remains abandoned/unaccepted. Independent post-fix validation passed all 1,040 tools tests with zero failures/errors/skips; doctor --infrastructure-only passed 9/9; strict agent-surface, tracker, owner, metadata, issue, and workspace audits passed."
+        }
+      ],
+      "expected": "Cursor, work-item, packet, prerequisite, attempt, and snapshot state are distinct; launchability is derived; every packet carries explicit read/write resource claims; conflicts are symmetric; blocked mechanical work returns one exact repair command; active work is never preempted.",
+      "workaround": "Parent manually serializes source, canonical builds, verifiers, BN mutation, and overlapping lane packets; this is safe but does not scale and is vulnerable to omission.",
+      "actual": "The current authored-byte work item is blocked for missing synchronized artifacts while progress next reports packet_state ready, conflicts empty, and required_parent_action resolve-conflict. Conflict derivation does not compare writes against peer read-only paths or explicitly model canonical-build readers.",
+      "repro": "Run progress next --json and progress show recoil:work:authored_byte_401060_direct_r1 --json, then inspect _work_conflicts and primary-versus-parallel arbitration.",
+      "resolution": "Completed packet contract v2 and scheduler safety repair: deterministic launch plans; normalized symmetric hierarchy-aware leases; sealed scope/agent-surface digests; non-expiring reservations; repair/close lifecycle; snapshot/freshness gates; transitive execution-input closure; stale full-byte fail-closed arbitration; completed-pipeline initialization; and active-peer-specific nonpreemption precedence while retaining conflict diagnostics. Clean live exercise at tracker rev 632-636 reserved recoil:work:authored_object_byte_401580_direct_r2 with 136 dependencies, produced receipt sha256:2367b8436b7212d0aea1fec4f5ef8830aa9710777654e60ef7db2e264c6d9a9c, imported evidence sha256:60d9117ecbccd5f34a3b3e4cff951bccad35dcfdcdb431c5e5e577c1ef146ad6, accepted only object_byte, closed/released the packet, and advanced the subordinate cursor to 0x4016a0. The lease-violating r1 result remains abandoned/unaccepted. Independent post-fix validation passed all 1,040 tools tests with zero failures/errors/skips; doctor --infrastructure-only passed 9/9; strict agent-surface, tracker, owner, metadata, issue, and workspace audits passed."
+    },
+    {
+      "id": "WSI-20260718-002",
+      "status": "resolved",
+      "kind": "instruction-gap",
+      "severity": "high",
+      "created": "2026-07-18T09:25:16Z",
+      "updated": "2026-07-18T11:55:36Z",
+      "summary": "Strict agent-surface audit misses acceptance-relevant semantic drift",
+      "area": "AGENTS.md, .codex/agents, .codex/skills, and focused reconstruction docs",
+      "impact": "Agents can over-gate compiler-generated lifecycle rows, treat harmless raw definitions as blocking, omit authored_order_role, route row classification through owner operations, suppress independent authored-byte work, race one live Binary Ninja database, or waste slots waiting for serialized Pro calls.",
+      "next_action": "Apply the bounded role/skill/doc corrections, then add machine-readable policy and semantic/current-metadata audit coverage through recoil_tool_maintainer.",
+      "commands": [],
+      "files": [],
+      "tags": [
+        "agent-surface",
+        "instruction-drift",
+        "evidence-safety"
+      ],
+      "history": [
+        {
+          "at": "2026-07-18T09:25:16Z",
+          "action": "created",
+          "note": "Issue recorded for future agent tooling/process repair."
+        },
+        {
+          "at": "2026-07-18T11:55:36Z",
+          "action": "resolved",
+          "note": "Repaired and aligned the root instructions, local roles, Recoil skills, and strict semantic audit: independent authored order/byte lanes, parent-brokered content-addressed ChatGPT Pro requests, normalized resource/lease claims, exclusive Binary Ninja writer semantics, parent-only tracker mutation, subordinate object-cursor handling, and host commentary precedence. Parent and worker validation passed strict agent-surface/current-metadata audits and 1012 tools tests."
+        }
+      ],
+      "expected": "Roles and skills reference canonical policy for authored gating roles, raw extras, classifier fields/routing, cursor aliases, BN writer exclusivity, Pro single-flight, and current metadata; strict tests reject drift.",
+      "workaround": "Parent manually corrects each handoff, but fresh agents can still follow the stale local wording.",
+      "actual": "The strict surface audit passes while verifier, scaffold, provider-classifier, owner-workflow, BN-concurrency, Pro-coordination, and stale-current-address wording contradict canonical rules.",
+      "repro": "Run audit agent-surface --strict, then compare the affected surfaces against root AGENTS authored_order_role, raw-object-extra, independent-byte-lane, BN, and parent-authority rules.",
+      "resolution": "Repaired and aligned the root instructions, local roles, Recoil skills, and strict semantic audit: independent authored order/byte lanes, parent-brokered content-addressed ChatGPT Pro requests, normalized resource/lease claims, exclusive Binary Ninja writer semantics, parent-only tracker mutation, subordinate object-cursor handling, and host commentary precedence. Parent and worker validation passed strict agent-surface/current-metadata audits and 1012 tools tests."
+    },
+    {
+      "id": "WSI-20260718-003",
+      "status": "resolved",
+      "kind": "environment-blocker",
+      "severity": "high",
+      "created": "2026-07-18T09:47:32Z",
+      "updated": "2026-07-18T19:59:21Z",
+      "summary": "Exact VC5 linker clock environment remains unqualified after timestamp diagnostic completion",
+      "area": "Hermetic VC5 link environment and final clock qualification",
+      "impact": "An unrestricted retail-identical executable cannot be emitted until the exact hashed VC5 LINK.EXE runs under a qualified coherent retail-time environment, but clock control alone is not sufficient while current source/object artifacts still produce non-timestamp linked differences.",
+      "next_action": "Implement the pure qualification contract and timezone-bound MAP validation without changing normal final-build behavior; obtain a concrete hermetic guest/provider externally; then run one exclusive T/T2 qualification and, only after current object nondeterminism is controlled, two exclusive clean raw-identical retail-time builds.",
+      "commands": [],
+      "files": [],
+      "tags": [
+        "final-build",
+        "timestamp",
+        "environment"
+      ],
+      "history": [
+        {
+          "at": "2026-07-18T09:47:32Z",
+          "action": "created",
+          "note": "Issue recorded for future agent tooling/process repair."
+        },
+        {
+          "at": "2026-07-18T16:28:14Z",
+          "action": "work-packet-created",
+          "note": "Created governed packet issue:work:wsi-20260718-003-process-clock-provider-r1."
+        },
+        {
+          "at": "2026-07-18T18:52:05Z",
+          "action": "work-packet-created",
+          "note": "Created governed packet issue:work:wsi-20260718-003-real-clock-qualification-r1."
+        },
+        {
+          "at": "2026-07-18T19:06:40Z",
+          "action": "work-packet-created",
+          "note": "Created governed packet issue:work:wsi-20260718-003-clock-qualification-exec-r1."
+        },
+        {
+          "at": "2026-07-18T19:41:24Z",
+          "action": "work-packet-created",
+          "note": "Created governed packet issue:work:wsi-20260718-003-clock-qualification-r2."
+        },
+        {
+          "at": "2026-07-18T19:59:21Z",
+          "action": "resolved",
+          "note": "Resolved after the governed ready-v5 process-local VC5 linker clock qualification completed successfully. Fresh r2 bundle sha256 cae113516656d8a39044f81c9ec2f1a8876a221bcafbcb2404a4aba304645ef7 (bundle id sha256:ca5958e4c4b7d3ab174ee7247eba0d0ea15f4152a0ff4561ccbf27daa63adb45) bound exact LINK/CVTRES, 72 objects, one resource, 18 libraries, and the unique MSDIS100/MSPDB50/MSVCP50 runtime closure under the exact clean PATH. One and only one real T/T2 invocation ran at epochs 916964810 and 916964930. Atomic receipt sha256 09bff1a409d98fe506f152b9cd9918cf80668d629057e7e120fbfc7a7b8d8700 independently validates qualified=true: both candidates are 1,163,776 bytes; their only diff range is [200,202), candidate_equal_except_parsed_timestamp=true, MAP projection and stable provider outputs are equal, sealed input catalogs remain unchanged/equal, each epoch used one launcher attempt, one pre-entry MSVCRT time-IAT patch, and one exact profiled CVTRES child. Preserved r1 failure evidence remains byte-identical. This resolves the workspace clock-environment blocker only; source, function-order, byte, owner-tier, provider-final, retail-identity, and final-executable acceptance claims remain false and the ordinary reconstruction scheduler remains authoritative."
+        }
+      ],
+      "expected": "A diagnostic-only qualification contract binds an immutable linker-input bundle and exact linker/provider/guest/config hashes, proves one T and one T2 link with differences confined to the parsed PE/MAP timestamp, passes tamper controls, and later supports two clean raw-identical retail-timestamp builds without altering raw memcmp/SHA acceptance.",
+      "workaround": "Continue source/order/byte reconstruction and preserve raw failures. Link-only contract/tool work may proceed from immutable inputs, but no provider may be used or final claim made until a concrete hermetic guest or separately audited process-local provider is supplied and qualified.",
+      "actual": "Parser-bound PE, COFF-object, and MAP timestamp diagnostics and receipt version 2 already exist. No qualified guest/provider profile or receipt exists. The latest r2 pair differs at 15 executable bytes in 10 ranges, only one range intersects the PE timestamp, and 46 object files differ outside COFF timestamp fields.",
+      "repro": "Inspect final_determinism_parent_r2 receipt and the final clock/provider absence in vc5_final_build.json and vc5_build.py; do not rerun a build merely to reproduce the observed immutable receipt.",
+      "evidence": "build/reconstruction-evidence/runs/2026-07-17/final_determinism_parent_r2/receipt.json",
+      "resolution": "Resolved after the governed ready-v5 process-local VC5 linker clock qualification completed successfully. Fresh r2 bundle sha256 cae113516656d8a39044f81c9ec2f1a8876a221bcafbcb2404a4aba304645ef7 (bundle id sha256:ca5958e4c4b7d3ab174ee7247eba0d0ea15f4152a0ff4561ccbf27daa63adb45) bound exact LINK/CVTRES, 72 objects, one resource, 18 libraries, and the unique MSDIS100/MSPDB50/MSVCP50 runtime closure under the exact clean PATH. One and only one real T/T2 invocation ran at epochs 916964810 and 916964930. Atomic receipt sha256 09bff1a409d98fe506f152b9cd9918cf80668d629057e7e120fbfc7a7b8d8700 independently validates qualified=true: both candidates are 1,163,776 bytes; their only diff range is [200,202), candidate_equal_except_parsed_timestamp=true, MAP projection and stable provider outputs are equal, sealed input catalogs remain unchanged/equal, each epoch used one launcher attempt, one pre-entry MSVCRT time-IAT patch, and one exact profiled CVTRES child. Preserved r1 failure evidence remains byte-identical. This resolves the workspace clock-environment blocker only; source, function-order, byte, owner-tier, provider-final, retail-identity, and final-executable acceptance claims remain false and the ordinary reconstruction scheduler remains authoritative."
+    },
+    {
+      "id": "WSI-20260718-004",
+      "status": "resolved",
+      "kind": "improvement",
+      "severity": "high",
+      "created": "2026-07-18T12:23:32Z",
+      "updated": "2026-07-18T16:25:19Z",
+      "summary": "HUD source-shape matrix runtime is explicitly unimplemented at the current authored-order cursor",
+      "area": "tools/_recoil/commands/vc5_source_shape_matrix.py and tools/_recoil/lib/vc5_source_shape_matrix.py",
+      "impact": "The primary authored-function-order cursor 0x404ca0 cannot choose among the Pro-required A/B/C HudUiElement source-placement hypotheses without a synchronized VC5 compile/link/COFF/MAP matrix; manual manifests would violate source-policy and could overclaim source shape.",
+      "next_action": "Assign one parent-scoped recoil_tool_maintainer to implement full-vc5-source-shape-matrix-runtime, then run python tools/recoil.py verify vc5-source-shape-matrix --config tools/_recoil/config/hud_ui_element_complete_owner_source_shape_matrix.json --jobs 3 under an exclusive whole-project build reservation and broker the resulting diagnostic packet through source discovery and owner scrutiny.",
+      "commands": [],
+      "files": [],
+      "tags": [],
+      "history": [
+        {
+          "at": "2026-07-18T12:23:32Z",
+          "action": "created",
+          "note": "Issue recorded for future agent tooling/process repair."
+        },
+        {
+          "at": "2026-07-18T15:06:44Z",
+          "action": "work-packet-created",
+          "note": "Created governed packet issue:work:wsi-20260718-004-matrix-runtime-r1."
+        },
+        {
+          "at": "2026-07-18T15:44:59Z",
+          "action": "work-packet-created",
+          "note": "Created governed packet issue:work:wsi-20260718-004-reservation-preflight-r2."
+        },
+        {
+          "at": "2026-07-18T16:25:19Z",
+          "action": "resolved",
+          "note": "Resolved the missing HUD source-shape matrix capability and its reservation boundary. The implemented VC5SP3 runtime compiles 70 common TUs once, isolates parallel A/B/C projected variants, emits COFF/MAP/preprocess diagnostics, seals artifacts and inputs, validates receipts, and keeps every acceptance claim false. Reservation preflight now consumes canonical attempt_id while rejecting state/packet/claim drift. Real governed attempt 2 produced a valid typed-partial diagnostic receipt at build/vc5-probes/source-shape-matrix/hud-ui-element-complete-owner/receipt.json, SHA-256 2e3d59326f30d8891a23d265c217a016252b1ed71099aeaf5af0979e16e3a51b; receipt-only validation passes, common compilation is 70/70, variant C compiles/links, and A/B stop at the reproducible projected-TU compile error g_HudUi_InvalidateMask undeclared. That source-shape dependency is ordinary reconstruction work, not a workspace-tool defect. Tracker evidence sha256:5205bb311eeafa98d0d72909db998439b66af48412db2df889f5509d180cf070 is recorded at revision 644. No source-owner, source-block, function-order, byte, provider, tier, or final claim was made; raw diagnostic exemption applies and no Pro inference was used."
+        }
+      ],
+      "requested_change": "Implement the validated dry-run contract's compile-once common bundle, isolated parallel A/B/C affected-TU builds, final /OPT:REF /OPT:ICF links, decorated function/data COMDAT attribution, preprocess dependency catalogs, selected link groups/seams, raw extras, and immutable diagnostic cross-variant receipt. Keep every acceptance flag false and causal ICF winner history unavailable.",
+      "benefit": "Unblocks the current HUD source-model decision with reproducible hash-bound evidence while preserving production source, exact header use, owner/tier boundaries, and final-byte authority.",
+      "resolution": "Resolved the missing HUD source-shape matrix capability and its reservation boundary. The implemented VC5SP3 runtime compiles 70 common TUs once, isolates parallel A/B/C projected variants, emits COFF/MAP/preprocess diagnostics, seals artifacts and inputs, validates receipts, and keeps every acceptance claim false. Reservation preflight now consumes canonical attempt_id while rejecting state/packet/claim drift. Real governed attempt 2 produced a valid typed-partial diagnostic receipt at build/vc5-probes/source-shape-matrix/hud-ui-element-complete-owner/receipt.json, SHA-256 2e3d59326f30d8891a23d265c217a016252b1ed71099aeaf5af0979e16e3a51b; receipt-only validation passes, common compilation is 70/70, variant C compiles/links, and A/B stop at the reproducible projected-TU compile error g_HudUi_InvalidateMask undeclared. That source-shape dependency is ordinary reconstruction work, not a workspace-tool defect. Tracker evidence sha256:5205bb311eeafa98d0d72909db998439b66af48412db2df889f5509d180cf070 is recorded at revision 644. No source-owner, source-block, function-order, byte, provider, tier, or final claim was made; raw diagnostic exemption applies and no Pro inference was used."
+    },
+    {
+      "id": "WSI-20260718-005",
+      "status": "resolved",
+      "kind": "tool-error",
+      "severity": "high",
+      "created": "2026-07-18T14:38:06Z",
+      "updated": "2026-07-18T15:05:14Z",
+      "summary": "Required tool-maintainer packets cannot obtain a compliant global resource lease",
+      "area": "tools/_recoil/commands/progress_cli.py, progress work leases, and workspace issue tooling",
+      "impact": "Repository rules require every maintenance packet to carry normalized claims and a verified reservation, but issue repair packets cannot be represented or reserved and the lease command cannot perform the mandated global pre-launch check without an existing reconstruction packet id.",
+      "next_action": "Add issue-owned work packets and reservations, global lease aggregation, symmetric conflict tests, and tool-maintainer review; keep issue work outside progress next.",
+      "commands": [
+        "python tools/recoil.py progress work leases --json"
+      ],
+      "files": [
+        "tools/recoil.py",
+        "tools/_recoil",
+        ".agent/WORKSPACE_ISSUES.json"
+      ],
+      "tags": [
+        "leases",
+        "tool-maintainer",
+        "agent-surface"
+      ],
+      "history": [
+        {
+          "at": "2026-07-18T14:38:06Z",
+          "action": "created",
+          "note": "Issue recorded for future agent tooling/process repair."
+        },
+        {
+          "at": "2026-07-18T14:48:21Z",
+          "action": "work-packet-created",
+          "note": "Created governed packet issue:work:wsi-20260718-005-bootstrap-review-r1."
+        },
+        {
+          "at": "2026-07-18T15:05:14Z",
+          "action": "resolved",
+          "note": "Resolved the workspace-issue maintenance leasing gap with hash-guarded issue-owned work packets and reservations, global selector-free reconstruction-plus-issue lease inspection, globally distinct issue:work packet identities, symmetric cross-ledger conflict enforcement in both reservation directions, fail-closed incomplete-lease and claim-drift handling, strict packet/reservation lifecycle validation, and prevention of issue resolution before packet closure. Issue work remains outside progress next. Parent and delegated validation passed 169 focused tests, strict issue-ledger and agent-surface audits, a conflict-free complete global lease view, and the 9-of-9 infrastructure doctor."
+        }
+      ],
+      "expected": "Explicit issue-owned recoil_tool_maintainer and recoil_verifier packets can be dry-run/apply created, conflict-checked, reserved, inspected, and closed without entering progress next; progress work leases can aggregate all active claims without requiring a packet id.",
+      "workaround": "Parent may perform only the minimal bootstrap because compliant delegation is impossible, then must immediately reserve and delegate a review packet through the repaired path.",
+      "actual": "issue tooling has no work packet or reservation commands; progress work accepts only scheduler packets; progress work leases requires --id, so it cannot show all active reservations before a tool-maintainer launch.",
+      "repro": "Run python tools/recoil.py progress work leases --json and observe that --id is required; inspect issue help and observe no issue work subcommands; attempt to prepare a recoil_tool_maintainer packet through progress work and observe the role/scheduler restrictions.",
+      "resolution": "Resolved the workspace-issue maintenance leasing gap with hash-guarded issue-owned work packets and reservations, global selector-free reconstruction-plus-issue lease inspection, globally distinct issue:work packet identities, symmetric cross-ledger conflict enforcement in both reservation directions, fail-closed incomplete-lease and claim-drift handling, strict packet/reservation lifecycle validation, and prevention of issue resolution before packet closure. Issue work remains outside progress next. Parent and delegated validation passed 169 focused tests, strict issue-ledger and agent-surface audits, a conflict-free complete global lease view, and the 9-of-9 infrastructure doctor."
+    },
+    {
+      "id": "WSI-20260718-006",
+      "status": "resolved",
+      "kind": "tool-error",
+      "severity": "high",
+      "created": "2026-07-18T15:53:06Z",
+      "updated": "2026-07-18T16:16:57Z",
+      "summary": "Closed scheduler work items cannot be retried despite diagnose returning reserve-work-item",
+      "area": "tools/_recoil/lib/progress.py structured work retry lifecycle",
+      "impact": "A fail-closed verifier attempt cannot be relaunched after a repair: the authoritative scheduler selects the same required dependency and directs reserve, but reserve rejects the closed packet, blocking the current authored-order cursor unless the tracker is hand-edited.",
+      "next_action": "Assign recoil_tool_maintainer to implement and test deterministic retry/reactivation semantics with new attempt IDs, prior-attempt preservation, stale-scope rejection, and diagnose/prepare/reserve agreement.",
+      "commands": [],
+      "files": [
+        "tools/_recoil/lib/progress.py",
+        "tools/_recoil/commands/progress_cli.py"
+      ],
+      "tags": [
+        "scheduler",
+        "retry",
+        "lease"
+      ],
+      "history": [
+        {
+          "at": "2026-07-18T15:53:06Z",
+          "action": "created",
+          "note": "Issue recorded for future agent tooling/process repair."
+        },
+        {
+          "at": "2026-07-18T15:53:38Z",
+          "action": "work-packet-created",
+          "note": "Created governed packet issue:work:wsi-20260718-006-scheduler-retry-r1."
+        },
+        {
+          "at": "2026-07-18T16:16:57Z",
+          "action": "resolved",
+          "note": "Resolved by adding a fail-closed retry lifecycle to progress work reserve for the exact still-current deterministic packet whose latest disposition is returned. The implementation preserves prior attempts, closure events, released-reservation history, and evidence; validates current-lane selection, contract-v2 scope/agent-surface digests, exact resource-claim snapshots, contiguous attempt history, non-success disposition, revision/SHA guards, and global conflicts; rotates reservation tokens and emits a monotonic new attempt. Focused scheduler tests pass 24/24, combined progress/work/issue tests 157/157, CLI/agent-surface tests 133/133, strict audits pass, and infrastructure doctor is 9/9. Live dry-run and apply at tracker revision 641 produced active attempt:2 and revision 642 with tracker SHA-256 6c38396e7d72b9e43e29d079806a50ed9764c9c95c7061942257471122b8d193. Core implementation SHA-256 d706ec45885b261a107679eccf57e18db69fd792c01a1aa505256c085c9e73a3."
+        }
+      ],
+      "expected": "A closed returned packet that remains the exact current deterministic scheduler dependency can be safely reactivated or retried through a dry-run-first, revision/hash-guarded command, generating a new attempt_id while preserving closure and prior-attempt evidence.",
+      "workaround": "None that preserves the rule forbidding hand edits to .agent/RECONSTRUCTION_PROGRESS.json. Do not force tracker state.",
+      "actual": "At tracker revision 641, progress work diagnose --from-current primary reports launchability=prepared, work_item_state=closed, required_parent_action=reserve-work-item for recoil:work:required_dependency_hud_matrix_404ca0_r1. The exact reserve dry-run fails: only a ready/current work item may be reserved. progress work prepare is idempotent and leaves the item closed; no retry/reopen command exists.",
+      "repro": "python tools/recoil.py progress work diagnose --from-current primary --json; python tools/recoil.py progress work prepare --from-current primary --expected-revision 641 --expected-sha256 a3c9f5702e36e8a295fb3972affc0a7943613eb413566f172df6539cdcf80d24 --dry-run --json; python tools/recoil.py progress work reserve --id recoil:work:required_dependency_hud_matrix_404ca0_r1 --expected-revision 641 --expected-sha256 a3c9f5702e36e8a295fb3972affc0a7943613eb413566f172df6539cdcf80d24 --dry-run --json",
+      "resolution": "Resolved by adding a fail-closed retry lifecycle to progress work reserve for the exact still-current deterministic packet whose latest disposition is returned. The implementation preserves prior attempts, closure events, released-reservation history, and evidence; validates current-lane selection, contract-v2 scope/agent-surface digests, exact resource-claim snapshots, contiguous attempt history, non-success disposition, revision/SHA guards, and global conflicts; rotates reservation tokens and emits a monotonic new attempt. Focused scheduler tests pass 24/24, combined progress/work/issue tests 157/157, CLI/agent-surface tests 133/133, strict audits pass, and infrastructure doctor is 9/9. Live dry-run and apply at tracker revision 641 produced active attempt:2 and revision 642 with tracker SHA-256 6c38396e7d72b9e43e29d079806a50ed9764c9c95c7061942257471122b8d193. Core implementation SHA-256 d706ec45885b261a107679eccf57e18db69fd792c01a1aa505256c085c9e73a3."
+    },
+    {
+      "id": "WSI-20260718-007",
+      "status": "resolved",
+      "kind": "tool-error",
+      "severity": "high",
+      "created": "2026-07-18T17:37:14Z",
+      "updated": "2026-07-18T18:35:42Z",
+      "summary": "Infrastructure doctor fails when valid canonical HUD matrix evidence exists",
+      "area": "tests/tools/recoil_vc5_source_shape_matrix_tests.py test isolation",
+      "impact": "A legitimate governed HUD matrix verifier run makes all 16 matrix unit tests and doctor --infrastructure-only fail until valid diagnostic evidence is deleted, so workspace health conflicts with evidence preservation.",
+      "next_action": "Assign recoil_tool_maintainer to isolate matrix tests from the canonical output path, retain explicit non-creation coverage, rerun the matrix suite and full infrastructure doctor, and do not modify or delete the canonical evidence.",
+      "commands": [],
+      "files": [
+        "tests/tools/recoil_vc5_source_shape_matrix_tests.py"
+      ],
+      "tags": [
+        "test-isolation",
+        "evidence-preservation",
+        "doctor"
+      ],
+      "history": [
+        {
+          "at": "2026-07-18T17:37:14Z",
+          "action": "created",
+          "note": "Issue recorded for future agent tooling/process repair."
+        },
+        {
+          "at": "2026-07-18T17:37:53Z",
+          "action": "work-packet-created",
+          "note": "Created governed packet issue:work:wsi-20260718-007-matrix-test-isolation-r1."
+        },
+        {
+          "at": "2026-07-18T18:35:42Z",
+          "action": "resolved",
+          "note": "Resolved the non-hermetic matrix-test conflict while preserving both historical r1 and current r2 evidence. Matrix and scheduler fixtures now inject unique repository-local temporary output namespaces; the production output-collision gate remains fail-closed and is exercised against a real fixture directory. The current r2 tree remains byte-identical at 416 files and 40,682,332 bytes, receipt SHA-256 13773d96b3ef96a5ca2b0a1ce24ff15b745e1cd777a20a32e5ffa68609f01d79. Validation with evidence present passed: focused suite 63/63, infrastructure doctor 9/9, strict agent-surface/progress/issue/workspace audits."
+        }
+      ],
+      "expected": "Matrix tests use injected or temporary output roots and remain hermetic when canonical verifier evidence exists; explicit dry-run tests still prove no canonical output is created when the root is absent.",
+      "workaround": "Deleting the valid matrix evidence hides the defect and is unsafe. No evidence-preserving workaround exists.",
+      "actual": "Each matrix test setUp asserts that build/vc5-probes/source-shape-matrix/hud-ui-element-complete-owner does not exist. Governed attempt 2 correctly preserved that canonical output and its validated receipt, causing all 16 tests to fail before their own isolated behavior is exercised.",
+      "repro": "Preserve build/vc5-probes/source-shape-matrix/hud-ui-element-complete-owner from the valid attempt-2 receipt, then run python -m unittest tests.tools.recoil_vc5_source_shape_matrix_tests or python tools/recoil.py doctor --infrastructure-only.",
+      "resolution": "Resolved the non-hermetic matrix-test conflict while preserving both historical r1 and current r2 evidence. Matrix and scheduler fixtures now inject unique repository-local temporary output namespaces; the production output-collision gate remains fail-closed and is exercised against a real fixture directory. The current r2 tree remains byte-identical at 416 files and 40,682,332 bytes, receipt SHA-256 13773d96b3ef96a5ca2b0a1ce24ff15b745e1cd777a20a32e5ffa68609f01d79. Validation with evidence present passed: focused suite 63/63, infrastructure doctor 9/9, strict agent-surface/progress/issue/workspace audits."
+    },
+    {
+      "id": "WSI-20260718-008",
+      "status": "resolved",
+      "kind": "tool-error",
+      "severity": "high",
+      "created": "2026-07-18T17:46:18Z",
+      "updated": "2026-07-18T18:35:42Z",
+      "summary": "HUD matrix dependency pin is stale after intentional final-clock manifest integration",
+      "area": "tools/_recoil/config/hud_ui_element_complete_owner_source_shape_matrix.json canonical_final_build binding",
+      "impact": "The HUD matrix command, 11 catalog-dependent tests, and infrastructure doctor fail closed before matrix behavior; the preserved attempt-2 receipt now binds a superseded final-build manifest and must not be silently treated as current.",
+      "next_action": "Assign recoil_tool_maintainer to audit the final-build delta, refresh the dependent pin if behavior-neutral by default, make reruns use fresh attempt-scoped output roots, and route the stale attempt-2 tracker evidence through the governed retry/supersession workflow before full validation.",
+      "commands": [],
+      "files": [
+        "tools/_recoil/config/hud_ui_element_complete_owner_source_shape_matrix.json",
+        "tools/_recoil/lib/vc5_source_shape_matrix.py",
+        "tools/_recoil/lib/progress.py"
+      ],
+      "tags": [
+        "dependency-pin",
+        "evidence-freshness",
+        "matrix"
+      ],
+      "history": [
+        {
+          "at": "2026-07-18T17:46:18Z",
+          "action": "created",
+          "note": "Issue recorded for future agent tooling/process repair."
+        },
+        {
+          "at": "2026-07-18T17:47:58Z",
+          "action": "work-packet-created",
+          "note": "Created governed packet issue:work:wsi-20260718-008-matrix-dependency-refresh-r1."
+        },
+        {
+          "at": "2026-07-18T18:35:42Z",
+          "action": "resolved",
+          "note": "Resolved the HUD matrix dependency-pin and lifecycle drift. Audited the final-build manifest delta as only the default-disabled qualified_clock_link policy, refreshed the fail-closed pin/config and catalog, derived content-bound r2 work/output identities, preserved the r1 attempt-2 receipt unchanged, ran the fresh governed r2 attempt, independently validated its typed-partial receipt, imported hash-bound evidence, and closed tracker work at revision 648 SHA-256 26a45e214000c53bd7f24751e86c2c879554f21e767e17f9271bfe8b8f4fb4b3. Current receipt SHA-256 13773d96b3ef96a5ca2b0a1ce24ff15b745e1cd777a20a32e5ffa68609f01d79; all acceptance claims remain false. Infrastructure doctor passes with current evidence preserved."
+        }
+      ],
+      "expected": "The matrix fail-closed dependency pin represents the current semantically compatible default-disabled final-build configuration, and dependent scheduler/evidence freshness is explicitly rerun, superseded, or marked stale without deleting historical evidence.",
+      "workaround": "Do not weaken hash validation or delete/modify the preserved attempt-2 evidence. Manual pin edits without semantic audit and downstream evidence routing are unsafe.",
+      "actual": "The HUD matrix config pins tools/_recoil/config/vc5_final_build.json SHA-256 222e5f6c95305ebe83f73c7af95f38305301b2f9579d2297fd786231e968ff7a, while the intentional default-disabled clock-provider integration changed the manifest to 5028db22e18a172fa49f0f7dc11122c778d9562f28b5e1f4453c7a1b2f91de34.",
+      "repro": "python -m unittest tests.tools.recoil_vc5_source_shape_matrix_tests; python tools/recoil.py doctor --infrastructure-only; python tools/recoil.py verify vc5-source-shape-matrix --config tools/_recoil/config/hud_ui_element_complete_owner_source_shape_matrix.json --jobs 3 --dry-run",
+      "resolution": "Resolved the HUD matrix dependency-pin and lifecycle drift. Audited the final-build manifest delta as only the default-disabled qualified_clock_link policy, refreshed the fail-closed pin/config and catalog, derived content-bound r2 work/output identities, preserved the r1 attempt-2 receipt unchanged, ran the fresh governed r2 attempt, independently validated its typed-partial receipt, imported hash-bound evidence, and closed tracker work at revision 648 SHA-256 26a45e214000c53bd7f24751e86c2c879554f21e767e17f9271bfe8b8f4fb4b3. Current receipt SHA-256 13773d96b3ef96a5ca2b0a1ce24ff15b745e1cd777a20a32e5ffa68609f01d79; all acceptance claims remain false. Infrastructure doctor passes with current evidence preserved."
+    },
+    {
+      "id": "WSI-20260718-009",
+      "status": "resolved",
+      "kind": "tool-error",
+      "severity": "high",
+      "created": "2026-07-18T18:25:37Z",
+      "updated": "2026-07-18T18:35:42Z",
+      "summary": "Scheduler lifecycle tests fail when valid current HUD matrix attempt evidence exists",
+      "area": "tests/tools scheduler and HUD matrix fixture isolation",
+      "impact": "A legitimate completed r2 HUD matrix attempt makes 15 scheduler/matrix tests and infrastructure doctor fail, so preserved current evidence conflicts with workspace validation and blocks clean handoff.",
+      "next_action": "Assign recoil_tool_maintainer to inject temporary matrix namespaces into every scheduler/matrix fixture that calls production dependency derivation, preserve explicit real-root collision coverage, rerun the focused suite and doctor with current evidence left intact.",
+      "commands": [],
+      "files": [
+        "tests/tools/recoil_vc5_source_shape_matrix_tests.py",
+        "tests/tools/recoil_scheduler_safety_tests.py",
+        "tools/_recoil/lib/progress.py"
+      ],
+      "tags": [
+        "test-isolation",
+        "lifecycle",
+        "evidence-preservation"
+      ],
+      "history": [
+        {
+          "at": "2026-07-18T18:25:37Z",
+          "action": "created",
+          "note": "Issue recorded for future agent tooling/process repair."
+        },
+        {
+          "at": "2026-07-18T18:26:45Z",
+          "action": "work-packet-created",
+          "note": "Created governed packet issue:work:wsi-20260718-009-scheduler-test-isolation-r1."
+        },
+        {
+          "at": "2026-07-18T18:35:42Z",
+          "action": "resolved",
+          "note": "Resolved scheduler/HUD test leakage into the completed r2 namespace with tests-only unique temporary HUD output-base injection. The unchanged suite reproduced 15 errors before repair and passes 63/63 after repair. Two lifecycle CLI tests now run in-process so fixture injection survives the command boundary; the collision test creates a real attempt-2 directory and verifies production reserve_work_item rejects it without document mutation. No production tool/config, ledger, source, support, documentation, skill, BN, or build-evidence file was edited. Doctor 9/9 and all strict audits pass; real r2 evidence is byte-identical before/after."
+        }
+      ],
+      "expected": "All scheduler/matrix unit tests derive HUD packets against injected temporary namespaces while production derivation continues to fail closed on any existing real attempt root.",
+      "workaround": "Deleting or moving the validated receipt is unsafe and would hide the defect. Do not weaken the production collision check; isolate only test fixtures.",
+      "actual": "After the validated r2 attempt-1 receipt was preserved, 15 tests fail because _hud_matrix_required_dependency sees the real canonical attempt-1 output root and correctly raises ProgressError before fixture-local lifecycle assertions execute.",
+      "repro": "Preserve build/vc5-probes/source-shape-matrix/hud-ui-element-complete-owner/r2-598ff9df4ca9/attempt-1, then run python -m unittest tests.tools.recoil_vc5_source_shape_matrix_tests tests.tools.recoil_scheduler_safety_tests tests.tools.recoil_work_prepare_tests; observe 15 errors.",
+      "resolution": "Resolved scheduler/HUD test leakage into the completed r2 namespace with tests-only unique temporary HUD output-base injection. The unchanged suite reproduced 15 errors before repair and passes 63/63 after repair. Two lifecycle CLI tests now run in-process so fixture injection survives the command boundary; the collision test creates a real attempt-2 directory and verifies production reserve_work_item rejects it without document mutation. No production tool/config, ledger, source, support, documentation, skill, BN, or build-evidence file was edited. Doctor 9/9 and all strict audits pass; real r2 evidence is byte-identical before/after."
+    },
+    {
+      "id": "WSI-20260718-010",
+      "status": "resolved",
+      "kind": "tool-error",
+      "severity": "high",
+      "created": "2026-07-18T18:39:02Z",
+      "updated": "2026-07-18T18:50:59Z",
+      "summary": "Final-clock qualification cannot consume a governed repository-relative output-root lease",
+      "area": "tools/_recoil/lib/link_clock_provider.py reservation/output-root integration",
+      "impact": "The real WSI003 T/T2 qualification cannot be launched under any valid issue-work packet: issue work set rejects absolute handoff paths, while final-clock qualification rejects the repository-relative output-root claim that issue work can produce.",
+      "next_action": "Assign recoil_tool_maintainer to canonicalize repository-relative output-root claims against REPO_ROOT in the final-clock reservation validator, add real issue-work schema integration tests plus negative path/ambiguity tests, and rerun clock/final-build/issue/doctor validations.",
+      "commands": [],
+      "files": [
+        "tools/_recoil/lib/link_clock_provider.py",
+        "tests/tools/recoil_final_clock_qualification_tests.py",
+        "tools/_recoil/commands/workspace_issues.py"
+      ],
+      "tags": [
+        "reservation",
+        "clock-provider",
+        "path-canonicalization"
+      ],
+      "history": [
+        {
+          "at": "2026-07-18T18:39:02Z",
+          "action": "created",
+          "note": "Issue recorded for future agent tooling/process repair."
+        },
+        {
+          "at": "2026-07-18T18:39:42Z",
+          "action": "work-packet-created",
+          "note": "Created governed packet issue:work:wsi-20260718-010-clock-relative-output-lease-r1."
+        },
+        {
+          "at": "2026-07-18T18:50:59Z",
+          "action": "resolved",
+          "note": "Final-clock reservation validation now resolves canonical repository-relative issue-work output-root claims against REPO_ROOT, proves repository containment, and requires exact equality with the absolute qualification destination while retaining active, completeness, conflict, access, multiplicity, traversal, ambiguity, wrong-root, clock-write, and whole-project-build gates. Legacy absolute normalized records remain supported. Validation passed 116/116 focused tests, agent-surface/issue/progress strict audits, and infrastructure doctor 9/9."
+        }
+      ],
+      "expected": "A valid active issue-work reservation with exactly one repository-relative output-root write is resolved against REPO_ROOT and compared to the exact canonical absolute qualification root, while traversal, ambiguity, missing/multiple roots, wrong access, and wrong paths remain rejected.",
+      "workaround": "Do not fabricate a normalized lease record or weaken the exact claim gate. No governance-preserving workaround exists.",
+      "actual": "issue work set fails with 'handoff path must be repository-relative' for the absolute output-root identifier required by validate_reservation_record; that validator compares the claim string directly to str(output_root.resolve()) and therefore cannot accept the relative form.",
+      "repro": "Attempt to create the WSI003 qualification packet with claim output-root:D:/Recoil Project/RecoilRebuild/build/vc5-clock-qualification/...:write; issue work set rejects it. The relative claim is accepted by issue work but cannot equal the absolute output expected at tools/_recoil/lib/link_clock_provider.py validate_reservation_record.",
+      "resolution": "Final-clock reservation validation now resolves canonical repository-relative issue-work output-root claims against REPO_ROOT, proves repository containment, and requires exact equality with the absolute qualification destination while retaining active, completeness, conflict, access, multiplicity, traversal, ambiguity, wrong-root, clock-write, and whole-project-build gates. Legacy absolute normalized records remain supported. Validation passed 116/116 focused tests, agent-surface/issue/progress strict audits, and infrastructure doctor 9/9."
+    },
+    {
+      "id": "WSI-20260718-011",
+      "status": "resolved",
+      "kind": "tool-error",
+      "severity": "high",
+      "created": "2026-07-18T19:16:20Z",
+      "updated": "2026-07-18T19:38:04Z",
+      "summary": "Clock bundle validation omits required VC5 LINK runtime dependency closure",
+      "area": "tools/_recoil/lib/link_clock_provider.py profile/bundle runtime dependency validation",
+      "impact": "A provider/profile and bundle can pass all preflight validation yet LINK.EXE cannot reach the provider patch point under the sealed clean environment, consuming the one permitted real qualification attempt and blocking WSI003.",
+      "next_action": "Assign recoil_tool_maintainer to bind LINK runtime dependencies in the provider/profile and bundle validation contract, add missing/wrong/hash/path/duplicate dependency negative tests, update focused docs/skills if needed, rebuild/reprofile if the schema requires it, then prepare a fresh r2 bundle and execution lease.",
+      "commands": [],
+      "files": [
+        "tools/_recoil/lib/link_clock_provider.py",
+        "tools/_recoil/commands/vc5_link_clock_provider.py",
+        "tests/tools/recoil_final_clock_qualification_tests.py"
+      ],
+      "tags": [
+        "clock-provider",
+        "runtime-dependency",
+        "fail-closed"
+      ],
+      "history": [
+        {
+          "at": "2026-07-18T19:16:20Z",
+          "action": "created",
+          "note": "Issue recorded for future agent tooling/process repair."
+        },
+        {
+          "at": "2026-07-18T19:17:48Z",
+          "action": "work-packet-created",
+          "note": "Created governed packet issue:work:wsi-20260718-011-clock-runtime-closure-r1."
+        },
+        {
+          "at": "2026-07-18T19:38:04Z",
+          "action": "resolved",
+          "note": "Resolved the missing VC5 LINK runtime dependency closure. The v2 provider profile now binds exact MSDIS100.DLL, MSPDB50.DLL, and MSVCP50.DLL artifacts; bundles require one unique loader-only runtime-dependency member for each; profile-bound validation enforces exact VC/BIN, SHAREDIDE/BIN, VC/REDIST PATH order, unique resolution of all three DLLs, and exactly one profiled CVTRES before any output creation/invocation. Adversarial missing/hash/role/path/duplicate/order/shadow tests pass; 117/117 focused tests, strict audits, skill checks, and doctor 9/9 pass. Canonical ready-v5 built, and a one-epoch native smoke proved one pre-entry time-IAT patch, one exact CVTRES child, LINK exit 0, requested PE timestamp, and unchanged input catalogs. Preserved WSI003 r1 failure evidence remains byte-identical; WSI003 remains pending a fresh r2 T/T2 qualification."
+        }
+      ],
+      "expected": "The provider profile/bundle contract binds and validates the exact LINK runtime DLL dependency closure and clean PATH directories, including hashes for MSDIS100.DLL, MSPDB50.DLL, and MSVCP50.DLL, before a real run; PATH must still resolve exactly one profiled CVTRES.EXE.",
+      "workaround": "Do not retry or modify r1. A fresh r2 bundle may add SHAREDIDE/BIN and VC/REDIST plus sealed runtime-dependency members, but the validator must first be strengthened so this omission fails before invocation.",
+      "actual": "The validated r1 bundle PATH contained only VC/BIN. LINK imports MSDIS100.DLL and MSPDB50.DLL from SHAREDIDE/BIN, and MSDIS100 imports MSVCP50.DLL from VC/REDIST. The real attempt terminated at loader startup with 0xc0000135, patched=0, no CVTRES, no candidate/map, while bundle validation had reported success.",
+      "repro": "Validate the r1 profile and bundle, then inspect preserved qualification receipt SHA-256 8a28ec21881ace36c14a6001fac308c06b3043abe619883bc7240472600896f2 and T/launcher.stderr.bin. Validation passes, but the one real launch exits 0xc0000135 before patch.",
+      "evidence": "build/vc5-clock-qualification/wsi-20260718-003/r1/qualification/qualification-receipt-v2.json",
+      "resolution": "Resolved the missing VC5 LINK runtime dependency closure. The v2 provider profile now binds exact MSDIS100.DLL, MSPDB50.DLL, and MSVCP50.DLL artifacts; bundles require one unique loader-only runtime-dependency member for each; profile-bound validation enforces exact VC/BIN, SHAREDIDE/BIN, VC/REDIST PATH order, unique resolution of all three DLLs, and exactly one profiled CVTRES before any output creation/invocation. Adversarial missing/hash/role/path/duplicate/order/shadow tests pass; 117/117 focused tests, strict audits, skill checks, and doctor 9/9 pass. Canonical ready-v5 built, and a one-epoch native smoke proved one pre-entry time-IAT patch, one exact CVTRES child, LINK exit 0, requested PE timestamp, and unchanged input catalogs. Preserved WSI003 r1 failure evidence remains byte-identical; WSI003 remains pending a fresh r2 T/T2 qualification."
+    }
+  ],
+  "work_packets": [
+    {
+      "id": "issue:work:wsi-20260718-005-bootstrap-review-r1",
+      "issue_id": "WSI-20260718-005",
+      "state": "closed",
+      "handoff_role": "recoil_tool_maintainer",
+      "scope": "Review and harden the minimal issue-work packet/reservation bootstrap without changing reconstruction scheduling or acceptance semantics.",
+      "next_command": "python -m unittest tests.tools.recoil_workspace_issues_tests tests.tools.recoil_scheduler_safety_tests tests.tools.recoil_agent_surface_audit_tests tests.tools.recoil_cli_tests",
+      "allowed_paths": [
+        "tools/recoil.py",
+        "tools/_recoil",
+        "tests/tools",
+        "tools/README.md"
+      ],
+      "forbidden_paths": [
+        "src",
+        "support",
+        ".agent/RECONSTRUCTION_PROGRESS.json",
+        ".agent/WORKSPACE_ISSUES.json",
+        "Recoil.bndb"
+      ],
+      "validation_commands": [
+        "python -m unittest tests.tools.recoil_workspace_issues_tests tests.tools.recoil_scheduler_safety_tests tests.tools.recoil_agent_surface_audit_tests tests.tools.recoil_cli_tests",
+        "python tools/recoil.py issue audit --strict",
+        "python tools/recoil.py progress work leases --json",
+        "python tools/recoil.py audit agent-surface --strict",
+        "python tools/recoil.py doctor --infrastructure-only"
+      ],
+      "required_return_fields": [
+        "changed_paths",
+        "exact_test_results",
+        "remaining_gaps",
+        "out_of_scope_files",
+        "issue_resolution_candidate"
+      ],
+      "resource_claims": [
+        {
+          "kind": "agent-surface",
+          "id": "recoil-agent-surface",
+          "access": "write"
+        },
+        {
+          "kind": "issue",
+          "id": "WSI-20260718-005",
+          "access": "read"
+        },
+        {
+          "kind": "issue-ledger",
+          "id": ".agent/WORKSPACE_ISSUES.json",
+          "access": "read"
+        },
+        {
+          "kind": "lane",
+          "id": "workspace-issue/WSI-20260718-005",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tests/tools",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/README.md",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/recoil.py",
+          "access": "write"
+        },
+        {
+          "kind": "tracker",
+          "id": "recoil",
+          "access": "read"
+        }
+      ],
+      "reservation_id": null,
+      "created": "2026-07-18T14:48:21Z",
+      "updated": "2026-07-18T15:04:25Z",
+      "outcome": "returned"
+    },
+    {
+      "id": "issue:work:wsi-20260718-004-matrix-runtime-r1",
+      "issue_id": "WSI-20260718-004",
+      "state": "closed",
+      "handoff_role": "recoil_tool_maintainer",
+      "scope": "Implement the complete diagnostic HUD VC5SP3 A/B/C source-shape matrix runtime for authored-function-order cursor 0x404ca0, owner recoil:owner:hud_ui.hud_ui_element_base, block recoil:block:0x404ca0, without editing production source or making owner/order/tier claims.",
+      "next_command": "python -m unittest tests.tools.recoil_vc5_source_shape_matrix_tests tests.tools.recoil_scheduler_safety_tests tests.tools.recoil_work_prepare_tests tests.tools.recoil_agent_surface_audit_tests tests.tools.recoil_cli_tests",
+      "allowed_paths": [
+        "tools/recoil.py",
+        "tools/_recoil/commands/vc5_source_shape_matrix.py",
+        "tools/_recoil/lib/vc5_source_shape_matrix.py",
+        "tools/_recoil/config/hud_ui_element_complete_owner_source_shape_matrix.json",
+        "tools/_recoil/lib/progress.py",
+        "tools/_recoil/commands/progress_cli.py",
+        "tests/tools",
+        "tools/README.md"
+      ],
+      "forbidden_paths": [
+        "src",
+        "support",
+        ".agent/RECONSTRUCTION_PROGRESS.json",
+        ".agent/WORKSPACE_ISSUES.json",
+        "Recoil.bndb",
+        ".codex"
+      ],
+      "validation_commands": [
+        "python -m unittest tests.tools.recoil_vc5_source_shape_matrix_tests tests.tools.recoil_scheduler_safety_tests tests.tools.recoil_work_prepare_tests tests.tools.recoil_agent_surface_audit_tests tests.tools.recoil_cli_tests",
+        "python tools/recoil.py verify vc5-source-shape-matrix --config tools/_recoil/config/hud_ui_element_complete_owner_source_shape_matrix.json --jobs 3 --dry-run",
+        "python tools/recoil.py audit agent-surface --strict",
+        "python tools/recoil.py issue audit --strict",
+        "python tools/recoil.py doctor --infrastructure-only"
+      ],
+      "required_return_fields": [
+        "changed_paths",
+        "exact_test_results",
+        "runtime_cli_contract",
+        "real_run_command",
+        "receipt_contract",
+        "remaining_gaps",
+        "out_of_scope_files",
+        "issue_resolution_candidate"
+      ],
+      "resource_claims": [
+        {
+          "kind": "agent-surface",
+          "id": "recoil-agent-surface",
+          "access": "write"
+        },
+        {
+          "kind": "host-path",
+          "id": "D:/Recoil Project/Compiler/VC5SP3",
+          "access": "read"
+        },
+        {
+          "kind": "issue",
+          "id": "WSI-20260718-004",
+          "access": "read"
+        },
+        {
+          "kind": "issue-ledger",
+          "id": ".agent/WORKSPACE_ISSUES.json",
+          "access": "read"
+        },
+        {
+          "kind": "lane",
+          "id": "workspace-issue/WSI-20260718-004",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "src",
+          "access": "read"
+        },
+        {
+          "kind": "path",
+          "id": "tests/tools",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/commands/progress_cli.py",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/commands/vc5_source_shape_matrix.py",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/config/hud_ui_element_complete_owner_source_shape_matrix.json",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/lib/progress.py",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/lib/vc5_source_shape_matrix.py",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/README.md",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/recoil.py",
+          "access": "write"
+        },
+        {
+          "kind": "reference",
+          "id": "support/Recoil.exe",
+          "access": "read"
+        },
+        {
+          "kind": "tracker",
+          "id": "recoil",
+          "access": "read"
+        }
+      ],
+      "reservation_id": null,
+      "created": "2026-07-18T15:06:44Z",
+      "updated": "2026-07-18T15:36:45Z",
+      "outcome": "returned"
+    },
+    {
+      "id": "issue:work:wsi-20260718-004-reservation-preflight-r2",
+      "issue_id": "WSI-20260718-004",
+      "state": "closed",
+      "handoff_role": "recoil_tool_maintainer",
+      "scope": "Repair the HUD matrix reservation preflight so it consumes the canonical tracker reservation attempt_id without weakening active-state, packet-id, or exact-claim validation; add tracker-shaped regression coverage.",
+      "next_command": "python -m unittest tests.tools.recoil_vc5_source_shape_matrix_tests",
+      "allowed_paths": [
+        "tools/_recoil/lib/vc5_source_shape_matrix.py",
+        "tools/_recoil/commands/vc5_source_shape_matrix.py",
+        "tests/tools/recoil_vc5_source_shape_matrix_tests.py"
+      ],
+      "forbidden_paths": [
+        "src",
+        "support",
+        ".agent",
+        ".codex",
+        "Recoil.bndb"
+      ],
+      "validation_commands": [
+        "python -m unittest tests.tools.recoil_vc5_source_shape_matrix_tests tests.tools.recoil_scheduler_safety_tests tests.tools.recoil_work_prepare_tests",
+        "python tools/recoil.py verify vc5-source-shape-matrix --config tools/_recoil/config/hud_ui_element_complete_owner_source_shape_matrix.json --jobs 3 --dry-run",
+        "python tools/recoil.py audit agent-surface --strict",
+        "python tools/recoil.py issue audit --strict"
+      ],
+      "required_return_fields": [
+        "changed_paths",
+        "exact_test_results",
+        "root_cause",
+        "validation_semantics",
+        "remaining_gaps",
+        "issue_resolution_candidate"
+      ],
+      "resource_claims": [
+        {
+          "kind": "agent-surface",
+          "id": "recoil-agent-surface",
+          "access": "write"
+        },
+        {
+          "kind": "issue",
+          "id": "WSI-20260718-004",
+          "access": "read"
+        },
+        {
+          "kind": "issue-ledger",
+          "id": ".agent/WORKSPACE_ISSUES.json",
+          "access": "read"
+        },
+        {
+          "kind": "lane",
+          "id": "workspace-issue/WSI-20260718-004",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "src",
+          "access": "read"
+        },
+        {
+          "kind": "path",
+          "id": "tests/tools/recoil_vc5_source_shape_matrix_tests.py",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/commands/vc5_source_shape_matrix.py",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/config/hud_ui_element_complete_owner_source_shape_matrix.json",
+          "access": "read"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/lib/vc5_source_shape_matrix.py",
+          "access": "write"
+        },
+        {
+          "kind": "reference",
+          "id": "support/Recoil.exe",
+          "access": "read"
+        },
+        {
+          "kind": "tracker",
+          "id": "recoil",
+          "access": "read"
+        }
+      ],
+      "reservation_id": null,
+      "created": "2026-07-18T15:44:59Z",
+      "updated": "2026-07-18T15:51:05Z",
+      "outcome": "returned"
+    },
+    {
+      "id": "issue:work:wsi-20260718-006-scheduler-retry-r1",
+      "issue_id": "WSI-20260718-006",
+      "state": "closed",
+      "handoff_role": "recoil_tool_maintainer",
+      "scope": "Repair structured scheduler retry lifecycle so an exact current closed/returned deterministic packet can be re-reserved with a new attempt_id, while preserving prior attempts/closure evidence and rejecting stale, drifted, noncurrent, abandoned, or successful packets.",
+      "next_command": "python -m unittest tests.tools.recoil_scheduler_safety_tests tests.tools.recoil_work_prepare_tests tests.tools.recoil_progress_tracker_tests",
+      "allowed_paths": [
+        "tools/recoil.py",
+        "tools/_recoil/lib/progress.py",
+        "tools/_recoil/commands/progress_cli.py",
+        "tests/tools",
+        "tools/README.md"
+      ],
+      "forbidden_paths": [
+        "src",
+        "support",
+        ".agent",
+        ".codex",
+        "Recoil.bndb"
+      ],
+      "validation_commands": [
+        "python -m unittest tests.tools.recoil_scheduler_safety_tests tests.tools.recoil_work_prepare_tests tests.tools.recoil_progress_tracker_tests tests.tools.recoil_workspace_issues_tests",
+        "python tools/recoil.py audit agent-surface --strict",
+        "python tools/recoil.py issue audit --strict",
+        "python tools/recoil.py progress audit --scope all --strict"
+      ],
+      "required_return_fields": [
+        "changed_paths",
+        "exact_test_results",
+        "retry_contract",
+        "prior_evidence_preservation",
+        "remaining_gaps",
+        "issue_resolution_candidate"
+      ],
+      "resource_claims": [
+        {
+          "kind": "agent-surface",
+          "id": "recoil-agent-surface",
+          "access": "write"
+        },
+        {
+          "kind": "issue",
+          "id": "WSI-20260718-006",
+          "access": "read"
+        },
+        {
+          "kind": "issue-ledger",
+          "id": ".agent/WORKSPACE_ISSUES.json",
+          "access": "read"
+        },
+        {
+          "kind": "lane",
+          "id": "workspace-issue/WSI-20260718-006",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tests/tools",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/commands/progress_cli.py",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/lib/progress.py",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/README.md",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/recoil.py",
+          "access": "write"
+        },
+        {
+          "kind": "tracker",
+          "id": "recoil",
+          "access": "read"
+        }
+      ],
+      "reservation_id": null,
+      "created": "2026-07-18T15:53:38Z",
+      "updated": "2026-07-18T16:15:30Z",
+      "outcome": "returned"
+    },
+    {
+      "id": "issue:work:wsi-20260718-003-process-clock-provider-r1",
+      "issue_id": "WSI-20260718-003",
+      "state": "closed",
+      "handoff_role": "recoil_tool_maintainer",
+      "scope": "Implement the approved fail-closed process-local VC5 LINK.EXE clock provider, sealed v2 link-input/provider contracts, T/T2/tamper qualification runtime, and disabled-by-default qualified final-build link integration without patching on-disk inputs or changing acceptance semantics.",
+      "next_command": "python -m unittest tests.tools.recoil_final_clock_qualification_tests tests.tools.recoil_final_determinism_tests tests.tools.recoil_pe_coff_time_tests tests.tools.recoil_vc5_build_tests tests.tools.recoil_cli_tests tests.tools.recoil_agent_surface_audit_tests",
+      "allowed_paths": [
+        "tools/recoil.py",
+        "tools/_recoil/commands/final_clock_qualification.py",
+        "tools/_recoil/commands/vc5_build.py",
+        "tools/_recoil/commands/vc5_link_clock_provider.py",
+        "tools/_recoil/lib",
+        "tools/_recoil/native",
+        "tools/_recoil/config/vc5_final_build.json",
+        "tests/tools",
+        "tools/README.md",
+        "docs/reconstruction/retail_executable_reproduction.md",
+        ".codex/skills/recoil-vc5-final-build/SKILL.md",
+        ".codex/skills/recoil-validation/SKILL.md"
+      ],
+      "forbidden_paths": [
+        "src",
+        "support",
+        ".agent",
+        "Recoil.bndb",
+        "messages.bndb"
+      ],
+      "validation_commands": [
+        "python -m unittest tests.tools.recoil_final_clock_qualification_tests tests.tools.recoil_final_determinism_tests tests.tools.recoil_pe_coff_time_tests tests.tools.recoil_vc5_build_tests tests.tools.recoil_cli_tests tests.tools.recoil_agent_surface_audit_tests",
+        "python tools/recoil.py audit agent-surface --strict",
+        "python tools/recoil.py issue audit --strict",
+        "python tools/recoil.py doctor --infrastructure-only"
+      ],
+      "required_return_fields": [
+        "changed_paths",
+        "exact_test_results",
+        "native_provider_contract",
+        "bundle_profile_contract",
+        "qualification_contract",
+        "final_build_integration_contract",
+        "real_qualification_commands",
+        "remaining_gaps",
+        "issue_resolution_candidate"
+      ],
+      "resource_claims": [
+        {
+          "kind": "agent-surface",
+          "id": "recoil-agent-surface",
+          "access": "write"
+        },
+        {
+          "kind": "host-path",
+          "id": "D:/Recoil-Project/Compiler/VC5SP3",
+          "access": "read"
+        },
+        {
+          "kind": "issue",
+          "id": "WSI-20260718-003",
+          "access": "read"
+        },
+        {
+          "kind": "issue-ledger",
+          "id": ".agent/WORKSPACE_ISSUES.json",
+          "access": "read"
+        },
+        {
+          "kind": "lane",
+          "id": "workspace-issue/WSI-20260718-003",
+          "access": "write"
+        },
+        {
+          "kind": "output-root",
+          "id": "build/vc5-clock-provider-tooling",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": ".codex/skills/recoil-validation/SKILL.md",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": ".codex/skills/recoil-vc5-final-build/SKILL.md",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "docs/reconstruction/retail_executable_reproduction.md",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tests/tools",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/commands/final_clock_qualification.py",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/commands/vc5_build.py",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/commands/vc5_link_clock_provider.py",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/config/vc5_final_build.json",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/lib",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/native",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/README.md",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/recoil.py",
+          "access": "write"
+        },
+        {
+          "kind": "tracker",
+          "id": "recoil",
+          "access": "read"
+        }
+      ],
+      "reservation_id": null,
+      "created": "2026-07-18T16:28:14Z",
+      "updated": "2026-07-18T17:36:51Z",
+      "outcome": "returned"
+    },
+    {
+      "id": "issue:work:wsi-20260718-007-matrix-test-isolation-r1",
+      "issue_id": "WSI-20260718-007",
+      "state": "closed",
+      "handoff_role": "recoil_tool_maintainer",
+      "scope": "Make the HUD VC5 source-shape matrix tests hermetic in the presence of preserved canonical attempt-2 evidence, while retaining explicit dry-run non-creation coverage and never modifying the evidence root.",
+      "next_command": "python -m unittest tests.tools.recoil_vc5_source_shape_matrix_tests",
+      "allowed_paths": [
+        "tests/tools/recoil_vc5_source_shape_matrix_tests.py"
+      ],
+      "forbidden_paths": [
+        "build/vc5-probes/source-shape-matrix/hud-ui-element-complete-owner",
+        "src",
+        "support",
+        ".agent",
+        ".codex",
+        "Recoil.bndb"
+      ],
+      "validation_commands": [
+        "python -m unittest tests.tools.recoil_vc5_source_shape_matrix_tests tests.tools.recoil_vc5_build_tests tests.tools.recoil_final_clock_qualification_tests",
+        "python tools/recoil.py doctor --infrastructure-only",
+        "python tools/recoil.py audit agent-surface --strict",
+        "python tools/recoil.py issue audit --strict"
+      ],
+      "required_return_fields": [
+        "changed_paths",
+        "exact_test_results",
+        "isolation_contract",
+        "evidence_preservation_proof",
+        "remaining_gaps",
+        "issue_resolution_candidate"
+      ],
+      "resource_claims": [
+        {
+          "kind": "agent-surface",
+          "id": "recoil-agent-surface",
+          "access": "write"
+        },
+        {
+          "kind": "issue",
+          "id": "WSI-20260718-007",
+          "access": "read"
+        },
+        {
+          "kind": "issue-ledger",
+          "id": ".agent/WORKSPACE_ISSUES.json",
+          "access": "read"
+        },
+        {
+          "kind": "lane",
+          "id": "workspace-issue/WSI-20260718-007",
+          "access": "write"
+        },
+        {
+          "kind": "output-root",
+          "id": "build/vc5-probes/source-shape-matrix/hud-ui-element-complete-owner",
+          "access": "read"
+        },
+        {
+          "kind": "path",
+          "id": "tests/tools/recoil_vc5_source_shape_matrix_tests.py",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/lib/vc5_source_shape_matrix.py",
+          "access": "read"
+        },
+        {
+          "kind": "tracker",
+          "id": "recoil",
+          "access": "read"
+        }
+      ],
+      "reservation_id": null,
+      "created": "2026-07-18T17:37:53Z",
+      "updated": "2026-07-18T17:45:48Z",
+      "outcome": "returned"
+    },
+    {
+      "id": "issue:work:wsi-20260718-008-matrix-dependency-refresh-r1",
+      "issue_id": "WSI-20260718-008",
+      "state": "closed",
+      "handoff_role": "recoil_tool_maintainer",
+      "scope": "Audit the default-disabled final-clock manifest delta, refresh the HUD matrix dependency pin only if behavior-neutral without opt-in, and make the scheduler derive a fresh deterministic required-dependency packet/output namespace so the preserved attempt-2 receipt remains historical rather than silently current.",
+      "next_command": "python -m unittest tests.tools.recoil_vc5_source_shape_matrix_tests tests.tools.recoil_work_prepare_tests tests.tools.recoil_scheduler_safety_tests",
+      "allowed_paths": [
+        "tools/recoil.py",
+        "tools/_recoil/config/hud_ui_element_complete_owner_source_shape_matrix.json",
+        "tools/_recoil/lib/vc5_source_shape_matrix.py",
+        "tools/_recoil/lib/progress.py",
+        "tools/_recoil/commands/progress_cli.py",
+        "tests/tools",
+        "tools/README.md"
+      ],
+      "forbidden_paths": [
+        "build/vc5-probes/source-shape-matrix/hud-ui-element-complete-owner",
+        "src",
+        "support",
+        ".agent",
+        ".codex",
+        "Recoil.bndb"
+      ],
+      "validation_commands": [
+        "python -m unittest tests.tools.recoil_vc5_source_shape_matrix_tests tests.tools.recoil_work_prepare_tests tests.tools.recoil_scheduler_safety_tests tests.tools.recoil_vc5_build_tests tests.tools.recoil_final_clock_qualification_tests",
+        "python tools/recoil.py verify vc5-source-shape-matrix --config tools/_recoil/config/hud_ui_element_complete_owner_source_shape_matrix.json --jobs 3 --dry-run",
+        "python tools/recoil.py audit agent-surface --strict",
+        "python tools/recoil.py progress audit --scope all --strict",
+        "python tools/recoil.py doctor --infrastructure-only"
+      ],
+      "required_return_fields": [
+        "changed_paths",
+        "exact_test_results",
+        "manifest_delta_audit",
+        "fresh_packet_contract",
+        "historical_evidence_treatment",
+        "parent_apply_commands",
+        "remaining_gaps",
+        "issue_resolution_candidate"
+      ],
+      "resource_claims": [
+        {
+          "kind": "agent-surface",
+          "id": "recoil-agent-surface",
+          "access": "write"
+        },
+        {
+          "kind": "issue",
+          "id": "WSI-20260718-008",
+          "access": "read"
+        },
+        {
+          "kind": "issue-ledger",
+          "id": ".agent/WORKSPACE_ISSUES.json",
+          "access": "read"
+        },
+        {
+          "kind": "lane",
+          "id": "workspace-issue/WSI-20260718-008",
+          "access": "write"
+        },
+        {
+          "kind": "output-root",
+          "id": "build/vc5-probes/source-shape-matrix/hud-ui-element-complete-owner",
+          "access": "read"
+        },
+        {
+          "kind": "path",
+          "id": "tests/tools",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/commands/progress_cli.py",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/config/hud_ui_element_complete_owner_source_shape_matrix.json",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/config/vc5_final_build.json",
+          "access": "read"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/lib/progress.py",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/lib/vc5_source_shape_matrix.py",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/README.md",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/recoil.py",
+          "access": "write"
+        },
+        {
+          "kind": "tracker",
+          "id": "recoil",
+          "access": "read"
+        }
+      ],
+      "reservation_id": null,
+      "created": "2026-07-18T17:47:58Z",
+      "updated": "2026-07-18T18:12:24Z",
+      "outcome": "returned"
+    },
+    {
+      "id": "issue:work:wsi-20260718-009-scheduler-test-isolation-r1",
+      "issue_id": "WSI-20260718-009",
+      "state": "closed",
+      "handoff_role": "recoil_tool_maintainer",
+      "scope": "Make scheduler and HUD matrix lifecycle tests hermetic when the real current r2 attempt root exists. Preserve the production fail-closed root-collision behavior and all historical/current matrix evidence; prefer fixture-local injected temporary namespaces and tests-only edits.",
+      "next_command": "python -m unittest tests.tools.recoil_vc5_source_shape_matrix_tests tests.tools.recoil_scheduler_safety_tests tests.tools.recoil_work_prepare_tests",
+      "allowed_paths": [
+        "tests/tools"
+      ],
+      "forbidden_paths": [
+        "build/vc5-probes/source-shape-matrix/hud-ui-element-complete-owner",
+        "tools/_recoil/lib/progress.py",
+        "tools/_recoil/config/hud_ui_element_complete_owner_source_shape_matrix.json",
+        "src",
+        "support",
+        ".agent",
+        ".codex",
+        "Recoil.bndb"
+      ],
+      "validation_commands": [
+        "python -m unittest tests.tools.recoil_vc5_source_shape_matrix_tests tests.tools.recoil_scheduler_safety_tests tests.tools.recoil_work_prepare_tests",
+        "python tools/recoil.py doctor --infrastructure-only",
+        "python tools/recoil.py audit agent-surface --strict",
+        "python tools/recoil.py progress audit --scope all --strict",
+        "python tools/recoil.py issue audit --strict"
+      ],
+      "required_return_fields": [
+        "changed_paths",
+        "exact_test_results",
+        "preserved_evidence_sentinels",
+        "production_collision_gate_evidence",
+        "remaining_gaps",
+        "issue_resolution_candidate"
+      ],
+      "resource_claims": [
+        {
+          "kind": "agent-surface",
+          "id": "recoil-agent-surface",
+          "access": "write"
+        },
+        {
+          "kind": "issue",
+          "id": "WSI-20260718-009",
+          "access": "read"
+        },
+        {
+          "kind": "issue-ledger",
+          "id": ".agent/WORKSPACE_ISSUES.json",
+          "access": "read"
+        },
+        {
+          "kind": "lane",
+          "id": "workspace-issue/WSI-20260718-009",
+          "access": "write"
+        },
+        {
+          "kind": "output-root",
+          "id": "build/vc5-probes/source-shape-matrix/hud-ui-element-complete-owner",
+          "access": "read"
+        },
+        {
+          "kind": "path",
+          "id": "tests/tools",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/config/hud_ui_element_complete_owner_source_shape_matrix.json",
+          "access": "read"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/lib/progress.py",
+          "access": "read"
+        },
+        {
+          "kind": "tracker",
+          "id": "recoil",
+          "access": "read"
+        }
+      ],
+      "reservation_id": null,
+      "created": "2026-07-18T18:26:45Z",
+      "updated": "2026-07-18T18:35:11Z",
+      "outcome": "returned"
+    },
+    {
+      "id": "issue:work:wsi-20260718-010-clock-relative-output-lease-r1",
+      "issue_id": "WSI-20260718-010",
+      "state": "closed",
+      "handoff_role": "recoil_tool_maintainer",
+      "scope": "Repair only the final-clock reservation/output-root integration so a canonical repository-relative output-root from a real issue-work reservation resolves against REPO_ROOT and must equal the exact absolute qualification destination. Preserve exactly-one-output-root-write, active reservation, complete claims, conflict-free, and all traversal/ambiguity/wrong-path rejection gates. Add end-to-end issue-work schema coverage.",
+      "next_command": "python -m unittest tests.tools.recoil_final_clock_qualification_tests tests.tools.recoil_workspace_issues_tests",
+      "allowed_paths": [
+        "tools/_recoil/lib/link_clock_provider.py",
+        "tests/tools/recoil_final_clock_qualification_tests.py",
+        "tests/tools/recoil_workspace_issues_tests.py"
+      ],
+      "forbidden_paths": [
+        "src",
+        "support",
+        ".agent",
+        ".codex",
+        "docs",
+        "build/vc5-clock-qualification",
+        "build/vc5-clock-provider-tooling",
+        "build/vc5-probes",
+        "Recoil.bndb"
+      ],
+      "validation_commands": [
+        "python -m unittest tests.tools.recoil_final_clock_qualification_tests tests.tools.recoil_workspace_issues_tests tests.tools.recoil_vc5_build_tests",
+        "python tools/recoil.py audit agent-surface --strict",
+        "python tools/recoil.py issue audit --strict",
+        "python tools/recoil.py progress audit --scope all --strict",
+        "python tools/recoil.py doctor --infrastructure-only"
+      ],
+      "required_return_fields": [
+        "changed_paths",
+        "exact_test_results",
+        "accepted_issue_lease_shape",
+        "negative_path_gate_results",
+        "production_behavior_preserved",
+        "remaining_gaps",
+        "issue_resolution_candidate"
+      ],
+      "resource_claims": [
+        {
+          "kind": "agent-surface",
+          "id": "recoil-agent-surface",
+          "access": "write"
+        },
+        {
+          "kind": "issue",
+          "id": "WSI-20260718-010",
+          "access": "read"
+        },
+        {
+          "kind": "issue-ledger",
+          "id": ".agent/WORKSPACE_ISSUES.json",
+          "access": "read"
+        },
+        {
+          "kind": "lane",
+          "id": "workspace-issue/WSI-20260718-010",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tests/tools/recoil_final_clock_qualification_tests.py",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tests/tools/recoil_workspace_issues_tests.py",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/commands/workspace_issues.py",
+          "access": "read"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/lib/link_clock_provider.py",
+          "access": "write"
+        },
+        {
+          "kind": "tracker",
+          "id": "recoil",
+          "access": "read"
+        }
+      ],
+      "reservation_id": null,
+      "created": "2026-07-18T18:39:42Z",
+      "updated": "2026-07-18T18:50:50Z",
+      "outcome": "returned"
+    },
+    {
+      "id": "issue:work:wsi-20260718-003-real-clock-qualification-r1",
+      "issue_id": "WSI-20260718-003",
+      "state": "closed",
+      "handoff_role": "recoil_verifier",
+      "scope": "From the validated current HUD matrix variant-C ordinary LINK response file, mechanically construct an exact expanded token bundle specification for the successful 72-object plus resource/library link; seal and validate it against the audited ready-v4 provider; then run exactly one diagnostic T/T2 final-clock qualification under this lease and independently validate its atomic receipt. No source/order/byte/tier/provider-final/final-executable claim is permitted.",
+      "next_command": "python tools/recoil.py build vc5-clock-provider -- seal-bundle --spec build/vc5-clock-qualification/wsi-20260718-003/r1/inputs/bundle-spec.json --output build/vc5-clock-qualification/wsi-20260718-003/r1/inputs/link-input-bundle-v2.json",
+      "allowed_paths": [
+        "build/vc5-clock-qualification/wsi-20260718-003/r1"
+      ],
+      "forbidden_paths": [
+        "tools",
+        "tests",
+        "src",
+        "support",
+        ".agent",
+        ".codex",
+        "build/vc5-clock-provider-tooling/ready-v4",
+        "build/vc5-probes/source-shape-matrix/hud-ui-element-complete-owner",
+        "Recoil.bndb"
+      ],
+      "validation_commands": [
+        "python tools/recoil.py build vc5-clock-provider -- validate --provider-profile build/vc5-clock-provider-tooling/ready-v4/provider-profile-v2.json --link-input-bundle build/vc5-clock-qualification/wsi-20260718-003/r1/inputs/link-input-bundle-v2.json",
+        "python tools/recoil.py verify final-clock-qualification --provider-profile build/vc5-clock-provider-tooling/ready-v4/provider-profile-v2.json --link-input-bundle build/vc5-clock-qualification/wsi-20260718-003/r1/inputs/link-input-bundle-v2.json --time-a 1999-01-22T00:26:50Z --time-b 1999-01-22T00:28:50Z --work-item issue:work:wsi-20260718-003-real-clock-qualification-r1 --reservation-record .agent/WORKSPACE_ISSUES.json --reservation-id issue:work:wsi-20260718-003-real-clock-qualification-r1:attempt:1 --output-root build/vc5-clock-qualification/wsi-20260718-003/r1/qualification --receipt-out build/vc5-clock-qualification/wsi-20260718-003/r1/qualification/qualification-receipt-v2.json --dry-run",
+        "python tools/recoil.py verify final-clock-qualification --provider-profile build/vc5-clock-provider-tooling/ready-v4/provider-profile-v2.json --link-input-bundle build/vc5-clock-qualification/wsi-20260718-003/r1/inputs/link-input-bundle-v2.json --time-a 1999-01-22T00:26:50Z --time-b 1999-01-22T00:28:50Z --work-item issue:work:wsi-20260718-003-real-clock-qualification-r1 --reservation-record .agent/WORKSPACE_ISSUES.json --reservation-id issue:work:wsi-20260718-003-real-clock-qualification-r1:attempt:1 --output-root build/vc5-clock-qualification/wsi-20260718-003/r1/qualification --receipt-out build/vc5-clock-qualification/wsi-20260718-003/r1/qualification/qualification-receipt-v2.json",
+        "python tools/recoil.py verify final-clock-qualification --provider-profile build/vc5-clock-provider-tooling/ready-v4/provider-profile-v2.json --link-input-bundle build/vc5-clock-qualification/wsi-20260718-003/r1/inputs/link-input-bundle-v2.json --validate-receipt build/vc5-clock-qualification/wsi-20260718-003/r1/qualification/qualification-receipt-v2.json"
+      ],
+      "required_return_fields": [
+        "bundle_spec_path_hash_size",
+        "sealed_bundle_path_hash_size_id",
+        "qualification_exit_code",
+        "receipt_path_hash_size_status",
+        "t_t2_comparison",
+        "native_attestation_summary",
+        "acceptance_claims",
+        "changed_paths",
+        "remaining_gaps",
+        "issue_resolution_or_new_issue_candidate"
+      ],
+      "resource_claims": [
+        {
+          "kind": "agent-surface",
+          "id": "recoil-agent-surface",
+          "access": "read"
+        },
+        {
+          "kind": "clock",
+          "id": "vc5-link-environment",
+          "access": "write"
+        },
+        {
+          "kind": "host-toolchain",
+          "id": "vc5sp3",
+          "access": "read"
+        },
+        {
+          "kind": "issue",
+          "id": "WSI-20260718-003",
+          "access": "read"
+        },
+        {
+          "kind": "issue-ledger",
+          "id": ".agent/WORKSPACE_ISSUES.json",
+          "access": "read"
+        },
+        {
+          "kind": "lane",
+          "id": "workspace-issue/WSI-20260718-003",
+          "access": "write"
+        },
+        {
+          "kind": "output-root",
+          "id": "build/vc5-clock-qualification/wsi-20260718-003/r1/qualification",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "build/vc5-clock-provider-tooling/ready-v4",
+          "access": "read"
+        },
+        {
+          "kind": "path",
+          "id": "build/vc5-clock-qualification/wsi-20260718-003/r1/inputs",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "build/vc5-clock-qualification/wsi-20260718-003/r1/temp",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "build/vc5-probes/source-shape-matrix/hud-ui-element-complete-owner/r2-598ff9df4ca9/attempt-1",
+          "access": "read"
+        },
+        {
+          "kind": "reference",
+          "id": "support/sdk/DirectX6/lib",
+          "access": "read"
+        },
+        {
+          "kind": "tracker",
+          "id": "recoil",
+          "access": "read"
+        },
+        {
+          "kind": "whole-project-build",
+          "id": "recoil",
+          "access": "write"
+        }
+      ],
+      "reservation_id": null,
+      "created": "2026-07-18T18:52:05Z",
+      "updated": "2026-07-18T19:05:37Z",
+      "outcome": "returned"
+    },
+    {
+      "id": "issue:work:wsi-20260718-003-clock-qualification-exec-r1",
+      "issue_id": "WSI-20260718-003",
+      "state": "closed",
+      "handoff_role": "recoil_verifier",
+      "scope": "Execution-only real T/T2 qualification using the already sealed and validated immutable link-input bundle. Materialize this packet's fresh combined lease view under execution-lease, revalidate bundle/profile, run the exact dry-run, confirm the reserved qualification root remains absent, then invoke the real qualification exactly once and validate its atomic receipt. Do not rebuild/reseal/modify inputs or make any source/order/byte/tier/provider-final/final-executable claim.",
+      "next_command": "python tools/recoil.py progress work leases --id issue:work:wsi-20260718-003-clock-qualification-exec-r1 --json",
+      "allowed_paths": [
+        "build/vc5-clock-qualification/wsi-20260718-003/r1/execution-lease",
+        "build/vc5-clock-qualification/wsi-20260718-003/r1/temp",
+        "build/vc5-clock-qualification/wsi-20260718-003/r1/qualification"
+      ],
+      "forbidden_paths": [
+        "tools",
+        "tests",
+        "src",
+        "support",
+        ".agent",
+        ".codex",
+        "build/vc5-clock-provider-tooling/ready-v4",
+        "build/vc5-probes/source-shape-matrix/hud-ui-element-complete-owner",
+        "Recoil.bndb"
+      ],
+      "validation_commands": [
+        "python tools/recoil.py build vc5-clock-provider -- validate --provider-profile build/vc5-clock-provider-tooling/ready-v4/provider-profile-v2.json --link-input-bundle build/vc5-clock-qualification/wsi-20260718-003/r1/inputs/link-input-bundle-v2.json",
+        "python tools/recoil.py verify final-clock-qualification --provider-profile build/vc5-clock-provider-tooling/ready-v4/provider-profile-v2.json --link-input-bundle build/vc5-clock-qualification/wsi-20260718-003/r1/inputs/link-input-bundle-v2.json --time-a 1999-01-22T00:26:50Z --time-b 1999-01-22T00:28:50Z --work-item issue:work:wsi-20260718-003-clock-qualification-exec-r1 --reservation-record build/vc5-clock-qualification/wsi-20260718-003/r1/execution-lease/combined-lease.json --reservation-id issue:work:wsi-20260718-003-clock-qualification-exec-r1:attempt:1 --output-root 'D:/Recoil Project/RecoilRebuild/build/vc5-clock-qualification/wsi-20260718-003/r1/qualification' --receipt-out 'D:/Recoil Project/RecoilRebuild/build/vc5-clock-qualification/wsi-20260718-003/r1/qualification/qualification-receipt-v2.json' --dry-run",
+        "python tools/recoil.py verify final-clock-qualification --provider-profile build/vc5-clock-provider-tooling/ready-v4/provider-profile-v2.json --link-input-bundle build/vc5-clock-qualification/wsi-20260718-003/r1/inputs/link-input-bundle-v2.json --time-a 1999-01-22T00:26:50Z --time-b 1999-01-22T00:28:50Z --work-item issue:work:wsi-20260718-003-clock-qualification-exec-r1 --reservation-record build/vc5-clock-qualification/wsi-20260718-003/r1/execution-lease/combined-lease.json --reservation-id issue:work:wsi-20260718-003-clock-qualification-exec-r1:attempt:1 --output-root 'D:/Recoil Project/RecoilRebuild/build/vc5-clock-qualification/wsi-20260718-003/r1/qualification' --receipt-out 'D:/Recoil Project/RecoilRebuild/build/vc5-clock-qualification/wsi-20260718-003/r1/qualification/qualification-receipt-v2.json'",
+        "python tools/recoil.py verify final-clock-qualification --provider-profile build/vc5-clock-provider-tooling/ready-v4/provider-profile-v2.json --link-input-bundle build/vc5-clock-qualification/wsi-20260718-003/r1/inputs/link-input-bundle-v2.json --validate-receipt build/vc5-clock-qualification/wsi-20260718-003/r1/qualification/qualification-receipt-v2.json"
+      ],
+      "required_return_fields": [
+        "current_combined_lease_path_hash_size",
+        "qualification_exit_code",
+        "receipt_path_hash_size_status",
+        "t_t2_comparison",
+        "native_attestation_summary",
+        "immutable_input_result",
+        "acceptance_claims",
+        "changed_paths",
+        "remaining_gaps",
+        "issue_resolution_or_new_issue_candidate"
+      ],
+      "resource_claims": [
+        {
+          "kind": "agent-surface",
+          "id": "recoil-agent-surface",
+          "access": "read"
+        },
+        {
+          "kind": "clock",
+          "id": "vc5-link-environment",
+          "access": "write"
+        },
+        {
+          "kind": "host-toolchain",
+          "id": "vc5sp3",
+          "access": "read"
+        },
+        {
+          "kind": "issue",
+          "id": "WSI-20260718-003",
+          "access": "read"
+        },
+        {
+          "kind": "issue-ledger",
+          "id": ".agent/WORKSPACE_ISSUES.json",
+          "access": "read"
+        },
+        {
+          "kind": "lane",
+          "id": "workspace-issue/WSI-20260718-003",
+          "access": "write"
+        },
+        {
+          "kind": "output-root",
+          "id": "build/vc5-clock-qualification/wsi-20260718-003/r1/qualification",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "build/vc5-clock-provider-tooling/ready-v4",
+          "access": "read"
+        },
+        {
+          "kind": "path",
+          "id": "build/vc5-clock-qualification/wsi-20260718-003/r1/execution-lease",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "build/vc5-clock-qualification/wsi-20260718-003/r1/inputs",
+          "access": "read"
+        },
+        {
+          "kind": "path",
+          "id": "build/vc5-clock-qualification/wsi-20260718-003/r1/temp",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "build/vc5-probes/source-shape-matrix/hud-ui-element-complete-owner/r2-598ff9df4ca9/attempt-1",
+          "access": "read"
+        },
+        {
+          "kind": "reference",
+          "id": "support/sdk/DirectX6/lib",
+          "access": "read"
+        },
+        {
+          "kind": "tracker",
+          "id": "recoil",
+          "access": "read"
+        },
+        {
+          "kind": "whole-project-build",
+          "id": "recoil",
+          "access": "write"
+        }
+      ],
+      "reservation_id": null,
+      "created": "2026-07-18T19:06:40Z",
+      "updated": "2026-07-18T19:15:56Z",
+      "outcome": "returned"
+    },
+    {
+      "id": "issue:work:wsi-20260718-011-clock-runtime-closure-r1",
+      "issue_id": "WSI-20260718-011",
+      "state": "closed",
+      "handoff_role": "recoil_tool_maintainer",
+      "scope": "Make VC5 process-local clock provider/profile/bundle validation fail closed on the exact LINK.EXE runtime DLL dependency closure. Bind and validate MSDIS100.DLL, MSPDB50.DLL, and MSVCP50.DLL plus their unique clean-PATH resolution before invocation, while preserving exactly-one profiled CVTRES resolution and existing reservation/clock semantics. Rebuild a fresh canonical ready-v5 provider/profile if profile binding changes; never alter or retry preserved r1 qualification evidence.",
+      "next_command": "python -m unittest tests.tools.recoil_final_clock_qualification_tests tests.tools.recoil_vc5_build_tests",
+      "allowed_paths": [
+        "tools/_recoil/lib/link_clock_provider.py",
+        "tools/_recoil/commands/vc5_link_clock_provider.py",
+        "tools/_recoil/commands/final_clock_qualification.py",
+        "tests/tools/recoil_final_clock_qualification_tests.py",
+        "tests/tools/recoil_vc5_build_tests.py",
+        "tools/README.md",
+        "docs/reconstruction/retail_executable_reproduction.md",
+        ".codex/skills/recoil-vc5-final-build/SKILL.md",
+        ".codex/skills/recoil-validation/SKILL.md",
+        "build/vc5-clock-provider-tooling/ready-v5"
+      ],
+      "forbidden_paths": [
+        "build/vc5-clock-qualification/wsi-20260718-003/r1",
+        "build/vc5-clock-provider-tooling/ready-v4",
+        "src",
+        "support",
+        ".agent",
+        "Recoil.bndb"
+      ],
+      "validation_commands": [
+        "python -m unittest tests.tools.recoil_final_clock_qualification_tests tests.tools.recoil_vc5_build_tests tests.tools.recoil_workspace_issues_tests",
+        "python tools/recoil.py build vc5-clock-provider -- build --output-root build/vc5-clock-provider-tooling/ready-v5",
+        "python tools/recoil.py audit agent-surface --strict",
+        "python tools/recoil.py issue audit --strict",
+        "python tools/recoil.py progress audit --scope all --strict",
+        "python tools/recoil.py doctor --infrastructure-only"
+      ],
+      "required_return_fields": [
+        "changed_paths",
+        "exact_test_results",
+        "enforced_runtime_dependency_contract",
+        "ready_v5_artifact_hashes",
+        "native_smoke_result",
+        "preserved_r1_sentinels",
+        "remaining_gaps",
+        "issue_resolution_candidate"
+      ],
+      "resource_claims": [
+        {
+          "kind": "agent-surface",
+          "id": "recoil-agent-surface",
+          "access": "write"
+        },
+        {
+          "kind": "clock",
+          "id": "vc5-link-environment",
+          "access": "write"
+        },
+        {
+          "kind": "host-toolchain",
+          "id": "vc5sp3",
+          "access": "read"
+        },
+        {
+          "kind": "issue",
+          "id": "WSI-20260718-011",
+          "access": "read"
+        },
+        {
+          "kind": "issue-ledger",
+          "id": ".agent/WORKSPACE_ISSUES.json",
+          "access": "read"
+        },
+        {
+          "kind": "lane",
+          "id": "workspace-issue/WSI-20260718-011",
+          "access": "write"
+        },
+        {
+          "kind": "output-root",
+          "id": "build/vc5-clock-provider-tooling/ready-v5",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": ".codex/skills/recoil-validation/SKILL.md",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": ".codex/skills/recoil-vc5-final-build/SKILL.md",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "docs/reconstruction/retail_executable_reproduction.md",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tests/tools/recoil_final_clock_qualification_tests.py",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tests/tools/recoil_vc5_build_tests.py",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/commands/final_clock_qualification.py",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/commands/vc5_link_clock_provider.py",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/lib/link_clock_provider.py",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/README.md",
+          "access": "write"
+        },
+        {
+          "kind": "tracker",
+          "id": "recoil",
+          "access": "read"
+        }
+      ],
+      "reservation_id": null,
+      "created": "2026-07-18T19:17:48Z",
+      "updated": "2026-07-18T19:37:48Z",
+      "outcome": "returned"
+    },
+    {
+      "id": "issue:work:wsi-20260718-003-clock-qualification-r2",
+      "issue_id": "WSI-20260718-003",
+      "state": "closed",
+      "handoff_role": "recoil_verifier",
+      "scope": "Prepare a fresh r2 immutable link-input bundle from the current HUD matrix variant-C LINK response file and the audited ready-v5 provider/runtime closure; materialize this packet lease; validate and dry-run; then invoke exactly one real T/T2 qualification and validate its atomic receipt. Preserve all r1 evidence and make no source/order/byte/tier/provider-final/final-executable claim.",
+      "next_command": "python tools/recoil.py progress work leases --id issue:work:wsi-20260718-003-clock-qualification-r2 --json",
+      "allowed_paths": [
+        "build/vc5-clock-qualification/wsi-20260718-003/r2"
+      ],
+      "forbidden_paths": [
+        "tools",
+        "tests",
+        "src",
+        "support",
+        ".agent",
+        ".codex",
+        "build/vc5-clock-qualification/wsi-20260718-003/r1",
+        "build/vc5-clock-provider-tooling/ready-v5",
+        "build/vc5-probes/source-shape-matrix/hud-ui-element-complete-owner",
+        "Recoil.bndb"
+      ],
+      "validation_commands": [
+        "python tools/recoil.py build vc5-clock-provider -- validate --provider-profile build/vc5-clock-provider-tooling/ready-v5/provider-profile-v2.json --link-input-bundle build/vc5-clock-qualification/wsi-20260718-003/r2/inputs/link-input-bundle-v2.json",
+        "python tools/recoil.py verify final-clock-qualification --provider-profile build/vc5-clock-provider-tooling/ready-v5/provider-profile-v2.json --link-input-bundle build/vc5-clock-qualification/wsi-20260718-003/r2/inputs/link-input-bundle-v2.json --time-a 1999-01-22T00:26:50Z --time-b 1999-01-22T00:28:50Z --work-item issue:work:wsi-20260718-003-clock-qualification-r2 --reservation-record build/vc5-clock-qualification/wsi-20260718-003/r2/execution-lease/combined-lease.json --reservation-id issue:work:wsi-20260718-003-clock-qualification-r2:attempt:1 --output-root 'D:/Recoil Project/RecoilRebuild/build/vc5-clock-qualification/wsi-20260718-003/r2/qualification' --receipt-out 'D:/Recoil Project/RecoilRebuild/build/vc5-clock-qualification/wsi-20260718-003/r2/qualification/qualification-receipt-v2.json' --dry-run",
+        "python tools/recoil.py verify final-clock-qualification --provider-profile build/vc5-clock-provider-tooling/ready-v5/provider-profile-v2.json --link-input-bundle build/vc5-clock-qualification/wsi-20260718-003/r2/inputs/link-input-bundle-v2.json --time-a 1999-01-22T00:26:50Z --time-b 1999-01-22T00:28:50Z --work-item issue:work:wsi-20260718-003-clock-qualification-r2 --reservation-record build/vc5-clock-qualification/wsi-20260718-003/r2/execution-lease/combined-lease.json --reservation-id issue:work:wsi-20260718-003-clock-qualification-r2:attempt:1 --output-root 'D:/Recoil Project/RecoilRebuild/build/vc5-clock-qualification/wsi-20260718-003/r2/qualification' --receipt-out 'D:/Recoil Project/RecoilRebuild/build/vc5-clock-qualification/wsi-20260718-003/r2/qualification/qualification-receipt-v2.json'",
+        "python tools/recoil.py verify final-clock-qualification --provider-profile build/vc5-clock-provider-tooling/ready-v5/provider-profile-v2.json --link-input-bundle build/vc5-clock-qualification/wsi-20260718-003/r2/inputs/link-input-bundle-v2.json --validate-receipt build/vc5-clock-qualification/wsi-20260718-003/r2/qualification/qualification-receipt-v2.json"
+      ],
+      "required_return_fields": [
+        "current_combined_lease_path_hash_size",
+        "bundle_spec_path_hash_size",
+        "sealed_bundle_path_hash_size_id",
+        "qualification_exit_code",
+        "receipt_path_hash_size_status",
+        "t_t2_comparison",
+        "native_attestation_summary",
+        "immutable_input_result",
+        "acceptance_claims",
+        "changed_paths",
+        "remaining_gaps",
+        "issue_resolution_or_new_issue_candidate"
+      ],
+      "resource_claims": [
+        {
+          "kind": "agent-surface",
+          "id": "recoil-agent-surface",
+          "access": "read"
+        },
+        {
+          "kind": "clock",
+          "id": "vc5-link-environment",
+          "access": "write"
+        },
+        {
+          "kind": "host-toolchain",
+          "id": "vc5sp3",
+          "access": "read"
+        },
+        {
+          "kind": "issue",
+          "id": "WSI-20260718-003",
+          "access": "read"
+        },
+        {
+          "kind": "issue-ledger",
+          "id": ".agent/WORKSPACE_ISSUES.json",
+          "access": "read"
+        },
+        {
+          "kind": "lane",
+          "id": "workspace-issue/WSI-20260718-003",
+          "access": "write"
+        },
+        {
+          "kind": "output-root",
+          "id": "build/vc5-clock-qualification/wsi-20260718-003/r2/qualification",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "build/vc5-clock-provider-tooling/ready-v5",
+          "access": "read"
+        },
+        {
+          "kind": "path",
+          "id": "build/vc5-clock-qualification/wsi-20260718-003/r2/execution-lease",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "build/vc5-clock-qualification/wsi-20260718-003/r2/inputs",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "build/vc5-clock-qualification/wsi-20260718-003/r2/temp",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "build/vc5-probes/source-shape-matrix/hud-ui-element-complete-owner/r2-598ff9df4ca9/attempt-1",
+          "access": "read"
+        },
+        {
+          "kind": "reference",
+          "id": "support/sdk/DirectX6/lib",
+          "access": "read"
+        },
+        {
+          "kind": "tracker",
+          "id": "recoil",
+          "access": "read"
+        },
+        {
+          "kind": "whole-project-build",
+          "id": "recoil",
+          "access": "write"
+        }
+      ],
+      "reservation_id": null,
+      "created": "2026-07-18T19:41:24Z",
+      "updated": "2026-07-18T19:58:57Z",
+      "outcome": "returned"
+    }
+  ],
+  "reservations": [
+    {
+      "id": "issue:work:wsi-20260718-005-bootstrap-review-r1:attempt:1",
+      "packet_id": "issue:work:wsi-20260718-005-bootstrap-review-r1",
+      "state": "released",
+      "created": "2026-07-18T14:48:36Z",
+      "released": "2026-07-18T15:04:25Z",
+      "outcome": "returned",
+      "evidence_ids": [
+        "tests:workspace-issues-scheduler-agent-surface-cli-169-pass",
+        "audit:agent-surface-strict-pass",
+        "doctor:infrastructure-9-of-9-pass"
+      ],
+      "resource_claims": [
+        {
+          "kind": "agent-surface",
+          "id": "recoil-agent-surface",
+          "access": "write"
+        },
+        {
+          "kind": "issue",
+          "id": "WSI-20260718-005",
+          "access": "read"
+        },
+        {
+          "kind": "issue-ledger",
+          "id": ".agent/WORKSPACE_ISSUES.json",
+          "access": "read"
+        },
+        {
+          "kind": "lane",
+          "id": "workspace-issue/WSI-20260718-005",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tests/tools",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/README.md",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/recoil.py",
+          "access": "write"
+        },
+        {
+          "kind": "tracker",
+          "id": "recoil",
+          "access": "read"
+        }
+      ],
+      "expires": null
+    },
+    {
+      "id": "issue:work:wsi-20260718-004-matrix-runtime-r1:attempt:1",
+      "packet_id": "issue:work:wsi-20260718-004-matrix-runtime-r1",
+      "state": "released",
+      "created": "2026-07-18T15:06:56Z",
+      "released": "2026-07-18T15:36:45Z",
+      "outcome": "returned",
+      "evidence_ids": [
+        "tests:matrix-15-pass",
+        "tests:matrix-scheduler-work-agent-cli-186-pass",
+        "audit:agent-surface-issue-workspace-pass",
+        "doctor:infrastructure-9-of-9-pass"
+      ],
+      "resource_claims": [
+        {
+          "kind": "agent-surface",
+          "id": "recoil-agent-surface",
+          "access": "write"
+        },
+        {
+          "kind": "host-path",
+          "id": "D:/Recoil Project/Compiler/VC5SP3",
+          "access": "read"
+        },
+        {
+          "kind": "issue",
+          "id": "WSI-20260718-004",
+          "access": "read"
+        },
+        {
+          "kind": "issue-ledger",
+          "id": ".agent/WORKSPACE_ISSUES.json",
+          "access": "read"
+        },
+        {
+          "kind": "lane",
+          "id": "workspace-issue/WSI-20260718-004",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "src",
+          "access": "read"
+        },
+        {
+          "kind": "path",
+          "id": "tests/tools",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/commands/progress_cli.py",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/commands/vc5_source_shape_matrix.py",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/config/hud_ui_element_complete_owner_source_shape_matrix.json",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/lib/progress.py",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/lib/vc5_source_shape_matrix.py",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/README.md",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/recoil.py",
+          "access": "write"
+        },
+        {
+          "kind": "reference",
+          "id": "support/Recoil.exe",
+          "access": "read"
+        },
+        {
+          "kind": "tracker",
+          "id": "recoil",
+          "access": "read"
+        }
+      ],
+      "expires": null
+    },
+    {
+      "id": "issue:work:wsi-20260718-004-reservation-preflight-r2:attempt:1",
+      "packet_id": "issue:work:wsi-20260718-004-reservation-preflight-r2",
+      "state": "released",
+      "created": "2026-07-18T15:45:12Z",
+      "released": "2026-07-18T15:51:05Z",
+      "outcome": "returned",
+      "evidence_ids": [
+        "sha256:786d0a3bfe66188d01046fc1ef78c22d57097365fdee391499f870c917d39841"
+      ],
+      "resource_claims": [
+        {
+          "kind": "agent-surface",
+          "id": "recoil-agent-surface",
+          "access": "write"
+        },
+        {
+          "kind": "issue",
+          "id": "WSI-20260718-004",
+          "access": "read"
+        },
+        {
+          "kind": "issue-ledger",
+          "id": ".agent/WORKSPACE_ISSUES.json",
+          "access": "read"
+        },
+        {
+          "kind": "lane",
+          "id": "workspace-issue/WSI-20260718-004",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "src",
+          "access": "read"
+        },
+        {
+          "kind": "path",
+          "id": "tests/tools/recoil_vc5_source_shape_matrix_tests.py",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/commands/vc5_source_shape_matrix.py",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/config/hud_ui_element_complete_owner_source_shape_matrix.json",
+          "access": "read"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/lib/vc5_source_shape_matrix.py",
+          "access": "write"
+        },
+        {
+          "kind": "reference",
+          "id": "support/Recoil.exe",
+          "access": "read"
+        },
+        {
+          "kind": "tracker",
+          "id": "recoil",
+          "access": "read"
+        }
+      ],
+      "expires": null
+    },
+    {
+      "id": "issue:work:wsi-20260718-006-scheduler-retry-r1:attempt:1",
+      "packet_id": "issue:work:wsi-20260718-006-scheduler-retry-r1",
+      "state": "released",
+      "created": "2026-07-18T15:53:49Z",
+      "released": "2026-07-18T16:15:30Z",
+      "outcome": "returned",
+      "evidence_ids": [
+        "sha256:d706ec45885b261a107679eccf57e18db69fd792c01a1aa505256c085c9e73a3"
+      ],
+      "resource_claims": [
+        {
+          "kind": "agent-surface",
+          "id": "recoil-agent-surface",
+          "access": "write"
+        },
+        {
+          "kind": "issue",
+          "id": "WSI-20260718-006",
+          "access": "read"
+        },
+        {
+          "kind": "issue-ledger",
+          "id": ".agent/WORKSPACE_ISSUES.json",
+          "access": "read"
+        },
+        {
+          "kind": "lane",
+          "id": "workspace-issue/WSI-20260718-006",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tests/tools",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/commands/progress_cli.py",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/lib/progress.py",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/README.md",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/recoil.py",
+          "access": "write"
+        },
+        {
+          "kind": "tracker",
+          "id": "recoil",
+          "access": "read"
+        }
+      ],
+      "expires": null
+    },
+    {
+      "id": "issue:work:wsi-20260718-003-process-clock-provider-r1:attempt:1",
+      "packet_id": "issue:work:wsi-20260718-003-process-clock-provider-r1",
+      "state": "released",
+      "created": "2026-07-18T16:28:32Z",
+      "released": "2026-07-18T17:36:51Z",
+      "outcome": "returned",
+      "evidence_ids": [
+        "sha256:bff51e3e1579c53494c5ccc3a2ce9a2a415c7e46e6855a6b8380a056f9efb019"
+      ],
+      "resource_claims": [
+        {
+          "kind": "agent-surface",
+          "id": "recoil-agent-surface",
+          "access": "write"
+        },
+        {
+          "kind": "host-path",
+          "id": "D:/Recoil-Project/Compiler/VC5SP3",
+          "access": "read"
+        },
+        {
+          "kind": "issue",
+          "id": "WSI-20260718-003",
+          "access": "read"
+        },
+        {
+          "kind": "issue-ledger",
+          "id": ".agent/WORKSPACE_ISSUES.json",
+          "access": "read"
+        },
+        {
+          "kind": "lane",
+          "id": "workspace-issue/WSI-20260718-003",
+          "access": "write"
+        },
+        {
+          "kind": "output-root",
+          "id": "build/vc5-clock-provider-tooling",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": ".codex/skills/recoil-validation/SKILL.md",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": ".codex/skills/recoil-vc5-final-build/SKILL.md",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "docs/reconstruction/retail_executable_reproduction.md",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tests/tools",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/commands/final_clock_qualification.py",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/commands/vc5_build.py",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/commands/vc5_link_clock_provider.py",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/config/vc5_final_build.json",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/lib",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/native",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/README.md",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/recoil.py",
+          "access": "write"
+        },
+        {
+          "kind": "tracker",
+          "id": "recoil",
+          "access": "read"
+        }
+      ],
+      "expires": null
+    },
+    {
+      "id": "issue:work:wsi-20260718-007-matrix-test-isolation-r1:attempt:1",
+      "packet_id": "issue:work:wsi-20260718-007-matrix-test-isolation-r1",
+      "state": "released",
+      "created": "2026-07-18T17:38:09Z",
+      "released": "2026-07-18T17:45:48Z",
+      "outcome": "returned",
+      "evidence_ids": [
+        "sha256:a43b2fe6cf85065fa75d58749a09cdcf835d7d68dd308a3a9b00639c2a6d8b15"
+      ],
+      "resource_claims": [
+        {
+          "kind": "agent-surface",
+          "id": "recoil-agent-surface",
+          "access": "write"
+        },
+        {
+          "kind": "issue",
+          "id": "WSI-20260718-007",
+          "access": "read"
+        },
+        {
+          "kind": "issue-ledger",
+          "id": ".agent/WORKSPACE_ISSUES.json",
+          "access": "read"
+        },
+        {
+          "kind": "lane",
+          "id": "workspace-issue/WSI-20260718-007",
+          "access": "write"
+        },
+        {
+          "kind": "output-root",
+          "id": "build/vc5-probes/source-shape-matrix/hud-ui-element-complete-owner",
+          "access": "read"
+        },
+        {
+          "kind": "path",
+          "id": "tests/tools/recoil_vc5_source_shape_matrix_tests.py",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/lib/vc5_source_shape_matrix.py",
+          "access": "read"
+        },
+        {
+          "kind": "tracker",
+          "id": "recoil",
+          "access": "read"
+        }
+      ],
+      "expires": null
+    },
+    {
+      "id": "issue:work:wsi-20260718-008-matrix-dependency-refresh-r1:attempt:1",
+      "packet_id": "issue:work:wsi-20260718-008-matrix-dependency-refresh-r1",
+      "state": "released",
+      "created": "2026-07-18T17:48:16Z",
+      "released": "2026-07-18T18:12:24Z",
+      "outcome": "returned",
+      "evidence_ids": [
+        "sha256:598ff9df4ca985e5cae6fe733784823710e94984cad280179ebadc5df2c35695"
+      ],
+      "resource_claims": [
+        {
+          "kind": "agent-surface",
+          "id": "recoil-agent-surface",
+          "access": "write"
+        },
+        {
+          "kind": "issue",
+          "id": "WSI-20260718-008",
+          "access": "read"
+        },
+        {
+          "kind": "issue-ledger",
+          "id": ".agent/WORKSPACE_ISSUES.json",
+          "access": "read"
+        },
+        {
+          "kind": "lane",
+          "id": "workspace-issue/WSI-20260718-008",
+          "access": "write"
+        },
+        {
+          "kind": "output-root",
+          "id": "build/vc5-probes/source-shape-matrix/hud-ui-element-complete-owner",
+          "access": "read"
+        },
+        {
+          "kind": "path",
+          "id": "tests/tools",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/commands/progress_cli.py",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/config/hud_ui_element_complete_owner_source_shape_matrix.json",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/config/vc5_final_build.json",
+          "access": "read"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/lib/progress.py",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/lib/vc5_source_shape_matrix.py",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/README.md",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/recoil.py",
+          "access": "write"
+        },
+        {
+          "kind": "tracker",
+          "id": "recoil",
+          "access": "read"
+        }
+      ],
+      "expires": null
+    },
+    {
+      "id": "issue:work:wsi-20260718-009-scheduler-test-isolation-r1:attempt:1",
+      "packet_id": "issue:work:wsi-20260718-009-scheduler-test-isolation-r1",
+      "state": "released",
+      "created": "2026-07-18T18:26:56Z",
+      "released": "2026-07-18T18:35:11Z",
+      "outcome": "returned",
+      "evidence_ids": [
+        "sha256:02ea81b95575471709f14c3286b9b62df41ddec7d7c4466f6e11aa4c74fd2e09"
+      ],
+      "resource_claims": [
+        {
+          "kind": "agent-surface",
+          "id": "recoil-agent-surface",
+          "access": "write"
+        },
+        {
+          "kind": "issue",
+          "id": "WSI-20260718-009",
+          "access": "read"
+        },
+        {
+          "kind": "issue-ledger",
+          "id": ".agent/WORKSPACE_ISSUES.json",
+          "access": "read"
+        },
+        {
+          "kind": "lane",
+          "id": "workspace-issue/WSI-20260718-009",
+          "access": "write"
+        },
+        {
+          "kind": "output-root",
+          "id": "build/vc5-probes/source-shape-matrix/hud-ui-element-complete-owner",
+          "access": "read"
+        },
+        {
+          "kind": "path",
+          "id": "tests/tools",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/config/hud_ui_element_complete_owner_source_shape_matrix.json",
+          "access": "read"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/lib/progress.py",
+          "access": "read"
+        },
+        {
+          "kind": "tracker",
+          "id": "recoil",
+          "access": "read"
+        }
+      ],
+      "expires": null
+    },
+    {
+      "id": "issue:work:wsi-20260718-010-clock-relative-output-lease-r1:attempt:1",
+      "packet_id": "issue:work:wsi-20260718-010-clock-relative-output-lease-r1",
+      "state": "released",
+      "created": "2026-07-18T18:39:57Z",
+      "released": "2026-07-18T18:50:50Z",
+      "outcome": "returned",
+      "evidence_ids": [
+        "sha256:ffc6dc61c893f62b65f498693cf4df1aea24928e8fde3009e98f952cb78ad302"
+      ],
+      "resource_claims": [
+        {
+          "kind": "agent-surface",
+          "id": "recoil-agent-surface",
+          "access": "write"
+        },
+        {
+          "kind": "issue",
+          "id": "WSI-20260718-010",
+          "access": "read"
+        },
+        {
+          "kind": "issue-ledger",
+          "id": ".agent/WORKSPACE_ISSUES.json",
+          "access": "read"
+        },
+        {
+          "kind": "lane",
+          "id": "workspace-issue/WSI-20260718-010",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tests/tools/recoil_final_clock_qualification_tests.py",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tests/tools/recoil_workspace_issues_tests.py",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/commands/workspace_issues.py",
+          "access": "read"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/lib/link_clock_provider.py",
+          "access": "write"
+        },
+        {
+          "kind": "tracker",
+          "id": "recoil",
+          "access": "read"
+        }
+      ],
+      "expires": null
+    },
+    {
+      "id": "issue:work:wsi-20260718-003-real-clock-qualification-r1:attempt:1",
+      "packet_id": "issue:work:wsi-20260718-003-real-clock-qualification-r1",
+      "state": "released",
+      "created": "2026-07-18T18:52:22Z",
+      "released": "2026-07-18T19:05:37Z",
+      "outcome": "returned",
+      "evidence_ids": [
+        "sha256:8060ef108f59f2c40724828531b3a20fa6a246dd26ddaa94e9ae21a054f4136f"
+      ],
+      "resource_claims": [
+        {
+          "kind": "agent-surface",
+          "id": "recoil-agent-surface",
+          "access": "read"
+        },
+        {
+          "kind": "clock",
+          "id": "vc5-link-environment",
+          "access": "write"
+        },
+        {
+          "kind": "host-toolchain",
+          "id": "vc5sp3",
+          "access": "read"
+        },
+        {
+          "kind": "issue",
+          "id": "WSI-20260718-003",
+          "access": "read"
+        },
+        {
+          "kind": "issue-ledger",
+          "id": ".agent/WORKSPACE_ISSUES.json",
+          "access": "read"
+        },
+        {
+          "kind": "lane",
+          "id": "workspace-issue/WSI-20260718-003",
+          "access": "write"
+        },
+        {
+          "kind": "output-root",
+          "id": "build/vc5-clock-qualification/wsi-20260718-003/r1/qualification",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "build/vc5-clock-provider-tooling/ready-v4",
+          "access": "read"
+        },
+        {
+          "kind": "path",
+          "id": "build/vc5-clock-qualification/wsi-20260718-003/r1/inputs",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "build/vc5-clock-qualification/wsi-20260718-003/r1/temp",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "build/vc5-probes/source-shape-matrix/hud-ui-element-complete-owner/r2-598ff9df4ca9/attempt-1",
+          "access": "read"
+        },
+        {
+          "kind": "reference",
+          "id": "support/sdk/DirectX6/lib",
+          "access": "read"
+        },
+        {
+          "kind": "tracker",
+          "id": "recoil",
+          "access": "read"
+        },
+        {
+          "kind": "whole-project-build",
+          "id": "recoil",
+          "access": "write"
+        }
+      ],
+      "expires": null
+    },
+    {
+      "id": "issue:work:wsi-20260718-003-clock-qualification-exec-r1:attempt:1",
+      "packet_id": "issue:work:wsi-20260718-003-clock-qualification-exec-r1",
+      "state": "released",
+      "created": "2026-07-18T19:06:51Z",
+      "released": "2026-07-18T19:15:56Z",
+      "outcome": "returned",
+      "evidence_ids": [
+        "sha256:8a28ec21881ace36c14a6001fac308c06b3043abe619883bc7240472600896f2"
+      ],
+      "resource_claims": [
+        {
+          "kind": "agent-surface",
+          "id": "recoil-agent-surface",
+          "access": "read"
+        },
+        {
+          "kind": "clock",
+          "id": "vc5-link-environment",
+          "access": "write"
+        },
+        {
+          "kind": "host-toolchain",
+          "id": "vc5sp3",
+          "access": "read"
+        },
+        {
+          "kind": "issue",
+          "id": "WSI-20260718-003",
+          "access": "read"
+        },
+        {
+          "kind": "issue-ledger",
+          "id": ".agent/WORKSPACE_ISSUES.json",
+          "access": "read"
+        },
+        {
+          "kind": "lane",
+          "id": "workspace-issue/WSI-20260718-003",
+          "access": "write"
+        },
+        {
+          "kind": "output-root",
+          "id": "build/vc5-clock-qualification/wsi-20260718-003/r1/qualification",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "build/vc5-clock-provider-tooling/ready-v4",
+          "access": "read"
+        },
+        {
+          "kind": "path",
+          "id": "build/vc5-clock-qualification/wsi-20260718-003/r1/execution-lease",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "build/vc5-clock-qualification/wsi-20260718-003/r1/inputs",
+          "access": "read"
+        },
+        {
+          "kind": "path",
+          "id": "build/vc5-clock-qualification/wsi-20260718-003/r1/temp",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "build/vc5-probes/source-shape-matrix/hud-ui-element-complete-owner/r2-598ff9df4ca9/attempt-1",
+          "access": "read"
+        },
+        {
+          "kind": "reference",
+          "id": "support/sdk/DirectX6/lib",
+          "access": "read"
+        },
+        {
+          "kind": "tracker",
+          "id": "recoil",
+          "access": "read"
+        },
+        {
+          "kind": "whole-project-build",
+          "id": "recoil",
+          "access": "write"
+        }
+      ],
+      "expires": null
+    },
+    {
+      "id": "issue:work:wsi-20260718-011-clock-runtime-closure-r1:attempt:1",
+      "packet_id": "issue:work:wsi-20260718-011-clock-runtime-closure-r1",
+      "state": "released",
+      "created": "2026-07-18T19:18:02Z",
+      "released": "2026-07-18T19:37:48Z",
+      "outcome": "returned",
+      "evidence_ids": [
+        "sha256:abdcee68f1cc3fb9883ee84b61c9f7ae5e48aada53912fe90472b071c1147398"
+      ],
+      "resource_claims": [
+        {
+          "kind": "agent-surface",
+          "id": "recoil-agent-surface",
+          "access": "write"
+        },
+        {
+          "kind": "clock",
+          "id": "vc5-link-environment",
+          "access": "write"
+        },
+        {
+          "kind": "host-toolchain",
+          "id": "vc5sp3",
+          "access": "read"
+        },
+        {
+          "kind": "issue",
+          "id": "WSI-20260718-011",
+          "access": "read"
+        },
+        {
+          "kind": "issue-ledger",
+          "id": ".agent/WORKSPACE_ISSUES.json",
+          "access": "read"
+        },
+        {
+          "kind": "lane",
+          "id": "workspace-issue/WSI-20260718-011",
+          "access": "write"
+        },
+        {
+          "kind": "output-root",
+          "id": "build/vc5-clock-provider-tooling/ready-v5",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": ".codex/skills/recoil-validation/SKILL.md",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": ".codex/skills/recoil-vc5-final-build/SKILL.md",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "docs/reconstruction/retail_executable_reproduction.md",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tests/tools/recoil_final_clock_qualification_tests.py",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tests/tools/recoil_vc5_build_tests.py",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/commands/final_clock_qualification.py",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/commands/vc5_link_clock_provider.py",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/_recoil/lib/link_clock_provider.py",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "tools/README.md",
+          "access": "write"
+        },
+        {
+          "kind": "tracker",
+          "id": "recoil",
+          "access": "read"
+        }
+      ],
+      "expires": null
+    },
+    {
+      "id": "issue:work:wsi-20260718-003-clock-qualification-r2:attempt:1",
+      "packet_id": "issue:work:wsi-20260718-003-clock-qualification-r2",
+      "state": "released",
+      "created": "2026-07-18T19:41:43Z",
+      "released": "2026-07-18T19:58:57Z",
+      "outcome": "returned",
+      "evidence_ids": [
+        "sha256:09bff1a409d98fe506f152b9cd9918cf80668d629057e7e120fbfc7a7b8d8700"
+      ],
+      "resource_claims": [
+        {
+          "kind": "agent-surface",
+          "id": "recoil-agent-surface",
+          "access": "read"
+        },
+        {
+          "kind": "clock",
+          "id": "vc5-link-environment",
+          "access": "write"
+        },
+        {
+          "kind": "host-toolchain",
+          "id": "vc5sp3",
+          "access": "read"
+        },
+        {
+          "kind": "issue",
+          "id": "WSI-20260718-003",
+          "access": "read"
+        },
+        {
+          "kind": "issue-ledger",
+          "id": ".agent/WORKSPACE_ISSUES.json",
+          "access": "read"
+        },
+        {
+          "kind": "lane",
+          "id": "workspace-issue/WSI-20260718-003",
+          "access": "write"
+        },
+        {
+          "kind": "output-root",
+          "id": "build/vc5-clock-qualification/wsi-20260718-003/r2/qualification",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "build/vc5-clock-provider-tooling/ready-v5",
+          "access": "read"
+        },
+        {
+          "kind": "path",
+          "id": "build/vc5-clock-qualification/wsi-20260718-003/r2/execution-lease",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "build/vc5-clock-qualification/wsi-20260718-003/r2/inputs",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "build/vc5-clock-qualification/wsi-20260718-003/r2/temp",
+          "access": "write"
+        },
+        {
+          "kind": "path",
+          "id": "build/vc5-probes/source-shape-matrix/hud-ui-element-complete-owner/r2-598ff9df4ca9/attempt-1",
+          "access": "read"
+        },
+        {
+          "kind": "reference",
+          "id": "support/sdk/DirectX6/lib",
+          "access": "read"
+        },
+        {
+          "kind": "tracker",
+          "id": "recoil",
+          "access": "read"
+        },
+        {
+          "kind": "whole-project-build",
+          "id": "recoil",
+          "access": "write"
+        }
+      ],
+      "expires": null
     }
   ]
 }

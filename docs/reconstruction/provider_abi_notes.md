@@ -45,7 +45,7 @@ the unified reconstruction tracker, or per-target VC verification evidence.
   class evidence does not fit, or real provider headers/types. If a
   free-function pointer with `self` in `ecx` is the only current model, the
   source is not reimplemented and the affected entry must stay
-  `Reimplemented [X]`/`❌` until the owning source model is recovered.
+  `Reimplemented [X]` until the owning source model is recovered.
 - Current executable provenance indicates VS97 SP3 `cvtres` for 1 object,
   VS97 SP3 `link` 5.10.7303 for 293 objects, and VS97-era tooling for 10
   objects.
@@ -82,8 +82,10 @@ the unified reconstruction tracker, or per-target VC verification evidence.
 
 ## Open Limits
 
-- Provider notes record workspace assumptions only; each authored function still
-  needs address-local Binary Ninja inspection and per-function or group
-  verification.
-- Some implemented functions currently use limited `☑️` reconstruction markers
-  where Binary Ninja/provider/toolchain limits remain.
+- Provider notes record workspace assumptions only. Verification is owner-
+  scoped: each authored primary function/data entry uses the unified
+  `Reimplemented [X/C/B/A/S]` tiers, and owner tier `S` requires the complete
+  source-shaped owner's primary-owned, referenced, touched, linked, and
+  dependency data to satisfy its owner byte gate.
+- Legacy checkmark markers are not acceptance state and must not substitute for
+  unified owner gates, per-primary-entry tiers, or `Reimplemented [X/C/B/A/S]`.

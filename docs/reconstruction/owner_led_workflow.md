@@ -61,9 +61,14 @@ means that dependency is byte-ready, not that its parent owner is complete.
 
 Owner gates are local acceptance properties. They do not authorize out-of-phase
 scheduling, later-owner work ahead of `progress next`, or byte work outside the
-accepted-prefix fallback. Verification receipts are machine-bound evidence inputs;
-they never mutate state or prove source shape. All positive boundary/source/
-data/tier-B-or-better claims require the scrutiny workflow in root `AGENTS.md`.
+scheduler-returned primary or `parallel_authored_byte_cursor`. The deprecated
+fallback cursor is only a compatibility alias for that full authored-byte
+cursor and has no accepted-prefix prerequisite. Only subordinate
+`parallel_authored_object_byte_cursor` preparation is limited to the current
+hash-bound accepted authored-order prefix. Verification receipts are machine-
+bound evidence inputs; they never mutate state or prove source shape. All
+positive boundary/source/data/tier-B-or-better claims require the scrutiny
+workflow in root `AGENTS.md`.
 
 Tools and receipts calculate and validate SHA-256 integrity metadata. Agents
 cite the receipt/evidence path or imported evidence id and copy a digest only
