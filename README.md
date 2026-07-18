@@ -11,19 +11,24 @@ whole-file SHA-256 are identical to the immutable retail reference
 normalized PE comparisons, post-link patching, or a matching subset of the
 executable do not satisfy that goal.
 
-The work proceeds globally and sequentially:
+The unified tracker coordinates five stages with independently monotonic order
+and authored-byte lanes that join before resolved linked-byte traversal:
 
-1. Recover the natural VC5SP3 order of source-authored and authored-lifecycle
-   contributions across retail `.text`.
-2. Match those authored contributions at the object, relocation, symbolic
-   target, and relocation-normalized linked-body level.
-3. Restart at the beginning and recover the exact complete linked function and
-   contribution set, retail addresses, order, and seams, including compiler,
-   runtime, framework, and provider rows.
-4. Match every resolved linked address, relocation operand, reference target,
-   and linked byte sequence.
-5. Validate one unrestricted final build, including sections, data, resources,
-   imports, provider selections, addresses, and the whole-file SHA-256.
+1. `authored-function-order` recovers the natural VC5SP3 order of
+   source-authored and authored-lifecycle bodies across retail `.text`.
+2. Independently, `authored-byte-match` proves each gating authored
+   contribution at the object, relocation, symbolic-target, and
+   relocation-normalized linked-body level.
+3. After authored order completes, `full-function-order` restarts at the
+   beginning without waiting for authored bytes and recovers the complete
+   linked contribution set, retail addresses, order, and seams, including
+   compiler, runtime, framework, and provider rows.
+4. Once full order and authored-byte traversal have both completed,
+   `linked-byte-match` proves every resolved linked address, relocation operand,
+   reference target, and linked byte sequence.
+5. `final-validation` checks one unrestricted final build, including sections,
+   data, resources, imports, provider selections, addresses, and the whole-file
+   SHA-256.
 
 The source remains deliberately compatible with the recovered late-1990s
 Windows compiler, ABI, SDK, MFC, and DirectX boundaries. Modern-language or
