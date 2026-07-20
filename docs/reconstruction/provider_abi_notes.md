@@ -58,7 +58,7 @@ the unified reconstruction tracker, or per-target VC verification evidence.
   owner lookup. Add a missing BN-visible
   provider boundary only when current BN/provider evidence proves no authored
   body exists, using
-  `python tools/recoil.py progress owner add --id <owner-id> --kind provider-boundary --name <name> --evidence-id sha256:<evidence-hash> --expected-revision <revision> --dry-run`
+  `python tools/recoil.py progress owner add --id <owner-id> --kind provider-boundary --name <name> --evidence-id <semantic-evidence-id> --expected-revision <revision> --dry-run`
   before repeating the reviewed command with `--apply` against the same
   revision. Correct stale owner/provider classification through the
   focused owner link, remove, gate, and entry-tier commands.

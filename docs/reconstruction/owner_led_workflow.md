@@ -65,14 +65,17 @@ scheduler-returned primary or `parallel_authored_byte_cursor`. The deprecated
 fallback cursor is only a compatibility alias for that full authored-byte
 cursor and has no accepted-prefix prerequisite. Only subordinate
 `parallel_authored_object_byte_cursor` preparation is limited to the current
-hash-bound accepted authored-order prefix. Verification receipts are machine-
-bound evidence inputs; they never mutate state or prove source shape. All
+semantically accepted authored-order prefix. Order validation and acceptance
+rerun the configured object/TU and linked comparisons directly; they do not
+depend on stored file identity. Byte and final validation likewise compare
+current compiled outputs directly; they never silently prove source shape. All
 positive boundary/source/data/tier-B-or-better claims require the scrutiny
 workflow in root `AGENTS.md`.
 
-Tools and receipts calculate and validate SHA-256 integrity metadata. Agents
-cite the receipt/evidence path or imported evidence id and copy a digest only
-when diagnosing an actual integrity mismatch.
+Tracker mutations use the reviewed monotonic revision as their sole
+concurrency guard. Durable evidence records semantic scope, direct comparison
+results, and any material evidence paths without binding validation to file
+identity.
 
 The address-specific `0x4e5954..0x4e5a50` orphan-data exception described in
 root `AGENTS.md` remains non-reusable.

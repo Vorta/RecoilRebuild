@@ -2,12 +2,12 @@
 
 This file is an archive of dated experiments and evidence. It is not the live
 queue or current command surface. Use `final_executable_repro.md` and the live
-`audit final-repro` / `audit final-data` output whenever they conflict with
+current `verify final-image` / `audit final-data` output whenever they conflict with
 historical wording below.
 
 ## Final Data Tail Evidence
 
-Historical final-data snapshot from 2026-06-29: attribution in
+Historical final-data observation from 2026-06-29: attribution in
 `build/vc5-final/final_data_diff_virtual_tail_parent.json` showed the reference
 `.data` tail `0x775d08..0x779ac0` was missing from the candidate image; the
 corresponding candidate window `0x762d08..0x766ac0` was outside the candidate
@@ -17,7 +17,7 @@ context, warning, and queued-impact globals, `g_zWeapon_MaxTetherAltitude`,
 `g_Player_LocalFxOffsetWorldPtr`, and CRT/common provider rows at
 `0x779ab0..0x779abc`.
 
-That snapshot's focused deltas were:
+That observation's focused deltas were:
 
 - `.data` RVA delta: `-0x13000`
 - `.data` raw-size delta: `-0x600`
@@ -362,9 +362,8 @@ function byte/codegen drift. This does not explain or repair the global
 
 A subsequent read-only source/BN/object pass on 2026-06-29 strengthened the
 same blocked routing. The reference bytes for `0x4e5954..0x4e5a4f` come from
-reference `.data` file offset `0xe3b54`, SHA-256
-`8bc659290408182605901b9329b9991d25a8d79d465ada917fbfe39664215d7c`, and
-decode as 21 triples beginning `(0, 2.2, 0.2)`, `(2, -2.2, 0.2)`,
+reference `.data` file offset `0xe3b54` and decode as 21 triples beginning
+`(0, 2.2, 0.2)`, `(2, -2.2, 0.2)`,
 `(-2, -2.2, -0.2)`, `(2, 2.2, -0.2)`, and `(-2, 0, 5)`, followed by sparse
 zero/unit/`5`/`-5` triples. Raw-byte scans found no full `0xfc` hit in
 `build/vc5-final/Recoil.exe` or any `build/vc5-final/obj/**/*.obj`, and no

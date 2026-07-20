@@ -22,12 +22,23 @@ if(NOT EXISTS "${RECOIL_MFC42_SRC_DIR}/APPCORE.CPP")
     message(FATAL_ERROR "Missing VC5 MFC42 source evidence at ${RECOIL_MFC42_SRC_DIR}")
 endif()
 
-file(SHA256 "${RECOIL_MFC42_INCLUDE_DIR}/AFXWIN.H" RECOIL_MFC42_AFXWIN_SHA256)
-if(NOT RECOIL_MFC42_AFXWIN_SHA256 STREQUAL "87603d834fcaa1d21b94ebc241f26164ab7698898b00ea774f249196540a7087")
+file(STRINGS "${RECOIL_MFC42_INCLUDE_DIR}/AFXWIN.H" RECOIL_MFC42_AFXWIN_COPYRIGHT
+    LIMIT_COUNT 1
+    REGEX "Copyright \\(C\\) 1992-1997 Microsoft Corporation"
+)
+file(STRINGS "${RECOIL_MFC42_INCLUDE_DIR}/AFXWIN.H" RECOIL_MFC42_AFXWIN_GUARD
+    LIMIT_COUNT 1
+    REGEX "^#define __AFXWIN_H__$"
+)
+if(NOT RECOIL_MFC42_AFXWIN_COPYRIGHT OR NOT RECOIL_MFC42_AFXWIN_GUARD)
     message(FATAL_ERROR
         "Unexpected AFXWIN.H provider at ${RECOIL_MFC42_INCLUDE_DIR}; "
-        "the Recoil project requires the canonical VC5 header."
+        "expected the VC5-era Microsoft 1992-1997 marker and __AFXWIN_H__ guard."
     )
+endif()
+
+if(NOT EXISTS "${RECOIL_VC5SP3_ROOT}/VC/BIN/CL.EXE")
+    message(FATAL_ERROR "Missing VC5SP3 compiler probe executable at ${RECOIL_VC5SP3_ROOT}/VC/BIN/CL.EXE")
 endif()
 
 if(NOT EXISTS "${RECOIL_MFC42_RUNTIME_DLL}")

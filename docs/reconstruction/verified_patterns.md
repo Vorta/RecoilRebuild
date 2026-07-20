@@ -142,8 +142,8 @@ for individual functions and owner tiers.
   do not create fake functions or data owners at `0x401948` or `0x401964`.
   ChatGPT Pro correctly rejected reuse of the address-sensitive XZ assembly
   helpers here because retail uses direct EBP-relative operands, and no new raw
-  assembly was required. Differential-review transcript content SHA-256:
-  `ac74aed14598fa6b049203544cc2e40c66f7f3ec53f7f01966329c1835d16fd0`.
+  assembly was required. The retained differential-review transcript records
+  that scoped conclusion directly.
 - HUD/UI leaf accessors and setters: verified examples include
   `HudUiElement::GetX` and nearby small HUD helpers. Prefer named fields and
   static layout checks over offset math once Binary Ninja types are stable.

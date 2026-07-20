@@ -20,7 +20,7 @@ tools/recoil.py progress ...`.
   `authored-byte-match` lane; `linked-byte-match` waits for both lanes and is
   followed by `final-validation`. It defines row classifications, sole
   `progress next` scheduling, exact
-  retail SHA-256 goal, evidence gates, and debt-free closeout contract.
+  typed retail semantic goal, evidence gates, and debt-free closeout contract.
 - `agent_launch_checklist.md` - compact preflight and task-selection checklist
   for reconstruction agents.
 - `compiler_linker_provenance.md` - compiler, linker, and verification-profile
@@ -33,7 +33,7 @@ tools/recoil.py progress ...`.
   independent validation, never peer schedulers.
 - [`final_executable_repro_history.md`](final_executable_repro_history.md) -
   archived dated final-data experiments, rejected hypotheses, numeric
-  snapshots, and provenance; use the live runbook and audit output for current
+  observations, and provenance; use the live runbook and audit output for current
   state.
 - `inlined_helpers.md` - compact ledger for likely original helpers and methods
   that were fully inlined by the retail compiler, with caller evidence and
@@ -139,10 +139,10 @@ progress notes or duplicated live tracker state.
   address as the accepted unit when BN proves a larger owner.
 - For physical data/layout evidence, use `progress output-section show` and
   `progress storage show`. Unknown extents omit size/end; final-data/final-repro
-  receipts and their imports are observed evidence only. They create no work
-  unit, peer scheduler, or owner-action batch. Storage/section acceptance is an
-  explicit dry-run-first operation, and final acceptance additionally requires
-  every mandatory whole section and an exact final-repro receipt.
+  observations are navigation evidence only. They create no work unit, peer
+  scheduler, or owner-action batch. Storage/section acceptance is an explicit
+  dry-run-first operation, and final acceptance additionally requires live
+  typed comparison of every mandatory whole section and catalogued entity.
 - For compiler or provider questions, check `provider_abi_notes.md` and
   `compiler_linker_provenance.md` before adding one-off flags or stand-ins.
 - Before introducing or reshaping class, vtable, function-table, record, or

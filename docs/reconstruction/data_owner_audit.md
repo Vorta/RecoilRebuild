@@ -47,13 +47,12 @@ data `Reimplemented [S]`:
 
 ```powershell
 python tools/recoil.py audit final-data --include-owners --strict --json-out build/vc5-final/final_data_diff.json
-python tools/recoil.py progress evidence import-final-data --report build/vc5-final/final_data_diff.json --expected-revision <revision> --dry-run
 python tools/recoil.py progress output-section show recoil:section:.data
 ```
 
-Final executable reproducibility is Phase 3 and is documented in
-`final_executable_repro.md`. Final-data and final-repro are tracker-bound
-diagnostic evidence producers, not work units, queues, or peer schedulers.
+Final executable validation is Phase 5 and is documented in
+`final_executable_repro.md`. Final-data reports are diagnostics, not work units,
+queues, acceptance tokens, or peer schedulers.
 Inspect them only when selected by `progress next`, explicitly requested, or
 required by the current cursor. Their reports/imports accept nothing and never
 mutate owner gates or tiers.
@@ -61,10 +60,9 @@ mutate owner gates or tiers.
 `--strict` returns nonzero when section deltas are present. For this audit that
 is evidence that final data byte identity is blocked, not necessarily a tool
 failure. `--include-owners` correlates final-data issues with current data `S`
-rows for navigation only; it emits no owner-action batch. Import the receipt as
-observed evidence, inspect `progress storage show`, and use explicit dry-run-first
-`progress accept storage` or `progress accept section` only after their own
-evidence gates pass.
+rows for navigation only; it emits no owner-action batch. Inspect the live
+result and `progress storage show`; storage or section acceptance remains a
+separate parent-reviewed operation only after its own semantic gates pass.
 
 Data symbols, source-owner data gates, physical `storage_contributions`, PE
 `output_sections`, and final-image acceptance are distinct. A symbol address

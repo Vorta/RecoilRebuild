@@ -1,97 +1,128 @@
 # Agent Launch Checklist
 
-Compact reminder only. Root `AGENTS.md` is authoritative; the canonical global
+Compact reminder only. Root `AGENTS.md` is authoritative; the executable
 pipeline is [`retail_executable_reproduction.md`](retail_executable_reproduction.md).
 
-## No Explicit Target
+## Select And Claim
+
+With no explicit target:
 
 ```powershell
-python tools/recoil.py progress next
 python tools/recoil.py progress next --json
-python tools/recoil.py progress audit --scope all --strict
-python tools/recoil.py doctor --quick --binja
+python tools/recoil.py progress work leases --json
+python tools/recoil.py progress work claim-current --lane all --max-packets <available-child-slots> --expected-revision <revision> --apply --json
 ```
 
-`progress next` is the sole Recoil.exe scheduler. It follows the canonical
-order-primary sequence `authored-function-order` -> `full-function-order`, with
-an independent retail-monotonic authored-byte lane. `linked-byte-match` starts
-only after full order and authored bytes are both complete, followed by
-`final-validation`. Expand the primary cursor into the complete physical block,
-semantic span, and source-shaped owner. If it returns
-`parallel_authored_byte_cursor`, that row is bounded secondary-lane work only:
-it does not move the primary cursor or phase, and it must not overlap the active
-order block, owner, writable paths, or mutable build step. Use `progress handoff
---authored-byte --json`; the old fallback cursor/flag are deprecated aliases.
-If `parallel_authored_object_byte_cursor` is returned, use `progress handoff
---authored-object-byte --json`. That packet prepares only one exact object body
-inside the accepted authored-order prefix, uses a packet-unique
-`build/vc5-authored-object-byte/...` root, and never runs a whole-project/final
-build. Version 1 advances address-at-a-time; owner-bundle production and
-`--through` acceptance are intentionally deferred.
-Owner/work/section/final
-and ordinary `messages.dll` views are deferred context unless the cursor records
-them as required dependencies.
+`progress next` is the sole Recoil.exe scheduler. It keeps
+`authored-function-order` primary until complete, then starts
+`full-function-order` without waiting for the independent authored-byte lane.
+`linked-byte-match` waits for both; `final-validation` follows. Owner, section,
+functional, final-data, final-image, and ordinary `messages.dll` views are
+deferred context, not peer queues.
 
-## Assigned Entity
+A bare `Start` is enough: the root parent computes remaining child slots from
+effective runtime capacity, applies the multi-lane claim without waiting for
+more user confirmation, and launches every compatible returned packet. Fixed
+priority is primary order, full authored byte, then subordinate authored-object
+byte. A blocked primary does not suppress compatible bytes; full authored byte
+wins over overlapping new object work. Conflicts and capacity skips are
+tool-owned. Render each real reservation by packet id:
 
 ```powershell
-python tools/recoil.py progress show <binary-qualified-id|owner-id|address|block-id|semantic-id>
-python tools/recoil.py progress find <query>
-python tools/recoil.py progress owner relationships 0xNNNNNN
-python tools/recoil.py doctor --quick --binja
+python tools/recoil.py progress handoff --packet-id <packet-id> --json
 ```
 
-Binary Ninja is a maintained analysis artifact. Work only in the already-open
-target and never load, switch, or patch a binary. New active-scope evidence lets
-the parent assign a bounded `recoil_bn_reconstructor` correction without another
-user approval or tracker mutation. Only that role may edit, reanalyze, and save;
-its read-only filesystem sandbox does not make assigned BN MCP state immutable.
-It requires one parent-assigned exclusive writer lease for that live database,
-held through reanalysis and save; no reader or second writer may use the same
-database until the lease is released. It may not decide owner/block/order/
-provider/tier acceptance. Address is
-traversal evidence; implementation and owner acceptance
-use the complete proven source-shaped owner. Keep physical blocks, semantic
-spans, source owners, data symbols, owner data gates, physical storage
-contributions, PE output sections, work items, linked-image state, and evidence
-freshness distinct. Unknown extents have no guessed size/end.
+Individual `--lane <primary|authored|object>` claims remain available for a
+focused retry or explicit assignment.
+The handoff exists only while that reservation and lease are active. It names
+packet mode/id, target, covered blocks, writable paths, one non-mutating worker
+command, objective, stop condition, and return fields. It fails closed for an
+absent lease, empty write closure, or parent-only acceptance command.
+
+## Worker Loop
+
+For `order-edit-v1`, run only the packet command:
+
+```powershell
+python tools/recoil.py verify vc5-order <target> --build-root <packet-root>
+```
+
+Edit the listed source/header closure and repeat until PASS or a concrete
+out-of-scope contradiction. The registered target may cover several explicit
+contiguous physical block slices. This loop does not need Binary Ninja, byte
+evidence, Pro, artifact packaging, hashes, or tracker mutation.
+
+An unresolved row anywhere in the target interval blocks the whole block
+packet and acceptance. A resolved-subset raw diagnostic PASS is useful feedback
+only; it cannot launch or accept a partial block.
+
+The worker returns packet id, changed paths, exact command/result, first
+divergence, and any scope contradiction. The parent independently validates,
+then closes or routes the packet.
+
+## Parent Acceptance
+
+Use one fresh acceptance invocation:
+
+```powershell
+python tools/recoil.py progress advance-live-order --target <tracker-target-id> --build-root <fresh-root> --expected-revision <revision> --apply --json
+python tools/recoil.py progress advance-live-byte --lane <object|authored|linked> --build-root <fresh-root> --expected-revision <revision> --apply --json
+```
+
+Direct `--apply` is normal because each command rebuilds, validates, derives
+the safe semantic prefix, and performs one revision-guarded mutation from the
+same result. `--dry-run` is an optional diagnostic, not a mandatory first build.
+Manual owner/block/provider/catalog/tier mutations remain dry-run-first.
+
+For authored relocations, use `progress relocation-target bind` when retail
+determines the operand but its existing or exact known-extent target identity
+is missing. Use `progress relocation-exception set` only for genuine reviewed
+ambiguity. Both are manual dry-run-first mutations; candidate output is never
+expected truth.
+
+## Assigned Entity Or Binary Ninja
+
+For focused context:
+
+```powershell
+python tools/recoil.py progress show <id|address>
+python tools/recoil.py progress find <query>
+python tools/recoil.py progress owner relationships <id|address>
+```
+
+An address is evidence, not the default edit owner. Expand source work to the
+complete proven owner and its assigned paths. Keep source owners, physical
+blocks, semantic spans, storage, output sections, and final coverage distinct.
+
+Use Binary Ninja only when current binary facts are required. Work in the
+already-open maintained analysis artifact; never load, switch, or patch a
+binary. Read-only use requires a stable saved view and no active writer.
+Mutation requires one parent-assigned `recoil_bn_reconstructor` writer lease
+through reanalysis, propagation checks, save, and return.
 
 ## Non-Address Maintenance
 
-Inspect only assigned surfaces. Do not run `progress next` or require Binary
-Ninja unless the defect depends on current binary facts. Use
-`python tools/recoil.py doctor --infrastructure-only` when broad infrastructure
-health is useful. Tool/docs/skill/role upgrades normally go through a
-parent-assigned `recoil_tool_maintainer`.
-
-## Handoff Essentials
-
-Generate handoffs from structured work items with:
+Do not select an address or require Binary Ninja. Use a bounded
+`recoil_tool_maintainer` packet and validate with:
 
 ```powershell
-python tools/recoil.py progress handoff --json
+python tools/recoil.py doctor --infrastructure-only
+python tools/recoil.py audit agent-surface --strict
+python tools/recoil.py audit workflow-contracts --strict
+python tools/recoil.py audit pipeline-reachability --strict
 ```
 
-The handoff names target binary, global phase, cursor/range, physical block,
-semantic span, complete owner, work item, first unresolved item, exact next
-command, exit gate, role, exact allowed and forbidden paths, ordered validation
-commands, non-overlap statement, evidence, and required return fields. It fails
-closed when any required envelope field is missing, broad, overlapping, or
-mutation-bearing. Source workers own hard-byte artifact production/upload;
-verifiers validate the supplied synchronized triplet and call order mismatches
-`order-gate failure`. A source-owner mapper that needs ChatGPT Pro returns a
-complete `needs_pro` bundle and releases its worker slot. The parent broker
-obtains one receipt for the scoped request and supplies it when the mapper
-resumes; workers do not wait on or compete for the global browser lock.
+`agent-surface` is static alignment; the latter two exercise actual command and
+expected-fact paths.
 
-Only the parent mutates the unified tracker, always dry-run first and with the
-reviewed revision on apply. Agents never run git commands or report
-version-control state. Subagents never clear or durably depend on `.devspace`;
-the parent waits for all consumers, promotes material evidence, runs strict
-checks, and clears `.devspace` as the final workspace action.
+## Final Reminders
 
-`audit final-data` and `audit final-repro` emit tracker-bound observed evidence
-only. Their import commands accept nothing; they are not work units, owner
-action generators, or peer schedulers. Use explicit `progress accept storage`
-and `progress accept section` review, and require mandatory whole sections plus
-an exact final-repro receipt before `progress accept final`.
+- Never treat hashes, saved receipts, a worker PASS, or a raw whole-file delta
+  as candidate acceptance.
+- Never clear or durably depend on `.devspace`; keep material facts in their
+  canonical source/doc/tracker destination.
+- Never run git from reconstruction packets.
+- The authored-object byte cursor is subordinate evidence preparation, not a
+  peer scheduler. Deprecated aliases have no accepted-prefix prerequisite.
+- ChatGPT Pro is reserved for genuine competing source models, a material
+  cross-boundary dispute, raw-assembly escalation, or an explicit user request.

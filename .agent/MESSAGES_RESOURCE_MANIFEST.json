@@ -8,15 +8,24 @@
       "language_hex": "0x409",
       "name": 1,
       "name_label": "#1",
+      "payload_path": "message_table_1_0409.bin",
       "rva": 61536,
       "rva_hex": "0xf060",
-      "sha256": "27158e89a98bcd543aa9567f998ffff95c1ee3ee046f18d73a3ed74cd22475e7",
       "size": 24176,
       "type": "#11",
       "type_id": 11,
       "type_name": "message_table"
     }
   ],
+  "payload_validation": {
+    "identity_fields": [
+      "type_id",
+      "name",
+      "language"
+    ],
+    "method": "direct-live-bytes",
+    "path": "support/messages.dll"
+  },
   "reference": "support/messages.dll",
   "resource_directory": {
     "rva": "0xf000",

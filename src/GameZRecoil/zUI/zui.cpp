@@ -1930,6 +1930,34 @@ void HudUiElement::Invalidate() {
 }
 
 /**
+ * Reimplements 0x4b4190: HudUiElement::SetBltSourceAndClipRect.
+ * Purpose: apply the recovered HUD state change handled by HudUiElement::SetBltSourceAndClipRect.
+ */
+void HudUiElement::SetBltSourceAndClipRect(
+    void *bltSourceOrNull,
+    const HudUiRect *rectOrNull
+) {
+    bltSource = bltSourceOrNull;
+    SetClipRect(rectOrNull);
+}
+
+/**
+ * Reimplements 0x4b41b0: HudUiElement::SetClipRect.
+ * Purpose: replace the element clip rectangle when a source rectangle is supplied.
+ * Binary Ninja: 0x4b41b0 returns immediately for a null argument; otherwise it
+ * copies the four HudUiRect fields into the clipRect member at offset 0x20.
+ */
+void HudUiElement::SetClipRect(
+    const HudUiRect *rect
+) {
+    if (rect == 0) {
+        return;
+    }
+
+    clipRect = *rect;
+}
+
+/**
  * Reimplements 0x4b41e0: HudUiElement::Update.
  * Original file: D:\Proj\Battlesport\HudUiElement.cpp.
  * Purpose: dispatch visible or hidden dirty drawing and hide the element when its timer expires.
@@ -1996,34 +2024,6 @@ void HudUiElement::SetTimer(
     } else {
         flags = (flags & ~0x01u) | 0x10u;
     }
-}
-
-/**
- * Reimplements 0x4b4190: HudUiElement::SetBltSourceAndClipRect.
- * Purpose: apply the recovered HUD state change handled by HudUiElement::SetBltSourceAndClipRect.
- */
-void HudUiElement::SetBltSourceAndClipRect(
-    void *bltSourceOrNull,
-    const HudUiRect *rectOrNull
-) {
-    bltSource = bltSourceOrNull;
-    SetClipRect(rectOrNull);
-}
-
-/**
- * Reimplements 0x4b41b0: HudUiElement::SetClipRect.
- * Purpose: replace the element clip rectangle when a source rectangle is supplied.
- * Binary Ninja: 0x4b41b0 returns immediately for a null argument; otherwise it
- * copies the four HudUiRect fields into the clipRect member at offset 0x20.
- */
-void HudUiElement::SetClipRect(
-    const HudUiRect *rect
-) {
-    if (rect == 0) {
-        return;
-    }
-
-    clipRect = *rect;
 }
 
 /**

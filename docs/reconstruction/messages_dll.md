@@ -22,7 +22,7 @@ The bridge supports target-qualified requests, so agents should pass
 ## Unified Progress State
 
 Companion owners, symbols, verification targets, work items, blockers, and
-hashed evidence are binary-qualified entities in
+semantic observations are binary-qualified entities in
 `.agent/RECONSTRUCTION_PROGRESS.json`. Inspect them with joined selectors:
 
 ```powershell

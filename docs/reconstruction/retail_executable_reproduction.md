@@ -2,11 +2,12 @@
 
 ## Goal
 
-The workspace is complete only when source-faithful VC5SP3 C/C++ compiles and
-links into a file whose complete SHA-256 equals immutable
-`support/Recoil.exe`. Matching behavior, selected functions, normalized bytes,
-or PE shape is intermediate evidence, not completion. Post-link patching is
-forbidden.
+The workspace is complete only when source-faithful VC5SP3 C/C++ reproduces
+every catalogued retail semantic fact: functions and source blocks, selected
+linked contribution order and addresses, code and data bytes, relocations and
+targets, providers, resources, directories, padding, and typed PE layout.
+The linker-written COFF timestamp and the resulting raw file difference are
+diagnostic only. Post-link patching is forbidden.
 
 Original retail COFF objects are unavailable. Prove the executable-bearing
 facts that can be observed: the exact function/contribution inventory and
@@ -20,11 +21,29 @@ Run `python tools/recoil.py progress next` before any other no-target view.
 `.agent/RECONSTRUCTION_PROGRESS.json` is the only reconstruction-progress
 authority. It stores distinct linked physical-block, semantic-span, symbol,
 source-owner/gate/tier, output-section, physical-storage-contribution,
-verification-target, work-item, blocker, and hashed-evidence entities. Binary
+verification-target, work-item, blocker, and semantic-observation entities. Binary
 Ninja remains binary authority. Data symbols, owner data gates, physical
 storage, PE sections, and final-image acceptance never imply one another.
 Unknown extents retain their start address and `extent_state=unknown` but omit
 size and end; a fabricated one-byte extent is forbidden.
+
+A bare `Start` is a complete root-parent launch request. Without an explicit
+target, the parent runs `progress next --json` and `progress work leases
+--json`, computes remaining child slots from effective runtime capacity, and
+immediately applies the compatible multi-lane claim without another user
+confirmation:
+
+```powershell
+python tools/recoil.py progress work claim-current --lane all --max-packets <available-child-slots> --expected-revision <revision> --apply --json
+```
+
+Claim priority is fixed as primary order, full authored byte, then subordinate
+authored-object byte. A blocked primary does not suppress compatible bytes;
+full authored byte wins over an overlapping new object packet. Capacity and
+resource-conflict skips are tool-owned. Render and launch each returned real
+reservation with `python tools/recoil.py progress handoff --packet-id
+<packet-id> --json`. Individual `--lane <primary|authored|object>` claims
+remain available for focused retries and explicit assignments.
 
 The sole scheduler exposes two independent monotonic lanes. The primary order
 lane runs `authored-function-order` and then `full-function-order`. The
@@ -36,18 +55,17 @@ alias for that same parallel cursor, not an accepted-prefix prerequisite.
 
 While an order phase is primary, `progress next` may additionally expose the
 subordinate `parallel_authored_object_byte_cursor`. It scans only complete
-physical blocks inside the current contiguous, current-hash-bound accepted
+physical blocks inside the current contiguous, semantically accepted
 authored-order prefix and selects the first gating address group whose
-`object_byte` dimension is not current-hash-bound accepted. Version 1 is
-address-at-a-time: there
-is no `--through` or owner-bundle producer. Run `verify
-authored-object-byte 0xADDR`, import its typed receipt, and accept that exact
-cursor before advancing. A direct failure expands the subsequent source repair
-handoff to the complete owner; that is not batch acceptance.
-
-The version-1 receipt binds canonical `support/Recoil.exe`, production source,
-normalized VC5 `/E` dependencies, the current manifest/profile/toolchain, a
-packet-isolated root below `build/vc5-authored-object-byte/`, exact COFF extent,
+`object_byte` dimension is not semantically accepted. Run `progress
+advance-live-byte --lane object --build-root <fresh-root>
+--expected-revision <revision> --apply`; it compiles current source in a new
+isolated root, directly checks that exact cursor, and revision-atomically
+accepts from the same in-memory result. Optional `--dry-run` is diagnostic only;
+do not routinely build twice. A failure
+expands the subsequent source repair handoff to the complete owner; that is not
+batch acceptance. The live check uses production source, the registered
+manifest/profile/toolchain, exact COFF extent,
 body bytes, mask, and structurally observed relocation rows. It accepts only
 `binary_state.object_byte` and explicitly claims no relocation identity,
 linked state, order, owner/model, tier, or final result. A current launchable
@@ -87,6 +105,11 @@ selected alias elsewhere keeps the global projection incomplete, but does not
 acquire membership in the active retail interval merely because its candidate
 address lies between two selected sentinels.
 
+One unresolved row anywhere in a registered target's covered interval blocks
+the whole physical-block packet and its live acceptance. A raw-object check of
+only the resolved subset may report a useful diagnostic PASS, but that partial
+result cannot launch or accept the covered block.
+
 `authored_order_role` defaults fail-closed from the historical class:
 `authored` becomes `authored-body`, and `authored-lifecycle` becomes
 `authored-lifecycle-body`. Only those two roles gate authored raw/linked order
@@ -117,6 +140,41 @@ identity, provider classification, or final acceptance. Linker removal also
 does not make arbitrary dead authored source a source-faithful model; that is a
 separate source-owner judgment.
 
+#### Fast authored-order source loop
+
+The source worker's feedback loop is a direct compile-and-compare cycle:
+
+```powershell
+python tools/recoil.py verify vc5-order <registered-order-target> --build-root <packet-root>
+```
+
+The parent obtains real compact packets through the no-target multi-lane claim
+above, or a focused `progress work claim-current --lane primary ... --apply`,
+then renders the selected reservation with `progress handoff --packet-id
+<packet-id> --json`. The order packet names that one command, the exact writable
+source/header closure, an isolated build root, objective, and stop condition.
+A registered target may cover one translation unit and several explicit,
+contiguous physical-block slices. The worker may reshape the assigned
+`.h`/`.cpp` layout, definition placement, include timing, and calls, then rerun
+the same command as often as needed. The verifier resolves the retail decorated
+identities in the newly compiled VC5SP3 output and prints `PASS` or `FAIL`,
+followed on failure by the first blocking identity/order divergence and its
+expected and candidate neighbors. Detailed raw inventory follows when needed.
+
+This loop does not open Binary Ninja, compare bytes, produce or import an
+acceptance artifact/evidence package, qualify a candidate hash, mutate the
+tracker, or call ChatGPT Pro for routine order feedback. A passing target
+comparison is immediate source feedback, not linked, byte, owner, model, or
+tier acceptance. `progress handoff --json` renders only a real active
+reservation and never exposes a parent mutation command.
+
+Authored relative order uses the same fold-aware predicate in the canonical
+report, the live verifier, and tracker acceptance. A `selected-winner` or
+`not-established` logical identity remains in the relative sequence. A proven
+fold/cofold alias remains required inventory and must resolve exactly once, but
+it does not impose a second physical relative-order position. Full order is
+unchanged and inventories every selected linked contribution.
+
 The linked authored-order check is a retail-identity partial-order projection,
 not a candidate-address corridor scan. It joins decorated manifest selectors
 to the unified tracker's current retail row and logical-ICF-alias roles, then
@@ -130,14 +188,44 @@ aliases remain explicit and set global `linked_projection_complete=false`, but
 they are not treated as interval extras unless a retail mapping places them in
 the interval.
 
-Linked authored-order receipts use version 4 and keep these claims separate:
-raw authored order is explicitly unevaluated by the link check; known-authored
-linked relative order, required linked presence, scoped projection
-completeness, and block precedence are reported independently. Exact selected
-population plus linked seams/RVAs are explicitly unevaluated and remain
-`full-function-order` work. Compatibility fields remain available for older
-receipt consumers; version-3 linked authored receipts retain their historical
-strict-extra validation.
+The parent independently rebuilds and advances the complete target-covered
+physical slices through one phase-aware live command:
+
+```powershell
+python tools/recoil.py progress advance-live-order --target <tracker-target-id> --build-root build/live-order/<cursor>/<target> --expected-revision <revision> --apply
+```
+
+If the current block's phase-appropriate `order_targets` field is empty or
+stale, pass a reviewed command-scoped exact-range override instead of mutating
+the tracker just to launch the check: `--object-target
+<registered-object-target>` during authored order or `--linked-target
+<registered-linked-target>` during full order. `--target` remains the tracker
+acceptance target id. The override accepts an exact target id or one unique
+registered name and must match the acceptance target's binary, half-open range,
+phase scope, contiguous blocks, and tracker identity sequence. `progress next`
+emits the override automatically only when exactly one registered target proves
+that contract. Zero or multiple matches produce a typed blocked cursor, never a
+launchable cursor with an empty command.
+
+The advancement command owns the serialized current build. It validates once,
+prints the first typed divergence and neighboring identities on failure, and
+CAS-advances only complete covered slices from that same in-memory semantic
+result while the tracker remains at the supplied revision. Target failure
+accepts none of its slices. Direct `--apply` is normal; optional `--dry-run` is
+diagnostic only. `--expected-revision` is the sole concurrency guard. Raw authored order stays
+explicitly separate from linked presence, known-authored relative order,
+scoped projection completeness, and block precedence. Exact selected
+population plus linked seams/RVAs remain `full-function-order` work. Archived
+order observations are historical context only and cannot drive current
+acceptance without a live recheck.
+
+Ordinary comments, `Purpose:` prose, and narrative function labels are not
+order drift. Exact address-bearing provenance markers remain semantic input:
+`Reimplements 0x...`, `Emits 0x...`, and provider/compiler marker addresses
+must still name the expected identity, so removing or changing such an address
+fails strict order validation. A narrative-only name change does not stale
+accepted order; a function/address/classification/order expectation change
+does.
 
 Canonical MFC provider checks use VC5SP3 `/E` line directives because that
 compiler does not implement `/showIncludes`. Every official project/build path
@@ -151,9 +239,11 @@ root.
 Correct source owners, physical blocks, header layering, helper placement,
 linkage, and include timing whenever authored order shows that existing source
 shape is wrong. Never force order with `.inl`, pragma/linker tricks, wrong-file
-helpers, fake wrappers, or duplicate bodies. New or disputed owner/block/order
-or lifecycle-classification conclusions continue to require the root ChatGPT
-Pro policy.
+helpers, fake wrappers, or duplicate bodies. Registered target execution,
+mechanical first-divergence interpretation, current-source rechecks, and edits
+to an already-reviewed model are ChatGPT Pro-exempt. Escalate only under the
+ambiguity-driven triggers in root `AGENTS.md` and
+`recoil-source-model-recovery`.
 
 Stop order work at the first order divergence. Independently, `progress next`
 scans retail address groups for the earliest unaccepted authored byte gate. It
@@ -167,31 +257,30 @@ For a bounded whole-link COMDAT attribution problem, census existing diagnostic
 builds before rebuilding:
 
 ```powershell
-python tools/recoil.py audit vc5-comdat --run <diagnostic-receipt-or-directory> --run <comparison-receipt-or-directory> --symbol <exact-decorated-identity> --pattern <fullmatch-regex> --output-dir <evidence-directory>
+python tools/recoil.py audit vc5-comdat --run <diagnostic-run-directory> --run <comparison-run-directory> --symbol <exact-decorated-identity> --pattern <fullmatch-regex> --output-dir <evidence-directory>
 ```
 
 The command writes `opening_object_manifest.json` and
-`opening_comdat_census.json`. It preserves receipt object ordinals, compile
-profiles, object hashes, relevant section/COMDAT metadata, bytes and relocation
-signatures, recoverable direct-object references, and limited final-map
+`opening_comdat_census.json`. It preserves object ordinals, compile profiles,
+relevant section/COMDAT metadata, bytes and relocation signatures,
+recoverable direct-object references, and limited final-map
 address/alias/provider observations. It deliberately does not infer discarded
 same-name definitions, the pre-`/OPT:REF` survivor set, or causal
-`/OPT:ICF` winner history that the receipt/object/map artifacts do not expose.
-Missing or stale object files leave honest receipt-only fields rather than
-silently analyzing different artifacts.
+`/OPT:ICF` winner history that the observed object/map outputs do not expose.
+Missing object files remain explicit instead of silently substituting a
+different run.
 
-When a same-object-set fold discriminator is needed, the existing final-build
-path is sufficient: compile the diagnostic bundle once, then relink that
-unchanged validated bundle with:
+When a fold discriminator is needed, run two fresh isolated compile/link
+diagnostics from the same reviewed source, one for each profile:
 
 ```powershell
-python tools/recoil.py verify final-build -- --reuse-compile --link-profile vc5sp3_ref_noicf <the-same-compile-and-source-profile-options>
+python tools/recoil.py verify final-build --build-dir <fresh-icf-root> --link-profile vc5sp3_ref_icf
+python tools/recoil.py verify final-build --build-dir <fresh-noicf-root> --link-profile vc5sp3_ref_noicf
 ```
 
-Keep every source/compile-profile option identical to
-the original diagnostic command; `--reuse-compile` rejects changed object,
-resource, header-trace, or compile-context state. The `/OPT:NOICF` result is a
-diagnostic control and never replaces the production `/OPT:ICF` linked gate.
+Keep every source and compile-profile option identical except the intentional
+link-profile difference. The `/OPT:NOICF` result is a diagnostic control and
+never replaces the production `/OPT:ICF` linked gate.
 
 ### 2. `authored-byte-match`
 
@@ -200,24 +289,49 @@ unaccepted `authored-body` or `authored-lifecycle-body`, stopping at unresolved
 classification and skipping proven `non-authored` rows plus explicit
 compiler-generated roles. A physical ICF/address group is one traversal step;
 logical aliases do not create duplicate byte steps. Traverse in retail order
-while editing and accepting the complete source-shaped owner. Each row needs
-one synchronized version-3 receipt proving
-exact extent and object bytes outside relocations, relocation types and
-symbol/provider identities/addends, linked presence, symbolic call/reference
-target identity, and exact relocation-normalized linked body bytes at the
-candidate address. Exact retail RVA and fully resolved relocation operands are
-diagnostic here: they are not authored-byte failures and become blocking in the
-full-order and resolved linked-byte phases.
+while editing and accepting the complete source-shaped owner. Preflight the
+expected relocation semantics and advance the live lane with:
 
-Version-3 receipts bind target-local compile, object, and linked projections:
-the source and resolved include dependency set, VC5SP3 profile/toolchain,
-object body and relocations, linked presence, symbolic target identities, and
-relocation-normalized linked body. A successful compile/link and current
-candidate/MAP are required, but a linked-order failure, whole-candidate hash
-change, candidate RVA, ICF representative placement, manifest hash, and
-resolved operand equality are not authored-byte gates. Whole-build paths and
-hashes remain observation provenance. Version-2 receipts remain valid under
-their legacy accepted-order bindings; accepted history is not rewritten.
+```powershell
+python tools/recoil.py audit relocation-expectations --at <cursor> --json
+python tools/recoil.py progress advance-live-byte --lane authored --build-root build/live-byte/authored/<cursor> --expected-revision <revision> --apply
+```
+
+The command compiles and links current source, compares exact extent and object
+bytes outside relocations, relocation types, symbol/provider/alias identities
+and addends, linked presence, symbolic call/reference target identity, and
+relocation-normalized linked body bytes at the candidate address. Expectations
+are derived live from immutable retail plus accepted typed identity/provider/
+alias facts, never from the candidate. An explicit empty set is valid. Genuine
+ambiguity blocks before the build and routes to the narrow reviewed exception
+command:
+
+```powershell
+python tools/recoil.py progress relocation-exception set --source-symbol-id <physical-symbol-id> --source-address <cursor> --payload-json '<json-object>' --expected-revision <revision> --dry-run --json
+```
+
+The governed row binds exact current source/target extent, object registration,
+pipeline/provider/alias context, and evidence ids. Drift produces a typed stale
+exception instead of a hash failure. After review, repeat with `--apply`.
+The live byte command builds and validates once, then advances explicitly
+matched physical groups from that same result. Optional `--dry-run` is
+diagnostic only. Exact retail RVA and fully resolved relocation operands are
+diagnostic here: they become blocking in the full-order and resolved
+linked-byte phases. Ordinary comments and file identity do not participate;
+the current tracker revision is the sole concurrency guard.
+
+If retail already determines the operand but the tracker is missing its typed
+target identity, use `progress relocation-target bind`, not an ambiguity
+exception:
+
+```powershell
+python tools/recoil.py progress relocation-target bind --source-symbol-id <physical-symbol-id> --source-address <cursor> --payload-json '<reviewed-binding>' --expected-revision <revision> --dry-run --json
+```
+
+This dry-run-first reviewed mutation binds an existing target or an exact
+known-extent target identity for live expectation derivation. Repeat with
+`--apply` after review. `relocation-exception set` remains reserved for genuine
+ambiguity; neither route learns expected facts from candidate output.
 
 Accept only the current authored/lifecycle row or a contiguous authored bundle
 beginning there after filtering out intervening proven non-authored rows. Owner
@@ -245,110 +359,79 @@ do not fail merely because dead/foldable COMDATs exist before `/OPT:REF` and
 linked divergence; authored-order or authored-byte acceptance does not excuse a
 missing/misplaced non-authored row, address drift, or seam drift.
 
+Use the same live semantic advancement path for full order:
+
+```powershell
+python tools/recoil.py progress advance-live-order --target <tracker-target-id> --build-root build/live-order/<cursor>/<target> --expected-revision <revision> --apply
+```
+
+The full live result records selected groups, providers, COMDAT/ICF selection,
+exact RVAs, and predecessor/successor sentinels as inspectable semantic fields,
+then CAS-applies all complete target-covered slices or, on target failure,
+accepts none and stops with the first divergence plus candidate neighbors. The
+checker evaluates the complete identity population
+and computes exact blocker/count state, but large downstream alias, physical-
+class, and extra-contribution inventories retain at most 25 prioritized examples
+per category plus exact totals and state counts. Console output leads with the
+first divergence and bounds follow-on diagnostics. Historical full-order
+observations remain readable context, but only a current live semantic recheck
+can satisfy linked-byte dependencies.
+
 ### 4. `linked-byte-match`
 
 After every full-order row and every authored-byte gating address group are
-accepted, restart at `0x401000`. Traverse every
+accepted, restart at `0x401000` with `verify linked-byte`. Traverse every
 linked row by retail address. Require exact linked RVA/address, exact resolved
 relocation operands, exact symbolic call/reference targets, and exact linked-
-image bytes. Earlier authored-byte receipts remain useful input, but their
+image bytes. Earlier authored-byte state remains useful context, but its
 relocation-normalized candidate-address comparison cannot substitute for this
-resolved retail-address gate. Accept only the current address or a contiguous
-bundle beginning there.
-
-Linked-byte tracker acceptance requires one typed version-4-or-newer receipt:
+resolved retail-address gate. Advance the live lane with:
 
 ```powershell
-python tools/recoil.py progress evidence import-linked-byte --receipt <receipt.json> --expected-revision <revision> --expected-sha256 <sha256> --dry-run
-python tools/recoil.py progress accept byte <symbol-id> --evidence-id <sha256:id> --expected-revision <revision> --expected-sha256 <sha256> --dry-run
+python tools/recoil.py progress advance-live-byte --lane linked --build-root build/live-byte/linked/<cursor> --expected-revision <revision> --apply
 ```
 
-The import snapshots the receipt immutably and validates the current physical
-row/catalog, retail reference, typed linked-full-order selected source object,
-and bound artifacts. Acceptance reopens the snapshot and advances only the
-exact `linked_address`, `linked_targets`, and `linked_byte` triplet. It does not
-backfill object, authored relocation, owner, provider, model, or tier state.
-Generic evidence and legacy receipts are rejected. The current legacy
-`verify linked-byte` producer remains diagnostic-only; provider-library,
-compiler-runtime, and non-authored rows fail closed until governed archive-
-member and symbolic-target-catalog evidence exists.
+The command rebuilds and validates once, reports the first typed divergence,
+and CAS-advances explicitly matched physical groups from that same result.
+Optional `--dry-run` is diagnostic only. It may advance only the
+exact `linked_address`, `linked_targets`, and `linked_byte` triplet that
+passed. It does not backfill object, authored
+relocation, owner, provider, model, or tier state. Provider-library,
+compiler-runtime, and non-authored rows fail closed until their archive-member
+and symbolic-target catalogs exist.
 
 ### 5. `final-validation`
 
-Run one unrestricted synchronized build:
+Run one fresh unrestricted build and complete typed comparison:
 
 ```powershell
 python tools/recoil.py verify pe --reference support/Recoil.exe --manifest .agent/REFERENCE_EXECUTABLE.json --verify
-python tools/recoil.py verify final-build
-python tools/recoil.py audit final-data --strict --json-out build/vc5-final/final_data_diff.json
-python tools/recoil.py progress evidence import-final-data --report build/vc5-final/final_data_diff.json --expected-revision <revision> --dry-run
-python tools/recoil.py audit final-repro --strict --output build/vc5-final/final_repro.json
-python tools/recoil.py progress evidence import-final-repro --report build/vc5-final/final_repro.json --expected-revision <revision> --dry-run
+python tools/recoil.py audit final-image-catalog --json
+python tools/recoil.py verify final-image --json
 python tools/recoil.py progress audit --scope pipeline --strict
 ```
 
-Receipt imports record hash-bound observations only. Review normalized state
-with `progress output-section show` and `progress storage show`; accept each
-storage/section dimension explicitly with dry-run-first `progress accept
-storage` and `progress accept section`. Final acceptance requires every
-authored/full order and authored/linked byte row, every required order target,
-every mandatory whole output section, resource comparison,
-PE/data/import/provider/address validation, an
-exact final-repro receipt, and candidate size/SHA-256 matching retail. `--no-pe-compare`,
-`--no-resource-compare`, skipped required order checks, normalized comparison,
-or a stale map/candidate makes the run diagnostic-only.
-
-An early `verify final-determinism` pair is diagnostic dependency evidence, not
-final acceptance. Receipt version 2 must preserve raw executable diff counts
-and ranges and distinguish `source_toolchain_inputs_equal`,
-`raw_linker_inputs_equal`, and `object_artifacts_raw_equal`. The only permitted
-secondary final-image projection is the structurally parsed complete I386 PE32
-COFF TimeDateStamp range `[e_lfanew+8,e_lfanew+12)`; it may set
-`equal_except_declared_volatile_fields` but cannot change the raw result or exit
-status. Strict MAP/object timestamp projections remain artifact diagnostics and
-cannot substitute for relocation-aware object or linked-image gates.
-
-The governed clock provider is `process-local-msvcrt-time-iat-v1`. Build its
-native x86 launcher with `build vc5-clock-provider`; its v2 profile binds
-`LINK.EXE` and the exact `MSDIS100.DLL`/`MSPDB50.DLL`/`MSVCP50.DLL` loader
-closure. Then seal one exact v2 ordered link bundle without exposing
-`support/Recoil.exe`. The bundle must inventory those DLLs exactly once as
-non-argv `runtime-dependency` members and use only the profiled VC `BIN`,
-`SHAREDIDE\BIN`, and VC `REDIST` directories in that PATH order. Under a live
-conflict-free clock/whole-project/output reservation, `verify
-final-clock-qualification` runs the exact bundle once at `916964810` and once
-at `916964930`. It requires the candidates to differ only within the parsed
-four-byte PE timestamp, the MAPs to differ only in the uniquely bound UTC
-timestamp header, every stable provider output to match, and all input catalogs
-to remain unchanged. Its v2 receipt is diagnostic-only and grants no source,
-order, byte, owner-tier, provider-final, final-executable, or retail-identity
-acceptance.
-
-The launcher starts the exact hashed VC5 `LINK.EXE` once with
-`DEBUG_ONLY_THIS_PROCESS`, stops before entry, verifies one
-`MSVCRT.dll!time` import/export/pointer identity, and patches only that one
-in-memory IAT pointer to a verified x86 fixed-epoch stub. It does not change the
-host clock, linker/candidate files, code bodies, other imports, `ctime`,
-`_tzset`, or OS APIs. Before invocation, the runtime DLL member paths, hashes,
-roles, uniqueness, and exact clean PATH resolution must match the profile. The
-VC5 resource-link path permits exactly one child: the sealed absolute
-`CVTRES.EXE`; a missing, additional, or differently resolved runtime DLL or
-child fails closed, as do reordered/duplicate PATH entries, ambiguity, early
-entry, unexpected debug state, timeout, retry, or output selection.
-
-Normal final-build linking remains the default. The qualified path is opt-in
-only with the exact successful receipt/profile/bundle plus retail epoch; it
-substitutes only link-process invocation and keeps the ordinary raw resource,
-PE, and whole-file SHA-256 comparisons authoritative. Qualification proves only
-the named provider/bundle contract. Two independently clean raw-identical
-retail-timestamp builds and the unrestricted final gate remain required.
+The catalog must cover every retail section and selected contribution without
+gaps or overlap. `audit final-image-catalog` derives mechanical PE facts live
+from verified retail and joins accepted tracker facts; it does not require a
+manually populated legacy catalog blob. It reports exact file-backed and
+loaded-RVA gaps, overlaps, unknown extents, ambiguous padding, missing
+providers, and unresolved entities. Persist only narrow reviewed ambiguity
+annotations; deterministic retail facts are rederived and candidate output
+never supplies expected facts. `verify final-image` fails before building while
+typed coverage is incomplete. When complete, final acceptance requires every
+authored/full-order and authored/linked-byte row, exact timestamp-excluded
+headers, complete section and directory population, resources, data, imports,
+providers, addresses, targets, padding, and overlay from one fresh unrestricted
+build. The linker-written COFF timestamp and raw whole-file differences are
+diagnostic only. A stale MAP, skipped comparison, or unmodelled range blocks.
 
 To census ordinary compiler failures without linking while required order
 targets are active, run `python tools/recoil.py verify final-build --
 --compile-only --keep-going --compile-only-skip-linked-order`. This explicit
 compile-only diagnostic bypasses linked-order target evaluation only because no
-map is produced. It is rejected without `--compile-only`, writes no linked-order
-receipt, and cannot satisfy authored order, full order, or final acceptance.
+map is produced. It is rejected without `--compile-only` and cannot satisfy
+authored order, full order, or final acceptance.
 The unrestricted final-validation command above never uses this option.
 
 ## Commands and Handoffs
@@ -358,44 +441,60 @@ Use:
 ```powershell
 python tools/recoil.py progress next --json
 python tools/recoil.py progress status
+python tools/recoil.py progress work leases --json
+python tools/recoil.py progress work claim-current --lane all --max-packets <available-child-slots> --expected-revision <revision> --apply --json
+python tools/recoil.py progress handoff --packet-id <packet-id> --json
 python tools/recoil.py progress audit --scope all --strict
 ```
 
-Only the parent mutates the unified tracker, dry-run first and against the
-reviewed revision, through narrow `progress accept`, `progress blocker`,
-`progress owner`, `progress block`, `progress semantic`, `progress work`, or
-`progress evidence` operations.
-Receipts must bind the retail reference, VC5SP3 profile, applicable target-local
-inputs/projections, exact gates, command, scope, and conclusion; never
-store a concrete `.devspace` dependency. SHA-256 is machine-managed integrity
-metadata: tools and receipts calculate and validate it, while agents cite the
-receipt/evidence path or imported evidence id instead of copying digests unless
-diagnosing an integrity mismatch. Evidence generation/import never promotes
-owner gates, tiers, provider classification, global prefixes, or `Model:`
-metadata.
+Only the parent mutates the unified tracker. Active binary-lane advancement
+uses direct `--apply` with `progress advance-live-order` and
+`progress advance-live-byte`: each validates/builds once and CAS-applies from
+that same semantic result. Optional `--dry-run` is diagnostic. Other narrow
+owner, block, provider, classification, ambiguity-exception, tier, blocker,
+semantic, and work mutations remain dry-run-first. `--expected-revision` is the
+sole concurrency guard. Durable observations record semantic facts and direct
+evidence paths when needed; they never store a concrete `.devspace`
+dependency. Evidence generation never promotes owner gates, tiers, provider
+classification, global prefixes, or `Model:` metadata.
 
-A source-worker/verifier handoff names the global phase and its primary cursor
-(plus `parallel_authored_byte_cursor` when the scheduler returns it),
-physical block, complete owner, allowed files, first divergence, exact command,
-required receipt, and exit gate. Reports include expected/actual definition counts,
-informational raw extras, blocking missing/duplicate/reordered expected
-identities, linked seam/address/byte results, and the first
-unresolved address. Ordinary owner, final-data/final-repro, functional, and
-`messages.dll` queues are `deferred_by_pipeline_phase` unless required by the
-current Recoil.exe cursor.
+A source-worker/verifier handoff is a compact mode-specific packet backed by a
+real active reservation and lease. `progress handoff --json` fails when that
+state is absent, claims no writable path, or contains a mutating worker command;
+it never fabricates current work. An `order-edit-v1` packet carries only packet
+id, registered target, exact writable source/header closure, isolated root,
+objective, stop condition, and its `verify vc5-order` command. Results return
+packet id, outcome, changed paths, exact validation result, first divergence,
+and concrete scope contradictions. Ordinary owner, final-data/final-repro,
+functional, and `messages.dll` queues are `deferred_by_pipeline_phase` unless
+required by the current Recoil.exe cursor.
 Final-data and final-repro are evidence producers, not work units, queues, or
 peer schedulers; they never generate owner-action batches.
+
+For workspace-process health, run static and operational checks together:
+
+```powershell
+python tools/recoil.py audit agent-surface --strict
+python tools/recoil.py audit workflow-contracts --strict
+python tools/recoil.py audit pipeline-reachability --strict
+```
+
+`agent-surface` validates syntax and canonical references.
+`workflow-contracts` exercises command transitions and reservation-backed
+handoffs. `pipeline-reachability` checks target-to-slice coverage and verifies
+that every required fail-closed consumer has a live expected-fact producer or
+reviewed ambiguity route. A static pass alone is not complete workflow health.
 
 ## Debt-Free Session Close
 
 Before final response, fix every regression introduced by the session; remove
-temporary probes and failed variants; promote conclusions and receipt/evidence
-paths or imported evidence ids;
+temporary probes and failed variants; promote material conclusions and direct
+evidence/transcript paths with their semantic scope;
 leave exactly one truthful cursor/blocker with an exact next command; update or
 close structured work items; run touched checks and strict workspace/progress/
 agent audits; and
 wait for workers/Pro consumers. A source blocker is legitimate backlog only
-when its address/range, evidence, failed command/result, accepted checkpoint,
-and next command are durable. Parent-only `.devspace` cleanup is the last
-workspace action. Do not finalize with stale work items/cursors, hidden failures,
+when its address/range, evidence, failed command/result, accepted pipeline state,
+and next command are durable. Agents never clear `.devspace` or make durable
+facts depend on session scratch. Do not finalize with stale work items/cursors, hidden failures,
 false claims, unregistered evidence, or any other session-introduced debt.
