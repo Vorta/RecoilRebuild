@@ -1,6 +1,6 @@
 #include "GameZRecoil/include/opt_catalog.h"
 #include "GameZRecoil/zModel/gmod.h"
-#include "GameZRecoil/zRndr/zrndr.h"
+#include "GameZRecoil/zRender/zrndr.h"
 #include "GameZRecoil/zVideo/zvid.h"
 
 namespace {

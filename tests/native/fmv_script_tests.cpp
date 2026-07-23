@@ -1,7 +1,7 @@
 #ifdef RECOIL_FMV_SCRIPT_TESTS_WAIT_ONLY
 
 #include "GameZRecoil/zFMV/fmv.h"
-#include "GameZRecoil/zRndr/zrndr.h"
+#include "GameZRecoil/zRender/zrndr.h"
 #include "GameZRecoil/zSound/zsnd.h"
 #include "GameZRecoil/zVideo/zvid.h"
 
@@ -1226,7 +1226,7 @@ extern "C" int zfmv_stream_read_and_decode_frame_smoke(void) {
 #include "GameZRecoil/include/zimage.h"
 #include "GameZRecoil/zInput/zinput.h"
 #include "GameZRecoil/zReader/zreader.h"
-#include "GameZRecoil/zRndr/zrndr.h"
+#include "GameZRecoil/zRender/zrndr.h"
 #include "GameZRecoil/zSound/zsnd.h"
 #include "GameZRecoil/zSys/zsys.h"
 #include "GameZRecoil/zVideo/zvid.h"

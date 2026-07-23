@@ -3802,7 +3802,7 @@ set(ZDECLIENT_NATIVE_SMOKE_PREFIX
     "${CMAKE_CURRENT_BINARY_DIR}/zdeclient_native_smoke_prefix.h"
 )
 file(WRITE "${ZDECLIENT_NATIVE_SMOKE_PREFIX}" [=[
-#include "Battlesport/Mfc42Abi.h"
+#include "recoil/Mfc42Abi.h"
 #include "GameZRecoil/zNetwork/znet.h"
 #include <cstdint>
 

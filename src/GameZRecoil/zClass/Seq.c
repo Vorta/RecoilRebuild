@@ -10,50 +10,9 @@
 
 namespace {
     const char kSequenceSourceFile[] = "D:\\Proj\\GameZRecoil\\zClass\\Seq.c";
+    const int kZClassNodeLod = 6;
 
-    /**
-     * Original-source helper evidence: no standalone retail function exists.
-     * Observed in caller 0x44bea0 (D:\Proj\GameZRecoil\zClass\Seq.c);
-     * BN keeps the active-entry traversal cull, bounds refresh, and sphere
-     * clip-mask sequence inline in the Sequence traversal body.
-     * Purpose: update sequence-node bounds when needed and run the sphere
-     * frustum cull used by sequence render traversal.
-     */
-    int CullNodeForRender(
-        zClass_NodePartial * node,
-        int siblingCountHint,
-        int *clipMask
-    ) {
-        int result = 0;
-        if (*clipMask != 0 && siblingCountHint > 1) {
-            if ((node->boundsFlags & 0x04) != 0 || g_zClass_RenderBoundsContextActive != 0) {
-                zBBoxCorners corners = {0};
-                zClass_Class::gwNodeGetViewBBoxCorners(
-                    node,
-                    &corners
-                );
-                BBox::CornersToBoundingSphere(
-                    &corners,
-                    zClass_NodeViewSphereCenter(node),
-                    zClass_NodeViewSphereRadius(node)
-                );
-                node->boundsFlags &= ~0x04;
-            }
-            result = zVideo_FrustumTestSphereClipMask(
-                zClass_NodeViewSphereCenter(node),
-                clipMask,
-                *zClass_NodeViewSphereRadius(node)
-            );
-            if ((node->flags & 0x80) != 0 && result == 0x20) {
-                result = 0;
-                *clipMask &= ~0x20;
-            }
-        }
-        return result;
-    }
 }
-
-#include "GameZRecoil/zClass/lod_impl_body.h"
 
 namespace zClass_Sequence {
     /**
@@ -160,6 +119,77 @@ namespace zClass_Sequence {
             message
         );
         return 5;
+    }
+
+    int __fastcall
+    /**
+     * Reimplements 0x454000: zClass_Sequence::RemoveChild
+     * (D:\Proj\GameZRecoil\zClass\Seq.c).
+     *
+     * Purpose: remove a child from both the zClass child list and the sequence
+     * entry list, then clamp the active index back to the first entry if needed.
+     */
+    RemoveChild(
+        zClass_NodePartial * parent,
+        zClass_NodePartial * child
+    ) {
+        if (parent == 0) {
+            zError::ReportOld(
+                0x400,
+                kSequenceSourceFile,
+                0xd3,
+                "Null node pointer."
+            );
+            return 5;
+        }
+        if (child == 0) {
+            zError::ReportOld(
+                0x400,
+                kSequenceSourceFile,
+                0xd4,
+                "Null node pointer."
+            );
+            return 5;
+        }
+        if (parent->classData == 0) {
+            zError::ReportOld(
+                0x400,
+                kSequenceSourceFile,
+                0xd5,
+                "Null class data pointer"
+            );
+            return 5;
+        }
+
+        const int removeResult = zClass_Class::RemoveChildGeneric(
+            parent,
+            child
+        );
+        if (removeResult != 0) {
+            return removeResult;
+        }
+
+        zClass_SequenceDataPartial *data = (zClass_SequenceDataPartial *)(parent->classData);
+        int childIndex = -1;
+        for (int i = 0; i < data->entryCount; ++i) {
+            if (data->entries[i].node == child) {
+                childIndex = i;
+                break;
+            }
+        }
+
+        if (childIndex >= 0) {
+            for (int i = childIndex; i < data->entryCount - 1; ++i) {
+                data->entries[i] = data->entries[i + 1];
+            }
+            --data->entryCount;
+        }
+
+        if (data->currentIndex >= data->entryCount) {
+            data->currentIndex = 0;
+        }
+
+        return 0;
     }
 
     /**
@@ -325,77 +355,6 @@ namespace zClass_Sequence {
         return 5;
     }
 
-    int __fastcall
-    /**
-     * Reimplements 0x454000: zClass_Sequence::RemoveChild
-     * (D:\Proj\GameZRecoil\zClass\Seq.c).
-     *
-     * Purpose: remove a child from both the zClass child list and the sequence
-     * entry list, then clamp the active index back to the first entry if needed.
-     */
-    RemoveChild(
-        zClass_NodePartial * parent,
-        zClass_NodePartial * child
-    ) {
-        if (parent == 0) {
-            zError::ReportOld(
-                0x400,
-                kSequenceSourceFile,
-                0xd3,
-                "Null node pointer."
-            );
-            return 5;
-        }
-        if (child == 0) {
-            zError::ReportOld(
-                0x400,
-                kSequenceSourceFile,
-                0xd4,
-                "Null node pointer."
-            );
-            return 5;
-        }
-        if (parent->classData == 0) {
-            zError::ReportOld(
-                0x400,
-                kSequenceSourceFile,
-                0xd5,
-                "Null class data pointer"
-            );
-            return 5;
-        }
-
-        const int removeResult = zClass_Class::RemoveChildGeneric(
-            parent,
-            child
-        );
-        if (removeResult != 0) {
-            return removeResult;
-        }
-
-        zClass_SequenceDataPartial *data = (zClass_SequenceDataPartial *)(parent->classData);
-        int childIndex = -1;
-        for (int i = 0; i < data->entryCount; ++i) {
-            if (data->entries[i].node == child) {
-                childIndex = i;
-                break;
-            }
-        }
-
-        if (childIndex >= 0) {
-            for (int i = childIndex; i < data->entryCount - 1; ++i) {
-                data->entries[i] = data->entries[i + 1];
-            }
-            --data->entryCount;
-        }
-
-        if (data->currentIndex >= data->entryCount) {
-            data->currentIndex = 0;
-        }
-
-        return 0;
-    }
-
     /**
      * Reimplements 0x4541c0: zClass_Sequence::Update
      * (D:\Proj\GameZRecoil\zClass\Seq.c).
@@ -475,56 +434,110 @@ namespace zClass_Sequence {
         return 0;
     }
 
+}
+
+namespace zClass_Lod {
+    /**
+     * Reimplements 0x4542a0: zClass_Lod::gwLodNew.
+     * The original implementation translation unit is unresolved; Seq.c is
+     * the provisional current compile host.
+     *
+     * Purpose: allocate an LOD node, attach zeroed LOD class data, and seed the
+     * original default range and active-distance settings.
+     */
+    zClass_NodePartial *gwLodNew() {
+        zClass_NodePartial *node = zClass_Class::AllocNodeFromFreeList();
+        node->classId = kZClassNodeLod;
+
+        zClass_LodDataPartial *data =
+            (zClass_LodDataPartial *)(calloc(
+                1,
+                sizeof(zClass_LodDataPartial)
+            ));
+        node->classData = data;
+        data->computeOwnDistance = 1;
+        data->nearRange = 1000.0f;
+        data->farRangeSq = 1000000.0f;
+        data->active = 1;
+        return node;
+    }
+
     int __fastcall
     /**
-     * Reimplements 0x44bea0: zClass_Sequence::RenderTraverse
-     * (D:\Proj\GameZRecoil\zClass\Seq.c).
+     * Reimplements 0x454310: zClass_Lod::gwLodAddChild.
+     * The original implementation translation unit is unresolved; Seq.c is
+     * the provisional current compile host.
      *
-     * Purpose: cull an active sequence node, push traversal state, and render
-     * only the currently selected child entry.
+     * Purpose: append a child to an LOD node using the shared zClass child-list
+     * helper.
      */
-    RenderTraverse(
-        zClass_NodePartial * node,
-        int siblingCountHint
+    gwLodAddChild(
+        zClass_NodePartial * parent,
+        zClass_NodePartial * child
     ) {
-        int boundsContextPushed = 0;
-        zClass_SequenceDataPartial *data;
-        const int flags = node->flags;
-        if ((flags & 0x04) == 0) {
-            return 0;
-        }
-
-        data = (zClass_SequenceDataPartial *)(node->classData);
-        node->flags = flags & ~0x02000000;
-        if (data->isActive == 0) {
-            return 0;
-        }
-
-        int clipMask = *gModel_ClipMaskStackTop;
-        const int result = CullNodeForRender(
-            node,
-            siblingCountHint,
-            &clipMask
+        return zClass_Class::AddChildGeneric(
+            parent,
+            child
         );
-        if (g_zClass_RenderBoundsContextActive == 0) {
-            boundsContextPushed = 1;
-            g_zClass_RenderBoundsContextActive = 1;
+    }
+
+    int __fastcall
+    /**
+     * Reimplements 0x454320: zClass_Lod::RemoveChild.
+     * The original implementation translation unit is unresolved; Seq.c is
+     * the provisional current compile host.
+     *
+     * Purpose: remove a child from an LOD node through the shared zClass
+     * child-list helper and return success.
+     */
+    RemoveChild(
+        zClass_NodePartial * parent,
+        zClass_NodePartial * child
+    ) {
+        zClass_Class::RemoveChildGeneric(
+            parent,
+            child
+        );
+        return 0;
+    }
+
+    int __fastcall
+    /**
+     * Reimplements 0x454330: zClass_Lod::SetComputeOwnDistance.
+     * The original implementation translation unit is unresolved; Seq.c is
+     * the provisional current compile host.
+     *
+     * Purpose: update whether this LOD node computes its own camera distance
+     * during render traversal.
+     */
+    SetComputeOwnDistance(
+        zClass_NodePartial * node,
+        int enabled
+    ) {
+        ((zClass_LodDataPartial *)(node->classData))->computeOwnDistance = enabled;
+        return 0;
+    }
+
+    int __fastcall
+    /**
+     * Reimplements 0x454340: zClass_Lod::SetTargetNodeAndRange.
+     * The original implementation translation unit is unresolved; Seq.c is
+     * the provisional current compile host.
+     *
+     * Purpose: assign the range-fade target node and cache the squared fade
+     * range when a target is present.
+     */
+    SetTargetNodeAndRange(
+        zClass_NodePartial * node,
+        zClass_NodePartial * target,
+        float range
+    ) {
+        zClass_LodDataPartial *data = (zClass_LodDataPartial *)(node->classData);
+        data->rangeNode = target;
+        if (target != 0) {
+            data->rangeSq = range * range;
         }
 
-        if (result == 0) {
-            node->flags |= 0x80000000;
-            ++gModel_ClipMaskStackTop;
-            *gModel_ClipMaskStackTop = clipMask;
-            zClass_Class::gwNodeRenderDispatch(
-                data->entries[data->currentIndex].node,
-                node->listCountB
-            );
-            --gModel_ClipMaskStackTop;
-        }
-
-        if (boundsContextPushed != 0) {
-            g_zClass_RenderBoundsContextActive = 0;
-        }
-        return result;
+        return 0;
     }
 }

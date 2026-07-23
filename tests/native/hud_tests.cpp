@@ -1,7 +1,7 @@
 #include "Battlesport/hud.h"
 
 #include "Battlesport/game_net.h"
-#include "Battlesport/Mfc42Abi.h"
+#include "recoil/Mfc42Abi.h"
 #include "Battlesport/pickup.h"
 #include "Battlesport/player.h"
 #include "GameZRecoil/Time/time.h"

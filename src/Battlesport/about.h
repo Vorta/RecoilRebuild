@@ -3,7 +3,7 @@
 #include "recoil/recoil_types.h"
 
 #define RECOIL_MFC42_DELAY_AFXWIN_INLINES
-#include "Battlesport/Mfc42Abi.h"
+#include "recoil/Mfc42Abi.h"
 #undef RECOIL_MFC42_DELAY_AFXWIN_INLINES
 #include "Battlesport/Resource.h"
 #include "recoil/recoil_callconv.h"

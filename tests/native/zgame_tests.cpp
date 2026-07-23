@@ -14,7 +14,7 @@
 #include "GameZRecoil/zMath/zmth.h"
 #include "GameZRecoil/zModel/gmod.h"
 #include "GameZRecoil/zReader/zreader.h"
-#include "GameZRecoil/zRndr/zrndr.h"
+#include "GameZRecoil/zRender/zrndr.h"
 #include "GameZRecoil/zSound/zsnd.h"
 #include "GameZRecoil/zUtil/zsave_game.h"
 #include "GameZRecoil/zUtil/zbd.h"

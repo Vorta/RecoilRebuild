@@ -61,7 +61,7 @@ int main(void) { return 0; }
     endif()
 endif()
 
-add_subdirectory(src/native)
+add_subdirectory(cmake/recoil_native)
 
 if(RECOIL_BUILD_NATIVE_TESTS)
     enable_testing()

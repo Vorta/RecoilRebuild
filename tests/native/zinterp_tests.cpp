@@ -5,7 +5,7 @@
 #include "GameZRecoil/include/zimage.h"
 #include "GameZRecoil/zReader/zreader.h"
 #include "GameZRecoil/zModel/gmod.h"
-#include "GameZRecoil/zRndr/zrndr.h"
+#include "GameZRecoil/zRender/zrndr.h"
 #include "GameZRecoil/zVideo/zvid.h"
 #include "GameZRecoil/zWeapon/zwep.h"
 

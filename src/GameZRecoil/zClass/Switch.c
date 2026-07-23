@@ -1,4 +1,5 @@
 #include "GameZRecoil/include/zclass.h"
+#include "GameZRecoil/zError/zerr.h"
 #include "GameZRecoil/zMath/zmth.h"
 #include "GameZRecoil/zVideo/zvid.h"
 
@@ -15,98 +16,119 @@ char g_zClass_SourceFile_SwitchC[0x24] =
 
 namespace {
     /**
-     * Original-source helper evidence: no standalone retail function exists.
-     * Observed in caller 0x44bfb0 (D:\Proj\GameZRecoil\zClass\Switch.c);
-     * BN keeps the switch-mask traversal cull, bounds refresh, and sphere
-     * clip-mask sequence inline in the Switch traversal body.
-     * Purpose: update switch-node bounds when needed and run the sphere
-     * frustum cull used by switch render traversal.
+     * Original static helper observed in BN Switch.c callers 0x452920 and
+     * 0x452970; no standalone retail function is known.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\Switch.c.
+     * Purpose: share the Switch.c null parent, child, and class-data checks
+     * before routing through the data-driven zClass child-link lists.
      */
-    int CullNodeForRender(
-        zClass_NodePartial * node,
-        int siblingCountHint,
-        int *clipMask
+    int ValidateParentChildForSwitch(
+        zClass_NodePartial * parent,
+        zClass_NodePartial * child,
+        int nullParentLine,
+        int nullChildLine,
+        int nullClassDataLine
     ) {
-        int result = 0;
-        if (*clipMask != 0 && siblingCountHint > 1) {
-            if ((node->boundsFlags & 0x04) != 0 || g_zClass_RenderBoundsContextActive != 0) {
-                zBBoxCorners corners = {0};
-                zClass_Class::gwNodeGetViewBBoxCorners(
-                    node,
-                    &corners
-                );
-                BBox::CornersToBoundingSphere(
-                    &corners,
-                    zClass_NodeViewSphereCenter(node),
-                    zClass_NodeViewSphereRadius(node)
-                );
-                node->boundsFlags &= ~0x04;
-            }
-            result = zVideo_FrustumTestSphereClipMask(
-                zClass_NodeViewSphereCenter(node),
-                clipMask,
-                *zClass_NodeViewSphereRadius(node)
+        if (parent == 0) {
+            zError::ReportOld(
+                0x400,
+                g_zClass_SourceFile_SwitchC,
+                nullParentLine,
+                "Null node pointer."
             );
-            if ((node->flags & 0x80) != 0 && result == 0x20) {
-                result = 0;
-                *clipMask &= ~0x20;
-            }
+            return 5;
         }
-        return result;
+        if (child == 0) {
+            zError::ReportOld(
+                0x400,
+                g_zClass_SourceFile_SwitchC,
+                nullChildLine,
+                "Null node pointer."
+            );
+            return 5;
+        }
+        if (parent->classData == 0) {
+            zError::ReportOld(
+                0x400,
+                g_zClass_SourceFile_SwitchC,
+                nullClassDataLine,
+                "Null class data pointer"
+            );
+            return 5;
+        }
+
+        return 0;
     }
 }
 
-namespace zClass_Switch {
-    int __fastcall
+namespace zClass_Class {
     /**
-     * Reimplements 0x44bfb0: zClass_Switch::RenderTraverse
-     * (D:\Proj\GameZRecoil\zClass\Switch.c).
-     *
-     * Purpose: cull the switch node, push the clip mask, and render only the
-     * active child-mask entries.
+     * Reimplements 0x452920: zClass_Class::AddChildValidated.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\Switch.c.
+     * Purpose: validate Switch.c parent/child node state, then link the child
+     * through the generic zClass listA/listB ownership routine.
      */
-    RenderTraverse(
-        zClass_NodePartial * node,
-        int siblingCountHint
+    int __fastcall AddChildValidated(
+        zClass_NodePartial * parent,
+        zClass_NodePartial * child
     ) {
-        int boundsContextPushed = 0;
-        const int flags = node->flags;
-        if ((flags & 0x04) == 0) {
-            return 0;
+        if (ValidateParentChildForSwitch(
+            parent,
+            child,
+            0x80,
+            0x81,
+            0x82
+        ) != 0) {
+            return 5;
         }
 
-        zClass_SwitchDataPartial *data = (zClass_SwitchDataPartial *)(node->classData);
-        node->flags = flags & ~0x02000000;
-        int clipMask = *gModel_ClipMaskStackTop;
-        const int result = CullNodeForRender(
-            node,
-            siblingCountHint,
-            &clipMask
+        return AddChildGeneric(
+            parent,
+            child
         );
-        if (g_zClass_RenderBoundsContextActive == 0) {
-            boundsContextPushed = 1;
-            g_zClass_RenderBoundsContextActive = 1;
+    }
+
+    /**
+     * Reimplements 0x452970: zClass_Class::RemoveChildValidated.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\Switch.c.
+     * Purpose: validate Switch.c parent/child node state, then unlink the child
+     * through the generic zClass listA/listB ownership routine.
+     */
+    int __fastcall RemoveChildValidated(
+        zClass_NodePartial * parent,
+        zClass_NodePartial * child
+    ) {
+        if (parent == 0) {
+            zError::ReportOld(
+                0x400,
+                g_zClass_SourceFile_SwitchC,
+                0x9f,
+                "Null node pointer."
+            );
+            return 5;
+        }
+        if (child == 0) {
+            zError::ReportOld(
+                0x400,
+                g_zClass_SourceFile_SwitchC,
+                0xa0,
+                "Null node pointer."
+            );
+            return 5;
+        }
+        if (parent->classData == 0) {
+            zError::ReportOld(
+                0x400,
+                g_zClass_SourceFile_SwitchC,
+                0xa1,
+                "Null node class data pointer."
+            );
+            return 5;
         }
 
-        if (result == 0) {
-            node->flags |= 0x80000000;
-            ++gModel_ClipMaskStackTop;
-            *gModel_ClipMaskStackTop = clipMask;
-            const unsigned int activeMask = data->childMasks[data->activeMaskIndex];
-            for (int i = 0; i < node->listCountB; ++i) {
-                if (((activeMask >> i) & 1U) != 0) {
-                    zClass_Class::gwNodeRenderDispatch(
-                        node->listB[i],
-                        node->listCountB
-                    );
-                }
-            }
-            --gModel_ClipMaskStackTop;
-        }
-
-        if (boundsContextPushed != 0) {
-            g_zClass_RenderBoundsContextActive = 0;
-        }
-        return result;
+        return RemoveChildGeneric(
+            parent,
+            child
+        );
     }
 }

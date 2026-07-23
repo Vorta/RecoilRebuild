@@ -1,10 +1,46 @@
-/* This source-layout fragment is included by the current compatibility container.
- * Parent build/manifests must compile this path directly after retiring the container include.
+#include "zinput.h"
+
+#include <stdlib.h>
+
+extern "C" {
+/**
+ * Reimplements data 0x4e0c9c: g_zInput_SourceFile_ZinInitCpp.
+ * BN types this writable char[0x28] as the zin_init.cpp source-path literal
+ * passed to DI_ReportError when DirectInputCreateA fails.
+ * Purpose: Supplies the original init source-file path for diagnostics.
  */
+char g_zInput_SourceFile_ZinInitCpp[0x28] =
+    "D:\\Proj\\GameZRecoil\\zInput\\zin_init.cpp";
+}
+
+namespace zInput {
+
+const unsigned char kSuspendFlag = 2;
+const unsigned int kDirectInputVersion = 0x500;
+
+inline zInput_BindMapOverlayStackNode *__fastcall BindMapOverlay_DetachHead(
+    zInput_BindMapOverlayStackNode **head
+);
+inline void __fastcall BindMapOverlay_DeleteNodeList(
+    zInput_BindMapOverlayStackNode **head
+);
+
+/**
+ * Original-source helper evidence: zInput suspend flag test.
+ * No standalone retail function exists; observed caller bodies at 0x471c60 and
+ * 0x471c70 use this same bit-1 clear test, matching the keyboard variant at
+ * 0x471c80.
+ * Purpose: Convert a device registry flag byte into an unsuspended boolean.
+ */
+inline int IsUnsuspended(
+    unsigned char flags
+) {
+    return (~flags & kSuspendFlag) >> 1;
+}
 
 /**
  * Reimplements 0x4719e0: zInput::GlobalStateStaticInitAndRegisterAtExit.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
+ * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * BN assembly calls zInput::GlobalStateStaticInit and tail-jumps to
  * zInput::GlobalStateRegisterAtExit.
  * Purpose: perform zInput global-state static construction and register its
@@ -17,9 +53,10 @@ void __cdecl GlobalStateStaticInitAndRegisterAtExit() {
 
 #if defined(_MSC_VER) && defined(_M_IX86)
 typedef void (__cdecl *ZInputCrtInitializerFn)();
+typedef int (__cdecl *ZInputCrtIntInitializerFn)();
 /* VC5 emits these zInput startup callbacks as direct .CRT$XCU rows. */
 #pragma data_seg(".CRT$XCU")
-ZInputCrtInitializerFn s_zInputCrtInit_BindGroupList =
+ZInputCrtIntInitializerFn s_zInputCrtInit_BindGroupList =
     BindGroupList_StaticInitAndRegisterAtExit;
 ZInputCrtInitializerFn s_zInputCrtInit_GlobalState =
     GlobalStateStaticInitAndRegisterAtExit;
@@ -28,7 +65,7 @@ ZInputCrtInitializerFn s_zInputCrtInit_GlobalState =
 
 /**
  * Reimplements 0x4719f0: zInput::GlobalStateStaticInit.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
+ * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * BN assembly loads 0x561cb0 as the static-object this pointer and tail-jumps
  * to zInput_GlobalState::Constructor.
  * Purpose: run zInput global-state static construction.
@@ -39,7 +76,7 @@ void *GlobalStateStaticInit() {
 
 /**
  * Reimplements 0x471a00: zInput::GlobalStateRegisterAtExit.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
+ * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * BN assembly pushes zInput::GlobalStateAtExitDestructor and calls the CRT
  * atexit provider.
  * Purpose: register the zInput global-state static destructor.
@@ -50,7 +87,7 @@ int GlobalStateRegisterAtExit() {
 
 /**
  * Reimplements 0x471a10: zInput::GlobalStateAtExitDestructor.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
+ * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * BN assembly loads 0x561cb0 as the static-object this pointer and tail-jumps
  * to zInput_GlobalState::Destructor.
  * Purpose: expose the zInput global-state destructor as a CRT atexit callback.
@@ -61,7 +98,7 @@ void __cdecl GlobalStateAtExitDestructor() {
 
 /**
  * Reimplements 0x471a20: zInput_GlobalState::Destructor.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
+ * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * BN assembly drains the overlay free-list, drains the auxiliary block-list,
  * clears both list heads plus stack head/reserved/depth, and leaves the block
  * size field intact.
@@ -81,7 +118,7 @@ void __fastcall GlobalStateDestructor(
 
 /**
  * Reimplements 0x471ab0: zInput_GlobalState::Constructor.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
+ * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * BN assembly writes the overlay lifetime fields at data addresses
  * 0x565ea4..0x565eb8 through the 0x561cb0 static-object base; the rebuilt
  * source keeps the retail storage as named globals instead of adding a
@@ -102,7 +139,7 @@ void *__fastcall GlobalStateConstructor(
 
 /**
  * Reimplements 0x471ae0: zInput::OnAppDeactivate.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
+ * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: suspend active input devices during app deactivation, then mark the
  * mouse inactive and update DirectInput acquisition state.
  *
@@ -128,7 +165,7 @@ void OnAppDeactivate() {
 }
 /**
  * Reimplements 0x471b20: zInput::OnAppActivate.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
+ * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: resume suspended input devices when a window is active, then mark
  * the mouse active and update DirectInput acquisition state.
  *
@@ -150,7 +187,7 @@ void OnAppActivate() {
 
 /**
  * Reimplements 0x471b50: zInput::Init.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
+ * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: initialize DirectInput, clear device status state, create keyboard,
  * mouse, and joystick devices, then acquire keyboard and mouse poll refs.
  */
@@ -196,7 +233,7 @@ int __fastcall Init(
 
 /**
  * Reimplements 0x471c10: zInput::Shutdown.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
+ * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: shut down joystick, keyboard, mouse, and DirectInput state, then
  * clear the input window handle.
  */
@@ -234,7 +271,7 @@ void ResetAllTransitionState() {
 
 /**
  * Reimplements 0x471c60: zInput::Mouse_IsUnsuspended.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
+ * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: report whether the mouse suspend bit in the zInput device registry
  * is clear.
  */
@@ -244,7 +281,7 @@ int Mouse_IsUnsuspended() {
 
 /**
  * Reimplements 0x471c70: zInput::Joystick_IsUnsuspended.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
+ * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: report whether the joystick suspend bit in the zInput device
  * registry is clear.
  */
@@ -252,20 +289,10 @@ int Joystick_IsUnsuspended() {
     return IsUnsuspended(g_zInputJoystickFlags);
 }
 
-/**
- * Original-source helper evidence: zInput keyboard suspend flag query.
- * No standalone retail function exists for this namespace wrapper; activation
- * callers use the address-backed keyboard implementation at 0x471c80.
- * Purpose: expose the keyboard unsuspended query through the zInput namespace.
- */
-int Keyboard_IsUnsuspended() {
-    return zInput_Keyboard_IsUnsuspended();
-}
-
 }
 /**
  * Reimplements 0x471c80: zInput_Keyboard_IsUnsuspended.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
+ * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: report whether the keyboard device registry suspend bit is clear.
  *
  * Evidence: BN names the retail callee as zInputKeyboard::IsUnsuspended and
@@ -277,21 +304,13 @@ int zInput_Keyboard_IsUnsuspended() {
 namespace zInput {
 
 /**
- * Reimplements data 0x4e5ce0: k_EmptyString.
- * BN types this as a one-byte initialized empty string returned by bind-map
- * name lookup helpers when no key, joystick, or mouse label exists.
- * Purpose: Provides a stable empty C string for input binding names.
- */
-char k_EmptyString[] = "";
-
-/**
  * Original inline helper evidence: bind-map overlay list head detach.
  * No standalone retail function exists; observed caller 0x471a20 inlines this
  * list-unlink pattern for both overlay node lists before operator delete.
  * Purpose: detach the current overlay list head while preserving the recovered
  * prev/next cleanup shape used by zInput global-state teardown.
  */
-zInput_BindMapOverlayStackNode *__fastcall BindMapOverlay_DetachHead(
+inline zInput_BindMapOverlayStackNode *__fastcall BindMapOverlay_DetachHead(
     zInput_BindMapOverlayStackNode **head
 ) {
     zInput_BindMapOverlayStackNode *node = *head;
@@ -317,7 +336,7 @@ zInput_BindMapOverlayStackNode *__fastcall BindMapOverlay_DetachHead(
  * Purpose: delete one recovered overlay node list in zInput global-state
  * teardown.
  */
-void __fastcall BindMapOverlay_DeleteNodeList(
+inline void __fastcall BindMapOverlay_DeleteNodeList(
     zInput_BindMapOverlayStackNode **head
 ) {
     zInput_BindMapOverlayStackNode *node = BindMapOverlay_DetachHead(head);
@@ -327,11 +346,9 @@ void __fastcall BindMapOverlay_DeleteNodeList(
     }
 }
 
-const int kZInputCommandLabelBytes = 0x50;
-
 /**
  * Reimplements 0x471c90: zInput::Mouse_ResumeFromSuspend.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
+ * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: reset mouse transition state if it was suspended, then clear the
  * mouse suspend bit.
  *
@@ -348,7 +365,7 @@ void Mouse_ResumeFromSuspend() {
 
 /**
  * Reimplements 0x471cb0: zInput::Joystick_ResumeFromSuspend.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
+ * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: reset joystick transition state if it was suspended, then clear the
  * joystick suspend bit.
  *
@@ -365,7 +382,7 @@ void Joystick_ResumeFromSuspend() {
 
 /**
  * Reimplements 0x471cd0: zInput::Keyboard_ResumeFromSuspend.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
+ * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: reset keyboard transition state if it was suspended, then clear the
  * keyboard suspend bit.
  *
@@ -382,7 +399,7 @@ void Keyboard_ResumeFromSuspend() {
 
 /**
  * Reimplements 0x471cf0: zInput::Mouse_Suspend.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
+ * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: set the mouse suspend bit in the zInput device registry.
  */
 void Mouse_Suspend() {
@@ -391,7 +408,7 @@ void Mouse_Suspend() {
 
 /**
  * Reimplements 0x471d00: zInput::Joystick_Suspend.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
+ * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: set the joystick suspend bit in the zInput device registry.
  */
 void Joystick_Suspend() {
@@ -400,7 +417,7 @@ void Joystick_Suspend() {
 
 /**
  * Reimplements 0x471d10: zInput::Keyboard_Suspend.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
+ * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: set the keyboard suspend bit in the zInput device registry.
  */
 void Keyboard_Suspend() {
@@ -409,7 +426,7 @@ void Keyboard_Suspend() {
 
 /**
  * Reimplements 0x471d20: zInput::Keyboard_AddRef.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
+ * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: Increment the keyboard polling reference count and reset transition
  * state when the first active reference is acquired.
  */
@@ -426,7 +443,7 @@ int Keyboard_AddRef() {
 
 /**
  * Reimplements 0x471d50: zInput::DI_AddJoystickRef.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
+ * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: Increment the joystick polling reference count and reset transition
  * state when the first active reference is acquired.
  */
@@ -443,7 +460,7 @@ int DI_AddJoystickRef() {
 
 /**
  * Reimplements 0x471d80: zInput::DI_ReleaseJoystickRef.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
+ * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: Decrement the joystick polling reference count without underflow.
  */
 int DI_ReleaseJoystickRef() {
@@ -458,7 +475,7 @@ int DI_ReleaseJoystickRef() {
 
 /**
  * Reimplements 0x471da0: zInput::Mouse_AddRef.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
+ * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: Increment the mouse polling reference count and reset transition
  * state when the first active reference is acquired.
  */
@@ -475,7 +492,7 @@ int Mouse_AddRef() {
 
 /**
  * Reimplements 0x471dd0: zInput::DI_GetJoystickRefCount.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
+ * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: Return the current joystick polling reference count.
  */
 int DI_GetJoystickRefCount() {
@@ -502,3 +519,5 @@ void __fastcall PollActiveDevices(
         Keyboard_PollState(savedDispatchCallbacks);
     }
 }
+
+} // namespace zInput

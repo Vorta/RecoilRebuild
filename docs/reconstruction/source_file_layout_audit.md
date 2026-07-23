@@ -13,53 +13,162 @@ assembly. The unified tracker provides joined physical-block and semantic-span
 context for the cursor selected by `progress next`. Block order, owner views,
 work-item views, and this history never select the next work themselves.
 
+## 2026-07-23 Whole-`src` Naming And Layout Pass
+
+This pass audited all 157 current files under `src`: 85 Recoil.exe production
+translation units, five separately governed `Messages` files, and the
+production headers/resources consumed by those targets. The Recoil.exe source
+set remains 64 retail-literal-backed translation units plus 21 no-literal
+provisional compile hosts. No source-list entry was inserted, removed, or
+reordered; `vc5_final_build.json` remains the active compile iteration and
+object link-response order.
+
+The following placement changes are supported by retail literals, neighboring
+physical order, source ownership, include closure, and unchanged VC5 output:
+
+| Previous implementation path | Current path | Evidence status |
+| --- | --- | --- |
+| `src/GameZRecoil/zSys/zSys.cpp` | `src/GameZRecoil/zSys/zsys.cpp` | Provisional case normalization consistent with the active manifest and neighboring `zsys_*` family; not literal-backed filename proof. |
+| `src/GameZRecoil/zRndr/zrndr.h` | `src/GameZRecoil/zRender/zrndr.h` | Header placement inferred from the literal-backed `zRender/zrndr_draw.c` owner and complete include closure. |
+| `src/GameZRecoil/mission.h` | `src/Battlesport/mission.h` | Header co-located with literal-backed `Battlesport/mission.cpp`. |
+| `src/GameZRecoil/zTurret/zTurret.h` | `src/Battlesport/turret.h` | Full 0x180-byte runtime type is owned by literal-backed `Battlesport/turret.cpp` and its game-facing consumers. |
+| `src/GameZRecoil/wwonline/wol_download.h` | `src/Battlesport/wol_download.h` | Download declarations join the existing Battlesport WOL source/header family; exact historical header name remains provisional. |
+| `src/GameZRecoil/RecoilApp/recoil_state_main_menu_transition.h` | `src/Battlesport/recoil_state_main_menu_transition.h` | Reconstructed declaration belongs to the literal-backed Battlesport RecoilApp contribution; filename remains provisional. |
+| `src/GameZRecoil/RecoilApp/recoil_state_dialog_host.h` | `src/Battlesport/recoil_state_dialog_host.h` | Same RecoilApp/HUD ownership basis; filename remains provisional. |
+
+The resulting empty `zRndr`, `zTurret`, `wwonline`, and header-only
+`RecoilApp` directories were removed. `src/Battlesport/RecoilApp.cpp` was not
+renamed: that exact source name and Battlesport placement are retail
+literal-backed.
+
+Tool and compatibility infrastructure no longer lives under production
+`src`. The native CMake target and anchor now live under
+`cmake/recoil_native`; `intrin.h`, `recoil_types.h`, `recoil_callconv.h`, and
+`Mfc42Abi.h` live under the target-scoped
+`tools/_recoil/compat/include` root. `Mfc42Abi.h` remains provider/verification
+infrastructure, not authored Battlesport source. Active CMake, VC5, functional,
+and test configuration paths use that root. Historical `.agent` evidence was
+not rewritten.
+
+Two unused reconstruction artifacts were removed:
+`zReader/zbd_reader.h`, which had no implementation or references and used
+modern viewer-only declarations, and
+`zSound/zsnd_snapshot_stop_all_note.h`, whose useful TU/codegen observation is
+now in the existing `StopAllIfPlaying` docblock.
+
+All 64 literal-backed `.c`/`.cpp` paths retain their tracker-recorded spelling.
+The following 21 Recoil translation units remain provisional compile hosts and
+were not renamed from aesthetics or alphabetical adjacency:
+
+- Battlesport `about.cpp`, `util.cpp`, `version.cpp`, `weapon.cpp`,
+  `WinSock.cpp`, and `WOL.cpp`;
+- `CZGameFrame/CZGameFrame.cpp`, `GameZRecoil/Time/Time.cpp`, and
+  `WinMain.cpp`;
+- `zGame/zgame_opt.c`;
+- `zInput/zin_joystick.cpp`, `zInput/zin_mouse.cpp`, and `zInput/zInput.cpp`;
+- `zSound/zsnd_error.cpp`, `zSound/zsnd_fade.cpp`, and `zSound/zsnd.cpp`;
+- `zSys/zsys_cpu.cpp` and `zSys/zsys.cpp`;
+- `zUI/zui.cpp`, `zUtil/zutl_zbd.cpp`, and `zVideo/zvid_main.c`.
+
+All remaining production headers are covered by one of these dispositions:
+
+- `src/GameZRecoil/include/*` is the shared, codegen-sensitive header shelf.
+  The rejected 2026-07-22 experiment below remains binding.
+- Headers beside a retail-literal-backed translation unit are retained as that
+  owner's declaration/type inputs; header filenames remain provisional unless
+  separately proven.
+- Headers beside the 21 no-literal hosts remain provisional source-shape
+  inputs.
+- `src/CZGameFrame/*` and `src/Battlesport/CZRecoilFrame.h` retain the reviewed
+  base/derived application-frame layering.
+- `src/Messages/*` remains the separately governed companion-DLL tree.
+
+Source provenance labels now distinguish proof from placement hypotheses.
+Exactly 425 address-bearing docblocks whose stated path matches the
+literal-backed physical block containing that function use
+`Retail literal-backed physical source block:`. The other 603 former
+`Original source path/file` claims use
+`Provisional source-placement hypothesis:`. This replacement changes no line
+count or embedded retail path literal. `guard source-placement` enforces both
+the labels and the retired path set on production and active configuration
+surfaces.
+
+The exact authored-order checks remained stable after the moves. Representative
+complete results are render 132/132, mission 132/132, map 42/42, turret 20/20,
+HUD 418/418, player 177/177, weapon 50/50, RecoilApp 218/218, WOL 110/110,
+zInterp 42/42, zUI early 1/1, zUI late 258/258, zSys 1/1, zLoc-adjacent 7/7,
+and Time 2/2. The final VC5SP3 build compiled all 85 sources, compiled the
+resource, linked, retained canonical MFC include provenance, and passed the
+mandatory linked-order targets. These are non-regression results only; they do
+not promote an inferred header path to literal-backed historical fact.
+
+The source-discovery ChatGPT Pro critiques
+`2026-07-23T08-43-01-617Z-chatgpt-call` and
+`2026-07-23T09-14-53-513Z-chatgpt-call` were used only to challenge and rank
+the ambiguous header placements. Their output is advisory and proves no
+owner, physical block, order, byte, provider, or tier fact.
+
+The 29 affected verification-target registrations were synchronized at tracker
+revision 1203 without invalidating any block or symbol. The registered
+`owner replace-batch` route rejects metadata-only path-casing changes because
+it requires a primary-function reassignment, so seven owner records that still
+mention the old `zSys.cpp` casing were not hand-edited. Those strings remain
+non-authoritative metadata debt until a registered metadata-only owner update
+route exists.
+
 ## 2026-07-03 Source Tree Alignment Pass
 
 The production source tree under `src` has been reshaped to match the current
 source-file block catalog's physical `.c`/`.cpp` file set. The new
 `python tools/recoil.py progress audit --scope blocks --strict` command compares current
 production `.c`/`.cpp` paths against block `agent_source_path` resolution and
-currently reports `84 ledger/current .c/.cpp file(s)`. `src/Messages` and
-`src/native` are intentionally outside this Recoil.exe layout check.
+currently reports a strict match for the 85 Recoil.exe production translation
+units. `src/Messages` is intentionally outside this Recoil.exe layout check;
+the former `src/native` infrastructure was externalized by the later
+2026-07-23 pass above.
 
 This pass is file-structure alignment only. It does not claim that every moved
-body is now source-faithful, standalone, order-proven, or byte-ready. Several
-legacy implementation chunks were preserved in private `_body.h` or
-`*_impl.h` files and included from the nearest current compile host so no
-reimplemented bodies were deleted while the original include/source split is
-still unknown. Those preservation headers are source-shape debt, not original
-source proof. The affected areas include Battlesport HUD/RecoilApp shards,
-zClass render-list/Lod preservation, zModel/zReader/zSys/zWeapon compatibility
-headers, and zSound sample/snapshot preservation.
+body is now source-faithful, standalone, order-proven, or byte-ready. Early
+versions of the alignment pass temporarily preserved implementation chunks in
+private `_body.h`, `*_impl.h`, and `*_impl_body.h` files or through quoted
+`.c`/`.cpp` includes. That preservation strategy is now fully retired from the
+production `src` tree: no such fragment files or include edges, included-source
+edges, production `.inl` files, or compatibility-only final-build exclusions
+remain. This negative source-shape result does not by itself prove an original
+filename or translation-unit split.
 
-Twelve recovered source-block files are still compiled through compatibility
-hosts instead of as standalone translation units:
-`zdec_qsand.cpp`, `zdec_crater.cpp`, `zeff_anim_init.c`, `zeff_init.c`,
-`zeff_anim_save.c`, `fmv_main.cpp`, `fmv_stream.cpp`, `zimg_fonts.cpp`,
-`zin_kbd.cpp`, `zin_mouse.cpp`, `zin_init.cpp`, and `zin_joystick.cpp`.
-`tools/_recoil/config/vc5_final_build.json` records explicit
-`source_file_map_exclusions` for those files so the final-build source guard
-does not silently treat them as missing. The VC5 manifest source guard now
-follows explicit quoted project `.c`/`.cpp` includes in addition to headers
-when checking provenance comments, because these compatibility hosts are the
-current production compile inputs.
+The live, non-mutating inventory for this debt is:
 
-Placeholder ledger hosts were created where the catalog requires a physical
-file but no standalone authored body has been reconstructed yet, including
-`weapon.cpp`, `zsnd_3d.cpp`, `zsnd_error.cpp`, several zVideo split files,
-`zsys_cpu.cpp`, and `zutl_zar.cpp`. Their existence satisfies current file-set
-alignment only. Future source-shape work must either fill them with recovered
-original-style bodies or update the physical-block tracker if BN/object-map
-evidence proves a different physical file model.
+```powershell
+python tools/recoil.py audit source-fragments --root src --json
+```
 
-The current native build still exposes unresolved compatibility-host blockers
-in included-fragment areas such as zDEClient, zEffect, zInput, and HUD
-main-menu shards. Treat those as source-shape/include-shape debt caused by the
-temporary preservation strategy, not as evidence that a `.cpp` can be split
-into multiple physical blocks. The next reconstruction steps should retire the
-compatibility includes by recovering the original declarations, namespace
-scope, helper ordering, and standalone translation-unit dependencies for the
-affected files.
+It derives preservation-header files (`*_body.h`, `*_impl.h`, and
+`*_impl_body.h`), direct and nested quoted include edges, quoted `.c`/`.cpp`
+includes, production `.inl` files, and compatibility-only final-build source
+exclusions from the current source tree and final-build manifest. The strict
+counterpart is `python tools/recoil.py guard source-fragments --root src`.
+There is no allowlist. The guard currently reports zero in all five categories,
+and the VC-manifest guard plus live parent order acceptance apply the same
+classifier to each target's declared and transitive repo-local production
+closure.
+
+Former compatibility-host areas now use ordinary direct definitions in their
+current physical compile host or independent direct translation units where
+the evidence supports that split. In particular, the four literal-backed
+zEffect blocks compile directly from `zeff_anim_run.c`, `zeff_anim_init.c`,
+`zeff_init.c`, and `zeff_anim_save.c`; none textually includes another source.
+No compatibility source exclusion remains in the governed final-build source
+list.
+
+Some no-literal shelves still have unresolved historical filenames. Where a
+new physical split was not supported, the recovered bodies were absorbed at
+their exact current host seam to preserve natural emission topology. The late
+RecoilApp/AppFrame cluster, zLoc helpers, and HUD weather cluster are examples
+of this conservative interim treatment. Their direct source placement is an
+implementation fact, not acceptance of the host as the original translation
+unit. A stronger literal, map/object, or natural-order result may still require
+reshaping the corresponding `.h`/`.c`/`.cpp` boundary.
 
 ## `zError::ReportOldNoOp` Source-File Literals
 
@@ -322,7 +431,7 @@ no-literal authored prelude ranges need explicit physical blocks.
 | `[0x438990,0x43ce80)` | `src/Battlesport/weapon.cpp` | Provisional physical host for pickup/airdrop helpers followed by player weapon banks, hardpoints, aim/fire pipeline, damage feedback, alt-gun/mines runtime, kill-verb callback, and mission weapon availability. BN xref sweep found no callers after `0x43ce80`; semantic subranges remain recorded in the source-block database. |
 | `[0x43ce80,0x43cf90)` | `src/Battlesport/WinSock.cpp` | NetUi/zStr/GameNet transition immediately before WOL. Exact internal splits are `0x43ce80` NetUi Winsock prompt, NOP padding at `0x43cf1c`, `0x43cf20` zStr CRT init-table stub with data xref `0x4da094`, NOP padding at `0x43cf31`, `0x43cf40` Net IPv4 formatter, and padding at `0x43cf8b`. |
 | `[0x43cf90,0x442890)` | `src/Battlesport/WOL.cpp` | Westwood Online dialog/API/event-sink/config/progress/download cluster. BN order interleaves those class layers, so current evidence supports one provisional aggregate placement label rather than separate per-class physical `.cpp` rows. |
-| `[0x4428b0,0x443730)` | `semantic:late-recoilapp-appframe-cluster`, provisionally `src/CZGameFrame/AppFrame.cpp` | Late RecoilApp/MFC/OLE/state-queue frame glue with 6 recorded semantic subranges. Focused BN review found no `AppFrame.cpp` literal; the only `RecoilApp.cpp` literal xrefs earlier `RecoilApp::InitInstance`, so this is an unresolved semantic placement row rather than an accepted physical filename. Do not route this row to `src/Battlesport/RecoilApp.cpp`, because that physical TU is already the literal-backed `[0x42de10,0x436630)` block. |
+| `[0x4428b0,0x443730)` | `semantic:late-recoilapp-appframe-cluster`, current compile host `src/Battlesport/RecoilApp.cpp` | Late RecoilApp/MFC/OLE/state-queue frame glue with 6 recorded semantic subranges. Focused BN review found no `AppFrame.cpp` literal; the only `RecoilApp.cpp` literal xrefs earlier `RecoilApp::InitInstance`, so this remains an unresolved semantic placement row rather than an accepted physical filename. Current production source keeps the bodies directly at the proven emission seam in `RecoilApp.cpp` instead of creating an unproved `AppFrame.cpp`; this topology-preserving host is not historical TU proof. |
 | `[0x443730,0x443b70)` | `src/CZGameFrame/CZGameFrame.cpp` provisional | CZGameFrame runtime/message-map/window methods with 8 recorded semantic subranges; includes one zVideo cached-client-rect helper island at `0x443a40`, called only by local `CZGameFrame::OnSize`/`OnMove` and not a proven emitted header row. Runtime/message-map data xrefs support the class cluster, but no source-path literal proves `CZGameFrame.cpp`; the row is no longer routed to `Battlesport/RecoilApp.cpp` because the compiler would not split that literal-backed TU around the intervening `turret.cpp` and transition shelf. |
 | `[0x454360,0x4558f0)` | `src/GameZRecoil/zClass/cls_zbd.c` | Literal-backed ZBD block now includes the no-literal `0x454360 zClass::ResetCurrentZbdPath` prefix; no separate `cls_path.c` source file is proven. |
 | `[0x470020,0x4706c0)` | `src/GameZRecoil/zInput/zin_mouse.cpp` | Bracketed/order-backed mouse runtime block; no local source-path literal, so this remains a provisional physical placement label. BN confirms the padded boundary at `0x4706c0` and function-level mouse subranges are recorded in the catalog; no `.h` body contributor is proven. |
@@ -525,12 +634,12 @@ The first durable repair is conservative:
   resumes at `[0x402fd0,0x4038a0)`. Early `zmth_types.h` and `zmth_decls.h`
   remain `source_shape_inputs` because they are declaration/type inputs, not
   known address-emitting rows.
-- New `.inl` production reconstruction files are banned. Existing `.inl` files
-  are legacy/provisional source-shape debt unless independently proven
-  original: `src/GameZRecoil/zSys/zsys_probe_platform.inl`,
-  `src/GameZRecoil/zSys/zsys_cpu_asm.inl`,
-  `src/GameZRecoil/zSys/zsys_cpu_detect.inl`, and
-  `src/GameZRecoil/zSys/zsys_cpu_get_class.inl`.
+- New `.inl` production reconstruction files are banned. The empty retired
+  donors `zsys_cpu_asm.inl`, `zsys_cpu_detect.inl`, and
+  `zsys_cpu_get_class.inl` were removed after their direct CPU-probe bodies were
+  confirmed in `zgame_opt.c` and `zsys_cpu.cpp`. The nonexistent
+  `zsys_probe_platform.inl` was likewise removed from manifest closures because
+  its platform-probe definitions already live directly in `zSys.cpp`.
 
 Historical Battlesport source-path literal sequence recorded during the dated
 alignment passes (not a current queue):
@@ -684,7 +793,7 @@ and do not update `the unified tracker`.
 | `src/Battlesport/ai_net.cpp` | `[0x401060,0x4038a0)` | `0x4da1e8`, xref `0x4030bb` | `AINet::TickAiMode2TopLevel` / `AINet::FreeAll` | mapped with `ai_net.h`/`zmth.h` partial-header rows and 6 body subranges |
 | `src/Battlesport/Briefing.cpp` | `[0x4038a0,0x404ca0)` | `0x4da32c`, xref `0x404238` | `HudUiBriefingObjectivePicture::DrawWithNoiseOverlay` / `Briefing::BuildObjectiveActionsForRuntime` | mapped, 11 semantic subranges |
 | `src/Battlesport/hud.cpp` | `[0x404ca0,0x415ab0)` | `0x4dadd8`, xrefs `0x4101a3`, `0x4141bb` | `HudUiElement::Draw` / `zFMV_ActionBase::Destructor` | mapped refined; documented HUD order diagnostics now cover the worked physical block through `0x415ab0`; semantic/provider/header exceptions remain order-only evidence, not owner/tier acceptance |
-| `src/Battlesport/map.cpp` | `[0x415ab0,0x417350)` | `0x4daf04`, xref `0x416922` | `HudSensorMapNode::Init` / `HudSensorTracker::SetObjectiveMarkerColorBlink` | mapped refined. On 2026-07-20, `map_text_block_order_current_shape` compiled current VC5SP3 source and passed the explicit 41/41 authored-body projection; the 53 additional raw definitions remain informational under the current gate. Retail `0x416790` is separately retained as an unresolved ABI-transparent `jmp 0x4167a0`: ordinary `HudSensorTracker::Shutdown` and two cleanup funclets reach it, but current evidence does not distinguish a second authored wrapper from generated canonical-entry glue. A parent-brokered Pro source-discovery review returned BLOCK/unresolved (session request `2026-07-20T13-45-35-175Z-chatgpt-call`; transcript under session scratch), and is advisory only. Do not assign an authored or compiler-generated order role until independent object/decorated-symbol, EH-association, or verified VC5SP3 link-thunk evidence discriminates the models. Exact selected linked interval/seams, bytes, owner/tier acceptance, and the `0x416790` classification remain open. |
+| `src/Battlesport/map.cpp` | `[0x415ab0,0x417350)` | `0x4daf04`, xref `0x416922` | `HudSensorMapNode::Init` / `HudSensorTracker::SetObjectiveMarkerColorBlink` | mapped refined. On 2026-07-20, `map_text_block_order_current_shape` compiled current VC5SP3 source and passed the explicit 41/41 ordinary-authored projection; the 53 additional raw definitions remain informational under the current gate. The earlier advisory Pro review left retail `0x416790` unresolved because its packet omitted a discriminating caller (session request `2026-07-20T13-45-35-175Z-chatgpt-call`; advisory only). Direct retail evidence recovered on 2026-07-21 resolves the row as an authored lifecycle/destructor facade: `0x416790` is an ABI-transparent `jmp 0x4167a0`; the `HudSensorTracker` constructor EH unwind map at `0x4d5658` routes the already-initialized offset-zero map subobject through funclet `0x4c9520` to `0x416790`; the outer shutdown body at `0x419490` calls `0x416790` after destroying its three `CString` members; and ordinary mission shutdown at `0x417da8` independently calls `0x4167a0` directly. Because both entry addresses are independently referenced, `0x416790` cannot be the single authored function's incremental-link canonical-entry thunk. The order registration therefore classifies `0x416790` as `authored-lifecycle` / `authored-lifecycle-body`; exact linked interval/seams, bytes, source-owner model, and tier acceptance remain independent. |
 | `src/Battlesport/mission.cpp` | `[0x417350,0x41cc10)` | `0x4db230`, xrefs `0x417fc2`, `0x4181b6`, `0x418209`, `0x4182ff`, `0x418395`, `0x419091`, `0x419304` | `Mission::InitObjectives` / `CSpinButtonCtrl::ScalarDeletingDestructor` | mapped refined, 14 semantic subranges |
 | `src/Battlesport/pickup.cpp` | `[0x41cc10,0x41ea90)` | `0x4dc190`, xrefs `0x41cd93`, `0x41d523`, `0x41db80` | `PickupSpawnList::Primary_Init` / `Pickup::SpawnAtCarrierNodeByName` | mapped |
 | `src/Battlesport/player.cpp` | `[0x41ea90,0x42de10)` | `0x4dc26c`, xrefs `0x41f20b`, `0x41f870`, `0x42087a`, `0x420dc7`, `0x42155b`, `0x421722`, `0x42176f` | `Player::InitMasterCommonDataList` / `CRT::SafeVtableRelease` | mapped physical, tail scrutiny |
@@ -898,27 +1007,22 @@ uses complete owner units.
 | `zvid_ddd3d.c [0x4a9ac0,0x4ae380)` | Core DD3D code runs through `0x4ad680`; `0x4ad680` is address-backed `zVideo_dd3d::FloorPowerOfTwo`; `0x4ad6a0` is `zVideo_dd::ReportError`, a `zvid_dd.c` diagnostic helper physically emitted in this block tail. `[0x4ae1ec,0x4ae380)` is VC5 compiler-emitted switch machinery for `ReportError`: jump table `[0x4ae1ec,0x4ae274)`, byte lookup table `[0x4ae274,0x4ae2b1)`, 3-byte alignment `[0x4ae2b1,0x4ae2b4)`, jump tables `[0x4ae2b4,0x4ae348)` and `[0x4ae348,0x4ae380)`. | Rebuild `zVideo_dd::ReportError` as the `zvid_dd.c` diagnostic helper but preserve its physical tail placement and generated `.text` switch output. Do not model the table tail as authored arrays, provider data, callback tables, or primary data owners. |
 | `zwep_init.c [0x4ae380,0x4b2960)` | BN evidence supports this as a real broad physical contribution block. Internal islands include OptCatalog runtime/process core `[0x4ae380,0x4b0530)` with `0x4af060 ProcessRuntimeInstances` as an internal anchor, impact/aim/warning behavior `[0x4b0530,0x4b1090)`, zWeapon init/load `[0x4b1090,0x4b1d90)`, OptCatalog shutdown/trail/fx load `[0x4b1d90,0x4b2160)`, Light thermal pool plus PlayerTimedHit/HitSource `[0x4b2160,0x4b25a0)`, zClass damage callbacks `[0x4b25a0,0x4b26f0)`, and DamageFeedback/HitContext/MineIterator tail `[0x4b26f0,0x4b2960)`. The source literal `0x4e45d8` (`D:\Proj\GameZRecoil\zWeapon\zwep_init.c`) is xrefed only from `zWeapon::LoadOptCatalogFromPath`, and `[0x4b2951,0x4b2960)` is NOP alignment before the no-literal late shelf. | Do not collapse `zwep_init.c` into one semantic owner. Use the physical block as VC5 order evidence while scheduling complete linked OptCatalog/zWeapon/Light/player-hit/zClass/DamageFeedback/HitContext/MineIterator owners. Comments naming `zWeapon.cpp`, `Light.c`, or `OptCatalog.c` are semantic hints only; no separate header/provider/source split is proven. |
 
-#### zEffect Compatibility-Host Quarantine (2026-07-11)
+#### zEffect Four-Translation-Unit Restoration (2026-07-22)
 
-A source-discovery ChatGPT Pro critique conditionally allowed a bounded repair
-of the current single-object zEffect compatibility host solely to unblock the
-VC5 final-build pipeline. The retained scoped transcript records this
-conditional allowance directly.
-The allowance covers only individually evidenced named-namespace or
-qualification corrections while `zeff_anim_run.c` remains the one compiled
-host that textually includes the other three fragments in retail block order.
+The former single-object compatibility host is retired. The literal-backed
+physical blocks now compile independently from `zeff_anim_run.c`,
+`zeff_anim_init.c`, `zeff_init.c`, and `zeff_anim_save.c`, in retail interval
+order. Shared declarations remain in the ordinary code-free `zeff.h` layer;
+TU-private records remain in their owning source. There is no implementation
+header, included source, synthetic helper translation unit, compatibility
+exclusion, or fragment-order mechanism.
 
-This compatibility repair is excluded from source-owner, source-block,
-original-namespace, natural COFF order, linkage, byte, model, and tier
-evidence. It must preserve the 129-definition lexical sequence, all data and
-anonymous-namespace linkage, the three compiler-generated switch tables, the
-fragment include order, and the one zEffect object between `zdec_init.obj` and
-`zerr_old.obj`. Any ambiguous binding, unreviewed effective-scope movement,
-new declaration/helper/data/symbol/dependency, or changed switch/object/link
-shape blocks the repair. The later source-shape reconstruction still requires
-a code-free shared declaration/type layer, a tail-first peel in the order
-save, init, anim-init, run, and positive per-object defined-set review. Never
-use temporary compatibility braces or qualifiers as evidence for that peel.
+The registered per-TU authored-order targets reproduce the complete 75, 21,
+4, and 29 gating-definition sequences respectively. This establishes the
+current natural object-emission shape only. Existing function-byte divergences
+remain separate reconstruction work, and this restoration does not accept a
+source owner, source model, linkage gate, provider boundary, tier, authored
+byte group, or linked-image result.
 
 #### zInput One-Object Compatibility Quarantine (2026-07-11)
 
@@ -1473,6 +1577,34 @@ placement.
 | `[0x41c980,0x41cbf0)` | `mission_net_session_config_maps_layer` | multiplayer map registration/name/init/change layer | Map registration and config dialog map-name lifecycle. |
 | `[0x41cbf0,0x41cc10)` | `mission_mfc_spin_provider_tail_layer` | MFC `CSpinButtonCtrl` scalar-deleting destructor provider tail | Provider-shaped tail closes mission.cpp before `pickup.cpp`. |
 
+A 2026-07-21 read-only retail recheck classified the sixteen previously
+unresolved 0x20-byte deleting-destructor rows in this physical block without
+changing their owner, placement, or tier.  Each row has the canonical VC5
+scalar-deleting form, has no direct code caller, and is reached only through a
+vtable or related dispatch-table slot.  The game-class rows `0x419850`,
+`0x41a3d0`, `0x41a570`, `0x41a590`, `0x41abc0`, `0x41be90`, `0x41c3e0`,
+`0x41c480`, `0x41c4c0`, `0x41c610`, and `0x41c7d0` are therefore
+class-associated authored lifecycle emissions with the non-gating
+`compiler-generated-deleting-variant` order role.  The MFC rows `0x41b8d0`,
+`0x41b8f0`, `0x41b910`, `0x41b930`, and `0x41cbf0` are provider-owned
+compiler-generated deleting variants with the same non-gating role.  Keep all
+sixteen rows in full linked-order inventory, but do not let them gate authored
+relative order or use them as standalone source-owner evidence.  The
+`0x41c480` row also has a logical-identity/ICF caveat; that affects exact
+identity accounting, not its compiler-generated lifecycle classification.
+
+A follow-up audit of two previously classified authored rows found the same
+deterministic compiler-generated shape.  `0x41ae90` calls the real
+`NetSessionBrowserDialog` destructor at `0x41aeb0`, conditionally invokes
+`operator delete`, has no code callers, and is referenced only from the first
+slot of `g_NetSessionBrowserDialog_Vtbl`.  `0x41c4a0` calls the real
+`HudUiNumericTextInput` destructor at `0x41a3f0`, has no code callers, and is
+referenced from nine related HUD input vtable/FTable slots.  Both rows are
+therefore `authored-lifecycle` with the non-gating
+`compiler-generated-deleting-variant` order role.  The second is a shared
+folded logical-address case and must not be forced to represent one authored
+source-order identity.  Both remain required full-order inventory.
+
 #### `pickup.cpp` Source-Shape Layer Detail
 
 These layer names are reconstruction routing labels stored in
@@ -1584,9 +1716,10 @@ boundaries around `[0x442890,0x443c50)`. No local source-path literal was found
 for `AppFrame.cpp`, `CZGameFrame.cpp`, or `CZGameFrame.h`. The
 `[0x4428b0,0x443730)` row is therefore a semantic
 `late-recoilapp-appframe-cluster`, not an accepted `AppFrame.cpp` physical
-filename; it is now provisionally routed to `src/CZGameFrame/AppFrame.cpp`
-because `src/Battlesport/RecoilApp.cpp` is already the earlier literal-backed
-`[0x42de10,0x436630)` physical block. The `[0x443730,0x443b70)` row is likewise
+filename. Current production source keeps these bodies directly at their
+emission seam in `src/Battlesport/RecoilApp.cpp`; that compile-host choice is a
+topology-preserving interim and does not make the late row part of the earlier
+literal-backed `[0x42de10,0x436630)` physical block. The `[0x443730,0x443b70)` row is likewise
 cataloged as a provisional `src/CZGameFrame/CZGameFrame.cpp` placement row
 carrying the semantic label `czgameframe-cluster`, not an accepted
 literal-backed `CZGameFrame.cpp` physical filename. The exact physical host
@@ -1686,8 +1819,9 @@ Known exception classes from this pass:
 - `WinSock.cpp [0x43ce80,0x43cf90)` remains provisional/no-literal. It now has
   6 recorded subranges, including `0x43cf20` as a zStr CRT init-table stub
   exception, and the WOL boundary remains `0x43cf90`.
-- `semantic:late-recoilapp-appframe-cluster [0x4428b0,0x443730)` is
-  provisionally routed to `src/CZGameFrame/AppFrame.cpp`, and
+- `semantic:late-recoilapp-appframe-cluster [0x4428b0,0x443730)` is kept
+  directly at its current emission seam in `src/Battlesport/RecoilApp.cpp`
+  without claiming that file as its historical translation unit, and
   `src/CZGameFrame/CZGameFrame.cpp [0x443730,0x443b70)` carries the
   `czgameframe-cluster` placement row between WOL and `cls_di.c`.
   Neither row is literal-backed, and neither should be routed to the earlier
@@ -1901,6 +2035,11 @@ Known exception classes from this pass:
   `zsnd_cd.cpp`, `zsnd_init.cpp`, `zsnd_3d.cpp`, `zsnd_create.cpp`,
   `zsnd_parm.cpp`, and `zsnd_grp.cpp` prove call sites or neighboring blocks
   only, not physical placement for the no-literal helper bodies.
+- The zLoc implementation is now direct at the existing terminal seam in
+  `zSys.cpp`; the temporary `zsys_zloc_impl.h` is gone. The complete registered
+  zLoc interval reproduces natural VC5 order there, but the absence of a
+  `zLoc.*` literal means this is a conservative current compile host, not proof
+  of the historical filename or translation-unit boundary.
 - The diagnostic target
   `zsnd_time_recoilapp_mixed_shelf_front_order_current_shape` is a negative
   current-shape check for the front of `[0x4a53f0,0x4a5c20)`: current
@@ -2047,8 +2186,10 @@ Known exception classes from this pass:
   `[0x4b3ce0,0x4bd470)` and `[0x4bf060,0x4bffe0)` behaves like reusable
   UI/widget/control/dialog/background code, making `zUI/zui_*` the preferred
   hypothesis for those authored bodies, while `[0x4bdc70,0x4bed30)` is a
-  weather-Fx class cluster and should test first as
-  `src/GameZRecoil/zWeather/zweather_fx.cpp`. No `zUI`, `zHud`, `zWeather`,
+  weather-Fx class cluster. A separate
+  `src/GameZRecoil/zWeather/zweather_fx.cpp` split was not supported by the
+  available order and neighboring-owner evidence; the bodies now live directly
+  at their exact seam in `zui.cpp`, with no fragment header. No `zUI`, `zHud`, `zWeather`,
   `zhud`, or `zweather` source-path literal is known for the shelf. A naive
   physical split would also interleave the `render_video.zvideo_fxpass3_ui_local_config`
   owner on both sides of the weather owner, so keep `zUI/zui.cpp` as the
@@ -2244,9 +2385,10 @@ VC5 order in every `vc5_resolution_tests` row.
   and the AppFrame/CZGameFrame cluster remain placement labels until a source-path literal,
   object/map artifact, or VC5 function-order reproduction proves the physical
   TU split. The former `AppFrame.cpp` row is now recorded as unresolved
-  `semantic:late-recoilapp-appframe-cluster` provisionally routed to
-  `src/CZGameFrame/AppFrame.cpp`; current BN supports RecoilApp
-  app-shell/state-queue semantics but no exact physical filename. The
+  `semantic:late-recoilapp-appframe-cluster`; current production source keeps
+  it directly at the corresponding seam in `src/Battlesport/RecoilApp.cpp`
+  without treating that compile host as original-filename proof. Current BN
+  supports RecoilApp app-shell/state-queue semantics but no exact physical filename. The
   `CZGameFrame` row is now recorded as an unresolved CZGameFrame semantic
   cluster provisionally routed to `src/CZGameFrame/CZGameFrame.cpp`; current
   BN supports the CZGameFrame runtime/message-map class cluster, but no exact
@@ -2695,6 +2837,34 @@ cross-file `zGeometry_ClipPatchOutput` scope that continues into
 Do not substitute the stale 2026-07-01 `Recoil.map` or its old zDEClient object;
 source reshaping remains blocked until one current-source final link produces
 the selected-provider comparison.
+
+## Conservative header placement experiment (2026-07-22)
+
+`CZGameFrame.h` now lives beside `CZGameFrame.cpp`; Battlesport remains flat
+and includes the base-frame declaration through the `CZGameFrame` owner path.
+The dedicated CZGameFrame authored-order target remains exact after both the
+directory move and the case-only rename. This is a conservative source-shape
+tightening, not proof of the exact historical directory spelling.
+
+The derived application frame declaration now uses the era-consistent class
+filename `src/Battlesport/CZRecoilFrame.h`. This remains the most plausible
+semantic placement rather than literal-path proof: the current retail database
+contains `D:\Proj\Battlesport\RecoilApp.cpp` and the `CZRecoilFrame` runtime
+class name, but no observed `CZRecoilFrame.cpp` or header source-path literal.
+
+The analogous `GameZRecoil` experiment was rejected. Moving `zClass.h`,
+`zImage.h`, `zclip_rect.h`, and `zclip_alt.h` from the shared `include` shelf to
+their semantic owner folders preserved the registered authored function-order
+comparisons, but changed direct VC5SP3 final-build code generation. In
+particular, `HudUiWidget::GetCenterY` changed from the reproducible 64-byte
+padded COFF extent to a 48-byte extent and shifted the first unresolved linked
+MFC alias from candidate `0x42b9c0` to `0x42b9b0`. A guarded direct-build
+control with the original physical paths and original mixed bare/qualified
+include spellings reproduced the 64-byte body and `0x42b9c0`, while two clean
+builds of the moved layout reproduced the shorter body and shifted address.
+Therefore those four headers remain under `src/GameZRecoil/include`; semantic
+owner clustering alone is insufficient source-placement evidence when VC5
+codegen contradicts it.
 
 When `progress next` selects a physical block, use this evidence procedure for that
 selected window only:

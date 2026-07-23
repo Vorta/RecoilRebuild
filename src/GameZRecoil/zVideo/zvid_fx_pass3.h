@@ -40,6 +40,58 @@ struct zVideoFxPass3Element : HudUiElement {
     virtual void ApplyPass3();
 };
 
+struct zVideoFxPass3RootElement : zVideoFxPass3Element {
+    unsigned short packedColor16;
+    unsigned char unknown_3a[0x06];
+    double alpha;
+
+    void ApplyPass3();
+};
+
+struct zVideoFxPass3Slot : zVideoFxPass3Element {
+    int currentRadius;
+    int maxRadius;
+    int extent;
+    float sinFreq;
+    float sinPhase;
+
+    zVideoFxPass3Slot();
+    void SetRectAndPayload(
+        int rectLeftPixels,
+        int rectTopPixels,
+        int currentRadiusPixels,
+        int maxRadiusPixels,
+        int extentPixels,
+        float sinFreqValue,
+        float sinPhaseValue
+    );
+    void ApplyPass3();
+};
+
+struct zVideoFxPass3Config : HudUiContainer {
+    HudUiRect *inputRectsOrNull[2];
+    unsigned short *surfacePixels;
+    int surfaceWidth;
+    int surfaceHeight;
+    int surfacePitchBytes;
+    zVideoFxPass3RootElement rootElement;
+    zVideoFxPass3Slot slots[5];
+    int slotWriteIndex;
+
+    zVideoFxPass3Config();
+    ~zVideoFxPass3Config();
+    void SetInputRectByIndex(
+        int index,
+        HudUiRect *rectOrNull
+    );
+    void QueuePrimitiveRaw(
+        void *primitive,
+        int width,
+        int height,
+        int pitchBytes
+    );
+};
+
 #if defined(_M_IX86) || defined(__i386__)
 RECOIL_STATIC_ASSERT(sizeof(zVideoFxPass3Element) == 0x38);
 RECOIL_STATIC_ASSERT(

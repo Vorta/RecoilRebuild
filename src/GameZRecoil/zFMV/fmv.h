@@ -19,6 +19,22 @@ struct zFMV_Stream;
 struct zSndPlayHandle;
 struct zSndSample;
 
+/**
+ * Original inline helper evidence: no standalone retail function exists;
+ * callers at 0x462330, 0x4631af, 0x463221, 0x4635af, 0x463b2f, and 0x463d50
+ * contain the complete C-string duplication operation.
+ * Purpose: duplicate an input C string for FMV objects that own their paths.
+ */
+static inline char *DuplicateCString(
+    const char *value
+) {
+#if defined(_MSC_VER)
+    return _strdup(value);
+#else
+    return strdup(value);
+#endif
+}
+
 struct zFMV_Rect {
     int left;
     int top;
@@ -51,7 +67,7 @@ struct zFMV_Playback {
         const char *mediaPath,
         HWND notifyHwnd
     );
-    void Destructor();
+    ~zFMV_Playback();
     void OpenAndPlay(
         unsigned int startMs,
         int endMs,

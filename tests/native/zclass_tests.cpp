@@ -4,7 +4,7 @@
 #include "GameZRecoil/include/zimage.h"
 #include "GameZRecoil/zMath/zmth.h"
 #include "GameZRecoil/zModel/gmod.h"
-#include "GameZRecoil/zRndr/zrndr.h"
+#include "GameZRecoil/zRender/zrndr.h"
 #include "GameZRecoil/zSound/zsnd.h"
 #include "GameZRecoil/Time/time.h"
 #include "GameZRecoil/zVideo/zvid.h"

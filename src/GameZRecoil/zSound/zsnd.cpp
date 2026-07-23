@@ -156,6 +156,30 @@ int zSndWaveData::LoadAndParseIfNeeded() {
 }
 
 /**
+ * Reimplements 0x4a55c0: zSndWaveData::Reset.
+ *
+ * Purpose: free loaded WAV file storage and clear cached parse fields.
+ */
+int zSndWaveData::Reset() {
+    if (parsedOk != 0) {
+        if (fileData != 0) {
+            free(fileData);
+            fileData = 0;
+        }
+
+        fileSize = 0;
+        pcmData = 0;
+        fmt = 0;
+        pcmByteCount = 0;
+        cuePoints = 0;
+        cuePointCount = 0;
+        parsedOk = 0;
+    }
+
+    return 1;
+}
+
+/**
  * Reimplements 0x4a5600: zSndWaveData::LoadAndParseFromIndexArchiveIfNeeded.
  *
  * Purpose: load a named WAV payload from an index archive once, parse it, and
@@ -190,28 +214,4 @@ int zSndWaveData::LoadAndParseFromIndexArchiveIfNeeded(
     }
 
     return parsedOk;
-}
-
-/**
- * Reimplements 0x4a55c0: zSndWaveData::Reset.
- *
- * Purpose: free loaded WAV file storage and clear cached parse fields.
- */
-int zSndWaveData::Reset() {
-    if (parsedOk != 0) {
-        if (fileData != 0) {
-            free(fileData);
-            fileData = 0;
-        }
-
-        fileSize = 0;
-        pcmData = 0;
-        fmt = 0;
-        pcmByteCount = 0;
-        cuePoints = 0;
-        cuePointCount = 0;
-        parsedOk = 0;
-    }
-
-    return 1;
 }

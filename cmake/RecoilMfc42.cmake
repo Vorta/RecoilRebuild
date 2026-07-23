@@ -59,7 +59,7 @@ target_compile_definitions(recoil_mfc42_legacy INTERFACE
 
 if(MSVC)
     target_compile_options(recoil_mfc42_legacy INTERFACE
-        "/FI${PROJECT_SOURCE_DIR}/src/Battlesport/Mfc42Abi.h"
+        "/FI${PROJECT_SOURCE_DIR}/tools/_recoil/compat/include/recoil/Mfc42Abi.h"
     )
 endif()
 

@@ -6,7 +6,7 @@
 #include "Battlesport/wol_dialog.h"
 #include "Battlesport/wol_ref_count_and_lock.h"
 #include "GameZRecoil/Time/time.h"
-#include "GameZRecoil/wwonline/wol_download.h"
+#include "Battlesport/wol_download.h"
 #include "GameZRecoil/zGame/zgame.h"
 #include "GameZRecoil/zLoc/zloc.h"
 

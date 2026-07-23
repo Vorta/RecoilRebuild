@@ -1,8 +1,8 @@
 #include "GameZRecoil/zHud/zhud_ui.h"
-#include "GameZRecoil/RecoilApp/recoil_state_main_menu_transition.h"
+#include "Battlesport/recoil_state_main_menu_transition.h"
 #include "GameZRecoil/zGame/zgame.h"
 #include "GameZRecoil/zEffect/zeff.h"
-#include "GameZRecoil/zRndr/zrndr.h"
+#include "GameZRecoil/zRender/zrndr.h"
 #include "GameZRecoil/zSound/zsnd.h"
 #include <string.h>
 

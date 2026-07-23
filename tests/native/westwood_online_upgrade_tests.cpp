@@ -1,6 +1,6 @@
 #if defined(RECOIL_NATIVE_WESTWOOD_ONLINE_UPGRADE_UNADVISE_SMOKE_ONLY)
 
-#include "GameZRecoil/wwonline/wol_download.h"
+#include "Battlesport/wol_download.h"
 
 #include <ocidl.h>
 
@@ -180,7 +180,7 @@ extern "C" int westwood_online_upgrade_download_unadvise_release_smoke(void) {
 #include "Battlesport/wol_dialog.h"
 #include "Battlesport/wol_ref_count_and_lock.h"
 #include "GameZRecoil/Time/time.h"
-#include "GameZRecoil/wwonline/wol_download.h"
+#include "Battlesport/wol_download.h"
 #include "GameZRecoil/zGame/zgame.h"
 #include "GameZRecoil/zLoc/zloc.h"
 #include "GameZRecoil/zNetwork/znet.h"

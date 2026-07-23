@@ -1,6 +1,7 @@
 #include "zclass.h"
 
 #include "GameZRecoil/zError/zerr.h"
+#include "GameZRecoil/zVideo/zvid.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -188,6 +189,561 @@ namespace {
 
 }
 
+namespace zClass_TypeList {
+    /**
+     * Reimplements 0x44e630: zClass_TypeList::AllocLink.
+     * Purpose: allocate or recycle a type-list link while maintaining live
+     * link accounting.
+     */
+    zClass_TypeListLink *AllocLink() {
+        const int liveCount = g_zClass_TypeList_LiveLinkCount + 1;
+        g_zClass_TypeList_LiveLinkCount = liveCount;
+        if (liveCount > g_zClass_TypeList_PeakLiveLinkCount) {
+            g_zClass_TypeList_PeakLiveLinkCount = liveCount;
+        }
+
+        zClass_TypeListLink *link = g_zClass_TypeList_FreeLinkHead;
+        if (link != 0) {
+            zClass_TypeListLink **nextSlot = &link->next;
+            zClass_TypeListLink *next = *nextSlot;
+            g_zClass_TypeList_FreeLinkHead = next;
+            if (next != 0) {
+                next->prev = 0;
+            }
+
+            *nextSlot = 0;
+            link->prev = 0;
+            link->pendingRemove = 0;
+            return link;
+        }
+
+        return (zClass_TypeListLink *)(calloc(
+            1,
+            sizeof(zClass_TypeListLink)
+        ));
+    }
+
+    /**
+     * Reimplements 0x44e690: zClass_TypeList::FreeLink.
+     * Purpose: return an unused type-list link to the global recycled-link
+     * list and update live link accounting.
+     */
+    void __fastcall FreeLink(zClass_TypeListLink * link) {
+        --g_zClass_TypeList_LiveLinkCount;
+
+        zClass_TypeListLink *head = g_zClass_TypeList_FreeLinkHead;
+        if (head == 0) {
+            g_zClass_TypeList_FreeLinkHead = link;
+            link->prev = 0;
+            g_zClass_TypeList_FreeLinkHead->next = 0;
+            return;
+        }
+
+        link->next = head;
+        link->prev = 0;
+        g_zClass_TypeList_FreeLinkHead->prev = link;
+        g_zClass_TypeList_FreeLinkHead = link;
+    }
+
+    /**
+     * Reimplements 0x44e6d0: zClass_TypeList::FreeAll.
+     * Purpose: release every recycled type-list link owned by the global
+     * free-list cache.
+     */
+    void FreeAll() {
+        zClass_TypeListLink *link = g_zClass_TypeList_FreeLinkHead;
+        while (link != 0) {
+            g_zClass_TypeList_FreeLinkHead = link->next;
+            free(link);
+            link = g_zClass_TypeList_FreeLinkHead;
+        }
+    }
+
+    /**
+     * Reimplements 0x44e700: zClass_TypeList::ProcessPendingRemovals.
+     * Purpose: unlink deferred-removal entries from one type-list bucket and
+     * recycle their list links.
+     */
+    void __fastcall ProcessPendingRemovals(int bucket) {
+        if (g_zClass_DeferredProcessingEnabled == 0) {
+            return;
+        }
+
+        zClass_TypeListLink *next = zClass_TypeList::Head(bucket);
+        bool removed;
+        do {
+            removed = false;
+            while (next != 0 && next->pendingRemove == 0) {
+                next = next->next;
+            }
+
+            if (next != 0) {
+                zClass_TypeListLink *link = next;
+                next = link->next;
+                removed = true;
+
+                if (bucket == 7 && (link->node->flags & 0x02) != 0) {
+                    link->pendingRemove = 0;
+                } else {
+                    if (link == zClass_TypeList::Head(bucket)) {
+                        zClass_TypeList::Head(bucket) = link->next;
+                    }
+                    if (link == zClass_TypeList::Tail(bucket)) {
+                        zClass_TypeList::Tail(bucket) = link->prev;
+                    }
+                    if (link->prev != 0) {
+                        link->prev->next = link->next;
+                    }
+                    if (link->next != 0) {
+                        link->next->prev = link->prev;
+                    }
+                    if (bucket == 7) {
+                        link->node->flags &= ~0x01;
+                    }
+                    FreeLink(link);
+                }
+            }
+        } while (removed);
+
+        if (bucket >= 0 && bucket < 16) {
+            zClass_TypeList::SetPendingRemovalDirty(
+                bucket,
+                0
+            );
+        }
+    }
+}
+
+namespace zClass {
+    /**
+     * Reimplements 0x44e920: zClass::ProcessDeferredWork.
+     * Purpose: process dirty deferred-removal buckets and then drain pending
+     * node frees while deferred work is enabled.
+     */
+    int ProcessDeferredWork() {
+        if (g_zClass_DeferredProcessingEnabled == 0) {
+            return 1;
+        }
+
+#define ZCLASS_PROCESS_PENDING_BUCKET(bucket)                                                      \
+    if (zClass_TypeList::PendingRemovalDirty(bucket) != 0) {                                       \
+        zClass_TypeList::ProcessPendingRemovals(bucket);                                           \
+    }
+
+        ZCLASS_PROCESS_PENDING_BUCKET(6);
+        ZCLASS_PROCESS_PENDING_BUCKET(0);
+        ZCLASS_PROCESS_PENDING_BUCKET(1);
+        ZCLASS_PROCESS_PENDING_BUCKET(2);
+        ZCLASS_PROCESS_PENDING_BUCKET(3);
+        ZCLASS_PROCESS_PENDING_BUCKET(4);
+        ZCLASS_PROCESS_PENDING_BUCKET(5);
+        ZCLASS_PROCESS_PENDING_BUCKET(7);
+        ZCLASS_PROCESS_PENDING_BUCKET(8);
+        ZCLASS_PROCESS_PENDING_BUCKET(9);
+        ZCLASS_PROCESS_PENDING_BUCKET(10);
+        ZCLASS_PROCESS_PENDING_BUCKET(13);
+        ZCLASS_PROCESS_PENDING_BUCKET(14);
+        ZCLASS_PROCESS_PENDING_BUCKET(15);
+        ZCLASS_PROCESS_PENDING_BUCKET(11);
+        ZCLASS_PROCESS_PENDING_BUCKET(12);
+
+#undef ZCLASS_PROCESS_PENDING_BUCKET
+
+        if (g_zClass_NodeList_PendingFreeHead != 0) {
+            zClass_NodeList::ProcessPendingFrees();
+        }
+
+        return 0;
+    }
+}
+
+namespace zClass_TypeList {
+    /**
+     * Reimplements 0x44ea70: zClass_TypeList::UpdateAllBuckets.
+     * Purpose: update each non-empty callback-priority bucket and then flush
+     * queued node update work.
+     */
+    void UpdateAllBuckets() {
+        for (int i = 0; i < 6; ++i) {
+            zClass_TypeListLink *bucket = *g_zClassCallbackPriorityHeadSlotPtrs[i];
+            if (bucket != 0) {
+                UpdateBucket(bucket);
+                zClass_Class::gwNodeUpdateAll();
+            }
+        }
+    }
+
+    /**
+     * Reimplements 0x44eaa0: zClass_TypeList::UpdateBucket.
+     * Purpose: run eligible action callbacks in one bucket while deferring
+     * list mutations until the pass completes.
+     */
+    void __fastcall UpdateBucket(zClass_TypeListLink * bucket) {
+        const int wasDeferredEnabled = g_zClass_DeferredProcessingEnabled;
+        g_zClass_DeferredProcessingEnabled = 0;
+
+        for (zClass_TypeListLink *link = bucket; link != 0; link = link->next) {
+            zClass_NodePartial *node = link->node;
+            zClass_NodeActionCallback callback = (zClass_NodeActionCallback)(node->actionCallback);
+            if (callback == 0) {
+                link->pendingRemove = 1;
+            } else if (link->pendingRemove == 0 && (node->flags & 0x04) != 0) {
+                callback(node);
+            }
+        }
+
+        g_zClass_DeferredProcessingEnabled = wasDeferredEnabled;
+        zClass::ProcessDeferredWork();
+    }
+}
+
+namespace gwNode {
+    /**
+     * Reimplements 0x44eb00: gwNode::UpdateSubtree.
+     * Purpose: update a node subtree and mark each visited node for queued
+     * tree-list removal.
+     */
+    int __fastcall UpdateSubtree(zClass_NodePartial * node) {
+        for (int i = 0; i < node->listCountB; ++i) {
+            zClass_NodePartial *child = node->listB[i];
+            if ((child->flags & 0x01) != 0) {
+                UpdateSubtree(child);
+            }
+        }
+
+        zClass_Class::gwNodeUpdate(node);
+        zClass_TypeList::MarkPendingRemoval(
+            kQueuedTreeBucket,
+            node
+        );
+        return 0;
+    }
+
+    /**
+     * Reimplements 0x44eb50: gwNode::UpdateTree.
+     * Purpose: update a node tree upward through its non-world parents and
+     * process deferred work when enabled.
+     */
+    void __fastcall UpdateTree(zClass_NodePartial * node) {
+        UpdateSubtree(node);
+        for (int i = 0; i < node->listCountA; ++i) {
+            zClass_NodePartial *parent = node->listA[i];
+            if (parent->classId != kZClassNodeWorld) {
+                UpdateTree(parent);
+            }
+        }
+
+        if (g_zClass_DeferredProcessingEnabled != 0) {
+            zClass::ProcessDeferredWork();
+        }
+    }
+}
+
+namespace zClass_TypeList {
+    /**
+     * Reimplements 0x44eba0: zClass_TypeList::UpdateQueuedTrees.
+     * Purpose: process queued tree-update nodes until the queued-tree bucket
+     * contains no remaining active work.
+     */
+    int UpdateQueuedTrees() {
+        zClass_TypeListLink *link = zClass_TypeList::Head(kQueuedTreeBucket);
+        while (link != 0) {
+            while (link != 0 && link->pendingRemove != 0) {
+                link = link->next;
+            }
+            if (link == 0) {
+                break;
+            }
+
+            gwNode::UpdateTree(link->node);
+            link = zClass_TypeList::Head(kQueuedTreeBucket);
+        }
+
+        return 0;
+    }
+
+    /**
+     * Reimplements 0x44ebe0: zClass_TypeList::UpdateSequences.
+     * Purpose: update all non-pending sequence nodes while deferring list
+     * mutations during the pass.
+     */
+    int UpdateSequences() {
+        zClass_TypeListLink *link = zClass_TypeList::Head(11);
+        if (link == 0) {
+            return 0;
+        }
+
+        const int wasDeferredEnabled = g_zClass_DeferredProcessingEnabled;
+        g_zClass_DeferredProcessingEnabled = 0;
+        do {
+            if (link->pendingRemove == 0) {
+                zClass_Sequence::Update(link->node);
+            }
+
+            link = link->next;
+        } while (link != 0);
+
+        g_zClass_DeferredProcessingEnabled = wasDeferredEnabled;
+        zClass::ProcessDeferredWork();
+        return 0;
+    }
+
+    /**
+     * Reimplements 0x44ec30: zClass_TypeList::UpdateAnimations.
+     * Purpose: update active animation nodes while deferring list mutations
+     * during the pass.
+     */
+    int UpdateAnimations() {
+        zClass_TypeListLink *link = zClass_TypeList::Head(12);
+        if (link == 0) {
+            return 0;
+        }
+
+        const int wasDeferredEnabled = g_zClass_DeferredProcessingEnabled;
+        g_zClass_DeferredProcessingEnabled = 0;
+        do {
+            if (link->pendingRemove == 0 && (link->node->flags & 0x04) != 0) {
+                zClass_Animate::UpdateNode(link->node);
+            }
+
+            link = link->next;
+        } while (link != 0);
+
+        g_zClass_DeferredProcessingEnabled = wasDeferredEnabled;
+        zClass::ProcessDeferredWork();
+        return 0;
+    }
+}
+
+namespace zClass_Class {
+    /**
+     * Reimplements 0x44ec80: zClass_Class::gwNodeUpdateAll.
+     * Purpose: update sequence, animation, and queued-tree work in order.
+     */
+    int gwNodeUpdateAll() {
+        zClass_TypeList::UpdateSequences();
+        zClass_TypeList::UpdateAnimations();
+        return zClass_TypeList::UpdateQueuedTrees();
+    }
+}
+
+namespace zClass_TypeList {
+    /**
+     * Reimplements 0x44ec90: zClass_TypeList::CountNodes.
+     * Purpose: count the links currently present in one type-list bucket.
+     */
+    int __fastcall CountNodes(int bucket) {
+        int count = 0;
+        for (zClass_TypeListLink *link = zClass_TypeList::Head(bucket); link != 0;
+            link = link->next) {
+            ++count;
+        }
+        return count;
+    }
+
+    /**
+     * Reimplements 0x44ecb0: zClass_TypeList::PrintBucket.
+     * Purpose: print each node name in one type-list bucket for diagnostics.
+     */
+    void __fastcall PrintBucket(int bucket) {
+        int index = 0;
+        for (zClass_TypeListLink *link = zClass_TypeList::Head(bucket); link != 0;
+            link = link->next) {
+            printf(
+                "Node %d desc: %s\n",
+                index,
+                link->node->name
+            );
+            ++index;
+        }
+    }
+}
+
+namespace zClass {
+    /**
+     * Reimplements 0x44ecf0: zClass::FindByTypeAndName.
+     * Purpose: find the first node in a type-list bucket whose name matches.
+     */
+    zClass_NodePartial *__fastcall FindByTypeAndName(
+        int bucket,
+        const char *name
+    ) {
+        for (zClass_TypeListLink *link = zClass_TypeList::Head(bucket); link != 0;
+            link = link->next) {
+            if (strcmp(
+                link->node->name,
+                name
+            ) == 0) {
+                return link->node;
+            }
+        }
+
+        return 0;
+    }
+}
+
+namespace zClass_TypeList {
+    /**
+     * Reimplements 0x44ed50: zClass_TypeList::GetBucketHead.
+     * Purpose: return the head link for one type-list bucket.
+     */
+    zClass_TypeListLink *__fastcall GetBucketHead(int bucket) {
+        return zClass_TypeList::Head(bucket);
+    }
+}
+
+namespace zClass_NodeList {
+    /**
+     * Reimplements 0x44ed60: zClass_NodeList::Insert.
+     * Purpose: queue a node for deferred free processing on the pending-free
+     * node list.
+     */
+    int __fastcall Insert(zClass_NodePartial * node) {
+        zClass_TypeListLink *link = zClass_TypeList::AllocLink();
+        link->node = node;
+
+        zClass_TypeListLink *head = g_zClass_NodeList_PendingFreeHead;
+        if (head != 0) {
+            link->next = head;
+            head->prev = link;
+        }
+        g_zClass_NodeList_PendingFreeHead = link;
+        return 0;
+    }
+}
+
+namespace zClass_TypeList {
+    /**
+     * Reimplements 0x44ed90: zClass_TypeList::Insert.
+     * Purpose: insert a node at the head of a type-list bucket and queue
+     * eligible child nodes.
+     */
+    int __fastcall Insert(
+        int bucket,
+        zClass_NodePartial *node
+    ) {
+        zClass_TypeListLink *link = AllocLink();
+        link->node = node;
+
+        zClass_TypeListLink **headSlot = g_zClass_TypeList_HeadSlotPtrs[bucket];
+        zClass_TypeListLink *head = *headSlot;
+        if (head == 0) {
+            *g_zClass_TypeList_TailSlotPtrs[bucket] = link;
+        } else {
+            link->next = head;
+            head->prev = link;
+        }
+        *g_zClass_TypeList_HeadSlotPtrs[bucket] = link;
+
+        if (bucket == kQueuedTreeBucket) {
+            node->flags |= kTypeListInsertedFlag;
+            for (int i = 0; i < node->listCountA; ++i) {
+                zClass_NodePartial *child = node->listA[i];
+                if ((child->flags & kTypeListInsertedFlag) == 0 &&
+                    child->classId != kZClassNodeWorld) {
+                    InsertChildNodes(
+                        kQueuedTreeBucket,
+                        child
+                    );
+                }
+            }
+        }
+
+        return 0;
+    }
+
+    /**
+     * Reimplements 0x44ee10: zClass_TypeList::InsertChildNodes.
+     * Purpose: append a node to a type-list bucket and queue eligible child
+     * nodes.
+     */
+    int __fastcall InsertChildNodes(
+        int bucket,
+        zClass_NodePartial *node
+    ) {
+        zClass_TypeListLink *link = AllocLink();
+        link->node = node;
+
+        zClass_TypeListLink **tailSlot = g_zClass_TypeList_TailSlotPtrs[bucket];
+        zClass_TypeListLink *tail = *tailSlot;
+        zClass_TypeListLink **headSlot = g_zClass_TypeList_HeadSlotPtrs[bucket];
+        if (*headSlot == 0) {
+            *headSlot = link;
+            *g_zClass_TypeList_TailSlotPtrs[bucket] = link;
+        } else {
+            link->prev = tail;
+            tail->next = link;
+            *g_zClass_TypeList_TailSlotPtrs[bucket] = link;
+        }
+
+        if (bucket == kQueuedTreeBucket) {
+            node->flags |= kTypeListInsertedFlag;
+            for (int i = 0; i < node->listCountA; ++i) {
+                zClass_NodePartial *child = node->listA[i];
+                if ((child->flags & kTypeListInsertedFlag) == 0 &&
+                    child->classId != kZClassNodeWorld) {
+                    InsertChildNodes(
+                        kQueuedTreeBucket,
+                        child
+                    );
+                }
+            }
+        }
+
+        return 0;
+    }
+}
+
+namespace zClass_NodeList {
+    /**
+     * Reimplements 0x44eea0: zClass_NodeList::ProcessPendingFrees.
+     * Purpose: drain pending node frees through the class free-list and
+     * recycle their queue links.
+     */
+    void ProcessPendingFrees() {
+        zClass_TypeListLink *link = g_zClass_NodeList_PendingFreeHead;
+        while (link != 0) {
+            g_zClass_NodeList_PendingFreeHead = link->next;
+            zClass_Class::FreeNodeToFreeList(link->node);
+            zClass_TypeList::FreeLink(link);
+            link = g_zClass_NodeList_PendingFreeHead;
+        }
+    }
+}
+
+namespace zClass_TypeList {
+    /**
+     * Reimplements 0x44eed0: zClass_TypeList::MarkPendingRemoval.
+     * Purpose: mark a matching type-list link for deferred removal and set
+     * the bucket dirty flag.
+     */
+    int __fastcall MarkPendingRemoval(
+        int bucket,
+        zClass_NodePartial *node
+    ) {
+        zClass_TypeListLink *link = zClass_TypeList::Head(bucket);
+        if (link == 0) {
+            return 1;
+        }
+
+        while (link != 0 && (link->node != node || link->pendingRemove != 0)) {
+            link = link->next;
+        }
+
+        if (link != 0) {
+            link->pendingRemove = 1;
+            if (bucket >= 0 && bucket < 16) {
+                zClass_TypeList::SetPendingRemovalDirty(
+                    bucket,
+                    1
+                );
+            }
+        }
+
+        return 0;
+    }
+}
+
 namespace zClass_List {
     /**
      * Reimplements 0x44f000: zClass_List::DeleteNodeFromLists.
@@ -280,33 +836,58 @@ namespace zClass_List {
     }
 
     /**
-     * Reimplements 0x44f690: zClass_List::IterateBucketFiltered.
-     * Purpose: initialize or continue filtered iteration over one type-list
-     * bucket using a caller-supplied predicate.
+     * Reimplements 0x44f120: zClass_List::DeleteAllOfType.
+     * Purpose: repeatedly delete every node in one type-list bucket and
+     * verify that the bucket is empty afterward.
      */
-    zClass_NodePartial *__fastcall IterateBucketFiltered(
-        const char *filterText,
-        int bucket,
-        zClass_NodePredicate predicate
-    ) {
-        if (filterText != 0) {
-            g_zClass_FilterIterText = filterText;
-            g_zClass_FilterIterCursor = zClass_TypeList::GetBucketHead(bucket);
-            return 0;
-        }
+    int __fastcall DeleteAllOfType(int bucket) {
+        zClass::ProcessDeferredWork();
 
-        zClass_TypeListLink *link = g_zClass_FilterIterCursor;
-        while (link != 0) {
-            zClass_NodePartial *node = link->node;
-            g_zClass_FilterIterCursor = link->next;
-            if (predicate(node) != 0) {
-                return node;
+        zClass_TypeListLink *link = zClass_TypeList::Head(bucket);
+        int deletedInLastPass = 1;
+        while (link != 0 && deletedInLastPass != 0) {
+            deletedInLastPass = 0;
+            while (link != 0 && deletedInLastPass == 0) {
+                zClass_NodePartial *node = link->node;
+                if (gwListDeleteANode(node) == 0) {
+                    zClass_TypeList::MarkPendingRemoval(
+                        bucket,
+                        node
+                    );
+                    deletedInLastPass = 1;
+                } else {
+                    link = link->next;
+                }
             }
-            link = g_zClass_FilterIterCursor;
+
+            zClass::ProcessDeferredWork();
+            link = zClass_TypeList::Head(bucket);
         }
 
+        if (link != 0) {
+            zError::ReportOld(
+                0x400,
+                kListSourceFile,
+                0x92d,
+                "ERROR deleting list nodes; Not all nodes were deleteable"
+            );
+            return 1;
+        }
+
+        if (zClass_TypeList::CountNodes(bucket) != 0) {
+            zError::ReportOld(
+                0x400,
+                kListSourceFile,
+                0x935,
+                "ERROR deleting list nodes; %d nodes left on list"
+            );
+            return 1;
+        }
+
+        zClass_TypeList::Tail(bucket) = 0;
         return 0;
     }
+
 
     /**
      * Reimplements 0x44f1d0: zClass_List::gwListDeleteANode.
@@ -567,600 +1148,82 @@ namespace zClass_List {
         }
     }
 
-    /**
-     * Reimplements 0x44f120: zClass_List::DeleteAllOfType.
-     * Purpose: repeatedly delete every node in one type-list bucket and
-     * verify that the bucket is empty afterward.
-     */
-    int __fastcall DeleteAllOfType(int bucket) {
-        zClass::ProcessDeferredWork();
+}
 
-        zClass_TypeListLink *link = zClass_TypeList::Head(bucket);
-        int deletedInLastPass = 1;
-        while (link != 0 && deletedInLastPass != 0) {
-            deletedInLastPass = 0;
-            while (link != 0 && deletedInLastPass == 0) {
-                zClass_NodePartial *node = link->node;
-                if (gwListDeleteANode(node) == 0) {
-                    zClass_TypeList::MarkPendingRemoval(
-                        bucket,
-                        node
+namespace zClass_List {
+    /**
+     * Reimplements 0x44f630: zClass_List::RenderActiveCameras (GameZRecoil/zClass/List.c).
+     *
+     * Purpose: walk the active camera bucket and render each enabled camera through
+     * the current software or scene-render path.
+     */
+    int RenderActiveCameras() {
+        zClass_TypeListLink *link = zClass_TypeList::GetBucketHead(8);
+        if (link == 0) {
+            fprintf(
+                stderr,
+                "ERROR: No camera on camera list.\n"
+            );
+            return 1;
+        }
+
+        do {
+            zClass_NodePartial *const camera = link->node;
+            zClass_TypeListLink *const next = link->next;
+
+            if ((camera->flags & 4) != 0) {
+                if (g_zVideo_ActiveRendererPath != 0) {
+                    zVideo_sw_RenderFrame(
+                        camera,
+                        0
                     );
-                    deletedInLastPass = 1;
                 } else {
-                    link = link->next;
+                    zClass_Camera::RenderScene(
+                        camera,
+                        0
+                    );
                 }
             }
 
-            zClass::ProcessDeferredWork();
-            link = zClass_TypeList::Head(bucket);
-        }
+            link = next;
+        } while (link != 0);
 
-        if (link != 0) {
-            zError::ReportOld(
-                0x400,
-                kListSourceFile,
-                0x92d,
-                "ERROR deleting list nodes; Not all nodes were deleteable"
-            );
-            return 1;
-        }
-
-        if (zClass_TypeList::CountNodes(bucket) != 0) {
-            zError::ReportOld(
-                0x400,
-                kListSourceFile,
-                0x935,
-                "ERROR deleting list nodes; %d nodes left on list"
-            );
-            return 1;
-        }
-
-        zClass_TypeList::Tail(bucket) = 0;
         return 0;
     }
 }
 
-#include "render_active_cameras_impl.h"
-
-namespace zClass_TypeList {
+namespace zClass_List {
     /**
-     * Reimplements 0x44e630: zClass_TypeList::AllocLink.
-     * Purpose: allocate or recycle a type-list link while maintaining live
-     * link accounting.
+     * Reimplements 0x44f690: zClass_List::IterateBucketFiltered.
+     * Purpose: initialize or continue filtered iteration over one type-list
+     * bucket using a caller-supplied predicate.
      */
-    zClass_TypeListLink *AllocLink() {
-        const int liveCount = g_zClass_TypeList_LiveLinkCount + 1;
-        g_zClass_TypeList_LiveLinkCount = liveCount;
-        if (liveCount > g_zClass_TypeList_PeakLiveLinkCount) {
-            g_zClass_TypeList_PeakLiveLinkCount = liveCount;
+    zClass_NodePartial *__fastcall IterateBucketFiltered(
+        const char *filterText,
+        int bucket,
+        zClass_NodePredicate predicate
+    ) {
+        if (filterText != 0) {
+            g_zClass_FilterIterText = filterText;
+            g_zClass_FilterIterCursor = zClass_TypeList::GetBucketHead(bucket);
+            return 0;
         }
 
-        zClass_TypeListLink *link = g_zClass_TypeList_FreeLinkHead;
-        if (link != 0) {
-            zClass_TypeListLink **nextSlot = &link->next;
-            zClass_TypeListLink *next = *nextSlot;
-            g_zClass_TypeList_FreeLinkHead = next;
-            if (next != 0) {
-                next->prev = 0;
-            }
-
-            *nextSlot = 0;
-            link->prev = 0;
-            link->pendingRemove = 0;
-            return link;
-        }
-
-        return (zClass_TypeListLink *)(calloc(
-            1,
-            sizeof(zClass_TypeListLink)
-        ));
-    }
-
-    /**
-     * Reimplements 0x44e690: zClass_TypeList::FreeLink.
-     * Purpose: return an unused type-list link to the global recycled-link
-     * list and update live link accounting.
-     */
-    void __fastcall FreeLink(zClass_TypeListLink * link) {
-        --g_zClass_TypeList_LiveLinkCount;
-
-        zClass_TypeListLink *head = g_zClass_TypeList_FreeLinkHead;
-        if (head == 0) {
-            g_zClass_TypeList_FreeLinkHead = link;
-            link->prev = 0;
-            g_zClass_TypeList_FreeLinkHead->next = 0;
-            return;
-        }
-
-        link->next = head;
-        link->prev = 0;
-        g_zClass_TypeList_FreeLinkHead->prev = link;
-        g_zClass_TypeList_FreeLinkHead = link;
-    }
-
-    /**
-     * Reimplements 0x44e6d0: zClass_TypeList::FreeAll.
-     * Purpose: release every recycled type-list link owned by the global
-     * free-list cache.
-     */
-    void FreeAll() {
-        zClass_TypeListLink *link = g_zClass_TypeList_FreeLinkHead;
+        zClass_TypeListLink *link = g_zClass_FilterIterCursor;
         while (link != 0) {
-            g_zClass_TypeList_FreeLinkHead = link->next;
-            free(link);
-            link = g_zClass_TypeList_FreeLinkHead;
-        }
-    }
-
-    /**
-     * Reimplements 0x44e700: zClass_TypeList::ProcessPendingRemovals.
-     * Purpose: unlink deferred-removal entries from one type-list bucket and
-     * recycle their list links.
-     */
-    void __fastcall ProcessPendingRemovals(int bucket) {
-        if (g_zClass_DeferredProcessingEnabled == 0) {
-            return;
-        }
-
-        zClass_TypeListLink *next = zClass_TypeList::Head(bucket);
-        bool removed;
-        do {
-            removed = false;
-            while (next != 0 && next->pendingRemove == 0) {
-                next = next->next;
-            }
-
-            if (next != 0) {
-                zClass_TypeListLink *link = next;
-                next = link->next;
-                removed = true;
-
-                if (bucket == 7 && (link->node->flags & 0x02) != 0) {
-                    link->pendingRemove = 0;
-                } else {
-                    if (link == zClass_TypeList::Head(bucket)) {
-                        zClass_TypeList::Head(bucket) = link->next;
-                    }
-                    if (link == zClass_TypeList::Tail(bucket)) {
-                        zClass_TypeList::Tail(bucket) = link->prev;
-                    }
-                    if (link->prev != 0) {
-                        link->prev->next = link->next;
-                    }
-                    if (link->next != 0) {
-                        link->next->prev = link->prev;
-                    }
-                    if (bucket == 7) {
-                        link->node->flags &= ~0x01;
-                    }
-                    FreeLink(link);
-                }
-            }
-        } while (removed);
-
-        if (bucket >= 0 && bucket < 16) {
-            zClass_TypeList::SetPendingRemovalDirty(
-                bucket,
-                0
-            );
-        }
-    }
-
-    /**
-     * Reimplements 0x44ec90: zClass_TypeList::CountNodes.
-     * Purpose: count the links currently present in one type-list bucket.
-     */
-    int __fastcall CountNodes(int bucket) {
-        int count = 0;
-        for (zClass_TypeListLink *link = zClass_TypeList::Head(bucket); link != 0;
-            link = link->next) {
-            ++count;
-        }
-        return count;
-    }
-
-    /**
-     * Reimplements 0x44ecb0: zClass_TypeList::PrintBucket.
-     * Purpose: print each node name in one type-list bucket for diagnostics.
-     */
-    void __fastcall PrintBucket(int bucket) {
-        int index = 0;
-        for (zClass_TypeListLink *link = zClass_TypeList::Head(bucket); link != 0;
-            link = link->next) {
-            printf(
-                "Node %d desc: %s\n",
-                index,
-                link->node->name
-            );
-            ++index;
-        }
-    }
-
-    /**
-     * Reimplements 0x44ed50: zClass_TypeList::GetBucketHead.
-     * Purpose: return the head link for one type-list bucket.
-     */
-    zClass_TypeListLink *__fastcall GetBucketHead(int bucket) {
-        return zClass_TypeList::Head(bucket);
-    }
-
-    /**
-     * Reimplements 0x44eed0: zClass_TypeList::MarkPendingRemoval.
-     * Purpose: mark a matching type-list link for deferred removal and set
-     * the bucket dirty flag.
-     */
-    int __fastcall MarkPendingRemoval(
-        int bucket,
-        zClass_NodePartial *node
-    ) {
-        zClass_TypeListLink *link = zClass_TypeList::Head(bucket);
-        if (link == 0) {
-            return 1;
-        }
-
-        while (link != 0 && (link->node != node || link->pendingRemove != 0)) {
-            link = link->next;
-        }
-
-        if (link != 0) {
-            link->pendingRemove = 1;
-            if (bucket >= 0 && bucket < 16) {
-                zClass_TypeList::SetPendingRemovalDirty(
-                    bucket,
-                    1
-                );
-            }
-        }
-
-        return 0;
-    }
-
-    /**
-     * Reimplements 0x44ed90: zClass_TypeList::Insert.
-     * Purpose: insert a node at the head of a type-list bucket and queue
-     * eligible child nodes.
-     */
-    int __fastcall Insert(
-        int bucket,
-        zClass_NodePartial *node
-    ) {
-        zClass_TypeListLink *link = AllocLink();
-        link->node = node;
-
-        zClass_TypeListLink **headSlot = g_zClass_TypeList_HeadSlotPtrs[bucket];
-        zClass_TypeListLink *head = *headSlot;
-        if (head == 0) {
-            *g_zClass_TypeList_TailSlotPtrs[bucket] = link;
-        } else {
-            link->next = head;
-            head->prev = link;
-        }
-        *g_zClass_TypeList_HeadSlotPtrs[bucket] = link;
-
-        if (bucket == kQueuedTreeBucket) {
-            node->flags |= kTypeListInsertedFlag;
-            for (int i = 0; i < node->listCountA; ++i) {
-                zClass_NodePartial *child = node->listA[i];
-                if ((child->flags & kTypeListInsertedFlag) == 0 &&
-                    child->classId != kZClassNodeWorld) {
-                    InsertChildNodes(
-                        kQueuedTreeBucket,
-                        child
-                    );
-                }
-            }
-        }
-
-        return 0;
-    }
-
-    /**
-     * Reimplements 0x44ee10: zClass_TypeList::InsertChildNodes.
-     * Purpose: append a node to a type-list bucket and queue eligible child
-     * nodes.
-     */
-    int __fastcall InsertChildNodes(
-        int bucket,
-        zClass_NodePartial *node
-    ) {
-        zClass_TypeListLink *link = AllocLink();
-        link->node = node;
-
-        zClass_TypeListLink **tailSlot = g_zClass_TypeList_TailSlotPtrs[bucket];
-        zClass_TypeListLink *tail = *tailSlot;
-        zClass_TypeListLink **headSlot = g_zClass_TypeList_HeadSlotPtrs[bucket];
-        if (*headSlot == 0) {
-            *headSlot = link;
-            *g_zClass_TypeList_TailSlotPtrs[bucket] = link;
-        } else {
-            link->prev = tail;
-            tail->next = link;
-            *g_zClass_TypeList_TailSlotPtrs[bucket] = link;
-        }
-
-        if (bucket == kQueuedTreeBucket) {
-            node->flags |= kTypeListInsertedFlag;
-            for (int i = 0; i < node->listCountA; ++i) {
-                zClass_NodePartial *child = node->listA[i];
-                if ((child->flags & kTypeListInsertedFlag) == 0 &&
-                    child->classId != kZClassNodeWorld) {
-                    InsertChildNodes(
-                        kQueuedTreeBucket,
-                        child
-                    );
-                }
-            }
-        }
-
-        return 0;
-    }
-
-    /**
-     * Reimplements 0x44ea70: zClass_TypeList::UpdateAllBuckets.
-     * Purpose: update each non-empty callback-priority bucket and then flush
-     * queued node update work.
-     */
-    void UpdateAllBuckets() {
-        for (int i = 0; i < 6; ++i) {
-            zClass_TypeListLink *bucket = *g_zClassCallbackPriorityHeadSlotPtrs[i];
-            if (bucket != 0) {
-                UpdateBucket(bucket);
-                zClass_Class::gwNodeUpdateAll();
-            }
-        }
-    }
-
-    /**
-     * Reimplements 0x44eaa0: zClass_TypeList::UpdateBucket.
-     * Purpose: run eligible action callbacks in one bucket while deferring
-     * list mutations until the pass completes.
-     */
-    void __fastcall UpdateBucket(zClass_TypeListLink * bucket) {
-        const int wasDeferredEnabled = g_zClass_DeferredProcessingEnabled;
-        g_zClass_DeferredProcessingEnabled = 0;
-
-        for (zClass_TypeListLink *link = bucket; link != 0; link = link->next) {
             zClass_NodePartial *node = link->node;
-            zClass_NodeActionCallback callback = (zClass_NodeActionCallback)(node->actionCallback);
-            if (callback == 0) {
-                link->pendingRemove = 1;
-            } else if (link->pendingRemove == 0 && (node->flags & 0x04) != 0) {
-                callback(node);
+            g_zClass_FilterIterCursor = link->next;
+            if (predicate(node) != 0) {
+                return node;
             }
-        }
-
-        g_zClass_DeferredProcessingEnabled = wasDeferredEnabled;
-        zClass::ProcessDeferredWork();
-    }
-
-    /**
-     * Reimplements 0x44eba0: zClass_TypeList::UpdateQueuedTrees.
-     * Purpose: process queued tree-update nodes until the queued-tree bucket
-     * contains no remaining active work.
-     */
-    int UpdateQueuedTrees() {
-        zClass_TypeListLink *link = zClass_TypeList::Head(kQueuedTreeBucket);
-        while (link != 0) {
-            while (link != 0 && link->pendingRemove != 0) {
-                link = link->next;
-            }
-            if (link == 0) {
-                break;
-            }
-
-            gwNode::UpdateTree(link->node);
-            link = zClass_TypeList::Head(kQueuedTreeBucket);
+            link = g_zClass_FilterIterCursor;
         }
 
         return 0;
-    }
-
-    /**
-     * Reimplements 0x44ebe0: zClass_TypeList::UpdateSequences.
-     * Purpose: update all non-pending sequence nodes while deferring list
-     * mutations during the pass.
-     */
-    int UpdateSequences() {
-        zClass_TypeListLink *link = zClass_TypeList::Head(11);
-        if (link == 0) {
-            return 0;
-        }
-
-        const int wasDeferredEnabled = g_zClass_DeferredProcessingEnabled;
-        g_zClass_DeferredProcessingEnabled = 0;
-        do {
-            if (link->pendingRemove == 0) {
-                zClass_Sequence::Update(link->node);
-            }
-
-            link = link->next;
-        } while (link != 0);
-
-        g_zClass_DeferredProcessingEnabled = wasDeferredEnabled;
-        zClass::ProcessDeferredWork();
-        return 0;
-    }
-
-    /**
-     * Reimplements 0x44ec30: zClass_TypeList::UpdateAnimations.
-     * Purpose: update active animation nodes while deferring list mutations
-     * during the pass.
-     */
-    int UpdateAnimations() {
-        zClass_TypeListLink *link = zClass_TypeList::Head(12);
-        if (link == 0) {
-            return 0;
-        }
-
-        const int wasDeferredEnabled = g_zClass_DeferredProcessingEnabled;
-        g_zClass_DeferredProcessingEnabled = 0;
-        do {
-            if (link->pendingRemove == 0 && (link->node->flags & 0x04) != 0) {
-                zClass_Animate::UpdateNode(link->node);
-            }
-
-            link = link->next;
-        } while (link != 0);
-
-        g_zClass_DeferredProcessingEnabled = wasDeferredEnabled;
-        zClass::ProcessDeferredWork();
-        return 0;
-    }
-}
-
-namespace gwNode {
-    /**
-     * Reimplements 0x44eb00: gwNode::UpdateSubtree.
-     * Purpose: update a node subtree and mark each visited node for queued
-     * tree-list removal.
-     */
-    int __fastcall UpdateSubtree(zClass_NodePartial * node) {
-        for (int i = 0; i < node->listCountB; ++i) {
-            zClass_NodePartial *child = node->listB[i];
-            if ((child->flags & 0x01) != 0) {
-                UpdateSubtree(child);
-            }
-        }
-
-        zClass_Class::gwNodeUpdate(node);
-        zClass_TypeList::MarkPendingRemoval(
-            kQueuedTreeBucket,
-            node
-        );
-        return 0;
-    }
-
-    /**
-     * Reimplements 0x44eb50: gwNode::UpdateTree.
-     * Purpose: update a node tree upward through its non-world parents and
-     * process deferred work when enabled.
-     */
-    void __fastcall UpdateTree(zClass_NodePartial * node) {
-        UpdateSubtree(node);
-        for (int i = 0; i < node->listCountA; ++i) {
-            zClass_NodePartial *parent = node->listA[i];
-            if (parent->classId != kZClassNodeWorld) {
-                UpdateTree(parent);
-            }
-        }
-
-        if (g_zClass_DeferredProcessingEnabled != 0) {
-            zClass::ProcessDeferredWork();
-        }
-    }
-}
-
-namespace zClass_NodeList {
-    /**
-     * Reimplements 0x44ed60: zClass_NodeList::Insert.
-     * Purpose: queue a node for deferred free processing on the pending-free
-     * node list.
-     */
-    int __fastcall Insert(zClass_NodePartial * node) {
-        zClass_TypeListLink *link = zClass_TypeList::AllocLink();
-        link->node = node;
-
-        zClass_TypeListLink *head = g_zClass_NodeList_PendingFreeHead;
-        if (head != 0) {
-            link->next = head;
-            head->prev = link;
-        }
-        g_zClass_NodeList_PendingFreeHead = link;
-        return 0;
-    }
-
-    /**
-     * Reimplements 0x44eea0: zClass_NodeList::ProcessPendingFrees.
-     * Purpose: drain pending node frees through the class free-list and
-     * recycle their queue links.
-     */
-    void ProcessPendingFrees() {
-        zClass_TypeListLink *link = g_zClass_NodeList_PendingFreeHead;
-        while (link != 0) {
-            g_zClass_NodeList_PendingFreeHead = link->next;
-            zClass_Class::FreeNodeToFreeList(link->node);
-            zClass_TypeList::FreeLink(link);
-            link = g_zClass_NodeList_PendingFreeHead;
-        }
     }
 }
 
 namespace zClass {
-    /**
-     * Reimplements 0x44e920: zClass::ProcessDeferredWork.
-     * Purpose: process dirty deferred-removal buckets and then drain pending
-     * node frees while deferred work is enabled.
-     */
-    int ProcessDeferredWork() {
-        if (g_zClass_DeferredProcessingEnabled == 0) {
-            return 1;
-        }
-
-#define ZCLASS_PROCESS_PENDING_BUCKET(bucket)                                                      \
-    if (zClass_TypeList::PendingRemovalDirty(bucket) != 0) {                                       \
-        zClass_TypeList::ProcessPendingRemovals(bucket);                                           \
-    }
-
-        ZCLASS_PROCESS_PENDING_BUCKET(6);
-        ZCLASS_PROCESS_PENDING_BUCKET(0);
-        ZCLASS_PROCESS_PENDING_BUCKET(1);
-        ZCLASS_PROCESS_PENDING_BUCKET(2);
-        ZCLASS_PROCESS_PENDING_BUCKET(3);
-        ZCLASS_PROCESS_PENDING_BUCKET(4);
-        ZCLASS_PROCESS_PENDING_BUCKET(5);
-        ZCLASS_PROCESS_PENDING_BUCKET(7);
-        ZCLASS_PROCESS_PENDING_BUCKET(8);
-        ZCLASS_PROCESS_PENDING_BUCKET(9);
-        ZCLASS_PROCESS_PENDING_BUCKET(10);
-        ZCLASS_PROCESS_PENDING_BUCKET(13);
-        ZCLASS_PROCESS_PENDING_BUCKET(14);
-        ZCLASS_PROCESS_PENDING_BUCKET(15);
-        ZCLASS_PROCESS_PENDING_BUCKET(11);
-        ZCLASS_PROCESS_PENDING_BUCKET(12);
-
-#undef ZCLASS_PROCESS_PENDING_BUCKET
-
-        if (g_zClass_NodeList_PendingFreeHead != 0) {
-            zClass_NodeList::ProcessPendingFrees();
-        }
-
-        return 0;
-    }
-
-    /**
-     * Reimplements 0x44ecf0: zClass::FindByTypeAndName.
-     * Purpose: find the first node in a type-list bucket whose name matches.
-     */
-    zClass_NodePartial *__fastcall FindByTypeAndName(
-        int bucket,
-        const char *name
-    ) {
-        for (zClass_TypeListLink *link = zClass_TypeList::Head(bucket); link != 0;
-            link = link->next) {
-            if (strcmp(
-                link->node->name,
-                name
-            ) == 0) {
-                return link->node;
-            }
-        }
-
-        return 0;
-    }
-
-    /**
-     * Reimplements 0x44f720: zClass::FindNextByTypePrefix_Predicate.
-     * Purpose: test whether a node name matches the active prefix-search text.
-     */
-    int __fastcall FindNextByTypePrefix_Predicate(zClass_NodePartial * node) {
-        return strncmp(
-                   node->name,
-                   g_zClass_FilterIterText,
-                   (size_t)(g_zClass_FilterIterPrefixLen)
-               ) == 0;
-    }
-
     /**
      * Reimplements 0x44f6f0: zClass::FindNextByTypePrefix.
      * Purpose: initialize or continue prefix search over one type-list bucket.
@@ -1181,87 +1244,32 @@ namespace zClass {
     }
 
     /**
-     * Reimplements 0x452810: zClass::AnyNodeMatchesPredicateRecursive.
-     * Purpose: recursively test a node and its secondary children with a
-     * caller-supplied predicate.
+     * Reimplements 0x44f720: zClass::FindNextByTypePrefix_Predicate.
+     * Purpose: test whether a node name matches the active prefix-search text.
      */
-    int __fastcall AnyNodeMatchesPredicateRecursive(
-        zClass_NodePartial * root,
-        zClass_NodePredicate predicate
-    ) {
-        if (predicate(root) == 1) {
-            return 1;
-        }
-
-        for (int i = root->listCountB - 1; i >= 0; --i) {
-            if (AnyNodeMatchesPredicateRecursive(
-                root->listB[i],
-                predicate
-            ) == 1) {
-                return 1;
-            }
-        }
-
-        return 0;
+    int __fastcall FindNextByTypePrefix_Predicate(zClass_NodePartial * node) {
+        return strncmp(
+                   node->name,
+                   g_zClass_FilterIterText,
+                   (size_t)(g_zClass_FilterIterPrefixLen)
+               ) == 0;
     }
+
+
+    /**
+     * Reimplements 0x452810: zClass::AnyNodeMatchesPredicateRecursive.
+     * Source-shape note: the definition is emitted by cls_util.c; List.c
+     * retains callers and the public declaration.
+     */
 
     /**
      * Reimplements 0x44f870: zClass::RemoveChildChecked.
-     * Purpose: validate parent and child pointers before removing the child
-     * through the generic class helper.
+     * Source-shape note: the definition is emitted by Window.c; List.c retains
+     * callers of the shared class operation.
      */
-    int __fastcall RemoveChildChecked(
-        zClass_NodePartial * parent,
-        zClass_NodePartial * child
-    ) {
-        if (parent == 0) {
-            zError::ReportOld(
-                0x400,
-                "D:\\Proj\\GameZRecoil\\zClass\\Window.c",
-                0xb6,
-                "Null node pointer."
-            );
-            return 5;
-        }
-        if (child == 0) {
-            zError::ReportOld(
-                0x400,
-                "D:\\Proj\\GameZRecoil\\zClass\\Window.c",
-                0xb7,
-                "Null node pointer."
-            );
-            return 5;
-        }
-
-        return zClass_Class::RemoveChildGeneric(
-            parent,
-            child
-        );
-    }
 }
 
 namespace zClass_Class {
-    /**
-     * Reimplements 0x44ec80: zClass_Class::gwNodeUpdateAll.
-     * Purpose: update sequence, animation, and queued-tree work in order.
-     */
-    int gwNodeUpdateAll() {
-        zClass_TypeList::UpdateSequences();
-        zClass_TypeList::UpdateAnimations();
-        return zClass_TypeList::UpdateQueuedTrees();
-    }
-
-    /**
-     * Reimplements 0x44f750: zClass_Class::gwNodeFindNextByName_Predicate.
-     * Purpose: test whether a node name matches the active exact-name search
-     * text.
-     */
-    int __fastcall gwNodeFindNextByName_Predicate(zClass_NodePartial * node) {
-        return strcmp(
-            node->name,
-            g_zClass_FilterIterText
-        ) == 0;
-    }
 
     /**
      * Reimplements 0x44f740: zClass_Class::gwNodeFindNextByName.
@@ -1278,4 +1286,17 @@ namespace zClass_Class {
             gwNodeFindNextByName_Predicate
         );
     }
+
+    /**
+     * Reimplements 0x44f750: zClass_Class::gwNodeFindNextByName_Predicate.
+     * Purpose: test whether a node name matches the active exact-name search
+     * text.
+     */
+    int __fastcall gwNodeFindNextByName_Predicate(zClass_NodePartial * node) {
+        return strcmp(
+            node->name,
+            g_zClass_FilterIterText
+        ) == 0;
+    }
+
 }

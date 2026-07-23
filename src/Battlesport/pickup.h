@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef BATTLESPORT_PICKUP_H
+#define BATTLESPORT_PICKUP_H
+
 #include "recoil/recoil_types.h"
 #include <stddef.h>
 
@@ -150,6 +153,17 @@ RECOIL_STATIC_ASSERT(
     ) == 0x30
 );
 RECOIL_STATIC_ASSERT(sizeof(PickupParsedZrdEntry) == 0x34);
+
+struct PickupPkt11Delta {
+    zNetworkPacketHeader header;
+    unsigned short flags;
+    unsigned short reserved;
+    int pickupId;
+};
+RECOIL_STATIC_ASSERT(sizeof(PickupPkt11Delta) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(PickupPkt11Delta, flags) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(PickupPkt11Delta, reserved) == 0x0a);
+RECOIL_STATIC_ASSERT(offsetof(PickupPkt11Delta, pickupId) == 0x0c);
 
 struct PickupPkt11CreateDelta {
     zNetworkPacketHeader header;
@@ -321,6 +335,9 @@ extern PickupSpawnList g_PickupSpawnList_Primary;
 extern int g_NextPickupId;
 extern int g_Pickup_LastVTOLDropIndex;
 extern zClass_NodePartial *g_Pickup_SceneNode;
+extern PickupPkt11Delta g_PickupPkt11Flag2Delta;
+extern PickupPkt11Delta g_PickupPkt11Flag8Delta;
+extern PickupPkt12AirdropSpawnChuteRelay g_PickupPkt12AirdropSpawnChuteRelay;
 
 extern "C" {
 extern PickupAirdropSpawnRef *g_Pickup_GlobalAirdropSpawnRef;
@@ -611,3 +628,5 @@ RECOIL_STATIC_ASSERT(
     ) == 0x0c
 );
 RECOIL_STATIC_ASSERT(sizeof(PickupRespawnQueue) == 0x10);
+
+#endif /* BATTLESPORT_PICKUP_H */

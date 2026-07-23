@@ -7,7 +7,7 @@
 
 namespace zError {
 int __fastcall InitOutputContext(
-    HWND hWnd,
+    void *hWnd,
     int maxBytes,
     const char *logFileName
 );

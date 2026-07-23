@@ -6,8 +6,12 @@
 #include "recoil/recoil_types.h"
 #include <stddef.h>
 
-#include "Battlesport/Mfc42Abi.h"
+#include "recoil/Mfc42Abi.h"
 #include <windows.h>
+
+#if defined(_MSC_VER) && _MSC_VER < 1200
+#include <vector>
+#endif
 
 #include "recoil/recoil_callconv.h"
 
@@ -196,6 +200,10 @@ struct zInput_BindGroupInfo {
 
     void Destroy();
 };
+
+#if defined(_MSC_VER) && _MSC_VER < 1200
+typedef std::vector<zInput_BindGroupInfo *> zInput_BindGroupInfoStdVector;
+#endif
 RECOIL_STATIC_ASSERT(
     offsetof(
         zInput_BindGroupInfo,
@@ -554,7 +562,6 @@ void Mouse_ApplyAccumulatedDelta();
 void Mouse_ResetTransitionState();
 int Mouse_IsUnsuspended();
 int Joystick_IsUnsuspended();
-int Keyboard_IsUnsuspended();
 void Mouse_Suspend();
 void Joystick_Suspend();
 void Keyboard_Suspend();
@@ -639,7 +646,7 @@ void __cdecl GlobalStateStaticInitAndRegisterAtExit();
 void BindGroupListStaticInit();
 int BindGroupListRegisterAtExit();
 void __cdecl BindGroupListAtExitDestructor();
-void __cdecl BindGroupList_StaticInitAndRegisterAtExit();
+int __cdecl BindGroupList_StaticInitAndRegisterAtExit();
 int BindGroupList_GetCount();
 char *__fastcall BindGroupList_GetGroupTitle(int groupIndex);
 int __fastcall BindGroupList_GetGroupCommandCount(int groupIndex);

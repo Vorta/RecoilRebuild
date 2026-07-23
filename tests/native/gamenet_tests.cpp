@@ -5,7 +5,7 @@
 #include "Battlesport/recoil_app.h"
 #include "Battlesport/pickup.h"
 #include "Battlesport/player.h"
-#include "GameZRecoil/mission.h"
+#include "Battlesport/mission.h"
 #include "GameZRecoil/Time/time.h"
 #include "GameZRecoil/include/opt_catalog.h"
 #include "GameZRecoil/zEffect/zeff.h"

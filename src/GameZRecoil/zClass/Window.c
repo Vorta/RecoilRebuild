@@ -1,7 +1,7 @@
 #include "zclass.h"
 
 #include "GameZRecoil/zError/zerr.h"
-#include "GameZRecoil/zRndr/zrndr.h"
+#include "GameZRecoil/zRender/zrndr.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -185,7 +185,45 @@ namespace zClass_Window {
 
         return node;
     }
+}
 
+namespace zClass {
+    /**
+     * Reimplements 0x44f870: zClass::RemoveChildChecked.
+     * Purpose: validate parent and child pointers before removing the child
+     * through the generic class helper.
+     */
+    int __fastcall RemoveChildChecked(
+        zClass_NodePartial * parent,
+        zClass_NodePartial * child
+    ) {
+        if (parent == 0) {
+            zError::ReportOld(
+                0x400,
+                "D:\\Proj\\GameZRecoil\\zClass\\Window.c",
+                0xb6,
+                "Null node pointer."
+            );
+            return 5;
+        }
+        if (child == 0) {
+            zError::ReportOld(
+                0x400,
+                "D:\\Proj\\GameZRecoil\\zClass\\Window.c",
+                0xb7,
+                "Null node pointer."
+            );
+            return 5;
+        }
+
+        return zClass_Class::RemoveChildGeneric(
+            parent,
+            child
+        );
+    }
+}
+
+namespace zClass_Window {
     /**
      * Reimplements 0x44f8b0:
      * zClass_Window::gwWindowSetResolution.

@@ -5,8 +5,8 @@
 #include <windows.h>
 
 #include "Battlesport/recoil_app.h"
-#include "GameZRecoil/RecoilApp/recoil_state_dialog_host.h"
-#include "GameZRecoil/RecoilApp/recoil_state_main_menu_transition.h"
+#include "Battlesport/recoil_state_dialog_host.h"
+#include "Battlesport/recoil_state_main_menu_transition.h"
 #include "GameZRecoil/include/zclass.h"
 #include "GameZRecoil/zHud/zhud_ui.h"
 #include "GameZRecoil/zVideo/zvid.h"
@@ -264,6 +264,7 @@ struct HudUiSaveLoadGameNameInput : HudUiNumericTextInput {
 
     void OnActivate();
     int OnRawKeyboardEvent(int key);
+    virtual void OnAccept();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiSaveLoadGameNameInput) == 0x374);
 
@@ -684,6 +685,10 @@ RECOIL_STATIC_ASSERT(
 struct HudUiNewGamePanelOverlayOwner : RecoilStateDialogHost {
     virtual ~HudUiNewGamePanelOverlayOwner();
     int OnTryBecomeCurrent();
+    static void __cdecl StaticInitAndRegisterAtExit();
+    static HudUiNewGamePanelOverlayOwner *StaticInit();
+    static void RegisterAtExit();
+    static void __cdecl AtExitDestructor();
     static void QueueEnter();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNewGamePanelOverlayOwner) == 0x08);
@@ -841,7 +846,7 @@ RECOIL_STATIC_ASSERT(
 struct HudUiCheatCodeTitleWidget : HudUiZrdWidget {
     /**
      * Reimplements 0x4070e0: HudUiCheatCodeTitleWidget::OnActivate.
-     * Original source path: D:\Proj\Battlesport\HudUiCheatCode.cpp.
+     * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiCheatCode.cpp.
      * Purpose: Queue the cheat-code state exit when the GO widget is activated.
      */
     virtual void OnActivate();

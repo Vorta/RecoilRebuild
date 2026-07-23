@@ -3,7 +3,7 @@
 #include "GameZRecoil/include/zclip_rect.h"
 #include "GameZRecoil/zMath/zmth.h"
 #include "GameZRecoil/zModel/gmod.h"
-#include "GameZRecoil/zRndr/zrndr.h"
+#include "GameZRecoil/zRender/zrndr.h"
 #include "GameZRecoil/zVideo/zvid.h"
 
 #include <cstring>

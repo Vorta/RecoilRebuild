@@ -1,5 +1,5 @@
 #include "GameZRecoil/zVideo/zvid.h"
-#include "GameZRecoil/zRndr/zrndr.h"
+#include "GameZRecoil/zRender/zrndr.h"
 
 #include <cstdio>
 #include <cstdlib>

@@ -114,6 +114,7 @@ struct HudUiNetGameSetupPanel : HudUiBackground {
     int reconfigureExistingSession;
 
     HudUiNetGameSetupPanel(int reconfigureExistingSessionValue);
+    ~HudUiNetGameSetupPanel();
     /**
      * Original inline constructor evidence: no standalone retail function;
      * local reconstructed callers need the previous constructor-shaped entry,
@@ -123,7 +124,6 @@ struct HudUiNetGameSetupPanel : HudUiBackground {
     HudUiNetGameSetupPanel * Constructor(int reconfigureExistingSessionValue) {
         return new (this) HudUiNetGameSetupPanel(reconfigureExistingSessionValue);
     }
-    void Destructor();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel) == 0xcaac);
 RECOIL_STATIC_ASSERT(

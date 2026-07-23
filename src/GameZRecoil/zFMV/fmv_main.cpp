@@ -1,6 +1,66 @@
-/* This source-layout fragment is included by the current compatibility container.
- * Parent build/manifests must compile this path directly after retiring the container include.
+#include "GameZRecoil/zError/zerr.h"
+#include "GameZRecoil/zFMV/fmv.h"
+#include "GameZRecoil/zVideo/zvid.h"
+
+#include <mmsystem.h>
+#include <digitalv.h>
+
+#include <stdlib.h>
+#include <string.h>
+
+extern "C" {
+/**
+ * Reimplements data 0x4dfb1c: g_zFMV_MpegVideoString.
+ * BN xrefs: zFMV_Playback::OpenAndPlay opens the MCI MPEGVideo device type.
+ * Purpose: first literal in the playback/MCI data owner 0x4dfb1c..0x4dfb63.
  */
+char g_zFMV_MpegVideoString[] = "MPEGVideo";
+
+/**
+ * Reimplements data 0x4dfb28: g_zFMV_SourceFile_FmvMainCpp.
+ * BN xrefs: zFMV_Playback::ReportMciError passes the retail source path to zError.
+ * Purpose: second literal in the playback/MCI data owner 0x4dfb1c..0x4dfb63.
+ */
+char g_zFMV_SourceFile_FmvMainCpp[] = "D:\\Proj\\GameZRecoil\\zFMV\\fmv_main.cpp";
+
+/**
+ * Reimplements data 0x4dfb50: g_zFMV_UnknownErrorIdMsg.
+ * BN xrefs: zFMV_Playback::ReportMciError uses this fallback MCI error text.
+ * Purpose: final literal in the playback/MCI data owner 0x4dfb1c..0x4dfb63.
+ */
+char g_zFMV_UnknownErrorIdMsg[] = "Unknown Error ID";
+}
+
+namespace {
+
+struct zFMV_MciWindowParams {
+    DWORD callback;
+    HWND hwnd;
+    unsigned int commandShow;
+    const char *text;
+};
+
+struct zFMV_MciRectParams {
+    DWORD callback;
+    int left;
+    int top;
+    int width;
+    int height;
+};
+
+struct zFMV_MciSetParams {
+    DWORD callback;
+    DWORD timeFormat;
+    DWORD audio;
+};
+
+struct zFMV_MciPlayParams {
+    DWORD callback;
+    DWORD from;
+    DWORD to;
+};
+
+} // namespace
 
 /**
  * Reimplements 0x462330: zFMV_Playback::Constructor.
@@ -19,7 +79,7 @@ zFMV_Playback::zFMV_Playback(
  * Reimplements 0x462360: zFMV_Playback::Destructor.
  * Purpose: release the duplicated MCI media path.
  */
-void zFMV_Playback::Destructor() {
+zFMV_Playback::~zFMV_Playback() {
     free(mediaPathDup);
 }
 
@@ -47,7 +107,7 @@ void zFMV_Playback::OpenAndPlay(
         0,
         0x803,
         0x2202,
-        (DWORD_PTR)(&openParams)
+        (DWORD)(&openParams)
     );
     if (mciError != 0) {
         ReportMciError(mciError);
@@ -60,7 +120,7 @@ void zFMV_Playback::OpenAndPlay(
         mciDeviceId,
         0x841,
         0x10002,
-        (DWORD_PTR)(&windowParams)
+        (DWORD)(&windowParams)
     );
     if (mciError != 0) {
         ReportMciError(mciError);
@@ -76,7 +136,7 @@ void zFMV_Playback::OpenAndPlay(
             mciDeviceId,
             0x842,
             0x50002,
-            (DWORD_PTR)(&rectParams)
+            (DWORD)(&rectParams)
         );
         if (mciError != 0) {
             ReportMciError(mciError);
@@ -93,7 +153,7 @@ void zFMV_Playback::OpenAndPlay(
             mciDeviceId,
             0x842,
             0x30002,
-            (DWORD_PTR)(&rectParams)
+            (DWORD)(&rectParams)
         );
         if (mciError != 0) {
             ReportMciError(mciError);
@@ -107,7 +167,7 @@ void zFMV_Playback::OpenAndPlay(
         mciDeviceId,
         0x811,
         0x302,
-        (DWORD_PTR)(&setParams)
+        (DWORD)(&setParams)
     );
     if (mciError != 0) {
         ReportMciError(mciError);
@@ -115,7 +175,7 @@ void zFMV_Playback::OpenAndPlay(
     }
 
     DWORD playFlags = 0x6;
-    playParams.callback = (DWORD_PTR)(notifyHwnd);
+    playParams.callback = (DWORD)(notifyHwnd);
     playParams.from = startMs;
     if (endMs >= 0) {
         playParams.to = (DWORD)(endMs);
@@ -129,7 +189,7 @@ void zFMV_Playback::OpenAndPlay(
         mciDeviceId,
         0x806,
         playFlags,
-        (DWORD_PTR)(&playParams)
+        (DWORD)(&playParams)
     );
     if (mciError != 0) {
         ReportMciError(mciError);
@@ -153,7 +213,7 @@ void zFMV_Playback::StopAndClose() {
             mciDeviceId,
             0x804,
             0x2,
-            (DWORD_PTR)(&closeParams)
+            (DWORD)(&closeParams)
         );
     }
 
@@ -202,4 +262,3 @@ int zFMV_Playback::ReportMciError(
     );
     return 0;
 }
-

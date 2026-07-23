@@ -10,7 +10,7 @@
 #include "GameZRecoil/zInput/zinput.h"
 #include "GameZRecoil/zLoc/zloc.h"
 #include "GameZRecoil/zNetwork/znet.h"
-#include "GameZRecoil/zRndr/zrndr.h"
+#include "GameZRecoil/zRender/zrndr.h"
 #include "GameZRecoil/zSound/zsnd.h"
 #include "GameZRecoil/zSys/zsys.h"
 #include "GameZRecoil/zVideo/zvid.h"
@@ -5215,18 +5215,10 @@ extern "C" int zhud_zrd_widget_constructor_smoke(void) {
         widget->activateSound == nullptr &&
         widget->activatePlayHandle == nullptr &&
         widget->activateSoundScale == 1.0f &&
-        widget->labelPanels.begin == nullptr &&
-        widget->labelPanels.end == nullptr &&
-        widget->labelPanels.capacityEnd == nullptr &&
-        widget->rolloverLabelPanels.begin == nullptr &&
-        widget->rolloverLabelPanels.end == nullptr &&
-        widget->rolloverLabelPanels.capacityEnd == nullptr &&
-        widget->activateLabelPanels.begin == nullptr &&
-        widget->activateLabelPanels.end == nullptr &&
-        widget->activateLabelPanels.capacityEnd == nullptr &&
-        widget->disabledLabelPanels.begin == nullptr &&
-        widget->disabledLabelPanels.end == nullptr &&
-        widget->disabledLabelPanels.capacityEnd == nullptr &&
+        widget->labelPanels.empty() &&
+        widget->rolloverLabelPanels.empty() &&
+        widget->activateLabelPanels.empty() &&
+        widget->disabledLabelPanels.empty() &&
         (widget->flags & 0x02u) != 0 &&
         (widget->flags & ~0x12u) == 0 &&
         (widget->imageStateWord & 0xffffu) == 1;
@@ -5371,33 +5363,25 @@ extern "C" int zhud_zrd_widget_helpers_smoke(void) {
         reinterpret_cast<HudUiPanel *>(0x3000),
         reinterpret_cast<HudUiPanel *>(0x4000),
     };
-    HudUiPanelPtrVector vector{};
-    vector.begin = panels;
-    vector.end = panels + 4;
-    vector.capacityEnd = panels + 4;
+    HudUiPanelPtrVector vector(panels, panels + 4);
 
-    HudUiPanel **const result = vector.EraseRange(panels + 1, panels + 3);
+    HudUiPanelPtrVector::iterator result = vector.erase(vector.begin() + 1, vector.begin() + 3);
     const bool erased =
-        result == panels + 1 &&
-        vector.end == panels + 2 &&
-        panels[0] == reinterpret_cast<HudUiPanel *>(0x1000) &&
-        panels[1] == reinterpret_cast<HudUiPanel *>(0x4000);
-    vector.begin = nullptr;
-    vector.end = nullptr;
-    vector.capacityEnd = nullptr;
+        result == vector.begin() + 1 &&
+        vector.size() == 2 &&
+        vector[0] == reinterpret_cast<HudUiPanel *>(0x1000) &&
+        vector[1] == reinterpret_cast<HudUiPanel *>(0x4000);
 
     HudUiPanelPtrVector insertVector{};
     HudUiPanel *insertA = reinterpret_cast<HudUiPanel *>(0x1110);
     HudUiPanel *insertB = reinterpret_cast<HudUiPanel *>(0x2220);
-    insertVector.InsertN(nullptr, 1, &insertA);
-    insertVector.InsertN(insertVector.begin, 2, &insertB);
+    insertVector.push_back(insertA);
+    insertVector.insert(insertVector.begin(), 2, insertB);
     const bool inserted =
-        insertVector.begin != nullptr &&
-        insertVector.end == insertVector.begin + 3 &&
-        insertVector.capacityEnd >= insertVector.end &&
-        insertVector.begin[0] == reinterpret_cast<HudUiPanel *>(0x2220) &&
-        insertVector.begin[1] == reinterpret_cast<HudUiPanel *>(0x2220) &&
-        insertVector.begin[2] == reinterpret_cast<HudUiPanel *>(0x1110);
+        insertVector.size() == 3 &&
+        insertVector[0] == reinterpret_cast<HudUiPanel *>(0x2220) &&
+        insertVector[1] == reinterpret_cast<HudUiPanel *>(0x2220) &&
+        insertVector[2] == reinterpret_cast<HudUiPanel *>(0x1110);
 
     TestZrdChildWidget child{};
     child.deleteFlags = 0;
@@ -5408,28 +5392,12 @@ extern "C" int zhud_zrd_widget_helpers_smoke(void) {
     TestZrdChildWidget labelChild{};
     TestZrdChildWidget rolloverChild{};
     TestZrdChildWidget activateChild{};
-    HudUiPanel **const labelPanels =
-        static_cast<HudUiPanel **>(::operator new(sizeof(HudUiPanel *)));
-    HudUiPanel **const rolloverPanels =
-        static_cast<HudUiPanel **>(::operator new(sizeof(HudUiPanel *)));
-    HudUiPanel **const activatePanels =
-        static_cast<HudUiPanel **>(::operator new(sizeof(HudUiPanel *)));
-    labelPanels[0] = reinterpret_cast<HudUiPanel *>(&labelChild);
-    rolloverPanels[0] = reinterpret_cast<HudUiPanel *>(&rolloverChild);
-    activatePanels[0] = reinterpret_cast<HudUiPanel *>(&activateChild);
-
     void *const widgetStorage = ::operator new(sizeof(HudUiZrdWidget));
     std::memset(widgetStorage, 0, sizeof(HudUiZrdWidget));
     HudUiZrdWidget *const widget = new (widgetStorage) HudUiZrdWidget;
-    widget->labelPanels.begin = labelPanels;
-    widget->labelPanels.end = labelPanels + 1;
-    widget->labelPanels.capacityEnd = labelPanels + 1;
-    widget->rolloverLabelPanels.begin = rolloverPanels;
-    widget->rolloverLabelPanels.end = rolloverPanels + 1;
-    widget->rolloverLabelPanels.capacityEnd = rolloverPanels + 1;
-    widget->activateLabelPanels.begin = activatePanels;
-    widget->activateLabelPanels.end = activatePanels + 1;
-    widget->activateLabelPanels.capacityEnd = activatePanels + 1;
+    widget->labelPanels.push_back(reinterpret_cast<HudUiPanel *>(&labelChild));
+    widget->rolloverLabelPanels.push_back(reinterpret_cast<HudUiPanel *>(&rolloverChild));
+    widget->activateLabelPanels.push_back(reinterpret_cast<HudUiPanel *>(&activateChild));
 
     widget->DestructorCore();
     const bool destructed =
@@ -5453,8 +5421,7 @@ extern "C" int zhud_zrd_widget_helpers_smoke(void) {
     HudUiPanel *const labelA = new (labelAStorage) HudUiPanel;
     HudUiPanel *const labelB = new (labelBStorage) HudUiPanel;
     HudUiPanel *invalidateLabels[] = {labelA, labelB};
-    invalidateWidget.labelPanels.begin = invalidateLabels;
-    invalidateWidget.labelPanels.end = invalidateLabels + 2;
+    invalidateWidget.labelPanels.assign(invalidateLabels, invalidateLabels + 2);
     g_HudUi_InvalidateMask = 0x80;
     invalidateWidget.Invalidate();
     const bool invalidated =
@@ -5462,8 +5429,7 @@ extern "C" int zhud_zrd_widget_helpers_smoke(void) {
         (labelA->flags & 0x80) != 0 &&
         (labelB->flags & 0x80) != 0;
     g_HudUi_InvalidateMask = 0;
-    invalidateWidget.labelPanels.begin = nullptr;
-    invalidateWidget.labelPanels.end = nullptr;
+    invalidateWidget.labelPanels.clear();
     ::operator delete(labelAStorage);
     ::operator delete(labelBStorage);
 
@@ -5509,8 +5475,7 @@ extern "C" int zhud_zrd_widget_helpers_smoke(void) {
     boundsWidget.boundsRect.top = 0;
     boundsWidget.boundsRect.right = 0;
     boundsWidget.boundsRect.bottom = 0;
-    boundsWidget.labelPanels.begin = boundsLabels;
-    boundsWidget.labelPanels.end = boundsLabels + 2;
+    boundsWidget.labelPanels.assign(boundsLabels, boundsLabels + 2);
     HudUiRect *const labelBounds = boundsWidget.GetBoundsRectOrNull();
     const bool labelBoundsOk =
         labelBounds == &boundsWidget.boundsRect &&
@@ -5521,10 +5486,8 @@ extern "C" int zhud_zrd_widget_helpers_smoke(void) {
 
     g_HudUi_InvalidateMask = 0;
 
-    invalidateWidget.labelPanels.begin = nullptr;
-    invalidateWidget.labelPanels.end = nullptr;
-    boundsWidget.labelPanels.begin = nullptr;
-    boundsWidget.labelPanels.end = nullptr;
+    invalidateWidget.labelPanels.clear();
+    boundsWidget.labelPanels.clear();
     boundsWidget.image = nullptr;
     boundsWidget.defaultImage = nullptr;
     boundsWidget.disabledImage = nullptr;
@@ -5627,8 +5590,8 @@ extern "C" int zhud_zrd_widget_load_from_zrd_smoke(void) {
     );
 
     HudUiTransitionTextPanel *const labelPanel =
-        widget.labelPanels.begin != nullptr
-            ? reinterpret_cast<HudUiTransitionTextPanel *>(widget.labelPanels.begin[0])
+        !widget.labelPanels.empty()
+            ? reinterpret_cast<HudUiTransitionTextPanel *>(widget.labelPanels[0])
             : nullptr;
     HudUiPanel *const panel = labelPanel;
     HudUiElement *const element = labelPanel;
@@ -5657,7 +5620,7 @@ extern "C" int zhud_zrd_widget_load_from_zrd_smoke(void) {
         widget.x == 15 &&
         widget.y == 27 &&
         owner.childHead == reinterpret_cast<HudUiElement *>(&widget) &&
-        widget.labelPanels.end == widget.labelPanels.begin + 1 &&
+        widget.labelPanels.size() == 1 &&
         labelPanel != nullptr &&
         std::strcmp(panel->cachedText, "HELLO") == 0 &&
         element->x == 17 &&
@@ -5677,10 +5640,7 @@ extern "C" int zhud_zrd_widget_load_from_zrd_smoke(void) {
         panel->hFont = nullptr;
         ::operator delete(panel);
     }
-    ::operator delete(widget.labelPanels.begin);
-    widget.labelPanels.begin = nullptr;
-    widget.labelPanels.end = nullptr;
-    widget.labelPanels.capacityEnd = nullptr;
+    widget.labelPanels.clear();
     owner.childHead = nullptr;
     owner.childTail = nullptr;
     g_HudUi_InvalidateMask = oldMask;
@@ -6603,14 +6563,10 @@ extern "C" int zhud_check_toggle_widget_helpers_smoke(void) {
     HudUiPanel *disabledLabels[] = {reinterpret_cast<HudUiPanel *>(&disabled)};
     zVidImagePartial disabledPrimary{};
     zVidImagePartial disabledFallback{};
-    widget.labelPanels.begin = labels;
-    widget.labelPanels.end = labels + 1;
-    widget.rolloverLabelPanels.begin = rollovers;
-    widget.rolloverLabelPanels.end = rollovers + 1;
-    widget.activateLabelPanels.begin = activates;
-    widget.activateLabelPanels.end = activates + 1;
-    widget.disabledLabelPanels.begin = disabledLabels;
-    widget.disabledLabelPanels.end = disabledLabels + 1;
+    widget.labelPanels.assign(labels, labels + 1);
+    widget.rolloverLabelPanels.assign(rollovers, rollovers + 1);
+    widget.activateLabelPanels.assign(activates, activates + 1);
+    widget.disabledLabelPanels.assign(disabledLabels, disabledLabels + 1);
     widget.disabledCheckedImage = &disabledPrimary;
     widget.disabledCheckedFallbackImage = &disabledFallback;
     widget.checked = 1;
@@ -6647,20 +6603,19 @@ extern "C" int zhud_check_toggle_widget_helpers_smoke(void) {
     previewWidget.checked = 0;
     previewWidget.image = &previewDefault;
     previewWidget.rolloverImage = &previewRollover;
-    previewWidget.labelPanels.begin = previewLabels;
-    previewWidget.labelPanels.end = previewLabels + 1;
-    previewWidget.rolloverLabelPanels.begin = previewRolloverLabels;
-    previewWidget.rolloverLabelPanels.end = previewRolloverLabels + 1;
+    previewWidget.labelPanels.assign(previewLabels, previewLabels + 1);
+    previewWidget.rolloverLabelPanels.assign(
+        previewRolloverLabels,
+        previewRolloverLabels + 1
+    );
     previewWidget.ShowPreview();
     const bool previewShown =
         previewWidget.defaultImage == &previewDefault &&
         previewWidget.image == &previewRollover &&
         (previewLabel.flags & 0x10) != 0 &&
         (previewRolloverLabel.flags & 0x10) == 0;
-    previewWidget.labelPanels.begin = nullptr;
-    previewWidget.labelPanels.end = nullptr;
-    previewWidget.rolloverLabelPanels.begin = nullptr;
-    previewWidget.rolloverLabelPanels.end = nullptr;
+    previewWidget.labelPanels.clear();
+    previewWidget.rolloverLabelPanels.clear();
 
     HudUiCheckToggleWidget checkedPreviewWidget{};
     checkedPreviewWidget.modeOrEnabled = 1;
@@ -6744,18 +6699,10 @@ extern "C" int zhud_check_toggle_widget_helpers_smoke(void) {
         reinterpret_cast<zSndPlayHandle *>(0x33334444);
 
     const bool bounds = widget.GetBoundsRectOrNull() == &widget.boundsRect;
-    widget.labelPanels.begin = nullptr;
-    widget.labelPanels.end = nullptr;
-    widget.labelPanels.capacityEnd = nullptr;
-    widget.rolloverLabelPanels.begin = nullptr;
-    widget.rolloverLabelPanels.end = nullptr;
-    widget.rolloverLabelPanels.capacityEnd = nullptr;
-    widget.activateLabelPanels.begin = nullptr;
-    widget.activateLabelPanels.end = nullptr;
-    widget.activateLabelPanels.capacityEnd = nullptr;
-    widget.disabledLabelPanels.begin = nullptr;
-    widget.disabledLabelPanels.end = nullptr;
-    widget.disabledLabelPanels.capacityEnd = nullptr;
+    widget.labelPanels.clear();
+    widget.rolloverLabelPanels.clear();
+    widget.activateLabelPanels.clear();
+    widget.disabledLabelPanels.clear();
     widget.defaultImage = nullptr;
     widget.disabledImage = nullptr;
     widget.rolloverImage = nullptr;
@@ -6942,9 +6889,9 @@ extern "C" int zhud_check_toggle_widget_load_from_zrd_smoke(void) {
 
     HudUiPanel *const checkedPanel = widget.checkedLabelPanel;
     HudUiPanel *const baseLabelPanel =
-        widget.labelPanels.begin != nullptr ? widget.labelPanels.begin[0] : nullptr;
+        !widget.labelPanels.empty() ? widget.labelPanels[0] : nullptr;
     HudUiPanel *const disabledPanel =
-        widget.disabledLabelPanels.begin != nullptr ? widget.disabledLabelPanels.begin[0] : nullptr;
+        !widget.disabledLabelPanels.empty() ? widget.disabledLabelPanels[0] : nullptr;
     HudUiElement *const checkedElement = checkedPanel;
     HudUiElement *const baseLabelElement = baseLabelPanel;
     HudUiElement *const disabledElement = disabledPanel;
@@ -6973,7 +6920,7 @@ extern "C" int zhud_check_toggle_widget_load_from_zrd_smoke(void) {
         failureCode = 8;
     } else if (checkedPanel->textColor0 != 0x00010203) {
         failureCode = 9;
-    } else if (widget.labelPanels.end != widget.labelPanels.begin + 1) {
+    } else if (widget.labelPanels.size() != 1) {
         failureCode = 10;
     } else if (baseLabelPanel == nullptr) {
         failureCode = 11;
@@ -6995,7 +6942,7 @@ extern "C" int zhud_check_toggle_widget_load_from_zrd_smoke(void) {
         widget.boundsRect.bottom != 48 + baseLabelHeight
     ) {
         failureCode = 16;
-    } else if (widget.disabledLabelPanels.end != widget.disabledLabelPanels.begin + 1) {
+    } else if (widget.disabledLabelPanels.size() != 1) {
         failureCode = 17;
     } else if (disabledPanel == nullptr) {
         failureCode = 18;

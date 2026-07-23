@@ -1,4 +1,4 @@
-#include "Battlesport/Mfc42Abi.h"
+#include "recoil/Mfc42Abi.h"
 
 #include "zgame.h"
 
@@ -265,122 +265,7 @@ RECOIL_STATIC_ASSERT(
 );
 RECOIL_STATIC_ASSERT(sizeof(zGame_OptionsRuntimeConfig) == 0x30);
 
-/**
- * Reimplements 0x4b3090: zGame_OptionsRuntimeConfig::CopyDefault.
- * Original source path: D:\Proj\GameZRecoil\zGame\zGame.cpp.
- * Purpose: copy the probed default runtime configuration into this active config.
- */
-zGame_OptionsRuntimeConfig * zGame_OptionsRuntimeConfig::CopyDefault() {
-    if (this == 0) {
-        return &g_zGame_Options_RuntimeConfigDefaults;
-    }
-
-    memcpy(
-        this,
-        &g_zGame_Options_RuntimeConfigDefaults,
-        sizeof(*this)
-    );
-    return this;
-}
-
-/**
- * Reimplements 0x4b3160: zGame_OptionsRuntimeConfig::LoadCpuVendorString.
- * Original source path: D:\Proj\GameZRecoil\zGame\zGame.cpp.
- * Raw assembly: emits the CPUID opcode for the VC5 retail path because this
- * compiler-era source has no portable intrinsic form that preserves the
- * observed register output layout.
- * Purpose: load the CPUID vendor string into the runtime configuration when available.
- */
-RECOIL_NO_GS void zGame_OptionsRuntimeConfig::LoadCpuVendorString() {
-    if (zSys::HasCpuidSupportRuntimeOptions() == 0) {
-        return;
-    }
-
-    int cpuInfo[4];
-#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
-    __asm {
-        lea edi, cpuInfo
-        xor eax, eax
-        _emit 0x0f
-        _emit 0xa2
-        mov dword ptr [edi], eax
-        mov dword ptr [edi + 004h], ebx
-        mov dword ptr [edi + 008h], ecx
-        mov dword ptr [edi + 00ch], edx
-    }
-#else
-    __cpuid(
-        cpuInfo,
-        0
-    );
-#endif
-    char vendor[0x0c];
-    memcpy(
-        &vendor[0],
-        &cpuInfo[1],
-        4
-    );
-    memcpy(
-        &vendor[4],
-        &cpuInfo[3],
-        4
-    );
-    memcpy(
-        &vendor[8],
-        &cpuInfo[2],
-        4
-    );
-    strncpy(
-        cpuVendor,
-        vendor,
-        0x0c
-    );
-    cpuVendor[0x0c] = '\0';
-}
-
-/**
- * Reimplements 0x4b30b0: zGame_OptionsRuntimeConfig::InitFromSystem.
- * Original source path: D:\Proj\GameZRecoil\zGame\zGame.cpp.
- * Purpose: populate runtime option defaults from CPU, memory, video, and sound probes.
- */
-RECOIL_NO_GS int zGame_OptionsRuntimeConfig::InitFromSystem() {
-    LoadCpuVendorString();
-    cpuClass = zSys::GetCpuClass();
-    cpuMhz = zSys::GetCpuMhz();
-
-    unsigned int probe = (unsigned int)(zSnd::HasMmxMixerSupport()) & 1u;
-    unsigned int flags = defaultFlags;
-    defaultFlags = ((flags ^ probe) & 1u) ^ flags;
-
-    probe = ((unsigned int)(zSys::ReturnZeroStub()) & 1u) << 1;
-    flags = defaultFlags;
-    defaultFlags = (flags & ~2u) | probe;
-
-    systemRamKb = zSys::GetTotalPhysKb();
-
-    probe = ((unsigned int)(zSys::ReturnZeroStub()) & 1u) << 2;
-    flags = defaultFlags;
-    defaultFlags = (flags & ~4u) | probe;
-
-    probe = ((unsigned int)(zVid::HasAcceptedHardwareRenderer()) & 1u) << 6;
-    flags = defaultFlags;
-    defaultFlags = (flags & ~0x40u) | probe;
-
-    soundHardwareMemKb = 0;
-    if (zSnd::AcquireCachedDirectSound(0) != 0) {
-        DSCAPS caps;
-        zSnd::CachedDirectSound_GetCaps(&caps);
-        soundHardwareMemKb = caps.dwTotalHwMemBytes >> 10;
-        zSnd::ReleaseCachedDirectSound();
-    }
-
-    reservedCapabilityValue = zSys::ReturnZeroStub();
-    return 0;
-}
-
-
 namespace zGame {
-namespace {
 const int ZGAME_OPTION_INLINE_DWORD = 0;
 const int ZGAME_OPTION_INLINE_BINARY4 = 1;
 const int ZGAME_OPTION_INLINE_BINARY8 = 2;
@@ -399,103 +284,6 @@ const int ZOPT_GRAPHICS_PERSPECTIVE = 8;
 const int ZOPT_GRAPHICS_GLOBAL_LIGHT = 0x10;
 const int ZOPT_GRAPHICS_ALL_VIDEO_BUFFER = 0x20;
 
-} // namespace
-
-
-/**
- * Reimplements 0x4b3380: zGame::Options_FindOption.
- * Purpose: scan the registered option-entry list for an exact name match.
- */
-zOptionEntryPartial *__fastcall Options_FindOption(
-    const char *name
-) throw() {
-    for (zOptionEntryPartial *entry = g_zGame_Options_OptionListHead; entry != 0;
-        entry = entry->next) {
-        if (strcmp(
-            name,
-            entry->name
-        ) == 0) {
-            return entry;
-        }
-    }
-
-    return 0;
-}
-
-/**
- * Reimplements 0x4b2e80: zGame::Options_GetOrCreateOption.
- * Purpose: return an existing option entry or allocate and link a typed option record.
- */
-zOptionEntryPartial *__fastcall Options_GetOrCreateOption(
-    const char *name,
-    int storageType,
-    int dataSize,
-    int registryScope
-) {
-    zOptionEntryPartial *result = Options_FindOption(name);
-    if (result != 0) {
-        return result;
-    }
-
-    result = (zOptionEntryPartial *)(calloc(
-        1,
-        sizeof(zOptionEntryPartial)
-    ));
-    result->name = _strdup(name);
-    result->storageType = storageType;
-    result->dataSize = dataSize;
-    result->registryScope = registryScope;
-
-    switch (storageType) {
-    case 0:
-    case 2:
-        result->dataSize = 4;
-        break;
-
-    case 1:
-        result->dataSize = 8;
-        break;
-
-    case 3:
-    case 4:
-    case 5:
-    case 6:
-    case 7:
-        if (dataSize == 0) {
-            free(result);
-            return 0;
-        }
-        result->payloadOrBuffer = (int)(calloc(
-            1,
-            dataSize
-        ));
-        break;
-
-    default:
-        break;
-    }
-
-    result->next = g_zGame_Options_OptionListHead;
-    g_zGame_Options_OptionListHead = result;
-    return result;
-}
-
-/**
- * Reimplements 0x4b3260: zGame::Options_InitRegistryContext.
- * Purpose: initialize the registry-key context and reset the option-entry list.
- */
-void __fastcall Options_InitRegistryContext(
-    const char *regKeyRoot,
-    const char *regKeyCurrentUser,
-    const char *regKeyGame
-) {
-    g_zGame_Options_RegKeyRoot = _strdup(regKeyRoot);
-    g_zGame_Options_RegKeyCurrentUser = _strdup(regKeyCurrentUser);
-    g_zGame_Options_RegKeyGame = _strdup(regKeyGame);
-    g_zGame_Options_OptionListHead = 0;
-    g_zGame_Options_RegContextInitialized = 1;
-    g_zGame_Options_RuntimeConfigDefaults.InitFromSystem();
-}
 
 /**
  * Reimplements 0x4b2960: zGame::Options_LoadFromRegistry.
@@ -716,6 +504,444 @@ RECOIL_NO_GS int Options_SaveToRegistry() {
     return 1;
 }
 
+/**
+ * Reimplements 0x4b2e80: zGame::Options_GetOrCreateOption.
+ * Purpose: return an existing option entry or allocate and link a typed option record.
+ */
+zOptionEntryPartial *__fastcall Options_GetOrCreateOption(
+    const char *name,
+    int storageType,
+    int dataSize,
+    int registryScope
+) {
+    zOptionEntryPartial *result = Options_FindOption(name);
+    if (result != 0) {
+        return result;
+    }
+
+    result = (zOptionEntryPartial *)(calloc(
+        1,
+        sizeof(zOptionEntryPartial)
+    ));
+    result->name = _strdup(name);
+    result->storageType = storageType;
+    result->dataSize = dataSize;
+    result->registryScope = registryScope;
+
+    switch (storageType) {
+    case 0:
+    case 2:
+        result->dataSize = 4;
+        break;
+
+    case 1:
+        result->dataSize = 8;
+        break;
+
+    case 3:
+    case 4:
+    case 5:
+    case 6:
+    case 7:
+        if (dataSize == 0) {
+            free(result);
+            return 0;
+        }
+        result->payloadOrBuffer = (int)(calloc(
+            1,
+            dataSize
+        ));
+        break;
+
+    default:
+        break;
+    }
+
+    result->next = g_zGame_Options_OptionListHead;
+    g_zGame_Options_OptionListHead = result;
+    return result;
+}
+
+} // namespace zGame
+
+namespace zSnd {
+
+/**
+ * Reimplements 0x4b2f50: zSnd::AcquireCachedDirectSound.
+ * Purpose: return the matching cached DirectSound device or create and cache a
+ * new device for the requested GUID.
+ */
+LPDIRECTSOUND __fastcall AcquireCachedDirectSound(
+    const GUID *deviceGuid
+) {
+    LPDIRECTSOUND cached = g_zSnd_CachedDirectSound;
+    if (cached != 0) {
+        if (deviceGuid == g_zSnd_CachedDirectSoundGuid) {
+            return cached;
+        }
+
+        cached->Release();
+        g_zSnd_CachedDirectSound = 0;
+    }
+
+    if (DirectSoundCreate(
+        (LPGUID)(deviceGuid),
+        &g_zSnd_CachedDirectSound,
+        0
+    ) != DS_OK) {
+        return 0;
+    }
+
+    g_zSnd_CachedDirectSoundGuid = deviceGuid;
+    return g_zSnd_CachedDirectSound;
+}
+
+/**
+ * Reimplements 0x4b2fa0: zSnd::ReleaseCachedDirectSound.
+ * Purpose: release and clear the cached DirectSound device when present.
+ */
+void ReleaseCachedDirectSound() {
+    LPDIRECTSOUND cached = g_zSnd_CachedDirectSound;
+    if (cached != 0) {
+        cached->Release();
+        g_zSnd_CachedDirectSound = 0;
+    }
+}
+
+/**
+ * Reimplements 0x4b2fc0: zSnd::CachedDirectSound_GetCaps.
+ * Purpose: initialize the DirectSound caps structure size and query the cached
+ * DirectSound device.
+ */
+HRESULT __fastcall CachedDirectSound_GetCaps(
+    DSCAPS *caps
+) {
+    caps->dwSize = sizeof(DSCAPS);
+    return g_zSnd_CachedDirectSound->GetCaps(caps);
+}
+
+} // namespace zSnd
+
+namespace zSys {
+
+/**
+ * Reimplements 0x4b2fe0: zSys::HasCpuidSupportRuntimeOptions.
+ * Purpose: repeats the EFLAGS ID-bit probe for runtime option setup callers;
+ * VC5 C++ cannot express the required EFLAGS toggle and register-preservation
+ * sequence, so this documented raw-assembly CPU-probe exception keeps that
+ * sequence local.
+ */
+int HasCpuidSupportRuntimeOptions() {
+#if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZSYS_CPU_RAW_ASM)
+    int changedFlags = 0;
+    __asm {
+        push ebx
+        push ecx
+        push edx
+        pushfd
+        pop eax
+        mov ecx, eax
+        xor eax, 0200000h
+        push eax
+        popfd
+        pushfd
+        pop eax
+        xor eax, ecx
+        mov dword ptr [changedFlags], eax
+        pop edx
+        pop ecx
+        pop ebx
+    }
+    return changedFlags != 0 ? 1 : 0;
+#else
+    return HasCpuidSupport() != 0 ? 1 : 0;
+#endif
+}
+
+} // namespace zSys
+
+namespace zCpu {
+
+/**
+ * Reimplements 0x4b3020: zCpu::HasMmxSupport.
+ * Purpose: probe CPUID feature bit 23 for MMX support; VC5 C++ has no CPUID
+ * intrinsic, so this documented raw-assembly CPU-probe exception emits the
+ * opcode locally.
+ */
+int HasMmxSupport() {
+#if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZSYS_CPU_RAW_ASM)
+    int result;
+    __asm {
+        push ebx
+        push ecx
+        push edx
+        mov eax, 1
+        _emit 0x0f
+        _emit 0xa2
+        test edx, 0800000h
+        jne recoil_zgame_cpu_mmx_support_done
+        xor eax, eax
+    recoil_zgame_cpu_mmx_support_done:
+        mov dword ptr [result], eax
+        pop edx
+        pop ecx
+        pop ebx
+    }
+    return result != 0 ? 1 : 0;
+#else
+    int cpuInfo[4] = {0};
+    __cpuid(
+        cpuInfo,
+        1
+    );
+    return (cpuInfo[3] & 0x800000) != 0 ? 1 : 0;
+#endif
+}
+
+} // namespace zCpu
+
+namespace zSys {
+
+/**
+ * Reimplements 0x4b3050: zSys::CheckCpuSignatureMask.
+ * Purpose: read CPUID leaf 1 and test the optimized-path signature mask; VC5
+ * C++ has no CPUID intrinsic, so this documented raw-assembly CPU-probe
+ * exception emits the opcode while preserving the retail register shape.
+ */
+int CheckCpuSignatureMask() {
+#if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZSYS_CPU_RAW_ASM)
+    unsigned int cpuidSignature;
+    __asm {
+        xor esi, esi
+        push ebx
+        push ecx
+        push edx
+        mov eax, 1
+        _emit 0x0f
+        _emit 0xa2
+        mov dword ptr [cpuidSignature], eax
+        pop edx
+        pop ecx
+        pop ebx
+        mov eax, dword ptr [cpuidSignature]
+        and eax, 0630h
+        cmp eax, 0630h
+        jne recoil_zgame_cpu_signature_done
+        mov esi, 1
+    recoil_zgame_cpu_signature_done:
+        mov eax, esi
+    }
+#else
+    int cpuInfo[4] = {0};
+    __cpuid(
+        cpuInfo,
+        1
+    );
+    return (cpuInfo[0] & 0x630) == 0x630 ? 1 : 0;
+#endif
+}
+
+} // namespace zSys
+
+/**
+ * Reimplements 0x4b3090: zGame_OptionsRuntimeConfig::CopyDefault.
+ * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zGame\zGame.cpp.
+ * Purpose: copy the probed default runtime configuration into this active config.
+ */
+zGame_OptionsRuntimeConfig * zGame_OptionsRuntimeConfig::CopyDefault() {
+    if (this == 0) {
+        return &g_zGame_Options_RuntimeConfigDefaults;
+    }
+
+    memcpy(
+        this,
+        &g_zGame_Options_RuntimeConfigDefaults,
+        sizeof(*this)
+    );
+    return this;
+}
+
+/**
+ * Reimplements 0x4b30b0: zGame_OptionsRuntimeConfig::InitFromSystem.
+ * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zGame\zGame.cpp.
+ * Purpose: populate runtime option defaults from CPU, memory, video, and sound probes.
+ */
+RECOIL_NO_GS int zGame_OptionsRuntimeConfig::InitFromSystem() {
+    LoadCpuVendorString();
+    cpuClass = zSys::GetCpuClass();
+    cpuMhz = zSys::GetCpuMhz();
+
+    unsigned int probe = (unsigned int)(zSnd::HasMmxMixerSupport()) & 1u;
+    unsigned int flags = defaultFlags;
+    defaultFlags = ((flags ^ probe) & 1u) ^ flags;
+
+    probe = ((unsigned int)(zSys::ReturnZeroStub()) & 1u) << 1;
+    flags = defaultFlags;
+    defaultFlags = (flags & ~2u) | probe;
+
+    systemRamKb = zSys::GetTotalPhysKb();
+
+    probe = ((unsigned int)(zSys::ReturnZeroStub()) & 1u) << 2;
+    flags = defaultFlags;
+    defaultFlags = (flags & ~4u) | probe;
+
+    probe = ((unsigned int)(zVid::HasAcceptedHardwareRenderer()) & 1u) << 6;
+    flags = defaultFlags;
+    defaultFlags = (flags & ~0x40u) | probe;
+
+    soundHardwareMemKb = 0;
+    if (zSnd::AcquireCachedDirectSound(0) != 0) {
+        DSCAPS caps;
+        zSnd::CachedDirectSound_GetCaps(&caps);
+        soundHardwareMemKb = caps.dwTotalHwMemBytes >> 10;
+        zSnd::ReleaseCachedDirectSound();
+    }
+
+    reservedCapabilityValue = zSys::ReturnZeroStub();
+    return 0;
+}
+
+/**
+ * Reimplements 0x4b3160: zGame_OptionsRuntimeConfig::LoadCpuVendorString.
+ * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zGame\zGame.cpp.
+ * Purpose: load the CPUID vendor string into the runtime configuration when
+ * available; VC5 C++ has no CPUID intrinsic, so this documented raw-assembly
+ * CPU-probe exception emits the opcode and stores its fixed-register result
+ * directly.
+ */
+RECOIL_NO_GS void zGame_OptionsRuntimeConfig::LoadCpuVendorString() {
+    if (zSys::HasCpuidSupportRuntimeOptions() == 0) {
+        return;
+    }
+
+    int cpuInfo[4];
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+    __asm {
+        lea edi, cpuInfo
+        xor eax, eax
+        _emit 0x0f
+        _emit 0xa2
+        mov dword ptr [edi], eax
+        mov dword ptr [edi + 004h], ebx
+        mov dword ptr [edi + 008h], ecx
+        mov dword ptr [edi + 00ch], edx
+    }
+#else
+    __cpuid(
+        cpuInfo,
+        0
+    );
+#endif
+    char vendor[0x0c];
+    memcpy(
+        &vendor[0],
+        &cpuInfo[1],
+        4
+    );
+    memcpy(
+        &vendor[4],
+        &cpuInfo[3],
+        4
+    );
+    memcpy(
+        &vendor[8],
+        &cpuInfo[2],
+        4
+    );
+    strncpy(
+        cpuVendor,
+        vendor,
+        0x0c
+    );
+    cpuVendor[0x0c] = '\0';
+}
+
+namespace zSys {
+
+/**
+ * Reimplements 0x4b31b0: zSys::GetCpuClass.
+ * Purpose: return the low-word CPU class from the recovered CPU detection packet.
+ */
+int GetCpuClass() {
+    return DetectCpuClassAndFeatures() & 0xffff;
+}
+
+} // namespace zSys
+
+namespace zSnd {
+
+/**
+ * Reimplements 0x4b31f0: zSnd::HasMmxMixerSupport.
+ * Purpose: report MMX mixer availability only when CPUID probing is available.
+ */
+int HasMmxMixerSupport() {
+    if (zSys::HasCpuidSupportRuntimeOptions() == 0) {
+        return 0;
+    }
+
+    return zCpu::HasMmxSupport();
+}
+
+} // namespace zSnd
+
+namespace zSys {
+
+/**
+ * Reimplements 0x4b3210: zSys::ReturnZeroStub.
+ * Purpose: return zero for callers that need a stable legacy system stub.
+ */
+int ReturnZeroStub() {
+    return 0;
+}
+
+} // namespace zSys
+
+namespace zVid {
+
+/**
+ * Reimplements 0x4b3220: zVid::HasAcceptedHardwareRenderer.
+ * Purpose: report whether the cached renderer list contains an accepted entry.
+ */
+int HasAcceptedHardwareRenderer() {
+    return GetAcceptedHardwareRendererCount_Cached() > 0 ? 1 : 0;
+}
+
+} // namespace zVid
+
+namespace zSys {
+
+/**
+ * Reimplements 0x4b3230: zSys::GetTotalPhysKb.
+ * Purpose: read Windows memory status and return physical memory in kilobytes.
+ */
+RECOIL_NO_GS unsigned int GetTotalPhysKb() {
+    MEMORYSTATUS status;
+    status.dwLength = sizeof(status);
+    GlobalMemoryStatus(&status);
+    return status.dwTotalPhys >> 10;
+}
+
+} // namespace zSys
+
+namespace zGame {
+
+/**
+ * Reimplements 0x4b3260: zGame::Options_InitRegistryContext.
+ * Purpose: initialize the registry-key context and reset the option-entry list.
+ */
+void __fastcall Options_InitRegistryContext(
+    const char *regKeyRoot,
+    const char *regKeyCurrentUser,
+    const char *regKeyGame
+) {
+    g_zGame_Options_RegKeyRoot = _strdup(regKeyRoot);
+    g_zGame_Options_RegKeyCurrentUser = _strdup(regKeyCurrentUser);
+    g_zGame_Options_RegKeyGame = _strdup(regKeyGame);
+    g_zGame_Options_OptionListHead = 0;
+    g_zGame_Options_RegContextInitialized = 1;
+    g_zGame_Options_RuntimeConfigDefaults.InitFromSystem();
+}
+
 
 
 /**
@@ -764,6 +990,26 @@ void Options_ShutdownRegistryContext() {
     }
 
     g_zGame_Options_RegContextInitialized = 0;
+}
+
+/**
+ * Reimplements 0x4b3380: zGame::Options_FindOption.
+ * Purpose: scan the registered option-entry list for an exact name match.
+ */
+zOptionEntryPartial *__fastcall Options_FindOption(
+    const char *name
+) throw() {
+    for (zOptionEntryPartial *entry = g_zGame_Options_OptionListHead; entry != 0;
+        entry = entry->next) {
+        if (strcmp(
+            name,
+            entry->name
+        ) == 0) {
+            return entry;
+        }
+    }
+
+    return 0;
 }
 
 } // namespace zGame

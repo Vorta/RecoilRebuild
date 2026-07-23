@@ -16,9 +16,9 @@
 #include "GameZRecoil/zInput/zinput.h"
 #include "GameZRecoil/zMath/zmth.h"
 #include "GameZRecoil/zModel/gmod.h"
-#include "GameZRecoil/zRndr/zrndr.h"
+#include "GameZRecoil/zRender/zrndr.h"
 #include "GameZRecoil/zSound/zsnd.h"
-#include "GameZRecoil/zTurret/zturret.h"
+#include "Battlesport/turret.h"
 #include "GameZRecoil/zUtil/zsave_game.h"
 #include "GameZRecoil/zVideo/zvid.h"
 
@@ -5302,8 +5302,8 @@ extern "C" int zhud_background_load_zrd_and_section_null_root_smoke(void) {
 #include "Battlesport/hud.h"
 #include "Battlesport/pickup.h"
 #include "GameZRecoil/Time/time.h"
-#include "GameZRecoil/mission.h"
-#include "GameZRecoil/RecoilApp/recoil_state_main_menu_transition.h"
+#include "Battlesport/mission.h"
+#include "Battlesport/recoil_state_main_menu_transition.h"
 #include "GameZRecoil/include/opt_catalog.h"
 #include "GameZRecoil/include/zclass.h"
 #include "GameZRecoil/include/zclip_rect.h"
@@ -5321,10 +5321,10 @@ extern "C" int zhud_background_load_zrd_and_section_null_root_smoke(void) {
 #include "GameZRecoil/zMath/zmth.h"
 #include "GameZRecoil/zModel/gmod.h"
 #include "GameZRecoil/zNetwork/znet.h"
-#include "GameZRecoil/zRndr/zrndr.h"
+#include "GameZRecoil/zRender/zrndr.h"
 #include "GameZRecoil/zSound/zsnd.h"
 #include "GameZRecoil/zSys/zsys.h"
-#include "GameZRecoil/zTurret/zturret.h"
+#include "Battlesport/turret.h"
 #include "GameZRecoil/zUtil/zsave_game.h"
 #include "GameZRecoil/zUtil/zbd.h"
 #include "GameZRecoil/zVideo/zvid.h"
@@ -13928,14 +13928,8 @@ extern "C" int zhud_zrd_widget_constructor_smoke(void) {
     widget.Constructor();
 
     const bool vectorsEmpty =
-        widget.labelPanels.begin == nullptr && widget.labelPanels.end == nullptr &&
-        widget.labelPanels.capacityEnd == nullptr && widget.rolloverLabelPanels.begin == nullptr &&
-        widget.rolloverLabelPanels.end == nullptr &&
-        widget.rolloverLabelPanels.capacityEnd == nullptr &&
-        widget.activateLabelPanels.begin == nullptr && widget.activateLabelPanels.end == nullptr &&
-        widget.activateLabelPanels.capacityEnd == nullptr &&
-        widget.disabledLabelPanels.begin == nullptr && widget.disabledLabelPanels.end == nullptr &&
-        widget.disabledLabelPanels.capacityEnd == nullptr;
+        widget.labelPanels.empty() && widget.rolloverLabelPanels.empty() &&
+        widget.activateLabelPanels.empty() && widget.disabledLabelPanels.empty();
 
     const bool ok = widget.base.ftable ==
                         reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiZrdWidget_FTable) &&
@@ -13963,28 +13957,22 @@ extern "C" int zhud_zrd_widget_helpers_smoke(void) {
         reinterpret_cast<HudUiPanel *>(0x3000),
         reinterpret_cast<HudUiPanel *>(0x4000),
     };
-    HudUiPanelPtrVector vector{};
-    vector.begin = panels;
-    vector.end = panels + 4;
-    vector.capacityEnd = panels + 4;
+    HudUiPanelPtrVector vector(panels, panels + 4);
 
-    HudUiPanel **const result = vector.EraseRange(panels + 1, panels + 3);
-    const bool erased = result == panels + 1 && vector.end == panels + 2 &&
-                        panels[0] == reinterpret_cast<HudUiPanel *>(0x1000) &&
-                        panels[1] == reinterpret_cast<HudUiPanel *>(0x4000);
+    HudUiPanelPtrVector::iterator result = vector.erase(vector.begin() + 1, vector.begin() + 3);
+    const bool erased = result == vector.begin() + 1 && vector.size() == 2 &&
+                        vector[0] == reinterpret_cast<HudUiPanel *>(0x1000) &&
+                        vector[1] == reinterpret_cast<HudUiPanel *>(0x4000);
 
     HudUiPanelPtrVector insertVector{};
     HudUiPanel *insertA = reinterpret_cast<HudUiPanel *>(0x1110);
     HudUiPanel *insertB = reinterpret_cast<HudUiPanel *>(0x2220);
-    insertVector.InsertN(nullptr, 1, &insertA);
-    insertVector.InsertN(insertVector.begin, 2, &insertB);
-    const bool inserted = insertVector.begin != nullptr &&
-                          insertVector.end == insertVector.begin + 3 &&
-                          insertVector.capacityEnd >= insertVector.end &&
-                          insertVector.begin[0] == reinterpret_cast<HudUiPanel *>(0x2220) &&
-                          insertVector.begin[1] == reinterpret_cast<HudUiPanel *>(0x2220) &&
-                          insertVector.begin[2] == reinterpret_cast<HudUiPanel *>(0x1110);
-    ::operator delete(insertVector.begin);
+    insertVector.push_back(insertA);
+    insertVector.insert(insertVector.begin(), 2, insertB);
+    const bool inserted = insertVector.size() == 3 &&
+                          insertVector[0] == reinterpret_cast<HudUiPanel *>(0x2220) &&
+                          insertVector[1] == reinterpret_cast<HudUiPanel *>(0x2220) &&
+                          insertVector[2] == reinterpret_cast<HudUiPanel *>(0x1110);
 
     HudUiWidget_FTable table{};
     table.slots[0] = MethodAddress(&TestZrdChildWidget::ScalarDeletingDestructor);
@@ -13993,51 +13981,28 @@ extern "C" int zhud_zrd_widget_helpers_smoke(void) {
     const bool childDelete =
         HudUiZrdWidget::DeleteChildIfPresent(&child) == nullptr && child.deleteFlags == 1;
 
-    auto *labelVec = static_cast<HudUiPanel **>(::operator new(sizeof(HudUiPanel *)));
-    auto *rolloverVec = static_cast<HudUiPanel **>(::operator new(sizeof(HudUiPanel *)));
-    auto *activateVec = static_cast<HudUiPanel **>(::operator new(sizeof(HudUiPanel *)));
-    auto *disabledVec = static_cast<HudUiPanel **>(::operator new(sizeof(HudUiPanel *)));
-
     TestZrdChildWidget labelChild{&table, 0};
     TestZrdChildWidget rolloverChild{&table, 0};
     TestZrdChildWidget activateChild{&table, 0};
-    *labelVec = reinterpret_cast<HudUiPanel *>(&labelChild);
-    *rolloverVec = reinterpret_cast<HudUiPanel *>(&rolloverChild);
-    *activateVec = reinterpret_cast<HudUiPanel *>(&activateChild);
-    *disabledVec = nullptr;
+    void *const widgetStorage = ::operator new(sizeof(HudUiZrdWidget));
+    HudUiZrdWidget *const widget = new (widgetStorage) HudUiZrdWidget;
+    widget->base.ftable = nullptr;
+    widget->base.image = &zVid_Image::g_zImage_DefaultImage;
+    widget->base.ownsImage = 0;
+    widget->defaultImage = widget->base.image;
+    widget->activateImage = widget->base.image;
+    widget->labelPanels.push_back(reinterpret_cast<HudUiPanel *>(&labelChild));
+    widget->rolloverLabelPanels.push_back(reinterpret_cast<HudUiPanel *>(&rolloverChild));
+    widget->activateLabelPanels.push_back(reinterpret_cast<HudUiPanel *>(&activateChild));
+    widget->disabledLabelPanels.push_back(nullptr);
 
-    HudUiZrdWidget widget{};
-    widget.base.ftable = nullptr;
-    widget.base.image = &zVid_Image::g_zImage_DefaultImage;
-    widget.base.ownsImage = 0;
-    widget.defaultImage = widget.base.image;
-    widget.activateImage = widget.base.image;
-    widget.labelPanels.begin = labelVec;
-    widget.labelPanels.end = labelVec + 1;
-    widget.labelPanels.capacityEnd = labelVec + 1;
-    widget.rolloverLabelPanels.begin = rolloverVec;
-    widget.rolloverLabelPanels.end = rolloverVec + 1;
-    widget.rolloverLabelPanels.capacityEnd = rolloverVec + 1;
-    widget.activateLabelPanels.begin = activateVec;
-    widget.activateLabelPanels.end = activateVec + 1;
-    widget.activateLabelPanels.capacityEnd = activateVec + 1;
-    widget.disabledLabelPanels.begin = disabledVec;
-    widget.disabledLabelPanels.end = disabledVec + 1;
-    widget.disabledLabelPanels.capacityEnd = disabledVec + 1;
-
-    widget.DestructorCore();
+    widget->DestructorCore();
     const bool destructed =
-        widget.base.ftable == reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable) &&
+        widget->base.ftable == reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable) &&
         labelChild.deleteFlags == 1 && rolloverChild.deleteFlags == 1 &&
-        activateChild.deleteFlags == 1 && widget.labelPanels.begin == nullptr &&
-        widget.labelPanels.end == nullptr && widget.labelPanels.capacityEnd == nullptr &&
-        widget.rolloverLabelPanels.begin == nullptr && widget.rolloverLabelPanels.end == nullptr &&
-        widget.rolloverLabelPanels.capacityEnd == nullptr &&
-        widget.activateLabelPanels.begin == nullptr && widget.activateLabelPanels.end == nullptr &&
-        widget.activateLabelPanels.capacityEnd == nullptr &&
-        widget.disabledLabelPanels.begin == nullptr && widget.disabledLabelPanels.end == nullptr &&
-        widget.disabledLabelPanels.capacityEnd == nullptr &&
-        widget.defaultImage == widget.base.image && widget.activateImage == widget.base.image;
+        activateChild.deleteFlags == 1 && widget->defaultImage == widget->base.image &&
+        widget->activateImage == widget->base.image;
+    ::operator delete(widgetStorage);
 
     HudUiZrdWidget scalarWidget{};
     HudUiZrdWidget *const scalarResult = scalarWidget.ScalarDeletingDestructor(0);
@@ -14060,8 +14025,7 @@ extern "C" int zhud_zrd_widget_helpers_smoke(void) {
         reinterpret_cast<HudUiPanel *>(&labelA),
         reinterpret_cast<HudUiPanel *>(&labelB),
     };
-    invalidateWidget.labelPanels.begin = labelPanels;
-    invalidateWidget.labelPanels.end = labelPanels + 2;
+    invalidateWidget.labelPanels.assign(labelPanels, labelPanels + 2);
     g_HudUi_InvalidateMask = 0x80;
     invalidateWidget.Invalidate();
     const bool invalidated = (invalidateWidget.base.flags & 0x80) != 0 &&
@@ -14104,8 +14068,7 @@ extern "C" int zhud_zrd_widget_helpers_smoke(void) {
     HudUiPanel *boundsLabels[] = {boundsLabelA, boundsLabelB};
     boundsWidget.base.image = nullptr;
     boundsWidget.boundsRect = {};
-    boundsWidget.labelPanels.begin = boundsLabels;
-    boundsWidget.labelPanels.end = boundsLabels + 2;
+    boundsWidget.labelPanels.assign(boundsLabels, boundsLabels + 2);
     HudUiRect *labelBounds = boundsWidget.GetBoundsRectOrNull();
     const bool labelBoundsOk = labelBounds == &boundsWidget.boundsRect && labelBounds->left == 10 &&
                                labelBounds->top == 20 && labelBounds->right == 42 &&
@@ -14133,8 +14096,7 @@ extern "C" int zhud_zrd_widget_helpers_smoke(void) {
     TestFieldAt<std::uint32_t>(centerLabelB, 0x270) = 0;
     HudUiPanel *centerLabels[] = {centerLabelA, centerLabelB};
     boundsWidget.boundsRect = {100, 0, 0, 0};
-    boundsWidget.labelPanels.begin = centerLabels;
-    boundsWidget.labelPanels.end = centerLabels + 2;
+    boundsWidget.labelPanels.assign(centerLabels, centerLabels + 2);
     HudUiRect *centerBounds = boundsWidget.GetBoundsRectOrNull();
     const bool centerBoundsOk =
         centerBounds == &boundsWidget.boundsRect && centerBounds->left == 15 &&
@@ -14162,8 +14124,7 @@ extern "C" int zhud_zrd_widget_helpers_smoke(void) {
     TestFieldAt<std::uint32_t>(rightLabelB, 0x270) = 0;
     HudUiPanel *rightLabels[] = {rightLabelA, rightLabelB};
     boundsWidget.boundsRect = {100, 0, 0, 0};
-    boundsWidget.labelPanels.begin = rightLabels;
-    boundsWidget.labelPanels.end = rightLabels + 2;
+    boundsWidget.labelPanels.assign(rightLabels, rightLabels + 2);
     HudUiRect *rightBounds = boundsWidget.GetBoundsRectOrNull();
     const bool rightBoundsOk = rightBounds == &boundsWidget.boundsRect &&
                                rightBounds->left == 30 && rightBounds->top == 10 &&
@@ -14193,14 +14154,10 @@ extern "C" int zhud_zrd_widget_helpers_smoke(void) {
     HudUiPanel *stateDisabledLabels[] = {
         reinterpret_cast<HudUiPanel *>(&stateDisabled),
     };
-    stateWidget.labelPanels.begin = stateLabels;
-    stateWidget.labelPanels.end = stateLabels + 1;
-    stateWidget.rolloverLabelPanels.begin = stateRolloverLabels;
-    stateWidget.rolloverLabelPanels.end = stateRolloverLabels + 1;
-    stateWidget.activateLabelPanels.begin = stateActivateLabels;
-    stateWidget.activateLabelPanels.end = stateActivateLabels + 1;
-    stateWidget.disabledLabelPanels.begin = stateDisabledLabels;
-    stateWidget.disabledLabelPanels.end = stateDisabledLabels + 1;
+    stateWidget.labelPanels.assign(stateLabels, stateLabels + 1);
+    stateWidget.rolloverLabelPanels.assign(stateRolloverLabels, stateRolloverLabels + 1);
+    stateWidget.activateLabelPanels.assign(stateActivateLabels, stateActivateLabels + 1);
+    stateWidget.disabledLabelPanels.assign(stateDisabledLabels, stateDisabledLabels + 1);
     stateWidget.defaultImage = &defaultImage;
     stateWidget.disabledImage = &disabledImage;
     stateWidget.modeOrEnabled = 1;
@@ -14244,12 +14201,12 @@ extern "C" int zhud_zrd_widget_helpers_smoke(void) {
     };
     previewWidget.base.image = &previewDefault;
     previewWidget.rolloverImage = &previewRollover;
-    previewWidget.labelPanels.begin = previewLabels;
-    previewWidget.labelPanels.end = previewLabels + 1;
-    previewWidget.rolloverLabelPanels.begin = previewRolloverLabels;
-    previewWidget.rolloverLabelPanels.end = previewRolloverLabels + 1;
-    previewWidget.activateLabelPanels.begin = previewActivateLabels;
-    previewWidget.activateLabelPanels.end = previewActivateLabels + 1;
+    previewWidget.labelPanels.assign(previewLabels, previewLabels + 1);
+    previewWidget.rolloverLabelPanels.assign(
+        previewRolloverLabels,
+        previewRolloverLabels + 1
+    );
+    previewWidget.activateLabelPanels.assign(previewActivateLabels, previewActivateLabels + 1);
     g_HudUi_InvalidateMask = 0x80;
     previewWidget.ShowPreview();
     const bool previewShown =
@@ -14269,10 +14226,14 @@ extern "C" int zhud_zrd_widget_helpers_smoke(void) {
     HudUiPanel *previewNoRolloverActivateLabels[] = {
         reinterpret_cast<HudUiPanel *>(&previewNoRolloverActivateLabel),
     };
-    previewNoRolloverWidget.labelPanels.begin = previewNoRolloverLabels;
-    previewNoRolloverWidget.labelPanels.end = previewNoRolloverLabels + 1;
-    previewNoRolloverWidget.activateLabelPanels.begin = previewNoRolloverActivateLabels;
-    previewNoRolloverWidget.activateLabelPanels.end = previewNoRolloverActivateLabels + 1;
+    previewNoRolloverWidget.labelPanels.assign(
+        previewNoRolloverLabels,
+        previewNoRolloverLabels + 1
+    );
+    previewNoRolloverWidget.activateLabelPanels.assign(
+        previewNoRolloverActivateLabels,
+        previewNoRolloverActivateLabels + 1
+    );
     previewNoRolloverWidget.ShowPreview();
     const bool previewNoRolloverShown =
         (previewNoRolloverLabel.flags & 0x10) == 0 &&
@@ -14297,18 +14258,33 @@ extern "C" int zhud_zrd_widget_helpers_smoke(void) {
         reinterpret_cast<HudUiPanel *>(&activateActiveLabel),
     };
     activateWidget.activateImage = &activateImage;
-    activateWidget.labelPanels.begin = activateLabels;
-    activateWidget.labelPanels.end = activateLabels + 1;
-    activateWidget.rolloverLabelPanels.begin = activateRolloverLabels;
-    activateWidget.rolloverLabelPanels.end = activateRolloverLabels + 1;
-    activateWidget.activateLabelPanels.begin = activateActiveLabels;
-    activateWidget.activateLabelPanels.end = activateActiveLabels + 1;
+    activateWidget.labelPanels.assign(activateLabels, activateLabels + 1);
+    activateWidget.rolloverLabelPanels.assign(
+        activateRolloverLabels,
+        activateRolloverLabels + 1
+    );
+    activateWidget.activateLabelPanels.assign(activateActiveLabels, activateActiveLabels + 1);
     activateWidget.OnActivate();
     const bool activated =
         activateWidget.base.image == &activateImage && (activateWidget.base.flags & 0x80) != 0 &&
         (activateLabel.flags & 0x10) != 0 && (activateRolloverLabel.flags & 0x10) != 0 &&
         (activateActiveLabel.flags & 0x10) == 0;
     g_HudUi_InvalidateMask = 0;
+
+    invalidateWidget.labelPanels.clear();
+    boundsWidget.labelPanels.clear();
+    stateWidget.labelPanels.clear();
+    stateWidget.rolloverLabelPanels.clear();
+    stateWidget.activateLabelPanels.clear();
+    stateWidget.disabledLabelPanels.clear();
+    previewWidget.labelPanels.clear();
+    previewWidget.rolloverLabelPanels.clear();
+    previewWidget.activateLabelPanels.clear();
+    previewNoRolloverWidget.labelPanels.clear();
+    previewNoRolloverWidget.activateLabelPanels.clear();
+    activateWidget.labelPanels.clear();
+    activateWidget.rolloverLabelPanels.clear();
+    activateWidget.activateLabelPanels.clear();
 
     return erased && inserted && nullDelete && childDelete && destructed && scalarDeleted &&
                    scalarHeapDeleted && invalidated && disabledBounds && imageBoundsOk &&
@@ -14407,8 +14383,8 @@ extern "C" int zhud_zrd_widget_load_from_zrd_smoke(void) {
     const std::int32_t result = widget.LoadFromZrd(&root, owner);
 
     auto *const labelPanel =
-        widget.labelPanels.begin != nullptr
-            ? reinterpret_cast<HudUiTransitionTextPanel *>(widget.labelPanels.begin[0])
+        !widget.labelPanels.empty()
+            ? reinterpret_cast<HudUiTransitionTextPanel *>(widget.labelPanels[0])
             : nullptr;
     auto *const panel = reinterpret_cast<HudUiPanel *>(labelPanel);
     auto *const element = reinterpret_cast<HudUiElement *>(labelPanel);
@@ -14427,7 +14403,7 @@ extern "C" int zhud_zrd_widget_load_from_zrd_smoke(void) {
         reinterpret_cast<HudUiElement *>(&widget.base)->x == 15 &&
         reinterpret_cast<HudUiElement *>(&widget.base)->y == 27 &&
         owner->childHead == reinterpret_cast<HudUiElement *>(&widget) &&
-        widget.labelPanels.end == widget.labelPanels.begin + 1 && labelPanel != nullptr &&
+        widget.labelPanels.size() == 1 && labelPanel != nullptr &&
         std::strcmp(&TestFieldAt<char>(panel, 0x34), "HELLO") == 0 && element->x == 17 &&
         element->y == 30 && TestFieldAt<std::uint32_t>(panel, 0x144) == 1 &&
         TestFieldAt<std::uint32_t>(panel, 0x14c) == 0x00112233 &&
@@ -14440,7 +14416,7 @@ extern "C" int zhud_zrd_widget_load_from_zrd_smoke(void) {
     if (panel != nullptr) {
         DeletePanelAllocation(panel);
     }
-    ::operator delete(widget.labelPanels.begin);
+    widget.labelPanels.clear();
 
     g_HudUi_InvalidateMask = 0;
     return loaded ? 0 : 1;
@@ -14501,14 +14477,10 @@ extern "C" int zhud_check_toggle_widget_helpers_smoke(void) {
     HudUiPanel *disabledLabels[] = {reinterpret_cast<HudUiPanel *>(&disabled)};
     zVidImagePartial disabledPrimary{};
     zVidImagePartial disabledFallback{};
-    widget.base.labelPanels.begin = labels;
-    widget.base.labelPanels.end = labels + 1;
-    widget.base.rolloverLabelPanels.begin = rollovers;
-    widget.base.rolloverLabelPanels.end = rollovers + 1;
-    widget.base.activateLabelPanels.begin = activates;
-    widget.base.activateLabelPanels.end = activates + 1;
-    widget.base.disabledLabelPanels.begin = disabledLabels;
-    widget.base.disabledLabelPanels.end = disabledLabels + 1;
+    widget.base.labelPanels.assign(labels, labels + 1);
+    widget.base.rolloverLabelPanels.assign(rollovers, rollovers + 1);
+    widget.base.activateLabelPanels.assign(activates, activates + 1);
+    widget.base.disabledLabelPanels.assign(disabledLabels, disabledLabels + 1);
     widget.disabledCheckedImage = &disabledPrimary;
     widget.disabledCheckedFallbackImage = &disabledFallback;
     widget.checked = 1;
@@ -14543,10 +14515,11 @@ extern "C" int zhud_check_toggle_widget_helpers_smoke(void) {
     previewWidget.checked = 0;
     previewWidget.base.base.image = &previewDefault;
     previewWidget.base.rolloverImage = &previewRollover;
-    previewWidget.base.labelPanels.begin = previewLabels;
-    previewWidget.base.labelPanels.end = previewLabels + 1;
-    previewWidget.base.rolloverLabelPanels.begin = previewRolloverLabels;
-    previewWidget.base.rolloverLabelPanels.end = previewRolloverLabels + 1;
+    previewWidget.base.labelPanels.assign(previewLabels, previewLabels + 1);
+    previewWidget.base.rolloverLabelPanels.assign(
+        previewRolloverLabels,
+        previewRolloverLabels + 1
+    );
     previewWidget.ShowPreview();
     const bool previewShown = previewWidget.base.defaultImage == &previewDefault &&
                               previewWidget.base.base.image == &previewRollover &&
@@ -14641,10 +14614,10 @@ extern "C" int zhud_check_toggle_widget_helpers_smoke(void) {
     TestZrdChildWidget labelChild{&table, 0};
     auto *const ownedCheckedImage =
         static_cast<zVidImagePartial *>(::operator new(sizeof(zVidImagePartial)));
-    widget.base.labelPanels = {};
-    widget.base.rolloverLabelPanels = {};
-    widget.base.activateLabelPanels = {};
-    widget.base.disabledLabelPanels = {};
+    widget.base.labelPanels.clear();
+    widget.base.rolloverLabelPanels.clear();
+    widget.base.activateLabelPanels.clear();
+    widget.base.disabledLabelPanels.clear();
     widget.base.defaultImage = nullptr;
     widget.base.disabledImage = nullptr;
     widget.base.rolloverImage = nullptr;
@@ -14658,6 +14631,7 @@ extern "C" int zhud_check_toggle_widget_helpers_smoke(void) {
                             widget.base.base.image == &zVid_Image::g_zImage_DefaultImage &&
                             widget.checkedImage == nullptr && widget.checkedLabelPanel == nullptr &&
                             labelChild.deleteFlags == 1;
+    new (&widget) HudUiCheckToggleWidget;
 
     HudUiCheckToggleWidget scalarWidget{};
     HudUiCheckToggleWidget *const scalarResult = scalarWidget.ScalarDeletingDestructor(0);
@@ -14665,6 +14639,7 @@ extern "C" int zhud_check_toggle_widget_helpers_smoke(void) {
         scalarResult == &scalarWidget &&
         scalarWidget.base.base.ftable ==
             reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable);
+    new (&scalarWidget) HudUiCheckToggleWidget;
 
     HudUiCheckToggleWidget *const scalarHeapWidget = new HudUiCheckToggleWidget{};
     HudUiCheckToggleWidget *const scalarHeapResult =
@@ -14687,6 +14662,10 @@ extern "C" int zhud_check_toggle_widget_helpers_smoke(void) {
         thunkWidget.base.base.image == &zVid_Image::g_zImage_DefaultImage &&
         thunkWidget.checkedImage == nullptr && thunkWidget.checkedLabelPanel == nullptr &&
         thunkLabelChild.deleteFlags == 1;
+    new (&thunkWidget) HudUiCheckToggleWidget;
+
+    previewWidget.base.labelPanels.clear();
+    previewWidget.base.rolloverLabelPanels.clear();
 
     g_HudUi_InvalidateMask = 0;
     return constructed && checkedState && uncheckedState && refreshEnabled && refreshDisabled &&
@@ -14776,12 +14755,12 @@ extern "C" int zhud_check_toggle_widget_load_from_zrd_smoke(void) {
 
     auto *const checkedPanel = widget.checkedLabelPanel;
     auto *const checkedElement = reinterpret_cast<HudUiElement *>(checkedPanel);
-    auto *const disabledPanel = widget.base.disabledLabelPanels.begin != nullptr
-                                    ? widget.base.disabledLabelPanels.begin[0]
+    auto *const disabledPanel = !widget.base.disabledLabelPanels.empty()
+                                    ? widget.base.disabledLabelPanels[0]
                                     : nullptr;
     auto *const disabledElement = reinterpret_cast<HudUiElement *>(disabledPanel);
     auto *const baseLabelPanel =
-        widget.base.labelPanels.begin != nullptr ? widget.base.labelPanels.begin[0] : nullptr;
+        !widget.base.labelPanels.empty() ? widget.base.labelPanels[0] : nullptr;
     auto *const baseLabelElement = reinterpret_cast<HudUiElement *>(baseLabelPanel);
     const std::int32_t baseLabelHeight =
         baseLabelPanel != nullptr ? baseLabelPanel->QueryTextHeight() : 0;
@@ -14794,7 +14773,7 @@ extern "C" int zhud_check_toggle_widget_load_from_zrd_smoke(void) {
         std::strcmp(&TestFieldAt<char>(checkedPanel, 0x34), "ON") == 0 && checkedElement->x == 34 &&
         checkedElement->y == 45 && (checkedElement->flags & 0x10) != 0 &&
         TestFieldAt<std::uint32_t>(checkedPanel, 0x14c) == 0x00010203 &&
-        widget.base.labelPanels.end == widget.base.labelPanels.begin + 1 &&
+        widget.base.labelPanels.size() == 1 &&
         baseLabelPanel != nullptr &&
         std::strcmp(&TestFieldAt<char>(baseLabelPanel, 0x34), "DISABLED") == 0 &&
         baseLabelElement->x == 37 && baseLabelElement->y == 48 &&
@@ -14802,7 +14781,7 @@ extern "C" int zhud_check_toggle_widget_load_from_zrd_smoke(void) {
         baseLabelWidth > 0 && widget.base.boundsRect.left == 37 &&
         widget.base.boundsRect.top == 48 && widget.base.boundsRect.right == 37 + baseLabelWidth &&
         widget.base.boundsRect.bottom == 48 + baseLabelHeight &&
-        widget.base.disabledLabelPanels.end == widget.base.disabledLabelPanels.begin + 1 &&
+        widget.base.disabledLabelPanels.size() == 1 &&
         disabledPanel != nullptr &&
         std::strcmp(&TestFieldAt<char>(disabledPanel, 0x34), "DISABLED") == 0 &&
         disabledElement->x == 37 && disabledElement->y == 48 &&
@@ -14819,8 +14798,8 @@ extern "C" int zhud_check_toggle_widget_load_from_zrd_smoke(void) {
     if (baseLabelPanel != nullptr) {
         DeletePanelAllocation(baseLabelPanel);
     }
-    ::operator delete(widget.base.labelPanels.begin);
-    ::operator delete(widget.base.disabledLabelPanels.begin);
+    widget.base.labelPanels.clear();
+    widget.base.disabledLabelPanels.clear();
 
     g_HudUi_InvalidateMask = 0;
     return loaded ? 0 : 1;
@@ -20102,8 +20081,7 @@ extern "C" int zhud_numeric_text_input_base_constructor_smoke(void) {
     HudUiElement labelPanel{};
     labelPanel.ftable = &g_HudUiCommon_FTable;
     HudUiPanel *labelPanelPtr = reinterpret_cast<HudUiPanel *>(&labelPanel);
-    input.base.labelPanels.begin = &labelPanelPtr;
-    input.base.labelPanels.end = &labelPanelPtr + 1;
+    input.base.labelPanels.assign(&labelPanelPtr, &labelPanelPtr + 1);
     input.sliderBorder.inputActive = 1;
     input.base.base.flags = 0x82;
     input.sliderBorder.base.base.flags = 0x80;
@@ -20130,8 +20108,7 @@ extern "C" int zhud_numeric_text_input_base_constructor_smoke(void) {
     labelTextTable.slots[35] = MethodAddress(&TestNumericLabelPanel::SetText);
     TestNumericLabelPanel textLabel{&labelTextTable, nullptr};
     HudUiPanel *textLabelPtr = reinterpret_cast<HudUiPanel *>(&textLabel);
-    input.base.labelPanels.begin = &textLabelPtr;
-    input.base.labelPanels.end = &textLabelPtr + 1;
+    input.base.labelPanels.assign(&textLabelPtr, &textLabelPtr + 1);
     input.base.base.flags = 0;
     input.Update("123");
     const bool updated = std::strcmp(input.textInput.buffer, "123") == 0 &&
@@ -20143,8 +20120,7 @@ extern "C" int zhud_numeric_text_input_base_constructor_smoke(void) {
     measureLabel->ConstructorDefault("X", 5, 7);
     TestFieldAt<std::uint32_t>(measureLabel, 0x14c) = 0x00332211;
     HudUiPanel *measureLabelPtr = measureLabel;
-    input.base.labelPanels.begin = &measureLabelPtr;
-    input.base.labelPanels.end = &measureLabelPtr + 1;
+    input.base.labelPanels.assign(&measureLabelPtr, &measureLabelPtr + 1);
     std::strcpy(input.textInput.buffer, "1234");
     input.textInput.cursor = 2;
     input.base.base.flags = 0x82;
@@ -20196,6 +20172,7 @@ extern "C" int zhud_numeric_text_input_base_constructor_smoke(void) {
                             destructInput.sliderBorder.base.base.ftable == &g_HudUiCommon_FTable &&
                             destructInput.base.base.ftable ==
                                 reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable);
+    new (&destructInput) HudUiNumericTextInput;
 
     HudUiNumericTextInput *const deletingInput = new HudUiNumericTextInput{};
     deletingInput->Constructor(4);
@@ -20215,6 +20192,7 @@ extern "C" int zhud_numeric_text_input_base_constructor_smoke(void) {
         thunkInput.textInput.ftable == &g_HudUiTextInput_FTable &&
         thunkInput.base.base.ftable ==
             reinterpret_cast<const HudUiWidget_FTable *>(&g_HudUiCommon_FTable);
+    new (&thunkInput) HudUiNumericTextInput;
 
     alignas(void *) std::uint8_t focusOwnerStorage[0xa950]{};
     HudUiNumericTextInput **const focusSlot =
@@ -20244,6 +20222,7 @@ extern "C" int zhud_numeric_text_input_base_constructor_smoke(void) {
     constructed.Destructor();
     ::operator delete(input.textInput.buffer);
     input.textInput.buffer = nullptr;
+    input.base.labelPanels.clear();
     g_HudUi_InvalidateMask = 0;
     return ok && textInputTable && ctorTable && constructedNumeric && clampedTable && clampedConstructed &&
                    clampedHighCommitted && clampedEmptyCommitted && clampedAcceptForwarded &&

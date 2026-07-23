@@ -5,7 +5,7 @@
 #include "Battlesport/recoil_app.h"
 #include "GameZRecoil/zGame/zgame.h"
 #include "GameZRecoil/zNetwork/znet.h"
-#include "GameZRecoil/zRndr/zrndr.h"
+#include "GameZRecoil/zRender/zrndr.h"
 #include "GameZRecoil/zSound/zsnd.h"
 #include "GameZRecoil/zVideo/zvid.h"
 

@@ -1,5 +1,5 @@
-#include "Battlesport/Mfc42Abi.h"
-#include "GameZRecoil/zTurret/zturret.h"
+#include "recoil/Mfc42Abi.h"
+#include "Battlesport/turret.h"
 
 #include "Battlesport/game_net.h"
 #include "Battlesport/player.h"
@@ -348,6 +348,28 @@ const zVec3 *zTurret_FindNearestTarget(
     return bestTarget;
 }
 } // namespace
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+namespace zTurret_System {
+
+
+
+
+
+
+} // namespace zTurret_System
 
 /**
  * Reimplements 0x436630: zTurret_Runtime::InitDefaults.
@@ -927,6 +949,191 @@ void zTurret_Runtime::InitFromReaderNode(
 }
 
 /**
+ * Reimplements 0x436e00: zTurret_Runtime::Shutdown.
+ * Source file: D:\Proj\Battlesport\turret.cpp.
+ * Purpose: Frees per-runtime trail state and clears the turret damage handler.
+ */
+int zTurret_Runtime::Shutdown() {
+    if (trailRuntimeState != 0) {
+        OptCatalog::FreeTrailRuntimeStateStorage(trailRuntimeState);
+    }
+
+    return zClass_Node::ClearDamageHandler(healthyNode);
+}
+
+/**
+ * Reimplements 0x436e20: zTurret_Runtime::HasActiveNode.
+ * Source file: D:\Proj\Battlesport\turret.cpp.
+ * Purpose: Reports whether the parsed turret has an active scene node.
+ */
+int zTurret_Runtime::HasActiveNode() {
+    if (flags != 0 && (turretNode->flags & 0x04) != 0) {
+        return 1;
+    }
+
+    return 0;
+}
+
+/**
+ * Reimplements 0x436e40: zTurret_Runtime::Tick.
+ * Source file: D:\Proj\Battlesport\turret.cpp.
+ * Purpose: Ticks target acquisition, aiming, firing, trail state, and turret deactivation.
+ */
+void zTurret_Runtime::Tick(
+    const zVec3 *playerFxOffsetWorld
+) {
+    if (!zTurret_NodeIsActive(healthyNode) || !zTurret_NodeIsActive(turretNode) ||
+        (deactivateNode != 0 && !zTurret_NodeIsActive(deactivateNode))) {
+        if (fireEffectNode != 0 && !zTurret_NodeIsActive(fireEffectNode)) {
+            zClass_Class::gwNodeSetActive(
+                fireEffectNode,
+                0
+            );
+        }
+        zTurret_DeactivateRuntimeInstance(this);
+        return;
+    }
+
+    if (activateOnHitTimeout < g_Time_AccumulatedTimeSec) {
+        return;
+    }
+
+    zUtil_PlayerStateStorage *const playerState =
+        (zUtil_PlayerStateStorage *)(g_GameStateOrMapTable->playerState);
+    const int removeRuntimeOnFire =
+        (weaponCatalogEntry->flags & kOptCatalogFlagRemoveRuntimeOnTurretFire) != 0;
+
+    if (removeRuntimeOnFire != 0 && weaponBaseMoves != 0) {
+        gwNode::GetWorldPosition(
+            turretNode,
+            &worldPos
+        );
+    } else if (removeRuntimeOnFire == 0 && fireEffectNode != 0 &&
+               zTurret_NodeIsActive(fireEffectNode) && g_Time_AccumulatedTimeSec < nextFireTime) {
+        zModel_Instance_UpdateScrollingTexturesIfNeeded(
+            (zModel_InstancePartial *)(fireEffectNode->userDataOrDiRef)
+        );
+    }
+
+    float nearestDistance = 0.0f;
+    const zVec3 *const targetPos =
+        zTurret_FindNearestTarget(
+            this,
+            playerState,
+            playerFxOffsetWorld,
+            &nearestDistance
+        );
+    const int targetInRange = nearestDistance < detectionRange;
+
+    if (targetInRange == 0) {
+        isFiring = 0;
+        if (weaponBaseMoves != 0 && hasMissileLock != 0) {
+            UpdateFirePositionFromParts();
+        }
+    } else {
+        if (g_zTurret_CallbackIterationActive != 0) {
+            g_zTurret_CallbackIterationActive = 0;
+            g_zTurret_CallbackStartIndex = g_zTurret_CallbackIterIndex;
+        }
+
+        if (weaponBaseMoves != 0) {
+            UpdateFirePositionFromParts();
+        }
+
+        const int losDirection = enableLosCheck == 1 ? 2 : 1;
+        if (AINet::HasLineOfSightFromLocalPlayerFxOffset(healthyNode, &firePos, losDirection) !=
+            0) {
+            isFiring = 1;
+            runtimeAimPending = 1;
+            runtimeAimTarget.targetPos = (zVec3 *)targetPos;
+            if (fireDwellTime != 0.0f) {
+                fireDwellUntil = g_Time_AccumulatedTimeSec + fireDwellTime;
+            }
+        } else if (fireDwellTime == 0.0f || g_Time_AccumulatedTimeSec >= fireDwellUntil) {
+            isFiring = 0;
+        }
+
+        if (removeRuntimeOnFire != 0 && isFiring != 0) {
+            zEffectAnim::SetVelocity_Thunk(
+                destroyAnimEntry,
+                turretNode,
+                0.0f,
+                0.0f,
+                0.0f
+            );
+            OptCatalog::RemoveRuntimeInstance(
+                weaponCatalogEntry,
+                &worldPos,
+                0
+            );
+            return;
+        }
+    }
+
+    if (isFiring != 0) {
+        UpdateAimAndPartMatrices(targetPos);
+        if (isFiring != 0 && g_Time_AccumulatedTimeSec >= nextFireTime) {
+            if (fireEffectNode != 0) {
+                if (!zTurret_NodeIsActive(fireEffectNode)) {
+                    zClass_Class::gwNodeSetActive(
+                        fireEffectNode,
+                        1
+                    );
+                    nextFireTime = g_Time_AccumulatedTimeSec + fireEffectDurationSec;
+                    return;
+                }
+
+                zClass_Class::gwNodeSetActive(
+                    fireEffectNode,
+                    0
+                );
+            }
+
+            SelectFirePointAndAimAtTarget(targetPos);
+            if (fireAnimEntry == 0) {
+                FireWeapon();
+            } else {
+                zEffectAnimEntry::SetOnStateDoneCallback(
+                    fireAnimEntry,
+                    (void *)zTurret_Runtime::FireWeaponCallback,
+                    this
+                );
+                zEffectAnim::SetVelocity_Thunk(
+                    fireAnimEntry,
+                    turretNode,
+                    0.0f,
+                    0.0f,
+                    0.0f
+                );
+            }
+        }
+    }
+
+    if (runtimeInstanceActive != 0) {
+        UpdateFireBurstTimer(g_FrameDeltaTimeSec);
+        if (weaponBaseMoves != 0 && isFiring != 0) {
+            SelectFirePointAndAimAtTarget(targetPos);
+        }
+    }
+
+    if (isFiring == 0) {
+        if (alwaysLookAtTarget != 0) {
+            UpdateAimAndPartMatrices(targetPos);
+        }
+
+        zTurret_DeactivateRuntimeInstance(this);
+    }
+
+    if (fireBurstTimer != fireBurstDuration) {
+        fireBurstTimer += g_FrameDeltaTimeSec;
+        if (fireBurstTimer >= fireBurstDuration) {
+            fireBurstTimer = fireBurstDuration;
+            nextFireTime = g_Time_AccumulatedTimeSec;
+        }
+    }
+}
+
+/**
  * Reimplements 0x437430: zTurret_Runtime::UpdateFirePositionFromParts.
  * Source file: D:\Proj\Battlesport\turret.cpp.
  * Purpose: Recomputes the turret fire origin from the active base, barrel, and fire-point parts.
@@ -1188,180 +1395,6 @@ void zTurret_Runtime::UpdateFireBurstTimer(
 }
 
 /**
- * Reimplements 0x436e40: zTurret_Runtime::Tick.
- * Source file: D:\Proj\Battlesport\turret.cpp.
- * Purpose: Ticks target acquisition, aiming, firing, trail state, and turret deactivation.
- */
-void zTurret_Runtime::Tick(
-    const zVec3 *playerFxOffsetWorld
-) {
-    if (!zTurret_NodeIsActive(healthyNode) || !zTurret_NodeIsActive(turretNode) ||
-        (deactivateNode != 0 && !zTurret_NodeIsActive(deactivateNode))) {
-        if (fireEffectNode != 0 && !zTurret_NodeIsActive(fireEffectNode)) {
-            zClass_Class::gwNodeSetActive(
-                fireEffectNode,
-                0
-            );
-        }
-        zTurret_DeactivateRuntimeInstance(this);
-        return;
-    }
-
-    if (activateOnHitTimeout < g_Time_AccumulatedTimeSec) {
-        return;
-    }
-
-    zUtil_PlayerStateStorage *const playerState =
-        (zUtil_PlayerStateStorage *)(g_GameStateOrMapTable->playerState);
-    const int removeRuntimeOnFire =
-        (weaponCatalogEntry->flags & kOptCatalogFlagRemoveRuntimeOnTurretFire) != 0;
-
-    if (removeRuntimeOnFire != 0 && weaponBaseMoves != 0) {
-        gwNode::GetWorldPosition(
-            turretNode,
-            &worldPos
-        );
-    } else if (removeRuntimeOnFire == 0 && fireEffectNode != 0 &&
-               zTurret_NodeIsActive(fireEffectNode) && g_Time_AccumulatedTimeSec < nextFireTime) {
-        zModel_Instance_UpdateScrollingTexturesIfNeeded(
-            (zModel_InstancePartial *)(fireEffectNode->userDataOrDiRef)
-        );
-    }
-
-    float nearestDistance = 0.0f;
-    const zVec3 *const targetPos =
-        zTurret_FindNearestTarget(
-            this,
-            playerState,
-            playerFxOffsetWorld,
-            &nearestDistance
-        );
-    const int targetInRange = nearestDistance < detectionRange;
-
-    if (targetInRange == 0) {
-        isFiring = 0;
-        if (weaponBaseMoves != 0 && hasMissileLock != 0) {
-            UpdateFirePositionFromParts();
-        }
-    } else {
-        if (g_zTurret_CallbackIterationActive != 0) {
-            g_zTurret_CallbackIterationActive = 0;
-            g_zTurret_CallbackStartIndex = g_zTurret_CallbackIterIndex;
-        }
-
-        if (weaponBaseMoves != 0) {
-            UpdateFirePositionFromParts();
-        }
-
-        const int losDirection = enableLosCheck == 1 ? 2 : 1;
-        if (AINet::HasLineOfSightFromLocalPlayerFxOffset(healthyNode, &firePos, losDirection) !=
-            0) {
-            isFiring = 1;
-            runtimeAimPending = 1;
-            runtimeAimTarget.targetPos = (zVec3 *)targetPos;
-            if (fireDwellTime != 0.0f) {
-                fireDwellUntil = g_Time_AccumulatedTimeSec + fireDwellTime;
-            }
-        } else if (fireDwellTime == 0.0f || g_Time_AccumulatedTimeSec >= fireDwellUntil) {
-            isFiring = 0;
-        }
-
-        if (removeRuntimeOnFire != 0 && isFiring != 0) {
-            zEffectAnim::SetVelocity_Thunk(
-                destroyAnimEntry,
-                turretNode,
-                0.0f,
-                0.0f,
-                0.0f
-            );
-            OptCatalog::RemoveRuntimeInstance(
-                weaponCatalogEntry,
-                &worldPos,
-                0
-            );
-            return;
-        }
-    }
-
-    if (isFiring != 0) {
-        UpdateAimAndPartMatrices(targetPos);
-        if (isFiring != 0 && g_Time_AccumulatedTimeSec >= nextFireTime) {
-            if (fireEffectNode != 0) {
-                if (!zTurret_NodeIsActive(fireEffectNode)) {
-                    zClass_Class::gwNodeSetActive(
-                        fireEffectNode,
-                        1
-                    );
-                    nextFireTime = g_Time_AccumulatedTimeSec + fireEffectDurationSec;
-                    return;
-                }
-
-                zClass_Class::gwNodeSetActive(
-                    fireEffectNode,
-                    0
-                );
-            }
-
-            SelectFirePointAndAimAtTarget(targetPos);
-            if (fireAnimEntry == 0) {
-                FireWeapon();
-            } else {
-                zEffectAnimEntry::SetOnStateDoneCallback(
-                    fireAnimEntry,
-                    (void *)zTurret_Runtime::FireWeaponCallback,
-                    this
-                );
-                zEffectAnim::SetVelocity_Thunk(
-                    fireAnimEntry,
-                    turretNode,
-                    0.0f,
-                    0.0f,
-                    0.0f
-                );
-            }
-        }
-    }
-
-    if (runtimeInstanceActive != 0) {
-        UpdateFireBurstTimer(g_FrameDeltaTimeSec);
-        if (weaponBaseMoves != 0 && isFiring != 0) {
-            SelectFirePointAndAimAtTarget(targetPos);
-        }
-    }
-
-    if (isFiring == 0) {
-        if (alwaysLookAtTarget != 0) {
-            UpdateAimAndPartMatrices(targetPos);
-        }
-
-        zTurret_DeactivateRuntimeInstance(this);
-    }
-
-    if (fireBurstTimer != fireBurstDuration) {
-        fireBurstTimer += g_FrameDeltaTimeSec;
-        if (fireBurstTimer >= fireBurstDuration) {
-            fireBurstTimer = fireBurstDuration;
-            nextFireTime = g_Time_AccumulatedTimeSec;
-        }
-    }
-}
-
-/**
- * Reimplements 0x437e50: zTurret_Runtime::FireWeaponCallback.
- * Source file: D:\Proj\Battlesport\turret.cpp.
- * Purpose: Bridges the fire animation completion callback to the turret weapon firing path.
- */
-void __fastcall zTurret_Runtime::FireWeaponCallback(
-    zEffectAnimEntry *entry,
-    zTurret_Runtime *self,
-    int eventCode
-) {
-    (void)entry;
-    (void)eventCode;
-    self->FireWeapon();
-}
-
-/**
  * Reimplements 0x4379f0: zTurret_Runtime::ApplyDamageAndHandleDestruction.
  * Source file: D:\Proj\Battlesport\turret.cpp.
  * Purpose: Applies damage, activate-on-hit timing, and turret destruction effects.
@@ -1406,60 +1439,6 @@ int zTurret_Runtime::ApplyDamageAndHandleDestruction(
     return 0;
 }
 
-/**
- * Reimplements 0x437d60: zTurret_Runtime::OnDamage.
- * Source file: D:\Proj\Battlesport\turret.cpp.
- * Purpose: Handles incoming OptCatalog damage and updates destruction or damage feedback.
- */
-int __fastcall zTurret_Runtime::OnDamage(
-    zTurret_Runtime *self,
-    OptCatalogEntryDef *entry,
-    OptCatalogHitEventPartial *hitEvent,
-    float damageAmount
-) {
-    if (self->ApplyDamageAndHandleDestruction(
-        damageAmount,
-        entry,
-        hitEvent
-    ) != 0) {
-        OptCatalog::SetDamageContext(
-            1,
-            0
-        );
-        Player::AddScaledHudCounterValue(self->healthMax);
-    } else {
-        DamageFeedback::SetIntensityScalar(self->healthCurrent / self->healthMax);
-    }
-
-    return 0;
-}
-
-/**
- * Reimplements 0x436e00: zTurret_Runtime::Shutdown.
- * Source file: D:\Proj\Battlesport\turret.cpp.
- * Purpose: Frees per-runtime trail state and clears the turret damage handler.
- */
-int zTurret_Runtime::Shutdown() {
-    if (trailRuntimeState != 0) {
-        OptCatalog::FreeTrailRuntimeStateStorage(trailRuntimeState);
-    }
-
-    return zClass_Node::ClearDamageHandler(healthyNode);
-}
-
-/**
- * Reimplements 0x436e20: zTurret_Runtime::HasActiveNode.
- * Source file: D:\Proj\Battlesport\turret.cpp.
- * Purpose: Reports whether the parsed turret has an active scene node.
- */
-int zTurret_Runtime::HasActiveNode() {
-    if (flags != 0 && (turretNode->flags & 0x04) != 0) {
-        return 1;
-    }
-
-    return 0;
-}
-
 namespace zTurret_System {
 /**
  * Reimplements 0x437aa0: zTurret_System::ResetIterationState.
@@ -1469,6 +1448,16 @@ namespace zTurret_System {
 int ResetIterationState() {
     g_zTurret_RuntimeCount = 0;
     g_zTurret_CallbackStartIndex = 0;
+    return 0;
+}
+
+/**
+ * Reimplements 0x437ab0: zTurret_System::Shutdown.
+ * Source file: D:\Proj\Battlesport\turret.cpp.
+ * Purpose: Shuts down the zTurret subsystem by freeing all loaded runtime state.
+ */
+int Shutdown() {
+    FreeAllRuntimes();
     return 0;
 }
 
@@ -1642,7 +1631,37 @@ int EnableTickCallback() {
         (void *)zTurret_System::TickAllRuntimesRoundRobin
     );
 }
+} // namespace zTurret_System
 
+/**
+ * Reimplements 0x437d60: zTurret_Runtime::OnDamage.
+ * Source file: D:\Proj\Battlesport\turret.cpp.
+ * Purpose: Handles incoming OptCatalog damage and updates destruction or damage feedback.
+ */
+int __fastcall zTurret_Runtime::OnDamage(
+    zTurret_Runtime *self,
+    OptCatalogEntryDef *entry,
+    OptCatalogHitEventPartial *hitEvent,
+    float damageAmount
+) {
+    if (self->ApplyDamageAndHandleDestruction(
+        damageAmount,
+        entry,
+        hitEvent
+    ) != 0) {
+        OptCatalog::SetDamageContext(
+            1,
+            0
+        );
+        Player::AddScaledHudCounterValue(self->healthMax);
+    } else {
+        DamageFeedback::SetIntensityScalar(self->healthCurrent / self->healthMax);
+    }
+
+    return 0;
+}
+
+namespace zTurret_System {
 /**
  * Reimplements 0x437dc0: zTurret_System::FreeAllRuntimes.
  * Source file: D:\Proj\Battlesport\turret.cpp.
@@ -1673,14 +1692,19 @@ int FreeAllRuntimes() {
 
     return 0;
 }
+} // namespace zTurret_System
 
 /**
- * Reimplements 0x437ab0: zTurret_System::Shutdown.
+ * Reimplements 0x437e50: zTurret_Runtime::FireWeaponCallback.
  * Source file: D:\Proj\Battlesport\turret.cpp.
- * Purpose: Shuts down the zTurret subsystem by freeing all loaded runtime state.
+ * Purpose: Bridges the fire animation completion callback to the turret weapon firing path.
  */
-int Shutdown() {
-    FreeAllRuntimes();
-    return 0;
+void __fastcall zTurret_Runtime::FireWeaponCallback(
+    zEffectAnimEntry *entry,
+    zTurret_Runtime *self,
+    int eventCode
+) {
+    (void)entry;
+    (void)eventCode;
+    self->FireWeapon();
 }
-} // namespace zTurret_System

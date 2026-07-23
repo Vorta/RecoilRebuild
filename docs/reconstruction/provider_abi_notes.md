@@ -55,13 +55,18 @@ the unified reconstruction tracker, or per-target VC verification evidence.
   blocker.
 - Use `python tools/recoil.py progress show`, `python tools/recoil.py progress
   find`, and `python tools/recoil.py progress owner relationships` for focused
-  owner lookup. Add a missing BN-visible
-  provider boundary only when current BN/provider evidence proves no authored
-  body exists, using
-  `python tools/recoil.py progress owner add --id <owner-id> --kind provider-boundary --name <name> --evidence-id <semantic-evidence-id> --expected-revision <revision> --dry-run`
-  before repeating the reviewed command with `--apply` against the same
-  revision. Correct stale owner/provider classification through the
-  focused owner link, remove, gate, and entry-tier commands.
+  owner lookup. When immutable retail proves a named-function IAT slot but no
+  target row exists, use `python tools/recoil.py progress provider-target
+  register --address 0xNNNNNN --payload-json '<reviewed-provider-target>'
+  --expected-revision <revision> --dry-run --json`. It derives the DLL/import
+  identity, four-byte IAT storage, one-byte callable provider view, section,
+  and current evidence from `support/Recoil.exe`; the exact reviewed VC5
+  `__imp_` object symbol must come from provider declarations/evidence, never
+  candidate output. Review and repeat with `--apply`, then use the separate
+  `progress relocation-target bind` dry-run/apply workflow for each call site.
+  Non-import provider creation or existing-owner reclassification remains
+  blocked when no registered typed mutation exists; never hand-edit the
+  tracker or invent an owner/link command.
 - Production source must preserve 32-bit pointer, alignment, calling convention,
   message-map, vtable, import, and cleanup behavior when those affect generated
   code or ABI.

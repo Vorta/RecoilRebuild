@@ -3,7 +3,7 @@
 #include "recoil/recoil_types.h"
 #include <stddef.h>
 
-#include "Battlesport/Mfc42Abi.h"
+#include "recoil/Mfc42Abi.h"
 #include "GameZRecoil/zFMV/fmv.h"
 #include "recoil/recoil_callconv.h"
 
@@ -249,6 +249,7 @@ struct RecoilApp_AttractFmvState : RecoilApp_FmvState {
     int m_clientRect[4];
 
     RecoilApp_AttractFmvState();
+    ~RecoilApp_AttractFmvState();
     int OnTryBecomeCurrent();
     int OnUpdateShouldQuit();
     void OnDeactivate();
@@ -268,6 +269,7 @@ struct RecoilApp_IntroFmvState : RecoilApp_FmvState {
      */
     RecoilApp_IntroFmvState() {
     }
+    ~RecoilApp_IntroFmvState();
     int OnTryBecomeCurrent();
     int OnUpdateShouldQuit();
     void OnDeactivate();
@@ -297,6 +299,7 @@ struct RecoilApp_MissionFmvState : RecoilApp_FmvState {
     int m_reserved2c;
 
     RecoilApp_MissionFmvState();
+    ~RecoilApp_MissionFmvState();
     int OnTryBecomeCurrent();
     void OnDeactivate();
     int OnUpdateShouldQuit();
@@ -379,6 +382,7 @@ class RecoilApp : public RecoilApp_MfcOleModule {
     RecoilApp_MpExitDialogState m_mpExitDialogState;
 
     RecoilApp();
+    virtual ~RecoilApp();
     RECOIL_NO_GS static void __fastcall InitStdLogFiles(const char *exePath);
     RECOIL_NO_GS static void __fastcall FatalErrorAndExit(int errorCode);
 

@@ -1,12 +1,37 @@
-/* This source-layout fragment is included by the current compatibility container.
- * Parent build/manifests must compile this path directly after retiring the container include.
- */
+#include "GameZRecoil/zEffect/zeff.h"
+
+#include "GameZRecoil/Time/time.h"
+#include "GameZRecoil/zHud/zhud_ui.h"
+#include "GameZRecoil/include/zimage.h"
+#include "GameZRecoil/zError/zerr.h"
+#include "GameZRecoil/zLoc/zloc.h"
+#include "GameZRecoil/zMath/zmth.h"
+#include "GameZRecoil/zModel/gmod.h"
+#include "GameZRecoil/zReader/zreader.h"
+#include "GameZRecoil/zSound/zsnd.h"
+#include "GameZRecoil/zUtil/zbd.h"
+#include "GameZRecoil/zUtil/zutil.h"
+#include "GameZRecoil/zVideo/zvid.h"
+#include "zdi.h"
+
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <time.h>
+
+extern char g_EffectsZrdNodeName[8];
+
+namespace {
+const char *kZeffInitSourceFile = g_zEffect_SourceFile_ZeffInitC;
+} // namespace
 
 namespace zEffect {
 
 /**
  * Reimplements 0x460020: zEffect::Init.
- * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_init.c.
+ * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_init.c.
  * Purpose: reset the runtime effect manager and initialize zEffect animation
  * state.
  */
@@ -25,7 +50,7 @@ int Init() {
 
 /**
  * Reimplements 0x460060: zEffect::ShutdownAll.
- * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_init.c.
+ * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_init.c.
  * Purpose: reset runtime effect state and shut down animation data when it is
  * loaded.
  */
@@ -35,7 +60,7 @@ int ShutdownAll() {
 }
 /**
  * Reimplements 0x460070: zEffect::InitFromPath.
- * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_init.c.
+ * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_init.c.
  * Purpose: load runtime effect templates from a zReader tree and prepare the
  * runtime free list and texture cycling data.
  */
@@ -69,7 +94,8 @@ int __fastcall InitFromPath(
         rootNode,
         g_EffectsZrdNodeName
     );
-    g_zEffect_RuntimeManager.templateCount = zReaderArrayCount(effectsNode) - 1;
+    g_zEffect_RuntimeManager.templateCount =
+        effectsNode->value.nodes->value.i32 - 1;
     g_zEffect_RuntimeManager.templates = (zEffect_RuntimeEntry *)(calloc(
         g_zEffect_RuntimeManager.templateCount,
         sizeof(zEffect_RuntimeEntry)
@@ -78,17 +104,16 @@ int __fastcall InitFromPath(
     g_zEffect_RuntimeManager.listenerNode = cameraNode;
 
     for (int i = 0; i < g_zEffect_RuntimeManager.templateCount; ++i) {
-        zReader::Node *const effectNode = &zReaderArrayBase(effectsNode)[i + 1];
+        zReader::Node *const effectNode =
+            &effectsNode->value.nodes[i + 1];
         zReader::Node *const mapsNode = zReader_GetNamedNode(
             effectNode,
             g_zEffect_TokenMaps
         );
         zEffect_RuntimeEntry *const runtimeEntry = &g_zEffect_RuntimeManager.templates[i];
         runtimeEntry->effectIndex = -1;
-        runtimeEntry->modelNodeName = zReaderArrayStringAt(
-            effectNode,
-            1
-        );
+        runtimeEntry->modelNodeName =
+            effectNode->value.nodes[1].value.str;
         runtimeEntry->effectName = (char *)(zReader::ReadNamedString(
             effectNode,
             "NAME"
@@ -144,7 +169,7 @@ int __fastcall InitFromPath(
         );
 
         zModel_MaterialPartial *const material = (zModel_MaterialPartial *)(gfxData);
-        const int textureCount = zReaderArrayCount(mapsNode) - 1;
+        const int textureCount = mapsNode->value.nodes->value.i32 - 1;
         zModel_Material::SetCycleTextureCount(
             material,
             textureCount
@@ -166,9 +191,10 @@ int __fastcall InitFromPath(
             g_zEffectAnim_TokenLooping
         );
         if (loopingNode != 0) {
-            const char *const loopingText = loopingNode->type == zReader::ZRDR_NODE_ARRAY
-                                                ? zReaderArrayStringAt(loopingNode, 1)
-                                                : loopingNode->value.str;
+            const char *const loopingText =
+                loopingNode->type == zReader::ZRDR_NODE_ARRAY
+                    ? loopingNode->value.nodes[1].value.str
+                    : loopingNode->value.str;
             zModel_Material::SetCycleTextureLoop(
                 material,
                 strcmp(
@@ -182,10 +208,9 @@ int __fastcall InitFromPath(
             for (int textureIndex = 1; textureIndex <= textureCount; ++textureIndex) {
                 zModel_Material::AddCycleTexture(
                     material,
-                    zImage::TexDir_FindOrAppendByPath(zReaderArrayStringAt(
-                        mapsNode,
-                        textureIndex
-                    ))
+                    zImage::TexDir_FindOrAppendByPath(
+                        mapsNode->value.nodes[textureIndex].value.str
+                    )
                 );
             }
         }
@@ -200,7 +225,7 @@ int __fastcall InitFromPath(
 
 /**
  * Reimplements 0x460330: zEffect::Reset.
- * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_init.c.
+ * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_init.c.
  * Purpose: free loaded runtime template data, delete recycled effect nodes,
  * destroy the free list, and reinitialize zEffect state.
  */

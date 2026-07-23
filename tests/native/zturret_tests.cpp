@@ -1,4 +1,4 @@
-#include "GameZRecoil/zTurret/zturret.h"
+#include "Battlesport/turret.h"
 
 #include "Battlesport/hud_sensor_tracker.h"
 #include "Battlesport/game_net.h"

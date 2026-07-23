@@ -1,10 +1,24 @@
-/* This source-layout fragment is included by the current compatibility container.
- * Parent build/manifests must compile this path directly after retiring the container include.
- */
+#include "zinput.h"
+
+#include <string.h>
+
+namespace zInput {
+
+const int kDiOk = 0;
+const int kDiFalse = 1;
+const int kDiInputLost = (int)(0x8007001e);
+
+struct DipropDwordInit {
+    unsigned int dwSize;
+    unsigned int dwHeaderSize;
+    unsigned int dwObj;
+    unsigned int dwHow;
+    unsigned int dwData;
+};
 
 /**
  * Reimplements 0x470020: zInput::Mouse_ApplyClientCursorPosToOS.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
+ * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
  * Purpose: Convert the cached client mouse point to screen coordinates and
  * apply it through the Win32 cursor provider.
  */
@@ -24,7 +38,7 @@ void Mouse_ApplyClientCursorPosToOS() {
 
 /**
  * Reimplements 0x470060: zInput::Mouse_UpdateClientRectAndCenter.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
+ * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
  * Purpose: Refresh mouse client dimensions, center coordinates, and inverse
  * scaling factors from the current input window client rectangle.
  */
@@ -44,7 +58,7 @@ void Mouse_UpdateClientRectAndCenter() {
 
 /**
  * Reimplements 0x4700a0: zInput::Mouse_SetNormalizedCursorPos.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
+ * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
  * Purpose: Clamp normalized cursor coordinates, convert them to cached client
  * coordinates, and apply the cursor position to the OS.
  */
@@ -76,7 +90,7 @@ void __stdcall Mouse_SetNormalizedCursorPos(
 
 /**
  * Reimplements 0x470150: zInput::Mouse_RecenterCursor.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
+ * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
  * Purpose: Move the cached mouse cursor position to the client center and
  * apply the position to the OS cursor.
  */
@@ -90,7 +104,7 @@ void Mouse_RecenterCursor() {
 
 /**
  * Reimplements 0x470180: zInput::Mouse_RecenterCursorX.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
+ * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
  * Purpose: Recenter only the cached mouse client X coordinate before applying
  * the position to the OS cursor.
  */
@@ -101,7 +115,7 @@ void Mouse_RecenterCursorX() {
 
 /**
  * Reimplements 0x470190: zInput::Mouse_IsInitialized.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
+ * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
  * Purpose: Return whether the DirectInput mouse device has been initialized.
  */
 int Mouse_IsInitialized() {
@@ -110,7 +124,7 @@ int Mouse_IsInitialized() {
 
 /**
  * Reimplements 0x4701a0: zInput::Mouse_SetClientSizeAndCenter.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
+ * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
  * Purpose: Store explicit mouse client dimensions, signed center coordinates,
  * and inverse center scale factors.
  */
@@ -128,7 +142,7 @@ void __fastcall Mouse_SetClientSizeAndCenter(
 
 /**
  * Reimplements 0x4701f0: zInput::Mouse_InitDevice.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
+ * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
  * Purpose: Create and configure the DirectInput mouse device, initialize the
  * shared mouse snapshot, acquire the device, and center the cursor state.
  *
@@ -240,7 +254,7 @@ void Mouse_UpdateAcquireState() {
 
 /**
  * Reimplements 0x470360: zInput::Mouse_ShutdownDevice.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
+ * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
  * Purpose: deactivate mouse acquisition, release the mouse DirectInput device,
  * and clear mouse device lifetime state.
  *
@@ -381,7 +395,7 @@ void Mouse_ApplyAccumulatedDelta() {
 
 /**
  * Reimplements 0x4705f0: zInput::Mouse_GetStateSnapshot.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
+ * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
  * Purpose: Copy the current derived mouse snapshot to the caller and return
  * the last DirectInput mouse poll result.
  */
@@ -429,7 +443,7 @@ void Mouse_ResetTransitionState() {
 
 /**
  * Reimplements 0x470670: zInput::Mouse_SetCooperativeLevelFlags.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
+ * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
  * Purpose: Replace the stored mouse DirectInput cooperative-level flags and
  * return the previous value.
  */
@@ -443,7 +457,7 @@ int __fastcall Mouse_SetCooperativeLevelFlags(
 
 /**
  * Reimplements 0x470680: zInput::Mouse_WaitForButtonPress.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
+ * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
  * Purpose: Poll mouse input until a newly pressed button is found or the
  * caller requests a single scan.
  */
@@ -468,3 +482,4 @@ int __fastcall Mouse_WaitForButtonPress(
     return result;
 }
 
+} // namespace zInput

@@ -1,6 +1,6 @@
 #include "GameZRecoil/zGame/zgame.h"
 #include "GameZRecoil/zHud/zhud_ui.h"
-#include "GameZRecoil/zRndr/zrndr.h"
+#include "GameZRecoil/zRender/zrndr.h"
 #include "GameZRecoil/Time/time.h"
 #include "GameZRecoil/zModel/gmod.h"
 #include "GameZRecoil/include/zclip_rect.h"

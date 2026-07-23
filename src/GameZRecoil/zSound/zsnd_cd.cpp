@@ -1,4 +1,4 @@
-#include "zsnd.h"
+#include "GameZRecoil/zSound/zsnd.h"
 
 #include "GameZRecoil/zReader/zreader.h"
 
@@ -6,9 +6,18 @@
 #include <windows.h>
 
 #include "recoil/recoil_types.h"
+#include <list>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+/*
+ * Retail zsnd_play.cpp physical-contribution routing anchor. This
+ * address-backed body now compiles from zsnd_play.cpp; the anchor preserves
+ * narrow legacy target provenance without compiling a duplicate definition
+ * in this TU.
+ * Reimplements 0x4a07f0: zSnd::SetUseArchiveBanksFlag.
+ */
 
 struct zSndCdTrackState {
     int track;
@@ -35,10 +44,6 @@ extern "C" int g_zSndCdDiscLengthSecond = 0;
 extern "C" zSndCdTrackState g_zSndCdPlayFrom = {0};
 extern "C" zSndCdTrackState g_zSndCdCurrent = {0};
 extern "C" zSndCdTrackState g_zSndCdPlayTo = {0};
-extern "C" unsigned char g_zSndCd_TrackListCtorGuard = 0;
-extern "C" zSndCdTrackNode *g_zSndCd_TrackListHead = 0;
-// Static CD track-list lifecycle count owned with the zSndCdTrackList helper.
-extern "C" int g_zSndCd_TrackCount = 0;
 /**
  * Reimplements data 0x4e5d34: ZOPT_AUDIO_API.
  * Purpose: Stores ZOPT AUDIO API data used by engine.zsound.backend_option_globals.
@@ -73,136 +78,24 @@ namespace {
 const int ZSND_CD_FLAG_STEREO_AUX = 1;
 const int ZSND_CD_FLAG_READY = 2;
 const char kZSndCdSourceFile[] = "D:\\Proj\\GameZRecoil\\zSound\\zsnd_cd.cpp";
+std::list<zSndCdTrackEntry *> g_zSndCdTrackList;
 } // namespace
-
-namespace zSndCdTrackList {
-/**
- * Reimplements 0x4a2020: zSndCdTrackList::StaticConstructor.
- * Purpose: Allocate and initialize the circular CD track-list sentinel.
- */
-void StaticConstructor() {
-    g_zSndCd_TrackListCtorGuard = 1;
-    g_zSndCd_TrackListHead = (zSndCdTrackNode *)(::operator new(sizeof(zSndCdTrackNode)));
-    g_zSndCd_TrackListHead->next = g_zSndCd_TrackListHead;
-    g_zSndCd_TrackListHead->prev = g_zSndCd_TrackListHead;
-    g_zSndCd_TrackCount = 0;
-}
-
-/**
- * Reimplements 0x4a2060: zSndCdTrackList::StaticDestructor.
- * Purpose: Delete every CD track-list node and reset the static list state.
- */
-void __cdecl StaticDestructor() {
-    zSndCdTrackNode *const head = g_zSndCd_TrackListHead;
-    zSndCdTrackNode *node = head->next;
-    while (node != head) {
-        zSndCdTrackNode *const next = node->next;
-        node->prev->next = node->next;
-        node->next->prev = node->prev;
-        ::operator delete(node);
-        --g_zSndCd_TrackCount;
-        node = next;
-    }
-
-    ::operator delete(head);
-    g_zSndCd_TrackListHead = 0;
-    g_zSndCd_TrackCount = 0;
-}
-
-/**
- * Reimplements 0x4a2050: zSndCdTrackList::RegisterAtExitDestructor.
- * Purpose: Register the static CD track-list destructor for process exit.
- */
-void RegisterAtExitDestructor() {
-    atexit(StaticDestructor);
-}
-
-/**
- * Reimplements 0x4a2010: zSndCdTrackList::StaticInit.
- * Purpose: Initialize the CD track-list singleton and its exit cleanup.
- */
-void __cdecl StaticInit() {
-    StaticConstructor();
-    RegisterAtExitDestructor();
-}
-} // namespace zSndCdTrackList
-
-#if defined(_MSC_VER) && defined(_M_IX86)
-typedef void (__cdecl *ZSndCdCrtInitializerFn)();
-/* VC5 emits the zsnd_cd.cpp CD track-list startup callback as a direct .CRT$XCU row. */
-#pragma data_seg(".CRT$XCU")
-ZSndCdCrtInitializerFn s_ZSndCdCrtInit_TrackList =
-    zSndCdTrackList::StaticInit;
-#pragma data_seg()
-#endif
 
 namespace zSnd {
 /**
+ * Retail zsnd_parm.cpp physical-contribution routing anchors. These
+ * address-backed bodies now compile from zsnd_parm.cpp; the anchors preserve
+ * narrow legacy target provenance without compiling duplicate definitions in
+ * this TU.
  * Reimplements 0x4a1290: zSnd::SetActiveBackendPreInit.
- * Purpose: Select the sound backend before the runtime is preinitialized.
- */
-int __fastcall SetActiveBackendPreInit(
-    int backend
-) {
-    if (g_zSnd_PreInitialized != 0) {
-        return 0;
-    }
-
-    g_zSnd_ActiveBackend = backend;
-    return 1;
-}
-
-/**
  * Reimplements 0x4a12b0: zSnd::GetActiveBackend.
- * Purpose: Return the currently selected sound backend id.
  */
-int GetActiveBackend() {
-    return g_zSnd_ActiveBackend;
-}
-
-
-
-
-
-/**
- * Reimplements 0x4a07f0: zSnd::SetUseArchiveBanksFlag.
- * Original source: D:\Proj\GameZRecoil\zSound\zsnd.cpp.
- * Purpose: Store the archive-bank selector global for sound-bank loading.
- */
-void __fastcall SetUseArchiveBanksFlag(
-    int useArchiveBanks
-) {
-    g_zSnd_UseArchiveBanksFlag = useArchiveBanks;
-}
-
-/**
- * Reimplements 0x4a3ea0: zSnd::ReportMciError.
- * Purpose: print a formatted MCI error message for a source-file line.
- */
-RECOIL_NO_GS int __fastcall ReportMciError(
-    unsigned int mciError,
-    const char *sourceFile,
-    int lineNumber
-) {
-    char errorText[0x100];
-    mciGetErrorStringA(
-        mciError,
-        errorText,
-        sizeof(errorText)
-    );
-    fprintf(
-        stderr,
-        "%s(%d): MCIError [%s]\n",
-        sourceFile,
-        lineNumber,
-        errorText
-    );
-    return 0;
-}
 } // namespace zSnd
 
 namespace zSndCd {
 int ResetTrackState();
+int __fastcall ApplyPlaybackMode(int playbackMode);
+int __fastcall PlayTrack(int trackIndex);
 int Shutdown();
 
 /**
@@ -354,23 +247,7 @@ RECOIL_NO_GS int __fastcall Init(
                 entry->archiveName = _strdup(trackConfig[1].value.str);
             }
 
-            if (g_zSndCd_TrackListHead == 0) {
-                g_zSndCd_TrackListHead =
-                    (zSndCdTrackNode *)(::operator new(sizeof(zSndCdTrackNode)));
-                g_zSndCd_TrackListHead->next = g_zSndCd_TrackListHead;
-                g_zSndCd_TrackListHead->prev = g_zSndCd_TrackListHead;
-                g_zSndCd_TrackListHead->entry = 0;
-            }
-
-            zSndCdTrackNode *head = g_zSndCd_TrackListHead;
-            zSndCdTrackNode *tail = head->prev;
-            zSndCdTrackNode *node = (zSndCdTrackNode *)(::operator new(sizeof(zSndCdTrackNode)));
-            node->next = head;
-            node->prev = tail;
-            tail->next = node;
-            head->prev = node;
-            node->entry = entry;
-            ++g_zSndCd_TrackCount;
+            g_zSndCdTrackList.push_back(entry);
         }
     }
 
@@ -387,6 +264,198 @@ int ResetTrackState() {
     g_zSndCdCurrent = state;
     g_zSndCdPlayTo = state;
     return state.track;
+}
+
+/**
+ * Reimplements 0x4a24d0: zSndCd::Shutdown.
+ * Purpose: stop CD playback, close the MCI CD device, clear ready state, and
+ * release configured track-list entries.
+ */
+int Shutdown() {
+    Stop();
+
+    if ((g_zSndCdDeviceId & 0xffff) != 0) {
+        MCI_GENERIC_PARMS closeParms = {0};
+        mciSendCommandA(
+            (MCIDEVICEID)(g_zSndCdDeviceId & 0xffff),
+            MCI_CLOSE,
+            MCI_WAIT,
+            (DWORD_PTR)(&closeParms)
+        );
+        g_zSndCdDeviceId &= 0xffff0000;
+    }
+
+    g_zSndCdFlags &= ~ZSND_CD_FLAG_READY;
+
+    std::list<zSndCdTrackEntry *>::iterator entryIt =
+        g_zSndCdTrackList.begin();
+    while (entryIt != g_zSndCdTrackList.end()) {
+        zSndCdTrackEntry *entry = *entryIt;
+        if (entry != 0) {
+            if (entry->archiveName != 0) {
+                free(entry->archiveName);
+                entry->archiveName = 0;
+            }
+            ::operator delete(entry);
+        }
+        ++entryIt;
+    }
+    g_zSndCdTrackList.clear();
+
+    return 1;
+}
+
+/**
+ * Reimplements 0x4a25e0: zSndCd::PlayTrackWithMode.
+ * Purpose: Start a CD track and then apply the requested playback mode.
+ */
+int __fastcall PlayTrackWithMode(
+    int trackIndex,
+    int playbackMode
+) {
+    int result = 0;
+    const int mode = playbackMode;
+    if (PlayTrack(trackIndex) != 0) {
+        result = ApplyPlaybackMode(mode);
+    }
+
+    return result;
+}
+
+/**
+ * Reimplements 0x4a2600: zSndCd::ApplyPlaybackMode.
+ * Purpose: Apply the requested CD playback mode and issue the MCI play command.
+ */
+RECOIL_NO_GS int __fastcall ApplyPlaybackMode(
+    int playbackMode
+) {
+    if ((g_zSndCdFlags & ZSND_CD_FLAG_READY) == 0) {
+        return 0;
+    }
+
+    register int currentTrack = g_zSndCdCurrentTrack;
+    register int trackCount = g_zSndCdTrackCountCached;
+    register int playToTrack;
+    if (playbackMode == 2) {
+        playToTrack = currentTrack + 1;
+    } else {
+        playToTrack = trackCount + 1;
+        if (playbackMode == 5) {
+            playToTrack = currentTrack + 1;
+        }
+    }
+
+    g_zSndCdPlayToTrack = playToTrack;
+
+    MCI_PLAY_PARMS playParms;
+    playParms.dwFrom = (DWORD)(currentTrack & 0xff);
+    playParms.dwTo = (DWORD)(playToTrack & 0xff);
+    playParms.dwCallback = g_zSnd_WindowHandle;
+
+    DWORD playFlags = 0x5;
+    if ((unsigned int)(playToTrack) <= (unsigned int)(trackCount)) {
+        playFlags = 0x0d;
+    }
+
+    const DWORD mciError = mciSendCommandA(
+        (MCIDEVICEID)(g_zSndCdDeviceId & 0xffff),
+        0x806,
+        playFlags,
+        (DWORD_PTR)(&playParms)
+    );
+    if (mciError != 0) {
+        return zSnd::ReportMciError(
+            mciError,
+            kZSndCdSourceFile,
+            0xf1
+        );
+    }
+
+    g_zSndCdLastPlayMode = playbackMode;
+    return 1;
+}
+
+/**
+ * Reimplements 0x4a26b0: zSndCd::OnMciNotify.
+ * Purpose: Restart looping CD playback when the MCI notify callback completes.
+ */
+void __fastcall OnMciNotify(
+    unsigned int wParam,
+    unsigned int lParam
+) {
+    if ((g_zSndCdFlags & ZSND_CD_FLAG_READY) == 0 || g_zSndCdLastPlayMode != 5 ||
+        lParam != (unsigned int)(g_zSndCdDeviceId & 0xffff) || wParam != 1) {
+        return;
+    }
+
+    PlayTrackWithMode(
+        g_zSndCdCurrentTrack,
+        5
+    );
+}
+
+/**
+ * Reimplements 0x4a26f0: zSndCd::Stop.
+ * Purpose: stop the current MCI CD playback and reset the cached track state.
+ */
+RECOIL_NO_GS int Stop() {
+    if ((g_zSndCdFlags & ZSND_CD_FLAG_READY) == 0) {
+        return 0;
+    }
+
+    MCI_GENERIC_PARMS stopParms;
+    const DWORD mciError = mciSendCommandA(
+        (MCIDEVICEID)(g_zSndCdDeviceId & 0xffff),
+        0x808,
+        0x02,
+        (DWORD_PTR)(&stopParms)
+    );
+    if (mciError != 0) {
+        return zSnd::ReportMciError(
+            mciError,
+            kZSndCdSourceFile,
+            0x10e
+        );
+    }
+
+    g_zSndCdLastPlayMode = 0;
+    ResetTrackState();
+    return 1;
+}
+
+/**
+ * Reimplements 0x4a2750: zSndCd::PlayTrack.
+ * Purpose: Seek to a CD track and reset cached playback state for that track.
+ */
+RECOIL_NO_GS int __fastcall PlayTrack(
+    int trackIndex
+) {
+    if ((g_zSndCdFlags & ZSND_CD_FLAG_READY) == 0) {
+        return 0;
+    }
+
+    MCI_SEEK_PARMS seekParms;
+    seekParms.dwTo = (DWORD)(trackIndex & 0xff);
+
+    const DWORD mciError = mciSendCommandA(
+        (MCIDEVICEID)(g_zSndCdDeviceId & 0xffff),
+        0x807,
+        0x0a,
+        (DWORD_PTR)(&seekParms)
+    );
+    if (mciError != 0) {
+        return zSnd::ReportMciError(
+            mciError,
+            kZSndCdSourceFile,
+            0x16e
+        );
+    }
+
+    ResetTrackState();
+    g_zSndCdCurrentTrack = trackIndex;
+    g_zSndCdPlayToTrack = trackIndex;
+    g_zSndCdPlayFromTrack = trackIndex;
+    return 1;
 }
 
 /**
@@ -486,59 +555,6 @@ int __fastcall SetVolume(
 }
 
 /**
- * Reimplements 0x4a2600: zSndCd::ApplyPlaybackMode.
- * Purpose: Apply the requested CD playback mode and issue the MCI play command.
- */
-RECOIL_NO_GS int __fastcall ApplyPlaybackMode(
-    int playbackMode
-) {
-    if ((g_zSndCdFlags & ZSND_CD_FLAG_READY) == 0) {
-        return 0;
-    }
-
-    register int currentTrack = g_zSndCdCurrentTrack;
-    register int trackCount = g_zSndCdTrackCountCached;
-    register int playToTrack;
-    if (playbackMode == 2) {
-        playToTrack = currentTrack + 1;
-    } else {
-        playToTrack = trackCount + 1;
-        if (playbackMode == 5) {
-            playToTrack = currentTrack + 1;
-        }
-    }
-
-    g_zSndCdPlayToTrack = playToTrack;
-
-    MCI_PLAY_PARMS playParms;
-    playParms.dwFrom = (DWORD)(currentTrack & 0xff);
-    playParms.dwTo = (DWORD)(playToTrack & 0xff);
-    playParms.dwCallback = g_zSnd_WindowHandle;
-
-    DWORD playFlags = 0x5;
-    if ((unsigned int)(playToTrack) <= (unsigned int)(trackCount)) {
-        playFlags = 0x0d;
-    }
-
-    const DWORD mciError = mciSendCommandA(
-        (MCIDEVICEID)(g_zSndCdDeviceId & 0xffff),
-        0x806,
-        playFlags,
-        (DWORD_PTR)(&playParms)
-    );
-    if (mciError != 0) {
-        return zSnd::ReportMciError(
-            mciError,
-            kZSndCdSourceFile,
-            0xf1
-        );
-    }
-
-    g_zSndCdLastPlayMode = playbackMode;
-    return 1;
-}
-
-/**
  * Reimplements 0x4a2930: zSndCd::GetTrackCount.
  * Purpose: Return the cached number of CD tracks when the CD device is ready.
  */
@@ -548,152 +564,5 @@ int GetTrackCount() {
     }
 
     return g_zSndCdTrackCountCached;
-}
-
-/**
- * Reimplements 0x4a2750: zSndCd::PlayTrack.
- * Purpose: Seek to a CD track and reset cached playback state for that track.
- */
-RECOIL_NO_GS int __fastcall PlayTrack(
-    int trackIndex
-) {
-    if ((g_zSndCdFlags & ZSND_CD_FLAG_READY) == 0) {
-        return 0;
-    }
-
-    MCI_SEEK_PARMS seekParms;
-    seekParms.dwTo = (DWORD)(trackIndex & 0xff);
-
-    const DWORD mciError = mciSendCommandA(
-        (MCIDEVICEID)(g_zSndCdDeviceId & 0xffff),
-        0x807,
-        0x0a,
-        (DWORD_PTR)(&seekParms)
-    );
-    if (mciError != 0) {
-        return zSnd::ReportMciError(
-            mciError,
-            kZSndCdSourceFile,
-            0x16e
-        );
-    }
-
-    ResetTrackState();
-    g_zSndCdCurrentTrack = trackIndex;
-    g_zSndCdPlayToTrack = trackIndex;
-    g_zSndCdPlayFromTrack = trackIndex;
-    return 1;
-}
-
-/**
- * Reimplements 0x4a25e0: zSndCd::PlayTrackWithMode.
- * Purpose: Start a CD track and then apply the requested playback mode.
- */
-int __fastcall PlayTrackWithMode(
-    int trackIndex,
-    int playbackMode
-) {
-    int result = 0;
-    const int mode = playbackMode;
-    if (PlayTrack(trackIndex) != 0) {
-        result = ApplyPlaybackMode(mode);
-    }
-
-    return result;
-}
-
-/**
- * Reimplements 0x4a26b0: zSndCd::OnMciNotify.
- * Purpose: Restart looping CD playback when the MCI notify callback completes.
- */
-void __fastcall OnMciNotify(
-    unsigned int wParam,
-    unsigned int lParam
-) {
-    if ((g_zSndCdFlags & ZSND_CD_FLAG_READY) == 0 || g_zSndCdLastPlayMode != 5 ||
-        lParam != (unsigned int)(g_zSndCdDeviceId & 0xffff) || wParam != 1) {
-        return;
-    }
-
-    PlayTrackWithMode(
-        g_zSndCdCurrentTrack,
-        5
-    );
-}
-
-/**
- * Reimplements 0x4a26f0: zSndCd::Stop.
- * Purpose: stop the current MCI CD playback and reset the cached track state.
- */
-RECOIL_NO_GS int Stop() {
-    if ((g_zSndCdFlags & ZSND_CD_FLAG_READY) == 0) {
-        return 0;
-    }
-
-    MCI_GENERIC_PARMS stopParms;
-    const DWORD mciError = mciSendCommandA(
-        (MCIDEVICEID)(g_zSndCdDeviceId & 0xffff),
-        0x808,
-        0x02,
-        (DWORD_PTR)(&stopParms)
-    );
-    if (mciError != 0) {
-        return zSnd::ReportMciError(
-            mciError,
-            kZSndCdSourceFile,
-            0x10e
-        );
-    }
-
-    g_zSndCdLastPlayMode = 0;
-    ResetTrackState();
-    return 1;
-}
-
-/**
- * Reimplements 0x4a24d0: zSndCd::Shutdown.
- * Purpose: stop CD playback, close the MCI CD device, clear ready state, and
- * release configured track-list entries.
- */
-int Shutdown() {
-    Stop();
-
-    if ((g_zSndCdDeviceId & 0xffff) != 0) {
-        MCI_GENERIC_PARMS closeParms = {0};
-        mciSendCommandA(
-            (MCIDEVICEID)(g_zSndCdDeviceId & 0xffff),
-            MCI_CLOSE,
-            MCI_WAIT,
-            (DWORD_PTR)(&closeParms)
-        );
-        g_zSndCdDeviceId &= 0xffff0000;
-    }
-
-    g_zSndCdFlags &= ~ZSND_CD_FLAG_READY;
-
-    zSndCdTrackNode *head = g_zSndCd_TrackListHead;
-    for (zSndCdTrackNode *node = head->next; node != head; node = node->next) {
-        zSndCdTrackEntry *entry = node->entry;
-        if (entry != 0) {
-            if (entry->archiveName != 0) {
-                free(entry->archiveName);
-                entry->archiveName = 0;
-            }
-            ::operator delete(entry);
-            node->entry = 0;
-        }
-    }
-
-    zSndCdTrackNode *deleteNode = head->next;
-    while (deleteNode != head) {
-        zSndCdTrackNode *next = deleteNode->next;
-        deleteNode->prev->next = deleteNode->next;
-        deleteNode->next->prev = deleteNode->prev;
-        ::operator delete(deleteNode);
-        --g_zSndCd_TrackCount;
-        deleteNode = next;
-    }
-
-    return 1;
 }
 } // namespace zSndCd

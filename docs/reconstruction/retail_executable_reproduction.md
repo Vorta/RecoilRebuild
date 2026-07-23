@@ -328,10 +328,29 @@ exception:
 python tools/recoil.py progress relocation-target bind --source-symbol-id <physical-symbol-id> --source-address <cursor> --payload-json '<reviewed-binding>' --expected-revision <revision> --dry-run --json
 ```
 
-This dry-run-first reviewed mutation binds an existing target or an exact
-known-extent target identity for live expectation derivation. Repeat with
-`--apply` after review. `relocation-exception set` remains reserved for genuine
-ambiguity; neither route learns expected facts from candidate output.
+If that operand is a retail-proven named-function IAT slot and no target row
+exists yet, first create the typed provider package through its separate
+dry-run-first mutation:
+
+```powershell
+python tools/recoil.py progress provider-target register --address <iat-address> --payload-json '<reviewed-provider-target>' --expected-revision <revision> --dry-run --json
+```
+
+`provider-target register` parses immutable `support/Recoil.exe`, requires the
+exact IAT address plus DLL/import name, derives the four-byte storage and
+one-byte callable provider views in their retail section, and creates current
+evidence plus an accepted provider-boundary owner with exact anchor,
+primary-function, and primary-data relationships. Its reviewed VC5 `__imp_`
+object identity must come from provider declarations/evidence, never candidate
+output. Review and apply that proposal, then run `relocation-target bind` at
+the next tracker revision to bind the individual call site. The two mutations
+remain separate: provider registration creates no call-site binding, while
+relocation binding creates no provider inventory.
+
+`relocation-target bind` remains the dry-run-first route for an existing target
+or exact known-extent authored data identity. Repeat with `--apply` after
+review. `relocation-exception set` remains reserved for genuine ambiguity;
+none of these routes learns expected facts from candidate output.
 
 Accept only the current authored/lifecycle row or a contiguous authored bundle
 beginning there after filtering out intervening proven non-authored rows. Owner
@@ -434,6 +453,28 @@ map is produced. It is rejected without `--compile-only` and cannot satisfy
 authored order, full order, or final acceptance.
 The unrestricted final-validation command above never uses this option.
 
+### Play-test deployment
+
+A normal successful run of the canonical
+`tools/_recoil/config/vc5_final_build.json` manifest copies its freshly linked
+`Recoil.exe` candidate to `playground/Recoil-rebuild.exe` for manual play
+testing. The copy occurs only after compile, resource, link, and all required
+linked-order checks succeed. Dry runs, compile-only runs, linked-order-only
+runs, diagnostic manifests or profiles, isolated order diagnostics, custom
+manifests, companion-DLL builds, probes, and every failed build path do not
+deploy.
+
+Deployment is play-test convenience only. The build-root `candidate_path`
+remains the authoritative candidate, and the playground copy is not acceptance
+evidence for order, bytes, source ownership, tiers, providers, or the final
+image. The driver copies through a temporary sibling and atomically replaces
+the destination. It does not create a missing `playground` directory. A missing
+directory, locked destination, or copy/replace failure preserves the prior
+play-test executable where one exists, removes the temporary copy when
+possible, prints an explicit non-gating warning, records the result under
+`playtest_deploy` in the normal successful canonical summary, and leaves the
+successful build return code unchanged.
+
 ## Commands and Handoffs
 
 Use:
@@ -468,6 +509,15 @@ packet id, outcome, changed paths, exact validation result, first divergence,
 and concrete scope contradictions. Ordinary owner, final-data/final-repro,
 functional, and `messages.dll` queues are `deferred_by_pipeline_phase` unless
 required by the current Recoil.exe cursor.
+
+An order manifest may add optional `order_edit_paths` to that writable closure
+when natural-order repair requires existing C/C++ sources or headers outside
+`source_from` and the tracker source-shape inputs. Entries fail closed unless
+they are exact normalized repository-local paths to existing C/C++
+source/header files. Synchronization copies the metadata into the registered
+target; reservation-backed primary-order packet construction then adds it only
+to writable paths and resource claims. The field never changes compilation,
+registered symbol identities, covered blocks, order semantics, or acceptance.
 Final-data and final-repro are evidence producers, not work units, queues, or
 peer schedulers; they never generate owner-action batches.
 

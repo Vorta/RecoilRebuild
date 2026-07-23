@@ -470,6 +470,26 @@ extern int g_zVideo_SortedPolyQueueCount;
 extern int g_zVideo_SortedPolyDrawOrder[256];
 extern int g_zVideo_OverwriteQueueCount;
 extern zVideo_TextureRecordPartial *g_zVideo_DefaultTextureRecord;
+extern zVidImagePartial g_zVideo_DefaultTextureImage;
+extern char g_zVideo_DefaultHwApiDescription[8];
+extern char g_zVideo_InitFailSetModeMsg[0x19];
+extern char g_zVideo_SourceFile_ZvidInitC[0x27];
+extern char g_zVideo_InitFailOpenVideoModeMsg[0x1a];
+extern char g_zVideo_SourceFile_ZvidDdC[0x25];
+extern char g_zVideo_UnrecognizedPixelFormatMsg[0x1a];
+extern char g_zVideo_DDrawEnumBeginMsg[0x20];
+extern char g_zVideo_DDrawEnumAgpSuffix[0x6];
+extern char g_zVideo_DDrawEnumTooManyDevicesMsg[0x34];
+extern char g_zVideo_DDrawEnumDevicePrintfFmt[0x17];
+extern char g_zVideo_D3DEnumNoUsableDriversMsg[0x14];
+extern char g_zVideo_D3DEnumBeginMsgFmt[0x1c];
+extern char g_zVideo_D3DEnumAcceptedMsg[0x9];
+extern char g_zVideo_D3DEnumTooManyDriversMsg[0x2c];
+extern char g_zVideo_D3DEnumSkipNo16BitZBufferMsg[0x31];
+extern char g_zVideo_D3DEnumSkipNoRgbColorMsg[0x2b];
+extern char g_zVideo_D3DEnumSkipNoHardwareMsg[0x31];
+extern char g_zVideo_D3DEnumDriverPrintfFmt[0x10];
+extern char g_zVideo_DefaultD3DDeviceName[0x6];
 extern zVideo_StatusProc g_zVideo_pfnOpenVideoMode;
 extern zVideo_ShutdownVideoSystemProc g_zVideo_pfnShutdownVideoSystem;
 extern zVideo_PaletteSetEntriesProc g_zVideo_pfnPaletteSetEntries;
@@ -496,10 +516,18 @@ extern zVideo_DestroyTextureRecordProc g_zVideo_pfnTextureRecordDestroy;
 extern zVideo_ReleaseAllTextureUploadSurfacesProc
     g_zVideo_pfnTextureRecordReleaseAllUploadSurfaces;
 extern zVideo_ImageProc g_zVideo_pfnImageEnsureSurfaceForCurrentDevice;
+extern zVideo_ImageLazyCreateSurfaceProc
+    g_zVideo_pfnImageLazyCreateVideoMemorySurface;
+extern zVideo_SetFogEnableProc g_zVideo_pfnSetFogEnable;
+extern zVideo_SetFogFloatProc g_zVideo_pfnSetFogStart;
+extern zVideo_SetFogFloatProc g_zVideo_pfnSetFogEnd;
+extern zVideo_ApplyFogStateProc g_zVideo_pfnApplyFogStateFromGlobals;
 extern zVideo_FlushProc g_zVideo_pfnFlushSortedPolys;
 extern zVideo_FlushProc g_zVideo_pfnFlushOverwritePolys;
 extern zVideo_FlushProc g_zVideo_pfnFlushQuadBatch;
 extern zVideo_SubmitPolyFlatColor16Proc g_zVideo_pfnSubmitPolyFlatColor16;
+extern zVideo_SubmitPolyGouraudColor16Proc
+    g_zVideo_pfnSubmitPolyGouraudColor16;
 extern zVideo_SubmitPolyColorAttrProc g_zVideo_pfnSubmitPolyColorAttr;
 extern zVideo_SubmitPolyRenderClassProc g_zVideo_pfnSubmitPolyRenderClass;
 extern zVideo_SubmitPolygonProc g_zVideo_pfnSubmitPolygon;
@@ -554,6 +582,159 @@ extern zVideo_GetHwApiDeviceFeatureFlagsProc g_zVideo_pfnGetHwApiDeviceFeatureFl
 extern IDirectDrawPalette *g_zVideo_pDDPalette;
 extern HWND g_zVideo_hWnd;
 extern RECT g_zVideo_CachedClientRectScreen;
+extern unsigned int g_zVideo_OpaqueWhiteArgb;
+extern char g_zVideo_SourceFile_ZvidDdd3dC[0x28];
+extern char g_zVideo_TextureTooLargeUsingDefaultFmt[0x49];
+extern char g_zVideo_TextureBadAspectUsingDefaultFmt[0x4f];
+extern char g_zVideo_TexturePaletteUnsupportedUsingDefaultFmt[0x3c];
+extern char g_zVideo_TextureNotPowerOf2UsingDefaultFmt[0x4c];
+extern char g_zVideo_NotEnoughMaxTransparentPolysFmt[0x2a];
+extern char g_zVideo_NotEnoughMaxOverwritePolysNeedFmt[0x2d];
+extern char g_zVideo_NotEnoughMaxOverwritePolysNeedsFmt[0x2e];
+extern char g_zVideo_DirectDrawErrorFmt[0x1d];
+extern char g_zVideo_D3DErrorName_ViewportDataNotSet[0x1a];
+extern char g_zVideo_D3DErrorName_SceneNotInScene[0x1a];
+extern char g_zVideo_D3DErrorName_SceneInScene[0x16];
+extern char g_zVideo_D3DErrorName_SceneEndFailed[0x18];
+extern char g_zVideo_D3DErrorName_SceneBeginFailed[0x1a];
+extern char g_zVideo_D3DErrorName_NoViewports[0x13];
+extern char g_zVideo_D3DErrorName_NotInBegin[0x12];
+extern char g_zVideo_D3DErrorName_InBegin[0x0f];
+extern char g_zVideo_D3DErrorName_LightSetFailed[0x18];
+extern char g_zVideo_D3DErrorName_ZBuffNeedsVideoMemory[0x1f];
+extern char g_zVideo_D3DErrorName_ZBuffNeedsSystemMemory[0x20];
+extern char g_zVideo_D3DErrorName_TextureUnlockFailed[0x1d];
+extern char g_zVideo_D3DErrorName_TextureSwapFailed[0x1b];
+extern char g_zVideo_D3DErrorName_TextureNotLocked[0x1a];
+extern char g_zVideo_D3DErrorName_TextureNoSupport[0x1a];
+extern char g_zVideo_D3DErrorName_TextureLocked[0x16];
+extern char g_zVideo_D3DErrorName_TextureLockFailed[0x1b];
+extern char g_zVideo_D3DErrorName_TextureLoadFailed[0x1b];
+extern char g_zVideo_D3DErrorName_TextureGetSurfFailed[0x1e];
+extern char g_zVideo_D3DErrorName_TextureDestroyFailed[0x1e];
+extern char g_zVideo_D3DErrorName_TextureCreateFailed[0x1d];
+extern char g_zVideo_D3DErrorName_TextureBadSize[0x17];
+extern char g_zVideo_D3DErrorName_SetViewportDataFailed[0x1e];
+extern char g_zVideo_D3DErrorName_MatrixSetDataFailed[0x1d];
+extern char g_zVideo_D3DErrorName_MatrixGetDataFailed[0x1d];
+extern char g_zVideo_D3DErrorName_MatrixDestroyFailed[0x1d];
+extern char g_zVideo_D3DErrorName_MatrixCreateFailed[0x1c];
+extern char g_zVideo_D3DErrorName_MaterialSetDataFailed[0x1f];
+extern char g_zVideo_D3DErrorName_MaterialGetDataFailed[0x1f];
+extern char g_zVideo_D3DErrorName_MaterialDestroyFailed[0x1f];
+extern char g_zVideo_D3DErrorName_MaterialCreateFailed[0x1e];
+extern char g_zVideo_D3DErrorName_InvalidVertexType[0x19];
+extern char g_zVideo_D3DErrorName_InvalidPrimitiveType[0x1c];
+extern char g_zVideo_D3DErrorName_InvalidCurrentViewport[0x1e];
+extern char g_zVideo_D3DErrorName_ExecuteUnlockFailed[0x1d];
+extern char g_zVideo_D3DErrorName_ExecuteNotLocked[0x1a];
+extern char g_zVideo_D3DErrorName_ExecuteLocked[0x16];
+extern char g_zVideo_D3DErrorName_ExecuteLockFailed[0x1b];
+extern char g_zVideo_D3DErrorName_ExecuteFailed[0x16];
+extern char g_zVideo_D3DErrorName_ExecuteDestroyFailed[0x1e];
+extern char g_zVideo_D3DErrorName_ExecuteCreateFailed[0x1d];
+extern char g_zVideo_D3DErrorName_ExecuteClippedFailed[0x1e];
+extern char g_zVideo_D3DErrorName_InvalidDevice[0x16];
+extern char g_zVideo_D3DErrorName_BadMajorVersion[0x17];
+extern char g_zVideo_D3DErrorName_BadMinorVersion[0x17];
+extern char g_zVideo_DDErrorName_NotPageLocked[0x14];
+extern char g_zVideo_DDErrorName_CantPageUnlock[0x15];
+extern char g_zVideo_DDErrorName_CantPageLock[0x13];
+extern char g_zVideo_DDErrorName_XAlign[0x0d];
+extern char g_zVideo_DDErrorName_WrongMode[0x10];
+extern char g_zVideo_DDErrorName_UnsupportedMode[0x16];
+extern char g_zVideo_DDErrorName_RegionTooSmall[0x15];
+extern char g_zVideo_DDErrorName_PrimarySurfaceAlreadyExists[0x22];
+extern char g_zVideo_DDErrorName_OverlayNotVisible[0x18];
+extern char g_zVideo_DDErrorName_NotPalettized[0x14];
+extern char g_zVideo_DDErrorName_NotLocked[0x10];
+extern char g_zVideo_DDErrorName_NotFlippable[0x13];
+extern char g_zVideo_DDErrorName_NoAOverlaySurface[0x18];
+extern char g_zVideo_DDErrorName_NoPaletteHw[0x12];
+extern char g_zVideo_DDErrorName_NoPaletteAttached[0x18];
+extern char g_zVideo_DDErrorName_NoMipMapHw[0x11];
+extern char g_zVideo_DDErrorName_NoHwnd[0x0d];
+extern char g_zVideo_DDErrorName_NoEmulation[0x12];
+extern char g_zVideo_DDErrorName_NoDirectDrawHw[0x15];
+extern char g_zVideo_DDErrorName_NoDdRopsHw[0x11];
+extern char g_zVideo_DDErrorName_NoDirectDc[0x11];
+extern char g_zVideo_DDErrorName_NoClipperAttached[0x18];
+extern char g_zVideo_DDErrorName_NoBltHw[0x0e];
+extern char g_zVideo_DDErrorName_InvalidSurfaceType[0x19];
+extern char g_zVideo_DDErrorName_InvalidPosition[0x16];
+extern char g_zVideo_DDErrorName_InvalidDirectDrawGuid[0x1c];
+extern char g_zVideo_DDErrorName_ImplicitlyCreated[0x18];
+extern char g_zVideo_DDErrorName_HwndSubclassed[0x15];
+extern char g_zVideo_DDErrorName_HwndAlreadySet[0x15];
+extern char g_zVideo_DDErrorName_ExclusiveModeAlreadySet[0x1e];
+extern char g_zVideo_DDErrorName_DirectDrawAlreadyCreated[0x1f];
+extern char g_zVideo_DDErrorName_DcAlreadyCreated[0x17];
+extern char g_zVideo_DDErrorName_ClipperIsUsingHwnd[0x19];
+extern char g_zVideo_DDErrorName_CantDuplicate[0x14];
+extern char g_zVideo_DDErrorName_CantCreateDc[0x13];
+extern char g_zVideo_DDErrorName_BltFastCantClip[0x16];
+extern char g_zVideo_DDErrorName_WasStillDrawing[0x16];
+extern char g_zVideo_DDErrorName_VerticalBlankInProgress[0x1e];
+extern char g_zVideo_DDErrorName_UnsupportedMask[0x16];
+extern char g_zVideo_DDErrorName_UnsupportedFormat[0x18];
+extern char g_zVideo_DDErrorName_TooBigWidth[0x12];
+extern char g_zVideo_DDErrorName_TooBigSize[0x11];
+extern char g_zVideo_DDErrorName_TooBigHeight[0x13];
+extern char g_zVideo_DDErrorName_SurfaceNotAttached[0x19];
+extern char g_zVideo_DDErrorName_SurfaceLost[0x12];
+extern char g_zVideo_DDErrorName_SurfaceIsObscured[0x18];
+extern char g_zVideo_DDErrorName_CantLockSurface[0x16];
+extern char g_zVideo_DDErrorName_SurfaceBusy[0x12];
+extern char g_zVideo_DDErrorName_SurfaceAlreadyDependent[0x1e];
+extern char g_zVideo_DDErrorName_SurfaceAlreadyAttached[0x1d];
+extern char g_zVideo_DDErrorName_ColorKeyNotSet[0x15];
+extern char g_zVideo_DDErrorName_OverlayCantClip[0x16];
+extern char g_zVideo_DDErrorName_OverlayColorKeyOnlyOneActive[0x23];
+extern char g_zVideo_DDErrorName_PaletteBusy[0x12];
+extern char g_zVideo_DDErrorName_OutOfVideoMemory[0x17];
+extern char g_zVideo_DDErrorName_OutOfCaps[0x10];
+extern char g_zVideo_DDErrorName_NoZOverlayHw[0x13];
+extern char g_zVideo_DDErrorName_NoZBufferHw[0x12];
+extern char g_zVideo_DDErrorName_NoVSyncHw[0x10];
+extern char g_zVideo_DDErrorName_NoTextureHw[0x12];
+extern char g_zVideo_DDErrorName_Not8BitColor[0x13];
+extern char g_zVideo_DDErrorName_Not4BitColorIndex[0x18];
+extern char g_zVideo_DDErrorName_Not4BitColor[0x13];
+extern char g_zVideo_DDErrorName_NoStretchHw[0x12];
+extern char g_zVideo_DDErrorName_NoRotationHw[0x13];
+extern char g_zVideo_DDErrorName_NoRasterOpHw[0x13];
+extern char g_zVideo_DDErrorName_NoOverlayHw[0x12];
+extern char g_zVideo_DDErrorName_NotFound[0x0f];
+extern char g_zVideo_DDErrorName_NoMirrorHw[0x11];
+extern char g_zVideo_DDErrorName_NoGdi[0x0c];
+extern char g_zVideo_DDErrorName_NoFlipHw[0x0f];
+extern char g_zVideo_DDErrorName_NoColorKeyHw[0x13];
+extern char g_zVideo_DDErrorName_NoDirectDrawSupport[0x1a];
+extern char g_zVideo_DDErrorName_NoExclusiveMode[0x16];
+extern char g_zVideo_DDErrorName_NoColorKey[0x11];
+extern char g_zVideo_DDErrorName_NoCooperativeLevelSet[0x1c];
+extern char g_zVideo_DDErrorName_NoColorConvHw[0x14];
+extern char g_zVideo_DDErrorName_NoClipList[0x11];
+extern char g_zVideo_DDErrorName_NoAlphaHw[0x10];
+extern char g_zVideo_DDErrorName_No3d[0x0b];
+extern char g_zVideo_DDErrorName_LockedSurfaces[0x15];
+extern char g_zVideo_DDErrorName_InvalidRect[0x12];
+extern char g_zVideo_DDErrorName_InvalidPixelFormat[0x19];
+extern char g_zVideo_DDErrorName_InvalidObject[0x14];
+extern char g_zVideo_DDErrorName_InvalidMode[0x12];
+extern char g_zVideo_DDErrorName_InvalidClipList[0x16];
+extern char g_zVideo_DDErrorName_InvalidCaps[0x12];
+extern char g_zVideo_DDErrorName_HeightAlign[0x12];
+extern char g_zVideo_DDErrorName_Exception[0x10];
+extern char g_zVideo_DDErrorName_CurrentlyNotAvail[0x18];
+extern char g_zVideo_DDErrorName_CannotDetachSurface[0x1a];
+extern char g_zVideo_DDErrorName_CannotAttachSurface[0x1a];
+extern char g_zVideo_DDErrorName_AlreadyInitialized[0x19];
+extern char g_zVideo_DDErrorName_InvalidParams[0x14];
+extern char g_zVideo_DDErrorName_OutOfMemory[0x12];
+extern char g_zVideo_DDErrorName_NotInitialized[0x15];
+extern char g_zVideo_DDErrorName_Generic[0x0e];
+extern char g_zVideo_DDErrorName_Unsupported[0x12];
 
 unsigned int __fastcall zVid_PackColorRGB(
     unsigned char red,
@@ -566,12 +747,11 @@ void __fastcall zVideo_SetClearColorPacked16(unsigned int packedColor16);
 void __fastcall zVideo_SetPendingFogTargetColorFromRgb01(
     zVideo_ColorRgbFloat *color
 );
+void zVideo_RestoreIconicFullscreenWindowIfNeeded();
+}
+
 void __fastcall zVideo_SetActiveViewContext(
     zClass_CameraDataPartial *viewContext
-);
-int __fastcall zVideo_sw_RenderFrame(
-    zClass_NodePartial *camera,
-    int updateFxPass3Local
 );
 void __fastcall zVideo_UpdateProjectionStateFromCameraData(
     zClass_CameraDataPartial *cameraData
@@ -581,8 +761,11 @@ int __fastcall zVideo_FrustumTestSphereClipMask(
     int *clipMaskInOut,
     float radius
 );
-void zVideo_RestoreIconicFullscreenWindowIfNeeded();
-}
+
+int __fastcall zVideo_sw_RenderFrame(
+    zClass_NodePartial *camera,
+    int updateFxPass3Local
+);
 
 namespace zVid {
 void __fastcall SetAccelerationOption(int accelerationOption);
@@ -607,6 +790,19 @@ int __fastcall QueryTextureMemoryBytes(
     int *freeBytes
 );
 int QueryCachedClientRectUpdateMaskIf3dfx();
+/**
+ * Reimplements 0x443a40: zVid::UpdateCachedClientRectIfUpdateMaskEnabled.
+ * Original source-shape evidence: the retail contribution lies between
+ * CZGameFrame::OnSize and CZGameFrame::OnMove, so this externally linked
+ * inline body is emitted by the first CZGameFrame call site.
+ *
+ * Purpose: refresh the cached client rectangle when the renderer-path update
+ * mask is set.
+ *
+ * Evidence: BN calls zVid::QueryCachedClientRectUpdateMaskIf3dfx and
+ * tail-jumps to zVideo::UpdateCachedClientRectScreenCoords only when the query
+ * is nonzero.
+ */
 void UpdateCachedClientRectIfUpdateMaskEnabled();
 void __fastcall SetCachedClientRectUpdateMask(int mask);
 char *GetSelectedHwApiDescriptionOrDefault();

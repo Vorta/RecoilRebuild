@@ -10,6 +10,8 @@ extern float g_zMath_ProjOffsetX;
 extern float g_zMath_ProjOffsetY;
 extern float g_zMath_InvProjScaleX;
 extern float g_zMath_InvProjScaleY;
+extern float g_zMath_ClipZLowerBound;
+extern float g_zMath_ClipZUpperBound;
 extern int g_zMath_ScreenWidthPx;
 extern int g_zMath_ScreenHeightPx;
 extern float g_zMath_FocalScaleX;
@@ -24,6 +26,7 @@ extern float g_zMath_ProjDepth;
 extern float g_zMath_ApproxExpNegTable[256];
 extern float g_zMath_ApproxExpNegScale;
 extern int g_zMath_ApproxExpNegDirty;
+extern const float g_zMath_MidpointHalf;
 
 void __fastcall zMath_Mat_TransformBBoxToCorners(
     const zMat4x3 *matrix,

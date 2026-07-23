@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GameZRecoil/RecoilApp/recoil_state_dialog_host.h"
+#include "Battlesport/recoil_state_dialog_host.h"
 
 struct HudUiCreditsPanel;
 

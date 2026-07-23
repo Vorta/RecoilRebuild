@@ -1,6 +1,6 @@
 #include "Battlesport/wol_dialog.h"
 #include "Battlesport/wol_api.h"
-#include "GameZRecoil/wwonline/wol_download.h"
+#include "Battlesport/wol_download.h"
 
 #include <ocidl.h>
 #include <string.h>
