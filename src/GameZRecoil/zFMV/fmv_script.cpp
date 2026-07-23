@@ -5,14 +5,12 @@
 #include "GameZRecoil/zHud/zhud_ui.h"
 #include "GameZRecoil/zInput/zinput.h"
 #include "GameZRecoil/zReader/zreader.h"
-#include "GameZRecoil/zRndr/zrndr.h"
+#include "GameZRecoil/zRender/zrndr.h"
 #include "GameZRecoil/zSound/zsnd.h"
 #include "GameZRecoil/zSys/zsys.h"
 #include "GameZRecoil/zVideo/zvid.h"
 
 #include <mmsystem.h>
-#include <digitalv.h>
-#include <vfw.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -46,27 +44,6 @@ struct zFMV_ActionTagStringSet {
 };
 
 extern "C" {
-/**
- * Reimplements data 0x4dfb1c: g_zFMV_MpegVideoString.
- * BN xrefs: zFMV_Playback::OpenAndPlay opens the MCI MPEGVideo device type.
- * Purpose: first literal in the playback/MCI data owner 0x4dfb1c..0x4dfb63.
- */
-char g_zFMV_MpegVideoString[] = "MPEGVideo";
-
-/**
- * Reimplements data 0x4dfb28: g_zFMV_SourceFile_FmvMainCpp.
- * BN xrefs: zFMV_Playback::ReportMciError passes the retail source path to zError.
- * Purpose: second literal in the playback/MCI data owner 0x4dfb1c..0x4dfb63.
- */
-char g_zFMV_SourceFile_FmvMainCpp[] = "D:\\Proj\\GameZRecoil\\zFMV\\fmv_main.cpp";
-
-/**
- * Reimplements data 0x4dfb50: g_zFMV_UnknownErrorIdMsg.
- * BN xrefs: zFMV_Playback::ReportMciError uses this fallback MCI error text.
- * Purpose: final literal in the playback/MCI data owner 0x4dfb1c..0x4dfb63.
- */
-char g_zFMV_UnknownErrorIdMsg[] = "Unknown Error ID";
-
 /**
  * Reimplements data 0x4dfb64: g_zFMV_ParseActionsErrorFmt.
  * BN xrefs: zFMV_Script::LoadActionsFromZrd reports malformed action arrays.
@@ -145,83 +122,6 @@ char g_zFMV_MissingDefinitionsZrdErrorMsg[] = "Failed to find FMV definitions (f
  * Purpose: zSnd sample-set selector literal adjacent to the FMV stream diagnostics.
  */
 char g_zSnd_FmvSampleSetName[] = "FMV";
-
-/**
- * Reimplements data 0x4dfc74: g_zFMV_SourceFile_FmvStreamCpp.
- * BN xrefs: zFMV_Stream error paths pass the retail source path to zError.
- * Purpose: source-file literal for AVI stream diagnostics.
- */
-char g_zFMV_SourceFile_FmvStreamCpp[] = "D:\\Proj\\GameZRecoil\\zFMV\\fmv_stream.cpp";
-
-/**
- * Reimplements data 0x4dfc9c: g_zFMV_CannotReadAviStreamInfoMsg.
- * BN xrefs: zFMV_Stream::Constructor reports AVI video stream-info failures.
- * Purpose: AVI stream diagnostic literal in retail .data order.
- */
-char g_zFMV_CannotReadAviStreamInfoMsg[] = "Cannot Read AVI Stream Info";
-
-/**
- * Reimplements data 0x4dfcb8: g_zFMV_CannotReadAviFormatMsg.
- * BN xrefs: zFMV_Stream::Constructor reports AVI video format read failures.
- * Purpose: AVI stream diagnostic literal in retail .data order.
- */
-char g_zFMV_CannotReadAviFormatMsg[] = "Cannot Read AVI Format";
-
-/**
- * Reimplements data 0x4dfcd0: g_zFMV_CannotReadAviFormatSizeMsg.
- * BN xrefs: zFMV_Stream::Constructor reports AVI video format-size failures.
- * Purpose: AVI stream diagnostic literal in retail .data order.
- */
-char g_zFMV_CannotReadAviFormatSizeMsg[] = "Cannot Read AVI Format Size";
-
-/**
- * Reimplements data 0x4dfcec: g_zFMV_CannotOpenAviFileMsg.
- * BN xrefs: zFMV_Stream::Constructor reports AVI video stream open failures.
- * Purpose: AVI stream diagnostic literal in retail .data order.
- */
-char g_zFMV_CannotOpenAviFileMsg[] = "Cannot Open AVI File";
-
-/**
- * Reimplements data 0x4dfd04: g_zFMV_CannotReadAviSoundStreamMsg.
- * BN xrefs: zFMV_Stream audio read paths report AVI sound stream failures.
- * Purpose: AVI stream diagnostic literal in retail .data order.
- */
-char g_zFMV_CannotReadAviSoundStreamMsg[] = "Cannot Read AVI Sound Stream";
-
-/**
- * Reimplements data 0x4dfd24: g_zFMV_CannotReadAviSoundStreamInfoMsg.
- * BN xrefs: zFMV_Stream::OpenAudio reports AVI sound stream-info failures.
- * Purpose: AVI stream diagnostic literal in retail .data order.
- */
-char g_zFMV_CannotReadAviSoundStreamInfoMsg[] = "Cannot Read AVI Sound Stream Info";
-
-/**
- * Reimplements data 0x4dfd48: g_zFMV_CannotReadAviSoundFormatMsg.
- * BN xrefs: zFMV_Stream::OpenAudio reports AVI sound format read failures.
- * Purpose: AVI stream diagnostic literal in retail .data order.
- */
-char g_zFMV_CannotReadAviSoundFormatMsg[] = "Cannot Read AVI Sound Format";
-
-/**
- * Reimplements data 0x4dfd68: g_zFMV_CannotReadAviSoundFormatSizeMsg.
- * BN xrefs: zFMV_Stream::OpenAudio reports AVI sound format-size failures.
- * Purpose: AVI stream diagnostic literal in retail .data order.
- */
-char g_zFMV_CannotReadAviSoundFormatSizeMsg[] = "Cannot Read AVI Sound Format Size";
-
-/**
- * Reimplements data 0x4dfd8c: g_zFMV_CannotDecompressAviVideoStreamMsg.
- * BN xrefs: zFMV_Stream::ReadAndDecodeFrame reports video decompression failures.
- * Purpose: AVI stream diagnostic literal in retail .data order.
- */
-char g_zFMV_CannotDecompressAviVideoStreamMsg[] = "Cannot Decompress AVI Video Stream";
-
-/**
- * Reimplements data 0x4dfdb0: g_zFMV_CannotReadAviVideoStreamMsg.
- * BN xrefs: zFMV_Stream::ReadAndDecodeFrame reports AVI video read failures.
- * Purpose: AVI stream diagnostic literal in retail .data order.
- */
-char g_zFMV_CannotReadAviVideoStreamMsg[] = "Cannot Read AVI Video Stream";
 }
 
 /**
@@ -262,33 +162,6 @@ const int k_zFMV_BlurModeHorizontal = 1;
 const int k_zFMV_BlurModeVertical = 2;
 const int k_zFMV_BlurModeCombined = 3;
 
-struct zFMV_MciWindowParams {
-    DWORD_PTR callback;
-    HWND hwnd;
-    unsigned int commandShow;
-    const char *text;
-};
-
-struct zFMV_MciRectParams {
-    DWORD_PTR callback;
-    int left;
-    int top;
-    int width;
-    int height;
-};
-
-struct zFMV_MciSetParams {
-    DWORD_PTR callback;
-    DWORD timeFormat;
-    DWORD audio;
-};
-
-struct zFMV_MciPlayParams {
-    DWORD_PTR callback;
-    DWORD from;
-    DWORD to;
-};
-
 /**
  * Original inline helper evidence: BN 0x4631f0 copies the active-region rect
  * state through a destination rect pointer after zRndr::GetActiveRegionState.
@@ -298,21 +171,6 @@ static inline void CopyActionImageActiveRegionRect(
     zVidRect32 *rect
 ) {
     *rect = g_zFMV_ActionImage_ActiveRegion;
-}
-
-/**
- * Observed in callers 0x462330, 0x4631af, 0x463221, 0x4635af, and 0x463b2f.
- * Original inline helper evidence: recovered from address-backed callers in this source file.
- * Purpose: duplicate an input C string through the active C runtime spelling.
- */
-static inline char *DuplicateCString(
-    const char *value
-) {
-#if defined(_MSC_VER)
-    return _strdup(value);
-#else
-    return strdup(value);
-#endif
 }
 
 /**
@@ -356,10 +214,6 @@ const char *StringArg(
 
 } // namespace
 
-/* Source-file block layout: the current native build still compiles this compatibility container.
- * The included fragment files below hold the ledger physical source rows.
- */
-#include "fmv_main.cpp"
 /**
  * Reimplements 0x4625e0: zFMV_Script::Init.
  * Purpose: initialize an FMV script object and optionally load its action sequence.
@@ -1470,8 +1324,7 @@ zFMV_ActionPlayMci::~zFMV_ActionPlayMci() {
 
     zFMV_Playback *const playbackObject = playback;
     if (playbackObject != 0) {
-        playbackObject->Destructor();
-        ::operator delete(playbackObject);
+        delete playbackObject;
         playback = 0;
     }
 }
@@ -1552,8 +1405,6 @@ void zFMV_ActionPlayMci::End() {
         zVid_Image::ReleaseIfNotDefault(capturedImage);
     }
 }
-
-#include "fmv_stream.cpp"
 
 /**
  * Original inline helper; no standalone retail function exists.

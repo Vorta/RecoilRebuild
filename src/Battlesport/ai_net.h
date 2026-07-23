@@ -821,9 +821,6 @@ void __fastcall AINet::TickAiMode2TopLevel(
     }
 }
 
-#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
-#pragma optimize("y", off)
-#endif
 
 /**
  * Reimplements 0x401180: AINet::TickAiMode2PathFollow (Battlesport/ai_net.h).
@@ -981,7 +978,7 @@ int __fastcall AINet::AiMode2ForwardProbeRequiresAutoTurn(
     const float forwardProbeOffset =
         AINET_MAX(
             zMath::Vec3Normalize(&forwardDir),
-            kPlayerAiForwardProbeMinLength
+            1.0f
         ) * kPlayerAiForwardProbeLengthHalfScale -
         masterModalData->probePoints[1].z;
     segmentPairs[0].end.x = forwardProbeOffset * forwardDir.x;
@@ -1093,9 +1090,6 @@ void __fastcall AINet::AiAdvancePathCursorAndComputeTargetVec(
     AINET_VECTOR_SUBTRACT(outTargetVec, worldPosition, selectedPosition);
 }
 
-#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
-#pragma optimize("y", on)
-#endif
 
 /**
  * Reimplements 0x4016a0: AINet::AiChooseNextPathBranchIndex (Battlesport/ai_net.h).
@@ -1232,9 +1226,10 @@ void __fastcall AINet::TickAiMode2SteeringSubstate(
     }
 
     if (masterModalData->masterType == kPlayerMasterTypeSub) {
-        const float pitchInput = (g_Player_AiMode2_SteeringPitchInputScale * verticalDistanceScale -
-                                     playerState->vehiclePitchRad) *
-                                 g_Player_AiMode2_SteeringPitchTurnGain;
+        float pitchInput = g_Player_AiMode2_SteeringPitchInputScale;
+        pitchInput *= verticalDistanceScale;
+        pitchInput = (pitchInput - playerState->vehiclePitchRad) *
+                     g_Player_AiMode2_SteeringPitchTurnGain;
         playerState->subPitchInput = pitchInput;
         playerState->subPitchInputCopy = pitchInput;
 
@@ -1275,36 +1270,24 @@ void __fastcall AINet::UpdateAiMode2MoveAndTurnTowardTarget(
     float targetDistance
 ) {
     zUtil_PlayerStateStorage *const playerState = saveState->playerState;
-    float *const throttleInput = &playerState->throttleInput;
-    float *const steeringInput = &playerState->steeringInput;
 
     if (forwardDot <= 0.0f) {
-        *throttleInput = 0.0f;
-        *steeringInput = (float)(lateralDot < 0.0f ? -1 : 1);
-        playerState->throttleInputCopy = *throttleInput;
-        playerState->steeringInputCopy = *steeringInput;
-        return;
+        playerState->throttleInput = 0.0f;
+        const int steeringDirection = lateralDot < 0.0f ? -1 : 1;
+        playerState->steeringInput = (float)steeringDirection;
+    } else {
+        playerState->steeringInput = lateralDot;
+        if (targetDistance > playerState->aiNet->pursuitParam1) {
+            playerState->throttleInput = 1.0f;
+        } else if (targetDistance < playerState->aiNet->pursuitParam0) {
+            playerState->throttleInput = -1.0f;
+        } else {
+            playerState->throttleInput = 0.0f;
+        }
     }
 
-    AINet *const aiNet = playerState->aiNet;
-    playerState->steeringInput = lateralDot;
-    if (targetDistance > aiNet->pursuitParam1) {
-        *throttleInput = 1.0f;
-        playerState->steeringInputCopy = *steeringInput;
-        playerState->throttleInputCopy = *throttleInput;
-        return;
-    }
-
-    if (targetDistance < aiNet->pursuitParam0) {
-        *throttleInput = -1.0f;
-        playerState->steeringInputCopy = *steeringInput;
-        playerState->throttleInputCopy = *throttleInput;
-        return;
-    }
-
-    *throttleInput = 0.0f;
-    playerState->steeringInputCopy = *steeringInput;
-    playerState->throttleInputCopy = *throttleInput;
+    playerState->throttleInputCopy = playerState->throttleInput;
+    playerState->steeringInputCopy = playerState->steeringInput;
 }
 
 /**
@@ -1499,6 +1482,12 @@ void __fastcall AINet::AiEnterMode2SteeringPursuit(
  * Purpose: tests whether the active local player fx-offset position has an
  * unobstructed ray path to the supplied point while temporarily excluding the
  * tested node and local player root from raycast candidates.
+ *
+ * Source model: pure C++ two-call if/else. The directionMode parameter is
+ * overwritten with the RaycastFindClosest result so the selector remains a
+ * read-before-write scalar across both arms (ChatGPT Pro hard-byte critique
+ * 401d50-critique-current-island: untested lowering for EAX materialization,
+ * common EDX=&rayData hoist, and post-call result coalescing). No inline asm.
  */
 int __fastcall AINet::HasLineOfSightFromLocalPlayerFxOffset(
     zClass_NodePartial *node,
@@ -1509,21 +1498,14 @@ int __fastcall AINet::HasLineOfSightFromLocalPlayerFxOffset(
         (zUtil_PlayerStateStorage *)(g_GameStateOrMapTable->playerState);
 
     g_Variant_CurrentTag = playerState->variantTag;
-    zClass_Class::gwNodeSetRaycastable(
-        node,
-        0
-    );
-    zClass_Class::gwNodeSetRaycastable(
-        playerState->rootNode,
-        0
-    );
+    zClass_Class::gwNodeSetRaycastable(node, 0);
+    zClass_Class::gwNodeSetRaycastable(playerState->rootNode, 0);
     zClass_cls_di::SetBreakOnFirstCandidate(1);
     zClass_cls_di::SetStopAfterFirstHit(0x40000);
 
     PlayerProbeSampleCandidateBuffer rayData;
-    int raycastResult;
     if (directionMode == 1) {
-        raycastResult = zClass_cls_di::RaycastFindClosest(
+        directionMode = zClass_cls_di::RaycastFindClosest(
             g_Player_RuntimeDiScene,
             &rayData,
             playerState->fxOffsetWorld.x,
@@ -1534,7 +1516,7 @@ int __fastcall AINet::HasLineOfSightFromLocalPlayerFxOffset(
             point->z
         );
     } else {
-        raycastResult = zClass_cls_di::RaycastFindClosest(
+        directionMode = zClass_cls_di::RaycastFindClosest(
             g_Player_RuntimeDiScene,
             &rayData,
             point->x,
@@ -1545,18 +1527,13 @@ int __fastcall AINet::HasLineOfSightFromLocalPlayerFxOffset(
             playerState->fxOffsetWorld.z
         );
     }
-
     zClass_cls_di::SetBreakOnFirstCandidate(0);
-    zClass_Class::gwNodeSetRaycastable(
-        playerState->rootNode,
-        1
-    );
-    zClass_Class::gwNodeSetRaycastable(
-        node,
-        1
-    );
-
-    return raycastResult == 0 && rayData.candidateCount != 0 ? 0 : 1;
+    zClass_Class::gwNodeSetRaycastable(playerState->rootNode, 1);
+    zClass_Class::gwNodeSetRaycastable(node, 1);
+    if (directionMode == 0 && rayData.candidateCount != 0) {
+        return 0;
+    }
+    return 1;
 }
 
 /**
@@ -1785,7 +1762,7 @@ void __fastcall AINet::UpdateAiMode2TurnInPlaceTowardPlayer(
 
 /**
  * Reimplements 0x402250: AINet::TickAiMode2AltGunAttackWindow.
- * Original source path: Battlesport/ai_net.h.
+ * Provisional source-placement hypothesis: Battlesport/ai_net.h.
  * Purpose: reimplement AINet::TickAiMode2AltGunAttackWindow from the recovered
  * Battlesport ai_net.cpp source-file contribution.
  */
@@ -1893,7 +1870,7 @@ void __fastcall AINet::TickAiMode2AltGunAttackWindow(
 
 /**
  * Reimplements 0x4024a0: AINet::SolveAltGunLeadTargetPoint.
- * Original source path: Battlesport/ai_net.h.
+ * Provisional source-placement hypothesis: Battlesport/ai_net.h.
  * Purpose: reimplement AINet::SolveAltGunLeadTargetPoint from the recovered
  * Battlesport ai_net.cpp source-file contribution.
  */
@@ -2139,7 +2116,7 @@ void __fastcall AINet::TickAiMode2TimedPathSteering(
 
 /**
  * Reimplements 0x402be0: AINet::AiSteerTowardPathNodeForward.
- * Original source path: Battlesport/ai_net.h.
+ * Provisional source-placement hypothesis: Battlesport/ai_net.h.
  * Purpose: reimplement AINet::AiSteerTowardPathNodeForward from the recovered
  * Battlesport ai_net.cpp source-file contribution.
  */
@@ -2211,7 +2188,7 @@ void __fastcall AINet::AiSteerTowardPathNodeForward(
 
 /**
  * Reimplements 0x402d60: AINet::AiSteerTowardPathNodeReverse.
- * Original source path: Battlesport/ai_net.h.
+ * Provisional source-placement hypothesis: Battlesport/ai_net.h.
  * Purpose: reimplement AINet::AiSteerTowardPathNodeReverse from the recovered
  * Battlesport ai_net.cpp source-file contribution.
  */

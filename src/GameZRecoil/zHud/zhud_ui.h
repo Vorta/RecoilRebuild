@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "Battlesport/recoil_app.h"
-#include "GameZRecoil/RecoilApp/recoil_state_dialog_host.h"
+#include "Battlesport/recoil_state_dialog_host.h"
 #include "GameZRecoil/zReader/zreader.h"
 #include "GameZRecoil/zVideo/zvid.h"
 #include "GameZRecoil/zInput/zinput.h"
@@ -305,7 +305,7 @@ struct HudUiContainer {
     ~HudUiContainer();
 
     virtual void UpdateAll(float deltaSeconds);
-    virtual void SetEnabled(int enabled);
+    void SetEnabled(int enabled);
 
     int enabled;
     HudUiElement *childHead;
@@ -515,6 +515,7 @@ void __stdcall DispatchSetScale(float deltaTime);
 extern char g_HudUiMessage_NodeName[8];
 extern char g_HudUiMessage_SeparatorColon[2];
 extern char g_HudSensorTracker_ReadFileFailedFmt[18];
+extern char g_HudCfgKey_Fonts[6];
 extern char g_HudZrd_Key_Sound[6];
 extern int g_HudUiMgrObjectiveChatComposeActive;
 struct HudUiObjectiveBar;
@@ -554,7 +555,6 @@ struct StdPtrVector {
         int *begin,
         int *end
     );
-    void FreeBufferAndReset();
 };
 
 struct HudUiPrimitiveBindTarget : HudUiElement {
@@ -669,7 +669,7 @@ struct HudUiBackgroundContainer : HudUiContainer {
     HudUiBackgroundContainer(int initFlag);
     ~HudUiBackgroundContainer();
     virtual void UpdateAll(float deltaSeconds);
-    virtual void SetEnabled(int enabled);
+    void SetEnabled(int enabled);
     void SetInputFocus(HudUiElement *element);
     HudUiElement * GetInputFocus();
 };
@@ -750,142 +750,13 @@ struct HudUiBackgroundMemberCursorWidget : HudUiBackgroundCursorWidget {
     }
 };
 
-struct HudUiPanelPtrAllocator {
-    char value;
-
-    /**
-     * Restores the original-source inline one-byte VC5 allocator subobject used by
-     * std::vector<HudUiPanel *> member construction. No standalone retail
-     * function exists; observed in caller 0x4b4ee0.
-     * Purpose: keep the recovered vector layout aligned with the retail
-     * allocator/_First/_Last/_End object shape.
-     */
-    HudUiPanelPtrAllocator() {
-#if !defined(_MSC_VER) || _MSC_VER >= 1200
-        value = 0;
-#endif
-    }
-};
-
-struct HudUiPanelPtrVector {
-    // Recovered VC5 std::vector<HudUiPanel *> storage. Native builds keep the
-    // ABI-compatible record because host STL vector layout is not compatible
-    // with the retail VC5 object layout.
-    HudUiPanelPtrAllocator allocatorProxy;
-    char padding[3];
-    HudUiPanel **begin;
-    HudUiPanel **end;
-    HudUiPanel **capacityEnd;
-
-    /**
-     * Restores the original-source inline VC5 std::vector<HudUiPanel *> default constructor. No
-     * standalone retail function exists; observed in caller 0x4b4ee0 as
-     * allocator copy construction followed by zeroed begin/end/capacity
-     * iterators.
-     * Purpose: preserve the original panel-vector member construction shape.
-     */
-    explicit HudUiPanelPtrVector(const HudUiPanelPtrAllocator &allocator = HudUiPanelPtrAllocator())
-        : allocatorProxy(allocator), begin(0), end(0), capacityEnd(0) {
-    }
-
-    /**
-     * Restores the original-source inline VC5 std::vector<HudUiPanel *> destructor.
-     * The EH table for 0x4b4ee0 invokes 0x4ba470 for each constructed panel
-     * vector member, proving the vector owns this free-buffer cleanup.
-     * Purpose: preserve constructor unwind cleanup for recovered panel-vector members.
-     */
-    ~HudUiPanelPtrVector() {
-        HudUiPanel **const oldBegin = begin;
-        ::operator delete(oldBegin);
-        begin = 0;
-        end = 0;
-        capacityEnd = 0;
-    }
-
-    /**
-     * Restores the original-source inline vector size query. No standalone
-     * retail function exists; observed in callers 0x4b4ba0, 0x4b4ca0, and
-     * 0x4b4e60 as a null begin guard followed by end-begin pointer arithmetic.
-     * Purpose: keep panel-vector users expressed as typed vector operations.
-     */
-    int Count() const {
-        if (begin == 0) {
-            return 0;
-        }
-        return (int)(end - begin);
-    }
-
-    /**
-     * Restores the original-source inline vector element access. No standalone
-     * retail function exists; observed in callers 0x4b4ba0, 0x4b4ca0, and
-     * 0x4b4e60 as a reload of the first iterator before dereferencing.
-     * Purpose: keep first-panel access tied to the recovered vector owner.
-     */
-    HudUiPanel * At(unsigned int index) const {
-        return begin[index];
-    }
-
-    HudUiPanel ** EraseRange(
-        HudUiPanel **first,
-        HudUiPanel **last
-    );
-    /**
-     * Restores the VC5 std::vector<HudUiPanel *>::erase(first,last) body
-     * inlined into 0x4b4ee0. The retail constructor keeps the dead
-     * copy-and-destroy path for clear-on-empty panel vectors before updating
-     * the vector end iterator.
-     * Purpose: preserve the original inline STL erase shape for constructor
-     * byte verification while keeping the recovered vector storage typed.
-     */
-    HudUiPanel ** EraseRangeNoDestroyInline(
-        HudUiPanel **first,
-        HudUiPanel **last
-    ) {
-        HudUiPanel **write = first;
-        HudUiPanel **read = last;
-        HudUiPanel **const oldEnd = end;
-        if (read != oldEnd) {
-            do {
-                *write++ = *read++;
-            } while (read != oldEnd);
-        }
-        ((StdPtrVector *)(this))->ClearNoOpDestroy(
-            (int *)(write),
-            (int *)(oldEnd)
-        );
-        end = write;
-        return first;
-    }
-
-    /**
-     * Original inline helper evidence: no standalone retail function exists;
-     * recovered from the full-range vector erase inlined in
-     * HudUiZrdWidget::HudUiZrdWidget at 0x4b4ee0.
-     * Purpose: express the constructor's clear-on-empty panel-vector erase through
-     * the owning vector object so VC5 preserves the original cleanup shape.
-     */
-    HudUiPanel ** EraseRangeNoDestroyInline(HudUiPanel **first) {
-        HudUiPanel **write = first;
-        HudUiPanel **read = end;
-        HudUiPanel **const oldEnd = end;
-        if (read != oldEnd) {
-            do {
-                *write++ = *read++;
-            } while (read != oldEnd);
-        }
-        ((StdPtrVector *)(this))->ClearNoOpDestroy(
-            (int *)(write),
-            (int *)(oldEnd)
-        );
-        end = write;
-        return first;
-    }
-    void InsertN(
-        HudUiPanel **position,
-        unsigned int count,
-        HudUiPanel **valueSource
-    );
-};
+/**
+ * Compiler-emitted 0x4ba470: canonical VC5
+ * std::vector<HudUiPanel *>::~vector provider COMDAT used by the four
+ * HudUiZrdWidget panel-vector members. This is provider output from the
+ * ordinary STL source model, not an authored retail owner.
+ */
+typedef std::vector<HudUiPanel *> HudUiPanelPtrVector;
 
 struct HudUiZrdWidget : HudUiWidget {
     int originX;
@@ -1176,11 +1047,7 @@ struct HudUiListSelectorItem : HudUiPanel {
     int entryIndex;
     void *owner;
 
-    /**
- * Reimplements 0x4b92a0: HudUiListSelectorItem::HudUiListSelectorItem.
- * Purpose: preserve the recovered HUD behavior for HudUiListSelectorItem::HudUiListSelectorItem.
- */
-HudUiListSelectorItem() :
+    HudUiListSelectorItem() :
         HudUiPanel(
             0,
             0,
@@ -1892,6 +1759,15 @@ struct HudUiChatComposeTextInput : HudUiTextInput {
     virtual void OnAccept();
 };
 
+/**
+ * Emits 0x41a3f0: compiler-generated HudUiNumericTextInput destructor tail
+ * thunk.
+ *
+ * Retail evidence: the complete body is a five-byte tail jump to the authored
+ * destructor at 0x4b4ac0. It has lifecycle/EH cleanup callers and no table or
+ * data references, so it is compiler inventory rather than a second authored
+ * destructor definition.
+ */
 struct HudUiNumericTextInput : HudUiZrdWidget {
     HudUiOwnedTextInput textInput;
     HudUiSliderBorder sliderBorder;
@@ -1901,7 +1777,6 @@ struct HudUiNumericTextInput : HudUiZrdWidget {
     HudUiNumericTextInput * Constructor(unsigned int maxDigits);
     HudUiNumericTextInput * BaseConstructor();
     void Destructor();
-    void DestructorThunk();
     void AllocTextBuffer(unsigned int bufferSize);
     char * GetBuffer();
     void Update(const char *text);
@@ -3649,25 +3524,9 @@ RECOIL_STATIC_ASSERT(
         alignMode
     ) == 0x144
 );
+#if defined(_MSC_VER) && _MSC_VER < 1200
 RECOIL_STATIC_ASSERT(sizeof(HudUiPanelPtrVector) == 0x10);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiPanelPtrVector,
-        begin
-    ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiPanelPtrVector,
-        end
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiPanelPtrVector,
-        capacityEnd
-    ) == 0x0c
-);
+#endif
 RECOIL_STATIC_ASSERT(sizeof(HudUiZrdWidget) == 0x14c);
 RECOIL_STATIC_ASSERT(
     offsetof(

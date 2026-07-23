@@ -267,10 +267,6 @@ OptCatalogTrailRuntimeState *__fastcall CreateTrailRuntimeState(
     zVec3 *spawnDir,
     int segmentCount
 );
-OptCatalogRuntimeInstanceStorage *__fastcall MineIterator_Begin(
-    OptCatalogEntryDef *entry
-);
-OptCatalogRuntimeInstanceStorage *MineIterator_Next();
 void __fastcall SetPendingSpawnTargetOverrides(
     void *pendingSpawnTargetCountPtr,
     void *pendingSpawnTargetListPtr
@@ -449,6 +445,13 @@ int __fastcall ComputeTrailImpactResponse(
 );
 void __fastcall UpdateTrailSegmentVisual(OptCatalogTrailNodeSlot *segment);
 } // namespace OptCatalog
+
+namespace OptCatalog_MineIterator {
+OptCatalogRuntimeInstanceStorage *__fastcall Begin(
+    OptCatalogEntryDef *entry
+);
+OptCatalogRuntimeInstanceStorage *Next();
+} // namespace OptCatalog_MineIterator
 
 namespace DamageFeedback {
 void __stdcall SetIntensityScalar(float scalar);

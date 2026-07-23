@@ -8,11 +8,11 @@
 #include "GameZRecoil/zError/zerr.h"
 #include "GameZRecoil/zModel/gmod.h"
 #include "GameZRecoil/zReader/zreader.h"
-#include "GameZRecoil/zRndr/zrndr.h"
+#include "GameZRecoil/zRender/zrndr.h"
 #include "GameZRecoil/zUtil/zutil.h"
 #include "GameZRecoil/zVideo/zvid.h"
 #include "GameZRecoil/zWeapon/zwep.h"
-#include "GameZRecoil/wwonline/wol_download.h"
+#include "Battlesport/wol_download.h"
 
 #include <ctype.h>
 #include <direct.h>
@@ -348,268 +348,6 @@ int zInterp_Context::DeferredDispatchHook(
 }
 
 /**
- * Reimplements 0x4c58c0: zInterp_Context::DefaultDispatchHook.
- * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
- *
- * Purpose: accept the default zClass node dispatch callback after touching
- * the node user-data provider entry.
- */
-int __stdcall zInterp_Context::DefaultDispatchHook(
-    zClass_NodePartial *node
-) {
-    if (node != 0) {
-        zClass_Class::gwNodeGetUserData(
-            node,
-            0
-        );
-    }
-
-    return 0;
-}
-
-namespace zInterp_Object3D {
-/**
- * Reimplements 0x4c59e0: zInterp_Object3D::DefaultRenderAction.
- * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
- *
- * Purpose: update scrolling textures for a node's display-instance payload.
- */
-int __fastcall DefaultRenderAction(
-    zClass_NodePartial *node
-) {
-    unsigned int userData = 0;
-    zClass_Class::gwNodeGetUserData(
-        node,
-        &userData
-    );
-    return zModel_Instance_UpdateScrollingTexturesIfNeeded((zModel_InstancePartial *)(userData));
-}
-
-/**
- * Reimplements 0x4c5a00: zInterp_Object3D::ScrollAlwaysTickAction.
- * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
- *
- * Purpose: walk the context-owned always-scroll list and run the texture
- * update action for each payload node.
- */
-void __fastcall ScrollAlwaysTickAction(
-    zClass_NodePartial *wrapperNode
-) {
-    if (wrapperNode == 0) {
-        return;
-    }
-
-    zInterp_Context *const context = (zInterp_Context *)(wrapperNode->callbackContext);
-    zInterp_LinkNode *const head = context->scrollAlwaysListHead;
-    zInterp_LinkNode *entry = head->next;
-    while (entry != head) {
-        DefaultRenderAction((zClass_NodePartial *)(entry->payload));
-        entry = entry->next;
-    }
-}
-} // namespace zInterp_Object3D
-
-/**
- * Reimplements 0x4c1b30: zInterp_Context::Logf.
- * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
- *
- * Purpose: forward formatted parser logging to the context callback.
- */
-void zInterp_Context::Logf(
-    zInterp_Context *ctx,
-    const char *fmt,
-    ...
-) {
-    if (ctx->logFn != 0) {
-        va_list args;
-        va_start(
-            args,
-            fmt
-        );
-        ctx->logFn(
-            fmt,
-            (char *)args
-        );
-        va_end(args);
-    }
-}
-
-/**
- * Reimplements 0x4c5520: zInterp_Context::ReportErrorf.
- * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
- *
- * Purpose: mark the current line failed and forward formatted parser logging.
- */
-void zInterp_Context::ReportErrorf(
-    zInterp_Context *ctx,
-    const char *fmt,
-    ...
-) {
-    ctx->lineHadError = 1;
-    if (ctx->logFn != 0) {
-        va_list args;
-        va_start(
-            args,
-            fmt
-        );
-        ctx->logFn(
-            fmt,
-            (char *)args
-        );
-        va_end(args);
-    }
-}
-
-/**
- * Reimplements 0x4c1b20: zInterp_Context::IncErrorCount.
- * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
- *
- * Purpose: count one parser error for the current command line.
- */
-void zInterp_Context::IncErrorCount() {
-    ++errorCount;
-}
-
-/**
- * Reimplements 0x4c2090: zInterp_Context::ReportParseError.
- * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
- *
- * Purpose: count an unhandled command parse error and report failure.
- */
-int zInterp_Context::ReportParseError(
-    char *
-) {
-    IncErrorCount();
-    return 1;
-}
-
-/**
- * Reimplements 0x4c15f0: zInterp_Context::FindMacroValue.
- * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
- *
- * Purpose: locate a macro entry by name and optionally return its table slot.
- */
-char * zInterp_Context::FindMacroValue(
-    const char *name,
-    zInterp_MacroEntry **outEntry
-) {
-    for (unsigned int macroIndex = 0; macroIndex < macroCount; ++macroIndex) {
-        zInterp_MacroEntry *const entry = &macroTable[macroIndex];
-        if (strcmp(
-            entry->name,
-            name
-        ) == 0) {
-            if (outEntry != 0) {
-                *outEntry = entry;
-            }
-            return entry->value;
-        }
-    }
-
-    return 0;
-}
-
-/**
- * Reimplements 0x4c1710: zInterp_Context::IsMacroTrue.
- * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
- *
- * Purpose: test whether a named macro currently holds the TRUE literal.
- */
-int zInterp_Context::IsMacroTrue(
-    const char *name
-) {
-    const char *const value = FindMacroValue(
-        name,
-        0
-    );
-    return value != 0 && strcmp(
-        value,
-        "TRUE"
-    ) == 0;
-}
-
-/**
- * Reimplements 0x4c1780: zInterp_Context::SetMacro.
- * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
- *
- * Purpose: create or update one dynamically allocated macro table entry.
- */
-int zInterp_Context::SetMacro(
-    const char *name,
-    const char *value
-) {
-    zInterp_MacroEntry *entry = 0;
-    if (name == 0 || value == 0) {
-        return 0;
-    }
-
-    if (FindMacroValue(
-        name,
-        &entry
-    ) != 0) {
-        const size_t valueSize = strlen(value) + 1;
-        entry->value = (char *)(realloc(
-            entry->value,
-            valueSize
-        ));
-        memcpy(
-            entry->value,
-            value,
-            valueSize
-        );
-        return 1;
-    }
-
-    macroTable =
-        (zInterp_MacroEntry *)(realloc(
-            macroTable,
-            (macroCount + 1) * sizeof(zInterp_MacroEntry)
-        ));
-    entry = &macroTable[macroCount];
-    entry->name = _strdup(name);
-    entry->value = _strdup(value);
-    ++macroCount;
-    return 1;
-}
-
-/**
- * Reimplements 0x4c1670: zInterp_Context::ClearMacroTable.
- * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
- *
- * Purpose: free all macro names, values, and table storage for the context.
- */
-void zInterp_Context::ClearMacroTable() {
-    for (unsigned int macroIndex = 0; macroIndex < macroCount; ++macroIndex) {
-        free(macroTable[macroIndex].name);
-        free(macroTable[macroIndex].value);
-    }
-
-    if (macroTable != 0) {
-        free(macroTable);
-    }
-    macroTable = 0;
-    macroCount = 0;
-}
-
-/**
- * Reimplements 0x4c16c0: zInterp_Context::ClearVarTable.
- * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
- *
- * Purpose: free variable table names and release the context's table storage.
- */
-void zInterp_Context::ClearVarTable() {
-    for (unsigned int varIndex = 0; varIndex < varCount; ++varIndex) {
-        free(varTable[varIndex].name);
-    }
-
-    if (varTable != 0) {
-        free(varTable);
-    }
-    varTable = 0;
-    varCount = 0;
-}
-
-/**
  * Reimplements 0x4c0d20: zInterp_Context::Constructor.
  * Source path: D:\Proj\GameZRecoil\zInterp\interp_context.c.
  *
@@ -672,44 +410,6 @@ zInterp_Context * zInterp_Context::Constructor(
 }
 
 /**
- * Reimplements 0x4c0f70: zInterp_Context::Destroy.
- * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
- *
- * Purpose: clear per-run parser tables, search paths, scroll callbacks, and
- * pointer-array state while leaving constructor-owned storage intact.
- */
-void zInterp_Context::Destroy() {
-    ClearMacroTable();
-    ClearVarTable();
-    ClearFileFrameStack();
-
-    if (archiveSearchList != 0) {
-        zUtil_ZRDR_FreeSearchPathList(archiveSearchList);
-        archiveSearchList = 0;
-    }
-
-    scrollAlwaysDriverNode = 0;
-
-    zInterp_LinkNode *const head = scrollAlwaysListHead;
-    zInterp_LinkNode *node = head->next;
-    while (node != head) {
-        zInterp_LinkNode *const next = node->next;
-        node->prev->next = node->next;
-        node->next->prev = node->prev;
-        delete node;
-        --scrollAlwaysListCount;
-        node = next;
-    }
-
-    if (ptrArrayHead != 0) {
-        free(ptrArrayHead);
-    }
-    ptrArrayHead = 0;
-    ptrArrayCount = 0;
-    includeDepth = 0;
-}
-
-/**
  * Reimplements 0x4c0e50: zInterp_Context::Destructor.
  * Source path: D:\Proj\GameZRecoil\zInterp\interp_context.c.
  *
@@ -754,123 +454,199 @@ void zInterp_Context::Destructor() {
 }
 
 /**
- * Reimplements 0x4c58e0: zInterp_Context::RegisterScrollAlwaysNode.
+ * Reimplements 0x4c0f70: zInterp_Context::Destroy.
  * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
  *
- * Purpose: register a node for immediate or driver-driven texture scrolling.
+ * Purpose: clear per-run parser tables, search paths, scroll callbacks, and
+ * pointer-array state while leaving constructor-owned storage intact.
  */
-int zInterp_Context::RegisterScrollAlwaysNode(
-    zClass_NodePartial *node,
-    float textureWorldPerMeter,
-    int textureWorldAxis,
-    int installDriverCallback
-) {
-    if (node == 0) {
-        return 0;
+void zInterp_Context::Destroy() {
+    ClearMacroTable();
+    ClearVarTable();
+    ClearFileFrameStack();
+
+    if (archiveSearchList != 0) {
+        zUtil_ZRDR_FreeSearchPathList(archiveSearchList);
+        archiveSearchList = 0;
     }
 
-    unsigned int diValue = 0;
-    zClass_Class::gwNodeGetUserData(
-        node,
-        &diValue
-    );
-    zDiPartial *const di = (zDiPartial *)(diValue);
-    if (di == 0) {
-        return 0;
-    }
-
-    zModel::SetDiTextureWorldPerMeter(
-        di,
-        1,
-        textureWorldPerMeter,
-        textureWorldAxis
-    );
-
-    if (installDriverCallback == 0) {
-        zClass_Class::gwNodeSetActionCallback(
-            node,
-            (void *)(&zInterp_Object3D::DefaultRenderAction)
-        );
-        return 1;
-    }
-
-    if (scrollAlwaysDriverNode == 0) {
-        scrollAlwaysDriverNode = zClass_Object3D::gwObject3DInit();
-        zClass_Class::gwNodeSetActionCallback(
-            scrollAlwaysDriverNode,
-            (void *)(&zInterp_Object3D::ScrollAlwaysTickAction)
-        );
-        zClass_Class::gwNodeSetName(
-            scrollAlwaysDriverNode,
-            g_zInterp_ScrollAlwaysNodeName
-        );
-        scrollAlwaysDriverNode->callbackContext = (zClass_NodePartial *)(this);
-    }
+    scrollAlwaysDriverNode = 0;
 
     zInterp_LinkNode *const head = scrollAlwaysListHead;
-    zInterp_LinkNode *const tail = head->prev;
-    zInterp_LinkNode *const entry = new zInterp_LinkNode;
-    entry->next = head != 0 ? head : entry;
-    entry->prev = tail != 0 ? tail : entry;
-    head->prev = entry;
-    entry->prev->next = entry;
-    entry->payload = node;
-    ++scrollAlwaysListCount;
+    zInterp_LinkNode *node = head->next;
+    while (node != head) {
+        zInterp_LinkNode *const next = node->next;
+        node->prev->next = node->next;
+        node->next->prev = node->prev;
+        delete node;
+        --scrollAlwaysListCount;
+        node = next;
+    }
+
+    if (ptrArrayHead != 0) {
+        free(ptrArrayHead);
+    }
+    ptrArrayHead = 0;
+    ptrArrayCount = 0;
+    includeDepth = 0;
+}
+
+/**
+ * Reimplements 0x4c1020: zInterp_Context::RunString.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: read script input lines or prepared token blobs and run each one.
+ */
+int zInterp_Context::RunString(
+    FILE *scriptFile,
+    int preparedInput
+) {
+    if (scriptFile == 0) {
+        return 0;
+    }
+
+    hasPreparedInput = preparedInput;
+    currentScriptFile = scriptFile;
+
+    int readOk = 0;
+    int runOk = 0;
+    do {
+        memset(
+            g_zInterp_LineBuffer,
+            0,
+            sizeof(g_zInterp_LineBuffer)
+        );
+        readOk = ReadLineOrPreparedTokens(
+            currentScriptFile,
+            g_zInterp_LineBuffer
+        );
+        runOk = RunStream(g_zInterp_LineBuffer);
+    } while ((readOk & runOk) != 0);
+
+    hasPreparedInput = 0;
     return 1;
 }
 
 /**
- * Reimplements 0x4c1b50: zInterp_Context::EvalConditionExpr.
+ * Reimplements 0x4c1090: zInterp_Context::RunStream.
  * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
  *
- * Purpose: evaluate simple macro truth expressions used by ifdef/ifndef.
+ * Purpose: tokenize one command line, dispatch builtins/core hooks, and clear
+ * temporary token storage.
  */
-int zInterp_Context::EvalConditionExpr() {
-    if (tokenCount == 1) {
+int zInterp_Context::RunStream(
+    char *lineBuffer
+) {
+    if (lineBuffer == 0) {
         return 0;
     }
 
-    if (tokenCount == 2) {
-        return IsMacroTrue(tokenList[1]) != 0;
+    const int wasPreparedInput = hasPreparedInput;
+    parseResult = 0;
+    lineHadError = 0;
+    errorCount = 0;
+
+    if (wasPreparedInput == 0) {
+        TokenizeLine(lineBuffer);
     }
 
-    unsigned int tokenIndex = 1;
-    int op = 0;
-    int result = 0;
-    while (tokenIndex < tokenCount) {
-        const char *const name = tokenList[tokenIndex];
-        ++tokenIndex;
-
-        if (op == 0) {
-            result = IsMacroTrue(name);
-        } else if (op == 1) {
-            result |= IsMacroTrue(name);
-        } else if (op == 2) {
-            result &= IsMacroTrue(name);
-        }
-
-        if (tokenIndex < tokenCount) {
-            const char *const opText = tokenList[tokenIndex];
-            ++tokenIndex;
-            if (strncmp(
-                opText,
-                "||",
-                2
-            ) == 0) {
-                op = 1;
-            } else if (strncmp(
-                opText,
-                "&&",
-                2
-            ) == 0) {
-                op = 2;
-            } else {
-                break;
+    if (tokenCount != 0) {
+        char *const commandToken = CurrentCommandToken(this);
+        if (HandleBuiltinCommand(commandToken) != 0) {
+            tokenReadIndex = 1;
+            if (DispatchHook(commandToken) != 0) {
+                tokenReadIndex = 1;
+                DispatchCoreCommand(commandToken);
+                tokenReadIndex = 1;
+                PostDispatchHook(commandToken);
+                if (errorCount == 3) {
+                    Logf(
+                        this,
+                        "BadCommand (%s): %s",
+                        commandToken,
+                        lineBuffer
+                    );
+                }
             }
         }
+
+        if (lineHadError != 0) {
+            DeferredDispatchHook(commandToken);
+        }
     }
 
-    return result;
+    if (tempAlloc != 0) {
+        free(tempAlloc);
+    }
+    tempAlloc = 0;
+    return parseResult == 0 ? 1 : 0;
+}
+
+/**
+ * Reimplements 0x4c1160: zInterp_Context::ReadLineOrPreparedTokens.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: read either a text script line or a prepared token block.
+ */
+int zInterp_Context::ReadLineOrPreparedTokens(
+    FILE *scriptFile,
+    char *lineBuffer
+) {
+    if (hasPreparedInput == 0) {
+        int ch = fgetc(scriptFile);
+        if (ch != 0) {
+            while (feof(scriptFile) == 0) {
+                *lineBuffer = (char)(ch);
+                ++lineBuffer;
+                if (ch == '\n') {
+                    break;
+                }
+
+                ch = fgetc(scriptFile);
+                if (ch == 0) {
+                    break;
+                }
+            }
+        }
+
+        return (feof(scriptFile) || ferror(scriptFile)) ? 0 : 1;
+    }
+
+    unsigned int tokenBlobSize = 0;
+    tokenReadIndex = 1;
+    fread(
+        &tokenBlobSize,
+        4,
+        1,
+        scriptFile
+    );
+    if (tokenBlobSize == 0) {
+        tokenCount = 0;
+        tempAlloc = 0;
+        return 0;
+    }
+
+    fread(
+        &tokenCount,
+        4,
+        1,
+        scriptFile
+    );
+    tempAlloc = (char *)(malloc(tokenBlobSize));
+    fread(
+        tempAlloc,
+        tokenBlobSize,
+        1,
+        scriptFile
+    );
+
+    char *tokenText = tempAlloc;
+    for (unsigned int tokenIndex = 0; tokenIndex < tokenCount; ++tokenIndex) {
+        tokenList[tokenIndex] = tokenText;
+        tokenText += strlen(tokenText) + 1;
+    }
+
+    return 1;
 }
 
 /**
@@ -951,6 +727,342 @@ char * zInterp_Context::ExpandMacroRefs(
     }
 
     return g_zInterp_MacroExpansionScratch;
+}
+
+/**
+ * Reimplements 0x4c13c0: zInterp_Context::TokenizeLine.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ * BN evidence: retail imports iswspace and sign-extends token bytes before
+ * each whitespace classification call.
+ *
+ * Purpose: copy a text line, strip comments, and split command tokens.
+ */
+int zInterp_Context::TokenizeLine(
+    const char *line
+) {
+    if (hasPreparedInput != 0) {
+        return 1;
+    }
+
+    tokenCount = 0;
+    tokenReadIndex = 1;
+
+    const char *const comment = strchr(
+        line,
+        '#'
+    );
+    if (comment == 0) {
+        tempAlloc = _strdup(line);
+    } else {
+        const size_t prefixLength = (size_t)(comment - line);
+        tempAlloc = (char *)(malloc(prefixLength + 1));
+        memcpy(
+            tempAlloc,
+            line,
+            prefixLength
+        );
+        tempAlloc[prefixLength] = '\0';
+    }
+
+    char *cursor = tempAlloc;
+    while (iswspace(*cursor) != 0) {
+        ++cursor;
+    }
+
+    char *separator = strpbrk(
+        cursor,
+        k_zInterp_TokenDelimiters
+    );
+    while (separator != 0) {
+        tokenList[tokenCount] = cursor;
+        ++tokenCount;
+
+        cursor = separator + 1;
+        const char separatorChar = *separator;
+        *separator = '\0';
+        if (separatorChar == '\n') {
+            break;
+        }
+
+        while (iswspace(*cursor) != 0) {
+            ++cursor;
+        }
+
+        separator = strpbrk(
+            cursor,
+            k_zInterp_TokenDelimiters
+        );
+    }
+
+    if (strlen(cursor) != 0) {
+        tokenList[tokenCount] = cursor;
+        ++tokenCount;
+    }
+
+    return 1;
+}
+
+/**
+ * Reimplements 0x4c1500: zInterp_Context::RunScriptFile.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: push nested script state, choose prepared or text input, and run it.
+ */
+int zInterp_Context::RunScriptFile(
+    const char *filePath
+) {
+    FILE *scriptFile = 0;
+    int hasPrepared = 0;
+
+    if (currentScriptFile != 0) {
+        const long filePos = ftell(currentScriptFile);
+        PushFileFrame(
+            currentScriptFile,
+            filePos,
+            hasPreparedInput
+        );
+    }
+
+    if (g_zInterp_EnablePreparedScripts != 0 &&
+        LoadPreparedScriptIndex(preparedIndexFileName) != 0) {
+        scriptFile = OpenPreparedScriptStream(filePath);
+        if (scriptFile != 0) {
+            hasPrepared = 1;
+        }
+    }
+
+    if (scriptFile == 0) {
+        scriptFile = fopen(
+            filePath,
+            g_zEffectAnim_FileModeRead
+        );
+        ++includeDepth;
+    }
+
+    int result = 0;
+    if (scriptFile != 0) {
+        result = RunString(
+            scriptFile,
+            hasPrepared
+        );
+        if (hasPrepared == 0) {
+            fclose(scriptFile);
+        }
+    }
+
+    zInterp_FileFrame *const frame = PopFileFrame();
+    if (frame != 0) {
+        currentScriptFile = frame->file;
+        fseek(
+            frame->file,
+            frame->filePos,
+            0
+        );
+        hasPreparedInput = frame->hasPreparedInput;
+        return result;
+    }
+
+    currentScriptFile = 0;
+    return result;
+}
+
+/**
+ * Reimplements 0x4c15f0: zInterp_Context::FindMacroValue.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: locate a macro entry by name and optionally return its table slot.
+ */
+char * zInterp_Context::FindMacroValue(
+    const char *name,
+    zInterp_MacroEntry **outEntry
+) {
+    for (unsigned int macroIndex = 0; macroIndex < macroCount; ++macroIndex) {
+        zInterp_MacroEntry *const entry = &macroTable[macroIndex];
+        if (strcmp(
+            entry->name,
+            name
+        ) == 0) {
+            if (outEntry != 0) {
+                *outEntry = entry;
+            }
+            return entry->value;
+        }
+    }
+
+    return 0;
+}
+
+/**
+ * Reimplements 0x4c1670: zInterp_Context::ClearMacroTable.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: free all macro names, values, and table storage for the context.
+ */
+void zInterp_Context::ClearMacroTable() {
+    for (unsigned int macroIndex = 0; macroIndex < macroCount; ++macroIndex) {
+        free(macroTable[macroIndex].name);
+        free(macroTable[macroIndex].value);
+    }
+
+    if (macroTable != 0) {
+        free(macroTable);
+    }
+    macroTable = 0;
+    macroCount = 0;
+}
+
+/**
+ * Reimplements 0x4c16c0: zInterp_Context::ClearVarTable.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: free variable table names and release the context's table storage.
+ */
+void zInterp_Context::ClearVarTable() {
+    for (unsigned int varIndex = 0; varIndex < varCount; ++varIndex) {
+        free(varTable[varIndex].name);
+    }
+
+    if (varTable != 0) {
+        free(varTable);
+    }
+    varTable = 0;
+    varCount = 0;
+}
+
+/**
+ * Reimplements 0x4c1710: zInterp_Context::IsMacroTrue.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: test whether a named macro currently holds the TRUE literal.
+ */
+int zInterp_Context::IsMacroTrue(
+    const char *name
+) {
+    const char *const value = FindMacroValue(
+        name,
+        0
+    );
+    return value != 0 && strcmp(
+        value,
+        "TRUE"
+    ) == 0;
+}
+
+/**
+ * Reimplements 0x4c1780: zInterp_Context::SetMacro.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: create or update one dynamically allocated macro table entry.
+ */
+int zInterp_Context::SetMacro(
+    const char *name,
+    const char *value
+) {
+    zInterp_MacroEntry *entry = 0;
+    if (name == 0 || value == 0) {
+        return 0;
+    }
+
+    if (FindMacroValue(
+        name,
+        &entry
+    ) != 0) {
+        const size_t valueSize = strlen(value) + 1;
+        entry->value = (char *)(realloc(
+            entry->value,
+            valueSize
+        ));
+        memcpy(
+            entry->value,
+            value,
+            valueSize
+        );
+        return 1;
+    }
+
+    macroTable =
+        (zInterp_MacroEntry *)(realloc(
+            macroTable,
+            (macroCount + 1) * sizeof(zInterp_MacroEntry)
+        ));
+    entry = &macroTable[macroCount];
+    entry->name = _strdup(name);
+    entry->value = _strdup(value);
+    ++macroCount;
+    return 1;
+}
+
+/**
+ * Reimplements 0x4c1870: zInterp_Context::EchoTokens.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: print each parsed token followed by a newline.
+ */
+int zInterp_Context::EchoTokens() {
+    for (unsigned int tokenIndex = 0; tokenIndex < tokenCount; ++tokenIndex) {
+        printf(
+            g_zInterp_PrintTokenWithSpaceFmt,
+            tokenList[tokenIndex]
+        );
+    }
+
+    return printf("\n");
+}
+
+/**
+ * Reimplements 0x4c18c0: zInterp_Context::PushFileFrame.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: append one saved script file position for nested source commands.
+ */
+int zInterp_Context::PushFileFrame(
+    FILE *file,
+    long filePos,
+    int hasPreparedInput
+) {
+    zInterp_FileFrame *const frames = (zInterp_FileFrame *)(realloc(
+        fileFrameStack,
+        (fileFrameCount + 1) * sizeof(zInterp_FileFrame)
+    ));
+    const int frameIndex = fileFrameCount;
+    fileFrameStack = frames;
+
+    frames[frameIndex].file = file;
+    fileFrameStack[fileFrameCount].filePos = filePos;
+    fileFrameStack[fileFrameCount].hasPreparedInput = hasPreparedInput;
+    ++fileFrameCount;
+    return 1;
+}
+
+/**
+ * Reimplements 0x4c1940: zInterp_Context::PopFileFrame.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: pop the most recent nested-script file frame without freeing storage.
+ */
+zInterp_FileFrame * zInterp_Context::PopFileFrame() {
+    int count = fileFrameCount;
+    if (count == 0) {
+        return 0;
+    }
+
+    --count;
+    fileFrameCount = count;
+    return &fileFrameStack[count];
+}
+
+/**
+ * Reimplements 0x4c1960: zInterp_Context::ClearFileFrameStack.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: free saved nested-script file frames and reset the frame count.
+ */
+void zInterp_Context::ClearFileFrameStack() {
+    if (fileFrameStack != 0) {
+        free(fileFrameStack);
+        fileFrameStack = 0;
+    }
+    fileFrameCount = 0;
 }
 
 /**
@@ -1094,639 +1206,92 @@ void zInterp_Context::DumpVarEntry(
 }
 
 /**
- * Reimplements 0x4c5480: zInterp_Context::CommandEqualsPrefix.
+ * Reimplements 0x4c1b20: zInterp_Context::IncErrorCount.
  * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
  *
- * Purpose: compare the current command token against a caller-supplied prefix.
+ * Purpose: count one parser error for the current command line.
  */
-int zInterp_Context::CommandEqualsPrefix(
-    const char *prefix,
-    unsigned int prefixLen
-) {
-    char *command = 0;
-    if (tokenCount > 0) {
-        command = tokenList[0];
-    }
-
-    return strncmp(
-        command,
-        prefix,
-        prefixLen
-    ) == 0;
+void zInterp_Context::IncErrorCount() {
+    ++errorCount;
 }
 
 /**
- * Reimplements 0x4c54b0: zInterp_Context::CommandEquals.
+ * Reimplements 0x4c1b30: zInterp_Context::Logf.
  * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
  *
- * Purpose: compare the current command token against a complete string.
+ * Purpose: forward formatted parser logging to the context callback.
  */
-int zInterp_Context::CommandEquals(
-    const char *other
+void zInterp_Context::Logf(
+    zInterp_Context *ctx,
+    const char *fmt,
+    ...
 ) {
-    char *command = 0;
-    if (tokenCount > 0) {
-        command = tokenList[0];
-    }
-
-    return strcmp(
-        command,
-        other
-    ) == 0;
-}
-
-/**
- * Reimplements 0x4c5510: zInterp_Context::GetCurrentCommand.
- * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
- *
- * Purpose: return token zero for the current parsed command line.
- */
-char * zInterp_Context::GetCurrentCommand() {
-    if (tokenCount <= 0) {
-        return 0;
-    }
-
-    return tokenList[0];
-}
-
-/**
- * Reimplements 0x4c5820: zInterp_Context::ValidateArgsAndNodeType.
- * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
- *
- * Purpose: validate argument count and optional zClass node type for commands.
- */
-int zInterp_Context::ValidateArgsAndNodeType(
-    int expectedArgCount,
-    int expectedClassType,
-    zClass_NodePartial *node
-) {
-    if (expectedClassType != 0) {
-        if (node == 0) {
-            ReportErrorf(
-                this,
-                "Interp: keyword [%s] has NULL node to work with",
-                tokenCount > 0 ? tokenList[0] : 0
-            );
-            return 0;
-        }
-
-        const int classType = node->classId;
-        if (classType != expectedClassType) {
-            ReportErrorf(
-                this,
-                "Interp: keyword [%s] has node [%s] of class=%d, expected=%d",
-                tokenCount > 0 ? tokenList[0] : 0,
-                node,
-                classType,
-                expectedClassType
-            );
-            return 0;
-        }
-    }
-
-    const int currentTokenCount = tokenCount;
-    if ((unsigned int)(expectedArgCount + 1) <= (unsigned int)(currentTokenCount)) {
-        return 1;
-    }
-
-    ReportErrorf(
-        this,
-        "Interp: keyword [%s] requires (%d) args, found (%d) args",
-        currentTokenCount > 0 ? tokenList[0] : 0,
-        expectedArgCount,
-        currentTokenCount - 1
-    );
-    return 0;
-}
-
-/**
- * Reimplements 0x4c5550: zInterp_Context::LoadPreparedScriptIndex.
- * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
- *
- * Purpose: open and validate the prepared script index and cache its entries.
- */
-int zInterp_Context::LoadPreparedScriptIndex(
-    const char *zrdrPath
-) {
-    int preparedMagic = 0;
-    int preparedVersion = 0;
-    unsigned int preparedEntryCountValue = 0;
-    int preparedHeader[2] = {0, 0};
-
-    if (preparedIndexStream != 0) {
-        return 1;
-    }
-
-    if (archiveSearchList == 0) {
-        archiveSearchList = zUtil_ZRDR_CreateSearchPathList(searchPathSpec);
-    }
-
-    preparedIndexStream = zUtil_ZRDR_OpenFileResolved(
-        archiveSearchList,
-        zrdrPath,
-        "rb"
-    );
-    if (preparedIndexStream == 0) {
-        return 0;
-    }
-
-    if (fread(
-        preparedHeader,
-        sizeof(preparedHeader),
-        1,
-        preparedIndexStream
-    ) != 1) {
-        fclose(preparedIndexStream);
-        preparedIndexStream = 0;
-        return 0;
-    }
-    preparedMagic = preparedHeader[0];
-    preparedVersion = preparedHeader[1];
-
-    if (preparedMagic != kPreparedScriptMagic) {
-        fclose(preparedIndexStream);
-        preparedIndexStream = 0;
-        return 0;
-    }
-
-    if (preparedVersion != kPreparedScriptVersion ||
-        fread(
-            &preparedEntryCountValue,
-            4,
-            1,
-            preparedIndexStream
-        ) != 1) {
-        fclose(preparedIndexStream);
-        preparedIndexStream = 0;
-        return 0;
-    }
-
-    zInterp_PreparedScriptEntry *entries = (zInterp_PreparedScriptEntry *)(realloc(
-        0,
-        (preparedEntryCountValue + 1) * sizeof(zInterp_PreparedScriptEntry)
-    ));
-    if (entries == 0) {
-        fclose(preparedIndexStream);
-        preparedIndexStream = 0;
-        return 0;
-    }
-
-    if (fread(
-            entries,
-            sizeof(zInterp_PreparedScriptEntry),
-            preparedEntryCountValue,
-            preparedIndexStream
-        ) != preparedEntryCountValue) {
-        fclose(preparedIndexStream);
-        preparedIndexStream = 0;
-        return 0;
-    }
-
-    int entriesFresh = 1;
-    for (unsigned int entryIndex = 0; entriesFresh != 0 && entryIndex < preparedEntryCountValue;
-        ++entryIndex) {
-        struct _stat sourceStat;
-        if (_stat(entries[entryIndex].path, &sourceStat) == 0 &&
-            entries[entryIndex].fileTime != sourceStat.st_mtime) {
-            entriesFresh = 0;
-        }
-    }
-
-    if (entriesFresh != 0) {
-        preparedIndexMagic = preparedMagic;
-        preparedIndexVersion = preparedVersion;
-        *preparedEntryCount = (int)(preparedEntryCountValue);
-        preparedEntryTable = entries;
-        return 1;
-    }
-
-    fclose(preparedIndexStream);
-    preparedIndexStream = 0;
-    free(entries);
-    return 0;
-}
-
-/**
- * Reimplements 0x4c5740: zInterp_Context::OpenPreparedScriptStream.
- * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
- *
- * Purpose: locate a prepared script entry and seek the shared stream to it.
- */
-FILE * zInterp_Context::OpenPreparedScriptStream(
-    const char *commandName
-) {
-    if (preparedIndexStream == 0) {
-        return 0;
-    }
-
-    int matchedIndex = -1;
-    for (int entryIndex = 0; entryIndex < *preparedEntryCount; ++entryIndex) {
-        if (_stricmp(
-            preparedEntryTable[entryIndex].path,
-            commandName
-        ) == 0) {
-            matchedIndex = entryIndex;
-            break;
-        }
-    }
-
-    if (matchedIndex == -1) {
-        return 0;
-    }
-
-    zInterp_PreparedScriptEntry *const matchedEntry = &preparedEntryTable[matchedIndex];
-    int usePreparedStream = 1;
-    struct _stat sourceStat;
-    if (_stat(commandName, &sourceStat) == 0 &&
-        difftime(
-            sourceStat.st_mtime,
-            matchedEntry->fileTime
-        ) > 0.0) {
-        usePreparedStream = 0;
-    }
-
-    if (usePreparedStream == 0) {
-        return 0;
-    }
-
-    FILE *const stream = preparedIndexStream;
-    if (fseek(
-        stream,
-        matchedEntry->fileOffset,
-        SEEK_SET
-    ) == 0) {
-        return stream;
-    }
-
-    return 0;
-}
-
-/**
- * Reimplements 0x4c1500: zInterp_Context::RunScriptFile.
- * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
- *
- * Purpose: push nested script state, choose prepared or text input, and run it.
- */
-int zInterp_Context::RunScriptFile(
-    const char *filePath
-) {
-    FILE *scriptFile = 0;
-    int hasPrepared = 0;
-
-    if (currentScriptFile != 0) {
-        const long filePos = ftell(currentScriptFile);
-        PushFileFrame(
-            currentScriptFile,
-            filePos,
-            hasPreparedInput
+    if (ctx->logFn != 0) {
+        va_list args;
+        va_start(
+            args,
+            fmt
         );
-    }
-
-    if (g_zInterp_EnablePreparedScripts != 0 &&
-        LoadPreparedScriptIndex(preparedIndexFileName) != 0) {
-        scriptFile = OpenPreparedScriptStream(filePath);
-        if (scriptFile != 0) {
-            hasPrepared = 1;
-        }
-    }
-
-    if (scriptFile == 0) {
-        scriptFile = fopen(
-            filePath,
-            g_zEffectAnim_FileModeRead
+        ctx->logFn(
+            fmt,
+            (char *)args
         );
-        ++includeDepth;
+        va_end(args);
+    }
+}
+
+/**
+ * Reimplements 0x4c1b50: zInterp_Context::EvalConditionExpr.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: evaluate simple macro truth expressions used by ifdef/ifndef.
+ */
+int zInterp_Context::EvalConditionExpr() {
+    if (tokenCount == 1) {
+        return 0;
     }
 
+    if (tokenCount == 2) {
+        return IsMacroTrue(tokenList[1]) != 0;
+    }
+
+    unsigned int tokenIndex = 1;
+    int op = 0;
     int result = 0;
-    if (scriptFile != 0) {
-        result = RunString(
-            scriptFile,
-            hasPrepared
-        );
-        if (hasPrepared == 0) {
-            fclose(scriptFile);
+    while (tokenIndex < tokenCount) {
+        const char *const name = tokenList[tokenIndex];
+        ++tokenIndex;
+
+        if (op == 0) {
+            result = IsMacroTrue(name);
+        } else if (op == 1) {
+            result |= IsMacroTrue(name);
+        } else if (op == 2) {
+            result &= IsMacroTrue(name);
+        }
+
+        if (tokenIndex < tokenCount) {
+            const char *const opText = tokenList[tokenIndex];
+            ++tokenIndex;
+            if (strncmp(
+                opText,
+                "||",
+                2
+            ) == 0) {
+                op = 1;
+            } else if (strncmp(
+                opText,
+                "&&",
+                2
+            ) == 0) {
+                op = 2;
+            } else {
+                break;
+            }
         }
     }
 
-    zInterp_FileFrame *const frame = PopFileFrame();
-    if (frame != 0) {
-        currentScriptFile = frame->file;
-        fseek(
-            frame->file,
-            frame->filePos,
-            0
-        );
-        hasPreparedInput = frame->hasPreparedInput;
-        return result;
-    }
-
-    currentScriptFile = 0;
     return result;
-}
-
-/**
- * Reimplements 0x4c1020: zInterp_Context::RunString.
- * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
- *
- * Purpose: read script input lines or prepared token blobs and run each one.
- */
-int zInterp_Context::RunString(
-    FILE *scriptFile,
-    int preparedInput
-) {
-    if (scriptFile == 0) {
-        return 0;
-    }
-
-    hasPreparedInput = preparedInput;
-    currentScriptFile = scriptFile;
-
-    int readOk = 0;
-    int runOk = 0;
-    do {
-        memset(
-            g_zInterp_LineBuffer,
-            0,
-            sizeof(g_zInterp_LineBuffer)
-        );
-        readOk = ReadLineOrPreparedTokens(
-            currentScriptFile,
-            g_zInterp_LineBuffer
-        );
-        runOk = RunStream(g_zInterp_LineBuffer);
-    } while ((readOk & runOk) != 0);
-
-    hasPreparedInput = 0;
-    return 1;
-}
-
-/**
- * Reimplements 0x4c1090: zInterp_Context::RunStream.
- * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
- *
- * Purpose: tokenize one command line, dispatch builtins/core hooks, and clear
- * temporary token storage.
- */
-int zInterp_Context::RunStream(
-    char *lineBuffer
-) {
-    if (lineBuffer == 0) {
-        return 0;
-    }
-
-    const int wasPreparedInput = hasPreparedInput;
-    parseResult = 0;
-    lineHadError = 0;
-    errorCount = 0;
-
-    if (wasPreparedInput == 0) {
-        TokenizeLine(lineBuffer);
-    }
-
-    if (tokenCount != 0) {
-        char *const commandToken = CurrentCommandToken(this);
-        if (HandleBuiltinCommand(commandToken) != 0) {
-            tokenReadIndex = 1;
-            if (DispatchHook(commandToken) != 0) {
-                tokenReadIndex = 1;
-                DispatchCoreCommand(commandToken);
-                tokenReadIndex = 1;
-                PostDispatchHook(commandToken);
-                if (errorCount == 3) {
-                    Logf(
-                        this,
-                        "BadCommand (%s): %s",
-                        commandToken,
-                        lineBuffer
-                    );
-                }
-            }
-        }
-
-        if (lineHadError != 0) {
-            DeferredDispatchHook(commandToken);
-        }
-    }
-
-    if (tempAlloc != 0) {
-        free(tempAlloc);
-    }
-    tempAlloc = 0;
-    return parseResult == 0 ? 1 : 0;
-}
-
-/**
- * Reimplements 0x4c13c0: zInterp_Context::TokenizeLine.
- * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
- * BN evidence: retail imports iswspace and sign-extends token bytes before
- * each whitespace classification call.
- *
- * Purpose: copy a text line, strip comments, and split command tokens.
- */
-int zInterp_Context::TokenizeLine(
-    const char *line
-) {
-    if (hasPreparedInput != 0) {
-        return 1;
-    }
-
-    tokenCount = 0;
-    tokenReadIndex = 1;
-
-    const char *const comment = strchr(
-        line,
-        '#'
-    );
-    if (comment == 0) {
-        tempAlloc = _strdup(line);
-    } else {
-        const size_t prefixLength = (size_t)(comment - line);
-        tempAlloc = (char *)(malloc(prefixLength + 1));
-        memcpy(
-            tempAlloc,
-            line,
-            prefixLength
-        );
-        tempAlloc[prefixLength] = '\0';
-    }
-
-    char *cursor = tempAlloc;
-    while (iswspace(*cursor) != 0) {
-        ++cursor;
-    }
-
-    char *separator = strpbrk(
-        cursor,
-        k_zInterp_TokenDelimiters
-    );
-    while (separator != 0) {
-        tokenList[tokenCount] = cursor;
-        ++tokenCount;
-
-        cursor = separator + 1;
-        const char separatorChar = *separator;
-        *separator = '\0';
-        if (separatorChar == '\n') {
-            break;
-        }
-
-        while (iswspace(*cursor) != 0) {
-            ++cursor;
-        }
-
-        separator = strpbrk(
-            cursor,
-            k_zInterp_TokenDelimiters
-        );
-    }
-
-    if (strlen(cursor) != 0) {
-        tokenList[tokenCount] = cursor;
-        ++tokenCount;
-    }
-
-    return 1;
-}
-
-/**
- * Reimplements 0x4c1870: zInterp_Context::EchoTokens.
- * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
- *
- * Purpose: print each parsed token followed by a newline.
- */
-int zInterp_Context::EchoTokens() {
-    for (unsigned int tokenIndex = 0; tokenIndex < tokenCount; ++tokenIndex) {
-        printf(
-            g_zInterp_PrintTokenWithSpaceFmt,
-            tokenList[tokenIndex]
-        );
-    }
-
-    return printf("\n");
-}
-
-/**
- * Reimplements 0x4c1160: zInterp_Context::ReadLineOrPreparedTokens.
- * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
- *
- * Purpose: read either a text script line or a prepared token block.
- */
-int zInterp_Context::ReadLineOrPreparedTokens(
-    FILE *scriptFile,
-    char *lineBuffer
-) {
-    if (hasPreparedInput == 0) {
-        int ch = fgetc(scriptFile);
-        if (ch != 0) {
-            while (feof(scriptFile) == 0) {
-                *lineBuffer = (char)(ch);
-                ++lineBuffer;
-                if (ch == '\n') {
-                    break;
-                }
-
-                ch = fgetc(scriptFile);
-                if (ch == 0) {
-                    break;
-                }
-            }
-        }
-
-        return (feof(scriptFile) || ferror(scriptFile)) ? 0 : 1;
-    }
-
-    unsigned int tokenBlobSize = 0;
-    tokenReadIndex = 1;
-    fread(
-        &tokenBlobSize,
-        4,
-        1,
-        scriptFile
-    );
-    if (tokenBlobSize == 0) {
-        tokenCount = 0;
-        tempAlloc = 0;
-        return 0;
-    }
-
-    fread(
-        &tokenCount,
-        4,
-        1,
-        scriptFile
-    );
-    tempAlloc = (char *)(malloc(tokenBlobSize));
-    fread(
-        tempAlloc,
-        tokenBlobSize,
-        1,
-        scriptFile
-    );
-
-    char *tokenText = tempAlloc;
-    for (unsigned int tokenIndex = 0; tokenIndex < tokenCount; ++tokenIndex) {
-        tokenList[tokenIndex] = tokenText;
-        tokenText += strlen(tokenText) + 1;
-    }
-
-    return 1;
-}
-
-/**
- * Reimplements 0x4c1960: zInterp_Context::ClearFileFrameStack.
- * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
- *
- * Purpose: free saved nested-script file frames and reset the frame count.
- */
-void zInterp_Context::ClearFileFrameStack() {
-    if (fileFrameStack != 0) {
-        free(fileFrameStack);
-        fileFrameStack = 0;
-    }
-    fileFrameCount = 0;
-}
-
-/**
- * Reimplements 0x4c1940: zInterp_Context::PopFileFrame.
- * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
- *
- * Purpose: pop the most recent nested-script file frame without freeing storage.
- */
-zInterp_FileFrame * zInterp_Context::PopFileFrame() {
-    int count = fileFrameCount;
-    if (count == 0) {
-        return 0;
-    }
-
-    --count;
-    fileFrameCount = count;
-    return &fileFrameStack[count];
-}
-
-/**
- * Reimplements 0x4c18c0: zInterp_Context::PushFileFrame.
- * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
- *
- * Purpose: append one saved script file position for nested source commands.
- */
-int zInterp_Context::PushFileFrame(
-    FILE *file,
-    long filePos,
-    int hasPreparedInput
-) {
-    zInterp_FileFrame *const frames = (zInterp_FileFrame *)(realloc(
-        fileFrameStack,
-        (fileFrameCount + 1) * sizeof(zInterp_FileFrame)
-    ));
-    const int frameIndex = fileFrameCount;
-    fileFrameStack = frames;
-
-    frames[frameIndex].file = file;
-    fileFrameStack[fileFrameCount].filePos = filePos;
-    fileFrameStack[fileFrameCount].hasPreparedInput = hasPreparedInput;
-    ++fileFrameCount;
-    return 1;
 }
 
 /**
@@ -1913,6 +1478,54 @@ int zInterp_Context::HandleBuiltinCommand(
         return 0;
     }
 
+    return 1;
+}
+
+/**
+ * Reimplements 0x4c2030: zInterp_Context::PrintNodeTree.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: recursively log a zClass node tree with two-space child indentation.
+ */
+void zInterp_Context::PrintNodeTree(
+    zClass_NodePartial *node,
+    int indent
+) {
+    if (node == 0) {
+        return;
+    }
+
+    Logf(
+        this,
+        k_zInterp_PrintNodeTreeFormat,
+        indent,
+        " ",
+        node->name
+    );
+
+    const int childCount = node->listCountB;
+    if (childCount <= 0) {
+        return;
+    }
+
+    const int childIndent = indent + 2;
+    for (int childIndex = 0; childIndex < childCount; ++childIndex) {
+        PrintNodeTree(
+            node->listB[childIndex],
+            childIndent
+        );
+    }
+}
+/**
+ * Reimplements 0x4c2090: zInterp_Context::ReportParseError.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: count an unhandled command parse error and report failure.
+ */
+int zInterp_Context::ReportParseError(
+    char *
+) {
+    IncErrorCount();
     return 1;
 }
 
@@ -4147,39 +3760,425 @@ int zInterp_Context::DispatchCoreCommand(
     IncErrorCount();
     return 1;
 }
-
 /**
- * Reimplements 0x4c2030: zInterp_Context::PrintNodeTree.
+ * Reimplements 0x4c5480: zInterp_Context::CommandEqualsPrefix.
  * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
  *
- * Purpose: recursively log a zClass node tree with two-space child indentation.
+ * Purpose: compare the current command token against a caller-supplied prefix.
  */
-void zInterp_Context::PrintNodeTree(
-    zClass_NodePartial *node,
-    int indent
+int zInterp_Context::CommandEqualsPrefix(
+    const char *prefix,
+    unsigned int prefixLen
 ) {
-    if (node == 0) {
-        return;
+    char *command = 0;
+    if (tokenCount > 0) {
+        command = tokenList[0];
     }
 
-    Logf(
-        this,
-        k_zInterp_PrintNodeTreeFormat,
-        indent,
-        " ",
-        node->name
-    );
+    return strncmp(
+        command,
+        prefix,
+        prefixLen
+    ) == 0;
+}
 
-    const int childCount = node->listCountB;
-    if (childCount <= 0) {
-        return;
+/**
+ * Reimplements 0x4c54b0: zInterp_Context::CommandEquals.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: compare the current command token against a complete string.
+ */
+int zInterp_Context::CommandEquals(
+    const char *other
+) {
+    char *command = 0;
+    if (tokenCount > 0) {
+        command = tokenList[0];
     }
 
-    const int childIndent = indent + 2;
-    for (int childIndex = 0; childIndex < childCount; ++childIndex) {
-        PrintNodeTree(
-            node->listB[childIndex],
-            childIndent
+    return strcmp(
+        command,
+        other
+    ) == 0;
+}
+
+/**
+ * Reimplements 0x4c5510: zInterp_Context::GetCurrentCommand.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: return token zero for the current parsed command line.
+ */
+char * zInterp_Context::GetCurrentCommand() {
+    if (tokenCount <= 0) {
+        return 0;
+    }
+
+    return tokenList[0];
+}
+
+/**
+ * Reimplements 0x4c5520: zInterp_Context::ReportErrorf.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: mark the current line failed and forward formatted parser logging.
+ */
+void zInterp_Context::ReportErrorf(
+    zInterp_Context *ctx,
+    const char *fmt,
+    ...
+) {
+    ctx->lineHadError = 1;
+    if (ctx->logFn != 0) {
+        va_list args;
+        va_start(
+            args,
+            fmt
         );
+        ctx->logFn(
+            fmt,
+            (char *)args
+        );
+        va_end(args);
     }
 }
+
+/**
+ * Reimplements 0x4c5550: zInterp_Context::LoadPreparedScriptIndex.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: open and validate the prepared script index and cache its entries.
+ */
+int zInterp_Context::LoadPreparedScriptIndex(
+    const char *zrdrPath
+) {
+    int preparedMagic = 0;
+    int preparedVersion = 0;
+    unsigned int preparedEntryCountValue = 0;
+    int preparedHeader[2] = {0, 0};
+
+    if (preparedIndexStream != 0) {
+        return 1;
+    }
+
+    if (archiveSearchList == 0) {
+        archiveSearchList = zUtil_ZRDR_CreateSearchPathList(searchPathSpec);
+    }
+
+    preparedIndexStream = zUtil_ZRDR_OpenFileResolved(
+        archiveSearchList,
+        zrdrPath,
+        "rb"
+    );
+    if (preparedIndexStream == 0) {
+        return 0;
+    }
+
+    if (fread(
+        preparedHeader,
+        sizeof(preparedHeader),
+        1,
+        preparedIndexStream
+    ) != 1) {
+        fclose(preparedIndexStream);
+        preparedIndexStream = 0;
+        return 0;
+    }
+    preparedMagic = preparedHeader[0];
+    preparedVersion = preparedHeader[1];
+
+    if (preparedMagic != kPreparedScriptMagic) {
+        fclose(preparedIndexStream);
+        preparedIndexStream = 0;
+        return 0;
+    }
+
+    if (preparedVersion != kPreparedScriptVersion ||
+        fread(
+            &preparedEntryCountValue,
+            4,
+            1,
+            preparedIndexStream
+        ) != 1) {
+        fclose(preparedIndexStream);
+        preparedIndexStream = 0;
+        return 0;
+    }
+
+    zInterp_PreparedScriptEntry *entries = (zInterp_PreparedScriptEntry *)(realloc(
+        0,
+        (preparedEntryCountValue + 1) * sizeof(zInterp_PreparedScriptEntry)
+    ));
+    if (entries == 0) {
+        fclose(preparedIndexStream);
+        preparedIndexStream = 0;
+        return 0;
+    }
+
+    if (fread(
+            entries,
+            sizeof(zInterp_PreparedScriptEntry),
+            preparedEntryCountValue,
+            preparedIndexStream
+        ) != preparedEntryCountValue) {
+        fclose(preparedIndexStream);
+        preparedIndexStream = 0;
+        return 0;
+    }
+
+    int entriesFresh = 1;
+    for (unsigned int entryIndex = 0; entriesFresh != 0 && entryIndex < preparedEntryCountValue;
+        ++entryIndex) {
+        struct _stat sourceStat;
+        if (_stat(entries[entryIndex].path, &sourceStat) == 0 &&
+            entries[entryIndex].fileTime != sourceStat.st_mtime) {
+            entriesFresh = 0;
+        }
+    }
+
+    if (entriesFresh != 0) {
+        preparedIndexMagic = preparedMagic;
+        preparedIndexVersion = preparedVersion;
+        *preparedEntryCount = (int)(preparedEntryCountValue);
+        preparedEntryTable = entries;
+        return 1;
+    }
+
+    fclose(preparedIndexStream);
+    preparedIndexStream = 0;
+    free(entries);
+    return 0;
+}
+
+/**
+ * Reimplements 0x4c5740: zInterp_Context::OpenPreparedScriptStream.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: locate a prepared script entry and seek the shared stream to it.
+ */
+FILE * zInterp_Context::OpenPreparedScriptStream(
+    const char *commandName
+) {
+    if (preparedIndexStream == 0) {
+        return 0;
+    }
+
+    int matchedIndex = -1;
+    for (int entryIndex = 0; entryIndex < *preparedEntryCount; ++entryIndex) {
+        if (_stricmp(
+            preparedEntryTable[entryIndex].path,
+            commandName
+        ) == 0) {
+            matchedIndex = entryIndex;
+            break;
+        }
+    }
+
+    if (matchedIndex == -1) {
+        return 0;
+    }
+
+    zInterp_PreparedScriptEntry *const matchedEntry = &preparedEntryTable[matchedIndex];
+    int usePreparedStream = 1;
+    struct _stat sourceStat;
+    if (_stat(commandName, &sourceStat) == 0 &&
+        difftime(
+            sourceStat.st_mtime,
+            matchedEntry->fileTime
+        ) > 0.0) {
+        usePreparedStream = 0;
+    }
+
+    if (usePreparedStream == 0) {
+        return 0;
+    }
+
+    FILE *const stream = preparedIndexStream;
+    if (fseek(
+        stream,
+        matchedEntry->fileOffset,
+        SEEK_SET
+    ) == 0) {
+        return stream;
+    }
+
+    return 0;
+}
+
+/**
+ * Reimplements 0x4c5820: zInterp_Context::ValidateArgsAndNodeType.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: validate argument count and optional zClass node type for commands.
+ */
+int zInterp_Context::ValidateArgsAndNodeType(
+    int expectedArgCount,
+    int expectedClassType,
+    zClass_NodePartial *node
+) {
+    if (expectedClassType != 0) {
+        if (node == 0) {
+            ReportErrorf(
+                this,
+                "Interp: keyword [%s] has NULL node to work with",
+                tokenCount > 0 ? tokenList[0] : 0
+            );
+            return 0;
+        }
+
+        const int classType = node->classId;
+        if (classType != expectedClassType) {
+            ReportErrorf(
+                this,
+                "Interp: keyword [%s] has node [%s] of class=%d, expected=%d",
+                tokenCount > 0 ? tokenList[0] : 0,
+                node,
+                classType,
+                expectedClassType
+            );
+            return 0;
+        }
+    }
+
+    const int currentTokenCount = tokenCount;
+    if ((unsigned int)(expectedArgCount + 1) <= (unsigned int)(currentTokenCount)) {
+        return 1;
+    }
+
+    ReportErrorf(
+        this,
+        "Interp: keyword [%s] requires (%d) args, found (%d) args",
+        currentTokenCount > 0 ? tokenList[0] : 0,
+        expectedArgCount,
+        currentTokenCount - 1
+    );
+    return 0;
+}
+
+/**
+ * Reimplements 0x4c58c0: zInterp_Context::DefaultDispatchHook.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: accept the default zClass node dispatch callback after touching
+ * the node user-data provider entry.
+ */
+int __stdcall zInterp_Context::DefaultDispatchHook(
+    zClass_NodePartial *node
+) {
+    if (node != 0) {
+        zClass_Class::gwNodeGetUserData(
+            node,
+            0
+        );
+    }
+
+    return 0;
+}
+
+/**
+ * Reimplements 0x4c58e0: zInterp_Context::RegisterScrollAlwaysNode.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: register a node for immediate or driver-driven texture scrolling.
+ */
+int zInterp_Context::RegisterScrollAlwaysNode(
+    zClass_NodePartial *node,
+    float textureWorldPerMeter,
+    int textureWorldAxis,
+    int installDriverCallback
+) {
+    if (node == 0) {
+        return 0;
+    }
+
+    unsigned int diValue = 0;
+    zClass_Class::gwNodeGetUserData(
+        node,
+        &diValue
+    );
+    zDiPartial *const di = (zDiPartial *)(diValue);
+    if (di == 0) {
+        return 0;
+    }
+
+    zModel::SetDiTextureWorldPerMeter(
+        di,
+        1,
+        textureWorldPerMeter,
+        textureWorldAxis
+    );
+
+    if (installDriverCallback == 0) {
+        zClass_Class::gwNodeSetActionCallback(
+            node,
+            (void *)(&zInterp_Object3D::DefaultRenderAction)
+        );
+        return 1;
+    }
+
+    if (scrollAlwaysDriverNode == 0) {
+        scrollAlwaysDriverNode = zClass_Object3D::gwObject3DInit();
+        zClass_Class::gwNodeSetActionCallback(
+            scrollAlwaysDriverNode,
+            (void *)(&zInterp_Object3D::ScrollAlwaysTickAction)
+        );
+        zClass_Class::gwNodeSetName(
+            scrollAlwaysDriverNode,
+            g_zInterp_ScrollAlwaysNodeName
+        );
+        scrollAlwaysDriverNode->callbackContext = (zClass_NodePartial *)(this);
+    }
+
+    zInterp_LinkNode *const head = scrollAlwaysListHead;
+    zInterp_LinkNode *const tail = head->prev;
+    zInterp_LinkNode *const entry = new zInterp_LinkNode;
+    entry->next = head != 0 ? head : entry;
+    entry->prev = tail != 0 ? tail : entry;
+    head->prev = entry;
+    entry->prev->next = entry;
+    entry->payload = node;
+    ++scrollAlwaysListCount;
+    return 1;
+}
+
+namespace zInterp_Object3D {
+/**
+ * Reimplements 0x4c59e0: zInterp_Object3D::DefaultRenderAction.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: update scrolling textures for a node's display-instance payload.
+ */
+int __fastcall DefaultRenderAction(
+    zClass_NodePartial *node
+) {
+    unsigned int userData = 0;
+    zClass_Class::gwNodeGetUserData(
+        node,
+        &userData
+    );
+    return zModel_Instance_UpdateScrollingTexturesIfNeeded((zModel_InstancePartial *)(userData));
+}
+
+/**
+ * Reimplements 0x4c5a00: zInterp_Object3D::ScrollAlwaysTickAction.
+ * Source path: D:\Proj\GameZRecoil\zInterp\zinterp_parse.cpp.
+ *
+ * Purpose: walk the context-owned always-scroll list and run the texture
+ * update action for each payload node.
+ */
+void __fastcall ScrollAlwaysTickAction(
+    zClass_NodePartial *wrapperNode
+) {
+    if (wrapperNode == 0) {
+        return;
+    }
+
+    zInterp_Context *const context = (zInterp_Context *)(wrapperNode->callbackContext);
+    zInterp_LinkNode *const head = context->scrollAlwaysListHead;
+    zInterp_LinkNode *entry = head->next;
+    while (entry != head) {
+        DefaultRenderAction((zClass_NodePartial *)(entry->payload));
+        entry = entry->next;
+    }
+}
+
+} // namespace zInterp_Object3D

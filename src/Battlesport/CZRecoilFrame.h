@@ -3,7 +3,7 @@
 #include "recoil/recoil_types.h"
 #include <stddef.h>
 
-#include "Battlesport/cz_game_frame.h"
+#include "CZGameFrame/CZGameFrame.h"
 #include "recoil/recoil_callconv.h"
 
 namespace MfcCmdUI {
@@ -31,19 +31,10 @@ struct CZRecoilFrame : CZGameFrame {
     unsigned int m_vidMemFreeBytes;
     int m_campaignsOnlyMode;
 
-    static CRuntimeClass classCZRecoilFrame;
-    static const AFX_MSGMAP messageMap;
-    static const AFX_MSGMAP_ENTRY messageEntries[];
+    DECLARE_DYNCREATE(CZRecoilFrame)
 
     CZRecoilFrame();
     ~CZRecoilFrame();
-    static CRuntimeClass *__stdcall GetBaseRuntimeClass();
-    static CZRecoilFrame *CreateObject();
-    static CRuntimeClass *__stdcall GetRuntimeClassStatic();
-    virtual CRuntimeClass *GetRuntimeClass() const;
-    static const AFX_MSGMAP *__stdcall GetBaseMessageMap();
-    static const AFX_MSGMAP *__stdcall GetMessageMapStatic();
-    virtual const AFX_MSGMAP * GetMessageMap() const;
     void SetMenuBarVisibility(int visible);
     CString * BuildWindowTitle(CString *outTitle);
     void OnMenuStartSinglePlayer();
@@ -116,6 +107,16 @@ struct CZRecoilFrame : CZGameFrame {
     void InitFallbackMode();
     void EnsureHwApiInitialized(int hwApiSelector);
     void InitStartupHwApiFromOptions();
+
+  private:
+    static const AFX_MSGMAP_ENTRY _messageEntries[];
+
+  protected:
+    static AFX_DATA const AFX_MSGMAP messageMap;
+    static const AFX_MSGMAP *PASCAL _GetBaseMessageMap();
+
+  public:
+    virtual const AFX_MSGMAP *GetMessageMap() const;
 };
 RECOIL_STATIC_ASSERT(
     offsetof(

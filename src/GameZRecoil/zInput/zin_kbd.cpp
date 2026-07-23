@@ -1,10 +1,152 @@
-/* This source-layout fragment is included by the current compatibility container.
- * Parent build/manifests must compile this path directly after retiring the container include.
+#include "zinput.h"
+
+#include <stdlib.h>
+#include <string.h>
+
+extern "C" {
+/**
+ * Reimplements data 0x4e08cc: g_zInput_SourceFile_ZinKbdCpp.
+ * BN types this writable char[0x27] as the zin_kbd.cpp source-path literal
+ * passed to DI_ReportError by keyboard DirectInput failure paths.
+ * Purpose: Supplies the original keyboard source-file path for diagnostics.
  */
+char g_zInput_SourceFile_ZinKbdCpp[0x27] =
+    "D:\\Proj\\GameZRecoil\\zInput\\zin_kbd.cpp";
+}
+
+namespace zInput {
+
+const int kDiOk = 0;
+const int kDiInputLost = (int)(0x8007001e);
+const unsigned int kZInputKeyboardEventBufferCount = 0x80;
+
+struct DipropDwordInit {
+    unsigned int dwSize;
+    unsigned int dwHeaderSize;
+    unsigned int dwObj;
+    unsigned int dwHow;
+    unsigned int dwData;
+};
+
+typedef int(__fastcall *KeyboardRawEventCallbackFn)(
+    int ascii,
+    void *context
+);
+typedef void(__fastcall *KeyboardComboCallbackFn)(int comboIdx);
+
+/**
+ * Recovered inline helper: zInput keyboard modifier state update.
+ * Original-source helper evidence: No standalone retail function exists;
+ * observed inline in 0x46fa10 and 0x46f690 where the keyboard wait/poll paths
+ * set or clear the shared modifier mask for shift/control/alt DIK events.
+ * Purpose: Apply a pressed/released transition to one keyboard modifier bit.
+ */
+inline void UpdateKeyboardModifierState(
+    int mask,
+    bool pressed
+) {
+    if (pressed) {
+        g_zInput_KbdModifierState |= mask;
+    } else {
+        g_zInput_KbdModifierState &= ~mask;
+    }
+}
+
+/**
+ * Recovered inline helper: zInput keyboard poll event application.
+ * Original-source helper evidence: No standalone retail function exists;
+ * observed inline in 0x46f690 where the frame poll path updates modifier
+ * state, dispatch-state slots, and optional raw ASCII callbacks.
+ * Purpose: Apply one buffered keyboard poll event and return its dispatch index.
+ */
+inline int ApplyKeyboardPollEvent(
+    DIDeviceObjectData &event
+) {
+    unsigned int dispatchIndex = event.dwOfs;
+    switch (event.dwOfs) {
+    case 0x38:
+    case 0xb8:
+        UpdateKeyboardModifierState(
+            0x100,
+            (event.dwData & 0x80) != 0
+        );
+        break;
+    case 0x1d:
+    case 0x9d:
+        UpdateKeyboardModifierState(
+            0x200,
+            (event.dwData & 0x80) != 0
+        );
+        break;
+    case 0x2a:
+    case 0x36:
+        UpdateKeyboardModifierState(
+            0x400,
+            (event.dwData & 0x80) != 0
+        );
+        break;
+    default:
+        if (g_zInput_KbdModifierState != 0 && g_zInputKbdKeyDispatchTable[event.dwOfs].state != 0) {
+            g_zInputKbdKeyDispatchTable[event.dwOfs].state = 4;
+        }
+        if ((g_zInput_KbdModifierState & 0x100) != 0) {
+            event.dwData |= 0x40;
+        }
+        if ((g_zInput_KbdModifierState & 0x200) != 0) {
+            event.dwData |= 0x20;
+        }
+        if ((g_zInput_KbdModifierState & 0x400) != 0) {
+            event.dwData |= 0x10;
+        }
+        dispatchIndex |= (unsigned int)(g_zInput_KbdModifierState);
+        break;
+    }
+
+    KbdKeyDispatchEntry &dispatch = g_zInputKbdKeyDispatchTable[dispatchIndex];
+    if ((event.dwData & 0x80) != 0) {
+        dispatch.state = dispatch.state == 1 ? 3 : 1;
+        if (g_zInput_KbdRawEventCallback != 0) {
+            KeyboardRawEventCallbackFn callback =
+                (KeyboardRawEventCallbackFn)(g_zInput_KbdRawEventCallback);
+            callback(
+                Keyboard_TranslateDikToAscii((int)(dispatchIndex)),
+                g_zInput_KbdRawEventCallbackCtx
+            );
+        }
+    } else {
+        dispatch.state |= 4;
+    }
+
+    return (int)(dispatchIndex);
+}
+
+/**
+ * Recovered inline helper: zInput keyboard callback dispatch index builder.
+ * Original-source helper evidence: No standalone retail function exists;
+ * observed inline in 0x46f690's second pass where processed dwData modifier
+ * bits are folded back into a keyboard combo index before callback dispatch.
+ * Purpose: Rebuild a modifier-aware keyboard combo index from a processed event.
+ */
+inline int KeyboardEventDispatchIndex(
+    const DIDeviceObjectData &event
+) {
+    int dispatchIndex = (int)(event.dwOfs);
+    if ((event.dwData & 0x40) != 0) {
+        dispatchIndex |= 0x100;
+    }
+    if ((event.dwData & 0x20) != 0) {
+        dispatchIndex |= 0x200;
+    }
+    if ((event.dwData & 0x10) != 0) {
+        dispatchIndex |= 0x400;
+    }
+
+    return dispatchIndex;
+}
 
 /**
  * Reimplements 0x46f300: zInput::Keyboard_InitDevice.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_kbd.cpp.
+ * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_kbd.cpp.
  * Purpose: Create and configure the DirectInput keyboard device, allocate the
  * buffered event storage, and clear transition/callback state.
  *
@@ -97,7 +239,7 @@ int Keyboard_InitDevice() {
 
 /**
  * Reimplements 0x46f420: zInput::Keyboard_ShutdownDevice.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_kbd.cpp.
+ * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_kbd.cpp.
  * Purpose: unacquire and release the keyboard DirectInput device, then free
  * the buffered keyboard event storage.
  *
@@ -284,7 +426,7 @@ void __fastcall Keyboard_SetRawEventCallback(
 
 /**
  * Reimplements 0x46f980: zInput::Keyboard_GetKeyTransitionState.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_kbd.cpp.
+ * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_kbd.cpp.
  * Purpose: Return and advance the transition state for one modifier-aware
  * keyboard dispatch slot.
  */
@@ -593,3 +735,4 @@ void Keyboard_InitDikToAsciiTable() {
     g_zInput_KbdDikToAsciiTable[0xd3] = 0x7f;
 }
 
+} // namespace zInput

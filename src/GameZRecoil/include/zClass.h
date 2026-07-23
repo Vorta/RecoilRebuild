@@ -2471,8 +2471,8 @@ void __fastcall Add(
     float targetModelRef,
     float durationSec
 );
-void Update();
 void Reset();
+void Update();
 } // namespace zClass_Object3D_ModelRefLerpQueue
 
 namespace zClass_Lod {
@@ -2583,6 +2583,10 @@ int __fastcall gwCameraAddChild(
 int __fastcall gwCameraRemoveChild(
     zClass_NodePartial *parent,
     zClass_NodePartial *child
+);
+int __fastcall gwCameraSetActive(
+    zClass_NodePartial *node,
+    int active
 );
 int __fastcall gwCameraSetFlagBit0(
     zClass_NodePartial *node,

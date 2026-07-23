@@ -1,10 +1,14 @@
-/* This source-layout fragment is included by the current compatibility container.
- * Parent build/manifests must compile this path directly after retiring the container include.
- */
+#include "GameZRecoil/zHud/zhud_ui.h"
+#include "GameZRecoil/include/zimage.h"
+
+#include "GameZRecoil/zError/zerr.h"
+#include "GameZRecoil/zReader/zreader.h"
+
+#include <stdlib.h>
 
 /**
  * Reimplements 0x46efc0: zImage_Font::GetByIndexOrDefault.
- * Original file: D:\Proj\GameZRecoil\zImage\zimg_fonts.cpp.
+ * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zImage\zimg_fonts.cpp.
  * Purpose: return a requested font table slot, falling back to slot 0 when
  * the requested slot is empty.
  *
@@ -25,7 +29,7 @@ zImage_Font *__fastcall zImage_Font::GetByIndexOrDefault(
 namespace zImage {
 /**
  * Reimplements 0x46efe0: zImage::FontsLoadFromPath.
- * Original file: D:\Proj\GameZRecoil\zImage\zimg_fonts.cpp.
+ * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zImage\zimg_fonts.cpp.
  * Purpose: load the FONTS node, create font records, load each font image,
  * and build glyph rectangles for the font table.
  *
@@ -101,7 +105,7 @@ int __fastcall FontsLoadFromPath(
 
 /**
  * Reimplements 0x46f130: zImage_Font::BuildGlyphRects.
- * Original file: D:\Proj\GameZRecoil\zImage\zimg_fonts.cpp.
+ * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zImage\zimg_fonts.cpp.
  * Purpose: scan the font image into glyph rectangles and compute the space
  * width used by font text layout.
  *
@@ -168,7 +172,7 @@ int zImage_Font::BuildGlyphRects() {
 }
 /**
  * Reimplements 0x46f210: zImage_Font::IsImageColumnTransparent.
- * Original file: D:\Proj\GameZRecoil\zImage\zimg_fonts.cpp.
+ * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zImage\zimg_fonts.cpp.
  * Purpose: test whether a vertical image column contains only the configured
  * transparent font color.
  *
@@ -203,7 +207,7 @@ int __fastcall zImage_Font::IsImageColumnTransparent(
 
 /**
  * Reimplements 0x46f260: zImage_Font::MeasureString.
- * Original file: D:\Proj\GameZRecoil\zImage\zimg_fonts.cpp.
+ * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zImage\zimg_fonts.cpp.
  * Purpose: measure wrapped font text width and total line advance.
  *
  * Evidence: BN gets the requested font with fallback, uses image height as
@@ -256,4 +260,3 @@ void __fastcall zImage_Font::MeasureString(
     *outWidthPx = maxLineWidth;
     *outLineAdvance = totalLineAdvance;
 }
-

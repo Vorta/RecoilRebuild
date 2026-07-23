@@ -169,3 +169,28 @@ extern "C" int __fastcall zSndPlayHandle_TryDisableManaged(
     handle->isActive = 0;
     return 1;
 }
+
+namespace zSnd {
+/**
+ * Reimplements 0x4a1290: zSnd::SetActiveBackendPreInit.
+ * Purpose: Select the sound backend before the runtime is preinitialized.
+ */
+int __fastcall SetActiveBackendPreInit(
+    int backend
+) {
+    if (g_zSnd_PreInitialized != 0) {
+        return 0;
+    }
+
+    g_zSnd_ActiveBackend = backend;
+    return 1;
+}
+
+/**
+ * Reimplements 0x4a12b0: zSnd::GetActiveBackend.
+ * Purpose: Return the currently selected sound backend id.
+ */
+int GetActiveBackend() {
+    return g_zSnd_ActiveBackend;
+}
+} // namespace zSnd

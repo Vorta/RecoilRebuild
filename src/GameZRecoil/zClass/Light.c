@@ -4,7 +4,7 @@
 #include "GameZRecoil/zError/zerr.h"
 #include "GameZRecoil/zMath/zmth.h"
 #include "GameZRecoil/zModel/gmod.h"
-#include "GameZRecoil/zRndr/zrndr.h"
+#include "GameZRecoil/zRender/zrndr.h"
 #include "GameZRecoil/zVideo/zvid.h"
 #include "zdi.h"
 
@@ -15,13 +15,6 @@
 namespace {
     const int kZClassNodeLight = 9;
     const char kLightSourceFile[] = "D:\\Proj\\GameZRecoil\\zClass\\Light.c";
-    /**
-     * Reimplements data 0x4e4658: g_zWeapon_ThermalGlowLabel.
-     * Purpose: stores the fixed node name assigned to pooled thermal glow
-     * lights during initialization.
-     */
-    const char g_zWeapon_ThermalGlowLabel[] = "Thermal glow";
-
     /**
      * Original inline helper; no standalone retail function exists.
      * Observed zClass_Light callers in this file: 0x453200, 0x453250,
@@ -82,192 +75,32 @@ namespace {
         return out;
     }
 
-    /**
-     * Original inline helper; no standalone retail function exists.
-     * Observed caller 0x44b140 (D:\Proj\GameZRecoil\zClass\Light.c).
-     * Evidence: a single recovered render-traverse culling fragment with
-     * no separate retail xrefed body.
-     * Purpose: refresh a node's view bounding sphere when needed, run the
-     * frustum sphere clip-mask test, and honor no-near-clip render flags.
-     */
-    int CullNodeForRender(
-        zClass_NodePartial * node,
-        int siblingCountHint,
-        int *clipMask
-    ) {
-        int result = 0;
-        if ((*clipMask != 0 && siblingCountHint > 1) || (node->flags & 0x00080000) == 0) {
-            if ((node->boundsFlags & 0x04) != 0 || g_zClass_RenderBoundsContextActive != 0 ||
-                (node->flags & 0x00080000) == 0) {
-                zBBoxCorners corners = {0};
-                zClass_Class::gwNodeGetViewBBoxCorners(
-                    node,
-                    &corners
-                );
-                BBox::CornersToBoundingSphere(
-                    &corners,
-                    zClass_NodeViewSphereCenter(node),
-                    zClass_NodeViewSphereRadius(node)
-                );
-                if ((node->flags & 0x00080000) != 0) {
-                    node->boundsFlags &= ~0x04;
-                }
-            }
-            result = zVideo_FrustumTestSphereClipMask(
-                zClass_NodeViewSphereCenter(node),
-                clipMask,
-                *zClass_NodeViewSphereRadius(node)
-            );
-            if ((node->flags & 0x80) != 0 && result == 0x20) {
-                result = 0;
-                *clipMask &= ~0x20;
-            }
-        }
-        return result;
-    }
-
-    /**
-     * Original inline helper; no standalone retail function exists.
-     * Observed caller 0x44b140 (D:\Proj\GameZRecoil\zClass\Light.c).
-     * Evidence: a single recovered render-traverse render/child-walk
-     * fragment with no separate retail xrefed body.
-     * Purpose: mark the node as rendered, apply range-fade DI state, render it,
-     * and recurse through child render dispatch while preserving clip masks.
-     */
-    void RenderNodeAndChildren(
-        zClass_NodePartial * node,
-        int clipMask
-    ) {
-        node->flags |= 0x80000000;
-        zDiPartial *di = (zDiPartial *)(unsigned int)node->userDataOrDiRef;
-        if (di != 0 && g_zClass_RenderRangeFadeActive != 0) {
-            di->flags |= 0x08;
-            di->blendScale = g_zClass_RenderRangeFadeScale;
-        }
-        if (gModel_RenderFn != 0) {
-            gModel_RenderFn(
-                node,
-                clipMask
-            );
-        }
-
-        if (node->listCountB > 0) {
-            ++gModel_ClipMaskStackTop;
-            *gModel_ClipMaskStackTop = clipMask;
-            for (int i = 0; i < node->listCountB; ++i) {
-                zClass_Class::gwNodeRenderDispatch(
-                    node->listB[i],
-                    node->listCountB
-                );
-            }
-            --gModel_ClipMaskStackTop;
-        }
-    }
 }
 
 namespace Light {
     /**
-     * Reimplements 0x4b2160: Light::InitThermalGlowPool
-     * (D:\Proj\GameZRecoil\zClass\Light.c).
-     * Purpose: allocate the fixed eight-node thermal glow light pool, initialize
-     * names, positions, and ranges, then link every node onto the free list.
+     * Reimplements 0x4b2160: Light::InitThermalGlowPool.
+     * Purpose: provenance marker for the thermal-pool body emitted in the
+     * literal-backed zwep_init.c physical contribution.
      */
-    int InitThermalGlowPool() {
-        for (int i = 0; i < 8; ++i) {
-            zClass_NodePartial *const light = zClass_Light::gwLightNew();
-            zClass_Class::gwNodeSetName(
-                light,
-                g_zWeapon_ThermalGlowLabel
-            );
-            zClass_Light::gwLightSetPosition(
-                light,
-                0.0f,
-                0.0f,
-                0.0f
-            );
-            zClass_Light::gwLightSetRange(
-                light,
-                0.1f,
-                0.2f
-            );
-            light->callbackContext = g_OptCatalogThermalGlowFreeList;
-            g_OptCatalogThermalGlowFreeList = light;
-        }
-
-        return 1;
-    }
-
     /**
-     * Reimplements 0x4b21e0: Light::DestroyThermalGlowPool
-     * (D:\Proj\GameZRecoil\zClass\Light.c).
-     * Purpose: delete every thermal glow light still on the free list and clear
-     * the pool head.
+     * Reimplements 0x4b21e0: Light::DestroyThermalGlowPool.
+     * Purpose: provenance marker for the thermal-pool body emitted in the
+     * literal-backed zwep_init.c physical contribution.
      */
-    int DestroyThermalGlowPool() {
-        zClass_NodePartial *node = g_OptCatalogThermalGlowFreeList;
-        while (node != 0) {
-            zClass_NodePartial *next = node->callbackContext;
-            node->callbackContext = 0;
-            zClass_Class::DeleteNodeByType(node);
-            node = next;
-        }
-
-        g_OptCatalogThermalGlowFreeList = 0;
-        return 1;
-    }
-
     /**
-     * Reimplements 0x4b2520: Light::AllocFromFreeListAndAttach
-     * (D:\Proj\GameZRecoil\zClass\Light.c).
-     * Purpose: pop a thermal glow light from the free list, reset its range and
-     * specular color, and attach it to the active runtime world.
+     * Reimplements 0x4b2520: Light::AllocFromFreeListAndAttach.
+     * Purpose: provenance marker for the thermal-pool body emitted in the
+     * literal-backed zwep_init.c physical contribution.
      */
-    zClass_NodePartial *__fastcall AllocFromFreeListAndAttach(
-        zColorRgb * specularColor
-    ) {
-        zClass_NodePartial *const light = g_OptCatalogThermalGlowFreeList;
-        if (light == 0) {
-            return 0;
-        }
-
-        g_OptCatalogThermalGlowFreeList = light->callbackContext;
-        zClass_Light::gwLightSetRange(
-            light,
-            0.1f,
-            0.2f
-        );
-        zClass_Light::gwLightSetSpecularColor(
-            light,
-            specularColor->red,
-            specularColor->green,
-            specularColor->blue
-        );
-        zClass_World::AddLight(
-            g_OptCatalogRuntimeWorld,
-            light
-        );
-        return light;
-    }
-
     /**
-     * Reimplements 0x4b2570: Light::ReturnToFreeList
-     * (D:\Proj\GameZRecoil\zClass\Light.c).
-     * Purpose: reset a thermal glow light's range, detach it from the runtime
-     * world, and push it back onto the thermal glow free list.
+     * Reimplements 0x4b2570: Light::ReturnToFreeList.
+     * Purpose: provenance marker for the thermal-pool body emitted in the
+     * literal-backed zwep_init.c physical contribution.
      */
-    void __fastcall ReturnToFreeList(zClass_NodePartial * lightNode) {
-        zClass_Light::gwLightSetRange(
-            lightNode,
-            0.1f,
-            0.2f
-        );
-        zClass_World::RemoveLight(
-            g_OptCatalogRuntimeWorld,
-            lightNode
-        );
-        lightNode->callbackContext = g_OptCatalogThermalGlowFreeList;
-        g_OptCatalogThermalGlowFreeList = lightNode;
-    }
+
+
+
 }
 
 namespace zClass_Light {
@@ -859,53 +692,4 @@ namespace zClass_Light {
         return 0;
     }
 
-    /**
-     * Reimplements 0x44b140: zClass_Light::RenderTraverse
-     * (D:\Proj\GameZRecoil\zClass\Light.c).
-     * Purpose: cull an enabled light node, push render-bounds context when
-     * needed, apply local transform, render the node subtree, and restore state.
-     */
-    int __fastcall RenderTraverse(
-        zClass_NodePartial * node,
-        int siblingCountHint
-    ) {
-        const int flags = node->flags;
-        int boundsContextPushed = 0;
-        if ((flags & 0x04) == 0) {
-            return 0;
-        }
-
-        node->flags = flags & ~0x02000000;
-        zClass_LightDataPartial *data = (zClass_LightDataPartial *)(node->classData);
-        int clipMask = *gModel_ClipMaskStackTop;
-        const int result = CullNodeForRender(
-            node,
-            siblingCountHint,
-            &clipMask
-        );
-        if (g_zClass_RenderBoundsContextActive == 0) {
-            boundsContextPushed = 1;
-            g_zClass_RenderBoundsContextActive = 1;
-        }
-
-        if (result == 0) {
-            const zVec3 unitScale = {1.0f, 1.0f, 1.0f};
-            zMath::MatStackPushAndCloneParent(data->savedParentMatrix);
-            zMath::MatApplyLocalTRS(
-                &data->localRotation,
-                &data->localPosition,
-                &unitScale
-            );
-            RenderNodeAndChildren(
-                node,
-                clipMask
-            );
-            zMath::MatStackPopPtr();
-        }
-
-        if (boundsContextPushed != 0) {
-            g_zClass_RenderBoundsContextActive = 0;
-        }
-        return result;
-    }
 }

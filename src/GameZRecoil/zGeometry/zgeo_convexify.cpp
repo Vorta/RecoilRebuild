@@ -543,142 +543,9 @@ float EstimateMagnitudeFromSquaredLength(
 }
 } // namespace
 
-namespace zGeometry_Vec3Array {
-/**
- * Reimplements 0x46c5b0.
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
- * Purpose: Reverse all points after the anchor point in a polygon ring.
- */
-void __fastcall ReversePoints(
-    int pointCount,
-    zVec3 *points
-) {
-    zVec3 *front = &points[1];
-    zVec3 *back = &points[pointCount - 1];
-    const int swapCount = pointCount / 2;
-
-    for (int i = 0; i < swapCount; ++i) {
-        const zVec3 temp = *back;
-        *back = *front;
-        *front = temp;
-        --back;
-        ++front;
-    }
-}
-
-/**
- * Reimplements 0x46c620.
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
- * Purpose: Ensure the first two polygon edges produce a positive Z cross.
- */
-int __fastcall EnsurePositiveCrossZ(
-    int pointCount,
-    zVec3 *points,
-    int allowReverse
-) {
-    const zVec3 edge0 = {points[1].x - points[0].x,
-        points[1].y - points[0].y,
-        points[1].z - points[0].z};
-    const zVec3 edge1 = {points[2].x - points[1].x,
-        points[2].y - points[1].y,
-        points[2].z - points[1].z};
-    const zVec3 cross = {edge0.y * edge1.z - edge0.z * edge1.y,
-        edge0.z * edge1.x - edge0.x * edge1.z,
-        edge0.x * edge1.y - edge0.y * edge1.x};
-
-    if (!(cross.z > 0.0f)) {
-        if (allowReverse == 0) {
-            return 0;
-        }
-
-        ReversePoints(
-            pointCount,
-            points
-        );
-    }
-
-    return 1;
-}
-
-/**
- * Reimplements 0x46c3a0.
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeometry.cpp.
- * Purpose: Compute a normalized Newell plane equation from a point ring.
- */
-void __fastcall ComputeNewellPlane(
-    int pointCount,
-    zVec3 *points,
-    zGeometry_PlaneEquationPartial *outPlane
-) {
-    float normalX = 0.0f;
-    float normalY = 0.0f;
-    float normalZ = 0.0f;
-    float sumX = 0.0f;
-    float sumY = 0.0f;
-    float sumZ = 0.0f;
-
-    for (int i = 0; i < pointCount; ++i) {
-        zVec3 *const point = &points[i];
-        zVec3 *const next = &points[(i + 1) % pointCount];
-
-        normalX += (point->y - next->y) * (point->z + next->z);
-        normalY += (point->z - next->z) * (point->x + next->x);
-        normalZ += (point->x - next->x) * (point->y + next->y);
-
-        sumX += point->x;
-        sumY += point->y;
-        sumZ += point->z;
-    }
-
-    float estimatedMagnitude = 0.0f;
-    if (normalX != 0.0f || normalY != 0.0f || normalZ != 0.0f) {
-        const float squaredLength = normalX * normalX + normalY * normalY + normalZ * normalZ;
-        estimatedMagnitude = EstimateMagnitudeFromSquaredLength(squaredLength);
-    }
-
-    float normalScale = 0.0f;
-    if (estimatedMagnitude != 0.0f) {
-        normalScale = 1.0f / estimatedMagnitude;
-    }
-
-    outPlane->a = normalX * normalScale;
-    outPlane->b = normalY * normalScale;
-    outPlane->c = normalZ * normalScale;
-    outPlane->d =
-        -((sumX * normalX + sumY * normalY + sumZ * normalZ) /
-            ((float)(pointCount)*estimatedMagnitude));
-}
-} // namespace zGeometry_Vec3Array
-
 namespace zGeometry_TriangulateHole {
 /**
- * Reimplements 0x46bf70.
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
- * Purpose: Find a live edge between two combined-ring vertex indices.
- */
-zGeometry_TriangulateHole_EdgeState *__fastcall FindActiveEdgeState(
-    int vertexIndex0,
-    int vertexIndex1,
-    int edgeCount,
-    zGeometry_TriangulateHole_EdgeState *edgeStates
-) {
-    for (int i = 0; i < edgeCount; ++i) {
-        zGeometry_TriangulateHole_EdgeState *const edge = &edgeStates[i];
-        if ((edge->vertexIndex0 == vertexIndex0 && edge->vertexIndex1 == vertexIndex1) ||
-            (edge->vertexIndex0 == vertexIndex1 && edge->vertexIndex1 == vertexIndex0)) {
-            if (edge->remainingUseCount != 0) {
-                return edge;
-            }
-
-            return 0;
-        }
-    }
-
-    return 0;
-}
-
-/**
- * Reimplements 0x46bd50.
+ * Reimplements 0x46bd50: zGeometry_TriangulateHole::TryAppendBridgeEdge
  * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
  * Purpose: Append a bridge edge when it is unique and does not cross live edges.
  */
@@ -721,9 +588,49 @@ int __fastcall TryAppendBridgeEdge(
     edgeStates[edgeCount] = *edgeState;
     return edgeCount + 1;
 }
+} // namespace zGeometry_TriangulateHole
 
+namespace zGeometry_Segment {
 /**
- * Reimplements 0x46bf30.
+ * Reimplements 0x46be20: zGeometry_Segment::IntersectsSegmentXY
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
+ * Purpose: Test whether two XY segments intersect with both parametric coordinates in the half-open unit range.
+ */
+int __fastcall IntersectsSegmentXY(
+    zVec3 *segmentAPoint0,
+    zVec3 *segmentAPoint1,
+    zVec3 *segmentBPoint0,
+    zVec3 *segmentBPoint1
+) {
+    const float segmentAX = segmentAPoint1->x - segmentAPoint0->x;
+    const float segmentAY = segmentAPoint1->y - segmentAPoint0->y;
+    const float segmentBX = segmentBPoint1->x - segmentBPoint0->x;
+    const float segmentBY = segmentBPoint1->y - segmentBPoint0->y;
+    const float determinant = segmentAX * segmentBY - segmentAY * segmentBX;
+
+    if (determinant == 0.0f) {
+        return 0;
+    }
+
+    const float originDeltaX = segmentBPoint0->x - segmentAPoint0->x;
+    const float originDeltaY = segmentBPoint0->y - segmentAPoint0->y;
+    const float segmentAParameter =
+        (originDeltaX * segmentBY - originDeltaY * segmentBX) / determinant;
+    const float segmentBParameter =
+        (originDeltaX * segmentAY - originDeltaY * segmentAX) / determinant;
+
+    if (segmentAParameter >= 0.0f && segmentBParameter >= 0.0f && segmentAParameter < 1.0f &&
+        segmentBParameter < 1.0f) {
+        return 1;
+    }
+
+    return 0;
+}
+} // namespace zGeometry_Segment
+
+namespace zGeometry_TriangulateHole {
+/**
+ * Reimplements 0x46bf30: zGeometry_TriangulateHole::CollectActiveEdgeIndicesForVertex
  * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
  * Purpose: Collect live edge-state indices incident to one combined-ring vertex.
  */
@@ -745,9 +652,39 @@ int __fastcall CollectActiveEdgeIndicesForVertex(
 
     return result;
 }
+} // namespace zGeometry_TriangulateHole
 
+namespace zGeometry_TriangulateHole {
 /**
- * Reimplements 0x46bfc0.
+ * Reimplements 0x46bf70: zGeometry_TriangulateHole::FindActiveEdgeState
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
+ * Purpose: Find a live edge between two combined-ring vertex indices.
+ */
+zGeometry_TriangulateHole_EdgeState *__fastcall FindActiveEdgeState(
+    int vertexIndex0,
+    int vertexIndex1,
+    int edgeCount,
+    zGeometry_TriangulateHole_EdgeState *edgeStates
+) {
+    for (int i = 0; i < edgeCount; ++i) {
+        zGeometry_TriangulateHole_EdgeState *const edge = &edgeStates[i];
+        if ((edge->vertexIndex0 == vertexIndex0 && edge->vertexIndex1 == vertexIndex1) ||
+            (edge->vertexIndex0 == vertexIndex1 && edge->vertexIndex1 == vertexIndex0)) {
+            if (edge->remainingUseCount != 0) {
+                return edge;
+            }
+
+            return 0;
+        }
+    }
+
+    return 0;
+}
+} // namespace zGeometry_TriangulateHole
+
+namespace zGeometry_TriangulateHole {
+/**
+ * Reimplements 0x46bfc0: zGeometry_TriangulateHole::TryEmitTriangleFromEdgePair
  * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
  * Purpose: Emit a triangle from two incident live edges and their closing edge.
  */
@@ -801,45 +738,11 @@ void __fastcall TryEmitTriangleFromEdgePair(
     --edge1->remainingUseCount;
     --closingEdge->remainingUseCount;
 }
-
-/**
- * Reimplements 0x46c390.
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeometry.cpp.
- * Purpose: Cache the plane equation used to project the inner ring.
- */
-void __fastcall CacheCombinedPlane(
-    int pointCount,
-    zVec3 *points
-) {
-    zGeometry_Vec3Array::ComputeNewellPlane(
-        pointCount,
-        points,
-        &g_zGeometry_TriangulateHole_CachedPlane
-    );
-}
-
-/**
- * Reimplements 0x46c570.
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeometry.cpp.
- * Purpose: Project inner-ring Z values onto the cached outer-ring plane.
- */
-void __fastcall ProjectInnerRingOntoCachedPlane(
-    int pointCount,
-    zVec3 *points
-) {
-    for (int i = 0; i < pointCount; ++i) {
-        zVec3 *const point = &points[i];
-        point->z = -(g_zGeometry_TriangulateHole_CachedPlane.a * point->x +
-                       g_zGeometry_TriangulateHole_CachedPlane.b * point->y +
-                       g_zGeometry_TriangulateHole_CachedPlane.d) /
-                   g_zGeometry_TriangulateHole_CachedPlane.c;
-    }
-}
 } // namespace zGeometry_TriangulateHole
 
 namespace zGeometry {
 /**
- * Reimplements 0x46c070.
+ * Reimplements 0x46c070: zGeometry::TriangulatePolygonWithHole
  * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
  * Purpose: Bridge an inner polygon ring to an outer ring and emit triangle soup.
  */
@@ -990,104 +893,276 @@ zGeometry_TriangleSoup *__fastcall TriangulatePolygonWithHole(
 }
 } // namespace zGeometry
 
-namespace zGeometry_Polygon {
+namespace zGeometry_TriangulateHole {
 /**
- * Reimplements 0x46ced0.
+ * Reimplements 0x46c390: zGeometry_TriangulateHole::CacheCombinedPlane
  * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
- * Purpose: Split a polygon point-dword offset list across the chosen diagonal
- * into two smaller polygon offset lists.
+ * Purpose: Cache the plane equation used to project the inner ring.
  */
-int __fastcall TrySplitPointDwordOffsetsAtBestDiagonal(
+void __fastcall CacheCombinedPlane(
     int pointCount,
-    float *pointDwords,
-    int *pointDwordOffsets,
-    zGeometry_PolygonSplitDwordOffsetListPair *outSplitPointLists,
-    int pointDwordStride
+    zVec3 *points
 ) {
-    const bool ccw =
-        PolygonArea2D(
-            pointDwords,
-            pointDwordOffsets,
+    zGeometry_Vec3Array::ComputeNewellPlane(
+        pointCount,
+        points,
+        &g_zGeometry_TriangulateHole_CachedPlane
+    );
+}
+} // namespace zGeometry_TriangulateHole
+
+namespace zGeometry_Vec3Array {
+/**
+ * Reimplements 0x46c3a0: zGeometry_Vec3Array::ComputeNewellPlane
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
+ * Purpose: Compute a normalized Newell plane equation from a point ring.
+ */
+void __fastcall ComputeNewellPlane(
+    int pointCount,
+    zVec3 *points,
+    zGeometry_PlaneEquationPartial *outPlane
+) {
+    float normalX = 0.0f;
+    float normalY = 0.0f;
+    float normalZ = 0.0f;
+    float sumX = 0.0f;
+    float sumY = 0.0f;
+    float sumZ = 0.0f;
+
+    for (int i = 0; i < pointCount; ++i) {
+        zVec3 *const point = &points[i];
+        zVec3 *const next = &points[(i + 1) % pointCount];
+
+        normalX += (point->y - next->y) * (point->z + next->z);
+        normalY += (point->z - next->z) * (point->x + next->x);
+        normalZ += (point->x - next->x) * (point->y + next->y);
+
+        sumX += point->x;
+        sumY += point->y;
+        sumZ += point->z;
+    }
+
+    float estimatedMagnitude = 0.0f;
+    if (normalX != 0.0f || normalY != 0.0f || normalZ != 0.0f) {
+        const float squaredLength = normalX * normalX + normalY * normalY + normalZ * normalZ;
+        estimatedMagnitude = EstimateMagnitudeFromSquaredLength(squaredLength);
+    }
+
+    float normalScale = 0.0f;
+    if (estimatedMagnitude != 0.0f) {
+        normalScale = 1.0f / estimatedMagnitude;
+    }
+
+    outPlane->a = normalX * normalScale;
+    outPlane->b = normalY * normalScale;
+    outPlane->c = normalZ * normalScale;
+    outPlane->d =
+        -((sumX * normalX + sumY * normalY + sumZ * normalZ) /
+            ((float)(pointCount)*estimatedMagnitude));
+}
+} // namespace zGeometry_Vec3Array
+
+namespace zGeometry_TriangulateHole {
+/**
+ * Reimplements 0x46c570: zGeometry_TriangulateHole::ProjectInnerRingOntoCachedPlane
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
+ * Purpose: Project inner-ring Z values onto the cached outer-ring plane.
+ */
+void __fastcall ProjectInnerRingOntoCachedPlane(
+    int pointCount,
+    zVec3 *points
+) {
+    for (int i = 0; i < pointCount; ++i) {
+        zVec3 *const point = &points[i];
+        point->z = -(g_zGeometry_TriangulateHole_CachedPlane.a * point->x +
+                       g_zGeometry_TriangulateHole_CachedPlane.b * point->y +
+                       g_zGeometry_TriangulateHole_CachedPlane.d) /
+                   g_zGeometry_TriangulateHole_CachedPlane.c;
+    }
+}
+} // namespace zGeometry_TriangulateHole
+
+namespace zGeometry_Vec3Array {
+/**
+ * Reimplements 0x46c5b0: zGeometry_Vec3Array::ReversePoints
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
+ * Purpose: Reverse all points after the anchor point in a polygon ring.
+ */
+void __fastcall ReversePoints(
+    int pointCount,
+    zVec3 *points
+) {
+    zVec3 *front = &points[1];
+    zVec3 *back = &points[pointCount - 1];
+    const int swapCount = pointCount / 2;
+
+    for (int i = 0; i < swapCount; ++i) {
+        const zVec3 temp = *back;
+        *back = *front;
+        *front = temp;
+        --back;
+        ++front;
+    }
+}
+} // namespace zGeometry_Vec3Array
+
+namespace zGeometry_Vec3Array {
+/**
+ * Reimplements 0x46c620: zGeometry_Vec3Array::EnsurePositiveCrossZ
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
+ * Purpose: Ensure the first two polygon edges produce a positive Z cross.
+ */
+int __fastcall EnsurePositiveCrossZ(
+    int pointCount,
+    zVec3 *points,
+    int allowReverse
+) {
+    const zVec3 edge0 = {points[1].x - points[0].x,
+        points[1].y - points[0].y,
+        points[1].z - points[0].z};
+    const zVec3 edge1 = {points[2].x - points[1].x,
+        points[2].y - points[1].y,
+        points[2].z - points[1].z};
+    const zVec3 cross = {edge0.y * edge1.z - edge0.z * edge1.y,
+        edge0.z * edge1.x - edge0.x * edge1.z,
+        edge0.x * edge1.y - edge0.y * edge1.x};
+
+    if (!(cross.z > 0.0f)) {
+        if (allowReverse == 0) {
+            return 0;
+        }
+
+        ReversePoints(
             pointCount,
-            pointDwordStride
-        ) >= 0.0f;
-
-    int earPrev = 0;
-    int earCurr = 1;
-    int earNext = 2;
-
-    bool foundEar = false;
-    {
-        for (int curr = 0; curr < pointCount; ++curr) {
-            const int prev = (curr + pointCount - 1) % pointCount;
-            const int next = (curr + 1) % pointCount;
-            if (IsEar(
-                    pointDwords,
-                    pointDwordOffsets,
-                    pointCount,
-                    pointDwordStride,
-                    prev,
-                    curr,
-                    next,
-                    ccw
-                )) {
-                earPrev = prev;
-                earCurr = curr;
-                earNext = next;
-                foundEar = true;
-                break;
-            }
-        }
-    }
-
-    if (!foundEar) {
-        earPrev = 0;
-        earCurr = 1;
-        earNext = 2;
-    }
-
-    outSplitPointLists->pointCount0 = 3;
-    outSplitPointLists->pointCount1 = pointCount - 1;
-
-    int *out = outSplitPointLists->pointDwordOffsets;
-    CopyOffsetVertex(
-        out,
-        &pointDwordOffsets[earPrev * pointDwordStride],
-        pointDwordStride
-    );
-    CopyOffsetVertex(
-        out + pointDwordStride,
-        &pointDwordOffsets[earCurr * pointDwordStride],
-        pointDwordStride
-    );
-    CopyOffsetVertex(
-        out + pointDwordStride * 2,
-        &pointDwordOffsets[earNext * pointDwordStride],
-        pointDwordStride
-    );
-
-    out += pointDwordStride * 3;
-    int index = earNext;
-    while (true) {
-        CopyOffsetVertex(
-            out,
-            &pointDwordOffsets[index * pointDwordStride],
-            pointDwordStride
+            points
         );
-        out += pointDwordStride;
-
-        if (index == earPrev) {
-            break;
-        }
-
-        index = (index + 1) % pointCount;
     }
 
     return 1;
 }
+} // namespace zGeometry_Vec3Array
 
+namespace zGeometry_ConvexPolygonSet {
 /**
- * Reimplements 0x46cb50.
+ * Reimplements 0x46c720: zGeometry_ConvexPolygonSet::Destroy
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
+ * Purpose: Release a convex polygon set and its owned point and polygon arrays.
+ */
+void __fastcall Destroy(
+    zGeometry_ConvexPolygonSetPartial *self
+) {
+    if (self == 0) {
+        return;
+    }
+
+    if (self->polygons != 0) {
+        free(self->polygons);
+    }
+
+    if (self->points != 0) {
+        free(self->points);
+    }
+
+    free(self);
+}
+} // namespace zGeometry_ConvexPolygonSet
+
+namespace zGeometry_Polygon {
+/**
+ * Reimplements 0x46c760: zGeometry_Polygon::Convexify
+ * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
+ * Purpose: Convert polygon spans into convex polygon output, copying already
+ * convex spans and triangulating non-convex spans through the polygon splitter.
+ */
+zGeometry_ConvexPolygonSetPartial *__fastcall Convexify(
+    zGeometry_PolygonSpanArrayPartial *polygonSet,
+    int inputPointCount,
+    zVec3 *points
+) {
+    if (inputPointCount <= 0 || points == 0) {
+        fprintf(
+            stderr,
+            g_zGeometry_ConvexifyNullInputsMsg
+        );
+        return 0;
+    }
+
+    zGeometry_ConvexPolygonSetPartial *result =
+        (zGeometry_ConvexPolygonSetPartial *)(malloc(sizeof(zGeometry_ConvexPolygonSetPartial)));
+    result->points = (zVec3 *)(malloc((size_t)(inputPointCount * 3 - 6) * sizeof(zVec3)));
+    result->polygons = (zGeometry_PolygonPointSpanPartial *)(malloc(
+        (size_t)(inputPointCount - 2) * sizeof(zGeometry_PolygonPointSpanPartial)
+    ));
+    result->totalPointCount = 0;
+    result->polygonCount = 0;
+
+    zVec3 *outputPointWriteCursor = result->points;
+    zGeometry_PolygonPointSpanPartial *inputPolygon = polygonSet->polygons;
+    for (int remaining = polygonSet->polygonCount; remaining != 0; --remaining, ++inputPolygon) {
+        const int polygonPointCount = inputPolygon->pointCount;
+        if (polygonPointCount < 3) {
+            continue;
+        }
+
+        const float *sourcePointDwords = PointDwordBase(
+            points,
+            inputPolygon->pointDwordOffset
+        );
+        if (polygonPointCount == 3) {
+            outputPointWriteCursor =
+                CopySpanPoints(
+                    result,
+                    outputPointWriteCursor,
+                    sourcePointDwords,
+                    3
+                );
+        } else if (polygonPointCount == 4) {
+            const zVec3 *quadPoints = (const zVec3 *)(sourcePointDwords);
+            if (IsConvexQuadXY(quadPoints)) {
+                outputPointWriteCursor =
+                    CopySpanPoints(
+                        result,
+                        outputPointWriteCursor,
+                        sourcePointDwords,
+                        4
+                    );
+            } else {
+                outputPointWriteCursor =
+                    AppendTriangulatedSpan(
+                        result,
+                        outputPointWriteCursor,
+                        inputPolygon,
+                        points
+                    );
+            }
+        } else if (polygonPointCount > 4) {
+            outputPointWriteCursor =
+                AppendTriangulatedSpan(
+                    result,
+                    outputPointWriteCursor,
+                    inputPolygon,
+                    points
+                );
+        } else {
+            zError::ReportOld(
+                0x100,
+                g_zGeometry_SourceFile_ZgeoConvexifyCpp,
+                0x38b,
+                g_zGeometry_ConvexifyInvalidInputPolygonSizeFmt,
+                inputPolygon->pointCount
+            );
+            zGeometry_ConvexPolygonSet::Destroy(result);
+            return 0;
+        }
+    }
+
+    return result;
+}
+} // namespace zGeometry_Polygon
+
+namespace zGeometry_Polygon {
+/**
+ * Reimplements 0x46cb50: zGeometry_Polygon::TriangulatePointDwordOffsetsRecursive
  * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
  * Purpose: Recursively split a polygon point-dword offset list and append the
  * resulting triangle offset lists.
@@ -1233,120 +1308,101 @@ zGeometry_TriangleDwordOffsetList *__fastcall TriangulatePointDwordOffsetsRecurs
 
     return result;
 }
-
-/**
- * Reimplements 0x46c760.
- * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
- * Purpose: Convert polygon spans into convex polygon output, copying already
- * convex spans and triangulating non-convex spans through the polygon splitter.
- */
-zGeometry_ConvexPolygonSetPartial *__fastcall Convexify(
-    zGeometry_PolygonSpanArrayPartial *polygonSet,
-    int inputPointCount,
-    zVec3 *points
-) {
-    if (inputPointCount <= 0 || points == 0) {
-        fprintf(
-            stderr,
-            g_zGeometry_ConvexifyNullInputsMsg
-        );
-        return 0;
-    }
-
-    zGeometry_ConvexPolygonSetPartial *result =
-        (zGeometry_ConvexPolygonSetPartial *)(malloc(sizeof(zGeometry_ConvexPolygonSetPartial)));
-    result->points = (zVec3 *)(malloc((size_t)(inputPointCount * 3 - 6) * sizeof(zVec3)));
-    result->polygons = (zGeometry_PolygonPointSpanPartial *)(malloc(
-        (size_t)(inputPointCount - 2) * sizeof(zGeometry_PolygonPointSpanPartial)
-    ));
-    result->totalPointCount = 0;
-    result->polygonCount = 0;
-
-    zVec3 *outputPointWriteCursor = result->points;
-    zGeometry_PolygonPointSpanPartial *inputPolygon = polygonSet->polygons;
-    for (int remaining = polygonSet->polygonCount; remaining != 0; --remaining, ++inputPolygon) {
-        const int polygonPointCount = inputPolygon->pointCount;
-        if (polygonPointCount < 3) {
-            continue;
-        }
-
-        const float *sourcePointDwords = PointDwordBase(
-            points,
-            inputPolygon->pointDwordOffset
-        );
-        if (polygonPointCount == 3) {
-            outputPointWriteCursor =
-                CopySpanPoints(
-                    result,
-                    outputPointWriteCursor,
-                    sourcePointDwords,
-                    3
-                );
-        } else if (polygonPointCount == 4) {
-            const zVec3 *quadPoints = (const zVec3 *)(sourcePointDwords);
-            if (IsConvexQuadXY(quadPoints)) {
-                outputPointWriteCursor =
-                    CopySpanPoints(
-                        result,
-                        outputPointWriteCursor,
-                        sourcePointDwords,
-                        4
-                    );
-            } else {
-                outputPointWriteCursor =
-                    AppendTriangulatedSpan(
-                        result,
-                        outputPointWriteCursor,
-                        inputPolygon,
-                        points
-                    );
-            }
-        } else if (polygonPointCount > 4) {
-            outputPointWriteCursor =
-                AppendTriangulatedSpan(
-                    result,
-                    outputPointWriteCursor,
-                    inputPolygon,
-                    points
-                );
-        } else {
-            zError::ReportOld(
-                0x100,
-                g_zGeometry_SourceFile_ZgeoConvexifyCpp,
-                0x38b,
-                g_zGeometry_ConvexifyInvalidInputPolygonSizeFmt,
-                inputPolygon->pointCount
-            );
-            zGeometry_ConvexPolygonSet::Destroy(result);
-            return 0;
-        }
-    }
-
-    return result;
-}
 } // namespace zGeometry_Polygon
 
-namespace zGeometry_ConvexPolygonSet {
+namespace zGeometry_Polygon {
 /**
- * Reimplements 0x46c720.
+ * Reimplements 0x46ced0: zGeometry_Polygon::TrySplitPointDwordOffsetsAtBestDiagonal
  * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_convexify.cpp.
- * Purpose: Release a convex polygon set and its owned point and polygon arrays.
+ * Purpose: Split a polygon point-dword offset list across the chosen diagonal
+ * into two smaller polygon offset lists.
  */
-void __fastcall Destroy(
-    zGeometry_ConvexPolygonSetPartial *self
+int __fastcall TrySplitPointDwordOffsetsAtBestDiagonal(
+    int pointCount,
+    float *pointDwords,
+    int *pointDwordOffsets,
+    zGeometry_PolygonSplitDwordOffsetListPair *outSplitPointLists,
+    int pointDwordStride
 ) {
-    if (self == 0) {
-        return;
+    const bool ccw =
+        PolygonArea2D(
+            pointDwords,
+            pointDwordOffsets,
+            pointCount,
+            pointDwordStride
+        ) >= 0.0f;
+
+    int earPrev = 0;
+    int earCurr = 1;
+    int earNext = 2;
+
+    bool foundEar = false;
+    {
+        for (int curr = 0; curr < pointCount; ++curr) {
+            const int prev = (curr + pointCount - 1) % pointCount;
+            const int next = (curr + 1) % pointCount;
+            if (IsEar(
+                    pointDwords,
+                    pointDwordOffsets,
+                    pointCount,
+                    pointDwordStride,
+                    prev,
+                    curr,
+                    next,
+                    ccw
+                )) {
+                earPrev = prev;
+                earCurr = curr;
+                earNext = next;
+                foundEar = true;
+                break;
+            }
+        }
     }
 
-    if (self->polygons != 0) {
-        free(self->polygons);
+    if (!foundEar) {
+        earPrev = 0;
+        earCurr = 1;
+        earNext = 2;
     }
 
-    if (self->points != 0) {
-        free(self->points);
+    outSplitPointLists->pointCount0 = 3;
+    outSplitPointLists->pointCount1 = pointCount - 1;
+
+    int *out = outSplitPointLists->pointDwordOffsets;
+    CopyOffsetVertex(
+        out,
+        &pointDwordOffsets[earPrev * pointDwordStride],
+        pointDwordStride
+    );
+    CopyOffsetVertex(
+        out + pointDwordStride,
+        &pointDwordOffsets[earCurr * pointDwordStride],
+        pointDwordStride
+    );
+    CopyOffsetVertex(
+        out + pointDwordStride * 2,
+        &pointDwordOffsets[earNext * pointDwordStride],
+        pointDwordStride
+    );
+
+    out += pointDwordStride * 3;
+    int index = earNext;
+    while (true) {
+        CopyOffsetVertex(
+            out,
+            &pointDwordOffsets[index * pointDwordStride],
+            pointDwordStride
+        );
+        out += pointDwordStride;
+
+        if (index == earPrev) {
+            break;
+        }
+
+        index = (index + 1) % pointCount;
     }
 
-    free(self);
+    return 1;
 }
-} // namespace zGeometry_ConvexPolygonSet
+} // namespace zGeometry_Polygon

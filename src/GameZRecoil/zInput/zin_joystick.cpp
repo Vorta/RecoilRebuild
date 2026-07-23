@@ -1,10 +1,62 @@
-/* This source-layout fragment is included by the current compatibility container.
- * Parent build/manifests must compile this path directly after retiring the container include.
- */
+#include "zinput.h"
+
+#include "GameZRecoil/zError/zerr.h"
+
+#include <stdio.h>
+#include <string.h>
+
+extern "C" {
+/** Reimplements data 0x4e0cc4: DirectInput error report format. */
+char g_zInput_DirectInputErrorFmt[0x18] = "DirectInput Error [%s]\n";
+/** Reimplements data 0x4e0cdc: DIERR_ALREADYINITIALIZED name. */
+char g_zInput_DiErrorName_AlreadyInitialized[0x19] =
+    "DIERR_ALREADYINITIALIZED";
+/** Reimplements data 0x4e0cf8: DIERR_BETADIRECTINPUTVERSION name. */
+char g_zInput_DiErrorName_BetaDirectInputVersion[0x1d] =
+    "DIERR_BETADIRECTINPUTVERSION";
+/** Reimplements data 0x4e0d18: DIERR_OLDDIRECTINPUTVERSION name. */
+char g_zInput_DiErrorName_OldDirectInputVersion[0x1c] =
+    "DIERR_OLDDIRECTINPUTVERSION";
+/** Reimplements data 0x4e0d34: DIERR_ACQUIRED name. */
+char g_zInput_DiErrorName_Acquired[0x0f] = "DIERR_ACQUIRED";
+/** Reimplements data 0x4e0d44: DIERR_BADDRIVERVER name. */
+char g_zInput_DiErrorName_BadDriverVersion[0x13] = "DIERR_BADDRIVERVER";
+/** Reimplements data 0x4e0d58: DIERR_INVALIDPARAM name. */
+char g_zInput_DiErrorName_InvalidParam[0x13] = "DIERR_INVALIDPARAM";
+/** Reimplements data 0x4e0d6c: DIERR_INPUTLOST name. */
+char g_zInput_DiErrorName_InputLost[0x10] = "DIERR_INPUTLOST";
+/** Reimplements data 0x4e0d7c: DIERR_NOTINITIALIZED name. */
+char g_zInput_DiErrorName_NotInitialized[0x15] =
+    "DIERR_NOTINITIALIZED";
+/** Reimplements data 0x4e0d94: DIERR_OUTOFMEMORY name. */
+char g_zInput_DiErrorName_OutOfMemory[0x12] = "DIERR_OUTOFMEMORY";
+/** Reimplements data 0x4e0da8: DIERR_NOTACQUIRED name. */
+char g_zInput_DiErrorName_NotAcquired[0x12] = "DIERR_NOTACQUIRED";
+/** Reimplements data 0x4e0dbc: DIERR_READONLY name. */
+char g_zInput_DiErrorName_ReadOnly[0x0f] = "DIERR_READONLY";
+/** Reimplements data 0x4e0dcc: DIERR_OBJECTNOTFOUND name. */
+char g_zInput_DiErrorName_ObjectNotFound[0x15] =
+    "DIERR_OBJECTNOTFOUND";
+/** Reimplements data 0x4e0de4: DIERR_DEVICENOTREG name. */
+char g_zInput_DiErrorName_DeviceNotReg[0x13] = "DIERR_DEVICENOTREG";
+/** Reimplements data 0x4e0df8: DIERR_NOAGGREGATION name. */
+char g_zInput_DiErrorName_NoAggregation[0x14] = "DIERR_NOAGGREGATION";
+/** Reimplements data 0x4e0e0c: DIERR_UNSUPPORTED name. */
+char g_zInput_DiErrorName_Unsupported[0x12] = "DIERR_UNSUPPORTED";
+/** Reimplements data 0x4e0e20: DIERR_NOINTERFACE name. */
+char g_zInput_DiErrorName_NoInterface[0x12] = "DIERR_NOINTERFACE";
+/** Reimplements data 0x4e0e34: DIERR_GENERIC name. */
+char g_zInput_DiErrorName_Generic[0x0e] = "DIERR_GENERIC";
+}
+
+namespace zInput {
+
+const int kDiOk = 0;
+const int kDiInputLost = (int)(0x8007001e);
 
 /**
  * Reimplements 0x471e40: zInput::DI_InitJoystickDevice.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
+ * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
  * Purpose: Enumerate and configure the DirectInput joystick device, cache
  * capabilities, apply startup axis ranges, acquire the device, and mark it initialized.
  *
@@ -79,7 +131,7 @@ int __fastcall DI_InitJoystickDevice(
 
 /**
  * Reimplements 0x471f60: zInput::DI_EnumDevicesCallback_SelectFirstJoystick.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
+ * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
  * Purpose: Create the first enumerated joystick device and store the upgraded
  * IDirectInputDevice2A pointer for zInput joystick setup.
  */
@@ -120,7 +172,7 @@ int DI_AcquireJoystickDevice() {
 
 /**
  * Reimplements 0x471fd0: zInput::DI_ApplyAxisConfig.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
+ * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
  * Purpose: Apply the recovered four-axis joystick range and deadzone
  * configuration to the active DirectInput joystick device.
  *
@@ -221,7 +273,7 @@ int __fastcall DI_ApplyAxisConfig(
 
 /**
  * Reimplements 0x4721a0: zInput::DI_SetAxisDeadzone.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
+ * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
  * Purpose: Apply one DirectInput axis deadzone property by object offset.
  */
 int __fastcall DI_SetAxisDeadzone(
@@ -249,7 +301,7 @@ int __fastcall DI_SetAxisDeadzone(
 
 /**
  * Reimplements 0x4721e0: zInput::DI_SetAxisRange.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
+ * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
  * Purpose: Apply one DirectInput axis range property by object offset.
  */
 int __fastcall DI_SetAxisRange(
@@ -280,7 +332,7 @@ int __fastcall DI_SetAxisRange(
 
 /**
  * Reimplements 0x472230: zInput::DI_GetAxisRange.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
+ * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
  * Purpose: Read one DirectInput axis range property by object offset.
  */
 int __fastcall DI_GetAxisRange(
@@ -313,7 +365,7 @@ int __fastcall DI_GetAxisRange(
 
 /**
  * Reimplements 0x472280: zInput::Joystick_ShutdownDevice.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
+ * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
  * Purpose: unacquire and release the joystick DirectInput device during zInput
  * shutdown.
  *
@@ -334,7 +386,7 @@ int Joystick_ShutdownDevice() {
 
 /**
  * Reimplements 0x4722b0: zInput::DI_IsJoystickDeviceReady.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
+ * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
  * Purpose: Report whether joystick input is initialized and has an active
  * DirectInput device pointer.
  */
@@ -471,7 +523,10 @@ void DI_ResetTransitionState() {
 }
 /**
  * Reimplements 0x472450: zInput_DI_CreateForceFeedbackEffect.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_ff.cpp.
+ * Physical source contribution: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
+ * The retail order shelf places this body between joystick transition reset
+ * and the adjacent force-feedback capability query; no separate zin_ff.cpp
+ * contribution is proven.
  * Purpose: create a DirectInput force-feedback effect on the active joystick.
  */
 zInput_DiEffect *__fastcall zInput_DI_CreateForceFeedbackEffect(
@@ -491,164 +546,10 @@ zInput_DiEffect *__fastcall zInput_DI_CreateForceFeedbackEffect(
     );
     return result < 0 ? 0 : outEffect;
 }
-namespace zInput {
-
-/**
- * Original-source helper evidence: ClampForceFeedbackGain.
- * No standalone retail function address is assigned; address-backed force-feedback
- * callers in this source file share this clamp shape.
- * Purpose: clamp a force-feedback gain to the normalized DirectInput range.
- */
-static float ClampForceFeedbackGain(
-    float gain
-) {
-    if (gain > 1.0f) {
-        return 1.0f;
-    }
-    if (gain < 0.0f) {
-        return 0.0f;
-    }
-
-    return gain;
-}
-
-/**
- * Original-source helper evidence: ClampForceFeedbackGainRange.
- * No standalone retail function address is assigned; address-backed force-feedback
- * callers in this source file share this bounded clamp shape.
- * Purpose: clamp a force-feedback gain to a caller-provided normalized range.
- */
-static float ClampForceFeedbackGainRange(
-    float gain,
-    float minGain,
-    float maxGain
-) {
-    if (gain > maxGain) {
-        return maxGain;
-    }
-    if (gain < minGain) {
-        return minGain;
-    }
-
-    return gain;
-}
-
-/**
- * Original-source helper evidence: WrapForceFeedbackPolarRadians.
- * No standalone retail function address is assigned; address-backed impact
- * direction code uses this single-turn polar angle wrap.
- * Purpose: wrap a polar angle by one full revolution when it leaves the range.
- */
-static float WrapForceFeedbackPolarRadians(
-    float angle
-) {
-    const float kTwoPi = 6.28318548f;
-    if (angle < -kTwoPi) {
-        angle += kTwoPi;
-    } else if (angle > kTwoPi) {
-        angle -= kTwoPi;
-    }
-
-    return angle;
-}
-
-/**
- * Original-source helper evidence: ForceFeedbackDirectionFromRadians.
- * No standalone retail function address is assigned; address-backed
- * force-feedback direction code converts radians to DirectInput hundredths of
- * degrees.
- * Purpose: convert a polar angle in radians to a DirectInput direction value.
- */
-static int ForceFeedbackDirectionFromRadians(
-    float angle
-) {
-    const double kRadToDeg = 57.295779513079999;
-    return (int)(angle * kRadToDeg) * 100;
-}
-
-/**
- * Original-source helper evidence: ForceFeedbackDirectionFromImpact.
- * No standalone retail function address is assigned; address-backed collision
- * and damage force-feedback callers share this camera-relative bearing math.
- * Purpose: compute a camera-relative DirectInput force direction for an impact.
- */
-static int ForceFeedbackDirectionFromImpact(
-    const zVec3 *worldPosXZ,
-    bool sourceToPlayer
-) {
-    const float kPi = 3.14159274f;
-    const zInput_PlayerStatePartial *const playerState = g_GameStateOrMapTable->playerState;
-    const float sourceBearing = sourceToPlayer ? (float)(atan2(
-        worldPosXZ->z,
-        worldPosXZ->x
-    ))
-                                               : (float)(atan2(
-                                                   -worldPosXZ->z,
-                                                   -worldPosXZ->x
-                                               ));
-    const float playerBearing =
-        (float)(atan2(
-            -playerState->cameraDirNextZ,
-            -playerState->cameraDirNextX
-        ));
-    const float relativeBearing =
-        WrapForceFeedbackPolarRadians(kPi - (sourceBearing - playerBearing));
-    return ForceFeedbackDirectionFromRadians(relativeBearing);
-}
-
-/**
- * Original-source helper evidence: SetAndStartDirectionalForceFeedbackEffect.
- * No standalone retail function address is assigned; address-backed steer, pitch,
- * collision, and damage callers share this SetParameters/Start sequence.
- * Purpose: update a two-axis polar force-feedback effect and start it.
- */
-static void SetAndStartDirectionalForceFeedbackEffect(
-    zInput_DiEffect *effect,
-    int direction,
-    float gain
-) {
-    LONG polarDirection[2] = {direction, 0};
-    DIEFFECT desc = {0};
-    desc.dwSize = sizeof(desc);
-    desc.dwFlags = 0x20;
-    desc.dwGain = (DWORD)(gain * 10000.0f);
-    desc.cAxes = 2;
-    desc.rglDirection = polarDirection;
-    effect->SetParameters(
-        &desc,
-        0x44
-    );
-    effect->Start(
-        1,
-        0
-    );
-}
-
-/**
- * Original-source helper evidence: FastPitchLowpassFactor.
- * No standalone retail function address is assigned; the address-backed pitch
- * force updater uses this VC-era bit construction before smoothing pitch force.
- * Purpose: compute the pitch-force lowpass factor from frame delta time.
- */
-static float FastPitchLowpassFactor(
-    float deltaTime
-) {
-    int bits = (int)(deltaTime * -3.0f * 12102200.0f);
-    bits += 0x3f800000;
-
-    float factor = 0.0f;
-    memcpy(
-        &factor,
-        &bits,
-        sizeof(factor)
-    );
-    return factor;
-}
-
-}
 /**
  * Reimplements 0x472480: zInput_DI_HasForceFeedback.
- * Original source path: D:\Proj\GameZRecoil\zInput\zin_ff.cpp.
+ * Physical source contribution: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
+ * No separate zin_ff.cpp contribution is proven by the retail order shelf.
  * Purpose: return the detected DirectInput joystick force-feedback capability.
  */
 int zInput_DI_HasForceFeedback() {
@@ -859,3 +760,5 @@ reportError:
     );
     return 0;
 }
+
+} // namespace zInput

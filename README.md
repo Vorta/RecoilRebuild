@@ -43,7 +43,10 @@ substitutes for source-faithful production reconstruction under `src/`.
 
 - `src/Battlesport` — reconstructed game shell and gameplay-facing source.
 - `src/GameZRecoil` — reconstructed engine subsystems.
-- `src/native` — native target wiring and include bridges.
+- `cmake/recoil_native` — native target wiring outside the reconstructed
+  production source tree.
+- `tools/_recoil/compat/include` — compiler, calling-convention, and ABI
+  compatibility bridges used by governed builds.
 - `tests/native` and `tests/tools` — focused behavior, ABI, guard, and tooling
   verification.
 - `tools` — local reconstruction and verification infrastructure.
@@ -70,38 +73,38 @@ Generated from the unified reconstruction tracker. The tracker remains the sole 
 
 | Stage | State | Accepted / total | Frontier | Typed blocker |
 | --- | --- | ---: | --- | --- |
-| authored-function-order | current | 6 / 107 | 0x415ab0 | order-target-role-gate-blocked: 0x416790 (HudSensorTracker::MapShutdownAndResetThunk) |
-| authored-byte-match | ready | 0 / 3424 | 0x401000 | — |
-| full-function-order | waiting | 0 / 107 | 0x401000 | — |
-| linked-byte-match | waiting | 0 / 4955 | 0x401000 | — |
+| authored-function-order | current | 72 / 113 | 0x4a10e0 | order-target-unresolved |
+| authored-byte-match | ready | 14 / 3414 | 0x401d50 | — |
+| full-function-order | waiting | 0 / 113 | 0x401000 | — |
+| linked-byte-match | waiting | 0 / 4956 | 0x401000 | — |
 | final-validation | waiting | typed whole image | — | — |
-| authored object-byte preparation (subordinate) | ready | 7 / 490 | 0x401710 | — |
+| authored object-byte preparation (subordinate) | ready | 15 / 2686 | 0x401e50 | — |
 
 ### Source-Owner Overview
 
 | Binary | Owners | Authored owners | Provider boundaries |
 | --- | ---: | ---: | ---: |
-| recoil | 1246 | 1199 | 47 |
+| recoil | 1247 | 1199 | 48 |
 | messages | 1 | 1 | 0 |
-| Total | 1247 | 1200 | 47 |
+| Total | 1248 | 1200 | 48 |
 
 ### Source-Owner Gates
 
 | Gate | accepted | blocked | deferred | none | pending | Total |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| boundary | 1232 | 5 | 0 | 1 | 9 | 1247 |
-| source | 1224 | 8 | 0 | 1 | 14 | 1247 |
-| data | 966 | 4 | 0 | 214 | 63 | 1247 |
-| functional | 806 | 0 | 0 | 325 | 116 | 1247 |
-| linkage | 1026 | 142 | 0 | 67 | 12 | 1247 |
-| byte | 22 | 466 | 725 | 0 | 34 | 1247 |
+| boundary | 1233 | 5 | 0 | 1 | 9 | 1248 |
+| source | 1225 | 8 | 0 | 1 | 14 | 1248 |
+| data | 967 | 4 | 0 | 214 | 63 | 1248 |
+| functional | 806 | 0 | 0 | 326 | 116 | 1248 |
+| linkage | 1026 | 142 | 0 | 68 | 12 | 1248 |
+| byte | 22 | 466 | 726 | 0 | 34 | 1248 |
 
 ### Owner Reimplementation Tiers
 
 | Tier | Count | Percent of authored owners |
 | --- | ---: | ---: |
-| X | 131 | 10.9% |
-| C | 223 | 18.6% |
+| X | 132 | 11.0% |
+| C | 222 | 18.5% |
 | B | 832 | 69.3% |
 | A | 1 | 0.1% |
 | S | 13 | 1.1% |
@@ -124,9 +127,9 @@ Counts durable per-primary-entry tiers for authored primary data entries. Owner 
 
 | Tier | recoil | messages | Total | Percent of authored entries |
 | --- | ---: | ---: | ---: | ---: |
-| X | 345 | 0 | 345 | 10.6% |
-| C | 1599 | 0 | 1599 | 49.1% |
-| B | 1305 | 0 | 1305 | 40.1% |
+| X | 353 | 0 | 353 | 10.8% |
+| C | 1599 | 0 | 1599 | 49.0% |
+| B | 1305 | 0 | 1305 | 40.0% |
 | A | 4 | 0 | 4 | 0.1% |
 | S | 0 | 1 | 1 | 0.0% |
 
@@ -135,12 +138,12 @@ Counts durable per-primary-entry tiers for authored primary data entries. Owner 
 | Kind | Count | Percent of owners |
 | --- | ---: | ---: |
 | callback-table | 1 | 0.1% |
-| class | 164 | 13.2% |
+| class | 164 | 13.1% |
 | data-owner | 430 | 34.5% |
-| provider-boundary | 47 | 3.8% |
+| provider-boundary | 48 | 3.8% |
 | record | 42 | 3.4% |
 | source-file | 166 | 13.3% |
-| standalone | 58 | 4.7% |
+| standalone | 58 | 4.6% |
 | subsystem | 339 | 27.2% |
 <!-- RECOIL_PROGRESS:END -->
 

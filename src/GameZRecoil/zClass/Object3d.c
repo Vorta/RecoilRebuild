@@ -164,324 +164,92 @@ namespace {
         }
     }
 
+}
+
+namespace zClass_Node {
     /**
-     * Original-source helper evidence: no standalone retail function exists.
-     * Observed in caller 0x44b300 (D:\Proj\GameZRecoil\zClass\Object3d.c);
-     * BN keeps the bounds refresh, sphere test, and far-clip repair as
-     * caller-local render traversal code rather than a separate call target.
-     * Purpose: decide whether object render culling is needed, refresh the view
-     * bounding sphere, and run the frustum sphere clip-mask test.
+     * Reimplements 0x44d990: zClass_Node::PropagateTransformDirtyRecursive
+     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
+     * Purpose: mark Object3D transform data, node bounds, and descendants dirty
+     * for transform-dependent world/render updates.
      */
-    int CullNodeForRender(
-        zClass_NodePartial * node,
-        int siblingCountHint,
-        int *clipMask
+    void __fastcall PropagateTransformDirtyRecursive(
+        zClass_NodePartial * self
     ) {
-        int testNeeded = 0;
-        if (g_zClass_ObjectHseTestEnabled == 0) {
-            testNeeded =
-                ((*clipMask != 0 || g_zClass_RenderFrustumGridTileIndex > 0) &&
-                    siblingCountHint > 1);
-        } else {
-            testNeeded = (*clipMask != 0 && siblingCountHint > 1);
+        if (self->classId == kZClassNodeObject3D) {
+            *(int *)(self->classData) |= kObject3DTransformDirtyFlag;
         }
 
-        if (testNeeded == 0 && (node->flags & kSingleParentFlag) != 0) {
-            return 0;
-        }
+        self->boundsFlags |= kNodeBoundsDirtyFlag;
+        self->flags |= kNodeTransformDirtyPropagatedFlag;
 
-        if ((node->boundsFlags & kNodeBoundsDirtyFlag) != 0 ||
-            g_zClass_RenderBoundsContextActive != 0 || (node->flags & kSingleParentFlag) == 0) {
-            zBBoxCorners corners = {0};
-            zClass_Class::gwNodeGetViewBBoxCorners(
-                node,
-                &corners
-            );
-            BBox::CornersToBoundingSphere(
-                &corners,
-                zClass_NodeViewSphereCenter(node),
-                zClass_NodeViewSphereRadius(node)
-            );
-            if ((node->flags & kSingleParentFlag) != 0) {
-                node->boundsFlags &= ~kNodeBoundsDirtyFlag;
+        for (int i = 0; i < self->listCountB; ++i) {
+            zClass_NodePartial *child = self->listB[i];
+            if ((child->flags & kNodeTransformDirtyPropagatedFlag) == 0) {
+                PropagateTransformDirtyRecursive(child);
             }
         }
-
-        int result = zVideo_FrustumTestSphereClipMask(
-            zClass_NodeViewSphereCenter(node),
-            clipMask,
-            *zClass_NodeViewSphereRadius(node)
-        );
-        if ((node->flags & 0x80) != 0 && result == 0x20) {
-            result = 0;
-            *clipMask &= ~0x20;
-        }
-        return result;
-    }
-
-    /**
-     * Original-source helper evidence: no standalone retail function exists.
-     * Observed in caller 0x44b300 (D:\Proj\GameZRecoil\zClass\Object3d.c);
-     * BN shows the Object3D matrix-selection branches in the render traversal
-     * body, with only direct zMath provider calls inside the pattern.
-     * Purpose: push the correct object matrix onto the zMath stack, recomputing
-     * cached world matrix state when the transform is dirty.
-     */
-    void PushObjectMatrix(
-        zClass_Object3DDataPartial * data,
-        int *pushed
-    ) {
-        const int flags = data->flags;
-        if ((flags & 0x08) != 0) {
-            *pushed = 0;
-            return;
-        }
-
-        *pushed = 1;
-        if ((flags & kObject3DTransformDirtyFlag) != 0) {
-            zMath::MatStackPushAndCloneParent(data->cachedWorldMatrix);
-            zMath::MatMultiply(
-                (const zMat4x3 *)data->localMatrix,
-                3
-            );
-            data->flags &= ~kObject3DTransformDirtyFlag;
-        } else if ((flags & kSingleParentFlag) == 0) {
-            zMath::MatStackPushAndCloneParent(data->cachedWorldMatrix);
-            zMath::MatMultiply(
-                (const zMat4x3 *)data->localMatrix,
-                3
-            );
-        } else {
-            zMath::MatStackPushPtr(data->cachedWorldMatrix);
-        }
-    }
-
-    /**
-     * Original-source helper evidence: no standalone retail function exists.
-     * Observed in caller 0x44b300 (D:\Proj\GameZRecoil\zClass\Object3d.c);
-     * BN keeps the render-state stack pushes and zModel setter calls in the
-     * Object3D render traversal body.
-     * Purpose: push vertex-alpha, alpha-scale, and software color override
-     * render state for an Object3D node.
-     */
-    void PushObjectRenderState(
-        zClass_NodePartial * node,
-        zClass_Object3DDataPartial * data,
-        int *pushedVertexAlpha,
-        int *pushedAlphaScale,
-        int *pushedSoftwareState
-    ) {
-        *pushedVertexAlpha = 0;
-        *pushedAlphaScale = 0;
-        *pushedSoftwareState = 0;
-
-        if ((node->flags & 0x00800000) != 0 && g_zClass_RenderVertexAlphaOverrideActive == 0) {
-            *pushedVertexAlpha = 1;
-            g_zClass_RenderVertexAlphaOverrideActive = 1;
-            zModel_RenderVertexAlphaEnabled_SetCurrent(1);
-        }
-
-        if ((data->flags & 0x02) != 0) {
-            *pushedAlphaScale = 1;
-            ++g_zClass_RenderAlphaScaleStackTop;
-            g_zClass_RenderAlphaScaleStack[g_zClass_RenderAlphaScaleStackTop] = data->alphaScale;
-            zModel_RenderAlphaScale_SetCurrent(data->alphaScale);
-        }
-
-        if ((data->flags & 0x04) != 0) {
-            *pushedSoftwareState = 1;
-            ++g_zClass_SoftwarePathStateStackTop;
-            g_zClass_SoftwarePathRenderStateStack[g_zClass_SoftwarePathStateStackTop].color =
-                data->color;
-            g_zClass_SoftwarePathRenderStateStack[g_zClass_SoftwarePathStateStackTop].alpha =
-                data->colorAlpha;
-            zModel_FogTargetColorOverride_SetCurrent(
-                &g_zClass_SoftwarePathRenderStateStack[g_zClass_SoftwarePathStateStackTop].color,
-                data->colorAlpha
-            );
-        }
-    }
-
-    /**
-     * Original-source helper evidence: no standalone retail function exists.
-     * Observed in caller 0x44b300 (D:\Proj\GameZRecoil\zClass\Object3d.c);
-     * BN keeps the vertex-alpha, alpha-scale, and software-state restore
-     * sequence in the Object3D render traversal epilogue.
-     * Purpose: restore Object3D render-state stacks after rendering a node
-     * subtree.
-     */
-    void PopObjectRenderState(
-        int pushedVertexAlpha,
-        int pushedAlphaScale,
-        int pushedSoftwareState
-    ) {
-        if (pushedVertexAlpha != 0) {
-            g_zClass_RenderVertexAlphaOverrideActive = 0;
-            zModel_RenderVertexAlphaEnabled_SetCurrent(0);
-        }
-
-        if (pushedAlphaScale != 0) {
-            --g_zClass_RenderAlphaScaleStackTop;
-            const float scale =
-                g_zClass_RenderAlphaScaleStackTop >= 0
-                    ? g_zClass_RenderAlphaScaleStack[g_zClass_RenderAlphaScaleStackTop]
-                    : 1.0f;
-            zModel_RenderAlphaScale_SetCurrent(scale);
-        }
-
-        if (pushedSoftwareState != 0) {
-            --g_zClass_SoftwarePathStateStackTop;
-            if (g_zClass_SoftwarePathStateStackTop >= 0) {
-                zModel_FogTargetColorOverride_SetCurrent(
-                    &g_zClass_SoftwarePathRenderStateStack[g_zClass_SoftwarePathStateStackTop]
-                        .color,
-                    g_zClass_SoftwarePathRenderStateStack[g_zClass_SoftwarePathStateStackTop].alpha
-                );
-            } else {
-                zModel_FogTargetColorOverride_SetCurrent(
-                    0,
-                    0.0f
-                );
-            }
-        }
-    }
-
-    /**
-     * Original-source helper evidence: no standalone retail function exists.
-     * Observed in caller 0x44b300 (D:\Proj\GameZRecoil\zClass\Object3d.c);
-     * BN shows the child-loop variant check, recursive Object3D call, and
-     * generic dispatch call inline in the traversal body.
-     * Purpose: render Object3D children through variant filtering and dispatch
-     * non-Object3D children through the generic node renderer.
-     */
-    void RenderObjectChildren(
-        zClass_NodePartial * node,
-        int clipMask
-    ) {
-        if (node->listCountB <= 0) {
-            return;
-        }
-
-        ++gModel_ClipMaskStackTop;
-        *gModel_ClipMaskStackTop = clipMask;
-        for (int i = 0; i < node->listCountB; ++i) {
-            zClass_NodePartial *child = node->listB[i];
-            if (child != 0 && child->classId == kZClassNodeObject3D) {
-                if (VariantTag::CurrentAllowsId(child->nodeType) != 0) {
-                    zClass_Object3D::RenderTraverse(
-                        child,
-                        node->listCountB
-                    );
-                }
-            } else if (child != 0) {
-                zClass_Class::gwNodeRenderDispatch(
-                    child,
-                    node->listCountB
-                );
-            }
-        }
-        --gModel_ClipMaskStackTop;
     }
 }
 
 namespace zClass_Object3D {
-    int __fastcall
     /**
-     * Reimplements 0x44b300: zClass_Object3D::RenderTraverse
+     * Reimplements 0x44d9e0: zClass_Object3D::PropagateTransformDirty
      * (D:\Proj\GameZRecoil\zClass\Object3d.c).
-     * Purpose: cull visible Object3D nodes, manage alt-clip and render-bounds
-     * state, push transform/render state, render the node, and recurse children.
+     * Purpose: reset local Object3D transform fields to identity defaults and
+     * queue a transform/bounds dirty update for the node subtree.
      */
-    RenderTraverse(
-        zClass_NodePartial * node,
-        int siblingCountHint
-    ) {
-        const int flags = node->flags;
-        int boundsContextPushed = 0;
-        if ((flags & kObject3DVisibleFlag) == 0) {
-            return 0;
+    int __fastcall PropagateTransformDirty(zClass_NodePartial * node) {
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c",
+                0xe8,
+                "Null node pointer."
+            );
+            return 5;
         }
-
-        node->flags = flags & ~kNodeTransformDirtyPropagatedFlag;
-        int altClipReset = 0;
-        if (gAltClipPassEnabled != 0 && node == g_zClass_CameraTargetNode) {
-            gAltClipPassEnabled = 0;
-            altClipReset = 1;
+        if (node->classData == 0) {
+            zError::ReportOld(
+                0x400,
+                "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c",
+                0xe9,
+                "Null class data pointer"
+            );
+            return 5;
         }
 
         zClass_Object3DDataPartial *data = (zClass_Object3DDataPartial *)(node->classData);
-        int clipMask = *gModel_ClipMaskStackTop;
-        const int result = CullNodeForRender(
-            node,
-            siblingCountHint,
-            &clipMask
+        /* Retail keeps the rotation-zero and scale-one dword stores paired. */
+        volatile unsigned int *scaleBits = (volatile unsigned int *)(&data->scale.x);
+        int count = 3;
+        do {
+            scaleBits[-3] = 0;
+            *scaleBits = 0x3f800000;
+            ++scaleBits;
+            --count;
+        } while (count != 0);
+
+        memset(
+            data->localMatrix,
+            0,
+            sizeof(data->localMatrix)
         );
-        if (result == 0) {
-            int matrixPushed = 0;
-            PushObjectMatrix(
-                data,
-                &matrixPushed
+        data->localMatrix[0] = 1.0f;
+        data->localMatrix[4] = 1.0f;
+        data->localMatrix[8] = 1.0f;
+        data->flags = (data->flags & ~0x10) | 0x09;
+
+        zClass_Node::PropagateTransformDirtyRecursive(node);
+        if ((node->flags & 0x01) == 0) {
+            zClass_TypeList::Insert(
+                7,
+                node
             );
-            if (g_zClass_RenderBoundsContextActive == 0) {
-                boundsContextPushed = 1;
-                g_zClass_RenderBoundsContextActive = 1;
-            }
-
-            int pushedVertexAlpha;
-            int pushedAlphaScale;
-            int pushedSoftwareState;
-            PushObjectRenderState(
-                node,
-                data,
-                &pushedVertexAlpha,
-                &pushedAlphaScale,
-                &pushedSoftwareState
-            );
-
-            int visibleByProjectedSphere = 1;
-            if (g_zClass_ObjectHseTestEnabled != 0 && g_zClass_RenderFrustumGridTileIndex > 0 &&
-                siblingCountHint != 1 && g_zClass_RenderVertexAlphaOverrideActive == 0) {
-                visibleByProjectedSphere = zScene::TestProjectedSphereVisible(
-                    zClass_NodeViewSphereCenter(node),
-                    *zClass_NodeViewSphereRadius(node)
-                );
-            }
-            if (visibleByProjectedSphere != 0) {
-                node->flags |= 0x80000000;
-                zDiPartial *di = (zDiPartial *)(unsigned int)node->userDataOrDiRef;
-                if (di != 0 && g_zClass_RenderRangeFadeActive != 0) {
-                    di->flags |= 0x08;
-                    di->blendScale = g_zClass_RenderRangeFadeScale;
-                }
-                if (gModel_RenderFn != 0) {
-                    gModel_RenderFn(
-                        node,
-                        clipMask
-                    );
-                }
-                RenderObjectChildren(
-                    node,
-                    clipMask
-                );
-            }
-
-            PopObjectRenderState(
-                pushedVertexAlpha,
-                pushedAlphaScale,
-                pushedSoftwareState
-            );
-            if (matrixPushed != 0) {
-                zMath::MatStackPopPtr();
-            }
+            node->flags |= 0x01;
         }
-
-        if (boundsContextPushed != 0) {
-            g_zClass_RenderBoundsContextActive = 0;
-        }
-        if (altClipReset != 0) {
-            gAltClipPassEnabled = 1;
-        }
-        return result;
+        node->flags |= 0x02;
+        return 0;
     }
 
     /**
@@ -508,6 +276,16 @@ namespace zClass_Object3D {
             sizeof(zClass_Object3DDataPartial)
         );
         return PropagateTransformDirty(node) == 0 ? node : 0;
+    }
+
+    /**
+     * Reimplements 0x44db00: zClass_Object3D::DeleteNode
+     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
+     * Purpose: release Object3D class data and return the node to the generic
+     * free-list path.
+     */
+    int __fastcall DeleteNode(zClass_NodePartial * node) {
+        return zClass_Class::TryFreeNode(node);
     }
 
     int __fastcall
@@ -598,75 +376,6 @@ namespace zClass_Object3D {
             parent,
             child
         );
-    }
-
-    /**
-     * Reimplements 0x44db00: zClass_Object3D::DeleteNode
-     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
-     * Purpose: release Object3D class data and return the node to the generic
-     * free-list path.
-     */
-    int __fastcall DeleteNode(zClass_NodePartial * node) {
-        return zClass_Class::TryFreeNode(node);
-    }
-
-    /**
-     * Reimplements 0x44d9e0: zClass_Object3D::PropagateTransformDirty
-     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
-     * Purpose: reset local Object3D transform fields to identity defaults and
-     * queue a transform/bounds dirty update for the node subtree.
-     */
-    int __fastcall PropagateTransformDirty(zClass_NodePartial * node) {
-        if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c",
-                0xe8,
-                "Null node pointer."
-            );
-            return 5;
-        }
-        if (node->classData == 0) {
-            zError::ReportOld(
-                0x400,
-                "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c",
-                0xe9,
-                "Null class data pointer"
-            );
-            return 5;
-        }
-
-        zClass_Object3DDataPartial *data = (zClass_Object3DDataPartial *)(node->classData);
-        /* Retail keeps the rotation-zero and scale-one dword stores paired. */
-        volatile unsigned int *scaleBits = (volatile unsigned int *)(&data->scale.x);
-        int count = 3;
-        do {
-            scaleBits[-3] = 0;
-            *scaleBits = 0x3f800000;
-            ++scaleBits;
-            --count;
-        } while (count != 0);
-
-        memset(
-            data->localMatrix,
-            0,
-            sizeof(data->localMatrix)
-        );
-        data->localMatrix[0] = 1.0f;
-        data->localMatrix[4] = 1.0f;
-        data->localMatrix[8] = 1.0f;
-        data->flags = (data->flags & ~0x10) | 0x09;
-
-        zClass_Node::PropagateTransformDirtyRecursive(node);
-        if ((node->flags & 0x01) == 0) {
-            zClass_TypeList::Insert(
-                7,
-                node
-            );
-            node->flags |= 0x01;
-        }
-        node->flags |= 0x02;
-        return 0;
     }
 
     int __fastcall
@@ -879,33 +588,6 @@ namespace zClass_Object3D {
 
     int __fastcall
     /**
-     * Reimplements 0x44dfd0: zClass_Object3D::gwObject3DGetScale
-     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
-     * Purpose: validate Object3D data and return the local scale vector.
-     */
-    gwObject3DGetScale(
-        zClass_NodePartial * node,
-        float *outX,
-        float *outY,
-        float *outZ
-    ) {
-        zClass_Object3DDataPartial *data = GetObject3DDataNoClassCheck(
-            node,
-            0x331,
-            0x332
-        );
-        if (data == 0) {
-            return 5;
-        }
-
-        *outX = data->scale.x;
-        *outY = data->scale.y;
-        *outZ = data->scale.z;
-        return 0;
-    }
-
-    int __fastcall
-    /**
      * Reimplements 0x44df00: zClass_Object3D::gwObject3DSetScale
      * (D:\Proj\GameZRecoil\zClass\Object3d.c).
      * Purpose: validate Object3D data, store local scale, update identity state,
@@ -945,11 +627,11 @@ namespace zClass_Object3D {
 
     int __fastcall
     /**
-     * Reimplements 0x44e110: zClass_Object3D::gwObject3DGetRotation
+     * Reimplements 0x44dfd0: zClass_Object3D::gwObject3DGetScale
      * (D:\Proj\GameZRecoil\zClass\Object3d.c).
-     * Purpose: validate Object3D data and return the local rotation vector.
+     * Purpose: validate Object3D data and return the local scale vector.
      */
-    gwObject3DGetRotation(
+    gwObject3DGetScale(
         zClass_NodePartial * node,
         float *outX,
         float *outY,
@@ -957,16 +639,16 @@ namespace zClass_Object3D {
     ) {
         zClass_Object3DDataPartial *data = GetObject3DDataNoClassCheck(
             node,
-            0x3a9,
-            0x3aa
+            0x331,
+            0x332
         );
         if (data == 0) {
             return 5;
         }
 
-        *outX = data->rotation.x;
-        *outY = data->rotation.y;
-        *outZ = data->rotation.z;
+        *outX = data->scale.x;
+        *outY = data->scale.y;
+        *outZ = data->scale.z;
         return 0;
     }
 
@@ -1009,6 +691,33 @@ namespace zClass_Object3D {
             node,
             data
         );
+        return 0;
+    }
+
+    int __fastcall
+    /**
+     * Reimplements 0x44e110: zClass_Object3D::gwObject3DGetRotation
+     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
+     * Purpose: validate Object3D data and return the local rotation vector.
+     */
+    gwObject3DGetRotation(
+        zClass_NodePartial * node,
+        float *outX,
+        float *outY,
+        float *outZ
+    ) {
+        zClass_Object3DDataPartial *data = GetObject3DDataNoClassCheck(
+            node,
+            0x3a9,
+            0x3aa
+        );
+        if (data == 0) {
+            return 5;
+        }
+
+        *outX = data->rotation.x;
+        *outY = data->rotation.y;
+        *outZ = data->rotation.z;
         return 0;
     }
 
@@ -1162,26 +871,6 @@ namespace zClass_Object3D {
         return 0;
     }
 
-    /**
-     * Reimplements 0x44e5b0: zClass_Object3D::gwObject3DGetMatrixPtr
-     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
-     * Purpose: validate Object3D data and return a pointer to the local matrix
-     * storage.
-     */
-    float *__fastcall gwObject3DGetMatrixPtr(zClass_NodePartial * node) {
-        zClass_Object3DDataPartial *data = GetObject3DData(
-            node,
-            0x4fe,
-            0x4ff,
-            0x500
-        );
-        if (data == 0) {
-            return 0;
-        }
-
-        return data->localMatrix;
-    }
-
     int __fastcall
     /**
      * Reimplements 0x44e4f0: zClass_Object3D::gwObject3DSetMatrix
@@ -1222,6 +911,26 @@ namespace zClass_Object3D {
         }
         node->flags |= 0x02;
         return 0;
+    }
+
+    /**
+     * Reimplements 0x44e5b0: zClass_Object3D::gwObject3DGetMatrixPtr
+     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
+     * Purpose: validate Object3D data and return a pointer to the local matrix
+     * storage.
+     */
+    float *__fastcall gwObject3DGetMatrixPtr(zClass_NodePartial * node) {
+        zClass_Object3DDataPartial *data = GetObject3DData(
+            node,
+            0x4fe,
+            0x4ff,
+            0x500
+        );
+        if (data == 0) {
+            return 0;
+        }
+
+        return data->localMatrix;
     }
 }
 
@@ -1304,6 +1013,28 @@ namespace zClass_Object3D_ModelRefLerpQueue {
             node,
             1
         );
+    }
+
+    /**
+     * Reimplements 0x438180: zClass_Object3D_ModelRefLerpQueue::Reset
+     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
+     * Purpose: delete all queued model-reference lerp tasks and zero the global
+     * queue state.
+     */
+    void Reset() {
+        zClass_Object3D_ModelRefLerpTask *task = g_ModelRefLerpQueueState.head;
+        while (task != 0) {
+            zClass_Object3D_ModelRefLerpTask *const next = task != 0
+                ? task->next
+                : 0;
+            ::operator delete(task);
+            task = next;
+        }
+
+        g_ModelRefLerpQueueState.listAux = 0;
+        g_ModelRefLerpQueueState.tail = 0;
+        g_ModelRefLerpQueueState.head = 0;
+        g_ModelRefLerpQueueState.count = 0;
     }
 
     /**
@@ -1395,71 +1126,12 @@ namespace zClass_Object3D_ModelRefLerpQueue {
             }
         }
     }
-
-    /**
-     * Reimplements 0x438180: zClass_Object3D_ModelRefLerpQueue::Reset
-     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
-     * Purpose: delete all queued model-reference lerp tasks and zero the global
-     * queue state.
-     */
-    void Reset() {
-        zClass_Object3D_ModelRefLerpTask *task = g_ModelRefLerpQueueState.head;
-        while (task != 0) {
-            zClass_Object3D_ModelRefLerpTask *const next = task != 0
-                ? task->next
-                : 0;
-            ::operator delete(task);
-            task = next;
-        }
-
-        g_ModelRefLerpQueueState.listAux = 0;
-        g_ModelRefLerpQueueState.tail = 0;
-        g_ModelRefLerpQueueState.head = 0;
-        g_ModelRefLerpQueueState.count = 0;
-    }
 }
 
 namespace zClass_Node {
     /**
-     * Reimplements 0x4527f0: zClass_Node::HasRenderableDiPredicate
-     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
-     * Purpose: test whether a node's DI reference points to a renderable display
-     * instance mode without the hidden flag.
+     * Reimplements 0x4527f0: zClass_Node::HasRenderableDiPredicate.
+     * Source-shape note: the definition is emitted by cls_util.c; Object3d.c
+     * retains related callers and the public declaration.
      */
-    int __fastcall HasRenderableDiPredicate(zClass_NodePartial * node) {
-        ::zDiPartial *di = (::zDiPartial *)((unsigned int)(node->userDataOrDiRef));
-        if (di == 0) {
-            return 0;
-        }
-
-        if (di->mode == 1 && (di->flags & 0x10) == 0) {
-            return 1;
-        }
-
-        return 0;
-    }
-
-    /**
-     * Reimplements 0x44d990: zClass_Node::PropagateTransformDirtyRecursive
-     * (D:\Proj\GameZRecoil\zClass\Object3d.c).
-     * Purpose: mark Object3D transform data, node bounds, and descendants dirty
-     * for transform-dependent world/render updates.
-     */
-    void __fastcall PropagateTransformDirtyRecursive(
-        zClass_NodePartial * self
-    ) {
-        if (self->classId == kZClassNodeObject3D) {
-            *(int *)(self->classData) |= kObject3DTransformDirtyFlag;
-        }
-
-        self->boundsFlags |= kNodeBoundsDirtyFlag;
-        self->flags |= kNodeTransformDirtyPropagatedFlag;
-
-        for (int i = 0; i < self->listCountB; ++i) {
-            zClass_NodePartial *child = self->listB[i];
-            if ((child->flags & kNodeTransformDirtyPropagatedFlag) == 0) {
-                PropagateTransformDirtyRecursive(child);
-            }
-        }
-    }
 }

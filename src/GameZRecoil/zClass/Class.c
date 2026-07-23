@@ -214,51 +214,6 @@ namespace {
         return priority >= 0 && priority < 6;
     }
 
-    /**
-     * Original static helper observed in BN Switch.c callers 0x452920 and
-     * 0x452970; no standalone retail function is known.
-     * BN source path evidence: D:\Proj\GameZRecoil\zClass\Switch.c.
-     * Purpose: share the Switch.c null parent, child, and class-data checks
-     * before routing through the data-driven zClass child-link lists.
-     */
-    int ValidateParentChildForSwitch(
-        zClass_NodePartial * parent,
-        zClass_NodePartial * child,
-        int nullParentLine,
-        int nullChildLine,
-        int nullClassDataLine
-    ) {
-        if (parent == 0) {
-            zError::ReportOld(
-                0x400,
-                g_zClass_SourceFile_SwitchC,
-                nullParentLine,
-                "Null node pointer."
-            );
-            return 5;
-        }
-        if (child == 0) {
-            zError::ReportOld(
-                0x400,
-                g_zClass_SourceFile_SwitchC,
-                nullChildLine,
-                "Null node pointer."
-            );
-            return 5;
-        }
-        if (parent->classData == 0) {
-            zError::ReportOld(
-                0x400,
-                g_zClass_SourceFile_SwitchC,
-                nullClassDataLine,
-                "Null class data pointer"
-            );
-            return 5;
-        }
-
-        return 0;
-    }
-
     /*
      * BN type evidence: zClass_CameraData stores a union at 0x80 whose
      * cachedViewMatrix arm is used by node bbox query helpers 0x4487c0 and
@@ -802,554 +757,39 @@ namespace zClass_Class {
     }
 
     /**
-     * Reimplements 0x448cc0: zClass_Class::gwNodeUpdate.
+     * Reimplements 0x447bc0: zClass_Class::FindNodeRecursiveByName
      * Source: D:\Proj\GameZRecoil\zClass\Class.c
-     * Purpose: process pending transform and bounds work for one scene node
-     * and run class-specific camera, world, object, and animate updates.
+     * BN caveat: the inlined strcmp-style comparison has a known sbb
+     * flag-generation limitation; assembly still proves the typed node-name
+     * comparison and forward child recursion.
+     * Purpose: search a zClass node subtree by exact node name, returning the
+     * first matching node in forward child-list order.
      */
-    int __fastcall gwNodeUpdate(zClass_NodePartial * node) {
-        int result = 0;
-        bool needsBBoxRecalc = false;
-        const zVec3 unitScale = UnitScale();
-
-        if ((node->boundsFlags & 0x01) != 0) {
-            gwNodeUpdateDisplayInstance(node);
-            needsBBoxRecalc = true;
-        }
-        if ((node->boundsFlags & 0x02) != 0) {
-            gwNodeComputeChildBBox(node);
-            needsBBoxRecalc = true;
-        }
-        node->boundsFlags &= 0x04;
-
-        zClass_NodePartial *nodeValue = node;
-
-        switch (node->classId) {
-        case 1: {
-            zClass_CameraDataPartial *cameraData = (zClass_CameraDataPartial *)(node->classData);
-            if (cameraData != 0 && (cameraData->cameraFlags & 0x04) != 0) {
-                if ((cameraData->cameraFlags & 0x02) == 0) {
-                    zMath::MatStackPushPtr((float *)(CameraCachedViewMatrix(cameraData)));
-                    zMath::MatLoadIdentity();
-                    zMath::MatApplyLocalTRS(
-                        &cameraData->posOffset,
-                        &cameraData->targetOrEuler,
-                        &unitScale
-                    );
-                    zMath::MatStackPopPtr();
-                }
-                gwNodeRecalcBBox(node);
-                cameraData->cameraFlags &= ~0x04;
-                needsBBoxRecalc = false;
-            }
-            break;
-        }
-        case 2:
-            zClass_World::ApplyPendingFogSettings(node);
-            break;
-        case 5: {
-            zClass_Object3DDataPartial *objectData =
-                (zClass_Object3DDataPartial *)(node->classData);
-            if (objectData != 0 && (objectData->flags & 0x01) != 0) {
-                if ((objectData->flags & 0x10) == 0) {
-                    zMath::MatStackPushPtr(objectData->localMatrix);
-                    zMath::MatLoadIdentity();
-                    zMath::MatApplyLocalTRS(
-                        &objectData->rotation,
-                        (zVec3 *)(&objectData->localMatrix[9]),
-                        &objectData->scale
-                    );
-                    zMath::MatStackPopPtr();
-                }
-                gwNodeRecalcBBox(node);
-                objectData->flags &= ~0x01;
-                needsBBoxRecalc = false;
-            }
-            break;
-        }
-        case 6:
-        case 7:
-            break;
-        case 8: {
-            zClass_AnimateDataPartial *animateData = (zClass_AnimateDataPartial *)(node->classData);
-            if ((node->flags & 0x04) != 0 && (animateData->statusFlags & 0x04) != 0 &&
-                animateData->flags != 0) {
-                if ((animateData->flags & 0x01) != 0) {
-                    zMath::MatStackPushPtr(animateData->animatedTransform);
-                    zMath::MatLoadIdentity();
-                    zMath::MatApplyLocalTRS(
-                        &animateData->runtime.sampledRotation,
-                        &animateData->runtime.sampledPosition,
-                        &animateData->runtime.sampledScale
-                    );
-                    zMath::MatStackPopPtr();
-                    gwNodeRecalcBBox(node);
-                    needsBBoxRecalc = false;
-                }
-                animateData->flags = 0;
-            }
-            break;
-        }
-        default:
-            zError::ReportOld(
-                0x200,
-                kClassSourceFile,
-                0x99e,
-                "gwNodeUpdate(): Unrecognized node class type:\n  node = %s class_type = %d\n",
-                node,
-                node->classId
-            );
-            result = 3;
-            break;
-        }
-
-        if (needsBBoxRecalc) {
-            gwNodeRecalcBBox(node);
-        }
-        node->flags &= ~kTransformQueuedFlag;
-        return result;
-    }
-
-    /**
-     * Reimplements 0x449420: zClass_Class::gwNodeUpdateDisplayInstance.
-     * Source: D:\Proj\GameZRecoil\zClass\Class.c
-     * Purpose: rebuild display-instance bounds into the node primary box and
-     * update the primary-bounds-valid flag.
-     */
-    int __fastcall gwNodeUpdateDisplayInstance(zClass_NodePartial * node) {
-        if (ReportNullNode(
-            0xb31,
-            node
-        )) {
-            return 5;
-        }
-
-        zDiPartial *di = (zDiPartial *)((unsigned int)(node->userDataOrDiRef));
-        if (di != 0) {
-            zDi::RebuildBounds(
-                di,
-                (zBoundsMinMaxPartial *)(PrimaryBBox(node))
-            );
-            node->flags |= 0x200;
-        } else {
-            node->flags &= ~0x200;
-        }
-
-        return 0;
-    }
-
-    /**
-     * Reimplements 0x448760: zClass_Class::gwNodeGetBBox.
-     * Source: D:\Proj\GameZRecoil\zClass\Class.c
-     * Purpose: copy the cached node bounding box when it is currently valid.
-     */
-    int __fastcall gwNodeGetBBox(
-        zClass_NodePartial * node,
-        zBBox3f * outBBox
+    zClass_NodePartial *__fastcall FindNodeRecursiveByName(
+        zClass_NodePartial * root,
+        const char *name
     ) {
         if (ReportNullNode(
-            0x7f9,
-            node
+            0x33a,
+            root
         )) {
-            return 5;
-        }
-        if (node->classData == 0) {
-            zError::ReportOld(
-                0x400,
-                kClassSourceFile,
-                0x7fa,
-                "Null class data pointer"
-            );
-            return 5;
-        }
-        if ((node->flags & 0x100) == 0) {
-            return 1;
-        }
-
-        memcpy(
-            outBBox,
-            CachedBBox(node),
-            sizeof(*outBBox)
-        );
-        return 0;
-    }
-
-    /**
-     * Reimplements 0x4487c0: zClass_Class::gwNodeGetWorldBBoxCorners.
-     * Source: D:\Proj\GameZRecoil\zClass\Class.c
-     * Purpose: return cached bounds corners in world/node space for object,
-     * camera, animate, and untransformed node classes.
-     */
-    int __fastcall gwNodeGetWorldBBoxCorners(
-        zClass_NodePartial * node,
-        zBBoxCorners * outCorners
-    ) {
-        if (ReportNullNode(
-            0x81b,
-            node
-        )) {
-            return 5;
-        }
-        if (node->classData == 0) {
-            zError::ReportOld(
-                0x400,
-                kClassSourceFile,
-                0x81c,
-                "Null class data pointer"
-            );
-            return 5;
-        }
-        if ((node->flags & 0x100) == 0) {
-            return 1;
-        }
-
-        const zBBox3f *bbox = CachedBBox(node);
-        if (node->classId == 5) {
-            const zClass_Object3DDataPartial *objectData =
-                (const zClass_Object3DDataPartial *)(node->classData);
-            if ((objectData->flags & 0x08) == 0) {
-                zMath_Mat_TransformBBoxToCorners(
-                    Object3DLocalMatrix(objectData),
-                    bbox,
-                    outCorners
-                );
-                return 0;
-            }
-        } else if (node->classId == 1) {
-            const zClass_CameraDataPartial *cameraData =
-                (const zClass_CameraDataPartial *)(node->classData);
-            zMath_Mat_TransformBBoxToCorners(
-                CameraCachedViewMatrix(cameraData),
-                bbox,
-                outCorners
-            );
-            return 0;
-        } else if (node->classId == 8) {
-            const zClass_AnimateDataPartial *animateData =
-                (const zClass_AnimateDataPartial *)(node->classData);
-            if ((node->flags & 0x04) != 0 && (animateData->statusFlags & 0x04) != 0) {
-                zMath_Mat_TransformBBoxToCorners(
-                    AnimateTransform(animateData),
-                    bbox,
-                    outCorners
-                );
-                return 0;
-            }
-        }
-
-        CopyBBoxToCorners(
-            bbox,
-            outCorners
-        );
-        return 0;
-    }
-
-    /**
-     * Reimplements 0x448920: zClass_Class::gwNodeGetViewBBoxCorners.
-     * Source: D:\Proj\GameZRecoil\zClass\Class.c
-     * Purpose: return cached bounds corners after combining the active view
-     * transform with any class-specific node transform.
-     */
-    int __fastcall gwNodeGetViewBBoxCorners(
-        zClass_NodePartial * node,
-        zBBoxCorners * outCorners
-    ) {
-        if (ReportNullNode(
-            0x85f,
-            node
-        )) {
-            return 5;
-        }
-        if (node->classData == 0) {
-            zError::ReportOld(
-                0x400,
-                kClassSourceFile,
-                0x860,
-                "Null class data pointer"
-            );
-            return 5;
-        }
-        if ((node->flags & 0x100) == 0) {
-            return 1;
-        }
-
-        int returnCode = 0;
-        int currentIsIdentity = zMath_Mat_IsCurrentIdentity();
-        zMat4x3 *currentMatrix = zMath_Mat_GetCurrent();
-        int skipTransform = 0;
-        const zMat4x3 *nodeMatrix = 0;
-
-        switch (node->classId) {
-        case 1: {
-            const zClass_CameraDataPartial *cameraData =
-                (const zClass_CameraDataPartial *)(node->classData);
-            nodeMatrix = CameraCachedViewMatrix(cameraData);
-            break;
-        }
-        case 2:
-        case 6:
-        case 7:
-            skipTransform = 1;
-            break;
-        case 5: {
-            const zClass_Object3DDataPartial *objectData =
-                (const zClass_Object3DDataPartial *)(node->classData);
-            skipTransform = (objectData->flags >> 3) & 0x01;
-            nodeMatrix = Object3DLocalMatrix(objectData);
-            break;
-        }
-        case 8: {
-            const zClass_AnimateDataPartial *animateData =
-                (const zClass_AnimateDataPartial *)(node->classData);
-            if ((node->flags & 0x04) == 0 ||
-                (animateData->statusFlags & 0x04) == 0) {
-                skipTransform = 1;
-            }
-            nodeMatrix = AnimateTransform(animateData);
-            break;
-        }
-        case 9:
-        case 10:
-            break;
-        default:
-            returnCode = 3;
-            break;
-        }
-
-        if (currentMatrix == 0) {
-            currentIsIdentity = 1;
-        }
-        if (nodeMatrix == 0) {
-            skipTransform = 1;
-        }
-
-        const zBBox3f *bbox = CachedBBox(node);
-        if (currentIsIdentity != 0) {
-            if (skipTransform != 0) {
-                CopyBBoxToCorners(
-                    bbox,
-                    outCorners
-                );
-                return returnCode;
-            }
-            zMath_Mat_TransformBBoxToCorners(
-                nodeMatrix,
-                bbox,
-                outCorners
-            );
-            return returnCode;
-        }
-
-        if (skipTransform != 0) {
-            zMath_Mat_TransformBBoxToCorners(
-                currentMatrix,
-                bbox,
-                outCorners
-            );
-            return returnCode;
-        }
-
-        zMat4x3 combinedMatrix = {0};
-        MultiplyMatricesForViewBBox(
-            currentMatrix,
-            nodeMatrix,
-            &combinedMatrix
-        );
-        zMath_Mat_TransformBBoxToCorners(
-            &combinedMatrix,
-            bbox,
-            outCorners
-        );
-        return returnCode;
-    }
-
-    /**
-     * Reimplements 0x4491b0: zClass_Class::gwNodeComputeChildBBox.
-     * Source: D:\Proj\GameZRecoil\zClass\Class.c
-     * Purpose: merge valid child world-bounds corners into the node's
-     * secondary bounding box.
-     */
-    int __fastcall gwNodeComputeChildBBox(zClass_NodePartial * node) {
-        if (ReportNullNode(
-            0xaa3,
-            node
-        )) {
-            return 5;
-        }
-
-        node->flags &= ~0x400;
-        if (node->listCountB == 0 || node->classId == 2) {
             return 0;
         }
 
-        zBBoxCorners corners = {0};
-        int childIndex = 0;
-        for (; childIndex < node->listCountB; ++childIndex) {
-            zClass_NodePartial *child = node->listB[childIndex];
-            if ((child->flags & 0x100) == 0) {
-                continue;
-            }
+        if (strcmp(
+            root->name,
+            name
+        ) == 0) {
+            return root;
+        }
 
-            gwNodeGetWorldBBoxCorners(
-                child,
-                &corners
+        for (int i = 0; i < root->listCountB; ++i) {
+            zClass_NodePartial *const childMatch = FindNodeRecursiveByName(
+                root->listB[i],
+                name
             );
-            zBBox3f *childBBox = SecondaryBBox(node);
-            childBBox->minX = corners.values[0];
-            childBBox->minY = corners.values[1];
-            childBBox->minZ = corners.values[2];
-            childBBox->maxX = corners.values[0];
-            childBBox->maxY = corners.values[1];
-            childBBox->maxZ = corners.values[2];
-            node->flags |= 0x400;
-
-            {
-                for (int cornerIndex = 1; cornerIndex < 8; ++cornerIndex) {
-                    ExpandBBoxWithCorner(
-                        childBBox,
-                        &corners.values[cornerIndex * 3]
-                    );
-                }
-            }
-            ++childIndex;
-            break;
-        }
-
-        if ((node->flags & 0x400) == 0) {
-            return 0;
-        }
-
-        for (; childIndex < node->listCountB; ++childIndex) {
-            zClass_NodePartial *child = node->listB[childIndex];
-            if ((child->flags & 0x100) == 0) {
-                continue;
-            }
-
-            gwNodeGetWorldBBoxCorners(
-                child,
-                &corners
-            );
-            zBBox3f *childBBox = SecondaryBBox(node);
-            {
-                for (int cornerIndex = 0; cornerIndex < 8; ++cornerIndex) {
-                    ExpandBBoxWithCorner(
-                        childBBox,
-                        &corners.values[cornerIndex * 3]
-                    );
-                }
-            }
-        }
-
-        return 0;
-    }
-
-    /**
-     * Reimplements 0x448e90: zClass_Class::gwNodeRecalcBBox.
-     * Source: D:\Proj\GameZRecoil\zClass\Class.c
-     * Purpose: select or merge primary and child bounds, cache the result, and
-     * propagate parent/world-grid bounds updates.
-     */
-    int __fastcall gwNodeRecalcBBox(zClass_NodePartial * node) {
-        if (ReportNullNode(
-            0x9d0,
-            node
-        )) {
-            return 5;
-        }
-        if (node->classId == 2) {
-            return 0;
-        }
-
-        zBBox3f merged = {0};
-        const zBBox3f *bboxSource = 0;
-        const bool hasPrimaryBBox = (node->flags & 0x200) != 0;
-        const bool hasChildBBox = (node->flags & 0x400) != 0;
-        if (hasPrimaryBBox && hasChildBBox) {
-            merged = MergeBBoxes(
-                PrimaryBBox(node),
-                SecondaryBBox(node)
-            );
-            bboxSource = &merged;
-        } else if (hasPrimaryBBox) {
-            bboxSource = PrimaryBBox(node);
-        } else if (hasChildBBox) {
-            bboxSource = SecondaryBBox(node);
-        } else {
-            node->flags &= ~0x100;
-            return 0;
-        }
-
-        node->flags |= 0x100;
-        CopyBBoxToCachedBounds(
-            node,
-            bboxSource
-        );
-        node->boundsFlags |= 0x04;
-
-        bool worldRectComputed = false;
-        float minX = 0.0f;
-        float maxX = 0.0f;
-        float minZ = 0.0f;
-        float maxZ = 0.0f;
-        for (int i = 0; i < node->listCountA; ++i) {
-            zClass_NodePartial *parent = node->listA[i];
-            if (parent->classId != 2) {
-                parent->boundsFlags |= 0x02;
-                if ((parent->flags & 0x01) == 0) {
-                    zClass_TypeList::InsertChildNodes(
-                        kQueuedTreeBucket,
-                        parent
-                    );
-                    parent->flags |= 0x01;
-                }
-                parent->flags |= 0x02;
-                continue;
-            }
-
-            if (!worldRectComputed) {
-                ComputeXZRectFromCorners(
-                    node,
-                    &minX,
-                    &maxX,
-                    &minZ,
-                    &maxZ
-                );
-                worldRectComputed = true;
-            }
-
-            int gridCol = -1;
-            int gridRow = -1;
-            if ((node->flags & 0x80) == 0) {
-                zClass_World::WorldRectToGridIndex(
-                    parent,
-                    &gridCol,
-                    minX,
-                    maxX,
-                    minZ,
-                    maxZ,
-                    &gridRow
-                );
-            }
-
-            if (gridCol == node->gridCol && gridRow == node->gridRow) {
-                if (node->gridCol >= 0 && node->gridRow >= 0) {
-                    zClass_World::EnsureGridCellDisplayPosition(
-                        parent,
-                        node->gridCol,
-                        node->gridRow
-                    );
-                }
-            } else {
-                zClass_World::RemoveChildAtGrid(
-                    parent,
-                    node
-                );
-                zClass_World::AddChildToGridCell(
-                    parent,
-                    node,
-                    gridCol,
-                    gridRow
-                );
+            if (childMatch != 0) {
+                return childMatch;
             }
         }
 
@@ -1455,55 +895,6 @@ namespace zClass_Class {
     }
 
     /**
-     * Reimplements 0x447e60: zClass_Class::gwNodeSetDisplayInstance
-     * Source: D:\Proj\GameZRecoil\zClass\Class.c
-     * Purpose: replace a node's display-instance reference, maintain zDi
-     * reference counts, rebuild its bounds, and queue transform updates.
-     */
-    int __fastcall gwNodeSetDisplayInstance(
-        zClass_NodePartial * node,
-        zDiPartial * displayInstance
-    ) {
-        if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                "D:\\Proj\\GameZRecoil\\zClass\\Class.c",
-                0x424,
-                "Null node pointer."
-            );
-            return 5;
-        }
-
-        zDiPartial *oldDisplayInstance = (zDiPartial *)((unsigned int)(node->userDataOrDiRef));
-        if (oldDisplayInstance != 0) {
-            zDi::Release(oldDisplayInstance);
-        }
-
-        node->userDataOrDiRef = (unsigned int)((unsigned int)(displayInstance));
-        if (displayInstance != 0) {
-            zDi::AddRef(displayInstance);
-            zDi::RebuildBounds(
-                (zDiPartial *)((unsigned int)(node->userDataOrDiRef)),
-                (zBoundsMinMaxPartial *)(&((zClass_NodeFreeListSlot *)node)->primaryBounds)
-            );
-            node->flags |= 0x200;
-        } else {
-            node->flags &= ~0x200;
-        }
-
-        node->boundsFlags |= 0x01;
-        if ((node->flags & kTypeListInsertedFlag) == 0) {
-            zClass_TypeList::Insert(
-                kQueuedTreeBucket,
-                node
-            );
-            node->flags |= kTypeListInsertedFlag;
-        }
-        node->flags |= kTransformQueuedFlag;
-        return 0;
-    }
-
-    /**
      * Reimplements 0x447dc0: zClass_Class::gwNodeSetName
      * Source: D:\Proj\GameZRecoil\zClass\Class.c
      * Purpose: copy or truncate a caller-supplied name into a zClass node's
@@ -1552,6 +943,55 @@ namespace zClass_Class {
         }
 
         return node->name;
+    }
+
+    /**
+     * Reimplements 0x447e60: zClass_Class::gwNodeSetDisplayInstance
+     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * Purpose: replace a node's display-instance reference, maintain zDi
+     * reference counts, rebuild its bounds, and queue transform updates.
+     */
+    int __fastcall gwNodeSetDisplayInstance(
+        zClass_NodePartial * node,
+        zDiPartial * displayInstance
+    ) {
+        if (node == 0) {
+            zError::ReportOld(
+                0x400,
+                "D:\\Proj\\GameZRecoil\\zClass\\Class.c",
+                0x424,
+                "Null node pointer."
+            );
+            return 5;
+        }
+
+        zDiPartial *oldDisplayInstance = (zDiPartial *)((unsigned int)(node->userDataOrDiRef));
+        if (oldDisplayInstance != 0) {
+            zDi::Release(oldDisplayInstance);
+        }
+
+        node->userDataOrDiRef = (unsigned int)((unsigned int)(displayInstance));
+        if (displayInstance != 0) {
+            zDi::AddRef(displayInstance);
+            zDi::RebuildBounds(
+                (zDiPartial *)((unsigned int)(node->userDataOrDiRef)),
+                (zBoundsMinMaxPartial *)(&((zClass_NodeFreeListSlot *)node)->primaryBounds)
+            );
+            node->flags |= 0x200;
+        } else {
+            node->flags &= ~0x200;
+        }
+
+        node->boundsFlags |= 0x01;
+        if ((node->flags & kTypeListInsertedFlag) == 0) {
+            zClass_TypeList::Insert(
+                kQueuedTreeBucket,
+                node
+            );
+            node->flags |= kTypeListInsertedFlag;
+        }
+        node->flags |= kTransformQueuedFlag;
+        return 0;
     }
 
     /**
@@ -1996,252 +1436,6 @@ namespace zClass_Class {
     }
 
     /**
-     * Reimplements 0x449ab0: zClass_Class::gwNodeGetRoot
-     * (D:\Proj\GameZRecoil\zClass\Class.c).
-     * Purpose: walk a node's single-parent chain and return the root node.
-     */
-    zClass_NodePartial *__fastcall gwNodeGetRoot(zClass_NodePartial * node) {
-        zClass_NodePartial *current = node;
-        if (current == 0) {
-            return 0;
-        }
-
-        while (current->listCountA != 0) {
-            if (current->listCountA != 1) {
-                zError::ReportOld(
-                    0x200,
-                    kClassSourceFile,
-                    0xd0d,
-                    "Error getting root node; Multiple parents found.\n  Node: %s\n",
-                    current
-                );
-                return 0;
-            }
-
-            current = current->listA[0];
-            if (current == 0) {
-                return 0;
-            }
-        }
-
-        return current;
-    }
-
-    zClass_NodePartial *__fastcall
-    /**
-     * Reimplements 0x452770: zClass_Class::FindSubNodeByName
-     * (D:\Proj\GameZRecoil\zClass\Class.c).
-     * Purpose: recursively search a node subtree by name, checking the root
-     * first and then visiting child-list entries from tail to head.
-     */
-    FindSubNodeByName(
-        zClass_NodePartial * root,
-        const char *name
-    ) {
-        if (root == 0) {
-            return 0;
-        }
-        if (strcmp(
-            name,
-            root->name
-        ) == 0) {
-            return root;
-        }
-
-        for (int i = root->listCountB - 1; i >= 0; --i) {
-            zClass_NodePartial *found = FindSubNodeByName(
-                root->listB[i],
-                name
-            );
-            if (found != 0) {
-                return found;
-            }
-        }
-
-        return 0;
-    }
-
-    /**
-     * Reimplements 0x447bc0: zClass_Class::FindNodeRecursiveByName
-     * Source: D:\Proj\GameZRecoil\zClass\Class.c
-     * BN caveat: the inlined strcmp-style comparison has a known sbb
-     * flag-generation limitation; assembly still proves the typed node-name
-     * comparison and forward child recursion.
-     * Purpose: search a zClass node subtree by exact node name, returning the
-     * first matching node in forward child-list order.
-     */
-    zClass_NodePartial *__fastcall FindNodeRecursiveByName(
-        zClass_NodePartial * root,
-        const char *name
-    ) {
-        if (ReportNullNode(
-            0x33a,
-            root
-        )) {
-            return 0;
-        }
-
-        if (strcmp(
-            root->name,
-            name
-        ) == 0) {
-            return root;
-        }
-
-        for (int i = 0; i < root->listCountB; ++i) {
-            zClass_NodePartial *const childMatch = FindNodeRecursiveByName(
-                root->listB[i],
-                name
-            );
-            if (childMatch != 0) {
-                return childMatch;
-            }
-        }
-
-        return 0;
-    }
-
-    /**
-     * Reimplements 0x449af0: zClass_Class::gwNodeGetWorldChild.
-     * BN source path evidence: D:\Proj\GameZRecoil\zClass\Class.c.
-     * Purpose: walk a node's single-parent chain through listA links and
-     * return the child directly owned by the world node.
-     */
-    zClass_NodePartial *__fastcall gwNodeGetWorldChild(
-        zClass_NodePartial * node
-    ) {
-        zClass_NodePartial *current = node;
-        while (current != 0 && current->listCountA != 0) {
-            if (current->listCountA != 1) {
-                zError::ReportOld(
-                    0x200,
-                    kClassSourceFile,
-                    0xd4e,
-                    "Error getting root node; Multiple parents found.\n  Node: %s\n",
-                    current
-                );
-                return 0;
-            }
-
-            zClass_NodePartial *parent = current->listA[0];
-            if (parent == 0) {
-                return 0;
-            }
-            if (parent->classId == 2) {
-                return current;
-            }
-            current = parent;
-        }
-
-        return 0;
-    }
-
-    /**
-     * Reimplements 0x449b40: zClass_Class::SetSingleParentFlagRecursive.
-     * BN source path evidence: D:\Proj\GameZRecoil\zClass\Class.c.
-     * Purpose: propagate the single-parent flag through a data-driven zClass
-     * child subtree when listA ownership count changes.
-     */
-    int __fastcall SetSingleParentFlagRecursive(
-        zClass_NodePartial * node,
-        int setFlag
-    ) {
-        if (node == 0) {
-            return 1;
-        }
-
-        if (setFlag != 0) {
-            if (node->listCountA > 1) {
-                return 0;
-            }
-            node->flags |= kSingleParentFlag;
-        } else {
-            node->flags &= ~kSingleParentFlag;
-        }
-
-        for (int i = 0; i < node->listCountB; ++i) {
-            SetSingleParentFlagRecursive(
-                node->listB[i],
-                setFlag
-            );
-        }
-
-        return 0;
-    }
-
-    /**
-     * Reimplements 0x452920: zClass_Class::AddChildValidated.
-     * BN source path evidence: D:\Proj\GameZRecoil\zClass\Switch.c; current
-     * source location remains zClass/Class.c for this cleanup-only slice.
-     * Purpose: validate Switch.c parent/child node state, then link the child
-     * through the generic zClass listA/listB ownership routine.
-     */
-    int __fastcall AddChildValidated(
-        zClass_NodePartial * parent,
-        zClass_NodePartial * child
-    ) {
-        if (ValidateParentChildForSwitch(
-            parent,
-            child,
-            0x80,
-            0x81,
-            0x82
-        ) != 0) {
-            return 5;
-        }
-
-        return AddChildGeneric(
-            parent,
-            child
-        );
-    }
-
-    /**
-     * Reimplements 0x452970: zClass_Class::RemoveChildValidated.
-     * BN source path evidence: D:\Proj\GameZRecoil\zClass\Switch.c; current
-     * source location remains zClass/Class.c for this cleanup-only slice.
-     * Purpose: validate Switch.c parent/child node state, then unlink the child
-     * through the generic zClass listA/listB ownership routine.
-     */
-    int __fastcall RemoveChildValidated(
-        zClass_NodePartial * parent,
-        zClass_NodePartial * child
-    ) {
-        if (parent == 0) {
-            zError::ReportOld(
-                0x400,
-                g_zClass_SourceFile_SwitchC,
-                0x9f,
-                "Null node pointer."
-            );
-            return 5;
-        }
-        if (child == 0) {
-            zError::ReportOld(
-                0x400,
-                g_zClass_SourceFile_SwitchC,
-                0xa0,
-                "Null node pointer."
-            );
-            return 5;
-        }
-        if (parent->classData == 0) {
-            zError::ReportOld(
-                0x400,
-                g_zClass_SourceFile_SwitchC,
-                0xa1,
-                "Null node class data pointer."
-            );
-            return 5;
-        }
-
-        return RemoveChildGeneric(
-            parent,
-            child
-        );
-    }
-
-    /**
      * Reimplements 0x4483f0: zClass_Class::AddChild.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\Class.c.
      * Purpose: dispatch child attachment by parent classId across the
@@ -2331,6 +1525,51 @@ namespace zClass_Class {
             zError::EmitDebugBuffer(1);
             return 1;
         }
+    }
+
+    /**
+     * Reimplements 0x4484d0: zClass_Class::AddChildGeneric.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\Class.c.
+     * Purpose: append child and parent references to the generic listB/listA
+     * node-link arrays and queue parent transform/bounds updates.
+     */
+    int __fastcall AddChildGeneric(
+        zClass_NodePartial * parent,
+        zClass_NodePartial * child
+    ) {
+        const int newChildCount = parent->listCountB + 1;
+        parent->listB = (zClass_NodePartial **)(realloc(
+            parent->listB,
+            (size_t)(newChildCount) * sizeof(parent->listB[0])
+        ));
+        parent->listB[parent->listCountB] = child;
+        parent->listCountB = newChildCount;
+
+        const int newParentCount = child->listCountA + 1;
+        child->listA = (zClass_NodePartial **)(realloc(
+            child->listA,
+            (size_t)(newParentCount) * sizeof(child->listA[0])
+        ));
+        child->listA[child->listCountA] = parent;
+        child->listCountA = newParentCount;
+        if (newParentCount > 1) {
+            SetSingleParentFlagRecursive(
+                child,
+                0
+            );
+        }
+
+        parent->boundsFlags |= kBoundsDirtyFlag;
+        if ((parent->flags & kTypeListInsertedFlag) == 0) {
+            zClass_TypeList::Insert(
+                kQueuedTreeBucket,
+                parent
+            );
+            parent->flags |= kTypeListInsertedFlag;
+        }
+        parent->flags |= kTransformQueuedFlag;
+
+        return 0;
     }
 
     /**
@@ -2446,51 +1685,6 @@ namespace zClass_Class {
     }
 
     /**
-     * Reimplements 0x4484d0: zClass_Class::AddChildGeneric.
-     * BN source path evidence: D:\Proj\GameZRecoil\zClass\Class.c.
-     * Purpose: append child and parent references to the generic listB/listA
-     * node-link arrays and queue parent transform/bounds updates.
-     */
-    int __fastcall AddChildGeneric(
-        zClass_NodePartial * parent,
-        zClass_NodePartial * child
-    ) {
-        const int newChildCount = parent->listCountB + 1;
-        parent->listB = (zClass_NodePartial **)(realloc(
-            parent->listB,
-            (size_t)(newChildCount) * sizeof(parent->listB[0])
-        ));
-        parent->listB[parent->listCountB] = child;
-        parent->listCountB = newChildCount;
-
-        const int newParentCount = child->listCountA + 1;
-        child->listA = (zClass_NodePartial **)(realloc(
-            child->listA,
-            (size_t)(newParentCount) * sizeof(child->listA[0])
-        ));
-        child->listA[child->listCountA] = parent;
-        child->listCountA = newParentCount;
-        if (newParentCount > 1) {
-            SetSingleParentFlagRecursive(
-                child,
-                0
-            );
-        }
-
-        parent->boundsFlags |= kBoundsDirtyFlag;
-        if ((parent->flags & kTypeListInsertedFlag) == 0) {
-            zClass_TypeList::Insert(
-                kQueuedTreeBucket,
-                parent
-            );
-            parent->flags |= kTypeListInsertedFlag;
-        }
-        parent->flags |= kTransformQueuedFlag;
-
-        return 0;
-    }
-
-    /**
      * Reimplements 0x448660: zClass_Class::RemoveChildGeneric.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\Class.c.
      * Purpose: remove matching child and parent references from generic
@@ -2559,6 +1753,577 @@ namespace zClass_Class {
 
         return 0;
     }
+
+    /**
+     * Reimplements 0x448760: zClass_Class::gwNodeGetBBox.
+     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * Purpose: copy the cached node bounding box when it is currently valid.
+     */
+    int __fastcall gwNodeGetBBox(
+        zClass_NodePartial * node,
+        zBBox3f * outBBox
+    ) {
+        if (ReportNullNode(
+            0x7f9,
+            node
+        )) {
+            return 5;
+        }
+        if (node->classData == 0) {
+            zError::ReportOld(
+                0x400,
+                kClassSourceFile,
+                0x7fa,
+                "Null class data pointer"
+            );
+            return 5;
+        }
+        if ((node->flags & 0x100) == 0) {
+            return 1;
+        }
+
+        memcpy(
+            outBBox,
+            CachedBBox(node),
+            sizeof(*outBBox)
+        );
+        return 0;
+    }
+
+    /**
+     * Reimplements 0x4487c0: zClass_Class::gwNodeGetWorldBBoxCorners.
+     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * Purpose: return cached bounds corners in world/node space for object,
+     * camera, animate, and untransformed node classes.
+     */
+    int __fastcall gwNodeGetWorldBBoxCorners(
+        zClass_NodePartial * node,
+        zBBoxCorners * outCorners
+    ) {
+        if (ReportNullNode(
+            0x81b,
+            node
+        )) {
+            return 5;
+        }
+        if (node->classData == 0) {
+            zError::ReportOld(
+                0x400,
+                kClassSourceFile,
+                0x81c,
+                "Null class data pointer"
+            );
+            return 5;
+        }
+        if ((node->flags & 0x100) == 0) {
+            return 1;
+        }
+
+        const zBBox3f *bbox = CachedBBox(node);
+        if (node->classId == 5) {
+            const zClass_Object3DDataPartial *objectData =
+                (const zClass_Object3DDataPartial *)(node->classData);
+            if ((objectData->flags & 0x08) == 0) {
+                zMath_Mat_TransformBBoxToCorners(
+                    Object3DLocalMatrix(objectData),
+                    bbox,
+                    outCorners
+                );
+                return 0;
+            }
+        } else if (node->classId == 1) {
+            const zClass_CameraDataPartial *cameraData =
+                (const zClass_CameraDataPartial *)(node->classData);
+            zMath_Mat_TransformBBoxToCorners(
+                CameraCachedViewMatrix(cameraData),
+                bbox,
+                outCorners
+            );
+            return 0;
+        } else if (node->classId == 8) {
+            const zClass_AnimateDataPartial *animateData =
+                (const zClass_AnimateDataPartial *)(node->classData);
+            if ((node->flags & 0x04) != 0 && (animateData->statusFlags & 0x04) != 0) {
+                zMath_Mat_TransformBBoxToCorners(
+                    AnimateTransform(animateData),
+                    bbox,
+                    outCorners
+                );
+                return 0;
+            }
+        }
+
+        CopyBBoxToCorners(
+            bbox,
+            outCorners
+        );
+        return 0;
+    }
+
+    /**
+     * Reimplements 0x448920: zClass_Class::gwNodeGetViewBBoxCorners.
+     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * Purpose: return cached bounds corners after combining the active view
+     * transform with any class-specific node transform.
+     */
+    int __fastcall gwNodeGetViewBBoxCorners(
+        zClass_NodePartial * node,
+        zBBoxCorners * outCorners
+    ) {
+        if (ReportNullNode(
+            0x85f,
+            node
+        )) {
+            return 5;
+        }
+        if (node->classData == 0) {
+            zError::ReportOld(
+                0x400,
+                kClassSourceFile,
+                0x860,
+                "Null class data pointer"
+            );
+            return 5;
+        }
+        if ((node->flags & 0x100) == 0) {
+            return 1;
+        }
+
+        int returnCode = 0;
+        int currentIsIdentity = zMath_Mat_IsCurrentIdentity();
+        zMat4x3 *currentMatrix = zMath_Mat_GetCurrent();
+        int skipTransform = 0;
+        const zMat4x3 *nodeMatrix = 0;
+
+        switch (node->classId) {
+        case 1: {
+            const zClass_CameraDataPartial *cameraData =
+                (const zClass_CameraDataPartial *)(node->classData);
+            nodeMatrix = CameraCachedViewMatrix(cameraData);
+            break;
+        }
+        case 2:
+        case 6:
+        case 7:
+            skipTransform = 1;
+            break;
+        case 5: {
+            const zClass_Object3DDataPartial *objectData =
+                (const zClass_Object3DDataPartial *)(node->classData);
+            skipTransform = (objectData->flags >> 3) & 0x01;
+            nodeMatrix = Object3DLocalMatrix(objectData);
+            break;
+        }
+        case 8: {
+            const zClass_AnimateDataPartial *animateData =
+                (const zClass_AnimateDataPartial *)(node->classData);
+            if ((node->flags & 0x04) == 0 ||
+                (animateData->statusFlags & 0x04) == 0) {
+                skipTransform = 1;
+            }
+            nodeMatrix = AnimateTransform(animateData);
+            break;
+        }
+        case 9:
+        case 10:
+            break;
+        default:
+            returnCode = 3;
+            break;
+        }
+
+        if (currentMatrix == 0) {
+            currentIsIdentity = 1;
+        }
+        if (nodeMatrix == 0) {
+            skipTransform = 1;
+        }
+
+        const zBBox3f *bbox = CachedBBox(node);
+        if (currentIsIdentity != 0) {
+            if (skipTransform != 0) {
+                CopyBBoxToCorners(
+                    bbox,
+                    outCorners
+                );
+                return returnCode;
+            }
+            zMath_Mat_TransformBBoxToCorners(
+                nodeMatrix,
+                bbox,
+                outCorners
+            );
+            return returnCode;
+        }
+
+        if (skipTransform != 0) {
+            zMath_Mat_TransformBBoxToCorners(
+                currentMatrix,
+                bbox,
+                outCorners
+            );
+            return returnCode;
+        }
+
+        zMat4x3 combinedMatrix = {0};
+        MultiplyMatricesForViewBBox(
+            currentMatrix,
+            nodeMatrix,
+            &combinedMatrix
+        );
+        zMath_Mat_TransformBBoxToCorners(
+            &combinedMatrix,
+            bbox,
+            outCorners
+        );
+        return returnCode;
+    }
+
+    /**
+     * Reimplements 0x448cc0: zClass_Class::gwNodeUpdate.
+     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * Purpose: process pending transform and bounds work for one scene node
+     * and run class-specific camera, world, object, and animate updates.
+     */
+    int __fastcall gwNodeUpdate(zClass_NodePartial * node) {
+        int result = 0;
+        bool needsBBoxRecalc = false;
+        const zVec3 unitScale = UnitScale();
+
+        if ((node->boundsFlags & 0x01) != 0) {
+            gwNodeUpdateDisplayInstance(node);
+            needsBBoxRecalc = true;
+        }
+        if ((node->boundsFlags & 0x02) != 0) {
+            gwNodeComputeChildBBox(node);
+            needsBBoxRecalc = true;
+        }
+        node->boundsFlags &= 0x04;
+
+        zClass_NodePartial *nodeValue = node;
+
+        switch (node->classId) {
+        case 1: {
+            zClass_CameraDataPartial *cameraData = (zClass_CameraDataPartial *)(node->classData);
+            if (cameraData != 0 && (cameraData->cameraFlags & 0x04) != 0) {
+                if ((cameraData->cameraFlags & 0x02) == 0) {
+                    zMath::MatStackPushPtr((float *)(CameraCachedViewMatrix(cameraData)));
+                    zMath::MatLoadIdentity();
+                    zMath::MatApplyLocalTRS(
+                        &cameraData->posOffset,
+                        &cameraData->targetOrEuler,
+                        &unitScale
+                    );
+                    zMath::MatStackPopPtr();
+                }
+                gwNodeRecalcBBox(node);
+                cameraData->cameraFlags &= ~0x04;
+                needsBBoxRecalc = false;
+            }
+            break;
+        }
+        case 2:
+            zClass_World::ApplyPendingFogSettings(node);
+            break;
+        case 5: {
+            zClass_Object3DDataPartial *objectData =
+                (zClass_Object3DDataPartial *)(node->classData);
+            if (objectData != 0 && (objectData->flags & 0x01) != 0) {
+                if ((objectData->flags & 0x10) == 0) {
+                    zMath::MatStackPushPtr(objectData->localMatrix);
+                    zMath::MatLoadIdentity();
+                    zMath::MatApplyLocalTRS(
+                        &objectData->rotation,
+                        (zVec3 *)(&objectData->localMatrix[9]),
+                        &objectData->scale
+                    );
+                    zMath::MatStackPopPtr();
+                }
+                gwNodeRecalcBBox(node);
+                objectData->flags &= ~0x01;
+                needsBBoxRecalc = false;
+            }
+            break;
+        }
+        case 6:
+        case 7:
+            break;
+        case 8: {
+            zClass_AnimateDataPartial *animateData = (zClass_AnimateDataPartial *)(node->classData);
+            if ((node->flags & 0x04) != 0 && (animateData->statusFlags & 0x04) != 0 &&
+                animateData->flags != 0) {
+                if ((animateData->flags & 0x01) != 0) {
+                    zMath::MatStackPushPtr(animateData->animatedTransform);
+                    zMath::MatLoadIdentity();
+                    zMath::MatApplyLocalTRS(
+                        &animateData->runtime.sampledRotation,
+                        &animateData->runtime.sampledPosition,
+                        &animateData->runtime.sampledScale
+                    );
+                    zMath::MatStackPopPtr();
+                    gwNodeRecalcBBox(node);
+                    needsBBoxRecalc = false;
+                }
+                animateData->flags = 0;
+            }
+            break;
+        }
+        default:
+            zError::ReportOld(
+                0x200,
+                kClassSourceFile,
+                0x99e,
+                "gwNodeUpdate(): Unrecognized node class type:\n  node = %s class_type = %d\n",
+                node,
+                node->classId
+            );
+            result = 3;
+            break;
+        }
+
+        if (needsBBoxRecalc) {
+            gwNodeRecalcBBox(node);
+        }
+        node->flags &= ~kTransformQueuedFlag;
+        return result;
+    }
+
+    /**
+     * Reimplements 0x448e90: zClass_Class::gwNodeRecalcBBox.
+     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * Purpose: select or merge primary and child bounds, cache the result, and
+     * propagate parent/world-grid bounds updates.
+     */
+    int __fastcall gwNodeRecalcBBox(zClass_NodePartial * node) {
+        if (ReportNullNode(
+            0x9d0,
+            node
+        )) {
+            return 5;
+        }
+        if (node->classId == 2) {
+            return 0;
+        }
+
+        zBBox3f merged = {0};
+        const zBBox3f *bboxSource = 0;
+        const bool hasPrimaryBBox = (node->flags & 0x200) != 0;
+        const bool hasChildBBox = (node->flags & 0x400) != 0;
+        if (hasPrimaryBBox && hasChildBBox) {
+            merged = MergeBBoxes(
+                PrimaryBBox(node),
+                SecondaryBBox(node)
+            );
+            bboxSource = &merged;
+        } else if (hasPrimaryBBox) {
+            bboxSource = PrimaryBBox(node);
+        } else if (hasChildBBox) {
+            bboxSource = SecondaryBBox(node);
+        } else {
+            node->flags &= ~0x100;
+            return 0;
+        }
+
+        node->flags |= 0x100;
+        CopyBBoxToCachedBounds(
+            node,
+            bboxSource
+        );
+        node->boundsFlags |= 0x04;
+
+        bool worldRectComputed = false;
+        float minX = 0.0f;
+        float maxX = 0.0f;
+        float minZ = 0.0f;
+        float maxZ = 0.0f;
+        for (int i = 0; i < node->listCountA; ++i) {
+            zClass_NodePartial *parent = node->listA[i];
+            if (parent->classId != 2) {
+                parent->boundsFlags |= 0x02;
+                if ((parent->flags & 0x01) == 0) {
+                    zClass_TypeList::InsertChildNodes(
+                        kQueuedTreeBucket,
+                        parent
+                    );
+                    parent->flags |= 0x01;
+                }
+                parent->flags |= 0x02;
+                continue;
+            }
+
+            if (!worldRectComputed) {
+                ComputeXZRectFromCorners(
+                    node,
+                    &minX,
+                    &maxX,
+                    &minZ,
+                    &maxZ
+                );
+                worldRectComputed = true;
+            }
+
+            int gridCol = -1;
+            int gridRow = -1;
+            if ((node->flags & 0x80) == 0) {
+                zClass_World::WorldRectToGridIndex(
+                    parent,
+                    &gridCol,
+                    minX,
+                    maxX,
+                    minZ,
+                    maxZ,
+                    &gridRow
+                );
+            }
+
+            if (gridCol == node->gridCol && gridRow == node->gridRow) {
+                if (node->gridCol >= 0 && node->gridRow >= 0) {
+                    zClass_World::EnsureGridCellDisplayPosition(
+                        parent,
+                        node->gridCol,
+                        node->gridRow
+                    );
+                }
+            } else {
+                zClass_World::RemoveChildAtGrid(
+                    parent,
+                    node
+                );
+                zClass_World::AddChildToGridCell(
+                    parent,
+                    node,
+                    gridCol,
+                    gridRow
+                );
+            }
+        }
+
+        return 0;
+    }
+
+    /**
+     * Reimplements 0x4491b0: zClass_Class::gwNodeComputeChildBBox.
+     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * Purpose: merge valid child world-bounds corners into the node's
+     * secondary bounding box.
+     */
+    int __fastcall gwNodeComputeChildBBox(zClass_NodePartial * node) {
+        if (ReportNullNode(
+            0xaa3,
+            node
+        )) {
+            return 5;
+        }
+
+        node->flags &= ~0x400;
+        if (node->listCountB == 0 || node->classId == 2) {
+            return 0;
+        }
+
+        zBBoxCorners corners = {0};
+        int childIndex = 0;
+        for (; childIndex < node->listCountB; ++childIndex) {
+            zClass_NodePartial *child = node->listB[childIndex];
+            if ((child->flags & 0x100) == 0) {
+                continue;
+            }
+
+            gwNodeGetWorldBBoxCorners(
+                child,
+                &corners
+            );
+            zBBox3f *childBBox = SecondaryBBox(node);
+            childBBox->minX = corners.values[0];
+            childBBox->minY = corners.values[1];
+            childBBox->minZ = corners.values[2];
+            childBBox->maxX = corners.values[0];
+            childBBox->maxY = corners.values[1];
+            childBBox->maxZ = corners.values[2];
+            node->flags |= 0x400;
+
+            {
+                for (int cornerIndex = 1; cornerIndex < 8; ++cornerIndex) {
+                    ExpandBBoxWithCorner(
+                        childBBox,
+                        &corners.values[cornerIndex * 3]
+                    );
+                }
+            }
+            ++childIndex;
+            break;
+        }
+
+        if ((node->flags & 0x400) == 0) {
+            return 0;
+        }
+
+        for (; childIndex < node->listCountB; ++childIndex) {
+            zClass_NodePartial *child = node->listB[childIndex];
+            if ((child->flags & 0x100) == 0) {
+                continue;
+            }
+
+            gwNodeGetWorldBBoxCorners(
+                child,
+                &corners
+            );
+            zBBox3f *childBBox = SecondaryBBox(node);
+            {
+                for (int cornerIndex = 0; cornerIndex < 8; ++cornerIndex) {
+                    ExpandBBoxWithCorner(
+                        childBBox,
+                        &corners.values[cornerIndex * 3]
+                    );
+                }
+            }
+        }
+
+        return 0;
+    }
+
+    /**
+     * Reimplements 0x449420: zClass_Class::gwNodeUpdateDisplayInstance.
+     * Source: D:\Proj\GameZRecoil\zClass\Class.c
+     * Purpose: rebuild display-instance bounds into the node primary box and
+     * update the primary-bounds-valid flag.
+     */
+    int __fastcall gwNodeUpdateDisplayInstance(zClass_NodePartial * node) {
+        if (ReportNullNode(
+            0xb31,
+            node
+        )) {
+            return 5;
+        }
+
+        zDiPartial *di = (zDiPartial *)((unsigned int)(node->userDataOrDiRef));
+        if (di != 0) {
+            zDi::RebuildBounds(
+                di,
+                (zBoundsMinMaxPartial *)(PrimaryBBox(node))
+            );
+            node->flags |= 0x200;
+        } else {
+            node->flags &= ~0x200;
+        }
+
+        return 0;
+    }
+
+    /**
+     * Reimplements 0x452770: zClass_Class::FindSubNodeByName.
+     * Source-shape note: the definition is emitted by cls_util.c; Class.c
+     * retains callers and the public declaration.
+     */
+    /**
+     * Reimplements 0x452920: zClass_Class::AddChildValidated.
+     * Source-shape note: the complete definition is emitted by Switch.c;
+     * Class.c retains callers and the public declaration.
+     */
+    /**
+     * Reimplements 0x452970: zClass_Class::RemoveChildValidated.
+     * Source-shape note: the complete definition is emitted by Switch.c;
+     * Class.c retains callers and the public declaration.
+     */
 
 }
 
@@ -2899,138 +2664,110 @@ namespace gwNode {
 
 namespace zClass_Class {
     /**
-     * Reimplements 0x44c0e0: zClass_Class::gwNodeRenderDispatch.
-     * Source: D:\Proj\GameZRecoil\zClass\Class.c
-     * Purpose: route visible scene nodes to the class-specific render
-     * traversal after variant-tag filtering.
+     * Reimplements 0x449ab0: zClass_Class::gwNodeGetRoot
+     * (D:\Proj\GameZRecoil\zClass\Class.c).
+     * Purpose: walk a node's single-parent chain and return the root node.
      */
-    int __fastcall gwNodeRenderDispatch(
-        zClass_NodePartial * node,
-        int siblingCountHint
-    ) {
-        const int variantId = node->nodeType;
-        const int variantAllowed = VariantTag::CurrentAllowsId(variantId);
-        if (variantAllowed == 0) {
-            return variantAllowed;
+    zClass_NodePartial *__fastcall gwNodeGetRoot(zClass_NodePartial * node) {
+        zClass_NodePartial *current = node;
+        if (current == 0) {
+            return 0;
         }
 
-        switch (node->classId - 1) {
-        case 0:
-            return zClass_Camera::RenderTraverse(
-                node,
-                siblingCountHint
-            );
-        case 4:
-            return zClass_Object3D::RenderTraverse(
-                node,
-                siblingCountHint
-            );
-        case 5:
-            return zClass_Lod::RenderTraverse(
-                node,
-                siblingCountHint
-            );
-        case 6:
-            return zClass_Sequence::RenderTraverse(
-                node,
-                siblingCountHint
-            );
-        case 7:
-            return zClass_Animate::RenderTraverse(
-                node,
-                siblingCountHint
-            );
-        case 8:
-            return zClass_Light::RenderTraverse(
-                node,
-                siblingCountHint
-            );
-        case 9:
-            return zClass_Sound::RenderTraverse(
-                node,
-                siblingCountHint
-            );
-        case 10:
-            return zClass_Switch::RenderTraverse(
-                node,
-                siblingCountHint
-            );
-        default:
-            return fprintf(
-                stderr,
-                "Unrecognized node rendering type: %s\n",
-                node->name
+        while (current->listCountA != 0) {
+            if (current->listCountA != 1) {
+                zError::ReportOld(
+                    0x200,
+                    kClassSourceFile,
+                    0xd0d,
+                    "Error getting root node; Multiple parents found.\n  Node: %s\n",
+                    current
+                );
+                return 0;
+            }
+
+            current = current->listA[0];
+            if (current == 0) {
+                return 0;
+            }
+        }
+
+        return current;
+    }
+
+    /**
+     * Reimplements 0x449af0: zClass_Class::gwNodeGetWorldChild.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\Class.c.
+     * Purpose: walk a node's single-parent chain through listA links and
+     * return the child directly owned by the world node.
+     */
+    zClass_NodePartial *__fastcall gwNodeGetWorldChild(
+        zClass_NodePartial * node
+    ) {
+        zClass_NodePartial *current = node;
+        while (current != 0 && current->listCountA != 0) {
+            if (current->listCountA != 1) {
+                zError::ReportOld(
+                    0x200,
+                    kClassSourceFile,
+                    0xd4e,
+                    "Error getting root node; Multiple parents found.\n  Node: %s\n",
+                    current
+                );
+                return 0;
+            }
+
+            zClass_NodePartial *parent = current->listA[0];
+            if (parent == 0) {
+                return 0;
+            }
+            if (parent->classId == 2) {
+                return current;
+            }
+            current = parent;
+        }
+
+        return 0;
+    }
+
+    /**
+     * Reimplements 0x449b40: zClass_Class::SetSingleParentFlagRecursive.
+     * BN source path evidence: D:\Proj\GameZRecoil\zClass\Class.c.
+     * Purpose: propagate the single-parent flag through a data-driven zClass
+     * child subtree when listA ownership count changes.
+     */
+    int __fastcall SetSingleParentFlagRecursive(
+        zClass_NodePartial * node,
+        int setFlag
+    ) {
+        if (node == 0) {
+            return 1;
+        }
+
+        if (setFlag != 0) {
+            if (node->listCountA > 1) {
+                return 0;
+            }
+            node->flags |= kSingleParentFlag;
+        } else {
+            node->flags &= ~kSingleParentFlag;
+        }
+
+        for (int i = 0; i < node->listCountB; ++i) {
+            SetSingleParentFlagRecursive(
+                node->listB[i],
+                setFlag
             );
         }
+
+        return 0;
     }
+
 }
 
 namespace zClass_Node {
-    /**
-     * Reimplements 0x421d60: zClass_Node::MaskExtraFlagsRecursive
-     * Source: D:\Proj\GameZRecoil\zClass\Class.c
-     * BN evidence: fastcall self/mask, auxFlags at 0x28, signed
-     * listCountB at 0x5c, listB at 0x60, recursive self-call only, and no
-     * global data references.
-     * Purpose: AND a mask into auxFlags across a node's child-list subtree.
-     */
-    void __fastcall MaskExtraFlagsRecursive(
-        zClass_NodePartial * self,
-        int mask
-    ) {
-        self->auxFlags &= mask;
 
-        for (int i = 0; i < self->listCountB; ++i) {
-            MaskExtraFlagsRecursive(
-                self->listB[i],
-                mask
-            );
-        }
-    }
 
-    /**
-     * Reimplements 0x421da0: zClass_Node::PropagateExtraFlagsRecursive
-     * Source: D:\Proj\GameZRecoil\zClass\Class.c
-     * BN evidence: fastcall self/flags, auxFlags at 0x28, signed
-     * listCountB at 0x5c, listB at 0x60, recursive self-call only, and no
-     * global data references.
-     * Purpose: OR auxFlags into each node in a child-list subtree.
-     */
-    void __fastcall PropagateExtraFlagsRecursive(
-        zClass_NodePartial * self,
-        int flags
-    ) {
-        self->auxFlags |= flags;
-
-        for (int i = 0; i < self->listCountB; ++i) {
-            PropagateExtraFlagsRecursive(
-                self->listB[i],
-                flags
-            );
-        }
-    }
-
-    /**
-     * Reimplements 0x421de0: zClass_Node::PropagateFlagsRecursive
-     * Source: D:\Proj\GameZRecoil\zClass\Class.c
-     * BN evidence: fastcall self/flags, flags at 0x24, signed listCountB at
-     * 0x5c, listB at 0x60, recursive self-call only, and no global data
-     * references.
-     * Purpose: OR normal node flags into each node in a child-list subtree.
-     */
-    void __fastcall PropagateFlagsRecursive(
-        zClass_NodePartial * self,
-        int flags
-    ) {
-        self->flags |= flags;
-
-        for (int i = 0; i < self->listCountB; ++i) {
-            PropagateFlagsRecursive(
-                self->listB[i],
-                flags
-            );
-        }
-    }
 
     /**
      * Reimplements 0x437e60: zClass_Node::SetContextRecursive
@@ -3093,92 +2830,20 @@ namespace zClass_Node {
         }
     }
 
-    /**
-     * Reimplements 0x452860: zClass_Node::SetMaterialFlagBit9ForFlagBit0EntriesRecursive
-     * Source: D:\Proj\GameZRecoil\zClass\Class.c
-     * Purpose: recurse a child-list subtree and propagate material flag bit 9
-     * updates through each node display instance.
+    /*
+     * Source-shape routing markers: these definitions are emitted by
+     * cls_util.c while Class.c retains related callers.
+     * Reimplements 0x452860: zClass_Node::SetMaterialFlagBit9ForFlagBit0EntriesRecursive.
+     * Reimplements 0x4528a0: zClass_Node::LoadFlagBit8MaterialImagesAndTexturePack.
+     * Reimplements 0x4528b0: zClass_Node::InvalidateFlagBit8MaterialImagesRecursive.
+     * Reimplements 0x4528e0: zClass_Node::AssignInt32ToDiRecursive.
      */
-    void __fastcall SetMaterialFlagBit9ForFlagBit0EntriesRecursive(
-        zClass_NodePartial * node,
-        int enabled
-    ) {
-        zDiPartial *di = (zDiPartial *)((unsigned int)(node->userDataOrDiRef));
-        if (di != 0) {
-            zDi::SetMaterialFlagBit9ForFlagBit0Entries(
-                di,
-                enabled
-            );
-        }
-
-        for (int i = 0; i < node->listCountB; ++i) {
-            SetMaterialFlagBit9ForFlagBit0EntriesRecursive(
-                node->listB[i],
-                enabled
-            );
-        }
-    }
-
-    /**
-     * Reimplements 0x4528b0: zClass_Node::InvalidateFlagBit8MaterialImagesRecursive
-     * Source: D:\Proj\GameZRecoil\zClass\Class.c
-     * Purpose: recurse a child-list subtree and invalidate loaded material
-     * image variants for each display instance with material flag bit 8 set.
-     */
-    void __fastcall InvalidateFlagBit8MaterialImagesRecursive(
-        zClass_NodePartial * node
-    ) {
-        zDiPartial *di = (zDiPartial *)((unsigned int)(node->userDataOrDiRef));
-        if (di != 0) {
-            zDi::InvalidateImagesForFlagBit8Materials(di);
-        }
-
-        for (int i = 0; i < node->listCountB; ++i) {
-            InvalidateFlagBit8MaterialImagesRecursive(node->listB[i]);
-        }
-    }
-
-    /**
-     * Reimplements 0x4528a0: zClass_Node::LoadFlagBit8MaterialImagesAndTexturePack
-     * Source: D:\Proj\GameZRecoil\zClass\Class.c
-     * Purpose: invalidate flagged material images under a node subtree and
-     * then load pending texture-directory entries.
-     */
-    void __fastcall LoadFlagBit8MaterialImagesAndTexturePack(
-        zClass_NodePartial * node
-    ) {
-        if (node == 0) {
-            return;
-        }
-
-        InvalidateFlagBit8MaterialImagesRecursive(node);
-        zImage::TexDir_LoadPendingEntries();
-    }
-
-    /**
-     * Reimplements 0x4528e0: zClass_Node::AssignInt32ToDiRecursive
-     * Source: D:\Proj\GameZRecoil\zClass\Class.c
-     * Purpose: assign display-instance flag bit 0 for each display instance
-     * reachable through a node's child-list subtree.
-     */
-    void __fastcall AssignInt32ToDiRecursive(
-        zClass_NodePartial * node,
-        int value
-    ) {
-        zDiPartial *di = (zDiPartial *)((unsigned int)(node->userDataOrDiRef));
-        if (di != 0) {
-            zDi::SetFlagBit0(
-                di,
-                value
-            );
-        }
-
-        for (int i = 0; i < node->listCountB; ++i) {
-            AssignInt32ToDiRecursive(
-                node->listB[i],
-                value
-            );
-        }
-    }
 
 }
+/*
+ * Provenance-only routing markers: these definitions compile through the
+ * literal-backed Battlesport/player.cpp contribution.
+ * Reimplements 0x421d60: zClass_Node::MaskExtraFlagsRecursive.
+ * Reimplements 0x421da0: zClass_Node::PropagateExtraFlagsRecursive.
+ * Reimplements 0x421de0: zClass_Node::PropagateFlagsRecursive.
+ */

@@ -284,6 +284,14 @@ int g_Briefing_ProgressEventCode = -1;
 }
 
 /**
+ * Provider-boundary 0x403db0: official VC5
+ * std::list<BriefingAction *>::~list COMDAT emitted from the queue member.
+ * Purpose: destroy the queue's list nodes through the compiler's canonical
+ * xlist implementation while leaving the pointed-to BriefingAction objects
+ * under the queue's explicit action-lifetime policy.
+ */
+
+/**
  * Original inline constructor; no standalone retail function exists.
  * Observed in caller 0x403930 as the first runtime member construction state.
  * The official VC5 std::list constructor supplies the empty sentinel; the

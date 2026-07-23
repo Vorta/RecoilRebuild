@@ -70,7 +70,7 @@ struct HudUiMpExitDialog : HudUiBackground {
     }
 
     void UnloadLayout();
-    void Update(float deltaSeconds);
+    virtual void Update(float deltaSeconds);
     void LoadLayout();
     void Destructor();
 };

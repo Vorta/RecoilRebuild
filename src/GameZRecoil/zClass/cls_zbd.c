@@ -372,243 +372,28 @@ namespace {
     }
 }
 
-namespace GameZ {
+namespace zClass {
     /**
-     * Reimplements 0x454a50: GameZ::WriteZBDFile.
-     * Evidence: BN name/source-file comment and cls_zbd.c callees serialize
-     * the header, texture directory, material pool, DI pool, and node table.
-     * Purpose: write a GameZ ZBD archive and patch the header offsets.
+     * Reimplements 0x454360: zClass::ResetCurrentZbdPath.
+     * Purpose: clear the active zClass ZBD path buffer and return success.
      */
-    RECOIL_NO_GS int __fastcall WriteZBDFile(const char *filename) {
-        const size_t filenameLength = strlen(filename);
-        if (filenameLength == 0) {
-            return -1;
-        }
-
-        if (filenameLength < 0x2f) {
-            memcpy(
-                g_zClass_CurrentZbdPath,
-                filename,
-                filenameLength + 1
-            );
-        } else {
-            zError::ReportOld(
-                0x200,
-                g_zClass_SourceFile_ClsZbdC,
-                0x272,
-                g_zClass_ZbdFilenameTooLongFmt,
-                (int)(filenameLength),
-                0x30
-            );
-        }
-
-        FILE *const file = fopen(
-            filename,
-            "wb"
-        );
-        if (file == 0) {
-            return -1;
-        }
-
-        zClass_ZbdHeader header;
-        header.magic = 0x02971222;
-        header.version = 0x0f;
-        if (fwrite(
-            &header,
-            sizeof(header),
-            1,
-            file
-        ) != 1) {
-            return ReportZbdWriteFailure(
-                0x285,
-                g_zClass_WriteGameZHeaderDataErrorMsg
-            );
-        }
-
-        header.texDirOffset = ftell(file);
-        header.texDirArg = zImage::WriteTextureDirectory(file);
-        header.matlOffset = ftell(file);
-        zModel_MatlBuffer::WriteGameZ(file);
-        header.model3dOffset = ftell(file);
-        zModel_DiPool::WriteToStream(file);
-        zClass_NodeList::ProcessPendingFrees();
-        header.nodeFreeHead = g_zClass_NodeFreeHeadIndex;
-        header.nodeTableOffset = ftell(file);
-        header.nodeCount = GameZ_ZBD::WriteNodeTable(file);
-
-        fseek(
-            file,
-            0,
-            SEEK_SET
-        );
-        if (fwrite(
-            &header,
-            sizeof(header),
-            1,
-            file
-        ) != 1) {
-            return ReportZbdWriteFailure(
-                0x2aa,
-                g_zClass_WriteGameZHeaderDataErrorMsg
-            );
-        }
-
-        fclose(file);
+    int ResetCurrentZbdPath() {
+        g_zClass_CurrentZbdPath[0] = 0;
         return 0;
     }
+}
 
+namespace GameZ_ZBD {
     /**
-     * Reimplements 0x455520: GameZ::ReadZBDFile.
-     * Evidence: BN name/source-file comment and cls_zbd.c callee order reload
-     * texture, material, model, and node-table sections from header offsets.
-     * Purpose: read a GameZ ZBD archive into the engine resource state.
+     * Reimplements 0x454370: GameZ_ZBD::NodePtrToIndex
+     * Purpose: convert a node pointer in the ZBD node table to its slot index.
      */
-    RECOIL_NO_GS int __fastcall ReadZBDFile(const char *filename) {
-        const size_t filenameLength = strlen(filename);
-        if (filenameLength == 0) {
+    int __fastcall NodePtrToIndex(zClass_NodePartial * node) {
+        if (node == 0) {
             return -1;
         }
 
-        if (filenameLength < 0x2f) {
-            memcpy(
-                g_zClass_CurrentZbdPath,
-                filename,
-                filenameLength + 1
-            );
-        } else {
-            zError::ReportOld(
-                0x200,
-                g_zClass_SourceFile_ClsZbdC,
-                0x551,
-                g_zClass_ZbdFilenameTooLongFmt,
-                (int)(filenameLength),
-                0x30
-            );
-        }
-
-        zClass_ZbdHeader header;
-        FILE *const file = OpenAndReadZBDHeader(
-            filename,
-            &header
-        );
-        if (file == 0) {
-            return -1;
-        }
-
-        int sourceLine = 0;
-        const char *message = 0;
-
-        fseek(
-            file,
-            header.texDirOffset,
-            SEEK_SET
-        );
-        if (zImage::ReadTextureDirectory(
-            header.texDirArg,
-            file
-        ) < 0) {
-            sourceLine = 0x562;
-            message = g_zClass_ReadGameZTextureDataErrorMsg;
-            goto readError;
-        }
-
-        fseek(
-            file,
-            header.matlOffset,
-            SEEK_SET
-        );
-        if (zModel_MatlBuffer::ReadGameZ(file) < 0) {
-            sourceLine = 0x56e;
-            message = g_zClass_ReadGameZMaterialDataErrorMsg;
-            goto readError;
-        }
-
-        fseek(
-            file,
-            header.model3dOffset,
-            SEEK_SET
-        );
-        if (zModel_DiPool::ReadFromStream(file) < 0) {
-            sourceLine = 0x57a;
-            message = g_zClass_ReadGameZModel3DDataErrorMsg;
-            goto readError;
-        }
-
-        fseek(
-            file,
-            header.nodeTableOffset,
-            SEEK_SET
-        );
-        if (GameZ_ZBD::ReadNodeTable(
-            header.nodeCount,
-            file
-        ) < 0) {
-            sourceLine = 0x586;
-            message = g_zClass_ReadGameZNodeDataErrorMsg;
-            goto readError;
-        }
-
-        g_zClass_NodeFreeHeadIndex = header.nodeFreeHead;
-        fclose(file);
-        return 0;
-
-    readError:
-        zError::ReportOld(
-            0x200,
-            g_zClass_SourceFile_ClsZbdC,
-            sourceLine,
-            message
-        );
-        fclose(file);
-        return -1;
-    }
-
-    /**
-     * Reimplements 0x4556a0: GameZ::OpenAndReadZBDHeader.
-     * Evidence: BN name/source-file comment and callers 0x455520/0x455730 use
-     * this shared header validation before reading ZBD sections.
-     * Purpose: open a ZBD file, read its header, and reject bad magic/version.
-     */
-    FILE *__fastcall OpenAndReadZBDHeader(
-        const char *filename,
-        zClass_ZbdHeader *outHeader
-    ) {
-        FILE *file = fopen(
-            filename,
-            "rb"
-        );
-        if (file == 0) {
-            return 0;
-        }
-
-        int sourceLine = 0;
-        const char *message = 0;
-        if (fread(
-            outHeader,
-            sizeof(zClass_ZbdHeader),
-            1,
-            file
-        ) != 1) {
-            message = g_zClass_ReadGameZHeaderDataErrorMsg;
-            sourceLine = 0x515;
-        } else if (outHeader->magic != 0x02971222) {
-            message = g_zClass_ReadGameZHeaderIncompatibleTypeMsg;
-            sourceLine = 0x51e;
-        } else if (outHeader->version != 0x0f) {
-            message = g_zClass_ReadGameZHeaderIncompatibleVersionMsg;
-            sourceLine = 0x527;
-        } else {
-            return file;
-        }
-
-        zError::ReportOld(
-            0x200,
-            g_zClass_SourceFile_ClsZbdC,
-            sourceLine,
-            message
-        );
-        fclose(file);
-        return 0;
+        return (int)((zClass_NodeFreeListSlot *)(node)-g_zClass_NodeArray);
     }
 }
 
@@ -629,18 +414,6 @@ namespace zClass {
 }
 
 namespace GameZ_ZBD {
-    /**
-     * Reimplements 0x454370: GameZ_ZBD::NodePtrToIndex
-     * Purpose: convert a node pointer in the ZBD node table to its slot index.
-     */
-    int __fastcall NodePtrToIndex(zClass_NodePartial * node) {
-        if (node == 0) {
-            return -1;
-        }
-
-        return (int)((zClass_NodeFreeListSlot *)(node)-g_zClass_NodeArray);
-    }
-
     /**
      * Reimplements 0x4543d0: GameZ_ZBD::NodeIndexToPtr
      * Purpose: convert a non-negative ZBD node table index back to its node
@@ -1057,7 +830,95 @@ namespace GameZ_ZBD {
         free(nodeBuffer);
         return result;
     }
+}
 
+namespace GameZ {
+    /**
+     * Reimplements 0x454a50: GameZ::WriteZBDFile.
+     * Evidence: BN name/source-file comment and cls_zbd.c callees serialize
+     * the header, texture directory, material pool, DI pool, and node table.
+     * Purpose: write a GameZ ZBD archive and patch the header offsets.
+     */
+    RECOIL_NO_GS int __fastcall WriteZBDFile(const char *filename) {
+        const size_t filenameLength = strlen(filename);
+        if (filenameLength == 0) {
+            return -1;
+        }
+
+        if (filenameLength < 0x2f) {
+            memcpy(
+                g_zClass_CurrentZbdPath,
+                filename,
+                filenameLength + 1
+            );
+        } else {
+            zError::ReportOld(
+                0x200,
+                g_zClass_SourceFile_ClsZbdC,
+                0x272,
+                g_zClass_ZbdFilenameTooLongFmt,
+                (int)(filenameLength),
+                0x30
+            );
+        }
+
+        FILE *const file = fopen(
+            filename,
+            "wb"
+        );
+        if (file == 0) {
+            return -1;
+        }
+
+        zClass_ZbdHeader header;
+        header.magic = 0x02971222;
+        header.version = 0x0f;
+        if (fwrite(
+            &header,
+            sizeof(header),
+            1,
+            file
+        ) != 1) {
+            return ReportZbdWriteFailure(
+                0x285,
+                g_zClass_WriteGameZHeaderDataErrorMsg
+            );
+        }
+
+        header.texDirOffset = ftell(file);
+        header.texDirArg = zImage::WriteTextureDirectory(file);
+        header.matlOffset = ftell(file);
+        zModel_MatlBuffer::WriteGameZ(file);
+        header.model3dOffset = ftell(file);
+        zModel_DiPool::WriteToStream(file);
+        zClass_NodeList::ProcessPendingFrees();
+        header.nodeFreeHead = g_zClass_NodeFreeHeadIndex;
+        header.nodeTableOffset = ftell(file);
+        header.nodeCount = GameZ_ZBD::WriteNodeTable(file);
+
+        fseek(
+            file,
+            0,
+            SEEK_SET
+        );
+        if (fwrite(
+            &header,
+            sizeof(header),
+            1,
+            file
+        ) != 1) {
+            return ReportZbdWriteFailure(
+                0x2aa,
+                g_zClass_WriteGameZHeaderDataErrorMsg
+            );
+        }
+
+        fclose(file);
+        return 0;
+    }
+}
+
+namespace GameZ_ZBD {
     /**
      * Reimplements 0x454bf0: GameZ_ZBD::ReadNodeRefListIndices.
      * Evidence: BN name/source-file comment and read-node callers read integer
@@ -1602,7 +1463,165 @@ namespace GameZ_ZBD {
 
         return g_zClass_NodeArraySize;
     }
+}
 
+namespace GameZ {
+    /**
+     * Reimplements 0x455520: GameZ::ReadZBDFile.
+     * Evidence: BN name/source-file comment and cls_zbd.c callee order reload
+     * texture, material, model, and node-table sections from header offsets.
+     * Purpose: read a GameZ ZBD archive into the engine resource state.
+     */
+    RECOIL_NO_GS int __fastcall ReadZBDFile(const char *filename) {
+        const size_t filenameLength = strlen(filename);
+        if (filenameLength == 0) {
+            return -1;
+        }
+
+        if (filenameLength < 0x2f) {
+            memcpy(
+                g_zClass_CurrentZbdPath,
+                filename,
+                filenameLength + 1
+            );
+        } else {
+            zError::ReportOld(
+                0x200,
+                g_zClass_SourceFile_ClsZbdC,
+                0x551,
+                g_zClass_ZbdFilenameTooLongFmt,
+                (int)(filenameLength),
+                0x30
+            );
+        }
+
+        zClass_ZbdHeader header;
+        FILE *const file = OpenAndReadZBDHeader(
+            filename,
+            &header
+        );
+        if (file == 0) {
+            return -1;
+        }
+
+        int sourceLine = 0;
+        const char *message = 0;
+
+        fseek(
+            file,
+            header.texDirOffset,
+            SEEK_SET
+        );
+        if (zImage::ReadTextureDirectory(
+            header.texDirArg,
+            file
+        ) < 0) {
+            sourceLine = 0x562;
+            message = g_zClass_ReadGameZTextureDataErrorMsg;
+            goto readError;
+        }
+
+        fseek(
+            file,
+            header.matlOffset,
+            SEEK_SET
+        );
+        if (zModel_MatlBuffer::ReadGameZ(file) < 0) {
+            sourceLine = 0x56e;
+            message = g_zClass_ReadGameZMaterialDataErrorMsg;
+            goto readError;
+        }
+
+        fseek(
+            file,
+            header.model3dOffset,
+            SEEK_SET
+        );
+        if (zModel_DiPool::ReadFromStream(file) < 0) {
+            sourceLine = 0x57a;
+            message = g_zClass_ReadGameZModel3DDataErrorMsg;
+            goto readError;
+        }
+
+        fseek(
+            file,
+            header.nodeTableOffset,
+            SEEK_SET
+        );
+        if (GameZ_ZBD::ReadNodeTable(
+            header.nodeCount,
+            file
+        ) < 0) {
+            sourceLine = 0x586;
+            message = g_zClass_ReadGameZNodeDataErrorMsg;
+            goto readError;
+        }
+
+        g_zClass_NodeFreeHeadIndex = header.nodeFreeHead;
+        fclose(file);
+        return 0;
+
+    readError:
+        zError::ReportOld(
+            0x200,
+            g_zClass_SourceFile_ClsZbdC,
+            sourceLine,
+            message
+        );
+        fclose(file);
+        return -1;
+    }
+
+    /**
+     * Reimplements 0x4556a0: GameZ::OpenAndReadZBDHeader.
+     * Evidence: BN name/source-file comment and callers 0x455520/0x455730 use
+     * this shared header validation before reading ZBD sections.
+     * Purpose: open a ZBD file, read its header, and reject bad magic/version.
+     */
+    FILE *__fastcall OpenAndReadZBDHeader(
+        const char *filename,
+        zClass_ZbdHeader *outHeader
+    ) {
+        FILE *file = fopen(
+            filename,
+            "rb"
+        );
+        if (file == 0) {
+            return 0;
+        }
+
+        int sourceLine = 0;
+        const char *message = 0;
+        if (fread(
+            outHeader,
+            sizeof(zClass_ZbdHeader),
+            1,
+            file
+        ) != 1) {
+            message = g_zClass_ReadGameZHeaderDataErrorMsg;
+            sourceLine = 0x515;
+        } else if (outHeader->magic != 0x02971222) {
+            message = g_zClass_ReadGameZHeaderIncompatibleTypeMsg;
+            sourceLine = 0x51e;
+        } else if (outHeader->version != 0x0f) {
+            message = g_zClass_ReadGameZHeaderIncompatibleVersionMsg;
+            sourceLine = 0x527;
+        } else {
+            return file;
+        }
+
+        zError::ReportOld(
+            0x200,
+            g_zClass_SourceFile_ClsZbdC,
+            sourceLine,
+            message
+        );
+        fclose(file);
+        return 0;
+    }
+}
+
+namespace GameZ_ZBD {
     /**
      * Reimplements 0x455730: GameZ_ZBD::ReloadDisplayInstancesFromCurrentPath_Local.
      * Evidence: BN name/source-file comment and caller shape open the current

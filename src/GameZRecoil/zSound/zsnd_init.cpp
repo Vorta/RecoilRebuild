@@ -14,7 +14,7 @@ extern "C" LPDIRECTSOUND g_zSnd_BackendDevice = 0;
 extern "C" LPDIRECTSOUNDBUFFER g_zSnd_BackendListenerHandle = 0;
 extern "C" DSCAPS g_zSnd_BackendAuxHandleOrConfig = {0};
 extern "C" LPDIRECTSOUND g_zSnd_CachedDirectSound = 0;
-extern "C" LPGUID g_zSnd_CachedDirectSoundGuid = 0;
+extern "C" const GUID *g_zSnd_CachedDirectSoundGuid = 0;
 extern "C" int g_zSndCdTrackListCount;
 extern "C" int g_zSnd_PreInitialized = 0;
 extern "C" int g_zSnd_SoundLodDefault = 0;
@@ -291,578 +291,14 @@ const GUID kIID_IA3dListener = {0xc398e563,
 
 } // namespace
 
-namespace zSnd {
-/**
- * Reimplements 0x4a3ef0: zSnd::ReportA3DError.
- *
- * Purpose: translate an A3D provider error code into the original diagnostic
- * text and report it through zError.
- */
-int __fastcall ReportA3DError(
-    int a3dError,
-    const char *sourceFile,
-    int sourceLine
-) {
-    char errorNameStorage[0x100];
-    if (a3dError <= 0) {
-        if (a3dError != 0) {
-            switch ((unsigned int)(a3dError)) {
-            case 0x80040001u:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_MEMORY_ALLOCATION\t"
-                );
-                break;
-            case 0x80040002u:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_FAILED_CREATE_PRIMARY_BUFFER\t"
-                );
-                break;
-            case 0x80040003u:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_FAILED_CREATE_SECONDARY_BUFFER\t"
-                );
-                break;
-            case 0x80040004u:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_FAILED_INIT_A3D_DRIVER\t"
-                );
-                break;
-            case 0x80040005u:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_FAILED_QUERY_DIRECTSOUND\t"
-                );
-                break;
-            case 0x80040006u:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_FAILED_QUERY_A3D3\t"
-                );
-                break;
-            case 0x80040007u:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_FAILED_INIT_A3D3\t"
-                );
-                break;
-            case 0x80040008u:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_FAILED_QUERY_A3D2\t"
-                );
-                break;
-            case 0x80040009u:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_FAILED_FILE_OPEN\t"
-                );
-                break;
-            case 0x8004000au:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_FAILED_CREATE_SOUNDBUFFER\t"
-                );
-                break;
-            case 0x8004000bu:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_FAILED_QUERY_3DINTERFACE\t"
-                );
-                break;
-            case 0x8004000cu:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_FAILED_LOCK_BUFFER\t"
-                );
-                break;
-            case 0x8004000du:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_FAILED_UNLOCK_BUFFER\t"
-                );
-                break;
-            case 0x8004000eu:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_UNRECOGNIZED_FORMAT\t"
-                );
-                break;
-            case 0x8004000fu:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_NO_WAVE_DATA\t"
-                );
-                break;
-            case 0x80040010u:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_UNKNOWN_PLAYMODE\t"
-                );
-                break;
-            case 0x80040011u:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_FAILED_PLAY\t"
-                );
-                break;
-            case 0x80040012u:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_FAILED_STOP\t"
-                );
-                break;
-            case 0x80040013u:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_NEEDS_FORMAT_INFORMATION\t"
-                );
-                break;
-            case 0x80040014u:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_FAILED_ALLOCATE_WAVEDATA\t"
-                );
-                break;
-            case 0x80040015u:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_NOT_VALID_SOURCE\t"
-                );
-                break;
-            case 0x80040016u:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_FAILED_DUPLICATION\t"
-                );
-                break;
-            case 0x80040017u:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_FAILED_INIT\t"
-                );
-                break;
-            case 0x80040018u:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_FAILED_SETCOOPERATIVE_LEVEL\t"
-                );
-                break;
-            case 0x80040019u:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_FAILED_INIT_QUERIED_INTERFACE\t"
-                );
-                break;
-            case 0x8004001au:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_GEOMETRY_INPUT_OUTSIDE_BEGIN_END_BLOCK\t"
-                );
-                break;
-            case 0x8004001bu:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_INVALID_NORMAL\t"
-                );
-                break;
-            case 0x8004001cu:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_END_BEFORE_VALID_BEGIN_BLOCK\t"
-                );
-                break;
-            case 0x8004001du:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_INVALID_BEGIN_MODE\t"
-                );
-                break;
-            case 0x8004001eu:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_INVALID_ARGUMENT\t"
-                );
-                break;
-            case 0x8004001fu:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_INVALID_INDEX\t"
-                );
-                break;
-            case 0x80040020u:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_INVALID_VERTEX_INDEX\t"
-                );
-                break;
-            case 0x80040021u:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_INVALID_PRIMITIVE_INDEX\t"
-                );
-                break;
-            case 0x80040022u:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_MIXING_2D_AND_3D_MODES\t"
-                );
-                break;
-            case 0x80040023u:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_2DWALL_REQUIRES_EXACTLY_ONE_LINE\t"
-                );
-                break;
-            case 0x80040024u:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_NO_PRIMITIVES_DEFINED\t"
-                );
-                break;
-            case 0x80040025u:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_PRIMITIVES_NON_PLANAR\t"
-                );
-                break;
-            case 0x80040026u:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_PRIMITIVES_OVERLAPPING\t"
-                );
-                break;
-            case 0x80040027u:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_PRIMITIVES_NOT_ADJACENT\t"
-                );
-                break;
-            case 0x80040028u:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_OBJECT_NOT_FOUND\t"
-                );
-                break;
-            case 0x80040029u:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_ROOM_HAS_NO_SHELL_WALLS\t"
-                );
-                break;
-            case 0x8004002au:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_WALLS_DO_NOT_ENCLOSE_ROOM\t"
-                );
-                break;
-            case 0x8004002bu:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_INVALID_WALL\t"
-                );
-                break;
-            case 0x8004002cu:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_ROOM_HAS_LESS_THAN_4SHELL_WALLS\t"
-                );
-                break;
-            case 0x8004002du:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_ROOM_HAS_LESS_THAN_3UNIQUE_NORMALS\t"
-                );
-                break;
-            case 0x8004002eu:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_INTERSECTING_WALL_EDGES\t"
-                );
-                break;
-            case 0x8004002fu:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_INVALID_ROOM\t"
-                );
-                break;
-            case 0x80040030u:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_SCENE_HAS_ROOMS_INSIDE_ANOTHER_ROOMS\t"
-                );
-                break;
-            case 0x80040031u:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_SCENE_HAS_OVERLAPPING_STATIC_ROOMS\t"
-                );
-                break;
-            case 0x80040032u:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_DYNAMIC_OBJ_UNSUPPORTED\t"
-                );
-                break;
-            case 0x80040033u:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_DIR_AND_UP_VECTORS_NOT_PERPENDICULAR\t"
-                );
-                break;
-            case 0x80040034u:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_INVALID_ROOM_INDEX\t"
-                );
-                break;
-            case 0x80040035u:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_INVALID_WALL_INDEX\t"
-                );
-                break;
-            case 0x80040036u:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_SCENE_INVALID\t"
-                );
-                break;
-            case 0x80040037u:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_UNIMPLEMENTED_FUNCTION\t"
-                );
-                break;
-            case 0x80040038u:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_NO_ROOMS_IN_SCENE\t"
-                );
-                break;
-            case 0x80040039u:
-                sprintf(
-                    errorNameStorage,
-                    "\tA3DERROR_2D_GEOMETRY_UNIMPLEMENTED\t"
-                );
-                break;
-            default:
-                goto reportUnknownA3D;
-            }
-
-            goto reportA3D;
-        }
-        return 1;
-    }
-
-reportUnknownA3D:
-    sprintf(
-        errorNameStorage,
-        g_Player_MasterTypeName_Unknown
-    );
-
-reportA3D:
-    zError::ReportOld(
-        0x400,
-        sourceFile,
-        sourceLine,
-        g_zSnd_A3DErrorFmt,
-        errorNameStorage
-    );
-    return 0;
-}
-
-/**
- * Reimplements 0x4a4330: zSnd::ReportDirectSoundError.
- *
- * Purpose: translate a DirectSound provider error code into the original
- * diagnostic text and report it through zError.
- */
-int __fastcall ReportDirectSoundError(
-    int directSoundError,
-    const char *sourceFile,
-    int sourceLine
-) {
-    char errorNameStorage[0x100];
-    switch ((HRESULT)(directSoundError)) {
-    case DSERR_GENERIC:
-        sprintf(
-            errorNameStorage,
-            g_zSnd_DsErrorName_Generic
-        );
-        break;
-    case DSERR_UNSUPPORTED:
-        sprintf(
-            errorNameStorage,
-            g_zSnd_DsErrorName_Unsupported
-        );
-        break;
-    case DSERR_OUTOFMEMORY:
-        sprintf(
-            errorNameStorage,
-            g_zSnd_DsErrorName_OutOfMemory
-        );
-        break;
-    case DSERR_NOAGGREGATION:
-        sprintf(
-            errorNameStorage,
-            g_zSnd_DsErrorName_NoAggregation
-        );
-        break;
-    case DSERR_INVALIDPARAM:
-        sprintf(
-            errorNameStorage,
-            g_zSnd_DsErrorName_InvalidParam
-        );
-        break;
-    case DSERR_ALLOCATED:
-        sprintf(
-            errorNameStorage,
-            g_zSnd_DsErrorName_Allocated
-        );
-        break;
-    case DSERR_CONTROLUNAVAIL:
-        sprintf(
-            errorNameStorage,
-            g_zSnd_DsErrorName_ControlUnavail
-        );
-        break;
-    case DSERR_INVALIDCALL:
-        sprintf(
-            errorNameStorage,
-            g_zSnd_DsErrorName_InvalidCall
-        );
-        break;
-    case DSERR_PRIOLEVELNEEDED:
-        sprintf(
-            errorNameStorage,
-            g_zSnd_DsErrorName_PrioLevelNeeded
-        );
-        break;
-    case DSERR_BADFORMAT:
-        sprintf(
-            errorNameStorage,
-            g_zSnd_DsErrorName_BadFormat
-        );
-        break;
-    case DSERR_NODRIVER:
-        sprintf(
-            errorNameStorage,
-            g_zSnd_DsErrorName_NoDriver
-        );
-        break;
-    case DSERR_ALREADYINITIALIZED:
-        sprintf(
-            errorNameStorage,
-            g_zSnd_DsErrorName_AlreadyInitialized
-        );
-        break;
-    case DSERR_BUFFERLOST:
-        sprintf(
-            errorNameStorage,
-            g_zSnd_DsErrorName_BufferLost
-        );
-        break;
-    case DSERR_OTHERAPPHASPRIO:
-        sprintf(
-            errorNameStorage,
-            g_zSnd_DsErrorName_OtherAppHasPrio
-        );
-        break;
-    case DS_OK:
-        return 1;
-    default:
-        sprintf(
-            errorNameStorage,
-            g_Player_MasterTypeName_Unknown
-        );
-        break;
-    }
-
-    zError::ReportOld(
-        0x400,
-        sourceFile,
-        sourceLine,
-        g_zSnd_DirectSoundErrorFmt,
-        errorNameStorage
-    );
-    return 0;
-}
-
-/**
- * Reimplements 0x4b31f0: zSnd::HasMmxMixerSupport.
- *
- * Purpose: report MMX mixer availability only when CPUID probing is available
- * and the CPU feature probe reports MMX support.
- */
-int HasMmxMixerSupport() {
-    if (zSys::HasCpuidSupportRuntimeOptions() == 0) {
-        return 0;
-    }
-
-    return zCpu::HasMmxSupport();
-}
-
-/**
+/*
+ * zgame_opt.c physical-contribution routing anchors. The ordinary definitions
+ * now compile from the registered options/runtime-probe translation unit.
  * Reimplements 0x4b2f50: zSnd::AcquireCachedDirectSound.
- *
- * Purpose: return the matching cached DirectSound device or create and cache a
- * new device for the requested GUID.
- */
-LPDIRECTSOUND __fastcall AcquireCachedDirectSound(
-    LPGUID deviceGuid
-) {
-    LPDIRECTSOUND cached = g_zSnd_CachedDirectSound;
-    if (cached != 0) {
-        if (deviceGuid == g_zSnd_CachedDirectSoundGuid) {
-            return cached;
-        }
-
-        cached->Release();
-        g_zSnd_CachedDirectSound = 0;
-    }
-
-    if (DirectSoundCreate(
-        deviceGuid,
-        &g_zSnd_CachedDirectSound,
-        0
-    ) != DS_OK) {
-        return 0;
-    }
-
-    g_zSnd_CachedDirectSoundGuid = deviceGuid;
-    return g_zSnd_CachedDirectSound;
-}
-
-/**
  * Reimplements 0x4b2fa0: zSnd::ReleaseCachedDirectSound.
- *
- * Purpose: release and clear the cached DirectSound device when present.
- */
-void ReleaseCachedDirectSound() {
-    LPDIRECTSOUND cached = g_zSnd_CachedDirectSound;
-    if (cached != 0) {
-        cached->Release();
-        g_zSnd_CachedDirectSound = 0;
-    }
-}
-
-/**
  * Reimplements 0x4b2fc0: zSnd::CachedDirectSound_GetCaps.
- *
- * Purpose: initialize the DirectSound caps structure size and query the cached
- * DirectSound device.
+ * Reimplements 0x4b31f0: zSnd::HasMmxMixerSupport.
  */
-HRESULT __fastcall CachedDirectSound_GetCaps(
-    DSCAPS *caps
-) {
-    caps->dwSize = sizeof(DSCAPS);
-    return g_zSnd_CachedDirectSound->GetCaps(caps);
-}
-} // namespace zSnd
 
 /**
  * Reimplements 0x4a12c0: zSnd_PreInitializeRuntimeState.
@@ -921,6 +357,34 @@ extern "C" int __fastcall zSnd_PreInitializeRuntimeState(
     g_zSnd_Flag10PlaybackEnabled = 1;
     return 1;
 }
+
+namespace zSndSystem {
+/**
+ * Reimplements 0x4a13d0: zSndSystem::Shutdown.
+ * Evidence: BN 0x4a13d0 calls the sound subsystem shutdown routines, then
+ * frees g_zSnd_ConfigRootNode and g_zSnd_SearchPathList when present.
+ * Purpose: shut down sound subsystems and release sound config/search-path
+ * resources.
+ */
+int Shutdown() {
+    zSndStreamMgr::Shutdown();
+    zSndBackend::Shutdown();
+    zSndCd::Shutdown();
+    zSndSampleSetRegistry_DestroyAll();
+    zSndFadeLists::StopAllAndShutdown();
+
+    if (g_zSnd_ConfigRootNode != 0) {
+        zReader::FreeLoadedTree(g_zSnd_ConfigRootNode);
+        g_zSnd_ConfigRootNode = 0;
+    }
+
+    if (g_zSnd_SearchPathList != 0) {
+        g_zSnd_SearchPathList = zUtil_ZRDR_FreeSearchPathList(g_zSnd_SearchPathList);
+    }
+
+    return 1;
+}
+} // namespace zSndSystem
 
 /**
  * Reimplements 0x4a1420: zSndSystem_Init.
@@ -990,63 +454,380 @@ extern "C" int __fastcall zSndSystem_Init(
 }
 
 /**
- * Reimplements 0x4a1e50: zSndBackend_InitDirectSound.
- *
- * Purpose: create the DirectSound device, set cooperative level, cache device
- * caps, and create the primary listener buffer.
+ * Reimplements 0x4a1510: zSndSystem_InitLegacySetsSyntax.
+ * Evidence: BN 0x4a1510 expands the legacy positional SETS parser in this
+ * source file, using the same namespace config/search-path state as 0x4a1870.
+ * Purpose: load legacy sound sets, optional CD tracks, search paths, groups,
+ * and speed-of-sound settings from the sound config tree.
  */
-extern "C" int zSndBackend_InitDirectSound() {
-    HRESULT directSoundError = DirectSoundCreate(
-        0,
-        &g_zSnd_BackendDevice,
-        0
+extern "C" int __fastcall zSndSystem_InitLegacySetsSyntax(
+    zReader::Node *configRootNode
+) {
+    (void)configRootNode;
+
+    zSndCd::Init(zReader_GetNamedNode(
+        g_zSnd_ConfigRootNode,
+        g_zSndConfig_CdTracksKey
+    ));
+
+    const char *pathText = zReader::ReadNamedString(
+        g_zSnd_ConfigRootNode,
+        g_zSndConfig_SoundPathKey
     );
-    if (directSoundError != DS_OK) {
-        return zSnd::ReportDirectSoundError(
-            directSoundError,
-            g_zSnd_SourceFile_zsnd_init_cpp,
-            0x26a
-        );
+    if (pathText != 0) {
+        if (g_zSnd_SearchPathList == 0) {
+            g_zSnd_SearchPathList = zUtil_ZRDR_CreateSearchPathList(pathText);
+        } else {
+            zUtil::ZRDR_AddSearchPaths(
+                g_zSnd_SearchPathList,
+                pathText
+            );
+        }
     }
 
-    directSoundError =
-        g_zSnd_BackendDevice->SetCooperativeLevel(
-            (HWND)(g_zSnd_WindowHandle),
-            DSSCL_NORMAL
-        );
-    if (directSoundError != DS_OK) {
-        return zSnd::ReportDirectSoundError(
-            directSoundError,
-            g_zSnd_SourceFile_zsnd_init_cpp,
-            0x26d
-        );
+    float speedOfSound = 0.0f;
+    if (zReader::ReadNamedFloat(
+        g_zSnd_ConfigRootNode,
+        g_zSndConfig_SpeedOfSoundKey,
+        &speedOfSound
+    ) != 0) {
+        zSnd::SetSpeedOfSoundMps(speedOfSound);
     }
 
-    g_zSnd_BackendAuxHandleOrConfig.dwSize = sizeof(DSCAPS);
-    directSoundError = g_zSnd_BackendDevice->GetCaps(&g_zSnd_BackendAuxHandleOrConfig);
-    if (directSoundError != DS_OK) {
-        return zSnd::ReportDirectSoundError(
-            directSoundError,
-            g_zSnd_SourceFile_zsnd_init_cpp,
-            0x271
-        );
+    zReader::Node *setsNode = zReader_GetNamedNode(
+        g_zSnd_ConfigRootNode,
+        g_zSndConfig_SetsKey
+    );
+    zReader::Node *sets = setsNode->value.nodes;
+    const int setCount = (sets[0].value.i32 - 1) / 2;
+    for (int i = 0; i < setCount; ++i) {
+        zReader::Node *setNameNode = &sets[(i * 2) + 1];
+        zReader::Node *sampleListNode = &sets[(i * 2) + 2];
+        const int sampleCount = sampleListNode->value.nodes[0].value.i32 - 1;
+        zSndSampleSet *sampleSet =
+            (zSndSampleSet *)(::operator new(sizeof(zSndSampleSet)));
+        if (sampleSet != 0) {
+            sampleSet = sampleSet->RegistryAddEntry(
+                setNameNode->value.str,
+                sampleCount
+            );
+        }
+
+        zReader::Node *entries = sampleListNode->value.nodes;
+        for (int sampleIndex = 0; sampleIndex < sampleCount; ++sampleIndex) {
+            zSndSample *sample = sampleSet->GetSampleAt(sampleIndex);
+            zReader::Node *entryNode = &entries[sampleIndex + 1];
+            zReader::Node *entry = entryNode->value.nodes;
+
+            sample->createGuard = 0;
+            sample->replayFields.sampleId = entry[1].value.str;
+            sample->replayFields.resourceName = entry[2].value.str;
+
+            int tailIndex = 3;
+            if (entry[tailIndex].type == zReader::ZRDR_NODE_FLOAT) {
+                sample->replayFields.gain = entry[tailIndex].value.f32;
+                ++tailIndex;
+            } else {
+                sample->replayFields.gain = 1.0f;
+            }
+
+            if (strcmp(
+                entry[tailIndex].value.str,
+                "TRUE"
+            ) == 0) {
+                sample->replayFields.flags |= 0x01;
+            } else {
+                sample->replayFields.flags &= ~0x01;
+            }
+            ++tailIndex;
+
+            if (strcmp(
+                entry[tailIndex].value.str,
+                "TRUE"
+            ) == 0) {
+                sample->replayFields.flags |= 0x04;
+            } else {
+                sample->replayFields.flags &= ~0x04;
+            }
+            ++tailIndex;
+
+            if (strcmp(
+                entry[tailIndex].value.str,
+                "TRUE"
+            ) == 0) {
+                sample->replayFields.flags |= 0x02;
+            } else {
+                sample->replayFields.flags &= ~0x02;
+            }
+            ++tailIndex;
+
+            if (entry[0].value.i32 == tailIndex + 2) {
+                sample->rangeMin = entry[tailIndex].value.f32;
+                sample->rangeMax = entry[tailIndex + 1].value.f32;
+            } else {
+                sample->rangeMin = 50.0f;
+                sample->rangeMax = 400.0f;
+            }
+
+            sample->playbackParam3 = 20000.0f;
+            sample->playbackParam2 = 90000.0f;
+            sample->highVariant.samplesPerSec = 44100;
+            sample->highVariant.bitsPerSample = 16;
+            sample->highVariant.channelCount = 2;
+            sample->medVariant.samplesPerSec = 22050;
+            sample->medVariant.bitsPerSample = 16;
+            sample->medVariant.channelCount = 1;
+            sample->lowVariant.samplesPerSec = 11025;
+            sample->lowVariant.bitsPerSample = 8;
+            sample->lowVariant.channelCount = 1;
+        }
     }
 
-    DSBUFFERDESC desc = {0};
-    desc.dwSize = sizeof(desc);
-    desc.dwFlags = DSBCAPS_PRIMARYBUFFER | DSBCAPS_CTRLVOLUME | DSBCAPS_CTRLPAN;
-    directSoundError =
-        g_zSnd_BackendDevice->CreateSoundBuffer(
-            &desc,
-            &g_zSnd_BackendListenerHandle,
-            0
-        );
-    if (directSoundError != DS_OK) {
-        return zSnd::ReportDirectSoundError(
-            directSoundError,
-            g_zSnd_SourceFile_zsnd_init_cpp,
-            0x28d
-        );
+    zReader::Node *groupsNode = zReader_GetNamedNode(
+        g_zSnd_ConfigRootNode,
+        g_zSndConfig_SoundGroupsKey
+    );
+    if (groupsNode != 0) {
+        zSndGroup_QueuePendingLoadsFromConfigNode(groupsNode);
+    }
+
+    return 1;
+}
+
+/**
+ * Reimplements 0x4a1870: zSndSystem_InitNamedSetsSyntax.
+ * Evidence: BN 0x4a1870 expands the named SETS parser in this source file,
+ * using g_zSnd_ConfigRootNode and g_zSnd_SearchPathList as namespace state.
+ * Purpose: load named sound sets, optional CD tracks, search paths, groups,
+ * and speed-of-sound settings from the sound config tree.
+ */
+extern "C" int __fastcall zSndSystem_InitNamedSetsSyntax(
+    zReader::Node *configRootNode
+) {
+    (void)configRootNode;
+
+    zSndCd::Init(zReader_GetNamedNode(
+        g_zSnd_ConfigRootNode,
+        g_zSndConfig_CdTracksKey
+    ));
+
+    const char *pathText = zReader::ReadNamedString(
+        g_zSnd_ConfigRootNode,
+        g_zSndConfig_SoundPathKey
+    );
+    if (pathText != 0) {
+        if (g_zSnd_SearchPathList == 0) {
+            g_zSnd_SearchPathList = zUtil_ZRDR_CreateSearchPathList(pathText);
+        } else {
+            zUtil::ZRDR_AddSearchPaths(
+                g_zSnd_SearchPathList,
+                pathText
+            );
+        }
+    }
+
+    float speedOfSound = 0.0f;
+    if (zReader::ReadNamedFloat(
+        g_zSnd_ConfigRootNode,
+        g_zSndConfig_SpeedOfSoundKey,
+        &speedOfSound
+    ) != 0) {
+        zSnd::SetSpeedOfSoundMps(speedOfSound);
+    }
+
+    zReader::Node *setsNode = zReader_GetNamedNode(
+        g_zSnd_ConfigRootNode,
+        g_zSndConfig_SetsKey
+    );
+    zReader::Node *sets = setsNode->value.nodes;
+    const int setCount = (sets[0].value.i32 - 1) / 2;
+    for (int i = 0; i < setCount; ++i) {
+        zReader::Node *setNameNode = &sets[(i * 2) + 1];
+        zReader::Node *sampleListNode = &sets[(i * 2) + 2];
+        const int sampleCount = sampleListNode->value.nodes[0].value.i32 - 1;
+        zSndSampleSet *sampleSet =
+            (zSndSampleSet *)(::operator new(sizeof(zSndSampleSet)));
+        if (sampleSet != 0) {
+            sampleSet = sampleSet->RegistryAddEntry(
+                setNameNode->value.str,
+                sampleCount
+            );
+        }
+
+        zReader::Node *samples = sampleListNode->value.nodes;
+        for (int sampleIndex = 0; sampleIndex < sampleCount; ++sampleIndex) {
+            zSndSample *sample = sampleSet->GetSampleAt(sampleIndex);
+            zReader::Node *sampleNode = &samples[sampleIndex + 1];
+            zReader::Node *sampleFields = sampleNode->value.nodes;
+
+            sample->createGuard = 0;
+            sample->replayFields.sampleId = sampleFields[1].value.str;
+            sample->replayFields.resourceName = sampleFields[2].value.str;
+
+            if (zReader_GetNamedNode(
+                sampleNode,
+                g_zSndConfig_3dKey
+            ) != 0) {
+                sample->replayFields.flags |= 0x04;
+            } else {
+                sample->replayFields.flags &= ~0x04;
+            }
+
+            if (zReader_GetNamedNode(
+                sampleNode,
+                g_zSndConfig_LoopedKey
+            ) != 0) {
+                sample->replayFields.flags |= 0x01;
+            } else {
+                sample->replayFields.flags &= ~0x01;
+            }
+
+            if (zReader_GetNamedNode(
+                sampleNode,
+                g_zSndConfig_FrequencyKey
+            ) != 0) {
+                sample->replayFields.flags |= 0x20;
+            } else {
+                sample->replayFields.flags &= ~0x20;
+            }
+
+            if (zReader_GetNamedNode(
+                sampleNode,
+                g_zSndConfig_HardwareKey
+            ) != 0) {
+                sample->replayFields.flags |= 0x40;
+            } else {
+                sample->replayFields.flags &= ~0x40;
+            }
+
+            if (zReader_GetNamedNode(
+                sampleNode,
+                g_zSndConfig_PurgeableKey
+            ) != 0) {
+                sample->replayFields.flags |= 0x02;
+            } else {
+                sample->replayFields.flags &= ~0x02;
+            }
+
+            if (zReader_GetNamedNode(
+                sampleNode,
+                g_zSndConfig_VoiceKey
+            ) != 0) {
+                sample->replayFields.flags |= 0x10;
+            } else {
+                sample->replayFields.flags &= ~0x10;
+            }
+
+            sample->replayFields.gain = 1.0f;
+            zReader::ReadNamedFloat(
+                sampleNode,
+                g_zSndConfig_VolumeKey,
+                &sample->replayFields.gain
+            );
+            if (sample->replayFields.gain > 1.0f) {
+                sample->replayFields.gain = 1.0f;
+            } else if (!(sample->replayFields.gain >= 0.0f)) {
+                sample->replayFields.gain = 0.0f;
+            }
+
+            sample->a3dDistanceScale = 1.0f;
+            zReader::ReadNamedFloat(
+                sampleNode,
+                g_zSndConfig_A3dDistanceKey,
+                &sample->a3dDistanceScale
+            );
+
+            zReader::Node *rangeNode = zReader_GetNamedNode(
+                sampleNode,
+                g_zEffectAnim_TokenRange
+            );
+            if (rangeNode != 0) {
+                sample->replayFields.flags |= 0x04;
+                zReader::Node *range = rangeNode->value.nodes;
+                sample->rangeMin = range[1].value.f32;
+                sample->rangeMax = range[2].value.f32;
+            } else {
+                sample->rangeMin = 50.0f;
+                sample->rangeMax = 400.0f;
+            }
+
+            zReader::Node *variantNode = zReader_GetNamedNode(
+                sampleNode,
+                "HIGH"
+            );
+            if (variantNode == 0) {
+                sample->highVariant.sampleName = 0;
+                sample->highVariant.samplesPerSec = 44100;
+                sample->highVariant.bitsPerSample = 16;
+                sample->highVariant.channelCount = 2;
+            } else if (variantNode->type == zReader::ZRDR_NODE_STRING) {
+                sample->highVariant.sampleName = _strdup(variantNode->value.str);
+                sample->highVariant.samplesPerSec = 0;
+                sample->highVariant.bitsPerSample = 0;
+                sample->highVariant.channelCount = 0;
+            } else {
+                zReader::Node *format = variantNode->value.nodes;
+                sample->highVariant.sampleName = 0;
+                sample->highVariant.samplesPerSec = format[1].value.i32;
+                sample->highVariant.bitsPerSample = format[2].value.i32;
+                sample->highVariant.channelCount = format[3].value.i32;
+            }
+
+            variantNode = zReader_GetNamedNode(
+                sampleNode,
+                g_zSndConfig_QualityMedToken
+            );
+            if (variantNode == 0) {
+                sample->medVariant.sampleName = 0;
+                sample->medVariant.samplesPerSec = 22050;
+                sample->medVariant.bitsPerSample = 16;
+                sample->medVariant.channelCount = 1;
+            } else if (variantNode->type == zReader::ZRDR_NODE_STRING) {
+                sample->medVariant.sampleName = _strdup(variantNode->value.str);
+                sample->medVariant.samplesPerSec = 0;
+                sample->medVariant.bitsPerSample = 0;
+                sample->medVariant.channelCount = 0;
+            } else {
+                zReader::Node *format = variantNode->value.nodes;
+                sample->medVariant.sampleName = 0;
+                sample->medVariant.samplesPerSec = format[1].value.i32;
+                sample->medVariant.bitsPerSample = format[2].value.i32;
+                sample->medVariant.channelCount = format[3].value.i32;
+            }
+
+            variantNode = zReader_GetNamedNode(
+                sampleNode,
+                "LOW"
+            );
+            if (variantNode == 0) {
+                sample->lowVariant.sampleName = 0;
+                sample->lowVariant.samplesPerSec = 11025;
+                sample->lowVariant.bitsPerSample = 8;
+                sample->lowVariant.channelCount = 1;
+            } else if (variantNode->type == zReader::ZRDR_NODE_STRING) {
+                sample->lowVariant.sampleName = _strdup(variantNode->value.str);
+                sample->lowVariant.samplesPerSec = 0;
+                sample->lowVariant.bitsPerSample = 0;
+                sample->lowVariant.channelCount = 0;
+            } else {
+                zReader::Node *format = variantNode->value.nodes;
+                sample->lowVariant.sampleName = 0;
+                sample->lowVariant.samplesPerSec = format[1].value.i32;
+                sample->lowVariant.bitsPerSample = format[2].value.i32;
+                sample->lowVariant.channelCount = format[3].value.i32;
+            }
+
+            sample->playbackParam3 = 20000.0f;
+            sample->playbackParam2 = 90000.0f;
+        }
+    }
+
+    zReader::Node *groupsNode = zReader_GetNamedNode(
+        g_zSnd_ConfigRootNode,
+        g_zSndConfig_SoundGroupsKey
+    );
+    if (groupsNode != 0) {
+        zSndGroup_QueuePendingLoadsFromConfigNode(groupsNode);
     }
 
     return 1;
@@ -1146,6 +927,70 @@ extern "C" int zSndBackend_InitA3D() {
 
     return 1;
 }
+
+/**
+ * Reimplements 0x4a1e50: zSndBackend_InitDirectSound.
+ *
+ * Purpose: create the DirectSound device, set cooperative level, cache device
+ * caps, and create the primary listener buffer.
+ */
+extern "C" int zSndBackend_InitDirectSound() {
+    HRESULT directSoundError = DirectSoundCreate(
+        0,
+        &g_zSnd_BackendDevice,
+        0
+    );
+    if (directSoundError != DS_OK) {
+        return zSnd::ReportDirectSoundError(
+            directSoundError,
+            g_zSnd_SourceFile_zsnd_init_cpp,
+            0x26a
+        );
+    }
+
+    directSoundError =
+        g_zSnd_BackendDevice->SetCooperativeLevel(
+            (HWND)(g_zSnd_WindowHandle),
+            DSSCL_NORMAL
+        );
+    if (directSoundError != DS_OK) {
+        return zSnd::ReportDirectSoundError(
+            directSoundError,
+            g_zSnd_SourceFile_zsnd_init_cpp,
+            0x26d
+        );
+    }
+
+    g_zSnd_BackendAuxHandleOrConfig.dwSize = sizeof(DSCAPS);
+    directSoundError = g_zSnd_BackendDevice->GetCaps(&g_zSnd_BackendAuxHandleOrConfig);
+    if (directSoundError != DS_OK) {
+        return zSnd::ReportDirectSoundError(
+            directSoundError,
+            g_zSnd_SourceFile_zsnd_init_cpp,
+            0x271
+        );
+    }
+
+    DSBUFFERDESC desc = {0};
+    desc.dwSize = sizeof(desc);
+    desc.dwFlags = DSBCAPS_PRIMARYBUFFER | DSBCAPS_CTRLVOLUME | DSBCAPS_CTRLPAN;
+    directSoundError =
+        g_zSnd_BackendDevice->CreateSoundBuffer(
+            &desc,
+            &g_zSnd_BackendListenerHandle,
+            0
+        );
+    if (directSoundError != DS_OK) {
+        return zSnd::ReportDirectSoundError(
+            directSoundError,
+            g_zSnd_SourceFile_zsnd_init_cpp,
+            0x28d
+        );
+    }
+
+    return 1;
+}
+
 
 namespace zSndBackend {
 namespace {

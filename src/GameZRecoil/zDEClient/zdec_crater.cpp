@@ -1,10 +1,263 @@
-/* This source-layout fragment is included by the current compatibility container.
- * Parent build/manifests must compile this path directly after retiring the container include.
+#include "zdec.h"
+
+#include "GameZRecoil/zEffect/zeff.h"
+#include "GameZRecoil/zError/zerr.h"
+#include "GameZRecoil/zModel/gmod.h"
+#include "GameZRecoil/zUtil/zbd.h"
+#include "zdi.h"
+
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#if defined(_MSC_VER) && _MSC_VER < 1200 && defined(_M_IX86)
+#include <yvals.h>
+#endif
+
+/**
+ * Reimplements data 0x4df5ac: g_zDEClient_CraterInstanceTessellationFailedMsg.
+ * Purpose: Reports crater instancing failure when tessellation fails.
  */
+char g_zDEClient_CraterInstanceTessellationFailedMsg[] =
+    "Failed to instance crater: Tesselation Failed";
+/**
+ * Reimplements data 0x4df5dc: g_zDEClient_CraterInstanceClipFailedMsg.
+ * Purpose: Reports crater instancing failure when feature clipping fails.
+ */
+char g_zDEClient_CraterInstanceClipFailedMsg[] =
+    "Failed to instance crater: Clip Failed";
+/**
+ * Reimplements data 0x4df604: g_zDEClient_SourceFile_ZdecCraterCpp.
+ * Purpose: Provides the original source path for crater feature diagnostics.
+ */
+char g_zDEClient_SourceFile_ZdecCraterCpp[] =
+    "D:\\Proj\\GameZRecoil\\zDEClient\\zdec_crater.cpp";
+/**
+ * Reimplements data 0x4df634: g_zDEClient_CraterInstanceBuildFailedMsg.
+ * Purpose: Reports crater instancing failure when display construction fails.
+ */
+char g_zDEClient_CraterInstanceBuildFailedMsg[] =
+    "Failed to instance crater: Build Failed";
+/**
+ * Reimplements data 0x4df65c: g_zDEClient_CraterNameFmt.
+ * Purpose: Formats saved crater feature section names.
+ */
+char g_zDEClient_CraterNameFmt[] = "Crater%d";
+/**
+ * Reimplements data 0x4df668: g_zDEClient_QuickSandNameFmt.
+ * Purpose: Formats saved quicksand feature section names.
+ */
+char g_zDEClient_QuickSandNameFmt[] = "QSand%d";
+
+RECOIL_STATIC_ASSERT(sizeof(g_zDEClient_CraterInstanceTessellationFailedMsg) == 0x2e);
+RECOIL_STATIC_ASSERT(sizeof(g_zDEClient_CraterInstanceClipFailedMsg) == 0x27);
+RECOIL_STATIC_ASSERT(sizeof(g_zDEClient_SourceFile_ZdecCraterCpp) == 0x2e);
+RECOIL_STATIC_ASSERT(sizeof(g_zDEClient_CraterInstanceBuildFailedMsg) == 0x28);
+RECOIL_STATIC_ASSERT(sizeof(g_zDEClient_CraterNameFmt) == 0x09);
+RECOIL_STATIC_ASSERT(sizeof(g_zDEClient_QuickSandNameFmt) == 0x08);
+
+namespace {
+/**
+ * Recovered original inlined helper for zdec_crater.cpp.
+ * No standalone retail function is present; observed callers are zDEClient
+ * map-tree methods 0x457d90, 0x457e80, 0x457fe0, 0x458510, and 0x4585a0.
+ * Purpose: test for the shared nil sentinel used by the zDEClient map tree.
+ */
+bool IsNil(
+    const zDEClient_MapTreeNode *node
+) {
+    return node == 0 || node == g_zDEClient_FeatureMapTreeNil;
+}
+
+/**
+ * Recovered original inlined helper for zdec_crater.cpp.
+ * No standalone retail function is present; observed callers are 0x457d90,
+ * 0x457e80, 0x457fe0, 0x458510, and 0x4585a0.
+ * Purpose: return the leftmost non-nil node in a feature map-tree subtree.
+ */
+zDEClient_MapTreeNode *TreeMinimum(
+    zDEClient_MapTreeNode *node
+) {
+    while (!IsNil(node->left)) {
+        node = node->left;
+    }
+
+    return node;
+}
+
+/**
+ * Recovered original inlined helper for zdec_crater.cpp.
+ * No standalone retail function is present; observed callers are 0x457d90,
+ * 0x457e80, 0x457fe0, 0x458510, and 0x4585a0.
+ * Purpose: return the rightmost non-nil node in a feature map-tree subtree.
+ */
+zDEClient_MapTreeNode *TreeMaximum(
+    zDEClient_MapTreeNode *node
+) {
+    while (!IsNil(node->right)) {
+        node = node->right;
+    }
+
+    return node;
+}
+
+/**
+ * Recovered original inlined helper for zdec_crater.cpp.
+ * No standalone retail function is present; observed caller is 0x4585a0
+ * zDEClient_MapTreeState::InsertAt.
+ * Purpose: rotate a feature map-tree branch left during insertion fixup.
+ */
+void RotateTreeLeft(
+    zDEClient_MapTreeState *tree,
+    zDEClient_MapTreeNode *node
+) {
+    zDEClient_MapTreeNode *const pivot = node->right;
+    node->right = pivot->left;
+    if (!IsNil(pivot->left)) {
+        pivot->left->parent = node;
+    }
+
+    pivot->parent = node->parent;
+    if (node == tree->header->parent) {
+        tree->header->parent = pivot;
+    } else if (node == node->parent->left) {
+        node->parent->left = pivot;
+    } else {
+        node->parent->right = pivot;
+    }
+
+    pivot->left = node;
+    node->parent = pivot;
+}
+
+/**
+ * Recovered original inlined helper for zdec_crater.cpp.
+ * No standalone retail function is present; observed caller is 0x4585a0
+ * zDEClient_MapTreeState::InsertAt.
+ * Purpose: rotate a feature map-tree branch right during insertion fixup.
+ */
+void RotateTreeRight(
+    zDEClient_MapTreeState *tree,
+    zDEClient_MapTreeNode *node
+) {
+    zDEClient_MapTreeNode *const pivot = node->left;
+    node->left = pivot->right;
+    if (!IsNil(pivot->right)) {
+        pivot->right->parent = node;
+    }
+
+    pivot->parent = node->parent;
+    if (node == tree->header->parent) {
+        tree->header->parent = pivot;
+    } else if (node == node->parent->right) {
+        node->parent->right = pivot;
+    } else {
+        node->parent->left = pivot;
+    }
+
+    pivot->right = node;
+    node->parent = pivot;
+}
+
+/**
+ * Recovered original inlined helper for zdec_crater.cpp.
+ * No standalone retail function is present; observed callers are map-tree
+ * erase and initialization paths in this source file.
+ * Purpose: reset the map-tree header to the empty-tree state.
+ */
+void ResetHeader(
+    zDEClient_MapTreeState *tree
+) {
+    if (tree->header == 0) {
+        return;
+    }
+
+    tree->header->parent = g_zDEClient_FeatureMapTreeNil;
+    tree->header->left = tree->header;
+    tree->header->right = tree->header;
+}
+
+/**
+ * Recovered original inlined helper for zdec_crater.cpp.
+ * No standalone retail function is present; observed caller is 0x457fe0
+ * zDEClient_MapTreeState::EraseAndAdvance.
+ * Purpose: replace one map-tree node link with another during erase.
+ */
+void Transplant(
+    zDEClient_MapTreeState *tree,
+    zDEClient_MapTreeNode *oldNode,
+    zDEClient_MapTreeNode *newNode
+) {
+    if (oldNode->parent == tree->header) {
+        tree->header->parent = newNode;
+    } else if (oldNode == oldNode->parent->left) {
+        oldNode->parent->left = newNode;
+    } else {
+        oldNode->parent->right = newNode;
+    }
+
+    if (!IsNil(newNode)) {
+        newNode->parent = oldNode->parent;
+    }
+}
+
+/**
+ * Recovered original inlined helper for zdec_crater.cpp.
+ * No standalone retail function is present; observed callers are map-tree
+ * erase paths 0x457e80 and 0x457fe0.
+ * Purpose: refresh cached leftmost and rightmost header links after erase.
+ */
+void RefreshHeaderExtents(
+    zDEClient_MapTreeState *tree
+) {
+    zDEClient_MapTreeNode *const root = tree->header != 0 ? tree->header->parent : 0;
+    if (tree->nodeCount <= 0 || IsNil(root)) {
+        ResetHeader(tree);
+        return;
+    }
+
+    tree->header->left = TreeMinimum(root);
+    tree->header->right = TreeMaximum(root);
+}
+
+/**
+ * Recovered original inlined helper for zdec_crater.cpp.
+ * No standalone retail function is present; observed caller is 0x457d90
+ * zDEClient_MapTreeState::FindOrInsertKey.
+ * Purpose: lazily allocate the feature map-tree header and shared nil node.
+ */
+void EnsureFeatureMapTreeInitialized(
+    zDEClient_MapTreeState *tree
+) {
+    if (g_zDEClient_FeatureMapTreeNil == 0) {
+        g_zDEClient_FeatureMapTreeNil =
+            (zDEClient_MapTreeNode *)(::operator new(sizeof(zDEClient_MapTreeNode)));
+        g_zDEClient_FeatureMapTreeNil->left = g_zDEClient_FeatureMapTreeNil;
+        g_zDEClient_FeatureMapTreeNil->parent = g_zDEClient_FeatureMapTreeNil;
+        g_zDEClient_FeatureMapTreeNil->right = g_zDEClient_FeatureMapTreeNil;
+        g_zDEClient_FeatureMapTreeNil->key = 0;
+        g_zDEClient_FeatureMapTreeNil->colorOrNil = 1;
+        g_zDEClient_FeatureMapTreeNilRefCount = 1;
+    }
+
+    if (tree->header == 0) {
+        tree->header = (zDEClient_MapTreeNode *)(::operator new(sizeof(zDEClient_MapTreeNode)));
+        tree->header->left = tree->header;
+        tree->header->parent = g_zDEClient_FeatureMapTreeNil;
+        tree->header->right = tree->header;
+        tree->header->key = 0;
+        tree->header->colorOrNil = 0;
+        tree->allowInsert = 0;
+        tree->nodeCount = 0;
+    }
+}
+} // namespace
+
 namespace zDEClient_Crater {
 /**
  * Reimplements 0x456ad0: zDEClient_Crater::DestroyFeature
- * (D:\Proj\GameZRecoil\zDEClient\zdec_crater.c).
+ * (D:\Proj\GameZRecoil\zDEClient\zdec_crater.cpp).
  *
  * Purpose: release a crater feature instance, including its generated point
  * buffer and clip-patch output.
@@ -29,7 +282,7 @@ void __fastcall DestroyFeature(
 
 /**
  * Reimplements 0x456b00: zDEClient_Crater::InitEventTemplateDefaults
- * (D:\Proj\GameZRecoil\zDEClient\zdec_crater.c).
+ * (D:\Proj\GameZRecoil\zDEClient\zdec_crater.cpp).
  *
  * Purpose: copy the configured crater event template defaults into a caller
  * supplied event template.
@@ -46,7 +299,7 @@ void __fastcall InitEventTemplateDefaults(
 
 /**
  * Reimplements 0x456b20: zDEClient_Crater::InstanceEvent
- * (D:\Proj\GameZRecoil\zDEClient\zdec_crater.c).
+ * (D:\Proj\GameZRecoil\zDEClient\zdec_crater.cpp).
  *
  * Purpose: instance and submit crater geometry for an event template, restore
  * vertex merge state, and optionally start the crater effect animation.
@@ -124,7 +377,7 @@ int __fastcall InstanceEvent(
 
 /**
  * Reimplements 0x456c50: zDEClient_Crater::InstanceEventMaybeRelay
- * (D:\Proj\GameZRecoil\zDEClient\zdec_crater.c).
+ * (D:\Proj\GameZRecoil\zDEClient\zdec_crater.cpp).
  *
  * Purpose: let the registered crater relay callback veto remote crater
  * instancing before creating the crater locally.
@@ -147,7 +400,7 @@ int __fastcall InstanceEventMaybeRelay(
 namespace zDEClient_Crater {
 /**
  * Reimplements 0x456c80: zDEClient_Crater::InitFeatureFromEventTemplate
- * (D:\Proj\GameZRecoil\zDEClient\zdec_crater.c).
+ * (D:\Proj\GameZRecoil\zDEClient\zdec_crater.cpp).
  *
  * Purpose: create a crater feature from an event template, fit it to the
  * owning feature grid cell, and generate its circular point bounds.
@@ -298,7 +551,7 @@ zDEClient_CraterFeature *__fastcall InitFeatureFromEventTemplate(
 
 /**
  * Reimplements 0x457040: zDEClient_Crater::CreateFeatureStructFromEventTemplate
- * (D:\Proj\GameZRecoil\zDEClient\zdec_crater.c).
+ * (D:\Proj\GameZRecoil\zDEClient\zdec_crater.cpp).
  *
  * Purpose: allocate and initialize the crater feature record copied from an
  * event template, including point storage, clip output, and display material
@@ -342,7 +595,7 @@ zDEClient_CraterFeature *__fastcall CreateFeatureStructFromEventTemplate(
 
 /**
  * Reimplements 0x4570e0: zDEClient_Crater::Build
- * Source: D:\Proj\GameZRecoil\zDEClient\zdec_crater.c
+ * Source: D:\Proj\GameZRecoil\zDEClient\zdec_crater.cpp
  * Purpose: Clip the crater polygon into the feature grid cell and adopt the clipped point list.
  */
 int __fastcall Build(
@@ -378,7 +631,7 @@ int __fastcall Build(
 
 /**
  * Reimplements 0x457140: zDEClient_Crater::CreateFeature
- * (D:\Proj\GameZRecoil\zDEClient\zdec_crater.c).
+ * (D:\Proj\GameZRecoil\zDEClient\zdec_crater.cpp).
  *
  * Purpose: create crater display geometry from the clipped crater points and
  * attach the display instance to the generated feature node.
@@ -555,7 +808,7 @@ void __fastcall SubmitFeatureGeometry(
 
 /**
  * Reimplements 0x457650: zDEClient::InitFeatureSystem.
- * Original source path: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp.
+ * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp.
  * Purpose: initialize feature-entry storage and register shutdown cleanup.
  */
 void __cdecl InitFeatureSystem() {
@@ -594,7 +847,7 @@ void InitFeatureEntryListAndMapTree() {
 
 /**
  * Reimplements 0x4576a0: zDEClient::RegisterFeatureSystemCleanupAtExit.
- * Original source path: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp.
+ * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp.
  * Purpose: register feature-system shutdown with the CRT atexit list.
  */
 void RegisterFeatureSystemCleanupAtExit() {
@@ -603,7 +856,7 @@ void RegisterFeatureSystemCleanupAtExit() {
 
 /**
  * Reimplements 0x4576b0: zDEClient::ShutdownFeatureSystem.
- * Original source path: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp.
+ * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp.
  * Purpose: release feature-entry vector storage and destroy the feature map
  * tree.
  */
@@ -652,7 +905,7 @@ void zDEClient_MapTreeState::Destroy() {
 namespace zDEClient {
 /**
  * Reimplements 0x457750: zDEClient::ClearFeatureDisplayNodes.
- * Original source path: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp.
+ * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp.
  * Purpose: reload display instances and delete generated ZDEC_FEATURE nodes.
  */
 void ClearFeatureDisplayNodes() {
@@ -807,7 +1060,7 @@ int ClearFeatureEntriesAndMapTree() {
 
 /**
  * Reimplements 0x457b40: zDEClient::WriteFeatureSectionsToZAR.
- * Original source path: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp.
+ * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp.
  * Purpose: serialize saved crater and quicksand feature entries into ZAR
  * sections.
  */
@@ -872,7 +1125,7 @@ int __fastcall WriteFeatureSectionsToZAR(
 
 /**
  * Reimplements 0x457c10: zDEClient::ApplyFeatureEntry.
- * Original source path: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp.
+ * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp.
  * Purpose: reload a serialized zDEClient feature entry or clear feature
  * display state for a reload marker.
  */
@@ -899,7 +1152,7 @@ void __stdcall ApplyFeatureEntry(
 
 /**
  * Reimplements 0x457c50: zDEClient::DispatchFeatureEventTemplates.
- * Original source path: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp.
+ * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp.
  * Purpose: iterate feature-entry snapshots and dispatch crater or quicksand
  * event templates to caller-provided handlers.
  */
@@ -1329,7 +1582,7 @@ void zDEClient_MapTreeState::IterPrevNodeRef(
 namespace zDEClient {
 /**
  * Reimplements 0x458a30: zDEClient::CopyFeatureEntriesForward.
- * Original source path: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp.
+ * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp.
  * Purpose: copy feature-entry records forward during vector growth.
  */
 zDEClient_FeatureEntry *__stdcall CopyFeatureEntriesForward(
@@ -1351,7 +1604,7 @@ zDEClient_FeatureEntry *__stdcall CopyFeatureEntriesForward(
 
 /**
  * Reimplements 0x458a70: zDEClient::FillFeatureEntries.
- * Original source path: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp.
+ * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp.
  * Purpose: fill feature-entry vector slots with a repeated feature record.
  */
 void __stdcall FillFeatureEntries(

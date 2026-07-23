@@ -1874,6 +1874,27 @@ extern char g_zEffectAnim_ZarSectionName_Anim[5];
 extern char g_zEffectAnim_ZarSectionName_RunningAnim[12];
 extern char g_zEffectAnim_ZarSectionName_AnimActivation[15];
 extern char g_zEffectAnim_ActivationPrereqNodeNotFoundFmt[0x4e];
+extern char g_zEffectAnim_CorruptAnimationLoadedFmt[0x2b];
+extern char g_zEffectAnim_TokenLooping[0x8];
+extern char g_zEffectAnim_TokenSpeed[0x6];
+extern char g_zEffect_FailedToFindGfxDataFmt[0x29];
+extern char g_zEffect_NodeLookupFailedFmt[0x2b];
+extern char g_zEffect_TokenMaps[0x5];
+extern char g_zEffect_ReadFieldFailedFmt[0x1b];
+extern char g_zEffect_SourceFile_ZeffInitC[0x28];
+extern char g_zEffectAnim_ActivationSectionNameFmt[0xf];
+extern char g_zEffectAnim_RestoreNodeFmt[0x14];
+extern char g_zEffectAnim_StateInvalidMsg[0x24];
+extern char g_zEffectAnim_ResetFunctionName[0xe];
+extern char g_zEffectAnim_StateExecutedMsg[0x25];
+extern char g_zEffectAnim_ProcessActivationRecordName[0x1c];
+extern char g_zEffect_SourceFile_ZeffAnimSaveC[0x2d];
+extern char g_zEffectAnim_ResetActivationRecordFmt[0x1e];
+extern char g_zEffectAnim_ActivationSectionName0[0xf];
+extern char g_zEffectAnim_RunningSectionNameFmt[0xc];
+extern char g_zEffectAnim_AnimSectionNameFmt[0x9];
+extern char g_zEffect_StringNone[0x5];
+extern char g_zEffectAnim_ResetTraceFmt[0x12];
 }
 
 namespace zEffect_Anim {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Battlesport/Mfc42Abi.h"
+#include "recoil/Mfc42Abi.h"
 #include "Battlesport/player.h"
 #include "GameZRecoil/include/zclass.h"
 #include "GameZRecoil/zHud/zhud_ui.h"
@@ -628,6 +628,10 @@ int __fastcall ClassifyPointAgainstSegment(
 }
 
 namespace HudLineClip {
+extern "C" float g_HudLineClip_CurrentLeft;
+extern "C" float g_HudLineClip_CurrentTop;
+extern "C" float g_HudLineClip_CurrentRight;
+extern "C" float g_HudLineClip_CurrentBottom;
 void __fastcall SetCurrentBoundsFromRectI(const HudRectI *rect);
 int __fastcall ClipSegmentToCurrentBounds(
     zVec3 *point0,

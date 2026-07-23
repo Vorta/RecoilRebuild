@@ -2,7 +2,7 @@
 
 #include <stddef.h>
 
-#include "Battlesport/Mfc42Abi.h"
+#include "recoil/Mfc42Abi.h"
 #include "Battlesport/wol_ref_count_and_lock.h"
 #include "recoil/recoil_callconv.h"
 #include "recoil/recoil_types.h"

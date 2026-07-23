@@ -1,6 +1,91 @@
-/* This source-layout fragment is included by the current compatibility container.
- * Parent build/manifests must compile this path directly after retiring the container include.
+#include "GameZRecoil/zError/zerr.h"
+#include "GameZRecoil/zFMV/fmv.h"
+#include "GameZRecoil/zSound/zsnd.h"
+#include "GameZRecoil/zVideo/zvid.h"
+
+#include <vfw.h>
+
+#include <stdlib.h>
+#include <string.h>
+
+extern "C" {
+/**
+ * Reimplements data 0x4dfc74: g_zFMV_SourceFile_FmvStreamCpp.
+ * BN xrefs: zFMV_Stream error paths pass the retail source path to zError.
+ * Purpose: source-file literal for AVI stream diagnostics.
  */
+char g_zFMV_SourceFile_FmvStreamCpp[] = "D:\\Proj\\GameZRecoil\\zFMV\\fmv_stream.cpp";
+
+/**
+ * Reimplements data 0x4dfc9c: g_zFMV_CannotReadAviStreamInfoMsg.
+ * BN xrefs: zFMV_Stream::Constructor reports AVI video stream-info failures.
+ * Purpose: AVI stream diagnostic literal in retail .data order.
+ */
+char g_zFMV_CannotReadAviStreamInfoMsg[] = "Cannot Read AVI Stream Info";
+
+/**
+ * Reimplements data 0x4dfcb8: g_zFMV_CannotReadAviFormatMsg.
+ * BN xrefs: zFMV_Stream::Constructor reports AVI video format read failures.
+ * Purpose: AVI stream diagnostic literal in retail .data order.
+ */
+char g_zFMV_CannotReadAviFormatMsg[] = "Cannot Read AVI Format";
+
+/**
+ * Reimplements data 0x4dfcd0: g_zFMV_CannotReadAviFormatSizeMsg.
+ * BN xrefs: zFMV_Stream::Constructor reports AVI video format-size failures.
+ * Purpose: AVI stream diagnostic literal in retail .data order.
+ */
+char g_zFMV_CannotReadAviFormatSizeMsg[] = "Cannot Read AVI Format Size";
+
+/**
+ * Reimplements data 0x4dfcec: g_zFMV_CannotOpenAviFileMsg.
+ * BN xrefs: zFMV_Stream::Constructor reports AVI video stream open failures.
+ * Purpose: AVI stream diagnostic literal in retail .data order.
+ */
+char g_zFMV_CannotOpenAviFileMsg[] = "Cannot Open AVI File";
+
+/**
+ * Reimplements data 0x4dfd04: g_zFMV_CannotReadAviSoundStreamMsg.
+ * BN xrefs: zFMV_Stream audio read paths report AVI sound stream failures.
+ * Purpose: AVI stream diagnostic literal in retail .data order.
+ */
+char g_zFMV_CannotReadAviSoundStreamMsg[] = "Cannot Read AVI Sound Stream";
+
+/**
+ * Reimplements data 0x4dfd24: g_zFMV_CannotReadAviSoundStreamInfoMsg.
+ * BN xrefs: zFMV_Stream::OpenAudio reports AVI sound stream-info failures.
+ * Purpose: AVI stream diagnostic literal in retail .data order.
+ */
+char g_zFMV_CannotReadAviSoundStreamInfoMsg[] = "Cannot Read AVI Sound Stream Info";
+
+/**
+ * Reimplements data 0x4dfd48: g_zFMV_CannotReadAviSoundFormatMsg.
+ * BN xrefs: zFMV_Stream::OpenAudio reports AVI sound format read failures.
+ * Purpose: AVI stream diagnostic literal in retail .data order.
+ */
+char g_zFMV_CannotReadAviSoundFormatMsg[] = "Cannot Read AVI Sound Format";
+
+/**
+ * Reimplements data 0x4dfd68: g_zFMV_CannotReadAviSoundFormatSizeMsg.
+ * BN xrefs: zFMV_Stream::OpenAudio reports AVI sound format-size failures.
+ * Purpose: AVI stream diagnostic literal in retail .data order.
+ */
+char g_zFMV_CannotReadAviSoundFormatSizeMsg[] = "Cannot Read AVI Sound Format Size";
+
+/**
+ * Reimplements data 0x4dfd8c: g_zFMV_CannotDecompressAviVideoStreamMsg.
+ * BN xrefs: zFMV_Stream::ReadAndDecodeFrame reports video decompression failures.
+ * Purpose: AVI stream diagnostic literal in retail .data order.
+ */
+char g_zFMV_CannotDecompressAviVideoStreamMsg[] = "Cannot Decompress AVI Video Stream";
+
+/**
+ * Reimplements data 0x4dfdb0: g_zFMV_CannotReadAviVideoStreamMsg.
+ * BN xrefs: zFMV_Stream::ReadAndDecodeFrame reports AVI video read failures.
+ * Purpose: AVI stream diagnostic literal in retail .data order.
+ */
+char g_zFMV_CannotReadAviVideoStreamMsg[] = "Cannot Read AVI Video Stream";
+}
 
 /**
  * Reimplements 0x463d50: zFMV_Stream::Init.
@@ -220,8 +305,8 @@ void zFMV_Stream::Constructor() {
     ICSendMessage(
         videoDecompressor,
         ICM_DECOMPRESS_BEGIN,
-        (DWORD_PTR)(srcFormat),
-        (DWORD_PTR)(dstFormat)
+        (DWORD)(srcFormat),
+        (DWORD)(dstFormat)
     );
 
     const unsigned int rate = videoStreamInfo.dwRate;
@@ -564,4 +649,3 @@ int zFMV_Stream::FillAudioBuffer(
         buffer2Bytes
     );
 }
-

@@ -3,6 +3,10 @@
 #include "recoil/recoil_types.h"
 
 #if defined(_MSC_VER) && _MSC_VER <= 1100
+/**
+ * Provider boundary 0x4a59d0: canonical VC5 KERNEL32 import-library thunk
+ * `_GetTickCount@0`; this declaration contributes no authored function body.
+ */
 extern "C" unsigned long __stdcall GetTickCount();
 #else
 #include <windows.h>

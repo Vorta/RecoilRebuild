@@ -444,6 +444,19 @@ void __cdecl ShutdownInstance();
 } // namespace PlayerNodeFlagRestore
 
 namespace Player {
+enum PlayerLifecycleState {
+    kPlayerLifecycleLocal = 1,
+    kPlayerLifecycleAi = 2,
+    kPlayerLifecycleRemote = 3,
+    kPlayerLifecycleInactive = 4,
+    kPlayerLifecycleDestroyed = 5,
+    kPlayerLifecycleState6Inactive = 6
+};
+
+enum PlayerOptCatalogFlags {
+    kOptCatalogFlagAltDispatchLatch = 0x02
+};
+
 void __cdecl InitMasterCommonDataList();
 void __cdecl InitMasterModalDataList();
 void __cdecl InitAndRegisterUnderwaterFxPass3UiSingleton();

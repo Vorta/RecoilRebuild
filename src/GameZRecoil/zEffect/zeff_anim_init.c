@@ -1,12 +1,60 @@
-/* This source-layout fragment is included by the current compatibility container.
- * Parent build/manifests must compile this path directly after retiring the container include.
- */
+#include "GameZRecoil/zEffect/zeff.h"
+
+#include "GameZRecoil/Time/time.h"
+#include "GameZRecoil/zHud/zhud_ui.h"
+#include "GameZRecoil/include/zimage.h"
+#include "GameZRecoil/zError/zerr.h"
+#include "GameZRecoil/zLoc/zloc.h"
+#include "GameZRecoil/zMath/zmth.h"
+#include "GameZRecoil/zModel/gmod.h"
+#include "GameZRecoil/zReader/zreader.h"
+#include "GameZRecoil/zSound/zsnd.h"
+#include "GameZRecoil/zUtil/zbd.h"
+#include "GameZRecoil/zUtil/zutil.h"
+#include "GameZRecoil/zVideo/zvid.h"
+#include "zdi.h"
+
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <time.h>
+
+namespace {
+const unsigned int kRandUnitScaleBits = 0x38000100u;
+const unsigned int kEffectAnimNeedsCopiedRootFlag = 0x00008000u;
+const char *kZeffAnimInitSourceFile = "D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_init.c";
+const char *kAnimationNodeNotFoundMessage =
+    "Animation node not found.\n  Animation: %s; Node: %s\n";
+
+struct zEffectAnimZbdHeaderBlock {
+    int entriesInstantiated;
+    void *heapPtr;
+    short countsPackedLoWord;
+    short entryCount;
+    zEffectAnimEntry *entryList;
+    int textIdEntryCount;
+    zEffectAnimTextIdEntry *textIdEntryList;
+    zClass_NodePartial *worldNode;
+    float defaultGravity;
+    int conditionalRefPosEnabled;
+    int variantOverrideEnabled;
+    float conditionalRefPosX;
+    float conditionalRefPosY;
+    float conditionalRefPosZ;
+    unsigned int variantOverridePackedIds;
+    float frameDeltaRemainingSec;
+};
+
+RECOIL_STATIC_ASSERT(sizeof(zEffectAnimZbdHeaderBlock) == 0x3c);
+} // namespace
 
 namespace zEffect_Anim {
 
 /**
  * Reimplements 0x45e100: zEffect_Anim::Init.
- * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_anim_init.c.
+ * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_init.c.
  * Purpose: reset animation globals, seed runtime random values, and register
  * animation save/load ZAR section handlers.
  */
@@ -71,7 +119,7 @@ int Init() {
 namespace zEffect {
 /**
  * Reimplements 0x45e200: zEffect::SetWorldNode.
- * Original source path: D:\Proj\GameZRecoil\zEffect\zeff.c.
+ * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff.c.
  * Purpose: store the world node used by zEffect runtime handlers.
  */
 void __fastcall SetWorldNode(
@@ -86,7 +134,7 @@ namespace zEffect_Anim {
 
 /**
  * Reimplements 0x45e210: zEffect_Anim::SetZbdFilename.
- * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_anim_init.c.
+ * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_init.c.
  * Purpose: store the animation ZBD filename after enforcing the retail length
  * limit.
  */
@@ -116,7 +164,7 @@ namespace zEffect {
 
 /**
  * Reimplements 0x45e270: zEffect::SetResourceNode.
- * Original source path: D:\Proj\GameZRecoil\zEffect\zeff.c.
+ * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff.c.
  * Purpose: store the resource node used by zEffect initialization and runtime
  * lookup.
  */
@@ -174,7 +222,7 @@ int __fastcall FindLightRefIndexByName(
 
 /**
  * Reimplements 0x45e380: zEffectAnim::FindOrCreateSoundRef.
- * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_anim.c.
+ * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_anim.c.
  * Purpose: find an existing runtime sound reference or create a named sound
  * node reference for an animation entry.
  */
@@ -249,7 +297,7 @@ int __fastcall FindOrCreateSoundRef(
 
 /**
  * Reimplements 0x45e4a0: zEffectAnim::FindOrCreateLightRef.
- * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_anim.c.
+ * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_anim.c.
  * Purpose: find an existing runtime light reference or create a named light
  * node reference for an animation entry.
  */
@@ -404,7 +452,7 @@ zClass_NodePartial *__fastcall FindNodeRecursiveByName(
 
 /**
  * Reimplements 0x45e6d0: zEffectAnim::EnsureCopiedRootTree.
- * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_anim.c.
+ * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_anim.c.
  * Purpose: copy and rebind an animation root when the entry is marked as
  * needing an owned runtime tree.
  */
@@ -479,7 +527,7 @@ zEffectAnimEntry *__fastcall CloneEntryForNode(
     );
 
     clonedEntry->runtimeSibling = 0;
-    clonedEntry->flags &= ~kEffectAnimWorldChildAttachedFlag;
+    clonedEntry->flags &= ~0x00000100u;
 
     if (node != 0) {
         clonedEntry->boundNode = node;
@@ -778,11 +826,15 @@ zEffectAnimEntry *__fastcall RebindEntryToNode(
                 self->attachNodeName
             );
         if (callbackNode == 0) {
-            ReportAnimationNodeNotFound(
-                self,
+            zError::ReportOld(
+                0x400,
+                kZeffAnimInitSourceFile,
                 0x27f9,
+                kAnimationNodeNotFoundMessage,
+                self,
                 self->attachNodeName
             );
+            self->activationState = 5;
             return 0;
         }
         self->callbackNode = callbackNode;
@@ -797,11 +849,15 @@ zEffectAnimEntry *__fastcall RebindEntryToNode(
                     tracked->trackedNodeName
                 );
             if (trackedNode == 0) {
-                ReportAnimationNodeNotFound(
-                    self,
+                zError::ReportOld(
+                    0x400,
+                    kZeffAnimInitSourceFile,
                     0x2811,
+                    kAnimationNodeNotFoundMessage,
+                    self,
                     tracked->trackedNodeName
                 );
+                self->activationState = 5;
                 return 0;
             }
             tracked->trackedNode = trackedNode;
@@ -816,11 +872,15 @@ zEffectAnimEntry *__fastcall RebindEntryToNode(
                 nodeRef->name.text
             );
             if (resolvedNode == 0) {
-                ReportAnimationNodeNotFound(
-                    self,
+                zError::ReportOld(
+                    0x400,
+                    kZeffAnimInitSourceFile,
                     0x282c,
+                    kAnimationNodeNotFoundMessage,
+                    self,
                     nodeRef->name.text
                 );
+                self->activationState = 5;
                 return 0;
             }
             nodeRef->node = resolvedNode;
@@ -860,7 +920,7 @@ namespace zEffect_Anim {
 
 /**
  * Reimplements 0x45efb0: zEffect_Anim::LoadZbd.
- * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_anim_init.c.
+ * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_init.c.
  * Purpose: load animation entries, dynamic lists, event streams, refs, and
  * text ids from the configured animation ZBD.
  */
@@ -880,17 +940,19 @@ int LoadZbd() {
     int zbdSignature = 0;
     int sourceFileStampRecordSize = 0;
     int sourceFileStampCount = 0;
-    if (!ReadOne(stream, &zbdSignature, sizeof(zbdSignature)) ||
-        !ReadOne(
-            stream,
+    if (fread(&zbdSignature, sizeof(zbdSignature), 1, stream) != 1 ||
+        fread(
             &sourceFileStampRecordSize,
-            sizeof(sourceFileStampRecordSize)
-        ) ||
-        !ReadOne(
-            stream,
+            sizeof(sourceFileStampRecordSize),
+            1,
+            stream
+        ) != 1 ||
+        fread(
             &sourceFileStampCount,
-            sizeof(sourceFileStampCount)
-        ) ||
+            sizeof(sourceFileStampCount),
+            1,
+            stream
+        ) != 1 ||
         zbdSignature != 0x08170616 ||
         sourceFileStampRecordSize != sizeof(zEffectAnimSourceFileStamp)) {
         fclose(stream);
@@ -898,13 +960,23 @@ int LoadZbd() {
     }
 
     g_zEffectAnim_SourceFileStampCount = sourceFileStampCount;
-    if (!ReadArray(
-            stream,
-            &g_zEffectAnim_SourceFileStampList,
-            (unsigned int)(sourceFileStampCount)
-        )) {
-        fclose(stream);
-        return -1;
+    g_zEffectAnim_SourceFileStampList = 0;
+    if (sourceFileStampCount > 0) {
+        g_zEffectAnim_SourceFileStampList =
+            (zEffectAnimSourceFileStamp *)(malloc(
+                sizeof(zEffectAnimSourceFileStamp) *
+                (unsigned int)(sourceFileStampCount)
+            ));
+        if (g_zEffectAnim_SourceFileStampList == 0 ||
+            fread(
+                g_zEffectAnim_SourceFileStampList,
+                sizeof(zEffectAnimSourceFileStamp),
+                (unsigned int)(sourceFileStampCount),
+                stream
+            ) != (unsigned int)(sourceFileStampCount)) {
+            fclose(stream);
+            return -1;
+        }
     }
 
     bool stampMismatch = false;
@@ -930,11 +1002,12 @@ int LoadZbd() {
 
     zClass_NodePartial *const savedWorld = g_zEffect_World;
     zEffectAnimZbdHeaderBlock headerBlock = {0};
-    if (!ReadOne(
-        stream,
-        &headerBlock,
-        sizeof(headerBlock)
-    )) {
+    if (fread(
+            &headerBlock,
+            sizeof(headerBlock),
+            1,
+            stream
+        ) != 1) {
         fclose(stream);
         return -1;
     }
@@ -972,11 +1045,12 @@ int LoadZbd() {
 
     for (int i_2059 = 0; i_2059 < entryCount; ++i_2059) {
         zEffectAnimEntry *const entry = &g_zEffectAnim_EntryList[i_2059];
-        if (!ReadOne(
-            stream,
-            entry,
-            sizeof(zEffectAnimEntry)
-        )) {
+        if (fread(
+                entry,
+                sizeof(zEffectAnimEntry),
+                1,
+                stream
+            ) != 1) {
             fclose(stream);
             return -1;
         }
@@ -992,44 +1066,125 @@ int LoadZbd() {
         entry->runtimeList = 0;
         entry->surfacePrimary.eventStream = 0;
 
-        if (!ReadArray(stream, &entry->trackedNodeList, entry->trackedNodeCount) ||
-            !ReadArray(
-                stream,
-                &entry->nodeRefList,
-                entry->nodeRefCount
-            ) ||
-            !ReadArray(
-                stream,
-                &entry->lightRefList,
-                entry->lightRefCount
-            ) ||
-            !ReadArray(
-                stream,
-                &entry->soundRefList,
-                entry->soundRefCount
-            ) ||
-            !ReadArray(
-                stream,
-                &entry->sampleRefList,
-                entry->sampleRefCount
-            ) ||
-            !ReadArray(
-                stream,
-                &entry->effectTemplateRefList,
-                entry->effectTemplateRefCount
-            ) ||
-            !ReadArray(
-                stream,
-                &entry->activationPrereqList,
-                entry->activationPrereqCount
-            ) ||
-            !ReadArray(
-                stream,
-                &entry->runtimeRefList,
-                entry->runtimeRefCount
-            )) {
-            fclose(stream);
-            return -1;
+        if (entry->trackedNodeCount > 0) {
+            entry->trackedNodeList = (zEffectAnimTrackedNode *)(malloc(
+                sizeof(zEffectAnimTrackedNode) * entry->trackedNodeCount
+            ));
+            if (entry->trackedNodeList == 0 ||
+                fread(
+                    entry->trackedNodeList,
+                    sizeof(zEffectAnimTrackedNode),
+                    entry->trackedNodeCount,
+                    stream
+                ) != entry->trackedNodeCount) {
+                fclose(stream);
+                return -1;
+            }
+        }
+        if (entry->nodeRefCount > 0) {
+            entry->nodeRefList = (zEffectAnimNodeRef28 *)(malloc(
+                sizeof(zEffectAnimNodeRef28) * entry->nodeRefCount
+            ));
+            if (entry->nodeRefList == 0 ||
+                fread(
+                    entry->nodeRefList,
+                    sizeof(zEffectAnimNodeRef28),
+                    entry->nodeRefCount,
+                    stream
+                ) != entry->nodeRefCount) {
+                fclose(stream);
+                return -1;
+            }
+        }
+        if (entry->lightRefCount > 0) {
+            entry->lightRefList = (zEffectAnimRuntimeNodeRef *)(malloc(
+                sizeof(zEffectAnimRuntimeNodeRef) * entry->lightRefCount
+            ));
+            if (entry->lightRefList == 0 ||
+                fread(
+                    entry->lightRefList,
+                    sizeof(zEffectAnimRuntimeNodeRef),
+                    entry->lightRefCount,
+                    stream
+                ) != entry->lightRefCount) {
+                fclose(stream);
+                return -1;
+            }
+        }
+        if (entry->soundRefCount > 0) {
+            entry->soundRefList = (zEffectAnimRuntimeNodeRef *)(malloc(
+                sizeof(zEffectAnimRuntimeNodeRef) * entry->soundRefCount
+            ));
+            if (entry->soundRefList == 0 ||
+                fread(
+                    entry->soundRefList,
+                    sizeof(zEffectAnimRuntimeNodeRef),
+                    entry->soundRefCount,
+                    stream
+                ) != entry->soundRefCount) {
+                fclose(stream);
+                return -1;
+            }
+        }
+        if (entry->sampleRefCount > 0) {
+            entry->sampleRefList = (zEffectAnimSampleRef *)(malloc(
+                sizeof(zEffectAnimSampleRef) * entry->sampleRefCount
+            ));
+            if (entry->sampleRefList == 0 ||
+                fread(
+                    entry->sampleRefList,
+                    sizeof(zEffectAnimSampleRef),
+                    entry->sampleRefCount,
+                    stream
+                ) != entry->sampleRefCount) {
+                fclose(stream);
+                return -1;
+            }
+        }
+        if (entry->effectTemplateRefCount > 0) {
+            entry->effectTemplateRefList = (zEffectAnimTemplateIndexRef *)(malloc(
+                sizeof(zEffectAnimTemplateIndexRef) * entry->effectTemplateRefCount
+            ));
+            if (entry->effectTemplateRefList == 0 ||
+                fread(
+                    entry->effectTemplateRefList,
+                    sizeof(zEffectAnimTemplateIndexRef),
+                    entry->effectTemplateRefCount,
+                    stream
+                ) != entry->effectTemplateRefCount) {
+                fclose(stream);
+                return -1;
+            }
+        }
+        if (entry->activationPrereqCount > 0) {
+            entry->activationPrereqList = (zEffectAnimActivationPrereq *)(malloc(
+                sizeof(zEffectAnimActivationPrereq) * entry->activationPrereqCount
+            ));
+            if (entry->activationPrereqList == 0 ||
+                fread(
+                    entry->activationPrereqList,
+                    sizeof(zEffectAnimActivationPrereq),
+                    entry->activationPrereqCount,
+                    stream
+                ) != entry->activationPrereqCount) {
+                fclose(stream);
+                return -1;
+            }
+        }
+        if (entry->runtimeRefCount > 0) {
+            entry->runtimeRefList = (zEffectAnimRuntimeRef *)(malloc(
+                sizeof(zEffectAnimRuntimeRef) * entry->runtimeRefCount
+            ));
+            if (entry->runtimeRefList == 0 ||
+                fread(
+                    entry->runtimeRefList,
+                    sizeof(zEffectAnimRuntimeRef),
+                    entry->runtimeRefCount,
+                    stream
+                ) != entry->runtimeRefCount) {
+                fclose(stream);
+                return -1;
+            }
         }
 
         for (int j = 0; j < entry->runtimeRefCount; ++j) {
@@ -1046,24 +1201,55 @@ int LoadZbd() {
             }
         }
 
-        if (!ReadOne(stream, &entry->surfacePrimary, sizeof(entry->surfacePrimary)) ||
-            !ReadEventStream(
-                stream,
-                &entry->surfacePrimary
-            )) {
+        if (fread(
+                &entry->surfacePrimary,
+                sizeof(entry->surfacePrimary),
+                1,
+                stream
+            ) != 1) {
             fclose(stream);
             return -1;
+        }
+        entry->surfacePrimary.eventStream = 0;
+        if (entry->surfacePrimary.eventStreamSize > 0) {
+            entry->surfacePrimary.eventStream =
+                malloc(entry->surfacePrimary.eventStreamSize);
+            if (entry->surfacePrimary.eventStream == 0 ||
+                fread(
+                    entry->surfacePrimary.eventStream,
+                    entry->surfacePrimary.eventStreamSize,
+                    1,
+                    stream
+                ) != 1) {
+                fclose(stream);
+                return -1;
+            }
         }
 
         for (int j_2108 = 0; j_2108 < entry->runtimeSequenceCount; ++j_2108) {
             zEffectAnimSurfaceRuntime *const runtime = &entry->runtimeList[j_2108];
-            if (!ReadOne(stream, runtime, sizeof(zEffectAnimSurfaceRuntime)) ||
-                !ReadEventStream(
-                    stream,
-                    runtime
-                )) {
+            if (fread(
+                    runtime,
+                    sizeof(zEffectAnimSurfaceRuntime),
+                    1,
+                    stream
+                ) != 1) {
                 fclose(stream);
                 return -1;
+            }
+            runtime->eventStream = 0;
+            if (runtime->eventStreamSize > 0) {
+                runtime->eventStream = malloc(runtime->eventStreamSize);
+                if (runtime->eventStream == 0 ||
+                    fread(
+                        runtime->eventStream,
+                        runtime->eventStreamSize,
+                        1,
+                        stream
+                    ) != 1) {
+                    fclose(stream);
+                    return -1;
+                }
             }
         }
     }
@@ -1246,11 +1432,17 @@ int LoadZbd() {
     }
 
     if (g_zEffectAnim_TextIdEntryCount > 0) {
-        if (!ReadArray(
-                stream,
-                &g_zEffectAnim_TextIdEntryList,
-                (unsigned int)(g_zEffectAnim_TextIdEntryCount)
-            )) {
+        g_zEffectAnim_TextIdEntryList = (zEffectAnimTextIdEntry *)(malloc(
+            sizeof(zEffectAnimTextIdEntry) *
+            (unsigned int)(g_zEffectAnim_TextIdEntryCount)
+        ));
+        if (g_zEffectAnim_TextIdEntryList == 0 ||
+            fread(
+                g_zEffectAnim_TextIdEntryList,
+                sizeof(zEffectAnimTextIdEntry),
+                (unsigned int)(g_zEffectAnim_TextIdEntryCount),
+                stream
+            ) != (unsigned int)(g_zEffectAnim_TextIdEntryCount)) {
             fclose(stream);
             return -1;
         }
@@ -1267,7 +1459,7 @@ int LoadZbd() {
 
 /**
  * Reimplements 0x45fb30: zEffect_Anim::LoadAndInstantiate.
- * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_anim_init.c.
+ * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_init.c.
  * Purpose: ensure animation entries are loaded, bind runtime roots, install
  * callbacks, capture initial node state, and mark entries instantiated.
  */
@@ -1390,7 +1582,7 @@ namespace zEffectAnim {
 
 /**
  * Reimplements 0x45fd10: zEffectAnim::ShutdownEntry.
- * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_anim_init.c.
+ * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_init.c.
  * Purpose: release runtime nodes, event streams, dynamic entry lists, and
  * cloned siblings owned by one animation entry.
  */
@@ -1410,23 +1602,45 @@ int __fastcall ShutdownEntry(
         zClass_Node::ClearDamageHandler(self->callbackNode);
     }
 
-    FreeIfSet(self->surfacePrimary.eventStream);
+    if (self->surfacePrimary.eventStream != 0) {
+        free(self->surfacePrimary.eventStream);
+    }
     self->surfacePrimary.eventStream = 0;
     self->surfacePrimary.eventStreamSize = 0;
 
     for (int i = 0; i < self->runtimeSequenceCount; ++i) {
-        FreeIfSet(self->runtimeList[i].eventStream);
+        if (self->runtimeList[i].eventStream != 0) {
+            free(self->runtimeList[i].eventStream);
+        }
     }
 
-    FreeIfSet(self->runtimeList);
-    FreeIfSet(self->trackedNodeList);
-    FreeIfSet(self->nodeRefList);
-    FreeIfSet(self->lightRefList);
-    FreeIfSet(self->soundRefList);
-    FreeIfSet(self->sampleRefList);
-    FreeIfSet(self->effectTemplateRefList);
-    FreeIfSet(self->activationPrereqList);
-    FreeIfSet(self->runtimeRefList);
+    if (self->runtimeList != 0) {
+        free(self->runtimeList);
+    }
+    if (self->trackedNodeList != 0) {
+        free(self->trackedNodeList);
+    }
+    if (self->nodeRefList != 0) {
+        free(self->nodeRefList);
+    }
+    if (self->lightRefList != 0) {
+        free(self->lightRefList);
+    }
+    if (self->soundRefList != 0) {
+        free(self->soundRefList);
+    }
+    if (self->sampleRefList != 0) {
+        free(self->sampleRefList);
+    }
+    if (self->effectTemplateRefList != 0) {
+        free(self->effectTemplateRefList);
+    }
+    if (self->activationPrereqList != 0) {
+        free(self->activationPrereqList);
+    }
+    if (self->runtimeRefList != 0) {
+        free(self->runtimeRefList);
+    }
 
     if (self->runtimeSibling != 0) {
         ShutdownEntry(self->runtimeSibling);
@@ -1442,7 +1656,7 @@ namespace zEffect_Anim {
 
 /**
  * Reimplements 0x45fe50: zEffect_Anim::Shutdown.
- * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_anim_init.c.
+ * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_init.c.
  * Purpose: free loaded animation heap, entries, localized text records, and
  * queued activation records, then clear animation-load state.
  */
@@ -1476,7 +1690,7 @@ int Shutdown() {
 
 /**
  * Reimplements 0x45fef0: zEffect_Anim::ShutdownIfLoaded.
- * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_anim_init.c.
+ * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_init.c.
  * Purpose: run animation shutdown only when entries are currently
  * instantiated.
  */
@@ -1518,7 +1732,7 @@ zEffectAnimEntry *__fastcall FindEntryByName(
 
 /**
  * Reimplements 0x45ffa0: zEffectAnim::FindNextAsyncEntry.
- * Original source path: D:\Proj\GameZRecoil\zEffect\zeff_anim.c.
+ * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_anim.c.
  * Purpose: return the next animation entry with the async flag set after an
  * optional current entry.
  */

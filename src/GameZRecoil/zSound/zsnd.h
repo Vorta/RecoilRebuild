@@ -2,6 +2,7 @@
 
 #include "recoil/recoil_types.h"
 #include <stddef.h>
+#include <vector>
 
 // clang-format off
 #include <windows.h>
@@ -15,6 +16,9 @@ typedef DWORD DWORD_PTR;
 
 #include "recoil/recoil_callconv.h"
 #include "zclass.h"
+
+extern "C" LPDIRECTSOUND g_zSnd_CachedDirectSound;
+extern "C" const GUID *g_zSnd_CachedDirectSoundGuid;
 
 struct zSndBuffer;
 struct zSndSample;
@@ -163,10 +167,10 @@ struct zSndWaveData {
     void Destructor();
     int ParseLoadedWaveFile();
     int LoadAndParseIfNeeded();
+    int Reset();
     int LoadAndParseFromIndexArchiveIfNeeded(
         zIndexArchive *archive
     );
-    int Reset();
 };
 
 /**
@@ -278,13 +282,14 @@ struct zSndSampleSet {
     void DestroyOwnedData();
 };
 
-struct zSndSampleSetRegistry {
-    unsigned char useArchiveBanksFlag;
-    unsigned char unknown_01[3];
-    zSndSampleSet **begin;
-    zSndSampleSet **end;
-    zSndSampleSet **capacityEnd;
-};
+/**
+ * Original VC5 sample-set registry container.
+ * Evidence: retail 0x4a09e0 is the inlined std::vector push-back/growth path,
+ * including the VC5 copy, uninitialized-fill, destroy-range, allocation, and
+ * deallocation COMDATs over the object stored at 0x56b290.
+ * Purpose: own the ordered set of loaded zSndSampleSet pointers.
+ */
+typedef std::vector<zSndSampleSet *> zSndSampleSetRegistry;
 
 struct zSndGroupConfigBlock {
     unsigned short currentPlayCount;
@@ -397,12 +402,6 @@ struct zSndCdTrackEntry {
     int trackNumber;
 };
 
-struct zSndCdTrackNode {
-    zSndCdTrackNode *next;
-    zSndCdTrackNode *prev;
-    zSndCdTrackEntry *entry;
-};
-
 namespace zReader {
 struct Node;
 }
@@ -418,7 +417,9 @@ RECOIL_STATIC_ASSERT(sizeof(zSndCuePoint) == 0x18);
 RECOIL_STATIC_ASSERT(sizeof(zSndWaveData) == 0x24);
 RECOIL_STATIC_ASSERT(sizeof(zSndSample) == 0xb8);
 RECOIL_STATIC_ASSERT(sizeof(zSndSampleSet) == 0x10);
+#if defined(_MSC_VER) && _MSC_VER < 1200
 RECOIL_STATIC_ASSERT(sizeof(zSndSampleSetRegistry) == 0x10);
+#endif
 RECOIL_STATIC_ASSERT(sizeof(zSndGroupConfigBlock) == 0x18);
 RECOIL_STATIC_ASSERT(sizeof(zSndGroupRuntimeFields) == 0x24);
 RECOIL_STATIC_ASSERT(sizeof(zSndGroup) == 0xb8);
@@ -426,7 +427,6 @@ RECOIL_STATIC_ASSERT(sizeof(zSndStreamRequest) == 0x3c);
 RECOIL_STATIC_ASSERT(sizeof(zSndFadeEntry) == 0x10);
 RECOIL_STATIC_ASSERT(sizeof(zSndFadeListNode) == 0x0c);
 RECOIL_STATIC_ASSERT(sizeof(zSndFadeList) == 0x0c);
-RECOIL_STATIC_ASSERT(sizeof(zSndCdTrackNode) == 0x0c);
 RECOIL_STATIC_ASSERT(sizeof(zSndCdTrackEntry) == 0x08);
 RECOIL_STATIC_ASSERT(
     offsetof(
@@ -466,12 +466,6 @@ RECOIL_STATIC_ASSERT(
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        zSndCdTrackNode,
-        entry
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
         zSndSampleSet,
         sampleCount
     ) == 0x04
@@ -481,12 +475,6 @@ RECOIL_STATIC_ASSERT(
         zSndSampleSet,
         samples
     ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zSndSampleSetRegistry,
-        begin
-    ) == 0x04
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
@@ -574,6 +562,11 @@ RECOIL_STATIC_ASSERT(
 );
 
 namespace zSnd {
+int __fastcall ReportMciError(
+    unsigned int mciError,
+    const char *sourceFile,
+    int lineNumber
+);
 int __fastcall ReportA3DError(
     int a3dError,
     const char *sourceFile,
@@ -600,7 +593,7 @@ float __stdcall MulGlobalVolumeScaleAndGetPrev(float scale);
 float __stdcall SetGlobalVolumeScale(float scale);
 void __fastcall SetFlag10PlaybackEnabled(int enabled);
 int HasMmxMixerSupport();
-LPDIRECTSOUND __fastcall AcquireCachedDirectSound(LPGUID deviceGuid);
+LPDIRECTSOUND __fastcall AcquireCachedDirectSound(const GUID *deviceGuid);
 void ReleaseCachedDirectSound();
 HRESULT __fastcall CachedDirectSound_GetCaps(DSCAPS *caps);
 } // namespace zSnd
@@ -664,19 +657,10 @@ extern zArchiveList *g_zSndStream_FreeList;
 extern zSndStreamRequest *g_zSndStream_MatchedRequest;
 extern int g_zSndStream_MatchedRequestCount;
 extern zClass_NodePartial *g_zSndStream_RootNode;
-extern unsigned int g_zSndFadeActiveListFlags;
-extern zSndFadeListNode *g_zSndFadeActiveListSentinel;
-extern int g_zSndFadeActiveListCount;
-extern unsigned int g_zSndFadeDispatchListFlags;
-extern zSndFadeListNode *g_zSndFadeDispatchListSentinel;
-extern int g_zSndFadeDispatchListCount;
 extern int g_zSndCdFlags;
 extern int g_zSndCdLastPlayMode;
 extern int g_zSndCdDeviceId;
 extern int g_zSndCdAuxDeviceId;
-extern unsigned char g_zSndCd_TrackListCtorGuard;
-extern zSndCdTrackNode *g_zSndCd_TrackListHead;
-extern int g_zSndCd_TrackCount;
 extern int g_zSndCdDiscLengthMinute;
 extern int g_zSndCdDiscLengthSecond;
 extern unsigned short g_zSndCdAuxVolumePrimary;
@@ -699,6 +683,7 @@ extern char g_zSndConfig_HardwareKey[0x09];
 extern char g_zSndConfig_FrequencyKey[0x0a];
 extern char g_zSndConfig_LoopedKey[0x07];
 extern char g_zSndConfig_3dKey[0x03];
+extern "C" char g_zEffectAnim_TokenRange[0x06];
 
 extern "C" int zSndBackend_InitA3D();
 extern "C" int zSndBackend_InitDirectSound();
@@ -719,12 +704,6 @@ int Shutdown();
 namespace zSndBackend {
 int Shutdown();
 }
-namespace zSndCdTrackList {
-void __cdecl StaticInit();
-void StaticConstructor();
-void RegisterAtExitDestructor();
-void __cdecl StaticDestructor();
-}
 namespace zSndStreamMgr {
 int __fastcall UpdateActiveRequestPredicate(
     void *payload,
@@ -733,12 +712,6 @@ int __fastcall UpdateActiveRequestPredicate(
 int Shutdown();
 }
 extern "C" void zSndSampleSetRegistry_DestroyAll();
-extern "C" void __cdecl zSndSampleSetRegistry_Shutdown();
-extern "C" void zSndSampleSetRegistry_RegisterAtExit();
-extern "C" void __fastcall zSnd_SetUseArchiveBanks(unsigned char enabled);
-extern "C" void __fastcall zSnd_SetUseArchiveBanksAndRegisterAtExit(
-    unsigned char enabled
-);
 extern "C" int zSndSampleSetRegistry_GetCount();
 extern "C" zSndSampleSet *__fastcall zSndSampleSetRegistry_GetByIndex(
     int index
@@ -749,10 +722,6 @@ extern "C" zSndSampleSet *__fastcall zSndSampleSetRegistry_FindByName(
 extern "C" int __fastcall zSndSampleSet_DestroyByName(const char *setName);
 extern "C" int __fastcall zSndSampleSet_InitByName(const char *setName);
 namespace zSndFadeLists {
-void Init();
-void InitGlobals();
-void RegisterShutdownAtExit();
-void __cdecl ShutdownAtExit();
 void StopAllAndShutdown();
 } // namespace zSndFadeLists
 namespace zSndFadeDispatchList {

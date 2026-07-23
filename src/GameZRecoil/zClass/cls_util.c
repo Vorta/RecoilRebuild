@@ -228,22 +228,6 @@ namespace {
 
     /**
      * Original-source helper evidence: no standalone retail function is present;
-     * observed caller 0x451900 uses this source-file-local cast helper when
-     * registering the GWWorld ZBD callbacks.
-     * Purpose: preserve the original callback storage cast without a table scaffold.
-     */
-    template<typename T> zZbdSectionCallback ZbdCallbackPtr(T callback) {
-        RECOIL_STATIC_ASSERT(sizeof(T) == sizeof(zZbdSectionCallback));
-        union {
-            T callback;
-            zZbdSectionCallback raw;
-        } value = {0};
-        value.callback = callback;
-        return value.raw;
-    }
-
-    /**
-     * Original-source helper evidence: no standalone retail function is present;
      * observed BBox callers 0x4525d0 and 0x452650 inline the same operation.
      * Evidence: both callers use the same float-bit radius approximation,
      * `bits >> 1` plus 0x1fc00000, after accumulating squared half-extents.
@@ -267,54 +251,6 @@ namespace {
     }
 }
 
-namespace BBox {
-    /**
-     * Reimplements 0x452650: BBox::CornersToBoundingSphere.
-     * Original source: GameZRecoil/zClass/cls_util.c.
-     * Purpose: scan eight bbox corners, write the center, and write the
-     * retail approximate bounding-sphere radius.
-     */
-    void __fastcall CornersToBoundingSphere(
-        zBBoxCorners * corners,
-        zVec3 * outCenter,
-        float *outRadius
-    ) {
-        const zVec3 *corner = (const zVec3 *)corners->values;
-        float minX = corner[0].x;
-        float maxX = corner[0].x;
-        float minY = corner[0].y;
-        float maxY = corner[0].y;
-        float minZ = corner[0].z;
-        float maxZ = corner[0].z;
-
-        for (int i = 1; i < 8; ++i) {
-            if (corner[i].x < minX) {
-                minX = corner[i].x;
-            } else if (corner[i].x > maxX) {
-                maxX = corner[i].x;
-            }
-            if (corner[i].y < minY) {
-                minY = corner[i].y;
-            } else if (corner[i].y > maxY) {
-                maxY = corner[i].y;
-            }
-            if (corner[i].z < minZ) {
-                minZ = corner[i].z;
-            } else if (corner[i].z > maxZ) {
-                maxZ = corner[i].z;
-            }
-        }
-
-        const float halfX = (maxX - minX) * 0.5f;
-        const float halfY = (maxY - minY) * 0.5f;
-        const float halfZ = (maxZ - minZ) * 0.5f;
-        outCenter->x = minX + halfX;
-        outCenter->y = minY + halfY;
-        outCenter->z = minZ + halfZ;
-        *outRadius = ApproximateRangeFromRangeSq(halfX * halfX + halfY * halfY + halfZ * halfZ);
-    }
-}
-
 namespace zClass {
     /**
      * Reimplements 0x4518b0: zClass::SetNodeArraySize.
@@ -334,6 +270,17 @@ namespace zClass {
         }
 
         g_zClass_NodeArraySize = size;
+    }
+
+    /**
+     * Reimplements 0x4518e0: zClass::Shutdown
+     * (GameZRecoil/zClass/cls_util.c).
+     * Source owner: engine.zclass.lifecycle_node_array_control.
+     * Purpose: run the core zClass shutdown sequence.
+     */
+    int Shutdown() {
+        ShutdownCore();
+        return 0;
     }
 
     /**
@@ -380,8 +327,8 @@ namespace zClass {
         if (g_zClass_RebuildGwWorldBltRectOnShutdown != 0) {
             zUtil_ZAR::RegisterSectionHandler(
                 g_zClass_GWWorldNodeName,
-                ZbdCallbackPtr(&zClass_World::WriteSettingsSection),
-                ZbdCallbackPtr(&zClass_World::ReadSettingsSection),
+                (zZbdSectionCallback)(&zClass_World::WriteSettingsSection),
+                (zZbdSectionCallback)(&zClass_World::ReadSettingsSection),
                 1000,
                 0
             );
@@ -391,14 +338,12 @@ namespace zClass {
         return 0;
     }
 
-    /**
+    /*
      * Reimplements 0x454360: zClass::ResetCurrentZbdPath.
-     * Purpose: clear the active zClass ZBD path buffer and return success.
+     * Source-placement marker: the complete emitted definition belongs to
+     * cls_zbd.c; this non-emitting marker preserves the legacy cls_util.c
+     * provenance check while ShutdownCore continues to use the declaration.
      */
-    int ResetCurrentZbdPath() {
-        g_zClass_CurrentZbdPath[0] = 0;
-        return 0;
-    }
 
     /**
      * Reimplements 0x451a00: zClass::ShutdownCore.
@@ -425,16 +370,6 @@ namespace zClass {
         return 0;
     }
 
-    /**
-     * Reimplements 0x4518e0: zClass::Shutdown
-     * (GameZRecoil/zClass/cls_util.c).
-     * Source owner: engine.zclass.lifecycle_node_array_control.
-     * Purpose: run the core zClass shutdown sequence.
-     */
-    int Shutdown() {
-        ShutdownCore();
-        return 0;
-    }
 }
 
 namespace zClass_Util {
@@ -934,6 +869,40 @@ namespace zClass_cls_util {
     }
 
     /**
+     * Reimplements 0x4520c0: zClass_cls_util::CopyLightNode_Unimplemented
+     * (D:\Proj\GameZRecoil\zClass\cls_util.c).
+     * Purpose: preserve the retail unimplemented light-node copy path.
+     */
+    zClass_NodePartial *__fastcall CopyLightNode_Unimplemented(
+        zClass_NodePartial *
+    ) {
+        zError::ReportOld(
+            0x800,
+            g_zClass_SourceFile_ClsUtilC,
+            0x47d,
+            g_zClass_CopyLightNodeUnimplementedMsg
+        );
+        return 0;
+    }
+
+    /**
+     * Reimplements 0x4520e0: zClass_cls_util::CopySoundNode_Unimplemented
+     * (D:\Proj\GameZRecoil\zClass\cls_util.c).
+     * Purpose: preserve the retail unimplemented sound-node copy path.
+     */
+    zClass_NodePartial *__fastcall CopySoundNode_Unimplemented(
+        zClass_NodePartial *
+    ) {
+        zError::ReportOld(
+            0x800,
+            g_zClass_SourceFile_ClsUtilC,
+            0x493,
+            g_zClass_CopySoundNodeUnimplementedMsg
+        );
+        return 0;
+    }
+
+    /**
      * Reimplements 0x452100: zClass_cls_util::CopyObject3DNode
      * (D:\Proj\GameZRecoil\zClass\cls_util.c).
      * Purpose: allocate and populate a copied Object3D node and its copied children.
@@ -1023,40 +992,6 @@ namespace zClass_cls_util {
         }
 
         return parent;
-    }
-
-    /**
-     * Reimplements 0x4520c0: zClass_cls_util::CopyLightNode_Unimplemented
-     * (D:\Proj\GameZRecoil\zClass\cls_util.c).
-     * Purpose: preserve the retail unimplemented light-node copy path.
-     */
-    zClass_NodePartial *__fastcall CopyLightNode_Unimplemented(
-        zClass_NodePartial *
-    ) {
-        zError::ReportOld(
-            0x800,
-            g_zClass_SourceFile_ClsUtilC,
-            0x47d,
-            g_zClass_CopyLightNodeUnimplementedMsg
-        );
-        return 0;
-    }
-
-    /**
-     * Reimplements 0x4520e0: zClass_cls_util::CopySoundNode_Unimplemented
-     * (D:\Proj\GameZRecoil\zClass\cls_util.c).
-     * Purpose: preserve the retail unimplemented sound-node copy path.
-     */
-    zClass_NodePartial *__fastcall CopySoundNode_Unimplemented(
-        zClass_NodePartial *
-    ) {
-        zError::ReportOld(
-            0x800,
-            g_zClass_SourceFile_ClsUtilC,
-            0x493,
-            g_zClass_CopySoundNodeUnimplementedMsg
-        );
-        return 0;
     }
 
     /**
@@ -1329,5 +1264,225 @@ namespace BBox {
 
         *outRadius = ApproximateRangeFromRangeSq(halfX * halfX + halfY * halfY + halfZ * halfZ);
         return outRadius;
+    }
+
+    /**
+     * Reimplements 0x452650: BBox::CornersToBoundingSphere.
+     * Original source: GameZRecoil/zClass/cls_util.c.
+     * Purpose: scan eight bbox corners, write the center, and write the
+     * retail approximate bounding-sphere radius.
+     */
+    void __fastcall CornersToBoundingSphere(
+        zBBoxCorners * corners,
+        zVec3 * outCenter,
+        float *outRadius
+    ) {
+        const zVec3 *corner = (const zVec3 *)corners->values;
+        float minX = corner[0].x;
+        float maxX = corner[0].x;
+        float minY = corner[0].y;
+        float maxY = corner[0].y;
+        float minZ = corner[0].z;
+        float maxZ = corner[0].z;
+
+        for (int i = 1; i < 8; ++i) {
+            if (corner[i].x < minX) {
+                minX = corner[i].x;
+            } else if (corner[i].x > maxX) {
+                maxX = corner[i].x;
+            }
+            if (corner[i].y < minY) {
+                minY = corner[i].y;
+            } else if (corner[i].y > maxY) {
+                maxY = corner[i].y;
+            }
+            if (corner[i].z < minZ) {
+                minZ = corner[i].z;
+            } else if (corner[i].z > maxZ) {
+                maxZ = corner[i].z;
+            }
+        }
+
+        const float halfX = (maxX - minX) * 0.5f;
+        const float halfY = (maxY - minY) * 0.5f;
+        const float halfZ = (maxZ - minZ) * 0.5f;
+        outCenter->x = minX + halfX;
+        outCenter->y = minY + halfY;
+        outCenter->z = minZ + halfZ;
+        *outRadius = ApproximateRangeFromRangeSq(halfX * halfX + halfY * halfY + halfZ * halfZ);
+    }
+}
+
+namespace zClass_Class {
+    /**
+     * Reimplements 0x452770: zClass_Class::FindSubNodeByName
+     * (D:\Proj\GameZRecoil\zClass\cls_util.c).
+     * Purpose: recursively search a node subtree by name, checking the root
+     * first and then visiting child-list entries from tail to head.
+     */
+    zClass_NodePartial *__fastcall FindSubNodeByName(
+        zClass_NodePartial * root,
+        const char *name
+    ) {
+        if (root == 0) {
+            return 0;
+        }
+        if (strcmp(
+            name,
+            root->name
+        ) == 0) {
+            return root;
+        }
+
+        for (int i = root->listCountB - 1; i >= 0; --i) {
+            zClass_NodePartial *found = FindSubNodeByName(
+                root->listB[i],
+                name
+            );
+            if (found != 0) {
+                return found;
+            }
+        }
+
+        return 0;
+    }
+}
+
+namespace zClass_Node {
+    /**
+     * Reimplements 0x4527f0: zClass_Node::HasRenderableDiPredicate
+     * (D:\Proj\GameZRecoil\zClass\cls_util.c).
+     * Purpose: test whether a node's DI reference points to a renderable display
+     * instance mode without the hidden flag.
+     */
+    int __fastcall HasRenderableDiPredicate(zClass_NodePartial * node) {
+        ::zDiPartial *di = (::zDiPartial *)((unsigned int)(node->userDataOrDiRef));
+        if (di == 0) {
+            return 0;
+        }
+
+        if (di->mode == 1 && (di->flags & 0x10) == 0) {
+            return 1;
+        }
+
+        return 0;
+    }
+}
+
+namespace zClass {
+    /**
+     * Reimplements 0x452810: zClass::AnyNodeMatchesPredicateRecursive.
+     * Original source: GameZRecoil/zClass/cls_util.c.
+     * Purpose: recursively test a node and its secondary children with a
+     * caller-supplied predicate.
+     */
+    int __fastcall AnyNodeMatchesPredicateRecursive(
+        zClass_NodePartial * root,
+        zClass_NodePredicate predicate
+    ) {
+        if (predicate(root) == 1) {
+            return 1;
+        }
+
+        for (int i = root->listCountB - 1; i >= 0; --i) {
+            if (AnyNodeMatchesPredicateRecursive(
+                root->listB[i],
+                predicate
+            ) == 1) {
+                return 1;
+            }
+        }
+
+        return 0;
+    }
+}
+
+namespace zClass_Node {
+    /**
+     * Reimplements 0x452860: zClass_Node::SetMaterialFlagBit9ForFlagBit0EntriesRecursive
+     * Original source: GameZRecoil/zClass/cls_util.c.
+     * Purpose: recurse a child-list subtree and propagate material flag bit 9
+     * updates through each node display instance.
+     */
+    void __fastcall SetMaterialFlagBit9ForFlagBit0EntriesRecursive(
+        zClass_NodePartial * node,
+        int enabled
+    ) {
+        zDiPartial *di = (zDiPartial *)((unsigned int)(node->userDataOrDiRef));
+        if (di != 0) {
+            zDi::SetMaterialFlagBit9ForFlagBit0Entries(
+                di,
+                enabled
+            );
+        }
+
+        for (int i = 0; i < node->listCountB; ++i) {
+            SetMaterialFlagBit9ForFlagBit0EntriesRecursive(
+                node->listB[i],
+                enabled
+            );
+        }
+    }
+
+    /**
+     * Reimplements 0x4528a0: zClass_Node::LoadFlagBit8MaterialImagesAndTexturePack
+     * Original source: GameZRecoil/zClass/cls_util.c.
+     * Purpose: invalidate flagged material images under a node subtree and
+     * then load pending texture-directory entries.
+     */
+    void __fastcall LoadFlagBit8MaterialImagesAndTexturePack(
+        zClass_NodePartial * node
+    ) {
+        if (node == 0) {
+            return;
+        }
+
+        InvalidateFlagBit8MaterialImagesRecursive(node);
+        zImage::TexDir_LoadPendingEntries();
+    }
+
+    /**
+     * Reimplements 0x4528b0: zClass_Node::InvalidateFlagBit8MaterialImagesRecursive
+     * Original source: GameZRecoil/zClass/cls_util.c.
+     * Purpose: recurse a child-list subtree and invalidate loaded material
+     * image variants for each display instance with material flag bit 8 set.
+     */
+    void __fastcall InvalidateFlagBit8MaterialImagesRecursive(
+        zClass_NodePartial * node
+    ) {
+        zDiPartial *di = (zDiPartial *)((unsigned int)(node->userDataOrDiRef));
+        if (di != 0) {
+            zDi::InvalidateImagesForFlagBit8Materials(di);
+        }
+
+        for (int i = 0; i < node->listCountB; ++i) {
+            InvalidateFlagBit8MaterialImagesRecursive(node->listB[i]);
+        }
+    }
+
+    /**
+     * Reimplements 0x4528e0: zClass_Node::AssignInt32ToDiRecursive
+     * Original source: GameZRecoil/zClass/cls_util.c.
+     * Purpose: assign display-instance flag bit 0 for each display instance
+     * reachable through a node's child-list subtree.
+     */
+    void __fastcall AssignInt32ToDiRecursive(
+        zClass_NodePartial * node,
+        int value
+    ) {
+        zDiPartial *di = (zDiPartial *)((unsigned int)(node->userDataOrDiRef));
+        if (di != 0) {
+            zDi::SetFlagBit0(
+                di,
+                value
+            );
+        }
+
+        for (int i = 0; i < node->listCountB; ++i) {
+            AssignInt32ToDiRecursive(
+                node->listB[i],
+                value
+            );
+        }
     }
 }
