@@ -6208,7 +6208,7 @@ void HudUiPanel::GetTextRect(
  *
  * Evidence: BN retail 0x4bb790 constructs the HudUiPanel base, initializes the
  * vector member, installs g_HudUiCompositePanel_FTable, builds a stack
- * HudUiTransitionTextPanel template entry, resizes the entry vector, applies
+ * HudUiCompositePanelEntry template entry, resizes the entry vector, applies
  * text "W", relayouts, and sets the panel visible. BN caller 0x403930 invokes
  * this entry-count construction for HudUiBriefingRuntime::messagesPanel before
  * constructing locatorPanels, matching a C++ member-initializer constructor.
@@ -6224,7 +6224,7 @@ HudUiCompositePanel::HudUiCompositePanel(
         0
     ) {
     activeEntryCount = 0;
-    HudUiTransitionTextPanel templateEntry;
+    HudUiCompositePanelEntry templateEntry;
     entryVector.resize(
         (unsigned int)(entryCount),
         templateEntry
@@ -6315,7 +6315,8 @@ void HudUiCompositePanel::SetTextFmtV(
     const char *format,
     va_list args
 ) {
-    HudUiTransitionTextPanel *const entry = &entryVector[activeEntryCount];
+    HudUiTransitionTextPanel *const entry =
+        &entryVector[activeEntryCount];
     entry->SetTextFmtV(
         format,
         args
@@ -6337,8 +6338,10 @@ void HudUiCompositePanel::ScrollHistory() {
             for (unsigned int index = 0;
                 index < (unsigned int)(entryVector.size()) - 1;
                 ++index) {
-                HudUiTransitionTextPanel *const current = &entryVector[index];
-                HudUiTransitionTextPanel *const next = &entryVector[index + 1];
+                HudUiTransitionTextPanel *const current =
+                    &entryVector[index];
+                HudUiTransitionTextPanel *const next =
+                    &entryVector[index + 1];
                 current->SetText(next->GetLastTextPtr());
             }
         }
@@ -6402,7 +6405,7 @@ void HudUiCompositePanel::ResizeEntryVectorAndRelayout(
     const int oldCount = (int)(entryVector.size());
 
     if (entryCount != oldCount) {
-        HudUiTransitionTextPanel templateEntry;
+        HudUiCompositePanelEntry templateEntry;
 
         if (entryCount > oldCount) {
             entryVector.insert(
