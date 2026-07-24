@@ -311,7 +311,7 @@ inline Briefing_ActionQueue::Briefing_ActionQueue()
 inline HudUiBriefingObjectivePicture::HudUiBriefingObjectivePicture()
     : HudUiWidget(0) {
     noiseAlpha = 0.0f;
-    Invalidate();
+    ((HudUiElement *)(this))->Invalidate();
 }
 
 /**
@@ -457,7 +457,8 @@ HudUiBriefingRuntime::HudUiBriefingRuntime(
 
     namePanel->SetVisible(0);
     messagesPanel.SetVisible(1);
-    ((HudUiContainer *)(this))->SetEnabled(1);
+    HudUiBackground *const background = this;
+    background->SetEnabled(1);
 
     Time::Tick();
     zSnd_Tick(1);
@@ -564,11 +565,8 @@ void HudUiBriefingLocatorPanel::Update(
 /**
  * Reimplements 0x403e20: HudUiCompositePanel::~HudUiCompositePanel.
  * Physical source block: D:\Proj\Battlesport\Briefing.cpp.
- * Purpose: destroy composite-panel entries, free vector storage, and tear down
- * the inherited panel state.
+ * The in-class definition permits VC5 to inline member cleanup into callers.
  */
-HudUiCompositePanel::~HudUiCompositePanel() {
-}
 
 /**
  * Reimplements 0x403ed0: HudUiBriefingRuntime::~HudUiBriefingRuntime.

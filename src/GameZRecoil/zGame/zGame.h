@@ -42,6 +42,47 @@ struct zOpt_CameraSection {
 
 typedef int zOptGameControlFlags;
 
+struct zGame_OptionsPointerCache {
+    int *effectsLevelSw;
+    int *effectsLevelHw;
+    int *gfxFlagsSw;
+    int *gfxFlagsHw;
+    int *objectLodSw;
+    int *objectLodHw;
+    int *textureMemorySw;
+    int *textureMemoryHw;
+    int *hudVisibilitySw;
+    int *hudVisibilityHw;
+    int *hudTypeSw;
+    int *hudTypeHw;
+    int *videoMode;
+    int *audioApi;
+    int *soundLod;
+    zOptGameControlFlags *gameControlOptions;
+    int *muteSound;
+    float *soundVolume;
+    int *gameDifficulty;
+    zOptionEntryPartial *playerName;
+    int *cdAudio;
+    int *videoFullscreen;
+    int *videoAcceleration;
+    int *hardwareApi;
+    int *inputJoystick;
+    int *joystickNumAxes;
+    int *joystickNumButtons;
+    int *replicate;
+    int *videoStride;
+    int *networkEnabled;
+    int *networkListen;
+    zOpt_CameraSection **cameraSection;
+    zOpt_ViewRectSection **renderSection;
+    zOpt_ViewRectSection **displaySection;
+    zOpt_ViewRectSection **windowSection;
+    void *unusedOption;
+    int *networkModem;
+    int *wolPasswordFlag;
+};
+
 struct zGame_OptionsRuntimeConfig {
     char cpuVendor[0x10];
     int cpuClass;
@@ -65,36 +106,8 @@ extern char *g_zGame_Options_RegKeyGame;
 extern int g_zGame_Options_RegContextInitialized;
 extern zGame_OptionsRuntimeConfig g_zGame_Options_RuntimeConfigDefaults;
 extern zGame_OptionsRuntimeConfig g_zGame_Options_RuntimeConfig;
-extern int *ZOPT_VIDEO_FULLSCREEN;
-extern int *ZOPT_VIDEO_STRIDE;
-extern int *ZOPT_HUD_SW;
-extern int *ZOPT_HUD_HW;
-extern int *ZOPT_HUD_TYPE_SW;
-extern int *ZOPT_HUD_TYPE_HW;
-extern int *ZOPT_REPLICATE;
-extern int *ZOPT_NETWORK_ENABLED;
-extern int *g_zOpt_NetworkModemOption;
-extern int *g_zOpt_NetworkListenOption;
-extern int *g_zOpt_GameDifficultyOption;
-extern int *g_zOpt_WolPasswordFlagOption;
-extern int *ZOPT_EFFECTS_LEVEL_SW;
-extern int *ZOPT_EFFECTS_LEVEL_HW;
-extern int *ZOPT_OBJECT_LOD_SW;
-extern int *ZOPT_OBJECT_LOD_HW;
-extern int *ZOPT_MUTE_SOUND;
-extern float *ZOPT_SOUND_VOLUME;
-extern int *ZOPT_SOUND_LOD;
-extern int *ZOPT_TEXTURE_MEMORY_SW;
-extern int *ZOPT_TEXTURE_MEMORY_HW;
-extern zOptionEntryPartial *ZOPT_PLAYER_NAME;
-extern int *ZOPT_GFX_FLAGS_SW;
-extern int *ZOPT_GFX_FLAGS_HW;
-extern zOpt_ViewRectSection **g_zOpt_RenderSectionOption;
-extern zOpt_ViewRectSection **g_zOpt_DisplaySectionOption;
-extern zOpt_ViewRectSection **g_zOpt_WindowSectionOption;
-extern zOpt_CameraSection **g_zOpt_CameraSectionOption;
+extern zGame_OptionsPointerCache g_zGame_Options_PointerCache;
 extern int g_zOpt_HwMode;
-extern zOptGameControlFlags *ZOPT_GAME_CONTROL_OPTIONS;
 }
 
 enum zOptHudTypeOption {

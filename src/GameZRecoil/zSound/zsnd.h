@@ -624,8 +624,6 @@ extern "C" zSndSample *__fastcall zSndSample_CreateQueuedStreamingSample(
 );
 
 extern "C" {
-extern int *ZOPT_AUDIO_API;
-extern int *ZOPT_SOUND_CDAUDIO;
 extern int g_zSnd_IsInitialized;
 extern int g_zSnd_PreInitialized;
 extern int g_zSnd_ActiveBackend;

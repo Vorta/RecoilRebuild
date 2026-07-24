@@ -54,6 +54,47 @@ struct zSndSample;
 struct zSndPlayHandle;
 struct zFMV_Stream;
 
+struct zTimedTask {
+    zTimedTask *next;
+    int kind;
+    int flags;
+    float remainingSeconds;
+    int actionArg0;
+    int actionArg1;
+    int actionArg2;
+    int actionArg3;
+    int actionArg4;
+    unsigned char payload_24[0x94];
+    int alphaPointCount;
+    int alphaVariantIndex;
+    int alpha255;
+    unsigned char payload_c4[0x48];
+    int rasterVertexCount;
+    int rasterDrawParam;
+
+    void RemoveFromActiveList();
+    void RunImmediateAction();
+    static void TickActiveList();
+};
+
+RECOIL_STATIC_ASSERT(offsetof(zTimedTask, next) == 0x00);
+RECOIL_STATIC_ASSERT(offsetof(zTimedTask, kind) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(zTimedTask, flags) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(zTimedTask, remainingSeconds) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(zTimedTask, actionArg0) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(zTimedTask, actionArg4) == 0x20);
+RECOIL_STATIC_ASSERT(offsetof(zTimedTask, alphaPointCount) == 0xb8);
+RECOIL_STATIC_ASSERT(offsetof(zTimedTask, alphaVariantIndex) == 0xbc);
+RECOIL_STATIC_ASSERT(offsetof(zTimedTask, alpha255) == 0xc0);
+RECOIL_STATIC_ASSERT(offsetof(zTimedTask, rasterVertexCount) == 0x10c);
+RECOIL_STATIC_ASSERT(offsetof(zTimedTask, rasterDrawParam) == 0x110);
+
+extern int g_zTimedTask_ActiveCount;
+extern zTimedTask *g_zTimedTask_ActiveHead;
+extern zTimedTask *g_zTimedTask_ActiveTail;
+extern "C" unsigned int g_HudUi_InvalidateMask;
+extern char g_HudFontName_Arial[];
+
 extern int g_HudCmdMouseDebounceFrames;
 struct HudUiWidget;
 struct HudUiMgrData;
@@ -305,7 +346,7 @@ struct HudUiContainer {
     ~HudUiContainer();
 
     virtual void UpdateAll(float deltaSeconds);
-    void SetEnabled(int enabled);
+    virtual void SetEnabled(int enabled);
 
     int enabled;
     HudUiElement *childHead;
@@ -2103,7 +2144,22 @@ struct HudUiCompositePanelEntry {
     );
 };
 
-typedef std::vector<HudUiCompositePanelEntry> HudUiCompositePanelVector;
+/**
+ * Reimplements 0x4bbfa0: the natural VC5
+ * std::vector<HudUiTransitionTextPanel> specialization destructor/clear body,
+ * which destroys the concrete entries, frees the buffer, and resets the
+ * begin/end/capacity cursor triple.
+ * Purpose: record the source provenance of the template body selected by this
+ * typedef and its uses; it is not a hand-authored wrapper function.
+ */
+/**
+ * Reimplements 0x4bbff0: the natural VC5
+ * std::vector<HudUiTransitionTextPanel> specialization count-insert body for
+ * 0x2c0-byte entries, including its in-place and reallocation paths.
+ * Purpose: record the source provenance of the template body selected by this
+ * typedef and its uses; it is not a hand-authored wrapper function.
+ */
+typedef std::vector<HudUiTransitionTextPanel> HudUiCompositePanelVector;
 
 struct HudUiCompositePanel : HudUiPanel {
     int activeEntryCount;
@@ -2130,7 +2186,8 @@ struct HudUiCompositePanel : HudUiPanel {
      * constructor instead of a default construction plus later body call.
      */
     HudUiCompositePanel(int entryCount);
-    ~HudUiCompositePanel();
+    ~HudUiCompositePanel() {
+    }
     virtual void SetPos(
         int x,
         int y

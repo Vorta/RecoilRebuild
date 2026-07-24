@@ -567,15 +567,6 @@ RECOIL_STATIC_ASSERT(sizeof(g_zVideo_DefaultD3DDeviceName) == 0x6);
  */
 int g_zVid_PaletteRemapVariantTableCount = 0;
 unsigned short **g_zVid_PaletteRemapVariantTables = 0;
-/**
- * Reimplements data 0x4e5d30: ZOPT_VIDEO_MODE.
- * Reimplements data 0x4e5d58: ZOPT_VIDEO_ACCELERATION.
- * Reimplements data 0x4e5d5c: ZOPT_HW_API.
- * Purpose: point at the video option storage used by zVid option accessors.
- */
-int *ZOPT_VIDEO_MODE = 0;
-int *ZOPT_VIDEO_ACCELERATION = 0;
-int *ZOPT_HW_API = 0;
 /*
  * zVideo hardware default texture owner: BN 0x4a75f0 passes this separate
  * 8x8 four-color checker image directly to the active texture-record callback

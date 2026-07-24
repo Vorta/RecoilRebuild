@@ -925,9 +925,6 @@ extern int g_zInput_KbdDikToAsciiTableReady;
 extern zInput_FFEffectSet *g_zInputFfEffectSet;
 extern zInput_GameStateOrMapTablePartial *g_GameStateOrMapTable;
 extern float g_zInput_DiPitchAngleLowpassRad;
-extern int *ZOPT_INPUT_JOYSTICK;
-extern int *ZOPT_JOYSTICK_NUM_AXES;
-extern int *ZOPT_JOYSTICK_NUM_BUTTONS;
 
 int zInput_Keyboard_IsUnsuspended();
 int __fastcall zInput_WaitForAnyKeyPressWithTimeoutMs(int timeoutMs);
